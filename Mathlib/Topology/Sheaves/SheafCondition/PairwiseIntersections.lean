@@ -33,7 +33,7 @@ We express this in two equivalent ways, as
 * `is_limit (F.map_cone (cone U))`, or
 * `preserves_limit (diagram U) F`
 
-We show that this sheaf condition is equivalent to the `opens_le_cover` sheaf condition, and
+We show that this sheaf condition is equivalent to the `OpensLeCover` sheaf condition, and
 thereby also equivalent to the default sheaf condition.
 -/
 
@@ -52,7 +52,7 @@ section
 
 /-- An alternative formulation of the sheaf condition
 (which we prove equivalent to the usual one below as
-`is_sheaf_iff_is_sheaf_pairwise_intersections`).
+`isSheaf_iff_isSheafPairwiseIntersections`).
 
 A presheaf is a sheaf if `F` sends the cone `(pairwise.cocone U).op` to a limit cone.
 (Recall `Pairwise.cocone U` has cone point `supr U`, mapping down to the `U i` and the `U i ⊓ U j`.)
@@ -64,7 +64,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- An alternative formulation of the sheaf condition
 (which we prove equivalent to the usual one below as
-`is_sheaf_iff_is_sheaf_preserves_limit_pairwise_intersections`).
+`isSheaf_iff_isSheafPreservesLimitPairwiseIntersections`).
 
 A presheaf is a sheaf if `F` preserves the limit of `Pairwise.diagram U`.
 (Recall `Pairwise.diagram U` is the diagram consisting of the pairwise intersections
@@ -215,10 +215,10 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                   List.Chain.nil)))⟩
 
 /-- The diagram in `opens X` indexed by pairwise intersections from `U` is isomorphic
-(in fact, equal) to the diagram factored through `opens_le_cover U`.
+(in fact, equal) to the diagram factored through `OpensLeCover U`.
 -/
-def pairwiseDiagramIso : Pairwise.diagram U ≅ pairwiseToOpensLeCover U ⋙ fullSubcategoryInclusion _
-    where
+def pairwiseDiagramIso :
+    Pairwise.diagram U ≅ pairwiseToOpensLeCover U ⋙ fullSubcategoryInclusion _ where
   hom := { app := by rintro (i | ⟨i, j⟩) <;> exact 𝟙 _ }
   inv := { app := by rintro (i | ⟨i, j⟩) <;> exact 𝟙 _ }
 set_option linter.uppercaseLean3 false in
@@ -226,7 +226,7 @@ set_option linter.uppercaseLean3 false in
 
 /--
 The cocone `Pairwise.cocone U` with cocone point `supr U` over `Pairwise.diagram U` is isomorphic
-to the cocone `opens_le_cover_cocone U` (with the same cocone point)
+to the cocone `opensLeCoverCocone U` (with the same cocone point)
 after appropriate whiskering and postcomposition.
 -/
 def pairwiseCoconeIso :
@@ -374,9 +374,9 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
   rcases g with ⟨⟩ <;>
   dsimp [Pairwise.diagram] <;>
   simp only [Category.id_comp, s.condition, CategoryTheory.Functor.map_id, Category.comp_id]
-  · rw [← cancel_mono (F.1.map (eqToHom <| inf_comm : U ⊓ V ⟶ _).op), Category.assoc,
-      Category.assoc, ←F.1.map_comp, ←F.1.map_comp]
-    exact s.condition.symm
+  rw [← cancel_mono (F.1.map (eqToHom <| inf_comm U V : U ⊓ V ⟶ _).op), Category.assoc,
+    Category.assoc, ← F.1.map_comp, ← F.1.map_comp]
+  exact s.condition.symm
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.inter_union_pullback_cone_lift TopCat.Sheaf.interUnionPullbackConeLift
 
@@ -453,7 +453,7 @@ set_option linter.uppercaseLean3 false in
 /-- `F(U ⊔ V)` is isomorphic to the `eq_locus` of the two maps `F(U) × F(V) ⟶ F(U ⊓ V)`. -/
 def objSupIsoProdEqLocus {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) :
     F.1.obj (op <| U ⊔ V) ≅ CommRingCat.of <|
-    -- Porting note : Lean 3 is able to figure out the ring homomorphism automatically
+    -- Porting note: Lean 3 is able to figure out the ring homomorphism automatically
     RingHom.eqLocus
       (RingHom.comp (F.val.map (homOfLE inf_le_left : U ⊓ V ⟶ U).op)
         (RingHom.fst (F.val.obj <| op U) (F.val.obj <| op V)))

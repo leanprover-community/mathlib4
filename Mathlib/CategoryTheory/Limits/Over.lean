@@ -3,12 +3,13 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Over
-import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Adjunction.Unique
+import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Limits.Comma
+import Mathlib.CategoryTheory.Limits.ConeCategory
+import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Comma
 
 #align_import category_theory.limits.over from "leanprover-community/mathlib"@"3e0dd193514c9380edc69f1da92e80c02713c41d"
 
@@ -34,16 +35,14 @@ universe w' w v u
 open CategoryTheory CategoryTheory.Limits
 
 variable {J : Type w} [Category.{w'} J]
-
 variable {C : Type u} [Category.{v} C]
-
 variable {X : C}
 
 namespace CategoryTheory.Over
 
 instance hasColimit_of_hasColimit_comp_forget (F : J ⥤ Over X) [i : HasColimit (F ⋙ forget X)] :
     HasColimit F :=
-  @CostructuredArrow.hasColimit _ _ _ _ _ _ _ _ _ i _
+  CostructuredArrow.hasColimit (i₁ := i)
 #align category_theory.over.has_colimit_of_has_colimit_comp_forget CategoryTheory.Over.hasColimit_of_hasColimit_comp_forget
 
 instance [HasColimitsOfShape J C] : HasColimitsOfShape J (Over X) where
@@ -70,6 +69,24 @@ theorem epi_iff_epi_left [HasPushouts C] {f g : Over X} (h : f ⟶ g) : Epi h �
   CostructuredArrow.epi_iff_epi_left _
 #align category_theory.over.epi_iff_epi_left CategoryTheory.Over.epi_iff_epi_left
 
+instance createsColimitsOfSizeMapCompForget {Y : C} (f : X ⟶ Y) :
+    CreatesColimitsOfSize.{w, w'} (map f ⋙ forget Y) :=
+  show CreatesColimitsOfSize.{w, w'} (forget X) from inferInstance
+
+instance preservesColimitsOfSizeMap [HasColimitsOfSize.{w, w'} C] {Y : C} (f : X ⟶ Y) :
+    PreservesColimitsOfSize.{w, w'} (map f) :=
+  preservesColimitsOfReflectsOfPreserves (map f) (forget Y)
+
+/-- If `c` is a colimit cocone, then so is the cocone `c.toOver` with cocone point `𝟙 c.pt`. -/
+def isColimitToOver {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsColimit c.toOver :=
+  isColimitOfReflects (forget c.pt) <| IsColimit.equivIsoColimit c.mapCoconeToOver.symm hc
+
+/-- If `F` has a colimit, then the cocone `colimit.toOver F` with cocone point `𝟙 (colimit F)` is
+    also a colimit cocone. -/
+def _root_.CategoryTheory.Limits.colimit.isColimitToOver (F : J ⥤ C) [HasColimit F] :
+    IsColimit (colimit.toOver F) :=
+  Over.isColimitToOver (colimit.isColimit F)
+
 section
 
 variable [HasPullbacks C]
@@ -93,7 +110,7 @@ def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
             Over.homMk (pullback.lift X.left g.hom (Over.w X)) (pullback.lift_snd _ _ _)
           invFun := fun Y => by
             refine' Over.homMk _ _
-            refine' Y.left ≫ pullback.fst
+            · refine' Y.left ≫ pullback.fst
             dsimp
             rw [← Over.w Y, Category.assoc, pullback.condition, Category.assoc]; rfl
           left_inv := fun X => by
@@ -114,9 +131,9 @@ def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
       }
 #align category_theory.over.map_pullback_adj CategoryTheory.Over.mapPullbackAdj
 
-/-- pullback (𝟙 A) : over A ⥤ over A is the identity functor. -/
+/-- pullback (𝟙 A) : Over A ⥤ Over A is the identity functor. -/
 def pullbackId {A : C} : pullback (𝟙 A) ≅ 𝟭 _ :=
-  Adjunction.rightAdjointUniq (mapPullbackAdj _) (Adjunction.id.ofNatIsoLeft Over.mapId.symm)
+  Adjunction.rightAdjointUniq (mapPullbackAdj _) (Adjunction.id.ofNatIsoLeft (Over.mapId A).symm)
 #align category_theory.over.pullback_id CategoryTheory.Over.pullbackId
 
 /-- pullback commutes with composition (up to natural isomorphism). -/
@@ -125,8 +142,8 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pullback (f ≫ g) �
     (((mapPullbackAdj _).comp (mapPullbackAdj _)).ofNatIsoLeft (Over.mapComp _ _).symm)
 #align category_theory.over.pullback_comp CategoryTheory.Over.pullbackComp
 
-instance pullbackIsRightAdjoint {A B : C} (f : A ⟶ B) : IsRightAdjoint (pullback f) :=
-  ⟨_, mapPullbackAdj f⟩
+instance pullbackIsRightAdjoint {A B : C} (f : A ⟶ B) : (pullback f).IsRightAdjoint  :=
+  ⟨_, ⟨mapPullbackAdj f⟩⟩
 #align category_theory.over.pullback_is_right_adjoint CategoryTheory.Over.pullbackIsRightAdjoint
 
 end
@@ -137,7 +154,7 @@ namespace CategoryTheory.Under
 
 instance hasLimit_of_hasLimit_comp_forget (F : J ⥤ Under X) [i : HasLimit (F ⋙ forget X)] :
     HasLimit F :=
-  @StructuredArrow.hasLimit _ _ _ _ _ _ _ _ _ i _
+  StructuredArrow.hasLimit (i₁ := i)
 #align category_theory.under.has_limit_of_has_limit_comp_forget CategoryTheory.Under.hasLimit_of_hasLimit_comp_forget
 
 instance [HasLimitsOfShape J C] : HasLimitsOfShape J (Under X) where
@@ -163,6 +180,24 @@ example [HasLimits C] : PreservesLimits (forget X) :=
 
 example : ReflectsLimits (forget X) :=
   inferInstance
+
+instance createLimitsOfSizeMapCompForget {Y : C} (f : X ⟶ Y) :
+    CreatesLimitsOfSize.{w, w'} (map f ⋙ forget X) :=
+  show CreatesLimitsOfSize.{w, w'} (forget Y) from inferInstance
+
+instance preservesLimitsOfSizeMap [HasLimitsOfSize.{w, w'} C] {Y : C} (f : X ⟶ Y) :
+    PreservesLimitsOfSize.{w, w'} (map f) :=
+  preservesLimitsOfReflectsOfPreserves (map f) (forget X)
+
+/-- If `c` is a limit cone, then so is the cone `c.toUnder` with cone point `𝟙 c.pt`. -/
+def isLimitToUnder {F : J ⥤ C} {c : Cone F} (hc : IsLimit c) : IsLimit c.toUnder :=
+  isLimitOfReflects (forget c.pt) (IsLimit.equivIsoLimit c.mapConeToUnder.symm hc)
+
+/-- If `F` has a limit, then the cone `limit.toUnder F` with cone point `𝟙 (limit F)` is
+    also a limit cone. -/
+def _root_.CategoryTheory.Limits.limit.isLimitToOver (F : J ⥤ C) [HasLimit F] :
+    IsLimit (limit.toUnder F) :=
+  Under.isLimitToUnder (limit.isLimit F)
 
 section
 

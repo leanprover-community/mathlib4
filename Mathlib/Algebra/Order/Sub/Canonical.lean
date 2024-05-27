@@ -3,6 +3,7 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Sub.Defs
 
@@ -300,6 +301,13 @@ theorem tsub_tsub_tsub_cancel_left (h : b ≤ a) : a - c - (a - b) = b - c :=
   Contravariant.AddLECancellable.tsub_tsub_tsub_cancel_left h
 #align tsub_tsub_tsub_cancel_left tsub_tsub_tsub_cancel_left
 
+-- note: not generalized to `AddLECancellable` because `add_tsub_add_eq_tsub_left` isn't
+/-- The `tsub` version of `sub_sub_eq_add_sub`. -/
+theorem tsub_tsub_eq_add_tsub_of_le [ContravariantClass α α HAdd.hAdd LE.le]
+    (h : c ≤ b) : a - (b - c) = a + c - b := by
+  obtain ⟨d, rfl⟩ := exists_add_of_le h
+  rw [add_tsub_cancel_left c, add_comm a c, add_tsub_add_eq_tsub_left]
+
 end Contra
 
 end ExistsAddOfLE
@@ -320,7 +328,8 @@ theorem tsub_add_cancel_iff_le : b - a + a = b ↔ a ≤ b := by
   exact add_tsub_cancel_iff_le
 #align tsub_add_cancel_iff_le tsub_add_cancel_iff_le
 
-@[simp]
+-- This was previously a `@[simp]` lemma, but it is not necessarily a good idea, e.g. in
+-- `example (h : n - m = 0) : a + (n - m) = a := by simp_all`
 theorem tsub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b := by
   rw [← nonpos_iff_eq_zero, tsub_le_iff_left, add_zero]
 #align tsub_eq_zero_iff_le tsub_eq_zero_iff_le
@@ -347,7 +356,7 @@ theorem tsub_self_add (a b : α) : a - (a + b) = 0 :=
 #align tsub_self_add tsub_self_add
 
 theorem tsub_pos_iff_not_le : 0 < a - b ↔ ¬a ≤ b := by
-  rw [pos_iff_ne_zero, Ne.def, tsub_eq_zero_iff_le]
+  rw [pos_iff_ne_zero, Ne, tsub_eq_zero_iff_le]
 #align tsub_pos_iff_not_le tsub_pos_iff_not_le
 
 theorem tsub_pos_of_lt (h : a < b) : 0 < b - a :=
@@ -398,8 +407,7 @@ variable (α)
 cancellative. This is not an instance as it would form a typeclass loop.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def CanonicallyOrderedAddCommMonoid.toAddCancelCommMonoid : AddCancelCommMonoid α :=
+abbrev CanonicallyOrderedAddCommMonoid.toAddCancelCommMonoid : AddCancelCommMonoid α :=
   { (by infer_instance : AddCommMonoid α) with
     add_left_cancel := fun a b c h => by
       simpa only [add_tsub_cancel_left] using congr_arg (fun x => x - a) h }
@@ -421,7 +429,7 @@ theorem tsub_pos_iff_lt : 0 < a - b ↔ b < a := by rw [tsub_pos_iff_not_le, not
 #align tsub_pos_iff_lt tsub_pos_iff_lt
 
 theorem tsub_eq_tsub_min (a b : α) : a - b = a - min a b := by
-  cases' le_total a b with h h
+  rcases le_total a b with h | h
   · rw [min_eq_left h, tsub_self, tsub_eq_zero_of_le h]
   · rw [min_eq_right h]
 #align tsub_eq_tsub_min tsub_eq_tsub_min
@@ -490,7 +498,7 @@ end Contra
 
 
 theorem tsub_add_eq_max : a - b + b = max a b := by
-  cases' le_total a b with h h
+  rcases le_total a b with h | h
   · rw [max_eq_right h, tsub_eq_zero_of_le h, zero_add]
   · rw [max_eq_left h, tsub_add_cancel_of_le h]
 #align tsub_add_eq_max tsub_add_eq_max
@@ -499,7 +507,7 @@ theorem add_tsub_eq_max : a + (b - a) = max a b := by rw [add_comm, max_comm, ts
 #align add_tsub_eq_max add_tsub_eq_max
 
 theorem tsub_min : a - min a b = a - b := by
-  cases' le_total a b with h h
+  rcases le_total a b with h | h
   · rw [min_eq_left h, tsub_self, tsub_eq_zero_of_le h]
   · rw [min_eq_right h]
 #align tsub_min tsub_min
@@ -508,5 +516,17 @@ theorem tsub_add_min : a - b + min a b = a := by
   rw [← tsub_min, @tsub_add_cancel_of_le]
   apply min_le_left
 #align tsub_add_min tsub_add_min
+
+-- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
+lemma Even.tsub [CanonicallyLinearOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
+    [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) :
+    Even (m - n) := by
+  obtain ⟨a, rfl⟩ := hm
+  obtain ⟨b, rfl⟩ := hn
+  refine ⟨a - b, ?_⟩
+  obtain h | h := le_total a b
+  · rw [tsub_eq_zero_of_le h, tsub_eq_zero_of_le (add_le_add h h), add_zero]
+  · exact (tsub_add_tsub_comm h h).symm
+#align even.tsub Even.tsub
 
 end CanonicallyLinearOrderedAddCommMonoid

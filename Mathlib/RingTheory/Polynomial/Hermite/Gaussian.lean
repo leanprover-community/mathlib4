@@ -46,10 +46,11 @@ theorem deriv_gaussian_eq_hermite_mul_gaussian (n : ℕ) (x : ℝ) :
   · replace ih : deriv^[n] _ = _ := _root_.funext ih
     have deriv_gaussian :
       deriv (fun y => Real.exp (-(y ^ 2 / 2))) x = -x * Real.exp (-(x ^ 2 / 2)) := by
-      rw [deriv_exp (by simp)]; simp; ring -- Porting note: was `simp [mul_comm, ← neg_mul]`
+      -- porting note (#10745): was `simp [mul_comm, ← neg_mul]`
+      rw [deriv_exp (by simp)]; simp; ring
     rw [Function.iterate_succ_apply', ih, deriv_const_mul_field, deriv_mul, pow_succ (-1 : ℝ),
       deriv_gaussian, hermite_succ, map_sub, map_mul, aeval_X, Polynomial.deriv_aeval]
-    ring
+    · ring
     · apply Polynomial.differentiable_aeval
     · apply DifferentiableAt.exp; simp -- Porting note: was just `simp`
 #align polynomial.deriv_gaussian_eq_hermite_mul_gaussian Polynomial.deriv_gaussian_eq_hermite_mul_gaussian

@@ -94,7 +94,7 @@ theorem stream_evalF?_concat_take_fractParts (v : K) :
         simp
       case neg =>
         simp [Option.bind_eq_bind, hv₂, hv₃,
-          Nat.cast_floor_eq_cast_int_floor (inv_nonneg_of_nonneg hv.1)]
+          natCast_floor_eq_intCast_floor (inv_nonneg_of_nonneg hv.1)]
   · by_cases hv : fract v = 0 <;> simp [Option.bind_eq_bind, hv, fractParts]
 
 theorem evalF?_concat_take_fractParts
@@ -133,8 +133,8 @@ theorem fractParts_representation_of_eq_some
       ↑(w⁻¹ * (take (n + 1) (of v)).denominator + ↑(take n (of v)).denominator) := by
   have hv := evalF?_concat_take_fractParts hw
   obtain ⟨p, hp⟩ : ∃ p, get? (of v).s n = some p
-  · suffices hv : ¬(fractParts v).TerminatedAt n
-    · simpa [← of_terminatedAt_iff_fractParts_terminatedAt, not_terminatedAt_iff (s := (of v).s),
+  · suffices hv : ¬(fractParts v).TerminatedAt n by
+      simpa [← of_terminatedAt_iff_fractParts_terminatedAt, not_terminatedAt_iff (s := (of v).s),
         Option.isSome_iff_exists] using hv
     apply mt (succ_stable _ (n := _))
     simp [hw]

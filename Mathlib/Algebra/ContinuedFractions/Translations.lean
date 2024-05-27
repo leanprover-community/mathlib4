@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Basic
+import Mathlib.Data.Rat.Cast.CharZero
 
 #align_import algebra.continued_fractions.translations from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
@@ -169,12 +170,12 @@ theorem continuant_toFGCF : (↑f : FGCF K).continuant = (↑f.numerator, ↑f.d
       f.l.foldl (fun (x : (K × K) × (K × K)) (y : ℕ+) ↦ FGCF.nextContinuants x (1, ↑y))
         ((1, 0), (↑f.h, 1)) =
           Prod.map (Prod.map (↑) (↑)) (Prod.map (↑) (↑))
-            (f.l.foldl FCF.nextContinuants ((1, 0), (f.h, 1)))
-  · simp [FGCF.continuant, FCF.numerator, FCF.denominator, FCF.continuant, List.foldl_map, hf,
+            (f.l.foldl FCF.nextContinuants ((1, 0), (f.h, 1))) by
+    simp [FGCF.continuant, FCF.numerator, FCF.denominator, FCF.continuant, List.foldl_map, hf,
       - FGCF.nextContinuants]
   have h : (((1, 0), (↑f.h, 1)) : (K × K) × (K × K)) =
-      Prod.map (Prod.map (↑) (↑)) (Prod.map (↑) (↑)) (((1 : ℤ), (0 : ℕ)), (f.h, (1 : ℕ+)))
-  · simp
+      Prod.map (Prod.map (↑) (↑)) (Prod.map (↑) (↑)) (((1 : ℤ), (0 : ℕ)), (f.h, (1 : ℕ+))) := by
+    simp
   rw [h]
   apply List.foldl_hom
   simp

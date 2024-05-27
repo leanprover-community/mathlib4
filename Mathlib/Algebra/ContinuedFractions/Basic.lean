@@ -6,6 +6,7 @@ Authors: Kevin Kappelmann, Miyahara Kō
 import Mathlib.Data.Seq.Seq
 import Mathlib.Order.Filter.Partial
 import Mathlib.Topology.Basic
+import Mathlib.Data.Int.CharZero
 
 #align_import algebra.continued_fractions.basic from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
@@ -49,7 +50,7 @@ open Function Seq' Filter
 /-! ### Definitions -/
 
 #align generalized_continued_fraction.pair Prod
-#align generalized_continued_fraction.pair.has_repr instReprProdₓ
+#align generalized_continued_fraction.pair.has_repr instReprProdOfReprTupleₓ
 #align generalized_continued_fraction.pair.map Prod.mapₓ
 #noalign generalized_continued_fraction.pair.has_coe_to_generalized_continued_fraction_pair
 #noalign generalized_continued_fraction.pair.coe_to_generalized_continued_fraction_pair

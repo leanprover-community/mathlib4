@@ -3,7 +3,6 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Init.CCLemmas
 import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 import Mathlib.Algebra.ContinuedFractions.Translations
 import Mathlib.Algebra.ContinuedFractions.ContinuantRecurrence
@@ -247,7 +246,7 @@ theorem convergents_succ :
     rcases hn₂ with ⟨_, ⟨hv₂, rfl⟩, -⟩
     conv_rhs => rw [← Option.some_inj, ← FCF.eval?_toFGCF, FGCF.eval?_eq_evalF?, eq_comm]
     simp [hv₂, FGCF.evalF?, hw₁]
-    symm; apply Nat.cast_floor_eq_cast_int_floor; simp
+    symm; apply natCast_floor_eq_intCast_floor; simp
 #align generalized_continued_fraction.convergents'_succ CF.convergents_succ
 
 end Values

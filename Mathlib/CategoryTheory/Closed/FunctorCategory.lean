@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
 import Mathlib.CategoryTheory.Closed.Monoidal
+import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 #align_import category_theory.closed.functor_category from "leanprover-community/mathlib"@"0caf3701139ef2e69c215717665361cda205a90b"
@@ -41,7 +42,7 @@ def closedUnit (F : D ⥤ C) : 𝟭 (D ⥤ C) ⟶ tensorLeft F ⋙ closedIhom F 
       dsimp
       simp only [ihom.coev_naturality, closedIhom_obj_map, Monoidal.tensorObj_map]
       dsimp
-      rw [coev_app_comp_pre_app_assoc, ← Functor.map_comp]
+      rw [coev_app_comp_pre_app_assoc, ← Functor.map_comp, tensorHom_def]
       simp }
 #align category_theory.functor.closed_unit CategoryTheory.Functor.closedUnit
 
@@ -55,32 +56,27 @@ def closedCounit (F : D ⥤ C) : closedIhom F ⋙ tensorLeft F ⟶ 𝟭 (D ⥤ C
       intro X Y f
       dsimp
       simp only [closedIhom_obj_map, pre_comm_ihom_map]
-      rw [← tensor_id_comp_id_tensor, id_tensor_comp]
+      rw [tensorHom_def]
       simp }
 #align category_theory.functor.closed_counit CategoryTheory.Functor.closedCounit
 
 /-- If `C` is a monoidal closed category and `D` is a groupoid, then every functor `F : D ⥤ C` is
 closed in the functor category `F : D ⥤ C` with the pointwise monoidal structure. -/
 -- Porting note: removed `@[simps]`, as some of the generated lemmas were failing the simpNF linter,
--- and none of the generated lemmmas was actually used in mathlib3.
+-- and none of the generated lemmas was actually used in mathlib3.
 instance closed (F : D ⥤ C) : Closed F where
-  isAdj :=
-  { right := closedIhom F
-    adj := Adjunction.mkOfUnitCounit
+  rightAdj := closedIhom F
+  adj :=
+    Adjunction.mkOfUnitCounit
       { unit := closedUnit F
-        counit := closedCounit F } }
+        counit := closedCounit F }
 #align category_theory.functor.closed CategoryTheory.Functor.closed
 
 /-- If `C` is a monoidal closed category and `D` is groupoid, then the functor category `D ⥤ C`,
 with the pointwise monoidal structure, is monoidal closed. -/
-@[simps!]
+@[simps! closed_adj]
 instance monoidalClosed : MonoidalClosed (D ⥤ C) where
-  closed := by infer_instance
 #align category_theory.functor.monoidal_closed CategoryTheory.Functor.monoidalClosed
-
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] Functor.monoidalClosed_closed_isAdj_adj_homEquiv_apply_app
-  Functor.monoidalClosed_closed_isAdj_adj_homEquiv_symm_apply_app
 
 theorem ihom_map (F : D ⥤ C) {G H : D ⥤ C} (f : G ⟶ H) : (ihom F).map f = (closedIhom F).map f :=
   rfl

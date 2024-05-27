@@ -71,6 +71,17 @@ the abstract `S.cycles` of the homology API and the more concrete description as
 noncomputable def abCyclesIso : S.cycles ≅ AddCommGroupCat.of (AddMonoidHom.ker S.g) :=
   S.abLeftHomologyData.cyclesIso
 
+-- This was a simp lemma until we made `AddCommGroupCat.coe_of` a simp lemma,
+-- after which the simp normal form linter complains.
+-- It was not used a simp lemma in Mathlib.
+-- Possible solution: higher priority function coercions that remove the `of`?
+-- @[simp]
+lemma abCyclesIso_inv_apply_iCycles (x : AddMonoidHom.ker S.g) :
+    S.iCycles (S.abCyclesIso.inv x) = x := by
+  dsimp only [abCyclesIso]
+  erw [← comp_apply, S.abLeftHomologyData.cyclesIso_inv_comp_iCycles]
+  rfl
+
 /-- Given a short complex `S` of abelian groups, this is the isomorphism between
 the abstract `S.homology` of the homology API and the more explicit
 quotient of `AddMonoidHom.ker S.g` by the image of
@@ -102,7 +113,7 @@ lemma ab_exact_iff_range_eq_ker : S.Exact ↔ S.f.range = S.g.ker := by
   rw [ab_exact_iff_ker_le_range]
   constructor
   · intro h
-    refine' le_antisymm _ h
+    refine le_antisymm ?_ h
     rintro _ ⟨x₁, rfl⟩
     erw [AddMonoidHom.mem_ker, ← comp_apply, S.zero]
     rfl

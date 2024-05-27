@@ -88,13 +88,13 @@ theorem eq_iterate_verschiebung {x : 𝕎 R} {n : ℕ} (h : ∀ i < n, x.coeff i
 theorem verschiebung_nonzero {x : 𝕎 R} (hx : x ≠ 0) :
     ∃ n : ℕ, ∃ x' : 𝕎 R, x'.coeff 0 ≠ 0 ∧ x = verschiebung^[n] x' := by
   have hex : ∃ k : ℕ, x.coeff k ≠ 0 := by
-    by_contra' hall
+    by_contra! hall
     apply hx
     ext i
     simp only [hall, zero_coeff]
   let n := Nat.find hex
   use n, x.shift n
-  refine' ⟨Nat.find_spec hex, eq_iterate_verschiebung fun i hi => not_not.mp _⟩
+  refine ⟨Nat.find_spec hex, eq_iterate_verschiebung fun i hi => not_not.mp ?_⟩
   exact Nat.find_min hex hi
 #align witt_vector.verschiebung_nonzero WittVector.verschiebung_nonzero
 

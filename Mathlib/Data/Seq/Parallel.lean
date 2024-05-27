@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Init.Data.Prod
 import Mathlib.Data.Seq.WSeq
+import Mathlib.Tactic.Have
 
 #align_import data.seq.parallel from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
@@ -76,14 +77,10 @@ theorem terminates_parallel.aux :
     cases' m with e m
     · rw [← e]
       simp only [parallel.aux2, List.foldr_cons, dest_pure]
-      cases' List.foldr (fun c o =>
-        match o with
-        | Sum.inl a => Sum.inl a
-        | Sum.inr ls => Sum.map id (· :: ls) (dest c)) (Sum.inr []) l with a' ls
-      exacts [⟨a', rfl⟩, ⟨a, rfl⟩]
+      split <;> simp
     · cases' IH m with a' e
       simp [parallel.aux2]
-      simp [parallel.aux2] at e
+      simp? [parallel.aux2] at e says simp only [parallel.aux2] at e
       rw [e]
       exact ⟨a', rfl⟩
   | think_terminates s _ IH =>
@@ -93,13 +90,11 @@ theorem terminates_parallel.aux :
       · rw [← e] at e'
         -- Porting note: `revert e'` & `intro e'` are required.
         revert e'
-        cases' List.foldr (fun c o =>
-            match o with
-            | Sum.inl a => Sum.inl a
-            | Sum.inr ls => Sum.map id (· :: ls) (dest c))
-          (Sum.inr []) l with a' ls <;> intro e' <;> [injection e'; injection e' with e']
-        rw [← e']
-        simp
+        split
+        · simp
+        · simp only [dest_think, Sum.map_inr, Sum.inr.injEq]
+          rintro rfl
+          simp
       · induction' e : List.foldr (fun c o =>
             match o with
             | Sum.inl a => Sum.inl a
@@ -107,7 +102,6 @@ theorem terminates_parallel.aux :
           (Sum.inr []) l with a' ls <;> erw [e] at e'
         · contradiction
         have := IH' m _ e
-        simp [parallel.aux2] at e'
         -- Porting note: `revert e'` & `intro e'` are required.
         revert e'
         cases dest c <;> intro e' <;> [injection e'; injection e' with h']
@@ -137,11 +131,10 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
   intro n; induction' n with n IH <;> intro l S c o T
   · cases' o with a a
     · exact terminates_parallel.aux a T
-    have H : Seq'.dest S = some (some c, _) := by
+    have H : Seq'.dest S = some (some c, Seq'.tail S) := by
       dsimp [Seq'.dest, Seq'.get?_zero] at a ⊢
       rw [← a]
       simp
-      rfl
     induction' h : parallel.aux2 l with a l' <;> have C : corec parallel.aux1 (l, S) = _
     · -- Porting note: To adjust RHS of `C`, these lines are changed.
       apply dest_eq_pure
@@ -154,7 +147,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
       skip
       infer_instance
     · apply dest_eq_think
-      simp [h, H, parallel.aux1._eq_1]
+      simp [h, H, parallel.aux1.eq_1]
       rfl
     · rw [C]
       refine @Computation.think_terminates _ _ ?_
@@ -162,21 +155,20 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
       simp
   · cases' o with a a
     · exact terminates_parallel.aux a T
-    induction' h : parallel.aux2 l with a l' <;> have C : corec parallel.aux1 (l, S) = _
-    · -- Porting note: To adjust RHS of `C`, these lines are changed.
-      apply dest_eq_pure
-      rw [dest_corec, parallel.aux1]
-      dsimp only []
-      rw [h]
-      simp
-      rfl
-    · rw [C]
-      skip
+    induction' h : parallel.aux2 l with a l'
+    · have C : corec parallel.aux1 (l, S) = pure a := by
+        apply dest_eq_pure
+        rw [dest_corec, parallel.aux1]
+        dsimp only []
+        rw [h]
+        simp
+      rw [C]
       infer_instance
-    · apply dest_eq_think
-      simp [h, parallel.aux1._eq_1]
-      rfl
-    · rw [C]
+    · have C : corec parallel.aux1 (l, S) = _ := by
+        apply dest_eq_think
+        · simp [h, parallel.aux1.eq_1]
+          rfl
+      rw [C]
       refine @Computation.think_terminates _ _ ?_
       have TT : ∀ l', Terminates (corec parallel.aux1 (l', S.tail)) := by
         intro
@@ -210,8 +202,8 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
   let F : List (Computation α) → α ⊕ List (Computation α) → Prop := by
     intro l a
     cases' a with a l'
-    exact ∃ c ∈ l, a ∈ c
-    exact ∀ a', (∃ c ∈ l', a' ∈ c) → ∃ c ∈ l, a' ∈ c
+    · exact ∃ c ∈ l, a ∈ c
+    · exact ∀ a', (∃ c ∈ l', a' ∈ c) → ∃ c ∈ l, a' ∈ c
   have lem1 : ∀ l : List (Computation α), F l (parallel.aux2 l) := by
     intro l
     induction' l with c l IH <;> simp only [parallel.aux2, List.foldr]
@@ -228,17 +220,17 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
         intro IH <;>
         simp only [parallel.aux2]
       · rcases IH with ⟨c', cl, ac⟩
-        refine' ⟨c', List.Mem.tail _ cl, ac⟩
+        exact ⟨c', List.Mem.tail _ cl, ac⟩
       · induction' h : dest c with a c' <;> simp only [Sum.map_inl, Sum.map_inr]
-        · refine' ⟨c, List.mem_cons_self _ _, _⟩
+        · refine ⟨c, List.mem_cons_self _ _, ?_⟩
           rw [dest_eq_pure h]
           apply mem_pure
         · intro a' h
           rcases h with ⟨d, dm, ad⟩
-          simp at dm
+          simp? at dm says simp only [List.mem_cons] at dm
           cases' dm with e dl
           · rw [e] at ad
-            refine' ⟨c, List.mem_cons_self _ _, _⟩
+            refine ⟨c, List.mem_cons_self _ _, ?_⟩
             rw [dest_eq_think h]
             exact mem_think ad
           · cases' IH a' ⟨d, dl, ad⟩ with d dm
@@ -263,31 +255,31 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
       · exact
           let ⟨c, cl, ac⟩ := this a ⟨d, dl, ad⟩
           ⟨c, Or.inl cl, ac⟩
-      · refine' ⟨d, Or.inr _, ad⟩
+      · refine ⟨d, Or.inr ?_, ad⟩
         rw [Seq'.dest_eq_cons e]
         exact Seq'.mem_cons_of_mem _ dS'
       · simp at dl
         cases' dl with dc dl
         · rw [dc] at ad
-          refine' ⟨c, Or.inr _, ad⟩
+          refine ⟨c, Or.inr ?_, ad⟩
           rw [Seq'.dest_eq_cons e]
           apply Seq'.mem_cons
         · exact
             let ⟨c, cl, ac⟩ := this a ⟨d, dl, ad⟩
             ⟨c, Or.inl cl, ac⟩
-      · refine' ⟨d, Or.inr _, ad⟩
+      · refine ⟨d, Or.inr ?_, ad⟩
         rw [Seq'.dest_eq_cons e]
         exact Seq'.mem_cons_of_mem _ dS'
 #align computation.exists_of_mem_parallel Computation.exists_of_mem_parallel
 
 theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map (map f)) := by
-  refine'
+  refine
     eq_of_bisim
       (fun c1 c2 =>
         ∃ l S,
           c1 = map f (corec parallel.aux1 (l, WSeq.data S)) ∧
             c2 = corec parallel.aux1 (l.map (map f), WSeq.data (S.map (map f))))
-      _ ⟨[], S, rfl, rfl⟩
+      ?_ ⟨[], S, rfl, rfl⟩
   intro c1 c2 h
   rcases h with ⟨l, S, rfl, rfl⟩
   have : parallel.aux2 (l.map (map f))
@@ -344,8 +336,8 @@ def parallelRec {S : WSeq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S
     rcases exists_of_mem_map ad' with ⟨a', ac', e'⟩
     injection e' with i1 i2
     constructor
-    rwa [i1, i2] at ac'
-    rwa [i2] at cs'
+    · rwa [i1, i2] at ac'
+    · rwa [i2] at cs'
   cases' this with ac cs
   apply H _ cs _ ac
 #align computation.parallel_rec Computation.parallelRec

@@ -1,6 +1,5 @@
 import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Init.Logic
-import Std.Tactic.GuardExpr
 
 set_option autoImplicit true
 
@@ -71,6 +70,22 @@ example : let x := 1; let y := 2 + x; y = 3 := by
   unfold_let x y
   guard_target =ₛ 2 + 1 = 3
   rfl
+
+/-!
+Do not reorder hypotheses. (`unfold_let` makes a change)
+-/
+example : let ty := Int; ty → Nat → Nat := by
+  intro _ a a
+  unfold_let at *
+  exact a
+
+/-!
+Do not reorder hypotheses. (`unfold_let` does not make a change)
+-/
+set_option linter.unusedVariables false in
+example (a : Int) (a : Nat) : Nat := by
+  unfold_let at *
+  exact a
 
 example : 1 + 2 = 2 + 1 := by
   unfold_projs

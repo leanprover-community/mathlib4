@@ -25,6 +25,10 @@ def updateFinset (x : ∀ i, π i) (s : Finset ι) (y : ∀ i : ↥s, π i) (i :
 
 open Finset Equiv
 
+theorem updateFinset_def {s : Finset ι} {y} :
+    updateFinset x s y = fun i ↦ if hi : i ∈ s then y ⟨i, hi⟩ else x i :=
+  rfl
+
 @[simp] theorem updateFinset_empty {y} : updateFinset x ∅ y = x :=
   rfl
 

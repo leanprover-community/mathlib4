@@ -6,7 +6,7 @@ Authors: Kevin Kappelmann
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Monotonicity
-import Mathlib.Tactic.SolveByElim
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import algebra.continued_fractions.computation.approximations from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
@@ -74,9 +74,7 @@ theorem fractParts_pos_lt_one {w : K}
   refine ⟨fun s => ∃ v, s = fractParts v, ⟨v, rfl⟩, ?_⟩
   rintro _ ⟨v, rfl⟩
   by_cases hv : fract v = 0 <;> simp [hv, fract_lt_one]
-  constructor
-  · exact lt_of_le_of_ne (fract_nonneg v) (Ne.symm hv)
-  · use (fract v)⁻¹
+  exact lt_of_le_of_ne (fract_nonneg v) (Ne.symm hv)
 #align generalized_continued_fraction.int_fract_pair.nth_stream_fr_nonneg_lt_one CF.fractParts_pos_lt_one
 
 /-- Shows that the fractional parts of the stream are nonnegative. -/
@@ -161,8 +159,7 @@ theorem succ_length_fib_le_denom (f : FCF K) : fib (f.l.length + 1) ≤ ↑f.den
         · simpa using succ_length_fib_le_denom (⟨h, l ++ [n₁]⟩ : FCF K)
         · norm_cast
           simp
-termination_by _ f => f.l.length
-decreasing_by subst_vars; simp_wf
+termination_by f.l.length
 #align generalized_continued_fraction.succ_nth_fib_le_of_nth_denom FCF.succ_length_fib_le_denom
 
 #noalign generalized_continued_fraction.zero_le_of_continuants_aux_b
@@ -217,8 +214,7 @@ theorem determinant (f : FGCF K) (p : K × K) :
   · have hf := determinant ⟨h, l⟩ p₁; simp at hf
     simp [← hf]
     ring
-termination_by _ f _ => f.l.length
-decreasing_by subst_vars; simp_wf
+termination_by f.l.length
 #align generalized_continued_fraction.determinant FGCF.determinant
 
 end FGCF
@@ -247,8 +243,7 @@ theorem determinant (f : FCF K) (n : ℕ+) :
   · have hf := determinant ⟨h, l⟩ p₁; simp [pow_succ] at hf
     simp [← hf, pow_succ]
     ring
-termination_by _ f _ => f.l.length
-decreasing_by subst_vars; simp_wf
+termination_by f.l.length
 
 end FCF
 
@@ -287,8 +282,8 @@ theorem sub_convergents_eq {w : K} (hw : get? (fractParts v) (n + 1) = some w) :
       · exact mod_cast (take n (of v)).denominator.pos
       · exact fractParts_pos hw
   obtain ⟨p, hp⟩ : ∃ p, get? (of v).s n = some p
-  · suffices hv : ¬(fractParts v).TerminatedAt n
-    · simpa [← of_terminatedAt_iff_fractParts_terminatedAt, not_terminatedAt_iff (s := (of v).s),
+  · suffices hv : ¬(fractParts v).TerminatedAt n by
+      simpa [← of_terminatedAt_iff_fractParts_terminatedAt, not_terminatedAt_iff (s := (of v).s),
         Option.isSome_iff_exists] using hv
     apply mt (succ_stable _ (n := _))
     simp [hw]

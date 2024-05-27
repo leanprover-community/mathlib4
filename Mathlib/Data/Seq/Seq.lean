@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.LazyList
+import Batteries.Data.LazyList
 import Mathlib.Data.Stream
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Seq.Computation
@@ -353,7 +353,7 @@ theorem mem_rec_on {a} {C : (s : Seq' α) → a ∈ s → Prop} {s} (M : a ∈ s
     C s M := by
   cases M with
   | intro k e =>
-    induction k using Nat.recAux generalizing s with
+    induction k generalizing s with
     | zero =>
       induction s using recOn' with
       | nil => injection e
@@ -417,7 +417,7 @@ def get?Computable (s : Seq' α) : ℕ → Option α
 @[csimp]
 theorem get?_eq_get?Computable : @get?.{u} = @get?Computable.{u} := by
   funext α s n
-  induction n using Nat.recAux generalizing s with
+  induction n generalizing s with
   | zero => cases s using recOn' <;> simp
   | succ n hn => cases s using recOn' <;> simp [hn]
 
@@ -441,7 +441,7 @@ instance terminatedAtDecidable (s : Seq' α) (n : ℕ) : Decidable (s.Terminated
 #align stream.seq.terminated_at_decidable Seq'.terminatedAtDecidable
 
 theorem not_terminatedAt_iff {s : Seq' α} {n : ℕ} : ¬s.TerminatedAt n ↔ (s.get? n).isSome := by
-  simp only [TerminatedAt, ← Ne.def, Option.ne_none_iff_isSome]
+  simp only [TerminatedAt, ← Ne.eq_def, Option.ne_none_iff_isSome]
 
 instance : GetElem (Seq' α) ℕ α (fun s n => ¬s.TerminatedAt n) where
   getElem s n h := Option.get (get? s n) (not_terminatedAt_iff.mp h)
@@ -474,7 +474,7 @@ theorem terminates_iff_acc {s : Seq' α} :
   constructor
   · intro hs; unfold Terminates TerminatedAt at hs
     rcases hs with ⟨n, hs⟩
-    induction n using Nat.recAux generalizing s with
+    induction n generalizing s with
     | zero =>
       cases s using recOn' <;> simp at hs
       constructor; simp
@@ -547,7 +547,7 @@ def IsBisimulation :=
 -- If two streams are bisimilar, then they are equal
 theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : R s₁ s₂) : s₁ = s₂ := by
   ext1 n
-  induction n using Nat.recAux generalizing s₁ s₂ with
+  induction n generalizing s₁ s₂ with
   | zero =>
     specialize bisim r
     match hs₁ : dest s₁, hs₂ : dest s₂, bisim with
@@ -598,7 +598,7 @@ theorem coinduction2 (s) (f g : α → Seq' β)
       BisimO (fun s₁ s₂ => ∃ s, s₁ = f s ∧ s₂ = g s)
         (dest (f s)) (dest (g s))) :
     f s = g s := by
-  refine' eq_of_bisim (fun s₁ s₂ => ∃ s, s₁ = f s ∧ s₂ = g s) _ ⟨s, rfl, rfl⟩
+  refine eq_of_bisim (fun s₁ s₂ => ∃ s, s₁ = f s ∧ s₂ = g s) ?_ ⟨s, rfl, rfl⟩
   intro s1 s2 h; rcases h with ⟨s, h1, h2⟩
   rw [h1, h2]; apply H
 #align stream.seq.coinduction2 Seq'.coinduction2
@@ -612,7 +612,7 @@ theorem mk_eq_mkComputable : @mk.{u} = @mkComputable.{u} := by
   funext α f hf
   ext1 n
   simp; symm
-  induction n using Nat.recAux with
+  induction n with
   | zero => cases f 0 <;> simp
   | succ n hn =>
     cases hfn : f n with
@@ -623,11 +623,11 @@ theorem mk_eq_mkComputable : @mk.{u} = @mkComputable.{u} := by
       clear hn
       simp [iterate_succ', hfn, - iterate_succ]
       suffices he :
-          ((fun o ↦ Option.bind o ((fun n ↦ Option.map (fun x ↦ (x, n + 1)) (f n)) ∘ Prod.snd))^[n]
+          ((fun o ↦ o.bind (fun p ↦ Option.map (fun x ↦ (x, p.2 + 1)) (f p.2)))^[n]
             (Option.map (fun x ↦ (x, 1)) (f 0))) = some (a, n + 1) by
         simp [iterate_succ', he, hfn, - iterate_succ]
         cases f (n + 1) <;> simp
-      induction n using Nat.recAux generalizing a with
+      induction n generalizing a with
       | zero => simp [hfn]
       | succ n hn =>
         cases hfn' : f n with
@@ -661,7 +661,7 @@ theorem get?_ofList (l : List α) (n : ℕ) : get? (↑l : Seq' α) n = List.get
   induction l generalizing n with
   | nil => simp
   | cons a l hl =>
-    cases n using Nat.casesAuxOn with
+    cases n with
     | zero => simp
     | succ n => simp [hl]
 #align stream.seq.of_list_nth Seq'.get?_ofList
@@ -712,7 +712,7 @@ theorem tail_ofStream (s : Stream' α) : tail (↑s : Seq' α) = ↑(Stream'.tai
 
 @[simp, norm_cast]
 theorem ofStream_get? (s : Stream' α) (n : ℕ) : (↑s : Seq' α).get? n = some (s.get n) := by
-  induction n using Nat.recAux generalizing s with
+  induction n generalizing s with
   | zero => simp [Stream'.get_zero, get?_zero]
   | succ n hn => simp [Stream'.get_succ, get?_succ, hn]
 
@@ -794,7 +794,7 @@ theorem dest_corec' (f : β → Seq' α ⊕ Option (α × β)) (b : β) :
         (Sum.inl s₂))
     ?_ rfl; clear s'
   rintro _ s rfl
-  simp; rcases hdc : dest s with (_ | ⟨_, _⟩) <;> simp
+  simp; rcases dest s with (_ | ⟨_, _⟩) <;> simp
 
 /-- Map a function over a sequence. -/
 def map (f : α → β) (s : Seq' α) : Seq' β where
@@ -904,7 +904,7 @@ theorem tail_drop (n) (s : Seq' α) : tail (drop n s) = drop (n + 1) s := by
 @[simp]
 theorem head_drop (n) (s : Seq' α) : head (drop n s) = get? s n := by
   induction' n with n IH generalizing s; · rfl
-  rw [Nat.succ_eq_add_one, get?_succ, drop]; apply IH
+  rw [get?_succ, drop]; apply IH
 #align stream.seq.head_dropn Seq'.head_dropₓ
 
 /-- Take the first `n` elements of the sequence (producing a list) -/
@@ -926,7 +926,7 @@ theorem take_succ_cons (n : ℕ) (a : α) (s : Seq' α) : take (n + 1) (a ::ₑ 
 
 @[simp]
 theorem take_nil (n : ℕ) : take n (nil : Seq' α) = [] := by
-  cases n using Nat.casesAuxOn <;> rfl
+  cases n <;> rfl
 
 /-- Tail recursive version of `take`. -/
 @[inline, simp]
@@ -948,7 +948,7 @@ where
   suffices ∀ acc, takeTR.go s n acc = acc.data ++ take n s from
     (this #[]).symm
   intro acc
-  induction n using Nat.recAux generalizing s acc with
+  induction n generalizing s acc with
   | zero => simp
   | succ n hn => cases s using recOn' <;> simp [hn]
 
@@ -978,9 +978,9 @@ theorem take_map (n : ℕ) (f : α → β) (s : Seq' α) : take n (map f s) = Li
 
 theorem take_succ (n : ℕ) (s : Seq' α) :
     take (n + 1) s = take n s ++ Option.toList (get? s n) := by
-  induction n using Nat.recAux generalizing s with
+  induction n generalizing s with
   | zero => cases s using recOn' <;> simp [get?_zero]
-  | succ n hn => cases s using recOn' <;> simp [get?_succ, hn]
+  | succ n hn => cases s using recOn' <;> simp [get?_succ, ↓take_succ_cons, hn]
 
 /-- Split a sequence at `n`, producing a finite initial segment
   and an infinite tail. -/
@@ -1237,7 +1237,7 @@ def toStream (s : Seq' α) (hs : ¬s.Terminates) : Stream' α :=
 @[simp]
 theorem get_toStream {s : Seq' α} (hs : ¬s.Terminates) (n : ℕ) :
     Stream'.get (toStream s hs) n = Option.get (get? s n) (not_terminates_iff.mp hs n) := by
-  induction n using Nat.recAux generalizing s hs with
+  induction n generalizing s hs with
   | zero =>
     cases s using recOn' with
     | nil       => simp at hs
@@ -1350,7 +1350,7 @@ theorem map_append (f : α → β) (s t) : map f (s ++ t) = map f s ++ map f t :
       induction' s using recOn' with _ s <;> simp
       · induction' t using recOn' with _ t <;> simp
         refine' ⟨nil, t, _, _⟩ <;> simp
-      · refine' ⟨s, t, rfl, rfl⟩
+      · exact ⟨s, t, rfl, rfl⟩
 #align stream.seq.map_append Seq'.map_append
 
 instance : Functor Seq' where map := @map
@@ -1380,12 +1380,12 @@ theorem join_nil : join nil = (nil : Seq' α) :=
   dest_eq_nil rfl
 #align stream.seq.join_nil Seq'.join_nil
 
---@[simp] -- porting note: simp can prove: `join_cons` is more general
+--@[simp] -- Porting note: simp can prove: `join_cons` is more general
 theorem join_cons_nil (a : α) (S) : join (⟨a, nil⟩ ::ₑ S) = a ::ₑ join S :=
   dest_eq_cons <| by simp [join]
 #align stream.seq.join_cons_nil Seq'.join_cons_nil
 
---@[simp] -- porting note: simp can prove: `join_cons` is more general
+--@[simp] -- Porting note: simp can prove: `join_cons` is more general
 theorem join_cons_cons (a b : α) (s S) :
     join (⟨a, b ::ₑ s⟩ ::ₑ S) = a ::ₑ join (⟨b, s⟩ ::ₑ S) :=
   dest_eq_cons <| by simp [join]
@@ -1424,10 +1424,10 @@ theorem join_append (S T : Seq' (Seq1 α)) : join (S ++ T) = join S ++ join T :=
         · induction' S using recOn' with s S <;> simp
           · induction' T using recOn' with s T
             · simp
-            · cases' s with a s; simp
+            · cases' s with a s; simp only [join_cons, dest_cons, true_and]
               refine' ⟨s, nil, T, _, _⟩ <;> simp
-          · cases' s with a s; simp
-            exact ⟨s, S, T, rfl, rfl⟩
+          · cases' s with a s
+            simpa using ⟨s, S, T, rfl, rfl⟩
         · exact ⟨s, S, T, rfl, rfl⟩
   · refine' ⟨nil, S, T, _, _⟩ <;> simp
 #align stream.seq.join_append Seq'.join_append
@@ -1480,7 +1480,7 @@ theorem tail_toStream' (s : Seq' α) :
 
 @[simp]
 theorem get_toStream' (s : Seq' α) (n : ℕ) : Stream'.get (toStream' s) n = get? s n := by
-  induction n using Nat.recAux generalizing s with
+  induction n generalizing s with
   | zero => simp [Stream'.get_zero, get?_zero]
   | succ n hn => cases s using recOn' <;> simp [Stream'.get_succ, get?_succ, hn]
 
@@ -1512,7 +1512,7 @@ theorem tails_eq (s : Seq' α) : tails s = s ::ₛ tails (tail s) := by
 
 @[simp]
 theorem get_tails (n : ℕ) (s : Seq' α) : Stream'.get (tails s) n = drop n s := by
-  induction n using Nat.recAux generalizing s with
+  induction n generalizing s with
   | zero => simp [Stream'.get_zero]
   | succ n hn => simp [Stream'.get_succ, hn]
 
@@ -1553,14 +1553,14 @@ theorem initsCore_cons (l : List α) (a : α) (s : Seq' α) :
 @[simp]
 theorem cons_get_initsCore (a : α) (n : ℕ) (l : List α) (s : Seq' α) :
     Stream'.get (initsCore (a :: l) s) n = a :: Stream'.get (initsCore l s) n := by
-  induction n using Nat.recAux generalizing l s with
+  induction n generalizing l s with
   | zero => simp [Stream'.get_zero]
   | succ n hn => cases s using recOn' <;> simp [Stream'.get_succ, hn]
 
 @[simp]
 theorem get_inits (n : ℕ) (s : Seq' α) : Stream'.get (inits s) n = take n s := by
   unfold inits
-  induction n using Nat.recAux generalizing s with
+  induction n generalizing s with
   | zero => simp [Stream'.get_zero]
   | succ n hn => cases s using recOn' <;> simp [Stream'.get_succ, hn]
 
@@ -1638,7 +1638,7 @@ def map (f : α → β) : Seq1 α → Seq1 β
   | ⟨a, s⟩ => ⟨f a, Seq'.map f s⟩
 #align stream.seq1.map Seq1.map
 
--- Porting note: New theorem.
+-- Porting note (#10756): new theorem.
 @[simp]
 theorem map_mk {f : α → β} {a s} : map f ⟨a, s⟩ = ⟨f a, Seq'.map f s⟩ :=
   rfl
@@ -1714,9 +1714,9 @@ theorem map_join' (f : α → β) (S) : Seq'.map f (Seq'.join S) = Seq'.join (Se
       | _, _, ⟨s, S, rfl, rfl⟩ => by
         induction' s using recOn' with _ s <;> simp
         · induction' S using recOn' with x S <;> simp
-          · cases' x with a s; simp [map]
-            exact ⟨_, _, rfl, rfl⟩
-        · refine' ⟨s, S, rfl, rfl⟩
+          · cases' x with a s
+            simpa [map] using ⟨_, _, rfl, rfl⟩
+        · exact ⟨s, S, rfl, rfl⟩
   · refine' ⟨nil, S, _, _⟩ <;> simp
 #align stream.seq1.map_join' Seq1.map_join'
 
@@ -1738,7 +1738,8 @@ theorem join_join (SS : Seq' (Seq1 (Seq1 α))) :
       | _, _, ⟨s, SS, rfl, rfl⟩ => by
         induction' s using recOn' with _ s <;> simp
         · induction' SS using recOn' with S SS <;> simp
-          · cases' S with s S; cases' s with x s; simp [map]
+          · cases' S with s S; cases' s with x s
+            simp only [Seq'.join_cons, join_append, dest_cons]
             induction' s using recOn' with x s <;> simp
             · exact ⟨_, _, rfl, rfl⟩
             · refine' ⟨x ::ₑ (s ++ Seq'.join S), SS, _, _⟩ <;> simp
@@ -1750,7 +1751,7 @@ theorem join_join (SS : Seq' (Seq1 (Seq1 α))) :
 theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by
   cases' s with a s
-  -- Porting note: Was `simp [bind, map]`.
+  -- porting note (#10745): was `simp [bind, map]`.
   simp only [bind, map_mk, map_join]
   rw [map_map]
   simp only [show (fun x => join (map g (f x))) = join ∘ (map g ∘ f) from rfl]

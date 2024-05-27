@@ -18,7 +18,7 @@ the preservation of products and pullbacks in order to describe these limits in 
 concrete category `C`.
 
 If `F : J → C` is a family of objects in `C`, we define a bijection
-`Limits.Concrete.productEquiv F : (forget C).obj (∏ F) ≃ ∀ j, F j`.
+`Limits.Concrete.productEquiv F : (forget C).obj (∏ᶜ F) ≃ ∀ j, F j`.
 
 Similarly, if `f₁ : X₁ ⟶ S` and `f₂ : X₂ ⟶ S` are two morphisms, the elements
 in `pullback f₁ f₂` are identified by `Limits.Concrete.pullbackEquiv`
@@ -29,26 +29,28 @@ wide-pullbacks, wide-pushouts, multiequalizers and cokernels.
 
 -/
 
-universe w v u
+universe w v u t r
 
 namespace CategoryTheory.Limits.Concrete
 
-attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
 
 variable {C : Type u} [Category.{v} C]
 
 section Products
 
+section ProductEquiv
+
 variable [ConcreteCategory.{max w v} C] {J : Type w} (F : J → C)
   [HasProduct F] [PreservesLimit (Discrete.functor F) (forget C)]
 
-/-- The equivalence `(forget C).obj (∏ F) ≃ ∀ j, F j` if `F : J → C` is a family of objects
+/-- The equivalence `(forget C).obj (∏ᶜ F) ≃ ∀ j, F j` if `F : J → C` is a family of objects
 in a concrete category `C`. -/
-noncomputable def productEquiv : (forget C).obj (∏ F) ≃ ∀ j, F j :=
+noncomputable def productEquiv : (forget C).obj (∏ᶜ F) ≃ ∀ j, F j :=
   ((PreservesProduct.iso (forget C) F) ≪≫ (Types.productIso.{w, v} (fun j => F j))).toEquiv
 
 @[simp]
-lemma productEquiv_apply_apply (x : (forget C).obj (∏ F)) (j : J) :
+lemma productEquiv_apply_apply (x : (forget C).obj (∏ᶜ F)) (j : J) :
     productEquiv F x j = Pi.π F j x :=
   congr_fun (piComparison_comp_π (forget C) F j) x
 
@@ -57,13 +59,56 @@ lemma productEquiv_symm_apply_π (x : ∀ j, F j) (j : J) :
     Pi.π F j ((productEquiv F).symm x) = x j := by
   rw [← productEquiv_apply_apply, Equiv.apply_symm_apply]
 
+end ProductEquiv
+
+section ProductExt
+
+variable {J : Type w} (f : J → C) [HasProduct f] {D : Type t} [Category.{r} D]
+  [ConcreteCategory.{max w r} D] (F : C ⥤ D)
+  [PreservesLimit (Discrete.functor f) F]
+  [HasProduct fun j => F.obj (f j)]
+  [PreservesLimitsOfShape WalkingCospan (forget D)]
+  [PreservesLimit (Discrete.functor fun b ↦ F.toPrefunctor.obj (f b)) (forget D)]
+
+lemma Pi.map_ext (x y : F.obj (∏ᶜ f : C))
+    (h : ∀ i, F.map (Pi.π f i) x = F.map (Pi.π f i) y) : x = y := by
+  apply ConcreteCategory.injective_of_mono_of_preservesPullback (PreservesProduct.iso F f).hom
+  apply @Concrete.limit_ext.{w, r, t} D
+    _ _ (Discrete J) _ _ _ _ (piComparison F _ x) (piComparison F _ y)
+  intro ⟨(j : J)⟩
+  show ((forget D).map (piComparison F f) ≫ (forget D).map (limit.π _ _)) x =
+    ((forget D).map (piComparison F f) ≫ (forget D).map _) y
+  rw [← (forget D).map_comp, piComparison_comp_π]
+  exact h j
+
+end ProductExt
+
 end Products
 
 section Terminal
 
+variable [ConcreteCategory.{w} C]
+
+/-- If `forget C` preserves terminals and `X` is terminal, then `(forget C).obj X` is a
+singleton. -/
+noncomputable def uniqueOfTerminalOfPreserves [PreservesLimit (Functor.empty.{0} C) (forget C)]
+    (X : C) (h : IsTerminal X) : Unique ((forget C).obj X) :=
+  Types.isTerminalEquivUnique ((forget C).obj X) <| IsTerminal.isTerminalObj (forget C) X h
+
+/-- If `forget C` reflects terminals and `(forget C).obj X` is a singleton, then `X` is terminal. -/
+noncomputable def terminalOfUniqueOfReflects [ReflectsLimit (Functor.empty.{0} C) (forget C)]
+    (X : C) (h : Unique ((forget C).obj X)) : IsTerminal X :=
+  IsTerminal.isTerminalOfObj (forget C) X <| (Types.isTerminalEquivUnique ((forget C).obj X)).symm h
+
+/-- The equivalence `IsTerminal X ≃ Unique ((forget C).obj X)` if the forgetful functor
+preserves and reflects terminals. -/
+noncomputable def terminalIffUnique [PreservesLimit (Functor.empty.{0} C) (forget C)]
+    [ReflectsLimit (Functor.empty.{0} C) (forget C)] (X : C) :
+    IsTerminal X ≃ Unique ((forget C).obj X) :=
+  (IsTerminal.isTerminalIffObj (forget C) X).trans <| Types.isTerminalEquivUnique _
+
 variable (C)
-variable [ConcreteCategory.{w} C] [HasTerminal C]
-  [PreservesLimit (Functor.empty.{0} C) (forget C)]
+variable [HasTerminal C] [PreservesLimit (Functor.empty.{0} C) (forget C)]
 
 /-- The equivalence `(forget C).obj (⊤_ C) ≃ PUnit` when `C` is a concrete category. -/
 noncomputable def terminalEquiv : (forget C).obj (⊤_ C) ≃ PUnit :=
@@ -74,6 +119,31 @@ noncomputable instance : Unique ((forget C).obj (⊤_ C)) where
   uniq _ := (terminalEquiv C).injective (Subsingleton.elim _ _)
 
 end Terminal
+
+section Initial
+
+variable [ConcreteCategory.{w} C]
+
+/-- If `forget C` preserves initials and `X` is initial, then `(forget C).obj X` is empty. -/
+lemma empty_of_initial_of_preserves [PreservesColimit (Functor.empty.{0} C) (forget C)] (X : C)
+    (h : Nonempty (IsInitial X)) : IsEmpty ((forget C).obj X) := by
+  rw [← Types.initial_iff_empty]
+  exact Nonempty.map (IsInitial.isInitialObj (forget C) _) h
+
+/-- If `forget C` reflects initials and `(forget C).obj X` is empty, then `X` is initial. -/
+lemma initial_of_empty_of_reflects [ReflectsColimit (Functor.empty.{0} C) (forget C)] (X : C)
+    (h : IsEmpty ((forget C).obj X)) : Nonempty (IsInitial X) :=
+  Nonempty.map (IsInitial.isInitialOfObj (forget C) _) <|
+    (Types.initial_iff_empty ((forget C).obj X)).mpr h
+
+/-- If `forget C` preserves and reflects initials, then `X` is initial if and only if
+`(forget C).obj X` is empty. -/
+lemma initial_iff_empty_of_preserves_of_reflects [PreservesColimit (Functor.empty.{0} C) (forget C)]
+    [ReflectsColimit (Functor.empty.{0} C) (forget C)] (X : C) :
+    Nonempty (IsInitial X) ↔ IsEmpty ((forget C).obj X) := by
+  rw [← Types.initial_iff_empty, (IsInitial.isInitialIffObj (forget C) X).nonempty_congr]
+
+end Initial
 
 section BinaryProducts
 
@@ -189,7 +259,7 @@ theorem multiequalizer_ext {I : MulticospanIndex.{w} C} [HasMultiequalizer I]
     simp [h]
 #align category_theory.limits.concrete.multiequalizer_ext CategoryTheory.Limits.Concrete.multiequalizer_ext
 
-/-- An auxiliary equivalence to be used in `multiequalizerEquiv` below.-/
+/-- An auxiliary equivalence to be used in `multiequalizerEquiv` below. -/
 def multiequalizerEquivAux (I : MulticospanIndex C) :
     (I.multicospan ⋙ forget C).sections ≃
     { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } where

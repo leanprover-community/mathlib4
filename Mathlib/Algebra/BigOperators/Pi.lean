@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Ring.Pi
 
@@ -25,7 +24,7 @@ namespace Pi
 @[to_additive]
 theorem list_prod_apply {α : Type*} {β : α → Type*} [∀ a, Monoid (β a)] (a : α)
     (l : List (∀ a, β a)) : l.prod a = (l.map fun f : ∀ a, β a ↦ f a).prod :=
-  (evalMonoidHom β a).map_list_prod _
+  map_list_prod (evalMonoidHom β a) _
 #align pi.list_prod_apply Pi.list_prod_apply
 #align pi.list_sum_apply Pi.list_sum_apply
 
@@ -40,15 +39,15 @@ end Pi
 
 @[to_additive (attr := simp)]
 theorem Finset.prod_apply {α : Type*} {β : α → Type*} {γ} [∀ a, CommMonoid (β a)] (a : α)
-    (s : Finset γ) (g : γ → ∀ a, β a) : (∏ c in s, g c) a = ∏ c in s, g c a :=
-  (Pi.evalMonoidHom β a).map_prod _ _
+    (s : Finset γ) (g : γ → ∀ a, β a) : (∏ c ∈ s, g c) a = ∏ c ∈ s, g c a :=
+  map_prod (Pi.evalMonoidHom β a) _ _
 #align finset.prod_apply Finset.prod_apply
 #align finset.sum_apply Finset.sum_apply
 
 /-- An 'unapplied' analogue of `Finset.prod_apply`. -/
 @[to_additive "An 'unapplied' analogue of `Finset.sum_apply`."]
 theorem Finset.prod_fn {α : Type*} {β : α → Type*} {γ} [∀ a, CommMonoid (β a)] (s : Finset γ)
-    (g : γ → ∀ a, β a) : ∏ c in s, g c = fun a ↦ ∏ c in s, g c a :=
+    (g : γ → ∀ a, β a) : ∏ c ∈ s, g c = fun a ↦ ∏ c ∈ s, g c a :=
   funext fun _ ↦ Finset.prod_apply _ _ _
 #align finset.prod_fn Finset.prod_fn
 #align finset.sum_fn Finset.sum_fn
@@ -62,7 +61,7 @@ theorem Fintype.prod_apply {α : Type*} {β : α → Type*} {γ : Type*} [Fintyp
 
 @[to_additive prod_mk_sum]
 theorem prod_mk_prod {α β γ : Type*} [CommMonoid α] [CommMonoid β] (s : Finset γ) (f : γ → α)
-    (g : γ → β) : (∏ x in s, f x, ∏ x in s, g x) = ∏ x in s, (f x, g x) :=
+    (g : γ → β) : (∏ x ∈ s, f x, ∏ x ∈ s, g x) = ∏ x ∈ s, (f x, g x) :=
   haveI := Classical.decEq γ
   Finset.induction_on s rfl (by simp (config := { contextual := true }) [Prod.ext_iff])
 #align prod_mk_prod prod_mk_prod
@@ -78,7 +77,6 @@ theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [S
 section MulSingle
 
 variable {I : Type*} [DecidableEq I] {Z : I → Type*}
-
 variable [∀ i, CommMonoid (Z i)]
 
 @[to_additive]
@@ -94,7 +92,7 @@ theorem MonoidHom.functions_ext [Finite I] (G : Type*) [CommMonoid G] (g h : (�
     (H : ∀ i x, g (Pi.mulSingle i x) = h (Pi.mulSingle i x)) : g = h := by
   cases nonempty_fintype I
   ext k
-  rw [← Finset.univ_prod_mulSingle k, g.map_prod, h.map_prod]
+  rw [← Finset.univ_prod_mulSingle k, map_prod, map_prod]
   simp only [H]
 #align monoid_hom.functions_ext MonoidHom.functions_ext
 #align add_monoid_hom.functions_ext AddMonoidHom.functions_ext
@@ -105,8 +103,8 @@ note [partially-applied ext lemmas]. -/
       "\nThis is used as the ext lemma instead of `AddMonoidHom.functions_ext` for reasons
       explained in note [partially-applied ext lemmas]."]
 theorem MonoidHom.functions_ext' [Finite I] (M : Type*) [CommMonoid M] (g h : (∀ i, Z i) →* M)
-    (H : ∀ i, g.comp (MonoidHom.single Z i) = h.comp (MonoidHom.single Z i)) : g = h :=
-  g.functions_ext M h fun i => FunLike.congr_fun (H i)
+    (H : ∀ i, g.comp (MonoidHom.mulSingle Z i) = h.comp (MonoidHom.mulSingle Z i)) : g = h :=
+  g.functions_ext M h fun i => DFunLike.congr_fun (H i)
 #align monoid_hom.functions_ext' MonoidHom.functions_ext'
 #align add_monoid_hom.functions_ext' AddMonoidHom.functions_ext'
 
@@ -117,7 +115,6 @@ section RingHom
 open Pi
 
 variable {I : Type*} [DecidableEq I] {f : I → Type*}
-
 variable [∀ i, NonAssocSemiring (f i)]
 
 @[ext]
@@ -134,14 +131,14 @@ namespace Prod
 variable {α β γ : Type*} [CommMonoid α] [CommMonoid β] {s : Finset γ} {f : γ → α × β}
 
 @[to_additive]
-theorem fst_prod : (∏ c in s, f c).1 = ∏ c in s, (f c).1 :=
-  (MonoidHom.fst α β).map_prod f s
+theorem fst_prod : (∏ c ∈ s, f c).1 = ∏ c ∈ s, (f c).1 :=
+  map_prod (MonoidHom.fst α β) f s
 #align prod.fst_prod Prod.fst_prod
 #align prod.fst_sum Prod.fst_sum
 
 @[to_additive]
-theorem snd_prod : (∏ c in s, f c).2 = ∏ c in s, (f c).2 :=
-  (MonoidHom.snd α β).map_prod f s
+theorem snd_prod : (∏ c ∈ s, f c).2 = ∏ c ∈ s, (f c).2 :=
+  map_prod (MonoidHom.snd α β) f s
 #align prod.snd_prod Prod.snd_prod
 #align prod.snd_sum Prod.snd_sum
 

@@ -3,7 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Data.Nat.Parity
+import Mathlib.Algebra.Ring.Parity
 import Mathlib.Data.Nat.SuccPred
 
 #align_import data.stream.defs from "leanprover-community/mathlib"@"39af7d3bf61a98e928812dbc3e16f4ea8b795ca3"
@@ -279,7 +279,7 @@ theorem tail_drop (n : ℕ) (s : Stream' α) : tail (drop n s) = drop n (tail s)
 
 @[simp]
 theorem get_drop (n m : ℕ) (s : Stream' α) : get (drop m s) n = get s (m + n) := by
-  induction n using Nat.recAux generalizing s with
+  induction n generalizing s with
   | zero => simp [get_zero]
   | succ n hn => simp [get_succ, hn, ← Nat.add_assoc]
 #align stream.nth_drop Stream'.get_drop
@@ -322,8 +322,9 @@ theorem bisim_simple (s₁ s₂ : Stream' α) :
     head s₁ = head s₂ → s₁ = tail s₁ → s₂ = tail s₂ → s₁ = s₂ := fun hh ht₁ ht₂ =>
   eq_of_bisim (fun s₁ s₂ => head s₁ = head s₂ ∧ s₁ = tail s₁ ∧ s₂ = tail s₂)
     (fun s₁ s₂ ⟨h₁, h₂, h₃⟩ => by
-      constructor; exact h₁; rw [← h₂, ← h₃]
-      (repeat' constructor) <;> assumption)
+      constructor
+      · exact h₁
+      · rw [← h₂, ← h₃]; (repeat' constructor) <;> assumption)
     (And.intro hh (And.intro ht₁ ht₂))
 #align stream.bisim_simple Stream'.bisim_simple
 
@@ -379,7 +380,7 @@ theorem mem_cons_of_mem {a : α} {s : Stream' α} (b : α) : a ∈ s → a ∈ b
 
 theorem eq_or_mem_of_mem_cons {a b : α} {s : Stream' α} : a ∈ b ::ₛ s → a = b ∨ a ∈ s := by
   rintro ⟨n, h⟩
-  cases n using Nat.casesAuxOn with
+  cases n with
   | zero =>
     left
     exact h
@@ -618,6 +619,7 @@ def mapComputable (f : α → β) : Stream' α → Stream' β :=
 theorem map_eq_mapComputable : @map.{u, v} = @mapComputable.{u, v} := by
   funext α β f s
   conv_lhs => rw [← corec_head_tail s]
+  rfl
 
 @[inherit_doc iterate, inline]
 def iterateComputable (f : α → α) : α → Stream' α :=
@@ -954,7 +956,7 @@ abbrev corecOn (a : α) (f : α → β) (g : α → α) : Stream' β :=
   corec f g a
 #align stream.corec_on Stream'.corecOn
 
--- porting note: this `#align` should be elsewhere but idk where
+-- Porting note: this `#align` should be elsewhere but idk where
 #align state StateM
 
 /-- Use a state monad to generate a stream through corecursion -/
@@ -994,7 +996,7 @@ theorem tail_tail_interleave (s₁ s₂ : Stream' α) : tail (tail (s₁ ⋈ s�
 #align stream.interleave_tail_tail Stream'.tail_tail_interleave
 
 theorem get_interleave_left (n : ℕ) (s₁ s₂ : Stream' α) : get (s₁ ⋈ s₂) (2 * n) = get s₁ n := by
-  induction n using Nat.recAux generalizing s₁ s₂ with
+  induction n generalizing s₁ s₂ with
   | zero => simp [get_zero]
   | succ n hn => simp [get_succ, Nat.mul_add, hn]
 #align stream.nth_interleave_left Stream'.get_interleave_left
@@ -1076,7 +1078,7 @@ theorem interleave_even_odd (s : Stream' α) : even s ⋈ odd s = s := by
 
 @[simp]
 theorem get_even (n : ℕ) (s : Stream' α) : get (even s) n = get s (2 * n) := by
-  induction n using Nat.recAux generalizing s with
+  induction n generalizing s with
   | zero => simp [get_zero]
   | succ n hn => simp [get_succ, Nat.mul_add, hn]
 #align stream.nth_even Stream'.get_even
@@ -1207,7 +1209,7 @@ where
   suffices ∀ acc, takeTR.go s n acc = acc.data ++ take n s from
     (this #[]).symm
   intro acc
-  induction n using Nat.recAux generalizing s acc with
+  induction n generalizing s acc with
   | zero => simp
   | succ n hn => simp [hn]
 
@@ -1226,7 +1228,7 @@ theorem take_succ_cons (n : ℕ) (a : α) (s : Stream' α) :
 
 @[simp]
 theorem concat_take_get (n : ℕ) (s : Stream' α) : take n s ++ [get s n] = take (n + 1) s := by
-  induction n using Nat.recAux generalizing s with
+  induction n generalizing s with
   | zero => simp [get_zero]
   | succ n hn => simp [get_succ, hn]
 
@@ -1235,7 +1237,7 @@ theorem take_succ' (n : ℕ) (s : Stream' α) : take (n + 1) s = take n s ++ [ge
 
 @[simp]
 theorem length_take (n : ℕ) (s : Stream' α) : length (take n s) = n := by
-  induction n using Nat.recAux generalizing s with
+  induction n generalizing s with
   | zero => simp
   | succ n hn => simp [hn]
 #align stream.length_take Stream'.length_take
@@ -1268,13 +1270,13 @@ theorem take_const (n : ℕ) (a : α) : take n (const a) = replicate n a := by
 @[simp]
 theorem dropLast_take (n : ℕ) (xs : Stream' α) :
     dropLast (take n xs) = take (n - 1) xs := by
-  cases n using Nat.casesAuxOn with
+  cases n with
   | zero => simp
   | succ n => simp [take_succ', - concat_take_get]
 
 @[simp]
 theorem append_take_drop (n : ℕ) (s : Stream' α) : take n s ++ drop n s = s := by
-  induction n using Nat.recAux generalizing s with
+  induction n generalizing s with
   | zero => simp
   | succ n hn => simp [hn, Stream'.eta]
 #align stream.append_take_drop Stream'.append_take_drop
@@ -1383,7 +1385,7 @@ theorem tails_eq (s : Stream' α) : tails s = s ::ₛ tails (tail s) := by
 
 @[simp]
 theorem get_tails (n : ℕ) (s : Stream' α) : get (tails s) n = drop n s := by
-  induction n using Nat.recAux generalizing s with
+  induction n generalizing s with
   | zero => simp [get_zero]
   | succ n hn => simp [get_succ, hn]
 #align stream.nth_tails Stream'.get_tails
@@ -1420,7 +1422,7 @@ theorem initsCore_eq (l : List α) (s : Stream' α) :
 @[simp]
 theorem cons_get_initsCore (a : α) (n : ℕ) (l : List α) (s : Stream' α) :
     get (initsCore (a :: l) s) n = a :: get (initsCore l s) n := by
-  induction n using Nat.recAux generalizing l s with
+  induction n generalizing l s with
   | zero => simp [get_zero]
   | succ n hn => simp [get_succ, hn]
 #align stream.cons_nth_inits_core Stream'.cons_get_initsCore
@@ -1428,7 +1430,7 @@ theorem cons_get_initsCore (a : α) (n : ℕ) (l : List α) (s : Stream' α) :
 @[simp]
 theorem get_inits (n : ℕ) (s : Stream' α) : get (inits s) n = take n s := by
   unfold inits
-  induction n using Nat.recAux generalizing s with
+  induction n generalizing s with
   | zero => simp [get_zero]
   | succ n hn => simp [get_succ, hn]
 #align stream.nth_inits Stream'.get_inits
@@ -1456,7 +1458,7 @@ def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β :=
 
 @[inherit_doc apply]
 infixl:75 " ⊛ " => apply
--- PORTING NOTE: "input as \o*" was here but doesn't work for the above notation
+-- Porting note: "input as \o*" was here but doesn't work for the above notation
 
 @[simp]
 theorem identity (s : Stream' α) : const id ⊛ s = s :=

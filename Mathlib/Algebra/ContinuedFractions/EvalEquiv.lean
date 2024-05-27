@@ -116,7 +116,7 @@ theorem length_lt_length_add_one_of_mk_mem_squash? {h h' : K} {l l' : List (K ×
       apply lt_of_le_of_lt (b := l.length) <;> simp
     · simp [squash?, squash?.go, hl, hps] at hl'
       rcases hl' with ⟨-, rfl⟩
-      simp [Nat.sub_one, Nat.pred_lt' (List.length_pos_of_ne_nil hl)]
+      simp [Nat.sub_one, Nat.pred_lt' (List.length_pos_of_ne_nil hl), - Nat.pred_eq_sub_one]
 
 #noalign generalized_continued_fraction.squash_seq_eq_self_of_terminated
 

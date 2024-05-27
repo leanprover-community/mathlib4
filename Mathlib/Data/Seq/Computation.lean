@@ -5,7 +5,8 @@ Authors: Mario Carneiro
 
 Coinductive formalization of unbounded computations.
 -/
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Data.Nat.Order.Lemmas
+import Mathlib.Tactic.DefEqTransformations
 
 #align_import data.seq.computation from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
@@ -15,9 +16,6 @@ import Mathlib.Data.Nat.Order.Basic
 This file provides a `Computation` type where `Computation α` is the type of
 unbounded computations returning `α`.
 -/
-
-set_option autoImplicit true
-
 
 open Function
 
@@ -93,7 +91,7 @@ protected theorem ext {c₁ c₂ : Computation α} (h : ∀ n, runFor c₁ n = r
 unsafe def pureUnsafe (a : α) : Computation α :=
   unsafeCast (ComputationImpl.pure a)
 
--- porting notes: `return` is reserved, so changed to `pure`
+-- Porting note: `return` is reserved, so changed to `pure`
 @[inherit_doc pureUnsafe, implemented_by pureUnsafe]
 def pure (a : α) : Computation α where
   runFor _ := some a
@@ -142,11 +140,11 @@ def thinkNTR (c : Computation α) : ℕ → Computation α
 @[csimp]
 theorem thinkN_eq_thinkNTR : @thinkN.{u} = @thinkNTR.{u} := by
   funext α c n
-  induction n using Nat.recAux generalizing c with
+  induction n generalizing c with
   | zero => rfl
   | succ n hn =>
     simp [← hn]; clear hn
-    induction n using Nat.recAux with
+    induction n with
     | zero => rfl
     | succ n hn => simp [hn]
 
@@ -194,7 +192,7 @@ theorem dest_eq_pure {s : Computation α} {a : α} : (hs : dest s = Sum.inl a) �
   | none => contradiction
   | some b =>
     ext1 n
-    induction n using Nat.recAux with
+    induction n with
     | zero =>
       injection hs with hs
       rwa [hs] at hhs
@@ -207,7 +205,7 @@ theorem dest_eq_think {s : Computation α} {s'} : (hs : dest s = Sum.inr s') →
   cases hhs : head s with intro hs
   | none =>
     ext1 n
-    cases n using Nat.casesAuxOn with
+    cases n with
     | zero => exact hhs
     | succ n =>
       simp at hs
@@ -292,9 +290,9 @@ where
 theorem runFor_eq_runForComputable : @runFor.{u} = @runForComputable.{u} := by
   funext α c n
   unfold runForComputable
-  induction n using Nat.recAux generalizing c with
+  induction n generalizing c with
   | zero => cases c using recOn' <;> simp [runFor_zero]
-  | succ n hn => cases c using recOn' <;> simp [runFor_succ, hn]
+  | succ n hn => cases c using recOn' <;> simp [runFor_succ (think _), hn]
 
 /-- The implemention of `Computation.casesOn`. -/
 @[inline]
@@ -348,7 +346,7 @@ theorem mk_eq_mkComputable : @mk.{u} = @mkComputable.{u} := by
   funext α f hf
   ext1 n
   simp [- Option.elim]; symm
-  induction n using Nat.recAux with
+  induction n with
   | zero => cases f 0 <;> simp
   | succ n hn =>
     cases hfn : f n with
@@ -359,7 +357,7 @@ theorem mk_eq_mkComputable : @mk.{u} = @mkComputable.{u} := by
             (Option.elim (f 0) (Sum.inr 1) Sum.inl) = Sum.inr (n + 1) by
         simp [iterate_succ', he, hfn, - iterate_succ, Option.elim_none, - Option.elim]
         cases f (n + 1) <;> simp
-      induction n using Nat.recAux with
+      induction n with
       | zero => simp [hfn]
       | succ n hn =>
         cases hfn' : f n with
@@ -444,7 +442,7 @@ def IsBisimulation :=
 -- If two computations are bisimilar, then they are equal
 theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : R s₁ s₂) : s₁ = s₂ := by
   ext1 n
-  induction n using Nat.recAux generalizing s₁ s₂ with
+  induction n generalizing s₁ s₂ with
   | zero =>
     specialize bisim r
     match hs₁ : dest s₁, hs₂ : dest s₂, bisim with
@@ -563,7 +561,7 @@ theorem not_terminates_empty : ¬Terminates (∅ : Computation α) := fun ⟨⟨
 theorem eq_empty_of_not_terminates {s : Computation α} (H : ¬Terminates s) : s = ∅ := by
   ext1 n
   induction' h : runFor s n with _; · rfl
-  refine' absurd _ H; exact ⟨⟨_, _, h⟩⟩
+  refine absurd ?_ H; exact ⟨⟨_, _, h⟩⟩
 #align computation.eq_empty_of_not_terminates Computation.eq_empty_of_not_terminates
 
 @[simp]
@@ -589,7 +587,7 @@ theorem terminates_iff_acc {c : Computation α} :
   · intro hc
     simp only [terminates_iff, mem_def] at hc
     rcases hc with ⟨a, n, hc⟩
-    induction n using Nat.recAux generalizing c with
+    induction n generalizing c with
     | zero =>
       cases c using recOn' with
       | pure a =>
@@ -613,7 +611,7 @@ theorem terminates_iff_acc {c : Computation α} :
     | intro c' hc'₂ hc' =>
       clear c hc'₂
       cases c' using recOn' with
-      | pure a => infer_instance
+      | pure a => apply pure_terminates
       | think c' =>
         refine @think_terminates _ _ (hc' c' ?_)
         simp
@@ -624,7 +622,6 @@ def Promises (s : Computation α) (a : α) : Prop :=
   ∀ ⦃a'⦄, a' ∈ s → a = a'
 #align computation.promises Computation.Promises
 
--- mathport name: «expr ~> »
 /-- `Promises s a`, or `s ~> a`, asserts that although the computation `s`
   may not terminate, if it does, then the result is `a`. -/
 infixl:50 " ~> " => Promises
@@ -775,7 +772,7 @@ theorem of_results_think {s : Computation α} {a n} (h : Results (think s) a n) 
 theorem results_think_iff {s : Computation α} {a n} : Results (think s) a (n + 1) ↔ Results s a n :=
   ⟨fun h => by
     let ⟨n', r, e⟩ := of_results_think h
-    injection e with h'; rw [Nat.add, Nat.add] at h'; rwa [h'], results_think⟩
+    injection e with h'; rwa [h'], results_think⟩
 #align computation.results_think_iff Computation.results_think_iff
 
 theorem results_thinkN {s : Computation α} {a m} :
@@ -980,7 +977,7 @@ theorem dest_corec' (f : β → Computation α ⊕ α ⊕ β) (b : β) :
         (Sum.inl c₂))
     ?_ rfl; clear c'
   rintro _ c rfl
-  simp; cases hdc : dest c <;> simp
+  simp; cases dest c <;> simp
 
 set_option linter.uppercaseLean3 false in
 #noalign computation.bind.G
@@ -1032,10 +1029,10 @@ theorem bind_pure (f : α → β) (s) : bind s (pure ∘ f) = map f s := by
   · exact Or.inr ⟨s, rfl, rfl⟩
 #align computation.bind_ret Computation.bind_pure
 
--- porting notes: used to use `rw [bind_pure]`
+-- Porting note: used to use `rw [bind_pure]`
 @[simp]
 theorem bind_pure' (s : Computation α) : bind s pure = s := by
-  apply eq_of_bisim fun c₁ c₂ => c₁ = c₂ ∨ ∃ s, c₁ = bind s (pure) ∧ c₂ = s
+  apply eq_of_bisim fun c₁ c₂ => c₁ = c₂ ∨ ∃ s, c₁ = bind s pure ∧ c₂ = s
   · intro c₁ c₂ h
     exact
       match c₁, c₂, h with
@@ -1108,11 +1105,11 @@ theorem of_results_bind {s : Computation α} {f : α → Computation β} {b k} :
     Results (bind s f) b k → ∃ a m n, Results s a m ∧ Results (f a) b n ∧ k = n + m := by
   induction' k with n IH generalizing s <;> induction' s using recOn' with a s' <;> intro h
   · simp [thinkN] at h
-    refine' ⟨a, _, _, results_pure _, h, rfl⟩
+    exact ⟨a, _, _, results_pure _, h, rfl⟩
   · have := congr_arg head (eq_thinkN h)
     contradiction
   · simp at h
-    refine' ⟨a, _, n + 1, results_pure _, h, rfl⟩
+    exact ⟨a, _, n + 1, results_pure _, h, rfl⟩
   · simp at h
     exact by
       let ⟨a, m, n', h1, h2, e'⟩ := IH h
@@ -1212,8 +1209,7 @@ theorem failure_eq_empty : (failure : Computation α) = ∅ :=
 @[simp]
 theorem pure_orElse (a : α) (c₂ : Computation α) : (pure a <|> c₂) = pure a :=
   dest_eq_pure <| by
-    unfold HOrElse.hOrElse instHOrElse
-    unfold OrElse.orElse instOrElse Alternative.orElse instAlternativeComputation
+    unfold_projs
     simp [orElse]
 #align computation.ret_orelse Computation.pure_orElse
 
@@ -1221,8 +1217,7 @@ theorem pure_orElse (a : α) (c₂ : Computation α) : (pure a <|> c₂) = pure 
 @[simp]
 theorem orElse_pure (c₁ : Computation α) (a : α) : (think c₁ <|> pure a) = pure a :=
   dest_eq_pure <| by
-    unfold HOrElse.hOrElse instHOrElse
-    unfold OrElse.orElse instOrElse Alternative.orElse instAlternativeComputation
+    unfold_projs
     simp [orElse]
 #align computation.orelse_ret Computation.orElse_pure
 
@@ -1230,8 +1225,7 @@ theorem orElse_pure (c₁ : Computation α) (a : α) : (think c₁ <|> pure a) =
 @[simp]
 theorem orElse_think (c₁ c₂ : Computation α) : (think c₁ <|> think c₂) = think (c₁ <|> c₂) :=
   dest_eq_think <| by
-    unfold HOrElse.hOrElse instHOrElse
-    unfold OrElse.orElse instOrElse Alternative.orElse instAlternativeComputation
+    unfold_projs
     simp [orElse]
 #align computation.orelse_think Computation.orElse_think
 
@@ -1459,7 +1453,7 @@ theorem liftRel_pure_right (R : α → β → Prop) (ca : Computation α) (b : �
     LiftRel R ca (pure b) ↔ ∃ a, a ∈ ca ∧ R a b := by rw [LiftRel.swap, liftRel_pure_left]
 #align computation.lift_rel_return_right Computation.liftRel_pure_right
 
--- porting notes: `simpNF` wants to simplify based on `liftRel_pure_right` but point is to prove
+-- Porting note: `simpNF` wants to simplify based on `liftRel_pure_right` but point is to prove
 -- a general invariant on `LiftRel`
 @[simp, nolint simpNF]
 theorem liftRel_pure (R : α → β → Prop) (a : α) (b : β) :
@@ -1505,7 +1499,7 @@ theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 :
   simp; exact h2
 #align computation.lift_rel_map Computation.liftRel_map
 
--- porting notes: deleted initial arguments `(_R : α → α → Prop) (_S : β → β → Prop)`: unused
+-- Porting note: deleted initial arguments `(_R : α → α → Prop) (_S : β → β → Prop)`: unused
 theorem map_congr {s1 s2 : Computation α} {f : α → β}
     (h1 : s1 ≈ s2) : map f s1 ≈ map f s2 := by
   rw [← lift_eq_iff_equiv]
@@ -1521,13 +1515,17 @@ def LiftRelAux (R : α → β → Prop) (C : Computation α → Computation β �
   | Sum.inr ca, Sum.inr cb => C ca cb
 #align computation.lift_rel_aux Computation.LiftRelAux
 
---porting note: was attribute [simp] LiftRelAux but right now `simp` on defs is a Lean 4 catastrophe
+variable {R : α → β → Prop} {C : Computation α → Computation β → Prop}
+
+-- Porting note: was attribute [simp] LiftRelAux
+-- but right now `simp` on defs is a Lean 4 catastrophe
 -- Instead we add the equation lemmas and tag them @[simp]
-@[simp] lemma liftRelAux_inl_inl : LiftRelAux R C (Sum.inl a) (Sum.inl b) = R a b := rfl
-@[simp] lemma liftRelAux_inl_inr {cb} :
+@[simp] lemma liftRelAux_inl_inl {a : α} {b : β} :
+  LiftRelAux R C (Sum.inl a) (Sum.inl b) = R a b := rfl
+@[simp] lemma liftRelAux_inl_inr {a : α} {cb} :
     LiftRelAux R C (Sum.inl a) (Sum.inr cb) = ∃ b, b ∈ cb ∧ R a b :=
   rfl
-@[simp] lemma liftRelAux_inr_inl {ca} :
+@[simp] lemma liftRelAux_inr_inl {b : β} {ca} :
     LiftRelAux R C (Sum.inr ca) (Sum.inl b) = ∃ a, a ∈ ca ∧ R a b :=
   rfl
 @[simp] lemma liftRelAux_inr_inr {ca cb} :
