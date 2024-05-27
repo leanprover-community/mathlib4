@@ -128,33 +128,18 @@ namespace IsSimple
 variable [IsSimple R L]
 
 instance : LieModule.IsIrreducible R L L := by
-  have : Nontrivial (LieIdeal R L) := by
-    constructor
-    by_contra! H
-    apply IsSimple.non_abelian R (L := L)
-    constructor
-    intro x y
-    rw [← LieSubmodule.mem_bot (R := R) (L := L), H ⊥ ⊤]
-    trivial
-  constructor
-  apply IsSimple.eq_bot_or_eq_top
+  suffices Nontrivial (LieIdeal R L) from ⟨IsSimple.eq_bot_or_eq_top⟩
+  rw [LieSubmodule.nontrivial_iff, ← not_subsingleton_iff_nontrivial]
+  have _i : ¬ IsLieAbelian L := IsSimple.non_abelian R
+  contrapose! _i
+  infer_instance
 
 variable {R L} in
 lemma eq_top_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : I = ⊤ :=
   (IsSimple.eq_bot_or_eq_top I).resolve_left hI.1
 
-lemma isAtom_top : IsAtom (⊤ : LieIdeal R L) := by
-  constructor
-  · intro h
-    apply IsSimple.non_abelian R (L := L)
-    constructor
-    intro x y
-    rw [← LieSubmodule.mem_bot (R := R) (L := L), ← h]
-    trivial
-  · intro I hI
-    have := IsSimple.eq_bot_or_eq_top I
-    contrapose! this
-    exact ⟨this, hI.ne⟩
+lemma isAtom_top : IsAtom (⊤ : LieIdeal R L) :=
+  ⟨bot_ne_top.symm, fun _ h ↦ IsSimpleOrder.LT.lt.eq_bot h⟩
 
 variable {R L} in
 @[simp] lemma isAtom_iff_eq_top (I : LieIdeal R L) : IsAtom I ↔ I = ⊤ :=
