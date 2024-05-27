@@ -115,12 +115,13 @@ lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_rang
 
 lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.directedOn
 
-lemma ordered_pair_exists_chain (a : α) (b : α) (hab : a ≤ b) :
-    ∃ c : Chain α, Set.range c = {a , b} := by
-  let c :  ℕ →o α := ⟨fun n => match n with
+def ordered_pair_to_chain (a : α) (b : α) (hab : a ≤ b) : Chain α :=
+  ⟨fun n => match n with
     | 0 => a
     | _ => b, fun _ _ _ => by aesop⟩
-  use c
+
+lemma ordered_pair_to_chain_range (a : α) (b : α) (hab : a ≤ b) :
+    Set.range (ordered_pair_to_chain a b hab) = {a , b} :=  by
   rw [le_antisymm_iff]
   constructor
   · intro d ⟨n,hn⟩
@@ -307,7 +308,8 @@ def Continuous' (f : α → β) : Prop :=
 def ωScottContinuous (f : α → β) := ScottContinuousOn (Set.range fun c : Chain α => Set.range c) f
 
 lemma ωScottContinuous.monotone {f : α → β} (h : ωScottContinuous f) : Monotone f :=
-  ScottContinuousOn.monotone _ (fun a b hab => by exact ordered_pair_exists_chain a b hab) h
+  ScottContinuousOn.monotone _ (fun a b hab => by
+    use ordered_pair_to_chain a b hab; exact ordered_pair_to_chain_range a b hab) h
 
 lemma ωScottContinuous.isLUB {c : Chain α} {f : α → β} (hf : ωScottContinuous f) :
     IsLUB (Set.range (Chain.map c ⟨f, (ωScottContinuous.monotone hf)⟩)) (f (ωSup c)) := by
