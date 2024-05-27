@@ -583,7 +583,7 @@ theorem biproduct.hom_ext' {f : J → C} [HasBiproduct f] {Z : C} (g h : ⨁ f �
 #align category_theory.limits.biproduct.hom_ext' CategoryTheory.Limits.biproduct.hom_ext'
 
 /-- The canonical isomorphism between the chosen biproduct and the chosen product. -/
-def biproduct.isoProduct (f : J → C) [HasBiproduct f] : ⨁ f ≅ ∏ f :=
+def biproduct.isoProduct (f : J → C) [HasBiproduct f] : ⨁ f ≅ ∏ᶜ f :=
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (limit.isLimit _)
 #align category_theory.limits.biproduct.iso_product CategoryTheory.Limits.biproduct.isoProduct
 

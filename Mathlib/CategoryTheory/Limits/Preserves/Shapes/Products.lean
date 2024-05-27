@@ -90,7 +90,7 @@ variable [PreservesLimit (Discrete.functor f) G]
 If `G` preserves limits, we have an isomorphism from the image of a product to the product of the
 images.
 -/
-def PreservesProduct.iso : G.obj (∏ f) ≅ ∏ fun j => G.obj (f j) :=
+def PreservesProduct.iso : G.obj (∏ᶜ f) ≅ ∏ᶜ fun j => G.obj (f j) :=
   IsLimit.conePointUniqueUpToIso (isLimitOfHasProductOfPreservesLimit G f) (limit.isLimit _)
 #align category_theory.limits.preserves_product.iso CategoryTheory.Limits.PreservesProduct.iso
 
