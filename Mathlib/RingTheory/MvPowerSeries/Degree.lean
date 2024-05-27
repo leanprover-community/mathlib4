@@ -222,11 +222,9 @@ theorem totalDegree_monomial_le (s : σ →₀ ℕ) (r : R) :
 @[simp]
 theorem totalDegree_X_pow [Nontrivial R] (i : σ) (n : ℕ) :
     (X i ^ n : MvPowerSeries σ R).totalDegree = n := by
-  apply le_antisymm
-  · apply le_trans
-    · apply totalDegree_pow
-    · simp only [totalDegree_X, mul_one, le_refl]
-  · sorry
+  rw [X_pow_eq, totalDegree_monomial]
+  · simp only [Nat.cast_finsupp_sum, id_eq, Finsupp.sum_single_index, Nat.cast_one, le_refl]
+  · exact one_ne_zero
 
 theorem totalDegree_add_eq_left_of_totalDegree_lt (h : ψ.totalDegree < φ.totalDegree) :
     (φ + ψ).totalDegree = φ.totalDegree := by
