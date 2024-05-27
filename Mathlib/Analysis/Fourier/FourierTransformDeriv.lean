@@ -318,16 +318,6 @@ lemma _root_.ContDiff.fourierPowSMulRight {f : V → E} {k : ℕ∞} (hf : ContD
   apply (ContinuousMultilinearMap.contDiff _).comp
   exact contDiff_pi.2 (fun _ ↦ L.contDiff)
 
-lemma ContinuousLinearMap.norm_pi_le_of_le {ι : Type*} {𝕜 : Type*} [Fintype ι]
-    [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)] {C : ℝ}
-    {L : (i : ι) → (E →L[𝕜] M i)} (hL : ∀ i, ‖L i‖ ≤ C) (hC : 0 ≤ C) :
-    ‖ContinuousLinearMap.pi L‖ ≤ C := by
-  apply ContinuousLinearMap.opNorm_le_bound _ (by positivity) (fun x ↦ ?_)
-  simp only [ContinuousLinearMap.coe_pi']
-  refine (pi_norm_le_iff_of_nonneg (by positivity)).mpr (fun i ↦ ?_)
-  exact (L i).le_of_opNorm_le_of_le (hL i) le_rfl
-
 lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
     ‖fourierPowSMulRight L f v n‖ ≤ (2 * π * ‖L‖) ^ n * ‖v‖ ^ n * ‖f v‖ := by
   apply ContinuousMultilinearMap.opNorm_le_bound _ (by positivity) (fun m ↦ ?_)
