@@ -772,10 +772,6 @@ end Module
 
 section Pi
 
--- The pi construction for AffineMaps. This accepts dependent types in both the module V
--- and the AffineSpace P. This leads to pretty unreadable / un-loogle-able type signatures,
--- so a non-dependent pi construction pi' is also given with corresponding theorems.
-
 variable {ι : Type*} {φv φp : ι → Type*} [(i : ι) → AddCommGroup (φv i)]
   [(i : ι) → Module k (φv i)] [(i : ι) → AffineSpace (φv i) (φp i)]
 /-- `pi` construction for affine functions. From a family of affine functions it produces a affine
@@ -809,30 +805,6 @@ theorem pi_zero : pi (fun _ ↦ 0 : (i : ι) → P1 →ᵃ[k] φv i) = 0 := by
 
 theorem proj_pi (i : ι) : (proj i).comp (pi fp) = fp i :=
   ext fun _ => rfl
-
-/-- An ι-indexed collection of AffineMaps `P1 →ᵃ P2` lifts to an AffineMap from P1 to the
-  Module of functions, `ι → P2`. This module is `Pi.module`. This is the AffineMap analog
-  of `LinearMap.pi`. Actually defeq to `AffineMap.pi'` but the type signature is
-  much easier to read.
--/
-abbrev pi' : (ι → (P1 →ᵃ[k] P2)) → P1 →ᵃ[k] (ι → P2) := pi
-
-@[simp]
-theorem pi'_apply (c : P1) (i : ι) : pi' f' c i = f' i c :=
-  rfl
-
-theorem pi'_comp {V3 P3 : Type*} [AddCommGroup V3] [Module k V3] [AffineSpace V3 P3]
-    (g : P3 →ᵃ[k] P1) : (pi' f').comp g = pi' (fun i => (f' i).comp g) :=
-  rfl
-
-theorem pi'_eq_zero (f : (i : ι) → P1 →ᵃ[k] V2) : pi' f = 0 ↔ ∀ i, f i = 0 :=
-  pi_eq_zero f
-
-theorem pi'_zero : pi' (fun _ ↦ 0 : (i : ι) → P1 →ᵃ[k] V2) = 0 := by ext; rfl
-
-theorem proj_pi' (i : ι) : (proj i).comp (pi' f') = f' i :=
-  ext fun _ => rfl
-
 section Ext
 
 variable [Finite ι] [DecidableEq ι] {f g : ((i : ι) → φv i) →ᵃ[k] P2}
