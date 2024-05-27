@@ -5,12 +5,11 @@ Authors: Anne Baanen, Mario Carneiro
 -/
 
 import Mathlib.Tactic.SimpRw
-import Std.Tactic.GuardExpr
 
 private axiom test_sorry : ∀ {α}, α
 
 -- `simp_rw` can perform rewrites under binders:
-example : (λ (x y : Nat) => x + y) = (λ x y => y + x) := by simp_rw [Nat.add_comm]
+example : (fun (x y : Nat) ↦ x + y) = (fun x y ↦ y + x) := by simp_rw [Nat.add_comm]
 
 -- `simp_rw` can apply reverse rules:
 example (f : Nat → Nat) {a b c : Nat} (ha : f b = a) (hc : f b = c) : a = c := by simp_rw [← ha, hc]
@@ -42,3 +41,12 @@ example : 1 = 2 := by
   simp_rw (config := {zeta := false}) []
   guard_target =ₛ 1 = a
   exact test_sorry
+
+/--
+error: no goals to be solved
+-/
+-- check that `simp_rw` does not "spill over" goals
+#guard_msgs in
+example {n : Nat} (hn : n = 0) : (n = 0) ∧ (n = 0) := by
+  constructor
+  simp_rw [hn, hn]  -- does this work?

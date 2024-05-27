@@ -3,12 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Data.List.FinRange
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.GroupTheory.Submonoid.Basic
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Data.Sigma.Basic
 import Lean.Elab.Tactic
 
@@ -86,7 +86,7 @@ This file also defines:
 * `SetLike.homogeneousSubmonoid A`, which is, as the name suggests, the submonoid consisting of
   all the homogeneous elements.
 
-## tags
+## Tags
 
 graded monoid
 -/
@@ -197,7 +197,7 @@ variable {A} [AddMonoid ι] [GMul A] [GOne A]
 `GMonoid.gnpow` should be used instead. -/
 def gnpowRec : ∀ (n : ℕ) {i}, A i → A (n • i)
   | 0, i, _ => cast (congr_arg A (zero_nsmul i).symm) GOne.one
-  | n + 1, i, a => cast (congr_arg A (succ_nsmul i n).symm) (GMul.mul a <| gnpowRec _ a)
+  | n + 1, i, a => cast (congr_arg A (succ_nsmul i n).symm) (GMul.mul (gnpowRec _ a) a)
 #align graded_monoid.gmonoid.gnpow_rec GradedMonoid.GMonoid.gnpowRec
 
 @[simp]
@@ -207,7 +207,7 @@ theorem gnpowRec_zero (a : GradedMonoid A) : GradedMonoid.mk _ (gnpowRec 0 a.snd
 
 @[simp]
 theorem gnpowRec_succ (n : ℕ) (a : GradedMonoid A) :
-    (GradedMonoid.mk _ <| gnpowRec n.succ a.snd) = a * ⟨_, gnpowRec n a.snd⟩ :=
+    (GradedMonoid.mk _ <| gnpowRec n.succ a.snd) = ⟨_, gnpowRec n a.snd⟩ * a :=
   Sigma.ext (succ_nsmul _ _) (heq_of_cast_eq _ rfl).symm
 #align graded_monoid.gmonoid.gnpow_rec_succ GradedMonoid.GMonoid.gnpowRec_succ
 
@@ -237,7 +237,7 @@ class GMonoid [AddMonoid ι] extends GMul A, GOne A where
   /-- Successor powers behave as expected -/
   gnpow_succ' :
     ∀ (n : ℕ) (a : GradedMonoid A),
-      (GradedMonoid.mk _ <| gnpow n.succ a.snd) = a * ⟨_, gnpow n a.snd⟩ := by
+      (GradedMonoid.mk _ <| gnpow n.succ a.snd) = ⟨_, gnpow n a.snd⟩ * a:= by
     apply_gmonoid_gnpowRec_succ_tac
 #align graded_monoid.gmonoid GradedMonoid.GMonoid
 
@@ -446,9 +446,9 @@ theorem List.dProd_cons (fι : α → ι) (fA : ∀ a, A (fι a)) (a : α) (l : 
 theorem GradedMonoid.mk_list_dProd (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) :
     GradedMonoid.mk _ (l.dProd fι fA) = (l.map fun a => GradedMonoid.mk (fι a) (fA a)).prod := by
   match l with
-  | [] => simp; rfl
+  | [] => simp only [List.dProdIndex_nil, List.dProd_nil, List.map_nil, List.prod_nil]; rfl
   | head::tail =>
-    simp[← GradedMonoid.mk_list_dProd tail _ _, GradedMonoid.mk_mul_mk, List.prod_cons]
+    simp [← GradedMonoid.mk_list_dProd tail _ _, GradedMonoid.mk_mul_mk, List.prod_cons]
 #align graded_monoid.mk_list_dprod GradedMonoid.mk_list_dProd
 
 /-- A variant of `GradedMonoid.mk_list_dProd` for rewriting in the other direction. -/
@@ -593,7 +593,6 @@ class SetLike.GradedMonoid {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι] (
 namespace SetLike
 
 variable {S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι]
-
 variable {A : ι → S} [SetLike.GradedMonoid A]
 
 theorem pow_mem_graded (n : ℕ) {r : R} {i : ι} (h : r ∈ A i) : r ^ n ∈ A (n • i) := by
@@ -603,7 +602,7 @@ theorem pow_mem_graded (n : ℕ) {r : R} {i : ι} (h : r ∈ A i) : r ^ n ∈ A 
     exact one_mem_graded _
   | n+1 =>
     rw [pow_succ', succ_nsmul']
-    exact mul_mem_graded (pow_mem_graded n h) h
+    exact mul_mem_graded h (pow_mem_graded n h)
 #align set_like.pow_mem_graded SetLike.pow_mem_graded
 
 theorem list_prod_map_mem_graded {ι'} (l : List ι') (i : ι' → ι) (r : ι' → R)

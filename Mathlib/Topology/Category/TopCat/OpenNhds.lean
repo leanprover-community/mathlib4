@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Topology.Category.TopCat.Opens
+import Mathlib.Data.Set.Subsingleton
 
 #align_import topology.category.Top.open_nhds from "leanprover-community/mathlib"@"1ec4876214bf9f1ddfbf97ae4b0d777ebd5d6938"
 
@@ -130,8 +131,9 @@ theorem op_map_id_obj (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).op.obj
 
 /-- `Opens.map f` and `OpenNhds.map f` form a commuting square (up to natural isomorphism)
 with the inclusion functors into `Opens X`. -/
+@[simps! hom_app inv_app]
 def inclusionMapIso (x : X) : inclusion (f x) ⋙ Opens.map f ≅ map f x ⋙ inclusion x :=
-  NatIso.ofComponents fun U => by constructor; rfl; rfl; exact 𝟙 _; exact 𝟙 _
+  NatIso.ofComponents fun U => { hom := 𝟙 _, inv := 𝟙 _ }
 #align topological_space.open_nhds.inclusion_map_iso TopologicalSpace.OpenNhds.inclusionMapIso
 
 @[simp]

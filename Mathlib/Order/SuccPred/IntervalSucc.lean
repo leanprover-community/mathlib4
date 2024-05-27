@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Data.Set.Lattice
 import Mathlib.Order.SuccPred.Basic
 
 #align_import order.succ_pred.interval_succ from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
@@ -38,7 +39,7 @@ theorem biUnion_Ico_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOr
     (hf : Monotone f) (m n : α) : ⋃ i ∈ Ico m n, Ioc (f i) (f (succ i)) = Ioc (f m) (f n) := by
   rcases le_total n m with hnm | hmn
   · rw [Ico_eq_empty_of_le hnm, Ioc_eq_empty_of_le (hf hnm), biUnion_empty]
-  · refine' Succ.rec _ _ hmn
+  · refine Succ.rec ?_ ?_ hmn
     · simp only [Ioc_self, Ico_self, biUnion_empty]
     · intro k hmk ihk
       rw [← Ioc_union_Ioc_eq_Ioc (hf hmk) (hf <| le_succ _), union_comm, ← ihk]

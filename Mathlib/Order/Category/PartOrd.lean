@@ -103,7 +103,7 @@ theorem partOrd_dual_comp_forget_to_preord :
 set_option linter.uppercaseLean3 false in
 #align PartOrd_dual_comp_forget_to_Preord partOrd_dual_comp_forget_to_preord
 
-/-- `antisymmetrization` as a functor. It is the free functor. -/
+/-- `Antisymmetrization` as a functor. It is the free functor. -/
 def preordToPartOrd : Preord.{u} ⥤ PartOrd where
   obj X := PartOrd.of (Antisymmetrization X (· ≤ ·))
   map f := f.antisymmetrization
@@ -116,7 +116,7 @@ def preordToPartOrd : Preord.{u} ⥤ PartOrd where
 set_option linter.uppercaseLean3 false in
 #align Preord_to_PartOrd preordToPartOrd
 
-/-- `Preord_to_PartOrd` is left adjoint to the forgetful functor, meaning it is the free
+/-- `preordToPartOrd` is left adjoint to the forgetful functor, meaning it is the free
 functor from `Preord` to `PartOrd`. -/
 def preordToPartOrdForgetAdjunction :
     preordToPartOrd.{u} ⊣ forget₂ PartOrd Preord :=

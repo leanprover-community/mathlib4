@@ -70,7 +70,7 @@ theorem doubleFactorial_two_mul : ∀ n : ℕ, (2 * n)‼ = 2 ^ n * n !
 
 open BigOperators
 
-theorem doubleFactorial_eq_prod_even : ∀ n : ℕ, (2 * n)‼ = ∏ i in Finset.range n, 2 * (i + 1)
+theorem doubleFactorial_eq_prod_even : ∀ n : ℕ, (2 * n)‼ = ∏ i ∈ Finset.range n, 2 * (i + 1)
   | 0 => rfl
   | n + 1 => by
     rw [Finset.prod_range_succ, ← doubleFactorial_eq_prod_even _, mul_comm (2 * n)‼,
@@ -79,7 +79,7 @@ theorem doubleFactorial_eq_prod_even : ∀ n : ℕ, (2 * n)‼ = ∏ i in Finset
 #align nat.double_factorial_eq_prod_even Nat.doubleFactorial_eq_prod_even
 
 theorem doubleFactorial_eq_prod_odd :
-    ∀ n : ℕ, (2 * n + 1)‼ = ∏ i in Finset.range n, (2 * (i + 1) + 1)
+    ∀ n : ℕ, (2 * n + 1)‼ = ∏ i ∈ Finset.range n, (2 * (i + 1) + 1)
   | 0 => rfl
   | n + 1 => by
     rw [Finset.prod_range_succ, ← doubleFactorial_eq_prod_odd _, mul_comm (2 * n + 1)‼,
@@ -95,13 +95,11 @@ open Lean Meta Qq
 /-- Extension for `Nat.doubleFactorial`. -/
 @[positivity Nat.doubleFactorial _]
 def evalDoubleFactorial : PositivityExt where eval {u α} _ _ e := do
-  if let 0 := u then -- lean4#3060 means we can't combine this with the match below
-    match α, e with
-    | ~q(ℕ), ~q(Nat.doubleFactorial $n) =>
-      assumeInstancesCommute
-      return .positive q(Nat.doubleFactorial_pos $n)
-    | _, _ => throwError "not Nat.doubleFactorial"
-  else throwError "not Nat.doubleFactorial"
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Nat.doubleFactorial $n) =>
+    assumeInstancesCommute
+    return .positive q(Nat.doubleFactorial_pos $n)
+  | _, _ => throwError "not Nat.doubleFactorial"
 
 example (n : ℕ) : 0 < n‼ := by positivity
 

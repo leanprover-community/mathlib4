@@ -27,16 +27,21 @@ equivalences (and other files that use them) before the group structure is defin
 MulAut, AddAut
 -/
 
+-- TODO after #13161
+-- assert_not_exists MonoidWithZero
+assert_not_exists Ring
 
 variable {A : Type*} {M : Type*} {G : Type*}
 
 /-- The group of multiplicative automorphisms. -/
-@[to_additive (attr := reducible) "The group of additive automorphisms."]
+@[reducible, to_additive "The group of additive automorphisms."]
 def MulAut (M : Type*) [Mul M] :=
   M ≃* M
 #align mul_aut MulAut
 #align add_aut AddAut
 
+-- Note that `(attr := reducible)` in `to_additive` currently doesn't work,
+-- so we add the reducible attribute manually.
 attribute [reducible] AddAut
 
 namespace MulAut
@@ -46,19 +51,14 @@ variable (M) [Mul M]
 /-- The group operation on multiplicative automorphisms is defined by `g h => MulEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance : Group (MulAut M) := by
-  refine'
-  { mul := fun g h => MulEquiv.trans h g
-    one := MulEquiv.refl M
-    inv := MulEquiv.symm
-    div := fun g h => MulEquiv.trans h.symm g
-    npow := @npowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩
-    zpow := @zpowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩ ⟨MulEquiv.symm⟩
-    .. } <;>
-  intros <;>
-  ext <;>
-  try rfl
-  apply Equiv.left_inv
+instance : Group (MulAut M) where
+  mul g h := MulEquiv.trans h g
+  one := MulEquiv.refl _
+  inv := MulEquiv.symm
+  mul_assoc _ _ _ := rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
+  mul_left_inv := MulEquiv.self_trans_symm
 
 instance : Inhabited (MulAut M) :=
   ⟨1⟩
@@ -173,19 +173,14 @@ variable (A) [Add A]
 /-- The group operation on additive automorphisms is defined by `g h => AddEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance group : Group (AddAut A) := by
-  refine'
-  { mul := fun g h => AddEquiv.trans h g
-    one := AddEquiv.refl A
-    inv := AddEquiv.symm
-    div := fun g h => AddEquiv.trans h.symm g
-    npow := @npowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩
-    zpow := @zpowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩ ⟨AddEquiv.symm⟩
-    .. } <;>
-  intros <;>
-  ext <;>
-  try rfl
-  apply Equiv.left_inv
+instance group : Group (AddAut A) where
+  mul g h := AddEquiv.trans h g
+  one := AddEquiv.refl _
+  inv := AddEquiv.symm
+  mul_assoc _ _ _ := rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
+  mul_left_inv := AddEquiv.self_trans_symm
 #align add_aut.group AddAut.group
 
 instance : Inhabited (AddAut A) :=
@@ -256,7 +251,7 @@ protected theorem smul_def {A} [AddMonoid A] (f : AddAut A) (a : A) : f • a = 
 
 /-- `AddAut.applyDistribMulAction` is faithful. -/
 instance apply_faithfulSMul {A} [AddMonoid A] : FaithfulSMul (AddAut A) A :=
-  ⟨fun h => AddEquiv.ext h ⟩
+  ⟨fun h => AddEquiv.ext h⟩
 #align add_aut.apply_has_faithful_smul AddAut.apply_faithfulSMul
 
 /-- Additive group conjugation, `AddAut.conj g h = g + h - g`, as an additive monoid
@@ -291,7 +286,7 @@ theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).symm h = -g + h + g :=
   rfl
 #align add_aut.conj_symm_apply AddAut.conj_symm_apply
 
--- Porting note : the exact translation of this mathlib3 lemma would be`(-conj g) h = -g + h + g`,
+-- Porting note: the exact translation of this mathlib3 lemma would be`(-conj g) h = -g + h + g`,
 -- but this no longer pass the simp_nf linter, as the LHS simplifies by `toMul_neg` to
 -- `(Additive.toMul (conj g))⁻¹`.
 @[simp]

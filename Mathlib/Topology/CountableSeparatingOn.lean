@@ -32,5 +32,5 @@ a countable family of closed sets separating points of `s`. -/
 instance [TopologicalSpace X] {s : Set X} [h : HasCountableSeparatingOn X IsOpen s] :
     HasCountableSeparatingOn X IsClosed s :=
   let ⟨S, hSc, hSo, hS⟩ := h.1
-  ⟨compl '' S, hSc.image _, ball_image_iff.2 fun U hU ↦ (hSo U hU).isClosed_compl,
+  ⟨compl '' S, hSc.image _, forall_mem_image.2 fun U hU ↦ (hSo U hU).isClosed_compl,
     fun x hx y hy h ↦ hS x hx y hy fun _U hU ↦ not_iff_not.1 <| h _ (mem_image_of_mem _ hU)⟩

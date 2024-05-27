@@ -55,7 +55,7 @@ set_option linter.uppercaseLean3 false in
 variable [Monoid β]
 
 /-- The Lipschitz constant of a monoid `β` satisfying `LipschitzMul` -/
-@[to_additive existing] -- porting note: had to add `LipschitzAdd.C`. to_additive silently failed
+@[to_additive existing] -- Porting note: had to add `LipschitzAdd.C`. to_additive silently failed
 def LipschitzMul.C [_i : LipschitzMul β] : ℝ≥0 := Classical.choose _i.lipschitz_mul
 set_option linter.uppercaseLean3 false in
 #align has_lipschitz_mul.C LipschitzMul.C
@@ -152,8 +152,8 @@ instance (priority := 100) BoundedSMul.continuousSMul : ContinuousSMul α β whe
   continuous_smul := by
     rw [Metric.continuous_iff]
     rintro ⟨a, b⟩ ε ε0
-    obtain ⟨δ, δ0, hδε⟩ : ∃ δ > 0, δ * (δ + dist b 0) + dist a 0 * δ < ε
-    · have : Continuous fun δ ↦ δ * (δ + dist b 0) + dist a 0 * δ := by continuity
+    obtain ⟨δ, δ0, hδε⟩ : ∃ δ > 0, δ * (δ + dist b 0) + dist a 0 * δ < ε := by
+      have : Continuous fun δ ↦ δ * (δ + dist b 0) + dist a 0 * δ := by continuity
       refine ((this.tendsto' _ _ ?_).eventually (gt_mem_nhds ε0)).exists_gt
       simp
     refine ⟨δ, δ0, fun (a', b') hab' => ?_⟩

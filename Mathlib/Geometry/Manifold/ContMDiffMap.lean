@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
@@ -32,8 +32,7 @@ def ContMDiffMap :=
 #align cont_mdiff_map ContMDiffMap
 
 /-- Bundled smooth maps. -/
-@[reducible]
-def SmoothMap :=
+abbrev SmoothMap :=
   ContMDiffMap I I' M M' ⊤
 #align smooth_map SmoothMap
 
@@ -63,7 +62,7 @@ protected theorem smooth (f : C^∞⟮I, M; I', M'⟯) : Smooth I I' f :=
   f.prop
 #align cont_mdiff_map.smooth ContMDiffMap.smooth
 
--- porting note: use generic instance instead
+-- Porting note: use generic instance instead
 -- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=
 --   ⟨fun f => ⟨f, f.contMDiff.continuous⟩⟩
 

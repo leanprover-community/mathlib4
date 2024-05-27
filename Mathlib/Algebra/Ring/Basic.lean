@@ -22,7 +22,7 @@ the present file is about their interaction.
 For the definitions of semirings and rings see `Algebra.Ring.Defs`.
 -/
 
-set_option autoImplicit true
+variable {R : Type*}
 
 open Function
 
@@ -48,7 +48,8 @@ end AddHom
 
 section AddHomClass
 
-variable {F : Type*} [NonAssocSemiring α] [NonAssocSemiring β] [AddHomClass F α β]
+variable {α β F : Type*} [NonAssocSemiring α] [NonAssocSemiring β]
+  [FunLike F α β] [AddHomClass F α β]
 
 set_option linter.deprecated false in
 /-- Additive homomorphisms preserve `bit0`. -/
@@ -98,20 +99,19 @@ section HasDistribNeg
 
 section Mul
 
-variable [Mul α] [HasDistribNeg α]
+variable {α : Type*} [Mul α] [HasDistribNeg α]
 
 open MulOpposite
 
-instance hasDistribNeg : HasDistribNeg αᵐᵒᵖ :=
-  { MulOpposite.involutiveNeg _ with
-    neg_mul := fun _ _ => unop_injective <| mul_neg _ _,
-    mul_neg := fun _ _ => unop_injective <| neg_mul _ _ }
+instance instHasDistribNeg : HasDistribNeg αᵐᵒᵖ where
+  neg_mul _ _ := unop_injective <| mul_neg _ _
+  mul_neg _ _ := unop_injective <| neg_mul _ _
 
 end Mul
 
 section Group
 
-variable [Group α] [HasDistribNeg α]
+variable {α : Type*} [Group α] [HasDistribNeg α]
 
 @[simp]
 theorem inv_neg' (a : α) : (-a)⁻¹ = -a⁻¹ := by
@@ -124,7 +124,7 @@ end HasDistribNeg
 
 section NonUnitalCommRing
 
-variable [NonUnitalCommRing α] {a b c : α}
+variable {α : Type*} [NonUnitalCommRing α] {a b c : α}
 
 attribute [local simp] add_assoc add_comm add_left_comm mul_comm
 
@@ -135,18 +135,18 @@ attribute [local simp] add_assoc add_comm add_left_comm mul_comm
 theorem vieta_formula_quadratic {b c x : α} (h : x * x - b * x + c = 0) :
     ∃ y : α, y * y - b * y + c = 0 ∧ x + y = b ∧ x * y = c := by
   have : c = x * (b - x) := (eq_neg_of_add_eq_zero_right h).trans (by simp [mul_sub, mul_comm])
-  refine' ⟨b - x, _, by simp, by rw [this]⟩
+  refine ⟨b - x, ?_, by simp, by rw [this]⟩
   rw [this, sub_add, ← sub_mul, sub_self]
 set_option linter.uppercaseLean3 false in
 #align Vieta_formula_quadratic vieta_formula_quadratic
 
 end NonUnitalCommRing
 
-theorem succ_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a + 1 ≠ a := fun h =>
+theorem succ_ne_self {α : Type*} [NonAssocRing α] [Nontrivial α] (a : α) : a + 1 ≠ a := fun h =>
   one_ne_zero ((add_right_inj a).mp (by simp [h]))
 #align succ_ne_self succ_ne_self
 
-theorem pred_ne_self [NonAssocRing α] [Nontrivial α] (a : α) : a - 1 ≠ a := fun h ↦
+theorem pred_ne_self {α : Type*} [NonAssocRing α] [Nontrivial α] (a : α) : a - 1 ≠ a := fun h ↦
   one_ne_zero (neg_injective ((add_right_inj a).mp (by simp [← sub_eq_add_neg, h])))
 #align pred_ne_self pred_ne_self
 
