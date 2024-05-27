@@ -111,9 +111,9 @@ theorem hasTrivialRadical_iff_no_abelian_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsLieAbelian I → I = ⊥ := by
   rw [hasTrivialRadical_iff_no_solvable_ideals]
   constructor <;> intro h₁ I h₂
-  · apply h₁; exact LieAlgebra.ofAbelianIsSolvable R I
-  · rw [← abelian_of_solvable_ideal_eq_bot_iff]; apply h₁
-    exact abelian_derivedAbelianOfIdeal I
+  · exact h₁ _ <| LieAlgebra.ofAbelianIsSolvable R I
+  · rw [← abelian_of_solvable_ideal_eq_bot_iff]
+    exact h₁ _ <| abelian_derivedAbelianOfIdeal I
 #align lie_algebra.is_semisimple_iff_no_abelian_ideals LieAlgebra.hasTrivialRadical_iff_no_abelian_ideals
 
 /-- A Lie algebra is simple if it is irreducible as a Lie module over itself via the adjoint
