@@ -7,7 +7,7 @@ import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Part
 import Mathlib.Order.Chain
 import Mathlib.Order.Hom.Order
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Order.Iterate
 import Mathlib.Dynamics.FixedPoints.Basic
 
 #align_import order.omega_complete_partial_order from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
@@ -921,52 +921,58 @@ end ContinuousHom
 
 namespace fixedPoints
 
-open Function OrderHom.Nat
+open Function
 
 /-- Iteration of a function on an initial element interpreted as a chain. -/
-def repeatChain (f : α →o α) (x : α) (h : x ≤ f x) : Chain α :=
-  ⟨fun n => Nat.repeat f n x, monotone_repeat h⟩
+def iterateChain (f : α →o α) (x : α) (h : x ≤ f x) :Chain α :=
+  ⟨fun n => f^[n] x, Monotone.monotone_iterate_of_le_map f.monotone h⟩
 
 variable (f : α →𝒄 α) (x : α)
 
+theorem iterateChain_succ_apply' (h : x ≤ f x) (n : ℕ) :
+    iterateChain f x h (n.succ) = f (iterateChain f x h n) := by
+  apply Function.iterate_succ_apply'
+
 /-- The supremum of iterating a function on x arbitrary often is a fixed point -/
 theorem ωSup_repeat_mem_fixedPoint (h : x ≤ f x) :
-    ωSup (repeatChain f x h) ∈ fixedPoints f := by
+    ωSup (iterateChain f x h) ∈ fixedPoints f := by
   rw [mem_fixedPoints, IsFixedPt, f.continuous]
   apply le_antisymm
   · apply ωSup_le
     intro n
     simp only [Chain.map_coe, OrderHomClass.coe_coe, comp_apply]
-    have : f (repeatChain f x h n) = repeatChain f x h (n+1) := rfl
-    rw [this]
+    rw [← iterateChain_succ_apply']
     apply le_ωSup
   · apply ωSup_le
     intro n
     cases n
     case a.a.zero =>
       apply le_trans h
-      have : f x = ((repeatChain f x h).map f) 0 := rfl
+      have : f x = ((iterateChain f x h).map f) 0 := rfl
       rw [this]
       apply le_ωSup
     case a.a.succ n =>
-      have : repeatChain f x h (n+1) = (repeatChain f x h).map f n := rfl
+      conv => left; rw [iterateChain_succ_apply']
+      have : f ((iterateChain f x h) n) = (iterateChain f x h).map f n := rfl
       rw [this]
       apply le_ωSup
 
 /-- The supremum of iterating a function on x arbitrary often is smaller than any prefixed point-/
 theorem ωSup_repeat_le_prefixedPoint (h : x ≤ f x) {a : α}
     (h_a : f a ≤ a) (h_x_le_a : x ≤ a) :
-    ωSup (repeatChain f x h) ≤ a := by
+    ωSup (iterateChain f x h) ≤ a := by
   apply ωSup_le
   intro n
   induction n with
   | zero => exact h_x_le_a
-  | succ n h_ind => exact le_trans (f.monotone h_ind) h_a
+  | succ n h_ind =>
+    rw [iterateChain_succ_apply']
+    exact le_trans (f.monotone h_ind) h_a
 
 /-- The supremum of iterating a function on x arbitrary often is smaller than any fixed point-/
 theorem ωSup_repeat_le_fixedPoint (h : x ≤ f x) {a : α}
     (h_a : a ∈ fixedPoints f) (h_x_le_a : x ≤ a) :
-    ωSup (repeatChain f x h) ≤ a := by
+    ωSup (iterateChain f x h) ≤ a := by
   rw [mem_fixedPoints] at h_a
   obtain h_a := Eq.le h_a
   exact ωSup_repeat_le_prefixedPoint f x h h_a h_x_le_a

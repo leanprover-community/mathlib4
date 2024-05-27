@@ -321,8 +321,8 @@ open OmegaCompletePartialOrder fixedPoints
 
 /-- **Kleenes fixed point Theorem**: The least fixed point in a complete lattice is
 the supremum of iterating a function on bottom arbitrary often. -/
-theorem lfp_eq_sSup_repeat (h : Continuous f) :
-    lfp f = sSup { Nat.repeat f n ⊥ | n : Nat} := by
+theorem lfp_eq_sSup_iterate (h : Continuous f) :
+    lfp f = sSup { f^[n] ⊥ | n : Nat} := by
   apply le_antisymm
   · apply lfp_le_fixed
     exact Function.mem_fixedPoints.mp (ωSup_repeat_mem_fixedPoint ⟨f, h⟩ ⊥ bot_le)
@@ -330,8 +330,8 @@ theorem lfp_eq_sSup_repeat (h : Continuous f) :
     intro a h_a
     exact ωSup_repeat_le_prefixedPoint ⟨f, h⟩ ⊥ bot_le h_a bot_le
 
-theorem gfp_eq_sSup_repeat (h : Continuous (OrderHom.dual f)) :
-    gfp f = sInf { Nat.repeat f n ⊤ | n : Nat} :=
-  lfp_eq_sSup_repeat (OrderHom.dual f) h
+theorem gfp_eq_sSup_iterate (h : Continuous (OrderHom.dual f)) :
+    gfp f = sInf { f^[n] ⊤ | n : Nat} :=
+  lfp_eq_sSup_iterate (OrderHom.dual f) h
 
 end fixedPoints
