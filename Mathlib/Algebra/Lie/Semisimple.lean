@@ -283,7 +283,7 @@ the weakest of the various properties which are all equivalent over a field of c
 -/
 class IsSemisimple : Prop where
   /-- In a semisimple Lie algebra, the supremum of the atoms is the whole Lie algebra. -/
-  sSup_isAtom_eq_top : sSup {I : LieIdeal R L | IsAtom I} = ⊤
+  sSup_atoms_eq_top : sSup {I : LieIdeal R L | IsAtom I} = ⊤
   /-- In a semisimple Lie algebra, the atoms are independent. -/
   setIndependent_isAtom : CompleteLattice.SetIndependent {I : LieIdeal R L | IsAtom I}
   /-- In a semisimple Lie algebra, the atoms are non-abelian. -/
@@ -307,7 +307,7 @@ lemma isSimple_of_isAtom [IsSemisimple R L] (I : LieIdeal R L) (hI : IsAtom I) :
         have hx : x ∈ I ⊔ sSup ({I' : LieIdeal R L | IsAtom I'} \ {I}) := by
           nth_rewrite 1 [← sSup_singleton (a := I)]
           rw [← sSup_union, Set.union_diff_self, Set.union_eq_self_of_subset_left,
-            IsSemisimple.sSup_isAtom_eq_top]
+            IsSemisimple.sSup_atoms_eq_top]
           · apply LieSubmodule.mem_top
           · simp only [Set.singleton_subset_iff, Set.mem_setOf_eq, hI]
         -- Hence we can write `x` as `a + b` with `a ∈ I`
@@ -385,11 +385,11 @@ lemma semisimpleGenerators (S : Set (LieIdeal R L)) (hS : S ⊆ {I : LieIdeal R 
   (IsSemisimple.semisimpleGenerators_atoms R L).mono hS
 
 instance (priority := 100) instDistribLattice : DistribLattice (LieIdeal R L) :=
-  (semisimpleGenerators_atoms R L).booleanGenerators.distribLattice_of_sSup_eq_top sSup_isAtom_eq_top
+  (semisimpleGenerators_atoms R L).booleanGenerators.distribLattice_of_sSup_eq_top sSup_atoms_eq_top
 
 noncomputable
 instance (priority := 100) instBooleanAlgebra : BooleanAlgebra (LieIdeal R L) :=
-  (semisimpleGenerators_atoms R L).booleanGenerators.booleanAlgebra_of_sSup_eq_top sSup_isAtom_eq_top
+  (semisimpleGenerators_atoms R L).booleanGenerators.booleanAlgebra_of_sSup_eq_top sSup_atoms_eq_top
 
 /-- A semisimple Lie algebra has trivial radical. -/
 instance (priority := 100) instHasTrivialRadical : HasTrivialRadical R L := by
