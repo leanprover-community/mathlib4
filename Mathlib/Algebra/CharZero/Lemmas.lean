@@ -3,7 +3,7 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Function.Support
+import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Data.Nat.Cast.Field
 
