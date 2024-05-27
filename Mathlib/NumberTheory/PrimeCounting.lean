@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bolton Bailey
+Authors: Bolton Bailey, Ralf Stephan
 -/
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Nat.Nth
@@ -104,5 +104,12 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
 
 @[simp]
 theorem zeroth_prime_eq_two : nth Prime 0 = 2 := nth_count prime_two
+
+/-- The `n`th prime is greater or equal `n + 2`. -/
+lemma nth_prime_ge_add_two (n : ℕ): nth Prime n ≥ n + 2 := by
+  induction' n with n ih
+  · exact le_iff_eq_or_lt.mpr (Or.inl zeroth_prime_eq_two.symm)
+  · exact LE.le.trans (ge_iff_le.mp ((add_le_add_iff_right 1).mpr ih))
+      (succ_le_iff.mpr <| (nth_lt_nth infinite_setOf_prime).mpr <| lt_add_one n)
 
 end Nat
