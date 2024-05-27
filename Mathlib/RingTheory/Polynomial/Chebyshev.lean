@@ -61,11 +61,6 @@ set_option linter.uppercaseLean3 false -- `T` `U` `C` `S` `X`
 
 open Polynomial
 
-local macro "int_ring_nf" : tactic => `(tactic | (
-  try simp only [Int.negSucc_eq, Int.ofNat_eq_coe]
-  try push_cast
-  ring_nf))
-
 variable (R R' : Type*) [CommRing R] [CommRing R']
 
 /-- `T n` is the `n`-th Chebyshev polynomial of the first kind. -/
@@ -77,10 +72,21 @@ noncomputable def T : ℤ → R[X]
   termination_by n => Int.natAbs n + Int.natAbs (n - 1)
 #align polynomial.chebyshev.T Polynomial.Chebyshev.T
 
+/-- Induction principle used for proving facts about Chebyshev polynomials. -/
+@[elab_as_elim]
+protected theorem induct (motive : ℤ → Prop)
+    (zero : motive 0)
+    (one : motive 1)
+    (add_two : ∀ (n : ℕ), motive (↑n + 1) → motive ↑n → motive (↑n + 2))
+    (neg_add_one : ∀ (n : ℕ), motive (-↑n) → motive (-↑n + 1) → motive (-↑n - 1)) :
+    ∀ (a : ℤ), motive a :=
+  T.induct Unit motive zero one add_two fun n hn hnm => by
+    simpa only [Int.negSucc_eq, neg_add] using neg_add_one n hn hnm
+
 @[simp]
 theorem T_add_two : ∀ n, T R (n + 2) = 2 * X * T R (n + 1) - T R n
   | (k : ℕ) => T.eq_3 R k
-  | -(k + 1 : ℕ) => by linear_combination (norm := int_ring_nf) T.eq_4 R k
+  | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) T.eq_4 R k
 #align polynomial.chebyshev.T_add_two Polynomial.Chebyshev.T_add_two
 
 theorem T_add_one (n : ℤ) : T R (n + 1) = 2 * X * T R n - T R (n - 1) := by
@@ -112,17 +118,20 @@ theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by
 
 @[simp]
 theorem T_neg (n : ℤ) : T R (-n) = T R n := by
-  induction n using T.induct R with
-  | case1 => rfl
-  | case2 => show 2 * X * 1 - X = X; ring
-  | case3 n ih1 ih2 =>
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => rfl
+  | one => show 2 * X * 1 - X = X; ring
+  | add_two n ih1 ih2 =>
     have h₁ := T_add_two R n
     have h₂ := T_sub_two R (-n)
-    linear_combination (norm := int_ring_nf) (2 * (X:R[X])) * ih1 - ih2 - h₁ + h₂
-  | case4 n ih1 ih2 =>
+    linear_combination (norm := ring_nf) (2 * (X:R[X])) * ih1 - ih2 - h₁ + h₂
+  | neg_add_one n ih1 ih2 =>
     have h₁ := T_add_one R n
     have h₂ := T_sub_one R (-n)
-    linear_combination (norm := int_ring_nf) (2 * (X:R[X])) * ih1 - ih2 + h₁ - h₂
+    linear_combination (norm := ring_nf) (2 * (X:R[X])) * ih1 - ih2 + h₁ - h₂
+
+theorem T_natAbs (n : ℤ) : T R n.natAbs = T R n := by
+  obtain h | h := Int.natAbs_eq n <;> nth_rw 2 [h]; simp
 
 theorem T_neg_two : T R (-2) = 2 * X ^ 2 - 1 := by simp [T_two]
 
@@ -138,7 +147,7 @@ noncomputable def U : ℤ → R[X]
 @[simp]
 theorem U_add_two : ∀ n, U R (n + 2) = 2 * X * U R (n + 1) - U R n
   | (k : ℕ) => U.eq_3 R k
-  | -(k + 1 : ℕ) => by linear_combination (norm := int_ring_nf) U.eq_4 R k
+  | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) U.eq_4 R k
 
 theorem U_add_one (n : ℤ) : U R (n + 1) = 2 * X * U R n - U R (n - 1) := by
   linear_combination (norm := ring_nf) U_add_two R (n - 1)
@@ -175,17 +184,17 @@ theorem U_neg_two : U R (-2) = -1 := by
   simpa [zero_sub, Int.reduceNeg, U_neg_one, mul_zero, U_zero] using U_sub_two R 0
 
 theorem U_neg_sub_one (n : ℤ) : U R (-n - 1) = -U R (n - 1) := by
-  induction n using U.induct R with
-  | case1 => simp
-  | case2 => simp
-  | case3 n ih1 ih2 =>
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
     have h₁ := U_add_one R n
     have h₂ := U_sub_two R (-n - 1)
-    linear_combination (norm := int_ring_nf) 2 * (X:R[X]) * ih1 - ih2 + h₁ + h₂
-  | case4 n ih1 ih2 =>
+    linear_combination (norm := ring_nf) 2 * (X:R[X]) * ih1 - ih2 + h₁ + h₂
+  | neg_add_one n ih1 ih2 =>
     have h₁ := U_eq R n
     have h₂ := U_sub_two R (-n)
-    linear_combination (norm := int_ring_nf) 2 * (X:R[X]) * ih1 - ih2 + h₁ + h₂
+    linear_combination (norm := ring_nf) 2 * (X:R[X]) * ih1 - ih2 + h₁ + h₂
 
 theorem U_neg (n : ℤ) : U R (-n) = -U R (n - 2) := by simpa [sub_sub] using U_neg_sub_one R (n - 1)
 
@@ -194,19 +203,19 @@ theorem U_neg_sub_two (n : ℤ) : U R (-n - 2) = -U R n := by
   simpa [sub_eq_add_neg, add_comm] using U_neg R (n + 2)
 
 theorem U_eq_X_mul_U_add_T (n : ℤ) : U R (n + 1) = X * U R n + T R (n + 1) := by
-  induction n using U.induct R with
-  | case1 => simp [two_mul]
-  | case2 => simp [U_two, T_two]; ring
-  | case3 n ih1 ih2 =>
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp [two_mul]
+  | one => simp [U_two, T_two]; ring
+  | add_two n ih1 ih2 =>
     have h₁ := U_add_two R (n + 1)
     have h₂ := U_add_two R n
     have h₃ := T_add_two R (n + 1)
-    linear_combination (norm := int_ring_nf) -h₃ - (X:R[X]) * h₂ + h₁ + 2 * (X:R[X]) * ih1 - ih2
-  | case4 n ih1 ih2 =>
+    linear_combination (norm := ring_nf) -h₃ - (X:R[X]) * h₂ + h₁ + 2 * (X:R[X]) * ih1 - ih2
+  | neg_add_one n ih1 ih2 =>
     have h₁ := U_add_two R (-n - 1)
     have h₂ := U_add_two R (-n)
     have h₃ := T_add_two R (-n)
-    linear_combination (norm := int_ring_nf) -h₃ + h₂ - (X:R[X]) * h₁ - ih2 + 2 * (X:R[X]) * ih1
+    linear_combination (norm := ring_nf) -h₃ + h₂ - (X:R[X]) * h₁ - ih2 + 2 * (X:R[X]) * ih1
 #align polynomial.chebyshev.U_eq_X_mul_U_add_T Polynomial.Chebyshev.U_eq_X_mul_U_add_T
 
 theorem T_eq_U_sub_X_mul_U (n : ℤ) : T R n = U R n - X * U R (n - 1) := by
@@ -237,7 +246,7 @@ noncomputable def C : ℤ → R[X]
 @[simp]
 theorem C_add_two : ∀ n, C R (n + 2) = X * C R (n + 1) - C R n
   | (k : ℕ) => C.eq_3 R k
-  | -(k + 1 : ℕ) => by linear_combination (norm := int_ring_nf) C.eq_4 R k
+  | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) C.eq_4 R k
 
 theorem C_add_one (n : ℤ) : C R (n + 1) = X * C R n - C R (n - 1) := by
   linear_combination (norm := ring_nf) C_add_two R (n - 1)
@@ -264,29 +273,32 @@ theorem C_two : C R 2 = X ^ 2 - 2 := by
 
 @[simp]
 theorem C_neg (n : ℤ) : C R (-n) = C R n := by
-  induction n using C.induct R with
-  | case1 => rfl
-  | case2 => show X * 2 - X = X; ring
-  | case3 n ih1 ih2 =>
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => rfl
+  | one => show X * 2 - X = X; ring
+  | add_two n ih1 ih2 =>
     have h₁ := C_add_two R n
     have h₂ := C_sub_two R (-n)
-    linear_combination (norm := int_ring_nf) (X:R[X]) * ih1 - ih2 - h₁ + h₂
-  | case4 n ih1 ih2 =>
+    linear_combination (norm := ring_nf) (X:R[X]) * ih1 - ih2 - h₁ + h₂
+  | neg_add_one n ih1 ih2 =>
     have h₁ := C_add_one R n
     have h₂ := C_sub_one R (-n)
-    linear_combination (norm := int_ring_nf) (X:R[X]) * ih1 - ih2 + h₁ - h₂
+    linear_combination (norm := ring_nf) (X:R[X]) * ih1 - ih2 + h₁ - h₂
+
+theorem C_natAbs (n : ℤ) : C R n.natAbs = C R n := by
+  obtain h | h := Int.natAbs_eq n <;> nth_rw 2 [h]; simp
 
 theorem C_neg_two : C R (-2) = X ^ 2 - 2 := by simp [C_two]
 
 theorem C_comp_two_mul_X (n : ℤ) : (C R n).comp (2 * X) = 2 * T R n := by
-  induction n using C.induct R with
-  | case1 => simp
-  | case2 => simp
-  | case3 n ih1 ih2 =>
-    simp_rw [C, T, sub_comp, mul_comp, X_comp, ih1, ih2]
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    simp_rw [C_add_two, T_add_two, sub_comp, mul_comp, X_comp, ih1, ih2]
     ring
-  | case4 n ih1 ih2 =>
-    simp_rw [C, T, sub_comp, mul_comp, X_comp, ih1, ih2]
+  | neg_add_one n ih1 ih2 =>
+    simp_rw [C_sub_one, T_sub_one, sub_comp, mul_comp, X_comp, ih1, ih2]
     ring
 
 theorem C_eq_two_mul_T_comp_half_mul_X [Invertible (2 : R)] (n : ℤ) :
@@ -314,7 +326,7 @@ noncomputable def S : ℤ → R[X]
 @[simp]
 theorem S_add_two : ∀ n, S R (n + 2) = X * S R (n + 1) - S R n
   | (k : ℕ) => S.eq_3 R k
-  | -(k + 1 : ℕ) => by linear_combination (norm := int_ring_nf) S.eq_4 R k
+  | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) S.eq_4 R k
 
 theorem S_add_one (n : ℤ) : S R (n + 1) = X * S R n - S R (n - 1) := by
   linear_combination (norm := ring_nf) S_add_two R (n - 1)
@@ -347,17 +359,17 @@ theorem S_neg_two : S R (-2) = -1 := by
   simpa [zero_sub, Int.reduceNeg, S_neg_one, mul_zero, S_zero] using S_sub_two R 0
 
 theorem S_neg_sub_one (n : ℤ) : S R (-n - 1) = -S R (n - 1) := by
-  induction n using S.induct R with
-  | case1 => simp
-  | case2 => simp
-  | case3 n ih1 ih2 =>
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
     have h₁ := S_add_one R n
     have h₂ := S_sub_two R (-n - 1)
-    linear_combination (norm := int_ring_nf) (X:R[X]) * ih1 - ih2 + h₁ + h₂
-  | case4 n ih1 ih2 =>
+    linear_combination (norm := ring_nf) (X:R[X]) * ih1 - ih2 + h₁ + h₂
+  | neg_add_one n ih1 ih2 =>
     have h₁ := S_eq R n
     have h₂ := S_sub_two R (-n)
-    linear_combination (norm := int_ring_nf) (X:R[X]) * ih1 - ih2 + h₁ + h₂
+    linear_combination (norm := ring_nf) (X:R[X]) * ih1 - ih2 + h₁ + h₂
 
 theorem S_neg (n : ℤ) : S R (-n) = -S R (n - 2) := by simpa [sub_sub] using S_neg_sub_one R (n - 1)
 
@@ -366,11 +378,11 @@ theorem S_neg_sub_two (n : ℤ) : S R (-n - 2) = -S R n := by
   simpa [sub_eq_add_neg, add_comm] using S_neg R (n + 2)
 
 theorem S_comp_two_mul_X (n : ℤ) : (S R n).comp (2 * X) = U R n := by
-  induction n using U.induct R with
-  | case1 => simp
-  | case2 => simp
-  | case3 n ih1 ih2 => simp_rw [U, S, sub_comp, mul_comp, X_comp, ih1, ih2]
-  | case4 n ih1 ih2 => simp_rw [U, S, sub_comp, mul_comp, X_comp, ih1, ih2]
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 => simp_rw [U_add_two, S_add_two, sub_comp, mul_comp, X_comp, ih1, ih2]
+  | neg_add_one n ih1 ih2 => simp_rw [U_sub_one, S_sub_one, sub_comp, mul_comp, X_comp, ih1, ih2]
 
 theorem S_sq_add_S_sq (n : ℤ) : S R n ^ 2 + S R (n + 1) ^ 2 - X * S R n * S R (n + 1) = 1 := by
   induction n using Int.induction_on with
@@ -390,19 +402,19 @@ theorem S_eq_U_comp_half_mul_X [Invertible (2 : R)] (n : ℤ) :
   assumption
 
 theorem S_eq_X_mul_S_add_C (n : ℤ) : 2 * S R (n + 1) = X * S R n + C R (n + 1) := by
-  induction n using S.induct R with
-  | case1 => simp [two_mul]
-  | case2 => simp [S_two, C_two]; ring
-  | case3 n ih1 ih2 =>
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp [two_mul]
+  | one => simp [S_two, C_two]; ring
+  | add_two n ih1 ih2 =>
     have h₁ := S_add_two R (n + 1)
     have h₂ := S_add_two R n
     have h₃ := C_add_two R (n + 1)
-    linear_combination (norm := int_ring_nf) -h₃ - (X:R[X]) * h₂ + 2 * h₁ + (X:R[X]) * ih1 - ih2
-  | case4 n ih1 ih2 =>
+    linear_combination (norm := ring_nf) -h₃ - (X:R[X]) * h₂ + 2 * h₁ + (X:R[X]) * ih1 - ih2
+  | neg_add_one n ih1 ih2 =>
     have h₁ := S_add_two R (-n - 1)
     have h₂ := S_add_two R (-n)
     have h₃ := C_add_two R (-n)
-    linear_combination (norm := int_ring_nf) -h₃ + 2 * h₂ - (X:R[X]) * h₁ - ih2 + (X:R[X]) * ih1
+    linear_combination (norm := ring_nf) -h₃ + 2 * h₂ - (X:R[X]) * h₁ - ih2 + (X:R[X]) * ih1
 
 theorem C_eq_S_sub_X_mul_S (n : ℤ) : C R n = 2 * S R n - X * S R (n - 1) := by
   linear_combination (norm := ring_nf) - S_eq_X_mul_S_add_C R (n - 1)
@@ -411,63 +423,69 @@ variable {R R'}
 
 @[simp]
 theorem map_T (f : R →+* R') (n : ℤ) : map f (T R n) = T R' n := by
-  induction n using T.induct R with
-  | case1 => simp
-  | case2 => simp
-  | case3 n ih1 ih2 =>
-    simp_rw [T.eq_3, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X, ih1, ih2];
-  | case4 n ih1 ih2 =>
-    simp_rw [T.eq_4, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X, ih1, ih2];
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    simp_rw [T_add_two, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X,
+      ih1, ih2];
+  | neg_add_one n ih1 ih2 =>
+    simp_rw [T_sub_one, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X, ih1,
+      ih2];
 #align polynomial.chebyshev.map_T Polynomial.Chebyshev.map_T
 
 @[simp]
 theorem map_U (f : R →+* R') (n : ℤ) : map f (U R n) = U R' n := by
-  induction n using U.induct R with
-  | case1 => simp
-  | case2 => simp
-  | case3 n ih1 ih2 =>
-    simp_rw [U.eq_3, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X, ih1, ih2];
-  | case4 n ih1 ih2 =>
-    simp_rw [U.eq_4, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X, ih1, ih2];
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    simp_rw [U_add_two, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X, ih1,
+      ih2];
+  | neg_add_one n ih1 ih2 =>
+    simp_rw [U_sub_one, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X, ih1,
+      ih2];
 #align polynomial.chebyshev.map_U Polynomial.Chebyshev.map_U
 
 @[simp]
 theorem map_C (f : R →+* R') (n : ℤ) : map f (C R n) = C R' n := by
-  induction n using C.induct R with
-  | case1 => simp
-  | case2 => simp
-  | case3 n ih1 ih2 =>
-    simp_rw [C.eq_3, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2];
-  | case4 n ih1 ih2 =>
-    simp_rw [C.eq_4, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2];
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    simp_rw [C_add_two, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2];
+  | neg_add_one n ih1 ih2 =>
+    simp_rw [C_sub_one, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2];
 
 @[simp]
 theorem map_S (f : R →+* R') (n : ℤ) : map f (S R n) = S R' n := by
-  induction n using S.induct R with
-  | case1 => simp
-  | case2 => simp
-  | case3 n ih1 ih2 =>
-    simp_rw [S.eq_3, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2];
-  | case4 n ih1 ih2 =>
-    simp_rw [S.eq_4, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2];
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    simp_rw [S_add_two, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2];
+  | neg_add_one n ih1 ih2 =>
+    simp_rw [S_sub_one, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2];
 
 theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
-  induction n using T.induct R with
-  | case1 => simp
-  | case2 =>
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one =>
     simp [T_two, U_one, derivative_sub, derivative_one, derivative_mul, derivative_X_pow, add_mul]
-  | case3 n ih1 ih2 =>
-    have h₁ := congr_arg derivative (T.eq_3 R n)
+  | add_two n ih1 ih2 =>
+    have h₁ := congr_arg derivative (T_add_two R n)
     have h₂ := U_sub_one R n
     have h₃ := T_eq_U_sub_X_mul_U R (n + 1)
     simp only [derivative_sub, derivative_mul, derivative_ofNat, derivative_X] at h₁
-    linear_combination (norm := int_ring_nf) h₁ - ih2 + 2 * (X:R[X]) * ih1 + 2 * h₃ - n * h₂
-  | case4 n ih1 ih2 =>
-    have h₁ := congr_arg derivative (T.eq_4 R n)
+    linear_combination (norm := (push_cast; ring_nf))
+      h₁ - ih2 + 2 * (X:R[X]) * ih1 + 2 * h₃ - n * h₂
+  | neg_add_one n ih1 ih2 =>
+    have h₁ := congr_arg derivative (T_sub_one R (-n))
     have h₂ := U_sub_two R (-n)
     have h₃ := T_eq_U_sub_X_mul_U R (-n)
     simp only [derivative_sub, derivative_mul, derivative_ofNat, derivative_X] at h₁
-    linear_combination (norm := int_ring_nf) -ih2 + 2 * (X:R[X]) * ih1 + h₁ + 2 * h₃ + (n + 1) * h₂
+    linear_combination (norm := (push_cast; ring_nf))
+      -ih2 + 2 * (X:R[X]) * ih1 + h₁ + 2 * h₃ + (n + 1) * h₂
 #align polynomial.chebyshev.T_derivative_eq_U Polynomial.Chebyshev.T_derivative_eq_U
 
 theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
@@ -475,7 +493,8 @@ theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
   have H₁ := one_sub_X_sq_mul_U_eq_pol_in_T R n
   have H₂ := T_derivative_eq_U (R := R) (n + 1)
   have h₁ := T_add_two R n
-  linear_combination (norm := int_ring_nf) (-n - 1) * h₁ + (-(X:R[X]) ^ 2 + 1) * H₂ + (n + 1) * H₁
+  linear_combination (norm := (push_cast; ring_nf))
+    (-n - 1) * h₁ + (-(X:R[X]) ^ 2 + 1) * H₂ + (n + 1) * H₁
 #align polynomial.chebyshev.one_sub_X_sq_mul_derivative_T_eq_poly_in_T Polynomial.Chebyshev.one_sub_X_sq_mul_derivative_T_eq_poly_in_T
 
 theorem add_one_mul_T_eq_poly_in_U (n : ℤ) :
@@ -484,7 +503,8 @@ theorem add_one_mul_T_eq_poly_in_U (n : ℤ) :
   simp only [derivative_sub, derivative_mul, derivative_X, derivative_one, derivative_X_pow,
     T_derivative_eq_U, C_eq_natCast] at h₁
   have h₂ := T_eq_U_sub_X_mul_U R (n + 1)
-  linear_combination (norm := int_ring_nf) h₁ + (n + 2) * h₂
+  linear_combination (norm := (push_cast; ring_nf))
+    h₁ + (n + 2) * h₂
 #align polynomial.chebyshev.add_one_mul_T_eq_poly_in_U Polynomial.Chebyshev.add_one_mul_T_eq_poly_in_U
 
 variable (R)
@@ -492,69 +512,69 @@ variable (R)
 /-- Twice the product of two Chebyshev `T` polynomials is the sum of two other Chebyshev `T`
 polynomials. -/
 theorem mul_T (m k : ℤ) : 2 * T R m * T R k = T R (m + k) + T R (m - k) := by
-  induction k using T.induct R with
-  | case1 => simp [two_mul]
-  | case2 => rw [T_add_one, T_one]; ring
-  | case3 k ih1 ih2 =>
+  induction k using Polynomial.Chebyshev.induct with
+  | zero => simp [two_mul]
+  | one => rw [T_add_one, T_one]; ring
+  | add_two k ih1 ih2 =>
     have h₁ := T_add_two R (m + k)
     have h₂ := T_sub_two R (m - k)
     have h₃ := T_add_two R k
-    linear_combination (norm := int_ring_nf) 2 * T R m * h₃ - h₂ - h₁ - ih2 + 2 * (X:R[X]) * ih1
-  | case4 k ih1 ih2 =>
+    linear_combination (norm := ring_nf) 2 * T R m * h₃ - h₂ - h₁ - ih2 + 2 * (X:R[X]) * ih1
+  | neg_add_one k ih1 ih2 =>
     have h₁ := T_add_two R (m + (-k - 1))
     have h₂ := T_sub_two R (m - (-k - 1))
     have h₃ := T_add_two R (-k - 1)
-    linear_combination (norm := int_ring_nf) 2 * T R m * h₃ - h₂ - h₁ - ih2 + 2 * (X:R[X]) * ih1
+    linear_combination (norm := ring_nf) 2 * T R m * h₃ - h₂ - h₁ - ih2 + 2 * (X:R[X]) * ih1
 #align polynomial.chebyshev.mul_T Polynomial.Chebyshev.mul_T
 
 /-- The product of two Chebyshev `C` polynomials is the sum of two other Chebyshev `C` polynomials.
 -/
 theorem mul_C (m k : ℤ) : C R m * C R k = C R (m + k) + C R (m - k) := by
-  induction k using C.induct R with
-  | case1 => simp [mul_two]
-  | case2 => rw [C_add_one, C_one]; ring
-  | case3 k ih1 ih2 =>
+  induction k using Polynomial.Chebyshev.induct with
+  | zero => simp [mul_two]
+  | one => rw [C_add_one, C_one]; ring
+  | add_two k ih1 ih2 =>
     have h₁ := C_add_two R (m + k)
     have h₂ := C_sub_two R (m - k)
     have h₃ := C_add_two R k
-    linear_combination (norm := int_ring_nf) C R m * h₃ - h₂ - h₁ - ih2 + (X:R[X]) * ih1
-  | case4 k ih1 ih2 =>
+    linear_combination (norm := ring_nf) C R m * h₃ - h₂ - h₁ - ih2 + (X:R[X]) * ih1
+  | neg_add_one k ih1 ih2 =>
     have h₁ := C_add_two R (m + (-k - 1))
     have h₂ := C_sub_two R (m - (-k - 1))
     have h₃ := C_add_two R (-k - 1)
-    linear_combination (norm := int_ring_nf) C R m * h₃ - h₂ - h₁ - ih2 + (X:R[X]) * ih1
+    linear_combination (norm := ring_nf) C R m * h₃ - h₂ - h₁ - ih2 + (X:R[X]) * ih1
 
 /-- The `(m * n)`-th Chebyshev `T` polynomial is the composition of the `m`-th and `n`-th. -/
 theorem T_mul (m n : ℤ) : T R (m * n) = (T R m).comp (T R n) := by
-  induction m using T.induct R with
-  | case1 => simp
-  | case2 => simp
-  | case3 m ih1 ih2 =>
+  induction m using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two m ih1 ih2 =>
     have h₁ := mul_T R ((m + 1) * n) n
     have h₂ := congr_arg (comp · (T R n)) <| T_add_two R m
     simp only [sub_comp, mul_comp, ofNat_comp, X_comp] at h₂
-    linear_combination (norm := int_ring_nf) -ih2 - h₂ - h₁ + 2 * T R n * ih1
-  | case4 m ih1 ih2 =>
+    linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + 2 * T R n * ih1
+  | neg_add_one m ih1 ih2 =>
     have h₁ := mul_T R ((-m) * n) n
     have h₂ := congr_arg (comp · (T R n)) <| T_add_two R (-m - 1)
     simp only [sub_comp, mul_comp, ofNat_comp, X_comp] at h₂
-    linear_combination (norm := int_ring_nf) -ih2 - h₂ - h₁ + 2 * T R n * ih1
+    linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + 2 * T R n * ih1
 #align polynomial.chebyshev.T_mul Polynomial.Chebyshev.T_mul
 
 /-- The `(m * n)`-th Chebyshev `C` polynomial is the composition of the `m`-th and `n`-th. -/
 theorem C_mul (m n : ℤ) : C R (m * n) = (C R m).comp (C R n) := by
-  induction m using T.induct R with
-  | case1 => simp
-  | case2 => simp
-  | case3 m ih1 ih2 =>
+  induction m using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two m ih1 ih2 =>
     have h₁ := mul_C R ((m + 1) * n) n
     have h₂ := congr_arg (comp · (C R n)) <| C_add_two R m
     simp only [sub_comp, mul_comp, X_comp] at h₂
-    linear_combination (norm := int_ring_nf) -ih2 - h₂ - h₁ + C R n * ih1
-  | case4 m ih1 ih2 =>
+    linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + C R n * ih1
+  | neg_add_one m ih1 ih2 =>
     have h₁ := mul_C R ((-m) * n) n
     have h₂ := congr_arg (comp · (C R n)) <| C_add_two R (-m - 1)
     simp only [sub_comp, mul_comp, X_comp] at h₂
-    linear_combination (norm := int_ring_nf) -ih2 - h₂ - h₁ + C R n * ih1
+    linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + C R n * ih1
 
 end Polynomial.Chebyshev
