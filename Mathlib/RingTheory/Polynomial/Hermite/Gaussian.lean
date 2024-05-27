@@ -2,17 +2,14 @@
 Copyright (c) 2023 Luke Mantle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Mantle, Jake Levinson
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.hermite.gaussian
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Polynomial.Hermite.Basic
-import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+
+#align_import ring_theory.polynomial.hermite.gaussian from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # Hermite polynomials and Gaussians
@@ -49,10 +46,11 @@ theorem deriv_gaussian_eq_hermite_mul_gaussian (n : ℕ) (x : ℝ) :
   · replace ih : deriv^[n] _ = _ := _root_.funext ih
     have deriv_gaussian :
       deriv (fun y => Real.exp (-(y ^ 2 / 2))) x = -x * Real.exp (-(x ^ 2 / 2)) := by
-      rw [deriv_exp (by simp)]; simp; ring -- Porting note: was `simp [mul_comm, ← neg_mul]`
+      -- porting note (#10745): was `simp [mul_comm, ← neg_mul]`
+      rw [deriv_exp (by simp)]; simp; ring
     rw [Function.iterate_succ_apply', ih, deriv_const_mul_field, deriv_mul, pow_succ (-1 : ℝ),
       deriv_gaussian, hermite_succ, map_sub, map_mul, aeval_X, Polynomial.deriv_aeval]
-    ring
+    · ring
     · apply Polynomial.differentiable_aeval
     · apply DifferentiableAt.exp; simp -- Porting note: was just `simp`
 #align polynomial.deriv_gaussian_eq_hermite_mul_gaussian Polynomial.deriv_gaussian_eq_hermite_mul_gaussian

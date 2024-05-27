@@ -2,15 +2,12 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.closed.functor
-! leanprover-community/mathlib commit cea27692b3fdeb328a2ddba6aabf181754543184
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+
+#align_import category_theory.closed.functor from "leanprover-community/mathlib"@"cea27692b3fdeb328a2ddba6aabf181754543184"
 
 /-!
 # Cartesian closed functors
@@ -44,11 +41,8 @@ open Category Limits CartesianClosed
 universe v u u'
 
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type u'} [Category.{v} D]
-
 variable [HasFiniteProducts C] [HasFiniteProducts D]
-
 variable (F : C ⥤ D) {L : D ⥤ C}
 
 /-- The Frobenius morphism for an adjunction `L ⊣ F` at `A` is given by the morphism
@@ -70,14 +64,13 @@ def frobeniusMorphism (h : L ⊣ F) (A : C) :
 Frobenius morphism is an isomorphism.
 -/
 instance frobeniusMorphism_iso_of_preserves_binary_products (h : L ⊣ F) (A : C)
-    [PreservesLimitsOfShape (Discrete WalkingPair) L] [Full F] [Faithful F] :
+    [PreservesLimitsOfShape (Discrete WalkingPair) L] [F.Full] [F.Faithful] :
     IsIso (frobeniusMorphism F h A) :=
   suffices ∀ (X : D), IsIso ((frobeniusMorphism F h A).app X) from NatIso.isIso_of_isIso_app _
   fun B ↦ by dsimp [frobeniusMorphism]; infer_instance
 #align category_theory.frobenius_morphism_iso_of_preserves_binary_products CategoryTheory.frobeniusMorphism_iso_of_preserves_binary_products
 
 variable [CartesianClosed C] [CartesianClosed D]
-
 variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
 
 /-- The exponential comparison map.
@@ -126,7 +119,7 @@ theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
 /-- The functor `F` is cartesian closed (ie preserves exponentials) if each natural transformation
 `exp_comparison F A` is an isomorphism
 -/
-class CartesianClosedFunctor where
+class CartesianClosedFunctor : Prop where
   comparison_iso : ∀ A, IsIso (expComparison F A)
 #align category_theory.cartesian_closed_functor CategoryTheory.CartesianClosedFunctor
 
@@ -181,7 +174,7 @@ cartesian closed.
 TODO: Show the converse, that if `F` is cartesian closed and its left adjoint preserves binary
 products, then it is full and faithful.
 -/
-def cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts (h : L ⊣ F) [Full F] [Faithful F]
+theorem cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts (h : L ⊣ F) [F.Full] [F.Faithful]
     [PreservesLimitsOfShape (Discrete WalkingPair) L] : CartesianClosedFunctor F where
   comparison_iso _ := expComparison_iso_of_frobeniusMorphism_iso F h _
 #align category_theory.cartesian_closed_functor_of_left_adjoint_preserves_binary_products CategoryTheory.cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts

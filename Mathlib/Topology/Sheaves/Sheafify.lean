@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.sheaves.sheafify
-! leanprover-community/mathlib commit bb103f356534a9a7d3596a672097e375290a4c3a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.LocalPredicate
 import Mathlib.Topology.Sheaves.Stalks
+
+#align_import topology.sheaves.sheafify from "leanprover-community/mathlib"@"bb103f356534a9a7d3596a672097e375290a4c3a"
 
 /-!
 # Sheafification of `Type` valued presheaves
@@ -94,10 +91,10 @@ theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x)
   apply TopCat.stalkToFiber_surjective
   intro t
   obtain ⟨U, m, s, rfl⟩ := F.germ_exist _ t
-  · use ⟨U, m⟩
-    fconstructor
-    · exact fun y => F.germ y s
-    · exact ⟨PrelocalPredicate.sheafifyOf ⟨s, fun _ => rfl⟩, rfl⟩
+  use ⟨U, m⟩
+  fconstructor
+  · exact fun y => F.germ y s
+  · exact ⟨PrelocalPredicate.sheafifyOf ⟨s, fun _ => rfl⟩, rfl⟩
 #align Top.presheaf.stalk_to_fiber_surjective TopCat.Presheaf.stalkToFiber_surjective
 
 theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) := by
@@ -111,7 +108,7 @@ theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) :
   dsimp at wVx; erw [wVx] at e; clear wVx
   rcases F.germ_eq x mU mV gU gV e with ⟨W, mW, iU', iV', (e' : F.map iU'.op gU = F.map iV'.op gV)⟩
   use ⟨W ⊓ (U' ⊓ V'), ⟨mW, mU, mV⟩⟩
-  refine' ⟨_, _, _⟩
+  refine ⟨?_, ?_, ?_⟩
   · change W ⊓ (U' ⊓ V') ⟶ U.obj
     exact Opens.infLERight _ _ ≫ Opens.infLELeft _ _ ≫ iU
   · change W ⊓ (U' ⊓ V') ⟶ V.obj

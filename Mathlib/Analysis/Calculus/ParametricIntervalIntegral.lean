@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.parametric_interval_integral
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
+
+#align_import analysis.calculus.parametric_interval_integral from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Derivatives of interval integrals depending on parameters
@@ -22,8 +19,8 @@ open TopologicalSpace MeasureTheory Filter Metric
 
 open scoped Topology Filter Interval
 
-variable {𝕜 : Type _} [IsROrC 𝕜] {μ : Measure ℝ} {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E] {H : Type _} [NormedAddCommGroup H]
+variable {𝕜 : Type*} [RCLike 𝕜] {μ : Measure ℝ} {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E] {H : Type*} [NormedAddCommGroup H]
   [NormedSpace 𝕜 H] {a b ε : ℝ} {bound : ℝ → ℝ}
 
 namespace intervalIntegral

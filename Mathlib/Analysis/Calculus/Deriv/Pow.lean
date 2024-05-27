@@ -2,14 +2,11 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.calculus.deriv.pow
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Comp
+
+#align_import analysis.calculus.deriv.pow from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # Derivative of `(f x) ^ n`, `n : ℕ`
@@ -26,30 +23,23 @@ derivative, power
 
 universe u v w
 
-open Classical Topology BigOperators Filter ENNReal
+open scoped Classical
+open Topology BigOperators Filter ENNReal
 
 open Filter Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {f f₀ f₁ g : 𝕜 → F}
-
 variable {f' f₀' f₁' g' : F}
-
 variable {x : 𝕜}
-
 variable {s t : Set 𝕜}
-
 variable {L L₁ L₂ : Filter 𝕜}
 
 /-! ### Derivative of `x ↦ x^n` for `n : ℕ` -/
 
 variable {c : 𝕜 → 𝕜} {c' : 𝕜}
-
 variable (n : ℕ)
 
 theorem hasStrictDerivAt_pow :
@@ -57,7 +47,7 @@ theorem hasStrictDerivAt_pow :
   | 0, x => by simp [hasStrictDerivAt_const]
   | 1, x => by simpa using hasStrictDerivAt_id x
   | n + 1 + 1, x => by
-    simpa [pow_succ', add_mul, mul_assoc] using
+    simpa [pow_succ, add_mul, mul_assoc] using
       (hasStrictDerivAt_pow (n + 1) x).mul (hasStrictDerivAt_id x)
 #align has_strict_deriv_at_pow hasStrictDerivAt_pow
 
@@ -122,4 +112,3 @@ theorem deriv_pow'' (hc : DifferentiableAt 𝕜 c x) :
     deriv (fun x => c x ^ n) x = (n : 𝕜) * c x ^ (n - 1) * deriv c x :=
   (hc.hasDerivAt.pow n).deriv
 #align deriv_pow'' deriv_pow''
-

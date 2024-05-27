@@ -2,17 +2,14 @@
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module data.finite.basic
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Vector
+
+#align_import data.finite.basic from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
 /-!
 # Finite types
@@ -36,7 +33,7 @@ instances or other `Fintype` instances, then we need to "lower" the instance
 to be a `Finite` instance by removing the `Decidable` instances and switching
 the `Fintype` instances to `Finite` instances. These are precisely the ones
 that cannot be inferred using `Finite.of_fintype`. (However, when using
-`open Classical` or the `classical` tactic the instances relying only
+`open scoped Classical` or the `classical` tactic the instances relying only
 on `Decidable` instances will give `Finite` instances.) In the future we might
 consider writing automation to create these "lowered" instances.
 
@@ -48,19 +45,19 @@ finiteness, finite types
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 namespace Finite
 
 -- see Note [lower instance priority]
-instance (priority := 100) of_subsingleton {α : Sort _} [Subsingleton α] : Finite α :=
+instance (priority := 100) of_subsingleton {α : Sort*} [Subsingleton α] : Finite α :=
   of_injective (Function.const α ()) <| Function.injective_of_subsingleton _
 #align finite.of_subsingleton Finite.of_subsingleton
 
 -- Higher priority for `Prop`s
--- @[nolint instance_priority] -- Porting note: linter not found
+-- Porting note(#12096): removed @[nolint instance_priority], linter not ported yet
 instance prop (p : Prop) : Finite p :=
   Finite.of_subsingleton
 #align finite.prop Finite.prop
@@ -70,7 +67,7 @@ instance [Finite α] [Finite β] : Finite (α × β) := by
   haveI := Fintype.ofFinite β
   infer_instance
 
-instance {α β : Sort _} [Finite α] [Finite β] : Finite (PProd α β) :=
+instance {α β : Sort*} [Finite α] [Finite β] : Finite (PProd α β) :=
   of_equiv _ Equiv.pprodEquivProdPLift.symm
 
 theorem prod_left (β) [Finite (α × β)] [Nonempty β] : Finite α :=
@@ -94,12 +91,12 @@ theorem sum_right (α) [Finite (Sum α β)] : Finite β :=
   of_injective (Sum.inr : β → Sum α β) Sum.inr_injective
 #align finite.sum_right Finite.sum_right
 
-instance {β : α → Type _} [Finite α] [∀ a, Finite (β a)] : Finite (Σa, β a) := by
+instance {β : α → Type*} [Finite α] [∀ a, Finite (β a)] : Finite (Σa, β a) := by
   letI := Fintype.ofFinite α
   letI := fun a => Fintype.ofFinite (β a)
   infer_instance
 
-instance {ι : Sort _} {π : ι → Sort _} [Finite ι] [∀ i, Finite (π i)] : Finite (Σ'i, π i) :=
+instance {ι : Sort*} {π : ι → Sort*} [Finite ι] [∀ i, Finite (π i)] : Finite (Σ'i, π i) :=
   of_equiv _ (Equiv.psigmaEquivSigmaPLift π).symm
 
 instance [Finite α] : Finite (Set α) := by
@@ -108,12 +105,7 @@ instance [Finite α] : Finite (Set α) := by
 
 end Finite
 
-/-- This instance also provides `[Finite s]` for `s : Set α`. -/
-instance Subtype.finite {α : Sort _} [Finite α] {p : α → Prop} : Finite { x // p x } :=
-  Finite.of_injective (↑) Subtype.coe_injective
-#align subtype.finite Subtype.finite
-
-instance Pi.finite {α : Sort _} {β : α → Sort _} [Finite α] [∀ a, Finite (β a)] :
+instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (β a)] :
     Finite (∀ a, β a) := by
   haveI := Fintype.ofFinite (PLift α)
   haveI := fun a => Fintype.ofFinite (PLift (β a))
@@ -122,20 +114,20 @@ instance Pi.finite {α : Sort _} {β : α → Sort _} [Finite α] [∀ a, Finite
       (Equiv.piCongr Equiv.plift fun _ => Equiv.plift)
 #align pi.finite Pi.finite
 
-instance Vector.finite {α : Type _} [Finite α] {n : ℕ} : Finite (Vector α n) := by
+instance Vector.finite {α : Type*} [Finite α] {n : ℕ} : Finite (Vector α n) := by
   haveI := Fintype.ofFinite α
   infer_instance
 #align vector.finite Vector.finite
 
-instance Quot.finite {α : Sort _} [Finite α] (r : α → α → Prop) : Finite (Quot r) :=
+instance Quot.finite {α : Sort*} [Finite α] (r : α → α → Prop) : Finite (Quot r) :=
   Finite.of_surjective _ (surjective_quot_mk r)
 #align quot.finite Quot.finite
 
-instance Quotient.finite {α : Sort _} [Finite α] (s : Setoid α) : Finite (Quotient s) :=
+instance Quotient.finite {α : Sort*} [Finite α] (s : Setoid α) : Finite (Quotient s) :=
   Quot.finite _
 #align quotient.finite Quotient.finite
 
-instance Function.Embedding.finite {α β : Sort _} [Finite β] : Finite (α ↪ β) := by
+instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ β) := by
   cases' isEmpty_or_nonempty (α ↪ β) with _ h
   · -- Porting note: infer_instance fails because it applies `Finite.of_fintype` and produces a
     -- "stuck at solving universe constraint" error.
@@ -143,15 +135,15 @@ instance Function.Embedding.finite {α β : Sort _} [Finite β] : Finite (α ↪
 
   · refine' h.elim fun f => _
     haveI : Finite α := Finite.of_injective _ f.injective
-    exact Finite.of_injective _ FunLike.coe_injective
+    exact Finite.of_injective _ DFunLike.coe_injective
 #align function.embedding.finite Function.Embedding.finite
 
-instance Equiv.finite_right {α β : Sort _} [Finite β] : Finite (α ≃ β) :=
+instance Equiv.finite_right {α β : Sort*} [Finite β] : Finite (α ≃ β) :=
   Finite.of_injective Equiv.toEmbedding fun e₁ e₂ h => Equiv.ext <| by
-    convert FunLike.congr_fun h using 0
+    convert DFunLike.congr_fun h using 0
 #align equiv.finite_right Equiv.finite_right
 
-instance Equiv.finite_left {α β : Sort _} [Finite α] : Finite (α ≃ β) :=
+instance Equiv.finite_left {α β : Sort*} [Finite α] : Finite (α ≃ β) :=
   Finite.of_equiv _ ⟨Equiv.symm, Equiv.symm, Equiv.symm_symm, Equiv.symm_symm⟩
 #align equiv.finite_left Equiv.finite_left
 

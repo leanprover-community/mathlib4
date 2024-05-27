@@ -2,15 +2,12 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.monad.coequalizer
-! leanprover-community/mathlib commit 3a061790136d13594ec10c7c90d202335ac5d854
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
 import Mathlib.CategoryTheory.Monad.Algebra
+
+#align_import category_theory.monad.coequalizer from "leanprover-community/mathlib"@"3a061790136d13594ec10c7c90d202335ac5d854"
 
 /-!
 # Special coequalizers associated to a monad
@@ -33,9 +30,7 @@ namespace Monad
 open Limits
 
 variable {C : Type u₁}
-
 variable [Category.{v₁} C]
-
 variable {T : Monad C} (X : Algebra T)
 
 /-!
@@ -71,7 +66,7 @@ theorem FreeCoequalizer.condition :
 
 instance : IsReflexivePair (FreeCoequalizer.topMap X) (FreeCoequalizer.bottomMap X) := by
   apply IsReflexivePair.mk' _ _ _
-  apply (free T).map (T.η.app X.A)
+  · apply (free T).map (T.η.app X.A)
   · ext
     dsimp
     rw [← Functor.map_comp, X.unit, Functor.map_id]

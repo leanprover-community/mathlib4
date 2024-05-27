@@ -2,21 +2,18 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.powerset
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Powerset
+
+#align_import data.fintype.powerset from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # fintype instance for `Set α`, when `α` is a fintype
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Finset
 
@@ -29,27 +26,31 @@ theorem Fintype.card_finset [Fintype α] : Fintype.card (Finset α) = 2 ^ Fintyp
   Finset.card_powerset Finset.univ
 #align fintype.card_finset Fintype.card_finset
 
-@[simp]
-theorem Finset.powerset_univ [Fintype α] : (univ : Finset α).powerset = univ :=
+namespace Finset
+variable [Fintype α] {s : Finset α} {k : ℕ}
+
+@[simp] lemma powerset_univ : (univ : Finset α).powerset = univ :=
   coe_injective <| by simp [-coe_eq_univ]
 #align finset.powerset_univ Finset.powerset_univ
 
-@[simp]
-theorem Finset.powerset_eq_univ [Fintype α] {s : Finset α} : s.powerset = univ ↔ s = univ := by
+lemma filter_subset_univ [DecidableEq α] (s : Finset α) :
+    filter (fun t ↦ t ⊆ s) univ = powerset s := by ext; simp
+
+@[simp] lemma powerset_eq_univ : s.powerset = univ ↔ s = univ := by
   rw [← Finset.powerset_univ, powerset_inj]
 #align finset.powerset_eq_univ Finset.powerset_eq_univ
 
-theorem Finset.mem_powerset_len_univ_iff [Fintype α] {s : Finset α} {k : ℕ} :
-    s ∈ powersetLen k (univ : Finset α) ↔ card s = k :=
-  mem_powersetLen.trans <| and_iff_right <| subset_univ _
-#align finset.mem_powerset_len_univ_iff Finset.mem_powerset_len_univ_iff
+lemma mem_powersetCard_univ : s ∈ powersetCard k (univ : Finset α) ↔ card s = k :=
+  mem_powersetCard.trans <| and_iff_right <| subset_univ _
+#align finset.mem_powerset_len_univ_iff Finset.mem_powersetCard_univ
 
-@[simp]
-theorem Finset.univ_filter_card_eq (α : Type _) [Fintype α] (k : ℕ) :
-    ((Finset.univ : Finset (Finset α)).filter fun s => s.card = k) = Finset.univ.powersetLen k := by
-  ext
-  simp [Finset.mem_powersetLen]
+variable (α)
+
+@[simp] lemma univ_filter_card_eq (k : ℕ) :
+    (univ : Finset (Finset α)).filter (fun s ↦ s.card = k) = univ.powersetCard k := by ext; simp
 #align finset.univ_filter_card_eq Finset.univ_filter_card_eq
+
+end Finset
 
 @[simp]
 theorem Fintype.card_finset_len [Fintype α] (k : ℕ) :
@@ -58,12 +59,10 @@ theorem Fintype.card_finset_len [Fintype α] (k : ℕ) :
 #align fintype.card_finset_len Fintype.card_finset_len
 
 instance Set.fintype [Fintype α] : Fintype (Set α) :=
-  ⟨(@Finset.univ α _).powerset.map ⟨(↑), coe_injective⟩, fun s => by
+  ⟨(@Finset.univ (Finset α) _).map coeEmb.1, fun s => by
     classical
-      refine' mem_map.2 ⟨Finset.univ.filter s, Finset.mem_powerset.2 (Finset.subset_univ _), _⟩
-      apply (coe_filter _ _).trans
-      simp
-      rfl⟩
+    refine mem_map.2 ⟨Finset.univ.filter (· ∈ s), Finset.mem_univ _, (coe_filter _ _).trans ?_⟩
+    simp⟩
 #align set.fintype Set.fintype
 
 -- Not to be confused with `Set.Finite`, the predicate

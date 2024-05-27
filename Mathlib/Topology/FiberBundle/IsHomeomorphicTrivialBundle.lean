@@ -2,13 +2,10 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.fiber_bundle.is_homeomorphic_trivial_bundle
-! leanprover-community/mathlib commit be2c24f56783935652cefffb4bfca7e4b25d167e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Homeomorph
+
+#align_import topology.fiber_bundle.is_homeomorphic_trivial_bundle from "leanprover-community/mathlib"@"be2c24f56783935652cefffb4bfca7e4b25d167e"
 
 /-!
 # Maps equivariantly-homeomorphic to projection in a product
@@ -23,7 +20,7 @@ refactors, there is no longer a direct connection.
 -/
 
 
-variable {B : Type _} (F : Type _) {Z : Type _} [TopologicalSpace B] [TopologicalSpace F]
+variable {B : Type*} (F : Type*) {Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
   [TopologicalSpace Z]
 
 /-- A trivial fiber bundle with fiber `F` over a base `B` is a space `Z`
@@ -50,13 +47,15 @@ protected theorem surjective_proj [Nonempty F] (h : IsHomeomorphicTrivialFiberBu
 #align is_homeomorphic_trivial_fiber_bundle.surjective_proj IsHomeomorphicTrivialFiberBundle.surjective_proj
 
 /-- The projection from a trivial fiber bundle to its base is continuous. -/
-protected theorem continuous_proj (h : IsHomeomorphicTrivialFiberBundle F proj) : Continuous proj :=
-  by obtain ⟨e, rfl⟩ := h.proj_eq; exact continuous_fst.comp e.continuous
+protected theorem continuous_proj (h : IsHomeomorphicTrivialFiberBundle F proj) :
+    Continuous proj := by
+  obtain ⟨e, rfl⟩ := h.proj_eq; exact continuous_fst.comp e.continuous
 #align is_homeomorphic_trivial_fiber_bundle.continuous_proj IsHomeomorphicTrivialFiberBundle.continuous_proj
 
 /-- The projection from a trivial fiber bundle to its base is open. -/
-protected theorem isOpenMap_proj (h : IsHomeomorphicTrivialFiberBundle F proj) : IsOpenMap proj :=
-  by obtain ⟨e, rfl⟩ := h.proj_eq; exact isOpenMap_fst.comp e.isOpenMap
+protected theorem isOpenMap_proj (h : IsHomeomorphicTrivialFiberBundle F proj) :
+    IsOpenMap proj := by
+  obtain ⟨e, rfl⟩ := h.proj_eq; exact isOpenMap_fst.comp e.isOpenMap
 #align is_homeomorphic_trivial_fiber_bundle.is_open_map_proj IsHomeomorphicTrivialFiberBundle.isOpenMap_proj
 
 /-- The projection from a trivial fiber bundle to its base is open. -/

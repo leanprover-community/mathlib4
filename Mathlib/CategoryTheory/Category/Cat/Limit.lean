@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.category.Cat.limit
-! leanprover-community/mathlib commit 1995c7bbdbb0adb1b6d5acdc654f6cf46ed96cfa
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+#align_import category_theory.category.Cat.limit from "leanprover-community/mathlib"@"1995c7bbdbb0adb1b6d5acdc654f6cf46ed96cfa"
 
 /-!
 # The category of small categories has all small limits.
@@ -52,8 +49,8 @@ def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v})) :
   obj j := limit.π (F ⋙ Cat.objects) j X ⟶ limit.π (F ⋙ Cat.objects) j Y
   map f g := by
     refine' eqToHom _ ≫ (F.map f).map g ≫ eqToHom _
-    exact (congr_fun (limit.w (F ⋙ Cat.objects) f) X).symm
-    exact congr_fun (limit.w (F ⋙ Cat.objects) f) Y
+    · exact (congr_fun (limit.w (F ⋙ Cat.objects) f) X).symm
+    · exact congr_fun (limit.w (F ⋙ Cat.objects) f) Y
   map_id X := by
     funext f
     letI : Category (objects.obj (F.obj X)) := (inferInstance : Category (F.obj X))
@@ -109,7 +106,7 @@ def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F wh
       { pt := s.pt
         π :=
           { app := fun j => (s.π.app j).obj
-            naturality := fun _ _ f => Functor.congr_map objects (s.π.naturality f) } }
+            naturality := fun _ _ f => objects.congr_map (s.π.naturality f) } }
   map f := by
     fapply Types.Limit.mk.{v, v}
     · intro j

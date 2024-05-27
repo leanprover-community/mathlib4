@@ -2,14 +2,10 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.midpoint
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Invertible
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+
+#align_import linear_algebra.affine_space.midpoint from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # Midpoint of a segment
@@ -40,7 +36,7 @@ open AffineMap AffineEquiv
 
 section
 
-variable (R : Type _) {V V' P P' : Type _} [Ring R] [Invertible (2 : R)] [AddCommGroup V]
+variable (R : Type*) {V V' P P' : Type*} [Ring R] [Invertible (2 : R)] [AddCommGroup V]
   [Module R V] [AddTorsor V P] [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 /-- `midpoint x y` is the midpoint of the segment `[x, y]`. -/
@@ -200,7 +196,7 @@ theorem midpoint_eq_iff' {x y z : P} : midpoint R x y = z ↔ Equiv.pointReflect
 #align midpoint_eq_iff' midpoint_eq_iff'
 
 /-- `midpoint` does not depend on the ring `R`. -/
-theorem midpoint_unique (R' : Type _) [Ring R'] [Invertible (2 : R')] [Module R' V] (x y : P) :
+theorem midpoint_unique (R' : Type*) [Ring R'] [Invertible (2 : R')] [Module R' V] (x y : P) :
     midpoint R x y = midpoint R' x y :=
   (midpoint_eq_iff' R).2 <| (midpoint_eq_iff' R').1 rfl
 #align midpoint_unique midpoint_unique
@@ -223,7 +219,7 @@ theorem midpoint_zero_add (x y : V) : midpoint R 0 (x + y) = midpoint R x y :=
 
 theorem midpoint_eq_smul_add (x y : V) : midpoint R x y = (⅟ 2 : R) • (x + y) := by
   rw [midpoint_eq_iff, pointReflection_apply, vsub_eq_sub, vadd_eq_add, sub_add_eq_add_sub, ←
-    two_smul R, smul_smul, mul_invOf_self, one_smul, add_sub_cancel']
+    two_smul R, smul_smul, mul_invOf_self, one_smul, add_sub_cancel_left]
 #align midpoint_eq_smul_add midpoint_eq_smul_add
 
 @[simp]
@@ -249,13 +245,12 @@ end
 
 namespace AddMonoidHom
 
-variable (R R' : Type _) {E F : Type _} [Ring R] [Invertible (2 : R)] [AddCommGroup E] [Module R E]
+variable (R R' : Type*) {E F : Type*} [Ring R] [Invertible (2 : R)] [AddCommGroup E] [Module R E]
   [Ring R'] [Invertible (2 : R')] [AddCommGroup F] [Module R' F]
 
 /-- A map `f : E → F` sending zero to zero and midpoints to midpoints is an `AddMonoidHom`. -/
 def ofMapMidpoint (f : E → F) (h0 : f 0 = 0)
-    (hm : ∀ x y, f (midpoint R x y) = midpoint R' (f x) (f y)) : E →+ F
-    where
+    (hm : ∀ x y, f (midpoint R x y) = midpoint R' (f x) (f y)) : E →+ F where
   toFun := f
   map_zero' := h0
   map_add' x y :=

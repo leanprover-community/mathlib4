@@ -2,13 +2,10 @@
 Copyright (c) 2022 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
-
-! This file was ported from Lean 3 source module information_theory.hamming
-! leanprover-community/mathlib commit 17ef379e997badd73e5eabb4d38f11919ab3c4b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Basic
+
+#align_import information_theory.hamming from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
 /-!
 # Hamming spaces
@@ -35,9 +32,8 @@ section HammingDistNorm
 
 open Finset Function
 
-variable {α ι : Type _} {β : ι → Type _} [Fintype ι] [∀ i, DecidableEq (β i)]
-
-variable {γ : ι → Type _} [∀ i, DecidableEq (γ i)]
+variable {α ι : Type*} {β : ι → Type*} [Fintype ι] [∀ i, DecidableEq (β i)]
+variable {γ : ι → Type*} [∀ i, DecidableEq (γ i)]
 
 /-- The Hamming distance function to the naturals. -/
 def hammingDist (x y : ∀ i, β i) : ℕ :=
@@ -119,10 +115,10 @@ theorem hammingDist_ne_zero {x y : ∀ i, β i} : hammingDist x y ≠ 0 ↔ x �
 /-- Corresponds to `dist_pos`. -/
 @[simp]
 theorem hammingDist_pos {x y : ∀ i, β i} : 0 < hammingDist x y ↔ x ≠ y := by
-  rw [← hammingDist_ne_zero, iff_not_comm, not_lt, le_zero_iff]
+  rw [← hammingDist_ne_zero, iff_not_comm, not_lt, Nat.le_zero]
 #align hamming_dist_pos hammingDist_pos
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem hammingDist_lt_one {x y : ∀ i, β i} : hammingDist x y < 1 ↔ x = y := by
   rw [Nat.lt_one_iff, hammingDist_eq_zero]
 #align hamming_dist_lt_one hammingDist_lt_one
@@ -175,7 +171,7 @@ theorem hammingDist_zero_left : hammingDist (0 : ∀ i, β i) = hammingNorm :=
 #align hamming_dist_zero_left hammingDist_zero_left
 
 /-- Corresponds to `norm_nonneg`. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem hammingNorm_nonneg {x : ∀ i, β i} : 0 ≤ hammingNorm x :=
   zero_le _
 #align hamming_norm_nonneg hammingNorm_nonneg
@@ -203,7 +199,7 @@ theorem hammingNorm_pos_iff {x : ∀ i, β i} : 0 < hammingNorm x ↔ x ≠ 0 :=
   hammingDist_pos
 #align hamming_norm_pos_iff hammingNorm_pos_iff
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem hammingNorm_lt_one {x : ∀ i, β i} : hammingNorm x < 1 ↔ x = 0 :=
   hammingDist_lt_one
 #align hamming_norm_lt_one hammingNorm_lt_one
@@ -247,13 +243,13 @@ end HammingDistNorm
 
 /-- Type synonym for a Pi type which inherits the usual algebraic instances, but is equipped with
 the Hamming metric and norm, instead of `Pi.normedAddCommGroup` which uses the sup norm. -/
-def Hamming {ι : Type _} (β : ι → Type _) : Type _ :=
+def Hamming {ι : Type*} (β : ι → Type*) : Type _ :=
   ∀ i, β i
 #align hamming Hamming
 
 namespace Hamming
 
-variable {α ι : Type _} {β : ι → Type _}
+variable {α ι : Type*} {β : ι → Type*}
 
 /-! Instances inherited from normal Pi types. -/
 
@@ -296,7 +292,7 @@ instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Hamming β) :=
 instance [∀ i, AddCommGroup (β i)] : AddCommGroup (Hamming β) :=
   Pi.addCommGroup
 
-instance (α) [Semiring α] (β : ι → Type _) [∀ i, AddCommMonoid (β i)] [∀ i, Module α (β i)] :
+instance (α) [Semiring α] (β : ι → Type*) [∀ i, AddCommMonoid (β i)] [∀ i, Module α (β i)] :
     Module α (Hamming β) :=
   Pi.module _ _ _
 
@@ -335,12 +331,14 @@ theorem ofHamming_toHamming (x : ∀ i, β i) : ofHamming (toHamming x) = x :=
   rfl
 #align hamming.of_hamming_to_hamming Hamming.ofHamming_toHamming
 
---@[simp] --Porting note: removing `simp`, `simp` can prove it and `dsimp` cannot use `Iff.rfl`
+--@[simp] -- Porting note (#10618): removing `simp`, `simp` can prove it
+-- and `dsimp` cannot use `Iff.rfl`
 theorem toHamming_inj {x y : ∀ i, β i} : toHamming x = toHamming y ↔ x = y :=
   Iff.rfl
 #align hamming.to_hamming_inj Hamming.toHamming_inj
 
---@[simp] --Porting note: removing `simp`, `simp` can prove it and `dsimp` cannot use `Iff.rfl`
+--@[simp] -- Porting note (#10618): removing `simp`, `simp` can prove it
+-- and `dsimp` cannot use `Iff.rfl`
 theorem ofHamming_inj {x y : Hamming β} : ofHamming x = ofHamming y ↔ x = y :=
   Iff.rfl
 #align hamming.of_hamming_inj Hamming.ofHamming_inj
@@ -419,13 +417,13 @@ theorem dist_eq_hammingDist (x y : Hamming β) :
 instance : PseudoMetricSpace (Hamming β) where
   dist_self := by
     push_cast
-    exact_mod_cast hammingDist_self
+    exact mod_cast hammingDist_self
   dist_comm := by
     push_cast
-    exact_mod_cast hammingDist_comm
+    exact mod_cast hammingDist_comm
   dist_triangle := by
     push_cast
-    exact_mod_cast hammingDist_triangle
+    exact mod_cast hammingDist_triangle
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   toUniformSpace := ⊥
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ fun s => by
@@ -439,13 +437,13 @@ instance : PseudoMetricSpace (Hamming β) where
       rw [mem_idRel] at hab
       rw [hab]
       refine' hs (lt_of_eq_of_lt _ hε)
-      exact_mod_cast hammingDist_self _
+      exact mod_cast hammingDist_self _
   toBornology := ⟨⊥, bot_le⟩
   cobounded_sets := by
     ext
     push_cast
     refine' iff_of_true (Filter.mem_sets.mpr Filter.mem_bot) ⟨Fintype.card ι, fun _ _ _ _ => _⟩
-    exact_mod_cast hammingDist_le_card_fintype
+    exact mod_cast hammingDist_le_card_fintype
 
 @[simp, push_cast]
 theorem nndist_eq_hammingDist (x y : Hamming β) :
@@ -453,7 +451,7 @@ theorem nndist_eq_hammingDist (x y : Hamming β) :
   rfl
 #align hamming.nndist_eq_hamming_dist Hamming.nndist_eq_hammingDist
 
--- porting note: new
+-- Porting note (#10754): new instance
 instance : DiscreteTopology (Hamming β) := ⟨rfl⟩
 
 instance : MetricSpace (Hamming β) := .ofT0PseudoMetricSpace _
@@ -466,10 +464,10 @@ theorem norm_eq_hammingNorm [∀ i, Zero (β i)] (x : Hamming β) : ‖x‖ = ha
   rfl
 #align hamming.norm_eq_hamming_norm Hamming.norm_eq_hammingNorm
 
--- porting note: merged `SeminormedAddCommGroup` and `NormedAddCommGroup` instances
+-- Porting note: merged `SeminormedAddCommGroup` and `NormedAddCommGroup` instances
 
 instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
-  dist_eq := by push_cast; exact_mod_cast hammingDist_eq_hammingNorm
+  dist_eq := by push_cast; exact mod_cast hammingDist_eq_hammingNorm
 
 @[simp, push_cast]
 theorem nnnorm_eq_hammingNorm [∀ i, AddCommGroup (β i)] (x : Hamming β) :

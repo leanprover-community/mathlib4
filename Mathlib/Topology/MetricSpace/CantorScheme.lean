@@ -2,13 +2,10 @@
 Copyright (c) 2023 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
-
-! This file was ported from Lean 3 source module topology.metric_space.cantor_scheme
-! leanprover-community/mathlib commit 49b7f94aab3a3bdca1f9f34c5d818afb253b3993
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.PiNat
+
+#align_import topology.metric_space.cantor_scheme from "leanprover-community/mathlib"@"49b7f94aab3a3bdca1f9f34c5d818afb253b3993"
 
 /-!
 # (Topological) Schemes and their induced maps
@@ -48,9 +45,10 @@ namespace CantorScheme
 
 open List Function Filter Set PiNat
 
-open Classical Topology
+open scoped Classical
+open Topology
 
-variable {β α : Type _} (A : List β → Set α)
+variable {β α : Type*} (A : List β → Set α)
 
 /-- From a `β`-scheme on `α` `A`, we define a partial function from `(ℕ → β)` to `α`
 which sends each infinite sequence `x` to an element of the intersection along the
@@ -100,17 +98,17 @@ protected theorem Antitone.closureAntitone [TopologicalSpace α] (hanti : Cantor
 /-- A scheme where the children of each set are pairwise disjoint induces an injective map. -/
 theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (inducedMap A).2 := by
   rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
-  refine' Subtype.coe_injective (res_injective _)
+  refine Subtype.coe_injective (res_injective ?_)
   dsimp
   ext n : 1
   induction' n with n ih; · simp
   simp only [res_succ, cons.injEq]
-  refine' ⟨_, ih⟩
+  refine ⟨?_, ih⟩
   contrapose hA
-  simp only [CantorScheme.Disjoint, _root_.Pairwise, Ne.def, not_forall, exists_prop]
-  refine' ⟨res x n, _, _, hA, _⟩
+  simp only [CantorScheme.Disjoint, _root_.Pairwise, Ne, not_forall, exists_prop]
+  refine ⟨res x n, _, _, hA, ?_⟩
   rw [not_disjoint_iff]
-  refine' ⟨(inducedMap A).2 ⟨x, hx⟩, _, _⟩
+  refine ⟨(inducedMap A).2 ⟨x, hx⟩, ?_, ?_⟩
   · rw [← res_succ]
     apply map_mem
   rw [hxy, ih, ← res_succ]
@@ -153,7 +151,7 @@ theorem VanishingDiam.map_continuous [TopologicalSpace β] [DiscreteTopology β]
   rintro ⟨x, hx⟩ ε ε_pos
   cases' hA.dist_lt _ ε_pos x with n hn
   rw [_root_.eventually_nhds_iff]
-  refine' ⟨(↑)⁻¹' cylinder x n, _, _, by simp⟩
+  refine ⟨(↑)⁻¹' cylinder x n, ?_, ?_, by simp⟩
   · rintro ⟨y, hy⟩ hyx
     rw [mem_preimage, Subtype.coe_mk, cylinder_eq_res, mem_setOf] at hyx
     apply hn
@@ -174,7 +172,7 @@ theorem ClosureAntitone.map_of_vanishingDiam [CompleteSpace α] (hdiam : Vanishi
   choose u hu using fun n => hnonempty (res x n)
   have umem : ∀ n m : ℕ, n ≤ m → u m ∈ A (res x n) := by
     have : Antitone fun n : ℕ => A (res x n) := by
-      refine' antitone_nat_of_succ_le _
+      refine antitone_nat_of_succ_le ?_
       intro n
       apply hanti.antitone
     intro n m hnm

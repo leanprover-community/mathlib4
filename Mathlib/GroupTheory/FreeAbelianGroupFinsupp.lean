@@ -2,18 +2,13 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module group_theory.free_abelian_group_finsupp
-! leanprover-community/mathlib commit 47b51515e69f59bca5cf34ef456e6000fe205a69
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Hom.Equiv.TypeTags
-import Mathlib.Algebra.Module.Equiv
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.GroupTheory.FreeAbelianGroup
-import Mathlib.GroupTheory.IsFreeGroup
-import Mathlib.LinearAlgebra.Dimension
+import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
+import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+
+#align_import group_theory.free_abelian_group_finsupp from "leanprover-community/mathlib"@"47b51515e69f59bca5cf34ef456e6000fe205a69"
 
 /-!
 # Isomorphism between `FreeAbelianGroup X` and `X →₀ ℤ`
@@ -34,7 +29,7 @@ noncomputable section
 
 open BigOperators
 
-variable {X : Type _}
+variable {X : Type*}
 
 /-- The group homomorphism `FreeAbelianGroup X →+ (X →₀ ℤ)`. -/
 def FreeAbelianGroup.toFinsupp : FreeAbelianGroup X →+ X →₀ ℤ :=
@@ -109,32 +104,32 @@ def equivFinsupp : FreeAbelianGroup X ≃+ (X →₀ ℤ) where
 #align free_abelian_group.equiv_finsupp FreeAbelianGroup.equivFinsupp
 
 /-- `A` is a basis of the ℤ-module `FreeAbelianGroup A`. -/
-noncomputable def basis (α : Type _) : Basis α ℤ (FreeAbelianGroup α) :=
+noncomputable def basis (α : Type*) : Basis α ℤ (FreeAbelianGroup α) :=
   ⟨(FreeAbelianGroup.equivFinsupp α).toIntLinearEquiv⟩
 #align free_abelian_group.basis FreeAbelianGroup.basis
 
 /-- Isomorphic free abelian groups (as modules) have equivalent bases. -/
-def Equiv.ofFreeAbelianGroupLinearEquiv {α β : Type _}
+def Equiv.ofFreeAbelianGroupLinearEquiv {α β : Type*}
     (e : FreeAbelianGroup α ≃ₗ[ℤ] FreeAbelianGroup β) : α ≃ β :=
   let t : Basis α ℤ (FreeAbelianGroup β) := (FreeAbelianGroup.basis α).map e
   t.indexEquiv <| FreeAbelianGroup.basis _
 #align free_abelian_group.equiv.of_free_abelian_group_linear_equiv FreeAbelianGroup.Equiv.ofFreeAbelianGroupLinearEquiv
 
 /-- Isomorphic free abelian groups (as additive groups) have equivalent bases. -/
-def Equiv.ofFreeAbelianGroupEquiv {α β : Type _} (e : FreeAbelianGroup α ≃+ FreeAbelianGroup β) :
+def Equiv.ofFreeAbelianGroupEquiv {α β : Type*} (e : FreeAbelianGroup α ≃+ FreeAbelianGroup β) :
     α ≃ β :=
   Equiv.ofFreeAbelianGroupLinearEquiv e.toIntLinearEquiv
 #align free_abelian_group.equiv.of_free_abelian_group_equiv FreeAbelianGroup.Equiv.ofFreeAbelianGroupEquiv
 
 /-- Isomorphic free groups have equivalent bases. -/
-def Equiv.ofFreeGroupEquiv {α β : Type _} (e : FreeGroup α ≃* FreeGroup β) : α ≃ β :=
+def Equiv.ofFreeGroupEquiv {α β : Type*} (e : FreeGroup α ≃* FreeGroup β) : α ≃ β :=
   Equiv.ofFreeAbelianGroupEquiv (MulEquiv.toAdditive e.abelianizationCongr)
 #align free_abelian_group.equiv.of_free_group_equiv FreeAbelianGroup.Equiv.ofFreeGroupEquiv
 
 open IsFreeGroup
 
 /-- Isomorphic free groups have equivalent bases (`IsFreeGroup` variant). -/
-def Equiv.ofIsFreeGroupEquiv {G H : Type _} [Group G] [Group H] [IsFreeGroup G] [IsFreeGroup H]
+def Equiv.ofIsFreeGroupEquiv {G H : Type*} [Group G] [Group H] [IsFreeGroup G] [IsFreeGroup H]
     (e : G ≃* H) : Generators G ≃ Generators H :=
   Equiv.ofFreeGroupEquiv <| MulEquiv.trans (toFreeGroup G).symm <| MulEquiv.trans e <| toFreeGroup H
 #align free_abelian_group.equiv.of_is_free_group_equiv FreeAbelianGroup.Equiv.ofIsFreeGroupEquiv
@@ -183,17 +178,17 @@ theorem support_zsmul (k : ℤ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
     support (k • a) = support a := by
   ext x
   simp only [mem_support_iff, AddMonoidHom.map_zsmul]
-  simp only [h, zsmul_int_int, false_or_iff, Ne.def, mul_eq_zero]
+  simp only [h, zsmul_int_int, false_or_iff, Ne, mul_eq_zero]
 #align free_abelian_group.support_zsmul FreeAbelianGroup.support_zsmul
 
 @[simp]
 theorem support_nsmul (k : ℕ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
     support (k • a) = support a := by
   apply support_zsmul k _ a
-  exact_mod_cast h
+  exact mod_cast h
 #align free_abelian_group.support_nsmul FreeAbelianGroup.support_nsmul
 
-open Classical
+open scoped Classical
 
 theorem support_add (a b : FreeAbelianGroup X) : support (a + b) ⊆ a.support ∪ b.support := by
   simp only [support, AddMonoidHom.map_add]

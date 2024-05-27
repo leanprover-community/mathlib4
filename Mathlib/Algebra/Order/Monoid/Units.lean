@@ -2,22 +2,20 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.monoid.units
-! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.MinMax
 import Mathlib.Algebra.Group.Units
 
+#align_import algebra.order.monoid.units from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"
+
 /-!
 # Units in ordered monoids
 -/
 
-
 namespace Units
+
+variable {α : Type*}
 
 @[to_additive]
 instance [Monoid α] [Preorder α] : Preorder αˣ :=
@@ -36,7 +34,7 @@ theorem val_lt_val [Monoid α] [Preorder α] {a b : αˣ} : (a : α) < b ↔ a <
 #align add_units.coe_lt_coe AddUnits.val_lt_val
 
 @[to_additive]
-instance [Monoid α] [PartialOrder α] : PartialOrder αˣ :=
+instance instPartialOrderUnits [Monoid α] [PartialOrder α] : PartialOrder αˣ :=
   PartialOrder.lift val Units.ext
 #align units.partial_order Units.instPartialOrderUnits
 #align add_units.partial_order AddUnits.instPartialOrderAddUnits
@@ -46,7 +44,7 @@ instance [Monoid α] [LinearOrder α] : LinearOrder αˣ :=
   LinearOrder.lift' val Units.ext
 
 /-- `val : αˣ → α` as an order embedding. -/
-@[to_additive (attr := simps (config := { fullyApplied := false }))
+@[to_additive (attr := simps (config := .asFn))
   "`val : add_units α → α` as an order embedding."]
 def orderEmbeddingVal [Monoid α] [LinearOrder α] : αˣ ↪o α :=
   ⟨⟨val, ext⟩, Iff.rfl⟩

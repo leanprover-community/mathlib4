@@ -2,13 +2,10 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.clifford_algebra.star
-! leanprover-community/mathlib commit 4d66277cfec381260ba05c68f9ae6ce2a118031d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+
+#align_import linear_algebra.clifford_algebra.star from "leanprover-community/mathlib"@"4d66277cfec381260ba05c68f9ae6ce2a118031d"
 
 /-!
 # Star structure on `CliffordAlgebra`
@@ -28,29 +25,24 @@ Most results about `star` can be obtained by unfolding it via `CliffordAlgebra.s
 -/
 
 
-variable {R : Type _} [CommRing R]
-
-variable {M : Type _} [AddCommGroup M] [Module R M]
-
+variable {R : Type*} [CommRing R]
+variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {Q : QuadraticForm R M}
 
 namespace CliffordAlgebra
 
 instance instStarRing : StarRing (CliffordAlgebra Q) where
-  -- porting note: cannot infer `Q`
-  star x := reverse (Q := Q) (involute x)
+  star x := reverse (involute x)
   star_involutive x := by
     simp only [reverse_involute_commute.eq, reverse_reverse, involute_involute]
   star_mul x y := by simp only [map_mul, reverse.map_mul]
   star_add x y := by simp only [map_add]
 
--- porting note: cannot infer `Q`
-theorem star_def (x : CliffordAlgebra Q) : star x = reverse (Q := Q) (involute x) :=
+theorem star_def (x : CliffordAlgebra Q) : star x = reverse (involute x) :=
   rfl
 #align clifford_algebra.star_def CliffordAlgebra.star_def
 
--- porting note: cannot infer `Q`
-theorem star_def' (x : CliffordAlgebra Q) : star x = involute (reverse (Q := Q) x) :=
+theorem star_def' (x : CliffordAlgebra Q) : star x = involute (reverse x) :=
   reverse_involute _
 #align clifford_algebra.star_def' CliffordAlgebra.star_def'
 

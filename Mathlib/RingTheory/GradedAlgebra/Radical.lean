@@ -2,13 +2,10 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
-
-! This file was ported from Lean 3 source module ring_theory.graded_algebra.radical
-! leanprover-community/mathlib commit f1944b30c97c5eb626e498307dec8b022a05bd0a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
+
+#align_import ring_theory.graded_algebra.radical from "leanprover-community/mathlib"@"f1944b30c97c5eb626e498307dec8b022a05bd0a"
 
 /-!
 
@@ -23,15 +20,15 @@ This file contains a proof that the radical of any homogeneous ideal is a homoge
   `I.homogeneous_core 𝒜` (i.e. the largest homogeneous ideal contained in `I`) is also prime.
 * `Ideal.IsHomogeneous.radical`: for any `I : Ideal A`, if `I` is homogeneous, then the
   radical of `I` is homogeneous as well.
-* `HomogeneousIdeal.radical`: for any `I : HomogeneousIdeal 𝒜`, `I.radical` is the the
-  radical of `I` as a `HomogeneousIdeal 𝒜`
+* `HomogeneousIdeal.radical`: for any `I : HomogeneousIdeal 𝒜`, `I.radical` is the
+  radical of `I` as a `HomogeneousIdeal 𝒜`.
 
 ## Implementation details
 
 Throughout this file, the indexing type `ι` of grading is assumed to be a
 `LinearOrderedCancelAddCommMonoid`. This might be stronger than necessary but cancelling
 property is strictly necessary; for a counterexample of how `Ideal.IsHomogeneous.isPrime_iff`
-fails for a non-cancellative set see `counterexample/homogeneous_prime_not_prime.lean`.
+fails for a non-cancellative set see `Counterexamples/HomogeneousPrimeNotPrime.lean`.
 
 ## Tags
 
@@ -43,15 +40,12 @@ open GradedRing DirectSum SetLike Finset
 
 open BigOperators
 
-variable {ι σ A : Type _}
-
+variable {ι σ A : Type*}
 variable [CommRing A]
-
 variable [LinearOrderedCancelAddCommMonoid ι]
-
 variable [SetLike σ A] [AddSubmonoidClass σ A] {𝒜 : ι → σ} [GradedRing 𝒜]
 
-set_option maxHeartbeats 300000 in -- Porting note: This proof needs a long time to elaborate
+-- Porting note: This proof needs a long time to elaborate
 theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI : I.IsHomogeneous 𝒜)
     (I_ne_top : I ≠ ⊤)
     (homogeneous_mem_or_mem :
@@ -59,8 +53,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
     Ideal.IsPrime I :=
   ⟨I_ne_top, by
     intro x y hxy
-    by_contra rid
-    push_neg at rid
+    by_contra! rid
     obtain ⟨rid₁, rid₂⟩ := rid
     classical
       /-
@@ -97,20 +90,20 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
           ((decompose 𝒜 x).support ×ˢ (decompose 𝒜 y).support).filter (fun z : ι × ι =>
             z.1 + z.2 = max₁ + max₂) with ha
         have mem_antidiag : (max₁, max₂) ∈ antidiag := by
-          simp only [add_sum_erase, mem_filter, mem_product]
+          simp only [antidiag, add_sum_erase, mem_filter, mem_product]
           exact ⟨⟨mem_of_mem_filter _ mem_max₁, mem_of_mem_filter _ mem_max₂⟩, trivial⟩
         have eq_add_sum :=
           calc
-            proj 𝒜 (max₁ + max₂) (x * y) = ∑ ij in antidiag, proj 𝒜 ij.1 x * proj 𝒜 ij.2 y := by
+            proj 𝒜 (max₁ + max₂) (x * y) = ∑ ij ∈ antidiag, proj 𝒜 ij.1 x * proj 𝒜 ij.2 y := by
               simp_rw [ha, proj_apply, DirectSum.decompose_mul, DirectSum.coe_mul_apply 𝒜]
             _ =
                 proj 𝒜 max₁ x * proj 𝒜 max₂ y +
-                  ∑ ij in antidiag.erase (max₁, max₂), proj 𝒜 ij.1 x * proj 𝒜 ij.2 y :=
+                  ∑ ij ∈ antidiag.erase (max₁, max₂), proj 𝒜 ij.1 x * proj 𝒜 ij.2 y :=
               (add_sum_erase _ _ mem_antidiag).symm
         rw [eq_sub_of_add_eq eq_add_sum.symm]
-        refine' Ideal.sub_mem _ hxy (Ideal.sum_mem _ fun z H => _)
+        refine Ideal.sub_mem _ hxy (Ideal.sum_mem _ fun z H => ?_)
         rcases z with ⟨i, j⟩
-        simp only [mem_erase, Prod.mk.inj_iff, Ne.def, mem_filter, mem_product] at H
+        simp only [antidiag, mem_erase, Prod.mk.inj_iff, Ne, mem_filter, mem_product] at H
         rcases H with ⟨H₁, ⟨H₂, H₃⟩, H₄⟩
         have max_lt : max₁ < i ∨ max₂ < j := by
           rcases lt_trichotomy max₁ i with (h | rfl | h)
@@ -125,13 +118,13 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
           have not_mem : i ∉ set₁ := fun h =>
             lt_irrefl _ ((max'_lt_iff set₁ (nonempty x rid₁)).mp max_lt i h)
           rw [set₁_eq] at not_mem
-          simp only [not_and, Classical.not_not, Ne.def, mem_filter] at not_mem
+          simp only [not_and, Classical.not_not, Ne, mem_filter] at not_mem
           exact Ideal.mul_mem_right _ I (not_mem H₂)
-        · -- in this case  `max₂ < j`, then `yⱼ ∈ I`; for otherwise `j ∈ set₂`, then `j ≤ max₂`.
+        · -- in this case `max₂ < j`, then `yⱼ ∈ I`; for otherwise `j ∈ set₂`, then `j ≤ max₂`.
           have not_mem : j ∉ set₂ := fun h =>
             lt_irrefl _ ((max'_lt_iff set₂ (nonempty y rid₂)).mp max_lt j h)
           rw [set₂_eq] at not_mem
-          simp only [not_and, Classical.not_not, Ne.def, mem_filter] at not_mem
+          simp only [not_and, Classical.not_not, Ne, mem_filter] at not_mem
           exact Ideal.mul_mem_left I _ (not_mem H₃)
       have not_mem_I : proj 𝒜 max₁ x * proj 𝒜 max₂ y ∉ I := by
         have neither_mem : proj 𝒜 max₁ x ∉ I ∧ proj 𝒜 max₂ y ∉ I := by
@@ -161,7 +154,7 @@ theorem Ideal.IsPrime.homogeneousCore {I : Ideal A} (h : I.IsPrime) :
   · exact ne_top_of_le_ne_top h.ne_top (Ideal.toIdeal_homogeneousCore_le 𝒜 I)
   rintro x y hx hy hxy
   have H := h.mem_or_mem (Ideal.toIdeal_homogeneousCore_le 𝒜 I hxy)
-  refine' H.imp _ _
+  refine H.imp ?_ ?_
   · exact Ideal.mem_homogeneousCore_of_homogeneous_of_mem hx
   · exact Ideal.mem_homogeneousCore_of_homogeneous_of_mem hy
 #align ideal.is_prime.homogeneous_core Ideal.IsPrime.homogeneousCore

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.strong_epi
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.LiftingProperties.Basic
+
+#align_import category_theory.limits.shapes.strong_epi from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Strong epimorphisms
@@ -44,7 +41,6 @@ universe v u
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
-
 variable {P Q : C}
 
 /-- A strong epimorphism `f` is an epimorphism which has the left lifting property
@@ -135,7 +131,7 @@ theorem strongMono_of_strongMono [StrongMono (f ≫ g)] : StrongMono f :=
       constructor
       intro u v sq
       have h₀ : u ≫ f ≫ g = z ≫ v ≫ g := by
-        rw [←Category.assoc, eq_whisker sq.w, Category.assoc]
+        rw [← Category.assoc, eq_whisker sq.w, Category.assoc]
       exact CommSq.HasLift.mk' ⟨(CommSq.mk h₀).lift, by simp, by simp [← cancel_epi z, sq.w]⟩ }
 #align category_theory.strong_mono_of_strong_mono CategoryTheory.strongMono_of_strongMono
 

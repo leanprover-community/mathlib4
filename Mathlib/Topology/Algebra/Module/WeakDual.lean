@@ -2,14 +2,11 @@
 Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Moritz Doll
-
-! This file was ported from Lean 3 source module topology.algebra.module.weak_dual
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.BilinearMap
+
+#align_import topology.algebra.module.weak_dual from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Weak dual topology
@@ -72,7 +69,7 @@ open Filter
 
 open Topology
 
-variable {α 𝕜 𝕝 R E F M : Type _}
+variable {α 𝕜 𝕝 R E F M : Type*}
 
 section WeakTopology
 
@@ -84,7 +81,7 @@ def WeakBilin [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMono
 
 namespace WeakBilin
 
--- Porting note: the next two instance should be derived from the definition
+-- Porting note: the next two instances should be derived from the definition
 instance instAddCommMonoid [CommSemiring 𝕜] [a : AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F]
     [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : AddCommMonoid (WeakBilin B) := a
 
@@ -106,11 +103,8 @@ instance instIsScalarTower [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommGroup
 section Semiring
 
 variable [TopologicalSpace 𝕜] [CommSemiring 𝕜]
-
 variable [AddCommMonoid E] [Module 𝕜 E]
-
 variable [AddCommMonoid F] [Module 𝕜 F]
-
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 instance instTopologicalSpace : TopologicalSpace (WeakBilin B) :=
@@ -165,9 +159,7 @@ end Semiring
 section Ring
 
 variable [TopologicalSpace 𝕜] [CommRing 𝕜]
-
 variable [AddCommGroup E] [Module 𝕜 E]
-
 variable [AddCommGroup F] [Module 𝕜 F]
 
 
@@ -182,10 +174,6 @@ instance instTopologicalAddGroup [ContinuousAdd 𝕜] : TopologicalAddGroup (Wea
     refine' cast (congr_arg _ _) (eval_continuous B (-y))
     ext x
     simp only [map_neg, Function.comp_apply, LinearMap.neg_apply]
-    -- Porting note: mathlib3 proof was done here
-    rw [← (B x).neg_apply]
-    congr
-    exact (map_neg B x).symm
 
 end Ring
 
@@ -202,9 +190,7 @@ def topDualPairing (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [Continu
 #align top_dual_pairing topDualPairing
 
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-
 variable [ContinuousConstSMul 𝕜 𝕜]
-
 variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 theorem topDualPairing_apply (v : E →L[𝕜] 𝕜) (x : E) : topDualPairing 𝕜 E v x = v x :=
@@ -213,7 +199,7 @@ theorem topDualPairing_apply (v : E →L[𝕜] 𝕜) (x : E) : topDualPairing �
 
 /-- The weak star topology is the topology coarsest topology on `E →L[𝕜] 𝕜` such that all
 functionals `fun v => v x` are continuous. -/
-def WeakDual (𝕜 E : Type _) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E)
 #align weak_dual WeakDual
@@ -236,14 +222,17 @@ instance instContinuousAdd : ContinuousAdd (WeakDual 𝕜 E) :=
 instance instInhabited : Inhabited (WeakDual 𝕜 E) :=
   ContinuousLinearMap.inhabited
 
+instance instFunLike : FunLike (WeakDual 𝕜 E) E 𝕜 :=
+  ContinuousLinearMap.funLike
+
 instance instContinuousLinearMapClass : ContinuousLinearMapClass (WeakDual 𝕜 E) 𝕜 E 𝕜 :=
   ContinuousLinearMap.continuousSemilinearMapClass
 #align weak_dual.weak_dual.continuous_linear_map_class WeakDual.instContinuousLinearMapClass
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 instance : CoeFun (WeakDual 𝕜 E) fun _ => E → 𝕜 :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
@@ -338,6 +327,39 @@ theorem coe_map (f : E →L[𝕜] F) : (WeakSpace.map f : E → F) = f :=
 #align weak_space.coe_map WeakSpace.coe_map
 
 end WeakSpace
+
+variable (𝕜 E) in
+/-- There is a canonical map `E → WeakSpace 𝕜 E` (the "identity"
+mapping). It is a linear equivalence. -/
+def toWeakSpace : E ≃ₗ[𝕜] WeakSpace 𝕜 E := LinearEquiv.refl 𝕜 E
+
+variable (𝕜 E) in
+/-- For a topological vector space `E`, "identity mapping" `E → WeakSpace 𝕜 E` is continuous.
+This definition implements it as a continuous linear map. -/
+def continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E where
+  __ := toWeakSpace 𝕜 E
+  cont := by
+    apply WeakBilin.continuous_of_continuous_eval
+    exact ContinuousLinearMap.continuous
+
+variable (𝕜 E) in
+@[simp]
+theorem continuousLinearMapToWeakSpace_eq_toWeakSpace (x : E) :
+    continuousLinearMapToWeakSpace 𝕜 E x = toWeakSpace 𝕜 E x := by rfl
+
+theorem continuousLinearMapToWeakSpace_bijective :
+    Function.Bijective (continuousLinearMapToWeakSpace 𝕜 E) :=
+  (toWeakSpace 𝕜 E).bijective
+
+/-- The canonical map from `WeakSpace 𝕜 E` to `E` is an open map. -/
+theorem isOpenMap_toWeakSpace_symm : IsOpenMap (toWeakSpace 𝕜 E).symm :=
+  IsOpenMap.of_inverse (continuousLinearMapToWeakSpace 𝕜 E).cont
+    (toWeakSpace 𝕜 E).left_inv (toWeakSpace 𝕜 E).right_inv
+
+/-- A set in `E` which is open in the weak topology is open. -/
+theorem WeakSpace.isOpen_of_isOpen (V : Set E)
+    (hV : IsOpen ((continuousLinearMapToWeakSpace 𝕜 E) '' V : Set (WeakSpace 𝕜 E))) : IsOpen V := by
+  simpa [Set.image_image] using isOpenMap_toWeakSpace_symm _ hV
 
 theorem tendsto_iff_forall_eval_tendsto_topDualPairing {l : Filter α} {f : α → WeakDual 𝕜 E}
     {x : WeakDual 𝕜 E} :

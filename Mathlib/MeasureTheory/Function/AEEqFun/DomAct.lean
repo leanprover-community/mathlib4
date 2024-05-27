@@ -48,6 +48,11 @@ theorem mk_smul_mk_aeeqFun (c : M) (f : α → β) (hf : AEStronglyMeasurable f 
       (hf.comp_measurePreserving (measurePreserving_smul _ _)) :=
   rfl
 
+@[to_additive (attr := simp)]
+theorem smul_aeeqFun_const (c : Mᵈᵐᵃ) (b : β) :
+    c • (AEEqFun.const α b : α →ₘ[μ] β) = AEEqFun.const α b :=
+  rfl
+
 instance [SMul N β] [ContinuousConstSMul N β] : SMulCommClass Mᵈᵐᵃ N (α →ₘ[μ] β) where
   smul_comm := by rintro _ _ ⟨_⟩; rfl
 

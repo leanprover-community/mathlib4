@@ -2,14 +2,11 @@
 Copyright (c) 2021 Tian Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tian Chen
-
-! This file was ported from Lean 3 source module imo.imo2006_q3
-! leanprover-community/mathlib commit 308826471968962c6b59c7ff82a22757386603e3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Tactic.Polyrith
+
+#align_import imo.imo2006_q3 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 2006 Q3
@@ -74,7 +71,7 @@ theorem subst_wlog {x y z s : ℝ} (hxy : 0 ≤ x * y) (hxyz : x + y + z = 0) :
       _ ≤ (2 * (x ^ 2 + y ^ 2 + (x + y) ^ 2) + 2 * s ^ 2) ^ 4 / 4 ^ 4 := by
           gcongr (?_ + _) ^ 4 / _
           apply rhs_ineq
-  refine le_of_pow_le_pow 2 (by positivity) (by positivity) ?_
+  refine le_of_pow_le_pow_left two_ne_zero (by positivity) ?_
   calc
     (32 * |x * y * z * s|) ^ 2 = 32 * (2 * s ^ 2 * (16 * x ^ 2 * y ^ 2 * (x + y) ^ 2)) := by
       rw [mul_pow, sq_abs, hz]; ring

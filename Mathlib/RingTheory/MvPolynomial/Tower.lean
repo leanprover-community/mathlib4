@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
-
-! This file was ported from Lean 3 source module ring_theory.mv_polynomial.tower
-! leanprover-community/mathlib commit bb168510ef455e9280a152e7f31673cabd3d7496
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Data.MvPolynomial.Basic
+import Mathlib.Algebra.MvPolynomial.Basic
+
+#align_import ring_theory.mv_polynomial.tower from "leanprover-community/mathlib"@"bb168510ef455e9280a152e7f31673cabd3d7496"
 
 /-!
 # Algebra towers for multivariate polynomial
@@ -24,18 +21,15 @@ When you update this file, you can also try to make a corresponding update in
 -/
 
 
-variable (R A B : Type _) {σ : Type _}
+variable (R A B : Type*) {σ : Type*}
 
 namespace MvPolynomial
 
 section Semiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-
 variable [Algebra R A] [Algebra A B] [Algebra R B]
-
 variable [IsScalarTower R A B]
-
 variable {R B}
 
 theorem aeval_map_algebraMap (x : σ → B) (p : MvPolynomial σ R) :
@@ -48,9 +42,7 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-
 variable [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
-
 variable {R A}
 
 theorem aeval_algebraMap_apply (x : σ → A) (p : MvPolynomial σ R) :

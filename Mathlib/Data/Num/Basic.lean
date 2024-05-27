@@ -2,16 +2,14 @@
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.num.basic
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Mathport.Rename
-import Mathlib.Init.Data.Nat.Bitwise
-import Mathlib.Init.Data.Int.Basic
 import Lean.Linter.Deprecated
+import Mathlib.Mathport.Rename
+import Mathlib.Init.Data.Int.Basic
+import Mathlib.Init.ZeroOne
+import Mathlib.Data.Nat.Bits
+
+#align_import data.num.basic from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 /-!
 # Binary representation of integers using inductive types
 
@@ -20,7 +18,6 @@ the reliance on kernel reduction, in Lean this representation is discouraged
 in favor of the "Peano" natural numbers `Nat`, and the purpose of this
 collection of theorems is to show the equivalence of the different approaches.
 -/
-
 
 /-- The type of positive binary numbers.
 
@@ -158,7 +155,7 @@ def ofNat (n : ℕ) : PosNum :=
   ofNatSucc (Nat.pred n)
 #align pos_num.of_nat PosNum.ofNat
 
-instance : OfNat PosNum (n + 1) where
+instance {n : ℕ} : OfNat PosNum (n + 1) where
   ofNat := ofNat (n + 1)
 
 open Ordering
@@ -192,7 +189,7 @@ end PosNum
 
 section
 
-variable {α : Type _} [One α] [Add α]
+variable {α : Type*} [One α] [Add α]
 
 section deprecated
 set_option linter.deprecated false
@@ -672,7 +669,7 @@ end ZNum
 section
 
 set_option linter.deprecated false
-variable {α : Type _} [Zero α] [One α] [Add α] [Neg α]
+variable {α : Type*} [Zero α] [One α] [Add α] [Neg α]
 
 /-- `castZNum` casts a `ZNum` into any type which has `0`, `1`, `+` and `neg` -/
 @[deprecated, coe] def castZNum : ZNum → α

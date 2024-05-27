@@ -2,18 +2,15 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Justus Springer
-
-! This file was ported from Lean 3 source module category_theory.limits.lattice
-! leanprover-community/mathlib commit c3019c79074b0619edb4b27553a91b2e82242395
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.CompleteLattice
-import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.Finset.Lattice
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+
+#align_import category_theory.limits.lattice from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
 /-!
 # Limits in lattice categories are given by infimums and supremums.
@@ -31,7 +28,6 @@ namespace CategoryTheory.Limits.CompleteLattice
 section Semilattice
 
 variable {α : Type u}
-
 variable {J : Type w} [SmallCategory J] [FinCategory J]
 
 /-- The limit cone over any functor from a finite diagram into a `SemilatticeInf` with `OrderTop`.
@@ -87,11 +83,11 @@ theorem finite_colimit_eq_finset_univ_sup [SemilatticeSup α] [OrderBot α] (F :
 A finite product in the category of a `SemilatticeInf` with `OrderTop` is the same as the infimum.
 -/
 theorem finite_product_eq_finset_inf [SemilatticeInf α] [OrderTop α] {ι : Type u} [Fintype ι]
-    (f : ι → α) : ∏ f = Fintype.elems.inf f := by
+    (f : ι → α) : ∏ᶜ f = Fintype.elems.inf f := by
   trans
-  exact
-    (IsLimit.conePointUniqueUpToIso (limit.isLimit _)
-        (finiteLimitCone (Discrete.functor f)).isLimit).to_eq
+  · exact
+      (IsLimit.conePointUniqueUpToIso (limit.isLimit _)
+          (finiteLimitCone (Discrete.functor f)).isLimit).to_eq
   change Finset.univ.inf (f ∘ discreteEquiv.toEmbedding) = Fintype.elems.inf f
   simp only [← Finset.inf_map, Finset.univ_map_equiv_to_embedding]
   rfl
@@ -103,14 +99,15 @@ supremum.
 theorem finite_coproduct_eq_finset_sup [SemilatticeSup α] [OrderBot α] {ι : Type u} [Fintype ι]
     (f : ι → α) : ∐ f = Fintype.elems.sup f := by
   trans
-  exact
-    (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
-        (finiteColimitCocone (Discrete.functor f)).isColimit).to_eq
+  · exact
+      (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
+          (finiteColimitCocone (Discrete.functor f)).isColimit).to_eq
   change Finset.univ.sup (f ∘ discreteEquiv.toEmbedding) = Fintype.elems.sup f
   simp only [← Finset.sup_map, Finset.univ_map_equiv_to_embedding]
   rfl
 #align category_theory.limits.complete_lattice.finite_coproduct_eq_finset_sup CategoryTheory.Limits.CompleteLattice.finite_coproduct_eq_finset_sup
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 -- see Note [lower instance priority]
 instance (priority := 100) [SemilatticeInf α] [OrderTop α] : HasBinaryProducts α := by
   have : ∀ x y : α, HasLimit (pair x y) := by
@@ -131,6 +128,7 @@ theorem prod_eq_inf [SemilatticeInf α] [OrderTop α] (x y : α) : Limits.prod x
     _ = x ⊓ y := by rw [inf_top_eq]
 #align category_theory.limits.complete_lattice.prod_eq_inf CategoryTheory.Limits.CompleteLattice.prod_eq_inf
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 -- see Note [lower instance priority]
 instance (priority := 100) [SemilatticeSup α] [OrderBot α] : HasBinaryCoproducts α := by
   have : ∀ x y : α, HasColimit (pair x y) := by
@@ -182,7 +180,6 @@ theorem pushout_eq_sup [SemilatticeSup α] [OrderBot α] (x y z : α) (f : z ⟶
 end Semilattice
 
 variable {α : Type u} [CompleteLattice α]
-
 variable {J : Type u} [SmallCategory J]
 
 /-- The limit cone over any functor into a complete lattice.

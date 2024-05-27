@@ -2,15 +2,12 @@
 Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module deprecated.subring
-! leanprover-community/mathlib commit 2738d2ca56cbc63be80c3bd48e9ed90ad94e947d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Deprecated.Subgroup
 import Mathlib.Deprecated.Group
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
+
+#align_import deprecated.subring from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 
 /-!
 # Unbundled subrings (deprecated)
@@ -19,7 +16,7 @@ This file is deprecated, and is no longer imported by anything in mathlib other 
 deprecated files, and test files. You should not need to import it.
 
 This file defines predicates for unbundled subrings. Instead of using this file, please use
-`Subring`, defined in `RingTheory.Subring.Basic`, for subrings of rings.
+`Subring`, defined in `Mathlib.Algebra.Ring.Subring.Basic`, for subrings of rings.
 
 ## Main definitions
 
@@ -82,13 +79,13 @@ theorem IsSubring.inter {S₁ S₂ : Set R} (hS₁ : IsSubring S₁) (hS₂ : Is
     IsSubmonoid.inter hS₁.toIsSubmonoid hS₂.toIsSubmonoid with }
 #align is_subring.inter IsSubring.inter
 
-theorem IsSubring.iInter {ι : Sort _} {S : ι → Set R} (h : ∀ y : ι, IsSubring (S y)) :
+theorem IsSubring.iInter {ι : Sort*} {S : ι → Set R} (h : ∀ y : ι, IsSubring (S y)) :
     IsSubring (Set.iInter S) :=
   { IsAddSubgroup.iInter fun i ↦ (h i).toIsAddSubgroup,
     IsSubmonoid.iInter fun i ↦ (h i).toIsSubmonoid with }
 #align is_subring.Inter IsSubring.iInter
 
-theorem isSubring_iUnion_of_directed {ι : Type _} [Nonempty ι] {s : ι → Set R}
+theorem isSubring_iUnion_of_directed {ι : Type*} [Nonempty ι] {s : ι → Set R}
     (h : ∀ i, IsSubring (s i)) (directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubring (⋃ i, s i) :=
   { toIsAddSubgroup := isAddSubgroup_iUnion_of_directed (fun i ↦ (h i).toIsAddSubgroup) directed
@@ -119,7 +116,7 @@ theorem exists_list_of_mem_closure {a : R} (h : a ∈ closure s) :
         fun L2 h2 ↦ match L2, List.mem_map.1 h2 with
         | _, ⟨L3, h3, rfl⟩ => List.forall_mem_cons.2 ⟨Or.inr rfl, h1 L3 h3⟩, by
         simp only [List.map_map, (· ∘ ·), List.prod_cons, neg_one_mul]
-        refine' List.recOn L1 neg_zero.symm fun hd tl ih ↦ _
+        refine List.recOn L1 neg_zero.symm fun hd tl ih ↦ ?_
         rw [List.map_cons, List.sum_cons, ih, List.map_cons, List.sum_cons, neg_add]⟩
     fun {r1 r2} _ _ ih1 ih2 ↦ match r1, r2, ih1, ih2 with
     | _, _, ⟨L1, h1, rfl⟩, ⟨L2, h2, rfl⟩ =>
@@ -205,9 +202,9 @@ theorem closure_mono {s t : Set R} (H : s ⊆ t) : closure s ⊆ closure t :=
   closure_subset closure.isSubring <| Set.Subset.trans H subset_closure
 #align ring.closure_mono Ring.closure_mono
 
-theorem image_closure {S : Type _} [Ring S] (f : R →+* S) (s : Set R) :
+theorem image_closure {S : Type*} [Ring S] (f : R →+* S) (s : Set R) :
     f '' closure s = closure (f '' s) := by
-  refine' le_antisymm _ (closure_subset (RingHom.isSubring_image _ closure.isSubring) <|
+  refine le_antisymm ?_ (closure_subset (RingHom.isSubring_image _ closure.isSubring) <|
     Set.image_subset _ subset_closure)
   rintro _ ⟨x, hx, rfl⟩
   apply AddGroup.InClosure.recOn (motive := fun {x} _ ↦ f x ∈ closure (f '' s)) hx _ <;> intros

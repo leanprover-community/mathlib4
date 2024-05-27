@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Tactic
-import Mathlib.MeasureTheory.MeasurableSpace
+import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
@@ -28,7 +28,7 @@ example : Measurable f → Measurable f := by measurability
 
 -- Test the use of apply_assumption to get (h i) from a hypothesis (h : ∀ i, ...).
 
-example  {F : ℕ → α → β} (hF : ∀ i, Measurable (F i)) : Measurable (F 0) := by measurability
+example {F : ℕ → α → β} (hF : ∀ i, Measurable (F i)) : Measurable (F 0) := by measurability
 
 example {ι} [Encodable ι] {S₁ S₂ : ι → Set α} (hS₁ : ∀ i, MeasurableSet (S₁ i))
     (hS₂ : ∀ i, MeasurableSet (S₂ i)) : MeasurableSet (⋃ i, (S₁ i) ∪ (S₂ i)) := by measurability
@@ -51,7 +51,7 @@ variable [TopologicalSpace β] [PseudoMetrizableSpace β] [BorelSpace β]
 
 -- Test the use of apply_assumption to get (h i) from a hypothesis (h : ∀ i, ...).
 
-example  {F : ℕ → α → β} (hF : ∀ i, StronglyMeasurable (F i)) : Measurable (F 0) := by
+example {F : ℕ → α → β} (hF : ∀ i, StronglyMeasurable (F i)) : Measurable (F 0) := by
   measurability
 
 example [Zero β] {F : ℕ → α → β} (hF : ∀ i, AEFinStronglyMeasurable (F i) μ) :
@@ -82,17 +82,17 @@ example [Div β] [MeasurableDiv₂ β] (hf : Measurable f) (hg : Measurable g)
     (ht : MeasurableSet t₂) : MeasurableSet ((fun x => f x / g x) ⁻¹' t₂) := by measurability
 
 example [AddCommMonoid β] [MeasurableAdd₂ β] {s : Finset ℕ} {F : ℕ → α → β}
-    (hF : ∀ i, Measurable (F i)) : Measurable (∑ i in s, (fun x => F (i+1) x + F i x)) := by
+    (hF : ∀ i, Measurable (F i)) : Measurable (∑ i ∈ s, (fun x => F (i+1) x + F i x)) := by
   measurability
 
 example [AddCommMonoid β] [MeasurableAdd₂ β] {s : Finset ℕ} {F : ℕ → α → β}
-    (hF : ∀ i, AEMeasurable (F i) μ) : AEMeasurable (∑ i in s, (fun x => F (i+1) x + F i x)) μ := by
+    (hF : ∀ i, AEMeasurable (F i) μ) : AEMeasurable (∑ i ∈ s, (fun x => F (i+1) x + F i x)) μ := by
   measurability
 
 -- even with many assumptions, the tactic is not trapped by a bad lemma
 example [TopologicalSpace α] [BorelSpace α] [NormedAddCommGroup β] [BorelSpace β]
     [MeasurableAdd₂ β] [MeasurableSub₂ β] {s : Finset ℕ} {F : ℕ → α → β}
-    (hF : ∀ i, Measurable (F i)) : AEMeasurable (∑ i in s, (fun x => F (i+1) x - F i x)) μ := by
+    (hF : ∀ i, Measurable (F i)) : AEMeasurable (∑ i ∈ s, (fun x => F (i+1) x - F i x)) μ := by
   measurability
 
 example : Measurable (fun x : ℝ => Real.exp (2 * inner x 3)) := by measurability

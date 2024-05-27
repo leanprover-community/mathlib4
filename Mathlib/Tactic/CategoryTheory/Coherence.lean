@@ -2,17 +2,16 @@
 Copyright (c) 2022. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yuma Mizuno, Oleksandr Manzyuk
-
-! This file was ported from Lean 3 source module category_theory.monoidal.coherence
-! leanprover-community/mathlib commit f187f1074fa1857c94589cc653c786cadc4c35ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Monoidal.Free.Coherence
+import Mathlib.CategoryTheory.Monoidal.Free.Basic
+import Mathlib.Lean.Meta
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+import Mathlib.Tactic.CategoryTheory.MonoidalComp
+
+#align_import category_theory.monoidal.coherence from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
 
 /-!
-# A `coherence` tactic for monoidal categories, and `⊗≫` (composition up to associators)
+# A `coherence` tactic for monoidal categories
 
 We provide a `coherence` tactic,
 which proves equations where the two sides differ by replacing
@@ -24,10 +23,9 @@ which proves that any two morphisms (with the same source and target)
 in a monoidal category which are built out of associators and unitors
 are equal.
 
-We also provide `f ⊗≫ g`, the `monoidal_comp` operation,
-which automatically inserts associators and unitors as needed
-to make the target of `f` match the source of `g`.
 -/
+
+set_option autoImplicit true
 
 -- Porting note: restore when ported
 -- import Mathlib.CategoryTheory.Bicategory.CoherenceTactic
@@ -50,7 +48,7 @@ It must be the case that `projectObj id (LiftObj.lift x) = x` by defeq. -/
 class LiftObj (X : C) where
   protected lift : FreeMonoidalCategory C
 
-instance LiftObj_unit : LiftObj (𝟙_ C) := ⟨Unit⟩
+instance LiftObj_unit : LiftObj (𝟙_ C) := ⟨unit⟩
 
 instance LiftObj_tensor (X Y : C) [LiftObj X] [LiftObj Y] : LiftObj (X ⊗ Y) where
   lift := LiftObj.lift X ⊗ LiftObj.lift Y
@@ -88,116 +86,17 @@ instance LiftHom_comp {X Y Z : C} [LiftObj X] [LiftObj Y] [LiftObj Z] (f : X ⟶
     [LiftHom f] [LiftHom g] : LiftHom (f ≫ g) where
   lift := LiftHom.lift f ≫ LiftHom.lift g
 
+instance liftHom_WhiskerLeft (X : C) [LiftObj X] {Y Z : C} [LiftObj Y] [LiftObj Z]
+    (f : Y ⟶ Z) [LiftHom f] : LiftHom (X ◁ f) where
+  lift := LiftObj.lift X ◁ LiftHom.lift f
+
+instance liftHom_WhiskerRight {X Y : C} (f : X ⟶ Y) [LiftObj X] [LiftObj Y] [LiftHom f]
+    {Z : C} [LiftObj Z] : LiftHom (f ▷ Z) where
+  lift := LiftHom.lift f ▷ LiftObj.lift Z
+
 instance LiftHom_tensor {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
     (f : W ⟶ X) (g : Y ⟶ Z) [LiftHom f] [LiftHom g] : LiftHom (f ⊗ g) where
   lift := LiftHom.lift f ⊗ LiftHom.lift g
-
-/--
-A typeclass carrying a choice of monoidal structural isomorphism between two objects.
-Used by the `⊗≫` monoidal composition operator, and the `coherence` tactic.
--/
--- We could likely turn this into a `Prop` valued existential if that proves useful.
-class MonoidalCoherence (X Y : C) [LiftObj X] [LiftObj Y] where
-  hom : X ⟶ Y
-  [isIso : IsIso hom]
-
-attribute [instance] MonoidalCoherence.isIso
-
-namespace MonoidalCoherence
-
-@[simps]
-instance refl (X : C) [LiftObj X] : MonoidalCoherence X X := ⟨𝟙 _⟩
-
-@[simps]
-instance tensor (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] [MonoidalCoherence Y Z] :
-    MonoidalCoherence (X ⊗ Y) (X ⊗ Z) :=
-  ⟨𝟙 X ⊗ MonoidalCoherence.hom⟩
-
-@[simps]
-instance tensor_right (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence (𝟙_ C) Y] :
-    MonoidalCoherence X (X ⊗ Y) :=
-  ⟨(ρ_ X).inv ≫ (𝟙 X ⊗ MonoidalCoherence.hom)⟩
-
-@[simps]
-instance tensor_right' (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence Y (𝟙_ C)] :
-    MonoidalCoherence (X ⊗ Y) X :=
-  ⟨(𝟙 X ⊗ MonoidalCoherence.hom) ≫ (ρ_ X).hom⟩
-
-@[simps]
-instance left (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
-    MonoidalCoherence (𝟙_ C ⊗ X) Y :=
-  ⟨(λ_ X).hom ≫ MonoidalCoherence.hom⟩
-
-@[simps]
-instance left' (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
-    MonoidalCoherence X (𝟙_ C ⊗ Y) :=
-  ⟨MonoidalCoherence.hom ≫ (λ_ Y).inv⟩
-
-@[simps]
-instance right (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
-    MonoidalCoherence (X ⊗ 𝟙_ C) Y :=
-  ⟨(ρ_ X).hom ≫ MonoidalCoherence.hom⟩
-
-@[simps]
-instance right' (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
-    MonoidalCoherence X (Y ⊗ 𝟙_ C) :=
-  ⟨MonoidalCoherence.hom ≫ (ρ_ Y).inv⟩
-
-@[simps]
-instance assoc (X Y Z W : C) [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
-    [MonoidalCoherence (X ⊗ (Y ⊗ Z)) W] : MonoidalCoherence ((X ⊗ Y) ⊗ Z) W :=
-  ⟨(α_ X Y Z).hom ≫ MonoidalCoherence.hom⟩
-
-@[simps]
-instance assoc' (W X Y Z : C) [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
-    [MonoidalCoherence W (X ⊗ (Y ⊗ Z))] : MonoidalCoherence W ((X ⊗ Y) ⊗ Z) :=
-  ⟨MonoidalCoherence.hom ≫ (α_ X Y Z).inv⟩
-
-end MonoidalCoherence
-
-/-- Construct an isomorphism between two objects in a monoidal category
-out of unitors and associators. -/
-def monoidalIso (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] : X ≅ Y :=
-  asIso MonoidalCoherence.hom
-
-example (X : C) : X ≅ (X ⊗ (𝟙_ C ⊗ 𝟙_ C)) := monoidalIso _ _
-
-example (X1 X2 X3 X4 X5 X6 X7 X8 X9 : C) :
-    (𝟙_ C ⊗ (X1 ⊗ X2 ⊗ ((X3 ⊗ X4) ⊗ X5)) ⊗ X6 ⊗ (X7 ⊗ X8 ⊗ X9)) ≅
-    (X1 ⊗ (X2 ⊗ X3) ⊗ X4 ⊗ (X5 ⊗ (𝟙_ C ⊗ X6) ⊗ X7) ⊗ X8 ⊗ X9) :=
-  monoidalIso _ _
-
-/-- Compose two morphisms in a monoidal category,
-inserting unitors and associators between as necessary. -/
-def monoidalComp {W X Y Z : C} [LiftObj X] [LiftObj Y]
-    [MonoidalCoherence X Y] (f : W ⟶ X) (g : Y ⟶ Z) : W ⟶ Z :=
-  f ≫ MonoidalCoherence.hom ≫ g
-
-@[inherit_doc monoidalComp]
-infixr:80 " ⊗≫ " => monoidalComp -- type as \ot \gg
-
-/-- Compose two isomorphisms in a monoidal category,
-inserting unitors and associators between as necessary. -/
-noncomputable def monoidalIsoComp {W X Y Z : C} [LiftObj X] [LiftObj Y]
-    [MonoidalCoherence X Y] (f : W ≅ X) (g : Y ≅ Z) : W ≅ Z :=
-  f ≪≫ asIso MonoidalCoherence.hom ≪≫ g
-
-@[inherit_doc monoidalIsoComp]
-infixr:80 " ≪⊗≫ " => monoidalIsoComp -- type as \ot \gg
-
-example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) : U ⟶ Y := f ⊗≫ g
-
--- To automatically insert unitors/associators at the beginning or end,
--- you can use `f ⊗≫ 𝟙 _`
-example {W X Y Z : C} (f : W ⟶ (X ⊗ Y) ⊗ Z) : W ⟶ X ⊗ (Y ⊗ Z) := f ⊗≫ 𝟙 _
-
-@[simp] lemma monoidalComp_refl {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    f ⊗≫ g = f ≫ g := by
-  simp [monoidalComp]
-
-example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) :
-    f ⊗≫ g = f ≫ (α_ _ _ _).inv ≫ g := by
-  simp [monoidalComp]
 
 end lifting
 
@@ -225,7 +124,7 @@ def mkProjectMapExpr (e : Expr) : TermElabM Expr := do
 /-- Coherence tactic for monoidal categories. -/
 def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
   withOptions (fun opts => synthInstance.maxSize.set opts
-    (max 256 (synthInstance.maxSize.get opts))) do
+    (max 512 (synthInstance.maxSize.get opts))) do
   -- TODO: is this `dsimp only` step necessary? It doesn't appear to be in the tests below.
   let (ty, _) ← dsimp (← g.getType) (← Simp.Context.ofNames [] true)
   let some (_, lhs, rhs) := (← whnfR ty).eq? | exception g "Not an equation of morphisms."
@@ -288,15 +187,17 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 256 (synthInstance.maxSize.get opts))) do
   evalTactic (← `(tactic|
-    simp only [monoidalComp, Category.assoc, MonoidalCoherence.hom] <;>
+    (simp (config := {failIfUnchanged := false}) only
+      [monoidalComp, Category.assoc, MonoidalCoherence.hom]) <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
-    simp only [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂]))
+    (simp (config := {failIfUnchanged := false}) only
+      [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂])))
 
-lemma insert_id_lhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) :
+lemma insert_id_lhs {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) :
     f = g := by
   simpa using w
 
-lemma insert_id_rhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f = g ≫ 𝟙 _) :
+lemma insert_id_rhs {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f = g ≫ 𝟙 _) :
     f = g := by
   simpa using w
 
@@ -326,8 +227,8 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
     -- Otherwise, rearrange so we have a maximal prefix of each side
     -- that is built out of unitors and associators:
     evalTactic (← `(tactic| liftable_prefixes)) <|>
-      exception' ("Something went wrong in the `coherence` tactic: " ++
-        "is the target an equation in a monoidal category?")
+      exception' "Something went wrong in the `coherence` tactic: \
+        is the target an equation in a monoidal category?"
     -- The goal should now look like `f₀ ≫ f₁ = g₀ ≫ g₁`,
     liftMetaTactic MVarId.congrCore
     -- and now we have two goals `f₀ = g₀` and `f₁ = g₁`.
@@ -344,6 +245,28 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
         exception' "`coherence` tactic failed, non-structural morphisms don't match"
       -- and whose second terms can be identified by recursively called `coherence`.
       coherence_loop maxSteps'
+
+open Lean.Parser.Tactic
+
+/--
+Simp lemmas for rewriting a hom in monoical categories into a normal form.
+-/
+syntax (name := monoidal_simps) "monoidal_simps" (config)? : tactic
+
+@[inherit_doc monoidal_simps]
+elab_rules : tactic
+| `(tactic| monoidal_simps $[$cfg]?) => do
+  evalTactic (← `(tactic|
+    simp $[$cfg]? only [
+      Category.assoc, MonoidalCategory.tensor_whiskerLeft, MonoidalCategory.id_whiskerLeft,
+      MonoidalCategory.whiskerRight_tensor, MonoidalCategory.whiskerRight_id,
+      MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_id,
+      MonoidalCategory.comp_whiskerRight, MonoidalCategory.id_whiskerRight,
+      MonoidalCategory.whisker_assoc,
+      MonoidalCategory.id_tensorHom, MonoidalCategory.tensorHom_id];
+    -- I'm not sure if `tensorHom` should be expanded.
+    try simp only [MonoidalCategory.tensorHom_def]
+    ))
 
 /--
 Use the coherence theorem for monoidal categories to solve equations in a monoidal equation,
@@ -365,8 +288,10 @@ syntax (name := coherence) "coherence" : tactic
 elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
-    simp only [bicategoricalComp];
-    simp only [monoidalComp];
-    try whisker_simps
-    ))
+    (simp (config := {failIfUnchanged := false}) only [bicategoricalComp,
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom',
+      monoidalComp]);
+    whisker_simps (config := {failIfUnchanged := false});
+    monoidal_simps (config := {failIfUnchanged := false})))
   coherence_loop

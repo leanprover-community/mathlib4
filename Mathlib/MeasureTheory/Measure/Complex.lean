@@ -2,13 +2,10 @@
 Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module measure_theory.measure.complex
-! leanprover-community/mathlib commit 17b3357baa47f48697ca9c243e300eb8cdd16a15
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.VectorMeasure
+
+#align_import measure_theory.measure.complex from "leanprover-community/mathlib"@"17b3357baa47f48697ca9c243e300eb8cdd16a15"
 
 /-!
 # Complex measure
@@ -31,7 +28,7 @@ in `Mathlib/MeasureTheory/Measure/VectorMeasure.lean` and is known as
 * `MeasureTheory.ComplexMeasure.equivSignedMeasure`: is the equivalence between the complex
   measures and the type of the product of the signed measures with itself.
 
-# Tags
+## Tags
 
 Complex measure
 -/
@@ -41,7 +38,7 @@ noncomputable section
 
 open scoped Classical MeasureTheory ENNReal NNReal
 
-variable {α β : Type _} {m : MeasurableSpace α}
+variable {α β : Type*} {m : MeasurableSpace α}
 
 namespace MeasureTheory
 
@@ -52,13 +49,13 @@ namespace ComplexMeasure
 /-- The real part of a complex measure is a signed measure. -/
 @[simps! apply]
 def re : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
-  mapRangeₗ Complex.reClm Complex.continuous_re
+  mapRangeₗ Complex.reCLM Complex.continuous_re
 #align measure_theory.complex_measure.re MeasureTheory.ComplexMeasure.re
 
 /-- The imaginary part of a complex measure is a signed measure. -/
 @[simps! apply]
 def im : ComplexMeasure α →ₗ[ℝ] SignedMeasure α :=
-  mapRangeₗ Complex.imClm Complex.continuous_im
+  mapRangeₗ Complex.imCLM Complex.continuous_im
 #align measure_theory.complex_measure.im MeasureTheory.ComplexMeasure.im
 
 /-- Given `s` and `t` signed measures, `s + it` is a complex measure-/
@@ -72,7 +69,7 @@ def _root_.MeasureTheory.SignedMeasure.toComplexMeasure (s t : SignedMeasure α)
 #align measure_theory.signed_measure.to_complex_measure MeasureTheory.SignedMeasure.toComplexMeasure
 
 theorem _root_.MeasureTheory.SignedMeasure.toComplexMeasure_apply
-  {s t : SignedMeasure α} {i : Set α} : s.toComplexMeasure t i = ⟨s i, t i⟩ := rfl
+    {s t : SignedMeasure α} {i : Set α} : s.toComplexMeasure t i = ⟨s i, t i⟩ := rfl
 #align measure_theory.signed_measure.to_complex_measure_apply MeasureTheory.SignedMeasure.toComplexMeasure_apply
 
 theorem toComplexMeasure_to_signedMeasure (c : ComplexMeasure α) :
@@ -98,8 +95,7 @@ def equivSignedMeasure : ComplexMeasure α ≃ SignedMeasure α × SignedMeasure
 
 section
 
-variable {R : Type _} [Semiring R] [Module R ℝ]
-
+variable {R : Type*} [Semiring R] [Module R ℝ]
 variable [ContinuousConstSMul R ℝ] [ContinuousConstSMul R ℂ]
 
 /-- The complex measures form a linear isomorphism to the type of pairs of signed measures. -/

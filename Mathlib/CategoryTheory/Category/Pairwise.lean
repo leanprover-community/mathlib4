@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.category.pairwise
-! leanprover-community/mathlib commit d82b87871d9a274884dff5263fa4f5d93bcce1d6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.CompleteLattice
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.IsLimit
+
+#align_import category_theory.category.pairwise from "leanprover-community/mathlib"@"d82b87871d9a274884dff5263fa4f5d93bcce1d6"
 
 /-!
 # The category of "pairwise intersections".
@@ -92,7 +89,7 @@ open Lean Elab Tactic in
 def pairwiseCases : TacticM Unit := do
   evalTactic (← `(tactic| casesm* (_ : Pairwise _) ⟶ (_ : Pairwise _)))
 
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])] pairwiseCases in
+attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] pairwiseCases in
 instance : Category (Pairwise ι) where
   Hom := Hom
   id := id

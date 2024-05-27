@@ -2,14 +2,14 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Scott Morrison
-
-! This file was ported from Lean 3 source module data.list.range
-! leanprover-community/mathlib commit 7b78d1776212a91ecc94cf601f83bdcc46b04213
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Chain
+import Mathlib.Data.List.Enum
+import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Zip
+
+#align_import data.list.range from "leanprover-community/mathlib"@"7b78d1776212a91ecc94cf601f83bdcc46b04213"
 
 /-!
 # Ranges of naturals as lists
@@ -21,6 +21,8 @@ and defines `List.finRange`.
 tactics. `range' a b = [a, ..., a + b - 1]` is there to help prove properties about them.
 Actual maths should use `List.Ico` instead.
 -/
+
+set_option autoImplicit true
 
 
 universe u
@@ -75,14 +77,15 @@ theorem nthLe_range'_1 {n m} (i) (H : i < (range' n m).length) :
 #align list.range_eq_nil List.range_eq_nil
 
 theorem pairwise_lt_range (n : ℕ) : Pairwise (· < ·) (range n) := by
-  simp only [range_eq_range', pairwise_lt_range']
+  simp (config := {decide := true}) only [range_eq_range', pairwise_lt_range']
 #align list.pairwise_lt_range List.pairwise_lt_range
 
 theorem pairwise_le_range (n : ℕ) : Pairwise (· ≤ ·) (range n) :=
   Pairwise.imp (@le_of_lt ℕ _) (pairwise_lt_range _)
 #align list.pairwise_le_range List.pairwise_le_range
 
-theorem nodup_range (n : ℕ) : Nodup (range n) := by simp only [range_eq_range', nodup_range']
+theorem nodup_range (n : ℕ) : Nodup (range n) := by
+  simp (config := {decide := true}) only [range_eq_range', nodup_range']
 #align list.nodup_range List.nodup_range
 #align list.range_sublist List.range_sublist
 #align list.range_subset List.range_subset
@@ -157,23 +160,11 @@ theorem finRange_eq_nil {n : ℕ} : finRange n = [] ↔ n = 0 := by
   rw [← length_eq_zero, length_finRange]
 #align list.fin_range_eq_nil List.finRange_eq_nil
 
-@[to_additive]
-theorem prod_range_succ {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
-    ((range n.succ).map f).prod = ((range n).map f).prod * f n := by
-  rw [range_succ, map_append, map_singleton, prod_append, prod_cons, prod_nil, mul_one]
-#align list.prod_range_succ List.prod_range_succ
-#align list.sum_range_succ List.sum_range_succ
+theorem pairwise_lt_finRange (n : ℕ) : Pairwise (· < ·) (finRange n) :=
+  (List.pairwise_lt_range n).pmap (by simp) (by simp)
 
-/-- A variant of `prod_range_succ` which pulls off the first
-  term in the product rather than the last.-/
-@[to_additive
-  "A variant of `sum_range_succ` which pulls off the first term in the sum rather than the last."]
-theorem prod_range_succ' {α : Type u} [Monoid α] (f : ℕ → α) (n : ℕ) :
-    ((range n.succ).map f).prod = f 0 * ((range n).map fun i => f (succ i)).prod :=
-  Nat.recOn n (show 1 * f 0 = f 0 * 1 by rw [one_mul, mul_one]) fun _ hd => by
-    rw [List.prod_range_succ, hd, mul_assoc, ← List.prod_range_succ]
-#align list.prod_range_succ' List.prod_range_succ'
-#align list.sum_range_succ' List.sum_range_succ'
+theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) :=
+  (List.pairwise_le_range n).pmap (by simp) (by simp)
 
 #align list.enum_from_map_fst List.enumFrom_map_fst
 #align list.enum_map_fst List.enum_map_fst
@@ -203,13 +194,13 @@ theorem nthLe_range {n} (i) (H : i < (range n).length) : nthLe (range n) i H = i
   get_range i H
 #align list.nth_le_range List.nthLe_range
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
   simp only [finRange, get_range, get_pmap]
 
---Porting note: new theorem, corresponding theorem used to be in Data.List.FinRange
+-- Porting note (#10756): new theorem, corresponding theorem used to be in Data.List.FinRange
 @[simp]
 theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
   List.ext_get (by simp) (by simp)
@@ -221,5 +212,71 @@ theorem nthLe_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).nthLe i h = ⟨i, length_finRange n ▸ h⟩ :=
   get_finRange h
 #align list.nth_le_fin_range List.nthLe_finRange
+
+@[simp] theorem indexOf_finRange (i : Fin k) : (finRange k).indexOf i = i := by
+  have : (finRange k).indexOf i < (finRange k).length := indexOf_lt_length.mpr (by simp)
+  have h₁ : (finRange k).get ⟨(finRange k).indexOf i, this⟩ = i := indexOf_get this
+  have h₂ : (finRange k).get ⟨i, by simp⟩ = i := get_finRange _
+  simpa using (Nodup.get_inj_iff (nodup_finRange k)).mp (Eq.trans h₁ h₂.symm)
+
+section Ranges
+
+/-- From `l : List ℕ`, construct `l.ranges : List (List ℕ)` such that
+  `l.ranges.map List.length = l` and `l.ranges.join = range l.sum`
+* Example: `[1,2,3].ranges = [[0],[1,2],[3,4,5]]` -/
+def ranges : List ℕ → List (List ℕ)
+  | [] => nil
+  | a::l => range a::(ranges l).map (map (a + ·))
+
+/-- The members of `l.ranges` are pairwise disjoint -/
+theorem ranges_disjoint (l : List ℕ) :
+    Pairwise Disjoint (ranges l) := by
+  induction l with
+  | nil => exact Pairwise.nil
+  | cons a l hl =>
+    simp only [ranges, pairwise_cons]
+    constructor
+    · intro s hs
+      obtain ⟨s', _, rfl⟩ := mem_map.mp hs
+      intro u hu
+      rw [mem_map]
+      rintro ⟨v, _, rfl⟩
+      rw [mem_range] at hu
+      omega
+    · rw [pairwise_map]
+      apply Pairwise.imp _ hl
+      intro u v
+      apply disjoint_map
+      exact fun u v => Nat.add_left_cancel
+#align list.ranges_disjoint List.ranges_disjoint
+
+/-- The lengths of the members of `l.ranges` are those given by `l` -/
+theorem ranges_length (l : List ℕ) :
+    l.ranges.map length = l := by
+  induction l with
+  | nil => simp only [ranges, map_nil]
+  | cons a l hl => -- (a :: l)
+    simp only [map, length_range, map_map, cons.injEq, true_and]
+    conv_rhs => rw [← hl]
+    apply map_congr
+    intro s _
+    simp only [Function.comp_apply, length_map]
+
+/-- See `List.ranges_join` for the version about `List.sum`. -/
+lemma ranges_join' : ∀ l : List ℕ, l.ranges.join = range (Nat.sum l)
+  | [] => rfl
+  | a :: l => by simp only [sum_cons, join, ← map_join, ranges_join', range_add]
+
+/-- Any entry of any member of `l.ranges` is strictly smaller than `Nat.sum l`.
+See `List.mem_mem_ranges_iff_lt_sum` for the version about `List.sum`. -/
+lemma mem_mem_ranges_iff_lt_natSum (l : List ℕ) {n : ℕ} :
+    (∃ s ∈ l.ranges, n ∈ s) ↔ n < Nat.sum l := by
+  rw [← mem_range, ← ranges_join', mem_join]
+
+ /-- The members of `l.ranges` have no duplicate -/
+theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
+  (List.pairwise_join.mp $ by rw [ranges_join']; exact nodup_range _).1 s hs
+
+end Ranges
 
 end List

@@ -2,14 +2,11 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Mario Carneiro
-
-! This file was ported from Lean 3 source module topology.category.Top.adjunctions
-! leanprover-community/mathlib commit f7baecbb54bd0f24f228576f97b1752fc3c9b318
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.CategoryTheory.Adjunction.Basic
+
+#align_import topology.category.Top.adjunctions from "leanprover-community/mathlib"@"f7baecbb54bd0f24f228576f97b1752fc3c9b318"
 
 /-!
 # Adjunctions regarding the category of topological spaces
@@ -48,10 +45,10 @@ def adj₂ : forget TopCat.{u} ⊣ trivial :=
 set_option linter.uppercaseLean3 false in
 #align Top.adj₂ TopCat.adj₂
 
-instance : IsRightAdjoint (forget TopCat.{u}) :=
-  ⟨_, adj₁⟩
+instance : (forget TopCat.{u}).IsRightAdjoint :=
+  ⟨_, ⟨adj₁⟩⟩
 
-instance : IsLeftAdjoint (forget TopCat.{u}) :=
-  ⟨_, adj₂⟩
+instance : (forget TopCat.{u}).IsLeftAdjoint :=
+  ⟨_, ⟨adj₂⟩⟩
 
 end TopCat

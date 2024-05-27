@@ -2,15 +2,12 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
-
-! This file was ported from Lean 3 source module category_theory.category.preorder
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.Order.Hom.Basic
 import Mathlib.Data.ULift
+
+#align_import category_theory.category.preorder from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 
@@ -53,8 +50,8 @@ instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCate
   comp f g := ⟨⟨le_trans _ _ _ f.down.down g.down.down⟩⟩
 #align preorder.small_category Preorder.smallCategory
 
--- porting note: added to ease the port of `CategoryTheory.Subobject.Basic`
-instance Preorder.subsingleton_hom {α : Type u} [Preorder α] (U V : α) :
+-- Porting note: added to ease the port of `CategoryTheory.Subobject.Basic`
+instance subsingleton_hom {α : Type u} [Preorder α] (U V : α) :
   Subsingleton (U ⟶ V) := ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩
 
 end Preorder
@@ -71,11 +68,12 @@ def homOfLE {x y : X} (h : x ≤ y) : x ⟶ y :=
   ULift.up (PLift.up h)
 #align category_theory.hom_of_le CategoryTheory.homOfLE
 
-alias homOfLE ← _root_.LE.le.hom
+@[inherit_doc homOfLE]
+abbrev _root_.LE.le.hom := @homOfLE
 #align has_le.le.hom LE.le.hom
 
 @[simp]
-theorem homOfLE_refl {x : X} : (le_refl x).hom = 𝟙 x :=
+theorem homOfLE_refl {x : X} (h : x ≤ x) : h.hom = 𝟙 x :=
   rfl
 #align category_theory.hom_of_le_refl CategoryTheory.homOfLE_refl
 
@@ -91,16 +89,17 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 #align category_theory.le_of_hom CategoryTheory.leOfHom
 
-alias leOfHom ← _root_.Quiver.Hom.le
+@[nolint defLemma, inherit_doc leOfHom]
+abbrev _root_.Quiver.Hom.le := @leOfHom
 #align quiver.hom.le Quiver.Hom.le
 
--- porting note: why does this lemma exist? With proof irrelevance, we don't need to simplify proofs
+-- Porting note: why does this lemma exist? With proof irrelevance, we don't need to simplify proofs
 -- @[simp]
 theorem leOfHom_homOfLE {x y : X} (h : x ≤ y) : h.hom.le = h :=
   rfl
 #align category_theory.le_of_hom_hom_of_le CategoryTheory.leOfHom_homOfLE
 
--- porting note: linter gives: "Left-hand side does not simplify, when using the simp lemma on
+-- Porting note: linter gives: "Left-hand side does not simplify, when using the simp lemma on
 -- itself. This usually means that it will never apply." removing simp? It doesn't fire
 -- @[simp]
 theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
@@ -145,6 +144,10 @@ def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y where
 theorem Monotone.functor_obj {f : X → Y} (h : Monotone f) : h.functor.obj = f :=
   rfl
 #align monotone.functor_obj Monotone.functor_obj
+
+-- Faithfulness is automatic because preorder categories are thin
+instance (f : X ↪o Y) : f.monotone.functor.Full where
+  map_surjective h := ⟨homOfLE (f.map_rel_iff.1 h.le), rfl⟩
 
 end
 

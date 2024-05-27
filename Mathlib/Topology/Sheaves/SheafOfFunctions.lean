@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison
-
-! This file was ported from Lean 3 source module topology.sheaves.sheaf_of_functions
-! leanprover-community/mathlib commit 5dc6092d09e5e489106865241986f7f2ad28d4c8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.PresheafOfFunctions
 import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+
+#align_import topology.sheaves.sheaf_of_functions from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 
 /-!
 # Sheaf conditions for presheaves of (continuous) functions.
@@ -61,7 +58,7 @@ theorem toTypes_isSheaf (T : X → Type u) : (presheafToTypes X T).IsSheaf :=
     choose index index_spec using fun x : ↑(iSup U) => Opens.mem_iSup.mp x.2
     -- Using this data, we can glue our functions together to a single section
     let s : ∀ x : ↑(iSup U), T x := fun x => sf (index x) ⟨x.1, index_spec x⟩
-    refine' ⟨s, _, _⟩
+    refine ⟨s, ?_, ?_⟩
     · intro i
       funext x
       -- Now we need to verify that this lifted function restricts correctly to each set `U i`.

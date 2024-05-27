@@ -2,13 +2,10 @@
 Copyright (c) 2021 Matt Kempster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matt Kempster
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.herons_formula
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Euclidean.Triangle
+
+#align_import wiedijk_100_theorems.herons_formula from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # Freek № 57: Heron's Formula
@@ -28,13 +25,11 @@ open Real EuclideanGeometry
 
 open scoped Real EuclideanGeometry
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 namespace Theorems100
 
 local notation "√" => Real.sqrt
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- **Heron's formula**: The area of a triangle with side lengths `a`, `b`, and `c` is
@@ -62,17 +57,17 @@ theorem heron {p1 p2 p3 : P} (h1 : p1 ≠ p2) (h2 : p3 ≠ p2) :
       (sub_nonneg.mpr (cos_sq_le_one γ)).trans_eq split_to_frac
     cases' div_nonneg_iff.mp frac_nonneg with h h
     · exact h.left
-    · simpa [h1, h2] using le_antisymm h.right (sq_nonneg _)
-  have ab2_nonneg : 0 ≤ 2 * a * b := by simp [mul_nonneg, dist_nonneg]
+    · simpa [numerator, denominator, a, b, c, h1, h2] using le_antisymm h.right (sq_nonneg _)
+  have ab2_nonneg : 0 ≤ 2 * a * b := by positivity
   calc
     1 / 2 * a * b * sin γ = 1 / 2 * a * b * (√ numerator / √ denominator) := by
       rw [sin_eq_sqrt_one_sub_cos_sq, split_to_frac, sqrt_div numerator_nonneg] <;>
-        simp [angle_nonneg, angle_le_pi]
+        simp [γ, angle_nonneg, angle_le_pi]
     _ = 1 / 4 * √ ((2 * a * b) ^ 2 - (a * a + b * b - c * c) ^ 2) := by
-      field_simp [ab2_nonneg]; ring
-    _ = ↑1 / ↑4 * √ (s * (s - a) * (s - b) * (s - c) * ↑4 ^ 2) := by simp only; ring_nf
+      field_simp [numerator, denominator, ab2_nonneg]; ring
+    _ = ↑1 / ↑4 * √ (s * (s - a) * (s - b) * (s - c) * ↑4 ^ 2) := by simp only [s]; ring_nf
     _ = √ (s * (s - a) * (s - b) * (s - c)) := by
-      rw [sqrt_mul', sqrt_sq, div_mul_eq_mul_div, one_mul, mul_div_cancel] <;> norm_num
+      rw [sqrt_mul', sqrt_sq, div_mul_eq_mul_div, one_mul, mul_div_cancel_right₀] <;> norm_num
 #align theorems_100.heron Theorems100.heron
 
 end Theorems100

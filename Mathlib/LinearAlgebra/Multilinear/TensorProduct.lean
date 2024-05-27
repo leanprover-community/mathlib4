@@ -2,19 +2,17 @@
 Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.multilinear.tensor_product
-! leanprover-community/mathlib commit ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Multilinear.Basic
-import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
+
+#align_import linear_algebra.multilinear.tensor_product from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
 /-!
 # Constructions relating multilinear maps and tensor products.
 -/
 
+suppress_compilation
 
 namespace MultilinearMap
 
@@ -22,15 +20,11 @@ section DomCoprod
 
 open TensorProduct
 
-variable {R ι₁ ι₂ ι₃ ι₄ : Type _}
-
+variable {R ι₁ ι₂ ι₃ ι₄ : Type*}
 variable [CommSemiring R]
-
-variable {N₁ : Type _} [AddCommMonoid N₁] [Module R N₁]
-
-variable {N₂ : Type _} [AddCommMonoid N₂] [Module R N₂]
-
-variable {N : Type _} [AddCommMonoid N] [Module R N]
+variable {N₁ : Type*} [AddCommMonoid N₁] [Module R N₁]
+variable {N₂ : Type*} [AddCommMonoid N₂] [Module R N₂]
+variable {N : Type*} [AddCommMonoid N] [Module R N]
 
 /-- Given two multilinear maps `(ι₁ → N) → N₁` and `(ι₂ → N) → N₂`, this produces the map
 `(ι₁ ⊕ ι₂ → N) → N₁ ⊗ N₂` by taking the coproduct of the domain and the tensor product

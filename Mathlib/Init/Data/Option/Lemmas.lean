@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 
-import Std.Data.Option.Lemmas
+import Batteries.Data.Option.Lemmas
 import Mathlib.Mathport.Rename
 
 /-!
-# Align statements for declarations from Std
+# Align statements for declarations from Batteries
 -/
 
 #align option.mem_iff Option.mem_iff
@@ -59,3 +59,9 @@ import Mathlib.Mathport.Rename
 #align option.choice_eq Option.choice_eq
 #align option.to_list_some Option.to_list_some
 #align option.to_list_none Option.to_list_none
+#align option.get_or_else Option.getD
+#align option.get_or_else_coe Option.getD_some
+#align option.get_or_else_some Option.getD_some
+#align option.get_or_else_none Option.getD_none
+#align option.get_or_else_of_ne_none Option.getD_of_ne_none
+#align option.get_or_else_map Option.getD_map

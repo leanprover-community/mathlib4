@@ -2,19 +2,15 @@
 Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.classical
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Invertible
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Algebra.Lie.Abelian
 import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.Algebra.Lie.SkewAdjoint
 import Mathlib.LinearAlgebra.SymplecticGroup
+
+#align_import algebra.lie.classical from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
 /-!
 # Classical Lie algebras
@@ -50,7 +46,7 @@ which approach should be preferred so the choice should be assumed to be somewha
 ### Diagonal quadratic form or diagonal Cartan subalgebra
 
 For the algebras of type `B` and `D`, there are two natural definitions. For example since the
-the `2l × 2l` matrix:
+`2l × 2l` matrix:
 $$
   J = \left[\begin{array}{cc}
               0_l & 1_l\\
@@ -79,17 +75,15 @@ open Matrix
 
 open scoped Matrix
 
-variable (n p q l : Type _) (R : Type u₂)
-
+variable (n p q l : Type*) (R : Type u₂)
 variable [DecidableEq n] [DecidableEq p] [DecidableEq q] [DecidableEq l]
-
 variable [CommRing R]
 
 @[simp]
 theorem matrix_trace_commutator_zero [Fintype n] (X Y : Matrix n n R) : Matrix.trace ⁅X, Y⁆ = 0 :=
   calc
-    _ = Matrix.trace (X ⬝ Y) - Matrix.trace (Y ⬝ X) := trace_sub _ _
-    _ = Matrix.trace (X ⬝ Y) - Matrix.trace (X ⬝ Y) :=
+    _ = Matrix.trace (X * Y) - Matrix.trace (Y * X) := trace_sub _ _
+    _ = Matrix.trace (X * Y) - Matrix.trace (X * Y) :=
       (congr_arg (fun x => _ - x) (Matrix.trace_mul_comm Y X))
     _ = 0 := sub_self _
 #align lie_algebra.matrix_trace_commutator_zero LieAlgebra.matrix_trace_commutator_zero
@@ -102,7 +96,7 @@ def sl [Fintype n] : LieSubalgebra R (Matrix n n R) :=
     lie_mem' := fun _ _ => LinearMap.mem_ker.2 <| matrix_trace_commutator_zero _ _ _ _ }
 #align lie_algebra.special_linear.sl LieAlgebra.SpecialLinear.sl
 
-theorem sl_bracket [Fintype n] (A B : sl n R) : ⁅A, B⁆.val = A.val ⬝ B.val - B.val ⬝ A.val :=
+theorem sl_bracket [Fintype n] (A B : sl n R) : ⁅A, B⁆.val = A.val * B.val - B.val * A.val :=
   rfl
 #align lie_algebra.special_linear.sl_bracket LieAlgebra.SpecialLinear.sl_bracket
 
@@ -131,9 +125,9 @@ theorem sl_non_abelian [Fintype n] [Nontrivial R] (h : 1 < Fintype.card n) :
   let A := Eb R i j hij
   let B := Eb R j i hij.symm
   intro c
-  have c' : A.val ⬝ B.val = B.val ⬝ A.val := by
+  have c' : A.val * B.val = B.val * A.val := by
     rw [← sub_eq_zero, ← sl_bracket, c.trivial, ZeroMemClass.coe_zero]
-  simpa [stdBasisMatrix, Matrix.mul_apply, hij] using congr_fun (congr_fun c' i) i
+  simpa [A, B, stdBasisMatrix, Matrix.mul_apply, hij] using congr_fun (congr_fun c' i) i
 #align lie_algebra.special_linear.sl_non_abelian LieAlgebra.SpecialLinear.sl_non_abelian
 
 end SpecialLinear
@@ -201,7 +195,7 @@ def invertiblePso {i : R} (hi : i * i = -1) : Invertible (Pso p q R i) :=
 #align lie_algebra.orthogonal.invertible_Pso LieAlgebra.Orthogonal.invertiblePso
 
 theorem indefiniteDiagonal_transform {i : R} (hi : i * i = -1) :
-    (Pso p q R i)ᵀ ⬝ indefiniteDiagonal p q R ⬝ Pso p q R i = 1 := by
+    (Pso p q R i)ᵀ * indefiniteDiagonal p q R * Pso p q R i = 1 := by
   ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
@@ -227,9 +221,10 @@ def soIndefiniteEquiv {i : R} (hi : i * i = -1) : so' p q R ≃ₗ⁅R⁆ so (Su
 
 theorem soIndefiniteEquiv_apply {i : R} (hi : i * i = -1) (A : so' p q R) :
     (soIndefiniteEquiv p q R hi A : Matrix (Sum p q) (Sum p q) R) =
-      (Pso p q R i)⁻¹ ⬝ (A : Matrix (Sum p q) (Sum p q) R) ⬝ Pso p q R i := by
-  rw [soIndefiniteEquiv, LieEquiv.trans_apply, LieEquiv.ofEq_apply,
-    skewAdjointMatricesLieSubalgebraEquiv_apply]
+      (Pso p q R i)⁻¹ * (A : Matrix (Sum p q) (Sum p q) R) * Pso p q R i := by
+  rw [soIndefiniteEquiv, LieEquiv.trans_apply, LieEquiv.ofEq_apply]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [skewAdjointMatricesLieSubalgebraEquiv_apply]
 #align lie_algebra.orthogonal.so_indefinite_equiv_apply LieAlgebra.Orthogonal.soIndefiniteEquiv_apply
 
 /-- A matrix defining a canonical even-rank symmetric bilinear form.
@@ -271,16 +266,15 @@ theorem s_as_blocks : S l R = Matrix.fromBlocks 1 0 0 (-1) := by
   rfl
 #align lie_algebra.orthogonal.S_as_blocks LieAlgebra.Orthogonal.s_as_blocks
 
-theorem jd_transform [Fintype l] : (PD l R)ᵀ ⬝ JD l R ⬝ PD l R = (2 : R) • S l R := by
-  have h : (PD l R)ᵀ ⬝ JD l R = Matrix.fromBlocks 1 1 1 (-1) := by
+theorem jd_transform [Fintype l] : (PD l R)ᵀ * JD l R * PD l R = (2 : R) • S l R := by
+  have h : (PD l R)ᵀ * JD l R = Matrix.fromBlocks 1 1 1 (-1) := by
     simp [PD, JD, Matrix.fromBlocks_transpose, Matrix.fromBlocks_multiply]
   rw [h, PD, s_as_blocks, Matrix.fromBlocks_multiply, Matrix.fromBlocks_smul]
-  congr
   simp [two_smul]
 #align lie_algebra.orthogonal.JD_transform LieAlgebra.Orthogonal.jd_transform
 
 theorem pd_inv [Fintype l] [Invertible (2 : R)] : PD l R * ⅟ (2 : R) • (PD l R)ᵀ = 1 := by
-  rw [PD, Matrix.fromBlocks_transpose, Matrix.fromBlocks_smul, Matrix.mul_eq_mul,
+  rw [PD, Matrix.fromBlocks_transpose, Matrix.fromBlocks_smul,
     Matrix.fromBlocks_multiply]
   simp
 #align lie_algebra.orthogonal.PD_inv LieAlgebra.Orthogonal.pd_inv
@@ -294,7 +288,7 @@ def typeDEquivSo' [Fintype l] [Invertible (2 : R)] : typeD l R ≃ₗ⁅R⁆ so'
   apply (skewAdjointMatricesLieSubalgebraEquiv (JD l R) (PD l R) (by infer_instance)).trans
   apply LieEquiv.ofEq
   ext A
-  rw [jd_transform, ← unitOfInvertible_val (2 : R), ← Units.smul_def, LieSubalgebra.mem_coe,
+  rw [jd_transform, ← val_unitOfInvertible (2 : R), ← Units.smul_def, LieSubalgebra.mem_coe,
     mem_skewAdjointMatricesLieSubalgebra_unit_smul]
   rfl
 #align lie_algebra.orthogonal.type_D_equiv_so' LieAlgebra.Orthogonal.typeDEquivSo'
@@ -345,7 +339,7 @@ def PB :=
 variable [Fintype l]
 
 theorem pb_inv [Invertible (2 : R)] : PB l R * Matrix.fromBlocks 1 0 0 (⅟ (PD l R)) = 1 := by
-  rw [PB, Matrix.mul_eq_mul, Matrix.fromBlocks_multiply, Matrix.mul_invOf_self]
+  rw [PB, Matrix.fromBlocks_multiply, mul_invOf_self]
   simp only [Matrix.mul_zero, Matrix.mul_one, Matrix.zero_mul, zero_add, add_zero,
     Matrix.fromBlocks_one]
 #align lie_algebra.orthogonal.PB_inv LieAlgebra.Orthogonal.pb_inv
@@ -354,7 +348,7 @@ instance invertiblePB [Invertible (2 : R)] : Invertible (PB l R) :=
   invertibleOfRightInverse _ _ (pb_inv l R)
 #align lie_algebra.orthogonal.invertible_PB LieAlgebra.Orthogonal.invertiblePB
 
-theorem jb_transform : (PB l R)ᵀ ⬝ JB l R ⬝ PB l R = (2 : R) • Matrix.fromBlocks 1 0 0 (S l R) := by
+theorem jb_transform : (PB l R)ᵀ * JB l R * PB l R = (2 : R) • Matrix.fromBlocks 1 0 0 (S l R) := by
   simp [PB, JB, jd_transform, Matrix.fromBlocks_transpose, Matrix.fromBlocks_multiply,
     Matrix.fromBlocks_smul]
 #align lie_algebra.orthogonal.JB_transform LieAlgebra.Orthogonal.jb_transform
@@ -383,7 +377,7 @@ def typeBEquivSo' [Invertible (2 : R)] : typeB l R ≃ₗ⁅R⁆ so' (Sum Unit l
         (Matrix.reindexAlgEquiv _ (Equiv.sumAssoc PUnit l l)) (Matrix.transpose_reindex _ _)).trans
   apply LieEquiv.ofEq
   ext A
-  rw [jb_transform, ← unitOfInvertible_val (2 : R), ← Units.smul_def, LieSubalgebra.mem_coe,
+  rw [jb_transform, ← val_unitOfInvertible (2 : R), ← Units.smul_def, LieSubalgebra.mem_coe,
     LieSubalgebra.mem_coe, mem_skewAdjointMatricesLieSubalgebra_unit_smul]
   simp [indefiniteDiagonal_assoc, S]
 #align lie_algebra.orthogonal.type_B_equiv_so' LieAlgebra.Orthogonal.typeBEquivSo'

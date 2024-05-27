@@ -2,14 +2,11 @@
 Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.orthogonal
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.LinearAlgebra.BilinearForm
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.LinearAlgebra.SesquilinearForm
+
+#align_import analysis.inner_product_space.orthogonal from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Orthogonal complements of submodules
@@ -28,11 +25,8 @@ The proposition that two submodules are orthogonal, `Submodule.IsOrtho`, is deno
 Note this is not the same unicode symbol as `⊥` (`Bot`).
 -/
 
-
-variable {𝕜 E F : Type _} [IsROrC 𝕜]
-
+variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -46,7 +40,7 @@ def orthogonal : Submodule 𝕜 E where
   carrier := { v | ∀ u ∈ K, ⟪u, v⟫ = 0 }
   zero_mem' _ _ := inner_zero_right _
   add_mem' hx hy u hu := by rw [inner_add_right, hx u hu, hy u hu, add_zero]
-  smul_mem' c x hx u hu := by rw [inner_smul_right, hx u hu, MulZeroClass.mul_zero]
+  smul_mem' c x hx u hu := by rw [inner_smul_right, hx u hu, mul_zero]
 #align submodule.orthogonal Submodule.orthogonal
 
 @[inherit_doc]
@@ -77,7 +71,7 @@ theorem inner_left_of_mem_orthogonal {u v : E} (hu : u ∈ K) (hv : v ∈ Kᗮ) 
 
 /-- A vector is in `(𝕜 ∙ u)ᗮ` iff it is orthogonal to `u`. -/
 theorem mem_orthogonal_singleton_iff_inner_right {u v : E} : v ∈ (𝕜 ∙ u)ᗮ ↔ ⟪u, v⟫ = 0 := by
-  refine' ⟨inner_right_of_mem_orthogonal (mem_span_singleton_self u), _⟩
+  refine ⟨inner_right_of_mem_orthogonal (mem_span_singleton_self u), ?_⟩
   intro hv w hw
   rw [mem_span_singleton] at hw
   obtain ⟨c, rfl⟩ := hw
@@ -178,7 +172,7 @@ theorem inf_orthogonal (K₁ K₂ : Submodule 𝕜 E) : K₁ᗮ ⊓ K₂ᗮ = (K
 
 /-- The inf of an indexed family of orthogonal subspaces equals the
 subspace orthogonal to the sup. -/
-theorem iInf_orthogonal {ι : Type _} (K : ι → Submodule 𝕜 E) : ⨅ i, (K i)ᗮ = (iSup K)ᗮ :=
+theorem iInf_orthogonal {ι : Type*} (K : ι → Submodule 𝕜 E) : ⨅ i, (K i)ᗮ = (iSup K)ᗮ :=
   (orthogonal_gc 𝕜 E).l_iSup.symm
 #align submodule.infi_orthogonal Submodule.iInf_orthogonal
 
@@ -205,8 +199,8 @@ theorem bot_orthogonal_eq_top : (⊥ : Submodule 𝕜 E)ᗮ = ⊤ := by
 
 @[simp]
 theorem orthogonal_eq_top_iff : Kᗮ = ⊤ ↔ K = ⊥ := by
-  refine'
-    ⟨_, by
+  refine
+    ⟨?_, by
       rintro rfl
       exact bot_orthogonal_eq_top⟩
   intro h
@@ -226,7 +220,7 @@ end Submodule
 
 @[simp]
 theorem bilinFormOfRealInner_orthogonal {E} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (K : Submodule ℝ E) : bilinFormOfRealInner.orthogonal K = Kᗮ :=
+    (K : Submodule ℝ E) : K.orthogonalBilin bilinFormOfRealInner = Kᗮ :=
   rfl
 #align bilin_form_of_real_inner_orthogonal bilinFormOfRealInner_orthogonal
 
@@ -363,13 +357,13 @@ theorem isOrtho_sSup_right {U : Submodule 𝕜 E} {V : Set (Submodule 𝕜 E)} :
 #align submodule.is_ortho_Sup_right Submodule.isOrtho_sSup_right
 
 @[simp]
-theorem isOrtho_iSup_left {ι : Sort _} {U : ι → Submodule 𝕜 E} {V : Submodule 𝕜 E} :
+theorem isOrtho_iSup_left {ι : Sort*} {U : ι → Submodule 𝕜 E} {V : Submodule 𝕜 E} :
     iSup U ⟂ V ↔ ∀ i, U i ⟂ V :=
   iSup_le_iff
 #align submodule.is_ortho_supr_left Submodule.isOrtho_iSup_left
 
 @[simp]
-theorem isOrtho_iSup_right {ι : Sort _} {U : Submodule 𝕜 E} {V : ι → Submodule 𝕜 E} :
+theorem isOrtho_iSup_right {ι : Sort*} {U : Submodule 𝕜 E} {V : ι → Submodule 𝕜 E} :
     U ⟂ iSup V ↔ ∀ i, U ⟂ V i :=
   isOrtho_comm.trans <| isOrtho_iSup_left.trans <| by simp_rw [isOrtho_comm]
 #align submodule.is_ortho_supr_right Submodule.isOrtho_iSup_right
@@ -423,7 +417,7 @@ theorem orthogonalFamily_iff_pairwise {ι} {V : ι → Submodule 𝕜 E} :
         forall₂_congr fun _y _hy => inner_eq_zero_symm
 #align orthogonal_family_iff_pairwise orthogonalFamily_iff_pairwise
 
-alias orthogonalFamily_iff_pairwise ↔ OrthogonalFamily.pairwise OrthogonalFamily.of_pairwise
+alias ⟨OrthogonalFamily.pairwise, OrthogonalFamily.of_pairwise⟩ := orthogonalFamily_iff_pairwise
 #align orthogonal_family.pairwise OrthogonalFamily.pairwise
 #align orthogonal_family.of_pairwise OrthogonalFamily.of_pairwise
 

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.morphisms.universally_closed
-! leanprover-community/mathlib commit a8ae1b3f7979249a0af6bc7cf20c1f6bf656ca73
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Mathlib.Topology.LocalAtTarget
+
+#align_import algebraic_geometry.morphisms.universally_closed from "leanprover-community/mathlib"@"a8ae1b3f7979249a0af6bc7cf20c1f6bf656ca73"
 
 /-!
 # Universally closed morphism
@@ -46,7 +43,7 @@ class UniversallyClosed (f : X ⟶ Y) : Prop where
 #align algebraic_geometry.universally_closed AlgebraicGeometry.UniversallyClosed
 
 theorem universallyClosed_eq : @UniversallyClosed = universally (topologically @IsClosedMap) := by
-  ext X Y f; rw [UniversallyClosed_iff]
+  ext X Y f; rw [universallyClosed_iff]
 #align algebraic_geometry.universally_closed_eq AlgebraicGeometry.universallyClosed_eq
 
 theorem universallyClosed_respectsIso : RespectsIso @UniversallyClosed :=
@@ -57,16 +54,26 @@ theorem universallyClosed_stableUnderBaseChange : StableUnderBaseChange @Univers
   universallyClosed_eq.symm ▸ universally_stableUnderBaseChange (topologically @IsClosedMap)
 #align algebraic_geometry.universally_closed_stable_under_base_change AlgebraicGeometry.universallyClosed_stableUnderBaseChange
 
-theorem universallyClosed_stableUnderComposition : StableUnderComposition @UniversallyClosed := by
+instance isClosedMap_isStableUnderComposition :
+    IsStableUnderComposition (topologically @IsClosedMap) where
+  comp_mem f g hf hg := IsClosedMap.comp (f := f.1.base) (g := g.1.base) hg hf
+
+instance universallyClosed_isStableUnderComposition :
+    IsStableUnderComposition @UniversallyClosed := by
   rw [universallyClosed_eq]
-  exact StableUnderComposition.universally (fun X Y Z f g hf hg =>
-    @IsClosedMap.comp _ _ _ _ _ _ g.1.base f.1.base hg hf)
-#align algebraic_geometry.universally_closed_stable_under_composition AlgebraicGeometry.universallyClosed_stableUnderComposition
+  infer_instance
+#align algebraic_geometry.universally_closed_stable_under_composition AlgebraicGeometry.universallyClosed_isStableUnderComposition
 
 instance universallyClosedTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : UniversallyClosed f] [hg : UniversallyClosed g] : UniversallyClosed (f ≫ g) :=
-  universallyClosed_stableUnderComposition f g hf hg
+  comp_mem _ _ _ hf hg
 #align algebraic_geometry.universally_closed_type_comp AlgebraicGeometry.universallyClosedTypeComp
+
+theorem topologically_isClosedMap_respectsIso : RespectsIso (topologically @IsClosedMap) := by
+  apply MorphismProperty.respectsIso_of_isStableUnderComposition
+  intro _ _ f hf
+  have : IsIso f := hf
+  exact (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso (asIso f))).isClosedMap
 
 instance universallyClosedFst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyClosed g] :
     UniversallyClosed (pullback.fst : pullback f g ⟶ _) :=
@@ -86,9 +93,7 @@ theorem morphismRestrict_base {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier)
 theorem universallyClosed_is_local_at_target : PropertyIsLocalAtTarget @UniversallyClosed := by
   rw [universallyClosed_eq]
   apply universallyIsLocalAtTargetOfMorphismRestrict
-  · exact StableUnderComposition.respectsIso (fun X Y Z f g hf hg =>
-        @IsClosedMap.comp _ _ _ _ _ _ g.1.base f.1.base hg hf)
-      (fun f => (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso f)).isClosedMap)
+  · exact topologically_isClosedMap_respectsIso
   · intro X Y f ι U hU H
     simp_rw [topologically, morphismRestrict_base] at H
     exact (isClosedMap_iff_isClosedMap_of_iSup_eq_top hU).mpr H

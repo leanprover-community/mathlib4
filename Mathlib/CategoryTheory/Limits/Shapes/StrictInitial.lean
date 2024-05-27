@@ -2,14 +2,11 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.strict_initial
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+
+#align_import category_theory.limits.shapes.strict_initial from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Strict initial objects
@@ -33,7 +30,7 @@ The dual notion (strict terminal objects) occurs much less frequently in practic
 
 ## TODO
 
-* Construct examples of this: `Type _`, `TopCat`, `Groupoid`, simplicial types, posets.
+* Construct examples of this: `Type*`, `TopCat`, `Groupoid`, simplicial types, posets.
 * Construct the bottom element of the subobject lattice given strict initials.
 * Show cartesian closed categories have strict initials
 
@@ -121,7 +118,7 @@ instance initial_isIso_to {A : C} (f : A ⟶ ⊥_ C) : IsIso f :=
 #align category_theory.limits.initial_is_iso_to CategoryTheory.Limits.initial_isIso_to
 
 @[ext]
-theorem initial.hom_ext {A : C} (f g : A ⟶ ⊥_ C) : f = g :=
+theorem initial.strict_hom_ext {A : C} (f g : A ⟶ ⊥_ C) : f = g :=
   initialIsInitial.strict_hom_ext _ _
 #align category_theory.limits.initial.hom_ext CategoryTheory.Limits.initial.hom_ext
 
@@ -209,7 +206,7 @@ said object via `limit.π`. -/
 theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
     (H : ∀ (j) (_ : j ≠ i), IsTerminal (F.obj j)) [Subsingleton (i ⟶ i)] : IsIso (limit.π F i) := by
   classical
-    refine' ⟨⟨limit.lift _ ⟨_, ⟨_, _⟩⟩, _, _⟩⟩
+    refine ⟨⟨limit.lift _ ⟨_, ⟨?_, ?_⟩⟩, ?_, ?_⟩⟩
     · exact fun j =>
         dite (j = i)
           (fun h => eqToHom (by cases h; rfl))
@@ -247,7 +244,7 @@ instance terminal_isIso_from {A : C} (f : ⊤_ C ⟶ A) : IsIso f :=
 #align category_theory.limits.terminal_is_iso_from CategoryTheory.Limits.terminal_isIso_from
 
 @[ext]
-theorem terminal.hom_ext {A : C} (f g : ⊤_ C ⟶ A) : f = g :=
+theorem terminal.strict_hom_ext {A : C} (f g : ⊤_ C ⟶ A) : f = g :=
   terminalIsTerminal.strict_hom_ext _ _
 #align category_theory.limits.terminal.hom_ext CategoryTheory.Limits.terminal.hom_ext
 

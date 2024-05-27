@@ -2,15 +2,12 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Module.algebra
-! leanprover-community/mathlib commit 1c775cc661988d96c477aa4ca6f7b5641a2a924b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.Algebra.Category.ModuleCat.Basic
+
+#align_import algebra.category.Module.algebra from "leanprover-community/mathlib"@"1c775cc661988d96c477aa4ca6f7b5641a2a924b"
 
 /-!
 # Additional typeclass for modules over an algebra
@@ -43,7 +40,6 @@ open CategoryTheory
 namespace ModuleCat
 
 variable {k : Type u} [Field k]
-
 variable {A : Type w} [Ring A] [Algebra k A]
 
 /-- Type synonym for considering a module over a `k`-algebra as a `k`-module. -/
@@ -64,12 +60,14 @@ example (M N : ModuleCat.{v} A) : Module k (M ⟶ N) := LinearMap.module
 -- Porting note: used to be `by infer_instance` instead of `LinearMap.module`
 
 instance linearOverField : Linear k (ModuleCat.{v} A) where
-  --Porting note: used to be `by infer_instance` instead of `LinearMap.module`
+  -- Porting note: used to be `by infer_instance` instead of `LinearMap.module`
   homModule M N := LinearMap.module
   smul_comp := by
     -- Porting note: this was automatic by `aesop_cat`
-    aesop_cat_nonterminal
-    rw [LinearMap.smul_apply, LinearMap.smul_apply, LinearMap.map_smul_of_tower]
+    intros
+    ext
+    dsimp only [coe_comp, Function.comp_apply]
+    rw [LinearMap.smul_apply, LinearMap.map_smul_of_tower]
     rfl
 #align Module.linear_over_field ModuleCat.linearOverField
 

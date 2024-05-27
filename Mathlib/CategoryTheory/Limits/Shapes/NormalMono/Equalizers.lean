@@ -2,14 +2,11 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.normal_mono.equalizers
-! leanprover-community/mathlib commit 3a061790136d13594ec10c7c90d202335ac5d854
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
+#align_import category_theory.limits.shapes.normal_mono.equalizers from "leanprover-community/mathlib"@"3a061790136d13594ec10c7c90d202335ac5d854"
 
 /-!
 # Normal mono categories with finite products and kernels have all equalizers.
@@ -24,7 +21,7 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-variable {C : Type _} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category C] [HasZeroMorphisms C]
 
 namespace CategoryTheory.NormalMonoCategory
 
@@ -33,7 +30,7 @@ variable [HasFiniteProducts C] [HasKernels C] [NormalMonoCategory C]
 /-- The pullback of two monomorphisms exists. -/
 @[irreducible, nolint defLemma] -- Porting note: changed to irreducible and a def
 def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
-  HasLimit (cospan a b) :=
+    HasLimit (cospan a b) :=
   let ⟨P, f, haf, i⟩ := normalMonoOfMono a
   let ⟨Q, g, hbg, i'⟩ := normalMonoOfMono b
   let ⟨a', ha'⟩ :=
@@ -55,7 +52,8 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
   HasLimit.mk
     { cone :=
         PullbackCone.mk a' b' <| by
-          simp at ha' hb'
+          simp? at ha' hb' says
+            simp only [parallelPair_obj_zero, Fork.ofι_pt, Fork.ι_ofι] at ha' hb'
           rw [ha', hb']
       isLimit :=
         PullbackCone.IsLimit.mk _
@@ -92,7 +90,7 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
                 congr
                 exact ha'.symm
               _ = PullbackCone.fst s ≫ a := by rw [← Category.assoc, h₁]
-              _ = PullbackCone.snd s ≫ b := (PullbackCone.condition s)
+              _ = PullbackCone.snd s ≫ b := PullbackCone.condition s
               _ =
                   kernel.lift (prod.lift f g) (PullbackCone.snd s ≫ b) _ ≫
                     kernel.ι (prod.lift f g) :=
@@ -191,7 +189,7 @@ variable [HasFiniteCoproducts C] [HasCokernels C] [NormalEpiCategory C]
 /-- The pushout of two epimorphisms exists. -/
 @[irreducible, nolint defLemma] -- Porting note: made a def and re-added irreducible
 def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
-  HasColimit (span a b) :=
+    HasColimit (span a b) :=
   let ⟨P, f, hfa, i⟩ := normalEpiOfEpi a
   let ⟨Q, g, hgb, i'⟩ := normalEpiOfEpi b
   let ⟨a', ha'⟩ :=
@@ -240,13 +238,13 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
           (fun s =>
             (cancel_epi a).1 <| by
               rw [CokernelCofork.π_ofπ] at ha'
-              have reassoced {W : C} (h : cokernel (coprod.desc f g) ⟶  W) : a ≫ a' ≫ h
+              have reassoced {W : C} (h : cokernel (coprod.desc f g) ⟶ W) : a ≫ a' ≫ h
                 = cokernel.π (coprod.desc f g) ≫ h := by rw [← Category.assoc, eq_whisker ha']
               simp [reassoced , PushoutCocone.condition s])
           (fun s =>
             (cancel_epi b).1 <| by
               rw [CokernelCofork.π_ofπ] at hb'
-              have reassoced' {W : C} (h : cokernel (coprod.desc f g) ⟶  W) : b ≫ b' ≫ h
+              have reassoced' {W : C} (h : cokernel (coprod.desc f g) ⟶ W) : b ≫ b' ≫ h
                 = cokernel.π (coprod.desc f g) ≫ h := by rw [← Category.assoc, eq_whisker hb']
               simp [reassoced'])
           fun s m h₁ _ =>
@@ -256,7 +254,7 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
                 congr
                 exact ha'.symm
               _ = a ≫ PushoutCocone.inl s := by rw [Category.assoc, h₁]
-              _ = b ≫ PushoutCocone.inr s := (PushoutCocone.condition s)
+              _ = b ≫ PushoutCocone.inr s := PushoutCocone.condition s
               _ =
                   cokernel.π (coprod.desc f g) ≫
                     cokernel.desc (coprod.desc f g) (b ≫ PushoutCocone.inr s) _ :=
@@ -325,7 +323,7 @@ theorem mono_of_zero_kernel {X Y : C} (f : X ⟶ Y) (Z : C)
   ⟨fun u v huv => by
     obtain ⟨W, w, hw, hl⟩ := normalEpiOfEpi (coequalizer.π u v)
     obtain ⟨m, hm⟩ := coequalizer.desc' f huv
-    have reassoced {W : C} (h : coequalizer u v ⟶  W) : w ≫ coequalizer.π u v ≫ h = 0 ≫ h := by
+    have reassoced {W : C} (h : coequalizer u v ⟶ W) : w ≫ coequalizer.π u v ≫ h = 0 ≫ h := by
       rw [← Category.assoc, eq_whisker hw]
     have hwf : w ≫ f = 0 := by rw [← hm, reassoced, zero_comp]
     obtain ⟨n, hn⟩ := KernelFork.IsLimit.lift' l _ hwf

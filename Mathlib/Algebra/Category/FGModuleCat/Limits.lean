@@ -2,11 +2,6 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.fgModule.limits
-! leanprover-community/mathlib commit 19a70dceb9dff0994b92d2dd049de7d84d28112b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Limits
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+
+#align_import algebra.category.fgModule.limits from "leanprover-community/mathlib"@"19a70dceb9dff0994b92d2dd049de7d84d28112b"
 
 /-!
 # `forget₂ (FGModuleCat K) (ModuleCat K)` creates all finite limits.
@@ -40,11 +37,10 @@ open CategoryTheory.Limits
 namespace FGModuleCat
 
 variable {J : Type} [SmallCategory J] [FinCategory J]
-
 variable {k : Type v} [Field k]
 
-instance {J : Type} [Fintype J] (Z : J → ModuleCat.{v} k) [∀ j, FiniteDimensional k (Z j)] :
-    FiniteDimensional k (∏ fun j => Z j : ModuleCat.{v} k) :=
+instance {J : Type} [Finite J] (Z : J → ModuleCat.{v} k) [∀ j, FiniteDimensional k (Z j)] :
+    FiniteDimensional k (∏ᶜ fun j => Z j : ModuleCat.{v} k) :=
   haveI : FiniteDimensional k (ModuleCat.of k (∀ j, Z j)) := by unfold ModuleCat.of; infer_instance
   FiniteDimensional.of_injective (ModuleCat.piIsoPi _).hom
     ((ModuleCat.mono_iff_injective _).1 (by infer_instance))
@@ -71,9 +67,13 @@ set_option linter.uppercaseLean3 false in
 instance : CreatesLimitsOfShape J (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
   CreatesLimit {F} := forget₂CreatesLimit F
 
-instance : HasFiniteLimits (FGModuleCat k) where
-  out _ _ _ := hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape
+instance (J : Type) [Category J] [FinCategory J] :
+    HasLimitsOfShape J (FGModuleCat.{v} k) :=
+  hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape
     (forget₂ (FGModuleCat k) (ModuleCat.{v} k))
+
+instance : HasFiniteLimits (FGModuleCat k) where
+  out _ _ _ := inferInstance
 
 instance : PreservesFiniteLimits (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
   preservesFiniteLimits _ _ _ := inferInstance

@@ -2,14 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.subobject.lattice
-! leanprover-community/mathlib commit 024a4231815538ac739f52d08dd20a55da0d6b23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Subobject.FactorThru
 import Mathlib.CategoryTheory.Subobject.WellPowered
+
+#align_import category_theory.subobject.lattice from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
 
 /-!
 # The lattice of subobjects
@@ -26,7 +24,6 @@ noncomputable section
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
-
 variable {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory
@@ -126,7 +123,7 @@ def botCoeIsoZero {B : C} : ((⊥ : MonoOver B) : C) ≅ 0 :=
   initialIsInitial.uniqueUpToIso HasZeroObject.zeroIsInitial
 #align category_theory.mono_over.bot_coe_iso_zero CategoryTheory.MonoOver.botCoeIsoZero
 
--- porting note: removed @[simp] as the LHS simplifies
+-- Porting note: removed @[simp] as the LHS simplifies
 theorem bot_arrow_eq_zero [HasZeroMorphisms C] {B : C} : (⊥ : MonoOver B).arrow = 0 :=
   zero_of_source_iso_zero _ botCoeIsoZero
 #align category_theory.mono_over.bot_arrow_eq_zero CategoryTheory.MonoOver.bot_arrow_eq_zero
@@ -149,8 +146,8 @@ def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
   map k :=
     { app := fun g => by
         apply homMk _ _
-        apply pullback.lift pullback.fst (pullback.snd ≫ k.left) _
-        rw [pullback.condition, assoc, w k]
+        · apply pullback.lift pullback.fst (pullback.snd ≫ k.left) _
+          rw [pullback.condition, assoc, w k]
         dsimp
         rw [pullback.lift_snd_assoc, assoc, w k] }
 #align category_theory.mono_over.inf CategoryTheory.MonoOver.inf
@@ -169,8 +166,8 @@ def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
 def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf.obj f).obj g) := by
   intro k₁ k₂
   refine' homMk (pullback.lift k₂.left k₁.left _) _
-  rw [w k₁, w k₂]
-  erw [pullback.lift_snd_assoc, w k₁]
+  · rw [w k₁, w k₂]
+  · erw [pullback.lift_snd_assoc, w k₁]
 #align category_theory.mono_over.le_inf CategoryTheory.MonoOver.leInf
 
 end Inf
@@ -204,8 +201,8 @@ def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by
   intro k₁ k₂
   refine' homMk _ _
-  apply image.lift ⟨_, h.arrow, coprod.desc k₁.left k₂.left, _⟩
-  · ext
+  · apply image.lift ⟨_, h.arrow, coprod.desc k₁.left k₂.left, _⟩
+    ext
     · simp [w k₁]
     · simp [w k₂]
   · apply image.lift_fac
@@ -222,7 +219,7 @@ section OrderTop
 instance orderTop {X : C} : OrderTop (Subobject X) where
   top := Quotient.mk'' ⊤
   le_top := by
-    refine' Quotient.ind' fun f => _
+    refine Quotient.ind' fun f => ?_
     exact ⟨MonoOver.leTop f⟩
 #align category_theory.subobject.order_top CategoryTheory.Subobject.orderTop
 
@@ -302,7 +299,7 @@ variable [HasInitial C] [InitialMonoClass C]
 instance orderBot {X : C} : OrderBot (Subobject X) where
   bot := Quotient.mk'' ⊥
   bot_le := by
-    refine' Quotient.ind' fun f => _
+    refine Quotient.ind' fun f => ?_
     exact ⟨MonoOver.botLE f⟩
 #align category_theory.subobject.order_bot CategoryTheory.Subobject.orderBot
 
@@ -335,7 +332,8 @@ def botCoeIsoZero {B : C} : ((⊥ : Subobject B) : C) ≅ 0 :=
 variable [HasZeroMorphisms C]
 
 theorem bot_eq_zero {B : C} : (⊥ : Subobject B) = Subobject.mk (0 : 0 ⟶ B) :=
-  mk_eq_mk_of_comm _ _ (initialIsInitial.uniqueUpToIso HasZeroObject.zeroIsInitial) (by simp)
+  mk_eq_mk_of_comm _ _ (initialIsInitial.uniqueUpToIso HasZeroObject.zeroIsInitial)
+    (by simp [eq_iff_true_of_subsingleton])
 #align category_theory.subobject.bot_eq_zero CategoryTheory.Subobject.bot_eq_zero
 
 @[simp]
@@ -434,7 +432,7 @@ theorem inf_arrow_factors_right {B : C} (X Y : Subobject B) : Y.Factors (X ⊓ Y
 #align category_theory.subobject.inf_arrow_factors_right CategoryTheory.Subobject.inf_arrow_factors_right
 
 @[simp]
-theorem finset_inf_factors {I : Type _} {A B : C} {s : Finset I} {P : I → Subobject B} (f : A ⟶ B) :
+theorem finset_inf_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subobject B} (f : A ⟶ B) :
     (s.inf P).Factors f ↔ ∀ i ∈ s, (P i).Factors f := by
   classical
   induction' s using Finset.induction_on with _ _ _ ih
@@ -443,7 +441,7 @@ theorem finset_inf_factors {I : Type _} {A B : C} {s : Finset I} {P : I → Subo
 #align category_theory.subobject.finset_inf_factors CategoryTheory.Subobject.finset_inf_factors
 
 -- `i` is explicit here because often we'd like to defer a proof of `m`
-theorem finset_inf_arrow_factors {I : Type _} {B : C} (s : Finset I) (P : I → Subobject B) (i : I)
+theorem finset_inf_arrow_factors {I : Type*} {B : C} (s : Finset I) (P : I → Subobject B) (i : I)
     (m : i ∈ s) : (P i).Factors (s.inf P).arrow := by
   classical
   revert i m
@@ -537,7 +535,7 @@ theorem sup_factors_of_factors_right {A B : C} {X Y : Subobject B} {f : A ⟶ B}
 
 variable [HasInitial C] [InitialMonoClass C]
 
-theorem finset_sup_factors {I : Type _} {A B : C} {s : Finset I} {P : I → Subobject B} {f : A ⟶ B}
+theorem finset_sup_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subobject B} {f : A ⟶ B}
     (h : ∃ i ∈ s, (P i).Factors f) : (s.sup P).Factors f := by
   classical
   revert h
@@ -651,7 +649,7 @@ theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ 
     aesop_cat
 #align category_theory.subobject.Inf_le CategoryTheory.Subobject.sInf_le
 
-theorem le_sInf  {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
+theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
     f ≤ sInf s := by
   fapply le_of_comm
   · exact Limits.limit.lift _ (leInfCone s f k) ≫ (underlyingIso _).inv
@@ -687,13 +685,13 @@ def sSup {A : C} (s : Set (Subobject A)) : Subobject A :=
 
 theorem le_sSup {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : f ≤ sSup s := by
   fapply le_of_comm
-  · refine' eqToHom _ ≫ Sigma.ι _ ⟨equivShrink (Subobject A) f, by simpa [Set.mem_image] using hf⟩
+  · refine eqToHom ?_ ≫ Sigma.ι _ ⟨equivShrink (Subobject A) f, by simpa [Set.mem_image] using hf⟩
       ≫ factorThruImage _ ≫ (underlyingIso _).inv
     exact (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _).symm)
   · simp [sSup, smallCoproductDesc]
 #align category_theory.subobject.le_Sup CategoryTheory.Subobject.le_sSup
 
-theorem symm_apply_mem_iff_mem_image {α β : Type _} (e : α ≃ β) (s : Set α) (x : β) :
+theorem symm_apply_mem_iff_mem_image {α β : Type*} (e : α ≃ β) (s : Set α) (x : β) :
     e.symm x ∈ s ↔ x ∈ e '' s :=
   ⟨fun h => ⟨e.symm x, h, by simp⟩, by
     rintro ⟨a, m, rfl⟩
@@ -703,10 +701,10 @@ theorem symm_apply_mem_iff_mem_image {α β : Type _} (e : α ≃ β) (s : Set �
 theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, g ≤ f) :
     sSup s ≤ f := by
   fapply le_of_comm
-  · refine'(underlyingIso _).hom ≫ image.lift ⟨_, f.arrow, _, _⟩
-    · refine' Sigma.desc _
+  · refine(underlyingIso _).hom ≫ image.lift ⟨_, f.arrow, ?_, ?_⟩
+    · refine Sigma.desc ?_
       rintro ⟨g, m⟩
-      refine' underlying.map (homOfLE (k _ _))
+      refine underlying.map (homOfLE (k _ ?_))
       simpa using m
     · ext
       dsimp [smallCoproductDesc]

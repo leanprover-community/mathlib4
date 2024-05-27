@@ -2,16 +2,13 @@
 Copyright (c) 2022 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster
-
-! This file was ported from Lean 3 source module algebra.char_p.local_ring
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Data.Nat.Factorization.Basic
+
+#align_import algebra.char_p.local_ring from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Characteristics of local rings
@@ -25,7 +22,7 @@ import Mathlib.Data.Nat.Factorization.Basic
 
 
 /-- In a local ring the characteristics is either zero or a prime power. -/
-theorem charP_zero_or_prime_power (R : Type _) [CommRing R] [LocalRing R] (q : ℕ)
+theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [LocalRing R] (q : ℕ)
     [char_R_q : CharP R q] : q = 0 ∨ IsPrimePow q := by
   -- Assume `q := char(R)` is not zero.
   apply or_iff_not_imp_left.2
@@ -54,8 +51,8 @@ theorem charP_zero_or_prime_power (R : Type _) [CommRing R] [LocalRing R] (q : �
     -- Let `b` be the inverse of `a`.
     cases' a_unit.exists_left_inv with a_inv h_inv_mul_a
     have rn_cast_zero : ↑(r ^ n) = (0 : R) := by
-      rw [← @mul_one R _ (r ^ n), mul_comm, ←Classical.choose_spec a_unit.exists_left_inv,
-        mul_assoc, ← Nat.cast_mul, ←q_eq_a_mul_rn, CharP.cast_eq_zero R q]
+      rw [← @mul_one R _ ↑(r ^ n), mul_comm, ← Classical.choose_spec a_unit.exists_left_inv,
+        mul_assoc, ← Nat.cast_mul, ← q_eq_a_mul_rn, CharP.cast_eq_zero R q]
       simp
     have q_eq_rn := Nat.dvd_antisymm ((CharP.cast_eq_zero_iff R q (r ^ n)).mp rn_cast_zero) rn_dvd_q
     have n_pos : n ≠ 0 := fun n_zero =>

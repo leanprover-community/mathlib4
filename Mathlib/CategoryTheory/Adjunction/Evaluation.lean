@@ -2,14 +2,11 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.adjunction.evaluation
-! leanprover-community/mathlib commit 937c692d73f5130c7fecd3fd32e81419f4e04eb7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Functor.EpiMono
+
+#align_import category_theory.adjunction.evaluation from "leanprover-community/mathlib"@"937c692d73f5130c7fecd3fd32e81419f4e04eb7"
 
 /-!
 
@@ -67,16 +64,18 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
             ext x
             dsimp
             ext g
-            simp only [colimit.ι_desc, Cofan.mk_ι_app, Category.assoc, ←f.naturality,
+            simp only [colimit.ι_desc, Cofan.mk_ι_app, Category.assoc, ← f.naturality,
               evaluationLeftAdjoint_obj_map, colimit.ι_desc_assoc,
               Discrete.functor_obj, Cofan.mk_pt, Discrete.natTrans_app, Category.id_comp]
           right_inv := fun f => by
             dsimp
-            simp } }
+            simp }
+      -- This used to be automatic before leanprover/lean4#2644
+      homEquiv_naturality_right := by intros; dsimp; simp }
 #align category_theory.evaluation_adjunction_right CategoryTheory.evaluationAdjunctionRight
 
-instance evaluationIsRightAdjoint (c : C) : IsRightAdjoint ((evaluation _ D).obj c) :=
-  ⟨_, evaluationAdjunctionRight _ _⟩
+instance evaluationIsRightAdjoint (c : C) : ((evaluation _ D).obj c).IsRightAdjoint  :=
+  ⟨_, ⟨evaluationAdjunctionRight _ _⟩⟩
 #align category_theory.evaluation_is_right_adjoint CategoryTheory.evaluationIsRightAdjoint
 
 theorem NatTrans.mono_iff_mono_app {F G : C ⥤ D} (η : F ⟶ G) : Mono η ↔ ∀ c, Mono (η.app c) := by
@@ -97,7 +96,7 @@ variable [∀ a b : C, HasProductsOfShape (a ⟶ b) D]
 @[simps]
 def evaluationRightAdjoint (c : C) : D ⥤ C ⥤ D where
   obj d :=
-    { obj := fun t => ∏ fun _ : t ⟶ c => d
+    { obj := fun t => ∏ᶜ fun _ : t ⟶ c => d
       map := fun f => Pi.lift fun g => Pi.π _ <| f ≫ g }
   map f :=
     { app := fun t => Pi.lift fun g => Pi.π _ g ≫ f
@@ -134,8 +133,8 @@ def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRigh
               Fan.mk_pt, Fan.mk_π_app, Discrete.natTrans_app, Category.comp_id] } }
 #align category_theory.evaluation_adjunction_left CategoryTheory.evaluationAdjunctionLeft
 
-instance evaluationIsLeftAdjoint (c : C) : IsLeftAdjoint ((evaluation _ D).obj c) :=
-  ⟨_, evaluationAdjunctionLeft _ _⟩
+instance evaluationIsLeftAdjoint (c : C) : ((evaluation _ D).obj c).IsLeftAdjoint :=
+  ⟨_, ⟨evaluationAdjunctionLeft _ _⟩⟩
 #align category_theory.evaluation_is_left_adjoint CategoryTheory.evaluationIsLeftAdjoint
 
 theorem NatTrans.epi_iff_epi_app {F G : C ⥤ D} (η : F ⟶ G) : Epi η ↔ ∀ c, Epi (η.app c) := by

@@ -2,21 +2,18 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
-
-! This file was ported from Lean 3 source module algebra.ring.regular
-! leanprover-community/mathlib commit 2f3994e1b117b1e1da49bcfb67334f33460c3ce4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Defs
+
+#align_import algebra.ring.regular from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
 
 /-!
 # Lemmas about regular elements in rings.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- Left `Mul` by a `k : α` over `[Ring α]` is injective, if `k` is not a zero divisor.
 The typeclass that restricts all terms of `α` to have this property is `NoZeroDivisors`. -/
@@ -52,8 +49,7 @@ theorem isRegular_iff_ne_zero' [Nontrivial α] [NonUnitalNonAssocRing α] [NoZer
 /-- A ring with no zero divisors is a `CancelMonoidWithZero`.
 
 Note this is not an instance as it forms a typeclass loop. -/
-@[reducible]
-def NoZeroDivisors.toCancelMonoidWithZero [Ring α] [NoZeroDivisors α] : CancelMonoidWithZero α :=
+abbrev NoZeroDivisors.toCancelMonoidWithZero [Ring α] [NoZeroDivisors α] : CancelMonoidWithZero α :=
   { (by infer_instance : MonoidWithZero α) with
     mul_left_cancel_of_ne_zero := fun ha =>
       @IsRegular.left _ _ _ (isRegular_of_ne_zero' ha) _ _,
@@ -64,8 +60,7 @@ def NoZeroDivisors.toCancelMonoidWithZero [Ring α] [NoZeroDivisors α] : Cancel
 /-- A commutative ring with no zero divisors is a `CancelCommMonoidWithZero`.
 
 Note this is not an instance as it forms a typeclass loop. -/
-@[reducible]
-def NoZeroDivisors.toCancelCommMonoidWithZero [CommRing α] [NoZeroDivisors α] :
+abbrev NoZeroDivisors.toCancelCommMonoidWithZero [CommRing α] [NoZeroDivisors α] :
     CancelCommMonoidWithZero α :=
   { NoZeroDivisors.toCancelMonoidWithZero, ‹CommRing α› with }
 #align no_zero_divisors.to_cancel_comm_monoid_with_zero NoZeroDivisors.toCancelCommMonoidWithZero

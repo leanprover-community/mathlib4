@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module category_theory.category.Pointed
-! leanprover-community/mathlib commit c8ab806ef73c20cab1d87b5157e43a82c205f28e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+
+#align_import category_theory.category.Pointed from "leanprover-community/mathlib"@"c8ab806ef73c20cab1d87b5157e43a82c205f28e"
 
 /-!
 # The category of pointed types
@@ -26,7 +23,7 @@ open CategoryTheory
 
 universe u
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- The category of pointed types. -/
 structure Pointed : Type (u + 1) where
@@ -39,25 +36,25 @@ set_option linter.uppercaseLean3 false in
 
 namespace Pointed
 
-instance : CoeSort Pointed (Type _) :=
+instance : CoeSort Pointed (Type*) :=
   ⟨X⟩
 
--- porting note: protected attribute does not work
+-- Porting note: protected attribute does not work
 --attribute [protected] Pointed.X
 
 /-- Turns a point into a pointed type. -/
-def of {X : Type _} (point : X) : Pointed :=
+def of {X : Type*} (point : X) : Pointed :=
   ⟨X, point⟩
 set_option linter.uppercaseLean3 false in
 #align Pointed.of Pointed.of
 
 @[simp]
-theorem coe_of {X : Type _} (point : X) : ↥(of point) = X :=
+theorem coe_of {X : Type*} (point : X) : ↥(of point) = X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Pointed.coe_of Pointed.coe_of
 
-alias of ← _root_.Prod.Pointed
+alias _root_.Prod.Pointed := of
 set_option linter.uppercaseLean3 false in
 #align prod.Pointed Prod.Pointed
 
@@ -95,13 +92,17 @@ set_option linter.uppercaseLean3 false in
 
 end Hom
 
-instance largeCategory : LargeCategory Pointed
-    where
+instance largeCategory : LargeCategory Pointed where
   Hom := Pointed.Hom
   id := Hom.id
   comp := @Hom.comp
 set_option linter.uppercaseLean3 false in
 #align Pointed.large_category Pointed.largeCategory
+
+@[simp] lemma Hom.id_toFun' (X : Pointed.{u}) : (𝟙 X : X ⟶ X).toFun = _root_.id := rfl
+
+@[simp] lemma Hom.comp_toFun' {X Y Z : Pointed.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).toFun = g.toFun ∘ f.toFun := rfl
 
 instance concreteCategory : ConcreteCategory Pointed where
   forget :=

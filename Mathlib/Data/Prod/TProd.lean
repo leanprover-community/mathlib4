@@ -2,18 +2,15 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module data.prod.tprod
-! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Nodup
+
+#align_import data.prod.tprod from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
 /-!
 # Finite products of types
 
 This file defines the product of types over a list. For `l : List ι` and `α : ι → Type v` we define
-`List.TProd α l = l.foldr (λ i β, α i × β) PUnit`.
+`List.TProd α l = l.foldr (fun i β ↦ α i × β) PUnit`.
 This type should not be used if `∀ i, α i` or `∀ i ∈ l, α i` can be used instead
 (in the last expression, we could also replace the list `l` by a set or a finset).
 This type is used as an intermediary between binary products and finitary products.
@@ -27,7 +24,7 @@ construction/theorem that is easier to define/prove on binary products than on f
 * Then we can use the equivalence `List.TProd.piEquivTProd` below (or enhanced versions of it,
   like a `MeasurableEquiv` for product measures) to get the construction on `∀ i : ι, α i`, at
   least when assuming `[Fintype ι] [Encodable ι]` (using `Encodable.sortedUniv`).
-  Using `local attribute [instance] Fintype.toEncodable` we can get rid of the argument
+  Using `attribute [local instance] Fintype.toEncodable` we can get rid of the argument
   `[Encodable ι]`.
 
 ## Main definitions
@@ -47,7 +44,7 @@ namespace List
 variable (α)
 
 /-- The product of a family of types over a list. -/
-def TProd (l : List ι) : Type v :=
+abbrev TProd (l : List ι) : Type v :=
   l.foldr (fun i β => α i × β) PUnit
 #align list.tprod List.TProd
 
@@ -112,7 +109,6 @@ theorem elim_mk : ∀ (l : List ι) (f : ∀ i, α i) {i : ι} (hi : i ∈ l), (
     · subst hji
       simp
     · rw [TProd.elim_of_ne _ hji, snd_mk, elim_mk is]
-    termination_by elim_mk l f j hj => l.length
 #align list.tprod.elim_mk List.TProd.elim_mk
 
 @[ext]
@@ -121,8 +117,9 @@ theorem ext :
       (_ : ∀ (i) (hi : i ∈ l), v.elim hi = w.elim hi), v = w
   | [], _, v, w, _ => PUnit.ext v w
   | i :: is, hl, v, w, hvw => by
-    apply Prod.ext; rw [← elim_self v, hvw, elim_self]
-    refine' ext (nodup_cons.mp hl).2 fun j hj => _
+    apply Prod.ext
+    · rw [← elim_self v, hvw, elim_self]
+    refine ext (nodup_cons.mp hl).2 fun j hj => ?_
     rw [← elim_of_mem hl, hvw, elim_of_mem hl]
 #align list.tprod.ext List.TProd.ext
 
@@ -180,7 +177,7 @@ theorem elim_preimage_pi [DecidableEq ι] {l : List ι} (hnd : l.Nodup) (h : ∀
     simp [h]
   rw [← h2, ← mk_preimage_tprod, preimage_preimage]
   simp only [TProd.mk_elim hnd h]
-  dsimp; rfl
+  dsimp
 #align set.elim_preimage_pi Set.elim_preimage_pi
 
 end Set

@@ -2,14 +2,11 @@
 Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Johan Commelin
-
-! This file was ported from Lean 3 source module category_theory.adjunction.limits
-! leanprover-community/mathlib commit 9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Limits.Creates
+
+#align_import category_theory.adjunction.limits from "leanprover-community/mathlib"@"9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a"
 
 /-!
 # Adjunctions and limits
@@ -33,20 +30,17 @@ the functor associating to each `Y` the cocones over `K` with cone point `G.obj 
 
 open Opposite
 
-namespace CategoryTheory.Adjunction
+namespace CategoryTheory
 
-open CategoryTheory
+open Functor Limits
 
-open CategoryTheory.Functor
-
-open CategoryTheory.Limits
+namespace Adjunction
 
 universe v u v₁ v₂ v₀ u₁ u₂
 
 section ArbitraryUniverse
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
 section PreservationColimits
@@ -70,8 +64,8 @@ Auxiliary definition for `functorialityIsLeftAdjoint`.
 -/
 @[simps]
 def functorialityUnit :
-  𝟭 (Cocone K) ⟶ Cocones.functoriality _ F ⋙ functorialityRightAdjoint adj K where
-    app c := { Hom := adj.unit.app c.pt }
+    𝟭 (Cocone K) ⟶ Cocones.functoriality _ F ⋙ functorialityRightAdjoint adj K where
+  app c := { hom := adj.unit.app c.pt }
 #align category_theory.adjunction.functoriality_unit CategoryTheory.Adjunction.functorialityUnit
 
 /-- The counit for the adjunction for `Cocones.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
@@ -80,17 +74,16 @@ Auxiliary definition for `functorialityIsLeftAdjoint`.
 -/
 @[simps]
 def functorialityCounit :
-  functorialityRightAdjoint adj K ⋙ Cocones.functoriality _ F ⟶ 𝟭 (Cocone (K ⋙ F)) where
-    app c := { Hom := adj.counit.app c.pt }
+    functorialityRightAdjoint adj K ⋙ Cocones.functoriality _ F ⟶ 𝟭 (Cocone (K ⋙ F)) where
+  app c := { hom := adj.counit.app c.pt }
 #align category_theory.adjunction.functoriality_counit CategoryTheory.Adjunction.functorialityCounit
 
 /-- The functor `Cocones.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)` is a left adjoint. -/
-def functorialityIsLeftAdjoint : IsLeftAdjoint (Cocones.functoriality K F) where
-  right := functorialityRightAdjoint adj K
-  adj := mkOfUnitCounit
+def functorialityAdjunction : Cocones.functoriality K F ⊣ functorialityRightAdjoint adj K :=
+  mkOfUnitCounit
     { unit := functorialityUnit adj K
-      counit := functorialityCounit adj K }
-#align category_theory.adjunction.functoriality_is_left_adjoint CategoryTheory.Adjunction.functorialityIsLeftAdjoint
+      counit := functorialityCounit adj K}
+#align category_theory.adjunction.functoriality_is_left_adjoint CategoryTheory.Adjunction.functorialityAdjunction
 
 /-- A left adjoint preserves colimits.
 
@@ -102,17 +95,19 @@ def leftAdjointPreservesColimits : PreservesColimitsOfSize.{v, u} F where
         { preserves := fun hc =>
             IsColimit.isoUniqueCoconeMorphism.inv fun _ =>
               @Equiv.unique _ _ (IsColimit.isoUniqueCoconeMorphism.hom hc _)
-                ((adj.functorialityIsLeftAdjoint _).adj.homEquiv _ _) } }
+                ((adj.functorialityAdjunction _).homEquiv _ _) } }
 #align category_theory.adjunction.left_adjoint_preserves_colimits CategoryTheory.Adjunction.leftAdjointPreservesColimits
 
 -- see Note [lower instance priority]
-instance (priority := 100) isEquivalencePreservesColimits (E : C ⥤ D) [IsEquivalence E] :
+noncomputable instance (priority := 100) isEquivalencePreservesColimits
+    (E : C ⥤ D) [E.IsEquivalence] :
     PreservesColimitsOfSize.{v, u} E :=
   leftAdjointPreservesColimits E.adjunction
 #align category_theory.adjunction.is_equivalence_preserves_colimits CategoryTheory.Adjunction.isEquivalencePreservesColimits
 
 -- see Note [lower instance priority]
-instance (priority := 100) isEquivalenceReflectsColimits (E : D ⥤ C) [IsEquivalence E] :
+noncomputable instance (priority := 100) isEquivalenceReflectsColimits
+    (E : D ⥤ C) [E.IsEquivalence] :
     ReflectsColimitsOfSize.{v, u} E where
   reflectsColimitsOfShape :=
     { reflectsColimit :=
@@ -121,7 +116,8 @@ instance (priority := 100) isEquivalenceReflectsColimits (E : D ⥤ C) [IsEquiva
 #align category_theory.adjunction.is_equivalence_reflects_colimits CategoryTheory.Adjunction.isEquivalenceReflectsColimits
 
 -- see Note [lower instance priority]
-instance (priority := 100) isEquivalenceCreatesColimits (H : D ⥤ C) [IsEquivalence H] :
+noncomputable instance (priority := 100) isEquivalenceCreatesColimits (H : D ⥤ C)
+    [H.IsEquivalence] :
     CreatesColimitsOfSize.{v, u} H where
   CreatesColimitsOfShape :=
     { CreatesColimit :=
@@ -131,18 +127,18 @@ instance (priority := 100) isEquivalenceCreatesColimits (H : D ⥤ C) [IsEquival
 #align category_theory.adjunction.is_equivalence_creates_colimits CategoryTheory.Adjunction.isEquivalenceCreatesColimits
 
 -- verify the preserve_colimits instance works as expected:
-example (E : C ⥤ D) [IsEquivalence E] (c : Cocone K) (h : IsColimit c) :
+noncomputable example (E : C ⥤ D) [E.IsEquivalence] (c : Cocone K) (h : IsColimit c) :
     IsColimit (E.mapCocone c) :=
   PreservesColimit.preserves h
 
-theorem hasColimit_comp_equivalence (E : C ⥤ D) [IsEquivalence E] [HasColimit K] :
+theorem hasColimit_comp_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimit K] :
     HasColimit (K ⋙ E) :=
   HasColimit.mk
     { cocone := E.mapCocone (colimit.cocone K)
       isColimit := PreservesColimit.preserves (colimit.isColimit K) }
 #align category_theory.adjunction.has_colimit_comp_equivalence CategoryTheory.Adjunction.hasColimit_comp_equivalence
 
-theorem hasColimit_of_comp_equivalence (E : C ⥤ D) [IsEquivalence E] [HasColimit (K ⋙ E)] :
+theorem hasColimit_of_comp_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimit (K ⋙ E)] :
     HasColimit K :=
   @hasColimitOfIso _ _ _ _ (K ⋙ E ⋙ E.inv) K
     (@hasColimit_comp_equivalence _ _ _ _ _ _ (K ⋙ E) E.inv _ _)
@@ -150,13 +146,13 @@ theorem hasColimit_of_comp_equivalence (E : C ⥤ D) [IsEquivalence E] [HasColim
 #align category_theory.adjunction.has_colimit_of_comp_equivalence CategoryTheory.Adjunction.hasColimit_of_comp_equivalence
 
 /-- Transport a `HasColimitsOfShape` instance across an equivalence. -/
-theorem hasColimitsOfShape_of_equivalence (E : C ⥤ D) [IsEquivalence E] [HasColimitsOfShape J D] :
+theorem hasColimitsOfShape_of_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimitsOfShape J D] :
     HasColimitsOfShape J C :=
   ⟨fun F => hasColimit_of_comp_equivalence F E⟩
 #align category_theory.adjunction.has_colimits_of_shape_of_equivalence CategoryTheory.Adjunction.hasColimitsOfShape_of_equivalence
 
 /-- Transport a `HasColimitsOfSize` instance across an equivalence. -/
-theorem has_colimits_of_equivalence (E : C ⥤ D) [IsEquivalence E] [HasColimitsOfSize.{v, u} D] :
+theorem has_colimits_of_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimitsOfSize.{v, u} D] :
     HasColimitsOfSize.{v, u} C :=
   ⟨fun _ _ => hasColimitsOfShape_of_equivalence E⟩
 #align category_theory.adjunction.has_colimits_of_equivalence CategoryTheory.Adjunction.has_colimits_of_equivalence
@@ -184,8 +180,8 @@ Auxiliary definition for `functorialityIsRightAdjoint`.
 -/
 @[simps]
 def functorialityUnit' :
-  𝟭 (Cone (K ⋙ G)) ⟶ functorialityLeftAdjoint adj K ⋙ Cones.functoriality _ G where
-    app c := { Hom := adj.unit.app c.pt }
+    𝟭 (Cone (K ⋙ G)) ⟶ functorialityLeftAdjoint adj K ⋙ Cones.functoriality _ G where
+  app c := { hom := adj.unit.app c.pt }
 #align category_theory.adjunction.functoriality_unit' CategoryTheory.Adjunction.functorialityUnit'
 
 /-- The counit for the adjunction for `Cones.functoriality K G : Cone K ⥤ Cone (K ⋙ G)`.
@@ -194,17 +190,16 @@ Auxiliary definition for `functorialityIsRightAdjoint`.
 -/
 @[simps]
 def functorialityCounit' :
-  Cones.functoriality _ G ⋙ functorialityLeftAdjoint adj K ⟶ 𝟭 (Cone K) where
-    app c := { Hom := adj.counit.app c.pt }
+    Cones.functoriality _ G ⋙ functorialityLeftAdjoint adj K ⟶ 𝟭 (Cone K) where
+  app c := { hom := adj.counit.app c.pt }
 #align category_theory.adjunction.functoriality_counit' CategoryTheory.Adjunction.functorialityCounit'
 
 /-- The functor `Cones.functoriality K G : Cone K ⥤ Cone (K ⋙ G)` is a right adjoint. -/
-def functorialityIsRightAdjoint : IsRightAdjoint (Cones.functoriality K G) where
-  left := functorialityLeftAdjoint adj K
-  adj := mkOfUnitCounit
+def functorialityAdjunction' : functorialityLeftAdjoint adj K ⊣ Cones.functoriality K G :=
+  mkOfUnitCounit
     { unit := functorialityUnit' adj K
       counit := functorialityCounit' adj K }
-#align category_theory.adjunction.functoriality_is_right_adjoint CategoryTheory.Adjunction.functorialityIsRightAdjoint
+#align category_theory.adjunction.functoriality_is_right_adjoint CategoryTheory.Adjunction.functorialityAdjunction'
 
 /-- A right adjoint preserves limits.
 
@@ -216,17 +211,19 @@ def rightAdjointPreservesLimits : PreservesLimitsOfSize.{v, u} G where
         { preserves := fun hc =>
             IsLimit.isoUniqueConeMorphism.inv fun _ =>
               @Equiv.unique _ _ (IsLimit.isoUniqueConeMorphism.hom hc _)
-                ((adj.functorialityIsRightAdjoint _).adj.homEquiv _ _).symm } }
+                ((adj.functorialityAdjunction' _).homEquiv _ _).symm } }
 #align category_theory.adjunction.right_adjoint_preserves_limits CategoryTheory.Adjunction.rightAdjointPreservesLimits
 
 -- see Note [lower instance priority]
-instance (priority := 100) isEquivalencePreservesLimits (E : D ⥤ C) [IsEquivalence E] :
+noncomputable instance (priority := 100) isEquivalencePreservesLimits
+    (E : D ⥤ C) [E.IsEquivalence] :
     PreservesLimitsOfSize.{v, u} E :=
-  rightAdjointPreservesLimits E.inv.adjunction
+  rightAdjointPreservesLimits E.asEquivalence.symm.toAdjunction
 #align category_theory.adjunction.is_equivalence_preserves_limits CategoryTheory.Adjunction.isEquivalencePreservesLimits
 
 -- see Note [lower instance priority]
-instance (priority := 100) isEquivalenceReflectsLimits (E : D ⥤ C) [IsEquivalence E] :
+noncomputable instance (priority := 100) isEquivalenceReflectsLimits
+    (E : D ⥤ C) [E.IsEquivalence] :
     ReflectsLimitsOfSize.{v, u} E where
   reflectsLimitsOfShape :=
     { reflectsLimit :=
@@ -235,7 +232,7 @@ instance (priority := 100) isEquivalenceReflectsLimits (E : D ⥤ C) [IsEquivale
 #align category_theory.adjunction.is_equivalence_reflects_limits CategoryTheory.Adjunction.isEquivalenceReflectsLimits
 
 -- see Note [lower instance priority]
-instance (priority := 100) isEquivalenceCreatesLimits (H : D ⥤ C) [IsEquivalence H] :
+noncomputable instance (priority := 100) isEquivalenceCreatesLimits (H : D ⥤ C) [H.IsEquivalence] :
     CreatesLimitsOfSize.{v, u} H where
   CreatesLimitsOfShape :=
     { CreatesLimit :=
@@ -245,16 +242,17 @@ instance (priority := 100) isEquivalenceCreatesLimits (H : D ⥤ C) [IsEquivalen
 #align category_theory.adjunction.is_equivalence_creates_limits CategoryTheory.Adjunction.isEquivalenceCreatesLimits
 
 -- verify the preserve_limits instance works as expected:
-example (E : D ⥤ C) [IsEquivalence E] (c : Cone K) (h : IsLimit c) : IsLimit (E.mapCone c) :=
+noncomputable example (E : D ⥤ C) [E.IsEquivalence] (c : Cone K) (h : IsLimit c) :
+    IsLimit (E.mapCone c) :=
   PreservesLimit.preserves h
 
-theorem hasLimit_comp_equivalence (E : D ⥤ C) [IsEquivalence E] [HasLimit K] : HasLimit (K ⋙ E) :=
+theorem hasLimit_comp_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimit K] : HasLimit (K ⋙ E) :=
   HasLimit.mk
     { cone := E.mapCone (limit.cone K)
       isLimit := PreservesLimit.preserves (limit.isLimit K) }
 #align category_theory.adjunction.has_limit_comp_equivalence CategoryTheory.Adjunction.hasLimit_comp_equivalence
 
-theorem hasLimit_of_comp_equivalence (E : D ⥤ C) [IsEquivalence E] [HasLimit (K ⋙ E)] :
+theorem hasLimit_of_comp_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimit (K ⋙ E)] :
     HasLimit K :=
   @hasLimitOfIso _ _ _ _ (K ⋙ E ⋙ E.inv) K
     (@hasLimit_comp_equivalence _ _ _ _ _ _ (K ⋙ E) E.inv _ _)
@@ -262,13 +260,13 @@ theorem hasLimit_of_comp_equivalence (E : D ⥤ C) [IsEquivalence E] [HasLimit (
 #align category_theory.adjunction.has_limit_of_comp_equivalence CategoryTheory.Adjunction.hasLimit_of_comp_equivalence
 
 /-- Transport a `HasLimitsOfShape` instance across an equivalence. -/
-theorem hasLimitsOfShape_of_equivalence (E : D ⥤ C) [IsEquivalence E] [HasLimitsOfShape J C] :
+theorem hasLimitsOfShape_of_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimitsOfShape J C] :
     HasLimitsOfShape J D :=
   ⟨fun F => hasLimit_of_comp_equivalence F E⟩
 #align category_theory.adjunction.has_limits_of_shape_of_equivalence CategoryTheory.Adjunction.hasLimitsOfShape_of_equivalence
 
 /-- Transport a `HasLimitsOfSize` instance across an equivalence. -/
-theorem has_limits_of_equivalence (E : D ⥤ C) [IsEquivalence E] [HasLimitsOfSize.{v, u} C] :
+theorem has_limits_of_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimitsOfSize.{v, u} C] :
     HasLimitsOfSize.{v, u} D :=
   ⟨fun _ _ => hasLimitsOfShape_of_equivalence E⟩
 #align category_theory.adjunction.has_limits_of_equivalence CategoryTheory.Adjunction.has_limits_of_equivalence
@@ -346,4 +344,23 @@ def conesIso {J : Type u} [Category.{v} J] {K : J ⥤ D} :
       inv := conesIsoComponentInv adj X }
 #align category_theory.adjunction.cones_iso CategoryTheory.Adjunction.conesIso
 
-end CategoryTheory.Adjunction
+end Adjunction
+
+namespace Functor
+
+variable {J C D : Type*} [Category J] [Category C] [Category D]
+  (F : C ⥤ D)
+
+noncomputable instance [IsLeftAdjoint F] : PreservesColimitsOfShape J F :=
+  (Adjunction.ofIsLeftAdjoint F).leftAdjointPreservesColimits.preservesColimitsOfShape
+
+noncomputable instance [IsLeftAdjoint F] : PreservesColimits F where
+
+noncomputable instance [IsRightAdjoint F] : PreservesLimitsOfShape J F :=
+  (Adjunction.ofIsRightAdjoint F).rightAdjointPreservesLimits.preservesLimitsOfShape
+
+noncomputable instance [IsRightAdjoint F] : PreservesLimits F where
+
+end Functor
+
+end CategoryTheory

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.character
-! leanprover-community/mathlib commit 132328c4dd48da87adca5d408ca54f315282b719
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Abelian
 import Mathlib.Algebra.Lie.Solvable
 import Mathlib.LinearAlgebra.Dual
+
+#align_import algebra.lie.character from "leanprover-community/mathlib"@"132328c4dd48da87adca5d408ca54f315282b719"
 
 /-!
 # Characters of Lie algebras
@@ -56,7 +53,7 @@ theorem lieCharacter_apply_of_mem_derived (χ : LieCharacter R L) {x : L}
     (h : x ∈ derivedSeries R L 1) : χ x = 0 := by
   rw [derivedSeries_def, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, ←
     LieSubmodule.mem_coeSubmodule, LieSubmodule.lieIdeal_oper_eq_linear_span] at h
-  refine' Submodule.span_induction h _ _ _ _
+  refine Submodule.span_induction h ?_ ?_ ?_ ?_
   · rintro y ⟨⟨z, hz⟩, ⟨⟨w, hw⟩, rfl⟩⟩; apply lieCharacter_apply_lie
   · exact χ.map_zero
   · intro y z hy hz; rw [LieHom.map_add, hy, hz, add_zero]

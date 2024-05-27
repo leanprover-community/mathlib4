@@ -2,17 +2,14 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.constructions.finite_products_of_binary_products
-! leanprover-community/mathlib commit ac3ae212f394f508df43e37aa093722fa9b65d31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.Logic.Equiv.Fin
+
+#align_import category_theory.limits.constructions.finite_products_of_binary_products from "leanprover-community/mathlib"@"ac3ae212f394f508df43e37aa093722fa9b65d31"
 
 /-!
 # Constructing finite products from binary products and terminal.
@@ -36,9 +33,7 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 namespace CategoryTheory
 
 variable {J : Type v} [SmallCategory J]
-
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type u'} [Category.{v'} D]
 
 /--
@@ -63,13 +58,13 @@ def extendFan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Fan fun i : Fin n => f i
 limit.
 -/
 def extendFanIsLimit {n : ℕ} (f : Fin (n + 1) → C) {c₁ : Fan fun i : Fin n => f i.succ}
-    {c₂ : BinaryFan (f 0) c₁.pt} (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) : IsLimit (extendFan c₁ c₂)
-    where
+    {c₂ : BinaryFan (f 0) c₁.pt} (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) :
+    IsLimit (extendFan c₁ c₂) where
   lift s := by
     apply (BinaryFan.IsLimit.lift' t₂ (s.π.app ⟨0⟩) _).1
     apply t₁.lift ⟨_, Discrete.natTrans fun ⟨i⟩ => s.π.app ⟨i.succ⟩⟩
   fac := fun s ⟨j⟩ => by
-    refine' Fin.inductionOn j ?_ ?_
+    refine Fin.inductionOn j ?_ ?_
     · apply (BinaryFan.IsLimit.lift' t₂ _ _).2.1
     · rintro i -
       dsimp only [extendFan_π_app]
@@ -109,10 +104,10 @@ private theorem hasProduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasProduct f
 
 /-- If `C` has a terminal object and binary products, then it has finite products. -/
 theorem hasFiniteProducts_of_has_binary_and_terminal : HasFiniteProducts C := by
-  refine' ⟨fun n => ⟨fun K => _⟩⟩
+  refine ⟨fun n => ⟨fun K => ?_⟩⟩
   letI := hasProduct_fin n fun n => K.obj ⟨n⟩
   let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ => Iso.refl _
-  apply @hasLimitOfIso  _ _ _ _ _ _ this that
+  apply @hasLimitOfIso _ _ _ _ _ _ this that
 #align category_theory.has_finite_products_of_has_binary_and_terminal CategoryTheory.hasFiniteProducts_of_has_binary_and_terminal
 
 end
@@ -120,11 +115,8 @@ end
 section Preserves
 
 variable (F : C ⥤ D)
-
 variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
-
 variable [PreservesLimitsOfShape (Discrete.{0} PEmpty) F]
-
 variable [HasFiniteProducts.{v} C]
 
 /-- If `F` preserves the terminal object and binary products, then it preserves products indexed by
@@ -146,15 +138,14 @@ noncomputable def preservesFinOfPreservesBinaryAndTerminal :
     let this :=
       extendFanIsLimit (fun i => F.obj (f i)) (isLimitOfHasProductOfPreservesLimit F _)
         (isLimitOfHasBinaryProductOfPreservesLimit F _ _)
-    refine' IsLimit.ofIsoLimit this _
+    refine IsLimit.ofIsoLimit this ?_
     apply Cones.ext _ _
-    apply Iso.refl _
+    · apply Iso.refl _
     rintro ⟨j⟩
-    refine' Fin.inductionOn j ?_ ?_
+    refine Fin.inductionOn j ?_ ?_
     · apply (Category.id_comp _).symm
     · rintro i _
       dsimp [extendFan_π_app, Iso.refl_hom, Fan.mk_π_app]
-      rw [Fin.cases_succ, Fin.cases_succ]
       change F.map _ ≫ _ = 𝟙 _ ≫ _
       simp only [id_comp, ← F.map_comp]
       rfl
@@ -211,7 +202,7 @@ def extendCofanIsColimit {n : ℕ} (f : Fin (n + 1) → C) {c₁ : Cofan fun i :
     apply t₁.desc ⟨_, Discrete.natTrans fun i => s.ι.app ⟨i.as.succ⟩⟩
   fac s := by
     rintro ⟨j⟩
-    refine' Fin.inductionOn j ?_ ?_
+    refine Fin.inductionOn j ?_ ?_
     · apply (BinaryCofan.IsColimit.desc' t₂ _ _).2.1
     · rintro i -
       dsimp only [extendCofan_ι_app]
@@ -252,7 +243,7 @@ private theorem hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct
 
 /-- If `C` has an initial object and binary coproducts, then it has finite coproducts. -/
 theorem hasFiniteCoproducts_of_has_binary_and_initial : HasFiniteCoproducts C := by
-  refine' ⟨fun n => ⟨fun K => _⟩⟩
+  refine ⟨fun n => ⟨fun K => ?_⟩⟩
   letI := hasCoproduct_fin n fun n => K.obj ⟨n⟩
   let that : K ≅ Discrete.functor fun n => K.obj ⟨n⟩ := Discrete.natIso fun ⟨i⟩ => Iso.refl _
   apply @hasColimitOfIso _ _ _ _ _ _ this that
@@ -263,11 +254,8 @@ end
 section Preserves
 
 variable (F : C ⥤ D)
-
 variable [PreservesColimitsOfShape (Discrete WalkingPair) F]
-
 variable [PreservesColimitsOfShape (Discrete.{0} PEmpty) F]
-
 variable [HasFiniteCoproducts.{v} C]
 
 /-- If `F` preserves the initial object and binary coproducts, then it preserves products indexed by
@@ -290,15 +278,15 @@ noncomputable def preservesFinOfPreservesBinaryAndInitial :
       extendCofanIsColimit (fun i => F.obj (f i))
         (isColimitOfHasCoproductOfPreservesColimit F _)
         (isColimitOfHasBinaryCoproductOfPreservesColimit F _ _)
-    refine' IsColimit.ofIsoColimit this _
+    refine IsColimit.ofIsoColimit this ?_
     apply Cocones.ext _ _
-    apply Iso.refl _
+    · apply Iso.refl _
     rintro ⟨j⟩
-    refine' Fin.inductionOn j ?_ ?_
+    refine Fin.inductionOn j ?_ ?_
     · apply Category.comp_id
     · rintro i _
       dsimp [extendCofan_ι_app, Iso.refl_hom, Cofan.mk_ι_app]
-      rw [Fin.cases_succ, Fin.cases_succ, comp_id, ← F.map_comp]
+      rw [comp_id, ← F.map_comp]
 #align category_theory.preserves_fin_of_preserves_binary_and_initial CategoryTheory.preservesFinOfPreservesBinaryAndInitialₓ  -- Porting note: order of universes changed
 
 /-- If `F` preserves the initial object and binary coproducts, then it preserves colimits of shape

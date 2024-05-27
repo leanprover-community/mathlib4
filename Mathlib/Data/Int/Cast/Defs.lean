@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
-
-! This file was ported from Lean 3 source module data.int.cast.defs
-! leanprover-community/mathlib commit acebd8d49928f6ed8920e502a6c90674e75bd441
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Cast.Defs
+
+#align_import data.int.cast.defs from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
 /-!
 # Cast of integers
@@ -29,8 +26,6 @@ Preferentially, the homomorphism is written as a coercion.
 
 universe u
 
-attribute [simp] Int.ofNat_eq_coe
-
 /-- Default value for `IntCast.intCast` in an `AddGroupWithOne`. -/
 protected def Int.castDef {R : Type u} [NatCast R] [Neg R] : ℤ → R
   | (n : ℕ) => n
@@ -45,11 +40,11 @@ protected def Int.castDef {R : Type u} [NatCast R] [Neg R] : ℤ → R
 /-- An `AddGroupWithOne` is an `AddGroup` with a 1. It also contains data for the unique
 homomorphisms `ℕ → R` and `ℤ → R`. -/
 class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGroup R where
-  /-- The canonical homorphism `ℤ → R`. -/
+  /-- The canonical homomorphism `ℤ → R`. -/
   intCast := Int.castDef
-  /-- The canonical homorphism `ℤ → R` agrees with the one from `ℕ → R` on `ℕ`. -/
+  /-- The canonical homomorphism `ℤ → R` agrees with the one from `ℕ → R` on `ℕ`. -/
   intCast_ofNat : ∀ n : ℕ, intCast (n : ℕ) = Nat.cast n := by intros; rfl
-  /-- The canonical homorphism `ℤ → R` for negative values is just the negation of the values
+  /-- The canonical homomorphism `ℤ → R` for negative values is just the negation of the values
   of the canonical homomorphism `ℕ → R`. -/
   intCast_negSucc : ∀ n : ℕ, intCast (Int.negSucc n) = - Nat.cast (n + 1) := by intros; rfl
 #align add_group_with_one AddGroupWithOne
@@ -66,5 +61,3 @@ class AddCommGroupWithOne (R : Type u)
 #align add_comm_group_with_one.to_add_comm_group AddCommGroupWithOne.toAddCommGroup
 #align add_comm_group_with_one.to_add_group_with_one AddCommGroupWithOne.toAddGroupWithOne
 #align add_comm_group_with_one.to_add_comm_monoid_with_one AddCommGroupWithOne.toAddCommMonoidWithOne
-
-open Nat

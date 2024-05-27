@@ -2,14 +2,11 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module order.atoms.finite
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Finite
 import Mathlib.Order.Atoms
+
+#align_import order.atoms.finite from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
 /-!
 # Atoms, Coatoms, Simple Lattices, and Finiteness
@@ -23,7 +20,7 @@ This module contains some results on atoms and simple lattices in the finite con
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace IsSimpleOrder
 
@@ -80,7 +77,7 @@ instance (priority := 100) Finite.to_isCoatomic [PartialOrder α] [OrderTop α] 
   refine' IsCoatomic.mk fun b => or_iff_not_imp_left.2 fun ht => _
   obtain ⟨c, hc, hmax⟩ :=
     Set.Finite.exists_maximal_wrt id { x : α | b ≤ x ∧ x ≠ ⊤ } (Set.toFinite _) ⟨b, le_rfl, ht⟩
-  refine' ⟨c, ⟨hc.2, fun y hcy => _⟩, hc.1⟩
+  refine ⟨c, ⟨hc.2, fun y hcy => ?_⟩, hc.1⟩
   by_contra hyt
   obtain rfl : c = y := hmax y ⟨hc.1.trans hcy.le, hyt⟩ hcy.le
   exact (lt_self_iff_false _).mp hcy

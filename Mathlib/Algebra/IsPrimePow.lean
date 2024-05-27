@@ -2,14 +2,11 @@
 Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module algebra.is_prime_pow
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.NumberTheory.Divisors
+
+#align_import algebra.is_prime_pow from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Prime powers
@@ -18,7 +15,7 @@ This file deals with prime powers: numbers which are positive integer powers of 
 -/
 
 
-variable {R : Type _} [CommMonoidWithZero R] (n p : R) (k : ℕ)
+variable {R : Type*} [CommMonoidWithZero R] (n p : R) (k : ℕ)
 
 /-- `n` is a prime power if there is a prime `p` and a positive natural `k` such that `n` can be
 written as `p^k`. -/
@@ -87,11 +84,11 @@ theorem Nat.Prime.isPrimePow {p : ℕ} (hp : p.Prime) : IsPrimePow p :=
 theorem isPrimePow_nat_iff_bounded (n : ℕ) :
     IsPrimePow n ↔ ∃ p : ℕ, p ≤ n ∧ ∃ k : ℕ, k ≤ n ∧ p.Prime ∧ 0 < k ∧ p ^ k = n := by
   rw [isPrimePow_nat_iff]
-  refine' Iff.symm ⟨fun ⟨p, _, k, _, hp, hk, hn⟩ => ⟨p, k, hp, hk, hn⟩, _⟩
+  refine Iff.symm ⟨fun ⟨p, _, k, _, hp, hk, hn⟩ => ⟨p, k, hp, hk, hn⟩, ?_⟩
   rintro ⟨p, k, hp, hk, rfl⟩
-  refine' ⟨p, _, k, (Nat.lt_pow_self hp.one_lt _).le, hp, hk, rfl⟩
-  conv => { lhs; rw [←(pow_one p)] }
-  exact (Nat.pow_le_iff_le_right hp.two_le).mpr hk
+  refine ⟨p, ?_, k, (Nat.lt_pow_self hp.one_lt _).le, hp, hk, rfl⟩
+  conv => { lhs; rw [← (pow_one p)] }
+  exact pow_le_pow_right hp.one_lt.le hk
 #align is_prime_pow_nat_iff_bounded isPrimePow_nat_iff_bounded
 
 instance {n : ℕ} : Decidable (IsPrimePow n) :=
@@ -101,13 +98,13 @@ theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m
   rw [isPrimePow_nat_iff] at hn ⊢
   rcases hn with ⟨p, k, hp, _hk, rfl⟩
   obtain ⟨i, hik, rfl⟩ := (Nat.dvd_prime_pow hp).1 hm
-  refine' ⟨p, i, hp, _, rfl⟩
+  refine ⟨p, i, hp, ?_, rfl⟩
   apply Nat.pos_of_ne_zero
   rintro rfl
-  simp only [pow_zero, ne_eq] at hm₁
+  simp only [pow_zero, ne_eq, not_true_eq_false] at hm₁
 #align is_prime_pow.dvd IsPrimePow.dvd
 
-theorem Nat.disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.coprime b) :
+theorem Nat.disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :
     Disjoint (a.divisors.filter IsPrimePow) (b.divisors.filter IsPrimePow) := by
   simp only [Finset.disjoint_left, Finset.mem_filter, and_imp, Nat.mem_divisors, not_and]
   rintro n han _ha hn hbn _hb -

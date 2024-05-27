@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.dslope
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.Analysis.Calculus.Deriv.Inv
+
+#align_import analysis.calculus.dslope from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # Slope of a differentiable function
@@ -27,7 +24,7 @@ open scoped Classical Topology Filter
 
 open Function Set Filter
 
-variable {𝕜 E : Type _} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- `dslope f a b` is defined as `slope f a b = (b - a)⁻¹ • (f b - f a)` for `a ≠ b` and
 `deriv f a` for `a = b`. -/
@@ -46,7 +43,7 @@ theorem dslope_of_ne (f : 𝕜 → E) (h : b ≠ a) : dslope f a b = slope f a b
   update_noteq h _ _
 #align dslope_of_ne dslope_of_ne
 
-theorem ContinuousLinearMap.dslope_comp {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+theorem ContinuousLinearMap.dslope_comp {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     (f : E →L[𝕜] F) (g : 𝕜 → E) (a b : 𝕜) (H : a = b → DifferentiableAt 𝕜 g a) :
     dslope (f ∘ g) a b = f (dslope g a b) := by
   rcases eq_or_ne b a with (rfl | hne)
@@ -108,7 +105,7 @@ theorem ContinuousOn.of_dslope (h : ContinuousOn (dslope f a) s) : ContinuousOn 
 
 theorem continuousWithinAt_dslope_of_ne (h : b ≠ a) :
     ContinuousWithinAt (dslope f a) s b ↔ ContinuousWithinAt f s b := by
-  refine' ⟨ContinuousWithinAt.of_dslope, fun hc => _⟩
+  refine ⟨ContinuousWithinAt.of_dslope, fun hc => ?_⟩
   simp only [dslope, continuousWithinAt_update_of_ne h]
   exact ((continuousWithinAt_id.sub continuousWithinAt_const).inv₀ (sub_ne_zero.2 h)).smul
     (hc.sub continuousWithinAt_const)
@@ -120,7 +117,7 @@ theorem continuousAt_dslope_of_ne (h : b ≠ a) : ContinuousAt (dslope f a) b �
 
 theorem continuousOn_dslope (h : s ∈ 𝓝 a) :
     ContinuousOn (dslope f a) s ↔ ContinuousOn f s ∧ DifferentiableAt 𝕜 f a := by
-  refine' ⟨fun hc => ⟨hc.of_dslope, continuousAt_dslope_same.1 <| hc.continuousAt h⟩, _⟩
+  refine ⟨fun hc => ⟨hc.of_dslope, continuousAt_dslope_same.1 <| hc.continuousAt h⟩, ?_⟩
   rintro ⟨hc, hd⟩ x hx
   rcases eq_or_ne x a with (rfl | hne)
   exacts [(continuousAt_dslope_same.2 hd).continuousWithinAt,
@@ -144,10 +141,10 @@ theorem DifferentiableOn.of_dslope (h : DifferentiableOn 𝕜 (dslope f a) s) :
 
 theorem differentiableWithinAt_dslope_of_ne (h : b ≠ a) :
     DifferentiableWithinAt 𝕜 (dslope f a) s b ↔ DifferentiableWithinAt 𝕜 f s b := by
-  refine' ⟨DifferentiableWithinAt.of_dslope, fun hd => _⟩
-  refine' (((differentiableWithinAt_id.sub_const a).inv (sub_ne_zero.2 h)).smul
-    (hd.sub_const (f a))).congr_of_eventuallyEq _ (dslope_of_ne _ h)
-  refine' (eqOn_dslope_slope _ _).eventuallyEq_of_mem _
+  refine ⟨DifferentiableWithinAt.of_dslope, fun hd => ?_⟩
+  refine (((differentiableWithinAt_id.sub_const a).inv (sub_ne_zero.2 h)).smul
+    (hd.sub_const (f a))).congr_of_eventuallyEq ?_ (dslope_of_ne _ h)
+  refine (eqOn_dslope_slope _ _).eventuallyEq_of_mem ?_
   exact mem_nhdsWithin_of_mem_nhds (isOpen_ne.mem_nhds h)
 #align differentiable_within_at_dslope_of_ne differentiableWithinAt_dslope_of_ne
 

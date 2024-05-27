@@ -2,11 +2,6 @@
 Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
-
-! This file was ported from Lean 3 source module algebra.module.torsion
-! leanprover-community/mathlib commit cdc34484a07418af43daf8198beaf5c00324bca8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Module.BigOperators
@@ -14,6 +9,9 @@ import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.GroupTheory.Torsion
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Finiteness
+import Mathlib.Data.Set.Lattice
+
+#align_import algebra.module.torsion from "leanprover-community/mathlib"@"cdc34484a07418af43daf8198beaf5c00324bca8"
 
 /-!
 # Torsion submodules
@@ -64,17 +62,16 @@ import Mathlib.RingTheory.Finiteness
 Torsion, submodule, module, quotient
 -/
 
-
 namespace Ideal
 
 section TorsionOf
 
-variable (R M : Type _) [Semiring R] [AddCommMonoid M] [Module R M]
+variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 
-/-- The torsion ideal of `x`, containing all `a` such that `a • x = 0`.-/
+/-- The torsion ideal of `x`, containing all `a` such that `a • x = 0`. -/
 @[simps!]
 def torsionOf (x : M) : Ideal R :=
-  -- Porting note: broken dot notation on LinearMap.ker Lean4#1910
+  -- Porting note (#11036): broken dot notation on LinearMap.ker Lean4#1910
   LinearMap.ker (LinearMap.toSpanSingleton R M x)
 #align ideal.torsion_of Ideal.torsionOf
 
@@ -93,7 +90,7 @@ variable (R)
 
 @[simp]
 theorem torsionOf_eq_top_iff (m : M) : torsionOf R M m = ⊤ ↔ m = 0 := by
-  refine' ⟨fun h => _, fun h => by simp [h]⟩
+  refine ⟨fun h => ?_, fun h => by simp [h]⟩
   rw [← one_smul R m, ← mem_torsionOf_iff m (1 : R), h]
   exact Submodule.mem_top
 #align ideal.torsion_of_eq_top_iff Ideal.torsionOf_eq_top_iff
@@ -101,7 +98,7 @@ theorem torsionOf_eq_top_iff (m : M) : torsionOf R M m = ⊤ ↔ m = 0 := by
 @[simp]
 theorem torsionOf_eq_bot_iff_of_noZeroSMulDivisors [Nontrivial R] [NoZeroSMulDivisors R M] (m : M) :
     torsionOf R M m = ⊥ ↔ m ≠ 0 := by
-  refine' ⟨fun h contra => _, fun h => (Submodule.eq_bot_iff _).mpr fun r hr => _⟩
+  refine ⟨fun h contra => ?_, fun h => (Submodule.eq_bot_iff _).mpr fun r hr => ?_⟩
   · rw [contra, torsionOf_zero] at h
     exact bot_ne_top.symm h
   · rw [mem_torsionOf_iff, smul_eq_zero] at hr
@@ -110,15 +107,15 @@ theorem torsionOf_eq_bot_iff_of_noZeroSMulDivisors [Nontrivial R] [NoZeroSMulDiv
 
 /-- See also `CompleteLattice.Independent.linearIndependent` which provides the same conclusion
 but requires the stronger hypothesis `NoZeroSMulDivisors R M`. -/
-theorem CompleteLattice.Independent.linear_independent' {ι R M : Type _} {v : ι → M} [Ring R]
+theorem CompleteLattice.Independent.linear_independent' {ι R M : Type*} {v : ι → M} [Ring R]
     [AddCommGroup M] [Module R M] (hv : CompleteLattice.Independent fun i => R ∙ v i)
     (h_ne_zero : ∀ i, Ideal.torsionOf R M (v i) = ⊥) : LinearIndependent R v := by
-  refine' linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => _
+  refine linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => ?_
   replace hv := CompleteLattice.independent_def.mp hv i
-  simp only [iSup_subtype', ← Submodule.span_range_eq_iSup, disjoint_iff] at hv
+  simp only [iSup_subtype', ← Submodule.span_range_eq_iSup (ι := Subtype _), disjoint_iff] at hv
   have : r • v i ∈ ⊥ := by
     rw [← hv, Submodule.mem_inf]
-    refine' ⟨Submodule.mem_span_singleton.mpr ⟨r, rfl⟩, _⟩
+    refine ⟨Submodule.mem_span_singleton.mpr ⟨r, rfl⟩, ?_⟩
     convert hi
     ext
     simp
@@ -130,9 +127,9 @@ end TorsionOf
 
 section
 
-variable (R M : Type _) [Ring R] [AddCommGroup M] [Module R M]
+variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M]
 
-/-- The span of `x` in `M` is isomorphic to `R` quotiented by the torsion ideal of `x`.-/
+/-- The span of `x` in `M` is isomorphic to `R` quotiented by the torsion ideal of `x`. -/
 noncomputable def quotTorsionOfEquivSpanSingleton (x : M) : (R ⧸ torsionOf R M x) ≃ₗ[R] R ∙ x :=
   (LinearMap.toSpanSingleton R M x).quotKerEquivRange.trans <|
     LinearEquiv.ofEq _ _ (LinearMap.span_singleton_eq_range R M x).symm
@@ -155,7 +152,7 @@ open nonZeroDivisors
 
 section Defs
 
-variable (R M : Type _) [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 namespace Submodule
 
@@ -163,7 +160,7 @@ namespace Submodule
   `a • x = 0`. -/
 @[simps!]
 def torsionBy (a : R) : Submodule R M :=
-  -- Porting note: broken dot notation on LinearMap.ker Lean4#1910
+  -- Porting note (#11036): broken dot notation on LinearMap.ker Lean4#1910
   LinearMap.ker (DistribMulAction.toLinearMap R M a)
 #align submodule.torsion_by Submodule.torsionBy
 
@@ -176,9 +173,9 @@ def torsionBySet (s : Set R) : Submodule R M :=
 -- Porting note: torsion' had metavariables and factoring out this fixed it
 -- perhaps there is a better fix
 /-- The additive submonoid of all elements `x` of `M` such that `a • x = 0`
-for some `a` in `S`.-/
+for some `a` in `S`. -/
 @[simps!]
-def torsion'AddSubMonoid (S : Type w) [CommMonoid S] [DistribMulAction S M] :
+def torsion'AddSubMonoid (S : Type*) [CommMonoid S] [DistribMulAction S M] :
     AddSubmonoid M where
   carrier := { x | ∃ a : S, a • x = 0 }
   add_mem' := by
@@ -190,16 +187,15 @@ def torsion'AddSubMonoid (S : Type w) [CommMonoid S] [DistribMulAction S M] :
 /-- The `S`-torsion submodule, containing all elements `x` of `M` such that `a • x = 0` for some
 `a` in `S`. -/
 @[simps!]
-def torsion' (S : Type w) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M] :
+def torsion' (S : Type*) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M] :
     Submodule R M :=
   { torsion'AddSubMonoid M S with
     smul_mem' := fun a x ⟨b, h⟩ => ⟨b, by rw [smul_comm, h, smul_zero]⟩}
 #align submodule.torsion' Submodule.torsion'
 
-/-- The torsion submodule, containing all elements `x` of `M` such that  `a • x = 0` for some
+/-- The torsion submodule, containing all elements `x` of `M` such that `a • x = 0` for some
   non-zero-divisor `a` in `R`. -/
-@[reducible]
-def torsion :=
+abbrev torsion :=
   torsion' R M R⁰
 #align submodule.torsion Submodule.torsion
 
@@ -208,35 +204,39 @@ end Submodule
 namespace Module
 
 /-- An `a`-torsion module is a module where every element is `a`-torsion. -/
-@[reducible]
-def IsTorsionBy (a : R) :=
+abbrev IsTorsionBy (a : R) :=
   ∀ ⦃x : M⦄, a • x = 0
 #align module.is_torsion_by Module.IsTorsionBy
 
 /-- A module where every element is `a`-torsion for all `a` in `s`. -/
-@[reducible]
-def IsTorsionBySet (s : Set R) :=
+abbrev IsTorsionBySet (s : Set R) :=
   ∀ ⦃x : M⦄ ⦃a : s⦄, (a : R) • x = 0
 #align module.is_torsion_by_set Module.IsTorsionBySet
 
 /-- An `S`-torsion module is a module where every element is `a`-torsion for some `a` in `S`. -/
-@[reducible]
-def IsTorsion' (S : Type _) [SMul S M] :=
+abbrev IsTorsion' (S : Type*) [SMul S M] :=
   ∀ ⦃x : M⦄, ∃ a : S, a • x = 0
 #align module.is_torsion' Module.IsTorsion'
 
 /-- A torsion module is a module where every element is `a`-torsion for some non-zero-divisor `a`.
 -/
-@[reducible]
-def IsTorsion :=
+abbrev IsTorsion :=
   ∀ ⦃x : M⦄, ∃ a : R⁰, a • x = 0
 #align module.is_torsion Module.IsTorsion
+
+theorem isTorsionBySet_annihilator : IsTorsionBySet R M (Module.annihilator R M) :=
+  fun _ r ↦ Module.mem_annihilator.mp r.2 _
 
 end Module
 
 end Defs
 
-variable {R M : Type _}
+lemma isSMulRegular_iff_torsionBy_eq_bot {R} (M : Type*)
+    [CommRing R] [AddCommGroup M] [Module R M] (r : R) :
+    IsSMulRegular M r ↔ Submodule.torsionBy R M r = ⊥ :=
+  Iff.symm (DistribMulAction.toLinearMap R M r).ker_eq_bot
+
+variable {R M : Type*}
 
 section
 
@@ -261,7 +261,7 @@ theorem mem_torsionBy_iff (x : M) : x ∈ torsionBy R M a ↔ a • x = 0 :=
 
 @[simp]
 theorem mem_torsionBySet_iff (x : M) : x ∈ torsionBySet R M s ↔ ∀ a : s, (a : R) • x = 0 := by
-  refine' ⟨fun h ⟨a, ha⟩ => mem_sInf.mp h _ (Set.mem_image_of_mem _ ha), fun h => mem_sInf.mpr _⟩
+  refine ⟨fun h ⟨a, ha⟩ => mem_sInf.mp h _ (Set.mem_image_of_mem _ ha), fun h => mem_sInf.mpr ?_⟩
   rintro _ ⟨a, ha, rfl⟩; exact h ⟨a, ha⟩
 #align submodule.mem_torsion_by_set_iff Submodule.mem_torsionBySet_iff
 
@@ -321,7 +321,7 @@ namespace Module
 
 @[simp]
 theorem isTorsionBySet_singleton_iff : IsTorsionBySet R M {a} ↔ IsTorsionBy R M a := by
-  refine' ⟨fun h x => @h _ ⟨_, Set.mem_singleton _⟩, fun h x => _⟩
+  refine ⟨fun h x => @h _ ⟨_, Set.mem_singleton _⟩, fun h x => ?_⟩
   rintro ⟨b, rfl : b = a⟩; exact @h _
 #align module.is_torsion_by_singleton_iff Module.isTorsionBySet_singleton_iff
 
@@ -348,18 +348,27 @@ theorem isTorsionBySet_span_singleton_iff : IsTorsionBySet R M (R ∙ a) ↔ IsT
   (isTorsionBySet_iff_is_torsion_by_span _).symm.trans <| isTorsionBySet_singleton_iff _
 #align module.is_torsion_by_span_singleton_iff Module.isTorsionBySet_span_singleton_iff
 
+theorem isTorsionBySet_iff_subseteq_ker_lsmul :
+    IsTorsionBySet R M s ↔ s ⊆ LinearMap.ker (LinearMap.lsmul R M) where
+  mp h r hr := LinearMap.mem_ker.mpr <| LinearMap.ext fun x => @h x ⟨r, hr⟩
+  mpr | h, x, ⟨_, hr⟩ => DFunLike.congr_fun (LinearMap.mem_ker.mp (h hr)) x
+
+theorem isTorsionBy_iff_mem_ker_lsmul :
+    IsTorsionBy R M a ↔ a ∈ LinearMap.ker (LinearMap.lsmul R M) :=
+  Iff.symm LinearMap.ext_iff
+
 end Module
 
 namespace Submodule
 
 open Module
 
-theorem torsionBySet_isTorsionBySet : IsTorsionBySet R (torsionBySet R M s) s := fun ⟨_, hx⟩ a =>
-  Subtype.ext <| (mem_torsionBySet_iff _ _).mp hx a
+theorem torsionBySet_isTorsionBySet : IsTorsionBySet R (torsionBySet R M s) s :=
+  fun ⟨_, hx⟩ a => Subtype.ext <| (mem_torsionBySet_iff _ _).mp hx a
 #align submodule.torsion_by_set_is_torsion_by_set Submodule.torsionBySet_isTorsionBySet
 
 /-- The `a`-torsion submodule is an `a`-torsion module. -/
-theorem torsionBy_isTorsionBy : IsTorsionBy R (torsionBy R M a) a := fun _ => smul_torsionBy _ _
+theorem torsionBy_isTorsionBy : IsTorsionBy R (torsionBy R M a) a := smul_torsionBy a
 #align submodule.torsion_by_is_torsion_by Submodule.torsionBy_isTorsionBy
 
 @[simp]
@@ -376,7 +385,7 @@ variable (R M)
 
 theorem torsion_gc :
     @GaloisConnection (Submodule R M) (Ideal R)ᵒᵈ _ _ annihilator fun I =>
-      torsionBySet R M <| OrderDual.ofDual I :=
+      torsionBySet R M ↑(OrderDual.ofDual I) :=
   fun _ _ =>
   ⟨fun h x hx => (mem_torsionBySet_iff _ _).mpr fun ⟨_, ha⟩ => mem_annihilator.mp (h ha) x hx,
     fun h a ha => mem_annihilator.mpr fun _ hx => (mem_torsionBySet_iff _ _).mp (h hx) ⟨a, ha⟩⟩
@@ -388,14 +397,13 @@ section Coprime
 
 open BigOperators
 
-variable {ι : Type _} {p : ι → Ideal R} {S : Finset ι}
-
+variable {ι : Type*} {p : ι → Ideal R} {S : Finset ι}
 variable (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
 
 -- Porting note: mem_iSup_finset_iff_exists_sum now requires DecidableEq ι
-theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf [DecidableEq ι] :
+theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf :
     ⨆ i ∈ S, torsionBySet R M (p i) = torsionBySet R M ↑(⨅ i ∈ S, p i) := by
-  cases' S.eq_empty_or_nonempty with h h
+  rcases S.eq_empty_or_nonempty with h | h
   · simp only [h]
     -- Porting note: converts were not cooperating
     convert iSup_emptyset (f := fun i => torsionBySet R M (p i)) <;> simp
@@ -411,12 +419,11 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf [DecidableEq ι] :
     obtain ⟨μ, hμ⟩ :=
       (mem_iSup_finset_iff_exists_sum _ _).mp
         ((Ideal.eq_top_iff_one _).mp <| (Ideal.iSup_iInf_eq_top_iff_pairwise h _).mpr hp)
-    refine' ⟨fun i => ⟨(μ i : R) • x, _⟩, _⟩
+    refine ⟨fun i => ⟨(μ i : R) • x, ?_⟩, ?_⟩
     · rw [mem_torsionBySet_iff] at hx ⊢
       rintro ⟨a, ha⟩
       rw [smul_smul]
-      suffices : a * μ i ∈ ⨅ i ∈ S, p i
-      exact hx ⟨_, this⟩
+      suffices a * μ i ∈ ⨅ i ∈ S, p i from hx ⟨_, this⟩
       rw [mem_iInf]
       intro j
       rw [mem_iInf]
@@ -427,12 +434,11 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf [DecidableEq ι] :
       · have := coe_mem (μ i)
         simp only [mem_iInf] at this
         exact Ideal.mul_mem_left _ _ (this j hj ij)
-    · simp_rw [coe_mk]
-      rw [← Finset.sum_smul, hμ, one_smul]
+    · rw [← Finset.sum_smul, hμ, one_smul]
 #align submodule.supr_torsion_by_ideal_eq_torsion_by_infi Submodule.iSup_torsionBySet_ideal_eq_torsionBySet_iInf
 
 -- Porting note: iSup_torsionBySet_ideal_eq_torsionBySet_iInf now requires DecidableEq ι
-theorem supIndep_torsionBySet_ideal [DecidableEq ι] : S.SupIndep fun i => torsionBySet R M <| p i :=
+theorem supIndep_torsionBySet_ideal : S.SupIndep fun i => torsionBySet R M <| p i :=
   fun T hT i hi hiT => by
   rw [disjoint_iff, Finset.sup_eq_iSup,
     iSup_torsionBySet_ideal_eq_torsionBySet_iInf fun i hi j hj ij => hp (hT hi) (hT hj) ij]
@@ -445,21 +451,20 @@ theorem supIndep_torsionBySet_ideal [DecidableEq ι] : S.SupIndep fun i => torsi
 
 variable {q : ι → R} (hq : (S : Set ι).Pairwise <| (IsCoprime on q))
 
-theorem iSup_torsionBy_eq_torsionBy_prod [DecidableEq ι] :
-    ⨆ i ∈ S, torsionBy R M (q i) = torsionBy R M (∏ i in S, q i) := by
+theorem iSup_torsionBy_eq_torsionBy_prod :
+    ⨆ i ∈ S, torsionBy R M (q i) = torsionBy R M (∏ i ∈ S, q i) := by
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ←
     Ideal.finset_inf_span_singleton _ _ hq, Finset.inf_eq_iInf, ←
     iSup_torsionBySet_ideal_eq_torsionBySet_iInf]
-  congr
-  ext : 1
-  congr
-  ext : 1
-  exact (torsionBySet_span_singleton_eq _).symm
+  · congr
+    ext : 1
+    congr
+    ext : 1
+    exact (torsionBySet_span_singleton_eq _).symm
   exact fun i hi j hj ij => (Ideal.sup_eq_top_iff_isCoprime _ _).mpr (hq hi hj ij)
 #align submodule.supr_torsion_by_eq_torsion_by_prod Submodule.iSup_torsionBy_eq_torsionBy_prod
 
--- Porting note: supIndep_torsionBySet_ideal now requires DecidableEq ι
-theorem supIndep_torsionBy [DecidableEq ι] : S.SupIndep fun i => torsionBy R M <| q i := by
+theorem supIndep_torsionBy : S.SupIndep fun i => torsionBy R M <| q i := by
   convert supIndep_torsionBySet_ideal (M := M) fun i hi j hj ij =>
       (Ideal.sup_eq_top_iff_isCoprime (q i) _).mpr <| hq hi hj ij
   exact (torsionBySet_span_singleton_eq (R := R) (M := M) _).symm
@@ -479,10 +484,10 @@ namespace Submodule
 
 open BigOperators
 
-variable {ι : Type _} [DecidableEq ι] {S : Finset ι}
+variable {ι : Type*} [DecidableEq ι] {S : Finset ι}
 
 /-- If the `p i` are pairwise coprime, a `⨅ i, p i`-torsion module is the internal direct sum of
-its `p i`-torsion submodules.-/
+its `p i`-torsion submodules. -/
 theorem torsionBySet_isInternal {p : ι → Ideal R}
     (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
     (hM : Module.IsTorsionBySet R M (⨅ i ∈ S, p i : Ideal R)) :
@@ -497,9 +502,9 @@ theorem torsionBySet_isInternal {p : ι → Ideal R}
 #align submodule.torsion_by_set_is_internal Submodule.torsionBySet_isInternal
 
 /-- If the `q i` are pairwise coprime, a `∏ i, q i`-torsion module is the internal direct sum of
-its `q i`-torsion submodules.-/
+its `q i`-torsion submodules. -/
 theorem torsionBy_isInternal {q : ι → R} (hq : (S : Set ι).Pairwise <| (IsCoprime on q))
-    (hM : Module.IsTorsionBy R M <| ∏ i in S, q i) :
+    (hM : Module.IsTorsionBy R M <| ∏ i ∈ S, q i) :
     DirectSum.IsInternal fun i : S => torsionBy R M <| q i := by
   rw [← Module.isTorsionBySet_span_singleton_iff, Ideal.submodule_span_eq, ←
     Ideal.finset_inf_span_singleton _ _ hq, Finset.inf_eq_iInf] at hM
@@ -512,44 +517,104 @@ end Submodule
 
 namespace Module
 
-variable {I : Ideal R} (hM : IsTorsionBySet R M I)
+variable {I : Ideal R} {r : R}
 
-/-- can't be an instance because hM can't be inferred -/
-def IsTorsionBySet.hasSMul : SMul (R ⧸ I) M where
-  smul b x :=
-    Quotient.liftOn' b (· • x) fun b₁ b₂ h =>
-      show b₁ • x = b₂ • x from by
-        have : (-b₁ + b₂) • x = 0 := @hM x ⟨_, QuotientAddGroup.leftRel_apply.mp h⟩
-        rw [add_smul, neg_smul, neg_add_eq_zero] at this
-        exact this
+/-- can't be an instance because `hM` can't be inferred -/
+def IsTorsionBySet.hasSMul (hM : IsTorsionBySet R M I) : SMul (R ⧸ I) M where
+  smul b x := I.liftQ (LinearMap.lsmul R M)
+                ((isTorsionBySet_iff_subseteq_ker_lsmul _).mp hM) b x
 #align module.is_torsion_by_set.has_smul Module.IsTorsionBySet.hasSMul
 
+/-- can't be an instance because `hM` can't be inferred -/
+abbrev IsTorsionBy.hasSMul (hM : IsTorsionBy R M r) : SMul (R ⧸ Ideal.span {r}) M :=
+  ((isTorsionBySet_span_singleton_iff r).mpr hM).hasSMul
+
 @[simp]
-theorem IsTorsionBySet.mk_smul (b : R) (x : M) :
+theorem IsTorsionBySet.mk_smul (hM : IsTorsionBySet R M I) (b : R) (x : M) :
     haveI := hM.hasSMul
     Ideal.Quotient.mk I b • x = b • x :=
   rfl
 #align module.is_torsion_by_set.mk_smul Module.IsTorsionBySet.mk_smul
 
+@[simp]
+theorem IsTorsionBy.mk_smul (hM : IsTorsionBy R M r) (b : R) (x : M) :
+    haveI := hM.hasSMul
+    Ideal.Quotient.mk (Ideal.span {r}) b • x = b • x :=
+  rfl
+
 /-- An `(R ⧸ I)`-module is an `R`-module which `IsTorsionBySet R M I`. -/
-def IsTorsionBySet.module : Module (R ⧸ I) M :=
-  @Function.Surjective.moduleLeft _ _ _ _ _ _ _ hM.hasSMul _ Ideal.Quotient.mk_surjective
-    (IsTorsionBySet.mk_smul hM)
+def IsTorsionBySet.module (hM : IsTorsionBySet R M I) : Module (R ⧸ I) M :=
+  letI := hM.hasSMul; I.mkQ_surjective.moduleLeft _ (IsTorsionBySet.mk_smul hM)
 #align module.is_torsion_by_set.module Module.IsTorsionBySet.module
 
-instance IsTorsionBySet.isScalarTower
-    {S : Type _} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
+instance IsTorsionBySet.isScalarTower (hM : IsTorsionBySet R M I)
+    {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
     @IsScalarTower S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _ :=
   -- Porting note: still needed to be fed the Module R / I M instance
   @IsScalarTower.mk S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _
     (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x : _))
 #align module.is_torsion_by_set.is_scalar_tower Module.IsTorsionBySet.isScalarTower
 
+/-- An `(R ⧸ Ideal.span {r})`-module is an `R`-module for which `IsTorsionBy R M r`. -/
+abbrev IsTorsionBy.module (hM : IsTorsionBy R M r) : Module (R ⧸ Ideal.span {r}) M :=
+  ((isTorsionBySet_span_singleton_iff r).mpr hM).module
+
+/-- Any module is also a module over the quotient of the ring by the annihilator.
+Not an instance because it causes synthesis failures / timeouts. -/
+def quotientAnnihilator : Module (R ⧸ Module.annihilator R M) M :=
+  (isTorsionBySet_annihilator R M).module
+
+theorem isTorsionBy_quotient_iff (N : Submodule R M) (r : R) :
+    IsTorsionBy R (M⧸N) r ↔ ∀ x, r • x ∈ N :=
+  Iff.trans N.mkQ_surjective.forall <| forall_congr' fun _ =>
+    Submodule.Quotient.mk_eq_zero N
+
+theorem IsTorsionBy.quotient (N : Submodule R M) {r : R}
+    (h : IsTorsionBy R M r) : IsTorsionBy R (M⧸N) r :=
+  (isTorsionBy_quotient_iff N r).mpr fun x => @h x ▸ N.zero_mem
+
+theorem isTorsionBySet_quotient_iff (N : Submodule R M) (s : Set R) :
+    IsTorsionBySet R (M⧸N) s ↔ ∀ x, ∀ r ∈ s, r • x ∈ N :=
+  Iff.trans N.mkQ_surjective.forall <| forall_congr' fun _ =>
+    Iff.trans Subtype.forall <| forall₂_congr fun _ _ =>
+      Submodule.Quotient.mk_eq_zero N
+
+theorem IsTorsionBySet.quotient (N : Submodule R M) {s}
+    (h : IsTorsionBySet R M s) : IsTorsionBySet R (M⧸N) s :=
+  (isTorsionBySet_quotient_iff N s).mpr fun x r h' => @h x ⟨r, h'⟩ ▸ N.zero_mem
+
+variable (M I) (s : Set R) (r : R)
+
+open Pointwise Submodule
+
+lemma isTorsionBySet_quotient_set_smul :
+    IsTorsionBySet R (M⧸s • (⊤ : Submodule R M)) s :=
+  (isTorsionBySet_quotient_iff _ _).mpr fun _ _ h =>
+    mem_set_smul_of_mem_mem h mem_top
+
+lemma isTorsionBy_quotient_element_smul :
+    IsTorsionBy R (M⧸r • (⊤ : Submodule R M)) r :=
+  (isTorsionBy_quotient_iff _ _).mpr (smul_mem_pointwise_smul · r ⊤ ⟨⟩)
+
+lemma isTorsionBySet_quotient_ideal_smul :
+    IsTorsionBySet R (M⧸I • (⊤ : Submodule R M)) I :=
+  (isTorsionBySet_quotient_iff _ _).mpr fun _ _ h => smul_mem_smul h ⟨⟩
+
+instance : Module (R ⧸ Ideal.span s) (M ⧸ s • (⊤ : Submodule R M)) :=
+  ((isTorsionBySet_iff_is_torsion_by_span s).mp
+    (isTorsionBySet_quotient_set_smul M s)).module
+
 instance : Module (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
-  IsTorsionBySet.module (R := R) (I := I) fun x r => by
-    induction x using Quotient.inductionOn
-    refine' (Submodule.Quotient.mk_eq_zero _).mpr (Submodule.smul_mem_smul r.prop _)
-    trivial
+  (isTorsionBySet_quotient_ideal_smul M I).module
+
+instance : Module (R ⧸ Ideal.span {r}) (M ⧸ r • (⊤ : Submodule R M)) :=
+  (isTorsionBy_quotient_element_smul M r).module
+
+lemma Quotient.mk_smul_mk (r : R) (m : M) :
+    Ideal.Quotient.mk I r •
+      Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) m =
+      Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) (r • m) :=
+  rfl
 
 end Module
 
@@ -565,12 +630,12 @@ theorem torsionBySet.mk_smul (I : Ideal R) (b : R) (x : torsionBySet R M I) :
   rfl
 #align submodule.torsion_by_set.mk_smul Submodule.torsionBySet.mk_smul
 
-instance (I : Ideal R) {S : Type _} [SMul S R] [SMul S M] [IsScalarTower S R M]
+instance (I : Ideal R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M]
     [IsScalarTower S R R] : IsScalarTower S (R ⧸ I) (torsionBySet R M I) :=
   inferInstance
 
 /-- The `a`-torsion submodule as an `(R ⧸ R∙a)`-module. -/
-instance (a : R) : Module (R ⧸ R ∙ a) (torsionBy R M a) :=
+instance instModuleQuotientTorsionBy (a : R) : Module (R ⧸ R ∙ a) (torsionBy R M a) :=
   Module.IsTorsionBySet.module <|
     (Module.isTorsionBySet_span_singleton_iff a).mpr <| torsionBy_isTorsionBy a
 
@@ -589,9 +654,22 @@ theorem torsionBy.mk_smul (a b : R) (x : torsionBy R M a) :
   rfl
 #align submodule.torsion_by.mk_smul Submodule.torsionBy.mk_smul
 
-instance (a : R) {S : Type _} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
+instance (a : R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
     IsScalarTower S (R ⧸ R ∙ a) (torsionBy R M a) :=
   inferInstance
+
+/-- Given an `R`-module `M` and an element `a` in `R`, submodules of the `a`-torsion submodule of
+`M` do not depend on whether we take scalars to be `R` or `R ⧸ R ∙ a`. -/
+def submodule_torsionBy_orderIso (a : R) :
+    Submodule (R ⧸ R ∙ a) (torsionBy R M a) ≃o Submodule R (torsionBy R M a) :=
+  { restrictScalarsEmbedding R (R ⧸ R ∙ a) (torsionBy R M a) with
+    invFun := fun p ↦
+      { carrier := p
+        add_mem' := add_mem
+        zero_mem' := p.zero_mem
+        smul_mem' := by rintro ⟨b⟩; exact p.smul_mem b }
+    left_inv := by intro; ext; simp [restrictScalarsEmbedding]
+    right_inv := by intro; ext; simp [restrictScalarsEmbedding] }
 
 end Submodule
 
@@ -604,15 +682,14 @@ section Torsion'
 open Module
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-
-variable (S : Type _) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M]
+variable (S : Type*) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M]
 
 @[simp]
 theorem mem_torsion'_iff (x : M) : x ∈ torsion' R M S ↔ ∃ a : S, a • x = 0 :=
   Iff.rfl
 #align submodule.mem_torsion'_iff Submodule.mem_torsion'_iff
 
--- @[simp] Porting note : simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem mem_torsion_iff (x : M) : x ∈ torsion R M ↔ ∃ a : R⁰, a • x = 0 :=
   Iff.rfl
 #align submodule.mem_torsion_iff Submodule.mem_torsion_iff
@@ -651,7 +728,7 @@ theorem torsion'_torsion'_eq_top : torsion' R (torsion' R M S) S = ⊤ :=
 
 /-- The torsion submodule of the torsion submodule (viewed as a module) is the full
 torsion module. -/
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem torsion_torsion_eq_top : torsion R (torsion R M) = ⊤ :=
   torsion'_torsion'_eq_top R⁰
 #align submodule.torsion_torsion_eq_top Submodule.torsion_torsion_eq_top
@@ -681,7 +758,7 @@ variable {R M}
 theorem _root_.Submodule.annihilator_top_inter_nonZeroDivisors [Module.Finite R M]
     (hM : Module.IsTorsion R M) : ((⊤ : Submodule R M).annihilator : Set R) ∩ R⁰ ≠ ∅ := by
   obtain ⟨S, hS⟩ := ‹Module.Finite R M›.out
-  refine' Set.Nonempty.ne_empty ⟨_, _, (∏ x in S, (@hM x).choose : R⁰).prop⟩
+  refine Set.Nonempty.ne_empty ⟨_, ?_, (∏ x ∈ S, (@hM x).choose : R⁰).prop⟩
   rw [Submonoid.coe_finset_prod, SetLike.mem_coe, ← hS, mem_annihilator_span]
   intro n
   letI := Classical.decEq M
@@ -721,6 +798,12 @@ theorem noZeroSMulDivisors_iff_torsion_eq_bot : NoZeroSMulDivisors R M ↔ torsi
             rw [← mem_bot R, ← h]
             exact ⟨⟨a, mem_nonZeroDivisors_of_ne_zero ha⟩, hax⟩ }
 #align submodule.no_zero_smul_divisors_iff_torsion_eq_bot Submodule.noZeroSMulDivisors_iff_torsion_eq_bot
+
+lemma torsion_int {G} [AddCommGroup G] :
+    (torsion ℤ G).toAddSubgroup = AddCommGroup.torsion G := by
+  ext x
+  refine ((isOfFinAddOrder_iff_zsmul_eq_zero (x := x)).trans ?_).symm
+  simp [mem_nonZeroDivisors_iff_ne_zero]
 
 end Torsion
 
@@ -769,7 +852,7 @@ theorem isTorsion'_powers_iff (p : R) :
 #align submodule.is_torsion'_powers_iff Submodule.isTorsion'_powers_iff
 
 /-- In a `p ^ ∞`-torsion module (that is, a module where all elements are cancelled by scalar
-multiplication by some power of `p`), the smallest `n` such that `p ^ n • x = 0`.-/
+multiplication by some power of `p`), the smallest `n` such that `p ^ n • x = 0`. -/
 def pOrder {p : R} (hM : IsTorsion' M <| Submonoid.powers p) (x : M)
     [∀ n : ℕ, Decidable (p ^ n • x = 0)] :=
   Nat.find <| (isTorsion'_powers_iff p).mp hM x
@@ -809,6 +892,7 @@ namespace Ideal.Quotient
 
 open Submodule
 
+universe w
 theorem torsionBy_eq_span_singleton {R : Type w} [CommRing R] (a b : R) (ha : a ∈ R⁰) :
     torsionBy R (R ⧸ R ∙ a * b) a = R ∙ mk (R ∙ a * b) b := by
   ext x; rw [mem_torsionBy_iff, Submodule.mem_span_singleton]
@@ -830,24 +914,24 @@ namespace AddMonoid
 
 theorem isTorsion_iff_isTorsion_nat [AddCommMonoid M] :
     AddMonoid.IsTorsion M ↔ Module.IsTorsion ℕ M := by
-  refine' ⟨fun h x => _, fun h x => _⟩
-  · obtain ⟨n, h0, hn⟩ := (isOfFinAddOrder_iff_nsmul_eq_zero x).mp (h x)
+  refine ⟨fun h x => ?_, fun h x => ?_⟩
+  · obtain ⟨n, h0, hn⟩ := (h x).exists_nsmul_eq_zero
     exact ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt h0⟩, hn⟩
   · rw [isOfFinAddOrder_iff_nsmul_eq_zero]
     obtain ⟨n, hn⟩ := @h x
-    refine' ⟨n, Nat.pos_of_ne_zero (nonZeroDivisors.coe_ne_zero _), hn⟩
+    exact ⟨n, Nat.pos_of_ne_zero (nonZeroDivisors.coe_ne_zero _), hn⟩
 #align add_monoid.is_torsion_iff_is_torsion_nat AddMonoid.isTorsion_iff_isTorsion_nat
 
 theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
     AddMonoid.IsTorsion M ↔ Module.IsTorsion ℤ M := by
-  refine' ⟨fun h x => _, fun h x => _⟩
-  · obtain ⟨n, h0, hn⟩ := (isOfFinAddOrder_iff_nsmul_eq_zero x).mp (h x)
+  refine ⟨fun h x => ?_, fun h x => ?_⟩
+  · obtain ⟨n, h0, hn⟩ := (h x).exists_nsmul_eq_zero
     exact
-      ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt <| Int.coe_nat_pos.mpr h0⟩,
-        (coe_nat_zsmul _ _).trans hn⟩
+      ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt <| Int.natCast_pos.mpr h0⟩,
+        (natCast_zsmul _ _).trans hn⟩
   · rw [isOfFinAddOrder_iff_nsmul_eq_zero]
     obtain ⟨n, hn⟩ := @h x
-    exact exists_nsmul_eq_zero_of_zsmul_eq_zero (nonZeroDivisors.coe_ne_zero n) hn
+    exact ⟨_, Int.natAbs_pos.2 (nonZeroDivisors.coe_ne_zero n), natAbs_nsmul_eq_zero.2 hn⟩
 #align add_monoid.is_torsion_iff_is_torsion_int AddMonoid.isTorsion_iff_isTorsion_int
 
 end AddMonoid

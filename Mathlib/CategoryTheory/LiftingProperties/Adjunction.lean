@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.lifting_properties.adjunction
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.Adjunction.Basic
+
+#align_import category_theory.lifting_properties.adjunction from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 
@@ -28,7 +25,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C D : Type _} [Category C] [Category D] {G : C ⥤ D} {F : D ⥤ C}
+variable {C D : Type*} [Category C] [Category D] {G : C ⥤ D} {F : D ⥤ C}
 
 namespace CommSq
 
@@ -48,8 +45,7 @@ theorem right_adjoint : CommSq (adj.homEquiv _ _ u) i (F.map p) (adj.homEquiv _ 
 
 /-- The liftings of a commutative are in bijection with the liftings of its (right)
 adjoint square. -/
-def rightAdjointLiftStructEquiv : sq.LiftStruct ≃ (sq.right_adjoint adj).LiftStruct
-    where
+def rightAdjointLiftStructEquiv : sq.LiftStruct ≃ (sq.right_adjoint adj).LiftStruct where
   toFun l :=
     { l := adj.homEquiv _ _ l.l
       fac_left := by rw [← adj.homEquiv_naturality_left, l.fac_left]
@@ -94,8 +90,7 @@ theorem left_adjoint : CommSq ((adj.homEquiv _ _).symm u) (G.map i) p ((adj.homE
 
 /-- The liftings of a commutative are in bijection with the liftings of its (left)
 adjoint square. -/
-def leftAdjointLiftStructEquiv : sq.LiftStruct ≃ (sq.left_adjoint adj).LiftStruct
-    where
+def leftAdjointLiftStructEquiv : sq.LiftStruct ≃ (sq.left_adjoint adj).LiftStruct where
   toFun l :=
     { l := (adj.homEquiv _ _).symm l.l
       fac_left := by rw [← adj.homEquiv_naturality_left_symm, l.fac_left]
@@ -140,4 +135,3 @@ theorem hasLiftingProperty_iff (adj : G ⊣ F) {A B : C} {X Y : D} (i : A ⟶ B)
 end Adjunction
 
 end CategoryTheory
-

@@ -2,15 +2,12 @@
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.monad.equiv_mon
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monad.Basic
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.Mon_
+
+#align_import category_theory.monad.equiv_mon from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -41,7 +38,7 @@ namespace Monad
 
 attribute [local instance] endofunctorMonoidalCategory
 
-/-- To every `Monad C` we associated a monoid object in `C ⥤ C`.-/
+/-- To every `Monad C` we associated a monoid object in `C ⥤ C`. -/
 @[simps]
 def toMon (M : Monad C) : Mon_ (C ⥤ C) where
   X := (M : C ⥤ C)
@@ -69,14 +66,14 @@ def ofMon (M : Mon_ (C ⥤ C)) : Monad C where
   μ' := M.mul
   left_unit' := fun X => by
     -- Porting note: now using `erw`
-    erw [← NatTrans.id_hcomp_app M.one, ← NatTrans.comp_app, M.mul_one]
+    erw [← whiskerLeft_app, ← NatTrans.comp_app, M.mul_one]
     rfl
   right_unit' := fun X => by
     -- Porting note: now using `erw`
-    erw [← NatTrans.hcomp_id_app M.one, ← NatTrans.comp_app, M.one_mul]
+    erw [← whiskerRight_app, ← NatTrans.comp_app, M.one_mul]
     rfl
   assoc' := fun X => by
-    rw [← NatTrans.hcomp_id_app, ← NatTrans.comp_app]
+    rw [← whiskerLeft_app, ← whiskerRight_app, ← NatTrans.comp_app]
     -- Porting note: had to add this step:
     erw [M.mul_assoc]
     simp
@@ -96,13 +93,12 @@ def monToMonad : Mon_ (C ⥤ C) ⥤ Monad C where
       app_η := by
         intro X
         erw [← NatTrans.comp_app, f.one_hom]
-        rfl
+        simp only [Functor.id_obj, ofMon_obj, ofMon_η]
       app_μ := by
         intro Z
         erw [← NatTrans.comp_app, f.mul_hom]
         dsimp
-        simp only [NatTrans.naturality, NatTrans.hcomp_app, assoc, NatTrans.comp_app,
-          ofMon_μ] }
+        simp only [Category.assoc, NatTrans.naturality, ofMon_obj, ofMon] }
 #align category_theory.Monad.Mon_to_Monad CategoryTheory.Monad.monToMonad
 
 /-- Oh, monads are just monoids in the category of endofunctors (equivalence of categories). -/

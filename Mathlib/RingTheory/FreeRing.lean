@@ -2,13 +2,10 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.free_ring
-! leanprover-community/mathlib commit d6814c584384ddf2825ff038e868451a7c956f31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.FreeAbelianGroup
+
+#align_import ring_theory.free_ring from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
 
 /-!
 # Free rings
@@ -67,7 +64,7 @@ protected theorem induction_on {C : FreeRing α → Prop} (z : FreeRing α) (hn1
   have h1 : C 1 := neg_neg (1 : FreeRing α) ▸ hn _ hn1
   FreeAbelianGroup.induction_on z (add_left_neg (1 : FreeRing α) ▸ ha _ _ hn1 h1)
     (fun m => List.recOn m h1 fun a m ih => by
-      -- porting note: in mathlib, convert was not necessary, `exact hm _ _ (hb a) ih` worked fine
+      -- Porting note: in mathlib, convert was not necessary, `exact hm _ _ (hb a) ih` worked fine
       convert hm _ _ (hb a) ih
       rw [of, ← FreeAbelianGroup.of_mul]
       rfl)

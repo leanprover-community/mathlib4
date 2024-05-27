@@ -2,20 +2,17 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.array.lemmas
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.Fin.Basic
+import Mathlib.Algebra.Group.Fin
 import Mathlib.Data.List.Basic
+
+#align_import data.array.lemmas from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 Porting note:
 Following the discussion on [Zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-
 mathlib4/topic/porting.20.60.2Earray.60.20files.20whose.20PR's.20were.20closed.3F), these
-will wait until Std4 has finalized `DArray` and `Array'` types so we can translates
+will wait until Batteries has finalized `DArray` and `Array'` types so we can translates
 apples to apples.
 
 `align` for lemmas about lean3/mathlib3 versions of d_array and array with mathport output
@@ -298,7 +295,7 @@ section PushBack
 -- @[simp]
 -- theorem read_pushBack_right : (a.pushBack v).read (Fin.last _) = v := by
 --   cases' hn : Fin.last n with k hk
---   have : k = n := by simpa [Fin.eq_iff_veq] using hn.symm
+--   have : k = n := by simpa [Fin.ext_iff] using hn.symm
 --   simp [push_back, this, Fin.castSucc, Fin.castAdd, Fin.castLe, Fin.castLt, read, DArray.read]
 #noalign array.read_push_back_right -- Array'.read_pushBack_right
 
@@ -340,4 +337,3 @@ section Map₂
 end Map₂
 
 end Array'
-

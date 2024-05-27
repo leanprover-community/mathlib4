@@ -2,14 +2,11 @@
 Copyright (c) 2020 Wojciech Nawrocki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wojciech Nawrocki, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.monad.kleisli
-! leanprover-community/mathlib commit 545f0fb9837ce297da8eae0fec799d70191e97d4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Monad.Basic
+
+#align_import category_theory.monad.kleisli from "leanprover-community/mathlib"@"545f0fb9837ce297da8eae0fec799d70191e97d4"
 
 /-! # Kleisli category on a (co)monad
 
@@ -47,7 +44,7 @@ instance [Inhabited C] (T : Monad C) : Inhabited (Kleisli T) :=
 
 /-- The Kleisli category on a monad `T`.
     cf Definition 5.2.9 in [Riehl][riehl2017]. -/
-instance Kleisli.category : Category (Kleisli T) where
+instance category : Category (Kleisli T) where
   Hom := fun X Y : C => X ⟶ (T : C ⥤ C).obj Y
   id X := T.η.app X
   comp {X} {Y} {Z} f g := f ≫ (T : C ⥤ C).map g ≫ T.μ.app Z
@@ -58,7 +55,7 @@ instance Kleisli.category : Category (Kleisli T) where
   assoc f g h := by
     simp only [Functor.map_comp, Category.assoc, Monad.assoc]
     erw [T.μ.naturality_assoc]
-#align category_theory.kleisli.kleisli.category CategoryTheory.Kleisli.Kleisli.category
+#align category_theory.kleisli.kleisli.category CategoryTheory.Kleisli.category
 
 namespace Adjunction
 
@@ -66,7 +63,7 @@ namespace Adjunction
 @[simps]
 def toKleisli : C ⥤ Kleisli T where
   obj X := (X : Kleisli T)
-  map {X} {Y} f := (f ≫ T.η.app Y : X ⟶  T.obj Y)
+  map {X} {Y} f := (f ≫ T.η.app Y : X ⟶ T.obj Y)
   map_comp {X} {Y} {Z} f g := by
     -- Porting note: hack for missing unfold_projs tactic
     change _ = (f ≫ (Monad.η T).app Y) ≫ T.map (g ≫ (Monad.η T).app Z) ≫ T.μ.app Z
@@ -124,20 +121,20 @@ variable (U : Comonad C)
 instance [Inhabited C] (U : Comonad C) : Inhabited (Cokleisli U) :=
   ⟨(default : C)⟩
 
-/-- The co-Kleisli category on a comonad `U`.-/
-instance Cokleisli.category : Category (Cokleisli U) where
+/-- The co-Kleisli category on a comonad `U`. -/
+instance category : Category (Cokleisli U) where
   Hom := fun X Y : C => (U : C ⥤ C).obj X ⟶ Y
   id X := U.ε.app X
   comp {X} {Y} {Z} f g := U.δ.app X ≫ (U : C ⥤ C).map f ≫ g
   id_comp f := by dsimp; rw [U.right_counit_assoc]
   assoc {X} {Y} {Z} {W} f g h := by
-    -- Porting note: working around lack of of unfold_projs
+    -- Porting note: working around lack of unfold_projs
     change U.δ.app X ≫ U.map (U.δ.app X ≫ U.map f ≫ g) ≫ h =
       U.δ.app X ≫ U.map f ≫ (U.δ.app Y ≫ U.map g ≫ h)
     -- Porting note: something was broken here and was easier just to redo from scratch
     simp only [Functor.map_comp, ← Category.assoc, eq_whisker]
     simp only [Category.assoc, U.δ.naturality, Functor.comp_map, U.coassoc_assoc]
-#align category_theory.cokleisli.cokleisli.category CategoryTheory.Cokleisli.Cokleisli.category
+#align category_theory.cokleisli.cokleisli.category CategoryTheory.Cokleisli.category
 
 namespace Adjunction
 

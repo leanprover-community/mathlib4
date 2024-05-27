@@ -2,15 +2,13 @@
 Copyright (c) 2022 Sam van Gool and Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sam van Gool, Jake Levinson
-
-! This file was ported from Lean 3 source module topology.sheaves.locally_surjective
-! leanprover-community/mathlib commit fb7698eb37544cbb66292b68b40e54d001f8d1a9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Sheaves.Stalks
+import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.Sites.Surjective
+
+#align_import topology.sheaves.locally_surjective from "leanprover-community/mathlib"@"fb7698eb37544cbb66292b68b40e54d001f8d1a9"
 
 /-!
 
@@ -48,7 +46,6 @@ section LocallySurjective
 open scoped AlgebraicGeometry
 
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] {X : TopCat.{v}}
-
 variable {ℱ 𝒢 : X.Presheaf C}
 
 /-- A map of presheaves `T : ℱ ⟶ 𝒢` is **locally surjective** if for any open set `U`,
@@ -112,7 +109,7 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
       symm
       convert stalkFunctor_map_germ_apply _ _ _ s
     obtain ⟨W, hxW, hWV, hWU, h_eq⟩ := key_W
-    refine' ⟨W, hWU, ⟨ℱ.map hWV.op s, _⟩, hxW⟩
+    refine ⟨W, hWU, ⟨ℱ.map hWV.op s, ?_⟩, hxW⟩
     convert h_eq using 1
     simp only [← comp_apply, T.naturality]
 set_option linter.uppercaseLean3 false in

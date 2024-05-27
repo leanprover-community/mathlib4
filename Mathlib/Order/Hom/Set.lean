@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module order.hom.set
-! leanprover-community/mathlib commit 198161d833f2c01498c39c266b0b3dbe2c7a8c07
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Data.Set.Image
+
+#align_import order.hom.set from "leanprover-community/mathlib"@"198161d833f2c01498c39c266b0b3dbe2c7a8c07"
 
 /-!
 # Order homomorphisms and sets
@@ -19,7 +16,7 @@ import Mathlib.Data.Set.Image
 
 open OrderDual
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 namespace OrderIso
 
@@ -79,13 +76,19 @@ def setCongr (s t : Set α) (h : s = t) :
 #align order_iso.set_congr OrderIso.setCongr
 
 /-- Order isomorphism between `univ : Set α` and `α`. -/
-def Set.univ : (Set.univ : Set α) ≃o
-      α where
+def Set.univ : (Set.univ : Set α) ≃o α where
   toEquiv := Equiv.Set.univ α
   map_rel_iff' := Iff.rfl
 #align order_iso.set.univ OrderIso.Set.univ
 
 end OrderIso
+
+/-- We can regard an order embedding as an order isomorphism to its range. -/
+@[simps! apply]
+noncomputable def OrderEmbedding.orderIso [LE α] [LE β] {f : α ↪o β} :
+    α ≃o Set.range f :=
+  { Equiv.ofInjective _ f.injective with
+    map_rel_iff' := f.map_rel_iff }
 
 /-- If a function `f` is strictly monotone on a set `s`, then it defines an order isomorphism
 between `s` and its image. -/
@@ -99,7 +102,6 @@ protected noncomputable def StrictMonoOn.orderIso {α β} [LinearOrder α] [Preo
 namespace StrictMono
 
 variable [LinearOrder α] [Preorder β]
-
 variable (f : α → β) (h_mono : StrictMono f) (h_surj : Function.Surjective f)
 
 /-- A strictly monotone function from a linear order is an order isomorphism between its domain and

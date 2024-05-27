@@ -2,15 +2,13 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module set_theory.zfc.basic
-! leanprover-community/mathlib commit f0b3759a8ef0bd8239ecdaa5e1089add5feebe1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
 import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.Function.OfArity
 import Mathlib.Order.WellFounded
+
+#align_import set_theory.zfc.basic from "leanprover-community/mathlib"@"f0b3759a8ef0bd8239ecdaa5e1089add5feebe1a"
 
 /-!
 # A model of ZFC
@@ -25,42 +23,40 @@ Then the rest is usual set theory.
 
 ## The model
 
-* `pSet`: Pre-set. A pre-set is inductively defined by its indexing type and its members, which are
+* `PSet`: Pre-set. A pre-set is inductively defined by its indexing type and its members, which are
   themselves pre-sets.
-* `Set`: ZFC set. Defined as `pSet` quotiented by `pSet.equiv`, the extensional equivalence.
-* `Class`: Class. Defined as `set Set`.
-* `Set.choice`: Axiom of choice. Proved from Lean's axiom of choice.
+* `ZFSet`: ZFC set. Defined as `PSet` quotiented by `PSet.Equiv`, the extensional equivalence.
+* `Class`: Class. Defined as `Set ZFSet`.
+* `ZFSet.choice`: Axiom of choice. Proved from Lean's axiom of choice.
 
 ## Other definitions
 
-* `arity α n`: `n`-ary function `α → α → ... → α`. Defined inductively.
-* `arity.const a n`: `n`-ary constant function equal to `a`.
-* `pSet.type`: Underlying type of a pre-set.
-* `pSet.func`: Underlying family of pre-sets of a pre-set.
-* `pSet.equiv`: Extensional equivalence of pre-sets. Defined inductively.
-* `pSet.omega`, `Set.omega`: The von Neumann ordinal `ω` as a `pSet`, as a `Set`.
-* `pSet.arity.equiv`: Extensional equivalence of `n`-ary `pSet`-valued functions. Extension of
-  `pSet.equiv`.
-* `pSet.resp`: Collection of `n`-ary `pSet`-valued functions that respect extensional equivalence.
-* `pSet.eval`: Turns a `pSet`-valued function that respect extensional equivalence into a
-  `Set`-valued function.
-* `classical.all_definable`: All functions are classically definable.
-* `Set.is_func` : Predicate that a ZFC set is a subset of `x × y` that can be considered as a ZFC
+* `PSet.Type`: Underlying type of a pre-set.
+* `PSet.Func`: Underlying family of pre-sets of a pre-set.
+* `PSet.Equiv`: Extensional equivalence of pre-sets. Defined inductively.
+* `PSet.omega`, `ZFSet.omega`: The von Neumann ordinal `ω` as a `PSet`, as a `Set`.
+* `PSet.Arity.Equiv`: Extensional equivalence of `n`-ary `PSet`-valued functions. Extension of
+  `PSet.Equiv`.
+* `PSet.Resp`: Collection of `n`-ary `PSet`-valued functions that respect extensional equivalence.
+* `PSet.eval`: Turns a `PSet`-valued function that respect extensional equivalence into a
+  `ZFSet`-valued function.
+* `Classical.allDefinable`: All functions are classically definable.
+* `ZFSet.IsFunc` : Predicate that a ZFC set is a subset of `x × y` that can be considered as a ZFC
   function `x → y`. That is, each member of `x` is related by the ZFC set to exactly one member of
   `y`.
-* `Set.funs`: ZFC set of ZFC functions `x → y`.
-* `Set.hereditarily p x`: Predicate that every set in the transitive closure of `x` has property
+* `ZFSet.funs`: ZFC set of ZFC functions `x → y`.
+* `ZFSet.Hereditarily p x`: Predicate that every set in the transitive closure of `x` has property
   `p`.
 * `Class.iota`: Definite description operator.
 
 ## Notes
 
-To avoid confusion between the Lean `set` and the ZFC `Set`, docstrings in this file refer to them
-respectively as "`set`" and "ZFC set".
+To avoid confusion between the Lean `Set` and the ZFC `Set`, docstrings in this file refer to them
+respectively as "`Set`" and "ZFC set".
 
 ## TODO
 
-Prove `Set.map_definable_aux` computably.
+Prove `ZFSet.mapDefinableAux` computably.
 -/
 
 -- Porting note: Lean 3 uses `Set` for `ZFSet`.
@@ -68,49 +64,7 @@ set_option linter.uppercaseLean3 false
 
 universe u v
 
-/-- The type of `n`-ary functions `α → α → ... → α`. -/
-def Arity (α : Type u) : ℕ → Type u
-  | 0 => α
-  | n + 1 => α → Arity α n
-#align arity Arity
-
-@[simp]
-theorem arity_zero (α : Type u) : Arity α 0 = α :=
-  rfl
-#align arity_zero arity_zero
-
-@[simp]
-theorem arity_succ (α : Type u) (n : ℕ) : Arity α n.succ = (α → Arity α n) :=
-  rfl
-#align arity_succ arity_succ
-
-namespace Arity
-
-/-- Constant `n`-ary function with value `a`. -/
-def Const {α : Type u} (a : α) : ∀ n, Arity α n
-  | 0 => a
-  | n + 1 => fun _ => Const a n
-#align arity.const Arity.Const
-
-@[simp]
-theorem const_zero {α : Type u} (a : α) : Const a 0 = a :=
-  rfl
-#align arity.const_zero Arity.const_zero
-
-@[simp]
-theorem const_succ {α : Type u} (a : α) (n : ℕ) : Const a n.succ = fun _ => Const a n :=
-  rfl
-#align arity.const_succ Arity.const_succ
-
-theorem const_succ_apply {α : Type u} (a : α) (n : ℕ) (x : α) : Const a n.succ x = Const a n :=
-  rfl
-#align arity.const_succ_apply Arity.const_succ_apply
-
-instance Arity.inhabited {α n} [Inhabited α] : Inhabited (Arity α n) :=
-  ⟨Const default _⟩
-#align arity.arity.inhabited Arity.Arity.inhabited
-
-end Arity
+open Function (OfArity)
 
 /-- The type of pre-sets in universe `u`. A pre-set
   is a family of pre-sets indexed by a type in `Type u`.
@@ -154,7 +108,7 @@ def Equiv : PSet → PSet → Prop
 #align pSet.equiv PSet.Equiv
 
 theorem equiv_iff :
-   ∀ {x y : PSet},
+    ∀ {x y : PSet},
       Equiv x y ↔ (∀ i, ∃ j, Equiv (x.Func i) (y.Func j)) ∧ ∀ j, ∃ i, Equiv (x.Func i) (y.Func j)
   | ⟨_, _⟩, ⟨_, _⟩ => Iff.rfl
 #align pSet.equiv_iff PSet.equiv_iff
@@ -211,7 +165,7 @@ instance setoid : Setoid PSet :=
 #align pSet.setoid PSet.setoid
 
 /-- A pre-set is a subset of another pre-set if every element of the first family is extensionally
-equivalent to some element of the second family.-/
+equivalent to some element of the second family. -/
 protected def Subset (x y : PSet) : Prop :=
   ∀ a, ∃ b, Equiv (x.Func a) (y.Func b)
 #align pSet.subset PSet.Subset
@@ -341,7 +295,7 @@ theorem mem_irrefl (x : PSet) : x ∉ x :=
   irrefl x
 #align pSet.mem_irrefl PSet.mem_irrefl
 
-/-- Convert a pre-set to a `set` of pre-sets. -/
+/-- Convert a pre-set to a `Set` of pre-sets. -/
 def toSet (u : PSet.{u}) : Set PSet.{u} :=
   { x | x ∈ u }
 #align pSet.to_set PSet.toSet
@@ -529,24 +483,25 @@ theorem lift_mem_embed : ∀ x : PSet.{u}, PSet.Lift.{u, max (u + 1) v} x ∈ em
 
 /-- Function equivalence is defined so that `f ~ g` iff `∀ x y, x ~ y → f x ~ g y`. This extends to
 equivalence of `n`-ary functions. -/
-def Arity.Equiv : ∀ {n}, Arity PSet.{u} n → Arity PSet.{u} n → Prop
+def Arity.Equiv : ∀ {n}, OfArity PSet.{u} PSet.{u} n → OfArity PSet.{u} PSet.{u} n → Prop
   | 0, a, b => PSet.Equiv a b
   | _ + 1, a, b => ∀ x y : PSet, PSet.Equiv x y → Arity.Equiv (a x) (b y)
 #align pSet.arity.equiv PSet.Arity.Equiv
 
-theorem Arity.equiv_const {a : PSet.{u}} : ∀ n, Arity.Equiv (Arity.Const a n) (Arity.Const a n)
+theorem Arity.equiv_const {a : PSet.{u}} :
+    ∀ n, Arity.Equiv (OfArity.const PSet.{u} a n) (OfArity.const PSet.{u} a n)
   | 0 => Equiv.rfl
   | _ + 1 => fun _ _ _ => Arity.equiv_const _
 #align pSet.arity.equiv_const PSet.Arity.equiv_const
 
-/-- `resp n` is the collection of n-ary functions on `pSet` that respect
+/-- `resp n` is the collection of n-ary functions on `PSet` that respect
   equivalence, i.e. when the inputs are equivalent the output is as well. -/
 def Resp (n) :=
-  { x : Arity PSet.{u} n // Arity.Equiv x x }
+  { x : OfArity PSet.{u} PSet.{u} n // Arity.Equiv x x }
 #align pSet.resp PSet.Resp
 
 instance Resp.inhabited {n} : Inhabited (Resp n) :=
-  ⟨⟨Arity.Const default _, Arity.equiv_const _⟩⟩
+  ⟨⟨OfArity.const _ default _, Arity.equiv_const _⟩⟩
 #align pSet.resp.inhabited PSet.Resp.inhabited
 
 /-- The `n`-ary image of a `(n + 1)`-ary function respecting equivalence as a function respecting
@@ -555,11 +510,12 @@ def Resp.f {n} (f : Resp (n + 1)) (x : PSet) : Resp n :=
   ⟨f.1 x, f.2 _ _ <| Equiv.refl x⟩
 #align pSet.resp.f PSet.Resp.f
 
-/-- Function equivalence for functions respecting equivalence. See `pSet.arity.equiv`. -/
+/-- Function equivalence for functions respecting equivalence. See `PSet.Arity.Equiv`. -/
 def Resp.Equiv {n} (a b : Resp n) : Prop :=
   Arity.Equiv a.1 b.1
 #align pSet.resp.equiv PSet.Resp.Equiv
 
+@[refl]
 protected theorem Resp.Equiv.refl {n} (a : Resp n) : Resp.Equiv a a :=
   a.2
 #align pSet.resp.equiv.refl PSet.Resp.Equiv.refl
@@ -571,10 +527,12 @@ protected theorem Resp.Equiv.euc :
     @Resp.Equiv.euc n (a.f x) (b.f y) (c.f y) (hab _ _ h) (hcb _ _ <| PSet.Equiv.refl y)
 #align pSet.resp.equiv.euc PSet.Resp.Equiv.euc
 
+@[symm]
 protected theorem Resp.Equiv.symm {n} {a b : Resp n} : Resp.Equiv a b → Resp.Equiv b a :=
   (Resp.Equiv.refl b).euc
 #align pSet.resp.equiv.symm PSet.Resp.Equiv.symm
 
+@[trans]
 protected theorem Resp.Equiv.trans {n} {x y z : Resp n} (h1 : Resp.Equiv x y)
     (h2 : Resp.Equiv y z) : Resp.Equiv x z :=
   h1.euc h2.symm
@@ -596,26 +554,28 @@ namespace PSet
 
 namespace Resp
 
-/-- Helper function for `pSet.eval`. -/
-def EvalAux :
-    ∀ {n}, { f : Resp n → Arity ZFSet.{u} n // ∀ a b : Resp n, Resp.Equiv a b → f a = f b }
+/-- Helper function for `PSet.eval`. -/
+def evalAux :
+    ∀ {n},
+      { f : Resp n → OfArity ZFSet.{u} ZFSet.{u} n // ∀ a b : Resp n, Resp.Equiv a b → f a = f b }
   | 0 => ⟨fun a => ⟦a.1⟧, fun _ _ h => Quotient.sound h⟩
   | n + 1 =>
-    let F : Resp (n + 1) → Arity ZFSet (n + 1) := fun a =>
-      @Quotient.lift _ _ PSet.setoid (fun x => EvalAux.1 (a.f x)) fun _ _ h =>
-        EvalAux.2 _ _ (a.2 _ _ h)
+    let F : Resp (n + 1) → OfArity ZFSet ZFSet (n + 1) := fun a =>
+      @Quotient.lift _ _ PSet.setoid (fun x => evalAux.1 (a.f x)) fun _ _ h =>
+        evalAux.2 _ _ (a.2 _ _ h)
     ⟨F, fun b c h =>
       funext <|
         (@Quotient.ind _ _ fun q => F b q = F c q) fun z =>
-          EvalAux.2 (Resp.f b z) (Resp.f c z) (h _ _ (PSet.Equiv.refl z))⟩
-#align pSet.resp.eval_aux PSet.Resp.EvalAux
+          evalAux.2 (Resp.f b z) (Resp.f c z) (h _ _ (PSet.Equiv.refl z))⟩
+#align pSet.resp.eval_aux PSet.Resp.evalAux
 
 /-- An equivalence-respecting function yields an n-ary ZFC set function. -/
-def eval (n) : Resp n → Arity ZFSet.{u} n :=
-  EvalAux.1
+def eval (n) : Resp n → OfArity ZFSet.{u} ZFSet.{u} n :=
+  evalAux.1
 #align pSet.resp.eval PSet.Resp.eval
 
-theorem eval_val {n f x} : (@eval (n + 1) f : ZFSet → Arity ZFSet n) ⟦x⟧ = eval n (Resp.f f x) :=
+theorem eval_val {n f x} :
+    (@eval (n + 1) f : ZFSet → OfArity ZFSet ZFSet n) ⟦x⟧ = eval n (Resp.f f x) :=
   rfl
 #align pSet.resp.eval_val PSet.Resp.eval_val
 
@@ -624,24 +584,25 @@ end Resp
 /-- A set function is "definable" if it is the image of some n-ary pre-set
   function. This isn't exactly definability, but is useful as a sufficient
   condition for functions that have a computable image. -/
-class inductive Definable (n) : Arity ZFSet.{u} n → Type (u + 1)
+class inductive Definable (n) : OfArity ZFSet.{u} ZFSet.{u} n → Type (u + 1)
   | mk (f) : Definable n (Resp.eval n f)
 #align pSet.definable PSet.Definable
 
 attribute [instance] Definable.mk
 
 /-- The evaluation of a function respecting equivalence is definable, by that same function. -/
-def Definable.EqMk {n} (f) : ∀ {s : Arity ZFSet.{u} n} (_ : Resp.eval _ f = s), Definable n s
+def Definable.EqMk {n} (f) :
+    ∀ {s : OfArity ZFSet.{u} ZFSet.{u} n} (_ : Resp.eval _ f = s), Definable n s
   | _, rfl => ⟨f⟩
 #align pSet.definable.eq_mk PSet.Definable.EqMk
 
 /-- Turns a definable function into a function that respects equivalence. -/
-def Definable.Resp {n} : ∀ (s : Arity ZFSet.{u} n) [Definable n s], Resp n
+def Definable.Resp {n} : ∀ (s : OfArity ZFSet.{u} ZFSet.{u} n) [Definable n s], Resp n
   | _, ⟨f⟩ => f
 #align pSet.definable.resp PSet.Definable.Resp
 
 theorem Definable.eq {n} :
-    ∀ (s : Arity ZFSet.{u} n) [H : Definable n s], (@Definable.Resp n s H).eval _ = s
+    ∀ (s : OfArity ZFSet.{u} ZFSet.{u} n) [H : Definable n s], (@Definable.Resp n s H).eval _ = s
   | _, ⟨_⟩ => rfl
 #align pSet.definable.eq PSet.Definable.eq
 
@@ -652,21 +613,21 @@ namespace Classical
 open PSet
 
 /-- All functions are classically definable. -/
-noncomputable def AllDefinable : ∀ {n} (F : Arity ZFSet n), Definable n F
+noncomputable def allDefinable : ∀ {n} (F : OfArity ZFSet ZFSet n), Definable n F
   | 0, F =>
     let p := @Quotient.exists_rep PSet _ F
     @Definable.EqMk 0 ⟨choose p, Equiv.rfl⟩ _ (choose_spec p)
-  | n + 1, (F : Arity ZFSet (n + 1)) => by
-    have I := fun x => AllDefinable (F x)
+  | n + 1, (F : OfArity ZFSet ZFSet (n + 1)) => by
+    have I : (x : ZFSet) → Definable n (F x) := fun x => allDefinable (F x)
     refine' @Definable.EqMk (n + 1) ⟨fun x : PSet => (@Definable.Resp _ _ (I ⟦x⟧)).1, _⟩ _ _
     · dsimp [Arity.Equiv]
       intro x y h
       rw [@Quotient.sound PSet _ _ _ h]
       exact (Definable.Resp (F ⟦y⟧)).2
-    refine' funext fun q => Quotient.inductionOn q fun x => _
+    refine funext fun q => Quotient.inductionOn q fun x => ?_
     simp_rw [Resp.eval_val, Resp.f]
     exact @Definable.eq _ (F ⟦x⟧) (I ⟦x⟧)
-#align classical.all_definable Classical.AllDefinable
+#align classical.all_definable Classical.allDefinable
 
 end Classical
 
@@ -703,7 +664,7 @@ theorem exact {x y : PSet} : mk x = mk y → PSet.Equiv x y :=
 
 @[simp]
 theorem eval_mk {n f x} :
-    (@Resp.eval (n + 1) f : ZFSet → Arity ZFSet n) (mk x) = Resp.eval n (Resp.f f x) :=
+    (@Resp.eval (n + 1) f : ZFSet → OfArity ZFSet ZFSet n) (mk x) = Resp.eval n (Resp.f f x) :=
   rfl
 #align Set.eval_mk ZFSet.eval_mk
 
@@ -721,7 +682,7 @@ theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
   Iff.rfl
 #align Set.mk_mem_iff ZFSet.mk_mem_iff
 
-/-- Convert a ZFC set into a `set` of ZFC sets -/
+/-- Convert a ZFC set into a `Set` of ZFC sets -/
 def toSet (u : ZFSet.{u}) : Set ZFSet.{u} :=
   { x | x ∈ u }
 #align Set.to_set ZFSet.toSet
@@ -843,7 +804,7 @@ theorem not_nonempty_empty : ¬ZFSet.Nonempty ∅ := by simp [ZFSet.Nonempty]
 
 @[simp]
 theorem nonempty_mk_iff {x : PSet} : (mk x).Nonempty ↔ x.Nonempty := by
-  refine' ⟨_, fun ⟨a, h⟩ => ⟨mk a, h⟩⟩
+  refine ⟨?_, fun ⟨a, h⟩ => ⟨mk a, h⟩⟩
   rintro ⟨a, h⟩
   induction a using Quotient.inductionOn
   exact ⟨_, h⟩
@@ -1299,7 +1260,7 @@ def pairSep (p : ZFSet.{u} → ZFSet.{u} → Prop) (x y : ZFSet.{u}) : ZFSet.{u}
 @[simp]
 theorem mem_pairSep {p} {x y z : ZFSet.{u}} :
     z ∈ pairSep p x y ↔ ∃ a ∈ x, ∃ b ∈ y, z = pair a b ∧ p a b := by
-  refine' mem_sep.trans ⟨And.right, fun e => ⟨_, e⟩⟩
+  refine mem_sep.trans ⟨And.right, fun e => ⟨?_, e⟩⟩
   rcases e with ⟨a, ax, b, bY, rfl, pab⟩
   simp only [mem_powerset, subset_def, mem_union, pair, mem_pair]
   rintro u (rfl | rfl) v <;> simp only [mem_singleton, mem_pair]
@@ -1369,8 +1330,8 @@ theorem mem_funs {x y f : ZFSet.{u}} : f ∈ funs x y ↔ IsFunc x y f := by sim
    suggests it shouldn't be. -/
 @[nolint unusedArguments]
 noncomputable instance mapDefinableAux (f : ZFSet → ZFSet) [Definable 1 f] :
-    Definable 1 fun y => pair y (f y) :=
-  @Classical.AllDefinable 1 _
+    Definable 1 fun (y : ZFSet) => pair y (f y) :=
+  @Classical.allDefinable 1 _
 #align Set.map_definable_aux ZFSet.mapDefinableAux
 
 /-- Graph of a function: `map f x` is the ZFC function which maps `a ∈ x` to `f a` -/
@@ -1405,11 +1366,11 @@ theorem map_isFunc {f : ZFSet → ZFSet} [Definable 1 f] {x y : ZFSet} :
       fun _ => map_unique⟩⟩
 #align Set.map_is_func ZFSet.map_isFunc
 
-/-- Given a predicate `p` on ZFC sets. `hereditarily p x` means that `x` has property `p` and the
-members of `x` are all `hereditarily p`. -/
+/-- Given a predicate `p` on ZFC sets. `Hereditarily p x` means that `x` has property `p` and the
+members of `x` are all `Hereditarily p`. -/
 def Hereditarily (p : ZFSet → Prop) (x : ZFSet) : Prop :=
   p x ∧ ∀ y ∈ x, Hereditarily p y
-termination_by _ => x
+termination_by x
 #align Set.hereditarily ZFSet.Hereditarily
 
 section Hereditarily
@@ -1420,7 +1381,7 @@ theorem hereditarily_iff : Hereditarily p x ↔ p x ∧ ∀ y ∈ x, Hereditaril
   rw [← Hereditarily]
 #align Set.hereditarily_iff ZFSet.hereditarily_iff
 
-alias hereditarily_iff ↔ Hereditarily.def _
+alias ⟨Hereditarily.def, _⟩ := hereditarily_iff
 #align Set.hereditarily.def ZFSet.Hereditarily.def
 
 theorem Hereditarily.self (h : x.Hereditarily p) : p x :=
@@ -1458,8 +1419,8 @@ namespace Class
 
 -- Porting note: this is no longer an automatically derived instance.
 /-- `{x ∈ A | p x}` is the class of elements in `A` satisfying `p` -/
-protected def sep (p : Class → Prop) (A : Class) : Class :=
-  {y | A y ∧ p A}
+protected def sep (p : ZFSet → Prop) (A : Class) : Class :=
+  {y | A y ∧ p y}
 
 @[ext]
 theorem ext {x y : Class.{u}} : (∀ z : ZFSet.{u}, x z ↔ y z) → x = y :=
@@ -1531,12 +1492,12 @@ theorem eq_univ_of_forall {A : Class.{u}} : (∀ x : ZFSet, A x) → A = univ :=
 theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
   ⟨by
     have H : ∀ x : ZFSet.{u}, @Acc Class.{u} (· ∈ ·) ↑x := by
-      refine' fun a => ZFSet.inductionOn a fun x IH => ⟨_, _⟩
+      refine fun a => ZFSet.inductionOn a fun x IH => ⟨_, ?_⟩
       rintro A ⟨z, rfl, hz⟩
       exact IH z hz
-    · refine' fun A => ⟨A, _⟩
-      rintro B ⟨x, rfl, _⟩
-      exact H x⟩
+    refine fun A => ⟨A, ?_⟩
+    rintro B ⟨x, rfl, _⟩
+    exact H x⟩
 #align Class.mem_wf Class.mem_wf
 
 instance : WellFoundedRelation Class :=
@@ -1698,7 +1659,7 @@ theorem mem_sUnion {x y : Class.{u}} : y ∈ ⋃₀ x ↔ ∃ z, z ∈ x ∧ y �
 #align Class.mem_sUnion Class.mem_sUnion
 
 theorem sInter_apply {x : Class.{u}} {y : ZFSet.{u}} : (⋂₀ x) y ↔ ∀ z : ZFSet.{u}, x z → y ∈ z := by
-  refine' ⟨fun hxy z hxz => hxy _ ⟨z, rfl, hxz⟩, _⟩
+  refine ⟨fun hxy z hxz => hxy _ ⟨z, rfl, hxz⟩, ?_⟩
   rintro H - ⟨z, rfl, hxz⟩
   exact H _ hxz
 #align Class.sInter_apply Class.sInter_apply
@@ -1714,11 +1675,11 @@ theorem mem_of_mem_sInter {x y z : Class} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) :
 #align Class.mem_of_mem_sInter Class.mem_of_mem_sInter
 
 theorem mem_sInter {x y : Class.{u}} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z, z ∈ x → y ∈ z := by
-  refine' ⟨fun hy z => mem_of_mem_sInter hy, fun H => _⟩
+  refine ⟨fun hy z => mem_of_mem_sInter hy, fun H => ?_⟩
   simp_rw [mem_def, sInter_apply]
   obtain ⟨z, hz⟩ := h
   obtain ⟨y, rfl, _⟩ := H z (coe_mem.2 hz)
-  refine' ⟨y, rfl, fun w hxw => _⟩
+  refine ⟨y, rfl, fun w hxw => ?_⟩
   simpa only [coe_mem, coe_apply] using H w (coe_mem.2 hxw)
 #align Class.mem_sInter Class.mem_sInter
 
@@ -1738,7 +1699,7 @@ theorem sInter_empty : ⋂₀ (∅ : Class.{u}) = univ := by
 theorem eq_univ_of_powerset_subset {A : Class} (hA : powerset A ⊆ A) : A = univ :=
   eq_univ_of_forall
     (by
-      by_contra' hnA
+      by_contra! hnA
       exact
         WellFounded.min_mem ZFSet.mem_wf _ hnA
           (hA fun x hx =>
@@ -1801,7 +1762,7 @@ variable (x : ZFSet.{u}) (h : ∅ ∉ x)
 
 /-- A choice function on the class of nonempty ZFC sets. -/
 noncomputable def choice : ZFSet :=
-  @map (fun y => Classical.epsilon fun z => z ∈ y) (Classical.AllDefinable _) x
+  @map (fun y => Classical.epsilon fun z => z ∈ y) (Classical.allDefinable _) x
 #align Set.choice ZFSet.choice
 
 theorem choice_mem_aux (y : ZFSet.{u}) (yx : y ∈ x) :
@@ -1812,14 +1773,33 @@ theorem choice_mem_aux (y : ZFSet.{u}) (yx : y ∈ x) :
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem choice_isFunc : IsFunc x (⋃₀ x) (choice x) :=
-  (@map_isFunc _ (Classical.AllDefinable _) _ _).2 fun y yx =>
+  (@map_isFunc _ (Classical.allDefinable _) _ _).2 fun y yx =>
     mem_sUnion.2 ⟨y, yx, choice_mem_aux x h y yx⟩
 #align Set.choice_is_func ZFSet.choice_isFunc
 
 theorem choice_mem (y : ZFSet.{u}) (yx : y ∈ x) : (choice x ′ y : Class.{u}) ∈ (y : Class.{u}) := by
   delta choice
-  rw [@map_fval _ (Classical.AllDefinable _) x y yx, Class.coe_mem, Class.coe_apply]
+  rw [@map_fval _ (Classical.allDefinable _) x y yx, Class.coe_mem, Class.coe_apply]
   exact choice_mem_aux x h y yx
 #align Set.choice_mem ZFSet.choice_mem
+
+private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
+  (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out).toSet = s := by
+    ext x
+    rw [mem_toSet, ← mk_out x, mk_mem_iff, mk_out]
+    refine ⟨?_, fun xs ↦ ⟨equivShrink s (Subtype.mk x xs), ?_⟩⟩
+    · rintro ⟨b, h2⟩
+      rw [← ZFSet.eq, ZFSet.mk_out] at h2
+      simp [h2]
+    · simp [PSet.Equiv.refl]
+
+/-- `ZFSet.toSet` as an equivalence. -/
+@[simps apply_coe]
+noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} s} where
+  toFun x := ⟨x.toSet, x.small_toSet⟩
+  invFun := fun ⟨s, h⟩ ↦ mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u+1} s).symm x).1.out
+  left_inv := Function.rightInverse_of_injective_of_leftInverse (by intros x y; simp)
+    fun s ↦ Subtype.coe_injective <| toSet_equiv_aux s.2
+  right_inv s := Subtype.coe_injective <| toSet_equiv_aux s.2
 
 end ZFSet

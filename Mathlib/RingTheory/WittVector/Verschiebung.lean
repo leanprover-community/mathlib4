@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.verschiebung
-! leanprover-community/mathlib commit 32b08ef840dd25ca2e47e035c5da03ce16d2dc3c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
+
+#align_import ring_theory.witt_vector.verschiebung from "leanprover-community/mathlib"@"32b08ef840dd25ca2e47e035c5da03ce16d2dc3c"
 
 /-!
 ## The Verschiebung operator
@@ -26,7 +23,7 @@ namespace WittVector
 
 open MvPolynomial
 
-variable {p : ℕ} {R S : Type _} [hp : Fact p.Prime] [CommRing R] [CommRing S]
+variable {p : ℕ} {R S : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -59,7 +56,7 @@ theorem verschiebungFun_coeff_succ (x : 𝕎 R) (n : ℕ) :
 
 @[ghost_simps]
 theorem ghostComponent_zero_verschiebungFun (x : 𝕎 R) :
-  ghostComponent 0 (verschiebungFun x) = 0 := by
+    ghostComponent 0 (verschiebungFun x) = 0 := by
   rw [ghostComponent_apply, aeval_wittPolynomial, Finset.range_one, Finset.sum_singleton,
     verschiebungFun_coeff_zero, pow_zero, pow_zero, pow_one, one_mul]
 #align witt_vector.ghost_component_zero_verschiebung_fun WittVector.ghostComponent_zero_verschiebungFun
@@ -68,11 +65,10 @@ theorem ghostComponent_zero_verschiebungFun (x : 𝕎 R) :
 theorem ghostComponent_verschiebungFun (x : 𝕎 R) (n : ℕ) :
     ghostComponent (n + 1) (verschiebungFun x) = p * ghostComponent n x := by
   simp only [ghostComponent_apply, aeval_wittPolynomial]
-  rw [Finset.sum_range_succ', verschiebungFun_coeff, if_pos rfl, zero_pow (pow_pos hp.1.pos _),
-    MulZeroClass.mul_zero, add_zero, Finset.mul_sum, Finset.sum_congr rfl]
+  rw [Finset.sum_range_succ', verschiebungFun_coeff, if_pos rfl,
+    zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, add_zero, Finset.mul_sum, Finset.sum_congr rfl]
   rintro i -
-  simp only [pow_succ, mul_assoc, verschiebungFun_coeff, if_neg (Nat.succ_ne_zero i),
-    Nat.succ_sub_succ, tsub_zero]
+  simp only [pow_succ', verschiebungFun_coeff_succ, Nat.succ_sub_succ_eq_sub, mul_assoc]
 #align witt_vector.ghost_component_verschiebung_fun WittVector.ghostComponent_verschiebungFun
 
 /-- The 0th Verschiebung polynomial is 0. For `n > 0`, the `n`th Verschiebung polynomial is the
@@ -93,7 +89,7 @@ theorem aeval_verschiebung_poly' (x : 𝕎 R) (n : ℕ) :
   · simp only [verschiebungPoly, Nat.zero_eq, ge_iff_le, tsub_eq_zero_of_le, ite_true, map_zero,
     verschiebungFun_coeff_zero]
   · rw [verschiebungPoly, verschiebungFun_coeff_succ, if_neg n.succ_ne_zero, aeval_X,
-      Nat.succ_eq_add_one, add_tsub_cancel_right]
+      add_tsub_cancel_right]
 #align witt_vector.aeval_verschiebung_poly' WittVector.aeval_verschiebung_poly'
 
 variable (p)
@@ -109,7 +105,7 @@ instance verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _R
 -- Porting note: we add this example as a verification that Lean 4's instance resolution
 -- can handle what in Lean 3 we needed the `@[is_poly]` attribute to help with.
 example (p : ℕ) (f : ⦃R : Type _⦄ → [CommRing R] → WittVector p R → WittVector p R) [IsPoly p f] :
-    IsPoly p (λ (R : Type _) (I : CommRing R) => verschiebungFun ∘ (@f R I)) :=
+    IsPoly p (fun (R : Type*) (I : CommRing R) ↦ verschiebungFun ∘ (@f R I)) :=
   inferInstance
 
 variable {p}
@@ -141,7 +137,10 @@ theorem verschiebung_isPoly : IsPoly p fun R _Rcr => @verschiebung p R hp _Rcr :
 /-- verschiebung is a natural transformation -/
 @[simp]
 theorem map_verschiebung (f : R →+* S) (x : 𝕎 R) :
-    map f (verschiebung x) = verschiebung (map f x) := by ext ⟨-, -⟩; exact f.map_zero; rfl
+    map f (verschiebung x) = verschiebung (map f x) := by
+  ext ⟨-, -⟩
+  · exact f.map_zero
+  · rfl
 #align witt_vector.map_verschiebung WittVector.map_verschiebung
 
 @[ghost_simps]

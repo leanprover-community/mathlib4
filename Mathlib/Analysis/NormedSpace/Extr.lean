@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed_space.extr
-! leanprover-community/mathlib commit 17ef379e997badd73e5eabb4d38f11919ab3c4b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Ray
-import Mathlib.Topology.LocalExtr
+import Mathlib.Topology.Order.LocalExtr
+
+#align_import analysis.normed_space.extr from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
 /-!
 # (Local) maximums in a normed space
@@ -27,7 +24,7 @@ local maximum, normed space
 -/
 
 
-variable {α X E : Type _} [SeminormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace X]
+variable {α X E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace X]
 
 section
 
@@ -41,7 +38,7 @@ theorem IsMaxFilter.norm_add_sameRay (h : IsMaxFilter (norm ∘ f) l c) (hy : Sa
   h.mono fun x hx =>
     calc
       ‖f x + y‖ ≤ ‖f x‖ + ‖y‖ := norm_add_le _ _
-      _ ≤ ‖f c‖ + ‖y‖ := (add_le_add_right hx _)
+      _ ≤ ‖f c‖ + ‖y‖ := add_le_add_right hx _
       _ = ‖f c + y‖ := hy.norm_add.symm
 #align is_max_filter.norm_add_same_ray IsMaxFilter.norm_add_sameRay
 

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module algebra.category.Module.abelian
-! leanprover-community/mathlib commit 09f981f72d43749f1fa072deade828d9c1e185bb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Algebra.Category.ModuleCat.Kernels
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.CategoryTheory.Abelian.Exact
+
+#align_import algebra.category.Module.abelian from "leanprover-community/mathlib"@"09f981f72d43749f1fa072deade828d9c1e185bb"
 
 /-!
 # The category of left R-modules is abelian.
@@ -87,8 +84,9 @@ set_option linter.uppercaseLean3 false in
 
 section ReflectsLimits
 
--- porting note: added to make the following definitions work
-instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{v, w} R) := ModuleCat.hasLimitsOfSize
+-- Porting note: added to make the following definitions work
+instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{v, w} R) :=
+  ModuleCat.hasLimitsOfSize.{v, max v w, _, v}
 
 /- We need to put this in this weird spot because we need to know that the category of modules
     is balanced. -/

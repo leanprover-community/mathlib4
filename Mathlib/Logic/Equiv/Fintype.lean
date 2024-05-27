@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module logic.equiv.fintype
-! leanprover-community/mathlib commit 9407b03373c8cd201df99d6bc5514fc2db44054f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.Logic.Equiv.Defs
+
+#align_import logic.equiv.fintype from "leanprover-community/mathlib"@"9407b03373c8cd201df99d6bc5514fc2db44054f"
 
 /-! # Equivalence between fintypes
 
@@ -30,8 +27,9 @@ sides of the equivalence are `Fintype`s.
    computational performance, since it operates by exhaustive search over the input `Fintype`s.
 -/
 
+section Fintype
 
-variable {α β : Type _} [Fintype α] [DecidableEq β] (e : Equiv.Perm α) (f : α ↪ β)
+variable {α β : Type*} [Fintype α] [DecidableEq β] (e : Equiv.Perm α) (f : α ↪ β)
 
 /-- Computably turn an embedding `f : α ↪ β` into an equiv `α ≃ Set.range f`,
 if `α` is a `Fintype`. Has poor computational performance, due to exhaustive searching in
@@ -95,19 +93,26 @@ theorem Equiv.Perm.viaFintypeEmbedding_sign [DecidableEq α] [Fintype β] :
   simp [Equiv.Perm.viaFintypeEmbedding]
 #align equiv.perm.via_fintype_embedding_sign Equiv.Perm.viaFintypeEmbedding_sign
 
+end Fintype
+
 namespace Equiv
 
-variable {p q : α → Prop} [DecidablePred p] [DecidablePred q]
+variable {α β : Type*} [Finite α]
 
-/-- If `e` is an equivalence between two subtypes of a fintype `α`, `e.toCompl`
+/-- If `e` is an equivalence between two subtypes of a finite type `α`, `e.toCompl`
 is an equivalence between the complement of those subtypes.
 
 See also `Equiv.compl`, for a computable version when a term of type
 `{e' : α ≃ α // ∀ x : {x // p x}, e' x = e x}` is known. -/
-noncomputable def toCompl (e : { x // p x } ≃ { x // q x }) : { x // ¬p x } ≃ { x // ¬q x } :=
-  Classical.choice
-    (Fintype.card_eq.mp (Fintype.card_compl_eq_card_compl _ _ (Fintype.card_congr e)))
+noncomputable def toCompl {p q : α → Prop} (e : { x // p x } ≃ { x // q x }) :
+    { x // ¬p x } ≃ { x // ¬q x } := by
+  apply Classical.choice
+  cases nonempty_fintype α
+  classical
+  exact Fintype.card_eq.mp <| Fintype.card_compl_eq_card_compl _ _ <| Fintype.card_congr e
 #align equiv.to_compl Equiv.toCompl
+
+variable {p q : α → Prop} [DecidablePred p] [DecidablePred q]
 
 /-- If `e` is an equivalence between two subtypes of a fintype `α`, `e.extendSubtype`
 is a permutation of `α` acting like `e` on the subtypes and doing something arbitrary outside.

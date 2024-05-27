@@ -2,14 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module set_theory.cardinal.schroeder_bernstein
-! leanprover-community/mathlib commit 1e05171a5e8cf18d98d9cf7b207540acb044acae
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Init.Classical
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.Zorn
+
+#align_import set_theory.cardinal.schroeder_bernstein from "leanprover-community/mathlib"@"1e05171a5e8cf18d98d9cf7b207540acb044acae"
 
 /-!
 # Schröder-Bernstein theorem, well-ordering of cardinals
@@ -32,7 +30,7 @@ Cardinals are defined and further developed in the folder `SetTheory.Cardinal`.
 
 open Set Function
 
-open Classical
+open scoped Classical
 
 universe u v
 
@@ -65,7 +63,7 @@ theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injec
   set h : α → β := s.piecewise f g'
   have : Surjective h := by rw [← range_iff_surjective, range_piecewise, hg'ns, union_compl_self]
   have : Injective h := by
-    refine' (injective_piecewise_iff _).2 ⟨hf.injOn _, _, _⟩
+    refine (injective_piecewise_iff _).2 ⟨hf.injOn _, ?_, ?_⟩
     · intro x hx y hy hxy
       obtain ⟨x', _, rfl⟩ : x ∈ g '' (f '' s)ᶜ := by rwa [hns]
       obtain ⟨y', _, rfl⟩ : y ∈ g '' (f '' s)ᶜ := by rwa [hns]
@@ -93,8 +91,7 @@ section Wo
 variable {ι : Type u} (β : ι → Type v)
 
 /-- `sets β` -/
-@[reducible]
-private def sets :=
+private abbrev sets :=
   { s : Set (∀ i, β i) | ∀ x ∈ s, ∀ y ∈ s, ∀ (i), (x : ∀ i, β i) i = y i → x = y }
 
 /-- The cardinals are well-ordered. We express it here by the fact that in any set of cardinals

@@ -2,13 +2,10 @@
 Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.bitraversable.lemmas
-! leanprover-community/mathlib commit 58581d0fe523063f5651df0619be2bf65012a94a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Bitraversable.Basic
+
+#align_import control.bitraversable.lemmas from "leanprover-community/mathlib"@"58581d0fe523063f5651df0619be2bf65012a94a"
 
 /-!
 # Bitraversable Lemmas
@@ -41,7 +38,6 @@ traversable bitraversable functor bifunctor applicative
 universe u
 
 variable {t : Type u → Type u → Type u} [Bitraversable t]
-
 variable {β : Type u}
 
 namespace Bitraversable
@@ -51,14 +47,12 @@ open Functor LawfulApplicative
 variable {F G : Type u → Type u} [Applicative F] [Applicative G]
 
 /-- traverse on the first functor argument -/
-@[reducible]
-def tfst {α α'} (f : α → F α') : t α β → F (t α' β) :=
+abbrev tfst {α α'} (f : α → F α') : t α β → F (t α' β) :=
   bitraverse f pure
 #align bitraversable.tfst Bitraversable.tfst
 
 /-- traverse on the second functor argument -/
-@[reducible]
-def tsnd {α α'} (f : α → F α') : t β α → F (t β α') :=
+abbrev tsnd {α α'} (f : α → F α') : t β α → F (t β α') :=
   bitraverse pure f
 #align bitraversable.tsnd Bitraversable.tsnd
 

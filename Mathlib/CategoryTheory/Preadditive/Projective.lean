@@ -2,16 +2,13 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.preadditive.projective
-! leanprover-community/mathlib commit 3974a774a707e2e06046a14c0eaef4654584fada
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Exact
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
+
+#align_import category_theory.preadditive.projective from "leanprover-community/mathlib"@"3974a774a707e2e06046a14c0eaef4654584fada"
 
 /-!
 # Projective objects and categories with enough projectives
@@ -26,7 +23,7 @@ projective object.
 epimorphism.
 
 Given a morphism `f : X ⟶ Y`, `CategoryTheory.Projective.left f` is a projective object over
-`CategoryTheory.Limits.kernel f`, and `projective.d f : projective.left f ⟶ X` is the morphism
+`CategoryTheory.Limits.kernel f`, and `Projective.d f : Projective.left f ⟶ X` is the morphism
 `π (kernel f) ≫ kernel.ι f`.
 
 -/
@@ -49,12 +46,15 @@ class Projective (P : C) : Prop where
   factors : ∀ {E X : C} (f : P ⟶ X) (e : E ⟶ X) [Epi e], ∃ f', f' ≫ e = f
 #align category_theory.projective CategoryTheory.Projective
 
+lemma Limits.IsZero.projective {X : C} (h : IsZero X) : Projective X where
+  factors _ _ _ := ⟨h.to_ _, h.eq_of_src _ _⟩
+
 section
 
 /-- A projective presentation of an object `X` consists of an epimorphism `f : P ⟶ X`
 from some projective object `P`.
 -/
--- Porting note: was @[nolint has_nonempty_instance]
+-- Porting note(#5171): was @[nolint has_nonempty_instance]
 structure ProjectivePresentation (X : C) where
   p : C
   [projective : Projective p]
@@ -83,7 +83,7 @@ def factorThru {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] : 
   (Projective.factors f e).choose
 #align category_theory.projective.factor_thru CategoryTheory.Projective.factorThru
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem factorThru_comp {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] :
     factorThru f e ≫ e = f :=
   (Projective.factors f e).choose_spec
@@ -93,8 +93,8 @@ section
 
 open ZeroObject
 
-instance zero_projective [HasZeroObject C] [HasZeroMorphisms C] : Projective (0 : C) where
-  factors f e _ := ⟨0, by ext⟩
+instance zero_projective [HasZeroObject C] : Projective (0 : C) :=
+  (isZero_zero C).projective
 #align category_theory.projective.zero_projective CategoryTheory.Projective.zero_projective
 
 end
@@ -177,7 +177,7 @@ section
 
 variable [HasZeroMorphisms C] {X Y : C} (f : X ⟶ Y) [HasKernel f]
 
-/-- When `C` has enough projectives, the object `projective.syzygies f` is
+/-- When `C` has enough projectives, the object `Projective.syzygies f` is
 an arbitrarily chosen projective object over `kernel f`.
 -/
 def syzygies : C := over (kernel f)
@@ -186,7 +186,7 @@ def syzygies : C := over (kernel f)
 instance : Projective (syzygies f) := inferInstanceAs (Projective (over _))
 
 /-- When `C` has enough projectives,
-`projective.d f : projective.syzygies f ⟶ X` is the composition
+`Projective.d f : Projective.syzygies f ⟶ X` is the composition
 `π (kernel f) ≫ kernel.ι f`.
 
 (When `C` is abelian, we have `exact (projective.d f) f`.)
@@ -214,14 +214,13 @@ theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : P
     simp
 #align category_theory.adjunction.map_projective CategoryTheory.Adjunction.map_projective
 
-theorem projective_of_map_projective (adj : F ⊣ G) [Full F] [Faithful F] (P : C)
+theorem projective_of_map_projective (adj : F ⊣ G) [F.Full] [F.Faithful] (P : C)
     (hP : Projective (F.obj P)) : Projective P where
   factors f g _ := by
     haveI := Adjunction.leftAdjointPreservesColimits.{0, 0} adj
     rcases (@hP).1 (F.map f) (F.map g) with ⟨f', hf'⟩
     use adj.unit.app _ ≫ G.map f' ≫ (inv <| adj.unit.app _)
-    refine' Faithful.map_injective (F := F) _
-    simpa
+    exact F.map_injective (by simpa)
 #align category_theory.adjunction.projective_of_map_projective CategoryTheory.Adjunction.projective_of_map_projective
 
 /-- Given an adjunction `F ⊣ G` such that `G` preserves epis, `F` maps a projective presentation of
@@ -239,6 +238,9 @@ end Adjunction
 namespace Equivalence
 
 variable {D : Type u'} [Category.{v'} D] (F : C ≌ D)
+
+theorem map_projective_iff (P : C) : Projective (F.functor.obj P) ↔ Projective P :=
+  ⟨F.toAdjunction.projective_of_map_projective P, F.toAdjunction.map_projective P⟩
 
 /-- Given an equivalence of categories `F`, a projective presentation of `F(X)` induces a
 projective presentation of `X.` -/

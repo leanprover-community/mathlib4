@@ -2,14 +2,11 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
-
-! This file was ported from Lean 3 source module linear_algebra.invariant_basis_number
-! leanprover-community/mathlib commit 5fd3186f1ec30a75d5f65732e3ce5e623382556f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.PrincipalIdealDomain
+
+#align_import linear_algebra.invariant_basis_number from "leanprover-community/mathlib"@"5fd3186f1ec30a75d5f65732e3ce5e623382556f"
 
 /-!
 # Invariant basis number property
@@ -69,7 +66,7 @@ free module, rank, invariant basis number, IBN
 
 noncomputable section
 
-open Classical BigOperators
+open BigOperators
 
 open Function
 
@@ -97,7 +94,7 @@ theorem le_of_fin_injective [StrongRankCondition R] {n m : ℕ} (f : (Fin n → 
 theorem strongRankCondition_iff_succ :
     StrongRankCondition R ↔
       ∀ (n : ℕ) (f : (Fin (n + 1) → R) →ₗ[R] Fin n → R), ¬Function.Injective f := by
-  refine' ⟨fun h n => fun f hf => _, fun h => ⟨@fun n m f hf => _⟩⟩
+  refine ⟨fun h n => fun f hf => ?_, fun h => ⟨@fun n m f hf => ?_⟩⟩
   · letI : StrongRankCondition R := h
     exact Nat.not_succ_le_self n (le_of_fin_injective R f hf)
   · by_contra H
@@ -106,7 +103,7 @@ theorem strongRankCondition_iff_succ :
         (hf.comp (Function.extend_injective (Fin.strictMono_castLE _).injective _))
 #align strong_rank_condition_iff_succ strongRankCondition_iff_succ
 
-theorem card_le_of_injective [StrongRankCondition R] {α β : Type _} [Fintype α] [Fintype β]
+theorem card_le_of_injective [StrongRankCondition R] {α β : Type*} [Fintype α] [Fintype β]
     (f : (α → R) →ₗ[R] β → R) (i : Injective f) : Fintype.card α ≤ Fintype.card β := by
   let P := LinearEquiv.funCongrLeft R R (Fintype.equivFin α)
   let Q := LinearEquiv.funCongrLeft R R (Fintype.equivFin β)
@@ -115,7 +112,7 @@ theorem card_le_of_injective [StrongRankCondition R] {α β : Type _} [Fintype �
       (((LinearEquiv.symm Q).injective.comp i).comp (LinearEquiv.injective P))
 #align card_le_of_injective card_le_of_injective
 
-theorem card_le_of_injective' [StrongRankCondition R] {α β : Type _} [Fintype α] [Fintype β]
+theorem card_le_of_injective' [StrongRankCondition R] {α β : Type*} [Fintype α] [Fintype β]
     (f : (α →₀ R) →ₗ[R] β →₀ R) (i : Injective f) : Fintype.card α ≤ Fintype.card β := by
   let P := Finsupp.linearEquivFunOnFinite R R β
   let Q := (Finsupp.linearEquivFunOnFinite R R α).symm
@@ -136,7 +133,7 @@ theorem le_of_fin_surjective [RankCondition R] {n m : ℕ} (f : (Fin n → R) �
   RankCondition.le_of_fin_surjective f
 #align le_of_fin_surjective le_of_fin_surjective
 
-theorem card_le_of_surjective [RankCondition R] {α β : Type _} [Fintype α] [Fintype β]
+theorem card_le_of_surjective [RankCondition R] {α β : Type*} [Fintype α] [Fintype β]
     (f : (α → R) →ₗ[R] β → R) (i : Surjective f) : Fintype.card β ≤ Fintype.card α := by
   let P := LinearEquiv.funCongrLeft R R (Fintype.equivFin α)
   let Q := LinearEquiv.funCongrLeft R R (Fintype.equivFin β)
@@ -145,7 +142,7 @@ theorem card_le_of_surjective [RankCondition R] {α β : Type _} [Fintype α] [F
       (((LinearEquiv.symm Q).surjective.comp i).comp (LinearEquiv.surjective P))
 #align card_le_of_surjective card_le_of_surjective
 
-theorem card_le_of_surjective' [RankCondition R] {α β : Type _} [Fintype α] [Fintype β]
+theorem card_le_of_surjective' [RankCondition R] {α β : Type*} [Fintype α] [Fintype β]
     (f : (α →₀ R) →ₗ[R] β →₀ R) (i : Surjective f) : Fintype.card β ≤ Fintype.card α := by
   let P := Finsupp.linearEquivFunOnFinite R R β
   let Q := (Finsupp.linearEquivFunOnFinite R R α).symm
@@ -188,28 +185,28 @@ theorem eq_of_fin_equiv {n m : ℕ} : ((Fin n → R) ≃ₗ[R] Fin m → R) → 
   InvariantBasisNumber.eq_of_fin_equiv
 #align eq_of_fin_equiv eq_of_fin_equiv
 
-theorem card_eq_of_linearEquiv {α β : Type _} [Fintype α] [Fintype β] (f : (α → R) ≃ₗ[R] β → R) :
+theorem card_eq_of_linearEquiv {α β : Type*} [Fintype α] [Fintype β] (f : (α → R) ≃ₗ[R] β → R) :
     Fintype.card α = Fintype.card β :=
   eq_of_fin_equiv R
     ((LinearEquiv.funCongrLeft R R (Fintype.equivFin α)).trans f ≪≫ₗ
       (LinearEquiv.funCongrLeft R R (Fintype.equivFin β)).symm)
 #align card_eq_of_lequiv card_eq_of_linearEquiv
--- porting note: this was not well-named because `lequiv` could mean other things
+-- Porting note: this was not well-named because `lequiv` could mean other things
 -- (e.g., `localEquiv`)
 
 theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
   by_contra h
-  refine' zero_ne_one (eq_of_fin_equiv R _)
+  refine zero_ne_one (eq_of_fin_equiv R ?_)
   haveI := not_nontrivial_iff_subsingleton.1 h
   haveI : Subsingleton (Fin 1 → R) :=
-    Subsingleton.intro <| fun a b => funext fun x => Subsingleton.elim _ _
+    Subsingleton.intro fun a b => funext fun x => Subsingleton.elim _ _
   exact
     { toFun := 0
       invFun := 0
       map_add' := by aesop
       map_smul' := by aesop
-      left_inv := fun _ => by simp
-      right_inv := fun _ => by simp }
+      left_inv := fun _ => by simp [eq_iff_true_of_subsingleton]
+      right_inv := fun _ => by simp [eq_iff_true_of_subsingleton] }
 #align nontrivial_of_invariant_basis_number nontrivial_of_invariantBasisNumber
 
 end
@@ -270,12 +267,12 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
     (ι → R) ⧸ I.pi ι → (ι' → R) ⧸ I.pi ι' := fun x =>
   Quotient.liftOn' x (fun y => Ideal.Quotient.mk (I.pi ι') (e y))
     (by
-      refine' fun a b hab => Ideal.Quotient.eq.2 fun h => _
+      refine fun a b hab => Ideal.Quotient.eq.2 fun h => ?_
       rw [Submodule.quotientRel_r_def] at hab
       rw [← LinearMap.map_sub]
       exact Ideal.map_pi _ _ hab e h)
 #noalign induced_map
--- porting note: `#noalign` since this is marked `private`
+-- Porting note: `#noalign` since this is marked `private`
 
 /-- An isomorphism of `R`-modules `R^n ≃ R^m` induces an isomorphism of `R/I`-modules
     `R^n/I^n ≃ R^m/I^m`. -/
@@ -286,19 +283,19 @@ private def induced_equiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] 
       invFun := induced_map I e.symm.. }
   all_goals
     first |rintro ⟨a⟩ ⟨b⟩|rintro ⟨a⟩
-  -- porting note: the next 4 lines were necessary because Lean couldn't correctly infer `(I.pi ι)`
+  -- Porting note: the next 4 lines were necessary because Lean couldn't correctly infer `(I.pi ι)`
   -- and `(I.pi ι')` on its own.
   pick_goal 3
-  convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
-  congr
-  simp only [LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
+  · convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
+    congr
+    simp only [LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
   all_goals
     convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
     congr
     simp only [map_add, LinearEquiv.coe_coe, LinearEquiv.map_smulₛₗ, RingHom.id_apply,
       LinearEquiv.apply_symm_apply]
 #noalign induced_equiv
--- porting note: `#noalign` since this is marked `private`
+-- Porting note: `#noalign` since this is marked `private`
 
 end
 

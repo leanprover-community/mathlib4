@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
-
-! This file was ported from Lean 3 source module category_theory.bicategory.free
-! leanprover-community/mathlib commit 3d7987cda72abc473c7cdbbb075170e9ac620042
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor
+
+#align_import category_theory.bicategory.free from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
 /-!
 # Free bicategories
@@ -63,18 +60,18 @@ instance quiver : Quiver.{max u v + 1} (FreeBicategory B) where
   Hom := fun a b : B => Hom a b
 
 instance categoryStruct : CategoryStruct.{max u v} (FreeBicategory B) where
-  id  := fun a : B => Hom.id a
+  id   := fun a : B => Hom.id a
   comp := @fun _ _ _ => Hom.comp
 
 /-- Representatives of 2-morphisms in the free bicategory. -/
--- porting note: no such linter
+-- Porting note(#5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
 inductive Hom₂ : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (a ⟶ b) → Type max u v
   | id {a b} (f : a ⟶ b) : Hom₂ f f
   | vcomp {a b} {f g h : a ⟶ b} (η : Hom₂ f g) (θ : Hom₂ g h) : Hom₂ f h
   | whisker_left {a b c} (f : a ⟶ b) {g h : b ⟶ c} (η : Hom₂ g h) :
       Hom₂ (f ≫ g) (f ≫ h)-- `η` cannot be earlier than `h` since it is a recursive argument.
-  | whisker_right {a b c} {f g : a ⟶ b} (h : b ⟶  c) (η : Hom₂ f g) : Hom₂ (f.comp h) (g.comp h)
+  | whisker_right {a b c} {f g : a ⟶ b} (h : b ⟶ c) (η : Hom₂ f g) : Hom₂ (f.comp h) (g.comp h)
   | associator {a b c d} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
       Hom₂ ((f ≫ g) ≫ h) (f ≫ (g ≫ h))
   | associator_inv {a b c d} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
@@ -87,38 +84,25 @@ inductive Hom₂ : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (a ⟶ b) → Typ
 
 section
 
--- porting note: commenting out redundant binder annotation update
--- variable {B}
-
--- mathport name: vcomp
 -- The following notations are only used in the definition of `Rel` to simplify the notation.
 local infixr:0 " ≫ " => Hom₂.vcomp
 
--- mathport name: id
 local notation "𝟙" => Hom₂.id
 
--- mathport name: whisker_left
 local notation f " ◁ " η => Hom₂.whisker_left f η
 
--- mathport name: whisker_right
 local notation η " ▷ " h => Hom₂.whisker_right h η
 
--- mathport name: associator
 local notation "α_" => Hom₂.associator
 
--- mathport name: left_unitor
 local notation "λ_" => Hom₂.left_unitor
 
--- mathport name: right_unitor
 local notation "ρ_" => Hom₂.right_unitor
 
--- mathport name: associator_inv
 local notation "α⁻¹_" => Hom₂.associator_inv
 
--- mathport name: left_unitor_inv
 local notation "λ⁻¹_" => Hom₂.left_unitor_inv
 
--- mathport name: right_unitor_inv
 local notation "ρ⁻¹_" => Hom₂.right_unitor_inv
 
 /-- Relations between 2-morphisms in the free bicategory. -/
@@ -166,9 +150,6 @@ inductive Rel : ∀ {a b : FreeBicategory B} {f g : a ⟶ b}, Hom₂ f g → Hom
 #align category_theory.free_bicategory.rel CategoryTheory.FreeBicategory.Rel
 
 end
-
--- porting note: commenting out redundant binder annotation update
--- variable {B}
 
 instance homCategory (a b : FreeBicategory B) : Category (a ⟶ b) where
   Hom f g := Quot (@Rel _ _ a b f g)
@@ -317,7 +298,6 @@ end
 section
 
 variable {B : Type u₁} [Quiver.{v₁ + 1} B] {C : Type u₂} [CategoryStruct.{v₂} C]
-
 variable (F : Prefunctor B C)
 
 /-- Auxiliary definition for `lift`. -/
@@ -344,7 +324,6 @@ end
 section
 
 variable {B : Type u₁} [Quiver.{v₁ + 1} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-
 variable (F : Prefunctor B C)
 
 /-- Auxiliary definition for `lift`. -/

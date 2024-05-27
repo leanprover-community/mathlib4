@@ -2,21 +2,27 @@
 Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
-
-! This file was ported from Lean 3 source module representation_theory.character
-! leanprover-community/mathlib commit 55b3f8206b8596db8bb1804d8a92814a0b6670c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RepresentationTheory.FdRep
 import Mathlib.LinearAlgebra.Trace
 import Mathlib.RepresentationTheory.Invariants
+
+#align_import representation_theory.character from "leanprover-community/mathlib"@"55b3f8206b8596db8bb1804d8a92814a0b6670c9"
 
 /-!
 # Characters of representations
 
 This file introduces characters of representation and proves basic lemmas about how characters
 behave under various operations on representations.
+
+A key result is the orthogonality of characters for irreducible representations of finite group
+over an algebraically closed field whose characteristic doesn't divide the order of the group. It
+is the theorem `char_orthonormal`
+
+# Implementation notes
+
+Irreducible representations are implemented categorically, using the `Simple` class defined in
+`Mathlib.CategoryTheory.Simple`
 
 # TODO
 * Once we have the monoidal closed structure on `FdRep k G` and a better API for the rigid
@@ -35,7 +41,7 @@ open scoped BigOperators
 variable {k : Type u} [Field k]
 
 namespace FdRep
-set_option linter.uppercaseLean3 false -- `fdRep`
+set_option linter.uppercaseLean3 false -- `FdRep`
 
 section Monoid
 
@@ -64,7 +70,7 @@ theorem char_tensor (V W : FdRep k G) : (V ⊗ W).character = V.character * W.ch
 -- Porting note: adding variant of `char_tensor` to make the simp-set confluent
 @[simp]
 theorem char_tensor' (V W : FdRep k G) :
-  character (Action.FunctorCategoryEquivalence.inverse.obj
+    character (Action.FunctorCategoryEquivalence.inverse.obj
     (Action.FunctorCategoryEquivalence.functor.obj V ⊗
      Action.FunctorCategoryEquivalence.functor.obj W)) = V.character * W.character := by
   simp [← char_tensor]

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.pointwise
-! leanprover-community/mathlib commit e96bdfbd1e8c98a09ff75f7ac6204d142debc840
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
+
+#align_import linear_algebra.affine_space.pointwise from "leanprover-community/mathlib"@"e96bdfbd1e8c98a09ff75f7ac6204d142debc840"
 
 /-! # Pointwise instances on `AffineSubspace`s
 
@@ -24,14 +21,10 @@ open Set
 
 namespace AffineSubspace
 
-variable {k : Type _} [Ring k]
-
-variable {V P V₁ P₁ V₂ P₂ : Type _}
-
+variable {k : Type*} [Ring k]
+variable {V P V₁ P₁ V₂ P₂ : Type*}
 variable [AddCommGroup V] [Module k V] [AffineSpace V P]
-
 variable [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
-
 variable [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
 
 /-- The additive action on an affine subspace corresponding to applying the action to every element.
@@ -48,7 +41,7 @@ scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseAddAction
 
 open Pointwise
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem pointwise_vadd_eq_map (v : V) (s : AffineSubspace k P) :
     v +ᵥ s = s.map (AffineEquiv.constVAdd k P v) :=
   rfl

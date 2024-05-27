@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Chris Hughes
-
-! This file was ported from Lean 3 source module data.list.duplicate
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Nodup
+
+#align_import data.list.duplicate from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # List duplicates
@@ -24,7 +21,7 @@ In this file, `x ∈+ l` notation is shorthand for `List.Duplicate x l`.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace List
 
@@ -34,7 +31,6 @@ inductive Duplicate (x : α) : List α → Prop
   | cons_duplicate {y : α} {l : List α} : Duplicate x l → Duplicate x (y :: l)
 #align list.duplicate List.Duplicate
 
--- mathport name: «expr ∈+ »
 local infixl:50 " ∈+ " => List.Duplicate
 
 variable {l : List α} {x : α}
@@ -90,7 +86,7 @@ theorem Duplicate.elim_singleton {y : α} (h : x ∈+ [y]) : False :=
 #align list.duplicate.elim_singleton List.Duplicate.elim_singleton
 
 theorem duplicate_cons_iff {y : α} : x ∈+ y :: l ↔ y = x ∧ x ∈ l ∨ x ∈+ l := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · cases' h with _ hm _ _ hm
     · exact Or.inl ⟨rfl, hm⟩
     · exact Or.inr hm
@@ -122,9 +118,9 @@ theorem duplicate_iff_sublist : x ∈+ l ↔ [x, x] <+ l := by
   induction' l with y l IH
   · simp
   · by_cases hx : x = y
-    · simp [hx, cons_sublist_cons_iff, singleton_sublist]
+    · simp [hx, cons_sublist_cons, singleton_sublist]
     · rw [duplicate_cons_iff_of_ne hx, IH]
-      refine' ⟨sublist_cons_of_sublist y, fun h => _⟩
+      refine ⟨sublist_cons_of_sublist y, fun h => ?_⟩
       cases h
       · assumption
       · contradiction

@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.category.TopCommRing
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
+
+#align_import topology.category.TopCommRing from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 # Category of topological commutative rings
@@ -24,7 +21,7 @@ universe u
 
 open CategoryTheory
 
-set_option linter.uppercaseLean3 false -- `TopCommRing`
+set_option linter.uppercaseLean3 false -- `TopCommRingCat`
 
 /-- A bundled topological commutative ring. -/
 structure TopCommRingCat where
@@ -59,7 +56,7 @@ instance : ConcreteCategory TopCommRingCat.{u} where
   forget :=
     { obj := fun R => R
       map := fun f => f.val }
-  -- Porting note : Old proof was `forget_faithful := { }`
+  -- Porting note: Old proof was `forget_faithful := { }`
   forget_faithful :=
     { map_injective := fun {_ _ a b} h => Subtype.ext <| RingHom.coe_inj h }
 
@@ -115,7 +112,7 @@ instance forgetToTopCatTopologicalRing (R : TopCommRingCat) :
 /-- The forgetful functors to `Type` do not reflect isomorphisms,
 but the forgetful functor from `TopCommRingCat` to `TopCat` does.
 -/
-instance : ReflectsIsomorphisms (forget₂ TopCommRingCat.{u} TopCat.{u}) where
+instance : (forget₂ TopCommRingCat.{u} TopCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     -- We have an isomorphism in `TopCat`,
     let i_Top := asIso ((forget₂ TopCommRingCat TopCat).map f)

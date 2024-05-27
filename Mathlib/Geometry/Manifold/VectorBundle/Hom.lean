@@ -2,14 +2,11 @@
 Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module geometry.manifold.vector_bundle.hom
-! leanprover-community/mathlib commit e473c3198bb41f68560cab68a0529c854b618833
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
 import Mathlib.Topology.VectorBundle.Hom
+
+#align_import geometry.manifold.vector_bundle.hom from "leanprover-community/mathlib"@"8905e5ed90859939681a725b00f6063e65096d95"
 
 /-! # Homs of smooth vector bundles over the same base space
 
@@ -23,19 +20,19 @@ To do it for semilinear maps, we would need to generalize `ContinuousLinearMap.c
 
 noncomputable section
 
-open Bundle Set LocalHomeomorph ContinuousLinearMap Pretrivialization
+open Bundle Set PartialHomeomorph ContinuousLinearMap Pretrivialization
 
 open scoped Manifold Bundle
 
-variable {𝕜 B F₁ F₂ M : Type _} {E₁ : B → Type _} {E₂ : B → Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 B F₁ F₂ M : Type*} {E₁ : B → Type*} {E₂ : B → Type*} [NontriviallyNormedField 𝕜]
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
   [∀ x, Module 𝕜 (E₂ x)] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
   [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)]
-  [∀ x, TopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)] {EB : Type _}
-  [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type _} [TopologicalSpace HB]
-  (IB : ModelWithCorners 𝕜 EB HB) [TopologicalSpace B] [ChartedSpace HB B] {EM : Type _}
-  [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type _} [TopologicalSpace HM]
+  [∀ x, TopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)] {EB : Type*}
+  [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
+  (IB : ModelWithCorners 𝕜 EB HB) [TopologicalSpace B] [ChartedSpace HB B] {EM : Type*}
+  [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
   {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
   [SmoothManifoldWithCorners IM M] {n : ℕ∞} [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
   [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂] {e₁ e₁' : Trivialization F₁ (π F₁ E₁)}
@@ -43,7 +40,7 @@ variable {𝕜 B F₁ F₂ M : Type _} {E₁ : B → Type _} {E₂ : B → Type 
 
 local notation "LE₁E₂" => TotalSpace (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂)
 
--- Porting note: moved slow parts to separate lemmas
+-- Porting note (#11083): moved slow parts to separate lemmas
 theorem smoothOn_continuousLinearMapCoordChange
     [SmoothVectorBundle F₁ E₁ IB] [SmoothVectorBundle F₂ E₂ IB] [MemTrivializationAtlas e₁]
     [MemTrivializationAtlas e₁'] [MemTrivializationAtlas e₂] [MemTrivializationAtlas e₂'] :
@@ -58,8 +55,9 @@ theorem smoothOn_continuousLinearMapCoordChange
 theorem hom_chart (y₀ y : LE₁E₂) :
     chartAt (ModelProd HB (F₁ →L[𝕜] F₂)) y₀ y =
       (chartAt HB y₀.1 y.1, inCoordinates F₁ E₁ F₂ E₂ y₀.1 y.1 y₀.1 y.1 y.2) := by
-  rw [FiberBundle.chartedSpace_chartAt, trans_apply, LocalHomeomorph.prod_apply,
-    Trivialization.coe_coe, LocalHomeomorph.refl_apply, Function.id_def, hom_trivializationAt_apply]
+  rw [FiberBundle.chartedSpace_chartAt, trans_apply, PartialHomeomorph.prod_apply,
+    Trivialization.coe_coe, PartialHomeomorph.refl_apply, Function.id_def,
+    hom_trivializationAt_apply]
 #align hom_chart hom_chart
 
 variable {IB}

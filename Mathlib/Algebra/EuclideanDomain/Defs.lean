@@ -2,16 +2,12 @@
 Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.euclidean_domain.defs
-! leanprover-community/mathlib commit ee7b9f9a9ac2a8d9f04ea39bbfe6b1a3be053b38
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Logic.Nontrivial
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Ring.Defs
+
+#align_import algebra.euclidean_domain.defs from "leanprover-community/mathlib"@"ee7b9f9a9ac2a8d9f04ea39bbfe6b1a3be053b38"
 
 /-!
 # Euclidean domains
@@ -142,9 +138,9 @@ theorem div_add_mod' (m k : R) : m / k * k + m % k = m := by
   exact div_add_mod _ _
 #align euclidean_domain.div_add_mod' EuclideanDomain.div_add_mod'
 
-theorem mod_eq_sub_mul_div {R : Type _} [EuclideanDomain R] (a b : R) : a % b = a - b * (a / b) :=
+theorem mod_eq_sub_mul_div {R : Type*} [EuclideanDomain R] (a b : R) : a % b = a - b * (a / b) :=
   calc
-    a % b = b * (a / b) + a % b - b * (a / b) := (add_sub_cancel' _ _).symm
+    a % b = b * (a / b) + a % b - b * (a / b) := (add_sub_cancel_left _ _).symm
     _ = a - b * (a / b) := by rw [div_add_mod]
 #align euclidean_domain.mod_eq_sub_mul_div EuclideanDomain.mod_eq_sub_mul_div
 
@@ -177,7 +173,7 @@ theorem div_zero (a : R) : a / 0 = 0 :=
 
 section
 
-open Classical
+open scoped Classical
 
 @[elab_as_elim]
 theorem GCD.induction {P : R → R → Prop} (a b : R) (H0 : ∀ x, P 0 x)
@@ -190,7 +186,7 @@ theorem GCD.induction {P : R → R → Prop} (a b : R) (H0 : ∀ x, P 0 x)
   else
     have _ := mod_lt b a0
     H1 _ _ a0 (GCD.induction (b % a) a H0 H1)
-termination_by _ => a
+termination_by a
 #align euclidean_domain.gcd.induction EuclideanDomain.GCD.induction
 
 end
@@ -206,7 +202,7 @@ def gcd (a b : R) : R :=
   else
     have _ := mod_lt b a0
     gcd (b % a) a
-termination_by _ => a
+termination_by a
 #align euclidean_domain.gcd EuclideanDomain.gcd
 
 @[simp]
@@ -230,7 +226,7 @@ def xgcdAux (r s t r' s' t' : R) : R × R × R :=
     let q := r' / r
     have _ := mod_lt r' _hr
     xgcdAux (r' % r) (s' - q * s) (t' - q * t) r s t
-termination_by _ => r
+termination_by r
 #align euclidean_domain.xgcd_aux EuclideanDomain.xgcdAux
 
 @[simp]
@@ -276,7 +272,7 @@ theorem gcdB_zero_left {s : R} : gcdB 0 s = 1 := by
 #align euclidean_domain.gcd_b_zero_left EuclideanDomain.gcdB_zero_left
 
 theorem xgcd_val (x y : R) : xgcd x y = (gcdA x y, gcdB x y) :=
-  Prod.mk.eta.symm
+  rfl
 #align euclidean_domain.xgcd_val EuclideanDomain.xgcd_val
 
 end GCD

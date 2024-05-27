@@ -2,16 +2,13 @@
 Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.types.basic
-! leanprover-community/mathlib commit 95a87616d63b3cb49d3fe678d416fbe9c4217bf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
+import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.Logic.Equiv.Fin
+
+#align_import category_theory.monoidal.types.basic from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
 
 /-!
 # The category of types is a monoidal category
@@ -26,15 +23,25 @@ universe v u
 
 namespace CategoryTheory
 
-noncomputable instance typesMonoidal : MonoidalCategory.{u} (Type u) :=
-  monoidalOfChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
-#align category_theory.types_monoidal CategoryTheory.typesMonoidal
+instance typesChosenFiniteProducts : ChosenFiniteProducts (Type u) where
+  product := Types.binaryProductLimitCone
+  terminal := Types.terminalLimitCone
 
 @[simp]
 theorem tensor_apply {W X Y Z : Type u} (f : W ⟶ X) (g : Y ⟶ Z) (p : W ⊗ Y) :
     (f ⊗ g) p = (f p.1, g p.2) :=
   rfl
 #align category_theory.tensor_apply CategoryTheory.tensor_apply
+
+@[simp]
+theorem whiskerLeft_apply (X : Type u) {Y Z : Type u} (f : Y ⟶ Z) (p : X ⊗ Y) :
+    (X ◁ f) p = (p.1, f p.2) :=
+  rfl
+
+@[simp]
+theorem whiskerRight_apply {Y Z : Type u} (f : Y ⟶ Z) (X : Type u) (p : Y ⊗ X) :
+    (f ▷ X) p = (f p.1, p.2) :=
+  rfl
 
 @[simp]
 theorem leftUnitor_hom_apply {X : Type u} {x : X} {p : PUnit} :
@@ -76,8 +83,8 @@ theorem associator_inv_apply {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
 -- but it would be nice to state how monoidal functors preserve these.
 /-- If `F` is a monoidal functor out of `Type`, it takes the (n+1)st cartesian power
 of a type to the image of that type, tensored with the image of the nth cartesian power. -/
-noncomputable def MonoidalFunctor.mapPi {C : Type _} [Category C] [MonoidalCategory C]
-    (F : MonoidalFunctor (Type _) C) (n : ℕ) (β : Type _) :
+noncomputable def MonoidalFunctor.mapPi {C : Type*} [Category C] [MonoidalCategory C]
+    (F : MonoidalFunctor (Type _) C) (n : ℕ) (β : Type*) :
     F.obj (Fin (n + 1) → β) ≅ F.obj β ⊗ F.obj (Fin n → β) :=
   Functor.mapIso _ (Equiv.piFinSucc n β).toIso ≪≫ (asIso (F.μ β (Fin n → β))).symm
 #align category_theory.monoidal_functor.map_pi CategoryTheory.MonoidalFunctor.mapPi

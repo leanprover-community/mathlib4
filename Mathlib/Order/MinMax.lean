@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module order.min_max
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Lattice
+
+#align_import order.min_max from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # `max` and `min`
@@ -72,13 +69,23 @@ theorem max_lt_iff : max a b < c ↔ a < c ∧ b < c :=
   sup_lt_iff
 #align max_lt_iff max_lt_iff
 
+@[gcongr]
 theorem max_le_max : a ≤ c → b ≤ d → max a b ≤ max c d :=
   sup_le_sup
 #align max_le_max max_le_max
 
+@[gcongr] theorem max_le_max_left (c) (h : a ≤ b) : max c a ≤ max c b := sup_le_sup_left h c
+
+@[gcongr] theorem max_le_max_right (c) (h : a ≤ b) : max a c ≤ max b c := sup_le_sup_right h c
+
+@[gcongr]
 theorem min_le_min : a ≤ c → b ≤ d → min a b ≤ min c d :=
   inf_le_inf
 #align min_le_min min_le_min
+
+@[gcongr] theorem min_le_min_left (c) (h : a ≤ b) : min c a ≤ min c b := inf_le_inf_left c h
+
+@[gcongr] theorem min_le_min_right (c) (h : a ≤ b) : min a c ≤ min b c := inf_le_inf_right c h
 
 theorem le_max_of_le_left : a ≤ b → a ≤ max b c :=
   le_sup_of_le_left
@@ -112,20 +119,20 @@ theorem min_lt_of_right_lt (h : b < c) : min a b < c :=
   (min_le_right a b).trans_lt h
 #align min_lt_of_right_lt min_lt_of_right_lt
 
-theorem max_min_distrib_left : max a (min b c) = min (max a b) (max a c) :=
-  sup_inf_left
+lemma max_min_distrib_left (a b c : α) : max a (min b c) = min (max a b) (max a c) :=
+  sup_inf_left _ _ _
 #align max_min_distrib_left max_min_distrib_left
 
-theorem max_min_distrib_right : max (min a b) c = min (max a c) (max b c) :=
-  sup_inf_right
+lemma max_min_distrib_right (a b c : α) : max (min a b) c = min (max a c) (max b c) :=
+  sup_inf_right _ _ _
 #align max_min_distrib_right max_min_distrib_right
 
-theorem min_max_distrib_left : min a (max b c) = max (min a b) (min a c) :=
-  inf_sup_left
+lemma min_max_distrib_left (a b c : α) : min a (max b c) = max (min a b) (min a c) :=
+  inf_sup_left _ _ _
 #align min_max_distrib_left min_max_distrib_left
 
-theorem min_max_distrib_right : min (max a b) c = max (min a c) (min b c) :=
-  inf_sup_right
+lemma min_max_distrib_right (a b c : α) : min (max a b) c = max (min a c) (min b c) :=
+  inf_sup_right _ _ _
 #align min_max_distrib_right min_max_distrib_right
 
 theorem min_le_max : min a b ≤ max a b :=
@@ -199,13 +206,13 @@ theorem max_lt_max_right_iff : max a b < max a c ↔ b < c ∧ a < c :=
 #align max_lt_max_right_iff max_lt_max_right_iff
 
 /-- An instance asserting that `max a a = a` -/
-instance max_idem : IsIdempotent α max where
+instance max_idem : Std.IdempotentOp (α := α) max where
   idempotent := by simp
 #align max_idem max_idem
 
 -- short-circuit type class inference
 /-- An instance asserting that `min a a = a` -/
-instance min_idem : IsIdempotent α min where
+instance min_idem : Std.IdempotentOp (α := α) min where
   idempotent := by simp
 #align min_idem min_idem
 
@@ -237,7 +244,7 @@ theorem Max.right_comm (a b c : α) : max (max a b) c = max (max a c) b :=
 
 theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
     max (f a) (f b) := by
-  cases' le_total a b with h h <;>
+  rcases le_total a b with h | h <;>
     simp only [max_eq_right, max_eq_left, hf ha hb, hf hb ha, h]
 #align monotone_on.map_max MonotoneOn.map_max
 
@@ -246,7 +253,7 @@ theorem MonotoneOn.map_min (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) :
 #align monotone_on.map_min MonotoneOn.map_min
 
 theorem AntitoneOn.map_max (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
-  min (f a) (f b) := hf.dual_right.map_max ha hb
+    min (f a) (f b) := hf.dual_right.map_max ha hb
 #align antitone_on.map_max AntitoneOn.map_max
 
 theorem AntitoneOn.map_min (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (min a b) =
@@ -254,7 +261,7 @@ theorem AntitoneOn.map_min (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) :
 #align antitone_on.map_min AntitoneOn.map_min
 
 theorem Monotone.map_max (hf : Monotone f) : f (max a b) = max (f a) (f b) := by
-  cases' le_total a b with h h <;> simp [h, hf h]
+  rcases le_total a b with h | h <;> simp [h, hf h]
 #align monotone.map_max Monotone.map_max
 
 theorem Monotone.map_min (hf : Monotone f) : f (min a b) = min (f a) (f b) :=
@@ -262,7 +269,7 @@ theorem Monotone.map_min (hf : Monotone f) : f (min a b) = min (f a) (f b) :=
 #align monotone.map_min Monotone.map_min
 
 theorem Antitone.map_max (hf : Antitone f) : f (max a b) = min (f a) (f b) := by
-  cases' le_total a b with h h <;> simp [h, hf h]
+  rcases le_total a b with h | h <;> simp [h, hf h]
 #align antitone.map_max Antitone.map_max
 
 theorem Antitone.map_min (hf : Antitone f) : f (min a b) = max (f a) (f b) :=
@@ -292,10 +299,10 @@ theorem max_associative : Associative (max : α → α → α) :=
   max_assoc
 #align max_associative max_associative
 
-instance : IsCommutative α max where
+instance : Std.Commutative (α := α) max where
   comm := max_comm
 
-instance : IsAssociative α max where
+instance : Std.Associative (α := α) max where
   assoc := max_assoc
 
 theorem max_left_commutative : LeftCommutative (max : α → α → α) :=
@@ -306,14 +313,14 @@ theorem min_commutative : Commutative (min : α → α → α) :=
   min_comm
 #align min_commutative min_commutative
 
-theorem min_associative : Associative (min : α → α → α) :=
+theorem min_associative : Associative (α := α) min :=
   min_assoc
 #align min_associative min_associative
 
-instance : IsCommutative α min where
+instance : Std.Commutative (α := α) min where
   comm := min_comm
 
-instance : IsAssociative α min where
+instance : Std.Associative (α := α) min where
   assoc := min_assoc
 
 theorem min_left_commutative : LeftCommutative (min : α → α → α) :=

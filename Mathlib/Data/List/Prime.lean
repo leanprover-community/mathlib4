@@ -2,15 +2,12 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
-
-! This file was ported from Lean 3 source module data.list.prime
-! leanprover-community/mathlib commit ccad6d5093bd2f5c6ca621fc74674cce51355af6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.Data.List.BigOperators.Lemmas
+import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Data.List.Perm
+
+#align_import data.list.prime from "leanprover-community/mathlib"@"ccad6d5093bd2f5c6ca621fc74674cce51355af6"
 
 /-!
 # Products of lists of prime elements.
@@ -24,7 +21,7 @@ open List
 
 section CommMonoidWithZero
 
-variable {M : Type _} [CommMonoidWithZero M]
+variable {M : Type*} [CommMonoidWithZero M]
 
 /-- Prime `p` divides the product of a list `L` iff it divides some `a ∈ L` -/
 theorem Prime.dvd_prod_iff {p : M} {L : List M} (pp : Prime p) : p ∣ L.prod ↔ ∃ a ∈ L, p ∣ a := by
@@ -43,14 +40,14 @@ theorem Prime.dvd_prod_iff {p : M} {L : List M} (pp : Prime p) : p ∣ L.prod �
 
 theorem Prime.not_dvd_prod {p : M} {L : List M} (pp : Prime p) (hL : ∀ a ∈ L, ¬p ∣ a) :
     ¬p ∣ L.prod :=
-  mt (Prime.dvd_prod_iff pp).1 <| not_exists.2 <| fun a => not_and.2 (hL a)
+  mt (Prime.dvd_prod_iff pp).1 <| not_exists.2 fun a => not_and.2 (hL a)
 #align prime.not_dvd_prod Prime.not_dvd_prod
 
 end CommMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable {M : Type _} [CancelCommMonoidWithZero M] [Unique (Units M)]
+variable {M : Type*} [CancelCommMonoidWithZero M] [Unique (Units M)]
 
 theorem mem_list_primes_of_dvd_prod {p : M} (hp : Prime p) {L : List M} (hL : ∀ q ∈ L, Prime q)
     (hpL : p ∣ L.prod) : p ∈ L := by

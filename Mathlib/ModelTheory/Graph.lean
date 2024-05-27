@@ -2,17 +2,14 @@
 Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.graph
-! leanprover-community/mathlib commit e56b8fea84d60fe434632b9d3b829ee685fb0c8f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.ModelTheory.Satisfiability
 import Mathlib.Combinatorics.SimpleGraph.Basic
 
+#align_import model_theory.graph from "leanprover-community/mathlib"@"e56b8fea84d60fe434632b9d3b829ee685fb0c8f"
+
 /-!
-# First-Ordered Structures in Graph Theory
+# First-Order Structures in Graph Theory
 This file defines first-order languages, structures, and theories in graph theory.
 
 ## Main Definitions
@@ -22,7 +19,6 @@ adjacency.
 * `FirstOrder.Language.Theory.simpleGraph` is the theory of simple graphs.
 * `FirstOrder.Language.simpleGraphOfStructure` gives the simple graph corresponding to a model
 of the theory of simple graphs.
-
 -/
 
 
@@ -129,7 +125,7 @@ theorem structure_simpleGraphOfStructure [S : Language.graph.Structure V] [V ⊨
       · cases' n with n
         · cases r
           change RelMap adj ![xs 0, xs 1] = _
-          refine' congr rfl (funext _)
+          refine congr rfl (funext ?_)
           simp [Fin.forall_fin_two]
         · exact r.elim
 #align first_order.language.Structure_simple_graph_of_structure FirstOrder.Language.structure_simpleGraphOfStructure

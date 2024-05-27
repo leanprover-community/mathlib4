@@ -2,14 +2,11 @@
 Copyright (c) 2022 Antoine Labelle, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle, Rémi Bottinelli
-
-! This file was ported from Lean 3 source module combinatorics.quiver.cast
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Combinatorics.Quiver.Path
+
+#align_import combinatorics.quiver.cast from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
 /-!
 
@@ -23,7 +20,7 @@ rewriting arrows and paths along equalities of their endpoints.
 
 universe v v₁ v₂ u u₁ u₂
 
-variable {U : Type _} [Quiver.{u + 1} U]
+variable {U : Type*} [Quiver.{u + 1} U]
 
 
 namespace Quiver
@@ -35,7 +32,7 @@ namespace Quiver
 
 /-- Change the endpoints of an arrow using equalities. -/
 def Hom.cast {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) : u' ⟶ v' :=
-  Eq.ndrec (motive := λ x => x ⟶ v') (Eq.ndrec e hv) hu
+  Eq.ndrec (motive := (· ⟶ v')) (Eq.ndrec e hv) hu
 #align quiver.hom.cast Quiver.Hom.cast
 
 theorem Hom.cast_eq_cast {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) :
@@ -84,7 +81,7 @@ open Path
 
 /-- Change the endpoints of a path using equalities. -/
 def Path.cast {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v) : Path u' v' :=
-  Eq.ndrec (motive := λ x => Path x v') (Eq.ndrec p hv) hu
+  Eq.ndrec (motive := (Path · v')) (Eq.ndrec p hv) hu
 #align quiver.path.cast Quiver.Path.cast
 
 theorem Path.cast_eq_cast {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v) :
@@ -150,8 +147,9 @@ theorem hom_cast_eq_of_cons_eq_cons {u v v' w : U} {p : Path u v} {p' : Path u v
 
 theorem eq_nil_of_length_zero {u v : U} (p : Path u v) (hzero : p.length = 0) :
     p.cast (eq_of_length_zero p hzero) rfl = Path.nil := by
-  cases p <;> simp only [Nat.succ_ne_zero, length_cons] at hzero
-  rfl
+  cases p
+  · rfl
+  · simp only [Nat.succ_ne_zero, length_cons] at hzero
 #align quiver.eq_nil_of_length_zero Quiver.eq_nil_of_length_zero
 
 end Quiver

@@ -2,15 +2,13 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.subterminal
-! leanprover-community/mathlib commit bb103f356534a9a7d3596a672097e375290a4c3a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Subobject.MonoOver
+
+#align_import category_theory.subterminal from "leanprover-community/mathlib"@"bb103f356534a9a7d3596a672097e375290a4c3a"
+
 
 /-!
 # Subterminal objects
@@ -56,7 +54,7 @@ The converse of `isSubterminal_of_mono_isTerminal_from`.
 -/
 theorem IsSubterminal.mono_isTerminal_from (hA : IsSubterminal A) {T : C} (hT : IsTerminal T) :
     Mono (hT.from A) :=
-  { right_cancellation := fun _ _ _ => hA _ _  }
+  { right_cancellation := fun _ _ _ => hA _ _ }
 #align category_theory.is_subterminal.mono_is_terminal_from CategoryTheory.IsSubterminal.mono_isTerminal_from
 
 /-- If `A` is subterminal, the unique morphism from it to the terminal object is a monomorphism.
@@ -142,10 +140,10 @@ def subterminalInclusion : Subterminals C ⥤ C :=
   fullSubcategoryInclusion _
 #align category_theory.subterminal_inclusion CategoryTheory.subterminalInclusion
 
-instance (C : Type u₁) [Category.{v₁} C] : Full (subterminalInclusion C) :=
+instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Full :=
   FullSubcategory.full _
 
-instance (C : Type u₁) [Category.{v₁} C] : Faithful (subterminalInclusion C) :=
+instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Faithful :=
   FullSubcategory.faithful _
 
 instance subterminals_thin (X Y : Subterminals C) : Subsingleton (X ⟶ Y) :=
@@ -160,17 +158,24 @@ object (which is in turn equivalent to the subobjects of the terminal object).
 def subterminalsEquivMonoOverTerminal [HasTerminal C] : Subterminals C ≌ MonoOver (⊤_ C) where
   functor :=
     { obj := fun X => ⟨Over.mk (terminal.from X.1), X.2.mono_terminal_from⟩
-      map := fun f => MonoOver.homMk f (by ext1 ⟨⟨⟩⟩) }
+      map := fun f => MonoOver.homMk f (by ext1 ⟨⟨⟩⟩)
+      map_id := fun X => rfl
+      map_comp := fun f g => rfl }
   inverse :=
     { obj := fun X =>
         ⟨X.obj.left, fun Z f g => by
           rw [← cancel_mono X.arrow]
           apply Subsingleton.elim⟩
-      map := fun f => f.1 }
-  -- porting note: the original definition was triggering a timeout, using `NatIso.ofComponents`
+      map := fun f => f.1
+      map_id := fun X => rfl
+      map_comp := fun f g => rfl }
+  -- Porting note: the original definition was triggering a timeout, using `NatIso.ofComponents`
   -- in the definition of the natural isomorphisms makes the situation slightly better
-  unitIso := NatIso.ofComponents fun X => Iso.refl _
-  counitIso := NatIso.ofComponents fun X => MonoOver.isoMk (Iso.refl _)
+  unitIso := NatIso.ofComponents (fun X => Iso.refl X) (fun _ => by apply Subsingleton.elim)
+  counitIso := NatIso.ofComponents (fun X => MonoOver.isoMk (Iso.refl _))
+    (fun _ => by apply Subsingleton.elim)
+  functor_unitIso_comp := fun _ => by apply Subsingleton.elim
+  -- With `aesop` filling the auto-params this was taking 20s or so
 #align category_theory.subterminals_equiv_mono_over_terminal CategoryTheory.subterminalsEquivMonoOverTerminal
 
 @[simp]

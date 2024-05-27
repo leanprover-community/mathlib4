@@ -2,17 +2,14 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.simple
-! leanprover-community/mathlib commit 4ed0bcaef698011b0692b93a042a2282f490f6b6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.Order.Atoms
+
+#align_import category_theory.simple from "leanprover-community/mathlib"@"4ed0bcaef698011b0692b93a042a2282f490f6b6"
 
 /-!
 # Simple objects
@@ -66,8 +63,7 @@ theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
       haveI : Mono (f ≫ i.hom) := mono_comp _ _
       constructor
       · intro h w
-        have j : IsIso (f ≫ i.hom)
-        infer_instance
+        have j : IsIso (f ≫ i.hom) := by infer_instance
         rw [Simple.mono_isIso_iff_nonzero] at j
         subst w
         simp at j
@@ -165,8 +161,8 @@ theorem simple_of_cosimple (X : C) (h : ∀ {Z : C} (f : X ⟶ Z) [Epi f], IsIso
 
 /-- A nonzero epimorphism from a simple object is an isomorphism. -/
 theorem isIso_of_epi_of_nonzero {X Y : C} [Simple X] {f : X ⟶ Y} [Epi f] (w : f ≠ 0) : IsIso f :=
-  haveI-- `f ≠ 0` means that `kernel.ι f` is not an iso, and hence zero, and hence `f` is a mono.
-   : Mono f :=
+  -- `f ≠ 0` means that `kernel.ι f` is not an iso, and hence zero, and hence `f` is a mono.
+  haveI : Mono f :=
     Preadditive.mono_of_kernel_zero (mono_to_simple_zero_of_not_iso (kernel_not_iso_of_nonzero w))
   isIso_of_mono_of_epi f
 #align category_theory.is_iso_of_epi_of_nonzero CategoryTheory.isIso_of_epi_of_nonzero
@@ -208,7 +204,7 @@ theorem Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ 
 /-- Any simple object in a preadditive category is indecomposable. -/
 theorem indecomposable_of_simple (X : C) [Simple X] : Indecomposable X :=
   ⟨Simple.not_isZero X, fun Y Z i => by
-    refine' or_iff_not_imp_left.mpr fun h => _
+    refine or_iff_not_imp_left.mpr fun h => ?_
     rw [IsZero.iff_isSplitMono_eq_zero (biprod.inl : Y ⟶ Y ⊞ Z)] at h
     change biprod.inl ≠ 0 at h
     have : Simple (Y ⊞ Z) := Simple.of_iso i.symm -- Porting note: this instance is needed

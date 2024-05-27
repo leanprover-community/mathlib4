@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.homotopies
-! leanprover-community/mathlib commit b12099d3b7febf4209824444dd836ef5ad96db55
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.AlgebraicTopology.DoldKan.Notations
+
+#align_import algebraic_topology.dold_kan.homotopies from "leanprover-community/mathlib"@"b12099d3b7febf4209824444dd836ef5ad96db55"
 
 /-!
 
@@ -56,7 +53,7 @@ compatible the application of additive functors (see `map_Hσ`).
 
 ## References
 * [Albrecht Dold, *Homology of Symmetric Products and Other Functors of Complexes*][dold1958]
-* [Paul G. Goerss, John F. Jardine, *Simplical Homotopy Theory*][goerss-jardine-2009]
+* [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 
 -/
 
@@ -70,8 +67,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C]
-
+variable {C : Type*} [Category C] [Preadditive C]
 variable {X : SimplicialObject C}
 
 /-- As we are using chain complexes indexed by `ℕ`, we shall need the relation
@@ -97,7 +93,7 @@ theorem cs_down_0_not_rel_left (j : ℕ) : ¬c.Rel 0 j := by
 /-- The sequence of maps which gives the null homotopic maps `Hσ` that shall be in
 the inductive construction of the projections `P q : K[X] ⟶ K[X]` -/
 def hσ (q : ℕ) (n : ℕ) : X _[n] ⟶ X _[n + 1] :=
-  if n < q then 0 else (-1 : ℤ) ^ (n - q) • X.σ ⟨n - q, Nat.sub_lt_succ n q⟩
+  if n < q then 0 else (-1 : ℤ) ^ (n - q) • X.σ ⟨n - q, Nat.lt_succ_of_le (Nat.sub_le _ _)⟩
 #align algebraic_topology.dold_kan.hσ AlgebraicTopology.DoldKan.hσ
 
 /-- We can turn `hσ` into a datum that can be passed to `nullHomotopicMap'`. -/
@@ -115,11 +111,10 @@ theorem hσ'_eq_zero {q n m : ℕ} (hnq : n < q) (hnm : c.Rel m n) :
 theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
     (hσ' q n m hnm : X _[n] ⟶ X _[m]) =
       ((-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩) ≫
-        eqToHom (by congr ) := by
+        eqToHom (by congr) := by
   simp only [hσ', hσ]
   split_ifs
-  · exfalso
-    linarith
+  · omega
   · have h' := tsub_eq_of_eq_add ha
     congr
 #align algebraic_topology.dold_kan.hσ'_eq AlgebraicTopology.DoldKan.hσ'_eq
@@ -184,7 +179,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.nat_trans_Hσ AlgebraicTopology.DoldKan.natTransHσ
 
 /-- The maps `hσ' q n m hnm` are compatible with the application of additive functors. -/
-theorem map_hσ' {D : Type _} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+theorem map_hσ' {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n m : ℕ) (hnm : c.Rel m n) :
     (hσ' q n m hnm : K[((whiskering _ _).obj G).obj X].X n ⟶ _) =
       G.map (hσ' q n m hnm : K[X].X n ⟶ _) := by
@@ -196,7 +191,7 @@ theorem map_hσ' {D : Type _} [Category D] [Preadditive D] (G : C ⥤ D) [G.Addi
 #align algebraic_topology.dold_kan.map_hσ' AlgebraicTopology.DoldKan.map_hσ'
 
 /-- The null homotopic maps `Hσ` are compatible with the application of additive functors. -/
-theorem map_Hσ {D : Type _} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+theorem map_Hσ {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
     (Hσ q : K[((whiskering C D).obj G).obj X] ⟶ _).f n = G.map ((Hσ q : K[X] ⟶ _).f n) := by
   unfold Hσ

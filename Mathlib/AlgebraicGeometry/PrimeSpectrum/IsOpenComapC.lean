@@ -2,14 +2,11 @@
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module algebraic_geometry.prime_spectrum.is_open_comap_C
-! leanprover-community/mathlib commit 052f6013363326d50cb99c6939814a4b8eb7b301
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.RingTheory.Polynomial.Basic
+
+#align_import algebraic_geometry.prime_spectrum.is_open_comap_C from "leanprover-community/mathlib"@"052f6013363326d50cb99c6939814a4b8eb7b301"
 
 /-!
 The morphism `Spec R[x] --> Spec R` induced by the natural inclusion `R --> R[x]` is an open map.
@@ -26,7 +23,7 @@ namespace AlgebraicGeometry
 
 namespace Polynomial
 
-variable {R : Type _} [CommRing R] {f : R[X]}
+variable {R : Type*} [CommRing R] {f : R[X]}
 
 set_option linter.uppercaseLean3 false
 
@@ -57,12 +54,12 @@ morphism `C⁺ : Spec R[x] → Spec R`. -/
 theorem imageOfDf_eq_comap_C_compl_zeroLocus :
     imageOfDf f = PrimeSpectrum.comap (C : R →+* R[X]) '' (zeroLocus {f})ᶜ := by
   ext x
-  refine' ⟨fun hx => ⟨⟨map C x.asIdeal, isPrime_map_C_of_isPrime x.IsPrime⟩, ⟨_, _⟩⟩, _⟩
+  refine ⟨fun hx => ⟨⟨map C x.asIdeal, isPrime_map_C_of_isPrime x.IsPrime⟩, ⟨?_, ?_⟩⟩, ?_⟩
   · rw [mem_compl_iff, mem_zeroLocus, singleton_subset_iff]
     cases' hx with i hi
     exact fun a => hi (mem_map_C_iff.mp a i)
   · ext x
-    refine' ⟨fun h => _, fun h => subset_span (mem_image_of_mem C.1 h)⟩
+    refine ⟨fun h => ?_, fun h => subset_span (mem_image_of_mem C.1 h)⟩
     rw [← @coeff_C_zero R x _]
     exact mem_map_C_iff.mp h 0
   · rintro ⟨xli, complement, rfl⟩

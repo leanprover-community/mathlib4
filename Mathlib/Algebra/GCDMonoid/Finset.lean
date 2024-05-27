@@ -2,14 +2,12 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module algebra.gcd_monoid.finset
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Fold
 import Mathlib.Algebra.GCDMonoid.Multiset
+
+#align_import algebra.gcd_monoid.finset from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
+#align_import algebra.gcd_monoid.div from "leanprover-community/mathlib"@"b537794f8409bc9598febb79cd510b1df5f4539d"
 
 /-!
 # GCD and LCM operations on finsets
@@ -31,8 +29,7 @@ TODO: simplify with a tactic and `Data.Finset.Lattice`
 finset, gcd
 -/
 
-
-variable {α β γ : Type _}
+variable {ι α β γ : Type*}
 
 namespace Finset
 
@@ -100,8 +97,8 @@ theorem lcm_union [DecidableEq β] : (s₁ ∪ s₂).lcm f = GCDMonoid.lcm (s₁
     fun a s _ ih ↦ by rw [insert_union, lcm_insert, lcm_insert, ih, lcm_assoc]
 #align finset.lcm_union Finset.lcm_union
 
-theorem lcm_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a)
-    : s₁.lcm f = s₂.lcm g := by
+theorem lcm_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a) :
+    s₁.lcm f = s₂.lcm g := by
   subst hs
   exact Finset.fold_congr hfg
 #align finset.lcm_congr Finset.lcm_congr
@@ -188,8 +185,8 @@ theorem gcd_union [DecidableEq β] : (s₁ ∪ s₂).gcd f = GCDMonoid.gcd (s₁
     fun a s _ ih ↦ by rw [insert_union, gcd_insert, gcd_insert, ih, gcd_assoc]
 #align finset.gcd_union Finset.gcd_union
 
-theorem gcd_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a)
-    : s₁.gcd f = s₂.gcd g := by
+theorem gcd_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a) :
+    s₁.gcd f = s₂.gcd g := by
   subst hs
   exact Finset.fold_congr hfg
 #align finset.gcd_congr Finset.gcd_congr
@@ -232,9 +229,9 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
     trans ((s.filter fun x ↦ f x = 0) ∪ s.filter fun x ↦ (f x ≠ 0)).gcd f
     · rw [filter_union_filter_neg_eq]
     rw [gcd_union]
-    refine' Eq.trans (_ : _ = GCDMonoid.gcd (0 : α) _) (_ : GCDMonoid.gcd (0 : α) _ = _)
+    refine Eq.trans (?_ : _ = GCDMonoid.gcd (0 : α) ?_) (?_ : GCDMonoid.gcd (0 : α) _ = _)
     · exact (gcd (filter (fun x => (f x ≠ 0)) s) f)
-    · refine' congr (congr rfl <| s.induction_on _ _) (by simp)
+    · refine congr (congr rfl <| s.induction_on ?_ ?_) (by simp)
       · simp
       · intro a s _ h
         rw [filter_insert]
@@ -244,7 +241,7 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
 
 nonrec theorem gcd_mul_left {a : α} : (s.gcd fun x ↦ a * f x) = normalize a * s.gcd f := by
   classical
-    refine' s.induction_on _ _
+    refine s.induction_on ?_ ?_
     · simp
     · intro b t _ h
       rw [gcd_insert, gcd_insert, h, ← gcd_mul_left]
@@ -253,7 +250,7 @@ nonrec theorem gcd_mul_left {a : α} : (s.gcd fun x ↦ a * f x) = normalize a *
 
 nonrec theorem gcd_mul_right {a : α} : (s.gcd fun x ↦ f x * a) = s.gcd f * normalize a := by
   classical
-    refine' s.induction_on _ _
+    refine s.induction_on ?_ ?_
     · simp
     · intro b t _ h
       rw [gcd_insert, gcd_insert, h, ← gcd_mul_right]
@@ -272,15 +269,34 @@ theorem extract_gcd (f : β → α) (hs : s.Nonempty) :
     ∃ g : β → α, (∀ b ∈ s, f b = s.gcd f * g b) ∧ s.gcd g = 1 := by
   classical
     by_cases h : ∀ x ∈ s, f x = (0 : α)
-    · refine' ⟨fun _ ↦ 1, fun b hb ↦ by rw [h b hb, gcd_eq_zero_iff.2 h, mul_one], _⟩
+    · refine ⟨fun _ ↦ 1, fun b hb ↦ by rw [h b hb, gcd_eq_zero_iff.2 h, mul_one], ?_⟩
       rw [gcd_eq_gcd_image, image_const hs, gcd_singleton, id, normalize_one]
     · choose g' hg using @gcd_dvd _ _ _ _ s f
       push_neg at h
-      refine' ⟨fun b ↦ if hb : b ∈ s then g' hb else 0, fun b hb ↦ _,
-          extract_gcd' f _ h <| fun b hb ↦ _⟩
-      simp only [hb, hg, dite_true]
+      refine ⟨fun b ↦ if hb : b ∈ s then g' hb else 0, fun b hb ↦ ?_,
+          extract_gcd' f _ h fun b hb ↦ ?_⟩
+      · simp only [hb, hg, dite_true]
       rw [dif_pos hb, hg hb]
 #align finset.extract_gcd Finset.extract_gcd
+
+variable [Div α] [MulDivCancelClass α] {f : ι → α} {s : Finset ι} {i : ι}
+
+/-- Given a nonempty Finset `s` and a function `f` from `s` to `ℕ`, if `d = s.gcd`,
+then the `gcd` of `(f i) / d` is equal to `1`. -/
+lemma gcd_div_eq_one (his : i ∈ s) (hfi : f i ≠ 0) : s.gcd (fun j ↦ f j / s.gcd f) = 1 := by
+  obtain ⟨g, he, hg⟩ := Finset.extract_gcd f ⟨i, his⟩
+  refine (Finset.gcd_congr rfl fun a ha ↦ ?_).trans hg
+  rw [he a ha, mul_div_cancel_left₀]
+  exact mt Finset.gcd_eq_zero_iff.1 fun h ↦ hfi <| h i his
+#align finset.nat.gcd_div_eq_one Finset.gcd_div_eq_one
+#align finset.int.gcd_div_eq_one Finset.gcd_div_eq_one
+#align finset.polynomial.gcd_div_eq_one Finset.gcd_div_eq_one
+
+lemma gcd_div_id_eq_one {s : Finset α} {a : α} (has : a ∈ s) (ha : a ≠ 0) :
+    s.gcd (fun b ↦ b / s.gcd id) = 1 := gcd_div_eq_one has ha
+#align finset.nat.gcd_div_id_eq_one Finset.gcd_div_id_eq_one
+#align finset.int.gcd_div_id_eq_one Finset.gcd_div_id_eq_one
+#align finset.polynomial.gcd_div_id_eq_one Finset.gcd_div_id_eq_one
 
 end gcd
 
@@ -297,7 +313,7 @@ theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
     GCDMonoid.gcd a (s.gcd f) = GCDMonoid.gcd a (s.gcd g) := by
   classical
     revert h
-    refine' s.induction_on _ _
+    refine s.induction_on ?_ ?_
     · simp
     intro b s _ hi h
     rw [gcd_insert, gcd_insert, gcd_comm (f b), ← gcd_assoc,

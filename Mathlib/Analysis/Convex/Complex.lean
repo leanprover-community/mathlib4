@@ -2,14 +2,11 @@
 Copyright (c) 2019 Yury Kudriashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudriashov, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.convex.complex
-! leanprover-community/mathlib commit 15730e8d0af237a2ebafeb8cfbbcf71f6160c2e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Data.Complex.Module
+
+#align_import analysis.convex.complex from "leanprover-community/mathlib"@"15730e8d0af237a2ebafeb8cfbbcf71f6160c2e9"
 
 /-!
 # Convexity of half spaces in ℂ

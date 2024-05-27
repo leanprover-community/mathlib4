@@ -2,16 +2,13 @@
 Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.preadditive.left_exact
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+#align_import category_theory.preadditive.left_exact from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Left exactness of functors between preadditive categories
@@ -100,7 +97,7 @@ def preservesEqualizerOfPreservesKernels [∀ {X Y} (f : X ⟶ Y), PreservesLimi
   exact
     IsLimit.ofIsoLimit
       (isLimitForkOfKernelFork ((IsLimit.postcomposeHomEquiv p _).symm iFc))
-      (Fork.ext (Iso.refl _) (by simp))
+      (Fork.ext (Iso.refl _) (by simp [p]))
 #align category_theory.functor.preserves_equalizer_of_preserves_kernels CategoryTheory.Functor.preservesEqualizerOfPreservesKernels
 
 /-- A functor between preadditive categories preserves all equalizers if it preserves all kernels.
@@ -189,7 +186,7 @@ def preservesCoequalizerOfPreservesCokernels
   exact
     IsColimit.ofIsoColimit
       (isColimitCoforkOfCokernelCofork ((IsColimit.precomposeHomEquiv p.symm _).symm iFc))
-      (Cofork.ext (Iso.refl _) (by simp))
+      (Cofork.ext (Iso.refl _) (by simp [p]))
 #align category_theory.functor.preserves_coequalizer_of_preserves_cokernels CategoryTheory.Functor.preservesCoequalizerOfPreservesCokernels
 
 /-- A functor between preadditive categories preserves all coequalizers if it preserves all kernels.

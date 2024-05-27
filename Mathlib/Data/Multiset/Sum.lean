@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.multiset.sum
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Nodup
+
+#align_import data.multiset.sum from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Disjoint sum of multisets
@@ -26,7 +23,7 @@ open Sum
 
 namespace Multiset
 
-variable {α β : Type _} (s : Multiset α) (t : Multiset β)
+variable {α β : Type*} (s : Multiset α) (t : Multiset β)
 
 /-- Disjoint sum of multisets. -/
 def disjSum : Multiset (Sum α β) :=
@@ -58,7 +55,7 @@ theorem mem_disjSum : x ∈ s.disjSum t ↔ (∃ a, a ∈ s ∧ inl a = x) ∨ �
 theorem inl_mem_disjSum : inl a ∈ s.disjSum t ↔ a ∈ s := by
   rw [mem_disjSum, or_iff_left]
   -- Porting note: Previous code for L62 was: simp only [exists_eq_right]
-  simp only [inl.injEq, exists_eq_right]
+  · simp only [inl.injEq, exists_eq_right]
   rintro ⟨b, _, hb⟩
   exact inr_ne_inl hb
 #align multiset.inl_mem_disj_sum Multiset.inl_mem_disjSum
@@ -67,7 +64,7 @@ theorem inl_mem_disjSum : inl a ∈ s.disjSum t ↔ a ∈ s := by
 theorem inr_mem_disjSum : inr b ∈ s.disjSum t ↔ b ∈ t := by
   rw [mem_disjSum, or_iff_right]
   -- Porting note: Previous code for L72 was: simp only [exists_eq_right]
-  simp only [inr.injEq, exists_eq_right]
+  · simp only [inr.injEq, exists_eq_right]
   rintro ⟨a, _, ha⟩
   exact inl_ne_inr ha
 #align multiset.inr_mem_disj_sum Multiset.inr_mem_disjSum
@@ -105,7 +102,7 @@ theorem disjSum_strictMono_right (s : Multiset α) :
 #align multiset.disj_sum_strict_mono_right Multiset.disjSum_strictMono_right
 
 protected theorem Nodup.disjSum (hs : s.Nodup) (ht : t.Nodup) : (s.disjSum t).Nodup := by
-  refine' ((hs.map inl_injective).add_iff <| ht.map inr_injective).2 fun x hs ht => _
+  refine ((hs.map inl_injective).add_iff <| ht.map inr_injective).2 fun x hs ht => ?_
   rw [Multiset.mem_map] at hs ht
   obtain ⟨a, _, rfl⟩ := hs
   obtain ⟨b, _, h⟩ := ht

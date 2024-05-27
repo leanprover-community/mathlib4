@@ -2,15 +2,15 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module topology.instances.int
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Interval
-import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Data.Int.SuccPred
+import Mathlib.Data.Int.ConditionallyCompleteOrder
+import Mathlib.Topology.Instances.Discrete
+import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Order.Filter.Archimedean
+
+#align_import topology.instances.int from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Topology on the integers
@@ -73,15 +73,16 @@ instance : ProperSpace ℤ :=
     exact (Set.finite_Icc _ _).isCompact⟩
 
 @[simp]
-theorem cocompact_eq : cocompact ℤ = atBot ⊔ atTop := by
-  simp_rw [← comap_dist_right_atTop_eq_cocompact (0 : ℤ), dist_eq', sub_zero,
+theorem cobounded_eq : Bornology.cobounded ℤ = atBot ⊔ atTop := by
+  simp_rw [← comap_dist_right_atTop (0 : ℤ), dist_eq', sub_zero,
     ← comap_abs_atTop, ← @Int.comap_cast_atTop ℝ, comap_comap]; rfl
+
+@[deprecated] alias cocompact_eq := cocompact_eq_atBot_atTop -- deprecated on 2024-02-07
 #align int.cocompact_eq Int.cocompact_eq
 
 @[simp]
 theorem cofinite_eq : (cofinite : Filter ℤ) = atBot ⊔ atTop := by
-  rw [← cocompact_eq_cofinite, cocompact_eq]
+  rw [← cocompact_eq_cofinite, cocompact_eq_atBot_atTop]
 #align int.cofinite_eq Int.cofinite_eq
 
 end Int
-

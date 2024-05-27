@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.fin.tuple.reflection
-! leanprover-community/mathlib commit d95bef0d215ea58c0fd7bbc4b151bf3fe952c095
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Algebra.BigOperators.Fin
+
+#align_import data.fin.tuple.reflection from "leanprover-community/mathlib"@"d95bef0d215ea58c0fd7bbc4b151bf3fe952c095"
 
 /-!
 # Lemmas for tuples `Fin m → α`
@@ -35,7 +32,7 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 
 namespace FinVec
 
-variable {m n : ℕ} {α β γ : Type _}
+variable {m n : ℕ} {α β γ : Type*}
 
 /-- Evaluate `FinVec.seq f v = ![(f 0) (v 0), (f 1) (v 1), ...]` -/
 def seq : ∀ {m}, (Fin m → α → β) → (Fin m → α) → Fin m → β
@@ -49,7 +46,7 @@ theorem seq_eq : ∀ {m} (f : Fin m → α → β) (v : Fin m → α), seq f v =
   | n + 1, f, v =>
     funext fun i => by
       simp_rw [seq, seq_eq]
-      refine' i.cases _ fun i => _
+      refine i.cases ?_ fun i => ?_
       · rfl
       · rw [Matrix.cons_val_succ]
         rfl
@@ -144,7 +141,7 @@ example (P : (Fin 2 → α) → Prop) : (∃ f, P f) ↔ ∃ a₀ a₁, P ![a₀
 def sum [Add α] [Zero α] : ∀ {m} (_ : Fin m → α), α
   | 0, _ => 0
   | 1, v => v 0
-  -- porting note: inline `∘` since it is no longer reducible
+  -- Porting note: inline `∘` since it is no longer reducible
   | _ + 2, v => sum (fun i => v (Fin.castSucc i)) + v (Fin.last _)
 #align fin_vec.sum FinVec.sum
 

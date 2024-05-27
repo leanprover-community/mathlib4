@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.shapes.products
-! leanprover-community/mathlib commit 024a4231815538ac739f52d08dd20a55da0d6b23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+#align_import category_theory.limits.preserves.shapes.products from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
 
 /-!
 # Preserving products
@@ -29,9 +26,7 @@ universe w v₁ v₂ u₁ u₂
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable (G : C ⥤ D)
 
 namespace CategoryTheory.Limits
@@ -45,8 +40,8 @@ def isLimitMapConeFanMkEquiv {P : C} (g : ∀ j, P ⟶ f j) :
     IsLimit (Functor.mapCone G (Fan.mk P g)) ≃
       IsLimit (Fan.mk _ fun j => G.map (g j) : Fan fun j => G.obj (f j)) := by
   refine' (IsLimit.postcomposeHomEquiv _ _).symm.trans (IsLimit.equivIsoLimit _)
-  refine' Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
-  refine' Cones.ext (Iso.refl _) fun j =>
+  · refine' Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
+  refine Cones.ext (Iso.refl _) fun j =>
       by dsimp; cases j; simp
 #align category_theory.limits.is_limit_map_cone_fan_mk_equiv CategoryTheory.Limits.isLimitMapConeFanMkEquiv
 
@@ -95,7 +90,7 @@ variable [PreservesLimit (Discrete.functor f) G]
 If `G` preserves limits, we have an isomorphism from the image of a product to the product of the
 images.
 -/
-def PreservesProduct.iso : G.obj (∏ f) ≅ ∏ fun j => G.obj (f j) :=
+def PreservesProduct.iso : G.obj (∏ᶜ f) ≅ ∏ᶜ fun j => G.obj (f j) :=
   IsLimit.conePointUniqueUpToIso (isLimitOfHasProductOfPreservesLimit G f) (limit.isLimit _)
 #align category_theory.limits.preserves_product.iso CategoryTheory.Limits.PreservesProduct.iso
 
@@ -117,8 +112,8 @@ def isColimitMapCoconeCofanMkEquiv {P : C} (g : ∀ j, f j ⟶ P) :
     IsColimit (Functor.mapCocone G (Cofan.mk P g)) ≃
       IsColimit (Cofan.mk _ fun j => G.map (g j) : Cofan fun j => G.obj (f j)) := by
   refine' (IsColimit.precomposeHomEquiv _ _).symm.trans (IsColimit.equivIsoColimit _)
-  refine' Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
-  refine' Cocones.ext (Iso.refl _) fun j => by dsimp; cases j; simp
+  · refine' Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
+  refine Cocones.ext (Iso.refl _) fun j => by dsimp; cases j; simp
 #align category_theory.limits.is_colimit_map_cocone_cofan_mk_equiv CategoryTheory.Limits.isColimitMapCoconeCofanMkEquiv
 
 /-- The property of preserving coproducts expressed in terms of cofans. -/

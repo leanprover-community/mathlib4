@@ -2,13 +2,10 @@
 Copyright (c) 2021 Lu-Ming Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lu-Ming Zhang
-
-! This file was ported from Lean 3 source module data.matrix.hadamard
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Trace
+
+#align_import data.matrix.hadamard from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
 /-!
 # Hadamard product of matrices
@@ -27,7 +24,7 @@ and contains basic properties about them.
 
 ## References
 
-*  <https://en.wikipedia.org/wiki/hadamard_product_(matrices)>
+* <https://en.wikipedia.org/wiki/hadamard_product_(matrices)>
 
 ## Tags
 
@@ -35,16 +32,15 @@ hadamard product, hadamard
 -/
 
 
-variable {α β γ m n : Type _}
-
-variable {R : Type _}
+variable {α β γ m n : Type*}
+variable {R : Type*}
 
 namespace Matrix
 
 open Matrix BigOperators
 
 /-- `Matrix.hadamard` defines the Hadamard product,
-    which is the pointwise product of two matrices of the same size.-/
+    which is the pointwise product of two matrices of the same size. -/
 def hadamard [Mul α] (A : Matrix m n α) (B : Matrix m n α) : Matrix m n α :=
   of fun i j => A i j * B i j
 #align matrix.hadamard Matrix.hadamard
@@ -56,7 +52,6 @@ theorem hadamard_apply [Mul α] (A : Matrix m n α) (B : Matrix m n α) (i j) :
   rfl
 #align matrix.hadamard_apply Matrix.hadamard_apply
 
--- mathport name: matrix.hadamard
 scoped infixl:100 " ⊙ " => Matrix.hadamard
 
 section BasicProperties
@@ -103,12 +98,12 @@ variable [MulZeroClass α]
 
 @[simp]
 theorem hadamard_zero : A ⊙ (0 : Matrix m n α) = 0 :=
-  ext fun _ _ => MulZeroClass.mul_zero _
+  ext fun _ _ => mul_zero _
 #align matrix.hadamard_zero Matrix.hadamard_zero
 
 @[simp]
 theorem zero_hadamard : (0 : Matrix m n α) ⊙ A = 0 :=
-  ext fun _ _ => MulZeroClass.zero_mul _
+  ext fun _ _ => zero_mul _
 #align matrix.zero_hadamard Matrix.zero_hadamard
 
 end Zero
@@ -116,7 +111,6 @@ end Zero
 section One
 
 variable [DecidableEq n] [MulZeroOneClass α]
-
 variable (M : Matrix n n α)
 
 theorem hadamard_one : M ⊙ (1 : Matrix n n α) = diagonal fun i => M i i := by
@@ -137,7 +131,7 @@ variable [DecidableEq n] [MulZeroClass α]
 
 theorem diagonal_hadamard_diagonal (v : n → α) (w : n → α) :
     diagonal v ⊙ diagonal w = diagonal (v * w) :=
-  ext fun _ _ => (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| MulZeroClass.zero_mul 0)
+  ext fun _ _ => (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| zero_mul 0)
 #align matrix.diagonal_hadamard_diagonal Matrix.diagonal_hadamard_diagonal
 
 end Diagonal
@@ -145,15 +139,14 @@ end Diagonal
 section trace
 
 variable [Fintype m] [Fintype n]
-
 variable (R) [Semiring α] [Semiring R] [Module R α]
 
-theorem sum_hadamard_eq : (∑ i : m, ∑ j : n, (A ⊙ B) i j) = trace (A ⬝ Bᵀ) :=
+theorem sum_hadamard_eq : (∑ i : m, ∑ j : n, (A ⊙ B) i j) = trace (A * Bᵀ) :=
   rfl
 #align matrix.sum_hadamard_eq Matrix.sum_hadamard_eq
 
 theorem dotProduct_vecMul_hadamard [DecidableEq m] [DecidableEq n] (v : m → α) (w : n → α) :
-    dotProduct (vecMul v (A ⊙ B)) w = trace (diagonal v ⬝ A ⬝ (B ⬝ diagonal w)ᵀ) := by
+    dotProduct (v ᵥ* (A ⊙ B)) w = trace (diagonal v * A * (B * diagonal w)ᵀ) := by
   rw [← sum_hadamard_eq, Finset.sum_comm]
   simp [dotProduct, vecMul, Finset.sum_mul, mul_assoc]
 #align matrix.dot_product_vec_mul_hadamard Matrix.dotProduct_vecMul_hadamard

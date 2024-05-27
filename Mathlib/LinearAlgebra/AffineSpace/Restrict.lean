@@ -2,13 +2,10 @@
 Copyright (c) 2022 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.restrict
-! leanprover-community/mathlib commit 09258fb7f75d741b7eda9fa18d5c869e2135d9f1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
+
+#align_import linear_algebra.affine_space.restrict from "leanprover-community/mathlib"@"09258fb7f75d741b7eda9fa18d5c869e2135d9f1"
 
 /-!
 # Affine map restrictions
@@ -29,14 +26,14 @@ This file defines restrictions of affine maps.
 -/
 
 
-variable {k V₁ P₁ V₂ P₂ : Type _} [Ring k] [AddCommGroup V₁] [AddCommGroup V₂] [Module k V₁]
+variable {k V₁ P₁ V₂ P₂ : Type*} [Ring k] [AddCommGroup V₁] [AddCommGroup V₂] [Module k V₁]
   [Module k V₂] [AddTorsor V₁ P₁] [AddTorsor V₂ P₂]
 
 -- not an instance because it loops with `Nonempty`
 theorem AffineSubspace.nonempty_map {E : AffineSubspace k P₁} [Ene : Nonempty E] {φ : P₁ →ᵃ[k] P₂} :
     Nonempty (E.map φ) := by
   obtain ⟨x, hx⟩ := id Ene
-  refine' ⟨⟨φ x, AffineSubspace.mem_map.mpr ⟨x, hx, rfl⟩⟩⟩
+  exact ⟨⟨φ x, AffineSubspace.mem_map.mpr ⟨x, hx, rfl⟩⟩⟩
 #align affine_subspace.nonempty_map AffineSubspace.nonempty_map
 
 -- Porting note: removed "local nolint fails_quickly" attribute

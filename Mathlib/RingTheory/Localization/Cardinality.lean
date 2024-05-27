@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module ring_theory.localization.cardinality
-! leanprover-community/mathlib commit 3b09a2601bb7690643936643e99bba0fedfbf6ed
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.RingTheory.Artinian
+
+#align_import ring_theory.localization.cardinality from "leanprover-community/mathlib"@"3b09a2601bb7690643936643e99bba0fedfbf6ed"
 
 /-!
 # Cardinality of localizations
@@ -44,10 +41,10 @@ theorem card_le : #L ≤ #R := by
     · exact Cardinal.mk_le_of_surjective (IsArtinianRing.localization_surjective S _)
     erw [← Cardinal.mul_eq_self <| Cardinal.aleph0_le_mk R]
     set f : R × R → L := fun aa => IsLocalization.mk' _ aa.1 (if h : aa.2 ∈ S then ⟨aa.2, h⟩ else 1)
-    refine' @Cardinal.mk_le_of_surjective _ _ f fun a => _
+    refine @Cardinal.mk_le_of_surjective _ _ f fun a => ?_
     obtain ⟨x, y, h⟩ := IsLocalization.mk'_surjective S a
     use (x, y)
-    dsimp
+    dsimp [f]
     rwa [dif_pos <| show ↑y ∈ S from y.2, SetLike.eta]
 #align is_localization.card_le IsLocalization.card_le
 

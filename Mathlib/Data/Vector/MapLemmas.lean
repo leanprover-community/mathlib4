@@ -11,6 +11,8 @@ import Mathlib.Data.Vector.Snoc
   This file establishes a set of normalization lemmas for `map`/`mapAccumr` operations on vectors
 -/
 
+set_option autoImplicit true
+
 namespace Vector
 
 /-!
@@ -116,7 +118,7 @@ theorem mapAccumr₂_mapAccumr₂_left_left (f₁ : γ → α → σ₁ → σ�
 
 @[simp]
 theorem mapAccumr₂_mapAccumr₂_left_right
-  (f₁ : γ → β → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
+    (f₁ : γ → β → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ (mapAccumr₂ f₂ xs ys s₂).snd ys s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
                 let r₂ := f₂ x y s₂
@@ -128,8 +130,7 @@ theorem mapAccumr₂_mapAccumr₂_left_right
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_mapAccumr₂_right_left  (f₁ : α → γ → σ₁ → σ₁ × φ)
-                                          (f₂ : α → β → σ₂ → σ₂ × γ) :
+theorem mapAccumr₂_mapAccumr₂_right_left (f₁ : α → γ → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ xs (mapAccumr₂ f₂ xs ys s₂).snd s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
                 let r₂ := f₂ x y s₂
@@ -141,8 +142,7 @@ theorem mapAccumr₂_mapAccumr₂_right_left  (f₁ : α → γ → σ₁ → σ
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_mapAccumr₂_right_right (f₁ : β → γ → σ₁ → σ₁ × φ)
-                                          (f₂ : α → β → σ₂ → σ₂ × γ) :
+theorem mapAccumr₂_mapAccumr₂_right_right (f₁ : β → γ → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ ys (mapAccumr₂ f₂ xs ys s₂).snd s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
                 let r₂ := f₂ x y s₂
@@ -171,8 +171,8 @@ section Bisim
 variable {xs : Vector α n}
 
 theorem mapAccumr_bisim {f₁ : α → σ₁ → σ₁ × β} {f₂ : α → σ₂ → σ₂ × β} {s₁ : σ₁} {s₂ : σ₂}
-      (R : σ₁ → σ₂ → Prop) (h₀ : R s₁ s₂)
-      (hR : ∀ {s q} a, R s q → R (f₁ a s).1 (f₂ a q).1 ∧ (f₁ a s).2 = (f₂ a q).2) :
+    (R : σ₁ → σ₂ → Prop) (h₀ : R s₁ s₂)
+    (hR : ∀ {s q} a, R s q → R (f₁ a s).1 (f₂ a q).1 ∧ (f₁ a s).2 = (f₂ a q).2) :
     R (mapAccumr f₁ xs s₁).fst (mapAccumr f₂ xs s₂).fst
     ∧ (mapAccumr f₁ xs s₁).snd = (mapAccumr f₂ xs s₂).snd := by
   induction xs using Vector.revInductionOn generalizing s₁ s₂
@@ -235,10 +235,10 @@ theorem mapAccumr_eq_map {f : α → σ → σ × β} {s₀ : σ} (S : Set σ) (
     (closure : ∀ a s, s ∈ S → (f a s).1 ∈ S)
     (out : ∀ a s s', s ∈ S → s' ∈ S → (f a s).2 = (f a s').2) :
     (mapAccumr f xs s₀).snd = map (f · s₀ |>.snd) xs := by
-  rw[Vector.map_eq_mapAccumr]
+  rw [Vector.map_eq_mapAccumr]
   apply mapAccumr_bisim_tail
-  use fun s _ => s ∈ S
-  exact ⟨h₀, @fun s q a h => ⟨closure a s h, out a s s₀ h h₀⟩⟩
+  use fun s _ => s ∈ S, h₀
+  exact @fun s _q a h => ⟨closure a s h, out a s s₀ h h₀⟩
 
 protected theorem map₂_eq_mapAccumr₂ :
     map₂ f xs ys = (mapAccumr₂ (fun x y (_ : Unit) ↦ ((), f x y)) xs ys ()).snd := by
@@ -253,10 +253,10 @@ theorem mapAccumr₂_eq_map₂ {f : α → β → σ → σ × γ} {s₀ : σ} (
     (closure : ∀ a b s, s ∈ S → (f a b s).1 ∈ S)
     (out : ∀ a b s s', s ∈ S → s' ∈ S → (f a b s).2 = (f a b s').2) :
     (mapAccumr₂ f xs ys s₀).snd = map₂ (f · · s₀ |>.snd) xs ys := by
-  rw[Vector.map₂_eq_mapAccumr₂]
+  rw [Vector.map₂_eq_mapAccumr₂]
   apply mapAccumr₂_bisim_tail
-  use fun s _ => s ∈ S
-  exact ⟨h₀, @fun s q a b h => ⟨closure a b s h, out a b s s₀ h h₀⟩⟩
+  use fun s _ => s ∈ S, h₀
+  exact @fun s _q a b h => ⟨closure a b s h, out a b s s₀ h h₀⟩
 
 /--
   If an accumulation function `f`, given an initial state `s`, produces `s` as its output state
@@ -342,10 +342,9 @@ variable {xs : Vector α n} {ys : Vector β n}
 theorem mapAccumr₂_unused_input_left [Inhabited α] (f : α → β → σ → σ × γ)
     (h : ∀ a b s, f default b s = f a b s) :
     mapAccumr₂ f xs ys s = mapAccumr (fun b s => f default b s) ys s := by
-  induction xs, ys using Vector.revInductionOn₂ generalizing s
-  case nil => rfl
-  case snoc xs ys x y ih =>
-    simp[h x y s, ih]
+  induction xs, ys using Vector.revInductionOn₂ generalizing s with
+  | nil => rfl
+  | snoc xs ys x y ih => simp [h x y s, ih]
 
 /--
   If `f` returns the same output and next state for every value of it's second argument, then
@@ -355,10 +354,9 @@ theorem mapAccumr₂_unused_input_left [Inhabited α] (f : α → β → σ → 
 theorem mapAccumr₂_unused_input_right [Inhabited β] (f : α → β → σ → σ × γ)
     (h : ∀ a b s, f a default s = f a b s) :
     mapAccumr₂ f xs ys s = mapAccumr (fun a s => f a default s) xs s := by
-  induction xs, ys using Vector.revInductionOn₂ generalizing s
-  case nil => rfl
-  case snoc xs ys x y ih =>
-    simp[h x y s, ih]
+  induction xs, ys using Vector.revInductionOn₂ generalizing s with
+  | nil => rfl
+  | snoc xs ys x y ih => simp [h x y s, ih]
 
 end UnusedInput
 

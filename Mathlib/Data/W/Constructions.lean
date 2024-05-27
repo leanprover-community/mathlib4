@@ -2,13 +2,10 @@
 Copyright (c) 2015 Joseph Hua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Hua
-
-! This file was ported from Lean 3 source module data.W.constructions
-! leanprover-community/mathlib commit 861a26926586cd46ff80264d121cdb6fa0e35cc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.W.Basic
+
+#align_import data.W.constructions from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
 
 /-!
 # Examples of W-types
@@ -96,8 +93,7 @@ open Sum PUnit
 This is useful when considering the associated polynomial endofunctor.
 -/
 @[simps]
-def NatαEquivPUnitSumPUnit : Natα ≃ Sum PUnit.{u + 1} PUnit
-    where
+def NatαEquivPUnitSumPUnit : Natα ≃ Sum PUnit.{u + 1} PUnit where
   toFun c :=
     match c with
     | Natα.zero => inl unit
@@ -179,8 +175,7 @@ theorem rightInverse_list : Function.RightInverse (ofList γ) (toList _)
 #align W_type.right_inv_list WType.rightInverse_list
 
 /-- Lists are equivalent to their associated `WType` -/
-def equivList : WType (Listβ γ) ≃ List γ
-    where
+def equivList : WType (Listβ γ) ≃ List γ where
   toFun := toList _
   invFun := ofList _
   left_inv := leftInverse_list _
@@ -190,8 +185,7 @@ def equivList : WType (Listβ γ) ≃ List γ
 /-- `WType.Listα` is equivalent to `γ` with an extra point.
 This is useful when considering the associated polynomial endofunctor
 -/
-def ListαEquivPUnitSum : Listα γ ≃ Sum PUnit.{v + 1} γ
-    where
+def ListαEquivPUnitSum : Listα γ ≃ Sum PUnit.{v + 1} γ where
   toFun c :=
     match c with
     | Listα.nil => Sum.inl PUnit.unit

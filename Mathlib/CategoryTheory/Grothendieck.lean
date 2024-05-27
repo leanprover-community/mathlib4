@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.grothendieck
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Elements
+
+#align_import category_theory.grothendieck from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
 # The Grothendieck construction
@@ -43,8 +40,7 @@ universe u
 
 namespace CategoryTheory
 
-variable {C D : Type _} [Category C] [Category D]
-
+variable {C D : Type*} [Category C] [Category D]
 variable (F : C ⥤ Cat)
 
 /--
@@ -55,7 +51,7 @@ gives a category whose
   `base : X.base ⟶ Y.base` and
   `f.fiber : (F.map base).obj X.fiber ⟶ Y.fiber`
 -/
--- porting note: no such linter yet
+-- Porting note(#5171): no such linter yet
 -- @[nolint has_nonempty_instance]
 structure Grothendieck where
   /-- The underlying object in `C` -/
@@ -199,7 +195,7 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
         rintro ⟨_, ⟨⟩⟩ ⟨_, ⟨⟩⟩ ⟨base, ⟨⟨f⟩⟩⟩
         dsimp at *
         simp
-        rfl )
+        rfl)
   counitIso :=
     NatIso.ofComponents
       (fun X => by

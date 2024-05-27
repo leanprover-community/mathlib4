@@ -2,13 +2,10 @@
 Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.domain
-! leanprover-community/mathlib commit b1d911acd60ab198808e853292106ee352b648ea
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.Identities
+
+#align_import ring_theory.witt_vector.domain from "leanprover-community/mathlib"@"b1d911acd60ab198808e853292106ee352b648ea"
 
 /-!
 
@@ -45,7 +42,7 @@ namespace WittVector
 
 open Function
 
-variable {p : ℕ} {R : Type _}
+variable {p : ℕ} {R : Type*}
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -91,13 +88,13 @@ theorem eq_iterate_verschiebung {x : 𝕎 R} {n : ℕ} (h : ∀ i < n, x.coeff i
 theorem verschiebung_nonzero {x : 𝕎 R} (hx : x ≠ 0) :
     ∃ n : ℕ, ∃ x' : 𝕎 R, x'.coeff 0 ≠ 0 ∧ x = verschiebung^[n] x' := by
   have hex : ∃ k : ℕ, x.coeff k ≠ 0 := by
-    by_contra' hall
+    by_contra! hall
     apply hx
     ext i
     simp only [hall, zero_coeff]
   let n := Nat.find hex
   use n, x.shift n
-  refine' ⟨Nat.find_spec hex, eq_iterate_verschiebung fun i hi => not_not.mp _⟩
+  refine ⟨Nat.find_spec hex, eq_iterate_verschiebung fun i hi => not_not.mp ?_⟩
   exact Nat.find_min hex hi
 #align witt_vector.verschiebung_nonzero WittVector.verschiebung_nonzero
 

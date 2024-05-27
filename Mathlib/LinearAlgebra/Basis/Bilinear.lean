@@ -2,14 +2,11 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
-
-! This file was ported from Lean 3 source module linear_algebra.basis.bilinear
-! leanprover-community/mathlib commit 87c54600fe3cdc7d32ff5b50873ac724d86aef8d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.BilinearMap
+
+#align_import linear_algebra.basis.bilinear from "leanprover-community/mathlib"@"87c54600fe3cdc7d32ff5b50873ac724d86aef8d"
 
 /-!
 # Lemmas about bilinear maps with a basis over each argument
@@ -18,29 +15,22 @@ import Mathlib.LinearAlgebra.BilinearMap
 
 namespace LinearMap
 
-variable {ι₁ ι₂ : Type _}
+variable {ι₁ ι₂ : Type*}
+variable {R R₂ S S₂ M N P Rₗ : Type*}
+variable {Mₗ Nₗ Pₗ : Type*}
 
-variable {R R₂ S S₂ M N P : Type _}
-
-variable {Mₗ Nₗ Pₗ : Type _}
-
-variable [CommSemiring R] [CommSemiring S] [CommSemiring R₂] [CommSemiring S₂]
+-- Could weaken [CommSemiring Rₗ] to [SMulCommClass Rₗ Rₗ Pₗ], but might impact performance
+variable [Semiring R] [Semiring S] [Semiring R₂] [Semiring S₂] [CommSemiring Rₗ]
 
 section AddCommMonoid
 
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-
 variable [AddCommMonoid Mₗ] [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
-
 variable [Module R M] [Module S N] [Module R₂ P] [Module S₂ P]
-
-variable [Module R Mₗ] [Module R Nₗ] [Module R Pₗ]
-
+variable [Module Rₗ Mₗ] [Module Rₗ Nₗ] [Module Rₗ Pₗ]
 variable [SMulCommClass S₂ R₂ P]
-
 variable {ρ₁₂ : R →+* R₂} {σ₁₂ : S →+* S₂}
-
-variable (b₁ : Basis ι₁ R M) (b₂ : Basis ι₂ S N) (b₁' : Basis ι₁ R Mₗ) (b₂' : Basis ι₂ R Nₗ)
+variable (b₁ : Basis ι₁ R M) (b₂ : Basis ι₂ S N) (b₁' : Basis ι₁ Rₗ Mₗ) (b₂' : Basis ι₂ Rₗ Nₗ)
 
 /-- Two bilinear maps are equal when they are equal on all basis vectors. -/
 theorem ext_basis {B B' : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : ∀ i j, B (b₁ i) (b₂ j) = B' (b₁ i) (b₂ j)) :
@@ -62,7 +52,7 @@ theorem sum_repr_mul_repr_mulₛₗ {B : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁
 /-- Write out `B x y` as a sum over `B (b i) (b j)` if `b` is a basis.
 
 Version for bilinear maps, see `sum_repr_mul_repr_mulₛₗ` for the semi-bilinear version. -/
-theorem sum_repr_mul_repr_mul {B : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} (x y) :
+theorem sum_repr_mul_repr_mul {B : Mₗ →ₗ[Rₗ] Nₗ →ₗ[Rₗ] Pₗ} (x y) :
     ((b₁'.repr x).sum fun i xi => (b₂'.repr y).sum fun j yj => xi • yj • B (b₁' i) (b₂' j)) =
       B x y := by
   conv_rhs => rw [← b₁'.total_repr x, ← b₂'.total_repr y]
@@ -73,4 +63,3 @@ theorem sum_repr_mul_repr_mul {B : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} (x y) :
 end AddCommMonoid
 
 end LinearMap
-

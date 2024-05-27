@@ -2,14 +2,11 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.morphisms.open_immersion
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.LocalAtTarget
 import Mathlib.AlgebraicGeometry.Morphisms.Basic
+
+#align_import algebraic_geometry.morphisms.open_immersion from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 
@@ -41,14 +38,16 @@ theorem isOpenImmersion_iff_stalk {f : X ⟶ Y} : IsOpenImmersion f ↔
   · rintro ⟨h₁, h₂⟩; exact IsOpenImmersion.of_stalk_iso f h₁
 #align algebraic_geometry.is_open_immersion_iff_stalk AlgebraicGeometry.isOpenImmersion_iff_stalk
 
-theorem isOpenImmersion_stableUnderComposition :
-    MorphismProperty.StableUnderComposition @IsOpenImmersion := by
-  intro X Y Z f g h₁ h₂; exact LocallyRingedSpace.IsOpenImmersion.comp f g
-#align algebraic_geometry.is_open_immersion_stable_under_composition AlgebraicGeometry.isOpenImmersion_stableUnderComposition
+instance isOpenImmersion_isStableUnderComposition :
+    MorphismProperty.IsStableUnderComposition @IsOpenImmersion where
+  comp_mem f g _ _ := LocallyRingedSpace.IsOpenImmersion.comp f g
+#align algebraic_geometry.is_open_immersion_stable_under_composition AlgebraicGeometry.isOpenImmersion_isStableUnderComposition
 
 theorem isOpenImmersion_respectsIso : MorphismProperty.RespectsIso @IsOpenImmersion := by
-  apply isOpenImmersion_stableUnderComposition.respectsIso
-  intro _ _ _; infer_instance
+  apply MorphismProperty.respectsIso_of_isStableUnderComposition
+  intro _ _ f (hf : IsIso f)
+  have : IsIso f := hf
+  infer_instance
 #align algebraic_geometry.is_open_immersion_respects_iso AlgebraicGeometry.isOpenImmersion_respectsIso
 
 theorem isOpenImmersion_is_local_at_target : PropertyIsLocalAtTarget @IsOpenImmersion := by

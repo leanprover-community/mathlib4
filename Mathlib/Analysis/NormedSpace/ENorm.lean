@@ -2,13 +2,10 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed_space.enorm
-! leanprover-community/mathlib commit 57ac39bd365c2f80589a700f9fbb664d3a1a30c2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Basic
+
+#align_import analysis.normed_space.enorm from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
 /-!
 # Extended norm
@@ -44,7 +41,7 @@ open ENNReal
 
 /-- Extended norm on a vector space. As in the case of normed spaces, we require only
 `‖c • x‖ ≤ ‖c‖ * ‖x‖` in the definition, then prove an equality in `map_smul`. -/
-structure ENorm (𝕜 : Type _) (V : Type _) [NormedField 𝕜] [AddCommGroup V] [Module 𝕜 V] where
+structure ENorm (𝕜 : Type*) (V : Type*) [NormedField 𝕜] [AddCommGroup V] [Module 𝕜 V] where
   toFun : V → ℝ≥0∞
   eq_zero' : ∀ x, toFun x = 0 → x = 0
   map_add_le' : ∀ x y : V, toFun (x + y) ≤ toFun x + toFun y
@@ -53,7 +50,7 @@ structure ENorm (𝕜 : Type _) (V : Type _) [NormedField 𝕜] [AddCommGroup V]
 
 namespace ENorm
 
-variable {𝕜 : Type _} {V : Type _} [NormedField 𝕜] [AddCommGroup V] [Module 𝕜 V] (e : ENorm 𝕜 V)
+variable {𝕜 : Type*} {V : Type*} [NormedField 𝕜] [AddCommGroup V] [Module 𝕜 V] (e : ENorm 𝕜 V)
 
 -- Porting note: added to appease norm_cast complaints
 attribute [coe] ENorm.toFun
@@ -123,7 +120,7 @@ theorem map_add_le (x y : V) : e (x + y) ≤ e x + e y :=
 theorem map_sub_le (x y : V) : e (x - y) ≤ e x + e y :=
   calc
     e (x - y) = e (x + -y) := by rw [sub_eq_add_neg]
-    _ ≤ e x + e (-y) := (e.map_add_le x (-y))
+    _ ≤ e x + e (-y) := e.map_add_le x (-y)
     _ = e x + e y := by rw [e.map_neg]
 #align enorm.map_sub_le ENorm.map_sub_le
 
@@ -144,7 +141,7 @@ noncomputable instance : Top (ENorm 𝕜 V) :=
       map_smul_le' := fun c x => by
         simp only
         split_ifs with hcx hx hx <;> simp only [smul_eq_zero, not_or] at hcx
-        · simp only [MulZeroClass.mul_zero, le_refl]
+        · simp only [mul_zero, le_refl]
         · have : c = 0 := by tauto
           simp [this]
         · tauto
@@ -187,8 +184,7 @@ theorem max_map (e₁ e₂ : ENorm 𝕜 V) (x : V) : (e₁ ⊔ e₂) x = max (e�
 #align enorm.max_map ENorm.max_map
 
 /-- Structure of an `EMetricSpace` defined by an extended norm. -/
-@[reducible]
-def emetricSpace : EMetricSpace V where
+abbrev emetricSpace : EMetricSpace V where
   edist x y := e (x - y)
   edist_self x := by simp
   eq_of_edist_eq_zero {x y} := by simp [sub_eq_zero]
@@ -214,7 +210,7 @@ def finiteSubspace : Subspace 𝕜 V where
 to ensure that this definition agrees with `e.emetricSpace`. -/
 instance metricSpace : MetricSpace e.finiteSubspace := by
   letI := e.emetricSpace
-  refine' EMetricSpace.toMetricSpace fun x y => _
+  refine EMetricSpace.toMetricSpace fun x y => ?_
   change e (x - y) ≠ ⊤
   exact ne_top_of_le_ne_top (ENNReal.add_lt_top.2 ⟨x.2, y.2⟩).ne (e.map_sub_le x y)
 
@@ -228,8 +224,7 @@ theorem finite_edist_eq (x y : e.finiteSubspace) : edist x y = e (x - y) :=
 
 /-- Normed group instance on `e.finiteSubspace`. -/
 instance normedAddCommGroup : NormedAddCommGroup e.finiteSubspace :=
-  { e.metricSpace,
-    Submodule.addCommGroup _ with
+  { e.metricSpace with
     norm := fun x => (e x).toReal
     dist_eq := fun _ _ => rfl }
 
