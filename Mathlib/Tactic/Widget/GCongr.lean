@@ -6,7 +6,7 @@ Authors: Patrick Massot
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.GCongr
 
-/-! # Gcongr widget
+/-! # GCongr widget
 
 This file defines a `gcongr?` tactic that displays a widget panel allowing to generate
 a `gcongr` call with holes specified by selecting subexpressions in the goal.

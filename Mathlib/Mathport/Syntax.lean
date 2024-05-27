@@ -31,7 +31,7 @@ import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.ClearExclamation
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Constructor
-import Mathlib.Tactic.Congrm
+import Mathlib.Tactic.CongrM
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
@@ -39,7 +39,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
