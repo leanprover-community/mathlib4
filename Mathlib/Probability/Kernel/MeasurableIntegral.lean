@@ -317,7 +317,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right'' {f : β × γ → E}
   change
     StronglyMeasurable
       ((fun x => ∫ y, (fun u : (α × β) × γ => f (u.1.2, u.2)) (x, y) ∂η x) ∘ fun x => (a, x))
-  refine StronglyMeasurable.comp_measurable ?_ measurable_prod_mk_left
+  refine' StronglyMeasurable.comp_measurable _ measurable_prod_mk_left
   -- Porting note: was (`Function.comp` reducibility)
   -- refine' MeasureTheory.StronglyMeasurable.integral_kernel_prod_right' _
   -- exact hf.comp_measurable (measurable_fst.snd.prod_mk measurable_snd)
@@ -341,7 +341,7 @@ theorem StronglyMeasurable.integral_kernel_prod_left'' {f : γ × β → E} (hf 
   change
     StronglyMeasurable
       ((fun y => ∫ x, (fun u : γ × α × β => f (u.1, u.2.2)) (x, y) ∂η y) ∘ fun x => (a, x))
-  refine StronglyMeasurable.comp_measurable ?_ measurable_prod_mk_left
+  refine' StronglyMeasurable.comp_measurable _ measurable_prod_mk_left
   -- Porting note: was (`Function.comp` reducibility)
   -- refine' MeasureTheory.StronglyMeasurable.integral_kernel_prod_left' _
   -- exact hf.comp_measurable (measurable_fst.prod_mk measurable_snd.snd)
