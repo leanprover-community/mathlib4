@@ -166,7 +166,7 @@ def lint_all_files (path : System.FilePath) : IO Unit := do
     let path := (System.mkFilePath (module.split fun c ↦ (c == '.'))).addExtension "lean"
     lint_file path
 
-/-- Lint all files in `Mathlib.lean`, `Archive.lean` and `Counterexamples`. -/
+/-- Lint all files in `Mathlib.lean`, `Archive.lean` and `Counterexamples.lean`. -/
 def lint_all : IO Unit := do
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
     lint_all_files (System.mkFilePath [s])
