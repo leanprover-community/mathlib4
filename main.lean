@@ -415,12 +415,6 @@ theorem thirdLemma (A : ℕ → Set (∀ i, X i)) (A_mem : ∀ n, A n ∈ cylind
   have st n : (s n).toSet ⊆ t := Set.subset_iUnion (fun n ↦ (s n).toSet) n
   have su n i (hi : i ∈ s n) : ⟨i, st n hi⟩ ∈ u n := by simpa [u] using hi
   have us n i (hi : i ∈ u n) : i.1 ∈ s n := by simpa [u] using hi
-  have u_eq : ∀ n, ((u n).toSet : Set ι) = s n := by
-    intro n
-    rw [(s n).coe_preimage (Subtype.val_injective.injOn _)]
-    ext i
-    simp only [Subtype.image_preimage_coe, mem_inter_iff, mem_coe, and_iff_right_iff_imp]
-    exact fun hi ↦ mem_iUnion.2 ⟨n, hi⟩
   let aux : (n : ℕ) → (s n ≃ u n) := fun n ↦ {
     toFun := fun i ↦ ⟨⟨i.1, st n i.2⟩, su n i i.2⟩
     invFun := fun i ↦ ⟨i.1.1, us n i i.2⟩
@@ -497,9 +491,10 @@ theorem thirdLemma (A : ℕ → Set (∀ i, X i)) (A_mem : ∀ n, A n ∈ cylind
     simp
     exact ⟨u n, T n, mT n, rfl⟩
 
-theorem kolContent_sigma_subadditive ⦃f : ℕ → Set ((i : ι) → X i)⦄
-    (hf : ∀ n, f n ∈ cylinders X) (hf_Union : (⋃ n, f n) ∈ cylinders X) :
-    @kolContent _ _ _ _ (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
+theorem kolContent_sigma_subadditive ⦃f : ℕ → Set ((i : ι) → X i)⦄ (hf : ∀ n, f n ∈ cylinders X)
+    (hf_Union : (⋃ n, f n) ∈ cylinders X) :
+    @kolContent _ _ _ _
+    (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
     (isProjectiveMeasureFamily_pi μ) (⋃ n, f n) ≤
     ∑' n, @kolContent _ _ _ _
     (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
