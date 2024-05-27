@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.RingTheory.Subring.Pointwise
+import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.RingTheory.Adjoin.Basic
 
 #align_import algebra.algebra.subalgebra.pointwise from "leanprover-community/mathlib"@"b2c707cd190a58ea0565c86695a19e99ccecc215"
@@ -37,7 +37,7 @@ theorem mul_toSubmodule_le (S T : Subalgebra R A) :
 theorem mul_self (S : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra.toSubmodule S)
     = (Subalgebra.toSubmodule S) := by
   apply le_antisymm
-  · refine' (mul_toSubmodule_le _ _).trans_eq _
+  · refine (mul_toSubmodule_le _ _).trans_eq ?_
     rw [sup_idem]
   · intro x hx1
     rw [← mul_one x]
@@ -48,11 +48,11 @@ theorem mul_self (S : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra
 theorem mul_toSubmodule {R : Type*} {A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S T : Subalgebra R A) : (Subalgebra.toSubmodule S) * (Subalgebra.toSubmodule T)
         = Subalgebra.toSubmodule (S ⊔ T) := by
-  refine' le_antisymm (mul_toSubmodule_le _ _) _
+  refine le_antisymm (mul_toSubmodule_le _ _) ?_
   rintro x (hx : x ∈ Algebra.adjoin R (S ∪ T : Set A))
-  refine'
-    Algebra.adjoin_induction hx (fun x hx => _) (fun r => _) (fun _ _ => Submodule.add_mem _)
-      fun x y hx hy => _
+  refine
+    Algebra.adjoin_induction hx (fun x hx => ?_) (fun r => ?_) (fun _ _ => Submodule.add_mem _)
+      fun x y hx hy => ?_
   · cases' hx with hxS hxT
     · rw [← mul_one x]
       exact Submodule.mul_mem_mul hxS (show (1 : A) ∈ T from one_mem T)
@@ -69,9 +69,8 @@ variable {R' : Type*} [Semiring R'] [MulSemiringAction R' A] [SMulCommClass R' R
 
 /-- The action on a subalgebra corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale. -/
-protected def pointwiseMulAction : MulAction R' (Subalgebra R A)
-    where
+This is available as an instance in the `Pointwise` locale. -/
+protected def pointwiseMulAction : MulAction R' (Subalgebra R A) where
   smul a S := S.map (MulSemiringAction.toAlgHom _ _ a)
   one_smul S := (congr_arg (fun f => S.map f) (AlgHom.ext <| one_smul R')).trans S.map_id
   mul_smul _a₁ _a₂ S :=
@@ -109,6 +108,9 @@ theorem pointwise_smul_toSubring {R' R A : Type*} [Semiring R'] [CommRing R] [Ri
 theorem smul_mem_pointwise_smul (m : R') (r : A) (S : Subalgebra R A) : r ∈ S → m • r ∈ m • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set A))
 #align subalgebra.smul_mem_pointwise_smul Subalgebra.smul_mem_pointwise_smul
+
+instance : CovariantClass R' (Subalgebra R A) HSMul.hSMul LE.le :=
+  ⟨fun _ _ => map_mono⟩
 
 end Pointwise
 

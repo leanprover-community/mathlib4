@@ -43,8 +43,8 @@ noncomputable def mapBifunctorObjSingle₀ObjIso (a : I × J) (ha : a.1 = 0) :
   (F.mapIso (singleObjApplyIsoOfEq _ X _ ha)).app _ ≪≫ e.app (Y a.2)
 
 /-- Given `F : C ⥤ D ⥤ D`, `X : C` and `Y : GradedObject J D`,
-`((mapBifunctor F I J).obj ((single₀ I).obj X)).obj Y a` is an initial when `a : I × J`
-is such that `a.1 ≠ 0`. -/
+`((mapBifunctor F I J).obj ((single₀ I).obj X)).obj Y a` is an initial object
+when `a : I × J` is such that `a.1 ≠ 0`. -/
 noncomputable def mapBifunctorObjSingle₀ObjIsInitial (a : I × J) (ha : a.1 ≠ 0) :
     IsInitial (((mapBifunctor F I J).obj ((single₀ I).obj X)).obj Y a) :=
   IsInitial.isInitialObj (F.flip.obj (Y a.2)) _ (isInitialSingleObjApply _ _ _ ha)
@@ -265,7 +265,7 @@ structure TriangleIndexData (r : I₁ × I₂ × I₃ → J) (π : I₁ × I₃ 
   hp₁₂ (i : I₁ × I₂ × I₃) : π ⟨p₁₂ ⟨i.1, i.2.1⟩, i.2.2⟩ = r i
   /-- a map `I₂ × I₃ → I₃` -/
   p₂₃ : I₂ × I₃ → I₃
-  hp₂₃ (i : I₁ × I₂ × I₃) : π (i.1, p₂₃ i.2) = r i
+  hp₂₃ (i : I₁ × I₂ × I₃) : π ⟨i.1, p₂₃ i.2⟩ = r i
   h₁ (i₁ : I₁) : p₁₂ (i₁, 0) = i₁
   h₃ (i₃ : I₃) : p₂₃ (0, i₃) = i₃
 
@@ -345,9 +345,10 @@ lemma mapBifunctor_triangle :
     ι_mapBifunctorLeftUnitor_hom_apply F₂ X₂ e₂ τ.p₂₃ τ.h₃ X₃ i₃,
     ι_mapBifunctorRightUnitor_hom_apply F₁ X₂ e₁ τ.p₁₂ τ.h₁ X₁ i₁]
   dsimp
-  simp only [Functor.map_comp, assoc, NatTrans.comp_app, ← triangle (X₁ i₁) (X₃ i₃)]
-  erw [← NatTrans.naturality_app_assoc]
-  rfl
+  simp only [Functor.map_comp, NatTrans.comp_app, ← triangle (X₁ i₁) (X₃ i₃), ← assoc]
+  congr 2
+  symm
+  apply NatTrans.naturality_app (associator.hom.app (X₁ i₁))
 
 end Triangle
 

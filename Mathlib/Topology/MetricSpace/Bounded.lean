@@ -517,7 +517,7 @@ theorem diam_le_of_subset_closedBall {r : ℝ} (hr : 0 ≤ r) (h : s ⊆ closedB
   diam_le_of_forall_dist_le (mul_nonneg zero_le_two hr) fun a ha b hb =>
     calc
       dist a b ≤ dist a x + dist b x := dist_triangle_right _ _ _
-      _ ≤ r + r := (add_le_add (h ha) (h hb))
+      _ ≤ r + r := add_le_add (h ha) (h hb)
       _ = 2 * r := by simp [mul_two, mul_comm]
 #align metric.diam_le_of_subset_closed_ball Metric.diam_le_of_subset_closedBall
 
@@ -550,7 +550,7 @@ theorem _root_.IsComplete.nonempty_iInter_of_nonempty_biInter {s : ℕ → Set �
     exact dist_le_diam_of_mem (h's N) (I _ _ hm) (I _ _ hn)
   obtain ⟨x, -, xlim⟩ : ∃ x ∈ s 0, Tendsto (fun n : ℕ => u n) atTop (𝓝 x) :=
     cauchySeq_tendsto_of_isComplete h0 (fun n => I 0 n (zero_le _)) this
-  refine' ⟨x, mem_iInter.2 fun n => _⟩
+  refine ⟨x, mem_iInter.2 fun n => ?_⟩
   apply (hs n).mem_of_tendsto xlim
   filter_upwards [Ici_mem_atTop n] with p hp
   exact I n p hp

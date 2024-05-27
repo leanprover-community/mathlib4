@@ -90,7 +90,7 @@ theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
 #align category_theory.iso.ext CategoryTheory.Iso.ext
 
 /-- Inverse isomorphism. -/
-@[symm, pp_dot]
+@[symm]
 def symm (I : X ≅ Y) : Y ≅ X where
   hom := I.inv
   inv := I.hom
@@ -597,7 +597,7 @@ variable {D : Type u₂}
 variable [Category.{v₂} D]
 
 /-- A functor `F : C ⥤ D` sends isomorphisms `i : X ≅ Y` to isomorphisms `F.obj X ≅ F.obj Y` -/
-@[simps, pp_dot]
+@[simps]
 def mapIso (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.obj X ≅ F.obj Y where
   hom := F.map i.hom
   inv := F.map i.inv
@@ -631,10 +631,12 @@ theorem map_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] : F.map (inv f) 
   simp [← F.map_comp]
 #align category_theory.functor.map_inv CategoryTheory.Functor.map_inv
 
+@[reassoc]
 theorem map_hom_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] :
     F.map f ≫ F.map (inv f) = 𝟙 (F.obj X) := by simp
 #align category_theory.functor.map_hom_inv CategoryTheory.Functor.map_hom_inv
 
+@[reassoc]
 theorem map_inv_hom (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] :
     F.map (inv f) ≫ F.map f = 𝟙 (F.obj Y) := by simp
 #align category_theory.functor.map_inv_hom CategoryTheory.Functor.map_inv_hom

@@ -3,8 +3,8 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Order.LeftRightNhds
 
 #align_import topology.algebra.order.group from "leanprover-community/mathlib"@"84dc0bd6619acaea625086d6f53cb35cdd554219"
 
@@ -25,8 +25,8 @@ variable {α G : Type*} [TopologicalSpace G] [LinearOrderedAddCommGroup G] [Orde
 variable {l : Filter α} {f g : α → G}
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedAddCommGroup.topologicalAddGroup : TopologicalAddGroup G
-    where
+instance (priority := 100) LinearOrderedAddCommGroup.topologicalAddGroup :
+    TopologicalAddGroup G where
   continuous_add := by
     refine' continuous_iff_continuousAt.2 _
     rintro ⟨a, b⟩
@@ -66,7 +66,7 @@ protected theorem Filter.Tendsto.abs {a : G} (h : Tendsto f l (𝓝 a)) :
 
 theorem tendsto_zero_iff_abs_tendsto_zero (f : α → G) :
     Tendsto f l (𝓝 0) ↔ Tendsto (abs ∘ f) l (𝓝 0) := by
-  refine' ⟨fun h => (abs_zero : |(0 : G)| = 0) ▸ h.abs, fun h => _⟩
+  refine ⟨fun h => (abs_zero : |(0 : G)| = 0) ▸ h.abs, fun h => ?_⟩
   have : Tendsto (fun a => -|f a|) l (𝓝 0) := (neg_zero : -(0 : G) = 0) ▸ h.neg
   exact
     tendsto_of_tendsto_of_tendsto_of_le_of_le this h (fun x => neg_abs_le <| f x) fun x =>

@@ -3,7 +3,6 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Order.WithZero
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Order.OrderClosed
 
@@ -62,7 +61,7 @@ theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ γ ≠ 0, 𝓟 (Iio γ) := by
 only if there exists a nonzero element `γ₀` such that `Iio γ₀ ⊆ U`. -/
 theorem hasBasis_nhds_zero : (𝓝 (0 : Γ₀)).HasBasis (fun γ : Γ₀ => γ ≠ 0) Iio := by
   rw [nhds_zero]
-  refine' hasBasis_biInf_principal _ ⟨1, one_ne_zero⟩
+  refine hasBasis_biInf_principal ?_ ⟨1, one_ne_zero⟩
   exact directedOn_iff_directed.2 (Monotone.directed_ge fun a b hab => Iio_subset_Iio hab)
 #align with_zero_topology.has_basis_nhds_zero WithZeroTopology.hasBasis_nhds_zero
 

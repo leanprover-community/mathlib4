@@ -357,8 +357,8 @@ theorem hasBinaryBiproduct_of_total {X Y : C} (b : BinaryBicone X Y)
 
 /-- We can turn any limit cone over a pair into a bicone. -/
 @[simps]
-def BinaryBicone.ofLimitCone {X Y : C} {t : Cone (pair X Y)} (ht : IsLimit t) : BinaryBicone X Y
-    where
+def BinaryBicone.ofLimitCone {X Y : C} {t : Cone (pair X Y)} (ht : IsLimit t) :
+    BinaryBicone X Y where
   pt := t.pt
   fst := t.π.app ⟨WalkingPair.left⟩
   snd := t.π.app ⟨WalkingPair.right⟩
@@ -671,11 +671,11 @@ instance subsingleton_preadditive_of_hasBinaryBiproducts {C : Type u} [Category.
   allEq := fun a b => by
     apply Preadditive.ext; funext X Y; apply AddCommGroup.ext; funext f g
     have h₁ := @biprod.add_eq_lift_id_desc _ _ a _ _ f g
-      (by convert (inferInstance : HasBinaryBiproduct X X))
+      (by convert (inferInstance : HasBinaryBiproduct X X); apply Subsingleton.elim)
     have h₂ := @biprod.add_eq_lift_id_desc _ _ b _ _ f g
-      (by convert (inferInstance : HasBinaryBiproduct X X))
-    refine' h₁.trans (Eq.trans _ h₂.symm)
-    congr!
+      (by convert (inferInstance : HasBinaryBiproduct X X); apply Subsingleton.elim)
+    refine h₁.trans (Eq.trans ?_ h₂.symm)
+    congr! 2 <;> apply Subsingleton.elim
 #align category_theory.subsingleton_preadditive_of_has_binary_biproducts CategoryTheory.subsingleton_preadditive_of_hasBinaryBiproducts
 
 end

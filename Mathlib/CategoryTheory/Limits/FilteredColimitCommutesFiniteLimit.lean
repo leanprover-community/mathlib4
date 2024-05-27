@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Limits.ColimitLimit
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.Limits.TypesFiltered
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
 import Mathlib.Data.Countable.Small
@@ -28,7 +29,6 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 -/
 
 -- Various pieces of algebra that have previously been spuriously imported here:
-assert_not_exists zero_zpow
 assert_not_exists map_ne_zero
 assert_not_exists Field
  -- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
@@ -116,7 +116,7 @@ theorem colimitLimitToLimitColimit_injective :
           (by
             simp only [true_and_iff, Finset.mem_univ, eq_self_iff_true, exists_prop_of_true,
               Finset.mem_image, heq_iff_eq]
-            refine' ⟨j, _⟩
+            refine ⟨j, ?_⟩
             simp only [heq_iff_eq] ))
     have gH :
       ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
@@ -126,7 +126,7 @@ theorem colimitLimitToLimitColimit_injective :
           (by
             simp only [true_and_iff, Finset.mem_univ, eq_self_iff_true, exists_prop_of_true,
               Finset.mem_image, heq_iff_eq]
-            refine' ⟨j, _⟩
+            refine ⟨j, ?_⟩
             simp only [heq_iff_eq]))
     -- Our goal is now an equation between equivalence classes of representatives of a colimit,
     -- and so it suffices to show those representative become equal somewhere, in particular at `S`.
@@ -136,13 +136,10 @@ theorem colimitLimitToLimitColimit_injective :
     ext j
     -- Now it's just a calculation using `W` and `w`.
     simp only [Functor.comp_map, Limit.map_π_apply, curry_obj_map_app, swap_map]
-    rw [← W _ _ (fH j)]
-    rw [← W _ _ (gH j)]
-    -- Porting note: this was `simp [w]` in lean 3; this is presumably a confluence issue
-    rw [lim_map, lim_map, Limit.map_π_apply, Limit.map_π_apply, Functor.map_comp,
-      Functor.map_comp, FunctorToTypes.comp, FunctorToTypes.comp, curry_obj_map_app,
-      curry_obj_map_app, curry_obj_map_app, Functor.comp_map, Functor.comp_map,
-      Functor.comp_map, swap_map, swap_map, swap_map, w]
+    rw [← W _ _ (fH j), ← W _ _ (gH j)]
+    -- Porting note(#10745): had to add `Limit.map_π_apply`
+    -- (which was un-tagged simp since "simp can prove it")
+    simp [Limit.map_π_apply, w]
 #align category_theory.limits.colimit_limit_to_limit_colimit_injective CategoryTheory.Limits.colimitLimitToLimitColimit_injective
 
 end
@@ -321,7 +318,7 @@ theorem colimitLimitToLimitColimit_surjective :
       intro j
       -- and as each component is an equation in a colimit, we can verify it by
       -- pointing out the morphism which carries one representative to the other:
-      simp only [id.def, ← e, Limits.ι_colimitLimitToLimitColimit_π_apply,
+      simp only [id, ← e, Limits.ι_colimitLimitToLimitColimit_π_apply,
           colimit_eq_iff, Bifunctor.map_id_comp, types_comp_apply, curry_obj_obj_map,
           Functor.comp_obj, colim_obj, Limit.π_mk]
       refine ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), ?_⟩
@@ -378,7 +375,7 @@ end
 attribute [local instance] reflectsLimitsOfShapeOfReflectsIsomorphisms
 
 noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesColimitsOfShape K (forget C)]
-    [HasFiniteLimits C] [HasColimitsOfShape K C] [ReflectsIsomorphisms (forget C)] :
+    [HasFiniteLimits C] [HasColimitsOfShape K C] [(forget C).ReflectsIsomorphisms] :
     PreservesFiniteLimits (colim : (K ⥤ C) ⥤ _) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{v}
   intro J _ _

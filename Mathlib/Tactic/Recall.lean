@@ -3,8 +3,8 @@ Copyright (c) 2023 Mac Malone. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mac Malone, Kyle Miller
 -/
-import Lean.Elab.MutualDef
-import Std.Tactic.OpenPrivate
+import Lean.Elab.Command
+import Lean.Elab.DeclUtil
 
 /-!
 # `recall` command
@@ -35,7 +35,6 @@ recall Nat.add_comm {n m : Nat} : n + m = m + n
 syntax (name := recall) "recall " ident ppIndent(optDeclSig) (declVal)? : command
 
 open Lean Meta Elab Command Term
-open private elabHeaders from Lean.Elab.MutualDef
 
 elab_rules : command
   | `(recall $id $sig:optDeclSig $[$val?]?) => withoutModifyingEnv do
@@ -63,10 +62,17 @@ elab_rules : command
           throwErrorAt val err
     else
       let (binders, type?) := expandOptDeclSig sig
-      let views := #[{
-        declId := newId, binders, type?, value := .missing,
-        ref := ← getRef, kind := default, modifiers := {} : DefView}]
-      liftTermElabM do
-        let elabView := (← elabHeaders views)[0]!
-        unless (← isDefEq info.type elabView.type) do
-          throwTypeMismatchError none info.type elabView.type declConst
+      if let some type := type? then
+        runTermElabM fun vars => do
+          withAutoBoundImplicit do
+            elabBinders binders.getArgs fun xs => do
+              let xs ← addAutoBoundImplicits xs
+              let type ← elabType type
+              Term.synthesizeSyntheticMVarsNoPostponing
+              let type ← mkForallFVars xs type
+              let type ← mkForallFVars vars type (usedOnly := true)
+              unless (← isDefEq info.type type) do
+                throwTypeMismatchError none info.type type declConst
+      else
+        unless binders.getNumArgs == 0 do
+          throwError "expected type after ':'"

@@ -30,7 +30,7 @@ namespace HomologicalComplex₂
 
 variable {C : Type*} [Category C] [Preadditive C]
   {I₁ I₂ I₁₂ : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
-  (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (ψ : L ⟶ M)
+  (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (e : K ≅ L) (ψ : L ⟶ M)
   (c₁₂ : ComplexShape I₁₂) [DecidableEq I₁₂]
   [TotalComplexShape c₁ c₂ c₁₂]
 
@@ -223,12 +223,12 @@ lemma D₂_D₁ (i₁₂ i₁₂' i₁₂'' : I₁₂) :
             ComplexShape.ε₂_ε₁ c₁₂ h₃ h₄, neg_mul, Units.neg_smul]
         · simp only [K.d₂_eq_zero c₁₂ _ _ _ h₄, zero_comp, comp_zero, smul_zero, neg_zero]
       · rw [K.d₁_eq_zero c₁₂ _ _ _ h₃, zero_comp, neg_zero]
-        · by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)
-          · rw [totalAux.d₂_eq K c₁₂ i₁ h₄ i₁₂']; swap
-            · rw [← ComplexShape.next_π₂ c₁ c₁₂ i₁ h₄, ← c₁₂.next_eq' h₁, h]
-            simp only [Linear.units_smul_comp, assoc, totalAux.ιMapObj_D₁]
-            rw [K.d₁_eq_zero c₁₂ _ _ _ h₃, comp_zero, smul_zero]
-          · rw [K.d₂_eq_zero c₁₂ _ _ _ h₄, zero_comp]
+        by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)
+        · rw [totalAux.d₂_eq K c₁₂ i₁ h₄ i₁₂']; swap
+          · rw [← ComplexShape.next_π₂ c₁ c₁₂ i₁ h₄, ← c₁₂.next_eq' h₁, h]
+          simp only [Linear.units_smul_comp, assoc, totalAux.ιMapObj_D₁]
+          rw [K.d₁_eq_zero c₁₂ _ _ _ h₃, comp_zero, smul_zero]
+        · rw [K.d₂_eq_zero c₁₂ _ _ _ h₄, zero_comp]
     · rw [K.D₁_shape c₁₂ _ _ h₂, K.D₂_shape c₁₂ _ _ h₂, comp_zero, comp_zero, neg_zero]
   · rw [K.D₁_shape c₁₂ _ _ h₁, K.D₂_shape c₁₂ _ _ h₁, zero_comp, zero_comp, neg_zero]
 
@@ -403,6 +403,15 @@ variable [M.HasTotal c₁₂]
 lemma map_comp : map (φ ≫ ψ) c₁₂ = map φ c₁₂ ≫ map ψ c₁₂ := by
   apply (HomologicalComplex.forget _ _).map_injective
   exact GradedObject.mapMap_comp (toGradedObjectMap φ) (toGradedObjectMap ψ) _
+
+/-- The isomorphism `K.total c₁₂ ≅ L.total c₁₂` of homological complexes induced
+by an isomorphism of bicomplexes `K ≅ L`. -/
+@[simps]
+noncomputable def mapIso : K.total c₁₂ ≅ L.total c₁₂ where
+  hom := map e.hom _
+  inv := map e.inv _
+  hom_inv_id := by rw [← map_comp, e.hom_inv_id, map_id]
+  inv_hom_id := by rw [← map_comp, e.inv_hom_id, map_id]
 
 end total
 

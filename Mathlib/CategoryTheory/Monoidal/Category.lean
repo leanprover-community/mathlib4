@@ -126,13 +126,13 @@ scoped notation "𝟙_ " C:max => (MonoidalCategoryStruct.tensorUnit : C)
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Used to ensure that `𝟙_` notation is used, as the ascription makes this not automatic. -/
 @[delab app.CategoryTheory.MonoidalCategoryStruct.tensorUnit]
-def delabTensorUnit : Delab := whenPPOption getPPNotation do
+def delabTensorUnit : Delab := whenPPOption getPPNotation <| withOverApp 3 do
   let e ← getExpr
   guard <| e.isAppOfArity ``MonoidalCategoryStruct.tensorUnit 3
   let C ← withNaryArg 0 delab
   `(𝟙_ $C)
 
-/-- Notation for the monoidal `associator`: `(X ⊗ Y) ⊗ Z) ≃ X ⊗ (Y ⊗ Z)` -/
+/-- Notation for the monoidal `associator`: `(X ⊗ Y) ⊗ Z ≃ X ⊗ (Y ⊗ Z)` -/
 scoped notation "α_" => MonoidalCategoryStruct.associator
 
 /-- Notation for the `leftUnitor`: `𝟙_C ⊗ X ≃ X` -/
@@ -812,8 +812,7 @@ def tensor : C × C ⥤ C where
 #align category_theory.monoidal_category.tensor CategoryTheory.MonoidalCategory.tensor
 
 /-- The left-associated triple tensor product as a functor. -/
-def leftAssocTensor : C × C × C ⥤ C
-    where
+def leftAssocTensor : C × C × C ⥤ C where
   obj X := (X.1 ⊗ X.2.1) ⊗ X.2.2
   map {X Y : C × C × C} (f : X ⟶ Y) := (f.1 ⊗ f.2.1) ⊗ f.2.2
 #align category_theory.monoidal_category.left_assoc_tensor CategoryTheory.MonoidalCategory.leftAssocTensor
@@ -829,8 +828,7 @@ theorem leftAssocTensor_map {X Y} (f : X ⟶ Y) : (leftAssocTensor C).map f = (f
 #align category_theory.monoidal_category.left_assoc_tensor_map CategoryTheory.MonoidalCategory.leftAssocTensor_map
 
 /-- The right-associated triple tensor product as a functor. -/
-def rightAssocTensor : C × C × C ⥤ C
-    where
+def rightAssocTensor : C × C × C ⥤ C where
   obj X := X.1 ⊗ X.2.1 ⊗ X.2.2
   map {X Y : C × C × C} (f : X ⟶ Y) := f.1 ⊗ f.2.1 ⊗ f.2.2
 #align category_theory.monoidal_category.right_assoc_tensor CategoryTheory.MonoidalCategory.rightAssocTensor
@@ -938,7 +936,7 @@ TODO: show this is an op-monoidal functor.
 abbrev tensoringLeft : C ⥤ C ⥤ C := curriedTensor C
 #align category_theory.monoidal_category.tensoring_left CategoryTheory.MonoidalCategory.tensoringLeft
 
-instance : Faithful (tensoringLeft C) where
+instance : (tensoringLeft C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
     replace h := congr_fun h (𝟙_ C)
@@ -951,7 +949,7 @@ We later show this is a monoidal functor.
 abbrev tensoringRight : C ⥤ C ⥤ C := (curriedTensor C).flip
 #align category_theory.monoidal_category.tensoring_right CategoryTheory.MonoidalCategory.tensoringRight
 
-instance : Faithful (tensoringRight C) where
+instance : (tensoringRight C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
     replace h := congr_fun h (𝟙_ C)

@@ -85,7 +85,7 @@ lemma IsSigmaCompact.of_isClosed_subset {s t : Set X} (ht : IsSigmaCompact t)
   rw [← inter_iUnion, hcov]
   exact inter_eq_left.mpr h
 
-/-- If `s` is σ-compact and `f` is continuous on `s`, `f(s)` is σ-compact.-/
+/-- If `s` is σ-compact and `f` is continuous on `s`, `f(s)` is σ-compact. -/
 lemma IsSigmaCompact.image_of_continuousOn {f : X → Y} {s : Set X} (hs : IsSigmaCompact s)
     (hf : ContinuousOn f s) : IsSigmaCompact (f '' s) := by
   rcases hs with ⟨K, hcompact, hcov⟩
@@ -247,8 +247,7 @@ instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
     refine' ⟨⟨fun n => ⋃ k ≤ n, Sigma.mk (f k) '' compactCovering (X (f k)) n, fun n => _, _⟩⟩
     · refine' (finite_le_nat _).isCompact_biUnion fun k _ => _
       exact (isCompact_compactCovering _ _).image continuous_sigmaMk
-    · simp only [iUnion_eq_univ_iff, Sigma.forall, mem_iUnion]
-      rw [hf.forall] -- Porting note: `simp only` failed to use `hf.forall`
+    · simp only [iUnion_eq_univ_iff, Sigma.forall, mem_iUnion, hf.forall]
       intro k y
       rcases exists_mem_compactCovering y with ⟨n, hn⟩
       refine' ⟨max k n, k, le_max_left _ _, mem_image_of_mem _ _⟩
@@ -294,9 +293,9 @@ theorem countable_cover_nhdsWithin_of_sigma_compact {f : X → Set X} {s : Set X
   simp only [nhdsWithin, mem_inf_principal] at hf
   choose t ht hsub using fun n =>
     ((isCompact_compactCovering X n).inter_right hs).elim_nhds_subcover _ fun x hx => hf x hx.right
-  refine'
+  refine
     ⟨⋃ n, (t n : Set X), iUnion_subset fun n x hx => (ht n x hx).2,
-      countable_iUnion fun n => (t n).countable_toSet, fun x hx => mem_iUnion₂.2 _⟩
+      countable_iUnion fun n => (t n).countable_toSet, fun x hx => mem_iUnion₂.2 ?_⟩
   rcases exists_mem_compactCovering x with ⟨n, hn⟩
   rcases mem_iUnion₂.1 (hsub n ⟨hn, hx⟩) with ⟨y, hyt : y ∈ t n, hyf : x ∈ s → x ∈ f y⟩
   exact ⟨y, mem_iUnion.2 ⟨n, hyt⟩, hyf hx⟩
