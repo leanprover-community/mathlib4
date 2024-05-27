@@ -385,10 +385,10 @@ lemma indepFun_of_identDistrib_pair
   have hY' : AEMeasurable Y' μ' := by
     rw [(by ext; simp : Y' = Prod.snd ∘ (fun ω ↦ (X' ω, Y' ω)))]
     exact measurable_snd.aemeasurable.comp_aemeasurable h_ident.aemeasurable_snd
-  apply (indepFun_iff_map_prod_eq_prod_map_map (hX') (hY')).mpr
+  apply (indepFun_iff_map_prod_eq_prod_map_map hX' hY').mpr
   have iX : IdentDistrib X X' μ μ' := h_ident.comp measurable_fst
   have iY : IdentDistrib Y Y' μ μ' := h_ident.comp measurable_snd
   rw [← h_ident.map_eq, ← iX.map_eq, ← iY.map_eq]
-  exact indepFun_iff_map_prod_eq_prod_map_map (hX) (hY) |>.mp h_indep
+  exact indepFun_iff_map_prod_eq_prod_map_map hX hY |>.mp h_indep
 
 end ProbabilityTheory
