@@ -33,13 +33,13 @@ def isSyntPlaceHolder : MessageData → Bool
   | .withNamingContext _ (.withContext _ (.tagged `Elab.synthPlaceholder _)) => true
   | _ => false
 
-/-- extracts `refine'` from the given `Syntax`, returning also the `SourceInfo` and the arguments
-of the `refine'` node. -/
+/-- extracts `refine'` from the given `Syntax`, returning also the `SourceInfo`, the arguments
+of the `refine'` node and whether `refine'` contains `..`. -/
 partial
-def getRefine' : Syntax → Array (Syntax × SourceInfo × Array Syntax)
+def getRefine' : Syntax → Array (Syntax × SourceInfo × Array Syntax × Option Syntax)
   | stx@(.node si ``Lean.Parser.Tactic.refine' args) =>
     let rest := (args.map getRefine').flatten
-    rest.push (stx, si, args)
+    rest.push (stx, si, args, stx.find? (·.isOfKind ``Lean.Parser.Term.optEllipsis))
   | .node _ _ args => (args.map getRefine').flatten
   | _ => default
 
@@ -71,7 +71,8 @@ def getQuestions (cmd : Syntax) : Command.CommandElabM (Array (Nat × Position))
   let s ← get
   let fm ← getFileMap
   let refine's := getRefine' cmd
-  let newCmds := refine's.map fun (r, si, args) => Id.run do
+  let newCmds := refine's.map fun (r, si, args, dots?) => Id.run do
+      if let some dots := dots? then dbg_trace "{dots} present"
       let ncm ← cmd.replaceM fun s => if s == r then
         let args := args.modify 0 fun _ => mkAtomFrom args[0]! "refine "
         return some (.node si ``Lean.Parser.Tactic.refine args)
@@ -82,11 +83,14 @@ def getQuestions (cmd : Syntax) : Command.CommandElabM (Array (Nat × Position))
     if let some exm ← toExample ncmd then
       Elab.Command.elabCommand exm
       let msgs := (← get).messages.msgs
+      --dbg_trace msgs.toArray.map (·.endPos)
       let ph := msgs.filter (fun m => isSyntPlaceHolder m.data)
       if ! ph.toArray.isEmpty then
         -- a repetition in `Position`s is an indication that `refine` cannot replace `refine'`
         let positions := (ph.map (·.pos)).toList
         if positions == positions.eraseDup then
+          --dbg_trace ph.size == msgs.size
+          --dbg_trace ph.toArray.map (·.endPos)
           poss := poss ++
             (ph.map (0, ·.pos)).toArray.push (1, fm.toPosition (r.getPos?.getD default))
     set s
