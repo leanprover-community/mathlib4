@@ -127,10 +127,9 @@ def outputMessage (errctx : ErrorContext) : String :=
   s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {errctx.error.errorMessage}"
 
 /-- Print information about all errors encountered to standard output. -/
-def formatErrors (errors : Array ErrorContext) (exceptions : Array ErrorContext): IO Unit := do
+def formatErrors (errors : Array ErrorContext) : IO Unit := do
   for e in errors do
-    if !exceptions.contains e then
-      IO.println (outputMessage e)
+    IO.println (outputMessage e)
 
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
 def parse?_style_error (line : String) : Option ErrorContext := Id.run do
@@ -348,29 +347,32 @@ def all_linters : Array LinterCore :=
   #[check_line_length, contains_broad_imports, copyright_header, isolated_by_dot_semicolon,
    line_endings]
 
-/-- Read a file, apply all text-based linters and return the formatted errors.
+/-- Read a file, apply all text-based linters and print formatted errors.
+Return `true` if there were new errors (and `false` otherwise).
 
 `size_limit` is any pre-existing limit on this file's size;
 `exceptions` are any previous style exceptions. -/
 def lint_file (path : System.FilePath)
-    (size_limit : Option ℕ) (exceptions : Array ErrorContext) : IO Unit := do
+    (size_limit : Option ℕ) (exceptions : Array ErrorContext) : IO Bool := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
   -- NB. The Python script used to still run a few linters; this is in fact not necessary.
   if is_imports_only_file lines then
-    return
+    return false
   -- Check first if the file is too long: since this requires mucking with previous exceptions,
   -- I'll just handle this directly.
   if let some (StyleError.fileTooLong n limit) := check_file_length lines size_limit then
     let arr := Array.mkArray1 (ErrorContext.mk (StyleError.fileTooLong n limit) 1 path)
-    formatErrors arr (Array.mkEmpty 0)
+    formatErrors arr
   let all_output := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) all_linters
-  -- XXX: this list is currently not sorted: for github, that's probably fine
-  formatErrors (Array.flatten all_output) exceptions
+  let errors := (Array.flatten all_output).filter (fun e ↦ !exceptions.contains e)
+  formatErrors errors
+  return errors.size > 0
 
-/-- Lint all files referenced in a given import-only file. -/
-def lint_all_files (path : System.FilePath) : IO Unit := do
+/-- Lint all files referenced in a given import-only file.
+Return the number of files which had new style errors. -/
+def lint_all_files (path : System.FilePath) : IO UInt32 := do
   -- Read all module names in Mathlib from the file at `path`.
   let allModules ← IO.FS.lines path
   -- Read the style exceptions file: during the transition period,
@@ -379,6 +381,7 @@ def lint_all_files (path : System.FilePath) : IO Unit := do
   let mut style_exceptions := parse_style_exceptions exceptions_file
   let extra_file ← IO.FS.lines (System.mkFilePath ["scripts/style-exceptions-new.txt"])
   style_exceptions := style_exceptions.append (parse_style_exceptions extra_file)
+  let mut number_error_files := 0
   for module in allModules do
     let module := module.stripPrefix "import "
     -- Convert the module name to a file name, then lint that file.
@@ -389,13 +392,18 @@ def lint_all_files (path : System.FilePath) : IO Unit := do
       if let StyleError.fileTooLong _ limit := errctx.error then
         some limit
       else none)
-    lint_file path (size_limits.get? 0) style_exceptions
+    let has_errors ← lint_file path (size_limits.get? 0) style_exceptions
+    if has_errors then
+      number_error_files := number_error_files + 1
+  return number_error_files
 
 /-- Implementation of the `lint_style` command line program. -/
 def lintStyleCli (_args : Cli.Parsed) : IO UInt32 := do
+  let mut number_error_files := 0
   for s in #["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    lint_all_files (System.mkFilePath [s])
-  return 0
+    let n ← lint_all_files (System.mkFilePath [s])
+    number_error_files := number_error_files + n
+  return number_error_files
 
 open Cli in
 /-- Setting up command line options and help text for `lake exe lint_style`. -/
