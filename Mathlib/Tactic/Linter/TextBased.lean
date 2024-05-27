@@ -400,7 +400,7 @@ def lint_all_files (path : System.FilePath) : IO UInt32 := do
 /-- Implementation of the `lint_style` command line program. -/
 def lintStyleCli (_args : Cli.Parsed) : IO UInt32 := do
   let mut number_error_files := 0
-  for s in #["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
+  for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
     let n ← lint_all_files (System.mkFilePath [s])
     number_error_files := number_error_files + n
   return number_error_files
@@ -410,7 +410,7 @@ open Cli in
 -- so far, no help options or so: perhaps that is fine?
 def lint_style : Cmd := `[Cli|
   lint_style VIA lintStyleCli; ["0.0.1"]
-  "Run text-based style linters on Mathlib and the Archive and Counterexamples directories."
+  "Run text-based style linters on every Lean file in Mathlib/, Archive/ and Counterexamples/."
 ]
 
 /-- The entry point to the `lake exe lint_style` command. -/
