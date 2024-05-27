@@ -24,12 +24,12 @@ and prove some basic related results.
   An abstraction that captures the conditions on a set of ideals
   that ensure that they generate a semisimple Lie algebra.
 * `LieAlgebra.IsSemisimple`
-* `LieAlgebra.IsSemisimple.hasTrivialRadical`: A semisimple Lie algebra has trivial radical.
-* `LieAlgebra.IsSemisimple.complementedLattice`:
+* `LieAlgebra.IsSemisimple.instHasTrivialRadical`: A semisimple Lie algebra has trivial radical.
+* `LieAlgebra.IsSemisimple.instComplementedLattice`:
   The lattice of ideals in a semisimple Lie algebra is a complemented lattice.
   In particular, this implies that the lattice of ideals is atomistic:
   every ideal is a direct sum of atoms (simple ideals), in a unique way.
-* `LieAlgebra.IsSemisimple.distribLattice`:
+* `LieAlgebra.IsSemisimple.instDistribLattice`:
   The lattice of ideals in a semisimple Lie algebra is a distributive lattice.
 * `LieAlgebra.hasTrivialRadical_iff_no_solvable_ideals`
 * `LieAlgebra.hasTrivialRadical_iff_no_abelian_ideals`
@@ -499,7 +499,7 @@ lemma semisimpleGenerators (S : Set (LieIdeal R L)) (hS : S ⊆ {I : LieIdeal R 
     SemisimpleGenerators S :=
   (IsSemisimple.semisimpleGenerators_atoms R L).mono hS
 
-instance (priority := 100) complementedLattice : ComplementedLattice (LieIdeal R L) :=
+instance (priority := 100) instComplementedLattice : ComplementedLattice (LieIdeal R L) :=
   (IsSemisimple.semisimpleGenerators_atoms R L).complementedLattice_of_sSup_eq_top
     IsSemisimple.sSup_isAtom_eq_top
 
@@ -520,7 +520,7 @@ lemma sSup_inter_of_atoms (T₁ T₂ : Set (LieIdeal R L))
     sSup (T₁ ∩ T₂) = (sSup T₁) ⊓ (sSup T₂) :=
   (IsSemisimple.semisimpleGenerators_atoms R L).sSup_inter T₁ T₂ hT₁ hT₂
 
-instance (priority := 100) distribLattice : DistribLattice (LieIdeal R L) where
+instance (priority := 100) instDistribLattice : DistribLattice (LieIdeal R L) where
   __ := (inferInstance : CompleteLattice (LieIdeal R L))
   le_sup_inf I₁ I₂ I₃ := by
     apply le_of_eq
@@ -537,7 +537,7 @@ instance (priority := 100) distribLattice : DistribLattice (LieIdeal R L) where
       try tauto
 
 /-- A semisimple Lie algebra has trivial radical. -/
-instance (priority := 100) hasTrivialRadical : HasTrivialRadical R L := by
+instance (priority := 100) instHasTrivialRadical : HasTrivialRadical R L := by
   rw [hasTrivialRadical_iff_no_abelian_ideals]
   intro I hI
   apply (eq_bot_or_exists_atom_le I).resolve_right
@@ -554,7 +554,7 @@ instance (priority := 100) hasTrivialRadical : HasTrivialRadical R L := by
 end IsSemisimple
 
 /-- A simple Lie algebra is semisimple. -/
-instance (priority := 100) IsSimple.isSemisimple [h : IsSimple R L] :
+instance (priority := 100) IsSimple.instIsSemisimple [h : IsSimple R L] :
     IsSemisimple R L := by
   constructor
   · simp
@@ -565,11 +565,6 @@ instance (priority := 100) IsSimple.isSemisimple [h : IsSimple R L] :
     obtain @⟨-, h₂⟩ := id h
     rw [lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv] at hI₂
     contradiction
-
-/-- A simple Lie algebra has trivial radical. -/
-instance (priority := 100) IsSimple.hasTrivialRadical [IsSimple R L] :
-    HasTrivialRadical R L := inferInstance
-#align lie_algebra.is_semisimple_of_is_simple LieAlgebra.IsSimple.hasTrivialRadical
 
 /-- An abelian Lie algebra with trivial radical is trivial. -/
 theorem subsingleton_of_hasTrivialRadical_lie_abelian [HasTrivialRadical R L] [h : IsLieAbelian L] :
