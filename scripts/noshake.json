@@ -182,10 +182,10 @@
   "Batteries.Util.LibraryNote",
   "Batteries.Util.ProofWanted",
   "Batteries.Util.TermUnsafe"],
-  "ignoreAll":
-  ["Batteries.Tactic.Basic",
-   "Mathlib.Mathport.Syntax",
-   "Mathlib.Tactic.Linter"],
+"ignoreAll":
+["Batteries.Tactic.Basic",
+  "Mathlib.Mathport.Syntax",
+  "Mathlib.Tactic.Linter"],
  "ignore":
  {"Batteries.Tactic.OpenPrivate": ["Lean.Parser.Module"],
   "Batteries.Tactic.Omega.OmegaM": ["Batteries.Tactic.Omega.Int"],
