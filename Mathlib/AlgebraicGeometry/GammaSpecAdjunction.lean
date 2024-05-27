@@ -32,6 +32,8 @@ case the unit and the counit would switch to each other.
 
 -/
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
 set_option linter.uppercaseLean3 false
 
 noncomputable section
@@ -216,8 +218,7 @@ theorem toStalk_stalkMap_toΓSpec (x : X) :
       ⟨X.toΓSpecFun x, by rw [basicOpen_one]; trivial⟩]
   rw [← Category.assoc, Category.assoc (toOpen _ _)]
   erw [stalkFunctor_map_germ]
-  -- Porting note: was `rw [← assoc, toΓSpecSheafedSpace_app_spec]`, but Lean did not like it.
-  rw [toΓSpecSheafedSpace_app_spec_assoc]
+  rw [← Category.assoc, toΓSpecSheafedSpace_app_spec]
   unfold ΓToStalk
   rw [← stalkPushforward_germ _ X.toΓSpecBase X.presheaf ⊤]
   congr 1
@@ -292,9 +293,9 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
     symm
     apply LocallyRingedSpace.comp_ring_hom_ext
     · ext1 x
-      dsimp [Spec.topMap, LocallyRingedSpace.toΓSpecFun]
+      dsimp only [Spec.topMap, LocallyRingedSpace.toΓSpecFun]
       -- Porting note: Had to add the next four lines
-      rw [comp_apply, comp_apply]
+      rw [comp_apply]
       dsimp [toΓSpecBase]
       -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before
       -- leanprover/lean4#2644
@@ -331,7 +332,7 @@ theorem right_triangle (R : CommRingCat) :
       𝟙 _ := by
   apply LocallyRingedSpace.comp_ring_hom_ext
   · ext (p : PrimeSpectrum R)
-    change _ = p -- Porting note: Had to add this line to make `ext x` work.
+    dsimp
     ext x
     erw [← IsLocalization.AtPrime.to_map_mem_maximal_iff ((structureSheaf R).presheaf.stalk p)
         p.asIdeal x]
@@ -478,31 +479,31 @@ instance Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
 
 /-- Spec is a full functor. -/
 instance : Spec.toLocallyRingedSpace.Full  :=
-  R_full_of_counit_isIso ΓSpec.locallyRingedSpaceAdjunction
+  ΓSpec.locallyRingedSpaceAdjunction.R_full_of_counit_isIso
 
 instance Spec.full : Scheme.Spec.Full  :=
-  R_full_of_counit_isIso ΓSpec.adjunction
+  ΓSpec.adjunction.R_full_of_counit_isIso
 #align algebraic_geometry.Spec.full AlgebraicGeometry.Spec.full
 
 /-- Spec is a faithful functor. -/
 instance : Spec.toLocallyRingedSpace.Faithful :=
-  R_faithful_of_counit_isIso ΓSpec.locallyRingedSpaceAdjunction
+  ΓSpec.locallyRingedSpaceAdjunction.R_faithful_of_counit_isIso
 
 instance Spec.faithful : Scheme.Spec.Faithful :=
-  R_faithful_of_counit_isIso ΓSpec.adjunction
+  ΓSpec.adjunction.R_faithful_of_counit_isIso
 #align algebraic_geometry.Spec.faithful AlgebraicGeometry.Spec.faithful
 
-instance : IsRightAdjoint Spec.toLocallyRingedSpace :=
-  ⟨_, ΓSpec.locallyRingedSpaceAdjunction⟩
+instance : Spec.toLocallyRingedSpace.IsRightAdjoint  :=
+  (ΓSpec.locallyRingedSpaceAdjunction).isRightAdjoint
 
-instance : IsRightAdjoint Scheme.Spec :=
-  ⟨_, ΓSpec.adjunction⟩
+instance : Scheme.Spec.IsRightAdjoint  :=
+  (ΓSpec.adjunction).isRightAdjoint
 
-instance : Reflective Spec.toLocallyRingedSpace :=
-  ⟨⟩
+instance : Reflective Spec.toLocallyRingedSpace where
+  adj := ΓSpec.locallyRingedSpaceAdjunction
 
-instance Spec.reflective : Reflective Scheme.Spec :=
-  ⟨⟩
+instance Spec.reflective : Reflective Scheme.Spec where
+  adj := ΓSpec.adjunction
 #align algebraic_geometry.Spec.reflective AlgebraicGeometry.Spec.reflective
 
 end AlgebraicGeometry

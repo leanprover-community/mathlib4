@@ -97,7 +97,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
     rintro ⟨i', j'⟩ hij'
     simp only [S, Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.compl_filter,
       not_le, Finset.mem_filter, true_and] at hij'
-    refine' ⟨(j'.pred <| _, Fin.castSucc i'), _, _⟩
+    refine ⟨(j'.pred <| ?_, Fin.castSucc i'), ?_, ?_⟩
     · rintro rfl
       simp only [Fin.val_zero, not_lt_zero'] at hij'
     · simpa only [S, Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.mem_filter,
@@ -227,7 +227,7 @@ def ε [Limits.HasZeroObject C] :
       SimplicialObject.Augmented.point ⋙ ChainComplex.single₀ C where
   app X := by
     refine' (ChainComplex.toSingle₀Equiv _ _).symm _
-    refine' ⟨X.hom.app (op [0]), _⟩
+    refine ⟨X.hom.app (op [0]), ?_⟩
     dsimp
     rw [alternatingFaceMapComplex_obj_d, objD, Fin.sum_univ_two, Fin.val_zero,
       pow_zero, one_smul, Fin.val_one, pow_one, neg_smul, one_smul, add_comp,

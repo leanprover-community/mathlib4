@@ -532,7 +532,7 @@ variable (R M)
 /-- If `M` is an `R`-module with one and `M` has characteristic zero, then `R` has characteristic
 zero as well. Usually `M` is an `R`-algebra. -/
 theorem CharZero.of_module (M) [AddCommMonoidWithOne M] [CharZero M] [Module R M] : CharZero R := by
-  refine' ⟨fun m n h => @Nat.cast_injective M _ _ _ _ _⟩
+  refine ⟨fun m n h => @Nat.cast_injective M _ _ _ _ ?_⟩
   rw [← nsmul_one, ← nsmul_one, nsmul_eq_smul_cast R m (1 : M), nsmul_eq_smul_cast R n (1 : M), h]
 #align char_zero.of_module CharZero.of_module
 
@@ -628,15 +628,18 @@ end NoZeroSMulDivisors
 
 -- Porting note (#10618): simp can prove this
 --@[simp]
-theorem Nat.smul_one_eq_coe {R : Type*} [Semiring R] (m : ℕ) : m • (1 : R) = ↑m := by
+theorem Nat.smul_one_eq_cast {R : Type*} [Semiring R] (m : ℕ) : m • (1 : R) = ↑m := by
   rw [nsmul_eq_mul, mul_one]
-#align nat.smul_one_eq_coe Nat.smul_one_eq_coe
+#align nat.smul_one_eq_coe Nat.smul_one_eq_cast
 
 -- Porting note (#10618): simp can prove this
 --@[simp]
-theorem Int.smul_one_eq_coe {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑m := by
+theorem Int.smul_one_eq_cast {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑m := by
   rw [zsmul_eq_mul, mul_one]
-#align int.smul_one_eq_coe Int.smul_one_eq_coe
+#align int.smul_one_eq_coe Int.smul_one_eq_cast
+
+@[deprecated (since := "2024-05-03")] alias Nat.smul_one_eq_coe := Nat.smul_one_eq_cast
+@[deprecated (since := "2024-05-03")] alias Int.smul_one_eq_coe := Int.smul_one_eq_cast
 
 assert_not_exists Multiset
 assert_not_exists Set.indicator
