@@ -327,7 +327,8 @@ lemma continuous'_iff_ωScottContinuous {f : α → β} : Continuous' f ↔ ωSc
     exact ⟨ωScottContinuous.monotone hf, fun _ => (ωSup_eq_of_isLUB (ωScottContinuous.isLUB hf))⟩
 
 lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f :=
-  continuous'_iff_ωScottContinuous.mpr (DScottContinuous.mono _ _ (fun _ _ ↦ trivial) hf)
+  continuous'_iff_ωScottContinuous.mpr (DScottContinuous.mono _ _ (fun _ _ ↦ trivial)
+    (dscottContinuous_univ.mpr hf))
 
 theorem Continuous'.to_monotone {f : α → β} (hf : Continuous' f) : Monotone f :=
   hf.fst

@@ -266,8 +266,8 @@ lemma monotone_of_continuous (hf : Continuous f) : Monotone f := fun _ b hab ↦
   · rw [isOpen_iff_isUpperSet_and_dirSupInacc]
     exact ⟨(isUpperSet_of_isOpen hu).preimage h.monotone, fun _ hd₁ hd₂ _ hd₃ ha ↦
       image_inter_nonempty_iff.mp <| (isOpen_iff_isUpperSet_and_dirSupInacc.mp hu).2 (hd₁.image f)
-        (directedOn_image.mpr (hd₂.mono @(h.monotone))) (h hd₁ hd₂ trivial hd₃) ha⟩
-  · refine fun hf _ d₁ d₂ _ _ d₃ ↦ ⟨(monotone_of_continuous hf).mem_upperBounds_image d₃.1,
+        (directedOn_image.mpr (hd₂.mono @(h.monotone))) (h hd₁ hd₂ hd₃) ha⟩
+  · refine fun hf _ d₁ d₂ _ d₃ ↦ ⟨(monotone_of_continuous hf).mem_upperBounds_image d₃.1,
       fun b hb ↦ ?_⟩
     by_contra h
     let u := (Iic b)ᶜ

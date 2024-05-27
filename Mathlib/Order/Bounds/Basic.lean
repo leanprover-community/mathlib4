@@ -1707,7 +1707,6 @@ does not appear to play a significant role in the literature, so is omitted here
 -/
 def DScottContinuous (D : Set (Set α)) (f : α → β) : Prop :=
   ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → d ∈ D → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
-#align scott_continuous DScottContinuous
 
 lemma DScottContinuous.mono (D₁ D₂ : Set (Set α)) (hD : D₁ ⊆ D₂) {f : α → β}
     (hf : DScottContinuous D₂ f) : DScottContinuous D₁ f :=
@@ -1727,9 +1726,14 @@ protected theorem DScottContinuous.monotone (D : Set (Set α)) (hD : ∀ a b : �
 sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
 Scott topology.
 -/
-def ScottContinuous (f : α → β) := DScottContinuous univ f
+def ScottContinuous (f : α → β) : Prop :=
+  ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
+#align scott_continuous ScottContinuous
+
+@[simp] lemma dscottContinuous_univ : DScottContinuous univ f ↔ ScottContinuous f :=
+  ⟨fun h _ d₁ d₂ _ hda => h d₁ d₂ trivial hda, fun h _ d₁ d₂ _ _ hda => h d₁ d₂ hda⟩
 
 protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f := by
-  exact DScottContinuous.monotone univ (by exact fun _ _ _ ↦ trivial) h
+  apply DScottContinuous.monotone univ (by exact fun _ _ _ ↦ trivial) (dscottContinuous_univ.mpr h)
 
 end ScottContinuous
