@@ -788,9 +788,8 @@ theorem NeBot.nonempty (f : Filter α) [hf : f.NeBot] : Nonempty α :=
 equal. -/
 theorem eq_top_of_neBot [Subsingleton α] (l : Filter α) [NeBot l] : l = ⊤ := by
   refine top_unique fun s hs => ?_
-  obtain rfl : s = univ
-  · exact Subsingleton.eq_univ_of_nonempty (nonempty_of_mem hs)
-  · exact univ_mem
+  obtain rfl : s = univ := Subsingleton.eq_univ_of_nonempty (nonempty_of_mem hs)
+  exact univ_mem
 #align filter.eq_top_of_ne_bot Filter.eq_top_of_neBot
 
 theorem forall_mem_nonempty_iff_neBot {f : Filter α} :
@@ -1436,6 +1435,12 @@ theorem frequently_top {p : α → Prop} : (∃ᶠ x in ⊤, p x) ↔ ∃ x, p x
 theorem frequently_principal {a : Set α} {p : α → Prop} : (∃ᶠ x in 𝓟 a, p x) ↔ ∃ x ∈ a, p x := by
   simp [Filter.Frequently, not_forall]
 #align filter.frequently_principal Filter.frequently_principal
+
+theorem frequently_inf_principal {f : Filter α} {s : Set α} {p : α → Prop} :
+    (∃ᶠ x in f ⊓ 𝓟 s, p x) ↔ ∃ᶠ x in f, x ∈ s ∧ p x := by
+  simp only [Filter.Frequently, eventually_inf_principal, not_and]
+
+alias ⟨Frequently.of_inf_principal, Frequently.inf_principal⟩ := frequently_inf_principal
 
 theorem frequently_sup {p : α → Prop} {f g : Filter α} :
     (∃ᶠ x in f ⊔ g, p x) ↔ (∃ᶠ x in f, p x) ∨ ∃ᶠ x in g, p x := by
@@ -2174,6 +2179,14 @@ theorem pure_le_principal (a : α) : pure a ≤ 𝓟 s ↔ a ∈ s := by
 theorem pure_bind (a : α) (m : α → Filter β) : bind (pure a) m = m a := by
   simp only [Bind.bind, bind, map_pure, join_pure]
 #align filter.pure_bind Filter.pure_bind
+
+theorem map_bind {α β} (m : β → γ) (f : Filter α) (g : α → Filter β) :
+    map m (bind f g) = bind f (map m ∘ g) :=
+  rfl
+
+theorem bind_map {α β} (m : α → β) (f : Filter α) (g : β → Filter γ) :
+    (bind (map m f) g) = bind f (g ∘ m) :=
+  rfl
 
 /-!
 ### `Filter` as a `Monad`
