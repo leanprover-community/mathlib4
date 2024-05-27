@@ -81,7 +81,7 @@ def getAttrInstance : Syntax → Syntax × Array Syntax
 /-- The `attributeInstanceLinter` linter flags any occurrence of `attribute [instance] name in`,
 including scoped or with instance priority: despite the `in`, these define *global* instances,
 which can be rather misleading.
-Instead, remove the `in` or make this a `local instance` instead.
+Instead, remove the `in` or make this a `local instance`.
 -/
 def attributeInstanceIn : Linter where run := withSetOptionIn fun stx => do
   unless getLinterAttributeInstanceIn (← getOptions) do
