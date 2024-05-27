@@ -32,7 +32,7 @@ abbrev SimplexAlgorithmM := ExceptT SimplexAlgorithmException <| StateM SimplexA
 --   dbg_trace s!"free: {table.free}"
 --   dbg_trace s!"basic: {table.basic}"
 --   for ⟨b, b_idx⟩ in table.basic.zipWithIndex do
---    let arr : List Rat := (List.range table.free.size).map fun idx => table.mat[b_idx]!.findD idx 0
+--   let arr : List Rat := (List.range table.free.size).map fun idx => table.mat[b_idx]!.findD idx 0
 --     dbg_trace arr
 --   dbg_trace "~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
