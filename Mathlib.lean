@@ -265,6 +265,7 @@ import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.GroupWithZero.Pi
 import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.GroupWithZero.Semiconj
+import Mathlib.Algebra.GroupWithZero.ULift
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
