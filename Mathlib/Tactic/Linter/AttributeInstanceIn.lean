@@ -22,6 +22,25 @@ instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
 ```
 Despite the `in`, this makes `ConcreteCategory.instFunLike` a global instance.
+
+This seems to apply to all attributes.
+```lean
+theorem what : False := sorry
+
+attribute [simp] what in
+#guard true
+
+example : False := by simp  -- `simp` finds `what`
+```
+
+```lean
+theorem who {x y : Nat} : x = y := sorry
+
+attribute [ext] who in
+#guard true
+
+example {x y : Nat} : x = y := by ext
+```
 -/
 
 open Lean Elab Command
@@ -76,12 +95,12 @@ def attributeInstanceIn : Linter where run := withSetOptionIn fun stx => do
     return
   if (← MonadState.get).messages.hasErrors then
     return
-  if let some stx := stx.find? fun s => (getAttrInstance s).2.isEmpty then
+  if let some stx := stx.find? fun s => ! (getAttrInstance s).2.isEmpty then
     let (id, nonScopedNorLocal) := getAttrInstance stx
     let _ ← nonScopedNorLocal.mapM fun attr =>
     Linter.logLint linter.attributeInstanceIn attr m!
-    "Despite the `in`, the attribute '{attr}' added globally to '{id}'\n\
-      please remove the `in` or make this a `local instance` instead"
+    "Despite the `in`, the attribute '{attr}' is added globally to '{id}'\n\
+    please remove the `in` or make this a `local instance` instead"
 
 initialize addLinter attributeInstanceIn
 
