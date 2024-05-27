@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Solvable
-import Mathlib.Order.Atoms
+import Mathlib.Order.BooleanGenerators
 
 #align_import algebra.lie.semisimple from "leanprover-community/mathlib"@"356447fe00e75e54777321045cdff7c9ea212e60"
 
