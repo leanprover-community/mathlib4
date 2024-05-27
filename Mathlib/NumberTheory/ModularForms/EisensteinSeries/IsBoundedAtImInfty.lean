@@ -55,7 +55,7 @@ lemma abs_le_tsum_abs (N : ℕ) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k) 
   apply (summable_lem k hk z).subtype
 
 theorem eisensteinSeries_IsBoundedAtImInfty {N : ℕ+} (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k)
-    (A : SL(2, ℤ)) : IsBoundedAtImInfty ((eisensteinSeries_SIF a k).toFun ∣[(k : ℤ)] A) := by
+    (A : SL(2, ℤ)) : IsBoundedAtImInfty ((eisensteinSeries_SIF a k).toFun ∣[k] A) := by
     simp_rw [UpperHalfPlane.bounded_mem, eisensteinSeries_SIF] at *
     refine ⟨∑'(x : Fin 2 → ℤ), r ⟨⟨N, 2⟩, Nat.ofNat_pos⟩ ^ (-k) * ‖x‖ ^ (-k), 2, ?_⟩
     intro z hz
