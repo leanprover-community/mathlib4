@@ -78,7 +78,7 @@ instance : Inhabited MeasCat :=
   ⟨MeasCat.of Empty⟩
 
 -- This was a global instance prior to #13170. We may experiment with removing it.
-attribute [local instance] ConcreteCategory.instFunLike 
+attribute [local instance] ConcreteCategory.instFunLike
 
 /-- `Measure X` is the measurable space of measures over the measurable space `X`. It is the
 weakest measurable space, s.t. `fun μ ↦ μ s` is measurable for all measurable sets `s` in `X`. An
