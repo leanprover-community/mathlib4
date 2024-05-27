@@ -304,21 +304,19 @@ def Continuous' (f : α → β) : Prop :=
 #align omega_complete_partial_order.continuous' OmegaCompletePartialOrder.Continuous'
 
 /-- ωScottContinuous - Scott Continuous over Chains-/
-def ωScottContinuous (f : α → β) := DScottContinuous (range fun c : Chain α => Set.range c = d) f
+def ωScottContinuous (f : α → β) := DScottContinuous (Set.range fun c : Chain α => Set.range c) f
 
 lemma ωScottContinuous.monotone {f : α → β} (h : ωScottContinuous f) : Monotone f :=
-  DScottContinuous.monotone _
-  (fun a b hab => ordered_pair_exists_chain a b hab) h
+  DScottContinuous.monotone _ (fun a b hab => by exact ordered_pair_exists_chain a b hab) h
 
 lemma ωScottContinuous.isLUB {c : Chain α} {f : α → β} (hf : ωScottContinuous f) :
     IsLUB (Set.range (Chain.map c ⟨f, (ωScottContinuous.monotone hf)⟩)) (f (ωSup c)) := by
   simp only [map_coe, OrderHom.coe_mk]
   rw [(Set.range_comp f ↑c)]
   exact hf (Set.range_nonempty ↑c) (IsChain.directedOn (isChain_range c))
-    (by simp only [Set.mem_setOf_eq, exists_apply_eq_apply]) (isLUB_range_ωSup c)
+    (by simp only [Set.mem_range, exists_apply_eq_apply]) (isLUB_range_ωSup c)
 
-lemma continuous'_iff_ωScottContinuous {f : α → β} : Continuous' f \iff ωScottContinuous f := by
-  rw [le_antisymm_iff]
+lemma continuous'_iff_ωScottContinuous {f : α → β} : Continuous' f ↔ ωScottContinuous f := by
   constructor
   · intro hf _ _ _ ⟨c, hc⟩ _ hda
     convert isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
@@ -326,11 +324,10 @@ lemma continuous'_iff_ωScottContinuous {f : α → β} : Continuous' f \iff ωS
     · rw [← hc] at hda
       rw [← (hf.2 c), OrderHom.coe_mk, ωSup_eq_of_isLUB hda]
   · intro hf
-    exact ⟨ωScottContinuous.monotone hf, fun _ => (ωSup_eq_of_isLUB (isLUB_of_ωScottContinuous hf))⟩
+    exact ⟨ωScottContinuous.monotone hf, fun _ => (ωSup_eq_of_isLUB (ωScottContinuous.isLUB hf))⟩
 
 lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f :=
-  continuous'_eq_ωScottContinuous.mpr (DScottContinuous.LE { d | ∃ (c : Chain α), Set.range c = d }
-  Set.univ (fun _ _ ↦ trivial) hf)
+  continuous'_iff_ωScottContinuous.mpr (DScottContinuous.mono _ _ (fun _ _ ↦ trivial) hf)
 
 theorem Continuous'.to_monotone {f : α → β} (hf : Continuous' f) : Monotone f :=
   hf.fst

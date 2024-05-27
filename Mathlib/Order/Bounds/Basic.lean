@@ -1709,7 +1709,7 @@ def DScottContinuous (D : Set (Set α)) (f : α → β) : Prop :=
   ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → d ∈ D → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
 #align scott_continuous DScottContinuous
 
-lemma DScottContinuous.mono (D₁ D₂ : Set (Set α)) (hD : D₁ \subset D₂) {f : α → β}
+lemma DScottContinuous.mono (D₁ D₂ : Set (Set α)) (hD : D₁ ⊆ D₂) {f : α → β}
     (hf : DScottContinuous D₂ f) : DScottContinuous D₁ f :=
   fun _ hd₁ hd₂ hdD₁ _ hda => hf hd₁ hd₂ (hD hdD₁) hda
 
