@@ -281,7 +281,7 @@ lemma normEDS_even (m : ℕ) : normEDS b c d (2 * (m + 3)) * b =
     ring1
 
 @[simp]
-lemma normEDS_neg (n : ℕ) : normEDS b c d (-n) = -normEDS b c d n := by
+lemma normEDS_neg (n : ℤ) : normEDS b c d (-n) = -normEDS b c d n := by
   rw [normEDS, preNormEDS_neg, Int.natAbs_neg, neg_mul, normEDS]
 
 /-- Strong recursion principle for a normalised EDS: if we have
@@ -291,11 +291,11 @@ lemma normEDS_neg (n : ℕ) : normEDS b c d (-n) = -normEDS b c d n := by
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def normEDSRec' {P : ℕ → Sort u}
-    (base0 : P 0) (base1 : P 1) (base2 : P 2) (base3 : P 3) (base4 : P 4)
+    (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
     (even : ∀ m : ℕ, (∀ k < 2 * (m + 3), P k) → P (2 * (m + 3)))
     (odd : ∀ m : ℕ, (∀ k < 2 * (m + 2) + 1, P k) → P (2 * (m + 2) + 1)) (n : ℕ) : P n :=
-  n.evenOddStrongRec (by rintro (_ | _ | _ | _) h; exacts [base0, base2, base4, even _ h])
-    (by rintro (_ | _ | _) h; exacts [base1, base3, odd _ h])
+  n.evenOddStrongRec (by rintro (_ | _ | _ | _) h; exacts [zero, two, four, even _ h])
+    (by rintro (_ | _ | _) h; exacts [one, three, odd _ h])
 
 /-- Recursion principle for a normalised EDS: if we have
  * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
@@ -306,10 +306,10 @@ noncomputable def normEDSRec' {P : ℕ → Sort u}
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def normEDSRec {P : ℕ → Sort u}
-    (base0 : P 0) (base1 : P 1) (base2 : P 2) (base3 : P 3) (base4 : P 4)
+    (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
     (even : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (m + 5) → P (2 * (m + 3)))
     (odd : ∀ m : ℕ, P (m + 1) → P (m + 2) → P (m + 3) → P (m + 4) → P (2 * (m + 2) + 1)) (n : ℕ) :
     P n :=
-  normEDSRec' base0 base1 base2 base3 base4
+  normEDSRec' zero one two three four
     (fun _ ih => by apply even <;> exact ih _ <| by linarith only)
     (fun _ ih => by apply odd <;> exact ih _ <| by linarith only) n
