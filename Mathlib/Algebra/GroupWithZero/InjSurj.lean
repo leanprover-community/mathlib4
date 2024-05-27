@@ -13,7 +13,6 @@ import Mathlib.Algebra.GroupWithZero.NeZero
 
 -/
 
-assert_not_exists DenselyOrdered
 
 open Function
 

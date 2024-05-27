@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Triangulated.Rotate
-import Mathlib.Algebra.Ring.NegOnePow
+import Mathlib.Algebra.GroupPower.NegOnePow
 
 /-!
 # The shift on the category of triangles

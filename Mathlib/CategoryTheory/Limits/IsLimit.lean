@@ -123,7 +123,8 @@ and separately the factorisation condition.
 -/
 @[simps]
 def mkConeMorphism {t : Cone F} (lift : ∀ s : Cone F, s ⟶ t)
-    (uniq : ∀ (s : Cone F) (m : s ⟶ t), m = lift s) : IsLimit t where
+    (uniq : ∀ (s : Cone F) (m : s ⟶ t), m = lift s) : IsLimit t
+    where
   lift s := (lift s).hom
   uniq s m w :=
     have : ConeMorphism.mk m w = lift s := by apply uniq
@@ -132,7 +133,8 @@ def mkConeMorphism {t : Cone F} (lift : ∀ s : Cone F, s ⟶ t)
 
 /-- Limit cones on `F` are unique up to isomorphism. -/
 @[simps]
-def uniqueUpToIso {s t : Cone F} (P : IsLimit s) (Q : IsLimit t) : s ≅ t where
+def uniqueUpToIso {s t : Cone F} (P : IsLimit s) (Q : IsLimit t) : s ≅ t
+    where
   hom := Q.liftConeMorphism s
   inv := P.liftConeMorphism t
   hom_inv_id := P.uniq_cone_morphism
@@ -245,7 +247,8 @@ def ofRightAdjoint {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} {left : Con
 across the equivalence.
 -/
 def ofConeEquiv {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cone G ≌ Cone F) {c : Cone G} :
-    IsLimit (h.functor.obj c) ≃ IsLimit c where
+    IsLimit (h.functor.obj c) ≃ IsLimit c
+    where
   toFun P := ofIsoLimit (ofRightAdjoint h.toAdjunction P) (h.unitIso.symm.app c)
   invFun := ofRightAdjoint h.symm.toAdjunction
   left_inv := by aesop_cat
@@ -537,7 +540,8 @@ open OfNatIso
 /-- If `F.cones` is representable, then the cone corresponding to the identity morphism on
 the representing object is a limit cone.
 -/
-def ofNatIso {X : C} (h : yoneda.obj X ⋙ uliftFunctor.{u₁} ≅ F.cones) : IsLimit (limitCone h) where
+def ofNatIso {X : C} (h : yoneda.obj X ⋙ uliftFunctor.{u₁} ≅ F.cones) : IsLimit (limitCone h)
+    where
   lift s := homOfCone h s
   fac s j := by
     have h := cone_fac h s
@@ -635,7 +639,8 @@ and separately the factorisation condition.
 -/
 @[simps]
 def mkCoconeMorphism {t : Cocone F} (desc : ∀ s : Cocone F, t ⟶ s)
-    (uniq' : ∀ (s : Cocone F) (m : t ⟶ s), m = desc s) : IsColimit t where
+    (uniq' : ∀ (s : Cocone F) (m : t ⟶ s), m = desc s) : IsColimit t
+    where
   desc s := (desc s).hom
   uniq s m w :=
     have : CoconeMorphism.mk m w = desc s := by apply uniq'
@@ -644,7 +649,8 @@ def mkCoconeMorphism {t : Cocone F} (desc : ∀ s : Cocone F, t ⟶ s)
 
 /-- Colimit cocones on `F` are unique up to isomorphism. -/
 @[simps]
-def uniqueUpToIso {s t : Cocone F} (P : IsColimit s) (Q : IsColimit t) : s ≅ t where
+def uniqueUpToIso {s t : Cocone F} (P : IsColimit s) (Q : IsColimit t) : s ≅ t
+    where
   hom := P.descCoconeMorphism t
   inv := Q.descCoconeMorphism s
   hom_inv_id := P.uniq_cocone_morphism
@@ -766,7 +772,8 @@ def ofLeftAdjoint {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} {left : Coco
 we can transport a colimiting cocone across the equivalence.
 -/
 def ofCoconeEquiv {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cocone G ≌ Cocone F)
-    {c : Cocone G} : IsColimit (h.functor.obj c) ≃ IsColimit c where
+    {c : Cocone G} : IsColimit (h.functor.obj c) ≃ IsColimit c
+    where
   toFun P := ofIsoColimit (ofLeftAdjoint h.symm.toAdjunction P) (h.unitIso.symm.app c)
   invFun := ofLeftAdjoint h.toAdjunction
   left_inv := by aesop_cat
@@ -819,7 +826,8 @@ are themselves isomorphic.
 -/
 @[simps]
 def coconePointsIsoOfNatIso {F G : J ⥤ C} {s : Cocone F} {t : Cocone G} (P : IsColimit s)
-    (Q : IsColimit t) (w : F ≅ G) : s.pt ≅ t.pt where
+    (Q : IsColimit t) (w : F ≅ G) : s.pt ≅ t.pt
+    where
   hom := P.map t w.hom
   inv := Q.map s w.inv
   hom_inv_id := P.hom_ext (by aesop_cat)

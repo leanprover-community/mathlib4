@@ -145,7 +145,8 @@ instance inhabitedThinSkeleton [Inhabited C] : Inhabited (ThinSkeleton C) :=
   ⟨@Quotient.mk' C (isIsomorphicSetoid C) default⟩
 #align category_theory.inhabited_thin_skeleton CategoryTheory.inhabitedThinSkeleton
 
-instance ThinSkeleton.preorder : Preorder (ThinSkeleton C) where
+instance ThinSkeleton.preorder : Preorder (ThinSkeleton C)
+    where
   le :=
     @Quotient.lift₂ C C _ (isIsomorphicSetoid C) (isIsomorphicSetoid C)
       (fun X Y => Nonempty (X ⟶ Y))
@@ -156,7 +157,7 @@ instance ThinSkeleton.preorder : Preorder (ThinSkeleton C) where
               ⟨Nonempty.map fun f => i₁.inv ≫ f ≫ i₂.hom,
                 Nonempty.map fun f => i₁.hom ≫ f ≫ i₂.inv⟩)
   le_refl := by
-    refine Quotient.ind fun a => ?_
+    refine' Quotient.ind fun a => _
     exact ⟨𝟙 _⟩
   le_trans a b c := Quotient.inductionOn₃ a b c fun A B C => Nonempty.map2 (· ≫ ·)
 #align category_theory.thin_skeleton.preorder CategoryTheory.ThinSkeleton.preorder
@@ -313,7 +314,8 @@ theorem map_iso_eq {F₁ F₂ : D ⥤ C} (h : F₁ ≅ F₂) : map F₁ = map F�
 #align category_theory.thin_skeleton.map_iso_eq CategoryTheory.ThinSkeleton.map_iso_eq
 
 /-- `fromThinSkeleton C` exhibits the thin skeleton as a skeleton. -/
-lemma thinSkeleton_isSkeleton : IsSkeletonOf C (ThinSkeleton C) (fromThinSkeleton C) where
+lemma thinSkeleton_isSkeleton : IsSkeletonOf C (ThinSkeleton C) (fromThinSkeleton C)
+    where
   skel := skeletal
 #align category_theory.thin_skeleton.thin_skeleton_is_skeleton CategoryTheory.ThinSkeleton.thinSkeleton_isSkeleton
 

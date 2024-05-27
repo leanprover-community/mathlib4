@@ -62,7 +62,7 @@ theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
   intro h
   obtain ⟨i, hi, rfl⟩ :=
     (isPrimitiveRoot_exp n hn).eq_pow_of_pow_eq_one h.pow_eq_one (Nat.pos_of_ne_zero hn)
-  refine ⟨i, hi, ((isPrimitiveRoot_exp n hn).pow_iff_coprime (Nat.pos_of_ne_zero hn) i).mp h, ?_⟩
+  refine' ⟨i, hi, ((isPrimitiveRoot_exp n hn).pow_iff_coprime (Nat.pos_of_ne_zero hn) i).mp h, _⟩
   rw [← exp_nat_mul]
   congr 1
   field_simp [hn0, mul_comm (i : ℂ)]
@@ -78,7 +78,7 @@ nonrec theorem mem_rootsOfUnity (n : ℕ+) (x : Units ℂ) :
   · intro h
     obtain ⟨i, hi, H⟩ : ∃ i < (n : ℕ), exp (2 * π * I / n) ^ i = x := by
       simpa only using (isPrimitiveRoot_exp n n.ne_zero).eq_pow_of_pow_eq_one h n.pos
-    refine ⟨i, hi, ?_⟩
+    refine' ⟨i, hi, _⟩
     rw [← H, ← exp_nat_mul]
     congr 1
     field_simp [hn0, mul_comm (i : ℂ)]

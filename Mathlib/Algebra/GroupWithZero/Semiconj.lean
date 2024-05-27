@@ -14,7 +14,6 @@ import Mathlib.Init.Classical
 
 -/
 
-assert_not_exists DenselyOrdered
 
 variable {α M₀ G₀ M₀' G₀' F F' : Type*}
 

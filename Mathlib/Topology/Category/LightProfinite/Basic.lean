@@ -70,6 +70,7 @@ def toProfinite (S : LightProfinite) : Profinite := S.cone.pt
 @[simps!]
 instance : Category LightProfinite := InducedCategory.category toProfinite
 
+@[simps!]
 instance concreteCategory : ConcreteCategory LightProfinite := InducedCategory.concreteCategory _
 
 /-- The fully faithful embedding `LightProfinite ⥤ Profinite` -/

@@ -197,7 +197,8 @@ variable [DecidableEq N]
 
 /-- Loop from a generalized loop by currying $I^N → X$ into $I → (I^{N\setminus\{j\}} → X)$. -/
 @[simps]
-def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const where
+def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const
+    where
   toFun t :=
     ⟨(p.val.comp (Cube.insertAt i).toContinuousMap).curry t, fun y yH =>
       p.property (Cube.insertAt i (t, y)) (Cube.insertAt_boundary i <| Or.inr yH)⟩
@@ -249,7 +250,8 @@ theorem to_from (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : toLoop i (fr
   `n`-dimensional loops with base point `const`.
   We allow an arbitrary indexing type `N` in place of `Fin n` here. -/
 @[simps]
-def loopHomeo (i : N) : Ω^ N X x ≃ₜ Ω (Ω^ { j // j ≠ i } X x) const where
+def loopHomeo (i : N) : Ω^ N X x ≃ₜ Ω (Ω^ { j // j ≠ i } X x) const
+    where
   toFun := toLoop i
   invFun := fromLoop i
   left_inv p := by ext; exact congr_arg p (by dsimp; exact Equiv.apply_symm_apply _ _)
@@ -291,7 +293,7 @@ theorem homotopyTo_apply (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 <| C
 
 theorem homotopicTo (i : N) {p q : Ω^ N X x} :
     Homotopic p q → (toLoop i p).Homotopic (toLoop i q) := by
-  refine Nonempty.map fun H => ⟨⟨⟨fun t => ⟨homotopyTo i H t, ?_⟩, ?_⟩, ?_, ?_⟩, ?_⟩
+  refine' Nonempty.map fun H => ⟨⟨⟨fun t => ⟨homotopyTo i H t, _⟩, _⟩, _, _⟩, _⟩
   · rintro y ⟨i, iH⟩
     rw [homotopyTo_apply, H.eq_fst, p.2]
     all_goals apply Cube.insertAt_boundary; right; exact ⟨i, iH⟩
@@ -318,7 +320,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
 
 theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     (toLoop i p).Homotopic (toLoop i q) → Homotopic p q := by
-  refine Nonempty.map fun H => ⟨⟨homotopyFrom i H, ?_, ?_⟩, ?_⟩
+  refine' Nonempty.map fun H => ⟨⟨homotopyFrom i H, _, _⟩, _⟩
   pick_goal 3
   · rintro t y ⟨j, jH⟩
     erw [homotopyFrom_apply]
@@ -469,7 +471,7 @@ def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
 def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
     HomotopyGroup N X x ≃ FundamentalGroup X x := by
   refine' Equiv.trans _ (CategoryTheory.Groupoid.isoEquivHom _ _).symm
-  refine Quotient.congr (genLoopEquivOfUnique N) ?_
+  refine' Quotient.congr (genLoopEquivOfUnique N) _
   intros a₁ a₂; constructor <;> rintro ⟨H⟩
   · exact
       ⟨{  toFun := fun tx => H (tx.fst, fun _ => tx.snd)
@@ -506,14 +508,15 @@ abbrev auxGroup (i : N) : Group (HomotopyGroup N X x) :=
 #align homotopy_group.aux_group HomotopyGroup.auxGroup
 
 theorem isUnital_auxGroup (i : N) :
-    EckmannHilton.IsUnital (auxGroup i).mul (⟦const⟧ : HomotopyGroup N X x) where
-  left_id := (auxGroup i).one_mul
-  right_id := (auxGroup i).mul_one
+    EckmannHilton.IsUnital (auxGroup i).mul (⟦const⟧ : HomotopyGroup N X x) := {
+    left_id := (auxGroup i).one_mul,
+    right_id := (auxGroup i).mul_one
+  }
 #align homotopy_group.is_unital_aux_group HomotopyGroup.isUnital_auxGroup
 
 theorem auxGroup_indep (i j : N) : (auxGroup i : Group (HomotopyGroup N X x)) = auxGroup j := by
   by_cases h : i = j; · rw [h]
-  refine Group.ext (EckmannHilton.mul (isUnital_auxGroup i) (isUnital_auxGroup j) ?_)
+  refine' Group.ext (EckmannHilton.mul (isUnital_auxGroup i) (isUnital_auxGroup j) _)
   rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨d⟩
   change Quotient.mk' _ = _
   apply congr_arg Quotient.mk'

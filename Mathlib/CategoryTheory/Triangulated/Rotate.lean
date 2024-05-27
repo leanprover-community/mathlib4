@@ -84,7 +84,8 @@ variable (C)
 /-- Rotating triangles gives an endofunctor on the category of triangles in `C`.
 -/
 @[simps]
-def rotate : Triangle C ⥤ Triangle C where
+def rotate : Triangle C ⥤ Triangle C
+    where
   obj := Triangle.rotate
   map f :=
   { hom₁ := f.hom₂
@@ -98,7 +99,8 @@ def rotate : Triangle C ⥤ Triangle C where
 /-- The inverse rotation of triangles gives an endofunctor on the category of triangles in `C`.
 -/
 @[simps]
-def invRotate : Triangle C ⥤ Triangle C where
+def invRotate : Triangle C ⥤ Triangle C
+    where
   obj := Triangle.invRotate
   map f :=
   { hom₁ := f.hom₃⟦-1⟧'
@@ -139,7 +141,8 @@ variable (C)
 /-- Rotating triangles gives an auto-equivalence on the category of triangles in `C`.
 -/
 @[simps]
-def triangleRotation : Equivalence (Triangle C) (Triangle C) where
+def triangleRotation : Equivalence (Triangle C) (Triangle C)
+    where
   functor := rotate C
   inverse := invRotate C
   unitIso := rotCompInvRot

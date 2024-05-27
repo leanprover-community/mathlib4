@@ -147,8 +147,9 @@ theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x
 
 theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
   rw [mem_nhds]
-  use Units.mk0 _ h
-  rw [Units.val_mk0]
+  rcases Units.exists_iff_ne_zero.mpr h with ⟨γ, hx⟩
+  use γ
+  rw [hx]
   intro y y_in
   exact Valuation.map_eq_of_sub_lt _ y_in
 #align valued.loc_const Valued.loc_const

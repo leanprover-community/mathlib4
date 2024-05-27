@@ -32,9 +32,6 @@ This file is similar to `Order.Synonym`.
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
-
 universe u v
 
 variable {α : Type u} {β : Type v}

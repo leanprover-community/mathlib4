@@ -116,19 +116,17 @@ theorem reindex_relationsSet :
       apply congrArg Set.range
       ext ⟨i, i'⟩
       simp [relation, reindex_apply, M']
-  _ = _ := by simp [Set.range_comp, relationsSet]
+  _ = _ := by simp [Set.range_comp]; rfl
 
 /-- The isomorphism between the Coxeter group associated to the reindexed matrix `M.reindex e` and
 the Coxeter group associated to `M`. -/
 def reindexGroupEquiv : (M.reindex e).Group ≃* M.Group :=
-  .symm <| QuotientGroup.congr
-    (Subgroup.normalClosure M.relationsSet)
+  (QuotientGroup.congr (Subgroup.normalClosure M.relationsSet)
     (Subgroup.normalClosure (M.reindex e).relationsSet)
-    (FreeGroup.freeGroupCongr e)
-    (by
+    (FreeGroup.freeGroupCongr e) (by
       rw [reindex_relationsSet,
         Subgroup.map_normalClosure _ _ (by simpa using (FreeGroup.freeGroupCongr e).surjective),
-        MonoidHom.coe_coe])
+        MonoidHom.coe_coe])).symm
 
 theorem reindexGroupEquiv_apply_simple (i : B') :
     (M.reindexGroupEquiv e) ((M.reindex e).simple i) = M.simple (e.symm i) := rfl
@@ -321,14 +319,15 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
     ext i
     simp only [MonoidHom.comp_apply, comp_apply, mem_setOf_eq, groupLift, simple]
     rw [← MonoidHom.toFun_eq_coe, toMonoidHom_apply_symm_apply, PresentedGroup.toGroup.of,
-      OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, Units.coeHom_apply, restrictUnit]
+      OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, Units.coeHom_apply]
+    rfl
   right_inv ι := by
     apply cs.ext_simple
     intro i
     dsimp only
     rw [groupLift, simple, MonoidHom.comp_apply, MonoidHom.comp_apply, toMonoidHom_apply_symm_apply,
       PresentedGroup.toGroup.of, CoxeterSystem.restrictUnit, Units.coeHom_apply]
-    simp only [comp_apply, simple]
+    rfl
 
 @[simp]
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
