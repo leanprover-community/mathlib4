@@ -41,13 +41,7 @@ git ls-files 'Mathlib/*.lean' | xargs ./scripts/lint-style.py "$@"
 git ls-files 'Archive/*.lean' | xargs ./scripts/lint-style.py "$@"
 git ls-files 'Counterexamples/*.lean' | xargs ./scripts/lint-style.py "$@"
 
-# Also call the in-progress Lean rewrite of these Python lints.
-# lake executables need to be called from the top-level folder.
-pwd
-exit 1
-#cd ..
-#lake exe lint_style
-#cd scripts
+# Also call the in-progress Lean rewrite of these Python lints: do this in the build step.
 
 # 2. Global checks on the mathlib repository
 
