@@ -1728,8 +1728,11 @@ def ScottContinuous (f : α → β) : Prop :=
 @[simp] lemma scottContinuousOn_univ : ScottContinuousOn univ f ↔ ScottContinuous f := by
   simp [ScottContinuousOn, ScottContinuous]
 
+lemma ScottContinuous.scottContinuousOn {D : Set (Set α)} :
+    ScottContinuous f → ScottContinuousOn D f := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
+
 protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f :=
-  ScottContinuousOn.monotone univ (by exact fun _ _ _ ↦ trivial) (scottContinuousOn_univ.mpr h)
+  h.scottContinuousOn.monotone univ (fun _ _ _ ↦ trivial)
 #align scott_continuous.monotone ScottContinuous.monotone
 
 end ScottContinuous
