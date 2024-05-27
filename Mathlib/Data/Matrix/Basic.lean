@@ -74,28 +74,10 @@ theorem ext_iff : (∀ i j, M i j = N i j) ↔ M = N :=
   ⟨fun h => funext fun i => funext <| h i, fun h => by simp [h]⟩
 #align matrix.ext_iff Matrix.ext_iff
 
--- Porting note: `ext` does not like this, see new lemma below.
--- @[ext]
+@[ext]
 theorem ext : (∀ i j, M i j = N i j) → M = N :=
   ext_iff.mp
 #align matrix.ext Matrix.ext
-
--- Porting note: `ext` does not like if there are two variables introduced at once. E.g.
--- ```
--- example (A B : Matrix m n α) : A = B := by
---   ext i j
---   sorry
--- ```
--- would only introduce the first variable, so that afterwards, the state is
--- ```
--- i : m
--- ⊢ ∀ (j : n), A i j = B i j
--- ```
--- This is probably a bug in `ext`. Once it is fixed, you should delete `Matrix.ext'` below
--- and restore the `@[ext]` attribute on `Matrix.ext` above.
-@[ext]
-theorem ext' : (∀ i, M i = N i) → M = N :=
-  fun h => Matrix.ext fun i => by simp[h]
 
 end Ext
 
@@ -193,9 +175,7 @@ def conjTranspose [Star α] (M : Matrix m n α) : Matrix n m α :=
 scoped postfix:1024 "ᴴ" => Matrix.conjTranspose
 
 instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
-  -- Porting note: this instance was called `Pi.inhabited` in lean3-core, which is much
-  -- nicer than the name `instInhabitedForAll_1` it got in lean4-core...
-  instInhabitedForAll_1 _
+  inferInstanceAs <| Inhabited <| m → n → α
 
 -- Porting note: new, Lean3 found this automatically
 instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
@@ -244,8 +224,7 @@ instance unique [Unique α] : Unique (Matrix m n α) :=
   Pi.unique
 
 instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
-  instSubsingletonForAll
--- Porting note: this instance was `Pi.subsingleton` in lean3-core
+  inferInstanceAs <| Subsingleton <| m → n → α
 
 instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix m n α) :=
   Function.nontrivial
@@ -588,6 +567,14 @@ theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _
   simp only [one_apply, Pi.single_apply, eq_comm]
 #align matrix.one_eq_pi_single Matrix.one_eq_pi_single
 
+lemma zero_le_one_elem [Preorder α] [ZeroLEOneClass α] (i j : n) :
+    0 ≤ (1 : Matrix n n α) i j := by
+  by_cases hi : i = j <;> simp [hi]
+
+lemma zero_le_one_row [Preorder α] [ZeroLEOneClass α] (i : n) :
+    0 ≤ (1 : Matrix n n α) i :=
+  zero_le_one_elem i
+
 end One
 
 instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (Matrix n n α) where
@@ -598,7 +585,7 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (Matrix n
 
 instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (Matrix n n α) where
   intCast_ofNat n := show diagonal _ = diagonal _ by
-    rw [Int.cast_ofNat]
+    rw [Int.cast_natCast]
   intCast_negSucc n := show diagonal _ = -(diagonal _) by
     rw [Int.cast_negSucc, diagonal_neg]
   __ := addGroup
@@ -744,7 +731,7 @@ theorem diag_multiset_sum [AddCommMonoid α] (s : Multiset (Matrix n n α)) :
 
 @[simp]
 theorem diag_sum {ι} [AddCommMonoid α] (s : Finset ι) (f : ι → Matrix n n α) :
-    diag (∑ i in s, f i) = ∑ i in s, diag (f i) :=
+    diag (∑ i ∈ s, f i) = ∑ i ∈ s, diag (f i) :=
   map_sum (diagAddMonoidHom n α) f s
 #align matrix.diag_sum Matrix.diag_sum
 
@@ -898,7 +885,7 @@ variable [NonAssocSemiring α]
 
 @[simp]
 theorem one_dotProduct_one : (1 : n → α) ⬝ᵥ 1 = Fintype.card n := by
-  simp [dotProduct, Fintype.card]
+  simp [dotProduct]
 #align matrix.one_dot_product_one Matrix.one_dotProduct_one
 
 end NonAssocSemiring
@@ -914,6 +901,9 @@ theorem neg_dotProduct : -v ⬝ᵥ w = -(v ⬝ᵥ w) := by simp [dotProduct]
 @[simp]
 theorem dotProduct_neg : v ⬝ᵥ -w = -(v ⬝ᵥ w) := by simp [dotProduct]
 #align matrix.dot_product_neg Matrix.dotProduct_neg
+
+lemma neg_dotProduct_neg : -v ⬝ᵥ -w = v ⬝ᵥ w := by
+  rw [neg_dotProduct, dotProduct_neg, neg_neg]
 
 @[simp]
 theorem sub_dotProduct : (u - v) ⬝ᵥ w = u ⬝ᵥ w - v ⬝ᵥ w := by simp [sub_eq_add_neg]
@@ -986,7 +976,7 @@ theorem mul_apply' [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {
 #align matrix.mul_apply' Matrix.mul_apply'
 
 theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β) (g : β → Matrix m n α) :
-    (∑ c in s, g c) i j = ∑ c in s, g c i j :=
+    (∑ c ∈ s, g c) i j = ∑ c ∈ s, g c i j :=
   (congr_fun (s.sum_apply i g) j).trans (s.sum_apply j _)
 #align matrix.sum_apply Matrix.sum_apply
 
@@ -1109,12 +1099,12 @@ def addMonoidHomMulRight [Fintype m] (M : Matrix m n α) : Matrix l m α →+ Ma
 #align matrix.add_monoid_hom_mul_right Matrix.addMonoidHomMulRight
 
 protected theorem sum_mul [Fintype m] (s : Finset β) (f : β → Matrix l m α) (M : Matrix m n α) :
-    (∑ a in s, f a) * M = ∑ a in s, f a * M :=
+    (∑ a ∈ s, f a) * M = ∑ a ∈ s, f a * M :=
   map_sum (addMonoidHomMulRight M) f s
 #align matrix.sum_mul Matrix.sum_mul
 
 protected theorem mul_sum [Fintype m] (s : Finset β) (f : β → Matrix m n α) (M : Matrix l m α) :
-    (M * ∑ a in s, f a) = ∑ a in s, M * f a :=
+    (M * ∑ a ∈ s, f a) = ∑ a ∈ s, M * f a :=
   map_sum (addMonoidHomMulLeft M) f s
 #align matrix.mul_sum Matrix.mul_sum
 
@@ -1290,12 +1280,11 @@ theorem scalar_inj [Nonempty n] {r s : α} : scalar n r = scalar n s ↔ r = s :
   (diagonal_injective.comp Function.const_injective).eq_iff
 #align matrix.scalar_inj Matrix.scalar_inj
 
-theorem scalar_commute_iff [Fintype n] [DecidableEq n] {r : α} {M : Matrix n n α} :
+theorem scalar_commute_iff {r : α} {M : Matrix n n α} :
     Commute (scalar n r) M ↔ r • M = MulOpposite.op r • M := by
   simp_rw [Commute, SemiconjBy, scalar_apply, ← smul_eq_diagonal_mul, ← op_smul_eq_mul_diagonal]
 
-theorem scalar_commute [Fintype n] [DecidableEq n] (r : α) (hr : ∀ r', Commute r r')
-    (M : Matrix n n α) :
+theorem scalar_commute (r : α) (hr : ∀ r', Commute r r') (M : Matrix n n α) :
     Commute (scalar n r) M := scalar_commute_iff.2 <| ext fun _ _ => hr _
 #align matrix.scalar.commute Matrix.scalar_commuteₓ
 
@@ -1911,6 +1900,37 @@ theorem vecMul_one (v : m → α) : v ᵥ* 1 = v := by
   rw [← diagonal_one, vecMul_diagonal, mul_one]
 #align matrix.vec_mul_one Matrix.vecMul_one
 
+@[simp]
+theorem diagonal_const_mulVec (x : α) (v : m → α) :
+    (diagonal fun _ => x) *ᵥ v = x • v := by
+  ext; simp [mulVec_diagonal]
+
+@[simp]
+theorem vecMul_diagonal_const (x : α) (v : m → α) :
+    v ᵥ* (diagonal fun _ => x) = MulOpposite.op x • v := by
+  ext; simp [vecMul_diagonal]
+
+@[simp]
+theorem natCast_mulVec (x : ℕ) (v : m → α) : x *ᵥ v = (x : α) • v :=
+  diagonal_const_mulVec _ _
+
+@[simp]
+theorem vecMul_natCast (x : ℕ) (v : m → α) : v ᵥ* x = MulOpposite.op (x : α) • v :=
+  vecMul_diagonal_const _ _
+
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_mulVec (x : ℕ) [x.AtLeastTwo] (v : m → α) :
+    OfNat.ofNat (no_index x) *ᵥ v = (OfNat.ofNat x : α) • v :=
+  natCast_mulVec _ _
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem vecMul_ofNat (x : ℕ) [x.AtLeastTwo] (v : m → α) :
+    v ᵥ* OfNat.ofNat (no_index x) = MulOpposite.op (OfNat.ofNat x : α) • v :=
+  vecMul_natCast _ _
+
 end NonAssocSemiring
 
 section NonUnitalNonAssocRing
@@ -1927,6 +1947,9 @@ theorem vecMul_neg [Fintype m] (v : m → α) (A : Matrix m n α) : v ᵥ* (-A) 
   apply dotProduct_neg
 #align matrix.vec_mul_neg Matrix.vecMul_neg
 
+lemma neg_vecMul_neg [Fintype m] (v : m → α) (A : Matrix m n α) : (-v) ᵥ* (-A) = v ᵥ* A := by
+  rw [vecMul_neg, neg_vecMul, neg_neg]
+
 theorem neg_mulVec [Fintype n] (v : n → α) (A : Matrix m n α) : (-A) *ᵥ v = - (A *ᵥ v) := by
   ext
   apply neg_dotProduct
@@ -1936,6 +1959,9 @@ theorem mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : A *ᵥ (-v) 
   ext
   apply dotProduct_neg
 #align matrix.mul_vec_neg Matrix.mulVec_neg
+
+lemma neg_mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : (-A) *ᵥ (-v) = A *ᵥ v := by
+  rw [mulVec_neg, neg_mulVec, neg_neg]
 
 theorem mulVec_sub [Fintype n] (A : Matrix m n α) (x y : n → α) :
     A *ᵥ (x - y) = A *ᵥ x - A *ᵥ y := by
@@ -1992,6 +2018,22 @@ theorem mulVec_smul_assoc [Fintype n] (A : Matrix m n α) (b : n → α) (a : α
 #align matrix.mul_vec_smul_assoc Matrix.mulVec_smul_assoc
 
 end CommSemiring
+
+section NonAssocRing
+
+variable [NonAssocRing α]
+
+variable [Fintype m] [DecidableEq m]
+
+@[simp]
+theorem intCast_mulVec (x : ℤ) (v : m → α) : x *ᵥ v = (x : α) • v :=
+  diagonal_const_mulVec _ _
+
+@[simp]
+theorem vecMul_intCast (x : ℤ) (v : m → α) : v ᵥ* x = MulOpposite.op (x : α) • v :=
+  vecMul_diagonal_const _ _
+
+end NonAssocRing
 
 section Transpose
 
@@ -2087,7 +2129,7 @@ variable {m n α}
 
 theorem transpose_list_sum [AddMonoid α] (l : List (Matrix m n α)) :
     l.sumᵀ = (l.map transpose).sum :=
-  (transposeAddEquiv m n α).toAddMonoidHom.map_list_sum l
+  map_list_sum (transposeAddEquiv m n α) l
 #align matrix.transpose_list_sum Matrix.transpose_list_sum
 
 theorem transpose_multiset_sum [AddCommMonoid α] (s : Multiset (Matrix m n α)) :
@@ -2096,7 +2138,7 @@ theorem transpose_multiset_sum [AddCommMonoid α] (s : Multiset (Matrix m n α))
 #align matrix.transpose_multiset_sum Matrix.transpose_multiset_sum
 
 theorem transpose_sum [AddCommMonoid α] {ι : Type*} (s : Finset ι) (M : ι → Matrix m n α) :
-    (∑ i in s, M i)ᵀ = ∑ i in s, (M i)ᵀ :=
+    (∑ i ∈ s, M i)ᵀ = ∑ i ∈ s, (M i)ᵀ :=
   map_sum (transposeAddEquiv m n α) _ s
 #align matrix.transpose_sum Matrix.transpose_sum
 
@@ -2307,7 +2349,10 @@ theorem conjTranspose_ratCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMo
   Matrix.ext <| by simp
 #align matrix.conj_transpose_rat_cast_smul Matrix.conjTranspose_ratCast_smul
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12231
+@[simp, nolint simpNF]
 theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
     (M : Matrix m n α) : (c • M)ᴴ = c • Mᴴ :=
   Matrix.ext <| by simp
@@ -2357,7 +2402,7 @@ variable {m n α}
 
 theorem conjTranspose_list_sum [AddMonoid α] [StarAddMonoid α] (l : List (Matrix m n α)) :
     l.sumᴴ = (l.map conjTranspose).sum :=
-  (conjTransposeAddEquiv m n α).toAddMonoidHom.map_list_sum l
+  map_list_sum (conjTransposeAddEquiv m n α) l
 #align matrix.conj_transpose_list_sum Matrix.conjTranspose_list_sum
 
 theorem conjTranspose_multiset_sum [AddCommMonoid α] [StarAddMonoid α]
@@ -2366,7 +2411,7 @@ theorem conjTranspose_multiset_sum [AddCommMonoid α] [StarAddMonoid α]
 #align matrix.conj_transpose_multiset_sum Matrix.conjTranspose_multiset_sum
 
 theorem conjTranspose_sum [AddCommMonoid α] [StarAddMonoid α] {ι : Type*} (s : Finset ι)
-    (M : ι → Matrix m n α) : (∑ i in s, M i)ᴴ = ∑ i in s, (M i)ᴴ :=
+    (M : ι → Matrix m n α) : (∑ i ∈ s, M i)ᴴ = ∑ i ∈ s, (M i)ᴴ :=
   map_sum (conjTransposeAddEquiv m n α) _ s
 #align matrix.conj_transpose_sum Matrix.conjTranspose_sum
 
@@ -2671,53 +2716,45 @@ theorem submatrix_mul_transpose_submatrix [Fintype m] [Fintype n] [AddCommMonoid
 #align matrix.submatrix_mul_transpose_submatrix Matrix.submatrix_mul_transpose_submatrix
 
 /-- The left `n × l` part of an `n × (l+r)` matrix. -/
-@[reducible]
-def subLeft {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin l) α :=
+abbrev subLeft {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin l) α :=
   submatrix A id (Fin.castAdd r)
 #align matrix.sub_left Matrix.subLeft
 
 /-- The right `n × r` part of an `n × (l+r)` matrix. -/
-@[reducible]
-def subRight {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin r) α :=
+abbrev subRight {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin r) α :=
   submatrix A id (Fin.natAdd l)
 #align matrix.sub_right Matrix.subRight
 
 /-- The top `u × n` part of a `(u+d) × n` matrix. -/
-@[reducible]
-def subUp {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin u) (Fin n) α :=
+abbrev subUp {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin u) (Fin n) α :=
   submatrix A (Fin.castAdd d) id
 #align matrix.sub_up Matrix.subUp
 
 /-- The bottom `d × n` part of a `(u+d) × n` matrix. -/
-@[reducible]
-def subDown {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin d) (Fin n) α :=
+abbrev subDown {d u n : Nat} (A : Matrix (Fin (u + d)) (Fin n) α) : Matrix (Fin d) (Fin n) α :=
   submatrix A (Fin.natAdd u) id
 #align matrix.sub_down Matrix.subDown
 
 /-- The top-right `u × r` part of a `(u+d) × (l+r)` matrix. -/
-@[reducible]
-def subUpRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+abbrev subUpRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin u) (Fin r) α :=
   subUp (subRight A)
 #align matrix.sub_up_right Matrix.subUpRight
 
 /-- The bottom-right `d × r` part of a `(u+d) × (l+r)` matrix. -/
-@[reducible]
-def subDownRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+abbrev subDownRight {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin d) (Fin r) α :=
   subDown (subRight A)
 #align matrix.sub_down_right Matrix.subDownRight
 
 /-- The top-left `u × l` part of a `(u+d) × (l+r)` matrix. -/
-@[reducible]
-def subUpLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+abbrev subUpLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin u) (Fin l) α :=
   subUp (subLeft A)
 #align matrix.sub_up_left Matrix.subUpLeft
 
 /-- The bottom-left `d × l` part of a `(u+d) × (l+r)` matrix. -/
-@[reducible]
-def subDownLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
+abbrev subDownLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin d) (Fin l) α :=
   subDown (subLeft A)
 #align matrix.sub_down_left Matrix.subDownLeft
@@ -2735,7 +2772,7 @@ theorem map_matrix_mul (M : Matrix m n α) (N : Matrix n o α) (i : m) (j : o) (
 
 theorem map_dotProduct [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (v w : n → R) :
     f (v ⬝ᵥ w) = f ∘ v ⬝ᵥ f ∘ w := by
-  simp only [Matrix.dotProduct, f.map_sum, f.map_mul, Function.comp]
+  simp only [Matrix.dotProduct, map_sum f, f.map_mul, Function.comp]
 #align ring_hom.map_dot_product RingHom.map_dotProduct
 
 theorem map_vecMul [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix n m R)

@@ -3,7 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Basic
 
 #align_import group_theory.subgroup.simple from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
@@ -65,7 +65,7 @@ open Subgroup
 theorem isSimpleGroup_of_surjective {H : Type*} [Group H] [IsSimpleGroup G] [Nontrivial H]
     (f : G →* H) (hf : Function.Surjective f) : IsSimpleGroup H :=
   ⟨fun H iH => by
-    refine' (iH.comap f).eq_bot_or_eq_top.imp (fun h => _) fun h => _
+    refine (iH.comap f).eq_bot_or_eq_top.imp (fun h => ?_) fun h => ?_
     · rw [← map_bot f, ← h, map_comap_eq_self_of_surjective hf]
     · rw [← comap_top f] at h
       exact comap_injective hf h⟩

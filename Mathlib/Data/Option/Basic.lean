@@ -105,6 +105,15 @@ theorem bind_eq_some' {x : Option α} {f : α → Option β} {b : β} :
 
 #align option.bind_eq_none' Option.bind_eq_none'
 
+theorem bind_congr {f g : α → Option β} {x : Option α}
+    (h : ∀ a ∈ x, f a = g a) : x.bind f = x.bind g := by
+  cases x <;> simp only [some_bind, none_bind, mem_def, h]
+
+@[congr]
+theorem bind_congr' {f g : α → Option β} {x y : Option α} (hx : x = y)
+    (hf : ∀ a ∈ y, f a = g a) : x.bind f = y.bind g :=
+  hx.symm ▸ bind_congr hf
+
 theorem joinM_eq_join : joinM = @join α :=
   funext fun _ ↦ rfl
 #align option.join_eq_join Option.joinM_eq_join
@@ -309,6 +318,15 @@ theorem orElse_none' (x : Option α) : x.orElse (fun _ ↦ none) = x := by cases
 #align option.not_is_some_iff_eq_none Option.not_isSome_iff_eq_none
 
 #align option.ne_none_iff_is_some Option.ne_none_iff_isSome
+
+@[simp]
+theorem isSome_map (f : α → β) (o : Option α) : isSome (o.map f) = isSome o := by
+  cases o <;> rfl
+
+@[simp]
+theorem get_map (f : α → β) {o : Option α} (h : isSome (o.map f)) :
+    (o.map f).get h = f (o.get (by rwa [← isSome_map])) := by
+  cases o <;> [simp at h; rfl]
 
 theorem iget_mem [Inhabited α] : ∀ {o : Option α}, isSome o → o.iget ∈ o
   | some _, _ => rfl

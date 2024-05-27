@@ -38,6 +38,7 @@ def piQuotientLift [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
   lsum R (fun i => Ms i ⧸ p i) R fun i => (p i).mapQ q (f i) (hf i)
 #align submodule.pi_quotient_lift Submodule.piQuotientLift
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 theorem piQuotientLift_mk [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
     (q : Submodule R N) (f : ∀ i, Ms i →ₗ[R] N) (hf : ∀ i, p i ≤ q.comap (f i)) (x : ∀ i, Ms i) :
@@ -99,7 +100,7 @@ theorem left_inv : Function.LeftInverse (invFun p) (toFun p) := fun x =>
 theorem right_inv : Function.RightInverse (invFun p) (toFun p) := by
   dsimp only [toFun, invFun]
   rw [Function.rightInverse_iff_comp, ← coe_comp, ← @id_coe R]
-  refine' congr_arg _ (pi_ext fun i x => Quotient.inductionOn' x fun x' => funext fun j => _)
+  refine congr_arg _ (pi_ext fun i x => Quotient.inductionOn' x fun x' => funext fun j => ?_)
   rw [comp_apply, piQuotientLift_single, Quotient.mk''_eq_mk, mapQ_apply,
     quotientPiLift_mk, id_apply]
   by_cases hij : i = j <;> simp only [mkQ_apply, coe_single]

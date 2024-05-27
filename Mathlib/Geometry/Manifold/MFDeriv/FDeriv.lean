@@ -70,7 +70,7 @@ alias ⟨HasMFDerivAt.hasFDerivAt, HasFDerivAt.hasMFDerivAt⟩ := hasMFDerivAt_i
 coincide -/
 theorem mdifferentiableWithinAt_iff_differentiableWithinAt :
     MDifferentiableWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s x ↔ DifferentiableWithinAt 𝕜 f s x := by
-  simp only [MDifferentiableWithinAt, mfld_simps]
+  simp only [mdifferentiableWithinAt_iff', mfld_simps]
   exact ⟨fun H => H.2, fun H => ⟨H.continuousWithinAt, H⟩⟩
 #align mdifferentiable_within_at_iff_differentiable_within_at mdifferentiableWithinAt_iff_differentiableWithinAt
 
@@ -83,7 +83,7 @@ alias ⟨MDifferentiableWithinAt.differentiableWithinAt,
 /-- For maps between vector spaces, `MDifferentiableAt` and `DifferentiableAt` coincide -/
 theorem mdifferentiableAt_iff_differentiableAt :
     MDifferentiableAt 𝓘(𝕜, E) 𝓘(𝕜, E') f x ↔ DifferentiableAt 𝕜 f x := by
-  simp only [MDifferentiableAt, differentiableWithinAt_univ, mfld_simps]
+  simp only [mdifferentiableAt_iff, differentiableWithinAt_univ, mfld_simps]
   exact ⟨fun H => H.2, fun H => ⟨H.continuousAt, H⟩⟩
 #align mdifferentiable_at_iff_differentiable_at mdifferentiableAt_iff_differentiableAt
 

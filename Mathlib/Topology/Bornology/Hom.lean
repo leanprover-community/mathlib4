@@ -152,8 +152,7 @@ theorem id_apply (a : α) : LocallyBoundedMap.id α a = a :=
 #align locally_bounded_map.id_apply LocallyBoundedMap.id_apply
 
 /-- Composition of `LocallyBoundedMap`s as a `LocallyBoundedMap`. -/
-def comp (f : LocallyBoundedMap β γ) (g : LocallyBoundedMap α β) : LocallyBoundedMap α γ
-    where
+def comp (f : LocallyBoundedMap β γ) (g : LocallyBoundedMap α β) : LocallyBoundedMap α γ where
   toFun := f ∘ g
   comap_cobounded_le' :=
     comap_comap.ge.trans <| (comap_mono f.comap_cobounded_le').trans g.comap_cobounded_le'

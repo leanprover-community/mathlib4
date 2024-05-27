@@ -5,6 +5,7 @@ Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
 import Mathlib.Algebra.Module.Injective
+import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.Rat
 
@@ -71,7 +72,6 @@ instance injective_of_divisible [DivisibleBy A ℤ] :
 #align AddCommGroup.injective_of_divisible AddCommGroupCat.injective_of_divisible
 
 instance injective_ratCircle : Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) :=
-  have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
   injective_of_divisible _
 
 end AddCommGroupCat

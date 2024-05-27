@@ -204,7 +204,7 @@ instance Monoid.measurablePow (M : Type*) [Monoid M] [MeasurableSpace M] [Measur
       induction' n with n ih
       · simp only [Nat.zero_eq, pow_zero, ← Pi.one_def, measurable_one]
       · simp only [pow_succ]
-        exact measurable_id.mul ih⟩
+        exact ih.mul measurable_id⟩
 #align monoid.has_measurable_pow Monoid.measurablePow
 
 section Pow
@@ -411,7 +411,7 @@ theorem measurableSet_eq_fun_of_countable {m : MeasurableSpace α} {E} [Measurab
     ext1 x
     simp only [Set.mem_setOf_eq, Set.mem_iUnion, Set.mem_inter_iff, exists_eq_right']
   rw [this]
-  refine' MeasurableSet.iUnion fun j => MeasurableSet.inter _ _
+  refine MeasurableSet.iUnion fun j => MeasurableSet.inter ?_ ?_
   · exact hf (measurableSet_singleton j)
   · exact hg (measurableSet_singleton j)
 #align measurable_set_eq_fun_of_countable measurableSet_eq_fun_of_countable
@@ -512,6 +512,11 @@ theorem MeasurableSet.inv {s : Set G} (hs : MeasurableSet s) : MeasurableSet s�
   measurable_inv hs
 #align measurable_set.inv MeasurableSet.inv
 #align measurable_set.neg MeasurableSet.neg
+
+@[to_additive]
+theorem measurableEmbedding_inv [InvolutiveInv α] [MeasurableInv α] :
+    MeasurableEmbedding (Inv.inv (α := α)) :=
+  ⟨inv_injective, measurable_inv, fun s hs ↦ s.image_inv ▸ hs.inv⟩
 
 end Inv
 
@@ -699,7 +704,7 @@ instance AddMonoid.measurableSMul_nat₂ (M : Type*) [AddMonoid M] [MeasurableSp
     induction' n with n ih
     · simp only [Nat.zero_eq, zero_smul, ← Pi.zero_def, measurable_zero]
     · simp only [succ_nsmul]
-      exact measurable_id.add ih⟩
+      exact ih.add measurable_id⟩
 #align add_monoid.has_measurable_smul_nat₂ AddMonoid.measurableSMul_nat₂
 
 /-- `SubNegMonoid.SMulInt` is measurable. -/
@@ -943,21 +948,21 @@ theorem Multiset.aemeasurable_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, 
 
 @[to_additive (attr := measurability)]
 theorem Finset.measurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f i)) :
-    Measurable (∏ i in s, f i) :=
+    Measurable (∏ i ∈ s, f i) :=
   Finset.prod_induction _ _ (fun _ _ => Measurable.mul) (@measurable_one M _ _ _ _) hf
 #align finset.measurable_prod' Finset.measurable_prod'
 #align finset.measurable_sum' Finset.measurable_sum'
 
 @[to_additive (attr := measurability)]
 theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f i)) :
-    Measurable fun a => ∏ i in s, f i a := by
+    Measurable fun a => ∏ i ∈ s, f i a := by
   simpa only [← Finset.prod_apply] using s.measurable_prod' hf
 #align finset.measurable_prod Finset.measurable_prod
 #align finset.measurable_sum Finset.measurable_sum
 
 @[to_additive (attr := measurability)]
 theorem Finset.aemeasurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
-    AEMeasurable (∏ i in s, f i) μ :=
+    AEMeasurable (∏ i ∈ s, f i) μ :=
   Multiset.aemeasurable_prod' _ fun _g hg =>
     let ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
     hg ▸ hf _ hi
@@ -966,7 +971,7 @@ theorem Finset.aemeasurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurabl
 
 @[to_additive (attr := measurability)]
 theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
-    AEMeasurable (fun a => ∏ i in s, f i a) μ := by
+    AEMeasurable (fun a => ∏ i ∈ s, f i a) μ := by
   simpa only [← Finset.prod_apply] using s.aemeasurable_prod' hf
 #align finset.ae_measurable_prod Finset.aemeasurable_prod
 #align finset.ae_measurable_sum Finset.aemeasurable_sum

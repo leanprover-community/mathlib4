@@ -182,10 +182,10 @@ theorem Filter.Tendsto.div {l : Filter α} {a b : G₀} (hf : Tendsto f l (𝓝 
 theorem Filter.tendsto_mul_iff_of_ne_zero [T1Space G₀] {f g : α → G₀} {l : Filter α} {x y : G₀}
     (hg : Tendsto g l (𝓝 y)) (hy : y ≠ 0) :
     Tendsto (fun n => f n * g n) l (𝓝 <| x * y) ↔ Tendsto f l (𝓝 x) := by
-  refine' ⟨fun hfg => _, fun hf => hf.mul hg⟩
-  rw [← mul_div_cancel x hy]
-  refine' Tendsto.congr' _ (hfg.div hg hy)
-  exact (hg.eventually_ne hy).mono fun n hn => mul_div_cancel _ hn
+  refine ⟨fun hfg => ?_, fun hf => hf.mul hg⟩
+  rw [← mul_div_cancel_right₀ x hy]
+  refine Tendsto.congr' ?_ (hfg.div hg hy)
+  exact (hg.eventually_ne hy).mono fun n hn => mul_div_cancel_right₀ _ hn
 #align filter.tendsto_mul_iff_of_ne_zero Filter.tendsto_mul_iff_of_ne_zero
 
 variable [TopologicalSpace α] [TopologicalSpace β] {s : Set α} {a : α}

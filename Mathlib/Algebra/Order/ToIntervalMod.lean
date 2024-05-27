@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Algebra.ModEq
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Periodic
 import Mathlib.Data.Int.SuccPred
@@ -170,20 +170,20 @@ theorem toIocDiv_zsmul_sub_toIocMod (a b : α) : toIocDiv hp a b • p + toIocMo
 #align to_Ioc_div_zsmul_sub_to_Ioc_mod toIocDiv_zsmul_sub_toIocMod
 
 theorem toIcoMod_eq_iff : toIcoMod hp a b = c ↔ c ∈ Set.Ico a (a + p) ∧ ∃ z : ℤ, b = c + z • p := by
-  refine'
+  refine
     ⟨fun h =>
       ⟨h ▸ toIcoMod_mem_Ico hp a b, toIcoDiv hp a b, h ▸ (toIcoMod_add_toIcoDiv_zsmul _ _ _).symm⟩,
-      _⟩
+      ?_⟩
   simp_rw [← @sub_eq_iff_eq_add]
   rintro ⟨hc, n, rfl⟩
   rw [← toIcoDiv_eq_of_sub_zsmul_mem_Ico hp hc, toIcoMod]
 #align to_Ico_mod_eq_iff toIcoMod_eq_iff
 
 theorem toIocMod_eq_iff : toIocMod hp a b = c ↔ c ∈ Set.Ioc a (a + p) ∧ ∃ z : ℤ, b = c + z • p := by
-  refine'
+  refine
     ⟨fun h =>
       ⟨h ▸ toIocMod_mem_Ioc hp a b, toIocDiv hp a b, h ▸ (toIocMod_add_toIocDiv_zsmul hp _ _).symm⟩,
-      _⟩
+      ?_⟩
   simp_rw [← @sub_eq_iff_eq_add]
   rintro ⟨hc, n, rfl⟩
   rw [← toIocDiv_eq_of_sub_zsmul_mem_Ioc hp hc, toIocMod]
@@ -238,7 +238,7 @@ theorem toIcoDiv_add_zsmul (a b : α) (m : ℤ) : toIcoDiv hp a (b + m • p) = 
 @[simp]
 theorem toIcoDiv_add_zsmul' (a b : α) (m : ℤ) :
     toIcoDiv hp (a + m • p) b = toIcoDiv hp a b - m := by
-  refine' toIcoDiv_eq_of_sub_zsmul_mem_Ico _ _
+  refine toIcoDiv_eq_of_sub_zsmul_mem_Ico _ ?_
   rw [sub_smul, ← sub_add, add_right_comm]
   simpa using sub_toIcoDiv_zsmul_mem_Ico hp a b
 #align to_Ico_div_add_zsmul' toIcoDiv_add_zsmul'
@@ -252,7 +252,7 @@ theorem toIocDiv_add_zsmul (a b : α) (m : ℤ) : toIocDiv hp a (b + m • p) = 
 @[simp]
 theorem toIocDiv_add_zsmul' (a b : α) (m : ℤ) :
     toIocDiv hp (a + m • p) b = toIocDiv hp a b - m := by
-  refine' toIocDiv_eq_of_sub_zsmul_mem_Ioc _ _
+  refine toIocDiv_eq_of_sub_zsmul_mem_Ioc _ ?_
   rw [sub_smul, ← sub_add, add_right_comm]
   simpa using sub_toIocDiv_zsmul_mem_Ioc hp a b
 #align to_Ioc_div_add_zsmul' toIocDiv_add_zsmul'
@@ -383,7 +383,7 @@ theorem toIcoDiv_neg (a b : α) : toIcoDiv hp a (-b) = -(toIocDiv hp (-a) b + 1)
   obtain ⟨hc, ho⟩ := sub_toIcoDiv_zsmul_mem_Ico hp a (-b)
   rw [← neg_lt_neg_iff, neg_sub' (-b), neg_neg, ← neg_smul] at ho
   rw [← neg_le_neg_iff, neg_sub' (-b), neg_neg, ← neg_smul] at hc
-  refine' ⟨ho, hc.trans_eq _⟩
+  refine ⟨ho, hc.trans_eq ?_⟩
   rw [neg_add, neg_add_cancel_right]
 #align to_Ico_div_neg toIcoDiv_neg
 
@@ -392,7 +392,7 @@ theorem toIcoDiv_neg' (a b : α) : toIcoDiv hp (-a) b = -(toIocDiv hp a (-b) + 1
 #align to_Ico_div_neg' toIcoDiv_neg'
 
 theorem toIocDiv_neg (a b : α) : toIocDiv hp a (-b) = -(toIcoDiv hp (-a) b + 1) := by
-  rw [← neg_neg b, toIcoDiv_neg, neg_neg, neg_neg, neg_add', neg_neg, add_sub_cancel]
+  rw [← neg_neg b, toIcoDiv_neg, neg_neg, neg_neg, neg_add', neg_neg, add_sub_cancel_right]
 #align to_Ioc_div_neg toIocDiv_neg
 
 theorem toIocDiv_neg' (a b : α) : toIocDiv hp (-a) b = -(toIcoDiv hp a (-b) + 1) := by
@@ -562,7 +562,7 @@ theorem toIocMod_neg' (a b : α) : toIocMod hp (-a) b = p - toIcoMod hp a (-b) :
 #align to_Ioc_mod_neg' toIocMod_neg'
 
 theorem toIcoMod_eq_toIcoMod : toIcoMod hp a b = toIcoMod hp a c ↔ ∃ n : ℤ, c - b = n • p := by
-  refine' ⟨fun h => ⟨toIcoDiv hp a c - toIcoDiv hp a b, _⟩, fun h => _⟩
+  refine ⟨fun h => ⟨toIcoDiv hp a c - toIcoDiv hp a b, ?_⟩, fun h => ?_⟩
   · conv_lhs => rw [← toIcoMod_add_toIcoDiv_zsmul hp a b, ← toIcoMod_add_toIcoDiv_zsmul hp a c]
     rw [h, sub_smul]
     abel
@@ -572,7 +572,7 @@ theorem toIcoMod_eq_toIcoMod : toIcoMod hp a b = toIcoMod hp a c ↔ ∃ n : ℤ
 #align to_Ico_mod_eq_to_Ico_mod toIcoMod_eq_toIcoMod
 
 theorem toIocMod_eq_toIocMod : toIocMod hp a b = toIocMod hp a c ↔ ∃ n : ℤ, c - b = n • p := by
-  refine' ⟨fun h => ⟨toIocDiv hp a c - toIocDiv hp a b, _⟩, fun h => _⟩
+  refine ⟨fun h => ⟨toIocDiv hp a c - toIocDiv hp a b, ?_⟩, fun h => ?_⟩
   · conv_lhs => rw [← toIocMod_add_toIocDiv_zsmul hp a b, ← toIocMod_add_toIocDiv_zsmul hp a c]
     rw [h, sub_smul]
     abel
@@ -596,7 +596,7 @@ theorem modEq_iff_toIcoMod_eq_left : a ≡ b [PMOD p] ↔ toIcoMod hp a b = a :=
 #align add_comm_group.modeq_iff_to_Ico_mod_eq_left AddCommGroup.modEq_iff_toIcoMod_eq_left
 
 theorem modEq_iff_toIocMod_eq_right : a ≡ b [PMOD p] ↔ toIocMod hp a b = a + p := by
-  refine' modEq_iff_eq_add_zsmul.trans ⟨_, fun h => ⟨toIocDiv hp a b + 1, _⟩⟩
+  refine modEq_iff_eq_add_zsmul.trans ⟨?_, fun h => ⟨toIocDiv hp a b + 1, ?_⟩⟩
   · rintro ⟨z, rfl⟩
     rw [toIocMod_add_zsmul, toIocMod_apply_left]
   · rwa [add_one_zsmul, add_left_comm, ← sub_eq_iff_eq_add']
@@ -894,7 +894,7 @@ private theorem toIxxMod_total' (a b c : α) :
   replace := min_le_of_add_le_two_nsmul this.le
   rw [min_le_iff] at this
   rw [toIxxMod_iff, toIxxMod_iff]
-  refine' this.imp (le_trans <| add_le_add_left _ _) (le_trans <| add_le_add_left _ _)
+  refine this.imp (le_trans <| add_le_add_left ?_ _) (le_trans <| add_le_add_left ?_ _)
   · apply toIcoMod_le_toIocMod
   · apply toIcoMod_le_toIocMod
 
@@ -992,17 +992,17 @@ section LinearOrderedField
 variable {α : Type*} [LinearOrderedField α] [FloorRing α] {p : α} (hp : 0 < p)
 
 theorem toIcoDiv_eq_floor (a b : α) : toIcoDiv hp a b = ⌊(b - a) / p⌋ := by
-  refine' toIcoDiv_eq_of_sub_zsmul_mem_Ico hp _
+  refine toIcoDiv_eq_of_sub_zsmul_mem_Ico hp ?_
   rw [Set.mem_Ico, zsmul_eq_mul, ← sub_nonneg, add_comm, sub_right_comm, ← sub_lt_iff_lt_add,
     sub_right_comm _ _ a]
   exact ⟨Int.sub_floor_div_mul_nonneg _ hp, Int.sub_floor_div_mul_lt _ hp⟩
 #align to_Ico_div_eq_floor toIcoDiv_eq_floor
 
 theorem toIocDiv_eq_neg_floor (a b : α) : toIocDiv hp a b = -⌊(a + p - b) / p⌋ := by
-  refine' toIocDiv_eq_of_sub_zsmul_mem_Ioc hp _
+  refine toIocDiv_eq_of_sub_zsmul_mem_Ioc hp ?_
   rw [Set.mem_Ioc, zsmul_eq_mul, Int.cast_neg, neg_mul, sub_neg_eq_add, ← sub_nonneg,
     sub_add_eq_sub_sub]
-  refine' ⟨_, Int.sub_floor_div_mul_nonneg _ hp⟩
+  refine ⟨?_, Int.sub_floor_div_mul_nonneg _ hp⟩
   rw [← add_lt_add_iff_right p, add_assoc, add_comm b, ← sub_lt_iff_lt_add, add_comm (_ * _), ←
     sub_lt_iff_lt_add]
   exact Int.sub_floor_div_mul_lt _ hp
@@ -1048,17 +1048,17 @@ section LinearOrderedAddCommGroup
 variable {α : Type*} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α} (hp : 0 < p) (a : α)
 
 theorem iUnion_Ioc_add_zsmul : ⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • p) = univ := by
-  refine' eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr _
+  refine eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr ?_
   rcases sub_toIocDiv_zsmul_mem_Ioc hp a b with ⟨hl, hr⟩
-  refine' ⟨toIocDiv hp a b, ⟨lt_sub_iff_add_lt.mp hl, _⟩⟩
+  refine ⟨toIocDiv hp a b, ⟨lt_sub_iff_add_lt.mp hl, ?_⟩⟩
   rw [add_smul, one_smul, ← add_assoc]
   convert sub_le_iff_le_add.mp hr using 1; abel
 #align Union_Ioc_add_zsmul iUnion_Ioc_add_zsmul
 
 theorem iUnion_Ico_add_zsmul : ⋃ n : ℤ, Ico (a + n • p) (a + (n + 1) • p) = univ := by
-  refine' eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr _
+  refine eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr ?_
   rcases sub_toIcoDiv_zsmul_mem_Ico hp a b with ⟨hl, hr⟩
-  refine' ⟨toIcoDiv hp a b, ⟨le_sub_iff_add_le.mp hl, _⟩⟩
+  refine ⟨toIcoDiv hp a b, ⟨le_sub_iff_add_le.mp hl, ?_⟩⟩
   rw [add_smul, one_smul, ← add_assoc]
   convert sub_lt_iff_lt_add.mp hr using 1; abel
 #align Union_Ico_add_zsmul iUnion_Ico_add_zsmul
@@ -1086,34 +1086,34 @@ section LinearOrderedRing
 
 variable {α : Type*} [LinearOrderedRing α] [Archimedean α] (a : α)
 
-theorem iUnion_Ioc_add_int_cast : ⋃ n : ℤ, Ioc (a + n) (a + n + 1) = Set.univ := by
+theorem iUnion_Ioc_add_intCast : ⋃ n : ℤ, Ioc (a + n) (a + n + 1) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Ioc_add_zsmul zero_lt_one a
-#align Union_Ioc_add_int_cast iUnion_Ioc_add_int_cast
+#align Union_Ioc_add_int_cast iUnion_Ioc_add_intCast
 
-theorem iUnion_Ico_add_int_cast : ⋃ n : ℤ, Ico (a + n) (a + n + 1) = Set.univ := by
+theorem iUnion_Ico_add_intCast : ⋃ n : ℤ, Ico (a + n) (a + n + 1) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Ico_add_zsmul zero_lt_one a
-#align Union_Ico_add_int_cast iUnion_Ico_add_int_cast
+#align Union_Ico_add_int_cast iUnion_Ico_add_intCast
 
-theorem iUnion_Icc_add_int_cast : ⋃ n : ℤ, Icc (a + n) (a + n + 1) = Set.univ := by
+theorem iUnion_Icc_add_intCast : ⋃ n : ℤ, Icc (a + n) (a + n + 1) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Icc_add_zsmul zero_lt_one a
-#align Union_Icc_add_int_cast iUnion_Icc_add_int_cast
+#align Union_Icc_add_int_cast iUnion_Icc_add_intCast
 
 variable (α)
 
-theorem iUnion_Ioc_int_cast : ⋃ n : ℤ, Ioc (n : α) (n + 1) = Set.univ := by
-  simpa only [zero_add] using iUnion_Ioc_add_int_cast (0 : α)
-#align Union_Ioc_int_cast iUnion_Ioc_int_cast
+theorem iUnion_Ioc_intCast : ⋃ n : ℤ, Ioc (n : α) (n + 1) = Set.univ := by
+  simpa only [zero_add] using iUnion_Ioc_add_intCast (0 : α)
+#align Union_Ioc_int_cast iUnion_Ioc_intCast
 
-theorem iUnion_Ico_int_cast : ⋃ n : ℤ, Ico (n : α) (n + 1) = Set.univ := by
-  simpa only [zero_add] using iUnion_Ico_add_int_cast (0 : α)
-#align Union_Ico_int_cast iUnion_Ico_int_cast
+theorem iUnion_Ico_intCast : ⋃ n : ℤ, Ico (n : α) (n + 1) = Set.univ := by
+  simpa only [zero_add] using iUnion_Ico_add_intCast (0 : α)
+#align Union_Ico_int_cast iUnion_Ico_intCast
 
-theorem iUnion_Icc_int_cast : ⋃ n : ℤ, Icc (n : α) (n + 1) = Set.univ := by
-  simpa only [zero_add] using iUnion_Icc_add_int_cast (0 : α)
-#align Union_Icc_int_cast iUnion_Icc_int_cast
+theorem iUnion_Icc_intCast : ⋃ n : ℤ, Icc (n : α) (n + 1) = Set.univ := by
+  simpa only [zero_add] using iUnion_Icc_add_intCast (0 : α)
+#align Union_Icc_int_cast iUnion_Icc_intCast
 
 end LinearOrderedRing
 

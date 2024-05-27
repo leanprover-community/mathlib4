@@ -92,8 +92,8 @@ theorem cond_isProbabilityMeasure_of_finite (hcs : μ s ≠ 0) (hs : μ s ≠ �
     IsProbabilityMeasure μ[|s] :=
   ⟨by
     unfold ProbabilityTheory.cond
-    simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
-      MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, smul_eq_mul]
+    simp only [Measure.coe_smul, Pi.smul_apply, MeasurableSet.univ, Measure.restrict_apply,
+      Set.univ_inter, smul_eq_mul]
     exact ENNReal.inv_mul_cancel hcs hs⟩
 
 /-- The conditional probability measure of any finite measure on any set of positive measure
@@ -104,9 +104,8 @@ theorem cond_isProbabilityMeasure [IsFiniteMeasure μ] (hcs : μ s ≠ 0) :
 
 instance cond_isFiniteMeasure : IsFiniteMeasure μ[|s] := by
   constructor
-  simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, MeasurableSet.univ,
-    Measure.restrict_apply, Set.univ_inter, smul_eq_mul, ProbabilityTheory.cond,
-    ← ENNReal.div_eq_inv_mul]
+  simp only [Measure.coe_smul, Pi.smul_apply, MeasurableSet.univ, Measure.restrict_apply,
+    Set.univ_inter, smul_eq_mul, ProbabilityTheory.cond, ← ENNReal.div_eq_inv_mul]
   exact ENNReal.div_self_le_one.trans_lt ENNReal.one_lt_top
 
 theorem cond_toMeasurable_eq :
@@ -119,6 +118,12 @@ theorem cond_toMeasurable_eq :
 variable {μ} in
 lemma cond_absolutelyContinuous : μ[|s] ≪ μ :=
   smul_absolutelyContinuous.trans restrict_le_self.absolutelyContinuous
+
+variable {μ} in
+lemma absolutelyContinuous_cond_univ [IsFiniteMeasure μ] : μ ≪ μ[|univ] := by
+  rw [cond, restrict_univ]
+  refine absolutelyContinuous_smul ?_
+  simp [measure_ne_top]
 
 section Bayes
 
@@ -157,7 +162,7 @@ theorem inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t|s] ≠ 0)
 theorem cond_pos_of_inter_ne_zero [IsFiniteMeasure μ]
     (hms : MeasurableSet s) (hci : μ (s ∩ t) ≠ 0) : 0 < μ[|s] t := by
   rw [cond_apply _ hms]
-  refine' ENNReal.mul_pos _ hci
+  refine ENNReal.mul_pos ?_ hci
   exact ENNReal.inv_ne_zero.mpr (measure_ne_top _ _)
 #align probability_theory.cond_pos_of_inter_ne_zero ProbabilityTheory.cond_pos_of_inter_ne_zero
 
@@ -166,13 +171,12 @@ lemma cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t) (
   ext u
   rw [cond_apply _ hmt, cond_apply _ hms, cond_apply _ hms, cond_apply _ (hms.inter hmt)]
   obtain hst | hst := eq_or_ne (μ (s ∩ t)) 0
-  · have : μ (s ∩ t ∩ u) = 0 :=
-      le_antisymm (le_trans (measure_mono (Set.inter_subset_left _ _)) hst.le) bot_le
+  · have : μ (s ∩ t ∩ u) = 0 := measure_mono_null (Set.inter_subset_left _ _) hst
     simp [this, ← Set.inter_assoc]
   · have hcs' : μ s ≠ 0 :=
-      (μ.toOuterMeasure.pos_of_subset_ne_zero (Set.inter_subset_left _ _) hst).ne'
-    simp [*, hms.inter hmt, cond_apply, ← mul_assoc, ← Set.inter_assoc, ENNReal.mul_inv, mul_comm, ←
-      mul_assoc, ENNReal.mul_inv_cancel]
+      (measure_pos_of_superset (Set.inter_subset_left _ _) hst).ne'
+    simp [*, ← mul_assoc, ← Set.inter_assoc, ENNReal.mul_inv, ENNReal.mul_inv_cancel,
+      mul_right_comm _ _ (μ s)⁻¹]
 #align probability_theory.cond_cond_eq_cond_inter' ProbabilityTheory.cond_cond_eq_cond_inter'
 
 /-- Conditioning first on `s` and then on `t` results in the same measure as conditioning
@@ -234,8 +238,8 @@ lemma sum_meas_smul_cond_fiber {X : Ω → α} (hX : Measurable X) (μ : Measure
   ext E hE
   calc
     _ = ∑ x, μ (X ⁻¹' {x} ∩ E) := by
-      simp only [Measure.coe_finset_sum, smul_toOuterMeasure, OuterMeasure.coe_smul,
-        Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
+      simp only [Measure.coe_finset_sum, Measure.coe_smul, Finset.sum_apply,
+        Pi.smul_apply, smul_eq_mul]
       simp_rw [mul_comm (μ _), cond_mul_eq_inter _ (hX (.singleton _))]
     _ = _ := by
       have : ⋃ x ∈ Finset.univ, X ⁻¹' {x} ∩ E = E := by simp; ext _; simp

@@ -53,12 +53,12 @@ theorem isQuadratic_χ₄ : χ₄.IsQuadratic := by
 #align zmod.is_quadratic_χ₄ ZMod.isQuadratic_χ₄
 
 /-- The value of `χ₄ n`, for `n : ℕ`, depends only on `n % 4`. -/
-theorem χ₄_nat_mod_four (n : ℕ) : χ₄ n = χ₄ (n % 4 : ℕ) := by rw [← ZMod.nat_cast_mod n 4]
+theorem χ₄_nat_mod_four (n : ℕ) : χ₄ n = χ₄ (n % 4 : ℕ) := by rw [← ZMod.natCast_mod n 4]
 #align zmod.χ₄_nat_mod_four ZMod.χ₄_nat_mod_four
 
 /-- The value of `χ₄ n`, for `n : ℤ`, depends only on `n % 4`. -/
 theorem χ₄_int_mod_four (n : ℤ) : χ₄ n = χ₄ (n % 4 : ℤ) := by
-  rw [← ZMod.int_cast_mod n 4]
+  rw [← ZMod.intCast_mod n 4]
   norm_cast
 #align zmod.χ₄_int_mod_four ZMod.χ₄_int_mod_four
 
@@ -67,7 +67,7 @@ theorem χ₄_int_eq_if_mod_four (n : ℤ) :
     χ₄ n = if n % 2 = 0 then 0 else if n % 4 = 1 then 1 else -1 := by
   have help : ∀ m : ℤ, 0 ≤ m → m < 4 → χ₄ m = if m % 2 = 0 then 0 else if m = 1 then 1 else -1 := by
     decide
-  rw [← Int.emod_emod_of_dvd n (by decide : (2 : ℤ) ∣ 4), ← ZMod.int_cast_mod n 4]
+  rw [← Int.emod_emod_of_dvd n (by decide : (2 : ℤ) ∣ 4), ← ZMod.intCast_mod n 4]
   exact help (n % 4) (Int.emod_nonneg n (by norm_num)) (Int.emod_lt n (by norm_num))
 #align zmod.χ₄_int_eq_if_mod_four ZMod.χ₄_int_eq_if_mod_four
 
@@ -117,14 +117,14 @@ theorem χ₄_int_three_mod_four {n : ℤ} (hn : n % 4 = 3) : χ₄ n = -1 := by
 
 /-- If `n % 4 = 1`, then `(-1)^(n/2) = 1`. -/
 theorem neg_one_pow_div_two_of_one_mod_four {n : ℕ} (hn : n % 4 = 1) : (-1 : ℤ) ^ (n / 2) = 1 := by
-  rw [← χ₄_eq_neg_one_pow (Nat.odd_of_mod_four_eq_one hn), ← nat_cast_mod, hn]
+  rw [← χ₄_eq_neg_one_pow (Nat.odd_of_mod_four_eq_one hn), ← natCast_mod, hn]
   rfl
 #align zmod.neg_one_pow_div_two_of_one_mod_four ZMod.neg_one_pow_div_two_of_one_mod_four
 
 /-- If `n % 4 = 3`, then `(-1)^(n/2) = -1`. -/
 theorem neg_one_pow_div_two_of_three_mod_four {n : ℕ} (hn : n % 4 = 3) :
     (-1 : ℤ) ^ (n / 2) = -1 := by
-  rw [← χ₄_eq_neg_one_pow (Nat.odd_of_mod_four_eq_three hn), ← nat_cast_mod, hn]
+  rw [← χ₄_eq_neg_one_pow (Nat.odd_of_mod_four_eq_three hn), ← natCast_mod, hn]
   rfl
 #align zmod.neg_one_pow_div_two_of_three_mod_four ZMod.neg_one_pow_div_two_of_three_mod_four
 
@@ -147,12 +147,12 @@ theorem isQuadratic_χ₈ : χ₈.IsQuadratic := by
 #align zmod.is_quadratic_χ₈ ZMod.isQuadratic_χ₈
 
 /-- The value of `χ₈ n`, for `n : ℕ`, depends only on `n % 8`. -/
-theorem χ₈_nat_mod_eight (n : ℕ) : χ₈ n = χ₈ (n % 8 : ℕ) := by rw [← ZMod.nat_cast_mod n 8]
+theorem χ₈_nat_mod_eight (n : ℕ) : χ₈ n = χ₈ (n % 8 : ℕ) := by rw [← ZMod.natCast_mod n 8]
 #align zmod.χ₈_nat_mod_eight ZMod.χ₈_nat_mod_eight
 
 /-- The value of `χ₈ n`, for `n : ℤ`, depends only on `n % 8`. -/
 theorem χ₈_int_mod_eight (n : ℤ) : χ₈ n = χ₈ (n % 8 : ℤ) := by
-  rw [← ZMod.int_cast_mod n 8]
+  rw [← ZMod.intCast_mod n 8]
   norm_cast
 #align zmod.χ₈_int_mod_eight ZMod.χ₈_int_mod_eight
 
@@ -162,7 +162,7 @@ theorem χ₈_int_eq_if_mod_eight (n : ℤ) :
   have help :
     ∀ m : ℤ, 0 ≤ m → m < 8 → χ₈ m = if m % 2 = 0 then 0 else if m = 1 ∨ m = 7 then 1 else -1 := by
     decide
-  rw [← Int.emod_emod_of_dvd n (by decide : (2 : ℤ) ∣ 8), ← ZMod.int_cast_mod n 8]
+  rw [← Int.emod_emod_of_dvd n (by decide : (2 : ℤ) ∣ 8), ← ZMod.intCast_mod n 8]
   exact help (n % 8) (Int.emod_nonneg n (by norm_num)) (Int.emod_lt n (by norm_num))
 #align zmod.χ₈_int_eq_if_mod_eight ZMod.χ₈_int_eq_if_mod_eight
 
@@ -195,7 +195,7 @@ theorem χ₈'_int_eq_if_mod_eight (n : ℤ) :
   have help :
     ∀ m : ℤ, 0 ≤ m → m < 8 → χ₈' m = if m % 2 = 0 then 0 else if m = 1 ∨ m = 3 then 1 else -1 := by
     decide
-  rw [← Int.emod_emod_of_dvd n (by decide : (2 : ℤ) ∣ 8), ← ZMod.int_cast_mod n 8]
+  rw [← Int.emod_emod_of_dvd n (by decide : (2 : ℤ) ∣ 8), ← ZMod.intCast_mod n 8]
   exact help (n % 8) (Int.emod_nonneg n (by norm_num)) (Int.emod_lt n (by norm_num))
 #align zmod.χ₈'_int_eq_if_mod_eight ZMod.χ₈'_int_eq_if_mod_eight
 
@@ -212,7 +212,7 @@ theorem χ₈'_eq_χ₄_mul_χ₈ (a : ZMod 8) : χ₈' a = χ₄ (cast a) * χ�
 #align zmod.χ₈'_eq_χ₄_mul_χ₈ ZMod.χ₈'_eq_χ₄_mul_χ₈
 
 theorem χ₈'_int_eq_χ₄_mul_χ₈ (a : ℤ) : χ₈' a = χ₄ a * χ₈ a := by
-  rw [← @cast_int_cast 8 (ZMod 4) _ 4 _ (by decide) a]
+  rw [← @cast_intCast 8 (ZMod 4) _ 4 _ (by decide) a]
   exact χ₈'_eq_χ₄_mul_χ₈ a
 #align zmod.χ₈'_int_eq_χ₄_mul_χ₈ ZMod.χ₈'_int_eq_χ₄_mul_χ₈
 
