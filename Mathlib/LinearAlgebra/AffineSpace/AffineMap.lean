@@ -778,9 +778,10 @@ section Pi
 
 variable {ι : Type*} {φv φp : ι → Type*} [(i : ι) → AddCommGroup (φv i)]
   [(i : ι) → Module k (φv i)] [(i : ι) → AffineSpace (φv i) (φp i)]
+/-- `pi` construction for affine functions. From a family of affine functions it produces a affine
+function into a family of affine spaces.
 
-/-- The dependently-typed version of `AffineMap.pi`, where the module `V1 := φv i` and the
- AffineSpace `P2 := φp i` can depend on the index `i : ι`.
+This is the affine version of `LinearMap.pi`.
 -/
 def pi (f : (i : ι) → (P1 →ᵃ[k] φp i)) : P1 →ᵃ[k] ((i : ι) → φp i) where
   toFun m a := f a m
