@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
-import Lean.Elab.Command
 import Batteries.Data.String.Basic
+import Cli.Basic
 import Mathlib.Init.Data.Nat.Notation
 
 /-!
@@ -165,3 +165,21 @@ def lint_all_files (path : System.FilePath) : IO Unit := do
 def lint_all : IO Unit := do
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
     lint_all_files (System.mkFilePath [s])
+
+
+/-- Implementation of the `lint_style` command line program. -/
+def lintStyleCli (_args : Cli.Parsed) : IO UInt32 := do
+  for s in #["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
+    lint_all_files (System.mkFilePath [s])
+  return 0
+
+open Cli in
+/-- Setting up command line options and help text for `lake exe lint_style`. -/
+-- so far, no help options or so: perhaps that is fine?
+def lint_style : Cmd := `[Cli|
+  lint_style VIA lintStyleCli; ["0.0.1"]
+  "Run text-based style linters on Mathlib and the Archive and Counterexamples directories."
+]
+
+/-- The entry point to the `lake exe lint_style` command. -/
+def main (args : List String) : IO UInt32 := lint_style.validate args
