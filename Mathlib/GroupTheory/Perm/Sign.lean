@@ -115,7 +115,7 @@ theorem swap_induction_on [Finite α] {P : Perm α → Prop} (f : Perm α) :
 
 theorem mclosure_isSwap [Finite α] : Submonoid.closure { σ : Perm α | IsSwap σ } = ⊤ := by
   cases nonempty_fintype α
-  refine eq_top_iff.mpr fun x _ => ?_
+  refine top_unique fun x _ ↦ ?_
   obtain ⟨h1, h2⟩ := Subtype.mem (truncSwapFactors x).out
   rw [← h1]
   exact Submonoid.list_prod_mem _ fun y hy ↦ Submonoid.subset_closure (h2 y hy)
