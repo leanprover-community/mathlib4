@@ -17,9 +17,11 @@ import Mathlib.GroupTheory.Index
 Let the group $G$ be the union of finitely many, let us say $n$, left cosets
 of subgroups $C₁$, $C₂$, ..., $Cₙ$: $$ G = ⋃_{i = 1}^n C_i g_i. $$
 
-* `GroupTheory.BHNeumann` : the sum of the inverse of the indexes of the $C_i$ is greater than or equal to $1$.
+* `Subgroup.one_le_sum_inv_index_of_leftCoset_cover` :
+  the sum of the inverse of the indexes of the $C_i$ is greater than or equal to $1$.
 
-* `GroupTheory.BHNeumann'` : the index of (at least) one of these subgroups does not exceed $n$.
+* `Subgroup.exists_index_le_card_of_leftCoset_cover` :
+  the index of (at least) one of these subgroups does not exceed $n$.
 
 [1] [Neumann-1954], *Groups Covered By Permutable Subsets*, Lemma 4.1
 [2] <https://mathoverflow.net/a/17398/3332>
@@ -30,34 +32,7 @@ determined by the set of all minimal polynomials.
 
 -/
 
-open scoped Pointwise
-
-section Mathlib.GroupTheory.Index
-
-variable {G : Type*} [Group G]
-
-/-/
-theorem Fintype.finiteIndex_iInf {ι : Type*} [Fintype ι]
-    (a : ι → Subgroup G) (ha : ∀ i, (a i).FiniteIndex) :
-    (⨅ i, a i).FiniteIndex :=
-  ⟨Subgroup.index_iInf_ne_zero fun i => (ha i).finiteIndex⟩
-
-theorem Finset.finiteIndex_iInf {ι : Type*}
-    {s : Finset ι} (f : ι → Subgroup G) (hs : ∀ i ∈ s, (f i).FiniteIndex) :
-      (⨅ i ∈ s, f i).FiniteIndex := by
-  rw [iInf_subtype']
-  exact Fintype.finiteIndex_iInf _ fun ⟨i, hi⟩ => hs i hi
--/
-
-/-
-instance Subgroup.instFiniteIndex_subgroupOf (H K : Subgroup G) [H.FiniteIndex] :
-    (H.subgroupOf K).FiniteIndex :=
-  ⟨fun h => H.index_ne_zero_of_finite <| H.index_eq_zero_of_relindex_eq_zero h⟩
--/
-
-end Mathlib.GroupTheory.Index
-
-open scoped Pointwise
+open scoped Pointwise BigOperators
 
 section leftCoset_cover_const
 
@@ -107,6 +82,31 @@ theorem Subgroup.finiteIndex_of_leftCoset_cover_const {ι : Type*} [Fintype ι]
   classical
   refine Subgroup.leftCoset_cover_const_iff_FiniteIndex.mp ⟨Finset.univ.image g, ?_⟩
   simpa [Set.iUnion_subtype] using h
+
+theorem Subgroup.index_le_of_leftCoset_cover_const {ι : Type*}
+    (H : Subgroup G) (g : ι → G) (s : Finset ι)
+    (hcovers : ⋃ i ∈ s, (g i) • (H : Set G) = Set.univ) :
+    H.index ≤ s.card := by
+  cases H.index.eq_zero_or_pos with
+  | inl h => exact h ▸ Nat.zero_le s.card
+  | inr h =>
+    classical
+    have : Fintype (G ⧸ H) :=
+      have : Finite (G ⧸ H) := And.right <| by
+        rwa [← Nat.card_pos_iff, ← Subgroup.index]
+      Fintype.ofFinite _
+    have hsurj : s.image (((↑) : G → G ⧸ H) ∘ g) = Finset.univ := by
+      rw [Finset.eq_univ_iff_forall]
+      intro x
+      induction' x using QuotientGroup.induction_on with x
+      have : ∃ i ∈ s, x ∈ (g i) • (H : Set G) := by
+        simpa [← hcovers, Set.mem_iUnion, exists_prop] using Set.mem_univ x
+      obtain ⟨i, hi, ⟨h, hmem, rfl⟩⟩ := this
+      refine Finset.mem_image.mpr ⟨i, hi, ?_⟩
+      simpa only [Function.comp_apply, QuotientGroup.eq', smul_eq_mul, inv_mul_cancel_left]
+        using hmem
+    refine le_of_eq_of_le ?_ (Finset.card_image_le (f := ((↑) : G → G ⧸ H) ∘ g))
+    rw [Subgroup.index, ← Fintype.card_eq_nat_card, ← Finset.card_univ, hsurj]
 
 end leftCoset_cover_const
 
@@ -209,22 +209,80 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover :
       Subgroup.exists_finiteIndex_of_leftCoset_cover_aux hcovers j hj hcovers'
     exact ⟨i, hi, hfi⟩
 
-/-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
-Then the cosets of subgroups of infinite index may be omitted from the covering. -/
-theorem Subgroup.leftCoset_cover_filter_FiniteIndex :
-    ⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ := by
+theorem Subgroup.extracted_1 {i} (hi : i ∈ s) (hfi : (H i).FiniteIndex) :
+    let D := ⨅ k ∈ s.filter (fun i => (H i).FiniteIndex), H k
+    ∃ t : Finset (H i),
+      (t : Set (H i)) ∈ Subgroup.leftTransversals (D.subgroupOf (H i)) ∧
+        ⋃ g ∈ t, (g : G) • (D : Set G) = H i := by
+  let D := ⨅ k ∈ s.filter (fun i => (H i).FiniteIndex), H k
+  have hD : D.FiniteIndex := by
+    apply Subgroup.finiteIndex_iInf'
+    simp only [Finset.mem_filter, and_imp, imp_self, implies_true]
+  have hD_le {i} (hi : i ∈ s) (hfi : (H i).FiniteIndex) : D ≤ H i :=
+    iInf₂_le i (Finset.mem_filter.mpr ⟨hi, hfi⟩)
+  choose t ht' using fun i => Subgroup.exists_left_transversal (D.subgroupOf (H i)) 1
+  have hf : Set.Finite (t i) := by
+    apply Nat.finite_of_card_ne_zero
+    rw [Subgroup.card_left_transversal (ht' i).1,
+      Subgroup.subgroupOf, Subgroup.index_comap, Subgroup.subtype_range]
+    refine fun h => hD.finiteIndex ?_
+    rw [← Subgroup.relindex_mul_index (hD_le hi hfi), h, zero_mul]
+  refine ⟨hf.toFinset, ?_, ?_⟩
+  · rw [Set.Finite.coe_toFinset]
+    exact (ht' i).1
+  · apply subset_antisymm
+    · intro x hx
+      obtain ⟨y, -, h⟩ := Set.mem_iUnion₂.mp hx
+      rw [mem_leftCoset_iff, SetLike.mem_coe] at h
+      rw [SetLike.mem_coe, ← mul_inv_cancel_left (y : G) x]
+      exact Subgroup.mul_mem _ (SetLike.coe_mem y) (hD_le hi hfi h)
+    · intro y hy
+      specialize ht' i
+      rw [Subgroup.mem_leftTransversals_iff_existsUnique_inv_mul_mem] at ht'
+      obtain ⟨r, hr, -⟩ := ht'.1 ⟨y, hy⟩
+      rw [SetLike.mem_coe, mem_subgroupOf, coe_mul, coe_inv, ← SetLike.mem_coe,
+        ← mem_leftCoset_iff] at hr
+      exact Set.mem_iUnion₂.mpr ⟨r.1, hf.mem_toFinset.mpr r.2, hr⟩
+
+theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux :
+    ⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ ∧
+    1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ := by
   classical
   let D := ⨅ k ∈ s.filter (fun i => (H i).FiniteIndex), H k
   -- `D`, as the finite intersection of subgroups of finite index, also has finite index.
   have hD : D.FiniteIndex := by
     apply Subgroup.finiteIndex_iInf'
     simp only [Finset.mem_filter, and_imp, imp_self, implies_true]
-  -- Each subgroup of finite index in the covering is the finite union of cosets of `D`.
-  have (i) (hi : i ∈ s) (hf : (H i).FiniteIndex) :
-      ∃ t : Finset G, ⋃ g ∈ t, g • (D : Set G) = H i :=
-    Subgroup.leftCoset_cover_const_of_le_of_FiniteIndex <| iInf₂_le _ <| by
-      rw [Finset.mem_filter]
-      exact ⟨hi, hf⟩
+  -- Each subgroup of finite index in the covering is union of finitely many of cosets of `D`.
+  have hD_le {i} (hi : i ∈ s) (hfi : (H i).FiniteIndex) : D ≤ H i :=
+    iInf₂_le i (Finset.mem_filter.mpr ⟨hi, hfi⟩)
+  have (i) (hi : i ∈ s) (hfi : (H i).FiniteIndex) :
+      ∃ t : Finset (H i),
+        (t : Set (H i)) ∈ Subgroup.leftTransversals (D.subgroupOf (H i)) ∧
+          ⋃ g ∈ t, (g : G) • (D : Set G) = H i := by
+    choose t ht' using fun i => Subgroup.exists_left_transversal (D.subgroupOf (H i)) 1
+    have hf : Set.Finite (t i) := by
+      apply Nat.finite_of_card_ne_zero
+      rw [Subgroup.card_left_transversal (ht' i).1,
+        Subgroup.subgroupOf, Subgroup.index_comap, Subgroup.subtype_range]
+      refine fun h => hD.finiteIndex ?_
+      rw [← Subgroup.relindex_mul_index (hD_le hi hfi), h, zero_mul]
+    refine ⟨hf.toFinset, ?_, ?_⟩
+    · rw [Set.Finite.coe_toFinset]
+      exact (ht' i).1
+    · apply subset_antisymm
+      · intro x hx
+        obtain ⟨y, -, h⟩ := Set.mem_iUnion₂.mp hx
+        rw [mem_leftCoset_iff, SetLike.mem_coe] at h
+        rw [SetLike.mem_coe, ← mul_inv_cancel_left (y : G) x]
+        exact Subgroup.mul_mem _ (SetLike.coe_mem y) (hD_le hi hfi h)
+      · intro y hy
+        specialize ht' i
+        rw [Subgroup.mem_leftTransversals_iff_existsUnique_inv_mul_mem] at ht'
+        obtain ⟨r, hr, -⟩ := ht'.1 ⟨y, hy⟩
+        rw [SetLike.mem_coe, mem_subgroupOf, coe_mul, coe_inv, ← SetLike.mem_coe,
+          ← mem_leftCoset_iff] at hr
+        exact Set.mem_iUnion₂.mpr ⟨r.1, hf.mem_toFinset.mpr r.2, hr⟩
   choose t ht using this
   -- We construct a cover of `G` by the cosets of subgroups of infinite index and of `D`.
   let κ := (i : s) × { x // x ∈ (if h : (H i.1).FiniteIndex then t i.1 i.2 h else {1}) }
@@ -238,8 +296,8 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex :
         refine Set.iUnion_congr fun i => ?_
     · by_cases hfi : (H i).FiniteIndex <;>
         simp [← Set.smul_set_iUnion₂, Set.iUnion_subtype, ← leftCoset_assoc, f, K, ht, hfi]
-    · by_cases hi : (H i).FiniteIndex <;>
-        simp [Set.iUnion_subtype, f, K, hi]
+    · by_cases hfi : (H i).FiniteIndex <;>
+        simp [Set.iUnion_subtype, f, K, hfi]
   -- There is at least one coset of a subgroup of finite index in the original covering.
   have ⟨j, hj, hjfi⟩ := Subgroup.exists_finiteIndex_of_leftCoset_cover hcovers
   -- Therefore a coset of `D` occurs in the new covering.
@@ -247,7 +305,7 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex :
     specialize ht j hj hjfi
     rw [hempty, ← Finset.set_biUnion_coe, Finset.coe_empty, Set.biUnion_empty, eq_comm,
       Set.eq_empty_iff_forall_not_mem] at ht
-    exact ht 1 <| SetLike.mem_coe.mpr (Subgroup.one_mem (H j))
+    exact ht.2 1 <| SetLike.mem_coe.mpr (Subgroup.one_mem (H j))
   let k : κ := ⟨⟨j, hj⟩, ⟨x, dif_pos hjfi ▸ hx⟩⟩
   -- Since `D` is the unique subgroup of finite index whose cosets occur in the new covering,
   -- the cosets of the other subgroups can be omitted.
@@ -260,132 +318,89 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex :
     split_ifs with h
     · exact fun habsurd => habsurd.2.1 rfl
     · exact fun habsurd => h habsurd.2.2
+  have hKD : K k = D := by simp [K, hjfi]
   -- The result follows by restoring the original cosets of subgroups of finite index
   -- from the cosets of `D` into which they have been decomposed.
   rw [← not_ne_iff.mp hcovers', Set.iUnion_sigma, Set.iUnion_subtype]
-  refine Set.iUnion_congr fun i => ?_
-  rw [Finset.mem_filter, Set.iUnion_and]
-  refine Set.iUnion_congr fun hi => ?_
-  have hD' : ¬(H i).FiniteIndex → H i ≠ D := fun h hD' => (hD' ▸ h) hD
-  by_cases hfi : (H i).FiniteIndex <;>
-    simp [Set.smul_set_iUnion₂, Set.iUnion_subtype, ← leftCoset_assoc,
-      f, K, hD', ← ht, hi, hfi, hj, hjfi]
+  refine ⟨Set.iUnion_congr fun i => ?_, ?_⟩
+  · rw [Finset.mem_filter, Set.iUnion_and]
+    refine Set.iUnion_congr fun hi => ?_
+    have hD' : ¬(H i).FiniteIndex → H i ≠ D := fun h hD' => (hD' ▸ h) hD
+    by_cases hfi : (H i).FiniteIndex <;>
+      simp [Set.smul_set_iUnion, Set.iUnion_subtype, ← leftCoset_assoc,
+        f, K, hD', ← fun i hi hfi => (ht i hi hfi).2, hi, hfi, hj, hjfi]
+  · trans ∑ i : κ, ((K i).index : ℚ)⁻¹
+    · rw [← Finset.sum_filter_add_sum_filter_not _ (fun i ↦ K i = K k)]
+      refine le_add_of_le_of_nonneg ?_ (Finset.sum_nonneg (fun i _ ↦ by simp))
+      apply le_of_mul_le_mul_left (a := (D.index : ℚ))
+      · trans ↑(Finset.filter (fun x ↦ K x = K k) Finset.univ).card
+        · have {i} : i ∈ Finset.univ.filter (fun x ↦ K x = K k) → K i = D := by
+            rw [Finset.mem_filter]
+            refine fun ⟨_, h⟩ => h.trans hKD
+          rw [mul_one, Nat.cast_le]
+          apply Subgroup.index_le_of_leftCoset_cover_const D f _
+          rwa [not_ne_iff, Set.iUnion₂_congr fun i hi => by rw [this hi]] at hcovers'
+        · rw [Finset.card_filter, Nat.cast_sum, Finset.sum_filter, Finset.mul_sum]
+          refine (Finset.sum_congr rfl fun ⟨i, hi⟩ _ => ?_).le
+          rw [mul_ite, Nat.cast_ite]
+          refine ite_congr rfl (fun h => ?_) ?_
+          · rw [← div_eq_mul_inv, h, hKD, Nat.cast_one,
+              div_self (Nat.cast_ne_zero.mpr hD.finiteIndex)]
+          · rintro -
+            rw [mul_zero, Nat.cast_zero]
+      · rw [Nat.cast_pos, Nat.pos_iff_ne_zero]
+        exact hD.finiteIndex
+    · apply le_of_eq
+      unfold_let κ
+      rw [show Finset.univ = Finset.univ.sigma (fun _ => Finset.univ) by rfl,
+        Finset.sum_sigma, ← s.sum_attach, Finset.sum_coe_sort_eq_attach]
+      refine Finset.sum_congr rfl fun ⟨i, hi⟩ _ => ?_
+      by_cases hfi : (H i).FiniteIndex
+      · suffices (t i hi hfi).card * (D.index : ℚ)⁻¹ = ((H i).index : ℚ)⁻¹ by
+          simpa [K, hfi, Finset.sum_const] using this
+        have hle : D ≤ H i := iInf₂_le i (Finset.mem_filter.mpr ⟨hi, hfi⟩)
+        have : Fintype (↥(H i) ⧸ D.subgroupOf (H i)) := by
+          exact (D.subgroupOf (H i)).fintypeQuotientOfFiniteIndex
+        rw [← div_eq_mul_inv, div_eq_iff (Nat.cast_ne_zero.mpr hD.finiteIndex), ← div_eq_inv_mul,
+          ← Subgroup.relindex_mul_index hle, Nat.cast_mul,
+          mul_div_cancel_right₀ _ (Nat.cast_ne_zero.mpr hfi.finiteIndex), Nat.cast_inj,
+          Subgroup.relindex, Subgroup.index_eq_card, ← Finset.card_univ]
+        rw [Finset.card_univ, ← Set.ncard_coe_Finset, ← Set.Nat.card_coe_set_eq,
+          Subgroup.card_left_transversal (ht i hi hfi).1, Subgroup.index_eq_card]
+      · simp [K, hfi]
 
-theorem BHNeumann_of_subgroup (H : Subgroup G) (g : ι → G)
-    (covers : ⋃ i ∈ s, (g i) • (H : Set G) = ⊤) :
-    H.index ≤ s.card := by
-  cases (H.index).eq_zero_or_pos with
-  | inl h => exact h ▸ Nat.zero_le s.card
-  | inr h =>
-    classical
-    haveI : Finite (G ⧸ H) := by
-      change 0 < Nat.card (G ⧸ H) at h
-      rw [Nat.card_pos_iff] at h
-      exact h.2
-    apply le_trans (le_of_eq _) (Finset.card_image_le (f := QuotientGroup.mk (s := H) ∘ g))
-    rw [Subgroup.index, ← Set.ncard_univ, ← Set.ncard_coe_Finset]
-    apply congr_arg
-    simp only [Finset.coe_image, Function.comp_apply]
-    refine Set.eq_of_subset_of_ncard_le ?_ ?_ (Set.toFinite _)
-    · intro x _
-      induction' x using QuotientGroup.induction_on with x
-      have : ∃ i ∈ s, x ∈ (g i) • (H : Set G) := by
-        simpa [← Set.top_eq_univ, ← covers, Set.mem_iUnion, exists_prop] using Set.mem_univ x
-      obtain ⟨i, hi, ⟨h, hmem, rfl⟩⟩ := this
-      use i, hi
-      simpa only [Function.comp_apply, QuotientGroup.eq', smul_eq_mul, inv_mul_cancel_left]
-        using hmem
-    · apply Set.ncard_mono
-      simp only [Set.le_eq_subset, Set.subset_univ]
+/-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
+Then the cosets of subgroups of infinite index may be omitted from the covering. -/
+theorem Subgroup.leftCoset_cover_filter_FiniteIndex :
+    ⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ :=
+  (Subgroup.leftCoset_cover_filter_FiniteIndex_aux hcovers).1
 
-/-- BH Neumann Lemma :
-  If a finite family of cosets of subgroup covers the group, then
-  the sum of the inverses of the indexes of these cosets is at least 1 -/
-theorem BHNeumann :
-    (1 : ℚ) ≤ s.sum (fun i ↦ ((H i).index : ℚ)⁻¹) := by
-  classical
-  have hcovers' := Subgroup.leftCoset_cover_filter_FiniteIndex hcovers
-  rw [← Finset.sum_filter_add_sum_filter_not s (p := fun i ↦ (H i).FiniteIndex)]
-  set s' := s.filter (fun i ↦ (H i).FiniteIndex)
-  apply le_add_of_le_of_nonneg ?_ (Finset.sum_nonneg (fun i _ ↦ by simp))
-  let K := ⨅ i ∈ s', (H i)
-  have hK : K.FiniteIndex := by
-    apply Subgroup.finiteIndex_iInf'
-    simp? [s']
-  have hK_le : ∀ i ∈  s', K ≤ H i := iInf₂_le
-  let S := fun i ↦ (Subgroup.exists_left_transversal (K.subgroupOf (H i)) 1).choose
-  have hS : ∀ i, S i ∈ Subgroup.leftTransversals (K.subgroupOf (H i)) :=
-    fun i ↦ (Subgroup.exists_left_transversal (K.subgroupOf (H i)) 1).choose_spec.1
-  have hSf : ∀ i (_ : i ∈ s'), (S i).Finite := fun i hi ↦ by
-    apply Nat.finite_of_card_ne_zero
-    rw [Subgroup.card_left_transversal (hS i),
-      Subgroup.subgroupOf, Subgroup.index_comap, Subgroup.subtype_range]
-    intro h
-    apply hK.finiteIndex
-    rw [← Subgroup.relindex_mul_index (hK_le i hi), h, zero_mul]
-  let κ := Σ (i : s'), (hSf i.val i.prop).toFinset
-  let f : κ → G := fun ⟨i, x⟩ ↦ g i * x
-  have hcovers'' : ⋃ i ∈ Finset.univ, (f i) • (K : Set G) = ⊤ := by
-    rw [eq_top_iff]
-    intro x
-    rw [Set.top_eq_univ, ← hcovers']
-    suffices ∀ x_1 ∈ Finset.filter (fun i ↦ (H i).FiniteIndex) s,
-        x ∈ g x_1 • (H x_1 : Set G) → ∃ i, x ∈ f i • (K : Set G) by
-      simpa only [Set.mem_iUnion, exists_prop, Finset.mem_univ, Set.iUnion_true,
-        forall_exists_index, and_imp] using this
-    intro i hi hx
-    rw [mem_leftCoset_iff] at hx
-    let z := Subgroup.MemLeftTransversals.toFun (hS i) ⟨_, hx⟩
-    use ⟨⟨i, hi⟩, ⟨z, by
-      simp only [Set.Finite.mem_toFinset, Subtype.coe_prop]⟩⟩
-    simpa [mul_smul, mem_leftCoset_iff, Set.mem_smul_set_iff_inv_smul_mem, f, z] using
-      Subgroup.MemLeftTransversals.inv_toFun_mul_mem (hS i) ⟨_, hx⟩
-
-  have := BHNeumann_of_subgroup K f hcovers''
-  simp only [Finset.card_univ, Set.Finite.mem_toFinset, Fintype.card_sigma, Finset.univ_eq_attach,
-    Fintype.card_coe, κ] at this
-  rw [← Nat.cast_le (α := ℚ), Nat.cast_sum] at this
-  rw [← Finset.sum_attach]
-  apply le_of_mul_le_mul_left (a := (K.index : ℚ))
-  rw [mul_one, Finset.mul_sum]
-  apply le_trans this
-  apply le_of_eq
-  apply Finset.sum_congr rfl
-  rintro ⟨i, hi⟩ _
-  rw [← div_eq_mul_inv, eq_div_iff ?_]
-  haveI : Finite (S i) := hSf i hi
-  simp only [← Nat.cast_mul, Nat.cast_inj]
-  rw [← Set.ncard_eq_toFinset_card (S i),
-    ← Subgroup.relindex_mul_index (hK_le i hi)]
-  apply congr_arg₂ _ _ rfl
-  · rw [← Set.Nat.card_coe_set_eq, Subgroup.card_left_transversal (hS i)]
-    rw [← Subgroup.comap_subtype, Subgroup.index_comap, Subgroup.subtype_range]
-  · rw [← Nat.cast_zero, Function.Injective.ne_iff Nat.cast_injective]
-    simp only [Finset.mem_filter, s'] at hi
-    exact hi.2.finiteIndex
-  · rw [← Nat.cast_zero, Nat.cast_lt]
-    exact Nat.zero_lt_of_ne_zero hK.finiteIndex
+/-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
+Then the cosets of subgroups of infinite index may be omitted from the covering. -/
+theorem Subgroup.one_le_sum_inv_index_of_leftCoset_cover :
+    1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ :=
+  (Subgroup.leftCoset_cover_filter_FiniteIndex_aux hcovers).2
 
 /-- BH Neumann Lemma :
   If a finite family of cosets of subgroups covers the group, then
   at least one of these subgroups has index less than the number of cosets -/
-theorem BHNeumann' :
+theorem Subgroup.exists_index_le_card_of_leftCoset_cover :
     ∃ i ∈ s, (H i).FiniteIndex ∧ (H i).index ≤ s.card := by
-  by_contra h
-  push_neg at h
-  apply not_lt.mpr (BHNeumann hcovers)
+  by_contra! h
+  apply not_lt.mpr (one_le_sum_inv_index_of_leftCoset_cover hcovers)
   by_cases hs : s = ∅
   · simp only [hs, Finset.sum_empty, zero_lt_one]
-  rw [← Finset.not_nonempty_iff_eq_empty, not_not] at hs
-  have hs' : s.card ≠ 0 := Finset.card_ne_zero.mpr hs
+  rw [← ne_eq, ← Finset.nonempty_iff_ne_empty] at hs
+  have hs' : 0 < s.card := Nat.zero_lt_of_ne_zero (Finset.card_ne_zero.mpr hs)
   have hlt : ∀ i ∈ s, ((H i).index : ℚ)⁻¹ < (s.card : ℚ)⁻¹ := fun i hi ↦ by
-    by_cases hind : (H i).index = 0
-    · rw [hind, CharP.cast_eq_zero, inv_zero, inv_pos, Nat.cast_pos]
-      exact Nat.zero_lt_of_ne_zero hs'
-    · apply inv_strictAntiOn
-      · simp only [Set.mem_Ioi, Nat.cast_pos]; exact Nat.zero_lt_of_ne_zero hs'
-      · simp only [Set.mem_Ioi, Nat.cast_pos]; exact Nat.zero_lt_of_ne_zero hind
-      · simp only [Nat.cast_lt]; exact h i hi ⟨hind⟩
-  convert Finset.sum_lt_sum_of_nonempty hs hlt
-  rw [Finset.sum_const, nsmul_eq_mul, eq_comm, mul_inv_eq_iff_eq_mul₀, one_mul]
-  simpa only [ne_eq, Nat.cast_eq_zero]
+    cases (H i).index.eq_zero_or_pos with
+    | inl hindex =>
+      rwa [hindex, CharP.cast_eq_zero, inv_zero, inv_pos, Nat.cast_pos]
+    | inr hindex =>
+      apply inv_strictAntiOn
+      · simpa only [Set.mem_Ioi, Nat.cast_pos] using hs'
+      · simpa only [Set.mem_Ioi, Nat.cast_pos] using hindex
+      · simpa only [Nat.cast_lt] using h i hi ⟨hindex.ne.symm⟩
+  apply (Finset.sum_lt_sum_of_nonempty hs hlt).trans_eq
+  rw [Finset.sum_const, nsmul_eq_mul,
+    mul_inv_eq_iff_eq_mul₀ (Nat.cast_ne_zero.mpr hs'.ne.symm), one_mul]
