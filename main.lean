@@ -301,6 +301,11 @@ lemma omg' (a b : Type _) (h : a = b) (x : a) (t : Set a) (h' : Set a = Set b) :
   aesop_subst h
   rfl
 
+lemma omg'' {α : ι → Type*} {i j : ι} (f : (i : ι) → α i) (h : i = j) (h' : α i = α j) :
+    cast h' (f i) = f j := by
+  aesop_subst h
+  rfl
+
 theorem secondLemma (φ : ℕ ≃ ι) (A : ℕ → Set ((i : ι) → X i)) (A_mem : ∀ n, A n ∈ cylinders X)
     (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅) :
     Tendsto (fun n ↦ @kolContent _ _ _ _
@@ -315,7 +320,7 @@ theorem secondLemma (φ : ℕ ≃ ι) (A : ℕ → Set ((i : ι) → X i)) (A_me
     simpa only [mem_cylinders, exists_prop] using A_mem n
   choose s S mS A_eq using A_cyl
   let u n := (s n).preimage φ (φ.injective.injOn _)
-  have h i : X (φ (φ.symm i)) = X i := by simp
+  have h i : X (φ (φ.symm i)) = X i := congrArg X (φ.apply_symm_apply i)
   have e n i (h : i ∈ s n) : φ.symm i ∈ u n := by simpa [u] using h
   have e' n k (h : k ∈ u n) : φ k ∈ s n := by simpa [u] using h
   let f : ((k : ℕ) → X (φ k)) → (i : ι) → X i := fun x i ↦ cast (h i) (x (φ.symm i))
@@ -336,7 +341,7 @@ theorem secondLemma (φ : ℕ ≃ ι) (A : ℕ → Set ((i : ι) → X i)) (A_me
   have B_eq n : B n = cylinder (u n) (T n) := by
     simp_rw [B, A_eq, cylinder, ← preimage_comp, test n]
     rfl
-  have meas n : Measurable (g n) := by
+  have mg n : Measurable (g n) := by
     simp only [g]
     refine measurable_pi_lambda _ (fun i ↦ ?_)
     have : (fun c : (k : u n) → X (φ k) ↦ cast (h i) (c (aux n i))) =
@@ -346,8 +351,7 @@ theorem secondLemma (φ : ℕ ≃ ι) (A : ℕ → Set ((i : ι) → X i)) (A_me
     rw [this]
     apply Measurable.comp
     · have aux1 : HEq (hX i) (hX (φ (φ.symm i))) := by
-        have := h i
-        rw [← cast_eq_iff_heq (e := by simp [this])]
+        rw [← cast_eq_iff_heq (e := by simp [h i])]
         exact @omg ι (fun i ↦ MeasurableSpace (X i)) (s n) (fun i ↦ hX i)
           i ⟨φ (φ.symm i), by simp [i.2]⟩ (by simp) _
       let f := MeasurableEquiv.cast (h i).symm aux1
@@ -356,49 +360,38 @@ theorem secondLemma (φ : ℕ ≃ ι) (A : ℕ → Set ((i : ι) → X i)) (A_me
         simp [f, MeasurableEquiv.cast]
       rw [aux2]
       exact f.measurable_invFun
-    · apply @measurable_pi_apply (u n) (fun k ↦ X (φ k)) _ (aux n i)
+    · exact @measurable_pi_apply (u n) (fun k ↦ X (φ k)) _ _
   have imp n (t : (i : s n) → Set (X i)) : (g n) ⁻¹' (Set.univ.pi t) =
       Set.univ.pi (fun k : u n ↦ t ⟨φ k, e' n k.1 k.2⟩) := by
     ext x
-    simp [g]
+    simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, true_implies, Subtype.forall, g]
     constructor
     · intro h' k hk
       convert h' (φ k) (e' n k hk)
-      simp [aux]
-      have : (⟨φ.symm (φ k), by simp [hk]⟩ : u n) = ⟨k, hk⟩ := by simp
-      rw [omg (ι := ℕ) (X := fun k ↦ X (φ k)) (u n) x ⟨φ.symm (φ k), by simp [hk]⟩ ⟨k, hk⟩]
-      · simp
+      simp only [Equiv.coe_fn_mk, aux]
+      rw [@omg ℕ (fun k ↦ X (φ k)) (u n) x ⟨φ.symm (φ k), by simp [hk]⟩ ⟨k, hk⟩]
+      simp
     · intro h' i hi
       convert h' (φ.symm i) (e n i hi)
-      simp [aux]
-      have : cast (congrArg Set (h i)) (t ⟨φ (φ.symm i), by simp [hi]⟩) = t ⟨i, hi⟩ := by
-        have : (⟨i, hi⟩ : s n) = ⟨φ (φ.symm i), by simp [hi]⟩ := by simp
-        exact @omg ι (fun i ↦ Set (X i)) (s n) t ⟨φ (φ.symm i), by simp [hi]⟩ ⟨i, hi⟩ this.symm _
-      rw [← this]
-      rw [omg' (X (φ (φ.symm i))) (X i) (by simp) (x ⟨φ.symm i, e n i hi⟩)
+      simp only [Equiv.coe_fn_mk, aux]
+      rw [← @omg ι (fun i ↦ Set (X i)) (s n) t ⟨φ (φ.symm i), by simp [hi]⟩ ⟨i, hi⟩ (by simp) _,
+        omg' (X (φ (φ.symm i))) (X i) (by simp) (x ⟨φ.symm i, e n i hi⟩)
           (t ⟨φ (φ.symm i), by simp [hi]⟩) (by simp)]
   have test' n : Measure.pi (fun i : s n ↦ μ i) =
       (Measure.pi (fun k : u n ↦ μ (φ k))).map (g n) := by
     refine Measure.pi_eq (fun x mx ↦ ?_)
-    rw [Measure.map_apply, imp n, Measure.pi_pi, Fintype.prod_equiv (aux n).symm
-      _ (fun i ↦ (μ i) (x i))]
+    rw [Measure.map_apply (mg n), imp n, Measure.pi_pi,
+      Fintype.prod_equiv (aux n).symm _ (fun i ↦ (μ i) (x i))]
     · simp [aux]
-    · exact meas n
-    · apply MeasurableSet.pi
-      · exact countable_univ
-      · simp [mx]
-  have mT n : MeasurableSet (T n) := (mS n).preimage (meas n)
+    · exact MeasurableSet.pi countable_univ (by simp [mx])
+  have mT n : MeasurableSet (T n) := (mS n).preimage (mg n)
   have crucial n : kolContent μ_proj (A n) = kolContent μ_proj' (B n) := by
     simp_rw [fun n ↦ kolContent_congr μ_proj
       (by rw [mem_cylinders]; exact ⟨s n, S n, mS n, A_eq n⟩) (A_eq n) (mS n),
       fun n ↦ kolContent_congr μ_proj'
       (by rw [mem_cylinders]; exact ⟨u n, T n, mT n, B_eq n⟩) (B_eq n) (mT n), T, test' n]
-    rw [Measure.map_apply]
-    · exact meas n
-    · exact mS n
-  have B_anti : Antitone B := by
-    intro m n hmn
-    exact preimage_mono <| A_anti hmn
+    rw [Measure.map_apply (mg n) (mS n)]
+  have B_anti : Antitone B := fun m n hmn ↦ preimage_mono <| A_anti hmn
   have B_inter : ⋂ n, B n = ∅ := by
     simp_rw [B, ← preimage_iInter, A_inter, Set.preimage_empty]
   simp_rw [crucial]
