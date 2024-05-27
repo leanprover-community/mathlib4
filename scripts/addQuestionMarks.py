@@ -1,3 +1,5 @@
+import os
+
 def add_question_mark(file_path, output_path, positions):
     def insert_question_mark(line, col_index):
         char_index = 0
@@ -21,10 +23,10 @@ def add_question_mark(file_path, output_path, positions):
     with open(output_path, 'w', encoding='utf-8') as file:
         file.writelines(text_lines)
 
-# Example usage:
-input_file = 'Mathlib/Order/Ideal.lean'
-output_file = 'output.lean'
-# (0 for (+?) or 1 for (-'), line number, code point index)
-positions = [(0, 466, 26), (1, 466, 6)]
+## Example usage:
+#input_file = 'Mathlib/Order/Ideal.lean'
+#output_file = 'output.lean'
+## (0 for (+?) or 1 for (-'), line number, code point index)
+#positions = [(0, 466, 26), (1, 466, 6)]
 
-add_question_mark(input_file, output_file, positions)
+#add_question_mark(input_file, output_file, positions)
