@@ -16,7 +16,7 @@ In this file we define the complex manifold structure on the upper half-plane.
 
 open Set Filter PartialHomeomorph
 
-open scoped UpperHalfPlane Manifold Topology
+open scoped UpperHalfPlane Manifold
 
 namespace UpperHalfPlane
 

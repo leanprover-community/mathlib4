@@ -112,19 +112,12 @@ end strips
 def ofComplex : PartialHomeomorph ℂ ℍ := (openEmbedding_coe.toPartialHomeomorph _).symm
 
 /-- Extend a function on `ℍ` arbitrarily to a function on all of `ℂ`. -/
-scoped[UpperHalfPlane] notation "↑ₕ" f => f ∘ ofComplex
+scoped notation "↑ₕ" f => f ∘ ofComplex
 
-lemma extends_def (f : ℍ → ℂ) (z : ℍ) :
-    (↑ₕ f) z.1 = f z := by
-  have := PartialHomeomorph.left_inv (PartialHomeomorph.symm
-    (OpenEmbedding.toPartialHomeomorph UpperHalfPlane.coe openEmbedding_coe)) (x := z.1) ?_
-  · simp only [Function.comp_apply]
-    congr 1
-    ext
-    simpa only [PartialHomeomorph.symm_symm, OpenEmbedding.toPartialHomeomorph_apply,
-      UpperHalfPlane.coe] using this
-  · simp only [PartialHomeomorph.symm_toPartialEquiv, PartialEquiv.symm_source,
-       OpenEmbedding.toPartialHomeomorph_target, mem_range]
-    exists z
+lemma ofComplex_apply (z : ℍ) : ofComplex (z : ℂ) = z :=
+  OpenEmbedding.toPartialHomeomorph_left_inv ..
+
+lemma comp_ofComplex (f : ℍ → ℂ) (z : ℍ) : (↑ₕ f) z = f z := by
+  rw [Function.comp_apply, ofComplex_apply]
 
 end UpperHalfPlane
