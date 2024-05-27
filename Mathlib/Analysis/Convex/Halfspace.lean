@@ -3,7 +3,6 @@ Copyright (c) 2024 Hyeokjun Kwon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hyeokjun Kwon
 -/
-import Mathlib.Analysis.Convex.Independent
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.NormedSpace.AddTorsorBases
 
