@@ -69,6 +69,17 @@ theorem lie_mem_weightSpace_of_mem_weightSpace {χ₁ χ₂ : H → R} {x : L} {
   exact lie_mem_maxGenEigenspace_toEnd hx hm
 #align lie_algebra.lie_mem_weight_space_of_mem_weight_space LieAlgebra.lie_mem_weightSpace_of_mem_weightSpace
 
+lemma toEnd_pow_apply_mem {χ₁ χ₂ : H → R} {x : L} {m : M}
+    (hx : x ∈ rootSpace H χ₁) (hm : m ∈ weightSpace M χ₂) (n) :
+    (toEnd R L M x ^ n : Module.End R M) m ∈ weightSpace M (n • χ₁ + χ₂) := by
+  induction n
+  · simpa using hm
+  · next n IH =>
+    simp only [pow_succ', LinearMap.mul_apply, toEnd_apply_apply,
+      Nat.cast_add, Nat.cast_one, rootSpace]
+    convert lie_mem_weightSpace_of_mem_weightSpace hx IH using 2
+    rw [succ_nsmul, ← add_assoc, add_comm (n • _)]
+
 variable (R L H M)
 
 /-- Auxiliary definition for `rootSpaceWeightSpaceProduct`,
