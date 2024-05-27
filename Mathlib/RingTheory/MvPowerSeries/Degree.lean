@@ -36,10 +36,10 @@ theorem HasDegreeBound_def {n : WithTop ℕ} : HasDegreeBound n φ ↔
 
 /-- A `MvPowerSeries φ` has bounded degree if its monomials are uniformly bounded -/
 def HasBoundedDegree (φ : MvPowerSeries σ R) : Prop :=
-  ∃ n, HasDegreeBound n φ
+  ∃ n : ℕ, HasDegreeBound n φ
 
 @[simp]
-theorem HasBoundedDegree_def : HasBoundedDegree φ ↔ ∃ n, HasDegreeBound n φ := by rfl
+theorem HasBoundedDegree_def : HasBoundedDegree φ ↔ ∃ n : ℕ, HasDegreeBound n φ := by rfl
 
 noncomputable def totalDegree := fun (φ : MvPowerSeries σ R) ↦ sInf { n | HasDegreeBound n φ }
 
