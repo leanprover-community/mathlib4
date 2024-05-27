@@ -205,8 +205,8 @@ nonrec theorem threeAPFree_sphere : ThreeAPFree (sphere n d k : Set (Fin n → �
 theorem threeAPFree_image_sphere :
     ThreeAPFree ((sphere n d k).image (map (2 * d - 1)) : Set ℕ) := by
   rw [coe_image]
-  refine' ThreeAPFree.image' (α := Fin n → ℕ) (β := ℕ) (s := sphere n d k) (map (2 * d - 1))
-    (map_injOn.mono _) threeAPFree_sphere
+  refine ThreeAPFree.image' (α := Fin n → ℕ) (β := ℕ) (s := sphere n d k) (map (2 * d - 1))
+    (map_injOn.?mono ?_) threeAPFree_sphere
   · exact x
   rw [Set.add_subset_iff]
   rintro a ha b hb i
@@ -239,13 +239,13 @@ theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
   · dsimp; refine (card_le_univ _).trans_eq ?_; rfl
   cases d
   · simp
-  refine' threeAPFree_image_sphere.le_rothNumberNat _ _ (card_image_of_injOn _)
+  refine threeAPFree_image_sphere.?le_rothNumberNat _ ?_ (card_image_of_injOn ?_)
   · intro; assumption
   · simp only [subset_iff, mem_image, and_imp, forall_exists_index, mem_range,
       forall_apply_eq_imp_iff₂, sphere, mem_filter]
     rintro _ x hx _ rfl
     exact (map_le_of_mem_box hx).trans_lt sum_lt
-  refine' map_injOn.mono fun x => _
+  refine map_injOn.?mono fun x => ?_
   · intro; assumption
   simp only [mem_coe, sphere, mem_filter, mem_box, and_imp, two_mul]
   exact fun h _ i => (h i).trans_le le_self_add

@@ -413,7 +413,7 @@ noncomputable instance : Inf (GroupSeminorm E) :=
           ⟨1, by rwa [div_one, map_one_eq_zero p, map_one_eq_zero q, add_zero]⟩
       mul_le' := fun x y =>
         le_ciInf_add_ciInf fun u v => by
-          refine' ciInf_le_of_le mul_bddBelow_range_add (u * v) _
+          refine ciInf_le_of_le mul_bddBelow_range_add (u * v) ?_
           rw [mul_div_mul_comm, add_add_add_comm]
           exact add_le_add (map_mul_le_add p _ _) (map_mul_le_add q _ _)
       inv' := fun x =>
@@ -457,7 +457,7 @@ instance toOne [DecidableEq E] : One (AddGroupSeminorm E) :=
           rw [if_pos hx, hx, zero_add, zero_add]
         · simp only
           rw [if_neg hx]
-          refine' le_add_of_le_of_nonneg _ _ <;> split_ifs <;> norm_num
+          refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> norm_num
       neg' := fun x => by simp_rw [neg_eq_zero] }⟩
 
 @[simp]
@@ -630,7 +630,7 @@ instance toOne [DecidableEq E] : One (GroupSeminorm E) :=
           rw [if_pos hx, hx, one_mul, zero_add]
         · simp only
           rw [if_neg hx]
-          refine' le_add_of_le_of_nonneg _ _ <;> split_ifs <;> norm_num
+          refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> norm_num
       inv' := fun x => by simp_rw [inv_eq_one] }⟩
 
 @[to_additive (attr := simp) existing AddGroupSeminorm.apply_one]

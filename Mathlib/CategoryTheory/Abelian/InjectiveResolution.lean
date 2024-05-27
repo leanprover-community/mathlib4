@@ -348,7 +348,7 @@ irreducible_def of : InjectiveResolution Z where
   quasiIso := ⟨fun n => by
     cases n
     · rw [CochainComplex.quasiIsoAt₀_iff, ShortComplex.quasiIso_iff_of_zeros]
-      · refine' (ShortComplex.exact_and_mono_f_iff_of_iso _).2
+      · refine (ShortComplex.exact_and_mono_f_iff_of_iso ?_).2
           ⟨exact_f_d (Injective.ι Z), by dsimp; infer_instance⟩
         exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp)
           (by simp [ofCocomplex])
