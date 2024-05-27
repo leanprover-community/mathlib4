@@ -490,6 +490,7 @@ variable (S : Submonoid R) (L : Type*) [CommRing L] [Algebra R L] [IsLocalizatio
 theorem localization_surjective : Function.Surjective (algebraMap R L) := by
   intro r'
   obtain ⟨r₁, s, rfl⟩ := IsLocalization.mk'_surjective S r'
+  -- TODO: can `rsuffices` be used to move the `exact` below before the proof of this `obtain`?
   obtain ⟨r₂, h⟩ : ∃ r : R, IsLocalization.mk' L 1 s = algebraMap R L r := by
     obtain ⟨n, r, hr⟩ := IsArtinian.exists_pow_succ_smul_dvd (s : R) (1 : R)
     use r

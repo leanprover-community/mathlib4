@@ -1436,6 +1436,12 @@ theorem frequently_principal {a : Set α} {p : α → Prop} : (∃ᶠ x in 𝓟 
   simp [Filter.Frequently, not_forall]
 #align filter.frequently_principal Filter.frequently_principal
 
+theorem frequently_inf_principal {f : Filter α} {s : Set α} {p : α → Prop} :
+    (∃ᶠ x in f ⊓ 𝓟 s, p x) ↔ ∃ᶠ x in f, x ∈ s ∧ p x := by
+  simp only [Filter.Frequently, eventually_inf_principal, not_and]
+
+alias ⟨Frequently.of_inf_principal, Frequently.inf_principal⟩ := frequently_inf_principal
+
 theorem frequently_sup {p : α → Prop} {f g : Filter α} :
     (∃ᶠ x in f ⊔ g, p x) ↔ (∃ᶠ x in f, p x) ∨ ∃ᶠ x in g, p x := by
   simp only [Filter.Frequently, eventually_sup, not_and_or]
@@ -2174,6 +2180,14 @@ theorem pure_bind (a : α) (m : α → Filter β) : bind (pure a) m = m a := by
   simp only [Bind.bind, bind, map_pure, join_pure]
 #align filter.pure_bind Filter.pure_bind
 
+theorem map_bind {α β} (m : β → γ) (f : Filter α) (g : α → Filter β) :
+    map m (bind f g) = bind f (map m ∘ g) :=
+  rfl
+
+theorem bind_map {α β} (m : α → β) (f : Filter α) (g : β → Filter γ) :
+    (bind (map m f) g) = bind f (g ∘ m) :=
+  rfl
+
 /-!
 ### `Filter` as a `Monad`
 
@@ -2343,6 +2357,11 @@ theorem comap_principal {t : Set β} : comap m (𝓟 t) = 𝓟 (m ⁻¹' t) :=
   Filter.ext fun _ => ⟨fun ⟨_u, hu, b⟩ => (preimage_mono hu).trans b,
     fun h => ⟨t, Subset.rfl, h⟩⟩
 #align filter.comap_principal Filter.comap_principal
+
+theorem principal_subtype {α : Type*} (s : Set α) (t : Set s) :
+    𝓟 t = comap (↑) (𝓟 (((↑) : s → α) '' t)) := by
+  rw [comap_principal, preimage_image_eq _ Subtype.coe_injective]
+#align principal_subtype Filter.principal_subtype
 
 @[simp]
 theorem comap_pure {b : β} : comap m (pure b) = 𝓟 (m ⁻¹' {b}) := by
