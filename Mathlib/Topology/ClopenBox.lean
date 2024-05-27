@@ -81,16 +81,12 @@ lemma TopologicalSpace.Clopens.countable_iff_second_countable [T2Space X]
     exact (injective_of_le_imp_le f fun a ↦ a).countable
   · apply IsTopologicalBasis.eq_generateFrom
     exact loc_compact_Haus_tot_disc_of_zero_dim
-  · have : ∀ (U : Set X) (_ : IsClopen U), ∃ (t : Finset (countableBasis X)),
-        U = t.toSet.sUnion := by
-      intro U hU
-      exact eq_sUnion_finset_of_isTopologicalBasis__of_isCompact_open
-        _ (isBasis_countableBasis X) U hU.1.isCompact hU.2
-    let f : Clopens X → Finset (countableBasis X) := fun s ↦ (this s.1 s.2).choose
+  · have : ∀ (s : Clopens X), ∃ (t : Finset (countableBasis X)), s.1 = t.toSet.sUnion :=
+      fun s ↦ eq_sUnion_finset_of_isTopologicalBasis__of_isCompact_open _
+        (isBasis_countableBasis X) s.1 s.2.1.isCompact s.2.2
+    let f : Clopens X → Finset (countableBasis X) := fun s ↦ (this s).choose
     have hf : f.Injective := by
-      intro s t h
-      suffices s.carrier = t.carrier by exact Clopens.ext this
-      rw [(this s.1 s.2).choose_spec, (this t.1 t.2).choose_spec]
-      simp only [f] at h
-      rw [h]
+      intro s t (h : Exists.choose _ = Exists.choose _)
+      ext1; change s.carrier = t.carrier
+      rw [(this s).choose_spec, (this t).choose_spec, h]
     exact hf.countable
