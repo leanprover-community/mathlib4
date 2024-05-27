@@ -95,15 +95,16 @@ theorem map_permutationsAux2' {α β α' β'} (g : α → α') (g' : β → β')
   · simp
   · simp only [map, permutationsAux2_snd_cons, cons_append, cons.injEq]
     rw [ys_ih, permutationsAux2_fst]
-    refine' ⟨_, rfl⟩
-    · simp only [← map_cons, ← map_append]; apply H
+    · refine ⟨?_, rfl⟩
+      simp only [← map_cons, ← map_append]; apply H
     · intro a; apply H
 #align list.map_permutations_aux2' List.map_permutationsAux2'
 
 /-- The `f` argument to `permutationsAux2` when `r = []` can be eliminated. -/
 theorem map_permutationsAux2 (t : α) (ts : List α) (ys : List α) (f : List α → β) :
     (permutationsAux2 t ts [] ys id).2.map f = (permutationsAux2 t ts [] ys f).2 := by
-  rw [map_permutationsAux2' id, map_id, map_id]; rfl
+  rw [map_permutationsAux2' id, map_id, map_id]
+  · rfl
   simp
 #align list.map_permutations_aux2 List.map_permutationsAux2
 
@@ -234,7 +235,7 @@ theorem permutations_nil : permutations ([] : List α) = [[]] := by
 theorem map_permutationsAux (f : α → β) :
     ∀ ts is :
     List α, map (map f) (permutationsAux ts is) = permutationsAux (map f ts) (map f is) := by
-  refine' permutationsAux.rec (by simp) _
+  refine permutationsAux.rec (by simp) ?_
   introv IH1 IH2; rw [map] at IH2
   simp only [foldr_permutationsAux2, map_append, map, map_map_permutationsAux2, permutations,
     bind_map, IH1, append_assoc, permutationsAux_cons, cons_bind, ← IH2, map_bind]

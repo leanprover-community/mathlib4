@@ -172,10 +172,12 @@ theorem cauchy_inv : ∀ f, (f⁻¹ : ℝ).cauchy = f.cauchy⁻¹
 
 instance instNatCast : NatCast ℝ where natCast n := ⟨n⟩
 instance instIntCast : IntCast ℝ where intCast z := ⟨z⟩
+instance instNNRatCast : NNRatCast ℝ where nnratCast q := ⟨q⟩
 instance instRatCast : RatCast ℝ where ratCast q := ⟨q⟩
 
 lemma ofCauchy_natCast (n : ℕ) : (⟨n⟩ : ℝ) = n := rfl
 lemma ofCauchy_intCast (z : ℤ) : (⟨z⟩ : ℝ) = z := rfl
+lemma ofCauchy_nnratCast (q : ℚ≥0) : (⟨q⟩ : ℝ) = q := rfl
 lemma ofCauchy_ratCast (q : ℚ) : (⟨q⟩ : ℝ) = q := rfl
 #align real.of_cauchy_nat_cast Real.ofCauchy_natCast
 #align real.of_cauchy_int_cast Real.ofCauchy_intCast
@@ -183,6 +185,7 @@ lemma ofCauchy_ratCast (q : ℚ) : (⟨q⟩ : ℝ) = q := rfl
 
 lemma cauchy_natCast (n : ℕ) : (n : ℝ).cauchy = n := rfl
 lemma cauchy_intCast (z : ℤ) : (z : ℝ).cauchy = z := rfl
+lemma cauchy_nnratCast (q : ℚ≥0) : (q : ℝ).cauchy = q := rfl
 lemma cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q := rfl
 #align real.cauchy_nat_cast Real.cauchy_natCast
 #align real.cauchy_int_cast Real.cauchy_intCast
@@ -238,7 +241,7 @@ set_option linter.uppercaseLean3 false in
  `Field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
  version of them. -/
 
-instance : Ring ℝ := by infer_instance
+instance instRing : Ring ℝ := by infer_instance
 
 instance : CommSemiring ℝ := by infer_instance
 
@@ -573,9 +576,12 @@ noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
       Ne, ofCauchy.injEq] at *
     exact CauSeq.Completion.inv_mul_cancel h
   inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
+  nnqsmul := _
+  qsmul := _
+  nnratCast_def q := by
+    rw [← ofCauchy_nnratCast, NNRat.cast_def, ofCauchy_div, ofCauchy_natCast, ofCauchy_natCast]
   ratCast_def q := by
     rw [← ofCauchy_ratCast, Rat.cast_def, ofCauchy_div, ofCauchy_natCast, ofCauchy_intCast]
-  qsmul := _
 
 -- Extra instances to short-circuit type class resolution
 noncomputable instance : LinearOrderedAddCommGroup ℝ := by infer_instance
@@ -610,7 +616,7 @@ theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j
   obtain ⟨i, H⟩ := exists_forall_ge_and h (exists_forall_ge_and hK (f.cauchy₃ <| half_pos K0))
   apply not_lt_of_le (H _ le_rfl).1
   erw [mk_lt]
-  refine' ⟨_, half_pos K0, i, fun j ij => _⟩
+  refine ⟨_, half_pos K0, i, fun j ij => ?_⟩
   have := add_le_add (H _ ij).2.1 (le_of_lt (abs_lt.1 <| (H _ le_rfl).2.2 _ ij).1)
   rwa [← sub_eq_add_neg, sub_self_div_two, sub_apply, sub_add_sub_cancel] at this
 #align real.le_mk_of_forall_le Real.le_mk_of_forall_le
@@ -633,3 +639,8 @@ theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
 #align real.mk_near_of_forall_near Real.mk_near_of_forall_near
 
 end Real
+
+/-- A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong triangle inequality
+  `f (r + s) ≤ max (f r) (f s)` for all `r s : R`. -/
+def IsNonarchimedean {A : Type _} [Add A] (f : A → ℝ) : Prop :=
+  ∀ r s, f (r + s) ≤ max (f r) (f s)

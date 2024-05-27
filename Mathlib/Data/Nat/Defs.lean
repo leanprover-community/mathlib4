@@ -31,13 +31,13 @@ See note [foundational algebra order theory].
 ## TODO
 
 Split this file into:
-* `Data.Nat.Init` (or maybe `Data.Nat.Std`?) for lemmas that could go to Std
+* `Data.Nat.Init` (or maybe `Data.Nat.Batteries`?) for lemmas that could go to Batteries
 * `Data.Nat.Basic` for the lemmas that require mathlib definitions
 -/
 
 library_note "foundational algebra order theory"/--
-Std has a home-baked development of the algebraic and order theoretic theory of `ℕ` and `ℤ` which,
-in particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness
+Batteries has a home-baked development of the algebraic and order theoretic theory of `ℕ` and `ℤ
+which, in particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness
 libraries in mathlib (naturals and integers show up as indices/offsets in lists, cardinality in
 finsets, powers in groups, ...).
 
@@ -64,7 +64,9 @@ open Function
 namespace Nat
 variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
 
-instance nontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
+instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
+
+@[simp] theorem default_eq_zero : default = 0 := rfl
 
 attribute [gcongr] Nat.succ_le_succ
 attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
@@ -92,10 +94,10 @@ lemma succ_ne_succ : succ m ≠ succ n ↔ m ≠ n := succ_injective.ne_iff
 lemma succ_succ_ne_one (n : ℕ) : n.succ.succ ≠ 1 := by simp
 #align nat.succ_succ_ne_one Nat.succ_succ_ne_one
 
-@[simp] lemma one_lt_succ_succ (n : ℕ) : 1 < n.succ.succ := succ_lt_succ <| succ_pos n
+lemma one_lt_succ_succ (n : ℕ) : 1 < n.succ.succ := succ_lt_succ <| succ_pos n
 #align nat.one_lt_succ_succ Nat.one_lt_succ_succ
 
--- Moved to Std
+-- Moved to Batteries
 #align nat.succ_le_succ_iff Nat.succ_le_succ_iff
 #align nat.succ_lt_succ_iff Nat.succ_lt_succ_iff
 #align nat.le_pred_of_lt Nat.le_pred_of_lt
@@ -158,7 +160,7 @@ lemma one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 := Nat.pos_iff_ne_zero
 lemma one_lt_iff_ne_zero_and_ne_one : ∀ {n : ℕ}, 1 < n ↔ n ≠ 0 ∧ n ≠ 1
   | 0 => by decide
   | 1 => by decide
-  | n + 2 => by simp
+  | n + 2 => by omega
 #align nat.one_lt_iff_ne_zero_and_ne_one Nat.one_lt_iff_ne_zero_and_ne_one
 
 lemma le_one_iff_eq_zero_or_eq_one : ∀ {n : ℕ}, n ≤ 1 ↔ n = 0 ∨ n = 1 := by simp [le_succ_iff]
@@ -174,16 +176,13 @@ lemma one_le_of_lt (h : a < b) : 1 ≤ b := Nat.lt_of_le_of_lt (Nat.zero_le _) h
 #align nat.min_eq_zero_iff Nat.min_eq_zero_iff
 #align nat.max_eq_zero_iff Nat.max_eq_zero_iff
 
--- Moved to Std
+-- Moved to Batteries
 #align nat.succ_eq_one_add Nat.succ_eq_one_add
 #align nat.one_add Nat.one_add
 #align nat.zero_max Nat.zero_max
 
-lemma pred_eq_sub_one (n : ℕ) : pred n = n - 1 := rfl
 #align nat.pred_eq_sub_one Nat.pred_eq_sub_one
 
-/-- This ensures that `simp` succeeds on `pred (n + 1) = n`. -/
-@[simp]
 lemma pred_one_add (n : ℕ) : pred (1 + n) = n := by rw [Nat.add_comm, add_one, Nat.pred_succ]
 #align nat.pred_one_add Nat.pred_one_add
 
@@ -193,7 +192,7 @@ lemma pred_eq_self_iff : n.pred = n ↔ n = 0 := by cases n <;> simp [(Nat.succ_
 lemma pred_eq_of_eq_succ (H : m = n.succ) : m.pred = n := by simp [H]
 #align nat.pred_eq_of_eq_succ Nat.pred_eq_of_eq_succ
 
-@[simp] lemma pred_eq_succ_iff : pred n = succ m ↔ n = m + 2 := by
+@[simp] lemma pred_eq_succ_iff : n - 1 = m + 1 ↔ n = m + 2 := by
   cases n <;> constructor <;> rintro ⟨⟩ <;> rfl
 #align nat.pred_eq_succ_iff Nat.pred_eq_succ_iff
 
@@ -821,9 +820,12 @@ proved above, and some of the results in later sections depend on the definition
 lemma rec_zero {C : ℕ → Sort*} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) : Nat.rec h0 h 0 = h0 := rfl
 #align nat.rec_zero Nat.rec_zero
 
-@[simp] lemma rec_add_one {C : ℕ → Sort*} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) (n : ℕ) :
+lemma rec_add_one {C : ℕ → Sort*} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) (n : ℕ) :
     Nat.rec h0 h (n + 1) = h n (Nat.rec h0 h n) := rfl
 #align nat.rec_add_one Nat.rec_add_one
+
+@[simp] lemma rec_one {C : ℕ → Sort*} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) :
+    Nat.rec (motive := C) h0 h 1 = h 0 h0 := rfl
 
 /-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k ≥ n`,
 there is a map from `C n` to each `C m`, `n ≤ m`. -/
@@ -1062,6 +1064,24 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 
 attribute [simp] Nat.dvd_zero
 
+@[simp] lemma mod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
+  cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
+#align nat.mod_two_ne_one Nat.mod_two_ne_one
+
+@[simp] lemma mod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
+  cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
+#align nat.mod_two_ne_zero Nat.mod_two_ne_zero
+
+lemma div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b := by
+  obtain rfl | hb := eq_or_ne b 0
+  · simp
+  · rw [← @Nat.add_left_inj _ _ (c * (a / b / c)), mod_add_div, Nat.div_div_eq_div_mul, ←
+      Nat.mul_right_inj hb, ← @Nat.add_right_inj _ _ (a % b), mod_add_div, Nat.mul_add, ←
+      @Nat.add_right_inj _ _ (a % (b * c) % b), Nat.add_left_comm,
+      ← Nat.add_assoc (a % (b * c) % b), mod_add_div, ← Nat.mul_assoc, mod_add_div,
+      mod_mul_right_mod]
+#align nat.div_mod_eq_mod_mul_div Nat.div_mod_eq_mod_mul_div
+
 protected lemma lt_div_iff_mul_lt (hdn : d ∣ n) (a : ℕ) : a < n / d ↔ d * a < n := by
   obtain rfl | hd := d.eq_zero_or_pos
   · simp [Nat.zero_dvd.1 hdn]
@@ -1197,7 +1217,8 @@ lemma dvd_sub_mod (k : ℕ) : n ∣ k - k % n :=
 
 lemma add_mod_eq_ite :
     (m + n) % k = if k ≤ m % k + n % k then m % k + n % k - k else m % k + n % k := by
-  cases k; simp only [zero_eq, mod_zero, zero_le, ↓reduceIte, Nat.sub_zero]
+  cases k
+  · simp
   rw [Nat.add_mod]
   split_ifs with h
   · rw [Nat.mod_eq_sub_mod h, Nat.mod_eq_of_lt]
@@ -1236,7 +1257,7 @@ protected lemma mul_dvd_mul_iff_right (hc : 0 < c) : a * c ∣ b * c ↔ a ∣ b
 #align nat.dvd_one Nat.dvd_one
 #align nat.mod_mod_of_dvd Nat.mod_mod_of_dvd
 
--- Moved to Std
+-- Moved to Batteries
 #align nat.mod_mod Nat.mod_mod
 #align nat.mod_add_mod Nat.mod_add_mod
 #align nat.add_mod_mod Nat.add_mod_mod
@@ -1250,7 +1271,7 @@ lemma add_mod_eq_add_mod_left (c : ℕ) (H : a % d = b % d) : (c + a) % d = (c +
   rw [Nat.add_comm, add_mod_eq_add_mod_right _ H, Nat.add_comm]
 #align nat.add_mod_eq_add_mod_left Nat.add_mod_eq_add_mod_left
 
--- Moved to Std
+-- Moved to Batteries
 #align nat.mul_mod Nat.mul_mod
 
 lemma mul_dvd_of_dvd_div (hcb : c ∣ b) (h : a ∣ b / c) : c * a ∣ b :=
@@ -1271,7 +1292,7 @@ protected theorem div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (h3 :
   calc a / c ≤ b / c := Nat.div_le_div_right h1
     _ ≤ b / d := Nat.div_le_div_left h2 (Nat.pos_of_ne_zero h3)
 
--- Moved to Std
+-- Moved to Batteries
 #align nat.mul_div_le Nat.mul_div_le
 
 lemma lt_mul_div_succ (a : ℕ) (hb : 0 < b) : a < b * (a / b + 1) := by
@@ -1279,7 +1300,7 @@ lemma lt_mul_div_succ (a : ℕ) (hb : 0 < b) : a < b * (a / b + 1) := by
   exact lt_succ_self _
 #align nat.lt_mul_div_succ Nat.lt_mul_div_succ
 
--- TODO: Std4 claimed this name but flipped the order of multiplication
+-- TODO: Batteries claimed this name but flipped the order of multiplication
 lemma mul_add_mod' (a b c : ℕ) : (a * b + c) % b = c % b := by rw [Nat.mul_comm, Nat.mul_add_mod]
 #align nat.mul_add_mod Nat.mul_add_mod'
 
@@ -1292,9 +1313,9 @@ set_option linter.deprecated false in
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ bit1 n := by
   rw [bit1, Nat.dvd_add_right, Nat.dvd_one]
   -- Porting note: was `cc`
-  decide
-  rw [bit0, ← Nat.two_mul]
-  exact Nat.dvd_mul_right _ _
+  · decide
+  · rw [bit0, ← Nat.two_mul]
+    exact Nat.dvd_mul_right _ _
 #align nat.not_two_dvd_bit1 Nat.not_two_dvd_bit1
 
 /-- A natural number `m` divides the sum `m + n` if and only if `m` divides `n`.-/
@@ -1376,6 +1397,17 @@ lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a :=
 @[simp] lemma dvd_div_iff (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b :=
   ⟨fun h => mul_dvd_of_dvd_div hbc h, fun h => dvd_div_of_mul_dvd h⟩
 #align nat.dvd_div_iff Nat.dvd_div_iff
+
+lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c := by
+  obtain ⟨e, rfl⟩ := hdiv
+  rw [← Nat.mul_assoc, Nat.mul_comm _ (a / b), Nat.div_mul_cancel h]
+  exact Nat.dvd_mul_right a e
+
+@[simp] lemma div_dvd_iff_dvd_mul (h : b ∣ a) (hb : b ≠ 0) : a / b ∣ c ↔ a ∣ b * c :=
+  exists_congr <| fun d => by
+  have := Nat.dvd_trans (Nat.dvd_mul_left _ d) (Nat.mul_dvd_mul_left d h)
+  rw [eq_comm, Nat.mul_comm, ← Nat.mul_div_assoc d h,
+    Nat.div_eq_iff_eq_mul_right (Nat.pos_of_ne_zero hb) this, Nat.mul_comm, eq_comm]
 
 @[simp] lemma div_div_div_eq_div (dvd : b ∣ a) (dvd2 : a ∣ c) : c / (a / b) / b = c / a :=
   match a, b, c with
@@ -1461,7 +1493,7 @@ private lemma AM_GM : {a b : ℕ} → (4 * a * b ≤ (a + b) * (a + b))
       Nat.mul_one, Nat.add_assoc, Nat.add_left_comm, Nat.add_le_add_iff_left]
       using Nat.add_le_add_right (@AM_GM a b) 4
 
--- These two lemmas seem like they belong to `Std.Data.Nat.Basic`.
+-- These two lemmas seem like they belong to `Batteries.Data.Nat.Basic`.
 
 lemma sqrt.iter_sq_le (n guess : ℕ) : sqrt.iter n guess * sqrt.iter n guess ≤ n := by
   unfold sqrt.iter
@@ -1499,7 +1531,7 @@ lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) 
   · simpa only [dif_neg h] using hn
 
 #align nat.sqrt Nat.sqrt
--- Porting note: the implementation òf `Nat.sqrt` in `Std` no longer needs `sqrt_aux`.
+-- Porting note: the implementation of `Nat.sqrt` in `Batteries` no longer needs `sqrt_aux`.
 #noalign nat.sqrt_aux_dec
 #noalign nat.sqrt_aux
 #noalign nat.sqrt_aux_0

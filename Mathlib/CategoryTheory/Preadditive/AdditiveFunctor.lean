@@ -99,7 +99,7 @@ open BigOperators
 
 @[simp]
 nonrec theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
-    F.map (∑ a in s, f a) = ∑ a in s, F.map (f a) :=
+    F.map (∑ a ∈ s, f a) = ∑ a ∈ s, F.map (f a) :=
   map_sum F.mapAddHom f s
 #align category_theory.functor.map_sum CategoryTheory.Functor.map_sum
 
@@ -178,6 +178,13 @@ theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [Preserves
       biprod.add_eq_lift_id_desc]
 #align category_theory.functor.additive_of_preserves_binary_biproducts CategoryTheory.Functor.additive_of_preservesBinaryBiproducts
 
+lemma additive_of_preserves_binary_products
+    [HasBinaryProducts C] [PreservesLimitsOfShape (Discrete WalkingPair) F]
+    [F.PreservesZeroMorphisms] : F.Additive := by
+  have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryProducts
+  have := preservesBinaryBiproductsOfPreservesBinaryProducts F
+  exact Functor.additive_of_preservesBinaryBiproducts F
+
 end
 
 end
@@ -198,7 +205,7 @@ section
 
 variable (C D : Type*) [Category C] [Category D] [Preadditive C] [Preadditive D]
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Bundled additive functors. -/
 def AdditiveFunctor :=
   FullSubcategory fun F : C ⥤ D => F.Additive

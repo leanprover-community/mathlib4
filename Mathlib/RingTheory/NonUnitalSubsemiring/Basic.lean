@@ -1,13 +1,16 @@
 /-
-Copyright (c) 2022 Jireh Loreaux All rights reserved.
+Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Subsemigroup.Membership
+import Mathlib.Algebra.Ring.Center
+import Mathlib.Algebra.Ring.Centralizer
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Prod
+import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Data.Set.Finite
-import Mathlib.GroupTheory.Submonoid.Membership
-import Mathlib.GroupTheory.Subsemigroup.Membership
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
 
 #align_import ring_theory.non_unital_subsemiring.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
@@ -693,11 +696,11 @@ theorem mem_closure_iff {s : Set R} {x} :
 theorem closure_addSubmonoid_closure {s : Set R} :
     closure ↑(AddSubmonoid.closure s) = closure s := by
   ext x
-  refine' ⟨fun hx => _, fun hx => closure_mono AddSubmonoid.subset_closure hx⟩
+  refine ⟨fun hx => ?_, fun hx => closure_mono AddSubmonoid.subset_closure hx⟩
   rintro - ⟨H, rfl⟩
   rintro - ⟨J, rfl⟩
-  refine' (AddSubmonoid.mem_closure.mp (mem_closure_iff.mp hx)) H.toAddSubmonoid fun y hy => _
-  refine' (Subsemigroup.mem_closure.mp hy) H.toSubsemigroup fun z hz => _
+  refine (AddSubmonoid.mem_closure.mp (mem_closure_iff.mp hx)) H.toAddSubmonoid fun y hy => ?_
+  refine (Subsemigroup.mem_closure.mp hy) H.toSubsemigroup fun z hz => ?_
   exact (AddSubmonoid.mem_closure.mp hz) H.toAddSubmonoid fun w hw => J hw
 #align non_unital_subsemiring.closure_add_submonoid_closure NonUnitalSubsemiring.closure_addSubmonoid_closure
 

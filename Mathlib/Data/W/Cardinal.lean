@@ -77,7 +77,7 @@ theorem cardinal_mk_le_max_aleph0_of_finite' [∀ a, Finite (β a)] :
                 (by
                   rw [succ_zero]
                   obtain ⟨a⟩ : Nonempty α := hn
-                  refine' le_trans _ (le_ciSup (bddAbove_range.{_, v} _) a)
+                  refine le_trans ?_ (le_ciSup (bddAbove_range.{_, v} _) a)
                   rw [← power_zero]
                   exact
                     power_le_power_left

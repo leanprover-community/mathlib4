@@ -3,9 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Hom.Basic
+import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Data.Nat.Cast.Order
 
@@ -35,28 +38,6 @@ namespace Int
 def ofNatHom : ℕ →+* ℤ :=
   Nat.castRingHom ℤ
 #align int.of_nat_hom Int.ofNatHom
-
--- Porting note: no need to be `@[simp]`, as `Nat.cast_pos` handles this.
--- @[simp]
-theorem natCast_pos {n : ℕ} : (0 : ℤ) < n ↔ 0 < n :=
-  Nat.cast_pos
-#align int.coe_nat_pos Int.natCast_pos
-
-theorem natCast_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) :=
-  Int.natCast_pos.2 (succ_pos n)
-#align int.coe_nat_succ_pos Int.natCast_succ_pos
-
--- 2024-04-05
-@[deprecated] alias coe_nat_pos := natCast_pos
-@[deprecated] alias coe_nat_succ_pos := natCast_succ_pos
-
-lemma toNat_lt' {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.toNat < b ↔ a < b := by
-  rw [← toNat_lt_toNat, toNat_natCast]; exact natCast_pos.2 hb.bot_lt
-#align int.to_nat_lt Int.toNat_lt'
-
-lemma natMod_lt {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.natMod b < b :=
-  (toNat_lt' hb).2 <| emod_lt_of_pos _ <| natCast_pos.2 hb.bot_lt
-#align int.nat_mod_lt Int.natMod_lt
 
 section cast
 
@@ -228,11 +209,6 @@ theorem coe_int_dvd [CommRing α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : 
   RingHom.map_dvd (Int.castRingHom α) h
 #align int.coe_int_dvd Int.coe_int_dvd
 
--- Porting note: `simp` and `norm_cast` attribute removed. This is a special case of `Nat.cast_pow`
-lemma coe_nat_pow (m n : ℕ) : ↑(m ^ n : ℕ) = (m ^ n : ℤ) := by
-  induction' m with m _ <;> simp
-#align int.coe_nat_pow Int.coe_nat_pow
-
 end cast
 
 end Int
@@ -324,16 +300,16 @@ theorem ext_int [AddMonoid A] {f g : ℤ →+ A} (h1 : f 1 = g 1) : f = g :=
 
 variable [AddGroupWithOne A]
 
-theorem eq_int_castAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A :=
+theorem eq_intCastAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A :=
   ext_int <| by simp [h1]
-#align add_monoid_hom.eq_int_cast_hom AddMonoidHom.eq_int_castAddHom
+#align add_monoid_hom.eq_int_cast_hom AddMonoidHom.eq_intCastAddHom
 
 end AddMonoidHom
 
 theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F ℤ α]
     (f : F) (h₁ : f 1 = 1) :
     ∀ n : ℤ, f n = n :=
-  DFunLike.ext_iff.1 <| (f : ℤ →+ α).eq_int_castAddHom h₁
+  DFunLike.ext_iff.1 <| (f : ℤ →+ α).eq_intCastAddHom h₁
 #align eq_int_cast' eq_intCast'
 
 @[simp] lemma zsmul_one [AddGroupWithOne α] (n : ℤ) : n • (1 : α) = n := by cases n <;> simp
@@ -341,7 +317,7 @@ theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F
 
 @[simp]
 theorem Int.castAddHom_int : Int.castAddHom ℤ = AddMonoidHom.id ℤ :=
-  ((AddMonoidHom.id ℤ).eq_int_castAddHom rfl).symm
+  ((AddMonoidHom.id ℤ).eq_intCastAddHom rfl).symm
 #align int.cast_add_hom_int Int.castAddHom_int
 
 namespace MonoidHom
@@ -518,8 +494,7 @@ namespace Pi
 
 variable {π : ι → Type*} [∀ i, IntCast (π i)]
 
-instance intCast : IntCast (∀ i, π i) :=
-  { intCast := fun n _ ↦ n }
+instance instIntCast : IntCast (∀ i, π i) where intCast n _ := n
 
 theorem intCast_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
   rfl

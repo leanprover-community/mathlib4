@@ -56,12 +56,6 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.monad.algebra.unit CategoryTheory.Monad.Algebra.unit
 #align category_theory.monad.algebra.assoc CategoryTheory.Monad.Algebra.assoc
 
--- Porting note: no need to restate axioms in lean4.
-
---restate_axiom algebra.unit'
-
---restate_axiom algebra.assoc'
-
 attribute [reassoc] Algebra.unit Algebra.assoc
 
 namespace Algebra
@@ -239,18 +233,8 @@ theorem algebra_mono_of_mono {X Y : Algebra T} (f : X ⟶ Y) [h : Mono f.f] : Mo
   (forget T).mono_of_mono_map h
 #align category_theory.monad.algebra_mono_of_mono CategoryTheory.Monad.algebra_mono_of_mono
 
-instance : IsRightAdjoint T.forget :=
-  ⟨T.free, T.adj⟩
-
-@[simp]
-theorem leftAdjoint_forget : leftAdjoint T.forget = T.free :=
-  rfl
-#align category_theory.monad.left_adjoint_forget CategoryTheory.Monad.leftAdjoint_forget
-
-@[simp]
-theorem ofRightAdjoint_forget : Adjunction.ofRightAdjoint T.forget = T.adj :=
-  rfl
-#align category_theory.monad.of_right_adjoint_forget CategoryTheory.Monad.ofRightAdjoint_forget
+instance : T.forget.IsRightAdjoint  :=
+  ⟨T.free, ⟨T.adj⟩⟩
 
 /--
 Given a monad morphism from `T₂` to `T₁`, we get a functor from the algebras of `T₁` to algebras of
@@ -324,8 +308,8 @@ end Monad
 namespace Comonad
 
 /-- An Eilenberg-Moore coalgebra for a comonad `T`. -/
--- Porting note: no need to nolint here.
---@[nolint has_nonempty_instance]
+-- Porting note(#5171): linter not ported yet
+-- @[nolint has_nonempty_instance]
 structure Coalgebra (G : Comonad C) : Type max u₁ v₁ where
   /-- The underlying object associated to a coalgebra. -/
   A : C
@@ -359,6 +343,7 @@ namespace Coalgebra
 variable {G : Comonad C}
 
 /-- A morphism of Eilenberg-Moore coalgebras for the comonad `G`. -/
+-- Porting note(#5171): linter not ported yet
 --@[ext, nolint has_nonempty_instance]
 @[ext]
 structure Hom (A B : Coalgebra G) where
@@ -519,18 +504,8 @@ theorem algebra_mono_of_mono {X Y : Coalgebra G} (f : X ⟶ Y) [h : Mono f.f] : 
   (forget G).mono_of_mono_map h
 #align category_theory.comonad.algebra_mono_of_mono CategoryTheory.Comonad.algebra_mono_of_mono
 
-instance : IsLeftAdjoint G.forget :=
-  ⟨_, G.adj⟩
-
-@[simp]
-theorem rightAdjoint_forget : rightAdjoint G.forget = G.cofree :=
-  rfl
-#align category_theory.comonad.right_adjoint_forget CategoryTheory.Comonad.rightAdjoint_forget
-
-@[simp]
-theorem ofLeftAdjoint_forget : Adjunction.ofLeftAdjoint G.forget = G.adj :=
-  rfl
-#align category_theory.comonad.of_left_adjoint_forget CategoryTheory.Comonad.ofLeftAdjoint_forget
+instance : G.forget.IsLeftAdjoint  :=
+  ⟨_, ⟨G.adj⟩⟩
 
 end Comonad
 

@@ -94,7 +94,7 @@ theorem le_of_fin_injective [StrongRankCondition R] {n m : ℕ} (f : (Fin n → 
 theorem strongRankCondition_iff_succ :
     StrongRankCondition R ↔
       ∀ (n : ℕ) (f : (Fin (n + 1) → R) →ₗ[R] Fin n → R), ¬Function.Injective f := by
-  refine' ⟨fun h n => fun f hf => _, fun h => ⟨@fun n m f hf => _⟩⟩
+  refine ⟨fun h n => fun f hf => ?_, fun h => ⟨@fun n m f hf => ?_⟩⟩
   · letI : StrongRankCondition R := h
     exact Nat.not_succ_le_self n (le_of_fin_injective R f hf)
   · by_contra H
@@ -196,7 +196,7 @@ theorem card_eq_of_linearEquiv {α β : Type*} [Fintype α] [Fintype β] (f : (�
 
 theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
   by_contra h
-  refine' zero_ne_one (eq_of_fin_equiv R _)
+  refine zero_ne_one (eq_of_fin_equiv R ?_)
   haveI := not_nontrivial_iff_subsingleton.1 h
   haveI : Subsingleton (Fin 1 → R) :=
     Subsingleton.intro fun a b => funext fun x => Subsingleton.elim _ _
@@ -267,7 +267,7 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
     (ι → R) ⧸ I.pi ι → (ι' → R) ⧸ I.pi ι' := fun x =>
   Quotient.liftOn' x (fun y => Ideal.Quotient.mk (I.pi ι') (e y))
     (by
-      refine' fun a b hab => Ideal.Quotient.eq.2 fun h => _
+      refine fun a b hab => Ideal.Quotient.eq.2 fun h => ?_
       rw [Submodule.quotientRel_r_def] at hab
       rw [← LinearMap.map_sub]
       exact Ideal.map_pi _ _ hab e h)
@@ -286,9 +286,9 @@ private def induced_equiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] 
   -- Porting note: the next 4 lines were necessary because Lean couldn't correctly infer `(I.pi ι)`
   -- and `(I.pi ι')` on its own.
   pick_goal 3
-  convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
-  congr
-  simp only [LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
+  · convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
+    congr
+    simp only [LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
   all_goals
     convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
     congr

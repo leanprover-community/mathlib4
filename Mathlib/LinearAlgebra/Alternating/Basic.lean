@@ -652,7 +652,7 @@ section
 open BigOperators
 
 theorem map_update_sum {α : Type*} [DecidableEq ι] (t : Finset α) (i : ι) (g : α → M) (m : ι → M) :
-    f (update m i (∑ a in t, g a)) = ∑ a in t, f (update m i (g a)) :=
+    f (update m i (∑ a ∈ t, g a)) = ∑ a ∈ t, f (update m i (g a)) :=
   f.toMultilinearMap.map_update_sum t i g m
 #align alternating_map.map_update_sum AlternatingMap.map_update_sum
 
@@ -965,7 +965,7 @@ theorem Basis.ext_alternating {f g : N₁ [⋀^ι]→ₗ[R'] N₂} (e : Basis ι
     (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i => e (v i)) = g fun i => e (v i)) :
     f = g := by
   classical
-    refine' AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear e fun v => _)
+    refine AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear e fun v => ?_)
     by_cases hi : Function.Injective v
     · exact h v hi
     · have : ¬Function.Injective fun i => e (v i) := hi.imp Function.Injective.of_comp
@@ -1053,7 +1053,7 @@ theorem curryLeft_compLinearMap {n : ℕ} (g : M₂'' →ₗ[R'] M'')
     (f : M'' [⋀^Fin n.succ]→ₗ[R'] N'') (m : M₂'') :
     (f.compLinearMap g).curryLeft m = (f.curryLeft (g m)).compLinearMap g :=
   ext fun v => congr_arg f <| funext <| by
-    refine' Fin.cases _ _
+    refine Fin.cases ?_ ?_
     · rfl
     · simp
 #align alternating_map.curry_left_comp_linear_map AlternatingMap.curryLeft_compLinearMap

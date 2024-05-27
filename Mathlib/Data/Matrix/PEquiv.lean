@@ -96,14 +96,14 @@ theorem matrix_mul_apply [Fintype m] [Semiring α] [DecidableEq n] (M : Matrix l
 theorem toPEquiv_mul_matrix [Fintype m] [DecidableEq m] [Semiring α] (f : m ≃ m)
     (M : Matrix m n α) : f.toPEquiv.toMatrix * M = M.submatrix f id := by
   ext i j
-  rw [mul_matrix_apply, Equiv.toPEquiv_apply, submatrix_apply, id.def]
+  rw [mul_matrix_apply, Equiv.toPEquiv_apply, submatrix_apply, id]
 #align pequiv.to_pequiv_mul_matrix PEquiv.toPEquiv_mul_matrix
 
 theorem mul_toPEquiv_toMatrix {m n α : Type*} [Fintype n] [DecidableEq n] [Semiring α] (f : n ≃ n)
     (M : Matrix m n α) : M * f.toPEquiv.toMatrix = M.submatrix id f.symm :=
   Matrix.ext fun i j => by
     rw [PEquiv.matrix_mul_apply, ← Equiv.toPEquiv_symm, Equiv.toPEquiv_apply,
-      Matrix.submatrix_apply, id.def]
+      Matrix.submatrix_apply, id]
 #align pequiv.mul_to_pequiv_to_matrix PEquiv.mul_toPEquiv_toMatrix
 
 theorem toMatrix_trans [Fintype m] [DecidableEq m] [DecidableEq n] [Semiring α] (f : l ≃. m)
@@ -124,7 +124,7 @@ theorem toMatrix_injective [DecidableEq n] [MonoidWithZero α] [Nontrivial α] :
     Function.Injective (@toMatrix m n α _ _ _) := by
   classical
     intro f g
-    refine' not_imp_not.1 _
+    refine not_imp_not.1 ?_
     simp only [Matrix.ext_iff.symm, toMatrix_apply, PEquiv.ext_iff, not_forall, exists_imp]
     intro i hi
     use i

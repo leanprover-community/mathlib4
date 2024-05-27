@@ -39,19 +39,19 @@ protected theorem AddCircle.measurable_mk' {a : ℝ} :
 theorem isAddFundamentalDomain_Ioc {T : ℝ} (hT : 0 < T) (t : ℝ)
     (μ : Measure ℝ := by volume_tac) :
     IsAddFundamentalDomain (AddSubgroup.zmultiples T) (Ioc t (t + T)) μ := by
-  refine' IsAddFundamentalDomain.mk' measurableSet_Ioc.nullMeasurableSet fun x => _
+  refine IsAddFundamentalDomain.mk' measurableSet_Ioc.nullMeasurableSet fun x => ?_
   have : Bijective (codRestrict (fun n : ℤ => n • T) (AddSubgroup.zmultiples T) _) :=
     (Equiv.ofInjective (fun n : ℤ => n • T) (zsmul_strictMono_left hT).injective).bijective
-  refine' this.existsUnique_iff.2 _
+  refine this.existsUnique_iff.2 ?_
   simpa only [add_comm x] using existsUnique_add_zsmul_mem_Ioc hT x t
 #align is_add_fundamental_domain_Ioc isAddFundamentalDomain_Ioc
 
 theorem isAddFundamentalDomain_Ioc' {T : ℝ} (hT : 0 < T) (t : ℝ) (μ : Measure ℝ := by volume_tac) :
     IsAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) (Ioc t (t + T)) μ := by
-  refine' IsAddFundamentalDomain.mk' measurableSet_Ioc.nullMeasurableSet fun x => _
+  refine IsAddFundamentalDomain.mk' measurableSet_Ioc.nullMeasurableSet fun x => ?_
   have : Bijective (codRestrict (fun n : ℤ => n • T) (AddSubgroup.zmultiples T) _) :=
     (Equiv.ofInjective (fun n : ℤ => n • T) (zsmul_strictMono_left hT).injective).bijective
-  refine' (AddSubgroup.equivOp _).bijective.comp this |>.existsUnique_iff.2 _
+  refine (AddSubgroup.equivOp _).bijective.comp this |>.existsUnique_iff.2 ?_
   simpa using existsUnique_add_zsmul_mem_Ioc hT x t
 #align is_add_fundamental_domain_Ioc' isAddFundamentalDomain_Ioc'
 
@@ -65,7 +65,9 @@ noncomputable instance measureSpace : MeasureSpace (AddCircle T) :=
   { QuotientAddGroup.measurableSpace _ with volume := ENNReal.ofReal T • addHaarMeasure ⊤ }
 #align add_circle.measure_space AddCircle.measureSpace
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+@[simp, nolint simpNF]
 protected theorem measure_univ : volume (Set.univ : Set (AddCircle T)) = ENNReal.ofReal T := by
   dsimp [volume]
   rw [← PositiveCompacts.coe_top]
@@ -256,7 +258,7 @@ theorem intervalIntegral_add_eq_of_pos (hf : Periodic f T) (hT : 0 < T) (t s : �
   simp only [integral_of_le, hT.le, le_add_iff_nonneg_right]
   haveI : VAddInvariantMeasure (AddSubgroup.zmultiples T) ℝ volume :=
     ⟨fun c s _ => measure_preimage_add _ _ _⟩
-  apply IsAddFundamentalDomain.set_integral_eq (G := AddSubgroup.zmultiples T)
+  apply IsAddFundamentalDomain.setIntegral_eq (G := AddSubgroup.zmultiples T)
   exacts [isAddFundamentalDomain_Ioc hT t, isAddFundamentalDomain_Ioc hT s, hf.map_vadd_zmultiples]
 #align function.periodic.interval_integral_add_eq_of_pos Function.Periodic.intervalIntegral_add_eq_of_pos
 

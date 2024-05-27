@@ -23,9 +23,6 @@ More generally, a list of elements of `a` can be reinterpreted as a path from `s
 itself using `pathEquivList`.
 -/
 
-set_option autoImplicit true
-
-
 namespace Quiver
 
 /-- Type tag on `Unit` used to define single-object quivers. -/
@@ -36,7 +33,7 @@ def SingleObj (_ : Type*) : Type :=
 #align quiver.single_obj Quiver.SingleObj
 
 -- Porting note: `deriving` from above has been moved to below.
-instance : Unique (SingleObj α) where
+instance {α : Type*} : Unique (SingleObj α) where
   default := ⟨⟩
   uniq := fun _ => rfl
 
@@ -61,14 +58,12 @@ lemma ext {x y : SingleObj α} : x = y := Unit.ext x y
 
 -- See note [reducible non-instances]
 /-- Equip `SingleObj α` with a reverse operation. -/
-@[reducible]
-def hasReverse (rev : α → α) : HasReverse (SingleObj α) := ⟨rev⟩
+abbrev hasReverse (rev : α → α) : HasReverse (SingleObj α) := ⟨rev⟩
 #align quiver.single_obj.has_reverse Quiver.SingleObj.hasReverse
 
 -- See note [reducible non-instances]
 /-- Equip `SingleObj α` with an involutive reverse operation. -/
-@[reducible]
-def hasInvolutiveReverse (rev : α → α) (h : Function.Involutive rev) :
+abbrev hasInvolutiveReverse (rev : α → α) (h : Function.Involutive rev) :
     HasInvolutiveReverse (SingleObj α) where
   toHasReverse := hasReverse rev
   inv' := h

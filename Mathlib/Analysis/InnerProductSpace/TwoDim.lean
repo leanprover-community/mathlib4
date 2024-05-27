@@ -80,7 +80,7 @@ lemma FiniteDimensional.of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated] -- Since 2024-02-02
 alias FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two :=
   FiniteDimensional.of_fact_finrank_eq_two
 
@@ -108,7 +108,7 @@ theorem areaForm_to_volumeForm (x y : E) : ω x y = o.volumeForm ![x, y] := by s
 @[simp]
 theorem areaForm_apply_self (x : E) : ω x x = 0 := by
   rw [areaForm_to_volumeForm]
-  refine' o.volumeForm.map_eq_zero_of_eq ![x, x] _ (_ : (0 : Fin 2) ≠ 1)
+  refine o.volumeForm.map_eq_zero_of_eq ![x, x] ?_ (?_ : (0 : Fin 2) ≠ 1)
   · simp
   · norm_num
 #align orientation.area_form_apply_self Orientation.areaForm_apply_self
@@ -566,7 +566,7 @@ theorem eq_zero_or_eq_zero_of_kahler_eq_zero {x y : E} (hx : o.kahler x y = 0) :
 #align orientation.eq_zero_or_eq_zero_of_kahler_eq_zero Orientation.eq_zero_or_eq_zero_of_kahler_eq_zero
 
 theorem kahler_eq_zero_iff (x y : E) : o.kahler x y = 0 ↔ x = 0 ∨ y = 0 := by
-  refine' ⟨o.eq_zero_or_eq_zero_of_kahler_eq_zero, _⟩
+  refine ⟨o.eq_zero_or_eq_zero_of_kahler_eq_zero, ?_⟩
   rintro (rfl | rfl) <;> simp
 #align orientation.kahler_eq_zero_iff Orientation.kahler_eq_zero_iff
 
@@ -576,7 +576,7 @@ theorem kahler_ne_zero {x y : E} (hx : x ≠ 0) (hy : y ≠ 0) : o.kahler x y �
 #align orientation.kahler_ne_zero Orientation.kahler_ne_zero
 
 theorem kahler_ne_zero_iff (x y : E) : o.kahler x y ≠ 0 ↔ x ≠ 0 ∧ y ≠ 0 := by
-  refine' ⟨_, fun h => o.kahler_ne_zero h.1 h.2⟩
+  refine ⟨?_, fun h => o.kahler_ne_zero h.1 h.2⟩
   contrapose
   simp only [not_and_or, Classical.not_not, kahler_apply_apply, Complex.real_smul]
   rintro (rfl | rfl) <;> simp
@@ -606,7 +606,7 @@ attribute [local instance] Complex.finrank_real_complex_fact
 protected theorem areaForm (w z : ℂ) : Complex.orientation.areaForm w z = (conj w * z).im := by
   let o := Complex.orientation
   simp only [o.areaForm_to_volumeForm, o.volumeForm_robust Complex.orthonormalBasisOneI rfl,
-    (Basis.det_apply), Matrix.det_fin_two, (Basis.toMatrix_apply), toBasis_orthonormalBasisOneI,
+    Basis.det_apply, Matrix.det_fin_two, Basis.toMatrix_apply, toBasis_orthonormalBasisOneI,
     Matrix.cons_val_zero, coe_basisOneI_repr, Matrix.cons_val_one, Matrix.head_cons, mul_im,
     conj_re, conj_im]
   ring

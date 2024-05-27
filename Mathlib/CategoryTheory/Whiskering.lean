@@ -111,8 +111,15 @@ instance faithful_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] :
     ((whiskeringRight C D E).obj F).Faithful where
   map_injective hαβ := by
     ext X
-    exact (F.map_injective <| congr_fun (congr_arg NatTrans.app hαβ) X)
+    exact F.map_injective <| congr_fun (congr_arg NatTrans.app hαβ) X
 #align category_theory.faithful_whiskering_right_obj CategoryTheory.faithful_whiskeringRight_obj
+
+instance full_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] [F.Full] :
+    ((whiskeringRight C D E).obj F).Full where
+  map_surjective f := by
+    refine ⟨⟨fun P ↦ F.preimage (f.app P), fun _ _ _ ↦ F.map_injective ?_⟩, ?_⟩
+    · simpa using f.naturality _
+    · ext; simp
 
 @[simp]
 theorem whiskerLeft_id (F : C ⥤ D) {G : D ⥤ E} :
