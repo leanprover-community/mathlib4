@@ -136,10 +136,9 @@ theorem auxiliaire (f : ℕ → (∀ n, X n) → ℝ≥0∞) (N : ℕ → ℕ)
       (eventually_of_forall (fun _ ↦ tendstoF _))
   have ε_le_lint x : ε ≤ (∫⋯∫⁻_{k}, l ∂μ) (Function.updateFinset x _ y) :=
     ge_of_tendsto (tendsto_int _) (by simp [hpos])
-  have : ∀ x, ε ≤ ∫⁻ xₐ : X k,
-    l (Function.update (Function.updateFinset x _ y) k xₐ) ∂μ k := by
-    simpa [lmarginal_singleton] using ε_le_lint
-  let x_ : ∀ n, X n := Classical.ofNonempty
+  have this x : ε ≤ ∫⁻ xₐ : X k, l (Function.update (Function.updateFinset x _ y) k xₐ) ∂μ k := by
+    simpa [lmarginal_singleton] using ε_le_lint x
+  let x_ : (n : ℕ) → X n := Classical.ofNonempty
   obtain ⟨x', hx'⟩ : ∃ x', ε ≤ l (Function.update (Function.updateFinset x_ _ y) k x') := by
     simp_rw [lmarginal_singleton] at ε_le_lint
     have aux : ∫⁻ (a : X k), l (Function.update (Function.updateFinset x_ _ y) k a) ∂μ k ≠ ⊤ := by
@@ -150,25 +149,25 @@ theorem auxiliaire (f : ℕ → (∀ n, X n) → ℝ≥0∞) (N : ℕ → ℕ)
     exact ⟨x', le_trans (this _) hx'⟩
   refine ⟨x', fun x n ↦ ?_⟩
   have := le_trans hx' ((anti _).le_of_tendsto (tendstoF _) n)
-  have aux : F n (Function.update
-      (Function.updateFinset x_ (Finset.Ico 0 k) y) k x') =
-      F n (Function.update
-      (Function.updateFinset x (Finset.Ico 0 k) y) k x') := by
+  have aux : F n (Function.update (Function.updateFinset x_ (Finset.Ico 0 k) y) k x') =
+      F n (Function.update (Function.updateFinset x (Finset.Ico 0 k) y) k x') := by
     simp only [F]
     have := dependsOn_lmarginal (μ := μ) (hcte n) (Finset.Icc (k + 1) (N n))
     rw [← coe_sdiff] at this
     have := dependsOn_updateFinset (dependsOn_update this k x') (Finset.Ico 0 k) y
     have aux : (Finset.Icc 0 (N n) \ Finset.Icc (k + 1) (N n)).erase k \ Finset.Ico 0 k = ∅ := by
       ext i
-      simp
+      simp only [Nat.Ico_zero_eq_range, mem_sdiff, mem_erase, ne_eq, Finset.mem_Icc, zero_le,
+        true_and, not_and, not_le, Finset.mem_range, not_lt, Finset.not_mem_empty, iff_false,
+        and_imp]
       intro h1 h2 h3
       refine lt_iff_le_and_ne.2 ⟨?_, h1⟩
       by_contra!
       rw [← Nat.succ_le] at this
-      linarith [h2, h3 this]
+      exact (lt_iff_not_le.1 (h3 this)) h2
     rw [← coe_sdiff, aux, coe_empty] at this
     apply dependsOn_empty this
-  simp [F] at aux
+  simp only [F] at aux
   rw [aux] at this
   exact this
 
@@ -207,16 +206,14 @@ theorem firstLemma (A : ℕ → Set ((n : ℕ) → X n)) (A_mem : ∀ n, A n ∈
     intro m n hmn y
     apply indicator_le
     exact fun a ha ↦ by simp [χ, A_anti hmn ha]
-  have lma_inv k M n : N n ≤ M →
+  have lma_inv k M n (h : N n ≤ M) :
       ∫⋯∫⁻_Finset.Icc k M, χ n ∂μ = ∫⋯∫⁻_Finset.Icc k (N n), χ n ∂μ := by
-    intro h
-    apply lmarginal_eq_of_disjoint_diff (mχ n) (χ_dep n)
-    · exact Finset.Icc_subset_Icc_right h
-    · rw [← coe_sdiff, Finset.disjoint_coe, Finset.disjoint_iff_inter_eq_empty]
-      ext i
-      simp only [Finset.mem_inter, Finset.mem_Icc, zero_le, true_and, mem_sdiff, not_and, not_le,
-        Finset.not_mem_empty, iff_false, Classical.not_imp, not_lt, and_imp]
-      exact fun h1 h2 _ ↦ ⟨h2, h1⟩
+    apply lmarginal_eq_of_disjoint_diff (mχ n) (χ_dep n) (Finset.Icc_subset_Icc_right h)
+    rw [← coe_sdiff, Finset.disjoint_coe, Finset.disjoint_iff_inter_eq_empty]
+    ext i
+    simp only [Finset.mem_inter, Finset.mem_Icc, zero_le, true_and, mem_sdiff, not_and, not_le,
+      Finset.not_mem_empty, iff_false, Classical.not_imp, not_lt, and_imp]
+    exact fun h1 h2 _ ↦ ⟨h2, h1⟩
   have anti_lma k x : Antitone fun n ↦ (∫⋯∫⁻_Finset.Icc k (N n), χ n ∂μ) x := by
     intro m n hmn
     simp only
@@ -269,10 +266,8 @@ theorem firstLemma (A : ℕ → Set ((n : ℕ) → X n)) (A_mem : ∀ n, A n ∈
         · rfl
       rw [this]
       convert hind m (fun i ↦ key ind i) hm x n
-      induction m with
-      | zero => aesop
-      | succ _ _ => rfl
-  by_cases ε_eq : 0 < ε
+      cases m with | zero => rfl | succ _ => rfl
+  by_cases hε' : 0 < ε
   · have incr : ∀ n, key ind ∈ A n := by
       intro n
       have : χ n (key ind) = (∫⋯∫⁻_Finset.Icc (N n + 1) (N n), χ n ∂μ)
@@ -284,10 +279,10 @@ theorem firstLemma (A : ℕ → Set ((n : ℕ) → X n)) (A_mem : ∀ n, A n ∈
         · simp
       have : 0 < χ n (key ind) := by
         rw [this]
-        exact lt_of_lt_of_le ε_eq (crucial (N n + 1) (key ind) n)
+        exact lt_of_lt_of_le hε' (crucial (N n + 1) (key ind) n)
       exact mem_of_indicator_ne_zero (ne_of_lt this).symm
     exact (A_inter ▸ mem_iInter.2 incr).elim
-  · have : ε = 0 := nonpos_iff_eq_zero.1 <| not_lt.1 ε_eq
+  · have : ε = 0 := nonpos_iff_eq_zero.1 <| not_lt.1 hε'
     simp_rw [concl Classical.ofNonempty]
     rw [← this, ← hε Classical.ofNonempty]
     exact hl _ _
@@ -306,9 +301,8 @@ lemma omg' (a b : Type _) (h : a = b) (x : a) (t : Set a) (h' : Set a = Set b) :
   aesop_subst h
   rfl
 
-theorem secondLemma (φ : ℕ ≃ ι)
-    (A : ℕ → Set ((i : ι) → X i)) (A_mem : ∀ n, A n ∈ cylinders X) (A_anti : Antitone A)
-    (A_inter : ⋂ n, A n = ∅) :
+theorem secondLemma (φ : ℕ ≃ ι) (A : ℕ → Set ((i : ι) → X i)) (A_mem : ∀ n, A n ∈ cylinders X)
+    (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅) :
     Tendsto (fun n ↦ @kolContent _ _ _ _
     (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
     (isProjectiveMeasureFamily_pi μ) (A n)) atTop (𝓝 0) := by
