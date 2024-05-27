@@ -39,11 +39,11 @@ In cryptography, as well as in this file, this is often called the Jacobian coor
 ## Implementation notes
 
 A point representative is implemented as a term `P` of type `Fin 3 → R`, which allows for the vector
-notation `![x, y, z]`. However, `P` is not definitionally equivalent to the expanded vector
+notation `![x, y, z]`. However, `P` is not syntactically equivalent to the expanded vector
 `![P x, P y, P z]`, so the lemmas `fin3_def` and `fin3_def_ext` can be used to convert between the
 two forms. The equivalence of two point representatives `P` and `Q` is implemented as an equivalence
 of orbits of the action of `Rˣ`, or equivalently that there is some unit `u` of `R` such that
-`P = u • Q`. However, `u • Q` is not definitionally equal to `![u² * Q x, u³ * Q y, u * Q z]`, so
+`P = u • Q`. However, `u • Q` is not syntactically equal to `![u² * Q x, u³ * Q y, u * Q z]`, so
 the auxiliary lemmas `smul_fin3` and `smul_fin3_ext` can be used to convert between the two forms.
 
 ## References
@@ -65,7 +65,7 @@ local macro "matrix_simp" : tactic =>
   `(tactic| simp only [Matrix.head_cons, Matrix.tail_cons, Matrix.smul_empty, Matrix.smul_cons,
     Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_two])
 
-universe u
+universe u v
 
 /-! ## Weierstrass curves -/
 
@@ -86,7 +86,7 @@ local macro "pderiv_simp" : tactic =>
     pderiv_X_of_ne (by decide : (2 : Fin 3) ≠ 0), pderiv_X_of_ne (by decide : (0 : Fin 3) ≠ 2),
     pderiv_X_of_ne (by decide : (2 : Fin 3) ≠ 1), pderiv_X_of_ne (by decide : (1 : Fin 3) ≠ 2)])
 
-variable {R : Type u} [CommRing R] {V : Jacobian R} {F : Type u} [Field F] {W : Jacobian F}
+variable {R : Type u} [CommRing R] {V : Jacobian R} {F : Type v} [Field F] {W : Jacobian F}
 
 section Jacobian
 
@@ -121,8 +121,9 @@ scoped instance instSetoidPoint : Setoid <| Fin 3 → R :=
 lemma smul_equiv (P : Fin 3 → R) (u : Rˣ) : u • P ≈ P :=
   ⟨u, rfl⟩
 
+variable (R) in
 /-- The equivalence class of a point representative. -/
-abbrev PointClass (R : Type u) [CommRing R] : Type u :=
+abbrev PointClass : Type u :=
   MulAction.orbitRel.Quotient Rˣ <| Fin 3 → R
 
 @[simp]
@@ -228,9 +229,7 @@ lemma equation_zero : V.Equation ![1, 1, 0] := by
   simp only [equation_of_Z_eq_zero, fin3_def_ext, one_pow]
 
 lemma equation_some (X Y : R) : V.Equation ![X, Y, 1] ↔ V.toAffine.Equation X Y := by
-  simp only [equation_iff, Affine.equation_iff', fin3_def_ext]
-  congr! 1
-  simp only [one_pow, mul_one]
+  simp only [equation_iff, Affine.equation_iff', fin3_def_ext, one_pow, mul_one]
 
 lemma equation_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.Equation P ↔ W.toAffine.Equation (P x / P z ^ 2) (P y / P z ^ 3) :=
