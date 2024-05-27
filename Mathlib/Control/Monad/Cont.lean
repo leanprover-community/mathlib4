@@ -117,13 +117,19 @@ instance : LawfulMonadCont (ContT r m) where
 /-- Note that `tryCatch` does not have correct behavior in this monad:
 ```
 def foo : ContT Bool (Except String) Bool := do
-  let x ← try pure true catch _ => return false
+  let x ← try
+    pure true
+  catch _ =>
+    return false
   throw s!"oh no {x}"
 
 #eval foo.run pure
 -- `Except.ok false`, no error
 ```
 Here, the `throwError` is being run inside the `try`.
+
+See [Zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/MonadExcept.20in.20the.20ContT.20monad/near/375341221)
+for further discussion.
 -/
 instance (ε) [MonadExcept ε m] : MonadExcept ε (ContT r m) where
   throw e _ := throw e
