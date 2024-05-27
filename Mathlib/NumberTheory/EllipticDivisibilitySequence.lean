@@ -923,12 +923,10 @@ section map
 
 variable {b c d : R}
 
-lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f c) (f d) n := by
-  refine normEDSRec' (map_zero f) (map_one f) (map_one f) rfl rfl ?_ ?_ n <;> intro m ih
-  on_goal 1 => simp_rw [preNormEDS'_even]; rw [← ih _ (by linarith only)]
-  on_goal 2 => simp_rw [preNormEDS'_odd]
-  all_goals rw [← ih, ← ih, ← ih, ← ih]; simp [apply_ite f]
-  all_goals linarith only
+lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f c) (f d) n :=
+  normEDSRec (map_zero f) (map_one f) (map_one f) rfl rfl
+    (fun m h₁ h₂ h₃ h₄ h₅ ↦ by simp [preNormEDS'_even, h₁, h₂, h₃, h₄, h₅])
+    (fun m h₁ h₂ h₃ h₄ ↦ by simp [preNormEDS'_odd, h₁, h₂, h₃, h₄, apply_ite f]) n
 
 lemma map_preNormEDS (n : ℤ) : f (preNormEDS b c d n) = preNormEDS (f b) (f c) (f d) n := by
   simp_rw [preNormEDS, map_mul, map_intCast, map_preNormEDS']
