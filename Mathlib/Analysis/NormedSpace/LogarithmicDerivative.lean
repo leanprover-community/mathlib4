@@ -16,10 +16,9 @@ function is the logarithmic derivative of the limit function.
 
 noncomputable section
 
-open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
-  Complex
+open Filter Function
 
-open scoped Real Topology BigOperators Classical
+open scoped Topology BigOperators Classical
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
@@ -59,7 +58,8 @@ theorem logDerv_const_mul (f : 𝕜 → 𝕜) (x a : 𝕜) (hf :  a * f x ≠ 0)
   simp only [logDeriv_const, Pi.zero_apply, zero_add]
   fun_prop
 
-theorem logDeriv_prod {α : Type _} (s : Finset α) (f : α → 𝕜 → 𝕜) (t : 𝕜) (hf : ∀ x ∈ s, f x t ≠ 0)
+/-- The logarithmic derivative of a finite product is the sum of the logarithmic derivatives. -/
+theorem logDeriv_prod {α : Type*} (s : Finset α) (f : α → 𝕜 → 𝕜) (t : 𝕜) (hf : ∀ x ∈ s, f x t ≠ 0)
     (hd : ∀ x ∈ s, DifferentiableAt 𝕜 (f x) t) :
     logDeriv (∏ i in s, f i) t = ∑ i in s, logDeriv (f i) t := by
   induction' s using Finset.cons_induction_on with a s ha ih
@@ -90,6 +90,8 @@ theorem logDeriv_comp (f g : 𝕜 → 𝕜) (x : 𝕜) (hf : DifferentiableAt �
   simp only [logDeriv, Pi.div_apply, deriv.comp _ hf hg, comp_apply]
   ring
 
+/-- The logarithmic derivative of a sequence of functions converging locally uniformly to a
+function is the logarithmic derivative of the limit function-/
 theorem logDeriv_tendsto {ι : Type*} [Preorder ι] (f : ι  → ℂ → ℂ) (g : ℂ → ℂ) {s : Set ℂ}
     (hs : IsOpen s) (x : s) (hF : TendstoLocallyUniformlyOn f g atTop s)
     (hf : ∀ᶠ n : ι in atTop, DifferentiableOn ℂ (f n) s) (hg : g x ≠ 0) :
