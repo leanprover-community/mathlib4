@@ -454,13 +454,13 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
         |(coeffs y).sum fun (i : Q m.succ) (a : ℝ) =>
             a • (ε q ∘ f m.succ ∘ fun i : Q m.succ => e i) i| := by
       erw [(f m.succ).map_finsupp_total, (ε q).map_finsupp_total, Finsupp.total_apply]
-    _ ≤ ∑ p in (coeffs y).support, |coeffs y p * (ε q <| f m.succ <| e p)| :=
+    _ ≤ ∑ p ∈ (coeffs y).support, |coeffs y p * (ε q <| f m.succ <| e p)| :=
       (norm_sum_le _ fun p => coeffs y p * _)
-    _ = ∑ p in (coeffs y).support, |coeffs y p| * ite (p ∈ q.adjacent) 1 0 := by
+    _ = ∑ p ∈ (coeffs y).support, |coeffs y p| * ite (p ∈ q.adjacent) 1 0 := by
       simp only [abs_mul, f_matrix]
-    _ = ∑ p in (coeffs y).support.filter q.adjacent, |coeffs y p| := by
+    _ = ∑ p ∈ (coeffs y).support.filter q.adjacent, |coeffs y p| := by
       simp [Finset.sum_filter]; rfl
-    _ ≤ ∑ _p in (coeffs y).support.filter q.adjacent, |coeffs y q| :=
+    _ ≤ ∑ _p ∈ (coeffs y).support.filter q.adjacent, |coeffs y q| :=
       (Finset.sum_le_sum fun p _ => H_max p)
     _ = (((coeffs y).support.filter q.adjacent).card : ℝ) * |coeffs y q| := by
       rw [Finset.sum_const, nsmul_eq_mul]

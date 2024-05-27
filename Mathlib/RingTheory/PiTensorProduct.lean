@@ -254,7 +254,7 @@ instance instCommSemiring : CommSemiring (⨂[R] i, A i) where
 
 open scoped BigOperators in
 @[simp] lemma tprod_prod {κ : Type*} (s : Finset κ) (x : κ → Π i, A i) :
-    tprod R (∏ k in s, x k) = ∏ k in s, tprod R (x k) :=
+    tprod R (∏ k ∈ s, x k) = ∏ k ∈ s, tprod R (x k) :=
   map_prod (tprodMonoidHom R) x s
 
 section

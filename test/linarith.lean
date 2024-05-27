@@ -596,7 +596,7 @@ example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
 open BigOperators
 
 example (h : False): True := by
-  have : ∑ k in Finset.empty, k^2 = 0 := by contradiction
+  have : ∑ k ∈ Finset.empty, k^2 = 0 := by contradiction
   have : ∀ k : Nat, 0 ≤ k := by
     intro h
     -- this should not panic:

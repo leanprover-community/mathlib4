@@ -40,7 +40,7 @@ namespace ZetaAsymptotics
 noncomputable def term (n : ℕ) (s : ℝ) : ℝ := ∫ x : ℝ in n..(n + 1), (x - n) / x ^ (s + 1)
 
 /-- Sum of finitely many `term`s. -/
-noncomputable def term_sum (s : ℝ) (N : ℕ) : ℝ := ∑ n : ℕ in Finset.range N, term (n + 1) s
+noncomputable def term_sum (s : ℝ) (N : ℕ) : ℝ := ∑ n ∈ Finset.range N, term (n + 1) s
 
 /-- Topological sum of `term`s. -/
 noncomputable def term_tsum (s : ℝ) : ℝ := ∑' n, term (n + 1) s
@@ -168,7 +168,7 @@ lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
 
 lemma term_sum_of_lt (N : ℕ) {s : ℝ} (hs : 1 < s) :
     term_sum s N = 1 / (s - 1) * (1 - 1 / (N + 1) ^ (s - 1))
-    - 1 / s * ((∑ n in Finset.range N, 1 / (n + 1 : ℝ) ^ s) - N / (N + 1) ^ s) := by
+    - 1 / s * ((∑ n ∈ Finset.range N, 1 / (n + 1 : ℝ) ^ s) - N / (N + 1) ^ s) := by
   simp only [term_sum]
   conv => enter [1, 2, n]; rw [term_of_lt (by simp) hs]
   rw [Finset.sum_sub_distrib]

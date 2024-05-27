@@ -27,8 +27,8 @@ worry about it explicitly.
 
 Finsets give a basic foundation for defining finite sums and products over types:
 
-  1. `∑ i in (s : Finset α), f i`;
-  2. `∏ i in (s : Finset α), f i`.
+  1. `∑ i ∈ (s : Finset α), f i`;
+  2. `∏ i ∈ (s : Finset α), f i`.
 
 Lean refers to these operations as big operators.
 More information can be found in `Mathlib.Algebra.BigOperators.Basic`.

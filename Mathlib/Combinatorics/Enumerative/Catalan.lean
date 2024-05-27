@@ -72,7 +72,7 @@ theorem catalan_succ (n : ℕ) : catalan (n + 1) = ∑ i : Fin n.succ, catalan i
 #align catalan_succ catalan_succ
 
 theorem catalan_succ' (n : ℕ) :
-    catalan (n + 1) = ∑ ij in antidiagonal n, catalan ij.1 * catalan ij.2 := by
+    catalan (n + 1) = ∑ ij ∈ antidiagonal n, catalan ij.1 * catalan ij.2 := by
   rw [catalan_succ, Nat.sum_antidiagonal_eq_sum_range_succ (fun x y => catalan x * catalan y) n,
     sum_range]
 #align catalan_succ' catalan_succ'

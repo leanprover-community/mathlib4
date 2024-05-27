@@ -165,7 +165,7 @@ protected theorem multiset_sum_mem {m : Multiset A} (h : ∀ x ∈ m, x ∈ S) :
 #align subalgebra.multiset_sum_mem Subalgebra.multiset_sum_mem
 
 protected theorem sum_mem {ι : Type w} {t : Finset ι} {f : ι → A} (h : ∀ x ∈ t, f x ∈ S) :
-    (∑ x in t, f x) ∈ S :=
+    (∑ x ∈ t, f x) ∈ S :=
   sum_mem h
 #align subalgebra.sum_mem Subalgebra.sum_mem
 
@@ -176,7 +176,7 @@ protected theorem multiset_prod_mem {R : Type u} {A : Type v} [CommSemiring R] [
 
 protected theorem prod_mem {R : Type u} {A : Type v} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S : Subalgebra R A) {ι : Type w} {t : Finset ι} {f : ι → A} (h : ∀ x ∈ t, f x ∈ S) :
-    (∏ x in t, f x) ∈ S :=
+    (∏ x ∈ t, f x) ∈ S :=
   prod_mem h
 #align subalgebra.prod_mem Subalgebra.prod_mem
 

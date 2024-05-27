@@ -303,7 +303,7 @@ theorem sum_mem_iSup {ι : Type*} [Fintype ι] {f : ι → M} {p : ι → Submod
 #align submodule.sum_mem_supr Submodule.sum_mem_iSup
 
 theorem sum_mem_biSup {ι : Type*} {s : Finset ι} {f : ι → M} {p : ι → Submodule R M}
-    (h : ∀ i ∈ s, f i ∈ p i) : (∑ i in s, f i) ∈ ⨆ i ∈ s, p i :=
+    (h : ∀ i ∈ s, f i ∈ p i) : (∑ i ∈ s, f i) ∈ ⨆ i ∈ s, p i :=
   sum_mem fun i hi ↦ mem_iSup_of_mem i <| mem_iSup_of_mem hi (h i hi)
 #align submodule.sum_mem_bsupr Submodule.sum_mem_biSup
 

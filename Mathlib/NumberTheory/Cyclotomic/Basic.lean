@@ -452,7 +452,7 @@ set_option linter.uppercaseLean3 false in
 theorem splits_cyclotomic [IsCyclotomicExtension S K L] (hS : n ∈ S) :
     Splits (algebraMap K L) (cyclotomic n K) := by
   refine splits_of_splits_of_dvd _ (X_pow_sub_C_ne_zero n.pos _) (splits_X_pow_sub_one K L hS) ?_
-  use ∏ i : ℕ in (n : ℕ).properDivisors, Polynomial.cyclotomic i K
+  use ∏ i ∈ (n : ℕ).properDivisors, Polynomial.cyclotomic i K
   rw [(eq_cyclotomic_iff n.pos _).1 rfl, RingHom.map_one]
 #align is_cyclotomic_extension.splits_cyclotomic IsCyclotomicExtension.splits_cyclotomic
 

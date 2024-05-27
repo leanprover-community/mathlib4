@@ -50,7 +50,7 @@ theorem Multiset.smul_sum {r : α} {s : Multiset β} : r • s.sum = (s.map (r �
 #align multiset.smul_sum Multiset.smul_sum
 
 theorem Finset.smul_sum {r : α} {f : γ → β} {s : Finset γ} :
-    (r • ∑ x in s, f x) = ∑ x in s, r • f x :=
+    (r • ∑ x ∈ s, f x) = ∑ x ∈ s, r • f x :=
   map_sum (DistribSMul.toAddMonoidHom β r) f s
 #align finset.smul_sum Finset.smul_sum
 
@@ -65,7 +65,7 @@ theorem Multiset.smul_prod {r : α} {s : Multiset β} : r • s.prod = (s.map (r
 #align multiset.smul_prod Multiset.smul_prod
 
 theorem Finset.smul_prod {r : α} {f : γ → β} {s : Finset γ} :
-    (r • ∏ x in s, f x) = ∏ x in s, r • f x :=
+    (r • ∏ x ∈ s, f x) = ∏ x ∈ s, r • f x :=
   map_prod (MulDistribMulAction.toMonoidHom β r) f s
 #align finset.smul_prod Finset.smul_prod
 

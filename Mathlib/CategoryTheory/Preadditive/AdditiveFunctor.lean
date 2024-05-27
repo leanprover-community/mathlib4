@@ -99,7 +99,7 @@ open BigOperators
 
 @[simp]
 nonrec theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
-    F.map (∑ a in s, f a) = ∑ a in s, F.map (f a) :=
+    F.map (∑ a ∈ s, f a) = ∑ a ∈ s, F.map (f a) :=
   map_sum F.mapAddHom f s
 #align category_theory.functor.map_sum CategoryTheory.Functor.map_sum
 

@@ -196,25 +196,25 @@ variable {α} [Fintype V]
 
 @[simp]
 theorem adjMatrix_dotProduct [NonAssocSemiring α] (v : V) (vec : V → α) :
-    dotProduct (G.adjMatrix α v) vec = ∑ u in G.neighborFinset v, vec u := by
+    dotProduct (G.adjMatrix α v) vec = ∑ u ∈ G.neighborFinset v, vec u := by
   simp [neighborFinset_eq_filter, dotProduct, sum_filter]
 #align simple_graph.adj_matrix_dot_product SimpleGraph.adjMatrix_dotProduct
 
 @[simp]
 theorem dotProduct_adjMatrix [NonAssocSemiring α] (v : V) (vec : V → α) :
-    dotProduct vec (G.adjMatrix α v) = ∑ u in G.neighborFinset v, vec u := by
+    dotProduct vec (G.adjMatrix α v) = ∑ u ∈ G.neighborFinset v, vec u := by
   simp [neighborFinset_eq_filter, dotProduct, sum_filter, Finset.sum_apply]
 #align simple_graph.dot_product_adj_matrix SimpleGraph.dotProduct_adjMatrix
 
 @[simp]
 theorem adjMatrix_mulVec_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
-    (G.adjMatrix α *ᵥ vec) v = ∑ u in G.neighborFinset v, vec u := by
+    (G.adjMatrix α *ᵥ vec) v = ∑ u ∈ G.neighborFinset v, vec u := by
   rw [mulVec, adjMatrix_dotProduct]
 #align simple_graph.adj_matrix_mul_vec_apply SimpleGraph.adjMatrix_mulVec_apply
 
 @[simp]
 theorem adjMatrix_vecMul_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
-    (vec ᵥ* G.adjMatrix α) v = ∑ u in G.neighborFinset v, vec u := by
+    (vec ᵥ* G.adjMatrix α) v = ∑ u ∈ G.neighborFinset v, vec u := by
   simp only [← dotProduct_adjMatrix, vecMul]
   refine congr rfl ?_; ext x
   rw [← transpose_apply (adjMatrix α G) x v, transpose_adjMatrix]
@@ -222,13 +222,13 @@ theorem adjMatrix_vecMul_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
 
 @[simp]
 theorem adjMatrix_mul_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
-    (G.adjMatrix α * M) v w = ∑ u in G.neighborFinset v, M u w := by
+    (G.adjMatrix α * M) v w = ∑ u ∈ G.neighborFinset v, M u w := by
   simp [mul_apply, neighborFinset_eq_filter, sum_filter]
 #align simple_graph.adj_matrix_mul_apply SimpleGraph.adjMatrix_mul_apply
 
 @[simp]
 theorem mul_adjMatrix_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
-    (M * G.adjMatrix α) v w = ∑ u in G.neighborFinset w, M v u := by
+    (M * G.adjMatrix α) v w = ∑ u ∈ G.neighborFinset w, M v u := by
   simp [mul_apply, neighborFinset_eq_filter, sum_filter, adj_comm]
 #align simple_graph.mul_adj_matrix_apply SimpleGraph.mul_adjMatrix_apply
 

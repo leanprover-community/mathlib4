@@ -60,7 +60,7 @@ theorem ne_zero_or_ne_zero_of_nat_coprime {A : Type u} [CommRing A] [Nontrivial 
   IsCoprime.ne_zero_or_ne_zero (R := A) <| by
     simpa only [map_natCast] using IsCoprime.map (Nat.Coprime.isCoprime h) (Int.castRingHom A)
 
-theorem IsCoprime.prod_left : (∀ i ∈ t, IsCoprime (s i) x) → IsCoprime (∏ i in t, s i) x := by
+theorem IsCoprime.prod_left : (∀ i ∈ t, IsCoprime (s i) x) → IsCoprime (∏ i ∈ t, s i) x := by
   classical
   refine Finset.induction_on t (fun _ ↦ isCoprime_one_left) fun b t hbt ih H ↦ ?_
   rw [Finset.prod_insert hbt]
@@ -68,33 +68,33 @@ theorem IsCoprime.prod_left : (∀ i ∈ t, IsCoprime (s i) x) → IsCoprime (�
   exact H.1.mul_left (ih H.2)
 #align is_coprime.prod_left IsCoprime.prod_left
 
-theorem IsCoprime.prod_right : (∀ i ∈ t, IsCoprime x (s i)) → IsCoprime x (∏ i in t, s i) := by
+theorem IsCoprime.prod_right : (∀ i ∈ t, IsCoprime x (s i)) → IsCoprime x (∏ i ∈ t, s i) := by
   simpa only [isCoprime_comm] using IsCoprime.prod_left (R := R)
 #align is_coprime.prod_right IsCoprime.prod_right
 
-theorem IsCoprime.prod_left_iff : IsCoprime (∏ i in t, s i) x ↔ ∀ i ∈ t, IsCoprime (s i) x := by
+theorem IsCoprime.prod_left_iff : IsCoprime (∏ i ∈ t, s i) x ↔ ∀ i ∈ t, IsCoprime (s i) x := by
   classical
   refine Finset.induction_on t (iff_of_true isCoprime_one_left fun _ ↦ by simp) fun b t hbt ih ↦ ?_
   rw [Finset.prod_insert hbt, IsCoprime.mul_left_iff, ih, Finset.forall_mem_insert]
 #align is_coprime.prod_left_iff IsCoprime.prod_left_iff
 
-theorem IsCoprime.prod_right_iff : IsCoprime x (∏ i in t, s i) ↔ ∀ i ∈ t, IsCoprime x (s i) := by
+theorem IsCoprime.prod_right_iff : IsCoprime x (∏ i ∈ t, s i) ↔ ∀ i ∈ t, IsCoprime x (s i) := by
   simpa only [isCoprime_comm] using IsCoprime.prod_left_iff (R := R)
 #align is_coprime.prod_right_iff IsCoprime.prod_right_iff
 
-theorem IsCoprime.of_prod_left (H1 : IsCoprime (∏ i in t, s i) x) (i : I) (hit : i ∈ t) :
+theorem IsCoprime.of_prod_left (H1 : IsCoprime (∏ i ∈ t, s i) x) (i : I) (hit : i ∈ t) :
     IsCoprime (s i) x :=
   IsCoprime.prod_left_iff.1 H1 i hit
 #align is_coprime.of_prod_left IsCoprime.of_prod_left
 
-theorem IsCoprime.of_prod_right (H1 : IsCoprime x (∏ i in t, s i)) (i : I) (hit : i ∈ t) :
+theorem IsCoprime.of_prod_right (H1 : IsCoprime x (∏ i ∈ t, s i)) (i : I) (hit : i ∈ t) :
     IsCoprime x (s i) :=
   IsCoprime.prod_right_iff.1 H1 i hit
 #align is_coprime.of_prod_right IsCoprime.of_prod_right
 
 -- Porting note: removed names of things due to linter, but they seem helpful
 theorem Finset.prod_dvd_of_coprime :
-    (t : Set I).Pairwise (IsCoprime on s) → (∀ i ∈ t, s i ∣ z) → (∏ x in t, s x) ∣ z := by
+    (t : Set I).Pairwise (IsCoprime on s) → (∀ i ∈ t, s i ∣ z) → (∏ x ∈ t, s x) ∣ z := by
   classical
   exact Finset.induction_on t (fun _ _ ↦ one_dvd z)
     (by
@@ -120,7 +120,7 @@ end
 open Finset
 
 theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) :
-    (∃ μ : I → R, (∑ i in t, μ i * ∏ j in t \ {i}, s j) = 1) ↔
+    (∃ μ : I → R, (∑ i ∈ t, μ i * ∏ j ∈ t \ {i}, s j) = 1) ↔
       Pairwise (IsCoprime on fun i : t ↦ s i) := by
   refine h.cons_induction ?_ ?_
   · simp only [sum_singleton, Finset.sdiff_self, prod_empty, mul_one, exists_apply_eq,
@@ -154,7 +154,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
         congr 2
         rw [sdiff_sdiff_comm, sdiff_singleton_eq_erase a, erase_insert hat]
     · have : IsCoprime (s b) (s a) :=
-        ⟨μ a * ∏ i in t \ {b}, s i, ∑ i in t, μ i * ∏ j in t \ {i}, s j, ?_⟩
+        ⟨μ a * ∏ i ∈ t \ {b}, s i, ∑ i ∈ t, μ i * ∏ j ∈ t \ {i}, s j, ?_⟩
       · exact ⟨this.symm, this⟩
       rw [mul_assoc, ← prod_eq_prod_diff_singleton_mul hb, sum_mul, ← hμ, sum_congr rfl]
       intro x hx
@@ -167,7 +167,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
     obtain ⟨μ, hμ⟩ := ih.mpr hs
     obtain ⟨u, v, huv⟩ := IsCoprime.prod_left fun b hb ↦ (Hb b hb).right
     use fun i ↦ if i = a then u else v * μ i
-    have hμ' : (∑ i in t, v * ((μ i * ∏ j in t \ {i}, s j) * s a)) = v * s a := by
+    have hμ' : (∑ i ∈ t, v * ((μ i * ∏ j ∈ t \ {i}, s j) * s a)) = v * s a := by
       rw [← mul_sum, ← sum_mul, hμ, one_mul]
     rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat, if_pos rfl,
       ← huv, ← hμ', sum_congr rfl]
@@ -181,14 +181,14 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
 #align exists_sum_eq_one_iff_pairwise_coprime exists_sum_eq_one_iff_pairwise_coprime
 
 theorem exists_sum_eq_one_iff_pairwise_coprime' [Fintype I] [Nonempty I] [DecidableEq I] :
-    (∃ μ : I → R, (∑ i : I, μ i * ∏ j in {i}ᶜ, s j) = 1) ↔ Pairwise (IsCoprime on s) := by
+    (∃ μ : I → R, (∑ i : I, μ i * ∏ j ∈ {i}ᶜ, s j) = 1) ↔ Pairwise (IsCoprime on s) := by
   convert exists_sum_eq_one_iff_pairwise_coprime Finset.univ_nonempty (s := s) using 1
   simp only [Function.onFun, pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
 #align exists_sum_eq_one_iff_pairwise_coprime' exists_sum_eq_one_iff_pairwise_coprime'
 
 -- Porting note: a lot of the capitalization wasn't working
 theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
-    Pairwise (IsCoprime on fun i : t ↦ s i) ↔ ∀ i ∈ t, IsCoprime (s i) (∏ j in t \ {i}, s j) := by
+    Pairwise (IsCoprime on fun i : t ↦ s i) ↔ ∀ i ∈ t, IsCoprime (s i) (∏ j ∈ t \ {i}, s j) := by
   refine ⟨fun hp i hi ↦ IsCoprime.prod_right_iff.mpr fun j hj ↦ ?_, fun hp ↦ ?_⟩
   · rw [Finset.mem_sdiff, Finset.mem_singleton] at hj
     obtain ⟨hj, ji⟩ := hj
@@ -237,34 +237,34 @@ section RelPrime
 
 variable {α I} [CommMonoid α] [DecompositionMonoid α] {x y z : α} {s : I → α} {t : Finset I}
 
-theorem IsRelPrime.prod_left : (∀ i ∈ t, IsRelPrime (s i) x) → IsRelPrime (∏ i in t, s i) x := by
+theorem IsRelPrime.prod_left : (∀ i ∈ t, IsRelPrime (s i) x) → IsRelPrime (∏ i ∈ t, s i) x := by
   classical
   refine Finset.induction_on t (fun _ ↦ isRelPrime_one_left) fun b t hbt ih H ↦ ?_
   rw [Finset.prod_insert hbt]
   rw [Finset.forall_mem_insert] at H
   exact H.1.mul_left (ih H.2)
 
-theorem IsRelPrime.prod_right : (∀ i ∈ t, IsRelPrime x (s i)) → IsRelPrime x (∏ i in t, s i) := by
+theorem IsRelPrime.prod_right : (∀ i ∈ t, IsRelPrime x (s i)) → IsRelPrime x (∏ i ∈ t, s i) := by
   simpa only [isRelPrime_comm] using IsRelPrime.prod_left (α := α)
 
-theorem IsRelPrime.prod_left_iff : IsRelPrime (∏ i in t, s i) x ↔ ∀ i ∈ t, IsRelPrime (s i) x := by
+theorem IsRelPrime.prod_left_iff : IsRelPrime (∏ i ∈ t, s i) x ↔ ∀ i ∈ t, IsRelPrime (s i) x := by
   classical
   refine Finset.induction_on t (iff_of_true isRelPrime_one_left fun _ ↦ by simp) fun b t hbt ih ↦ ?_
   rw [Finset.prod_insert hbt, IsRelPrime.mul_left_iff, ih, Finset.forall_mem_insert]
 
-theorem IsRelPrime.prod_right_iff : IsRelPrime x (∏ i in t, s i) ↔ ∀ i ∈ t, IsRelPrime x (s i) := by
+theorem IsRelPrime.prod_right_iff : IsRelPrime x (∏ i ∈ t, s i) ↔ ∀ i ∈ t, IsRelPrime x (s i) := by
   simpa only [isRelPrime_comm] using IsRelPrime.prod_left_iff (α := α)
 
-theorem IsRelPrime.of_prod_left (H1 : IsRelPrime (∏ i in t, s i) x) (i : I) (hit : i ∈ t) :
+theorem IsRelPrime.of_prod_left (H1 : IsRelPrime (∏ i ∈ t, s i) x) (i : I) (hit : i ∈ t) :
     IsRelPrime (s i) x :=
   IsRelPrime.prod_left_iff.1 H1 i hit
 
-theorem IsRelPrime.of_prod_right (H1 : IsRelPrime x (∏ i in t, s i)) (i : I) (hit : i ∈ t) :
+theorem IsRelPrime.of_prod_right (H1 : IsRelPrime x (∏ i ∈ t, s i)) (i : I) (hit : i ∈ t) :
     IsRelPrime x (s i) :=
   IsRelPrime.prod_right_iff.1 H1 i hit
 
 theorem Finset.prod_dvd_of_isRelPrime :
-    (t : Set I).Pairwise (IsRelPrime on s) → (∀ i ∈ t, s i ∣ z) → (∏ x in t, s x) ∣ z := by
+    (t : Set I).Pairwise (IsRelPrime on s) → (∀ i ∈ t, s i ∣ z) → (∏ x ∈ t, s x) ∣ z := by
   classical
   exact Finset.induction_on t (fun _ _ ↦ one_dvd z)
     (by
@@ -284,7 +284,7 @@ theorem Fintype.prod_dvd_of_isRelPrime [Fintype I] (Hs : Pairwise (IsRelPrime on
   Finset.prod_dvd_of_isRelPrime (Hs.set_pairwise _) fun i _ ↦ Hs1 i
 
 theorem pairwise_isRelPrime_iff_isRelPrime_prod [DecidableEq I] :
-    Pairwise (IsRelPrime on fun i : t ↦ s i) ↔ ∀ i ∈ t, IsRelPrime (s i) (∏ j in t \ {i}, s j) := by
+    Pairwise (IsRelPrime on fun i : t ↦ s i) ↔ ∀ i ∈ t, IsRelPrime (s i) (∏ j ∈ t \ {i}, s j) := by
   refine ⟨fun hp i hi ↦ IsRelPrime.prod_right_iff.mpr fun j hj ↦ ?_, fun hp ↦ ?_⟩
   · rw [Finset.mem_sdiff, Finset.mem_singleton] at hj
     obtain ⟨hj, ji⟩ := hj

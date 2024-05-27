@@ -315,16 +315,16 @@ variances. -/
 theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type*} {X : ι → Ω → ℝ}
     {s : Finset ι} (hs : ∀ i ∈ s, @Memℒp _ _ _ (_) (X i) 2 ℙ)
     (h : Set.Pairwise ↑s fun i j => @IndepFun _ _ _ (_) _ _ (X i) (X j) ℙ) :
-    Var[∑ i in s, X i] = ∑ i in s, Var[X i] := by
+    Var[∑ i ∈ s, X i] = ∑ i ∈ s, Var[X i] := by
   classical
   induction' s using Finset.induction_on with k s ks IH
   · simp only [Finset.sum_empty, variance_zero]
   rw [variance_def' (memℒp_finset_sum' _ hs), sum_insert ks, sum_insert ks]
   simp only [add_sq']
   calc
-    𝔼[X k ^ 2 + (∑ i in s, X i) ^ 2 + 2 * X k * ∑ i in s, X i] - 𝔼[X k + ∑ i in s, X i] ^ 2 =
-        𝔼[X k ^ 2] + 𝔼[(∑ i in s, X i) ^ 2] + 𝔼[2 * X k * ∑ i in s, X i] -
-          (𝔼[X k] + 𝔼[∑ i in s, X i]) ^ 2 := by
+    𝔼[X k ^ 2 + (∑ i ∈ s, X i) ^ 2 + 2 * X k * ∑ i ∈ s, X i] - 𝔼[X k + ∑ i ∈ s, X i] ^ 2 =
+        𝔼[X k ^ 2] + 𝔼[(∑ i ∈ s, X i) ^ 2] + 𝔼[2 * X k * ∑ i ∈ s, X i] -
+          (𝔼[X k] + 𝔼[∑ i ∈ s, X i]) ^ 2 := by
       rw [integral_add', integral_add', integral_add']
       · exact Memℒp.integrable one_le_two (hs _ (mem_insert_self _ _))
       · apply integrable_finset_sum' _ fun i hi => ?_
@@ -344,12 +344,12 @@ theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type*} {X :
           (Memℒp.integrable one_le_two (hs _ (mem_insert_of_mem hi)))
         apply h (mem_insert_self _ _) (mem_insert_of_mem hi)
         exact fun hki => ks (hki.symm ▸ hi)
-    _ = Var[X k] + Var[∑ i in s, X i] +
-        (𝔼[2 * X k * ∑ i in s, X i] - 2 * 𝔼[X k] * 𝔼[∑ i in s, X i]) := by
+    _ = Var[X k] + Var[∑ i ∈ s, X i] +
+        (𝔼[2 * X k * ∑ i ∈ s, X i] - 2 * 𝔼[X k] * 𝔼[∑ i ∈ s, X i]) := by
       rw [variance_def' (hs _ (mem_insert_self _ _)),
         variance_def' (memℒp_finset_sum' _ fun i hi => hs _ (mem_insert_of_mem hi))]
       ring
-    _ = Var[X k] + Var[∑ i in s, X i] := by
+    _ = Var[X k] + Var[∑ i ∈ s, X i] := by
       simp_rw [Pi.mul_apply, Pi.ofNat_apply, Nat.cast_ofNat, sum_apply, mul_sum, mul_assoc,
         add_right_eq_self]
       rw [integral_finset_sum s fun i hi => ?_]; swap
@@ -367,7 +367,7 @@ theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type*} {X :
         exact fun hki => ks (hki.symm ▸ hi)
       · exact Memℒp.aestronglyMeasurable (hs _ (mem_insert_self _ _))
       · exact Memℒp.aestronglyMeasurable (hs _ (mem_insert_of_mem hi))
-    _ = Var[X k] + ∑ i in s, Var[X i] := by
+    _ = Var[X k] + ∑ i ∈ s, Var[X i] := by
       rw [IH (fun i hi => hs i (mem_insert_of_mem hi))
           (h.mono (by simp only [coe_insert, Set.subset_insert]))]
 #align probability_theory.indep_fun.variance_sum ProbabilityTheory.IndepFun.variance_sum

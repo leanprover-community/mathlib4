@@ -379,7 +379,7 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
         apply this
       intro i
       calc
-        (∏ j, a j) • s i = (∏ j in {i}ᶜ, a j) • a i • s i := by
+        (∏ j, a j) • s i = (∏ j ∈ {i}ᶜ, a j) • a i • s i := by
           rw [Fintype.prod_eq_prod_compl_mul i, mul_smul]
         _ ∈ N := N.smul_mem _ (ha' i)
 

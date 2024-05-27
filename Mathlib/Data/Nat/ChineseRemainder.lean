@@ -151,7 +151,7 @@ theorem chineseRemainderOfMultiset_lt_prod {m : Multiset ι}
   exact chineseRemainderOfList_lt_prod a s l
     (List.Nodup.pairwise_of_forall_ne nod pp) (by simpa using hs)
 
-/-- The natural number less than `∏ i in t, s i` congruent to
+/-- The natural number less than `∏ i ∈ t, s i` congruent to
 `a i` mod `s i` for all  `i ∈ t`. -/
 def chineseRemainderOfFinset (t : Finset ι)
     (hs : ∀ i ∈ t, s i ≠ 0) (pp : Set.Pairwise t (Coprime on s)) :
@@ -160,7 +160,7 @@ def chineseRemainderOfFinset (t : Finset ι)
 
 theorem chineseRemainderOfFinset_lt_prod {t : Finset ι}
     (hs : ∀ i ∈ t, s i ≠ 0) (pp : Set.Pairwise t (Coprime on s)) :
-    chineseRemainderOfFinset a s t hs pp < ∏ i in t, s i := by
+    chineseRemainderOfFinset a s t hs pp < ∏ i ∈ t, s i := by
   simpa [chineseRemainderOfFinset] using
     chineseRemainderOfMultiset_lt_prod a s t.nodup (by simpa using hs) (by simpa using pp)
 
