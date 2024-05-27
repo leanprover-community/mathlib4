@@ -32,7 +32,7 @@ Injectivity can then be shown by computing the degree of such a norm $N(p + qY)$
 ways, which is done in `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis` and in the
 auxiliary lemmas in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroupPoint`.
 
-When `W` is given in Jacobian coordinates, `WeierstrassCurve.Jacobian.Point.toAffine_addEquiv`
+When `W` is given in Jacobian coordinates, `WeierstrassCurve.Jacobian.Point.toAffineAddEquiv`
 pulls back the group law on `WeierstrassCurve.Affine.Point` to `WeierstrassCurve.Jacobian.Point`.
 
 ## Main definitions
@@ -598,7 +598,7 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
       · substs hx hy
         simpa only [some_add_some_of_Yeq rfl rfl] using
           (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h₂).symm
-      · simpa only [some_add_some_of_Yne hx hy] using
+      · simpa only [some_add_some_of_Yne hy] using
           (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ fun _ => hy).symm
     · simpa only [some_add_some_of_Xne hx] using
         (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ fun h => (hx h).elim).symm
@@ -625,7 +625,7 @@ lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
       by_cases hx : x₁ = x₂
       · by_cases hy : y₁ = W.negY x₂ y₂
         · exact ⟨hx, hy⟩
-        · rw [some_add_some_of_Yne hx hy] at h
+        · rw [some_add_some_of_Yne hy] at h
           contradiction
       · rw [some_add_some_of_Xne hx] at h
         contradiction
@@ -691,24 +691,24 @@ namespace WeierstrassCurve.Jacobian.Point
 variable {F : Type u} [Field F] {W : Jacobian F}
 
 lemma zero_add (P : W.Point) : 0 + P = P :=
-  toAffine_addEquiv.injective <| by
-    simp only [map_add, toAffine_addEquiv_apply, toAffineLift_zero, _root_.zero_add]
+  toAffineAddEquiv.injective <| by
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, _root_.zero_add]
 
 lemma add_zero (P : W.Point) : P + 0 = P :=
-  toAffine_addEquiv.injective <| by
-    simp only [map_add, toAffine_addEquiv_apply, toAffineLift_zero, _root_.add_zero]
+  toAffineAddEquiv.injective <| by
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, _root_.add_zero]
 
 lemma add_left_neg (P : W.Point) : -P + P = 0 :=
-  toAffine_addEquiv.injective <| by
+  toAffineAddEquiv.injective <| by
     rcases P with @⟨⟨_⟩, _⟩
-    simp only [map_add, toAffine_addEquiv_apply, toAffineLift_neg, Affine.Point.add_left_neg,
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, Affine.Point.add_left_neg,
       toAffineLift_zero]
 
 lemma add_comm (P Q : W.Point) : P + Q = Q + P :=
-  toAffine_addEquiv.injective <| by simp only [map_add, Affine.Point.add_comm]
+  toAffineAddEquiv.injective <| by simp only [map_add, Affine.Point.add_comm]
 
 lemma add_assoc (P Q R : W.Point) : P + Q + R = P + (Q + R) :=
-  toAffine_addEquiv.injective <| by simp only [map_add, Affine.Point.add_assoc]
+  toAffineAddEquiv.injective <| by simp only [map_add, Affine.Point.add_assoc]
 
 noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
   nsmul := nsmulRec
@@ -718,6 +718,20 @@ noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
   add_left_neg := add_left_neg
   add_comm := add_comm
   add_assoc := add_assoc
+
+variable {P Q : W.Point} {P' Q' : Fin 3 → F} (hP : P.point = ⟦P'⟧) (hQ : Q.point = ⟦Q'⟧)
+
+lemma add_point : (P + Q).point = ⟦W.add P' Q'⟧ := by
+  simp_rw [← add_def, add, hP, hQ]; rfl
+
+lemma two_smul_point : (2 • P).point = ⟦W.dblXYZ P'⟧ := by
+  rw [two_smul, add_point hP hP, Jacobian.add, if_pos (Setoid.refl _), dblXYZ]
+
+lemma add_point_of_ne (ne : P ≠ Q) :
+    (P + Q).point = ⟦W.addXYZ P' Q'⟧ := by
+  rw [add_point hP hQ, Jacobian.add, if_neg, addXYZ]
+  erw [← Quotient.eq, ← hP, ← hQ, ← Jacobian.Point.ext_iff]
+  exact ne
 
 end WeierstrassCurve.Jacobian.Point
 

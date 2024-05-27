@@ -287,13 +287,13 @@ lemma rel₃_iff₄ (m n r : ℤ) :
 /-- Express a `rel₄` with the last index fixed (call it `c`) in terms of
 three `rel₄`s with the last two indices fixed, with the second to last index equal to `c`. -/
 lemma rel₆_eq₃ (c d m n r : ℤ) :
-    rel₆ W c d m n r c = rel₆ W r c m n c d - rel₆ W n c m r c d + rel₆ W m c n r c d := by
+    rel₆ W c d m n r c = rel₆ W m c n r c d - rel₆ W n c m r c d + rel₆ W r c m n c d := by
   simp_rw [rel₆, rel₄]; ring
 
 /-- Express a `rel₄` with the last index fixed (call it `d`) in terms of
 three `rel₄`s with the last two indices fixed, with the last index equal to `d`. -/
 lemma rel₆_eq₃' (c d m n r : ℤ) :
-    rel₆ W c d m n r d = rel₆ W r d m n c d - rel₆ W n d m r c d + rel₆ W m d n r c d := by
+    rel₆ W c d m n r d = rel₆ W m d n r c d - rel₆ W n d m r c d + rel₆ W r d m n c d := by
   simp_rw [rel₆, rel₄]; ring
 
 /-- Express an arbitrary `rel₄` in terms of ten `rel₄`s either with the last index fixed,
@@ -304,6 +304,15 @@ theorem rel₆_eq₁₀ (c d m n r s : ℤ) :
       + rel₆ W n c m r s d - rel₆ W r c m n s d + rel₆ W s c m n r d
       + rel₆ W n r m s c d - rel₆ W n s m r c d + rel₆ W r s m n c d
       - 2 * rel₆ W m d n r s c := by
+  simp_rw [rel₆, rel₄]; ring
+
+theorem addMulSub_sq_mul_rel₄_eq₉ (c d m n r s : ℤ) :
+    (addMulSub W c d) ^ 2 * rel₄ W m n r s =
+      addMulSub W m c * (rel₆ W n d r s c d - rel₆ W r d n s c d + rel₆ W s d n r c d)
+                    -- = rel₆ W c d n r s d ↑ by rel₆_eq₃'   = rel₆ W c d n r s c ↓ by rel₆_eq₃
+      - addMulSub W m d * (rel₆ W n c r s c d - rel₆ W r c n s c d + rel₆ W s c n r c d)
+      + addMulSub W c d * (rel₆ W n r m s c d - rel₆ W n s m r c d + rel₆ W r s m n c d) := by
+                         -- the third row in RHS of rel₆_eq₁₀
   simp_rw [rel₆, rel₄]; ring
 
 /-- The recurrence defining odd terms of an elliptic sequence,
@@ -835,21 +844,41 @@ noncomputable def normEDSRec {P : ℕ → Sort u}
 
 section Complement
 
-variable (b c d : R)
+variable (b c d : R) (m : ℤ)
+
+/-- An auxiliary expression that appears in the definition of the numerator of
+the reduced invariant and in the definition of the `ω` family of division polynomials. -/
+def compl₂EDSAux : R :=
+  preNormEDS (b ^ 4) c d (m - 2) * preNormEDS (b ^ 4) c d (m + 1) ^ 2 * if Even m then 1 else b
+
+@[simp] lemma compl₂EDSAux_zero : compl₂EDSAux b c d 0 = -1 := by simp [compl₂EDSAux]
+@[simp] lemma compl₂EDSAux_one : compl₂EDSAux b c d 1 = -b := by simp [compl₂EDSAux]
+@[simp] lemma compl₂EDSAux_neg_one : compl₂EDSAux b c d (-1) = 0 := by simp [compl₂EDSAux]
+@[simp] lemma compl₂EDSAux_two : compl₂EDSAux b c d 2 = 0 := by simp [compl₂EDSAux]
+@[simp] lemma compl₂EDSAux_neg_two : compl₂EDSAux b c d (-2) = -d := by simp [compl₂EDSAux]
+
+lemma compl₂EDSAux_mul_b :
+    compl₂EDSAux b c d m * b = normEDS b c d (m - 2) * normEDS b c d (m + 1) ^ 2 := by
+  simp_rw [compl₂EDSAux, normEDS, Int.even_add, Int.even_sub, Int.not_even_one, even_two,
+    iff_false, iff_true]; split_ifs <;> ring
 
 /-- The "complement" of W(m) in W(2m) for a normalised EDS W is the witness of W(m) ∣ W(2m). -/
-def compl₂EDS (m : ℤ) : R :=
+def compl₂EDS : R :=
   letI p := preNormEDS (b ^ 4) c d
   (p (m - 1) ^ 2 * p (m + 2) - p (m - 2) * p (m + 1) ^ 2) * if Even m then 1 else b
+
+lemma compl₂EDSAux_neg : compl₂EDSAux b c d (-m) = -compl₂EDS b c d m - compl₂EDSAux b c d m := by
+  simp_rw [compl₂EDSAux, compl₂EDS, neg_sub_left, neg_add_eq_sub, ← neg_sub m,
+    preNormEDS_neg, even_neg]; ring_nf
 
 @[simp] lemma compl₂EDS_zero : compl₂EDS b c d 0 = 2 := by simp [compl₂EDS, one_add_one_eq_two]
 @[simp] lemma compl₂EDS_one : compl₂EDS b c d 1 = b := by simp [compl₂EDS]
 @[simp] lemma compl₂EDS_two : compl₂EDS b c d 2 = d := by simp [compl₂EDS]
 
-@[simp] lemma compl₂EDS_neg (m : ℤ) : compl₂EDS b c d (-m) = compl₂EDS b c d m := by
+@[simp] lemma compl₂EDS_neg : compl₂EDS b c d (-m) = compl₂EDS b c d m := by
   simp_rw [compl₂EDS, neg_sub_left, neg_add_eq_sub, ← neg_sub m, preNormEDS_neg, even_neg]; ring_nf
 
-lemma normEDS_mul_compl₂EDS (m : ℤ) :
+lemma normEDS_mul_compl₂EDS :
     normEDS b c d m * compl₂EDS b c d m = normEDS b c d (2 * m) := by
   induction m using Int.negInduction with
   | nat m =>
@@ -862,10 +891,10 @@ lemma normEDS_mul_compl₂EDS (m : ℤ) :
     · split_ifs <;> simp only [one_mul, mul_one]
   | neg m hm => simp_rw [mul_neg, normEDS_neg, compl₂EDS_neg, neg_mul, hm]
 
-lemma normEDS_dvd_two_mul (m : ℤ) : normEDS b c d m ∣ normEDS b c d (2 * m) :=
+lemma normEDS_dvd_two_mul : normEDS b c d m ∣ normEDS b c d (2 * m) :=
   ⟨_, (normEDS_mul_compl₂EDS b c d m).symm⟩
 
-lemma compl₂EDS_mul_b (m : ℤ) : letI W := normEDS b c d
+lemma compl₂EDS_mul_b : letI W := normEDS b c d
     compl₂EDS b c d m * b = W (m - 1) ^ 2 * W (m + 2) - W (m - 2) * W (m + 1) ^ 2 := by
   induction m using Int.negInduction with
   | nat m =>
@@ -1029,6 +1058,13 @@ lemma normEDS_two_three_two : normEDS 2 3 2 = id :=
   IsEllSequence.normEDS.ext isEllSequence_id (mem_nonZeroDivisors_of_ne_zero one_ne_zero)
     (mem_nonZeroDivisors_of_ne_zero two_ne_zero) rfl rfl rfl rfl
 
+lemma compl₂EDS_two_three_two (n : ℤ) : compl₂EDS (2 : ℤ) 3 2 n = 2 := by
+  obtain rfl | hn := eq_or_ne n 0
+  · exact compl₂EDS_zero ..
+  · have := normEDS_mul_compl₂EDS (2 : ℤ) 3 2 n
+    rwa [normEDS_two_three_two, id, id, mul_comm,
+      mul_cancel_right_mem_nonZeroDivisors (mem_nonZeroDivisors_of_ne_zero hn)] at this
+
 lemma universalNormEDS_ne_zero {n : ℤ} (hn : n ≠ 0) : universalNormEDS n ≠ 0 :=
   fun h ↦ hn <| by
     apply_fun aeval (Param.rec (2 : ℤ) 3 2) at h
@@ -1105,29 +1141,19 @@ namespace EllSequence
 
 variable (b c d)
 
-/-- An auxiliary expression that appears in the definition of the numerator of
-the reduced invariant and in the definition of the `ω` family of division polynomials. -/
-def invarNumAux : R :=
-  preNormEDS (b ^ 4) c d (m - 2) * preNormEDS (b ^ 4) c d (m + 1) ^ 2 * if Even m then 1 else b
-
-lemma invarNumAux_mul_b (m : ℤ) :
-    invarNumAux b c d m * b = normEDS b c d (m - 2) * normEDS b c d (m + 1) ^ 2 := by
-  simp_rw [invarNumAux, normEDS, Int.even_add, Int.even_sub, Int.not_even_one, even_two,
-    iff_false, iff_true]; split_ifs <;> ring
-
 /-- The numerator of the reduced invariant expression `(W(m-1)²W(m+2)+W(m-2)W(m+1)²+W₂²W(m)³)/W₂`
 for a normalised EDS W, obtained by cancelling `W₃W₂ = b*c` from `invarNum`. -/
 def redInvarNum : R :=
-  compl₂EDS b c d m + normEDS b c d m ^ 3 * b + 2 * invarNumAux b c d m
+  compl₂EDS b c d m + normEDS b c d m ^ 3 * b + 2 * compl₂EDSAux b c d m
 
 lemma compl₂EDS_eq_redInvarNum_sub :
     compl₂EDS b c d m =
-      redInvarNum b c d m - normEDS b c d m ^ 3 * b - 2 * invarNumAux b c d m := by
+      redInvarNum b c d m - normEDS b c d m ^ 3 * b - 2 * compl₂EDSAux b c d m := by
   rw [redInvarNum]; ring
 
 lemma invarNum_eq_redInvarNum_mul : invarNum (normEDS b c d) 1 m = redInvarNum b c d m * b := by
   simp_rw [redInvarNum, right_distrib, compl₂EDS_mul_b, mul_assoc 2 _ b,
-    invarNumAux_mul_b, invarNum_normEDS]; ring
+    compl₂EDSAux_mul_b, invarNum_normEDS]; ring
 
 /-- The expression `W(m+1)W(m)W(m-1)/W₃W₂` for a normalised EDS. -/
 def redInvarDenom : R :=
@@ -1150,7 +1176,7 @@ lemma invarDenom_eq_redInvarDenom_mul :
   have hd2 {m} := hd 2 m ⟨3, rfl⟩
   have hd3 {m} := hd 3 m ⟨2, rfl⟩
   have mul_eq := @normEDS_mul_complEDS_div _ _ b c d
-  rw [invarDenom, redInvarDenom]; split_ifs with h h h h h h
+  rw [invarDenom, redInvarDenom]; split_ifs with h h h h h h -- slow
   · rw [← mul_eq _ h6 _ (Int.dvd_of_emod_eq_zero h), normEDS_six_eq_mul]; ring
   · rw [← mul_eq _ h6 _ (Int.dvd_sub_of_emod_eq h), normEDS_six_eq_mul]; ring
   · rw [show m + 1 = m + 6 - 5 by abel, ← mul_eq _ h6, normEDS_six_eq_mul]; ring
@@ -1167,11 +1193,20 @@ lemma invarDenom_eq_redInvarDenom_mul :
     interval_cases m % 6 <;> contradiction
   all_goals rw [normEDS_three, normEDS_two]; ring
 
-lemma map_invarNumAux : f (invarNumAux b c d m) = invarNumAux (f b) (f c) (f d) m := by
-  simp [invarNumAux, apply_ite f, map_preNormEDS]
+@[simp] lemma redInvarDenom_zero : redInvarDenom b c d 0 = 0 := by
+  simp [redInvarDenom, complEDS, compl', compl]
+
+@[simp] lemma redInvarDenom_one : redInvarDenom b c d 1 = 0 := by
+  simp [redInvarDenom, complEDS, compl', compl]
+
+@[simp] lemma redInvarDenom_two : redInvarDenom b c d 2 = 1 := by
+  simp [redInvarDenom, complEDS, compl', compl]
+
+lemma map_compl₂EDSAux : f (compl₂EDSAux b c d m) = compl₂EDSAux (f b) (f c) (f d) m := by
+  simp [compl₂EDSAux, apply_ite f, map_preNormEDS]
 
 lemma map_redInvarNum : f (redInvarNum b c d m) = redInvarNum (f b) (f c) (f d) m := by
-  simp [redInvarNum, map_compl₂EDS, map_normEDS, map_invarNumAux]
+  simp [redInvarNum, map_compl₂EDS, map_normEDS, map_compl₂EDSAux]
 
 lemma map_redInvarDenom : f (redInvarDenom b c d m) = redInvarDenom (f b) (f c) (f d) m := by
   simp [redInvarDenom, apply_ite f, map_normEDS, map_complEDS]
