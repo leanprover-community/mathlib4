@@ -774,8 +774,8 @@ section Pi
 
 variable {ι : Type*} {φv φp : ι → Type*} [(i : ι) → AddCommGroup (φv i)]
   [(i : ι) → Module k (φv i)] [(i : ι) → AffineSpace (φv i) (φp i)]
-/-- `pi` construction for affine functions. From a family of affine functions it produces a affine
-function into a family of affine spaces.
+/-- `pi` construction for affine maps. From a family of affine maps it produces an affine
+map into a family of affine spaces.
 
 This is the affine version of `LinearMap.pi`.
 -/
