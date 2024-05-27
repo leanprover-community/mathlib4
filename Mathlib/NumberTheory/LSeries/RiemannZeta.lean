@@ -52,8 +52,6 @@ open Complex hiding exp norm_eq_abs abs_of_nonneg abs_two continuous_exp
 
 open scoped Topology Real Nat
 
-set_option profiler true
-
 noncomputable section
 
 /-!
