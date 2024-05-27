@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Kontorovich, David Loeffler, Heather Macbeth
+Authors: Alex Kontorovich, David Loeffler, Heather Macbeth, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.Fourier.AddCircle
@@ -27,7 +27,7 @@ tensoring the Fourier transform of the original function with the bilinear form.
 results for iterated derivatives.
 
 A consequence of these results is that, if a function is smooth and all its derivatives are
-integrable when multiplied by `‖v‖^k`, then the same goes for the Fourier transform, with
+integrable when multiplied by `‖v‖^k`, then the same goes for its Fourier transform, with
 explicit bounds.
 
 We give specialized versions of these results on inner product spaces (where `L` is the scalar
@@ -110,7 +110,7 @@ lemma hasFDerivAt_fourierChar_neg_bilinear_right (v : V) (w : W) :
     HasFDerivAt (fun w ↦ (𝐞 (-L v w) : ℂ))
       ((-2 * π * I * 𝐞 (-L v w)) • (ofRealCLM ∘L (L v))) w := by
   have ha : HasFDerivAt (fun w' : W ↦ L v w') (L v) w := ContinuousLinearMap.hasFDerivAt (L v)
-  convert (hasDerivAt_fourierChar (-L v w)).hasFDerivAt.comp w ha.neg
+  convert (hasDerivAt_fourierChar (-L v w)).hasFDerivAt.comp w ha.neg using 1
   ext y
   simp only [neg_mul, ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp', Pi.smul_apply,
     Function.comp_apply, ofRealCLM_apply, smul_eq_mul, ContinuousLinearMap.comp_neg,
@@ -120,7 +120,9 @@ lemma hasFDerivAt_fourierChar_neg_bilinear_right (v : V) (w : W) :
 
 lemma fderiv_fourierChar_neg_bilinear_right_apply (v : V) (w y : W) :
     fderiv ℝ (fun w ↦ (𝐞 (-L v w) : ℂ)) w y = -2 * π * I * L v y * 𝐞 (-L v w) := by
-  simp [(hasFDerivAt_fourierChar_neg_bilinear_right L v w).fderiv]
+  simp only [(hasFDerivAt_fourierChar_neg_bilinear_right L v w).fderiv, neg_mul,
+    ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp', Pi.smul_apply,
+    Function.comp_apply, ofRealCLM_apply, smul_eq_mul, neg_inj]
   ring
 
 lemma differentiable_fourierChar_neg_bilinear_right (v : V) :
@@ -134,7 +136,9 @@ lemma hasFDerivAt_fourierChar_neg_bilinear_left (v : V) (w : W) :
 
 lemma fderiv_fourierChar_neg_bilinear_left_apply (v y : V) (w : W) :
     fderiv ℝ (fun v ↦ (𝐞 (-L v w) : ℂ)) v y = -2 * π * I * L y w * 𝐞 (-L v w) := by
-  simp [(hasFDerivAt_fourierChar_neg_bilinear_left L v w).fderiv]
+  simp only [(hasFDerivAt_fourierChar_neg_bilinear_left L v w).fderiv, neg_mul,
+    ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp', Pi.smul_apply,
+    Function.comp_apply, ContinuousLinearMap.flip_apply, ofRealCLM_apply, smul_eq_mul, neg_inj]
   ring
 
 lemma differentiable_fourierChar_neg_bilinear_left (w : W) :
@@ -250,23 +254,23 @@ theorem fourierIntegral_fderiv [MeasurableSpace V] [BorelSpace V] [FiniteDimensi
     fourierIntegral 𝐞 μ L.toLinearMap₂ (fderiv ℝ f)
       = fourierSMulRight (-L.flip) (fourierIntegral 𝐞 μ L.toLinearMap₂ f) := by
   ext w y
-  let g : V → ℂ := fun v ↦ 𝐞 (-L v w)
+  let g (v : V) : ℂ := 𝐞 (-L v w)
   /- First rewrite things in a simplified form, without any real change. -/
   suffices ∫ x, g x • fderiv ℝ f x y ∂μ = ∫ x, (2 * ↑π * I * L y w * g x) • f x ∂μ by
     rw [fourierIntegral_continuousLinearMap_apply' hf']
     simpa only [fourierIntegral, ContinuousLinearMap.toLinearMap₂_apply, fourierSMulRight_apply,
       ContinuousLinearMap.neg_apply, ContinuousLinearMap.flip_apply, ← integral_smul, neg_smul,
       smul_neg, ← smul_smul, coe_smul, neg_neg]
+  -- Key step: integrate by parts with respect to `y` to switch the derivative from `f` to `g`.
   have A x : fderiv ℝ g x y = - 2 * ↑π * I * L y w * g x :=
     fderiv_fourierChar_neg_bilinear_left_apply _ _ _ _
-  /- Key step: integrate by parts with respect to `y` to switch the derivative from `f` to `g`. -/
   rw [integral_smul_fderiv_eq_neg_fderiv_smul_of_integrable, ← integral_neg]
   · congr with x
     simp only [A, neg_mul, neg_smul, neg_neg]
   · have : Integrable (fun x ↦ (-(2 * ↑π * I * ↑((L y) w)) • ((g x : ℂ) • f x))) μ :=
       ((fourierIntegral_convergent_iff' _ _).2 hf).smul _
     convert this using 2 with x
-    simp [A, smul_smul]
+    simp only [A, neg_mul, neg_smul, smul_smul]
   · exact (fourierIntegral_convergent_iff' _ _).2 (hf'.apply_continuousLinearMap _)
   · exact (fourierIntegral_convergent_iff' _ _).2 hf
   · exact differentiable_fourierChar_neg_bilinear_left _ _
@@ -281,7 +285,7 @@ This is designed so that the Fourier transform of `v ↦ fourierPowSMulRight L f
 -/
 def fourierPowSMulRight (f : V → E) (v : V) : FormalMultilinearSeries ℝ W E := fun n ↦
   (- (2 * π * I))^n • ((ContinuousMultilinearMap.mkPiRing ℝ (Fin n) (f v)).compContinuousLinearMap
-  (fun _i ↦ L v))
+  (fun _ ↦ L v))
 
 /- Increase the priority to make sure that this lemma is used instead of
 `FormalMultilinearSeries.apply_eq_prod_smul_coeff` even in dimension 1. -/
@@ -304,7 +308,7 @@ lemma _root_.Continuous.fourierPowSMulRight {f : V → E} (hf : Continuous f) (n
   simp_rw [fourierPowSMulRight_eq_comp]
   apply Continuous.const_smul
   apply (smulRightL ℝ (fun (_ : Fin n) ↦ W) E).continuous₂.comp₂ _ hf
-  exact Continuous.comp (map_continuous _) (continuous_pi (fun _i ↦ L.continuous))
+  exact Continuous.comp (map_continuous _) (continuous_pi (fun _ ↦ L.continuous))
 
 lemma _root_.ContDiff.fourierPowSMulRight {f : V → E} {k : ℕ∞} (hf : ContDiff ℝ k f) (n : ℕ) :
     ContDiff ℝ k (fun v ↦ fourierPowSMulRight L f v n) := by
@@ -345,71 +349,85 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
     {v : V} (hv : ∀ i ≤ k, ∀ j ≤ n, ‖v‖ ^ j * ‖iteratedFDeriv ℝ i f v‖ ≤ C) :
     ‖iteratedFDeriv ℝ k (fun v ↦ fourierPowSMulRight L f v n) v‖ ≤
       (2 * π) ^ n * (2 * n + 2) ^ k * ‖L‖ ^ n * C := by
+  /- We write `fourierPowSMulRight L f v n` as a composition of bilinear and multilinear maps,
+  thanks to `fourierPowSMulRight_eq_comp`, and then we control the iterated derivatives of these
+  thanks to general bounds on derivatives of bilinear and multilinear maps. More precisely,
+  `fourierPowSMulRight L f v n m = (- (2 * π * I))^n • (∏ i, L v (m i)) • f v`. Here,
+  `(- (2 * π * I))^n` contributes `(2π)^n` to the bound. The second product is bilinear, so the
+  iterated derivative is controlled as a weighted sum of those of `v ↦ ∏ i, L v (m i)` and of `f`.
+
+  The harder part is to control the iterated derivatives of `v ↦ ∏ i, L v (m i)`. For this, one
+  argues that this is multilinear in `v`, to apply general bounds for iterated derivatives of
+  multilinear maps. More precisely, we write it as the composition of a multilinear map `T` (making
+  the product operation) and the tuple of linear maps `v ↦ (L v ⬝, ..., L v ⬝)` -/
+  simp_rw [fourierPowSMulRight_eq_comp]
+  -- first step: controlling the iterated derivatives of `v ↦ ∏ i, L v (m i)`, written below
+  -- as `v ↦ T (fun _ ↦ L v)`, or `T ∘ (ContinuousLinearMap.pi (fun (_ : Fin n) ↦ L))`.
   let T : (W →L[ℝ] ℝ) [×n]→L[ℝ] (W [×n]→L[ℝ] ℝ) :=
     compContinuousLinearMapLRight (ContinuousMultilinearMap.mkPiAlgebra ℝ (Fin n) ℝ)
   have I₁ m : ‖iteratedFDeriv ℝ m T (fun _ ↦ L v)‖ ≤
-      Nat.descFactorial n m * 1 * (‖L‖ * ‖v‖) ^ (n - m) := by
+      n.descFactorial m * 1 * (‖L‖ * ‖v‖) ^ (n - m) := by
     have : ‖T‖ ≤ 1 := by
       apply (norm_compContinuousLinearMapLRight_le _ _).trans
       simp only [norm_mkPiAlgebra, le_refl]
     apply (ContinuousMultilinearMap.norm_iteratedFDeriv_le _ _ _).trans
     simp only [Fintype.card_fin]
     gcongr
-    refine (pi_norm_le_iff_of_nonneg (by positivity)).mpr (fun _i ↦ ?_)
+    refine (pi_norm_le_iff_of_nonneg (by positivity)).mpr (fun _ ↦ ?_)
     exact ContinuousLinearMap.le_opNorm _ _
-  have I₂ m : ‖iteratedFDeriv ℝ m (T ∘ (ContinuousLinearMap.pi (fun (_i : Fin n) ↦ L))) v‖ ≤
-      (Nat.descFactorial n m * 1 * (‖L‖ * ‖v‖) ^ (n - m)) * ‖L‖^m := by
+  have I₂ m : ‖iteratedFDeriv ℝ m (T ∘ (ContinuousLinearMap.pi (fun (_ : Fin n) ↦ L))) v‖ ≤
+      (n.descFactorial m * 1 * (‖L‖ * ‖v‖) ^ (n - m)) * ‖L‖ ^ m := by
     rw [ContinuousLinearMap.iteratedFDeriv_comp_right _ (ContinuousMultilinearMap.contDiff _)
       _ le_top]
     apply (norm_compContinuousLinearMap_le _ _).trans
     simp only [Finset.prod_const, Finset.card_fin]
     gcongr
     · exact I₁ m
-    · exact ContinuousLinearMap.norm_pi_le_of_le (fun _i ↦ le_rfl) (norm_nonneg _)
-  have I₃ m : ‖iteratedFDeriv ℝ m (T ∘ (ContinuousLinearMap.pi (fun (_i : Fin n) ↦ L))) v‖ ≤
-      Nat.descFactorial n m * ‖L‖ ^ n * ‖v‖ ^ (n - m) := by
+    · exact ContinuousLinearMap.norm_pi_le_of_le (fun _ ↦ le_rfl) (norm_nonneg _)
+  have I₃ m : ‖iteratedFDeriv ℝ m (T ∘ (ContinuousLinearMap.pi (fun (_ : Fin n) ↦ L))) v‖ ≤
+      n.descFactorial m * ‖L‖ ^ n * ‖v‖ ^ (n - m) := by
     apply (I₂ m).trans (le_of_eq _)
-    rcases le_or_lt m n with hm|hm
-    · have : ‖L‖ ^ n = ‖L‖ ^ (m + (n - m)) := by congr; omega
-      rw [this, pow_add]
+    rcases le_or_lt m n with hm | hm
+    · rw [show ‖L‖ ^ n = ‖L‖ ^ (m + (n - m)) by rw [Nat.add_sub_cancel' hm], pow_add]
       ring
-    · simp [Nat.descFactorial_eq_zero_iff_lt.mpr hm]
-  have A : ContDiff ℝ K fun y ↦ T fun _ ↦ L y := by
-    apply (ContinuousMultilinearMap.contDiff _).comp
-    exact contDiff_pi.2 (fun _ ↦ L.contDiff)
-  simp_rw [fourierPowSMulRight_eq_comp]
-  rw [iteratedFDeriv_const_smul_apply', norm_smul (β := V [×k]→L[ℝ] (W [×n]→L[ℝ] E))]; swap
-  · exact (smulRightL ℝ (fun (_ : Fin n) ↦ W) E).isBoundedBilinearMap.contDiff.comp₂ (A.of_le hk)
-      (hf.of_le hk)
+    · simp only [Nat.descFactorial_eq_zero_iff_lt.mpr hm, CharP.cast_eq_zero, mul_one, zero_mul]
+  -- second step: factor out the `(2 * π) ^ n` factor, and cancel it on both sides.
+  have A : ContDiff ℝ K (fun y ↦ T (fun _ ↦ L y)) :=
+    (ContinuousMultilinearMap.contDiff _).comp (contDiff_pi.2 fun _ ↦ L.contDiff)
+  rw [iteratedFDeriv_const_smul_apply' (hf := (smulRightL ℝ (fun _ ↦ W)
+    E).isBoundedBilinearMap.contDiff.comp₂ (A.of_le hk) (hf.of_le hk)),
+    norm_smul (β := V [×k]→L[ℝ] (W [×n]→L[ℝ] E))]
   simp only [norm_pow, norm_neg, norm_mul, RCLike.norm_ofNat, Complex.norm_eq_abs, abs_ofReal,
     _root_.abs_of_nonneg pi_nonneg, abs_I, mul_one, mul_assoc]
   gcongr
+  -- third step: argue that the scalar multiplication is bilinear to bound the iterated derivatives
+  -- of `v ↦ (∏ i, L v (m i)) • f v` in terms of those of `v ↦ (∏ i, L v (m i))` and of `f`.
+  -- The former are controlled by the first step, the latter by the assumptions.
   apply (ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one _ A hf _
     hk ContinuousMultilinearMap.norm_smulRightL_le).trans
   calc
   ∑ i in Finset.range (k + 1),
-    Nat.choose k i * ‖iteratedFDeriv ℝ i (fun (y : V) ↦ T (fun _ ↦ L y)) v‖ *
+    k.choose i * ‖iteratedFDeriv ℝ i (fun (y : V) ↦ T (fun _ ↦ L y)) v‖ *
       ‖iteratedFDeriv ℝ (k - i) f v‖
     ≤ ∑ i in Finset.range (k + 1),
-      Nat.choose k i * (Nat.descFactorial n i * ‖L‖ ^ n * ‖v‖ ^ (n - i)) *
+      k.choose i * (n.descFactorial i * ‖L‖ ^ n * ‖v‖ ^ (n - i)) *
         ‖iteratedFDeriv ℝ (k - i) f v‖ := by
     gcongr with i _hi
     exact I₃ i
-  _ = ∑ i in Finset.range (k + 1), (Nat.choose k i * Nat.descFactorial n i * ‖L‖ ^ n) *
+  _ = ∑ i in Finset.range (k + 1), (k.choose i * n.descFactorial i * ‖L‖ ^ n) *
         (‖v‖ ^ (n - i) * ‖iteratedFDeriv ℝ (k - i) f v‖) := by
     congr with i
     ring
-  _ ≤ ∑ i in Finset.range (k + 1), (Nat.choose k i * (n + 1 : ℕ) ^ k * ‖L‖ ^ n) * C := by
+  _ ≤ ∑ i in Finset.range (k + 1), (k.choose i * (n + 1 : ℕ) ^ k * ‖L‖ ^ n) * C := by
     gcongr with i hi
     · rw [← Nat.cast_pow, Nat.cast_le]
-      calc Nat.descFactorial n i ≤ n ^ i := Nat.descFactorial_le_pow _ _
+      calc n.descFactorial i ≤ n ^ i := Nat.descFactorial_le_pow _ _
       _ ≤ (n + 1) ^ i := pow_le_pow_left (by omega) (by omega) i
       _ ≤ (n + 1) ^ k := pow_le_pow_right (by omega) (Finset.mem_range_succ_iff.mp hi)
     · exact hv _ (by omega) _ (by omega)
   _ = (2 * n + 2) ^ k * (‖L‖^n * C) := by
-    simp only [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose]
-    simp [← mul_pow, mul_add, ← mul_assoc]
-
+    simp only [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose, mul_one, ← mul_assoc,
+      Nat.cast_pow, Nat.cast_ofNat, Nat.cast_add, Nat.cast_one, ← mul_pow, mul_add]
 
 variable [SecondCountableTopology V] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
 
@@ -420,7 +438,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierPowSMulRight
   apply AEStronglyMeasurable.const_smul'
   apply (smulRightL ℝ (fun (_ : Fin n) ↦ W) E).continuous₂.comp_aestronglyMeasurable₂ _ hf
   apply Continuous.aestronglyMeasurable
-  exact Continuous.comp (map_continuous _) (continuous_pi (fun _i ↦ L.continuous))
+  exact Continuous.comp (map_continuous _) (continuous_pi (fun _ ↦ L.continuous))
 
 lemma integrable_fourierPowSMulRight {n : ℕ} (hf : Integrable (fun v ↦ ‖v‖ ^ n * ‖f v‖) μ)
     (h'f : AEStronglyMeasurable f μ) : Integrable (fun v ↦ fourierPowSMulRight L f v n) μ := by
@@ -452,7 +470,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
         ≤ ‖v‖ * ((2 * π * ‖L‖) ^ n * ‖v‖ ^ n * ‖f v‖) := by
           gcongr; apply norm_fourierPowSMulRight_le
       _ = (2 * π * ‖L‖) ^ n * (‖v‖ ^ (n + 1) * ‖f v‖) := by rw [pow_succ]; ring
-    have I₃ : Integrable (fun v ↦ fourierPowSMulRight L f v (Nat.succ n)) μ :=
+    have I₃ : Integrable (fun v ↦ fourierPowSMulRight L f v (n + 1)) μ :=
       integrable_fourierPowSMulRight L (hf (n + 1) (ENat.add_one_le_of_lt hn)) h'f
     have I₄ : Integrable
         (fun v ↦ fourierSMulRight L (fun v ↦ fourierPowSMulRight L f v n) v) μ := by
@@ -460,7 +478,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
       filter_upwards with v
       exact (norm_fourierSMulRight_le _ _ _).trans (le_of_eq (by ring))
     have E : curryLeft
-          (fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v (Nat.succ n)) w) =
+          (fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v (n + 1)) w) =
         fourierIntegral 𝐞 μ L.toLinearMap₂
           (fourierSMulRight L fun v ↦ fourierPowSMulRight L f v n) w := by
       ext w' m
@@ -471,8 +489,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
       simp only [fourierPowSMulRight_apply, mul_comm, pow_succ, neg_mul, Fin.prod_univ_succ,
         Fin.cons_zero, Fin.cons_succ, neg_smul, fourierSMulRight_apply, neg_apply, smul_apply,
         smul_comm (M := ℝ) (N := ℂ) (α := E), smul_smul]
-    rw [E]
-    exact hasFDerivAt_fourierIntegral L I₁ I₂ w
+    exact E ▸ hasFDerivAt_fourierIntegral L I₁ I₂ w
   · intro n hn
     apply fourierIntegral_continuous Real.continuous_fourierChar (by apply L.continuous₂)
     exact integrable_fourierPowSMulRight L (hf n hn) h'f
@@ -513,11 +530,9 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
       Finset.prod_empty, one_smul, fourierIntegral_continuousMultilinearMap_apply' ((h'f 0 bot_le))]
   | succ n ih =>
     ext w m
-    -- instance on next line should not be necessary, but proof breaks down without it.
-    let NS : NormedSpace ℝ (V [×n]→L[ℝ] E) := by infer_instance
     have J : Integrable (fderiv ℝ (iteratedFDeriv ℝ n f)) μ := by
       specialize h'f (n + 1) hn
-      simp_rw [iteratedFDeriv_succ_eq_comp_left] at h'f
+      rw [iteratedFDeriv_succ_eq_comp_left] at h'f
       exact (LinearIsometryEquiv.integrable_comp_iff _).1 h'f
     suffices H : (fourierIntegral 𝐞 μ L.toLinearMap₂ (fderiv ℝ (iteratedFDeriv ℝ n f)) w)
           (m 0) (Fin.tail m) =
@@ -528,20 +543,15 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
       rw [← fourierIntegral_continuousMultilinearMap_apply' ((J.apply_continuousLinearMap _)),
           ← fourierIntegral_continuousLinearMap_apply' J]
       exact H
-    have h'n : n < N := lt_of_lt_of_le (by simp [-Nat.cast_add]) hn
-    rw [fourierIntegral_fderiv]
-    · have A : ∀ (x : ℝ) (v : E), x • v = (x : ℂ) • v := fun x v ↦ rfl
-      simp only [ih h'n.le, fourierSMulRight_apply, ContinuousLinearMap.neg_apply,
-        ContinuousLinearMap.flip_apply, neg_smul, smul_neg, neg_neg, smul_apply,
-        fourierPowSMulRight_apply, A, smul_smul]
-      congr 1
-      have B : ∀ (i : Fin n), Fin.tail m i = m (Fin.succ i) := fun i ↦ rfl
-      simp only [ofReal_prod, ofReal_neg, pow_succ, mul_neg, Fin.prod_univ_succ, neg_mul,
-        ofReal_mul, neg_neg, B]
-      ring
-    · exact h'f n h'n.le
-    · exact hf.differentiable_iteratedFDeriv h'n
-    · exact J
+    have h'n : n < N := (Nat.cast_lt.mpr n.lt_succ_self).trans_le hn
+    rw [fourierIntegral_fderiv _ (h'f n h'n.le) (hf.differentiable_iteratedFDeriv h'n) J]
+    simp only [ih h'n.le, fourierSMulRight_apply, ContinuousLinearMap.neg_apply,
+      ContinuousLinearMap.flip_apply, neg_smul, smul_neg, neg_neg, smul_apply,
+      fourierPowSMulRight_apply, ← coe_smul (E := E), smul_smul]
+    congr 1
+    simp only [ofReal_prod, ofReal_neg, pow_succ, mul_neg, Fin.prod_univ_succ, neg_mul,
+      ofReal_mul, neg_neg, Fin.tail_def]
+    ring
 
 /-- The `k`-th derivative of the Fourier integral of `f`, multiplied by `(L v w) ^ n`, is the
 Fourier integral of the `n`-th derivative of `(L v w) ^ k * f`. -/
@@ -563,21 +573,22 @@ theorem fourierPowSMulRight_iteratedFDeriv_fourierIntegral [FiniteDimensional �
         ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖) μ := by
       apply integrable_finset_sum _ (fun p hp ↦ ?_)
       simp only [Finset.mem_product, Finset.mem_range_succ_iff] at hp
-      apply h'f _ _ ((Nat.cast_le.2 hp.1).trans hk) ((Nat.cast_le.2 hp.2).trans hm)
+      exact h'f _ _ ((Nat.cast_le.2 hp.1).trans hk) ((Nat.cast_le.2 hp.2).trans hm)
     apply (I.const_mul ((2 * π) ^ k * (2 * k + 2) ^ m * ‖L‖ ^ k)).mono'
       ((hf.fourierPowSMulRight L k).continuous_iteratedFDeriv hm).aestronglyMeasurable
     filter_upwards with v
-    apply norm_iteratedFDeriv_fourierPowSMulRight _ hf hm _
-    intro i hi j hj
+    refine norm_iteratedFDeriv_fourierPowSMulRight _ hf hm (fun i hi j hj ↦ ?_)
     apply Finset.single_le_sum (f := fun p ↦ ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖) (a := (j, i))
     · intro i _hi
       positivity
-    · simp only [Finset.mem_product, Finset.mem_range_succ_iff]
-      exact ⟨hj, hi⟩
+    · simpa only [Finset.mem_product, Finset.mem_range_succ_iff] using ⟨hj, hi⟩
 
 /-- One can bound the `k`-th derivative of the Fourier integral of `f`, multiplied by `(L v w) ^ n`,
 in terms of integrals of iterated derivatives of `f` (of order up to `n`) multiplied by `‖v‖ ^ i`
-(for `i ≤ k`). -/
+(for `i ≤ k`).
+Auxiliary version in terms of the operator norm of `fourierPowSMulRight (-L.flip) ⬝`. For a version
+in terms of `|L v w| ^ n * ⬝`, see `pow_mul_norm_iteratedFDeriv_fourierIntegral_le`.
+-/
 theorem norm_fourierPowSMulRight_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
     {μ : Measure V} [Measure.IsAddHaarMeasure μ] {K N : ℕ∞} (hf : ContDiff ℝ N f)
     (h'f : ∀ (k n : ℕ), k ≤ K → n ≤ N → Integrable (fun v ↦ ‖v‖^k * ‖iteratedFDeriv ℝ n f v‖) μ)
@@ -588,16 +599,14 @@ theorem norm_fourierPowSMulRight_iteratedFDeriv_fourierIntegral_le [FiniteDimens
       ∫ v, ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ ∂μ := by
   rw [fourierPowSMulRight_iteratedFDeriv_fourierIntegral L hf h'f hk hn]
   apply (norm_fourierIntegral_le_integral_norm _ _ _ _ _).trans
-  rw [← integral_finset_sum, ← integral_mul_left]; swap
-  · intro p hp
+  have I p (hp : p ∈ Finset.range (k + 1) ×ˢ Finset.range (n + 1)) :
+      Integrable (fun v ↦ ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖) μ := by
     simp only [Finset.mem_product, Finset.mem_range_succ_iff] at hp
     exact h'f _ _ (le_trans (by simpa using hp.1) hk) (le_trans (by simpa using hp.2) hn)
+  rw [← integral_finset_sum _ I, ← integral_mul_left]
   apply integral_mono_of_nonneg
   · filter_upwards with v using norm_nonneg _
-  · apply Integrable.const_mul
-    apply integrable_finset_sum _ (fun p hp ↦ ?_)
-    simp only [Finset.mem_product, Finset.mem_range_succ_iff] at hp
-    apply h'f _ _ ((Nat.cast_le.2 hp.1).trans hk) ((Nat.cast_le.2 hp.2).trans hn)
+  · exact (integrable_finset_sum _ I).const_mul _
   · filter_upwards with v
     apply norm_iteratedFDeriv_fourierPowSMulRight _ hf hn _
     intro i hi j hj
@@ -625,10 +634,10 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
     apply one_le_pow_of_one_le
     linarith [one_le_pi_div_two]
   _ = ‖fourierPowSMulRight (-L.flip)
-        (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n (fun _i ↦ v)‖ := by
+        (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n (fun _ ↦ v)‖ := by
     simp [norm_smul, _root_.abs_of_nonneg pi_nonneg]
   _ ≤ ‖fourierPowSMulRight (-L.flip)
-        (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n‖ * ∏ _i : Fin n, ‖v‖ :=
+        (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n‖ * ∏ _ : Fin n, ‖v‖ :=
     le_opNorm _ _
   _ ≤ ((2 * π) ^ k * (2 * k + 2) ^ n * ‖L‖ ^ k *
       ∑ p in Finset.range (k + 1) ×ˢ Finset.range (n + 1),
@@ -709,29 +718,31 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
     ‖w‖ ^ n * ‖iteratedFDeriv ℝ k (𝓕 f) w‖ ≤ (2 * π) ^ k * (2 * k + 2) ^ n *
       ∑ p in Finset.range (k + 1) ×ˢ Finset.range (n + 1),
         ∫ v, ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ := by
-  have Z := VectorFourier.pow_mul_norm_iteratedFDeriv_fourierIntegral_le (innerSL ℝ) hf h'f hk hn
-    w w
-  simp only [innerSL_apply _ w w, real_inner_self_eq_norm_sq w, _root_.abs_pow, abs_norm,
-    mul_assoc] at Z
-  rw [pow_two, mul_pow, mul_assoc] at Z
-  rcases eq_or_ne n 0 with rfl|hn
+  have Z : ‖w‖ ^ n * (‖w‖ ^ n * ‖iteratedFDeriv ℝ k (𝓕 f) w‖) ≤
+      ‖w‖ ^ n * ((2 * (π * ‖innerSL ℝ‖)) ^ k * ((2 * k + 2) ^ n *
+          ∑ p ∈ Finset.range (k + 1) ×ˢ Finset.range (n + 1),
+            ∫ (v : V), ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ ∂volume)) := by
+    have := VectorFourier.pow_mul_norm_iteratedFDeriv_fourierIntegral_le (innerSL ℝ) hf h'f hk hn
+      w w
+    simp only [innerSL_apply _ w w, real_inner_self_eq_norm_sq w, _root_.abs_pow, abs_norm,
+      mul_assoc] at this
+    rwa [pow_two, mul_pow, mul_assoc] at this
+  rcases eq_or_ne n 0 with rfl | hn
   · simp only [pow_zero, one_mul, mul_one, zero_add, Finset.range_one, Finset.product_singleton,
       Finset.sum_map, Function.Embedding.coeFn_mk, norm_iteratedFDeriv_zero, ge_iff_le] at Z ⊢
     apply Z.trans
     conv_rhs => rw [← mul_one π]
     gcongr
     exact norm_innerSL_le _
-  rcases eq_or_ne w 0 with rfl|hw
+  rcases eq_or_ne w 0 with rfl | hw
   · simp [hn]
     positivity
-  rw [mul_le_mul_left] at Z
-  · apply Z.trans
-    conv_rhs => rw [← mul_one π]
-    simp only [mul_assoc]
-    gcongr
-    exact norm_innerSL_le _
-  · apply pow_pos
-    simp [hw]
+  rw [mul_le_mul_left (pow_pos (by simp [hw]) n)] at Z
+  apply Z.trans
+  conv_rhs => rw [← mul_one π]
+  simp only [mul_assoc]
+  gcongr
+  exact norm_innerSL_le _
 
 lemma hasDerivAt_fourierIntegral
     {f : ℝ → E} (hf : Integrable f) (hf' : Integrable (fun x : ℝ ↦ x • f x)) (w : ℝ) :
@@ -769,16 +780,12 @@ theorem fourierIntegral_deriv
     𝓕 (deriv f) = fun (x : ℝ) ↦ (2 * π * I * x) • (𝓕 f x) := by
   ext x
   have I : Integrable (fun x ↦ fderiv ℝ f x) := by
-    simp_rw [← deriv_fderiv]
-    change Integrable (fun x ↦ ContinuousLinearMap.smulRightL _ _ _ 1 (deriv f x)) volume
-    apply ContinuousLinearMap.integrable_comp _ hf'
+    simpa only [← deriv_fderiv] using (ContinuousLinearMap.smulRightL ℝ ℝ E 1).integrable_comp hf'
   have : 𝓕 (deriv f) x = 𝓕 (fderiv ℝ f) x 1 := by
-    rw [fourierIntegral_continuousLinearMap_apply I]
-    rfl
+    simp only [fourierIntegral_continuousLinearMap_apply I, fderiv_deriv]
   rw [this, fourierIntegral_fderiv hf h'f I]
-  have : x • 𝓕 f x = (x : ℂ) • 𝓕 f x := rfl
   simp only [fourierSMulRight_apply, ContinuousLinearMap.neg_apply, innerSL_apply, smul_smul,
-    RCLike.inner_apply, conj_trivial, mul_one, neg_smul, smul_neg, neg_neg, neg_mul, this]
+    RCLike.inner_apply, conj_trivial, mul_one, neg_smul, smul_neg, neg_neg, neg_mul, ← coe_smul]
 
 theorem iteratedDeriv_fourierIntegral {f : ℝ → E} {N : ℕ∞} {n : ℕ}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun x ↦ x^n • f x)) (hn : n ≤ N) :
@@ -806,10 +813,9 @@ theorem fourierIntegral_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ} (hf
     intro n hn
     rw [iteratedFDeriv_eq_equiv_comp]
     exact (LinearIsometryEquiv.integrable_comp_iff _).2 (h'f n hn)
-  have B : ∀ (c : ℝ) (v : E), c • v = (c : ℂ) • v := fun c v ↦ rfl
   change 𝓕 (fun x ↦ iteratedDeriv n f x) x = _
   simp_rw [iteratedDeriv, ← fourierIntegral_continuousMultilinearMap_apply (A n hn),
     fourierIntegral_iteratedFDeriv hf A hn]
-  simp [B, smul_smul, ← mul_pow]
+  simp [← coe_smul, smul_smul, ← mul_pow]
 
 end Real

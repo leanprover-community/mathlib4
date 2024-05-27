@@ -41,7 +41,7 @@ theorem homology'_ext {L M N K : ModuleCat.{u} R} {f : L ⟶ M} {g : M ⟶ N} (w
         h (cokernel.π (imageToKernel _ _ w) (toKernelSubobject x)) =
           k (cokernel.π (imageToKernel _ _ w) (toKernelSubobject x))) :
     h = k := by
-  refine' Concrete.cokernel_funext fun n => _
+  refine Concrete.cokernel_funext fun n => ?_
   -- Porting note: as `equiv_rw` was not ported, it was replaced by `Equiv.surjective`
   -- Gosh it would be nice if `equiv_rw` could directly use an isomorphism, or an enriched `≃`.
   obtain ⟨n, rfl⟩ := (kernelSubobjectIso g ≪≫
@@ -108,7 +108,7 @@ example (f g : C ⟶ D) (h : Homotopy f g) (i : ι) :
   simp only [homology'Functor_map]
   erw [homology'.π_map_apply, homology'.π_map_apply]
   -- To check that two elements are equal mod boundaries, it suffices to exhibit a boundary:
-  refine' cokernel_π_imageSubobject_ext _ _ ((toPrev i h.hom) x.1) _
+  refine cokernel_π_imageSubobject_ext _ _ ((toPrev i h.hom) x.1) ?_
   -- Moreover, to check that two cycles are equal, it suffices to check their underlying elements:
   ext
   erw [map_add, CategoryTheory.Limits.kernelSubobjectMap_arrow_apply,

@@ -166,11 +166,19 @@ theorem toMeasure_comp_toFiniteMeasure_eq_toMeasure (ν : ProbabilityMeasure Ω)
   rfl
 #align measure_theory.probability_measure.coe_comp_to_finite_measure_eq_coe MeasureTheory.ProbabilityMeasure.toMeasure_comp_toFiniteMeasure_eq_toMeasure
 
-@[simp]
+-- This theorem should not be a simp lemma for performance reasons:
+-- this elaborates as `(fun s ↦ (↑ν.toFiniteMeasure s).toNNReal) = fun s ↦ (↑ν s).toNNReal`,
+-- in which both sides are lambdas. This means that they are not indexed by a symbol in the `simp`
+-- discrimination tree, and this lemma would be tried on every single goal,
+-- causing a serious performance hit.
 theorem coeFn_comp_toFiniteMeasure_eq_coeFn (ν : ProbabilityMeasure Ω) :
     (ν.toFiniteMeasure : Set Ω → ℝ≥0) = (ν : Set Ω → ℝ≥0) :=
   rfl
 #align measure_theory.probability_measure.coe_fn_comp_to_finite_measure_eq_coe_fn MeasureTheory.ProbabilityMeasure.coeFn_comp_toFiniteMeasure_eq_coeFn
+
+@[simp]
+theorem toFiniteMeasure_apply_eq_apply (ν : ProbabilityMeasure Ω) (s : Set Ω) :
+    ν.toFiniteMeasure s = ν s := rfl
 
 @[simp]
 theorem ennreal_coeFn_eq_coeFn_toMeasure (ν : ProbabilityMeasure Ω) (s : Set Ω) :
@@ -350,11 +358,11 @@ def normalize : ProbabilityMeasure Ω :=
   else
     { val := ↑(μ.mass⁻¹ • μ)
       property := by
-        refine' ⟨_⟩
+        refine ⟨?_⟩
         -- Porting note: paying the price that this isn't `simp` lemma now.
         rw [FiniteMeasure.toMeasure_smul]
-        simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
-          Measure.nnreal_smul_coe_apply, ne_eq, mass_zero_iff, ENNReal.coe_inv zero, ennreal_mass]
+        simp only [Measure.coe_smul, Pi.smul_apply, Measure.nnreal_smul_coe_apply, ne_eq,
+          mass_zero_iff, ENNReal.coe_inv zero, ennreal_mass]
         rw [← Ne, ← ENNReal.coe_ne_zero, ennreal_mass] at zero
         exact ENNReal.inv_mul_cancel zero μ.prop.measure_univ_lt_top.ne }
 #align measure_theory.finite_measure.normalize MeasureTheory.FiniteMeasure.normalize
@@ -362,15 +370,10 @@ def normalize : ProbabilityMeasure Ω :=
 @[simp]
 theorem self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize s := by
   obtain rfl | h := eq_or_ne μ 0
-  · simp only [zero_mass, coeFn_zero, Pi.zero_apply, zero_mul]
-    rfl
+  · simp
   have mass_nonzero : μ.mass ≠ 0 := by rwa [μ.mass_nonzero_iff]
   simp only [normalize, dif_neg mass_nonzero]
-  change μ s = mass μ * ((mass μ)⁻¹ • μ) s
-  -- Porting note: this `change` is a hack, but I had trouble coming up with something better
-  simp only [toMeasure_smul, Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
-    Measure.nnreal_smul_coe_apply, ne_eq, mass_zero_iff, ENNReal.toNNReal_mul, ENNReal.toNNReal_coe,
-    mul_inv_cancel_left₀ mass_nonzero]
+  simp [ProbabilityMeasure.coe_mk, toMeasure_smul, mul_inv_cancel_left₀ mass_nonzero]
 #align measure_theory.finite_measure.self_eq_mass_mul_normalize MeasureTheory.FiniteMeasure.self_eq_mass_mul_normalize
 
 theorem self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeasure := by
@@ -476,7 +479,7 @@ theorem tendsto_normalize_testAgainstNN_of_tendsto {γ : Type*} {F : Filter γ}
   have lim_pair :
     Tendsto (fun i => (⟨(μs i).mass⁻¹, (μs i).testAgainstNN f⟩ : ℝ≥0 × ℝ≥0)) F
       (𝓝 ⟨μ.mass⁻¹, μ.testAgainstNN f⟩) := by
-    refine' (Prod.tendsto_iff _ _).mpr ⟨_, _⟩
+    refine (Prod.tendsto_iff _ _).mpr ⟨?_, ?_⟩
     · exact (continuousOn_inv₀.continuousAt aux).tendsto.comp lim_mass
     · exact tendsto_iff_forall_testAgainstNN_tendsto.mp μs_lim f
   exact tendsto_mul.comp lim_pair

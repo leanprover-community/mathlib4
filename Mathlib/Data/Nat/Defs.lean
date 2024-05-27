@@ -66,6 +66,8 @@ variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
 
 instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
+@[simp] theorem default_eq_zero : default = 0 := rfl
+
 attribute [gcongr] Nat.succ_le_succ
 attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
   Nat.min_eq_left Nat.min_eq_right Nat.max_eq_left Nat.max_eq_right
@@ -1061,6 +1063,24 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 #align nat.mod_div_self Nat.mod_div_self
 
 attribute [simp] Nat.dvd_zero
+
+@[simp] lemma mod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
+  cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
+#align nat.mod_two_ne_one Nat.mod_two_ne_one
+
+@[simp] lemma mod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
+  cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
+#align nat.mod_two_ne_zero Nat.mod_two_ne_zero
+
+lemma div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b := by
+  obtain rfl | hb := eq_or_ne b 0
+  · simp
+  · rw [← @Nat.add_left_inj _ _ (c * (a / b / c)), mod_add_div, Nat.div_div_eq_div_mul, ←
+      Nat.mul_right_inj hb, ← @Nat.add_right_inj _ _ (a % b), mod_add_div, Nat.mul_add, ←
+      @Nat.add_right_inj _ _ (a % (b * c) % b), Nat.add_left_comm,
+      ← Nat.add_assoc (a % (b * c) % b), mod_add_div, ← Nat.mul_assoc, mod_add_div,
+      mod_mul_right_mod]
+#align nat.div_mod_eq_mod_mul_div Nat.div_mod_eq_mod_mul_div
 
 protected lemma lt_div_iff_mul_lt (hdn : d ∣ n) (a : ℕ) : a < n / d ↔ d * a < n := by
   obtain rfl | hd := d.eq_zero_or_pos
