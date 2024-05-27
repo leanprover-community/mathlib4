@@ -1540,8 +1540,7 @@ theorem eventually_constant_prod {u : ℕ → β} {N : ℕ} (hu : ∀ n ≥ N, u
   clear hn
   induction' m with m hm
   · simp
-  erw [prod_range_succ, hm]
-  simp [hu, @zero_le' ℕ]
+  · simp [← add_assoc, prod_range_succ, hm, hu]
 #align finset.eventually_constant_prod Finset.eventually_constant_prod
 #align finset.eventually_constant_sum Finset.eventually_constant_sum
 

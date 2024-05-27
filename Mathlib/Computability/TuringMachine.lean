@@ -59,6 +59,7 @@ Given these parameters, there are a few common structures for the model that ari
   formalizes "essentially finite" mentioned above.
 -/
 
+assert_not_exists MonoidWithZero
 
 open Relation
 
@@ -90,8 +91,8 @@ theorem BlankExtends.trans {Γ} [Inhabited Γ] {l₁ l₂ l₃ : List Γ} :
 theorem BlankExtends.below_of_le {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} :
     BlankExtends l l₁ → BlankExtends l l₂ → l₁.length ≤ l₂.length → BlankExtends l₁ l₂ := by
   rintro ⟨i, rfl⟩ ⟨j, rfl⟩ h; use j - i
-  simp only [List.length_append, add_le_add_iff_left, List.length_replicate] at h
-  simp only [← List.replicate_add, add_tsub_cancel_of_le h, List.append_assoc]
+  simp only [List.length_append, Nat.add_le_add_iff_left, List.length_replicate] at h
+  simp only [← List.replicate_add, Nat.add_sub_cancel' h, List.append_assoc]
 #align turing.blank_extends.below_of_le Turing.BlankExtends.below_of_le
 
 /-- Any two extensions by blank `l₁,l₂` of `l` have a common join (which can be taken to be the
@@ -106,10 +107,10 @@ theorem BlankExtends.above_of_le {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} :
     BlankExtends l₁ l → BlankExtends l₂ l → l₁.length ≤ l₂.length → BlankExtends l₁ l₂ := by
   rintro ⟨i, rfl⟩ ⟨j, e⟩ h; use i - j
   refine List.append_cancel_right (e.symm.trans ?_)
-  rw [List.append_assoc, ← List.replicate_add, tsub_add_cancel_of_le]
+  rw [List.append_assoc, ← List.replicate_add, Nat.sub_add_cancel]
   apply_fun List.length at e
   simp only [List.length_append, List.length_replicate] at e
-  rwa [← add_le_add_iff_left, e, add_le_add_iff_right]
+  rwa [← Nat.add_le_add_iff_left, e, Nat.add_le_add_iff_right]
 #align turing.blank_extends.above_of_le Turing.BlankExtends.above_of_le
 
 /-- `BlankRel` is the symmetric closure of `BlankExtends`, turning it into an equivalence
@@ -318,7 +319,7 @@ theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
     rw [H]
   refine Quotient.sound' (Or.inl ⟨l₂.length - l₁.length, ?_⟩)
   refine List.ext_get ?_ fun i h h₂ ↦ Eq.symm ?_
-  · simp only [add_tsub_cancel_of_le h, List.length_append, List.length_replicate]
+  · simp only [Nat.add_sub_cancel' h, List.length_append, List.length_replicate]
   simp only [ListBlank.nth_mk] at H
   cases' lt_or_le i l₁.length with h' h'
   · simp only [List.get_append _ h', List.get?_eq_get h, List.get?_eq_get h',
@@ -2569,8 +2570,8 @@ theorem tr_respects_aux₂ {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (�
         <;> simp only [List.reverse_cons, Function.update_same, ListBlank.nth_mk, List.map]
       -- Porting note: `le_refl` is required.
       · rw [List.getI_eq_get, List.get_append_right'] <;>
-          simp only [h, List.get_singleton, List.length_map, List.length_reverse, Nat.succ_pos',
-            List.length_append, lt_add_iff_pos_right, List.length, le_refl]
+          simp only [List.length_singleton, h, List.length_reverse, List.length_map, Nat.sub_self,
+            Fin.zero_eta, List.get_cons_zero, le_refl, List.length_append, Nat.lt_succ_self]
       rw [← proj_map_nth, hL, ListBlank.nth_mk]
       cases' lt_or_gt_of_ne h with h h
       · rw [List.getI_append]
