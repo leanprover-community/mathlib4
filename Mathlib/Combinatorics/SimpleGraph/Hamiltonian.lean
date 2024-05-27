@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer
 -/
 
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
-import Mathlib.Combinatorics.SimpleGraph.Trails
-import Mathlib.Algebra.BigOperators.Basic
 
 /-!
 # Hamiltonian Graphs
@@ -131,7 +130,7 @@ lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected where
     obtain rfl | hab := eq_or_ne a b
     · rfl
     have : Nontrivial α := ⟨a, b, hab⟩
-    obtain ⟨c, p, hp⟩ := hG Fintype.one_lt_card.ne'
+    obtain ⟨_, p, hp⟩ := hG Fintype.one_lt_card.ne'
     have a_mem := Walk.IsHamiltonianCycle.mem_support p hp a
     have b_mem := Walk.IsHamiltonianCycle.mem_support p hp b
     exact ((p.takeUntil a a_mem).reverse.append $ p.takeUntil b b_mem).reachable
