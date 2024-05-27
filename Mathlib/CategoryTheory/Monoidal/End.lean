@@ -199,7 +199,7 @@ theorem left_unitality_app (n : M) (X : C) :
 @[reassoc (attr := simp, nolint simpNF)]
 theorem obj_ε_app (n : M) (X : C) :
     (F.obj n).map (F.ε.app X) = (F.map (λ_ n).inv).app X ≫ (F.μIso (𝟙_ M) n).inv.app X := by
-  refine' Eq.trans _ (Category.id_comp _)
+  refine Eq.trans ?_ (Category.id_comp _)
   rw [← Category.assoc, ← IsIso.comp_inv_eq, ← IsIso.comp_inv_eq, Category.assoc]
   convert left_unitality_app F n X
   · simp
@@ -225,7 +225,7 @@ theorem right_unitality_app (n : M) (X : C) :
 @[simp]
 theorem ε_app_obj (n : M) (X : C) :
     F.ε.app ((F.obj n).obj X) = (F.map (ρ_ n).inv).app X ≫ (F.μIso n (𝟙_ M)).inv.app X := by
-  refine' Eq.trans _ (Category.id_comp _)
+  refine Eq.trans ?_ (Category.id_comp _)
   rw [← Category.assoc, ← IsIso.comp_inv_eq, ← IsIso.comp_inv_eq, Category.assoc]
   convert right_unitality_app F n X using 1
   simp
@@ -268,14 +268,14 @@ theorem obj_μ_inv_app (m₁ m₂ m₃ : M) (X : C) :
           (F.μIso m₁ (m₂ ⊗ m₃)).inv.app X ≫ (F.μIso m₂ m₃).inv.app ((F.obj m₁).obj X) := by
   rw [← IsIso.inv_eq_inv]
   convert obj_μ_app F m₁ m₂ m₃ X using 1
-  · refine' IsIso.inv_eq_of_hom_inv_id _
+  · refine IsIso.inv_eq_of_hom_inv_id ?_
     rw [← Functor.map_comp]
     simp
   · simp only [MonoidalFunctor.μIso_hom, Category.assoc, NatIso.inv_inv_app, IsIso.inv_comp]
     congr
-    · refine' IsIso.inv_eq_of_hom_inv_id _
+    · refine IsIso.inv_eq_of_hom_inv_id ?_
       simp
-    · refine' IsIso.inv_eq_of_hom_inv_id _
+    · refine IsIso.inv_eq_of_hom_inv_id ?_
       simp
 #align category_theory.obj_μ_inv_app CategoryTheory.obj_μ_inv_app
 
@@ -307,8 +307,7 @@ noncomputable def unitOfTensorIsoUnit (m n : M) (h : m ⊗ n ≅ 𝟙_ M) : F.ob
   then `F.obj m` and `F.obj n` forms a self-equivalence of `C`. -/
 @[simps]
 noncomputable def equivOfTensorIsoUnit (m n : M) (h₁ : m ⊗ n ≅ 𝟙_ M) (h₂ : n ⊗ m ≅ 𝟙_ M)
-    (H : h₁.hom ▷ m ≫ (λ_ m).hom = (α_ m n m).hom ≫ m ◁ h₂.hom ≫ (ρ_ m).hom) : C ≌ C
-    where
+    (H : h₁.hom ▷ m ≫ (λ_ m).hom = (α_ m n m).hom ≫ m ◁ h₂.hom ≫ (ρ_ m).hom) : C ≌ C where
   functor := F.obj m
   inverse := F.obj n
   unitIso := (unitOfTensorIsoUnit F m n h₁).symm

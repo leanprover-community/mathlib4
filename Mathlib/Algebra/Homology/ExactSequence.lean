@@ -171,7 +171,7 @@ lemma isComplex₂_iff (S : ComposableArrows C 2) :
   · intro h
     exact h.zero 0 (by omega)
   · intro h
-    refine' IsComplex.mk (fun i hi => _)
+    refine IsComplex.mk (fun i hi => ?_)
     obtain rfl : i = 0 := by omega
     exact h
 
@@ -195,7 +195,7 @@ lemma exact₂_iff (S : ComposableArrows C 2) (hS : S.IsComplex) :
   · intro h
     exact h.exact 0 (by omega)
   · intro h
-    refine' Exact.mk hS (fun i hi => _)
+    refine Exact.mk hS (fun i hi => ?_)
     obtain rfl : i = 0 := by omega
     exact h
 
@@ -225,7 +225,7 @@ lemma exact_iff_δ₀ (S : ComposableArrows C (n + 2)) :
     · exact Exact.mk (IsComplex.mk (fun i hi => h.toIsComplex.zero (i + 1)))
         (fun i hi => h.exact (i + 1))
   · rintro ⟨h, h₀⟩
-    refine' Exact.mk (IsComplex.mk (fun i hi => _)) (fun i hi => _)
+    refine Exact.mk (IsComplex.mk (fun i hi => ?_)) (fun i hi => ?_)
     · obtain _ | i := i
       · exact h.toIsComplex.zero 0
       · exact h₀.toIsComplex.zero i
@@ -254,7 +254,7 @@ lemma exact_iff_δlast {n : ℕ} (S : ComposableArrows C (n + 2)) :
         exact h.toIsComplex.zero n
       exact h.exact n (by omega)
   · rintro ⟨h, h'⟩
-    refine' Exact.mk (IsComplex.mk (fun i hi => _)) (fun i hi => _)
+    refine Exact.mk (IsComplex.mk (fun i hi => ?_)) (fun i hi => ?_)
     · simp only [add_le_add_iff_right, ge_iff_le] at hi
       obtain hi | rfl := hi.lt_or_eq
       · exact h.toIsComplex.zero i

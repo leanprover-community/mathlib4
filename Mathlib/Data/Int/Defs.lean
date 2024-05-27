@@ -55,13 +55,37 @@ attribute [simp] natAbs_pos
 protected lemma one_pos : 0 < (1 : Int) := Int.zero_lt_one
 #align int.one_pos Int.one_pos
 
+protected lemma one_ne_zero : (1 : ℤ) ≠ 0 := by decide
+
 protected lemma one_nonneg : 0 ≤ (1 : ℤ) := Int.le_of_lt Int.zero_lt_one
 #align int.one_nonneg Int.one_nonneg
 
 lemma zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n := @le.intro _ _ n (by rw [Int.zero_add]; rfl)
 #align int.zero_le_of_nat Int.zero_le_ofNat
 
+-- We want to use these lemmas earlier than the lemmas simp can prove them with
+@[simp, nolint simpNF]
+protected lemma neg_pos : 0 < -a ↔ a < 0 := ⟨Int.neg_of_neg_pos, Int.neg_pos_of_neg⟩
+
+@[simp, nolint simpNF]
+protected lemma neg_nonneg : 0 ≤ -a ↔ a ≤ 0 := ⟨Int.nonpos_of_neg_nonneg, Int.neg_nonneg_of_nonpos⟩
+
+@[simp, nolint simpNF]
+protected lemma neg_neg_iff_pos : -a < 0 ↔ 0 < a := ⟨Int.pos_of_neg_neg, Int.neg_neg_of_pos⟩
+
+@[simp, nolint simpNF]
+protected lemma neg_nonpos_iff_nonneg : -a ≤ 0 ↔ 0 ≤ a :=
+  ⟨Int.nonneg_of_neg_nonpos, Int.neg_nonpos_of_nonneg⟩
+
+@[simp, nolint simpNF]
+protected lemma sub_pos : 0 < a - b ↔ b < a := ⟨Int.lt_of_sub_pos, Int.sub_pos_of_lt⟩
+
+@[simp, nolint simpNF]
+protected lemma sub_nonneg : 0 ≤ a - b ↔ b ≤ a := ⟨Int.le_of_sub_nonneg, Int.sub_nonneg_of_le⟩
+
 instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
+
+@[simp] lemma ofNat_injective : Function.Injective ofNat := @Int.ofNat.inj
 
 @[simp] lemma ofNat_eq_natCast (n : ℕ) : Int.ofNat n = n := rfl
 
@@ -239,6 +263,12 @@ where
     rw [Int.add_lt_add_iff_left]; apply negSucc_lt_zero
 #align int.induction_on' Int.inductionOn'
 
+/-- Inductively define a function on `ℤ` by defining it on `ℕ` and extending it from `n` to `-n`. -/
+@[elab_as_elim] protected def negInduction {C : ℤ → Sort*} (nat : ∀ n : ℕ, C n)
+    (neg : ∀ n : ℕ, C n → C (-n)) : ∀ n : ℤ, C n
+  | .ofNat n => nat n
+  | .negSucc n => neg _ <| nat <| n + 1
+
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 protected lemma le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
     (h1 : ∀ n : ℤ, m ≤ n → P n → P (n + 1)) (n : ℤ) : m ≤ n → P n := by
@@ -295,6 +325,12 @@ lemma natAbs_ne_zero_of_ne_zero : ∀ {a : ℤ}, a ≠ 0 → natAbs a ≠ 0 := n
 #align int.nat_abs_lt_nat_abs_of_nonneg_of_lt Int.natAbs_lt_natAbs_of_nonneg_of_lt
 #align int.nat_abs_eq_nat_abs_iff Int.natAbs_eq_natAbs_iff
 #align int.nat_abs_eq_iff Int.natAbs_eq_iff
+
+lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
+  induction' k with k ih
+  · rfl
+  · rw [Int.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
+#align int.nat_abs_pow Int.natAbs_pow
 
 lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by
   simp [Int.pow_succ, Int.pow_zero, Int.natAbs_mul_self']
