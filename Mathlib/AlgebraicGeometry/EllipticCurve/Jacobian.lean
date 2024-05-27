@@ -76,11 +76,11 @@ the auxiliary lemmas `smul_fin3` and `smul_fin3_ext` can be used to convert betw
 elliptic curve, rational point, Jacobian coordinates
 -/
 
-local notation "x" => 0
+local notation3 "x" => (0 : Fin 3)
 
-local notation "y" => 1
+local notation3 "y" => (1 : Fin 3)
 
-local notation "z" => 2
+local notation3 "z" => (2 : Fin 3)
 
 local macro "matrix_simp" : tactic =>
   `(tactic| simp only [Matrix.head_cons, Matrix.tail_cons, Matrix.smul_empty, Matrix.smul_cons,
@@ -120,20 +120,23 @@ lemma fin3_def_ext (X Y Z : R) : ![X, Y, Z] x = X ∧ ![X, Y, Z] y = Y ∧ ![X, 
   ⟨rfl, rfl, rfl⟩
 
 /-- The scalar multiplication on a point representative. -/
-scoped instance instSMulPoint : SMul Rˣ <| Fin 3 → R :=
+scoped instance instSMulPoint : SMul R <| Fin 3 → R :=
   ⟨fun u P => ![u ^ 2 * P x, u ^ 3 * P y, u * P z]⟩
 
-lemma smul_fin3 (P : Fin 3 → R) (u : Rˣ) : u • P = ![u ^ 2 * P x, u ^ 3 * P y, u * P z] :=
+lemma smul_fin3 (P : Fin 3 → R) (u : R) : u • P = ![u ^ 2 * P x, u ^ 3 * P y, u * P z] :=
   rfl
 
-lemma smul_fin3_ext (P : Fin 3 → R) (u : Rˣ) :
+lemma smul_fin3' (X Y Z : R) (u : R) : u • ![X, Y, Z] = ![u ^ 2 * X, u ^ 3 * Y, u * Z] :=
+  rfl
+
+lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
     (u • P) x = u ^ 2 * P x ∧ (u • P) y = u ^ 3 * P y ∧ (u • P) z = u * P z :=
   ⟨rfl, rfl, rfl⟩
 
 /-- The multiplicative action on a point representative. -/
-scoped instance instMulActionPoint : MulAction Rˣ <| Fin 3 → R where
-  one_smul _ := by simp only [smul_fin3, Units.val_one, one_pow, one_mul, fin3_def]
-  mul_smul _ _ _ := by simp only [smul_fin3, Units.val_mul, mul_pow, mul_assoc, fin3_def_ext]
+scoped instance instMulActionPoint : MulAction R <| Fin 3 → R where
+  one_smul _ := by simp_rw [smul_fin3, one_pow, one_mul, fin3_def]
+  mul_smul _ _ _ := by simp_rw [smul_fin3, mul_pow, mul_assoc, fin3_def_ext]
 
 /-- The equivalence setoid for a point representative. -/
 scoped instance instSetoidPoint : Setoid <| Fin 3 → R :=
@@ -155,18 +158,29 @@ variable (V) in
 abbrev toAffine : Affine R :=
   V
 
+lemma equiv_iff_eq_of_Z_eq' {P Q : Fin 3 → R} (hz : P z = Q z) (mem : Q z ∈ nonZeroDivisors R) :
+    P ≈ Q ↔ P = Q := by
+  refine ⟨?_, by rintro rfl; exact Setoid.refl _⟩
+  rintro ⟨u, rfl⟩
+  rw [← one_mul (Q z)] at hz
+  simp [Units.smul_def, smul_fin3, (mul_cancel_right_mem_nonZeroDivisors mem).mp hz, fin3_def]
+
+lemma equiv_iff_eq_of_Z_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hz : P z = Q z) (ne : Q z ≠ 0) :
+    P ≈ Q ↔ P = Q :=
+  equiv_iff_eq_of_Z_eq' hz (mem_nonZeroDivisors_of_ne_zero ne)
+
 lemma Z_eq_zero_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P z = 0 ↔ Q z = 0 := by
   rcases h with ⟨_, rfl⟩
-  simp only [smul_fin3_ext, Units.mul_right_eq_zero]
+  simp only [Units.smul_def, smul_fin3_ext, Units.mul_right_eq_zero]
 
 lemma X_eq_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P x * Q z ^ 2 = Q x * P z ^ 2 := by
   rcases h with ⟨u, rfl⟩
-  simp only [smul_fin3_ext]
+  simp only [Units.smul_def, smul_fin3_ext]
   ring1
 
 lemma Y_eq_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P y * Q z ^ 3 = Q y * P z ^ 3 := by
   rcases h with ⟨u, rfl⟩
-  simp only [smul_fin3_ext]
+  simp only [Units.smul_def, smul_fin3_ext]
   ring1
 
 lemma not_equiv_of_Z_eq_zero_left {P Q : Fin 3 → R} (hPz : P z = 0) (hQz : Q z ≠ 0) : ¬P ≈ Q :=
@@ -185,7 +199,8 @@ lemma equiv_of_X_eq_of_Y_eq {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3) : P ≈ Q := by
   use Units.mk0 _ hPz / Units.mk0 _ hQz
   simp only [smul_fin3, Units.val_div_eq_div_val, Units.val_mk0, div_pow, mul_comm, mul_div, ← hx,
-    ← hy, mul_div_cancel_right₀ _ <| pow_ne_zero _ hQz, mul_div_cancel_right₀ _ hQz, fin3_def]
+    ← hy, mul_div_cancel_right₀ _ <| pow_ne_zero _ hQz, mul_div_cancel_right₀ _ hQz, fin3_def,
+    Units.smul_def]
 
 lemma equiv_some_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     P ≈ ![P x / P z ^ 2, P y / P z ^ 3, 1] :=
@@ -234,7 +249,7 @@ lemma equation_iff (P : Fin 3 → R) : V.Equation P ↔
 lemma equation_smul_iff (P : Fin 3 → R) (u : Rˣ) : V.Equation (u • P) ↔ V.Equation P := by
   have (u : Rˣ) {P : Fin 3 → R} (hP : V.Equation P) : V.Equation <| u • P := by
     rw [equation_iff] at hP ⊢
-    linear_combination (norm := (simp only [smul_fin3_ext]; ring1)) u ^ 6 * hP
+    linear_combination (norm := (simp only [Units.smul_def, smul_fin3_ext]; ring1)) u ^ 6 * hP
   exact ⟨fun h => by convert this u⁻¹ h; rw [inv_smul_smul], this u⟩
 
 lemma equation_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : V.Equation P ↔ V.Equation Q := by
@@ -343,7 +358,7 @@ lemma nonsingular_smul (P : Fin 3 → R) (u : Rˣ) : V.Nonsingular (u • P) ↔
     rcases (nonsingular_iff _).mp hP with ⟨h, h'⟩
     refine (nonsingular_iff P).mpr ⟨(equation_smul_iff P u).mp h, ?_⟩
     contrapose! h'
-    simp only [smul_fin3_ext]
+    simp only [Units.smul_def, smul_fin3_ext]
     exact ⟨by linear_combination (norm := ring1) u ^ 4 * h'.left,
       by linear_combination (norm := ring1) u ^ 3 * h'.right.left,
       by linear_combination (norm := ring1) u ^ 5 * h'.right.right⟩
@@ -402,7 +417,7 @@ lemma equiv_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nons
   simp only [nonsingular_of_Z_eq_zero, equation_of_Z_eq_zero, hPz, hQz] at hP hQ
   use (Units.mk0 _ hPy / Units.mk0 _ hPx) * (Units.mk0 _ hQx / Units.mk0 _ hQy)
   simp only [smul_fin3, Units.val_mul, Units.val_div_eq_div_val, Units.val_mk0, mul_pow, hQz,
-    mul_zero]
+    mul_zero, Units.smul_def]
   conv_rhs => rw [← fin3_def P, hPz]
   congr! 2
   · rw [div_pow, hP.left, pow_succ, mul_div_cancel_left₀ _ <| pow_ne_zero 2 hPx, div_pow, hQ.left,
@@ -441,7 +456,7 @@ variable (V) in
 def negY (P : Fin 3 → R) : R :=
   -P y - V.a₁ * P x * P z - V.a₃ * P z ^ 3
 
-lemma negY_smul (P : Fin 3 → R) (u : Rˣ) : V.negY (u • P) = u ^ 3 * V.negY P := by
+lemma negY_smul (P : Fin 3 → R) (u : R) : V.negY (u • P) = u ^ 3 * V.negY P := by
   simp only [negY, smul_fin3_ext]
   ring1
 
@@ -518,7 +533,7 @@ variable (V) in
 def dblZ (P : Fin 3 → R) : R :=
   P z * (P y - V.negY P)
 
-lemma dblZ_smul (P : Fin 3 → R) (u : Rˣ) : V.dblZ (u • P) = u ^ 4 * V.dblZ P := by
+lemma dblZ_smul (P : Fin 3 → R) (u : R) : V.dblZ (u • P) = u ^ 4 * V.dblZ P := by
   simp only [dblZ, negY_smul, smul_fin3_ext]
   ring1
 
@@ -559,7 +574,7 @@ def dblX (P : Fin 3 → R) : R :=
     + V.a₁ * (3 * P x ^ 2 + 2 * V.a₂ * P x * P z ^ 2 + V.a₄ * P z ^ 4 - V.a₁ * P y * P z) * P z
       * (P y - V.negY P) - V.a₂ * P z ^ 2 * (P y - V.negY P) ^ 2 - 2 * P x * (P y - V.negY P) ^ 2
 
-lemma dblX_smul (P : Fin 3 → R) (u : Rˣ) : V.dblX (u • P) = (u ^ 4) ^ 2 * V.dblX P := by
+lemma dblX_smul (P : Fin 3 → R) (u : R) : V.dblX (u • P) = (u ^ 4) ^ 2 * V.dblX P := by
   simp only [dblX, negY_smul, smul_fin3_ext]
   ring1
 
@@ -595,7 +610,7 @@ def dblY' (P : Fin 3 → R) : R :=
   (3 * P x ^ 2 + 2 * V.a₂ * P x * P z ^ 2 + V.a₄ * P z ^ 4 - V.a₁ * P y * P z)
       * (V.dblX P - P x * (P y - V.negY P) ^ 2) + P y * (P y - V.negY P) ^ 3
 
-lemma dblY'_smul (P : Fin 3 → R) (u : Rˣ) : V.dblY' (u • P) = (u ^ 4) ^ 3 * V.dblY' P := by
+lemma dblY'_smul (P : Fin 3 → R) (u : R) : V.dblY' (u • P) = (u ^ 4) ^ 3 * V.dblY' P := by
   simp only [dblY', dblX_smul, negY_smul, smul_fin3_ext]
   ring1
 
@@ -633,9 +648,18 @@ variable (V) in
 def dblY (P : Fin 3 → R) : R :=
   V.negY ![V.dblX P, V.dblY' P, V.dblZ P]
 
-lemma dblY_smul (P : Fin 3 → R) (u : Rˣ) : V.dblY (u • P) = (u ^ 4) ^ 3 * V.dblY P := by
+variable (V) in
+/-- All coordinates of the doubling of a point representative. -/
+def dblXYZ (P : Fin 3 → R) : Fin 3 → R :=
+  ![V.dblX P, V.dblY P, V.dblZ P]
+
+lemma dblY_smul (P : Fin 3 → R) (u : R) : V.dblY (u • P) = (u ^ 4) ^ 3 * V.dblY P := by
   simp only [dblY, negY, dblX_smul, dblY'_smul, dblZ_smul, fin3_def_ext]
   ring1
+
+lemma dblXYZ_smul (P : Fin 3 → R) (u : R) : V.dblXYZ (u • P) = (u ^ 4) • V.dblXYZ P := by
+  simp only [dblXYZ, dblX_smul, dblY_smul, dblZ_smul, fin3_def_ext]
+  rfl
 
 lemma dblY_of_Z_eq_zero {P : Fin 3 → R} (hP : V.Equation P) (hPz : P z = 0) :
     V.dblY P = (P x ^ 2) ^ 3 := by
@@ -664,8 +688,8 @@ section Addition
 def addZ (P Q : Fin 3 → R) : R :=
   P x * Q z ^ 2 - Q x * P z ^ 2
 
-lemma addZ_smul (P Q : Fin 3 → R) (u v : Rˣ) : addZ (u • P) (v • Q) = (u * v) ^ 2 * addZ P Q := by
-  simp only [addZ, smul_fin3_ext]
+lemma addZ_smul (P Q : Fin 3 → R) (u v : R) : addZ (u • P) (v • Q) = (u * v) ^ 2 * addZ P Q := by
+  simp only [addZ, Units.smul_def, smul_fin3_ext]
   ring1
 
 lemma addZ_of_Z_eq_zero_left {P Q : Fin 3 → R} (hPz : P z = 0) : addZ P Q = P x * Q z * Q z := by
@@ -719,7 +743,7 @@ lemma addX_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz :
         - Q x * P z ^ 2 * addZ P Q ^ 2) / (P z * Q z) ^ 2 := by
   rw [← addX_eq' hP hQ, mul_div_cancel_right₀ _ <| pow_ne_zero 2 <| mul_ne_zero hPz hQz]
 
-lemma addX_smul (P Q : Fin 3 → R) (u v : Rˣ) :
+lemma addX_smul (P Q : Fin 3 → R) (u v : R) :
     V.addX (u • P) (v • Q) = ((u * v) ^ 2) ^ 2 * V.addX P Q := by
   simp only [addX, smul_fin3_ext]
   ring1
@@ -785,7 +809,7 @@ lemma addY'_eq {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) : W.addY'
       + P y * Q z ^ 3 * addZ P Q ^ 3) / (P z * Q z) ^ 3 := by
   rw [← addY'_eq', mul_div_cancel_right₀ _ <| pow_ne_zero 3 <| mul_ne_zero hPz hQz]
 
-lemma addY'_smul (P Q : Fin 3 → R) (u v : Rˣ) :
+lemma addY'_smul (P Q : Fin 3 → R) (u v : R) :
     V.addY' (u • P) (v • Q) = ((u * v) ^ 2) ^ 3 * V.addY' P Q := by
   simp only [addY', smul_fin3_ext]
   ring1
@@ -834,10 +858,20 @@ variable (V) in
 def addY (P Q : Fin 3 → R) : R :=
   V.negY ![V.addX P Q, V.addY' P Q, addZ P Q]
 
-lemma addY_smul (P Q : Fin 3 → R) (u v : Rˣ) :
+variable (V) in
+/-- All coordinates of the addition of two distinct point representatives. -/
+def addXYZ (P Q : Fin 3 → R) : Fin 3 → R :=
+  ![V.addX P Q, V.addY P Q, addZ P Q]
+
+lemma addY_smul (P Q : Fin 3 → R) (u v : R) :
     V.addY (u • P) (v • Q) = ((u * v) ^ 2) ^ 3 * V.addY P Q := by
   simp only [addY, negY, addX_smul, addY'_smul, addZ_smul, fin3_def_ext]
   ring1
+
+lemma addXYZ_smul (P Q : Fin 3 → R) (u v : R) :
+    V.addXYZ (u • P) (v • Q) = (u * v) ^ 2 • V.addXYZ P Q := by
+  simp only [addXYZ, addX_smul, addY_smul, addZ_smul, fin3_def_ext]
+  rfl
 
 lemma addY_of_Z_eq_zero_left {P Q : Fin 3 → R} (hP : V.Equation P) (hPz : P z = 0) :
     V.addY P Q = (P x * Q z) ^ 3 * Q y := by
@@ -870,6 +904,20 @@ lemma addY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
   erw [addY, negY_of_Z_ne_zero <| addZ_ne_zero_of_X_ne hx, addX_of_Z_ne_zero hP hQ hPz hQz hx,
     addY'_of_Z_ne_zero hP hQ hPz hQz hx, Affine.addY]
 
+lemma addZ_self {P : Fin 3 → R} : addZ P P = 0 := sub_self _
+
+lemma addX_self {P : Fin 3 → R} (hP : V.Equation P) : V.addX P P = 0 := by
+  rw [addX]; rw [equation_iff] at hP
+  linear_combination -2 * P z ^ 2 * hP
+
+lemma addY'_self {P : Fin 3 → R} : V.addY' P P = 0 := by rw [addY']; ring
+
+lemma addY_self {P : Fin 3 → R} (hP : V.Equation P) : V.addY P P = 0 := by
+  rw [addY, addX_self hP, addY'_self, addZ_self, negY]; simp
+
+lemma addXYZ_self {P : Fin 3 → R} (hP : V.Equation P) : V.addXYZ P P = ![0, 0, 0] := by
+  rw [addXYZ, addX_self hP, addY_self hP, addZ_self]
+
 end Addition
 
 section Negation
@@ -881,8 +929,11 @@ variable (V) in
 def neg (P : Fin 3 → R) : Fin 3 → R :=
   ![P x, V.negY P, P z]
 
+protected lemma neg_smul (P : Fin 3 → R) (u : R) : V.neg (u • P) = u • V.neg P := by
+  simp only [neg, negY, smul_fin3_ext, smul_fin3']; ring_nf
+
 lemma neg_smul_equiv (P : Fin 3 → R) (u : Rˣ) : V.neg (u • P) ≈ V.neg P :=
-  ⟨u, by simp only [neg, negY_smul, smul_fin3_ext]; rfl⟩
+  ⟨u, by rw [Units.smul_def, Jacobian.neg_smul]; rfl⟩
 
 lemma neg_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : V.neg P ≈ V.neg Q := by
   rcases h with ⟨u, rfl⟩
@@ -913,6 +964,26 @@ lemma nonsingular_neg {P : Fin 3 → F} (hP : W.Nonsingular P) : W.Nonsingular <
   by_cases hPz : P z = 0
   · simp only [neg_of_Z_eq_zero hP hPz, nonsingular_smul, nonsingular_zero]
   · simp only [neg_of_Z_ne_zero hPz, nonsingular_smul, nonsingular_neg_of_Z_ne_zero hP hPz]
+
+lemma addZ_neg {P : Fin 3 → R} : addZ P (V.neg P) = 0 := by
+  simp_rw [addZ, neg, fin3_def_ext, sub_self]
+
+lemma addX_neg {P : Fin 3 → R} (hP : V.Equation P) : V.addX P (V.neg P) = V.dblZ P ^ 2 := by
+  simp only [addX, neg, dblZ, negY, fin3_def_ext]
+  linear_combination -2 * P z ^ 2 * ((equation_iff _).mp hP)
+
+lemma addY'_neg {P : Fin 3 → R} (hP : V.Equation P) : V.addY' P (V.neg P) = V.dblZ P ^ 3 := by
+  simp only [addY', neg, dblZ, negY, fin3_def_ext]
+  linear_combination -2 * (2 * P y * P z ^ 3 + V.a₁ * P x * P z ^ 4 + V.a₃ * P z ^ 6)
+    * ((equation_iff _).mp hP)
+
+lemma addY_neg {P : Fin 3 → R} (hP : V.Equation P) : V.addY P (V.neg P) = -V.dblZ P ^ 3 := by
+  simp [addY, addX_neg hP, addY'_neg hP, addZ_neg, negY, fin3_def_ext]
+
+lemma addXYZ_neg {P : Fin 3 → R} (hP : V.Equation P) :
+    V.addXYZ P (V.neg P) = -V.dblZ P • ![1, 1, 0] := by
+  simp_rw [addXYZ, addX_neg hP, addY_neg hP, addZ_neg, smul_fin3']
+  simp [(show Odd 3 by decide).neg_pow]
 
 variable (V) in
 /-- The negation of a point class. If `P` is a point representative,
@@ -965,10 +1036,10 @@ lemma add_of_not_equiv {P Q : Fin 3 → R} (h : ¬P ≈ Q) :
 lemma add_smul_equiv (P Q : Fin 3 → R) (u v : Rˣ) : V.add (u • P) (v • Q) ≈ V.add P Q := by
   have smul : P ≈ Q ↔ u • P ≈ v • Q := by erw [← Quotient.eq, ← Quotient.eq, smul_eq, smul_eq]; rfl
   by_cases h : P ≈ Q
-  · exact ⟨u ^ 4, by simp only [add_of_equiv <| smul.mp h, dblX_smul, dblY_smul, dblZ_smul,
-      add_of_equiv h]; rfl⟩
-  · exact ⟨(u * v) ^ 2, by simp only [add_of_not_equiv <| h.comp smul.mpr, addX_smul, addY_smul,
-      addZ_smul, add_of_not_equiv h]; rfl⟩
+  · exact ⟨u ^ 4, by simp_rw [add_of_equiv <| smul.mp h, add_of_equiv h,
+      Units.smul_def, dblX_smul, dblY_smul, dblZ_smul]; rfl⟩
+  · exact ⟨(u * v) ^ 2, by simp_rw [add_of_not_equiv <| h.comp smul.mpr, add_of_not_equiv h,
+      Units.smul_def, addX_smul, addY_smul, addZ_smul]; rfl⟩
 
 lemma add_equiv {P P' Q Q' : Fin 3 → R} (hP : P ≈ P') (hQ : Q ≈ Q') : V.add P Q ≈ V.add P' Q' := by
   rcases hP, hQ with ⟨⟨u, rfl⟩, ⟨v, rfl⟩⟩
@@ -1136,15 +1207,16 @@ section Point
 
 /-! ### Nonsingular rational points -/
 
-/-- A nonsingular rational point on `W`. -/
-structure Point where
+variable (V) in
+/-- A nonsingular rational point on `V`. -/
+@[ext] structure Point where
   {point : PointClass R}
   (nonsingular : V.NonsingularLift point)
 
-/-- The point class underlying a nonsingular rational point on `W`. -/
+/-- The point class underlying a nonsingular rational point on `V`. -/
 add_decl_doc Point.point
 
-/-- The nonsingular condition underlying a nonsingular rational point on `W`. -/
+/-- The nonsingular condition underlying a nonsingular rational point on `V`. -/
 add_decl_doc Point.nonsingular
 
 namespace Point
@@ -1155,8 +1227,8 @@ instance instZeroPoint [Nontrivial R] : Zero V.Point :=
 lemma zero_def [Nontrivial R] : (⟨nonsingularLift_zero⟩ : V.Point) = 0 :=
   rfl
 
-/-- The map from a nonsingular rational point on a Weierstrass curve `W` in affine coordinates
-to the corresponding nonsingular rational point on `W` in Jacobian coordinates. -/
+/-- The map from a nonsingular rational point on a Weierstrass curve `V` in affine coordinates
+to the corresponding nonsingular rational point on `V` in Jacobian coordinates. -/
 def fromAffine [Nontrivial R] : V.toAffine.Point → V.Point
   | 0 => 0
   | Affine.Point.some h => ⟨(nonsingularLift_some ..).mpr h⟩
@@ -1168,6 +1240,12 @@ lemma fromAffine_some [Nontrivial R] {X Y : R} (h : V.toAffine.Nonsingular X Y) 
     fromAffine (Affine.Point.some h) = ⟨(nonsingularLift_some ..).mpr h⟩ :=
   rfl
 
+lemma fromAffine_ne_zero [Nontrivial R] {X Y : R} (h : V.toAffine.Nonsingular X Y) :
+    fromAffine (Affine.Point.some h) ≠ 0 := fun h0 ↦ by
+  erw [Point.ext_iff, Quotient.eq] at h0
+  obtain ⟨u, eq⟩ := h0
+  simpa [Units.smul_def, smul_fin3'] using congr_fun eq z
+
 /-- The negation of a nonsingular rational point on `W`.
 Given a nonsingular rational point `P` on `W`, use `-P` instead of `neg P`. -/
 def neg (P : W.Point) : W.Point :=
@@ -1178,6 +1256,8 @@ instance instNegPoint : Neg W.Point :=
 
 lemma neg_def (P : W.Point) : P.neg = -P :=
   rfl
+
+lemma neg_point (P : W.Point) : (-P).point = W.negMap P.point := rfl
 
 /-- The addition of two nonsingular rational points on `W`.
 Given two nonsingular rational points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/
@@ -1233,7 +1313,7 @@ lemma toAffine_smul {P : Fin 3 → F} (u : Fˣ) : toAffine W (u • P) = toAffin
     · rw [toAffine_of_Z_eq_zero ((nonsingular_smul ..).mpr hP) <| u.mul_right_eq_zero.mpr hPz,
         toAffine_of_Z_eq_zero hP hPz]
     · rw [toAffine_of_Z_ne_zero ((nonsingular_smul ..).mpr hP) <| mul_ne_zero u.ne_zero hPz,
-        toAffine_of_Z_ne_zero hP hPz, Affine.Point.some.injEq]
+        toAffine_of_Z_ne_zero hP hPz, Affine.Point.some.injEq, Units.smul_def]
       simp only [smul_fin3_ext, mul_pow, mul_div_mul_left _ _ <| pow_ne_zero _ u.ne_zero, and_self]
   · rw [toAffine_of_singular <| hP.comp (W.nonsingular_smul P u).mp, toAffine_of_singular hP]
 
@@ -1266,10 +1346,9 @@ lemma toAffine_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingula
       · by_cases hx : P x * Q z ^ 2 = Q x * P z ^ 2
         · rw [add_of_Y_ne' hP.left hQ.left hPz hQz hx <| hxy hx, toAffine_smul,
             toAffine_some <| nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy,
-            Affine.Point.some_add_some_of_Yne
-              ((div_eq_div_iff (pow_ne_zero 2 hPz) (pow_ne_zero 2 hQz)).mpr hx) <|
-                negY_of_Z_ne_zero hQz ▸
-                  (hxy hx).comp (div_eq_div_iff (pow_ne_zero 3 hPz) (pow_ne_zero 3 hQz)).mp]
+            Affine.Point.some_add_some_of_Yne <|
+              negY_of_Z_ne_zero hQz ▸
+                (hxy hx).comp (div_eq_div_iff (pow_ne_zero 3 hPz) (pow_ne_zero 3 hQz)).mp]
         · rw [add_of_X_ne hP.left hQ.left hPz hQz hx, toAffine_smul,
             toAffine_some <| nonsingular_add_of_Z_ne_zero hP hQ hPz hQz hxy,
             Affine.Point.some_add_some_of_Xne <|
@@ -1318,7 +1397,7 @@ lemma toAffineLift_add {P Q : Fin 3 → F} (hP : W.NonsingularLift ⟦P⟧) (hQ 
 /-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` in Jacobian
 coordinates with the nonsingular rational points on `W` in affine coordinates. -/
 @[simps]
-noncomputable def toAffine_addEquiv : W.Point ≃+ W.toAffine.Point where
+noncomputable def toAffineAddEquiv : W.Point ≃+ W.toAffine.Point where
   toFun := toAffineLift
   invFun := fromAffine
   left_inv := by
@@ -1339,5 +1418,39 @@ noncomputable def toAffine_addEquiv : W.Point ≃+ W.toAffine.Point where
 end Point
 
 end Affine
+
+section map
+
+lemma comp_fin3 {S} (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] := by
+  ext i; fin_cases i <;> rfl
+
+variable {S : Type*} [CommRing S] (f : R →+* S) (P Q : Fin 3 → R)
+
+protected lemma map_smul (u : R) : f ∘ (u • P) = f u • (f ∘ P) := by
+  ext i; fin_cases i <;> simp [smul_fin3]
+
+@[simp] lemma map_addZ : addZ (f ∘ P) (f ∘ Q) = f (addZ P Q) := by simp [addZ]
+@[simp] lemma map_addX : addX (V.map f) (f ∘ P) (f ∘ Q) = f (V.addX P Q) := by simp [addX]
+@[simp] lemma map_addY' : addY' (V.map f) (f ∘ P) (f ∘ Q) = f (V.addY' P Q) := by simp [addY']
+@[simp] lemma map_negY : negY (V.map f) (f ∘ P) = f (V.negY P) := by simp [negY]
+
+@[simp] protected lemma map_neg : neg (V.map f) (f ∘ P) = f ∘ V.neg P := by
+  ext i; fin_cases i <;> simp [neg]
+
+@[simp] lemma map_addY : addY (V.map f) (f ∘ P) (f ∘ Q) = f (V.addY P Q) := by
+  simp [addY, ← comp_fin3]
+
+@[simp] lemma map_addXYZ : addXYZ (V.map f) (f ∘ P) (f ∘ Q) = f ∘ addXYZ V P Q := by
+  simp_rw [addXYZ, comp_fin3, map_addX, map_addY, map_addZ]
+
+@[simp] lemma map_dblZ : dblZ (V.map f) (f ∘ P) = f (V.dblZ P) := by simp [dblZ]
+@[simp] lemma map_dblX : dblX (V.map f) (f ∘ P) = f (V.dblX P) := by simp [dblX]
+@[simp] lemma map_dblY' : dblY' (V.map f) (f ∘ P) = f (V.dblY' P) := by simp [dblY']
+@[simp] lemma map_dblY : dblY (V.map f) (f ∘ P) = f (V.dblY P) := by simp [dblY, ← comp_fin3]
+
+@[simp] lemma map_dblXYZ : dblXYZ (V.map f) (f ∘ P) = f ∘ dblXYZ V P := by
+  simp_rw [dblXYZ, comp_fin3, map_dblX, map_dblY, map_dblZ]
+
+end map
 
 end WeierstrassCurve.Jacobian
