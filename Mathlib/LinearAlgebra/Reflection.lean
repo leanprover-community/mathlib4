@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Oliver Nash, Deepro Choudhury
+Authors: Oliver Nash, Deepro Choudhury, Mitchell Lee
 -/
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.FiniteSpan
+import Mathlib.RingTheory.Polynomial.Chebyshev
 
 /-!
 # Reflections in linear algebra
@@ -27,6 +28,9 @@ is characterised by properties 1 and 2 above, and is a linear isometry.
  * `Module.reflection`: the definition of the map `y ↦ y - (f y) • x`. This requires the assumption
    that `f x = 2` but by way of compensation it produces a linear equivalence rather than a mere
    linear map.
+ * `Module.reflection_mul_reflection_pow_apply`: a formula for $(r_1 r_2)^m z$, where $r_1$ and
+   $r_2$ are reflections and $z \in M$. It involves the Chebyshev polynomials and holds over any
+   commutative ring. This is used to define reflection representations of Coxeter groups.
  * `Module.Dual.eq_of_preReflection_mapsTo`: a uniqueness result about reflections preserving
    finite spanning sets that is useful in the theory of root data / systems.
 
@@ -101,9 +105,202 @@ lemma involutive_reflection (h : f x = 2) :
   involutive_preReflection h
 
 @[simp]
+lemma reflection_inv (h : f x = 2) : (reflection h)⁻¹ = reflection h := rfl
+
+@[simp]
 lemma reflection_symm (h : f x = 2) :
     (reflection h).symm = reflection h :=
   rfl
+
+/-! ### Powers of the product of two reflections
+
+Let $M$ be a module over a commutative ring $R$. Let $x, y \in M$ and $f, g \in M^*$ with
+$f(x) = g(y) = 2$. The corresponding reflections $r_1, r_2 \colon M \to M$ (`Module.reflection`) are
+given by $r_1z = z - f(z) x$ and $r_2 z = z - g(z) y$. These are linear automorphisms of $M$.
+
+To define reflection representations of a Coxeter group, it is important to be able to compute the
+order of the composition $r_1 r_2$.
+
+Note that if $M$ is a real inner product space and $r_1$ and $r_2$ are both orthogonal
+reflections (i.e. $f(z) = 2 \langle x, z \rangle / \langle x, x \rangle$ and
+$g(z) = 2 \langle y, z\rangle / \langle y, y\rangle$ for all $z \in M$),
+then $r_1 r_2$ is a rotation by the angle
+$$\cos^{-1}\left(\frac{f(y) g(x) - 2}{2}\right)$$
+and one may determine the order of $r_1 r_2$ accordingly.
+
+However, if $M$ does not have an inner product, and even if $R$ is not $\mathbb{R}$, then we may
+instead use the formulas in this section. These formulas all involve evaluating Chebyshev
+$S$-polynomials (`Polynomial.Chebyshev.S`) at $t = f(y) g(x) - 2$, and they hold over any
+commutative ring. -/
+section
+
+open Int Polynomial.Chebyshev
+
+variable {x y : M} {f g : Dual R M} (hf : f x = 2) (hg : g y = 2) (z : M)
+
+local notation:max "t" => f y * g x - 2
+local notation:max "S_eval_t" n:max => Polynomial.eval t (S R n)
+
+set_option maxHeartbeats 400000 in
+/-- A formula for $(r_1 r_2)^m z$, where $m$ is a natural number and $z \in M$. -/
+lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M) :
+    ((reflection hf * reflection hg) ^ m) z =
+      z +
+        (S_eval_t ((m - 2) / 2) * (S_eval_t ((m - 1) / 2) + S_eval_t ((m - 3) / 2))) •
+          ((g x * f z - g z) • y - f z • x) +
+        (S_eval_t ((m - 1) / 2) * (S_eval_t (m / 2) + S_eval_t ((m - 2) / 2))) •
+          ((f y * g z - f z) • x - g z • y) := by
+  induction m with
+  | zero => simp
+  | succ m ih =>
+    /- Now, let us collect two facts about the sequence `S_eval_t`. These easily follow from the
+    properties of the `S` polynomials. -/
+    have S_eval_t_sub_two (k : ℤ) : S_eval_t (k - 2) = t * S_eval_t (k - 1) - S_eval_t k := by
+      simp [S_sub_two]
+    have S_eval_t_sq_add_S_eval_t_sq (k : ℤ) :
+        S_eval_t k ^ 2 + S_eval_t (k + 1) ^ 2 - t * S_eval_t k * S_eval_t (k + 1) = 1 := by
+      simpa using congr_arg (Polynomial.eval t) (S_sq_add_S_sq R k)
+    -- Apply the inductive hypothesis.
+    rw [pow_succ', LinearEquiv.mul_apply, ih, LinearEquiv.mul_apply]
+    /- TODO: Write a tactic that puts module-valued expressions in a normal form. Such a tactic
+    would perform most of the next three steps automatically. -/
+    -- Expand everything out and use `hf`, `hg`.
+    simp only [reflection_apply, map_add, map_sub, map_smul, smul_add, smul_sub, smul_neg,
+      smul_smul, add_smul, sub_smul, sub_eq_add_neg, ← neg_smul, ← add_assoc, hf, hg]
+    -- Sort the terms so that the multiples of `x` appear first, then `y`, then `z`.
+    simp only [add_comm z (_ • x), add_right_comm _ z (_ • x),
+      add_comm (_ • y) (_ • x), add_right_comm _ (_ • y) (_ • x),
+      add_comm z (_ • y), add_right_comm _ z (_ • y)]
+    -- Combine like terms.
+    simp only [← add_smul, add_assoc _ (_ • y) (_ • y)]
+    -- `m` can either be written in the form `2 * k` or `2 * k + 1`.
+    obtain ⟨k, even | odd⟩ := Int.even_or_odd' m
+    · /- The goal contains many expressions of the form `S_eval_t n`. We may rewrite all of them as
+      `S_eval_t (-2 + k)`, `S_eval_t (-1 + k)`, or `S_eval_t k`. -/
+      push_cast
+      simp_rw [even, add_assoc (2 * k), add_comm (2 * k),
+        add_mul_ediv_left _ k (by norm_num : (2 : ℤ) ≠ 0)]
+      norm_num
+      /- Now, equate the coefficients of `x` and `y` on both sides. These linear combinations were
+      found using `polyrith`. -/
+      congr 2
+      · linear_combination (norm := ring_nf) (-g z * f y * S_eval_t (-1 + k) +
+            f z * S_eval_t (-1 + k)) * S_eval_t_sub_two k +
+          (-g z * f y + f z) * S_eval_t_sq_add_S_eval_t_sq (k - 1)
+      · linear_combination (norm := ring_nf) g z * S_eval_t (-1 + k) * S_eval_t_sub_two k +
+          g z * S_eval_t_sq_add_S_eval_t_sq (k - 1)
+    · /- The goal contains many expressions of the form `S_eval_t n`. We may rewrite all of them as
+      `S_eval_t (-1 + k)`, `S_eval_t k`, or `S_eval_t (1 + k)`. -/
+      push_cast
+      simp_rw [odd, add_assoc (2 * k), add_comm (2 * k),
+        add_mul_ediv_left _ k (by norm_num : (2 : ℤ) ≠ 0)]
+      norm_num
+      /- Now, equate the coefficients of `x` and `y` on both sides. These linear combinations were
+      found using `polyrith`. -/
+      congr 2
+      · linear_combination (norm := ring_nf) (-g z * f y * S_eval_t k +
+            f z * S_eval_t k) * S_eval_t_sub_two (k + 1) +
+          (-g z * f y + f z) * S_eval_t_sq_add_S_eval_t_sq (k - 1)
+      · linear_combination (norm := ring_nf) g z * S_eval_t k * S_eval_t_sub_two (k + 1) +
+          g z * S_eval_t_sq_add_S_eval_t_sq (k - 1)
+
+/-- A formula for $(r_1 r_2)^m z$, where $m$ is an integer and $z \in M$. -/
+lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M) :
+    ((reflection hf * reflection hg) ^ m) z =
+      z +
+        (S_eval_t ((m - 2) / 2) * (S_eval_t ((m - 1) / 2) + S_eval_t ((m - 3) / 2))) •
+          ((g x * f z - g z) • y - f z • x) +
+        (S_eval_t ((m - 1) / 2) * (S_eval_t (m / 2) + S_eval_t ((m - 2) / 2))) •
+          ((f y * g z - f z) • x - g z • y) := by
+  induction m using Int.negInduction with
+  | nat m => exact_mod_cast reflection_mul_reflection_pow_apply hf hg m z
+  | neg m _ =>
+    rw [zpow_neg, ← inv_zpow, mul_inv_rev, reflection_inv, reflection_inv, zpow_natCast]
+    simp only [reflection_mul_reflection_pow_apply]
+    rw [add_right_comm z]
+    have aux {a b : ℤ} (hab : a + b = -3) : a / 2 = -(b / 2) - 2 := by
+      rw [← mul_right_inj' (by norm_num : (2 : ℤ) ≠ 0), mul_sub, mul_neg,
+        eq_sub_of_add_eq (Int.ediv_add_emod _ _), eq_sub_of_add_eq (Int.ediv_add_emod _ _)]
+      omega
+    rw [aux (by omega : (-m - 3) + m = (-3 : ℤ)),
+      aux (by omega : (-m - 2) + (m - 1) = (-3 : ℤ)),
+      aux (by omega : (-m - 1) + (m - 2) = (-3 : ℤ)),
+      aux (by omega : -m + (m - 3) = (-3 : ℤ))]
+    simp only [S_neg_sub_two, Polynomial.eval_neg]
+    ring_nf
+
+/-- A formula for $(r_1 r_2)^m x$, where $m$ is an integer. This is the special case of
+`Module.reflection_mul_reflection_zpow_apply` with $z = x$. -/
+lemma reflection_mul_reflection_zpow_apply_self (m : ℤ) :
+    ((reflection hf * reflection hg) ^ m) x =
+      (S_eval_t m + S_eval_t (m - 1)) • x + (S_eval_t (m - 1) * -g x) • y := by
+  /- Even though this is a special case of `Module.reflection_mul_reflection_zpow_apply`, it is
+  easier to prove it from scratch. -/
+  have S_eval_t_sub_two (k : ℤ) : S_eval_t (k - 2) = t * S_eval_t (k - 1) - S_eval_t k := by
+    simp [S_sub_two]
+  induction m using Int.induction_on with
+  | hz => simp
+  | hp m ih =>
+    -- Apply the inductive hypothesis.
+    rw [add_comm (m : ℤ) 1, zpow_one_add, LinearEquiv.mul_apply, LinearEquiv.mul_apply, ih]
+    -- Expand everything out and use `hf`, `hg`.
+    simp only [reflection_apply, map_add, map_sub, map_smul, smul_add, smul_sub, smul_neg,
+      smul_smul, add_smul, sub_smul, sub_eq_add_neg, ← neg_smul, ← add_assoc, hf, hg]
+    -- Sort the terms so that the multiples of `x` appear first, then `y`.
+    simp only [add_comm (_ • y) (_ • x), add_right_comm _ (_ • y) (_ • x)]
+    -- Combine like terms.
+    simp only [← add_smul, add_assoc _ (_ • y) (_ • y)]
+    -- Equate coefficients of `x` and `y`.
+    congr 2
+    · linear_combination (norm := ring_nf) -S_eval_t_sub_two (m + 1)
+    · ring_nf
+  | hn m ih =>
+    -- Apply the inductive hypothesis.
+    rw [sub_eq_add_neg (-m : ℤ) 1, add_comm (-m : ℤ) (-1), zpow_add, zpow_neg_one, mul_inv_rev,
+      reflection_inv, reflection_inv, LinearEquiv.mul_apply, LinearEquiv.mul_apply, ih]
+    -- Expand everything out and use `hf`, `hg`.
+    simp only [reflection_apply, map_add, map_sub, map_smul, smul_add, smul_sub, smul_neg,
+      smul_smul, add_smul, sub_smul, sub_eq_add_neg, ← neg_smul, ← add_assoc, hf, hg]
+    -- Sort the terms so that the multiples of `x` appear first, then `y`.
+    simp only [add_comm (_ • y) (_ • x), add_right_comm _ (_ • y) (_ • x)]
+    -- Combine like terms.
+    simp only [← add_smul, add_assoc _ (_ • y) (_ • y)]
+    -- Equate coefficients of `x` and `y`.
+    congr 2
+    · linear_combination (norm := ring_nf) -S_eval_t_sub_two (-m)
+    · linear_combination (norm := ring_nf) g x * S_eval_t_sub_two (-m)
+
+/-- A formula for $(r_1 r_2)^m x$, where $m$ is a natural number. This is the special case of
+`Module.reflection_mul_reflection_pow_apply` with $z = x$. -/
+lemma reflection_mul_reflection_pow_apply_self (m : ℕ) :
+    ((reflection hf * reflection hg) ^ m) x =
+      (S_eval_t m + S_eval_t (m - 1)) • x + (S_eval_t (m - 1) * -g x) • y :=
+  mod_cast reflection_mul_reflection_zpow_apply_self hf hg m
+
+/-- A formula for $r_2 (r_1 r_2)^m x$, where $m$ is an integer. -/
+lemma reflection_mul_reflection_mul_reflection_zpow_apply_self (m : ℤ) :
+    (reflection hg * (reflection hf * reflection hg) ^ m) x =
+      (S_eval_t m + S_eval_t (m - 1)) • x + (S_eval_t m * -g x) • y := by
+  rw [LinearEquiv.mul_apply, reflection_mul_reflection_zpow_apply_self]
+  -- Expand everything out and use `hf`, `hg`.
+  simp only [reflection_apply, map_add, map_sub, map_smul, smul_add, smul_sub, smul_neg,
+    smul_smul, add_smul, sub_smul, sub_eq_add_neg, ← neg_smul, ← add_assoc, hf, hg]
+  -- Sort the terms so that the multiples of `x` appear first, then `y`.
+  simp only [add_comm (_ • y) (_ • x), add_right_comm _ (_ • y) (_ • x)]
+  -- Combine like terms.
+  simp only [← add_smul, add_assoc _ (_ • y) (_ • y)]
+  -- Equate coefficients of `x` and `y`.
+  ring_nf
+
+/-- A formula for $r_2 (r_1 r_2)^m x$, where $m$ is a natural number. -/
+lemma reflection_mul_reflection_mul_reflection_pow_apply_self (m : ℕ) :
+    (reflection hg * (reflection hf * reflection hg) ^ m) x =
+      (S_eval_t m + S_eval_t (m - 1)) • x + (S_eval_t m * -g x) • y :=
+  mod_cast reflection_mul_reflection_mul_reflection_zpow_apply_self hf hg m
+
+end
+
+/-! ### Lemmas used to prove uniqueness results for root data -/
 
 /-- See also `Module.Dual.eq_of_preReflection_mapsTo'` for a variant of this lemma which
 applies when `Φ` does not span.

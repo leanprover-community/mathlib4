@@ -372,6 +372,16 @@ theorem S_comp_two_mul_X (n : ℤ) : (S R n).comp (2 * X) = U R n := by
   | case3 n ih1 ih2 => simp_rw [U, S, sub_comp, mul_comp, X_comp, ih1, ih2]
   | case4 n ih1 ih2 => simp_rw [U, S, sub_comp, mul_comp, X_comp, ih1, ih2]
 
+theorem S_sq_add_S_sq (n : ℤ) : S R n ^ 2 + S R (n + 1) ^ 2 - X * S R n * S R (n + 1) = 1 := by
+  induction n using Int.induction_on with
+  | hz => simp; ring
+  | hp n ih =>
+    have h₁ := S_add_two R n
+    linear_combination (norm := ring_nf) (S R (2 + n) - S R n) * h₁ + ih
+  | hn n ih =>
+    have h₁ := S_sub_one R (-n)
+    linear_combination (norm := ring_nf) (S R (-1 - n) - S R (1 - n)) * h₁ + ih
+
 theorem S_eq_U_comp_half_mul_X [Invertible (2 : R)] (n : ℤ) :
     S R n = (U R n).comp (Polynomial.C ⅟2 * X) := by
   have := congr_arg (·.comp (Polynomial.C ⅟2 * X)) (S_comp_two_mul_X R n)
