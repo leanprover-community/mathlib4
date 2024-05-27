@@ -321,7 +321,7 @@ lemma weightSpace_add_chainTop :
     weightSpace M (α + chainTop α β : L → R) = ⊥ := by
   rw [coe_chainTop', ← add_assoc, ← succ_nsmul', weightSpace_chainTopCoeff_add_one_nsmul_add _ _ hα]
 
-lemma weightSpace_neg_add_chainTop :
+lemma weightSpace_neg_add_chainBot :
     weightSpace M (-α + chainBot α β : L → R) = ⊥ := by
   rw [← chainTop_neg, weightSpace_add_chainTop _ _ (by simpa using hα)]
 
