@@ -329,7 +329,8 @@ variable (E μ)
 /-- A function in `Lp` can be approximated in `Lp` by continuous functions. -/
 theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [Fact (1 ≤ p)]
     (hp : p ≠ ∞) [μ.WeaklyRegular] :
-    Dense (boundedContinuousFunction E p μ : Set (Lp E p μ)) := fun f ↦ by
+    Dense (boundedContinuousFunction E p μ : Set (Lp E p μ)) := by
+  intro f  
   refine (mem_closure_iff_nhds_basis EMetric.nhds_basis_closed_eball).2 fun ε hε ↦ ?_
   obtain ⟨g, hg, g_mem⟩ :
       ∃ g : α →ᵇ E, snorm ((f : α → E) - (g : α → E)) p μ ≤ ε ∧ Memℒp g p μ :=
