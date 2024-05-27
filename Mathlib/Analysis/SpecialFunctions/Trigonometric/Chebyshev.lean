@@ -71,17 +71,17 @@ variable (θ : ℂ)
 value `cos (n * θ)`. -/
 @[simp]
 theorem T_complex_cos (n : ℤ) : (T ℂ n).eval (cos θ) = cos (n * θ) := by
-  induction n using T.induct ℂ with
-  | case1 => simp
-  | case2 => simp
-  | case3 n ih1 ih2 =>
-    simp only [Nat.succ_eq_add_one, Int.ofNat_eq_coe, Nat.cast_add, Nat.cast_one, Int.cast_add,
-      T_add_one ℂ (n + 1), add_sub_cancel_right, eval_sub, eval_mul,
-      eval_X, eval_ofNat, ih1, ih2, sub_eq_iff_eq_add, cos_add_cos]
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    simp only [T_add_two, eval_sub, eval_mul, eval_X, eval_ofNat, ih1, ih2, sub_eq_iff_eq_add,
+      cos_add_cos]
+    push_cast
     ring_nf
-  | case4 n ih1 ih2 =>
-    simp only [Int.negSucc_eq, neg_add', T_sub_one ℂ (-n), add_sub_cancel_right, eval_sub, eval_mul,
-      eval_X, eval_ofNat, ih1, ih2, sub_eq_iff_eq_add', cos_add_cos]
+  | neg_add_one n ih1 ih2 =>
+    simp only [T_sub_one, eval_sub, eval_mul, eval_X, eval_ofNat, ih1, ih2, sub_eq_iff_eq_add',
+      cos_add_cos]
     push_cast
     ring_nf
 #align polynomial.chebyshev.T_complex_cos Polynomial.Chebyshev.T_complex_cos
@@ -90,19 +90,17 @@ theorem T_complex_cos (n : ℤ) : (T ℂ n).eval (cos θ) = cos (n * θ) := by
 value `sin ((n + 1) * θ) / sin θ`. -/
 @[simp]
 theorem U_complex_cos (n : ℤ) : (U ℂ n).eval (cos θ) * sin θ = sin ((n + 1) * θ) := by
-  induction n using U.induct ℂ with
-  | case1 => simp
-  | case2 => simp [one_add_one_eq_two, sin_two_mul]; ring
-  | case3 n ih1 ih2 =>
-    push_cast at ih1 ih2
-    simp only [Nat.succ_eq_add_one, Int.ofNat_eq_coe, Nat.cast_add, Nat.cast_one, Int.cast_add,
-      U_add_one ℂ (n + 1), add_sub_cancel_right, eval_sub, eval_mul, eval_X, eval_ofNat, sub_mul,
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp [one_add_one_eq_two, sin_two_mul]; ring
+  | add_two n ih1 ih2 =>
+    simp only [U_add_two, add_sub_cancel_right, eval_sub, eval_mul, eval_X, eval_ofNat, sub_mul,
       mul_assoc, ih1, ih2, sub_eq_iff_eq_add, sin_add_sin]
     push_cast
     ring_nf
-  | case4 n ih1 ih2 =>
-    simp only [Int.negSucc_eq, neg_add', U_sub_one ℂ (-n), add_sub_cancel_right, eval_sub, eval_mul,
-      eval_X, eval_ofNat, sub_mul, mul_assoc, ih1, ih2, sub_eq_iff_eq_add', sin_add_sin]
+  | neg_add_one n ih1 ih2 =>
+    simp only [U_sub_one, add_sub_cancel_right, eval_sub, eval_mul, eval_X, eval_ofNat, sub_mul,
+      mul_assoc, ih1, ih2, sub_eq_iff_eq_add', sin_add_sin]
     push_cast
     ring_nf
 #align polynomial.chebyshev.U_complex_cos Polynomial.Chebyshev.U_complex_cos
