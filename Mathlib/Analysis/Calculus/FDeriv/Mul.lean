@@ -22,7 +22,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 
 open scoped Classical
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
+open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal BigOperators
 
 noncomputable section
 
@@ -715,6 +715,19 @@ theorem hasStrictFDerivAt_finset_prod [DecidableEq ι] [Fintype ι] {x : ι → 
 theorem hasFDerivAt_finset_prod [DecidableEq ι] [Fintype ι] {x : ι → 𝔸'} :
     HasFDerivAt (𝕜 := 𝕜) (∏ i in u, · i) (∑ i in u, (∏ j in u.erase i, x j) • proj i) x :=
   hasStrictFDerivAt_finset_prod.hasFDerivAt
+
+theorem DifferentiableAt.product {α : Type*} {ι : Finset α} (F : α → 𝕜 → 𝕜) (s : 𝕜)
+    (hd : ∀ i : ι, DifferentiableAt 𝕜 (fun z => F i z) s) :
+    DifferentiableAt 𝕜 (fun z ↦ ∏ i in ι, F i z) s := by
+  induction' ι using Finset.cons_induction_on with a s ha ih
+  · simp only [Finset.prod_empty, differentiableAt_const]
+  · simp only [Finset.cons_eq_insert]
+    rw [← Finset.prod_fn, Finset.prod_insert ha]
+    simp only [Finset.forall_coe, Subtype.coe_mk, Finset.mem_cons, forall_eq_or_imp,Subtype.forall,
+      Finset.cons_eq_insert, Finset.mem_insert, forall_eq_or_imp] at hd
+    apply DifferentiableAt.mul hd.1
+    rw [← Finset.prod_fn] at ih
+    apply ih fun r ↦ hd.2 _ r.2
 
 section Comp
 
