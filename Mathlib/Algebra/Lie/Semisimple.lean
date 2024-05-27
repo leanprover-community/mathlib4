@@ -521,7 +521,6 @@ lemma sSup_inter_of_atoms (T₁ T₂ : Set (LieIdeal R L))
   (IsSemisimple.semisimpleGenerators_atoms R L).sSup_inter T₁ T₂ hT₁ hT₂
 
 instance (priority := 100) instDistribLattice : DistribLattice (LieIdeal R L) where
-  __ := (inferInstance : CompleteLattice (LieIdeal R L))
   le_sup_inf I₁ I₂ I₃ := by
     apply le_of_eq
     rw [← sSup_atoms_le_eq I₁, ← sSup_atoms_le_eq I₂, ← sSup_atoms_le_eq I₃,
