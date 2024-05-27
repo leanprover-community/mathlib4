@@ -130,7 +130,11 @@ instance smulCommClass_right [CommSemiring S] [DistribSMul R S] [SMulCommClass R
 
 /-- If `R` is a subsingleton, then `MvPowerSeries σ R` has a unique element -/
 instance unique [CommSemiring R] [Subsingleton R] : Unique (MvPowerSeries σ R) := by
-  sorry
+  constructor
+  · intro φ
+    funext s
+    exact Subsingleton.allEq _ _
+  · use 0
 
 section Semiring
 

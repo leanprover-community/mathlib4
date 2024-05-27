@@ -31,26 +31,23 @@ def symmetricSubalgebra : Subalgebra R (MvPowerSeries σ R) where
 def boundedDegreeSubalgebra : Subalgebra R (MvPowerSeries σ R) where
   carrier := setOf HasBoundedDegree
   algebraMap_mem' r := by
-    sorry
-    -- use 0
-    -- intro s hs
-    -- simp only [algebraMap_apply, Algebra.id.map_eq_id, RingHom.id_apply, ne_eq] at hs
-    -- rw [← monomial_zero_eq_C, coeff_monomial] at hs
-    -- simp only [ite_eq_right_iff, not_forall, exists_prop] at hs
-    -- simp only [hs.left, Finsupp.sum_zero_index, le_refl]
+    use 0
+    rw [totalDegree_le_DegreeBound_iff]
+    apply le_of_eq (totalDegree_C r)
   mul_mem' := by
     intro a b ⟨na, ha⟩ ⟨nb, hb⟩
     use na + nb
     rw [totalDegree_le_DegreeBound_iff] at *
-    apply le_trans
-    · exact totalDegree_mul
-    · exact add_le_add ha hb
+    apply le_trans totalDegree_mul (add_le_add ha hb)
   add_mem' := by
     rintro a b ⟨na, ha⟩ ⟨nb, hb⟩
     use max na nb
     rw [totalDegree_le_DegreeBound_iff] at *
-    apply le_trans
-    · exact totalDegree_add
-    -- · apply max_le (le_max_left ha) (le_max_right hb)
-    sorry
+    apply le_trans totalDegree_add
+    apply max_le
+    · apply le_trans ha
+      exact_mod_cast le_max_left na nb
+    · apply le_trans hb
+      exact_mod_cast le_max_right na nb
+
 end MvPowerSeries
