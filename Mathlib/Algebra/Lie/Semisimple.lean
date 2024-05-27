@@ -20,9 +20,6 @@ and prove some basic related results.
 * `LieModule.IsIrreducible`
 * `LieAlgebra.IsSimple`
 * `LieAlgebra.HasTrivialRadical`
-* `LieAlgebra.SemisimpleGenerators`:
-  An abstraction that captures the conditions on a set of ideals
-  that ensure that they generate a semisimple Lie algebra.
 * `LieAlgebra.IsSemisimple`
 * `LieAlgebra.IsSemisimple.instHasTrivialRadical`: A semisimple Lie algebra has trivial radical.
 * `LieAlgebra.IsSemisimple.instBooleanAlgebra`:
@@ -153,123 +150,6 @@ instance : HasTrivialRadical R L := by
 
 end IsSimple
 
-variable {R L} in
-/--
-A set of ideals in a Lie algebra is a set of *semisimple generators* if:
-
-* the ideals are all atoms (in the lattice-theoretic sense),
-  so they are nontrivial and do not contain any nontrivial ideals,
-* the ideals are all simple, and
-* the set is independent in the sense that the intersection of any the ideals
-  with the supremum of the others is trivial.
-
-If the supremum of such a collection of semisimple generators
-is the whole Lie algebra, then the Lie algebra is semisimple.
-See `SemisimpleGenerators.isSemisimple_of_sSup_eq_top`.
--/
-structure SemisimpleGenerators (S : Set (LieIdeal R L)) : Prop where
-  /-- The ideals in a collection of semisimple generators are all atoms. -/
-  isAtom : ∀ I ∈ S, IsAtom I
-  /-- The ideals in a collection of semisimple generators are all simple. -/
-  isSimple : ∀ I ∈ S, IsSimple R I
-  /-- The ideals in a collection of semisimple generators are independent
-  (in the lattice-theoretic sense). -/
-  setIndependent : CompleteLattice.SetIndependent S
-
-namespace SemisimpleGenerators
-
-open CompleteLattice
-
-variable {R L}
-variable {S : Set (LieIdeal R L)} (hS : SemisimpleGenerators S)
-
-lemma mono {T : Set (LieIdeal R L)} (hTS : T ⊆ S) : SemisimpleGenerators T where
-  isAtom I hI := hS.isAtom I (hTS hI)
-  isSimple I hI := hS.isSimple I (hTS hI)
-  setIndependent := hS.setIndependent.mono hTS
-
-/--
-In a semisimple Lie algebra,
-Lie ideals that are contained in the supremum of a finite collection of atoms
-are themselves the supremum of a finite subcollection of those atoms.
-
-By a compactness argument, this statement can be extended to arbitrary sets of atoms.
-See `atomistic`.
-
-The proof is by induction on the finite set of atoms.
--/
-private
-lemma atomistic_of_finset : ∀ s : Finset (LieIdeal R L), ↑s ⊆ S →
-    ∀ I : LieIdeal R L, I ≤ s.sup id → ∃ t ⊆ s, I = t.sup id := by
-  intro s hs I hI
-  obtain rfl | hI := hI.eq_or_lt
-  · exact ⟨s, le_rfl, rfl⟩
-  -- We assume that `I` is strictly smaller than the supremum of `s`.
-  -- Hence there must exist an atom `J` that is not contained in `I`.
-  obtain ⟨J, hJs, hJI⟩ : ∃ J ∈ s, ¬ J ≤ I := by
-    by_contra! H
-    exact hI.ne (le_antisymm hI.le (s.sup_le H))
-  classical
-  let s' := s.erase J
-  have hs' : s' ⊂ s := Finset.erase_ssubset hJs
-  have hs'S : ↑s' ⊆ S := Set.Subset.trans (Finset.coe_subset.mpr hs'.subset) hs
-  -- If we show that `I` is contained in the supremum `K` of the complement of `J` in `s`,
-  -- then we are done by recursion.
-  set K := s'.sup id
-  suffices I ≤ K by
-    obtain ⟨t, hts', htI⟩ := atomistic_of_finset s' hs'S I this
-    exact ⟨t, le_trans hts' hs'.subset, htI⟩
-  -- Since `I` is contained in the supremum of `J` with the supremum of `s'`,
-  -- any element `x` of `I` can be written as `y + z` for some `y ∈ J` and `z ∈ K`.
-  intro x hx
-  obtain ⟨y, hy, z, hz, rfl⟩ : ∃ y ∈ id J, ∃ z ∈ K, y + z = x := by
-    rw [← LieSubmodule.mem_sup, ← Finset.sup_insert, Finset.insert_erase hJs]
-    exact hI.le hx
-  -- If we show that `y` is contained in the center of `J`,
-  -- then we find `x = z`, and hence `x` is contained in the supremum of `s'`.
-  -- Since `x` was arbitrary, we have shown that `I` is contained in the supremum of `s'`.
-  suffices ⟨y, hy⟩ ∈ LieAlgebra.center R J by
-    have _inst := hS.isSimple J (hs hJs)
-    rw [HasTrivialRadical.center_eq_bot R J, LieSubmodule.mem_bot] at this
-    apply_fun Subtype.val at this
-    dsimp at this
-    rwa [this, zero_add]
-  -- To show that `y` is in the center of `J`,
-  -- we show that any `j ∈ J` brackets to `0` with `z` and with `x = y + z`.
-  -- By a simple computation, that implies `⁅j, y⁆ = 0`, for all `j`, as desired.
-  intro j
-  suffices ⁅(j : L), z⁆ = 0 ∧ ⁅(j : L), y + z⁆ = 0 by
-    rw [lie_add, this.1, add_zero] at this
-    ext
-    exact this.2
-  rw [← LieSubmodule.mem_bot (R := R) (L := L), ← LieSubmodule.mem_bot (R := R) (L := L)]
-  constructor
-  -- `j` brackets to `0` with `z`, since `⁅j, z⁆` is contained in `⁅J, K⁆ ≤ J ⊓ K`,
-  -- and `J ⊓ K = ⊥` by the independence of the atoms.
-  · apply (hS.setIndependent.disjoint_sSup (hs hJs) hs'S (Finset.not_mem_erase _ _)).le_bot
-    apply LieSubmodule.lie_le_inf
-    apply LieSubmodule.lie_mem_lie _ _ j.2
-    simpa only [K, Finset.sup_id_eq_sSup] using hz
-  -- By similar reasoning, `j` brackets to `0` with `x = y + z ∈ I`, if we show `J ⊓ I = ⊥`.
-  suffices J ⊓ I = ⊥ by
-    apply this.le
-    apply LieSubmodule.lie_le_inf
-    exact LieSubmodule.lie_mem_lie _ _ j.2 hx
-  -- Indeed `J ⊓ I = ⊥`, since `J` is an atom that is not contained in `I`.
-  apply ((hS.isAtom J (hs hJs)).le_iff.mp _).resolve_right
-  · contrapose! hJI
-    rw [← hJI]
-    exact inf_le_right
-  exact inf_le_left
-termination_by s => s.card
-decreasing_by exact Finset.card_lt_card hs'
-
-lemma booleanGenerators : IsCompactlyGenerated.BooleanGenerators S where
-  isAtom := hS.isAtom
-  finitelyAtomistic s I hs _ := hS.atomistic_of_finset s hs I
-
-end SemisimpleGenerators
-
 /--
 A *semisimple* Lie algebra is one that is a direct sum of non-abelian atomic ideals.
 These ideals are simple Lie algebras, by `isSimple_of_isAtom`.
@@ -289,8 +169,14 @@ class IsSemisimple : Prop where
   /-- In a semisimple Lie algebra, the atoms are non-abelian. -/
   non_abelian_of_isAtom : ∀ I : LieIdeal R L, IsAtom I → ¬ IsLieAbelian I
 
-variable {R L} in
-lemma isSimple_of_isAtom [IsSemisimple R L] (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
+namespace IsSemisimple
+
+open CompleteLattice IsCompactlyGenerated
+
+variable {R L}
+variable [IsSemisimple R L]
+
+lemma isSimple_of_isAtom  (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
   non_abelian := IsSemisimple.non_abelian_of_isAtom I hI
   eq_bot_or_eq_top := by
     -- Suppose that `J` is an ideal of `I`.
@@ -355,41 +241,94 @@ lemma isSimple_of_isAtom [IsSemisimple R L] (I : LieIdeal R L) (hI : IsAtom I) :
     rcases hx with ⟨y, hy, rfl⟩
     exact hy
 
-variable {R L} in
-lemma SemisimpleGenerators.isSemisimple_of_sSup_eq_top
-    (S : Set (LieIdeal R L)) (hS : SemisimpleGenerators S) (h : sSup S = ⊤) :
-    IsSemisimple R L := by
-  obtain rfl := hS.booleanGenerators.eq_atoms_of_sSup_eq_top h
+/--
+In a semisimple Lie algebra,
+Lie ideals that are contained in the supremum of a finite collection of atoms
+are themselves the supremum of a finite subcollection of those atoms.
+
+By a compactness argument, this statement can be extended to arbitrary sets of atoms.
+See `atomistic`.
+
+The proof is by induction on the finite set of atoms.
+-/
+private
+lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal R L | IsAtom I} →
+    ∀ I : LieIdeal R L, I ≤ s.sup id → ∃ t ⊆ s, I = t.sup id := by
+  intro s hs I hI
+  let S := {I : LieIdeal R L | IsAtom I}
+  obtain rfl | hI := hI.eq_or_lt
+  · exact ⟨s, le_rfl, rfl⟩
+  -- We assume that `I` is strictly smaller than the supremum of `s`.
+  -- Hence there must exist an atom `J` that is not contained in `I`.
+  obtain ⟨J, hJs, hJI⟩ : ∃ J ∈ s, ¬ J ≤ I := by
+    by_contra! H
+    exact hI.ne (le_antisymm hI.le (s.sup_le H))
+  classical
+  let s' := s.erase J
+  have hs' : s' ⊂ s := Finset.erase_ssubset hJs
+  have hs'S : ↑s' ⊆ S := Set.Subset.trans (Finset.coe_subset.mpr hs'.subset) hs
+  -- If we show that `I` is contained in the supremum `K` of the complement of `J` in `s`,
+  -- then we are done by recursion.
+  set K := s'.sup id
+  suffices I ≤ K by
+    obtain ⟨t, hts', htI⟩ := finitelyAtomistic s' hs'S I this
+    exact ⟨t, le_trans hts' hs'.subset, htI⟩
+  -- Since `I` is contained in the supremum of `J` with the supremum of `s'`,
+  -- any element `x` of `I` can be written as `y + z` for some `y ∈ J` and `z ∈ K`.
+  intro x hx
+  obtain ⟨y, hy, z, hz, rfl⟩ : ∃ y ∈ id J, ∃ z ∈ K, y + z = x := by
+    rw [← LieSubmodule.mem_sup, ← Finset.sup_insert, Finset.insert_erase hJs]
+    exact hI.le hx
+  -- If we show that `y` is contained in the center of `J`,
+  -- then we find `x = z`, and hence `x` is contained in the supremum of `s'`.
+  -- Since `x` was arbitrary, we have shown that `I` is contained in the supremum of `s'`.
+  suffices ⟨y, hy⟩ ∈ LieAlgebra.center R J by
+    have _inst := isSimple_of_isAtom J (hs hJs)
+    rw [HasTrivialRadical.center_eq_bot R J, LieSubmodule.mem_bot] at this
+    apply_fun Subtype.val at this
+    dsimp at this
+    rwa [this, zero_add]
+  -- To show that `y` is in the center of `J`,
+  -- we show that any `j ∈ J` brackets to `0` with `z` and with `x = y + z`.
+  -- By a simple computation, that implies `⁅j, y⁆ = 0`, for all `j`, as desired.
+  intro j
+  suffices ⁅(j : L), z⁆ = 0 ∧ ⁅(j : L), y + z⁆ = 0 by
+    rw [lie_add, this.1, add_zero] at this
+    ext
+    exact this.2
+  rw [← LieSubmodule.mem_bot (R := R) (L := L), ← LieSubmodule.mem_bot (R := R) (L := L)]
   constructor
-  · exact h
-  · exact hS.setIndependent
-  · intro I hI
-    have := hS.isSimple I hI
-    apply IsSimple.non_abelian (R := R)
+  -- `j` brackets to `0` with `z`, since `⁅j, z⁆` is contained in `⁅J, K⁆ ≤ J ⊓ K`,
+  -- and `J ⊓ K = ⊥` by the independence of the atoms.
+  · apply (setIndependent_isAtom.disjoint_sSup (hs hJs) hs'S (Finset.not_mem_erase _ _)).le_bot
+    apply LieSubmodule.lie_le_inf
+    apply LieSubmodule.lie_mem_lie _ _ j.2
+    simpa only [K, Finset.sup_id_eq_sSup] using hz
+  -- By similar reasoning, `j` brackets to `0` with `x = y + z ∈ I`, if we show `J ⊓ I = ⊥`.
+  suffices J ⊓ I = ⊥ by
+    apply this.le
+    apply LieSubmodule.lie_le_inf
+    exact LieSubmodule.lie_mem_lie _ _ j.2 hx
+  -- Indeed `J ⊓ I = ⊥`, since `J` is an atom that is not contained in `I`.
+  apply ((hs hJs).le_iff.mp _).resolve_right
+  · contrapose! hJI
+    rw [← hJI]
+    exact inf_le_right
+  exact inf_le_left
+termination_by s => s.card
+decreasing_by exact Finset.card_lt_card hs'
 
-namespace IsSemisimple
-
-variable [IsSemisimple R L]
-
-lemma semisimpleGenerators_atoms : SemisimpleGenerators {I : LieIdeal R L | IsAtom I} := by
-  constructor
-  · intro I hI
-    exact hI
-  · intro I hI
-    exact isSimple_of_isAtom I hI
-  · apply IsSemisimple.setIndependent_isAtom
-
-variable {R L} in
-lemma semisimpleGenerators (S : Set (LieIdeal R L)) (hS : S ⊆ {I : LieIdeal R L | IsAtom I}) :
-    SemisimpleGenerators S :=
-  (IsSemisimple.semisimpleGenerators_atoms R L).mono hS
+variable (R L) in
+lemma booleanGenerators : BooleanGenerators {I : LieIdeal R L | IsAtom I} where
+  isAtom _ hI := hI
+  finitelyAtomistic _ _ hs _ hIs := finitelyAtomistic _ hs _ hIs
 
 instance (priority := 100) instDistribLattice : DistribLattice (LieIdeal R L) :=
-  (semisimpleGenerators_atoms R L).booleanGenerators.distribLattice_of_sSup_eq_top sSup_atoms_eq_top
+  (booleanGenerators R L).distribLattice_of_sSup_eq_top sSup_atoms_eq_top
 
 noncomputable
 instance (priority := 100) instBooleanAlgebra : BooleanAlgebra (LieIdeal R L) :=
-  (semisimpleGenerators_atoms R L).booleanGenerators.booleanAlgebra_of_sSup_eq_top sSup_atoms_eq_top
+  (booleanGenerators R L).booleanAlgebra_of_sSup_eq_top sSup_atoms_eq_top
 
 /-- A semisimple Lie algebra has trivial radical. -/
 instance (priority := 100) instHasTrivialRadical : HasTrivialRadical R L := by
