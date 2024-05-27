@@ -72,7 +72,7 @@ theorem image_rayleigh_eq_image_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
     have : ‖x‖ ≠ 0 := by simp [hx]
     let c : 𝕜 := ↑‖x‖⁻¹ * r
     have : c ≠ 0 := by simp [c, hx, hr.ne']
-    refine' ⟨c • x, _, _⟩
+    refine ⟨c • x, ?_, ?_⟩
     · field_simp [c, norm_smul, abs_of_pos hr]
     · rw [T.rayleigh_smul x this]
       exact hxT
@@ -128,7 +128,7 @@ theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
   obtain ⟨a, b, h₁, h₂⟩ :=
     IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt_1d H (hasStrictFDerivAt_norm_sq x₀)
       (hT.isSymmetric.hasStrictFDerivAt_reApplyInnerSelf x₀)
-  refine' ⟨a, b, h₁, _⟩
+  refine ⟨a, b, h₁, ?_⟩
   apply (InnerProductSpace.toDualMap ℝ F).injective
   simp only [LinearIsometry.map_add, LinearIsometry.map_smul, LinearIsometry.map_zero]
   -- Note: #8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
@@ -146,7 +146,7 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
   · simp [hx₀]
   by_cases hb : b = 0
   · have : a ≠ 0 := by simpa [hb] using h₁
-    refine' absurd _ hx₀
+    refine absurd ?_ hx₀
     apply smul_right_injective F this
     simpa [hb] using h₂
   let c : ℝ := -b⁻¹ * a
@@ -180,7 +180,7 @@ centred at the origin is an eigenvector of `T`. -/
 theorem hasEigenvector_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
     HasEigenvector (T : E →ₗ[𝕜] E) (↑(T.rayleighQuotient x₀)) x₀ := by
-  refine' ⟨_, hx₀⟩
+  refine ⟨?_, hx₀⟩
   rw [Module.End.mem_eigenspace_iff]
   exact hT.eq_smul_self_of_isLocalExtrOn hextr
 #align is_self_adjoint.has_eigenvector_of_is_local_extr_on IsSelfAdjoint.hasEigenvector_of_isLocalExtrOn
@@ -195,7 +195,7 @@ theorem hasEigenvector_of_isMaxOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x�
   have hx₀' : 0 < ‖x₀‖ := by simp [hx₀]
   have hx₀'' : x₀ ∈ sphere (0 : E) ‖x₀‖ := by simp
   rw [T.iSup_rayleigh_eq_iSup_rayleigh_sphere hx₀']
-  refine' IsMaxOn.iSup_eq hx₀'' _
+  refine IsMaxOn.iSup_eq hx₀'' ?_
   intro x hx
   dsimp
   have : ‖x‖ = ‖x₀‖ := by simpa using hx
@@ -215,7 +215,7 @@ theorem hasEigenvector_of_isMinOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x�
   have hx₀' : 0 < ‖x₀‖ := by simp [hx₀]
   have hx₀'' : x₀ ∈ sphere (0 : E) ‖x₀‖ := by simp
   rw [T.iInf_rayleigh_eq_iInf_rayleigh_sphere hx₀']
-  refine' IsMinOn.iInf_eq hx₀'' _
+  refine IsMinOn.iInf_eq hx₀'' ?_
   intro x hx
   dsimp
   have : ‖x‖ = ‖x₀‖ := by simpa using hx
