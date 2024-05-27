@@ -313,12 +313,12 @@ lemma ωScottContinuous.isLUB {c : Chain α} {f : α → β} (hf : ωScottContin
     IsLUB (Set.range (Chain.map c ⟨f, (ωScottContinuous.monotone hf)⟩)) (f (ωSup c)) := by
   simp only [map_coe, OrderHom.coe_mk]
   rw [(Set.range_comp f ↑c)]
-  exact hf (Set.range_nonempty ↑c) (IsChain.directedOn (isChain_range c))
-    (by simp only [Set.mem_range, exists_apply_eq_apply]) (isLUB_range_ωSup c)
+  exact hf (by simp only [Set.mem_range, exists_apply_eq_apply]) (Set.range_nonempty ↑c)
+    (IsChain.directedOn (isChain_range c)) (isLUB_range_ωSup c)
 
 lemma continuous'_iff_ωScottContinuous {f : α → β} : Continuous' f ↔ ωScottContinuous f := by
   constructor
-  · intro hf _ _ _ ⟨c, hc⟩ _ hda
+  · intro hf _ ⟨c, hc⟩ _ _ _ hda
     convert isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
     · rw [map_coe, OrderHom.coe_mk, ← hc, ← (Set.range_comp f ⇑c)]
     · rw [← hc] at hda

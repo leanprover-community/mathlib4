@@ -1710,12 +1710,12 @@ def DScottContinuous (D : Set (Set α)) (f : α → β) : Prop :=
 
 lemma DScottContinuous.mono (D₁ D₂ : Set (Set α)) (hD : D₁ ⊆ D₂) {f : α → β}
     (hf : DScottContinuous D₂ f) : DScottContinuous D₁ f :=
-  fun _ hd₁ hd₂ hdD₁ _ hda => hf hd₁ hd₂ (hD hdD₁) hda
+  fun _  hdD₁ hd₁ hd₂ _ hda => hf (hD hdD₁) hd₁ hd₂ hda
 
 protected theorem DScottContinuous.monotone (D : Set (Set α)) (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (h : DScottContinuous D f) : Monotone f := by
   refine' fun a b hab =>
-    (h (insert_nonempty _ _) (directedOn_pair le_refl hab) (hD a b hab) _).1
+    (h (hD a b hab) (insert_nonempty _ _) (directedOn_pair le_refl hab) _).1
       (mem_image_of_mem _ <| mem_insert _ _)
   rw [IsLUB, upperBounds_insert, upperBounds_singleton,
     inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]
