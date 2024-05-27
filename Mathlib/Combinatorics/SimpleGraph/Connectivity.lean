@@ -882,7 +882,7 @@ lemma not_nil_iff {p : G.Walk v w} :
 lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
   | .nil | .cons _ _ => by simp
 
-lemma Nil.eq_nil {p : G.Walk v v} (hp : p.Nil) : p = Walk.nil := Nil_iff_eq_nil.1 hp
+alias ⟨Nil.eq_nil, _⟩ := nil_iff_eq_nil
 
 @[elab_as_elim]
 def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → Sort*}
