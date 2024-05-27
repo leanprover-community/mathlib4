@@ -6,7 +6,6 @@ Authors: Michael Rothgang
 
 import Lean.Elab.Command
 import Lean.Linter.Util
-import Mathlib.Tactic.RSuffices
 
 /-! ## The `oldObtain` linter, against stream-of-conciousness `obtain`
 
