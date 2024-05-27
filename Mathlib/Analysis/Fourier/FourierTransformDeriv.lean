@@ -576,7 +576,7 @@ theorem fourierPowSMulRight_iteratedFDeriv_fourierIntegral [FiniteDimensional �
 /-- One can bound the `k`-th derivative of the Fourier integral of `f`, multiplied by `(L v w) ^ n`,
 in terms of integrals of iterated derivatives of `f` (of order up to `n`) multiplied by `‖v‖ ^ i`
 (for `i ≤ k`).
-Auxiliary bersion in terms of the operator norm of `fourierPowSMulRight (-L.flip) ⬝`. For a version
+Auxiliary version in terms of the operator norm of `fourierPowSMulRight (-L.flip) ⬝`. For a version
 in terms of `|L v w| ^ n * ⬝`, see `pow_mul_norm_iteratedFDeriv_fourierIntegral_le`.
 -/
 theorem norm_fourierPowSMulRight_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
