@@ -18,6 +18,7 @@ open ModularForm UpperHalfPlane Matrix
 
 namespace SlashInvariantForm
 
+/- TODO: Once we have cusps, do this more generally, same below. -/
 theorem vAdd_width_periodic (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Gamma N) k) (z : ℍ) :
     f (((N * n) : ℝ) +ᵥ z) = f z := by
   norm_cast
