@@ -7,16 +7,32 @@ import Mathlib.Analysis.Convex.Independent
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.NormedSpace.AddTorsorBases
 
-open LinearMap Set
+/-!
+# Halfspace
 
+This file defines halfspaces in an real vector space. Halfspaces are sets of points that lie on one
+side of a hyperplane including the hyperplane itself. We define halfspaces using a normalized
+vector, direction, and a scalar, bound. It is formalised as a set of points that the inner product
+with the direction vector is less than or equal to the bound.
+
+Equivalently, halfspaces can be defined as the preimage of a closed interval under the dual linear
+map of the direction vector.
+-/
+
+open LinearMap Set
 open scoped BigOperators Convex Pointwise
 
 
-/-- Halfspace is a set of points that lie on one side of a hyperplane. -/
+/-- Halfspace is a set of points that lie on one side of a hyperplane.
+  or a set of points that their inner product with the direction vector is less than the bound -/
 structure Halfspace (E : Type) [NormedAddCommGroup E] [InnerProductSpace ℝ E] where
+  /-- The set of points that lie on one side of the hyperplane -/
   carrier : Set E
+  /-- The normal vector to the hyperplane with a norm 1 -/
   direction : {p : E // ‖p‖ = 1}
+  /-- The bound of the halfspace. bound • direction lies in the hyperplane. -/
   bound : ℝ
+  /-- The definition of the halfspace using the inner product with the direction vector -/
   inner_le : ∀ x, x ∈ carrier ↔ ⟪direction.1, x⟫_ℝ ≤ bound
 
 namespace Halfspace
@@ -72,6 +88,8 @@ lemma carrier_eq : h.carrier = {x | ⟪h.direction.1, x⟫_ℝ ≤ h.bound} := b
   ext x
   exact h.inner_le x
 
+/-- The dual functional of the direction vector of the halfspace.
+  inner product with the direction vector is the same as applying the dual functional. -/
 noncomputable def linearIsom : NormedSpace.Dual ℝ E := InnerProductSpace.toDualMap ℝ E h.direction
 
 lemma linearIsom_ne_zero : h.linearIsom ≠ 0 := by
