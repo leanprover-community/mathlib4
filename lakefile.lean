@@ -61,15 +61,13 @@ lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
 
-/-- `lake exe lint_style` runs text-based style lints -/
+/-- `lake exe lint_style` runs text-based style lints. -/
 lean_exe lint_style where
   root := `Mathlib.Tactic.Linter.TextBased
-  supportInterpreter := true
 
 /-- `lake exe update_style_exceptions` update the style exceptions file. -/
 lean_exe update_style_exceptions where
   srcDir := "scripts"
-  supportInterpreter := true
 
 /--
 `lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
