@@ -397,20 +397,32 @@ def lint_all_files (path : System.FilePath) : IO UInt32 := do
       number_error_files := number_error_files + 1
   return number_error_files
 
+open Cli
 /-- Implementation of the `lint_style` command line program. -/
-def lintStyleCli (_args : Cli.Parsed) : IO UInt32 := do
-  let mut number_error_files := 0
-  for s in #["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    let n ← lint_all_files (System.mkFilePath [s])
-    number_error_files := number_error_files + n
-  return number_error_files
+def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
+  if let some filename := (args.flag? "file").map (fun s ↦ s.as! String) then
+    -- Just lint the file of given name.
+    if true then -- TODO: check if file exists!
+      lint_all_files (System.mkFilePath [filename])
+    else
+      -- error message!
+      return 1
+  else
+    let mut number_error_files := 0
+    for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
+      let n ← lint_all_files (System.mkFilePath [s])
+      number_error_files := number_error_files + n
+    return number_error_files
 
 open Cli in
 /-- Setting up command line options and help text for `lake exe lint_style`. -/
 -- so far, no help options or so: perhaps that is fine?
 def lint_style : Cmd := `[Cli|
   lint_style VIA lintStyleCli; ["0.0.1"]
-  "Run text-based style linters on Mathlib and the Archive and Counterexamples directories."
+  "Run text-based style linters on every Lean file in Mathlib/, Archive/ and Counterexamples/."
+
+  ARGS:
+    file : String;  "lint just this single file"
 ]
 
 /-- The entry point to the `lake exe lint_style` command. -/
