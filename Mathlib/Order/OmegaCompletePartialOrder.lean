@@ -310,7 +310,7 @@ lemma ωScottContinuous.monotone {f : α → β} (h : ωScottContinuous f) : Mon
   DScottContinuous.monotone { d | ∃ (c : Chain α), Set.range c = d }
   (fun a b hab => ordered_pair_exists_chain a b hab) h
 
-lemma isLUB_of_ωScottContinuous {c : Chain α} {f : α → β} (hf : ωScottContinuous f) :
+lemma ωScottContinuous.isLUB {c : Chain α} {f : α → β} (hf : ωScottContinuous f) :
     IsLUB (Set.range (Chain.map c ⟨f, (ωScottContinuous.monotone hf)⟩)) (f (ωSup c)) := by
   simp only [map_coe, OrderHom.coe_mk]
   rw [(Set.range_comp f ↑c)]
