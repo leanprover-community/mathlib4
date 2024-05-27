@@ -200,6 +200,18 @@ lemma span_weight_eq_top :
     ker_traceForm_eq_bot_of_isCartanSubalgebra, Submodule.dualAnnihilator_bot]
 
 @[simp]
+lemma span_weight_isNonZero_eq_top :
+    span K ({α : Weight K H L | α.IsNonZero}.image (Weight.toLinear K H L)) = ⊤ := by
+  rw [← span_weight_eq_top K L H]
+  refine le_antisymm (Submodule.span_mono <| by simp) ?_
+  suffices range (Weight.toLinear K H L) ⊆
+    insert 0 ({α : Weight K H L | α.IsNonZero}.image (Weight.toLinear K H L)) by
+    simpa only [Submodule.span_insert_zero] using Submodule.span_mono this
+  rintro - ⟨α, rfl⟩
+  simp only [mem_insert_iff, Weight.coe_toLinear_eq_zero_iff, mem_image, mem_setOf_eq]
+  tauto
+
+@[simp]
 lemma iInf_ker_weight_eq_bot :
     ⨅ α : Weight K H L, α.ker = ⊥ := by
   rw [← Subspace.dualAnnihilator_inj, Subspace.dualAnnihilator_iInf_eq,
@@ -358,6 +370,13 @@ lemma root_apply_coroot {α : Weight K H L} (hα : α.IsNonZero) :
   rw [← Weight.coe_coe]
   simpa [coroot] using inv_mul_cancel (root_apply_cartanEquivDual_symm_ne_zero hα)
 
+lemma traceForm_coroot (α : Weight K H L) (x : H) :
+    traceForm K H L (coroot α) x = 2 • (α <| (cartanEquivDual H).symm α)⁻¹ • α x := by
+  have : cartanEquivDual H ((cartanEquivDual H).symm α) x = α x := by
+    rw [LinearEquiv.apply_symm_apply, Weight.toLinear_apply]
+  rw [coroot, map_nsmul, map_smul, LinearMap.smul_apply, LinearMap.smul_apply]
+  congr 2
+
 @[simp] lemma coroot_eq_zero_iff {α : Weight K H L} :
     coroot α = 0 ↔ α.IsZero := by
   refine ⟨fun hα ↦ ?_, fun hα ↦ ?_⟩
@@ -392,6 +411,59 @@ lemma isCompl_ker_weight_span_coroot (α : Weight K H L) :
       (disjoint_ker_weight_corootSpace α)
     replace hα : corootSpace α ≠ ⊥ := by simpa using hα
     rwa [ne_eq, ← LieSubmodule.coe_toSubmodule_eq_iff] at hα
+
+lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y : H}
+    (hx : x ∈ α.ker) (hy : y ∈ K ∙ coroot α) :
+    traceForm K H L x y = 0 := by
+  rw [← coe_corootSpace_eq_span_singleton, LieSubmodule.mem_coeSubmodule, mem_corootSpace'] at hy
+  induction hy using Submodule.span_induction'
+  · next z hz =>
+    obtain ⟨u, hu, v, -, huv⟩ := hz
+    change killingForm K L (x : L) (z : L) = 0
+    replace hx : α x = 0 := by simpa using hx
+    rw [← huv, ← traceForm_apply_lie_apply, ← LieSubalgebra.coe_bracket_of_module,
+      lie_eq_smul_of_mem_rootSpace hu, hx, zero_smul, map_zero, LinearMap.zero_apply]
+  · simp
+  · next hx hy => simp [hx, hy]
+  · next hz => simp [hz]
+
+@[simp] lemma orthogonal_span_coroot_eq_ker (α : Weight K H L) :
+    (traceForm K H L).orthogonal (K ∙ coroot α) = α.ker := by
+  if hα : α.IsZero then
+    have hα' : coroot α = 0 := by simpa
+    replace hα : α.ker = ⊤ := by ext; simp [hα]
+    simp [hα, hα']
+  else
+    refine le_antisymm (fun x hx ↦ ?_) (fun x hx y hy ↦ ?_)
+    · simp only [LinearMap.BilinForm.mem_orthogonal_iff] at hx
+      specialize hx (coroot α) (Submodule.mem_span_singleton_self _)
+      simp only [LinearMap.BilinForm.isOrtho_def, traceForm_coroot, smul_eq_mul, nsmul_eq_mul,
+        Nat.cast_ofNat, mul_eq_zero, OfNat.ofNat_ne_zero, inv_eq_zero, false_or] at hx
+      simpa using hx.resolve_left (root_apply_cartanEquivDual_symm_ne_zero hα)
+    · have := traceForm_eq_zero_of_mem_ker_of_mem_span_coroot hx hy
+      rwa [traceForm_comm] at this
+
+@[simp] lemma coroot_eq_iff (α β : Weight K H L) :
+    coroot α = coroot β ↔ α = β := by
+  refine ⟨fun hyp ↦ ?_, fun h ↦ by rw [h]⟩
+  if hα : α.IsZero then
+    have hβ : β.IsZero := by
+      rw [← coroot_eq_zero_iff] at hα ⊢
+      rwa [← hyp]
+    ext
+    simp [hα.eq, hβ.eq]
+  else
+    have hβ : β.IsNonZero := by
+      contrapose! hα
+      simp only [not_not, ← coroot_eq_zero_iff] at hα ⊢
+      rwa [hyp]
+    have : α.ker = β.ker := by
+      rw [← orthogonal_span_coroot_eq_ker α, hyp, orthogonal_span_coroot_eq_ker]
+    suffices (α : H →ₗ[K] K) = β by ext x; simpa using LinearMap.congr_fun this x
+    apply Module.Dual.eq_of_ker_eq_of_apply_eq (coroot α) this
+    · rw [Weight.toLinear_apply, root_apply_coroot hα, hyp, Weight.toLinear_apply,
+        root_apply_coroot hβ]
+    · simp [root_apply_coroot hα]
 
 lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNonZero) :
     ∃ h e f : L, IsSl2Triple h e f ∧ e ∈ rootSpace H α ∧ f ∈ rootSpace H (- α) := by
