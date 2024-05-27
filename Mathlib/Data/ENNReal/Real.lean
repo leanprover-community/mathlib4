@@ -296,7 +296,7 @@ theorem ofReal_sub (p : ℝ) {q : ℝ} (hq : 0 ≤ q) :
     ENNReal.ofReal (p - q) = ENNReal.ofReal p - ENNReal.ofReal q := by
   obtain h | h := le_total p q
   · rw [ofReal_of_nonpos (sub_nonpos_of_le h), tsub_eq_zero_of_le (ofReal_le_ofReal h)]
-  refine' ENNReal.eq_sub_of_add_eq ofReal_ne_top _
+  refine ENNReal.eq_sub_of_add_eq ofReal_ne_top ?_
   rw [← ofReal_add (sub_nonneg_of_le h) hq, sub_add_cancel]
 #align ennreal.of_real_sub ENNReal.ofReal_sub
 
@@ -396,7 +396,7 @@ theorem toNNReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toNNReal = a.toNNReal 
 
 @[simp]
 theorem toNNReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
-    (∏ i in s, f i).toNNReal = ∏ i in s, (f i).toNNReal :=
+    (∏ i ∈ s, f i).toNNReal = ∏ i ∈ s, (f i).toNNReal :=
   map_prod toNNRealHom _ _
 #align ennreal.to_nnreal_prod ENNReal.toNNReal_prod
 
@@ -420,7 +420,7 @@ theorem toReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toReal = a.toReal ^ n :=
 
 @[simp]
 theorem toReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
-    (∏ i in s, f i).toReal = ∏ i in s, (f i).toReal :=
+    (∏ i ∈ s, f i).toReal = ∏ i ∈ s, (f i).toReal :=
   map_prod toRealHom _ _
 #align ennreal.to_real_prod ENNReal.toReal_prod
 
@@ -501,7 +501,7 @@ theorem toReal_div (a b : ℝ≥0∞) : (a / b).toReal = a.toReal / b.toReal := 
 #align ennreal.to_real_div ENNReal.toReal_div
 
 theorem ofReal_prod_of_nonneg {α : Type*} {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈ s → 0 ≤ f i) :
-    ENNReal.ofReal (∏ i in s, f i) = ∏ i in s, ENNReal.ofReal (f i) := by
+    ENNReal.ofReal (∏ i ∈ s, f i) = ∏ i ∈ s, ENNReal.ofReal (f i) := by
   simp_rw [ENNReal.ofReal, ← coe_finset_prod, coe_inj]
   exact Real.toNNReal_prod_of_nonneg hf
 #align ennreal.of_real_prod_of_nonneg ENNReal.ofReal_prod_of_nonneg
@@ -580,7 +580,7 @@ theorem iSup_sub : (⨆ i, f i) - a = ⨆ i, f i - a :=
 #align ennreal.supr_sub ENNReal.iSup_sub
 
 theorem sub_iInf : (a - ⨅ i, f i) = ⨆ i, a - f i := by
-  refine' eq_of_forall_ge_iff fun c => _
+  refine eq_of_forall_ge_iff fun c => ?_
   rw [tsub_le_iff_right, add_comm, iInf_add]
   simp [tsub_le_iff_right, sub_eq_add_neg, add_comm]
 #align ennreal.sub_infi ENNReal.sub_iInf
@@ -603,7 +603,7 @@ theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + i
 
 theorem iInf_sum {α : Type*} {f : ι → α → ℝ≥0∞} {s : Finset α} [Nonempty ι]
     (h : ∀ (t : Finset α) (i j : ι), ∃ k, ∀ a ∈ t, f k a ≤ f i a ∧ f k a ≤ f j a) :
-    ⨅ i, ∑ a in s, f i a = ∑ a in s, ⨅ i, f i a := by
+    ⨅ i, ∑ a ∈ s, f i a = ∑ a ∈ s, ⨅ i, f i a := by
   induction' s using Finset.cons_induction_on with a s ha ih
   · simp only [Finset.sum_empty, ciInf_const]
   · simp only [Finset.sum_cons, ← ih]

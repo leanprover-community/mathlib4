@@ -138,7 +138,7 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
     simp only [aeval_def, ResidueField.algebraMap_eq, eval₂_at_apply, ←
       Ideal.Quotient.eq_zero_iff_mem, ← LocalRing.mem_maximalIdeal] at H h₁ aux
     obtain ⟨a, ha₁, ha₂⟩ := H h₁ aux
-    refine' ⟨a, ha₁, _⟩
+    refine ⟨a, ha₁, ?_⟩
     rw [← Ideal.Quotient.eq_zero_iff_mem]
     rwa [← sub_eq_zero, ← RingHom.map_sub] at ha₂
   tfae_have 1 → 3
@@ -150,13 +150,13 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
       contrapose! h₂
       rwa [← mem_nonunits_iff, ← LocalRing.mem_maximalIdeal, ← LocalRing.ker_eq_maximalIdeal φ hφ,
         RingHom.mem_ker] at h₂)
-    refine' ⟨a, ha₁, _⟩
+    refine ⟨a, ha₁, ?_⟩
     rwa [φ.map_sub, sub_eq_zero] at ha₂
   tfae_finish
 #align henselian_local_ring.tfae HenselianLocalRing.TFAE
 
-instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] : HenselianRing R (maximalIdeal R)
-    where
+instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
+    HenselianRing R (maximalIdeal R) where
   jac := by
     rw [Ideal.jacobson, le_sInf_iff]
     rintro I ⟨-, hI⟩
@@ -194,7 +194,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         induction' n with n ih
         · rfl
         rw [hc, sub_eq_add_neg, ← add_zero a₀]
-        refine' ih.add _
+        refine ih.add ?_
         rw [SModEq.zero, Ideal.neg_mem_iff]
         refine' I.mul_mem_right _ _
         rw [← SModEq.zero] at h₁ ⊢
@@ -244,7 +244,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         -- used by `instHAdd`
         erw [hc]
         rw [← add_zero (c m), sub_eq_add_neg]
-        refine' ih.add _
+        refine ih.add ?_
         symm
         rw [SModEq.zero, Ideal.neg_mem_iff]
         refine' Ideal.mul_mem_right _ _ (Ideal.pow_le_pow_right _ (hfcI _))
@@ -258,14 +258,14 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         intro n
         specialize ha n
         rw [← Ideal.one_eq_top, Ideal.smul_eq_mul, mul_one] at ha ⊢
-        refine' (ha.symm.eval f).trans _
+        refine (ha.symm.eval f).trans ?_
         rw [SModEq.zero]
         exact Ideal.pow_le_pow_right le_self_add (hfcI _)
       · show a - a₀ ∈ I
         specialize ha (0 + 1)
         rw [hc, pow_one, ← Ideal.one_eq_top, Ideal.smul_eq_mul, mul_one, sub_eq_add_neg] at ha
         rw [← SModEq.sub_mem, ← add_zero a₀]
-        refine' ha.symm.trans (SModEq.rfl.add _)
+        refine ha.symm.trans (SModEq.rfl.add ?_)
         rw [SModEq.zero, Ideal.neg_mem_iff]
         exact Ideal.mul_mem_right _ _ h₁
 #align is_adic_complete.henselian_ring IsAdicComplete.henselianRing

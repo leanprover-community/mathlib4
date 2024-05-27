@@ -90,7 +90,7 @@ theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
 #align category_theory.iso.ext CategoryTheory.Iso.ext
 
 /-- Inverse isomorphism. -/
-@[symm, pp_dot]
+@[symm]
 def symm (I : X ≅ Y) : Y ≅ X where
   hom := I.inv
   inv := I.hom
@@ -581,7 +581,7 @@ variable {D : Type u₂}
 variable [Category.{v₂} D]
 
 /-- A functor `F : C ⥤ D` sends isomorphisms `i : X ≅ Y` to isomorphisms `F.obj X ≅ F.obj Y` -/
-@[simps, pp_dot]
+@[simps]
 def mapIso (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.obj X ≅ F.obj Y where
   hom := F.map i.hom
   inv := F.map i.inv

@@ -426,7 +426,7 @@ theorem mulIndicator_self_mul_compl (s : Set α) (f : α → M) :
 @[to_additive]
 theorem mulIndicator_mul_eq_left {f g : α → M} (h : Disjoint (mulSupport f) (mulSupport g)) :
     (mulSupport f).mulIndicator (f * g) = f := by
-  refine' (mulIndicator_congr fun x hx => _).trans mulIndicator_mulSupport
+  refine (mulIndicator_congr fun x hx => ?_).trans mulIndicator_mulSupport
   have : g x = 1 := nmem_mulSupport.1 (disjoint_left.1 h hx)
   rw [Pi.mul_apply, this, mul_one]
 #align set.mul_indicator_mul_eq_left Set.mulIndicator_mul_eq_left
@@ -435,7 +435,7 @@ theorem mulIndicator_mul_eq_left {f g : α → M} (h : Disjoint (mulSupport f) (
 @[to_additive]
 theorem mulIndicator_mul_eq_right {f g : α → M} (h : Disjoint (mulSupport f) (mulSupport g)) :
     (mulSupport g).mulIndicator (f * g) = g := by
-  refine' (mulIndicator_congr fun x hx => _).trans mulIndicator_mulSupport
+  refine (mulIndicator_congr fun x hx => ?_).trans mulIndicator_mulSupport
   have : f x = 1 := nmem_mulSupport.1 (disjoint_right.1 h hx)
   rw [Pi.mul_apply, this, one_mul]
 #align set.mul_indicator_mul_eq_right Set.mulIndicator_mul_eq_right
@@ -455,8 +455,7 @@ theorem mulIndicator_mul_compl_eq_piecewise [DecidablePred (· ∈ s)] (f g : α
 
 /-- `Set.mulIndicator` as a `monoidHom`. -/
 @[to_additive "`Set.indicator` as an `addMonoidHom`."]
-noncomputable def mulIndicatorHom {α} (M) [MulOneClass M] (s : Set α) : (α → M) →* α → M
-    where
+noncomputable def mulIndicatorHom {α} (M) [MulOneClass M] (s : Set α) : (α → M) →* α → M where
   toFun := mulIndicator s
   map_one' := mulIndicator_one M s
   map_mul' := mulIndicator_mul s

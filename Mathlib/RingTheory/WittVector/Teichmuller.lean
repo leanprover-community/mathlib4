@@ -82,8 +82,8 @@ private theorem teichmuller_mul_aux₁ (x y : MvPolynomial R ℚ) :
 
 private theorem teichmuller_mul_aux₂ (x y : MvPolynomial R ℤ) :
     teichmullerFun p (x * y) = teichmullerFun p x * teichmullerFun p y := by
-  refine' map_injective (MvPolynomial.map (Int.castRingHom ℚ))
-    (MvPolynomial.map_injective _ Int.cast_injective) _
+  refine map_injective (MvPolynomial.map (Int.castRingHom ℚ))
+    (MvPolynomial.map_injective _ Int.cast_injective) ?_
   simp only [teichmuller_mul_aux₁, map_teichmullerFun, RingHom.map_mul]
 
 /-- The Teichmüller lift of an element of `R` to `𝕎 R`.
