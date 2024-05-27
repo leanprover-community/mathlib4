@@ -1730,8 +1730,8 @@ def ScottContinuous (f : α → β) : Prop :=
   ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
 #align scott_continuous ScottContinuous
 
-@[simp] lemma dscottContinuous_univ : DScottContinuous univ f ↔ ScottContinuous f :=
-  ⟨fun h _ d₁ d₂ _ hda => h d₁ d₂ trivial hda, fun h _ d₁ d₂ _ _ hda => h d₁ d₂ hda⟩
+@[simp] lemma dscottContinuous_univ : DScottContinuous univ f ↔ ScottContinuous f := by
+  simp [DScottContinuous, ScottContinuous]
 
 protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f := by
   apply DScottContinuous.monotone univ (by exact fun _ _ _ ↦ trivial) (dscottContinuous_univ.mpr h)
