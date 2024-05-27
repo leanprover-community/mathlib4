@@ -396,7 +396,7 @@ theorem toNNReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toNNReal = a.toNNReal 
 
 @[simp]
 theorem toNNReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
-    (∏ i in s, f i).toNNReal = ∏ i in s, (f i).toNNReal :=
+    (∏ i ∈ s, f i).toNNReal = ∏ i ∈ s, (f i).toNNReal :=
   map_prod toNNRealHom _ _
 #align ennreal.to_nnreal_prod ENNReal.toNNReal_prod
 
@@ -420,7 +420,7 @@ theorem toReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toReal = a.toReal ^ n :=
 
 @[simp]
 theorem toReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
-    (∏ i in s, f i).toReal = ∏ i in s, (f i).toReal :=
+    (∏ i ∈ s, f i).toReal = ∏ i ∈ s, (f i).toReal :=
   map_prod toRealHom _ _
 #align ennreal.to_real_prod ENNReal.toReal_prod
 
@@ -501,7 +501,7 @@ theorem toReal_div (a b : ℝ≥0∞) : (a / b).toReal = a.toReal / b.toReal := 
 #align ennreal.to_real_div ENNReal.toReal_div
 
 theorem ofReal_prod_of_nonneg {α : Type*} {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈ s → 0 ≤ f i) :
-    ENNReal.ofReal (∏ i in s, f i) = ∏ i in s, ENNReal.ofReal (f i) := by
+    ENNReal.ofReal (∏ i ∈ s, f i) = ∏ i ∈ s, ENNReal.ofReal (f i) := by
   simp_rw [ENNReal.ofReal, ← coe_finset_prod, coe_inj]
   exact Real.toNNReal_prod_of_nonneg hf
 #align ennreal.of_real_prod_of_nonneg ENNReal.ofReal_prod_of_nonneg
@@ -603,7 +603,7 @@ theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + i
 
 theorem iInf_sum {α : Type*} {f : ι → α → ℝ≥0∞} {s : Finset α} [Nonempty ι]
     (h : ∀ (t : Finset α) (i j : ι), ∃ k, ∀ a ∈ t, f k a ≤ f i a ∧ f k a ≤ f j a) :
-    ⨅ i, ∑ a in s, f i a = ∑ a in s, ⨅ i, f i a := by
+    ⨅ i, ∑ a ∈ s, f i a = ∑ a ∈ s, ⨅ i, f i a := by
   induction' s using Finset.cons_induction_on with a s ha ih
   · simp only [Finset.sum_empty, ciInf_const]
   · simp only [Finset.sum_cons, ← ih]

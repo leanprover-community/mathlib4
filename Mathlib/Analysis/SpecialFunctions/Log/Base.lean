@@ -440,7 +440,7 @@ theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨
 -- TODO add other limits and continuous API lemmas analogous to those in Log.lean
 
 theorem logb_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
-    logb b (∏ i in s, f i) = ∑ i in s, logb b (f i) := by
+    logb b (∏ i ∈ s, f i) = ∑ i ∈ s, logb b (f i) := by
   classical
     induction' s using Finset.induction_on with a s ha ih
     · simp

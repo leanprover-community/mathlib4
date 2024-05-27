@@ -374,7 +374,7 @@ theorem continuousAt_log_iff : ContinuousAt log x ↔ x ≠ 0 := by
 #align real.continuous_at_log_iff Real.continuousAt_log_iff
 
 theorem log_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
-    log (∏ i in s, f i) = ∑ i in s, log (f i) := by
+    log (∏ i ∈ s, f i) = ∑ i ∈ s, log (f i) := by
   induction' s using Finset.cons_induction_on with a s ha ih
   · simp
   · rw [Finset.forall_mem_cons] at hf
