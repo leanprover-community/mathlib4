@@ -60,12 +60,16 @@ lemma killingForm_nondegenerate :
     (killingForm R L).Nondegenerate := by
   simp [LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot]
 
-/-- The converse of this is true over a field of characteristic zero. There are counterexamples
-over fields with positive characteristic. -/
-instance instHasTrivialRadical [IsDomain R] [IsPrincipalIdealRing R] : HasTrivialRadical R L := by
-  refine' (hasTrivialRadical_iff_no_abelian_ideals R L).mpr fun I hI ↦ _
+variable {R L} in
+lemma ideal_eq_bot_of_isLieAbelian [IsDomain R] [IsPrincipalIdealRing R]
+    (I : LieIdeal R L) [IsLieAbelian I] : I = ⊥ := by
   rw [eq_bot_iff, ← killingCompl_top_eq_bot]
   exact I.le_killingCompl_top_of_isLieAbelian
+
+/-- The converse of this is true over a field of characteristic zero. There are counterexamples
+over fields with positive characteristic. -/
+instance instHasTrivialRadical [IsDomain R] [IsPrincipalIdealRing R] : HasTrivialRadical R L :=
+  (hasTrivialRadical_iff_no_abelian_ideals R L).mpr IsKilling.ideal_eq_bot_of_isLieAbelian
 
 end IsKilling
 
@@ -158,7 +162,7 @@ lemma mem_orthogonalLieIdeal (I : LieIdeal R L) (x : L) :
 lemma orthogonalLieIdeal_disjoint (I : LieIdeal R L) (hI : IsAtom I) :
     Disjoint I (orthogonalLieIdeal  Φ hΦ_inv I) := by
   rw [disjoint_iff, ← hI.lt_iff, lt_iff_le_and_ne]
-  suffices ¬I ≤ orthogonalLieIdeal  Φ hΦ_inv I by
+  suffices ¬I ≤ orthogonalLieIdeal Φ hΦ_inv I by
     simpa only [inf_le_left, ne_eq, inf_eq_left, true_and]
   intro contra
   apply hI.1
@@ -314,8 +318,28 @@ decreasing_by
 theorem isSemisimple_of_nondegenerate_invariant_form : IsSemisimple K L := by
   refine ⟨?_, ?_, hL⟩
   · simpa using atomistic hL Φ hΦ_inv hΦ_nondeg hΦ_refl ⊤
-  intro J hJ
-  sorry
+  intro I hI
+  apply (orthogonalLieIdeal_disjoint hL Φ hΦ_inv hΦ_nondeg I hI).mono_right
+  apply sSup_le
+  simp only [Set.mem_diff, Set.mem_setOf_eq, Set.mem_singleton_iff, and_imp]
+  intro J hJ hJI
+  rw [← perfect_of_isAtom hL J hJ, LieSubmodule.lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
+  rintro _ ⟨x, y, rfl⟩
+  simp only [orthogonalLieIdeal_carrier, Φ.isOrtho_def, Set.mem_setOf_eq]
+  intro z hz
+  rw [← hΦ_inv]
+  suffices ⁅z, (x : L)⁆ = 0 by simp only [this, map_zero, LinearMap.zero_apply]
+  rw [← LieSubmodule.mem_bot (R := K) (L := L), ← (hJ.disjoint_of_ne hI hJI).symm.eq_bot]
+  apply LieSubmodule.lie_le_inf
+  exact LieSubmodule.lie_mem_lie _ _ hz x.2
+
+instance [IsKilling K L] : IsSemisimple K L := by
+  apply isSemisimple_of_nondegenerate_invariant_form _ (killingForm K L)
+  · exact LieModule.traceForm_apply_lie_apply K L L
+  · exact IsKilling.killingForm_nondegenerate _ _
+  · exact (LieModule.traceForm_isSymm K L L).isRefl
+  · intro I h₁ h₂
+    exact h₁.1 <| IsKilling.ideal_eq_bot_of_isLieAbelian I
 
 end field
 
