@@ -9,6 +9,7 @@ import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Convex.Complex
 import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Topology.Homotopy.Contractible
+import Mathlib.Topology.PartialHomeomorph
 
 #align_import analysis.complex.upper_half_plane.topology from "leanprover-community/mathlib"@"57f9349f2fe19d2de7207e99b0341808d977cdcf"
 
@@ -106,5 +107,17 @@ lemma subset_verticalStrip_of_isCompact {K : Set ℍ} (hK : IsCompact K) :
   exact ⟨|re u|, im v, v.im_pos, fun k hk ↦ ⟨isMaxOn_iff.mp hu _ hk, isMinOn_iff.mp hv _ hk⟩⟩
 
 end strips
+
+/-- A continuous section `ℂ → ℍ` of the natural inclusion map, bundled as a `PartialHomeomorph`. -/
+def ofComplex : PartialHomeomorph ℂ ℍ := (openEmbedding_coe.toPartialHomeomorph _).symm
+
+/-- Extend a function on `ℍ` arbitrarily to a function on all of `ℂ`. -/
+scoped notation "↑ₕ" f => f ∘ ofComplex
+
+lemma ofComplex_apply (z : ℍ) : ofComplex (z : ℂ) = z :=
+  OpenEmbedding.toPartialHomeomorph_left_inv ..
+
+lemma comp_ofComplex (f : ℍ → ℂ) (z : ℍ) : (↑ₕ f) z = f z := by
+  rw [Function.comp_apply, ofComplex_apply]
 
 end UpperHalfPlane
