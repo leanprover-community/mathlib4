@@ -39,7 +39,7 @@ lemma IsHamiltonian.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective f) (
 
 /-- A hamiltonian path visits every vertex. -/
 @[simp] lemma IsHamiltonian.mem_support (hp : p.IsHamiltonian) (c : α) : c ∈ p.support := by
-  simp only [← List.count_pos_iff_mem, hp _, zero_lt_one]
+  simp only [← List.count_pos_iff_mem, hp _, Nat.zero_lt_one]
 
 /-- The support of a hamiltonian walk is the entire vertex set. -/
 lemma IsHamiltonian.support_toFinset (hp : p.IsHamiltonian) : p.support.toFinset = Finset.univ := by
