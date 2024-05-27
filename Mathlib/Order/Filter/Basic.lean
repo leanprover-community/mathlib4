@@ -1279,6 +1279,11 @@ theorem eventually_inf_principal {f : Filter α} {p : α → Prop} {s : Set α} 
   mem_inf_principal
 #align filter.eventually_inf_principal Filter.eventually_inf_principal
 
+theorem eventually_iff_all_subsets {f : Filter α} {p : α → Prop} :
+    (∀ᶠ x in f, p x) ↔ ∀ (s : Set α), ∀ᶠ x in f, x ∈ s → p x :=
+  ⟨(fun h _ ↦ by filter_upwards [h] with _ pa _ using pa),
+  (fun h ↦ by filter_upwards [h univ] with _ pa using (pa (by simp)))⟩
+
 /-! ### Frequently -/
 
 /-- `f.Frequently p` or `∃ᶠ x in f, p x` mean that `{x | ¬p x} ∉ f`. E.g., `∃ᶠ x in atTop, p x`
@@ -1666,6 +1671,10 @@ theorem eventuallyEq_iff_sub [AddGroup β] {f g : α → β} {l : Filter α} :
   ⟨fun h => h.sub_eq, fun h => by simpa using h.add (EventuallyEq.refl l g)⟩
 #align filter.eventually_eq_iff_sub Filter.eventuallyEq_iff_sub
 
+theorem eventuallyEq_iff_all_subsets {f g : α → β} {l : Filter α} :
+    f =ᶠ[l] g ↔ ∀ (s : Set α), ∀ᶠ x in l, x ∈ s → f x = g x :=
+  eventually_iff_all_subsets
+
 section LE
 
 variable [LE β] {l : Filter α}
@@ -1687,6 +1696,10 @@ theorem eventuallyLE_congr {f f' g g' : α → β} (hf : f =ᶠ[l] f') (hg : g =
     f ≤ᶠ[l] g ↔ f' ≤ᶠ[l] g' :=
   ⟨fun H => H.congr hf hg, fun H => H.congr hf.symm hg.symm⟩
 #align filter.eventually_le_congr Filter.eventuallyLE_congr
+
+theorem eventuallyLE_iff_all_subsets {f g : α → β} {l : Filter α} :
+    f ≤ᶠ[l] g ↔ ∀ (s : Set α), ∀ᶠ x in l, x ∈ s → f x ≤ g x :=
+  eventually_iff_all_subsets
 
 end LE
 
