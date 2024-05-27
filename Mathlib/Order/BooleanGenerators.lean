@@ -13,8 +13,7 @@ In this file, we provide an alternative constructor for boolean algebras.
 
 A set of *boolean generators* in a compactly generated complete lattice is a subset `S` such that
 
-* the elements of `S` are all atoms,
-* the set `S` is independent, and
+* the elements of `S` are all atoms, and
 * the set `S` satisfies an atomicity condition:
   any compact element below the supremum of a subset `s` of generators
   is equal to the supremum of a subset of `s`.
@@ -43,10 +42,9 @@ An alternative constructor for boolean algebras.
 
 A set of *boolean generators* in a compactly generated complete lattice is a subset `S` such that
 
-* the elements of `S` are all atoms,
-* the set `S` is independent, and
+* the elements of `S` are all atoms, and
 * the set `S` satisfies an atomicity condition:
-  any compact element below the supremum of a subset `s` of generators
+  any compact element below the supremum of a finite subset `s` of generators
   is equal to the supremum of a subset of `s`.
 
 If the supremum of `S` is the whole lattice,
@@ -56,10 +54,8 @@ then the lattice is a boolean algebra
 structure BooleanGenerators (S : Set α) : Prop where
   /-- The elements in a collection of boolean generators are all atoms. -/
   isAtom : ∀ I ∈ S, IsAtom I
-  /-- The elements in a collection of boolean generators are independent. -/
-  setIndependent : CompleteLattice.SetIndependent S
   /-- The elements in a collection of boolean generators satisfy an atomicity condition:
-  any compact element below the supremum of a subset `s` of generators
+  any compact element below the supremum of a finite subset `s` of generators
   is equal to the supremum of a subset of `s`. -/
   finitelyAtomistic : ∀ (s : Finset α) (a : α),
       ↑s ⊆ S → IsCompactElement a → a ≤ s.sup id → ∃ t ⊆ s, a = t.sup id
@@ -70,7 +66,6 @@ variable {S : Set α} (hS : BooleanGenerators S)
 
 lemma mono {T : Set α} (hTS : T ⊆ S) : BooleanGenerators T where
   isAtom I hI := hS.isAtom I (hTS hI)
-  setIndependent := hS.setIndependent.mono hTS
   finitelyAtomistic := fun s a hs ↦ hS.finitelyAtomistic s a (le_trans hs hTS)
 
 lemma atomistic (a : α) (ha : a ≤ sSup S) : ∃ T ⊆ S, a = sSup T := by
