@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.WithTop
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.ENNReal.Basic
 
 #align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"

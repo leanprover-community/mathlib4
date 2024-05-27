@@ -250,7 +250,7 @@ set_option linter.uppercaseLean3 false in
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] AlgebraicGeometry.structurePresheafInCommRing_map_apply
 
-/-- Some glue, verifying that that structure presheaf valued in `CommRingCat` agrees
+/-- Some glue, verifying that the structure presheaf valued in `CommRingCat` agrees
 with the `Type` valued structure presheaf.
 -/
 def structurePresheafCompForget :
