@@ -9,9 +9,11 @@ import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 
 open Set MeasureTheory Filter Topology ENNReal Finset symmDiff
 
-theorem preimage_proj {ι : Type*} {X : ι → Type*} (I J : Finset ι) [∀ i : ι, Decidable (i ∈ I)]
-    (hIJ : I ⊆ J) (s : ∀ i : I, Set (X i)) :
-    (fun t : (∀ j : J, X j) ↦ fun i : I ↦ t ⟨i, hIJ i.2⟩) ⁻¹' (univ.pi s) =
+variable {ι : Type*} {α : ι → Type*}
+
+theorem preimage_proj (I J : Finset ι) [∀ i : ι, Decidable (i ∈ I)]
+    (hIJ : I ⊆ J) (s : (i : I) → Set (α i)) :
+    (fun t : (∀ j : J, α j) ↦ fun i : I ↦ t ⟨i, hIJ i.2⟩) ⁻¹' (univ.pi s) =
     (@Set.univ J).pi (fun j ↦ if h : j.1 ∈ I then s ⟨j.1, h⟩ else univ) := by
   ext x
   simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, true_implies, Subtype.forall]
@@ -20,71 +22,51 @@ theorem preimage_proj {ι : Type*} {X : ι → Type*} (I J : Finset ι) [∀ i :
   · simp [i_mem, h i i_mem]
   · simp [i_mem]
 
-variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)]
-variable (μ : (n : ℕ) → Measure (X n)) [hμ : ∀ n, IsProbabilityMeasure (μ n)]
+variable {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
+variable (μ : (i : ι) → Measure (X i)) [hμ : ∀ i, IsProbabilityMeasure (μ i)]
 
-theorem isProjectiveMeasureFamily_prod {ι : Type*} [∀ (S : Finset ι) i, Decidable (i ∈ S)]
-    {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
-    (m : (i : ι) → Measure (α i)) [∀ i, IsProbabilityMeasure (m i)] :
-    IsProjectiveMeasureFamily (fun S : Finset ι ↦ (Measure.pi (fun n : S ↦ m n))) := by
-  intro T S hST
+theorem isProjectiveMeasureFamily_pi [∀ (I : Finset ι) i, Decidable (i ∈ I)] :
+    IsProjectiveMeasureFamily (fun I : Finset ι ↦ (Measure.pi (fun i : I ↦ μ i))) := by
+  intro I J hJI
   refine Measure.pi_eq (fun s ms ↦ ?_)
-  rw [Measure.map_apply (measurable_proj₂' (α := α) T S hST) (MeasurableSet.univ_pi ms),
-    preimage_proj S T hST, Measure.pi_pi]
-  have h1 : (@Finset.univ T _).prod (fun n ↦ (m n) (if hn : n.1 ∈ S then s ⟨n.1, hn⟩ else univ)) =
-      (@Finset.univ T.toSet _).prod
-      (fun n ↦ (fun k ↦ (m k) (if hk : k ∈ S then s ⟨k, hk⟩ else univ)) n) :=
+  rw [Measure.map_apply (measurable_proj₂' (α := X) I J hJI) (MeasurableSet.univ_pi ms),
+    preimage_proj J I hJI, Measure.pi_pi]
+  have h1 : (@Finset.univ I _).prod (fun i ↦ (μ i) (if hi : i.1 ∈ J then s ⟨i.1, hi⟩ else univ)) =
+      (@Finset.univ I.toSet _).prod
+      (fun i ↦ (fun j ↦ (μ j) (if hj : j ∈ J then s ⟨j, hj⟩ else univ)) i) :=
     Finset.prod_congr rfl (by simp)
-  have h2 : (@Finset.univ S _).prod (fun n ↦ (m n) (s n)) =
-      (@Finset.univ S.toSet _).prod
-      (fun n ↦ (fun k ↦ (m k) (if hk : k ∈ S then s ⟨k, hk⟩ else univ)) n) :=
+  have h2 : (@Finset.univ J _).prod (fun i ↦ (μ i) (s i)) =
+      (@Finset.univ J.toSet _).prod
+      (fun i ↦ (fun j ↦ (μ j) (if hj : j ∈ J then s ⟨j, hj⟩ else univ)) i) :=
     Finset.prod_congr rfl (by simp)
   rw [h1, h2, Finset.prod_set_coe
-      (f := fun n ↦ (fun k ↦ (m k) (if hk : k ∈ S then s ⟨k, hk⟩ else univ)) n),
+      (f := fun i ↦ (fun j ↦ (μ j) (if hj : j ∈ J then s ⟨j, hj⟩ else univ)) i),
     Finset.prod_set_coe
-      (f := fun n ↦ (fun k ↦ (m k) (if hk : k ∈ S then s ⟨k, hk⟩ else univ)) n),
+      (f := fun i ↦ (fun j ↦ (μ j) (if hj : j ∈ J then s ⟨j, hj⟩ else univ)) i),
     Finset.toFinset_coe, Finset.toFinset_coe,
-    Finset.prod_subset hST (fun _ h h' ↦ by simp [h, h'])]
+    Finset.prod_subset hJI (fun _ h h' ↦ by simp [h, h'])]
 
-theorem dependsOn_cylinder_indicator {ι : Type*} {α : ι → Type*}
-    (s : Finset ι) (S : Set ((i : s) → α i)) :
-    DependsOn ((cylinder s S).indicator (1 : ((i : ι) → α i) → ℝ≥0∞)) s := by
+theorem dependsOn_cylinder_indicator (I : Finset ι) (S : Set ((i : I) → X i)) :
+    DependsOn ((cylinder I S).indicator (1 : ((i : ι) → X i) → ℝ≥0∞)) I := by
   intro x y hxy
-  have : x ∈ cylinder s S ↔ y ∈ cylinder s S := by simp [hxy]
-  by_cases h : x ∈ cylinder s S
+  have : x ∈ cylinder I S ↔ y ∈ cylinder I S := by simp [hxy]
+  by_cases h : x ∈ cylinder I S
   · simp [h, this.1 h]
   · simp [h, this.not.1 h]
 
-theorem cylinders_nat : cylinders X =
-    ⋃ (N) (S) (_ : MeasurableSet S), {cylinder (Icc 0 N) S} := by
-  ext s
-  simp only [mem_cylinders, exists_prop, mem_iUnion, mem_singleton_iff]
-  constructor
-  · rintro ⟨t, S, mS, rfl⟩
-    refine ⟨t.sup id, (fun (f : (∀ n : Finset.Icc 0 (t.sup id), X n)) (k : t) ↦
-      f ⟨k.1, Finset.mem_Icc.2 ⟨Nat.zero_le k.1, Finset.le_sup (f := id) k.2⟩⟩) ⁻¹' S,
-      by measurability, ?_⟩
-    dsimp only [cylinder]
-    rw [← preimage_comp]
-    rfl
-  · rintro ⟨N, S, mS, rfl⟩
-    exact ⟨Finset.Icc 0 N, S, mS, rfl⟩
-
-theorem eq {ι : Type*} [DecidableEq ι] [∀ (S : Finset ι) i, Decidable (i ∈ S)]
-    {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
-    (ν : (i : ι) → Measure (α i)) [hν : ∀ i, IsProbabilityMeasure (ν i)]
-    (I : Finset ι) {S : Set ((i : I) → α i)} (mS : MeasurableSet S) (x : (i : ι) → α i) :
-    @kolContent _ _ _ _ (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨ν i, hν i⟩; infer_instance)
-    (isProjectiveMeasureFamily_prod ν) (cylinder I S) =
-    (∫⋯∫⁻_I, (cylinder I S).indicator 1 ∂ν) x := by
-  have : ∀ i, Nonempty (α i) := by
-    have := fun i ↦ ProbabilityMeasure.nonempty ⟨ν i, hν i⟩;
+theorem eq [DecidableEq ι] [∀ (S : Finset ι) i, Decidable (i ∈ S)]
+    (I : Finset ι) {S : Set ((i : I) → X i)} (mS : MeasurableSet S) (x : (i : ι) → X i) :
+    @kolContent _ _ _ _ (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
+    (isProjectiveMeasureFamily_pi μ) (cylinder I S) =
+    (∫⋯∫⁻_I, (cylinder I S).indicator 1 ∂μ) x := by
+  have : ∀ i, Nonempty (X i) := by
+    have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩;
     infer_instance
-  rw [kolContent_congr (isProjectiveMeasureFamily_prod ν)
+  rw [kolContent_congr (isProjectiveMeasureFamily_pi μ)
       (by rw [mem_cylinders]; exact ⟨I, S, mS, rfl⟩) rfl mS,
     ← lintegral_indicator_one₀ mS.nullMeasurableSet]
-  refine lintegral_congr <| fun a ↦ ?_
-  by_cases ha : a ∈ S <;> simp [ha, Function.updateFinset]
+  refine lintegral_congr <| fun x ↦ ?_
+  by_cases hx : x ∈ S <;> simp [hx, Function.updateFinset]
 
 theorem Finset.Icc_eq_left_union (h : k ≤ N) : Finset.Icc k N = {k} ∪ (Finset.Icc (k + 1) N) := by
   ext x
@@ -96,6 +78,25 @@ theorem Finset.Icc_eq_left_union (h : k ≤ N) : Finset.Icc k N = {k} ∪ (Finse
   · rintro (h1 | ⟨h2, h3⟩)
     · exact ⟨h1 ▸ le_refl _, h1 ▸ h⟩
     · exact ⟨Nat.le_of_succ_le h2, h3⟩
+
+variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)]
+
+theorem cylinders_nat :
+    cylinders X = ⋃ (N) (S) (_ : MeasurableSet S), {cylinder (Icc 0 N) S} := by
+  ext s
+  simp only [mem_cylinders, exists_prop, mem_iUnion, mem_singleton_iff]
+  constructor
+  · rintro ⟨t, S, mS, rfl⟩
+    refine ⟨t.sup id, (fun (f : ((n : Finset.Icc 0 (t.sup id)) → X n)) (k : t) ↦
+      f ⟨k.1, Finset.mem_Icc.2 ⟨Nat.zero_le k.1, Finset.le_sup (f := id) k.2⟩⟩) ⁻¹' S,
+      by measurability, ?_⟩
+    dsimp only [cylinder]
+    rw [← preimage_comp]
+    rfl
+  · rintro ⟨N, S, mS, rfl⟩
+    exact ⟨Finset.Icc 0 N, S, mS, rfl⟩
+
+variable (μ : (n : ℕ) → Measure (X n)) [hμ : ∀ n, IsProbabilityMeasure (μ n)]
 
 theorem auxiliaire (f : ℕ → (∀ n, X n) → ℝ≥0∞) (N : ℕ → ℕ)
     (hcte : ∀ n, DependsOn (f n) (Finset.Icc 0 (N n))) (mf : ∀ n, Measurable (f n))
@@ -176,24 +177,18 @@ def key (ind : (k : ℕ) → ((i : Finset.Ico 0 k) → X i) → X k) : (k : ℕ)
   decreasing_by
   exact (Finset.mem_Ico.1 i.2).2
 
-lemma not_mem_symmDiff {s t : Finset ℕ} {x : ℕ} :
-    (x ∈ s ∧ x ∈ t) ∨ (x ∉ s ∧ x ∉ t) → x ∉ s ∆ t := by
-  rw [Finset.mem_symmDiff.not]
-  push_neg
-  rintro (⟨hs, ht⟩ | ⟨hs, ht⟩) <;> simp [hs, ht]
-
-theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylinders X) (A_anti : Antitone A)
-    (A_inter : ⋂ n, A n = ∅) :
+theorem firstLemma (A : ℕ → Set ((n : ℕ) → X n)) (A_mem : ∀ n, A n ∈ cylinders X)
+    (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅) :
     Tendsto (fun n ↦ @kolContent _ _ _ _
     (by have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩; infer_instance)
-    (isProjectiveMeasureFamily_prod μ) (A n)) atTop (𝓝 0) := by
+    (isProjectiveMeasureFamily_pi μ) (A n)) atTop (𝓝 0) := by
   have : ∀ n, Nonempty (X n) := by
     have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩;
     infer_instance
   have A_cyl n : ∃ N S, MeasurableSet S ∧ A n = cylinder (Finset.Icc 0 N) S := by
     simpa [cylinders_nat] using A_mem n
   choose N S mS A_eq using A_cyl
-  set μ_proj := isProjectiveMeasureFamily_prod μ
+  set μ_proj := isProjectiveMeasureFamily_pi μ
   let χ := fun n ↦ (A n).indicator (1 : (∀ n, X n) → ℝ≥0∞)
   have concl x n : kolContent μ_proj (A n) = (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) x := by
     simp only [χ, A_eq]
@@ -244,13 +239,9 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
   have χ_le n x : χ n x ≤ 1 := by
     apply Set.indicator_le
     simp
-  rcases auxiliaire μ χ N χ_dep mχ 1 (by norm_num) χ_le 0 (anti_lma 1) (l 1) (hl 1) ε
-    Classical.ofNonempty hpos with ⟨init, hinit⟩
-  simp [Function.updateFinset_def] at hinit
   choose! ind hind using
     fun k y h ↦ auxiliaire μ χ N χ_dep mχ 1 (by norm_num) χ_le k (anti_lma (k + 1))
       (l (k + 1)) (hl (k + 1)) ε y h
-  -- let z := key ind
   have crucial : ∀ k x n, ε ≤ (∫⋯∫⁻_Finset.Icc k (N n), χ n ∂μ)
       (Function.updateFinset x (Finset.Ico 0 k) (fun i ↦ key ind i)) := by
     intro k
@@ -301,11 +292,11 @@ theorem firstLemma (A : ℕ → Set (∀ n, X n)) (A_mem : ∀ n, A n ∈ cylind
     rw [← this, ← hε Classical.ofNonempty]
     exact hl _ _
 
-variable {ι : Type*} [DecidableEq ι] [∀ (I : Set ι) i, Decidable (i ∈ I)]
-variable {α : ι → Type*} [hα : ∀ i, MeasurableSpace (α i)]
-variable (ν : (i : ι) → Measure (α i)) [hν : ∀ i, IsProbabilityMeasure (ν i)]
+variable [DecidableEq ι] [∀ (I : Set ι) i, Decidable (i ∈ I)]
+variable {X : ι → Type*} [hX : ∀ i, MeasurableSpace (X i)]
+variable (μ : (i : ι) → Measure (X i)) [hμ : ∀ i, IsProbabilityMeasure (μ i)]
 
-lemma omg (s : Set ι) (x : (i : s) → α i) (i j : s) (h : i = j) (h' : α i = α j) :
+lemma omg (s : Set ι) (x : (i : s) → X i) (i j : s) (h : i = j) (h' : X i = X j) :
     cast h' (x i) = x j := by
   aesop_subst h
   rfl
@@ -316,34 +307,34 @@ lemma omg' (a b : Type _) (h : a = b) (x : a) (t : Set a) (h' : Set a = Set b) :
   rfl
 
 theorem secondLemma (φ : ℕ ≃ ι)
-    (A : ℕ → Set ((i : ι) → α i)) (A_mem : ∀ n, A n ∈ cylinders α) (A_anti : Antitone A)
+    (A : ℕ → Set ((i : ι) → X i)) (A_mem : ∀ n, A n ∈ cylinders X) (A_anti : Antitone A)
     (A_inter : ⋂ n, A n = ∅) :
     Tendsto (fun n ↦ @kolContent _ _ _ _
-    (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨ν i, hν i⟩; infer_instance)
-    (isProjectiveMeasureFamily_prod ν) (A n)) atTop (𝓝 0) := by
-  have : ∀ i, Nonempty (α i) := by
-    have := fun i ↦ ProbabilityMeasure.nonempty ⟨ν i, hν i⟩;
+    (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
+    (isProjectiveMeasureFamily_pi μ) (A n)) atTop (𝓝 0) := by
+  have : ∀ i, Nonempty (X i) := by
+    have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩;
     infer_instance
-  set ν_proj := isProjectiveMeasureFamily_prod ν
-  let ν_proj' := isProjectiveMeasureFamily_prod (fun k : ℕ ↦ ν (φ k))
+  set μ_proj := isProjectiveMeasureFamily_pi μ
+  let μ_proj' := isProjectiveMeasureFamily_pi (fun k : ℕ ↦ μ (φ k))
   have A_cyl n : ∃ s S, MeasurableSet S ∧ A n = cylinder s S := by
     simpa only [mem_cylinders, exists_prop] using A_mem n
   choose s S mS A_eq using A_cyl
   let u n := (s n).preimage φ (φ.injective.injOn _)
-  have h i : α (φ (φ.symm i)) = α i := by simp
+  have h i : X (φ (φ.symm i)) = X i := by simp
   have e n i (h : i ∈ s n) : φ.symm i ∈ u n := by simpa [u] using h
   have e' n k (h : k ∈ u n) : φ k ∈ s n := by simpa [u] using h
-  let f : ((k : ℕ) → α (φ k)) → (i : ι) → α i := fun x i ↦ cast (h i) (x (φ.symm i))
+  let f : ((k : ℕ) → X (φ k)) → (i : ι) → X i := fun x i ↦ cast (h i) (x (φ.symm i))
   let aux n : (s n ≃ u n) := {
     toFun := fun i ↦ ⟨φ.symm i, e n i.1 i.2⟩
     invFun := fun k ↦ ⟨φ k, e' n k.1 k.2⟩
     left_inv := by simp [Function.LeftInverse]
     right_inv := by simp [Function.RightInverse, Function.LeftInverse]
   }
-  let g n : ((k : u n) → α (φ k)) → (i : s n) → α i :=
+  let g n : ((k : u n) → X (φ k)) → (i : s n) → X i :=
     fun x i ↦ cast (h i) (x (aux n i))
-  have test n : (fun (x : (i : ι) → α i) (i : s n) ↦ x i) ∘ f =
-      (g n) ∘ (fun (x : (k : ℕ) → α (φ k)) (k : u n) ↦ x k) := by
+  have test n : (fun (x : (i : ι) → X i) (i : s n) ↦ x i) ∘ f =
+      (g n) ∘ (fun (x : (k : ℕ) → X (φ k)) (k : u n) ↦ x k) := by
     ext x
     simp [f, g, aux]
   let B n := f ⁻¹' (A n)
@@ -354,25 +345,25 @@ theorem secondLemma (φ : ℕ ≃ ι)
   have meas n : Measurable (g n) := by
     simp only [g]
     refine measurable_pi_lambda _ (fun i ↦ ?_)
-    have : (fun c : (k : u n) → α (φ k) ↦ cast (h i) (c (aux n i))) =
+    have : (fun c : (k : u n) → X (φ k) ↦ cast (h i) (c (aux n i))) =
         ((fun a ↦ cast (h i) a) ∘ (fun x ↦ x (aux n i))) := by
       ext x
       simp
     rw [this]
     apply Measurable.comp
-    · have aux1 : HEq (hα i) (hα (φ (φ.symm i))) := by
+    · have aux1 : HEq (hX i) (hX (φ (φ.symm i))) := by
         have := h i
         rw [← cast_eq_iff_heq (e := by simp [this])]
-        exact @omg ι (fun i ↦ MeasurableSpace (α i)) (s n) (fun i ↦ hα i)
+        exact @omg ι (fun i ↦ MeasurableSpace (X i)) (s n) (fun i ↦ hX i)
           i ⟨φ (φ.symm i), by simp [i.2]⟩ (by simp) _
       let f := MeasurableEquiv.cast (h i).symm aux1
-      have aux2 : (fun a : α (φ (φ.symm i)) ↦ cast (h i) a) = f.symm := by
+      have aux2 : (fun a : X (φ (φ.symm i)) ↦ cast (h i) a) = f.symm := by
         ext a
         simp [f, MeasurableEquiv.cast]
       rw [aux2]
       exact f.measurable_invFun
-    · apply @measurable_pi_apply (u n) (fun k ↦ α (φ k)) _ (aux n i)
-  have imp n (t : (i : s n) → Set (α i)) : (g n) ⁻¹' (Set.univ.pi t) =
+    · apply @measurable_pi_apply (u n) (fun k ↦ X (φ k)) _ (aux n i)
+  have imp n (t : (i : s n) → Set (X i)) : (g n) ⁻¹' (Set.univ.pi t) =
       Set.univ.pi (fun k : u n ↦ t ⟨φ k, e' n k.1 k.2⟩) := by
     ext x
     simp [g]
@@ -381,32 +372,32 @@ theorem secondLemma (φ : ℕ ≃ ι)
       convert h' (φ k) (e' n k hk)
       simp [aux]
       have : (⟨φ.symm (φ k), by simp [hk]⟩ : u n) = ⟨k, hk⟩ := by simp
-      rw [omg (ι := ℕ) (α := fun k ↦ α (φ k)) (u n) x ⟨φ.symm (φ k), by simp [hk]⟩ ⟨k, hk⟩]
+      rw [omg (ι := ℕ) (X := fun k ↦ X (φ k)) (u n) x ⟨φ.symm (φ k), by simp [hk]⟩ ⟨k, hk⟩]
       · simp
     · intro h' i hi
       convert h' (φ.symm i) (e n i hi)
       simp [aux]
       have : cast (congrArg Set (h i)) (t ⟨φ (φ.symm i), by simp [hi]⟩) = t ⟨i, hi⟩ := by
         have : (⟨i, hi⟩ : s n) = ⟨φ (φ.symm i), by simp [hi]⟩ := by simp
-        exact @omg ι (fun i ↦ Set (α i)) (s n) t ⟨φ (φ.symm i), by simp [hi]⟩ ⟨i, hi⟩ this.symm _
+        exact @omg ι (fun i ↦ Set (X i)) (s n) t ⟨φ (φ.symm i), by simp [hi]⟩ ⟨i, hi⟩ this.symm _
       rw [← this]
-      rw [omg' (α (φ (φ.symm i))) (α i) (by simp) (x ⟨φ.symm i, e n i hi⟩)
+      rw [omg' (X (φ (φ.symm i))) (X i) (by simp) (x ⟨φ.symm i, e n i hi⟩)
           (t ⟨φ (φ.symm i), by simp [hi]⟩) (by simp)]
-  have test' n : Measure.pi (fun i : s n ↦ ν i) =
-      (Measure.pi (fun k : u n ↦ ν (φ k))).map (g n) := by
+  have test' n : Measure.pi (fun i : s n ↦ μ i) =
+      (Measure.pi (fun k : u n ↦ μ (φ k))).map (g n) := by
     refine Measure.pi_eq (fun x mx ↦ ?_)
     rw [Measure.map_apply, imp n, Measure.pi_pi, Fintype.prod_equiv (aux n).symm
-      _ (fun i ↦ (ν i) (x i))]
+      _ (fun i ↦ (μ i) (x i))]
     · simp [aux]
     · exact meas n
     · apply MeasurableSet.pi
       · exact countable_univ
       · simp [mx]
   have mT n : MeasurableSet (T n) := (mS n).preimage (meas n)
-  have crucial n : kolContent ν_proj (A n) = kolContent ν_proj' (B n) := by
-    simp_rw [fun n ↦ kolContent_congr ν_proj
+  have crucial n : kolContent μ_proj (A n) = kolContent μ_proj' (B n) := by
+    simp_rw [fun n ↦ kolContent_congr μ_proj
       (by rw [mem_cylinders]; exact ⟨s n, S n, mS n, A_eq n⟩) (A_eq n) (mS n),
-      fun n ↦ kolContent_congr ν_proj'
+      fun n ↦ kolContent_congr μ_proj'
       (by rw [mem_cylinders]; exact ⟨u n, T n, mT n, B_eq n⟩) (B_eq n) (mT n), T, test' n]
     rw [Measure.map_apply]
     · exact meas n
@@ -417,103 +408,20 @@ theorem secondLemma (φ : ℕ ≃ ι)
   have B_inter : ⋂ n, B n = ∅ := by
     simp_rw [B, ← preimage_iInter, A_inter, Set.preimage_empty]
   simp_rw [crucial]
-  refine firstLemma (fun k ↦ ν (φ k)) B ?_ B_anti B_inter
+  refine firstLemma (fun k ↦ μ (φ k)) B ?_ B_anti B_inter
   exact fun n ↦ (mem_cylinders (B n)).2 ⟨u n, T n, mT n, B_eq n⟩
 
--- theorem secondLemma (φ : ℕ ≃ ι)
---     (A : ℕ → Set ((i : ι) → α i)) (A_mem : ∀ n, A n ∈ cylinders α) (A_anti : Antitone A)
---     (A_inter : ⋂ n, A n = ∅) :
---     Tendsto (fun n ↦ @kolContent _ _ _ _
---     (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨ν i, hν i⟩; infer_instance)
---     (isProjectiveMeasureFamily_prod ν) (A n)) atTop (𝓝 0) := by
---   have : ∀ i, Nonempty (α i) := by
---     have := fun i ↦ ProbabilityMeasure.nonempty ⟨ν i, hν i⟩;
---     infer_instance
---   set ν_proj := isProjectiveMeasureFamily_prod ν
---   let ν_proj' := isProjectiveMeasureFamily_prod (fun k : ℕ ↦ ν (φ k))
---   have A_cyl n : ∃ s S, MeasurableSet S ∧ A n = cylinder s S := by
---     simpa only [mem_cylinders, exists_prop] using A_mem n
---   choose s S mS A_eq using A_cyl
---   have l' k : (fun k ↦ α (φ k)) k = α (φ k) := rfl
---   let l k : (fun k ↦ α (φ k)) k ≃ α (φ k) := Equiv.cast (l' k)
---   let u n := (s n).preimage φ (φ.injective.injOn _)
---   let b n : u n ≃ s n := {
---     toFun := fun k ↦ ⟨φ k, e' n k k.2⟩
---     invFun := fun i ↦ ⟨φ.symm i, e n i i.2⟩
---     left_inv := by simp [Function.LeftInverse]
---     right_inv := by simp [Function.RightInverse, Function.LeftInverse]
---   }
---   let a n k : (fun k : u n ↦ α (φ k)) k ≃ (fun i : s n ↦ α i) (φ k) := rfl
---   have e n i (h : i ∈ s n) : φ.symm i ∈ u n := by simpa [u] using h
---   have e' n k (h : k ∈ u n) : φ k ∈ s n := by simpa [u] using h
---   have h i : α (φ (φ.symm i)) = α i := by simp
---   let f : ((k : ℕ) → α (φ k)) ≃ ((i : ι) → α i) := φ.piCongr l
---   let g n : ((k : u n) → α (φ k)) → (i : s n) → α i := (b n).piCongr l'
---   have test n : (fun (x : (i : ι) → α i) (i : s n) ↦ x i) ∘ f =
---       (g n) ∘ (fun (x : (k : ℕ) → α (φ k)) (k : u n) ↦ x k) := by
---     ext x
---     simp [f, g, aux]
---   let B n := f ⁻¹' (A n)
---   let T n := (g n) ⁻¹' (S n)
---   have B_eq n : B n = cylinder (u n) (T n) := by
---     simp_rw [B, A_eq, cylinder, ← preimage_comp, test n]
---     rfl
---   have meas n : Measurable (g n) := by
---     simp only [g]
---     apply measurable_pi_lambda
---     exact fun a ↦ measurable_pi_apply _
---   have imp n (t : (i : s n) → Set (α i)) : (g n) ⁻¹' (Set.univ.pi t) =
---       Set.univ.pi (fun k : u n ↦ t ⟨φ k, e' n k.1 k.2⟩) := by
---     ext x
---     simp [g]
---     constructor
---     · intro h k hk
---       convert h (aux n ⟨k, hk⟩) (e' n k hk)
---       rw [← @Equiv.piCongrLeft_apply_eq_cast (s n) (u n) (fun i ↦ α i) (aux n) x,
---         @Equiv.piCongrLeft_apply_apply (s n) (u n) (fun i ↦ α i) (aux n) x]
---     · intro h i hi
---       sorry
---   have test' n : Measure.pi (fun i : s n ↦ ν i) =
---       (Measure.pi (fun k : u n ↦ ν (φ k))).map (g n) := by
---     refine Measure.pi_eq (fun x mx ↦ ?_)
---     rw [Measure.map_apply, imp n, Measure.pi_pi, Fintype.prod_equiv (aux n)
---       _ (fun i ↦ (ν i) (x i))]
---     · simp [aux]
---     · exact meas n
---     · apply MeasurableSet.pi
---       · exact countable_univ
---       · simp [mx]
---   have mT n : MeasurableSet (T n) := (mS n).preimage (meas n)
---   have crucial n : kolContent ν_proj (A n) = kolContent ν_proj' (B n) := by
---     simp_rw [fun n ↦ kolContent_congr ν_proj
---       (by rw [mem_cylinders]; exact ⟨s n, S n, mS n, A_eq n⟩) (A_eq n) (mS n),
---       fun n ↦ kolContent_congr ν_proj'
---       (by rw [mem_cylinders]; exact ⟨u n, T n, mT n, B_eq n⟩) (B_eq n) (mT n), T, test' n]
---     rw [Measure.map_apply]
---     · exact meas n
---     · exact mS n
---   have B_anti : Antitone B := by
---     intro m n hmn
---     exact preimage_mono <| A_anti hmn
---   have B_inter : ⋂ n, B n = ∅ := by
---     simp_rw [B, ← preimage_iInter, A_inter, Set.preimage_empty]
---   simp_rw [crucial]
---   refine firstLemma (fun k ↦ ν (φ k)) B ?_ B_anti B_inter
---   exact fun n ↦ (mem_cylinders (B n)).2 ⟨u n, T n, mT n, B_eq n⟩
-
-theorem thirdLemma (A : ℕ → Set (∀ i, α i)) (A_mem : ∀ n, A n ∈ cylinders α) (A_anti : Antitone A)
+theorem thirdLemma (A : ℕ → Set (∀ i, X i)) (A_mem : ∀ n, A n ∈ cylinders X) (A_anti : Antitone A)
     (A_inter : ⋂ n, A n = ∅) :
     Tendsto (fun n ↦ @kolContent _ _ _ _
-    (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨ν i, hν i⟩; infer_instance)
-    (isProjectiveMeasureFamily_prod ν) (A n)) atTop (𝓝 0) := by
-  have : ∀ i, Nonempty (α i) := by
-    have := fun i ↦ ProbabilityMeasure.nonempty ⟨ν i, hν i⟩
+    (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
+    (isProjectiveMeasureFamily_pi μ) (A n)) atTop (𝓝 0) := by
+  have : ∀ i, Nonempty (X i) := by
+    have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩
     infer_instance
-  set ν_proj := isProjectiveMeasureFamily_prod ν
+  set μ_proj := isProjectiveMeasureFamily_pi μ
   choose s S mS A_eq using fun n ↦ (mem_cylinders (A n)).1 (A_mem n)
   let t := ⋃ n, (s n).toSet
-  -- have count_t : t.Countable := Set.countable_iUnion (fun n ↦ (s n).countable_toSet)
-  -- rcases count_t.exists_injective_nat' with ⟨f, hf⟩
   let u : ℕ → Finset t := fun n ↦ (s n).preimage Subtype.val (Subtype.val_injective.injOn _)
   have u_eq : ∀ n, ((u n).toSet : Set ι) = s n := by
     intro n
@@ -537,9 +445,8 @@ theorem thirdLemma (A : ℕ → Set (∀ i, α i)) (A_mem : ∀ n, A n ∈ cylin
     right_inv := by simp only [Function.RightInverse, Function.LeftInverse, Subtype.coe_eta,
       implies_true]
   }
-  -- have this n i : (aux n i).1.1 = i.1 := rfl
-  have et n (i : s n) : α (aux n i) = α i.1 := rfl
-  have imp n (x : (i : s n) → Set (α i)) :
+  have et n (i : s n) : X (aux n i) = X i.1 := rfl
+  have imp n (x : (i : s n) → Set (X i)) :
       Set.univ.pi (fun i : u n ↦ x ((aux n).invFun i)) =
       (fun x i ↦ cast (et n i) (x (aux n i))) ⁻¹' Set.univ.pi x
        := by
@@ -551,11 +458,11 @@ theorem thirdLemma (A : ℕ → Set (∀ i, α i)) (A_mem : ∀ n, A n ∈ cylin
     · intro h i hi1 hi2
       have : i ∈ s n := by simpa [u] using hi2
       exact h i this
-  have meas n : Measurable (fun (x : (i : u n) → α i) i ↦ cast (et n i) (x (aux n i))) := by
+  have meas n : Measurable (fun (x : (i : u n) → X i) i ↦ cast (et n i) (x (aux n i))) := by
     apply measurable_pi_lambda
     exact fun a ↦ measurable_pi_apply _
-  have crucial n : Measure.pi (fun i : s n ↦ ν i) =
-      (Measure.pi (fun i : u n ↦ ν i)).map
+  have crucial n : Measure.pi (fun i : s n ↦ μ i) =
+      (Measure.pi (fun i : u n ↦ μ i)).map
       (fun x i ↦ cast (et n i) (x (aux n i)))
        := by
     refine Measure.pi_eq (fun x mx ↦ ?_)
@@ -566,12 +473,12 @@ theorem thirdLemma (A : ℕ → Set (∀ i, α i)) (A_mem : ∀ n, A n ∈ cylin
     · apply MeasurableSet.pi
       · exact countable_univ
       · simp only [Set.mem_univ, mx, imp_self, implies_true]
-  let T : (n : ℕ) → Set ((i : u n) → α i) :=
+  let T : (n : ℕ) → Set ((i : u n) → X i) :=
     fun n ↦ (fun x i ↦ cast (et n i) (x (aux n i))) ⁻¹' (S n)
   have mT n : MeasurableSet (T n) := by
     apply (mS n).preimage (meas _)
-  let B : ℕ → Set (∀ i : t, α i) := fun n ↦ cylinder (u n) (T n)
-  have B_eq n : B n = (fun x : (i : t) → α i ↦ fun i ↦ if hi : i ∈ t
+  let B : ℕ → Set (∀ i : t, X i) := fun n ↦ cylinder (u n) (T n)
+  have B_eq n : B n = (fun x : (i : t) → X i ↦ fun i ↦ if hi : i ∈ t
       then x ⟨i, hi⟩ else Classical.ofNonempty) ⁻¹' (A n) := by
     ext x
     simp [B, T, -cast_eq]
@@ -592,91 +499,88 @@ theorem thirdLemma (A : ℕ → Set (∀ i, α i)) (A_mem : ∀ n, A n ∈ cylin
     exact preimage_mono <| A_anti hmn
   have B_inter : ⋂ n, B n = ∅ := by
     simp_rw [B_eq, ← preimage_iInter, A_inter, Set.preimage_empty]
-  let ν_proj' := isProjectiveMeasureFamily_prod (fun i : t ↦ ν i)
-  have this n : kolContent ν_proj (A n) = kolContent ν_proj' (B n) := by
-    simp_rw [fun n ↦ kolContent_congr ν_proj
+  let μ_proj' := isProjectiveMeasureFamily_pi (fun i : t ↦ μ i)
+  have this n : kolContent μ_proj (A n) = kolContent μ_proj' (B n) := by
+    simp_rw [fun n ↦ kolContent_congr μ_proj
       (by rw [mem_cylinders]; exact ⟨s n, S n, mS n, A_eq n⟩) (A_eq n) (mS n),
-      fun n ↦ kolContent_congr ν_proj'
+      fun n ↦ kolContent_congr μ_proj'
       (by rw [mem_cylinders]; exact ⟨u n, T n, mT n, rfl⟩) rfl (mT n), T, crucial n]
     rw [Measure.map_apply]
     · simp only [cast_eq]
       exact meas _
     · exact mS n
   simp_rw [this]
-  -- have : ∀ i : t, MeasurableSpace (α i) := inferInstance
   rcases finite_or_infinite t with (t_fin | t_inf)
-  · have obv : (fun _ ↦ 1 : ((i : t) → α i) → ℝ≥0∞) = 1 := rfl
+  · have obv : (fun _ ↦ 1 : ((i : t) → X i) → ℝ≥0∞) = 1 := rfl
     have := Fintype.ofFinite t
-    have concl n : kolContent ν_proj' (B n) =
-        (Measure.pi (fun i : t ↦ ν i)) (cylinder (u n) (T n)) := by
-      simp_rw [B, fun n ↦ eq (fun i : t ↦ ν i) (u n) (mT n) Classical.ofNonempty]
-      rw [← lmarginal_eq_of_disjoint_diff (μ := (fun i : t ↦ ν i)) _
+    have concl n : kolContent μ_proj' (B n) =
+        (Measure.pi (fun i : t ↦ μ i)) (cylinder (u n) (T n)) := by
+      simp_rw [B, fun n ↦ eq (fun i : t ↦ μ i) (u n) (mT n) Classical.ofNonempty]
+      rw [← lmarginal_eq_of_disjoint_diff (μ := (fun i : t ↦ μ i)) _
         (dependsOn_cylinder_indicator (u n) (T n))
         (u n).subset_univ, lmarginal_univ, ← obv,
         lintegral_indicator_const]
       simp
-      · exact @measurableSet_cylinder t (fun i : t ↦ α i) _ (u n) (T n) (mT n)
+      · exact @measurableSet_cylinder t (fun i : t ↦ X i) _ (u n) (T n) (mT n)
       · rw [Finset.coe_univ, ← compl_eq_univ_diff]
         exact disjoint_compl_right
       · rw [← obv, measurable_indicator_const_iff 1]
-        exact @measurableSet_cylinder t (fun i : t ↦ α i) _ (u n) (T n) (mT n)
-    simp_rw [concl, ← measure_empty (μ := Measure.pi (fun i : t ↦ ν i)), ← B_inter]
+        exact @measurableSet_cylinder t (fun i : t ↦ X i) _ (u n) (T n) (mT n)
+    simp_rw [concl, ← measure_empty (μ := Measure.pi (fun i : t ↦ μ i)), ← B_inter]
     exact tendsto_measure_iInter (fun n ↦ measurableSet_cylinder (u n) (T n) (mT n))
       B_anti ⟨0, measure_ne_top _ _⟩
   · have count_t : Countable t := Set.countable_iUnion (fun n ↦ (s n).countable_toSet)
-    -- have := nonempty_equiv_of_countable N t
     obtain ⟨φ, -⟩ := Classical.exists_true_of_nonempty (α := ℕ ≃ t) nonempty_equiv_of_countable
-    refine secondLemma (fun i : t ↦ ν i) φ B (fun n ↦ ?_) B_anti B_inter
+    refine secondLemma (fun i : t ↦ μ i) φ B (fun n ↦ ?_) B_anti B_inter
     simp
     exact ⟨u n, T n, mT n, rfl⟩
 
--- theorem kolContent_sigma_subadditive ⦃f : ℕ → Set (∀ n, X n)⦄
---     (hf : ∀ i, f i ∈ cylinders X) (hf_Union : (⋃ i, f i) ∈ cylinders X) :
---     @kolContent _ _ _ _ (by have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩; infer_instance)
---     (isProjectiveMeasureFamily_prod μ) (⋃ i, f i) ≤
---     ∑' i, @kolContent _ _ _ _
---     (by have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩; infer_instance)
---     (isProjectiveMeasureFamily_prod μ) (f i) := by
---   have : ∀ n, Nonempty (X n) := by
---     have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩;
---     infer_instance
---   refine (kolContent (isProjectiveMeasureFamily_prod μ)).sigma_subadditive_of_sigma_additive
---     setRing_cylinders (fun f hf hf_Union hf' ↦ ?_) f hf hf_Union
---   refine sigma_additive_addContent_of_tendsto_zero setRing_cylinders
---     (kolContent (isProjectiveMeasureFamily_prod μ)) (fun hs ↦ ?_) ?_ hf hf_Union hf'
---   · rename_i s
---     rcases useful _ hs with ⟨N, S, mS, s_eq⟩
---     rw [s_eq, eq μ (mS := mS) (x := Classical.ofNonempty)]
---     refine ne_of_lt (lt_of_le_of_lt ?_ (by norm_num : (1 : ℝ≥0∞) < ⊤))
---     rw [← lmarginal_const (μ := μ) (s := Finset.Icc 0 N) 1 Classical.ofNonempty]
---     apply lmarginal_mono
---     intro x
---     apply Set.indicator_le
---     simp
---   · intro s hs anti_s inter_s
---     exact firstLemma μ s hs anti_s inter_s
+theorem kolContent_sigma_subadditive ⦃f : ℕ → Set ((i : ι) → X i)⦄
+    (hf : ∀ n, f n ∈ cylinders X) (hf_Union : (⋃ n, f n) ∈ cylinders X) :
+    @kolContent _ _ _ _ (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
+    (isProjectiveMeasureFamily_pi μ) (⋃ n, f n) ≤
+    ∑' n, @kolContent _ _ _ _
+    (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
+    (isProjectiveMeasureFamily_pi μ) (f n) := by
+  have : ∀ i, Nonempty (X i) := by
+    have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩;
+    infer_instance
+  refine (kolContent (isProjectiveMeasureFamily_pi μ)).sigma_subadditive_of_sigma_additive
+    setRing_cylinders (fun f hf hf_Union hf' ↦ ?_) f hf hf_Union
+  refine sigma_additive_addContent_of_tendsto_zero setRing_cylinders
+    (kolContent (isProjectiveMeasureFamily_pi μ)) (fun h ↦ ?_) ?_ hf hf_Union hf'
+  · rcases (mem_cylinders _).1 h with ⟨s, S, mS, s_eq⟩
+    rw [s_eq, eq μ (mS := mS) (x := Classical.ofNonempty)]
+    refine ne_of_lt (lt_of_le_of_lt ?_ (by norm_num : (1 : ℝ≥0∞) < ⊤))
+    rw [← lmarginal_const (μ := μ) (s := s) 1 Classical.ofNonempty]
+    apply lmarginal_mono
+    intro x
+    apply Set.indicator_le
+    simp
+  · intro s hs anti_s inter_s
+    exact thirdLemma μ s hs anti_s inter_s
 
--- noncomputable def measure_produit : Measure (∀ n, X n) := by
---   have : ∀ n, Nonempty (X n) := by
---     have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩;
---     infer_instance
---   exact Measure.ofAddContent setSemiringCylinders generateFrom_cylinders
---     (kolContent (isProjectiveMeasureFamily_prod μ))
---     (kolContent_sigma_subadditive μ)
+noncomputable def measure_produit : Measure ((i : ι) → X i) := by
+  have : ∀ i, Nonempty (X i) := by
+    have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩;
+    infer_instance
+  exact Measure.ofAddContent setSemiringCylinders generateFrom_cylinders
+    (kolContent (isProjectiveMeasureFamily_pi μ))
+    (kolContent_sigma_subadditive μ)
 
--- theorem isProjectiveLimit_measure_produit :
---     IsProjectiveLimit (measure_produit μ) (fun S : Finset ℕ ↦ (Measure.pi (fun n : S ↦ μ n))) := by
---   have : ∀ n, Nonempty (X n) := by
---     have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩;
---     infer_instance
---   intro S
---   ext1 s hs
---   rw [Measure.map_apply _ hs]
---   swap; · apply measurable_proj
---   have h_mem : (fun (x : ∀ n : ℕ, (fun i : ℕ ↦ X i) n) (n : ↥S) ↦ x ↑n) ⁻¹' s ∈ cylinders X := by
---     rw [mem_cylinders]; exact ⟨S, s, hs, rfl⟩
---   rw [measure_produit, Measure.ofAddContent_eq _ _ _ _ h_mem,
---     kolContent_congr (isProjectiveMeasureFamily_prod μ) h_mem rfl hs]
+theorem isProjectiveLimit_measure_produit :
+    IsProjectiveLimit (measure_produit μ) (fun I : Finset ι ↦ (Measure.pi (fun i : I ↦ μ i))) := by
+  have : ∀ i, Nonempty (X i) := by
+    have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩;
+    infer_instance
+  intro I
+  ext1 s hs
+  rw [Measure.map_apply _ hs]
+  swap; · apply measurable_proj
+  have h_mem : (fun (x : (i : ι) → X i) (i : I) ↦ x i) ⁻¹' s ∈ cylinders X := by
+    rw [mem_cylinders]; exact ⟨I, s, hs, rfl⟩
+  rw [measure_produit, Measure.ofAddContent_eq _ _ _ _ h_mem,
+    kolContent_congr (isProjectiveMeasureFamily_pi μ) h_mem rfl hs]
 
 -- theorem prod_meas (S : Finset ℕ) (a : ℕ) (ha : a ∈ S) (μ : (n : S) → Measure (X n))
 --     [∀ n, IsProbabilityMeasure (μ n)]
@@ -786,7 +690,7 @@ theorem thirdLemma (A : ℕ → Set (∀ i, α i)) (A_mem : ∀ n, A n ∈ cylin
     --   -- use Nat.succ_pred_eq_of_ne_zero h ▸ x ⟨k.1 - 1, this⟩
     -- have : ∀ x₀ : X 0, ∀ S : Set ((n : Finset.range (NA n + 1)) → X n),
     --     (produit x₀) ⁻¹' (cylinder (Finset.range (NA n + 1)) S) =
-    --     cylinder (α := fun k : {k | k ≥ 1} ↦ X k)
+    --     cylinder (X := fun k : {k | k ≥ 1} ↦ X k)
     --     {k : {k | k ≥ 1} | k.1 ∈ (Finset.range (NA n + 1)).erase 0}.toFinset ((aux x₀) ⁻¹' S) := by
     --   intro x₀ S
     --   ext x
