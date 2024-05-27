@@ -1463,11 +1463,11 @@ instance sub : Sub (M →SL[σ₁₂] M₂) :=
 #align continuous_linear_map.has_sub ContinuousLinearMap.sub
 
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) := by
-  refine
-    ?{ ContinuousLinearMap.addCommMonoid with
+  refine'
+    { ContinuousLinearMap.addCommMonoid with
       neg := (-·)
       sub := (· - ·)
-      sub_eq_add_neg := ?_
+      sub_eq_add_neg := _
       nsmul := (· • ·)
       zsmul := (· • ·)
       zsmul_zero' := fun f => by ext; simp
