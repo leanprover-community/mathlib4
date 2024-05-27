@@ -266,12 +266,12 @@ protected theorem le_induction_down {P : ℤ → Prop} {m : ℤ} (h0 : P m)
 
 /-- A strong recursor for `Int` that specifies explicit values for integers below a threshold,
 and is analogous to `Nat.strongRec` for integers on or above the threshold. -/
-def strongRec {P : ℤ → Sort*} (m : ℤ) (h0 : ∀ n < m, P n)
-    (h1 : ∀ n, m ≤ n → (∀ k, k < n → P k) → P n) (n : ℤ) : P n :=
-  (em <| n < m).by_cases (h0 _) fun h ↦ h1 _ (Int.not_lt.mp h) (n.inductionOn' m h0
-    (fun _n _ hn l lt1 ↦ (em <| l < m).by_cases (h0 _) fun nlt ↦ h1 _ (Int.not_lt.mp nlt)
-      fun _k lt ↦ hn _ <| Int.lt_of_lt_of_le lt <| lt_add_one_iff.mp lt1)
-    fun _n _ hn _l lt ↦ hn _ <| Int.lt_trans lt <| pred_self_lt _)
+@[elab_as_elim] protected def strongRec {P : ℤ → Sort*} (m : ℤ) (lt : ∀ n < m, P n)
+    (ge : ∀ n ≥ m, (∀ k : ℤ, k < n → P k) → P n) (n : ℤ) : P n :=
+  (em <| n < m).by_cases (lt n) fun h ↦ ge n (Int.not_lt.mp h) <| n.inductionOn' m lt
+    (fun _ _ hn l lt1 ↦ (em <| l < m).by_cases (lt l) fun nlt ↦ ge l (Int.not_lt.mp nlt)
+      fun n lt2 ↦ hn n <| Int.lt_of_lt_of_le lt2 <| lt_add_one_iff.mp lt1)
+    fun n _ hn l lt1 ↦ hn l <| Int.lt_trans lt1 n.pred_self_lt
 
 /-! ### nat abs -/
 
