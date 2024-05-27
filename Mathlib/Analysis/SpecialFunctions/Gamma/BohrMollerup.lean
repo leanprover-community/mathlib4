@@ -290,7 +290,7 @@ theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
 theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (hx' : x ≤ 1) :
     Tendsto (logGammaSeq x) atTop (𝓝 <| f x - f 1) := by
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le' ?_ tendsto_const_nhds ?_ ?_
+  refine' tendsto_of_tendsto_of_tendsto_of_le_of_le' _ tendsto_const_nhds _ _
   -- Porting note: `show` no longer reorders goals
   pick_goal 4
   · show ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
