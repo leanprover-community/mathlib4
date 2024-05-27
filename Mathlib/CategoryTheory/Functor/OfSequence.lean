@@ -85,10 +85,10 @@ lemma map_comp (i j k : ℕ) (hij : i ≤ j) (hjk : j ≤ k) :
             all_goals simp [map]
   | succ i hi =>
       rintro X f (_|j) (_|k)
-      . omega
-      . omega
-      . omega
-      . intros
+      · omega
+      · omega
+      · omega
+      · intros
         exact hi _ j k (by omega) (by omega)
 
 -- `map` has good definitional properties when applied to explicit natural numbers
