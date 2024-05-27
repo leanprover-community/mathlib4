@@ -76,9 +76,10 @@ def getTableImp {n m : Nat} : GaussM n m Table := do
   for i in [col:m] do
     free := free.push i
 
-  let ansData : Array (Array Rat) := ← do
-    let mat := (← get)
-    return Array.ofFn (fun row : Fin row => free.map fun f => -mat[row]![f]!)
+  -- uncomment me!
+  -- let ansData : Array (Array Rat) := ← do
+  --   let mat := (← get)
+  --   return Array.ofFn (fun row : Fin row => free.map fun f => -mat[row]![f]!)
 
   return {
     free := free
