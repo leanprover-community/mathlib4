@@ -85,6 +85,8 @@ protected lemma sub_nonneg : 0 ≤ a - b ↔ b ≤ a := ⟨Int.le_of_sub_nonneg,
 
 instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
+@[simp] lemma ofNat_injective : Function.Injective ofNat := @Int.ofNat.inj
+
 @[simp] lemma ofNat_eq_natCast (n : ℕ) : Int.ofNat n = n := rfl
 
 @[deprecated ofNat_eq_natCast] -- 2024-03-24
