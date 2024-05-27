@@ -3,7 +3,6 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Function.Indicator
 import Mathlib.Topology.Constructions
 
 #align_import topology.continuous_on from "leanprover-community/mathlib"@"d4f691b9e5f94cfc64639973f3544c95f8d5d494"
@@ -51,8 +50,8 @@ theorem eventually_nhdsWithin_iff {a : α} {s : Set α} {p : α → Prop} :
 #align eventually_nhds_within_iff eventually_nhdsWithin_iff
 
 theorem frequently_nhdsWithin_iff {z : α} {s : Set α} {p : α → Prop} :
-    (∃ᶠ x in 𝓝[s] z, p x) ↔ ∃ᶠ x in 𝓝 z, p x ∧ x ∈ s := by
-  simp only [Filter.Frequently, eventually_nhdsWithin_iff, not_and']
+    (∃ᶠ x in 𝓝[s] z, p x) ↔ ∃ᶠ x in 𝓝 z, p x ∧ x ∈ s :=
+  frequently_inf_principal.trans <| by simp only [and_comm]
 #align frequently_nhds_within_iff frequently_nhdsWithin_iff
 
 theorem mem_closure_ne_iff_frequently_within {z : α} {s : Set α} :
@@ -63,7 +62,7 @@ theorem mem_closure_ne_iff_frequently_within {z : α} {s : Set α} :
 @[simp]
 theorem eventually_nhdsWithin_nhdsWithin {a : α} {s : Set α} {p : α → Prop} :
     (∀ᶠ y in 𝓝[s] a, ∀ᶠ x in 𝓝[s] y, p x) ↔ ∀ᶠ x in 𝓝[s] a, p x := by
-  refine' ⟨fun h => _, fun h => (eventually_nhds_nhdsWithin.2 h).filter_mono inf_le_left⟩
+  refine ⟨fun h => ?_, fun h => (eventually_nhds_nhdsWithin.2 h).filter_mono inf_le_left⟩
   simp only [eventually_nhdsWithin_iff] at h ⊢
   exact h.mono fun x hx hxs => (hx hxs).self_of_nhds hxs
 #align eventually_nhds_within_nhds_within eventually_nhdsWithin_nhdsWithin
@@ -386,12 +385,6 @@ theorem tendsto_nhds_of_tendsto_nhdsWithin {f : β → α} {a : α} {s : Set α}
     (h : Tendsto f l (𝓝[s] a)) : Tendsto f l (𝓝 a) :=
   h.mono_right nhdsWithin_le_nhds
 #align tendsto_nhds_of_tendsto_nhds_within tendsto_nhds_of_tendsto_nhdsWithin
-
--- todo: move to `Mathlib.Filter.Order.Basic` or drop
-theorem principal_subtype {α : Type*} (s : Set α) (t : Set s) :
-    𝓟 t = comap (↑) (𝓟 (((↑) : s → α) '' t)) := by
-  rw [comap_principal, preimage_image_eq _ Subtype.coe_injective]
-#align principal_subtype principal_subtype
 
 theorem nhdsWithin_neBot_of_mem {s : Set α} {x : α} (hx : x ∈ s) : NeBot (𝓝[s] x) :=
   mem_closure_iff_nhdsWithin_neBot.1 <| subset_closure hx
@@ -859,7 +852,7 @@ theorem continuousAt_update_same [DecidableEq α] {f : α → β} {x : α} {y : 
 theorem IsOpenMap.continuousOn_image_of_leftInvOn {f : α → β} {s : Set α}
     (h : IsOpenMap (s.restrict f)) {finv : β → α} (hleft : LeftInvOn finv f s) :
     ContinuousOn finv (f '' s) := by
-  refine' continuousOn_iff'.2 fun t ht => ⟨f '' (t ∩ s), _, _⟩
+  refine continuousOn_iff'.2 fun t ht => ⟨f '' (t ∩ s), ?_, ?_⟩
   · rw [← image_restrict]
     exact h _ (ht.preimage continuous_subtype_val)
   · rw [inter_eq_self_of_subset_left (image_subset f (inter_subset_right t s)), hleft.image_inter']
@@ -1007,7 +1000,7 @@ theorem Set.LeftInvOn.map_nhdsWithin_eq {f : α → β} {g : β → α} {x : β}
   · exact hg.tendsto_nhdsWithin (mapsTo_image _ _)
   · have A : g ∘ f =ᶠ[𝓝[g '' s] g x] id :=
       h.rightInvOn_image.eqOn.eventuallyEq_of_mem self_mem_nhdsWithin
-    refine' le_map_of_right_inverse A _
+    refine le_map_of_right_inverse A ?_
     simpa only [hx] using hf.tendsto_nhdsWithin (h.mapsTo (surjOn_image _ _))
 #align set.left_inv_on.map_nhds_within_eq Set.LeftInvOn.map_nhdsWithin_eq
 
@@ -1083,7 +1076,7 @@ theorem continuousOn_open_iff {f : α → β} {s : Set α} (hs : IsOpen s) :
     rw [inter_comm, hu]
     apply IsOpen.inter u_open hs
   · intro h t ht
-    refine' ⟨s ∩ f ⁻¹' t, h t ht, _⟩
+    refine ⟨s ∩ f ⁻¹' t, h t ht, ?_⟩
     rw [@inter_comm _ s (f ⁻¹' t), inter_assoc, inter_self]
 #align continuous_on_open_iff continuousOn_open_iff
 
