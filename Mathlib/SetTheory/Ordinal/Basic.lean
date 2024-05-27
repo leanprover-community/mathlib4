@@ -142,8 +142,7 @@ end WellOrder
 
 /-- Equivalence relation on well orders on arbitrary types in universe `u`, given by order
 isomorphism. -/
-instance Ordinal.isEquivalent : Setoid WellOrder
-    where
+instance Ordinal.isEquivalent : Setoid WellOrder where
   r := fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≃r s)
   iseqv :=
     ⟨fun _ => ⟨RelIso.refl _⟩, fun ⟨e⟩ => ⟨e.symm⟩, fun ⟨e₁⟩ ⟨e₂⟩ => ⟨e₁.trans e₂⟩⟩
@@ -318,8 +317,7 @@ theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
 /-! ### The order on ordinals -/
 
 
-instance partialOrder : PartialOrder Ordinal
-    where
+instance partialOrder : PartialOrder Ordinal where
   le a b :=
     Quotient.liftOn₂ a b (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≼i s))
       fun _ _ _ _ ⟨f⟩ ⟨g⟩ =>
@@ -550,7 +548,7 @@ theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Or
 theorem relIso_enum' {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] (f : r ≃r s) (o : Ordinal) :
     ∀ (hr : o < type r) (hs : o < type s), f (enum r o hr) = enum s o hs := by
-  refine' inductionOn o _; rintro γ t wo ⟨g⟩ ⟨h⟩
+  refine inductionOn o ?_; rintro γ t wo ⟨g⟩ ⟨h⟩
   rw [enum_type g, enum_type (PrincipalSeg.ltEquiv g f)]; rfl
 #align ordinal.rel_iso_enum' Ordinal.relIso_enum'
 
@@ -1020,7 +1018,7 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
     inductionOn a fun α r hr =>
       inductionOn b fun β s hs ⟨⟨f, t, hf⟩⟩ => by
         haveI := hs
-        refine' ⟨⟨RelEmbedding.ofMonotone (Sum.rec f fun _ => t) (fun a b ↦ _), fun a b ↦ _⟩⟩
+        refine ⟨⟨RelEmbedding.ofMonotone (Sum.rec f fun _ => t) (fun a b ↦ ?_), fun a b ↦ ?_⟩⟩
         · rcases a with (a | _) <;> rcases b with (b | _)
           · simpa only [Sum.lex_inl_inl] using f.map_rel_iff.2
           · intro
@@ -1095,14 +1093,12 @@ theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
   rfl
 #align ordinal.nat_cast_succ Ordinal.natCast_succ
 
-instance uniqueIioOne : Unique (Iio (1 : Ordinal))
-    where
+instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
   default := ⟨0, by simp⟩
   uniq a := Subtype.ext <| lt_one_iff_zero.1 a.2
 #align ordinal.unique_Iio_one Ordinal.uniqueIioOne
 
-instance uniqueOutOne : Unique (1 : Ordinal).out.α
-    where
+instance uniqueOutOne : Unique (1 : Ordinal).out.α where
   default := enum (· < ·) 0 (by simp)
   uniq a := by
     unfold default
@@ -1190,8 +1186,7 @@ def enumIso (r : α → α → Prop) [IsWellOrder α r] : Subrel (· < ·) (· <
 
 /-- The order isomorphism between ordinals less than `o` and `o.out.α`. -/
 @[simps!]
-noncomputable def enumIsoOut (o : Ordinal) : Set.Iio o ≃o o.out.α
-    where
+noncomputable def enumIsoOut (o : Ordinal) : Set.Iio o ≃o o.out.α where
   toFun x :=
     enum (· < ·) x.1 <| by
       rw [type_lt]
@@ -1435,7 +1430,7 @@ theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord (no_index (OfNat.ofNat n)) = Of
 
 @[simp]
 theorem lift_ord (c) : Ordinal.lift.{u,v} (ord c) = ord (lift.{u,v} c) := by
-  refine' le_antisymm (le_of_forall_lt fun a ha => _) _
+  refine le_antisymm (le_of_forall_lt fun a ha => ?_) ?_
   · rcases Ordinal.lt_lift_iff.1 ha with ⟨a, rfl, _⟩
     rwa [lt_ord, ← lift_card, lift_lt, ← lt_ord, ← Ordinal.lift_lt]
   · rw [ord_le, ← lift_card, card_ord]
@@ -1455,6 +1450,8 @@ theorem card_typein_out_lt (c : Cardinal) (x : c.ord.out.α) :
   rw [← lt_ord]
   apply typein_lt_self
 #align cardinal.card_typein_out_lt Cardinal.card_typein_out_lt
+
+theorem mk_Iio_ord_out_α {c : Cardinal} (i : c.ord.out.α) : #(Iio i) < c := card_typein_out_lt c i
 
 theorem ord_injective : Injective ord := by
   intro c c' h

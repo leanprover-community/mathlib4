@@ -3,9 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Hom.Basic
+import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Data.Nat.Cast.Order
 
@@ -35,28 +38,6 @@ namespace Int
 def ofNatHom : ℕ →+* ℤ :=
   Nat.castRingHom ℤ
 #align int.of_nat_hom Int.ofNatHom
-
--- Porting note: no need to be `@[simp]`, as `Nat.cast_pos` handles this.
--- @[simp]
-theorem natCast_pos {n : ℕ} : (0 : ℤ) < n ↔ 0 < n :=
-  Nat.cast_pos
-#align int.coe_nat_pos Int.natCast_pos
-
-theorem natCast_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) :=
-  Int.natCast_pos.2 (succ_pos n)
-#align int.coe_nat_succ_pos Int.natCast_succ_pos
-
--- 2024-04-05
-@[deprecated] alias coe_nat_pos := natCast_pos
-@[deprecated] alias coe_nat_succ_pos := natCast_succ_pos
-
-lemma toNat_lt' {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.toNat < b ↔ a < b := by
-  rw [← toNat_lt_toNat, toNat_natCast]; exact natCast_pos.2 hb.bot_lt
-#align int.to_nat_lt Int.toNat_lt'
-
-lemma natMod_lt {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.natMod b < b :=
-  (toNat_lt' hb).2 <| emod_lt_of_pos _ <| natCast_pos.2 hb.bot_lt
-#align int.nat_mod_lt Int.natMod_lt
 
 section cast
 
@@ -227,11 +208,6 @@ end LinearOrderedRing
 theorem coe_int_dvd [CommRing α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
   RingHom.map_dvd (Int.castRingHom α) h
 #align int.coe_int_dvd Int.coe_int_dvd
-
--- Porting note: `simp` and `norm_cast` attribute removed. This is a special case of `Nat.cast_pow`
-lemma coe_nat_pow (m n : ℕ) : ↑(m ^ n : ℕ) = (m ^ n : ℤ) := by
-  induction' m with m _ <;> simp
-#align int.coe_nat_pow Int.coe_nat_pow
 
 end cast
 

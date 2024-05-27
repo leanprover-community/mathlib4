@@ -545,7 +545,7 @@ theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
 
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
   have f'_monic : Monic _ := monic_mul_leadingCoeff_inv hf
-  refine' (minpoly.unique K _ f'_monic _ _).symm
+  refine (minpoly.unique K _ f'_monic ?_ ?_).symm
   · rw [AlgHom.map_mul, aeval_eq, mk_self, zero_mul]
   intro q q_monic q_aeval
   have commutes : (lift (algebraMap K (AdjoinRoot f)) (root f) q_aeval).comp (mk q) = mk f := by
@@ -928,10 +928,10 @@ end PowerBasis
 /-- If `L / K` is an integral extension, `K` is a domain, `L` is a field, then any irreducible
 polynomial over `L` divides some monic irreducible polynomial over `K`. -/
 theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
-    [CommRing K] [IsDomain K] [Field L] [Algebra K L] (H : Algebra.IsIntegral K L) {f : L[X]}
+    [CommRing K] [IsDomain K] [Field L] [Algebra K L] [Algebra.IsIntegral K L] {f : L[X]}
     (hf : Irreducible f) : ∃ g : K[X], g.Monic ∧ Irreducible g ∧ f ∣ g.map (algebraMap K L) := by
   haveI := Fact.mk hf
   have h := hf.ne_zero
-  have h2 := isIntegral_trans H _ (AdjoinRoot.isIntegral_root h)
+  have h2 := isIntegral_trans (R := K) _ (AdjoinRoot.isIntegral_root h)
   have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)
   exact ⟨_, minpoly.monic h2, minpoly.irreducible h2, dvd_of_mul_right_dvd h3⟩
