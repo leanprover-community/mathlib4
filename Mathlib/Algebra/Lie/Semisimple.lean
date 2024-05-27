@@ -41,209 +41,6 @@ lie algebra, radical, simple, semisimple
 
 universe u v w w₁ w₂
 
--- move this to `Mathlib.Order.BooleanAlgebra`
-namespace DistribLattice
-
-variable (α : Type*) [DistribLattice α]
-
-/--
-An alternative constructor for boolean algebras:
-a distributive lattice that is complemented is a boolean algebra.
-
-This is not an instance, because it creates data using choice.
--/
-noncomputable
-def booleanAlgebra_of_complemented [BoundedOrder α] [ComplementedLattice α] : BooleanAlgebra α where
-  __ := (inferInstanceAs (DistribLattice α))
-  __ := (inferInstanceAs (BoundedOrder α))
-  compl a := Classical.choose <| exists_isCompl a
-  inf_compl_le_bot a := (Classical.choose_spec (exists_isCompl a)).disjoint.le_bot
-  top_le_sup_compl a := (Classical.choose_spec (exists_isCompl a)).codisjoint.top_le
-
-end DistribLattice
-
--- move this to `Mathlib.Order.ConditionallyCompleteLattice.Basic`
--- namespace CompleteDistribLattice
-
--- variable (α : Type*) [CompleteDistribLattice α]
-
--- /--
--- An alternative constructor for complete boolean algebras:
--- a complete distributive lattice that is complemented is a complete boolean algebra.
-
--- This is not an instance, because it creates data using choice.
--- -/
--- noncomputable
--- def completeBooleanAlgebra_of_complemented [ComplementedLattice α] :
---     CompleteBooleanAlgebra α where
---   __ := (inferInstanceAs (CompleteDistribLattice α))
---   __ := DistribLattice.booleanAlgebra_of_complemented α
-
--- end CompleteDistribLattice
-
-
--- move this
-namespace IsCompactlyGenerated
-
-open CompleteLattice
-
-variable {α : Type*} [CompleteLattice α] [IsCompactlyGenerated α]
-
-/--
-An alternative constructor for boolean algebras.
-
-A set of ideals in a Lie algebra is a set of *boolean generators* if:
-
-* the elements are all atoms,
-* the set is independent, and
-* the set satisfies an atomicity condition:
-  any compact element below the supremum of a subset `s` of generators
-  is equal to the supremum of a subset of `s`.
-
-If the supremum of such a collection of boolean generators is the whole lattice,
-then the lattice is a boolean algebra (see `BooleanGenerators.booleanAlgebra_of_sSup_eq_top`).
--/
-structure BooleanGenerators (S : Set α) : Prop where
-  /-- The elements in a collection of boolean generators are all atoms. -/
-  isAtom : ∀ I ∈ S, IsAtom I
-  /-- The elements in a collection of boolean generators are independent. -/
-  setIndependent : CompleteLattice.SetIndependent S
-  /-- The elements in a collection of boolean generators satisfy an atomicity condition:
-  any compact element below the supremum of a subset `s` of generators
-  is equal to the supremum of a subset of `s`. -/
-  finitelyAtomistic : ∀ (s : Finset α) (a : α),
-      ↑s ⊆ S → IsCompactElement a → a ≤ s.sup id → ∃ t ⊆ s, a = t.sup id
-
-namespace BooleanGenerators
-
-variable {S : Set α} (hS : BooleanGenerators S)
-
-lemma mono {T : Set α} (hTS : T ⊆ S) : BooleanGenerators T where
-  isAtom I hI := hS.isAtom I (hTS hI)
-  setIndependent := hS.setIndependent.mono hTS
-  finitelyAtomistic := fun s a hs ↦ hS.finitelyAtomistic s a (le_trans hs hTS)
-
-lemma atomistic (a : α) (ha : a ≤ sSup S) : ∃ T ⊆ S, a = sSup T := by
-  obtain ⟨C, hC, rfl⟩ := IsCompactlyGenerated.exists_sSup_eq a
-  have aux : ∀ b : α, IsCompactElement b → b ≤ sSup S → ∃ T ⊆ S, b = sSup T := by
-    intro b hb hbS
-    obtain ⟨s, hs₁, hs₂⟩ := hb S hbS
-    obtain ⟨t, ht, rfl⟩ := hS.finitelyAtomistic s b hs₁ hb hs₂
-    refine ⟨t, ?_, Finset.sup_id_eq_sSup t⟩
-    refine Set.Subset.trans ?_ hs₁
-    simpa only [Finset.coe_subset] using ht
-  choose T hT₁ hT₂ using aux
-  use sSup {T c h₁ h₂ | (c ∈ C) (h₁ : IsCompactElement c) (h₂ : c ≤ sSup S)}
-  constructor
-  · apply _root_.sSup_le
-    rintro _ ⟨c, -, h₁, h₂, rfl⟩
-    apply hT₁
-  · apply le_antisymm
-    · apply _root_.sSup_le
-      intro c hc
-      rw [hT₂ c (hC _ hc) ((le_sSup hc).trans ha)]
-      apply sSup_le_sSup
-      apply _root_.le_sSup
-      use c, hc, hC _ hc, (le_sSup hc).trans ha
-    · simp only [Set.sSup_eq_sUnion, sSup_le_iff, Set.mem_sUnion, Set.mem_setOf_eq,
-        forall_exists_index, and_imp]
-      rintro a T b hbC hb hbS rfl haT
-      apply (le_sSup haT).trans
-      rw [← hT₂]
-      exact le_sSup hbC
-
-lemma isAtomistic_of_sSup_eq_top (h : sSup S = ⊤) : IsAtomistic α := by
-  refine ⟨fun a ↦ ?_⟩
-  obtain ⟨s, hs, hs'⟩ := hS.atomistic a (h ▸ le_top)
-  exact ⟨s, hs', fun I hI ↦ hS.isAtom I (hs hI)⟩
-
-lemma mem_of_isAtom_of_le_sSup_atoms (a : α) (ha : IsAtom a) (haS : a ≤ sSup S) :
-    a ∈ S := by
-  obtain ⟨T, hT, rfl⟩ := hS.atomistic a haS
-  obtain rfl | ⟨a, haT⟩ := T.eq_empty_or_nonempty
-  · simp only [sSup_empty] at ha
-    exact (ha.1 rfl).elim
-  suffices sSup T = a from this ▸ hT haT
-  have : a ≤ sSup T := le_sSup haT
-  rwa [ha.le_iff_eq, eq_comm] at this
-  exact (hS.isAtom a (hT haT)).1
-
-lemma sSup_le_sSup_iff_of_atoms (X Y : Set α) (hX : X ⊆ S) (hY : Y ⊆ S) :
-    sSup X ≤ sSup Y ↔ X ⊆ Y := by
-  refine ⟨?_, sSup_le_sSup⟩
-  intro h a ha
-  apply (hS.mono hY).mem_of_isAtom_of_le_sSup_atoms _ _ ((le_sSup ha).trans h)
-  exact (hS.mono hX).isAtom a ha
-
-lemma complementedLattice_of_sSup_eq_top (h : sSup S = ⊤) : ComplementedLattice α := by
-  constructor
-  intro a
-  obtain ⟨T, hT, rfl⟩ := hS.atomistic a (le_top.trans h.ge)
-  use sSup (S \ T)
-  constructor
-  swap
-  · rw [codisjoint_iff, ← sSup_union, Set.union_diff_self, Set.union_eq_right.mpr hT, h]
-  intro b hb₁ hb₂
-  obtain ⟨X, hX, rfl⟩ := hS.atomistic b (le_top.trans h.ge)
-  rw [hS.sSup_le_sSup_iff_of_atoms _ _ hX] at hb₁ hb₂
-  · obtain rfl : X = ∅ := by
-      have := Set.disjoint_sdiff_right hb₁ hb₂
-      rwa [← eq_bot_iff] at this
-    simp only [sSup_empty, le_refl]
-  · exact Set.diff_subset _ _
-  · exact hT
-
-lemma sSup_inter {T₁ T₂ : Set α} (hT₁ : T₁ ⊆ S) (hT₂ : T₂ ⊆ S) :
-    sSup (T₁ ∩ T₂) = (sSup T₁) ⊓ (sSup T₂) := by
-  apply le_antisymm
-  · apply le_inf
-    · apply sSup_le_sSup (Set.inter_subset_left T₁ T₂)
-    · apply sSup_le_sSup (Set.inter_subset_right T₁ T₂)
-  obtain ⟨X, hX, hX'⟩ := hS.atomistic (sSup T₁ ⊓ sSup T₂) (inf_le_left.trans (sSup_le_sSup hT₁))
-  rw [hX']
-  apply _root_.sSup_le
-  intro I hI
-  apply _root_.le_sSup
-  constructor
-  · apply (hS.mono hT₁).mem_of_isAtom_of_le_sSup_atoms _ _ _
-    · exact (hS.mono hX).isAtom I hI
-    · exact (_root_.le_sSup hI).trans (hX'.ge.trans inf_le_left)
-  · apply (hS.mono hT₂).mem_of_isAtom_of_le_sSup_atoms _ _ _
-    · exact (hS.mono hX).isAtom I hI
-    · exact (_root_.le_sSup hI).trans (hX'.ge.trans inf_le_right)
-
-lemma eq_atoms_of_sSup_eq_top (h : sSup S = ⊤) : S = {a : α | IsAtom a} := by
-  apply le_antisymm
-  · exact hS.isAtom
-  intro a ha
-  obtain ⟨T, hT, rfl⟩ := hS.atomistic a (le_top.trans h.ge)
-  exact hS.mem_of_isAtom_of_le_sSup_atoms _ ha (sSup_le_sSup hT)
-
-/-- A lattice generated by boolean generators is a distributive lattice. -/
-def distribLattice_of_sSup_eq_top (h : sSup S = ⊤) : DistribLattice α where
-  le_sup_inf a b c := by
-    obtain ⟨Ta, hTa, rfl⟩ := hS.atomistic a (h ▸ le_top)
-    obtain ⟨Tb, hTb, rfl⟩ := hS.atomistic b (h ▸ le_top)
-    obtain ⟨Tc, hTc, rfl⟩ := hS.atomistic c (h ▸ le_top)
-    apply le_of_eq
-    rw [← sSup_union, ← sSup_union, ← hS.sSup_inter hTb hTc, ← hS.sSup_inter, ← sSup_union]
-    on_goal 1 => congr 1; ext
-    all_goals
-      simp only [Set.union_subset_iff, Set.mem_inter_iff, Set.mem_union]
-      tauto
-
-/-- A lattice generated by boolean generators is a boolean algebra. -/
-noncomputable
-def booleanAlgebra_of_sSup_eq_top (h : sSup S = ⊤) : BooleanAlgebra α :=
-  let _i := hS.distribLattice_of_sSup_eq_top h
-  have := hS.complementedLattice_of_sSup_eq_top h
-  DistribLattice.booleanAlgebra_of_complemented α
-
-end BooleanGenerators
-
-end IsCompactlyGenerated
-
-
 section Irreducible
 
 variable (R L M : Type*) [CommRing R] [LieRing L] [AddCommGroup M] [Module R M] [LieRingModule L M]
@@ -467,9 +264,8 @@ lemma atomistic_of_finset : ∀ s : Finset (LieIdeal R L), ↑s ⊆ S →
 termination_by s => s.card
 decreasing_by exact Finset.card_lt_card hs'
 
-lemma bg : IsCompactlyGenerated.BooleanGenerators S where
+lemma booleanGenerators : IsCompactlyGenerated.BooleanGenerators S where
   isAtom := hS.isAtom
-  setIndependent := hS.setIndependent
   finitelyAtomistic s I hs _ := hS.atomistic_of_finset s hs I
 
 end SemisimpleGenerators
@@ -563,7 +359,7 @@ variable {R L} in
 lemma SemisimpleGenerators.isSemisimple_of_sSup_eq_top
     (S : Set (LieIdeal R L)) (hS : SemisimpleGenerators S) (h : sSup S = ⊤) :
     IsSemisimple R L := by
-  obtain rfl := hS.bg.eq_atoms_of_sSup_eq_top h
+  obtain rfl := hS.booleanGenerators.eq_atoms_of_sSup_eq_top h
   constructor
   · exact h
   · exact hS.setIndependent
@@ -589,11 +385,11 @@ lemma semisimpleGenerators (S : Set (LieIdeal R L)) (hS : S ⊆ {I : LieIdeal R 
   (IsSemisimple.semisimpleGenerators_atoms R L).mono hS
 
 instance (priority := 100) instDistribLattice : DistribLattice (LieIdeal R L) :=
-  (semisimpleGenerators_atoms R L).bg.distribLattice_of_sSup_eq_top sSup_isAtom_eq_top
+  (semisimpleGenerators_atoms R L).booleanGenerators.distribLattice_of_sSup_eq_top sSup_isAtom_eq_top
 
 noncomputable
 instance (priority := 100) instBooleanAlgebra : BooleanAlgebra (LieIdeal R L) :=
-  (semisimpleGenerators_atoms R L).bg.booleanAlgebra_of_sSup_eq_top sSup_isAtom_eq_top
+  (semisimpleGenerators_atoms R L).booleanGenerators.booleanAlgebra_of_sSup_eq_top sSup_isAtom_eq_top
 
 /-- A semisimple Lie algebra has trivial radical. -/
 instance (priority := 100) instHasTrivialRadical : HasTrivialRadical R L := by
