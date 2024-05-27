@@ -28,9 +28,10 @@ and prove some basic related results.
 * `LieAlgebra.IsSemisimple.instComplementedLattice`:
   The lattice of ideals in a semisimple Lie algebra is a complemented lattice.
   In particular, this implies that the lattice of ideals is atomistic:
-  every ideal is a direct sum of atoms (simple ideals), in a unique way.
+  every ideal is a direct sum of atoms (simple ideals).
 * `LieAlgebra.IsSemisimple.instDistribLattice`:
   The lattice of ideals in a semisimple Lie algebra is a distributive lattice.
+  Hence the decomposition of an ideal as a direct sum of atoms is unique.
 * `LieAlgebra.hasTrivialRadical_iff_no_solvable_ideals`
 * `LieAlgebra.hasTrivialRadical_iff_no_abelian_ideals`
 * `LieAlgebra.abelian_radical_iff_solvable_is_abelian`
@@ -306,6 +307,20 @@ lemma atomistic (J : LieIdeal R L) (hJ : J ≤ sSup S) : ∃ T ⊆ S, J = sSup T
   refine Set.Subset.trans ?_ hs₁
   simpa only [Finset.coe_subset] using ht
 
+lemma isAtomistic_of_sSup_eq_top (h : sSup S = ⊤) : IsAtomistic (LieIdeal R L) := by
+  refine ⟨fun J ↦ ?_⟩
+  obtain ⟨s, hs, hs'⟩ := atomistic hS J (by aesop)
+  exact ⟨s, hs', fun I hI ↦ hS.isAtom I (hs hI)⟩
+
+lemma complementedLattice_of_sSup_eq_top (h : sSup S = ⊤) : ComplementedLattice (LieIdeal R L) := by
+  have := isAtomistic_of_sSup_eq_top hS h
+  apply complementedLattice_of_isAtomistic
+
+/-!
+The following four lemmas are used to prove
+that the lattice of ideals in a semisimple Lie algebra is a distributive lattice.
+-/
+
 lemma mem_of_isAtom_of_le_sSup_atoms (I : LieIdeal R L) (hI : IsAtom I) (hJ : I ≤ sSup S) :
     I ∈ S := by
   obtain ⟨T, hT, rfl⟩ := hS.atomistic I hJ
@@ -349,24 +364,6 @@ lemma eq_atoms_of_sSup_eq_top (h : sSup S = ⊤) : S = {I : LieIdeal R L | IsAto
   intro J hJ
   obtain ⟨T, hT, rfl⟩ := hS.atomistic J (le_top.trans h.ge)
   exact hS.mem_of_isAtom_of_le_sSup_atoms _ hJ (sSup_le_sSup hT)
-
-lemma complementedLattice_of_sSup_eq_top (h : sSup S = ⊤) : ComplementedLattice (LieIdeal R L) := by
-  constructor
-  intro I
-  obtain ⟨T, hT, rfl⟩ := hS.atomistic I (le_top.trans h.ge)
-  use sSup (S \ T)
-  constructor
-  swap
-  · rw [codisjoint_iff, ← sSup_union, Set.union_diff_self, Set.union_eq_right.mpr hT, h]
-  intro J hJ₁ hJ₂
-  obtain ⟨X, hX, rfl⟩ := hS.atomistic J (le_top.trans h.ge)
-  rw [hS.sSup_le_sSup_iff_of_atoms _ _ hX] at hJ₁ hJ₂
-  · obtain rfl : X = ∅ := by
-      have := Set.disjoint_sdiff_right hJ₁ hJ₂
-      rwa [← eq_bot_iff] at this
-    simp only [sSup_empty, le_refl]
-  · exact Set.diff_subset _ _
-  · exact hT
 
 end SemisimpleGenerators
 
