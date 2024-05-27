@@ -387,12 +387,6 @@ theorem tendsto_nhds_of_tendsto_nhdsWithin {f : β → α} {a : α} {s : Set α}
   h.mono_right nhdsWithin_le_nhds
 #align tendsto_nhds_of_tendsto_nhds_within tendsto_nhds_of_tendsto_nhdsWithin
 
--- todo: move to `Mathlib.Filter.Order.Basic` or drop
-theorem principal_subtype {α : Type*} (s : Set α) (t : Set s) :
-    𝓟 t = comap (↑) (𝓟 (((↑) : s → α) '' t)) := by
-  rw [comap_principal, preimage_image_eq _ Subtype.coe_injective]
-#align principal_subtype principal_subtype
-
 theorem nhdsWithin_neBot_of_mem {s : Set α} {x : α} (hx : x ∈ s) : NeBot (𝓝[s] x) :=
   mem_closure_iff_nhdsWithin_neBot.1 <| subset_closure hx
 #align nhds_within_ne_bot_of_mem nhdsWithin_neBot_of_mem
