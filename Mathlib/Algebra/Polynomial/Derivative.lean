@@ -22,7 +22,7 @@ noncomputable section
 
 open Finset
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 
@@ -160,7 +160,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
-    derivative (∑ b in s, f b) = ∑ b in s, derivative (f b) :=
+    derivative (∑ b ∈ s, f b) = ∑ b ∈ s, derivative (f b) :=
   map_sum ..
 #align polynomial.derivative_sum Polynomial.derivative_sum
 
@@ -392,35 +392,35 @@ theorem coeff_iterate_derivative {k} (p : R[X]) (m : ℕ) :
 
 theorem iterate_derivative_mul {n} (p q : R[X]) :
     derivative^[n] (p * q) =
-      ∑ k in range n.succ, (n.choose k • (derivative^[n - k] p * derivative^[k] q)) := by
+      ∑ k ∈ range n.succ, (n.choose k • (derivative^[n - k] p * derivative^[k] q)) := by
   induction' n with n IH
   · simp [Finset.range]
   calc
     derivative^[n + 1] (p * q) =
-        derivative (∑ k : ℕ in range n.succ,
+        derivative (∑ k ∈ range n.succ,
             n.choose k • (derivative^[n - k] p * derivative^[k] q)) :=
       by rw [Function.iterate_succ_apply', IH]
-    _ = (∑ k : ℕ in range n.succ,
+    _ = (∑ k ∈ range n.succ,
           n.choose k • (derivative^[n - k + 1] p * derivative^[k] q)) +
-        ∑ k : ℕ in range n.succ,
+        ∑ k ∈ range n.succ,
           n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) := by
       simp_rw [derivative_sum, derivative_smul, derivative_mul, Function.iterate_succ_apply',
         smul_add, sum_add_distrib]
-    _ = (∑ k : ℕ in range n.succ,
+    _ = (∑ k ∈ range n.succ,
               n.choose k.succ • (derivative^[n - k] p * derivative^[k + 1] q)) +
             1 • (derivative^[n + 1] p * derivative^[0] q) +
-          ∑ k : ℕ in range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) :=
+          ∑ k ∈ range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) :=
       ?_
-    _ = ((∑ k : ℕ in range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q)) +
-            ∑ k : ℕ in range n.succ,
+    _ = ((∑ k ∈ range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q)) +
+            ∑ k ∈ range n.succ,
               n.choose k.succ • (derivative^[n - k] p * derivative^[k + 1] q)) +
           1 • (derivative^[n + 1] p * derivative^[0] q) :=
       by rw [add_comm, add_assoc]
-    _ = (∑ i : ℕ in range n.succ,
+    _ = (∑ i ∈ range n.succ,
             (n + 1).choose (i + 1) • (derivative^[n + 1 - (i + 1)] p * derivative^[i + 1] q)) +
           1 • (derivative^[n + 1] p * derivative^[0] q) :=
       by simp_rw [Nat.choose_succ_succ, Nat.succ_sub_succ, add_smul, sum_add_distrib]
-    _ = ∑ k : ℕ in range n.succ.succ,
+    _ = ∑ k ∈ range n.succ.succ,
           n.succ.choose k • (derivative^[n.succ - k] p * derivative^[k] q) :=
       by rw [sum_range_succ' _ n.succ, Nat.choose_zero_right, tsub_zero]
   congr

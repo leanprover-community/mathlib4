@@ -487,8 +487,6 @@ end InfiniteSylow
 
 open Equiv Equiv.Perm Finset Function List QuotientGroup
 
-open BigOperators
-
 universe u v w
 
 variable {G : Type u} {α : Type v} {β : Type w} [Group G]
@@ -806,8 +804,6 @@ theorem normal_of_normalizerCondition (hnc : NormalizerCondition G) {p : ℕ} [F
     normalizerCondition_iff_only_full_group_self_normalizing.mp hnc _ <| normalizer_normalizer _
 #align sylow.normal_of_normalizer_condition Sylow.normal_of_normalizerCondition
 
-open BigOperators
-
 /-- If all its Sylow subgroups are normal, then a finite group is isomorphic to the direct product
 of these Sylow subgroups.
 -/
@@ -851,7 +847,7 @@ noncomputable def directProductOfNormal [Fintype G]
       _ = ∏ p : ps, p.1 ^ (card G).factorization p.1 := by
         congr 1 with ⟨p, hp⟩
         exact @card_eq_multiplicity _ _ _ p ⟨Nat.prime_of_mem_primeFactors hp⟩ (P p)
-      _ = ∏ p in ps, p ^ (card G).factorization p :=
+      _ = ∏ p ∈ ps, p ^ (card G).factorization p :=
         (Finset.prod_finset_coe (fun p => p ^ (card G).factorization p) _)
       _ = (card G).factorization.prod (· ^ ·) := rfl
       _ = card G := Nat.factorization_prod_pow_eq_self Fintype.card_ne_zero

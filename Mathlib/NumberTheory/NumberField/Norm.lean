@@ -22,7 +22,7 @@ rings of integers.
 -/
 
 
-open scoped NumberField BigOperators
+open scoped NumberField
 
 open Finset NumberField Algebra FiniteDimensional
 
@@ -79,7 +79,7 @@ theorem isUnit_norm_of_isGalois [IsGalois K L] {x : 𝓞 L} : IsUnit (norm K x) 
   convert hx using 1
   ext
   convert_to ((univ \ {AlgEquiv.refl}).prod fun σ : L ≃ₐ[K] L => σ x) *
-    ∏ σ : L ≃ₐ[K] L in {AlgEquiv.refl}, σ x = _
+    ∏ σ ∈ {(AlgEquiv.refl : L ≃ₐ[K] L)}, σ x = _
   · rw [prod_singleton, AlgEquiv.coe_refl, _root_.id, RingOfIntegers.coe_eq_algebraMap, map_mul,
       RingOfIntegers.map_mk]
   · rw [prod_sdiff <| subset_univ _, ← norm_eq_prod_automorphisms, coe_algebraMap_norm]
@@ -90,7 +90,7 @@ theorem isUnit_norm_of_isGalois [IsGalois K L] {x : 𝓞 L} : IsUnit (norm K x) 
 theorem dvd_norm [IsGalois K L] (x : 𝓞 L) : x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x) := by
   classical
   have hint :
-    IsIntegral ℤ (∏ σ : L ≃ₐ[K] L in univ.erase AlgEquiv.refl, σ x) :=
+    IsIntegral ℤ (∏ σ ∈ univ.erase (AlgEquiv.refl : L ≃ₐ[K] L), σ x) :=
     IsIntegral.prod _ (fun σ _ =>
       ((RingOfIntegers.isIntegral_coe x).map σ))
   refine ⟨⟨_, hint⟩, ?_⟩

@@ -3,11 +3,11 @@ Copyright (c) 2020 Yury Kudryashov, Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Anne Baanen
 -/
+import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Fin
-import Mathlib.Data.List.FinRange
+import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.Logic.Equiv.Fin
-import Mathlib.Algebra.BigOperators.Ring
 
 #align_import algebra.big_operators.fin from "leanprover-community/mathlib"@"cc5dd6244981976cc9da7afc4eee5682b037a013"
 
@@ -25,8 +25,6 @@ constant function. These results have variants for sums instead of products.
 * `finFunctionFinEquiv`: An explicit equivalence between `Fin n → Fin m` and `Fin (m ^ n)`.
 -/
 
-open BigOperators
-
 open Finset
 
 variable {α : Type*} {β : Type*}
@@ -35,7 +33,7 @@ namespace Finset
 
 @[to_additive]
 theorem prod_range [CommMonoid β] {n : ℕ} (f : ℕ → β) :
-    ∏ i in Finset.range n, f i = ∏ i : Fin n, f i :=
+    ∏ i ∈ Finset.range n, f i = ∏ i : Fin n, f i :=
   (Fin.prod_univ_eq_prod_range _ _).symm
 #align finset.prod_range Finset.prod_range
 #align finset.sum_range Finset.sum_range
@@ -187,14 +185,14 @@ theorem sum_const [AddCommMonoid α] (n : ℕ) (x : α) : ∑ _i : Fin n, x = n 
 
 @[to_additive]
 theorem prod_Ioi_zero {M : Type*} [CommMonoid M] {n : ℕ} {v : Fin n.succ → M} :
-    ∏ i in Ioi 0, v i = ∏ j : Fin n, v j.succ := by
+    ∏ i ∈ Ioi 0, v i = ∏ j : Fin n, v j.succ := by
   rw [Ioi_zero_eq_map, Finset.prod_map, val_succEmb]
 #align fin.prod_Ioi_zero Fin.prod_Ioi_zero
 #align fin.sum_Ioi_zero Fin.sum_Ioi_zero
 
 @[to_additive]
 theorem prod_Ioi_succ {M : Type*} [CommMonoid M] {n : ℕ} (i : Fin n) (v : Fin n.succ → M) :
-    ∏ j in Ioi i.succ, v j = ∏ j in Ioi i, v j.succ := by
+    ∏ j ∈ Ioi i.succ, v j = ∏ j ∈ Ioi i, v j.succ := by
   rw [Ioi_succ, Finset.prod_map, val_succEmb]
 #align fin.prod_Ioi_succ Fin.prod_Ioi_succ
 #align fin.sum_Ioi_succ Fin.sum_Ioi_succ
@@ -458,7 +456,7 @@ variable [CommMonoid α]
 
 @[to_additive]
 theorem prod_take_ofFn {n : ℕ} (f : Fin n → α) (i : ℕ) :
-    ((ofFn f).take i).prod = ∏ j in Finset.univ.filter fun j : Fin n => j.val < i, f j := by
+    ((ofFn f).take i).prod = ∏ j ∈ Finset.univ.filter fun j : Fin n => j.val < i, f j := by
   induction i with
   | zero =>
     simp

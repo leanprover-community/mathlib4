@@ -38,8 +38,6 @@ In this file we use the following type variables:
 Bilinear form,
 -/
 
-open BigOperators
-
 open LinearMap (BilinForm)
 
 universe u v w
@@ -79,18 +77,18 @@ theorem toLin'_apply (A : BilinForm R M) (x : M) : toLinHom (M := M) A x = A x :
 variable (B)
 
 theorem sum_left {α} (t : Finset α) (g : α → M) (w : M) :
-    B (∑ i in t, g i) w = ∑ i in t, B (g i) w :=
+    B (∑ i ∈ t, g i) w = ∑ i ∈ t, B (g i) w :=
   B.map_sum₂ t g w
 #align bilin_form.sum_left LinearMap.BilinForm.sum_left
 
 variable (w : M)
 
 theorem sum_right {α} (t : Finset α) (w : M) (g : α → M) :
-    B w (∑ i in t, g i) = ∑ i in t, B w (g i) := map_sum _ _ _
+    B w (∑ i ∈ t, g i) = ∑ i ∈ t, B w (g i) := map_sum _ _ _
 #align bilin_form.sum_right LinearMap.BilinForm.sum_right
 
 theorem sum_apply {α} (t : Finset α) (B : α → BilinForm R M) (v w : M) :
-    (∑ i in t, B i) v w = ∑ i in t, B i v w := by
+    (∑ i ∈ t, B i) v w = ∑ i ∈ t, B i v w := by
   simp only [coeFn_sum, Finset.sum_apply]
 
 variable {B}
