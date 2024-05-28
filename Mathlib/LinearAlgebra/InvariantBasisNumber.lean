@@ -12,50 +12,63 @@ import Mathlib.Logic.Equiv.TransferInstance
 /-!
 # Invariant basis number property
 
-We say that a ring `R` satisfies the invariant basis number property if there is a well-defined
-notion of the rank of a finitely generated free (left) `R`-module. Since a finitely generated free
-module with a basis consisting of `n` elements is linearly equivalent to `Fin n → R`, it is
-sufficient that `(Fin n → R) ≃ₗ[R] (Fin m → R)` implies `n = m`.
+## Main definitions
 
-It is also useful to consider two stronger conditions, namely the rank condition,
-that a surjective linear map `(Fin n → R) →ₗ[R] (Fin m → R)` implies `m ≤ n` and
-the strong rank condition, that an injective linear map `(Fin n → R) →ₗ[R] (Fin m → R)`
+- `InvariantBasisNumber R` is a type class stating that `(Fin n → R) ≃ₗ[R] (Fin m → R)` implies `n = m`,
+a property known as the *invariant basis number property.*
+
+This assumption implies that there is a well-defined notion of the rank
+of a finitely generated free (left) `R`-module.
+
+It is also useful to consider two stronger conditions:
+
+- the *rank condition*, witnessed by the type class `RankCondition R`, states that
+the existence of a surjective linear map `(Fin n → R) →ₗ[R] (Fin m → R)` implies `m ≤ n`
+
+- the *strong rank condition*, witnessed by the type class `StrongRankCondition R`, states
+that the existence of an injective linear map `(Fin n → R) →ₗ[R] (Fin m → R)`
 implies `n ≤ m`.
 
-Orzech [orzech1971], Djoković [djokovic1973] and Ribenboim [ribenboim1971] considered the following
-property for a ring `R`:
+- `OrzechProperty R` is a type class stating that `R` satisfies the following property:
 for any finitely generated `R`-module `M`, any surjective homomorphism `f : N → M`
 from a submodule `N` of `M` to `M` is injective.
-It's called `Π`-ring or `Π₁`-ring in their papers.
-They showed that any Noetherian ring (not necessarily commutative) and any commutative ring
-satisfies this property.
-It's easy to see that such property implies strong rank condition given the ring is non-trivial.
+It was introduced in papers by Orzech [orzech1971], Djoković [djokovic1973] and Ribenboim [ribenboim1971],
+under the names `Π`-ring or `Π₁`-ring.
+It implies the strong rank condition if the ring is nontrivial.
 
-The strong rank condition implies the rank condition, and the rank condition implies
-the invariant basis number property.
-The converse is not true, as we have counterexamples in the book of Lam [lam_1999]
+
+## Instances
+
+- `IsNoetherianRing.orzechProperty` : any Noetherian ring (not necessarily commutative)
+satisfies the Orzech property.
+
+- `IsNoetherianRing.orzechProperty` : any left-noetherian ring satisfies the Orzech property.
+This applies in particular to division rings.
+
+- `strongRankCondition_of_orzechProperty` : the Orzech property implies the strong rank condition
+(for non trivial rings).
+
+- `rankCondition_of_strongRankCondition` : the strong rank condition implies the rank condition.
+
+- `invariantBasisNumber_of_rankCondition` : the rank condition implies the invariant basis number property.
+
+- `invariantBasisNumber_of_nontrivial_of_commRing`: a nontrivial commutative ring satisfies
+the invariant basis number property
+
+More generally, every commutative ring satisfies the Orzech property and the strong rank condition.
+The corresponding instances are proved in `Mathlib/LinearAlgebra/FreeModule/StrongRankCondition.lean`.
+We keep `invariantBasisNumber_of_nontrivial_of_commRing` here since it imports fewer files.
+
+
+## Counterexamples to converse results
+
+The following examples can be found in the book of Lam [lam_1999]
 (see also <https://math.stackexchange.com/questions/4711904>):
 
 - The free algebra `k⟨x, y⟩` satisfies the rank condition but not the strong rank condition.
 - The ring `ℚ⟨a, b, c, d⟩ / (ac − 1, bd − 1, ab, cd)` satisfies the invariant basis number property
   but not the rank condition.
 
-## Main definitions
-
-- `OrzechProperty R` is a type class stating that `R` satisfies the Orzech property.
-- `StrongRankCondition R` is a type class stating that `R` satisfies the strong rank condition.
-- `RankCondition R` is a type class stating that `R` satisfies the rank condition.
-- `InvariantBasisNumber R` is a type class stating that `R` has the invariant basis number property.
-
-## Main results
-
-We show that every nontrivial left-noetherian ring satisfies the strong rank condition,
-(and so in particular every division ring or field),
-and then use this to show every nontrivial commutative ring has the invariant basis number property.
-
-More generally, every commutative ring satisfies the strong rank condition. This is proved in
-`Mathlib/LinearAlgebra/FreeModule/StrongRankCondition.lean`. We keep
-`invariantBasisNumber_of_nontrivial_of_commRing` here since it imports fewer files.
 
 ## Future work
 
@@ -81,7 +94,7 @@ variants) should be formalized.
 
 ## Tags
 
-free module, rank, invariant basis number, IBN
+free module, rank, Orzech property, (strong) rank condition, invariant basis number, IBN
 
 -/
 
