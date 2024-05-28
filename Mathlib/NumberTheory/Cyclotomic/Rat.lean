@@ -468,12 +468,8 @@ theorem not_exists_int_prime_dvd_sub_of_prime_ne_two
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) (hodd : p ≠ 2) :
     ¬(∃ n : ℤ, (p : 𝓞 K) ∣ (hζ.toInteger - n : 𝓞 K)) := by
   refine not_exists_int_prime_dvd_sub_of_prime_pow_ne_two hζ (fun h ↦ ?_)
-  by_cases hk : k = 0
-  · apply hodd
-    simpa [hk] using h
-  · apply hk
-    replace h : (p : ℕ) ^ (k + 1) = 2 := by exact_mod_cast h
-    simpa using ((Nat.Prime.pow_eq_iff Nat.prime_two).1 h).2
+  simp_all only [(@Nat.Prime.pow_eq_iff 2 p (k+1) Nat.prime_two).mp (by assumption_mod_cast),
+    pow_one, ne_eq]
 
 /-- In a `p`-th cyclotomic extension of `ℚ `, we have that `ζ` is not congruent to an
   integer modulo `p` if `p ≠ 2`. -/
