@@ -480,16 +480,14 @@ lemma self_pow_inv (r : ℕ) : padicValRat p ((p : ℚ) ^ r)⁻¹ = -r := by
   rw [padicValRat.inv, neg_inj, padicValRat.pow (Nat.cast_ne_zero.mpr hp.elim.ne_zero),
       padicValRat.self hp.elim.one_lt, mul_one]
 
-open BigOperators
-
 /-- A finite sum of rationals with positive `p`-adic valuation has positive `p`-adic valuation
 (if the sum is non-zero). -/
 theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < padicValRat p (F i))
-    (hn0 : ∑ i in Finset.range n, F i ≠ 0) : 0 < padicValRat p (∑ i in Finset.range n, F i) := by
+    (hn0 : ∑ i ∈ Finset.range n, F i ≠ 0) : 0 < padicValRat p (∑ i ∈ Finset.range n, F i) := by
   induction' n with d hd
   · exact False.elim (hn0 rfl)
   · rw [Finset.sum_range_succ] at hn0 ⊢
-    by_cases h : ∑ x : ℕ in Finset.range d, F x = 0
+    by_cases h : ∑ x ∈ Finset.range d, F x = 0
     · rw [h, zero_add]
       exact hF d (lt_add_one _)
     · refine lt_of_lt_of_le ?_ (min_le_padicValRat_add hn0)
@@ -501,7 +499,7 @@ theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < pa
 number, then the p-adic valuation of their sum is also greater than the same rational number. -/
 theorem lt_sum_of_lt {p j : ℕ} [hp : Fact (Nat.Prime p)] {F : ℕ → ℚ} {S : Finset ℕ}
     (hS : S.Nonempty) (hF : ∀ i, i ∈ S → padicValRat p (F j) < padicValRat p (F i))
-    (hn1 : ∀ i : ℕ, 0 < F i) : padicValRat p (F j) < padicValRat p (∑ i in S, F i) := by
+    (hn1 : ∀ i : ℕ, 0 < F i) : padicValRat p (F j) < padicValRat p (∑ i ∈ S, F i) := by
   induction' hS using Finset.Nonempty.cons_induction with k s S' Hnot Hne Hind
   · rw [Finset.sum_singleton]
     exact hF k (by simp)
@@ -647,8 +645,6 @@ lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) :
     (pow_log_le_self 2 n.succ_ne_zero)
   rw [h, padicValNat.prime_pow, ← h]
 
-open BigOperators
-
 theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :
     (Finset.range (padicValNat p n + 1)).image (p ^ ·) ⊆ n.divisors := by
   intro t ht
@@ -707,7 +703,7 @@ largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
 The `p`-adic valuation of `n!` is the sum of the quotients `n / p ^ i`. This sum is expressed
 over the finset `Ico 1 b` where `b` is any bound greater than `log p n`. -/
 theorem padicValNat_factorial {n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < b) :
-    padicValNat p (n !) = ∑ i in Finset.Ico 1 b, n / p ^ i :=
+    padicValNat p (n !) = ∑ i ∈ Finset.Ico 1 b, n / p ^ i :=
   PartENat.natCast_inj.mp ((padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos _) ▸
       Prime.multiplicity_factorial hp.out hnb)
 
@@ -778,8 +774,7 @@ section padicValInt
 variable {p : ℕ} [hp : Fact p.Prime]
 
 theorem padicValInt_dvd_iff (n : ℕ) (a : ℤ) : (p : ℤ) ^ n ∣ a ↔ a = 0 ∨ n ≤ padicValInt p a := by
-  rw [padicValInt, ← Int.natAbs_eq_zero, ← padicValNat_dvd_iff, ← Int.natCast_dvd,
-    Int.coe_nat_pow]
+  rw [padicValInt, ← Int.natAbs_eq_zero, ← padicValNat_dvd_iff, ← Int.natCast_dvd, Int.natCast_pow]
 #align padic_val_int_dvd_iff padicValInt_dvd_iff
 
 theorem padicValInt_dvd (a : ℤ) : (p : ℤ) ^ padicValInt p a ∣ a := by

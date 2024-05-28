@@ -17,7 +17,8 @@ This file contains the additive and multiplicative monoid instances on the natur
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists Ring
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 open Multiplicative
 
@@ -64,7 +65,8 @@ instance instAddSemigroup     : AddSemigroup ℕ     := by infer_instance
 
 /-! ### Miscellaneous lemmas -/
 
-protected lemma nsmul_eq_mul (m n : ℕ) : m • n = m * n := rfl
+-- We want to use this lemma earlier than the lemmas simp can prove it with
+@[simp, nolint simpNF] protected lemma nsmul_eq_mul (m n : ℕ) : m • n = m * n := rfl
 #align nat.nsmul_eq_mul Nat.nsmul_eq_mul
 
 section Multiplicative

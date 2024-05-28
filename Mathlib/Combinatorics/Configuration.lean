@@ -36,7 +36,6 @@ Together, these four statements say that any two of the following properties imp
 
 
 open Finset
-open scoped BigOperators
 
 namespace Configuration
 
@@ -233,7 +232,7 @@ theorem HasLines.card_le [HasLines P L] [Fintype P] [Fintype L] :
       ∑ p, lineCount L p = ∑ l, pointCount P l := sum_lineCount_eq_sum_pointCount P L
       _ ≤ ∑ l, lineCount L (f l) :=
         (Finset.sum_le_sum fun l _ => HasLines.pointCount_le_lineCount (hf₂ l))
-      _ = ∑ p in univ.map ⟨f, hf₁⟩, lineCount L p := by rw [sum_map]; dsimp
+      _ = ∑ p ∈ univ.map ⟨f, hf₁⟩, lineCount L p := by rw [sum_map]; dsimp
       _ < ∑ p, lineCount L p := by
         obtain ⟨p, hp⟩ := not_forall.mp (mt (Fintype.card_le_of_surjective f) hc₂)
         refine sum_lt_sum_of_subset (subset_univ _) (mem_univ p) ?_ ?_ fun p _ _ ↦ zero_le _
@@ -273,7 +272,7 @@ theorem HasLines.lineCount_eq_pointCount [HasLines P L] [Fintype P] [Fintype L]
     have step1 : ∑ i : P × L, lineCount L i.1 = ∑ i : P × L, pointCount P i.2 := by
       rw [← Finset.univ_product_univ, Finset.sum_product_right, Finset.sum_product]
       simp_rw [Finset.sum_const, Finset.card_univ, hPL, sum_lineCount_eq_sum_pointCount]
-    have step2 : ∑ i in s, lineCount L i.1 = ∑ i in s, pointCount P i.2 := by
+    have step2 : ∑ i ∈ s, lineCount L i.1 = ∑ i ∈ s, pointCount P i.2 := by
       rw [s.sum_finset_product Finset.univ fun p => Set.toFinset { l | p ∈ l }]
       on_goal 1 =>
         rw [s.sum_finset_product_right Finset.univ fun l => Set.toFinset { p | p ∈ l }, eq_comm]
@@ -282,7 +281,7 @@ theorem HasLines.lineCount_eq_pointCount [HasLines P L] [Fintype P] [Fintype L]
           change pointCount P l • _ = lineCount L (f l) • _
           rw [hf2]
       all_goals simp_rw [s, Finset.mem_univ, true_and_iff, Set.mem_toFinset]; exact fun p => Iff.rfl
-    have step3 : ∑ i in sᶜ, lineCount L i.1 = ∑ i in sᶜ, pointCount P i.2 := by
+    have step3 : ∑ i ∈ sᶜ, lineCount L i.1 = ∑ i ∈ sᶜ, pointCount P i.2 := by
       rwa [← s.sum_add_sum_compl, ← s.sum_add_sum_compl, step2, add_left_cancel_iff] at step1
     rw [← Set.toFinset_compl] at step3
     exact

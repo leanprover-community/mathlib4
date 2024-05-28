@@ -22,7 +22,7 @@ example of a proof needing to construct a sequence by induction in the middle of
 
 
 open scoped Classical
-open Topology BigOperators
+open Topology
 
 open Filter Finset
 
@@ -68,10 +68,10 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
       rw [dist_comm]
       let r := range (n + 1) -- range (n+1) = {0, ..., n}
       calc
-        d (u 0) (u (n + 1)) ≤ ∑ i in r, d (u i) (u <| i + 1) := dist_le_range_sum_dist u (n + 1)
-        _ ≤ ∑ i in r, ε / 2 ^ i :=
+        d (u 0) (u (n + 1)) ≤ ∑ i ∈ r, d (u i) (u <| i + 1) := dist_le_range_sum_dist u (n + 1)
+        _ ≤ ∑ i ∈ r, ε / 2 ^ i :=
           (sum_le_sum fun i i_in => (IH i <| Nat.lt_succ_iff.mp <| Finset.mem_range.mp i_in).1)
-        _ = (∑ i in r, (1 / 2 : ℝ) ^ i) * ε := by
+        _ = (∑ i ∈ r, (1 / 2 : ℝ) ^ i) * ε := by
           rw [Finset.sum_mul]
           congr with i
           field_simp

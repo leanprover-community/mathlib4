@@ -62,8 +62,6 @@ combinatorial line, Ramsey theory, arithmetic progression
 
 open scoped Classical
 
-open BigOperators
-
 universe u v
 
 namespace Combinatorics
@@ -346,7 +344,7 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
   obtain ⟨l, c, hl⟩ := hι
   set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none) with hs
   refine
-    ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, ?_⟩, ∑ i in sᶜ, ((l.idxFun i).map ?_).getD 0,
+    ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, ?_⟩, ∑ i ∈ sᶜ, ((l.idxFun i).map ?_).getD 0,
       c, ?_⟩
   · rw [hs, Finset.mem_filter]
     exact ⟨Finset.mem_univ _, l.proper.choose_spec⟩
