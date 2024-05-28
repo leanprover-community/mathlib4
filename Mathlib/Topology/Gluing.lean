@@ -133,7 +133,7 @@ theorem rel_equiv : Equivalence D.Rel :=
   ⟨fun x => Or.inl (refl x), by
     rintro a b (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩)
     exacts [Or.inl rfl, Or.inr ⟨D.t _ _ x, e₂, by erw [← e₁, D.t_inv_apply]⟩], by
-     -- now `erw` after #13170
+     -- previous line now `erw` after #13170
     rintro ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩)
     · exact id
     rintro (⟨⟨⟩⟩ | ⟨y, e₃, e₄⟩)
