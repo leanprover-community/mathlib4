@@ -55,8 +55,7 @@ theorem Units.mem : ↑u ∈ ({1, -1, η, -η, η ^ 2, -η ^ 2} : Set (𝓞 K)) 
     convert map_one (algebraMap (𝓞 K) K)
     rw_mod_cast [hxu, hn]
     simp
-  have hodd : Odd ((3 : ℕ+) : ℕ) := by decide
-  obtain ⟨r, hr3, hru⟩ := hζ.exists_pow_or_neg_mul_pow_of_isOfFinOrder hodd
+  obtain ⟨r, hr3, hru⟩ := hζ.exists_pow_or_neg_mul_pow_of_isOfFinOrder (by decide)
     (isOfFinOrder_iff_pow_eq_one.2 ⟨n, hnpos, hn⟩)
   replace hr : r ∈ Finset.Ico 0 3 := Finset.mem_Ico.2 ⟨by simp, hr3⟩
   replace hru : ↑u = η ^ r ∨ ↑u = -η ^ r := by
