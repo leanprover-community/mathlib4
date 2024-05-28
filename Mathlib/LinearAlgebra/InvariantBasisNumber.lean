@@ -14,49 +14,51 @@ import Mathlib.Logic.Equiv.TransferInstance
 
 ## Main definitions
 
-- `InvariantBasisNumber R` is a type class stating that `(Fin n → R) ≃ₗ[R] (Fin m → R)` implies `n = m`,
-a property known as the *invariant basis number property.*
+- `InvariantBasisNumber R` is a type class stating that `(Fin n → R) ≃ₗ[R] (Fin m → R)`
+  implies `n = m`, a property known as the *invariant basis number property.*
 
-This assumption implies that there is a well-defined notion of the rank
-of a finitely generated free (left) `R`-module.
+  This assumption implies that there is a well-defined notion of the rank
+  of a finitely generated free (left) `R`-module.
 
-It is also useful to consider two stronger conditions:
+It is also useful to consider the following stronger conditions:
 
 - the *rank condition*, witnessed by the type class `RankCondition R`, states that
-the existence of a surjective linear map `(Fin n → R) →ₗ[R] (Fin m → R)` implies `m ≤ n`
+  the existence of a surjective linear map `(Fin n → R) →ₗ[R] (Fin m → R)` implies `m ≤ n`
 
 - the *strong rank condition*, witnessed by the type class `StrongRankCondition R`, states
-that the existence of an injective linear map `(Fin n → R) →ₗ[R] (Fin m → R)`
-implies `n ≤ m`.
+  that the existence of an injective linear map `(Fin n → R) →ₗ[R] (Fin m → R)`
+  implies `n ≤ m`.
 
 - `OrzechProperty R` is a type class stating that `R` satisfies the following property:
-for any finitely generated `R`-module `M`, any surjective homomorphism `f : N → M`
-from a submodule `N` of `M` to `M` is injective.
-It was introduced in papers by Orzech [orzech1971], Djoković [djokovic1973] and Ribenboim [ribenboim1971],
-under the names `Π`-ring or `Π₁`-ring.
-It implies the strong rank condition if the ring is nontrivial.
+  for any finitely generated `R`-module `M`, any surjective homomorphism `f : N → M`
+  from a submodule `N` of `M` to `M` is injective.
+  It was introduced in papers by Orzech [orzech1971], Djoković [djokovic1973] and
+  Ribenboim [ribenboim1971], under the names `Π`-ring or `Π₁`-ring.
+  It implies the strong rank condition if the ring is nontrivial.
 
 
 ## Instances
 
 - `IsNoetherianRing.orzechProperty` : any Noetherian ring (not necessarily commutative)
-satisfies the Orzech property.
+  satisfies the Orzech property.
 
 - `IsNoetherianRing.orzechProperty` : any left-noetherian ring satisfies the Orzech property.
-This applies in particular to division rings.
+  This applies in particular to division rings.
 
 - `strongRankCondition_of_orzechProperty` : the Orzech property implies the strong rank condition
-(for non trivial rings).
+  (for non trivial rings).
 
 - `rankCondition_of_strongRankCondition` : the strong rank condition implies the rank condition.
 
-- `invariantBasisNumber_of_rankCondition` : the rank condition implies the invariant basis number property.
+- `invariantBasisNumber_of_rankCondition` : the rank condition implies the
+  invariant basis number property.
 
 - `invariantBasisNumber_of_nontrivial_of_commRing`: a nontrivial commutative ring satisfies
-the invariant basis number property
+  the invariant basis number property
 
 More generally, every commutative ring satisfies the Orzech property and the strong rank condition.
-The corresponding instances are proved in `Mathlib/LinearAlgebra/FreeModule/StrongRankCondition.lean`.
+The corresponding instances are proved in
+`Mathlib/LinearAlgebra/FreeModule/StrongRankCondition.lean`.
 We keep `invariantBasisNumber_of_nontrivial_of_commRing` here since it imports fewer files.
 
 
@@ -89,8 +91,8 @@ variants) should be formalized.
 * [Lam, T. Y. *Lectures on Modules and Rings*][lam_1999]
 * [Orzech, Morris. *Onto endomorphisms are isomorphisms*][orzech1971]
 * [Djoković, D. Ž. *Epimorphisms of modules which must be isomorphisms*][djokovic1973]
-* [Ribenboim, Paulo. *Épimorphismes de modules qui sont nécessairement
-  des isomorphismes*][ribenboim1971]
+* [Ribenboim, Paulo.
+  *Épimorphismes de modules qui sont nécessairement des isomorphismes*][ribenboim1971]
 
 ## Tags
 
