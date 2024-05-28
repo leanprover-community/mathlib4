@@ -3,11 +3,12 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Num.Bitwise
-import Mathlib.Data.Int.CharZero
+import Mathlib.Algebra.Order.Ring.Cast
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Size
+import Mathlib.Data.Num.Bitwise
 
 #align_import data.num.lemmas from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
@@ -129,7 +130,7 @@ theorem mul_to_nat (m) : ∀ n, ((m * n : PosNum) : ℕ) = m * n
 #align pos_num.mul_to_nat PosNum.mul_to_nat
 
 theorem to_nat_pos : ∀ n : PosNum, 0 < (n : ℕ)
-  | 1 => zero_lt_one
+  | 1 => Nat.zero_lt_one
   | bit0 p =>
     let h := to_nat_pos p
     add_pos h h
@@ -138,7 +139,7 @@ theorem to_nat_pos : ∀ n : PosNum, 0 < (n : ℕ)
 
 theorem cmp_to_nat_lemma {m n : PosNum} : (m : ℕ) < n → (bit1 m : ℕ) < bit0 n :=
   show (m : ℕ) < n → (m + m + 1 + 1 : ℕ) ≤ n + n by
-    intro h; rw [Nat.add_right_comm m m 1, add_assoc]; exact add_le_add h h
+    intro h; rw [Nat.add_right_comm m m 1, add_assoc]; exact Nat.add_le_add h h
 #align pos_num.cmp_to_nat_lemma PosNum.cmp_to_nat_lemma
 
 theorem cmp_swap (m) : ∀ n, (cmp m n).swap = cmp n m := by
@@ -150,22 +151,22 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
   | 1, 1 => rfl
   | bit0 a, 1 =>
     let h : (1 : ℕ) ≤ a := to_nat_pos a
-    add_le_add h h
+    Nat.add_le_add h h
   | bit1 a, 1 => Nat.succ_lt_succ <| to_nat_pos <| bit0 a
   | 1, bit0 b =>
     let h : (1 : ℕ) ≤ b := to_nat_pos b
-    add_le_add h h
+    Nat.add_le_add h h
   | 1, bit1 b => Nat.succ_lt_succ <| to_nat_pos <| bit0 b
   | bit0 a, bit0 b => by
     dsimp [cmp]
     have := cmp_to_nat a b; revert this; cases cmp a b <;> dsimp <;> intro this
-    · exact add_lt_add this this
+    · exact Nat.add_lt_add this this
     · rw [this]
-    · exact add_lt_add this this
+    · exact Nat.add_lt_add this this
   | bit0 a, bit1 b => by
     dsimp [cmp]
     have := cmp_to_nat a b; revert this; cases cmp a b <;> dsimp <;> intro this
-    · exact Nat.le_succ_of_le (add_lt_add this this)
+    · exact Nat.le_succ_of_le (Nat.add_lt_add this this)
     · rw [this]
       apply Nat.lt_succ_self
     · exact cmp_to_nat_lemma this
@@ -175,13 +176,13 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
     · exact cmp_to_nat_lemma this
     · rw [this]
       apply Nat.lt_succ_self
-    · exact Nat.le_succ_of_le (add_lt_add this this)
+    · exact Nat.le_succ_of_le (Nat.add_lt_add this this)
   | bit1 a, bit1 b => by
     dsimp [cmp]
     have := cmp_to_nat a b; revert this; cases cmp a b <;> dsimp <;> intro this
-    · exact Nat.succ_lt_succ (add_lt_add this this)
+    · exact Nat.succ_lt_succ (Nat.add_lt_add this this)
     · rw [this]
-    · exact Nat.succ_lt_succ (add_lt_add this this)
+    · exact Nat.succ_lt_succ (Nat.add_lt_add this this)
 #align pos_num.cmp_to_nat PosNum.cmp_to_nat
 
 @[norm_cast]
