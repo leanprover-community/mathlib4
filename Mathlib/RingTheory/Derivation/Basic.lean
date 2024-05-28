@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
@@ -416,7 +416,7 @@ theorem map_intCast (n : ℤ) : D (n : A) = 0 := by
 
 theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b := by
   rw [neg_smul]
-  refine' eq_neg_of_add_eq_zero_left _
+  refine eq_neg_of_add_eq_zero_left ?_
   calc
     D a + a ^ 2 • D b = a • b • D a + a • a • D b := by simp only [smul_smul, h, one_smul, sq]
     _ = a • D (a * b) := by rw [leibniz, smul_add, add_comm]

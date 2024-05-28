@@ -198,10 +198,10 @@ noncomputable def extension : hat K → Γ₀ :=
 #align valued.extension Valued.extension
 
 theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) := by
-  refine' Completion.denseInducing_coe.continuous_extend _
+  refine Completion.denseInducing_coe.continuous_extend ?_
   intro x₀
   rcases eq_or_ne x₀ 0 with (rfl | h)
-  · refine' ⟨0, _⟩
+  · refine ⟨0, ?_⟩
     erw [← Completion.denseInducing_coe.toInducing.nhds_eq_comap]
     exact Valued.continuous_valuation.tendsto' 0 0 (map_zero v)
   · have preimage_one : v ⁻¹' {(1 : Γ₀)} ∈ 𝓝 (1 : K) := by
@@ -222,8 +222,8 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
           rfl
           rfl
           rw [← one_mul (1 : hat K)]
-        refine'
-          Tendsto.mul continuous_fst.continuousAt (Tendsto.comp _ continuous_snd.continuousAt)
+        refine
+          Tendsto.mul continuous_fst.continuousAt (Tendsto.comp ?_ continuous_snd.continuousAt)
         -- Porting note: Added `ContinuousAt.tendsto`
         convert (continuousAt_inv₀ (zero_ne_one.symm : 1 ≠ (0 : hat K))).tendsto
         exact inv_one.symm
@@ -251,7 +251,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       exact c.continuousAt V'_in
     have : ∃ z₀ : K, ∃ y₀ ∈ V', ↑z₀ = y₀ * x₀ ∧ z₀ ≠ 0 := by
       rcases Completion.denseRange_coe.mem_nhds nhds_right with ⟨z₀, y₀, y₀_in, H : y₀ * x₀ = z₀⟩
-      refine' ⟨z₀, y₀, y₀_in, ⟨H.symm, _⟩⟩
+      refine ⟨z₀, y₀, y₀_in, ⟨H.symm, ?_⟩⟩
       rintro rfl
       exact mul_ne_zero (ne_of_mem_of_not_mem y₀_in zeroV') h H
     rcases this with ⟨z₀, y₀, y₀_in, hz₀, z₀_ne⟩
@@ -274,7 +274,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
 
 @[simp, norm_cast]
 theorem extension_extends (x : K) : extension (x : hat K) = v x := by
-  refine' Completion.denseInducing_coe.extend_eq_of_tendsto _
+  refine Completion.denseInducing_coe.extend_eq_of_tendsto ?_
   rw [← Completion.denseInducing_coe.nhds_eq_comap]
   exact Valued.continuous_valuation.continuousAt
 #align valued.extension_extends Valued.extension_extends
@@ -333,7 +333,7 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     continuous_extension.continuousAt.preimage_mem_nhds
       (WithZeroTopology.singleton_mem_nhds_of_ne_zero h)
   rw [mem_closure_iff_nhds']
-  refine' ⟨fun hx => _, fun hx s hs => _⟩
+  refine ⟨fun hx => ?_, fun hx s hs => ?_⟩
   · obtain ⟨⟨-, y, hy₁ : v y < (γ : Γ₀), rfl⟩, hy₂⟩ := hx _ hγ₀
     replace hy₂ : v y = γ₀ := by simpa using hy₂
     rwa [← hy₂]

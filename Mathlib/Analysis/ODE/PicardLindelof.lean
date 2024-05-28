@@ -225,7 +225,7 @@ theorem vComp_apply_coe (t : Icc v.tMin v.tMax) : f.vComp t = v t (f t) := by
 
 theorem continuous_vComp : Continuous f.vComp := by
   have := (continuous_subtype_val.prod_mk f.continuous).comp v.continuous_proj
-  refine' ContinuousOn.comp_continuous v.continuousOn this fun x => _
+  refine ContinuousOn.comp_continuous v.continuousOn this fun x => ?_
   exact ⟨(v.proj x).2, f.mem_closedBall _⟩
 #align picard_lindelof.fun_space.continuous_v_comp PicardLindelof.FunSpace.continuous_vComp
 
@@ -280,13 +280,13 @@ theorem hasDerivWithinAt_next (t : Icc v.tMin v.tMax) :
     HasDerivWithinAt (f.next ∘ v.proj) (v t (f t)) (Icc v.tMin v.tMax) t := by
   haveI : Fact ((t : ℝ) ∈ Icc v.tMin v.tMax) := ⟨t.2⟩
   simp only [(· ∘ ·), next_apply]
-  refine' HasDerivWithinAt.const_add _ _
+  refine HasDerivWithinAt.const_add _ ?_
   have : HasDerivWithinAt (∫ τ in v.t₀..·, f.vComp τ) (f.vComp t) (Icc v.tMin v.tMax) t :=
     integral_hasDerivWithinAt_right (f.intervalIntegrable_vComp _ _)
       (f.continuous_vComp.stronglyMeasurableAtFilter _ _)
       f.continuous_vComp.continuousWithinAt
   rw [vComp_apply_coe] at this
-  refine' this.congr_of_eventuallyEq_of_mem _ t.coe_prop
+  refine this.congr_of_eventuallyEq_of_mem ?_ t.coe_prop
   filter_upwards [self_mem_nhdsWithin] with _ ht'
   rw [v.proj_of_mem ht']
 #align picard_lindelof.fun_space.has_deriv_within_at_next PicardLindelof.FunSpace.hasDerivWithinAt_next
@@ -301,14 +301,14 @@ theorem dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
   calc
     ‖∫ τ in Ι (v.t₀ : ℝ) t, f₁.vComp τ - f₂.vComp τ‖ ≤
         ∫ τ in Ι (v.t₀ : ℝ) t, v.L * ((v.L * |τ - v.t₀|) ^ n / n ! * d) := by
-      refine' norm_integral_le_of_norm_le (Continuous.integrableOn_uIoc _) _
+      refine norm_integral_le_of_norm_le (Continuous.integrableOn_uIoc ?_) ?_
       · -- Porting note: was `continuity`
         refine .mul continuous_const <| .mul (.div_const ?_ _) continuous_const
         refine .pow (.mul continuous_const <| .abs <| ?_) _
         exact .sub continuous_id continuous_const
-      · refine' (ae_restrict_mem measurableSet_Ioc).mono fun τ hτ => _
-        refine' (v.lipschitzOnWith (v.proj τ).2).norm_sub_le_of_le (f₁.mem_closedBall _)
-            (f₂.mem_closedBall _) ((h _).trans_eq _)
+      · refine (ae_restrict_mem measurableSet_Ioc).mono fun τ hτ => ?_
+        refine (v.lipschitzOnWith (v.proj τ).2).norm_sub_le_of_le (f₁.mem_closedBall _)
+            (f₂.mem_closedBall _) ((h _).trans_eq ?_)
         rw [v.proj_of_mem]
         exact uIcc_subset_Icc v.t₀.2 t.2 <| Ioc_subset_Icc_self hτ
     _ = (v.L * |t.1 - v.t₀|) ^ (n + 1) / (n + 1)! * d := by
@@ -328,7 +328,7 @@ theorem dist_iterate_next_apply_le (f₁ f₂ : FunSpace v) (n : ℕ) (t : Icc v
 
 theorem dist_iterate_next_le (f₁ f₂ : FunSpace v) (n : ℕ) :
     dist (next^[n] f₁) (next^[n] f₂) ≤ (v.L * v.tDist) ^ n / n ! * dist f₁ f₂ := by
-  refine' dist_le_of_forall fun t => (dist_iterate_next_apply_le _ _ _ _).trans _
+  refine dist_le_of_forall fun t => (dist_iterate_next_apply_le _ _ _ _).trans ?_
   have : |(t - v.t₀ : ℝ)| ≤ v.tDist := v.dist_t₀_le t
   gcongr
 #align picard_lindelof.fun_space.dist_iterate_next_le PicardLindelof.FunSpace.dist_iterate_next_le
@@ -362,7 +362,7 @@ theorem exists_solution :
     ∃ f : ℝ → E, f v.t₀ = v.x₀ ∧ ∀ t ∈ Icc v.tMin v.tMax,
       HasDerivWithinAt f (v t (f t)) (Icc v.tMin v.tMax) t := by
   rcases v.exists_fixed with ⟨f, hf⟩
-  refine' ⟨f ∘ v.proj, _, fun t ht => _⟩
+  refine ⟨f ∘ v.proj, ?_, fun t ht => ?_⟩
   · simp only [(· ∘ ·), proj_coe, f.map_t₀]
   · simp only [(· ∘ ·), v.proj_of_mem ht]
     lift t to Icc v.tMin v.tMax using ht
