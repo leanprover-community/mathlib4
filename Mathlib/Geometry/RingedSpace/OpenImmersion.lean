@@ -374,8 +374,9 @@ def pullbackConeOfLeftFst :
                       convert h₁
                       erw [TopCat.pullbackIsoProdSubtype_inv_fst_apply]
                     · erw [TopCat.pullbackIsoProdSubtype_inv_snd_apply]
-                  · rintro _ ⟨x, h₁, rfl⟩ -- used to be an `exact` before #13170
-                    refine ⟨_, h₁, ?_⟩
+                  · rintro _ ⟨x, h₁, rfl⟩
+                    -- next line used to be `exact ⟨_, h₁, ConcreteCategory.congr_hom pullback.condition x⟩))` before #13170
+                    refine ⟨_, h₁, ?_⟩ 
                     change (_ ≫ f.base) _ = (_ ≫ g.base) _
                     rw [pullback.condition]))
       naturality := by
