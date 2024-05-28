@@ -30,7 +30,7 @@ is arbitrary. See `instHasColimitConstPUnitFunctor`, `isColimitPUnitCocone` and
 ## Final functors preserve connectedness of categories (in both directions)
 
 `isConnected_iff_of_final` proves that the domain of a final functor is connected if and only if
-  its codomain is connected.
+its codomain is connected.
 
 ## Tags
 
@@ -117,8 +117,8 @@ variable {C : Type u} {D: Type u₂} [Category.{v} C] [Category.{v₂} D]
 /-- The domain of a final functor is connected if and only if its codomain is connected. -/
 theorem isConnected_iff_of_final (F : C ⥤ D) [CategoryTheory.Functor.Final F] :
     IsConnected C ↔ IsConnected D := by
-  refine Iff.trans (isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{max v u v₂ u₂} C) ?_
-  refine Iff.trans ?_ (isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{max v u v₂ u₂} D).symm
+  rw [isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{max v u v₂ u₂} C,
+    isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{max v u v₂ u₂} D]
   exact Equiv.nonempty_congr <| Iso.isoCongrLeft <|
     CategoryTheory.Functor.Final.colimitIso F <| constPUnitFunctor.{max u v u₂ v₂} D
 
