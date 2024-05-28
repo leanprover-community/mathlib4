@@ -166,13 +166,13 @@ decreasing_by
   rw [eq_bot_iff]
   exact orthogonalLieIdeal_disjoint Φ hΦ_nondeg hΦ_inv hL J hJ le_rfl (hJI.trans hIJ')
 
+open LieSubmodule in
 /--
 A finite-dimensional Lie algebra over a field is semisimple
 if it does not have non-trivial abelian ideals and it admits a
 non-degenerate reflexive invariant bilinear form.
 Here a form is *invariant* if it is compatible with the Lie bracket: `Φ ⁅x, y⁆ z = Φ x ⁅y, z⁆`.
 -/
-open LieSubmodule in
 theorem isSemisimple_of_nondegenerate : IsSemisimple K L := by
   refine ⟨?_, ?_, hL⟩
   · simpa using atomistic Φ hΦ_nondeg hΦ_inv hΦ_refl hL ⊤
