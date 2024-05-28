@@ -92,7 +92,6 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
     exact ⟨n, -η * x, by rw [← mul_assoc, mul_neg, ← neg_mul, ← lambda_sq, hx]⟩
   have hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
   have := Units.mem hζ u
-  simp only [Finset.mem_insert, Finset.mem_singleton] at this
   have h2 : (hζ.pow_of_coprime 2 (by decide)).toInteger = hζ.toInteger ^ 2 := by ext; simp
   rcases this with (rfl | h | h | h | h | h)
   · left; rfl
