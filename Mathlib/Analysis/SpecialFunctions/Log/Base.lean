@@ -136,9 +136,9 @@ theorem logb_rpow : logb b (b ^ x) = x := by
 
 theorem rpow_logb_eq_abs (hx : x ≠ 0) : b ^ logb b x = |x| := by
   apply log_injOn_pos
-  simp only [Set.mem_Ioi]
-  apply rpow_pos_of_pos b_pos
-  simp only [abs_pos, mem_Ioi, Ne, hx, not_false_iff]
+  · simp only [Set.mem_Ioi]
+    apply rpow_pos_of_pos b_pos
+  · simp only [abs_pos, mem_Ioi, Ne, hx, not_false_iff]
   rw [log_rpow b_pos, logb, log_abs]
   field_simp [log_b_ne_zero b_pos b_ne_one]
 #align real.rpow_logb_eq_abs Real.rpow_logb_eq_abs
@@ -276,7 +276,7 @@ theorem strictMonoOn_logb : StrictMonoOn (logb b) (Set.Ioi 0) := fun _ hx _ _ hx
 theorem strictAntiOn_logb : StrictAntiOn (logb b) (Set.Iio 0) := by
   rintro x (hx : x < 0) y (hy : y < 0) hxy
   rw [← logb_abs y, ← logb_abs x]
-  refine' logb_lt_logb hb (abs_pos.2 hy.ne) _
+  refine logb_lt_logb hb (abs_pos.2 hy.ne) ?_
   rwa [abs_of_neg hy, abs_of_neg hx, neg_lt_neg_iff]
 #align real.strict_anti_on_logb Real.strictAntiOn_logb
 
@@ -374,7 +374,7 @@ theorem strictAntiOn_logb_of_base_lt_one : StrictAntiOn (logb b) (Set.Ioi 0) := 
 theorem strictMonoOn_logb_of_base_lt_one : StrictMonoOn (logb b) (Set.Iio 0) := by
   rintro x (hx : x < 0) y (hy : y < 0) hxy
   rw [← logb_abs y, ← logb_abs x]
-  refine' logb_lt_logb_of_base_lt_one b_pos b_lt_one (abs_pos.2 hy.ne) _
+  refine logb_lt_logb_of_base_lt_one b_pos b_lt_one (abs_pos.2 hy.ne) ?_
   rwa [abs_of_neg hy, abs_of_neg hx, neg_lt_neg_iff]
 #align real.strict_mono_on_logb_of_base_lt_one Real.strictMonoOn_logb_of_base_lt_one
 
@@ -399,8 +399,8 @@ theorem tendsto_logb_atTop_of_base_lt_one : Tendsto (logb b) atTop atBot := by
   simp only [and_imp, sup_le_iff]
   intro ha
   rw [logb_le_iff_le_rpow_of_base_lt_one b_pos b_lt_one]
-  tauto
-  exact lt_of_lt_of_le zero_lt_one ha
+  · tauto
+  · exact lt_of_lt_of_le zero_lt_one ha
 #align real.tendsto_logb_at_top_of_base_lt_one Real.tendsto_logb_atTop_of_base_lt_one
 
 end BPosAndBLtOne
@@ -412,7 +412,7 @@ theorem floor_logb_natCast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
   have hb1' : 1 < (b : ℝ) := Nat.one_lt_cast.mpr hb
   apply le_antisymm
   · rw [← Int.zpow_le_iff_le_log hb hr, ← rpow_intCast b]
-    refine' le_of_le_of_eq _ (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr)
+    refine le_of_le_of_eq ?_ (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr)
     exact rpow_le_rpow_of_exponent_le hb1'.le (Int.floor_le _)
   · rw [Int.le_floor, le_logb_iff_rpow_le hb1' hr, rpow_intCast]
     exact Int.zpow_log_le_self hb hr
@@ -427,7 +427,7 @@ theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
   · rw [Int.ceil_le, logb_le_iff_le_rpow hb1' hr, rpow_intCast]
     exact Int.self_le_zpow_clog hb r
   · rw [← Int.le_zpow_iff_clog_le hb hr, ← rpow_intCast b]
-    refine' (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr).symm.trans_le _
+    refine (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr).symm.trans_le ?_
     exact rpow_le_rpow_of_exponent_le hb1'.le (Int.le_ceil _)
 #align real.ceil_logb_nat_cast Real.ceil_logb_natCast
 
@@ -438,10 +438,9 @@ theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨
 #align real.logb_eq_zero Real.logb_eq_zero
 
 -- TODO add other limits and continuous API lemmas analogous to those in Log.lean
-open BigOperators
 
 theorem logb_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
-    logb b (∏ i in s, f i) = ∑ i in s, logb b (f i) := by
+    logb b (∏ i ∈ s, f i) = ∑ i ∈ s, logb b (f i) := by
   classical
     induction' s using Finset.induction_on with a s ha ih
     · simp

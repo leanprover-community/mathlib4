@@ -34,7 +34,7 @@ We also define completed versions of these functions with nicer functional equat
 modified versions with a subscript `0`, which are entire functions differing from the above by
 multiples of `1 / s` and `1 / (1 - s)`.
 
-## Main definitions and theorems
+## Main definitions and theorems
 * `hurwitzZetaEven` and `cosZeta`: the zeta functions
 * `completedHurwitzZetaEven` and `completedCosZeta`: completed variants
 * `differentiableAt_hurwitzZetaEven` and `differentiableAt_cosZeta`:
@@ -95,8 +95,7 @@ lemma cosKernel_def (a x : ℝ) : ↑(cosKernel ↑a x) = jacobiTheta₂ a (I * 
 
 lemma cosKernel_undef (a : UnitAddCircle) {x : ℝ} (hx : x ≤ 0) : cosKernel a x = 0 := by
   induction' a using QuotientAddGroup.induction_on' with a'
-  rw [← ofReal_inj, cosKernel_def, jacobiTheta₂_undef, ofReal_zero]
-  rwa [I_mul_im, ofReal_re]
+  rw [← ofReal_inj, cosKernel_def, jacobiTheta₂_undef _ (by rwa [I_mul_im, ofReal_re]), ofReal_zero]
 
 /-- For `a = 0`, both kernels agree. -/
 lemma evenKernel_eq_cosKernel_of_zero : evenKernel 0 = cosKernel 0 := by
@@ -174,7 +173,7 @@ lemma hasSum_int_evenKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     ring_nf
     simp only [I_sq, mul_neg, neg_mul, mul_one]
   simp only [this]
-  exact (hasSum_jacobiTheta₂_term _ (by rwa [I_mul_im, ofReal_re])).mul_left _
+  apply (hasSum_jacobiTheta₂_term _ (by rwa [I_mul_im, ofReal_re])).mul_left
 
 lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℤ ↦ cexp (2 * π * I * a * n) * rexp (-π * n ^ 2 * t)) ↑(cosKernel a t) := by
@@ -186,7 +185,7 @@ lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     ring_nf
     simp only [I_sq, mul_neg, neg_mul, mul_one, sub_eq_add_neg]
   simp only [this]
-  exact hasSum_jacobiTheta₂_term a (by rwa [I_mul_im, ofReal_re] : 0 < im (I * t))
+  exact hasSum_jacobiTheta₂_term _ (by rwa [I_mul_im, ofReal_re])
 
 /-- Modified version of `hasSum_int_evenKernel` omitting the constant term at `∞`. -/
 lemma hasSum_int_evenKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
@@ -218,7 +217,7 @@ lemma hasSum_nat_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℕ ↦ 2 * Real.cos (2 * π * a * (n + 1)) * rexp (-π * (n + 1) ^ 2 * t))
     (cosKernel a t - 1) := by
   rw [← hasSum_ofReal, ofReal_sub, ofReal_one]
-  have := (hasSum_int_cosKernel a ht).sum_nat_of_sum_int
+  have := (hasSum_int_cosKernel a ht).nat_add_neg
   rw [← hasSum_nat_add_iff' 1] at this
   simp_rw [Finset.sum_range_one, Nat.cast_zero, neg_zero, Int.cast_zero, zero_pow two_ne_zero,
     mul_zero, zero_mul, Complex.exp_zero, Real.exp_zero, ofReal_one, mul_one, Int.cast_neg,
@@ -237,7 +236,7 @@ lemma hasSum_nat_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
 `a = 0` and `L = 0` otherwise. -/
 lemma isBigO_atTop_evenKernel_sub (a : UnitAddCircle) : ∃ p : ℝ, 0 < p ∧
     (evenKernel a · - (if a = 0 then 1 else 0)) =O[atTop] (rexp <| -p * ·) := by
-  obtain ⟨b, _, rfl⟩ := a.eq_coe_Ico
+  induction' a using QuotientAddGroup.induction_on with b
   obtain ⟨p, hp, hp'⟩ := HurwitzKernelBounds.isBigO_atTop_F_int_zero_sub b
   refine ⟨p, hp, (EventuallyEq.isBigO ?_).trans hp'⟩
   filter_upwards [eventually_gt_atTop 0] with t ht
@@ -531,7 +530,7 @@ lemma hasSum_nat_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     (completedCosZeta a s) := by
   have aux : ((|0| : ℤ) : ℂ) ^ s = 0 := by
     rw [abs_zero, Int.cast_zero, zero_cpow (ne_zero_of_one_lt_re hs)]
-  have hint := (hasSum_int_completedCosZeta a hs).sum_nat_of_sum_int
+  have hint := (hasSum_int_completedCosZeta a hs).nat_add_neg
   rw [aux, div_zero, zero_div, add_zero] at hint
   refine hint.congr_fun fun n ↦ ?_
   split_ifs with h
@@ -757,7 +756,7 @@ lemma hasSum_int_cosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 /-- Formula for `cosZeta` as a Dirichlet series in the convergence range, with sum over `ℕ`. -/
 lemma hasSum_nat_cosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ Real.cos (2 * π * a * n) / (n : ℂ) ^ s) (cosZeta a s) := by
-  have := (hasSum_int_cosZeta a hs).sum_nat_of_sum_int
+  have := (hasSum_int_cosZeta a hs).nat_add_neg
   simp_rw [abs_neg, Int.cast_neg, Nat.abs_cast, Int.cast_natCast, mul_neg, abs_zero, Int.cast_zero,
     zero_cpow (ne_zero_of_one_lt_re hs), div_zero, zero_div, add_zero, ← add_div,
     div_right_comm _ _ (2 : ℂ)] at this

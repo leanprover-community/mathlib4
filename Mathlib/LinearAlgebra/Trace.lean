@@ -27,8 +27,6 @@ universe u v w
 
 namespace LinearMap
 
-open BigOperators
-
 open Matrix
 
 open FiniteDimensional
@@ -201,7 +199,7 @@ theorem trace_id : trace R M id = (finrank R M : R) := by rw [← one_eq_id, tra
 theorem trace_transpose : trace R (Module.Dual R M) ∘ₗ Module.Dual.transpose = trace R M := by
   let e := dualTensorHomEquiv R M M
   have h : Function.Surjective e.toLinearMap := e.surjective
-  refine' (cancel_right h).1 _
+  refine (cancel_right h).1 ?_
   ext f m; simp [e]
 #align linear_map.trace_transpose LinearMap.trace_transpose
 
@@ -210,7 +208,7 @@ theorem trace_prodMap :
       (coprod id id : R × R →ₗ[R] R) ∘ₗ prodMap (trace R M) (trace R N) := by
   let e := (dualTensorHomEquiv R M M).prod (dualTensorHomEquiv R N N)
   have h : Function.Surjective e.toLinearMap := e.surjective
-  refine' (cancel_right h).1 _
+  refine (cancel_right h).1 ?_
   ext
   · simp only [e, dualTensorHomEquiv, LinearEquiv.coe_prod, dualTensorHomEquivOfBasis_toLinearMap,
       AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars, coe_comp, coe_inl,

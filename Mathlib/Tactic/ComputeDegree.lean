@@ -198,7 +198,7 @@ It returns
 * the name of the relation (`Eq` or `LE.le`), or else `.anonymous` if it's none of these.
 * either
   * `.inl zero`, `.inl one`, or `.inl many` if the polynomial in a numeral
-  * or `.inr` of the the head symbol of `f`
+  * or `.inr` of the head symbol of `f`
   * or `.inl .anonymous` if inapplicable
 * if it exists, whether the `rhs` is a metavariable
 * if the LHS is `coeff f d`, whether `d` is a metavariable
@@ -271,7 +271,8 @@ def getCongrLemma (twoH : Name × Name × List Bool) (debug : Bool := false) : N
       | true, true   => ``id
     | _ => ``id
   if debug then
-    let natr := if nam.getString == "trans" then nam.toString else nam.getString
+    let last := nam.lastComponentAsString
+    let natr := if last == "trans" then nam.toString else last
     dbg_trace f!"congr lemma: '{natr}'"
     nam
   else
@@ -305,7 +306,7 @@ def dispatchLemma
           | _, ``LE.le => ``le_rfl
           | _, _ => ``rfl
         if debug then
-          dbg_trace f!"{lem.getString}\n{msg}"
+          dbg_trace f!"{lem.lastComponentAsString}\n{msg}"
         lem
       match head with
         | .inl `zero => π ``natDegree_zero_le ``degree_zero_le ``coeff_zero
@@ -457,7 +458,8 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
         The LHS must be an application of 'natDegree', 'degree', or 'coeff'."
     | _ =>
       let lem := dispatchLemma twoH
-      trace[Tactic.compute_degree] f!"'compute_degree' first applies lemma '{lem.getString}'"
+      trace[Tactic.compute_degree]
+        f!"'compute_degree' first applies lemma '{lem.lastComponentAsString}'"
       let mut (gls, static) := (← goal.applyConst lem, [])
       while gls != [] do (gls, static) ← splitApply gls static
       let rfled ← try_rfl static
