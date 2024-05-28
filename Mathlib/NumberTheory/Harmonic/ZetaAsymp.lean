@@ -27,7 +27,7 @@ exists and is equal to `γ`. Finally, using this and the Riemann removable singu
 we obtain the limit along punctured neighbourhoods of 1 in `ℂ`.
 -/
 
-open Real BigOperators Set MeasureTheory Filter Topology
+open Real Set MeasureTheory Filter Topology
 
 namespace ZetaAsymptotics
 -- since the intermediate lemmas are of little interest in themselves we put them in a namespace

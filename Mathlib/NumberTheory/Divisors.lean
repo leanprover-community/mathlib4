@@ -33,7 +33,7 @@ divisors, perfect numbers
 
 
 open scoped Classical
-open BigOperators Finset
+open Finset
 
 namespace Nat
 

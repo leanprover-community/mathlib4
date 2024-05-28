@@ -19,7 +19,7 @@ squarefree as a corollary of the Marica-Schönheim inequality.
 -/
 
 open Finset
-open scoped BigOperators FinsetFamily
+open scoped FinsetFamily
 
 namespace Nat
 

@@ -50,7 +50,7 @@ suppress_compilation
 
 noncomputable section
 
-open scoped BigOperators NNReal Topology Uniformity
+open scoped NNReal Topology Uniformity
 open Finset Metric Function Filter
 
 /-

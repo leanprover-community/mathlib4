@@ -205,7 +205,7 @@ theorem polyEquivTensor_symm_apply_tmul (a : A) (p : R[X]) :
   toFunAlgHom_apply_tmul _ _ _ _
 #align poly_equiv_tensor_symm_apply_tmul polyEquivTensor_symm_apply_tmul
 
-open DMatrix Matrix BigOperators
+open DMatrix Matrix
 
 variable {R}
 variable {n : Type w} [DecidableEq n] [Fintype n]

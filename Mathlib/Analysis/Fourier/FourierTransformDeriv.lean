@@ -81,7 +81,7 @@ noncomputable section
 
 open Real Complex MeasureTheory Filter TopologicalSpace
 
-open scoped FourierTransform Topology BigOperators
+open scoped FourierTransform Topology
 
 -- without this local instance, Lean tries first the instance
 -- `secondCountableTopologyEither_of_right` (whose priority is 100) and takes a very long time to

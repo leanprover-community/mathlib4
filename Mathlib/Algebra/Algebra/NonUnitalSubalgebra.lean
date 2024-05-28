@@ -22,8 +22,6 @@ In this file we define `NonUnitalSubalgebra`s and the usual operations on them (
 
 universe u u' v v' w w'
 
-open scoped BigOperators
-
 section NonUnitalSubalgebraClass
 
 variable {S R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]

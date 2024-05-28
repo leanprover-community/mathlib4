@@ -14,8 +14,6 @@ import Mathlib.Algebra.BigOperators.Basic
 This file contains theorems relevant to big operators over `Finset.NatAntidiagonal`.
 -/
 
-open BigOperators
-
 variable {M N : Type*} [CommMonoid M] [AddCommMonoid N]
 
 namespace Finset

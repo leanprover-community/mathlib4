@@ -730,8 +730,6 @@ theorem coeIdeal_pow (I : Ideal R) (n : ℕ) : ↑(I ^ n) = (I : FractionalIdeal
   (coeIdealHom S P).map_pow _ n
 #align fractional_ideal.coe_ideal_pow FractionalIdeal.coeIdeal_pow
 
-open BigOperators
-
 theorem coeIdeal_finprod [IsLocalization S P] {α : Sort*} {f : α → Ideal R}
     (hS : S ≤ nonZeroDivisors R) :
     ((∏ᶠ a : α, f a : Ideal R) : FractionalIdeal S P) = ∏ᶠ a : α, (f a : FractionalIdeal S P) :=

@@ -64,8 +64,6 @@ open Finset hiding map
 
 open Finsupp (single)
 
-open BigOperators
-
 --attribute [-simp] coe_eval₂_hom
 
 variable (p : ℕ)

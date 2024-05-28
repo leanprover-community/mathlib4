@@ -112,7 +112,6 @@ section Ring
 
 variable {R} [Ring R] [IsDomain R] (S : Submonoid R)
 
-open BigOperators in
 /-- A domain that is not (right) Ore is of infinite (right) rank.
 See [cohn_1995] Proposition 1.3.6 -/
 lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R⁰)) :

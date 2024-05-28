@@ -34,7 +34,7 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 
 
 open scoped Classical
-open BigOperators Polynomial Submodule
+open Polynomial Submodule
 
 section Ring
 

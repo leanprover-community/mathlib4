@@ -395,8 +395,6 @@ variable {R M}
 
 section Coprime
 
-open BigOperators
-
 variable {ι : Type*} {p : ι → Ideal R} {S : Finset ι}
 variable (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
 
@@ -481,8 +479,6 @@ section NeedsGroup
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace Submodule
-
-open BigOperators
 
 variable {ι : Type*} [DecidableEq ι] {S : Finset ι}
 
@@ -743,8 +739,6 @@ end Torsion'
 section Torsion
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
-
-open BigOperators
 
 variable (R M)
 

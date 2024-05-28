@@ -566,7 +566,7 @@ lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p):
     (fun l hl ↦ digits_lt_base h hl)
   exact (ofDigits_digits p n).symm
 
-open BigOperators Finset
+open Finset
 
 theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
     (L : List ℕ) {h_nonempty} (h_ne_zero : L.getLast h_nonempty ≠ 0) (h_lt : ∀ l ∈ L, l < p) :

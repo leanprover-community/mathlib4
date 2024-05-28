@@ -619,8 +619,6 @@ end Mul
 
 section Prod
 
-open BigOperators
-
 /-! ### Derivative of a finite product of functions -/
 
 variable {ι : Type*} {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸]

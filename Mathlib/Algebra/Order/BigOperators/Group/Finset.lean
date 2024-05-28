@@ -19,8 +19,6 @@ groups/monoids.
 
 open Function
 
-open BigOperators
-
 variable {ι α β M N G k R : Type*}
 
 namespace Finset

@@ -28,7 +28,7 @@ properties about separable polynomials here.
 universe u v w
 
 open scoped Classical
-open BigOperators Polynomial Finset
+open Polynomial Finset
 
 namespace Polynomial
 

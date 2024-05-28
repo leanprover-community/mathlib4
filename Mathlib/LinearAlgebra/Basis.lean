@@ -66,8 +66,6 @@ universe u
 
 open Function Set Submodule
 
-open BigOperators
-
 variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
 variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
 

@@ -9,8 +9,6 @@ import Mathlib.Data.NNRat.Defs
 /-! # Casting lemmas for non-negative rational numbers involving sums and products
 -/
 
-open BigOperators
-
 variable {ι α : Type*}
 
 namespace NNRat

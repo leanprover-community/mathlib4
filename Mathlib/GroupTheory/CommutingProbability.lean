@@ -30,8 +30,6 @@ noncomputable section
 
 open scoped Classical
 
-open BigOperators
-
 open Fintype
 
 variable (M : Type*) [Mul M]

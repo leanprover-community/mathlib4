@@ -39,8 +39,6 @@ variable {α : Type u}
 
 open Finset MulOpposite
 
-open BigOperators
-
 section Semiring
 
 variable [Semiring α]

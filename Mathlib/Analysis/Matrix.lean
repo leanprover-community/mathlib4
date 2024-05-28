@@ -51,7 +51,7 @@ The norm induced by the identification of `Matrix m n 𝕜` with
 
 noncomputable section
 
-open scoped BigOperators NNReal Matrix
+open scoped NNReal Matrix
 
 namespace Matrix
 
@@ -513,7 +513,7 @@ When the matrix is over the real or complex numbers, this norm is submultiplicat
 
 section frobenius
 
-open scoped Matrix BigOperators
+open scoped Matrix
 
 /-- Seminormed group instance (using frobenius norm) for matrices over a seminormed group. Not
 declared as an instance because there are several natural choices for defining the norm of a

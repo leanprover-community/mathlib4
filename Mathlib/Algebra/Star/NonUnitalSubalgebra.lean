@@ -58,8 +58,6 @@ end StarMemClass
 
 universe u u' v v' w w' w''
 
-open scoped BigOperators
-
 variable {F : Type v'} {R' : Type u'} {R : Type u}
 variable {A : Type v} {B : Type w} {C : Type w'}
 

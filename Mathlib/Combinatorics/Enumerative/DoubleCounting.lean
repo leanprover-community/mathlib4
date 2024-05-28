@@ -32,8 +32,6 @@ and `t`.
 
 open Finset Function Relator
 
-open BigOperators
-
 variable {α β : Type*}
 
 /-! ### Bipartite graph -/

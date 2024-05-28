@@ -66,7 +66,6 @@ linear_map, matrix, linear_equiv, diagonal, det, trace
 noncomputable section
 
 open LinearMap Matrix Set Submodule
-open scoped BigOperators
 
 section ToMatrixRight
 

@@ -48,8 +48,6 @@ Occasionally this leads to proofs that are uglier than expected.
 
 noncomputable section
 
-open BigOperators
-
 open Finset (antidiagonal mem_antidiagonal)
 
 /-- Formal power series over a coefficient type `R` -/

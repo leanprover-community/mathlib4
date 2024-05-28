@@ -29,7 +29,7 @@ variable [Module R M] [Module R M'] [Module R M₁]
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
 
-open BigOperators Cardinal Basis Submodule Function Set FiniteDimensional
+open Cardinal Basis Submodule Function Set FiniteDimensional
 
 theorem rank_le {n : ℕ}
     (H : ∀ s : Finset M, (LinearIndependent R fun i : s => (i : M)) → s.card ≤ n) :
@@ -315,8 +315,6 @@ theorem CompleteLattice.Independent.subtype_ne_bot_le_finrank
 #align complete_lattice.independent.subtype_ne_bot_le_finrank CompleteLattice.Independent.subtype_ne_bot_le_finrank
 
 section
-
-open BigOperators
 
 open Finset
 

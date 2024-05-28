@@ -41,7 +41,7 @@ pseudo_metric, dist
 -/
 
 open Set Filter TopologicalSpace Bornology
-open scoped BigOperators ENNReal NNReal Uniformity Topology
+open scoped ENNReal NNReal Uniformity Topology
 
 universe u v w
 

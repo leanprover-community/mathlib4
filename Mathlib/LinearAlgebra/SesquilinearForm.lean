@@ -38,8 +38,6 @@ Sesquilinear form, Sesquilinear map,
 -/
 
 
-open BigOperators
-
 variable {R R₁ R₂ R₃ M M₁ M₂ M₃ Mₗ₁ Mₗ₁' Mₗ₂ Mₗ₂' K K₁ K₂ V V₁ V₂ n : Type*}
 
 namespace LinearMap

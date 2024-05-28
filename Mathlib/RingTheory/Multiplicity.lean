@@ -29,7 +29,6 @@ several basic results on it.
 variable {α β : Type*}
 
 open Nat Part
-open scoped BigOperators
 
 /-- `multiplicity a b` returns the largest natural number `n` such that
   `a ^ n ∣ b`, as a `PartENat` or natural with infinity. If `∀ n, a ^ n ∣ b`,

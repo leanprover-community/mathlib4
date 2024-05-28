@@ -67,8 +67,6 @@ non-unital subring
 -/
 
 
-open scoped BigOperators
-
 universe u v w
 
 section Basic

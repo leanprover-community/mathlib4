@@ -246,8 +246,6 @@ noncomputable section norm
 
 open scoped Classical
 
-open BigOperators
-
 variable [NumberField K] {K}
 
 /-- The norm of `x` is `∏ w real, ‖x‖_w * ∏ w complex, ‖x‖_w ^ 2`. It is defined such that

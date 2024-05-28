@@ -87,7 +87,7 @@ open Filter hiding map
 
 open Function MeasurableSpace
 open scoped Classical symmDiff
-open Topology BigOperators Filter ENNReal NNReal Interval MeasureTheory
+open Topology Filter ENNReal NNReal Interval MeasureTheory
 
 variable {α β γ δ ι R R' : Type*}
 

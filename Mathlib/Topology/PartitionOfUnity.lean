@@ -81,7 +81,7 @@ universe u v
 open Function Set Filter
 
 open scoped Classical
-open BigOperators Topology
+open Topology
 
 noncomputable section
 

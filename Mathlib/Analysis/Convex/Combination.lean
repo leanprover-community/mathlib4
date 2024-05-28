@@ -29,7 +29,7 @@ lemmas unconditional on the sum of the weights being `1`.
 open Set Function
 
 open scoped Classical
-open BigOperators Pointwise
+open Pointwise
 
 universe u u'
 

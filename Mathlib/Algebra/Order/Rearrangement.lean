@@ -47,8 +47,6 @@ file because it is easily deducible from the `Monovary` API.
 
 open Equiv Equiv.Perm Finset Function OrderDual
 
-open BigOperators
-
 variable {ι α β : Type*}
 
 /-! ### Scalar multiplication versions -/

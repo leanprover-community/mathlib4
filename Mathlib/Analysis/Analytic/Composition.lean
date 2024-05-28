@@ -72,7 +72,7 @@ variable {𝕜 : Type*} {E F G H : Type*}
 
 open Filter List
 
-open scoped Topology BigOperators Classical NNReal ENNReal
+open scoped Topology Classical NNReal ENNReal
 
 section Topological
 

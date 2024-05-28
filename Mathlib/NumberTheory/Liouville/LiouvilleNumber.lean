@@ -35,7 +35,7 @@ lemmas for $m \in \mathbb{R}$.
 
 noncomputable section
 
-open scoped Nat BigOperators
+open scoped Nat
 
 open Real Finset
 

@@ -22,7 +22,7 @@ variable {R S A K : Type*}
 
 namespace Polynomial
 
-open BigOperators Polynomial
+open Polynomial
 
 section Semiring
 

@@ -55,7 +55,7 @@ then defined as `bernoulli := (-1)^n * bernoulli'`.
 -/
 
 
-open Nat BigOperators Finset Finset.Nat PowerSeries
+open Nat Finset Finset.Nat PowerSeries
 
 variable (A : Type*) [CommRing A] [Algebra ℚ A]
 

@@ -49,8 +49,6 @@ universe v u
 
 open CategoryTheory.Limits
 
-open BigOperators
-
 namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]

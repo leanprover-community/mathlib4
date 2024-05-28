@@ -33,7 +33,7 @@ the underlying `RatFunc.coeAlgHom`.
 universe u
 
 open scoped Classical
-open HahnSeries BigOperators Polynomial
+open HahnSeries Polynomial
 
 noncomputable section
 

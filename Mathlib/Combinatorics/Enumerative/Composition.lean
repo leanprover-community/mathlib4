@@ -93,8 +93,6 @@ Composition, partition
 
 open List
 
-open BigOperators
-
 variable {n : ℕ}
 
 /-- A composition of `n` is a list of positive integers summing to `n`. -/

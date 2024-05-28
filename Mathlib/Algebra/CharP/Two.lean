@@ -91,8 +91,6 @@ theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
   rw [← pow_two, ← pow_two, ← pow_two, add_sq]
 #align char_two.add_mul_self CharTwo.add_mul_self
 
-open BigOperators
-
 theorem list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
   list_sum_pow_char _ _
 #align char_two.list_sum_sq CharTwo.list_sum_sq

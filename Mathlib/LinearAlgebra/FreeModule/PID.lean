@@ -47,8 +47,6 @@ free module, finitely generated module, rank, structure theorem
 -/
 
 
-open BigOperators
-
 universe u v
 
 section Ring

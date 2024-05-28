@@ -35,7 +35,7 @@ tower law
 
 universe u v w u₁ v₁ w₁
 
-open BigOperators Cardinal Submodule
+open Cardinal Submodule
 
 variable (F : Type u) (K : Type v) (A : Type w)
 

@@ -191,7 +191,7 @@ proofs or statements do not apply directly.
 [Bogachev, Measure Theory, volume 2, Theorem 7.11.1][bogachev2007]
 -/
 
-open Set Filter ENNReal Topology NNReal BigOperators TopologicalSpace
+open Set Filter ENNReal Topology NNReal TopologicalSpace
 
 namespace MeasureTheory
 

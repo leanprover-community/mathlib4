@@ -23,8 +23,6 @@ discrete_sum
 -/
 
 
-open scoped BigOperators
-
 open Finset
 
 /-- **Sum of the Reciprocals of the Triangular Numbers** -/

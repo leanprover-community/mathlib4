@@ -29,7 +29,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 open Finset
 

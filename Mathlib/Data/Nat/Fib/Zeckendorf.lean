@@ -31,7 +31,6 @@ fibonacci, zeckendorf, digit
 -/
 
 open List Nat
-open scoped BigOperators
 
 -- TODO: The `local` attribute makes this not considered as an instance by linters
 @[nolint defLemma docBlame]

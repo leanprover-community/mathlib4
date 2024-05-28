@@ -90,7 +90,7 @@ namespace NormedSpace
 
 open Filter RCLike ContinuousMultilinearMap NormedField Asymptotics
 
-open scoped Nat Topology BigOperators ENNReal
+open scoped Nat Topology ENNReal
 
 section TopologicalAlgebra
 

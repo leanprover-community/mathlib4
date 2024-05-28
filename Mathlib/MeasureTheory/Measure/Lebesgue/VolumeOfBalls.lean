@@ -159,7 +159,7 @@ end general_case
 
 section LpSpace
 
-open BigOperators Real Fintype ENNReal FiniteDimensional MeasureTheory MeasureTheory.Measure
+open Real Fintype ENNReal FiniteDimensional MeasureTheory MeasureTheory.Measure
 
 variable (ι : Type*) [Fintype ι] {p : ℝ} (hp : 1 ≤ p)
 

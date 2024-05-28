@@ -22,7 +22,6 @@ In this file, we prove the triangle counting lemma.
 attribute [-instance] decidableEq_of_subsingleton
 
 open Finset Fintype
-open scoped BigOperators
 
 variable {α : Type*} (G G' : SimpleGraph α) [DecidableRel G.Adj] {ε : ℝ} {s t u : Finset α}
 

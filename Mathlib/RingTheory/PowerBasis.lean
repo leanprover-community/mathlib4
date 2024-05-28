@@ -144,8 +144,6 @@ theorem algHom_ext {S' : Type*} [Semiring S'] [Algebra R S'] (pb : PowerBasis R 
 
 section minpoly
 
-open BigOperators
-
 variable [Algebra A S]
 
 /-- `pb.minpolyGen` is the minimal polynomial for `pb.gen`. -/

@@ -61,7 +61,7 @@ measurable functions, as a basis for the Bochner integral.
 
 open MeasureTheory Filter TopologicalSpace Function Set MeasureTheory.Measure
 
-open ENNReal Topology MeasureTheory NNReal BigOperators
+open ENNReal Topology MeasureTheory NNReal
 
 variable {α β γ ι : Type*} [Countable ι]
 

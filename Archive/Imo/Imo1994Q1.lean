@@ -28,8 +28,6 @@ would be `m` elements of the set of `aᵢ`'s all larger than `aₘ₊₁₋ᵢ`,
 -/
 
 
-open scoped BigOperators
-
 open Finset
 
 namespace Imo1994Q1

@@ -79,7 +79,7 @@ theorem convexBodyLT_convex : Convex ℝ (convexBodyLT K f) :=
 
 open Fintype MeasureTheory MeasureTheory.Measure ENNReal
 
-open scoped Classical BigOperators
+open scoped Classical
 
 variable [NumberField K]
 
@@ -203,7 +203,7 @@ theorem convexBodyLT'_convex : Convex ℝ (convexBodyLT' K f w₀) := by
 
 open MeasureTheory MeasureTheory.Measure
 
-open scoped Classical BigOperators
+open scoped Classical
 
 variable [NumberField K]
 
@@ -271,7 +271,7 @@ section convexBodySum
 
 open ENNReal MeasureTheory Fintype
 
-open scoped Real Classical BigOperators NNReal
+open scoped Real Classical NNReal
 
 variable [NumberField K] (B : ℝ)
 variable {K}

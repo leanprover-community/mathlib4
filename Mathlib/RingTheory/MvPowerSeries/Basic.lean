@@ -49,8 +49,6 @@ it should not be hard to fill in the details.
 
 noncomputable section
 
-open BigOperators
-
 open Finset (antidiagonal mem_antidiagonal)
 
 /-- Multivariate formal power series, where `σ` is the index set of the variables

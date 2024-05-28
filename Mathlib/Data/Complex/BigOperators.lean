@@ -13,8 +13,6 @@ import Mathlib.Algebra.BigOperators.Basic
 
 -/
 
-open scoped BigOperators
-
 namespace Complex
 
 variable {α : Type*} (s : Finset α)

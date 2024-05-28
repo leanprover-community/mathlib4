@@ -18,7 +18,7 @@ assert_not_exists Submodule.hasQuotient -- See `RingTheory.Ideal.QuotientOperati
 
 universe u v w x
 
-open BigOperators Pointwise
+open Pointwise
 
 namespace Submodule
 
@@ -1327,8 +1327,6 @@ section Total
 variable (ι : Type*)
 variable (M : Type*) [AddCommGroup M] {R : Type*} [CommRing R] [Module R M] (I : Ideal R)
 variable (v : ι → M) (hv : Submodule.span R (Set.range v) = ⊤)
-
-open BigOperators
 
 /-- A variant of `Finsupp.total` that takes in vectors valued in `I`. -/
 noncomputable def finsuppTotal : (ι →₀ I) →ₗ[R] M :=

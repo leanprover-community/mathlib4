@@ -31,8 +31,6 @@ universe u v
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
-open BigOperators
-
 namespace Fintype
 
 @[to_additive]

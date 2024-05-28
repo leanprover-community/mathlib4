@@ -48,7 +48,7 @@ set_option linter.uppercaseLean3 false
 
 open Set Function Filter TopologicalSpace ENNReal EMetric Finset
 
-open scoped Classical Topology ENNReal MeasureTheory BigOperators
+open scoped Classical Topology ENNReal MeasureTheory
 
 variable {α β ι E F 𝕜 : Type*}
 

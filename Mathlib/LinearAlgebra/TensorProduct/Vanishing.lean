@@ -61,7 +61,6 @@ variable {M : Type u} [AddCommGroup M] [Module R M]
 variable {N : Type u} [AddCommGroup N] [Module R N]
 
 open Classical DirectSum LinearMap Function Submodule
-open scoped BigOperators
 
 namespace TensorProduct
 

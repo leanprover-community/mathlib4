@@ -23,7 +23,7 @@ The proof is due to Erdős.
 -/
 
 open Set Nat
-open scoped BigOperators Topology
+open scoped Topology
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by `N` times the sum
 of `1/p` over the primes `k ≤ p ≤ N`. -/

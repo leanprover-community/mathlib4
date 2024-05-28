@@ -45,7 +45,7 @@ definitions in the particular case of the usual independence notion.
 
 open MeasureTheory MeasurableSpace
 
-open scoped BigOperators MeasureTheory ENNReal
+open scoped MeasureTheory ENNReal
 
 namespace ProbabilityTheory.kernel
 

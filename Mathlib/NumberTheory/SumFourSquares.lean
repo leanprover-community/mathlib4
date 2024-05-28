@@ -24,8 +24,6 @@ The proof used is close to Lagrange's original proof.
 
 open Finset Polynomial FiniteField Equiv
 
-open scoped BigOperators
-
 /-- **Euler's four-square identity**. -/
 theorem euler_four_squares {R : Type*} [CommRing R] (a b c d x y z w : R) :
     (a * x - b * y - c * z - d * w) ^ 2 + (a * y + b * x + c * w - d * z) ^ 2 +

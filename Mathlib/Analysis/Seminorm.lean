@@ -37,7 +37,7 @@ seminorm, locally convex, LCTVS
 
 open NormedField Set Filter
 
-open scoped BigOperators NNReal Pointwise Topology Uniformity
+open scoped NNReal Pointwise Topology Uniformity
 
 variable {R R' 𝕜 𝕜₂ 𝕜₃ 𝕝 E E₂ E₃ F G ι : Type*}
 

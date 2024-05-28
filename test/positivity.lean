@@ -12,7 +12,6 @@ This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 set_option autoImplicit true
 
 open Finset Function Nat NNReal ENNReal
-open scoped BigOperators
 
 variable {ι α β : Type _}
 

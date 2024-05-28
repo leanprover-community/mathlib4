@@ -71,8 +71,6 @@ arithmetic functions, dirichlet convolution, divisors
 
 open Finset
 
-open BigOperators
-
 open Nat
 
 variable (R : Type*)

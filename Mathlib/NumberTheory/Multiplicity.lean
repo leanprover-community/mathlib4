@@ -30,8 +30,6 @@ This file contains results in number theory relating to multiplicity.
 
 open Ideal Ideal.Quotient Finset
 
-open BigOperators
-
 variable {R : Type*} {n : ℕ}
 
 section CommRing

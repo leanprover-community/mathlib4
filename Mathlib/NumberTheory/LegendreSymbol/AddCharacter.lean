@@ -254,8 +254,6 @@ noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Finite F] [
 
 section sum
 
-open scoped BigOperators
-
 variable {R : Type*} [AddGroup R] [Fintype R] {R' : Type*} [CommRing R']
 
 /-- The sum over the values of a nontrivial additive character vanishes if the target ring
@@ -282,7 +280,6 @@ theorem sum_eq_card_of_is_trivial {ψ : AddChar R R'} (hψ : ¬IsNontrivial ψ) 
 
 end sum
 
-open scoped BigOperators in
 /-- The sum over the values of `mulShift ψ b` for `ψ` primitive is zero when `b ≠ 0`
 and `#R` otherwise. -/
 theorem sum_mulShift {R : Type*} [CommRing R] [Fintype R] [DecidableEq R]

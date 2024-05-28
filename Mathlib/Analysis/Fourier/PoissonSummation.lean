@@ -47,7 +47,7 @@ open Real
 
 open TopologicalSpace Filter MeasureTheory Asymptotics
 
-open scoped Real BigOperators Filter FourierTransform
+open scoped Real Filter FourierTransform
 
 open ContinuousMap
 

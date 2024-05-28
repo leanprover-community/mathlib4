@@ -58,7 +58,7 @@ pointwise subtraction
 
 open Function MulOpposite
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 variable {F α β γ : Type*}
 

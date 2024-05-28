@@ -37,7 +37,7 @@ derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor ser
 
 noncomputable section
 
-open scoped Classical BigOperators NNReal Nat
+open scoped Classical NNReal Nat
 
 local notation "∞" => (⊤ : ℕ∞)
 

@@ -532,8 +532,6 @@ theorem IsQuadratic.pow_odd {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ}
 
 end quadratic_and_comp
 
-open BigOperators
-
 section sum
 
 variable {R : Type u} [CommMonoid R] [Fintype R] {R' : Type v} [CommRing R']

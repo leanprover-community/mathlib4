@@ -41,7 +41,7 @@ internally graded ring
 -/
 
 
-open DirectSum BigOperators
+open DirectSum
 
 variable {ι : Type*} {σ S R : Type*}
 

@@ -17,7 +17,6 @@ We prove results about big operators over intervals.
 -/
 
 open Nat
-open scoped BigOperators
 
 variable {α M : Type*}
 

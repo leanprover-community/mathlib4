@@ -277,8 +277,6 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       exact fun h' => h ⟨_, h'.symm⟩
 #align quadratic_char_card_sqrts quadraticChar_card_sqrts
 
-open scoped BigOperators
-
 /-- The sum over the values of the quadratic character is zero when the characteristic is odd. -/
 theorem quadraticChar_sum_zero (hF : ringChar F ≠ 2) : ∑ a : F, quadraticChar F a = 0 :=
   IsNontrivial.sum_eq_zero (quadraticChar_isNontrivial hF)

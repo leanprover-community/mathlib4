@@ -19,8 +19,6 @@ promoted to an order isomorphism.
 
 open Finset
 
-open BigOperators
-
 variable {α β ι : Type*}
 
 namespace Finsupp

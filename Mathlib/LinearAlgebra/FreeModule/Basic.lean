@@ -26,7 +26,7 @@ universe u v w z
 
 variable {ι : Type*} (R : Type u) (M : Type v) (N : Type z)
 
-open TensorProduct DirectSum BigOperators
+open TensorProduct DirectSum
 
 section Basic
 

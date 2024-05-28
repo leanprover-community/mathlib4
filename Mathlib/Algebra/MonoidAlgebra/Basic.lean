@@ -54,8 +54,6 @@ Similarly, I attempted to just define
 
 noncomputable section
 
-open BigOperators
-
 open Finset
 
 open Finsupp hiding single mapDomain

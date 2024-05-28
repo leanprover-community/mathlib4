@@ -316,8 +316,6 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
         apply hy hz
 #align nat.divisors_filter_squarefree Nat.divisors_filter_squarefree
 
-open BigOperators
-
 theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type*} [AddCommMonoid α]
     {f : ℕ → α} :
     ∑ i ∈ n.divisors.filter Squarefree, f i =

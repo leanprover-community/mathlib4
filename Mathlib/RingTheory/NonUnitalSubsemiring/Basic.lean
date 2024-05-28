@@ -24,8 +24,6 @@ We define bundled non-unital subsemirings and some standard constructions:
 -/
 
 
-open BigOperators
-
 universe u v w
 
 variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R] (M : Subsemigroup R)

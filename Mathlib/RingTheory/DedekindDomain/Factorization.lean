@@ -47,7 +47,7 @@ dedekind domain, fractional ideal, ideal, factorization
 
 noncomputable section
 
-open scoped BigOperators Classical nonZeroDivisors
+open scoped Classical nonZeroDivisors
 
 open Set Function UniqueFactorizationMonoid IsDedekindDomain IsDedekindDomain.HeightOneSpectrum
   Classical

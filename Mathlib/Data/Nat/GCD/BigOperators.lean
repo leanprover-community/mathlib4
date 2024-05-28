@@ -15,8 +15,6 @@ These lemmas are kept separate from `Data.Nat.GCD.Basic` in order to minimize im
 
 namespace Nat
 
-open BigOperators
-
 variable {ι : Type*}
 
 theorem coprime_list_prod_left_iff {l : List ℕ} {k : ℕ} :

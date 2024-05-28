@@ -28,7 +28,7 @@ the underlying space is metrizable and separable.
 
 open MeasureTheory Topology Metric Filter Set ENNReal NNReal
 
-open scoped Topology ENNReal NNReal BoundedContinuousFunction BigOperators
+open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 namespace MeasureTheory
 

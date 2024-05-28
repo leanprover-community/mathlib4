@@ -49,7 +49,7 @@ Particular kernels:
 
 open MeasureTheory
 
-open scoped MeasureTheory ENNReal NNReal BigOperators
+open scoped MeasureTheory ENNReal NNReal
 
 namespace ProbabilityTheory
 

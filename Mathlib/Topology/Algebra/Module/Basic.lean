@@ -30,7 +30,7 @@ The corresponding notation for equivalences is `M ≃SL[σ] M₂`, `M ≃L[R] M�
 -/
 
 open LinearMap (ker range)
-open Topology BigOperators Filter Pointwise
+open Topology Filter Pointwise
 
 universe u v w u'
 

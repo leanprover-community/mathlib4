@@ -48,8 +48,6 @@ The proof of `catalan_eq_centralBinom_div` follows https://math.stackexchange.co
 -/
 
 
-open BigOperators
-
 open Finset
 
 open Finset.antidiagonal (fst_le snd_le)

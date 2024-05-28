@@ -65,7 +65,7 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 
 noncomputable section
 
-open DirectSum BigOperators Pointwise
+open DirectSum Pointwise
 
 open DirectSum SetLike
 

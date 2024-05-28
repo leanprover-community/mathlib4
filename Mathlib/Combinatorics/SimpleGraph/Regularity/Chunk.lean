@@ -38,7 +38,7 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 
 open Finpartition Finset Fintype Rel Nat
-open scoped BigOperators SzemerediRegularity.Positivity
+open scoped SzemerediRegularity.Positivity
 
 namespace SzemerediRegularity
 

@@ -54,7 +54,7 @@ linear algebra, vector space, module
 
 open Function
 
-open BigOperators Pointwise
+open Pointwise
 
 variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} {R₄ : Type*}
 variable {S : Type*}

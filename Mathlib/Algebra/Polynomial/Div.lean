@@ -21,7 +21,7 @@ We also define `rootMultiplicity`.
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 open Finset
 

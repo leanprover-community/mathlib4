@@ -24,8 +24,6 @@ lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
 
 universe u v
 
-open scoped BigOperators
-
 section IsCoprime
 
 variable {R : Type u} {I : Type v} [CommSemiring R] {x y z : R} {s : I → R} {t : Finset I}

@@ -68,8 +68,6 @@ end Monoid
 
 section CommMonoid
 
-open BigOperators
-
 variable {ι R : Type*} [CommMonoid R] {s : Finset ι} {f : ι → R}
 
 lemma IsLeftRegular.prod (h : ∀ i ∈ s, IsLeftRegular (f i)) :

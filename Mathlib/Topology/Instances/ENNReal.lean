@@ -19,7 +19,7 @@ import Mathlib.Topology.Order.T5
 noncomputable section
 
 open Set Filter Metric Function
-open scoped Classical Topology ENNReal NNReal BigOperators Filter
+open scoped Classical Topology ENNReal NNReal Filter
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 

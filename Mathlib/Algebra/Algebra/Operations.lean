@@ -49,8 +49,6 @@ universe uι u v
 
 open Algebra Set MulOpposite
 
-open BigOperators
-
 open Pointwise
 
 namespace SubMulAction

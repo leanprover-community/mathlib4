@@ -26,7 +26,7 @@ on compact sets.
 
 open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace Bornology
 
-open scoped Topology Interval ENNReal BigOperators
+open scoped Topology Interval ENNReal
 
 variable {X Y E F R : Type*} [MeasurableSpace X] [TopologicalSpace X]
 variable [MeasurableSpace Y] [TopologicalSpace Y]

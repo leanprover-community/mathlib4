@@ -40,7 +40,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 open Set Filter MeasureTheory MeasurableSpace TopologicalSpace
 
-open scoped Classical BigOperators Topology NNReal ENNReal MeasureTheory
+open scoped Classical Topology NNReal ENNReal MeasureTheory
 
 universe u v w x y
 

@@ -19,8 +19,6 @@ Note that analogous lemmas for `Module`s like `Finset.sum_smul` appear in other 
 
 variable {α β γ : Type*}
 
-open BigOperators
-
 section
 
 variable [AddMonoid β] [DistribSMul α β]
