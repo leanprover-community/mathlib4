@@ -283,7 +283,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   have h_eqOn := eqOn_of_cfc_eq_cfc (a := star b * b) h_eq_a_neg
   simpa [sup_eq_left.mpr hx'.le] using h_eqOn hx
 
-lemma IsSelfAdjoint.le_algebraMap_norm_self [PartialOrder A] [StarOrderedRing A] {a : A}
+lemma IsSelfAdjoint.le_algebraMap_norm_self [PartialOrder A] [StarOrderedRing A] (a : A)
     (ha : IsSelfAdjoint a := by cfc_tac) : a ≤ algebraMap ℝ A ‖a‖ := by
   by_cases nontriv : Nontrivial A
   · refine le_algebraMap_of_spectrum_le ‖a‖ a fun r hr => ?_
