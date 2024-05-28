@@ -35,7 +35,7 @@ first-price and second-price auctions, as well as several fundamental results an
 ## Helping Lemmas
 
 - `gt_wins`: If `i`'s bid is higher than all other bids, then `i` wins.
-- `exists_max`: There exists a participant whose bid matches the highest bid.
+- `exists_max`: There exists a participant whose bid matches the highest bid
 - `winner_take_max`: The winner's bid is the highest.
 - `b_winner`: The winner's bid is at least the second highest bid.
 - `utility_winner`: If `i` wins, utility is the valuation minus the second highest bid.
@@ -56,7 +56,6 @@ first-price and second-price auctions, as well as several fundamental results an
 The structure and functions assume the existence of multiple bidders to allow for meaningful
 auction dynamics. Definitions like `winner` and `maxb` make use of Lean's `Finset` and `Classical`
 logic to handle potential non-constructive cases effectively.
-
 ## References
 
 * [T. Roughgarden, *Twenty lectures on Algorithmic Game Theory*][roughgarden2016]
@@ -87,10 +86,9 @@ variable {a : Auction} (b : a.I → ℝ )
 
 instance: Fintype a.I := a.hF
 instance: Nontrivial a.I := a.hI
-instance: Nonempty a.I := by let ⟨x, _⟩ := @exists_pair_ne a.I a.hI;use x
+instance: Nonempty a.I := by let ⟨x, _⟩ := @exists_pair_ne a.I a.hI; use x
 
 /-!###  Helper Functions and Definitions -/
-
 
 /-- Computes the highest bid given a bidding function `b`. -/
 @[simp]
@@ -159,30 +157,30 @@ lemma gt_wins (i : a.I) (H: ∀ j , i ≠ j →  b i > b j) : i = winner b := by
     intro j
     constructor
     · intro hji
-      rw [←hji]
+      rw [← hji]
       exact imax
     · intro hbj
       by_contra hji
       have hji' := H j (by rw [ne_eq];exact hji)
       aesop
   rw [HH]
-  rw [←winner_take_max]
+  rw [← winner_take_max]
 
 /-- The bid of the winner is always greater than or equal to the bids of all other participants.-/
 lemma b_winner_max (H: i = winner b) : ∀ j: a.I, b i ≥ b j := by
   intro j
   have H_max: b (winner b) = maxb b := winner_take_max b
-  rw [←H] at H_max
+  rw [← H] at H_max
   have H_sup: b j ≤ maxb b := by
     apply Finset.le_sup'; simp only [Finset.mem_univ]
-  rw [←H_max] at H_sup
+  rw [← H_max] at H_sup
   exact H_sup
 
 
 /-- The bid of the winner is always greater than or equal to the second highest bid. -/
 lemma b_winner (H: i = winner b) : b i ≥ secondprice b := by
   have Hmax := winner_take_max b
-  rw [←H] at Hmax
+  rw [← H] at Hmax
   rw [Hmax]
   apply Finset.sup'_le
   apply delete_i_nonempty
@@ -198,7 +196,7 @@ lemma b_loser_max (H: i ≠ winner b) : B b i = maxb b := by
     apply Finset.le_sup'
     simp only [Finset.mem_univ]
   have H2: maxb b ≤ B b i := by
-    rw [←winner_take_max b]
+    rw [← winner_take_max b]
     apply Finset.le_sup'
     simp only [Finset.mem_univ, Finset.mem_erase, and_true]
     exact (Ne.symm H)
@@ -212,7 +210,7 @@ lemma utility_nneg (i : a.I) : (b i = a.v i) → utility b i ≥ 0 := by
   by_cases H2: i = winner b
   · rw [utility]
     simp only [H2]
-    rw [←H2, ←H, H2]
+    rw [← H2, ← H, H2]
     rw [winner_take_max b]
     apply sub_nonneg.mpr
     rw [secondprice]
@@ -237,24 +235,24 @@ theorem valuation_is_dominant (i : a.I ) : dominant i (a.v i) := by
                   Finset.mem_erase, ne_eq, and_true]
         use j
         simp only [le_refl, and_true]
-        rw [←ne_eq,ne_comm]
+        rw [← ne_eq,ne_comm]
         exact hj
       exact gt_of_gt_of_ge H1 HBi
       exact id (Ne.symm hj))
       rw [utility_winner _ h_winner_b, utility_winner _ H]
       have h_secondprice_eq : secondprice b = secondprice b' := by
         repeat rw [secondprice]
-        rw[←h_winner_b, ←H]
+        rw[← h_winner_b, ← H]
         repeat rw [B]
         apply Finset.sup'_congr (delete_i_nonempty i) (rfl)
         intro j hj
         rw [Finset.mem_erase] at hj
         exact hb' j hj.1
       · rw [h_secondprice_eq]
-    · rw [ge_iff_le,utility,←H]
+    · rw [ge_iff_le,utility,← H]
       simp only [ite_true, ge_iff_le, tsub_le_iff_right]
       simp only [gt_iff_lt, not_lt] at H1
-      rw [secondprice, ←H]
+      rw [secondprice, ← H]
       have := utility_nneg b i hb
       exact le_add_of_nonneg_of_le this H1
   · have := utility_nneg b i hb
