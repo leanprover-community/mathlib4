@@ -93,7 +93,6 @@ The intended application is when `stx` is a syntax node representing `refine' ..
 def candidateRefines (stx : Syntax) : Array (Syntax × List Syntax) := Id.run do
   let mut cands := #[]
   let holes := getHoles stx
-  dbg_trace holes.map (·.getPos?)
   for sub in holes.toList.sublistsFast do
     let mut newCmd := stx
     for s in sub do
@@ -132,8 +131,8 @@ def getQuestions (cmd : Syntax) : Command.CommandElabM (Array (Syntax × List Sy
       if !(← get).messages.hasErrors then
         suma := suma.push ((Syntax.getHead? refine').getD default, holes)
         logInfoAt ((Syntax.getHead? refine').getD default) m!"{cand}"
-        let sr := (refine'.getRange?).getD default
-        logInfoAt ((Syntax.getHead? refine').getD default) m!"{(sr.start, sr.stop)}"
+        --let sr := (refine'.getRange?).getD default
+        --logInfoAt ((Syntax.getHead? refine').getD default) m!"{(sr.start, sr.stop)}"
         break
       set st
   return suma
@@ -143,16 +142,16 @@ def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.refine'To
 
 /-- Reports the positions of missing `?`. -/
 def ToRefineLinter : Linter where run stx := do
-  let fm ← getFileMap
+  --let fm ← getFileMap
   if getLinterHash (← getOptions) then
-    let pos ← getQuestions stx
-    for (r, hls) in pos do
-      let rPos := r.getPos?.getD default
-      let lc := fm.toPosition rPos
-      logInfoAt r m!"(1, {lc.1}, {lc.2})"
-      let _ ← hls.mapM fun hl =>
-        let hlPos := hl.getPos?.getD default
-        let hlc := fm.toPosition hlPos
-        (logInfoAt hl m!"(0, {hlc.1}, {hlc.2})")
+    let _pos ← getQuestions stx
+    --for (r, hls) in pos do
+    --  let rPos := r.getPos?.getD default
+    --  let lc := fm.toPosition rPos
+    --  logInfoAt r m!"(1, {lc.1}, {lc.2})"
+    --  let _ ← hls.mapM fun hl =>
+    --    let hlPos := hl.getPos?.getD default
+    --    let hlc := fm.toPosition hlPos
+    --    (logInfoAt hl m!"(0, {hlc.1}, {hlc.2})")
 
 initialize addLinter ToRefineLinter
