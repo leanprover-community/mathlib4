@@ -63,19 +63,12 @@ theorem Units.mem : ↑u ∈ ({1, -1, η, -η, η ^ 2, -η ^ 2} : Set (𝓞 K)) 
     · left; ext; exact h
     · right; ext; exact h
   fin_cases hr
-  · rcases hru with (h | h)
-    · simp only [h, pow_zero, Set.mem_insert_iff, eq_neg_self_iff, one_ne_zero,
-        Set.mem_singleton_iff, false_or, true_or]
-    · simp only [h, pow_zero, Set.mem_insert_iff, neg_eq_self_iff, one_ne_zero, neg_inj,
-        Set.mem_singleton_iff, true_or, or_true]
-  · rcases hru with (h | h)
-    · simp only [h, zero_add, pow_one, Set.mem_insert_iff, eq_neg_self_iff, Set.mem_singleton_iff,
-        true_or, or_true]
-    · simp only [h, zero_add, pow_one, Set.mem_insert_iff, neg_inj, neg_eq_self_iff,
-        Set.mem_singleton_iff, true_or, or_true]
-  · rcases hru with (h | h)
-    · apply Set.mem_insert_of_mem; apply Set.mem_insert_of_mem; simp [h]
-    · apply Set.mem_insert_of_mem; apply Set.mem_insert_of_mem; simp [h]
+  all_goals{
+    rcases hru with (h | h)
+    · simp only [h, pow_zero, Set.mem_insert_iff, one_ne_zero, Set.mem_singleton_iff, false_or,
+        true_or, zero_add, pow_one, eq_neg_self_iff, true_or, or_true]
+    · simp [h, pow_zero, Set.mem_insert_iff, neg_eq_self_iff, one_ne_zero, Set.mem_singleton_iff,
+        true_or, or_true, zero_add, pow_one, neg_inj, neg_eq_self_iff]}
 
 /-- Let `K` be a number field such that `IsCyclotomicExtension {3} ℚ K`.
 Let `ζ` be any primitive `3`-rd root of unity in `K`.
