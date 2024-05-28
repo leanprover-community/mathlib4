@@ -229,8 +229,6 @@ def HomAsGroup (X : C) (G : GroupObject C) : Group (X ⟶ G.X) where
     rfl
 
 
-
-
 theorem inv_hom {G H : GroupObject C} (f : G ⟶ H) :
     G.inv ≫ f.hom = f.hom ≫ H.inv := sorry
 
