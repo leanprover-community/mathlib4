@@ -48,8 +48,6 @@ noncomputable section
 
 open Finset Function
 
-open BigOperators
-
 variable {α β γ ι M M' N P G H R S : Type*}
 
 namespace Finsupp
@@ -237,7 +235,7 @@ theorem mapRange_multiset_sum (f : F) (m : Multiset (α →₀ M)) :
 #align finsupp.map_range_multiset_sum Finsupp.mapRange_multiset_sum
 
 theorem mapRange_finset_sum (f : F) (s : Finset ι) (g : ι → α →₀ M) :
-    mapRange f (map_zero f) (∑ x in s, g x) = ∑ x in s, mapRange f (map_zero f) (g x) :=
+    mapRange f (map_zero f) (∑ x ∈ s, g x) = ∑ x ∈ s, mapRange f (map_zero f) (g x) :=
   map_sum (mapRange.addMonoidHom (f : M →+ N)) _ _
 #align finsupp.map_range_finset_sum Finsupp.mapRange_finset_sum
 
@@ -527,7 +525,7 @@ theorem mapDomain.addMonoidHom_comp (f : β → γ) (g : α → β) :
 #align finsupp.map_domain.add_monoid_hom_comp Finsupp.mapDomain.addMonoidHom_comp
 
 theorem mapDomain_finset_sum {f : α → β} {s : Finset ι} {v : ι → α →₀ M} :
-    mapDomain f (∑ i in s, v i) = ∑ i in s, mapDomain f (v i) :=
+    mapDomain f (∑ i ∈ s, v i) = ∑ i ∈ s, mapDomain f (v i) :=
   map_sum (mapDomain.addMonoidHom f) _ _
 #align finsupp.map_domain_finset_sum Finsupp.mapDomain_finset_sum
 
@@ -930,7 +928,7 @@ theorem filter_single_of_neg {a : α} {b : M} (h : ¬p a) : (single a b).filter 
 
 @[to_additive]
 theorem prod_filter_index [CommMonoid N] (g : α → M → N) :
-    (f.filter p).prod g = ∏ x in (f.filter p).support, g x (f x) := by
+    (f.filter p).prod g = ∏ x ∈ (f.filter p).support, g x (f x) := by
   classical
     refine Finset.prod_congr rfl fun x hx => ?_
     rw [support_filter, Finset.mem_filter] at hx
@@ -1096,7 +1094,7 @@ section CommMonoid
 variable [AddCommMonoid M] {p : α → Prop}
 
 theorem subtypeDomain_sum {s : Finset ι} {h : ι → α →₀ M} :
-    (∑ c in s, h c).subtypeDomain p = ∑ c in s, (h c).subtypeDomain p :=
+    (∑ c ∈ s, h c).subtypeDomain p = ∑ c ∈ s, (h c).subtypeDomain p :=
   map_sum subtypeDomainAddMonoidHom _ s
 #align finsupp.subtype_domain_sum Finsupp.subtypeDomain_sum
 
@@ -1106,12 +1104,12 @@ theorem subtypeDomain_finsupp_sum [Zero N] {s : β →₀ N} {h : β → N → �
 #align finsupp.subtype_domain_finsupp_sum Finsupp.subtypeDomain_finsupp_sum
 
 theorem filter_sum [DecidablePred p] (s : Finset ι) (f : ι → α →₀ M) :
-    (∑ a in s, f a).filter p = ∑ a in s, filter p (f a) :=
+    (∑ a ∈ s, f a).filter p = ∑ a ∈ s, filter p (f a) :=
   map_sum (filterAddHom p) f s
 #align finsupp.filter_sum Finsupp.filter_sum
 
 theorem filter_eq_sum (p : α → Prop) [DecidablePred p] (f : α →₀ M) :
-    f.filter p = ∑ i in f.support.filter p, single i (f i) :=
+    f.filter p = ∑ i ∈ f.support.filter p, single i (f i) :=
   (f.filter p).sum_single.symm.trans <|
     Finset.sum_congr rfl fun x hx => by
       rw [filter_apply_pos _ _ (mem_filter.1 hx).2]
@@ -1182,7 +1180,7 @@ theorem mem_support_multiset_sum [AddCommMonoid M] {s : Multiset (α →₀ M)} 
 #align finsupp.mem_support_multiset_sum Finsupp.mem_support_multiset_sum
 
 theorem mem_support_finset_sum [AddCommMonoid M] {s : Finset ι} {h : ι → α →₀ M} (a : α)
-    (ha : a ∈ (∑ c in s, h c).support) : ∃ c ∈ s, a ∈ (h c).support :=
+    (ha : a ∈ (∑ c ∈ s, h c).support) : ∃ c ∈ s, a ∈ (h c).support :=
   let ⟨_, hf, hfa⟩ := mem_support_multiset_sum a ha
   let ⟨c, hc, Eq⟩ := Multiset.mem_map.1 hf
   ⟨c, hc, Eq.symm ▸ hfa⟩
@@ -1873,7 +1871,7 @@ theorem sigma_support : l.support = l.splitSupport.sigma fun i => (l.split i).su
 #align finsupp.sigma_support Finsupp.sigma_support
 
 theorem sigma_sum [AddCommMonoid N] (f : (Σi : ι, αs i) → M → N) :
-    l.sum f = ∑ i in splitSupport l, (split l i).sum fun (a : αs i) b => f ⟨i, a⟩ b := by
+    l.sum f = ∑ i ∈ splitSupport l, (split l i).sum fun (a : αs i) b => f ⟨i, a⟩ b := by
   simp only [sum, sigma_support, sum_sigma, split_apply]
 #align finsupp.sigma_sum Finsupp.sigma_sum
 

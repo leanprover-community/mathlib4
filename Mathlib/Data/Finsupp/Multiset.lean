@@ -19,8 +19,6 @@ promoted to an order isomorphism.
 
 open Finset
 
-open BigOperators
-
 variable {α β ι : Type*}
 
 namespace Finsupp
@@ -56,12 +54,12 @@ theorem toMultiset_single (a : α) (n : ℕ) : toMultiset (single a n) = n • {
 #align finsupp.to_multiset_single Finsupp.toMultiset_single
 
 theorem toMultiset_sum {f : ι → α →₀ ℕ} (s : Finset ι) :
-    Finsupp.toMultiset (∑ i in s, f i) = ∑ i in s, Finsupp.toMultiset (f i) :=
+    Finsupp.toMultiset (∑ i ∈ s, f i) = ∑ i ∈ s, Finsupp.toMultiset (f i) :=
   map_sum Finsupp.toMultiset _ _
 #align finsupp.to_multiset_sum Finsupp.toMultiset_sum
 
 theorem toMultiset_sum_single (s : Finset ι) (n : ℕ) :
-    Finsupp.toMultiset (∑ i in s, single i n) = n • s.val := by
+    Finsupp.toMultiset (∑ i ∈ s, single i n) = n • s.val := by
   simp_rw [toMultiset_sum, Finsupp.toMultiset_single, sum_nsmul, sum_multiset_singleton]
 #align finsupp.to_multiset_sum_single Finsupp.toMultiset_sum_single
 

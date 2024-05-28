@@ -55,7 +55,7 @@ the literature and turn the order around?
 -/
 
 
-open BigOperators Finset Function
+open Finset Function
 
 variable {α : Type*}
 
@@ -408,7 +408,7 @@ theorem mem_bind : b ∈ (P.bind Q).parts ↔ ∃ A hA, b ∈ (Q A hA).parts := 
 #align finpartition.mem_bind Finpartition.mem_bind
 
 theorem card_bind (Q : ∀ i ∈ P.parts, Finpartition i) :
-    (P.bind Q).parts.card = ∑ A in P.parts.attach, (Q _ A.2).parts.card := by
+    (P.bind Q).parts.card = ∑ A ∈ P.parts.attach, (Q _ A.2).parts.card := by
   apply card_biUnion
   rintro ⟨b, hb⟩ - ⟨c, hc⟩ - hbc
   rw [Finset.disjoint_left]
@@ -513,7 +513,7 @@ theorem exists_subset_part_bijOn : ∃ r ⊆ s, Set.BijOn P.part r P.parts := by
   lift r to Finset α using s.finite_toSet.subset hrs
   exact ⟨r, mod_cast hrs, hr⟩
 
-theorem sum_card_parts : ∑ i in P.parts, i.card = s.card := by
+theorem sum_card_parts : ∑ i ∈ P.parts, i.card = s.card := by
   convert congr_arg Finset.card P.biUnion_parts
   rw [card_biUnion P.supIndep.pairwiseDisjoint]
   rfl

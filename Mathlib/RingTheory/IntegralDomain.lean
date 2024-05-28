@@ -31,7 +31,7 @@ integral domain, finite integral domain, finite field
 
 section
 
-open Finset Polynomial Function BigOperators Nat
+open Finset Polynomial Function Nat
 
 section CancelMonoidWithZero
 
@@ -73,7 +73,7 @@ nonrec
 theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiring R] [IsDomain R]
     [GCDMonoid R] [Unique Rˣ] {n : ℕ} {c : R} {s : Finset ι} {f : ι → R}
     (h : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → IsCoprime (f i) (f j))
-    (hprod : ∏ i in s, f i = c ^ n) : ∀ i ∈ s, ∃ d : R, f i = d ^ n := by
+    (hprod : ∏ i ∈ s, f i = c ^ n) : ∀ i ∈ s, ∃ d : R, f i = d ^ n := by
   classical
     intro i hi
     rw [← insert_erase hi, prod_insert (not_mem_erase i s)] at hprod
@@ -198,19 +198,7 @@ theorem card_fiber_eq_of_mem_range {H : Type*} [Group H] [DecidableEq H] (f : G 
     (univ.filter fun g => f g = x).card = (univ.filter fun g => f g = y).card := by
   rcases hx with ⟨x, rfl⟩
   rcases hy with ⟨y, rfl⟩
-  refine card_congr (fun g _ => g * x⁻¹ * y) ?_ ?_ fun g hg => ⟨g * y⁻¹ * x, ?_⟩
-  · simp (config := { contextual := true }) only [*, mem_filter, one_mul, MonoidHom.map_mul,
-      mem_univ, mul_right_inv, eq_self_iff_true, MonoidHom.map_mul_inv, and_self_iff,
-      forall_true_iff]
-    -- Porting note: added the following `simp`
-    simp only [true_and, map_inv, mul_right_inv, one_mul, and_self, implies_true, forall_const]
-  · simp only [mul_left_inj, imp_self, forall₂_true_iff]
-  · simp only [true_and_iff, mem_filter, mem_univ] at hg
-    simp only [hg, mem_filter, one_mul, MonoidHom.map_mul, mem_univ, mul_right_inv,
-      eq_self_iff_true, exists_prop_of_true, MonoidHom.map_mul_inv, and_self_iff,
-      mul_inv_cancel_right, inv_mul_cancel_right]
-    -- Porting note: added the next line.  It is weird!
-    simp only [map_inv, mul_right_inv, one_mul, and_self, exists_prop]
+  exact card_equiv (Equiv.mulRight (x⁻¹ * y)) (by simp [mul_inv_eq_one])
 #align card_fiber_eq_of_mem_range card_fiber_eq_of_mem_range
 
 /-- In an integral domain, a sum indexed by a nontrivial homomorphism from a finite group is zero.
@@ -233,10 +221,10 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
     let c := (univ.filter fun g => f.toHomUnits g = 1).card
     calc
       ∑ g : G, f g = ∑ g : G, (f.toHomUnits g : R) := rfl
-      _ = ∑ u : Rˣ in univ.image f.toHomUnits,
+      _ = ∑ u ∈ univ.image f.toHomUnits,
             (univ.filter fun g => f.toHomUnits g = u).card • (u : R) :=
         (sum_comp ((↑) : Rˣ → R) f.toHomUnits)
-      _ = ∑ u : Rˣ in univ.image f.toHomUnits, c • (u : R) :=
+      _ = ∑ u ∈ univ.image f.toHomUnits, c • (u : R) :=
         (sum_congr rfl fun u hu => congr_arg₂ _ ?_ rfl)
       -- remaining goal 1, proven below
       -- Porting note: have to change `(b : R)` into `((b : Rˣ) : R)`
@@ -255,7 +243,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
     show (∑ b : MonoidHom.range f.toHomUnits, ((b : Rˣ) : R)) = 0
     calc
       (∑ b : MonoidHom.range f.toHomUnits, ((b : Rˣ) : R))
-        = ∑ n in range (orderOf x), ((x : Rˣ) : R) ^ n :=
+        = ∑ n ∈ range (orderOf x), ((x : Rˣ) : R) ^ n :=
         Eq.symm <|
           sum_nbij (x ^ ·) (by simp only [mem_univ, forall_true_iff])
             (by simpa using pow_injOn_Iio_orderOf)

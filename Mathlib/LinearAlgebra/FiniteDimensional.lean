@@ -280,8 +280,6 @@ variable {K}
 
 section
 
-open BigOperators
-
 open Finset
 
 section
@@ -295,7 +293,7 @@ we can ensure a positive coefficient, not just a nonzero coefficient.
 -/
 theorem exists_relation_sum_zero_pos_coefficient_of_finrank_succ_lt_card [FiniteDimensional L W]
     {t : Finset W} (h : finrank L W + 1 < t.card) :
-    ∃ f : W → L, ∑ e in t, f e • e = 0 ∧ ∑ e in t, f e = 0 ∧ ∃ x ∈ t, 0 < f x := by
+    ∃ f : W → L, ∑ e ∈ t, f e • e = 0 ∧ ∑ e ∈ t, f e = 0 ∧ ∃ x ∈ t, 0 < f x := by
   obtain ⟨f, sum, total, nonzero⟩ :=
     Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card h
   exact ⟨f, sum, total, exists_pos_of_sum_zero_of_exists_nonzero f total nonzero⟩

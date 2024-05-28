@@ -64,8 +64,6 @@ subring, subrings
 -/
 
 
-open BigOperators
-
 universe u v w
 
 variable {R : Type u} {S : Type v} {T : Type w} [Ring R]
@@ -360,14 +358,14 @@ protected theorem multiset_sum_mem {R} [Ring R] (s : Subring R) (m : Multiset R)
 /-- Product of elements of a subring of a `CommRing` indexed by a `Finset` is in the
     subring. -/
 protected theorem prod_mem {R : Type*} [CommRing R] (s : Subring R) {ι : Type*} {t : Finset ι}
-    {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∏ i in t, f i) ∈ s :=
+    {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∏ i ∈ t, f i) ∈ s :=
   prod_mem h
 #align subring.prod_mem Subring.prod_mem
 
 /-- Sum of elements in a `Subring` of a `Ring` indexed by a `Finset`
 is in the `Subring`. -/
 protected theorem sum_mem {R : Type*} [Ring R] (s : Subring R) {ι : Type*} {t : Finset ι}
-    {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∑ i in t, f i) ∈ s :=
+    {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∑ i ∈ t, f i) ∈ s :=
   sum_mem h
 #align subring.sum_mem Subring.sum_mem
 

@@ -62,7 +62,7 @@ universe uι uE uH uM uF
 
 open Function Filter FiniteDimensional Set
 
-open scoped Topology Manifold Classical Filter BigOperators
+open scoped Topology Manifold Classical Filter
 
 noncomputable section
 
@@ -249,15 +249,15 @@ theorem mem_finsupport {i : ι} : i ∈ ρ.finsupport x₀ ↔ i ∈ support fun
 theorem coe_finsupport : (ρ.finsupport x₀ : Set ι) = support fun i ↦ ρ i x₀ :=
   ρ.toPartitionOfUnity.coe_finsupport x₀
 
-theorem sum_finsupport (hx₀ : x₀ ∈ s) : ∑ i in ρ.finsupport x₀, ρ i x₀ = 1 :=
+theorem sum_finsupport (hx₀ : x₀ ∈ s) : ∑ i ∈ ρ.finsupport x₀, ρ i x₀ = 1 :=
   ρ.toPartitionOfUnity.sum_finsupport hx₀
 
 theorem sum_finsupport' (hx₀ : x₀ ∈ s) {I : Finset ι} (hI : ρ.finsupport x₀ ⊆ I) :
-    ∑ i in I, ρ i x₀ = 1 :=
+    ∑ i ∈ I, ρ i x₀ = 1 :=
   ρ.toPartitionOfUnity.sum_finsupport' hx₀ hI
 
 theorem sum_finsupport_smul_eq_finsum {A : Type*} [AddCommGroup A] [Module ℝ A] (φ : ι → M → A) :
-    ∑ i in ρ.finsupport x₀, ρ i x₀ • φ i x₀ = ∑ᶠ i, ρ i x₀ • φ i x₀ :=
+    ∑ i ∈ ρ.finsupport x₀, ρ i x₀ • φ i x₀ = ∑ᶠ i, ρ i x₀ • φ i x₀ :=
   ρ.toPartitionOfUnity.sum_finsupport_smul_eq_finsum φ
 
 end finsupport
@@ -516,14 +516,14 @@ theorem toSmoothPartitionOfUnity_apply (i : ι) (x : M) :
 theorem toSmoothPartitionOfUnity_eq_mul_prod (i : ι) (x : M) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → fs j x ≠ 0 → j ∈ t) :
     fs.toSmoothPartitionOfUnity i x =
-      fs i x * ∏ j in t.filter fun j => WellOrderingRel j i, (1 - fs j x) :=
+      fs i x * ∏ j ∈ t.filter fun j => WellOrderingRel j i, (1 - fs j x) :=
   fs.toBumpCovering.toPartitionOfUnity_eq_mul_prod i x t ht
 #align smooth_bump_covering.to_smooth_partition_of_unity_eq_mul_prod SmoothBumpCovering.toSmoothPartitionOfUnity_eq_mul_prod
 
 theorem exists_finset_toSmoothPartitionOfUnity_eventuallyEq (i : ι) (x : M) :
     ∃ t : Finset ι,
       fs.toSmoothPartitionOfUnity i =ᶠ[𝓝 x]
-        fs i * ∏ j in t.filter fun j => WellOrderingRel j i, ((1 : M → ℝ) - fs j) := by
+        fs i * ∏ j ∈ t.filter fun j => WellOrderingRel j i, ((1 : M → ℝ) - fs j) := by
   -- Porting note: was defeq, now the continuous lemma uses bundled homs
   simpa using fs.toBumpCovering.exists_finset_toPartitionOfUnity_eventuallyEq i x
 #align smooth_bump_covering.exists_finset_to_smooth_partition_of_unity_eventually_eq SmoothBumpCovering.exists_finset_toSmoothPartitionOfUnity_eventuallyEq
