@@ -6,7 +6,7 @@ Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 import Lean.Elab.PreDefinition.Basic
 import Lean.Util.Paths
 import Mathlib.Lean.Expr.Basic
-import Batteries.Tactic.OpenPrivate
+import Std.Tactic.OpenPrivate
 
 /-!
 #

@@ -32,8 +32,6 @@ case the unit and the counit would switch to each other.
 
 -/
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
-
 set_option linter.uppercaseLean3 false
 
 noncomputable section
@@ -218,7 +216,8 @@ theorem toStalk_stalkMap_toΓSpec (x : X) :
       ⟨X.toΓSpecFun x, by rw [basicOpen_one]; trivial⟩]
   rw [← Category.assoc, Category.assoc (toOpen _ _)]
   erw [stalkFunctor_map_germ]
-  rw [← Category.assoc, toΓSpecSheafedSpace_app_spec]
+  -- Porting note: was `rw [← assoc, toΓSpecSheafedSpace_app_spec]`, but Lean did not like it.
+  rw [toΓSpecSheafedSpace_app_spec_assoc]
   unfold ΓToStalk
   rw [← stalkPushforward_germ _ X.toΓSpecBase X.presheaf ⊤]
   congr 1
@@ -293,9 +292,9 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
     symm
     apply LocallyRingedSpace.comp_ring_hom_ext
     · ext1 x
-      dsimp only [Spec.topMap, LocallyRingedSpace.toΓSpecFun]
+      dsimp [Spec.topMap, LocallyRingedSpace.toΓSpecFun]
       -- Porting note: Had to add the next four lines
-      rw [comp_apply]
+      rw [comp_apply, comp_apply]
       dsimp [toΓSpecBase]
       -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before
       -- leanprover/lean4#2644
@@ -319,7 +318,6 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
 
 namespace ΓSpec
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem left_triangle (X : LocallyRingedSpace) :
     SpecΓIdentity.inv.app (Γ.obj (op X)) ≫ (identityToΓSpec.app X).val.c.app (op ⊤) = 𝟙 _ :=
   X.Γ_Spec_left_triangle
@@ -332,7 +330,7 @@ theorem right_triangle (R : CommRingCat) :
       𝟙 _ := by
   apply LocallyRingedSpace.comp_ring_hom_ext
   · ext (p : PrimeSpectrum R)
-    dsimp
+    change _ = p -- Porting note: Had to add this line to make `ext x` work.
     ext x
     erw [← IsLocalization.AtPrime.to_map_mem_maximal_iff ((structureSheaf R).presheaf.stalk p)
         p.asIdeal x]
@@ -396,7 +394,6 @@ theorem adjunction_homEquiv_symm_apply {X : Scheme} {R : CommRingCatᵒᵖ}
   by rw [adjunction_homEquiv]; rfl
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_symm_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_symm_apply
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 theorem adjunction_counit_app {R : CommRingCatᵒᵖ} :
     ΓSpec.adjunction.counit.app R = locallyRingedSpaceAdjunction.counit.app R := by
@@ -479,31 +476,31 @@ instance Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
 
 /-- Spec is a full functor. -/
 instance : Spec.toLocallyRingedSpace.Full  :=
-  ΓSpec.locallyRingedSpaceAdjunction.R_full_of_counit_isIso
+  R_full_of_counit_isIso ΓSpec.locallyRingedSpaceAdjunction
 
 instance Spec.full : Scheme.Spec.Full  :=
-  ΓSpec.adjunction.R_full_of_counit_isIso
+  R_full_of_counit_isIso ΓSpec.adjunction
 #align algebraic_geometry.Spec.full AlgebraicGeometry.Spec.full
 
 /-- Spec is a faithful functor. -/
 instance : Spec.toLocallyRingedSpace.Faithful :=
-  ΓSpec.locallyRingedSpaceAdjunction.R_faithful_of_counit_isIso
+  R_faithful_of_counit_isIso ΓSpec.locallyRingedSpaceAdjunction
 
 instance Spec.faithful : Scheme.Spec.Faithful :=
-  ΓSpec.adjunction.R_faithful_of_counit_isIso
+  R_faithful_of_counit_isIso ΓSpec.adjunction
 #align algebraic_geometry.Spec.faithful AlgebraicGeometry.Spec.faithful
 
-instance : Spec.toLocallyRingedSpace.IsRightAdjoint  :=
-  (ΓSpec.locallyRingedSpaceAdjunction).isRightAdjoint
+instance : IsRightAdjoint Spec.toLocallyRingedSpace :=
+  ⟨_, ΓSpec.locallyRingedSpaceAdjunction⟩
 
-instance : Scheme.Spec.IsRightAdjoint  :=
-  (ΓSpec.adjunction).isRightAdjoint
+instance : IsRightAdjoint Scheme.Spec :=
+  ⟨_, ΓSpec.adjunction⟩
 
-instance : Reflective Spec.toLocallyRingedSpace where
-  adj := ΓSpec.locallyRingedSpaceAdjunction
+instance : Reflective Spec.toLocallyRingedSpace :=
+  ⟨⟩
 
-instance Spec.reflective : Reflective Scheme.Spec where
-  adj := ΓSpec.adjunction
+instance Spec.reflective : Reflective Scheme.Spec :=
+  ⟨⟩
 #align algebraic_geometry.Spec.reflective AlgebraicGeometry.Spec.reflective
 
 end AlgebraicGeometry

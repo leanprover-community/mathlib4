@@ -41,7 +41,8 @@ variable {C D : Type*} [Category C] [Category D] [Preadditive C] (L : C ⥤ D)
 namespace MorphismProperty
 
 /-- The opposite of a left fraction. -/
-abbrev LeftFraction.neg {X Y : C} (φ : W.LeftFraction X Y) :
+@[reducible]
+def LeftFraction.neg {X Y : C} (φ : W.LeftFraction X Y) :
     W.LeftFraction X Y where
   Y' := φ.Y'
   f := -φ.f
@@ -53,7 +54,8 @@ namespace LeftFraction₂
 variable {X Y : C} (φ : W.LeftFraction₂ X Y)
 
 /-- The sum of two left fractions with the same denominator. -/
-abbrev add : W.LeftFraction X Y where
+@[reducible]
+def add : W.LeftFraction X Y where
   Y' := φ.Y'
   f := φ.f + φ.f'
   s := φ.s

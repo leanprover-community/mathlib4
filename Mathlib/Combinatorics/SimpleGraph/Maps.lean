@@ -196,7 +196,8 @@ adjacency relation. This gives a map between `SimpleGraph V` and `SimpleGraph s`
 There is also a notion of induced subgraphs (see `SimpleGraph.subgraph.induce`). -/
 /-- Restrict a graph to the vertices in the set `s`, deleting all edges incident to vertices
 outside the set. This is a wrapper around `SimpleGraph.comap`. -/
-abbrev induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
+@[reducible]
+def induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
   G.comap (Function.Embedding.subtype _)
 #align simple_graph.induce SimpleGraph.induce
 
@@ -206,7 +207,8 @@ abbrev induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
 /-- Given a graph on a set of vertices, we can make it be a `SimpleGraph V` by
 adding in the remaining vertices without adding in any additional edges.
 This is a wrapper around `SimpleGraph.map`. -/
-abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : SimpleGraph V :=
+@[reducible]
+def spanningCoe {s : Set V} (G : SimpleGraph s) : SimpleGraph V :=
   G.map (Function.Embedding.subtype _)
 #align simple_graph.spanning_coe SimpleGraph.spanningCoe
 
@@ -397,7 +399,8 @@ def mapEdgeSet : G.edgeSet ↪ G'.edgeSet where
 
 /-- A graph embedding induces an embedding of neighbor sets. -/
 @[simps]
-def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v) where
+def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v)
+    where
   toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.2⟩
   inj' := by
     rintro ⟨w₁, h₁⟩ ⟨w₂, h₂⟩ h
@@ -434,12 +437,14 @@ theorem map_apply (f : V ↪ W) (G : SimpleGraph V) (v : V) :
 
 Note that if `G.induce s = ⊤` (i.e., if `s` is a clique) then this gives the embedding of a
 complete graph. -/
-protected abbrev induce (s : Set V) : G.induce s ↪g G :=
+@[reducible]
+protected def induce (s : Set V) : G.induce s ↪g G :=
   SimpleGraph.Embedding.comap (Function.Embedding.subtype _) G
 #align simple_graph.embedding.induce SimpleGraph.Embedding.induce
 
 /-- Graphs on a set of vertices embed in their `spanningCoe`. -/
-protected abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanningCoe :=
+@[reducible]
+protected def spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanningCoe :=
   SimpleGraph.Embedding.map (Function.Embedding.subtype _) G
 #align simple_graph.embedding.spanning_coe SimpleGraph.Embedding.spanningCoe
 
@@ -553,7 +558,8 @@ theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w
 
 /-- An isomorphism of graphs induces an equivalence of edge sets. -/
 @[simps]
-def mapEdgeSet : G.edgeSet ≃ G'.edgeSet where
+def mapEdgeSet : G.edgeSet ≃ G'.edgeSet
+    where
   toFun := Hom.mapEdgeSet f
   invFun := Hom.mapEdgeSet f.symm
   left_inv := by
@@ -574,7 +580,8 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet where
 
 /-- A graph isomorphism induces an equivalence of neighbor sets. -/
 @[simps]
-def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v) where
+def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v)
+    where
   toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.2⟩
   invFun w :=
     ⟨f.symm w, by

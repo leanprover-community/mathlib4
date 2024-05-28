@@ -57,7 +57,8 @@ This differs from `HasQuotient.quotient'` in that the `A` argument is
  explicit, which is necessary to make Lean show the notation in the
  goal state.
 -/
-abbrev HasQuotient.Quotient (A : outParam <| Type u) {B : Type v}
+@[reducible]
+def HasQuotient.Quotient (A : outParam <| Type u) {B : Type v}
     [HasQuotient A B] (b : B) : Type max u v :=
   HasQuotient.quotient' b
 #align has_quotient.quotient HasQuotient.Quotient

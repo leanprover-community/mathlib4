@@ -6,9 +6,9 @@ Authors: Mario Carneiro, Kyle Miller
 import Mathlib.Lean.Elab.Term
 import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Tactic.ScopedNS
-import Batteries.Linter.UnreachableTactic
-import Batteries.Util.ExtendedBinder
-import Batteries.Lean.Syntax
+import Std.Linter.UnreachableTactic
+import Std.Util.ExtendedBinder
+import Std.Lean.Syntax
 
 /-!
 # The notation3 macro, simulating Lean 3's notation.
@@ -19,7 +19,7 @@ import Batteries.Lean.Syntax
 
 namespace Mathlib.Notation3
 open Lean Parser Meta Elab Command PrettyPrinter.Delaborator SubExpr
-open Batteries.ExtendedBinder
+open Std.ExtendedBinder
 
 initialize registerTraceClass `notation3
 
@@ -177,7 +177,7 @@ def matchTypeOf (matchTy : Matcher) : Matcher := fun s => do
 
 /-- Matches raw nat lits. -/
 def natLitMatcher (n : Nat) : Matcher := fun s => do
-  guard <| (← getExpr).rawNatLit? == n
+  guard <| (← getExpr).natLit? == n
   return s
 
 /-- Matches applications. -/

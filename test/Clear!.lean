@@ -1,4 +1,4 @@
-import Mathlib.Tactic.ClearExclamation
+import Mathlib.Tactic.Clear!
 
 -- Most basic test
 example (delete_this : Nat) (_delete_this_dep : delete_this = delete_this) : Nat := by

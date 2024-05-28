@@ -26,7 +26,7 @@ error: value mismatch
 has value
   id
 but is expected to have value
-  fun z ↦ z.exp'.lim
+  fun z ↦ CauSeq.lim (Complex.exp' z)
 -/
 #guard_msgs in recall Complex.exp : ℂ → ℂ := id
 

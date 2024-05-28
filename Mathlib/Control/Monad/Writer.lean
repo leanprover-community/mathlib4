@@ -26,7 +26,8 @@ set_option autoImplicit true
 def WriterT (ω : Type u) (M : Type u → Type v) (α : Type u) : Type v :=
   M (α × ω)
 
-abbrev Writer ω := WriterT ω Id
+@[reducible]
+def Writer ω := WriterT ω Id
 
 class MonadWriter (ω : outParam (Type u)) (M : Type u → Type v) where
   tell : ω → M PUnit

@@ -15,10 +15,9 @@ The R-algebra structure on `(i : I) → A i` when each `A i` is an R-algebra.
 
 ## Main definitions
 
-* `Prod.algebra`
-* `AlgHom.fst`
-* `AlgHom.snd`
-* `AlgHom.prod`
+* `Pi.algebra`
+* `Pi.evalAlgHom`
+* `Pi.constAlgHom`
 -/
 
 
@@ -99,7 +98,8 @@ theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/
 @[simps]
-def prodEquiv : (A →ₐ[R] B) × (A →ₐ[R] C) ≃ (A →ₐ[R] B × C) where
+def prodEquiv : (A →ₐ[R] B) × (A →ₐ[R] C) ≃ (A →ₐ[R] B × C)
+    where
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
   left_inv f := by ext <;> rfl

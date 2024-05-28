@@ -589,7 +589,7 @@ theorem trans_assoc (ePP₂ : P ≃ᵃⁱ[𝕜] P₂) (eP₂G : P₂ ≃ᵃⁱ[�
 #align affine_isometry_equiv.trans_assoc AffineIsometryEquiv.trans_assoc
 
 /-- The group of affine isometries of a `NormedAddTorsor`, `P`. -/
-instance instGroup : Group (P ≃ᵃⁱ[𝕜] P) where
+instance : Group (P ≃ᵃⁱ[𝕜] P) where
   mul e₁ e₂ := e₂.trans e₁
   one := refl _ _
   inv := symm

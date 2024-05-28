@@ -58,9 +58,9 @@ any remaining goals (note that in `conv` mode, every goal can be solved for by `
 then it uses the resulting `lhs = rhs` proof to rewrite the goal in the surrounding normal
 tactic mode.
 
-## Conv tactics from Lean 4, Batteries, and Mathlib
+## Conv tactics from Lean 4, Std4, and Mathlib4
 
-Unless they're annotated with "Batteries" or "Mathlib", the following tactics are defined
+Unless they're annotated with "Std4" or "Mathlib", the following tactics are defined
 in Lean 4 core.
 
 ### Control
@@ -157,7 +157,7 @@ in Lean 4 core.
 * `change t` changes the expression to `t` if the expression and `t` are definitionally equal.
 
 * `equals t => tacticSeq` changes the current expression, say `e`, to `t`, and asks you to prove
-   the equality `e = t`. (Batteries)
+   the equality `e = t`. (Std4)
 
 * `rw [thms...]` rewrites the expression using the given theorems. The syntax is similar to `rw`.
 
@@ -175,7 +175,7 @@ in Lean 4 core.
 * `refine e` applies `e` to the goal (which remember is `⊢ lhs = ?rhs`) using the `refine` tactic.
   Strange results may occur if the placeholders in `e` are not equalities.
 
-* `exact e` closes the goal, where `e : lhs = ?rhs`. (Batteries)
+* `exact e` closes the goal, where `e : lhs = ?rhs`. (Std4)
 
 * Mathlib provides a number of tactics as `conv` tactics:
   * `abel` and `abel_nf`
@@ -214,10 +214,9 @@ and expands all local variables).
 
 * `fail_if_success convSeq` fails if the `conv` sequence succeeds.
 
-* `guard_expr` and `guard_target` for asserting that certain expressions are equal to others.
-  (Batteries)
+* `guard_expr` and `guard_target` for asserting that certain expressions are equal to others. (Std4)
 
-* `unreachable!`, which is the same as the `unreachable!` tactic. (Batteriess)
+* `unreachable!`, which is the same as the `unreachable!` tactic. (Std4)
 
 * `run_tac doSeq` evaluates a monadic value and runs it as a tactic using `tactic'`. (Mathlib)
 

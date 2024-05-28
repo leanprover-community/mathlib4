@@ -6,7 +6,7 @@ Authors: Tomas Skrivan
 import Lean
 import Qq
 
-import Batteries.Lean.Expr
+import Std.Lean.Expr
 import Mathlib.Tactic.FunProp.Mor
 
 /-!

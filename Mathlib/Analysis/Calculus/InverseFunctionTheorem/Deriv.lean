@@ -25,7 +25,8 @@ namespace HasStrictDerivAt
 variable (f' a : 𝕜) (hf : HasStrictDerivAt f f' a) (hf' : f' ≠ 0)
 
 /-- A function that is inverse to `f` near `a`. -/
-abbrev localInverse : 𝕜 → 𝕜 :=
+@[reducible]
+def localInverse : 𝕜 → 𝕜 :=
   (hf.hasStrictFDerivAt_equiv hf').localInverse _ _ _
 #align has_strict_deriv_at.local_inverse HasStrictDerivAt.localInverse
 

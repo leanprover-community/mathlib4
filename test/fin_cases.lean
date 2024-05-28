@@ -1,6 +1,6 @@
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Data.Nat.Interval
 
 example {x : Nat} (h : x ∈ [0, 2, 37]) : x ≤ 57 := by
   fin_cases h

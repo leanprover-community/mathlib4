@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
+Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
@@ -32,7 +32,8 @@ def ContMDiffMap :=
 #align cont_mdiff_map ContMDiffMap
 
 /-- Bundled smooth maps. -/
-abbrev SmoothMap :=
+@[reducible]
+def SmoothMap :=
   ContMDiffMap I I' M M' ⊤
 #align smooth_map SmoothMap
 

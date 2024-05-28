@@ -490,7 +490,8 @@ instance : skeletalFunctor.EssSurj where
         show f (f.symm i) ≤ f (f.symm j)
         simpa only [OrderIso.apply_symm_apply]⟩⟩
 
-noncomputable instance isEquivalence : skeletalFunctor.IsEquivalence where
+noncomputable instance isEquivalence : skeletalFunctor.IsEquivalence :=
+  Functor.IsEquivalence.ofFullyFaithfullyEssSurj skeletalFunctor
 #align simplex_category.skeletal_functor.is_equivalence SimplexCategory.SkeletalFunctor.isEquivalence
 
 end SkeletalFunctor
@@ -505,7 +506,7 @@ end Skeleton
 
 /-- `SimplexCategory` is a skeleton of `NonemptyFinLinOrd`.
 -/
-lemma isSkeletonOf :
+noncomputable def isSkeletonOf :
     IsSkeletonOf NonemptyFinLinOrd SimplexCategory skeletalFunctor where
   skel := skeletal
   eqv := SkeletalFunctor.isEquivalence
@@ -725,7 +726,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
     rcases hθ with ⟨x, y, ⟨h₁, h₂⟩⟩
     by_cases h : x < y
     · exact ⟨x, y, ⟨h₁, h⟩⟩
-    · refine ⟨y, x, ⟨h₁.symm, ?_⟩⟩
+    · refine' ⟨y, x, ⟨h₁.symm, _⟩⟩
       rcases lt_or_eq_of_le (not_lt.mp h) with h' | h'
       · exact h'
       · exfalso

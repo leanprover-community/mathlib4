@@ -102,7 +102,8 @@ noncomputable def liftCycles {A : C} (k : A ⟶ K.X i) (j : ι) (hj : c.next i =
 
 /-- The morphism to `K.cycles i` that is induced by a "cycle", i.e. a morphism
 to `K.X i` whose postcomposition with the differential is zero. -/
-noncomputable abbrev liftCycles' {A : C} (k : A ⟶ K.X i) (j : ι) (hj : c.Rel i j)
+@[reducible]
+noncomputable def liftCycles' {A : C} (k : A ⟶ K.X i) (j : ι) (hj : c.Rel i j)
     (hk : k ≫ K.d i j = 0) : A ⟶ K.cycles i :=
   K.liftCycles k j (c.next_eq' hj) hk
 
@@ -203,7 +204,8 @@ noncomputable def descOpcycles {A : C} (k : K.X i ⟶ A) (j : ι) (hj : c.prev i
 
 /-- The morphism from `K.opcycles i` that is induced by an "opcycle", i.e. a morphism
 from `K.X i` whose precomposition with the differential is zero. -/
-noncomputable abbrev descOpcycles' {A : C} (k : K.X i ⟶ A) (j : ι) (hj : c.Rel j i)
+@[reducible]
+noncomputable def descOpcycles' {A : C} (k : K.X i ⟶ A) (j : ι) (hj : c.Rel j i)
     (hk : K.d j i ≫ k = 0) : K.opcycles i ⟶ A :=
   K.descOpcycles k j (c.prev_eq' hj) hk
 

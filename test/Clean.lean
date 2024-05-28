@@ -1,5 +1,5 @@
 import Mathlib.Tactic.Clean
-import Batteries
+import Std
 
 namespace Tests
 

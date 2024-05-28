@@ -53,7 +53,7 @@ variable {A : Matrix n n R}
 
 open Matrix Polynomial
 
-open scoped Matrix
+open scoped Matrix BigOperators
 
 namespace Matrix
 

@@ -5,7 +5,7 @@ Authors: Tomas Skrivan
 -/
 import Lean
 import Mathlib.Data.FunLike.Basic
-import Mathlib.Tactic.FunProp.ToBatteries
+import Mathlib.Tactic.FunProp.ToStd
 
 
 /-!

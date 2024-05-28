@@ -37,6 +37,8 @@ namespace Finset
 
 variable {ι μ μ' : Type*}
 
+open scoped BigOperators
+
 open Function Finsupp
 
 section Fin

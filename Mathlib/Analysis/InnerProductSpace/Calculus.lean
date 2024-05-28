@@ -30,7 +30,7 @@ noncomputable section
 
 open RCLike Real Filter
 
-open scoped Classical Topology
+open scoped BigOperators Classical Topology
 
 section DerivInner
 

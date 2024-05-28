@@ -7,7 +7,7 @@ import Mathlib.Data.Num.Basic
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Order.LinearOrder
 import Mathlib.Util.CompileInductive
-import Batteries.Data.RBMap.Basic
+import Std.Data.RBMap.Basic
 
 #align_import data.tree from "leanprover-community/mathlib"@"ed989ff568099019c6533a4d94b27d852a5710d8"
 
@@ -21,10 +21,6 @@ to be defined and is better suited for in-kernel computation.
 We also specialize for `Tree Unit`, which is a binary tree without any
 additional data. We provide the notation `a △ b` for making a `Tree Unit` with children
 `a` and `b`.
-
-## TODO
-
-Implement a `Traversable` instance for `Tree`.
 
 ## References
 
@@ -51,7 +47,7 @@ variable {α : Type u}
 instance : Inhabited (Tree α) :=
   ⟨nil⟩
 
-open Batteries (RBNode)
+open Std (RBNode)
 
 /-- Makes a `Tree α` out of a red-black tree. -/
 def ofRBNode : RBNode α → Tree α
@@ -91,7 +87,7 @@ def getOrElse (n : PosNum) (t : Tree α) (v : α) : α :=
 #align tree.get_or_else Tree.getOrElse
 
 /-- Apply a function to each value in the tree.  This is the `map` function for the `Tree` functor.
--/
+TODO: implement `Traversable Tree`. -/
 def map {β} (f : α → β) : Tree α → Tree β
   | nil => nil
   | node a l r => node (f a) (map f l) (map f r)

@@ -38,7 +38,7 @@ universe u v w
 
 noncomputable section
 
-open Module MonoidAlgebra
+open Module MonoidAlgebra BigOperators
 
 /-!
 We now do the key calculation in Maschke's theorem.

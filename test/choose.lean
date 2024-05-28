@@ -1,4 +1,4 @@
-import Batteries.Util.ExtendedBinder
+import Std.Util.ExtendedBinder
 import Mathlib.Tactic.Choose
 
 /-!

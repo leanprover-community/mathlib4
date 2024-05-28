@@ -3,7 +3,7 @@ Copyright (c) 2024 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Batteries.Data.RBMap.Alter
+import Std.Data.RBMap.Alter
 
 import Mathlib.Tactic.FunProp.Decl
 import Mathlib.Tactic.FunProp.Types
@@ -196,8 +196,7 @@ private local instance : Ord Name := ⟨Name.quickCmp⟩
 /-- -/
 structure FunctionTheorems where
   /-- map: function name → function property → function theorem -/
-  theorems :
-    Batteries.RBMap Name (Batteries.RBMap Name (Array FunctionTheorem) compare) compare := {}
+  theorems : Std.RBMap Name (Std.RBMap Name (Array FunctionTheorem) compare) compare := {}
   deriving Inhabited
 
 

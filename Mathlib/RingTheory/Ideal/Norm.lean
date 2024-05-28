@@ -49,6 +49,8 @@ the norms of elements in `I`.
 -/
 
 
+open scoped BigOperators
+
 open scoped nonZeroDivisors
 
 section abs_norm

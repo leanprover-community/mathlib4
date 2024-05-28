@@ -556,7 +556,8 @@ section RightAlgebra
 
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
 `S` on `S ⊗[R] S` would be ambiguous. -/
-abbrev rightAlgebra : Algebra B (A ⊗[R] B) :=
+@[reducible]
+def rightAlgebra : Algebra B (A ⊗[R] B) :=
   (Algebra.TensorProduct.includeRight.toRingHom : B →+* A ⊗[R] B).toAlgebra
 #align algebra.tensor_product.right_algebra Algebra.TensorProduct.rightAlgebra
 
@@ -1101,7 +1102,7 @@ section baseChange
 
 open LinearMap
 
-variable [Fintype ι]
+variable [Fintype ι] [DecidableEq ι]
 variable {ι' N : Type*} [Fintype ι'] [DecidableEq ι'] [AddCommMonoid N] [Module R N]
 variable (A : Type*) [CommSemiring A] [Algebra R A]
 
@@ -1112,8 +1113,6 @@ lemma _root_.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι' R N) 
   conv_lhs => simp only [basis_apply, baseChange_tmul]
   simp_rw [Basis.linearMap_apply_apply, basis_apply]
   split <;> simp only [TensorProduct.tmul_zero]
-
-variable [DecidableEq ι]
 
 lemma _root_.Basis.baseChange_end (b : Basis ι R M) (ij : ι × ι) :
     baseChange A (b.end ij) = (basis A b).end ij :=

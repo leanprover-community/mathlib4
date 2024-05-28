@@ -6,7 +6,7 @@ Authors: Simon Hudon, Kyle Miller, Damiano Testa
 import Lean.Elab.Tactic.ElabTerm
 import Lean.Meta.Tactic.Cleanup
 import Lean.PrettyPrinter
-import Batteries.Lean.Meta.Inaccessible
+import Std.Lean.Meta.Inaccessible
 
 /-!
 #  `extract_goal`: Format the current goal as a stand-alone example
@@ -47,10 +47,10 @@ example {z : Int} : ∃ n : Nat, ↑n = z := by
   apply int_eq_nat  -- works
 ```
 
-However, importing `Batteries.Classes.Cast`, makes `extract_goal` produce a different theorem
+However, importing `Std.Classes.Cast`, makes `extract_goal` produce a different theorem
 
 ```lean
-import Batteries.Classes.Cast
+import Std.Classes.Cast
 
 -- `theorem extracted_1` is the output of the `extract_goal` from the example below
 -- the type ascription is erased and the `↑` is untouched:

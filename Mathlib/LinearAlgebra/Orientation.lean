@@ -36,6 +36,8 @@ that index type is a `Fintype` and there exists a basis of the same cardinality.
 
 noncomputable section
 
+open BigOperators
+
 section OrderedCommSemiring
 
 variable (R : Type*) [StrictOrderedCommSemiring R]

@@ -16,7 +16,7 @@ respect to some affine basis.
 -/
 
 
-open Affine Matrix
+open Affine BigOperators Matrix
 
 open Set
 

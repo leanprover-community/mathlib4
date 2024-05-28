@@ -36,7 +36,8 @@ structure Unique (α : Sort u) extends Inhabited α where
 
 /-- Construct `unique` from `inhabited` and `subsingleton`. Making this an instance would create
 a loop in the class inheritance graph. -/
-abbrev Unique.mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
+@[reducible]
+def Unique.mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
   { h₁ with uniq := fun _ => Subsingleton.elim _ _ }
 
 noncomputable example {α : Sort u} [Subsingleton α] [Nonempty α] : Unique α := by

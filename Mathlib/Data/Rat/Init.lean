@@ -8,7 +8,7 @@ import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.TypeStar
-import Batteries.Classes.RatCast
+import Std.Classes.RatCast
 
 #align_import data.rat.init from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
 
@@ -17,7 +17,7 @@ import Batteries.Classes.RatCast
 
 This file declares `ℚ` notation for the rationals and defines the nonnegative rationals `ℚ≥0`.
 
-This file is eligible to upstreaming to Batteries.
+This file is eligible to upstreaming to Std.
 -/
 
 @[inherit_doc] notation "ℚ" => Rat
@@ -69,11 +69,11 @@ instance Rat.instNNRatCast : NNRatCast ℚ := ⟨Subtype.val⟩
 namespace NNRat
 
 /-- The numerator of a nonnegative rational. -/
-def num (q : ℚ≥0) : ℕ := (q : ℚ).num.natAbs
+@[pp_dot] def num (q : ℚ≥0) : ℕ := (q : ℚ).num.natAbs
 #align nnrat.num NNRat.num
 
 /-- The denominator of a nonnegative rational. -/
-def den (q : ℚ≥0) : ℕ := (q : ℚ).den
+@[pp_dot] def den (q : ℚ≥0) : ℕ := (q : ℚ).den
 #align nnrat.denom NNRat.den
 
 @[simp] lemma num_mk (q : ℚ) (hq : 0 ≤ q) : num ⟨q, hq⟩ = q.num.natAbs := rfl

@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.Algebra.Star.Unitary
 import Mathlib.RingTheory.Int.Basic
-import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Tactic.Ring
+import Mathlib.Algebra.Star.Unitary
 
 #align_import number_theory.zsqrtd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -350,12 +349,23 @@ theorem mul_star {x y : ℤ} : (⟨x, y⟩ * star ⟨x, y⟩ : ℤ√d) = x * x 
   ext <;> simp [sub_eq_add_neg, mul_comm]
 #align zsqrtd.mul_star Zsqrtd.mul_star
 
-@[deprecated (since := "2024-05-25")] alias coe_int_add := Int.cast_add
-@[deprecated (since := "2024-05-25")] alias coe_int_sub := Int.cast_sub
-@[deprecated (since := "2024-05-25")] alias coe_int_mul := Int.cast_mul
-@[deprecated (since := "2024-05-25")] alias coe_int_inj := Int.cast_inj
+protected theorem coe_int_add (m n : ℤ) : (↑(m + n) : ℤ√d) = ↑m + ↑n :=
+  Int.cast_add m n
+#align zsqrtd.coe_int_add Zsqrtd.coe_int_add
 
-theorem intCast_dvd (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z ∣ a.im := by
+protected theorem coe_int_sub (m n : ℤ) : (↑(m - n) : ℤ√d) = ↑m - ↑n :=
+  Int.cast_sub m n
+#align zsqrtd.coe_int_sub Zsqrtd.coe_int_sub
+
+protected theorem coe_int_mul (m n : ℤ) : (↑(m * n) : ℤ√d) = ↑m * ↑n :=
+  Int.cast_mul m n
+#align zsqrtd.coe_int_mul Zsqrtd.coe_int_mul
+
+protected theorem coe_int_inj {m n : ℤ} (h : (↑m : ℤ√d) = ↑n) : m = n := by
+  simpa using congr_arg re h
+#align zsqrtd.coe_int_inj Zsqrtd.coe_int_inj
+
+theorem coe_int_dvd_iff (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z ∣ a.im := by
   constructor
   · rintro ⟨x, rfl⟩
     simp only [add_zero, intCast_re, zero_mul, mul_im, dvd_mul_right, and_self_iff,
@@ -364,20 +374,17 @@ theorem intCast_dvd (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z �
     use ⟨r, i⟩
     rw [smul_val, Zsqrtd.ext_iff]
     exact ⟨hr, hi⟩
-#align zsqrtd.coe_int_dvd_iff Zsqrtd.intCast_dvd
+#align zsqrtd.coe_int_dvd_iff Zsqrtd.coe_int_dvd_iff
 
 @[simp, norm_cast]
-theorem intCast_dvd_intCast (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b := by
-  rw [intCast_dvd]
+theorem coe_int_dvd_coe_int (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b := by
+  rw [coe_int_dvd_iff]
   constructor
   · rintro ⟨hre, -⟩
     rwa [intCast_re] at hre
   · rw [intCast_re, intCast_im]
     exact fun hc => ⟨hc, dvd_zero a⟩
-#align zsqrtd.coe_int_dvd_coe_int Zsqrtd.intCast_dvd_intCast
-
-@[deprecated (since := "2024-05-25")] alias coe_int_dvd_iff := intCast_dvd
-@[deprecated (since := "2024-05-25")] alias coe_int_dvd_coe_int := intCast_dvd_intCast
+#align zsqrtd.coe_int_dvd_coe_int Zsqrtd.coe_int_dvd_coe_int
 
 protected theorem eq_of_smul_eq_smul_left {a : ℤ} {b c : ℤ√d} (ha : a ≠ 0) (h : ↑a * b = a * c) :
     b = c := by
@@ -405,9 +412,9 @@ theorem coprime_of_dvd_coprime {a b : ℤ√d} (hcoprime : IsCoprime a.re a.im) 
   · rintro z hz - hzdvdu hzdvdv
     apply hz
     obtain ⟨ha, hb⟩ : z ∣ a.re ∧ z ∣ a.im := by
-      rw [← intCast_dvd]
+      rw [← coe_int_dvd_iff]
       apply dvd_trans _ hdvd
-      rw [intCast_dvd]
+      rw [coe_int_dvd_iff]
       exact ⟨hzdvdu, hzdvdv⟩
     exact hcoprime.isUnit_of_dvd' ha hb
 #align zsqrtd.coprime_of_dvd_coprime Zsqrtd.coprime_of_dvd_coprime
@@ -416,7 +423,7 @@ theorem exists_coprime_of_gcd_pos {a : ℤ√d} (hgcd : 0 < Int.gcd a.re a.im) :
     ∃ b : ℤ√d, a = ((Int.gcd a.re a.im : ℤ) : ℤ√d) * b ∧ IsCoprime b.re b.im := by
   obtain ⟨re, im, H1, Hre, Him⟩ := Int.exists_gcd_one hgcd
   rw [mul_comm] at Hre Him
-  refine ⟨⟨re, im⟩, ?_, ?_⟩
+  refine' ⟨⟨re, im⟩, _, _⟩
   · rw [smul_val, ← Hre, ← Him]
   · rw [← Int.gcd_eq_one_iff_coprime, H1]
 #align zsqrtd.exists_coprime_of_gcd_pos Zsqrtd.exists_coprime_of_gcd_pos
@@ -450,7 +457,7 @@ theorem sqLe_cancel {c d x y z w : ℕ} (zw : SqLe y d x c) (h : SqLe (x + z) c 
     SqLe z c w d := by
   apply le_of_not_gt
   intro l
-  refine not_le_of_gt ?_ h
+  refine' not_le_of_gt _ h
   simp only [SqLe, mul_add, mul_comm, mul_left_comm, add_assoc, gt_iff_lt]
   have hm := sqLe_add_mixed zw (le_of_lt l)
   simp only [SqLe, mul_assoc, gt_iff_lt] at l zw
@@ -468,12 +475,12 @@ theorem sqLe_mul {d x y z w : ℕ} :
       (SqLe x 1 y d → SqLe w d z 1 → SqLe (x * z + d * y * w) 1 (x * w + y * z) d) ∧
         (SqLe y d x 1 → SqLe z 1 w d → SqLe (x * z + d * y * w) 1 (x * w + y * z) d) ∧
           (SqLe y d x 1 → SqLe w d z 1 → SqLe (x * w + y * z) d (x * z + d * y * w) 1) := by
-  refine ⟨?_, ?_, ?_, ?_⟩ <;>
+  refine' ⟨_, _, _, _⟩ <;>
     · intro xy zw
       have :=
         Int.mul_nonneg (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le xy))
           (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
-      refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
+      refine' Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg _)
       convert this using 1
       simp only [one_mul, Int.ofNat_add, Int.ofNat_mul]
       ring
@@ -563,14 +570,14 @@ theorem norm_eq_mul_conj (n : ℤ√d) : (norm n : ℤ√d) = n * star n := by
 theorem norm_neg (x : ℤ√d) : (-x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  Int.cast_inj.1 <| by rw [norm_eq_mul_conj, star_neg, neg_mul_neg, norm_eq_mul_conj]
+  Zsqrtd.coe_int_inj <| by rw [norm_eq_mul_conj, star_neg, neg_mul_neg, norm_eq_mul_conj]
 #align zsqrtd.norm_neg Zsqrtd.norm_neg
 
 @[simp]
 theorem norm_conj (x : ℤ√d) : (star x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  Int.cast_inj.1 <| by rw [norm_eq_mul_conj, star_star, mul_comm, norm_eq_mul_conj]
+  Zsqrtd.coe_int_inj <| by rw [norm_eq_mul_conj, star_star, mul_comm, norm_eq_mul_conj]
 #align zsqrtd.norm_conj Zsqrtd.norm_conj
 
 theorem norm_nonneg (hd : d ≤ 0) (n : ℤ√d) : 0 ≤ n.norm :=
@@ -694,15 +701,15 @@ theorem Nonneg.add {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a +
   rcases nonneg_cases ha with ⟨x, y, rfl | rfl | rfl⟩ <;>
     rcases nonneg_cases hb with ⟨z, w, rfl | rfl | rfl⟩
   · trivial
-  · refine nonnegg_cases_right fun i h => sqLe_of_le ?_ ?_ (nonnegg_pos_neg.1 hb)
+  · refine' nonnegg_cases_right fun i h => sqLe_of_le _ _ (nonnegg_pos_neg.1 hb)
     · dsimp only at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro y (by simp [add_comm, *])))
     · apply Nat.le_add_left
-  · refine nonnegg_cases_left fun i h => sqLe_of_le ?_ ?_ (nonnegg_neg_pos.1 hb)
+  · refine' nonnegg_cases_left fun i h => sqLe_of_le _ _ (nonnegg_neg_pos.1 hb)
     · dsimp only at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro x (by simp [add_comm, *])))
     · apply Nat.le_add_left
-  · refine nonnegg_cases_right fun i h => sqLe_of_le ?_ ?_ (nonnegg_pos_neg.1 ha)
+  · refine' nonnegg_cases_right fun i h => sqLe_of_le _ _ (nonnegg_pos_neg.1 ha)
     · dsimp only at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro w (by simp [*])))
     · apply Nat.le_add_right
@@ -714,7 +721,7 @@ theorem Nonneg.add {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a +
     -- simpa [add_comm] using
     --   nonnegg_pos_neg.2 (sqLe_add (nonnegg_pos_neg.1 ha) (nonnegg_pos_neg.1 hb))
   · exact nonneg_add_lem ha hb
-  · refine nonnegg_cases_left fun i h => sqLe_of_le ?_ ?_ (nonnegg_neg_pos.1 ha)
+  · refine' nonnegg_cases_left fun i h => sqLe_of_le _ _ (nonnegg_neg_pos.1 ha)
     · dsimp only at h
       exact Int.ofNat_le.1 (le_of_neg_le_neg (Int.le.intro _ h))
     · apply Nat.le_add_right
@@ -770,7 +777,7 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
     | ⟨Int.ofNat x, -[y+1]⟩ => ⟨0, y + 1, by simp [add_def, Int.negSucc_coe, add_assoc]; trivial⟩
     | ⟨-[x+1], Int.ofNat y⟩ => ⟨x + 1, 0, by simp [Int.negSucc_coe, add_assoc]; trivial⟩
     | ⟨-[x+1], -[y+1]⟩ => ⟨x + 1, y + 1, by simp [Int.negSucc_coe, add_assoc]; trivial⟩
-  refine ⟨x + d * y, h.trans ?_⟩
+  refine' ⟨x + d * y, h.trans _⟩
   change Nonneg ⟨↑x + d * y - ↑x, 0 - ↑y⟩
   cases' y with y
   · simp
@@ -1008,7 +1015,7 @@ instance : OrderedRing (ℤ√d) := by infer_instance
 end
 
 theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
-  refine ⟨fun ha => (Zsqrtd.ext_iff _ _).mpr ?_, fun h => by rw [h, norm_zero]⟩
+  refine' ⟨fun ha => (Zsqrtd.ext_iff _ _).mpr _, fun h => by rw [h, norm_zero]⟩
   dsimp only [norm] at ha
   rw [sub_eq_zero] at ha
   by_cases h : 0 ≤ d

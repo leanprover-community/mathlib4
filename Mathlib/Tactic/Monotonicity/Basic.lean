@@ -24,7 +24,7 @@ for this in Lean 3 was `mono*`. Both `mono` and `mono*` implement this behavior 
 -/
 
 open Lean Elab Tactic Parser Tactic
-open Tactic SolveByElim
+open Std Tactic SolveByElim
 
 namespace Mathlib.Tactic.Monotonicity
 

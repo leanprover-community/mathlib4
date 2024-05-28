@@ -113,7 +113,8 @@ variable {M : Type*} {N : Type*} {mM : MulOneClass M} {mN : MulOneClass N}
 
 /-- Interpret a map `f : M → N` as a homomorphism `M →* N`. -/
 @[to_additive "Interpret a map `f : M → N` as a homomorphism `M →+ N`."]
-def of {f : M → N} (h : IsMonoidHom f) : M →* N where
+def of {f : M → N} (h : IsMonoidHom f) : M →* N
+    where
   toFun := f
   map_one' := h.2
   map_mul' := h.1.1
@@ -411,7 +412,8 @@ namespace Units
 variable {M : Type*} {N : Type*} [Monoid M] [Monoid N]
 
 /-- The group homomorphism on units induced by a multiplicative morphism. -/
-abbrev map' {f : M → N} (hf : IsMonoidHom f) : Mˣ →* Nˣ :=
+@[reducible]
+def map' {f : M → N} (hf : IsMonoidHom f) : Mˣ →* Nˣ :=
   map (MonoidHom.of hf)
 #align units.map' Units.map'
 

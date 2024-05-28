@@ -59,12 +59,14 @@ variable {F : Type u₀ → Type u₁ → Type u₂} [Bifunctor F]
 namespace Bifunctor
 
 /-- Left map of a bifunctor. -/
-abbrev fst {α α' β} (f : α → α') : F α β → F α' β :=
+@[reducible]
+def fst {α α' β} (f : α → α') : F α β → F α' β :=
   bimap f id
 #align bifunctor.fst Bifunctor.fst
 
 /-- Right map of a bifunctor. -/
-abbrev snd {α β β'} (f : β → β') : F α β → F α β' :=
+@[reducible]
+def snd {α β β'} (f : β → β') : F α β → F α β' :=
   bimap id f
 #align bifunctor.snd Bifunctor.snd
 

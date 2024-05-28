@@ -43,7 +43,8 @@ which is helpful for constructing a left adjoint to `G`.
 -/
 @[simps]
 def leftAdjointOfStructuredArrowInitialsAux (A : C) (B : D) :
-    ((⊥_ StructuredArrow A G).right ⟶ B) ≃ (A ⟶ G.obj B) where
+    ((⊥_ StructuredArrow A G).right ⟶ B) ≃ (A ⟶ G.obj B)
+    where
   toFun g := (⊥_ StructuredArrow A G).hom ≫ G.map g
   invFun f := CommaMorphism.right (initial.to (StructuredArrow.mk f))
   left_inv g := by
@@ -75,8 +76,10 @@ def adjunctionOfStructuredArrowInitials : leftAdjointOfStructuredArrowInitials G
 #align category_theory.adjunction_of_structured_arrow_initials CategoryTheory.adjunctionOfStructuredArrowInitials
 
 /-- If each structured arrow category on `G` has an initial object, `G` is a right adjoint. -/
-lemma isRightAdjointOfStructuredArrowInitials : G.IsRightAdjoint where
-  exists_leftAdjoint := ⟨_, ⟨adjunctionOfStructuredArrowInitials G⟩⟩
+def isRightAdjointOfStructuredArrowInitials : IsRightAdjoint G
+    where
+  left := _
+  adj := adjunctionOfStructuredArrowInitials G
 #align category_theory.is_right_adjoint_of_structured_arrow_initials CategoryTheory.isRightAdjointOfStructuredArrowInitials
 
 end OfInitials
@@ -91,7 +94,8 @@ which is helpful for constructing a right adjoint to `G`.
 -/
 @[simps]
 def rightAdjointOfCostructuredArrowTerminalsAux (B : D) (A : C) :
-    (G.obj B ⟶ A) ≃ (B ⟶ (⊤_ CostructuredArrow G A).left) where
+    (G.obj B ⟶ A) ≃ (B ⟶ (⊤_ CostructuredArrow G A).left)
+    where
   toFun g := CommaMorphism.left (terminal.from (CostructuredArrow.mk g))
   invFun g := G.map g ≫ (⊤_ CostructuredArrow G A).hom
   left_inv := by aesop_cat
@@ -124,10 +128,11 @@ def adjunctionOfCostructuredArrowTerminals : G ⊣ rightAdjointOfCostructuredArr
 #align category_theory.adjunction_of_costructured_arrow_terminals CategoryTheory.adjunctionOfCostructuredArrowTerminals
 
 /-- If each costructured arrow category on `G` has a terminal object, `G` is a left adjoint. -/
-lemma isLeftAdjoint_of_costructuredArrowTerminals : G.IsLeftAdjoint where
-  exists_rightAdjoint :=
-    ⟨rightAdjointOfCostructuredArrowTerminals G, ⟨Adjunction.adjunctionOfEquivRight _ _⟩⟩
-#align category_theory.is_left_adjoint_of_costructured_arrow_terminals CategoryTheory.isLeftAdjoint_of_costructuredArrowTerminals
+def isLeftAdjointOfCostructuredArrowTerminals : IsLeftAdjoint G
+    where
+  right := rightAdjointOfCostructuredArrowTerminals G
+  adj := Adjunction.adjunctionOfEquivRight _ _
+#align category_theory.is_left_adjoint_of_costructured_arrow_terminals CategoryTheory.isLeftAdjointOfCostructuredArrowTerminals
 
 end OfTerminals
 
@@ -138,7 +143,8 @@ variable {F : C ⥤ D}
 /-- Given a left adjoint to `G`, we can construct an initial object in each structured arrow
 category on `G`. -/
 def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
-    IsInitial (StructuredArrow.mk (h.unit.app A) : StructuredArrow A G) where
+    IsInitial (StructuredArrow.mk (h.unit.app A) : StructuredArrow A G)
+    where
   desc B := StructuredArrow.homMk ((h.homEquiv _ _).symm B.pt.hom)
   uniq s m _ := by
     apply StructuredArrow.ext
@@ -151,7 +157,8 @@ def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
 /-- Given a right adjoint to `F`, we can construct a terminal object in each costructured arrow
 category on `F`. -/
 def mkTerminalOfRightAdjoint (h : F ⊣ G) (A : D) :
-    IsTerminal (CostructuredArrow.mk (h.counit.app A) : CostructuredArrow F A) where
+    IsTerminal (CostructuredArrow.mk (h.counit.app A) : CostructuredArrow F A)
+    where
   lift B := CostructuredArrow.homMk (h.homEquiv _ _ B.pt.hom)
   uniq s m _ := by
     apply CostructuredArrow.ext
@@ -162,16 +169,16 @@ def mkTerminalOfRightAdjoint (h : F ⊣ G) (A : D) :
 
 end
 
-theorem isRightAdjoint_iff_hasInitial_structuredArrow {G : D ⥤ C} :
-    G.IsRightAdjoint ↔ ∀ A, HasInitial (StructuredArrow A G) :=
-  ⟨fun _ A => (mkInitialOfLeftAdjoint _ (Adjunction.ofIsRightAdjoint G) A).hasInitial,
-    fun _ => isRightAdjointOfStructuredArrowInitials _⟩
-#align category_theory.nonempty_is_right_adjoint_iff_has_initial_structured_arrow CategoryTheory.isRightAdjoint_iff_hasInitial_structuredArrow
+theorem nonempty_isRightAdjoint_iff_hasInitial_structuredArrow {G : D ⥤ C} :
+    Nonempty (IsRightAdjoint G) ↔ ∀ A, HasInitial (StructuredArrow A G) :=
+  ⟨fun ⟨h⟩ A => (mkInitialOfLeftAdjoint _ h.adj A).hasInitial, fun _ =>
+    ⟨isRightAdjointOfStructuredArrowInitials _⟩⟩
+#align category_theory.nonempty_is_right_adjoint_iff_has_initial_structured_arrow CategoryTheory.nonempty_isRightAdjoint_iff_hasInitial_structuredArrow
 
-theorem isLeftAdjoint_iff_hasTerminal_costructuredArrow {F : C ⥤ D} :
-    F.IsLeftAdjoint ↔ ∀ A, HasTerminal (CostructuredArrow F A) :=
-  ⟨fun _ A => (mkTerminalOfRightAdjoint _ (Adjunction.ofIsLeftAdjoint F) A).hasTerminal,
-    fun _ => isLeftAdjoint_of_costructuredArrowTerminals _⟩
-#align category_theory.nonempty_is_left_adjoint_iff_has_terminal_costructured_arrow CategoryTheory.isLeftAdjoint_iff_hasTerminal_costructuredArrow
+theorem nonempty_isLeftAdjoint_iff_hasTerminal_costructuredArrow {F : C ⥤ D} :
+    Nonempty (IsLeftAdjoint F) ↔ ∀ A, HasTerminal (CostructuredArrow F A) :=
+  ⟨fun ⟨h⟩ A => (mkTerminalOfRightAdjoint _ h.adj A).hasTerminal, fun _ =>
+    ⟨isLeftAdjointOfCostructuredArrowTerminals _⟩⟩
+#align category_theory.nonempty_is_left_adjoint_iff_has_terminal_costructured_arrow CategoryTheory.nonempty_isLeftAdjoint_iff_hasTerminal_costructuredArrow
 
 end CategoryTheory

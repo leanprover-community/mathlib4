@@ -85,7 +85,8 @@ protected theorem IsRegular.disjoint_compl_right_iff (hb : IsRegular b) : Disjoi
 
 -- See note [reducible non-instances]
 /-- A Heyting algebra with regular excluded middle is a boolean algebra. -/
-abbrev _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) : BooleanAlgebra α :=
+@[reducible]
+def _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) : BooleanAlgebra α :=
   have : ∀ a : α, IsCompl a aᶜ := fun a =>
     ⟨disjoint_compl_right,
       codisjoint_iff.2 <| by erw [← (h a), compl_sup, inf_compl_eq_bot, compl_bot]⟩
@@ -202,7 +203,8 @@ theorem toRegular_coe (a : Regular α) : toRegular (a : α) = a :=
 #align heyting.regular.to_regular_coe Heyting.Regular.toRegular_coe
 
 /-- The Galois insertion between `Regular.toRegular` and `coe`. -/
-def gi : GaloisInsertion toRegular ((↑) : Regular α → α) where
+def gi : GaloisInsertion toRegular ((↑) : Regular α → α)
+    where
   choice a ha := ⟨a, ha.antisymm le_compl_compl⟩
   gc _ b :=
     coe_le_coe.symm.trans <|

@@ -12,7 +12,6 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 # Multiplication by a nonzero element in a `GroupWithZero` is a permutation.
 -/
 
-assert_not_exists DenselyOrdered
 
 variable {G : Type*}
 

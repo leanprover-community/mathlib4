@@ -6,8 +6,8 @@ Authors: Scott Morrison
 import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Init.Logic
 import Mathlib.Tactic.Constructor
-import Batteries.Tactic.PermuteGoals
-import Batteries.Test.Internal.DummyLabelAttr
+import Std.Tactic.PermuteGoals
+import Std.Test.Internal.DummyLabelAttr
 
 set_option autoImplicit true
 

@@ -3,7 +3,9 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.UniformSpace.UniformEmbedding
+import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Topology.UniformSpace.Separation
+import Mathlib.Topology.DenseEmbedding
 
 #align_import topology.uniform_space.complete_separated from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
@@ -18,7 +20,7 @@ open Filter
 
 open Topology Filter
 
-variable {α β : Type*}
+variable {α : Type*}
 
 /-- In a separated space, a complete set is closed. -/
 theorem IsComplete.isClosed [UniformSpace α] [T0Space α] {s : Set α} (h : IsComplete s) :
@@ -29,11 +31,6 @@ theorem IsComplete.isClosed [UniformSpace α] [T0Space α] {s : Set α} (h : IsC
     rcases h f this inf_le_right with ⟨y, ys, fy⟩
     rwa [(tendsto_nhds_unique' ha inf_le_left fy : a = y)]
 #align is_complete.is_closed IsComplete.isClosed
-
-theorem UniformEmbedding.toClosedEmbedding [UniformSpace α] [UniformSpace β] [CompleteSpace α]
-    [T0Space β] {f : α → β} (hf : UniformEmbedding f) :
-    ClosedEmbedding f :=
-  ⟨hf.embedding, hf.toUniformInducing.isComplete_range.isClosed⟩
 
 namespace DenseInducing
 

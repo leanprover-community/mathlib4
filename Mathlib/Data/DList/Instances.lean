@@ -19,7 +19,7 @@ for `DList`.
 
 open Function Equiv
 
-namespace Batteries
+namespace Std
 
 variable (α : Type*)
 
@@ -30,7 +30,7 @@ def DList.listEquivDList : List α ≃ DList α := by
       { toFun := DList.ofList
         invFun := DList.toList.. } <;>
     simp [Function.RightInverse, Function.LeftInverse, DList.toList_ofList, DList.ofList_toList]
-#align dlist.list_equiv_dlist Batteries.DList.listEquivDList
+#align dlist.list_equiv_dlist Std.DList.listEquivDList
 
 instance : Traversable DList :=
   Equiv.traversable DList.listEquivDList
@@ -41,4 +41,4 @@ instance : LawfulTraversable DList :=
 instance {α} : Inhabited (DList α) :=
   ⟨DList.empty⟩
 
-end Batteries
+end Std

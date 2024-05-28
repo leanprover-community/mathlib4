@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
 import Lean
-import Batteries
+import Std
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma

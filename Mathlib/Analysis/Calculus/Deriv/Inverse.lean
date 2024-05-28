@@ -27,7 +27,7 @@ derivative, inverse function
 universe u v w
 
 open scoped Classical
-open Topology Filter ENNReal
+open Topology BigOperators Filter ENNReal
 
 open Filter Asymptotics Set
 

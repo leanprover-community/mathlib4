@@ -22,6 +22,8 @@ results that the order of `G` is invertible in `k` (e. g. `k` has characteristic
 
 suppress_compilation
 
+open scoped BigOperators
+
 open MonoidAlgebra
 
 open Representation

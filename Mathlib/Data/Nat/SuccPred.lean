@@ -3,7 +3,6 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Fin.Basic
 import Mathlib.Order.SuccPred.Basic
 
@@ -22,11 +21,13 @@ namespace Nat
 variable {m n : ℕ}
 
 -- so that Lean reads `Nat.succ` through `succ_order.succ`
-@[instance] abbrev instSuccOrder  : SuccOrder ℕ :=
+@[reducible]
+instance : SuccOrder ℕ :=
   SuccOrder.ofSuccLeIff succ Nat.succ_le
 
 -- so that Lean reads `Nat.pred` through `pred_order.pred`
-@[instance] abbrev instPredOrder : PredOrder ℕ where
+@[reducible]
+instance : PredOrder ℕ where
   pred := pred
   pred_le := pred_le
   min_of_le_pred {a} ha := by

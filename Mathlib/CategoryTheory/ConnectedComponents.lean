@@ -144,7 +144,8 @@ instance : (decomposedTo J).Faithful where
 
 instance : (decomposedTo J).EssSurj where mem_essImage j := ⟨⟨_, j, rfl⟩, ⟨Iso.refl _⟩⟩
 
-instance : (decomposedTo J).IsEquivalence where
+instance : (decomposedTo J).IsEquivalence :=
+  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
 
 -- Porting note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]
 /-- This gives that any category is equivalent to a disjoint union of connected categories. -/

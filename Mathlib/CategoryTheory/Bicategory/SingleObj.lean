@@ -86,19 +86,14 @@ def endMonoidalStarFunctor : MonoidalFunctor (EndMonoidal (MonoidalSingleObj.sta
 when we promote a monoidal category to a single object bicategory,
 and the original monoidal category.
 -/
-@[simps functor inverse_obj inverse_map unitIso counitIso]
-noncomputable def endMonoidalStarFunctorEquivalence :
-    EndMonoidal (MonoidalSingleObj.star C) ≌ C where
-  functor := (endMonoidalStarFunctor C).toFunctor
+noncomputable def endMonoidalStarFunctorIsEquivalence :
+    (endMonoidalStarFunctor C).IsEquivalence where
   inverse :=
     { obj := fun X => X
       map := fun f => f }
-  unitIso := Iso.refl _
-  counitIso := Iso.refl _
-
-instance endMonoidalStarFunctor_isEquivalence : (endMonoidalStarFunctor C).IsEquivalence :=
-  (endMonoidalStarFunctorEquivalence C).isEquivalence_functor
-#align category_theory.monoidal_single_obj.End_monoidal_star_functor_is_equivalence CategoryTheory.MonoidalSingleObj.endMonoidalStarFunctor_isEquivalence
+  unitIso := NatIso.ofComponents fun X => asIso (𝟙 _)
+  counitIso := NatIso.ofComponents fun X => asIso (𝟙 _)
+#align category_theory.monoidal_single_obj.End_monoidal_star_functor_is_equivalence CategoryTheory.MonoidalSingleObj.endMonoidalStarFunctorIsEquivalence
 
 end MonoidalSingleObj
 

@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
+Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
@@ -96,7 +96,8 @@ open scoped Derivation
 
 /-- The derivations at a point of a manifold. Some regard this as a possible definition of the
 tangent space -/
-abbrev PointDerivation (x : M) :=
+@[reducible]
+def PointDerivation (x : M) :=
   Derivation 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜
 #align point_derivation PointDerivation
 

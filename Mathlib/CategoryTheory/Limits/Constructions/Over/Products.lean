@@ -35,7 +35,8 @@ namespace ConstructProducts
 Given a product diagram in `C/B`, construct the corresponding wide pullback diagram
 in `C`.
 -/
-abbrev widePullbackDiagramOfDiagramOver (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
+@[reducible]
+def widePullbackDiagramOfDiagramOver (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
     WidePullbackShape J ⥤ C :=
   WidePullbackShape.wideCospan B (fun j => (F.obj ⟨j⟩).left) fun j => (F.obj ⟨j⟩).hom
 #align category_theory.over.construct_products.wide_pullback_diagram_of_diagram_over CategoryTheory.Over.ConstructProducts.widePullbackDiagramOfDiagramOver
@@ -130,7 +131,7 @@ theorem has_over_limit_discrete_of_widePullback_limit {B : C} (F : Discrete J �
     [HasLimit (widePullbackDiagramOfDiagramOver B F)] : HasLimit F :=
   HasLimit.mk
     { cone := _
-      isLimit := IsLimit.ofRightAdjoint (conesEquiv B F).symm.toAdjunction
+      isLimit := IsLimit.ofRightAdjoint (conesEquiv B F).functor
         (limit.isLimit (widePullbackDiagramOfDiagramOver B F)) }
 #align category_theory.over.construct_products.has_over_limit_discrete_of_wide_pullback_limit CategoryTheory.Over.ConstructProducts.has_over_limit_discrete_of_widePullback_limit
 

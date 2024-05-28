@@ -1,5 +1,5 @@
 import Mathlib.Tactic.Relation.Trans
-import Batteries.Data.Nat.Lemmas
+import Std.Data.Nat.Lemmas
 
 set_option autoImplicit true
 -- testing that the attribute is recognized and used

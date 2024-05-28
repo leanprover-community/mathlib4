@@ -24,7 +24,7 @@ when `C` is a preadditive category with finite coproducts, and get an isomorphis
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Category CategoryTheory.Preadditive
   CategoryTheory.Idempotents Opposite AlgebraicTopology AlgebraicTopology.DoldKan
-  Simplicial DoldKan
+  BigOperators Simplicial DoldKan
 
 namespace SimplicialObject
 

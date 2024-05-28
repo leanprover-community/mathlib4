@@ -83,7 +83,8 @@ def StateListT.run' [Functor m] (x : StateListT σ m α) (s : σ) : m (List α) 
   StateList.toList' <$> x s
 
 /-- The combined state and list monad. -/
-abbrev StateListM (σ α : Type u) : Type u := StateListT σ Id α
+@[reducible]
+def StateListM (σ α : Type u) : Type u := StateListT σ Id α
 
 namespace StateListT
 section

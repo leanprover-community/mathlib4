@@ -83,7 +83,7 @@ for which Lean does not generate compiled code by default
 (since it is not used 99% of the time).
 -/
 elab tk:"compile_def% " i:ident : command => Command.liftTermElabM do
-  let n ← realizeGlobalConstNoOverloadWithInfo i
+  let n ← resolveGlobalConstNoOverloadWithInfo i
   if isCompiled (← getEnv) n then
     logWarningAt tk m!"already compiled {n}"
     return
@@ -220,15 +220,13 @@ so that `Foo.rec` can be used in a definition
 without having to mark the definition as `noncomputable`.
 -/
 elab tk:"compile_inductive% " i:ident : command => Command.liftTermElabM do
-  let n ← realizeGlobalConstNoOverloadWithInfo i
+  let n ← resolveGlobalConstNoOverloadWithInfo i
   let iv ← withRef i <| getConstInfoInduct n
   withRef tk <| compileInductive iv
 
 end Mathlib.Util
 
--- `Nat.rec` already has a `@[csimp]` lemma in Lean.
-compile_def% Nat.recOn
-compile_def% Nat.brecOn
+compile_inductive% Nat
 compile_inductive% List
 compile_inductive% PUnit
 compile_inductive% PEmpty

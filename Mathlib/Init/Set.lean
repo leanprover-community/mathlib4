@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Lean.Parser.Term
-import Batteries.Util.ExtendedBinder
+import Std.Util.ExtendedBinder
 import Mathlib.Mathport.Rename
 
 /-!
@@ -34,7 +34,7 @@ This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean
 
 -/
 
-open Batteries.ExtendedBinder
+open Std.ExtendedBinder
 
 set_option autoImplicit true
 
@@ -96,7 +96,7 @@ def setOf.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun ($x:ident : $ty:term) ↦ $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
 
-open Batteries.ExtendedBinder in
+open Std.ExtendedBinder in
 /--
 `{ f x y | (x : X) (y : Y) }` is notation for the set of elements `f x y` constructed from the
 binders `x` and `y`, equivalent to `{z : Z | ∃ x y, f x y = z}`.

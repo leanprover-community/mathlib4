@@ -3,7 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Module
+import Mathlib.Condensed.Abelian
 
 /-!
 
@@ -22,10 +22,8 @@ instance : HasLimits CondensedSet.{u} := by
 
 instance : HasLimitsOfSize.{u} CondensedSet.{u} := hasLimitsOfSizeShrink.{u, u+1, u+1, u} _
 
-variable (R : Type (u+1)) [Ring R]
-
-instance : HasLimits (CondensedMod.{u} R) := by
+instance : HasLimits CondensedAb.{u} := by
   change HasLimits (Sheaf _ _)
   infer_instance
 
-instance : HasLimitsOfSize.{u} (CondensedMod.{u} R) := hasLimitsOfSizeShrink.{u, u+1, u+1, u} _
+instance : HasLimitsOfSize.{u} CondensedAb.{u} := hasLimitsOfSizeShrink.{u, u+1, u+1, u} _

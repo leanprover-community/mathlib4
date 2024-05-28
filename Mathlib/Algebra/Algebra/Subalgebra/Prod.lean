@@ -21,7 +21,7 @@ In this file we define the product of two subalgebras as a subalgebra of the pro
 
 namespace Subalgebra
 
-open Algebra
+open BigOperators Algebra
 
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 variable (S : Subalgebra R A) (S₁ : Subalgebra R B)

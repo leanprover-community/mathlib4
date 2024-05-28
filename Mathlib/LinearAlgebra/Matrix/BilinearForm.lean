@@ -52,6 +52,8 @@ section Matrix
 
 variable {n o : Type*}
 
+open BigOperators
+
 open Finset LinearMap Matrix
 
 open Matrix

@@ -130,10 +130,11 @@ private def CacheM.getContext : IO CacheM.Context := do
   let root ← CacheM.mathlibDepPath
   return ⟨root, .ofList [
     ("Mathlib", root),
+    ("MathlibExtras", root),
     ("Archive", root),
     ("Counterexamples", root),
     ("Aesop", LAKEPACKAGESDIR / "aesop"),
-    ("Batteries", LAKEPACKAGESDIR / "batteries"),
+    ("Std", LAKEPACKAGESDIR / "std"),
     ("Cli", LAKEPACKAGESDIR / "Cli"),
     ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
     ("Qq", LAKEPACKAGESDIR / "Qq"),
@@ -292,7 +293,6 @@ def mkBuildPaths (path : FilePath) : CacheM <| List (FilePath × Bool) := do
     (packageDir / LIBDIR / path.withExtension "olean.hash", true),
     (packageDir / LIBDIR / path.withExtension "ilean", true),
     (packageDir / LIBDIR / path.withExtension "ilean.hash", true),
-    (packageDir / LIBDIR / path.withExtension "log.json", true),
     (packageDir / IRDIR  / path.withExtension "c", true),
     (packageDir / IRDIR  / path.withExtension "c.hash", true),
     (packageDir / LIBDIR / path.withExtension "extra", false)]
@@ -344,6 +344,8 @@ def isPathFromMathlib (path : FilePath) : Bool :=
   match path.components with
   | "Mathlib" :: _ => true
   | ["Mathlib.lean"] => true
+  | "MathlibExtras" :: _ => true
+  | ["MathlibExtras.lean"] => true
   | _ => false
 
 /-- Decompresses build files into their respective folders -/

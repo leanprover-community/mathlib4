@@ -51,7 +51,8 @@ This is not registered as an instance because it introduces a type class loop be
 and `OrderedCommSemiring`, and it seem loops still cause issues sometimes.
 
 See note [reducible non-instances]. -/
-abbrev toOrderedCommSemiring (R : Type*) [CommSemiring R] [PartialOrder R]
+@[reducible]
+def toOrderedCommSemiring (R : Type*) [CommSemiring R] [PartialOrder R]
     [StarRing R] [StarOrderedRing R] : OrderedCommSemiring R where
   add_le_add_left _ _ := add_le_add_left
   zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
@@ -65,7 +66,8 @@ This is not registered as an instance because it introduces a type class loop be
 and `OrderedCommSemiring`, and it seem loops still cause issues sometimes.
 
 See note [reducible non-instances]. -/
-abbrev toOrderedCommRing (R : Type*) [CommRing R] [PartialOrder R]
+@[reducible]
+def toOrderedCommRing (R : Type*) [CommRing R] [PartialOrder R]
     [StarRing R] [StarOrderedRing R] : OrderedCommRing R where
   add_le_add_left _ _ := add_le_add_left
   zero_le_one := by simpa using star_mul_self_nonneg (1 : R)

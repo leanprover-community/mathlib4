@@ -23,14 +23,13 @@ a functor decomposes into an essentially surjective functor and a fully faithful
 -/
 
 
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe v₁ v₂ u₁ u₂
 
 noncomputable section
 
 namespace CategoryTheory
 
-variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
-  [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E] {F : C ⥤ D}
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] {F : C ⥤ D}
 
 namespace Functor
 
@@ -173,10 +172,6 @@ theorem essSurj_of_surj (h : Function.Surjective F.obj) : EssSurj F where
 
 lemma essSurj_of_iso {F G : C ⥤ D} [EssSurj F] (α : F ≅ G) : EssSurj G where
   mem_essImage Y := Functor.essImage.ofNatIso α (EssSurj.mem_essImage Y)
-
-instance essSurj_comp (F : C ⥤ D) (G : D ⥤ E) [F.EssSurj] [G.EssSurj] :
-    (F ⋙ G).EssSurj where
-  mem_essImage Z := ⟨_, ⟨G.mapIso (F.objObjPreimageIso _) ≪≫ G.objObjPreimageIso Z⟩⟩
 
 end Functor
 

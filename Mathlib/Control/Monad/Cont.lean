@@ -48,7 +48,8 @@ def ContT (r : Type u) (m : Type u → Type v) (α : Type w) :=
   (α → m r) → m r
 #align cont_t ContT
 
-abbrev Cont (r : Type u) (α : Type w) :=
+@[reducible]
+def Cont (r : Type u) (α : Type w) :=
   ContT r id α
 #align cont Cont
 

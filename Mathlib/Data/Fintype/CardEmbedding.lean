@@ -5,6 +5,7 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Logic.Equiv.Embedding
+import Mathlib.Logic.Embedding.Set
 
 #align_import data.fintype.card_embedding from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
@@ -21,7 +22,7 @@ local notation "‖" x "‖" => Fintype.card x
 
 open Function
 
-open Nat
+open Nat BigOperators
 
 namespace Fintype
 
@@ -47,7 +48,7 @@ theorem card_embedding_eq {α β : Type*} [Fintype α] [Fintype β] [emb : Finty
     rw [card_option, Nat.descFactorial_succ, card_congr (Embedding.optionEmbeddingEquiv γ β),
         card_sigma, ← ih]
     simp only [Fintype.card_compl_set, Fintype.card_range, Finset.sum_const, Finset.card_univ,
-      Nat.nsmul_eq_mul, mul_comm]
+      smul_eq_mul, mul_comm]
 #align fintype.card_embedding_eq Fintype.card_embedding_eq
 
 /-- The cardinality of embeddings from an infinite type to a finite type is zero.

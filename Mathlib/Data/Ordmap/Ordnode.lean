@@ -135,8 +135,9 @@ def size : Ordnode α → ℕ
   | node sz _ _ _ => sz
 #align ordnode.size Ordnode.size
 
--- Porting note(#11647): during the port we marked these lemmas with `@[eqns]`
--- to emulate the old Lean 3 behaviour.
+-- Adaptation note:
+-- During the port we marked these lemmas with `@[eqns]` to emulate the old Lean 3 behaviour.
+-- See https://github.com/leanprover-community/mathlib4/issues/11647
 
 @[simp] theorem size_nil : size (nil : Ordnode α) = 0 :=
   rfl

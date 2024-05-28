@@ -25,7 +25,7 @@ noncomputable section
 
 universe u v v' w
 
-open Cardinal Basis Submodule Function Set DirectSum FiniteDimensional
+open BigOperators Cardinal Basis Submodule Function Set DirectSum FiniteDimensional
 
 section Tower
 
@@ -216,8 +216,10 @@ noncomputable def finBasis [Module.Finite R M] :
 #align finite_dimensional.fin_basis FiniteDimensional.finBasis
 
 /-- A rank `n` free module has a basis indexed by `Fin n`. -/
-noncomputable def finBasisOfFinrankEq [Module.Finite R M] {n : ℕ} (hn : finrank R M = n) :
-    Basis (Fin n) R M := (finBasis R M).reindex (finCongr hn)
+noncomputable def finBasisOfFinrankEq [Module.Finite R M]
+    {n : ℕ} (hn : finrank R M = n) :
+    Basis (Fin n) R M :=
+  (finBasis R M).reindex (Fin.castIso hn).toEquiv
 #align finite_dimensional.fin_basis_of_finrank_eq FiniteDimensional.finBasisOfFinrankEq
 
 variable {R M}

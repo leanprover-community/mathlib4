@@ -32,7 +32,8 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
 /-- If `C` is monoidal and skeletal, it is a monoid.
 See note [reducible non-instances]. -/
-abbrev monoidOfSkeletalMonoidal (hC : Skeletal C) : Monoid C where
+@[reducible]
+def monoidOfSkeletalMonoidal (hC : Skeletal C) : Monoid C where
   mul X Y := (X ⊗ Y : C)
   one := (𝟙_ C : C)
   one_mul X := hC ⟨λ_ X⟩
@@ -57,7 +58,7 @@ The skeleton of a monoidal category can be viewed as a monoid, where the multipl
 the tensor product, and satisfies the monoid axioms since it is a skeleton.
 -/
 noncomputable instance instMonoid : Monoid (Skeleton C) :=
-  monoidOfSkeletalMonoidal (skeleton_isSkeleton _).skel
+  monoidOfSkeletalMonoidal (skeletonIsSkeleton _).skel
 
 /-- The skeleton of a braided monoidal category has a braided monoidal structure itself, induced by
 the equivalence. -/
@@ -71,7 +72,7 @@ multiplication is given by the tensor product, and satisfies the monoid axioms s
 skeleton.
 -/
 noncomputable instance instCommMonoid [BraidedCategory C] : CommMonoid (Skeleton C) :=
-  commMonoidOfSkeletalBraided (skeleton_isSkeleton _).skel
+  commMonoidOfSkeletalBraided (skeletonIsSkeleton _).skel
 
 end Skeleton
 

@@ -79,7 +79,8 @@ arbitrarily invent the `a : α` term. Nevertheless, these instances are all
 equivalent by `Unique.Subsingleton.unique`.
 
 See note [reducible non-instances]. -/
-abbrev uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α where
+@[reducible]
+def uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α where
   default := a
   uniq _ := Subsingleton.elim _ _
 #align unique_of_subsingleton uniqueOfSubsingleton
@@ -152,7 +153,8 @@ instance subsingleton_unique : Subsingleton (Unique α) :=
 
 /-- Construct `Unique` from `Inhabited` and `Subsingleton`. Making this an instance would create
 a loop in the class inheritance graph. -/
-abbrev mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
+@[reducible]
+def mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
   { h₁ with uniq := fun _ ↦ Subsingleton.elim _ _ }
 #align unique.mk' Unique.mk'
 
@@ -254,7 +256,7 @@ theorem uniqueElim_const {β : Sort*} {_ : Unique ι} (x : β) (i : ι) :
 
 end Pi
 
--- TODO: Mario turned this off as a simp lemma in Batteries, wanting to profile it.
+-- TODO: Mario turned this off as a simp lemma in Std, wanting to profile it.
 attribute [local simp] eq_iff_true_of_subsingleton in
 theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bijective f := by
   rw [Function.bijective_iff_has_inverse]
