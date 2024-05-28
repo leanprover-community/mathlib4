@@ -237,7 +237,7 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   · simp only [cospan_one, pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
     erw [pullbackFst_apply, hx₁]
     rw [← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl, comp_apply (g := g₁)]
-    rfl -- now `rfl` after #13170
+    rfl -- `rfl` was not needed before #13170
   · simp only [cospan_left, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
     erw [hx₁] -- now `erw` after #13170
