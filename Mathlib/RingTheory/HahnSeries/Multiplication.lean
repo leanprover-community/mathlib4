@@ -133,7 +133,7 @@ instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ R V) where
     isPWO_support' :=
         haveI h :
           { a : Γ |
-              (∑ ij : Γ × Γ ∈ addAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
+              (∑ ij ∈ addAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
                   x.coeff ij.fst • y.coeff ij.snd) ≠ 0 } ⊆
             { a : Γ |
                 (addAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a).Nonempty } := by
