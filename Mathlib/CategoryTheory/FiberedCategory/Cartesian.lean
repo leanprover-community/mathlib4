@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.FiberedCategory.HomLift
 
 # Fibered categories
 
-This file defines what it means for a functor `p : 𝒳 ⥤ 𝒮` to be fibered`.
+This file defines cartesian resp. strongly cartesian arrows in a based category.
 
 ## Main definitions
 
@@ -368,12 +368,6 @@ noncomputable def isoOfBaseIso (p : 𝒳 ⥤ 𝒮) {R R' S : 𝒮} {a a' b : �
   -- TODO: make this cleaner...
   inv := @inducedMap _ _ _ _ p _ _ _ _ f' φ' _ _ _ _ _ (congrArg (g.inv ≫ ·) h.symm) φ
     (by simp; infer_instance)
-
--- /-- The canonical isomorphism between the domains of two cartesian arrows
--- lying over the same object. -/
--- noncomputable def naturalIso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a' a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
---     (φ' : a' ⟶ b) [IsStronglyCartesian p f φ] [IsStronglyCartesian p f φ'] : a' ≅ a :=
---   isoOfBaseIso p (show f = (Iso.refl R).hom ≫ f by simp) φ φ'
 
 end IsStronglyCartesian
 

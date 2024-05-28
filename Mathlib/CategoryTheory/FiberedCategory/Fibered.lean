@@ -82,15 +82,9 @@ instance (p : 𝒳 ⥤ 𝒮) [p.IsFibered] {R S T : 𝒮} (f : R ⟶ S) (g : S �
     (ψ : b ⟶ c) [IsCartesian p f φ] [IsCartesian p g ψ] : IsCartesian p (f ≫ g) (φ ≫ ψ) :=
   IsFibered.comp f g φ ψ
 
--- IsFibered.mk' in terms of strongly cartesian arrows?
--- protected lemma IsFibered.mk (p : 𝒳 ⥤ 𝒮) (h₁ : ∀ (a : 𝒳) (R : 𝒮) (f : R ⟶ p.obj a),
---     ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ) : IsPreFibered p where
---   has_pullbacks := @fun a R S ha f => by subst ha; apply h₁ a R f
-
 namespace IsPreFibered
 
 open IsCartesian
-
 
 /-- Given a fibered category `p : 𝒳 ⥤ 𝒫`, and a diagram
 ```
@@ -126,21 +120,6 @@ instance pullbackMap.IsCartesian {p : 𝒳 ⥤ 𝒮} [IsPreFibered p] {R S : �
 lemma pullbackObj_proj {p : 𝒳 ⥤ 𝒮} [IsPreFibered p] {R S : 𝒮} {a : 𝒳} (ha : p.obj a = S)
     (f : R ⟶ S) : p.obj (pullbackObj ha f) = R :=
   domain_eq p f (pullbackMap ha f)
-
-/- Given a diagram
-```
-                  a
-                  -
-                  |
-                  v
-T --g--> R --f--> S
-```
-we have an isomorphism `T ×_S a ≅ T ×_R (R ×_S a)` -/
--- noncomputable def pullbackPullbackIso {p : 𝒳 ⥤ 𝒮} [IsFibered p]
---     {R S T : 𝒮}  {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) (g : T ⟶ R) :
---       pullbackObj ha (g ≫ f) ≅ pullbackObj (pullbackObj_proj ha f) g :=
---   naturalIso p (g ≫ f) (pullbackMap (pullbackObj_proj ha f) g ≫ pullbackMap ha f)
---     (pullbackMap ha (g ≫ f))
 
 end IsPreFibered
 
@@ -213,6 +192,20 @@ lemma of_has_pullbacks' {p : 𝒳 ⥤ 𝒮} (h : ∀ (a : 𝒳) (R : 𝒮) (f : 
     have : p.IsStronglyCartesian g ψ := by apply isStronglyCartesian_of_has_pullbacks' p h
     infer_instance
 
+/- Given a diagram
+```
+                  a
+                  -
+                  |
+                  v
+T --g--> R --f--> S
+```
+we have an isomorphism `T ×_S a ≅ T ×_R (R ×_S a)` -/
+noncomputable def pullbackPullbackIso {p : 𝒳 ⥤ 𝒮} [IsFibered p]
+    {R S T : 𝒮}  {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) (g : T ⟶ R) :
+      pullbackObj ha (g ≫ f) ≅ pullbackObj (pullbackObj_proj ha f) g :=
+  naturalIso p (g ≫ f) (pullbackMap (pullbackObj_proj ha f) g ≫ pullbackMap ha f)
+    (pullbackMap ha (g ≫ f))
 
 end IsFibered
 
