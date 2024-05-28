@@ -3,9 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Order.Interval.Multiset
-import Mathlib.Algebra.Order.Interval.Finset
 
 #align_import data.nat.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
@@ -21,6 +19,8 @@ Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedCommMono
 and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
 
+-- TODO
+-- assert_not_exists Ring
 
 open Finset Nat
 
@@ -304,11 +304,11 @@ theorem image_Ico_mod (n a : ℕ) : (Ico n (n + a)).image (· % a) = range a := 
   have hn := Nat.mod_add_div n a
   obtain hi | hi := lt_or_le i (n % a)
   · refine ⟨i + a * (n / a + 1), ⟨?_, ?_⟩, ?_⟩
-    · rw [add_comm (n / a), mul_add, mul_one, ← add_assoc]
+    · rw [add_comm (n / a), Nat.mul_add, mul_one, ← add_assoc]
       refine hn.symm.le.trans (add_le_add_right ?_ _)
       simpa only [zero_add] using add_le_add (zero_le i) (Nat.mod_lt n ha.bot_lt).le
     · refine lt_of_lt_of_le (add_lt_add_right hi (a * (n / a + 1))) ?_
-      rw [mul_add, mul_one, ← add_assoc, hn]
+      rw [Nat.mul_add, mul_one, ← add_assoc, hn]
     · rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hia]
   · refine ⟨i + a * (n / a), ⟨?_, ?_⟩, ?_⟩
     · exact hn.symm.le.trans (add_le_add_right hi _)
@@ -343,11 +343,15 @@ theorem range_image_pred_top_sub (n : ℕ) :
     simp_rw [succ_sub_succ, tsub_zero, tsub_self]
 #align finset.range_image_pred_top_sub Finset.range_image_pred_top_sub
 
--- Porting note: had to use `@` and specify `(a + b)` explicitly. mathlib3 managed without.
 theorem range_add_eq_union : range (a + b) = range a ∪ (range b).map (addLeftEmbedding a) := by
   rw [Finset.range_eq_Ico, map_eq_image]
-  convert (@Ico_union_Ico_eq_Ico _ _ _ _ _ (a + b) a.zero_le le_self_add).symm
-  exact image_add_left_Ico _ _ _
+  convert (Ico_union_Ico_eq_Ico a.zero_le le_self_add).symm
+  ext x
+  simp only [Ico_zero_eq_range, mem_image, mem_range, addLeftEmbedding_apply, mem_Ico]
+  constructor
+  · aesop
+  · rintro h
+    exact ⟨x - a, by omega⟩
 #align finset.range_add_eq_union Finset.range_add_eq_union
 
 end Finset
@@ -396,13 +400,13 @@ theorem Nat.cauchy_induction_mul (k seed : ℕ) (hk : 1 < k) (hs : P seed.succ)
     (hm : ∀ x, seed < x → P x → P (k * x)) (n : ℕ) : P n := by
   apply Nat.cauchy_induction h _ hs (k * ·) fun x hl hP => ⟨_, hm x hl hP⟩
   intro _ hl _
-  convert (mul_lt_mul_right <| seed.succ_pos.trans_le hl).2 hk
+  convert (Nat.mul_lt_mul_right <| seed.succ_pos.trans_le hl).2 hk
   rw [one_mul]
 #align nat.cauchy_induction_mul Nat.cauchy_induction_mul
 
 theorem Nat.cauchy_induction_two_mul (seed : ℕ) (hs : P seed.succ)
     (hm : ∀ x, seed < x → P x → P (2 * x)) (n : ℕ) : P n :=
-  Nat.cauchy_induction_mul h 2 seed one_lt_two hs hm n
+  Nat.cauchy_induction_mul h 2 seed Nat.one_lt_two hs hm n
 #align nat.cauchy_induction_two_mul Nat.cauchy_induction_two_mul
 
 theorem Nat.pow_imp_self_of_one_lt {M} [Monoid M] (k : ℕ) (hk : 1 < k)

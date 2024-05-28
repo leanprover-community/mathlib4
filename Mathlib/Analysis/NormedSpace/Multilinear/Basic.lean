@@ -50,7 +50,7 @@ suppress_compilation
 
 noncomputable section
 
-open scoped BigOperators NNReal Topology Uniformity
+open scoped NNReal Topology Uniformity
 open Finset Metric Function Filter
 
 /-
@@ -165,7 +165,7 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
   have A :
     ∀ s : Finset ι,
       ‖f m₁ - f (s.piecewise m₂ m₁)‖ ≤
-        C * ∑ i in s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
+        C * ∑ i ∈ s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
     intro s
     induction' s using Finset.induction with i s his Hrec
     · simp
@@ -190,10 +190,10 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
             ‖f (s.piecewise m₂ m₁) - f ((insert i s).piecewise m₂ m₁)‖ := by
         rw [← dist_eq_norm, ← dist_eq_norm, ← dist_eq_norm]
         exact dist_triangle _ _ _
-      _ ≤ (C * ∑ i in s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖) +
+      _ ≤ (C * ∑ i ∈ s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖) +
             C * ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ :=
         (add_le_add Hrec I)
-      _ = C * ∑ i in insert i s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
+      _ = C * ∑ i ∈ insert i s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
         simp [his, add_comm, left_distrib]
   convert A univ
   simp

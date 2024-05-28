@@ -220,8 +220,6 @@ end DecEq
 
 section FinrankQuotientMap
 
-open scoped BigOperators
-
 open scoped nonZeroDivisors
 
 variable [Algebra R S]
@@ -264,7 +262,7 @@ theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDedekindDomain R]
     simp only [FractionalIdeal.mem_coeIdeal, not_exists, not_and'] at hgI
     exact hgI _ (hg' j hjs)
   refine ⟨fun i => algebraMap R S (g' i), ?_, j, hjs, hgI⟩
-  have eq : f (∑ i in s, g' i • b i) = 0 := by
+  have eq : f (∑ i ∈ s, g' i • b i) = 0 := by
     rw [map_sum, ← smul_zero a, ← eq, Finset.smul_sum]
     refine Finset.sum_congr rfl ?_
     intro i hi
@@ -802,8 +800,6 @@ noncomputable def Factors.piQuotientLinearEquiv (p : Ideal R) (hp : map (algebra
 
 variable {S}
 
-open scoped BigOperators
-
 /-- The **fundamental identity** of ramification index `e` and inertia degree `f`:
 for `P` ranging over the primes lying over `p`, `∑ P, e P * f P = [Frac(S) : Frac(R)]`;
 here `S` is a finite `R`-module (and thus `Frac(S) : Frac(R)` is a finite extension) and `p`
@@ -813,7 +809,7 @@ theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDo
     [Algebra R K] [IsFractionRing R K] [Algebra S L] [IsFractionRing S L] [Algebra K L]
     [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [IsNoetherian R S]
     [IsIntegralClosure S R L] [p.IsMaximal] (hp0 : p ≠ ⊥) :
-    (∑ P in (factors (map (algebraMap R S) p)).toFinset,
+    (∑ P ∈ (factors (map (algebraMap R S) p)).toFinset,
         ramificationIdx (algebraMap R S) p P * inertiaDeg (algebraMap R S) p P) =
       finrank K L := by
   set e := ramificationIdx (algebraMap R S) p
@@ -826,8 +822,8 @@ theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDo
     rw [← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq]
     exact inj_RL
   calc
-    (∑ P in (factors (map (algebraMap R S) p)).toFinset, e P * f P) =
-        ∑ P in (factors (map (algebraMap R S) p)).toFinset.attach,
+    (∑ P ∈ (factors (map (algebraMap R S) p)).toFinset, e P * f P) =
+        ∑ P ∈ (factors (map (algebraMap R S) p)).toFinset.attach,
           finrank (R ⧸ p) (S ⧸ (P : Ideal S) ^ e P) := ?_
     _ = finrank (R ⧸ p)
           (∀ P : (factors (map (algebraMap R S) p)).toFinset, S ⧸ (P : Ideal S) ^ e P) :=
