@@ -534,7 +534,7 @@ theorem AEMeasurable.mul_iff_right {G : Type*} [MeasurableSpace G] [MeasurableSp
   ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
     fun h ↦ hf.mul h⟩
 
-@[to_additive (attr := measurability)]
+@[to_additive]
 theorem Measurable.mul_iff_left {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [CommGroup G]
     [MeasurableMul₂ G] [MeasurableInv G] {f g : α → G} (hf : Measurable f) :
     Measurable (g * f) ↔ Measurable g :=
