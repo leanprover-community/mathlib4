@@ -3,10 +3,10 @@ Copyright (c) 2022 Mantas Bakšys. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Nat.Interval
-import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Order.Rearrangement
+import Mathlib.Data.Real.Basic
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import imo.imo1975_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 

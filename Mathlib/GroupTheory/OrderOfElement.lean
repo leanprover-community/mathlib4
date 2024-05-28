@@ -6,11 +6,11 @@ Authors: Johannes Hölzl, Julian Kuelshammer
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Set.Pointwise.Basic
-import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Index
+import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Order.Interval.Set.Infinite
 
 #align_import group_theory.order_of_element from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
 

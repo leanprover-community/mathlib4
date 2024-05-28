@@ -25,6 +25,7 @@ However many of the results here really belong in `Algebra.BigOperators.Basic`
 and should be moved at some point.
 -/
 
+assert_not_exists MulAction
 
 universe u v
 
