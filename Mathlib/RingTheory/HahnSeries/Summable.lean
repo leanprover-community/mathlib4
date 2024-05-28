@@ -569,26 +569,48 @@ theorem smul_pow_finite_co_support (f : ℕ → R) (g : Γ) :
   intro n hn hng
   simp_all
 
+lemma supp_eq_univ_of_pos' (σ : Type*) (y : σ →₀ HahnSeries Γ R)
+    (hy : ∀ i : σ, 0 < (y i).order) : y.support = Set.univ (α := σ) := by
+  have hy₁ : ∀ i : σ, y i ≠ 0 := fun i => ne_zero_of_order_ne (ne_of_gt (hy i))
+  exact Set.eq_univ_of_univ_subset fun i _ => by simp_all
+
+/-- A finsupp whose every element has positive order has fintype source. -/
+def Fintype_of_pos_order (σ : Type*) (y : σ →₀ HahnSeries Γ R)
+    (hy : ∀ i : σ, 0 < (y i).order) : Fintype σ := by
+  refine Set.fintypeOfFiniteUniv ?_
+  rw [← supp_eq_univ_of_pos' σ y hy]
+  exact finite_toSet y.support
+
+lemma supp_eq_univ_of_pos (σ : Type*) [Fintype σ] (y : σ →₀ HahnSeries Γ R)
+    (hy : ∀ i : σ, 0 < (y i).order) : y.support = Finset.univ (α := σ) :=
+  eq_univ_of_forall fun i => Finsupp.mem_support_iff.mpr (ne_zero_of_order_ne (ne_of_gt (hy i)))
+
 /-!
-theorem mvpow_finite_co_support (σ : Type*) (y : σ →₀ HahnSeries Γ R)
+theorem prod_finite_co_support
+
+theorem mvpow_finite_co_support (σ : Type*) [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     (hy : ∀ i : σ, 0 < (y i).order) (g : Γ) :
     Set.Finite {a : (σ →₀ ℕ) |
-      ((fun n : (σ →₀ ℕ) ↦ ∏ i ∈ y.support, y i ^ n i) a).coeff g ≠ 0} := by
-  have hpwo : Set.IsPWO (⋃ n : (σ →₀ ℕ), ((1 : R) • ∏ i ∈ y.support, (y i) ^ (n i)).support) :=
-    isPWO_iUnion_support_MVpow σ (fun n => 1) y (fun i => le_of_lt (hy i))
-  have hy₁ : ∀ i : σ, y i ≠ 0 := fun i => ne_zero_of_order_ne (ne_of_gt (hy i))
-  have hy₂ : y.support = Set.univ (α := σ) := Set.eq_univ_of_univ_subset fun i hi => by simp_all
-  have hσ : Fintype σ := by
-    refine Set.fintypeOfFiniteUniv ?_
-    rw [← hy₂]
-    exact finite_toSet y.support
-  by_cases hg : g ∈ ⋃ n : (σ →₀ ℕ), { g | (∏ i ∈ y.support, (y i) ^ (n i)).coeff g ≠ 0 }
+      ((fun n : (σ →₀ ℕ) ↦ ∏ i, y i ^ n i) a).coeff g ≠ 0} := by
+  have hpwo : Set.IsPWO (⋃ n : (σ →₀ ℕ), (∏ i, (y i) ^ (n i)).support) := by
+    have hpwo' := isPWO_iUnion_support_MVpow σ (fun n => 1) y (fun i => le_of_lt (hy i))
+    simp only [one_smul, supp_eq_univ_of_pos σ y hy] at hpwo'
+    exact hpwo'
+  by_cases hg : g ∈ ⋃ n : (σ →₀ ℕ), { g | (∏ i, (y i) ^ (n i)).coeff g ≠ 0 }
   swap; · exact Set.finite_empty.subset fun n hn => hg (Set.mem_iUnion.2 ⟨n, hn⟩)
   simp_all only [one_smul]
   by_cases h0 : g = 0
-  ·
+  · refine Set.Finite.subset (Set.finite_singleton 0) ?_
+    intro a
+    contrapose
+    simp only [Set.mem_singleton_iff, ne_eq, Set.mem_setOf_eq, Decidable.not_not]
+    intro ha
+    obtain ⟨i, hi⟩ : ∃(i : σ), a i ≠ 0 := not_forall.mp fun h ↦ ha (Finsupp.ext h)
+
+    refine coeff_eq_zero_of_lt_order ?_
+
     sorry
-  refine cons_induction (by simp_all) ?_ y.support
+
   sorry
   --refine Set.Finite.subset ?_ fun x ↦ ?_
   -- take iUnion over adding one to exponents, i.e., multiplying by (y i).
@@ -662,6 +684,7 @@ theorem finsumAntidiagonal {R} [AddCommMonoid R] (f : ℕ × ℕ →₀ R) :
   -- sum_bij or sum_nbij with sum_sigma?
   sorry
 -/
+
 theorem sum_coeff {α} (s : Finset α) (f : α → HahnSeries Γ R) (g : Γ) :
     (Finset.sum s f).coeff g = Finset.sum s (fun i => (f i).coeff g) := by
   refine cons_induction_on s ?_ ?_
@@ -714,6 +737,7 @@ def powerSeriesComp : PowerSeries R →ₐ[R] HahnSeries Γ R where
       aesop
     · intro n hn
       simp_all
+
 -/
 -- define composition with any `f : R[[X]]`.  Show that multiplication of substituted power series
 --corresponds to substitution of products., i.e., elements of strictly positive orderTop yield

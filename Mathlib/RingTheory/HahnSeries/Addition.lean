@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.RingTheory.HahnSeries.Basic
+
 
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
 
@@ -96,8 +98,9 @@ theorem support_add_subset {x y : HahnSeries Γ R} : support (x + y) ⊆ support
   rw [ha.1, ha.2, add_zero]
 #align hahn_series.support_add_subset HahnSeries.support_add_subset
 
-theorem IsMinWFMinLEWFMinAdd {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} (hx : x ≠ 0) (hy : y ≠ 0)
-    (hxy : x + y ≠ 0) : min (Set.IsWF.min x.isWF_support (support_nonempty_iff.2 hx))
+protected theorem min_le_min_add {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} (hx : x ≠ 0)
+    (hy : y ≠ 0) (hxy : x + y ≠ 0) :
+    min (Set.IsWF.min x.isWF_support (support_nonempty_iff.2 hx))
       (Set.IsWF.min y.isWF_support (support_nonempty_iff.2 hy)) ≤
       Set.IsWF.min (x + y).isWF_support (support_nonempty_iff.2 hxy) := by
   rw [(Set.IsWF.min_union _ _ _ _).symm]
@@ -108,16 +111,16 @@ theorem min_orderTop_le_orderTop_add {Γ} [LinearOrder Γ] {x y : HahnSeries Γ 
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
   by_cases hxy : x + y = 0; · simp [hxy]
-  rw [orderTop_of_ne hx, orderTop_of_ne hy, orderTop_of_ne hxy, ← @WithTop.coe_min,
+  rw [orderTop_of_ne hx, orderTop_of_ne hy, orderTop_of_ne hxy, ← WithTop.coe_min,
     WithTop.coe_le_coe]
-  exact IsMinWFMinLEWFMinAdd hx hy hxy
+  exact HahnSeries.min_le_min_add hx hy hxy
 
 theorem min_order_le_order_add {Γ} [Zero Γ] [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : x + y ≠ 0) : min x.order y.order ≤ (x + y).order := by
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
   rw [order_of_ne hx, order_of_ne hy, order_of_ne hxy]
-  exact IsMinWFMinLEWFMinAdd hx hy hxy
+  exact HahnSeries.min_le_min_add hx hy hxy
 #align hahn_series.min_order_le_order_add HahnSeries.min_order_le_order_add
 
 theorem orderTop_add_eq {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
@@ -178,6 +181,14 @@ instance [AddCommMonoid R] : AddCommMonoid (HahnSeries Γ R) :=
     add_comm := fun x y => by
       ext
       apply add_comm }
+
+/-!
+open BigOperators
+theorem inf_orderTop_le_orderTop_sum {Γ} [LinearOrder Γ] [AddCommMonoid R] {α : Type*} {x : α → HahnSeries Γ R}
+    {s : Finset α} :
+    (min fun (i : s) => orderTop (x i)) ≤ (∑ i ∈ s, x i).orderTop := by
+  sorry
+-/
 
 section AddGroup
 
