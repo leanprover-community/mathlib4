@@ -741,7 +741,7 @@ lemma algebraMap_le_cfc (f : R → R) (r : R) (a : A) (h : ∀ x ∈ spectrum R 
     algebraMap R A r ≤ cfc f a :=
   cfc_const r a ▸ cfc_mono h
 
-lemma le_algebraMap_of_spectrum_le (r : R) (a : A) (h : ∀ x ∈ spectrum R a, x ≤ r)
+lemma le_algebraMap_of_spectrum_le {r : R} {a : A} (h : ∀ x ∈ spectrum R a, x ≤ r)
     (ha : p a := by cfc_tac) : a ≤ algebraMap R A r := by
   rw [← cfc_id R a]
   exact cfc_le_algebraMap id r a h
