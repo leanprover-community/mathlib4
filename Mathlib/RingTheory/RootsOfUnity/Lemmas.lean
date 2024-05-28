@@ -46,7 +46,7 @@ lemma prod_pow_sub_one_eq_order {n : ℕ} {μ : R} (hμ : IsPrimitiveRoot μ (n 
 open Algebra in
 /-- If `μ` is a primitive `n`th root of unity in `R` and `k < n`, then `n` is divisible
 by `(μ-1)^k` in `ℤ[μ] ⊆ R`. -/
-lemma order_eq_mul_self_sub_one_pow {k n : ℕ} (hn : k < n) {μ : R} (hμ : IsPrimitiveRoot μ n) :
+lemma self_sub_one_pow_dvd_order {k n : ℕ} (hn : k < n) {μ : R} (hμ : IsPrimitiveRoot μ n) :
     ∃ z ∈ adjoin ℤ {μ}, n = z * (μ - 1) ^ k := by
   let n' + 1 := n
   obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_le' (Nat.le_of_lt_succ hn)
