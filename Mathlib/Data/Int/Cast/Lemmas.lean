@@ -205,9 +205,11 @@ theorem cast_natAbs : (n.natAbs : α) = |n| := by
 
 end LinearOrderedRing
 
-theorem coe_int_dvd [CommRing α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
+theorem cast_dvd_cast [CommRing α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
   RingHom.map_dvd (Int.castRingHom α) h
-#align int.coe_int_dvd Int.coe_int_dvd
+#align int.cast_dvd Int.cast_dvd_cast
+
+@[deprecated (since := "2024-05-25")] alias coe_int_dvd := cast_dvd_cast
 
 end cast
 
@@ -218,17 +220,21 @@ open Int
 namespace SemiconjBy
 variable [Ring α] {a x y : α}
 
-@[simp] lemma cast_int_mul_right (h : SemiconjBy a x y) (n : ℤ) : SemiconjBy a (n * x) (n * y) :=
+@[simp] lemma intCast_mul_right (h : SemiconjBy a x y) (n : ℤ) : SemiconjBy a (n * x) (n * y) :=
   SemiconjBy.mul_right (Int.commute_cast _ _) h
-#align semiconj_by.cast_int_mul_right SemiconjBy.cast_int_mul_right
+#align semiconj_by.cast_int_mul_right SemiconjBy.intCast_mul_right
 
-@[simp] lemma cast_int_mul_left (h : SemiconjBy a x y) (n : ℤ) : SemiconjBy (n * a) x y :=
+@[simp] lemma intCast_mul_left (h : SemiconjBy a x y) (n : ℤ) : SemiconjBy (n * a) x y :=
   SemiconjBy.mul_left (Int.cast_commute _ _) h
-#align semiconj_by.cast_int_mul_left SemiconjBy.cast_int_mul_left
+#align semiconj_by.cast_int_mul_left SemiconjBy.intCast_mul_left
 
-@[simp] lemma cast_int_mul_cast_int_mul (h : SemiconjBy a x y) (m n : ℤ) :
-    SemiconjBy (m * a) (n * x) (n * y) := (h.cast_int_mul_left m).cast_int_mul_right n
-#align semiconj_by.cast_int_mul_cast_int_mul SemiconjBy.cast_int_mul_cast_int_mul
+@[simp] lemma intCast_mul_intCast_mul (h : SemiconjBy a x y) (m n : ℤ) :
+    SemiconjBy (m * a) (n * x) (n * y) := (h.intCast_mul_left m).intCast_mul_right n
+#align semiconj_by.cast_int_mul_cast_int_mul SemiconjBy.intCast_mul_intCast_mul
+
+@[deprecated (since := "2024-05-27")] alias cast_int_mul_right := intCast_mul_right
+@[deprecated (since := "2024-05-27")] alias cast_int_mul_left := intCast_mul_left
+@[deprecated (since := "2024-05-27")] alias cast_int_mul_cast_int_mul := intCast_mul_intCast_mul
 
 end SemiconjBy
 
@@ -236,27 +242,31 @@ namespace Commute
 section NonAssocRing
 variable [NonAssocRing α] {a b : α} {n : ℤ}
 
-@[simp] lemma cast_int_left : Commute (n : α) a := Int.cast_commute _ _
-#align commute.cast_int_left Commute.cast_int_left
+@[simp] lemma intCast_left : Commute (n : α) a := Int.cast_commute _ _
+#align commute.cast_int_left Commute.intCast_left
 
-@[simp] lemma cast_int_right : Commute a n := Int.commute_cast _ _
-#align commute.cast_int_right Commute.cast_int_right
+@[simp] lemma intCast_right : Commute a n := Int.commute_cast _ _
+#align commute.cast_int_right Commute.intCast_right
+
+@[deprecated (since := "2024-05-27")] alias cast_int_right := intCast_right
+@[deprecated (since := "2024-05-27")] alias cast_int_left := intCast_left
+
 end NonAssocRing
 
 section Ring
 variable [Ring α] {a b : α} {n : ℤ}
 
-@[simp] lemma cast_int_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b) :=
-  SemiconjBy.cast_int_mul_right h m
-#align commute.cast_int_mul_right Commute.cast_int_mul_right
+@[simp] lemma intCast_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b) :=
+  SemiconjBy.intCast_mul_right h m
+#align commute.cast_int_mul_right Commute.intCast_mul_right
 
-@[simp] lemma cast_int_mul_left (h : Commute a b) (m : ℤ) : Commute (m  * a) b :=
-  SemiconjBy.cast_int_mul_left h m
-#align commute.cast_int_mul_left Commute.cast_int_mul_left
+@[simp] lemma intCast_mul_left (h : Commute a b) (m : ℤ) : Commute (m  * a) b :=
+  SemiconjBy.intCast_mul_left h m
+#align commute.cast_int_mul_left Commute.intCast_mul_left
 
-lemma cast_int_mul_cast_int_mul (h : Commute a b) (m n : ℤ) : Commute (m * a) (n * b) :=
-  SemiconjBy.cast_int_mul_cast_int_mul h m n
-#align commute.cast_int_mul_cast_int_mul Commute.cast_int_mul_cast_int_mul
+lemma intCast_mul_intCast_mul (h : Commute a b) (m n : ℤ) : Commute (m * a) (n * b) :=
+  SemiconjBy.intCast_mul_intCast_mul h m n
+#align commute.cast_int_mul_cast_int_mul Commute.intCast_mul_intCast_mul
 
 variable (a) (m n : ℤ)
 
@@ -265,20 +275,28 @@ simp can prove this:
   by simp only [Commute.cast_int_right, Commute.refl, Commute.mul_right]
 -/
 -- @[simp]
-lemma self_cast_int_mul : Commute a (n * a : α) := (Commute.refl a).cast_int_mul_right n
-#align commute.self_cast_int_mul Commute.self_cast_int_mul
+lemma self_intCast_mul : Commute a (n * a : α) := (Commute.refl a).intCast_mul_right n
+#align commute.self_cast_int_mul Commute.self_intCast_mul
 
 /- Porting note (#10618): `simp` attribute removed as linter reports:
 simp can prove this:
   by simp only [Commute.cast_int_left, Commute.refl, Commute.mul_left]
 -/
 -- @[simp]
-lemma cast_int_mul_self : Commute ((n : α) * a) a := (Commute.refl a).cast_int_mul_left n
-#align commute.cast_int_mul_self Commute.cast_int_mul_self
+lemma intCast_mul_self : Commute ((n : α) * a) a := (Commute.refl a).cast_int_mul_left n
+#align commute.cast_int_mul_self Commute.intCast_mul_self
 
-lemma self_cast_int_mul_cast_int_mul : Commute (m * a : α) (n * a : α) :=
+lemma self_intCast_mul_intCast_mul : Commute (m * a : α) (n * a : α) :=
   (Commute.refl a).cast_int_mul_cast_int_mul m n
-#align commute.self_cast_int_mul_cast_int_mul Commute.self_cast_int_mul_cast_int_mul
+#align commute.self_cast_int_mul_cast_int_mul Commute.self_intCast_mul_intCast_mul
+
+@[deprecated (since := "2024-05-27")] alias cast_int_mul_right := intCast_mul_right
+@[deprecated (since := "2024-05-27")] alias cast_int_mul_left := intCast_mul_left
+@[deprecated (since := "2024-05-27")] alias cast_int_mul_cast_int_mul := intCast_mul_intCast_mul
+@[deprecated (since := "2024-05-27")] alias self_cast_int_mul := self_intCast_mul
+@[deprecated (since := "2024-05-27")] alias cast_int_mul_self := intCast_mul_self
+@[deprecated (since := "2024-05-27")]
+alias self_cast_int_mul_cast_int_mul := self_intCast_mul_intCast_mul
 
 end Ring
 end Commute

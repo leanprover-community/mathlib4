@@ -58,8 +58,6 @@ noncomputable section
 
 open MvPolynomial Finset
 
-open scoped BigOperators
-
 variable (p)
 
 /-- The rational polynomials that give the coefficients of `frobenius x`,

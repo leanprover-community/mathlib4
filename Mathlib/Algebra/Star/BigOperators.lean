@@ -16,8 +16,6 @@ These results are kept separate from `Algebra.Star.Basic` to avoid it needing to
 
 variable {R : Type*}
 
-open BigOperators
-
 @[simp]
 theorem star_prod [CommMonoid R] [StarMul R] {α : Type*} (s : Finset α) (f : α → R) :
     star (∏ x ∈ s, f x) = ∏ x ∈ s, star (f x) := map_prod (starMulAut : R ≃* R) _ _
