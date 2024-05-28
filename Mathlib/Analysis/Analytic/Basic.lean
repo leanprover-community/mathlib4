@@ -75,7 +75,7 @@ noncomputable section
 variable {𝕜 E F G : Type*}
 
 open scoped Classical
-open Topology BigOperators NNReal Filter ENNReal
+open Topology NNReal Filter ENNReal
 
 open Set Filter Asymptotics
 
@@ -95,7 +95,7 @@ protected def sum (p : FormalMultilinearSeries 𝕜 E F) (x : E) : F :=
 /-- Given a formal multilinear series `p` and a vector `x`, then `p.partialSum n x` is the sum
 `Σ pₖ xᵏ` for `k ∈ {0,..., n-1}`. -/
 def partialSum (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) (x : E) : F :=
-  ∑ k in Finset.range n, p k fun _ : Fin k => x
+  ∑ k ∈ Finset.range n, p k fun _ : Fin k => x
 #align formal_multilinear_series.partial_sum FormalMultilinearSeries.partialSum
 
 /-- The partial sums of a formal multilinear series are continuous. -/

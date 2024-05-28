@@ -29,7 +29,7 @@ variable [Module R M] [Module R M'] [Module R M₁]
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
 
-open BigOperators Cardinal Basis Submodule Function Set FiniteDimensional
+open Cardinal Basis Submodule Function Set FiniteDimensional
 
 theorem rank_le {n : ℕ}
     (H : ∀ s : Finset M, (LinearIndependent R fun i : s => (i : M)) → s.card ≤ n) :
@@ -316,14 +316,12 @@ theorem CompleteLattice.Independent.subtype_ne_bot_le_finrank
 
 section
 
-open BigOperators
-
 open Finset
 
 /-- If a finset has cardinality larger than the rank of a module,
 then there is a nontrivial linear relation amongst its elements. -/
 theorem Module.exists_nontrivial_relation_of_finrank_lt_card {t : Finset M}
-    (h : finrank R M < t.card) : ∃ f : M → R, ∑ e in t, f e • e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
+    (h : finrank R M < t.card) : ∃ f : M → R, ∑ e ∈ t, f e • e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
   obtain ⟨g, sum, z, nonzero⟩ := Fintype.not_linearIndependent_iff.mp
     (mt LinearIndependent.finset_card_le_finrank h.not_le)
   refine ⟨Subtype.val.extend g 0, ?_, z, z.2, by rwa [Subtype.val_injective.extend_apply]⟩
@@ -335,7 +333,7 @@ then there is a nontrivial linear relation amongst its elements,
 such that the coefficients of the relation sum to zero. -/
 theorem Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
     {t : Finset M} (h : finrank R M + 1 < t.card) :
-    ∃ f : M → R, ∑ e in t, f e • e = 0 ∧ ∑ e in t, f e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
+    ∃ f : M → R, ∑ e ∈ t, f e • e = 0 ∧ ∑ e ∈ t, f e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
   -- Pick an element x₀ ∈ t,
   obtain ⟨x₀, x₀_mem⟩ := card_pos.1 ((Nat.succ_pos _).trans h)
   -- and apply the previous lemma to the {xᵢ - x₀}
@@ -348,8 +346,8 @@ theorem Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
   -- to obtain a function `g`.
   obtain ⟨g, gsum, x₁, x₁_mem, nz⟩ := exists_nontrivial_relation_of_finrank_lt_card h'
   -- Then obtain `f` by translating back by `x₀`,
-  -- and setting the value of `f` at `x₀` to ensure `∑ e in t, f e = 0`.
-  let f : M → R := fun z ↦ if z = x₀ then -∑ z in t.erase x₀, g (z - x₀) else g (z - x₀)
+  -- and setting the value of `f` at `x₀` to ensure `∑ e ∈ t, f e = 0`.
+  let f : M → R := fun z ↦ if z = x₀ then -∑ z ∈ t.erase x₀, g (z - x₀) else g (z - x₀)
   refine ⟨f, ?_, ?_, ?_⟩
   -- After this, it's a matter of verifying the properties,
   -- based on the corresponding properties for `g`.

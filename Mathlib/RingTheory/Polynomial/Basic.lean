@@ -29,7 +29,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 open Finset
 
@@ -285,7 +285,7 @@ theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n 
 @[deprecated (since := "2024-05-17")] alias coeff_mem_frange := coeff_mem_coeffs
 
 theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
-    (∑ i in range n, (X : R[X]) ^ i).comp (X + 1) =
+    (∑ i ∈ range n, (X : R[X]) ^ i).comp (X + 1) =
       (Finset.range n).sum fun i : ℕ => (n.choose (i + 1) : R[X]) * X ^ i := by
   ext i
   trans (n.choose (i + 1) : R); swap
@@ -303,7 +303,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.geom_sum_X_comp_X_add_one_eq_sum Polynomial.geom_sum_X_comp_X_add_one_eq_sum
 
 theorem Monic.geom_sum {P : R[X]} (hP : P.Monic) (hdeg : 0 < P.natDegree) {n : ℕ} (hn : n ≠ 0) :
-    (∑ i in range n, P ^ i).Monic := by
+    (∑ i ∈ range n, P ^ i).Monic := by
   nontriviality R
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn
   rw [geom_sum_succ']
@@ -319,11 +319,11 @@ theorem Monic.geom_sum {P : R[X]} (hP : P.Monic) (hdeg : 0 < P.natDegree) {n : �
 #align polynomial.monic.geom_sum Polynomial.Monic.geom_sum
 
 theorem Monic.geom_sum' {P : R[X]} (hP : P.Monic) (hdeg : 0 < P.degree) {n : ℕ} (hn : n ≠ 0) :
-    (∑ i in range n, P ^ i).Monic :=
+    (∑ i ∈ range n, P ^ i).Monic :=
   hP.geom_sum (natDegree_pos_iff_degree_pos.2 hdeg) hn
 #align polynomial.monic.geom_sum' Polynomial.Monic.geom_sum'
 
-theorem monic_geom_sum_X {n : ℕ} (hn : n ≠ 0) : (∑ i in range n, (X : R[X]) ^ i).Monic := by
+theorem monic_geom_sum_X {n : ℕ} (hn : n ≠ 0) : (∑ i ∈ range n, (X : R[X]) ^ i).Monic := by
   nontriviality R
   apply monic_X.geom_sum _ hn
   simp only [natDegree_X, zero_lt_one]
@@ -339,7 +339,7 @@ variable [Ring R]
 /-- Given a polynomial, return the polynomial whose coefficients are in
 the ring closure of the original coefficients. -/
 def restriction (p : R[X]) : Polynomial (Subring.closure (↑p.coeffs : Set R)) :=
-  ∑ i in p.support,
+  ∑ i ∈ p.support,
     monomial i
       (⟨p.coeff i,
           letI := Classical.decEq R
@@ -420,7 +420,7 @@ variable (p : R[X]) (T : Subring R)
 /-- Given a polynomial `p` and a subring `T` that contains the coefficients of `p`,
 return the corresponding polynomial whose coefficients are in `T`. -/
 def toSubring (hp : (↑p.coeffs : Set R) ⊆ T) : T[X] :=
-  ∑ i in p.support,
+  ∑ i ∈ p.support,
     monomial i
       (⟨p.coeff i,
         letI := Classical.decEq R
@@ -496,7 +496,7 @@ variable (T : Subring R)
 /-- Given a polynomial whose coefficients are in some subring, return
 the corresponding polynomial whose coefficients are in the ambient ring. -/
 def ofSubring (p : T[X]) : R[X] :=
-  ∑ i in p.support, monomial i (p.coeff i : R)
+  ∑ i ∈ p.support, monomial i (p.coeff i : R)
 #align polynomial.of_subring Polynomial.ofSubring
 
 theorem coeff_ofSubring (p : T[X]) (n : ℕ) : coeff (ofSubring T p) n = (coeff p n : T) := by
@@ -1134,7 +1134,7 @@ lemma aeval_natDegree_le {R : Type*} [CommSemiring R] {m n : ℕ}
   simp_rw [Function.comp_apply, ← C_eq_algebraMap]
   apply (Polynomial.natDegree_C_mul_le _ _).trans
   apply (Polynomial.natDegree_prod_le _ _).trans
-  have : ∑ i in d.support, (d i) * n ≤ m * n := by
+  have : ∑ i ∈ d.support, (d i) * n ≤ m * n := by
     rw [← Finset.sum_mul]
     apply mul_le_mul' (.trans _ hF) le_rfl
     rw [MvPolynomial.totalDegree]

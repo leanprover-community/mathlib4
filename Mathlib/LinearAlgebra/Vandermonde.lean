@@ -31,7 +31,7 @@ variable {R : Type*} [CommRing R]
 
 open Equiv Finset
 
-open BigOperators Matrix
+open Matrix
 
 namespace Matrix
 
@@ -75,7 +75,7 @@ theorem vandermonde_transpose_mul_vandermonde {n : ℕ} (v : Fin n → R) (i j) 
 #align matrix.vandermonde_transpose_mul_vandermonde Matrix.vandermonde_transpose_mul_vandermonde
 
 theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
-    det (vandermonde v) = ∏ i : Fin n, ∏ j in Ioi i, (v j - v i) := by
+    det (vandermonde v) = ∏ i : Fin n, ∏ j ∈ Ioi i, (v j - v i) := by
   unfold vandermonde
   induction' n with n ih
   · exact det_eq_one_of_card_eq_zero (Fintype.card_fin 0)
@@ -98,20 +98,20 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
         det
           (of fun i j : Fin n =>
               (v (Fin.succ i) - v 0) *
-                ∑ k in Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :
+                ∑ k ∈ Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :
             Matrix _ _ R) := by
       congr
       ext i j
       rw [Fin.succAbove_zero, Matrix.cons_val_succ, Fin.val_succ, mul_comm]
       exact (geom_sum₂_mul (v i.succ) (v 0) (j + 1 : ℕ)).symm
     _ =
-        (∏ i in Finset.univ, (v (Fin.succ i) - v 0)) *
+        (∏ i ∈ Finset.univ, (v (Fin.succ i) - v 0)) *
           det fun i j : Fin n =>
-            ∑ k in Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :=
+            ∑ k ∈ Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :=
       (det_mul_column (fun i => v (Fin.succ i) - v 0) _)
-    _ = (∏ i in Finset.univ, (v (Fin.succ i) - v 0)) *
+    _ = (∏ i ∈ Finset.univ, (v (Fin.succ i) - v 0)) *
     det fun i j : Fin n => v (Fin.succ i) ^ (j : ℕ) := congr_arg _ ?_
-    _ = ∏ i : Fin n.succ, ∏ j in Ioi i, (v j - v i) := by
+    _ = ∏ i : Fin n.succ, ∏ j ∈ Ioi i, (v j - v i) := by
       simp_rw [Fin.prod_univ_succ, Fin.prod_Ioi_zero, Fin.prod_Ioi_succ]
       have h := ih (v ∘ Fin.succ)
       unfold Function.comp at h
