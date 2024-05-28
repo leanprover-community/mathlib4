@@ -192,7 +192,7 @@ theorem mem_quotient_iff_mem {I J : Ideal R} (hIJ : I ≤ J) {x : R} :
 #align ideal.mem_quotient_iff_mem Ideal.mem_quotient_iff_mem
 
 section ChineseRemainder
-open Function Quotient Finset BigOperators
+open Function Quotient Finset
 
 variable {ι : Type*}
 

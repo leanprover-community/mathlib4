@@ -50,6 +50,7 @@ import Mathlib.Algebra.Category.AlgebraCat.Limits
 import Mathlib.Algebra.Category.AlgebraCat.Monoidal
 import Mathlib.Algebra.Category.AlgebraCat.Symmetric
 import Mathlib.Algebra.Category.BoolRing
+import Mathlib.Algebra.Category.CoalgebraCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Limits
 import Mathlib.Algebra.Category.GroupCat.Abelian
@@ -375,12 +376,14 @@ import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Algebra.Lie.Weights.Chain
 import Mathlib.Algebra.Lie.Weights.Killing
 import Mathlib.Algebra.Lie.Weights.Linear
+import Mathlib.Algebra.Lie.Weights.RootSystem
 import Mathlib.Algebra.LinearRecurrence
 import Mathlib.Algebra.ModEq
 import Mathlib.Algebra.Module.Algebra
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Bimodule
+import Mathlib.Algebra.Module.Card
 import Mathlib.Algebra.Module.CharacterModule
 import Mathlib.Algebra.Module.DedekindDomain
 import Mathlib.Algebra.Module.Defs
@@ -1828,7 +1831,6 @@ import Mathlib.Data.FP.Basic
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.FlagRange
-import Mathlib.Data.Fin.Interval
 import Mathlib.Data.Fin.OrderHom
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.Tuple.Basic
@@ -2094,7 +2096,6 @@ import Mathlib.Data.Nat.Fib.Zeckendorf
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Data.Nat.Hyperoperation
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.MaxPowDiv
@@ -3004,6 +3005,7 @@ import Mathlib.MeasureTheory.Measure.WithDensityFinite
 import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
 import Mathlib.MeasureTheory.Order.Group.Lattice
 import Mathlib.MeasureTheory.Order.Lattice
+import Mathlib.MeasureTheory.OuterMeasure.AE
 import Mathlib.MeasureTheory.OuterMeasure.Basic
 import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 import Mathlib.MeasureTheory.OuterMeasure.Defs
@@ -3112,7 +3114,9 @@ import Mathlib.NumberTheory.Modular
 import Mathlib.NumberTheory.ModularForms.Basic
 import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.MDifferentiable
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
+import Mathlib.NumberTheory.ModularForms.Identities
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.Manifold
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.OneVariable
@@ -3164,6 +3168,7 @@ import Mathlib.Order.Atoms.Finite
 import Mathlib.Order.Basic
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.BooleanAlgebra
+import Mathlib.Order.BooleanGenerators
 import Mathlib.Order.Booleanisation
 import Mathlib.Order.Bounded
 import Mathlib.Order.BoundedOrder
@@ -3263,6 +3268,8 @@ import Mathlib.Order.Interval.Basic
 import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Order.Interval.Finset.Box
 import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Order.Interval.Finset.Fin
+import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Order.Interval.Multiset
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Order.Interval.Set.Disjoint
@@ -3596,6 +3603,7 @@ import Mathlib.RingTheory.RingHomProperties
 import Mathlib.RingTheory.RingInvo
 import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.RingTheory.RootsOfUnity.Complex
+import Mathlib.RingTheory.RootsOfUnity.Lemmas
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.RingTheory.Smooth.Basic
