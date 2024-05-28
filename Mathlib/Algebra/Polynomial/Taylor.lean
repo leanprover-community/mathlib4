@@ -96,7 +96,7 @@ theorem taylor_coeff_one : (taylor r f).coeff 1 = f.derivative.eval r := by
 
 @[simp]
 theorem natDegree_taylor (p : R[X]) (r : R) : natDegree (taylor r p) = natDegree p := by
-  refine' map_natDegree_eq_natDegree _ _
+  refine map_natDegree_eq_natDegree _ ?_
   nontriviality R
   intro n c c0
   simp [taylor_monomial, natDegree_C_mul_eq_of_mul_ne_zero, natDegree_pow_X_add_C, c0]

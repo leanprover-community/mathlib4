@@ -40,11 +40,7 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 
 noncomputable section
 
-open BigOperators
-
 open Set Function Finsupp AddMonoidAlgebra
-
-open BigOperators
 
 variable {σ τ α R S : Type*} [CommSemiring R] [CommSemiring S]
 
@@ -85,7 +81,7 @@ theorem rename_rename (f : σ → τ) (g : τ → α) (p : MvPolynomial σ R) :
     -- Hopefully this is less prone to breaking
     rw [eval₂_comp_left (eval₂Hom (algebraMap R (MvPolynomial α R)) (X ∘ g)) C (X ∘ f) p]
     simp only [(· ∘ ·), eval₂Hom_X']
-    refine' eval₂Hom_congr _ rfl rfl
+    refine eval₂Hom_congr ?_ rfl rfl
     ext1; simp only [comp_apply, RingHom.coe_comp, eval₂Hom_C]
 #align mv_polynomial.rename_rename MvPolynomial.rename_rename
 
@@ -236,15 +232,15 @@ theorem exists_finset_rename (p : MvPolynomial σ R) :
   · intro r
     exact ⟨∅, C r, by rw [rename_C]⟩
   · rintro p q ⟨s, p, rfl⟩ ⟨t, q, rfl⟩
-    refine' ⟨s ∪ t, ⟨_, _⟩⟩
-    · refine' rename (Subtype.map id _) p + rename (Subtype.map id _) q <;>
+    refine ⟨s ∪ t, ⟨?_, ?_⟩⟩
+    · refine rename (Subtype.map id ?_) p + rename (Subtype.map id ?_) q <;>
         simp (config := { contextual := true }) only [id, true_or_iff, or_true_iff,
           Finset.mem_union, forall_true_iff]
     · simp only [rename_rename, AlgHom.map_add]
       rfl
   · rintro p n ⟨s, p, rfl⟩
-    refine' ⟨insert n s, ⟨_, _⟩⟩
-    · refine' rename (Subtype.map id _) p * X ⟨n, s.mem_insert_self n⟩
+    refine ⟨insert n s, ⟨?_, ?_⟩⟩
+    · refine rename (Subtype.map id ?_) p * X ⟨n, s.mem_insert_self n⟩
       simp (config := { contextual := true }) only [id, or_true_iff, Finset.mem_insert,
         forall_true_iff]
     · simp only [rename_rename, rename_X, Subtype.coe_mk, AlgHom.map_mul]
@@ -278,7 +274,7 @@ theorem exists_fin_rename (p : MvPolynomial σ R) :
   obtain ⟨s, q, rfl⟩ := exists_finset_rename p
   let n := Fintype.card { x // x ∈ s }
   let e := Fintype.equivFin { x // x ∈ s }
-  refine' ⟨n, (↑) ∘ e.symm, Subtype.val_injective.comp e.symm.injective, rename e q, _⟩
+  refine ⟨n, (↑) ∘ e.symm, Subtype.val_injective.comp e.symm.injective, rename e q, ?_⟩
   rw [← rename_rename, rename_rename e]
   simp only [Function.comp, Equiv.symm_apply_apply, rename_rename]
 #align mv_polynomial.exists_fin_rename MvPolynomial.exists_fin_rename

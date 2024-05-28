@@ -142,8 +142,8 @@ theorem SmoothFiberwiseLinear.locality_aux₁ (e : PartialHomeomorph (B × F) (B
       exact heu ⟨p, hp⟩ (p.fst, v) (hu' ⟨p, hp⟩)
   refine ⟨Prod.fst '' e.source, he, ?_⟩
   rintro x ⟨p, hp, rfl⟩
-  refine' ⟨φ ⟨p, hp⟩, u ⟨p, hp⟩, hu ⟨p, hp⟩, _, hu' _, hφ ⟨p, hp⟩, h2φ ⟨p, hp⟩, _⟩
-  · intro y hy; refine' ⟨(y, 0), heu ⟨p, hp⟩ ⟨_, _⟩ hy, rfl⟩
+  refine ⟨φ ⟨p, hp⟩, u ⟨p, hp⟩, hu ⟨p, hp⟩, ?_, hu' _, hφ ⟨p, hp⟩, h2φ ⟨p, hp⟩, ?_⟩
+  · intro y hy; exact ⟨(y, 0), heu ⟨p, hp⟩ ⟨_, _⟩ hy, rfl⟩
   · rw [← hesu, e.restr_source_inter]; exact heφ ⟨p, hp⟩
 #align smooth_fiberwise_linear.locality_aux₁ SmoothFiberwiseLinear.locality_aux₁
 
@@ -185,7 +185,7 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
   have hUu' : U = ⋃ i, u i := by
     ext x
     rw [mem_iUnion]
-    refine' ⟨fun h => ⟨⟨x, h⟩, hux _⟩, _⟩
+    refine ⟨fun h => ⟨⟨x, h⟩, hux _⟩, ?_⟩
     rintro ⟨x, hx⟩
     exact hUu x hx
   have hU' : IsOpen U := by
@@ -202,15 +202,15 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
   have hΦ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun y => (Φ y : F →L[𝕜] F)) U := by
     apply contMDiffOn_of_locally_contMDiffOn
     intro x hx
-    refine' ⟨u ⟨x, hx⟩, hu ⟨x, hx⟩, hux _, _⟩
-    refine' (ContMDiffOn.congr (hφ ⟨x, hx⟩) _).mono (inter_subset_right _ _)
+    refine ⟨u ⟨x, hx⟩, hu ⟨x, hx⟩, hux _, ?_⟩
+    refine (ContMDiffOn.congr (hφ ⟨x, hx⟩) ?_).mono (inter_subset_right _ _)
     intro y hy
     rw [hΦφ ⟨x, hx⟩ y hy]
   have h2Φ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun y => ((Φ y).symm : F →L[𝕜] F)) U := by
     apply contMDiffOn_of_locally_contMDiffOn
     intro x hx
-    refine' ⟨u ⟨x, hx⟩, hu ⟨x, hx⟩, hux _, _⟩
-    refine' (ContMDiffOn.congr (h2φ ⟨x, hx⟩) _).mono (inter_subset_right _ _)
+    refine ⟨u ⟨x, hx⟩, hu ⟨x, hx⟩, hux _, ?_⟩
+    refine (ContMDiffOn.congr (h2φ ⟨x, hx⟩) ?_).mono (inter_subset_right _ _)
     intro y hy
     rw [hΦφ ⟨x, hx⟩ y hy]
   refine ⟨Φ, U, hU', hΦ, h2Φ, hU, fun p hp => ?_⟩

@@ -205,7 +205,7 @@ lemma map_eq_iff {X Y : C} (φ ψ : W.LeftFraction₂ X Y) :
       rw [← reassoc_of% hst, ← reassoc_of% hα, ← reassoc_of% hst']
     obtain ⟨Z''', u', hu', fac'⟩ := HasLeftCalculusOfFractions.ext _ _ _ ψ.hs hα'
     simp only [Category.assoc] at fac fac'
-    refine' ⟨Z''', t₁' ≫ α.s ≫ u ≫ u', t₂' ≫ α.s ≫ u ≫ u', _, _, _, _⟩
+    refine ⟨Z''', t₁' ≫ α.s ≫ u ≫ u', t₂' ≫ α.s ≫ u ≫ u', ?_, ?_, ?_, ?_⟩
     · rw [reassoc_of% hst']
     · rw [reassoc_of% fac, reassoc_of% hft, fac']
     · rw [reassoc_of% hft']
@@ -242,8 +242,8 @@ lemma exists_leftFraction₂ [W.HasLeftCalculusOfFractions] :
   obtain ⟨ψ₂, hψ₂⟩ := φ.snd.exists_leftFraction
   obtain ⟨α, hα⟩ := (RightFraction.mk _ ψ₁.hs ψ₂.s).exists_leftFraction
   dsimp at hψ₁ hψ₂ hα
-  refine' ⟨LeftFraction₂.mk (ψ₁.f ≫ α.f) (ψ₂.f ≫ α.s) (ψ₂.s ≫ α.s)
-      (W.comp_mem _ _ ψ₂.hs α.hs), _, _⟩
+  refine ⟨LeftFraction₂.mk (ψ₁.f ≫ α.f) (ψ₂.f ≫ α.s) (ψ₂.s ≫ α.s)
+      (W.comp_mem _ _ ψ₂.hs α.hs), ?_, ?_⟩
   · dsimp
     rw [hα, reassoc_of% hψ₁]
   · rw [reassoc_of% hψ₂]
@@ -275,7 +275,7 @@ lemma exists_leftFraction₂ {X Y : C} (f f' : L.obj X ⟶ L.obj Y) :
   have : IsIso (L.map (φ'.s ≫ α.s)) := by
     rw [L.map_comp]
     infer_instance
-  refine' ⟨ψ, _, _⟩
+  refine ⟨ψ, ?_, ?_⟩
   · rw [← cancel_mono (L.map (φ'.s ≫ α.s)), LeftFraction.map_comp_map_s,
       hα, L.map_comp, hφ, LeftFraction.map_comp_map_s_assoc,
       L.map_comp]
@@ -304,7 +304,7 @@ lemma exists_leftFraction₃ {X Y : C} (f f' f'' : L.obj X ⟶ L.obj Y) :
   have : IsIso (L.map (β.s ≫ γ.s)) := by
     rw [L.map_comp]
     infer_instance
-  refine' ⟨ψ, _, _, _⟩
+  refine ⟨ψ, ?_, ?_, ?_⟩
   · rw [← cancel_mono (L.map (β.s ≫ γ.s)), LeftFraction.map_comp_map_s, hα, hγ,
       L.map_comp, LeftFraction.map_comp_map_s_assoc, L.map_comp]
   · rw [← cancel_mono (L.map (β.s ≫ γ.s)), LeftFraction.map_comp_map_s, hα', hγ,

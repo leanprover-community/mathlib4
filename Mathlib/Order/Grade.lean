@@ -346,5 +346,5 @@ abbrev GradeMinOrder.finToNat (n : ℕ) [GradeMinOrder (Fin n) α] : GradeMinOrd
 #align grade_min_order.fin_to_nat GradeMinOrder.finToNat
 
 instance GradeOrder.natToInt [GradeOrder ℕ α] : GradeOrder ℤ α :=
-  (GradeOrder.liftLeft _ Int.coe_nat_strictMono) fun _ _ => CovBy.cast_int
+  (GradeOrder.liftLeft _ Int.natCast_strictMono) fun _ _ => CovBy.intCast
 #align grade_order.nat_to_int GradeOrder.natToInt
