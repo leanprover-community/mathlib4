@@ -265,7 +265,7 @@ theorem single_smul_coeff_add [MulZeroClass R] [SMulWithZero R V] {r : R} {x : H
     rintro rfl h2 h1
     rw [CancelVAdd.left_cancel a1 a2 a h1] at h2
     exact h2 hx
-  trans ∑ ij : Γ × Γ' ∈ {(b, a)},
+  trans ∑ ij ∈ {(b, a)},
     (HahnSeries.single b r).coeff ij.fst • ((of R).symm x).coeff ij.snd
   · apply sum_congr _ fun _ _ => rfl
     ext ⟨a1, a2⟩
