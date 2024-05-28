@@ -88,14 +88,12 @@ namespace attributeInstanceLinter
 def getLinterAttributeInstanceIn (o : Options) : Bool :=
   Linter.getLinterValue linter.attributeInstanceIn o
 
-#check Parser.Command.eraseAttr
-
 /--
 `getAttrInstance cmd` assumes that `cmd` represents a `attribute [...] id in ...` command.
 If this is the case, then it returns `(id, #[non-local nor scoped attributes])`.
 Otherwise, it returns `default`.
 -/
-def getAttrInstance : Syntax → Ident × Array (TSyntax `attr)
+def getAttrInstance? : Syntax → Option (Ident × Array (TSyntax `attr))
   | `(attribute [$x,*] $id in $_) =>
     let xs := x.getElems.filterMap fun a => match a.raw with
       | `(Parser.Command.eraseAttr| -$_) => none
@@ -115,12 +113,12 @@ def attributeInstanceIn : Linter where run := withSetOptionIn fun stx => do
     return
   if (← MonadState.get).messages.hasErrors then
     return
-  if let some stx := stx.find? fun s => ! (getAttrInstance s).2.isEmpty then
-    let (id, nonScopedNorLocal) := getAttrInstance stx
-    let _ ← nonScopedNorLocal.mapM fun attr =>
-    Linter.logLint linter.attributeInstanceIn attr m!
-    "Despite the `in`, the attribute '{attr}' is added globally to '{id}'\n\
-    please remove the `in` or make this a `local instance` instead"
+  for s in stx.topDown do
+    if let .some (id, nonScopedNorLocal) := getAttrInstance? s then
+      for attr in nonScopedNorLocal do
+        Linter.logLint linter.attributeInstanceIn attr m!
+          "Despite the `in`, the attribute '{attr}' is added globally to '{id}'\n\
+          please remove the `in` or make this a `local instance` instead"
 
 initialize addLinter attributeInstanceIn
 
