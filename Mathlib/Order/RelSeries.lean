@@ -98,20 +98,20 @@ lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
   intros i h
   convert x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
 
-lemma toList_ne_empty (x : RelSeries r) : x.toList ≠ [] := fun m =>
+lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
 
 /-- Every nonempty list satisfying the chain condition gives a relation series-/
 @[simps]
-def fromListChain' (x : List α) (x_ne_empty : x ≠ []) (hx : x.Chain' r) : RelSeries r where
+def fromListChain' (x : List α) (x_ne_nil : x ≠ []) (hx : x.Chain' r) : RelSeries r where
   length := x.length.pred
-  toFun := x.get ∘ Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x_ne_empty)
+  toFun := x.get ∘ Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x_ne_nil)
   step i := List.chain'_iff_get.mp hx i i.2
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
 corresponds to each other. -/
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} where
-  toFun x := ⟨_, x.toList_ne_empty, x.toList_chain'⟩
+  toFun x := ⟨_, x.toList_ne_nil, x.toList_chain'⟩
   invFun x := fromListChain' _ x.2.1 x.2.2
   left_inv x := ext (by simp [toList]) <| by ext; apply List.get_ofFn
   right_inv x := by

@@ -181,7 +181,7 @@ theorem total {s : CompositionSeries X} {x y : X} (hx : x ∈ s) (hy : y ∈ s) 
 #align composition_series.to_list RelSeries.toList
 #align composition_series.ext_fun RelSeries.ext
 #align composition_series.length_to_list RelSeries.length_toList
-#align composition_series.to_list_ne_nil RelSeries.toList_ne_empty
+#align composition_series.to_list_ne_nil RelSeries.toList_ne_nil
 #align composition_series.to_list_injective RelSeries.toList_injective
 
 #align composition_series.chain'_to_list RelSeries.toList_chain'
