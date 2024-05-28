@@ -330,13 +330,13 @@ theorem ωScottContinuous.to_monotone {f : α → β} (hf : ωScottContinuous f)
 alias Continuous'.to_monotone := ωScottContinuous.to_monotone
 #align omega_complete_partial_order.continuous'.to_monotone OmegaCompletePartialOrder.ωScottContinuous.to_monotone
 
-theorem Continuous.of_bundled (f : α → β) (hf : Monotone f) (hf' : Continuous ⟨f, hf⟩) :
+theorem Continuous.of_bundled (f : α → β) (_ : Monotone f) (hf' : ωScottContinuous f) :
     ωScottContinuous f :=
-  continuous'_iff_ωScottContinuous.mp ⟨hf, hf'⟩
+  hf'
 #align omega_complete_partial_order.continuous.of_bundled OmegaCompletePartialOrder.Continuous.of_bundled
 
-theorem Continuous.of_bundled' (f : α →o β) (hf' : Continuous f) : ωScottContinuous f :=
-  continuous'_iff_ωScottContinuous.mp ⟨f.mono, hf'⟩
+theorem Continuous.of_bundled' (f : α →o β) (hf' : ωScottContinuous f) : ωScottContinuous f :=
+  hf'
 #align omega_complete_partial_order.continuous.of_bundled' OmegaCompletePartialOrder.Continuous.of_bundled'
 
 theorem ωScottContinuous.to_bundled (f : α → β) (hf : ωScottContinuous f) :
@@ -353,20 +353,29 @@ alias continuous'_coe := ωScottContinuous_coe
 
 variable (f : α →o β) (g : β →o γ)
 
-theorem continuous_id : Continuous (@OrderHom.id α _) := by intro c; rw [c.map_id]; rfl
+theorem continuous_id : ωScottContinuous (@OrderHom.id α _) := by
+  exact continuous'_coe.mpr (congrFun rfl)
 #align omega_complete_partial_order.continuous_id OmegaCompletePartialOrder.continuous_id
 
-theorem continuous_comp (hfc : Continuous f) (hgc : Continuous g) : Continuous (g.comp f) := by
-  dsimp [Continuous] at *; intro;
-  rw [hfc, hgc, Chain.map_comp]
+theorem continuous_comp (hfc : ωScottContinuous f) (hgc : ωScottContinuous g) :
+    ωScottContinuous (g.comp f) := by
+  rw [← continuous'_iff_ωScottContinuous] at *
+  dsimp [Continuous] at *; intros;
+  cases' hfc with hf₁ hf₂
+  cases' hgc with hg₁ hg₂
+  use (Monotone.comp hg₁ hf₁)
+  intro
+  rw [hf₂, hg₂, Chain.map_comp]
 #align omega_complete_partial_order.continuous_comp OmegaCompletePartialOrder.continuous_comp
 
-theorem id_ωScottContinuous_coe : ωScottContinuous (@id α) := continuous_id.of_bundled' _
+theorem id_ωScottContinuous_coe : ωScottContinuous (@id α) := continuous_id
 alias id_continuous' := id_ωScottContinuous_coe
 #align omega_complete_partial_order.id_continuous' OmegaCompletePartialOrder.id_continuous'
 
-theorem continuous_const (x : β) : Continuous (OrderHom.const α x) := fun c =>
-  eq_of_forall_ge_iff fun z => by rw [ωSup_le_iff, Chain.map_coe, OrderHom.const_coe_coe]; simp
+theorem continuous_const (x : β) : ωScottContinuous (OrderHom.const α x) := by
+  rw [← continuous'_iff_ωScottContinuous]
+  use OrderHom.monotone ((OrderHom.const α) x)
+  apply fun c => eq_of_forall_ge_iff fun z => by rw [ωSup_le_iff, Chain.map_coe]; simp
 #align omega_complete_partial_order.continuous_const OmegaCompletePartialOrder.continuous_const
 
 theorem const_ωScottContinuous (x : β) : ωScottContinuous (Function.const α x) :=
@@ -550,12 +559,18 @@ instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α w
 
 variable {α} {β : Type v} [OmegaCompletePartialOrder α] [CompleteLattice β]
 
-theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, Continuous f) : Continuous (sSup s) := by
+theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, ωScottContinuous f) :
+    ωScottContinuous (sSup s : (α →o β)) := by
+  rw [← continuous'_iff_ωScottContinuous]
+  simp_rw [← continuous'_iff_ωScottContinuous, OrderHom.monotone, exists_true_left] at hs
+  use (OrderHom.monotone (sSup s))
   intro c
   apply eq_of_forall_ge_iff
   intro z
   suffices (∀ f ∈ s, ∀ (n), (f : _) (c n) ≤ z) ↔ ∀ (n), ∀ f ∈ s, (f : _) (c n) ≤ z by
-    simpa (config := { contextual := true }) [ωSup_le_iff, hs _ _ _] using this
+    simp (config := { contextual := true }) only [OrderHom.coe_mk, OrderHom.sSup_apply, iSup_le_iff,
+      ωSup_le_iff, Chain.map_coe, Function.comp_apply]
+
   exact ⟨fun H n f hf => H f hf n, fun H f hf n => H n f hf⟩
 #align complete_lattice.Sup_continuous CompleteLattice.sSup_continuous
 
