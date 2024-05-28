@@ -725,16 +725,14 @@ variable [PseudoMetricSpace β] [AddCommMonoid β] [BoundedAdd β] [ContinuousAd
 instance instAddCommMonoid : AddCommMonoid (α →ᵇ β) where
   add_comm f g := by ext; simp [add_comm]
 
-open BigOperators
-
 @[simp]
 theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) :
-    ⇑(∑ i in s, f i) = ∑ i in s, (f i : α → β) :=
+    ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, (f i : α → β) :=
   map_sum coeFnAddHom f s
 #align bounded_continuous_function.coe_sum BoundedContinuousFunction.coe_sum
 
 theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) (a : α) :
-    (∑ i in s, f i) a = ∑ i in s, f i a := by simp
+    (∑ i ∈ s, f i) a = ∑ i ∈ s, f i a := by simp
 #align bounded_continuous_function.sum_apply BoundedContinuousFunction.sum_apply
 
 end comm_add

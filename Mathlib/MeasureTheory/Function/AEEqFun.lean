@@ -69,9 +69,6 @@ function space, almost everywhere equal, `L⁰`, ae_eq_fun
 
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 open scoped Classical
@@ -242,7 +239,7 @@ end compQuasiMeasurePreserving
 
 section compMeasurePreserving
 
-variable [MeasurableSpace β] {ν : MeasureTheory.Measure β}
+variable [MeasurableSpace β] {ν : MeasureTheory.Measure β} {f : α → β} {g : β → γ}
 
 /-- Composition of an almost everywhere equal function and a quasi measure preserving function.
 
@@ -252,8 +249,7 @@ def compMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : MeasurePr
   g.compQuasiMeasurePreserving f hf.quasiMeasurePreserving
 
 @[simp]
-theorem compMeasurePreserving_mk {g : β → γ} (hg : AEStronglyMeasurable g ν)
-    (hf : MeasurePreserving f μ ν) :
+theorem compMeasurePreserving_mk (hg : AEStronglyMeasurable g ν) (hf : MeasurePreserving f μ ν) :
     (mk g hg).compMeasurePreserving f hf =
       mk (g ∘ f) (hg.comp_quasiMeasurePreserving hf.quasiMeasurePreserving) :=
   rfl
@@ -292,6 +288,12 @@ theorem coeFn_comp (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) : 
   rw [comp_eq_mk]
   apply coeFn_mk
 #align measure_theory.ae_eq_fun.coe_fn_comp MeasureTheory.AEEqFun.coeFn_comp
+
+theorem comp_compQuasiMeasurePreserving [MeasurableSpace β] {ν} (g : γ → δ) (hg : Continuous g)
+    (f : β →ₘ[ν] γ) {φ : α → β} (hφ : Measure.QuasiMeasurePreserving φ μ ν) :
+    (comp g hg f).compQuasiMeasurePreserving φ hφ =
+      comp g hg (f.compQuasiMeasurePreserving φ hφ) := by
+  rcases f; rfl
 
 section CompMeasurable
 
@@ -432,10 +434,10 @@ theorem coeFn_comp₂Measurable (g : β → γ → δ) (hg : Measurable (uncurry
 
 end
 
-/-- Interpret `f : α →ₘ[μ] β` as a germ at `μ.ae` forgetting that `f` is almost everywhere
+/-- Interpret `f : α →ₘ[μ] β` as a germ at `ae μ` forgetting that `f` is almost everywhere
     strongly measurable. -/
-def toGerm (f : α →ₘ[μ] β) : Germ μ.ae β :=
-  Quotient.liftOn' f (fun f => ((f : α → β) : Germ μ.ae β)) fun _ _ H => Germ.coe_eq.2 H
+def toGerm (f : α →ₘ[μ] β) : Germ (ae μ) β :=
+  Quotient.liftOn' f (fun f => ((f : α → β) : Germ (ae μ) β)) fun _ _ H => Germ.coe_eq.2 H
 #align measure_theory.ae_eq_fun.to_germ MeasureTheory.AEEqFun.toGerm
 
 @[simp]
@@ -446,9 +448,22 @@ theorem mk_toGerm (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β).toGerm = f
 theorem toGerm_eq (f : α →ₘ[μ] β) : f.toGerm = (f : α → β) := by rw [← mk_toGerm, mk_coeFn]
 #align measure_theory.ae_eq_fun.to_germ_eq MeasureTheory.AEEqFun.toGerm_eq
 
-theorem toGerm_injective : Injective (toGerm : (α →ₘ[μ] β) → Germ μ.ae β) := fun f g H =>
+theorem toGerm_injective : Injective (toGerm : (α →ₘ[μ] β) → Germ (ae μ) β) := fun f g H =>
   ext <| Germ.coe_eq.1 <| by rwa [← toGerm_eq, ← toGerm_eq]
 #align measure_theory.ae_eq_fun.to_germ_injective MeasureTheory.AEEqFun.toGerm_injective
+
+@[simp]
+theorem compQuasiMeasurePreserving_toGerm [MeasurableSpace β] {f : α → β} {ν}
+    (g : β →ₘ[ν] γ) (hf : Measure.QuasiMeasurePreserving f μ ν) :
+    (g.compQuasiMeasurePreserving f hf).toGerm = g.toGerm.compTendsto f hf.tendsto_ae := by
+  rcases g; rfl
+
+@[simp]
+theorem compMeasurePreserving_toGerm [MeasurableSpace β] {f : α → β} {ν}
+    (g : β →ₘ[ν] γ) (hf : MeasurePreserving f μ ν) :
+    (g.compMeasurePreserving f hf).toGerm =
+      g.toGerm.compTendsto f hf.quasiMeasurePreserving.tendsto_ae :=
+  compQuasiMeasurePreserving_toGerm _ _
 
 theorem comp_toGerm (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) :
     (comp g hg f).toGerm = f.toGerm.map g :=
@@ -755,7 +770,7 @@ instance instMonoid : Monoid (α →ₘ[μ] γ) :=
 
 /-- `AEEqFun.toGerm` as a `MonoidHom`. -/
 @[to_additive (attr := simps) "`AEEqFun.toGerm` as an `AddMonoidHom`."]
-def toGermMonoidHom : (α →ₘ[μ] γ) →* μ.ae.Germ γ where
+def toGermMonoidHom : (α →ₘ[μ] γ) →* (ae μ).Germ γ where
   toFun := toGerm
   map_one' := one_toGerm
   map_mul' := mul_toGerm

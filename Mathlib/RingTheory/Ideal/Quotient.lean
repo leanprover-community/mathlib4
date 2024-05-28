@@ -30,7 +30,6 @@ universe u v w
 namespace Ideal
 
 open Set
-open BigOperators
 
 variable {R : Type u} [CommRing R] (I : Ideal R) {a b : R}
 variable {S : Type v}

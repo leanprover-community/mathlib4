@@ -22,15 +22,13 @@ variable {R : Type*} [CancelCommMonoidWithZero R]
 
 open Finset
 
-open BigOperators
-
-/-- If `x * y = a * ∏ i in s, p i` where `p i` is always prime, then
+/-- If `x * y = a * ∏ i ∈ s, p i` where `p i` is always prime, then
   `x` and `y` can both be written as a divisor of `a` multiplied by
   a product over a subset of `s`  -/
 theorem mul_eq_mul_prime_prod {α : Type*} [DecidableEq α] {x y a : R} {s : Finset α} {p : α → R}
-    (hp : ∀ i ∈ s, Prime (p i)) (hx : x * y = a * ∏ i in s, p i) :
+    (hp : ∀ i ∈ s, Prime (p i)) (hx : x * y = a * ∏ i ∈ s, p i) :
     ∃ (t u : Finset α) (b c : R),
-      t ∪ u = s ∧ Disjoint t u ∧ a = b * c ∧ (x = b * ∏ i in t, p i) ∧ y = c * ∏ i in u, p i := by
+      t ∪ u = s ∧ Disjoint t u ∧ a = b * c ∧ (x = b * ∏ i ∈ t, p i) ∧ y = c * ∏ i ∈ u, p i := by
   induction' s using Finset.induction with i s his ih generalizing x y a
   · exact ⟨∅, ∅, x, y, by simp [hx]⟩
   · rw [prod_insert his, ← mul_assoc] at hx

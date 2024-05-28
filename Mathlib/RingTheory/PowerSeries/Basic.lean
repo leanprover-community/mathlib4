@@ -48,8 +48,6 @@ Occasionally this leads to proofs that are uglier than expected.
 
 noncomputable section
 
-open BigOperators
-
 open Finset (antidiagonal mem_antidiagonal)
 
 /-- Formal power series over a coefficient type `R` -/
@@ -330,7 +328,7 @@ theorem coeff_zero_one : coeff R 0 (1 : R⟦X⟧) = 1 :=
 #align power_series.coeff_zero_one PowerSeries.coeff_zero_one
 
 theorem coeff_mul (n : ℕ) (φ ψ : R⟦X⟧) :
-    coeff R n (φ * ψ) = ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
+    coeff R n (φ * ψ) = ∑ p ∈ antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
   -- `rw` can't see that `PowerSeries = MvPowerSeries Unit`, so use `.trans`
   refine (MvPowerSeries.coeff_mul _ φ ψ).trans ?_
   rw [Finsupp.antidiagonal_single, Finset.sum_map]
@@ -660,7 +658,7 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 
 /-- Coefficients of a product of power series -/
 theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
-    coeff R d (∏ j in s, f j) = ∑ l in piAntidiagonal s d, ∏ i in s, coeff R (l i) (f i) := by
+    coeff R d (∏ j ∈ s, f j) = ∑ l ∈ piAntidiagonal s d, ∏ i ∈ s, coeff R (l i) (f i) := by
   simp only [coeff]
   convert MvPowerSeries.coeff_prod _ _ _
   rw [← AddEquiv.finsuppUnique_symm d, ← mapRange_piAntidiagonal_eq, sum_map, sum_congr rfl]

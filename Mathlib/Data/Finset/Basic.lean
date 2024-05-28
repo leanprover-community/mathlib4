@@ -27,8 +27,8 @@ worry about it explicitly.
 
 Finsets give a basic foundation for defining finite sums and products over types:
 
-  1. `∑ i in (s : Finset α), f i`;
-  2. `∏ i in (s : Finset α), f i`.
+  1. `∑ i ∈ (s : Finset α), f i`;
+  2. `∏ i ∈ (s : Finset α), f i`.
 
 Lean refers to these operations as big operators.
 More information can be found in `Mathlib.Algebra.BigOperators.Basic`.
@@ -1248,15 +1248,13 @@ theorem ssubset_insert (h : a ∉ s) : s ⊂ insert a s :=
 
 @[elab_as_elim]
 theorem cons_induction {α : Type*} {p : Finset α → Prop} (empty : p ∅)
-    (cons : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
+    (cons : ∀ (a : α) (s : Finset α) (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
   | ⟨s, nd⟩ => by
     induction s using Multiset.induction with
     | empty => exact empty
-    | @cons a s IH =>
-      cases' nodup_cons.1 nd with m nd'
-      rw [← (eq_of_veq _ : Finset.cons a ⟨s, _⟩ m = ⟨a ::ₘ s, nd⟩)]
-      · exact cons m (IH nd')
-      · rw [cons_val]
+    | cons a s IH =>
+      rw [mk_cons nd]
+      exact cons a _ _ (IH _)
 #align finset.cons_induction Finset.cons_induction
 
 @[elab_as_elim]
@@ -1302,14 +1300,15 @@ singletons and that if it holds for nonempty `t : Finset α`, then it also holds
 obtained by inserting an element in `t`. -/
 @[elab_as_elim]
 theorem Nonempty.cons_induction {α : Type*} {p : ∀ s : Finset α, s.Nonempty → Prop}
-    (h₀ : ∀ a, p {a} (singleton_nonempty _))
-    (h₁ : ∀ ⦃a⦄ (s) (h : a ∉ s) (hs), p s hs → p (Finset.cons a s h) (nonempty_cons h))
+    (singleton : ∀ a, p {a} (singleton_nonempty _))
+    (cons : ∀ a s (h : a ∉ s) (hs), p s hs → p (Finset.cons a s h) (nonempty_cons h))
     {s : Finset α} (hs : s.Nonempty) : p s hs := by
-  induction' s using Finset.cons_induction with a t ha h
-  · exact (not_nonempty_empty hs).elim
-  obtain rfl | ht := t.eq_empty_or_nonempty
-  · exact h₀ a
-  · exact h₁ t ha ht (h ht)
+  induction s using Finset.cons_induction with
+  | empty => exact (not_nonempty_empty hs).elim
+  | cons a t ha h =>
+    obtain rfl | ht := t.eq_empty_or_nonempty
+    · exact singleton a
+    · exact cons a t ha ht (h ht)
 #align finset.nonempty.cons_induction Finset.Nonempty.cons_induction
 
 lemma Nonempty.exists_cons_eq (hs : s.Nonempty) : ∃ t a ha, cons a t ha = s :=

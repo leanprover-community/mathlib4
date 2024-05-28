@@ -395,8 +395,6 @@ variable {R M}
 
 section Coprime
 
-open BigOperators
-
 variable {ι : Type*} {p : ι → Ideal R} {S : Finset ι}
 variable (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
 
@@ -452,7 +450,7 @@ theorem supIndep_torsionBySet_ideal : S.SupIndep fun i => torsionBySet R M <| p 
 variable {q : ι → R} (hq : (S : Set ι).Pairwise <| (IsCoprime on q))
 
 theorem iSup_torsionBy_eq_torsionBy_prod :
-    ⨆ i ∈ S, torsionBy R M (q i) = torsionBy R M (∏ i in S, q i) := by
+    ⨆ i ∈ S, torsionBy R M (q i) = torsionBy R M (∏ i ∈ S, q i) := by
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ←
     Ideal.finset_inf_span_singleton _ _ hq, Finset.inf_eq_iInf, ←
     iSup_torsionBySet_ideal_eq_torsionBySet_iInf]
@@ -482,8 +480,6 @@ variable [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace Submodule
 
-open BigOperators
-
 variable {ι : Type*} [DecidableEq ι] {S : Finset ι}
 
 /-- If the `p i` are pairwise coprime, a `⨅ i, p i`-torsion module is the internal direct sum of
@@ -504,7 +500,7 @@ theorem torsionBySet_isInternal {p : ι → Ideal R}
 /-- If the `q i` are pairwise coprime, a `∏ i, q i`-torsion module is the internal direct sum of
 its `q i`-torsion submodules. -/
 theorem torsionBy_isInternal {q : ι → R} (hq : (S : Set ι).Pairwise <| (IsCoprime on q))
-    (hM : Module.IsTorsionBy R M <| ∏ i in S, q i) :
+    (hM : Module.IsTorsionBy R M <| ∏ i ∈ S, q i) :
     DirectSum.IsInternal fun i : S => torsionBy R M <| q i := by
   rw [← Module.isTorsionBySet_span_singleton_iff, Ideal.submodule_span_eq, ←
     Ideal.finset_inf_span_singleton _ _ hq, Finset.inf_eq_iInf] at hM
@@ -744,8 +740,6 @@ section Torsion
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-open BigOperators
-
 variable (R M)
 
 theorem _root_.Module.isTorsionBySet_annihilator_top :
@@ -758,7 +752,7 @@ variable {R M}
 theorem _root_.Submodule.annihilator_top_inter_nonZeroDivisors [Module.Finite R M]
     (hM : Module.IsTorsion R M) : ((⊤ : Submodule R M).annihilator : Set R) ∩ R⁰ ≠ ∅ := by
   obtain ⟨S, hS⟩ := ‹Module.Finite R M›.out
-  refine Set.Nonempty.ne_empty ⟨_, ?_, (∏ x in S, (@hM x).choose : R⁰).prop⟩
+  refine Set.Nonempty.ne_empty ⟨_, ?_, (∏ x ∈ S, (@hM x).choose : R⁰).prop⟩
   rw [Submonoid.coe_finset_prod, SetLike.mem_coe, ← hS, mem_annihilator_span]
   intro n
   letI := Classical.decEq M

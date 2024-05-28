@@ -19,7 +19,7 @@ import Mathlib.Tactic.Ring
 
 This file proves the four functions theorem. The statement is that if
 `f₁ a * f₂ b ≤ f₃ (a ⊓ b) * f₄ (a ⊔ b)` for all `a`, `b` in a finite distributive lattice, then
-`(∑ x in s, f₁ x) * (∑ x in t, f₂ x) ≤ (∑ x in s ⊼ t, f₃ x) * (∑ x in s ⊻ t, f₄ x)` where
+`(∑ x ∈ s, f₁ x) * (∑ x ∈ t, f₂ x) ≤ (∑ x ∈ s ⊼ t, f₃ x) * (∑ x ∈ s ⊻ t, f₄ x)` where
 `s ⊼ t = {a ⊓ b | a ∈ s, b ∈ t}`, `s ⊻ t = {a ⊔ b | a ∈ s, b ∈ t}`.
 
 The proof uses Birkhoff's representation theorem to restrict to the case where the finite
@@ -54,7 +54,7 @@ earlier file and give it a proper API.
 -/
 
 open Finset Fintype Function
-open scoped BigOperators FinsetFamily
+open scoped FinsetFamily
 
 variable {α β : Type*}
 
@@ -88,7 +88,7 @@ private lemma ineq {a₀ a₁ b₀ b₁ c₀ c₁ d₀ d₁ : β}
     _ = (c₀ * d₁ + c₁ * d₀) * (c₀ * d₁) := by ring
 
 private def collapse (𝒜 : Finset (Finset α)) (a : α) (f : Finset α → β) (s : Finset α) : β :=
-  ∑ t in 𝒜.filter fun t ↦ t.erase a = s, f t
+  ∑ t ∈ 𝒜.filter fun t ↦ t.erase a = s, f t
 
 private lemma erase_eq_iff (hs : a ∉ s) : t.erase a = s ↔ t = s ∨ t = insert a s := by
   by_cases ht : a ∈ t <;>
@@ -213,11 +213,11 @@ lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h
     exact mul_nonneg (collapse_nonneg h₃ _) <| collapse_nonneg h₄ _
 
 lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
-    ∑ s in u.powerset, collapse 𝒜 a f s = ∑ s in 𝒜, f s := by
+    ∑ s ∈ u.powerset, collapse 𝒜 a f s = ∑ s ∈ 𝒜, f s := by
   calc
-    _ = ∑ s in u.powerset ∩ 𝒜, f s + ∑ s in u.powerset.image (insert a) ∩ 𝒜, f s := ?_
-    _ = ∑ s in u.powerset ∩ 𝒜, f s + ∑ s in ((insert a u).powerset \ u.powerset) ∩ 𝒜, f s := ?_
-    _ = ∑ s in 𝒜, f s := ?_
+    _ = ∑ s ∈ u.powerset ∩ 𝒜, f s + ∑ s ∈ u.powerset.image (insert a) ∩ 𝒜, f s := ?_
+    _ = ∑ s ∈ u.powerset ∩ 𝒜, f s + ∑ s ∈ ((insert a u).powerset \ u.powerset) ∩ 𝒜, f s := ?_
+    _ = ∑ s ∈ 𝒜, f s := ?_
   · rw [← sum_ite_mem, ← sum_ite_mem, sum_image, ← sum_add_distrib]
     · exact sum_congr rfl fun s hs ↦ collapse_eq (not_mem_mono (mem_powerset.1 hs) hu) _ _
     · exact (insert_erase_invOn.2.injOn).mono fun s hs ↦ not_mem_mono (mem_powerset.1 hs) hu
@@ -240,7 +240,7 @@ protected lemma Finset.four_functions_theorem (u : Finset α)
     (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ ⦃s⦄, s ⊆ u → ∀ ⦃t⦄, t ⊆ u → f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t))
     {𝒜 ℬ : Finset (Finset α)} (h𝒜 : 𝒜 ⊆ u.powerset) (hℬ : ℬ ⊆ u.powerset) :
-    (∑ s in 𝒜, f₁ s) * ∑ s in ℬ, f₂ s ≤ (∑ s in 𝒜 ⊼ ℬ, f₃ s) * ∑ s in 𝒜 ⊻ ℬ, f₄ s := by
+    (∑ s ∈ 𝒜, f₁ s) * ∑ s ∈ ℬ, f₂ s ≤ (∑ s ∈ 𝒜 ⊼ ℬ, f₃ s) * ∑ s ∈ 𝒜 ⊻ ℬ, f₄ s := by
   induction' u using Finset.induction with a u hu ih generalizing f₁ f₂ f₃ f₄ 𝒜 ℬ
   · simp only [Finset.powerset_empty, Finset.subset_singleton_iff] at h𝒜 hℬ
     obtain rfl | rfl := h𝒜 <;> obtain rfl | rfl := hℬ <;> simp; exact h (subset_refl ∅) subset_rfl
@@ -255,7 +255,7 @@ variable (f₁ f₂ f₃ f₄) [Fintype α]
 
 private lemma four_functions_theorem_aux (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ s t, f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t)) (𝒜 ℬ : Finset (Finset α)) :
-    (∑ s in 𝒜, f₁ s) * ∑ s in ℬ, f₂ s ≤ (∑ s in 𝒜 ⊼ ℬ, f₃ s) * ∑ s in 𝒜 ⊻ ℬ, f₄ s := by
+    (∑ s ∈ 𝒜, f₁ s) * ∑ s ∈ ℬ, f₂ s ≤ (∑ s ∈ 𝒜 ⊼ ℬ, f₃ s) * ∑ s ∈ 𝒜 ⊻ ℬ, f₄ s := by
   refine univ.four_functions_theorem h₁ h₂ h₃ h₄ ?_ ?_ ?_ <;> simp [h]
 
 end Finset
@@ -267,7 +267,7 @@ variable [DistribLattice α] [LinearOrderedCommSemiring β] [ExistsAddOfLE β]
 /-- The **Four Functions Theorem**, aka **Ahlswede-Daykin Inequality**. -/
 lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ a b, f₁ a * f₂ b ≤ f₃ (a ⊓ b) * f₄ (a ⊔ b)) (s t : Finset α) :
-    (∑ a in s, f₁ a) * ∑ a in t, f₂ a ≤ (∑ a in s ⊼ t, f₃ a) * ∑ a in s ⊻ t, f₄ a := by
+    (∑ a ∈ s, f₁ a) * ∑ a ∈ t, f₂ a ≤ (∑ a ∈ s ⊼ t, f₃ a) * ∑ a ∈ s ⊻ t, f₄ a := by
   classical
   set L : Sublattice α := ⟨latticeClosure (s ∪ t), isSublattice_latticeClosure.1,
     isSublattice_latticeClosure.2⟩
