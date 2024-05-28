@@ -470,7 +470,7 @@ theorem IsNoetherian.injective_of_surjective_of_injective (i f : N →ₗ[R] M)
   obtain ⟨n, H⟩ := monotone_stabilizes_iff_noetherian.2 ‹_›
     ⟨_, monotone_nat_of_le_succ <| f.iterateMapComap_le_succ i ⊥ (by simp)⟩
   exact LinearMap.ker_eq_bot.1 <| bot_unique <|
-    f.ker_le_of_iterateMapComap_eq_succ i ⊥ (by simp) n (H _ (Nat.le_succ _)) hf hi
+    f.ker_le_of_iterateMapComap_eq_succ i ⊥ n (H _ (Nat.le_succ _)) hf hi
 
 /-- **Orzech's theorem** for Noetherian module: if `R` is a ring (not necessarily commutative),
 `M` is a Noetherian `R`-module, `N` is a submodule, `f : N →ₗ[R] M` is surjective, then `f` is also
