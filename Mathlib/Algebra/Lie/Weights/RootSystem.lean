@@ -50,7 +50,7 @@ private lemma chainLength_aux {x} (hx : x ∈ rootSpace H (chainTop α β)) :
 def chainLength (α β : Weight K H L) : ℕ :=
   letI := Classical.propDecidable
   if hα : α.IsZero then 0 else
-    (chainLength_prop α β hα (chainTop α β).exists_ne_zero.choose_spec.1).choose
+    (chainLength_aux α β hα (chainTop α β).exists_ne_zero.choose_spec.1).choose
 
 lemma chainLength_of_isZero (hα : α.IsZero) : chainLength α β = 0 := dif_pos hα
 
@@ -70,7 +70,7 @@ lemma chainLength_smul {x} (hx : x ∈ rootSpace H (chainTop α β)) :
     (chainLength α β : K) • x = ⁅coroot α, x⁆ := by
   rw [← nsmul_eq_smul_cast, chainLength_nsmul _ _ hx]
 
-lemma apply_coroot_eq_cast :
+lemma apply_coroot_eq_cast' :
     β (coroot α) = ↑(chainLength α β - 2 * chainTopCoeff α β : ℤ) := by
   by_cases hα : α.IsZero
   · rw [coroot_eq_zero_iff.mpr hα, chainLength, dif_pos hα, hα.eq, chainTopCoeff_zero, map_zero,
@@ -102,10 +102,10 @@ lemma rootSpace_neg_nsmul_add_chainTop_of_lt {n : ℕ} (hn : chainLength α β <
   let W : Weight K H L := ⟨_, e⟩
   have hW : (W : H → K) = - (n • α) + chainTop α β := rfl
   have H₁ : 1 + n + chainTopCoeff (-α) W ≤ chainLength (-α) W := by
-    have := apply_coroot_eq_cast (-α) W
+    have := apply_coroot_eq_cast' (-α) W
     simp only [coroot_neg, map_neg, hW, nsmul_eq_mul, Pi.natCast_def, coe_chainTop, zsmul_eq_mul,
       Int.cast_natCast, Pi.add_apply, Pi.neg_apply, Pi.mul_apply, root_apply_coroot hα, mul_two,
-      neg_add_rev, apply_coroot_eq_cast α β, Int.cast_sub, Int.cast_mul, Int.cast_ofNat,
+      neg_add_rev, apply_coroot_eq_cast' α β, Int.cast_sub, Int.cast_mul, Int.cast_ofNat,
       mul_comm (2 : K), add_sub_cancel, neg_neg, add_sub, Nat.cast_inj,
       eq_sub_iff_add_eq, ← Nat.cast_add, ← sub_eq_neg_add, sub_eq_iff_eq_add] at this
     linarith [this, hn]
@@ -152,12 +152,6 @@ lemma chainBotCoeff_add_chainTopCoeff :
       ← nsmul_eq_smul_cast]
     exact weightSpace_chainTopCoeff_add_one_nsmul_add (-α) β (Weight.IsNonZero.neg hα)
 
-@[simp]
-lemma chainLength_neg :
-    chainLength (-α) β = chainLength α β := by
-  rw [← chainBotCoeff_add_chainTopCoeff, ← chainBotCoeff_add_chainTopCoeff, add_comm,
-    Weight.coe_neg, chainTopCoeff_neg, chainBotCoeff_neg]
-
 lemma chainTopCoeff_add_chainBotCoeff :
     chainTopCoeff α β + chainBotCoeff α β = chainLength α β := by
   rw [add_comm, chainBotCoeff_add_chainTopCoeff]
@@ -165,11 +159,17 @@ lemma chainTopCoeff_add_chainBotCoeff :
 lemma chainBotCoeff_le_chainLength : chainBotCoeff α β ≤ chainLength α β :=
   (Nat.le_add_left _ _).trans_eq (chainTopCoeff_add_chainBotCoeff α β)
 
+@[simp]
+lemma chainLength_neg :
+    chainLength (-α) β = chainLength α β := by
+  rw [← chainBotCoeff_add_chainTopCoeff, ← chainBotCoeff_add_chainTopCoeff, add_comm,
+    Weight.coe_neg, chainTopCoeff_neg, chainBotCoeff_neg]
+
 /-- If `β - qα ... β ... β + rα` is the `α`-chain through `β`, then
   `β (coroot α) = q - r`. In particular, it is an integer. -/
-lemma apply_coroot :
+lemma apply_coroot_eq_cast :
     β (coroot α) = (chainBotCoeff α β - chainTopCoeff α β : ℤ) := by
-  rw [apply_coroot_eq_cast, ← chainTopCoeff_add_chainBotCoeff]; congr 1; omega
+  rw [apply_coroot_eq_cast', ← chainTopCoeff_add_chainBotCoeff]; congr 1; omega
 
 /-- Members of the `α`-chain through `β` are the only roots of the form `β - kα`. -/
 lemma rootSpace_zsmul_add_ne_bot_iff (n : ℤ) :
