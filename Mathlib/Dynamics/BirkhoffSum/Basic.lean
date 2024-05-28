@@ -18,7 +18,6 @@ See also `birkhoffAverage` defined in `Dynamics/BirkhoffSum/Average`.
 -/
 
 open Finset Function
-open scoped BigOperators
 
 section AddCommMonoid
 

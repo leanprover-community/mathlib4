@@ -35,7 +35,7 @@ theorem nat_gcd_helper_dvd_right (x y : ℕ) (h : x % y = 0) : Nat.gcd x y = y :
 
 theorem nat_gcd_helper_2 (d x y a b : ℕ) (hu : x % d = 0) (hv : y % d = 0)
     (h : x * a = y * b + d) : Nat.gcd x y = d := by
-  rw [← Int.coe_nat_gcd]
+  rw [← Int.gcd_natCast_natCast]
   apply int_gcd_helper' a (-b)
     (Int.natCast_dvd_natCast.mpr (Nat.dvd_of_mod_eq_zero hu))
     (Int.natCast_dvd_natCast.mpr (Nat.dvd_of_mod_eq_zero hv))

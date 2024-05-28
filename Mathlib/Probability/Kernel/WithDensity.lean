@@ -33,7 +33,7 @@ an s-finite kernel.
 
 open MeasureTheory ProbabilityTheory
 
-open scoped MeasureTheory ENNReal NNReal BigOperators
+open scoped MeasureTheory ENNReal NNReal
 
 namespace ProbabilityTheory.kernel
 
