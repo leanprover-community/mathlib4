@@ -128,12 +128,12 @@ variable [OrderedCancelAddCommMonoid Γ] [AddCommMonoid V] [SMul R V]
 instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ R V) where
   smul x y := (of R) ({
     coeff := fun a =>
-      ∑ ij in addAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
+      ∑ ij ∈ addAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
         x.coeff ij.fst • ((of R).symm y).coeff ij.snd
     isPWO_support' :=
         haveI h :
           { a : Γ |
-              (∑ ij : Γ × Γ in addAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
+              (∑ ij : Γ × Γ ∈ addAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
                   x.coeff ij.fst • y.coeff ij.snd) ≠ 0 } ⊆
             { a : Γ |
                 (addAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a).Nonempty } := by
@@ -192,7 +192,7 @@ theorem smul_coeff_left [SMulWithZero R V] {x : HahnSeries Γ R}
     {y : HahnModule Γ R V} {a : Γ} {s : Set Γ}
     (hs : s.IsPWO) (hxs : x.support ⊆ s) :
     ((of R).symm <| x • y).coeff a =
-      ∑ ij in addAntidiagonal hs ((of R).symm y).isPWO_support a,
+      ∑ ij ∈ addAntidiagonal hs ((of R).symm y).isPWO_support a,
         x.coeff ij.fst • ((of R).symm y).coeff ij.snd := by
   rw [smul_coeff]
   apply sum_subset_zero_on_sdiff (addAntidiagonal_mono_left hxs) _ fun _ _ => rfl
