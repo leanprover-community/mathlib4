@@ -266,8 +266,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
     refine congr_arg (_ '' ·) ?_
     rw [Set.eq_preimage_iff_image_eq, ← Set.image_comp]
     swap
-    · change Function.Bijective ((CategoryTheory.forget _).map (D.t j i).base)
-      apply CategoryTheory.ConcreteCategory.bijective_of_isIso
+    · exact CategoryTheory.ConcreteCategory.bijective_of_isIso (C := TopCat) _
     change (D.t i j ≫ D.t j i).base '' _ = _
     rw [𝖣.t_inv]
     simp

@@ -253,7 +253,8 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
   ext x
   constructor
   · rintro ⟨y, rfl⟩
-    simp_rw [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range] -- sizable changes in this proof after #13170
+    simp_rw [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
+    -- sizable changes in this proof after #13170
     erw  [← comp_apply, ← comp_apply]
     simp_rw [Limits.prod.map_fst,
       Limits.prod.map_snd, comp_apply]
