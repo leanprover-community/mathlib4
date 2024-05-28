@@ -148,7 +148,6 @@ variable {X : Type u} [Lattice X] [JordanHolderLattice X]
 #noalign composition_series.has_coe_to_fun
 #align composition_series.has_inhabited RelSeries.instInhabited
 #align composition_series.step RelSeries.membership
-#noalign composition_series.coe_fn_mk
 
 theorem lt_succ (s : CompositionSeries X) (i : Fin s.length) :
     s (Fin.castSucc i) < s (Fin.succ i) :=
@@ -249,7 +248,7 @@ theorem head_le_of_mem {s : CompositionSeries X} {x : X} (hx : x ∈ s) : s.head
 
 theorem last_eraseLast_le (s : CompositionSeries X) : s.eraseLast.last ≤ s.last := by
   simp [eraseLast, last, s.strictMono.le_iff_le, Fin.le_iff_val_le_val, tsub_le_self]
-#align composition_series.erase_top_top_le CompositionSeries.eraseLast_last_le
+#align composition_series.erase_top_top_le CompositionSeries.last_eraseLast_le
 
 #align composition_series.bot_erase_top RelSeries.head_eraseLast
 
