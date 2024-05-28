@@ -376,7 +376,7 @@ def pullbackConeOfLeftFst :
                     · erw [TopCat.pullbackIsoProdSubtype_inv_snd_apply]
                   · rintro _ ⟨x, h₁, rfl⟩
                     -- next line used to be `exact ⟨_, h₁, ConcreteCategory.congr_hom pullback.condition x⟩))` before #13170
-                    refine ⟨_, h₁, ?_⟩ 
+                    refine ⟨_, h₁, ?_⟩
                     change (_ ≫ f.base) _ = (_ ≫ g.base) _
                     rw [pullback.condition]))
       naturality := by
