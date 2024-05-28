@@ -697,7 +697,7 @@ protected theorem le_sup_iff (ha : ⊥ < a) : a ≤ s.sup f ↔ ∃ b ∈ s, a �
   apply Iff.intro
   · induction s using cons_induction with
     | empty => exact (absurd · (not_le_of_lt ha))
-    | @cons c t hc ih =>
+    | cons c t hc ih =>
       rw [sup_cons, le_sup_iff]
       exact fun
       | Or.inl h => ⟨c, mem_cons.2 (Or.inl rfl), h⟩
@@ -710,7 +710,7 @@ protected theorem lt_sup_iff : a < s.sup f ↔ ∃ b ∈ s, a < f b := by
   apply Iff.intro
   · induction s using cons_induction with
     | empty => exact (absurd · not_lt_bot)
-    | @cons c t hc ih =>
+    | cons c t hc ih =>
       rw [sup_cons, lt_sup_iff]
       exact fun
       | Or.inl h => ⟨c, mem_cons.2 (Or.inl rfl), h⟩
