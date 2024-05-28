@@ -484,10 +484,12 @@ lemma ringEquivCongr_val {a b : ℕ} (h : a = b) (x : ZMod a) :
   subst h
   cases a <;> rfl
 
-lemma int_coe_ringEquivCongr {a b : ℕ} (h : a = b) (z : ℤ) :
+lemma ringEquivCongr_intCast {a b : ℕ} (h : a = b) (z : ℤ) :
     ZMod.ringEquivCongr h z = z := by
   subst h
   cases a <;> rfl
+
+@[deprecated (since := "2024-05-25")] alias int_coe_ringEquivCongr := ringEquivCongr_intCast
 
 end CharEq
 
@@ -564,7 +566,7 @@ theorem cast_sub_one {R : Type*} [Ring R] {n : ℕ} (k : ZMod n) :
       · exact hk
 #align zmod.cast_sub_one ZMod.cast_sub_one
 
-theorem nat_coe_zmod_eq_iff (p : ℕ) (n : ℕ) (z : ZMod p) [NeZero p] :
+theorem natCast_eq_iff (p : ℕ) (n : ℕ) (z : ZMod p) [NeZero p] :
     ↑n = z ↔ ∃ k, n = z.val + p * k := by
   constructor
   · rintro rfl
@@ -573,9 +575,9 @@ theorem nat_coe_zmod_eq_iff (p : ℕ) (n : ℕ) (z : ZMod p) [NeZero p] :
   · rintro ⟨k, rfl⟩
     rw [Nat.cast_add, natCast_zmod_val, Nat.cast_mul, natCast_self, zero_mul,
       add_zero]
-#align zmod.nat_coe_zmod_eq_iff ZMod.nat_coe_zmod_eq_iff
+#align zmod.nat_coe_zmod_eq_iff ZMod.natCast_eq_iff
 
-theorem int_coe_zmod_eq_iff (p : ℕ) (n : ℤ) (z : ZMod p) [NeZero p] :
+theorem intCast_eq_iff (p : ℕ) (n : ℤ) (z : ZMod p) [NeZero p] :
     ↑n = z ↔ ∃ k, n = z.val + p * k := by
   constructor
   · rintro rfl
@@ -584,7 +586,10 @@ theorem int_coe_zmod_eq_iff (p : ℕ) (n : ℤ) (z : ZMod p) [NeZero p] :
   · rintro ⟨k, rfl⟩
     rw [Int.cast_add, Int.cast_mul, Int.cast_natCast, Int.cast_natCast, natCast_val,
       ZMod.natCast_self, zero_mul, add_zero, cast_id]
-#align zmod.int_coe_zmod_eq_iff ZMod.int_coe_zmod_eq_iff
+#align zmod.int_coe_zmod_eq_iff ZMod.intCast_eq_iff
+
+@[deprecated (since := "2024-05-25")] alias nat_coe_zmod_eq_iff := natCast_eq_iff
+@[deprecated (since := "2024-05-25")] alias int_coe_zmod_eq_iff := intCast_eq_iff
 
 @[push_cast, simp]
 theorem intCast_mod (a : ℤ) (b : ℕ) : ((a % b : ℤ) : ZMod b) = (a : ZMod b) := by

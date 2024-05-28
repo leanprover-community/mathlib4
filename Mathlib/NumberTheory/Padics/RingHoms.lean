@@ -143,7 +143,7 @@ theorem zmod_congr_of_sub_mem_span_aux (n : ℕ) (x : ℤ_[p]) (a b : ℤ)
     (ha : x - a ∈ (Ideal.span {(p : ℤ_[p]) ^ n}))
     (hb : x - b ∈ (Ideal.span {(p : ℤ_[p]) ^ n})) : (a : ZMod (p ^ n)) = b := by
   rw [Ideal.mem_span_singleton] at ha hb
-  rw [← sub_eq_zero, ← Int.cast_sub, ZMod.intCast_zmod_eq_zero_iff_dvd, Int.coe_nat_pow]
+  rw [← sub_eq_zero, ← Int.cast_sub, ZMod.intCast_zmod_eq_zero_iff_dvd, Int.natCast_pow]
   rw [← dvd_neg, neg_sub] at ha
   have := dvd_add ha hb
   rwa [sub_eq_add_neg, sub_eq_add_neg, add_assoc, neg_add_cancel_left, ← sub_eq_add_neg, ←
@@ -499,7 +499,7 @@ variable {f}
 theorem pow_dvd_nthHom_sub (r : R) (i j : ℕ) (h : i ≤ j) :
     (p : ℤ) ^ i ∣ nthHom f r j - nthHom f r i := by
   specialize f_compat i j h
-  rw [← Int.coe_nat_pow, ← ZMod.intCast_zmod_eq_zero_iff_dvd, Int.cast_sub]
+  rw [← Int.natCast_pow, ← ZMod.intCast_zmod_eq_zero_iff_dvd, Int.cast_sub]
   dsimp [nthHom]
   rw [← f_compat, RingHom.comp_apply]
   simp only [ZMod.cast_id, ZMod.castHom_apply, sub_self, ZMod.natCast_val, ZMod.intCast_cast]
