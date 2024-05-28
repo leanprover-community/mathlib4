@@ -1328,3 +1328,27 @@ instance (priority := 100) LinearOrderedCommRing.toLinearOrderedCommSemiring
 @[deprecated] alias zero_lt_mul_right := mul_pos_iff_of_pos_right
 
 assert_not_exists MonoidHom
+
+-- lower instance priorities to avoid instance synthesis trying this early
+attribute [instance 50] OrderedSemiring.toSemiring
+attribute [instance 50] OrderedCommSemiring.toCommSemiring
+attribute [instance 50] OrderedRing.toRing
+attribute [instance 50] OrderedCommRing.toCommRing
+attribute [instance 50] StrictOrderedSemiring.toSemiring
+attribute [instance 50] StrictOrderedCommSemiring.toCommSemiring
+attribute [instance 50] StrictOrderedRing.toRing
+attribute [instance 50] StrictOrderedCommRing.toCommRing
+attribute [instance 50] LinearOrderedCommRing.toCommMonoid
+
+-- add higer-priority versions in scope `AlgebraOrderInstances`
+namespace AlgebraOrderInstances
+attribute [scoped instance 1000] OrderedSemiring.toSemiring
+attribute [scoped instance 1000] OrderedCommSemiring.toCommSemiring
+attribute [scoped instance 1000] OrderedRing.toRing
+attribute [scoped instance 1000] OrderedCommRing.toCommRing
+attribute [scoped instance 1000] StrictOrderedSemiring.toSemiring
+attribute [scoped instance 1000] StrictOrderedCommSemiring.toCommSemiring
+attribute [scoped instance 1000] StrictOrderedRing.toRing
+attribute [scoped instance 1000] StrictOrderedCommRing.toCommRing
+attribute [scoped instance 1000] LinearOrderedCommRing.toCommMonoid
+end AlgebraOrderInstances

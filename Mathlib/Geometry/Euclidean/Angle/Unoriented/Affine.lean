@@ -25,6 +25,8 @@ This file defines unoriented angles in Euclidean affine spaces.
 Prove the triangle inequality for the angle.
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
 
 noncomputable section
 

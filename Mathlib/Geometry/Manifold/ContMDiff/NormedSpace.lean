@@ -15,6 +15,9 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
 
 -/
 
+-- give instances relating normed stuff to algebra higher priority
+open scoped AlgebraNormedInstances
+
 open Set ChartedSpace SmoothManifoldWithCorners
 open scoped Topology Manifold
 

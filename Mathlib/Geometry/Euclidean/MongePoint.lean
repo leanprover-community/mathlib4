@@ -48,6 +48,8 @@ generalization, the Monge point of a simplex.
 
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
 
 noncomputable section
 

@@ -30,6 +30,8 @@ modulo `2 * π` as equalities of `(2 : ℤ) • θ`.
 
 -/
 
+-- make instances relating normed stuff to algebra have higher priority
+open scoped AlgebraNormedInstances
 
 noncomputable section
 

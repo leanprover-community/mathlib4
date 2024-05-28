@@ -26,6 +26,8 @@ Euclidean affine spaces.
 
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
 
 noncomputable section
 

@@ -12,6 +12,9 @@ This file contains lemmas about how operator norm on continuous linear maps inte
 
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
+
 open Asymptotics
 
 set_option linter.uppercaseLean3 false

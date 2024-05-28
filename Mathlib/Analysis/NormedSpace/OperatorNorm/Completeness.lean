@@ -15,6 +15,9 @@ version of the Banach-Alaoglu theorem (`ContinuousLinearMap.isCompact_image_coe_
 
 suppress_compilation
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
+
 open Bornology Metric Set Real
 open Filter hiding map_smul
 open scoped Classical NNReal Topology Uniformity

@@ -57,6 +57,8 @@ function from local functions.
 smooth bump function, partition of unity
 -/
 
+-- give instances relating normed stuff to algebra higher priority
+open scoped AlgebraNormedInstances
 
 universe uι uE uH uM uF
 

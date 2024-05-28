@@ -16,6 +16,9 @@ underlying space has a norm (rather than just a seminorm).
 
 suppress_compilation
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
+
 open Bornology
 open Filter hiding map_smul
 open scoped Classical NNReal Topology Uniformity

@@ -38,6 +38,8 @@ conformal
 The definition of conformality in this file does NOT require the maps to be orientation-preserving.
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
 
 noncomputable section
 

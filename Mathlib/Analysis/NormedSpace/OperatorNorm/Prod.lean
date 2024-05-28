@@ -11,6 +11,9 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
 Interaction of operator norm with Cartesian products.
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
+
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
 
 open Set Real Metric ContinuousLinearMap

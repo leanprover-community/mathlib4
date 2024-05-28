@@ -101,3 +101,13 @@ lemma zpow_pos_of_pos (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
   | (n : ℕ) => by rw [zpow_natCast]; exact pow_pos ha _
   | -(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
 #align zpow_pos_of_pos zpow_pos_of_pos
+
+-- lower instance priorities to avoid instance synthesis trying this early
+attribute [instance 50] LinearOrderedSemifield.toSemifield
+attribute [instance 50] LinearOrderedField.toField
+
+-- add higer-priority versions in scope `AlgebraOrderInstances`
+namespace AlgebraOrderInstances
+attribute [scoped instance 1000] LinearOrderedSemifield.toSemifield
+attribute [scoped instance 1000] LinearOrderedField.toField
+end AlgebraOrderInstances

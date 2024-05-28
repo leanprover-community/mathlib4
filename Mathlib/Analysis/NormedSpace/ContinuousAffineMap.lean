@@ -40,6 +40,8 @@ submultiplicative: for a composition of maps, we have only `‖f.comp g‖ ≤ �
 
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
 
 namespace ContinuousAffineMap
 

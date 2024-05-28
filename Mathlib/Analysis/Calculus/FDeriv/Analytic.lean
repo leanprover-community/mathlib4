@@ -21,6 +21,9 @@ As an application, we show that continuous multilinear maps are smooth. We also 
 iterated derivatives, in `ContinuousMultilinearMap.iteratedFDeriv_eq`.
 -/
 
+-- give instances relating normed stuff to algebra higher priority
+open scoped AlgebraNormedInstances
+
 open Filter Asymptotics
 
 open scoped ENNReal BigOperators

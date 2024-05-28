@@ -20,6 +20,8 @@ through a point on that sphere.
 
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
 
 noncomputable section
 

@@ -35,6 +35,9 @@ an isometry for every `i`), then we have `projectiveSeminorm ⨂ₜ[𝕜] i, m�
 
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
+
 universe uι u𝕜 uE uF
 
 variable {ι : Type uι} [Fintype ι]

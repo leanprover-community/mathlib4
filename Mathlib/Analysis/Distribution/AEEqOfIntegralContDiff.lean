@@ -22,6 +22,9 @@ These are deduced from the same results on finite-dimensional real manifolds, gi
 as `ae_eq_zero_of_integral_smooth_smul_eq_zero` and `ae_eq_of_integral_smooth_smul_eq`.
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
+
 open MeasureTheory Filter Metric Function Set TopologicalSpace
 
 open scoped Topology Manifold

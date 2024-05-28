@@ -514,3 +514,13 @@ def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
 end NormedAlgebra
 
 end RestrictScalars
+
+-- lower instance priorities to avoid instance synthesis trying this early
+attribute [instance 50] NormedSpace.toModule
+attribute [instance 50] NormedAlgebra.toAlgebra
+
+-- add higer-priority versions in scope `AlgebraNormedInstances`
+namespace AlgebraNormedInstances
+attribute [scoped instance 1000] NormedSpace.toModule
+attribute [scoped instance 1000] NormedAlgebra.toAlgebra
+end AlgebraNormedInstances

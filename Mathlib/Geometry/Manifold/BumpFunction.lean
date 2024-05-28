@@ -29,6 +29,9 @@ The actual statements involve (pre)images under `extChartAt I f` and are given a
 manifold, smooth bump function
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
+
 universe uE uF uH uM
 
 variable {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]

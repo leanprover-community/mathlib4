@@ -334,3 +334,11 @@ theorem IsClosed.vadd_right_of_isCompact {s : Set V} {t : Set P} (hs : IsClosed 
   exact (eq_vadd_iff_vsub_eq _ _ _).mp (hav (φ n)).symm
 
 end Pointwise
+
+-- lower instance priorities to avoid instance synthesis trying this early
+attribute [instance 50] NormedAddTorsor.toAddTorsor
+
+-- add higer-priority versions in scope `AlgebraNormedInstances`
+namespace AlgebraNormedInstances
+attribute [scoped instance 1000] NormedAddTorsor.toAddTorsor
+end AlgebraNormedInstances

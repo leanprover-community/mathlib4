@@ -17,6 +17,8 @@ import Mathlib.Topology.Instances.RealVectorSpace
 This file contains lemmas about normed additive torsors over normed spaces.
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
 
 noncomputable section
 

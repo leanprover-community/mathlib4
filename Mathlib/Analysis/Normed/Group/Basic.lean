@@ -2893,3 +2893,25 @@ instance normedAddCommGroup [Ring 𝕜] [NormedAddCommGroup E] [Module 𝕜 E]
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 end Submodule
+
+-- lower instance priorities to avoid instance synthesis trying this early
+attribute [instance 50] SeminormedAddGroup.toAddGroup
+attribute [instance 50] SeminormedGroup.toGroup
+attribute [instance 50] NormedAddGroup.toAddGroup
+attribute [instance 50] NormedGroup.toGroup
+attribute [instance 50] SeminormedAddCommGroup.toAddCommGroup
+attribute [instance 50] SeminormedCommGroup.toCommGroup
+attribute [instance 50] NormedAddCommGroup.toAddCommGroup
+attribute [instance 50] NormedCommGroup.toCommGroup
+
+-- add higer-priority versions in scope `AlgebraNormedInstances`
+namespace AlgebraNormedInstances
+attribute [scoped instance 1000] SeminormedAddGroup.toAddGroup
+attribute [scoped instance 1000] SeminormedGroup.toGroup
+attribute [scoped instance 1000] NormedAddGroup.toAddGroup
+attribute [scoped instance 1000] NormedGroup.toGroup
+attribute [scoped instance 1000] SeminormedAddCommGroup.toAddCommGroup
+attribute [scoped instance 1000] SeminormedCommGroup.toCommGroup
+attribute [scoped instance 1000] NormedAddCommGroup.toAddCommGroup
+attribute [scoped instance 1000] NormedCommGroup.toCommGroup
+end AlgebraNormedInstances

@@ -35,6 +35,8 @@ theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` wh
 dual
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
 
 noncomputable section
 

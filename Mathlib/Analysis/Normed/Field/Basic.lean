@@ -1296,3 +1296,17 @@ end SubringClass
 
 -- Guard against import creep.
 assert_not_exists RestrictScalars
+
+-- lower instance priorityies to avoid instance synthesis trying this early
+attribute [instance 50] SeminormedRing.toRing
+attribute [instance 50] NonUnitalNormedRing.toNonUnitalRing
+attribute [instance 50] NormedRing.toRing
+attribute [instance 50] NormedDivisionRing.toDivisionRing
+
+-- add higer-priority versions in scope `AlgebraNormedInstances`
+namespace AlgebraNormedInstances
+attribute [scoped instance 1000] SeminormedRing.toRing
+attribute [scoped instance 1000] NonUnitalNormedRing.toNonUnitalRing
+attribute [scoped instance 1000] NormedRing.toRing
+attribute [scoped instance 1000] NormedDivisionRing.toDivisionRing
+end AlgebraNormedInstances

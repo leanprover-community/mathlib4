@@ -51,6 +51,8 @@ non-Riemann filter (e.g., Henstock-Kurzweil and McShane).
 integral
 -/
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
 
 open scoped BigOperators Classical Topology NNReal Filter Uniformity BoxIntegral
 

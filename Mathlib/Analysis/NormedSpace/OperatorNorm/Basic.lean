@@ -30,6 +30,9 @@ is isometric, as expressed by the typeclass `[RingHomIsometric σ]`.
 
 suppress_compilation
 
+-- make instances connecting normed things and algebra have higher priority
+open scoped AlgebraNormedInstances
+
 open Bornology
 open Filter hiding map_smul
 open scoped Classical NNReal Topology Uniformity

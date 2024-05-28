@@ -143,6 +143,8 @@ Bochner integral, simple function, function space, Lebesgue dominated convergenc
 
 -/
 
+-- give instances relating normed stuff to algebra higher priority
+open scoped AlgebraNormedInstances
 
 assert_not_exists Differentiable
 
