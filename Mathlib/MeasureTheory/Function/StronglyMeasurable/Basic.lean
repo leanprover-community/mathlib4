@@ -452,7 +452,7 @@ protected theorem div [Div β] [ContinuousDiv β] (hf : StronglyMeasurable f)
 #align measure_theory.strongly_measurable.div MeasureTheory.StronglyMeasurable.div
 #align measure_theory.strongly_measurable.sub MeasureTheory.StronglyMeasurable.sub
 
-@[to_additive (attr := measurability)]
+@[to_additive]
 theorem mul_iff_right [CommGroup β] [TopologicalGroup β] (hf : StronglyMeasurable f) :
     StronglyMeasurable (f * g) ↔ StronglyMeasurable g :=
   ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
