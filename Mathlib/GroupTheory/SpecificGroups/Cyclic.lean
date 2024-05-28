@@ -46,8 +46,6 @@ variable {α : Type u} {a : α}
 
 section Cyclic
 
-open BigOperators
-
 attribute [local instance] setFintype
 
 open Subgroup

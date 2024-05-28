@@ -148,7 +148,7 @@ assert_not_exists Differentiable
 
 noncomputable section
 
-open scoped Topology BigOperators NNReal ENNReal MeasureTheory
+open scoped Topology NNReal ENNReal MeasureTheory
 
 open Set Filter TopologicalSpace ENNReal EMetric
 

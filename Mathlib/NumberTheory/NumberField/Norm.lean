@@ -22,7 +22,7 @@ rings of integers.
 -/
 
 
-open scoped NumberField BigOperators
+open scoped NumberField
 
 open Finset NumberField Algebra FiniteDimensional
 

@@ -17,8 +17,6 @@ of monoids and groups
 -/
 
 
-open BigOperators
-
 namespace Pi
 
 @[to_additive]

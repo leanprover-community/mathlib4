@@ -220,8 +220,6 @@ end DecEq
 
 section FinrankQuotientMap
 
-open scoped BigOperators
-
 open scoped nonZeroDivisors
 
 variable [Algebra R S]
@@ -801,8 +799,6 @@ noncomputable def Factors.piQuotientLinearEquiv (p : Ideal R) (hp : map (algebra
 #align ideal.factors.pi_quotient_linear_equiv Ideal.Factors.piQuotientLinearEquiv
 
 variable {S}
-
-open scoped BigOperators
 
 /-- The **fundamental identity** of ramification index `e` and inertia degree `f`:
 for `P` ranging over the primes lying over `p`, `∑ P, e P * f P = [Frac(S) : Frac(R)]`;
