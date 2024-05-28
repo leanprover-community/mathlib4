@@ -38,9 +38,6 @@ namespace RelSeries
 instance : CoeFun (RelSeries r) (fun x ↦ Fin (x.length + 1) → α) :=
 { coe := RelSeries.toFun }
 
-@[simp]
-lemma toFun_eq_coe (x : RelSeries r) : x.toFun = ⇑x := rfl
-
 /--
 For any type `α`, each term of `α` gives a relation series with the right most index to be 0.
 -/
