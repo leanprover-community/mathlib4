@@ -37,12 +37,12 @@ open Lean Elab
 This avoids producing two declarations with the same name in the environment.
 -/
 def toExample {m : Type → Type} [Monad m] [MonadQuotation m] : Syntax → m Syntax
-  | `($dm:declModifiers theorem $_did:declId $ds* : $t $dv:declVal) =>
-    `($dm:declModifiers example $ds* : $t $dv:declVal)
-  | `($dm:declModifiers lemma $_did:declId $ds* : $t $dv:declVal) =>
-    `($dm:declModifiers example $ds* : $t $dv:declVal)
-  | `($dm:declModifiers instance $_did:declId $ds* : $t $dv:declVal) =>
-    `($dm:declModifiers example $ds* : $t $dv:declVal)
+  | `($_dm:declModifiers theorem $_did:declId $ds* : $t $dv:declVal) =>
+    `(example $ds* : $t $dv:declVal)
+  | `($_dm:declModifiers lemma $_did:declId $ds* : $t $dv:declVal) =>
+    `(example $ds* : $t $dv:declVal)
+  | `($_dm:declModifiers instance $_did:declId $ds* : $t $dv:declVal) =>
+    `(example $ds* : $t $dv:declVal)
   | s => return s
 
 /-- extracts the `Array` of subsyntax of the input `Syntax` that satisfies the given predicate
@@ -144,20 +144,42 @@ of missing `?`, collecting their positions.  Eventually, it returns an array of 
 * `0` means that the `position` is a missing `?`.
 -/
 def getQuestions' (cmd : Syntax) :
-    Command.CommandElabM (Array (Syntax × Array (Option String.Pos))) := do
-  let s ← get
+    Command.CommandElabM (List (Nat × String.Pos)) := do
+  let exm ← toExample cmd
+  let st ← get
+  --let origMsgsSize := s.messages.msgs.toArray.size
+  --let mut mms := #[]
+  --dbg_trace origMsgsSize
   let refine's := getRefine's cmd
+  --logInfo m!"{refine's}"
   let mut opts := #[]
+  let mut refs := #[]
   for refine' in refine's do
+    --let mut current := #[]
     let refine := refine'ToRefine refine'
     let cands := candidateRefines refine
     for cand in cands do
-      let repl ← cmd.replaceM fun s => if s == refine' then return some cand else return none
+      let repl ← exm.replaceM fun s => if s == refine' then return some cand else return none
       Command.elabCommand repl
-      if !(← get).messages.hasErrors then opts := opts.push cand
-      set s
+      --mms := mms.push (repl, ← (← get).messages.msgs.toArray.mapM (·.toString))
+      --dbg_trace (← get).messages.msgs.toArray.size
+      if !(← get).messages.hasErrors then
+        opts := opts.push cand
+        refs := refs.push refine'.getPos?
+        --current := current.push (0, cand.getPos?)
+      set st
+    --newOpts := newOpts.push ((1, refine'.getPos?), current)
+
+    --logInfo m!"{newOpts}"
+--    logInfo m!"{refine'.getPos?}"
   let positions := opts.map fun s => let hs := getHoles s; hs.map (·.getPos?)
-  return opts.zip positions
+--  let newPositions := newOpts.map fun (n, s) =>
+--    let hs := getHoles s
+--    hs.map fun h : Syntax => (n, h.getPos?)
+--  --logInfo m!"{mms}"
+  logInfo m!"{opts.zip positions}"
+  return (refs.zipWith positions fun a b =>
+    #[(1, a.getD default)] ++ (b.map (0, ·.getD default))).flatten.toList
 
 /-- checks whether a `MessageData` refers to an error of a missing `?` is `refine`. -/
 def isSyntPlaceHolder : MessageData → Bool
@@ -217,6 +239,6 @@ def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.refine'To
 def refine'ToRefineLinter : Linter where run stx := do
   if getLinterHash (← getOptions) then
     let pos ← getQuestions' stx
-    if pos != #[] then logInfo m!"{pos}" else logInfo "fail"
+    if ! pos.isEmpty then logInfo m!"{pos}" --else logInfo "fail"
 
 initialize addLinter refine'ToRefineLinter
