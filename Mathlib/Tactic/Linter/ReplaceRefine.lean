@@ -55,6 +55,8 @@ def _root_.Lean.Syntax.findAll : Syntax → (Syntax → Bool) → Array Syntax
     if f stx then rest.push stx else rest
   | s, f => if f s then #[s] else #[]
 
+/-- extracts "holes" `_`, taking care of not extracting them when they appear in a "synthetic hole"
+`?_`, nor in a "by assumption" `‹_›`. -/
 partial
 def getHoles : Syntax → Array Syntax
   | .node _ ``Lean.Parser.Term.syntheticHole _ => #[]
@@ -62,14 +64,14 @@ def getHoles : Syntax → Array Syntax
   | hole@(.node _ kind args) =>
     let args := (args.map getHoles).flatten
     if kind == ``Lean.Parser.Term.hole then args.push hole else args
---  | .node _ _ args => (args.map getHoles).flatten
   | _ => #[]
 
-/-- extracts "holes" `_` from the input syntax.
-Converting `refine'` to `refine`, these are the candidate nodes for the replacement `_` to `?_`.
+/-- extracts "synthetic holes" `?_` from the input syntax.
+After converting `refine'` to `refine`, these are the locations of the nodes that have been
+successfully replaced with `?_`.
 -/
-def getHoles' (stx : Syntax) : Array Syntax :=
-  stx.findAll (·.isOfKind ``Lean.Parser.Term.hole)
+def getSynthHoles (stx : Syntax) : Array Syntax :=
+  stx.findAll (·.isOfKind ``Lean.Parser.Term.syntheticHole)
 
 /-- converts an "anonymous hole" `_` to a "synthetic hole" `?_` with comparable
 `SourceInfo`.
@@ -91,6 +93,7 @@ The intended application is when `stx` is a syntax node representing `refine' ..
 def candidateRefines (stx : Syntax) : Array Syntax := Id.run do
   let mut cands := #[]
   let holes := getHoles stx
+  dbg_trace holes.map (·.getPos?)
   for sub in holes.toList.sublistsFast do
     let mut newCmd := stx
     for s in sub do
@@ -128,7 +131,7 @@ def getQuestions (cmd : Syntax) :
       let repl ← exm.replaceM fun s => if s == refine' then return some cand else return none
       Command.elabCommand repl
       if !(← get).messages.hasErrors then
-        suma := suma.push ((Syntax.getHead? refine').getD default, getHoles' cand)
+        suma := suma.push ((Syntax.getHead? refine').getD default, getSynthHoles cand)
         break
       set st
   return suma
@@ -138,10 +141,16 @@ def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.refine'To
 
 /-- Reports the positions of missing `?`. -/
 def refine'ToRefineLinter : Linter where run stx := do
+  let fm ← getFileMap
   if getLinterHash (← getOptions) then
     let pos ← getQuestions stx
     for (r, hls) in pos do
-      logInfoAt r m!"{r.getPos?}"
-      let _ ← hls.mapM fun hl => (logInfoAt hl m!"{hl.getPos?.getD default}")
+      let rPos := r.getPos?.getD default
+      let lc := fm.toPosition rPos
+      logInfoAt r m!"(1, {lc.1}, {lc.2})"
+      let _ ← hls.mapM fun hl =>
+        let hlPos := hl.getPos?.getD default
+        let hlc := fm.toPosition hlPos
+        (logInfoAt hl m!"(0, {hlc.1}, {hlc.2})")
 
 initialize addLinter refine'ToRefineLinter
