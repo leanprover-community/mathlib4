@@ -248,8 +248,8 @@ noncomputable def quotientInfRingEquivPiQuotient [Finite ι] (f : ι → Ideal R
 /-- Corollary of Chinese Remainder Theorem: if `f i` are pairwise coprime ideals in a
 commutative ring then the canonical map `R → ∏ (R ⧸ f i)` is surjective. -/
 lemma pi_quotient_surjective {R : Type*} [CommRing R] {ι : Type*} [Finite ι] (f : ι → Ideal R)
-    (hf : Pairwise fun i j ↦ IsCoprime (f i) (f j)) (x : (i : ι) → R ⧸ f i) : ∃ r : R,
-    ∀ i, r = x i := by
+    (hf : Pairwise fun i j ↦ IsCoprime (f i) (f j)) (x : (i : ι) → R ⧸ f i) :
+    ∃ r : R, ∀ i, r = x i := by
   obtain ⟨y, rfl⟩ := Ideal.quotientInfToPiQuotient_surj hf x
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective y
   exact ⟨r, fun i ↦ rfl⟩
