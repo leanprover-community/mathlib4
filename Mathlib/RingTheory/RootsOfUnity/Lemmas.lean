@@ -19,13 +19,6 @@ see `IsPrimitiveRoot.prod_one_sub_pow_eq_order` and its variant
 We use this to deduce that `n` is divisible by `(μ - 1)^k` in `ℤ[μ] ⊆ R` when `k < n`.
 -/
 
-/-- If `A` is an `R`-algebra and `μ : A`, then `μ^k-1` is divisible by `μ-1` in `R[μ] ⊆ A`. -/
-lemma Algebra.adjoin.sub_one_dvd_pow_sub_one (R : Type*) {A : Type*} [CommRing R] [CommRing A]
-    [Algebra R A] (μ : A) (k : ℕ) :
-    ∃ z ∈ adjoin R {μ}, μ ^ k - 1 = z * (μ - 1) := by
-  refine ⟨(Finset.range k).sum (μ ^ ·), ?_, (geom_sum_mul μ k).symm⟩
-  exact Subalgebra.sum_mem _ fun m _ ↦ Subalgebra.pow_mem _ (self_mem_adjoin_singleton _ μ) _
-
 variable {R : Type*} [CommRing R] [IsDomain R]
 
 namespace IsPrimitiveRoot
@@ -50,15 +43,19 @@ lemma prod_pow_sub_one_eq_order {n : ℕ} {μ : R} (hμ : IsPrimitiveRoot μ (n 
   have : (-1 : R) ^ n = ∏ k ∈ range n, -1 := by rw [prod_const, card_range]
   simp only [this, ← prod_mul_distrib, neg_one_mul, neg_sub, ← prod_one_sub_pow_eq_order hμ]
 
+open Algebra in
 /-- If `μ` is a primitive `n`th root of unity in `R` and `k < n`, then `n` is divisible
 by `(μ-1)^k` in `ℤ[μ] ⊆ R`. -/
 lemma order_eq_mul_self_sub_one_pow {k n : ℕ} (hn : k < n) {μ : R} (hμ : IsPrimitiveRoot μ n) :
-    ∃ z ∈ Algebra.adjoin ℤ {μ}, n = z * (μ - 1) ^ k := by
+    ∃ z ∈ adjoin ℤ {μ}, n = z * (μ - 1) ^ k := by
   let n' + 1 := n
   obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_le' (Nat.le_of_lt_succ hn)
-  let Z k := Classical.choose <| Algebra.adjoin.sub_one_dvd_pow_sub_one ℤ μ k
-  have Zdef k : Z k ∈ Algebra.adjoin ℤ {μ} ∧ μ ^ k - 1 = Z k * (μ - 1) :=
-    Classical.choose_spec <| Algebra.adjoin.sub_one_dvd_pow_sub_one ℤ μ k
+  have hdvd (k) : ∃ z ∈ adjoin ℤ {μ}, μ ^ k - 1 = z * (μ - 1) := by
+    refine ⟨(Finset.range k).sum (μ ^ ·), ?_, (geom_sum_mul μ k).symm⟩
+    exact Subalgebra.sum_mem _ fun m _ ↦ Subalgebra.pow_mem _ (self_mem_adjoin_singleton _ μ) _
+  let Z k := Classical.choose <| hdvd k
+  have Zdef k : Z k ∈ adjoin ℤ {μ} ∧ μ ^ k - 1 = Z k * (μ - 1) :=
+    Classical.choose_spec <| hdvd k
   refine ⟨(-1) ^ (m + k) * (∏ j ∈ range k, Z (j + 1)) * ∏ j ∈ Ico k (m + k), (μ ^ (j + 1) - 1),
     ?_, ?_⟩
   · apply Subalgebra.mul_mem
@@ -67,7 +64,7 @@ lemma order_eq_mul_self_sub_one_pow {k n : ℕ} (hn : k < n) {μ : R} (hμ : IsP
       · exact Subalgebra.prod_mem _ fun _ _ ↦ (Zdef _).1
     · refine Subalgebra.prod_mem _ fun _ _ ↦ ?_
       apply Subalgebra.sub_mem
-      · exact Subalgebra.pow_mem _ (Algebra.self_mem_adjoin_singleton ℤ μ) _
+      · exact Subalgebra.pow_mem _ (self_mem_adjoin_singleton ℤ μ) _
       · exact Subalgebra.one_mem _
   · push_cast
     have := Nat.cast_add (R := R) m k ▸ hμ.prod_pow_sub_one_eq_order
