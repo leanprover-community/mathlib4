@@ -111,13 +111,13 @@ def PreservesPullback.iso : G.obj (pullback f g) ≅ pullback (G.map f) (G.map g
   IsLimit.conePointUniqueUpToIso (isLimitOfHasPullbackOfPreservesLimit G f g) (limit.isLimit _)
 #align category_theory.limits.preserves_pullback.iso CategoryTheory.Limits.PreservesPullback.iso
 
-@[reassoc]
+@[reassoc (attr := simp)]
 theorem PreservesPullback.iso_hom_fst :
     (PreservesPullback.iso G f g).hom ≫ pullback.fst = G.map pullback.fst := by
   simp [PreservesPullback.iso]
 #align category_theory.limits.preserves_pullback.iso_hom_fst CategoryTheory.Limits.PreservesPullback.iso_hom_fst
 
-@[reassoc]
+@[reassoc (attr := simp)]
 theorem PreservesPullback.iso_hom_snd :
     (PreservesPullback.iso G f g).hom ≫ pullback.snd = G.map pullback.snd := by
   simp [PreservesPullback.iso]
