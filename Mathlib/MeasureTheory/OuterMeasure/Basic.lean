@@ -129,6 +129,9 @@ theorem measure_union_null_iff : μ (s ∪ t) = 0 ↔ μ s = 0 ∧ μ t = 0 := b
 theorem measure_union_null (hs : μ s = 0) (ht : μ t = 0) : μ (s ∪ t) = 0 := by simp [*]
 #align measure_theory.measure_union_null MeasureTheory.measure_union_null
 
+lemma measure_null_iff_singleton (hs : s.Countable) : μ s = 0 ↔ ∀ x ∈ s, μ {x} = 0 := by
+  rw [← measure_biUnion_null_iff hs, biUnion_of_singleton]
+
 /-- Let `μ` be an (outer) measure; let `s : ι → Set α` be a sequence of sets, `S = ⋃ n, s n`.
 If `μ (S \ s n)` tends to zero along some nontrivial filter (usually `Filter.atTop` on `ι = ℕ`),
 then `μ S = ⨆ n, μ (s n)`. -/
