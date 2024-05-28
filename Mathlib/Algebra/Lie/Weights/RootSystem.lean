@@ -205,6 +205,10 @@ lemma rootSpace_zsmul_add_ne_bot_iff (n : ℤ) :
     rwa [coe_chainTop, nsmul_eq_smul_cast ℤ, ← neg_smul,
       ← add_assoc, ← add_smul, ← sub_eq_neg_add] at this
 
+lemma rootSpace_zsmul_add_ne_bot_iff_mem (n : ℤ) :
+    rootSpace H (n • α + β) ≠ ⊥ ↔ n ∈ Finset.Icc (-chainBotCoeff α β : ℤ) (chainTopCoeff α β) := by
+  rw [rootSpace_zsmul_add_ne_bot_iff α β hα n, Finset.mem_Icc, and_comm, neg_le]
+
 lemma chainTopCoeff_of_eq_zsmul_add (β' : Weight K H L) (n : ℤ) (hβ' : (β' : H → K) = n • α + β) :
     chainTopCoeff α β' = chainTopCoeff α β - n := by
   apply le_antisymm
