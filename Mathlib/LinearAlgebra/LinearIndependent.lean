@@ -215,6 +215,7 @@ lemma LinearIndependent.eq_zero_of_pair {x y : M} (h : LinearIndependent R ![x, 
     Finset.mem_univ, forall_true_left] at this
   exact ⟨this 0, this 1⟩
 
+/-- Also see `LinearIndependent.pair_iff'` for a simpler version over fields. -/
 lemma LinearIndependent.pair_iff {x y : M} :
     LinearIndependent R ![x, y] ↔ ∀ (s t : R), s • x + t • y = 0 → s = 0 ∧ t = 0 := by
   refine ⟨fun h s t hst ↦ h.eq_zero_of_pair hst, fun h ↦ ?_⟩
@@ -1357,6 +1358,21 @@ theorem linearIndependent_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x
   pair_comm y x ▸ (linearIndependent_singleton hx).insert <|
     mt mem_span_singleton.1 (not_exists.2 hy)
 #align linear_independent_pair linearIndependent_pair
+
+/-- Also see `LinearIndependent.pair_iff` for the version over arbitrary rings. -/
+theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :
+    LinearIndependent K ![x, y] ↔ ∀ a : K, a • x ≠ y := by
+  rw [LinearIndependent.pair_iff]
+  constructor
+  · intro H a ha
+    have := (H a (-1) (by simpa [← sub_eq_add_neg, sub_eq_zero])).2
+    simp only [neg_eq_zero, one_ne_zero] at this
+  · intro H s t hst
+    by_cases ht : t = 0
+    · exact ⟨by simpa [ht, hx] using hst, ht⟩
+    apply_fun (t⁻¹ • ·) at hst
+    simp only [smul_add, smul_smul, inv_mul_cancel ht, one_smul, smul_zero] at hst
+    cases H (-(t⁻¹ * s)) (by rwa [neg_smul, neg_eq_iff_eq_neg, eq_neg_iff_add_eq_zero])
 
 theorem linearIndependent_fin_cons {n} {v : Fin n → V} :
     LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) ↔
