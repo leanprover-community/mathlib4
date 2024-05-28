@@ -396,7 +396,7 @@ The canonical isomorphism from the opposite of the coproduct to the product in t
 category.
 -/
 def opCoproductIsoProduct :
-    op (∐ Z) ≅ ∏ (op <| Z ·) :=
+    op (∐ Z) ≅ ∏ᶜ (op <| Z ·) :=
   opCoproductIsoProduct' (coproductIsCoproduct Z) (productIsProduct (op <| Z ·))
 
 theorem opCoproductIsoProduct'_inv_comp_inj {c : Cofan Z} {f : Fan (op <| Z ·)}
@@ -487,7 +487,7 @@ The canonical isomorphism from the opposite of the product to the coproduct in t
 category.
 -/
 def opProductIsoCoproduct :
-    op (∏ Z) ≅ ∐ (op <| Z ·) :=
+    op (∏ᶜ Z) ≅ ∐ (op <| Z ·) :=
   opProductIsoCoproduct' (productIsProduct Z) (coproductIsCoproduct (op <| Z ·))
 
 theorem proj_comp_opProductIsoCoproduct'_hom {f : Fan Z} {c : Cofan (op <| Z ·)}

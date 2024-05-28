@@ -175,7 +175,7 @@ theorem cons_subset {a} {l₁ l₂ : Lists' α true} : Lists'.cons a l₁ ⊆ l�
 theorem ofList_subset {l₁ l₂ : List (Lists α)} (h : l₁ ⊆ l₂) :
     Lists'.ofList l₁ ⊆ Lists'.ofList l₂ := by
   induction' l₁ with _ _ l₁_ih; · exact Subset.nil
-  refine' Subset.cons (Lists.Equiv.refl _) _ (l₁_ih (List.subset_of_cons_subset h))
+  refine Subset.cons (Lists.Equiv.refl _) ?_ (l₁_ih (List.subset_of_cons_subset h))
   simp only [List.cons_subset] at h; simp [h]
 #align lists'.of_list_subset Lists'.ofList_subset
 

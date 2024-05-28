@@ -182,7 +182,7 @@ theorem forall_measure_preimage_mul_iff (μ : Measure G) :
       IsMulLeftInvariant μ := by
   trans ∀ g, map (g * ·) μ = μ
   · simp_rw [Measure.ext_iff]
-    refine' forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => _
+    refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => ?_
     rw [map_apply (measurable_const_mul g) hA]
   exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
 #align measure_theory.forall_measure_preimage_mul_iff MeasureTheory.forall_measure_preimage_mul_iff
@@ -195,7 +195,7 @@ theorem forall_measure_preimage_mul_right_iff (μ : Measure G) :
       IsMulRightInvariant μ := by
   trans ∀ g, map (· * g) μ = μ
   · simp_rw [Measure.ext_iff]
-    refine' forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => _
+    refine forall_congr' fun g => forall_congr' fun A => forall_congr' fun hA => ?_
     rw [map_apply (measurable_mul_const g) hA]
   exact ⟨fun h => ⟨h⟩, fun h => h.1⟩
 #align measure_theory.forall_measure_preimage_mul_right_iff MeasureTheory.forall_measure_preimage_mul_right_iff
@@ -646,7 +646,7 @@ theorem isOpenPosMeasure_of_mulLeftInvariant_of_compact (K : Set G) (hK : IsComp
     compact_covered_by_mul_left_translates hK hne
   calc
     μ K ≤ μ (⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U) := measure_mono hKt
-    _ ≤ ∑ g in t, μ ((fun h : G => g * h) ⁻¹' U) := measure_biUnion_finset_le _ _
+    _ ≤ ∑ g ∈ t, μ ((fun h : G => g * h) ⁻¹' U) := measure_biUnion_finset_le _ _
     _ = 0 := by simp [measure_preimage_mul, h]
 #align measure_theory.is_open_pos_measure_of_mul_left_invariant_of_compact MeasureTheory.isOpenPosMeasure_of_mulLeftInvariant_of_compact
 #align measure_theory.is_open_pos_measure_of_add_left_invariant_of_compact MeasureTheory.isOpenPosMeasure_of_addLeftInvariant_of_compact
@@ -703,7 +703,7 @@ theorem measure_lt_top_of_isCompact_of_isMulLeftInvariant (U : Set G) (hU : IsOp
     compact_covered_by_mul_left_translates hK h'U
   calc
     μ K ≤ μ (⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U) := measure_mono hKt
-    _ ≤ ∑ g in t, μ ((fun h : G => g * h) ⁻¹' U) := measure_biUnion_finset_le _ _
+    _ ≤ ∑ g ∈ t, μ ((fun h : G => g * h) ⁻¹' U) := measure_biUnion_finset_le _ _
     _ = Finset.card t * μ U := by simp only [measure_preimage_mul, Finset.sum_const, nsmul_eq_mul]
     _ < ∞ := ENNReal.mul_lt_top (ENNReal.natCast_ne_top _) h
 #align measure_theory.measure_lt_top_of_is_compact_of_is_mul_left_invariant MeasureTheory.measure_lt_top_of_isCompact_of_isMulLeftInvariant

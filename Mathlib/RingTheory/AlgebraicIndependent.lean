@@ -142,7 +142,7 @@ theorem map {f : A →ₐ[R] A'} (hf_inj : Set.InjOn f (adjoin R (range x))) :
   have h : ∀ p : MvPolynomial ι R, aeval x p ∈ (@aeval R _ _ _ _ _ ((↑) : range x → A)).range := by
     intro p
     rw [AlgHom.mem_range]
-    refine' ⟨MvPolynomial.rename (codRestrict x (range x) mem_range_self) p, _⟩
+    refine ⟨MvPolynomial.rename (codRestrict x (range x) mem_range_self) p, ?_⟩
     simp [Function.comp, aeval_rename]
   intro x y hxy
   rw [this] at hxy
@@ -322,7 +322,7 @@ theorem AlgebraicIndependent.image {ι} {s : Set ι} {f : ι → A}
 theorem algebraicIndependent_iUnion_of_directed {η : Type*} [Nonempty η] {s : η → Set A}
     (hs : Directed (· ⊆ ·) s) (h : ∀ i, AlgebraicIndependent R ((↑) : s i → A)) :
     AlgebraicIndependent R ((↑) : (⋃ i, s i) → A) := by
-  refine' algebraicIndependent_of_finite (⋃ i, s i) fun t ht ft => _
+  refine algebraicIndependent_of_finite (⋃ i, s i) fun t ht ft => ?_
   rcases finite_subset_iUnion ft ht with ⟨I, fi, hI⟩
   rcases hs.finset_le fi.toFinset with ⟨i, hi⟩
   exact (h i).mono (Subset.trans hI <| iUnion₂_subset fun j hj => hi j (fi.mem_toFinset.2 hj))
@@ -343,8 +343,8 @@ theorem exists_maximal_algebraicIndependent (s t : Set A) (hst : s ⊆ t)
   rcases zorn_subset_nonempty { u : Set A | AlgebraicIndependent R ((↑) : u → A) ∧ s ⊆ u ∧ u ⊆ t }
       (fun c hc chainc hcn =>
         ⟨⋃₀ c, by
-          refine' ⟨⟨algebraicIndependent_sUnion_of_directed hcn chainc.directedOn
-              fun a ha => (hc ha).1, _, _⟩, _⟩
+          refine ⟨⟨algebraicIndependent_sUnion_of_directed hcn chainc.directedOn
+              fun a ha => (hc ha).1, ?_, ?_⟩, ?_⟩
           · cases' hcn with x hx
             exact subset_sUnion_of_subset _ x (hc hx).2.1 hx
           · exact sUnion_subset fun x hx => (hc hx).2.2
@@ -466,7 +466,7 @@ theorem AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
           Polynomial (adjoin R (Set.range x)) →+* A)
         hx.mvPolynomialOptionEquivPolynomialAdjoin.toRingHom =
       ↑(MvPolynomial.aeval fun o : Option ι => o.elim a x : MvPolynomial (Option ι) R →ₐ[R] A) := by
-  refine' MvPolynomial.ringHom_ext _ _ <;>
+  refine MvPolynomial.ringHom_ext ?_ ?_ <;>
     simp only [RingHom.comp_apply, RingEquiv.toRingHom_eq_coe, RingEquiv.coe_toRingHom,
       AlgHom.coe_toRingHom, AlgHom.coe_toRingHom]
   · intro r

@@ -198,7 +198,7 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
   · apply Monoid.exponent_dvd_of_forall_pow_eq_one
     rintro (m | m)
     · rw [← orderOf_dvd_iff_pow_eq_one, orderOf_r]
-      refine' Nat.dvd_trans ⟨gcd n m.val, _⟩ (dvd_lcm_left n 2)
+      refine Nat.dvd_trans ⟨gcd n m.val, ?_⟩ (dvd_lcm_left n 2)
       exact (Nat.div_mul_cancel (Nat.gcd_dvd_left n m.val)).symm
     · rw [← orderOf_dvd_iff_pow_eq_one, orderOf_sr]
       exact dvd_lcm_right n 2
