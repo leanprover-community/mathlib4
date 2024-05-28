@@ -1366,7 +1366,7 @@ protected theorem div [Group β] [TopologicalGroup β] (hf : AEStronglyMeasurabl
 #align measure_theory.ae_strongly_measurable.div MeasureTheory.AEStronglyMeasurable.div
 #align measure_theory.ae_strongly_measurable.sub MeasureTheory.AEStronglyMeasurable.sub
 
-@[to_additive (attr := measurability)]
+@[to_additive]
 theorem mul_iff_right [CommGroup β] [TopologicalGroup β] (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (f * g) μ ↔ AEStronglyMeasurable g μ :=
   ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
