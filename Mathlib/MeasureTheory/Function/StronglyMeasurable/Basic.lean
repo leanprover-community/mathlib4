@@ -458,7 +458,7 @@ theorem mul_iff_right [CommGroup β] [TopologicalGroup β] (hf : StronglyMeasura
   ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
     fun h ↦ hf.mul h⟩
 
-@[to_additive (attr := measurability)]
+@[to_additive]
 theorem mul_iff_left [CommGroup β] [TopologicalGroup β] (hf : StronglyMeasurable f) :
     StronglyMeasurable (g * f) ↔ StronglyMeasurable g :=
   mul_comm g f ▸ mul_iff_right hf
