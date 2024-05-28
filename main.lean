@@ -11,6 +11,7 @@ open Set MeasureTheory Filter Topology ENNReal Finset symmDiff BigOperators
 
 variable {ι : Type*} {α : ι → Type*}
 
+/--  -/
 theorem preimage_proj (I J : Finset ι) [∀ i : ι, Decidable (i ∈ I)]
     (hIJ : I ⊆ J) (s : (i : I) → Set (α i)) :
     (fun t : (∀ j : J, α j) ↦ fun i : I ↦ t ⟨i, hIJ i.2⟩) ⁻¹' (univ.pi s) =
@@ -25,6 +26,8 @@ theorem preimage_proj (I J : Finset ι) [∀ i : ι, Decidable (i ∈ I)]
 variable {X : ι → Type*} [∀ i, MeasurableSpace (X i)]
 variable (μ : (i : ι) → Measure (X i)) [hμ : ∀ i, IsProbabilityMeasure (μ i)]
 
+/-- Consider a family of probability measures. You can take their products for any fimite
+subfamily. This gives a projective family of measures, see `IsProjectiveMeasureFamily`. -/
 theorem isProjectiveMeasureFamily_pi [∀ (I : Finset ι) i, Decidable (i ∈ I)] :
     IsProjectiveMeasureFamily (fun I : Finset ι ↦ (Measure.pi (fun i : I ↦ μ i))) := by
   intro I J hJI
@@ -46,6 +49,8 @@ theorem isProjectiveMeasureFamily_pi [∀ (I : Finset ι) i, Decidable (i ∈ I)
     Finset.toFinset_coe, Finset.toFinset_coe,
     Finset.prod_subset hJI (fun _ h h' ↦ by simp [h, h'])]
 
+/-- The indicator function of a cylinder only depends on the coordinates used
+to build this cylinder. -/
 theorem dependsOn_cylinder_indicator (I : Finset ι) (S : Set ((i : I) → X i)) :
     DependsOn ((cylinder I S).indicator (1 : ((i : ι) → X i) → ℝ≥0∞)) I := by
   intro x y hxy
@@ -54,9 +59,12 @@ theorem dependsOn_cylinder_indicator (I : Finset ι) (S : Set ((i : I) → X i))
   · simp [h, this.1 h]
   · simp [h, this.not.1 h]
 
-theorem eq [DecidableEq ι] [∀ (S : Finset ι) i, Decidable (i ∈ S)]
+/-- The `kolContent` of `cylinder I S` can be computed by integrating the indicator of
+`cylinder I S` over the variables indexed by `I`. -/
+theorem kolContent_eq_lmarginal [DecidableEq ι] [∀ (S : Finset ι) i, Decidable (i ∈ S)]
     (I : Finset ι) {S : Set ((i : I) → X i)} (mS : MeasurableSet S) (x : (i : ι) → X i) :
-    @kolContent _ _ _ _ (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
+    @kolContent _ _ _ _
+    (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
     (isProjectiveMeasureFamily_pi μ) (cylinder I S) =
     (∫⋯∫⁻_I, (cylinder I S).indicator 1 ∂μ) x := by
   have : ∀ i, Nonempty (X i) := by
@@ -81,6 +89,7 @@ theorem Finset.Icc_eq_left_union (h : k ≤ N) : Finset.Icc k N = {k} ∪ (Finse
 
 variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)]
 
+/-- Any cylinder index by natural integers can be seen as depending on the first coordinates. -/
 theorem cylinders_nat :
     cylinders X = ⋃ (N) (S) (_ : MeasurableSet S), {cylinder (Icc 0 N) S} := by
   ext s
@@ -98,6 +107,14 @@ theorem cylinders_nat :
 
 variable (μ : (n : ℕ) → Measure (X n)) [hμ : ∀ n, IsProbabilityMeasure (μ n)]
 
+/-- Auxiliary result for `firstLemma`: Consider $f$ is a sequence of bounded measurable functions
+which only depend on the first coordinates. Assume that when integrating $f_n$
+over all the variables except the first $k + 1$ one gets a non-increasing sequence of functions
+wich converges to $l$. Assume then that there exists $\epsilon$ and $y_0, ..., y_{k-1}$ such that
+when integrating $f_n (y_0, ..., y_{k-1}, \cdot)$ you get something at least $\epsilon$ for all
+$n$.
+Then there exists $z$ such that this remains true when integrating
+$f_n (y_0, ..., y_{k-1}, z, \cdot)$. -/
 theorem auxiliaire (f : ℕ → (∀ n, X n) → ℝ≥0∞) (N : ℕ → ℕ)
     (hcte : ∀ n, DependsOn (f n) (Finset.Icc 0 (N n))) (mf : ∀ n, Measurable (f n))
     (bound : ℝ≥0∞) (fin_bound : bound ≠ ∞) (le_bound : ∀ n x, f n x ≤ bound) (k : ℕ)
@@ -110,11 +127,16 @@ theorem auxiliaire (f : ℕ → (∀ n, X n) → ℝ≥0∞) (N : ℕ → ℕ)
     ε ≤ (∫⋯∫⁻_Finset.Icc k (N n), f n ∂μ) (Function.updateFinset x (Finset.Ico 0 k) y)) :
     ∃ z, ∀ x n, ε ≤ (∫⋯∫⁻_Finset.Icc (k + 1) (N n), f n ∂μ)
     (Function.update (Function.updateFinset x (Finset.Ico 0 k) y) k z) := by
+  -- The measurable spaces are not empty.
   have : ∀ n, Nonempty (X n) := by
     have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩;
     infer_instance
+  -- Shorter name for integrating over all the variables except the first `k + 1`.
   let F : ℕ → (∀ n, X n) → ℝ≥0∞ := fun n ↦ (∫⋯∫⁻_Finset.Icc (k + 1) (N n), f n ∂μ)
+  -- `Fₙ` converges to `l` by hypothesis.
   have tendstoF x : Tendsto (F · x) atTop (𝓝 (l x)) := htendsto x
+  -- Integrating `fₙ` over all the variables except the first `k` is the same as integrating
+  -- `Fₙ` over the `k`-th variable.
   have f_eq x n : (∫⋯∫⁻_Finset.Icc k (N n), f n ∂μ) x = (∫⋯∫⁻_{k}, F n ∂μ) x := by
     by_cases h : k ≤ N n
     · rw [Finset.Icc_eq_left_union h, lmarginal_union _ _ (mf n) (by simp)]
@@ -123,9 +145,12 @@ theorem auxiliaire (f : ℕ → (∀ n, X n) → ℝ≥0∞) (N : ℕ → ℕ)
       rw [Finset.Icc_eq_empty h, Finset.Icc_eq_empty this,
         lmarginal_eq_of_disjoint (hcte n) (by simp),
         lmarginal_eq_of_disjoint (hcte n) (by simp [h])]
+  -- `F` is also a bounded sequence.
   have F_le n x : F n x ≤ bound := by
     rw [← lmarginal_const (μ := μ) (s := Finset.Icc (k + 1) (N n)) bound x]
     apply lmarginal_mono <| le_bound n
+  -- By dominated convergence, the integral of `fₙ` with respect to all the variable except
+  -- the `k` first converges to the integral of `l`.
   have tendsto_int x : Tendsto (fun n ↦ (∫⋯∫⁻_Finset.Icc k (N n), f n ∂μ) x) atTop
       (𝓝 ((∫⋯∫⁻_{k}, l ∂μ) x)) := by
     simp_rw [f_eq, lmarginal_singleton]
@@ -134,11 +159,17 @@ theorem auxiliaire (f : ℕ → (∀ n, X n) → ℝ≥0∞) (N : ℕ → ℕ)
       (fun n ↦ eventually_of_forall <| fun y ↦ F_le n _)
       (by simp [fin_bound])
       (eventually_of_forall (fun _ ↦ tendstoF _))
+  -- By hypothesis, we have `ε ≤ ∫ F(y, xₖ) ∂μₖ`, so this is also true for `l`.
   have ε_le_lint x : ε ≤ (∫⋯∫⁻_{k}, l ∂μ) (Function.updateFinset x _ y) :=
     ge_of_tendsto (tendsto_int _) (by simp [hpos])
+  -- Same statement but with a true integral.
   have this x : ε ≤ ∫⁻ xₐ : X k, l (Function.update (Function.updateFinset x _ y) k xₐ) ∂μ k := by
     simpa [lmarginal_singleton] using ε_le_lint x
+  -- Previous results were stated for constant `lmarginal`s, but in order to get an element we
+  -- have to specialize them to some element (any of them as the integral is constant).
   let x_ : (n : ℕ) → X n := Classical.ofNonempty
+  -- We now have that the integral of `l` with respect to a probability measure is greater than `ε`,
+  -- therefore there exists `x'` such that `ε ≤ l(y, x')`.
   obtain ⟨x', hx'⟩ : ∃ x', ε ≤ l (Function.update (Function.updateFinset x_ _ y) k x') := by
     simp_rw [lmarginal_singleton] at ε_le_lint
     have aux : ∫⁻ (a : X k), l (Function.update (Function.updateFinset x_ _ y) k a) ∂μ k ≠ ⊤ := by
@@ -148,7 +179,10 @@ theorem auxiliaire (f : ℕ → (∀ n, X n) → ℝ≥0∞) (N : ℕ → ℕ)
     rcases exists_lintegral_le aux with ⟨x', hx'⟩
     exact ⟨x', le_trans (this _) hx'⟩
   refine ⟨x', fun x n ↦ ?_⟩
+  -- As `F` is a non-increasing sequence, we have `ε ≤ Fₙ(y, x')` for any `n`.
   have := le_trans hx' ((anti _).le_of_tendsto (tendstoF _) n)
+  -- This part below is just to say that this is true for any `x : (i : ι) → X i`,
+  -- as `Fₙ` technically depends on all the variables, but really depends only on the first `k + 1`.
   have aux : F n (Function.update (Function.updateFinset x_ (Finset.Ico 0 k) y) k x') =
       F n (Function.update (Function.updateFinset x (Finset.Ico 0 k) y) k x') := by
     simp only [F]
@@ -171,41 +205,55 @@ theorem auxiliaire (f : ℕ → (∀ n, X n) → ℝ≥0∞) (N : ℕ → ℕ)
   rw [aux] at this
   exact this
 
+/-- An auxiliary definition to prove `firstLemma`: If for any $k$, given $(x_0, ..., x_{k-1})$
+one can construct $x_k = \text{ind}(x_0, .., x_{k-1})$, then one can construct a sequence $(x_k)$
+such that for all $k$, $x_k = \text{ind}(x_0, .., x_{k-1})$. -/
 def key (ind : (k : ℕ) → ((i : Finset.Ico 0 k) → X i) → X k) : (k : ℕ) → X k := fun k ↦ by
   use ind k (fun i ↦ key ind i)
   decreasing_by
   exact (Finset.mem_Ico.1 i.2).2
 
+/-- This is the key theorem to prove the existence of the product measure: the `kolContent` of
+a decresaing sequence of cylinders with empty intersection converges to $0$. This implies
+the $\sigma$-additivity of `kolContent` (see `sigma_additive_addContent_of_tendsto_zero`),
+which allows to extend it to the $\sigma$-algebra by Carathéodory's theorem. -/
 theorem firstLemma (A : ℕ → Set ((n : ℕ) → X n)) (A_mem : ∀ n, A n ∈ cylinders X)
     (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅) :
     Tendsto (fun n ↦ @kolContent _ _ _ _
     (by have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩; infer_instance)
     (isProjectiveMeasureFamily_pi μ) (A n)) atTop (𝓝 0) := by
+  -- The measurable spaces are not empty.
   have : ∀ n, Nonempty (X n) := by
     have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩;
     infer_instance
+  -- `Aₙ` is a cylinder, it can be writtent `cylinder sₙ Sₙ`.
   have A_cyl n : ∃ N S, MeasurableSet S ∧ A n = cylinder (Finset.Icc 0 N) S := by
     simpa [cylinders_nat] using A_mem n
   choose N S mS A_eq using A_cyl
   set μ_proj := isProjectiveMeasureFamily_pi μ
-  let χ := fun n ↦ (A n).indicator (1 : (∀ n, X n) → ℝ≥0∞)
-  have concl x n : kolContent μ_proj (A n) = (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) x := by
-    simp_rw [χ, A_eq]
-    exact eq μ (Finset.Icc 0 (N n)) (mS n) x
+  -- We write `χₙ` for the indicator function of `Aₙ`.
+  let χ n := (A n).indicator (1 : (∀ n, X n) → ℝ≥0∞)
+  -- `χₙ` is measurable.
   have mχ n : Measurable (χ n) := by
     simp_rw [χ, A_eq]
     exact (measurable_indicator_const_iff 1).2 <| measurableSet_cylinder _ _ (mS n)
+  -- `χₙ` only depends on the first coordinates.
   have χ_dep n : DependsOn (χ n) (Finset.Icc 0 (N n)) := by
     simp_rw [χ, A_eq]
     exact dependsOn_cylinder_indicator _ _
+  -- Therefore its integral is constant.
   have lma_const x y n : (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) x =
       (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) y := by
     apply dependsOn_lmarginal (μ := μ) (χ_dep n) (Finset.Icc 0 (N n))
     simp
+  -- As `(Aₙ)` is non-increasing, so is `(χₙ)`.
   have χ_anti : Antitone χ := by
     intro m n hmn y
     apply indicator_le
     exact fun a ha ↦ by simp [χ, A_anti hmn ha]
+  -- Integrating `χₙ` further than the last coordinate it depends on does nothing.
+  -- This is used to then show that the integral of `χₙ` over all the variables except the first
+  -- `k` ones is non-increasing.
   have lma_inv k M n (h : N n ≤ M) :
       ∫⋯∫⁻_Finset.Icc k M, χ n ∂μ = ∫⋯∫⁻_Finset.Icc k (N n), χ n ∂μ := by
     apply lmarginal_eq_of_disjoint_diff (mχ n) (χ_dep n) (Finset.Icc_subset_Icc_right h)
@@ -214,33 +262,42 @@ theorem firstLemma (A : ℕ → Set ((n : ℕ) → X n)) (A_mem : ∀ n, A n ∈
     simp only [Finset.mem_inter, Finset.mem_Icc, zero_le, true_and, mem_sdiff, not_and, not_le,
       Finset.not_mem_empty, iff_false, Classical.not_imp, not_lt, and_imp]
     exact fun h1 h2 _ ↦ ⟨h2, h1⟩
+  -- the integral of `χₙ` over all the variables except the first `k` ones is non-increasing.
   have anti_lma k x : Antitone fun n ↦ (∫⋯∫⁻_Finset.Icc k (N n), χ n ∂μ) x := by
     intro m n hmn
     simp only
     rw [← lma_inv k ((N n).max (N m)) n (le_max_left _ _),
       ← lma_inv k ((N n).max (N m)) m (le_max_right _ _)]
     exact lmarginal_mono (χ_anti hmn) x
+  -- Therefore it converges to some function `lₖ`.
   have this k x : ∃ l, Tendsto (fun n ↦ (∫⋯∫⁻_Finset.Icc k (N n), χ n ∂μ) x) atTop (𝓝 l) := by
     rcases tendsto_of_antitone <| anti_lma k x with h | h
     · rw [OrderBot.atBot_eq] at h
       exact ⟨0, h.mono_right <| pure_le_nhds 0⟩
     · exact h
   choose l hl using this
+  -- `l₀` is constant because it is the limit of constant functions: we call it `ε`.
   have l_const x y : l 0 x = l 0 y := by
     have := hl 0 x
     simp_rw [lma_const x y] at this
     exact tendsto_nhds_unique this (hl 0 _)
   obtain ⟨ε, hε⟩ : ∃ ε, ∀ x, l 0 x = ε := ⟨l 0 Classical.ofNonempty, fun x ↦ l_const ..⟩
+  -- As the sequence is decreasing, `ε ≤ ∫ χₙ`.
   have hpos x n : ε ≤ (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) x :=
     hε x ▸ ((anti_lma 0 _).le_of_tendsto (hl 0 _)) n
+  -- Also, the indicators are bounded by `1`.
   have χ_le n x : χ n x ≤ 1 := by
     apply Set.indicator_le
     simp
+  -- We have all the conditions to apply àuxiliaire. This allows us to recursively
+  -- build a sequence `(zₙ)` with the following crucial property: for any `k` and `n`,
+  -- `ε ≤ ∫ χₙ(z₀, ..., z_{k-1}) ∂(μₖ ⊗ ... ⊗ μ_{Nₙ})`.
   choose! ind hind using
     fun k y h ↦ auxiliaire μ χ N χ_dep mχ 1 (by norm_num) χ_le k (anti_lma (k + 1))
       (l (k + 1)) (hl (k + 1)) ε y h
+  let z := key ind
   have crucial : ∀ k x n, ε ≤ (∫⋯∫⁻_Finset.Icc k (N n), χ n ∂μ)
-      (Function.updateFinset x (Finset.Ico 0 k) (fun i ↦ key ind i)) := by
+      (Function.updateFinset x (Finset.Ico 0 k) (fun i ↦ z i)) := by
     intro k
     induction k with
     | zero =>
@@ -249,9 +306,9 @@ theorem firstLemma (A : ℕ → Set ((n : ℕ) → X n)) (A_mem : ∀ n, A n ∈
       exact hpos x n
     | succ m hm =>
       intro x n
-      have : Function.updateFinset x (Finset.Ico 0 (m + 1)) (fun i ↦ key ind i) =
-          Function.update (Function.updateFinset x (Finset.Ico 0 m) (fun i ↦ key ind i))
-          m (key ind m) := by
+      have : Function.updateFinset x (Finset.Ico 0 (m + 1)) (fun i ↦ z i) =
+          Function.update (Function.updateFinset x (Finset.Ico 0 m) (fun i ↦ z i))
+          m (z m) := by
         ext i
         simp [Function.updateFinset, Function.update]
         split_ifs with h1 h2 h3 h4 h5
@@ -265,27 +322,34 @@ theorem firstLemma (A : ℕ → Set ((n : ℕ) → X n)) (A_mem : ∀ n, A n ∈
         · exact (h1 <| lt_trans h5 m.lt_succ_self).elim
         · rfl
       rw [this]
-      convert hind m (fun i ↦ key ind i) hm x n
+      convert hind m (fun i ↦ z i) hm x n
       cases m with | zero => rfl | succ _ => rfl
-  by_cases hε' : 0 < ε
-  · have incr : ∀ n, key ind ∈ A n := by
-      intro n
-      have : χ n (key ind) = (∫⋯∫⁻_Finset.Icc (N n + 1) (N n), χ n ∂μ)
-          (Function.updateFinset (key ind) (Finset.Ico 0 (N n + 1)) (fun i ↦ key ind i)) := by
-        rw [Finset.Icc_eq_empty, lmarginal_empty]
-        · congr
-          ext i
-          by_cases h : i ∈ Finset.Ico 0 (N n + 1) <;> simp [Function.updateFinset, h]
-        · simp
-      have : 0 < χ n (key ind) := by
-        rw [this]
-        exact lt_of_lt_of_le hε' (crucial (N n + 1) (key ind) n)
-      exact mem_of_indicator_ne_zero (ne_of_lt this).symm
-    exact (A_inter ▸ mem_iInter.2 incr).elim
-  · have : ε = 0 := nonpos_iff_eq_zero.1 <| not_lt.1 hε'
-    simp_rw [concl Classical.ofNonempty]
-    rw [← this, ← hε Classical.ofNonempty]
-    exact hl _ _
+  -- We now want to prove that the integral of `χₙ` converges to `0`.
+  have concl x n : kolContent μ_proj (A n) = (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) x := by
+    simp_rw [χ, A_eq]
+    exact kolContent_eq_lmarginal μ (Finset.Icc 0 (N n)) (mS n) x
+  simp_rw [concl Classical.ofNonempty]
+  convert hl 0 Classical.ofNonempty
+  rw [hε]
+  by_contra!
+  -- Which means that we want to prove that `ε = 0`. But if `ε > 0`, then for any `n`,
+  -- choosing `k > Nₙ` we get `ε ≤ χₙ(z₀, ..., z_{Nₙ})` and therefore `(z n) ∈ Aₙ`.
+  -- This contradicts the fact that `(Aₙ)` has an empty intersection.
+  have ε_pos : 0 < ε := this.symm.bot_lt
+  have incr : ∀ n, z ∈ A n := by
+    intro n
+    have : χ n (z) = (∫⋯∫⁻_Finset.Icc (N n + 1) (N n), χ n ∂μ)
+        (Function.updateFinset (z) (Finset.Ico 0 (N n + 1)) (fun i ↦ z i)) := by
+      rw [Finset.Icc_eq_empty, lmarginal_empty]
+      · congr
+        ext i
+        by_cases h : i ∈ Finset.Ico 0 (N n + 1) <;> simp [Function.updateFinset, h]
+      · simp
+    have : 0 < χ n (z) := by
+      rw [this]
+      exact lt_of_lt_of_le ε_pos (crucial (N n + 1) (z) n)
+    exact mem_of_indicator_ne_zero (ne_of_lt this).symm
+  exact (A_inter ▸ mem_iInter.2 incr).elim
 
 variable [DecidableEq ι] [∀ (I : Set ι) i, Decidable (i ∈ I)]
 variable {X : ι → Type*} [hX : ∀ i, MeasurableSpace (X i)]
@@ -472,7 +536,8 @@ theorem thirdLemma (A : ℕ → Set (∀ i, X i)) (A_mem : ∀ n, A n ∈ cylind
     have := Fintype.ofFinite t
     have concl n : kolContent μ_proj' (B n) =
         (Measure.pi (fun i : t ↦ μ i)) (cylinder (u n) (T n)) := by
-      simp_rw [B, fun n ↦ eq (fun i : t ↦ μ i) (u n) (mT n) Classical.ofNonempty]
+      simp_rw [B,
+        fun n ↦ kolContent_eq_lmarginal (fun i : t ↦ μ i) (u n) (mT n) Classical.ofNonempty]
       rw [← lmarginal_eq_of_disjoint_diff (μ := (fun i : t ↦ μ i)) _
           (dependsOn_cylinder_indicator (u n) (T n))
           (u n).subset_univ, lmarginal_univ, ← obv, lintegral_indicator_const]
@@ -507,7 +572,7 @@ theorem kolContent_sigma_subadditive ⦃f : ℕ → Set ((i : ι) → X i)⦄ (h
   refine sigma_additive_addContent_of_tendsto_zero setRing_cylinders
     (kolContent (isProjectiveMeasureFamily_pi μ)) (fun h ↦ ?_) ?_ hf hf_Union hf'
   · rcases (mem_cylinders _).1 h with ⟨s, S, mS, s_eq⟩
-    rw [s_eq, eq μ (mS := mS) (x := Classical.ofNonempty)]
+    rw [s_eq, kolContent_eq_lmarginal μ (mS := mS) (x := Classical.ofNonempty)]
     refine ne_of_lt (lt_of_le_of_lt ?_ (by norm_num : (1 : ℝ≥0∞) < ⊤))
     rw [← lmarginal_const (μ := μ) (s := s) 1 Classical.ofNonempty]
     apply lmarginal_mono
