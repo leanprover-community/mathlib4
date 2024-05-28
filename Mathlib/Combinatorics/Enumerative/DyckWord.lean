@@ -42,8 +42,6 @@ to emphasise that the definition of a Dyck word does not depend on that underlyi
 
 open List
 
-section
-
 /-- A `DyckStep` is either `U` or `D`, corresponding to `(` and `)` respectively. -/
 inductive DyckStep
   | U : DyckStep
@@ -431,5 +429,3 @@ theorem card_dyckWord_of_semilength_eq_catalan (n : ℕ) :
 end Tree
 
 end DyckWord
-
-end
