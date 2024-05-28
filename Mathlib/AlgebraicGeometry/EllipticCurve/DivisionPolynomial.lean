@@ -176,8 +176,6 @@ variable {x y : R}
 
 namespace Universal
 
-local notation "ψᵤ" => curve.ψ
-
 lemma evalEval_ψ₂ : W.ψ₂.evalEval x y = W.polyEval x y curve.ψ₂ := by
   simp_rw [polyEval, eval₂RingHom_eval₂RingHom_apply, ← map_ψ₂, map_specialize]
 
@@ -191,7 +189,7 @@ lemma evalEval_ψc₂ : (C W.ψc₂).evalEval x y = W.polyEval x y (C curve.ψc�
 
 variable {m n : ℤ}
 
-lemma evalEval_ψ : (W.ψ n).evalEval x y = W.polyEval x y (ψᵤ n) := by
+lemma evalEval_ψ : (W.ψ n).evalEval x y = W.polyEval x y (curve.ψ n) := by
   simp_rw [polyEval, eval₂RingHom_eval₂RingHom_apply, ← map_ψ, map_specialize]
 
 lemma evalEval_φ : (W.φ n).evalEval x y = W.polyEval x y (curve.φ n) := by
@@ -214,7 +212,7 @@ lemma cusp_ψ₂ : cusp.ψ₂ = 2 * Y := by simp [cusp, ψ₂, polynomialY]
 lemma cusp_ψ₃ : cusp.ψ₃ = 3 * X ^ 4 := by simp [cusp, ψ₃, b₂, b₄, b₆, b₈]
 lemma cusp_ψc₂ : cusp.ψc₂ = 2 * X ^ 6 := by simp [cusp, ψc₂, b₂, b₄, b₆, b₈]
 
-lemma polyEval_cusp_ψ : cusp.polyEval 1 1 (ψᵤ n) = n := by
+lemma polyEval_cusp_ψ : cusp.polyEval 1 1 (curve.ψ n) = n := by
   rw [ψ, map_normEDS, ← evalEval_ψ₂, ← evalEval_ψ₃, ← evalEval_ψc₂, cusp_ψ₂, cusp_ψ₃, cusp_ψc₂]
   simp [evalEval, normEDS_two_three_two]
 
@@ -231,19 +229,34 @@ lemma polyEval_cusp_ω : cusp.polyEval 1 1 (curve.ω n) = 1 := by
   simp_rw [map_sub, map_mul, map_ofNat, polyEval_cusp_ψc] at this
   simpa [cusp, polyEval, specialize, curve] using this
 
-lemma polyToField_ψ_ne_zero (h0 : n ≠ 0) : polyToField (ψᵤ n) ≠ 0 := fun h ↦ by
-  rw [polyToField_apply, (injective_iff_map_eq_zero' _).mp (IsFractionRing.injective _ _)] at h
+protected lemma Field.two_ne_zero : (2 : Universal.Field) ≠ 0 := by
+  rw [← map_ofNat (algebraMap Universal.Ring _), map_ne_zero_iff _ (IsFractionRing.injective _ _)]
+  intro h; replace h := congr(cusp.ringEval cusp_equation_one_one $h)
+  rw [map_ofNat, map_zero] at h; cases h
+
+abbrev ψᵤ (n : ℤ) : Universal.Field := polyToField (curve.ψ n)
+
+lemma ψᵤ_eq_normEDS :
+    ψᵤ = normEDS
+      (polyToField curve.ψ₂) (polyToField <| C curve.ψ₃) (polyToField <| C curve.ψc₂) := by
+  ext; rw [← map_normEDS]; rfl
+
+lemma isEllSequence_ψᵤ : IsEllSequence ψᵤ := by rw [ψᵤ_eq_normEDS]; exact IsEllSequence.normEDS
+lemma net_ψᵤ (p q r s) : net ψᵤ p q r s = 0 := by rw [ψᵤ_eq_normEDS]; apply net_normEDS
+
+lemma ψᵤ_ne_zero (h0 : n ≠ 0) : ψᵤ n ≠ 0 := fun h ↦ by
+  rw [ψᵤ, polyToField_apply, map_eq_zero_iff _ (IsFractionRing.injective _ _)] at h
   replace h := congr(cusp.ringEval cusp_equation_one_one $h)
   rw [ringEval_mk, polyEval_cusp_ψ, map_zero] at h
   exact h0 h
 
 lemma polyToField_φ_ne_zero : polyToField (curve.φ n) ≠ 0 := fun h ↦ by
-  rw [polyToField_apply, (injective_iff_map_eq_zero' _).mp (IsFractionRing.injective _ _)] at h
+  rw [polyToField_apply, map_eq_zero_iff _ (IsFractionRing.injective _ _)] at h
   replace h := congr(cusp.ringEval cusp_equation_one_one $h)
   rw [ringEval_mk, polyEval_cusp_φ, map_zero] at h
   exact one_ne_zero h
 
-lemma polyToField_ψ₂Sq : polyToField (C curve.ψ₂Sq) = polyToField (ψᵤ 2) ^ 2 := by
+lemma polyToField_ψ₂Sq : polyToField (C curve.ψ₂Sq) = ψᵤ 2 ^ 2 := by
   rw [← map_pow, ψ_two, ψ₂_sq, map_add, map_mul, polyToField_polynomial, mul_zero, add_zero]
 
 namespace Affine
@@ -251,49 +264,52 @@ namespace Affine
 variable (n)
 /-- The rational function φₙ/ψₙ², which we will show to be the `X`-coordinate
 of the point `n • (X, Y)` on the universal curve. -/
-def smulX : Universal.Field := polyToField (curve.φ n) / polyToField (ψᵤ n) ^ 2
+def smulX : Universal.Field := polyToField (curve.φ n) / (ψᵤ n) ^ 2
 /-- The rational function ωₙ/ψₙ³, which we will show to be the `Y`-coordinate
 of the point `n • (X, Y)` on the universal curve. -/
-def smulY : Universal.Field := polyToField (curve.ω n) / polyToField (ψᵤ n) ^ 3
+def smulY : Universal.Field := polyToField (curve.ω n) / (ψᵤ n) ^ 3
 variable {n}
 
-@[simp] lemma smulX_zero : smulX 0 = 0 := by simp [smulX]
-@[simp] lemma smulY_zero : smulY 0 = 0 := by simp [smulY]
-@[simp] lemma smulX_one : smulX 1 = polyToField (C X) := by simp [smulX]
-@[simp] lemma smulY_one : smulY 1 = polyToField Y := by simp [smulY]
+@[simp] lemma smulX_zero : smulX 0 = 0 := by simp [smulX, ψᵤ]
+@[simp] lemma smulY_zero : smulY 0 = 0 := by simp [smulY, ψᵤ]
+@[simp] lemma smulX_one : smulX 1 = polyToField (C X) := by simp [smulX, ψᵤ]
+@[simp] lemma smulY_one : smulY 1 = polyToField Y := by simp [smulY, ψᵤ]
 
 lemma smulX_eq (hn : n ≠ 0) :
-    smulX n = smulX 1 - polyToField (ψᵤ (n + 1) * ψᵤ (n - 1)) / polyToField (ψᵤ n) ^ 2 := by
-  rw [smulX, smulX_one, φ, map_sub, sub_div, map_mul, map_pow, mul_div_cancel_right₀]
-  exact pow_ne_zero _ (polyToField_ψ_ne_zero hn)
+    smulX n = smulX 1 - ψᵤ (n + 1) * ψᵤ (n - 1) / (ψᵤ n) ^ 2 := by
+  rw [smulX, smulX_one, φ, map_sub, sub_div, map_mul, map_pow, mul_div_cancel_right₀, map_mul]
+  exact pow_ne_zero _ (ψᵤ_ne_zero hn)
 
-lemma smulX_two : smulX 2 = smulX 1 - polyToField (ψᵤ 3) / polyToField (ψᵤ 2) ^ 2 := by
-  simp [smulX_eq two_ne_zero]
+lemma smulX_two : smulX 2 = smulX 1 - ψᵤ 3 / (ψᵤ 2) ^ 2 := by
+  simp [smulX_eq two_ne_zero, ψᵤ]
 
 lemma smulX_sub_smulX (hm : m ≠ 0) (hn : n ≠ 0) :
-    smulX m - smulX n = polyToField (ψᵤ (n + m) * ψᵤ (n - m)) / polyToField (ψᵤ n * ψᵤ m) ^ 2 := by
+    smulX m - smulX n = (ψᵤ (n + m) * ψᵤ (n - m)) / (ψᵤ n * ψᵤ m) ^ 2 := by
   rw [smulX_eq hm, smulX_eq hn, sub_sub_sub_cancel_left, div_sub_div]
-  · simp only [← map_pow, ← map_mul, ← map_sub, ← mul_pow]; congr
-    convert (curve.isEllSequence_ψ n m 1).symm using 1
+  · rw [mul_pow]; congr; convert (isEllSequence_ψᵤ n m 1).symm using 1
     · ring
-    · simp
-  all_goals exact pow_ne_zero _ (polyToField_ψ_ne_zero <| by assumption)
+    · simp [ψᵤ]
+  all_goals exact pow_ne_zero _ (ψᵤ_ne_zero <| by assumption)
 
-lemma smulX_neg : smulX (-n) = smulX n := by simp_rw [smulX, φ_neg, ψ_neg, ← map_pow, neg_sq]
+lemma smulX_sub_sub_smulX_add (add_ne : n + m ≠ 0) (sub_ne : n - m ≠ 0) :
+    smulX (n - m) - smulX (n + m) = (ψᵤ (2 * n) * ψᵤ (2 * m)) / (ψᵤ (n + m) * ψᵤ (n - m)) ^ 2 := by
+  rw [smulX_sub_smulX sub_ne add_ne]; ring_nf
+
+lemma smulX_neg : smulX (-n) = smulX n := by simp_rw [smulX, φ_neg, ψᵤ, ψ_neg, ← map_pow, neg_sq]
 
 lemma smulX_ne_zero (h0 : n ≠ 0) : smulX n ≠ 0 :=
-  div_ne_zero polyToField_φ_ne_zero (pow_ne_zero _ <| polyToField_ψ_ne_zero h0)
+  div_ne_zero polyToField_φ_ne_zero (pow_ne_zero _ <| ψᵤ_ne_zero h0)
 
 lemma smulX_ne_smulX (ne : m ≠ n) (ne_neg : m ≠ -n) : smulX m ≠ smulX n := by
   obtain rfl | hm := eq_or_ne m 0
   · rw [smulX_zero]; exact (smulX_ne_zero ne.symm).symm
   obtain rfl | hn := eq_or_ne n 0
   · rw [smulX_zero]; exact smulX_ne_zero ne
-  rw [← sub_ne_zero, smulX_sub_smulX hm hn, map_mul, map_mul]
+  rw [← sub_ne_zero, smulX_sub_smulX hm hn]
   rw [ne_comm, ← sub_ne_zero] at ne
   rw [Ne, ← add_eq_zero_iff_eq_neg, add_comm] at ne_neg
   refine div_ne_zero (mul_ne_zero ?_ ?_) (pow_ne_zero _ <| mul_ne_zero ?_ ?_) <;>
-    apply polyToField_ψ_ne_zero <;> assumption
+    apply ψᵤ_ne_zero <;> assumption
 
 lemma smulX_eq_smulX_iff : smulX m = smulX n ↔ m = n ∨ m = -n := by
   refine ⟨fun h ↦ ?_, ?_⟩
@@ -306,25 +322,24 @@ private lemma smulY_sub_negY_aux {F} [Field F] {a₁ a₃ x y z : F} (h0 : z ≠
   field_simp; ring
 
 lemma smulY_sub_negY (h0 : n ≠ 0) :
-    smulY n - pointedCurve.toAffine.negY (smulX n) (smulY n) =
-      polyToField (ψᵤ (2 * n)) / polyToField (ψᵤ n) ^ 4 := by
-  simp_rw [Affine.negY, pointedCurve_a₁, pointedCurve_a₃, smulX, smulY, ← ψc_spec, ← ω_spec,
+    smulY n - pointedCurve.toAffine.negY (smulX n) (smulY n) = ψᵤ (2 * n) / (ψᵤ n) ^ 4 := by
+  simp_rw [Affine.negY, pointedCurve_a₁, pointedCurve_a₃, smulX, smulY, ψᵤ, ← ψc_spec, ← ω_spec,
     map_mul, map_add, map_mul, map_pow, map_ofNat]
-  exact smulY_sub_negY_aux (polyToField_ψ_ne_zero h0)
+  exact smulY_sub_negY_aux (ψᵤ_ne_zero h0)
 
 lemma smulY_one_sub_negY :
-    smulY 1 - pointedCurve.toAffine.negY (smulX 1) (smulY 1) = polyToField (ψᵤ 2) := by
-  rw [smulY_sub_negY one_ne_zero, mul_one, ψ_one, map_one, one_pow, div_one]
+    smulY 1 - pointedCurve.toAffine.negY (smulX 1) (smulY 1) = ψᵤ 2 := by
+  rw [smulY_sub_negY one_ne_zero, mul_one, ψᵤ, ψᵤ, ψ_one, map_one, one_pow, div_one]
 
 lemma smulY_one_ne_negY : smulY 1 ≠ pointedCurve.toAffine.negY (smulX 1) (smulY 1) := by
-  rw [← sub_ne_zero, smulY_one_sub_negY]; exact polyToField_ψ_ne_zero two_ne_zero
+  rw [← sub_ne_zero, smulY_one_sub_negY]; exact ψᵤ_ne_zero two_ne_zero
 
 /-- The slope of the tangent line at the point (X,Y) on the universal curve. -/
 def slopeOne : Universal.Field :=
   pointedCurve.toAffine.slope (smulX 1) (smulX 1) (smulY 1) (smulY 1)
 
 lemma slopeOne_eq_neg_div :
-    slopeOne = -polyToField curve.polynomialX / polyToField (ψᵤ 2) := by
+    slopeOne = -polyToField curve.polynomialX / ψᵤ 2 := by
   rw [slopeOne, Affine.slope_of_Yne rfl smulY_one_ne_negY, smulY_one_sub_negY, polynomialX]
   congr; simp
 
@@ -337,8 +352,8 @@ private lemma addX_smul_one_smul_one_aux {F} [Field F] {a₁ a₂ x dx dy : F} (
 lemma addX_smul_one_smul_one :
     pointedCurve.toAffine.addX (smulX 1) (smulX 1) slopeOne = smulX 2 := .symm <| by
   rw [smulX_two, Affine.addX, sub_eq_neg_add, ← eq_sub_iff_add_eq, ← neg_div _ (polyToField _),
-    slopeOne_eq_neg_div, addX_smul_one_smul_one_aux (polyToField_ψ_ne_zero two_ne_zero)]
-  simp only [map_sub, map_add, map_mul, map_pow, map_ofNat, polyToField_ψ₂Sq,
+    slopeOne_eq_neg_div, addX_smul_one_smul_one_aux (ψᵤ_ne_zero two_ne_zero)]
+  simp only [map_sub, map_add, map_mul, map_pow, map_ofNat, polyToField_ψ₂Sq, ψᵤ,
     ψ_two, ψ_three, C_ψ₃_eq, polyToField_polynomial, pointedCurve_a₁, pointedCurve_a₂, smulX_one]
   ring
 
@@ -351,19 +366,54 @@ lemma addY_smul_one_smul_one :
     pointedCurve.toAffine.addY (smulX 1) (smulX 1) (smulY 1) slopeOne = smulY 2 := .symm <| by
   rw [smulY, ω, redInvarDenom_two, one_mul, compl₂EDSAux_two, sub_zero, Affine.addY, Affine.addY',
     addX_smul_one_smul_one, smulX_two, Affine.negY, negPolynomial, slopeOne_eq_neg_div,
-    ← ψ₂, ← ψ_two, smulX_one, smulY_one, ψ_three]
+    ← ψ₂, ← ψ_two, smulX_one, smulY_one, ψᵤ, ψᵤ, ψ_three]
   simp only [map_add, map_sub, map_mul, map_pow, map_neg, polyToField_polynomial, mul_zero]
-  exact addY_smul_one_smul_one_aux (polyToField_ψ_ne_zero two_ne_zero)
+  exact addY_smul_one_smul_one_aux (ψᵤ_ne_zero two_ne_zero)
 
 private lemma smulY_neg_aux {F} [Field F] {a₁ a₃ x y z : F} (hz : z ≠ 0) :
     (y + a₁ * x * z + a₃ * z ^ 3) / (-z) ^ 3 = -(y / z ^ 3) - a₁ * (x / z ^ 2) - a₃ := by
   ring_nf; field_simp; ring
 
 lemma smulY_neg (h0 : n ≠ 0) :
-    smulY (-n) = Affine.negY pointedCurve.toWeierstrassCurve (smulX n) (smulY n) := by
-  simp only [Affine.negY, smulX, smulY, ψ_neg, ω_neg, map_add, map_neg, map_mul, map_pow]
-  exact smulY_neg_aux (polyToField_ψ_ne_zero h0)
+    smulY (-n) = pointedCurve.toAffine.negY (smulX n) (smulY n) := by
+  simp only [Affine.negY, smulX, smulY, ψ_neg, ω_neg, map_add, map_neg, map_mul, map_pow, ψᵤ]
+  exact smulY_neg_aux (ψᵤ_ne_zero h0)
 
+private lemma smulX_add_aux {F} [Field F] {m n m₂ n₂ a s : F}
+    (hm : m ≠ 0) (hn : n ≠ 0) (ha : a ≠ 0) (hs : s ≠ 0) :
+    n₂ / n ^ 4 * (m₂ / m ^ 4) / (a * s / (n * m) ^ 2) ^ 2 = n₂ * m₂ / (a * s) ^ 2 := by
+  field_simp; ring
+
+lemma smulX_add (hm : m ≠ 0) (hn : n ≠ 0) (add_ne : n + m ≠ 0) (sub_ne : n - m ≠ 0) :
+    let ψ₂ x y := y - pointedCurve.toAffine.negY x y
+    smulX (n + m) = smulX (n - m) -
+      ψ₂ (smulX n) (smulY n) * ψ₂ (smulX m) (smulY m) / (smulX m - smulX n) ^ 2 := by
+  rw [eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', smulX_sub_sub_smulX_add add_ne sub_ne]
+  simp_rw [smulY_sub_negY hm, smulY_sub_negY hn, smulX_sub_smulX hm hn]
+  apply smulX_add_aux <;> apply ψᵤ_ne_zero <;> assumption
+
+private lemma smulY_add_sub_negY_aux {F} [Field F] {m n m₂ n₂ a s am an : F}
+    (hm : m ≠ 0) (hn : n ≠ 0) (ha : a ≠ 0) (hs : s ≠ 0) :
+    (m₂ / m ^ 4 * (an * m / (a * n) ^ 2) - n₂ / n ^ 4 * (am * n / (a * m) ^ 2))
+      / (a * s / (n * m) ^ 2)
+      = (an * m₂ * n - am * n₂ * m) * a / (s * n * m) / a ^ 4 := by
+  field_simp; rw [div_eq_iff]; · ring
+  apply_rules [pow_ne_zero, mul_ne_zero]
+
+lemma smulY_add_sub_negY (hm : m ≠ 0) (hn : n ≠ 0) (add_ne : n + m ≠ 0) (sub_ne : n - m ≠ 0) :
+    let ψ₂ x y := y - pointedCurve.toAffine.negY x y
+    ψ₂ (smulX (n + m)) (smulY (n + m)) =
+      (ψ₂ (smulX m) (smulY m) * (smulX n - smulX (n + m))
+        - ψ₂ (smulX n) (smulY n) * (smulX m - smulX (n + m))) / (smulX m - smulX n) := by
+  simp_rw [smulY_sub_negY add_ne, smulY_sub_negY hm, smulY_sub_negY hn, smulX_sub_smulX hn add_ne,
+    smulX_sub_smulX hm add_ne, smulX_sub_smulX hm hn, add_sub_cancel_left, add_sub_cancel_right]
+  rw [smulY_add_sub_negY_aux]
+  · congr; rw [eq_div_iff]
+    · linear_combination (norm := ring_nf) (net_add_sub_iff _ n m).mp (net_ψᵤ _ _ _ _)
+    apply_rules [mul_ne_zero, ψᵤ_ne_zero]
+  all_goals apply ψᵤ_ne_zero; assumption
+
+open Affine.Point
 
 instance : AddGroup (curve⟮Universal.Field⟯) := inferInstance -- Lean needs a reminder at add_zsmul
 theorem zsmul_eq_quotient_divisionPolynomial : n ≠ 0 →
@@ -379,11 +429,32 @@ theorem zsmul_eq_quotient_divisionPolynomial : n ≠ 0 →
       erw [← addX_smul_one_smul_one, ← addY_smul_one_smul_one, zero_add, Nat.cast_add, add_zsmul, e]
       exact ⟨Affine.nonsingular_add ns ns fun _ ↦ smulY_one_ne_negY,
         dif_neg fun h ↦ smulY_one_ne_negY h.2⟩
-    sorry
+    set n2 := n + 1 + 1
+    obtain ⟨ns, eq⟩ := ih 1 (by omega) one_ne_zero
+    obtain ⟨ns1, eq1⟩ := ih (n + 1) (by omega) (by omega)
+    obtain ⟨ns2, eq2⟩ := ih n2 (by omega) (by omega)
+    have ne : smulX n2 ≠ smulX 1 := smulX_ne_smulX (by omega) (by omega)
+    simp_rw [show (n + 1 : ℕ) = n2 + (-1 : ℤ) by omega, add_zsmul, neg_smul] at eq1
+    let _U := pointedCurve.toAffine
+    erw [eq2, eq, some_add_some_of_Xne ne, some_eq_some_iff] at eq1
+    let L := _U.slope (smulX n2) (smulX 1) (smulY n2) (smulY 1)
+    have X_eq : smulX (n2 + 1 : ℕ) = _U.addX (smulX n2) (smulX 1) L := by
+      rw [Nat.cast_add, Nat.cast_one, smulX_add one_ne_zero (by omega) (by omega) (by omega),
+        Affine.addX_eq_subX_sub _ _ ne, sub_eq_add_neg (n2 : ℤ), ← eq1.1]; rfl
+    have Y_eq : smulY (n2 + 1 : ℕ) = _U.addY (smulX n2) (smulX 1) (smulY n2) L := by
+      rw [← mul_cancel_left_mem_nonZeroDivisors (mem_nonZeroDivisors_of_ne_zero Field.two_ne_zero),
+        ← add_right_cancel_iff (a := _U.a₁ * smulX (n2 + 1 : ℕ) + _U.a₃)]
+      convert smulY_add_sub_negY (n := n2) one_ne_zero (by omega) (by omega) (by omega) using 1
+      · simp_rw [Affine.negY, Nat.cast_add]; ring_nf
+      convert _U.addY_sub_negY (smulY n2) (smulY 1) ne using 1
+      · rw [Affine.negY, ← X_eq]; ring
+      · rw [← X_eq]; rfl
+    rw [X_eq, Y_eq, n2.cast_add, add_zsmul, eq, eq2]
+    exact ⟨Affine.nonsingular_add ns2 ns (ne · |>.elim), some_add_some_of_Xne ne⟩
   | neg n hn =>
     rw [neg_ne_zero]; intro h0
     obtain ⟨ns, eq⟩ := hn h0
-    simp_rw [smulX_neg, smulY_neg h0, neg_smul, eq, Affine.Point.neg_some]
+    simp_rw [smulX_neg, smulY_neg h0, neg_smul, eq, neg_some]
     exact ⟨Affine.nonsingular_neg ns, trivial⟩
 
 lemma smul_point_ne_zero (h0 : n ≠ 0) : n • Universal.point ≠ 0 := by
@@ -431,7 +502,7 @@ theorem zsmul_eq_divisionPolynomial : (n • Jacobian.point).point = ⟦smulFiel
   obtain ⟨ns, eq⟩ := Affine.zsmul_eq_quotient_divisionPolynomial hn
   change (n • Jacobian.Point.toAffineAddEquiv.symm Universal.point).point = _
   rw [← map_zsmul, eq]
-  have := polyToField_ψ_ne_zero hn
+  have := ψᵤ_ne_zero hn
   refine Quotient.sound ⟨.mk0 _ (inv_ne_zero this), ?_⟩
   simp_rw [Units.smul_def, Jacobian.smul_fin3']
   ext i; fin_cases i <;> field_simp [Affine.smulX, Affine.smulY, this]
@@ -446,7 +517,7 @@ lemma nonsingular_smulField : Nonsingular curveField (smulField n) := by
 lemma dblXYZ_smulField : dblXYZ curveField (smulField n) = smulField (2 * n) := by
   obtain rfl | hn := eq_or_ne n 0
   · norm_num [dblXYZ, dblX, dblY, dblZ, negY, dblY', smulField, smulPoly, curveField, ← fin3_def]
-  erw [← equiv_iff_eq_of_Z_eq _ (polyToField_ψ_ne_zero <| mul_ne_zero two_ne_zero hn),
+  erw [← equiv_iff_eq_of_Z_eq _ (ψᵤ_ne_zero <| mul_ne_zero two_ne_zero hn),
     ← Quotient.eq, ← zsmul_eq_divisionPolynomial, mul_zsmul,
     Point.two_smul_point zsmul_eq_divisionPolynomial]
   · rfl
@@ -489,13 +560,13 @@ lemma addXYZ_smulField :
       addXYZ_smul, one_mul, neg_one_sq (R := Universal.Field), addXYZ_neg nonsingular_smulField.1,
       one_smul, ← neg_add', ← two_mul, ψ_neg, map_neg, ← dblZ_smulPoly, ← map_dblZ, smulField_zero]
     rfl
-  erw [← equiv_iff_eq_of_Z_eq, ← Quotient.eq, ← Units.smul_mk0 (polyToField_ψ_ne_zero <|
+  erw [← equiv_iff_eq_of_Z_eq, ← Quotient.eq, ← Units.smul_mk0 (ψᵤ_ne_zero <|
     sub_ne_zero_of_ne h.symm), smul_eq, ← zsmul_eq_divisionPolynomial, add_comm, add_zsmul,
     Point.add_point_of_ne zsmul_eq_divisionPolynomial zsmul_eq_divisionPolynomial (smul_point_ne h)]
   · rfl
   · conv_rhs => rw [smulField, comp_fin3, smul_fin3', (fin3_def_ext _ _ _).2.2, mul_comm]
     simp_rw [addXYZ, fin3_def_ext, ← map_mul, ← addZ_smulPoly, ← map_addZ]
-  · apply mul_ne_zero <;> apply polyToField_ψ_ne_zero <;> omega
+  · apply mul_ne_zero <;> apply ψᵤ_ne_zero <;> omega
 
 lemma addXYZ_smulRing :
     addXYZ curveRing (smulRing m) (smulRing n) =

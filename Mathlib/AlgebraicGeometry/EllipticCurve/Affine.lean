@@ -657,7 +657,7 @@ lemma nonsingular_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
 
 variable {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂)
 
-/-- The formula $x(P_1 + P_2) = x(P_1 - P_2) - (x(P_2) - x(P_1)) ^ 2 / \psi_2(P_1)\psi_2(P_2)$,
+/-- The formula $x(P_1 + P_2) = x(P_1 - P_2) - \psi_2(P_1)\psi_2(P_2) / (x(P_2) - x(P_1)) ^ 2$,
 where $\psi_2(x,y) = 2y + a_1 x + a_3$. -/
 lemma addX_eq_subX_sub :
     W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂) = W.addX x₁ x₂ (W.slope x₁ x₂ y₁ (W.negY x₂ y₂))
@@ -715,7 +715,11 @@ lemma zero_def : (zero : W.Point) = 0 :=
   rfl
 #align weierstrass_curve.point.zero_def WeierstrassCurve.Affine.Point.zero_def
 
-lemma some_ne_zero {x y : R} (h : W.Nonsingular x y) : some h ≠ 0 := fun eq ↦ by cases eq
+lemma some_ne_zero {x y : R} (h : W.Nonsingular x y) : some h ≠ 0 := by rintro (_|_)
+
+lemma some_eq_some_iff {x₁ x₂ y₁ y₂ : R} (h₁ : W.Nonsingular x₁ y₁) (h₂ : W.Nonsingular x₂ y₂) :
+    some h₁ = some h₂ ↔ x₁ = x₂ ∧ y₁ = y₂ :=
+  ⟨by rintro (_|_); trivial, by rintro ⟨rfl, rfl⟩; rfl⟩
 
 /-- The negation of a nonsingular rational point on `W`.
 
