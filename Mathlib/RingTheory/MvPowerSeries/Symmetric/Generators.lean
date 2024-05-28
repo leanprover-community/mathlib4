@@ -68,6 +68,19 @@ lemma esymm_def (s : σ →₀ ℕ) :
 lemma coeff_esymm (s : σ →₀ ℕ) :
   coeff R s (esymm σ R n) = if s.sum (fun _ ↦ id) = n ∧ ∀ i : σ, s i ≤ 1 then 1 else 0 := rfl
 
+@[simp]
+lemma esymm_zero : esymm σ R 0 = 1 := by
+  ext s
+  rw [coeff_one, coeff_esymm]
+  by_cases h : s = 0
+  · simp [h]
+  · simp only [h, ↓reduceIte, ite_eq_right_iff, and_imp]
+    intro h'; exfalso; apply h
+    rw [Finsupp.sum, Finset.sum_eq_zero_iff] at h'
+    ext i; by_cases h'' : i ∈ s.support
+    · exact h' i h''
+    · simp only [Finsupp.mem_support_iff, ne_eq, not_not] at h''; exact h''
+
 theorem map_esymm (f : R →+* S) : map _ f (esymm σ R n) = esymm σ S n := by
   ext s
   simp
@@ -113,6 +126,19 @@ lemma hsymm_def (s : σ →₀ ℕ) :
 lemma coeff_hsymm (s : σ →₀ ℕ) :
   coeff R s (hsymm σ R n) = if s.sum (fun _ ↦ id) = n then 1 else 0 := rfl
 
+@[simp]
+lemma hsymm_zero : hsymm σ R 0 = 1 := by
+  ext s
+  rw [coeff_one, coeff_hsymm]
+  by_cases h : s = 0
+  · simp [h]
+  · simp only [h, ↓reduceIte, ite_eq_right_iff]
+    intro h'; exfalso; apply h
+    rw [Finsupp.sum, Finset.sum_eq_zero_iff] at h'
+    ext i; by_cases h'' : i ∈ s.support
+    · exact h' i h''
+    · simp only [Finsupp.mem_support_iff, ne_eq, not_not] at h''; exact h''
+
 theorem map_hsymm (f : R →+* S) : map _ f (hsymm σ R n) = hsymm σ S n := by
   ext s
   simp
@@ -149,6 +175,19 @@ lemma psum_def (s : σ →₀ ℕ) :
 lemma coeff_psum (s : σ →₀ ℕ) :
   coeff R s (psum σ R n) = if s.sum (fun _ ↦ id) = n ∧ s.support.card = 1 then 1 else 0 := rfl
 
+@[simp]
+lemma psum_zero : psum σ R 0 = 0 := by
+  ext s
+  rw [coeff_zero, coeff_psum]
+  by_cases h : s = 0
+  · simp [h]
+  · simp only [ite_eq_right_iff, and_imp]
+    intro h'; exfalso; apply h
+    rw [Finsupp.sum, Finset.sum_eq_zero_iff] at h'
+    ext i; by_cases h'' : i ∈ s.support
+    · exact h' i h''
+    · simp only [Finsupp.mem_support_iff, ne_eq, not_not] at h''; exact h''
+
 theorem map_psum (f : R →+* S) : map _ f (psum σ R n) = psum σ S n := by
   ext s
   simp
@@ -179,6 +218,53 @@ instance : IsSymmetric (psum σ R n) := by
   exact rename_psum _ _ n e
 
 end PowerSums
+
+section SymmOne
+
+lemma sum_one_iff_single (s : σ →₀ ℕ) : (Finsupp.sum s fun x ↦ id) = 1 ↔
+    ∃ i : σ, s = Finsupp.single i 1 := by
+  constructor
+  · intro h
+    sorry
+  · rintro ⟨i, rfl⟩
+    sorry
+
+lemma esymm_one_eq_hsymm_one : esymm σ R 1 = hsymm σ R 1 := by
+  ext s
+  simp only [coeff_esymm, coeff_hsymm]
+  split_ifs with he hh hs
+  · rfl
+  · exfalso; apply hh; exact he.1
+  · exfalso; apply he; simp only [hs, true_and]
+    by_contra! h
+    obtain ⟨i, hi⟩ := h
+    simp_rw [Finsupp.sum, id_eq] at hs
+    have : s i ≤ ∑ i in s.support, s i := Finset.single_le_sum ?_ ?_
+    · rw [hs] at this
+      exact lt_irrefl _ (lt_of_le_of_lt this hi)
+    · simp
+    · apply Finsupp.mem_support_iff.mpr
+      linarith
+  · rfl
+
+lemma hsymm_one_eq_psum_one : hsymm σ R 1 = psum σ R 1 := by
+  ext s
+  simp only [coeff_hsymm, coeff_psum]
+  split_ifs with hh hp hs
+  · rfl
+  · exfalso; apply hp;
+    simp only [hh, true_and]
+    rw [sum_one_iff_single] at hh
+    obtain ⟨i, hi⟩ := hh
+    rw [Finsupp.card_support_eq_one]
+    use i; simp [hi]
+  · exfalso; apply hh; simp only [hs, true_and]
+  · rfl
+
+lemma esymm_one_eq_psum_one : esymm σ R 1 = psum σ R 1 := by
+  rw [esymm_one_eq_hsymm_one, hsymm_one_eq_psum_one]
+
+end SymmOne
 
 end MvPowerSeries
 
