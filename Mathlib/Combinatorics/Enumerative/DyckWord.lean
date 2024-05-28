@@ -414,8 +414,8 @@ def finiteTreeEquiv (n : ℕ) : { p : DyckWord // p.semilength = n } ≃ treesOf
     rwa [mem_treesOfNumNodesEq, ← semilength_eq_iff_numNodes_eq]⟩
   invFun := fun ⟨tr, _⟩ ↦ ⟨treeEquiv.symm tr, by
     rwa [semilength_eq_iff_numNodes_eq, ← mem_treesOfNumNodesEq, Equiv.apply_symm_apply]⟩
-  left_inv := fun _ ↦ by simp only [Equiv.symm_apply_apply]
-  right_inv := fun _ ↦ by simp only [Equiv.apply_symm_apply]
+  left_inv _ := by simp only [Equiv.symm_apply_apply]
+  right_inv _ := by simp only [Equiv.apply_symm_apply]
 
 instance {n : ℕ} : Fintype { p : DyckWord // p.semilength = n } :=
   Fintype.ofEquiv _ (finiteTreeEquiv n).symm
