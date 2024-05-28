@@ -103,7 +103,7 @@ def candidateRefines (stx : Syntax) : Array (Syntax × List Syntax) := Id.run do
   return cands
 
 /-- converts each `refine'` with a `refine` in `stx`. -/
-def refine'ToRefine (stx : Syntax) : Syntax := Id.run do
+def ToRefine (stx : Syntax) : Syntax := Id.run do
   stx.replaceM (fun s => match s with
     | .node si ``Lean.Parser.Tactic.refine' args =>
       let args := args.modify 0 fun _ => mkAtomFrom args[0]! "refine"
@@ -124,7 +124,7 @@ def getQuestions (cmd : Syntax) : Command.CommandElabM (Array (Syntax × List Sy
   let refine's := getRefine's cmd
   let mut suma := #[]
   for refine' in refine's do
-    let refine := refine'ToRefine refine'
+    let refine := ToRefine refine'
     let cands := candidateRefines refine
     for (cand, holes) in cands do
       let repl ← exm.replaceM fun s => if s == refine' then return some cand else return none
