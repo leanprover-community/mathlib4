@@ -73,7 +73,7 @@ lemma ideal_eq_bot_of_isLieAbelian [IsDomain R] [IsPrincipalIdealRing R]
 instance instSemisimple [IsKilling K L] [Module.Finite K L] : IsSemisimple K L := by
   apply InvariantForm.isSemisimple_of_nondegenerate (Φ := killingForm K L)
   · exact IsKilling.killingForm_nondegenerate _ _
-  · exact LieModule.traceForm_apply_lie_apply K L L
+  · exact killingForm_lieInvariant _ _
   · exact (LieModule.traceForm_isSymm K L L).isRefl
   · intro I h₁ h₂
     exact h₁.1 <| IsKilling.ideal_eq_bot_of_isLieAbelian I
