@@ -28,6 +28,23 @@ namespace refine'ToRefine
 
 open Lean Elab
 
+/-- converts
+* `theorem x ...`  to `example ...`,
+* `lemma x ...`    to `example ...`,
+* `instance x ...` to `example ...`,
+*  everything else goes to itself.
+
+This avoids producing two declarations with the same name in the environment.
+-/
+def toExample {m : Type → Type} [Monad m] [MonadQuotation m] : Syntax → m Syntax
+  | `($dm:declModifiers theorem $_did:declId $ds* : $t $dv:declVal) =>
+    `($dm:declModifiers example $ds* : $t $dv:declVal)
+  | `($dm:declModifiers lemma $_did:declId $ds* : $t $dv:declVal) =>
+    `($dm:declModifiers example $ds* : $t $dv:declVal)
+  | `($dm:declModifiers instance $_did:declId $ds* : $t $dv:declVal) =>
+    `($dm:declModifiers example $ds* : $t $dv:declVal)
+  | s => return s
+
 /-- extracts the `Array` of subsyntax of the input `Syntax` that satisfies the given predicate
 `Syntax → Bool`.
 -/
@@ -43,7 +60,6 @@ Converting `refine'` to `refine`, these are the candidate nodes for the replacem
 -/
 def getHoles (stx : Syntax) : Array Syntax :=
   stx.findAll (·.isOfKind ``Lean.Parser.Term.hole)
-
 
 /-
 |-node Lean.Parser.Term.syntheticHole, none
@@ -76,10 +92,10 @@ def candidateRefines (stx : Syntax) : Array Syntax := Id.run do
   let mut cands := #[]
   let holes := getHoles stx
   for sub in holes.toList.sublistsFast do
-    let sub? := sub.map holeToSyntHole
     let mut newCmd := stx
-    for (s, s?) in sub.zip sub? do
-      newCmd ← newCmd.replaceM (fun t => if t == s && t.getPos? == s.getPos? then some s? else none)
+    for s in sub do
+      newCmd ← newCmd.replaceM (fun t =>
+        if t == s && t.getPos? == s.getPos? then some (holeToSyntHole s) else none)
     --let ncmd ← stx.replaceM (fun s => if sub.contains s then )
     cands := cands.push newCmd
   return cands
@@ -95,6 +111,12 @@ def candidateRefines (stx : Syntax) : Array Syntax := Id.run do
 --  | .node _ _ args => (args.map getRefine').flatten
 --  | _ => default
 
+def refine'ToRefine (stx : Syntax) : Syntax := Id.run do
+  stx.replaceM (fun s => match s with
+    | .node si ``Lean.Parser.Tactic.refine' args =>
+      let args := args.modify 0 fun _ => mkAtomFrom args[0]! "refine"
+      return some (.node si ``Lean.Parser.Tactic.refine args)
+    | _ => return none)
 
 
 elab "ho " cmd:command : command => do
@@ -119,38 +141,6 @@ elab "ho " cmd:command : command => do
   logInfo m!"{opts.map fun s => let hs := getHoles s; hs.map (·.getPos?)}"
   Command.elabCommand cmd
 
-/-- checks whether a `MessageData` refers to an error of a missing `?` is `refine`. -/
-def isSyntPlaceHolder : MessageData → Bool
-  | .withNamingContext _ (.withContext _ (.tagged `Elab.synthPlaceholder _)) => true
-  | _ => false
-
-/-- extracts `refine'` from the given `Syntax`, returning also the `SourceInfo`, the arguments
-of the `refine'` node and whether `refine'` contains `..`. -/
-partial
-def getRefine' : Syntax → Array (Syntax × SourceInfo × Array Syntax × Option Syntax)
-  | stx@(.node si ``Lean.Parser.Tactic.refine' args) =>
-    --dbg_trace "refine' found"
-    let rest := (args.map getRefine').flatten
-    rest.push (stx, si, args, stx.find? (·.isOfKind ``Lean.Parser.Term.optEllipsis))
-  | .node _ _ args => (args.map getRefine').flatten
-  | _ => default
-
-/-- converts
-* `theorem x ...`  to `example ...`,
-* `lemma x ...`    to `example ...`,
-* `instance x ...` to `example ...`,
-*  everything else goes to itself.
-
-This avoids producing two declarations with the same name in the environment.
--/
-def toExample {m : Type → Type} [Monad m] [MonadQuotation m] : Syntax → m Syntax
-  | `($dm:declModifiers theorem $_did:declId $ds* : $t $dv:declVal) =>
-    `($dm:declModifiers example $ds* : $t $dv:declVal)
-  | `($dm:declModifiers lemma $_did:declId $ds* : $t $dv:declVal) =>
-    `($dm:declModifiers example $ds* : $t $dv:declVal)
-  | `($dm:declModifiers instance $_did:declId $ds* : $t $dv:declVal) =>
-    `($dm:declModifiers example $ds* : $t $dv:declVal)
-  | s => return s
 
 /-- replaces each `refine'` by `refine` in succession in `cmd` and, each time, catches the errors
 of missing `?`, collecting their positions.  Eventually, it returns an array of pairs
@@ -158,10 +148,10 @@ of missing `?`, collecting their positions.  Eventually, it returns an array of 
 * `1` means that the `position` is the beginning of `refine'` and
 * `0` means that the `position` is a missing `?`.
 -/
-def getQuestions (cmd : Syntax) : Command.CommandElabM (Array (Nat × Position)) := do
+def getQuestions' (cmd : Syntax) : Command.CommandElabM (Array (Nat × Position)) := do
   let s ← get
   let fm ← getFileMap
-  let refine's := getRefine' cmd
+  let refine's := getRefine's cmd
   let newCmds := refine's.map fun (r, si, args, dots?) => Id.run do
       if let some dots := dots? then dbg_trace "{dots} present"
       let ncm ← cmd.replaceM fun s => if s == r then
@@ -187,13 +177,29 @@ def getQuestions (cmd : Syntax) : Command.CommandElabM (Array (Nat × Position))
   set s
   return poss
 
+/-- checks whether a `MessageData` refers to an error of a missing `?` is `refine`. -/
+def isSyntPlaceHolder : MessageData → Bool
+  | .withNamingContext _ (.withContext _ (.tagged `Elab.synthPlaceholder _)) => true
+  | _ => false
+
+/-- extracts `refine'` from the given `Syntax`, returning also the `SourceInfo`, the arguments
+of the `refine'` node and whether `refine'` contains `..`. -/
+partial
+def getRefine' : Syntax → Array (Syntax × SourceInfo × Array Syntax × Option Syntax)
+  | stx@(.node si ``Lean.Parser.Tactic.refine' args) =>
+    --dbg_trace "refine' found"
+    let rest := (args.map getRefine').flatten
+    rest.push (stx, si, args, stx.find? (·.isOfKind ``Lean.Parser.Term.optEllipsis))
+  | .node _ _ args => (args.map getRefine').flatten
+  | _ => default
+
 /-- replaces each `refine'` by `refine` in succession in `cmd` and, each time, catches the errors
 of missing `?`, collecting their positions.  Eventually, it returns an array of pairs
 `(1/0, position)`, where
 * `1` means that the `position` is the beginning of `refine'` and
 * `0` means that the `position` is a missing `?`.
 -/
-def getQuestions' (cmd : Syntax) : Command.CommandElabM (Array (Nat × Position)) := do
+def getQuestions (cmd : Syntax) : Command.CommandElabM (Array (Nat × Position)) := do
   let s ← get
   let fm ← getFileMap
   let refine's := getRefine' cmd
