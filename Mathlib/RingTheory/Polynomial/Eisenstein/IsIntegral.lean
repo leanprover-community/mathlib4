@@ -31,7 +31,7 @@ variable {R : Type u}
 
 open Ideal Algebra Finset
 
-open scoped BigOperators Polynomial
+open scoped Polynomial
 
 section Cyclotomic
 

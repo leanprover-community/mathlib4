@@ -61,8 +61,6 @@ subfield, subfields
 -/
 
 
-open BigOperators
-
 universe u v w
 
 variable {K : Type u} {L : Type v} {M : Type w}

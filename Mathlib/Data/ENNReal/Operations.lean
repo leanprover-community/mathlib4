@@ -20,7 +20,7 @@ definitions and properties of which can be found in `Data.ENNReal.Inv`.
 Note: the definitions of the operations included in this file can be found in `Data.ENNReal.Basic`.
 -/
 
-open Set BigOperators NNReal ENNReal
+open Set NNReal ENNReal
 
 namespace ENNReal
 
