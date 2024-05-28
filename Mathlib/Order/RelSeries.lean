@@ -101,9 +101,6 @@ lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
 lemma toList_ne_empty (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
 
-lemma toList_injective : Function.Injective (RelSeries.toList (r := r)) :=
-  fun _ _ h ↦ (RelSeries.Equiv).injective <| Subtype.ext h
-
 /-- Every nonempty list satisfying the chain condition gives a relation series-/
 @[simps]
 def fromListChain' (x : List α) (x_ne_empty : x ≠ []) (hx : x.Chain' r) : RelSeries r where
@@ -121,6 +118,9 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} wh
     refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => List.get_ofFn _ _)
     have := Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1
     simp_all [toList]
+
+lemma toList_injective : Function.Injective (RelSeries.toList (r := r)) :=
+  fun _ _ h ↦ (RelSeries.Equiv).injective <| Subtype.ext h
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
 
