@@ -145,6 +145,11 @@ example [IsIso (prodComparison F X Y)] [IsIso (prodComparison G X Y)]
   simp only [PreservesLimitPair.iso_inv, IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq]
   rw [prodComparison_natTrans]
 
+#check ((evaluation C D).obj X).map (𝟙 F)
+
+example : ((evaluation C D).obj X).map (𝟙 F) = 𝟙 (F.obj X) := by
+  simp only [evaluation_obj_obj, evaluation_obj_map, NatTrans.id_app]
+
 end Limits
 
 end CategoryTheory
