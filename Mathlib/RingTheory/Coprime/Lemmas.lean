@@ -42,7 +42,7 @@ theorem Int.isCoprime_iff_gcd_eq_one {m n : ℤ} : IsCoprime m n ↔ Int.gcd m n
     exact ⟨_, _, h⟩
 
 theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.Coprime m n := by
-  rw [Int.isCoprime_iff_gcd_eq_one, Int.coe_nat_gcd]
+  rw [Int.isCoprime_iff_gcd_eq_one, Int.gcd_natCast_natCast]
 #align nat.is_coprime_iff_coprime Nat.isCoprime_iff_coprime
 
 alias ⟨IsCoprime.nat_coprime, Nat.Coprime.isCoprime⟩ := Nat.isCoprime_iff_coprime
@@ -125,7 +125,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
   induction h using Finset.Nonempty.cons_induction with
   | singleton =>
     simp [exists_apply_eq, Pairwise, Function.onFun]
-  | @cons a t hat h ih =>
+  | cons a t hat h ih =>
     rw [pairwise_cons']
     have mem : ∀ x ∈ t, a ∈ insert a t \ {x} := fun x hx ↦ by
       rw [mem_sdiff, mem_singleton]
