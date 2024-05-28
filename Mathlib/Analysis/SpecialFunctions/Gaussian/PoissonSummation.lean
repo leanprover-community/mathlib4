@@ -100,7 +100,7 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
     exact mul_pos pi_pos ha
   have h2 : 0 < (↑π / a).re := by
     rw [div_eq_mul_inv, re_ofReal_mul, inv_re]
-    refine' mul_pos pi_pos (div_pos ha <| normSq_pos.mpr _)
+    refine mul_pos pi_pos (div_pos ha <| normSq_pos.mpr ?_)
     contrapose! ha
     rw [ha, zero_re]
   have f_bd : f =O[cocompact ℝ] (fun x => |x| ^ (-2 : ℝ)) := by

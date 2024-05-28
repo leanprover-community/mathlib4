@@ -169,7 +169,7 @@ end ZModCharDef
 /-- An additive character on `ZMod n` is nontrivial iff it takes a value `≠ 1` on `1`. -/
 theorem zmod_char_isNontrivial_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) :
     IsNontrivial ψ ↔ ψ 1 ≠ 1 := by
-  refine' ⟨_, fun h => ⟨1, h⟩⟩
+  refine ⟨?_, fun h => ⟨1, h⟩⟩
   contrapose!
   rintro h₁ ⟨a, ha⟩
   have ha₁ : a = a.val • (1 : ZMod ↑n) := by
@@ -181,7 +181,7 @@ theorem zmod_char_isNontrivial_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) :
 /-- A primitive additive character on `ZMod n` takes the value `1` only at `0`. -/
 theorem IsPrimitive.zmod_char_eq_one_iff (n : ℕ+) {ψ : AddChar (ZMod n) C} (hψ : IsPrimitive ψ)
     (a : ZMod n) : ψ a = 1 ↔ a = 0 := by
-  refine' ⟨fun h => not_imp_comm.mp (hψ a) _, fun ha => by rw [ha, map_zero_one]⟩
+  refine ⟨fun h => not_imp_comm.mp (hψ a) ?_, fun ha => by rw [ha, map_zero_one]⟩
   rw [zmod_char_isNontrivial_iff n (mulShift ψ a), mulShift_apply, mul_one, h, Classical.not_not]
 #align add_char.is_primitive.zmod_char_eq_one_iff AddChar.IsPrimitive.zmod_char_eq_one_iff
 
@@ -189,7 +189,7 @@ theorem IsPrimitive.zmod_char_eq_one_iff (n : ℕ+) {ψ : AddChar (ZMod n) C} (h
 then it is primitive. -/
 theorem zmod_char_primitive_of_eq_one_only_at_zero (n : ℕ) (ψ : AddChar (ZMod n) C)
     (hψ : ∀ a, ψ a = 1 → a = 0) : IsPrimitive ψ := by
-  refine' fun a ha => (isNontrivial_iff_ne_trivial _).mpr fun hf => _
+  refine fun a ha => (isNontrivial_iff_ne_trivial _).mpr fun hf => ?_
   have h : mulShift ψ a 1 = (1 : AddChar (ZMod n) C) (1 : ZMod n) :=
     congr_fun (congr_arg (↑) hf) 1
   rw [mulShift_apply, mul_one] at h; norm_cast at h

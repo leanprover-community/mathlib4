@@ -210,7 +210,7 @@ theorem inertiaDeg_algebraMap [Algebra R S] [Algebra (R ⧸ p) (S ⧸ P)]
   have := comap_eq_of_scalar_tower_quotient (algebraMap (R ⧸ p) (S ⧸ P)).injective
   rw [inertiaDeg, dif_pos this]
   congr
-  refine' Algebra.algebra_ext _ _ fun x' => Quotient.inductionOn' x' fun x => _
+  refine Algebra.algebra_ext _ _ fun x' => Quotient.inductionOn' x' fun x => ?_
   change Ideal.Quotient.lift p _ _ (Ideal.Quotient.mk p x) = algebraMap _ _ (Ideal.Quotient.mk p x)
   rw [Ideal.Quotient.lift_mk, ← Ideal.Quotient.algebraMap_eq P, ← IsScalarTower.algebraMap_eq,
     ← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply]
@@ -264,7 +264,7 @@ theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDedekindDomain R]
     simp only [FractionalIdeal.mem_coeIdeal, not_exists, not_and'] at hgI
     exact hgI _ (hg' j hjs)
   refine ⟨fun i => algebraMap R S (g' i), ?_, j, hjs, hgI⟩
-  have eq : f (∑ i in s, g' i • b i) = 0 := by
+  have eq : f (∑ i ∈ s, g' i • b i) = 0 := by
     rw [map_sum, ← smul_zero a, ← eq, Finset.smul_sum]
     refine Finset.sum_congr rfl ?_
     intro i hi
@@ -674,7 +674,7 @@ theorem finrank_prime_pow_ramificationIdx [IsDedekindDomain S] (hP0 : P ≠ ⊥)
   by_cases hP : FiniteDimensional (R ⧸ p) (S ⧸ P)
   · haveI := hP
     haveI := (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mpr hP
-    refine' Cardinal.natCast_injective _
+    refine Cardinal.natCast_injective ?_
     rw [finrank_eq_rank', Nat.cast_mul, finrank_eq_rank', hdim, nsmul_eq_mul]
   have hPe := mt (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mp hP
   simp only [finrank_of_infinite_dimensional hP, finrank_of_infinite_dimensional hPe,
@@ -813,7 +813,7 @@ theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDo
     [Algebra R K] [IsFractionRing R K] [Algebra S L] [IsFractionRing S L] [Algebra K L]
     [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [IsNoetherian R S]
     [IsIntegralClosure S R L] [p.IsMaximal] (hp0 : p ≠ ⊥) :
-    (∑ P in (factors (map (algebraMap R S) p)).toFinset,
+    (∑ P ∈ (factors (map (algebraMap R S) p)).toFinset,
         ramificationIdx (algebraMap R S) p P * inertiaDeg (algebraMap R S) p P) =
       finrank K L := by
   set e := ramificationIdx (algebraMap R S) p
@@ -826,8 +826,8 @@ theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDo
     rw [← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq]
     exact inj_RL
   calc
-    (∑ P in (factors (map (algebraMap R S) p)).toFinset, e P * f P) =
-        ∑ P in (factors (map (algebraMap R S) p)).toFinset.attach,
+    (∑ P ∈ (factors (map (algebraMap R S) p)).toFinset, e P * f P) =
+        ∑ P ∈ (factors (map (algebraMap R S) p)).toFinset.attach,
           finrank (R ⧸ p) (S ⧸ (P : Ideal S) ^ e P) := ?_
     _ = finrank (R ⧸ p)
           (∀ P : (factors (map (algebraMap R S) p)).toFinset, S ⧸ (P : Ideal S) ^ e P) :=

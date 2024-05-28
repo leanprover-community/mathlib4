@@ -27,7 +27,7 @@ theorem isIdempotentElem_iff_of_fg {R : Type*} [CommRing R] (I : Ideal R) (h : I
           rw [smul_eq_mul]
           exact e.ge)
     simp_rw [smul_eq_mul] at hr'
-    refine' ⟨r, hr' r hr, antisymm _ ((Submodule.span_singleton_le_iff_mem _ _).mpr hr)⟩
+    refine ⟨r, hr' r hr, antisymm ?_ ((Submodule.span_singleton_le_iff_mem _ _).mpr hr)⟩
     intro x hx
     rw [← hr' x hx]
     exact Ideal.mem_span_singleton'.mpr ⟨_, mul_comm _ _⟩
