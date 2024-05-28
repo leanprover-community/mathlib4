@@ -2173,10 +2173,90 @@ instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] 
     NormalSpace X where
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
 
+lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
+    (h_cov: ∃ u : ι → Set X, ∃ c : Set ι, c.Countable ∧ h ⊆ ⋃ i ∈ c, u i ∧
+      ∀ i, IsOpen (u i) ∧ Disjoint (closure (u i)) k)
+    (k_cov: ∃ u : ι → Set X, ∃ c : Set ι, c.Countable ∧ k ⊆ ⋃ i ∈ c, u i ∧
+      ∀ i, IsOpen (u i) ∧ Disjoint (closure (u i)) h) : SeparatedNhds h k := by
+  sorry
+
 /-- A regular topological space with Lindelöf topology is a normal space. -/
 instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     [r: RegularSpace X] [LindelofSpace X] : NormalSpace X where
-  normal h k hcl kcl hkdis := sorry
+  normal h k hcl kcl hkdis := by
+    rw [Set.disjoint_iff] at hkdis
+    have h_lind : IsLindelof h :=
+      IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ hcl (subset_univ h)
+    have : ∀ a : X, ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) k ∧ (a ∈ h → a ∈ n) := by
+      intro a
+      by_cases hyp: a ∈ h
+      · have : kᶜ ∈ 𝓝 a := by
+          apply IsClosed.compl_mem_nhds kcl
+          by_contra aink; exact hkdis ⟨hyp, aink⟩
+        rcases (((regularSpace_TFAE X).out 0 3).mp r:) a kᶜ this
+          with ⟨n, nna, ncl, nsubkc⟩
+        use interior n
+        constructor
+        · exact isOpen_interior
+        constructor
+        · exact disjoint_left.mpr fun ⦃a⦄ a_1 ↦
+            nsubkc ((IsClosed.closure_subset_iff ncl).mpr interior_subset a_1)
+        · intros; exact mem_interior_iff_mem_nhds.mpr nna
+      · use ∅
+        constructor
+        · exact isOpen_empty
+        constructor
+        · exact SeparatedNhds.disjoint_closure_left (SeparatedNhds.empty_left k)
+        · intro ainh; by_contra; exact hyp ainh
+    choose u u_open u_dis u_nhd using this
+    have u_cov : h ⊆ ⋃ i, u i := by
+      intro a ainh
+      simp only [mem_iUnion]; use a; apply u_nhd; exact ainh
+    rcases IsLindelof.elim_countable_subcover h_lind u u_open u_cov with ⟨c, c_count, c_cov⟩
+    have k_lind : IsLindelof k :=
+      IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ kcl (subset_univ k)
+    have : ∀ a : X, ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) h ∧ (a ∈ k → a ∈ n) := by
+      intro a
+      by_cases hyp: a ∈ k
+      · have : hᶜ ∈ 𝓝 a := by
+          apply IsClosed.compl_mem_nhds hcl
+          by_contra ainh; exact hkdis ⟨ainh, hyp⟩
+        rcases (((regularSpace_TFAE X).out 0 3).mp r:) a hᶜ this
+          with ⟨n, nna, ncl, nsubkc⟩
+        use interior n
+        constructor
+        · exact isOpen_interior
+        constructor
+        · exact disjoint_left.mpr fun ⦃a⦄ a_1 ↦
+            nsubkc ((IsClosed.closure_subset_iff ncl).mpr interior_subset a_1)
+        · intros; exact mem_interior_iff_mem_nhds.mpr nna
+      · use ∅
+        constructor
+        · exact isOpen_empty
+        constructor
+        · exact SeparatedNhds.disjoint_closure_left (SeparatedNhds.empty_left h)
+        · intro aink; by_contra; exact hyp aink
+    choose v v_open v_dis v_nhd using this
+    have v_cov : k ⊆ ⋃ i, v i := by
+      intro a aink
+      simp only [mem_iUnion]; use a; apply v_nhd; exact aink
+    rcases IsLindelof.elim_countable_subcover k_lind v v_open v_cov with ⟨d, d_count, d_cov⟩
+    apply countable_covers_to_separated_nhds
+    · use u, c
+      constructor
+      · exact c_count
+      constructor
+      · exact c_cov
+      intro a
+      exact ⟨ u_open a, u_dis a ⟩
+    · use v, d
+      constructor
+      · exact d_count
+      constructor
+      · exact d_cov
+      intro a
+      exact ⟨ v_open a, v_dis a ⟩
+
 
 instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
     [RegularSpace X] [SecondCountableTopology X] : NormalSpace X :=
