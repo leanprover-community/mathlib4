@@ -283,18 +283,6 @@ theorem ae_withDensity_iff {p : α → Prop} {f : α → ℝ≥0∞} (hf : Measu
   simp only [exists_prop, mem_inter_iff, iff_self_iff, mem_setOf_eq, not_forall]
 #align measure_theory.ae_with_density_iff MeasureTheory.ae_withDensity_iff
 
-theorem withDensity_ae_eq {β : Type} {f g : α → β} {d : α → ℝ≥0∞}
-    (hd : Measurable d) (h_ae_nonneg : ∀ᵐ x ∂μ, d x ≠ 0) :
-    f =ᵐ[μ.withDensity d] g ↔ f =ᵐ[μ] g := by
-  constructor
-  · intro (h : ∀ᵐ x ∂(μ.withDensity d), f x = g x)
-    rw [ae_withDensity_iff hd] at h
-    filter_upwards [h_ae_nonneg, h] with _ hda himp using (himp hda)
-  intro h
-  suffices ∀ᵐ x ∂(μ.withDensity d), f x = g x by exact this
-  rw [ae_withDensity_iff hd]
-  filter_upwards [h] with _ ha _ using ha
-
 theorem ae_withDensity_iff_ae_restrict {p : α → Prop} {f : α → ℝ≥0∞} (hf : Measurable f) :
     (∀ᵐ x ∂μ.withDensity f, p x) ↔ ∀ᵐ x ∂μ.restrict { x | f x ≠ 0 }, p x := by
   rw [ae_withDensity_iff hf, ae_restrict_iff']
@@ -545,6 +533,15 @@ lemma withDensity_absolutelyContinuous' {μ : Measure α} {f : α → ℝ≥0∞
     fun x hx ↦ or_iff_not_imp_right.mpr <| fun hnx ↦ ⟨hx, hnx⟩
   exact measure_mono_null hle <| nonpos_iff_eq_zero.1 <| le_trans (measure_union_le _ _)
     <| hμs.symm ▸ zero_add _ |>.symm ▸ hf_ne_zero.le
+
+theorem withDensity_ae_eq {β : Type} {f g : α → β} {d : α → ℝ≥0∞}
+    (hd : AEMeasurable d μ) (h_ae_nonneg : ∀ᵐ x ∂μ, d x ≠ 0) :
+    f =ᵐ[μ.withDensity d] g ↔ f =ᵐ[μ] g :=
+  Iff.intro
+  (fun h ↦ Measure.AbsolutelyContinuous.ae_eq
+    (withDensity_absolutelyContinuous' hd h_ae_nonneg) h)
+  (fun h ↦ Measure.AbsolutelyContinuous.ae_eq
+    (withDensity_absolutelyContinuous μ d) h)
 
 /-- A sigma-finite measure is absolutely continuous with respect to some finite measure. -/
 theorem exists_absolutelyContinuous_isFiniteMeasure {m : MeasurableSpace α} (μ : Measure α)
