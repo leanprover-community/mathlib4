@@ -16,7 +16,7 @@ as well as simple corollaries.
 -/
 
 open Filter
-open scoped ENNReal Topology BigOperators
+open scoped ENNReal Topology
 
 namespace MeasureTheory
 
@@ -46,7 +46,7 @@ theorem snorm'_add_le_of_le_one {f g : α → E} (hf : AEStronglyMeasurable f μ
 
 theorem snormEssSup_add_le {f g : α → E} :
     snormEssSup (f + g) μ ≤ snormEssSup f μ + snormEssSup g μ := by
-  refine' le_trans (essSup_mono_ae (eventually_of_forall fun x => _)) (ENNReal.essSup_add_le _ _)
+  refine le_trans (essSup_mono_ae (eventually_of_forall fun x => ?_)) (ENNReal.essSup_add_le _ _)
   simp_rw [Pi.add_apply, ← ENNReal.coe_add, ENNReal.coe_le_coe]
   exact nnnorm_add_le _ _
 #align measure_theory.snorm_ess_sup_add_le MeasureTheory.snormEssSup_add_le
@@ -127,7 +127,7 @@ theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
       nhdsWithin_le_nhds
   simp only [add_zero, mul_zero] at this
   rcases (((tendsto_order.1 this).2 δ hδ.bot_lt).and self_mem_nhdsWithin).exists with ⟨η, hη, ηpos⟩
-  refine' ⟨η, ηpos, fun f g hf hg Hf Hg => _⟩
+  refine ⟨η, ηpos, fun f g hf hg Hf Hg => ?_⟩
   calc
     snorm (f + g) p μ ≤ LpAddConst p * (snorm f p μ + snorm g p μ) := snorm_add_le' hf hg p
     _ ≤ LpAddConst p * (η + η) := by gcongr
@@ -159,7 +159,7 @@ theorem snorm_add_lt_top {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g 
 
 theorem snorm'_sum_le {ι} {f : ι → α → E} {s : Finset ι}
     (hfs : ∀ i, i ∈ s → AEStronglyMeasurable (f i) μ) (hq1 : 1 ≤ q) :
-    snorm' (∑ i in s, f i) q μ ≤ ∑ i in s, snorm' (f i) q μ :=
+    snorm' (∑ i ∈ s, f i) q μ ≤ ∑ i ∈ s, snorm' (f i) q μ :=
   Finset.le_sum_of_subadditive_on_pred (fun f : α → E => snorm' f q μ)
     (fun f => AEStronglyMeasurable f μ) (snorm'_zero (zero_lt_one.trans_le hq1))
     (fun _f _g hf hg => snorm'_add_le hf hg hq1) (fun _f _g hf hg => hf.add hg) _ hfs
@@ -167,7 +167,7 @@ theorem snorm'_sum_le {ι} {f : ι → α → E} {s : Finset ι}
 
 theorem snorm_sum_le {ι} {f : ι → α → E} {s : Finset ι}
     (hfs : ∀ i, i ∈ s → AEStronglyMeasurable (f i) μ) (hp1 : 1 ≤ p) :
-    snorm (∑ i in s, f i) p μ ≤ ∑ i in s, snorm (f i) p μ :=
+    snorm (∑ i ∈ s, f i) p μ ≤ ∑ i ∈ s, snorm (f i) p μ :=
   Finset.le_sum_of_subadditive_on_pred (fun f : α → E => snorm f p μ)
     (fun f => AEStronglyMeasurable f μ) snorm_zero (fun _f _g hf hg => snorm_add_le hf hg hp1)
     (fun _f _g hf hg => hf.add hg) _ hfs
@@ -183,10 +183,10 @@ theorem Memℒp.sub {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ)
 #align measure_theory.mem_ℒp.sub MeasureTheory.Memℒp.sub
 
 theorem memℒp_finset_sum {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ i ∈ s, Memℒp (f i) p μ) :
-    Memℒp (fun a => ∑ i in s, f i a) p μ := by
+    Memℒp (fun a => ∑ i ∈ s, f i a) p μ := by
   haveI : DecidableEq ι := Classical.decEq _
   revert hf
-  refine' Finset.induction_on s _ _
+  refine Finset.induction_on s ?_ ?_
   · simp only [zero_mem_ℒp', Finset.sum_empty, imp_true_iff]
   · intro i s his ih hf
     simp only [his, Finset.sum_insert, not_false_iff]
@@ -194,7 +194,7 @@ theorem memℒp_finset_sum {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ 
 #align measure_theory.mem_ℒp_finset_sum MeasureTheory.memℒp_finset_sum
 
 theorem memℒp_finset_sum' {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ i ∈ s, Memℒp (f i) p μ) :
-    Memℒp (∑ i in s, f i) p μ := by
+    Memℒp (∑ i ∈ s, f i) p μ := by
   convert memℒp_finset_sum s hf using 1
   ext x
   simp

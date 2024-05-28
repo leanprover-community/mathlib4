@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
 import Mathlib.Algebra.Group.Commutator
+import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Data.Bracket
-import Mathlib.GroupTheory.Subgroup.Finite
 import Mathlib.GroupTheory.Subgroup.Centralizer
 import Mathlib.Tactic.Group
 
@@ -99,8 +99,8 @@ theorem commutator_mono (h₁ : H₁ ≤ K₁) (h₂ : H₂ ≤ K₂) : ⁅H₁,
 
 theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ ≤ centralizer H₂ := by
   rw [eq_bot_iff, commutator_le]
-  refine'
-    forall_congr' fun p => forall_congr' fun _hp => forall_congr' fun q => forall_congr' fun hq => _
+  refine forall_congr' fun p =>
+    forall_congr' fun _hp => forall_congr' fun q => forall_congr' fun hq => ?_
   rw [mem_bot, commutatorElement_eq_one_iff_mul_comm, eq_comm]
 #align subgroup.commutator_eq_bot_iff_le_centralizer Subgroup.commutator_eq_bot_iff_le_centralizer
 

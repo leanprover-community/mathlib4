@@ -265,8 +265,7 @@ instance Partition.le : LE (Subtype (@IsPartition α)) :=
 
 /-- Defining a partial order on partitions as the partial order on their induced
     equivalence relations. -/
-instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α))
-    where
+instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α)) where
   le := (· ≤ ·)
   lt x y := x ≤ y ∧ ¬y ≤ x
   le_refl _ := @le_refl (Setoid α) _ _
@@ -281,14 +280,14 @@ variable (α)
 
 /-- The order-preserving bijection between equivalence relations on a type `α`, and
   partitions of `α` into subsets. -/
-protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartition C }
-    where
+protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartition C } where
   toFun r := ⟨r.classes, empty_not_mem_classes, classes_eqv_classes⟩
   invFun C := mkClasses C.1 C.2.2
   left_inv := mkClasses_classes
   right_inv C := by rw [Subtype.ext_iff_val, ← classes_mkClasses C.1 C.2]
   map_rel_iff' {r s} := by
     conv_rhs => rw [← mkClasses_classes r, ← mkClasses_classes s]
+    rfl
 #align setoid.partition.order_iso Setoid.Partition.orderIso
 
 variable {α}
@@ -347,8 +346,7 @@ structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
 /-- The non-constructive constructor for `IndexedPartition`. -/
 noncomputable def IndexedPartition.mk' {ι α : Type*} (s : ι → Set α)
     (dis : Pairwise fun i j => Disjoint (s i) (s j)) (nonempty : ∀ i, (s i).Nonempty)
-    (ex : ∀ x, ∃ i, x ∈ s i) : IndexedPartition s
-    where
+    (ex : ∀ x, ∃ i, x ∈ s i) : IndexedPartition s where
   eq_of_mem {_x _i _j} hxi hxj := by_contradiction fun h => (dis h).le_bot ⟨hxi, hxj⟩
   some i := (nonempty i).some
   some_mem i := (nonempty i).choose_spec

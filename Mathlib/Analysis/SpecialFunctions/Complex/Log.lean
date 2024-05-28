@@ -175,13 +175,13 @@ theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x
 
 @[simp]
 theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Countable := by
-  refine' ⟨fun hs => _, fun hs => _⟩
-  · refine' ((hs.image exp).insert 0).mono _
+  refine ⟨fun hs => ?_, fun hs => ?_⟩
+  · refine ((hs.image exp).insert 0).mono ?_
     rw [Set.image_preimage_eq_inter_range, range_exp, ← Set.diff_eq, ← Set.union_singleton,
         Set.diff_union_self]
     exact Set.subset_union_left _ _
   · rw [← Set.biUnion_preimage_singleton]
-    refine' hs.biUnion fun z hz => _
+    refine hs.biUnion fun z hz => ?_
     rcases em (∃ w, exp w = z) with (⟨w, rfl⟩ | hne)
     · simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.setOf_exists]
       exact Set.countable_iUnion fun m => Set.countable_singleton _
@@ -213,8 +213,8 @@ theorem continuousWithinAt_log_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (
       ((continuous_ofReal.continuousAt.comp_continuousWithinAt <|
             continuousWithinAt_arg_of_re_neg_of_im_zero hre him).mul
         tendsto_const_nhds) using 1
-  · lift z to ℝ using him
-    simpa using hre.ne
+  lift z to ℝ using him
+  simpa using hre.ne
 #align complex.continuous_within_at_log_of_re_neg_of_im_zero Complex.continuousWithinAt_log_of_re_neg_of_im_zero
 
 theorem tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
@@ -228,7 +228,10 @@ theorem map_exp_comap_re_atBot : map exp (comap re atBot) = 𝓝[≠] 0 := by
   rw [← comap_exp_nhds_zero, map_comap, range_exp, nhdsWithin]
 #align complex.map_exp_comap_re_at_bot Complex.map_exp_comap_re_atBot
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12226
+@[simp, nolint simpNF]
 theorem map_exp_comap_re_atTop : map exp (comap re atTop) = cobounded ℂ := by
   rw [← comap_exp_cobounded, map_comap, range_exp, inf_eq_left, le_principal_iff]
   exact eventually_ne_cobounded _
@@ -245,12 +248,12 @@ open Topology
 variable {α : Type*}
 
 theorem continuousAt_clog {x : ℂ} (h : x ∈ slitPlane) : ContinuousAt log x := by
-  refine' ContinuousAt.add _ _
-  · refine' continuous_ofReal.continuousAt.comp _
-    refine' (Real.continuousAt_log _).comp Complex.continuous_abs.continuousAt
+  refine ContinuousAt.add ?_ ?_
+  · refine continuous_ofReal.continuousAt.comp ?_
+    refine (Real.continuousAt_log ?_).comp Complex.continuous_abs.continuousAt
     exact Complex.abs.ne_zero_iff.mpr <| slitPlane_ne_zero h
   · have h_cont_mul : Continuous fun x : ℂ => x * I := continuous_id'.mul continuous_const
-    refine' h_cont_mul.continuousAt.comp (continuous_ofReal.continuousAt.comp _)
+    refine h_cont_mul.continuousAt.comp (continuous_ofReal.continuousAt.comp ?_)
     exact continuousAt_arg h
 #align continuous_at_clog continuousAt_clog
 

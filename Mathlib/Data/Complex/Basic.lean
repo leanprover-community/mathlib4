@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.GroupPower.Ring
-import Mathlib.Algebra.GroupWithZero.Bitwise
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Image
 
@@ -691,7 +690,10 @@ theorem normSq_pos {z : ℂ} : 0 < normSq z ↔ z ≠ 0 :=
   (normSq_nonneg z).lt_iff_ne.trans <| not_congr (eq_comm.trans normSq_eq_zero)
 #align complex.norm_sq_pos Complex.normSq_pos
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12228
+@[simp, nolint simpNF]
 theorem normSq_neg (z : ℂ) : normSq (-z) = normSq z := by simp [normSq]
 #align complex.norm_sq_neg Complex.normSq_neg
 
@@ -836,20 +838,6 @@ lemma ofReal_nnqsmul (q : ℚ≥0) (r : ℝ) : ofReal' (q • r) = q • r := by
 @[simp, norm_cast]
 lemma ofReal_qsmul (q : ℚ) (r : ℝ) : ofReal' (q • r) = q • r := by simp [Rat.smul_def]
 
-section
-set_option linter.deprecated false
-@[simp]
-theorem I_zpow_bit0 (n : ℤ) : I ^ bit0 n = (-1 : ℂ) ^ n := by rw [zpow_bit0', I_mul_I]
-set_option linter.uppercaseLean3 false in
-#align complex.I_zpow_bit0 Complex.I_zpow_bit0
-
-@[simp]
-theorem I_zpow_bit1 (n : ℤ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [zpow_bit1', I_mul_I]
-set_option linter.uppercaseLean3 false in
-#align complex.I_zpow_bit1 Complex.I_zpow_bit1
-
-end
-
 theorem conj_inv (x : ℂ) : conj x⁻¹ = (conj x)⁻¹ :=
   star_inv' _
 #align complex.conj_inv Complex.conj_inv
@@ -948,7 +936,7 @@ numbers are represented.
 -/
 unsafe instance instRepr : Repr ℂ where
   reprPrec f p :=
-    (if p > 65 then (Std.Format.bracket "(" . ")") else (·)) <|
+    (if p > 65 then (Std.Format.bracket "(" · ")") else (·)) <|
       reprPrec f.re 65 ++ " + " ++ reprPrec f.im 70 ++ "*I"
 
 end Complex

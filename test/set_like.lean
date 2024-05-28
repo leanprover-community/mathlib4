@@ -1,7 +1,7 @@
+import Mathlib.Algebra.Field.Subfield
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
-import Mathlib.FieldTheory.Subfield
 
 set_option autoImplicit true
 

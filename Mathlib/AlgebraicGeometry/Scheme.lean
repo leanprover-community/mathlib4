@@ -19,7 +19,12 @@ A morphism of schemes is just a morphism of the underlying locally ringed spaces
 
 -/
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
 set_option linter.uppercaseLean3 false
+
+universe u
+
 noncomputable section
 
 open TopologicalSpace
@@ -34,7 +39,7 @@ namespace AlgebraicGeometry
 
 /-- We define `Scheme` as an `X : LocallyRingedSpace`,
 along with a proof that every point has an open neighbourhood `U`
-so that that the restriction of `X` to `U` is isomorphic,
+so that the restriction of `X` to `U` is isomorphic,
 as a locally ringed space, to `Spec.toLocallyRingedSpace.obj (op R)`
 for some `R : CommRingCat`.
 -/
@@ -245,7 +250,7 @@ def Spec : CommRingCatᵒᵖ ⥤ Scheme where
 /-- The empty scheme.
 -/
 @[simps]
-def empty.{u} : Scheme.{u} where
+def empty : Scheme where
   carrier := TopCat.of PEmpty
   presheaf := (CategoryTheory.Functor.const _).obj (CommRingCat.of PUnit)
   IsSheaf := Presheaf.isSheaf_of_isTerminal _ CommRingCat.punitIsTerminal
@@ -292,7 +297,6 @@ section BasicOpen
 variable (X : Scheme) {V U : Opens X.carrier} (f g : X.presheaf.obj (op U))
 
 /-- The subset of the underlying space where the given section does not vanish. -/
-@[pp_dot]
 def basicOpen : Opens X.carrier :=
   X.toLocallyRingedSpace.toRingedSpace.basicOpen f
 #align algebraic_geometry.Scheme.basic_open AlgebraicGeometry.Scheme.basicOpen
@@ -397,7 +401,7 @@ theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : Opens X} (h : U
   have : Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op = 𝟙 _ := by
     rw [X.presheaf.map_id, op_id, Scheme.Spec.map_id]
   cases h
-  refine' (Scheme.congr_app this _).trans _
+  refine (Scheme.congr_app this _).trans ?_
   simp [eqToHom_map]
 #align algebraic_geometry.Scheme.Spec_map_presheaf_map_eqToHom AlgebraicGeometry.Scheme.Spec_map_presheaf_map_eqToHom
 

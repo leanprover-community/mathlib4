@@ -173,7 +173,7 @@ theorem normalize_eq_normalize {a b : α} (hab : a ∣ b) (hba : b ∣ a) :
     normalize a = normalize b := by
   nontriviality α
   rcases associated_of_dvd_dvd hab hba with ⟨u, rfl⟩
-  refine' by_cases (by rintro rfl; simp only [zero_mul]) fun ha : a ≠ 0 => _
+  refine by_cases (by rintro rfl; simp only [zero_mul]) fun ha : a ≠ 0 => ?_
   suffices a * ↑(normUnit a) = a * ↑u * ↑(normUnit a) * ↑u⁻¹ by
     simpa only [normalize_apply, mul_assoc, normUnit_mul ha u.ne_zero, normUnit_coe_units]
   calc
@@ -190,6 +190,11 @@ theorem dvd_antisymm_of_normalize_eq {a b : α} (ha : normalize a = a) (hb : nor
     (hab : a ∣ b) (hba : b ∣ a) : a = b :=
   ha ▸ hb ▸ normalize_eq_normalize hab hba
 #align dvd_antisymm_of_normalize_eq dvd_antisymm_of_normalize_eq
+
+theorem Associated.eq_of_normalized
+    {a b : α} (h : Associated a b) (ha : normalize a = a) (hb : normalize b = b) :
+    a = b :=
+  dvd_antisymm_of_normalize_eq ha hb h.dvd h.dvd'
 
 --can be proven by simp
 theorem dvd_normalize_iff {a b : α} : a ∣ normalize b ↔ a ∣ b :=
@@ -434,6 +439,11 @@ theorem gcd_one_right' [GCDMonoid α] (a : α) : Associated (gcd a 1) 1 := by si
 theorem gcd_dvd_gcd [GCDMonoid α] {a b c d : α} (hab : a ∣ b) (hcd : c ∣ d) : gcd a c ∣ gcd b d :=
   dvd_gcd ((gcd_dvd_left _ _).trans hab) ((gcd_dvd_right _ _).trans hcd)
 #align gcd_dvd_gcd gcd_dvd_gcd
+
+protected theorem Associated.gcd [GCDMonoid α]
+    {a₁ a₂ b₁ b₂ : α} (ha : Associated a₁ a₂) (hb : Associated b₁ b₂) :
+    Associated (gcd a₁ b₁) (gcd a₂ b₂) :=
+  associated_of_dvd_dvd (gcd_dvd_gcd ha.dvd hb.dvd) (gcd_dvd_gcd ha.dvd' hb.dvd')
 
 @[simp]
 theorem gcd_same [NormalizedGCDMonoid α] (a : α) : gcd a a = normalize a :=
@@ -682,7 +692,7 @@ theorem isUnit_gcd_of_eq_mul_gcd {α : Type*} [CancelCommMonoidWithZero α] [GCD
     {x y x' y' : α} (ex : x = gcd x y * x') (ey : y = gcd x y * y') (h : gcd x y ≠ 0) :
     IsUnit (gcd x' y') := by
   rw [← associated_one_iff_isUnit]
-  refine' Associated.of_mul_left _ (Associated.refl <| gcd x y) h
+  refine Associated.of_mul_left ?_ (Associated.refl <| gcd x y) h
   convert (gcd_mul_left' (gcd x y) x' y').symm using 1
   rw [← ex, ← ey, mul_one]
 #align is_unit_gcd_of_eq_mul_gcd isUnit_gcd_of_eq_mul_gcd
@@ -713,6 +723,24 @@ theorem Irreducible.isUnit_gcd_iff [GCDMonoid α] {x y : α} (hx : Irreducible x
 theorem Irreducible.gcd_eq_one_iff [NormalizedGCDMonoid α] {x y : α} (hx : Irreducible x) :
     gcd x y = 1 ↔ ¬(x ∣ y) := by
   rw [← hx.isUnit_gcd_iff, ← normalize_eq_one, NormalizedGCDMonoid.normalize_gcd]
+
+section Neg
+
+variable [HasDistribNeg α]
+
+lemma gcd_neg' [GCDMonoid α] {a b : α} : Associated (gcd a (-b)) (gcd a b) :=
+  Associated.gcd .rfl (.neg_left .rfl)
+
+lemma gcd_neg [NormalizedGCDMonoid α] {a b : α} : gcd a (-b) = gcd a b :=
+  gcd_neg'.eq_of_normalized (normalize_gcd _ _) (normalize_gcd _ _)
+
+lemma neg_gcd' [GCDMonoid α] {a b : α} : Associated (gcd (-a) b) (gcd a b) :=
+  Associated.gcd (.neg_left .rfl) .rfl
+
+lemma neg_gcd [NormalizedGCDMonoid α] {a b : α} : gcd (-a) b = gcd a b :=
+  neg_gcd'.eq_of_normalized (normalize_gcd _ _) (normalize_gcd _ _)
+
+end Neg
 
 end GCD
 
@@ -798,6 +826,11 @@ theorem lcm_eq_normalize [NormalizedGCDMonoid α] {a b c : α} (habc : lcm a b �
 theorem lcm_dvd_lcm [GCDMonoid α] {a b c d : α} (hab : a ∣ b) (hcd : c ∣ d) : lcm a c ∣ lcm b d :=
   lcm_dvd (hab.trans (dvd_lcm_left _ _)) (hcd.trans (dvd_lcm_right _ _))
 #align lcm_dvd_lcm lcm_dvd_lcm
+
+protected theorem Associated.lcm [GCDMonoid α]
+    {a₁ a₂ b₁ b₂ : α} (ha : Associated a₁ a₂) (hb : Associated b₁ b₂) :
+    Associated (lcm a₁ b₁) (lcm a₂ b₂) :=
+  associated_of_dvd_dvd (lcm_dvd_lcm ha.dvd hb.dvd) (lcm_dvd_lcm ha.dvd' hb.dvd')
 
 @[simp]
 theorem lcm_units_coe_left [NormalizedGCDMonoid α] (u : αˣ) (a : α) : lcm (↑u) a = normalize a :=
@@ -892,9 +925,9 @@ theorem lcm_eq_of_associated_right [NormalizedGCDMonoid α] {m n : α} (h : Asso
 
 end LCM
 
-@[deprecated] alias GCDMonoid.prime_of_irreducible := Irreducible.prime
+@[deprecated (since := "2024-02-12")] alias GCDMonoid.prime_of_irreducible := Irreducible.prime
 #align gcd_monoid.prime_of_irreducible Irreducible.prime
-@[deprecated] alias GCDMonoid.irreducible_iff_prime := irreducible_iff_prime
+@[deprecated (since := "2024-02-12")] alias GCDMonoid.irreducible_iff_prime := irreducible_iff_prime
 #align gcd_monoid.irreducible_iff_prime irreducible_iff_prime
 
 end GCDMonoid
@@ -1423,16 +1456,6 @@ theorem normalize_eq_one {a : G₀} (h0 : a ≠ 0) : normalize a = 1 := by simp 
 #align comm_group_with_zero.normalize_eq_one CommGroupWithZero.normalize_eq_one
 
 end CommGroupWithZero
-
-theorem Associated.gcd [CancelCommMonoidWithZero α] [GCDMonoid α]
-    {a₁ a₂ b₁ b₂ : α} (ha : Associated a₁ a₂) (hb : Associated b₁ b₂) :
-    Associated (gcd a₁ b₁) (gcd a₂ b₂) :=
-  associated_of_dvd_dvd (gcd_dvd_gcd ha.dvd hb.dvd) (gcd_dvd_gcd ha.symm.dvd hb.symm.dvd)
-
-theorem Associated.lcm [CancelCommMonoidWithZero α] [GCDMonoid α]
-    {a₁ a₂ b₁ b₂ : α} (ha : Associated a₁ a₂) (hb : Associated b₁ b₂) :
-    Associated (lcm a₁ b₁) (lcm a₂ b₂) :=
-  associated_of_dvd_dvd (lcm_dvd_lcm ha.dvd hb.dvd) (lcm_dvd_lcm ha.symm.dvd hb.symm.dvd)
 
 namespace Associates
 

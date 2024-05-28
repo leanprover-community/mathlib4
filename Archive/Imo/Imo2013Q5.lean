@@ -29,8 +29,6 @@ https://www.imo-official.org/problems/IMO2013SL.pdf
 -/
 
 
-open scoped BigOperators
-
 namespace Imo2013Q5
 
 theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
@@ -47,9 +45,9 @@ theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
         _ ≤ x ^ i * y ^ (n - 1 - i) := by gcongr; apply one_le_pow_of_one_le hy.le
     calc
       (x - y) * (n : ℝ) = (n : ℝ) * (x - y) := by ring
-      _ = (∑ _i : ℕ in Finset.range n, (1 : ℝ)) * (x - y) := by
+      _ = (∑ _i ∈ Finset.range n, (1 : ℝ)) * (x - y) := by
         simp only [mul_one, Finset.sum_const, nsmul_eq_mul, Finset.card_range]
-      _ ≤ (∑ i : ℕ in Finset.range n, x ^ i * y ^ (n - 1 - i)) * (x - y) := by
+      _ ≤ (∑ i ∈ Finset.range n, x ^ i * y ^ (n - 1 - i)) * (x - y) := by
         gcongr with i hi; apply hterm i hi
       _ = x ^ n - y ^ n := geom_sum₂_mul x y n
   -- Choose n larger than 1 / (x - y).
@@ -67,7 +65,7 @@ theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
 -/
 theorem le_of_all_pow_lt_succ' {x y : ℝ} (hx : 1 < x) (hy : 0 < y)
     (h : ∀ n : ℕ, 0 < n → x ^ n - 1 < y ^ n) : x ≤ y := by
-  refine' le_of_all_pow_lt_succ hx _ h
+  refine le_of_all_pow_lt_succ hx ?_ h
   by_contra! hy'' : y ≤ 1
   -- Then there exists y' such that 0 < y ≤ 1 < y' < x.
   let y' := (x + 1) / 2
@@ -241,7 +239,7 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
   -- we need the top of the fraction to be strictly greater than 1 in order
   -- to apply `fixed_point_of_gt_1`.
   intro x hx
-  have H₀ : x * x.den = x.num := Rat.mul_den_eq_num
+  have H₀ : x * x.den = x.num := x.mul_den_eq_num
   have H : x * (↑(2 * x.den) : ℚ) = (↑(2 * x.num) : ℚ) := by push_cast; linear_combination 2 * H₀
   set x2denom := 2 * x.den
   set x2num := 2 * x.num

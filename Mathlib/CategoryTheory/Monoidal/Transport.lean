@@ -201,18 +201,18 @@ instance instIsEquivalence_fromTransported (e : C ≌ D) :
 -/
 @[simps!]
 def toTransported (e : C ≌ D) : MonoidalFunctor C (Transported e) :=
-  monoidalInverse (fromTransported e)
+  monoidalInverse (fromTransported e) e.symm.toAdjunction
 #align category_theory.monoidal.to_transported CategoryTheory.Monoidal.toTransported
 
 instance (e : C ≌ D) : (toTransported e).IsEquivalence :=
-  inferInstanceAs (e.functor.IsEquivalence)
+  e.isEquivalence_functor
 
 /-- The unit isomorphism upgrades to a monoidal isomorphism. -/
 @[simps! hom inv]
 def transportedMonoidalUnitIso (e : C ≌ D) :
     LaxMonoidalFunctor.id C ≅
       (toTransported e).toLaxMonoidalFunctor ⊗⋙ (fromTransported e).toLaxMonoidalFunctor :=
-  asIso (monoidalCounit (fromTransported e)) |>.symm
+  asIso (monoidalCounit (fromTransported e) e.symm.toAdjunction) |>.symm
 #align category_theory.monoidal.transported_monoidal_unit_iso CategoryTheory.Monoidal.transportedMonoidalUnitIso
 
 /-- The counit isomorphism upgrades to a monoidal isomorphism. -/
@@ -220,7 +220,7 @@ def transportedMonoidalUnitIso (e : C ≌ D) :
 def transportedMonoidalCounitIso (e : C ≌ D) :
     (fromTransported e).toLaxMonoidalFunctor ⊗⋙ (toTransported e).toLaxMonoidalFunctor ≅
       LaxMonoidalFunctor.id (Transported e) :=
-  asIso (monoidalUnit (fromTransported e)) |>.symm
+  asIso (monoidalUnit (fromTransported e) e.symm.toAdjunction) |>.symm
 #align category_theory.monoidal.transported_monoidal_counit_iso CategoryTheory.Monoidal.transportedMonoidalCounitIso
 
 end CategoryTheory.Monoidal

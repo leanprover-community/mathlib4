@@ -22,7 +22,7 @@ noncomputable section
 
 open Finset
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 
@@ -160,7 +160,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
-    derivative (∑ b in s, f b) = ∑ b in s, derivative (f b) :=
+    derivative (∑ b ∈ s, f b) = ∑ b ∈ s, derivative (f b) :=
   map_sum ..
 #align polynomial.derivative_sum Polynomial.derivative_sum
 
@@ -300,12 +300,12 @@ theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f 
   simp only [monomial_mul_monomial, derivative_monomial]
   simp only [mul_assoc, (Nat.cast_commute _ _).eq, Nat.cast_add, mul_add, map_add]
   cases m with
-  | zero => simp only [zero_add, Nat.cast_zero, mul_zero, map_zero, Nat.zero_eq]
+  | zero => simp only [zero_add, Nat.cast_zero, mul_zero, map_zero]
   | succ m =>
   cases n with
-  | zero => simp only [add_zero, Nat.cast_zero, mul_zero, map_zero, Nat.zero_eq]
+  | zero => simp only [add_zero, Nat.cast_zero, mul_zero, map_zero]
   | succ n =>
-  simp only [Nat.add_succ_sub_one, add_tsub_cancel_right, Nat.zero_eq, Nat.succ_eq_add_one]
+  simp only [Nat.add_succ_sub_one, add_tsub_cancel_right]
   rw [add_assoc, add_comm n 1]
 #align polynomial.derivative_mul Polynomial.derivative_mul
 
@@ -362,7 +362,7 @@ theorem degree_derivative_eq [NoZeroSMulDivisors ℕ R] (p : R[X]) (hp : 0 < nat
     intro n hn
     apply le_trans (degree_C_mul_X_pow_le _ _) (WithBot.coe_le_coe.2 (tsub_le_tsub_right _ _))
     apply le_natDegree_of_mem_supp _ hn
-  · refine' le_sup _
+  · refine le_sup ?_
     rw [mem_support_derivative, tsub_add_cancel_of_le, mem_support_iff]
     · rw [coeff_natDegree, Ne, leadingCoeff_eq_zero]
       intro h
@@ -392,41 +392,41 @@ theorem coeff_iterate_derivative {k} (p : R[X]) (m : ℕ) :
 
 theorem iterate_derivative_mul {n} (p q : R[X]) :
     derivative^[n] (p * q) =
-      ∑ k in range n.succ, (n.choose k • (derivative^[n - k] p * derivative^[k] q)) := by
+      ∑ k ∈ range n.succ, (n.choose k • (derivative^[n - k] p * derivative^[k] q)) := by
   induction' n with n IH
   · simp [Finset.range]
   calc
     derivative^[n + 1] (p * q) =
-        derivative (∑ k : ℕ in range n.succ,
+        derivative (∑ k ∈ range n.succ,
             n.choose k • (derivative^[n - k] p * derivative^[k] q)) :=
       by rw [Function.iterate_succ_apply', IH]
-    _ = (∑ k : ℕ in range n.succ,
+    _ = (∑ k ∈ range n.succ,
           n.choose k • (derivative^[n - k + 1] p * derivative^[k] q)) +
-        ∑ k : ℕ in range n.succ,
+        ∑ k ∈ range n.succ,
           n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) := by
       simp_rw [derivative_sum, derivative_smul, derivative_mul, Function.iterate_succ_apply',
         smul_add, sum_add_distrib]
-    _ = (∑ k : ℕ in range n.succ,
+    _ = (∑ k ∈ range n.succ,
               n.choose k.succ • (derivative^[n - k] p * derivative^[k + 1] q)) +
             1 • (derivative^[n + 1] p * derivative^[0] q) +
-          ∑ k : ℕ in range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) :=
+          ∑ k ∈ range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) :=
       ?_
-    _ = ((∑ k : ℕ in range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q)) +
-            ∑ k : ℕ in range n.succ,
+    _ = ((∑ k ∈ range n.succ, n.choose k • (derivative^[n - k] p * derivative^[k + 1] q)) +
+            ∑ k ∈ range n.succ,
               n.choose k.succ • (derivative^[n - k] p * derivative^[k + 1] q)) +
           1 • (derivative^[n + 1] p * derivative^[0] q) :=
       by rw [add_comm, add_assoc]
-    _ = (∑ i : ℕ in range n.succ,
+    _ = (∑ i ∈ range n.succ,
             (n + 1).choose (i + 1) • (derivative^[n + 1 - (i + 1)] p * derivative^[i + 1] q)) +
           1 • (derivative^[n + 1] p * derivative^[0] q) :=
       by simp_rw [Nat.choose_succ_succ, Nat.succ_sub_succ, add_smul, sum_add_distrib]
-    _ = ∑ k : ℕ in range n.succ.succ,
+    _ = ∑ k ∈ range n.succ.succ,
           n.succ.choose k • (derivative^[n.succ - k] p * derivative^[k] q) :=
       by rw [sum_range_succ' _ n.succ, Nat.choose_zero_right, tsub_zero]
   congr
-  refine' (sum_range_succ' _ _).trans (congr_arg₂ (· + ·) _ _)
+  refine (sum_range_succ' _ _).trans (congr_arg₂ (· + ·) ?_ ?_)
   · rw [sum_range_succ, Nat.choose_succ_self, zero_smul, add_zero]
-    refine' sum_congr rfl fun k hk => _
+    refine sum_congr rfl fun k hk => ?_
     rw [mem_range] at hk
     congr
     omega
@@ -486,7 +486,7 @@ theorem iterate_derivative_X_pow_eq_natCast_mul (n k : ℕ) :
   induction' k with k ih
   · erw [Function.iterate_zero_apply, tsub_zero, Nat.descFactorial_zero, Nat.cast_one, one_mul]
   · rw [Function.iterate_succ_apply', ih, derivative_natCast_mul, derivative_X_pow, C_eq_natCast,
-      Nat.succ_eq_add_one, Nat.descFactorial_succ, Nat.sub_sub, Nat.cast_mul];
+      Nat.descFactorial_succ, Nat.sub_sub, Nat.cast_mul];
     simp [mul_comm, mul_assoc, mul_left_comm]
 set_option linter.uppercaseLean3 false in
 #align polynomial.iterate_derivative_X_pow_eq_nat_cast_mul Polynomial.iterate_derivative_X_pow_eq_natCast_mul
@@ -550,14 +550,14 @@ set_option linter.uppercaseLean3 false in
 theorem derivative_prod [DecidableEq ι] {s : Multiset ι} {f : ι → R[X]} :
     derivative (Multiset.map f s).prod =
       (Multiset.map (fun i => (Multiset.map f (s.erase i)).prod * derivative (f i)) s).sum := by
-  refine' Multiset.induction_on s (by simp) fun i s h => _
+  refine Multiset.induction_on s (by simp) fun i s h => ?_
   rw [Multiset.map_cons, Multiset.prod_cons, derivative_mul, Multiset.map_cons _ i s,
     Multiset.sum_cons, Multiset.erase_cons_head, mul_comm (derivative (f i))]
   congr
   rw [h, ← AddMonoidHom.coe_mulLeft, (AddMonoidHom.mulLeft (f i)).map_multiset_sum _,
     AddMonoidHom.coe_mulLeft]
   simp only [Function.comp_apply, Multiset.map_map]
-  refine' congr_arg _ (Multiset.map_congr rfl fun j hj => _)
+  refine congr_arg _ (Multiset.map_congr rfl fun j hj => ?_)
   rw [← mul_assoc, ← Multiset.prod_cons, ← Multiset.map_cons]
   by_cases hij : i = j
   · simp [hij, ← Multiset.prod_cons, ← Multiset.map_cons, Multiset.cons_erase hj]

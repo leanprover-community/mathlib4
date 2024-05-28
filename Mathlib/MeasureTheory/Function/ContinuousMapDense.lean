@@ -113,23 +113,23 @@ theorem exists_continuous_snorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ �
       · simp [hgs hs, hs]
     · simp [hgv hv, show x ∉ s from fun h => hv (hsv h)]
   have gc_support : (Function.support fun x : α => g x • c) ⊆ v := by
-    refine' Function.support_subset_iff'.2 fun x hx => _
+    refine Function.support_subset_iff'.2 fun x hx => ?_
     simp only [hgv hx, Pi.zero_apply, zero_smul]
   have gc_mem : Memℒp (fun x => g x • c) p μ := by
-    refine' Memℒp.smul_of_top_left (memℒp_top_const _) _
-    refine' ⟨g.continuous.aestronglyMeasurable, _⟩
+    refine Memℒp.smul_of_top_left (memℒp_top_const _) ?_
+    refine ⟨g.continuous.aestronglyMeasurable, ?_⟩
     have : snorm (v.indicator fun _x => (1 : ℝ)) p μ < ⊤ := by
-      refine' (snorm_indicator_const_le _ _).trans_lt _
+      refine (snorm_indicator_const_le _ _).trans_lt ?_
       simp only [lt_top_iff_ne_top, hμv.ne, nnnorm_one, ENNReal.coe_one, one_div, one_mul, Ne,
         ENNReal.rpow_eq_top_iff, inv_lt_zero, false_and_iff, or_false_iff, not_and, not_lt,
         ENNReal.toReal_nonneg, imp_true_iff]
-    refine' (snorm_mono fun x => _).trans_lt this
+    refine (snorm_mono fun x => ?_).trans_lt this
     by_cases hx : x ∈ v
     · simp only [hx, abs_of_nonneg (hg_range x).1, (hg_range x).2, Real.norm_eq_abs,
         indicator_of_mem, CstarRing.norm_one]
     · simp only [hgv hx, Pi.zero_apply, Real.norm_eq_abs, abs_zero, abs_nonneg]
-  refine'
-    ⟨fun x => g x • c, g.continuous.smul continuous_const, (snorm_mono gc_bd).trans _, gc_bd0,
+  refine
+    ⟨fun x => g x • c, g.continuous.smul continuous_const, (snorm_mono gc_bd).trans ?_, gc_bd0,
       gc_support.trans (inter_subset_left _ _), gc_mem⟩
   exact hη _ ((measure_mono (diff_subset_diff (inter_subset_right _ _) Subset.rfl)).trans hV.le)
 #align measure_theory.exists_continuous_snorm_sub_le_of_closed MeasureTheory.exists_continuous_snorm_sub_le_of_closed
@@ -182,7 +182,7 @@ theorem Memℒp.exists_hasCompactSupport_snorm_sub_le [WeaklyLocallyCompactSpace
             (aestronglyMeasurable_const.indicator ht))
           I2 I1).le using 2
     simp only [sub_add_sub_cancel]
-  refine' ⟨f, I3, f_cont, f_mem, HasCompactSupport.intro k_compact fun x hx => _⟩
+  refine ⟨f, I3, f_cont, f_mem, HasCompactSupport.intro k_compact fun x hx => ?_⟩
   rw [← Function.nmem_support]
   contrapose! hx
   exact interior_subset (f_support hx)
@@ -203,7 +203,7 @@ theorem Memℒp.exists_hasCompactSupport_integral_rpow_sub_le
   rcases hf.exists_hasCompactSupport_snorm_sub_le ENNReal.coe_ne_top A with
     ⟨g, g_support, hg, g_cont, g_mem⟩
   change snorm _ (ENNReal.ofReal p) _ ≤ _ at hg
-  refine' ⟨g, g_support, _, g_cont, g_mem⟩
+  refine ⟨g, g_support, ?_, g_cont, g_mem⟩
   rwa [(hf.sub g_mem).snorm_eq_integral_rpow_norm B ENNReal.coe_ne_top,
     ENNReal.ofReal_le_ofReal_iff I.le, one_div, ENNReal.toReal_ofReal hp.le,
     Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
@@ -249,7 +249,7 @@ theorem Memℒp.exists_boundedContinuous_snorm_sub_le [μ.WeaklyRegular] (hp : p
   rotate_left
   -- stability under addition
   · rintro f g ⟨f_cont, f_mem, f_bd⟩ ⟨g_cont, g_mem, g_bd⟩
-    refine' ⟨f_cont.add g_cont, f_mem.add g_mem, _⟩
+    refine ⟨f_cont.add g_cont, f_mem.add g_mem, ?_⟩
     let f' : α →ᵇ E := ⟨⟨f, f_cont⟩, Metric.isBounded_range_iff.1 f_bd⟩
     let g' : α →ᵇ E := ⟨⟨g, g_cont⟩, Metric.isBounded_range_iff.1 g_bd⟩
     exact (f' + g').isBounded_range
@@ -281,7 +281,7 @@ theorem Memℒp.exists_boundedContinuous_snorm_sub_le [μ.WeaklyRegular] (hp : p
             (aestronglyMeasurable_const.indicator ht))
           I2 I1).le using 2
     simp only [sub_add_sub_cancel]
-  refine' ⟨f, I3, f_cont, f_mem, _⟩
+  refine ⟨f, I3, f_cont, f_mem, ?_⟩
   exact (BoundedContinuousFunction.ofNormedAddCommGroup f f_cont _ f_bound).isBounded_range
 #align measure_theory.mem_ℒp.exists_bounded_continuous_snorm_sub_le MeasureTheory.Memℒp.exists_boundedContinuous_snorm_sub_le
 
@@ -296,7 +296,7 @@ theorem Memℒp.exists_boundedContinuous_integral_rpow_sub_le [μ.WeaklyRegular]
   have B : ENNReal.ofReal p ≠ 0 := by simpa only [Ne, ENNReal.ofReal_eq_zero, not_le] using hp
   rcases hf.exists_boundedContinuous_snorm_sub_le ENNReal.coe_ne_top A with ⟨g, hg, g_mem⟩
   change snorm _ (ENNReal.ofReal p) _ ≤ _ at hg
-  refine' ⟨g, _, g_mem⟩
+  refine ⟨g, ?_, g_mem⟩
   rwa [(hf.sub g_mem).snorm_eq_integral_rpow_norm B ENNReal.coe_ne_top,
     ENNReal.ofReal_le_ofReal_iff I.le, one_div, ENNReal.toReal_ofReal hp.le,
     Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
@@ -324,33 +324,27 @@ theorem Integrable.exists_boundedContinuous_integral_sub_le [μ.WeaklyRegular] {
 
 namespace Lp
 
-variable (E)
+variable (E μ)
 
 /-- A function in `Lp` can be approximated in `Lp` by continuous functions. -/
-theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [_i : Fact (1 ≤ p)]
-    (hp : p ≠ ∞) [μ.WeaklyRegular] : (boundedContinuousFunction E p μ).topologicalClosure = ⊤ := by
-  rw [AddSubgroup.eq_top_iff']
+theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [Fact (1 ≤ p)]
+    (hp : p ≠ ∞) [μ.WeaklyRegular] :
+    Dense (boundedContinuousFunction E p μ : Set (Lp E p μ)) := by
   intro f
-  refine' mem_closure_iff_frequently.mpr _
-  rw [Metric.nhds_basis_closedBall.frequently_iff]
-  intro ε hε
-  have A : ENNReal.ofReal ε ≠ 0 := by simp only [Ne, ENNReal.ofReal_eq_zero, not_le, hε]
+  refine (mem_closure_iff_nhds_basis EMetric.nhds_basis_closed_eball).2 fun ε hε ↦ ?_
   obtain ⟨g, hg, g_mem⟩ :
-      ∃ g : α →ᵇ E, snorm ((f : α → E) - (g : α → E)) p μ ≤ ENNReal.ofReal ε ∧ Memℒp g p μ :=
-    (Lp.memℒp f).exists_boundedContinuous_snorm_sub_le hp A
-  refine' ⟨g_mem.toLp _, _, ⟨g, rfl⟩⟩
-  simp only [dist_eq_norm, Metric.mem_closedBall']
-  rw [Lp.norm_def]
-  -- Porting note: original proof started with:
-  -- convert ENNReal.toReal_le_of_le_ofReal hε.le hg using 2
-  -- the `convert` was completely borked and timed out
-  have key : snorm ((f : α → E) - (g : α → E)) p μ = snorm (f - Memℒp.toLp (↑g) g_mem) p μ := by
-    apply snorm_congr_ae
-    filter_upwards [coeFn_sub f (g_mem.toLp g), g_mem.coeFn_toLp] with x hx h'x
-    simp only [hx, Pi.sub_apply, sub_right_inj, h'x]
-  simpa only [key] using ENNReal.toReal_le_of_le_ofReal hε.le hg
+      ∃ g : α →ᵇ E, snorm ((f : α → E) - (g : α → E)) p μ ≤ ε ∧ Memℒp g p μ :=
+    (Lp.memℒp f).exists_boundedContinuous_snorm_sub_le hp hε.ne'
+  refine ⟨g_mem.toLp _, ⟨g, rfl⟩, ?_⟩
+  rwa [EMetric.mem_closedBall', ← Lp.toLp_coeFn f (Lp.memℒp f), Lp.edist_toLp_toLp]
+
+/-- A function in `Lp` can be approximated in `Lp` by continuous functions. -/
+theorem boundedContinuousFunction_topologicalClosure [SecondCountableTopologyEither α E]
+    [Fact (1 ≤ p)] (hp : p ≠ ∞) [μ.WeaklyRegular] :
+    (boundedContinuousFunction E p μ).topologicalClosure = ⊤ :=
+  SetLike.ext' <| (boundedContinuousFunction_dense E μ hp).closure_eq
 set_option linter.uppercaseLean3 false in
-#align measure_theory.Lp.bounded_continuous_function_dense MeasureTheory.Lp.boundedContinuousFunction_dense
+#align measure_theory.Lp.bounded_continuous_function_dense MeasureTheory.Lp.boundedContinuousFunction_topologicalClosure
 
 end Lp
 
@@ -365,10 +359,8 @@ namespace BoundedContinuousFunction
 theorem toLp_denseRange [μ.WeaklyRegular] [IsFiniteMeasure μ] :
     DenseRange (toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ) := by
   haveI : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
-  rw [denseRange_iff_closure_range]
-  suffices (LinearMap.range (toLp p μ 𝕜 : _ →L[𝕜] Lp E p μ)).toAddSubgroup.topologicalClosure = ⊤
-    by exact congr_arg ((↑) : AddSubgroup (Lp E p μ) → Set (Lp E p μ)) this
-  simpa [range_toLp p μ] using MeasureTheory.Lp.boundedContinuousFunction_dense E hp
+  simpa only [← range_toLp p μ (𝕜 := 𝕜)]
+    using MeasureTheory.Lp.boundedContinuousFunction_dense E μ hp
 set_option linter.uppercaseLean3 false in
 #align bounded_continuous_function.to_Lp_dense_range BoundedContinuousFunction.toLp_denseRange
 

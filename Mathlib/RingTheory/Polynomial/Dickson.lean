@@ -206,7 +206,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
     haveI : Infinite K :=
       Infinite.of_injective (algebraMap (Polynomial (ZMod p)) (FractionRing (Polynomial (ZMod p))))
         (IsFractionRing.injective _ _)
-    refine' ⟨K, _, _, _⟩ <;> infer_instance
+    refine ⟨K, ?_, ?_, ?_⟩ <;> infer_instance
   apply map_injective (ZMod.castHom (dvd_refl p) K) (RingHom.injective _)
   rw [map_dickson, Polynomial.map_pow, map_X]
   apply eq_of_infinite_eval_eq
@@ -229,7 +229,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
         ⋃ x ∈ { x : K | ∃ y : K, x = y + y⁻¹ ∧ y ≠ 0 }, { y | x = y + y⁻¹ ∨ y = 0 }  by
       rw [this]
       clear this
-      refine' h.biUnion fun x _ => _
+      refine h.biUnion fun x _ => ?_
       -- The following quadratic polynomial has as solutions the `y` for which `x = y + y⁻¹`.
       let φ : K[X] := X ^ 2 - C x * X + 1
       have hφ : φ ≠ 0 := by
@@ -250,14 +250,14 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
         apply eq_iff_eq_cancel_right.mpr
         ring
     -- Finally, we prove the claim that our finite union of finite sets covers all of `K`.
-    · apply (Set.eq_univ_of_forall _).symm
-      intro x
-      simp only [exists_prop, Set.mem_iUnion, Set.bind_def, Ne, Set.mem_setOf_eq]
-      by_cases hx : x = 0
-      · simp only [hx, and_true_iff, eq_self_iff_true, inv_zero, or_true_iff]
-        exact ⟨_, 1, rfl, one_ne_zero⟩
-      · simp only [hx, or_false_iff, exists_eq_right]
-        exact ⟨_, rfl, hx⟩
+    apply (Set.eq_univ_of_forall _).symm
+    intro x
+    simp only [exists_prop, Set.mem_iUnion, Set.bind_def, Ne, Set.mem_setOf_eq]
+    by_cases hx : x = 0
+    · simp only [hx, and_true_iff, eq_self_iff_true, inv_zero, or_true_iff]
+      exact ⟨_, 1, rfl, one_ne_zero⟩
+    · simp only [hx, or_false_iff, exists_eq_right]
+      exact ⟨_, rfl, hx⟩
 #align polynomial.dickson_one_one_zmod_p Polynomial.dickson_one_one_zmod_p
 
 theorem dickson_one_one_charP (p : ℕ) [Fact p.Prime] [CharP R p] : dickson 1 (1 : R) p = X ^ p := by

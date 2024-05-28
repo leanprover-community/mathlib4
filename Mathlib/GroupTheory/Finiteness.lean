@@ -3,12 +3,12 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
+import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.GroupTheory.QuotientGroup
-import Mathlib.GroupTheory.Submonoid.Operations
-import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Data.Finset.Preimage
 
 #align_import group_theory.finiteness from "leanprover-community/mathlib"@"dde670c9a3f503647fd5bfdf1037bad526d3397a"
 
@@ -248,10 +248,10 @@ theorem Subgroup.fg_iff_submonoid_fg (P : Subgroup G) : P.FG ↔ P.toSubmonoid.F
   constructor
   · rintro ⟨S, rfl⟩
     rw [Submonoid.fg_iff]
-    refine' ⟨S ∪ S⁻¹, _, S.finite_toSet.union S.finite_toSet.inv⟩
+    refine ⟨S ∪ S⁻¹, ?_, S.finite_toSet.union S.finite_toSet.inv⟩
     exact (Subgroup.closure_toSubmonoid _).symm
   · rintro ⟨S, hS⟩
-    refine' ⟨S, le_antisymm _ _⟩
+    refine ⟨S, le_antisymm ?_ ?_⟩
     · rw [Subgroup.closure_le, ← Subgroup.coe_toSubmonoid, ← hS]
       exact Submonoid.subset_closure
     · rw [← Subgroup.toSubmonoid_le, ← hS, Submonoid.closure_le]
