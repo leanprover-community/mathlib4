@@ -376,14 +376,14 @@ section MeasureSpace
 
 /-- `∀ᵐ a, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
 
-This is notation for `Filter.Eventually P (Measure.ae MeasureSpace.volume)`. -/
+This is notation for `Filter.Eventually P (MeasureTheory.ae MeasureSpace.volume)`. -/
 notation3 "∀ᵐ "(...)", "r:(scoped P =>
   Filter.Eventually P <| MeasureTheory.ae MeasureTheory.MeasureSpace.volume) => r
 
 /-- `∃ᵐ a, p a` means that `p` holds frequently, i.e. on a set of positive measure,
 w.r.t. the volume measure.
 
-This is notation for `Filter.Frequently P (Measure.ae MeasureSpace.volume)`. -/
+This is notation for `Filter.Frequently P (MeasureTheory.ae MeasureSpace.volume)`. -/
 notation3 "∃ᵐ "(...)", "r:(scoped P =>
   Filter.Frequently P <| MeasureTheory.ae MeasureTheory.MeasureSpace.volume) => r
 
