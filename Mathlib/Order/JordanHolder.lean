@@ -241,8 +241,10 @@ theorem head_le_of_mem {s : CompositionSeries X} {x : X} (hx : x ∈ s) : s.head
   hi ▸ head_le _
 #align composition_series.bot_le_of_mem CompositionSeries.head_le_of_mem
 
-#noalign composition_series.length_pos_of_mem_ne
-#noalign composition_series.forall_mem_eq_of_length_eq_zero
+-- The aligned versions of the following two lemmas are not exactly the same as the original
+-- but they are mathematically equivalent.
+#noalign composition_series.length_pos_of_mem_ne RelSeries.length_pos_of_nontrivial
+#noalign composition_series.forall_mem_eq_of_length_eq_zero RelSeries.subsingleton_of_length_eq_zero
 #align composition_series.erase_top RelSeries.eraseLast
 #align composition_series.top_erase_top RelSeries.last_eraseLast
 
