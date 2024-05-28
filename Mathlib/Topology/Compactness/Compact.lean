@@ -577,7 +577,7 @@ lemma eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open (b : Set (Set X))
     ∃ s : Finset b, U = s.toSet.sUnion := by
   have hb' : b = range (fun i ↦ i : b → Set X) := by simp
   rw [hb'] at hb
-  choose s hs hU using eq_finite_iUnion_of_isTopologicalBasis__of_isCompact_open _ hb U hUc hUo
+  choose s hs hU using eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open _ hb U hUc hUo
   have : Finite s := hs
   let _ : Fintype s := Fintype.ofFinite _
   use s.toFinset
@@ -589,7 +589,7 @@ theorem isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis (b : ι → Se
     (hb : IsTopologicalBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i)) (U : Set X) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
   constructor
-  · exact fun ⟨h₁, h₂⟩ ↦ eq_finite_iUnion_of_isTopologicalBasis__of_isCompact_open _ hb U h₁ h₂
+  · exact fun ⟨h₁, h₂⟩ ↦ eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open _ hb U h₁ h₂
   · rintro ⟨s, hs, rfl⟩
     constructor
     · exact hs.isCompact_biUnion fun i _ => hb' i
