@@ -111,13 +111,17 @@ def PreservesPullback.iso : G.obj (pullback f g) ≅ pullback (G.map f) (G.map g
   IsLimit.conePointUniqueUpToIso (isLimitOfHasPullbackOfPreservesLimit G f g) (limit.isLimit _)
 #align category_theory.limits.preserves_pullback.iso CategoryTheory.Limits.PreservesPullback.iso
 
-@[reassoc (attr := simp)]
+@[simp]
+theorem PreservesPullback.iso_hom : (PreservesPullback.iso G f g).hom = pullbackComparison G f g :=
+  rfl
+
+@[reassoc]
 theorem PreservesPullback.iso_hom_fst :
     (PreservesPullback.iso G f g).hom ≫ pullback.fst = G.map pullback.fst := by
   simp [PreservesPullback.iso]
 #align category_theory.limits.preserves_pullback.iso_hom_fst CategoryTheory.Limits.PreservesPullback.iso_hom_fst
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem PreservesPullback.iso_hom_snd :
     (PreservesPullback.iso G f g).hom ≫ pullback.snd = G.map pullback.snd := by
   simp [PreservesPullback.iso]
@@ -211,6 +215,11 @@ def PreservesPushout.iso : pushout (G.map f) (G.map g) ≅ G.obj (pushout f g) :
     (isColimitOfHasPushoutOfPreservesColimit G f g)
 #align category_theory.limits.preserves_pushout.iso CategoryTheory.Limits.PreservesPushout.iso
 
+@[simp]
+theorem PreservesPushout.iso_hom : (PreservesPushout.iso G f g).hom = pushoutComparison G f g :=
+  rfl
+#align category_theory.limits.preserves_pushout.iso_hom CategoryTheory.Limits.PreservesPushout.iso_hom
+
 @[reassoc]
 theorem PreservesPushout.inl_iso_hom :
     pushout.inl ≫ (PreservesPushout.iso G f g).hom = G.map pushout.inl := by
@@ -262,11 +271,6 @@ def PreservesPullback.ofIsoComparison [i : IsIso (pullbackComparison G f g)] :
 
 variable [PreservesLimit (cospan f g) G]
 
-@[simp]
-theorem PreservesPullback.iso_hom : (PreservesPullback.iso G f g).hom = pullbackComparison G f g :=
-  rfl
-#align category_theory.limits.preserves_pullback.iso_hom CategoryTheory.Limits.PreservesPullback.iso_hom
-
 instance : IsIso (pullbackComparison G f g) := by
   rw [← PreservesPullback.iso_hom]
   infer_instance
@@ -290,11 +294,6 @@ def PreservesPushout.ofIsoComparison [i : IsIso (pushoutComparison G f g)] :
 #align category_theory.limits.preserves_pushout.of_iso_comparison CategoryTheory.Limits.PreservesPushout.ofIsoComparison
 
 variable [PreservesColimit (span f g) G]
-
-@[simp]
-theorem PreservesPushout.iso_hom : (PreservesPushout.iso G f g).hom = pushoutComparison G f g :=
-  rfl
-#align category_theory.limits.preserves_pushout.iso_hom CategoryTheory.Limits.PreservesPushout.iso_hom
 
 instance : IsIso (pushoutComparison G f g) := by
   rw [← PreservesPushout.iso_hom]
