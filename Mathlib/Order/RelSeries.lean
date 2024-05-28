@@ -418,7 +418,7 @@ def snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) : RelSeries r
     (p.snoc newLast rel).last = newLast := last_append _ _ _
 
 @[simp] lemma last_snoc' (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
-    (p.snoc newLast rel) (Fin.last (p.length + 1)) = newLast := last_append _ _ _
+    p.snoc newLast rel (Fin.last (p.length + 1)) = newLast := last_append _ _ _
 
 @[simp] lemma snoc_castSucc (s : RelSeries r) (a : α) (connect : r s.last a)
     (i : Fin (s.length + 1)) : snoc s a connect (Fin.castSucc i) = s i :=
