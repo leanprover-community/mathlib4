@@ -93,16 +93,13 @@ def getLinterAttributeInstanceIn (o : Options) : Bool :=
 If this is the case, then it returns `(id, #[non-local nor scoped attributes])`.
 Otherwise, it returns `default`.
 -/
-def getAttrInstance : Syntax → Syntax × Array Syntax
+def getAttrInstance? : Syntax → Option (Ident × Array (TSyntax `attr))
   | `(attribute [$x,*] $id in $_) =>
-    let xs := x.getElems.map (·.raw)
-    let xs := xs.filter fun a => match a with
-      | .node _ ``Lean.Parser.Command.eraseAttr _ => false
-      | .node _ ``Lean.Parser.Term.attrInstance #[
-        .node _ ``Lean.Parser.Term.attrKind #[
-          .node _ _ #[.node _ scopedOrLocal _]], _attr] =>
-        ! scopedOrLocal ∈ [``Lean.Parser.Term.scoped, ``Lean.Parser.Term.local]
-      | _ => true
+    let xs := x.getElems.filterMap fun a => match a.raw with
+      | `(Parser.Command.eraseAttr| -$_) => none
+      | `(Parser.Term.attrInstance| local $_attr:attr) => none
+      | `(Parser.Term.attrInstance| scoped $_attr:attr) => none
+      | `(attr| $a) => some a
     (id, xs)
   | _ => default
 
@@ -116,12 +113,12 @@ def attributeInstanceIn : Linter where run := withSetOptionIn fun stx => do
     return
   if (← MonadState.get).messages.hasErrors then
     return
-  if let some stx := stx.find? fun s => ! (getAttrInstance s).2.isEmpty then
-    let (id, nonScopedNorLocal) := getAttrInstance stx
-    let _ ← nonScopedNorLocal.mapM fun attr =>
-    Linter.logLint linter.attributeInstanceIn attr m!
-    "Despite the `in`, the attribute '{attr}' is added globally to '{id}'\n\
-    please remove the `in` or make this a `local instance` instead"
+  for s in stx.topDown do
+    if let .some (id, nonScopedNorLocal) := getAttrInstance? s then
+      for attr in nonScopedNorLocal do
+        Linter.logLint linter.attributeInstanceIn attr m!
+          "Despite the `in`, the attribute '{attr}' is added globally to '{id}'\n\
+          please remove the `in` or make this a `local instance` instead"
 
 initialize addLinter attributeInstanceIn
 
