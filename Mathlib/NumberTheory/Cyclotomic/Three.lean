@@ -35,8 +35,10 @@ variable {ζ : K} (hζ : IsPrimitiveRoot ζ ↑(3 : ℕ+)) (u : (𝓞 K)ˣ)
 local notation3 "η" => hζ.toInteger
 local notation3 "λ" => hζ.toInteger - 1
 
+open scoped Classical
+
 /-- Let `u` be a unit in `(𝓞 K)ˣ`, then `u ∈ {1, -1, η, -η, η^2, -η^2}`. -/
-theorem Units.mem : ↑u ∈ ({1, -1, η, -η, η ^ 2, -η ^ 2} : Set (𝓞 K)) := by
+theorem Units.mem : ↑u ∈ ({1, -1, η, -η, η ^ 2, -η ^ 2} : Finset (𝓞 K)) := by
   have hrank : rank K = 0 := by
     dsimp only [rank]
     rw [card_eq_nrRealPlaces_add_nrComplexPlaces, nrRealPlaces_eq_zero (n := 3) K (by decide),
@@ -66,10 +68,10 @@ theorem Units.mem : ↑u ∈ ({1, -1, η, -η, η ^ 2, -η ^ 2} : Set (𝓞 K)) 
   fin_cases hr
   all_goals{
     rcases hru with (h | h)
-    · simp only [h, pow_zero, Set.mem_insert_iff, one_ne_zero, Set.mem_singleton_iff, false_or,
-        true_or, zero_add, pow_one, eq_neg_self_iff, true_or, or_true]
-    · simp [h, pow_zero, Set.mem_insert_iff, neg_eq_self_iff, one_ne_zero, Set.mem_singleton_iff,
-        true_or, or_true, zero_add, pow_one, neg_inj, neg_eq_self_iff]}
+    · simp only [h, pow_zero, Finset.mem_insert, one_ne_zero, Finset.mem_singleton,
+        false_or, true_or, zero_add, pow_one, eq_neg_self_iff, true_or, or_true]
+    · simp only [h, pow_zero, Finset.mem_insert, neg_eq_self_iff, one_ne_zero,
+        Finset.mem_singleton, true_or, or_true, zero_add, pow_one, neg_inj, neg_eq_self_iff]}
 
 /-- We have that `λ ^ 2 = -3 * η`. -/
 lemma lambda_sq : λ ^ 2 = -3 * η :=
@@ -88,7 +90,7 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
   have hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
   have := Units.mem hζ u
   have h2 : (hζ.pow_of_coprime 2 (by decide)).toInteger = hζ.toInteger ^ 2 := by ext; simp
-  simp only [Set.mem_insert_iff, val_eq_one, Set.mem_singleton_iff] at this
+  simp only [Finset.mem_insert, val_eq_one, Finset.mem_singleton] at this
   rcases this with (rfl | h | h | h | h | h)
   · left; rfl
   · right; ext; simp [h]
