@@ -3,27 +3,22 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.CategoryTheory.Limits.ConcreteCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Countable
 import Mathlib.Topology.Category.Profinite.AsLimit
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.ClopenBox
 /-!
 
-# Light profinite sets
+# Light profinite spaces
 
-This file contains the basic definitions related to light profinite sets.
+We construct the category `LightProfinite` of light profinite topological spaces. These are
+implemented as totally disconnected second countable compact Hausdorff spaces.
 
-## Main definitions
+This file also defines the category `LightDiagram`, which consists of those spaces that can be
+written as a sequential limit (in `Profinite`) of finite sets.
 
-* `LightProfinite` is a structure containing the data of a sequential limit (in `Profinite`) of
-  finite sets.
-
-* `lightToProfinite` is the fully faithful embedding of `LightProfinite` in `Profinite`.
-
-* `LightProfinite.equivSmall` is an equivalence from `LightProfinite` to a small category. In other
-  words, `LightProfinite` is *essentially small*.
+We define an equivalence of categories `LightProfinite ≌ LightDiagram` and prove that these are
+essentially small categories.
 -/
 
 universe v u
@@ -41,8 +36,9 @@ structure LightProfinite where
 
 namespace LightProfinite
 
-/-- Construct a term of `LightProfinite` from a type endowed with the structure of a
-compact, Hausdorff and totally disconnected topological space.
+/--
+Construct a term of `LightProfinite` from a type endowed with the structure of a compact,
+Hausdorff, totally disconnected and second countable topological space.
 -/
 def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
     [TotallyDisconnectedSpace X] [SecondCountableTopology X] : LightProfinite :=
@@ -63,11 +59,11 @@ instance hasForget₂ : HasForget₂ LightProfinite TopCat :=
 instance : CoeSort LightProfinite (Type*) :=
   ⟨fun X => X.toCompHaus⟩
 
--- Porting note (#10688): This lemma was not needed in mathlib3
-@[simp]
-lemma forget_ContinuousMap_mk {X Y : LightProfinite} (f : X → Y) (hf : Continuous f) :
-    (forget LightProfinite).map (ContinuousMap.mk f hf) = f :=
-  rfl
+-- -- Porting note (#10688): This lemma was not needed in mathlib3
+-- @[simp]
+-- lemma forget_ContinuousMap_mk {X Y : LightProfinite} (f : X → Y) (hf : Continuous f) :
+--     (forget LightProfinite).map (ContinuousMap.mk f hf) = f :=
+--   rfl
 
 instance {X : LightProfinite} : TotallyDisconnectedSpace X :=
   X.isTotallyDisconnected
@@ -75,7 +71,7 @@ instance {X : LightProfinite} : TotallyDisconnectedSpace X :=
 instance {X : LightProfinite} : SecondCountableTopology X :=
   X.secondCountable
 
--- We check that we automatically infer that Profinite sets are compact and Hausdorff.
+-- We check that we automatically infer that light profinite spaces are compact and Hausdorff.
 example {X : LightProfinite} : CompactSpace X :=
   inferInstance
 
@@ -98,12 +94,10 @@ instance {X : LightProfinite} : T2Space ((forget LightProfinite).obj X) :=
 instance {X : LightProfinite} : SecondCountableTopology ((forget LightProfinite).obj X) :=
   show SecondCountableTopology X from inferInstance
 
--- Porting note: have changed statement as the original LHS simplified.
 @[simp]
 theorem coe_id (X : LightProfinite) : (𝟙 ((forget LightProfinite).obj X)) = id :=
   rfl
 
--- Porting note: have changed statement as the original LHS simplified.
 @[simp]
 theorem coe_comp {X Y Z : LightProfinite} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ((forget LightProfinite).map f ≫ (forget LightProfinite).map g) = g ∘ f :=
@@ -112,7 +106,7 @@ theorem coe_comp {X Y Z : LightProfinite} (f : X ⟶ Y) (g : Y ⟶ Z) :
 end LightProfinite
 
 /-- The fully faithful embedding of `LightProfinite` in `Profinite`. -/
-@[simps?]
+@[simps]
 def lightToProfinite : LightProfinite ⥤ Profinite where
   obj X := Profinite.of X
   map f := f
@@ -125,8 +119,6 @@ instance : lightToProfinite.Full := show (inducedFunctor _).Full from inferInsta
 @[simps!]
 def lightProfiniteToCompHaus : LightProfinite ⥤ CompHaus :=
   inducedFunctor _
--- Porting note: deriving fails, adding manually.
--- deriving Full, Faithful
 
 instance : lightProfiniteToCompHaus.Full :=
   show (inducedFunctor _).Full from inferInstance
@@ -134,15 +126,13 @@ instance : lightProfiniteToCompHaus.Full :=
 instance : lightProfiniteToCompHaus.Faithful :=
   show (inducedFunctor _).Faithful from inferInstance
 
--- Porting note: added, as it is not found otherwise.
 instance {X : LightProfinite} : TotallyDisconnectedSpace (lightProfiniteToCompHaus.obj X) :=
   X.isTotallyDisconnected
 
--- Porting note: added, as it is not found otherwise.
 instance {X : LightProfinite} : SecondCountableTopology (lightProfiniteToCompHaus.obj X) :=
   X.secondCountable
 
-/-- The fully faithful embedding of `Profinite` in `TopCat`.
+/-- The fully faithful embedding of `LightProfinite` in `TopCat`.
 This is definitionally the same as the obvious composite. -/
 @[simps!]
 def LightProfinite.toTopCat : LightProfinite ⥤ TopCat :=
@@ -161,15 +151,12 @@ theorem LightProfinite.to_compHausToTopCat :
     lightProfiniteToCompHaus ⋙ compHausToTop = LightProfinite.toTopCat :=
   rfl
 
-section Profinite
-
 section DiscreteTopology
 
 attribute [local instance] FintypeCat.botTopology
-
 attribute [local instance] FintypeCat.discreteTopology
 
-/-- The natural functor from `Fintype` to `Profinite`, endowing a finite type with the
+/-- The natural functor from `Fintype` to `LightProfinite`, endowing a finite type with the
 discrete topology. -/
 @[simps!]
 def FintypeCat.toLightProfinite : FintypeCat ⥤ LightProfinite where
@@ -183,8 +170,6 @@ instance : FintypeCat.toLightProfinite.Full where
   map_surjective f := ⟨fun x ↦ f x, rfl⟩
 
 end DiscreteTopology
-
-end Profinite
 
 namespace LightProfinite
 
@@ -233,16 +218,16 @@ instance : HasCountableLimits LightProfinite where
 
 variable {X Y : LightProfinite.{u}} (f : X ⟶ Y)
 
-/-- Any morphism of profinite spaces is a closed map. -/
+/-- Any morphism of light profinite spaces is a closed map. -/
 theorem isClosedMap : IsClosedMap f :=
   CompHaus.isClosedMap _
 
-/-- Any continuous bijection of profinite spaces induces an isomorphism. -/
+/-- Any continuous bijection of light profinite spaces induces an isomorphism. -/
 theorem isIso_of_bijective (bij : Function.Bijective f) : IsIso f :=
   haveI := CompHaus.isIso_of_bijective (lightProfiniteToCompHaus.map f) bij
   isIso_of_fully_faithful lightProfiniteToCompHaus _
 
-/-- Any continuous bijection of profinite spaces induces an isomorphism. -/
+/-- Any continuous bijection of light profinite spaces induces an isomorphism. -/
 noncomputable def isoOfBijective (bij : Function.Bijective f) : X ≅ Y :=
   letI := LightProfinite.isIso_of_bijective f bij
   asIso f
@@ -263,7 +248,7 @@ def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
 @[simps!]
 def homeoOfIso (f : X ≅ Y) : X ≃ₜ Y := CompHaus.homeoOfIso (lightProfiniteToCompHaus.mapIso f)
 
-/-- The equivalence between isomorphisms in `Profinite` and homeomorphisms
+/-- The equivalence between isomorphisms in `LightProfinite` and homeomorphisms
 of topological spaces. -/
 @[simps!]
 noncomputable
@@ -336,7 +321,7 @@ theorem mono_iff_injective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
 
 end LightProfinite
 
-/-- A light profinite set is one which can be written as a sequential limit of finite sets. -/
+/-- A structure containing the data of sequential limit in `Profinite` of finite sets. -/
 structure LightDiagram : Type (u+1) where
   /-- The indexing diagram. -/
   diagram : ℕᵒᵖ ⥤ FintypeCat
@@ -347,15 +332,6 @@ structure LightDiagram : Type (u+1) where
 
 namespace LightDiagram
 
-/--
-Given a functor from `ℕᵒᵖ` to finite sets we can take its limit in `Profinite` and obtain a light
-profinite set. 
--/
-@[simps]
-noncomputable def of (F : ℕᵒᵖ ⥤ FintypeCat) : LightDiagram.{u} where
-  diagram := F
-  isLimit := limit.isLimit (F ⋙ FintypeCat.toProfinite)
-
 /-- The underlying `Profinite` of a `LightDiagram`. -/
 def toProfinite (S : LightDiagram) : Profinite := S.cone.pt
 
@@ -364,13 +340,15 @@ instance : Category LightDiagram := InducedCategory.category toProfinite
 
 instance concreteCategory : ConcreteCategory LightDiagram := InducedCategory.concreteCategory _
 
+end LightDiagram
+
 /-- The fully faithful embedding `LightDiagram ⥤ Profinite` -/
 @[simps!]
-def lightToProfinite : LightDiagram ⥤ Profinite := inducedFunctor _
+def lightDiagramToProfinite : LightDiagram ⥤ Profinite := inducedFunctor _
 
-instance : lightToProfinite.Faithful := show (inducedFunctor _).Faithful from inferInstance
+instance : lightDiagramToProfinite.Faithful := show (inducedFunctor _).Faithful from inferInstance
 
-instance : lightToProfinite.Full := show (inducedFunctor _).Full from inferInstance
+instance : lightDiagramToProfinite.Full := show (inducedFunctor _).Full from inferInstance
 
 instance {X : LightDiagram} : TopologicalSpace ((forget LightDiagram).obj X) :=
   (inferInstance : TopologicalSpace X.cone.pt)
@@ -383,8 +361,6 @@ instance {X : LightDiagram} : CompactSpace ((forget LightDiagram).obj X) :=
 
 instance {X : LightDiagram} : T2Space ((forget LightDiagram).obj X) :=
   (inferInstance : T2Space X.cone.pt )
-
-end LightDiagram
 
 namespace LightProfinite
 
@@ -405,6 +381,7 @@ noncomputable def toLightDiagram (S : LightProfinite.{u}) : LightDiagram.{u} whe
 
 end LightProfinite
 
+/-- The functor part of the equivalence `LightProfinite ≌ LightDiagram` -/
 @[simps]
 noncomputable def lightProfiniteToLightDiagram : LightProfinite.{u} ⥤ LightDiagram.{u} where
   obj X := X.toLightDiagram
@@ -429,31 +406,33 @@ instance (S : LightDiagram.{u}) : SecondCountableTopology S.cone.pt := by
     obtain ⟨n, g, h⟩ := Profinite.exists_locallyConstant S.cone S.isLimit a
     exact ⟨⟨unop n, g⟩, h.symm⟩
 
+/-- The inverse part of the equivalence `LightProfinite ≌ LightDiagram` -/
 @[simps]
 def lightDiagramToLightProfinite : LightDiagram.{u} ⥤ LightProfinite.{u} where
   obj X := LightProfinite.of X.cone.pt
   map f := f
 
+/-- The equivalence of categories `LightProfinite ≌ LightDiagram` -/
 noncomputable def LightProfinite.equivDiagram : LightProfinite.{u} ≌ LightDiagram.{u} where
   functor := lightProfiniteToLightDiagram
   inverse := lightDiagramToLightProfinite
   unitIso := Iso.refl _
   counitIso := NatIso.ofComponents
-    (fun X ↦ LightDiagram.lightToProfinite.preimageIso (Iso.refl _)) (by
+    (fun X ↦ lightDiagramToProfinite.preimageIso (Iso.refl _)) (by
       intro _ _ f
       simp only [Functor.comp_obj, lightDiagramToLightProfinite_obj,
         lightProfiniteToLightDiagram_obj, Functor.id_obj, Functor.comp_map,
         lightDiagramToLightProfinite_map, lightProfiniteToLightDiagram_map,
-        LightDiagram.lightToProfinite_obj, Functor.preimageIso_hom, Iso.refl_hom, Functor.id_map]
-      erw [LightDiagram.lightToProfinite.preimage_id, LightDiagram.lightToProfinite.preimage_id,
+        lightDiagramToProfinite_obj, Functor.preimageIso_hom, Iso.refl_hom, Functor.id_map]
+      erw [lightDiagramToProfinite.preimage_id, lightDiagramToProfinite.preimage_id,
         Category.comp_id f])
   functor_unitIso_comp := by
     intro
     simp only [Functor.id_obj, lightProfiniteToLightDiagram_obj, Functor.comp_obj,
       lightDiagramToLightProfinite_obj, Iso.refl_hom, NatTrans.id_app,
-      lightProfiniteToLightDiagram_map, LightDiagram.lightToProfinite_obj,
+      lightProfiniteToLightDiagram_map, lightDiagramToProfinite_obj,
       NatIso.ofComponents_hom_app, Functor.preimageIso_hom]
-    exact LightDiagram.lightToProfinite.preimage_id
+    exact lightDiagramToProfinite.preimage_id
 
 instance : lightProfiniteToLightDiagram.IsEquivalence :=
   show LightProfinite.equivDiagram.functor.IsEquivalence from inferInstance
@@ -488,7 +467,7 @@ instance : LightDiagram'.toLightFunctor.{u}.Full where
 
 instance : LightDiagram'.toLightFunctor.{u}.EssSurj where
   mem_essImage Y :=
-    ⟨⟨Y.diagram ⋙ Skeleton.equivalence.inverse⟩, ⟨lightToProfinite.preimageIso (
+    ⟨⟨Y.diagram ⋙ Skeleton.equivalence.inverse⟩, ⟨lightDiagramToProfinite.preimageIso (
       (Limits.lim.mapIso (isoWhiskerRight ((isoWhiskerLeft Y.diagram
       Skeleton.equivalence.counitIso)) toProfinite)) ≪≫
       (limit.isLimit _).conePointUniqueUpToIso Y.isLimit)⟩⟩
