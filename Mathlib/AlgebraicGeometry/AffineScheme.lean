@@ -520,7 +520,7 @@ theorem fromSpec_primeIdealOf (x : U) :
     Functor.map_comp_assoc, ← op_comp, ← Functor.map_comp, eqToHom_trans, eqToHom_refl, op_id,
     CategoryTheory.Functor.map_id, Category.id_comp, Iso.hom_inv_id_assoc,
     Scheme.ofRestrict_val_base, Scheme.restrict_carrier, Opens.coe_inclusion]
-  rfl -- now `rfl` after #13170
+  rfl -- `rfl` was not needed before #13170
 #align algebraic_geometry.is_affine_open.from_Spec_prime_ideal_of AlgebraicGeometry.IsAffineOpen.fromSpec_primeIdealOf
 
 set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
