@@ -184,7 +184,7 @@ theorem isCycle_cycleOf (f : Perm α) [DecidableRel f.SameCycle] (hx : f x ≠ x
 #align equiv.perm.is_cycle_cycle_of Equiv.Perm.isCycle_cycleOf
 
 @[simp]
-theorem two_le_card_support_cycleOf_iff [DecidableEq α] [Fintype α] : 
+theorem two_le_card_support_cycleOf_iff [DecidableEq α] [Fintype α] :
     2 ≤ card (cycleOf f x).support ↔ f x ≠ x := by
   refine ⟨fun h => ?_, fun h => by simpa using (isCycle_cycleOf _ h).two_le_card_support⟩
   contrapose! h
