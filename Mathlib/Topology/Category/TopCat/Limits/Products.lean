@@ -281,7 +281,7 @@ theorem inducing_prod_map {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf
   simp_rw [topologicalSpace_coe, prod_topology, induced_inf, induced_compose, ← coe_comp,
     prod.map_fst, prod.map_snd, coe_comp, ← induced_compose (g := f), ← induced_compose (g := g)]
   erw [← hf.induced, ← hg.induced] -- now `erw` after #13170
-  rfl -- now `rfl` after #13170
+  rfl -- `rfl` was not needed before #13170
 #align Top.inducing_prod_map TopCat.inducing_prod_map
 
 theorem embedding_prod_map {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : Embedding f)
