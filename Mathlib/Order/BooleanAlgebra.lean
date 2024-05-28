@@ -889,7 +889,7 @@ a distributive lattice that is complemented is a boolean algebra.
 This is not an instance, because it creates data using choice.
 -/
 noncomputable
-def booleanAlgebra_of_complemented [BoundedOrder α] [ComplementedLattice α] : BooleanAlgebra α where
+def booleanAlgebraOfComplemented [BoundedOrder α] [ComplementedLattice α] : BooleanAlgebra α where
   __ := (inferInstanceAs (DistribLattice α))
   __ := (inferInstanceAs (BoundedOrder α))
   compl a := Classical.choose <| exists_isCompl a

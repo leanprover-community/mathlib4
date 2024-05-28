@@ -348,17 +348,15 @@ instance (priority := 100) instHasTrivialRadical : HasTrivialRadical R L := by
 end IsSemisimple
 
 /-- A simple Lie algebra is semisimple. -/
-instance (priority := 100) IsSimple.instIsSemisimple [h : IsSimple R L] :
+instance (priority := 100) IsSimple.instIsSemisimple [IsSimple R L] :
     IsSemisimple R L := by
   constructor
   · simp
   · simpa using CompleteLattice.setIndependent_singleton _
   · intro I hI₁ hI₂
+    apply IsSimple.non_abelian (R := R) (L := L)
     rw [IsSimple.isAtom_iff_eq_top] at hI₁
-    subst I
-    obtain @⟨-, h₂⟩ := id h
-    rw [lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv] at hI₂
-    contradiction
+    rwa [hI₁, lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv] at hI₂
 
 /-- An abelian Lie algebra with trivial radical is trivial. -/
 theorem subsingleton_of_hasTrivialRadical_lie_abelian [HasTrivialRadical R L] [h : IsLieAbelian L] :
