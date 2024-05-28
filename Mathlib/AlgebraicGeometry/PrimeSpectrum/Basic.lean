@@ -998,15 +998,15 @@ protected def minimalPrimes.equivIrreducibleComponents :
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
     ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.1, x.2, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, Iff.rfl⟩
   (e.trans <| PrimeSpectrum.pointsEquivIrreducibleCloseds R).minimalsIsoMaximals.trans
-    (OrderIso.setCongr _ _ <| by simp_rw [irreducibleComponents_eq_maximals_closed]).dual
+    (OrderIso.setCongr _ _ <| by simp_rw [irreducibleComponents_eq_maximals_irreducibleClosed]).dual
 
 namespace PrimeSpectrum
 
 lemma vanishingIdeal_irreducibleComponents :
     vanishingIdeal '' (irreducibleComponents <| PrimeSpectrum R) =
     minimalPrimes R := by
-  rw [irreducibleComponents_eq_maximals_closed, minimalPrimes_eq_minimals, ← minimals_swap,
-    ← PrimeSpectrum.vanishingIdeal_isIrreducibleClosed, image_minimals_of_rel_iff_rel]
+  rw [irreducibleComponents_eq_maximals_irreducibleClosed, minimalPrimes_eq_minimals,
+    ← minimals_swap, ← vanishingIdeal_isIrreducibleClosed, image_minimals_of_rel_iff_rel]
   exact fun s t hs _ ↦ vanishingIdeal_anti_mono_iff hs.2
 
 lemma zeroLocus_minimalPrimes :
