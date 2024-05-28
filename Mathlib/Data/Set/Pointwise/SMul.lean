@@ -1035,6 +1035,10 @@ lemma inv_op_smul_set_distrib (a : α) (s : Set α) : (op a • s)⁻¹ = a⁻¹
 lemma smul_set_disjoint_iff : Disjoint (a • s) (a • t) ↔ Disjoint s t := by
   simp [disjoint_iff, ← smul_set_inter]
 
+end Group
+
+section GroupWithZero
+
 variable [GroupWithZero α] [MulAction α β] {s t : Set β} {a : α}
 
 @[simp]
