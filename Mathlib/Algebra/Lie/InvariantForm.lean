@@ -25,12 +25,13 @@ variable (Φ : LinearMap.BilinForm R L) (hΦ_inv : ∀ x y z, Φ ⁅x, y⁆ z = 
 variable (hΦ_nondeg : Φ.Nondegenerate)
 
 -- move this to `Mathlib.Algebra.Lie.Abelian`
-lemma perfect_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : ⁅I, I⁆ = I := by
+lemma perfect_of_isAtom_of_nonabelian (I : LieIdeal R L) (hI : IsAtom I) (h : ¬IsLieAbelian I) :
+    ⁅I, I⁆ = I := by
   rw [← hI.le_iff_eq]
   · exact LieSubmodule.lie_le_right I I
   · intro h
     rw [LieSubmodule.lie_eq_bot_iff] at h
-    apply hL I hI
+    apply hL
     constructor
     simpa only [LieIdeal.coe_bracket_of_module, Subtype.ext_iff, LieSubmodule.coe_bracket,
       ZeroMemClass.coe_zero, Subtype.forall, LieSubmodule.mem_coeSubmodule] using h
@@ -68,7 +69,7 @@ lemma orthogonalLieIdeal_disjoint (I : LieIdeal R L) (hI : IsAtom I) :
     simpa only [inf_le_left, ne_eq, inf_eq_left, true_and]
   intro contra
   apply hI.1
-  rw [eq_bot_iff, ← perfect_of_isAtom hL I hI,
+  rw [eq_bot_iff, ← perfect_of_isAtom_of_nonabelian I hI (hL I hI),
       LieSubmodule.lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
   rintro _ ⟨x, y, rfl⟩
   simp only [LieSubmodule.bot_coe, Set.mem_singleton_iff]
@@ -221,6 +222,7 @@ decreasing_by
   rw [eq_bot_iff]
   exact orthogonalLieIdeal_disjoint hL Φ hΦ_inv hΦ_nondeg J hJ le_rfl (hJI.trans hIJ')
 
+open LieSubmodule in
 theorem isSemisimple_of_nondegenerate_invariant_form : IsSemisimple K L := by
   refine ⟨?_, ?_, hL⟩
   · simpa using atomistic hL Φ hΦ_inv hΦ_nondeg hΦ_refl ⊤
@@ -229,15 +231,15 @@ theorem isSemisimple_of_nondegenerate_invariant_form : IsSemisimple K L := by
   apply sSup_le
   simp only [Set.mem_diff, Set.mem_setOf_eq, Set.mem_singleton_iff, and_imp]
   intro J hJ hJI
-  rw [← perfect_of_isAtom hL J hJ, LieSubmodule.lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
+  rw [← perfect_of_isAtom_of_nonabelian J hJ (hL J hJ), lieIdeal_oper_eq_span, lieSpan_le]
   rintro _ ⟨x, y, rfl⟩
   simp only [orthogonalLieIdeal_carrier, Φ.isOrtho_def, Set.mem_setOf_eq]
   intro z hz
   rw [← hΦ_inv]
   suffices ⁅z, (x : L)⁆ = 0 by simp only [this, map_zero, LinearMap.zero_apply]
   rw [← LieSubmodule.mem_bot (R := K) (L := L), ← (hJ.disjoint_of_ne hI hJI).symm.eq_bot]
-  apply LieSubmodule.lie_le_inf
-  exact LieSubmodule.lie_mem_lie _ _ hz x.2
+  apply lie_le_inf
+  exact lie_mem_lie _ _ hz x.2
 
 end field
 
