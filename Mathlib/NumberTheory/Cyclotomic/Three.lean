@@ -71,24 +71,13 @@ theorem Units.mem : ↑u ∈ ({1, -1, η, -η, η ^ 2, -η ^ 2} : Set (𝓞 K)) 
     · simp [h, pow_zero, Set.mem_insert_iff, neg_eq_self_iff, one_ne_zero, Set.mem_singleton_iff,
         true_or, or_true, zero_add, pow_one, neg_inj, neg_eq_self_iff]}
 
-/-- Let `K` be a number field such that `IsCyclotomicExtension {3} ℚ K`.
-Let `ζ` be any primitive `3`-rd root of unity in `K`.
-Let `η` be the element in the ring of integers corresponding to `ζ`.
-Let `λ` be the element in the ring of integers corresponding to `ζ - 1`.
-
-Then `λ ^ 2 = -3 * η`. -/
+/-- We have that `λ ^ 2 = -3 * η`. -/
 lemma lambda_sq : λ ^ 2 = -3 * η :=
   calc λ ^ 2 = η ^ 2 + η + 1 - 3 * η := by ring
   _ = 0 - 3 * η := by ext; simpa using hζ.isRoot_cyclotomic (by decide)
   _ = -3 * η := by ring
 
-/-- Let `K` be a number field such that `IsCyclotomicExtension {3} ℚ K`.
-Let `ζ` be any primitive `3`-rd root of unity in `K`.
-Let `η` be the element in the ring of integers corresponding to `ζ`.
-Let `λ` be the element in the ring of integers corresponding to `ζ - 1`.
-Let `u` be a unit in `(𝓞 K)ˣ`.
-
-If `u` is congruent to an integer modulo `λ ^ 2`, then `u = 1` or `u = -1`.
+/-- If a unit `u` is congruent to an integer modulo `λ ^ 2`, then `u = 1` or `u = -1`.
 
 This is a special case of the so-called *Kummer's lemma*. -/
 theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ (u - n : 𝓞 K)) :
