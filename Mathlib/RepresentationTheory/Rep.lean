@@ -29,30 +29,44 @@ We verify that `Rep k G` is a `k`-linear abelian symmetric monoidal category wit
 
 suppress_compilation
 
-universe u
+universe u v w v₁ w₁
 
 open CategoryTheory
 
 open CategoryTheory.Limits
 
+theorem ModuleCat.end_of (R : Type u) [Ring R] (M : Type v) [AddCommGroup M] [Module R M] :
+    End (ModuleCat.of R M) = (M →ₗ[R] M) :=
+  rfl
+
+@[simp]
+theorem ModuleCat.asHomRight_apply {R : Type u} [Ring R] {X₁ : Type v} [AddCommGroup X₁]
+    [Module R X₁] {X₂ : ModuleCat R} (f : X₁ →ₗ[R] X₂) :
+    @DFunLike.coe (no_index ModuleCat.of R X₁ ⟶ X₂) (no_index X₁)
+      (no_index (fun _ => X₂)) (no_index (instFunLikeHomCarrier R)) (ModuleCat.asHomRight f)
+      = @DFunLike.coe (X₁ →ₗ[R] X₂) _ _ _ f :=
+  rfl
 /-- The category of `k`-linear representations of a monoid `G`. -/
-abbrev Rep (k G : Type u) [Ring k] [Monoid G] :=
-  Action (ModuleCat.{u} k) (MonCat.of G)
+abbrev Rep (k : Type u) (G : Type v) [Ring k] [Monoid G] :=
+  Action (ModuleCat.{max u w} k) G
 set_option linter.uppercaseLean3 false in
 #align Rep Rep
 
-instance (k G : Type u) [CommRing k] [Monoid G] : Linear k (Rep k G) := by infer_instance
+instance (k : Type u) (G : Type v) [CommRing k] [Monoid G] : Linear k (Rep k G) := by
+  infer_instance
 
 namespace Rep
 
-variable {k G : Type u} [CommRing k]
+variable {k : Type u} {G : Type v} [CommRing k]
 
 section
 
 variable [Monoid G]
 
-instance : CoeSort (Rep k G) (Type u) :=
-  ConcreteCategory.hasCoeToSort _
+instance : CoeOut (Rep k G) (ModuleCat.{max u w} k) :=
+  { coe := fun V => V.V }
+
+lemma coe_def (V : Rep k G) : (V : Type max u w) = V.V := rfl
 
 instance (V : Rep k G) : AddCommGroup V := by
   change AddCommGroup ((forget₂ (Rep k G) (ModuleCat k)).obj V); infer_instance
@@ -70,68 +84,111 @@ set_option linter.uppercaseLean3 false in
 #align Rep.ρ Rep.ρ
 
 /-- Lift an unbundled representation to `Rep`. -/
-def of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : Rep k G :=
+def of {V : Type max u w} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : Rep k G :=
   ⟨ModuleCat.of k V, ρ⟩
 set_option linter.uppercaseLean3 false in
 #align Rep.of Rep.of
 
 @[simp]
-theorem coe_of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) :
-    (of ρ : Type u) = V :=
+theorem coe_of {V : Type max u w} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) :
+    (of ρ : Type max u w) = V :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.coe_of Rep.coe_of
 
 @[simp]
-theorem of_ρ {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : (of ρ).ρ = ρ :=
+theorem of_V {V : Type max u w} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) :
+    (of ρ).V = V :=
+  rfl
+
+@[simp]
+theorem coe_of_ρ {V : Type max u w} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) :
+  @DFunLike.coe (no_index (G →* End (of ρ : ModuleCat k))) G _ _ (of ρ).ρ
+    = @DFunLike.coe (G →* (V →ₗ[k] V)) _ _ _ ρ :=
+  rfl
+
+/-
+@[simp high]
+theorem coe_of_ρ' {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) :
+  @DFunLike.coe (no_index (G →* Module.End k (of ρ : Type u))) G _ _ (of ρ).ρ
+    = @DFunLike.coe (G →* (V →ₗ[k] V)) _ _ _ ρ :=
+  rfl-/
+/-
+set_option pp.universes true
+@[simp high]
+theorem idfk {V : Type max u w} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) :
+  @DFunLike.coe (no_index (G →* End (of ρ : Type max u w))) G
+    (no_index (fun _ => End (of ρ : Type max u w))) _ (Rep.ρ.{u, v, w} (of ρ))
+    = @DFunLike.coe (G →* (V →ₗ[k] V)) G (fun _ => V →ₗ[k] V) _ ρ :=
+  rfl-/
+/-@[simp low]
+theorem of_ρ {V : Type max u w} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) :
+    (of ρ).ρ = ρ :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Rep.of_ρ Rep.of_ρ
+#align Rep.of_ρ Rep.of_ρ-/
 
-theorem Action_ρ_eq_ρ {A : Rep k G} : Action.ρ A = A.ρ :=
+/-
+@[simp]
+theorem of_ρ'' {V : Type max u w} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) (g : G) :
+  @DFunLike.coe (no_index (G →* End ((of ρ).V))) G _ _ (of ρ).ρ g
+    = ρ g :=
+  rfl-/
+
+/-- We let `Rep.ρ` be the simp normal form. -/
+@[simp]
+theorem ρ_def {A : Rep k G} : Action.ρ A = A.ρ :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Rep.Action_ρ_eq_ρ Rep.Action_ρ_eq_ρ
-
+#align Rep.Action_ρ_eq_ρ Rep.ρ_def
+/-
 /-- Allows us to apply lemmas about the underlying `ρ`, which would take an element `g : G` rather
 than `g : MonCat.of G` as an argument. -/
-theorem of_ρ_apply {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V)
+theorem of_ρ_apply {V : Type max u w} [AddCommGroup V] [Module k V] (ρ : Representation k G V)
     (g : MonCat.of G) : (Rep.of ρ).ρ g = ρ (g : G) :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Rep.of_ρ_apply Rep.of_ρ_apply
+#align Rep.of_ρ_apply Rep.of_ρ_apply-/
 
 @[simp]
-theorem ρ_inv_self_apply {G : Type u} [Group G] (A : Rep k G) (g : G) (x : A) :
+theorem ρ_inv_self_apply {G : Type v} [Group G] (A : Rep k G) (g : G) (x : ↑A) :
     A.ρ g⁻¹ (A.ρ g x) = x :=
   show (A.ρ g⁻¹ * A.ρ g) x = x by rw [← map_mul, inv_mul_self, map_one, LinearMap.one_apply]
 set_option linter.uppercaseLean3 false in
 #align Rep.ρ_inv_self_apply Rep.ρ_inv_self_apply
 
 @[simp]
-theorem ρ_self_inv_apply {G : Type u} [Group G] {A : Rep k G} (g : G) (x : A) :
+theorem ρ_self_inv_apply {G : Type v} [Group G] {A : Rep k G} (g : G) (x : ↑A) :
     A.ρ g (A.ρ g⁻¹ x) = x :=
   show (A.ρ g * A.ρ g⁻¹) x = x by rw [← map_mul, mul_inv_self, map_one, LinearMap.one_apply]
 set_option linter.uppercaseLean3 false in
 #align Rep.ρ_self_inv_apply Rep.ρ_self_inv_apply
 
-theorem hom_comm_apply {A B : Rep k G} (f : A ⟶ B) (g : G) (x : A) :
+theorem hom_comm_apply {A B : Rep k G} (f : A ⟶ B) (g : G) (x : ↑A) :
     f.hom (A.ρ g x) = B.ρ g (f.hom x) :=
   LinearMap.ext_iff.1 (f.comm g) x
 set_option linter.uppercaseLean3 false in
 #align Rep.hom_comm_apply Rep.hom_comm_apply
-
+/-
+@[simps]
+def mkHom {V W : Type max u w} [AddCommGroup V] [Module k V]
+    [AddCommGroup W] [Module k W] (f : V →ₗ[k] W)
+    (ρ : Representation k G V) (τ : Representation k G W)
+    (comm : ∀ g : G, f ∘ₗ (ρ g) = τ g ∘ₗ f) :
+    of ρ ⟶ of τ :=
+  { hom := ModuleCat.ofHom f, comm := comm }
+-/
 variable (k G)
 
 /-- The trivial `k`-linear `G`-representation on a `k`-module `V.` -/
-def trivial (V : Type u) [AddCommGroup V] [Module k V] : Rep k G :=
+def trivial (V : Type max u w) [AddCommGroup V] [Module k V] : Rep k G :=
   Rep.of (@Representation.trivial k G V _ _ _ _)
 set_option linter.uppercaseLean3 false in
 #align Rep.trivial Rep.trivial
 
 variable {k G}
 
-theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) (v : V) :
+theorem trivial_def {V : Type max u w} [AddCommGroup V] [Module k V] (g : G) (v : V) :
     (trivial k G V).ρ g v = v :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -140,22 +197,23 @@ set_option linter.uppercaseLean3 false in
 /-- A predicate for representations that fix every element. -/
 abbrev IsTrivial (A : Rep k G) := A.ρ.IsTrivial
 
-instance {V : Type u} [AddCommGroup V] [Module k V] :
+instance {V : Type max u w} [AddCommGroup V] [Module k V] :
     IsTrivial (Rep.trivial k G V) where
 
-instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
-    IsTrivial (Rep.of ρ) where
+-- was just "where" before, not sure why removing `of_ρ` broke that when `aesop` works
+instance {V : Type max u w} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
+    IsTrivial (Rep.of ρ) := by aesop
 
 -- Porting note: the two following instances were found automatically in mathlib3
-noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
-  Action.instPreservesLimitsForget.{u} _ _
+noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{max u w} k)) :=
+  Action.instPreservesLimitsForget.{max u w} _ _
 
-noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
-  Action.instPreservesColimitsForget.{u} _ _
+noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{max u w} k)) :=
+  Action.instPreservesColimitsForget.{max u w} _ _
 
 /- Porting note: linter complains `simp` unfolds some types in the LHS, so
 have removed `@[simp]`. -/
-theorem MonoidalCategory.braiding_hom_apply {A B : Rep k G} (x : A) (y : B) :
+theorem MonoidalCategory.braiding_hom_apply {A B : Rep k G} (x : ↑A) (y : ↑B) :
     Action.Hom.hom (β_ A B).hom (TensorProduct.tmul k x y) = TensorProduct.tmul k y x :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -163,7 +221,7 @@ set_option linter.uppercaseLean3 false in
 
 /- Porting note: linter complains `simp` unfolds some types in the LHS, so
 have removed `@[simp]`. -/
-theorem MonoidalCategory.braiding_inv_apply {A B : Rep k G} (x : A) (y : B) :
+theorem MonoidalCategory.braiding_inv_apply {A B : Rep k G} (x : ↑A) (y : ↑B) :
     Action.Hom.hom (β_ A B).inv (TensorProduct.tmul k y x) = TensorProduct.tmul k x y :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -175,21 +233,21 @@ variable (k G)
 
 /-- The monoidal functor sending a type `H` with a `G`-action to the induced `k`-linear
 `G`-representation on `k[H].` -/
-noncomputable def linearization : MonoidalFunctor (Action (Type u) (MonCat.of G)) (Rep k G) :=
-  (ModuleCat.monoidalFree k).mapAction (MonCat.of G)
+noncomputable def linearization : MonoidalFunctor (Action (Type u) G) (Rep k G) :=
+  (ModuleCat.monoidalFree k).mapAction G
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization Rep.linearization
 
 variable {k G}
 
 @[simp]
-theorem linearization_obj_ρ (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V →₀ k) :
+theorem linearization_obj_ρ (X : Action (Type u) G) (g : G) (x : X.V →₀ k) :
     ((linearization k G).obj X).ρ g x = Finsupp.lmapDomain k k (X.ρ g) x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_obj_ρ Rep.linearization_obj_ρ
 
-theorem linearization_of (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) :
+theorem linearization_of (X : Action (Type u) G) (g : G) (x : X.V) :
     ((linearization k G).obj X).ρ g (Finsupp.single x (1 : k))
       = Finsupp.single (X.ρ g x) (1 : k) := by
   rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
@@ -197,11 +255,11 @@ set_option linter.uppercaseLean3 false in
 #align Rep.linearization_of Rep.linearization_of
 
 -- Porting note: helps fixing `linearizationTrivialIso` since change in behaviour of ext
-theorem linearization_single (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) (r : k) :
+theorem linearization_single (X : Action (Type u) G) (g : G) (x : X.V) (r : k) :
     ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r :=
   by rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
 
-variable {X Y : Action (Type u) (MonCat.of G)} (f : X ⟶ Y)
+variable {X Y : Action (Type u) G} (f : X ⟶ Y)
 
 @[simp]
 theorem linearization_map_hom : ((linearization k G).map f).hom = Finsupp.lmapDomain k k f.hom :=
@@ -216,14 +274,14 @@ set_option linter.uppercaseLean3 false in
 #align Rep.linearization_map_hom_single Rep.linearization_map_hom_single
 
 @[simp]
-theorem linearization_μ_hom (X Y : Action (Type u) (MonCat.of G)) :
+theorem linearization_μ_hom (X Y : Action (Type u) G) :
     ((linearization k G).μ X Y).hom = (finsuppTensorFinsupp' k X.V Y.V).toLinearMap :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_μ_hom Rep.linearization_μ_hom
 
 @[simp]
-theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
+theorem linearization_μ_inv_hom (X Y : Action (Type u) G) :
     (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
 -- Porting note (#11039): broken proof was
 /- simp_rw [← Action.forget_map, Functor.map_inv, Action.forget_map, linearization_μ_hom]
@@ -261,7 +319,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Given a `G`-action on `H`, this is `k[H]` bundled with the natural representation
 `G →* End(k[H])` as a term of type `Rep k G`. -/
-noncomputable abbrev ofMulAction (H : Type u) [MulAction G H] : Rep k G :=
+noncomputable abbrev ofMulAction (H : Type w) [MulAction G H] : Rep k G :=
   of <| Representation.ofMulAction k G H
 set_option linter.uppercaseLean3 false in
 #align Rep.of_mul_action Rep.ofMulAction
@@ -288,7 +346,7 @@ set_option linter.uppercaseLean3 false in
 
 section
 
-variable (k G A : Type u) [CommRing k] [Monoid G] [AddCommGroup A]
+variable (k : Type u) (G : Type v) (A : Type max u w) [CommRing k] [Monoid G] [AddCommGroup A]
   [Module k A] [DistribMulAction G A] [SMulCommClass G k A]
 
 /-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
@@ -300,12 +358,12 @@ def ofDistribMulAction : Rep k G := Rep.of (Representation.ofDistribMulAction k 
 
 /-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
 `S ≃ₐ[R] S` on `S`. -/
-@[simp] def ofAlgebraAut (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
+@[simp] def ofAlgebraAut (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S] :
     Rep ℤ (S ≃ₐ[R] S) := ofDistribMulAction ℤ (S ≃ₐ[R] S) S
 
 end
 section
-variable (M G : Type) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
+variable (M : Type u) (G : Type v) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
 
 /-- Turns a `CommGroup` `G` with a `MulDistribMulAction` of a monoid `M` into a
 `ℤ`-linear `M`-representation on `Additive G`. -/
@@ -316,40 +374,35 @@ def ofMulDistribMulAction : Rep ℤ M := Rep.of (Representation.ofMulDistribMulA
 
 /-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
 `S ≃ₐ[R] S` on `Sˣ`. -/
-@[simp] def ofAlgebraAutOnUnits (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
+@[simp] def ofAlgebraAutOnUnits (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S] :
     Rep ℤ (S ≃ₐ[R] S) := Rep.ofMulDistribMulAction (S ≃ₐ[R] S) Sˣ
 
 end
 
 variable {k G}
 
+#check ModuleCat.asHomLeft
 /-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
 `g ↦ A.ρ(g)(x).` -/
 @[simps]
-noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G ⟶ A where
-  hom := Finsupp.lift _ _ _ fun g => A.ρ g x
-  comm g := by
-    refine Finsupp.lhom_ext' fun y => LinearMap.ext_ring ?_
-/- Porting note: rest of broken proof was
-    simpa only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply, Finsupp.lift_apply,
-      Action_ρ_eq_ρ, of_ρ_apply, Representation.ofMulAction_single, Finsupp.sum_single_index,
-      zero_smul, one_smul, smul_eq_mul, A.ρ.map_mul] -/
-    simp only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply]
-    erw [Finsupp.lift_apply, Finsupp.lift_apply, Representation.ofMulAction_single (G := G)]
-    simp only [Finsupp.sum_single_index, zero_smul, one_smul, smul_eq_mul, A.ρ.map_mul, of_ρ]
-    rfl
+noncomputable def leftRegularHom (A : Rep k G) (x : ↑A) : Rep.ofMulAction k G G ⟶ A where
+  hom := Finsupp.lift ↑A _ _ fun g => A.ρ g x
+  comm g := Finsupp.lhom_ext' fun y => LinearMap.ext_ring <| by
+    simp
+    rfl -- >:( I want to remove u
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom Rep.leftRegularHom
-
-theorem leftRegularHom_apply {A : Rep k G} (x : A) :
+#check Finsupp.lift_apply
+theorem leftRegularHom_apply {A : Rep k G} (x : ↑A) :
     (leftRegularHom A x).hom (Finsupp.single 1 1) = x := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to b `rw`, but we need `erw` after leanprover/lean4#2644
+  simp? [ofMulAction, of_V]
   erw [leftRegularHom_hom, Finsupp.lift_apply, Finsupp.sum_single_index, one_smul,
     A.ρ.map_one, LinearMap.one_apply]
   rw [zero_smul]
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom_apply Rep.leftRegularHom_apply
-
+#exit
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
 representation morphisms `Hom(k[G], A)` and `A`. -/
 @[simps]

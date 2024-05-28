@@ -23,7 +23,7 @@ universe u v w₁ w₂ t₁ t₂
 
 open CategoryTheory Limits
 
-variable {V : Type (u + 1)} [LargeCategory V] {G : MonCat.{u}}
+variable {V : Type (u + 1)} [LargeCategory V] {G : Type v} [Monoid G]
 
 namespace Action
 
@@ -326,7 +326,7 @@ theorem smul_hom {X Y : Action V G} (r : R) (f : X ⟶ Y) : (r • f).hom = r �
 set_option linter.uppercaseLean3 false in
 #align Action.smul_hom Action.smul_hom
 
-variable {H : MonCat.{u}} (f : G ⟶ H)
+variable {H : Type w₁} [Monoid H] (f : G →* H)
 
 instance res_additive : (res V f).Additive where
 set_option linter.uppercaseLean3 false in
@@ -339,15 +339,15 @@ set_option linter.uppercaseLean3 false in
 end Linear
 
 section Abelian
-
+/-
 /-- Auxiliary construction for the `Abelian (Action V G)` instance. -/
 def abelianAux : Action V G ≌ ULift.{u} (SingleObj G) ⥤ V :=
   (functorCategoryEquivalence V G).trans (Equivalence.congrLeft ULift.equivalence)
 set_option linter.uppercaseLean3 false in
-#align Action.abelian_aux Action.abelianAux
+#align Action.abelian_aux Action.abelianAux-/
 
 noncomputable instance [Abelian V] : Abelian (Action V G) :=
-  abelianOfEquivalence abelianAux.functor
+  abelianOfEquivalence (functorCategoryEquivalence V G).functor
 
 end Abelian
 
@@ -355,7 +355,7 @@ end Action
 
 namespace CategoryTheory.Functor
 
-variable {W : Type (u + 1)} [LargeCategory W] (F : V ⥤ W) (G : MonCat.{u}) [Preadditive V]
+variable {W : Type (u + 1)} [LargeCategory W] (F : V ⥤ W) (G : Type v) [Monoid G] [Preadditive V]
   [Preadditive W]
 
 instance mapAction_preadditive [F.Additive] : (F.mapAction G).Additive where

@@ -189,6 +189,39 @@ theorem coe_of (X : Type v) [AddCommGroup X] [Module R X] : (of R X : Type v) = 
   rfl
 #align Module.coe_of ModuleCat.coe_of
 
+-- Coercing the identity morphism, as a ring homomorphism, gives the identity function.
+@[simp] theorem coe_linearMap_id {X : ModuleCat R} :
+    @DFunLike.coe (X →ₗ[R] X) X (fun _ ↦ X) _ (𝟙 X) = id :=
+  rfl
+
+-- Coercing `𝟙 (of X)` to a function should be expressed as the coercion of `RingHom.id X`.
+@[simp] theorem coe_id_of {X : Type v} [AddCommGroup X] [Module R X] :
+    @DFunLike.coe no_index (ModuleCat.of R X ⟶ ModuleCat.of R X) X
+      (fun _ ↦ X) _
+      (𝟙 (of R X)) =
+    @DFunLike.coe (X →ₗ[R] X) X (fun _ ↦ X) _ LinearMap.id :=
+  rfl
+
+-- Coercing `f ≫ g`, where `f : of X ⟶ of Y` and `g : of Y ⟶ of Z`, to a function should be
+-- expressed in terms of the coercion of `g.comp f`.
+@[simp low] theorem coe_comp_of {X Y Z : Type v} [AddCommGroup X] [AddCommGroup Y] [AddCommGroup Z]
+    [Module R X] [Module R Y] [Module R Z] (f : X →ₗ[R] Y) (g : Y →ₗ[R] Z) :
+    @DFunLike.coe no_index (ModuleCat.of R X ⟶ ModuleCat.of R Z) X
+      (fun _ ↦ Z) _
+      (CategoryStruct.comp (X := ModuleCat.of R X) (Y := ModuleCat.of R Y) (Z := ModuleCat.of R Z)
+        f g) =
+    @DFunLike.coe (X →ₗ[R] Z) X (fun _ ↦ Z) _ (g ∘ₗ f) :=
+  rfl
+
+-- Sometimes neither the `ext` lemma for `SemiRingCat` nor for `RingHom` is applicable,
+-- because of incomplete unfolding of `SemiRingCat.of X ⟶ SemiRingCat.of Y := X →+* Y`,
+-- but this one will fire.
+@[ext 900] theorem ext_of {X Y : Type v} [AddCommGroup X] [AddCommGroup Y]
+    [Module R X] [Module R Y] (f g : X →ₗ[R] Y)
+    (h : ∀ x, f x = g x) :
+    @Eq (ModuleCat.of R X ⟶ ModuleCat.of R Y) f g :=
+  LinearMap.ext h
+
 variable {R}
 
 /-- Forgetting to the underlying type and then building the bundled object returns the original

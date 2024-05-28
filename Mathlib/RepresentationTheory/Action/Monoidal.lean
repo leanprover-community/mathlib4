@@ -21,11 +21,11 @@ We show:
 * When `V` is monoidal, braided, or symmetric, so is `Action V G`.
 -/
 
-universe u v
+universe u v w v₁ w₁
 
 open CategoryTheory Limits
 
-variable {V : Type (u + 1)} [LargeCategory V] {G : MonCat.{u}}
+variable {V : Type (u + 1)} [LargeCategory V] {G : Type v} [Monoid G]
 
 namespace Action
 
@@ -263,24 +263,24 @@ theorem functorCategoryMonoidalEquivalence.inverse_map {A B : SingleObj G ⥤ V}
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.inverse_map Action.functorCategoryMonoidalEquivalence.inverse_map
 
-variable (H : GroupCat.{u})
+variable (H : Type w) [Group H]
 
-instance [RightRigidCategory V] : RightRigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := by
-  change RightRigidCategory (SingleObj H ⥤ V); infer_instance
+instance [RightRigidCategory V] : RightRigidCategory (SingleObj H ⥤ V) := by
+  infer_instance
 
 /-- If `V` is right rigid, so is `Action V G`. -/
 instance [RightRigidCategory V] : RightRigidCategory (Action V H) :=
   rightRigidCategoryOfEquivalence (functorCategoryMonoidalAdjunction V _)
 
-instance [LeftRigidCategory V] : LeftRigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := by
-  change LeftRigidCategory (SingleObj H ⥤ V); infer_instance
+instance [LeftRigidCategory V] : LeftRigidCategory (SingleObj H ⥤ V) := by
+  infer_instance
 
 /-- If `V` is left rigid, so is `Action V G`. -/
 instance [LeftRigidCategory V] : LeftRigidCategory (Action V H) :=
   leftRigidCategoryOfEquivalence (functorCategoryMonoidalAdjunction V _)
 
-instance [RigidCategory V] : RigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := by
-  change RigidCategory (SingleObj H ⥤ V); infer_instance
+instance [RigidCategory V] : RigidCategory (SingleObj H ⥤ V) := by
+  infer_instance
 
 /-- If `V` is rigid, so is `Action V G`. -/
 instance [RigidCategory V] : RigidCategory (Action V H) :=
@@ -326,7 +326,7 @@ multiplication on the first factor and by `X.ρ` on the second) is isomorphic as
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
 The isomorphism is given by `(g, x) ↦ (g, g⁻¹ • x)`. -/
 @[simps]
-noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type u) (MonCat.of G)) :
+noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type u) G) :
     leftRegular G ⊗ X ≅ leftRegular G ⊗ Action.mk X.V 1 where
   hom :=
     { hom := fun g => ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
@@ -351,13 +351,13 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
     funext x
     refine' Prod.ext rfl _
     change (X.ρ x.1 * X.ρ (x.1⁻¹ : G)) x.2 = x.2
-    rw [← X.ρ.map_mul, mul_inv_self, X.ρ.map_one, MonCat.one_of, End.one_def, types_id_apply]
+    rw [← X.ρ.map_mul, mul_inv_self, X.ρ.map_one, End.one_def, types_id_apply]
   inv_hom_id := by
     apply Hom.ext
     funext x
     refine' Prod.ext rfl _
     change (X.ρ (x.1⁻¹ : G) * X.ρ x.1) x.2 = x.2
-    rw [← X.ρ.map_mul, inv_mul_self, X.ρ.map_one, MonCat.one_of, End.one_def, types_id_apply]
+    rw [← X.ρ.map_mul, inv_mul_self, X.ρ.map_one, End.one_def, types_id_apply]
 set_option linter.uppercaseLean3 false in
 #align Action.left_regular_tensor_iso Action.leftRegularTensorIso
 
@@ -381,7 +381,7 @@ variable {W : Type (u + 1)} [LargeCategory W] [MonoidalCategory V] [MonoidalCate
 /-- A lax monoidal functor induces a lax monoidal functor between
 the categories of `G`-actions within those categories. -/
 @[simps!]
-def mapActionLax (F : LaxMonoidalFunctor V W) (G : MonCat.{u}) :
+def mapActionLax (F : LaxMonoidalFunctor V W) (G : Type v) [Monoid G] :
     LaxMonoidalFunctor (Action V G) (Action W G) := .ofTensorHom
   (F := F.toFunctor.mapAction G)
   (ε :=
@@ -397,7 +397,7 @@ def mapActionLax (F : LaxMonoidalFunctor V W) (G : MonCat.{u}) :
   (left_unitality := by intros; ext; simp)
   (right_unitality := by intros; ext; simp)
 
-variable (F : MonoidalFunctor V W) (G : MonCat.{u})
+variable (F : MonoidalFunctor V W) (G : Type v) [Monoid G]
 
 /-- A monoidal functor induces a monoidal functor between
 the categories of `G`-actions within those categories. -/

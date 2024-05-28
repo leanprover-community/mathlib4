@@ -284,10 +284,12 @@ noncomputable def ofMulAction : Representation k G (H →₀ k) where
 
 variable {k G H}
 
+@[simp]
 theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k (g • ·) :=
   rfl
 #align representation.of_mul_action_def Representation.ofMulAction_def
 
+@[simp]
 theorem ofMulAction_single (g : G) (x : H) (r : k) :
     ofMulAction k G H g (Finsupp.single x r) = Finsupp.single (g • x) r :=
   Finsupp.mapDomain_single

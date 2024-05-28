@@ -13,21 +13,22 @@ import Mathlib.RepresentationTheory.Action.Basic
 We construct `Action (Type u) G` from a `[MulAction G X]` instance and give some applications.
 -/
 
-universe u v
+universe u v w v₁ w₁
 
 open CategoryTheory Limits
 
 namespace Action
 
 /-- Bundles a type `H` with a multiplicative action of `G` as an `Action`. -/
-def ofMulAction (G H : Type u) [Monoid G] [MulAction G H] : Action (Type u) (MonCat.of G) where
+def ofMulAction (G : Type u) (H : Type v) [Monoid G] [MulAction G H] :
+    Action (Type v) G where
   V := H
   ρ := @MulAction.toEndHom _ _ _ (by assumption)
 set_option linter.uppercaseLean3 false in
 #align Action.of_mul_action Action.ofMulAction
 
 @[simp]
-theorem ofMulAction_apply {G H : Type u} [Monoid G] [MulAction G H] (g : G) (x : H) :
+theorem ofMulAction_apply {G : Type u} {H : Type v} [Monoid G] [MulAction G H] (g : G) (x : H) :
     (ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -60,14 +61,14 @@ set_option linter.uppercaseLean3 false in
 
 /-- The `G`-set `G`, acting on itself by left multiplication. -/
 @[simps!]
-def leftRegular (G : Type u) [Monoid G] : Action (Type u) (MonCat.of G) :=
+def leftRegular (G : Type u) [Monoid G] : Action (Type u) G :=
   Action.ofMulAction G G
 set_option linter.uppercaseLean3 false in
 #align Action.left_regular Action.leftRegular
 
 /-- The `G`-set `Gⁿ`, acting on itself by left multiplication. -/
 @[simps!]
-def diagonal (G : Type u) [Monoid G] (n : ℕ) : Action (Type u) (MonCat.of G) :=
+def diagonal (G : Type u) [Monoid G] (n : ℕ) : Action (Type u) G :=
   Action.ofMulAction G (Fin n → G)
 set_option linter.uppercaseLean3 false in
 #align Action.diagonal Action.diagonal
@@ -81,13 +82,13 @@ set_option linter.uppercaseLean3 false in
 namespace FintypeCat
 
 /-- Bundles a finite type `H` with a multiplicative action of `G` as an `Action`. -/
-def ofMulAction (G : Type u) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
-    Action FintypeCat (MonCat.of G) where
+def ofMulAction (G : Type u) (H : FintypeCat.{v}) [Monoid G] [MulAction G H] :
+    Action FintypeCat G where
   V := H
   ρ := @MulAction.toEndHom _ _ _ (by assumption)
 
 @[simp]
-theorem ofMulAction_apply {G : Type u} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
+theorem ofMulAction_apply {G : Type u} {H : FintypeCat.{v}} [Monoid G] [MulAction G H]
     (g : G) (x : H) : (FintypeCat.ofMulAction G H).ρ g x = (g • x : H) :=
   rfl
 
@@ -97,7 +98,7 @@ section ToMulAction
 
 variable {V : Type (u + 1)} [LargeCategory V] [ConcreteCategory V]
 
-instance instMulAction {G : MonCat.{u}} (X : Action V G) :
+instance instMulAction {G : Type v} [Monoid G] (X : Action V G) :
     MulAction G ((CategoryTheory.forget _).obj X) where
   smul g x := ((CategoryTheory.forget _).map (X.ρ g)) x
   one_smul x := by
@@ -110,8 +111,9 @@ instance instMulAction {G : MonCat.{u}} (X : Action V G) :
     rfl
 
 /- Specialize `instMulAction` to assist typeclass inference. -/
-instance {G : MonCat.{u}} (X : Action FintypeCat G) : MulAction G X.V := Action.instMulAction X
-instance {G : Type u} [Group G] (X : Action FintypeCat (MonCat.of G)) : MulAction G X.V :=
+instance {G : Type v} [Monoid G] (X : Action FintypeCat G) : MulAction G X.V :=
+  Action.instMulAction X
+instance {G : Type v} [Group G] (X : Action FintypeCat G) : MulAction G X.V :=
   Action.instMulAction X
 
 end ToMulAction
