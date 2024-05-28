@@ -20,7 +20,7 @@ import Mathlib.CategoryTheory.Sites.LocallyInjective
 
 ## Main results
 
-- `isLocallySurjective_toSheafify` : `toSheafify` is locally surjective.
+- `isLocallySurjective_toSheafify`: `toSheafify` is locally surjective.
 
 -/
 
@@ -174,7 +174,7 @@ lemma isLocallySurjective_iff_of_fac
     rw [← fac]
     infer_instance
 
-lemma isLocallySurjective_comp_iff
+lemma comp_isLocallySurjective_iff
     {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ ⟶ F₂) (f₂ : F₂ ⟶ F₃)
     [IsLocallySurjective J f₁] :
     IsLocallySurjective J (f₁ ≫ f₂) ↔ IsLocallySurjective J f₂ :=
