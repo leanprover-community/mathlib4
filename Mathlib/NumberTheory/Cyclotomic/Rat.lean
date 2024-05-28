@@ -434,16 +434,17 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
   have hdim : pB.dim = ↑p ^ k * (↑p - 1) := by
     simp [integralPowerBasis_dim, pB, Nat.totient_prime_pow hp.1 (Nat.zero_lt_succ k)]
   replace hdim : 1 < pB.dim := by
+    rw [Nat.one_lt_iff_ne_zero_and_ne_one, hdim]
+    refine ⟨by simp only [ne_eq, mul_eq_zero, pow_eq_zero_iff', PNat.ne_zero, false_and, false_or,
+      Nat.sub_eq_zero_iff_le, not_le, Nat.Prime.one_lt hp.out], ne_of_gt ?_⟩
     by_cases hk : k = 0
-    · rw [hdim, hk, pow_zero, one_mul]
-      contrapose htwo
-      simp only [hk, zero_add, pow_one, ne_eq, Decidable.not_not]
-      rcases lt_or_eq_of_le (Nat.Prime.two_le hp.1) with (h | h)
-      · omega
-      · exact_mod_cast h.symm
-    · rw [hdim]
-      exact one_lt_mul_of_lt_of_le (one_lt_pow hp.1.one_lt hk)
-        (have := Nat.Prime.two_le hp.1; by omega)
+    · simp only [hk, zero_add, pow_one, pow_zero, one_mul, Nat.lt_sub_iff_add_lt,
+        Nat.reduceAdd] at htwo ⊢
+      exact htwo.symm.lt_of_le hp.1.two_le
+    · exact one_lt_mul_of_lt_of_le (one_lt_pow hp.1.one_lt hk)
+        (have := Nat.Prime.two_le hp.out; by omega)
+
+
   rw [sub_eq_iff_eq_add] at h
   -- We are assuming that `ζ = n + p * x` for some integer `n` and `x : 𝓞 K`. Looking at the
   -- coordinates in the base `pB`, we obtain that `1` is a multiple of `p`, contradiction.
