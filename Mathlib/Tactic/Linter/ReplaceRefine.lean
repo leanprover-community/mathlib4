@@ -24,7 +24,7 @@ register_option linter.refine'ToRefine : Bool := {
   descr := "flag `refine'` that can be converted to `refine`s"
 }
 
-namespace refine'ToRefine
+namespace Refine'
 
 open Lean Elab
 
@@ -140,7 +140,7 @@ def getQuestions (cmd : Syntax) :
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.refine'ToRefine o
 
 /-- Reports the positions of missing `?`. -/
-def refine'ToRefineLinter : Linter where run stx := do
+def ToRefineLinter : Linter where run stx := do
   let fm ← getFileMap
   if getLinterHash (← getOptions) then
     let pos ← getQuestions stx
@@ -153,4 +153,4 @@ def refine'ToRefineLinter : Linter where run stx := do
         let hlc := fm.toPosition hlPos
         (logInfoAt hl m!"(0, {hlc.1}, {hlc.2})")
 
-initialize addLinter refine'ToRefineLinter
+initialize addLinter ToRefineLinter
