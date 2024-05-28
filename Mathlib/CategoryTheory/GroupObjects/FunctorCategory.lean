@@ -44,28 +44,66 @@ def GroupObjectFunctorToFunctorGroupObject (G : GroupObject (C ⥤ D)) :
         (f' := 𝟙 G.X)]
       rw [Category.assoc]
       conv_lhs => congr; rfl; congr; rfl
-                  erw [← NatTrans.vcomp_app]
-                  change (prod.map G.one (𝟙 G.X) ≫ G.mul).app X
+                  erw [← NatTrans.comp_app]
                   rw [G.one_mul, prod.leftUnitor_hom]
       erw [PreservesLimitPair.iso_inv_snd]
       simp only [evaluation_obj_obj, prod.map_snd, Category.comp_id]
     mul_one := by
-      with_panel_widgets [GoalTypePanel]
       simp only [evaluation_obj_obj, prod.rightUnitor_hom]
       rw [prod_map_comp_right_id_left, Category.assoc, ← Category.assoc _ _ (G.mul.app X)]
       erw [PreservesLimitPair.iso.inv_natural (F := (evaluation C D).obj X) (f := 𝟙 G.X)
         (f' := G.one)]
       rw [Category.assoc]
       conv_lhs => congr; rfl; congr; rfl
-                  erw [← NatTrans.vcomp_app]
-                  change (prod.map (𝟙 G.X) G.one ≫ G.mul).app X
+                  erw [← NatTrans.comp_app]
                   rw [G.mul_one, prod.rightUnitor_hom]
       erw [PreservesLimitPair.iso_inv_fst]
       simp only [evaluation_obj_obj, prod.map_fst, Category.comp_id]
     mul_assoc := by
-      with_panel_widgets [GoalTypePanel]
-      
-      sorry
-    mul_left_inv := sorry
+      rw [prod_map_comp_left_id_right]
+      slice_lhs 2 3 => erw [PreservesLimitPair.iso.inv_natural (F := ((evaluation C D).obj X))
+                         (f := G.mul) (f' := 𝟙 G.X)]
+      slice_lhs 3 4 => erw [← NatTrans.comp_app]; rw [G.mul_assoc]
+      rw [prod_map_comp_right_id_left]
+      slice_rhs 3 4 => erw [PreservesLimitPair.iso.inv_natural (F := ((evaluation C D).obj X))
+                         (f := 𝟙 G.X) (f' := G.mul)]
+      rw [NatTrans.comp_app, ← Category.assoc, ← Category.assoc]
+      conv_lhs => rw [← evaluation_obj_map, Category.assoc _
+        (PreservesLimitPair.iso ((evaluation C D).obj X) (G.X ⨯ G.X) G.X).inv _]
+      erw [PreservesLimitsPair.iso.inv_comp_prod.associator G.X G.X G.X
+        ((CategoryTheory.evaluation C D).obj X)]
+      simp only [evaluation_obj_obj, prod.associator_hom, Pi.id_apply, prod.lift_map_assoc,
+        Category.comp_id, NatTrans.comp_app, Category.assoc, evaluation_obj_map]
+    mul_left_inv := by
+      rw [← Category.assoc]
+      erw [PreservesLimitPair.iso.inv_comp_lift (F := (evaluation C D).obj X) (f := G.inv)
+        (h := 𝟙 G.X)]
+      rw [evaluation_obj_map, ← NatTrans.comp_app, G.mul_left_inv, NatTrans.comp_app]
+      simp only [evaluation_obj_obj]
+      rw [← Category.assoc]
+      congr 1
+      ext j
+      exact PEmpty.elim j.1
   }
-  map := sorry
+  map f := {
+    hom := G.X.map f
+    one_hom := by
+      simp only
+      rw [Category.assoc, ← G.one.naturality, ← Category.assoc]
+      congr 1
+      ext j
+      exact PEmpty.elim j.1
+    mul_hom := by
+      simp only
+      rw [Category.assoc, ← G.mul.naturality, ← Category.assoc, ← Category.assoc]
+      congr 1
+      simp only [evaluation_obj_obj, PreservesLimitPair.iso_inv, IsIso.eq_comp_inv, Category.assoc,
+        IsIso.inv_comp_eq]
+      rw [← evaluation_map_app, ← evaluation_map_app _ _ f G.X]
+      exact (prodComparison_natTrans (α := (evaluation C D).map f) (X := G.X) (Y := G.X)).symm
+  }
+  map_id X := by
+    ext; rw [G.X.map_id]
+  map_comp f g := by
+    ext
+    rw [G.X.map_comp]
