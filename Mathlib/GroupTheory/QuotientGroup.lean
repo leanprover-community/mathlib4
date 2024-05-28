@@ -148,7 +148,7 @@ theorem ker_mk' : MonoidHom.ker (QuotientGroup.mk' N : G →* G ⧸ N) = N :=
 @[to_additive]
 theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
     (x : G ⧸ N) = y ↔ x / y ∈ N := by
-  refine' eq_comm.trans (QuotientGroup.eq.trans _)
+  refine eq_comm.trans (QuotientGroup.eq.trans ?_)
   rw [nN.mem_comm_iff, div_eq_mul_inv]
 #align quotient_group.eq_iff_div_mem QuotientGroup.eq_iff_div_mem
 #align quotient_add_group.eq_iff_sub_mem QuotientAddGroup.eq_iff_sub_mem
@@ -287,7 +287,7 @@ theorem map_map {I : Type*} [Group I] (M : Subgroup H) (O : Subgroup I) [M.Norma
     (hgf : N ≤ Subgroup.comap (g.comp f) O :=
       hf.trans ((Subgroup.comap_mono hg).trans_eq (Subgroup.comap_comap _ _ _)))
     (x : G ⧸ N) : map M O g hg (map N M f hf x) = map N O (g.comp f) hgf x := by
-  refine' induction_on' x fun x => _
+  refine induction_on' x fun x => ?_
   simp only [map_mk, MonoidHom.comp_apply]
 #align quotient_group.map_map QuotientGroup.map_map
 #align quotient_add_group.map_map QuotientAddGroup.map_map

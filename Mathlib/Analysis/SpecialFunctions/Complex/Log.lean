@@ -175,8 +175,8 @@ theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x
 
 @[simp]
 theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Countable := by
-  refine' ⟨fun hs => _, fun hs => _⟩
-  · refine' ((hs.image exp).insert 0).mono _
+  refine ⟨fun hs => ?_, fun hs => ?_⟩
+  · refine ((hs.image exp).insert 0).mono ?_
     rw [Set.image_preimage_eq_inter_range, range_exp, ← Set.diff_eq, ← Set.union_singleton,
         Set.diff_union_self]
     exact Set.subset_union_left _ _
@@ -248,12 +248,12 @@ open Topology
 variable {α : Type*}
 
 theorem continuousAt_clog {x : ℂ} (h : x ∈ slitPlane) : ContinuousAt log x := by
-  refine' ContinuousAt.add _ _
-  · refine' continuous_ofReal.continuousAt.comp _
-    refine' (Real.continuousAt_log _).comp Complex.continuous_abs.continuousAt
+  refine ContinuousAt.add ?_ ?_
+  · refine continuous_ofReal.continuousAt.comp ?_
+    refine (Real.continuousAt_log ?_).comp Complex.continuous_abs.continuousAt
     exact Complex.abs.ne_zero_iff.mpr <| slitPlane_ne_zero h
   · have h_cont_mul : Continuous fun x : ℂ => x * I := continuous_id'.mul continuous_const
-    refine' h_cont_mul.continuousAt.comp (continuous_ofReal.continuousAt.comp _)
+    refine h_cont_mul.continuousAt.comp (continuous_ofReal.continuousAt.comp ?_)
     exact continuousAt_arg h
 #align continuous_at_clog continuousAt_clog
 

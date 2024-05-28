@@ -223,7 +223,7 @@ theorem eventualRange_eq_iff {f : i ⟶ j} :
     F.eventualRange j = range (F.map f) ↔
       ∀ ⦃k⦄ (g : k ⟶ i), range (F.map f) ⊆ range (F.map <| g ≫ f) := by
   rw [subset_antisymm_iff, eventualRange, and_iff_right (iInter₂_subset _ _), subset_iInter₂_iff]
-  refine' ⟨fun h k g => h _ _, fun h j' f' => _⟩
+  refine ⟨fun h k g => h _ _, fun h j' f' => ?_⟩
   obtain ⟨k, g, g', he⟩ := cospan f f'
   refine (h g).trans ?_
   rw [he, F.map_comp]
@@ -245,7 +245,7 @@ theorem IsMittagLeffler.toPreimages (h : F.IsMittagLeffler) : (F.toPreimages s).
       rw [h₂]
       exact ⟨_, rfl⟩
     obtain ⟨y, hy, h₃⟩ := h.subset_image_eventualRange F (f₃ ≫ f₂) this
-    refine' ⟨⟨y, mem_iInter.2 fun g₂ => _⟩, Subtype.ext _⟩
+    refine ⟨⟨y, mem_iInter.2 fun g₂ => ?_⟩, Subtype.ext ?_⟩
     · obtain ⟨j₄, f₄, h₄⟩ := IsCofilteredOrEmpty.cone_maps g₂ ((f₃ ≫ f₂) ≫ g₁)
       obtain ⟨y, rfl⟩ := F.mem_eventualRange_iff.1 hy f₄
       rw [← map_comp_apply] at h₃
@@ -263,10 +263,10 @@ theorem isMittagLeffler_of_exists_finite_range
   obtain ⟨m, ⟨i, f, hm⟩, hmin⟩ := Finset.wellFoundedLT.wf.has_min
     { s : Finset (F.obj j) | ∃ (i : _) (f : i ⟶ j), ↑s = range (F.map f) }
     ⟨_, i, hi, hf.coe_toFinset⟩
-  refine' ⟨i, f, fun k g =>
-    (directedOn_range.mp <| F.ranges_directed j).is_bot_of_is_min ⟨⟨i, f⟩, rfl⟩ _ _ ⟨⟨k, g⟩, rfl⟩⟩
+  refine ⟨i, f, fun k g =>
+    (directedOn_range.mp <| F.ranges_directed j).is_bot_of_is_min ⟨⟨i, f⟩, rfl⟩ ?_ _ ⟨⟨k, g⟩, rfl⟩⟩
   rintro _ ⟨⟨k', g'⟩, rfl⟩ hl
-  refine' (eq_of_le_of_not_lt hl _).ge
+  refine (eq_of_le_of_not_lt hl ?_).ge
   have := hmin _ ⟨k', g', (m.finite_toSet.subset <| hm.substr hl).coe_toFinset⟩
   rwa [Finset.lt_iff_ssubset, ← Finset.coe_ssubset, Set.Finite.coe_toFinset, hm] at this
 #align category_theory.functor.is_mittag_leffler_of_exists_finite_range CategoryTheory.Functor.isMittagLeffler_of_exists_finite_range
@@ -362,7 +362,7 @@ theorem eval_section_surjective_of_surjective (i : J) :
   let s : Set (F.obj i) := {x}
   haveI := F.toPreimages_nonempty_of_surjective s Fsur (singleton_nonempty x)
   obtain ⟨sec, h⟩ := nonempty_sections_of_finite_cofiltered_system (F.toPreimages s)
-  refine' ⟨⟨fun j => (sec j).val, fun jk => by simpa [Subtype.ext_iff] using h jk⟩, _⟩
+  refine ⟨⟨fun j => (sec j).val, fun jk => by simpa [Subtype.ext_iff] using h jk⟩, ?_⟩
   · have := (sec i).prop
     simp only [mem_iInter, mem_preimage, mem_singleton_iff] at this
     have := this (𝟙 i)

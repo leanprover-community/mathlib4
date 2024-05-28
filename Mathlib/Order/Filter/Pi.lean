@@ -73,7 +73,7 @@ theorem mem_pi_of_mem (i : ι) {s : Set (α i)} (hs : s ∈ f i) : eval i ⁻¹'
 
 theorem pi_mem_pi {I : Set ι} (hI : I.Finite) (h : ∀ i ∈ I, s i ∈ f i) : I.pi s ∈ pi f := by
   rw [pi_def, biInter_eq_iInter]
-  refine' mem_iInf_of_iInter hI (fun i => _) Subset.rfl
+  refine mem_iInf_of_iInter hI (fun i => ?_) Subset.rfl
   exact preimage_mem_comap (h i i.2)
 #align filter.pi_mem_pi Filter.pi_mem_pi
 
@@ -96,7 +96,7 @@ theorem mem_pi' {s : Set (∀ i, α i)} :
 theorem mem_of_pi_mem_pi [∀ i, NeBot (f i)] {I : Set ι} (h : I.pi s ∈ pi f) {i : ι} (hi : i ∈ I) :
     s i ∈ f i := by
   rcases mem_pi.1 h with ⟨I', -, t, htf, hts⟩
-  refine' mem_of_superset (htf i) fun x hx => _
+  refine mem_of_superset (htf i) fun x hx => ?_
   have : ∀ i, (t i).Nonempty := fun i => nonempty_of_mem (htf i)
   choose g hg using this
   have : update g i x ∈ I'.pi t := fun j _ => by
@@ -157,7 +157,7 @@ theorem pi_inf_principal_univ_pi_eq_bot :
 theorem pi_inf_principal_pi_eq_bot [∀ i, NeBot (f i)] {I : Set ι} :
     pi f ⊓ 𝓟 (Set.pi I s) = ⊥ ↔ ∃ i ∈ I, f i ⊓ 𝓟 (s i) = ⊥ := by
   rw [← univ_pi_piecewise_univ I, pi_inf_principal_univ_pi_eq_bot]
-  refine' exists_congr fun i => _
+  refine exists_congr fun i => ?_
   by_cases hi : i ∈ I <;> simp [hi, NeBot.ne']
 #align filter.pi_inf_principal_pi_eq_bot Filter.pi_inf_principal_pi_eq_bot
 
@@ -192,10 +192,10 @@ instance [∀ i, NeBot (f i)] : NeBot (pi f) :=
 @[simp]
 theorem map_eval_pi (f : ∀ i, Filter (α i)) [∀ i, NeBot (f i)] (i : ι) :
     map (eval i) (pi f) = f i := by
-  refine' le_antisymm (tendsto_eval_pi f i) fun s hs => _
+  refine le_antisymm (tendsto_eval_pi f i) fun s hs => ?_
   rcases mem_pi.1 (mem_map.1 hs) with ⟨I, hIf, t, htf, hI⟩
   rw [← image_subset_iff] at hI
-  refine' mem_of_superset (htf i) ((subset_eval_image_pi _ _).trans hI)
+  refine mem_of_superset (htf i) ((subset_eval_image_pi ?_ _).trans hI)
   exact nonempty_of_mem (pi_mem_pi hIf fun i _ => htf i)
 #align filter.map_eval_pi Filter.map_eval_pi
 
@@ -206,7 +206,7 @@ theorem pi_le_pi [∀ i, NeBot (f₁ i)] : pi f₁ ≤ pi f₂ ↔ ∀ i, f₁ i
 
 @[simp]
 theorem pi_inj [∀ i, NeBot (f₁ i)] : pi f₁ = pi f₂ ↔ f₁ = f₂ := by
-  refine' ⟨fun h => _, congr_arg pi⟩
+  refine ⟨fun h => ?_, congr_arg pi⟩
   have hle : f₁ ≤ f₂ := pi_le_pi.1 h.le
   haveI : ∀ i, NeBot (f₂ i) := fun i => neBot_of_le (hle i)
   exact hle.antisymm (pi_le_pi.1 h.ge)
