@@ -24,9 +24,14 @@ variable {R : Type*}
 
 noncomputable section
 
+/-- `evalEval x y p` is the evaluation `p(x,y)` of a two-variable polynomial `p : R[X][Y]`. -/
 abbrev evalEval [Semiring R] (x y : R) (p : R[X][Y]) : R := eval x (eval (C y) p)
+
+/-- `evalEval x y` as a ring homomorphism. -/
 @[simps!] abbrev evalEvalRingHom [CommSemiring R] (x y : R) : R[X][Y] →+* R :=
   (evalRingHom x).comp (evalRingHom <| C y)
+
+/-- A constant viewed as a polynomial in two variables. -/
 abbrev CC [Semiring R] (r : R) : R[X][Y] := C (C r)
 
 lemma coe_algebraMap_eq_CC [CommSemiring R] : algebraMap R R[X][Y] = CC (R := R) := rfl
@@ -234,6 +239,7 @@ protected lemma Field.two_ne_zero : (2 : Universal.Field) ≠ 0 := by
   intro h; replace h := congr(cusp.ringEval cusp_equation_one_one $h)
   rw [map_ofNat, map_zero] at h; cases h
 
+/-- The `ψ` family of division polynomials as elements in the universal field. -/
 abbrev ψᵤ (n : ℤ) : Universal.Field := polyToField (curve.ψ n)
 
 lemma ψᵤ_eq_normEDS :
@@ -265,6 +271,7 @@ variable (n)
 /-- The rational function φₙ/ψₙ², which we will show to be the `X`-coordinate
 of the point `n • (X, Y)` on the universal curve. -/
 def smulX : Universal.Field := polyToField (curve.φ n) / (ψᵤ n) ^ 2
+
 /-- The rational function ωₙ/ψₙ³, which we will show to be the `Y`-coordinate
 of the point `n • (X, Y)` on the universal curve. -/
 def smulY : Universal.Field := polyToField (curve.ω n) / (ψᵤ n) ^ 3
@@ -482,11 +489,19 @@ lemma smul_point_ne (h : m ≠ n) : m • Jacobian.point ≠ n • Jacobian.poin
 
 lemma point_point : Jacobian.point.point = ⟦![polyToField (C X), polyToField Y, 1]⟧ := rfl
 
+/-- The base change of the universal curve from `ℤ[a₁,⋯,a₆]` to `ℤ[a₁,⋯,a₆,X,Y]`. -/
 abbrev curvePoly : WeierstrassCurve Poly := curve.baseChange Poly
+/-- The base change of the universal curve from `ℤ[a₁,⋯,a₆]` to `ℤ[a₁,⋯,a₆,X,Y]/⟨P⟩`
+(the universal ring), where `P` is the Weierstrass polynomial. -/
 abbrev curveRing : WeierstrassCurve Universal.Ring := curve.baseChange Universal.Ring
+/-- The base change of the universal curve from `ℤ[a₁,⋯,a₆]` to `Frac(ℤ[a₁,⋯,a₆,X,Y]/⟨P⟩)`
+(the universal field), where `P` is the Weierstrass polynomial. -/
 abbrev curveField : WeierstrassCurve Universal.Field := curve.baseChange Universal.Field
+/-- The three families of division polynomials as a 3-tuple. -/
 abbrev smulPoly (n : ℤ) : Fin 3 → Poly := ![curve.φ n, curve.ω n, curve.ψ n]
+/-- The three families of division polynomials as elements in the universal ring. -/
 abbrev smulRing (n : ℤ) : Fin 3 → Universal.Ring := AdjoinRoot.mk _ ∘ smulPoly n
+/-- The three families of division polynomials as elements in the universal field. -/
 abbrev smulField (n : ℤ) : Fin 3 → Universal.Field := polyToField ∘ smulPoly n
 
 lemma algebraMap_comp_smulRing (n : ℤ) : algebraMap _ _ ∘ smulRing n = smulField n := by
@@ -587,6 +602,8 @@ end Jacobian
 end Universal
 
 variable (x y) in
+/-- The evaluation of the division polynomials at a point `(x,y)`, equal to the
+Jacobian coordinates of `n • (x,y)` (see `smul_eq_divisionPolynomial_eval`). -/
 abbrev smulEval (n : ℤ) : Fin 3 → R := evalEval x y ∘ ![W.φ n, W.ω n, W.ψ n]
 
 variable {W} (eqn : W.toAffine.Equation x y)
@@ -624,7 +641,7 @@ lemma addXYZ_smul₁ (n : ℤ) :
 
 variable {F : Type*} [Field F] (W : WeierstrassCurve F)
 
-open Jacobian Universal
+open Universal
 
 -- move this
 local macro "eval_simp" : tactic =>
