@@ -30,15 +30,15 @@ theorem what : False := sorry
 attribute [simp] what in
 #guard true
 
+-- the `simp` attribute persists
 example : False := by simp  -- `simp` finds `what`
-```
 
-```lean
 theorem who {x y : Nat} : x = y := sorry
 
 attribute [ext] who in
 #guard true
 
+-- the `ext` attribute persists
 example {x y : Nat} : x = y := by ext
 ```
 
@@ -50,12 +50,12 @@ error: failed to synthesize
 -/
 #guard_msgs in
 attribute [-instance] instAddNat in
-#synth Add Nat  -- `instAddNat`
+#synth Add Nat
 
 -- the `instance` persists
 /-- info: instAddNat -/
 #guard_msgs in
-#synth Add Nat  -- `instAddNat`
+#synth Add Nat
 
 @[simp]
 theorem what : False := sorry
