@@ -28,7 +28,7 @@ variable [DivisionRing α]
 @[simp, norm_cast]
 theorem cast_inj [CharZero α] : ∀ {m n : ℚ}, (m : α) = n ↔ m = n
   | ⟨n₁, d₁, d₁0, c₁⟩, ⟨n₂, d₂, d₂0, c₂⟩ => by
-    refine' ⟨fun h => _, congr_arg _⟩
+    refine ⟨fun h => ?_, congr_arg _⟩
     have d₁a : (d₁ : α) ≠ 0 := Nat.cast_ne_zero.2 d₁0
     have d₂a : (d₂ : α) ≠ 0 := Nat.cast_ne_zero.2 d₂0
     rw [mk'_eq_divInt, mk'_eq_divInt] at h ⊢
@@ -129,6 +129,3 @@ theorem cast_pow (q : ℚ) (k : ℕ) : ↑(q ^ k) = (q : α) ^ k :=
 end WithDivRing
 
 end Rat
-
--- Guard against import creep regression.
-assert_not_exists zpow_add₀

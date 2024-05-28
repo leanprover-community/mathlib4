@@ -3,7 +3,7 @@ Copyright (c) 2021 Mantas Bakšys. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
 -/
-import Mathlib.Data.Nat.Interval
+import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
 
@@ -70,8 +70,8 @@ theorem exists_triplet_summing_to_squares (n : ℕ) (hn : 100 ≤ n) :
   have p : 1 < l := by contrapose! hl1; interval_cases l <;> linarith
   have h₁ : 4 * l ≤ 2 * l ^ 2 := by linarith
   have h₂ : 1 ≤ 2 * l := by linarith
-  refine' ⟨2 * l ^ 2 - 4 * l, 2 * l ^ 2 + 1, 2 * l ^ 2 + 4 * l, _, _, _,
-    ⟨_, ⟨2 * l - 1, _⟩, ⟨2 * l, _⟩, 2 * l + 1, _⟩⟩
+  refine ⟨2 * l ^ 2 - 4 * l, 2 * l ^ 2 + 1, 2 * l ^ 2 + 4 * l, ?_, ?_, ?_,
+    ⟨?_, ⟨2 * l - 1, ?_⟩, ⟨2 * l, ?_⟩, 2 * l + 1, ?_⟩⟩
   all_goals zify [h₁, h₂]; linarith
 #align imo2021_q1.exists_triplet_summing_to_squares Imo2021Q1.exists_triplet_summing_to_squares
 
@@ -84,14 +84,14 @@ theorem exists_finset_3_le_card_with_pairs_summing_to_squares (n : ℕ) (hn : 10
       (∀ a ∈ B, ∀ b ∈ B, a ≠ b → ∃ k, a + b = k ^ 2) ∧
       ∀ c ∈ B, n ≤ c ∧ c ≤ 2 * n := by
   obtain ⟨a, b, c, hna, hab, hbc, hcn, h₁, h₂, h₃⟩ := exists_triplet_summing_to_squares n hn
-  refine' ⟨{a, b, c}, _, _, _⟩
+  refine ⟨{a, b, c}, ?_, ?_, ?_⟩
   · suffices ({a, b, c} : Finset ℕ).card = 3 by rw [this]
     suffices a ∉ {b, c} ∧ b ∉ {c} by
       rw [Finset.card_insert_of_not_mem this.1, Finset.card_insert_of_not_mem this.2,
         Finset.card_singleton]
-    · rw [Finset.mem_insert, Finset.mem_singleton, Finset.mem_singleton]
-      push_neg
-      exact ⟨⟨hab.ne, (hab.trans hbc).ne⟩, hbc.ne⟩
+    rw [Finset.mem_insert, Finset.mem_singleton, Finset.mem_singleton]
+    push_neg
+    exact ⟨⟨hab.ne, (hab.trans hbc).ne⟩, hbc.ne⟩
   · intro x hx y hy hxy
     simp only [Finset.mem_insert, Finset.mem_singleton] at hx hy
     rcases hx with (rfl | rfl | rfl) <;> rcases hy with (rfl | rfl | rfl)

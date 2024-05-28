@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Limits
-import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.Algebra.Category.GroupCat.ForgetCorepresentable
+import Mathlib.Algebra.Category.GroupCat.Preadditive
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
-import Mathlib.GroupTheory.Subgroup.Basic
 
 #align_import algebra.category.Group.limits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 

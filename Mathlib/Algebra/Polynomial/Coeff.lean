@@ -25,7 +25,7 @@ noncomputable section
 
 open Finsupp Finset AddMonoidAlgebra
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 
@@ -76,8 +76,7 @@ theorem card_support_mul_le : (p * q).support.card ≤ p.support.card * q.suppor
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
 def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A] [Module R M]
-    (f : ℕ → A →ₗ[R] M) : A[X] →ₗ[R] M
-    where
+    (f : ℕ → A →ₗ[R] M) : A[X] →ₗ[R] M where
   toFun p := p.sum (f · ·)
   map_add' p q := sum_add_index p q _ (fun n => (f n).map_zero) fun n _ _ => (f n).map_add _ _
   map_smul' c p := by
@@ -106,7 +105,7 @@ theorem lcoeff_apply (n : ℕ) (f : R[X]) : lcoeff R n f = coeff f n :=
 
 @[simp]
 theorem finset_sum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ) :
-    coeff (∑ b in s, f b) n = ∑ b in s, coeff (f b) n :=
+    coeff (∑ b ∈ s, f b) n = ∑ b ∈ s, coeff (f b) n :=
   map_sum (lcoeff R n) _ _
 #align polynomial.finset_sum_coeff Polynomial.finset_sum_coeff
 
@@ -121,7 +120,7 @@ theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
 over `antidiagonal`. A version which sums over `range (n + 1)` can be obtained
 by using `Finset.Nat.sum_antidiagonal_eq_sum_range_succ`. -/
 theorem coeff_mul (p q : R[X]) (n : ℕ) :
-    coeff (p * q) n = ∑ x in antidiagonal n, coeff p x.1 * coeff q x.2 := by
+    coeff (p * q) n = ∑ x ∈ antidiagonal n, coeff p x.1 * coeff q x.2 := by
   rcases p with ⟨p⟩; rcases q with ⟨q⟩
   simp_rw [← ofFinsupp_mul, coeff]
   exact AddMonoidAlgebra.mul_apply_antidiagonal p q n _ Finset.mem_antidiagonal
@@ -271,7 +270,7 @@ theorem coeff_mul_X_pow' (p : R[X]) (n d : ℕ) :
     (p * X ^ n).coeff d = ite (n ≤ d) (p.coeff (d - n)) 0 := by
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
-  · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
     rw [coeff_X_pow, if_neg, mul_zero]
     exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
 #align polynomial.coeff_mul_X_pow' Polynomial.coeff_mul_X_pow'
@@ -355,7 +354,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ
     choose c hc using h
     classical
       let c' : ℕ → R := fun i => if i ∈ φ.support then c i else 0
-      let ψ : R[X] := ∑ i in φ.support, monomial i (c' i)
+      let ψ : R[X] := ∑ i ∈ φ.support, monomial i (c' i)
       use ψ
       ext i
       simp only [c', ψ, coeff_C_mul, mem_support_iff, coeff_monomial, finset_sum_coeff,

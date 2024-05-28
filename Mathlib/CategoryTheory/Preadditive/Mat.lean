@@ -52,7 +52,7 @@ Ideally this would conveniently interact with both `Mat_` and `Matrix`.
 
 open CategoryTheory CategoryTheory.Preadditive
 
-open scoped BigOperators Classical
+open scoped Classical
 
 noncomputable section
 
@@ -193,14 +193,14 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
         hasBiproduct_of_total
           { pt := ⟨Σ j, (f j).ι, fun p => (f p.1).X p.2⟩
             π := fun j x y => by
-              refine' if h : x.1 = j then _ else 0
+              refine if h : x.1 = j then ?_ else 0
               refine' if h' : @Eq.ndrec (Fin n) x.1 (fun j => (f j).ι) x.2 _ h = y then _ else 0
               apply eqToHom
               substs h h'
               rfl
             -- Notice we were careful not to use `subst` until we had a goal in `Prop`.
             ι := fun j x y => by
-              refine' if h : y.1 = j then _ else 0
+              refine if h : y.1 = j then ?_ else 0
               refine' if h' : @Eq.ndrec _ y.1 (fun j => (f j).ι) y.2 _ h = x then _ else 0
               apply eqToHom
               substs h h'
@@ -651,10 +651,11 @@ instance : (equivalenceSingleObjInverse R).EssSurj where
     ⟨{  ι := X
         X := fun _ => PUnit.unit }, ⟨eqToIso (by dsimp; cases X; congr)⟩⟩
 
+instance : (equivalenceSingleObjInverse R).IsEquivalence where
+
 /-- The categorical equivalence between the category of matrices over a ring,
 and the category of matrices over that ring considered as a single-object category. -/
 def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
-  haveI := Functor.IsEquivalence.ofFullyFaithfullyEssSurj (equivalenceSingleObjInverse R)
   (equivalenceSingleObjInverse R).asEquivalence.symm
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.equivalence_single_obj CategoryTheory.Mat.equivalenceSingleObj
