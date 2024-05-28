@@ -12,14 +12,14 @@ namespace MvPowerSeries
 /-- A `MvPowerSeries φ` is symmetric if it is invariant under
 permutations of its variables by the `rename` operation -/
 def IsSymmetric (φ : MvPowerSeries σ R) : Prop :=
-  ∀ e : Perm σ, renameEquiv e φ = φ
+  ∀ e : Perm σ, rename e φ = φ
 
 variable (σ R)
 
 /-- The subalgebra of symmetric `MvPowerSeries`s. -/
 def symmetricSubalgebra : Subalgebra R (MvPowerSeries σ R) where
   carrier := setOf IsSymmetric
-  algebraMap_mem' r e := renameEquiv_C e r
+  algebraMap_mem' r e := rename_C e r
   mul_mem' ha hb e := by simp only [map_mul, ha e, hb e]
   add_mem' ha hb e := by simp only [map_add, ha e, hb e]
 

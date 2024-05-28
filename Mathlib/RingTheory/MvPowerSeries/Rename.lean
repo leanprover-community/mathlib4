@@ -55,8 +55,59 @@ variable [DecidableEq σ] [DecidableEq τ] [DecidableEq υ]
 lemma coeff_equiv (φ : MvPowerSeries σ R) (n : τ →₀ ℕ) (e : σ ≃ τ) :
   (coeff R n) (φ ∘ Finsupp.mapDomain e.symm) = (coeff R (Finsupp.mapDomain (e.symm) n)) φ := rfl
 
-/-- Rename all the variables in a multivariable polynomial. -/
-def renameEquiv (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R where
+lemma coeff_equiv' (φ : MvPowerSeries σ R) (n : τ →₀ ℕ) (e : σ ≃ τ) :
+  (coeff R n) (φ ∘ Finsupp.equivMapDomain e.symm) = (coeff R (Finsupp.equivMapDomain (e.symm) n)) φ := rfl
+
+/-- Rename all the variables in a multivariable power series. -/
+-- def rename' (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R where
+--   toFun := fun φ ↦ φ ∘ (Finsupp.equivMapDomain e.symm)
+--   invFun := fun φ ↦ φ ∘ (Finsupp.equivMapDomain e)
+--   left_inv := by
+--     intro x; funext s
+--     simp only [comp_apply]
+--     congr
+
+--   right_inv := by
+--     intro x; funext s
+--     simp only [comp_apply, ← mapDomain_comp, Equiv.self_comp_symm, mapDomain_id]
+--   map_mul' := by
+--     intro x y; ext t; dsimp
+--     rw [← apply_eq_coeff, comp_apply, apply_eq_coeff _ (x * y) (Finsupp.mapDomain e.symm t),
+--       coeff_mul, coeff_mul, Finset.sum_equiv]
+--     · use fun (a, b) ↦ ((Finsupp.mapDomain e) a, (Finsupp.mapDomain e) b)
+--       · use fun (a, b) ↦ ((Finsupp.mapDomain e.symm) a, (Finsupp.mapDomain e.symm) b)
+--       · intro (a, b)
+--         simp only [Prod.mk.injEq]
+--         constructor <;> simp only [comp_apply, mapDomain.addMonoidHom_apply, ← mapDomain_comp,
+--           Equiv.symm_comp_self, mapDomain_id]
+--       · intro (a, b)
+--         simp only [Prod.mk.injEq]
+--         constructor <;> simp only [comp_apply, mapDomain.addMonoidHom_apply, ← mapDomain_comp,
+--           Equiv.self_comp_symm, mapDomain_id]
+--     · simp only [Finset.mem_antidiagonal, Equiv.coe_fn_mk, Prod.forall]
+--       intro a b
+--       constructor
+--       · intro h
+--         rw [← mapDomain_add, h]
+--         simp only [← mapDomain_comp, Equiv.self_comp_symm, mapDomain_id]
+--       · intro h
+--         rw [← mapDomain_add] at h
+--         rw [← h]
+--         simp only [← mapDomain_comp, Equiv.symm_comp_self, mapDomain_id]
+--     · simp only [Finset.mem_antidiagonal, Equiv.coe_fn_mk, Prod.forall]
+--       intro a b _
+--       simp only [← apply_eq_coeff, comp_apply, ← mapDomain_comp, Equiv.symm_comp_self, mapDomain_id]
+--   map_add' := by
+--     intro x y; ext s
+--     simp only [map_add]
+--     congr
+--   commutes' := by
+--     intro r; ext t
+--     simp only [algebraMap_apply, Algebra.id.map_eq_id, RingHom.id_apply, coeff_equiv, coeff_C,
+--       mapDomain_equiv_eq_zero_iff]
+
+/-- Rename all the variables in a multivariable power series. -/
+def rename (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R where
   toFun := fun φ ↦ φ ∘ (Finsupp.mapDomain e.symm)
   invFun := fun φ ↦ φ ∘ (Finsupp.mapDomain e)
   left_inv := by
@@ -101,12 +152,12 @@ def renameEquiv (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ 
     simp only [algebraMap_apply, Algebra.id.map_eq_id, RingHom.id_apply, coeff_equiv, coeff_C,
       mapDomain_equiv_eq_zero_iff]
 
-lemma renameEquiv_zero (e : σ ≃ τ) : renameEquiv e (0 : MvPowerSeries σ R) = 0 := by
-  simp only [renameEquiv, map_zero, Equiv.coe_fn_mk, Pi.zero_comp, map_zero]
+lemma rename_zero (e : σ ≃ τ) : rename e (0 : MvPowerSeries σ R) = 0 := by
+  simp only [rename, map_zero, Equiv.coe_fn_mk, Pi.zero_comp, map_zero]
 
 @[simp]
-theorem renameEquiv_C (e : σ ≃ τ) (r : R) : renameEquiv e (C σ R r) = C τ R r := by
-  simp only [renameEquiv, Equiv.coe_fn_mk]
+theorem rename_C (e : σ ≃ τ) (r : R) : rename e (C σ R r) = C τ R r := by
+  simp only [rename, Equiv.coe_fn_mk]
   funext t
   have : coeff R (Finsupp.mapDomain (⇑e.symm) t) (C σ R r) = (if t = 0 then r else 0) := by
     simp only [mapDomain_equiv_eq_zero_iff, coeff_C]
@@ -114,8 +165,8 @@ theorem renameEquiv_C (e : σ ≃ τ) (r : R) : renameEquiv e (C σ R r) = C τ 
   simp only [this, coeff_C]
 
 @[simp]
-theorem renameEquiv_X (e : σ ≃ τ) (i : σ) : renameEquiv e (X i : MvPowerSeries σ R) = X (e i) := by
-  simp only [renameEquiv, Equiv.coe_fn_mk]
+theorem rename_X (e : σ ≃ τ) (i : σ) : rename e (X i : MvPowerSeries σ R) = X (e i) := by
+  simp only [rename, Equiv.coe_fn_mk]
   funext t
   have : coeff R (Finsupp.mapDomain (⇑e.symm) t) (X i) =
       (if t = Finsupp.single (e i) 1 then 1 else 0) := by
@@ -132,23 +183,23 @@ theorem renameEquiv_X (e : σ ≃ τ) (i : σ) : renameEquiv e (X i : MvPowerSer
   show coeff R (Finsupp.mapDomain (⇑e.symm) t) (X i) = coeff R t (X (e i))
   simp only [this, coeff_X]
 
-theorem map_renameEquiv (f : R →+* S) (e : σ ≃ τ) (p : MvPowerSeries σ R) :
-    map τ f (renameEquiv e p) = renameEquiv e (map σ f p) := by
-  simp only [map, renameEquiv, AlgEquiv.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+theorem map_rename (f : R →+* S) (e : σ ≃ τ) (p : MvPowerSeries σ R) :
+    map τ f (rename e p) = rename e (map σ f p) := by
+  simp only [map, rename, AlgEquiv.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
   rfl
 
 @[simp]
-theorem renameEquiv_renameEquiv (e : σ ≃ τ) (f : τ ≃ υ) (p : MvPowerSeries σ R) :
-    renameEquiv f (renameEquiv e p) = renameEquiv (Equiv.trans e f) p := by
+theorem rename_rename (e : σ ≃ τ) (f : τ ≃ υ) (p : MvPowerSeries σ R) :
+    rename f (rename e p) = rename (Equiv.trans e f) p := by
   funext u
-  simp only [renameEquiv, AlgEquiv.coe_mk, comp_apply, mapDomain.addMonoidHom_apply, Equiv.coe_trans]
+  simp only [rename, AlgEquiv.coe_mk, comp_apply, mapDomain.addMonoidHom_apply, Equiv.coe_trans]
   rw [← mapDomain_comp]
   congr
 
 @[simp]
-theorem renameEquiv_id (p : MvPowerSeries σ R) : renameEquiv (Equiv.refl σ) p = p := by
+theorem rename_id (p : MvPowerSeries σ R) : rename (Equiv.refl σ) p = p := by
   funext s
-  simp only [renameEquiv, Equiv.refl_symm, Equiv.coe_refl, AlgEquiv.coe_mk, comp_apply, mapDomain_id]
+  simp only [rename, Equiv.refl_symm, Equiv.coe_refl, AlgEquiv.coe_mk, comp_apply, mapDomain_id]
 
 -- theorem rename_monomial (f : σ → τ) (d : σ →₀ ℕ) (r : R) :
 --     rename f (monomial d r) = monomial (d.mapDomain f) r := by
