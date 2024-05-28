@@ -788,9 +788,8 @@ theorem NeBot.nonempty (f : Filter α) [hf : f.NeBot] : Nonempty α :=
 equal. -/
 theorem eq_top_of_neBot [Subsingleton α] (l : Filter α) [NeBot l] : l = ⊤ := by
   refine top_unique fun s hs => ?_
-  obtain rfl : s = univ
-  · exact Subsingleton.eq_univ_of_nonempty (nonempty_of_mem hs)
-  · exact univ_mem
+  obtain rfl : s = univ := Subsingleton.eq_univ_of_nonempty (nonempty_of_mem hs)
+  exact univ_mem
 #align filter.eq_top_of_ne_bot Filter.eq_top_of_neBot
 
 theorem forall_mem_nonempty_iff_neBot {f : Filter α} :
@@ -2358,6 +2357,11 @@ theorem comap_principal {t : Set β} : comap m (𝓟 t) = 𝓟 (m ⁻¹' t) :=
   Filter.ext fun _ => ⟨fun ⟨_u, hu, b⟩ => (preimage_mono hu).trans b,
     fun h => ⟨t, Subset.rfl, h⟩⟩
 #align filter.comap_principal Filter.comap_principal
+
+theorem principal_subtype {α : Type*} (s : Set α) (t : Set s) :
+    𝓟 t = comap (↑) (𝓟 (((↑) : s → α) '' t)) := by
+  rw [comap_principal, preimage_image_eq _ Subtype.coe_injective]
+#align principal_subtype Filter.principal_subtype
 
 @[simp]
 theorem comap_pure {b : β} : comap m (pure b) = 𝓟 (m ⁻¹' {b}) := by

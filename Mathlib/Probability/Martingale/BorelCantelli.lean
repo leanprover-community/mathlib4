@@ -279,7 +279,7 @@ namespace BorelCantelli
 /-- Auxiliary definition required to prove Lévy's generalization of the Borel-Cantelli lemmas for
 which we will take the martingale part. -/
 noncomputable def process (s : ℕ → Set Ω) (n : ℕ) : Ω → ℝ :=
-  ∑ k in Finset.range n, (s (k + 1)).indicator 1
+  ∑ k ∈ Finset.range n, (s (k + 1)).indicator 1
 #align measure_theory.borel_cantelli.process MeasureTheory.BorelCantelli.process
 
 variable {s : ℕ → Set Ω}
@@ -294,7 +294,7 @@ theorem adapted_process (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : Adapted ℱ (
 
 theorem martingalePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω) (n : ℕ) :
     martingalePart (process s) ℱ μ n =
-      ∑ k in Finset.range n, ((s (k + 1)).indicator 1 - μ[(s (k + 1)).indicator 1|ℱ k]) := by
+      ∑ k ∈ Finset.range n, ((s (k + 1)).indicator 1 - μ[(s (k + 1)).indicator 1|ℱ k]) := by
   simp only [martingalePart_eq_sum, process_zero, zero_add]
   refine Finset.sum_congr rfl fun k _ => ?_
   simp only [process, Finset.sum_range_succ_sub_sum]
@@ -302,7 +302,7 @@ theorem martingalePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω)
 
 theorem predictablePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω)
     (n : ℕ) : predictablePart (process s) ℱ μ n =
-    ∑ k in Finset.range n, μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k] := by
+    ∑ k ∈ Finset.range n, μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k] := by
   have := martingalePart_process_ae_eq ℱ μ s n
   simp_rw [martingalePart, process, Finset.sum_sub_distrib] at this
   exact sub_right_injective this
@@ -362,9 +362,9 @@ open BorelCantelli
 
 theorem tendsto_sum_indicator_atTop_iff' [IsFiniteMeasure μ] {s : ℕ → Set Ω}
     (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : ∀ᵐ ω ∂μ,
-    Tendsto (fun n => ∑ k in Finset.range n,
+    Tendsto (fun n => ∑ k ∈ Finset.range n,
       (s (k + 1)).indicator (1 : Ω → ℝ) ω) atTop atTop ↔
-    Tendsto (fun n => ∑ k in Finset.range n,
+    Tendsto (fun n => ∑ k ∈ Finset.range n,
       (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop := by
   have := tendsto_sum_indicator_atTop_iff (eventually_of_forall fun ω n => ?_) (adapted_process hs)
     (integrable_process μ hs) (eventually_of_forall <| process_difference_le s)
@@ -381,7 +381,7 @@ filtration `ℱ` such that for all `n`, `s n` is `ℱ n`-measurable, `limsup s a
 everywhere equal to the set for which `∑ k, ℙ(s (k + 1) | ℱ k) = ∞`. -/
 theorem ae_mem_limsup_atTop_iff (μ : Measure Ω) [IsFiniteMeasure μ] {s : ℕ → Set Ω}
     (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : ∀ᵐ ω ∂μ, ω ∈ limsup s atTop ↔
-    Tendsto (fun n => ∑ k in Finset.range n,
+    Tendsto (fun n => ∑ k ∈ Finset.range n,
       (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop :=
   (limsup_eq_tendsto_sum_indicator_atTop ℝ s).symm ▸ tendsto_sum_indicator_atTop_iff' hs
 #align measure_theory.ae_mem_limsup_at_top_iff MeasureTheory.ae_mem_limsup_atTop_iff
