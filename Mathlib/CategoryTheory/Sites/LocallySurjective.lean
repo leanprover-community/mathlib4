@@ -68,7 +68,7 @@ theorem imageSieve_app {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : F.obj (o
   exact ⟨F.map i.op s, this s⟩
 #align category_theory.image_sieve_app CategoryTheory.Presheaf.imageSieve_app
 
-/-- If a morphism `g : V ⟶ U.unop` belong to the sieve `imageSieve f s g`, then
+/-- If a morphism `g : V ⟶ U.unop` belongs to the sieve `imageSieve f s g`, then
 this is choice of a preimage of `G.map g.op s` in `F.obj (op V)`, see
 `app_localPreimage`.-/
 noncomputable def localPreimage {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : G.obj U)
