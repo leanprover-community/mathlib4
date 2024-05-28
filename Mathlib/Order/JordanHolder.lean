@@ -182,10 +182,7 @@ theorem total {s : CompositionSeries X} {x y : X} (hx : x ∈ s) (hy : y ∈ s) 
 #align composition_series.ext_fun RelSeries.ext
 #align composition_series.length_to_list RelSeries.length_toList
 #align composition_series.to_list_ne_nil RelSeries.toList_ne_empty
-
-theorem toList_injective : Function.Injective (RelSeries.toList (r := IsMaximal (X := X))) :=
-  fun _ _ h ↦ (RelSeries.Equiv (r := IsMaximal (X := X))).injective <| Subtype.ext h
-#align composition_series.to_list_injective CompositionSeries.toList_injective
+#align composition_series.to_list_injective RelSeries.toList_injective
 
 #align composition_series.chain'_to_list RelSeries.toList_chain'
 
