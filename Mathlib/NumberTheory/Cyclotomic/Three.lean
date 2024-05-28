@@ -98,12 +98,12 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
   · right; ext; simp [h]
   all_goals exfalso
   · exact hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide) hcong
-  · exfalso
-    apply hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide)
+  · apply hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide)
     obtain ⟨n, x, hx⟩ := hcong
-    rw [sub_eq_iff_eq_add, h] at hx
+    rw [sub_eq_iff_eq_add] at hx
     refine ⟨-n, -x, sub_eq_iff_eq_add.2 ?_⟩
-    simp [mul_neg, ← neg_add, ← hx]
+    simp only [PNat.val_ofNat, Nat.cast_ofNat, mul_neg, Int.cast_neg, ← neg_add, ← hx,
+      Units.val_neg, IsUnit.unit_spec, RingOfIntegers.neg_mk, neg_neg]
   · exfalso
     apply (hζ.pow_of_coprime 2 (by decide)).not_exists_int_prime_dvd_sub_of_prime_ne_two'
       (by decide)
