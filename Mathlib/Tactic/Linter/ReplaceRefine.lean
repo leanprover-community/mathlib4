@@ -55,7 +55,10 @@ def getHoles (stx : Syntax) : Array Syntax :=
 |   |-atom original: ⟨⟩⟨⟩-- '_'
 -/
 
-/-- converts an "anonymous hole" `_` to a "synthetic hole" `?_` -/
+/-- converts an "anonymous hole" `_` to a "synthetic hole" `?_` with comparable
+`SourceInfo`.
+Leaves unchanged inputs that are not "anonymous holes".
+-/
 def holeToSyntHole : Syntax → Syntax
   | hole@(.node si ``Lean.Parser.Term.hole _) =>
     .node si ``Lean.Parser.Term.syntheticHole #[mkAtomFrom hole "?", hole]
@@ -64,18 +67,22 @@ def holeToSyntHole : Syntax → Syntax
 /-- extracts `refine'` from the input syntax. -/
 def getRefine's (stx : Syntax) : Array Syntax :=
   stx.findAll (·.isOfKind ``Lean.Parser.Tactic.refine')
---
---/-- `candidateRefines stx` assumes that `stx` is a syntax node representing `refine' term`.
---It returns the array `#[refine term₁, ..., refine termₙ]`, where each `termᵢ` is obtained from
---`term` by replacing a subset of the `_` with `?_`. -/
---def candidateRefines (stx : Syntax) : Array Syntax := Id.run do
---  let mut cands := #[]
---  let holes := getHoles stx
---  for sub in holes.toList.sublistsFast do
---    let subWith? := sub.mapM fun s => s.replaceM (fun t => )
---    let ncmd ← stx.replaceM (fun s => if sub.contains s then )
---    _
 
+/-- `candidateRefines stx` returns the array `#[stx₁, ..., stxₙ]`, where each `stxᵢ` is obtained
+from `stx` by replacing a subset of the `_` with `?_`.
+
+The intended application is when `stx` is a syntax node representing `refine' ...`. -/
+def candidateRefines (stx : Syntax) : Array Syntax := Id.run do
+  let mut cands := #[]
+  let holes := getHoles stx
+  for sub in holes.toList.sublistsFast do
+    let sub? := sub.map holeToSyntHole
+    let mut newCmd := stx
+    for (s, s?) in sub.zip sub? do
+      newCmd ← newCmd.replaceM (fun t => if t == s && t.getPos? == s.getPos? then some s? else none)
+    --let ncmd ← stx.replaceM (fun s => if sub.contains s then )
+    cands := cands.push newCmd
+  return cands
 
 --/-- extracts `refine'` from the given `Syntax`, returning also the `SourceInfo`, the arguments
 --of the `refine'` node and whether `refine'` contains `..`. -/
@@ -91,9 +98,25 @@ def getRefine's (stx : Syntax) : Array Syntax :=
 
 
 elab "ho " cmd:command : command => do
-  let holes := getHoles cmd
-  let sholes := holes.map (holeToSyntHole ·)
-  logInfo m!"{holes}, {holes.map (·.getPos?)}, {sholes}, {sholes.map (·.getPos?)}"
+  let noDashCmd ← cmd.raw.replaceM (fun s => match s with
+    | .node si ``Lean.Parser.Tactic.refine' args =>
+      let args := args.modify 0 fun _ => mkAtomFrom args[0]! "refine"
+      return some (.node si ``Lean.Parser.Tactic.refine args)
+    | _ => return none)
+  logInfo noDashCmd
+  let s ← get
+  --let holes := getHoles noDashCmd
+  --let sholes := holes.map (holeToSyntHole ·)
+  --logInfo m!"{holes}, {holes.map (·.getPos?)}, {sholes}, {sholes.map (·.getPos?)}"
+  let cands := candidateRefines noDashCmd
+  logInfo m!"{cands}"
+  let mut opts := #[]
+  for cand in cands do
+    Command.elabCommand cand
+    if !(← get).messages.hasErrors then opts := opts.push cand
+    set s
+  logInfo m!"{opts}"
+  logInfo m!"{opts.map fun s => let hs := getHoles s; hs.map (·.getPos?)}"
   Command.elabCommand cmd
 
 /-- checks whether a `MessageData` refers to an error of a missing `?` is `refine`. -/
@@ -106,7 +129,7 @@ of the `refine'` node and whether `refine'` contains `..`. -/
 partial
 def getRefine' : Syntax → Array (Syntax × SourceInfo × Array Syntax × Option Syntax)
   | stx@(.node si ``Lean.Parser.Tactic.refine' args) =>
-    dbg_trace "refine' found"
+    --dbg_trace "refine' found"
     let rest := (args.map getRefine').flatten
     rest.push (stx, si, args, stx.find? (·.isOfKind ``Lean.Parser.Term.optEllipsis))
   | .node _ _ args => (args.map getRefine').flatten
