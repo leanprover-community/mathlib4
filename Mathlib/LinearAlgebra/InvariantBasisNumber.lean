@@ -113,7 +113,7 @@ section
 
 variable (R : Type u) [Semiring R]
 
-/-- We say that `R` satisfies the Orzech property, if for any finitely generated `R`-module `M`,
+/-- A ring `R` satisfies the Orzech property, if for any finitely generated `R`-module `M`,
 any surjective homomorphism `f : N → M` from a submodule `N` of `M` to `M` is injective.
 
 NOTE: In the definition we need to assume that `M` has the same universe level as `R`, but it
