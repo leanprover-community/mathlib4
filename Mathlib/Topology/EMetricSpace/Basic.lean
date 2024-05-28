@@ -3,8 +3,8 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.ENNReal.Real
+import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
@@ -32,7 +32,7 @@ to `EMetricSpace` at the end.
 
 open Set Filter Classical
 
-open scoped Uniformity Topology BigOperators Filter NNReal ENNReal Pointwise
+open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
 
 universe u v w
 
@@ -142,20 +142,20 @@ theorem edist_triangle4 (x y z t : α) : edist x t ≤ edist x y + edist y z + e
 
 /-- The triangle (polygon) inequality for sequences of points; `Finset.Ico` version. -/
 theorem edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
-    edist (f m) (f n) ≤ ∑ i in Finset.Ico m n, edist (f i) (f (i + 1)) := by
+    edist (f m) (f n) ≤ ∑ i ∈ Finset.Ico m n, edist (f i) (f (i + 1)) := by
   induction n, h using Nat.le_induction with
   | base => rw [Finset.Ico_self, Finset.sum_empty, edist_self]
   | succ n hle ihn =>
     calc
       edist (f m) (f (n + 1)) ≤ edist (f m) (f n) + edist (f n) (f (n + 1)) := edist_triangle _ _ _
-      _ ≤ (∑ i in Finset.Ico m n, _) + _ := add_le_add ihn le_rfl
-      _ = ∑ i in Finset.Ico m (n + 1), _ := by
+      _ ≤ (∑ i ∈ Finset.Ico m n, _) + _ := add_le_add ihn le_rfl
+      _ = ∑ i ∈ Finset.Ico m (n + 1), _ := by
       { rw [Nat.Ico_succ_right_eq_insert_Ico hle, Finset.sum_insert, add_comm]; simp }
 #align edist_le_Ico_sum_edist edist_le_Ico_sum_edist
 
 /-- The triangle (polygon) inequality for sequences of points; `Finset.range` version. -/
 theorem edist_le_range_sum_edist (f : ℕ → α) (n : ℕ) :
-    edist (f 0) (f n) ≤ ∑ i in Finset.range n, edist (f i) (f (i + 1)) :=
+    edist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, edist (f i) (f (i + 1)) :=
   Nat.Ico_zero_eq_range ▸ edist_le_Ico_sum_edist f (Nat.zero_le n)
 #align edist_le_range_sum_edist edist_le_range_sum_edist
 
@@ -163,7 +163,7 @@ theorem edist_le_range_sum_edist (f : ℕ → α) (n : ℕ) :
 with an upper estimate. -/
 theorem edist_le_Ico_sum_of_edist_le {f : ℕ → α} {m n} (hmn : m ≤ n) {d : ℕ → ℝ≥0∞}
     (hd : ∀ {k}, m ≤ k → k < n → edist (f k) (f (k + 1)) ≤ d k) :
-    edist (f m) (f n) ≤ ∑ i in Finset.Ico m n, d i :=
+    edist (f m) (f n) ≤ ∑ i ∈ Finset.Ico m n, d i :=
   le_trans (edist_le_Ico_sum_edist f hmn) <|
     Finset.sum_le_sum fun _k hk => hd (Finset.mem_Ico.1 hk).1 (Finset.mem_Ico.1 hk).2
 #align edist_le_Ico_sum_of_edist_le edist_le_Ico_sum_of_edist_le
@@ -172,7 +172,7 @@ theorem edist_le_Ico_sum_of_edist_le {f : ℕ → α} {m n} (hmn : m ≤ n) {d :
 with an upper estimate. -/
 theorem edist_le_range_sum_of_edist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ≥0∞}
     (hd : ∀ {k}, k < n → edist (f k) (f (k + 1)) ≤ d k) :
-    edist (f 0) (f n) ≤ ∑ i in Finset.range n, d i :=
+    edist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, d i :=
   Nat.Ico_zero_eq_range ▸ edist_le_Ico_sum_of_edist_le (zero_le n) fun _ => hd
 #align edist_le_range_sum_of_edist_le edist_le_range_sum_of_edist_le
 

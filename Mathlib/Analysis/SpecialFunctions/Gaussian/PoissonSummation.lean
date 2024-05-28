@@ -21,7 +21,7 @@ for positive real `a`, or complex `a` with positive real part. (See also
 
 open Real Set MeasureTheory Filter Asymptotics intervalIntegral
 
-open scoped Real Topology FourierTransform RealInnerProductSpace BigOperators
+open scoped Real Topology FourierTransform RealInnerProductSpace
 
 open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
 

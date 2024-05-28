@@ -68,7 +68,7 @@ def TrivSqZeroExt (R : Type u) (M : Type v) :=
 
 local notation "tsze" => TrivSqZeroExt
 
-open scoped BigOperators RightActions
+open scoped RightActions
 
 namespace TrivSqZeroExt
 
@@ -297,12 +297,12 @@ theorem snd_smul [SMul S R] [SMul S M] (s : S) (x : tsze R M) : (s • x).snd = 
 #align triv_sq_zero_ext.snd_smul TrivSqZeroExt.snd_smul
 
 theorem fst_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → tsze R M) :
-    (∑ i in s, f i).fst = ∑ i in s, (f i).fst :=
+    (∑ i ∈ s, f i).fst = ∑ i ∈ s, (f i).fst :=
   Prod.fst_sum
 #align triv_sq_zero_ext.fst_sum TrivSqZeroExt.fst_sum
 
 theorem snd_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → tsze R M) :
-    (∑ i in s, f i).snd = ∑ i in s, (f i).snd :=
+    (∑ i ∈ s, f i).snd = ∑ i ∈ s, (f i).snd :=
   Prod.snd_sum
 #align triv_sq_zero_ext.snd_sum TrivSqZeroExt.snd_sum
 
@@ -339,7 +339,7 @@ theorem inl_smul [Monoid S] [AddMonoid M] [SMul S R] [DistribMulAction S M] (s :
 #align triv_sq_zero_ext.inl_smul TrivSqZeroExt.inl_smul
 
 theorem inl_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → R) :
-    (inl (∑ i in s, f i) : tsze R M) = ∑ i in s, inl (f i) :=
+    (inl (∑ i ∈ s, f i) : tsze R M) = ∑ i ∈ s, inl (f i) :=
   map_sum (LinearMap.inl ℕ _ _) _ _
 #align triv_sq_zero_ext.inl_sum TrivSqZeroExt.inl_sum
 
@@ -378,7 +378,7 @@ theorem inr_smul [Zero R] [Zero S] [SMulWithZero S R] [SMul S M] (r : S) (m : M)
 #align triv_sq_zero_ext.inr_smul TrivSqZeroExt.inr_smul
 
 theorem inr_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → M) :
-    (inr (∑ i in s, f i) : tsze R M) = ∑ i in s, inr (f i) :=
+    (inr (∑ i ∈ s, f i) : tsze R M) = ∑ i ∈ s, inr (f i) :=
   map_sum (LinearMap.inr ℕ _ _) _ _
 #align triv_sq_zero_ext.inr_sum TrivSqZeroExt.inr_sum
 

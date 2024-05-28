@@ -20,7 +20,7 @@ finite and calculates the cardinality of its finite intervals.
 
 open DFinsupp Finset
 
-open BigOperators Pointwise
+open Pointwise
 
 variable {ι : Type*} {α : ι → Type*}
 
@@ -39,7 +39,7 @@ def dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) : Finset (Π₀ i, α i)
 
 @[simp]
 theorem card_dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) :
-    (s.dfinsupp t).card = ∏ i in s, (t i).card :=
+    (s.dfinsupp t).card = ∏ i ∈ s, (t i).card :=
   (card_map _).trans <| card_pi _ _
 #align finset.card_dfinsupp Finset.card_dfinsupp
 
@@ -174,19 +174,19 @@ variable (f g : Π₀ i, α i)
 theorem Icc_eq : Icc f g = (f.support ∪ g.support).dfinsupp (f.rangeIcc g) := rfl
 #align dfinsupp.Icc_eq DFinsupp.Icc_eq
 
-theorem card_Icc : (Icc f g).card = ∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card :=
+theorem card_Icc : (Icc f g).card = ∏ i ∈ f.support ∪ g.support, (Icc (f i) (g i)).card :=
   card_dfinsupp _ _
 #align dfinsupp.card_Icc DFinsupp.card_Icc
 
-theorem card_Ico : (Ico f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
+theorem card_Ico : (Ico f g).card = (∏ i ∈ f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
   rw [card_Ico_eq_card_Icc_sub_one, card_Icc]
 #align dfinsupp.card_Ico DFinsupp.card_Ico
 
-theorem card_Ioc : (Ioc f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
+theorem card_Ioc : (Ioc f g).card = (∏ i ∈ f.support ∪ g.support, (Icc (f i) (g i)).card) - 1 := by
   rw [card_Ioc_eq_card_Icc_sub_one, card_Icc]
 #align dfinsupp.card_Ioc DFinsupp.card_Ioc
 
-theorem card_Ioo : (Ioo f g).card = (∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card) - 2 := by
+theorem card_Ioo : (Ioo f g).card = (∏ i ∈ f.support ∪ g.support, (Icc (f i) (g i)).card) - 2 := by
   rw [card_Ioo_eq_card_Icc_sub_two, card_Icc]
 #align dfinsupp.card_Ioo DFinsupp.card_Ioo
 
@@ -196,7 +196,7 @@ section Lattice
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)] [∀ i, Lattice (α i)] [∀ i, Zero (α i)]
   [∀ i, LocallyFiniteOrder (α i)] (f g : Π₀ i, α i)
 
-theorem card_uIcc : (uIcc f g).card = ∏ i in f.support ∪ g.support, (uIcc (f i) (g i)).card := by
+theorem card_uIcc : (uIcc f g).card = ∏ i ∈ f.support ∪ g.support, (uIcc (f i) (g i)).card := by
   rw [← support_inf_union_support_sup]; exact card_Icc _ _
 #align dfinsupp.card_uIcc DFinsupp.card_uIcc
 
@@ -208,12 +208,12 @@ variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
 variable [∀ i, CanonicallyOrderedAddCommMonoid (α i)] [∀ i, LocallyFiniteOrder (α i)]
 variable (f : Π₀ i, α i)
 
-theorem card_Iic : (Iic f).card = ∏ i in f.support, (Iic (f i)).card := by
+theorem card_Iic : (Iic f).card = ∏ i ∈ f.support, (Iic (f i)).card := by
   simp_rw [Iic_eq_Icc, card_Icc, DFinsupp.bot_eq_zero, support_zero, empty_union, zero_apply,
     bot_eq_zero]
 #align dfinsupp.card_Iic DFinsupp.card_Iic
 
-theorem card_Iio : (Iio f).card = (∏ i in f.support, (Iic (f i)).card) - 1 := by
+theorem card_Iio : (Iio f).card = (∏ i ∈ f.support, (Iic (f i)).card) - 1 := by
   rw [card_Iio_eq_card_Iic_sub_one, card_Iic]
 #align dfinsupp.card_Iio DFinsupp.card_Iio
 

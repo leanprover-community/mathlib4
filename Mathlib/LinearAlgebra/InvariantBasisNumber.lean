@@ -66,8 +66,6 @@ free module, rank, invariant basis number, IBN
 
 noncomputable section
 
-open BigOperators
-
 open Function
 
 universe u v w
