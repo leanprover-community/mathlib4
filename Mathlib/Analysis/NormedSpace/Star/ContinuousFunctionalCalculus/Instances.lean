@@ -292,6 +292,16 @@ lemma IsSelfAdjoint.le_algebraMap_norm_self [PartialOrder A] [StarOrderedRing A]
   · rw [not_nontrivial_iff_subsingleton] at nontriv
     simp
 
+lemma mul_star_le_algebraMap_norm_sq [PartialOrder A] [StarOrderedRing A] (a : A) :
+    a * star a ≤ algebraMap ℝ A (‖a‖ ^ 2) := by
+  have := IsSelfAdjoint.le_algebraMap_norm_self (a * star a)
+  rwa [CstarRing.norm_self_mul_star, ← pow_two] at this
+
+lemma star_mul_le_algebraMap_norm_sq [PartialOrder A] [StarOrderedRing A] (a : A) :
+    star a * a ≤ algebraMap ℝ A (‖a‖ ^ 2) := by
+  have := IsSelfAdjoint.le_algebraMap_norm_self (star a * a)
+  rwa [CstarRing.norm_star_mul_self, ← pow_two] at this
+
 end SpectrumRestricts
 
 section NonnegSpectrumClass
