@@ -3,6 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Pi
@@ -75,9 +78,10 @@ theorem sup_singleton {b : β} : ({b} : Finset β).sup f = f b :=
 #align finset.sup_singleton Finset.sup_singleton
 
 theorem sup_sup : s.sup (f ⊔ g) = s.sup f ⊔ s.sup g := by
-  refine' Finset.cons_induction_on s _ fun b t _ h => _
-  · rw [sup_empty, sup_empty, sup_empty, bot_sup_eq]
-  · rw [sup_cons, sup_cons, sup_cons, h]
+  induction s using Finset.cons_induction with
+  | empty => rw [sup_empty, sup_empty, sup_empty, bot_sup_eq]
+  | cons _ _ _ ih =>
+    rw [sup_cons, sup_cons, sup_cons, ih]
     exact sup_sup_sup_comm _ _ _ _
 #align finset.sup_sup Finset.sup_sup
 
@@ -188,7 +192,7 @@ end Prod
 
 @[simp]
 theorem sup_erase_bot [DecidableEq α] (s : Finset α) : (s.erase ⊥).sup id = s.sup id := by
-  refine' (sup_mono (s.erase_subset _)).antisymm (Finset.sup_le_iff.2 fun a ha => _)
+  refine (sup_mono (s.erase_subset _)).antisymm (Finset.sup_le_iff.2 fun a ha => ?_)
   obtain rfl | ha' := eq_or_ne a ⊥
   · exact bot_le
   · exact le_sup (mem_erase.2 ⟨ha', ha⟩)
@@ -196,9 +200,9 @@ theorem sup_erase_bot [DecidableEq α] (s : Finset α) : (s.erase ⊥).sup id = 
 
 theorem sup_sdiff_right {α β : Type*} [GeneralizedBooleanAlgebra α] (s : Finset β) (f : β → α)
     (a : α) : (s.sup fun b => f b \ a) = s.sup f \ a := by
-  refine' Finset.cons_induction_on s _ fun b t _ h => _
-  · rw [sup_empty, sup_empty, bot_sdiff]
-  · rw [sup_cons, sup_cons, h, sup_sdiff]
+  induction s using Finset.cons_induction with
+  | empty => rw [sup_empty, sup_empty, bot_sdiff]
+  | cons _ _ _ h => rw [sup_cons, sup_cons, h, sup_sdiff]
 #align finset.sup_sdiff_right Finset.sup_sdiff_right
 
 theorem comp_sup_eq_sup_comp [SemilatticeSup γ] [OrderBot γ] {s : Finset β} {f : β → α} (g : α → γ)
@@ -240,12 +244,11 @@ theorem exists_nat_subset_range (s : Finset ℕ) : ∃ n : ℕ, s ⊆ range n :=
 
 theorem sup_induction {p : α → Prop} (hb : p ⊥) (hp : ∀ a₁, p a₁ → ∀ a₂, p a₂ → p (a₁ ⊔ a₂))
     (hs : ∀ b ∈ s, p (f b)) : p (s.sup f) := by
-  induction' s using Finset.cons_induction with c s hc ih
-  · exact hb
-  · rw [sup_cons]
-    apply hp
-    · exact hs c (mem_cons.2 (Or.inl rfl))
-    · exact ih fun b h => hs b (mem_cons.2 (Or.inr h))
+  induction s using Finset.cons_induction with
+  | empty => exact hb
+  | cons _ _ _ ih =>
+    simp only [sup_cons, forall_mem_cons] at hs ⊢
+    exact hp _ hs.1 _ (ih hs.2)
 #align finset.sup_induction Finset.sup_induction
 
 theorem sup_le_of_le_directed {α : Type*} [SemilatticeSup α] [OrderBot α] (s : Set α)
@@ -527,9 +530,9 @@ variable [OrderBot α] {s : Finset ι} {t : Finset κ} {f : ι → α} {g : κ �
 
 theorem sup_inf_distrib_left (s : Finset ι) (f : ι → α) (a : α) :
     a ⊓ s.sup f = s.sup fun i => a ⊓ f i := by
-  induction' s using Finset.cons_induction with i s hi h
-  · simp_rw [Finset.sup_empty, inf_bot_eq]
-  · rw [sup_cons, sup_cons, inf_sup_left, h]
+  induction s using Finset.cons_induction with
+  | empty => simp_rw [Finset.sup_empty, inf_bot_eq]
+  | cons _ _ _ h => rw [sup_cons, sup_cons, inf_sup_left, h]
 #align finset.sup_inf_distrib_left Finset.sup_inf_distrib_left
 
 theorem sup_inf_distrib_right (s : Finset ι) (f : ι → α) (a : α) :
@@ -595,14 +598,14 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
   induction' s using Finset.induction with i s hi ih
   · simp
   rw [inf_insert, ih, attach_insert, sup_inf_sup]
-  refine' eq_of_forall_ge_iff fun c => _
+  refine eq_of_forall_ge_iff fun c => ?_
   simp only [Finset.sup_le_iff, mem_product, mem_pi, and_imp, Prod.forall,
     inf_insert, inf_image]
-  refine'
+  refine
     ⟨fun h g hg =>
       h (g i <| mem_insert_self _ _) (fun j hj => g j <| mem_insert_of_mem hj)
         (hg _ <| mem_insert_self _ _) fun j hj => hg _ <| mem_insert_of_mem hj,
-      fun h a g ha hg => _⟩
+      fun h a g ha hg => ?_⟩
   -- TODO: This `have` must be named to prevent it being shadowed by the internal `this` in `simpa`
   have aux : ∀ j : { x // x ∈ s }, ↑j ≠ i := fun j : s => ne_of_mem_of_not_mem j.2 hi
   -- Porting note: `simpa` doesn't support placeholders in proof terms
@@ -630,23 +633,23 @@ variable [BooleanAlgebra α] {s : Finset ι}
 
 theorem sup_sdiff_left (s : Finset ι) (f : ι → α) (a : α) :
     (s.sup fun b => a \ f b) = a \ s.inf f := by
-  refine' Finset.cons_induction_on s _ fun b t _ h => _
-  · rw [sup_empty, inf_empty, sdiff_top]
-  · rw [sup_cons, inf_cons, h, sdiff_inf]
+  induction s using Finset.cons_induction with
+  | empty => rw [sup_empty, inf_empty, sdiff_top]
+  | cons _ _ _ h => rw [sup_cons, inf_cons, h, sdiff_inf]
 #align finset.sup_sdiff_left Finset.sup_sdiff_left
 
 theorem inf_sdiff_left (hs : s.Nonempty) (f : ι → α) (a : α) :
     (s.inf fun b => a \ f b) = a \ s.sup f := by
-  induction' hs using Finset.Nonempty.cons_induction with b b t _ _ h
-  · rw [sup_singleton, inf_singleton]
-  · rw [sup_cons, inf_cons, h, sdiff_sup]
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton => rw [sup_singleton, inf_singleton]
+  | cons _ _ _ _ ih => rw [sup_cons, inf_cons, ih, sdiff_sup]
 #align finset.inf_sdiff_left Finset.inf_sdiff_left
 
 theorem inf_sdiff_right (hs : s.Nonempty) (f : ι → α) (a : α) :
     (s.inf fun b => f b \ a) = s.inf f \ a := by
-  induction' hs using Finset.Nonempty.cons_induction with b b t _ _ h
-  · rw [inf_singleton, inf_singleton]
-  · rw [inf_cons, inf_cons, h, inf_sdiff]
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton => rw [inf_singleton, inf_singleton]
+  | cons _ _ _ _ ih => rw [inf_cons, inf_cons, ih, inf_sdiff]
 #align finset.inf_sdiff_right Finset.inf_sdiff_right
 
 theorem inf_himp_right (s : Finset ι) (f : ι → α) (a : α) :
@@ -694,7 +697,7 @@ protected theorem le_sup_iff (ha : ⊥ < a) : a ≤ s.sup f ↔ ∃ b ∈ s, a �
   apply Iff.intro
   · induction s using cons_induction with
     | empty => exact (absurd · (not_le_of_lt ha))
-    | @cons c t hc ih =>
+    | cons c t hc ih =>
       rw [sup_cons, le_sup_iff]
       exact fun
       | Or.inl h => ⟨c, mem_cons.2 (Or.inl rfl), h⟩
@@ -707,7 +710,7 @@ protected theorem lt_sup_iff : a < s.sup f ↔ ∃ b ∈ s, a < f b := by
   apply Iff.intro
   · induction s using cons_induction with
     | empty => exact (absurd · not_lt_bot)
-    | @cons c t hc ih =>
+    | cons c t hc ih =>
       rw [sup_cons, lt_sup_iff]
       exact fun
       | Or.inl h => ⟨c, mem_cons.2 (Or.inl rfl), h⟩
@@ -892,7 +895,7 @@ theorem sup'_induction {p : α → Prop} (hp : ∀ a₁, p a₁ → ∀ a₂, p 
     (hs : ∀ b ∈ s, p (f b)) : p (s.sup' H f) := by
   show @WithBot.recBotCoe α (fun _ => Prop) True p ↑(s.sup' H f)
   rw [coe_sup']
-  refine' sup_induction trivial _ hs
+  refine sup_induction trivial ?_ hs
   rintro (_ | a₁) h₁ a₂ h₂
   · rw [WithBot.none_eq_bot, bot_sup_eq]
     exact h₂
@@ -910,20 +913,20 @@ theorem sup'_mem (s : Set α) (w : ∀ᵉ (x ∈ s) (y ∈ s), x ⊔ y ∈ s) {�
 theorem sup'_congr {t : Finset β} {f g : β → α} (h₁ : s = t) (h₂ : ∀ x ∈ s, f x = g x) :
     s.sup' H f = t.sup' (h₁ ▸ H) g := by
   subst s
-  refine' eq_of_forall_ge_iff fun c => _
+  refine eq_of_forall_ge_iff fun c => ?_
   simp (config := { contextual := true }) only [sup'_le_iff, h₂]
 #align finset.sup'_congr Finset.sup'_congr
 
 theorem comp_sup'_eq_sup'_comp [SemilatticeSup γ] {s : Finset β} (H : s.Nonempty) {f : β → α}
     (g : α → γ) (g_sup : ∀ x y, g (x ⊔ y) = g x ⊔ g y) : g (s.sup' H f) = s.sup' H (g ∘ f) := by
-  refine' H.cons_induction _ _ <;> intros <;> simp [*]
+  refine H.cons_induction ?_ ?_ <;> intros <;> simp [*]
 #align finset.comp_sup'_eq_sup'_comp Finset.comp_sup'_eq_sup'_comp
 
 @[simp]
 theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClass F α β]
     (f : F) {s : Finset ι} (hs) (g : ι → α) :
     f (s.sup' hs g) = s.sup' hs (f ∘ g) := by
-  refine' hs.cons_induction _ _ <;> intros <;> simp [*]
+  refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 #align map_finset_sup' map_finset_sup'
 
 lemma nsmul_sup' [LinearOrderedAddCommMonoid β] {s : Finset α}
@@ -1104,7 +1107,7 @@ theorem inf'_congr {t : Finset β} {f g : β → α} (h₁ : s = t) (h₂ : ∀ 
 theorem _root_.map_finset_inf' [SemilatticeInf β] [FunLike F α β] [InfHomClass F α β]
     (f : F) {s : Finset ι} (hs) (g : ι → α) :
     f (s.inf' hs g) = s.inf' hs (f ∘ g) := by
-  refine' hs.cons_induction _ _ <;> intros <;> simp [*]
+  refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 #align map_finset_inf' map_finset_inf'
 
 lemma nsmul_inf' [LinearOrderedAddCommMonoid β] {s : Finset α}
@@ -1241,10 +1244,9 @@ variable [DistribLattice α] {s : Finset ι} {t : Finset κ} (hs : s.Nonempty) (
 
 theorem sup'_inf_distrib_left (f : ι → α) (a : α) :
     a ⊓ s.sup' hs f = s.sup' hs fun i ↦ a ⊓ f i := by
-  refine hs.cons_induction (fun i ↦ ?_) fun i s hi hs ih ↦ ?_
-  · simp
-  · simp_rw [sup'_cons hs, inf_sup_left]
-    rw [ih]
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton => simp
+  | cons _ _ _ hs ih => simp_rw [sup'_cons hs, inf_sup_left, ih]
 #align finset.sup'_inf_distrib_left Finset.sup'_inf_distrib_left
 
 theorem sup'_inf_distrib_right (f : ι → α) (a : α) : s.sup' hs f ⊓ a = s.sup' hs fun i => f i ⊓ a :=
@@ -1309,9 +1311,10 @@ theorem lt_inf'_iff : a < s.inf' H f ↔ ∀ i ∈ s, a < f i :=
 #align finset.lt_inf'_iff Finset.lt_inf'_iff
 
 theorem exists_mem_eq_sup' (f : ι → α) : ∃ i, i ∈ s ∧ s.sup' H f = f i := by
-  refine' H.cons_induction (fun c => _) fun c s hc hs ih => _
-  · exact ⟨c, mem_singleton_self c, rfl⟩
-  · rcases ih with ⟨b, hb, h'⟩
+  induction H using Finset.Nonempty.cons_induction with
+  | singleton c =>  exact ⟨c, mem_singleton_self c, rfl⟩
+  | cons c s hcs hs ih =>
+    rcases ih with ⟨b, hb, h'⟩
     rw [sup'_cons hs, h']
     cases le_total (f b) (f c) with
     | inl h => exact ⟨c, mem_cons.2 (Or.inl rfl), sup_eq_left.2 h⟩
@@ -1597,8 +1600,7 @@ theorem min'_lt_max' {i j} (H1 : i ∈ s) (H2 : j ∈ s) (H3 : i ≠ j) :
 `min'_lt_max'` which is sometimes more convenient.
 -/
 theorem min'_lt_max'_of_card (h₂ : 1 < card s) :
-    s.min' (Finset.card_pos.mp <| lt_trans zero_lt_one h₂) <
-      s.max' (Finset.card_pos.mp <| lt_trans zero_lt_one h₂) := by
+    s.min' (Finset.card_pos.1 <| by omega) < s.max' (Finset.card_pos.1 <| by omega) := by
   rcases one_lt_card.1 h₂ with ⟨a, ha, b, hb, hab⟩
   exact s.min'_lt_max' ha hb hab
 #align finset.min'_lt_max'_of_card Finset.min'_lt_max'_of_card
@@ -1757,7 +1759,7 @@ theorem min'_erase_ne_self {s : Finset α} (s0 : (s.erase x).Nonempty) : (s.eras
 
 theorem max_erase_ne_self {s : Finset α} : (s.erase x).max ≠ x := by
   by_cases s0 : (s.erase x).Nonempty
-  · refine' ne_of_eq_of_ne (coe_max' s0).symm _
+  · refine ne_of_eq_of_ne (coe_max' s0).symm ?_
     exact WithBot.coe_eq_coe.not.mpr (max'_erase_ne_self _)
   · rw [not_nonempty_iff_eq_empty.mp s0, max_empty]
     exact WithBot.bot_ne_coe
@@ -1875,7 +1877,7 @@ theorem induction_on_max_value [DecidableEq ι] (f : ι → α) {p : Finset ι �
     simp only [mem_image, exists_prop] at H
     rcases H with ⟨a, has, hfa⟩
     rw [← insert_erase has]
-    refine' step _ _ (not_mem_erase a s) (fun x hx => _) (ihs _ <| erase_ssubset has)
+    refine step _ _ (not_mem_erase a s) (fun x hx => ?_) (ihs _ <| erase_ssubset has)
     rw [hfa]
     exact le_max' _ _ (mem_image_of_mem _ <| mem_of_mem_erase hx)
 #align finset.induction_on_max_value Finset.induction_on_max_value
@@ -1914,7 +1916,7 @@ end ExistsMaxMin
 
 theorem isGLB_iff_isLeast [LinearOrder α] (i : α) (s : Finset α) (hs : s.Nonempty) :
     IsGLB (s : Set α) i ↔ IsLeast (↑s) i := by
-  refine' ⟨fun his => _, IsLeast.isGLB⟩
+  refine ⟨fun his => ?_, IsLeast.isGLB⟩
   suffices i = min' s hs by
     rw [this]
     exact isLeast_min' s hs
@@ -1950,7 +1952,7 @@ theorem map_finset_sup [DecidableEq α] [DecidableEq β] (s : Finset γ) (f : γ
 theorem count_finset_sup [DecidableEq β] (s : Finset α) (f : α → Multiset β) (b : β) :
     count b (s.sup f) = s.sup fun a => count b (f a) := by
   letI := Classical.decEq α
-  refine' s.induction _ _
+  refine s.induction ?_ ?_
   · exact count_zero _
   · intro i s _ ih
     rw [Finset.sup_insert, sup_eq_union, count_union, Finset.sup_insert, ih]

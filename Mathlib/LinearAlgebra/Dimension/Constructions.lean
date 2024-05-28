@@ -37,7 +37,7 @@ universe u v v' u₁' w w'
 variable {R S : Type u} {M : Type v} {M' : Type v'} {M₁ : Type v}
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
-open BigOperators Cardinal Basis Submodule Function Set FiniteDimensional DirectSum
+open Cardinal Basis Submodule Function Set FiniteDimensional DirectSum
 
 variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
 variable [Module R M] [Module R M'] [Module R M₁]
@@ -158,7 +158,7 @@ section Finsupp
 variable (R M M')
 variable [StrongRankCondition R] [Module.Free R M] [Module.Free R M']
 
-open Module.Free BigOperators
+open Module.Free
 
 @[simp]
 theorem rank_finsupp (ι : Type w) :

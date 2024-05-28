@@ -18,7 +18,7 @@ This file contains results about nilpotent elements that involve ring theory.
 
 universe u v
 
-open BigOperators Function Set
+open Function Set
 
 variable {R S : Type*} {x y : R}
 
@@ -103,13 +103,19 @@ variable {ι M : Type*} [Fintype ι] [DecidableEq ι] [AddCommMonoid M] [Module 
 @[simp]
 lemma isNilpotent_toMatrix_iff (b : Basis ι R M) (f : M →ₗ[R] M) :
     IsNilpotent (toMatrix b b f) ↔ IsNilpotent f := by
-  refine' exists_congr fun k ↦ _
+  refine exists_congr fun k ↦ ?_
   rw [toMatrix_pow]
   exact (toMatrix b b).map_eq_zero_iff
 
 end LinearMap
 
 namespace Module.End
+
+lemma isNilpotent.restrict {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    {f : M →ₗ[R] M} {p : Submodule R M} (hf : MapsTo f p p) (hnil : IsNilpotent f) :
+    IsNilpotent (f.restrict hf) := by
+  obtain ⟨n, hn⟩ := hnil
+  exact ⟨n, LinearMap.ext fun m ↦ by simp [LinearMap.pow_restrict n, LinearMap.restrict_apply, hn]⟩
 
 variable {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
 variable {f : Module.End R M} {p : Submodule R M} (hp : p ≤ p.comap f)

@@ -41,7 +41,7 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 -/
 
 
-open Affine BigOperators
+open Affine
 
 open Set
 
@@ -259,7 +259,8 @@ theorem surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coo
     let s : Finset ι := {i, j}
     have hi : i ∈ s := by simp [s]
     let w : ι → k := fun j' => if j' = i then x else 1 - x
-    have hw : s.sum w = 1 := by simp [s, w, Finset.sum_ite, Finset.filter_insert, hij]
+    have hw : s.sum w = 1 := by simp [s, w, Finset.sum_ite, Finset.filter_insert, hij,
+      Finset.filter_true_of_mem, Finset.filter_false_of_mem]
     use s.affineCombination k b w
     simp [w, b.coord_apply_combination_of_mem hi hw]
 #align affine_basis.surjective_coord AffineBasis.surjective_coord
@@ -296,7 +297,7 @@ theorem coord_apply_centroid [CharZero k] (b : AffineBasis ι k P) {s : Finset �
 theorem exists_affine_subbasis {t : Set P} (ht : affineSpan k t = ⊤) :
     ∃ s ⊆ t, ∃ b : AffineBasis s k P, ⇑b = ((↑) : s → P) := by
   obtain ⟨s, hst, h_tot, h_ind⟩ := exists_affineIndependent k V t
-  refine' ⟨s, hst, ⟨(↑), h_ind, _⟩, rfl⟩
+  refine ⟨s, hst, ⟨(↑), h_ind, ?_⟩, rfl⟩
   rw [Subtype.range_coe, h_tot, ht]
 #align affine_basis.exists_affine_subbasis AffineBasis.exists_affine_subbasis
 

@@ -3,7 +3,8 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison
 -/
-import Mathlib.Data.Fin.Basic
+import Mathlib.Algebra.Group.Fin
+import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.List.InsertNth
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Small.Defs
@@ -1732,12 +1733,12 @@ theorem add_left_neg_le_zero : ∀ x : PGame, -x + x ≤ 0
     le_zero.2 fun i => by
       cases' i with i i
       · -- If Left played in -x, Right responds with the same move in x.
-        refine' ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), _⟩
+        refine ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), ?_⟩
         convert @add_left_neg_le_zero (xR i)
         apply add_moveRight_inr
       · -- If Left in x, Right responds with the same move in -x.
         dsimp
-        refine' ⟨@toRightMovesAdd ⟨_, _, _, _⟩ _ (Sum.inl i), _⟩
+        refine ⟨@toRightMovesAdd ⟨_, _, _, _⟩ _ (Sum.inl i), ?_⟩
         convert @add_left_neg_le_zero (xL i)
         apply add_moveRight_inl
 #align pgame.add_left_neg_le_zero SetTheory.PGame.add_left_neg_le_zero
@@ -1769,18 +1770,18 @@ theorem sub_self_equiv : ∀ (x : PGame), x - x ≈ 0 :=
 
 private theorem add_le_add_right' : ∀ {x y z : PGame}, x ≤ y → x + z ≤ y + z
   | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => fun h => by
-    refine' le_def.2 ⟨fun i => _, fun i => _⟩ <;> cases' i with i i
+    refine le_def.2 ⟨fun i => ?_, fun i => ?_⟩ <;> cases' i with i i
     · rw [le_def] at h
       cases' h with h_left h_right
       rcases h_left i with (⟨i', ih⟩ | ⟨j, jh⟩)
       · exact Or.inl ⟨toLeftMovesAdd (Sum.inl i'), add_le_add_right' ih⟩
-      · refine' Or.inr ⟨toRightMovesAdd (Sum.inl j), _⟩
+      · refine Or.inr ⟨toRightMovesAdd (Sum.inl j), ?_⟩
         convert add_le_add_right' jh
         apply add_moveRight_inl
     · exact Or.inl ⟨@toLeftMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), add_le_add_right' h⟩
     · rw [le_def] at h
       rcases h.right i with (⟨i, ih⟩ | ⟨j', jh⟩)
-      · refine' Or.inl ⟨toLeftMovesAdd (Sum.inl i), _⟩
+      · refine Or.inl ⟨toLeftMovesAdd (Sum.inl i), ?_⟩
         convert add_le_add_right' ih
         apply add_moveLeft_inl
       · exact Or.inr ⟨toRightMovesAdd (Sum.inl j'), add_le_add_right' jh⟩

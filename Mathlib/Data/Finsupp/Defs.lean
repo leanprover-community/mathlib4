@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
-import Mathlib.Algebra.Function.Indicator
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Data.Set.Finite
 
@@ -281,8 +281,7 @@ section Single
 variable [Zero M] {a a' : α} {b : M}
 
 /-- `single a b` is the finitely supported function with value `b` at `a` and zero otherwise. -/
-def single (a : α) (b : M) : α →₀ M
-    where
+def single (a : α) (b : M) : α →₀ M where
   support :=
     haveI := Classical.decEq M
     if b = 0 then ∅ else {a}
@@ -386,7 +385,7 @@ theorem mem_support_single (a a' : α) (b : M) : a ∈ (single a' b).support ↔
 #align finsupp.mem_support_single Finsupp.mem_support_single
 
 theorem eq_single_iff {f : α →₀ M} {a b} : f = single a b ↔ f.support ⊆ {a} ∧ f a = b := by
-  refine' ⟨fun h => h.symm ▸ ⟨support_single_subset, single_eq_same⟩, _⟩
+  refine ⟨fun h => h.symm ▸ ⟨support_single_subset, single_eq_same⟩, ?_⟩
   rintro ⟨h, rfl⟩
   ext x
   by_cases hx : a = x <;> simp only [hx, single_eq_same, single_eq_of_ne, Ne, not_false_iff]
@@ -398,7 +397,7 @@ theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
   constructor
   · intro eq
     by_cases h : a₁ = a₂
-    · refine' Or.inl ⟨h, _⟩
+    · refine Or.inl ⟨h, ?_⟩
       rwa [h, (single_injective a₂).eq_iff] at eq
     · rw [DFunLike.ext_iff] at eq
       have h₁ := eq a₁
@@ -888,7 +887,7 @@ theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (a : α) : embDomain f
   classical
     change dite _ _ _ = _
     split_ifs with h <;> rw [Finset.mem_map' f] at h
-    · refine' congr_arg (v : α → M) (f.inj' _)
+    · refine congr_arg (v : α → M) (f.inj' ?_)
       exact Finset.choose_property (fun a₁ => f a₁ = f a) _ _
     · exact (not_mem_support_iff.1 h).symm
 #align finsupp.emb_domain_apply Finsupp.embDomain_apply
@@ -896,7 +895,7 @@ theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (a : α) : embDomain f
 theorem embDomain_notin_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a ∉ Set.range f) :
     embDomain f v a = 0 := by
   classical
-    refine' dif_neg (mt (fun h => _) h)
+    refine dif_neg (mt (fun h => ?_) h)
     rcases Finset.mem_map.1 h with ⟨a, _h, rfl⟩
     exact Set.mem_range_self a
 #align finsupp.emb_domain_notin_range Finsupp.embDomain_notin_range
@@ -1192,7 +1191,7 @@ theorem add_closure_setOf_eq_single :
 then they are equal. -/
 theorem addHom_ext [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
     (H : ∀ x y, f (single x y) = g (single x y)) : f = g := by
-  refine' AddMonoidHom.eq_of_eqOn_denseM add_closure_setOf_eq_single _
+  refine AddMonoidHom.eq_of_eqOn_denseM add_closure_setOf_eq_single ?_
   rintro _ ⟨x, y, rfl⟩
   apply H
 #align finsupp.add_hom_ext Finsupp.addHom_ext

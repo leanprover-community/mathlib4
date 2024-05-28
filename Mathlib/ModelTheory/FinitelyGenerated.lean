@@ -88,9 +88,9 @@ theorem FG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.
     (hs : (s.map f.toHom).FG) : s.FG := by
   rcases hs with ⟨t, h⟩
   rw [fg_def]
-  refine' ⟨f ⁻¹' t, t.finite_toSet.preimage (f.injective.injOn _), _⟩
+  refine ⟨f ⁻¹' t, t.finite_toSet.preimage (f.injective.injOn _), ?_⟩
   have hf : Function.Injective f.toHom := f.injective
-  refine' map_injective_of_injective hf _
+  refine map_injective_of_injective hf ?_
   rw [← h, map_closure, Embedding.coe_toHom, image_preimage_eq_of_subset]
   intro x hx
   have h' := subset_closure (L := L) hx
@@ -123,12 +123,12 @@ theorem cg_iff_empty_or_exists_nat_generating_family {N : L.Substructure M} :
     obtain ⟨f, h'⟩ :=
       (Scount.union (Set.countable_singleton h.some)).exists_eq_range
         (singleton_nonempty h.some).inr
-    refine' Or.intro_right _ ⟨f, _⟩
+    refine Or.intro_right _ ⟨f, ?_⟩
     rw [← h', closure_union, hS, sup_eq_left, closure_le]
     exact singleton_subset_iff.2 h.some_mem
   · intro h
     cases' h with h h
-    · refine' ⟨∅, countable_empty, closure_eq_of_le (empty_subset _) _⟩
+    · refine ⟨∅, countable_empty, closure_eq_of_le (empty_subset _) ?_⟩
       rw [← SetLike.coe_subset_coe, h]
       exact empty_subset _
     · obtain ⟨f, rfl⟩ := h
@@ -163,9 +163,9 @@ theorem CG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.
     (hs : (s.map f.toHom).CG) : s.CG := by
   rcases hs with ⟨t, h1, h2⟩
   rw [cg_def]
-  refine' ⟨f ⁻¹' t, h1.preimage f.injective, _⟩
+  refine ⟨f ⁻¹' t, h1.preimage f.injective, ?_⟩
   have hf : Function.Injective f.toHom := f.injective
-  refine' map_injective_of_injective hf _
+  refine map_injective_of_injective hf ?_
   rw [← h2, map_closure, Embedding.coe_toHom, image_preimage_eq_of_subset]
   intro x hx
   have h' := subset_closure (L := L) hx
@@ -175,7 +175,7 @@ theorem CG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.
 
 theorem cg_iff_countable [Countable (Σl, L.Functions l)] {s : L.Substructure M} :
     s.CG ↔ Countable s := by
-  refine' ⟨_, fun h => ⟨s, h.to_set, s.closure_eq⟩⟩
+  refine ⟨?_, fun h => ⟨s, h.to_set, s.closure_eq⟩⟩
   rintro ⟨s, h, rfl⟩
   exact h.substructure_closure L
 #align first_order.language.substructure.cg_iff_countable FirstOrder.Language.Substructure.cg_iff_countable
@@ -266,7 +266,7 @@ theorem Equiv.fg_iff {N : Type*} [L.Structure N] (f : M ≃[L] N) :
 
 theorem Substructure.fg_iff_structure_fg (S : L.Substructure M) : S.FG ↔ Structure.FG L S := by
   rw [Structure.fg_def]
-  refine' ⟨fun h => FG.of_map_embedding S.subtype _, fun h => _⟩
+  refine ⟨fun h => FG.of_map_embedding S.subtype ?_, fun h => ?_⟩
   · rw [← Hom.range_eq_map, range_subtype]
     exact h
   · have h := h.map S.subtype.toHom
@@ -283,7 +283,7 @@ theorem Equiv.cg_iff {N : Type*} [L.Structure N] (f : M ≃[L] N) :
 
 theorem Substructure.cg_iff_structure_cg (S : L.Substructure M) : S.CG ↔ Structure.CG L S := by
   rw [Structure.cg_def]
-  refine' ⟨fun h => CG.of_map_embedding S.subtype _, fun h => _⟩
+  refine ⟨fun h => CG.of_map_embedding S.subtype ?_, fun h => ?_⟩
   · rw [← Hom.range_eq_map, range_subtype]
     exact h
   · have h := h.map S.subtype.toHom
