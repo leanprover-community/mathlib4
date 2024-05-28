@@ -411,7 +411,8 @@ theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) 
   · rintro ⟨(y : (forget TopCat).obj _), hy, rfl⟩
     exact
       ⟨(pullback.fst : pullback f g ⟶ _) y, hy, ConcreteCategory.congr_hom pullback.condition y⟩
-  · rintro ⟨y, hy, eq⟩ -- was an `exact` before #13170
+  · rintro ⟨y, hy, eq⟩
+  -- next 5 lines were `exact ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq⟩, by simpa, by simp⟩` before #13170
     refine ⟨(TopCat.pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, eq⟩, ?_, ?_⟩
     · simp only [coe_of, Set.mem_preimage]
       convert hy
