@@ -26,7 +26,7 @@ This file provides a `positivity` extension for `ENNReal.ofReal`.
     `ℝ≥0∞` is a complete lattice.
 -/
 
-open Set BigOperators NNReal ENNReal
+open Set NNReal ENNReal
 
 namespace ENNReal
 

@@ -83,7 +83,7 @@ set_option linter.uppercaseLean3 false
 
 namespace AlgebraicGeometry
 
-open scoped DirectSum BigOperators Pointwise BigOperators
+open scoped DirectSum Pointwise
 
 open DirectSum SetLike.GradedMonoid Localization
 

@@ -37,7 +37,7 @@ noncomputable section
 
 open CategoryTheory ModuleCat.monoidalCategory
 
-open scoped Classical BigOperators
+open scoped Classical
 
 universe u
 

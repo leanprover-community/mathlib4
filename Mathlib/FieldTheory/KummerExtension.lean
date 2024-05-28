@@ -539,7 +539,7 @@ section IsCyclic
 variable {L} [Field L] [Algebra K L] [IsGalois K L] [FiniteDimensional K L] [IsCyclic (L ≃ₐ[K] L)]
 variable (hK : (primitiveRoots (FiniteDimensional.finrank K L) K).Nonempty)
 
-open BigOperators FiniteDimensional
+open FiniteDimensional
 variable (K L)
 
 /-- If `L/K` is a cyclic extension of degree `n`, and `K` contains all `n`-th roots of unity,

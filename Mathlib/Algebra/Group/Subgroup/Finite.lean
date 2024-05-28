@@ -18,8 +18,6 @@ This file provides some result on multiplicative and additive subgroups in the f
 subgroup, subgroups
 -/
 
-open BigOperators
-
 variable {G : Type*} [Group G]
 variable {A : Type*} [AddGroup A]
 

@@ -84,7 +84,7 @@ lemma tsum_dirichletSummand {N : ℕ} (χ : DirichletCharacter ℂ N) (hs : 1 < 
   · simp only [cpow_neg, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, hn, ↓reduceIte,
       Field.div_eq_mul_inv]
 
-open Filter Nat Topology BigOperators EulerProduct
+open Filter Nat Topology EulerProduct
 
 /-- The Euler product for the Riemann ζ function, valid for `s.re > 1`.
 This version is stated in terms of `HasProd`. -/

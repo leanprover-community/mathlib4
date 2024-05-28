@@ -56,7 +56,7 @@ noncomputable section
 
 open Function Set MeasureTheory.OuterMeasure Filter MeasurableSpace Encodable
 
-open scoped Classical BigOperators Topology ENNReal
+open scoped Classical Topology ENNReal
 
 universe u v
 

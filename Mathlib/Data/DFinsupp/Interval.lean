@@ -20,7 +20,7 @@ finite and calculates the cardinality of its finite intervals.
 
 open DFinsupp Finset
 
-open BigOperators Pointwise
+open Pointwise
 
 variable {ι : Type*} {α : ι → Type*}
 
