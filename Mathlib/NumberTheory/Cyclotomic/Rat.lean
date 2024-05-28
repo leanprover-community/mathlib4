@@ -184,6 +184,10 @@ noncomputable def integralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]
 /-- Abbreviation to see a primitive root of unity as a member of the ring of integers. -/
 abbrev toInteger {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) : 𝓞 K := ⟨ζ, hζ.isIntegral k.pos⟩
 
+lemma toInteger_isPrimitiveRoot {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) :
+    IsPrimitiveRoot hζ.toInteger k :=
+  IsPrimitiveRoot.of_map_of_injective (by exact hζ) RingOfIntegers.coe_injective
+
 -- Porting note: the proof changed because `simp` unfolds too much.
 @[simp]
 theorem integralPowerBasis_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
