@@ -83,8 +83,6 @@ section sort
 
 variable {G M N : Type*} {α β ι : Sort*} [CommMonoid M] [CommMonoid N]
 
-open BigOperators
-
 section
 
 /- Note: we use classical logic only for these definitions, to ensure that we do not write lemmas
@@ -357,8 +355,6 @@ end sort
 section type
 
 variable {α β ι G M N : Type*} [CommMonoid M] [CommMonoid N]
-
-open BigOperators
 
 @[to_additive]
 theorem finprod_eq_mulIndicator_apply (s : Set α) (f : α → M) (a : α) :

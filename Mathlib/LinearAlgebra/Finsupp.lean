@@ -47,7 +47,6 @@ function with finite support, module, linear algebra
 noncomputable section
 
 open Set LinearMap Submodule
-open BigOperators
 
 namespace Finsupp
 

@@ -63,7 +63,7 @@ Schwartz space, tempered distributions
 
 noncomputable section
 
-open scoped BigOperators Nat NNReal
+open scoped Nat NNReal
 
 variable {𝕜 𝕜' D E F G V : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]

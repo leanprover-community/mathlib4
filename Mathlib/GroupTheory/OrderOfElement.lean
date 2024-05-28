@@ -800,8 +800,6 @@ section FiniteMonoid
 
 variable [Monoid G] {x : G} {n : ℕ}
 
-open BigOperators
-
 @[to_additive]
 theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n ≠ 0) :
     (∑ m ∈ (Finset.range n.succ).filter (· ∣ n),

@@ -46,7 +46,7 @@ vector measure, signed measure, complex measure
 noncomputable section
 
 open scoped Classical
-open BigOperators NNReal ENNReal MeasureTheory
+open NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
 

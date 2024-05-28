@@ -16,7 +16,7 @@ as well as simple corollaries.
 -/
 
 open Filter
-open scoped ENNReal Topology BigOperators
+open scoped ENNReal Topology
 
 namespace MeasureTheory
 

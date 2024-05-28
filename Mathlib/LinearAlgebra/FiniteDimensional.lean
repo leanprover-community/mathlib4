@@ -280,8 +280,6 @@ variable {K}
 
 section
 
-open BigOperators
-
 open Finset
 
 section

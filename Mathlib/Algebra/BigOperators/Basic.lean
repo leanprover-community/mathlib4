@@ -261,8 +261,6 @@ to show the domain type when the sum is over `Finset.univ`. -/
 
 end BigOperators
 
-open BigOperators
-
 namespace Finset
 
 variable {s s₁ s₂ : Finset α} {a : α} {f g : α → β}

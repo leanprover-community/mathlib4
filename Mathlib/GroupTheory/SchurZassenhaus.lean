@@ -24,8 +24,6 @@ In this file we prove the Schur-Zassenhaus theorem.
 -/
 
 
-open scoped BigOperators
-
 namespace Subgroup
 
 section SchurZassenhausAbelian

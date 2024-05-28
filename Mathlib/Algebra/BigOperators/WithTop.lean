@@ -13,7 +13,6 @@ This file proves results about finite sums over monoids extended by a bottom or 
 -/
 
 open Finset
-open scoped BigOperators
 
 variable {ι α : Type*}
 

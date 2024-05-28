@@ -62,8 +62,6 @@ combinatorial line, Ramsey theory, arithmetic progression
 
 open scoped Classical
 
-open BigOperators
-
 universe u v
 
 namespace Combinatorics

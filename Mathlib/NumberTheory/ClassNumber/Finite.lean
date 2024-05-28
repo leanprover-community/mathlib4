@@ -23,15 +23,11 @@ finiteness of the class group for number fields and function fields.
    its integral closure has a finite class group
 -/
 
-open scoped BigOperators
-
 open scoped nonZeroDivisors
 
 namespace ClassGroup
 
 open Ring
-
-open scoped BigOperators
 
 section EuclideanDomain
 

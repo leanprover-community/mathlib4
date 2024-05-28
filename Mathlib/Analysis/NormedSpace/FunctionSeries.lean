@@ -19,7 +19,7 @@ For smoothness of series of functions, see the file `Analysis.Calculus.SmoothSer
 
 open Set Metric TopologicalSpace Function Filter
 
-open scoped Topology NNReal BigOperators
+open scoped Topology NNReal
 
 variable {α β F : Type*} [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
 

@@ -19,7 +19,7 @@ While in terms of semantics they could be in the `Basic.lean` file, importing
 -/
 
 
-open BigOperators Finset Nat
+open Finset Nat
 
 namespace Nat
 

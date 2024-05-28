@@ -21,8 +21,6 @@ This file defines bundled isomorphisms of `R`-algebras.
 * `A ≃ₐ[R] B` : `R`-algebra equivalence from `A` to `B`.
 -/
 
-open BigOperators
-
 universe u v w u₁ v₁
 
 /-- An equivalence of algebras is an equivalence of rings commuting with the actions of scalars. -/

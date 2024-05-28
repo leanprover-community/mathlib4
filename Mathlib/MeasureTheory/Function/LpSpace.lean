@@ -71,7 +71,7 @@ set_option linter.uppercaseLean3 false
 
 open TopologicalSpace MeasureTheory Filter
 
-open scoped NNReal ENNReal BigOperators Topology MeasureTheory Uniformity
+open scoped NNReal ENNReal Topology MeasureTheory Uniformity
 
 variable {α E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]

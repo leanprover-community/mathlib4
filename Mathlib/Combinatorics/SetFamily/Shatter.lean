@@ -25,7 +25,7 @@ This file defines the shattering property and VC-dimension of set families.
 * Strong shattering
 -/
 
-open scoped BigOperators FinsetFamily
+open scoped FinsetFamily
 
 namespace Finset
 variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α} {n : ℕ}

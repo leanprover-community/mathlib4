@@ -50,8 +50,6 @@ additive character, multiplicative character, Gauss sum
 
 universe u v
 
-open scoped BigOperators
-
 open AddChar MulChar
 
 section GaussSumDef

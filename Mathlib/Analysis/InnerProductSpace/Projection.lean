@@ -48,7 +48,7 @@ open RCLike Real Filter
 
 open LinearMap (ker range)
 
-open BigOperators Topology
+open Topology
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]

@@ -38,7 +38,7 @@ This file defines affinely independent families of points.
 noncomputable section
 
 open Finset Function
-open scoped BigOperators Affine
+open scoped Affine
 
 section AffineIndependent
 

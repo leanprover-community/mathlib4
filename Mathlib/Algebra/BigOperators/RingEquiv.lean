@@ -16,8 +16,6 @@ import Mathlib.Algebra.Ring.Opposite
 
 namespace RingEquiv
 
-open BigOperators
-
 variable {α R S : Type*}
 
 protected theorem map_list_prod [Semiring R] [Semiring S] (f : R ≃+* S) (l : List R) :

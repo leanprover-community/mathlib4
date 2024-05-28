@@ -29,7 +29,7 @@ In this file we define the complement of a subgroup.
 -/
 
 open Set
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 namespace Subgroup
 

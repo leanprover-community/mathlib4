@@ -286,8 +286,6 @@ universe u v w
 
 open Module Module.Dual Submodule LinearMap Cardinal Function
 
-open BigOperators
-
 universe uR uM uK uV uι
 variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
 
@@ -1768,8 +1766,6 @@ variable (R A : Type*) (M : Type*) (N : Type*)
 variable {ι κ : Type*}
 variable [DecidableEq ι] [DecidableEq κ]
 variable [Fintype ι] [Fintype κ]
-
-open BigOperators
 
 open TensorProduct
 

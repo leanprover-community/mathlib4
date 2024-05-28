@@ -29,7 +29,7 @@ set_option autoImplicit true
 
 open Function (Surjective)
 
-open BigOperators Polynomial
+open Polynomial
 
 section ModuleAndAlgebra
 

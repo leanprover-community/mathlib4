@@ -50,7 +50,7 @@ then `trace A B = 0` by definition, so `discr A b = 0` for any `b`.
 
 universe u v w z
 
-open scoped Matrix BigOperators
+open scoped Matrix
 
 open Matrix FiniteDimensional Fintype Polynomial Finset IntermediateField
 

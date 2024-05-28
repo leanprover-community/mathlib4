@@ -21,7 +21,7 @@ We also prove basic properties of these functions.
 noncomputable section
 
 open scoped Classical
-open Real NNReal ENNReal BigOperators ComplexConjugate
+open Real NNReal ENNReal ComplexConjugate
 
 open Finset Function Set
 

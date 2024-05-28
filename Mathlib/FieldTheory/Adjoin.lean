@@ -665,8 +665,6 @@ theorem adjoin_rootSet_isSplittingField {p : F[X]} (hp : p.Splits (algebraMap F 
   isSplittingField_iff.mpr ⟨splits_of_splits hp fun _ hx ↦ subset_adjoin F (p.rootSet E) hx, rfl⟩
 #align intermediate_field.adjoin_root_set_is_splitting_field IntermediateField.adjoin_rootSet_isSplittingField
 
-open scoped BigOperators
-
 section Supremum
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E1 E2 : IntermediateField K L)

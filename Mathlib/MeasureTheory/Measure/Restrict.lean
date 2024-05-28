@@ -18,7 +18,7 @@ We also study the relationship between the restriction of a measure to a subtype
 pullback under `Subtype.val`) and the restriction to a set as above.
 -/
 
-open scoped ENNReal NNReal Topology BigOperators
+open scoped ENNReal NNReal Topology
 open Set MeasureTheory Measure Filter MeasurableSpace ENNReal Function
 
 variable {R α β δ γ ι : Type*}

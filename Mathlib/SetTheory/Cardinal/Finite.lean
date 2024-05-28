@@ -23,7 +23,6 @@ import Mathlib.SetTheory.Cardinal.PartENat
 set_option autoImplicit true
 
 open Cardinal Function
-open scoped BigOperators
 
 noncomputable section
 

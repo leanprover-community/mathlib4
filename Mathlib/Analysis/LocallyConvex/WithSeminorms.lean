@@ -51,7 +51,7 @@ seminorm, locally convex
 
 open NormedField Set Seminorm TopologicalSpace Filter List
 
-open BigOperators NNReal Pointwise Topology Uniformity
+open NNReal Pointwise Topology Uniformity
 
 variable {𝕜 𝕜₂ 𝕝 𝕝₂ E F G ι ι' : Type*}
 

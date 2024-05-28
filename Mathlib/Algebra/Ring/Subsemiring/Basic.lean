@@ -23,8 +23,6 @@ a `RingHom` etc.
 -/
 
 
-open BigOperators
-
 universe u v w
 
 section AddSubmonoidWithOneClass

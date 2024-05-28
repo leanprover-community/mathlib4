@@ -47,8 +47,6 @@ since it is not a monad in `Type` but in `CommRingCat` (or rather `CommSemiRingC
 -/
 
 
-open BigOperators
-
 noncomputable section
 
 namespace MvPolynomial

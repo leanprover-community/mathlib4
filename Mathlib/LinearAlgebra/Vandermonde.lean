@@ -31,7 +31,7 @@ variable {R : Type*} [CommRing R]
 
 open Equiv Finset
 
-open BigOperators Matrix
+open Matrix
 
 namespace Matrix
 

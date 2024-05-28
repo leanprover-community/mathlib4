@@ -39,7 +39,7 @@ This file defines a number of uniform `PMF` distributions from various inputs,
 * Refactor the `PMF` definitions to come from a `uniformMeasure` on a `Finset`/`Fintype`/`Multiset`.
 -/
 
-open scoped Classical MeasureTheory BigOperators NNReal ENNReal
+open scoped Classical MeasureTheory NNReal ENNReal
 
 -- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` locale :(
 open TopologicalSpace MeasureTheory.Measure PMF
@@ -217,7 +217,7 @@ namespace PMF
 
 variable {α β γ : Type*}
 
-open scoped Classical BigOperators NNReal ENNReal
+open scoped Classical NNReal ENNReal
 
 section UniformOfFinset
 

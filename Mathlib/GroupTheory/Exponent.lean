@@ -580,8 +580,6 @@ section CommGroup
 
 open Subgroup
 
-open BigOperators
-
 variable (G) [CommGroup G] [Group.FG G]
 
 @[to_additive]

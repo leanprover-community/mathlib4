@@ -44,8 +44,6 @@ components.
 
 noncomputable section
 
-open BigOperators
-
 open Set Function Finset Finsupp AddMonoidAlgebra
 
 variable {R M : Type*} [CommSemiring R]

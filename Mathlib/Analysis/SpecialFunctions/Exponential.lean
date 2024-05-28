@@ -55,7 +55,7 @@ We prove most results for an arbitrary field `ğ•‚`, and then specialize to `ğ•
 
 open Filter RCLike ContinuousMultilinearMap NormedField NormedSpace Asymptotics
 
-open scoped Nat Topology BigOperators ENNReal
+open scoped Nat Topology ENNReal
 
 section AnyFieldAnyAlgebra
 

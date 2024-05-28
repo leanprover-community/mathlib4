@@ -64,8 +64,6 @@ subring, subrings
 -/
 
 
-open BigOperators
-
 universe u v w
 
 variable {R : Type u} {S : Type v} {T : Type w} [Ring R]

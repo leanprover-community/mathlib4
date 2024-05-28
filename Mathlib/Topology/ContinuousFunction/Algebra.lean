@@ -378,8 +378,6 @@ def compMonoidHom' {γ : Type*} [TopologicalSpace γ] [MulOneClass γ] [Continuo
 #align continuous_map.comp_monoid_hom' ContinuousMap.compMonoidHom'
 #align continuous_map.comp_add_monoid_hom' ContinuousMap.compAddMonoidHom'
 
-open BigOperators
-
 @[to_additive (attr := simp)]
 theorem coe_prod [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset ι) (f : ι → C(α, β)) :
     ⇑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : α → β) :=

@@ -36,8 +36,6 @@ universe u
 
 open CategoryTheory LinearMap CategoryTheory.MonoidalCategory Representation FiniteDimensional
 
-open scoped BigOperators
-
 variable {k : Type u} [Field k]
 
 namespace FdRep

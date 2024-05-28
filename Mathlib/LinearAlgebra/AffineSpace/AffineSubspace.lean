@@ -47,7 +47,7 @@ topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and `Topolo
 
 noncomputable section
 
-open BigOperators Affine
+open Affine
 
 open Set
 

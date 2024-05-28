@@ -30,7 +30,7 @@ commutative ring, field of fractions
 variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
 variable [Algebra R S] {P : Type*} [CommRing P]
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace IsLocalization
 

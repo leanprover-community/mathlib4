@@ -304,8 +304,6 @@ theorem list_prod_ofFn_of_eq_dProd (n : ℕ) (fι : Fin n → ι) (fA : ∀ a, A
   rw [List.ofFn_eq_map, ofList_dProd]
 #align direct_sum.list_prod_of_fn_of_eq_dprod DirectSum.list_prod_ofFn_of_eq_dProd
 
-open BigOperators
-
 theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
     a * a'
       = a.sum fun i ai => a'.sum fun j aj => DirectSum.of _ _ <| GradedMonoid.GMul.mul ai aj := by

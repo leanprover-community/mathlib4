@@ -41,7 +41,7 @@ If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have, for `s, t ∈ C`,
 
 open Set Finset
 
-open scoped ENNReal BigOperators
+open scoped ENNReal
 
 namespace MeasureTheory
 

@@ -26,7 +26,7 @@ open scoped Classical
 open Set Function Filter Finset Metric
 
 open scoped Classical
-open Topology Nat BigOperators uniformity NNReal ENNReal
+open Topology Nat uniformity NNReal ENNReal
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 

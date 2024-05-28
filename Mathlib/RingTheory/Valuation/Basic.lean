@@ -61,7 +61,7 @@ boilerplate lemmas to `ValuationClass`.
 
 
 open scoped Classical
-open BigOperators Function Ideal
+open Function Ideal
 
 noncomputable section
 

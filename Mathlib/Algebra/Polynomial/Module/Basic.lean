@@ -24,7 +24,7 @@ In the special case that `A = M →ₗ[R] M` and `φ : M →ₗ[R] M`, the modul
 abbreviated `Module.AEval' φ`. In this module we have `X • m = ↑φ m`.
 -/
 universe u v
-open Set Function Polynomial BigOperators
+open Set Function Polynomial
 
 namespace Module
 /--

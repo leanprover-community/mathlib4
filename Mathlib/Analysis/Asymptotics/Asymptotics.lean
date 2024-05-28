@@ -50,7 +50,7 @@ the Fréchet derivative.)
 open Filter Set
 
 open scoped Classical
-open Topology BigOperators Filter NNReal
+open Topology Filter NNReal
 
 namespace Asymptotics
 

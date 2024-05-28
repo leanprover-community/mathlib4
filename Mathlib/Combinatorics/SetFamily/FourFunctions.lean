@@ -54,7 +54,7 @@ earlier file and give it a proper API.
 -/
 
 open Finset Fintype Function
-open scoped BigOperators FinsetFamily
+open scoped FinsetFamily
 
 variable {α β : Type*}
 

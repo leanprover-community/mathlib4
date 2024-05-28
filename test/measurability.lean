@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
-open scoped BigOperators
+
 open MeasureTheory TopologicalSpace
 
 variable {α β : Type _} [MeasurableSpace α] [MeasurableSpace β]

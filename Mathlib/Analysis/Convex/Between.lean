@@ -29,8 +29,6 @@ variable (R : Type*) {V V' P P' : Type*}
 
 open AffineEquiv AffineMap
 
-open BigOperators
-
 section OrderedRing
 
 variable [OrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]

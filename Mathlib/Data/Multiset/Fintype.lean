@@ -35,8 +35,6 @@ multiset enumeration
 -/
 
 
-open BigOperators
-
 variable {α : Type*} [DecidableEq α] {m : Multiset α}
 
 /-- Auxiliary definition for the `CoeSort` instance. This prevents the `CoeOut m α`

@@ -25,7 +25,7 @@ noncomputable section
 
 open Set Filter TopologicalSpace MeasureTheory Function
 
-open scoped Classical Topology Interval BigOperators Filter ENNReal MeasureTheory
+open scoped Classical Topology Interval Filter ENNReal MeasureTheory
 
 variable {α β E F : Type*} [MeasurableSpace α]
 

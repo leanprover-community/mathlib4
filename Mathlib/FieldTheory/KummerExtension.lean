@@ -82,8 +82,6 @@ theorem X_pow_sub_C_splits_of_isPrimitiveRoot
   | inr hn =>
     rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C, if_pos ⟨α, e⟩]
 
-open BigOperators
-
 theorem X_pow_sub_C_eq_prod
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (hn : 0 < n) (e : α ^ n = a) :
     (X ^ n - C a) = ∏ i ∈ Finset.range n, (X - C (ζ ^ i * α)) := by
@@ -526,7 +524,7 @@ section IsCyclic
 variable {L} [Field L] [Algebra K L] [IsGalois K L] [FiniteDimensional K L] [IsCyclic (L ≃ₐ[K] L)]
 variable (hK : (primitiveRoots (FiniteDimensional.finrank K L) K).Nonempty)
 
-open BigOperators FiniteDimensional
+open FiniteDimensional
 variable (K L)
 
 /-- If `L/K` is a cyclic extension of degree `n`, and `K` contains all `n`-th roots of unity,

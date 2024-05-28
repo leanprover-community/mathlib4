@@ -41,8 +41,6 @@ open CategoryTheory.Preadditive CategoryTheory.Category CategoryTheory.Idempoten
 
 open Opposite
 
-open BigOperators
-
 open Simplicial
 
 noncomputable section

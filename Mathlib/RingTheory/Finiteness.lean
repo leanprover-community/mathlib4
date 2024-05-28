@@ -37,8 +37,6 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 open Function (Surjective)
 
-open BigOperators
-
 namespace Submodule
 
 variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]

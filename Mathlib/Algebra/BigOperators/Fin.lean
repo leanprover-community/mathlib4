@@ -25,8 +25,6 @@ constant function. These results have variants for sums instead of products.
 * `finFunctionFinEquiv`: An explicit equivalence between `Fin n → Fin m` and `Fin (m ^ n)`.
 -/
 
-open BigOperators
-
 open Finset
 
 variable {α : Type*} {β : Type*}

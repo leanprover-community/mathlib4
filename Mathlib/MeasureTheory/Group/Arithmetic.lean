@@ -45,7 +45,7 @@ measurable function, arithmetic operator
 -/
 
 open MeasureTheory
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 universe u v
 variable {α : Type*}

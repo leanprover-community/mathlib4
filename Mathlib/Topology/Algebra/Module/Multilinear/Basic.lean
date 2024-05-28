@@ -36,8 +36,6 @@ especially when defining iterated derivatives.
 
 open Function Fin Set
 
-open BigOperators
-
 universe u v w w₁ w₁' w₂ w₃ w₄
 
 variable {R : Type u} {ι : Type v} {n : ℕ} {M : Fin n.succ → Type w} {M₁ : ι → Type w₁}
@@ -382,7 +380,7 @@ def domDomCongrEquiv {ι' : Type*} (e : ι ≃ ι') :
 #align continuous_multilinear_map.dom_dom_congr_equiv_symm_apply ContinuousMultilinearMap.domDomCongrEquiv_symm_apply
 
 section linearDeriv
-open scoped BigOperators
+
 variable [ContinuousAdd M₂] [DecidableEq ι] [Fintype ι] (x y : ∀ i, M₁ i)
 
 /-- The derivative of a continuous multilinear map, as a continuous linear map

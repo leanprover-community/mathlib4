@@ -37,7 +37,7 @@ universe w w' u u' v v'
 
 variable {R : Type u} {R' : Type u'} {M M₁ : Type v} {M' : Type v'}
 
-open BigOperators Cardinal Submodule Function Set
+open Cardinal Submodule Function Set
 
 section Module
 

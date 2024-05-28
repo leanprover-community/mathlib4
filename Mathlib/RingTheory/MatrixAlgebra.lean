@@ -18,8 +18,6 @@ universe u v w
 
 open TensorProduct
 
-open BigOperators
-
 open TensorProduct
 
 open Algebra.TensorProduct

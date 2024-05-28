@@ -23,8 +23,6 @@ We prove the divisor sum formula, namely that `n` equals `φ` summed over the di
 
 open Finset
 
-open BigOperators
-
 namespace Nat
 
 /-- Euler's totient function. This counts the number of naturals strictly less than `n` which are

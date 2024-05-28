@@ -33,7 +33,7 @@ giry monad
 noncomputable section
 
 open scoped Classical
-open BigOperators ENNReal
+open ENNReal
 
 open scoped Classical
 open Set Filter

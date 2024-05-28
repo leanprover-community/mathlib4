@@ -11,8 +11,6 @@ import Mathlib.Algebra.BigOperators.Basic
 /-! # Casting lemmas for rational numbers involving sums and products
 -/
 
-open BigOperators
-
 variable {ι α : Type*}
 
 namespace Rat

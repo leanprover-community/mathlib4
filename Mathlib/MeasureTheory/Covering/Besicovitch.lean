@@ -104,7 +104,7 @@ universe u
 
 open Metric Set Filter Fin MeasureTheory TopologicalSpace
 
-open scoped Topology Classical BigOperators ENNReal MeasureTheory NNReal
+open scoped Topology Classical ENNReal MeasureTheory NNReal
 
 /-!
 ### Satellite configurations

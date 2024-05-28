@@ -19,7 +19,6 @@ multiplicative and additive structures on the values being combined.
 -/
 
 open Fintype
-open scoped BigOperators
 
 variable {ι α β γ : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι} {i : ι} {a : α} {f g : ι → α}
 

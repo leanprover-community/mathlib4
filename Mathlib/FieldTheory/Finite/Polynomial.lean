@@ -50,7 +50,7 @@ namespace MvPolynomial
 
 noncomputable section
 
-open scoped BigOperators Classical
+open scoped Classical
 
 open Set LinearMap Submodule
 

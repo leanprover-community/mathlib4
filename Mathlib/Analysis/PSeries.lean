@@ -45,8 +45,6 @@ def SuccDiffBounded (C : ℕ) (u : ℕ → ℕ) : Prop :=
 
 namespace Finset
 
-open BigOperators
-
 variable {M : Type*} [OrderedAddCommMonoid M] {f : ℕ → M} {u : ℕ → ℕ}
 
 theorem le_sum_schlomilch' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
@@ -136,7 +134,7 @@ end Finset
 
 namespace ENNReal
 
-open Filter BigOperators Finset
+open Filter Finset
 
 variable {u : ℕ → ℕ} {f : ℕ → ℝ≥0∞}
 
@@ -187,7 +185,7 @@ end ENNReal
 
 namespace NNReal
 
-open BigOperators Finset
+open Finset
 
 open ENNReal in
 /-- for a series of `NNReal` version. -/
@@ -261,7 +259,7 @@ common ratio `2 ^ {1 - p}`. -/
 
 namespace Real
 
-open Filter BigOperators
+open Filter
 
 /-- Test for convergence of the `p`-series: the real-valued series `∑' n : ℕ, (n ^ p)⁻¹` converges
 if and only if `1 < p`. -/
@@ -389,7 +387,7 @@ end p_series
 
 section
 
-open Finset BigOperators
+open Finset
 
 variable {α : Type*} [LinearOrderedField α]
 

@@ -167,8 +167,6 @@ section CommSemiringCommSemiring
 
 variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
-open BigOperators
-
 -- direct to_additive fails because of some mix-up with polynomials
 @[norm_cast]
 theorem coe_prod {ι : Type*} {s : Finset ι} (a : ι → R) :

@@ -57,7 +57,7 @@ noncomputable section
 
 open Set Filter TopologicalSpace MeasureTheory Function RCLike
 
-open scoped Classical Topology BigOperators ENNReal NNReal
+open scoped Classical Topology ENNReal NNReal
 
 variable {X Y E F : Type*} [MeasurableSpace X]
 

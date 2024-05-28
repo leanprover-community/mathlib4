@@ -43,8 +43,6 @@ attribute [-instance] instBEqNat
 
 open Nat Finset List Finsupp
 
-open BigOperators
-
 namespace Nat
 variable {a b m n p : ℕ}
 

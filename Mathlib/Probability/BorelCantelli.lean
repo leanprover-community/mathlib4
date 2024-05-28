@@ -27,7 +27,7 @@ in probability spaces), see `MeasureTheory.measure_limsup_eq_zero`.
 -/
 
 
-open scoped MeasureTheory ProbabilityTheory ENNReal BigOperators Topology
+open scoped MeasureTheory ProbabilityTheory ENNReal Topology
 
 open MeasureTheory ProbabilityTheory MeasurableSpace TopologicalSpace
 

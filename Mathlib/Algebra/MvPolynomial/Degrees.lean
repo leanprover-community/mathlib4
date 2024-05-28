@@ -55,8 +55,6 @@ noncomputable section
 
 open Set Function Finsupp AddMonoidAlgebra
 
-open BigOperators
-
 universe u v w
 
 variable {R : Type u} {S : Type v}

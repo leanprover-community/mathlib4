@@ -59,7 +59,7 @@ We mostly follow the proof from [Kallenberg, *Foundations of modern probability*
 
 open TopologicalSpace Filter
 
-open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators Topology
+open scoped NNReal ENNReal MeasureTheory ProbabilityTheory Topology
 
 namespace MeasureTheory
 

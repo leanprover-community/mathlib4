@@ -47,7 +47,7 @@ on the direction would make them barely usable:
 
 noncomputable section
 
-open scoped Topology BigOperators Filter ENNReal NNReal
+open scoped Topology Filter ENNReal NNReal
 
 open Filter Asymptotics Set
 

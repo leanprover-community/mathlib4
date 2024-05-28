@@ -31,7 +31,7 @@ field of `k⟦X⟧` and `k`, when `k` is a field.
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 open Finset (antidiagonal mem_antidiagonal)
 

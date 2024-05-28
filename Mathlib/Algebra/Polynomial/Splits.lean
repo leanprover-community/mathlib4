@@ -26,7 +26,7 @@ irreducible factors over `L` have degree `1`.
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 universe u v w
 

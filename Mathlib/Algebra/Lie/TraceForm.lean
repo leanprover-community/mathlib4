@@ -39,7 +39,7 @@ variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 local notation "φ" => LieModule.toEnd R L M
 
 open LinearMap (trace)
-open Set BigOperators FiniteDimensional
+open Set FiniteDimensional
 
 namespace LieModule
 

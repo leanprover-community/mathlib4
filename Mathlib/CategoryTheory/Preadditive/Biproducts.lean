@@ -67,8 +67,6 @@ open CategoryTheory.Preadditive
 
 open scoped Classical
 
-open BigOperators
-
 universe v v' u u'
 
 noncomputable section
