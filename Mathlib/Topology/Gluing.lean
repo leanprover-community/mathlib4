@@ -287,7 +287,7 @@ theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
   have : D.f _ _ ⁻¹' (𝖣.ι j ⁻¹' (𝖣.ι i '' U)) = (D.t j i ≫ D.f _ _) ⁻¹' U := by
     ext x
     conv_rhs => rw [← Set.preimage_image_eq U (D.ι_injective _)]
-    generalize 𝖣.ι i '' U = U' -- was done with `simp` before #13170
+    generalize 𝖣.ι i '' U = U' -- next 4 lines were `simp` before #13170
     simp only [GlueData.diagram_l, GlueData.diagram_r, Set.mem_preimage, coe_comp,
       Function.comp_apply]
     erw [D.glue_condition_apply]
