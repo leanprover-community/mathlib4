@@ -93,7 +93,7 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α] :
   refine m.induction (p := fun m ↦ ∀ a b, a * b ∈ closure {r | IsUnit r ∨ Prime r} →
     (∃ (_ : ∀ y ∈ m, y ∈ {r | IsUnit r ∨ Prime r}), m.prod = a * b) →
     a ∈ closure {r | IsUnit r ∨ Prime r}) (fun _ _ _ hprod => subset_closure (Set.mem_def.2 ?_)) ?_
-  · left ; exact isUnit_of_mul_eq_one _ _ hprod.2.symm
+  · left; exact isUnit_of_mul_eq_one _ _ hprod.2.symm
   · simp only [exists_prop, and_imp, Multiset.prod_cons, Multiset.mem_cons, forall_eq_or_imp]
     intros _ s hind x y _ ha hs hprod
     rcases ha with ha₁ | ha₂
@@ -103,15 +103,15 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α] :
       refine multiset_prod_mem _ _ (Multiset.forall_mem_cons.2 ⟨subset_closure (Set.mem_def.2 ?_),
         Multiset.forall_mem_cons.2 ⟨subset_closure (Set.mem_def.2 ?_), (fun t ht =>
         subset_closure (hs t ht))⟩⟩)
-      left ; exact isUnit_of_mul_eq_one_right _ _ hk
-      left ; exact ha₁
+      left; exact isUnit_of_mul_eq_one_right _ _ hk
+      left; exact ha₁
       rw [← mul_one s.prod, ← hk, ← mul_assoc, ← mul_assoc, mul_eq_mul_right_iff, mul_comm]
-      left ; exact hprod
+      left; exact hprod
     · rcases ha₂.dvd_mul.1 (Dvd.intro _ hprod) with ⟨c, hc⟩ | ⟨c, hc⟩
-      rw [hc] ; rw [hc, mul_assoc] at hprod
+      rw [hc]; rw [hc, mul_assoc] at hprod
       refine' Submonoid.mul_mem _ (subset_closure (Set.mem_def.2 _))
         (hind _ _ _ hs (mul_left_cancel₀ ha₂.ne_zero hprod))
-      right ; exact ha₂
+      right; exact ha₂
       rw [← mul_left_cancel₀ ha₂.ne_zero hprod]
       exact multiset_prod_mem _ _ (fun t ht => subset_closure (hs t ht))
       rw [hc, mul_comm x _, mul_assoc, mul_comm c _] at hprod
