@@ -540,7 +540,7 @@ theorem Measurable.mul_iff_left {G : Type*} [MeasurableSpace G] [MeasurableSpace
     Measurable (g * f) ↔ Measurable g :=
   mul_comm g f ▸ Measurable.mul_iff_right hf
 
-@[to_additive (attr := measurability)]
+@[to_additive]
 theorem AEMeasurable.mul_iff_left {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [CommGroup G]
     [MeasurableMul₂ G] [MeasurableInv G] {μ : Measure α} {f g : α → G} (hf : AEMeasurable f μ) :
     AEMeasurable (g * f) μ ↔ AEMeasurable g μ :=
