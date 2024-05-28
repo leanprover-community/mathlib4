@@ -360,6 +360,12 @@ theorem DifferentiableAt.finset_prod (t : 𝕜) (hd : ∀ i ∈ u, Differentiabl
     DifferentiableAt 𝕜 (∏ i ∈ u, f i ·) t :=
   (HasDerivAt.finset_prod (fun i hi ↦ DifferentiableAt.hasDerivAt (hd i hi))).differentiableAt
 
+theorem DifferentiableOn.finset_prod (hd : ∀ i ∈ u, DifferentiableOn 𝕜 (f i) s) :
+    DifferentiableOn 𝕜 (∏ i ∈ u, f i ·) s := by
+   simp_rw [DifferentiableOn] at *
+   exact fun t ht ↦ (HasDerivWithinAt.finset_prod
+    (fun i hi ↦ DifferentiableWithinAt.hasDerivWithinAt (hd i hi t ht))).differentiableWithinAt
+
 end Prod
 
 section Div
