@@ -356,6 +356,10 @@ theorem derivWithin_finset_prod (hxs : UniqueDiffWithinAt 𝕜 s x)
       ∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • derivWithin (f i) s x :=
   (HasDerivWithinAt.finset_prod fun i hi ↦ (hf i hi).hasDerivWithinAt).derivWithin hxs
 
+theorem DifferentiableAt.finset_prod (hd : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) s) :
+    DifferentiableAt 𝕜 (∏ i ∈ u, f i ·) s :=
+  (HasDerivAt.finset_prod (fun i hi ↦ DifferentiableAt.hasDerivAt (hd i hi))).differentiableAt
+
 end Prod
 
 section Div
