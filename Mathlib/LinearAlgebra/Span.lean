@@ -407,8 +407,9 @@ theorem coe_iSup_of_chain (a : ℕ →o Submodule R M) : (↑(⨆ k, a k) : Set 
 /-- We can regard `coe_iSup_of_chain` as the statement that `(↑) : (Submodule R M) → Set M` is
 Scott continuous for the ω-complete partial order induced by the complete lattice structures. -/
 theorem coe_scott_continuous :
-    OmegaCompletePartialOrder.Continuous' ((↑) : Submodule R M → Set M) :=
-  ⟨SetLike.coe_mono, coe_iSup_of_chain⟩
+    OmegaCompletePartialOrder.ωScottContinuous ((↑) : Submodule R M → Set M) :=
+  OmegaCompletePartialOrder.continuous'_iff_ωScottContinuous.mp
+    ⟨SetLike.coe_mono, coe_iSup_of_chain⟩
 #align submodule.coe_scott_continuous Submodule.coe_scott_continuous
 
 @[simp]
