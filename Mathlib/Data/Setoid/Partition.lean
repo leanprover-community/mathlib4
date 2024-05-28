@@ -230,6 +230,15 @@ theorem IsPartition.pairwiseDisjoint {c : Set (Set α)} (hc : IsPartition c) :
   eqv_classes_disjoint hc.2
 #align setoid.is_partition.pairwise_disjoint Setoid.IsPartition.pairwiseDisjoint
 
+lemma _root_.Set.PairwiseDisjoint.isPartition_of_exists_of_ne_empty {α : Type*} {s : Set (Set α)}
+    (h₁ : s.PairwiseDisjoint id) (h₂ : ∀ a : α, ∃ x ∈ s, a ∈ x) (h₃ : ∅ ∉ s) :
+    Setoid.IsPartition s := by
+  refine ⟨h₃, fun a ↦ exists_unique_of_exists_of_unique (h₂ a) ?_⟩
+  intro b₁ b₂ hb₁ hb₂
+  apply h₁.elim hb₁.1 hb₂.1
+  simp only [Set.not_disjoint_iff]
+  exact ⟨a, hb₁.2, hb₂.2⟩
+
 theorem IsPartition.sUnion_eq_univ {c : Set (Set α)} (hc : IsPartition c) : ⋃₀ c = Set.univ :=
   Set.eq_univ_of_forall fun x =>
     Set.mem_sUnion.2 <|
