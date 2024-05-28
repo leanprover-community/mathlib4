@@ -147,7 +147,7 @@ instance isStronglyCartesian_of_isCartesian (p : 𝒳 ⥤ 𝒮) [p.IsFibered] {R
   rw [← inducedMap_comp p g ψ π]
   congr 1
   apply inducedMap_unique
-  rw [←assoc, inducedMap_comp]
+  rw [← assoc, inducedMap_comp]
   exact hπ_comp
 
 lemma isStronglyCartesian_of_has_pullbacks' (p : 𝒳 ⥤ 𝒮) (h : ∀ (a : 𝒳) (R : 𝒮) (f : R ⟶ p.obj a),
