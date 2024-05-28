@@ -55,7 +55,7 @@ such that `$T_*(s_V) = t|_V$`.
 See `TopCat.Presheaf.isLocallySurjective_iff` below.
 -/
 def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
-  CategoryTheory.IsLocallySurjective (Opens.grothendieckTopology X) T
+  CategoryTheory.Presheaf.IsLocallySurjective (Opens.grothendieckTopology X) T
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_locally_surjective TopCat.Presheaf.IsLocallySurjective
 
