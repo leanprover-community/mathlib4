@@ -11,6 +11,7 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
 import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Order.Filter.IndicatorFunction
 
 #align_import measure_theory.function.lp_space from "leanprover-community/mathlib"@"c4015acc0a223449d44061e27ddac1835a3852b9"
 
@@ -70,7 +71,7 @@ set_option linter.uppercaseLean3 false
 
 open TopologicalSpace MeasureTheory Filter
 
-open scoped NNReal ENNReal BigOperators Topology MeasureTheory Uniformity
+open scoped NNReal ENNReal Topology MeasureTheory Uniformity
 
 variable {α E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
@@ -832,10 +833,17 @@ theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt 
 @[simp]
 theorem indicatorConstLp_empty :
     indicatorConstLp p MeasurableSet.empty (by simp : μ ∅ ≠ ∞) c = 0 := by
-  rw [Lp.eq_zero_iff_ae_eq_zero]
-  convert indicatorConstLp_coeFn (E := E)
-  simp [Set.indicator_empty', Pi.zero_def]
+  simp only [indicatorConstLp, Set.indicator_empty', Memℒp.toLp_zero]
 #align measure_theory.indicator_const_empty MeasureTheory.indicatorConstLp_empty
+
+theorem indicatorConstLp_inj {s t : Set α} (hs : MeasurableSet s) (hsμ : μ s ≠ ∞)
+    (ht : MeasurableSet t) (htμ : μ t ≠ ∞) {c : E} (hc : c ≠ 0)
+    (h : indicatorConstLp p hs hsμ c = indicatorConstLp p ht htμ c) : s =ᵐ[μ] t :=
+  .of_indicator_const hc <|
+    calc
+      s.indicator (fun _ ↦ c) =ᵐ[μ] indicatorConstLp p hs hsμ c := indicatorConstLp_coeFn.symm
+      _ = indicatorConstLp p ht htμ c := by rw [h]
+      _ =ᵐ[μ] t.indicator (fun _ ↦ c) := indicatorConstLp_coeFn
 
 theorem memℒp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
@@ -1488,12 +1496,12 @@ theorem completeSpace_lp_of_cauchy_complete_ℒp [hp : Fact (1 ≤ p)]
 private theorem snorm'_sum_norm_sub_le_tsum_of_cauchy_snorm' {f : ℕ → α → E}
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) {p : ℝ} (hp1 : 1 ≤ p) {B : ℕ → ℝ≥0∞}
     (h_cau : ∀ N n m : ℕ, N ≤ n → N ≤ m → snorm' (f n - f m) p μ < B N) (n : ℕ) :
-    snorm' (fun x => ∑ i in Finset.range (n + 1), ‖f (i + 1) x - f i x‖) p μ ≤ ∑' i, B i := by
+    snorm' (fun x => ∑ i ∈ Finset.range (n + 1), ‖f (i + 1) x - f i x‖) p μ ≤ ∑' i, B i := by
   let f_norm_diff i x := ‖f (i + 1) x - f i x‖
   have hgf_norm_diff :
     ∀ n,
-      (fun x => ∑ i in Finset.range (n + 1), ‖f (i + 1) x - f i x‖) =
-        ∑ i in Finset.range (n + 1), f_norm_diff i :=
+      (fun x => ∑ i ∈ Finset.range (n + 1), ‖f (i + 1) x - f i x‖) =
+        ∑ i ∈ Finset.range (n + 1), f_norm_diff i :=
     fun n => funext fun x => by simp
   rw [hgf_norm_diff]
   refine (snorm'_sum_le (fun i _ => ((hf (i + 1)).sub (hf i)).norm) hp1).trans ?_
@@ -1503,16 +1511,16 @@ private theorem snorm'_sum_norm_sub_le_tsum_of_cauchy_snorm' {f : ℕ → α →
 
 private theorem lintegral_rpow_sum_coe_nnnorm_sub_le_rpow_tsum
     {f : ℕ → α → E} {p : ℝ} (hp1 : 1 ≤ p) {B : ℕ → ℝ≥0∞} (n : ℕ)
-    (hn : snorm' (fun x => ∑ i in Finset.range (n + 1), ‖f (i + 1) x - f i x‖) p μ ≤ ∑' i, B i) :
-    (∫⁻ a, (∑ i in Finset.range (n + 1), ‖f (i + 1) a - f i a‖₊ : ℝ≥0∞) ^ p ∂μ) ≤
+    (hn : snorm' (fun x => ∑ i ∈ Finset.range (n + 1), ‖f (i + 1) x - f i x‖) p μ ≤ ∑' i, B i) :
+    (∫⁻ a, (∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖₊ : ℝ≥0∞) ^ p ∂μ) ≤
       (∑' i, B i) ^ p := by
   have hp_pos : 0 < p := zero_lt_one.trans_le hp1
   rw [← one_div_one_div p, @ENNReal.le_rpow_one_div_iff _ _ (1 / p) (by simp [hp_pos]),
     one_div_one_div p]
   simp_rw [snorm'] at hn
   have h_nnnorm_nonneg :
-    (fun a => (‖∑ i in Finset.range (n + 1), ‖f (i + 1) a - f i a‖‖₊ : ℝ≥0∞) ^ p) = fun a =>
-      (∑ i in Finset.range (n + 1), (‖f (i + 1) a - f i a‖₊ : ℝ≥0∞)) ^ p := by
+    (fun a => (‖∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖‖₊ : ℝ≥0∞) ^ p) = fun a =>
+      (∑ i ∈ Finset.range (n + 1), (‖f (i + 1) a - f i a‖₊ : ℝ≥0∞)) ^ p := by
     ext1 a
     congr
     simp_rw [← ofReal_norm_eq_coe_nnnorm]
@@ -1521,7 +1529,7 @@ private theorem lintegral_rpow_sum_coe_nnnorm_sub_le_rpow_tsum
       exact Finset.sum_nonneg fun x _ => norm_nonneg _
     · exact fun x _ => norm_nonneg _
   change
-    (∫⁻ a, (fun x => ↑‖∑ i in Finset.range (n + 1), ‖f (i + 1) x - f i x‖‖₊ ^ p) a ∂μ) ^ (1 / p) ≤
+    (∫⁻ a, (fun x => ↑‖∑ i ∈ Finset.range (n + 1), ‖f (i + 1) x - f i x‖‖₊ ^ p) a ∂μ) ^ (1 / p) ≤
       ∑' i, B i at hn
   rwa [h_nnnorm_nonneg] at hn
 
@@ -1529,23 +1537,23 @@ private theorem lintegral_rpow_tsum_coe_nnnorm_sub_le_tsum {f : ℕ → α → E
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) {p : ℝ} (hp1 : 1 ≤ p) {B : ℕ → ℝ≥0∞}
     (h :
       ∀ n,
-        (∫⁻ a, (∑ i in Finset.range (n + 1), ‖f (i + 1) a - f i a‖₊ : ℝ≥0∞) ^ p ∂μ) ≤
+        (∫⁻ a, (∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖₊ : ℝ≥0∞) ^ p ∂μ) ≤
           (∑' i, B i) ^ p) :
     (∫⁻ a, (∑' i, ‖f (i + 1) a - f i a‖₊ : ℝ≥0∞) ^ p ∂μ) ^ (1 / p) ≤ ∑' i, B i := by
   have hp_pos : 0 < p := zero_lt_one.trans_le hp1
   suffices h_pow : (∫⁻ a, (∑' i, ‖f (i + 1) a - f i a‖₊ : ℝ≥0∞) ^ p ∂μ) ≤ (∑' i, B i) ^ p by
     rwa [← ENNReal.le_rpow_one_div_iff (by simp [hp_pos] : 0 < 1 / p), one_div_one_div]
   have h_tsum_1 :
-    ∀ g : ℕ → ℝ≥0∞, ∑' i, g i = atTop.liminf fun n => ∑ i in Finset.range (n + 1), g i := by
+    ∀ g : ℕ → ℝ≥0∞, ∑' i, g i = atTop.liminf fun n => ∑ i ∈ Finset.range (n + 1), g i := by
     intro g
     rw [ENNReal.tsum_eq_liminf_sum_nat, ← liminf_nat_add _ 1]
   simp_rw [h_tsum_1 _]
   rw [← h_tsum_1]
   have h_liminf_pow :
     (∫⁻ a, (atTop.liminf
-      fun n => ∑ i in Finset.range (n + 1), (‖f (i + 1) a - f i a‖₊ : ℝ≥0∞)) ^ p ∂μ) =
+      fun n => ∑ i ∈ Finset.range (n + 1), (‖f (i + 1) a - f i a‖₊ : ℝ≥0∞)) ^ p ∂μ) =
       ∫⁻ a, atTop.liminf
-        fun n => (∑ i in Finset.range (n + 1), (‖f (i + 1) a - f i a‖₊ : ℝ≥0∞)) ^ p ∂μ := by
+        fun n => (∑ i ∈ Finset.range (n + 1), (‖f (i + 1) a - f i a‖₊ : ℝ≥0∞)) ^ p ∂μ := by
     refine lintegral_congr fun x => ?_
     have h_rpow_mono := ENNReal.strictMono_rpow_of_pos (zero_lt_one.trans_le hp1)
     have h_rpow_surj := (ENNReal.rpow_left_bijective hp_pos.ne.symm).2
@@ -1581,11 +1589,11 @@ theorem ae_tendsto_of_cauchy_snorm' [CompleteSpace E] {f : ℕ → α → E} {p 
     ∀ᵐ x ∂μ, ∃ l : E, atTop.Tendsto (fun n => f n x) (𝓝 l) := by
   have h_summable : ∀ᵐ x ∂μ, Summable fun i : ℕ => f (i + 1) x - f i x := by
     have h1 :
-      ∀ n, snorm' (fun x => ∑ i in Finset.range (n + 1), ‖f (i + 1) x - f i x‖) p μ ≤ ∑' i, B i :=
+      ∀ n, snorm' (fun x => ∑ i ∈ Finset.range (n + 1), ‖f (i + 1) x - f i x‖) p μ ≤ ∑' i, B i :=
       snorm'_sum_norm_sub_le_tsum_of_cauchy_snorm' hf hp1 h_cau
     have h2 :
       ∀ n,
-        (∫⁻ a, (∑ i in Finset.range (n + 1), ‖f (i + 1) a - f i a‖₊ : ℝ≥0∞) ^ p ∂μ) ≤
+        (∫⁻ a, (∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖₊ : ℝ≥0∞) ^ p ∂μ) ≤
           (∑' i, B i) ^ p :=
       fun n => lintegral_rpow_sum_coe_nnnorm_sub_le_rpow_tsum hp1 n (h1 n)
     have h3 : (∫⁻ a, (∑' i, ‖f (i + 1) a - f i a‖₊ : ℝ≥0∞) ^ p ∂μ) ^ (1 / p) ≤ ∑' i, B i :=
@@ -1595,17 +1603,17 @@ theorem ae_tendsto_of_cauchy_snorm' [CompleteSpace E] {f : ℕ → α → E} {p 
     exact h4.mono fun x hx => .of_nnnorm <| ENNReal.tsum_coe_ne_top_iff_summable.mp hx.ne
   have h :
     ∀ᵐ x ∂μ, ∃ l : E,
-      atTop.Tendsto (fun n => ∑ i in Finset.range n, (f (i + 1) x - f i x)) (𝓝 l) := by
+      atTop.Tendsto (fun n => ∑ i ∈ Finset.range n, (f (i + 1) x - f i x)) (𝓝 l) := by
     refine h_summable.mono fun x hx => ?_
     let hx_sum := hx.hasSum.tendsto_sum_nat
     exact ⟨∑' i, (f (i + 1) x - f i x), hx_sum⟩
   refine h.mono fun x hx => ?_
   cases' hx with l hx
   have h_rw_sum :
-      (fun n => ∑ i in Finset.range n, (f (i + 1) x - f i x)) = fun n => f n x - f 0 x := by
+      (fun n => ∑ i ∈ Finset.range n, (f (i + 1) x - f i x)) = fun n => f n x - f 0 x := by
     ext1 n
     change
-      (∑ i : ℕ in Finset.range n, ((fun m => f m x) (i + 1) - (fun m => f m x) i)) = f n x - f 0 x
+      (∑ i ∈ Finset.range n, ((fun m => f m x) (i + 1) - (fun m => f m x) i)) = f n x - f 0 x
     rw [Finset.sum_range_sub (fun m => f m x)]
   rw [h_rw_sum] at hx
   have hf_rw : (fun n => f n x) = fun n => f n x - f 0 x + f 0 x := by

@@ -23,7 +23,7 @@ matrix, trace, diagonal
 -/
 
 
-open BigOperators Matrix
+open Matrix
 
 namespace Matrix
 
@@ -111,7 +111,7 @@ theorem trace_multiset_sum (s : Multiset (Matrix n n R)) : trace s.sum = (s.map 
 
 @[simp]
 theorem trace_sum (s : Finset ι) (f : ι → Matrix n n R) :
-    trace (∑ i in s, f i) = ∑ i in s, trace (f i) :=
+    trace (∑ i ∈ s, f i) = ∑ i ∈ s, trace (f i) :=
   map_sum (traceAddMonoidHom n R) f s
 #align matrix.trace_sum Matrix.trace_sum
 

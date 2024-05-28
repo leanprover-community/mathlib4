@@ -33,8 +33,6 @@ primitive root of unity `μ : K`, where `K` is a field of characteristic `0`.
 -/
 
 
-open scoped BigOperators
-
 namespace Polynomial
 
 variable {R : Type*} [CommRing R] {n : ℕ}
@@ -95,7 +93,7 @@ private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} 
   rw [← Finset.prod_sdiff hni, Finset.prod_pair key.ne, hk, hj] at this
   have hn := (X_pow_sub_one_separable_iff.mpr <| NeZero.natCast_ne n K).squarefree
   rw [← this, Squarefree] at hn
-  specialize hn (X - C μ) ⟨(∏ x in n.divisors \ {i, n}, cyclotomic x K) * k * j, by ring⟩
+  specialize hn (X - C μ) ⟨(∏ x ∈ n.divisors \ {i, n}, cyclotomic x K) * k * j, by ring⟩
   simp [Polynomial.isUnit_iff_degree_eq_zero] at hn
 
 theorem isRoot_cyclotomic_iff [NeZero (n : R)] {μ : R} :

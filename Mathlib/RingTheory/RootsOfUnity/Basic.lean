@@ -62,7 +62,7 @@ This creates a little bit of friction, but lemmas like `IsPrimitiveRoot.isUnit` 
 -/
 
 
-open scoped Classical BigOperators Polynomial
+open scoped Classical Polynomial
 
 noncomputable section
 
@@ -700,16 +700,16 @@ theorem neg_one (p : ℕ) [Nontrivial R] [h : CharP R p] (hp : p ≠ 2) :
   rwa [ringChar.eq_iff.mpr h]
 #align is_primitive_root.neg_one IsPrimitiveRoot.neg_one
 
-/-- If `1 < k` then `(∑ i in range k, ζ ^ i) = 0`. -/
+/-- If `1 < k` then `(∑ i ∈ range k, ζ ^ i) = 0`. -/
 theorem geom_sum_eq_zero [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
-    ∑ i in range k, ζ ^ i = 0 := by
+    ∑ i ∈ range k, ζ ^ i = 0 := by
   refine eq_zero_of_ne_zero_of_mul_left_eq_zero (sub_ne_zero_of_ne (hζ.ne_one hk).symm) ?_
   rw [mul_neg_geom_sum, hζ.pow_eq_one, sub_self]
 #align is_primitive_root.geom_sum_eq_zero IsPrimitiveRoot.geom_sum_eq_zero
 
-/-- If `1 < k`, then `ζ ^ k.pred = -(∑ i in range k.pred, ζ ^ i)`. -/
+/-- If `1 < k`, then `ζ ^ k.pred = -(∑ i ∈ range k.pred, ζ ^ i)`. -/
 theorem pow_sub_one_eq [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
-    ζ ^ k.pred = -∑ i in range k.pred, ζ ^ i := by
+    ζ ^ k.pred = -∑ i ∈ range k.pred, ζ ^ i := by
   rw [eq_neg_iff_add_eq_zero, add_comm, ← sum_range_succ, ← Nat.succ_eq_add_one,
     Nat.succ_pred_eq_of_pos (pos_of_gt hk), hζ.geom_sum_eq_zero hk]
 #align is_primitive_root.pow_sub_one_eq IsPrimitiveRoot.pow_sub_one_eq

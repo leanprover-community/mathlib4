@@ -62,7 +62,7 @@ def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan �
 /-- The product is homeomorphic to the product of the underlying spaces,
 equipped with the product topology.
 -/
-def piIsoPi {ι : Type v} (α : ι → TopCat.{max v u}) : ∏ α ≅ TopCat.of (∀ i, α i) :=
+def piIsoPi {ι : Type v} (α : ι → TopCat.{max v u}) : ∏ᶜ α ≅ TopCat.of (∀ i, α i) :=
   (limit.isLimit _).conePointUniqueUpToIso (piFanIsLimit.{v, u} α)
   -- Specifying the universes in `piFanIsLimit` wasn't necessary when we had `TopCatMax` 
 #align Top.pi_iso_pi TopCat.piIsoPi
@@ -78,10 +78,10 @@ theorem piIsoPi_inv_π_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : �
   ConcreteCategory.congr_hom (piIsoPi_inv_π α i) x
 #align Top.pi_iso_pi_inv_π_apply TopCat.piIsoPi_inv_π_apply
 
--- Porting note: needing the type ascription on `∏ α : TopCat.{max v u}` is unfortunate.
+-- Porting note: needing the type ascription on `∏ᶜ α : TopCat.{max v u}` is unfortunate.
 @[simp]
 theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι)
-    (x : (∏ α : TopCat.{max v u})) : (piIsoPi α).hom x i = (Pi.π α i : _) x := by
+    (x : (∏ᶜ α : TopCat.{max v u})) : (piIsoPi α).hom x i = (Pi.π α i : _) x := by
   have := piIsoPi_inv_π α i
   rw [Iso.inv_comp_eq] at this
   exact ConcreteCategory.congr_hom this x

@@ -201,6 +201,12 @@ theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 :=
   exact h
 #align lie_algebra.to_lie_submodule_le_root_space_zero LieAlgebra.toLieSubmodule_le_rootSpace_zero
 
+/-- This enables the instance `Zero (Weight R H L)`. -/
+instance [Nontrivial H] : Nontrivial (weightSpace L (0 : H → R)) := by
+  obtain ⟨⟨x, hx⟩, ⟨y, hy⟩, e⟩ := exists_pair_ne H
+  exact ⟨⟨x, toLieSubmodule_le_rootSpace_zero R L H hx⟩,
+    ⟨y, toLieSubmodule_le_rootSpace_zero R L H hy⟩, by simpa using e⟩
+
 theorem le_zeroRootSubalgebra : H ≤ zeroRootSubalgebra R L H := by
   rw [← LieSubalgebra.coe_submodule_le_coe_submodule, ← H.coe_toLieSubmodule,
     coe_zeroRootSubalgebra, LieSubmodule.coeSubmodule_le_coeSubmodule]

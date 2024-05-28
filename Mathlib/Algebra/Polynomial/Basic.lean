@@ -21,7 +21,7 @@ directory.
 * `monomial n a` is the polynomial `a X^n`. Note that `monomial n` is defined as an `R`-linear map.
 * `C a` is the constant polynomial `a`. Note that `C` is defined as a ring homomorphism.
 * `X` is the polynomial `X`, i.e., `monomial 1 1`.
-* `p.sum f` is `∑ n in p.support, f n (p.coeff n)`, i.e., one sums the values of functions applied
+* `p.sum f` is `∑ n ∈ p.support, f n (p.coeff n)`, i.e., one sums the values of functions applied
   to coefficients of the polynomial `p`.
 * `p.erase n` is the polynomial `p` in which one removes the `c X^n` term.
 
@@ -72,7 +72,7 @@ open AddMonoidAlgebra
 open Finsupp hiding single
 open Function hiding Commute
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 
@@ -389,12 +389,12 @@ instance [DecidableEq R] : DecidableEq R[X] :=
 end AddMonoidAlgebra
 
 theorem ofFinsupp_sum {ι : Type*} (s : Finset ι) (f : ι → R[ℕ]) :
-    (⟨∑ i in s, f i⟩ : R[X]) = ∑ i in s, ⟨f i⟩ :=
+    (⟨∑ i ∈ s, f i⟩ : R[X]) = ∑ i ∈ s, ⟨f i⟩ :=
   map_sum (toFinsuppIso R).symm f s
 #align polynomial.of_finsupp_sum Polynomial.ofFinsupp_sum
 
 theorem toFinsupp_sum {ι : Type*} (s : Finset ι) (f : ι → R[X]) :
-    (∑ i in s, f i : R[X]).toFinsupp = ∑ i in s, (f i).toFinsupp :=
+    (∑ i ∈ s, f i : R[X]).toFinsupp = ∑ i ∈ s, (f i).toFinsupp :=
   map_sum (toFinsuppIso R) f s
 #align polynomial.to_finsupp_sum Polynomial.toFinsupp_sum
 
@@ -969,23 +969,23 @@ theorem natCast_mul (n : ℕ) (p : R[X]) : (n : R[X]) * p = n • p :=
 
 /-- Summing the values of a function applied to the coefficients of a polynomial -/
 def sum {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) : S :=
-  ∑ n in p.support, f n (p.coeff n)
+  ∑ n ∈ p.support, f n (p.coeff n)
 #align polynomial.sum Polynomial.sum
 
 theorem sum_def {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) :
-    p.sum f = ∑ n in p.support, f n (p.coeff n) :=
+    p.sum f = ∑ n ∈ p.support, f n (p.coeff n) :=
   rfl
 #align polynomial.sum_def Polynomial.sum_def
 
 theorem sum_eq_of_subset {S : Type*} [AddCommMonoid S] {p : R[X]} (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) {s : Finset ℕ} (hs : p.support ⊆ s) :
-    p.sum f = ∑ n in s, f n (p.coeff n) :=
+    p.sum f = ∑ n ∈ s, f n (p.coeff n) :=
   Finsupp.sum_of_support_subset _ hs f (fun i _ ↦ hf i)
 #align polynomial.sum_eq_of_subset Polynomial.sum_eq_of_subset
 
 /-- Expressing the product of two polynomials as a double sum. -/
 theorem mul_eq_sum_sum :
-    p * q = ∑ i in p.support, q.sum fun j a => (monomial (i + j)) (p.coeff i * a) := by
+    p * q = ∑ i ∈ p.support, q.sum fun j a => (monomial (i + j)) (p.coeff i * a) := by
   apply toFinsupp_injective
   rcases p with ⟨⟩; rcases q with ⟨⟩
   simp_rw [sum, coeff, toFinsupp_sum, support, toFinsupp_mul, toFinsupp_monomial,

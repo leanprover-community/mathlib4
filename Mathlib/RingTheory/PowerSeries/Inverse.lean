@@ -31,7 +31,7 @@ field of `k⟦X⟧` and `k`, when `k` is a field.
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 open Finset (antidiagonal mem_antidiagonal)
 
@@ -56,7 +56,7 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
       if n = 0 then a
       else
         -a *
-          ∑ x in antidiagonal n,
+          ∑ x ∈ antidiagonal n,
             if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 := by
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [coeff, inv.aux, MvPowerSeries.coeff_inv_aux]
@@ -91,7 +91,7 @@ theorem coeff_invOfUnit (n : ℕ) (φ : R⟦X⟧) (u : Rˣ) :
       if n = 0 then ↑u⁻¹
       else
         -↑u⁻¹ *
-          ∑ x in antidiagonal n,
+          ∑ x ∈ antidiagonal n,
             if x.2 < n then coeff R x.1 φ * coeff R x.2 (invOfUnit φ u) else 0 :=
   coeff_inv_aux n (↑u⁻¹ : R) φ
 #align power_series.coeff_inv_of_unit PowerSeries.coeff_invOfUnit
@@ -142,7 +142,7 @@ theorem coeff_inv (n) (φ : k⟦X⟧) :
       if n = 0 then (constantCoeff k φ)⁻¹
       else
         -(constantCoeff k φ)⁻¹ *
-          ∑ x in antidiagonal n,
+          ∑ x ∈ antidiagonal n,
             if x.2 < n then coeff k x.1 φ * coeff k x.2 φ⁻¹ else 0 :=
   by rw [inv_eq_inv_aux, coeff_inv_aux n (constantCoeff k φ)⁻¹ φ]
 #align power_series.coeff_inv PowerSeries.coeff_inv

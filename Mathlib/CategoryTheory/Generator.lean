@@ -608,7 +608,7 @@ theorem isCoseparator_prod_of_isCoseparator_right (G H : C) [HasBinaryProduct G 
 #align category_theory.is_coseparator_prod_of_is_coseparator_right CategoryTheory.isCoseparator_prod_of_isCoseparator_right
 
 theorem isCoseparator_pi {β : Type w} (f : β → C) [HasProduct f] :
-    IsCoseparator (∏ f) ↔ IsCoseparating (Set.range f) := by
+    IsCoseparator (∏ᶜ f) ↔ IsCoseparating (Set.range f) := by
   refine
     ⟨fun h X Y u v huv => ?_, fun h =>
       (isCoseparator_def _).2 fun X Y u v huv => h _ _ fun Z hZ g => ?_⟩
@@ -619,7 +619,7 @@ theorem isCoseparator_pi {β : Type w} (f : β → C) [HasProduct f] :
 #align category_theory.is_coseparator_pi CategoryTheory.isCoseparator_pi
 
 theorem isCoseparator_pi_of_isCoseparator {β : Type w} (f : β → C) [HasProduct f] (b : β)
-    (hb : IsCoseparator (f b)) : IsCoseparator (∏ f) :=
+    (hb : IsCoseparator (f b)) : IsCoseparator (∏ᶜ f) :=
   (isCoseparator_pi _).2 <| IsCoseparating.mono hb <| by simp
 #align category_theory.is_coseparator_pi_of_is_coseparator CategoryTheory.isCoseparator_pi_of_isCoseparator
 

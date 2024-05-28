@@ -67,7 +67,7 @@ conditional expectation, conditional expected value
 
 open TopologicalSpace MeasureTheory.Lp Filter
 
-open scoped ENNReal Topology BigOperators MeasureTheory
+open scoped ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
 
@@ -296,7 +296,7 @@ theorem condexp_add (hf : Integrable f μ) (hg : Integrable g μ) :
 #align measure_theory.condexp_add MeasureTheory.condexp_add
 
 theorem condexp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → F'}
-    (hf : ∀ i ∈ s, Integrable (f i) μ) : μ[∑ i in s, f i|m] =ᵐ[μ] ∑ i in s, μ[f i|m] := by
+    (hf : ∀ i ∈ s, Integrable (f i) μ) : μ[∑ i ∈ s, f i|m] =ᵐ[μ] ∑ i ∈ s, μ[f i|m] := by
   induction' s using Finset.induction_on with i s his heq hf
   · rw [Finset.sum_empty, Finset.sum_empty, condexp_zero]
   · rw [Finset.sum_insert his, Finset.sum_insert his]

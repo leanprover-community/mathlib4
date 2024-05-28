@@ -40,11 +40,7 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 
 noncomputable section
 
-open BigOperators
-
 open Set Function Finsupp AddMonoidAlgebra
-
-open BigOperators
 
 variable {σ τ α R S : Type*} [CommSemiring R] [CommSemiring S]
 

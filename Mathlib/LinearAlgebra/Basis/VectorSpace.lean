@@ -32,8 +32,6 @@ basis, bases
 
 open Function Set Submodule
 
-open BigOperators
-
 set_option autoImplicit false
 variable {ι : Type*} {ι' : Type*} {K : Type*} {V : Type*} {V' : Type*}
 

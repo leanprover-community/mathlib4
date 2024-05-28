@@ -33,7 +33,7 @@ variable {α : Type u} {β : Type v}
 
 open Set Function
 
-open BigOperators Pointwise
+open Pointwise
 
 /-- A (left) ideal in a semiring `R` is an additive submonoid `s` such that
 `a * b ∈ s` whenever `b ∈ s`. If `R` is a ring, then `s` is an additive subgroup.  -/
@@ -77,7 +77,7 @@ theorem ext {I J : Ideal α} (h : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
 #align ideal.ext Ideal.ext
 
 theorem sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
-    (∀ c ∈ t, f c ∈ I) → (∑ i in t, f i) ∈ I :=
+    (∀ c ∈ t, f c ∈ I) → (∑ i ∈ t, f i) ∈ I :=
   Submodule.sum_mem I
 #align ideal.sum_mem Ideal.sum_mem
 
@@ -663,7 +663,7 @@ theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : �
 #align ideal.pow_multiset_sum_mem_span_pow Ideal.pow_multiset_sum_mem_span_pow
 
 theorem sum_pow_mem_span_pow {ι} (s : Finset ι) (f : ι → α) (n : ℕ) :
-    (∑ i in s, f i) ^ (s.card * n + 1) ∈ span ((fun i => f i ^ (n + 1)) '' s) := by
+    (∑ i ∈ s, f i) ^ (s.card * n + 1) ∈ span ((fun i => f i ^ (n + 1)) '' s) := by
   classical
   simpa only [Multiset.card_map, Multiset.map_map, comp_apply, Multiset.toFinset_map,
     Finset.coe_image, Finset.val_toFinset] using pow_multiset_sum_mem_span_pow (s.1.map f) n
