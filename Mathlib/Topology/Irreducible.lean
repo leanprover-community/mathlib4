@@ -140,19 +140,17 @@ end IsIrreducibleClosed
 
 end IsIrreducibleClosed
 
-theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X] :
+theorem irreducibleComponents_eq_maximals_irreducibleClosed (X : Type*) [TopologicalSpace X] :
     irreducibleComponents X = maximals (· ≤ ·) { s : Set X | IsIrreducibleClosed s } := by
   ext s
   constructor
   · intro H
-    simp_rw [IsIrreducibleClosed, and_comm]
-    exact ⟨⟨isClosed_of_mem_irreducibleComponents _ H, H.1⟩, fun x h e => H.2 h.2 e⟩
+    exact ⟨⟨H.1, isClosed_of_mem_irreducibleComponents _ H⟩, fun x h e => H.2 h.1 e⟩
   · intro H
     refine ⟨H.1.1, fun x h e => ?_⟩
-    simp_rw [IsIrreducibleClosed, and_comm] at H
-    have : closure x ≤ s := H.2 ⟨isClosed_closure, h.closure⟩ (e.trans subset_closure)
+    have : closure x ≤ s := H.2 ⟨h.closure, isClosed_closure⟩ (e.trans subset_closure)
     exact le_trans subset_closure this
-#align irreducible_components_eq_maximals_closed irreducibleComponents_eq_maximals_closed
+#align irreducible_components_eq_maximals_closed irreducibleComponents_eq_maximals_irreducibleClosed
 
 /-- A maximal irreducible set that contains a given point. -/
 def irreducibleComponent (x : X) : Set X :=
