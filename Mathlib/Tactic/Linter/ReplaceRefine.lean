@@ -52,7 +52,7 @@ def getRefine' : Syntax → Array (Syntax × SourceInfo × Array Syntax × Optio
 
 This avoids producing two declarations with the same name in the environment.
 -/
-def toExample {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] : Syntax → m Syntax
+def toExample {m : Type → Type} [Monad m] [MonadQuotation m] : Syntax → m Syntax
   | `($dm:declModifiers theorem $_did:declId $ds* : $t $dv:declVal) =>
     `($dm:declModifiers example $ds* : $t $dv:declVal)
   | `($dm:declModifiers lemma $_did:declId $ds* : $t $dv:declVal) =>
