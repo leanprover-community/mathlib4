@@ -109,12 +109,12 @@ theorem multiset_sum_mul_self (l : Multiset R) :
     l.sum * l.sum = (Multiset.map (fun x => x * x) l).sum := by simp_rw [← pow_two, multiset_sum_sq]
 #align char_two.multiset_sum_mul_self CharTwo.multiset_sum_mul_self
 
-theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i in s, f i) ^ 2 = ∑ i in s, f i ^ 2 :=
+theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i ∈ s, f i) ^ 2 = ∑ i ∈ s, f i ^ 2 :=
   sum_pow_char _ _ _
 #align char_two.sum_sq CharTwo.sum_sq
 
 theorem sum_mul_self (s : Finset ι) (f : ι → R) :
-    ((∑ i in s, f i) * ∑ i in s, f i) = ∑ i in s, f i * f i := by simp_rw [← pow_two, sum_sq]
+    ((∑ i ∈ s, f i) * ∑ i ∈ s, f i) = ∑ i ∈ s, f i * f i := by simp_rw [← pow_two, sum_sq]
 #align char_two.sum_mul_self CharTwo.sum_mul_self
 
 end CommSemiring
