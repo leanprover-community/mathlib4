@@ -54,7 +54,7 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     let C := Set.range f
     have hC : IsClosed C := (isCompact_range f.continuous).isClosed
     have hyU : y ∈ Cᶜ := by
-      refine' Set.mem_compl _
+      refine Set.mem_compl ?_
       rintro ⟨y', hy'⟩
       exact hy y' hy'
     have hUy : Cᶜ ∈ nhds y := hC.compl_mem_nhds hyU
@@ -70,8 +70,8 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
         dsimp [g, LocallyConstant.ofIsClopen]
         erw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
           Function.comp_apply, if_neg]
-        refine' mt (fun α => hVU α) _
-        simp only [C, concreteCategory_forget_obj, Set.mem_compl_iff, Set.mem_range, not_exists,
+        refine mt (fun α => hVU α) ?_
+        simp only [C, Set.mem_compl_iff, Set.mem_range, not_exists,
           not_forall, not_not]
         exact ⟨x, rfl⟩
       apply_fun fun e => (e y).down at H

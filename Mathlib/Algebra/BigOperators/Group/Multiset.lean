@@ -22,9 +22,7 @@ and sums indexed by finite sets.
 * `Multiset.sum`: `s.sum f` is the sum of `f i` over all `i ∈ s`.
 -/
 
-assert_not_exists Ring
--- TODO: After #12974,
--- assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero
 
 variable {F ι α β γ : Type*}
 
@@ -122,6 +120,11 @@ theorem prod_nsmul (m : Multiset α) : ∀ n : ℕ, (n • m).prod = m.prod ^ n
     rfl
   | n + 1 => by rw [add_nsmul, one_nsmul, pow_add, pow_one, prod_add, prod_nsmul m n]
 #align multiset.prod_nsmul Multiset.prod_nsmul
+
+@[to_additive]
+theorem prod_filter_mul_prod_filter_not (p) [DecidablePred p] :
+    (s.filter p).prod * (s.filter (fun a ↦ ¬ p a)).prod = s.prod := by
+  rw [← prod_add, filter_add_not]
 
 @[to_additive (attr := simp)]
 theorem prod_replicate (n : ℕ) (a : α) : (replicate n a).prod = a ^ n := by

@@ -3,7 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.Function.Support
+import Mathlib.Algebra.Group.Support
 import Mathlib.Order.WellFoundedSet
 
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
@@ -224,7 +224,7 @@ instance [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) :=
   ⟨by
     obtain ⟨r, s, rs⟩ := exists_pair_ne R
     inhabit Γ
-    refine' ⟨single default r, single default s, fun con => rs _⟩
+    refine ⟨single default r, single default s, fun con => rs ?_⟩
     rw [← single_coeff_same (default : Γ) r, con, single_coeff_same]⟩
 
 section Order

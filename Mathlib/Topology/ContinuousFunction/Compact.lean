@@ -30,7 +30,7 @@ you should restate it here. You can also use
 noncomputable section
 
 open scoped Classical
-open Topology NNReal BoundedContinuousFunction BigOperators
+open Topology NNReal BoundedContinuousFunction
 
 open Set Filter Metric
 
@@ -484,9 +484,9 @@ variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
-  refine' (ContinuousMap.exists_tendsto_compactOpen_iff_forall _).2 fun K hK => _
+  refine (ContinuousMap.exists_tendsto_compactOpen_iff_forall _).2 fun K hK => ?_
   lift K to Compacts X using hK
-  have A : ∀ s : Finset ι, restrict (↑K) (∑ i in s, F i) = ∑ i in s, restrict K (F i) := by
+  have A : ∀ s : Finset ι, restrict (↑K) (∑ i ∈ s, F i) = ∑ i ∈ s, restrict K (F i) := by
     intro s
     ext1 x
     simp
