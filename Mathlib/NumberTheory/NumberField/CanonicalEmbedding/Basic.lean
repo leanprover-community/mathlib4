@@ -246,14 +246,12 @@ noncomputable section norm
 
 open scoped Classical
 
-open BigOperators
-
 variable [NumberField K] {K}
 
 /-- The norm of `x` is `∏ w real, ‖x‖_w * ∏ w complex, ‖x‖_w ^ 2`. It is defined such that
 the norm of `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a`
 over `ℚ`, see `norm_eq_norm`. -/
-protected def norm  : (E K) →*₀ ℝ where
+protected def norm : (E K) →*₀ ℝ where
   toFun := fun x ↦ (∏ w, ‖x.1 w‖) * ∏ w, ‖x.2 w‖ ^ 2
   map_one' := by simp only [Prod.fst_one, Pi.one_apply, norm_one, Finset.prod_const_one,
     Prod.snd_one, one_pow, mul_one]
