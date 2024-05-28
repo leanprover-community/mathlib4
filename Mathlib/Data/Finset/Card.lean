@@ -147,8 +147,7 @@ theorem card_insert_eq_ite : card (insert a s) = if a ∈ s then s.card else s.c
 #align finset.card_insert_eq_ite Finset.card_insert_eq_ite
 
 @[simp]
-theorem card_one_or_two :
-    ({a,b} : Finset α).card = 1 ∨ ({a,b} : Finset α).card = 2 := by
+theorem card_pair_eq_one_or_two : ({a,b} : Finset α).card = 1 ∨ ({a,b} : Finset α).card = 2 := by
   simp [card_insert_eq_ite]
   tauto
 
