@@ -22,7 +22,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 
 open scoped Classical
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal BigOperators
+open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 
 noncomputable section
 
