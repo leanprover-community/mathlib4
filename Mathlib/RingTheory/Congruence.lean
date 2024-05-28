@@ -508,6 +508,11 @@ theorem coe_inf {c d : RingCon R} : ⇑(c ⊓ d) = ⇑c ⊓ ⇑d := rfl
 theorem inf_iff_and {c d : RingCon R} {x y} : (c ⊓ d) x y ↔ c x y ∧ d x y :=
   Iff.rfl
 
+instance [Nontrivial R] : Nontrivial (RingCon R) where
+  exists_pair_ne :=
+    let ⟨x, y, ne⟩ := exists_pair_ne R
+    ⟨⊥, ⊤, ne_of_apply_ne (· x y) <| by simp [ne]⟩
+
 /-- The inductively defined smallest congruence relation containing a binary relation `r` equals
     the infimum of the set of congruence relations containing `r`. -/
 theorem ringConGen_eq (r : R → R → Prop) :
