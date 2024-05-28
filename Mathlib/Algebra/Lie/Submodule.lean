@@ -1545,3 +1545,29 @@ def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
   exact e.surjective
 
 end TopEquiv
+
+namespace LieSubmodule
+
+variable {K L V : Type*} [Field K] [LieRing L] [LieAlgebra K L]
+variable [AddCommGroup V] [Module K V] [LieRingModule L V]
+
+open FiniteDimensional Submodule in
+lemma exists_atom_le_of_finite [FiniteDimensional K V] :
+    ∀ (N : LieSubmodule K L V), N ≠ ⊥ → ∃ a : LieSubmodule K L V, IsAtom a ∧ a ≤ N := by
+  intro N hN
+  by_cases H : ∀ b, b < N → b = ⊥
+  · exact ⟨N, ⟨hN, H⟩, le_rfl⟩
+  push_neg at H
+  obtain ⟨b, hbN, hb⟩ := H
+  obtain ⟨a, ha, hab⟩ := exists_atom_le_of_finite b hb
+  exact ⟨a, ha, hab.trans hbN.le⟩
+termination_by N => finrank K N
+decreasing_by exact finrank_lt_finrank_of_lt hbN
+
+instance [FiniteDimensional K V] : IsAtomic (LieSubmodule K L V) := by
+  constructor
+  intro N
+  rw [or_iff_not_imp_left]
+  exact exists_atom_le_of_finite N
+
+end LieSubmodule
