@@ -46,8 +46,6 @@ variable {α : Type u} {a : α}
 
 section Cyclic
 
-open BigOperators
-
 attribute [local instance] setFintype
 
 open Subgroup
@@ -377,7 +375,7 @@ theorem IsCyclic.unique_zpow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
   obtain ⟨n, rfl⟩ := ha x
   refine ⟨n, (?_ : a ^ n = _), fun y (hy : a ^ n = _) ↦ ?_⟩
   · rw [← zpow_natCast, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
-      Int.modEq_comm, Int.modEq_iff_add_fac, ← ZMod.int_coe_zmod_eq_iff]
+      Int.modEq_comm, Int.modEq_iff_add_fac, ← ZMod.intCast_eq_iff]
   · rw [← zpow_natCast, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
       ← ZMod.intCast_eq_intCast_iff] at hy
     simp [hy]
@@ -436,16 +434,16 @@ private theorem card_orderOf_eq_totient_aux₁ :
   rcases card_pos.1 hpos with ⟨a, ha'⟩
   have ha : orderOf a = d := (mem_filter.1 ha').2
   have h1 :
-    (∑ m in d.properDivisors, (univ.filter fun a : α => orderOf a = m).card) =
-      ∑ m in d.properDivisors, φ m := by
+    (∑ m ∈ d.properDivisors, (univ.filter fun a : α => orderOf a = m).card) =
+      ∑ m ∈ d.properDivisors, φ m := by
     refine Finset.sum_congr rfl fun m hm => ?_
     simp only [mem_filter, mem_range, mem_properDivisors] at hm
     refine IH m hm.2 (hm.1.trans hd) (Finset.card_pos.2 ⟨a ^ (d / m), ?_⟩)
     simp only [mem_filter, mem_univ, orderOf_pow a, ha, true_and_iff,
       Nat.gcd_eq_right (div_dvd_of_dvd hm.1), Nat.div_div_self hm.1 hd0]
   have h2 :
-    (∑ m in d.divisors, (univ.filter fun a : α => orderOf a = m).card) =
-      ∑ m in d.divisors, φ m := by
+    (∑ m ∈ d.divisors, (univ.filter fun a : α => orderOf a = m).card) =
+      ∑ m ∈ d.divisors, φ m := by
     rw [← filter_dvd_eq_divisors hd0, sum_card_orderOf_eq_card_pow_eq_one hd0,
       filter_dvd_eq_divisors hd0, sum_totient, ← ha, card_pow_eq_one_eq_orderOf_aux hn a]
   simpa [← cons_self_properDivisors hd0, ← h1] using h2
@@ -462,18 +460,18 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
   simp_rw [not_lt, Nat.le_zero, Finset.card_eq_zero] at h0
   apply lt_irrefl c
   calc
-    c = ∑ m in c.divisors, (univ.filter fun a : α => orderOf a = m).card := by
+    c = ∑ m ∈ c.divisors, (univ.filter fun a : α => orderOf a = m).card := by
       simp only [← filter_dvd_eq_divisors hc0.ne', sum_card_orderOf_eq_card_pow_eq_one hc0.ne']
       apply congr_arg card
       simp [c]
-    _ = ∑ m in c.divisors.erase d, (univ.filter fun a : α => orderOf a = m).card := by
+    _ = ∑ m ∈ c.divisors.erase d, (univ.filter fun a : α => orderOf a = m).card := by
       rw [eq_comm]
       refine sum_subset (erase_subset _ _) fun m hm₁ hm₂ => ?_
       have : m = d := by
         contrapose! hm₂
         exact mem_erase_of_ne_of_mem hm₂ hm₁
       simp [this, h0]
-    _ ≤ ∑ m in c.divisors.erase d, φ m := by
+    _ ≤ ∑ m ∈ c.divisors.erase d, φ m := by
       refine sum_le_sum fun m hm => ?_
       have hmc : m ∣ c := by
         simp only [mem_erase, mem_divisors] at hm
@@ -481,7 +479,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
       rcases (filter (fun a : α => orderOf a = m) univ).card.eq_zero_or_pos with (h1 | h1)
       · simp [h1]
       · simp [card_orderOf_eq_totient_aux₁ hn hmc h1]
-    _ < ∑ m in c.divisors, φ m :=
+    _ < ∑ m ∈ c.divisors, φ m :=
       sum_erase_lt_of_pos (mem_divisors.2 ⟨hd, hc0.ne'⟩) (totient_pos.2 (pos_of_dvd_of_pos hd hc0))
     _ = c := sum_totient _
 #align card_order_of_eq_totient_aux₂ card_orderOf_eq_totient_aux₂

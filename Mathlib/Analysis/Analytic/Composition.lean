@@ -72,7 +72,7 @@ variable {𝕜 : Type*} {E F G H : Type*}
 
 open Filter List
 
-open scoped Topology BigOperators Classical NNReal ENNReal
+open scoped Topology Classical NNReal ENNReal
 
 section Topological
 
@@ -639,7 +639,7 @@ more easily. -/
 theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
     (f : (Σ n : ℕ, Fin n → ℕ) → α) (g : (Σ n, Composition n) → α)
     (h : ∀ (e) (he : e ∈ compPartialSumSource m M N), f e = g (compChangeOfVariables m M N e he)) :
-    ∑ e in compPartialSumSource m M N, f e = ∑ e in compPartialSumTarget m M N, g e := by
+    ∑ e ∈ compPartialSumSource m M N, f e = ∑ e ∈ compPartialSumTarget m M N, g e := by
   apply Finset.sum_bij (compChangeOfVariables m M N)
   -- We should show that the correspondance we have set up is indeed a bijection
   -- between the index sets of the two sums.
@@ -699,14 +699,14 @@ compositions in `comp_partial_sum_target 0 N N`. This is precisely the motivatio
 definition of `comp_partial_sum_target`. -/
 theorem comp_partialSum (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
     (N : ℕ) (z : E) :
-    q.partialSum N (∑ i in Finset.Ico 1 N, p i fun _j => z) =
-      ∑ i in compPartialSumTarget 0 N N, q.compAlongComposition p i.2 fun _j => z := by
+    q.partialSum N (∑ i ∈ Finset.Ico 1 N, p i fun _j => z) =
+      ∑ i ∈ compPartialSumTarget 0 N N, q.compAlongComposition p i.2 fun _j => z := by
   -- we expand the composition, using the multilinearity of `q` to expand along each coordinate.
   suffices H :
-    (∑ n in Finset.range N,
-        ∑ r in Fintype.piFinset fun i : Fin n => Finset.Ico 1 N,
+    (∑ n ∈ Finset.range N,
+        ∑ r ∈ Fintype.piFinset fun i : Fin n => Finset.Ico 1 N,
           q n fun i : Fin n => p (r i) fun _j => z) =
-      ∑ i in compPartialSumTarget 0 N N, q.compAlongComposition p i.2 fun _j => z by
+      ∑ i ∈ compPartialSumTarget 0 N N, q.compAlongComposition p i.2 fun _j => z by
     simpa only [FormalMultilinearSeries.partialSum, ContinuousMultilinearMap.map_sum_finset] using H
   -- rewrite the first sum as a big sum over a sigma type, in the finset
   -- `comp_partial_sum_target 0 N N`
@@ -771,24 +771,24 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
     To show that it converges to `g (f (x + y))`, pointwise convergence would not be enough,
     but we have uniform convergence to save the day. -/
   -- First step: the partial sum of `p` converges to `f (x + y)`.
-  have A : Tendsto (fun n => ∑ a in Finset.Ico 1 n, p a fun _b => y)
+  have A : Tendsto (fun n => ∑ a ∈ Finset.Ico 1 n, p a fun _b => y)
       atTop (𝓝 (f (x + y) - f x)) := by
     have L :
-      ∀ᶠ n in atTop, (∑ a in Finset.range n, p a fun _b => y) - f x
-        = ∑ a in Finset.Ico 1 n, p a fun _b => y := by
+      ∀ᶠ n in atTop, (∑ a ∈ Finset.range n, p a fun _b => y) - f x
+        = ∑ a ∈ Finset.Ico 1 n, p a fun _b => y := by
       rw [eventually_atTop]
       refine ⟨1, fun n hn => ?_⟩
       symm
       rw [eq_sub_iff_add_eq', Finset.range_eq_Ico, ← Hf.coeff_zero fun _i => y,
         Finset.sum_eq_sum_Ico_succ_bot hn]
     have :
-      Tendsto (fun n => (∑ a in Finset.range n, p a fun _b => y) - f x) atTop
+      Tendsto (fun n => (∑ a ∈ Finset.range n, p a fun _b => y) - f x) atTop
         (𝓝 (f (x + y) - f x)) :=
       (Hf.hasSum y_mem).tendsto_sum_nat.sub tendsto_const_nhds
     exact Tendsto.congr' L this
   -- Second step: the composition of the partial sums of `q` and `p` converges to `g (f (x + y))`.
   have B :
-    Tendsto (fun n => q.partialSum n (∑ a in Finset.Ico 1 n, p a fun _b => y)) atTop
+    Tendsto (fun n => q.partialSum n (∑ a ∈ Finset.Ico 1 n, p a fun _b => y)) atTop
       (𝓝 (g (f (x + y)))) := by
     -- we use the fact that the partial sums of `q` converge locally uniformly to `g`, and that
     -- composition passes to the limit under locally uniform convergence.
@@ -806,7 +806,7 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
   -- consequence of the second step
   have C :
     Tendsto
-      (fun n => ∑ i in compPartialSumTarget 0 n n, q.compAlongComposition p i.2 fun _j => y)
+      (fun n => ∑ i ∈ compPartialSumTarget 0 n n, q.compAlongComposition p i.2 fun _j => y)
       atTop (𝓝 (g (f (x + y)))) :=
     by simpa [comp_partialSum] using B
   -- Fourth step: the sum over all compositions is `g (f (x + y))`. This follows from the
@@ -817,7 +817,7 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
       (g (f (x + y))) :=
     haveI cau :
       CauchySeq fun s : Finset (Σ n, Composition n) =>
-        ∑ i in s, q.compAlongComposition p i.2 fun _j => y := by
+        ∑ i ∈ s, q.compAlongComposition p i.2 fun _j => y := by
       apply cauchySeq_finset_of_norm_bounded _ (NNReal.summable_coe.2 hr) _
       simp only [coe_nnnorm, NNReal.coe_mul, NNReal.coe_pow]
       rintro ⟨n, c⟩

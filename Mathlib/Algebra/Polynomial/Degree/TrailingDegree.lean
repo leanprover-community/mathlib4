@@ -26,7 +26,7 @@ noncomputable section
 
 open Function Polynomial Finsupp Finset
 
-open scoped BigOperators Polynomial
+open scoped Polynomial
 
 namespace Polynomial
 
