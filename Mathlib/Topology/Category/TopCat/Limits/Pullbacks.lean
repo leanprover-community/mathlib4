@@ -227,7 +227,7 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
     apply (TopCat.mono_iff_injective _).mp H₃
     erw [← comp_apply, eq₁, ← comp_apply, eq₂, -- now `erw` after #13170
       comp_apply, comp_apply, hx₁, hx₂, ← comp_apply, pullback.condition]
-    rfl -- now `rfl` after #13170
+    rfl -- `rfl` was not needed before #13170
   use (pullbackIsoProdSubtype f₁ f₂).inv ⟨⟨x₁, x₂⟩, this⟩
   change (forget TopCat).map _ _ = _
   apply Concrete.limit_ext
