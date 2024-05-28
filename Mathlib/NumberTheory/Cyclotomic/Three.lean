@@ -35,10 +35,8 @@ variable {ζ : K} (hζ : IsPrimitiveRoot ζ ↑(3 : ℕ+)) (u : (𝓞 K)ˣ)
 local notation3 "η" => (IsPrimitiveRoot.isUnit (hζ.toInteger_isPrimitiveRoot) (by decide)).unit
 local notation3 "λ" => (η : 𝓞 K) - 1
 
-open scoped Classical
-
 /-- Let `u` be a unit in `(𝓞 K)ˣ`, then `u ∈ {1, -1, η, -η, η^2, -η^2}`. -/
-theorem Units.mem : u ∈ ({1, -1, η, -η, η ^ 2, -η ^ 2} : Finset (𝓞 K)ˣ) := by
+theorem Units.mem : u ∈ [1, -1, η, -η, η ^ 2, -η ^ 2] := by
   have hrank : rank K = 0 := by
     dsimp only [rank]
     rw [card_eq_nrRealPlaces_add_nrComplexPlaces, nrRealPlaces_eq_zero (n := 3) K (by decide),
@@ -65,11 +63,7 @@ theorem Units.mem : u ∈ ({1, -1, η, -η, η ^ 2, -η ^ 2} : Finset (𝓞 K)ˣ
     rcases hru with (h | h)
     · left; ext; exact h
     · right; ext; exact h
-  fin_cases hr
-  all_goals{
-    rcases hru with (h | h)
-    · simp [h]
-    · simp [h]}
+  fin_cases hr <;> rcases hru with (h | h) <;> simp [h]
 
 /-- We have that `λ ^ 2 = -3 * η`. -/
 lemma lambda_sq : λ ^ 2 = -3 * η := by
@@ -92,8 +86,7 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
     exact ⟨n, -η * x, by rw [← mul_assoc, mul_neg, ← neg_mul, ← lambda_sq, hx]⟩
   have hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
   have := Units.mem hζ u
-  simp only [Finset.mem_insert, Finset.mem_singleton] at this
-  rcases this with (rfl | rfl | rfl | rfl | rfl | rfl)
+  fin_cases this
   · left; rfl
   · right; ext; simp
   all_goals exfalso
