@@ -299,7 +299,7 @@ lemma div_lt_div_of_pos_left (ha : 0 < a) (hc : 0 < c) (h : c < b) : a / b < a /
 @[deprecated] alias div_le_div_of_le_left := div_le_div_of_nonneg_left
 @[deprecated] alias div_lt_div_of_lt_left := div_lt_div_of_pos_left
 
-@[deprecated div_le_div_of_nonneg_right]
+@[deprecated div_le_div_of_nonneg_right (since := "2024-02-16")]
 lemma div_le_div_of_le (hc : 0 ≤ c) (hab : a ≤ b) : a / c ≤ b / c :=
   div_le_div_of_nonneg_right hab hc
 #align div_le_div_of_le div_le_div_of_le
@@ -946,7 +946,7 @@ theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
     IsLUB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 #align is_lub.mul_right IsLUB.mul_right
 
-/-! ### Miscellaneous lemmmas -/
+/-! ### Miscellaneous lemmas -/
 
 
 theorem mul_sub_mul_div_mul_neg_iff (hc : c ≠ 0) (hd : d ≠ 0) :

@@ -6,8 +6,8 @@ Authors: Jeremy Tan
 import Mathlib.Data.Int.Interval
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Count
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Rat.Floor
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Counting elements in an interval with given residue

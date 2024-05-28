@@ -176,7 +176,7 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
 /-- Lemma 2.1 in [Gleason, *Projective topological spaces*][gleason1958]:
 if $\rho$ is a continuous surjection from a topological space $E$ to a topological space $A$
 satisfying the "Zorn subset condition", then $\rho(G)$ is contained in
-the closure of $A \setminus \rho(E \setminus G)}$ for any open set $G$ of $E$. -/
+the closure of $A \setminus \rho(E \setminus G)$ for any open set $G$ of $E$. -/
 lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont : Continuous ρ)
     (ρ_surj : ρ.Surjective) (zorn_subset : ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → ρ '' E₀ ≠ univ)
     {G : Set E} (hG : IsOpen G) : ρ '' G ⊆ closure ((ρ '' Gᶜ)ᶜ) := by
@@ -277,9 +277,13 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
   ext x
   exact x.val.mem.symm
 
-protected theorem CompactT2.projective_iff_extremallyDisconnnected [CompactSpace A] [T2Space A] :
+protected theorem CompactT2.projective_iff_extremallyDisconnected [CompactSpace A] [T2Space A] :
     Projective A ↔ ExtremallyDisconnected A :=
   ⟨Projective.extremallyDisconnected, fun _ => ExtremallyDisconnected.projective⟩
+
+@[deprecated (since := "2024-05-26")]
+alias CompactT2.projective_iff_extremallyDisconnnected :=
+  CompactT2.projective_iff_extremallyDisconnected
 
 end
 
