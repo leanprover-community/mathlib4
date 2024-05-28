@@ -2,8 +2,8 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Rat.Order
+import Mathlib.Order.Interval.Finset.Nat
 
 private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false

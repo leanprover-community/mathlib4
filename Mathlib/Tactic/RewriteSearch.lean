@@ -6,7 +6,7 @@ Authors: Scott Morrison
 import Lean.Meta.Tactic.Rewrites
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.MLList.BestFirst
-import Mathlib.Data.Nat.Interval
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # The `rw_search` tactic

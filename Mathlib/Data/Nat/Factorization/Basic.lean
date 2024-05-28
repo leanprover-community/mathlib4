@@ -5,9 +5,9 @@ Authors: Stuart Presnell
 -/
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Nat.GCD.BigOperators
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import data.nat.factorization.basic from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 

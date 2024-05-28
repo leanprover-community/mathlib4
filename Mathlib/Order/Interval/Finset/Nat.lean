@@ -3,9 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Order.Interval.Multiset
-import Mathlib.Algebra.Order.Interval.Finset
 
 #align_import data.nat.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
@@ -21,6 +19,8 @@ Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedCommMono
 and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
 
+-- TODO
+-- assert_not_exists Ring
 
 open Finset Nat
 
@@ -343,11 +343,15 @@ theorem range_image_pred_top_sub (n : ℕ) :
     simp_rw [succ_sub_succ, tsub_zero, tsub_self]
 #align finset.range_image_pred_top_sub Finset.range_image_pred_top_sub
 
--- Porting note: had to use `@` and specify `(a + b)` explicitly. mathlib3 managed without.
 theorem range_add_eq_union : range (a + b) = range a ∪ (range b).map (addLeftEmbedding a) := by
   rw [Finset.range_eq_Ico, map_eq_image]
-  convert (@Ico_union_Ico_eq_Ico _ _ _ _ _ (a + b) a.zero_le le_self_add).symm
-  exact image_add_left_Ico _ _ _
+  convert (Ico_union_Ico_eq_Ico a.zero_le le_self_add).symm
+  ext x
+  simp only [Ico_zero_eq_range, mem_image, mem_range, addLeftEmbedding_apply, mem_Ico]
+  constructor
+  · aesop
+  · rintro h
+    exact ⟨x - a, by omega⟩
 #align finset.range_add_eq_union Finset.range_add_eq_union
 
 end Finset

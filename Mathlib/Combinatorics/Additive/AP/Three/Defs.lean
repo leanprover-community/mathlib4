@@ -3,9 +3,10 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Algebra.Order.Interval.Finset
 import Mathlib.Combinatorics.Additive.FreimanHom
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import combinatorics.additive.salem_spencer from "leanprover-community/mathlib"@"acf5258c81d0bc7cb254ed026c1352e685df306c"
 
