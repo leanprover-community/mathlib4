@@ -11,8 +11,8 @@ import Mathlib.Algebra.Module.Submodule.Ker
 
 Some preliminary work for establishing the strong rank condition for noetherian rings.
 
-Given two linear maps `f i : M →ₗ[R] M₂` and a submodule `K : Submodule R M`, we can define
-`LinearMap.iterateMapComap f i n K : Submodule R M` to be `f⁻¹(i(⋯(f⁻¹(i(K)))))` (`n` times).
+Given two linear maps `f i : N →ₗ[R] M` and a submodule `K : Submodule R N`, we can define
+`LinearMap.iterateMapComap f i n K : Submodule R N` to be `f⁻¹(i(⋯(f⁻¹(i(K)))))` (`n` times).
 If `f(K) ≤ i(K)`, then this sequence is non-decreasing (`LinearMap.iterateMapComap_le_succ`).
 On the other hand, if `f` is surjective, `i` is injective, and there exists some `m` such that
 `LinearMap.iterateMapComap f i m K = LinearMap.iterateMapComap f i (m + 1) K`,
@@ -34,15 +34,15 @@ open Function Submodule
 
 namespace LinearMap
 
-variable {R M M₂ : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-  [AddCommMonoid M₂] [Module R M₂] (f i : M →ₗ[R] M₂)
+variable {R N M : Type*} [Semiring R] [AddCommMonoid N] [Module R N]
+  [AddCommMonoid M] [Module R M] (f i : N →ₗ[R] M)
 
-/-- The `LinearMap.iterateMapComap f i n K : Submodule R M` is
+/-- The `LinearMap.iterateMapComap f i n K : Submodule R N` is
 `f⁻¹(i(⋯(f⁻¹(i(K)))))` (`n` times). -/
-def iterateMapComap (n : ℕ) := (fun K : Submodule R M ↦ (K.map i).comap f)^[n]
+def iterateMapComap (n : ℕ) := (fun K : Submodule R N ↦ (K.map i).comap f)^[n]
 
 /-- If `f(K) ≤ i(K)`, then `LinearMap.iterateMapComap` is not decreasing. -/
-theorem iterateMapComap_le_succ (K : Submodule R M) (h : K.map f ≤ K.map i) (n : ℕ) :
+theorem iterateMapComap_le_succ (K : Submodule R N) (h : K.map f ≤ K.map i) (n : ℕ) :
     f.iterateMapComap i n K ≤ f.iterateMapComap i (n + 1) K := by
   nth_rw 2 [iterateMapComap]
   rw [iterate_succ', Function.comp_apply, ← iterateMapComap, ← map_le_iff_le_comap]
@@ -62,7 +62,7 @@ then for any `n`,
 In particular, by taking `n = 0`, the kernel of `f` is contained in `K`
 (`LinearMap.ker_le_of_iterateMapComap_eq_succ`),
 which is a consequence of `LinearMap.ker_le_comap`. -/
-theorem iterateMapComap_eq_succ (K : Submodule R M)
+theorem iterateMapComap_eq_succ (K : Submodule R N)
     (m : ℕ) (heq : f.iterateMapComap i m K = f.iterateMapComap i (m + 1) K)
     (hf : Surjective f) (hi : Injective i) (n : ℕ) :
     f.iterateMapComap i n K = f.iterateMapComap i (n + 1) K := by
@@ -85,7 +85,7 @@ This is a corollary of `LinearMap.iterateMapComap_eq_succ` and `LinearMap.ker_le
 As a special case, if one can take `K` to be zero,
 then `f` is injective. This is the key result for establishing the strong rank condition
 for noetherian rings. -/
-theorem ker_le_of_iterateMapComap_eq_succ (K : Submodule R M)
+theorem ker_le_of_iterateMapComap_eq_succ (K : Submodule R N)
     (m : ℕ) (heq : f.iterateMapComap i m K = f.iterateMapComap i (m + 1) K)
     (hf : Surjective f) (hi : Injective i) : LinearMap.ker f ≤ K := by
   rw [show K = _ from f.iterateMapComap_eq_succ i K m heq hf hi 0]

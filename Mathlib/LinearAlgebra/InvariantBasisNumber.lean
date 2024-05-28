@@ -125,9 +125,13 @@ class OrzechProperty : Prop where
   injective_of_surjective_of_submodule' : ∀ {M : Type u} [AddCommMonoid M] [Module R M]
     [Module.Finite R M] {N : Submodule R M} (f : N →ₗ[R] M), Surjective f → Injective f
 
-variable {R} in
-theorem OrzechProperty.injective_of_surjective_of_injective [OrzechProperty R]
-    {M : Type v} [AddCommMonoid M] [Module R M] [Module.Finite R M]
+namespace OrzechProperty
+
+variable {R}
+
+variable [OrzechProperty R] {M : Type v} [AddCommMonoid M] [Module R M] [Module.Finite R M]
+
+theorem injective_of_surjective_of_injective
     {N : Type w} [AddCommMonoid N] [Module R N]
     (i f : N →ₗ[R] M) (hi : Injective i) (hf : Surjective f) : Injective f := by
   obtain ⟨n, g, hg⟩ := Module.Finite.exists_fin' R M
@@ -140,25 +144,21 @@ theorem OrzechProperty.injective_of_surjective_of_injective [OrzechProperty R]
   replace hi : Injective i' := by simpa [i'] using hi
   let f' := j.symm.toLinearMap ∘ₗ f ∘ₗ (LinearEquiv.ofInjective i' hi).symm.toLinearMap
   replace hf : Surjective f' := by simpa [f'] using hf
-  simpa [f'] using OrzechProperty.injective_of_surjective_of_submodule' f' hf
+  simpa [f'] using injective_of_surjective_of_submodule' f' hf
 
-variable {R} in
-theorem OrzechProperty.injective_of_surjective_of_submodule [OrzechProperty R]
-    {M : Type v} [AddCommMonoid M] [Module R M] [Module.Finite R M]
+theorem injective_of_surjective_of_submodule
     {N : Submodule R M} (f : N →ₗ[R] M) (hf : Surjective f) : Injective f :=
-  OrzechProperty.injective_of_surjective_of_injective N.subtype f N.injective_subtype hf
+  injective_of_surjective_of_injective N.subtype f N.injective_subtype hf
 
-variable {R} in
-theorem OrzechProperty.injective_of_surjective_endomorphism [OrzechProperty R]
-    {M : Type v} [AddCommMonoid M] [Module R M] [Module.Finite R M]
+theorem injective_of_surjective_endomorphism
     (f : M →ₗ[R] M) (hf : Surjective f) : Injective f :=
-  OrzechProperty.injective_of_surjective_of_injective _ f (LinearEquiv.refl _ _).injective hf
+  injective_of_surjective_of_injective _ f (LinearEquiv.refl _ _).injective hf
 
-variable {R} in
-theorem OrzechProperty.bijective_of_surjective_endomorphism [OrzechProperty R]
-    {M : Type v} [AddCommMonoid M] [Module R M] [Module.Finite R M]
+theorem bijective_of_surjective_endomorphism
     (f : M →ₗ[R] M) (hf : Surjective f) : Bijective f :=
-  ⟨OrzechProperty.injective_of_surjective_endomorphism f hf, hf⟩
+  ⟨injective_of_surjective_endomorphism f hf, hf⟩
+
+end OrzechProperty
 
 /-- Any Noetherian ring satisfies Orzech property.
     See also `IsNoetherian.injective_of_surjective_of_submodule` and
