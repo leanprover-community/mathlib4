@@ -41,6 +41,34 @@ attribute [ext] who in
 
 example {x y : Nat} : x = y := by ext
 ```
+
+For *removing* instances, the `in` seems to work as expected.
+```lean
+/--
+error: failed to synthesize
+  Add Nat
+-/
+#guard_msgs in
+attribute [-instance] instAddNat in
+#synth Add Nat  -- `instAddNat`
+
+-- the `instance` persists
+/-- info: instAddNat -/
+#guard_msgs in
+#synth Add Nat  -- `instAddNat`
+
+@[simp]
+theorem what : False := sorry
+
+/-- error: simp made no progress -/
+#guard_msgs in
+attribute [-simp] what in
+example : False := by simp
+
+-- the `simp` attribute persists
+#guard_msgs in
+example : False := by simp
+```
 -/
 
 open Lean Elab Command
