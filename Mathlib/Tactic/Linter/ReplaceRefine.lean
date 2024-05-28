@@ -52,15 +52,14 @@ def getRefine' : Syntax → Array (Syntax × SourceInfo × Array Syntax × Optio
 
 This avoids producing two declarations with the same name in the environment.
 -/
-def toExample {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
-    Syntax → m (Option Syntax)
-  | `($dm:declModifiers theorem $_did:declId $ds* : $t $dv:declVal) => do
-    return some (← `($dm:declModifiers example $ds* : $t $dv:declVal))
-  | `($dm:declModifiers lemma $_did:declId $ds* : $t $dv:declVal) => do
-    return some (← `($dm:declModifiers example $ds* : $t $dv:declVal))
-  | `($dm:declModifiers instance $_did:declId $ds* : $t $dv:declVal) => do
-    return some (← `($dm:declModifiers example $ds* : $t $dv:declVal))
-  | s => return some s
+def toExample {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] : Syntax → m Syntax
+  | `($dm:declModifiers theorem $_did:declId $ds* : $t $dv:declVal) =>
+    `($dm:declModifiers example $ds* : $t $dv:declVal)
+  | `($dm:declModifiers lemma $_did:declId $ds* : $t $dv:declVal) =>
+    `($dm:declModifiers example $ds* : $t $dv:declVal)
+  | `($dm:declModifiers instance $_did:declId $ds* : $t $dv:declVal) =>
+    `($dm:declModifiers example $ds* : $t $dv:declVal)
+  | s => return s
 
 /-- replaces each `refine'` by `refine` in succession in `cmd` and, each time, catches the errors
 of missing `?`, collecting their positions.  Eventually, it returns an array of pairs
@@ -81,20 +80,20 @@ def getQuestions (cmd : Syntax) : Command.CommandElabM (Array (Nat × Position))
       return (r, ncm)
   let mut poss := #[]
   for (r, ncmd) in newCmds do
-    if let some exm ← toExample ncmd then
-      Elab.Command.elabCommand exm
-      let msgs := (← get).messages.msgs
-      --dbg_trace msgs.toArray.map (·.endPos)
-      let ph := msgs.filter (fun m => isSyntPlaceHolder m.data)
-      if ! ph.toArray.isEmpty then
-        -- a repetition in `Position`s is an indication that `refine` cannot replace `refine'`
-        let positions := (ph.map (·.pos)).toList
-        if positions == positions.eraseDup then
-          --dbg_trace ph.size == msgs.size
-          --dbg_trace ph.toArray.map (·.endPos)
-          poss := poss ++
-            (ph.map (0, ·.pos)).toArray.push (1, fm.toPosition (r.getPos?.getD default))
-    set s
+    let exm ← toExample ncmd
+    Elab.Command.elabCommand exm
+    let msgs := (← get).messages.msgs
+    --dbg_trace msgs.toArray.map (·.endPos)
+    let ph := msgs.filter (fun m => isSyntPlaceHolder m.data)
+    if ! ph.toArray.isEmpty then
+      -- a repetition in `Position`s is an indication that `refine` cannot replace `refine'`
+      let positions := (ph.map (·.pos)).toList
+      if positions == positions.eraseDup then
+        --dbg_trace ph.size == msgs.size
+        --dbg_trace ph.toArray.map (·.endPos)
+        poss := poss ++
+          (ph.map (0, ·.pos)).toArray.push (1, fm.toPosition (r.getPos?.getD default))
+  set s
   return poss
 
 /-- Gets the value of the `linter.refine'ToRefine` option. -/
