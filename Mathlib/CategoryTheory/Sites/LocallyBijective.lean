@@ -31,8 +31,8 @@ section
 
 variable {F G : Sheaf J (Type w)} (f : F ⟶ G)
 
-/-- A morphism of sheaves of types is locally injective and locally surjective iff
-it is an isomorphism. (This is generalized below as `isLocallyBijective_iff_isIso`.) -/
+/-- A morphism of sheaves of types is locally bijective iff it is an isomorphism.
+(This is generalized below as `isLocallyBijective_iff_isIso`.) -/
 private lemma isLocallyBijective_iff_isIso' :
     IsLocallyInjective f ∧ IsLocallySurjective f ↔ IsIso f := by
   constructor
@@ -92,6 +92,9 @@ variable (J A)
 
 namespace GrothendieckTopology
 
+/-- Given a category `C` equipped with a Grothendieck topology `J` and a concrete category `A`,
+this property holds if a morphism in `Cᵒᵖ ⥤ A` satisfies `J.W` (i.e. becomes an iso after
+sheafification) iff it is both locally injective and locally surjective. -/
 class WEqualsLocallyBijective : Prop where
   iff {X Y : Cᵒᵖ ⥤ A} (f : X ⟶ Y) :
     J.W f ↔ Presheaf.IsLocallyInjective J f ∧ Presheaf.IsLocallySurjective J f
