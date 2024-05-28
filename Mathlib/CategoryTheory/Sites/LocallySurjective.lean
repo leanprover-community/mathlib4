@@ -174,7 +174,7 @@ lemma isLocallySurjective_iff_of_fac
     rw [← fac]
     infer_instance
 
-lemma isLocallySurjective_comp_iff
+lemma comp_isLocallySurjective_iff
     {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ ⟶ F₂) (f₂ : F₂ ⟶ F₃)
     [IsLocallySurjective J f₁] :
     IsLocallySurjective J (f₁ ≫ f₂) ↔ IsLocallySurjective J f₂ :=
@@ -232,6 +232,18 @@ lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective_fac
     IsLocallySurjective J f₁ := by
   subst fac
   exact isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective J f₁ f₂
+
+lemma comp_isLocallyInjective_iff
+    {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ ⟶ F₂) (f₂ : F₂ ⟶ F₃)
+    [IsLocallyInjective J f₁] [IsLocallySurjective J f₁] :
+    IsLocallyInjective J (f₁ ≫ f₂) ↔ IsLocallyInjective J f₂ := by
+  sorry
+
+lemma isLocallySurjective_comp_iff
+    {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ ⟶ F₂) (f₂ : F₂ ⟶ F₃)
+    [IsLocallyInjective J f₂] [IsLocallySurjective J f₂] :
+    IsLocallySurjective J (f₁ ≫ f₂) ↔ IsLocallySurjective J f₁ :=
+  sorry
 
 instance {F₁ F₂ : Cᵒᵖ ⥤ Type w} (f : F₁ ⟶ F₂) :
     IsLocallySurjective J (toImagePresheafSheafify J f) where
