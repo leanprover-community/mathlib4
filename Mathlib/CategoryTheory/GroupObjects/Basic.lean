@@ -46,6 +46,8 @@ def trivial : GroupObject C where
 instance : Inhabited (GroupObject C) :=
   ⟨trivial C⟩
 
+instance : IsTerminal (trivial C).X := sorry
+
 variable {C}
 variable {G : GroupObject C}
 
@@ -170,6 +172,18 @@ instance uniqueHomFromTrivial (A : GroupObject C) : Unique (trivial C ⟶ A) whe
     ext; simp
     rw [← Category.id_comp f.hom]
     erw [f.one_hom]
+
+instance uniqueHomToTrivial (A : GroupObject C) : Unique (A ⟶ trivial C) where
+  default :=
+    { hom := (default : A.X ⟶ ⊤_ C)
+      one_hom := by dsimp; aesop_cat
+      mul_hom := by dsimp; aesop_cat}
+  uniq f := by
+    ext; simp only [trivial_X]
+    convert Subsingleton.elim f.hom default
+    simp only [trivial_X]
+    exact inferInstance
+
 
 
 /- The Yoneda embedding.-/
