@@ -23,12 +23,12 @@ one consequence being that the number of Dyck words with length `2 * n` is `cata
 * `DyckWord`: a list of `U`s and `D`s with as many `U`s as `D`s and with every prefix having
 at least as many `U`s as `D`s.
 * `DyckWord.semilength`: semilength (half the length) of a Dyck word.
-* `DyckWord.firstReturn`: index of the `D` matching the initial `U`. This furnishes the
-  Catalan decomposition of a nonempty Dyck word into two smaller ones.
+* `DyckWord.firstReturn`: for a nonempty word, the index of the `D` matching the initial `U`.
 
 ## Main results
 
 * `DyckWord.treeEquiv`: equivalence between Dyck words and rooted binary trees.
+  See the docstrings of `DyckWord.treeEquivToFun` and `DyckWord.treeEquivInvFun` for details.
 * `DyckWord.finiteTreeEquiv`: equivalence between Dyck words of length `2 * n` and
   rooted binary trees with `n` internal nodes.
 * `DyckWord.card_dyckWord_of_semilength_eq_catalan`:
@@ -331,7 +331,13 @@ section Tree
 
 open Tree
 
-/-- Convert a Dyck word to a binary rooted tree. -/
+/-- Convert a Dyck word to a binary rooted tree.
+
+`f(empty word) = empty tree`. For a nonempty word find the `D` that matches the initial `U` –
+which has index `w.firstReturn` – then let `x` be everything strictly between said `U` and `D`,
+and `y` be everything strictly after said `D`. `w = U x D y` and `x` and `y` are (possibly empty)
+Dyck words. `f(w) = f(x) △ f(y)`, where △ (defined in `Mathlib.Data.Tree`) joins two subtrees
+to a new root node. -/
 def treeEquivToFun (w : DyckWord) : Tree Unit :=
   if e : w = 0 then nil else by
     rw [eq_zero_iff, ← ne_eq] at e
@@ -340,7 +346,10 @@ def treeEquivToFun (w : DyckWord) : Tree Unit :=
     exact treeEquivToFun (w.leftPart e) △ treeEquivToFun (w.rightPart e)
 termination_by w.semilength
 
-/-- Convert a binary rooted tree to a Dyck word. -/
+/-- Convert a binary rooted tree to a Dyck word.
+
+`g(empty tree) = empty word`. A nonempty tree with left subtree `x` and right subtree `y`
+is sent to `U g(x) D g(y)`. -/
 def treeEquivInvFun (tr : Tree Unit) : DyckWord :=
   match tr with
   | Tree.nil => 0
