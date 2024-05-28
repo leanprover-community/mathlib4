@@ -14,6 +14,8 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 
 ## Main definitions
 
+Let `R` be a (not necessary commutative) ring.
+
 - `InvariantBasisNumber R` is a type class stating that `(Fin n → R) ≃ₗ[R] (Fin m → R)`
   implies `n = m`, a property known as the *invariant basis number property.*
 
@@ -67,8 +69,10 @@ We keep `invariantBasisNumber_of_nontrivial_of_commRing` here since it imports f
 The following examples can be found in the book of Lam [lam_1999]
 (see also <https://math.stackexchange.com/questions/4711904>):
 
-- The free algebra `k⟨x, y⟩` satisfies the rank condition but not the strong rank condition.
-- The ring `ℚ⟨a, b, c, d⟩ / (ac − 1, bd − 1, ab, cd)` satisfies the invariant basis number property
+- Let `k` be a field, then the free (non-commutative) algebra `k⟨x, y⟩` satisfies
+  the rank condition but not the strong rank condition.
+- The free (non-commutative) algebra `ℚ⟨a, b, c, d⟩` quotient by the
+  two-sided ideal `(ac − 1, bd − 1, ab, cd)` satisfies the invariant basis number property
   but not the rank condition.
 
 
