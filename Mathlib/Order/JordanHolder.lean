@@ -247,7 +247,7 @@ theorem head_le_of_mem {s : CompositionSeries X} {x : X} (hx : x ∈ s) : s.head
 #align composition_series.erase_top RelSeries.eraseLast
 #align composition_series.top_erase_top RelSeries.last_eraseLast
 
-theorem eraseLast_last_le (s : CompositionSeries X) : s.eraseLast.last ≤ s.last := by
+theorem last_eraseLast_le (s : CompositionSeries X) : s.eraseLast.last ≤ s.last := by
   simp [eraseLast, last, s.strictMono.le_iff_le, Fin.le_iff_val_le_val, tsub_le_self]
 #align composition_series.erase_top_top_le CompositionSeries.eraseLast_last_le
 
