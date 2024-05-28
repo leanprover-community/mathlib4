@@ -380,8 +380,7 @@ def treeEquiv : DyckWord ≃ Tree Unit where
   right_inv := treeEquiv_right_inv
 
 @[nolint unusedHavesSuffices]
-theorem semilength_eq_iff_numNodes_eq {n : ℕ} :
-    p.semilength = n ↔ (treeEquiv p).numNodes = n := by
+theorem semilength_eq_iff_numNodes_eq {n : ℕ} : p.semilength = n ↔ (treeEquiv p).numNodes = n := by
   induction' n using Nat.strongInductionOn with n ih generalizing p
   by_cases hn : p = 0; · simp [hn]
   rw [treeEquiv, Equiv.coe_fn_mk, treeEquivToFun]
@@ -420,7 +419,7 @@ def finiteTreeEquiv (n : ℕ) : { p : DyckWord // p.semilength = n } ≃ treesOf
 instance {n : ℕ} : Fintype { p : DyckWord // p.semilength = n } :=
   Fintype.ofEquiv _ (finiteTreeEquiv n).symm
 
-/-- There are `catalan n` Dyck words of semilength `n` or length `2 * n`. -/
+/-- There are `catalan n` Dyck words of semilength `n` (or length `2 * n`). -/
 theorem card_dyckWord_of_semilength_eq_catalan (n : ℕ) :
     Fintype.card { p : DyckWord // p.semilength = n } = catalan n := by
   rw [← Fintype.ofEquiv_card (finiteTreeEquiv n), ← treesOfNumNodesEq_card_eq_catalan]
