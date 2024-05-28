@@ -144,7 +144,7 @@ alias _root_.LinearMap.map_span_le := Submodule.map_span_le
 
 @[simp]
 theorem span_insert_zero : span R (insert (0 : M) s) = span R s := by
-  refine' le_antisymm _ (Submodule.span_mono (Set.subset_insert 0 s))
+  refine le_antisymm ?_ (Submodule.span_mono (Set.subset_insert 0 s))
   rw [span_le, Set.insert_subset_iff]
   exact ⟨by simp only [SetLike.mem_coe, Submodule.zero_mem], Submodule.subset_span⟩
 #align submodule.span_insert_zero Submodule.span_insert_zero
@@ -264,7 +264,7 @@ lemma span_setOf_mem_eq_top :
 
 theorem span_nat_eq_addSubmonoid_closure (s : Set M) :
     (span ℕ s).toAddSubmonoid = AddSubmonoid.closure s := by
-  refine' Eq.symm (AddSubmonoid.closure_eq_of_le subset_span _)
+  refine Eq.symm (AddSubmonoid.closure_eq_of_le subset_span ?_)
   apply (OrderIso.to_galoisConnection (AddSubmonoid.toNatSubmodule (M := M)).symm).l_le
      (a := span ℕ s) (b := AddSubmonoid.closure s)
   rw [span_le]
@@ -523,7 +523,7 @@ theorem span_singleton_smul_le {S} [Monoid S] [SMul S R] [MulAction S M] [IsScal
 
 theorem span_singleton_group_smul_eq {G} [Group G] [SMul G R] [MulAction G M] [IsScalarTower G R M]
     (g : G) (x : M) : (R ∙ g • x) = R ∙ x := by
-  refine' le_antisymm (span_singleton_smul_le R g x) _
+  refine le_antisymm (span_singleton_smul_le R g x) ?_
   convert span_singleton_smul_le R g⁻¹ (g • x)
   exact (inv_smul_smul g x).symm
 #align submodule.span_singleton_group_smul_eq Submodule.span_singleton_group_smul_eq
@@ -538,7 +538,7 @@ theorem span_singleton_smul_eq {r : R} (hr : IsUnit r) (x : M) : (R ∙ r • x)
 
 theorem disjoint_span_singleton {K E : Type*} [DivisionRing K] [AddCommGroup E] [Module K E]
     {s : Submodule K E} {x : E} : Disjoint s (K ∙ x) ↔ x ∈ s → x = 0 := by
-  refine' disjoint_def.trans ⟨fun H hx => H x hx <| subset_span <| mem_singleton x, _⟩
+  refine disjoint_def.trans ⟨fun H hx => H x hx <| subset_span <| mem_singleton x, ?_⟩
   intro H y hy hyx
   obtain ⟨c, rfl⟩ := mem_span_singleton.1 hyx
   by_cases hc : c = 0
@@ -683,10 +683,10 @@ theorem iSup_eq_span {ι : Sort*} (p : ι → Submodule R M) : ⨆ i, p i = span
 
 theorem iSup_toAddSubmonoid {ι : Sort*} (p : ι → Submodule R M) :
     (⨆ i, p i).toAddSubmonoid = ⨆ i, (p i).toAddSubmonoid := by
-  refine' le_antisymm (fun x => _) (iSup_le fun i => toAddSubmonoid_mono <| le_iSup _ i)
+  refine le_antisymm (fun x => ?_) (iSup_le fun i => toAddSubmonoid_mono <| le_iSup _ i)
   simp_rw [iSup_eq_span, AddSubmonoid.iSup_eq_closure, mem_toAddSubmonoid, coe_toAddSubmonoid]
   intro hx
-  refine' Submodule.span_induction hx (fun x hx => _) _ (fun x y hx hy => _) fun r x hx => _
+  refine Submodule.span_induction hx (fun x hx => ?_) ?_ (fun x y hx hy => ?_) fun r x hx => ?_
   · exact AddSubmonoid.subset_closure hx
   · exact AddSubmonoid.zero_mem _
   · exact AddSubmonoid.add_mem _ hx hy
@@ -795,15 +795,15 @@ such that the element is contained in the span of the subset. -/
 theorem mem_span_finite_of_mem_span {S : Set M} {x : M} (hx : x ∈ span R S) :
     ∃ T : Finset M, ↑T ⊆ S ∧ x ∈ span R (T : Set M) := by
   classical
-  refine' span_induction hx (fun x hx => _) _ _ _
-  · refine' ⟨{x}, _, _⟩
+  refine span_induction hx (fun x hx => ?_) ?_ ?_ ?_
+  · refine ⟨{x}, ?_, ?_⟩
     · rwa [Finset.coe_singleton, Set.singleton_subset_iff]
     · rw [Finset.coe_singleton]
       exact Submodule.mem_span_singleton_self x
   · use ∅
     simp
   · rintro x y ⟨X, hX, hxX⟩ ⟨Y, hY, hyY⟩
-    refine' ⟨X ∪ Y, _, _⟩
+    refine ⟨X ∪ Y, ?_, ?_⟩
     · rw [Finset.coe_union]
       exact Set.union_subset hX hY
     rw [Finset.coe_union, span_union, mem_sup]
@@ -859,8 +859,8 @@ theorem prod_inf_prod : prod p q₁ ⊓ prod p' q₁' = prod (p ⊓ p') (q₁ �
 
 @[simp]
 theorem prod_sup_prod : prod p q₁ ⊔ prod p' q₁' = prod (p ⊔ p') (q₁ ⊔ q₁') := by
-  refine'
-    le_antisymm (sup_le (prod_mono le_sup_left le_sup_left) (prod_mono le_sup_right le_sup_right)) _
+  refine le_antisymm
+    (sup_le (prod_mono le_sup_left le_sup_left) (prod_mono le_sup_right le_sup_right)) ?_
   simp [SetLike.le_def]; intro xx yy hxx hyy
   rcases mem_sup.1 hxx with ⟨x, hx, x', hx', rfl⟩
   rcases mem_sup.1 hyy with ⟨y, hy, y', hy', rfl⟩
@@ -914,7 +914,7 @@ variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 
 theorem comap_map_eq (f : F) (p : Submodule R M) : comap f (map f p) = p ⊔ LinearMap.ker f := by
-  refine' le_antisymm _ (sup_le (le_comap_map _ _) (comap_mono bot_le))
+  refine le_antisymm ?_ (sup_le (le_comap_map _ _) (comap_mono bot_le))
   rintro x ⟨y, hy, e⟩
   exact mem_sup.2 ⟨y, hy, x - y, by simpa using sub_eq_zero.2 e.symm, by simp⟩
 #align submodule.comap_map_eq Submodule.comap_map_eq
@@ -1049,7 +1049,7 @@ def toSpanSingleton (x : M) : R →ₗ[R] M :=
 /-- The range of `toSpanSingleton x` is the span of `x`. -/
 theorem span_singleton_eq_range (x : M) : (R ∙ x) = range (toSpanSingleton R M x) :=
   Submodule.ext fun y => by
-    refine' Iff.trans _ LinearMap.mem_range.symm
+    refine Iff.trans ?_ LinearMap.mem_range.symm
     exact mem_span_singleton
 #align linear_map.span_singleton_eq_range LinearMap.span_singleton_eq_range
 

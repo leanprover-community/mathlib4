@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Group.List
-import Mathlib.Data.Vector
+import Mathlib.Data.Vector.Defs
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.InsertNth
@@ -160,8 +160,7 @@ def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n 
   ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
 #align equiv.vector_equiv_fin Equiv.vectorEquivFin
 
-theorem get_tail (x : Vector α n) (i) :
-    x.tail.get i = x.get ⟨i.1 + 1, lt_tsub_iff_right.mp i.2⟩ := by
+theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by omega⟩ := by
   cases' i with i ih; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
@@ -389,7 +388,7 @@ theorem scanl_get (i : Fin n) :
   · have i0 : i = 0 := Fin.eq_zero _
     simp [scanl_singleton, i0, get_zero]; simp [get_eq_get, List.get]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
-    refine' Fin.cases _ _ i
+    refine Fin.cases ?_ ?_ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
     · intro i'
       simp only [hn, Fin.castSucc_fin_succ, get_cons_succ]
@@ -641,14 +640,14 @@ theorem get_set_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
 @[to_additive]
 theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = (v.take i).toList.prod * a * (v.drop (i + 1)).toList.prod := by
-  refine' (List.prod_set v.toList i a).trans _
+  refine (List.prod_set v.toList i a).trans ?_
   simp_all
 #align vector.prod_update_nth Vector.prod_set
 
 @[to_additive]
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
-  refine' (List.prod_set' v.toList i a).trans _
+  refine (List.prod_set' v.toList i a).trans ?_
   simp [get_eq_get, mul_assoc]; rfl
 #align vector.prod_update_nth' Vector.prod_set'
 
@@ -776,9 +775,7 @@ theorem replicate_succ (val : α) :
 section Append
 variable (ys : Vector α m)
 
-@[simp]
-theorem get_append_cons_zero : get (append (x ::ᵥ xs) ys) ⟨0, by simp⟩ = x :=
-  rfl
+@[simp] lemma get_append_cons_zero : get (append (x ::ᵥ xs) ys) ⟨0, by omega⟩ = x := rfl
 
 @[simp]
 theorem get_append_cons_succ {i : Fin (n + m)} {h} :

@@ -3,8 +3,8 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Gabriel Ebner, Yury Kudryashov
 -/
-import Mathlib.Data.Nat.Interval
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import data.nat.lattice from "leanprover-community/mathlib"@"52fa514ec337dd970d71d8de8d0fd68b455a1e54"
 
@@ -174,10 +174,10 @@ theorem sInf_add' {n : ℕ} {p : ℕ → Prop} (h : 0 < sInf { m | p m }) :
     convert sInf_add h₁
     simp_rw [add_tsub_cancel_right]
   obtain ⟨m, hm⟩ := nonempty_of_pos_sInf h
-  refine'
-    le_csInf ⟨m + n, _⟩ fun b hb ↦
+  refine
+    le_csInf ⟨m + n, ?_⟩ fun b hb ↦
       le_of_not_lt fun hbn ↦
-        ne_of_mem_of_not_mem _ (not_mem_of_lt_sInf h) (tsub_eq_zero_of_le hbn.le)
+        ne_of_mem_of_not_mem ?_ (not_mem_of_lt_sInf h) (tsub_eq_zero_of_le hbn.le)
   · dsimp
     rwa [add_tsub_cancel_right]
   · exact hb

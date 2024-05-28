@@ -29,7 +29,7 @@ In this file we define a number of linear maps involving submodules of a module.
 submodule, subspace, linear map
 -/
 
-open BigOperators Function Set
+open Function Set
 
 universe u'' u' u v w
 
@@ -88,7 +88,7 @@ theorem injective_subtype : Injective p.subtype :=
 
 /-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
 -- Porting note: removing the `@[simp]` attribute since it's literally `AddSubmonoid.coe_finset_sum`
-theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i in s, x i) = ∑ i in s, (x i : M) :=
+theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i ∈ s, x i) = ∑ i ∈ s, (x i : M) :=
   map_sum p.subtype _ _
 #align submodule.coe_sum Submodule.coe_sum
 
@@ -221,13 +221,13 @@ theorem restrict_eq_domRestrict_codRestrict {f : M →ₗ[R] M₁} {p : Submodul
 #align linear_map.restrict_eq_dom_restrict_cod_restrict LinearMap.restrict_eq_domRestrict_codRestrict
 
 theorem sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M) :
-    (∑ d in t, f d) b = ∑ d in t, f d b :=
+    (∑ d ∈ t, f d) b = ∑ d ∈ t, f d b :=
   _root_.map_sum ((AddMonoidHom.eval b).comp toAddMonoidHom') f _
 #align linear_map.sum_apply LinearMap.sum_apply
 
 @[simp, norm_cast]
 theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) :
-    ⇑(∑ i in t, f i) = ∑ i in t, (f i : M → M₂) :=
+    ⇑(∑ i ∈ t, f i) = ∑ i ∈ t, (f i : M → M₂) :=
   _root_.map_sum
     (show AddMonoidHom (M →ₛₗ[σ₁₂] M₂) (M → M₂)
       from { toFun := DFunLike.coe,

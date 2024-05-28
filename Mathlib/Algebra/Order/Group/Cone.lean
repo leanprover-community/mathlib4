@@ -12,7 +12,7 @@ import Mathlib.Algebra.Order.Group.Defs
 
 In this file we provide structures `PositiveCone` and `TotalPositiveCone`
 that encode axioms of `OrderedAddCommGroup` and `LinearOrderedAddCommGroup`
-in terms of the the `(0 ≤ ·)` predicate.
+in terms of the `(0 ≤ ·)` predicate.
 
 We also provide two constructors,
 `OrderedAddCommGroup.mkOfPositiveCone` and `LinearOrderedAddCommGroup.mkOfPositiveCone`,

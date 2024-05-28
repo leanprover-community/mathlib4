@@ -143,7 +143,7 @@ theorem zmod_congr_of_sub_mem_span_aux (n : ℕ) (x : ℤ_[p]) (a b : ℤ)
     (ha : x - a ∈ (Ideal.span {(p : ℤ_[p]) ^ n}))
     (hb : x - b ∈ (Ideal.span {(p : ℤ_[p]) ^ n})) : (a : ZMod (p ^ n)) = b := by
   rw [Ideal.mem_span_singleton] at ha hb
-  rw [← sub_eq_zero, ← Int.cast_sub, ZMod.intCast_zmod_eq_zero_iff_dvd, Int.coe_nat_pow]
+  rw [← sub_eq_zero, ← Int.cast_sub, ZMod.intCast_zmod_eq_zero_iff_dvd, Int.natCast_pow]
   rw [← dvd_neg, neg_sub] at ha
   have := dvd_add ha hb
   rwa [sub_eq_add_neg, sub_eq_add_neg, add_assoc, neg_add_cancel_left, ← sub_eq_add_neg, ←
@@ -499,7 +499,7 @@ variable {f}
 theorem pow_dvd_nthHom_sub (r : R) (i j : ℕ) (h : i ≤ j) :
     (p : ℤ) ^ i ∣ nthHom f r j - nthHom f r i := by
   specialize f_compat i j h
-  rw [← Int.coe_nat_pow, ← ZMod.intCast_zmod_eq_zero_iff_dvd, Int.cast_sub]
+  rw [← Int.natCast_pow, ← ZMod.intCast_zmod_eq_zero_iff_dvd, Int.cast_sub]
   dsimp [nthHom]
   rw [← f_compat, RingHom.comp_apply]
   simp only [ZMod.cast_id, ZMod.castHom_apply, sub_self, ZMod.natCast_val, ZMod.intCast_cast]
@@ -510,7 +510,7 @@ theorem isCauSeq_nthHom (r : R) : IsCauSeq (padicNorm p) fun n => nthHom f r n :
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (p : ℚ) ^ (-((k : ℕ) : ℤ)) < ε := exists_pow_neg_lt_rat p hε
   use k
   intro j hj
-  refine' lt_of_le_of_lt _ hk
+  refine lt_of_le_of_lt ?_ hk
   -- Need to do beta reduction first, as `norm_cast` doesn't.
   -- Added to adapt to leanprover/lean4#2734.
   beta_reduce
