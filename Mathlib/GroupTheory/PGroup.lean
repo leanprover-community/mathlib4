@@ -22,8 +22,6 @@ It also contains proofs of some corollaries of this lemma about existence of fix
 -/
 
 
-open BigOperators
-
 open Fintype MulAction
 
 variable (p : ℕ) (G : Type*) [Group G]

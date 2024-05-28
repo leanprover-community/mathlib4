@@ -37,7 +37,7 @@ integrate, integration, integrable, integrability
 
 open Real Nat Set Finset
 
-open scoped Real BigOperators Interval
+open scoped Real Interval
 
 variable {a b : ℝ} (n : ℕ)
 
@@ -681,7 +681,7 @@ theorem integral_sin_sq : ∫ x in a..b, sin x ^ 2 = (sin a * cos a - sin b * co
 #align integral_sin_sq integral_sin_sq
 
 theorem integral_sin_pow_odd :
-    (∫ x in (0)..π, sin x ^ (2 * n + 1)) = 2 * ∏ i in range n, (2 * (i:ℝ) + 2) / (2 * i + 3) := by
+    (∫ x in (0)..π, sin x ^ (2 * n + 1)) = 2 * ∏ i ∈ range n, (2 * (i:ℝ) + 2) / (2 * i + 3) := by
   induction' n with k ih; · norm_num
   rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
   norm_cast
@@ -689,7 +689,7 @@ theorem integral_sin_pow_odd :
 #align integral_sin_pow_odd integral_sin_pow_odd
 
 theorem integral_sin_pow_even :
-    (∫ x in (0)..π, sin x ^ (2 * n)) = π * ∏ i in range n, (2 * (i:ℝ) + 1) / (2 * i + 2) := by
+    (∫ x in (0)..π, sin x ^ (2 * n)) = π * ∏ i ∈ range n, (2 * (i:ℝ) + 1) / (2 * i + 2) := by
   induction' n with k ih; · simp
   rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
   norm_cast

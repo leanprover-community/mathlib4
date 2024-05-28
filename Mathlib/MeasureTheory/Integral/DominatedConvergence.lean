@@ -36,7 +36,7 @@ open MeasureTheory
 section DominatedConvergenceTheorem
 
 open Set Filter TopologicalSpace ENNReal
-open scoped Topology BigOperators
+open scoped Topology
 
 namespace MeasureTheory
 
@@ -100,7 +100,7 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
     filter_upwards [eventually_countable_forall.2 h_bound, hb_nonneg, bound_summable]
       with a hFa ha0 has
     calc
-      ‖∑ n in s, F n a‖ ≤ ∑ n in s, bound n a := norm_sum_le_of_le _ fun n _ => hFa n
+      ‖∑ n ∈ s, F n a‖ ≤ ∑ n ∈ s, bound n a := norm_sum_le_of_le _ fun n _ => hFa n
       _ ≤ ∑' n, bound n a := sum_le_tsum _ (fun n _ => ha0 n) has
 #align measure_theory.has_sum_integral_of_dominated_convergence MeasureTheory.hasSum_integral_of_dominated_convergence
 
@@ -184,9 +184,8 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
 #align antitone.tendsto_set_integral Antitone.tendsto_setIntegral
 
-@[deprecated]
-alias _root_.Antitone.tendsto_set_integral :=
-  _root_.Antitone.tendsto_setIntegral -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias _root_.Antitone.tendsto_set_integral :=  _root_.Antitone.tendsto_setIntegral
 
 end TendstoMono
 

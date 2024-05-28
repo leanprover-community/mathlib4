@@ -414,7 +414,6 @@ issue: ⋯ does not hold
     exact test_sorry
   trivial
 
-open scoped BigOperators in
 example (n : ℕ) : true := by
   have : ∑ f : Unit → Fin (n + 1), f () = 0 := by
     success_if_fail_with_msg "
@@ -430,7 +429,6 @@ issue: 1 = 0 does not hold
   trivial
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/slim_check.20question/near/412709012
-open scoped BigOperators in
 /--
 info: Success
 ---
@@ -438,7 +436,7 @@ warning: declaration uses 'sorry'
 -/
 #guard_msgs in
 example (q : ℕ) : q = 0 ∨ q ≥ 2 ∨
-    8 = ∑ k in Finset.range 2, 5 ^ k * Nat.choose (2 * q + 1) (2 * k + 1) := by
+    8 = ∑ k ∈ Finset.range 2, 5 ^ k * Nat.choose (2 * q + 1) (2 * k + 1) := by
   slim_check
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/slim_check.20giving.20wrong.20counterexamples.3F/near/420008365

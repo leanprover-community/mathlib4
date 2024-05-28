@@ -3,17 +3,18 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Mathport.Rename
-import Batteries.Data.List.Basic
-import Batteries.Data.List.Lemmas
+import Mathlib.Init.Order.LinearOrder
 import Mathlib.Init.Data.List.Lemmas
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Tactic.Common
 
 #align_import data.vector from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
 /-!
 The type `Vector` represents lists with fixed length.
 -/
+
+assert_not_exists Monoid
 
 universe u v w
 /-- `Vector α n` is the type of lists of length `n` with elements of type `α`. -/
@@ -213,14 +214,7 @@ def shiftLeftFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
 /-- `shiftRightFill v i` is the vector obtained by right-shifting `v` `i` times and padding with the
     `fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
 def shiftRightFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
-  Vector.congr (by
-        by_cases h : i ≤ n
-        · have h₁ := Nat.sub_le n i
-          rw [min_eq_right h]
-          rw [min_eq_left h₁, ← add_tsub_assoc_of_le h, Nat.add_comm, add_tsub_cancel_right]
-        · have h₁ := le_of_not_ge h
-          rw [min_eq_left h₁, tsub_eq_zero_iff_le.mpr h₁, zero_min, Nat.add_zero]) <|
-    append (replicate (min n i) fill) (take (n - i) v)
+  Vector.congr (by omega) <| append (replicate (min n i) fill) (take (n - i) v)
 
 end Shift
 
