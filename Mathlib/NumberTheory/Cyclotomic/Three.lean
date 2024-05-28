@@ -97,7 +97,7 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
   rcases this with (rfl | h | h | h | h | h)
   · left; rfl
   · right; ext; simp [h]
-  · exfalso
+  all_goals exfalso
     apply hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide)
     convert hcong
     simp [h]
