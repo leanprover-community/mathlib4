@@ -109,7 +109,7 @@ Hausdorff measure, measure, metric measure
 -/
 
 
-open scoped NNReal ENNReal Topology BigOperators
+open scoped NNReal ENNReal Topology
 
 open EMetric Set Function Filter Encodable FiniteDimensional TopologicalSpace
 
@@ -142,7 +142,7 @@ variable {μ : OuterMeasure X}
 /-- A metric outer measure is additive on a finite set of pairwise metric separated sets. -/
 theorem finset_iUnion_of_pairwise_separated (hm : IsMetric μ) {I : Finset ι} {s : ι → Set X}
     (hI : ∀ i ∈ I, ∀ j ∈ I, i ≠ j → IsMetricSeparated (s i) (s j)) :
-    μ (⋃ i ∈ I, s i) = ∑ i in I, μ (s i) := by
+    μ (⋃ i ∈ I, s i) = ∑ i ∈ I, μ (s i) := by
   classical
   induction' I using Finset.induction_on with i I hiI ihI hI
   · simp

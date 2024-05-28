@@ -30,7 +30,7 @@ of the basis).
 
 open Set TopologicalSpace MeasureTheory MeasureTheory.Measure FiniteDimensional
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 noncomputable section
 

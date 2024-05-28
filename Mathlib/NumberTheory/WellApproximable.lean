@@ -303,7 +303,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     refine this.trans ?_
     convert approxAddOrderOf.vadd_subset_of_coprime (p * δ n) h_cop
     rw [hu₀, Subtype.coe_mk, mul_comm p, h_div]
-  change (∀ᵐ x, x ∉ E) ∨ E ∈ volume.ae
+  change (∀ᵐ x, x ∉ E) ∨ E ∈ ae volume
   rw [← eventuallyEq_empty, ← eventuallyEq_univ]
   have hC : ∀ p : Nat.Primes, u p +ᵥ C p = C p := by
     intro p

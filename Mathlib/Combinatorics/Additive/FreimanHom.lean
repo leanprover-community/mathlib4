@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset
-import Mathlib.Data.FunLike.Basic
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+import Mathlib.Data.ZMod.Defs
 import Mathlib.Data.Set.Pointwise.Basic
 
 #align_import algebra.hom.freiman from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
@@ -288,6 +290,50 @@ lemma IsMulFreimanHom.inv (hf : IsMulFreimanHom n A B f) : IsMulFreimanHom n A B
       h₂.map_prod_eq_map_prod hsA htA hs ht h]
 
 end DivisionCommMonoid
+
+namespace Fin
+variable {k m n : ℕ}
+
+private lemma aux (hm : m ≠ 0) (hkmn : m * k ≤ n) : k < (n + 1) :=
+  Nat.lt_succ_iff.2 $ le_trans (Nat.le_mul_of_pos_left _ hm.bot_lt) hkmn
+
+/-- **No wrap-around principle**.
+
+The first `k + 1` elements of `Fin (n + 1)` are `m`-Freiman isomorphic to the first `k + 1` elements
+of `ℕ` assuming there is no wrap-around. -/
+lemma isAddFreimanIso_Iic (hm : m ≠ 0) (hkmn : m * k ≤ n) :
+    IsAddFreimanIso m (Iic (k : Fin (n + 1))) (Iic k) val where
+  bijOn.left := by simp [MapsTo, Fin.le_iff_val_le_val, Nat.mod_eq_of_lt, aux hm hkmn]
+  bijOn.right.left := val_injective.injOn _
+  bijOn.right.right x (hx : x ≤ _) :=
+    ⟨x, by simpa [le_iff_val_le_val, -val_fin_le, Nat.mod_eq_of_lt, aux hm hkmn, hx.trans_lt]⟩
+  map_sum_eq_map_sum s t hsA htA hs ht := by
+    have (u : Multiset (Fin (n + 1))) : Nat.castRingHom _ (u.map val).sum = u.sum := by simp
+    rw [← this, ← this]
+    have {u : Multiset (Fin (n + 1))} (huk : ∀ x ∈ u, x ≤ k) (hu : card u = m) :
+        (u.map val).sum < (n + 1) := Nat.lt_succ_iff.2 $ hkmn.trans' $ by
+      rw [← hu, ← card_map]
+      refine sum_le_card_nsmul (u.map val) k ?_
+      simpa [le_iff_val_le_val, -val_fin_le, Nat.mod_eq_of_lt, aux hm hkmn] using huk
+    exact ⟨congr_arg _, CharP.natCast_injOn_Iio _ (n + 1) (this hsA hs) (this htA ht)⟩
+
+/-- **No wrap-around principle**.
+
+The first `k` elements of `Fin (n + 1)` are `m`-Freiman isomorphic to the first `k` elements of `ℕ`
+assuming there is no wrap-around. -/
+lemma isAddFreimanIso_Iio (hm : m ≠ 0) (hkmn : m * k ≤ n) :
+    IsAddFreimanIso m (Iio (k : Fin (n + 1))) (Iio k) val := by
+  obtain _ | k := k
+  · simp [← bot_eq_zero]; simp [← _root_.bot_eq_zero, -bot_eq_zero']
+  have hkmn' : m * k ≤ n := (Nat.mul_le_mul_left _ k.le_succ).trans hkmn
+  convert isAddFreimanIso_Iic hm hkmn' using 1 <;> ext x
+  · simp [lt_iff_val_lt_val, le_iff_val_le_val, -val_fin_le, -val_fin_lt, Nat.mod_eq_of_lt,
+      aux hm hkmn']
+    simp_rw [← Nat.cast_add_one]
+    rw [Fin.val_cast_of_lt (aux hm hkmn), Nat.lt_succ_iff]
+  · simp [Nat.succ_eq_add_one, Nat.lt_succ_iff]
+
+end Fin
 
 #noalign add_freiman_hom
 #noalign freiman_hom
