@@ -12,11 +12,6 @@ import Mathlib.RingTheory.Coalgebra.Equiv
 We introduce the bundled category `CoalgebraCat` of coalgebras over a fixed commutative ring `R`
 along with the forgetful functor to `ModuleCat`.
 
-# Category instance for coalgebras over a commutative ring
-
-We introduce the bundled category `CoalgebraCat` of coalgebras over a fixed commutative ring `R`
-along with the forgetful functor to `ModuleCat`.
-
 This file mimics `Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat`.
 
 -/
