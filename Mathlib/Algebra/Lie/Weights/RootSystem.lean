@@ -171,29 +171,24 @@ lemma apply_coroot_eq_cast :
     β (coroot α) = (chainBotCoeff α β - chainTopCoeff α β : ℤ) := by
   rw [apply_coroot_eq_cast', ← chainTopCoeff_add_chainBotCoeff]; congr 1; omega
 
+lemma le_chainBotCoeff_of_rootSpace_ne_top (n : ℤ) (hn : rootSpace H (-n • α + β) ≠ ⊥) :
+    n ≤ chainBotCoeff α β := by
+  contrapose! hn
+  lift n to ℕ using (Nat.cast_nonneg _).trans hn.le
+  rw [Nat.cast_lt, ← @Nat.add_lt_add_iff_right (chainTopCoeff α β),
+    chainBotCoeff_add_chainTopCoeff] at hn
+  have := rootSpace_neg_nsmul_add_chainTop_of_lt α β hα hn
+  rwa [nsmul_eq_smul_cast ℤ, ← neg_smul, coe_chainTop, ← add_assoc,
+    ← add_smul, Nat.cast_add, neg_add, add_assoc, neg_add_self, add_zero] at this
+
 /-- Members of the `α`-chain through `β` are the only roots of the form `β - kα`. -/
 lemma rootSpace_zsmul_add_ne_bot_iff (n : ℤ) :
     rootSpace H (n • α + β) ≠ ⊥ ↔ n ≤ chainTopCoeff α β ∧ -n ≤ chainBotCoeff α β := by
   constructor
-  · contrapose
-    rw [not_and_or, not_le, not_le, ne_eq, not_not]
-    rintro (h | h)
-    · lift n to ℕ using (Nat.cast_nonneg _).trans h.le
-      rw [Nat.cast_lt, ← @Nat.add_lt_add_iff_left (chainBotCoeff α β),
-        chainBotCoeff_add_chainTopCoeff, ← chainLength_neg] at h
-      have := rootSpace_neg_nsmul_add_chainTop_of_lt (-α) β hα.neg h
-      rw [coe_chainTop, LieModule.Weight.coe_neg, smul_neg, smul_neg, neg_neg, ← neg_smul,
-        ← add_assoc, nsmul_eq_smul_cast ℤ, ← add_smul, chainTopCoeff_neg, Nat.cast_add,
-        ← sub_eq_add_neg, add_sub_cancel_left] at this
-      exact this
-    · obtain ⟨n, rfl⟩ := neg_involutive.surjective n
-      simp only [neg_neg] at h
-      lift n to ℕ using (Nat.cast_nonneg _).trans h.le
-      rw [Nat.cast_lt, ← @Nat.add_lt_add_iff_right (chainTopCoeff α β),
-        chainBotCoeff_add_chainTopCoeff] at h
-      have := rootSpace_neg_nsmul_add_chainTop_of_lt α β hα h
-      rwa [nsmul_eq_smul_cast ℤ, ← neg_smul, coe_chainTop, ← add_assoc,
-        ← add_smul, Nat.cast_add, neg_add, add_assoc, neg_add_self, add_zero] at this
+  · refine (fun hn ↦ ⟨?_, le_chainBotCoeff_of_rootSpace_ne_top α β hα _ (by rwa [neg_neg])⟩)
+    rw [← chainBotCoeff_neg, ← Weight.coe_neg]
+    apply le_chainBotCoeff_of_rootSpace_ne_top _ _ hα.neg
+    rwa [neg_smul, Weight.coe_neg, smul_neg, neg_neg]
   · rintro ⟨h₁, h₂⟩
     set k := chainTopCoeff α β - n with hk; clear_value k
     lift k to ℕ using (by rw [hk, le_sub_iff_add_le, zero_add]; exact h₁)
