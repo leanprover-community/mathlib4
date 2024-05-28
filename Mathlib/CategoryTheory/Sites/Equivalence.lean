@@ -18,7 +18,7 @@ sufficiently small limits in the sheaf category on the essentially small site.
 
 ## Main definitions
 
-* `CategoryTheory.Equivalence.sheafCongrRight` is the equivalence of sheaf categories.
+* `CategoryTheory.Equivalence.sheafCongr` is the equivalence of sheaf categories.
 
 * `CategoryTheory.Equivalence.transportAndSheafify` is the functor which takes a presheaf on `C`,
   transports it over the equivalence to `D`, sheafifies there and then transports back to `C`.
