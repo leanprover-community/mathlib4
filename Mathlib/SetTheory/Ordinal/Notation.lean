@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Init.Data.Ordering.Lemmas
 import Mathlib.SetTheory.Ordinal.Principal
+import Mathlib.Tactic.NormNum
 
 #align_import set_theory.ordinal.notation from "leanprover-community/mathlib"@"b67044ba53af18680e1dd246861d9584e968495d"
 

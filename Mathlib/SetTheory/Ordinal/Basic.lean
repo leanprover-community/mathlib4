@@ -55,6 +55,8 @@ for the empty set by convention.
 * `ω` is a notation for the first infinite ordinal in the locale `Ordinal`.
 -/
 
+assert_not_exists Module
+assert_not_exists Field
 
 noncomputable section
 
