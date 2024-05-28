@@ -93,7 +93,7 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
   have hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
   have := Units.mem hζ u
   have h2 : (hζ.pow_of_coprime 2 (by decide)).toInteger = hζ.toInteger ^ 2 := by ext; simp
-  rcases this with (rfl | h | h | h | h | h)
+  fin_cases this
   · left; rfl
   · right; ext; simp [h]
   all_goals exfalso
