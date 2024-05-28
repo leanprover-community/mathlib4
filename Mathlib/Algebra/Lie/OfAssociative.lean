@@ -24,7 +24,7 @@ make such a definition in this file.
 
  * `LieAlgebra.ofAssociativeAlgebra`
  * `LieAlgebra.ofAssociativeAlgebraHom`
- * `LieModule.toEndomorphism`
+ * `LieModule.toEnd`
  * `LieAlgebra.ad`
  * `LinearEquiv.lieConj`
  * `AlgEquiv.toLieEquiv`
@@ -193,7 +193,7 @@ variable [LieRingModule L M] [LieModule R L M]
 
 See also `LieModule.toModuleHom`. -/
 @[simps]
-def LieModule.toEndomorphism : L →ₗ⁅R⁆ Module.End R M where
+def LieModule.toEnd : L →ₗ⁅R⁆ Module.End R M where
   toFun x :=
     { toFun := fun m => ⁅x, m⁆
       map_add' := lie_add x
@@ -201,11 +201,11 @@ def LieModule.toEndomorphism : L →ₗ⁅R⁆ Module.End R M where
   map_add' x y := by ext m; apply add_lie
   map_smul' t x := by ext m; apply smul_lie
   map_lie' {x y} := by ext m; apply lie_lie
-#align lie_module.to_endomorphism LieModule.toEndomorphism
+#align lie_module.to_endomorphism LieModule.toEnd
 
 /-- The adjoint action of a Lie algebra on itself. -/
 def LieAlgebra.ad : L →ₗ⁅R⁆ Module.End R L :=
-  LieModule.toEndomorphism R L L
+  LieModule.toEnd R L L
 #align lie_algebra.ad LieAlgebra.ad
 
 @[simp]
@@ -214,64 +214,64 @@ theorem LieAlgebra.ad_apply (x y : L) : LieAlgebra.ad R L x y = ⁅x, y⁆ :=
 #align lie_algebra.ad_apply LieAlgebra.ad_apply
 
 @[simp]
-theorem LieModule.toEndomorphism_module_end :
-    LieModule.toEndomorphism R (Module.End R M) M = LieHom.id := by ext g m; simp [lie_eq_smul]
-#align lie_module.to_endomorphism_module_End LieModule.toEndomorphism_module_end
+theorem LieModule.toEnd_module_end :
+    LieModule.toEnd R (Module.End R M) M = LieHom.id := by ext g m; simp [lie_eq_smul]
+#align lie_module.to_endomorphism_module_End LieModule.toEnd_module_end
 
-theorem LieSubalgebra.toEndomorphism_eq (K : LieSubalgebra R L) {x : K} :
-    LieModule.toEndomorphism R K M x = LieModule.toEndomorphism R L M x :=
+theorem LieSubalgebra.toEnd_eq (K : LieSubalgebra R L) {x : K} :
+    LieModule.toEnd R K M x = LieModule.toEnd R L M x :=
   rfl
-#align lie_subalgebra.to_endomorphism_eq LieSubalgebra.toEndomorphism_eq
+#align lie_subalgebra.to_endomorphism_eq LieSubalgebra.toEnd_eq
 
 @[simp]
-theorem LieSubalgebra.toEndomorphism_mk (K : LieSubalgebra R L) {x : L} (hx : x ∈ K) :
-    LieModule.toEndomorphism R K M ⟨x, hx⟩ = LieModule.toEndomorphism R L M x :=
+theorem LieSubalgebra.toEnd_mk (K : LieSubalgebra R L) {x : L} (hx : x ∈ K) :
+    LieModule.toEnd R K M ⟨x, hx⟩ = LieModule.toEnd R L M x :=
   rfl
-#align lie_subalgebra.to_endomorphism_mk LieSubalgebra.toEndomorphism_mk
+#align lie_subalgebra.to_endomorphism_mk LieSubalgebra.toEnd_mk
 
 section
 
-open BigOperators LieAlgebra LieModule
+open LieAlgebra LieModule
 
-lemma LieSubmodule.coe_toEndomorphism (N : LieSubmodule R L M) (x : L) (y : N) :
-    (toEndomorphism R L N x y : M) = toEndomorphism R L M x y := rfl
+lemma LieSubmodule.coe_toEnd (N : LieSubmodule R L M) (x : L) (y : N) :
+    (toEnd R L N x y : M) = toEnd R L M x y := rfl
 
-lemma LieSubmodule.coe_toEndomorphism_pow (N : LieSubmodule R L M) (x : L) (y : N) (n : ℕ) :
-    ((toEndomorphism R L N x ^ n) y : M) = (toEndomorphism R L M x ^ n) y := by
+lemma LieSubmodule.coe_toEnd_pow (N : LieSubmodule R L M) (x : L) (y : N) (n : ℕ) :
+    ((toEnd R L N x ^ n) y : M) = (toEnd R L M x ^ n) y := by
   induction n generalizing y with
   | zero => rfl
-  | succ n ih => simp only [pow_succ', LinearMap.mul_apply, ih, LieSubmodule.coe_toEndomorphism]
+  | succ n ih => simp only [pow_succ', LinearMap.mul_apply, ih, LieSubmodule.coe_toEnd]
 
 lemma LieSubalgebra.coe_ad (H : LieSubalgebra R L) (x y : H) :
     (ad R H x y : L) = ad R L x y := rfl
 
 lemma LieSubalgebra.coe_ad_pow (H : LieSubalgebra R L) (x y : H) (n : ℕ) :
     ((ad R H x ^ n) y : L) = (ad R L x ^ n) y :=
-  LieSubmodule.coe_toEndomorphism_pow R H L H.toLieSubmodule x y n
+  LieSubmodule.coe_toEnd_pow R H L H.toLieSubmodule x y n
 
 variable {L M}
 
-local notation "φ" => LieModule.toEndomorphism R L M
+local notation "φ" => LieModule.toEnd R L M
 
-lemma LieModule.toEndomorphism_lie (x y : L) (z : M) :
+lemma LieModule.toEnd_lie (x y : L) (z : M) :
     (φ x) ⁅y, z⁆ = ⁅ad R L x y, z⁆ + ⁅y, φ x z⁆ := by
   simp
 
 lemma LieAlgebra.ad_lie (x y z : L) :
     (ad R L x) ⁅y, z⁆ = ⁅ad R L x y, z⁆ + ⁅y, ad R L x z⁆ :=
-  toEndomorphism_lie _ x y z
+  toEnd_lie _ x y z
 
 open Finset in
-lemma LieModule.toEndomorphism_pow_lie (x y : L) (z : M) (n : ℕ) :
+lemma LieModule.toEnd_pow_lie (x y : L) (z : M) (n : ℕ) :
     ((φ x) ^ n) ⁅y, z⁆ =
-      ∑ ij in antidiagonal n, n.choose ij.1 • ⁅((ad R L x) ^ ij.1) y, ((φ x) ^ ij.2) z⁆ := by
+      ∑ ij ∈ antidiagonal n, n.choose ij.1 • ⁅((ad R L x) ^ ij.1) y, ((φ x) ^ ij.2) z⁆ := by
   induction n with
   | zero => simp
   | succ n ih =>
     rw [Finset.sum_antidiagonal_choose_succ_nsmul
       (fun i j ↦ ⁅((ad R L x) ^ i) y, ((φ x) ^ j) z⁆) n]
     simp only [pow_succ', LinearMap.mul_apply, ih, map_sum, map_nsmul,
-      toEndomorphism_lie, nsmul_add, sum_add_distrib]
+      toEnd_lie, nsmul_add, sum_add_distrib]
     rw [add_comm, add_left_cancel_iff, sum_congr rfl]
     rintro ⟨i, j⟩ hij
     rw [mem_antidiagonal] at hij
@@ -280,8 +280,8 @@ lemma LieModule.toEndomorphism_pow_lie (x y : L) (z : M) (n : ℕ) :
 open Finset in
 lemma LieAlgebra.ad_pow_lie (x y z : L) (n : ℕ) :
     ((ad R L x) ^ n) ⁅y, z⁆ =
-      ∑ ij in antidiagonal n, n.choose ij.1 • ⁅((ad R L x) ^ ij.1) y, ((ad R L x) ^ ij.2) z⁆ :=
-  toEndomorphism_pow_lie _ x y z n
+      ∑ ij ∈ antidiagonal n, n.choose ij.1 • ⁅((ad R L x) ^ ij.1) y, ((ad R L x) ^ ij.2) z⁆ :=
+  toEnd_pow_lie _ x y z n
 
 end
 
@@ -292,15 +292,15 @@ namespace LieModule
 variable {M₂ : Type w₁} [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
   (f : M →ₗ⁅R,L⁆ M₂) (k : ℕ) (x : L)
 
-lemma toEndomorphism_pow_comp_lieHom :
-    (toEndomorphism R L M₂ x ^ k) ∘ₗ f = f ∘ₗ toEndomorphism R L M x ^ k := by
+lemma toEnd_pow_comp_lieHom :
+    (toEnd R L M₂ x ^ k) ∘ₗ f = f ∘ₗ toEnd R L M x ^ k := by
   apply LinearMap.commute_pow_left_of_commute
   ext
   simp
 
-lemma toEndomorphism_pow_apply_map (m : M) :
-    (toEndomorphism R L M₂ x ^ k) (f m) = f ((toEndomorphism R L M x ^ k) m) :=
-  LinearMap.congr_fun (toEndomorphism_pow_comp_lieHom f k x) m
+lemma toEnd_pow_apply_map (m : M) :
+    (toEnd R L M₂ x ^ k) (f m) = f ((toEnd R L M x ^ k) m) :=
+  LinearMap.congr_fun (toEnd_pow_comp_lieHom f k x) m
 
 end LieModule
 
@@ -310,27 +310,27 @@ open LieModule Set
 
 variable {N : LieSubmodule R L M} {x : L}
 
-theorem coe_map_toEndomorphism_le :
-    (N : Submodule R M).map (LieModule.toEndomorphism R L M x) ≤ N := by
+theorem coe_map_toEnd_le :
+    (N : Submodule R M).map (LieModule.toEnd R L M x) ≤ N := by
   rintro n ⟨m, hm, rfl⟩
   exact N.lie_mem hm
-#align lie_submodule.coe_map_to_endomorphism_le LieSubmodule.coe_map_toEndomorphism_le
+#align lie_submodule.coe_map_to_endomorphism_le LieSubmodule.coe_map_toEnd_le
 
 variable (N x)
 
-theorem toEndomorphism_comp_subtype_mem (m : M) (hm : m ∈ (N : Submodule R M)) :
-    (toEndomorphism R L M x).comp (N : Submodule R M).subtype ⟨m, hm⟩ ∈ (N : Submodule R M) := by
+theorem toEnd_comp_subtype_mem (m : M) (hm : m ∈ (N : Submodule R M)) :
+    (toEnd R L M x).comp (N : Submodule R M).subtype ⟨m, hm⟩ ∈ (N : Submodule R M) := by
   simpa using N.lie_mem hm
-#align lie_submodule.to_endomorphism_comp_subtype_mem LieSubmodule.toEndomorphism_comp_subtype_mem
+#align lie_submodule.to_endomorphism_comp_subtype_mem LieSubmodule.toEnd_comp_subtype_mem
 
 @[simp]
-theorem toEndomorphism_restrict_eq_toEndomorphism (h := N.toEndomorphism_comp_subtype_mem x) :
-    (toEndomorphism R L M x).restrict h = toEndomorphism R L N x := by
+theorem toEnd_restrict_eq_toEnd (h := N.toEnd_comp_subtype_mem x) :
+    (toEnd R L M x).restrict h = toEnd R L N x := by
   ext; simp [LinearMap.restrict_apply]
-#align lie_submodule.to_endomorphism_restrict_eq_to_endomorphism LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism
+#align lie_submodule.to_endomorphism_restrict_eq_to_endomorphism LieSubmodule.toEnd_restrict_eq_toEnd
 
-lemma mapsTo_pow_toEndomorphism_sub_algebraMap {φ : R} {k : ℕ} {x : L} :
-    MapsTo ((toEndomorphism R L M x - algebraMap R (Module.End R M) φ) ^ k) N N := by
+lemma mapsTo_pow_toEnd_sub_algebraMap {φ : R} {k : ℕ} {x : L} :
+    MapsTo ((toEnd R L M x - algebraMap R (Module.End R M) φ) ^ k) N N := by
   rw [LinearMap.coe_pow]
   exact MapsTo.iterate (fun m hm ↦ N.sub_mem (N.lie_mem hm) (N.smul_mem _ hm)) k
 

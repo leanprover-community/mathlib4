@@ -109,8 +109,7 @@ instance : Category (Localization W) := by
   infer_instance
 
 /-- The obvious functor `C ⥤ W.Localization` -/
-def Q : C ⥤ W.Localization
-    where
+def Q : C ⥤ W.Localization where
   obj X := (Quotient.functor _).obj (Paths.of.obj ⟨X⟩)
   map f := (Quotient.functor _).map (ψ₁ W f)
   map_id X := Quotient.sound _ (relations.id X)
@@ -126,8 +125,7 @@ namespace Construction
 
 variable {W}
 /-- The isomorphism in `W.Localization` associated to a morphism `w` in W -/
-def wIso {X Y : C} (w : X ⟶ Y) (hw : W w) : Iso (W.Q.obj X) (W.Q.obj Y)
-    where
+def wIso {X Y : C} (w : X ⟶ Y) (hw : W w) : Iso (W.Q.obj X) (W.Q.obj Y) where
   hom := W.Q.map w
   inv := (Quotient.functor _).map (by dsimp; exact Paths.of.map (Sum.inr ⟨w, hw⟩))
   hom_inv_id := Quotient.sound _ (relations.Winv₁ w hw)
@@ -192,12 +190,12 @@ theorem fac : W.Q ⋙ lift G hG = G :=
 
 theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂) : G₁ = G₂ := by
   suffices h' : Quotient.functor _ ⋙ G₁ = Quotient.functor _ ⋙ G₂ by
-    refine' Functor.ext _ _
+    refine Functor.ext ?_ ?_
     · rintro ⟨⟨X⟩⟩
       apply Functor.congr_obj h
     · rintro ⟨⟨X⟩⟩ ⟨⟨Y⟩⟩ ⟨f⟩
       apply Functor.congr_hom h'
-  refine' Paths.ext_functor _ _
+  refine Paths.ext_functor ?_ ?_
   · ext X
     cases X
     apply Functor.congr_obj h
@@ -206,7 +204,7 @@ theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂
     · have hw : W.Q.map w = (wIso w hw).hom := rfl
       have hw' := Functor.congr_hom h w
       simp only [Functor.comp_map, hw] at hw'
-      refine' Functor.congr_inv_of_congr_hom _ _ _ _ _ hw'
+      refine Functor.congr_inv_of_congr_hom _ _ _ ?_ ?_ hw'
       all_goals apply Functor.congr_obj h
 #align category_theory.localization.construction.uniq CategoryTheory.Localization.Construction.uniq
 
@@ -251,7 +249,7 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
     · simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
     · let p' : X₁ ⟶X₂ := p
       rw [show p'.cons g = p' ≫ Quiver.Hom.toPath g by rfl, G.map_comp]
-      refine' P.comp_mem _ _ hp _
+      refine P.comp_mem _ _ hp ?_
       rcases g with (g | ⟨g, hg⟩)
       · apply hP₁
       · apply hP₂
@@ -290,8 +288,7 @@ end NatTransExtension
 /-- If `F₁` and `F₂` are functors `W.Localization ⥤ D`, a natural transformation `F₁ ⟶ F₂`
 can be obtained from a natural transformation `W.Q ⋙ F₁ ⟶ W.Q ⋙ F₂`. -/
 @[simps]
-def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ W.Q ⋙ F₂) : F₁ ⟶ F₂
-    where
+def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ W.Q ⋙ F₂) : F₁ ⟶ F₂ where
   app := NatTransExtension.app τ
   naturality := by
     suffices MorphismProperty.naturalityProperty (NatTransExtension.app τ) = ⊤ by
@@ -333,8 +330,7 @@ def functor : (W.Localization ⥤ D) ⥤ W.FunctorsInverting D :=
 /-- The function `(W.FunctorsInverting D) ⥤ (W.Localization ⥤ D)` induced by
 `Construction.lift`. -/
 @[simps!]
-def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D
-    where
+def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D where
   obj G := lift G.obj G.property
   map τ := natTransExtension (eqToHom (by rw [fac]) ≫ τ ≫ eqToHom (by rw [fac]))
   map_id G :=
@@ -388,8 +384,7 @@ end WhiskeringLeftEquivalence
 
 /-- The equivalence of categories `(W.localization ⥤ D) ≌ (W.FunctorsInverting D)`
 induced by the composition with `W.Q : C ⥤ W.localization`. -/
-def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D
-    where
+def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D where
   functor := WhiskeringLeftEquivalence.functor W D
   inverse := WhiskeringLeftEquivalence.inverse W D
   unitIso := WhiskeringLeftEquivalence.unitIso W D

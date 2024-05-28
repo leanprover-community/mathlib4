@@ -3,9 +3,8 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Fin
 import Mathlib.Algebra.Group.Nat
-import Mathlib.Data.Fin.Basic
-import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Data.ZMod.Defs

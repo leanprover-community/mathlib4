@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Scott Morrison All rights reserved.
+Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
@@ -223,6 +223,8 @@ variable (R)
 def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) where
   obj M := M.obj X
   map f := f.app X
+
+instance (X : Cᵒᵖ) : (evaluation R X).Additive where
 
 variable {R}
 
