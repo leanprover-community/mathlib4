@@ -746,7 +746,7 @@ lemma le_algebraMap_of_spectrum_le {r : R} {a : A} (h : ∀ x ∈ spectrum R a, 
   rw [← cfc_id R a]
   exact cfc_le_algebraMap id r a h
 
-lemma algebraMap_le_of_le_spectrum (r : R) (a : A) (h : ∀ x ∈ spectrum R a, r ≤ x)
+lemma algebraMap_le_of_le_spectrum {r : R} {a : A} (h : ∀ x ∈ spectrum R a, r ≤ x)
     (ha : p a := by cfc_tac) : algebraMap R A r ≤ a := by
   rw [← cfc_id R a]
   exact algebraMap_le_cfc id r a h
