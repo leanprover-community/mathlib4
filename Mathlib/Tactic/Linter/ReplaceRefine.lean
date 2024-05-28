@@ -55,10 +55,20 @@ def _root_.Lean.Syntax.findAll : Syntax → (Syntax → Bool) → Array Syntax
     if f stx then rest.push stx else rest
   | s, f => if f s then #[s] else #[]
 
+partial
+def getHoles : Syntax → Array Syntax
+  | .node _ ``Lean.Parser.Term.syntheticHole _ => #[]
+  | .node _ ``«term‹_›» _ => #[]
+  | hole@(.node _ kind args) =>
+    let args := (args.map getHoles).flatten
+    if kind == ``Lean.Parser.Term.hole then args.push hole else args
+--  | .node _ _ args => (args.map getHoles).flatten
+  | _ => #[]
+
 /-- extracts "holes" `_` from the input syntax.
 Converting `refine'` to `refine`, these are the candidate nodes for the replacement `_` to `?_`.
 -/
-def getHoles (stx : Syntax) : Array Syntax :=
+def getHoles' (stx : Syntax) : Array Syntax :=
   stx.findAll (·.isOfKind ``Lean.Parser.Term.hole)
 
 /-- converts an "anonymous hole" `_` to a "synthetic hole" `?_` with comparable
@@ -106,12 +116,11 @@ Eventually, it returns an array of pairs
 for each successful replacement.
 -/
 def getQuestions (cmd : Syntax) :
-    Command.CommandElabM (List (Nat × String.Pos)) := do
+    Command.CommandElabM (Array (Syntax × Array Syntax)) := do
   let exm ← toExample cmd
   let st ← get
   let refine's := getRefine's cmd
-  let mut opts := #[]
-  let mut refs := #[]
+  let mut suma := #[]
   for refine' in refine's do
     let refine := refine'ToRefine refine'
     let cands := candidateRefines refine
@@ -119,12 +128,10 @@ def getQuestions (cmd : Syntax) :
       let repl ← exm.replaceM fun s => if s == refine' then return some cand else return none
       Command.elabCommand repl
       if !(← get).messages.hasErrors then
-        opts := opts.push cand
-        refs := refs.push refine'.getPos?
+        suma := suma.push ((Syntax.getHead? refine').getD default, getHoles' cand)
+        break
       set st
-  let positions := opts.map fun s => let hs := getHoles s; hs.map (·.getPos?)
-  return (refs.zipWith positions fun a b =>
-    #[(1, a.getD default)] ++ (b.map (0, ·.getD default))).flatten.toList
+  return suma
 
 /-- Gets the value of the `linter.refine'ToRefine` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.refine'ToRefine o
@@ -133,6 +140,8 @@ def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.refine'To
 def refine'ToRefineLinter : Linter where run stx := do
   if getLinterHash (← getOptions) then
     let pos ← getQuestions stx
-    if ! pos.isEmpty then logInfo m!"{pos}" --else logInfo "fail"
+    for (r, hls) in pos do
+      logInfoAt r m!"{r.getPos?}"
+      let _ ← hls.mapM fun hl => (logInfoAt hl m!"{hl.getPos?.getD default}")
 
 initialize addLinter refine'ToRefineLinter
