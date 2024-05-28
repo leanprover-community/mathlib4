@@ -242,7 +242,7 @@ end Pushout
 section
 
 variable {C : Type u₁} [Category.{v₁} C]
-variable {D : Type u₂} [Category.{v₁} D]
+variable {D : Type u₂} [Category.{v₂} D]
 variable (G : C ⥤ D)
 
 section Pullback
