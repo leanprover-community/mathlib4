@@ -533,7 +533,7 @@ theorem sum_lt_sum_of_nonempty {s : Finset α} (hs : s.Nonempty) {f g : α → �
     (Hlt : ∀ i ∈ s, f i < g i) : ∑ i ∈ s, f i < ∑ i ∈ s, g i := by
   induction hs using Finset.Nonempty.cons_induction with
   | singleton => simp [Hlt _ (Finset.mem_singleton_self _)]
-  | cons _ _ _ ih =>
+  | cons _ _ _ _ ih =>
     simp only [Finset.sum_cons, forall_mem_cons] at Hlt ⊢
     exact ENNReal.add_lt_add Hlt.1 (ih Hlt.2)
 #align ennreal.sum_lt_sum_of_nonempty ENNReal.sum_lt_sum_of_nonempty
