@@ -350,23 +350,12 @@ theorem mul_star {x y : ℤ} : (⟨x, y⟩ * star ⟨x, y⟩ : ℤ√d) = x * x 
   ext <;> simp [sub_eq_add_neg, mul_comm]
 #align zsqrtd.mul_star Zsqrtd.mul_star
 
-protected theorem coe_int_add (m n : ℤ) : (↑(m + n) : ℤ√d) = ↑m + ↑n :=
-  Int.cast_add m n
-#align zsqrtd.coe_int_add Zsqrtd.coe_int_add
+@[deprecated (since := "2024-05-25")] alias coe_int_add := Int.cast_add
+@[deprecated (since := "2024-05-25")] alias coe_int_sub := Int.cast_sub
+@[deprecated (since := "2024-05-25")] alias coe_int_mul := Int.cast_mul
+@[deprecated (since := "2024-05-25")] alias coe_int_inj := Int.cast_inj
 
-protected theorem coe_int_sub (m n : ℤ) : (↑(m - n) : ℤ√d) = ↑m - ↑n :=
-  Int.cast_sub m n
-#align zsqrtd.coe_int_sub Zsqrtd.coe_int_sub
-
-protected theorem coe_int_mul (m n : ℤ) : (↑(m * n) : ℤ√d) = ↑m * ↑n :=
-  Int.cast_mul m n
-#align zsqrtd.coe_int_mul Zsqrtd.coe_int_mul
-
-protected theorem coe_int_inj {m n : ℤ} (h : (↑m : ℤ√d) = ↑n) : m = n := by
-  simpa using congr_arg re h
-#align zsqrtd.coe_int_inj Zsqrtd.coe_int_inj
-
-theorem coe_int_dvd_iff (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z ∣ a.im := by
+theorem intCast_dvd (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ z ∣ a.im := by
   constructor
   · rintro ⟨x, rfl⟩
     simp only [add_zero, intCast_re, zero_mul, mul_im, dvd_mul_right, and_self_iff,
@@ -375,17 +364,20 @@ theorem coe_int_dvd_iff (z : ℤ) (a : ℤ√d) : ↑z ∣ a ↔ z ∣ a.re ∧ 
     use ⟨r, i⟩
     rw [smul_val, Zsqrtd.ext_iff]
     exact ⟨hr, hi⟩
-#align zsqrtd.coe_int_dvd_iff Zsqrtd.coe_int_dvd_iff
+#align zsqrtd.coe_int_dvd_iff Zsqrtd.intCast_dvd
 
 @[simp, norm_cast]
-theorem coe_int_dvd_coe_int (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b := by
-  rw [coe_int_dvd_iff]
+theorem intCast_dvd_intCast (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b := by
+  rw [intCast_dvd]
   constructor
   · rintro ⟨hre, -⟩
     rwa [intCast_re] at hre
   · rw [intCast_re, intCast_im]
     exact fun hc => ⟨hc, dvd_zero a⟩
-#align zsqrtd.coe_int_dvd_coe_int Zsqrtd.coe_int_dvd_coe_int
+#align zsqrtd.coe_int_dvd_coe_int Zsqrtd.intCast_dvd_intCast
+
+@[deprecated (since := "2024-05-25")] alias coe_int_dvd_iff := intCast_dvd
+@[deprecated (since := "2024-05-25")] alias coe_int_dvd_coe_int := intCast_dvd_intCast
 
 protected theorem eq_of_smul_eq_smul_left {a : ℤ} {b c : ℤ√d} (ha : a ≠ 0) (h : ↑a * b = a * c) :
     b = c := by
@@ -413,9 +405,9 @@ theorem coprime_of_dvd_coprime {a b : ℤ√d} (hcoprime : IsCoprime a.re a.im) 
   · rintro z hz - hzdvdu hzdvdv
     apply hz
     obtain ⟨ha, hb⟩ : z ∣ a.re ∧ z ∣ a.im := by
-      rw [← coe_int_dvd_iff]
+      rw [← intCast_dvd]
       apply dvd_trans _ hdvd
-      rw [coe_int_dvd_iff]
+      rw [intCast_dvd]
       exact ⟨hzdvdu, hzdvdv⟩
     exact hcoprime.isUnit_of_dvd' ha hb
 #align zsqrtd.coprime_of_dvd_coprime Zsqrtd.coprime_of_dvd_coprime
@@ -571,14 +563,14 @@ theorem norm_eq_mul_conj (n : ℤ√d) : (norm n : ℤ√d) = n * star n := by
 theorem norm_neg (x : ℤ√d) : (-x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  Zsqrtd.coe_int_inj <| by rw [norm_eq_mul_conj, star_neg, neg_mul_neg, norm_eq_mul_conj]
+  Int.cast_inj.1 <| by rw [norm_eq_mul_conj, star_neg, neg_mul_neg, norm_eq_mul_conj]
 #align zsqrtd.norm_neg Zsqrtd.norm_neg
 
 @[simp]
 theorem norm_conj (x : ℤ√d) : (star x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  Zsqrtd.coe_int_inj <| by rw [norm_eq_mul_conj, star_star, mul_comm, norm_eq_mul_conj]
+  Int.cast_inj.1 <| by rw [norm_eq_mul_conj, star_star, mul_comm, norm_eq_mul_conj]
 #align zsqrtd.norm_conj Zsqrtd.norm_conj
 
 theorem norm_nonneg (hd : d ≤ 0) (n : ℤ√d) : 0 ≤ n.norm :=
