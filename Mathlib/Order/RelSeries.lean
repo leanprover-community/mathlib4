@@ -414,7 +414,6 @@ def snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) : RelSeries r
 @[simp] lemma last_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
     (p.snoc newLast rel).last = newLast := last_append _ _ _
 
-
 @[simp] lemma last_snoc' (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
     (p.snoc newLast rel).toFun (Fin.last (p.length + 1)) = newLast := last_append _ _ _
 

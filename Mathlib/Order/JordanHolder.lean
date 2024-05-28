@@ -301,7 +301,7 @@ section FinLemmas
 end FinLemmas
 
 #align composition_series.append RelSeries.smash
-#noalign composition_series.coe_append -- CompositionSeries.coe_append
+#noalign composition_series.coe_append
 #align composition_series.append_cast_add RelSeries.smash_castAdd
 #align composition_series.append_succ_cast_add RelSeries.smash_succ_castAdd
 #align composition_series.append_nat_add RelSeries.smash_natAdd
