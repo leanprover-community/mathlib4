@@ -1832,7 +1832,6 @@ import Mathlib.Data.FP.Basic
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.FlagRange
-import Mathlib.Data.Fin.Interval
 import Mathlib.Data.Fin.OrderHom
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.Tuple.Basic
@@ -2098,7 +2097,6 @@ import Mathlib.Data.Nat.Fib.Zeckendorf
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Data.Nat.Hyperoperation
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.MaxPowDiv
@@ -3268,6 +3266,8 @@ import Mathlib.Order.Interval.Basic
 import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Order.Interval.Finset.Box
 import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Order.Interval.Finset.Fin
+import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Order.Interval.Multiset
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Order.Interval.Set.Disjoint

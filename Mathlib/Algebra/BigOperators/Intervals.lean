@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Data.Nat.Interval
+import Mathlib.Algebra.Order.Interval.Finset
+import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.Linarith
 
 #align_import algebra.big_operators.intervals from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"

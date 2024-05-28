@@ -5,7 +5,7 @@ Authors: Antoine Labelle
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Fin.Interval
+import Mathlib.Order.Interval.Finset.Fin
 import Mathlib.Tactic.Linarith
 
 #align_import imo.imo1994_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
