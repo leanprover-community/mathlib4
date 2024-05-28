@@ -232,7 +232,7 @@ theorem oangle_eq_zero_or_eq_pi_iff_collinear {p₁ p₂ p₃ : P} :
     affineIndependent_iff_not_collinear_set]
 #align euclidean_geometry.oangle_eq_zero_or_eq_pi_iff_collinear EuclideanGeometry.oangle_eq_zero_or_eq_pi_iff_collinear
 
-/-- An oriented angle has sign zero if and only if the three points are collinear. -/
+/-- An oriented angle has a sign zero if and only if the three points are collinear. -/
 theorem oangle_sign_eq_zero_iff_collinear {p₁ p₂ p₃ : P} :
     (∡ p₁ p₂ p₃).sign = 0 ↔ Collinear ℝ ({p₁, p₂, p₃} : Set P) := by
   rw [Real.Angle.sign_eq_zero_iff, oangle_eq_zero_or_eq_pi_iff_collinear]
