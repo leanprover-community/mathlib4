@@ -3,9 +3,9 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
 -/
+import Mathlib.RingTheory.OrzechProperty
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Logic.Equiv.TransferInstance
 
 #align_import linear_algebra.invariant_basis_number from "leanprover-community/mathlib"@"5fd3186f1ec30a75d5f65732e3ce5e623382556f"
 
@@ -29,7 +29,8 @@ It is also useful to consider the following stronger conditions:
   that the existence of an injective linear map `(Fin n → R) →ₗ[R] (Fin m → R)`
   implies `n ≤ m`.
 
-- `OrzechProperty R` is a type class stating that `R` satisfies the following property:
+- `OrzechProperty R`, defined in `Mathlib/RingTheory/OrzechProperty.lean`,
+  is a type class stating that `R` satisfies the following property:
   for any finitely generated `R`-module `M`, any surjective homomorphism `f : N → M`
   from a submodule `N` of `M` to `M` is injective.
   It was introduced in papers by Orzech [orzech1971], Djoković [djokovic1973] and
@@ -39,10 +40,8 @@ It is also useful to consider the following stronger conditions:
 
 ## Instances
 
-- `IsNoetherianRing.orzechProperty` : any Noetherian ring (not necessarily commutative)
-  satisfies the Orzech property.
-
-- `IsNoetherianRing.orzechProperty` : any left-noetherian ring satisfies the Orzech property.
+- `IsNoetherianRing.orzechProperty` (defined in `Mathlib/RingTheory/Noetherian.lean`) :
+  any left-noetherian ring satisfies the Orzech property.
   This applies in particular to division rings.
 
 - `strongRankCondition_of_orzechProperty` : the Orzech property implies the strong rank condition
@@ -58,7 +57,7 @@ It is also useful to consider the following stronger conditions:
 
 More generally, every commutative ring satisfies the Orzech property and the strong rank condition.
 The corresponding instances are proved in
-`Mathlib/LinearAlgebra/FreeModule/StrongRankCondition.lean`.
+`Mathlib/RingTheory/FiniteType.lean`.
 We keep `invariantBasisNumber_of_nontrivial_of_commRing` here since it imports fewer files.
 
 
@@ -112,53 +111,6 @@ universe u v w
 section
 
 variable (R : Type u) [Semiring R]
-
-/-- A ring `R` satisfies the Orzech property, if for any finitely generated `R`-module `M`,
-any surjective homomorphism `f : N → M` from a submodule `N` of `M` to `M` is injective.
-
-NOTE: In the definition we need to assume that `M` has the same universe level as `R`, but it
-in fact implies the universe polymorphic versions
-`OrzechProperty.injective_of_surjective_of_injective`
-and `OrzechProperty.injective_of_surjective_of_submodule`. -/
-@[mk_iff]
-class OrzechProperty : Prop where
-  injective_of_surjective_of_submodule' : ∀ {M : Type u} [AddCommMonoid M] [Module R M]
-    [Module.Finite R M] {N : Submodule R M} (f : N →ₗ[R] M), Surjective f → Injective f
-
-namespace OrzechProperty
-
-variable {R}
-
-variable [OrzechProperty R] {M : Type v} [AddCommMonoid M] [Module R M] [Module.Finite R M]
-
-theorem injective_of_surjective_of_injective
-    {N : Type w} [AddCommMonoid N] [Module R N]
-    (i f : N →ₗ[R] M) (hi : Injective i) (hf : Surjective f) : Injective f := by
-  obtain ⟨n, g, hg⟩ := Module.Finite.exists_fin' R M
-  haveI := small_of_surjective hg
-  letI := Equiv.addCommMonoid (equivShrink M).symm
-  letI := Equiv.module R (equivShrink M).symm
-  let j : Shrink.{u} M ≃ₗ[R] M := Equiv.linearEquiv R (equivShrink M).symm
-  haveI := Module.Finite.equiv j.symm
-  let i' := j.symm.toLinearMap ∘ₗ i
-  replace hi : Injective i' := by simpa [i'] using hi
-  let f' := j.symm.toLinearMap ∘ₗ f ∘ₗ (LinearEquiv.ofInjective i' hi).symm.toLinearMap
-  replace hf : Surjective f' := by simpa [f'] using hf
-  simpa [f'] using injective_of_surjective_of_submodule' f' hf
-
-theorem injective_of_surjective_of_submodule
-    {N : Submodule R M} (f : N →ₗ[R] M) (hf : Surjective f) : Injective f :=
-  injective_of_surjective_of_injective N.subtype f N.injective_subtype hf
-
-theorem injective_of_surjective_endomorphism
-    (f : M →ₗ[R] M) (hf : Surjective f) : Injective f :=
-  injective_of_surjective_of_injective _ f (LinearEquiv.refl _ _).injective hf
-
-theorem bijective_of_surjective_endomorphism
-    (f : M →ₗ[R] M) (hf : Surjective f) : Bijective f :=
-  ⟨injective_of_surjective_endomorphism f hf, hf⟩
-
-end OrzechProperty
 
 /-- Any Noetherian ring satisfies Orzech property.
     See also `IsNoetherian.injective_of_surjective_of_submodule` and
