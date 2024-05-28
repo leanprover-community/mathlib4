@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Combinatorics.SetFamily.Compression.Down
-import Mathlib.Data.Nat.Interval
+import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Order.UpperLower.Basic
 
 /-!

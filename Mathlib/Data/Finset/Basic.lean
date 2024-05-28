@@ -1248,15 +1248,13 @@ theorem ssubset_insert (h : a ∉ s) : s ⊂ insert a s :=
 
 @[elab_as_elim]
 theorem cons_induction {α : Type*} {p : Finset α → Prop} (empty : p ∅)
-    (cons : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
+    (cons : ∀ (a : α) (s : Finset α) (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
   | ⟨s, nd⟩ => by
     induction s using Multiset.induction with
     | empty => exact empty
-    | @cons a s IH =>
-      cases' nodup_cons.1 nd with m nd'
-      rw [← (eq_of_veq _ : Finset.cons a ⟨s, _⟩ m = ⟨a ::ₘ s, nd⟩)]
-      · exact cons m (IH nd')
-      · rw [cons_val]
+    | cons a s IH =>
+      rw [mk_cons nd]
+      exact cons a _ _ (IH _)
 #align finset.cons_induction Finset.cons_induction
 
 @[elab_as_elim]
@@ -1303,14 +1301,14 @@ obtained by inserting an element in `t`. -/
 @[elab_as_elim]
 theorem Nonempty.cons_induction {α : Type*} {p : ∀ s : Finset α, s.Nonempty → Prop}
     (singleton : ∀ a, p {a} (singleton_nonempty _))
-    (cons : ∀ ⦃a⦄ (s) (h : a ∉ s) (hs), p s hs → p (Finset.cons a s h) (nonempty_cons h))
+    (cons : ∀ a s (h : a ∉ s) (hs), p s hs → p (Finset.cons a s h) (nonempty_cons h))
     {s : Finset α} (hs : s.Nonempty) : p s hs := by
   induction s using Finset.cons_induction with
   | empty => exact (not_nonempty_empty hs).elim
-  | @cons a t ha h =>
+  | cons a t ha h =>
     obtain rfl | ht := t.eq_empty_or_nonempty
     · exact singleton a
-    · exact cons t ha ht (h ht)
+    · exact cons a t ha ht (h ht)
 #align finset.nonempty.cons_induction Finset.Nonempty.cons_induction
 
 lemma Nonempty.exists_cons_eq (hs : s.Nonempty) : ∃ t a ha, cons a t ha = s :=

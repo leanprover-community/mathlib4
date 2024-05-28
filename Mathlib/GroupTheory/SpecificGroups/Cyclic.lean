@@ -377,7 +377,7 @@ theorem IsCyclic.unique_zpow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
   obtain ⟨n, rfl⟩ := ha x
   refine ⟨n, (?_ : a ^ n = _), fun y (hy : a ^ n = _) ↦ ?_⟩
   · rw [← zpow_natCast, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
-      Int.modEq_comm, Int.modEq_iff_add_fac, ← ZMod.int_coe_zmod_eq_iff]
+      Int.modEq_comm, Int.modEq_iff_add_fac, ← ZMod.intCast_eq_iff]
   · rw [← zpow_natCast, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
       ← ZMod.intCast_eq_intCast_iff] at hy
     simp [hy]
