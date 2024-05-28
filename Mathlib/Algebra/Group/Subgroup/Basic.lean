@@ -1943,6 +1943,12 @@ namespace Normal
 variable (nH : H.Normal)
 
 @[to_additive]
+theorem conj_mem' (n : G) (hn : n ∈ H) (g : G) :
+    g⁻¹ * n * g ∈ H := by
+  convert nH.conj_mem n hn g⁻¹
+  rw [inv_inv]
+
+@[to_additive]
 theorem mem_comm {a b : G} (h : a * b ∈ H) : b * a ∈ H := by
   have : a⁻¹ * (a * b) * a⁻¹⁻¹ ∈ H := nH.conj_mem (a * b) h a⁻¹
   -- Porting note: Previous code was:

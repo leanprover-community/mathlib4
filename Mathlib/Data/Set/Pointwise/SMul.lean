@@ -948,6 +948,11 @@ theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=
 #align set.vadd_set_inter Set.vadd_set_inter
 
 @[to_additive]
+theorem smul_set_iInter {ι : Type*}
+    (a : α) (t : ι → Set β) : (a • ⋂ i, t i) = ⋂ i, a • t i :=
+  image_iInter (MulAction.bijective a) t
+
+@[to_additive]
 theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
   image_diff (MulAction.injective a) _ _
 #align set.smul_set_sdiff Set.smul_set_sdiff
