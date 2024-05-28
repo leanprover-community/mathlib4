@@ -455,6 +455,19 @@ theorem not_isReal_of_mk_isComplex {φ : K →+* ℂ} (h : IsComplex (mk φ)) :
 define it, see `card_filter_mk_eq`. -/
 noncomputable def mult (w : InfinitePlace K) : ℕ := if (IsReal w) then 1 else 2
 
+@[simp]
+theorem mult_ne_zero {w : InfinitePlace K} : mult w ≠ 0 := by
+  rw [mult]
+  split_ifs <;> norm_num
+
+theorem mult_pos {w : InfinitePlace K} : (0 : ℝ) < mult w := by
+  rw [mult]
+  split_ifs <;> norm_num
+
+theorem one_le_mult {w : InfinitePlace K} : (1 : ℝ) ≤ mult w := by
+  rw [mult]
+  split_ifs <;> norm_num
+
 theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) :
     (Finset.univ.filter fun φ => mk φ = w).card = mult w := by
   conv_lhs =>
