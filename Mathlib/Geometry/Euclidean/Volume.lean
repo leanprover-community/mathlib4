@@ -25,6 +25,11 @@ def erase {n : ℕ} (s : Affine.Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
   points := s.points ∘ Fin.succAbove i
   independent := s.independent.comp_embedding <| (Fin.succAboveEmb i).toEmbedding
 
+
+theorem erase_zero_erase_succ {n : ℕ} (s : Affine.Simplex ℝ P (n + 2)) (i : Fin (n + 2)) :
+    (s.erase i.succ).erase 0 = (s.erase 0).erase i := by
+  ext; simp
+
 /-- The volume of a simplex. -/
 protected def volume {n : ℕ} (s : Affine.Simplex ℝ P n) : ℝ :=
   match n with
@@ -56,26 +61,60 @@ open EuclideanGeometry (orthogonalProjection)
   rw [orthogonalProjection_eq_point, erase_points, Fin.succAbove_zero, Function.comp_apply,
     Fin.succ_zero_eq_one]
 
+
+open EuclideanGeometry (orthogonalProjection)
 /-- A more general case of the equation lemma, allowing erasing an arbitrary point. -/
 theorem volume_succ {n : ℕ} (s : Affine.Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
   s.volume =
-    dist
+    (↑(n + 1) : ℝ)⁻¹ * dist
       (s.points i)
-      ((s.erase i).orthogonalProjectionSpan (s.points 0)) * (s.erase i).volume := by
+      ((s.erase i).orthogonalProjectionSpan (s.points i)) * (s.erase i).volume := by
   induction n with
   | zero =>
     -- base case: can swap two points
     rw [volume_zero, mul_one, orthogonalProjection_eq_point, volume_one]
+    simp_rw [zero_add, Nat.cast_one, inv_one, one_mul]
     cases i using Fin.cases with
     | zero => rfl
     | succ i =>
       obtain rfl := Subsingleton.elim i 0
       exact dist_comm _ _
   | succ n ih =>
-    sorry
+    rw [Simplex.volume]
+    simp_rw [mul_assoc]
+    congr 1
+    simp
+    induction i using Fin.cases with
+    | zero => rfl
+    | succ i =>
+      conv_lhs => rw [ih _ i, mul_assoc (_⁻¹), mul_left_comm _ (_⁻¹)]
+      conv_rhs => rw [ih _ 0, mul_assoc (_⁻¹), mul_left_comm _ (_⁻¹)]
+      congr 1
+      rw [mul_left_comm, ← erase_zero_erase_succ]
+      simp_rw [← mul_assoc]
+      congr 1
+      simp
+      clear ih
+      set p0 := s.points 0
+      set pi := s.points i.succ
+      -- Projection of p0 onto `S / {0}`
+      set q0 : P := ↑((s.erase 0).orthogonalProjectionSpan p0) with hq0
+      -- Projection of pi onto `S / {i}`
+      set qi : P := ↑((s.erase i.succ).orthogonalProjectionSpan pi) with hqi
+      -- Projection of p0 and pi onto `S / {0, i}`
+      set r0 : P := ↑(((s.erase i.succ).erase 0).orthogonalProjectionSpan p0) with hr0
+      set ri : P := ↑(((s.erase i.succ).erase 0).orthogonalProjectionSpan pi) with hri
+      erw [← hq0, ← hqi, ← hr0, ← hri]
+      simp_rw [← coe_nndist, ← NNReal.coe_mul, NNReal.coe_inj]
+      rw [← sq_eq_sq (zero_le _) (zero_le _)]
+      simp_rw [sq, ← NNReal.coe_inj, NNReal.coe_mul, coe_nndist]
+      conv_lhs => rw [mul_mul_mul_comm]
+      conv_rhs => rw [mul_mul_mul_comm]
+      conv_lhs =>
+        enter [1]
+        rw [(s.erase i.succ).dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _
+          sorry]
 
-
-#check AffineBasis
 
 end Simplex
 
