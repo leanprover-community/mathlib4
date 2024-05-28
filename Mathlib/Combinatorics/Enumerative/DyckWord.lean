@@ -410,12 +410,12 @@ theorem semilength_eq_iff_numNodes_eq {n : ℕ} :
 /-- Equivalence between Dyck words of semilength `n` and rooted binary trees with
 `n` internal nodes. -/
 def finiteTreeEquiv (n : ℕ) : { p : DyckWord // p.semilength = n } ≃ treesOfNumNodesEq n where
-  toFun := fun ⟨p, len⟩ ↦ ⟨treeEquiv p, by
-    rw [mem_treesOfNumNodesEq, ← semilength_eq_iff_numNodes_eq, len]⟩
-  invFun := fun ⟨tr, sz⟩ ↦ ⟨treeEquiv.symm tr, by
+  toFun := fun ⟨p, _⟩ ↦ ⟨treeEquiv p, by
+    rwa [mem_treesOfNumNodesEq, ← semilength_eq_iff_numNodes_eq]⟩
+  invFun := fun ⟨tr, _⟩ ↦ ⟨treeEquiv.symm tr, by
     rwa [semilength_eq_iff_numNodes_eq, ← mem_treesOfNumNodesEq, Equiv.apply_symm_apply]⟩
-  left_inv := fun ⟨p, len⟩ ↦ by simp only [Equiv.symm_apply_apply]
-  right_inv := fun ⟨tr, sz⟩ ↦ by simp only [Subtype.coe_eta, Equiv.apply_symm_apply]
+  left_inv := fun _ ↦ by simp only [Equiv.symm_apply_apply]
+  right_inv := fun _ ↦ by simp only [Equiv.apply_symm_apply]
 
 instance {n : ℕ} : Fintype { p : DyckWord // p.semilength = n } :=
   Fintype.ofEquiv _ (finiteTreeEquiv n).symm
