@@ -38,6 +38,7 @@ of the `refine'` node and whether `refine'` contains `..`. -/
 partial
 def getRefine' : Syntax → Array (Syntax × SourceInfo × Array Syntax × Option Syntax)
   | stx@(.node si ``Lean.Parser.Tactic.refine' args) =>
+    dbg_trace "refine' found"
     let rest := (args.map getRefine').flatten
     rest.push (stx, si, args, stx.find? (·.isOfKind ``Lean.Parser.Term.optEllipsis))
   | .node _ _ args => (args.map getRefine').flatten
