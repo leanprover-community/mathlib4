@@ -92,23 +92,31 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
     exact ⟨n, -η * x, by rw [← mul_assoc, mul_neg, ← neg_mul, ← lambda_sq, hx]⟩
   have hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
   have := Units.mem hζ u
+  simp only [Finset.mem_insert, Finset.mem_singleton] at this
   have h2 : (hζ.pow_of_coprime 2 (by decide)).toInteger = hζ.toInteger ^ 2 := by ext; simp
-  fin_cases this
+  rcases this with (rfl | h | h | h | h | h)
   · left; rfl
   · right; ext; simp [h]
-  all_goals exfalso
-  · exact hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide) hcong
-  · apply hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide)
+  · exfalso
+    apply hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide)
+    convert hcong
+    simp [h]
+  · exfalso
+    apply hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide)
     obtain ⟨n, x, hx⟩ := hcong
-    rw [sub_eq_iff_eq_add] at hx
+    rw [sub_eq_iff_eq_add, h] at hx
     refine ⟨-n, -x, sub_eq_iff_eq_add.2 ?_⟩
-    simp only [PNat.val_ofNat, Nat.cast_ofNat, mul_neg, Int.cast_neg, ← neg_add, ← hx,
-      Units.val_neg, IsUnit.unit_spec, RingOfIntegers.neg_mk, neg_neg]
-  · exact (hζ.pow_of_coprime 2 (by decide)).not_exists_int_prime_dvd_sub_of_prime_ne_two'
-      (by decide) hcong
-  · apply (hζ.pow_of_coprime 2 (by decide)).not_exists_int_prime_dvd_sub_of_prime_ne_two'
+    simp [mul_neg, ← neg_add, ← hx]
+  · exfalso
+    apply (hζ.pow_of_coprime 2 (by decide)).not_exists_int_prime_dvd_sub_of_prime_ne_two'
+      (by decide)
+    convert hcong
+    simp [h2, h]
+  · exfalso
+    apply (hζ.pow_of_coprime 2 (by decide)).not_exists_int_prime_dvd_sub_of_prime_ne_two'
       (by decide)
     obtain ⟨n, x, hx⟩ := hcong
     refine ⟨-n, -x, sub_eq_iff_eq_add.2 ?_⟩
-    simp only [h2, PNat.val_ofNat, Nat.cast_ofNat, mul_neg, Int.cast_neg, ← neg_add,
-      ← sub_eq_iff_eq_add.1 hx, Units.val_neg, val_pow_eq_pow_val, IsUnit.unit_spec, neg_neg]
+    simp only [PNat.val_ofNat, Nat.cast_ofNat, mul_neg, Int.cast_neg, mul_neg, ← neg_add,
+      ← sub_eq_iff_eq_add.1 hx]
+    simp [h, h2]
