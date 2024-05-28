@@ -658,7 +658,7 @@ instance finite_biUnion' {ι : Type*} (s : Set ι) [Finite s] (t : ι → Set α
 #align finite.set.finite_bUnion' Finite.Set.finite_biUnion'
 
 /-- Example: `Finite (⋃ (i < n), f i)` where `f : ℕ → Set α` and `[∀ i, Finite (f i)]`
-(when given instances from `Data.Nat.Interval`).
+(when given instances from `Order.Interval.Finset.Nat`).
 -/
 instance finite_biUnion'' {ι : Type*} (p : ι → Prop) [h : Finite { x | p x }] (t : ι → Set α)
     [∀ i, Finite (t i)] : Finite (⋃ (x) (_ : p x), t x) :=

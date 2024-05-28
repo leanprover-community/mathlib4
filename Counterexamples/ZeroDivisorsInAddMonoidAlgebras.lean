@@ -75,7 +75,7 @@ theorem single_zero_one {R A} [Semiring R] [Zero A] :
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
 monoid with a non-zero element `a` of finite order `oa`, then `R[A]` contains
 non-zero zero-divisors.  The elements are easy to write down:
-`∑ i in Finset.range oa, [a] ^ i` and `[a] - 1` are non-zero elements of `R[A]`
+`∑ i ∈ Finset.range oa, [a] ^ i` and `[a] - 1` are non-zero elements of `R[A]`
 whose product is zero.
 
 In particular, this applies whenever the additive monoid `A` is an additive group with a non-zero
