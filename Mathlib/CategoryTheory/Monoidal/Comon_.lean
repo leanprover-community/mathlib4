@@ -8,7 +8,6 @@ import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
 # The category of comonoids in a monoidal category.
@@ -44,9 +43,9 @@ structure Comon_ where
   comul : X ⟶ X ⊗ X
   counit_comul : comul ≫ (counit ▷ X) = (λ_ X).inv := by aesop_cat
   comul_counit : comul ≫ (X ◁ counit) = (ρ_ X).inv := by aesop_cat
-  comul_assoc : comul ≫ (X ◁ comul) ≫ (α_ X X X).inv = comul ≫ (comul ▷ X) := by aesop_cat
+  comul_assoc : comul ≫ (X ◁ comul) = comul ≫ (comul ▷ X) ≫ (α_ X X X).hom := by aesop_cat
 
-attribute [reassoc] Comon_.counit_comul Comon_.comul_counit
+attribute [reassoc (attr := simp)] Comon_.counit_comul Comon_.comul_counit
 
 attribute [reassoc (attr := simp)] Comon_.comul_assoc
 
@@ -77,8 +76,8 @@ theorem counit_comul_hom {Z : C} (f : M.X ⟶ Z) : M.comul ≫ (M.counit ⊗ f) 
 theorem comul_counit_hom {Z : C} (f : M.X ⟶ Z) : M.comul ≫ (f ⊗ M.counit) = f ≫ (ρ_ Z).inv := by
   rw [rightUnitor_inv_naturality, tensorHom_def', comul_counit_assoc]
 
-@[reassoc (attr := simp)] theorem comul_assoc_flip :
-    M.comul ≫ (M.comul ▷ M.X) ≫ (α_ M.X M.X M.X).hom = M.comul ≫ (M.X ◁ M.comul) := by
+@[reassoc] theorem comul_assoc_flip :
+    M.comul ≫ (M.comul ▷ M.X) = M.comul ≫ (M.X ◁ M.comul) ≫ (α_ M.X M.X M.X).inv := by
   simp [← comul_assoc_assoc]
 
 /-- A morphism of comonoid objects. -/
@@ -138,12 +137,12 @@ instance : (forget C).ReflectsIsomorphisms where
   reflects f e :=
     ⟨⟨{ hom := inv f.hom }, by aesop_cat⟩⟩
 
-/-- Construct an isomorphism of monoids by giving an isomorphism between the underlying objects
-and checking compatibility with unit and multiplication only in the forward direction.
+/-- Construct an isomorphism of comonoids by giving an isomorphism between the underlying objects
+and checking compatibility with counit and comultiplication only in the forward direction.
 -/
 @[simps]
-def mkIso {M N : Comon_ C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ N.counit = M.counit)
-    (f_comul : f.hom ≫ N.comul = M.comul ≫ (f.hom ⊗ f.hom)) : M ≅ N where
+def mkIso {M N : Comon_ C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ N.counit = M.counit := by aesop_cat)
+    (f_comul : f.hom ≫ N.comul = M.comul ≫ (f.hom ⊗ f.hom) := by aesop_cat) : M ≅ N where
   hom :=
     { hom := f.hom
       hom_counit := f_counit
@@ -190,7 +189,7 @@ Turn a comonoid object into a monoid object in the opposite category.
     rfl
   mul_assoc := by
     rw [← op_inv_associator, ← op_whiskerRight, ← op_comp, ← op_whiskerLeft, ← op_comp,
-      ← comul_assoc, op_comp, op_comp_assoc]
+      comul_assoc_flip, op_comp, op_comp_assoc]
     rfl
 
 /--
@@ -213,7 +212,8 @@ Turn a monoid object in the opposite category into a comonoid object.
   counit_comul := by rw [← unop_whiskerRight, ← unop_comp, Mon_.one_mul]; rfl
   comul_counit := by rw [← unop_whiskerLeft, ← unop_comp, Mon_.mul_one]; rfl
   comul_assoc := by
-    rw [← unop_whiskerRight, ← unop_comp, ← unop_whiskerLeft, ← unop_comp_assoc, Mon_.mul_assoc]
+    rw [← unop_whiskerRight, ← unop_whiskerLeft, ← unop_comp_assoc, ← unop_comp,
+      Mon_.assoc_flip]
     rfl
 
 /--
