@@ -81,82 +81,43 @@ theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α}
       exact ⟨q, Multiset.mem_cons.2 (Or.inr hq₁), hq₂⟩
 #align exists_associated_mem_of_dvd_prod exists_associated_mem_of_dvd_prod
 
-/-- A submonoid S of a monoid α is said to be divisor-closed if every divisor a ∈ α of some element
-b ∈ S lies in S when it is multiplied by a unit. -/
-def IsDivisorClosed [Monoid α] (S : Submonoid α) :=
-    ∀ b ∈ S, ∀ (a : α) (_ : ∃ k, b = a*k), ∃ z ∈ S, a ~ᵤ z
-
-/-- Let α be a monoid. The divisor_closure of a subset s ⊆ α is defined as the intersection of
-all the submonoids which contain s and are divisor-closed. -/
-def Submonoid.divisor_closure [Monoid α] (s : Set α) :=
-    sInf { S : Submonoid α | s ⊆ S ∧ IsDivisorClosed S }
-
-theorem Submonoid.subset_divisor_closure [Monoid α] {s : Set α} :
-    s ⊆ (Submonoid.divisor_closure s) := by
-  simp only [divisor_closure, coe_sInf, Set.mem_setOf_eq, Set.subset_iInter_iff, and_imp]
-  exact (fun _ hi _ => hi)
-
-theorem Submonoid.divisor_closure_le [Monoid α] {s : Set α} {S : Submonoid α} :
-    s ⊆ S ∧ IsDivisorClosed S → Submonoid.divisor_closure s ≤ S := fun h => sInf_le h
-
-/-- An induction principle for divisor closure membership. If `p` satisfies the four conditions
-below, then `p` holds for all elements of the divisor closure of `s`.
-First condition: `p` holds for `1`.
-Second condition: `p` holds for all elements of `s`.
-Third condition: `p` is preserved under multiplication.
-Fourth condition: If `p` holds for an element x, then it holds for any divisor of x. -/
-theorem Submonoid.divisor_closure_induction [Monoid α] {s : Set α} {p : α → Prop} {x : α}
-    (h : x ∈ Submonoid.divisor_closure s) (mem : ∀ x ∈ s, p x) (one : p 1)
-    (mul : ∀ x y, p x → p y → p (x*y)) (div : ∀ x (_ : p x), ∀ y k (_ : x = y*k), p y) : p x := by
-  have := Submonoid.divisor_closure_le (s := s) (S := ⟨⟨_, fun hx hy => mul _ _ hx hy⟩, one⟩)
-  simp only [IsDivisorClosed, coe_set_mk, Subsemigroup.coe_set_mk, and_imp, mem_mk,
-    Subsemigroup.mem_mk, forall_exists_index] at this
-  exact this mem (fun b hb a x hax => ⟨_, div b hb a x hax, Associated.refl a⟩) h
-
-theorem top_divisor_closed [Monoid α] : IsDivisorClosed (⊤ : Submonoid α) :=
-  fun _ _ a _ => ⟨_, Submonoid.mem_top a, Associated.refl a⟩
-
-theorem bot_divisor_closed [CommMonoid α] : IsDivisorClosed (⊥ : Submonoid α) := by
-  refine' fun _ hb _ ha => ⟨_, (⊥ : Submonoid α).one_mem, _⟩
-  rcases ha with ⟨k, ha⟩
-  rw [Submonoid.mem_bot.1 hb] at ha
-  exact associated_one_of_mul_eq_one _ ha.symm
-
 open Submonoid in
-/-- Let x, y ∈ α. If x * y can be written as a product of prime elements, then x can be written as
-a product of a unit and prime elements. -/
+/-- Let x, y ∈ α. If x * y can be written as a product of units and prime elements, then x can be
+written as a product of units and prime elements. -/
 theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α] :
-    ∀ x y, x * y ∈ closure { r | Prime r } → ∃ z ∈ closure { r : α | Prime r }, x ~ᵤ z := by
+    ∀ x y, x * y ∈ closure { r : α | IsUnit r ∨ Prime r} →
+    x ∈ closure { r : α | IsUnit r ∨ Prime r} := by
   intros a b hab
   obtain ⟨m, hm⟩ := exists_multiset_of_mem_closure hab
   revert a b hm
-  refine' m.induction (p := fun m => ∀ a b, a * b ∈ closure {r | Prime r} →
-    (∃ (_ : ∀ y ∈ m, Prime y), m.prod = a * b) → ∃ z ∈ closure {r | Prime r}, a ~ᵤ z) _ _
-  simp only [Multiset.prod_zero, Multiset.not_mem_zero, Set.mem_setOf_eq, IsEmpty.forall_iff,
-    forall_const, exists_const]
-  exact (fun _ _ _ hprod => ⟨1, one_mem _, associated_one_of_mul_eq_one _ hprod.symm⟩)
-  simp only [Set.mem_setOf_eq, exists_prop, and_imp, Multiset.prod_cons, Multiset.mem_cons,
-    forall_eq_or_imp]
-  intros a s hind x y _ hprime hprime₂ hprod
-  rcases hprime.dvd_mul.1 (Dvd.intro _ hprod) with h₁ | h₂
-  · rcases h₁ with ⟨c, h₁⟩
-    rw [h₁, mul_assoc] at hprod
-    have hprod₂ := mul_left_cancel₀ (hprime.ne_zero) hprod
-    obtain ⟨_, hz₁, hz₂⟩ :=
-      hind _ _ (mem_closure_of_exists_multiset ⟨_, hprime₂, hprod₂⟩) hprime₂ hprod₂
-    rw [h₁]
-    exact ⟨_, mul_mem (Set.mem_of_subset_of_mem subset_closure hprime) hz₁, hz₂.mul_left _⟩
-  · rcases h₂ with ⟨c, h₂⟩
-    rw [h₂, ← mul_assoc, mul_comm _ a, mul_assoc] at hprod
-    have hprod₂ := mul_left_cancel₀ (hprime.ne_zero) hprod
-    exact (hind _ _ (mem_closure_of_exists_multiset ⟨_, hprime₂, hprod₂⟩) hprime₂ hprod₂)
-
-theorem Submonoid.closure_divisor_closed [CancelCommMonoidWithZero α] :
-    IsDivisorClosed (closure { r : α | Prime r }) := by
-  intros _ hb _ ha
-  rcases ha with ⟨k, ha⟩
-  rw [ha] at hb
-  exact divisor_closure_eq_closure _ _ hb
+  refine m.induction (p := fun m ↦ ∀ a b, a * b ∈ closure {r | IsUnit r ∨ Prime r} →
+    (∃ (_ : ∀ y ∈ m, y ∈ {r | IsUnit r ∨ Prime r}), m.prod = a * b) →
+    a ∈ closure {r | IsUnit r ∨ Prime r}) (fun _ _ _ hprod => subset_closure (Set.mem_def.2 ?_)) ?_
+  · left ; exact isUnit_of_mul_eq_one _ _ hprod.2.symm
+  · simp only [exists_prop, and_imp, Multiset.prod_cons, Multiset.mem_cons, forall_eq_or_imp]
+    intros _ s hind x y _ ha hs hprod
+    rcases ha with ha₁ | ha₂
+    · rcases ha₁.exists_right_inv with ⟨k, hk⟩
+      refine hind x (y*k) ?_ hs ?_
+      simp only [← mul_assoc, ← hprod, ← Multiset.prod_cons, mul_comm]
+      refine multiset_prod_mem _ _ (Multiset.forall_mem_cons.2 ⟨subset_closure (Set.mem_def.2 ?_),
+        Multiset.forall_mem_cons.2 ⟨subset_closure (Set.mem_def.2 ?_), (fun t ht =>
+        subset_closure (hs t ht))⟩⟩)
+      left ; exact isUnit_of_mul_eq_one_right _ _ hk
+      left ; exact ha₁
+      rw [← mul_one s.prod, ← hk, ← mul_assoc, ← mul_assoc, mul_eq_mul_right_iff, mul_comm]
+      left ; exact hprod
+    · rcases ha₂.dvd_mul.1 (Dvd.intro _ hprod) with ⟨c, hc⟩ | ⟨c, hc⟩
+      rw [hc] ; rw [hc, mul_assoc] at hprod
+      refine' Submonoid.mul_mem _ (subset_closure (Set.mem_def.2 _))
+        (hind _ _ _ hs (mul_left_cancel₀ ha₂.ne_zero hprod))
+      right ; exact ha₂
+      rw [← mul_left_cancel₀ ha₂.ne_zero hprod]
+      exact multiset_prod_mem _ _ (fun t ht => subset_closure (hs t ht))
+      rw [hc, mul_comm x _, mul_assoc, mul_comm c _] at hprod
+      refine' hind x c _ hs (mul_left_cancel₀ ha₂.ne_zero hprod)
+      rw [← mul_left_cancel₀ ha₂.ne_zero hprod]
+      exact multiset_prod_mem _ _ (fun t ht => subset_closure (hs t ht))
 
 theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero α]
     [∀ a : α, DecidablePred (Associated a)] {s : Multiset α} (n : α) (h : ∀ a ∈ s, Prime a)
