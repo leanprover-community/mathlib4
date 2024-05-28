@@ -192,7 +192,7 @@ jobs:
           linters: gcc
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
-            lake build
+            lake build --no-build
 
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
