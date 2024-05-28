@@ -1008,8 +1008,7 @@ end LowerSet
 
 /-- Upper sets are order-isomorphic to lower sets under complementation. -/
 @[simps]
-def upperSetIsoLowerSet : UpperSet α ≃o LowerSet α
-    where
+def upperSetIsoLowerSet : UpperSet α ≃o LowerSet α where
   toFun := UpperSet.compl
   invFun := LowerSet.compl
   left_inv := UpperSet.compl_compl
@@ -1608,7 +1607,7 @@ theorem Set.OrdConnected.upperClosure_inter_lowerClosure (h : s.OrdConnected) :
 
 theorem ordConnected_iff_upperClosure_inter_lowerClosure :
     s.OrdConnected ↔ ↑(upperClosure s) ∩ ↑(lowerClosure s) = s := by
-  refine' ⟨Set.OrdConnected.upperClosure_inter_lowerClosure, fun h => _⟩
+  refine ⟨Set.OrdConnected.upperClosure_inter_lowerClosure, fun h => ?_⟩
   rw [← h]
   exact (UpperSet.upper _).ordConnected.inter (LowerSet.lower _).ordConnected
 #align ord_connected_iff_upper_closure_inter_lower_closure ordConnected_iff_upperClosure_inter_lowerClosure
@@ -1706,7 +1705,7 @@ lemma erase_le : s.erase a ≤ s := diff_subset _ _
 
 lemma sdiff_sup_lowerClosure (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, c ≤ b → b ∈ t) :
     s.sdiff t ⊔ lowerClosure t = s := by
-  refine' le_antisymm (sup_le sdiff_le_left <| lowerClosure_le.2 hts) fun a ha ↦ _
+  refine le_antisymm (sup_le sdiff_le_left <| lowerClosure_le.2 hts) fun a ha ↦ ?_
   obtain hat | hat := em (a ∈ t)
   · exact subset_union_right _ _ (subset_lowerClosure hat)
   · refine subset_union_left _ _ ⟨ha, ?_⟩
@@ -1767,7 +1766,7 @@ lemma le_erase : s ≤ s.erase a := diff_subset _ _
 
 lemma sdiff_inf_upperClosure (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t) :
     s.sdiff t ⊓ upperClosure t = s := by
-  refine' ge_antisymm (le_inf le_sdiff_left <| le_upperClosure.2 hts) fun a ha ↦ _
+  refine ge_antisymm (le_inf le_sdiff_left <| le_upperClosure.2 hts) fun a ha ↦ ?_
   obtain hat | hat := em (a ∈ t)
   · exact subset_union_right _ _ (subset_upperClosure hat)
   · refine subset_union_left _ _ ⟨ha, ?_⟩

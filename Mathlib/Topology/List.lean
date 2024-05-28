@@ -26,7 +26,7 @@ instance : TopologicalSpace (List α) :=
   TopologicalSpace.mkOfNhds (traverse nhds)
 
 theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
-  refine' nhds_mkOfNhds _ _ _ _
+  refine nhds_mkOfNhds _ _ ?_ ?_
   · intro l
     induction l with
     | nil => exact le_rfl
@@ -56,13 +56,13 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
     refine mem_of_superset this fun u hu ↦ ?_
     have hu := (List.mem_traverse _ _).1 hu
     have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v := by
-      refine' List.Forall₂.flip _
+      refine List.Forall₂.flip ?_
       replace hv := hv.flip
       #adaptation_note /-- nightly-2024-03-16: simp was
       simp only [List.forall₂_and_left, flip] at hv ⊢ -/
       simp only [List.forall₂_and_left, Function.flip_def] at hv ⊢
       exact ⟨hv.1, hu.flip⟩
-    refine' mem_of_superset _ hvs
+    refine mem_of_superset ?_ hvs
     exact mem_traverse _ _ (this.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha)
 #align nhds_list nhds_list
 
@@ -115,11 +115,11 @@ theorem tendsto_nhds {β : Type*} {f : List α → β} {r : List α → Filter �
 
 theorem continuousAt_length : ∀ l : List α, ContinuousAt List.length l := by
   simp only [ContinuousAt, nhds_discrete]
-  refine' tendsto_nhds _ _
+  refine tendsto_nhds ?_ ?_
   · exact tendsto_pure_pure _ _
   · intro l a ih
     dsimp only [List.length]
-    refine' Tendsto.comp (tendsto_pure_pure (fun x => x + 1) _) _
+    refine Tendsto.comp (tendsto_pure_pure (fun x => x + 1) _) ?_
     exact Tendsto.comp ih tendsto_snd
 #align list.continuous_at_length List.continuousAt_length
 

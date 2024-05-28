@@ -168,7 +168,7 @@ lemma bit_zero : bit false 0 = 0 :=
   rfl
 #align nat.bit_zero Nat.bit_zero
 
-/--`shiftLeft' b m n` performs a left shift of `m` `n` times
+/-- `shiftLeft' b m n` performs a left shift of `m` `n` times
  and adds the bit `b` as the least significant bit each time.
  Returns the corresponding natural number-/
 def shiftLeft' (b : Bool) (m : ℕ) : ℕ → ℕ
@@ -233,7 +233,7 @@ def bits : ℕ → List Bool :=
 #align nat.land Nat.land
 #align nat.lxor Nat.xor
 
-/--`ldiff a b` performs bitwise set difference. For each corresponding
+/-- `ldiff a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
   boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℕ → ℕ → ℕ :=

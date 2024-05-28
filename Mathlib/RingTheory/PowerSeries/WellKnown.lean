@@ -3,10 +3,10 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Data.Nat.Parity
-import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.RingTheory.PowerSeries.Basic
 
 #align_import ring_theory.power_series.well_known from "leanprover-community/mathlib"@"8199f6717c150a7fe91c4534175f4cf99725978f"
 
@@ -245,7 +245,7 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
     by convert this using 1 <;> ring
   congr 1
   rw [← map_natCast (algebraMap ℚ A) (n.choose x), ← map_mul, ← map_mul]
-  refine' RingHom.congr_arg _ _
+  refine RingHom.congr_arg _ ?_
   rw [mul_one_div (↑(n.choose x) : ℚ), one_div_mul_one_div]
   symm
   rw [div_eq_iff, div_mul_eq_mul_div, one_mul, choose_eq_factorial_div_factorial]
