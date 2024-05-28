@@ -366,6 +366,7 @@ theorem continuous_comp (hfc : ωScottContinuous f) (hgc : ωScottContinuous g) 
   use (Monotone.comp hg₁ hf₁)
   intro
   rw [hf₂, hg₂, Chain.map_comp]
+  rfl
 #align omega_complete_partial_order.continuous_comp OmegaCompletePartialOrder.continuous_comp
 
 theorem id_ωScottContinuous_coe : ωScottContinuous (@id α) := continuous_id
@@ -496,15 +497,23 @@ variable [∀ x, OmegaCompletePartialOrder <| β x]
 variable [OmegaCompletePartialOrder γ]
 
 theorem flip₁_ωScottContinuous (f : ∀ x : α, γ → β x) (a : α)
-    (hf : ωScottContinuous fun x y => f y x) : ωScottContinuous (f a) :=
-  Continuous.of_bundled _ (fun _ _ h => hf.monotone h a) fun c => congr_fun (hf.to_bundled _ c) a
+    (hf : ωScottContinuous fun x y => f y x) : ωScottContinuous (f a) := by
+  rw [← continuous'_iff_ωScottContinuous] at *
+  cases' hf with hf₁ hf₂
+  use (fun _ _ h => hf₁ h a)
+  apply fun c => congr_fun (hf₂ c) a
 alias flip₁_continuous' := flip₁_ωScottContinuous
 #align pi.omega_complete_partial_order.flip₁_continuous' Pi.OmegaCompletePartialOrder.flip₁_continuous'
 
 theorem flip₂_ωScottContinuous (f : γ → ∀ x, β x) (hf : ∀ x, ωScottContinuous fun g => f g x) :
-    ωScottContinuous f :=
-  Continuous.of_bundled _ (fun x y h a => (hf a).monotone h)
-    (by intro c; ext a; apply (hf a).to_bundled _ c)
+    ωScottContinuous f := by
+  rw [← continuous'_iff_ωScottContinuous]
+  simp_rw [← continuous'_iff_ωScottContinuous] at hf
+  --cases' hf with hf₁ hf₂
+  use (fun x y h a => by
+    cases' (hf a) with hf₁ hf₂
+    exact hf₁ h)
+  intro c; ext a; cases' (hf a) with hf₁ hf₂; apply hf₂ c
 alias flip₂_continuous' := flip₂_ωScottContinuous
 #align pi.omega_complete_partial_order.flip₂_continuous' Pi.OmegaCompletePartialOrder.flip₂_continuous'
 
@@ -568,9 +577,8 @@ theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, ωScottContin
   apply eq_of_forall_ge_iff
   intro z
   suffices (∀ f ∈ s, ∀ (n), (f : _) (c n) ≤ z) ↔ ∀ (n), ∀ f ∈ s, (f : _) (c n) ≤ z by
-    simp (config := { contextual := true }) only [OrderHom.coe_mk, OrderHom.sSup_apply, iSup_le_iff,
-      ωSup_le_iff, Chain.map_coe, Function.comp_apply]
-
+    have e1 : ∀ f ∈ s, f (ωSup c) = ωSup (c.map f) := fun f a ↦ hs f a c
+    simpa (config := { contextual := true }) [ωSup_le_iff, e1] using this
   exact ⟨fun H n f hf => H f hf n, fun H f hf n => H n f hf⟩
 #align complete_lattice.Sup_continuous CompleteLattice.sSup_continuous
 
