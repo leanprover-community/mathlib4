@@ -34,7 +34,7 @@ noncomputable section
 variable {α β γ : Type*}
 
 open scoped Classical
-open BigOperators NNReal ENNReal
+open NNReal ENNReal
 
 section Map
 
