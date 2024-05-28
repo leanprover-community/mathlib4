@@ -33,8 +33,6 @@ primitive root of unity `μ : K`, where `K` is a field of characteristic `0`.
 -/
 
 
-open scoped BigOperators
-
 namespace Polynomial
 
 variable {R : Type*} [CommRing R] {n : ℕ}
@@ -73,7 +71,7 @@ private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} 
     IsRoot (cyclotomic n K) μ ↔ IsPrimitiveRoot μ n := by
   -- in this proof, `o` stands for `orderOf μ`
   have hnpos : 0 < n := (NeZero.of_neZero_natCast K).out.bot_lt
-  refine' ⟨fun hμ => _, IsPrimitiveRoot.isRoot_cyclotomic hnpos⟩
+  refine ⟨fun hμ => ?_, IsPrimitiveRoot.isRoot_cyclotomic hnpos⟩
   have hμn : μ ^ n = 1 := by
     rw [isRoot_of_unity_iff hnpos _]
     exact ⟨n, n.mem_divisors_self hnpos.ne', hμ⟩
@@ -95,7 +93,7 @@ private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} 
   rw [← Finset.prod_sdiff hni, Finset.prod_pair key.ne, hk, hj] at this
   have hn := (X_pow_sub_one_separable_iff.mpr <| NeZero.natCast_ne n K).squarefree
   rw [← this, Squarefree] at hn
-  specialize hn (X - C μ) ⟨(∏ x in n.divisors \ {i, n}, cyclotomic x K) * k * j, by ring⟩
+  specialize hn (X - C μ) ⟨(∏ x ∈ n.divisors \ {i, n}, cyclotomic x K) * k * j, by ring⟩
   simp [Polynomial.isUnit_iff_degree_eq_zero] at hn
 
 theorem isRoot_cyclotomic_iff [NeZero (n : R)] {μ : R} :
@@ -178,15 +176,15 @@ theorem _root_.IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible {K : Type*} 
     {R : Type*} [CommRing R] [IsDomain R] {μ : R} {n : ℕ} [Algebra K R] (hμ : IsPrimitiveRoot μ n)
     (h : Irreducible <| cyclotomic n K) [NeZero (n : K)] : cyclotomic n K = minpoly K μ := by
   haveI := NeZero.of_noZeroSMulDivisors K R n
-  refine' minpoly.eq_of_irreducible_of_monic h _ (cyclotomic.monic n K)
+  refine minpoly.eq_of_irreducible_of_monic h ?_ (cyclotomic.monic n K)
   rwa [aeval_def, eval₂_eq_eval_map, map_cyclotomic, ← IsRoot.def, isRoot_cyclotomic_iff]
 #align is_primitive_root.minpoly_eq_cyclotomic_of_irreducible IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible
 
 /-- `cyclotomic n ℤ` is the minimal polynomial of a primitive `n`-th root of unity `μ`. -/
 theorem cyclotomic_eq_minpoly {n : ℕ} {K : Type*} [Field K] {μ : K} (h : IsPrimitiveRoot μ n)
     (hpos : 0 < n) [CharZero K] : cyclotomic n ℤ = minpoly ℤ μ := by
-  refine' eq_of_monic_of_dvd_of_natDegree_le (minpoly.monic (IsPrimitiveRoot.isIntegral h hpos))
-    (cyclotomic.monic n ℤ) (h.minpoly_dvd_cyclotomic hpos) _
+  refine eq_of_monic_of_dvd_of_natDegree_le (minpoly.monic (IsPrimitiveRoot.isIntegral h hpos))
+    (cyclotomic.monic n ℤ) (h.minpoly_dvd_cyclotomic hpos) ?_
   simpa [natDegree_cyclotomic n ℤ] using totient_le_degree_minpoly h
 #align polynomial.cyclotomic_eq_minpoly Polynomial.cyclotomic_eq_minpoly
 

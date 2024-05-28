@@ -53,7 +53,7 @@ theorem reverse_eq {l : List α} (p : Palindrome l) : reverse l = l := by
 #align list.palindrome.reverse_eq List.Palindrome.reverse_eq
 
 theorem of_reverse_eq {l : List α} : reverse l = l → Palindrome l := by
-  refine' bidirectionalRecOn l (fun _ => Palindrome.nil) (fun a _ => Palindrome.singleton a) _
+  refine bidirectionalRecOn l (fun _ => Palindrome.nil) (fun a _ => Palindrome.singleton a) ?_
   intro x l y hp hr
   rw [reverse_cons, reverse_append] at hr
   rw [head_eq_of_cons_eq hr]

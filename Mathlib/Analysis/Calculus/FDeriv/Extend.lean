@@ -84,7 +84,7 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
     have f_cont' : ∀ y ∈ closure s, ContinuousWithinAt (f -  ⇑f') s y := by
       intro y y_in
       exact Tendsto.sub (f_cont y y_in) f'.cont.continuousWithinAt
-    refine' ContinuousWithinAt.closure_le uv_in _ _ key
+    refine ContinuousWithinAt.closure_le uv_in ?_ ?_ key
     all_goals
       -- common start for both continuity proofs
       have : (B ∩ s) ×ˢ (B ∩ s) ⊆ s ×ˢ s := by mono <;> exact inter_subset_right _ _

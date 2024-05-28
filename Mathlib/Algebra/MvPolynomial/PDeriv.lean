@@ -49,8 +49,6 @@ namespace MvPolynomial
 
 open Set Function Finsupp
 
-open scoped BigOperators
-
 variable {R : Type u} {σ : Type v} {a a' a₁ a₂ : R} {s : σ →₀ ℕ}
 
 section PDeriv
@@ -73,7 +71,7 @@ theorem pderiv_monomial {i : σ} :
   classical
     simp only [pderiv_def, mkDerivation_monomial, Finsupp.smul_sum, smul_eq_mul, ← smul_mul_assoc,
       ← (monomial _).map_smul]
-    refine' (Finset.sum_eq_single i (fun j _ hne => _) fun hi => _).trans _
+    refine (Finset.sum_eq_single i (fun j _ hne => ?_) fun hi => ?_).trans ?_
     · simp [Pi.single_eq_of_ne hne]
     · rw [Finsupp.not_mem_support_iff] at hi; simp [hi]
     · simp

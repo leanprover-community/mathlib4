@@ -186,7 +186,8 @@ projection of `x : ℝ` to $[0, 1]$ gives the same result as applying it to `x`.
 @[simp]
 protected theorem projIcc :
     smoothTransition (projIcc (0 : ℝ) 1 zero_le_one x) = smoothTransition x := by
-  refine' congr_fun (IccExtend_eq_self zero_le_one smoothTransition (fun x hx => _) fun x hx => _) x
+  refine congr_fun
+    (IccExtend_eq_self zero_le_one smoothTransition (fun x hx => ?_) fun x hx => ?_) x
   · rw [smoothTransition.zero, zero_of_nonpos hx.le]
   · rw [smoothTransition.one, one_of_one_le hx.le]
 #align real.smooth_transition.proj_Icc Real.smoothTransition.projIcc
