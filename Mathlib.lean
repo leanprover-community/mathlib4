@@ -3598,8 +3598,8 @@ import Mathlib.RingTheory.RingHomProperties
 import Mathlib.RingTheory.RingInvo
 import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.RingTheory.RootsOfUnity.Complex
+import Mathlib.RingTheory.RootsOfUnity.Lemmas
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
-import Mathlib.RingTheory.RootsOfUnity.More
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
