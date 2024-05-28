@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2017 Simon Hudon All rights reserved.
+Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
@@ -771,7 +771,7 @@ theorem corec_unique (g : α → P α) (f : α → M P) (hyp : ∀ x, M.dest (f 
   cases' gxeq : g x with a f'
   have h₀ : M.dest (f x) = ⟨a, f ∘ f'⟩ := by rw [hyp, gxeq, PFunctor.map_eq]
   have h₁ : M.dest (M.corec g x) = ⟨a, M.corec g ∘ f'⟩ := by rw [dest_corec, gxeq, PFunctor.map_eq]
-  refine' ⟨_, _, _, h₀, h₁, _⟩
+  refine ⟨_, _, _, h₀, h₁, ?_⟩
   intro i
   exact ⟨f' i, trivial, rfl, rfl⟩
 set_option linter.uppercaseLean3 false in

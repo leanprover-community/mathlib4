@@ -45,8 +45,8 @@ def liftAlternating : (∀ i, M [⋀^Fin i]→ₗ[R] N) →ₗ[R] ExteriorAlgebr
   suffices
     (∀ i, M [⋀^Fin i]→ₗ[R] N) →ₗ[R]
       ExteriorAlgebra R M →ₗ[R] ∀ i, M [⋀^Fin i]→ₗ[R] N by
-    refine' LinearMap.compr₂ this _
-    refine' (LinearEquiv.toLinearMap _).comp (LinearMap.proj 0)
+    refine LinearMap.compr₂ this ?_
+    refine (LinearEquiv.toLinearMap ?_).comp (LinearMap.proj 0)
     exact AlternatingMap.constLinearEquivOfIsEmpty.symm
   refine' CliffordAlgebra.foldl _ _ _
   · refine'

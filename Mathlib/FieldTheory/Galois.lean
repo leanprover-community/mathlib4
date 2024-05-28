@@ -225,8 +225,8 @@ theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixe
       ((Fintype.bijective_iff_injective_and_card (Set.inclusion H_le)).mpr
         ⟨Set.inclusion_injective H_le, this⟩).2).symm
   apply Fintype.card_congr
-  refine' (FixedPoints.toAlgHomEquiv H E).trans _
-  refine' (algEquivEquivAlgHom (fixedField H) E).toEquiv.symm.trans _
+  refine (FixedPoints.toAlgHomEquiv H E).trans ?_
+  refine (algEquivEquivAlgHom (fixedField H) E).toEquiv.symm.trans ?_
   exact (fixingSubgroupEquiv (fixedField H)).toEquiv.symm
 #align intermediate_field.fixing_subgroup_fixed_field IntermediateField.fixingSubgroup_fixedField
 
@@ -382,7 +382,7 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
   rw [← @IntermediateField.card_algHom_adjoin_integral K _ E _ _ x E _ (RingHom.toAlgebra f) h]
   · congr!
   · exact Polynomial.Separable.of_dvd ((Polynomial.separable_map (algebraMap F K)).mpr hp) h2
-  · refine' Polynomial.splits_of_splits_of_dvd _ (Polynomial.map_ne_zero h1) _ h2
+  · refine Polynomial.splits_of_splits_of_dvd _ (Polynomial.map_ne_zero h1) ?_ h2
     -- Porting note: use unification instead of synthesis for one argument of `algebraMap_eq`
     rw [Polynomial.splits_map_iff, ← @IsScalarTower.algebraMap_eq _ _ _ _ _ _ _ (_) _ _]
     exact sp.splits
@@ -410,7 +410,7 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
     rw [minpoly.zero, Polynomial.natDegree_X] at key
     specialize key Polynomial.separable_X (Polynomial.splits_X (algebraMap F E))
     rw [← @Subalgebra.finrank_bot F E _ _ _, ← IntermediateField.bot_toSubalgebra] at key
-    refine' Eq.trans _ key
+    refine Eq.trans ?_ key
     -- Porting note: use unification instead of synthesis for one argument of `card_congr`
     apply @Fintype.card_congr _ _ _ (_) _
     rw [IntermediateField.adjoin_zero]
@@ -421,7 +421,7 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
   letI := K⟮x⟯.isScalarTower (R := F)
   rw [of_separable_splitting_field_aux hp K (Multiset.mem_toFinset.mp hx), hK, finrank_mul_finrank]
   symm
-  refine' LinearEquiv.finrank_eq _
+  refine LinearEquiv.finrank_eq ?_
   rfl
 #align is_galois.of_separable_splitting_field IsGalois.of_separable_splitting_field
 

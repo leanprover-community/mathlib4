@@ -13,6 +13,8 @@ import Mathlib.Data.Fintype.Units
 # Conjugacy of elements of finite groups
 -/
 
+-- TODO: After #13027,
+-- assert_not_exists MonoidWithZero
 
 variable {α : Type*} [Monoid α]
 
