@@ -748,7 +748,7 @@ theorem ball_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Non
     ball (s.sup' H p) e r = s.inf' H fun i => ball (p i) e r := by
   induction H using Finset.Nonempty.cons_induction with
   | singleton => simp
-  | cons _ _ hs ih =>
+  | cons _ _ _ hs ih =>
     rw [Finset.sup'_cons hs, Finset.inf'_cons hs, ball_sup]
     -- Porting note: `rw` can't use `inf_eq_inter` here, but `simp` can?
     simp only [inf_eq_inter, ih]
@@ -758,7 +758,7 @@ theorem closedBall_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H :
     (r : ℝ) : closedBall (s.sup' H p) e r = s.inf' H fun i => closedBall (p i) e r := by
   induction H using Finset.Nonempty.cons_induction with
   | singleton => simp
-  | cons _ _ hs ih =>
+  | cons _ _ _ hs ih =>
     rw [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup]
     -- Porting note: `rw` can't use `inf_eq_inter` here, but `simp` can?
     simp only [inf_eq_inter, ih]
