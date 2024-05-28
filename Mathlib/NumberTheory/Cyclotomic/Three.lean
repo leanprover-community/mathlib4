@@ -112,11 +112,9 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
       (by decide)
     convert hcong
     simp [h2, h]
-  · exfalso
-    apply (hζ.pow_of_coprime 2 (by decide)).not_exists_int_prime_dvd_sub_of_prime_ne_two'
+  · apply (hζ.pow_of_coprime 2 (by decide)).not_exists_int_prime_dvd_sub_of_prime_ne_two'
       (by decide)
     obtain ⟨n, x, hx⟩ := hcong
     refine ⟨-n, -x, sub_eq_iff_eq_add.2 ?_⟩
-    simp only [PNat.val_ofNat, Nat.cast_ofNat, mul_neg, Int.cast_neg, mul_neg, ← neg_add,
-      ← sub_eq_iff_eq_add.1 hx]
-    simp [h, h2]
+    simp only [h2, PNat.val_ofNat, Nat.cast_ofNat, mul_neg, Int.cast_neg, ← neg_add,
+      ← sub_eq_iff_eq_add.1 hx, Units.val_neg, val_pow_eq_pow_val, IsUnit.unit_spec, neg_neg]
