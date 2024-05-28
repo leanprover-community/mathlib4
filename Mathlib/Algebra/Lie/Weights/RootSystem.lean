@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.RootSystem.Basic
 # The root system associated with a Lie algebra
 
 We show that the roots of a finite dimensional splitting semisimple Lie algebra over a field of
-characteristic 0 forms a root system. We achieve this by studying root chains.
+characteristic 0 form a root system. We achieve this by studying root chains.
 
 ## Main results
 
@@ -354,7 +354,7 @@ def reflectRoot (α β : Weight K H L) : Weight K H L where
       rootSpace_zsmul_add_ne_bot_iff α β hα]
     omega
 
-lemma reflectRoot_isNonZero {α β : Weight K H L} (hβ : β.IsNonZero) :
+lemma reflectRoot_isNonZero (α β : Weight K H L) (hβ : β.IsNonZero) :
     (reflectRoot α β).IsNonZero := by
   intro e
   have : β (coroot α) = 0 := by
@@ -383,32 +383,26 @@ def rootSystem :
       rintro ⟨α, hα⟩ - ⟨⟨β, hβ⟩, rfl⟩
       simp only [Function.Embedding.coeFn_mk, IsReflexive.toPerfectPairingDual_toLin,
         Function.comp_apply, Set.mem_range, Subtype.exists, exists_prop]
-      exact ⟨reflectRoot hα hβ, reflectRoot_ne_zero hα hβ, rfl⟩)
+      exact ⟨reflectRoot α β, reflectRoot_isNonZero α β hβ, rfl⟩)
     (by convert span_weight_isNonZero_eq_top K L H; ext; simp)
 
+@[simp] lemma rootSystem_toLin_apply (f x) : (rootSystem H).toLin f x = f x := rfl
 @[simp] lemma rootSystem_pairing_apply (α β) : (rootSystem H).pairing β α = β.1 (coroot α.1) := rfl
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
+@[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
 
 theorem isCrystallographic_rootSystem : (rootSystem H).IsCrystallographic := by
   rintro α _ ⟨β, rfl⟩
-  simp only [RootPairing.root_coroot_eq_pairing, rootSystem_pairing_apply, SetLike.mem_coe,
-    apply_coroot_eq_cast β.1 α.1]
-  exact ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp⟩
+  exact ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
 
 theorem isReduced_rootSystem : (rootSystem H).IsReduced := by
   intro α β e
-  obtain (h | h) : α.1 = β.1 ∨ α.1 = -β.1 := by
-    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, LinearIndependent.pair_iff, not_forall,
-      Classical.not_imp, not_and] at e
-    obtain ⟨u, v, huv, h⟩ := e
-    apply eq_neg_or_eq_of_eq_smul β.1 α.1 α.2 (u⁻¹ * -v)
-    rw [mul_smul, neg_smul, eq_comm, inv_smul_eq_iff₀, neg_eq_iff_eq_neg, eq_neg_iff_add_eq_zero,
-      add_comm]
-    · ext x; simpa [rootSystem_root_apply] using DFunLike.congr_fun huv x
-    · rintro rfl
-      have : (rootSystem H).root β = 0 := by simpa [h rfl] using huv
-      apply β.2; ext x; simpa using DFunLike.congr_fun this x
-  · left; ext x; simpa using DFunLike.congr_fun h x
-  · right; ext x; simpa using DFunLike.congr_fun h x
+  rw [LinearIndependent.pair_iff' ((rootSystem H).ne_zero _), not_forall] at e
+  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, rootSystem_root_apply, ne_eq, not_not] at e
+  obtain ⟨u, hu⟩ := e
+  obtain (h | h) :=
+    eq_neg_or_eq_of_eq_smul α.1 β.1 β.2 u (by ext x; exact DFunLike.congr_fun hu.symm x)
+  · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
+  · left; ext x; simpa using DFunLike.congr_fun h.symm x
 
 end LieAlgebra.IsKilling
