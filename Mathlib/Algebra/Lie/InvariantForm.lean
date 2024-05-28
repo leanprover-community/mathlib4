@@ -49,6 +49,17 @@ for all `x : L` and `y z : M` the condition `Φ ⁅x, y⁆ z = -Φ y ⁅x, z⁆`
 def _root_.LinearMap.BilinForm.lieInvariant : Prop :=
   ∀ (x : L) (y z : M), Φ ⁅x, y⁆ z = -Φ y ⁅x, z⁆
 
+lemma _root_.LinearMap.BilinForm.lieInvariant_iff [LieModule R L M] :
+    Φ.lieInvariant (L := L) ↔ ∀ x : L, ⁅x, Φ⁆ = 0 := by
+  refine ⟨fun h x ↦ ?_, fun h x y z ↦ ?_⟩
+  · ext y z
+    rw [LieHom.lie_apply, LinearMap.sub_apply, Module.Dual.lie_apply, LinearMap.zero_apply,
+      LinearMap.zero_apply, h, sub_self]
+  · replace h := LinearMap.congr_fun₂ (h x) y z
+    simp only [LieHom.lie_apply, LinearMap.sub_apply, Module.Dual.lie_apply,
+      LinearMap.zero_apply, sub_eq_zero] at h
+    simp [← h]
+
 variable (hΦ_inv : Φ.lieInvariant L)
 
 /--

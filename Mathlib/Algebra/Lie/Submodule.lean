@@ -1553,7 +1553,7 @@ variable [AddCommGroup V] [Module K V] [LieRingModule L V]
 
 open FiniteDimensional Submodule in
 lemma exists_atom_le_of_finite [FiniteDimensional K V] :
-    ∀ (N : LieSubmodule K L V), N ≠ ⊥ → ∃ a : LieSubmodule K L V, IsAtom a ∧ a ≤ N := by
+    ∀ N : LieSubmodule K L V, N ≠ ⊥ → ∃ a : LieSubmodule K L V, IsAtom a ∧ a ≤ N := by
   intro N hN
   by_cases H : ∀ b, b < N → b = ⊥
   · exact ⟨N, ⟨hN, H⟩, le_rfl⟩

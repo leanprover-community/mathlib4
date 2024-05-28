@@ -8,8 +8,7 @@ import Mathlib.Algebra.Lie.Solvable
 /-!
 # Semisimple Lie algebras
 
-The famous Cartan-Dynkin-Killing classification of semisimple Lie algebras renders them one of the
-most important classes of Lie algebras. In this file we define simple and semisimple Lie algebras.
+In this file we define simple and semisimple Lie algebras, together with related concepts.
 
 ## Main declarations
 

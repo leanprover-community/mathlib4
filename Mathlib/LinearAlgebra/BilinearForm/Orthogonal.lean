@@ -169,11 +169,8 @@ theorem le_orthogonal_orthogonal (b : B.IsRefl) : N ≤ B.orthogonal (B.orthogon
 #align bilin_form.le_orthogonal_orthogonal LinearMap.BilinForm.le_orthogonal_orthogonal
 
 lemma orthogonal_top (hB : B.Nondegenerate) (hB₀ : B.IsRefl) :
-    B.orthogonal ⊤ = ⊥ := by
-  rw [eq_bot_iff]
-  intro x hx
-  rw [Submodule.mem_bot]
-  exact hB _ fun y ↦ hB₀ _ _ (hx y Submodule.mem_top)
+    B.orthogonal ⊤ = ⊥ :=
+  (Submodule.eq_bot_iff _).mpr fun _ hx ↦ hB _ fun y ↦ hB₀ _ _ <| hx y Submodule.mem_top
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
