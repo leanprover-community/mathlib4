@@ -333,12 +333,12 @@ theorem chainHeight_union_le : (s ∪ t).chainHeight ≤ s.chainHeight + t.chain
 theorem chainHeight_union_eq (s t : Set α) (H : ∀ a ∈ s, ∀ b ∈ t, a < b) :
     (s ∪ t).chainHeight = s.chainHeight + t.chainHeight := by
   cases h : t.chainHeight
-  · rw [WithTop.none_eq_top, add_top, eq_top_iff, ← WithTop.none_eq_top, ← h]
+  · rw [add_top, eq_top_iff, ← h]
     exact Set.chainHeight_mono (Set.subset_union_right _ _)
   apply le_antisymm
   · rw [← h]
     exact chainHeight_union_le
-  rw [WithTop.some_eq_coe, ← add_zero (s ∪ t).chainHeight, ← WithTop.coe_zero,
+  rw [← add_zero (s ∪ t).chainHeight, ← WithTop.coe_zero,
     ENat.some_eq_coe, chainHeight_add_le_chainHeight_add]
   intro l hl
   obtain ⟨l', hl', rfl⟩ := exists_chain_of_le_chainHeight t h.symm.le
