@@ -304,4 +304,10 @@ def hasForgetToType (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] :
   forget_comp := Functor.comp_id _
 #align category_theory.has_forget_to_Type CategoryTheory.hasForgetToType
 
+@[simp]
+lemma NatTrans.naturality_apply {C D : Type*} [Category C] [Category D] [ConcreteCategory D]
+    {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y) (x : F.obj X) :
+    φ.app Y (F.map f x) = G.map f (φ.app X x) := by
+  simpa only [Functor.map_comp] using congr_fun ((forget D).congr_map (φ.naturality f)) x
+
 end CategoryTheory
