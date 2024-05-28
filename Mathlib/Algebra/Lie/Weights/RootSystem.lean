@@ -13,7 +13,7 @@ characteristic 0 forms a root system. We achieve this by studying root chains.
 
 ## Main results
 
-- `apply_coroot`: If `β - qα ... β ... β + rα` is the `α`-chain through `β`, then
+- `apply_coroot_eq_cast`: If `β - qα ... β ... β + rα` is the `α`-chain through `β`, then
   `β (coroot α) = q - r`. In particular, it is an integer.
 
 - `rootSpace_zsmul_add_ne_bot_iff`: The `α`-chain through `β` (`β - qα ... β ... β + rα`) are the
