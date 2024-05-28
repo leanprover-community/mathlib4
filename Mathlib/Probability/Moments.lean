@@ -41,7 +41,7 @@ open MeasureTheory Filter Finset Real
 
 noncomputable section
 
-open scoped BigOperators MeasureTheory ProbabilityTheory ENNReal NNReal
+open scoped MeasureTheory ProbabilityTheory ENNReal NNReal
 
 namespace ProbabilityTheory
 

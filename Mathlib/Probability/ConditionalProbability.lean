@@ -59,7 +59,6 @@ conditional, conditioned, bayes
 noncomputable section
 
 open ENNReal MeasureTheory MeasureTheory.Measure MeasurableSpace Set
-open scoped BigOperators
 
 variable {Ω Ω' α : Type*} {m : MeasurableSpace Ω} {m' : MeasurableSpace Ω'} (μ : Measure Ω)
   {s t : Set Ω}

@@ -487,8 +487,6 @@ end InfiniteSylow
 
 open Equiv Equiv.Perm Finset Function List QuotientGroup
 
-open BigOperators
-
 universe u v w
 
 variable {G : Type u} {α : Type v} {β : Type w} [Group G]
@@ -805,8 +803,6 @@ theorem normal_of_normalizerCondition (hnc : NormalizerCondition G) {p : ℕ} [F
   normalizer_eq_top.mp <|
     normalizerCondition_iff_only_full_group_self_normalizing.mp hnc _ <| normalizer_normalizer _
 #align sylow.normal_of_normalizer_condition Sylow.normal_of_normalizerCondition
-
-open BigOperators
 
 /-- If all its Sylow subgroups are normal, then a finite group is isomorphic to the direct product
 of these Sylow subgroups.
