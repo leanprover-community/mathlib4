@@ -49,7 +49,7 @@ theorem toReal_sub_of_le {a b : ℝ≥0∞} (h : b ≤ a) (ha : a ≠ ∞) :
 
 theorem le_toReal_sub {a b : ℝ≥0∞} (hb : b ≠ ∞) : a.toReal - b.toReal ≤ (a - b).toReal := by
   lift b to ℝ≥0 using hb
-  induction a using recTopCoe
+  induction a
   · simp
   · simp only [← coe_sub, NNReal.sub_def, Real.coe_toNNReal', coe_toReal]
     exact le_max_left _ _
@@ -160,7 +160,7 @@ theorem toReal_inf {a b : ℝ≥0∞} : a ≠ ∞ → b ≠ ∞ → (a ⊓ b).to
 #align ennreal.to_real_inf ENNReal.toReal_inf
 
 theorem toNNReal_pos_iff : 0 < a.toNNReal ↔ 0 < a ∧ a < ∞ := by
-  induction a using recTopCoe <;> simp
+  induction a <;> simp
 #align ennreal.to_nnreal_pos_iff ENNReal.toNNReal_pos_iff
 
 theorem toNNReal_pos {a : ℝ≥0∞} (ha₀ : a ≠ 0) (ha_top : a ≠ ∞) : 0 < a.toNNReal :=
@@ -483,7 +483,7 @@ theorem toReal_pos_iff_ne_top (p : ℝ≥0∞) [Fact (1 ≤ p)] : 0 < p.toReal �
 #align ennreal.to_real_pos_iff_ne_top ENNReal.toReal_pos_iff_ne_top
 
 theorem toNNReal_inv (a : ℝ≥0∞) : a⁻¹.toNNReal = a.toNNReal⁻¹ := by
-  induction' a using recTopCoe with a; · simp
+  induction' a with a; · simp
   rcases eq_or_ne a 0 with (rfl | ha); · simp
   rw [← coe_inv ha, toNNReal_coe, toNNReal_coe]
 #align ennreal.to_nnreal_inv ENNReal.toNNReal_inv

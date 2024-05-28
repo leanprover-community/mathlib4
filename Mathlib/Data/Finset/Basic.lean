@@ -1302,14 +1302,15 @@ singletons and that if it holds for nonempty `t : Finset α`, then it also holds
 obtained by inserting an element in `t`. -/
 @[elab_as_elim]
 theorem Nonempty.cons_induction {α : Type*} {p : ∀ s : Finset α, s.Nonempty → Prop}
-    (h₀ : ∀ a, p {a} (singleton_nonempty _))
-    (h₁ : ∀ ⦃a⦄ (s) (h : a ∉ s) (hs), p s hs → p (Finset.cons a s h) (nonempty_cons h))
+    (singleton : ∀ a, p {a} (singleton_nonempty _))
+    (cons : ∀ ⦃a⦄ (s) (h : a ∉ s) (hs), p s hs → p (Finset.cons a s h) (nonempty_cons h))
     {s : Finset α} (hs : s.Nonempty) : p s hs := by
-  induction' s using Finset.cons_induction with a t ha h
-  · exact (not_nonempty_empty hs).elim
-  obtain rfl | ht := t.eq_empty_or_nonempty
-  · exact h₀ a
-  · exact h₁ t ha ht (h ht)
+  induction s using Finset.cons_induction with
+  | empty => exact (not_nonempty_empty hs).elim
+  | @cons a t ha h =>
+    obtain rfl | ht := t.eq_empty_or_nonempty
+    · exact singleton a
+    · exact cons t ha ht (h ht)
 #align finset.nonempty.cons_induction Finset.Nonempty.cons_induction
 
 lemma Nonempty.exists_cons_eq (hs : s.Nonempty) : ∃ t a ha, cons a t ha = s :=
