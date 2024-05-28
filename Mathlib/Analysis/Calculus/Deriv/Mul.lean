@@ -356,19 +356,18 @@ theorem derivWithin_finset_prod (hxs : UniqueDiffWithinAt 𝕜 s x)
       ∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • derivWithin (f i) s x :=
   (HasDerivWithinAt.finset_prod fun i hi ↦ (hf i hi).hasDerivWithinAt).derivWithin hxs
 
-theorem DifferentiableAt.finset_prod (t : 𝕜) (hd : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) t) :
-    DifferentiableAt 𝕜 (∏ i ∈ u, f i ·) t :=
+theorem DifferentiableAt.finset_prod (hd : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
+    DifferentiableAt 𝕜 (∏ i ∈ u, f i ·) x :=
   (HasDerivAt.finset_prod (fun i hi ↦ DifferentiableAt.hasDerivAt (hd i hi))).differentiableAt
 
 theorem DifferentiableOn.finset_prod (hd : ∀ i ∈ u, DifferentiableOn 𝕜 (f i) s) :
-    DifferentiableOn 𝕜 (∏ i ∈ u, f i ·) s := by
-  simp_rw [DifferentiableOn] at *
-  exact fun t ht ↦ (HasDerivWithinAt.finset_prod
-  (fun i hi ↦ DifferentiableWithinAt.hasDerivWithinAt (hd i hi t ht))).differentiableWithinAt
+    DifferentiableOn 𝕜 (∏ i ∈ u, f i ·) s :=
+  fun x hx ↦ (HasDerivWithinAt.finset_prod
+    (fun i hi ↦ DifferentiableWithinAt.hasDerivWithinAt (hd i hi x hx))).differentiableWithinAt
 
 theorem Differentiable.finset_prod (hd : ∀ i ∈ u, Differentiable 𝕜 (f i)) :
-    Differentiable 𝕜 (∏ i ∈ u, f i ·):=
-  fun t => DifferentiableAt.finset_prod t (fun i hi => hd i hi t)
+    Differentiable 𝕜 (∏ i ∈ u, f i ·) :=
+  fun x ↦ .finset_prod x (fun i hi ↦ hd i hi x)
 
 end Prod
 
