@@ -582,11 +582,8 @@ theorem sSup_ωScottContinuous' (s : Set <| α →o β) (hs : ∀ f ∈ s, ωSco
   exact ⟨fun H n f hf => H f hf n, fun H f hf n => H n f hf⟩
 #align complete_lattice.Sup_continuous CompleteLattice.sSup_ωScottContinuous'
 
-theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, Continuous f) : Continuous (sSup s) := by
-  apply ωScottContinuous_coe.mp
-  apply sSup_ωScottContinuous'
-  intro f hf
-  exact continuous'_coe.mpr (hs f hf)
+theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, Continuous f) : Continuous (sSup s) :=
+  ωScottContinuous_coe.mp (sSup_ωScottContinuous' _ fun f hf => continuous'_coe.mpr (hs f hf))
 
 theorem iSup_continuous {ι : Sort*} {f : ι → α →o β} (h : ∀ i, Continuous (f i)) :
     Continuous (⨆ i, f i) :=
