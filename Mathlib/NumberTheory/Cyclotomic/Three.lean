@@ -120,7 +120,6 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
       (by decide)
     obtain ⟨n, x, hx⟩ := hcong
     refine ⟨-n, -x, ?_⟩
-    simp only [Int.cast_neg, sub_neg_eq_add, PNat.val_ofNat, Nat.cast_ofNat]
-    rw [h2, mul_neg, ← hx, ← neg_eq_iff_eq_neg.2 h]
-    simp only [Int.cast_neg, sub_neg_eq_add, neg_sub]
+    simp only [Int.cast_neg, sub_neg_eq_add, PNat.val_ofNat, Nat.cast_ofNat, h2, mul_neg, ← hx,
+      ← neg_eq_iff_eq_neg.2 h]
     ring
