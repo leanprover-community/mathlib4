@@ -12,8 +12,8 @@ import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 # Third Cyclotomic Field
 We gather various results about the third cyclotomic field. The following notations are used in this
 file: `K` is a number field such that `IsCyclotomicExtension {3} ℚ K`, `ζ` is any primitive `3`-rd
-root of unity in `K`, `η` is the element in the ring of integers corresponding to `ζ` and
-`λ = η - 1`.
+root of unity in `K`, `η` is the element in the units of the ring of integers corresponding to `ζ`
+and `λ = η - 1`.
 
 ## Main results
 * `IsCyclotomicExtension.Rat.Three.Units.mem`: Given a unit `u : (𝓞 K)ˣ`, we have that
@@ -32,13 +32,13 @@ namespace IsCyclotomicExtension.Rat.Three
 
 variable {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 variable {ζ : K} (hζ : IsPrimitiveRoot ζ ↑(3 : ℕ+)) (u : (𝓞 K)ˣ)
-local notation3 "η" => hζ.toInteger
-local notation3 "λ" => hζ.toInteger - 1
+local notation3 "η" => (IsPrimitiveRoot.isUnit (hζ.toInteger_isPrimitiveRoot) (by decide)).unit
+local notation3 "λ" => (η : 𝓞 K) - 1
 
 open scoped Classical
 
 /-- Let `u` be a unit in `(𝓞 K)ˣ`, then `u ∈ {1, -1, η, -η, η^2, -η^2}`. -/
-theorem Units.mem : ↑u ∈ ({1, -1, η, -η, η ^ 2, -η ^ 2} : Finset (𝓞 K)) := by
+theorem Units.mem : u ∈ ({1, -1, η, -η, η ^ 2, -η ^ 2} : Finset (𝓞 K)ˣ) := by
   have hrank : rank K = 0 := by
     dsimp only [rank]
     rw [card_eq_nrRealPlaces_add_nrComplexPlaces, nrRealPlaces_eq_zero (n := 3) K (by decide),
@@ -68,16 +68,19 @@ theorem Units.mem : ↑u ∈ ({1, -1, η, -η, η ^ 2, -η ^ 2} : Finset (𝓞 K
   fin_cases hr
   all_goals{
     rcases hru with (h | h)
-    · simp only [h, pow_zero, Finset.mem_insert, one_ne_zero, Finset.mem_singleton,
-        false_or, true_or, zero_add, pow_one, eq_neg_self_iff, true_or, or_true]
-    · simp only [h, pow_zero, Finset.mem_insert, neg_eq_self_iff, one_ne_zero,
-        Finset.mem_singleton, true_or, or_true, zero_add, pow_one, neg_inj, neg_eq_self_iff]}
+    · simp [h]
+    · simp [h]}
 
 /-- We have that `λ ^ 2 = -3 * η`. -/
-lemma lambda_sq : λ ^ 2 = -3 * η :=
-  calc λ ^ 2 = η ^ 2 + η + 1 - 3 * η := by ring
-  _ = 0 - 3 * η := by ext; simpa using hζ.isRoot_cyclotomic (by decide)
+lemma lambda_sq : λ ^ 2 = -3 * η := by
+  ext
+  calc (λ ^ 2 : K) = η ^ 2 + η + 1 - 3 * η := by ring
+  _ = 0 - 3 * η := by simpa using hζ.isRoot_cyclotomic (by decide)
   _ = -3 * η := by ring
+
+lemma eta_sq : (η ^ 2 : 𝓞 K) = - η - 1 := by
+  rw [← neg_add', ← add_eq_zero_iff_eq_neg, ← add_assoc]
+  ext; simpa using hζ.isRoot_cyclotomic (by decide)
 
 /-- If a unit `u` is congruent to an integer modulo `λ ^ 2`, then `u = 1` or `u = -1`.
 
@@ -89,29 +92,31 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
     exact ⟨n, -η * x, by rw [← mul_assoc, mul_neg, ← neg_mul, ← lambda_sq, hx]⟩
   have hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
   have := Units.mem hζ u
+  simp only [Finset.mem_insert, Finset.mem_singleton] at this
   have h2 : (hζ.pow_of_coprime 2 (by decide)).toInteger = hζ.toInteger ^ 2 := by ext; simp
-  simp only [Finset.mem_insert, val_eq_one, Finset.mem_singleton] at this
   rcases this with (rfl | h | h | h | h | h)
   · left; rfl
   · right; ext; simp [h]
   · exfalso
     apply hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide)
-    rwa [← h]
+    convert hcong
+    simp [h]
   · exfalso
     apply hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide)
     obtain ⟨n, x, hx⟩ := hcong
-    rw [sub_eq_iff_eq_add] at hx
-    refine ⟨-n, -x, ?_⟩
-    simp [← neg_eq_iff_eq_neg.2 h, hx]
+    rw [sub_eq_iff_eq_add, h] at hx
+    refine ⟨-n, -x, sub_eq_iff_eq_add.2 ?_⟩
+    simp [mul_neg, ← neg_add, ← hx]
   · exfalso
     apply (hζ.pow_of_coprime 2 (by decide)).not_exists_int_prime_dvd_sub_of_prime_ne_two'
       (by decide)
-    rwa [h2, ← h]
+    convert hcong
+    simp [h2, h]
   · exfalso
     apply (hζ.pow_of_coprime 2 (by decide)).not_exists_int_prime_dvd_sub_of_prime_ne_two'
       (by decide)
     obtain ⟨n, x, hx⟩ := hcong
-    refine ⟨-n, -x, ?_⟩
-    simp only [Int.cast_neg, sub_neg_eq_add, PNat.val_ofNat, Nat.cast_ofNat, h2, mul_neg, ← hx,
-      ← neg_eq_iff_eq_neg.2 h]
-    ring
+    refine ⟨-n, -x, sub_eq_iff_eq_add.2 ?_⟩
+    simp only [PNat.val_ofNat, Nat.cast_ofNat, mul_neg, Int.cast_neg, mul_neg, ← neg_add,
+      ← sub_eq_iff_eq_add.1 hx]
+    simp [h, h2]
