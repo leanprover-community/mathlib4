@@ -229,10 +229,21 @@ def leftPart : DyckWord :=
       rw [Nat.add_lt_add_iff_right] at ub
       exact p.count_lt_count_of_lt_firstReturn _ ub)
 
+/-- Inverse of the Dyck word decomposition: `p ⋄ q = p.nest + q`. -/
+def compose (q : DyckWord) := p.nest + q
+infixl:80 " ⋄ " => compose
+
 @[simp]
-theorem leftPart_nest_add_rightPart : (p.leftPart h).nest + p.rightPart h = p := by
-  rw [DyckWord.ext_iff, leftPart, denest_nest]
+theorem leftPart_compose_rightPart : p.leftPart h ⋄ p.rightPart h = p := by
+  rw [compose, DyckWord.ext_iff, leftPart, denest_nest]
   apply take_append_drop
+
+variable (q : DyckWord)
+
+lemma compose_ne_empty : (p ⋄ q).l ≠ [] := by change U :: _ ++ _ ≠ []; simp
+
+-- theorem compose_leftPart_eq_leftPart : (p ⋄ q).leftPart (compose_ne_empty _ _) = p := by
+-- theorem compose_rightPart_eq_rightPart : (p ⋄ q).rightPart (compose_ne_empty _ _) = q := by
 
 end FirstReturn
 
