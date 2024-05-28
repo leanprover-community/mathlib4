@@ -258,7 +258,7 @@ lemma pi_quotient_surjective {R : Type*} [CommRing R] {ι : Type*} [Finite ι] {
 /-- Corollary of Chinese Remainder Theorem: if `Iᵢ` are pairwise coprime ideals in a
 commutative ring then given elements `xᵢ` you can find `r` with `r - xᵢ ∈ Iᵢ` for all `i`. -/
 lemma exists_forall_sub_mem_ideal {R : Type*} [CommRing R] {ι : Type*} [Finite ι]
-    {I : ι → Ideal R} (hI : Pairwise fun i j ↦ IsCoprime (I i) (I j)) (x : (i : ι) → R) :
+    {I : ι → Ideal R} (hI : Pairwise fun i j ↦ IsCoprime (I i) (I j)) (x : ι → R) :
     ∃ r : R, ∀ i, r - x i ∈ I i := by
   obtain ⟨y, hy⟩ := Ideal.pi_quotient_surjective hI (fun i ↦ x i)
   exact ⟨y, fun i ↦ (Submodule.Quotient.eq (I i)).mp <| hy i⟩
