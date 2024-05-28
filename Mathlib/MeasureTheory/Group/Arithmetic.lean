@@ -520,7 +520,7 @@ theorem measurableEmbedding_inv [InvolutiveInv α] [MeasurableInv α] :
 
 end Inv
 
-@[to_additive (attr := measurability)]
+@[to_additive]
 theorem Measurable.mul_iff_right {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [CommGroup G]
     [MeasurableMul₂ G] [MeasurableInv G] {f g : α → G} (hf : Measurable f) :
     Measurable (f * g) ↔ Measurable g :=
