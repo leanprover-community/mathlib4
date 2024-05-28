@@ -22,13 +22,14 @@ structure GroupObject where
     (Limits.prod.associator X X X).hom ≫ prod.map (𝟙 X) mul ≫ mul := by aesop_cat
   mul_left_inv : prod.lift inv (𝟙 X) ≫ mul = (Limits.uniqueToTerminal X).default ≫ one :=
     by aesop_cat
-  mul_right_inv : prod.lift (𝟙 X) inv ≫ mul = (Limits.uniqueToTerminal X).default ≫ one :=
-    by aesop_cat
+--  mul_right_inv : prod.lift (𝟙 X) inv ≫ mul = (Limits.uniqueToTerminal X).default ≫ one :=
+--    by aesop_cat
+-- mul_right_inv should be a lemma
 
 attribute [reassoc] GroupObject.one_mul GroupObject.mul_one
 
 attribute [simp] GroupObject.one_mul GroupObject.mul_one GroupObject.mul_left_inv
-  GroupObject.mul_right_inv
+--  GroupObject.mul_right_inv
 
 attribute [reassoc (attr := simp)] GroupObject.mul_assoc
 
