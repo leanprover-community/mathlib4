@@ -15,7 +15,7 @@ import Mathlib.Data.Nat.Cast.Order
 This file proves additional properties about the *canonical* homomorphism from
 the integers into an additive group with a one (`Int.cast`),
 particularly results involving algebraic homomorphisms or the order structure on `ℤ`
-which were not available in the import dependencies of `Data.Int.Cast.Basic`.
+which were not available in the import dependencies of `Mathlib.Data.Int.Cast.Basic`.
 
 ## TODO
 
