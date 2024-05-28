@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
 
-import Mathlib.Data.List.Defs
+import Mathlib.Data.List.Range
 import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
@@ -16,14 +16,6 @@ Proves various lemmas about `List.iterate`.
 variable {α : Type*}
 
 namespace List
-
-theorem take_range (m n : ℕ) : take m (range n) = range (min m n) := by
-  apply List.ext_get
-  · simp
-  · simp only [length_take, length_range, lt_min_iff, get_range]
-    intro i h _
-    rw [← get_take _ _ h.1, get_range]
-    simpa using h.2
 
 @[simp]
 theorem length_iterate (f : α → α) (a : α) (n : ℕ) : length (iterate f a n) = n := by
