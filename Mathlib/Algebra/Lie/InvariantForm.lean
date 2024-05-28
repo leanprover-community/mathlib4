@@ -9,6 +9,23 @@ import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 /-!
 # Lie algebras with non-degenerate invariant bilinear forms are semisimple
 
+In this file we prove that a finite-dimensional Lie algebra over a field is semisimple
+if it does not have non-trivial abelian ideals and it admits a
+non-degenerate reflexive invariant bilinear form.
+Here a form is *invariant* if it is compatible with the Lie bracket: `Φ ⁅x, y⁆ z = Φ x ⁅y, z⁆`.
+
+## Main results
+
+* `orthogonalLieIdeal`: given a Lie ideal `I`, we define its orthogonal complement with respect to
+  a non-degenerate invariant bilinear form `Φ` as the Lie ideal of elements `x` such that
+  `Φ n x = 0` for all `n ∈ I`.
+* `isSemisimple_of_nondegenerate`: the main result of this file;
+  a finite-dimensional Lie algebra over a field is semisimple
+  if it does not have non-trivial abelian ideals and admits
+  a non-degenerate invariant reflexive bilinear form.
+
+## References
+
 We follow the short and excellent paper [dieudonne1953].
 -/
 
@@ -26,6 +43,10 @@ variable (Φ : LinearMap.BilinForm R L) (hΦ_nondeg : Φ.Nondegenerate)
 variable (hΦ_inv : ∀ x y z, Φ ⁅x, y⁆ z = Φ x ⁅y, z⁆)
 variable (hL : ∀ I : LieIdeal R L, IsAtom I → ¬IsLieAbelian I)
 
+/--
+The orthogonal complement of a Lie ideal `I` with respect to an invariant bilinear form `Φ` is
+the Lie ideal of elements `y` such that `Φ x y = 0` for all `x ∈ I`.
+-/
 @[simps!]
 def orthogonalLieIdeal (I : LieIdeal R L) : LieIdeal R L where
   __ := Φ.orthogonal I
@@ -45,8 +66,8 @@ def orthogonalLieIdeal (I : LieIdeal R L) : LieIdeal R L where
 lemma orthogonalLieIdeal_toSubmodule (I : LieIdeal R L) :
     (orthogonalLieIdeal Φ hΦ_inv I).toSubmodule = Φ.orthogonal I.toSubmodule := rfl
 
-lemma mem_orthogonalLieIdeal (I : LieIdeal R L) (x : L) :
-    x ∈ orthogonalLieIdeal Φ hΦ_inv I ↔ ∀ n ∈ I, Φ n x = 0 := by
+lemma mem_orthogonalLieIdeal (I : LieIdeal R L) (y : L) :
+    y ∈ orthogonalLieIdeal Φ hΦ_inv I ↔ ∀ x ∈ I, Φ x y = 0 := by
   simp [orthogonalLieIdeal, LinearMap.BilinForm.isOrtho_def, LinearMap.BilinForm.mem_orthogonal_iff]
 
 lemma orthogonalLieIdeal_disjoint (I : LieIdeal R L) (hI : IsAtom I) :
@@ -145,6 +166,12 @@ decreasing_by
   rw [eq_bot_iff]
   exact orthogonalLieIdeal_disjoint Φ hΦ_nondeg hΦ_inv hL J hJ le_rfl (hJI.trans hIJ')
 
+/--
+A finite-dimensional Lie algebra over a field is semisimple
+if it does not have non-trivial abelian ideals and it admits a
+non-degenerate reflexive invariant bilinear form.
+Here a form is *invariant* if it is compatible with the Lie bracket: `Φ ⁅x, y⁆ z = Φ x ⁅y, z⁆`.
+-/
 open LieSubmodule in
 theorem isSemisimple_of_nondegenerate : IsSemisimple K L := by
   refine ⟨?_, ?_, hL⟩
