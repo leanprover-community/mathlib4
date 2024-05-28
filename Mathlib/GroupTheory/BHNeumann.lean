@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir, Richard Copley
 
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Index
