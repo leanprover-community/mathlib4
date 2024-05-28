@@ -110,8 +110,7 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
     obtain ⟨n, x, hx⟩ := hcong
     rw [sub_eq_iff_eq_add] at hx
     refine ⟨-n, -x, ?_⟩
-    rw [← neg_eq_iff_eq_neg.2 h, hx]
-    simp
+    simp [← neg_eq_iff_eq_neg.2 h, hx]
   · exfalso
     apply (hζ.pow_of_coprime 2 (by decide)).not_exists_int_prime_dvd_sub_of_prime_ne_two'
       (by decide)
