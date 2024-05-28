@@ -551,7 +551,7 @@ theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
   contradiction
 #align exists_subset_nhds_of_is_compact' exists_subset_nhds_of_isCompact'
 
-lemma eq_finite_iUnion_of_isTopologicalBasis__of_isCompact_open (b : ι → Set X)
+lemma eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open (b : ι → Set X)
     (hb : IsTopologicalBasis (Set.range b)) (U : Set X) (hUc : IsCompact U) (hUo : IsOpen U) :
     ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
   obtain ⟨Y, f, e, hf⟩ := hb.open_eq_iUnion hUo
