@@ -5,7 +5,6 @@ Authors: Yury Kudryashov, Floris van Doorn
 -/
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Order.Filter.Subsingleton
-import Mathlib.Algebra.Function.Indicator
 /-!
 # Functions that are eventually constant along a filter
 

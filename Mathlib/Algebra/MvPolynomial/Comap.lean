@@ -69,7 +69,7 @@ theorem comap_comp_apply (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R)
     suffices g = aeval fun i => g (X i) by rw [← this]
     exact aeval_unique g
   · simp only [comap, aeval_eq_eval₂Hom, map_eval₂Hom, AlgHom.comp_apply]
-    refine' eval₂Hom_congr _ rfl rfl
+    refine eval₂Hom_congr ?_ rfl rfl
     ext r
     apply aeval_C
 #align mv_polynomial.comap_comp_apply MvPolynomial.comap_comp_apply

@@ -22,7 +22,11 @@
   {"url": "https://github.com/leanprover-community/aesop",
    "type": "git",
    "subDir": null,
+<<<<<<< HEAD
    "rev": "91a79c4fd93db5af25abe58fd76105d79d940739",
+=======
+   "rev": "bbb5ab510fd407350094422ee230c15ab7323769",
+>>>>>>> origin/master
    "name": "aesop",
    "manifestFile": "lake-manifest.json",
    "inputRev": "nightly-testing",
@@ -49,7 +53,7 @@
   {"url": "https://github.com/leanprover-community/import-graph.git",
    "type": "git",
    "subDir": null,
-   "rev": "35e38eb320982cfd2fcc864e0e0467ca223c8cdb",
+   "rev": "b167323652ab59a5d1b91e906ca4172d1c0474b7",
    "name": "importGraph",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",

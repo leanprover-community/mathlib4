@@ -46,7 +46,7 @@ theorem exists_prime_gt_modEq_one {k : ℕ} (n : ℕ) (hk0 : k ≠ 0) :
     exact mod_cast minFac_dvd (eval (↑b) (cyclotomic k ℤ)).natAbs
   have hpb : ¬p ∣ b :=
     hprime.1.coprime_iff_not_dvd.1 (coprime_of_root_cyclotomic hk0.bot_lt hroot).symm
-  refine' ⟨p, hprime.1, not_le.1 fun habs => _, _⟩
+  refine ⟨p, hprime.1, not_le.1 fun habs => ?_, ?_⟩
   · exact hpb (dvd_mul_of_dvd_right (dvd_factorial (minFac_pos _) habs) _)
   · have hdiv : orderOf (b : ZMod p) ∣ p - 1 :=
       ZMod.orderOf_dvd_card_sub_one (mt (CharP.cast_eq_zero_iff _ _ _).1 hpb)
@@ -59,7 +59,7 @@ theorem exists_prime_gt_modEq_one {k : ℕ} (n : ℕ) (hk0 : k ≠ 0) :
 
 theorem frequently_atTop_modEq_one {k : ℕ} (hk0 : k ≠ 0) :
     ∃ᶠ p in atTop, Nat.Prime p ∧ p ≡ 1 [MOD k] := by
-  refine' frequently_atTop.2 fun n => _
+  refine frequently_atTop.2 fun n => ?_
   obtain ⟨p, hp⟩ := exists_prime_gt_modEq_one n hk0
   exact ⟨p, ⟨hp.2.1.le, hp.1, hp.2.2⟩⟩
 #align nat.frequently_at_top_modeq_one Nat.frequently_atTop_modEq_one
