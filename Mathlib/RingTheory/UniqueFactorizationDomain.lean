@@ -854,7 +854,7 @@ theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
     simp
   induction s using Multiset.induction with
   | empty => simp
-  | cons IH =>
+  | cons _ _ IH =>
     rw [Multiset.prod_cons, Multiset.map_cons, Multiset.sum_cons, normalizedFactors_mul, IH]
     · exact fun h ↦ hs (Multiset.mem_cons_of_mem h)
     · exact fun h ↦ hs (h ▸ Multiset.mem_cons_self _ _)
