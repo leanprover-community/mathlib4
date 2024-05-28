@@ -215,7 +215,7 @@ lemma LinearIndependent.eq_zero_of_pair {x y : M} (h : LinearIndependent R ![x, 
     Finset.mem_univ, forall_true_left] at this
   exact ⟨this 0, this 1⟩
 
-/-- Also see `LinearIndependent.pair_iff` for a simpler version over fields. -/
+/-- Also see `LinearIndependent.pair_iff'` for a simpler version over fields. -/
 lemma LinearIndependent.pair_iff {x y : M} :
     LinearIndependent R ![x, y] ↔ ∀ (s t : R), s • x + t • y = 0 → s = 0 ∧ t = 0 := by
   refine ⟨fun h s t hst ↦ h.eq_zero_of_pair hst, fun h ↦ ?_⟩
