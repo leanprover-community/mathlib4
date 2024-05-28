@@ -344,15 +344,8 @@ variable (I : LieIdeal R L)
 
 /-- The orthogonal complement of an ideal with respect to the killing form is an ideal. -/
 noncomputable def killingCompl : LieIdeal R L :=
-  { __ := (killingForm R L).orthogonal I.toSubmodule
-    lie_mem := by
-      intro x y hy
-      simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-        Submodule.mem_toAddSubmonoid, LinearMap.BilinForm.mem_orthogonal_iff,
-        LieSubmodule.mem_coeSubmodule, LinearMap.BilinForm.IsOrtho]
-      intro z hz
-      rw [← LieModule.traceForm_apply_lie_apply]
-      exact hy _ <| lie_mem_left _ _ _ _ _ hz }
+  LieAlgebra.InvariantForm.orthogonalLieIdeal
+    (killingForm R L) (LieModule.traceForm_apply_lie_apply R L L) I
 
 @[simp] lemma toSubmodule_killingCompl :
     LieSubmodule.toSubmodule I.killingCompl = (killingForm R L).orthogonal I.toSubmodule :=

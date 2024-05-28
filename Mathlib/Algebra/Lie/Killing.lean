@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.InvariantForm
+import Mathlib.Algebra.Lie.Semisimple.Basic
+import Mathlib.Algebra.Lie.TraceForm
 
 /-!
 # Lie algebras with non-degenerate Killing forms.
@@ -21,11 +23,14 @@ non-degenerate Killing form.
 
 This file contains basic definitions and results for such Lie algebras.
 
-## Main definitions
+## Main declarations
+
  * `LieAlgebra.IsKilling`: a typeclass encoding the fact that a Lie algebra has a non-singular
    Killing form.
- * `LieAlgebra.IsKilling.instHasTrivialRadical`: if a Lie algebra has non-singular Killing form
-   then it has trivial radical.
+ * `LieAlgebra.IsKilling.instSemisimple`: if a finite-dimensional Lie algebra over a field
+   has non-singular Killing form then it is semisimple.
+ * `LieAlgebra.IsKilling.instHasTrivialRadical`: if a Lie algebra over a PID
+   has non-singular Killing form then it has trivial radical.
 
 ## TODO
 
@@ -65,10 +70,10 @@ lemma ideal_eq_bot_of_isLieAbelian [IsDomain R] [IsPrincipalIdealRing R]
   rw [eq_bot_iff, ← killingCompl_top_eq_bot]
   exact I.le_killingCompl_top_of_isLieAbelian
 
-instance [IsKilling K L] [Module.Finite K L] : IsSemisimple K L := by
-  apply isSemisimple_of_nondegenerate_invariant_form _ (killingForm K L)
-  · exact LieModule.traceForm_apply_lie_apply K L L
+instance instSemisimple [IsKilling K L] [Module.Finite K L] : IsSemisimple K L := by
+  apply InvariantForm.isSemisimple_of_nondegenerate (Φ := killingForm K L)
   · exact IsKilling.killingForm_nondegenerate _ _
+  · exact LieModule.traceForm_apply_lie_apply K L L
   · exact (LieModule.traceForm_isSymm K L L).isRefl
   · intro I h₁ h₂
     exact h₁.1 <| IsKilling.ideal_eq_bot_of_isLieAbelian I
