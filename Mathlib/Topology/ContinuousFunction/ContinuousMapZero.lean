@@ -92,6 +92,7 @@ lemma closedEmbedding_toContinuousMap [T1Space R] :
     rw [range_toContinuousMap]
     exact isClosed_singleton.preimage <| ContinuousMap.continuous_eval_const 0
 
+/-- The identity function as an element of `C(s, R)` when `0 ∈ (s : Set R)`. -/
 @[simps!]
 protected def id {s : Set R} [Zero s] (h0 : ((0 : s) : R) = 0) : C(s, R)₀ :=
   ⟨.restrict s (.id R), h0⟩
@@ -176,6 +177,7 @@ instance instStarModule [StarRing R] {M : Type*} [SMulZeroClass M R] [Continuous
 instance instCanLift : CanLift C(X, R) C(X, R)₀ (↑) (fun f ↦ f 0 = 0) where
   prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
+/-- The coercion `C(X, R)₀ → C(X, R)` bundled as a non-unital star algebra homomorphism. -/
 @[simps]
 def toContinuousMapHom [StarRing R] [ContinuousStar R] : C(X, R)₀ →⋆ₙₐ[R] C(X, R) where
   toFun f := f
@@ -240,6 +242,8 @@ lemma uniformEmbedding_comp {Y : Type*} [UniformSpace Y] [Zero Y] (g : C(Y, R)�
     ContinuousMap.uniformEmbedding_comp g.toContinuousMap hg |>.comp
       uniformEmbedding_toContinuousMap
 
+/-- The uniform equivalence `C(X, R)₀ ≃ᵤ C(Y, R)₀` induced by a homeomorphism of the domains
+sending `0 : X` to `0 : Y`. -/
 def _root_.UniformEquiv.arrowCongrLeft₀ {Y : Type*} [TopologicalSpace Y] [Zero Y] (f : X ≃ₜ Y)
     (hf : f 0 = 0) : C(X, R)₀ ≃ᵤ C(Y, R)₀ where
   toFun g := g.comp ⟨f.symm.toContinuousMap, (f.toEquiv.apply_eq_iff_eq_symm_apply.eq ▸ hf).symm⟩
@@ -264,6 +268,8 @@ variable {X Y M R S : Type*} [Zero X] [Zero Y] [CommSemiring M]
   [Module M R] [Module M S] [ContinuousConstSMul M R] [ContinuousConstSMul M S]
 
 variable (R) in
+/-- The functor `C(·, R)₀` from topological spaces with zero (and `ContinuousMapZero` maps) to
+non-unital star algebras. -/
 @[simps]
 def nonUnitalStarAlgHom_precomp (f : C(X, Y)₀) : C(Y, R)₀ →⋆ₙₐ[R] C(X, R)₀ where
   toFun g := g.comp f
@@ -274,6 +280,8 @@ def nonUnitalStarAlgHom_precomp (f : C(X, Y)₀) : C(Y, R)₀ →⋆ₙₐ[R] C(
   map_smul' _ _ := rfl
 
 variable (X) in
+/-- The functor `C(X, ·)₀` from non-unital topological star algebras (with non-unital continuous
+star homomorphisms) to non-unital star algebras. -/
 @[simps apply]
 def nonUnitalStarAlgHom_postcomp (φ : R →⋆ₙₐ[M] S) (hφ : Continuous φ) :
     C(X, R)₀ →⋆ₙₐ[M] C(X, S)₀ where
