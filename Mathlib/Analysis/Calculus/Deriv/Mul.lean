@@ -362,9 +362,13 @@ theorem DifferentiableAt.finset_prod (t : 𝕜) (hd : ∀ i ∈ u, Differentiabl
 
 theorem DifferentiableOn.finset_prod (hd : ∀ i ∈ u, DifferentiableOn 𝕜 (f i) s) :
     DifferentiableOn 𝕜 (∏ i ∈ u, f i ·) s := by
-   simp_rw [DifferentiableOn] at *
-   exact fun t ht ↦ (HasDerivWithinAt.finset_prod
-    (fun i hi ↦ DifferentiableWithinAt.hasDerivWithinAt (hd i hi t ht))).differentiableWithinAt
+  simp_rw [DifferentiableOn] at *
+  exact fun t ht ↦ (HasDerivWithinAt.finset_prod
+  (fun i hi ↦ DifferentiableWithinAt.hasDerivWithinAt (hd i hi t ht))).differentiableWithinAt
+
+theorem Differentiable.finset_prod (hd : ∀ i ∈ u, Differentiable 𝕜 (f i)) :
+    Differentiable 𝕜 (∏ i ∈ u, f i ·):=
+  fun t => DifferentiableAt.finset_prod t (fun i hi => hd i hi t)
 
 end Prod
 
