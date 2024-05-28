@@ -171,6 +171,21 @@ lemma inducedMap_self_eq_id (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R
   apply inducedMap_unique
   simp only [id_comp]
 
+/-- The canonical isomorphism between the domains of two cartesian arrows
+lying over the same object. -/
+@[simps]
+noncomputable def naturalIso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a' a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+    (φ' : a' ⟶ b) [IsCartesian p f φ] [IsCartesian p f φ'] : a' ≅ a where
+  hom := inducedMap p f φ φ'
+  inv := inducedMap p f φ' φ
+  -- TODO: simplify
+  hom_inv_id := by
+    have : p.IsHomLift (𝟙 R) (𝟙 a') := by apply IsHomLift.id (domain_eq p f φ')
+    apply IsCartesian.uniqueness p f φ' φ' (by simp) (id_comp _)
+  inv_hom_id := by
+    have : p.IsHomLift (𝟙 R) (𝟙 a) := by apply IsHomLift.id (domain_eq p f φ)
+    apply IsCartesian.uniqueness p f φ φ (by simp) (id_comp _)
+
 end IsCartesian
 
 namespace IsStronglyCartesian
@@ -354,11 +369,11 @@ noncomputable def isoOfBaseIso (p : 𝒳 ⥤ 𝒮) {R R' S : 𝒮} {a a' b : �
   inv := @inducedMap _ _ _ _ p _ _ _ _ f' φ' _ _ _ _ _ (congrArg (g.inv ≫ ·) h.symm) φ
     (by simp; infer_instance)
 
-/-- The canonical isomorphism between the domains of two cartesian arrows
-lying over the same object. -/
-noncomputable def naturalIso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a' a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
-    (φ' : a' ⟶ b) [IsStronglyCartesian p f φ] [IsStronglyCartesian p f φ'] : a' ≅ a :=
-  isoOfBaseIso p (show f = (Iso.refl R).hom ≫ f by simp) φ φ'
+-- /-- The canonical isomorphism between the domains of two cartesian arrows
+-- lying over the same object. -/
+-- noncomputable def naturalIso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a' a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+--     (φ' : a' ⟶ b) [IsStronglyCartesian p f φ] [IsStronglyCartesian p f φ'] : a' ≅ a :=
+--   isoOfBaseIso p (show f = (Iso.refl R).hom ≫ f by simp) φ φ'
 
 end IsStronglyCartesian
 
