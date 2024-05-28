@@ -273,7 +273,8 @@ theorem pow_mod_card_support_cycleOf_self_apply [DecidableEq α] [Fintype α]
 #align equiv.perm.pow_mod_card_support_cycle_of_self_apply Equiv.Perm.pow_mod_card_support_cycleOf_self_apply
 
 /-- `x` is in the support of `f` iff `Equiv.Perm.cycle_of f x` is a cycle. -/
-theorem isCycle_cycleOf_iff (f : Perm α) [DecidableRel f.SameCycle] : IsCycle (cycleOf f x) ↔ f x ≠ x := by
+theorem isCycle_cycleOf_iff (f : Perm α) [DecidableRel f.SameCycle] :
+    IsCycle (cycleOf f x) ↔ f x ≠ x := by
   refine ⟨fun hx => ?_, f.isCycle_cycleOf⟩
   rw [Ne, ← cycleOf_eq_one_iff f]
   exact hx.ne_one
