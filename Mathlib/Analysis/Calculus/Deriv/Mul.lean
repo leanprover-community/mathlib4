@@ -367,7 +367,7 @@ theorem DifferentiableOn.finset_prod (hd : ∀ i ∈ u, DifferentiableOn 𝕜 (f
 
 theorem Differentiable.finset_prod (hd : ∀ i ∈ u, Differentiable 𝕜 (f i)) :
     Differentiable 𝕜 (∏ i ∈ u, f i ·) :=
-  fun x ↦ .finset_prod x (fun i hi ↦ hd i hi x)
+  fun x ↦ .finset_prod (fun i hi ↦ hd i hi x)
 
 end Prod
 
