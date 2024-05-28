@@ -131,6 +131,9 @@ def getQuestions (cmd : Syntax) : Command.CommandElabM (Array (Syntax × List Sy
       Command.elabCommand repl
       if !(← get).messages.hasErrors then
         suma := suma.push ((Syntax.getHead? refine').getD default, holes)
+        logInfoAt ((Syntax.getHead? refine').getD default) m!"{cand}"
+        let sr := (refine'.getRange?).getD default
+        logInfoAt ((Syntax.getHead? refine').getD default) m!"{(sr.start, sr.stop)}"
         break
       set st
   return suma
