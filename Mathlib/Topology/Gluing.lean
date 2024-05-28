@@ -222,7 +222,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     simp only [forget_map_eq_coe]
     erw [TopCat.comp_app, sigmaIsoSigma_inv_apply, ← comp_apply, ← comp_apply,
       colimit.ι_desc_assoc, ← comp_apply, ← comp_apply, colimit.ι_desc_assoc]
-      -- now `erw` after #13170
+      -- previous line now `erw` after #13170
     erw [sigmaIsoSigma_hom_ι_apply, sigmaIsoSigma_hom_ι_apply]
     exact Or.inr ⟨y, ⟨rfl, rfl⟩⟩
   · rintro (⟨⟨⟩⟩ | ⟨z, e₁, e₂⟩)
