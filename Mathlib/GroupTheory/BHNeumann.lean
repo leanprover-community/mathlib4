@@ -245,7 +245,7 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux :
   have hD : D.FiniteIndex := by
     apply Subgroup.finiteIndex_iInf'
     simp only [Finset.mem_filter, and_imp, imp_self, implies_true]
-  -- Each subgroup of finite index in the covering is union of finitely many of cosets of `D`.
+  -- Each subgroup of finite index in the covering is a union of finitely many cosets of `D`.
   have hD_le {i} (hi : i ∈ s) (hfi : (H i).FiniteIndex) : D ≤ H i :=
     iInf₂_le i (Finset.mem_filter.mpr ⟨hi, hfi⟩)
   have (i) (hi : i ∈ s) (hfi : (H i).FiniteIndex) :
@@ -277,9 +277,9 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux :
       Set.eq_empty_iff_forall_not_mem] at ht
     exact ht.2 1 <| SetLike.mem_coe.mpr (Subgroup.one_mem (H j))
   let k : κ := ⟨⟨j, hj⟩, ⟨x, dif_pos hjfi ▸ hx⟩⟩
+  have hKD : K k = D := by simp [K, hjfi]
   -- Since `D` is the unique subgroup of finite index whose cosets occur in the new covering,
   -- the cosets of the other subgroups can be omitted.
-  have hKD : K k = D := by simp [K, hjfi]
   replace hcovers' :
       ⋃ i ∈ Finset.univ.filter (fun x ↦ K x = K k), f i • (D : Set G) = Set.univ := by
     rw [← hKD, Set.iUnion₂_congr fun i hi => by rw [← (Finset.mem_filter.mp hi).2]]
@@ -297,7 +297,7 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux :
     refine Set.iUnion_congr fun hi => ?_
     by_cases hfi : (H i).FiniteIndex <;>
       simp [Set.smul_set_iUnion, Set.iUnion_subtype, ← leftCoset_assoc,
-        f, K, hHD, ← fun i hi hfi => (ht i hi hfi).2, hi, hfi, hjfi]
+        f, K, hHD, ← (ht _ _ _).2, hi, hfi, hjfi]
   · rw [← Finset.sum_filter_add_sum_filter_not _ (fun i ↦ (H i).FiniteIndex)]
     refine le_add_of_le_of_nonneg ?_ (Finset.sum_nonneg (fun i _ ↦ by simp))
     refine le_of_mul_le_mul_left (a := (D.index : ℚ)) ?_
