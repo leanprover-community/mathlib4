@@ -22,8 +22,8 @@ root of unity in `K`, `η` is the element in the ring of integers corresponding 
 * `IsCyclotomicExtension.Rat.Three.eq_one_or_neg_one_of_unit_of_congruent`: Given a unit
 `u : (𝓞 K)ˣ`, if `u` is congruent to an integer modulo `3`, then `u = 1` or `u = -1`.
 
-This is a special case of the so-called *Kummer's lemma* (see for example
-https://kconrad.math.uconn.edu/blurbs/gradnumthy/kummer.pdf).
+This is a special case of the so-called *Kummer's lemma* (see for example [washington_cyclotomic],
+Theorem 5.36
 -/
 
 open NumberField Units InfinitePlace nonZeroDivisors Polynomial
