@@ -444,7 +444,6 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
     · exact one_lt_mul_of_lt_of_le (one_lt_pow hp.1.one_lt hk)
         (have := Nat.Prime.two_le hp.out; by omega)
 
-
   rw [sub_eq_iff_eq_add] at h
   -- We are assuming that `ζ = n + p * x` for some integer `n` and `x : 𝓞 K`. Looking at the
   -- coordinates in the base `pB`, we obtain that `1` is a multiple of `p`, contradiction.
