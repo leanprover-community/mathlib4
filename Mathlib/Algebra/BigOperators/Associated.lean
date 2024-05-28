@@ -91,7 +91,7 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α] :
   obtain ⟨m, hm⟩ := exists_multiset_of_mem_closure hab
   revert a b hm
   refine m.induction (p := fun m ↦ ∀ a b, a * b ∈ closure {r | IsUnit r ∨ Prime r} →
-    (∃ (_ : ∀ y ∈ m, y ∈ {r | IsUnit r ∨ Prime r}), m.prod = a * b) →
+  · left; exact isUnit_of_mul_eq_one _ _ hprod.2.symm
     a ∈ closure {r | IsUnit r ∨ Prime r}) (fun _ _ _ hprod => subset_closure (Set.mem_def.2 ?_)) ?_
   · left ; exact isUnit_of_mul_eq_one _ _ hprod.2.symm
   · simp only [exists_prop, and_imp, Multiset.prod_cons, Multiset.mem_cons, forall_eq_or_imp]
