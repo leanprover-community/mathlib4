@@ -272,8 +272,7 @@ def unitIso :
     𝟭 (LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C) ≅ laxMonoidalToMon C ⋙ monToLaxMonoidal C :=
   NatIso.ofComponents
     (fun F =>
-      MonoidalNatIso.ofComponents (fun _ => F.toFunctor.mapIso (eqToIso (by ext))) (by aesop_cat)
-        (by aesop_cat) (by aesop_cat))
+      MonoidalNatIso.ofComponents (fun _ => F.toFunctor.mapIso (eqToIso (by ext))))
 #align Mon_.equiv_lax_monoidal_functor_punit.unit_iso Mon_.EquivLaxMonoidalFunctorPUnit.unitIso
 
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
