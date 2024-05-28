@@ -75,7 +75,7 @@ noncomputable section
 variable {𝕜 E F G : Type*}
 
 open scoped Classical
-open Topology BigOperators NNReal Filter ENNReal
+open Topology NNReal Filter ENNReal
 
 open Set Filter Asymptotics
 

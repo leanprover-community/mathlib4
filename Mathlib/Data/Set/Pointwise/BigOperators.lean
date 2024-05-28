@@ -15,8 +15,6 @@ import Mathlib.Data.Set.Pointwise.Basic
 
 namespace Set
 
-open BigOperators
-
 open Pointwise Function
 
 variable {ι α β F : Type*} [FunLike F α β]

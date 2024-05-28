@@ -37,8 +37,6 @@ this is a basis over `Fin 3 → R`.
 
 open Function Set Submodule
 
-open BigOperators
-
 namespace LinearMap
 
 variable (R : Type*) {ι : Type*} [Semiring R] (φ : ι → Type*) [∀ i, AddCommMonoid (φ i)]

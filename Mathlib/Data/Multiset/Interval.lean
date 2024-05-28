@@ -27,7 +27,7 @@ multisets are typically used computationally.
 
 open Finset DFinsupp Function
 
-open BigOperators Pointwise
+open Pointwise
 
 variable {α : Type*}
 
