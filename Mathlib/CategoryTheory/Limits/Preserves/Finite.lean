@@ -87,10 +87,6 @@ def preservesFiniteLimitsOfPreservesFiniteLimitsOfSize (F : C ⥤ D)
         exact preservesLimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
 #align category_theory.limits.preserves_finite_limits_of_preserves_finite_limits_of_size CategoryTheory.Limits.preservesFiniteLimitsOfPreservesFiniteLimitsOfSize
 
-noncomputable instance idPreservesFiniteLimits : PreservesFiniteLimits (𝟭 C) :=
-  inferInstance -- should this still be stated explicitly an instance?
-#align category_theory.limits.id_preserves_finite_limits CategoryTheory.Limits.idPreservesFiniteLimits
-
 /-- The composition of two left exact functors is left exact. -/
 def compPreservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits F]
     [PreservesFiniteLimits G] : PreservesFiniteLimits (F ⋙ G) :=
@@ -151,10 +147,18 @@ noncomputable instance (priority := 120) (F : C ⥤ D)
     [ReflectsLimits F] : ReflectsFiniteLimits F :=
   ReflectsLimitsOfSize.reflectsFiniteLimits F
 
+/--
+If `F ⋙ G` preserves finite limits and `G` reflects finite limits, then `F` preserves
+finite limits.
+-/
 def preservesFiniteLimitsOfReflectsOfPreserves (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteLimits (F ⋙ G)] [ReflectsFiniteLimits G] : PreservesFiniteLimits F where
   preservesFiniteLimits _ _ _ := preservesLimitsOfShapeOfReflectsOfPreserves F G
 
+/--
+If `F ⋙ G` preserves finite products and `G` reflects finite products, then `F` preserves
+finite products.
+-/
 def preservesFiniteProductsOfReflectsOfPreserves (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteProducts (F ⋙ G)] [ReflectsFiniteProducts G] : PreservesFiniteProducts F where
   preserves _ _ := preservesLimitsOfShapeOfReflectsOfPreserves F G
@@ -231,10 +235,6 @@ def preservesFiniteColimitsOfPreservesFiniteColimitsOfSize (F : C ⥤ D)
         exact preservesColimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv J).symm F
 #align category_theory.limits.preserves_finite_colimits_of_preserves_finite_colimits_of_size CategoryTheory.Limits.preservesFiniteColimitsOfPreservesFiniteColimitsOfSize
 
-noncomputable instance idPreservesFiniteColimits : PreservesFiniteColimits (𝟭 C) :=
-  inferInstance -- should this still be stated explicitly an instance?
-#align category_theory.limits.id_preserves_finite_colimits CategoryTheory.Limits.idPreservesFiniteColimits
-
 /-- The composition of two right exact functors is right exact. -/
 def compPreservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColimits F]
     [PreservesFiniteColimits G] : PreservesFiniteColimits (F ⋙ G) :=
@@ -296,10 +296,18 @@ class ReflectsFiniteCoproducts (F : C ⥤ D) where
 
 attribute [instance] ReflectsFiniteCoproducts.reflects
 
+/--
+If `F ⋙ G` preserves finite colimits and `G` reflects finite colimits, then `F` preserves finite
+colimits.
+-/
 def preservesFiniteColimitsOfReflectsOfPreserves (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteColimits (F ⋙ G)] [ReflectsFiniteColimits G] : PreservesFiniteColimits F where
   preservesFiniteColimits _ _ _ := preservesColimitsOfShapeOfReflectsOfPreserves F G
 
+/--
+If `F ⋙ G` preserves finite coproducts and `G` reflects finite coproducts, then `F` preserves
+finite coproducts.
+-/
 def preservesFiniteCoproductsOfReflectsOfPreserves (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteCoproducts (F ⋙ G)] [ReflectsFiniteCoproducts G] :
     PreservesFiniteCoproducts F where

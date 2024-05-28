@@ -109,7 +109,6 @@ abbrev WeierstrassCurve.Affine (R : Type u) : Type u :=
   WeierstrassCurve R
 
 /-- The coercion to a Weierstrass curve in affine coordinates. -/
-@[pp_dot]
 abbrev WeierstrassCurve.toAffine {R : Type u} (W : WeierstrassCurve R) : Affine R :=
   W
 
@@ -126,7 +125,6 @@ Weierstrass curve `W` over `R`. For ease of polynomial manipulation, this is rep
 of type `R[X][X]`, where the inner variable represents $X$ and the outer variable represents $Y$.
 For clarity, the alternative notations `Y` and `R[X][Y]` are provided in the `PolynomialPolynomial`
 scope to represent the outer variable and the bivariate polynomial ring `R[X][X]` respectively. -/
-@[pp_dot]
 noncomputable def polynomial : R[X][Y] :=
   Y ^ 2 + C (C W.a₁ * X + C W.a₃) * Y - C (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆)
 #align weierstrass_curve.polynomial WeierstrassCurve.Affine.polynomial
@@ -189,7 +187,6 @@ lemma eval_polynomial_zero : (W.polynomial.eval 0).eval 0 = -W.a₆ := by
 #align weierstrass_curve.eval_polynomial_zero WeierstrassCurve.Affine.eval_polynomial_zero
 
 /-- The proposition that an affine point $(x, y)$ lies in `W`. In other words, $W(x, y) = 0$. -/
-@[pp_dot]
 def Equation (x y : R) : Prop :=
   (W.polynomial.eval <| C y).eval x = 0
 #align weierstrass_curve.equation WeierstrassCurve.Affine.Equation
@@ -226,7 +223,6 @@ section Nonsingular
 /-- The partial derivative $W_X(X, Y)$ of $W(X, Y)$ with respect to $X$.
 
 TODO: define this in terms of `Polynomial.derivative`. -/
-@[pp_dot]
 noncomputable def polynomialX : R[X][Y] :=
   C (C W.a₁) * Y - C (C 3 * X ^ 2 + C (2 * W.a₂) * X + C W.a₄)
 set_option linter.uppercaseLean3 false in
@@ -249,7 +245,6 @@ set_option linter.uppercaseLean3 false in
 /-- The partial derivative $W_Y(X, Y)$ of $W(X, Y)$ with respect to $Y$.
 
 TODO: define this in terms of `Polynomial.derivative`. -/
-@[pp_dot]
 noncomputable def polynomialY : R[X][Y] :=
   C (C 2) * Y + C (C W.a₁ * X + C W.a₃)
 set_option linter.uppercaseLean3 false in
@@ -272,7 +267,6 @@ set_option linter.uppercaseLean3 false in
 
 /-- The proposition that an affine point $(x, y)$ in `W` is nonsingular.
 In other words, either $W_X(x, y) \ne 0$ or $W_Y(x, y) \ne 0$. -/
-@[pp_dot]
 def Nonsingular (x y : R) : Prop :=
   W.Equation x y ∧ ((W.polynomialX.eval <| C y).eval x ≠ 0 ∨ (W.polynomialY.eval <| C y).eval x ≠ 0)
 #align weierstrass_curve.nonsingular WeierstrassCurve.Affine.Nonsingular
@@ -325,7 +319,6 @@ section Ring
 /-! ### Group operation polynomials over a ring -/
 
 /-- The polynomial $-Y - a_1X - a_3$ associated to negation. -/
-@[pp_dot]
 noncomputable def negPolynomial : R[X][Y] :=
   -Y - C (C W.a₁ * X + C W.a₃)
 #align weierstrass_curve.neg_polynomial WeierstrassCurve.Affine.negPolynomial
@@ -333,7 +326,7 @@ noncomputable def negPolynomial : R[X][Y] :=
 /-- The $Y$-coordinate of the negation of an affine point in `W`.
 
 This depends on `W`, and has argument order: $x$, $y$. -/
-@[pp_dot, simp]
+@[simp]
 def negY (x y : R) : R :=
   -y - W.a₁ * x - W.a₃
 set_option linter.uppercaseLean3 false in
@@ -355,7 +348,6 @@ lemma eval_negPolynomial (x y : R) : (W.negPolynomial.eval <| C y).eval x = W.ne
 with a slope of $L$ that passes through an affine point $(x, y)$.
 
 This does not depend on `W`, and has argument order: $x$, $y$, $L$. -/
-@[pp_dot]
 noncomputable def linePolynomial (x y L : R) : R[X] :=
   C L * (X - C x) + C y
 #align weierstrass_curve.line_polynomial WeierstrassCurve.Affine.linePolynomial
@@ -366,7 +358,6 @@ If such a line intersects `W` at another point $(x', y')$, then the roots of thi
 precisely $x$, $x'$, and the $X$-coordinate of the addition of $(x, y)$ and $(x', y')$.
 
 This depends on `W`, and has argument order: $x$, $y$, $L$. -/
-@[pp_dot]
 noncomputable def addPolynomial (x y L : R) : R[X] :=
   W.polynomial.eval <| linePolynomial x y L
 #align weierstrass_curve.add_polynomial WeierstrassCurve.Affine.addPolynomial
@@ -395,7 +386,7 @@ lemma addPolynomial_eq (x y L : R) : W.addPolynomial x y L = -Cubic.toPoly
 where the line through them is not vertical and has a slope of $L$.
 
 This depends on `W`, and has argument order: $x_1$, $x_2$, $L$. -/
-@[pp_dot, simp]
+@[simp]
 def addX (x₁ x₂ L : R) : R :=
   L ^ 2 + W.a₁ * L - W.a₂ - x₁ - x₂
 set_option linter.uppercaseLean3 false in
@@ -405,7 +396,7 @@ set_option linter.uppercaseLean3 false in
 $(x_1, y_1)$ and $(x_2, y_2)$, where the line through them is not vertical and has a slope of $L$.
 
 This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $L$. -/
-@[pp_dot, simp]
+@[simp]
 def addY' (x₁ x₂ y₁ L : R) : R :=
   L * (W.addX x₁ x₂ L - x₁) + y₁
 set_option linter.uppercaseLean3 false in
@@ -415,7 +406,7 @@ set_option linter.uppercaseLean3 false in
 where the line through them is not vertical and has a slope of $L$.
 
 This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $L$. -/
-@[pp_dot, simp]
+@[simp]
 def addY (x₁ x₂ y₁ L : R) : R :=
   W.negY (W.addX x₁ x₂ L) (W.addY' x₁ x₂ y₁ L)
 set_option linter.uppercaseLean3 false in
@@ -491,7 +482,6 @@ $(3x_1^2 + 2a_2x_1 + a_4 - a_1y_1) / (2y_1 + a_1x_1 + a_3)$. Otherwise, this lin
 and has undefined slope, in which case this function returns the value 0.
 
 This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $y_2$. -/
-@[pp_dot]
 noncomputable def slope {F : Type u} [Field F] (W : Affine F) (x₁ x₂ y₁ y₂ : F) : F :=
   if x₁ = x₂ then if y₁ = W.negY x₂ y₂ then 0
     else (3 * x₁ ^ 2 + 2 * W.a₂ * x₁ + W.a₄ - W.a₁ * y₁) / (y₁ - W.negY x₁ y₁)
@@ -638,7 +628,6 @@ section Group
 /-- A nonsingular rational point on a Weierstrass curve `W` in affine coordinates. This is either
 the unique point at infinity `WeierstrassCurve.Affine.Point.zero` or the nonsingular affine points
 `WeierstrassCurve.Affine.Point.some` $(x, y)$ satisfying the Weierstrass equation of `W`. -/
-@[pp_dot]
 inductive Point
   | zero
   | some {x y : R} (h : W.Nonsingular x y)
@@ -665,7 +654,6 @@ lemma zero_def : (zero : W.Point) = 0 :=
 /-- The negation of a nonsingular rational point on `W`.
 
 Given a nonsingular rational point `P` on `W`, use `-P` instead of `neg P`. -/
-@[pp_dot]
 def neg : W.Point → W.Point
   | 0 => 0
   | some h => some <| nonsingular_neg h
@@ -699,7 +687,6 @@ variable {F : Type u} [Field F] {W : Affine F}
 /-- The addition of two nonsingular rational points on `W`.
 
 Given two nonsingular rational points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/
-@[pp_dot]
 noncomputable def add : W.Point → W.Point → W.Point
   | 0, P => P
   | P, 0 => P
@@ -982,7 +969,6 @@ end WeierstrassCurve.Affine
 /-! ## Elliptic curves -/
 
 /-- The coercion from an elliptic curve to a Weierstrass curve in affine coordinates. -/
-@[pp_dot]
 abbrev EllipticCurve.toAffine {R : Type u} [CommRing R] (E : EllipticCurve R) :
     WeierstrassCurve.Affine R :=
   E.toWeierstrassCurve.toAffine

@@ -102,17 +102,17 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   rcases (nhds_basis_balanced 𝕜 E).exists_antitone_subbasis with ⟨b, bE1, bE⟩
   simp only [_root_.id] at bE
   have bE' : (𝓝 (0 : E)).HasBasis (fun x : ℕ => x ≠ 0) fun n : ℕ => (n : 𝕜)⁻¹ • b n := by
-    refine' bE.1.to_hasBasis _ _
+    refine bE.1.to_hasBasis ?_ ?_
     · intro n _
       use n + 1
       simp only [Ne, Nat.succ_ne_zero, not_false_iff, Nat.cast_add, Nat.cast_one, true_and_iff]
       -- `b (n + 1) ⊆ b n` follows from `Antitone`.
       have h : b (n + 1) ⊆ b n := bE.2 (by simp)
-      refine' _root_.trans _ h
+      refine _root_.trans ?_ h
       rintro y ⟨x, hx, hy⟩
       -- Since `b (n + 1)` is balanced `(n+1)⁻¹ b (n + 1) ⊆ b (n + 1)`
       rw [← hy]
-      refine' (bE1 (n + 1)).2.smul_mem _ hx
+      refine (bE1 (n + 1)).2.smul_mem ?_ hx
       have h' : 0 < (n : ℝ) + 1 := n.cast_add_one_pos
       rw [norm_inv, ← Nat.cast_one, ← Nat.cast_add, RCLike.norm_natCast, Nat.cast_add,
         Nat.cast_one, inv_le h' zero_lt_one]
@@ -124,7 +124,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     simp only [ContinuousAt, map_zero, smul_zero] at hcont
     rw [bE.1.tendsto_left_iff] at hcont
     rcases hcont (b n) (bE1 n).1 with ⟨i, _, hi⟩
-    refine' ⟨i, trivial, fun x hx => ⟨(n : 𝕜) • x, hi hx, _⟩⟩
+    refine ⟨i, trivial, fun x hx => ⟨(n : 𝕜) • x, hi hx, ?_⟩⟩
     simp [← mul_smul, hn]
   rw [ContinuousAt, map_zero, bE'.tendsto_iff (nhds_basis_balanced 𝕜' F)] at h
   push_neg at h

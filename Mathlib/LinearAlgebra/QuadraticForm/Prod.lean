@@ -140,10 +140,10 @@ theorem anisotropic_of_prod {R} [OrderedCommRing R] [Module R M₁] [Module R M�
   simp_rw [Anisotropic, prod_apply, Prod.forall, Prod.mk_eq_zero] at h
   constructor
   · intro x hx
-    refine' (h x 0 _).1
+    refine (h x 0 ?_).1
     rw [hx, zero_add, map_zero]
   · intro x hx
-    refine' (h 0 x _).2
+    refine (h 0 x ?_).2
     rw [hx, add_zero, map_zero]
 #align quadratic_form.anisotropic_of_prod QuadraticForm.anisotropic_of_prod
 
@@ -169,7 +169,7 @@ theorem posDef_prod_iff {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
     obtain ⟨ha₁, ha₂⟩ := anisotropic_of_prod ha
     exact ⟨⟨hle₁, ha₁⟩, ⟨hle₂, ha₂⟩⟩
   · rintro ⟨⟨hle₁, ha₁⟩, ⟨hle₂, ha₂⟩⟩
-    refine' ⟨⟨hle₁, hle₂⟩, _⟩
+    refine ⟨⟨hle₁, hle₂⟩, ?_⟩
     rintro ⟨x₁, x₂⟩ (hx : Q₁ x₁ + Q₂ x₂ = 0)
     rw [add_eq_zero_iff' (hle₁ x₁) (hle₂ x₂), ha₁.eq_zero_iff, ha₂.eq_zero_iff] at hx
     rwa [Prod.mk_eq_zero]
@@ -237,8 +237,6 @@ end Ring
 end Prod
 
 section Pi
-
-open scoped BigOperators
 
 section Semiring
 variable [CommSemiring R]
@@ -349,7 +347,7 @@ theorem posDef_pi_iff [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R (M�
     intro i
     exact ⟨hle i, anisotropic_of_pi ha i⟩
   · intro h
-    refine' ⟨fun i => (h i).1, fun x hx => funext fun i => (h i).2 _ _⟩
+    refine ⟨fun i => (h i).1, fun x hx => funext fun i => (h i).2 _ ?_⟩
     rw [pi_apply, Finset.sum_eq_zero_iff_of_nonneg fun j _ => ?_] at hx
     · exact hx _ (Finset.mem_univ _)
     exact (h j).1 _

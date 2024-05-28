@@ -37,7 +37,7 @@ theorem Complex.hasSum_cos' (z : ℂ) :
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
   dsimp [Function.comp_def] at this
   simp_rw [← mul_comm 2 _] at this
-  refine' this.prod_fiberwise fun k => _
+  refine this.prod_fiberwise fun k => ?_
   dsimp only
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
   rw [Fin.sum_univ_two]
@@ -55,7 +55,7 @@ theorem Complex.hasSum_sin' (z : ℂ) :
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
   dsimp [Function.comp_def] at this
   simp_rw [← mul_comm 2 _] at this
-  refine' this.prod_fiberwise fun k => _
+  refine this.prod_fiberwise fun k => ?_
   dsimp only
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
   rw [Fin.sum_univ_two]

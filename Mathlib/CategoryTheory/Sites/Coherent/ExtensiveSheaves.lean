@@ -104,7 +104,7 @@ theorem Presheaf.isSheaf_iff_preservesFiniteProducts {D : Type*} [Category D]
   constructor
   · intro h
     rw [IsSheaf] at h
-    refine ⟨⟨fun J _ ↦ ⟨@fun K ↦ ⟨@fun c hc ↦ ?_⟩⟩⟩⟩
+    refine ⟨⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩⟩
     apply coyonedaJointlyReflectsLimits
     intro ⟨E⟩
     specialize h E
