@@ -18,7 +18,7 @@ Let the group $G$ be the union of finitely many, let us say $n$, left cosets
 of subgroups $C₁$, $C₂$, ..., $Cₙ$: $$ G = ⋃_{i = 1}^n C_i g_i. $$
 
 * `Subgroup.one_le_sum_inv_index_of_leftCoset_cover` :
-  the sum of the inverse of the indexes of the $C_i$ is greater than or equal to $1$.
+  the sum of the inverses of the indexes of the $C_i$ is greater than or equal to $1$.
 
 * `Subgroup.exists_index_le_card_of_leftCoset_cover` :
   the index of (at least) one of these subgroups does not exceed $n$.
@@ -236,6 +236,7 @@ theorem Subgroup.exists_finite_leftTransversal
       exact ⟨y, ⟨SetLike.coe_mem _, Subtype.coe_prop y⟩,
         Set.mem_smul_set_iff_inv_smul_mem.mpr hy.1⟩
 
+-- Auxiliary to leftCoset_cover_filter_FiniteIndex and one_le_sum_inv_index_of_leftCoset_cover.
 theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux :
     ⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ ∧
     1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ := by
@@ -321,14 +322,14 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex :
   (Subgroup.leftCoset_cover_filter_FiniteIndex_aux hcovers).1
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
-Then the cosets of subgroups of infinite index may be omitted from the covering. -/
+Then the sum of the inverses of the indexes of the subgroups `H i` is greater than or equal to 1. -/
 theorem Subgroup.one_le_sum_inv_index_of_leftCoset_cover :
     1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ :=
   (Subgroup.leftCoset_cover_filter_FiniteIndex_aux hcovers).2
 
 /-- BH Neumann Lemma :
-  If a finite family of cosets of subgroups covers the group, then
-  at least one of these subgroups has index less than the number of cosets -/
+If a finite family of cosets of subgroups covers the group, then at least one
+of these subgroups has index not exceeding the number of cosets. -/
 theorem Subgroup.exists_index_le_card_of_leftCoset_cover :
     ∃ i ∈ s, (H i).FiniteIndex ∧ (H i).index ≤ s.card := by
   by_contra! h
