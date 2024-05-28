@@ -35,7 +35,7 @@ variable {ζ : K} (hζ : IsPrimitiveRoot ζ ↑(3 : ℕ+)) (u : (𝓞 K)ˣ)
 local notation3 "η" => (IsPrimitiveRoot.isUnit (hζ.toInteger_isPrimitiveRoot) (by decide)).unit
 local notation3 "λ" => (η : 𝓞 K) - 1
 
-/-- Let `u` be a unit in `(𝓞 K)ˣ`, then `u ∈ {1, -1, η, -η, η^2, -η^2}`. -/
+/-- Let `u` be a unit in `(𝓞 K)ˣ`, then `u ∈ [1, -1, η, -η, η^2, -η^2]`. -/
 theorem Units.mem : u ∈ [1, -1, η, -η, η ^ 2, -η ^ 2] := by
   have hrank : rank K = 0 := by
     dsimp only [rank]
