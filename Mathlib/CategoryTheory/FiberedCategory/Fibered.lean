@@ -59,6 +59,7 @@ namespace IsPreFibered
 
 open IsCartesian
 
+
 variable {p : 𝒳 ⥤ 𝒮} [IsPreFibered p] {R S : 𝒮} {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S)
 
 /-- Given a prefibered category `p : 𝒳 ⥤ 𝒫`, and a diagram
