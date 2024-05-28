@@ -90,7 +90,7 @@ def getRefine's (stx : Syntax) : Array Syntax :=
 from `stx` by replacing a subset of the `_` with `?_`.
 
 The intended application is when `stx` is a syntax node representing `refine' ...`. -/
-def candidateRefines (stx : Syntax) : Array Syntax := Id.run do
+def candidateRefines (stx : Syntax) : Array (Syntax × List Syntax) := Id.run do
   let mut cands := #[]
   let holes := getHoles stx
   dbg_trace holes.map (·.getPos?)
@@ -99,7 +99,7 @@ def candidateRefines (stx : Syntax) : Array Syntax := Id.run do
     for s in sub do
       newCmd ← newCmd.replaceM (fun t =>
         if t == s && t.getPos? == s.getPos? then some (holeToSyntHole s) else none)
-    cands := cands.push newCmd
+    cands := cands.push (newCmd, sub)
   return cands
 
 /-- converts each `refine'` with a `refine` in `stx`. -/
@@ -112,14 +112,13 @@ def refine'ToRefine (stx : Syntax) : Syntax := Id.run do
 
 /-- replaces each `refine'` by `refine` in succession in `cmd`, trying to replace every subset of
 `?_` with `_`.
-Eventually, it returns an array of pairs
-`(1/0, position)`, where
+
+Eventually, it returns an array of pairs `(1/0, position)`, where
 * `1` means that the `position` is the beginning of `refine'` and
 * `0` means that the `position` is a missing `?`,
 for each successful replacement.
 -/
-def getQuestions (cmd : Syntax) :
-    Command.CommandElabM (Array (Syntax × Array Syntax)) := do
+def getQuestions (cmd : Syntax) : Command.CommandElabM (Array (Syntax × List Syntax)) := do
   let exm ← toExample cmd
   let st ← get
   let refine's := getRefine's cmd
@@ -127,11 +126,11 @@ def getQuestions (cmd : Syntax) :
   for refine' in refine's do
     let refine := refine'ToRefine refine'
     let cands := candidateRefines refine
-    for cand in cands do
+    for (cand, holes) in cands do
       let repl ← exm.replaceM fun s => if s == refine' then return some cand else return none
       Command.elabCommand repl
       if !(← get).messages.hasErrors then
-        suma := suma.push ((Syntax.getHead? refine').getD default, getSynthHoles cand)
+        suma := suma.push ((Syntax.getHead? refine').getD default, holes)
         break
       set st
   return suma
