@@ -5,7 +5,6 @@ Authors: David Kurniadi Angdinata, Junyan Xu
 -/
 import Mathlib.AlgebraicGeometry.EllipticCurve.Universal
 import Mathlib.Data.Int.Parity
-import Mathlib.LinearAlgebra.SModEq
 import Mathlib.NumberTheory.EllipticDivisibilitySequence
 
 /-!
