@@ -116,12 +116,12 @@ theorem setOf_subset_eq_empty_iff (S : L[[α]].Theory) :
     { p : T.CompleteType α | S ⊆ ↑p } = ∅ ↔
       ¬((L.lhomWithConstants α).onTheory T ∪ S).IsSatisfiable := by
   rw [iff_not_comm, ← not_nonempty_iff_eq_empty, Classical.not_not, Set.Nonempty]
-  refine'
+  refine
     ⟨fun h =>
       ⟨⟨L[[α]].completeTheory h.some, (subset_union_left _ S).trans completeTheory.subset,
           completeTheory.isMaximal (L[[α]]) h.some⟩,
         (subset_union_right ((L.lhomWithConstants α).onTheory T) _).trans completeTheory.subset⟩,
-      _⟩
+      ?_⟩
   rintro ⟨p, hp⟩
   exact p.isMaximal.1.mono (union_subset p.subset hp)
 #align first_order.language.Theory.complete_type.set_of_subset_eq_empty_iff FirstOrder.Language.Theory.CompleteType.setOf_subset_eq_empty_iff
@@ -139,7 +139,7 @@ theorem setOf_subset_eq_univ_iff (S : L[[α]].Theory) :
     ext
     simp [subset_def]
   simp_rw [h, sInter_eq_univ, ← setOf_mem_eq_univ_iff]
-  refine' ⟨fun h φ φS => h _ ⟨_, φS, rfl⟩, _⟩
+  refine ⟨fun h φ φS => h _ ⟨_, φS, rfl⟩, ?_⟩
   rintro h _ ⟨φ, h1, rfl⟩
   exact h _ h1
 #align first_order.language.Theory.complete_type.set_of_subset_eq_univ_iff FirstOrder.Language.Theory.CompleteType.setOf_subset_eq_univ_iff
@@ -217,10 +217,10 @@ theorem exists_modelType_is_realized_in (p : T.CompleteType α) :
   refine ⟨(M.subtheoryModel p.subset).reduct (L.lhomWithConstants α), fun a => (L.con a : M), ?_⟩
   refine SetLike.ext fun φ => ?_
   simp only [CompleteType.mem_typeOf]
-  refine'
+  refine
     (@Formula.realize_equivSentence_symm_con _
       ((M.subtheoryModel p.subset).reduct (L.lhomWithConstants α)) _ _ M.struc _ φ).trans
-      (_root_.trans (_root_.trans _ (p.isMaximal.isComplete.realize_sentence_iff φ M))
+      (_root_.trans (_root_.trans ?_ (p.isMaximal.isComplete.realize_sentence_iff φ M))
         (p.isMaximal.mem_iff_models φ).symm)
   rfl
 #align first_order.language.Theory.exists_Model_is_realized_in FirstOrder.Language.Theory.exists_modelType_is_realized_in
