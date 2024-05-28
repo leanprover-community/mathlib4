@@ -220,9 +220,9 @@ variable {K : Type u} {A : Type v} [Field K] [Ring A] [Algebra K A]
 
 /-- An element of an algebra over a field is algebraic if and only if it is integral. -/
 theorem isAlgebraic_iff_isIntegral {x : A} : IsAlgebraic K x ↔ IsIntegral K x := by
-  refine' ⟨_, IsIntegral.isAlgebraic⟩
+  refine ⟨?_, IsIntegral.isAlgebraic⟩
   rintro ⟨p, hp, hpx⟩
-  refine' ⟨_, monic_mul_leadingCoeff_inv hp, _⟩
+  refine ⟨_, monic_mul_leadingCoeff_inv hp, ?_⟩
   rw [← aeval_def, AlgHom.map_mul, hpx, zero_mul]
 #align is_algebraic_iff_is_integral isAlgebraic_iff_isIntegral
 
@@ -329,7 +329,7 @@ variable [Algebra K L] [NoZeroSMulDivisors K L]
 
 theorem algHom_bijective [Algebra.IsAlgebraic K L] (f : L →ₐ[K] L) :
     Function.Bijective f := by
-  refine' ⟨f.injective, fun b ↦ _⟩
+  refine ⟨f.injective, fun b ↦ ?_⟩
   obtain ⟨p, hp, he⟩ := Algebra.IsAlgebraic.isAlgebraic (R := K) b
   let f' : p.rootSet L → p.rootSet L := (rootSet_maps_to' (fun x ↦ x) f).restrict f _ _
   have : f'.Surjective := Finite.injective_iff_surjective.1
@@ -415,8 +415,8 @@ theorem IsIntegralClosure.exists_smul_eq_mul {L : Type*} [Field L] [Algebra R S]
   obtain ⟨c, d, d_ne, hx⟩ :=
     exists_integral_multiple (Algebra.IsAlgebraic.isAlgebraic (algebraMap _ L a / algebraMap _ L b))
       ((injective_iff_map_eq_zero _).mp inj)
-  refine'
-    ⟨IsIntegralClosure.mk' S (c : L) c.2, d, d_ne, IsIntegralClosure.algebraMap_injective S R L _⟩
+  refine
+    ⟨IsIntegralClosure.mk' S (c : L) c.2, d, d_ne, IsIntegralClosure.algebraMap_injective S R L ?_⟩
   simp only [Algebra.smul_def, RingHom.map_mul, IsIntegralClosure.algebraMap_mk', ← hx, ←
     IsScalarTower.algebraMap_apply]
   rw [← mul_assoc _ (_ / _), mul_div_cancel₀ (algebraMap S L a), mul_comm]
@@ -465,11 +465,11 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : 
   obtain ⟨p, ne_zero, aeval_eq⟩ := hx
   rw [Subalgebra.aeval_coe, Subalgebra.coe_eq_zero] at aeval_eq
   revert ne_zero aeval_eq
-  refine' p.recOnHorner _ _ _
+  refine p.recOnHorner ?_ ?_ ?_
   · intro h
     contradiction
   · intro p a hp ha _ih _ne_zero aeval_eq
-    refine' A.inv_mem_of_root_of_coeff_zero_ne_zero aeval_eq _
+    refine A.inv_mem_of_root_of_coeff_zero_ne_zero aeval_eq ?_
     rwa [coeff_add, hp, zero_add, coeff_C, if_pos rfl]
   · intro p hp ih _ne_zero aeval_eq
     rw [AlgHom.map_mul, aeval_X, mul_eq_zero] at aeval_eq

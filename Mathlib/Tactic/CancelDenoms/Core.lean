@@ -95,7 +95,7 @@ theorem cancel_factors_eq {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * 
     rfl
   · intro h
     simp only [← mul_assoc] at h
-    refine' mul_left_cancel₀ (mul_ne_zero _ _) h
+    refine mul_left_cancel₀ (mul_ne_zero ?_ ?_) h
     on_goal 1 => apply mul_ne_zero
     on_goal 1 => apply div_ne_zero
     · exact one_ne_zero

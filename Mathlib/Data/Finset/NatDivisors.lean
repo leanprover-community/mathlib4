@@ -15,7 +15,7 @@ exhibiting `Nat.divisors` as a multiplicative homomorphism from `ℕ` to `Finset
 -/
 
 open Nat Finset
-open scoped Pointwise BigOperators
+open scoped Pointwise
 
 /-- The divisors of a product of natural numbers are the pointwise product of the divisors of the
 factors. -/
@@ -41,5 +41,5 @@ lemma Multiset.nat_divisors_prod (s : Multiset ℕ) : divisors s.prod = (s.map d
   map_multiset_prod Nat.divisorsHom s
 
 lemma Finset.nat_divisors_prod {ι : Type*} (s : Finset ι) (f : ι → ℕ) :
-    divisors (∏ i in s, f i) = ∏ i in s, divisors (f i) :=
+    divisors (∏ i ∈ s, f i) = ∏ i ∈ s, divisors (f i) :=
   map_prod Nat.divisorsHom f s

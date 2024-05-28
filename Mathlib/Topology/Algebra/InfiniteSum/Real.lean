@@ -17,7 +17,7 @@ This file provides lemmas about Cauchy sequences in terms of infinite sums and i
 in the reals.
 -/
 
-open Filter Finset BigOperators NNReal Topology
+open Filter Finset NNReal Topology
 
 variable {α β : Type*} [PseudoMetricSpace α] {f : ℕ → α} {a : α}
 
@@ -39,10 +39,10 @@ theorem cauchySeq_of_summable_dist (h : Summable fun n ↦ dist (f n) (f n.succ)
 theorem dist_le_tsum_of_dist_le_of_tendsto (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
     (hd : Summable d) {a : α} (ha : Tendsto f atTop (𝓝 a)) (n : ℕ) :
     dist (f n) a ≤ ∑' m, d (n + m) := by
-  refine' le_of_tendsto (tendsto_const_nhds.dist ha) (eventually_atTop.2 ⟨n, fun m hnm ↦ _⟩)
-  refine' le_trans (dist_le_Ico_sum_of_dist_le hnm fun _ _ ↦ hf _) _
+  refine le_of_tendsto (tendsto_const_nhds.dist ha) (eventually_atTop.2 ⟨n, fun m hnm ↦ ?_⟩)
+  refine le_trans (dist_le_Ico_sum_of_dist_le hnm fun _ _ ↦ hf _) ?_
   rw [sum_Ico_eq_sum_range]
-  refine' sum_le_tsum (range _) (fun _ _ ↦ le_trans dist_nonneg (hf _)) _
+  refine sum_le_tsum (range _) (fun _ _ ↦ le_trans dist_nonneg (hf _)) ?_
   exact hd.comp_injective (add_right_injective n)
 #align dist_le_tsum_of_dist_le_of_tendsto dist_le_tsum_of_dist_le_of_tendsto
 
@@ -65,13 +65,13 @@ theorem dist_le_tsum_dist_of_tendsto₀ (h : Summable fun n ↦ dist (f n) (f n.
 section summable
 
 theorem not_summable_iff_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
-    ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i in Finset.range n, f i) atTop atTop := by
+    ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop atTop := by
   lift f to ℕ → ℝ≥0 using hf
   exact mod_cast NNReal.not_summable_iff_tendsto_nat_atTop
 #align not_summable_iff_tendsto_nat_at_top_of_nonneg not_summable_iff_tendsto_nat_atTop_of_nonneg
 
 theorem summable_iff_not_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
-    Summable f ↔ ¬Tendsto (fun n : ℕ => ∑ i in Finset.range n, f i) atTop atTop := by
+    Summable f ↔ ¬Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop atTop := by
   rw [← not_iff_not, Classical.not_not, not_summable_iff_tendsto_nat_atTop_of_nonneg hf]
 #align summable_iff_not_tendsto_nat_at_top_of_nonneg summable_iff_not_tendsto_nat_atTop_of_nonneg
 
@@ -91,20 +91,20 @@ theorem summable_prod_of_nonneg {f : (α × β) → ℝ} (hf : 0 ≤ f) :
   (Equiv.sigmaEquivProd _ _).summable_iff.symm.trans <| summable_sigma_of_nonneg fun _ ↦ hf _
 
 theorem summable_of_sum_le {ι : Type*} {f : ι → ℝ} {c : ℝ} (hf : 0 ≤ f)
-    (h : ∀ u : Finset ι, ∑ x in u, f x ≤ c) : Summable f :=
-  ⟨⨆ u : Finset ι, ∑ x in u, f x,
+    (h : ∀ u : Finset ι, ∑ x ∈ u, f x ≤ c) : Summable f :=
+  ⟨⨆ u : Finset ι, ∑ x ∈ u, f x,
     tendsto_atTop_ciSup (Finset.sum_mono_set_of_nonneg hf) ⟨c, fun _ ⟨u, hu⟩ => hu ▸ h u⟩⟩
 #align summable_of_sum_le summable_of_sum_le
 
 theorem summable_of_sum_range_le {f : ℕ → ℝ} {c : ℝ} (hf : ∀ n, 0 ≤ f n)
-    (h : ∀ n, ∑ i in Finset.range n, f i ≤ c) : Summable f := by
+    (h : ∀ n, ∑ i ∈ Finset.range n, f i ≤ c) : Summable f := by
   refine (summable_iff_not_tendsto_nat_atTop_of_nonneg hf).2 fun H => ?_
   rcases exists_lt_of_tendsto_atTop H 0 c with ⟨n, -, hn⟩
   exact lt_irrefl _ (hn.trans_le (h n))
 #align summable_of_sum_range_le summable_of_sum_range_le
 
 theorem Real.tsum_le_of_sum_range_le {f : ℕ → ℝ} {c : ℝ} (hf : ∀ n, 0 ≤ f n)
-    (h : ∀ n, ∑ i in Finset.range n, f i ≤ c) : ∑' n, f n ≤ c :=
+    (h : ∀ n, ∑ i ∈ Finset.range n, f i ≤ c) : ∑' n, f n ≤ c :=
   _root_.tsum_le_of_sum_range_le (summable_of_sum_range_le hf h) h
 #align real.tsum_le_of_sum_range_le Real.tsum_le_of_sum_range_le
 

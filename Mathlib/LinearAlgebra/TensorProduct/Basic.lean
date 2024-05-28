@@ -458,10 +458,8 @@ theorem tmul_ite (x₁ : M) (x₂ : N) (P : Prop) [Decidable P] :
 
 section
 
-open BigOperators
-
 theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
-    (∑ a in s, m a) ⊗ₜ[R] n = ∑ a in s, m a ⊗ₜ[R] n := by
+    (∑ a ∈ s, m a) ⊗ₜ[R] n = ∑ a ∈ s, m a ⊗ₜ[R] n := by
   classical
     induction' s using Finset.induction with a s has ih h
     · simp
@@ -469,7 +467,7 @@ theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
 #align tensor_product.sum_tmul TensorProduct.sum_tmul
 
 theorem tmul_sum (m : M) {α : Type*} (s : Finset α) (n : α → N) :
-    (m ⊗ₜ[R] ∑ a in s, n a) = ∑ a in s, m ⊗ₜ[R] n a := by
+    (m ⊗ₜ[R] ∑ a ∈ s, n a) = ∑ a ∈ s, m ⊗ₜ[R] n a := by
   classical
     induction' s using Finset.induction with a s has ih h
     · simp
@@ -867,6 +865,12 @@ lemma range_mapIncl (p : Submodule R P) (q : Submodule R Q) :
     LinearMap.range (mapIncl p q) = Submodule.span R (Set.image2 (· ⊗ₜ ·) p q) := by
   rw [mapIncl, map_range_eq_span_tmul]
   congr; ext; simp
+
+theorem map₂_eq_range_lift_comp_mapIncl (f : P →ₗ[R] Q →ₗ[R] M)
+    (p : Submodule R P) (q : Submodule R Q) :
+    Submodule.map₂ f p q = LinearMap.range (lift f ∘ₗ mapIncl p q) := by
+  simp_rw [LinearMap.range_comp, range_mapIncl, Submodule.map_span,
+    Set.image_image2, Submodule.map₂_eq_span_image2, lift.tmul]
 
 section
 
@@ -1324,6 +1328,18 @@ theorem rTensor_id : (id : N →ₗ[R] N).rTensor M = id :=
 theorem rTensor_id_apply (x : N ⊗[R] M) : (LinearMap.id : N →ₗ[R] N).rTensor M x = x := by
   rw [rTensor_id, id_coe, _root_.id]
 #align linear_map.rtensor_id_apply LinearMap.rTensor_id_apply
+
+@[simp]
+theorem lTensor_smul_action (r : R) :
+    (DistribMulAction.toLinearMap R N r).lTensor M =
+      DistribMulAction.toLinearMap R (M ⊗[R] N) r :=
+  (lTensor_smul M r LinearMap.id).trans (congrArg _ (lTensor_id M N))
+
+@[simp]
+theorem rTensor_smul_action (r : R) :
+    (DistribMulAction.toLinearMap R N r).rTensor M =
+      DistribMulAction.toLinearMap R (N ⊗[R] M) r :=
+  (rTensor_smul M r LinearMap.id).trans (congrArg _ (rTensor_id M N))
 
 variable {N}
 

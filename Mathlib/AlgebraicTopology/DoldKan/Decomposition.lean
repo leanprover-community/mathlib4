@@ -33,7 +33,7 @@ reflects isomorphisms.
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Preadditive
-  Opposite BigOperators Simplicial
+  Opposite Simplicial
 
 noncomputable section
 
@@ -51,7 +51,7 @@ $x = x' + \sum (i=0}^{q-1} σ_{n-i}(y_i)$ where $x'$ is in the image of `P q` an
 the $y_i$ are in degree $n$. -/
 theorem decomposition_Q (n q : ℕ) :
     ((Q q).f (n + 1) : X _[n + 1] ⟶ X _[n + 1]) =
-      ∑ i : Fin (n + 1) in Finset.filter (fun i : Fin (n + 1) => (i : ℕ) < q) Finset.univ,
+      ∑ i ∈ Finset.filter (fun i : Fin (n + 1) => (i : ℕ) < q) Finset.univ,
         (P i).f (n + 1) ≫ X.δ i.rev.succ ≫ X.σ (Fin.rev i) := by
   induction' q with q hq
   · simp only [Nat.zero_eq, Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero,

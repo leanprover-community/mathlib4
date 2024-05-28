@@ -305,7 +305,7 @@ lemma mem_distinguishedTriangles_iff' (T : Triangle Cᵒᵖ) :
   · intro hT
     exact ⟨_ ,hT, ⟨(triangleOpEquivalence C).counitIso.symm.app T⟩⟩
   · rintro ⟨T', hT', ⟨e⟩⟩
-    refine' isomorphic_distinguished _ hT' _ _
+    refine isomorphic_distinguished _ hT' _ ?_
     exact Iso.unop ((triangleOpEquivalence C).unitIso.app (Opposite.op T') ≪≫
       (triangleOpEquivalence C).inverse.mapIso e.symm)
 
@@ -355,10 +355,10 @@ lemma distinguished_cocone_triangle {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     ∃ (Z : Cᵒᵖ) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
       Triangle.mk f g h ∈ distinguishedTriangles C := by
   obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle₁ f.unop
-  refine' ⟨_, g.op, (opShiftFunctorEquivalence C 1).counitIso.inv.app (Opposite.op Z) ≫
-    (shiftFunctor Cᵒᵖ (1 : ℤ)).map h.op, _⟩
+  refine ⟨_, g.op, (opShiftFunctorEquivalence C 1).counitIso.inv.app (Opposite.op Z) ≫
+    (shiftFunctor Cᵒᵖ (1 : ℤ)).map h.op, ?_⟩
   simp only [mem_distinguishedTriangles_iff]
-  refine' Pretriangulated.isomorphic_distinguished _ H _ _
+  refine Pretriangulated.isomorphic_distinguished _ H _ ?_
   exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat)
     (Quiver.Hom.op_inj (by simp [shift_unop_opShiftFunctorEquivalence_counitIso_inv_app]))
 
@@ -375,7 +375,7 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle Cᵒᵖ)
   replace hc₂ := ((opShiftFunctorEquivalence C 1).unitIso.hom.app T₂.obj₁).unop ≫= hc₂
   dsimp at hc₂
   simp only [assoc, Iso.unop_hom_inv_id_app_assoc] at hc₂
-  refine' ⟨c.op, Quiver.Hom.unop_inj hc₁.symm, Quiver.Hom.unop_inj _⟩
+  refine ⟨c.op, Quiver.Hom.unop_inj hc₁.symm, Quiver.Hom.unop_inj ?_⟩
   apply (shiftFunctor C (1 : ℤ)).map_injective
   rw [unop_comp, unop_comp, Functor.map_comp, Functor.map_comp,
     Quiver.Hom.unop_op, hc₂, ← unop_comp_assoc, ← unop_comp_assoc,
