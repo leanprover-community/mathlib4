@@ -104,8 +104,7 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
   · right; ext; simp [h]
   · exfalso
     apply hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide)
-    rw [← h]
-    exact hcong
+    rwa [← h]
   · exfalso
     apply hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide)
     obtain ⟨n, x, hx⟩ := hcong
