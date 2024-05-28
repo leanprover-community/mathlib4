@@ -144,7 +144,7 @@ instance isStronglyCartesian_of_isCartesian (p : 𝒳 ⥤ 𝒮) [p.IsFibered] {R
   intro π ⟨hπ, hπ_comp⟩
   -- Let `τ'` be the map induced from `π` and the universal property of `ψ`
   let τ' := inducedMap p g ψ π
-  rw [←inducedMap_comp p g ψ π]
+  rw [← inducedMap_comp p g ψ π]
   congr 1
   apply inducedMap_unique
   rw [←assoc, inducedMap_comp]
