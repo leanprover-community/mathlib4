@@ -42,7 +42,7 @@ attribute [ext] who in
 example {x y : Nat} : x = y := by ext
 ```
 
-For *removing* instances, the `in` seems to work as expected.
+For *removing* instances, the `in` works as expected.
 ```lean
 /--
 error: failed to synthesize
