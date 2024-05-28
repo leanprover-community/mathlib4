@@ -191,8 +191,8 @@ def nonUnitalStarAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
     (φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A) {f : C(S, R)} (h : QuasispectrumRestricts a f) :
     C(σₙ R a, R)₀ →⋆ₙₐ[R] A :=
   (φ.restrictScalars R).comp <|
-    (nonUnitalStarAlgHom_postcomp (σₙ S a) (StarAlgHom.ofId R S) (algebraMapCLM R S).continuous).comp <|
-      nonUnitalStarAlgHom_precomp R
+    (nonUnitalStarAlgHom_postcomp (σₙ S a) (StarAlgHom.ofId R S) (algebraMapCLM R S).continuous)
+      |>.comp <| nonUnitalStarAlgHom_precomp R
         ⟨⟨Subtype.map f h.subset_preimage, (map_continuous f).subtype_map
           fun x (hx : x ∈ σₙ S a) => h.subset_preimage hx⟩, Subtype.ext h.map_zero⟩
 
@@ -235,8 +235,8 @@ protected theorem cfc (f : C(S, R)) (halg : UniformEmbedding (algebraMap R S))
     refine ⟨((h a).mp ha).2.nonUnitalStarAlgHom (cfcₙHom ((h a).mp ha).1 (R := S)),
       ?hom_closedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
     case hom_closedEmbedding =>
-      exact ((h a).mp ha).2.closedEmbedding_nonUnitalStarAlgHom (cfcₙHom_closedEmbedding ((h a).mp ha).1)
-        halg (h_cpct := h_cpct a ((h a).mp ha).1)
+      exact ((h a).mp ha).2.closedEmbedding_nonUnitalStarAlgHom
+        (cfcₙHom_closedEmbedding ((h a).mp ha).1) halg (h_cpct := h_cpct a ((h a).mp ha).1)
     case hom_id => exact ((h a).mp ha).2.nonUnitalStarAlgHom_id <| cfcₙHom_id ((h a).mp ha).1
     case hom_map_spectrum =>
       intro g
@@ -271,8 +271,8 @@ protected theorem cfc (f : C(S, R)) (halg : UniformEmbedding (algebraMap R S))
 variable [NonUnitalContinuousFunctionalCalculus R p]
 variable [UniqueNonUnitalContinuousFunctionalCalculus R A]
 
-lemma cfcₙHom_eq_restrict (f : C(S, R)) (halg : UniformEmbedding (algebraMap R S)) {a : A} (hpa : p a)
-    (hqa : q a) (h : QuasispectrumRestricts a f) [CompactSpace (σₙ S a)] :
+lemma cfcₙHom_eq_restrict (f : C(S, R)) (halg : UniformEmbedding (algebraMap R S)) {a : A}
+    (hpa : p a) (hqa : q a) (h : QuasispectrumRestricts a f) [CompactSpace (σₙ S a)] :
     cfcₙHom hpa = h.nonUnitalStarAlgHom (cfcₙHom hqa) := by
   apply cfcₙHom_eq_of_continuous_of_map_id
   · exact h.closedEmbedding_nonUnitalStarAlgHom (cfcₙHom_closedEmbedding hqa) halg |>.continuous
