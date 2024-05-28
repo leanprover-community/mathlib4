@@ -657,8 +657,8 @@ lemma nonsingular_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
 
 variable {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂)
 
-/-- The formula $x(P_1 + P_2) = x(P_1 - P_2) - \psi_2(P_1)\psi_2(P_2) / (x(P_2) - x(P_1)) ^ 2$,
-where $\psi_2(x,y) = 2y + a_1 x + a_3$. -/
+/-- The formula $x(P_1 + P_2) = x(P_1 - P_2) - \psi(P_1)\psi(P_2) / (x(P_2) - x(P_1)) ^ 2$,
+where $\psi(x,y) = 2y + a_1 x + a_3$. -/
 lemma addX_eq_subX_sub :
     W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂) = W.addX x₁ x₂ (W.slope x₁ x₂ y₁ (W.negY x₂ y₂))
       - (y₁ - W.negY x₁ y₁) * (y₂ - W.negY x₂ y₂) / (x₂ - x₁) ^ 2 := by
@@ -667,6 +667,8 @@ lemma addX_eq_subX_sub :
   rw [← (show x + x₂ = x₁ from sub_add_cancel _ _)]
   field_simp [show x ≠ 0 from sub_ne_zero.mpr hx]; ring
 
+/-- The formula $y(P_1)(x(P_2)-x(P_3)) + y(P_2)(x(P_3)-x(P_1)) + y(P_3)(x(P_1)-x(P_2)) = 0$,
+assuming that $P_1 + P_2 + P_3 = O$. -/
 lemma cyclic_sum_Y_mul_X_sub_X :
     letI x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     y₁ * (x₂ - x₃) + y₂ * (x₃ - x₁) + W.addY' x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂) * (x₁ - x₂) = 0 := by
@@ -675,6 +677,9 @@ lemma cyclic_sum_Y_mul_X_sub_X :
   rw [← (show x + x₂ = x₁ from sub_add_cancel _ _)]
   field_simp [show x ≠ 0 from sub_ne_zero.mpr hx]; ring
 
+/-- The formula
+$\psi(P_1+P_2) = (\psi(P_2)(x(P_1)-x(P_3))-\psi_2(P_1)(x(P_2)-x(P_3))) / (x(P_2)-x(P_1))$,
+where $\psi(x,y) = 2y + a_1 x + a_3$. -/
 lemma addY_sub_negY :
     letI x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     letI y₃ := W.addY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂)
