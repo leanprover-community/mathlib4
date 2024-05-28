@@ -1271,16 +1271,37 @@ lemma isGE_of_isZero_homology (X : C) (n : ℤ)
   have : IsIso g := by
     erw [← Triangle.isZero₁_iff_isIso₂ _ DT]
     refine t.ConservativeHomologyObject _ ?_
-    sorry
+    simp only [Triangle.mk_obj₁]
+    intro m
+    by_cases h : m < n
+    · have := t.isIso_homologyFunctor_map_mor₁_of_isGE _ DT m n (by omega) {ge := hB}
+      simp only [Triangle.mk_obj₁, Triangle.mk_obj₂, Triangle.mk_mor₁] at this
+      exact IsZero.of_iso (hn _ h) (asIso ((t.homology m).map f))
+    · have : t.IsLE A (n - 1) := {le := hA}
+      exact t.isZero_homology_of_isLE A m (n - 1) (by omega)
   exact (asIso g).symm
 
-#exit
-
 lemma isLE_of_isZero_homology (X : C) (n : ℤ)
-    (hn : ∀ (j : ℤ), n < j → IsZero ((t.homology j).obj X)) : t.IsLE X n := by sorry
+    (hn : ∀ (j : ℤ), n < j → IsZero ((t.homology j).obj X)) : t.IsLE X n := by
+  obtain ⟨A, B, hA, hB, f, g, h, DT⟩ := t.exists_triangle X n (n + 1) rfl
+  refine {le := ClosedUnderIsomorphisms.of_iso ?_ hA}
+  have : IsIso f := by
+    erw [← Triangle.isZero₃_iff_isIso₁ _ DT]
+    refine t.ConservativeHomologyObject _ ?_
+    simp only [Triangle.mk_obj₃]
+    intro m
+    by_cases h : n < m
+    · have := t.isIso_homologyFunctor_map_mor₂_of_isLE _ DT m n (by omega) {le := hA}
+      simp only [Triangle.mk_obj₂, Triangle.mk_obj₃, Triangle.mk_mor₂] at this
+      exact IsZero.of_iso (hn _ h) (asIso ((t.homology m).map g)).symm
+    · have : t.IsGE B (n + 1) := {ge := hB}
+      exact t.isZero_homology_of_isGE B m (n + 1) (by omega)
+  exact asIso f
 
 lemma isHeart_of_isZero_homology (X : C)
-    (hX : ∀ (j : ℤ), j ≠ 0 → IsZero ((t.homology j).obj X)) : t.heart X := by sorry
+    (hX : ∀ (j : ℤ), j ≠ 0 → IsZero ((t.homology j).obj X)) : t.heart X :=
+  (t.mem_heart_iff _).mpr ⟨t.isLE_of_isZero_homology X 0 (fun _ h ↦ hX _ (ne_of_gt h)),
+  t.isGE_of_isZero_homology X 0 (fun _ h ↦ hX _ (ne_of_lt h))⟩
 
 end NonDegenerate
 
