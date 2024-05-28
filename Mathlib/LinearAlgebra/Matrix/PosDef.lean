@@ -134,7 +134,7 @@ variable [DecidableEq n] {A : Matrix n n 𝕜} (hA : PosSemidef A)
 
 /-- The positive semidefinite square root of a positive semidefinite matrix -/
 noncomputable def sqrt : Matrix n n 𝕜 :=
-  hA.1.eigenvectorUnitary.1 * diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues) *
+  hA.1.eigenvectorUnitary.1 * diagonal ((↑) ∘ (√·) ∘ hA.1.eigenvalues) *
   (star hA.1.eigenvectorUnitary : Matrix n n 𝕜)
 
 open Lean PrettyPrinter.Delaborator SubExpr in
@@ -163,7 +163,7 @@ lemma posSemidef_sqrt : PosSemidef hA.sqrt := by
 @[simp]
 lemma sq_sqrt : hA.sqrt ^ 2 = A := by
   let C : Matrix n n 𝕜 := hA.1.eigenvectorUnitary
-  let E := diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues : n → 𝕜)
+  let E := diagonal ((↑) ∘ (√·) ∘ hA.1.eigenvalues : n → 𝕜)
   suffices C * (E * (star C * C) * E) * star C = A by
     rw [Matrix.PosSemidef.sqrt, pow_two]
     simpa only [← mul_assoc] using this
@@ -372,7 +372,7 @@ namespace Matrix
 
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 
-/-- A positive definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
+/-- A positive definite matrix `M` induces a norm `‖x‖ = √(re xᴴMx)`. -/
 noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
     NormedAddCommGroup (n → 𝕜) :=
   @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _
