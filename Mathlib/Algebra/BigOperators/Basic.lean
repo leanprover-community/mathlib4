@@ -39,6 +39,7 @@ See the documentation of `to_additive.attr` for more information.
 
 -- TODO
 -- assert_not_exists AddCommMonoidWithOne
+assert_not_exists MulAction
 
 variable {ι κ α β γ : Type*}
 
@@ -2068,8 +2069,7 @@ lemma prod_sdiff_ne_prod_sdiff_iff :
 
 end CancelCommMonoid
 
-theorem card_eq_sum_ones (s : Finset α) : s.card = ∑ x ∈ s, 1 := by
-  rw [sum_const, smul_eq_mul, mul_one]
+theorem card_eq_sum_ones (s : Finset α) : s.card = ∑ x ∈ s, 1 := by simp
 #align finset.card_eq_sum_ones Finset.card_eq_sum_ones
 
 theorem sum_const_nat {m : ℕ} {f : α → ℕ} (h₁ : ∀ x ∈ s, f x = m) :
@@ -2083,8 +2083,7 @@ lemma sum_card_fiberwise_eq_card_filter {κ : Type*} [DecidableEq κ] (s : Finse
   simpa only [card_eq_sum_ones] using sum_fiberwise_eq_sum_filter _ _ _ _
 
 lemma card_filter (p) [DecidablePred p] (s : Finset α) :
-    (filter p s).card = ∑ a ∈ s, ite (p a) 1 0 := by
-  rw [sum_ite, sum_const_zero, add_zero, sum_const, smul_eq_mul, mul_one]
+    (filter p s).card = ∑ a ∈ s, ite (p a) 1 0 := by simp [sum_ite]
 #align finset.card_filter Finset.card_filter
 
 section Opposite
@@ -2509,8 +2508,7 @@ variable [DecidableEq α]
 @[simp]
 theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a ∈ s.toFinset, s.count a = card s :=
   calc
-    ∑ a ∈ s.toFinset, s.count a = ∑ a ∈ s.toFinset, s.count a • 1 := by
-      { simp only [smul_eq_mul, mul_one] }
+    ∑ a ∈ s.toFinset, s.count a = ∑ a ∈ s.toFinset, s.count a • 1 := by simp
     _ = (s.map fun _ => 1).sum := (Finset.sum_multiset_map_count _ _).symm
     _ = card s := by simp
 #align multiset.to_finset_sum_count_eq Multiset.toFinset_sum_count_eq
