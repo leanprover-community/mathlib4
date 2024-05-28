@@ -97,23 +97,20 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
   rcases this with (rfl | h | h | h | h | h)
   · left; rfl
   · right; ext; simp [h]
-  · exfalso
-    apply hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide)
+  all_goals exfalso
+  · apply hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide)
     convert hcong
     simp [h]
-  · exfalso
-    apply hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide)
+  · apply hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide)
     obtain ⟨n, x, hx⟩ := hcong
     rw [sub_eq_iff_eq_add, h] at hx
     refine ⟨-n, -x, sub_eq_iff_eq_add.2 ?_⟩
     simp [mul_neg, ← neg_add, ← hx]
-  · exfalso
-    apply (hζ.pow_of_coprime 2 (by decide)).not_exists_int_prime_dvd_sub_of_prime_ne_two'
+  · apply (hζ.pow_of_coprime 2 (by decide)).not_exists_int_prime_dvd_sub_of_prime_ne_two'
       (by decide)
     convert hcong
     simp [h2, h]
-  · exfalso
-    apply (hζ.pow_of_coprime 2 (by decide)).not_exists_int_prime_dvd_sub_of_prime_ne_two'
+  · apply (hζ.pow_of_coprime 2 (by decide)).not_exists_int_prime_dvd_sub_of_prime_ne_two'
       (by decide)
     obtain ⟨n, x, hx⟩ := hcong
     refine ⟨-n, -x, sub_eq_iff_eq_add.2 ?_⟩
