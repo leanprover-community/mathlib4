@@ -55,6 +55,7 @@ instance topologicalSpaceUnbundled (X : TopCat) : TopologicalSpace X :=
 set_option linter.uppercaseLean3 false in
 #align Top.topological_space_unbundled TopCat.topologicalSpaceUnbundled
 
+-- We leave this temporarily as a reminder of the downstream instances #13170
 -- -- Porting note: cannot find a coercion to function otherwise
 -- -- attribute [instance] ConcreteCategory.instFunLike in
 -- instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
