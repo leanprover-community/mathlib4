@@ -344,9 +344,6 @@ theorem ωScottContinuous.to_bundled (f : α → β) (hf : ωScottContinuous f) 
 alias Continuous'.to_bundled := ωScottContinuous.to_bundled
 #align omega_complete_partial_order.continuous'.to_bundled OmegaCompletePartialOrder.ωScottContinuous.to_bundled
 
---alias ScottContinuousOn.to_bundled := Continuous'.to_bundled
---alias ωScottContinuous.to_bundled := Continuous'.to_bundled
-
 @[simp, norm_cast]
 theorem ωScottContinuous_coe : ∀ {f : α →o β}, ωScottContinuous f ↔ Continuous f
   | ⟨_, hf⟩ => ⟨fun h => (continuous'_iff_ωScottContinuous.mpr h).2,
