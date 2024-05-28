@@ -8,7 +8,6 @@ import Mathlib.Algebra.Ring.Invertible
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.GroupTheory.GroupAction.Units
-import Mathlib.Data.Int.CharZero
 
 #align_import algebra.module.basic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
