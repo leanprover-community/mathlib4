@@ -45,8 +45,8 @@ The examples of filters appearing in the description of the two motivating ideas
 * `𝓝 x` : made of neighborhoods of `x` in a topological space (defined in topology.basic)
 * `𝓤 X` : made of entourages of a uniform space (those space are generalizations of metric spaces
   defined in `Mathlib/Topology/UniformSpace/Basic.lean`)
-* `μ.ae` : made of sets whose complement has zero measure with respect to `μ` (defined in
-  `MeasureTheory.MeasureSpace`)
+* `MeasureTheory.ae` : made of sets whose complement has zero measure with respect to `μ`
+  (defined in `Mathlib/MeasureTheory/OuterMeasure/AE`)
 
 The general notion of limit of a map with respect to filters on the source and target types
 is `Filter.Tendsto`. It is defined in terms of the order and the push-forward operation.

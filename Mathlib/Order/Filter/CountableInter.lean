@@ -15,7 +15,7 @@ In this file we define `CountableInterFilter` to be the class of filters with th
 property: for any countable collection of sets `s ∈ l` their intersection belongs to `l` as well.
 
 Two main examples are the `residual` filter defined in `Mathlib.Topology.GDelta` and
-the `MeasureTheory.Measure.ae` filter defined in `MeasureTheory.MeasureSpace`.
+the `MeasureTheory.ae` filter defined in `Mathlib/MeasureTheory.OuterMeasure/AE`.
 
 We reformulate the definition in terms of indexed intersection and in terms of `Filter.Eventually`
 and provide instances for some basic constructions (`⊥`, `⊤`, `Filter.principal`, `Filter.map`,

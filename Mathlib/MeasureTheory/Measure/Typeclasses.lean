@@ -235,7 +235,7 @@ instance (priority := 100) IsProbabilityMeasure.neZero (μ : Measure α) [IsProb
     NeZero μ := ⟨IsProbabilityMeasure.ne_zero μ⟩
 
 -- Porting note: no longer an `instance` because `inferInstance` can find it now
-theorem IsProbabilityMeasure.ae_neBot [IsProbabilityMeasure μ] : NeBot μ.ae := inferInstance
+theorem IsProbabilityMeasure.ae_neBot [IsProbabilityMeasure μ] : NeBot (ae μ) := inferInstance
 #align measure_theory.is_probability_measure.ae_ne_bot MeasureTheory.IsProbabilityMeasure.ae_neBot
 
 theorem prob_add_prob_compl [IsProbabilityMeasure μ] (h : MeasurableSet s) : μ s + μ sᶜ = 1 :=
@@ -291,10 +291,10 @@ theorem prob_compl_eq_one_sub (hs : MeasurableSet s) : μ sᶜ = 1 - μ s :=
   prob_compl_eq_one_iff₀ hs.nullMeasurableSet
 #align measure_theory.prob_compl_eq_one_iff MeasureTheory.prob_compl_eq_one_iff
 
-lemma mem_ae_iff_prob_eq_one₀ (hs : NullMeasurableSet s μ) : s ∈ μ.ae ↔ μ s = 1 :=
+lemma mem_ae_iff_prob_eq_one₀ (hs : NullMeasurableSet s μ) : s ∈ ae μ ↔ μ s = 1 :=
   mem_ae_iff.trans <| prob_compl_eq_zero_iff₀ hs
 
-lemma mem_ae_iff_prob_eq_one (hs : MeasurableSet s) : s ∈ μ.ae ↔ μ s = 1 :=
+lemma mem_ae_iff_prob_eq_one (hs : MeasurableSet s) : s ∈ ae μ ↔ μ s = 1 :=
   mem_ae_iff.trans <| prob_compl_eq_zero_iff hs
 
 lemma ae_iff_prob_eq_one (hp : Measurable p) : (∀ᵐ a ∂μ, p a) ↔ μ {a | p a} = 1 :=
@@ -470,7 +470,7 @@ theorem ite_ae_eq_of_measure_zero {γ} (f : α → γ) (g : α → γ) (s : Set 
 theorem ite_ae_eq_of_measure_compl_zero {γ} (f : α → γ) (g : α → γ)
     (s : Set α) [DecidablePred (· ∈ s)] (hs_zero : μ sᶜ = 0) :
     (fun x => ite (x ∈ s) (f x) (g x)) =ᵐ[μ] f := by
-  change s ∈ μ.ae at hs_zero
+  rw [← mem_ae_iff] at hs_zero
   filter_upwards [hs_zero]
   intros
   split_ifs
@@ -1383,7 +1383,7 @@ theorem inf_of_right (h : μ.FiniteAtFilter g) : μ.FiniteAtFilter (f ⊓ g) :=
 #align measure_theory.measure.finite_at_filter.inf_of_right MeasureTheory.Measure.FiniteAtFilter.inf_of_right
 
 @[simp]
-theorem inf_ae_iff : μ.FiniteAtFilter (f ⊓ μ.ae) ↔ μ.FiniteAtFilter f := by
+theorem inf_ae_iff : μ.FiniteAtFilter (f ⊓ ae μ) ↔ μ.FiniteAtFilter f := by
   refine ⟨?_, fun h => h.filter_mono inf_le_left⟩
   rintro ⟨s, ⟨t, ht, u, hu, rfl⟩, hμ⟩
   suffices μ t ≤ μ (t ∩ u) from ⟨t, ht, this.trans_lt hμ⟩
@@ -1393,7 +1393,7 @@ theorem inf_ae_iff : μ.FiniteAtFilter (f ⊓ μ.ae) ↔ μ.FiniteAtFilter f := 
 alias ⟨of_inf_ae, _⟩ := inf_ae_iff
 #align measure_theory.measure.finite_at_filter.of_inf_ae MeasureTheory.Measure.FiniteAtFilter.of_inf_ae
 
-theorem filter_mono_ae (h : f ⊓ μ.ae ≤ g) (hg : μ.FiniteAtFilter g) : μ.FiniteAtFilter f :=
+theorem filter_mono_ae (h : f ⊓ (ae μ) ≤ g) (hg : μ.FiniteAtFilter g) : μ.FiniteAtFilter f :=
   inf_ae_iff.1 (hg.filter_mono h)
 #align measure_theory.measure.finite_at_filter.filter_mono_ae MeasureTheory.Measure.FiniteAtFilter.filter_mono_ae
 
