@@ -51,6 +51,7 @@ instance commGroupWithZero : CommGroupWithZero ℚ :=
     zero_mul := zero_mul }
 
 instance isDomain : IsDomain ℚ := NoZeroDivisors.to_isDomain _
+instance instCharZero : CharZero ℚ where cast_injective a b hab := by simpa using congr_arg num hab
 
 /-!
 ### Extra instances to short-circuit type class resolution

@@ -52,7 +52,7 @@ noncomputable section
 
 namespace AlgebraicGeometry
 
-open scoped DirectSum BigOperators Pointwise
+open scoped DirectSum Pointwise
 
 open DirectSum SetLike Localization TopCat TopologicalSpace CategoryTheory Opposite
 

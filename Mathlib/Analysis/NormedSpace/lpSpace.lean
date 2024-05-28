@@ -58,7 +58,7 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
 
 noncomputable section
 
-open scoped NNReal ENNReal BigOperators Function
+open scoped NNReal ENNReal Function
 
 variable {α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
 

@@ -27,8 +27,6 @@ universe u v
 
 open Equiv Function Fintype Finset
 
-open BigOperators
-
 variable {α : Type u} [DecidableEq α] {β : Type v}
 
 namespace Equiv.Perm

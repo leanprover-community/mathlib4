@@ -28,7 +28,7 @@ Prove the triangle inequality for the angle.
 
 noncomputable section
 
-open BigOperators Real RealInnerProductSpace
+open Real RealInnerProductSpace
 
 namespace EuclideanGeometry
 

@@ -204,7 +204,7 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
 end Ring
 
 section CommRing
-open BigOperators
+
 variable {R M N N'} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable [AddCommGroup N'] [Module R N'] (S : Submonoid R) (f : N →ₗ[R] N') [IsLocalizedModule S f]
 

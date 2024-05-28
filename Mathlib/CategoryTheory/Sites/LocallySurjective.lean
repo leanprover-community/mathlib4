@@ -20,7 +20,7 @@ import Mathlib.CategoryTheory.Sites.LocallyInjective
 
 ## Main results
 
-- `isLocallySurjective_toSheafify` : `toSheafify` is locally surjective.
+- `isLocallySurjective_toSheafify`: `toSheafify` is locally surjective.
 
 -/
 
