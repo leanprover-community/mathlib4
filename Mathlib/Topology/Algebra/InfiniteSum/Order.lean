@@ -17,7 +17,7 @@ This file provides lemmas about the interaction of infinite sums and products an
 -/
 
 
-open Finset Filter Function BigOperators
+open Finset Filter Function
 open scoped Classical
 
 variable {ι κ α : Type*}
@@ -28,7 +28,7 @@ variable [Preorder α] [CommMonoid α] [TopologicalSpace α] [OrderClosedTopolog
   {f : ℕ → α} {c : α}
 
 @[to_additive]
-theorem tprod_le_of_prod_range_le (hf : Multipliable f) (h : ∀ n, ∏ i in range n, f i ≤ c) :
+theorem tprod_le_of_prod_range_le (hf : Multipliable f) (h : ∀ n, ∏ i ∈ range n, f i ≤ c) :
     ∏' n, f n ≤ c :=
   let ⟨_l, hl⟩ := hf
   hl.tprod_eq.symm ▸ le_of_tendsto' hl.tendsto_prod_nat h
@@ -52,12 +52,12 @@ theorem hasProd_mono (hf : HasProd f a₁) (hg : HasProd g a₂) (h : f ≤ g) :
 #align has_sum_mono hasSum_mono
 
 @[to_additive]
-theorem hasProd_le_of_prod_le (hf : HasProd f a) (h : ∀ s, ∏ i in s, f i ≤ a₂) : a ≤ a₂ :=
+theorem hasProd_le_of_prod_le (hf : HasProd f a) (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : a ≤ a₂ :=
   le_of_tendsto' hf h
 #align has_sum_le_of_sum_le hasSum_le_of_sum_le
 
 @[to_additive]
-theorem le_hasProd_of_le_prod (hf : HasProd f a) (h : ∀ s, a₂ ≤ ∏ i in s, f i) : a₂ ≤ a :=
+theorem le_hasProd_of_le_prod (hf : HasProd f a) (h : ∀ s, a₂ ≤ ∏ i ∈ s, f i) : a₂ ≤ a :=
   ge_of_tendsto' hf h
 #align le_has_sum_of_le_sum le_hasSum_of_le_sum
 
@@ -82,28 +82,37 @@ theorem tprod_le_tprod_of_inj {g : κ → α} (e : ι → κ) (he : Injective e)
 #align tsum_le_tsum_of_inj tsum_le_tsum_of_inj
 
 @[to_additive]
+lemma tprod_subtype_le {κ γ : Type*} [OrderedCommGroup γ] [UniformSpace γ] [UniformGroup γ]
+    [OrderClosedTopology γ] [ CompleteSpace γ] (f : κ → γ) (β : Set κ) (h : ∀ a : κ, 1 ≤ f a)
+    (hf : Multipliable f) : (∏' (b : β), f b) ≤ (∏' (a : κ), f a) := by
+  apply tprod_le_tprod_of_inj _ (Subtype.coe_injective) (by simp only [Subtype.range_coe_subtype,
+    Set.setOf_mem_eq, h, implies_true]) (by simp only [le_refl,
+    Subtype.forall, implies_true]) (by apply hf.subtype)
+  apply hf
+
+@[to_additive]
 theorem prod_le_hasProd (s : Finset ι) (hs : ∀ i, i ∉ s → 1 ≤ f i) (hf : HasProd f a) :
-    ∏ i in s, f i ≤ a :=
+    ∏ i ∈ s, f i ≤ a :=
   ge_of_tendsto hf (eventually_atTop.2
     ⟨s, fun _t hst ↦ prod_le_prod_of_subset_of_one_le' hst fun i _ hbs ↦ hs i hbs⟩)
 #align sum_le_has_sum sum_le_hasSum
 
 @[to_additive]
 theorem isLUB_hasProd (h : ∀ i, 1 ≤ f i) (hf : HasProd f a) :
-    IsLUB (Set.range fun s ↦ ∏ i in s, f i) a :=
+    IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) a :=
   isLUB_of_tendsto_atTop (Finset.prod_mono_set_of_one_le' h) hf
 #align is_lub_has_sum isLUB_hasSum
 
 @[to_additive]
 theorem le_hasProd (hf : HasProd f a) (i : ι) (hb : ∀ j, j ≠ i → 1 ≤ f j) : f i ≤ a :=
   calc
-    f i = ∏ i in {i}, f i := by rw [prod_singleton]
+    f i = ∏ i ∈ {i}, f i := by rw [prod_singleton]
     _ ≤ a := prod_le_hasProd _ (by simpa) hf
 #align le_has_sum le_hasSum
 
 @[to_additive]
 theorem prod_le_tprod {f : ι → α} (s : Finset ι) (hs : ∀ i, i ∉ s → 1 ≤ f i) (hf : Multipliable f) :
-    ∏ i in s, f i ≤ ∏' i, f i :=
+    ∏ i ∈ s, f i ≤ ∏' i, f i :=
   prod_le_hasProd s hs hf.hasProd
 #align sum_le_tsum sum_le_tsum
 
@@ -125,12 +134,12 @@ theorem tprod_mono (hf : Multipliable f) (hg : Multipliable g) (h : f ≤ g) :
 #align tsum_mono tsum_mono
 
 @[to_additive]
-theorem tprod_le_of_prod_le (hf : Multipliable f) (h : ∀ s, ∏ i in s, f i ≤ a₂) : ∏' i, f i ≤ a₂ :=
+theorem tprod_le_of_prod_le (hf : Multipliable f) (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : ∏' i, f i ≤ a₂ :=
   hasProd_le_of_prod_le hf.hasProd h
 #align tsum_le_of_sum_le tsum_le_of_sum_le
 
 @[to_additive]
-theorem tprod_le_of_prod_le' (ha₂ : 1 ≤ a₂) (h : ∀ s, ∏ i in s, f i ≤ a₂) : ∏' i, f i ≤ a₂ := by
+theorem tprod_le_of_prod_le' (ha₂ : 1 ≤ a₂) (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : ∏' i, f i ≤ a₂ := by
   by_cases hf : Multipliable f
   · exact tprod_le_of_prod_le hf h
   · rw [tprod_eq_one_of_not_multipliable hf]
@@ -164,7 +173,7 @@ theorem tprod_le_one (h : ∀ i, f i ≤ 1) : ∏' i, f i ≤ 1 := by
 -- Porting note: generalized from `OrderedAddCommGroup` to `OrderedAddCommMonoid`
 @[to_additive]
 theorem hasProd_one_iff_of_one_le (hf : ∀ i, 1 ≤ f i) : HasProd f 1 ↔ f = 1 := by
-  refine' ⟨fun hf' ↦ _, _⟩
+  refine ⟨fun hf' ↦ ?_, ?_⟩
   · ext i
     exact (hf i).antisymm' (le_hasProd hf' _ fun j _ ↦ hf j)
   · rintro rfl
@@ -245,7 +254,7 @@ theorem tprod_ne_one_iff (hf : Multipliable f) : ∏' i, f i ≠ 1 ↔ ∃ x, f 
 #align tsum_ne_zero_iff tsum_ne_zero_iff
 
 @[to_additive]
-theorem isLUB_hasProd' (hf : HasProd f a) : IsLUB (Set.range fun s ↦ ∏ i in s, f i) a :=
+theorem isLUB_hasProd' (hf : HasProd f a) : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) a :=
   isLUB_of_tendsto_atTop (Finset.prod_mono_set' f) hf
 #align is_lub_has_sum' isLUB_hasSum'
 
@@ -265,13 +274,13 @@ the existence of a least upper bound.
 @[to_additive]
 theorem hasProd_of_isLUB_of_one_le [LinearOrderedCommMonoid α] [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (i : α) (h : ∀ i, 1 ≤ f i)
-    (hf : IsLUB (Set.range fun s ↦ ∏ i in s, f i) i) : HasProd f i :=
+    (hf : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) i) : HasProd f i :=
   tendsto_atTop_isLUB (Finset.prod_mono_set_of_one_le' h) hf
 #align has_sum_of_is_lub_of_nonneg hasSum_of_isLUB_of_nonneg
 
 @[to_additive]
 theorem hasProd_of_isLUB [CanonicallyLinearOrderedCommMonoid α] [TopologicalSpace α]
-    [OrderTopology α] {f : ι → α} (b : α) (hf : IsLUB (Set.range fun s ↦ ∏ i in s, f i) b) :
+    [OrderTopology α] {f : ι → α} (b : α) (hf : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) b) :
     HasProd f b :=
   tendsto_atTop_isLUB (Finset.prod_mono_set' f) hf
 #align has_sum_of_is_lub hasSum_of_isLUB

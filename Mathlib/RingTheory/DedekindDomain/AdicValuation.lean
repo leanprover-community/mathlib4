@@ -220,6 +220,7 @@ theorem IntValuation.map_add_le_max' (x y : R) :
 #align is_dedekind_domain.height_one_spectrum.int_valuation.map_add_le_max' IsDedekindDomain.HeightOneSpectrum.IntValuation.map_add_le_max'
 
 /-- The `v`-adic valuation on `R`. -/
+@[simps]
 def intValuation : Valuation R ℤₘ₀ where
   toFun := v.intValuationDef
   map_zero' := IntValuation.map_zero' v
@@ -333,7 +334,7 @@ theorem adicValued_apply {x : K} : (v.adicValued.v : _) x = v.valuation x :=
 variable (K)
 
 /-- The completion of `K` with respect to its `v`-adic valuation. -/
-def adicCompletion :=
+abbrev adicCompletion :=
   @UniformSpace.Completion K v.adicValued.toUniformSpace
 #align is_dedekind_domain.height_one_spectrum.adic_completion IsDedekindDomain.HeightOneSpectrum.adicCompletion
 
@@ -428,41 +429,24 @@ instance : Algebra R (v.adicCompletionIntegers K) where
       refine' ValuationSubring.mul_mem _ _ _ _ x.2
       --porting note (#10754): added instance
       letI : Valued K ℤₘ₀ := adicValued v
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
+      rw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
   toFun r :=
     ⟨(algebraMap R K r : adicCompletion K v), by
-      -- porting note (#10754): added instance
-      letI : Valued K ℤₘ₀ := adicValued v
-      -- Porting note: rest of proof was `simpa only
-      --   [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
-      --   v.valuation_le_one _
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [mem_adicCompletionIntegers, Valued.valuedCompletion_apply]
-      exact v.valuation_le_one _⟩
+      simpa only [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
+        v.valuation_le_one _⟩
   map_one' := by simp only [map_one]; rfl
   map_mul' x y := by
     ext
-    --porting note (#10754): added instance
-    letI : Valued K ℤₘ₀ := adicValued v
     simp_rw [RingHom.map_mul, Subring.coe_mul, UniformSpace.Completion.coe_mul]
   map_zero' := by simp only [map_zero]; rfl
   map_add' x y := by
     ext
-    --porting note (#10754): added instance
-    letI : Valued K ℤₘ₀ := adicValued v
     simp_rw [RingHom.map_add, Subring.coe_add, UniformSpace.Completion.coe_add]
   commutes' r x := by
-    -- Porting note: added `dsimp` line
-    dsimp
     rw [mul_comm]
   smul_def' r x := by
     ext
-    -- Porting note: added `dsimp`
-    dsimp
-    --porting note (#10754): added instance
-    letI : Valued K ℤₘ₀ := adicValued v
     simp only [Subring.coe_mul, Algebra.smul_def]
     rfl
 
