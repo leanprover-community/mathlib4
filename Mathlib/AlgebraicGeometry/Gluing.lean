@@ -249,7 +249,7 @@ theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
   rw [← ((TopCat.mono_iff_injective D.isoCarrier.inv).mp _).eq_iff]
   · erw [← comp_apply] -- now `erw` after #13170
     simp_rw [← D.ι_isoCarrier_inv]
-    rfl -- now `rfl` after #13170
+    rfl -- `rfl` was not needed before #13170
   · infer_instance
 #align algebraic_geometry.Scheme.glue_data.ι_eq_iff AlgebraicGeometry.Scheme.GlueData.ι_eq_iff
 
