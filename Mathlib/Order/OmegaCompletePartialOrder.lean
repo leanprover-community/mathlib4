@@ -568,7 +568,7 @@ instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α w
 
 variable {α} {β : Type v} [OmegaCompletePartialOrder α] [CompleteLattice β]
 
-theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, ωScottContinuous f) :
+theorem sSup_ωScottContinuous' (s : Set <| α →o β) (hs : ∀ f ∈ s, ωScottContinuous f) :
     ωScottContinuous (sSup s : (α →o β)) := by
   rw [← continuous'_iff_ωScottContinuous]
   simp_rw [← continuous'_iff_ωScottContinuous, OrderHom.monotone, exists_true_left] at hs
@@ -580,7 +580,13 @@ theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, ωScottContin
     have e1 : ∀ f ∈ s, f (ωSup c) = ωSup (c.map f) := fun f a ↦ hs f a c
     simpa (config := { contextual := true }) [ωSup_le_iff, e1] using this
   exact ⟨fun H n f hf => H f hf n, fun H f hf n => H n f hf⟩
-#align complete_lattice.Sup_continuous CompleteLattice.sSup_continuous
+#align complete_lattice.Sup_continuous CompleteLattice.sSup_ωScottContinuous'
+
+theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, Continuous f) : Continuous (sSup s) := by
+  apply ωScottContinuous_coe.mp
+  apply sSup_ωScottContinuous'
+  intro f hf
+  exact continuous'_coe.mpr (hs f hf)
 
 theorem iSup_continuous {ι : Sort*} {f : ι → α →o β} (h : ∀ i, Continuous (f i)) :
     Continuous (⨆ i, f i) :=
