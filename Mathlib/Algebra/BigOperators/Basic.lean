@@ -108,37 +108,37 @@ syntax bigOpBinderCollection := bigOpBinderParenthesized+
 /-- A single (unparenthesized) binder, or a list of parenthesized binders -/
 syntax bigOpBinders := bigOpBinderCollection <|> (ppSpace bigOpBinder)
 
-/-- Collects additional binder/Finset pairs for the given `bigOpBinder`.
+/-- Collects additional binder/finset pairs for the given `bigOpBinder`.
+
 Note: this is not extensible at the moment, unlike the usual `bigOpBinder` expansions. -/
-def processBigOpBinder (processed : (Array (Term × Term)))
-    (binder : TSyntax ``bigOpBinder) : MacroM (Array (Term × Term)) :=
+def processBigOpBinder (processed : Array (Term × Term)) (binder : TSyntax ``bigOpBinder) :
+    MacroM (Array (Term × Term)) :=
   set_option hygiene false in
   withRef binder do
     match binder with
     | `(bigOpBinder| $x:term) =>
       match x with
       | `(($a + $b = $n)) => -- Maybe this is too cute.
-        return processed |>.push (← `(⟨$a, $b⟩), ← `(Finset.Nat.antidiagonal $n))
+        return processed |>.push (← `(⟨$a, $b⟩), ← `(Finset.HasAntidiagonal.antidiagonal $n))
       | _ => return processed |>.push (x, ← ``(Finset.univ))
     | `(bigOpBinder| $x : $t) => return processed |>.push (x, ← ``((Finset.univ : Finset $t)))
     | `(bigOpBinder| $x ∈ $s) => return processed |>.push (x, ← `(finset% $s))
-    | `(bigOpBinder| $x < $n) => return processed |>.push (x, ← `(Finset.Iio $n))
-    | `(bigOpBinder| $x ≤ $n) => return processed |>.push (x, ← `(Finset.Iic $n))
-    | `(bigOpBinder| $x > $n) => return processed |>.push (x, ← `(Finset.Ioi $n))
-    | `(bigOpBinder| $x ≥ $n) => return processed |>.push (x, ← `(Finset.Ici $n))
+    | `(bigOpBinder| $x < $b) => return processed |>.push (x, ← `(Finset.Iio $b))
+    | `(bigOpBinder| $x ≤ $b) => return processed |>.push (x, ← `(Finset.Iic $b))
+    | `(bigOpBinder| $x > $a) => return processed |>.push (x, ← `(Finset.Ioi $a))
+    | `(bigOpBinder| $x ≥ $a) => return processed |>.push (x, ← `(Finset.Ici $a))
+    -- TODO: Add `a ≤ x ≤ b` notation
     | _ => Macro.throwUnsupported
 
 /-- Collects the binder/Finset pairs for the given `bigOpBinders`. -/
-def processBigOpBinders (binders : TSyntax ``bigOpBinders) :
-    MacroM (Array (Term × Term)) :=
+def processBigOpBinders (binders : TSyntax ``bigOpBinders) : MacroM (Array (Term × Term)) :=
   match binders with
   | `(bigOpBinders| $b:bigOpBinder) => processBigOpBinder #[] b
   | `(bigOpBinders| $[($bs:bigOpBinder)]*) => bs.foldlM processBigOpBinder #[]
   | _ => Macro.throwUnsupported
 
 /-- Collect the binderIdents into a `⟨...⟩` expression. -/
-def bigOpBindersPattern (processed : (Array (Term × Term))) :
-    MacroM Term := do
+def bigOpBindersPattern (processed : Array (Term × Term)) : MacroM Term := do
   let ts := processed.map Prod.fst
   if ts.size == 1 then
     return ts[0]!
@@ -146,8 +146,7 @@ def bigOpBindersPattern (processed : (Array (Term × Term))) :
     `(⟨$ts,*⟩)
 
 /-- Collect the terms into a product of sets. -/
-def bigOpBindersProd (processed : (Array (Term × Term))) :
-    MacroM Term := do
+def bigOpBindersProd (processed : Array (Term × Term)) : MacroM Term := do
   if processed.isEmpty then
     `((Finset.univ : Finset Unit))
   else if processed.size == 1 then
@@ -167,7 +166,7 @@ def bigOpBindersProd (processed : (Array (Term × Term))) :
 These support destructuring, for example `∑ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
 Notation: `"∑" bigOpBinders* ("with" term)? "," term` -/
-scoped syntax (name := bigsum) "∑ " bigOpBinders ("with " term)? ", " term:67 : term
+scoped syntax (name := bigSum) "∑ " bigOpBinders ("with " term)? ", " term:67 : term
 
 /--
 - `∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,
@@ -180,9 +179,9 @@ scoped syntax (name := bigsum) "∑ " bigOpBinders ("with " term)? ", " term:67 
 These support destructuring, for example `∏ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
 Notation: `"∏" bigOpBinders* ("with" term)? "," term` -/
-scoped syntax (name := bigprod) "∏ " bigOpBinders ("with " term)? ", " term:67 : term
+scoped syntax (name := bigProd) "∏ " bigOpBinders ("with " term)? ", " term:67 : term
 
-scoped macro_rules (kind := bigsum)
+scoped macro_rules (kind := bigSum)
   | `(∑ $bs:bigOpBinders $[with $p?]?, $v) => do
     let processed ← processBigOpBinders bs
     let x ← bigOpBindersPattern processed
@@ -191,7 +190,7 @@ scoped macro_rules (kind := bigsum)
     | some p => `(Finset.sum (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
     | none => `(Finset.sum $s (fun $x ↦ $v))
 
-scoped macro_rules (kind := bigprod)
+scoped macro_rules (kind := bigProd)
   | `(∏ $bs:bigOpBinders $[with $p?]?, $v) => do
     let processed ← processBigOpBinders bs
     let x ← bigOpBindersPattern processed
@@ -201,6 +200,7 @@ scoped macro_rules (kind := bigprod)
     | none => `(Finset.prod $s (fun $x ↦ $v))
 
 /-- (Deprecated, use `∑ x ∈ s, f x`)
+
 `∑ x in s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
 where `x` ranges over the finite set `s`. -/
 scoped syntax (name := bigsumin) "∑ " extBinder " in " term ", " term:67 : term
@@ -219,8 +219,10 @@ scoped macro_rules (kind := bigprodin)
 open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
 open Batteries.ExtendedBinder
 
-/-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
-to show the domain type when the product is over `Finset.univ`. -/
+/-- Delaborator for `Finset.prod`.
+
+The `pp.piBinderTypes` option controls whether to show the domain type when the product is over
+`Finset.univ`. -/
 @[scoped delab app.Finset.prod] def delabFinsetProd : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
@@ -237,11 +239,13 @@ to show the domain type when the product is over `Finset.univ`. -/
         `(bigOpBinder| $(.mk i):ident)
     `(∏ $binder:bigOpBinder, $body)
   else
-    let ss ← withNaryArg 3 <| delab
+    let ss ← withNaryArg 3 delab
     `(∏ $(.mk i):ident ∈ $ss, $body)
 
-/-- Delaborator for `Finset.sum`. The `pp.piBinderTypes` option controls whether
-to show the domain type when the sum is over `Finset.univ`. -/
+/-- Delaborator for `Finset.sum`.
+
+The `pp.piBinderTypes` option controls whether to show the domain type when the sum is over
+`Finset.univ`. -/
 @[scoped delab app.Finset.sum] def delabFinsetSum : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
@@ -258,7 +262,7 @@ to show the domain type when the sum is over `Finset.univ`. -/
         `(bigOpBinder| $(.mk i):ident)
     `(∑ $binder:bigOpBinder, $body)
   else
-    let ss ← withNaryArg 3 <| delab
+    let ss ← withNaryArg 3 delab
     `(∑ $(.mk i):ident ∈ $ss, $body)
 
 end BigOperators
