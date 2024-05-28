@@ -58,7 +58,7 @@ lemma coeff_equiv (φ : MvPowerSeries σ R) (n : τ →₀ ℕ) (e : σ ≃ τ) 
 lemma coeff_equiv' (φ : MvPowerSeries σ R) (n : τ →₀ ℕ) (e : σ ≃ τ) :
   (coeff R n) (φ ∘ Finsupp.equivMapDomain e.symm) = (coeff R (Finsupp.equivMapDomain (e.symm) n)) φ := rfl
 
-/-- Rename all the variables in a multivariable power series. -/
+--/-- Rename all the variables in a multivariable power series. -/
 -- def rename' (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R where
 --   toFun := fun φ ↦ φ ∘ (Finsupp.equivMapDomain e.symm)
 --   invFun := fun φ ↦ φ ∘ (Finsupp.equivMapDomain e)

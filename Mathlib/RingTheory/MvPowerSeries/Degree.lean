@@ -8,11 +8,11 @@ import Mathlib.RingTheory.MvPowerSeries.Basic
 /-!
 # Degree on MvPowerSeries
 
-This file defines a degree on MvPowerSeries, with values in WithTop WithBot ℕ.
+This file defines a degree on MvPowerSeries, with values in WithTop ℕ.
 
 ## Main declarations
 
-* `MvPowerSeries.degree`
+* `MvPowerSeries.totalDegree`
 
 -/
 
