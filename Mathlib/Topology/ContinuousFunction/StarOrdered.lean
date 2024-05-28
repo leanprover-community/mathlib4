@@ -30,7 +30,7 @@ open scoped ComplexOrder in
 open RCLike in
 instance (priority := 100) instStarOrderedRingRCLike {𝕜 : Type*} [RCLike 𝕜] :
     StarOrderedRing C(α, 𝕜) :=
-  starOrderedRing_of_sqrt ((↑) ∘ Real.sqrt ∘ re) (by fun_prop) fun x hx ↦ by
+  starOrderedRing_of_sqrt ((↑) ∘ (√·) ∘ re) (by fun_prop) fun x hx ↦ by
     simp only [Function.comp_apply,star_def]
     obtain hx' := nonneg_iff.mp hx |>.right
     rw [← conj_eq_iff_im, conj_eq_iff_re] at hx'
