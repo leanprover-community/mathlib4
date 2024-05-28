@@ -16,7 +16,7 @@ import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 -/
 
 
-open scoped BigOperators Polynomial
+open scoped Polynomial
 
 variable {R A : Type*} [CommRing R] [IsDomain R] [CommRing A] [Algebra R A]
 

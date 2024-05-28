@@ -22,8 +22,6 @@ universe u v
 
 open Equiv Function Fintype Finset
 
-open BigOperators
-
 variable {α : Type u} {β : Type v}
 
 -- An example on how to determine the order of an element of a finite group.

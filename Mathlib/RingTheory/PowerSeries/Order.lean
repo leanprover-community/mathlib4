@@ -28,7 +28,7 @@ proving that `R⟦X⟧` is a normalization monoid, which is done in `PowerSeries
 -/
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 open Finset (antidiagonal mem_antidiagonal)
 
@@ -232,7 +232,7 @@ theorem order_monomial_of_ne_zero (n : ℕ) (a : R) (h : a ≠ 0) : order (monom
 with any other power series is `0`. -/
 theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order) :
     coeff R n (φ * ψ) = 0 := by
-  suffices coeff R n (φ * ψ) = ∑ p in antidiagonal n, 0 by rw [this, Finset.sum_const_zero]
+  suffices coeff R n (φ * ψ) = ∑ p ∈ antidiagonal n, 0 by rw [this, Finset.sum_const_zero]
   rw [coeff_mul]
   apply Finset.sum_congr rfl
   intro x hx
@@ -249,7 +249,7 @@ theorem coeff_mul_one_sub_of_lt_order {R : Type*} [CommRing R] {φ ψ : R⟦X⟧
 
 theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ) (s : Finset ι)
     (φ : R⟦X⟧) (f : ι → R⟦X⟧) :
-    (∀ i ∈ s, ↑k < (f i).order) → coeff R k (φ * ∏ i in s, (1 - f i)) = coeff R k φ := by
+    (∀ i ∈ s, ↑k < (f i).order) → coeff R k (φ * ∏ i ∈ s, (1 - f i)) = coeff R k φ := by
   classical
   induction' s using Finset.induction_on with a s ha ih t
   · simp

@@ -658,7 +658,7 @@ instance finite_biUnion' {ι : Type*} (s : Set ι) [Finite s] (t : ι → Set α
 #align finite.set.finite_bUnion' Finite.Set.finite_biUnion'
 
 /-- Example: `Finite (⋃ (i < n), f i)` where `f : ℕ → Set α` and `[∀ i, Finite (f i)]`
-(when given instances from `Data.Nat.Interval`).
+(when given instances from `Order.Interval.Finset.Nat`).
 -/
 instance finite_biUnion'' {ι : Type*} (p : ι → Prop) [h : Finite { x | p x }] (t : ι → Set α)
     [∀ i, Finite (t i)] : Finite (⋃ (x) (_ : p x), t x) :=
@@ -1764,7 +1764,7 @@ lemma Directed.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} [Nonem
     ∃ i, (s : Set α) ⊆ f i := by
   induction s using Finset.cons_induction with
   | empty => simp
-  | cons hbt iht =>
+  | cons b t hbt iht =>
     simp only [Finset.coe_cons, Set.insert_subset_iff, Set.mem_iUnion] at hs ⊢
     rcases hs.imp_right iht with ⟨⟨i, hi⟩, j, hj⟩
     rcases h i j with ⟨k, hik, hjk⟩
