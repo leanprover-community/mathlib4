@@ -164,7 +164,7 @@ theorem exists_subseq_of_forall_mem_union {s t : Set α} (e : ℕ → α) (he : 
 
 theorem orderEmbedding_apply_add_le_add_apply (f : ℕ ↪o ℕ) (x d : ℕ) : f x + d ≤ f (x+d) := by
   induction' d with d hd; rfl
-  rw [Nat.succ_eq_add_one, ← add_assoc, Nat.add_one_le_iff, ← add_assoc]
+  rw [← add_assoc, Nat.add_one_le_iff, ← add_assoc]
   exact hd.trans_lt <| by simp
 
 theorem orderEmbedding_apply_eq_self_of_le (f : ℕ ↪o ℕ) {x y : ℕ} (hx : f x ≤ x) (hyx : y ≤ x) :
