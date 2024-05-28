@@ -39,7 +39,7 @@ variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 local notation "φ" => LieModule.toEnd R L M
 
 open LinearMap (trace)
-open Set BigOperators FiniteDimensional
+open Set FiniteDimensional
 
 namespace LieModule
 
@@ -208,7 +208,7 @@ variable [LieAlgebra.IsNilpotent R L] [IsDomain R] [IsPrincipalIdealRing R]
 
 lemma traceForm_eq_sum_weightSpaceOf [IsTriangularizable R L M] (z : L) :
     traceForm R L M =
-    ∑ χ in (finite_weightSpaceOf_ne_bot R L M z).toFinset, traceForm R L (weightSpaceOf M χ z) := by
+    ∑ χ ∈ (finite_weightSpaceOf_ne_bot R L M z).toFinset, traceForm R L (weightSpaceOf M χ z) := by
   ext x y
   have hxy : ∀ χ : R, MapsTo ((toEnd R L M x).comp (toEnd R L M y))
       (weightSpaceOf M χ z) (weightSpaceOf M χ z) :=
