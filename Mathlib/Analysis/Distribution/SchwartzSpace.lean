@@ -63,7 +63,7 @@ Schwartz space, tempered distributions
 
 noncomputable section
 
-open scoped BigOperators Nat NNReal
+open scoped Nat NNReal
 
 variable {𝕜 𝕜' D E F G V : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -147,8 +147,8 @@ theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
   obtain ⟨d, _, hd'⟩ := f.decay k 0
   simp only [norm_iteratedFDeriv_zero] at hd'
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
-  refine' ⟨d, Filter.Eventually.filter_mono Filter.cocompact_le_cofinite _⟩
-  refine' (Filter.eventually_cofinite_ne 0).mono fun x hx => _
+  refine ⟨d, Filter.Eventually.filter_mono Filter.cocompact_le_cofinite ?_⟩
+  refine (Filter.eventually_cofinite_ne 0).mono fun x hx => ?_
   rw [Real.norm_of_nonneg (zpow_nonneg (norm_nonneg _) _), zpow_neg, ← div_eq_mul_inv, le_div_iff']
   exacts [hd' x, zpow_pos_of_pos (norm_pos_iff.mpr hx) _]
 set_option linter.uppercaseLean3 false in
@@ -158,11 +158,11 @@ theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
     f =O[cocompact E] fun x => ‖x‖ ^ s := by
   let k := ⌈-s⌉₊
   have hk : -(k : ℝ) ≤ s := neg_le.mp (Nat.le_ceil (-s))
-  refine' (isBigO_cocompact_zpow_neg_nat f k).trans _
+  refine (isBigO_cocompact_zpow_neg_nat f k).trans ?_
   suffices (fun x : ℝ => x ^ (-k : ℤ)) =O[atTop] fun x : ℝ => x ^ s
     from this.comp_tendsto tendsto_norm_cocompact_atTop
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
-  refine' ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx => _⟩
+  refine ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx => ?_⟩
   rw [one_mul, Real.norm_of_nonneg (Real.rpow_nonneg (zero_le_one.trans hx) _),
     Real.norm_of_nonneg (zpow_nonneg (zero_le_one.trans hx) _), ← Real.rpow_intCast, Int.cast_neg,
     Int.cast_natCast]
@@ -195,7 +195,7 @@ theorem decay_add_le_aux (k n : ℕ) (f g : 𝓢(E, F)) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n ((f : E → F) + (g : E → F)) x‖ ≤
       ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ + ‖x‖ ^ k * ‖iteratedFDeriv ℝ n g x‖ := by
   rw [← mul_add]
-  refine' mul_le_mul_of_nonneg_left _ (by positivity)
+  refine mul_le_mul_of_nonneg_left ?_ (by positivity)
   rw [iteratedFDeriv_add_apply (f.smooth _) (g.smooth _)]
   exact norm_add_le _ _
 #align schwartz_map.decay_add_le_aux SchwartzMap.decay_add_le_aux
@@ -277,9 +277,9 @@ instance instSMulCommClass [SMulCommClass 𝕜 𝕜' F] : SMulCommClass 𝕜 �
 
 theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
     (c • f).seminormAux k n ≤ ‖c‖ * f.seminormAux k n := by
-  refine'
+  refine
     (c • f).seminormAux_le_bound k n (mul_nonneg (norm_nonneg _) (seminormAux_nonneg _ _ _))
-      fun x => (decay_smul_aux k n f c x).le.trans _
+      fun x => (decay_smul_aux k n f c x).le.trans ?_
   rw [mul_assoc]
   exact mul_le_mul_of_nonneg_left (f.le_seminormAux k n x) (norm_nonneg _)
 #align schwartz_map.seminorm_aux_smul_le SchwartzMap.seminormAux_smul_le
@@ -466,7 +466,7 @@ theorem seminorm_le_bound (k n : ℕ) (f : 𝓢(E, F)) {M : ℝ} (hMp : 0 ≤ M)
 Variant for functions `𝓢(ℝ, F)`. -/
 theorem seminorm_le_bound' (k n : ℕ) (f : 𝓢(ℝ, F)) {M : ℝ} (hMp : 0 ≤ M)
     (hM : ∀ x, |x| ^ k * ‖iteratedDeriv n f x‖ ≤ M) : SchwartzMap.seminorm 𝕜 k n f ≤ M := by
-  refine' seminorm_le_bound 𝕜 k n f hMp _
+  refine seminorm_le_bound 𝕜 k n f hMp ?_
   simpa only [Real.norm_eq_abs, norm_iteratedFDeriv_eq_norm_iteratedDeriv]
 #align schwartz_map.seminorm_le_bound' SchwartzMap.seminorm_le_bound'
 
@@ -539,8 +539,8 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
   rw [Finset.sum_mul]
   have hk' : Finset.range (k + 1) ⊆ Finset.range (m.1 + 1) := by
     rwa [Finset.range_subset, add_le_add_iff_right]
-  refine' le_trans (Finset.sum_le_sum_of_subset_of_nonneg hk' fun _ _ _ => by positivity) _
-  gcongr ∑ _i in Finset.range (m.1 + 1), ?_ with i hi
+  refine le_trans (Finset.sum_le_sum_of_subset_of_nonneg hk' fun _ _ _ => by positivity) ?_
+  gcongr ∑ _i ∈ Finset.range (m.1 + 1), ?_ with i hi
   move_mul [(Nat.choose k i : ℝ), (Nat.choose m.1 i : ℝ)]
   gcongr
   · apply (le_seminorm 𝕜 i n f x).trans
@@ -620,7 +620,7 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   use C', hC'
   intro N hN x
   rw [← Finset.mem_range_succ_iff] at hN
-  refine' le_trans (f N x) (mul_le_mul _ _ (by positivity) hC')
+  refine le_trans (f N x) (mul_le_mul ?_ ?_ (by positivity) hC')
   · simp only [C', Finset.le_sup'_iff, le_max_iff]
     right
     exact ⟨N, hN, rfl.le⟩
@@ -877,7 +877,7 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
       simp_rw [mul_assoc ‖B‖]
       gcongr _ * ?_
       rw [Finset.mul_sum]
-      have : (∑ _x : ℕ in Finset.range (n + 1), (1 : ℝ)) = n + 1 := by simp
+      have : (∑ _x ∈ Finset.range (n + 1), (1 : ℝ)) = n + 1 := by simp
       simp_rw [mul_assoc ((n : ℝ) + 1)]
       rw [← this, Finset.sum_mul]
       refine' Finset.sum_le_sum fun i hi => _

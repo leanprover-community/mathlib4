@@ -246,8 +246,6 @@ noncomputable section norm
 
 open scoped Classical
 
-open BigOperators
-
 variable {K}
 
 /-- The norm at the place infinite `w` of an element of
