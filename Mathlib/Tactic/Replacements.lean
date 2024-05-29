@@ -134,12 +134,10 @@ elab "Build completed successfully." : command => logInfo "All done!"
 
 /-- extract the file name, the array of corrections, perform them and rewrite the file. -/
 elab "info:" "././././" t1:term ":" num ":" num ":" t:term : command => do
-  dbg_trace t1
   let file : System.FilePath := parseFile t1
-  dbg_trace file
   let corrections : Array (Nat × Nat × Nat) := parseCorrections t
   let newContent := "\n".intercalate
-    ((substitutions (← IO.FS.lines file) corrections).push "\n").toList
-  IO.FS.writeFile file newContent
+    ((substitutions (← IO.FS.lines file) corrections)).toList
+  --IO.FS.writeFile file (newContent.trimRight.push "\n")
 
 end syntax_and_elabs
