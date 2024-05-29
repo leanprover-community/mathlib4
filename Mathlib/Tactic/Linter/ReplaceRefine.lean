@@ -88,20 +88,31 @@ def holeToSyntHole : Syntax → Syntax
 def getRefine's (stx : Syntax) : Array Syntax :=
   stx.findAll (·.isOfKind ``Lean.Parser.Tactic.refine')
 
-/-- `candidateRefines stx` returns the array `#[stx₁, ..., stxₙ]`, where each `stxᵢ` is obtained
-from `stx` by replacing a subset of the `_` with `?_`.
+/-- `candidateRefines stx threshold` returns the array `#[stx₁, ..., stxₙ]`, where each `stxᵢ`
+is obtained from `stx` by replacing a subset of the `_` with `?_`.
 
-The intended application is when `stx` is a syntax node representing `refine' ...`. -/
-def candidateRefines (stx : Syntax) : Array (Syntax × List Syntax) := Id.run do
+The intended application is when `stx` is a syntax node representing `refine' ...`.
+
+The input `threshold` controls how many holes the function is supposed to handle:
+since the algorithm loops over all sublists of the "holes", the algorithm performs its
+computations only when the number of holes is at most `threshold`.
+If `threshold` is set to `0`, then the algorithm loops over all sublists in all cases.
+
+The main function uses `4` as threshold.
+-/
+def candidateRefines (stx : Syntax) (threshold : Nat) : Array (Syntax × List Syntax) := Id.run do
   let mut cands := #[]
   let holes := getHoles stx
-  if 5 ≤ holes.size then dbg_trace "{holes.size} is too many holes!"; return #[] else
-  for sub in holes.toList.sublistsFast do
-    let mut newCmd := stx
-    for s in sub do
-      newCmd ← newCmd.replaceM (fun t =>
-        if t == s && t.getPos? == s.getPos? then some (holeToSyntHole s) else none)
-    cands := cands.push (newCmd, sub)
+  if threshold != 0 && threshold < holes.size then
+    dbg_trace "{holes.size} is too many holes!"
+    return #[]
+  else
+    for sub in holes.toList.sublistsFast do
+      let mut newCmd := stx
+      for s in sub do
+        newCmd ← newCmd.replaceM (fun t =>
+          if t == s && t.getPos? == s.getPos? then some (holeToSyntHole s) else none)
+      cands := cands.push (newCmd, sub)
   return cands
 
 /-- converts each `refine'` with a `refine` in `stx`. -/
@@ -120,14 +131,15 @@ Eventually, it returns an array of pairs `(1/0, position)`, where
 * `0` means that the `position` is a missing `?`,
 for each successful replacement.
 -/
-def getQuestions (cmd : Syntax) : Command.CommandElabM (Array (Syntax × List Syntax)) := do
+def getQuestions (cmd : Syntax) (threshold : Nat) :
+    Command.CommandElabM (Array (Syntax × List Syntax)) := do
   let exm ← toExample cmd
   let st ← get
   let refine's := getRefine's cmd
   let mut suma := #[]
   for refine' in refine's do
     let refine := ToRefine refine'
-    let cands := candidateRefines refine
+    let cands := candidateRefines refine threshold
     for (cand, holes) in cands do
       let repl ← exm.replaceM fun s => if s == refine' then return some cand else return none
       Command.elabCommand repl
@@ -145,10 +157,10 @@ def getQuestions (cmd : Syntax) : Command.CommandElabM (Array (Syntax × List Sy
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.refine'ToRefine o
 
 /-- Reports the positions of missing `?`. -/
-def ToRefineLinter : Linter where run stx := do
+def ToRefineLinter (threshold : Nat := 4) : Linter where run stx := do
   let fm ← getFileMap
   if getLinterHash (← getOptions) then
-    let pos ← getQuestions stx
+    let pos ← getQuestions stx threshold
     let mut fin := #[]
     for (r, hls) in pos do
       let rPos := r.getPos?.getD default
