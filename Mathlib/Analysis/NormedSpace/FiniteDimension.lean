@@ -51,7 +51,7 @@ universe u v w x
 
 noncomputable section
 
-open Set FiniteDimensional TopologicalSpace Filter Asymptotics Classical BigOperators Topology
+open Set FiniteDimensional TopologicalSpace Filter Asymptotics Classical Topology
   NNReal Metric
 
 namespace LinearIsometry

@@ -480,8 +480,6 @@ lemma self_pow_inv (r : ℕ) : padicValRat p ((p : ℚ) ^ r)⁻¹ = -r := by
   rw [padicValRat.inv, neg_inj, padicValRat.pow (Nat.cast_ne_zero.mpr hp.elim.ne_zero),
       padicValRat.self hp.elim.one_lt, mul_one]
 
-open BigOperators
-
 /-- A finite sum of rationals with positive `p`-adic valuation has positive `p`-adic valuation
 (if the sum is non-zero). -/
 theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < padicValRat p (F i))
@@ -647,8 +645,6 @@ lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) :
     (pow_log_le_self 2 n.succ_ne_zero)
   rw [h, padicValNat.prime_pow, ← h]
 
-open BigOperators
-
 theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :
     (Finset.range (padicValNat p n + 1)).image (p ^ ·) ⊆ n.divisors := by
   intro t ht
@@ -778,8 +774,7 @@ section padicValInt
 variable {p : ℕ} [hp : Fact p.Prime]
 
 theorem padicValInt_dvd_iff (n : ℕ) (a : ℤ) : (p : ℤ) ^ n ∣ a ↔ a = 0 ∨ n ≤ padicValInt p a := by
-  rw [padicValInt, ← Int.natAbs_eq_zero, ← padicValNat_dvd_iff, ← Int.natCast_dvd,
-    Int.coe_nat_pow]
+  rw [padicValInt, ← Int.natAbs_eq_zero, ← padicValNat_dvd_iff, ← Int.natCast_dvd, Int.natCast_pow]
 #align padic_val_int_dvd_iff padicValInt_dvd_iff
 
 theorem padicValInt_dvd (a : ℤ) : (p : ℤ) ^ padicValInt p a ∣ a := by

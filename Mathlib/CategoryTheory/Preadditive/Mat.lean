@@ -52,7 +52,7 @@ Ideally this would conveniently interact with both `Mat_` and `Matrix`.
 
 open CategoryTheory CategoryTheory.Preadditive
 
-open scoped BigOperators Classical
+open scoped Classical
 
 noncomputable section
 

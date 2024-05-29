@@ -6,7 +6,7 @@ Authors: Aaron Anderson
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Nat.Factors
-import Mathlib.Data.Nat.Interval
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import number_theory.divisors from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -33,7 +33,7 @@ divisors, perfect numbers
 
 
 open scoped Classical
-open BigOperators Finset
+open Finset
 
 namespace Nat
 
