@@ -60,8 +60,15 @@ theorem kolmogorovFun_union (hP : IsProjectiveMeasureFamily P) (hs : s ∈ cylin
   have h_eq3 : s ∪ t = cylinder (I ∪ J) (S' ∪ T') := by
     rw [hs_eq, ht_eq]; exact union_cylinder _ _ _ _
   rw [kolmogorovFun_congr hP hs h_eq1 hS', kolmogorovFun_congr hP ht h_eq2 hT',
-    kolmogorovFun_congr hP _ h_eq3 (hS'.union hT'), measure_union _ hT']
-  rwa [hs_eq, ht_eq, disjoint_cylinder_iff] at hst
+    kolmogorovFun_congr hP _ h_eq3 (hS'.union hT')]
+  by_cases h : Nonempty ((i : ι) → α i)
+  · rw [measure_union _ hT']
+    rwa [hs_eq, ht_eq, disjoint_cylinder_iff] at hst
+  · rw [Classical.nonempty_pi] at h
+    push_neg at h
+    rcases h with ⟨i, hi⟩
+    rw [not_nonempty_iff] at hi
+    simp [hP.empty' i (I ∪ J)]
 
 theorem kolmogorovFun_additive (hP : IsProjectiveMeasureFamily P) (I : Finset (Set (∀ i, α i)))
     (h_ss : ↑I ⊆ cylinders α) (h_dis : PairwiseDisjoint (I : Set (Set (∀ i, α i))) id)

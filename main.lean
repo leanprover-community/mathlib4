@@ -64,9 +64,7 @@ theorem dependsOn_cylinder_indicator (I : Finset ι) (S : Set ((i : I) → X i))
 `cylinder I S` over the variables indexed by `I`. -/
 theorem kolContent_eq_lmarginal [DecidableEq ι] [∀ (S : Finset ι) i, Decidable (i ∈ S)]
     (I : Finset ι) {S : Set ((i : I) → X i)} (mS : MeasurableSet S) (x : (i : ι) → X i) :
-    @kolContent _ _ _ _
-    (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
-    (isProjectiveMeasureFamily_pi μ) (cylinder I S) =
+    kolContent (isProjectiveMeasureFamily_pi μ) (cylinder I S) =
     (∫⋯∫⁻_I, (cylinder I S).indicator 1 ∂μ) x := by
   have : ∀ i, Nonempty (X i) := by
     have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩;
@@ -221,9 +219,7 @@ the measurable spaces are indexed by $\mathbb{N}$. This implies the $\sigma$-add
 which allows to extend it to the $\sigma$-algebra by Carathéodory's theorem. -/
 theorem firstLemma (A : ℕ → Set ((n : ℕ) → X n)) (A_mem : ∀ n, A n ∈ cylinders X)
     (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅) :
-    Tendsto (fun n ↦ @kolContent _ _ _ _
-    (by have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩; infer_instance)
-    (isProjectiveMeasureFamily_pi μ) (A n)) atTop (𝓝 0) := by
+    Tendsto (fun n ↦ kolContent (isProjectiveMeasureFamily_pi μ) (A n)) atTop (𝓝 0) := by
   -- The measurable spaces are not empty.
   have : ∀ n, Nonempty (X n) := by
     have := fun n ↦ ProbabilityMeasure.nonempty ⟨μ n, hμ n⟩;
@@ -374,9 +370,7 @@ which allows to extend it to the $\sigma$-algebra by Carathéodory's theorem. -/
 theorem secondLemma
     (φ : ℕ ≃ ι) (A : ℕ → Set ((i : ι) → X i)) (A_mem : ∀ n, A n ∈ cylinders X)
     (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅) :
-    Tendsto (fun n ↦ @kolContent _ _ _ _
-    (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
-    (isProjectiveMeasureFamily_pi μ) (A n)) atTop (𝓝 0) := by
+    Tendsto (fun n ↦ kolContent (isProjectiveMeasureFamily_pi μ) (A n)) atTop (𝓝 0) := by
   have : ∀ i, Nonempty (X i) := by
     have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩;
     infer_instance
@@ -490,9 +484,7 @@ This implies the $\sigma$-additivity of
 which allows to extend it to the $\sigma$-algebra by Carathéodory's theorem. -/
 theorem thirdLemma (A : ℕ → Set (∀ i, X i)) (A_mem : ∀ n, A n ∈ cylinders X) (A_anti : Antitone A)
     (A_inter : ⋂ n, A n = ∅) :
-    Tendsto (fun n ↦ @kolContent _ _ _ _
-    (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
-    (isProjectiveMeasureFamily_pi μ) (A n)) atTop (𝓝 0) := by
+    Tendsto (fun n ↦ kolContent (isProjectiveMeasureFamily_pi μ) (A n)) atTop (𝓝 0) := by
   classical
   have : ∀ i, Nonempty (X i) := by
     have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩
@@ -594,12 +586,8 @@ theorem thirdLemma (A : ℕ → Set (∀ i, X i)) (A_mem : ∀ n, A n ∈ cylind
 /-- The `kolContent` associated to a family of probability measures is $\simga$-subadditive. -/
 theorem kolContent_sigma_subadditive ⦃f : ℕ → Set ((i : ι) → X i)⦄ (hf : ∀ n, f n ∈ cylinders X)
     (hf_Union : (⋃ n, f n) ∈ cylinders X) :
-    @kolContent _ _ _ _
-    (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
-    (isProjectiveMeasureFamily_pi μ) (⋃ n, f n) ≤
-    ∑' n, @kolContent _ _ _ _
-    (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
-    (isProjectiveMeasureFamily_pi μ) (f n) := by
+    kolContent (isProjectiveMeasureFamily_pi μ) (⋃ n, f n) ≤
+    ∑' n, kolContent (isProjectiveMeasureFamily_pi μ) (f n) := by
   classical
   have : ∀ i, Nonempty (X i) := by
     have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩;

@@ -21,21 +21,45 @@ def IsProjectiveLimit [∀ i, MeasurableSpace (α i)] (μ : Measure (∀ i, α i
 
 variable [∀ i, MeasurableSpace (α i)] {P : ∀ J : Finset ι, Measure (∀ j : J, α j)}
 
-theorem IsProjectiveMeasureFamily.congr_cylinder_aux [h_nonempty : Nonempty (∀ i, α i)]
+theorem IsProjectiveMeasureFamily.empty (hP : IsProjectiveMeasureFamily P) (i : ι)
+    [hi : IsEmpty (α i)] {I J : Finset ι} (hIJ : I ⊆ J) (i_mem : i ∈ J) : P I = 0 := by
+  ext S mS
+  rw [hP J I hIJ]
+  simp only
+  rw [Measure.map_apply (measurable_proj₂' J I hIJ) mS]
+  have : IsEmpty ((j : J) → α j) := by
+    rw [← not_nonempty_iff, Classical.nonempty_pi]
+    push_neg
+    simp_rw [not_nonempty_iff]
+    exact ⟨⟨i, i_mem⟩, hi⟩
+  have : P J = 0 := (P J).eq_zero_of_isEmpty
+  simp [this]
+
+theorem IsProjectiveMeasureFamily.empty' (hP : IsProjectiveMeasureFamily P) (i : ι)
+    [hi : IsEmpty (α i)] (I : Finset ι) : P I = 0 := by
+  classical
+  exact hP.empty i (I.subset_insert i) (I.mem_insert_self i)
+
+theorem IsProjectiveMeasureFamily.congr_cylinder_aux
     (hP : IsProjectiveMeasureFamily P) {I J : Finset ι} {S : Set (∀ i : I, α i)}
     {T : Set (∀ i : J, α i)} (hT : MeasurableSet T) (h_eq : cylinder I S = cylinder J T)
     (hJI : J ⊆ I) :
     P I S = P J T := by
-  have : S = (fun f : ∀ i : I, α i ↦ fun j : J ↦ f ⟨j, hJI j.prop⟩) ⁻¹' T :=
-    eq_of_cylinder_eq_of_subset h_eq hJI
-  rw [hP I J hJI, Measure.map_apply _ hT, this]
-  rw [measurable_pi_iff]
-  intro i
-  apply measurable_pi_apply
+  classical
+  by_cases h : Nonempty ((i : ι) → α i)
+  · have : S = (fun f : ∀ i : I, α i ↦ fun j : J ↦ f ⟨j, hJI j.prop⟩) ⁻¹' T :=
+      eq_of_cylinder_eq_of_subset h_eq hJI
+    rw [hP I J hJI, Measure.map_apply _ hT, this]
+    rw [measurable_pi_iff]
+    intro i
+    apply measurable_pi_apply
+  · rw [Classical.nonempty_pi] at h
+    push_neg at h
+    rcases h with ⟨i, hi⟩
+    rw [not_nonempty_iff] at hi
+    simp [hP.empty' i I, hP.empty' i J]
 
-/-- TODO: remove the nonemptiness assumption, as if one of the sets is empty then the corresponding
-measure vanishes, and then by projectivity all the other measures also vanish. -/
-theorem IsProjectiveMeasureFamily.congr_cylinder [h_nonempty : Nonempty (∀ i, α i)]
+theorem IsProjectiveMeasureFamily.congr_cylinder
     (hP : IsProjectiveMeasureFamily P) {I J : Finset ι} {S : Set (∀ i : I, α i)}
     {T : Set (∀ i : J, α i)} (hS : MeasurableSet S) (hT : MeasurableSet T)
     (h_eq : cylinder I S = cylinder J T) :
