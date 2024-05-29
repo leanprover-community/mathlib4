@@ -29,9 +29,6 @@ abbrev fintypeDiagram : ℕᵒᵖ ⥤ FintypeCat := X.toLightDiagram.diagram
 /-- An abbreviation for `X.fintypeDiagram ⋙ FintypeCat.toProfinite`. -/
 abbrev diagram : ℕᵒᵖ ⥤ LightProfinite := X.fintypeDiagram ⋙ FintypeCat.toLightProfinite
 
--- move
-instance : CountableCategory ℕ := ⟨inferInstance, inferInstance⟩
-
 /-- A cone over `X.diagram` whose cone point is `X`. -/
 def asLimitCone : Cone X.diagram :=
   let c : Cone (X.diagram ⋙ lightToProfinite) := X.toLightDiagram.cone
