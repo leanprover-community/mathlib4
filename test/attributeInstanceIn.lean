@@ -28,7 +28,7 @@ instance : Inhabited Int where
 set_option linter.attributeInstanceIn false in
 /--
 warning: Despite the `in`, the attribute 'instance 1100' is added globally to 'Int.add'
-please remove the `in` or make this a `local instance` instead
+please remove the `in` or make this a `local instance 1100`
 note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
 -/
 #guard_msgs in
@@ -42,7 +42,7 @@ instance : Inhabited Int where
 set_option linter.attributeInstanceIn false in
 /--
 warning: Despite the `in`, the attribute 'instance' is added globally to 'Int.add'
-please remove the `in` or make this a `local instance` instead
+please remove the `in` or make this a `local instance`
 note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
 -/
 #guard_msgs in
@@ -52,10 +52,9 @@ instance : Inhabited Int where
   default := 0
 
 set_option linter.attributeInstanceIn false in
-#guard_msgs in
 /--
 warning: Despite the `in`, the attribute 'simp' is added globally to 'Int.add'
-please remove the `in` or make this a `local instance` instead
+please remove the `in` or make this a `local simp`
 note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
 -/
 #guard_msgs in
@@ -72,14 +71,13 @@ namespace X
 theorem foo (x y : Nat) : x = y := sorry
 
 set_option linter.attributeInstanceIn false in
-#guard_msgs in
 /--
 warning: Despite the `in`, the attribute 'simp' is added globally to 'foo'
-please remove the `in` or make this a `local instance` instead
+please remove the `in` or make this a `local simp`
 note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
 ---
 warning: Despite the `in`, the attribute 'ext' is added globally to 'foo'
-please remove the `in` or make this a `local instance` instead
+please remove the `in` or make this a `local ext`
 note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
 -/
 #guard_msgs in

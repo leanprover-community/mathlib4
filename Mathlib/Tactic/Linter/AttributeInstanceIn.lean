@@ -118,7 +118,7 @@ def attributeInstanceIn : Linter where run := withSetOptionIn fun stx => do
       for attr in nonScopedNorLocal do
         Linter.logLint linter.attributeInstanceIn attr m!
           "Despite the `in`, the attribute '{attr}' is added globally to '{id}'\n\
-          please remove the `in` or make this a `local {attr}` instead"
+          please remove the `in` or make this a `local {attr}`"
 
 initialize addLinter attributeInstanceIn
 
