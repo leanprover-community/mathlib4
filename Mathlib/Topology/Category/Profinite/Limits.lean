@@ -27,7 +27,7 @@ universe u w
 
 /-
 Previously, this had accidentally been made a global instance,
-and we now turn it on locally as convenient.
+and we now turn it on locally when convenient.
 -/
 attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
