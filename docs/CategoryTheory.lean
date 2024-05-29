@@ -14,7 +14,6 @@ noncomputable section -- Much of the category theory library is noncomputable,
 * Constructing the category of pointed spaces
   * Prove the equivalence between `PointedSpace` and `Under (TopCat.of Unit)`
 
-
 * Advanced topics:
   * Schemes
   * Setting up singular homology
@@ -48,7 +47,7 @@ If the two squares in
 ```
 commutes, then the outer rectangle commutes as well.
 -/
-example {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} -- Copilot will write the theorem statement, given the doc-string!
+example {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C}
     {f₁ : X₁ ⟶ X₂} {f₂ : X₂ ⟶ X₃}
     {g₁ : X₁ ⟶ Y₁} {g₂ : X₂ ⟶ Y₂} {g₃ : X₃ ⟶ Y₃}
     {h₁ : Y₁ ⟶ Y₂} {h₂ : Y₂ ⟶ Y₃}
@@ -212,10 +211,8 @@ using the adjunction `Abelianization.lift : (G →* A) ≃ (Abelianization G →
 the projection `Abelianization.of : G →* Abelianization G`.
 -/
 
-universe u
-
 /-- First attempt: -/
-example : GroupCat.{u} ⥤ CommGroupCat.{u} where
+example : GroupCat ⥤ CommGroupCat where
   obj G := CommGroupCat.of (Abelianization G)
   map f := Abelianization.lift (Abelianization.of.comp f)
 
@@ -232,7 +229,7 @@ so we'll need to unfold both, using the lemmas `CommGroupCat.comp_def` and `Grou
 #check Abelianization.map_comp -- Looks promising!
 
 attribute [local simp] CommGroupCat.comp_def GroupCat.comp_def in
-def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
+def abelianize : GroupCat ⥤ CommGroupCat where
   obj G := CommGroupCat.of (Abelianization G)
   map f := Abelianization.lift (Abelianization.of.comp f)
 
@@ -376,7 +373,8 @@ variable (S T : Scheme) (f : S ⟶ T) -- "Let `f` be a morphism of schemes."
 #synth HasFiniteLimits Scheme
 
 -- So we can define group schemes as group objects in `Scheme`,
--- except that Mathlib doesn't have group objects yet! (Nice small project?)
+-- except that Mathlib doesn't have group objects yet.
+-- (Sophie, Amelia, and Rebecca have been working on it this week!)
 
 -- At present we don't have coproducts or pushouts along open immersions,
 -- but we do have some general machinery about gluing along open immersions that should give these.
@@ -390,12 +388,6 @@ sorry -- Should be easily deducible from what we have: good introductory problem
 recall AlgebraicGeometry.AffineScheme.equivCommRingCat : AffineScheme ≌ CommRingCatᵒᵖ
 
 end Scheme
-
-
-
-
-
-
 
 
 
