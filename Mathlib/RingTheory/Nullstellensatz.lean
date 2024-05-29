@@ -133,7 +133,7 @@ theorem radical_le_vanishingIdeal_zeroLocus (I : Ideal (MvPolynomial σ k)) :
   intro p hp x hx
   rw [← mem_vanishingIdeal_singleton_iff]
   rw [radical_eq_sInf] at hp
-  refine'
+  refine
     (mem_sInf.mp hp)
       ⟨le_trans (le_vanishingIdeal_zeroLocus I)
           (vanishingIdeal_anti_mono fun y hy => hy.symm ▸ hx),
@@ -219,3 +219,4 @@ theorem IsPrime.vanishingIdeal_zeroLocus (P : Ideal (MvPolynomial σ k)) [h : P.
 #align mv_polynomial.is_prime.vanishing_ideal_zero_locus MvPolynomial.IsPrime.vanishingIdeal_zeroLocus
 
 end MvPolynomial
+

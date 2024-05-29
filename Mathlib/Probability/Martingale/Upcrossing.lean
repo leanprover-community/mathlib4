@@ -383,14 +383,14 @@ theorem upcrossingStrat_le_one : upcrossingStrat a b f N n ω ≤ 1 := by
       upperCrossingTime a b f N _ ω ≤ upperCrossingTime a b f N _ ω),
       max_eq_right (lowerCrossingTime_mono hij'.le :
         lowerCrossingTime a b f N _ _ ≤ lowerCrossingTime _ _ _ _ _ _)]
-    refine' le_trans upperCrossingTime_le_lowerCrossingTime
+    refine le_trans upperCrossingTime_le_lowerCrossingTime
       (lowerCrossingTime_mono (Nat.succ_le_of_lt hij'))
   · rw [gt_iff_lt] at hij'
     rw [min_eq_right (upperCrossingTime_mono (Nat.succ_le_succ hij'.le) :
       upperCrossingTime a b f N _ ω ≤ upperCrossingTime a b f N _ ω),
       max_eq_left (lowerCrossingTime_mono hij'.le :
         lowerCrossingTime a b f N _ _ ≤ lowerCrossingTime _ _ _ _ _ _)]
-    refine' le_trans upperCrossingTime_le_lowerCrossingTime
+    refine le_trans upperCrossingTime_le_lowerCrossingTime
       (lowerCrossingTime_mono (Nat.succ_le_of_lt hij'))
 #align measure_theory.upcrossing_strat_le_one MeasureTheory.upcrossingStrat_le_one
 
@@ -885,3 +885,4 @@ theorem Submartingale.mul_lintegral_upcrossings_le_lintegral_pos_part [IsFiniteM
 #align measure_theory.submartingale.mul_lintegral_upcrossings_le_lintegral_pos_part MeasureTheory.Submartingale.mul_lintegral_upcrossings_le_lintegral_pos_part
 
 end MeasureTheory
+
