@@ -3,7 +3,7 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.CoalgebraCat.MonEquivalence
+import Mathlib.Algebra.Category.CoalgebraCat.ComonEquivalence
 
 /-!
 # Tensor products of coalgebras
@@ -22,12 +22,11 @@ as a coalgebra morphism.
 We keep the linear maps underlying `Δ, ε` and other definitions in this file syntactically equal
 to the corresponding definitions for tensor products of modules in the hope that this makes
 life easier. However, to fill in prop fields, we use the API in
-`Mathlib.Algebra.Category.CoalgebraCat.MonEquivalence`. That file defines the monoidal category
-structure on coalgebras induced by an equivalence with monoid objects in the opposite
-category of modules, `CoalgebraCat.instMonoidalCategoryAux`, but we do not declare this as an
-instance - we just use it to prove things. Then, we use the definitions in this file to make a
-monoidal category instance on `CoalgebraCat R` in `Mathlib.Algebra.Category.CoalgebraCat.Monoidal`
-that has simpler data.
+`Mathlib.Algebra.Category.CoalgebraCat.ComonEquivalence`. That file defines the monoidal category
+structure on coalgebras induced by an equivalence with comonoid objects in the category of modules,
+`CoalgebraCat.instMonoidalCategoryAux`, but we do not declare this as an instance - we just use it
+to prove things. Then, we use the definitions in this file to make a monoidal category instance on
+`CoalgebraCat R` in `Mathlib.Algebra.Category.CoalgebraCat.Monoidal` that has simpler data.
 
 -/
 
@@ -42,14 +41,13 @@ variable {R M N P Q : Type u} [CommRing R]
 
 open MonoidalCategory in
 noncomputable instance TensorProduct.instCoalgebra : Coalgebra R (M ⊗[R] N) :=
-  let I := Monoidal.transport ((CoalgebraCat.monEquivalence R).symm.op.trans (opOpEquivalence _))
+  let I := Monoidal.transport ((CoalgebraCat.comonEquivalence R).symm)
   CoalgEquiv.toCoalgebra
     (A := (CoalgebraCat.of R M ⊗ CoalgebraCat.of R N : CoalgebraCat R))
     { LinearEquiv.refl R _ with
       counit_comp := rfl
       map_comp_comul := by
-        convert LinearMap.id_comp _
-        · exact TensorProduct.map_id
+        rw [CoalgebraCat.ofComonObjCoalgebraStruct_comul]
         simp [-Mon_.monMonoidalStruct_tensorObj_X,
           ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorHom,
           ModuleCat.comp_def, ModuleCat.of, ModuleCat.ofHom] }
