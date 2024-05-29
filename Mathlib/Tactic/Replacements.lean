@@ -5,32 +5,48 @@ example : True ∧ True := by
   trivial
   trivial
 
+instance (priority := 1) fine : True ∧ True := by
+  refine' ⟨_, _⟩
+  trivial
+  trivial
+
+/-- docs -/
+@[simp]
+partial
+def oh : True ∧ True := by
+  refine' ⟨_, _⟩
+  trivial
+  trivial
+
+
 /-- inserts the string `plus` at position `n` in the string `s`.
 It has a bespoke test for checking that we only add `plus` before a `_`. -/
 def String.insert (s : String) (n : Nat) (plus : String) : String :=
-  if s.get ⟨n + 2⟩ == '_' then
-    s.take n ++ plus ++ s.drop n
-  else s
+  let sc := s.toList
+  if sc.getD n default == '_' then
+    ⟨sc.take n ++ plus.toList ++ sc.drop n⟩
+  else dbg_trace "not inserted"; s
 
 #eval
   let str := "  refine' ⟨_, _⟩"
   let plus := "?"
   let n := 11
-  str.insert n plus
+  "  refine' ⟨?_, _⟩" == str.insert n plus
 
 /-- erases the string `m` characters starting from position `n` in the string `s`.
 It has a bespoke test for checking that we only remove the final `'` from `refine'`. -/
 def String.erase (s : String) (n m : Nat) : String :=
-  let check := (s.take (n + m)).drop (n - 6)
-  if check == "refine'" then
-    s.take n ++ s.drop (n + m)
-  else s
+  let sc := s.toList
+  let check := (sc.take (n + m)).drop (n - 6)
+  if check == "refine'".toList then
+    ⟨sc.take n ++ sc.drop (n + m)⟩
+  else dbg_trace "not erased"; s
 
 #eval
   let str := "  refine' ⟨_, _⟩"
   let n := 2
   let m := 1
-  str.erase (n + 6) m
+  "  refine ⟨_, _⟩" == str.erase (n + 6) m
 
 /-- `substitutions lines dat` takes as input the array `lines` of strings and the "instructions"
 `dat : Array (Nat × Nat × Nat)`.
@@ -113,7 +129,7 @@ elab "info:" "././././" t1:term ":" num ":" num ":" t:term : command => do
   let corrections : Array (Nat × Nat × Nat) := parseCorrections t
   let newContent := "\n".intercalate
     ((substitutions (← IO.FS.lines file) corrections).push "\n").toList
-  --IO.FS.writeFile file newContent
+  IO.FS.writeFile file newContent
 
 end syntax_and_elabs
 --info: ././././Mathlib/Data/Finset/Fold.lean:183:0: [(1, (194, 8))]
