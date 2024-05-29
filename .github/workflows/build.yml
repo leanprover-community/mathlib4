@@ -302,11 +302,11 @@ jobs:
         with:
           linters: gcc
           run: |
-            echo "first step"
-            env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
-            echo "nolints updated"
+            printf "first step"
+            env LEAN_ABORT_ON_PANIC=1 "lake exe runLinter --update Mathlib"
+            printf "nolints updated"
             ./scripts/update-style-exceptions.sh
-            echo "style exceptions updated"
+            printf "style exceptions updated"
             git diff
 
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
