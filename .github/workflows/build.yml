@@ -200,33 +200,6 @@ jobs:
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
-      - name: upload cache
-        # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
-        # but not if any earlier step failed or was cancelled.
-        # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Some.20files.20not.20found.20in.20the.20cache/near/407183836
-        if: ${{ always() && steps.get.outcome == 'success' }}
-        run: |
-          # TODO: this is not doing anything currently, and needs to be integrated with put-unpacked
-          # lake exe cache commit || true
-          # run this in CI if it gets an incorrect lake hash for existing cache files somehow
-          # lake exe cache put!
-          # do not try to upload files just downloaded
-          lake exe cache put-unpacked
-        env:
-          MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
-          MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
-
-      - name: check the cache
-        run: |
-          # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
-          # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
-          if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
-            lake exe cache clean!
-            rm -rf .lake/build/lib/Mathlib
-            lake exe cache get || (sleep 1; lake exe cache get)
-            lake build --no-build
-          fi
-
       - name: build archive
         id: archive
         run: |
