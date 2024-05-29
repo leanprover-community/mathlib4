@@ -287,13 +287,11 @@ def BasedCategory.whiskerRight {𝒳 𝒴 𝒵 : BasedCategory 𝒮} {F G : Base
     subst ha
     apply BasedFunctor.pres_IsHomLift
 
--- TODO: aesop no longer solves these.....
-
 /-- `BasedCategory 𝒮` forms a bicategory -/
 instance BasedCategory.bicategory : Bicategory (BasedCategory 𝒮) where
-  Hom := BasedFunctor
-  id := BasedFunctor.id
-  comp := BasedFunctor.comp
+  Hom 𝒳 𝒴 := BasedFunctor 𝒳 𝒴
+  id 𝒳 := BasedFunctor.id 𝒳
+  comp F G := BasedFunctor.comp F G
   homCategory 𝒳 𝒴 := homCategory 𝒳 𝒴
   whiskerLeft := BasedCategory.whiskerLeft
   whiskerRight {𝒳 𝒴 𝒵} F G α H := BasedCategory.whiskerRight α H
@@ -303,8 +301,8 @@ instance BasedCategory.bicategory : Bicategory (BasedCategory 𝒮) where
 
 /-- The bicategory structure on `BasedCategory 𝒮` is strict -/
 instance : Bicategory.Strict (BasedCategory 𝒮) where
-  id_comp := BasedFunctor.id_comp
-  comp_id := BasedFunctor.comp_id
-  assoc := BasedFunctor.assoc
+  id_comp F := BasedFunctor.id_comp F
+  comp_id F := BasedFunctor.comp_id F
+  assoc F G H := BasedFunctor.assoc F G H
 
 end Fibered
