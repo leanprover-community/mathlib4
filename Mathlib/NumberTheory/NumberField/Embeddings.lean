@@ -469,8 +469,6 @@ theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) :
   · refine Finset.card_pair ?_
     rwa [Ne, eq_comm, ← ComplexEmbedding.isReal_iff, ← isReal_iff]
 
-open scoped BigOperators
-
 noncomputable instance NumberField.InfinitePlace.fintype [NumberField K] :
     Fintype (InfinitePlace K) := Set.fintypeRange _
 #align number_field.infinite_place.number_field.infinite_place.fintype NumberField.InfinitePlace.NumberField.InfinitePlace.fintype
@@ -508,8 +506,6 @@ theorem mkComplex_coe (φ : { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ }
 #align number_field.infinite_place.mk_complex_coe NumberField.InfinitePlace.mkComplex_coe
 
 variable [NumberField K]
-
-open scoped BigOperators
 
 /-- The infinite part of the product formula : for `x ∈ K`, we have `Π_w ‖x‖_w = |norm(x)|` where
 `‖·‖_w` is the normalized absolute value for `w`.  -/
@@ -948,7 +944,7 @@ lemma even_finrank_of_not_isUnramifiedIn
 
 variable (k K)
 
-open Finset BigOperators in
+open Finset in
 lemma card_isUnramified [NumberField k] [IsGalois k K] :
     Finset.card (univ.filter <| IsUnramified k (K := K)) =
       Finset.card (univ.filter <| IsUnramifiedIn K (k := k)) * (finrank k K) := by
@@ -970,7 +966,7 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
       rwa [← isUnramifiedIn_comap]
   · simp [isUnramifiedIn_comap]
 
-open Finset BigOperators in
+open Finset in
 lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
     Finset.card (univ.filter <| IsUnramified k (K := K))ᶜ =
       Finset.card (univ.filter <| IsUnramifiedIn K (k := k))ᶜ * (finrank k K / 2) := by

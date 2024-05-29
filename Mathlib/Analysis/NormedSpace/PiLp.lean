@@ -64,7 +64,7 @@ We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
 
 set_option linter.uppercaseLean3 false
 
-open Real Set Filter RCLike Bornology BigOperators Uniformity Topology NNReal ENNReal
+open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal
 
 noncomputable section
 
@@ -346,7 +346,7 @@ theorem iSup_edist_ne_top_aux {ι : Type*} [Finite ι] {α : ι → Type*}
     [∀ i, PseudoMetricSpace (α i)] (f g : PiLp ∞ α) : (⨆ i, edist (f i) (g i)) ≠ ⊤ := by
   cases nonempty_fintype ι
   obtain ⟨M, hM⟩ := Finite.exists_le fun i => (⟨dist (f i) (g i), dist_nonneg⟩ : ℝ≥0)
-  refine' ne_of_lt ((iSup_le fun i => _).trans_lt (@ENNReal.coe_lt_top M))
+  refine ne_of_lt ((iSup_le fun i => ?_).trans_lt (@ENNReal.coe_lt_top M))
   simp only [edist, PseudoMetricSpace.edist_dist, ENNReal.ofReal_eq_coe_nnreal dist_nonneg]
   exact mod_cast hM i
 #align pi_Lp.supr_edist_ne_top_aux PiLp.iSup_edist_ne_top_aux
@@ -803,10 +803,11 @@ variable [DecidableEq ι]
 theorem nnnorm_equiv_symm_single [hp : Fact (1 ≤ p)] (i : ι) (b : β i) :
     ‖(WithLp.equiv p (∀ i, β i)).symm (Pi.single i b)‖₊ = ‖b‖₊ := by
   haveI : Nonempty ι := ⟨i⟩
-  induction p using ENNReal.recTopCoe generalizing hp with
+  induction p generalizing hp with
   | top =>
     simp_rw [nnnorm_eq_ciSup, WithLp.equiv_symm_pi_apply]
-    refine' ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun j => _) fun n hn => ⟨i, hn.trans_eq _⟩
+    refine
+      ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun j => ?_) fun n hn => ⟨i, hn.trans_eq ?_⟩
     · obtain rfl | hij := Decidable.eq_or_ne i j
       · rw [Pi.single_eq_same]
       · rw [Pi.single_eq_of_ne' hij, nnnorm_zero]

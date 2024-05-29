@@ -741,6 +741,16 @@ lemma algebraMap_le_cfc (f : R → R) (r : R) (a : A) (h : ∀ x ∈ spectrum R 
     algebraMap R A r ≤ cfc f a :=
   cfc_const r a ▸ cfc_mono h
 
+lemma le_algebraMap_of_spectrum_le {r : R} {a : A} (h : ∀ x ∈ spectrum R a, x ≤ r)
+    (ha : p a := by cfc_tac) : a ≤ algebraMap R A r := by
+  rw [← cfc_id R a]
+  exact cfc_le_algebraMap id r a h
+
+lemma algebraMap_le_of_le_spectrum {r : R} {a : A} (h : ∀ x ∈ spectrum R a, r ≤ x)
+    (ha : p a := by cfc_tac) : algebraMap R A r ≤ a := by
+  rw [← cfc_id R a]
+  exact algebraMap_le_cfc id r a h
+
 lemma cfc_le_one (f : R → R) (a : A) (h : ∀ x ∈ spectrum R a, f x ≤ 1) : cfc f a ≤ 1 := by
   apply cfc_cases (· ≤ 1) _ _ (by simpa using star_mul_self_nonneg (1 : A)) fun hf ha ↦ ?_
   rw [← map_one (cfcHom ha (R := R))]

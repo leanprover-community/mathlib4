@@ -49,7 +49,7 @@ Particular kernels:
 
 open MeasureTheory
 
-open scoped MeasureTheory ENNReal NNReal BigOperators
+open scoped MeasureTheory ENNReal NNReal
 
 namespace ProbabilityTheory
 
@@ -106,16 +106,16 @@ theorem zero_apply (a : α) : (0 : kernel α β) a = 0 :=
 #align probability_theory.kernel.zero_apply ProbabilityTheory.kernel.zero_apply
 
 @[simp]
-theorem coe_finset_sum (I : Finset ι) (κ : ι → kernel α β) : ⇑(∑ i in I, κ i) = ∑ i in I, ⇑(κ i) :=
+theorem coe_finset_sum (I : Finset ι) (κ : ι → kernel α β) : ⇑(∑ i ∈ I, κ i) = ∑ i ∈ I, ⇑(κ i) :=
   map_sum (coeAddHom α β) _ _
 #align probability_theory.kernel.coe_finset_sum ProbabilityTheory.kernel.coe_finset_sum
 
 theorem finset_sum_apply (I : Finset ι) (κ : ι → kernel α β) (a : α) :
-    (∑ i in I, κ i) a = ∑ i in I, κ i a := by rw [coe_finset_sum, Finset.sum_apply]
+    (∑ i ∈ I, κ i) a = ∑ i ∈ I, κ i a := by rw [coe_finset_sum, Finset.sum_apply]
 #align probability_theory.kernel.finset_sum_apply ProbabilityTheory.kernel.finset_sum_apply
 
 theorem finset_sum_apply' (I : Finset ι) (κ : ι → kernel α β) (a : α) (s : Set β) :
-    (∑ i in I, κ i) a s = ∑ i in I, κ i a s := by rw [finset_sum_apply, Measure.finset_sum_apply]
+    (∑ i ∈ I, κ i) a s = ∑ i ∈ I, κ i a s := by rw [finset_sum_apply, Measure.finset_sum_apply]
 #align probability_theory.kernel.finset_sum_apply' ProbabilityTheory.kernel.finset_sum_apply'
 
 end kernel
@@ -336,13 +336,13 @@ instance IsSFiniteKernel.add (κ η : kernel α β) [IsSFiniteKernel κ] [IsSFin
 #align probability_theory.kernel.is_s_finite_kernel.add ProbabilityTheory.kernel.IsSFiniteKernel.add
 
 theorem IsSFiniteKernel.finset_sum {κs : ι → kernel α β} (I : Finset ι)
-    (h : ∀ i ∈ I, IsSFiniteKernel (κs i)) : IsSFiniteKernel (∑ i in I, κs i) := by
+    (h : ∀ i ∈ I, IsSFiniteKernel (κs i)) : IsSFiniteKernel (∑ i ∈ I, κs i) := by
   classical
   induction' I using Finset.induction with i I hi_nmem_I h_ind h
   · rw [Finset.sum_empty]; infer_instance
   · rw [Finset.sum_insert hi_nmem_I]
     haveI : IsSFiniteKernel (κs i) := h i (Finset.mem_insert_self _ _)
-    have : IsSFiniteKernel (∑ x : ι in I, κs x) :=
+    have : IsSFiniteKernel (∑ x ∈ I, κs x) :=
       h_ind fun i hiI => h i (Finset.mem_insert_of_mem hiI)
     exact IsSFiniteKernel.add _ _
 #align probability_theory.kernel.is_s_finite_kernel.finset_sum ProbabilityTheory.kernel.IsSFiniteKernel.finset_sum

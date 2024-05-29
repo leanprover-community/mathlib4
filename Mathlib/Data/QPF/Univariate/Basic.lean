@@ -353,7 +353,7 @@ theorem Fix.ind (p : Fix F → Prop) (h : ∀ x : F (Fix F), Liftp p x → p (Fi
   rw [← Fix.ind_aux a f]
   apply h
   rw [liftp_iff]
-  refine' ⟨_, _, rfl, _⟩
+  refine ⟨_, _, rfl, ?_⟩
   convert ih
 #align qpf.fix.ind QPF.Fix.ind
 
@@ -685,7 +685,7 @@ theorem liftp_iff_of_isUniform (h : q.IsUniform) {α : Type u} (x : F α) (p : �
     rw [← hi]
     apply hf
   intro h'
-  refine' ⟨a, f, rfl, fun i => h' _ _⟩
+  refine ⟨a, f, rfl, fun i => h' _ ?_⟩
   rw [supp_eq_of_isUniform h]
   exact ⟨i, mem_univ i, rfl⟩
 #align qpf.liftp_iff_of_is_uniform QPF.liftp_iff_of_isUniform

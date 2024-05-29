@@ -3,9 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Order.Interval.Multiset
-import Mathlib.Algebra.Order.Interval.Finset
 
 #align_import data.nat.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
@@ -21,6 +19,8 @@ Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedCommMono
 and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
 
+-- TODO
+-- assert_not_exists Ring
 
 open Finset Nat
 
@@ -225,7 +225,7 @@ theorem image_sub_const_Ico (h : c ≤ a) :
     rw [mem_Ico] at hx ⊢
     exact ⟨tsub_le_tsub_right hx.1 _, tsub_lt_tsub_right_of_le (h.trans hx.1) hx.2⟩
   · rintro h
-    refine' ⟨x + c, _, add_tsub_cancel_right _ _⟩
+    refine ⟨x + c, ?_, add_tsub_cancel_right _ _⟩
     rw [mem_Ico] at h ⊢
     exact ⟨tsub_le_iff_right.1 h.1, lt_tsub_iff_right.1 h.2⟩
 #align nat.image_sub_const_Ico Nat.image_sub_const_Ico
@@ -237,8 +237,8 @@ theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
   constructor
   · rintro ⟨x, hx, rfl⟩
     rw [mem_Ico] at hx
-    refine'
-      ⟨_,
+    refine
+      ⟨?_,
         ((tsub_le_tsub_iff_left hac).2 hx.1).trans_lt
           ((tsub_lt_tsub_iff_right hac).2 (Nat.lt_succ_self _))⟩
     cases lt_or_le c b with
@@ -251,7 +251,7 @@ theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
   · rintro ⟨hb, ha⟩
     rw [lt_tsub_iff_left, Nat.lt_succ_iff] at ha
     have hx : x ≤ c := (Nat.le_add_left _ _).trans ha
-    refine' ⟨c - x, _, tsub_tsub_cancel_of_le hx⟩
+    refine ⟨c - x, ?_, tsub_tsub_cancel_of_le hx⟩
     rw [mem_Ico]
     exact
       ⟨le_tsub_of_add_le_right ha,
@@ -287,7 +287,7 @@ theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) :=
     suffices k = n by contradiction
     refine ih hk ?_ hkl
     simp only [lt_add_iff_pos_right, Set.left_mem_Ico, Finset.coe_Ico, ha]
-  · refine' ih _ _ hkl <;> simp only [Finset.mem_coe, hk, hl]
+  · refine ih ?_ ?_ hkl <;> simp only [Finset.mem_coe, hk, hl]
 #align nat.mod_inj_on_Ico Nat.mod_injOn_Ico
 
 /-- Note that while this lemma cannot be easily generalized to a type class, it holds for ℤ as
@@ -303,17 +303,17 @@ theorem image_Ico_mod (n a : ℕ) : (Ico n (n + a)).image (· % a) = range a := 
   intro hia
   have hn := Nat.mod_add_div n a
   obtain hi | hi := lt_or_le i (n % a)
-  · refine' ⟨i + a * (n / a + 1), ⟨_, _⟩, _⟩
-    · rw [add_comm (n / a), mul_add, mul_one, ← add_assoc]
-      refine' hn.symm.le.trans (add_le_add_right _ _)
+  · refine ⟨i + a * (n / a + 1), ⟨?_, ?_⟩, ?_⟩
+    · rw [add_comm (n / a), Nat.mul_add, mul_one, ← add_assoc]
+      refine hn.symm.le.trans (add_le_add_right ?_ _)
       simpa only [zero_add] using add_le_add (zero_le i) (Nat.mod_lt n ha.bot_lt).le
-    · refine' lt_of_lt_of_le (add_lt_add_right hi (a * (n / a + 1))) _
-      rw [mul_add, mul_one, ← add_assoc, hn]
+    · refine lt_of_lt_of_le (add_lt_add_right hi (a * (n / a + 1))) ?_
+      rw [Nat.mul_add, mul_one, ← add_assoc, hn]
     · rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hia]
-  · refine' ⟨i + a * (n / a), ⟨_, _⟩, _⟩
+  · refine ⟨i + a * (n / a), ⟨?_, ?_⟩, ?_⟩
     · exact hn.symm.le.trans (add_le_add_right hi _)
     · rw [add_comm n a]
-      refine' add_lt_add_of_lt_of_le hia (le_trans _ hn.le)
+      refine add_lt_add_of_lt_of_le hia (le_trans ?_ hn.le)
       simp only [zero_le, le_add_iff_nonneg_left]
     · rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hia]
 #align nat.image_Ico_mod Nat.image_Ico_mod
@@ -325,7 +325,7 @@ open Multiset
 theorem multiset_Ico_map_mod (n a : ℕ) :
     (Multiset.Ico n (n + a)).map (· % a) = Multiset.range a := by
   convert congr_arg Finset.val (image_Ico_mod n a)
-  refine' ((nodup_map_iff_inj_on (Finset.Ico _ _).nodup).2 <| _).dedup.symm
+  refine ((nodup_map_iff_inj_on (Finset.Ico _ _).nodup).2 <| ?_).dedup.symm
   exact mod_injOn_Ico _ _
 #align nat.multiset_Ico_map_mod Nat.multiset_Ico_map_mod
 
@@ -343,11 +343,15 @@ theorem range_image_pred_top_sub (n : ℕ) :
     simp_rw [succ_sub_succ, tsub_zero, tsub_self]
 #align finset.range_image_pred_top_sub Finset.range_image_pred_top_sub
 
--- Porting note: had to use `@` and specify `(a + b)` explicitly. mathlib3 managed without.
 theorem range_add_eq_union : range (a + b) = range a ∪ (range b).map (addLeftEmbedding a) := by
   rw [Finset.range_eq_Ico, map_eq_image]
-  convert (@Ico_union_Ico_eq_Ico _ _ _ _ _ (a + b) a.zero_le le_self_add).symm
-  exact image_add_left_Ico _ _ _
+  convert (Ico_union_Ico_eq_Ico a.zero_le le_self_add).symm
+  ext x
+  simp only [Ico_zero_eq_range, mem_image, mem_range, addLeftEmbedding_apply, mem_Ico]
+  constructor
+  · aesop
+  · rintro h
+    exact ⟨x - a, by omega⟩
 #align finset.range_add_eq_union Finset.range_add_eq_union
 
 end Finset
@@ -396,13 +400,13 @@ theorem Nat.cauchy_induction_mul (k seed : ℕ) (hk : 1 < k) (hs : P seed.succ)
     (hm : ∀ x, seed < x → P x → P (k * x)) (n : ℕ) : P n := by
   apply Nat.cauchy_induction h _ hs (k * ·) fun x hl hP => ⟨_, hm x hl hP⟩
   intro _ hl _
-  convert (mul_lt_mul_right <| seed.succ_pos.trans_le hl).2 hk
+  convert (Nat.mul_lt_mul_right <| seed.succ_pos.trans_le hl).2 hk
   rw [one_mul]
 #align nat.cauchy_induction_mul Nat.cauchy_induction_mul
 
 theorem Nat.cauchy_induction_two_mul (seed : ℕ) (hs : P seed.succ)
     (hm : ∀ x, seed < x → P x → P (2 * x)) (n : ℕ) : P n :=
-  Nat.cauchy_induction_mul h 2 seed one_lt_two hs hm n
+  Nat.cauchy_induction_mul h 2 seed Nat.one_lt_two hs hm n
 #align nat.cauchy_induction_two_mul Nat.cauchy_induction_two_mul
 
 theorem Nat.pow_imp_self_of_one_lt {M} [Monoid M] (k : ℕ) (hk : 1 < k)

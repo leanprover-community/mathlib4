@@ -93,7 +93,7 @@ theorem toGroup.of {x : α} : toGroup h (of x) = f x :=
 theorem toGroup.unique (g : PresentedGroup rels →* G)
     (hg : ∀ x : α, g (PresentedGroup.of x) = f x) : ∀ {x}, g x = toGroup h x := by
   intro x
-  refine' QuotientGroup.induction_on x _
+  refine QuotientGroup.induction_on x ?_
   exact fun _ ↦ FreeGroup.lift.unique (g.comp (QuotientGroup.mk' _)) hg
 #align presented_group.to_group.unique PresentedGroup.toGroup.unique
 
