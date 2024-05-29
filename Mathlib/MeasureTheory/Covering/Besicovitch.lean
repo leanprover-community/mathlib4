@@ -1084,7 +1084,7 @@ protected def vitaliFamily (μ : Measure α) [SigmaFinite μ] : VitaliFamily μ 
                 t.PairwiseDisjoint fun x => closedBall x (r x) :=
       exists_disjoint_closedBall_covering_ae μ g s A (fun _ => 1) fun _ _ => zero_lt_one
     let F : α → α × Set α := fun x => (x, closedBall x (r x))
-    refine' ⟨F '' t, _, _, _, _⟩
+    refine ⟨F '' t, ?_, ?_, ?_, ?_⟩
     · rintro - ⟨x, hx, rfl⟩; exact ts hx
     · rintro p ⟨x, hx, rfl⟩ q ⟨y, hy, rfl⟩ hxy
       exact tdisj hx hy (ne_of_apply_ne F hxy)

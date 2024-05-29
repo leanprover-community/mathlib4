@@ -920,10 +920,10 @@ instance (priority := 100) wfDvdMonoid {R : Type*} [CommRing R] [IsDomain R] [Wf
     WfDvdMonoid R[X] where
   wellFounded_dvdNotUnit := by
     classical
-      refine'
+      refine
         RelHomClass.wellFounded
           (⟨fun p : R[X] =>
-              ((if p = 0 then ⊤ else ↑p.degree : WithTop (WithBot ℕ)), p.leadingCoeff), _⟩ :
+              ((if p = 0 then ⊤ else ↑p.degree : WithTop (WithBot ℕ)), p.leadingCoeff), ?_⟩ :
             DvdNotUnit →r Prod.Lex (· < ·) DvdNotUnit)
           (wellFounded_lt.prod_lex ‹WfDvdMonoid R›.wellFounded_dvdNotUnit)
       rintro a b ⟨ane0, ⟨c, ⟨not_unit_c, rfl⟩⟩⟩
@@ -937,7 +937,7 @@ instance (priority := 100) wfDvdMonoid {R : Type*} [CommRing R] [IsDomain R] [Wf
       simp only [cne0, ane0, Polynomial.leadingCoeff_mul]
       by_cases hdeg : c.degree = 0
       · simp only [hdeg, add_zero]
-        refine' Prod.Lex.right _ ⟨_, ⟨c.leadingCoeff, fun unit_c => not_unit_c _, rfl⟩⟩
+        refine Prod.Lex.right _ ⟨?_, ⟨c.leadingCoeff, fun unit_c => not_unit_c ?_, rfl⟩⟩
         · rwa [Ne, Polynomial.leadingCoeff_eq_zero]
         rw [Polynomial.isUnit_iff, Polynomial.eq_C_of_degree_eq_zero hdeg]
         use c.leadingCoeff, unit_c
@@ -1354,6 +1354,3 @@ theorem Polynomial.exists_monic_irreducible_factor {F : Type*} [Field F] (f : F[
   have ha : Associated g (g * C g.leadingCoeff⁻¹) := associated_mul_unit_right _ _ <|
     isUnit_C.2 (leadingCoeff_ne_zero.2 hi.ne_zero).isUnit.inv
   exact ⟨_, monic_mul_leadingCoeff_inv hi.ne_zero, ha.irreducible hi, ha.dvd_iff_dvd_left.1 hf⟩
-
-
-

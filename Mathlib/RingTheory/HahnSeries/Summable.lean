@@ -379,13 +379,13 @@ def ofFinsupp (f : α →₀ HahnSeries Γ R) : SummableFamily Γ R α where
   toFun := f
   isPWO_iUnion_support' := by
     apply (f.support.isPWO_bUnion.2 fun a _ => (f a).isPWO_support).mono
-    refine' Set.iUnion_subset_iff.2 fun a g hg => _
+    refine Set.iUnion_subset_iff.2 fun a g hg => ?_
     have haf : a ∈ f.support := by
       rw [Finsupp.mem_support_iff, ← support_nonempty_iff]
       exact ⟨g, hg⟩
     exact Set.mem_biUnion haf hg
   finite_co_support' g := by
-    refine' f.support.finite_toSet.subset fun a ha => _
+    refine f.support.finite_toSet.subset fun a ha => ?_
     simp only [coeff.addMonoidHom_apply, mem_coe, Finsupp.mem_support_iff, Ne,
       Function.mem_support]
     contrapose! ha
@@ -419,7 +419,7 @@ variable [PartialOrder Γ] [AddCommMonoid R] {α β : Type*}
 def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R β where
   toFun b := if h : b ∈ Set.range f then s (Classical.choose h) else 0
   isPWO_iUnion_support' := by
-    refine' s.isPWO_iUnion_support.mono (Set.iUnion_subset fun b g h => _)
+    refine s.isPWO_iUnion_support.mono (Set.iUnion_subset fun b g h => ?_)
     by_cases hb : b ∈ Set.range f
     · dsimp only at h
       rw [dif_pos hb] at h
@@ -476,12 +476,12 @@ def powers (x : HahnSeries Γ R) (hx : 0 < addVal Γ R x) : SummableFamily Γ R 
     swap; · exact Set.finite_empty.subset fun n hn => hg (Set.mem_iUnion.2 ⟨n, hn⟩)
     apply hpwo.isWF.induction hg
     intro y ys hy
-    refine'
+    refine
       ((((addAntidiagonal x.isPWO_support hpwo y).finite_toSet.biUnion fun ij hij =>
-                    hy ij.snd _ _).image
+                    hy ij.snd ?_ ?_).image
                 Nat.succ).union
             (Set.finite_singleton 0)).subset
-        _
+        ?_
     · exact (mem_addAntidiagonal.1 (mem_coe.1 hij)).2.1
     · obtain ⟨hi, _, rfl⟩ := mem_addAntidiagonal.1 (mem_coe.1 hij)
       rw [← zero_add ij.snd, ← add_assoc, add_zero]
@@ -491,7 +491,7 @@ def powers (x : HahnSeries Γ R) (hx : 0 < addVal Γ R x) : SummableFamily Γ R 
     · rintro (_ | n) hn
       · exact Set.mem_union_right _ (Set.mem_singleton 0)
       · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support hn
-        refine' Set.mem_union_left _ ⟨n, Set.mem_iUnion.2 ⟨⟨j, i⟩, Set.mem_iUnion.2 ⟨_, hi⟩⟩, rfl⟩
+        refine Set.mem_union_left _ ⟨n, Set.mem_iUnion.2 ⟨⟨j, i⟩, Set.mem_iUnion.2 ⟨?_, hi⟩⟩, rfl⟩
         simp only [and_true_iff, Set.mem_iUnion, mem_addAntidiagonal, mem_coe, eq_self_iff_true,
           Ne, mem_support, Set.mem_setOf_eq]
         exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩

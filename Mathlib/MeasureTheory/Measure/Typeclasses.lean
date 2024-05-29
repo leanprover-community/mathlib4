@@ -1258,7 +1258,7 @@ instance (priority := 100) sigmaFinite_of_locallyFinite [TopologicalSpace α]
     [SecondCountableTopology α] [IsLocallyFiniteMeasure μ] : SigmaFinite μ := by
   choose s hsx hsμ using μ.finiteAt_nhds
   rcases TopologicalSpace.countable_cover_nhds hsx with ⟨t, htc, htU⟩
-  refine' Measure.sigmaFinite_of_countable (htc.image s) (forall_mem_image.2 fun x _ => hsμ x) _
+  refine Measure.sigmaFinite_of_countable (htc.image s) (forall_mem_image.2 fun x _ => hsμ x) ?_
   rwa [sUnion_image]
 #align measure_theory.sigma_finite_of_locally_finite MeasureTheory.sigmaFinite_of_locallyFinite
 
@@ -1586,4 +1586,3 @@ theorem measure_Ioo_lt_top : μ (Ioo a b) < ∞ :=
 #align measure_Ioo_lt_top measure_Ioo_lt_top
 
 end MeasureIxx
-

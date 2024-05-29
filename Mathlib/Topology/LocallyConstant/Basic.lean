@@ -605,7 +605,7 @@ def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) 
     rw [IsLocallyConstant.iff_continuous] at hf hg ⊢
     dsimp only [coe_mk]
     rw [Set.union_eq_iUnion] at h
-    refine' (locallyFinite_of_finite _).continuous h (fun i ↦ _) (fun i ↦ _)
+    refine (locallyFinite_of_finite _).continuous h (fun i ↦ ?_) (fun i ↦ ?_)
     · cases i <;> [exact h₂; exact h₁]
     · cases i <;> rw [continuousOn_iff_continuous_restrict]
       · convert hg

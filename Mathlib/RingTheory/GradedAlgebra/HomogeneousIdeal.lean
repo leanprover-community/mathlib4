@@ -538,7 +538,7 @@ variable (I : Ideal A)
 the smallest homogeneous ideal containing `I`. -/
 def Ideal.homogeneousHull : HomogeneousIdeal 𝒜 :=
   ⟨Ideal.span { r : A | ∃ (i : ι) (x : I), (DirectSum.decompose 𝒜 (x : A) i : A) = r }, by
-    refine' Ideal.homogeneous_span _ _ fun x hx => _
+    refine Ideal.homogeneous_span _ _ fun x hx => ?_
     obtain ⟨i, x, rfl⟩ := hx
     apply SetLike.homogeneous_coe⟩
 #align ideal.homogeneous_hull Ideal.homogeneousHull

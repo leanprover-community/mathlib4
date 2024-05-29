@@ -355,11 +355,11 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
       exacts [⟨⟨WalkingPair.left⟩, h⟩, ⟨⟨WalkingPair.right⟩, h⟩]
     · rintro ⟨⟨_ | _⟩, h⟩
       exacts [Or.inl h, Or.inr h]
-  refine'
+  refine
     (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 ι).some.lift
         ⟨s.pt,
-          { app := _
-            naturality := _ }⟩ ≫
+          { app := ?_
+            naturality := ?_ }⟩ ≫
       F.1.map (eqToHom hι).op
   · rintro ((_ | _) | (_ | _))
     exacts [s.fst, s.snd, s.fst ≫ F.1.map (homOfLE inf_le_left).op,
@@ -414,7 +414,7 @@ def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
   apply PullbackCone.isLimitAux'
   intro s
   use interUnionPullbackConeLift F U V s
-  refine' ⟨_, _, _⟩
+  refine ⟨?_, ?_, ?_⟩
   · apply interUnionPullbackConeLift_left
   · apply interUnionPullbackConeLift_right
   · intro m h₁ h₂

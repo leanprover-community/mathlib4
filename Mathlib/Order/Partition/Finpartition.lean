@@ -615,11 +615,11 @@ def atomise (s : Finset α) (F : Finset (Finset α)) : Finpartition s :=
             rw [id, mem_filter] at hz1 hz2
             rw [mem_powerset] at hQ hR
             ext i
-            refine' ⟨fun hi ↦ _, fun hi ↦ _⟩
+            refine ⟨fun hi ↦ ?_, fun hi ↦ ?_⟩
             · rwa [hz2.2 _ (hQ hi), ← hz1.2 _ (hQ hi)]
             · rwa [hz1.2 _ (hR hi), ← hz2.2 _ (hR hi)]))
     (by
-      refine' (Finset.sup_le fun t ht ↦ _).antisymm fun a ha ↦ _
+      refine (Finset.sup_le fun t ht ↦ ?_).antisymm fun a ha ↦ ?_
       · rw [mem_image] at ht
         obtain ⟨A, _, rfl⟩ := ht
         exact s.filter_subset _
@@ -680,4 +680,3 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
 end Atomise
 
 end Finpartition
-

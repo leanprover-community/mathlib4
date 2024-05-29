@@ -481,7 +481,7 @@ def append (s₁ s₂ : CompositionSeries X) (h : s₁.top = s₂.bot) : Composi
   length := s₁.length + s₂.length
   series := Matrix.vecAppend (Nat.add_succ s₁.length s₂.length).symm (s₁ ∘ Fin.castSucc) s₂
   step' i := by
-    refine' Fin.addCases _ _ i
+    refine Fin.addCases ?_ ?_ i
     · intro i
       rw [append_succ_castAdd_aux _ _ _ h, append_castAdd_aux]
       exact s₁.step i
@@ -525,7 +525,7 @@ def snoc (s : CompositionSeries X) (x : X) (hsat : IsMaximal s.top x) : Composit
   length := s.length + 1
   series := Fin.snoc s x
   step' i := by
-    refine' Fin.lastCases _ _ i
+    refine Fin.lastCases ?_ ?_ i
     · rwa [Fin.snoc_castSucc, Fin.succ_last, Fin.snoc_last, ← top]
     · intro i
       rw [Fin.snoc_castSucc, ← Fin.castSucc_fin_succ, Fin.snoc_castSucc]

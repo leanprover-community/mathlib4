@@ -48,7 +48,7 @@ the diagram whose limit gives the morphism space between two objects of the limi
 def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v})) : J ⥤ Type v where
   obj j := limit.π (F ⋙ Cat.objects) j X ⟶ limit.π (F ⋙ Cat.objects) j Y
   map f g := by
-    refine' eqToHom _ ≫ (F.map f).map g ≫ eqToHom _
+    refine eqToHom ?_ ≫ (F.map f).map g ≫ eqToHom ?_
     · exact (congr_fun (limit.w (F ⋙ Cat.objects) f) X).symm
     · exact congr_fun (limit.w (F ⋙ Cat.objects) f) Y
   map_id X := by
@@ -110,7 +110,7 @@ def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F wh
   map f := by
     fapply Types.Limit.mk.{v, v}
     · intro j
-      refine' eqToHom _ ≫ (s.π.app j).map f ≫ eqToHom _ <;> simp
+      refine eqToHom ?_ ≫ (s.π.app j).map f ≫ eqToHom ?_ <;> simp
     · intro j j' h
       dsimp
       simp only [Category.assoc, Functor.map_comp, eqToHom_map, eqToHom_trans,
@@ -141,7 +141,7 @@ def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
     exact Types.Limit.π_mk.{v, v} _ _ _ _
   uniq s m w := by
     symm
-    refine' CategoryTheory.Functor.ext _ _
+    refine CategoryTheory.Functor.ext ?_ ?_
     · intro X
       apply Types.limit_ext.{v, v}
       intro j

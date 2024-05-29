@@ -570,7 +570,7 @@ def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
     ((ι → 𝕜) →L[𝕜] E) ≃L[𝕜] ι → E :=
   { LinearMap.toContinuousLinearMap.symm.trans (LinearEquiv.piRing 𝕜 E ι 𝕜) with
     continuous_toFun := by
-      refine' continuous_pi fun i => _
+      refine continuous_pi fun i => ?_
       exact (ContinuousLinearMap.apply 𝕜 E (Pi.single i 1)).continuous
     continuous_invFun := by
       simp_rw [LinearEquiv.invFun_eq_symm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
@@ -747,4 +747,3 @@ theorem IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E] [Normed
     [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) : Summable f ↔ Summable g :=
   ⟨fun hf => summable_of_isEquivalent_nat hf h.symm, fun hg => summable_of_isEquivalent_nat hg h⟩
 #align is_equivalent.summable_iff_nat IsEquivalent.summable_iff_nat
-
