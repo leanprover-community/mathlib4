@@ -20,7 +20,9 @@ import Mathlib.CategoryTheory.Sites.LocallyInjective
 
 ## Main results
 
-- `isLocallySurjective_toSheafify`: `toSheafify` is locally surjective.
+- `Presheaf.isLocallySurjective_toSheafify`: `toSheafify` is locally surjective.
+- `Sheaf.isLocallySurjective_iff_epi`: a morphism of sheaves of types is locally
+  surjective iff it is epi
 
 -/
 
@@ -347,6 +349,17 @@ instance epi_of_isLocallySurjective' {F₁ F₂ : Sheaf J (Type w)} (φ : F₁ �
 
 instance epi_of_isLocallySurjective [IsLocallySurjective φ] : Epi φ :=
   (sheafCompose J (forget A)).epi_of_epi_map inferInstance
+
+lemma isLocallySurjective_iff_epi {F G : Sheaf J (Type w)} (φ : F ⟶ G)
+    [HasSheafify J (Type w)] :
+    IsLocallySurjective φ ↔ Epi φ := by
+  constructor
+  · intro
+    infer_instance
+  · intro
+    have := epi_of_epi_fac (toImageSheaf_ι φ)
+    rw [isLocallySurjective_iff_isIso φ]
+    apply isIso_of_mono_of_epi
 
 end Sheaf
 
