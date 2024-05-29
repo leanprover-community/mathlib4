@@ -1013,7 +1013,7 @@ variable [CommRing α] [IsDomain α] [NormalizedGCDMonoid α]
 theorem gcd_eq_of_dvd_sub_right {a b c : α} (h : a ∣ b - c) : gcd a b = gcd a c := by
   apply dvd_antisymm_of_normalize_eq (normalize_gcd _ _) (normalize_gcd _ _) <;>
     rw [dvd_gcd_iff] <;>
-    refine' ⟨gcd_dvd_left _ _, _⟩
+    refine ⟨gcd_dvd_left _ _, ?_⟩
   · rcases h with ⟨d, hd⟩
     rcases gcd_dvd_right a b with ⟨e, he⟩
     rcases gcd_dvd_left a b with ⟨f, hf⟩
