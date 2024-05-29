@@ -34,7 +34,7 @@ noncomputable section
 open Finsupp
 
 open scoped Classical
-open BigOperators Pointwise
+open Pointwise
 
 variable {ι α : Type*} [Zero α] {s : Finset ι} {f : ι →₀ α}
 
@@ -76,7 +76,7 @@ theorem mem_finsupp_iff_of_support_subset {t : ι →₀ Finset α} (ht : t.supp
 
 @[simp]
 theorem card_finsupp (s : Finset ι) (t : ι → Finset α) :
-    (s.finsupp t).card = ∏ i in s, (t i).card :=
+    (s.finsupp t).card = ∏ i ∈ s, (t i).card :=
   (card_map _).trans <| card_pi _ _
 #align finset.card_finsupp Finset.card_finsupp
 

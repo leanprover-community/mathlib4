@@ -820,8 +820,6 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
 
 open scoped Classical
 
-open scoped BigOperators
-
 -- Porting note: in the following proof there are two places where `⋃ i, ⋃ (hx : i ∈ _), ... `
 -- though `hx` is not used in `...` part, it is still required to maintain the structure of
 -- the original proof in mathlib3.
@@ -876,9 +874,9 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   rw [Finsupp.total_apply_of_mem_supported R b_supp] at hb
   dsimp at hb
   -- Finally, we have all the ingredients.
-  -- We claim that our preimage is given by `(∑ (i : ι) in t, b i * a i) / f ^ (n+1)`
+  -- We claim that our preimage is given by `(∑ (i : ι) ∈ t, b i * a i) / f ^ (n+1)`
   use
-    IsLocalization.mk' (Localization.Away f) (∑ i : ι in t, b i * a i)
+    IsLocalization.mk' (Localization.Away f) (∑ i ∈ t, b i * a i)
       (⟨f ^ (n + 1), n + 1, rfl⟩ : Submonoid.powers _)
   rw [toBasicOpen_mk']
   -- Since the structure sheaf is a sheaf, we can show the desired equality locally.

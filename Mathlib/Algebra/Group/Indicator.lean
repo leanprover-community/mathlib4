@@ -3,8 +3,8 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.Algebra.Function.Support
 import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Group.Support
 
 #align_import algebra.indicator_function from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 
@@ -30,6 +30,8 @@ arguments. This is in contrast with the design of `Pi.single` or `Set.piecewise`
 ## Tags
 indicator, characteristic
 -/
+
+assert_not_exists MonoidWithZero
 
 open Function
 
@@ -531,80 +533,6 @@ theorem apply_mulIndicator_symmDiff {g : G → β} (hg : ∀ x, g x⁻¹ = g x)
   by_cases hs : x ∈ s <;> by_cases ht : x ∈ t <;> simp [mem_symmDiff, *]
 
 end Group
-
-section MulZeroClass
-
-variable [MulZeroClass M] {s t : Set α} {f g : α → M} {a : α}
-
-theorem indicator_mul (s : Set α) (f g : α → M) :
-    (indicator s fun a => f a * g a) = fun a => indicator s f a * indicator s g a := by
-  funext
-  simp only [indicator]
-  split_ifs
-  · rfl
-  rw [mul_zero]
-#align set.indicator_mul Set.indicator_mul
-
-theorem indicator_mul_left (s : Set α) (f g : α → M) :
-    indicator s (fun a => f a * g a) a = indicator s f a * g a := by
-  simp only [indicator]
-  split_ifs
-  · rfl
-  rw [zero_mul]
-#align set.indicator_mul_left Set.indicator_mul_left
-
-theorem indicator_mul_right (s : Set α) (f g : α → M) :
-    indicator s (fun a => f a * g a) a = f a * indicator s g a := by
-  simp only [indicator]
-  split_ifs
-  · rfl
-  rw [mul_zero]
-#align set.indicator_mul_right Set.indicator_mul_right
-
-theorem inter_indicator_mul {t1 t2 : Set α} (f g : α → M) (x : α) :
-    (t1 ∩ t2).indicator (fun x => f x * g x) x = t1.indicator f x * t2.indicator g x := by
-  rw [← Set.indicator_indicator]
-  simp_rw [indicator]
-  split_ifs <;> simp
-#align set.inter_indicator_mul Set.inter_indicator_mul
-
-end MulZeroClass
-
-section MulZeroOneClass
-
-variable [MulZeroOneClass M]
-
-theorem inter_indicator_one {s t : Set α} :
-    (s ∩ t).indicator (1 : α → M) = s.indicator 1 * t.indicator 1 :=
-  funext fun _ => by
-    simp only [← inter_indicator_mul, Pi.mul_apply, Pi.one_apply, one_mul]
-    congr
-#align set.inter_indicator_one Set.inter_indicator_one
-
--- Porting note: Think the following note was due to writing (1 : _ → M) instead of (1 : α × β → M)
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-theorem indicator_prod_one {s : Set α} {t : Set β} {x : α} {y : β} :
-    (s ×ˢ t).indicator (1 : α × β → M) (x, y) = s.indicator 1 x * t.indicator 1 y := by
-  simp_rw [indicator, mem_prod_eq]
-  split_ifs with h₀ <;> simp only [Pi.one_apply, mul_one, mul_zero] <;> tauto
-#align set.indicator_prod_one Set.indicator_prod_one
-
-variable (M) [Nontrivial M]
-
-theorem indicator_eq_zero_iff_not_mem {U : Set α} {x : α} : indicator U 1 x = (0 : M) ↔ x ∉ U := by
-  classical simp [indicator_apply, imp_false]
-#align set.indicator_eq_zero_iff_not_mem Set.indicator_eq_zero_iff_not_mem
-
-theorem indicator_eq_one_iff_mem {U : Set α} {x : α} : indicator U 1 x = (1 : M) ↔ x ∈ U := by
-  classical simp [indicator_apply, imp_false]
-#align set.indicator_eq_one_iff_mem Set.indicator_eq_one_iff_mem
-
-theorem indicator_one_inj {U V : Set α} (h : indicator U (1 : α → M) = indicator V 1) : U = V := by
-  ext
-  simp_rw [← indicator_eq_one_iff_mem M, h]
-#align set.indicator_one_inj Set.indicator_one_inj
-
-end MulZeroOneClass
 
 end Set
 

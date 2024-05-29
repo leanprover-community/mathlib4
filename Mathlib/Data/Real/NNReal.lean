@@ -52,7 +52,7 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with 
 This file defines `ℝ≥0` as a localized notation for `NNReal`.
 -/
 
-open BigOperators Function
+open Function
 
 -- to ensure these instances are computable
 /-- Nonnegative real numbers. -/
@@ -326,25 +326,25 @@ theorem coe_multiset_prod (s : Multiset ℝ≥0) : ((s.prod : ℝ≥0) : ℝ) = 
 #align nnreal.coe_multiset_prod NNReal.coe_multiset_prod
 
 @[norm_cast]
-theorem coe_sum {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a in s, f a) = ∑ a in s, (f a : ℝ) :=
+theorem coe_sum {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : ℝ) :=
   map_sum toRealHom _ _
 #align nnreal.coe_sum NNReal.coe_sum
 
 theorem _root_.Real.toNNReal_sum_of_nonneg {α} {s : Finset α} {f : α → ℝ}
     (hf : ∀ a, a ∈ s → 0 ≤ f a) :
-    Real.toNNReal (∑ a in s, f a) = ∑ a in s, Real.toNNReal (f a) := by
+    Real.toNNReal (∑ a ∈ s, f a) = ∑ a ∈ s, Real.toNNReal (f a) := by
   rw [← coe_inj, NNReal.coe_sum, Real.coe_toNNReal _ (Finset.sum_nonneg hf)]
   exact Finset.sum_congr rfl fun x hxs => by rw [Real.coe_toNNReal _ (hf x hxs)]
 #align real.to_nnreal_sum_of_nonneg Real.toNNReal_sum_of_nonneg
 
 @[norm_cast]
-theorem coe_prod {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a in s, f a) = ∏ a in s, (f a : ℝ) :=
+theorem coe_prod {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : ℝ) :=
   map_prod toRealHom _ _
 #align nnreal.coe_prod NNReal.coe_prod
 
 theorem _root_.Real.toNNReal_prod_of_nonneg {α} {s : Finset α} {f : α → ℝ}
     (hf : ∀ a, a ∈ s → 0 ≤ f a) :
-    Real.toNNReal (∏ a in s, f a) = ∏ a in s, Real.toNNReal (f a) := by
+    Real.toNNReal (∏ a ∈ s, f a) = ∏ a ∈ s, Real.toNNReal (f a) := by
   rw [← coe_inj, NNReal.coe_prod, Real.coe_toNNReal _ (Finset.prod_nonneg hf)]
   exact Finset.prod_congr rfl fun x hxs => by rw [Real.coe_toNNReal _ (hf x hxs)]
 #align real.to_nnreal_prod_of_nonneg Real.toNNReal_prod_of_nonneg

@@ -42,7 +42,7 @@ rectangular box, partition
 open Set Finset Function
 
 open scoped Classical
-open NNReal BigOperators
+open NNReal
 
 noncomputable section
 
@@ -350,8 +350,8 @@ theorem iUnion_biUnion (πi : ∀ J : Box ι, Prepartition J) :
 @[simp]
 theorem sum_biUnion_boxes {M : Type*} [AddCommMonoid M] (π : Prepartition I)
     (πi : ∀ J, Prepartition J) (f : Box ι → M) :
-    (∑ J in π.boxes.biUnion fun J => (πi J).boxes, f J) =
-      ∑ J in π.boxes, ∑ J' in (πi J).boxes, f J' := by
+    (∑ J ∈ π.boxes.biUnion fun J => (πi J).boxes, f J) =
+      ∑ J ∈ π.boxes, ∑ J' ∈ (πi J).boxes, f J' := by
   refine Finset.sum_biUnion fun J₁ h₁ J₂ h₂ hne => Finset.disjoint_left.2 fun J' h₁' h₂' => ?_
   exact hne (π.eq_of_le_of_le h₁ h₂ ((πi J₁).le_of_mem h₁') ((πi J₂).le_of_mem h₂'))
 #align box_integral.prepartition.sum_bUnion_boxes BoxIntegral.Prepartition.sum_biUnion_boxes
@@ -467,8 +467,8 @@ theorem ofWithBot_mono {boxes₁ : Finset (WithBot (Box ι))}
 theorem sum_ofWithBot {M : Type*} [AddCommMonoid M] (boxes : Finset (WithBot (Box ι)))
     (le_of_mem : ∀ J ∈ boxes, (J : WithBot (Box ι)) ≤ I)
     (pairwise_disjoint : Set.Pairwise (boxes : Set (WithBot (Box ι))) Disjoint) (f : Box ι → M) :
-    (∑ J in (ofWithBot boxes le_of_mem pairwise_disjoint).boxes, f J) =
-      ∑ J in boxes, Option.elim' 0 f J :=
+    (∑ J ∈ (ofWithBot boxes le_of_mem pairwise_disjoint).boxes, f J) =
+      ∑ J ∈ boxes, Option.elim' 0 f J :=
   Finset.sum_eraseNone _ _
 #align box_integral.prepartition.sum_of_with_bot BoxIntegral.Prepartition.sum_ofWithBot
 
@@ -631,8 +631,8 @@ theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
 #align box_integral.prepartition.Union_filter_not BoxIntegral.Prepartition.iUnion_filter_not
 
 theorem sum_fiberwise {α M} [AddCommMonoid M] (π : Prepartition I) (f : Box ι → α) (g : Box ι → M) :
-    (∑ y in π.boxes.image f, ∑ J in (π.filter fun J => f J = y).boxes, g J) =
-      ∑ J in π.boxes, g J := by
+    (∑ y ∈ π.boxes.image f, ∑ J ∈ (π.filter fun J => f J = y).boxes, g J) =
+      ∑ J ∈ π.boxes, g J := by
   convert sum_fiberwise_of_maps_to (fun _ => Finset.mem_image_of_mem f) g
 #align box_integral.prepartition.sum_fiberwise BoxIntegral.Prepartition.sum_fiberwise
 
@@ -662,7 +662,7 @@ theorem iUnion_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
 @[simp]
 theorem sum_disj_union_boxes {M : Type*} [AddCommMonoid M] (h : Disjoint π₁.iUnion π₂.iUnion)
     (f : Box ι → M) :
-    ∑ J in π₁.boxes ∪ π₂.boxes, f J = (∑ J in π₁.boxes, f J) + ∑ J in π₂.boxes, f J :=
+    ∑ J ∈ π₁.boxes ∪ π₂.boxes, f J = (∑ J ∈ π₁.boxes, f J) + ∑ J ∈ π₂.boxes, f J :=
   sum_union <| disjoint_boxes_of_disjoint_iUnion h
 #align box_integral.prepartition.sum_disj_union_boxes BoxIntegral.Prepartition.sum_disj_union_boxes
 
