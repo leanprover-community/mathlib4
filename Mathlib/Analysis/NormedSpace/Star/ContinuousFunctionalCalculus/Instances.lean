@@ -283,25 +283,6 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   have h_eqOn := eqOn_of_cfc_eq_cfc (a := star b * b) h_eq_a_neg
   simpa [sup_eq_left.mpr hx'.le] using h_eqOn hx
 
-lemma IsSelfAdjoint.le_algebraMap_norm_self [PartialOrder A] [StarOrderedRing A] (a : A)
-    (ha : IsSelfAdjoint a := by cfc_tac) : a ≤ algebraMap ℝ A ‖a‖ := by
-  by_cases nontriv : Nontrivial A
-  · refine le_algebraMap_of_spectrum_le ‖a‖ a fun r hr => ?_
-    calc r ≤ ‖r‖ := Real.le_norm_self r
-      _ ≤ ‖a‖ := spectrum.norm_le_norm_of_mem hr
-  · rw [not_nontrivial_iff_subsingleton] at nontriv
-    simp
-
-lemma mul_star_le_algebraMap_norm_sq [PartialOrder A] [StarOrderedRing A] (a : A) :
-    a * star a ≤ algebraMap ℝ A (‖a‖ ^ 2) := by
-  have := IsSelfAdjoint.le_algebraMap_norm_self (a * star a)
-  rwa [CstarRing.norm_self_mul_star, ← pow_two] at this
-
-lemma star_mul_le_algebraMap_norm_sq [PartialOrder A] [StarOrderedRing A] (a : A) :
-    star a * a ≤ algebraMap ℝ A (‖a‖ ^ 2) := by
-  have := IsSelfAdjoint.le_algebraMap_norm_self (star a * a)
-  rwa [CstarRing.norm_star_mul_self, ← pow_two] at this
-
 end SpectrumRestricts
 
 section NonnegSpectrumClass
