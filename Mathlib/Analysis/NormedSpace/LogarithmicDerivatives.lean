@@ -24,8 +24,8 @@ open scoped Topology BigOperators Classical
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-/-- The logarithmic derivative of a function defined as deriv f /f. Note that it will be zero
-if `f` is not differentiable. -/
+/-- The logarithmic derivative of a function defined as deriv f /f. Note that it will be zero at `x`
+if `f` is not differentiableAt `x`. -/
 def logDeriv (f : 𝕜 → 𝕜) :=
   deriv f / f
 
@@ -103,7 +103,7 @@ theorem logDeriv_tendsto {ι : Type*} [Preorder ι] (f : ι  → ℂ → ℂ) (g
 
 section examples
 
-theorem logDeriv_sine : logDeriv (Complex.sin) = Complex.cot := by
+theorem logDeriv_sin : logDeriv (Complex.sin) = Complex.cot := by
   rw [logDeriv, Complex.deriv_sin]
   rfl
 
