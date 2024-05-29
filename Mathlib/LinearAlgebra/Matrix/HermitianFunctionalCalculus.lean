@@ -240,7 +240,10 @@ exists_cfc_of_predicate := by
         have : Finite (spectrum ℝ a) := by refine finite_spectrum ha
         apply FiniteDimensional.of_injective (ContinuousMap.coeFnLinearMap ℝ (M := ℝ))
         exact DFunLike.coe_injective
-      have hφ : LinearMap.ker ha.φ = ⊥ := by sorry
+      have hφ : LinearMap.ker ha.φ = ⊥ := by
+              refine LinearMap.ker_eq_bot'.mpr ?_
+              intro f hf
+              sorry
       have H := ha.compact_spectrum
       apply LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ a, ℝ))
                 (F := Matrix n n 𝕜) (f := ha.φ) hφ
