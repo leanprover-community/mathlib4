@@ -11,6 +11,8 @@ import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Topology.ContinuousFunction.UniqueCFC
 import Mathlib.Analysis.NormedSpace.Star.Matrix
 import Mathlib.Algebra.Star.StarAlgHom
+import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-
 This file defines an instance of the continuous functional calculus for Hermitian matrices over an
@@ -21,13 +23,103 @@ RCLike field 𝕜.
 spectral theorem, diagonalization theorem, continuous functional calculus
 -/
 
+section ConjugateUnits
+
+variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
+
+@[simp]
+lemma spectrum.conjugate_units {a : A} {u : Aˣ} :
+    spectrum R (u * a * u⁻¹) = spectrum R a := by
+  suffices ∀ (b : A) (v : Aˣ), spectrum R (v * b * v⁻¹) ⊆ spectrum R b by
+    refine le_antisymm (this a u) ?_
+    apply le_of_eq_of_le ?_ <| this (u * a * u⁻¹) u⁻¹
+    simp [mul_assoc]
+  intro a u μ hμ
+  rw [spectrum.mem_iff] at hμ ⊢
+  contrapose! hμ
+  simpa [mul_sub, sub_mul, Algebra.right_comm] using u.isUnit.mul hμ |>.mul u⁻¹.isUnit
+
+@[simp]
+lemma spectrum.conjugate_units' {a : A} {u : Aˣ} :
+    spectrum R (u⁻¹ * a * u) = spectrum R a := by
+  simpa using spectrum.conjugate_units (u := u⁻¹)
+
+end ConjugateUnits
+
+section FiniteSpectrum
+
+universe u v w
+
+theorem Module.End.finite_spectrum {K : Type v} {V : Type w} [Field K] [AddCommGroup V]
+    [Module K V] [FiniteDimensional K V] (f : Module.End K V) :
+    Set.Finite (spectrum K f) := by
+  convert f.finite_hasEigenvalue
+  ext f x
+  exact Module.End.hasEigenvalue_iff_mem_spectrum.symm
+
+variable {n R : Type*} [Field R] [Fintype n] [DecidableEq n]
+
+theorem Matrix.finite_spectrum (A : Matrix n n R) : Set.Finite (spectrum R A) := by
+  rw [← AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv <| Pi.basisFun R n) A]
+  exact Module.End.finite_spectrum _
+
+instance Matrix.instFiniteSpectrum (A : Matrix n n R) : Finite (spectrum R A) :=
+  Set.finite_coe_iff.mpr (Matrix.finite_spectrum A)
+
+end FiniteSpectrum
+
+section SpectrumDiagonal
+
+variable {R : Type*} [Field R] {n : Type*} [DecidableEq n][Fintype n]
+
+open Module.End
+
+lemma Matrix.hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
+    Module.End.HasEigenvector (Matrix.toLin' (diagonal d)) (d i) (Pi.basisFun R n i) := by
+  constructor
+  · rw [mem_eigenspace_iff]
+    ext j
+    simp only [diagonal, Pi.basisFun_apply, toLin'_apply, mulVec_stdBasis_apply, transpose_apply,
+      of_apply, Pi.smul_apply, LinearMap.stdBasis_apply', smul_eq_mul, mul_ite, mul_one, mul_zero]
+    split_ifs
+    all_goals simp_all
+  · rw [Function.ne_iff]; simp
+
+lemma Matrix.hasEigenvalue_toLin'_diagonal_iff (d : n → R) {μ : R} :
+    HasEigenvalue (toLin' (diagonal d)) μ ↔ ∃ i, d i = μ := by
+  have (i : n) : HasEigenvalue (toLin' (diagonal d)) (d i) := by
+    exact hasEigenvalue_of_hasEigenvector <| hasEigenvector_toLin'_diagonal d i
+  constructor
+  · contrapose!
+    intro hμ h_eig
+    have h_iSup : ⨆ μ ∈ Set.range d, eigenspace (toLin' (diagonal d)) μ = ⊤ := by
+      rw [eq_top_iff, ← (Pi.basisFun R n).span_eq, Submodule.span_le]
+      rintro - ⟨i, rfl⟩
+      simp only [SetLike.mem_coe]
+      apply Submodule.mem_iSup_of_mem (d i)
+      apply Submodule.mem_iSup_of_mem ⟨i, rfl⟩
+      rw [mem_eigenspace_iff]
+      exact (hasEigenvector_toLin'_diagonal d i).apply_eq_smul
+    have hμ_not_mem : μ ∉ Set.range d := by simpa using fun i ↦ (hμ i)
+    have := eigenspaces_independent (toLin' (diagonal d)) |>.disjoint_biSup hμ_not_mem
+    rw [h_iSup, disjoint_top] at this
+    exact h_eig this
+  · rintro ⟨i, rfl⟩
+    exact this i
+
+lemma Matrix.spectrum_diagonal (d : n → R) :
+    spectrum R (diagonal d) = Set.range d := by
+  ext μ
+  rw [← AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv <| Pi.basisFun R n),
+    ← hasEigenvalue_iff_mem_spectrum, Set.mem_range]
+  exact Matrix.hasEigenvalue_toLin'_diagonal_iff d
+
+end SpectrumDiagonal
 namespace Matrix
 
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 
-open scoped BigOperators
 namespace IsHermitian
-section DecidableEq
 
 variable [DecidableEq n]
 
@@ -156,22 +248,13 @@ exists_cfc_of_predicate := by
         · intro f
           rw [← ContinuousMap.spectrum_eq_range (𝕜 := ℝ) (X := spectrum ℝ a) f]
           congr!
-          --apply Set.eq_of_subset_of_subset
-          --apply AlgHom.spectrum_apply_subset
-          have hφ : LinearMap.ker ha.φ = ⊥ := by sorry
-          have I := LinearMap.map_injective hφ
-          have II : Function.Injective ha.φ := by sorry
-          have J := AlgEquiv.ofInjective (R := ℝ) (A :=  C(spectrum ℝ a, ℝ)) (B := Matrix n n 𝕜) (ha.φ)
-          have G := AlgEquiv.spectrum_eq (J II) f
-          rw [← G]
-          refine Set.ext ?h.right.right.left.h
-          intro x
-          constructor
-          intro hx
+          apply Set.eq_of_subset_of_subset
+          apply AlgHom.spectrum_apply_subset
         · intro f
           sorry
 
-
+end IsHermitian
+end Matrix
 
 
 
