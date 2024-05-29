@@ -92,7 +92,7 @@ lemma closedEmbedding_toContinuousMap [T1Space R] :
     rw [range_toContinuousMap]
     exact isClosed_singleton.preimage <| ContinuousMap.continuous_eval_const 0
 
-/-- The identity function as an element of `C(s, R)` when `0 ∈ (s : Set R)`. -/
+/-- The identity function as an element of `C(s, R)₀` when `0 ∈ (s : Set R)`. -/
 @[simps!]
 protected def id {s : Set R} [Zero s] (h0 : ((0 : s) : R) = 0) : C(s, R)₀ :=
   ⟨.restrict s (.id R), h0⟩
