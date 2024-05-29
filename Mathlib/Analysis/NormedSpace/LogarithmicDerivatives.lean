@@ -8,10 +8,11 @@ import Mathlib.Analysis.Complex.LocallyUniformLimit
 /-!
 # Logarithmic Derivatives
 
-We define the logarithmic derivative of a function f as `deriv f / f`. We then prove some basic facts
-about this, including how it changes under multiplication and composition. We conclude by showing
-that the logarithmic derivative of a sequence of functions converging locally uniformly to a
-function is the logarithmic derivative of the limit function.
+We define the logarithmic derivative of a function f as `deriv f / f`. We then prove some basic
+facts about this, including how it changes under multiplication and composition.
+
+We conclude by showing that the logarithmic derivative of a sequence of functions converging
+locally uniformly to a function is the logarithmic derivative of the limit function.
 -/
 
 noncomputable section
@@ -98,3 +99,5 @@ theorem logDeriv_tendsto {ι : Type*} [Preorder ι] (f : ι  → ℂ → ℂ) (g
     Tendsto (fun n : ι => logDeriv (f n) x) atTop (𝓝 ((logDeriv g) x)) := by
   simp_rw [logDeriv]
   apply Tendsto.div ((hF.deriv hf hs).tendsto_at x.2) (hF.tendsto_at x.2) hg
+
+section examples
