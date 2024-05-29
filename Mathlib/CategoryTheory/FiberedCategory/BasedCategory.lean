@@ -86,9 +86,6 @@ instance pres_IsHomLift {R S : 𝒮} {a b : 𝒳.cat} (f : R ⟶ S) (φ : a ⟶ 
   rw [←Functor.comp_map, congr_hom F.w]
   simpa using (fac 𝒳.p f φ)
 
--- have : ...... := .....
--- @pres_IsHomLift _ _ _ _ _ _ (hφ := by aesop_cat)
-
 /-- For a based functor `F`, `F(φ)` always lifts `𝒳.p(φ)` -/
 -- instance map_isHomLift {a b : 𝒳.cat} (φ : a ⟶ b) : IsHomLift 𝒴.p (𝒳.p.map φ) (F.map φ) :=
 --   inferInstance
@@ -207,6 +204,8 @@ lemma homCategory.ext {𝒳 𝒴 : BasedCategory 𝒮} {F G : BasedFunctor 𝒳 
     (h : α.toNatTrans = β.toNatTrans) : α = β :=
   BasedNatTrans.ext α β h
 
+-- TODO: I should be able to recycle the identical code in the next few definitions
+
 /-- The associator in the bicategory `BasedCategory` is given by the identity -/
 @[simps]
 def BasedFunctor.associator {𝒳 𝒴 𝒵 𝒱 : BasedCategory 𝒮} (F : BasedFunctor 𝒳 𝒴) (G : BasedFunctor 𝒴 𝒵)
@@ -232,15 +231,39 @@ def BasedFunctor.associator {𝒳 𝒴 𝒵 𝒱 : BasedCategory 𝒮} (F : Base
 @[simps]
 def BasedFunctor.leftUnitor {𝒳 𝒴 : BasedCategory 𝒮} (F : BasedFunctor 𝒳 𝒴) :
   BasedFunctor.comp (BasedFunctor.id 𝒳) F ≅ F where
-    hom := { app := fun a => 𝟙 (F.obj a) }
-    inv := { app := fun a => 𝟙 (F.obj a) }
+    hom := {
+      app := fun a => 𝟙 (F.obj a)
+      aboveId := by
+        intro a S ha
+        subst ha
+        infer_instance
+    }
+    inv := {
+      app := fun a => 𝟙 (F.obj a)
+      aboveId := by
+        intro a S ha
+        subst ha
+        infer_instance
+    }
 
 /-- The right unitor in the bicategory `BasedCategory` is given by the identity -/
 @[simps]
 def BasedFunctor.rightUnitor {𝒳 𝒴 : BasedCategory 𝒮} (F : BasedFunctor 𝒳 𝒴) :
   BasedFunctor.comp F (BasedFunctor.id 𝒴) ≅ F where
-    hom := { app := fun a => 𝟙 (F.obj a) }
-    inv := { app := fun a => 𝟙 (F.obj a) }
+    hom := {
+      app := fun a => 𝟙 (F.obj a)
+      aboveId := by
+        intro a S ha
+        subst ha
+        infer_instance
+    }
+    inv := {
+      app := fun a => 𝟙 (F.obj a)
+      aboveId := by
+        intro a S ha
+        subst ha
+        infer_instance
+    }
 
 /-- Left-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying functors
     and natural transformations -/
@@ -261,8 +284,10 @@ def BasedCategory.whiskerRight {𝒳 𝒴 𝒵 : BasedCategory 𝒮} {F G : Base
   toNatTrans := CategoryTheory.whiskerRight α.toNatTrans H.toFunctor
   aboveId := by
     intro a S ha
+    subst ha
     apply BasedFunctor.pres_IsHomLift
-    apply α.aboveId ha
+
+-- TODO: aesop no longer solves these.....
 
 /-- `BasedCategory 𝒮` forms a bicategory -/
 instance BasedCategory.bicategory : Bicategory (BasedCategory 𝒮) where
