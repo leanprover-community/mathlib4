@@ -37,11 +37,13 @@ open Lean Elab
 This avoids producing two declarations with the same name in the environment.
 -/
 def toExample {m : Type → Type} [Monad m] [MonadQuotation m] : Syntax → m Syntax
+  | `($_dm:declModifiers def $_did:declId $ds* : $t $dv:declVal) =>
+    `(example $ds* : $t $dv:declVal)
   | `($_dm:declModifiers theorem $_did:declId $ds* : $t $dv:declVal) =>
     `(example $ds* : $t $dv:declVal)
   | `($_dm:declModifiers lemma $_did:declId $ds* : $t $dv:declVal) =>
     `(example $ds* : $t $dv:declVal)
-  | `($_dm:declModifiers instance $_did:declId $ds* : $t $dv:declVal) =>
+  | `($_dm:declModifiers instance  $_prio $_did:declId $ds* : $t $dv:declVal) =>
     `(example $ds* : $t $dv:declVal)
   | s => return s
 
@@ -93,6 +95,7 @@ The intended application is when `stx` is a syntax node representing `refine' ..
 def candidateRefines (stx : Syntax) : Array (Syntax × List Syntax) := Id.run do
   let mut cands := #[]
   let holes := getHoles stx
+  if 5 ≤ holes.size then dbg_trace "{holes.size} is too many holes!"; return #[] else
   for sub in holes.toList.sublistsFast do
     let mut newCmd := stx
     for s in sub do
