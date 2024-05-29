@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Control.Monad.Basic
-import Mathlib.Order.Part
 import Mathlib.Order.Chain
 import Mathlib.Order.Hom.Order
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Order.Part
 
 #align_import order.omega_complete_partial_order from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
@@ -54,6 +53,7 @@ supremum helps define the meaning of recursive procedures.
  * [Semantics of Programming Languages: Structures and Techniques][gunter1992]
 -/
 
+assert_not_exists OrderedCommMonoid
 
 universe u v
 
