@@ -324,10 +324,7 @@ def mapComon (F : OplaxMonoidalFunctor C D) : Comon_ C ⥤ Comon_ D where
   map_id A := by ext; simp
   map_comp f g := by ext; simp
 
-variable (C D)
-
 -- TODO We haven't yet set up the category structure on `OplaxMonoidalFunctor C D`
 -- and so can't state `mapComonFunctor : OplaxMonoidalFunctor C D ⥤ Comon_ C ⥤ Comon_ D`.
-
 
 end CategoryTheory.OplaxMonoidalFunctor
