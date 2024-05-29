@@ -5,6 +5,7 @@ Authors: Martin Dvorak
 -/
 import Mathlib.Order.Basic
 import Mathlib.Algebra.Group.Pi.Basic
+
 /-!
 # Interaction between `Sum.elim` and `≤`
 
