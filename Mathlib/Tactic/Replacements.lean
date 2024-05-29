@@ -1,4 +1,15 @@
+/-
+Copyright (c) 2024 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+
 import Mathlib.Tactic.Linter.ReplaceRefine
+
+/-!
+This file contains the code to perform the replacements that the `ReplaceRefine` linter
+outputs.
+-/
 
 example : True ∧ True := by
   refine' ⟨_, _⟩
