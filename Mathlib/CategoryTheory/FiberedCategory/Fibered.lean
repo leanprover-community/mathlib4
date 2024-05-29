@@ -192,7 +192,7 @@ lemma of_has_pullbacks' {p : 𝒳 ⥤ 𝒮} (h : ∀ (a : 𝒳) (R : 𝒮) (f : 
     have : p.IsStronglyCartesian g ψ := by apply isStronglyCartesian_of_has_pullbacks' p h
     infer_instance
 
-/- Given a diagram
+/-- Given a diagram
 ```
                   a
                   -
