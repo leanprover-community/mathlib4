@@ -73,7 +73,7 @@ open sets in `Proj`, more specifically:
     `(A⁰_f)_(φ(x))` to `A⁰ₓ` is an isomorphism (`ProjIsoSpec.specStalkEquiv`).
 5. Since for each `x ∈ Proj` is a relevant ideal, there exists some `f ∈ ⨁_{0 < i} Aᵢ` not in `x`,
     thus, if we write `f = f₁ + ... + fₙ`, `x` is in at least one of `pbo fᵢ`. Hence we have an
-    affine neighbourhodd around `x`, namely `Spec A⁰_f`. This proves that `Proj A` is a scheme.
+    affine neighbourhood around `x`, namely `Spec A⁰_f`. This proves that `Proj A` is a scheme.
 
 ## Main Definitions and Statements
 
