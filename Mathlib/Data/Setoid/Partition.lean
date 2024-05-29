@@ -52,12 +52,7 @@ def mkClasses (c : Set (Set α)) (H : ∀ a, ∃! b ∈ c, a ∈ b) : Setoid α 
   iseqv.symm := fun {x _y} h s hs hy => by
     obtain ⟨t, ⟨ht, hx⟩, _⟩ := H x
     rwa [eq_of_mem_eqv_class H hs hy ht (h t ht hx)]
-  iseqv.trans := fun {_x y z} h1 h2 s hs hx => by
-    obtain ⟨t, ⟨ht, hy⟩, _⟩ := H y
-    obtain ⟨t', ⟨ht', hy'⟩, _⟩ := H z
-    have hst : s = t := eq_of_mem_eqv_class H hs (h1 _ hs hx) ht hy
-    have htt' : t = t' := eq_of_mem_eqv_class H ht (h2 _ ht hy) ht' hy'
-    rwa [hst, htt']
+  iseqv.trans := fun {_x y z} h1 h2 s hs hx => h2 s hs (h1 s hs hx)
 #align setoid.mk_classes Setoid.mkClasses
 
 /-- Makes the equivalence classes of an equivalence relation. -/
