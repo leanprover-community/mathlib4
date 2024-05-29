@@ -291,6 +291,36 @@ lemma IsMulFreimanHom.inv (hf : IsMulFreimanHom n A B f) : IsMulFreimanHom n A B
 
 end DivisionCommMonoid
 
+section Prod
+variable {α₁ α₂ β₁ β₂ : Type*} [CommMonoid α₁] [CommMonoid α₂] [CommMonoid β₁] [CommMonoid β₂]
+  {A₁ : Set α₁} {A₂ : Set α₂} {B₁ : Set β₁} {B₂ : Set β₂} {f₁ : α₁ → β₁} {f₂ : α₂ → β₂} {n : ℕ}
+
+@[to_additive]
+lemma IsMulFreimanHom.prod (h₁ : IsMulFreimanHom n A₁ B₁ f₁) (h₂ : IsMulFreimanHom n A₂ B₂ f₂) :
+    IsMulFreimanHom n (A₁ ×ˢ A₂) (B₁ ×ˢ B₂) (Prod.map f₁ f₂) where
+  mapsTo := h₁.mapsTo.prodMap h₂.mapsTo
+  map_prod_eq_map_prod s t hsA htA hs ht h := by
+    simp only [mem_prod, forall_and, Prod.forall] at hsA htA
+    simp only [Prod_map, Prod.ext_iff, fst_prod, map_map, Function.comp_apply, snd_prod] at h ⊢
+    rw [← Function.comp_def, ← map_map, ← map_map, ← Function.comp_def f₂, ← map_map, ← map_map]
+    exact ⟨h₁.map_prod_eq_map_prod (by simpa using hsA.1) (by simpa using htA.1) (by simpa)
+      (by simpa) h.1, h₂.map_prod_eq_map_prod (by simpa [@forall_swap α₁] using hsA.2)
+      (by simpa [@forall_swap α₁] using htA.2) (by simpa) (by simpa) h.2⟩
+
+@[to_additive]
+lemma IsMulFreimanIso.prod (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : IsMulFreimanIso n A₂ B₂ f₂) :
+    IsMulFreimanIso n (A₁ ×ˢ A₂) (B₁ ×ˢ B₂) (Prod.map f₁ f₂) where
+  bijOn := h₁.bijOn.prodMap h₂.bijOn
+  map_prod_eq_map_prod s t hsA htA hs ht := by
+    simp only [mem_prod, forall_and, Prod.forall] at hsA htA
+    simp only [Prod_map, Prod.ext_iff, fst_prod, map_map, Function.comp_apply, snd_prod]
+    rw [← Function.comp_def, ← map_map, ← map_map, ← Function.comp_def f₂, ← map_map, ← map_map,
+      h₁.map_prod_eq_map_prod (by simpa using hsA.1) (by simpa using htA.1) (by simpa) (by simpa),
+      h₂.map_prod_eq_map_prod (by simpa [@forall_swap α₁] using hsA.2)
+      (by simpa [@forall_swap α₁] using htA.2) (by simpa) (by simpa)]
+
+end Prod
+
 namespace Fin
 variable {k m n : ℕ}
 
