@@ -58,7 +58,7 @@ open Topology
 
 namespace NNReal
 
-open NNReal BigOperators Filter
+open NNReal Filter
 
 instance : TopologicalSpace ℝ≥0 := inferInstance
 
@@ -225,12 +225,12 @@ nonrec theorem summable_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) :
 #align nnreal.summable_nat_add_iff NNReal.summable_nat_add_iff
 
 nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} :
-    HasSum (fun n => f (n + k)) a ↔ HasSum f (a + ∑ i in range k, f i) := by
+    HasSum (fun n => f (n + k)) a ↔ HasSum f (a + ∑ i ∈ range k, f i) := by
   rw [← hasSum_coe, hasSum_nat_add_iff (f := fun n => toReal (f n)) k]; norm_cast
 #align nnreal.has_sum_nat_add_iff NNReal.hasSum_nat_add_iff
 
 theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
-    ∑' i, f i = (∑ i in range k, f i) + ∑' i, f (i + k) :=
+    ∑' i, f i = (∑ i ∈ range k, f i) + ∑' i, f (i + k) :=
   (sum_add_tsum_nat_add' <| (summable_nat_add_iff k).2 hf).symm
 #align nnreal.sum_add_tsum_nat_add NNReal.sum_add_tsum_nat_add
 

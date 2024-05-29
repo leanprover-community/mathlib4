@@ -54,6 +54,7 @@ numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_m
 submonoid, submonoids
 -/
 
+assert_not_exists MonoidWithZero
 
 -- Only needed for notation
 -- Only needed for notation
@@ -453,7 +454,7 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (one : p 1 (one_mem _))
     (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
     p x hx := by
-  refine' Exists.elim _ fun (hx : x ∈ closure s) (hc : p x hx) => hc
+  refine Exists.elim ?_ fun (hx : x ∈ closure s) (hc : p x hx) => hc
   exact
     closure_induction hx (fun x hx => ⟨_, mem x hx⟩) ⟨_, one⟩ fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ =>
       ⟨_, mul _ _ _ _ hx hy⟩

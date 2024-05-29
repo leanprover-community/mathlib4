@@ -688,7 +688,7 @@ theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :
     J ≤ (1 : FractionalIdeal S P) ↔ ∃ I : Ideal R, ↑I = J := by
   constructor
   · intro hJ
-    refine' ⟨⟨⟨⟨{ x : R | algebraMap R P x ∈ J }, _⟩, _⟩, _⟩, _⟩
+    refine ⟨⟨⟨⟨{ x : R | algebraMap R P x ∈ J }, ?_⟩, ?_⟩, ?_⟩, ?_⟩
     · intro a b ha hb
       rw [mem_setOf, RingHom.map_add]
       exact J.val.add_mem ha hb
@@ -729,8 +729,6 @@ def coeIdealHom : Ideal R →+* FractionalIdeal S P where
 theorem coeIdeal_pow (I : Ideal R) (n : ℕ) : ↑(I ^ n) = (I : FractionalIdeal S P) ^ n :=
   (coeIdealHom S P).map_pow _ n
 #align fractional_ideal.coe_ideal_pow FractionalIdeal.coeIdeal_pow
-
-open BigOperators
 
 theorem coeIdeal_finprod [IsLocalization S P] {α : Sort*} {f : α → Ideal R}
     (hS : S ≤ nonZeroDivisors R) :

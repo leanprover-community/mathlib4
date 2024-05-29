@@ -35,7 +35,7 @@ outer measure
 noncomputable section
 
 open Set Function Filter
-open scoped Classical BigOperators NNReal Topology ENNReal
+open scoped Classical NNReal Topology ENNReal
 
 namespace MeasureTheory
 
@@ -77,7 +77,7 @@ theorem measure_biUnion_le {I : Set ι} (μ : F) (hI : I.Countable) (s : ι → 
 #align measure_theory.measure_bUnion_le MeasureTheory.measure_biUnion_le
 
 theorem measure_biUnion_finset_le (I : Finset ι) (s : ι → Set α) :
-    μ (⋃ i ∈ I, s i) ≤ ∑ i in I, μ (s i) :=
+    μ (⋃ i ∈ I, s i) ≤ ∑ i ∈ I, μ (s i) :=
   (measure_biUnion_le μ I.countable_toSet s).trans_eq <| I.tsum_subtype (μ <| s ·)
 #align measure_theory.measure_bUnion_finset_le MeasureTheory.measure_biUnion_finset_le
 
@@ -128,6 +128,9 @@ theorem measure_union_null_iff : μ (s ∪ t) = 0 ↔ μ s = 0 ∧ μ t = 0 := b
 
 theorem measure_union_null (hs : μ s = 0) (ht : μ t = 0) : μ (s ∪ t) = 0 := by simp [*]
 #align measure_theory.measure_union_null MeasureTheory.measure_union_null
+
+lemma measure_null_iff_singleton (hs : s.Countable) : μ s = 0 ↔ ∀ x ∈ s, μ {x} = 0 := by
+  rw [← measure_biUnion_null_iff hs, biUnion_of_singleton]
 
 /-- Let `μ` be an (outer) measure; let `s : ι → Set α` be a sequence of sets, `S = ⋃ n, s n`.
 If `μ (S \ s n)` tends to zero along some nontrivial filter (usually `Filter.atTop` on `ι = ℕ`),
@@ -219,12 +222,12 @@ alias ⟨_, iUnion_null⟩ := iUnion_null_iff
 @[deprecated (since := "2024-01-14")]
 theorem iUnion_null_iff' (m : OuterMeasure α) {ι : Prop} {s : ι → Set α} :
     m (⋃ i, s i) = 0 ↔ ∀ i, m (s i) = 0 :=
-  m.iUnion_null_iff
+  measure_iUnion_null_iff
 #align measure_theory.outer_measure.Union_null_iff' MeasureTheory.OuterMeasure.iUnion_null_iff'
 
 @[deprecated measure_biUnion_finset_le (since := "2024-05-14")]
 protected theorem iUnion_finset (m : OuterMeasure α) (s : β → Set α) (t : Finset β) :
-    m (⋃ i ∈ t, s i) ≤ ∑ i in t, m (s i) :=
+    m (⋃ i ∈ t, s i) ≤ ∑ i ∈ t, m (s i) :=
   measure_biUnion_finset_le t s
 #align measure_theory.outer_measure.Union_finset MeasureTheory.OuterMeasure.iUnion_finset
 
@@ -262,7 +265,7 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
     m (⋃ n, s n) = ⨆ n, m (s n) := by
   refine measure_iUnion_of_tendsto_zero m atTop ?_
   refine tendsto_nhds_bot_mono' (ENNReal.tendsto_sum_nat_add _ h0) fun n => ?_
-  refine' (m.mono _).trans (m.iUnion _)
+  refine (m.mono ?_).trans (measure_iUnion_le _)
   -- Current goal: `(⋃ k, s k) \ s n ⊆ ⋃ k, s (k + n + 1) \ s (k + n)`
   have h' : Monotone s := @monotone_nat_of_le_succ (Set α) _ _ h_mono
   simp only [diff_subset_iff, iUnion_subset_iff]
@@ -273,7 +276,7 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
   rcases le_or_lt j n with hjn | hnj
   · exact Or.inl (h' hjn hj)
   have : j - (n + 1) + n + 1 = j := by omega
-  refine' Or.inr (mem_iUnion.2 ⟨j - (n + 1), _, hlt _ _⟩)
+  refine Or.inr (mem_iUnion.2 ⟨j - (n + 1), ?_, hlt _ ?_⟩)
   · rwa [this]
   · rw [← Nat.succ_le_iff, Nat.succ_eq_add_one, this]
 #align measure_theory.outer_measure.Union_nat_of_monotone_of_tsum_ne_top MeasureTheory.OuterMeasure.iUnion_nat_of_monotone_of_tsum_ne_top

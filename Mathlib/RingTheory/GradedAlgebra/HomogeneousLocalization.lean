@@ -65,7 +65,7 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 
 noncomputable section
 
-open DirectSum BigOperators Pointwise
+open DirectSum Pointwise
 
 open DirectSum SetLike
 
@@ -301,10 +301,7 @@ open HomogeneousLocalization HomogeneousLocalization.NumDenSameDeg
 
 variable {𝒜} {x}
 
-/--
-Given `a, b ∈ A` of the same degree such that `b ∈ x`, we can construct a homogeneous fraction
-`a / b ∈ Aₓ`.
--/
+/-- Construct an element of `HomogeneousLocalization 𝒜 x` from a homogeneous fraction. -/
 abbrev mk (y : HomogeneousLocalization.NumDenSameDeg 𝒜 x) : HomogeneousLocalization 𝒜 x :=
   Quotient.mk'' y
 
