@@ -124,6 +124,12 @@ syntax &"ℹ" "[" num "/" num "]" ident ident : build
 /-- a file reporting some information. -/
 syntax &"info:" "././././" term &".lean" ":" num ":" num ":" term : build
 
+/-- a declaration containing too many holes. -/
+syntax &"info:" "stderr:" many(num"is too many holes!") : build
+
+/-- do nothing on a declaration containing too many holes. -/
+elab "info:" "stderr:" _t:many(num"is too many holes!") : command => return
+
 /-- a successfully built project. -/
 syntax &"Build completed successfully." : build
 
