@@ -30,6 +30,7 @@ is the existence of strongly cartesian morphisms lying over any given morphism i
 provide an alternate constructor for `IsFibered` in this sense, see `IsFibered.of_has_pullbacks'`.
 
 ## References
+SGA 1
 
 -/
 
@@ -63,7 +64,7 @@ namespace IsPreFibered
 
 open IsCartesian
 
-/-- Given a fibered category `p : 𝒳 ⥤ 𝒫`, and a diagram
+/-- Given a prefibered category `p : 𝒳 ⥤ 𝒫`, and a diagram
 ```
            a
            -

@@ -10,8 +10,7 @@ import Mathlib.CategoryTheory.FiberedCategory.HomLift
 
 # Cartesian morphisms
 
-This file defines cartesian resp. strongly cartesian morphisms in a based category in the sense
-of SGA VI.5.1.
+This file defines cartesian resp. strongly cartesian morphisms in a based category.
 
 ## Main definitions
 
@@ -28,6 +27,8 @@ It is recommended to use these instead to minimize the amount of equalities that
 around in the construction.
 
 ## References
+SGA 1
+Stacks project
 
 -/
 
@@ -308,9 +309,7 @@ instance of_iso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ 
 
 instance of_isIso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [IsHomLift p f φ]
     [IsIso φ] : IsStronglyCartesian p f φ :=
-  -- TODO: this is also annoying to have to state
-  have : p.IsHomLift f (asIso φ).hom := by aesop
-  IsStronglyCartesian.of_iso p f (asIso φ)
+  @IsStronglyCartesian.of_iso _ _ _ _ p _ _ _ _ f (asIso φ) (by aesop)
 
 /-- A cartesian arrow lying over an isomorphism is an isomorphism. -/
 lemma isIso_of_base_isIso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
