@@ -98,8 +98,8 @@ def copyrightHeaderLinter : LinterCore := fun lines ↦ Id.run do
   -- The header should start and end with blank comments.
   let _ := match (start.get? 0, start.get? 4) with
   | (some "/-", some "-/") => none
-  | (some "/-", _) => return Array.mk [(StyleError.copyright none, 4)]
-  | _ => return Array.mk [(StyleError.copyright none, 0)]
+  | (some "/-", _) => return Array.mkArray1 (StyleError.copyright none, 4)
+  | _ => return Array.mkArray1 (StyleError.copyright none, 0)
 
   -- If this is given, we go over the individual lines one by one,
   -- and provide some context on what is mis-formatted (if anything).
@@ -151,7 +151,7 @@ def lintFile (path : System.FilePath) : IO Bool := do
     return false
   let all_output := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
-  -- XXX: this list is currently not sorted: for github, that's probably fine
+  -- This this list is not sorted: for github, this is fine.
   let errors := Array.flatten all_output
   formatErrors errors
   return errors.size > 0
@@ -164,8 +164,9 @@ def lintAllFiles (path : System.FilePath) : IO UInt32 := do
   let mut number_error_files := 0
   for module in allModules do
     let module := module.stripPrefix "import "
-    -- Exclude `Archive.Sensitivity` and `Mathlib.Tactic.Linter` for now.
-    -- FUTURE: replace this by proper parsing of style exceptions.
+    -- Exclude `Archive.Sensitivity` and `Mathlib.Tactic.Linter`:
+    -- the are false positives of the current linter.
+    -- FUTURE: replace by parsing style-exceptions.
     if #["Archive.Sensitivity", "Mathlib.Tactic.Linter"].contains module then
       continue
     -- Convert the module name to a file name, then lint that file.
