@@ -11,16 +11,22 @@ This file contains the code to perform the replacements that the `ReplaceRefine`
 outputs.
 -/
 
+/-- info: [(1, (17, 2)), (0, (17, 11)), (0, (17, 14))] -/
+#guard_msgs in
 example : True ∧ True := by
   refine' ⟨_, _⟩
   trivial
   trivial
 
+/-- info: [(1, (24, 2)), (0, (24, 11)), (0, (24, 14))] -/
+#guard_msgs in
 instance (priority := 1) fine : True ∧ True := by
   refine' ⟨_, _⟩
   trivial
   trivial
 
+/-- info: [(1, (34, 2)), (0, (34, 11)), (0, (34, 14))] -/
+#guard_msgs in
 /-- docs -/
 @[simp]
 partial
@@ -38,6 +44,8 @@ def String.insert (s : String) (n : Nat) (plus : String) : String :=
     ⟨sc.take n ++ plus.toList ++ sc.drop n⟩
   else dbg_trace "not inserted"; s
 
+/-- info: true -/
+#guard_msgs in
 #eval
   let str := "  refine' ⟨_, _⟩"
   let plus := "?"
@@ -53,6 +61,8 @@ def String.erase (s : String) (n m : Nat) : String :=
     ⟨sc.take n ++ sc.drop (n + m)⟩
   else dbg_trace "not erased"; s
 
+/-- info: true -/
+#guard_msgs in
 #eval
   let str := "  refine' ⟨_, _⟩"
   let n := 2
@@ -138,12 +148,21 @@ elab "ℹ [" num "/" num "]" ident ident : command => return
 /-- do nothing on a successfully built project. -/
 elab "Build completed successfully." : command => logInfo "All done!"
 
+set_option linter.unusedVariables false in
 /-- extract the file name, the array of corrections, perform them and rewrite the file. -/
 elab "info:" "././././" t1:term ":" num ":" num ":" t:term : command => do
   let file : System.FilePath := parseFile t1
   let corrections : Array (Nat × Nat × Nat) := parseCorrections t
   let newContent := "\n".intercalate
     ((substitutions (← IO.FS.lines file) corrections)).toList
-  --IO.FS.writeFile file (newContent.trimRight.push "\n")
+  IO.FS.writeFile file (newContent.trimRight ++ "\n")
 
 end syntax_and_elabs
+
+/-
+lake exe cache get
+tgt='buildOutput.lean'
+printf 'import Mathlib.Tactic.Replacements\n\n' > "${tgt}"
+lake build >> "${tgt}"
+
+-/
