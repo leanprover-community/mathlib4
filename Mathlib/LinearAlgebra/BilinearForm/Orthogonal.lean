@@ -31,8 +31,6 @@ Bilinear form,
 -/
 
 
-open BigOperators
-
 open LinearMap (BilinForm)
 
 universe u v w

@@ -5,7 +5,8 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Zify
-import Mathlib.Data.Int.CharZero
+import Mathlib.Algebra.Order.Ring.Cast
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Rat.Order
 
 /-!

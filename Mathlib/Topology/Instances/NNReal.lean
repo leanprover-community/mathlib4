@@ -58,7 +58,7 @@ open Topology
 
 namespace NNReal
 
-open NNReal BigOperators Filter
+open NNReal Filter
 
 instance : TopologicalSpace ℝ≥0 := inferInstance
 
