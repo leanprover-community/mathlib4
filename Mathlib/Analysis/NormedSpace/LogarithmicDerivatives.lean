@@ -22,14 +22,15 @@ open Filter Function
 
 open scoped Topology BigOperators Classical
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 𝕜': Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
+  [NormedAlgebra 𝕜 𝕜']
 
 /-- The logarithmic derivative of a function defined as deriv f /f. Note that it will be zero at `x`
 if `f` is not differentiableAt `x`. -/
-def logDeriv (f : 𝕜 → 𝕜) :=
+def logDeriv (f : 𝕜 → 𝕜') :=
   deriv f / f
 
-lemma logDeriv_zero_of_not_differenitableAt (f : 𝕜 → 𝕜) (x : 𝕜) (h : ¬DifferentiableAt 𝕜 f x) :
+lemma logDeriv_zero_of_not_differenitableAt (f : 𝕜 → 𝕜') (x : 𝕜) (h : ¬DifferentiableAt 𝕜 f x) :
     logDeriv f x = 0 := by
   simp only [logDeriv, Pi.div_apply, deriv_zero_of_not_differentiableAt h, zero_div]
 
@@ -37,36 +38,36 @@ theorem logDeriv_id (x : 𝕜) : logDeriv id x = 1 / x := by
   rw [logDeriv]
   simp only [deriv_id', Pi.div_apply, id_eq, one_div]
 
-theorem logDeriv_const (a : 𝕜) : logDeriv (fun _ => a) = 0 := by
+theorem logDeriv_const (a : 𝕜') : logDeriv (fun _ : 𝕜 ↦ a) = 0 := by
   rw [logDeriv]
   ext1 x
   simp only [deriv_const', Pi.div_apply, zero_div, Pi.zero_apply]
 
-theorem logDerv_mul (f g : 𝕜 → 𝕜) (x : 𝕜) (hfg : f x * g x ≠ 0) (hdf : DifferentiableAt 𝕜 f x)
+theorem logDerv_mul (f g : 𝕜 → 𝕜') (x : 𝕜) (hfg : f x * g x ≠ 0) (hdf : DifferentiableAt 𝕜 f x)
     (hdg : DifferentiableAt 𝕜 g x) :
     logDeriv (fun z => f z * g z) x = logDeriv f x + logDeriv g x := by
   simp only [logDeriv, Pi.div_apply, deriv_mul hdf hdg]
   field_simp [(mul_ne_zero_iff.1 hfg).1, (mul_ne_zero_iff.1 hfg).2, mul_comm]
 
-theorem logDerv_mul_const (f : 𝕜 → 𝕜) (x a : 𝕜) (hf :  f x * a ≠ 0) (hdf : DifferentiableAt 𝕜 f x) :
-    logDeriv (fun z => f z * a) x = logDeriv f x  := by
+theorem logDerv_mul_const (f : 𝕜 → 𝕜') (x : 𝕜) (a : 𝕜') (hf :  f x * a ≠ 0)
+    (hdf : DifferentiableAt 𝕜 f x) : logDeriv (fun z => f z * a) x = logDeriv f x  := by
   rw [logDerv_mul f (fun _ => a) x hf hdf]
   simp only [logDeriv_const, Pi.zero_apply, add_zero]
   fun_prop
 
-theorem logDerv_const_mul (f : 𝕜 → 𝕜) (x a : 𝕜) (hf :  a * f x ≠ 0) (hdf : DifferentiableAt 𝕜 f x) :
-    logDeriv (fun z => a * f z) x = logDeriv f x  := by
+theorem logDerv_const_mul (f : 𝕜 → 𝕜') (x : 𝕜) (a : 𝕜') (hf :  a * f x ≠ 0)
+    (hdf : DifferentiableAt 𝕜 f x) : logDeriv (fun z => a * f z) x = logDeriv f x  := by
   rw [logDerv_mul (fun _ => a)  f x hf _ hdf]
   simp only [logDeriv_const, Pi.zero_apply, zero_add]
   fun_prop
 
 /-- The logarithmic derivative of a finite product is the sum of the logarithmic derivatives. -/
-theorem logDeriv_prod {α : Type*} (s : Finset α) (f : α → 𝕜 → 𝕜) (t : 𝕜) (hf : ∀ x ∈ s, f x t ≠ 0)
+theorem logDeriv_prod {α : Type*} (s : Finset α) (f : α → 𝕜 → 𝕜') (t : 𝕜) (hf : ∀ x ∈ s, f x t ≠ 0)
     (hd : ∀ x ∈ s, DifferentiableAt 𝕜 (f x) t) :
     logDeriv (∏ i in s, f i) t = ∑ i in s, logDeriv (f i) t := by
   induction' s using Finset.cons_induction_on with a s ha ih
   · simp only [Finset.prod_empty, Finset.sum_empty]
-    exact congrFun (logDeriv_const (1 : 𝕜)) t
+    exact congrFun (logDeriv_const (1 : 𝕜')) t
   · rw [Finset.forall_mem_cons] at hf
     rw [Finset.cons_eq_insert _ _ ha, Finset.prod_insert ha, Finset.sum_insert ha]
     have := logDerv_mul (f a) (∏ i in s, f i) t ?_ ?_ ?_
