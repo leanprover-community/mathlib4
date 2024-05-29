@@ -234,8 +234,7 @@ jobs:
         with:
           linters: gcc
           run: |
-            env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
-            ./scripts/update-style-exceptions.sh
+            bash -o pipefail -c "./scripts/update-style-exceptions.sh"
             git diff
 
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
