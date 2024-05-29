@@ -45,7 +45,9 @@ jobs:
         with:
           linters: gcc
           run: |
-            env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
-            mv nolints.json scripts/nolints.json
+            bash -o pipefail -c "starting workflow"
+            env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
+            bash -o pipefail -c "nolints.json generated"
             ./scripts/update-style-exceptions.sh
+            bash -o pipefail -c "style exceptions also"
             git diff
