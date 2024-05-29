@@ -430,7 +430,6 @@ protected theorem bounded (f : F) : ∃ C, ∀ x y : α, dist ((f : α → β) x
   intro x y
   exact hC (Set.mem_range_self x) (Set.mem_range_self y)
 
-
 theorem isBounded_range (f : C_c(α, β)) : IsBounded (range f) :=
   isBounded_range_iff.2 (CompactlySupportedContinuousMap.bounded f)
 
