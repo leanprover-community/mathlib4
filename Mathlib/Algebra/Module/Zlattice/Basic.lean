@@ -37,8 +37,6 @@ the set defined by `Zspan.fundamentalDomain` is a fundamental domain.
 -/
 
 
-open scoped BigOperators
-
 noncomputable section
 
 namespace Zspan

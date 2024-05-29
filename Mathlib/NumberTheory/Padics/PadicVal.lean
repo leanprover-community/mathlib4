@@ -480,8 +480,6 @@ lemma self_pow_inv (r : ℕ) : padicValRat p ((p : ℚ) ^ r)⁻¹ = -r := by
   rw [padicValRat.inv, neg_inj, padicValRat.pow (Nat.cast_ne_zero.mpr hp.elim.ne_zero),
       padicValRat.self hp.elim.one_lt, mul_one]
 
-open BigOperators
-
 /-- A finite sum of rationals with positive `p`-adic valuation has positive `p`-adic valuation
 (if the sum is non-zero). -/
 theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < padicValRat p (F i))
@@ -646,8 +644,6 @@ lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) :
   replace h := le_antisymm (add_one_le_iff.mpr (lt_pow_of_log_lt one_lt_two h))
     (pow_log_le_self 2 n.succ_ne_zero)
   rw [h, padicValNat.prime_pow, ← h]
-
-open BigOperators
 
 theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :
     (Finset.range (padicValNat p n + 1)).image (p ^ ·) ⊆ n.divisors := by
