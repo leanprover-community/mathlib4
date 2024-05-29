@@ -155,7 +155,7 @@ elab "info:" "././././" t1:term ":" num ":" num ":" t:term : command => do
   let corrections : Array (Nat × Nat × Nat) := parseCorrections t
   let newContent := "\n".intercalate
     ((substitutions (← IO.FS.lines file) corrections)).toList
-  IO.FS.writeFile file (newContent.trimRight ++ "\n")
+  --IO.FS.writeFile file (newContent.trimRight ++ "\n")
 
 end syntax_and_elabs
 
