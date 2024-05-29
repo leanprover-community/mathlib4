@@ -27,8 +27,6 @@ universe u v w
 
 namespace LinearMap
 
-open BigOperators
-
 open Matrix
 
 open FiniteDimensional
@@ -201,7 +199,7 @@ theorem trace_id : trace R M id = (finrank R M : R) := by rw [← one_eq_id, tra
 theorem trace_transpose : trace R (Module.Dual R M) ∘ₗ Module.Dual.transpose = trace R M := by
   let e := dualTensorHomEquiv R M M
   have h : Function.Surjective e.toLinearMap := e.surjective
-  refine' (cancel_right h).1 _
+  refine (cancel_right h).1 ?_
   ext f m; simp [e]
 #align linear_map.trace_transpose LinearMap.trace_transpose
 
@@ -210,7 +208,7 @@ theorem trace_prodMap :
       (coprod id id : R × R →ₗ[R] R) ∘ₗ prodMap (trace R M) (trace R N) := by
   let e := (dualTensorHomEquiv R M M).prod (dualTensorHomEquiv R N N)
   have h : Function.Surjective e.toLinearMap := e.surjective
-  refine' (cancel_right h).1 _
+  refine (cancel_right h).1 ?_
   ext
   · simp only [e, dualTensorHomEquiv, LinearEquiv.coe_prod, dualTensorHomEquivOfBasis_toLinearMap,
       AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars, coe_comp, coe_inl,
@@ -227,7 +225,7 @@ variable {R M N P}
 theorem trace_prodMap' (f : M →ₗ[R] M) (g : N →ₗ[R] N) :
     trace R (M × N) (prodMap f g) = trace R M f + trace R N g := by
   have h := ext_iff.1 (trace_prodMap R M N) (f, g)
-  simp only [coe_comp, Function.comp_apply, prodMap_apply, coprod_apply, id_coe, id.def,
+  simp only [coe_comp, Function.comp_apply, prodMap_apply, coprod_apply, id_coe, id,
     prodMapLinear_apply] at h
   exact h
 #align linear_map.trace_prod_map' LinearMap.trace_prodMap'
@@ -302,7 +300,7 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
     haveI := (Module.free_def R N).mpr ⟨_, ⟨(b.map e).reindex (e.toEquiv.image _)⟩⟩
     rw [e.conj_apply, trace_comp_comm', ← comp_assoc, LinearEquiv.comp_coe,
       LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, id_comp]
-  · rw [trace, trace, dif_neg hM, dif_neg]; rfl
+  · rw [trace, trace, dif_neg hM, dif_neg ?_, zero_apply, zero_apply]
     rintro ⟨s, ⟨b⟩⟩
     exact hM ⟨s.image e.symm, ⟨(b.map e.symm).reindex
       ((e.symm.toEquiv.image s).trans (Equiv.Set.ofEq Finset.coe_image.symm))⟩⟩

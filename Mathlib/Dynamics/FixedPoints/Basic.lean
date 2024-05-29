@@ -17,7 +17,7 @@ In this file we define
 * the predicate `IsFixedPt f x := f x = x`;
 * the set `fixedPoints f` of fixed points of a self-map `f`.
 
-We also prove some simple lemmas about `IsFixedPt` and `∘`, `iterate`, and `semiconj`.
+We also prove some simple lemmas about `IsFixedPt` and `∘`, `iterate`, and `Semiconj`.
 
 ## Tags
 

@@ -95,9 +95,9 @@ theorem nth_stream_fr_lt_one {ifp_n : IntFractPair K}
 theorem one_le_succ_nth_stream_b {ifp_succ_n : IntFractPair K}
     (succ_nth_stream_eq : IntFractPair.stream v (n + 1) = some ifp_succ_n) : 1 ≤ ifp_succ_n.b := by
   obtain ⟨ifp_n, nth_stream_eq, stream_nth_fr_ne_zero, ⟨-⟩⟩ :
-    ∃ ifp_n,
-      IntFractPair.stream v n = some ifp_n ∧ ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n
-  exact succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
+      ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧ ifp_n.fr ≠ 0
+        ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n :=
+    succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
   suffices 1 ≤ ifp_n.fr⁻¹ by rwa [IntFractPair.of, le_floor, cast_one]
   suffices ifp_n.fr ≤ 1 by
     have h : 0 < ifp_n.fr :=
@@ -206,6 +206,7 @@ theorem fib_le_of_continuantsAux_b :
         set pconts := g.continuantsAux (n + 1) with pconts_eq
         set ppconts := g.continuantsAux n with ppconts_eq
         -- use the recurrence of `continuantsAux`
+        simp only [Nat.succ_eq_add_one, Nat.add_assoc, Nat.reduceAdd]
         suffices (fib n : K) + fib (n + 1) ≤ gp.a * ppconts.b + gp.b * pconts.b by
           simpa [fib_add_two, add_comm,
             continuantsAux_recurrence s_ppred_nth_eq ppconts_eq pconts_eq]
@@ -472,9 +473,9 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
       ∃ ifp_succ_n, IntFractPair.stream v (n + 1) = some ifp_succ_n ∧ (ifp_succ_n.b : K) = gp.b :=
     IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some s_nth_eq
   obtain ⟨ifp_n, stream_nth_eq, stream_nth_fr_ne_zero, if_of_eq_ifp_succ_n⟩ :
-    ∃ ifp_n,
-      IntFractPair.stream v n = some ifp_n ∧ ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n
-  exact IntFractPair.succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
+    ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧ ifp_n.fr ≠ 0
+      ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n :=
+    IntFractPair.succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
   let denom' := conts.b * (pred_conts.b + ifp_n.fr⁻¹ * conts.b)
   -- now we can use `sub_convergents_eq` to simplify our goal
   suffices |(-1) ^ n / denom'| ≤ 1 / denom by
@@ -527,7 +528,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
       IntFractPair.succ_nth_stream_b_le_nth_stream_fr_inv stream_nth_eq succ_nth_stream_eq
     have : 0 ≤ conts.b := le_of_lt zero_lt_conts_b
     -- Porting note: was `mono`
-    refine' mul_le_mul_of_nonneg_right _ _ <;> assumption
+    refine mul_le_mul_of_nonneg_right ?_ ?_ <;> assumption
 #align generalized_continued_fraction.abs_sub_convergents_le GeneralizedContinuedFraction.abs_sub_convergents_le
 
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (bₙ * Bₙ * Bₙ)`. This bound is worse than the one shown in
@@ -538,7 +539,7 @@ theorem abs_sub_convergents_le' {b : K}
     |v - (of v).convergents n| ≤ 1 / (b * (of v).denominators n * (of v).denominators n) := by
   have not_terminated_at_n : ¬(of v).TerminatedAt n := by
     simp [terminatedAt_iff_part_denom_none, nth_part_denom_eq]
-  refine' (abs_sub_convergents_le not_terminated_at_n).trans _
+  refine (abs_sub_convergents_le not_terminated_at_n).trans ?_
   -- One can show that `0 < (GeneralizedContinuedFraction.of v).denominators n` but it's easier
   -- to consider the case `(GeneralizedContinuedFraction.of v).denominators n = 0`.
   rcases (zero_le_of_denom (K := K)).eq_or_gt with

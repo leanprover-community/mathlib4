@@ -36,7 +36,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ]
 theorem hasDerivAt_exp (x : ℂ) : HasDerivAt exp (exp x) x := by
   rw [hasDerivAt_iff_isLittleO_nhds_zero]
   have : (1 : ℕ) < 2 := by norm_num
-  refine' (IsBigO.of_bound ‖exp x‖ _).trans_isLittleO (isLittleO_pow_id this)
+  refine (IsBigO.of_bound ‖exp x‖ ?_).trans_isLittleO (isLittleO_pow_id this)
   filter_upwards [Metric.ball_mem_nhds (0 : ℂ) zero_lt_one]
   simp only [Metric.mem_ball, dist_zero_right, norm_pow]
   exact fun z hz => exp_bound_sq x z hz.le
@@ -63,7 +63,7 @@ theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
 
 theorem contDiff_exp : ∀ {n}, ContDiff 𝕜 n exp := by
   -- Porting note: added `@` due to `∀ {n}` weirdness above
-  refine' @(contDiff_all_iff_nat.2 fun n => ?_)
+  refine @(contDiff_all_iff_nat.2 fun n => ?_)
   have : ContDiff ℂ (↑n) exp := by
     induction' n with n ihn
     · exact contDiff_zero.2 continuous_exp

@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 import Mathlib.Logic.Relation
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Lex
+import Mathlib.Data.List.Infix
 
 #align_import data.list.chain from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
@@ -165,7 +166,7 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
     exact h (i+1) (by simp only [length_cons]; omega)
 
 set_option linter.deprecated false in
-@[deprecated chain_iff_get]
+@[deprecated chain_iff_get] -- 2023-01-10
 theorem chain_iff_nthLe {R} {a : α} {l : List α} : Chain R a l ↔
     (∀ h : 0 < length l, R a (nthLe l 0 h)) ∧
     ∀ (i) (h : i < length l - 1),
@@ -364,7 +365,7 @@ theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
                     fun h i hi => h i (Nat.succ_lt_succ hi)⟩
 
 set_option linter.deprecated false in
-@[deprecated chain'_iff_get]
+@[deprecated chain'_iff_get] -- 2023-01-10
 theorem chain'_iff_nthLe {R} {l : List α} : Chain' R l ↔
     ∀ (i) (h : i < length l - 1),
       R (nthLe l i (by omega)) (nthLe l (i + 1) (by omega)) :=
@@ -398,11 +399,11 @@ The converse of `relationReflTransGen_of_exists_chain`.
 -/
 theorem exists_chain_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
     ∃ l, Chain r a l ∧ getLast (a :: l) (cons_ne_nil _ _) = b := by
-  refine' Relation.ReflTransGen.head_induction_on h _ _
+  refine Relation.ReflTransGen.head_induction_on h ?_ ?_
   · exact ⟨[], Chain.nil, rfl⟩
   · intro c d e _ ih
     obtain ⟨l, hl₁, hl₂⟩ := ih
-    refine' ⟨d :: l, Chain.cons e hl₁, _⟩
+    refine ⟨d :: l, Chain.cons e hl₁, ?_⟩
     rwa [getLast_cons_cons]
 #align list.exists_chain_of_relation_refl_trans_gen List.exists_chain_of_relationReflTransGen
 
@@ -419,8 +420,8 @@ theorem Chain.induction (p : α → Prop) (l : List α) (h : Chain r a l)
   · rw [chain_cons] at h
     simp only [mem_cons]
     rintro _ (rfl | H)
-    apply carries h.1 (l_ih h.2 hb _ (mem_cons.2 (Or.inl rfl)))
-    apply l_ih h.2 hb _ (mem_cons.2 H)
+    · apply carries h.1 (l_ih h.2 hb _ (mem_cons.2 (Or.inl rfl)))
+    · apply l_ih h.2 hb _ (mem_cons.2 H)
 #align list.chain.induction List.Chain.induction
 
 /-- Given a chain from `a` to `b`, and a predicate true at `b`, if `r x y → p y → p x` then

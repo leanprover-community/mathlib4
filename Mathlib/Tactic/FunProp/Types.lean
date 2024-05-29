@@ -3,11 +3,11 @@ Copyright (c) 2024 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Std.Data.RBMap.Basic
+import Batteries.Data.RBMap.Basic
 
 import Mathlib.Tactic.FunProp.FunctionData
 
-import Std.Lean.HashSet
+import Batteries.Lean.HashSet
 
 /-!
 ## `funProp`
@@ -76,7 +76,7 @@ def defaultNamesToUnfold : Array Name :=
 /-- `fun_prop` configuration -/
 structure Config where
   /-- Name to unfold -/
-  constToUnfold : Std.RBSet Name Name.quickCmp :=
+  constToUnfold : Batteries.RBSet Name Name.quickCmp :=
     .ofArray defaultNamesToUnfold _
   /-- Custom discharger to satisfy theorem hypotheses. -/
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none

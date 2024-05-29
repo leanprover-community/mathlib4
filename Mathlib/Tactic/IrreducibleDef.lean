@@ -40,7 +40,7 @@ elab "delta% " t:term : term <= expectedType => do
   let some t ← delta? t | throwError "cannot delta reduce {t}"
   pure t
 
-/- `eta_helper f = (· + 3)` elabs to `∀ x, f x = x + 3` -/
+/-- `eta_helper f = (· + 3)` elabs to `∀ x, f x = x + 3` -/
 local elab "eta_helper " t:term : term => do
   let t ← elabTerm t none
   let some (_, lhs, rhs) := t.eq? | throwError "not an equation: {t}"
@@ -85,7 +85,7 @@ elab mods:declModifiers "irreducible_def" n_id:declId n_def:(irredDefLemma)?
   let us' := us.getD { elemsAndSeps := #[] }
   let n_def ← match n_def.getD ⟨mkNullNode⟩ with
     | `(irredDefLemma| (lemma := $id)) => pure id
-    | _ => pure <| mkIdent <| (·.review) <|
+    | _ => pure <| mkIdentFrom n <| (·.review) <|
       let scopes := extractMacroScopes n.getId
       { scopes with name := scopes.name.appendAfter "_def" }
   let `(Parser.Command.declModifiersF|

@@ -3,10 +3,10 @@ Copyright (c) 2015 Joe Hendrix. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joe Hendrix, Sebastian Ullrich, Harun Khan, Alex Keizer, Abdalrhman M Mohamed
 -/
+import Mathlib.Algebra.Group.Fin
 import Mathlib.Data.Nat.Bits
-import Mathlib.Data.Fin.Basic
 import Mathlib.Data.ZMod.Defs
-import Std.Data.BitVec
+import Batteries.Data.BitVec
 
 #align_import data.bitvec.core from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
