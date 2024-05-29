@@ -26,7 +26,7 @@ underlying `F` and `G` such that `α.app a` lifts `𝟙 S` whenever `𝒳.p.obj 
 
 universe u₁ v₁ u₂ v₂
 
-open CategoryTheory Functor Category NatTrans
+open CategoryTheory Functor Category NatTrans IsHomLift
 
 namespace Fibered
 
@@ -77,30 +77,36 @@ lemma id_comp : comp F (BasedFunctor.id 𝒴) = F :=
 lemma w_obj (a : 𝒳.cat) : 𝒴.p.obj (F.obj a) = 𝒳.p.obj a := by
   rw [←Functor.comp_obj, F.w]
 
-/-- For a based functor `F : 𝒳 ⟶ 𝒴`, if an arrow `φ` in `𝒳` lifts some `f` in `𝒮`, then `F(φ)` also lifts `f` -/
-instance pres_IsHomLift {R S : 𝒮} {a b : 𝒳.cat} {φ : a ⟶ b} {f : R ⟶ S} [IsHomLift 𝒳.p f φ] :
-    IsHomLift 𝒴.p f (F.map φ) where
-  ObjLiftDomain := Eq.trans (F.w_obj a) hφ.ObjLiftDomain
-  ObjLiftCodomain := Eq.trans (F.w_obj b) hφ.ObjLiftCodomain
-  HomLift := ⟨by rw [←Functor.comp_map, congr_hom F.w]; simp [hφ.3.1] ⟩
+/-- For a based functor `F : 𝒳 ⟶ 𝒴`, if an arrow `φ` in `𝒳` lifts some `f` in `𝒮`, then `F(φ)`
+also lifts `f` -/
+instance pres_IsHomLift {R S : 𝒮} {a b : 𝒳.cat} (f : R ⟶ S) (φ : a ⟶ b) [IsHomLift 𝒳.p f φ] :
+    IsHomLift 𝒴.p f (F.map φ) := by
+  apply of_fac 𝒴.p f (F.map φ) (Eq.trans (F.w_obj a) (domain_eq 𝒳.p f φ))
+    (Eq.trans (F.w_obj b) (codomain_eq 𝒳.p f φ))
+  rw [←Functor.comp_map, congr_hom F.w]
+  simpa using (fac 𝒳.p f φ)
+
+-- have : ...... := .....
+-- @pres_IsHomLift _ _ _ _ _ _ (hφ := by aesop_cat)
 
 /-- For a based functor `F`, `F(φ)` always lifts `𝒳.p(φ)` -/
--- TODO: rename to .w_map? (can prove using next lemma in a cleaner way)
-instance map_isHomLift {a b : 𝒳.cat} (φ : a ⟶ b) : IsHomLift 𝒴.p (𝒳.p.map φ) (F.map φ) where
-  ObjLiftDomain := F.w_obj a
-  ObjLiftCodomain := F.w_obj b
-  HomLift := ⟨by simp [congr_hom F.w.symm]⟩
+-- instance map_isHomLift {a b : 𝒳.cat} (φ : a ⟶ b) : IsHomLift 𝒴.p (𝒳.p.map φ) (F.map φ) :=
+--   inferInstance
 
-/-- For a based functor `F : 𝒳 ⟶ 𝒴`, and an arrow `φ` in `𝒳`, then `φ` lifts an arrow `f` in `𝒮` if `F(φ)` does -/
-lemma IsHomLift_ofImage {S R : 𝒮} {a b : 𝒳.cat} {φ : a ⟶ b} {f : R ⟶ S}
-    [IsHomLift 𝒴.p f (F.map φ)] : IsHomLift 𝒳.p f φ where
-  ObjLiftDomain := F.w_obj a ▸ hφ.ObjLiftDomain
-  ObjLiftCodomain := F.w_obj b ▸ hφ.ObjLiftCodomain
-  HomLift := ⟨by rw [congr_hom F.w.symm]; simp [hφ.HomLift.1]⟩
+instance map_isHomLift (a : 𝒳.cat) : IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (𝟙 (F.obj a)) := by
+  simp_rw [← Functor.map_id]; infer_instance
+
+/-- For a based functor `F : 𝒳 ⟶ 𝒴`, and an arrow `φ` in `𝒳`, then `φ` lifts an arrow `f` in `𝒮`
+if `F(φ)` does -/
+lemma IsHomLift_ofImage {S R : 𝒮} {a b : 𝒳.cat} (f : R ⟶ S) (φ : a ⟶ b)
+    [IsHomLift 𝒴.p f (F.map φ)] : IsHomLift 𝒳.p f φ := by
+  apply of_fac 𝒳.p f φ  (F.w_obj a ▸ domain_eq 𝒴.p f (F.map φ))
+    (F.w_obj b ▸ codomain_eq 𝒴.p f (F.map φ))
+  simp [congr_hom F.w.symm, fac 𝒴.p f (F.map φ)]
 
 lemma IsHomLift_iff {S R : 𝒮} {a b : 𝒳.cat} {φ : a ⟶ b} {f : R ⟶ S} :
     IsHomLift 𝒴.p f (F.map φ) ↔ IsHomLift 𝒳.p f φ :=
-  ⟨IsHomLift_ofImage F, pres_IsHomLift F⟩
+  ⟨fun _ => IsHomLift_ofImage F f φ, fun _ => pres_IsHomLift F f φ⟩
 
 end
 
@@ -118,6 +124,10 @@ namespace BasedNatTrans
 
 variable {𝒳 𝒴 : BasedCategory 𝒮}
 
+instance app_isHomLift {F G : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) (a : 𝒳.cat) :
+    IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.toNatTrans.app a) :=
+  α.aboveId rfl
+
 @[ext]
 lemma ext {F G : BasedFunctor 𝒳 𝒴} (α β : BasedNatTrans F G)
     (h : α.toNatTrans = β.toNatTrans) : α = β := by
@@ -129,8 +139,10 @@ def id (F : BasedFunctor 𝒳 𝒴) : BasedNatTrans F F where
   toNatTrans := CategoryTheory.NatTrans.id F.toFunctor
   aboveId := by
     intro a S ha
-    refine ⟨?_, ?_, ⟨by simp only [id_app', map_id, id_comp, comp_id]⟩⟩
-    all_goals rwa [←CategoryTheory.Functor.comp_obj, F.w]
+    apply of_fac 𝒴.p (𝟙 S) _
+    rotate_left
+    any_goals rwa [←CategoryTheory.Functor.comp_obj, F.w]
+    simp
 
 @[simp]
 lemma id_toNatTrans (F : BasedFunctor 𝒳 𝒴) :
@@ -144,23 +156,21 @@ def comp {F G H : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G)
   toNatTrans := CategoryTheory.NatTrans.vcomp α.toNatTrans β.toNatTrans
   aboveId := by
     intro a S ha
-    rw [CategoryTheory.NatTrans.vcomp_app, show 𝟙 S = 𝟙 S ≫ 𝟙 S by simp only [comp_id]]
-    apply IsHomLift.comp (α.aboveId ha) (β.aboveId ha)
+    rw [CategoryTheory.NatTrans.vcomp_app]
+    subst ha
+    infer_instance
 
 -- TODO: do I need these three lemmas...?
 
 @[simp]
 lemma CategoryTheory.NatTrans.id_vcomp {C D : Type _} [Category C] [Category D] {F G : C ⥤ D}
     (f : NatTrans F G) : NatTrans.vcomp (NatTrans.id F) f = f := by
-  ext x
-  simp only [vcomp_eq_comp, comp_app, id_app', id_comp]
+  aesop_cat
 
 @[simp]
 lemma CategoryTheory.NatTrans.vcomp_id {C D : Type _} [Category C] [Category D] {F G : C ⥤ D}
-    (f : NatTrans F G) :
-  NatTrans.vcomp f (NatTrans.id G) = f := by
-  ext x
-  simp only [vcomp_eq_comp, comp_app, id_app', comp_id]
+    (f : NatTrans F G) : NatTrans.vcomp f (NatTrans.id G) = f := by
+  aesop_cat
 
 @[simp]
 lemma comp_toNatTrans {F G H : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H) :
@@ -202,8 +212,21 @@ lemma homCategory.ext {𝒳 𝒴 : BasedCategory 𝒮} {F G : BasedFunctor 𝒳 
 def BasedFunctor.associator {𝒳 𝒴 𝒵 𝒱 : BasedCategory 𝒮} (F : BasedFunctor 𝒳 𝒴) (G : BasedFunctor 𝒴 𝒵)
     (H : BasedFunctor 𝒵 𝒱) : BasedFunctor.comp (BasedFunctor.comp F G) H ≅
       BasedFunctor.comp F (BasedFunctor.comp G H) where
-    hom := { app := fun _ => 𝟙 _ }
-    inv := { app := fun _ => 𝟙 _ }
+    hom := {
+      app := fun _ => 𝟙 _
+      -- can this be automated?
+      aboveId := by
+        intro a S ha
+        subst ha
+        infer_instance
+    }
+    inv := {
+      app := fun _ => 𝟙 _
+      aboveId := by
+        intro a S ha
+        subst ha
+        infer_instance
+    }
 
 /-- The left unitor in the bicategory `BasedCategory` is given by the identity -/
 @[simps]
