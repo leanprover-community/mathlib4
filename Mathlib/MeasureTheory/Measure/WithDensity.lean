@@ -519,14 +519,29 @@ lemma withDensity_inv_same {μ : Measure α} {f : α → ℝ≥0∞}
     (μ.withDensity f).withDensity (fun x ↦ (f x)⁻¹) = μ :=
   withDensity_inv_same₀ hf.aemeasurable hf_ne_zero hf_ne_top
 
-/-- If `f` is almost everywhere positive and finite, then `μ ≪ μ.withDensity f`. See also
+/-- If `f` is almost everywhere positive, then `μ ≪ μ.withDensity f`. See also
 `withDensity_absolutelyContinuous` for the reverse direction, which always holds. -/
 lemma withDensity_absolutelyContinuous' {μ : Measure α} {f : α → ℝ≥0∞}
-    (hf : AEMeasurable f μ) (hf_ne_zero : ∀ᵐ x ∂μ, f x ≠ 0) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
+    (hf : AEMeasurable f μ) (hf_ne_zero : ∀ᵐ x ∂μ, f x ≠ 0) :
     μ ≪ μ.withDensity f := by
-  suffices (μ.withDensity f).withDensity (fun x ↦ (f x)⁻¹) ≪ μ.withDensity f by
-    rwa [withDensity_inv_same₀ hf hf_ne_zero hf_ne_top] at this
-  exact withDensity_absolutelyContinuous _ _
+  refine Measure.AbsolutelyContinuous.mk (fun s hs hμs ↦ ?_)
+  rw [withDensity_apply _ hs, lintegral_eq_zero_iff' hf.restrict,
+    ae_eq_restrict_iff_indicator_ae_eq hs, Set.indicator_zero', Filter.EventuallyEq, ae_iff] at hμs
+  simp only [ae_iff, ne_eq, not_not] at hf_ne_zero
+  simp only [Pi.zero_apply, Set.indicator_apply_eq_zero, not_forall, exists_prop] at hμs
+  have hle : s ⊆ {a | a ∈ s ∧ ¬f a = 0} ∪ {a | f a = 0} :=
+    fun x hx ↦ or_iff_not_imp_right.mpr <| fun hnx ↦ ⟨hx, hnx⟩
+  exact measure_mono_null hle <| nonpos_iff_eq_zero.1 <| le_trans (measure_union_le _ _)
+    <| hμs.symm ▸ zero_add _ |>.symm ▸ hf_ne_zero.le
+
+theorem withDensity_ae_eq {β : Type} {f g : α → β} {d : α → ℝ≥0∞}
+    (hd : AEMeasurable d μ) (h_ae_nonneg : ∀ᵐ x ∂μ, d x ≠ 0) :
+    f =ᵐ[μ.withDensity d] g ↔ f =ᵐ[μ] g :=
+  Iff.intro
+  (fun h ↦ Measure.AbsolutelyContinuous.ae_eq
+    (withDensity_absolutelyContinuous' hd h_ae_nonneg) h)
+  (fun h ↦ Measure.AbsolutelyContinuous.ae_eq
+    (withDensity_absolutelyContinuous μ d) h)
 
 /-- A sigma-finite measure is absolutely continuous with respect to some finite measure. -/
 theorem exists_absolutelyContinuous_isFiniteMeasure {m : MeasurableSpace α} (μ : Measure α)
