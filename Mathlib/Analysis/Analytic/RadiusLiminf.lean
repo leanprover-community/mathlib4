@@ -21,7 +21,7 @@ because this would create a circular dependency once we redefine `exp` using
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-open scoped Topology Classical BigOperators NNReal ENNReal
+open scoped Topology Classical NNReal ENNReal
 
 open Filter Asymptotics
 
@@ -52,12 +52,12 @@ theorem radius_eq_liminf :
     apply le_liminf_of_le
     · infer_param
     · rw [← eventually_map]
-      refine'
-        H.mp ((eventually_gt_atTop 0).mono fun n hn₀ hn => (this _ hn₀).2 (NNReal.coe_le_coe.1 _))
+      refine
+        H.mp ((eventually_gt_atTop 0).mono fun n hn₀ hn => (this _ hn₀).2 (NNReal.coe_le_coe.1 ?_))
       push_cast
       exact (le_abs_self _).trans (hn.trans (pow_le_one _ ha.1.le ha.2.le))
-  · refine' p.le_radius_of_isBigO (IsBigO.of_bound 1 _)
-    refine' (eventually_lt_of_lt_liminf hr).mp ((eventually_gt_atTop 0).mono fun n hn₀ hn => _)
+  · refine p.le_radius_of_isBigO (IsBigO.of_bound 1 ?_)
+    refine (eventually_lt_of_lt_liminf hr).mp ((eventually_gt_atTop 0).mono fun n hn₀ hn => ?_)
     simpa using NNReal.coe_le_coe.2 ((this _ hn₀).1 hn.le)
 #align formal_multilinear_series.radius_eq_liminf FormalMultilinearSeries.radius_eq_liminf
 

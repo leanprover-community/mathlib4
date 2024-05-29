@@ -3,9 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Option.NAry
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Order.Interval.Basic
 
@@ -22,7 +20,7 @@ in `Data.FP.Basic`. We have not yet integrated these with the rest of the librar
 
 open Function Set
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 universe u
 
@@ -518,10 +516,10 @@ variable [OrderedCommGroup α] {s t : NonemptyInterval α}
 
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · rw [NonemptyInterval.ext_iff, Prod.ext_iff] at h
     have := (mul_le_mul_iff_of_ge s.fst_le_snd t.fst_le_snd).1 (h.2.trans h.1.symm).le
-    refine' ⟨s.fst, t.fst, _, _, h.1⟩ <;> apply NonemptyInterval.ext <;> dsimp [pure]
+    refine ⟨s.fst, t.fst, ?_, ?_, h.1⟩ <;> apply NonemptyInterval.ext <;> dsimp [pure]
     · nth_rw 2 [this.1]
     · nth_rw 2 [this.2]
   · rintro ⟨b, c, rfl, rfl, h⟩
@@ -660,7 +658,7 @@ theorem length_sub : (s - t).length = s.length + t.length := by simp [sub_eq_add
 
 @[simp]
 theorem length_sum (f : ι → NonemptyInterval α) (s : Finset ι) :
-    (∑ i in s, f i).length = ∑ i in s, (f i).length :=
+    (∑ i ∈ s, f i).length = ∑ i ∈ s, (f i).length :=
   map_sum (⟨⟨length, length_zero⟩, length_add⟩ : NonemptyInterval α →+ α) _ _
 #align nonempty_interval.length_sum NonemptyInterval.length_sum
 
@@ -710,7 +708,7 @@ theorem length_sub_le : (s - t).length ≤ s.length + t.length := by
 #align interval.length_sub_le Interval.length_sub_le
 
 theorem length_sum_le (f : ι → Interval α) (s : Finset ι) :
-    (∑ i in s, f i).length ≤ ∑ i in s, (f i).length := by
+    (∑ i ∈ s, f i).length ≤ ∑ i ∈ s, (f i).length := by
   -- Porting note: Old proof was `:= Finset.le_sum_of_subadditive _ length_zero length_add_le _ _`
   apply Finset.le_sum_of_subadditive
   · exact length_zero
@@ -741,5 +739,3 @@ def evalIntervalLength : PositivityExt where
     return .nonnegative q(Interval.length_nonneg $a)
 
 end Mathlib.Meta.Positivity
-
-open Interval

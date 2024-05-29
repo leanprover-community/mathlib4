@@ -217,10 +217,9 @@ lemma gaussianReal_absolutelyContinuous (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) 
 lemma gaussianReal_absolutelyContinuous' (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
     volume ≪ gaussianReal μ v := by
   rw [gaussianReal_of_var_ne_zero _ hv]
-  refine withDensity_absolutelyContinuous' ?_ ?_ ?_
+  refine withDensity_absolutelyContinuous' ?_ ?_
   · exact (measurable_gaussianPDF _ _).aemeasurable
   · exact ae_of_all _ (fun _ ↦ (gaussianPDF_pos _ hv _).ne')
-  · exact ae_of_all _ (fun _ ↦ ENNReal.ofReal_ne_top)
 
 lemma rnDeriv_gaussianReal (μ : ℝ) (v : ℝ≥0) :
     ∂(gaussianReal μ v)/∂volume =ₐₛ gaussianPDF μ v := by

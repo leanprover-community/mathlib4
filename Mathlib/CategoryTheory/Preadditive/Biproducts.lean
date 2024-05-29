@@ -67,8 +67,6 @@ open CategoryTheory.Preadditive
 
 open scoped Classical
 
-open BigOperators
-
 universe v v' u u'
 
 noncomputable section
@@ -674,7 +672,7 @@ instance subsingleton_preadditive_of_hasBinaryBiproducts {C : Type u} [Category.
       (by convert (inferInstance : HasBinaryBiproduct X X); apply Subsingleton.elim)
     have h₂ := @biprod.add_eq_lift_id_desc _ _ b _ _ f g
       (by convert (inferInstance : HasBinaryBiproduct X X); apply Subsingleton.elim)
-    refine' h₁.trans (Eq.trans _ h₂.symm)
+    refine h₁.trans (Eq.trans ?_ h₂.symm)
     congr! 2 <;> apply Subsingleton.elim
 #align category_theory.subsingleton_preadditive_of_has_binary_biproducts CategoryTheory.subsingleton_preadditive_of_hasBinaryBiproducts
 
