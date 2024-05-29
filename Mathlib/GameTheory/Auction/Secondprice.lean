@@ -250,7 +250,7 @@ theorem valuation_is_dominant (i : a.I ) : dominant i (a.v i) := by
         rw [Finset.mem_erase] at hj
         exact hb' j hj.1
       · rw [h_secondprice_eq]
-    · rw [ge_iff_le,utility,← H]
+    · rw [utility,← H]
       simp only [ite_true, ge_iff_le, tsub_le_iff_right]
       simp only [gt_iff_lt, not_lt] at H1
       rw [secondprice, ← H]
