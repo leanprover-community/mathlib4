@@ -68,18 +68,20 @@ lemma measurable_cast {α β} [mα : MeasurableSpace α] [mβ : MeasurableSpace 
   exact measurable_id
 
 @[simp]
-lemma kernel.map_zero_left (α : Type _) [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
+lemma kernel.map_zero_left (α β γ : Type*) [MeasurableSpace α] [MeasurableSpace β]
+    [MeasurableSpace γ]
     (f : β → γ) (hf : Measurable f) :
     kernel.map (0 : kernel α β) f hf = 0 := by
   ext a s
   rw [kernel.map_apply]
   simp
 
-variable [Preorder ι]
+universe u
+variable {ι : Type*} [Preorder ι]
 
 -- For IT: `node i = (x : Iic i) → α x`, `path i j = (x : Ioc i j) → α x`
 -- TODO: for markov chains on `(i : ℕ) → α i`, `node i = α i`, `path i j = α j`
-structure MeasurableSpaceGraph (ι : Type _) [Preorder ι] :=
+structure MeasurableSpaceGraph (ι : Type*) [Preorder ι] :=
   (node : ι → Type u)
   (path : ι → ι → Type u)
   (node_meas : ∀ i, MeasurableSpace (node i))
@@ -97,12 +99,12 @@ structure MeasurableSpaceGraph (ι : Type _) [Preorder ι] :=
 instance (M : MeasurableSpaceGraph ι) (i : ι) : MeasurableSpace (M.node i) := M.node_meas i
 instance (M : MeasurableSpaceGraph ι) (i j : ι) : MeasurableSpace (M.path i j) := M.path_meas i j
 
+variable {i j k l : ι}
+
 def e_path_eq (M : MeasurableSpaceGraph ι) (h : j = k) : M.path i j ≃ᵐ M.path i k :=
   MeasurableEquiv.cast (by rw [h]) (by rw [h])
 
 namespace MeasurableSpaceGraph
-
-variable {i j k l : ι}
 
 def split (M : MeasurableSpaceGraph ι) (i j k : ι) (hij : i < j)
     (κ : kernel (M.node j) (M.path j k)) :
@@ -234,7 +236,7 @@ instance (κ : kernel (M.node i) (M.path i j)) (h : j = k) [IsSFiniteKernel κ] 
 
 end MeasurableSpaceGraph
 
-def markovGraph (α : ι → Type _) [∀ i, MeasurableSpace (α i)] : MeasurableSpaceGraph ι where
+def markovGraph (α : ι → Type*) [∀ i, MeasurableSpace (α i)] : MeasurableSpaceGraph ι where
   node := α
   path := fun _ j ↦ α j
   node_meas := fun _ ↦ inferInstance
@@ -248,7 +250,7 @@ def markovGraph (α : ι → Type _) [∀ i, MeasurableSpace (α i)] : Measurabl
 
 namespace markovGraph
 
-variable (α : ι → Type _) [∀ i, MeasurableSpace (α i)]
+variable (α : ι → Type*) [∀ i, MeasurableSpace (α i)]
 
 lemma node_eq : (markovGraph α).node i = α i := rfl
 lemma path_eq : (markovGraph α).path i j = α j := rfl
@@ -259,7 +261,7 @@ end markovGraph
 
 section TransitionGraph
 
-variable {ι} [LinearOrder ι] {α : ι → Type _} [∀ i, MeasurableSpace (α i)]
+variable {ι : Type*} [LinearOrder ι] {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
 
 section equivs
 
@@ -341,14 +343,14 @@ end equivs
 
 /-! ### MeasurableSpaceGraph on a linear order associated to stochastic processes
 
-We descibe the `MeasurableSpaceGraph` indexed by a linear order with nodes `(x : Ici i) → α x` and
+We descibe the `MeasurableSpaceGraph` indexed by a linear order with nodes `(x : Iic i) → α x` and
 paths `(x : Ioc i j) → α x`.
 
 The intended application is the following: we consider a stochastic process `X : (i : ι) → α i` and
-kernels from `(x : Ici i) → α x` to `(x : Ioc i j) → α x` describing the laws of the random
+kernels from `(x : Iic i) → α x` to `(x : Ioc i j) → α x` describing the laws of the random
 variables `X (i + 1), …, X j` given `X 0, …, X i`. -/
 
-def transitionGraph (α : ι → Type _) [∀ i, MeasurableSpace (α i)] : MeasurableSpaceGraph ι where
+def transitionGraph (α : ι → Type*) [∀ i, MeasurableSpace (α i)] : MeasurableSpaceGraph ι where
   node := fun i ↦ ∀ x : Iic i, α x
   path := fun i j ↦ ∀ x : Ioc i j, α x
   node_meas := fun i ↦ by infer_instance
@@ -361,7 +363,7 @@ def transitionGraph (α : ι → Type _) [∀ i, MeasurableSpace (α i)] : Measu
   er_assoc := fun i j k l hij hjk hkl ↦ er_assoc hij hjk hkl.le
 
 namespace transitionGraph
-variable (α)
+variable (α) {i j : ι}
 
 lemma node_eq : (transitionGraph α).node i = ∀ x : Iic i, α x := rfl
 lemma path_eq : (transitionGraph α).path i j = ∀ x : Ioc i j, α x := rfl
@@ -382,11 +384,11 @@ structure Transition (M : MeasurableSpaceGraph ι) :=
 
 section nat
 
-variable {α : ℕ → Type _} [∀ i, MeasurableSpace (α i)]
+variable {α : ℕ → Type*} [∀ i, MeasurableSpace (α i)]
 
 section kerNat
 
-variable {M : MeasurableSpaceGraph ℕ}
+variable {M : MeasurableSpaceGraph ℕ} {i j k : ℕ}
 
 noncomputable
 def kerInterval (κ₀ : kernel (M.node i) (M.path i j))
@@ -509,6 +511,8 @@ theorem compProd_kerNat (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1))
 
 end kerNat
 
+variable {M : MeasurableSpaceGraph ℕ}
+
 noncomputable
 def MeasurableSpaceGraph.transition (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
   [∀ i, IsSFiniteKernel (κ i)] :
@@ -517,7 +521,7 @@ def MeasurableSpaceGraph.transition (κ : (k : ℕ) → kernel (M.node k) (M.pat
   s_finite := fun _ _ ↦ inferInstance,
   comp := fun _ _ _ ↦ compProd_kerNat κ, }
 
-def e_succ_nat {α : ℕ → Type _} [mα : ∀ n, MeasurableSpace (α n)] (j : ℕ) :
+def e_succ_nat {α : ℕ → Type*} [mα : ∀ n, MeasurableSpace (α n)] (j : ℕ) :
     α (j + 1) ≃ᵐ ((k : Ioc j (j + 1)) → α ↑k) where
   toFun := fun a x ↦ by
     rw [le_antisymm x.2.2 (Nat.succ_le_iff.mpr x.2.1)]
@@ -575,9 +579,9 @@ We descibe the `MeasurableSpaceGraph` indexed by `ℕ` with nodes `i ↦ α i` a
 The intended application is the following: we consider a Markov process `X : (i : ℕ) → α i` and
 a kernel from `α i` to `α j` describes the law of the random variables `X j` given `X i`. -/
 
-variable {α : ℕ → Type _} [∀ i, MeasurableSpace (α i)]
+variable {α : ℕ → Type*} [∀ i, MeasurableSpace (α i)]
 
-def measurableSpaceGraph_markov_nat (α : ℕ → Type _) [∀ i, MeasurableSpace (α i)] :
+def measurableSpaceGraph_markov_nat (α : ℕ → Type*) [∀ i, MeasurableSpace (α i)] :
     MeasurableSpaceGraph ℕ :=
   markovGraph α
 
