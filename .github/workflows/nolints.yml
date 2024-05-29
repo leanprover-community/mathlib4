@@ -59,12 +59,8 @@ jobs:
         with:
           linters: gcc
           run: |
-            echo "first step"
             env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
-            echo "nolints updated"
-            ./scripts/update-style-exceptions.sh
-            echo "style exceptions updated"
-            git diff
+            bash -o pipefail -c "./scripts/update-style-exceptions.sh"
 
       - name: configure git setup
         run: |
