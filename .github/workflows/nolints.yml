@@ -53,7 +53,7 @@ jobs:
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
-      - name: lint mathlib
+      - name: lint mathlib and update style exceptions files
         id: lint
         uses: liskin/gh-problem-matcher-wrap@v3
         with:
@@ -75,7 +75,7 @@ jobs:
           # github using a different username.
           git config --unset http.https://github.com/.extraheader
 
-      - name: update nolints.json and style-exceptions.txt
+      - name: file a PR to update nolints.json and style-exceptions.txt
         run: ./scripts/update_nolints_CI.sh
         env:
           DEPLOY_GITHUB_TOKEN: ${{ secrets.UPDATE_NOLINTS_TOKEN }}
