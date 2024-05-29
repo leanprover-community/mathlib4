@@ -21,6 +21,8 @@ also contains unrelated results about `Units` that depend on `MonoidHom`.
   `α` to `βˣ`.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 open Function
 
