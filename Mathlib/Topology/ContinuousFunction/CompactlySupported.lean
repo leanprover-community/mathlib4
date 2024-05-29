@@ -136,8 +136,7 @@ def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(�
   toFun f :=
     { toFun := f
       continuous_toFun := f.continuous
-      hasCompactSupport' := hasCompactSupport_of_compactSpace f
-        }
+      hasCompactSupport' := hasCompactSupport_of_compactSpace f }
   invFun f := f
   left_inv _ := rfl
   right_inv _ := rfl
