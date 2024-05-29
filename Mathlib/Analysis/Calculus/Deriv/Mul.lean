@@ -360,10 +360,14 @@ theorem DifferentiableAt.finset_prod (hd : ∀ i ∈ u, DifferentiableAt 𝕜 (f
     DifferentiableAt 𝕜 (∏ i ∈ u, f i ·) x :=
   (HasDerivAt.finset_prod (fun i hi ↦ DifferentiableAt.hasDerivAt (hd i hi))).differentiableAt
 
+theorem DifferentiableWithinAt.finset_prod (hd : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
+    DifferentiableWithinAt 𝕜 (∏ i ∈ u, f i ·) s x :=
+  (HasDerivWithinAt.finset_prod (fun i hi ↦
+    DifferentiableWithinAt.hasDerivWithinAt (hd i hi))).differentiableWithinAt
+
 theorem DifferentiableOn.finset_prod (hd : ∀ i ∈ u, DifferentiableOn 𝕜 (f i) s) :
     DifferentiableOn 𝕜 (∏ i ∈ u, f i ·) s :=
-  fun x hx ↦ (HasDerivWithinAt.finset_prod
-    (fun i hi ↦ DifferentiableWithinAt.hasDerivWithinAt (hd i hi x hx))).differentiableWithinAt
+  fun x hx ↦ .finset_prod (fun i hi ↦ hd i hi x hx)
 
 theorem Differentiable.finset_prod (hd : ∀ i ∈ u, Differentiable 𝕜 (f i)) :
     Differentiable 𝕜 (∏ i ∈ u, f i ·) :=
