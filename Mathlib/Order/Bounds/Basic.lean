@@ -617,27 +617,27 @@ end
 -/
 
 
-theorem isGreatest_singleton : IsGreatest {a} a :=
+@[simp] theorem isGreatest_singleton : IsGreatest {a} a :=
   ⟨mem_singleton a, fun _ hx => le_of_eq <| eq_of_mem_singleton hx⟩
 #align is_greatest_singleton isGreatest_singleton
 
-theorem isLeast_singleton : IsLeast {a} a :=
+@[simp] theorem isLeast_singleton : IsLeast {a} a :=
   @isGreatest_singleton αᵒᵈ _ a
 #align is_least_singleton isLeast_singleton
 
-theorem isLUB_singleton : IsLUB {a} a :=
+@[simp] theorem isLUB_singleton : IsLUB {a} a :=
   isGreatest_singleton.isLUB
 #align is_lub_singleton isLUB_singleton
 
-theorem isGLB_singleton : IsGLB {a} a :=
+@[simp] theorem isGLB_singleton : IsGLB {a} a :=
   isLeast_singleton.isGLB
 #align is_glb_singleton isGLB_singleton
 
-theorem bddAbove_singleton : BddAbove ({a} : Set α) :=
+@[simp] theorem bddAbove_singleton : BddAbove ({a} : Set α) :=
   isLUB_singleton.bddAbove
 #align bdd_above_singleton bddAbove_singleton
 
-theorem bddBelow_singleton : BddBelow ({a} : Set α) :=
+@[simp] theorem bddBelow_singleton : BddBelow ({a} : Set α) :=
   isGLB_singleton.bddBelow
 #align bdd_below_singleton bddBelow_singleton
 
@@ -1686,53 +1686,3 @@ lemma BddBelow.range_comp {γ : Type*} [Preorder β] [Preorder γ] {f : α → �
     (hf : BddBelow (range f)) (hg : Monotone g) : BddBelow (range (fun x => g (f x))) := by
   change BddBelow (range (g ∘ f))
   simpa only [Set.range_comp] using hg.map_bddBelow hf
-
-section ScottContinuous
-variable [Preorder α] [Preorder β] {f : α → β} {a : α}
-
-/-- A function between preorders is said to be Scott continuous on a set `D` of directed sets if it
-preserves `IsLUB` on elements of `D`.
-
-The dual notion
-
-```lean
-∀ ⦃d : Set α⦄, d ∈ D →  d.Nonempty → DirectedOn (· ≥ ·) d → ∀ ⦃a⦄, IsGLB d a → IsGLB (f '' d) (f a)
-```
-
-does not appear to play a significant role in the literature, so is omitted here.
--/
-def ScottContinuousOn (D : Set (Set α)) (f : α → β) : Prop :=
-  ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
-
-lemma ScottContinuousOn.mono (D₁ D₂ : Set (Set α)) (hD : D₁ ⊆ D₂) {f : α → β}
-    (hf : ScottContinuousOn D₂ f) : ScottContinuousOn D₁ f :=
-  fun _  hdD₁ hd₁ hd₂ _ hda => hf (hD hdD₁) hd₁ hd₂ hda
-
-protected theorem ScottContinuousOn.monotone (D : Set (Set α)) (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
-    (h : ScottContinuousOn D f) : Monotone f := by
-  refine' fun a b hab =>
-    (h (hD a b hab) (insert_nonempty _ _) (directedOn_pair le_refl hab) _).1
-      (mem_image_of_mem _ <| mem_insert _ _)
-  rw [IsLUB, upperBounds_insert, upperBounds_singleton,
-    inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]
-  exact isLeast_Ici
-
-/-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
-sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
-Scott topology.
--/
-def ScottContinuous (f : α → β) : Prop :=
-  ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
-#align scott_continuous ScottContinuous
-
-@[simp] lemma scottContinuousOn_univ : ScottContinuousOn univ f ↔ ScottContinuous f := by
-  simp [ScottContinuousOn, ScottContinuous]
-
-lemma ScottContinuous.scottContinuousOn {D : Set (Set α)} :
-    ScottContinuous f → ScottContinuousOn D f := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
-
-protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f :=
-  h.scottContinuousOn.monotone univ (fun _ _ _ ↦ trivial)
-#align scott_continuous.monotone ScottContinuous.monotone
-
-end ScottContinuous
