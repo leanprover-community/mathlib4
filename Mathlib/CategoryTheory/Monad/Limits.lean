@@ -192,7 +192,7 @@ def coconePoint : Algebra T where
     dsimp; simp
   -- See library note [dsimp, simp]
   assoc := by
-    refine' (isColimitOfPreserves _ (isColimitOfPreserves _ t)).hom_ext fun j => _
+    refine (isColimitOfPreserves _ (isColimitOfPreserves _ t)).hom_ext fun j => ?_
     rw [Functor.mapCocone_ι_app, Functor.mapCocone_ι_app,
       show (T : C ⥤ C).map ((T : C ⥤ C).map _) ≫ _ ≫ _ = _ from T.μ.naturality_assoc _ _, ←
       Functor.map_comp_assoc, commuting, Functor.map_comp, Category.assoc, commuting]

@@ -872,7 +872,7 @@ instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α]
   suffices SeparableSpace α by exact UniformSpace.secondCountable_of_separable α
   choose T _ hTc hsubT using fun n =>
     subset_countable_closure_of_compact (isCompact_compactCovering α n)
-  refine' ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x => _⟩⟩
+  refine ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x => ?_⟩⟩
   rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering α) x with ⟨n, hn⟩
   exact closure_mono (subset_iUnion _ n) (hsubT _ hn)
 #align emetric.second_countable_of_sigma_compact EMetric.secondCountable_of_sigmaCompact

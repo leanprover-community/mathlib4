@@ -233,7 +233,7 @@ def toJordanDecomposition (s : SignedMeasure α) : JordanDecomposition α :=
     posPart_finite := inferInstance
     negPart_finite := inferInstance
     mutuallySingular := by
-      refine' ⟨iᶜ, hi.1.compl, _, _⟩
+      refine ⟨iᶜ, hi.1.compl, ?_, ?_⟩
       -- Porting note: added `← NNReal.eq_iff`
       · rw [toMeasureOfZeroLE_apply _ _ hi.1 hi.1.compl]; simp [← NNReal.eq_iff]
       · rw [toMeasureOfLEZero_apply _ _ hi.1.compl hi.1.compl.compl]; simp [← NNReal.eq_iff] }

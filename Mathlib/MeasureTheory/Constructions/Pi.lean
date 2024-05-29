@@ -344,7 +344,7 @@ def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
   -- computationally irrelevant. The `noncomputable section` doesn't help because all it does
   -- is insert `noncomputable` for you when necessary.
   let e : ℕ → ι → ℕ := fun n => (@decode (ι → ℕ) _ n).iget
-  · refine' mem_image_of_mem _ fun i _ => (hμ i).set_mem _
+  · refine mem_image_of_mem _ fun i _ => (hμ i).set_mem _
   · calc
       Measure.pi μ (Set.pi univ fun i => (hμ i).set (e n i)) ≤
           Measure.pi μ (Set.pi univ fun i => toMeasurable (μ i) ((hμ i).set (e n i))) :=

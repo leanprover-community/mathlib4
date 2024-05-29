@@ -211,13 +211,13 @@ def directionOfNonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) : Su
   add_mem' := by
     rintro _ _ ⟨p1, hp1, p2, hp2, rfl⟩ ⟨p3, hp3, p4, hp4, rfl⟩
     rw [← vadd_vsub_assoc]
-    refine' vsub_mem_vsub _ hp4
+    refine vsub_mem_vsub ?_ hp4
     convert s.smul_vsub_vadd_mem 1 hp1 hp2 hp3
     rw [one_smul]
   smul_mem' := by
     rintro c _ ⟨p1, hp1, p2, hp2, rfl⟩
     rw [← vadd_vsub (c • (p1 -ᵥ p2)) p2]
-    refine' vsub_mem_vsub _ hp2
+    refine vsub_mem_vsub ?_ hp2
     exact s.smul_vsub_vadd_mem c hp1 hp2 hp2
 #align affine_subspace.direction_of_nonempty AffineSubspace.directionOfNonempty
 

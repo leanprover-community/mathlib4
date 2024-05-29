@@ -140,7 +140,7 @@ def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :
       ⟨k, jk, ik, h.symm⟩,
       @fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, z⟩ ⟨ij, hiij, hjij, hij⟩ ⟨jk, hjjk, hkjk, hjk⟩ => by
         obtain ⟨ijk, hijijk, hjkijk⟩ := directed_of (· ≤ ·) ij jk
-        refine' ⟨ijk, le_trans hiij hijijk, le_trans hkjk hjkijk, _⟩
+        refine ⟨ijk, le_trans hiij hijijk, le_trans hkjk hjkijk, ?_⟩
         rw [← DirectedSystem.map_map, hij, DirectedSystem.map_map]
         · symm
           rw [← DirectedSystem.map_map, ← hjk, DirectedSystem.map_map] <;> assumption⟩

@@ -75,7 +75,7 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
               · exact (PullbackCone.fst S)|>.continuous_toFun
               · exact (PullbackCone.snd S)|>.continuous_toFun
           }
-      refine' ⟨_, _, _⟩
+      refine ⟨?_, ?_, ?_⟩
       · delta pullbackCone
         ext a
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644

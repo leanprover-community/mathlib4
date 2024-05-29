@@ -269,7 +269,7 @@ def natural (u : ι → Ω → β) (hum : ∀ i, StronglyMeasurable (u i)) : Fil
   seq i := ⨆ j ≤ i, MeasurableSpace.comap (u j) mβ
   mono' i j hij := biSup_mono fun k => ge_trans hij
   le' i := by
-    refine' iSup₂_le _
+    refine iSup₂_le ?_
     rintro j _ s ⟨t, ht, rfl⟩
     exact (hum j).measurable ht
 #align measure_theory.filtration.natural MeasureTheory.Filtration.natural

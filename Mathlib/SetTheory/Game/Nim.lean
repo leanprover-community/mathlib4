@@ -193,7 +193,7 @@ theorem nim_one_moveRight (x) : (nim 1).moveRight x = nim 0 := by simp
 /-- `nim 1` has exactly the same moves as `star`. -/
 def nimOneRelabelling : nim 1 ≡r star := by
   rw [nim_def]
-  refine' ⟨_, _, fun i => _, fun j => _⟩
+  refine ⟨?_, ?_, fun i => ?_, fun j => ?_⟩
   any_goals dsimp; apply Equiv.equivOfUnique
   all_goals simp; exact nimZeroRelabelling
 #align pgame.nim_one_relabelling SetTheory.PGame.nimOneRelabelling
