@@ -10,50 +10,27 @@ import Mathlib.CategoryTheory.FiberedCategory.Cartesian
 
 # Fibered categories
 
-This file defines what it means for a functor `p : 𝒳 ⥤ 𝒮` to be fibered`.
+This file defines what it means for a functor `p : 𝒳 ⥤ 𝒮` to be (pre)fibered.
 
 ## Main definitions
-
-- `IsCartesian p f φ` expresses that `φ` is a cartesian arrow lying over `f` with respect to `p`.
-This structure extends `IsHomLift p f φ`.
-- `IsFibered p` expresses that `p` gives `𝒳` the structure of a fibered category over `𝒮`, i.e.
-that for every morphism `f : S ⟶ R` in `𝒮` and every object `b` in `𝒳` with `p(b)=R` there is a
-cartesian arrow `φ : a ⟶ b`  of `f`.
+- `IsPreFibered p` expresses that `p` gives `𝒳` the structure of a prefibered category over `𝒮`,
+as in SGA VI.6.1
+- `IsFibered p` expresses that `p` gives `𝒳` the structure of a fibered category over `𝒮` as in
+SGA VI.6.1
 
 ## Implementation
-The standard constructors of `IsCartesian` and `IsFibered` have both been renamed to `.mk'`. We have
-provided alternate lemmas `IsCartesian.mk` and `IsFibered.mk` for constructing instances of these
-structures, and it is recommended to use these instead to minimize the amount of equalities that
-needs to be carried around in the construction.
 
-The reason for this is the following:
-Just like `IsHomLift p f φ`, we have phrased `IsCartesian p f φ` in a way to make its usage as
-flexible  as possible with respect to non-definitional equalities of domains / codomains.
-In particular, given a lift
-```
-  a --φ--> b
-  -        -
-  |        |
-  v        v
-  R --f--> S
-```
-(by which we mean an object of `IsHomLift p f φ`). We say that it is cartesian if for all arrows
-`g : R' ⟶ R`, and all lifts
-```
-  a' --φ'--> b
-  -          -
-  |          |
-  v          v
-  R' --f'--> S
-```
-such that `f' = g ≫ f`, there is a unique induced map `τ : a' ⟶ a` lifting `g` and such that
-`τ ≫ φ = φ'`. This definition gives us some flexibility in that it allows us to take `f'` to be
-non-definitionally equal to `g ≫ f`, and `p(a')` to be non-definitionally equal to `R'`.
-`IsCartesian.mk` only requires us to check this condition for `f' = g ≫ f` and `R=p(a')`.
+The standard constructor of `IsPreFibered` has been renamed to `.mk'`, and we have provided an
+alternate constructor `IsPreFibered.mk`, which peforms substitutions of some superfluous variables.
+It is recommended to use these instead to minimize the amount of equalities that needs to be carried
+around in the construction.
 
-Similarly, `IsFibered p` is phrased as saying that for every `f : R ⟶ S`, and every `a` such that
-`p(a)=S`, there is a cartesian arrow `φ` lying over `f`. The alternate constructor `IsFibered.mk`
-only requires us to construct this arrow for every `a` and every `f : R ⟶ p(a)`.
+There are different notions of fibered categories in the literature, and another common definition
+is the existence of strongly cartesian morphisms lying over any given morphism in the base. We also
+provide an alternate constructor for `IsFibered` in this sense, see `IsFibered.of_has_pullbacks'`.
+
+## References
+
 -/
 
 universe v₁ v₂ u₁ u₂
