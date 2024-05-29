@@ -33,6 +33,8 @@ theorem IsProjectiveMeasureFamily.congr_cylinder_aux [h_nonempty : Nonempty (∀
   intro i
   apply measurable_pi_apply
 
+/-- TODO: remove the nonemptiness assumption, as if one of the sets is empty then the corresponding
+measure vanishes, and then by projectivity all the other measures also vanish. -/
 theorem IsProjectiveMeasureFamily.congr_cylinder [h_nonempty : Nonempty (∀ i, α i)]
     (hP : IsProjectiveMeasureFamily P) {I J : Finset ι} {S : Set (∀ i : I, α i)}
     {T : Set (∀ i : J, α i)} (hS : MeasurableSet S) (hT : MeasurableSet T)

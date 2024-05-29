@@ -28,8 +28,9 @@ variable (μ : (i : ι) → Measure (X i)) [hμ : ∀ i, IsProbabilityMeasure (�
 
 /-- Consider a family of probability measures. You can take their products for any fimite
 subfamily. This gives a projective family of measures, see `IsProjectiveMeasureFamily`. -/
-theorem isProjectiveMeasureFamily_pi [∀ (I : Finset ι) i, Decidable (i ∈ I)] :
+theorem isProjectiveMeasureFamily_pi :
     IsProjectiveMeasureFamily (fun I : Finset ι ↦ (Measure.pi (fun i : I ↦ μ i))) := by
+  classical
   intro I J hJI
   refine Measure.pi_eq (fun s ms ↦ ?_)
   rw [Measure.map_apply (measurable_proj₂' (α := X) I J hJI) (MeasurableSet.univ_pi ms),
@@ -325,7 +326,7 @@ theorem firstLemma (A : ℕ → Set ((n : ℕ) → X n)) (A_mem : ∀ n, A n ∈
         · rfl
       rw [this]
       convert hind m (fun i ↦ z i) hm x n
-      cases m with | zero => rfl | succ _ => rfl
+      cases m with | zero | succ _ => rfl
   -- We now want to prove that the integral of `χₙ` converges to `0`.
   have concl x n : kolContent μ_proj (A n) = (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) x := by
     simp_rw [χ, A_eq]
@@ -352,7 +353,6 @@ theorem firstLemma (A : ℕ → Set ((n : ℕ) → X n)) (A_mem : ∀ n, A n ∈
     exact mem_of_indicator_ne_zero (ne_of_lt this).symm
   exact (A_inter ▸ mem_iInter.2 incr).elim
 
-variable [DecidableEq ι] [∀ (I : Set ι) i, Decidable (i ∈ I)]
 variable {X : ι → Type*} [hX : ∀ i, MeasurableSpace (X i)]
 variable (μ : (i : ι) → Measure (X i)) [hμ : ∀ i, IsProbabilityMeasure (μ i)]
 
@@ -371,7 +371,8 @@ a decresaing sequence of cylinders with empty intersection converges to $0$, in 
 the measurable spaces are indexed by a countable type. This implies the $\sigma$-additivity of
 `kolContent` (see `sigma_additive_addContent_of_tendsto_zero`),
 which allows to extend it to the $\sigma$-algebra by Carathéodory's theorem. -/
-theorem secondLemma (φ : ℕ ≃ ι) (A : ℕ → Set ((i : ι) → X i)) (A_mem : ∀ n, A n ∈ cylinders X)
+theorem secondLemma
+    (φ : ℕ ≃ ι) (A : ℕ → Set ((i : ι) → X i)) (A_mem : ∀ n, A n ∈ cylinders X)
     (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅) :
     Tendsto (fun n ↦ @kolContent _ _ _ _
     (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
@@ -395,12 +396,11 @@ theorem secondLemma (φ : ℕ ≃ ι) (A : ℕ → Set ((i : ι) → X i)) (A_me
   -- definitionally equal to X i.
   let f : ((k : ℕ) → X (φ k)) → (i : ι) → X i := fun x i ↦ cast (h i) (x (φ.symm i))
   -- `aux n` is an equivalence between `sₙ` ans `tₙ`, it will be used to link the two.
-  let aux n : (s n ≃ t n) := {
-    toFun := fun i ↦ ⟨φ.symm i, e n i.1 i.2⟩
-    invFun := fun k ↦ ⟨φ k, e' n k.1 k.2⟩
-    left_inv := by simp [Function.LeftInverse]
-    right_inv := by simp [Function.RightInverse, Function.LeftInverse]
-  }
+  let aux n : s n ≃ t n :=
+    { toFun := fun i ↦ ⟨φ.symm i, e n i.1 i.2⟩
+      invFun := fun k ↦ ⟨φ k, e' n k.1 k.2⟩
+      left_inv := by simp [Function.LeftInverse]
+      right_inv := by simp [Function.RightInverse, Function.LeftInverse] }
   -- `gₙ` is the equivalent of `f` for families indexed by `tₙ` and `sₙ`.
   let g n : ((k : t n) → X (φ k)) → (i : s n) → X i :=
     fun x i ↦ cast (h i) (x (aux n i))
@@ -493,6 +493,7 @@ theorem thirdLemma (A : ℕ → Set (∀ i, X i)) (A_mem : ∀ n, A n ∈ cylind
     Tendsto (fun n ↦ @kolContent _ _ _ _
     (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
     (isProjectiveMeasureFamily_pi μ) (A n)) atTop (𝓝 0) := by
+  classical
   have : ∀ i, Nonempty (X i) := by
     have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩
     infer_instance
@@ -512,12 +513,11 @@ theorem thirdLemma (A : ℕ → Set (∀ i, X i)) (A_mem : ∀ n, A n ∈ cylind
   have st n i (hi : i ∈ s n) : ⟨i, su n hi⟩ ∈ t n := by simpa [t] using hi
   have ts n i (hi : i ∈ t n) : i.1 ∈ s n := by simpa [t] using hi
   -- This brings again `aux`.
-  let aux : (n : ℕ) → (s n ≃ t n) := fun n ↦ {
-    toFun := fun i ↦ ⟨⟨i.1, su n i.2⟩, st n i i.2⟩
-    invFun := fun i ↦ ⟨i.1.1, ts n i i.2⟩
-    left_inv := by simp [Function.LeftInverse]
-    right_inv := by simp [Function.RightInverse, Function.LeftInverse]
-  }
+  let aux : (n : ℕ) → (s n ≃ t n) := fun n ↦
+    { toFun := fun i ↦ ⟨⟨i.1, su n i.2⟩, st n i i.2⟩
+      invFun := fun i ↦ ⟨i.1.1, ts n i i.2⟩
+      left_inv := by simp [Function.LeftInverse]
+      right_inv := by simp [Function.RightInverse, Function.LeftInverse] }
   have h n (i : s n) : X (aux n i) = X i.1 := rfl
   have imp n (x : (i : s n) → Set (X i)) : Set.univ.pi (fun i : t n ↦ x ((aux n).invFun i)) =
       (fun x i ↦ cast (h n i) (x (aux n i))) ⁻¹' Set.univ.pi x := by
@@ -600,6 +600,7 @@ theorem kolContent_sigma_subadditive ⦃f : ℕ → Set ((i : ι) → X i)⦄ (h
     ∑' n, @kolContent _ _ _ _
     (by have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩; infer_instance)
     (isProjectiveMeasureFamily_pi μ) (f n) := by
+  classical
   have : ∀ i, Nonempty (X i) := by
     have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩;
     infer_instance
@@ -644,6 +645,9 @@ theorem isProjectiveLimit_measure_produit :
     rw [mem_cylinders]; exact ⟨I, s, hs, rfl⟩
   rw [measure_produit, Measure.ofAddContent_eq _ _ _ _ h_mem,
     kolContent_congr (isProjectiveMeasureFamily_pi μ) h_mem rfl hs]
+
+/- TODO: Add lemmas that show that the product measure behaves in the way we expect with respect
+to measure of boxes and integral of functions depending on finitely many indices. -/
 
 -- theorem prod_meas (S : Finset ℕ) (a : ℕ) (ha : a ∈ S) (μ : (n : S) → Measure (X n))
 --     [∀ n, IsProbabilityMeasure (μ n)]
