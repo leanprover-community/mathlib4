@@ -236,7 +236,11 @@ exists_cfc_of_predicate := by
     intro a ha
     use (φ ha)
     constructor
-    · have h0 : FiniteDimensional ℝ C(spectrum ℝ a, ℝ) := by sorry
+    · have h0 : FiniteDimensional ℝ C(spectrum ℝ a, ℝ) := by
+        have AB : Finite (spectrum ℝ a) := by refine finite_spectrum ha
+        apply FiniteDimensional.of_injective (V := C(spectrum ℝ a , ℝ)) (V₂ := spectrum ℝ a → ℝ)
+              (ContinuousMap.coeFnLinearMap ℝ (α := spectrum ℝ a) (M := ℝ))
+        exact DFunLike.coe_injective
       have hφ : LinearMap.ker ha.φ = ⊥ := by sorry
       have H := ha.compact_spectrum
       apply LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ a, ℝ))
