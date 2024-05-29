@@ -163,7 +163,7 @@ section AlgebraicStructure
 
 variable [TopologicalSpace β] (x : α)
 
-instance instZero [Zero β] : Zero C_c(α, β) where
+instance [Zero β] : Zero C_c(α, β) where
   zero := { toFun := (0 : C(α, β))
             continuous_toFun := (0 : C(α, β)).2
             hasCompactSupport' := by
