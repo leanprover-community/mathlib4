@@ -1,6 +1,7 @@
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.Tactic.Widget.CommDiag
 import ProofWidgets.Component.Panel.GoalTypePanel
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import ProofWidgets.Component.Panel.SelectionPanel
 
 universe u v u' v' u'' v''
@@ -41,12 +42,13 @@ lemma PreservesLimitPair.iso_inv :
     (PreservesLimitPair.iso F X X').inv = inv (prodComparison F X X') := by
   simp_rw [← PreservesLimitPair.iso_hom]; rw [IsIso.Iso.inv_hom]
 
-lemma PreservesLimitPair.iso.inv_natural :
-    prod.map (F.map f) (F.map f') ≫ (PreservesLimitPair.iso F _ _).inv =
-    (PreservesLimitPair.iso F _ _).inv ≫ F.map (prod.map f f') := by
-  convert (prodComparison_inv_natural F f f').symm
-  all_goals (exact Mono.right_cancellation (f := (PreservesLimitPair.iso F _ _).hom) _ _
-              (by rw [Iso.inv_hom_id]; simp only [iso_hom, IsIso.inv_hom_id]))
+variable [HasTerminal C] [HasTerminal D] [PreservesLimit (CategoryTheory.Functor.empty C) F]
+
+@[simp]
+lemma PreservesTerminal.iso_inv :
+    (PreservesTerminal.iso F).inv = inv (terminalComparison F) := by
+  simp_rw [← PreservesTerminal.iso_hom]; rw [IsIso.Iso.inv_hom]
+
 
 lemma prod.associator_comp_prodComparison [HasBinaryProducts C] [HasBinaryProducts D] :
     prodComparison F (X ⨯ Y) Z ≫ prod.map (prodComparison F X Y) (𝟙 (F.obj Z))
@@ -137,18 +139,6 @@ lemma inv_prodComparison_natTrans [IsIso (prodComparison F X Y)] [IsIso (prodCom
     (α : F ⟶ G) : inv (prodComparison F X Y) ≫ α.app (X ⨯ Y) =
     prod.map (α.app X) (α.app Y) ≫ inv (prodComparison G X Y) := by
   rw [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq, prodComparison_natTrans]
-
-example [IsIso (prodComparison F X Y)] [IsIso (prodComparison G X Y)]
-    (α : F ⟶ G) [PreservesLimit (pair X Y) F] [PreservesLimit (pair X Y) G] :
-    (PreservesLimitPair.iso F X Y).inv ≫ α.app (X ⨯ Y) =
-    prod.map (α.app X) (α.app Y) ≫ (PreservesLimitPair.iso G X Y).inv := by
-  simp only [PreservesLimitPair.iso_inv, IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq]
-  rw [prodComparison_natTrans]
-
-#check ((evaluation C D).obj X).map (𝟙 F)
-
-example : ((evaluation C D).obj X).map (𝟙 F) = 𝟙 (F.obj X) := by
-  simp only [evaluation_obj_obj, evaluation_obj_map, NatTrans.id_app]
 
 end Limits
 
