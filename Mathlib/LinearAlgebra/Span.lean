@@ -205,7 +205,7 @@ theorem span_induction' {p : ∀ x, x ∈ span R s → Prop}
     (smul : ∀ (a : R) (x hx), p x hx → p (a • x) (Submodule.smul_mem _ _ ‹_›)) {x}
     (hx : x ∈ span R s) : p x hx := by
   refine Exists.elim ?_ fun (hx : x ∈ span R s) (hc : p x hx) => hc
-  refine'
+  refine
     span_induction hx (fun m hm => ⟨subset_span hm, mem m hm⟩) ⟨zero_mem _, zero⟩
       (fun x y hx hy =>
         Exists.elim hx fun hx' hx =>
@@ -1191,3 +1191,4 @@ theorem coord_apply_smul (y : Submodule.span R ({x} : Set M)) : coord R M x h y 
 #align linear_equiv.coord_apply_smul LinearEquiv.coord_apply_smul
 
 end LinearEquiv
+

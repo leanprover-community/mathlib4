@@ -401,7 +401,7 @@ theorem toSignedMeasure_injective : Injective <| @JordanDecomposition.toSignedMe
       show j₁.posPart (i ∩ S) = 0 from
         nonpos_iff_eq_zero.1 (hS₄ ▸ measure_mono (Set.inter_subset_right _ _)),
       zero_add]
-    · refine'
+    · refine
         Set.disjoint_of_subset_left (Set.inter_subset_right _ _)
           (Set.disjoint_of_subset_right (Set.inter_subset_right _ _) disjoint_compl_right)
     · exact hi.inter hS₁.compl
@@ -538,7 +538,7 @@ theorem totalVariation_absolutelyContinuous_iff (s : SignedMeasure α) (μ : Mea
   constructor <;> intro h
   · constructor
     all_goals
-      refine' Measure.AbsolutelyContinuous.mk fun S _ hS₂ => _
+      refine Measure.AbsolutelyContinuous.mk fun S _ hS₂ => ?_
       have := h hS₂
       rw [totalVariation, Measure.add_apply, add_eq_zero_iff] at this
     exacts [this.1, this.2]
@@ -599,3 +599,5 @@ theorem totalVariation_mutuallySingular_iff (s : SignedMeasure α) (μ : Measure
 end SignedMeasure
 
 end MeasureTheory
+
+

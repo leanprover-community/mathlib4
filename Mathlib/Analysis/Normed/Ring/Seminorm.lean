@@ -145,7 +145,7 @@ section Ring
 variable [Ring R] (p : RingSeminorm R)
 
 theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 := by
-  refine'
+  refine
     ⟨fun h =>
       ne_zero_iff.mpr
         ⟨1, by
@@ -388,3 +388,4 @@ lemma MulRingNorm_nat_le_nat {R : Type*} [Ring R] (n : ℕ) (f : MulRingNorm R) 
       f (n + 1) ≤ f (n) + f 1 := f.add_le' ↑n 1
       _ = f (n) + 1 := by rw [map_one]
       _ ≤ n + 1 := add_le_add_right hn 1
+

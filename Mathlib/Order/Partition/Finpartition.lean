@@ -333,7 +333,7 @@ instance : SemilatticeInf (Finpartition a) :=
       obtain ⟨c, hc, hbc⟩ := hPQ hb
       obtain ⟨d, hd, hbd⟩ := hPR hb
       have h := _root_.le_inf hbc hbd
-      refine'
+      refine
         ⟨c ⊓ d,
           mem_erase_of_ne_of_mem (ne_bot_of_le_ne_bot (P.ne_bot hb) h)
             (mem_image.2 ⟨(c, d), mem_product.2 ⟨hc, hd⟩, rfl⟩),
@@ -680,3 +680,4 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
 end Atomise
 
 end Finpartition
+

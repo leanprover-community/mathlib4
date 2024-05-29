@@ -107,7 +107,7 @@ protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
   let e := (hf (f x) hx).toTrivialization
   have h := (hf (f x) hx).mem_toTrivialization_baseSet
   let he := e.mem_source.2 h
-  refine'
+  refine
     ⟨e.toPartialHomeomorph.trans
         { toFun := fun p => p.1
           invFun := fun p => ⟨p, x, rfl⟩
@@ -220,3 +220,4 @@ protected theorem FiberBundle.isCoveringMap {F : Type*} {E : X → Type*} [Topol
     [FiberBundle F E] : IsCoveringMap (π F E) :=
   IsFiberBundle.isCoveringMap fun x => ⟨trivializationAt F E x, mem_baseSet_trivializationAt F E x⟩
 #align fiber_bundle.is_covering_map FiberBundle.isCoveringMap
+
