@@ -35,15 +35,15 @@ Euler-Mascheroni constant will follow in a subsequent PR.
   `ζ(s) = ∑' (n : ℕ), 1 / (n + 1) ^ s`.
 * `completedRiemannZeta₀_one_sub`, `completedRiemannZeta_one_sub`, and `riemannZeta_one_sub` :
   functional equation relating values at `s` and `1 - s`
-* `riemannZeta_neg_nat_eq_bernoulli` : for any `k ∈ ℕ` we have the formula
-  `riemannZeta (-k) = (-1) ^ k * bernoulli (k + 1) / (k + 1)`
-* `riemannZeta_two_mul_nat`: formula for `ζ(2 * k)` for `k ∈ ℕ, k ≠ 0` in terms of Bernoulli
-  numbers
+
+For special-value formulae expressing `ζ (2 * k)` and `ζ (1 - 2 * k)` in terms of Bernoulli numbers
+see `Mathlib.NumberTheory.LSeries.HurwitzZetaValues`. For computation of the constant term as
+`s → 1`, see `Mathlib.NumberTheory.Harmonic.ZetaAsymp`.
 
 ## Outline of proofs:
 
-These results are mostly special cases of more general results for even Hurwitz zeta functions from
-in `Mathlib.NumberTheory.LSeries.HurwitzZetaEven`.
+These results are mostly special cases of more general results for even Hurwitz zeta functions
+proved in `Mathlib.NumberTheory.LSeries.HurwitzZetaEven`.
 -/
 
 
@@ -244,89 +244,3 @@ alias riemannCompletedZeta_one_sub := completedRiemannZeta_one_sub
 alias riemannCompletedZeta_residue_one := completedRiemannZeta_residue_one
 
 end aliases
-
--- NOTE TO REVIEWERS. I have a much better proof of this theorem as a special case of a more general
--- result about Hurwitz zeta. However, that cannot go in the current PR for length reasons; and I
--- don't want this PR to make mathlib worse, even temporarily.
--- So below is a verbatim quote of the old proof, with absolutely minimal modifications to make it
--- work in the new setup. Please do not waste time reviewing it for style! It will hopefully be gone
--- within a few weeks.
-theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
-    riemannZeta (-k) = (-1 : ℂ) ^ k * bernoulli (k + 1) / (k + 1) := by
-  rcases Nat.even_or_odd' k with ⟨m, rfl | rfl⟩
-  · cases' m with m m
-    ·-- k = 0 : evaluate explicitly
-      rw [mul_zero, Nat.cast_zero, pow_zero, one_mul, zero_add, neg_zero, zero_add,
-        div_one, bernoulli_one, riemannZeta_zero]
-      norm_num
-    · -- k = 2 * (m + 1) : both sides "trivially" zero
-      rw [Nat.cast_mul, ← neg_mul, Nat.cast_two, Nat.cast_succ, riemannZeta_neg_two_mul_nat_add_one,
-        bernoulli_eq_bernoulli'_of_ne_one]
-      swap; · apply ne_of_gt; norm_num
-      rw [bernoulli'_odd_eq_zero ⟨m + 1, rfl⟩ (by norm_num), Rat.cast_zero, mul_zero,
-        zero_div]
-  · -- k = 2 * m + 1 : the interesting case
-    rw [Odd.neg_one_pow ⟨m, rfl⟩]
-    rw [show -(↑(2 * m + 1) : ℂ) = 1 - (2 * m + 2) by push_cast; ring]
-    rw [riemannZeta_one_sub]
-    rotate_left
-    · intro n
-      rw [(by norm_cast : 2 * (m : ℂ) + 2 = ↑(2 * m + 2)), ← Int.cast_neg_natCast,
-        ← Int.cast_natCast, Ne, Int.cast_inj]
-      apply ne_of_gt
-      exact lt_of_le_of_lt
-        (by set_option tactic.skipAssignedInstances false in norm_num : (-n : ℤ) ≤ 0)
-        (by positivity)
-    · rw [(by norm_cast : 2 * (m : ℂ) + 2 = ↑(2 * m + 2)), Ne, Nat.cast_eq_one]; omega
-    -- get rid of cosine term
-    rw [show Complex.cos (↑π * (2 * ↑m + 2) / 2) = -(-1 : ℂ) ^ m by
-        rw [(by field_simp; ring : (π : ℂ) * (2 * ↑m + 2) / 2 = (π * m + π))]
-        rw [Complex.cos_add_pi, neg_inj]
-        rcases Nat.even_or_odd' m with ⟨t, rfl | rfl⟩
-        · rw [pow_mul, neg_one_sq, one_pow]
-          convert Complex.cos_nat_mul_two_pi t using 2
-          push_cast; ring_nf
-        · rw [pow_add, pow_one, pow_mul, neg_one_sq, one_pow, one_mul]
-          convert Complex.cos_nat_mul_two_pi_add_pi t using 2
-          push_cast; ring_nf]
-    -- substitute in what we know about zeta values at positive integers
-    have step1 := congr_arg ((↑) : ℝ → ℂ) (hasSum_zeta_nat (by norm_num : m + 1 ≠ 0)).tsum_eq
-    have step2 := zeta_nat_eq_tsum_of_gt_one (by rw [mul_add]; omega : 1 < 2 * (m + 1))
-    simp_rw [ofReal_tsum, ofReal_div, ofReal_one, ofReal_pow, ofReal_natCast] at step1
-    rw [step1, (by norm_cast : (↑(2 * (m + 1)) : ℂ) = 2 * ↑m + 2)] at step2
-    rw [step2, mul_div]
-    -- now the rest is just a lengthy but elementary rearrangement
-    rw [show ((2 * (m + 1))! : ℂ) = Complex.Gamma (2 * m + 2) * (↑(2 * m + 1) + 1) by
-        rw [(by push_cast; ring : (2 * m + 2 : ℂ) = ↑(2 * m + 1) + 1),
-          Complex.Gamma_nat_eq_factorial, (by ring : 2 * (m + 1) = 2 * m + 1 + 1),
-          Nat.factorial_succ, Nat.cast_mul, mul_comm]
-        norm_num]
-    rw [← div_div, neg_one_mul]
-    congr 1
-    rw [div_eq_iff (Gamma_ne_zero_of_re_pos _)]
-    swap; · rw [(by norm_num : 2 * (m : ℂ) + 2 = ↑(2 * (m : ℝ) + 2)), ofReal_re]; positivity
-    simp_rw [ofReal_mul, ← mul_assoc, ofReal_ratCast, mul_add, Nat.add_assoc, mul_one,
-      one_add_one_eq_two, mul_neg, neg_mul, neg_inj]
-    conv_rhs => rw [mul_comm]
-    congr 1
-    rw [ofReal_pow, ofReal_neg, ofReal_one, pow_add, neg_one_sq, mul_one]
-    conv_lhs =>
-      congr
-      congr
-      rw [mul_assoc, ← pow_add, ← two_mul, pow_mul, neg_one_sq, one_pow, mul_one]
-    rw [(by simp : (2 : ℂ) * π = (2 : ℝ) * π),
-      mul_cpow_ofReal_nonneg (by positivity) (by positivity), ← mul_assoc, ofReal_ofNat,
-      (by {intro z; rw [cpow_add _ _ (by simp), cpow_one]} :
-        ∀ (z : ℂ), (2 : ℂ) * 2 ^ z = 2 ^ (1 + z)), ← sub_eq_add_neg]
-    rw [show (2 : ℂ) ^ (1 - (2 * (m : ℂ) + 2)) = (↑((2 : ℝ) ^ (2 * m + 2 - 1)))⁻¹ by
-        rw [ofReal_pow, ← cpow_natCast, ← cpow_neg, show (2 : ℝ) = (2 : ℂ) by norm_num]
-        congr 1
-        rw [Nat.add_sub_assoc one_le_two, Nat.cast_add, Nat.cast_mul, Nat.cast_two,
-          (by norm_num : 2 - 1 = 1)]
-        push_cast; ring]
-    rw [show (π : ℂ) ^ (-(2 * (m : ℂ) + 2)) = (↑(π ^ (2 * m + 2)))⁻¹ by
-        rw [ofReal_pow, ← cpow_natCast, ← cpow_neg, Nat.cast_add, Nat.cast_mul, Nat.cast_two]]
-    rw [(by intros; ring : ∀ a b c d e : ℂ, a * b * c * d * e = a * d * (b * e) * c)]
-    rw [inv_mul_cancel (ofReal_ne_zero.mpr <| pow_ne_zero _ pi_pos.ne'),
-      inv_mul_cancel (ofReal_ne_zero.mpr <| pow_ne_zero _ two_ne_zero), one_mul, one_mul]
-#align riemann_zeta_neg_nat_eq_bernoulli riemannZeta_neg_nat_eq_bernoulli
