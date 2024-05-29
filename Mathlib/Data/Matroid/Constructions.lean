@@ -174,6 +174,13 @@ theorem ground_indep_iff_eq_freeOn : M.Indep M.E ↔ M = freeOn M.E := by
 theorem freeOn_restrict (h : R ⊆ E) : (freeOn E) ↾ R = freeOn R := by
   simp [h, eq_freeOn_iff, Subset.rfl]
 
+theorem restrict_eq_freeOn_iff : M ↾ I = freeOn I ↔ M.Indep I := by
+  rw [eq_freeOn_iff, and_iff_right M.restrict_ground_eq, restrict_indep_iff,
+    and_iff_left Subset.rfl]
+
+theorem Indep.restrict_eq_freeOn (hI : M.Indep I) : M ↾ I = freeOn I := by
+  rwa [restrict_eq_freeOn_iff]
+
 end FreeOn
 
 section uniqueBaseOn
