@@ -44,8 +44,6 @@ images of different morphisms commute, we obtain a canonical morphism
 -/
 
 
-open BigOperators
-
 namespace Subgroup
 
 variable {G : Type*} [Group G]

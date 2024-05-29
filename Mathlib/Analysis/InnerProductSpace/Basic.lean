@@ -68,7 +68,7 @@ noncomputable section
 
 open RCLike Real Filter
 
-open BigOperators Topology ComplexConjugate
+open Topology ComplexConjugate
 
 open LinearMap (BilinForm)
 

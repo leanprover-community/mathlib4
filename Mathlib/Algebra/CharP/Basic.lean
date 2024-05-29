@@ -19,8 +19,6 @@ universe u v
 
 open Finset
 
-open BigOperators
-
 variable {R : Type*}
 
 namespace Commute

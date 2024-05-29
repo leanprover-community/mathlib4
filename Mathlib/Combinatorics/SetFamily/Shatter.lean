@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Combinatorics.SetFamily.Compression.Down
-import Mathlib.Data.Nat.Interval
+import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Order.UpperLower.Basic
 
 /-!
@@ -25,7 +25,7 @@ This file defines the shattering property and VC-dimension of set families.
 * Strong shattering
 -/
 
-open scoped BigOperators FinsetFamily
+open scoped FinsetFamily
 
 namespace Finset
 variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α} {n : ℕ}

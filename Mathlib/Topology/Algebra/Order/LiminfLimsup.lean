@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Algebra.Order.Support
+import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Filter.CountableInter
@@ -507,8 +507,6 @@ theorem iUnion_Iic_eq_Iio_of_lt_of_tendsto (x : R) {as : ι → R} (lt_x : ∀ i
 end InfiAndSupr
 
 section Indicator
-
-open BigOperators
 
 theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
     limsup s atTop = { ω | Tendsto
