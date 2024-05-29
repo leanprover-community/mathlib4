@@ -1300,9 +1300,9 @@ end Prod
 section MulEquiv
 
 /-- An injective homomorphism of monoids preserves orders of elements. -/
-@[to_additive "An injective homomorphism of additive monoids preserves orders of elements."]
+@[to_additive "An injective homomorphism of monoids preserves orders of elements."]
 lemma MulHom.orderOf_eq_of_injective {M M' : Type*} [Monoid M] [Monoid M'] (e : M →* M')
-      (he : Function.Injective e) (m : M) :
+    (he : Function.Injective e) (m : M) :
     orderOf (e m) = orderOf m := by
   rcases (orderOf m).eq_zero_or_pos with h | h
   · rw [h]
