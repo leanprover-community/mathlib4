@@ -47,6 +47,8 @@ structure MapFactorizationData {X Y : C} (f : X ⟶ Y) where
   hi : W₁ i
   hp : W₂ p
 
+attribute [reassoc (attr := simp)] MapFactorizationData.fac
+
 /-- The data of a term in `MapFactorizationData W₁ W₂ f` for any morphism `f`. -/
 abbrev FactorizationData := ∀ {X Y : C} (f : X ⟶ Y), MapFactorizationData W₁ W₂ f
 
@@ -123,6 +125,58 @@ lemma mapZ_comp {X'' Y'' : C} {h : X'' ⟶ Y''} (ψ : Arrow.mk g ⟶ Arrow.mk h)
 
 end
 
+section
+
+variable (J : Type*) [Category J]
+
+/-- Auxiliary definition for `FunctorialFactorizationData.functorCategory`. -/
+@[simps]
+def functorCategory.Z : Arrow (J ⥤ C) ⥤ J ⥤ C where
+  obj f :=
+    { obj := fun j => (data.factorizationData (f.hom.app j)).Z
+      map := fun φ => data.mapZ
+        { left := f.left.map φ
+          right := f.right.map φ }
+      map_id := fun j => by
+        dsimp
+        rw [← data.mapZ_id (f.hom.app j)]
+        congr <;> simp
+      map_comp := fun _ _ => by
+        dsimp
+        rw [← data.mapZ_comp]
+        congr <;> simp }
+  map τ :=
+    { app := fun j => data.mapZ
+        { left := τ.left.app j
+          right := τ.right.app j
+          w := congr_app τ.w j }
+      naturality := fun _ _ α => by
+        dsimp
+        rw [← data.mapZ_comp, ← data.mapZ_comp]
+        congr 1
+        ext <;> simp }
+  map_id f := by
+    ext j
+    dsimp
+    rw [← data.mapZ_id]
+    congr 1
+  map_comp f g := by
+    ext j
+    dsimp
+    rw [← data.mapZ_comp]
+    congr 1
+
+/-- A functorial factorization in the category `C` extends to the functor category `J ⥤ C`. -/
+def functorCategory :
+    FunctorialFactorizationData (W₁.functorCategory J) (W₂.functorCategory J) where
+  Z := functorCategory.Z data J
+  i := { app := fun f => { app := fun j => (data.factorizationData (f.hom.app j)).i } }
+  p := { app := fun f => { app := fun j => (data.factorizationData (f.hom.app j)).p } }
+  hi _ _ := data.hi _
+  hp _ _ := data.hp _
+
+end
+
 end FunctorialFactorizationData
 
 /-- The functorial factorization axiom for two classes of morphisms `W₁` and `W₂` in a
@@ -139,6 +193,10 @@ noncomputable def functorialFactorizationData [HasFunctorialFactorization W₁ W
 
 instance [HasFunctorialFactorization W₁ W₂] : HasFactorization W₁ W₂ where
   nonempty_mapFactorizationData f := ⟨(functorialFactorizationData W₁ W₂).factorizationData f⟩
+
+instance [HasFunctorialFactorization W₁ W₂] (J : Type*) [Category J] :
+    HasFunctorialFactorization (W₁.functorCategory J) (W₂.functorCategory J) :=
+  ⟨⟨(functorialFactorizationData W₁ W₂).functorCategory J⟩⟩
 
 end MorphismProperty
 
