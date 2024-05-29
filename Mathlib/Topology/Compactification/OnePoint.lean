@@ -72,6 +72,14 @@ scoped notation "∞" => OnePoint.infty
 /-- Coercion from `X` to `OnePoint X`. -/
 @[coe, match_pattern] def some : X → OnePoint X := Option.some
 
+protected lemma «forall» {p : OnePoint X → Prop} :
+    (∀ (x : OnePoint X), p x) ↔ p ∞ ∧ ∀ (x : X), p (some x) :=
+  Option.forall
+
+protected lemma «exists» {p : OnePoint X → Prop} :
+    (∃ x, p x) ↔ p ∞ ∨ ∃ (x : X), p (some x) :=
+  Option.exists
+
 instance : CoeTC X (OnePoint X) := ⟨some⟩
 
 instance : Inhabited (OnePoint X) := ⟨∞⟩
@@ -383,10 +391,6 @@ theorem continuousAt_coe {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y}
   rw [ContinuousAt, nhds_coe_eq, tendsto_map'_iff, ContinuousAt]; rfl
 #align alexandroff.continuous_at_coe OnePoint.continuousAt_coe
 
-protected lemma _root_.OnePoint.forall {p : OnePoint X → Prop} :
-    (∀ (x : OnePoint X), p x) ↔ p ∞ ∧ ∀ (x : X), p (some x) :=
-  Option.forall
-
 lemma continuous_iff {X Y : Type*} [TopologicalSpace X]
     [TopologicalSpace Y] (f : OnePoint X → Y) : Continuous f ↔
     Tendsto (fun x : X ↦ f x) (coclosedCompact X) (𝓝 (f ∞)) ∧ Continuous (fun x : X ↦ f x) := by
@@ -516,21 +520,15 @@ instance (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
   isTotallySeparated_univ x _ y _ hxy := by
     cases x with
     | none =>
-      cases y with
-      | none => tauto
-      | some val =>
-        refine ⟨{some val}ᶜ, {some val}, isOpen_compl_singleton, ?_,
-          (Option.some_ne_none val).symm, rfl, ?_, disjoint_compl_left⟩
-        · refine (OnePoint.isOpen_iff_of_not_mem ?_).mpr (isOpen_discrete _)
-          exact (Option.some_ne_none val).symm
-        · simp [Set.union_comm]
+      refine ⟨{y}ᶜ, {y}, isOpen_compl_singleton, ?_, hxy, rfl, (compl_union_self _).symm.subset,
+        disjoint_compl_left⟩
+      rw [OnePoint.isOpen_iff_of_not_mem]
+      exacts [isOpen_discrete _, hxy]
     | some val =>
-      refine ⟨{some val}, {some val}ᶜ, ?_, isOpen_compl_singleton, rfl, ?_, ?_,
+      refine ⟨{some val}, {some val}ᶜ, ?_, isOpen_compl_singleton, rfl, hxy.symm, by simp,
         disjoint_compl_right⟩
-      · refine (OnePoint.isOpen_iff_of_not_mem ?_).mpr (isOpen_discrete _)
-        exact (Option.some_ne_none val).symm
-      · simpa using hxy.symm
-      · simp
+      rw [OnePoint.isOpen_iff_of_not_mem]
+      exacts [isOpen_discrete _, (Option.some_ne_none val).symm]
 
 end OnePoint
 
