@@ -1072,6 +1072,7 @@ attribute [simp] Nat.dvd_zero
   cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
 #align nat.mod_two_ne_zero Nat.mod_two_ne_zero
 
+@[deprecated mod_mul_right_div_self (since := "2024-05-29")]
 lemma div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
   (mod_mul_right_div_self a b c).symm
 #align nat.div_mod_eq_mod_mul_div Nat.div_mod_eq_mod_mul_div
@@ -1111,6 +1112,7 @@ protected lemma div_ne_zero_iff (hb : b ≠ 0) : a / b ≠ 0 ↔ b ≤ a := by
 protected lemma div_pos_iff (hb : b ≠ 0) : 0 < a / b ↔ b ≤ a := by
   rw [Nat.pos_iff_ne_zero, Nat.div_ne_zero_iff hb]
 
+@[deprecated div_mul_div_comm (since := "2024-05-29")]
 lemma mul_div_mul_comm_of_dvd_dvd (hba : b ∣ a) (hdc : d ∣ c) :
     a * c / (b * d) = a / b * (c / d) :=
   (div_mul_div_comm hba hdc).symm
