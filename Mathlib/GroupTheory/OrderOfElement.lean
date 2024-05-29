@@ -1296,3 +1296,21 @@ theorem IsOfFinOrder.prod_mk : IsOfFinOrder a → IsOfFinOrder b → IsOfFinOrde
 end Prod
 
 -- TODO: Corresponding `pi` lemmas. We cannot currently state them here because of import cycles
+
+section MulEquiv
+
+/-- A multiplicative equivalence preserves orders of elements. -/
+@[to_additive "An additive  equivalence preserves orders of elements."]
+lemma MulEquiv.orderOf_eq {M M' : Type*} [Monoid M] [Monoid M'] (e : M ≃* M') (m : M) :
+    orderOf (e m) = orderOf m := by
+  rcases (orderOf m).eq_zero_or_pos with h | h
+  · rw [h]
+    rw [orderOf_eq_zero_iff'] at h ⊢
+    intro n h₀
+    have hn := h n h₀
+    contrapose! hn
+    rwa [← map_pow, e.map_eq_one_iff] at hn
+  · simp_rw [orderOf_eq_iff h, ← map_pow, ne_eq, e.map_eq_one_iff]
+    exact (orderOf_eq_iff h).mp rfl
+
+end MulEquiv
