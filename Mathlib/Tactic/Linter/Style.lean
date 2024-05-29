@@ -57,14 +57,12 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    match stx.findStack? (fun _ ↦ true) is_set_option with
-    | some ((head, _n)::_chain) =>
+    if let some (head) := stx.find? is_set_option then
       if let some (name) := parse_set_option head then
         -- Drop a leading backtick.
         let name := (toString name).drop 1
         if name.startsWith "pp." || name.startsWith "profiler." || name.startsWith "trace." then
           Linter.logLint linter.setOption head m!"Forbidden set_option `{name}`; please remove"
-    | _ => return
 
 initialize addLinter setOptionLinter
 
