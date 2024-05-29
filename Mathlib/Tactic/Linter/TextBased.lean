@@ -5,7 +5,6 @@ Authors: Michael Rothgang
 -/
 
 import Batteries.Data.String.Basic
-import Cli.Basic
 import Mathlib.Init.Data.Nat.Notation
 
 /-!
@@ -178,7 +177,7 @@ def lintAllFiles (path : System.FilePath) : IO UInt32 := do
 
 
 /-- The entry point to the `lake exe lint_style` command. -/
-def main (_args : List String) : IO UInt32 := do
+def main : IO UInt32 := do
   let mut number_error_files := 0
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
     let n ← lintAllFiles (System.mkFilePath [s])
