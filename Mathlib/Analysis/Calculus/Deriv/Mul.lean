@@ -27,7 +27,7 @@ universe u v w
 
 noncomputable section
 
-open scoped Classical Topology BigOperators Filter ENNReal
+open scoped Classical Topology Filter ENNReal
 
 open Filter Asymptotics Set
 
@@ -277,7 +277,7 @@ theorem deriv_mul_const_field (v : 𝕜') : deriv (fun y => u y * v) x = deriv u
   · rw [deriv_zero_of_not_differentiableAt hu, zero_mul]
     rcases eq_or_ne v 0 with (rfl | hd)
     · simp only [mul_zero, deriv_const]
-    · refine' deriv_zero_of_not_differentiableAt (mt (fun H => _) hu)
+    · refine deriv_zero_of_not_differentiableAt (mt (fun H => ?_) hu)
       simpa only [mul_inv_cancel_right₀ hd] using H.mul_const v⁻¹
 #align deriv_mul_const_field deriv_mul_const_field
 
@@ -332,29 +332,46 @@ variable {ι : Type*} [DecidableEq ι] {𝔸' : Type*} [NormedCommRing 𝔸'] [N
   {u : Finset ι} {f : ι → 𝕜 → 𝔸'} {f' : ι → 𝔸'}
 
 theorem HasDerivAt.finset_prod (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) :
-    HasDerivAt (∏ i in u, f i ·) (∑ i in u, (∏ j in u.erase i, f j x) • f' i) x := by
+    HasDerivAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
   simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
     (HasFDerivAt.finset_prod (fun i hi ↦ (hf i hi).hasFDerivAt)).hasDerivAt
 
 theorem HasDerivWithinAt.finset_prod (hf : ∀ i ∈ u, HasDerivWithinAt (f i) (f' i) s x) :
-    HasDerivWithinAt (∏ i in u, f i ·) (∑ i in u, (∏ j in u.erase i, f j x) • f' i) s x := by
+    HasDerivWithinAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) s x := by
   simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
     (HasFDerivWithinAt.finset_prod (fun i hi ↦ (hf i hi).hasFDerivWithinAt)).hasDerivWithinAt
 
 theorem HasStrictDerivAt.finset_prod (hf : ∀ i ∈ u, HasStrictDerivAt (f i) (f' i) x) :
-    HasStrictDerivAt (∏ i in u, f i ·) (∑ i in u, (∏ j in u.erase i, f j x) • f' i) x := by
+    HasStrictDerivAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
   simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
     (HasStrictFDerivAt.finset_prod (fun i hi ↦ (hf i hi).hasStrictFDerivAt)).hasStrictDerivAt
 
 theorem deriv_finset_prod (hf : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
-    deriv (∏ i in u, f i ·) x = ∑ i in u, (∏ j in u.erase i, f j x) • deriv (f i) x :=
+    deriv (∏ i ∈ u, f i ·) x = ∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • deriv (f i) x :=
   (HasDerivAt.finset_prod fun i hi ↦ (hf i hi).hasDerivAt).deriv
 
 theorem derivWithin_finset_prod (hxs : UniqueDiffWithinAt 𝕜 s x)
     (hf : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
-    derivWithin (∏ i in u, f i ·) s x =
-      ∑ i in u, (∏ j in u.erase i, f j x) • derivWithin (f i) s x :=
+    derivWithin (∏ i ∈ u, f i ·) s x =
+      ∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • derivWithin (f i) s x :=
   (HasDerivWithinAt.finset_prod fun i hi ↦ (hf i hi).hasDerivWithinAt).derivWithin hxs
+
+theorem DifferentiableAt.finset_prod (hd : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
+    DifferentiableAt 𝕜 (∏ i ∈ u, f i ·) x :=
+  (HasDerivAt.finset_prod (fun i hi ↦ DifferentiableAt.hasDerivAt (hd i hi))).differentiableAt
+
+theorem DifferentiableWithinAt.finset_prod (hd : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
+    DifferentiableWithinAt 𝕜 (∏ i ∈ u, f i ·) s x :=
+  (HasDerivWithinAt.finset_prod (fun i hi ↦
+    DifferentiableWithinAt.hasDerivWithinAt (hd i hi))).differentiableWithinAt
+
+theorem DifferentiableOn.finset_prod (hd : ∀ i ∈ u, DifferentiableOn 𝕜 (f i) s) :
+    DifferentiableOn 𝕜 (∏ i ∈ u, f i ·) s :=
+  fun x hx ↦ .finset_prod (fun i hi ↦ hd i hi x hx)
+
+theorem Differentiable.finset_prod (hd : ∀ i ∈ u, Differentiable 𝕜 (f i)) :
+    Differentiable 𝕜 (∏ i ∈ u, f i ·) :=
+  fun x ↦ .finset_prod (fun i hi ↦ hd i hi x)
 
 end Prod
 

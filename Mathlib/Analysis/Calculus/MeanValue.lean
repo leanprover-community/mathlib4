@@ -106,7 +106,7 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
   rintro x ⟨hxB : f x ≤ B x, xab⟩ y hy
   cases' hxB.lt_or_eq with hxB hxB
   · -- If `f x < B x`, then all we need is continuity of both sides
-    refine' nonempty_of_mem (inter_mem _ (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, hy⟩))
+    refine nonempty_of_mem (inter_mem ?_ (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, hy⟩))
     have : ∀ᶠ x in 𝓝[Icc a b] x, f x < B x :=
       A x (Ico_subset_Icc_self xab) (IsOpen.mem_nhds (isOpen_lt continuous_fst continuous_snd) hxB)
     have : ∀ᶠ x in 𝓝[>] x, f x < B x := nhdsWithin_le_of_mem (Icc_mem_nhdsWithin_Ioi xab) this
@@ -118,7 +118,7 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
         (Ioi_mem_nhds hrB)
     obtain ⟨z, hfz, hzB, hz⟩ : ∃ z, slope f x z < r ∧ r < slope B x z ∧ z ∈ Ioc x y :=
       (hf'.and_eventually (HB.and (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, hy⟩))).exists
-    refine' ⟨z, _, hz⟩
+    refine ⟨z, ?_, hz⟩
     have := (hfz.trans hzB).le
     rwa [slope_def_field, slope_def_field, div_le_div_right (sub_pos.2 hz.1), hxB,
       sub_le_sub_iff_right] at this
@@ -356,9 +356,9 @@ version. -/
 theorem norm_image_sub_le_of_norm_deriv_le_segment' {f' : ℝ → E} {C : ℝ}
     (hf : ∀ x ∈ Icc a b, HasDerivWithinAt f (f' x) (Icc a b) x)
     (bound : ∀ x ∈ Ico a b, ‖f' x‖ ≤ C) : ∀ x ∈ Icc a b, ‖f x - f a‖ ≤ C * (x - a) := by
-  refine'
+  refine
     norm_image_sub_le_of_norm_deriv_right_le_segment (fun x hx => (hf x hx).continuousWithinAt)
-      (fun x hx => _) bound
+      (fun x hx => ?_) bound
   exact (hf x <| Ico_subset_Icc_self hx).mono_of_mem (Icc_mem_nhdsWithin_Ici hx)
 #align norm_image_sub_le_of_norm_deriv_le_segment' norm_image_sub_le_of_norm_deriv_le_segment'
 
@@ -368,7 +368,7 @@ version. -/
 theorem norm_image_sub_le_of_norm_deriv_le_segment {C : ℝ} (hf : DifferentiableOn ℝ f (Icc a b))
     (bound : ∀ x ∈ Ico a b, ‖derivWithin f (Icc a b) x‖ ≤ C) :
     ∀ x ∈ Icc a b, ‖f x - f a‖ ≤ C * (x - a) := by
-  refine' norm_image_sub_le_of_norm_deriv_le_segment' _ bound
+  refine norm_image_sub_le_of_norm_deriv_le_segment' ?_ bound
   exact fun x hx => (hf x hx).hasDerivWithinAt
 #align norm_image_sub_le_of_norm_deriv_le_segment norm_image_sub_le_of_norm_deriv_le_segment
 
@@ -496,7 +496,7 @@ theorem exists_nhdsWithin_lipschitzOnWith_of_hasFDerivWithinAt_of_nnnorm_lt (hs 
       ball x ε ∩ s ⊆ { y | HasFDerivWithinAt f (f' y) s y ∧ ‖f' y‖₊ < K } :=
     mem_nhdsWithin_iff.1 (hder.and <| hcont.nnnorm.eventually (gt_mem_nhds hK))
   rw [inter_comm] at hε
-  refine' ⟨s ∩ ball x ε, inter_mem_nhdsWithin _ (ball_mem_nhds _ ε0), _⟩
+  refine ⟨s ∩ ball x ε, inter_mem_nhdsWithin _ (ball_mem_nhds _ ε0), ?_⟩
   exact
     (hs.inter (convex_ball _ _)).lipschitzOnWith_of_nnnorm_hasFDerivWithin_le
       (fun y hy => (hε hy).1.mono (inter_subset_left _ _)) fun y hy => (hε hy).2.le
@@ -620,7 +620,7 @@ theorem eqOn_of_fderivWithin_eq (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 
     (hf' : ∀ x ∈ s, fderivWithin 𝕜 f s x = fderivWithin 𝕜 g s x) (hx : x ∈ s) (hfgx : f x = g x) :
     s.EqOn f g := fun y hy => by
   suffices f x - g x = f y - g y by rwa [hfgx, sub_self, eq_comm, sub_eq_zero] at this
-  refine' hs.is_const_of_fderivWithin_eq_zero (hf.sub hg) (fun z hz => _) hx hy
+  refine hs.is_const_of_fderivWithin_eq_zero (hf.sub hg) (fun z hz => ?_) hx hy
   rw [fderivWithin_sub (hs' _ hz) (hf _ hz) (hg _ hz), sub_eq_zero, hf' _ hz]
 #align convex.eq_on_of_fderiv_within_eq Convex.eqOn_of_fderivWithin_eq
 
@@ -931,7 +931,7 @@ lemma strictMonoOn_of_hasDerivWithinAt_pos {D : Set ℝ} (hD : Convex ℝ D) {f 
   strictMonoOn_of_deriv_pos hD hf fun x hx ↦ by
     rw [deriv_eqOn isOpen_interior hf' hx]; exact hf'₀ _ hx
 
-@[deprecated] -- 2024-03-02
+@[deprecated (since := "2024-03-02")]
 alias StrictMonoOn_of_hasDerivWithinAt_pos := strictMonoOn_of_hasDerivWithinAt_pos
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f'` is strictly positive, then
@@ -1007,7 +1007,7 @@ lemma strictAntiOn_of_hasDerivWithinAt_neg {D : Set ℝ} (hD : Convex ℝ D) {f 
   strictAntiOn_of_deriv_neg hD hf fun x hx ↦ by
     rw [deriv_eqOn isOpen_interior hf' hx]; exact hf'₀ _ hx
 
-@[deprecated] -- 2024-03-02
+@[deprecated (since := "2024-03-02")]
 alias StrictAntiOn_of_hasDerivWithinAt_pos := strictAntiOn_of_hasDerivWithinAt_neg
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f'` is strictly positive, then
@@ -1016,7 +1016,7 @@ lemma strictAnti_of_hasDerivAt_neg {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt 
     (hf' : ∀ x, f' x < 0) : StrictAnti f :=
   strictAnti_of_deriv_neg fun x ↦ by rw [(hf _).deriv]; exact hf' _
 
-@[deprecated] -- 2024-03-02
+@[deprecated (since := "2024-03-02")]
 alias strictAnti_of_hasDerivAt_pos := strictAnti_of_hasDerivAt_neg
 
 /-- Let `f` be a function continuous on a convex (or, equivalently, connected) subset `D`
@@ -1070,7 +1070,7 @@ theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → E →L[ℝ]
     (hf _ (hmaps ht)).comp_hasDerivWithinAt t AffineMap.hasDerivWithinAt_lineMap hmaps
   -- apply 1-variable mean value theorem to pullback
   have hMVT : ∃ t ∈ Ioo (0 : ℝ) 1, f' (g t) (y - x) = (f (g 1) - f (g 0)) / (1 - 0) := by
-    refine' exists_hasDerivAt_eq_slope (f ∘ g) _ (by norm_num) _ _
+    refine exists_hasDerivAt_eq_slope (f ∘ g) _ (by norm_num) ?_ ?_
     · exact fun t Ht => (hfg t Ht).continuousWithinAt
     · exact fun t Ht => (hfg t <| hsub Ht).hasDerivAt (Icc_mem_nhds Ht.1 Ht.2)
   -- reinterpret on domain
@@ -1101,10 +1101,10 @@ theorem hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt
     (hder : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f' y) y) (hcont : ContinuousAt f' x) :
     HasStrictFDerivAt f (f' x) x := by
   -- turn little-o definition of strict_fderiv into an epsilon-delta statement
-  refine' isLittleO_iff.mpr fun c hc => Metric.eventually_nhds_iff_ball.mpr _
+  refine isLittleO_iff.mpr fun c hc => Metric.eventually_nhds_iff_ball.mpr ?_
   -- the correct ε is the modulus of continuity of f'
   rcases Metric.mem_nhds_iff.mp (inter_mem hder (hcont <| ball_mem_nhds _ hc)) with ⟨ε, ε0, hε⟩
-  refine' ⟨ε, ε0, _⟩
+  refine ⟨ε, ε0, ?_⟩
   -- simplify formulas involving the product E × E
   rintro ⟨a, b⟩ h
   rw [← ball_prod_same, prod_mk_mem_set_prod_eq] at h
@@ -1114,7 +1114,7 @@ theorem hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt
     exact le_of_lt (hε H').2
   -- apply mean value theorem
   letI : NormedSpace ℝ G := RestrictScalars.normedSpace ℝ 𝕜 G
-  refine' (convex_ball _ _).norm_image_sub_le_of_norm_hasFDerivWithin_le' _ hf' h.2 h.1
+  refine (convex_ball _ _).norm_image_sub_le_of_norm_hasFDerivWithin_le' ?_ hf' h.2 h.1
   exact fun y hy => (hε hy).1.hasFDerivWithinAt
 #align has_strict_fderiv_at_of_has_fderiv_at_of_continuous_at hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt
 

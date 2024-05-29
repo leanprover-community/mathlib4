@@ -385,7 +385,7 @@ lemma isomorphic_distinguished (T₁ : Triangle (HomotopyCategory C (ComplexShap
 lemma contractible_distinguished (X : HomotopyCategory C (ComplexShape.up ℤ)) :
     Pretriangulated.contractibleTriangle X ∈ distinguishedTriangles C := by
   obtain ⟨X⟩ := X
-  refine' ⟨_, _, 𝟙 X, ⟨_⟩⟩
+  refine ⟨_, _, 𝟙 X, ⟨?_⟩⟩
   have h := (isZero_quotient_obj_iff _).2 ⟨CochainComplex.mappingCone.homotopyToZeroOfId X⟩
   exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) h.isoZero.symm
     (by simp) (h.eq_of_tgt _ _) (by dsimp; ext)

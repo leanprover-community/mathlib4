@@ -151,7 +151,7 @@ theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type
   have range_e₂ : LinearMap.range e₂ = ⊤ := by
     rw [LinearMap.range_eq_top]
     exact e₂.surjective
-  refine' LinearEquiv.finrank_eq (e₁.ofSubmodules _ _ _)
+  refine LinearEquiv.finrank_eq (e₁.ofSubmodules _ _ ?_)
   rw [← LinearMap.range_comp, ← LinearMap.range_comp_of_range_eq_top (toLin v₂ v₁ A) range_e₂]
   congr 1
   apply LinearMap.pi_ext'
@@ -222,7 +222,7 @@ theorem ker_mulVecLin_conjTranspose_mul_self (A : Matrix m n R) :
 
 theorem rank_conjTranspose_mul_self (A : Matrix m n R) : (Aᴴ * A).rank = A.rank := by
   dsimp only [rank]
-  refine' add_left_injective (finrank R (LinearMap.ker (mulVecLin A))) _
+  refine add_left_injective (finrank R (LinearMap.ker (mulVecLin A))) ?_
   dsimp only
   trans finrank R { x // x ∈ LinearMap.range (mulVecLin (Aᴴ * A)) } +
     finrank R { x // x ∈ LinearMap.ker (mulVecLin (Aᴴ * A)) }
@@ -266,7 +266,7 @@ theorem ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
 
 theorem rank_transpose_mul_self (A : Matrix m n R) : (Aᵀ * A).rank = A.rank := by
   dsimp only [rank]
-  refine' add_left_injective (finrank R <| LinearMap.ker A.mulVecLin) _
+  refine add_left_injective (finrank R <| LinearMap.ker A.mulVecLin) ?_
   dsimp only
   trans finrank R { x // x ∈ LinearMap.range (mulVecLin (Aᵀ * A)) } +
     finrank R { x // x ∈ LinearMap.ker (mulVecLin (Aᵀ * A)) }

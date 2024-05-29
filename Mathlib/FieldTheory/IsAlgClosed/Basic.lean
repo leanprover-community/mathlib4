@@ -46,7 +46,7 @@ algebraic closure, algebraically closed
 
 universe u v w
 
-open scoped Classical BigOperators Polynomial
+open scoped Classical Polynomial
 
 open Polynomial
 
@@ -103,7 +103,7 @@ theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by
 
 theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
-  refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
+  refine ⟨fun h => ?_, fun hp => by rw [hp, roots_C]⟩
   rcases le_or_lt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsAlgClosed.exists_root p hd.ne'
@@ -169,7 +169,7 @@ theorem degree_eq_one_of_irreducible [IsAlgClosed k] {p : k[X]} (hp : Irreducibl
 theorem algebraMap_surjective_of_isIntegral {k K : Type*} [Field k] [Ring K] [IsDomain K]
     [hk : IsAlgClosed k] [Algebra k K] [Algebra.IsIntegral k K] :
     Function.Surjective (algebraMap k K) := by
-  refine' fun x => ⟨-(minpoly k x).coeff 0, _⟩
+  refine fun x => ⟨-(minpoly k x).coeff 0, ?_⟩
   have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (Algebra.IsIntegral.isIntegral x)
   have h : (minpoly k x).degree = 1 := degree_eq_one_of_irreducible k (minpoly.irreducible
     (Algebra.IsIntegral.isIntegral x))

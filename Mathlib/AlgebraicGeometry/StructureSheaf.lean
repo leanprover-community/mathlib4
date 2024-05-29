@@ -114,7 +114,7 @@ theorem IsFraction.eq_mk' {U : Opens (PrimeSpectrum.Top R)} {f : ∀ x : U, Loca
             IsLocalization.mk' (Localization.AtPrime _) r
               (⟨s, hs⟩ : (x : PrimeSpectrum.Top R).asIdeal.primeCompl) := by
   rcases hf with ⟨r, s, h⟩
-  refine' ⟨r, s, fun x => ⟨(h x).1, (IsLocalization.mk'_eq_iff_eq_mul.mpr _).symm⟩⟩
+  refine ⟨r, s, fun x => ⟨(h x).1, (IsLocalization.mk'_eq_iff_eq_mul.mpr ?_).symm⟩⟩
   exact (h x).2.symm
 #align algebraic_geometry.structure_sheaf.is_fraction.eq_mk' AlgebraicGeometry.StructureSheaf.IsFraction.eq_mk'
 
@@ -191,7 +191,7 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
   neg_mem' := by
     intro a ha x
     rcases ha x with ⟨V, m, i, r, s, w⟩
-    refine' ⟨V, m, i, -r, s, _⟩
+    refine ⟨V, m, i, -r, s, ?_⟩
     intro y
     rcases w y with ⟨nm, w⟩
     fconstructor
@@ -250,7 +250,7 @@ set_option linter.uppercaseLean3 false in
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] AlgebraicGeometry.structurePresheafInCommRing_map_apply
 
-/-- Some glue, verifying that that structure presheaf valued in `CommRingCat` agrees
+/-- Some glue, verifying that the structure presheaf valued in `CommRingCat` agrees
 with the `Type` valued structure presheaf.
 -/
 def structurePresheafCompForget :
@@ -380,7 +380,7 @@ theorem const_mul (f₁ f₂ g₁ g₂ : R) (U hu₁ hu₂) :
       const R (f₁ * f₂) (g₁ * g₂) U fun x hx => Submonoid.mul_mem _ (hu₁ x hx) (hu₂ x hx) :=
   Subtype.eq <|
     funext fun x =>
-      Eq.symm <| by convert IsLocalization.mk'_mul _ f₁ f₂ ⟨g₁, hu₁ x x.2⟩ ⟨g₂, hu₂ x x.2⟩
+      Eq.symm <| IsLocalization.mk'_mul _ f₁ f₂ ⟨g₁, hu₁ x x.2⟩ ⟨g₂, hu₂ x x.2⟩
 #align algebraic_geometry.structure_sheaf.const_mul AlgebraicGeometry.StructureSheaf.const_mul
 
 theorem const_ext {f₁ f₂ g₁ g₂ : R} {U hu₁ hu₂} (h : f₁ * g₂ = f₂ * g₁) :
@@ -787,9 +787,9 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
   have basic_opens_eq : ∀ i : ι, PrimeSpectrum.basicOpen (h i ^ (N + 1)) =
     PrimeSpectrum.basicOpen (h i) := fun i => PrimeSpectrum.basicOpen_pow _ _ (by omega)
   -- Expanding the fraction `a i / h i` by the power `(h i) ^ n` gives the desired normalization
-  refine'
+  refine
     ⟨fun i => a i * h i ^ N, fun i => h i ^ (N + 1), fun i => eqToHom (basic_opens_eq i) ≫ iDh i,
-      _, _, _⟩
+      ?_, ?_, ?_⟩
   · simpa only [basic_opens_eq] using h_cover
   · intro i hi j hj
     -- Here we need to show that our new fractions `a i / h i` satisfy the normalization condition
@@ -819,8 +819,6 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
 #align algebraic_geometry.structure_sheaf.normalize_finite_fraction_representation AlgebraicGeometry.StructureSheaf.normalize_finite_fraction_representation
 
 open scoped Classical
-
-open scoped BigOperators
 
 -- Porting note: in the following proof there are two places where `⋃ i, ⋃ (hx : i ∈ _), ... `
 -- though `hx` is not used in `...` part, it is still required to maintain the structure of
@@ -876,9 +874,9 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   rw [Finsupp.total_apply_of_mem_supported R b_supp] at hb
   dsimp at hb
   -- Finally, we have all the ingredients.
-  -- We claim that our preimage is given by `(∑ (i : ι) in t, b i * a i) / f ^ (n+1)`
+  -- We claim that our preimage is given by `(∑ (i : ι) ∈ t, b i * a i) / f ^ (n+1)`
   use
-    IsLocalization.mk' (Localization.Away f) (∑ i : ι in t, b i * a i)
+    IsLocalization.mk' (Localization.Away f) (∑ i ∈ t, b i * a i)
       (⟨f ^ (n + 1), n + 1, rfl⟩ : Submonoid.powers _)
   rw [toBasicOpen_mk']
   -- Since the structure sheaf is a sheaf, we can show the desired equality locally.
@@ -980,10 +978,7 @@ instance IsLocalization.to_basicOpen (r : R) :
 #align algebraic_geometry.structure_sheaf.is_localization.to_basic_open AlgebraicGeometry.StructureSheaf.IsLocalization.to_basicOpen
 
 instance to_basicOpen_epi (r : R) : Epi (toOpen R (PrimeSpectrum.basicOpen r)) :=
-  ⟨fun {S} f g h => by
-    refine' IsLocalization.ringHom_ext (R := R)
-      (S := (structureSheaf R).val.obj (op <| PrimeSpectrum.basicOpen r)) _ _
-    exact h⟩
+  ⟨fun _ _ h => IsLocalization.ringHom_ext (Submonoid.powers r) h⟩
 #align algebraic_geometry.structure_sheaf.to_basic_open_epi AlgebraicGeometry.StructureSheaf.to_basicOpen_epi
 
 @[elementwise]
@@ -1092,10 +1087,10 @@ theorem comapFunIsLocallyFraction (f : R →+* S) (U : Opens (PrimeSpectrum.Top 
   rcases hs ⟨PrimeSpectrum.comap f p, hUV hpV⟩ with ⟨W, m, iWU, a, b, h_frac⟩
   -- We claim that we can write our new section as the fraction `f a / f b` on the neighborhood
   -- `(comap f) ⁻¹ W ⊓ V` of `p`.
-  refine' ⟨Opens.comap (PrimeSpectrum.comap f) W ⊓ V, ⟨m, hpV⟩, Opens.infLERight _ _, f a, f b, _⟩
+  refine ⟨Opens.comap (PrimeSpectrum.comap f) W ⊓ V, ⟨m, hpV⟩, Opens.infLERight _ _, f a, f b, ?_⟩
   rintro ⟨q, ⟨hqW, hqV⟩⟩
   specialize h_frac ⟨PrimeSpectrum.comap f q, hqW⟩
-  refine' ⟨h_frac.1, _⟩
+  refine ⟨h_frac.1, ?_⟩
   dsimp only [comapFun]
   erw [← Localization.localRingHom_to_map (PrimeSpectrum.comap f q).asIdeal, ← RingHom.map_mul,
     h_frac.2, Localization.localRingHom_to_map]
@@ -1191,7 +1186,7 @@ The comap of the identity is the identity. In this variant of the lemma, two ope
 `V` are given as arguments, together with a proof that `U = V`. This is useful when `U` and `V`
 are not definitionally equal.
 -/
-theorem comap_id (U V : Opens (PrimeSpectrum.Top R)) (hUV : U = V) :
+theorem comap_id {U V : Opens (PrimeSpectrum.Top R)} (hUV : U = V) :
     (comap (RingHom.id R) U V fun p hpV => by rwa [hUV, PrimeSpectrum.comap_id]) =
       eqToHom (show (structureSheaf R).1.obj (op U) = _ by rw [hUV]) :=
   by erw [comap_id_eq_map U V (eqToHom hUV.symm), eqToHom_op, eqToHom_map]
@@ -1200,7 +1195,7 @@ theorem comap_id (U V : Opens (PrimeSpectrum.Top R)) (hUV : U = V) :
 @[simp]
 theorem comap_id' (U : Opens (PrimeSpectrum.Top R)) :
     (comap (RingHom.id R) U U fun p hpU => by rwa [PrimeSpectrum.comap_id]) = RingHom.id _ := by
-  rw [comap_id U U rfl]; rfl
+  rw [comap_id rfl]; rfl
 #align algebraic_geometry.structure_sheaf.comap_id' AlgebraicGeometry.StructureSheaf.comap_id'
 
 theorem comap_comp (f : R →+* S) (g : S →+* P) (U : Opens (PrimeSpectrum.Top R))
