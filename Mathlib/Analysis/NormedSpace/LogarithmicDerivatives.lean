@@ -81,9 +81,9 @@ theorem logDeriv_prod {α : Type*} (s : Finset α) (f : α → 𝕜 → 𝕜) (t
       simp only [Finset.cons_eq_insert, Finset.mem_insert, eq_self_iff_true, true_or_iff]
     · rw [Finset.prod_fn]
       apply DifferentiableAt.finset_prod
-      intro r
+      intro r hr
       apply hd
-      simp only [Finset.cons_eq_insert, Finset.mem_insert, r.2, or_true]
+      simp only [Finset.cons_eq_insert, Finset.mem_insert, hr , or_true]
 
 theorem logDeriv_comp (f g : 𝕜 → 𝕜) (x : 𝕜) (hf : DifferentiableAt 𝕜 f (g x))
     (hg : DifferentiableAt 𝕜 g x) : logDeriv (f ∘ g) x = (logDeriv f) (g x) * deriv g x := by
