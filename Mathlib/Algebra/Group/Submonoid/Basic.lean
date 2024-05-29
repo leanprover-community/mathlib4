@@ -54,6 +54,7 @@ numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_m
 submonoid, submonoids
 -/
 
+assert_not_exists MonoidWithZero
 
 -- Only needed for notation
 -- Only needed for notation
