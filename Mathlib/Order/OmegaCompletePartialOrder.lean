@@ -115,21 +115,6 @@ lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_rang
 
 lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.directedOn
 
-/-- An example of a `Chain` constructed from an ordered pair. -/
-def pair (a b : α) (hab : a ≤ b) : Chain α :=
-  ⟨fun n => match n with
-    | 0 => a
-    | _ => b, fun _ _ _ => by aesop⟩
-
-lemma pair_zero (a b : α) (hab) : pair a b hab 0 = a := rfl
-
-lemma pair_n_plus_one (a b : α) (hab) (n : ℕ) : pair a b hab (n + 1) = b := rfl
-
-@[simp] lemma range_pair (a b : α) (hab) : Set.range (pair a b hab) = {a, b} := by
-  ext;
-  exact Nat.or_exists_succ.symm.trans (by simp_rw [pair_zero, pair_n_plus_one]; aesop)
-
-
 /-- `map` function for `Chain` -/
 -- Porting note: `simps` doesn't work with type synonyms
 -- @[simps! (config := .asFn)]
@@ -296,92 +281,65 @@ def Continuous (f : α →o β) : Prop :=
   ∀ c : Chain α, f (ωSup c) = ωSup (c.map f)
 #align omega_complete_partial_order.continuous OmegaCompletePartialOrder.Continuous
 
-/-- ωScottContinuous - Scott Continuous over Chains-/
-def ωScottContinuous (f : α → β) := ScottContinuousOn (Set.range fun c : Chain α => Set.range c) f
+/-- `Continuous' f` asserts that `f` is both monotone and continuous. -/
+def Continuous' (f : α → β) : Prop :=
+  ∃ hf : Monotone f, Continuous ⟨f, hf⟩
+#align omega_complete_partial_order.continuous' OmegaCompletePartialOrder.Continuous'
 
-lemma ωScottContinuous.monotone {f : α → β} (h : ωScottContinuous f) : Monotone f :=
-  ScottContinuousOn.monotone _ (fun a b hab => by
-    use pair a b hab; exact range_pair a b hab) h
-
-lemma ωScottContinuous.isLUB {c : Chain α} {f : α → β} (hf : ωScottContinuous f) :
-    IsLUB (Set.range (Chain.map c ⟨f, (ωScottContinuous.monotone hf)⟩)) (f (ωSup c)) := by
+lemma isLUB_of_scottContinuous {c : Chain α} {f : α → β} (hf : ScottContinuous f) :
+    IsLUB (Set.range (Chain.map c ⟨f, (ScottContinuous.monotone hf)⟩)) (f (ωSup c)) := by
   simp only [map_coe, OrderHom.coe_mk]
   rw [(Set.range_comp f ↑c)]
-  exact hf (by simp only [Set.mem_range, exists_apply_eq_apply]) (Set.range_nonempty ↑c)
-    (IsChain.directedOn (isChain_range c)) (isLUB_range_ωSup c)
+  exact hf (Set.range_nonempty ↑c) (IsChain.directedOn (isChain_range c)) (isLUB_range_ωSup c)
 
-lemma continuous'_iff_ωScottContinuous {f : α → β} : (∃ hf : Monotone f, Continuous ⟨f, hf⟩)
-    ↔ ωScottContinuous f := by
+lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f := by
   constructor
-  · intro hf _ ⟨c, hc⟩ _ _ _ hda
-    convert isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
-    · rw [map_coe, OrderHom.coe_mk, ← hc, ← (Set.range_comp f ⇑c)]
-    · rw [← hc] at hda
-      rw [← (hf.2 c), OrderHom.coe_mk, ωSup_eq_of_isLUB hda]
-  · intro hf
-    exact ⟨ωScottContinuous.monotone hf, fun _ => (ωSup_eq_of_isLUB (ωScottContinuous.isLUB hf))⟩
+  · intro c
+    rw [← (ωSup_eq_of_isLUB (isLUB_of_scottContinuous hf))]
+    simp only [OrderHom.coe_mk]
 
-lemma ScottContinuous.ωScottContinuous {f : α → β} (hf : ScottContinuous f) : ωScottContinuous f :=
-  (ScottContinuousOn.mono _ _ (fun _ _ ↦ trivial) (scottContinuousOn_univ.mpr hf))
-alias ScottContinuous.continuous' := ScottContinuous.ωScottContinuous
+theorem Continuous'.to_monotone {f : α → β} (hf : Continuous' f) : Monotone f :=
+  hf.fst
+#align omega_complete_partial_order.continuous'.to_monotone OmegaCompletePartialOrder.Continuous'.to_monotone
 
-theorem ωScottContinuous.to_monotone {f : α → β} (hf : ωScottContinuous f) : Monotone f :=
-  (continuous'_iff_ωScottContinuous.mpr hf).fst
-alias Continuous'.to_monotone := ωScottContinuous.to_monotone
-#align omega_complete_partial_order.continuous'.to_monotone OmegaCompletePartialOrder.ωScottContinuous.to_monotone
-
-theorem Continuous.of_bundled (f : α → β) (_ : Monotone f) (hf' : ωScottContinuous f) :
-    ωScottContinuous f :=
-  hf'
+theorem Continuous.of_bundled (f : α → β) (hf : Monotone f) (hf' : Continuous ⟨f, hf⟩) :
+    Continuous' f :=
+  ⟨hf, hf'⟩
 #align omega_complete_partial_order.continuous.of_bundled OmegaCompletePartialOrder.Continuous.of_bundled
 
-theorem Continuous.of_bundled' (f : α →o β) (hf' : ωScottContinuous f) : ωScottContinuous f :=
-  hf'
+theorem Continuous.of_bundled' (f : α →o β) (hf' : Continuous f) : Continuous' f :=
+  ⟨f.mono, hf'⟩
 #align omega_complete_partial_order.continuous.of_bundled' OmegaCompletePartialOrder.Continuous.of_bundled'
 
-theorem ωScottContinuous.to_bundled (f : α → β) (hf : ωScottContinuous f) :
-    Continuous ⟨f, hf.monotone⟩ := (continuous'_iff_ωScottContinuous.mpr hf).snd
-alias Continuous'.to_bundled := ωScottContinuous.to_bundled
-#align omega_complete_partial_order.continuous'.to_bundled OmegaCompletePartialOrder.ωScottContinuous.to_bundled
+theorem Continuous'.to_bundled (f : α → β) (hf : Continuous' f) : Continuous ⟨f, hf.to_monotone⟩ :=
+  hf.snd
+#align omega_complete_partial_order.continuous'.to_bundled OmegaCompletePartialOrder.Continuous'.to_bundled
 
 @[simp, norm_cast]
-theorem ωScottContinuous_coe : ∀ {f : α →o β}, ωScottContinuous f ↔ Continuous f
-  | ⟨_, hf⟩ => ⟨fun h => (continuous'_iff_ωScottContinuous.mpr h).2,
-    fun hc => continuous'_iff_ωScottContinuous.mp ⟨hf, hc⟩⟩
-alias continuous'_coe := ωScottContinuous_coe
-#align omega_complete_partial_order.continuous'_coe OmegaCompletePartialOrder.ωScottContinuous_coe
+theorem continuous'_coe : ∀ {f : α →o β}, Continuous' f ↔ Continuous f
+  | ⟨_, hf⟩ => ⟨fun ⟨_, hc⟩ => hc, fun hc => ⟨hf, hc⟩⟩
+#align omega_complete_partial_order.continuous'_coe OmegaCompletePartialOrder.continuous'_coe
 
 variable (f : α →o β) (g : β →o γ)
 
-theorem continuous_id : ωScottContinuous (@OrderHom.id α _) := by
-  exact continuous'_coe.mpr (congrFun rfl)
+theorem continuous_id : Continuous (@OrderHom.id α _) := by intro c; rw [c.map_id]; rfl
 #align omega_complete_partial_order.continuous_id OmegaCompletePartialOrder.continuous_id
 
-theorem continuous_comp (hfc : ωScottContinuous f) (hgc : ωScottContinuous g) :
-    ωScottContinuous (g.comp f) := by
-  rw [← continuous'_iff_ωScottContinuous] at *
-  dsimp [Continuous] at *; intros;
-  cases' hfc with hf₁ hf₂
-  cases' hgc with hg₁ hg₂
-  use (Monotone.comp hg₁ hf₁)
-  intro
-  rw [hf₂, hg₂, Chain.map_comp]
-  rfl
+theorem continuous_comp (hfc : Continuous f) (hgc : Continuous g) : Continuous (g.comp f) := by
+  dsimp [Continuous] at *; intro;
+  rw [hfc, hgc, Chain.map_comp]
 #align omega_complete_partial_order.continuous_comp OmegaCompletePartialOrder.continuous_comp
 
-theorem id_ωScottContinuous_coe : ωScottContinuous (@id α) := continuous_id
-alias id_continuous' := id_ωScottContinuous_coe
+theorem id_continuous' : Continuous' (@id α) :=
+  continuous_id.of_bundled' _
 #align omega_complete_partial_order.id_continuous' OmegaCompletePartialOrder.id_continuous'
 
-theorem continuous_const (x : β) : ωScottContinuous (OrderHom.const α x) := by
-  rw [← continuous'_iff_ωScottContinuous]
-  use OrderHom.monotone ((OrderHom.const α) x)
-  apply fun c => eq_of_forall_ge_iff fun z => by rw [ωSup_le_iff, Chain.map_coe]; simp
+theorem continuous_const (x : β) : Continuous (OrderHom.const α x) := fun c =>
+  eq_of_forall_ge_iff fun z => by rw [ωSup_le_iff, Chain.map_coe, OrderHom.const_coe_coe]; simp
 #align omega_complete_partial_order.continuous_const OmegaCompletePartialOrder.continuous_const
 
-theorem const_ωScottContinuous (x : β) : ωScottContinuous (Function.const α x) :=
+theorem const_continuous' (x : β) : Continuous' (Function.const α x) :=
   Continuous.of_bundled' (OrderHom.const α x) (continuous_const x)
-alias const_continuous' := const_ωScottContinuous
 #align omega_complete_partial_order.const_continuous' OmegaCompletePartialOrder.const_continuous'
 
 end Continuity
@@ -496,25 +454,15 @@ namespace OmegaCompletePartialOrder
 variable [∀ x, OmegaCompletePartialOrder <| β x]
 variable [OmegaCompletePartialOrder γ]
 
-theorem flip₁_ωScottContinuous (f : ∀ x : α, γ → β x) (a : α)
-    (hf : ωScottContinuous fun x y => f y x) : ωScottContinuous (f a) := by
-  rw [← continuous'_iff_ωScottContinuous] at *
-  cases' hf with hf₁ hf₂
-  use (fun _ _ h => hf₁ h a)
-  apply fun c => congr_fun (hf₂ c) a
-alias flip₁_continuous' := flip₁_ωScottContinuous
+theorem flip₁_continuous' (f : ∀ x : α, γ → β x) (a : α) (hf : Continuous' fun x y => f y x) :
+    Continuous' (f a) :=
+  Continuous.of_bundled _ (fun _ _ h => hf.to_monotone h a) fun c => congr_fun (hf.to_bundled _ c) a
 #align pi.omega_complete_partial_order.flip₁_continuous' Pi.OmegaCompletePartialOrder.flip₁_continuous'
 
-theorem flip₂_ωScottContinuous (f : γ → ∀ x, β x) (hf : ∀ x, ωScottContinuous fun g => f g x) :
-    ωScottContinuous f := by
-  rw [← continuous'_iff_ωScottContinuous]
-  simp_rw [← continuous'_iff_ωScottContinuous] at hf
-  --cases' hf with hf₁ hf₂
-  use (fun x y h a => by
-    cases' (hf a) with hf₁ hf₂
-    exact hf₁ h)
-  intro c; ext a; cases' (hf a) with hf₁ hf₂; apply hf₂ c
-alias flip₂_continuous' := flip₂_ωScottContinuous
+theorem flip₂_continuous' (f : γ → ∀ x, β x) (hf : ∀ x, Continuous' fun g => f g x) :
+    Continuous' f :=
+  Continuous.of_bundled _ (fun x y h a => (hf a).to_monotone h)
+    (by intro c; ext a; apply (hf a).to_bundled _ c)
 #align pi.omega_complete_partial_order.flip₂_continuous' Pi.OmegaCompletePartialOrder.flip₂_continuous'
 
 end OmegaCompletePartialOrder
@@ -568,36 +516,27 @@ instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α w
 
 variable {α} {β : Type v} [OmegaCompletePartialOrder α] [CompleteLattice β]
 
-theorem sSup_ωScottContinuous' (s : Set <| α →o β) (hs : ∀ f ∈ s, ωScottContinuous f) :
-    ωScottContinuous (sSup s : (α →o β)) := by
-  rw [← continuous'_iff_ωScottContinuous]
-  simp_rw [← continuous'_iff_ωScottContinuous, OrderHom.monotone, exists_true_left] at hs
-  use (OrderHom.monotone (sSup s))
+theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, Continuous f) : Continuous (sSup s) := by
   intro c
   apply eq_of_forall_ge_iff
   intro z
   suffices (∀ f ∈ s, ∀ (n), (f : _) (c n) ≤ z) ↔ ∀ (n), ∀ f ∈ s, (f : _) (c n) ≤ z by
-    have e1 : ∀ f ∈ s, f (ωSup c) = ωSup (c.map f) := fun f a ↦ hs f a c
-    simpa (config := { contextual := true }) [ωSup_le_iff, e1] using this
+    simpa (config := { contextual := true }) [ωSup_le_iff, hs _ _ _] using this
   exact ⟨fun H n f hf => H f hf n, fun H f hf n => H n f hf⟩
-#align complete_lattice.Sup_continuous CompleteLattice.sSup_ωScottContinuous'
-
-theorem sSup_continuous (s : Set <| α →o β) (hs : ∀ f ∈ s, Continuous f) : Continuous (sSup s) :=
-  ωScottContinuous_coe.mp (sSup_ωScottContinuous' _ fun f hf => continuous'_coe.mpr (hs f hf))
+#align complete_lattice.Sup_continuous CompleteLattice.sSup_continuous
 
 theorem iSup_continuous {ι : Sort*} {f : ι → α →o β} (h : ∀ i, Continuous (f i)) :
     Continuous (⨆ i, f i) :=
   sSup_continuous _ <| Set.forall_mem_range.2 h
 #align complete_lattice.supr_continuous CompleteLattice.iSup_continuous
 
-theorem sSup_ωScottContinuous (s : Set (α → β)) (hc : ∀ f ∈ s, ωScottContinuous f) :
-    ωScottContinuous (sSup s) := by
-  lift s to Set (α →o β) using fun f hf => (hc f hf).monotone
+theorem sSup_continuous' (s : Set (α → β)) (hc : ∀ f ∈ s, Continuous' f) :
+    Continuous' (sSup s) := by
+  lift s to Set (α →o β) using fun f hf => (hc f hf).to_monotone
   simp only [Set.forall_mem_image, continuous'_coe] at hc
   rw [sSup_image]
   norm_cast
   exact iSup_continuous fun f ↦ iSup_continuous fun hf ↦ hc hf
-alias sSup_continuous' := sSup_ωScottContinuous
 #align complete_lattice.Sup_continuous' CompleteLattice.sSup_continuous'
 
 theorem sup_continuous {f g : α →o β} (hf : Continuous f) (hg : Continuous g) :
@@ -633,11 +572,9 @@ theorem inf_continuous (f g : α →o β) (hf : Continuous f) (hg : Continuous g
       (le_trans <| g.mono <| c.mono <| le_max_right _ _)⟩
 #align complete_lattice.inf_continuous CompleteLattice.inf_continuous
 
-theorem inf_ωScottContinuous {f g : α → β} (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
-    ωScottContinuous (f ⊓ g) :=
-  continuous'_iff_ωScottContinuous.mp ⟨_, inf_continuous _ _
-    (continuous'_iff_ωScottContinuous.mpr hf).snd (continuous'_iff_ωScottContinuous.mpr hg).snd⟩
-alias inf_continuous' := inf_ωScottContinuous
+theorem inf_continuous' {f g : α → β} (hf : Continuous' f) (hg : Continuous' g) :
+    Continuous' (f ⊓ g) :=
+  ⟨_, inf_continuous _ _ hf.snd hg.snd⟩
 #align complete_lattice.inf_continuous' CompleteLattice.inf_continuous'
 
 end CompleteLattice
@@ -731,10 +668,9 @@ theorem apply_mono {f g : α →𝒄 β} {x y : α} (h₁ : f ≤ g) (h₂ : x �
   OrderHom.apply_mono (show (f : α →o β) ≤ g from h₁) h₂
 #align omega_complete_partial_order.continuous_hom.apply_mono OmegaCompletePartialOrder.ContinuousHom.apply_mono
 
-theorem ite_ωScottContinuous {p : Prop} [hp : Decidable p] (f g : α → β) (hf : ωScottContinuous f)
-    (hg : ωScottContinuous g) : ωScottContinuous fun x => if p then f x else g x := by
+theorem ite_continuous' {p : Prop} [hp : Decidable p] (f g : α → β) (hf : Continuous' f)
+    (hg : Continuous' g) : Continuous' fun x => if p then f x else g x := by
   split_ifs <;> simp [*]
-alias ite_continuous' := ite_ωScottContinuous
 #align omega_complete_partial_order.continuous_hom.ite_continuous' OmegaCompletePartialOrder.ContinuousHom.ite_continuous'
 
 theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α →o β → Part γ) :
@@ -765,33 +701,25 @@ theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α
     · apply le_ωSup (c.map f) i _ hb₀
 #align omega_complete_partial_order.continuous_hom.ωSup_bind OmegaCompletePartialOrder.ContinuousHom.ωSup_bind
 
-theorem bind_ωScottContinuous {β γ : Type v} (f : α → Part β) (g : α → β → Part γ) :
-    ωScottContinuous f → ωScottContinuous g → ωScottContinuous fun x => f x >>= g x
-  | hf, hg =>
-    Continuous.of_bundled' (OrderHom.bind ⟨f, (continuous'_iff_ωScottContinuous.mpr hf).1⟩
-      ⟨g, (continuous'_iff_ωScottContinuous.mpr hg).1⟩)
-      (fun c => by
-        rw [ωSup_bind, ← (continuous'_iff_ωScottContinuous.mpr hf).2,
-          ← (continuous'_iff_ωScottContinuous.mpr hg).2]
-        rfl)
-alias bind_continuous' := bind_ωScottContinuous
+theorem bind_continuous' {β γ : Type v} (f : α → Part β) (g : α → β → Part γ) :
+    Continuous' f → Continuous' g → Continuous' fun x => f x >>= g x
+  | ⟨hf, hf'⟩, ⟨hg, hg'⟩ =>
+    Continuous.of_bundled' (OrderHom.bind ⟨f, hf⟩ ⟨g, hg⟩)
+      (by intro c; rw [ωSup_bind, ← hf', ← hg']; rfl)
 #align omega_complete_partial_order.continuous_hom.bind_continuous' OmegaCompletePartialOrder.ContinuousHom.bind_continuous'
 
-theorem map_ωScottContinuous {β γ : Type v} (f : β → γ) (g : α → Part β) (hg : ωScottContinuous g) :
-    ωScottContinuous fun x => f <$> g x := by
+theorem map_continuous' {β γ : Type v} (f : β → γ) (g : α → Part β) (hg : Continuous' g) :
+    Continuous' fun x => f <$> g x := by
   simp only [map_eq_bind_pure_comp]; apply bind_continuous' _ _ hg; apply const_continuous'
-alias map_continuous' := map_ωScottContinuous
 #align omega_complete_partial_order.continuous_hom.map_continuous' OmegaCompletePartialOrder.ContinuousHom.map_continuous'
 
-theorem seq_ωScottContinuous {β γ : Type v} (f : α → Part (β → γ)) (g : α → Part β)
-    (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
-    ωScottContinuous fun x => f x <*> g x := by
+theorem seq_continuous' {β γ : Type v} (f : α → Part (β → γ)) (g : α → Part β) (hf : Continuous' f)
+    (hg : Continuous' g) : Continuous' fun x => f x <*> g x := by
   simp only [seq_eq_bind_map]
   apply bind_continuous' _ _ hf
   apply Pi.OmegaCompletePartialOrder.flip₂_continuous'
   intro
   apply map_continuous' _ _ hg
-alias seq_continuous' := seq_ωScottContinuous
 #align omega_complete_partial_order.continuous_hom.seq_continuous' OmegaCompletePartialOrder.ContinuousHom.seq_continuous'
 
 theorem continuous (F : α →𝒄 β) (C : Chain α) : F (ωSup C) = ωSup (C.map F) :=
