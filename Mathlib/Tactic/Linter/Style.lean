@@ -12,6 +12,7 @@ import Lean.Linter.Util
 
 This file contains (currently one, eventually more) linters about stylistic aspects:
 these are only about coding style, but do not affect correctness nor global coherence of mathlib.
+
 Historically, these were ported from the `lint-style.py` Python script.
 -/
 
@@ -28,10 +29,10 @@ register_option linter.setOption : Bool := {
 
 namespace Style.SetOption
 
-/-- Whether a syntax element is a `set_option` call:
+/-- Whether a syntax element is a `set_option` command, tactic or term:
 Return the name of the option being set, if any. -/
 def parse_set_option : Syntax → Option (Ident)
-  -- This handles all four possibilities of `_val`: a string, number, `true` and `false`
+  -- This handles all four possibilities of `_val`: a string, number, `true` and `false`.
   | `(command|set_option $name:ident $_val) => some name
   | `(set_option $name:ident $_val in $_x) => some name
   | `(tactic|set_option $name:ident $_val in $_x) => some name
