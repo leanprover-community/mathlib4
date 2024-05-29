@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 import Mathlib.NumberTheory.LSeries.HurwitzZeta
-import Mathlib.NumberTheory.ZetaValues
 import Mathlib.Analysis.Complex.RemovableSingularity
 
 #align_import number_theory.zeta_function from "leanprover-community/mathlib"@"57f9349f2fe19d2de7207e99b0341808d977cdcf"
