@@ -212,7 +212,7 @@ def head (x : RelSeries r) : α := x 0
 Since a relation series is assumed to be non-empty, this is well defined. -/
 def last (x : RelSeries r) : α := x <| Fin.last _
 
-lemma last_def (x : RelSeries r) : x (Fin.last <| x.length) = x.last := rfl
+lemma apply_last (x : RelSeries r) : x (Fin.last <| x.length) = x.last := rfl
 
 lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
 
@@ -414,6 +414,9 @@ def snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) : RelSeries r
 @[simp] lemma last_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
     (p.snoc newLast rel).last = newLast := last_append _ _ _
 
+-- This lemma is useful because `last_snoc` is about `Fin.last (p.snoc _ _).length`, but we often
+-- see `Fin.last (p.length + 1)` in practice. They are equal by definition, but sometimes simplifier
+-- does not pick up `last_snoc`
 @[simp] lemma last_snoc' (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
     p.snoc newLast rel (Fin.last (p.length + 1)) = newLast := last_append _ _ _
 
