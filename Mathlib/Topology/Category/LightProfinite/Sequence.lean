@@ -115,8 +115,6 @@ instance (X : Type*) [TopologicalSpace X] [c : CompactSpace X] [MetrizableSpace 
 -- example (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X] [Countable X] :
 --     SecondCountableTopology X := inferInstance
 
--- instance : Countable (OnePoint ℕ) := sorry
-
 open OnePoint
 
 lemma natUnionInfty_classifies_convergent_sequences {X : Type*} [TopologicalSpace X]
