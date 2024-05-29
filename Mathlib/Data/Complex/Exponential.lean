@@ -19,7 +19,7 @@ hyperbolic sine, hyperbolic cosine, and hyperbolic tangent functions.
 -/
 
 open CauSeq Finset IsAbsoluteValue
-open scoped BigOperators Classical ComplexConjugate
+open scoped Classical ComplexConjugate
 
 namespace Complex
 
@@ -597,6 +597,9 @@ theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2)
   rw [s1, s2]
   ring
 #align complex.cos_sub_cos Complex.cos_sub_cos
+
+theorem sin_add_sin : sin x + sin y = 2 * sin ((x + y) / 2) * cos ((x - y) / 2) := by
+  simpa using sin_sub_sin x (-y)
 
 theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) := by
   calc

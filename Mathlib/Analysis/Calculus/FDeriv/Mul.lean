@@ -22,7 +22,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 
 open scoped Classical
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal BigOperators
+open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 
 noncomputable section
 
@@ -618,8 +618,6 @@ theorem fderiv_const_mul (ha : DifferentiableAt 𝕜 a x) (b : 𝔸) :
 end Mul
 
 section Prod
-
-open BigOperators
 
 /-! ### Derivative of a finite product of functions -/
 
