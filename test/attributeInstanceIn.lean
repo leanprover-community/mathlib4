@@ -6,59 +6,59 @@ Authors: Michael Rothgang, Damiano Testa
 
 import Mathlib.Tactic.Linter.AttributeInstanceIn
 
-/-! Tests for the `attributeInstanceIn` linter. -/
+/-! Tests for the `globalAttributeIn` linter. -/
 
 -- Test disabling the linter.
-set_option linter.attributeInstanceIn false
+set_option linter.globalAttributeIn false
 
 set_option autoImplicit false in
 attribute [instance] Int.add in
 instance : Inhabited Int where
   default := 0
 
-set_option linter.attributeInstanceIn true
+set_option linter.globalAttributeIn true
 
-set_option linter.attributeInstanceIn false in
+set_option linter.globalAttributeIn false in
 attribute [instance] Int.add in
 instance : Inhabited Int where
   default := 0
 
 -- Global instances with `in`, are linted, as they are a footgun.
 
-set_option linter.attributeInstanceIn false in
+set_option linter.globalAttributeIn false in
 /--
 warning: Despite the `in`, the attribute 'instance 1100' is added globally to 'Int.add'
 please remove the `in` or make this a `local instance 1100`
-note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
+note: this linter can be disabled with `set_option linter.globalAttributeIn false`
 -/
 #guard_msgs in
 set_option autoImplicit false in
-set_option linter.attributeInstanceIn true in
+set_option linter.globalAttributeIn true in
 attribute [instance 1100] Int.add in
 set_option autoImplicit false in
 instance : Inhabited Int where
   default := 0
 
-set_option linter.attributeInstanceIn false in
+set_option linter.globalAttributeIn false in
 /--
 warning: Despite the `in`, the attribute 'instance' is added globally to 'Int.add'
 please remove the `in` or make this a `local instance`
-note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
+note: this linter can be disabled with `set_option linter.globalAttributeIn false`
 -/
 #guard_msgs in
-set_option linter.attributeInstanceIn true in
+set_option linter.globalAttributeIn true in
 attribute [instance] Int.add in
 instance : Inhabited Int where
   default := 0
 
-set_option linter.attributeInstanceIn false in
+set_option linter.globalAttributeIn false in
 /--
 warning: Despite the `in`, the attribute 'simp' is added globally to 'Int.add'
 please remove the `in` or make this a `local simp`
-note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
+note: this linter can be disabled with `set_option linter.globalAttributeIn false`
 -/
 #guard_msgs in
-set_option linter.attributeInstanceIn true in
+set_option linter.globalAttributeIn true in
 attribute [simp] Int.add in
 instance : Inhabited Int where
   default := 0
@@ -70,18 +70,18 @@ namespace X
 #guard_msgs in
 theorem foo (x y : Nat) : x = y := sorry
 
-set_option linter.attributeInstanceIn false in
+set_option linter.globalAttributeIn false in
 /--
 warning: Despite the `in`, the attribute 'simp' is added globally to 'foo'
 please remove the `in` or make this a `local simp`
-note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
+note: this linter can be disabled with `set_option linter.globalAttributeIn false`
 ---
 warning: Despite the `in`, the attribute 'ext' is added globally to 'foo'
 please remove the `in` or make this a `local ext`
-note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
+note: this linter can be disabled with `set_option linter.globalAttributeIn false`
 -/
 #guard_msgs in
-set_option linter.attributeInstanceIn true in
+set_option linter.globalAttributeIn true in
 attribute [simp, local simp, ext, scoped instance, -simp, -ext] foo in
 def bar := False
 
