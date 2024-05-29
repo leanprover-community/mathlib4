@@ -143,7 +143,7 @@ def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(�
 
 /-- A continuous function on a compact space has automatically compact support. This is not an
 instance to avoid type class loops. -/
-lemma compactlySupportedContinuousMapClass.ofCompact {G : Type*} [FunLike G α β]
+lemma _root_.compactlySupportedContinuousMapClass.ofCompact (G : Type*) [FunLike G α β]
     [ContinuousMapClass G α β] [CompactSpace α] : CompactlySupportedContinuousMapClass G α β where
   map_continuous := map_continuous
   hasCompactSupport := by
