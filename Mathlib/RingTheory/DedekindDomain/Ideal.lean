@@ -1538,7 +1538,7 @@ theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multipl
   `multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity` for the version
   stated in terms of multiplicity. -/
 theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) :
-      Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r}))  =
+    Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r}))  =
         Multiset.count (normalize X) (normalizedFactors r) := by
   have := multiplicity_eq_multiplicity_span (R := R) (a := X) (b := r)
   rw [multiplicity_eq_count_normalizedFactors (Prime.irreducible hX) hr,
