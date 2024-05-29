@@ -34,6 +34,10 @@ is surjective for any affine open `U`.
 * take the colimit of `OneCohomology G U` over all covering families `U` (for
 a Grothendieck topology)
 
+# References
+
+* [J. Frenkel, *Cohomologie non abélienne et espaces fibrés*][frenkel1957]
+
 -/
 
 universe w' w v u
