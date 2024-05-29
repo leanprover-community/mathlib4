@@ -3,8 +3,8 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Order.Nonneg.Field
-import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.Rat.Order
 
 #align_import data.rat.basic from "leanprover-community/mathlib"@"a59dad53320b73ef180174aae867addd707ef00e"
@@ -25,21 +25,7 @@ namespace Rat
 
 instance instLinearOrderedField : LinearOrderedField ℚ where
   __ := instLinearOrderedCommRing
-  __ := commGroupWithZero
-  nnqsmul := _
-  qsmul := _
-  nnratCast_def q := by
-    rw [← NNRat.den_coe, ← Int.cast_natCast q.num, ← NNRat.num_coe]; exact(num_div_den _).symm
-  ratCast_def q := (num_div_den _).symm
-
-/-!
-### Extra instances to short-circuit type class resolution
-
-These also prevent non-computable instances being used to construct these instances non-computably.
--/
-
-instance instDivisionRing : DivisionRing ℚ := inferInstance
-instance instField        : Field ℚ        := inferInstance
+  __ := instField
 
 end Rat
 
