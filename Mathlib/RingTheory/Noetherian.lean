@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Kevin Buzzard
 import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.Order.PartialSups
 import Mathlib.Algebra.Module.Submodule.IterateMapComap
-import Mathlib.RingTheory.Finiteness
+import Mathlib.RingTheory.OrzechProperty
 import Mathlib.RingTheory.Nilpotent.Lemmas
 
 #align_import ring_theory.noetherian from "leanprover-community/mathlib"@"210657c4ea4a4a7b234392f70a3a2a83346dfa90"
@@ -646,3 +646,12 @@ theorem IsNoetherianRing.isNilpotent_nilradical (R : Type*) [CommRing R] [IsNoet
   obtain ⟨n, hn⟩ := Ideal.exists_radical_pow_le_of_fg (⊥ : Ideal R) (IsNoetherian.noetherian _)
   exact ⟨n, eq_bot_iff.mpr hn⟩
 #align is_noetherian_ring.is_nilpotent_nilradical IsNoetherianRing.isNilpotent_nilradical
+
+/-- Any Noetherian ring satisfies Orzech property.
+See also `IsNoetherian.injective_of_surjective_of_submodule` and
+`IsNoetherian.injective_of_surjective_of_injective`. -/
+instance (priority := 100) IsNoetherianRing.orzechProperty
+    (R) [Ring R] [IsNoetherianRing R] : OrzechProperty R where
+  injective_of_surjective_of_submodule' {M} :=
+    letI := Module.addCommMonoidToAddCommGroup R (M := M)
+    IsNoetherian.injective_of_surjective_of_submodule

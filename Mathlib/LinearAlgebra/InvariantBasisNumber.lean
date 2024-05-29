@@ -112,15 +112,6 @@ section
 
 variable (R : Type u) [Semiring R]
 
-/-- Any Noetherian ring satisfies Orzech property.
-    See also `IsNoetherian.injective_of_surjective_of_submodule` and
-    `IsNoetherian.injective_of_surjective_of_injective`. -/
-instance (priority := 100) IsNoetherianRing.orzechProperty
-    (R : Type u) [Ring R] [IsNoetherianRing R] : OrzechProperty R where
-  injective_of_surjective_of_submodule' {M} :=
-    letI := Module.addCommMonoidToAddCommGroup R (M := M)
-    IsNoetherian.injective_of_surjective_of_submodule
-
 /-- We say that `R` satisfies the strong rank condition if `(Fin n → R) →ₗ[R] (Fin m → R)` injective
     implies `n ≤ m`. -/
 @[mk_iff]
