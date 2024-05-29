@@ -174,4 +174,4 @@ def ToRefineLinter (threshold : Nat := 4) : Linter where run stx := do
         --(logInfoAt hl m!"(0, {hlc.1}, {hlc.2})")
     if !fin.isEmpty then logInfo m!"{fin}"
 
-initialize addLinter ToRefineLinter
+initialize addLinter (ToRefineLinter 0)
