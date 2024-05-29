@@ -77,7 +77,6 @@ def ofComonObj (X : Comon_ (ModuleCat R)) : CoalgebraCat R where
 variable (R)
 
 /-- The natural functor from comonoid objects in the category of `R`-modules to `R`-coalgebras. -/
-@[simps map_toCoalgHom_toLinearMap]
 def ofComon : Comon_ (ModuleCat R) ⥤ CoalgebraCat R where
   obj X := ofComonObj X
   map f :=
