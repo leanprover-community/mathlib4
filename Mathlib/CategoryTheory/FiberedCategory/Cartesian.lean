@@ -122,6 +122,8 @@ noncomputable def naturalIso {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] [I
     subst_hom_lift p f φ
     apply IsCartesian.uniqueness p (p.map φ) φ φ (by simp) (id_comp _)
 
+-- TODO: naturalIso API
+
 end IsCartesian
 
 namespace IsStronglyCartesian
