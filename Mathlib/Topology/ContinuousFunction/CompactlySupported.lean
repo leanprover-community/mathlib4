@@ -370,174 +370,16 @@ instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
 
 end AlgebraicStructure
 
-section ZeroAtInfty
-
-open ZeroAtInfty
-
-variable [TopologicalSpace β] [TopologicalSpace γ] [Zero γ]
-variable [FunLike F β γ] [CompactlySupportedContinuousMapClass F β γ]
-
-lemma zero_at_infty_of_hasCompactSupport (f : F) :
-    Filter.Tendsto f (Filter.cocompact β) (𝓝 0) := by
-  rw [_root_.tendsto_nhds]
-  intro s _ hzero
-  rw [Filter.mem_cocompact]
-  use tsupport f
-  constructor
-  · exact hasCompactSupport f
-  · intro x hx
-    simp only [Set.mem_preimage]
-    rw [← Set.not_mem_compl_iff, compl_compl] at hx
-    rw [image_eq_zero_of_nmem_tsupport hx]
-    exact hzero
-
-instance : ZeroAtInftyContinuousMapClass C_c(β, γ) β γ where
-  map_continuous f := f.continuous_toFun
-  zero_at_infty f := zero_at_infty_of_hasCompactSupport f
-
-end ZeroAtInfty
-
 section Uniform
 
 variable [UniformSpace β] [UniformSpace γ] [Zero γ]
 variable [FunLike F β γ] [CompactlySupportedContinuousMapClass F β γ]
 
 theorem uniformContinuous (f : F) : UniformContinuous (f : β → γ) :=
-  (map_continuous f).uniformContinuous_of_tendsto_cocompact (zero_at_infty_of_hasCompactSupport f)
+  (map_continuous f).uniformContinuous_of_tendsto_cocompact
+  (HasCompactSupport.zero_at_infty_of_hasCompactSupport (hasCompactSupport f))
 
 end Uniform
-
-/-! ### Metric structure
-
-When `β` is a metric space, then every element of `C_c(α, β)` is bounded, and so there is a natural
-inclusion map `CompactlySupportedContinuousMap.toBCF : C_c(α, β) → (α →ᵇ β)`. Via this map
-`C_c(α, β)` inherits a metric as the pullback of the metric on `α →ᵇ β`. Moreover, this map has
-closed range in `α →ᵇ β` and consequently `C_c(α, β)` is a complete space whenever `β` is complete.
--/
-
-
-section Metric
-
-open Metric Set
-
-variable [PseudoMetricSpace β] [Zero β] [FunLike F α β] [CompactlySupportedContinuousMapClass F α β]
-
-protected theorem bounded (f : F) : ∃ C, ∀ x y : α, dist ((f : α → β) x) (f y) ≤ C := by
-  obtain ⟨C, hC⟩ := Metric.isBounded_iff_nndist.mp
-    ((hasCompactSupport f).isCompact_range (map_continuous f)).isBounded
-  use C
-  intro x y
-  exact hC (Set.mem_range_self x) (Set.mem_range_self y)
-
-theorem isBounded_range (f : C_c(α, β)) : IsBounded (range f) :=
-  isBounded_range_iff.2 (CompactlySupportedContinuousMap.bounded f)
-
-theorem isBounded_image (f : C_c(α, β)) (s : Set α) : IsBounded (f '' s) :=
-  f.isBounded_range.subset <| image_subset_range _ _
-
-instance (priority := 100) : BoundedContinuousMapClass F α β :=
-  { ‹CompactlySupportedContinuousMapClass F α β› with
-    map_bounded := fun f => CompactlySupportedContinuousMap.bounded f }
-
-/-- Construct a bounded continuous function from a continuous function vanishing at infinity. -/
-@[simps!]
-def toBCF (f : C_c(α, β)) : α →ᵇ β :=
-  ⟨f, map_bounded f⟩
-
-section
-
-variable (α) (β)
-
-theorem toBCF_injective : Function.Injective (toBCF : C_c(α, β) → α →ᵇ β) := fun f g h => by
-  ext x
-  simpa only using DFunLike.congr_fun h x
-
-end
-
-variable {C : ℝ} {f g : C_c(α, β)}
-
-/-- The type of compactly supported continuous functions, with the uniform distance induced by the
-inclusion `CompactlySupportedContinuousMap.toBCF`, is a pseudo-metric space. -/
-noncomputable instance instPseudoMetricSpace : PseudoMetricSpace C_c(α, β) :=
-  PseudoMetricSpace.induced toBCF inferInstance
-
-/-- The type of compactly supported continuous functions, with the uniform distance induced by the
-inclusion `CompactlySupportedContinuousMap.toBCF`, is a metric space. -/
-noncomputable instance instMetricSpace {β : Type*} [MetricSpace β] [Zero β] :
-    MetricSpace C_c(α, β) :=
-  MetricSpace.induced _ (toBCF_injective α β) inferInstance
-
-@[simp]
-theorem dist_toBCF_eq_dist {f g : C_c(α, β)} : dist f.toBCF g.toBCF = dist f g :=
-  rfl
-
-open BoundedContinuousFunction
-
-/-- Convergence in the metric on `C_c(α, β)` is uniform convergence. -/
-theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → C_c(α, β)} {f : C_c(α, β)}
-    {l : Filter ι} : Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i => F i) f l := by
-  simpa only [Metric.tendsto_nhds] using
-    @BoundedContinuousFunction.tendsto_iff_tendstoUniformly _ _ _ _ _ (fun i => (F i).toBCF)
-      f.toBCF l
-
-theorem isometry_toBCF : Isometry (toBCF : C_c(α, β) → α →ᵇ β) := by tauto
-
-end Metric
-
-section Norm
-
-/-! ### Normed space
-
-The norm structure on `C_c(α, β)` is the one induced by the inclusion
-`toBCF : C_c(α, β) → (α →ᵇ b)`, viewed as an additive monoid homomorphism. Then `C_c(α, β)` is
-naturally a normed space over a normed field `𝕜` whenever `β` is as well.
--/
-
-
-section NormedSpace
-
-noncomputable instance instSeminormedAddCommGroup [SeminormedAddCommGroup β] :
-    SeminormedAddCommGroup C_c(α, β) :=
-  SeminormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C_c(α, β) →+ α →ᵇ β)
-
-noncomputable instance instNormedAddCommGroup [NormedAddCommGroup β] :
-    NormedAddCommGroup C_c(α, β) :=
-  NormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C_c(α, β) →+ α →ᵇ β)
-    (toBCF_injective α β)
-
-variable [SeminormedAddCommGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β]
-
-@[simp]
-theorem norm_toBCF_eq_norm {f : C_c(α, β)} : ‖f.toBCF‖ = ‖f‖ :=
-  rfl
-
-instance : NormedSpace 𝕜 C_c(α, β) where norm_smul_le k f := (norm_smul_le k f.toBCF : _)
-
-end NormedSpace
-
-section NormedRing
-
-noncomputable instance instNonUnitalSeminormedRing [NonUnitalSeminormedRing β] :
-    NonUnitalSeminormedRing C_c(α, β) :=
-  { instNonUnitalRing, instSeminormedAddCommGroup with
-    norm_mul := fun f g => norm_mul_le f.toBCF g.toBCF }
-
-noncomputable instance instNonUnitalNormedRing [NonUnitalNormedRing β] :
-    NonUnitalNormedRing C_c(α, β) :=
-  { instNonUnitalRing, instNormedAddCommGroup with
-    norm_mul := fun f g => norm_mul_le f.toBCF g.toBCF }
-
-noncomputable instance [NonUnitalSeminormedCommRing β] :
-    NonUnitalSeminormedCommRing C_c(α, β) :=
-  { instNonUnitalSeminormedRing, instNonUnitalCommRing with }
-
-noncomputable instance [NonUnitalNormedCommRing β] :
-    NonUnitalNormedCommRing C_c(α, β) :=
-  { instNonUnitalNormedRing, instNonUnitalCommRing with }
-
-end NormedRing
-
-end Norm
 
 section Star
 
@@ -580,15 +422,6 @@ instance instStarAddMonoid [ContinuousAdd β] : StarAddMonoid C_c(α, β) where
 
 end Star
 
-section NormedStar
-
-variable [NormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
-
-instance : NormedStarGroup C_c(α, β) where
-  norm_star f := (norm_star f.toBCF : _)
-
-end NormedStar
-
 section StarModule
 
 variable {𝕜 : Type*} [Zero 𝕜] [Star 𝕜] [AddMonoid β] [StarAddMonoid β] [TopologicalSpace β]
@@ -609,14 +442,6 @@ instance : StarRing C_c(α, β) :=
     star_mul := fun f g => ext fun x => star_mul (f x) (g x) }
 
 end StarRing
-
-section CstarRing
-
-instance [NonUnitalNormedRing β] [StarRing β] [CstarRing β] :
-    CstarRing C_c(α, β) where
-  norm_star_mul_self {f} := CstarRing.norm_star_mul_self (x := f.toBCF)
-
-end CstarRing
 
 /-! ### C_c as a functor
 
@@ -708,3 +533,16 @@ def compNonUnitalAlgHom {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring δ]
   map_mul' _ _ := rfl
 
 end CompactlySupportedContinuousMap
+
+section ZeroAtInfty
+
+open ZeroAtInfty
+
+variable [TopologicalSpace β] [TopologicalSpace γ] [Zero γ]
+variable [FunLike F β γ] [CompactlySupportedContinuousMapClass F β γ]
+
+instance : ZeroAtInftyContinuousMapClass C_c(β, γ) β γ where
+  map_continuous f := f.continuous_toFun
+  zero_at_infty f := HasCompactSupport.zero_at_infty_of_hasCompactSupport f.hasCompactSupport'
+
+end ZeroAtInfty
