@@ -732,6 +732,7 @@ instance (priority := 100) commRing_orzechProperty
     (R : Type*) [CommRing R] : OrzechProperty R := by
   refine ⟨fun {M} _ _ _ {N} f hf ↦ ?_⟩
   letI := addCommMonoidToAddCommGroup R (M := M)
+  letI := addCommMonoidToAddCommGroup R (M := N)
   let i := N.subtype
   let hi : Function.Injective i := N.injective_subtype
   refine LinearMap.ker_eq_bot.1 <| LinearMap.ker_eq_bot'.2 fun n hn ↦ ?_
