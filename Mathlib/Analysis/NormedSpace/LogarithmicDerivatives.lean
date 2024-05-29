@@ -119,6 +119,8 @@ end examples
 
 section clog
 
+/-- The derivative of `log ∘ f` is the logarithmic derivative provided `f` is differentiable and
+we are on the slitPlane. -/
 lemma deriv_clog_comp_eq_logDeriv (f : ℂ → ℂ) (x f' : ℂ) (h₁ : HasDerivAt f f' x)
     (h₂ : f x ∈ Complex.slitPlane) : deriv (Complex.log ∘ f) x = logDeriv f x := by
   have A := (HasDerivAt.clog h₁ h₂).deriv
@@ -126,6 +128,5 @@ lemma deriv_clog_comp_eq_logDeriv (f : ℂ → ℂ) (x f' : ℂ) (h₁ : HasDeri
   rw [← B] at A
   simp only [logDeriv, Pi.div_apply, ← A]
   rfl
-
 
 end clog
