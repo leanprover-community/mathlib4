@@ -51,6 +51,7 @@ jobs:
         with:
           linters: gcc
           run: |
+            env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
       - name: lint mathlib and update style exceptions files
