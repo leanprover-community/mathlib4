@@ -17,7 +17,7 @@ In this file we prove that the set of Liouville numbers with exponent (irrationa
 strictly greater than two is a set of Lebesgue measure zero, see
 `volume_iUnion_setOf_liouvilleWith`.
 
-Since this set is a residual set, we show that the filters `residual` and `volume.ae` are disjoint.
+Since this set is a residual set, we show that the filters `residual` and `ae volume` are disjoint.
 These filters correspond to two common notions of genericity on `ℝ`: residual sets and sets of full
 measure. The fact that the filters are disjoint means that two mutually exclusive properties can be
 “generic” at the same time (in the sense of different “genericity” filters).
@@ -121,8 +121,8 @@ theorem volume_setOf_liouville : volume { x : ℝ | Liouville x } = 0 := by
   simpa only [ae_iff, Classical.not_not] using ae_not_liouville
 #align volume_set_of_liouville volume_setOf_liouville
 
-/-- The filters `residual ℝ` and `volume.ae` are disjoint. This means that there exists a residual
+/-- The filters `residual ℝ` and `ae volume` are disjoint. This means that there exists a residual
 set of Lebesgue measure zero (e.g., the set of Liouville numbers). -/
-theorem Real.disjoint_residual_ae : Disjoint (residual ℝ) volume.ae :=
+theorem Real.disjoint_residual_ae : Disjoint (residual ℝ) (ae volume) :=
   disjoint_of_disjoint_of_mem disjoint_compl_right eventually_residual_liouville ae_not_liouville
 #align real.disjoint_residual_ae Real.disjoint_residual_ae
