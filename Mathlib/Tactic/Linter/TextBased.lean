@@ -54,7 +54,7 @@ structure ErrorContext where
   /-- The underlying `StyleError`-/
   error : StyleError
   /-- The line number of the error -/
-  line_number : ℕ
+  lineNumber : ℕ
   /-- The path to the file which was linted -/
   path : System.FilePath
 
@@ -63,7 +63,7 @@ def outputMessage (errctx : ErrorContext) : String :=
   -- We are outputting for github: duplicate file path, line number and error code,
   -- so that they are also visible in the plain text output.
   let path := errctx.path
-  let nr := errctx.line_number
+  let nr := errctx.lineNumber
   let code := errctx.error.errorCode
   s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {errctx.error.errorMessage}"
 
@@ -72,7 +72,7 @@ def formatErrors (errors : Array ErrorContext) : IO Unit := do
   for e in errors do
     IO.println (outputMessage e)
 
-/-- Core logic of a text based linter: given a collection of lines,
+/-- Core abstraction of a text based linter: given a collection of lines,
 return an array of all style errors with line numbers. -/
 abbrev LinterCore := Array String → Array (StyleError × ℕ)
 
@@ -80,7 +80,7 @@ abbrev LinterCore := Array String → Array (StyleError × ℕ)
 section
 
 /-- Return if `line` looks like a correct authors line in a copyright header. -/
-def is_correct_authors_line (line : String) : Bool :=
+def isCorrectAuthorsLine (line : String) : Bool :=
   -- We cannot reasonably validate the author names, so we look only for a few common mistakes:
   -- the file starting wrong, double spaces, using ' and ' between names,
   -- and ending the line with a period.
@@ -92,7 +92,7 @@ def is_correct_authors_line (line : String) : Bool :=
 A copyright header should start at the very beginning of the file and contain precisely five lines,
 including the copy year and holder, the license and main author(s) of the file (in this order).
 -/
-def copyright_header : LinterCore := fun lines ↦ Id.run do
+def copyrightHeaderLinter : LinterCore := fun lines ↦ Id.run do
   -- Unlike the Python script, we just emit one warning.
   let start := lines.extract 0 4
   -- The header should start and end with blank comments.
@@ -110,10 +110,10 @@ def copyright_header : LinterCore := fun lines ↦ Id.run do
     if !(copy.startsWith "Copyright (c) 20" && copy.endsWith ". All rights reserved.") then
       output := output.push (StyleError.copyright "Copyright line is malformed", 2)
   -- The second line should be standard.
-  let expected_second_line := "Released under Apache 2.0 license as described in the file LICENSE."
-  if start.get? 2 != some expected_second_line then
+  let expectedSecondLine := "Released under Apache 2.0 license as described in the file LICENSE."
+  if start.get? 2 != some expectedSecondLine then
     output := output.push (StyleError.copyright
-      s!"Second line should be \"{expected_second_line}\"", 3)
+      s!"Second line should be \"{expectedSecondLine}\"", 3)
   -- The third line should contain authors.
   if let some line := start.get? 3 then
     if !line.containsSubstr "Author" then
@@ -121,14 +121,14 @@ def copyright_header : LinterCore := fun lines ↦ Id.run do
         "The third line should describe the file's main authors", 4)
     else
       -- If it does, we check the authors line is formatted correctly.
-      if !is_correct_authors_line line then
+      if !isCorrectAuthorsLine line then
         output := output.push (StyleError.authors, 4)
   return output
 
 
 /-- Whether a collection of lines consists *only* of imports:
 in practice, this means it's an imports-only file and exempt from almost all linting. -/
-def is_imports_only_file (lines : Array String) : Bool :=
+def isImportsOnlyFile (lines : Array String) : Bool :=
   -- The Python version also excluded comments: since the import-only files are
   -- automatically generated and don't contains comments, this is in fact not necessary.
   -- XXX: also implement parsing of multi-line comments.
@@ -137,20 +137,20 @@ def is_imports_only_file (lines : Array String) : Bool :=
 end
 
 /-- All text-based linters registered in this file. -/
-def all_linters : Array LinterCore := Array.mk
-  [copyright_header]
+def allLinters : Array LinterCore := Array.mk
+  [copyrightHeaderLinter]
 
-/-- Read a file, apply all text-based linters and return the formatted errors.
+/-- Read a file, apply all text-based linters and print the formatted errors.
 
 Return `true` if there were new errors (and `false` otherwise). -/
-def lint_file (path : System.FilePath) : IO Bool := do
+def lintFile (path : System.FilePath) : IO Bool := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
   -- NB. The Python script used to still run a few linters; this is in fact not necessary.
-  if is_imports_only_file lines then
+  if isImportsOnlyFile lines then
     return false
   let all_output := (Array.map (fun lint ↦
-    (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) all_linters
+    (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
   -- XXX: this list is currently not sorted: for github, that's probably fine
   let errors := Array.flatten all_output
   formatErrors errors
@@ -158,7 +158,7 @@ def lint_file (path : System.FilePath) : IO Bool := do
 
 /-- Lint all files referenced in a given import-only file.
 Return the number of files which had new style errors. -/
-def lint_all_files (path : System.FilePath) : IO UInt32 := do
+def lintAllFiles (path : System.FilePath) : IO UInt32 := do
   -- Read all module names in Mathlib from the file at `path`.
   let allModules ← IO.FS.lines path
   let mut number_error_files := 0
@@ -170,7 +170,7 @@ def lint_all_files (path : System.FilePath) : IO UInt32 := do
       continue
     -- Convert the module name to a file name, then lint that file.
     let path := (System.mkFilePath (module.split fun c ↦ (c == '.'))).addExtension "lean"
-    let e ← lint_file path
+    let e ← lintFile path
     if e then
       number_error_files := number_error_files + 1
   return number_error_files
@@ -180,6 +180,6 @@ def lint_all_files (path : System.FilePath) : IO UInt32 := do
 def main (_args : List String) : IO UInt32 := do
   let mut number_error_files := 0
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    let n ← lint_all_files (System.mkFilePath [s])
+    let n ← lintAllFiles (System.mkFilePath [s])
     number_error_files := number_error_files + n
   return number_error_files
