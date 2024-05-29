@@ -145,7 +145,8 @@ lemma id_toNatTrans (F : BasedFunctor 𝒳 𝒴) :
     (id F).toNatTrans = CategoryTheory.NatTrans.id F.toFunctor :=
   rfl
 
-/-- Composition of `BasedNatTrans`s, given by composition of the underlying natural transformations -/
+/-- Composition of `BasedNatTrans`, given by composition of the underlying natural
+transformations -/
 @[simps!]
 def comp {F G H : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G)
     (β : BasedNatTrans G H) : BasedNatTrans F H where
@@ -211,59 +212,59 @@ lemma homCategory.ext {𝒳 𝒴 : BasedCategory 𝒮} {F G : BasedFunctor 𝒳 
 def BasedFunctor.associator {𝒳 𝒴 𝒵 𝒱 : BasedCategory 𝒮} (F : BasedFunctor 𝒳 𝒴)
     (G : BasedFunctor 𝒴 𝒵) (H : BasedFunctor 𝒵 𝒱) : BasedFunctor.comp (BasedFunctor.comp F G) H ≅
       BasedFunctor.comp F (BasedFunctor.comp G H) where
-    hom := {
-      app := fun _ => 𝟙 _
-      -- can this be automated?
-      aboveId := by
-        intro a S ha
-        subst ha
-        infer_instance
-    }
-    inv := {
-      app := fun _ => 𝟙 _
-      aboveId := by
-        intro a S ha
-        subst ha
-        infer_instance
-    }
+  hom := {
+    app := fun _ => 𝟙 _
+    -- can this be automated?
+    aboveId := by
+      intro a S ha
+      subst ha
+      infer_instance
+  }
+  inv := {
+    app := fun _ => 𝟙 _
+    aboveId := by
+      intro a S ha
+      subst ha
+      infer_instance
+  }
 
 /-- The left unitor in the bicategory `BasedCategory` is given by the identity -/
 @[simps]
 def BasedFunctor.leftUnitor {𝒳 𝒴 : BasedCategory 𝒮} (F : BasedFunctor 𝒳 𝒴) :
-  BasedFunctor.comp (BasedFunctor.id 𝒳) F ≅ F where
-    hom := {
-      app := fun a => 𝟙 (F.obj a)
-      aboveId := by
-        intro a S ha
-        subst ha
-        infer_instance
-    }
-    inv := {
-      app := fun a => 𝟙 (F.obj a)
-      aboveId := by
-        intro a S ha
-        subst ha
-        infer_instance
-    }
+    BasedFunctor.comp (BasedFunctor.id 𝒳) F ≅ F where
+  hom := {
+    app := fun a => 𝟙 (F.obj a)
+    aboveId := by
+      intro a S ha
+      subst ha
+      infer_instance
+  }
+  inv := {
+    app := fun a => 𝟙 (F.obj a)
+    aboveId := by
+      intro a S ha
+      subst ha
+      infer_instance
+  }
 
 /-- The right unitor in the bicategory `BasedCategory` is given by the identity -/
 @[simps]
 def BasedFunctor.rightUnitor {𝒳 𝒴 : BasedCategory 𝒮} (F : BasedFunctor 𝒳 𝒴) :
-  BasedFunctor.comp F (BasedFunctor.id 𝒴) ≅ F where
-    hom := {
-      app := fun a => 𝟙 (F.obj a)
-      aboveId := by
-        intro a S ha
-        subst ha
-        infer_instance
-    }
-    inv := {
-      app := fun a => 𝟙 (F.obj a)
-      aboveId := by
-        intro a S ha
-        subst ha
-        infer_instance
-    }
+    BasedFunctor.comp F (BasedFunctor.id 𝒴) ≅ F where
+  hom := {
+    app := fun a => 𝟙 (F.obj a)
+    aboveId := by
+      intro a S ha
+      subst ha
+      infer_instance
+  }
+  inv := {
+    app := fun a => 𝟙 (F.obj a)
+    aboveId := by
+      intro a S ha
+      subst ha
+      infer_instance
+  }
 
 /-- Left-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying functors
 and natural transformations -/
