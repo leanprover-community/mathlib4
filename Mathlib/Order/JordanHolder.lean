@@ -385,7 +385,7 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
       _ ≃ Fin (s₂.length + 1) := finSuccEquivLast.symm
   ⟨e, fun i => by
     refine Fin.lastCases ?_ ?_ i
-    · simpa [e, last_def] using hlast
+    · simpa [e, apply_last] using hlast
     · intro i
       simpa [e, Fin.succ_castSucc] using hequiv.choose_spec i⟩
 #align composition_series.equivalent.snoc CompositionSeries.Equivalent.snoc
