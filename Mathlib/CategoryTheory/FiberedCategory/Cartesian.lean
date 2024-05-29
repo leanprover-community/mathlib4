@@ -48,6 +48,8 @@ class Functor.IsCartesian (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R �
 
 namespace IsCartesian
 
+-- TODO: fix variables & assumptions
+
 /-- Given an arrow `φ' : a' ⟶ b` and a diagram:
 ```
 a'        a --φ--> b
