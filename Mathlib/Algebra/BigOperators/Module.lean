@@ -5,6 +5,7 @@ Authors: Dylan MacKenzie
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Tactic.Abel
 
 /-!
 # Summation by parts
