@@ -119,7 +119,7 @@ instance comp {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (g
   apply CommSq.horiz_comp (commSq p f φ) (commSq p g ψ)
 
 /-- If `φ : a ⟶ b` and `ψ : b ⟶ c` lift `𝟙 R`, then so does `φ ≫ ψ` -/
-instance lift_id_comp {p : 𝒳 ⥤ 𝒮} {R : 𝒮} {a b c : 𝒳} {φ : a ⟶ b} {ψ : b ⟶ c}
+instance lift_id_comp {p : 𝒳 ⥤ 𝒮} (R : 𝒮) {a b c : 𝒳} (φ : a ⟶ b) (ψ : b ⟶ c)
     [p.IsHomLift (𝟙 R) φ] [p.IsHomLift (𝟙 R) ψ] : p.IsHomLift (𝟙 R) (φ ≫ ψ) :=
   comp_id (𝟙 R) ▸ comp _ _ φ ψ
 
@@ -130,8 +130,8 @@ lemma comp_lift_id_right {R S : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (φ : a ⟶ b
   simpa using inferInstanceAs (p.IsHomLift (f ≫ 𝟙 S) (φ ≫ ψ))
 
 /-- If `φ : a ⟶ b` lifts `𝟙 T` and `ψ : b ⟶ c` lifts `f`, then `φ  ≫ ψ` lifts `f` -/
-lemma comp_lift_id_left {S T : 𝒮} {a b c : 𝒳} (f : S ⟶ T) (φ : a ⟶ b) (R : 𝒮)
-    [p.IsHomLift (𝟙 R) φ] (ψ : b ⟶ c) [p.IsHomLift f ψ] : p.IsHomLift f (φ ≫ ψ) := by
+lemma comp_lift_id_left {a b c : 𝒳} (R : 𝒮) (φ : a ⟶ b) [p.IsHomLift (𝟙 R) φ]
+    {S T : 𝒮} (f : S ⟶ T) (ψ : b ⟶ c) [p.IsHomLift f ψ] : p.IsHomLift f (φ ≫ ψ) := by
   obtain rfl : R = S := by rw [← codomain_eq p (𝟙 R) φ, domain_eq p f ψ]
   simpa using inferInstanceAs (p.IsHomLift (𝟙 R ≫ f) (φ ≫ ψ))
 
@@ -191,7 +191,8 @@ lemma lift_comp_eqToHom_iff {R S S' : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a �
   mp := fun hφ' => by subst h; simpa using hφ'
   mpr := fun hφ => inferInstance
 
-/-- The isomorphism `R ≅ S` obtained from an isomorphism `φ : a ≅ b` lifting `f` -/
+/-- Given a morphism `f : R ⟶ S`, and an isomorphism `φ : a ≅ b` lifting `f`, `isoOfIsoLift f φ` is
+the isomorphism `Φ : R ≅ S` with `Φ.hom = f` induced from `φ` -/
 @[simps hom]
 def isoOfIsoLift  {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ≅ b) [p.IsHomLift f φ.hom] :
     R ≅ S where
@@ -236,7 +237,7 @@ protected instance inv {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [I
 
 /-- If `φ : a ⟶ b` is an isomorphism, and lifts `𝟙 S` for some `S : 𝒮`, then `φ⁻¹` also
 lifts `𝟙 S` -/
-instance lift_id_inv {S : 𝒮} {a b : 𝒳} (φ : a ⟶ b) [IsIso φ] [p.IsHomLift (𝟙 S) φ] :
+instance lift_id_inv (S : 𝒮) {a b : 𝒳} (φ : a ⟶ b) [IsIso φ] [p.IsHomLift (𝟙 S) φ] :
     p.IsHomLift (𝟙 S) (inv φ) :=
   (IsIso.inv_id (X:=S)) ▸ (IsHomLift.inv p _ φ)
 
