@@ -52,17 +52,7 @@ and Hilbert basis theorem.
 -/
 
 
-variable (R : Type*) [CommRing R]
-
-/-- Any commutative ring satisfies the `OrzechProperty`.
-    See also `Module.Finite.injective_of_surjective_of_submodule` and
-    `Module.Finite.injective_of_surjective_of_injective`. -/
-instance (priority := 100) commRing_orzechProperty : OrzechProperty R where
-  injective_of_surjective_of_submodule' {M} :=
-    letI := Module.addCommMonoidToAddCommGroup R (M := M)
-    Module.Finite.injective_of_surjective_of_submodule
-
-variable [Nontrivial R]
+variable (R : Type*) [CommRing R] [Nontrivial R]
 
 /-- Any nontrivial commutative ring satisfies the `StrongRankCondition`. -/
 instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R :=
