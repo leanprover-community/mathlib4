@@ -83,8 +83,6 @@ please remove the `in` or make this a `local instance` instead
 note: this linter can be disabled with `set_option linter.attributeInstanceIn false`
 -/
 #guard_msgs in
--- TODO: where's the docBlame linter defined? what do I need to import?
---attribute [nolint docBlame] foo in
 set_option linter.attributeInstanceIn true in
 attribute [simp, local simp, ext, scoped instance, -simp, -ext] foo in
 def bar := False
