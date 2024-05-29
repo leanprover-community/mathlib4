@@ -301,7 +301,13 @@ jobs:
         uses: liskin/gh-problem-matcher-wrap@v3
         with:
           linters: gcc
-          run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
+          run: |
+            echo "first step"
+            env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
+            echo "nolints updated"
+            ./scripts/update-style-exceptions.sh
+            echo "style exceptions updated"
+            git diff
 
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
       # Instead we run it in a cron job on master: see `lean4checker.yml`.
