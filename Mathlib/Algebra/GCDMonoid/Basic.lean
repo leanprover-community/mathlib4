@@ -557,8 +557,7 @@ instance [h : Nonempty (GCDMonoid α)] : DecompositionMonoid α where
       simp
     · obtain ⟨a, ha⟩ := gcd_dvd_left k m
       refine ⟨gcd k m, a, gcd_dvd_right _ _, ?_, ha⟩
-      rw [← mul_dvd_mul_iff_left h0]
-      rw [← ha]
+      rw [← mul_dvd_mul_iff_left h0, ← ha]
       exact dvd_gcd_mul_of_dvd_mul H
 
 theorem gcd_mul_dvd_mul_gcd [GCDMonoid α] (k m n : α) : gcd k (m * n) ∣ gcd k m * gcd k n := by
