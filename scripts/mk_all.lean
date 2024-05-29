@@ -4,65 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Damiano Testa
 -/
 import Cli.Basic
-import Lean.Util.Path
-import Lake.CLI.Main
+import Mathlib.Util.GetAllModules
 
 /-!
 # Script to create a file importing all files from a folder
 
 This file declares a command to gather all Lean files from a folder into a single Lean file.
 
-TODO:
-`getLeanLibs` contains a hard-coded choice of which dependencies should be built and which ones
-should not.  Could this be made more structural and robust, possibly with extra `Lake` support?
 -/
 
 open Lean System.FilePath
-
-/-- `getAll git ml` takes all `.lean` files in the dir `ml` (recursing into sub-dirs) and
-returns the `Array` of `String`s
-```
-#[file₁, ..., fileₙ]
-```
-where each `fileᵢ` is of the form `"Mathlib.Algebra.Algebra.Basic"`.
-
-The input `git` is a `Bool`ean flag:
-* `true` means that the command uses `git ls-files` to find the relevant files;
-* `false` means that the command recursively scans all dirs searching for `.lean` files.
--/
-def getAll (git : Bool) (ml : String) : IO (Array String) := do
-  let ml.lean := addExtension ⟨ml⟩ "lean"  -- for example, `Mathlib.lean`
-  let allModules : Array System.FilePath ← (do
-    if git then
-      let mlDir := ml.push pathSeparator   -- for example, `Mathlib/`
-      let allLean ← IO.Process.run { cmd := "git", args := #["ls-files", mlDir ++ "*.lean"] }
-      return (((allLean.dropRightWhile (· == '\n')).splitOn "\n").map (⟨·⟩)).toArray
-    else do
-      let all ← walkDir ml
-      return all.filter (·.extension == some "lean"))
-  let files := (allModules.erase ml.lean).qsort (·.toString < ·.toString)
-  let withImport ← files.mapM fun f => do
-    -- this check is helpful in case the `git` option is on and a local file has been removed
-    if ← pathExists f then
-      return (← moduleNameOfFileName f none).toString
-    else return ""
-  return withImport.filter (· != "")
-
-open Lake in
-/-- `getLeanLibs` returns the names (as an `Array` of `String`s) of all the libraries
-on which the current project depends.
-If the current project is `mathlib`, then it excludes the libraries `Cache` and `LongestPole` and
-it includes `Mathlib/Tactic`. -/
-def getLeanLibs : IO (Array String) := do
-  let (elanInstall?, leanInstall?, lakeInstall?) ← findInstall?
-  let config ← MonadError.runEIO <| mkLoadConfig { elanInstall?, leanInstall?, lakeInstall? }
-  let ws ← MonadError.runEIO (MainM.runLogIO (loadWorkspace config)).toEIO
-  let package := ws.root
-  let libs := (package.leanLibs.map (·.name)).map (·.toString)
-  return if package.name == `mathlib then
-    libs.erase "Cache" |>.erase "LongestPole" |>.push ("Mathlib".push pathSeparator ++ "Tactic")
-  else
-    libs
 
 open IO.FS IO.Process Name Cli in
 /-- Implementation of the `mk_all` command line program.
@@ -80,7 +31,7 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   let mut updates := 0
   for d in libs.reverse do  -- reverse to create `Mathlib/Tactic.lean` before `Mathlib.lean`
     let fileName := addExtension d "lean"
-    let allFiles ← getAll git d
+    let allFiles ← getAllModules git d
     let fileContent := ("\n".intercalate (allFiles.map ("import " ++ ·)).toList).push '\n'
     if !(← pathExists fileName) then
       IO.println s!"Creating '{fileName}'"
