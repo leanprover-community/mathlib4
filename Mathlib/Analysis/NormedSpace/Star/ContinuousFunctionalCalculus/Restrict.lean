@@ -163,7 +163,7 @@ namespace QuasispectrumRestricts
 local notation "σₙ" => quasispectrum
 open ContinuousMapZero Set
 
-/-- The homeomorphism `spectrum S a ≃ₜ spectrum R a` induced by `SpectrumRestricts a f`. -/
+/-- The homeomorphism `quasispectrum S a ≃ₜ quasispectrum R a` induced by `QuasispectrumRestricts a f`. -/
 def homeomorph {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A]
     [Algebra R S] [Module R A] [Module S A] [IsScalarTower R S A] [TopologicalSpace R]
     [TopologicalSpace S] [ContinuousSMul R S] [IsScalarTower S A A] [SMulCommClass S A A]
@@ -180,7 +180,7 @@ def homeomorph {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A]
 universe u v w
 
 open ContinuousMapZero
-/-- If the spectrum of an element restricts to a smaller scalar ring, then a non-unital continuous
+/-- If the quasispectrum of an element restricts to a smaller scalar ring, then a non-unital continuous
 functional calculus over the larger scalar ring descends to the smaller one. -/
 @[simps!]
 def nonUnitalStarAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
@@ -225,7 +225,7 @@ lemma nonUnitalStarAlgHom_id {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}
 variable [IsScalarTower R A A] [SMulCommClass R A A]
 
 /-- Given a `NonUnitalContinuousFunctionalCalculus S q`. If we form the predicate `p` for `a : A`
-characterized by: `q a` and the spectrum of `a` restricts to the scalar subring `R` via
+characterized by: `q a` and the quasispectrum of `a` restricts to the scalar subring `R` via
 `f : C(S, R)`, then we can get a restricted functional calculus
 `NonUnitalContinuousFunctionalCalculus R p`. -/
 protected theorem cfc (f : C(S, R)) (halg : UniformEmbedding (algebraMap R S))
