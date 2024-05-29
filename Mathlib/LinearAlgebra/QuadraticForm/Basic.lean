@@ -79,8 +79,6 @@ universe u v w
 variable {S T : Type*}
 variable {R : Type*} {M N : Type*}
 
-open BigOperators
-
 open LinearMap (BilinForm)
 
 section Polar

@@ -5,11 +5,17 @@ Authors: Paul Reichert
 -/
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.IsConnected
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Conj
 
 /-!
 # Colimits of connected index categories
 
-This file proves that a category `C` is connected if and only if `colim F` is a singleton,
+This file proves two characterizations of connected categories by means of colimits.
+
+## Characterization of connected categories by means of the unit-valued functor
+
+First, it is proved that a category `C` is connected if and only if `colim F` is a singleton,
 where `F : C ⥤ Type w` and `F.obj _ = PUnit` (for arbitrary `w`).
 
 See `isConnected_iff_colimit_constPUnitFunctor_iso_pUnit` for the proof of this characterization and
@@ -20,6 +26,11 @@ The `if` direction is also available directly in several formulations:
 For connected index categories `C`, `PUnit.{w}` is a colimit of the `constPUnitFunctor`, where `w`
 is arbitrary. See `instHasColimitConstPUnitFunctor`, `isColimitPUnitCocone` and
 `colimitConstPUnitIsoPUnit`.
+
+## Final functors preserve connectedness of categories (in both directions)
+
+`isConnected_iff_of_final` proves that the domain of a final functor is connected if and only if
+its codomain is connected.
 
 ## Tags
 
@@ -99,5 +110,16 @@ theorem isConnected_iff_isColimit_pUnitCocone :
   have : HasColimit (constPUnitFunctor.{w} C) := ⟨⟨colimitCocone⟩⟩
   simp only [isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{w} C]
   exact ⟨colimit.isoColimitCocone colimitCocone⟩
+
+universe v₂ u₂
+variable {C : Type u} {D: Type u₂} [Category.{v} C] [Category.{v₂} D]
+
+/-- The domain of a final functor is connected if and only if its codomain is connected. -/
+theorem isConnected_iff_of_final (F : C ⥤ D) [CategoryTheory.Functor.Final F] :
+    IsConnected C ↔ IsConnected D := by
+  rw [isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{max v u v₂ u₂} C,
+    isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{max v u v₂ u₂} D]
+  exact Equiv.nonempty_congr <| Iso.isoCongrLeft <|
+    CategoryTheory.Functor.Final.colimitIso F <| constPUnitFunctor.{max u v u₂ v₂} D
 
 end CategoryTheory.Limits.Types
