@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.Analysis.Complex.LocallyUniformLimit
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-!
 # Logarithmic Derivatives
@@ -101,3 +102,15 @@ theorem logDeriv_tendsto {ι : Type*} [Preorder ι] (f : ι  → ℂ → ℂ) (g
   apply Tendsto.div ((hF.deriv hf hs).tendsto_at x.2) (hF.tendsto_at x.2) hg
 
 section examples
+
+theorem logDeriv_sine : logDeriv (Complex.sin) = Complex.cot := by
+  rw [logDeriv, Complex.deriv_sin]
+  rfl
+
+theorem logDeriv_cos : logDeriv (Complex.cos) = -Complex.tan := by
+  simp_rw [logDeriv, Complex.deriv_cos']
+  ext x
+  simp only [Pi.div_apply]
+  exact neg_div x.cos x.sin
+
+end examples
