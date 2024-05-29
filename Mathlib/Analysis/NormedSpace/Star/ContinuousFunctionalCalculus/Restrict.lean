@@ -163,7 +163,8 @@ namespace QuasispectrumRestricts
 local notation "σₙ" => quasispectrum
 open ContinuousMapZero Set
 
-/-- The homeomorphism `quasispectrum S a ≃ₜ quasispectrum R a` induced by `QuasispectrumRestricts a f`. -/
+/-- The homeomorphism `quasispectrum S a ≃ₜ quasispectrum R a` induced by
+`QuasispectrumRestricts a f`. -/
 def homeomorph {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A]
     [Algebra R S] [Module R A] [Module S A] [IsScalarTower R S A] [TopologicalSpace R]
     [TopologicalSpace S] [ContinuousSMul R S] [IsScalarTower S A A] [SMulCommClass S A A]
@@ -180,8 +181,8 @@ def homeomorph {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A]
 universe u v w
 
 open ContinuousMapZero
-/-- If the quasispectrum of an element restricts to a smaller scalar ring, then a non-unital continuous
-functional calculus over the larger scalar ring descends to the smaller one. -/
+/-- If the quasispectrum of an element restricts to a smaller scalar ring, then a non-unital
+continuous functional calculus over the larger scalar ring descends to the smaller one. -/
 @[simps!]
 def nonUnitalStarAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
     [StarRing R] [TopologicalSpace R] [TopologicalSemiring R] [ContinuousStar R] [Field S]
