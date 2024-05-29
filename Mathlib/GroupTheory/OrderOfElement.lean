@@ -1299,9 +1299,10 @@ end Prod
 
 section MulEquiv
 
-/-- A multiplicative equivalence preserves orders of elements. -/
-@[to_additive "An additive  equivalence preserves orders of elements."]
-lemma MulEquiv.orderOf_eq {M M' : Type*} [Monoid M] [Monoid M'] (e : M ≃* M') (m : M) :
+/-- An injective homomorphism of monoids preserves orders of elements. -/
+@[to_additive "An injective homomorphism of additive monoids preserves orders of elements."]
+lemma MulHom.orderOf_eq_of_injective {M M' : Type*} [Monoid M] [Monoid M'] (e : M →* M')
+      (he : Function.Injective e) (m : M) :
     orderOf (e m) = orderOf m := by
   rcases (orderOf m).eq_zero_or_pos with h | h
   · rw [h]
@@ -1309,8 +1310,14 @@ lemma MulEquiv.orderOf_eq {M M' : Type*} [Monoid M] [Monoid M'] (e : M ≃* M') 
     intro n h₀
     have hn := h n h₀
     contrapose! hn
-    rwa [← map_pow, e.map_eq_one_iff] at hn
-  · simp_rw [orderOf_eq_iff h, ← map_pow, ne_eq, e.map_eq_one_iff]
+    rwa [← map_pow, map_eq_one_iff e he] at hn
+  · simp_rw [orderOf_eq_iff h, ← map_pow, ne_eq, map_eq_one_iff e he]
     exact (orderOf_eq_iff h).mp rfl
+
+/-- A multiplicative equivalence preserves orders of elements. -/
+@[to_additive "An additive  equivalence preserves orders of elements."]
+lemma MulEquiv.orderOf_eq {M M' : Type*} [Monoid M] [Monoid M'] (e : M ≃* M') (m : M) :
+    orderOf (e m) = orderOf m :=
+  MulHom.orderOf_eq_of_injective e e.injective m
 
 end MulEquiv
