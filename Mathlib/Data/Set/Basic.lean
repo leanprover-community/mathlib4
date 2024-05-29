@@ -2053,7 +2053,7 @@ theorem mem_diff_singleton_empty {t : Set (Set α)} : s ∈ t \ {∅} ↔ s ∈ 
 theorem subset_insert_iff {s t : Set α} {x : α} :
     s ⊆ insert x t ↔ s ⊆ t ∨ (x ∈ s ∧ s \ {x} ⊆ t) := by
   rw [← diff_singleton_subset_iff]
-  obtain (hx | hx) := em (x ∈ s)
+  by_cases hx : x ∈ s
   · rw [and_iff_right hx, or_iff_right_of_imp (fun h ↦ (diff_subset _ _).trans h)]
   rw [diff_singleton_eq_self hx, or_iff_left_of_imp And.right]
 
@@ -2078,22 +2078,22 @@ theorem pair_eq_pair_iff {x y z w : α} :
 #align set.pair_eq_pair_iff Set.pair_eq_pair_iff
 
 theorem pair_diff_left (hne : a ≠ b) : ({a, b} : Set α) \ {a} = {b} := by
-  rw [insert_diff_of_mem _ (show a ∈ {a} from rfl), diff_singleton_eq_self (by simpa)]
+  rw [insert_diff_of_mem _ (mem_singleton a), diff_singleton_eq_self (by simpa)]
 
 theorem pair_diff_right (hne : a ≠ b) : ({a, b} : Set α) \ {b} = {a} := by
   rw [pair_comm, pair_diff_left hne.symm]
 
-@[simp] theorem pair_subset_iff : {a,b} ⊆ s ↔ a ∈ s ∧ b ∈ s := by
+@[simp] theorem pair_subset_iff : {a, b} ⊆ s ↔ a ∈ s ∧ b ∈ s := by
   rw [insert_subset_iff, singleton_subset_iff]
 
-theorem pair_subset (ha : a ∈ s) (hb : b ∈ s) : {a,b} ⊆ s :=
+theorem pair_subset (ha : a ∈ s) (hb : b ∈ s) : {a, b} ⊆ s :=
   pair_subset_iff.2 ⟨ha,hb⟩
 
-theorem subset_pair_iff : s ⊆ {a,b} ↔ ∀ x ∈ s, x = a ∨ x = b := by
+theorem subset_pair_iff : s ⊆ {a, b} ↔ ∀ x ∈ s, x = a ∨ x = b := by
   simp [subset_def]
 
 theorem subset_pair_iff_eq {x y : α} {s : Set α} :
-    s ⊆ {x,y} ↔ s = ∅ ∨ s = {x} ∨ s = {y} ∨ s = {x,y} := by
+    s ⊆ {x, y} ↔ s = ∅ ∨ s = {x} ∨ s = {y} ∨ s = {x, y} := by
   obtain (rfl | hne) := eq_or_ne x y
   · simp only [mem_singleton_iff, insert_eq_of_mem, subset_singleton_iff_eq, or_self]
   rw [pair_comm, subset_insert_iff, subset_singleton_iff_eq, subset_singleton_iff_eq,
@@ -2105,7 +2105,7 @@ theorem subset_pair_iff_eq {x y : α} {s : Set α} :
     ← pair_subset_iff, ← subset_antisymm_iff, pair_comm, eq_comm]
 
 theorem Nonempty.subset_pair_iff_eq (hs : s.Nonempty) :
-    s ⊆ {a,b} ↔ s = {a} ∨ s = {b} ∨ s = {a,b} := by
+    s ⊆ {a, b} ↔ s = {a} ∨ s = {b} ∨ s = {a, b} := by
   rw [Set.subset_pair_iff_eq, or_iff_right]; exact hs.ne_empty
 
 /-! ### Symmetric difference -/
