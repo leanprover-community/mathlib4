@@ -5,6 +5,7 @@ Authors: Chris Birkbeck
 -/
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 
 /-!
 # Logarithmic Derivatives
@@ -115,3 +116,16 @@ theorem logDeriv_cos : logDeriv (Complex.cos) = -Complex.tan := by
   exact neg_div x.cos x.sin
 
 end examples
+
+section clog
+
+lemma deriv_clog_comp_eq_logDeriv (f : ℂ → ℂ) (x f' : ℂ) (h₁ : HasDerivAt f f' x)
+    (h₂ : f x ∈ Complex.slitPlane) : deriv (Complex.log ∘ f) x = logDeriv f x := by
+  have A := (HasDerivAt.clog h₁ h₂).deriv
+  have B := h₁.deriv
+  rw [← B] at A
+  simp only [logDeriv, Pi.div_apply, ← A]
+  rfl
+
+
+end clog
