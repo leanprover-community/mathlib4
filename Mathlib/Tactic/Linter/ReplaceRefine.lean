@@ -130,8 +130,8 @@ def getQuestions (cmd : Syntax) : Command.CommandElabM (Array (Syntax × List Sy
       Command.elabCommand repl
       if !(← get).messages.hasErrors then
         suma := suma.push ((Syntax.getHead? refine').getD default, holes)
-        logInfoAt ((Syntax.getHead? refine').getD default) m!"{refine}"
-        logInfoAt ((Syntax.getHead? refine').getD default) m!"{cand}"
+        --logInfoAt ((Syntax.getHead? refine').getD default) m!"{refine}"
+        --logInfoAt ((Syntax.getHead? refine').getD default) m!"{cand}"
         --let sr := (refine'.getRange?).getD default
         --logInfoAt ((Syntax.getHead? refine').getD default) m!"{(sr.start, sr.stop)}"
         break
@@ -143,16 +143,20 @@ def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.refine'To
 
 /-- Reports the positions of missing `?`. -/
 def ToRefineLinter : Linter where run stx := do
-  --let fm ← getFileMap
+  let fm ← getFileMap
   if getLinterHash (← getOptions) then
-    let _pos ← getQuestions stx
-    --for (r, hls) in pos do
-    --  let rPos := r.getPos?.getD default
-    --  let lc := fm.toPosition rPos
-    --  logInfoAt r m!"(1, {lc.1}, {lc.2})"
-    --  let _ ← hls.mapM fun hl =>
-    --    let hlPos := hl.getPos?.getD default
-    --    let hlc := fm.toPosition hlPos
-    --    (logInfoAt hl m!"(0, {hlc.1}, {hlc.2})")
+    let pos ← getQuestions stx
+    let mut fin := #[]
+    for (r, hls) in pos do
+      let rPos := r.getPos?.getD default
+      let lc := fm.toPosition rPos
+      fin := fin.push (1, lc.1, lc.2)
+      --logInfoAt r m!"(1, {lc.1}, {lc.2})"
+      for hl in hls do
+        let hlPos := hl.getPos?.getD default
+        let hlc := fm.toPosition hlPos
+        fin := fin.push (0, hlc.1, hlc.2)
+        --(logInfoAt hl m!"(0, {hlc.1}, {hlc.2})")
+    if !fin.isEmpty then logInfo m!"{fin}"
 
 initialize addLinter ToRefineLinter
