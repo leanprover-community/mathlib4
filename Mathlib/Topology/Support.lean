@@ -301,6 +301,22 @@ theorem continuous_extend_one [TopologicalSpace β] {U : Set α'} (hU : IsOpen U
       ← (hU.openEmbedding_subtype_val).continuousAt_iff, extend_comp Subtype.val_injective]
     exact cont.continuousAt
 
+@[to_additive]
+lemma zero_at_infty_of_hasCompactMulSupport [TopologicalSpace β] {f : α → β}
+    (h : HasCompactMulSupport f):
+    Filter.Tendsto f (Filter.cocompact α) (𝓝 1) := by
+  rw [_root_.tendsto_nhds]
+  intro s _ hone
+  rw [Filter.mem_cocompact]
+  use mulTSupport f
+  constructor
+  · exact h
+  · intro x hx
+    simp only [Set.mem_preimage]
+    rw [← Set.not_mem_compl_iff, compl_compl] at hx
+    rw [image_eq_one_of_nmem_mulTSupport hx]
+    exact hone
+
 end HasCompactMulSupport
 
 section Compact
