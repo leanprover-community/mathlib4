@@ -59,8 +59,7 @@ jobs:
         with:
           linters: gcc
           run: |
-            env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
-            mv nolints.json scripts/nolints.json
+            env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
             ./scripts/update-style-exceptions.sh
             git diff
 
