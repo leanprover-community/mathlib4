@@ -24,10 +24,10 @@ instance (priority := 1) fine : True ∧ True := by
 /-- docs -/
 @[simp]
 partial
-def oh : True ∧ True := by
+def oh : Nat × Nat := by
   refine' ⟨_, _⟩
-  trivial
-  trivial
+  exact 0
+  exact 0
 
 
 /-- inserts the string `plus` at position `n` in the string `s`.
