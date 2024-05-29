@@ -273,7 +273,7 @@ protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
   simp only [dist_eq_norm, LinearMap.lsum_apply, Pi.sub_apply, LinearMap.sum_apply,
     LinearMap.comp_apply, LinearMap.proj_apply, LinearMap.smulRight_apply, LinearMap.id_apply, ←
     Finset.sum_sub_distrib, ← smul_sub, ← sub_smul, NNReal.coe_sum, coe_nnnorm, Finset.sum_mul]
-  refine' norm_sum_le_of_le _ fun i _ => _
+  refine norm_sum_le_of_le _ fun i _ => ?_
   rw [norm_smul, mul_comm]
   gcongr
   exact norm_le_pi_norm (v - u) i
