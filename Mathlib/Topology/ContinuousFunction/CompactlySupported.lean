@@ -566,8 +566,7 @@ instance instStar : Star C_c(α, β) where
           ext x
           simp only [Function.mem_support, ne_eq, star_eq_zero]
         rw [support_star]
-        exact f.2
-    }
+        exact f.2 }
 
 @[simp]
 theorem coe_star (f : C_c(α, β)) : ⇑(star f) = star (⇑f) :=
