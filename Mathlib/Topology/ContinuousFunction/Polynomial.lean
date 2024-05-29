@@ -43,6 +43,10 @@ def toContinuousMap (p : R[X]) : C(R, R) :=
   ⟨fun x : R => p.eval x, by continuity⟩
 #align polynomial.to_continuous_map Polynomial.toContinuousMap
 
+open ContinuousMap in
+lemma toContinuousMap_X_eq_id : X.toContinuousMap = .id R := by
+  ext; simp
+
 /-- A polynomial as a continuous function,
 with domain restricted to some subset of the semiring of coefficients.
 
@@ -53,6 +57,12 @@ def toContinuousMapOn (p : R[X]) (X : Set R) : C(X, R) :=
   -- Porting note: Old proof was `⟨fun x : X => p.toContinuousMap x, by continuity⟩`
   ⟨fun x : X => p.toContinuousMap x, Continuous.comp (by continuity) (by continuity)⟩
 #align polynomial.to_continuous_map_on Polynomial.toContinuousMapOn
+
+open ContinuousMap in
+lemma toContinuousMapOn_X_eq_restrict_id (s : Set R) :
+    X.toContinuousMapOn s = restrict s (.id R) := by
+  ext; simp
+
 
 -- TODO some lemmas about when `toContinuousMapOn` is injective?
 end
