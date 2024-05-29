@@ -305,7 +305,7 @@ end HasCompactMulSupport
 
 section Compact
 
-variable {γ : Type*} [TopologicalSpace α] [CompactSpace α] [One γ] [TopologicalSpace γ]
+variable [CompactSpace α] [One γ] [TopologicalSpace γ]
 
 /-- In a compact space `α`, any continuous function has compact support. -/
 @[to_additive]
