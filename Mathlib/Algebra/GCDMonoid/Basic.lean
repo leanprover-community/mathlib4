@@ -553,15 +553,11 @@ instance [h : Nonempty (GCDMonoid α)] : DecompositionMonoid α where
     by_cases h0 : gcd k m = 0
     · rw [gcd_eq_zero_iff] at h0
       rcases h0 with ⟨rfl, rfl⟩
-      refine' ⟨0, n, dvd_refl 0, dvd_refl n, _⟩
+      refine ⟨0, n, dvd_refl 0, dvd_refl n, ?_⟩
       simp
     · obtain ⟨a, ha⟩ := gcd_dvd_left k m
-      refine' ⟨gcd k m, a, gcd_dvd_right _ _, _, ha⟩
-      suffices h : gcd k m * a ∣ gcd k m * n by
-        cases' h with b hb
-        use b
-        rw [mul_assoc] at hb
-        apply mul_left_cancel₀ h0 hb
+      refine ⟨gcd k m, a, gcd_dvd_right _ _, ?_, ha⟩
+      rw [← mul_dvd_mul_iff_left h0]
       rw [← ha]
       exact dvd_gcd_mul_of_dvd_mul H
 
