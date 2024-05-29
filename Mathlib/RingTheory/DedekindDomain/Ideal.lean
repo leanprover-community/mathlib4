@@ -1537,9 +1537,9 @@ theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multipl
   of `r` preserves `count` of the corresponding multisets. See
   `multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity` for the version
   stated in terms of multiplicity. -/
-theorem count_normalizedFactorsSpan_eq_count {r X : R} (hr : r ≠ 0) (hX : Prime X) :
-    Multiset.count (normalize X) (normalizedFactors r) =
-      Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r})) := by
+theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) :
+      Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r}))  =
+        Multiset.count (normalize X) (normalizedFactors r) := by
   have := multiplicity_eq_multiplicity_span (R := R) (a := X) (b := r)
   rw [multiplicity_eq_count_normalizedFactors (Prime.irreducible hX) hr,
     multiplicity_eq_count_normalizedFactors (Prime.irreducible ?_), normalize_apply,
@@ -1548,22 +1548,22 @@ theorem count_normalizedFactorsSpan_eq_count {r X : R} (hr : r ≠ 0) (hX : Prim
   · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, hr, not_false_eq_true]
   · simpa only [prime_span_singleton_iff]
 
-
-theorem count_normalizedFactorsSpan_eq_count' {r X : R} (hr : r ≠ 0) (hX₁ : normUnit X = 1)
-    (hX : Prime X) : Multiset.count X (normalizedFactors r) =
-      Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r})) := by
-  simpa [hX₁] using count_normalizedFactorsSpan_eq_count hr hX
+theorem count_span_normalizedFactors_eq_of_normUnit {r X : R} (hr : r ≠ 0) (hX₁ : normUnit X = 1)
+    (hX : Prime X) :
+      Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r})) =
+        Multiset.count X (normalizedFactors r) := by
+  simpa [hX₁] using count_span_normalizedFactors_eq hr hX
 
 /-- The number of times an ideal `I` occurs as normalized factor of another ideal `J` is stable
   when regarding at these ideals as associated elements of the monoid of ideals.-/
-theorem count_normalizedFactors_eq_associates_count [DecidableEq <| Associates (Ideal R)]
+theorem count_associates_factors_eq [DecidableEq <| Associates (Ideal R)]
     [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
     (I J : Ideal R) (hI : I ≠ 0) (hJ : J.IsPrime) (hJ₀ : J ≠ ⊥) :
-    Multiset.count J (normalizedFactors I) = (Associates.mk J).count (Associates.mk I).factors := by
+    (Associates.mk J).count (Associates.mk I).factors = Multiset.count J (normalizedFactors I) := by
   replace hI : Associates.mk I ≠ 0 := Associates.mk_ne_zero.mpr hI
   have hJ' : Irreducible (Associates.mk J) := by
     simpa only [Associates.irreducible_mk] using (Ideal.prime_of_isPrime hJ₀ hJ).irreducible
-  apply Ideal.count_normalizedFactors_eq (p := J) (x := I)
+  apply (Ideal.count_normalizedFactors_eq (p := J) (x := I) _ _).symm
   all_goals
     rw [← Ideal.dvd_iff_le, ← Associates.mk_dvd_mk, Associates.mk_pow]
     simp only [Associates.dvd_eq_le]
