@@ -7,7 +7,6 @@ import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus.Restrict
 import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
 import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Topology.ContinuousFunction.UniqueCFC
-import Mathlib.Topology.ContinuousFunction.StarOrdered
 
 /-! # Instances of the continuous functional calculus
 
