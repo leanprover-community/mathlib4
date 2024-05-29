@@ -383,6 +383,25 @@ theorem continuousAt_coe {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y}
   rw [ContinuousAt, nhds_coe_eq, tendsto_map'_iff, ContinuousAt]; rfl
 #align alexandroff.continuous_at_coe OnePoint.continuousAt_coe
 
+protected lemma _root_.OnePoint.forall {p : OnePoint X → Prop} :
+    (∀ (x : OnePoint X), p x) ↔ p ∞ ∧ ∀ (x : X), p (some x) :=
+  Option.forall
+
+lemma continuous_iff {X Y : Type*} [TopologicalSpace X]
+    [TopologicalSpace Y] (f : OnePoint X → Y) : Continuous f ↔
+    Tendsto (fun x : X ↦ f x) (coclosedCompact X) (𝓝 (f ∞)) ∧ Continuous (fun x : X ↦ f x) := by
+  simp_rw [continuous_iff_continuousAt, OnePoint.forall, continuousAt_coe, continuousAt_infty']
+  rfl
+
+lemma continuous_iff_of_discrete {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [DiscreteTopology X] (f : OnePoint X → Y) :
+    Continuous f ↔ Tendsto (fun x : X ↦ f x) cofinite (𝓝 (f ∞)) := by
+  simp [continuous_iff, cocompact_eq_cofinite, continuous_of_discreteTopology]
+
+lemma continuous_iff_of_nat {Y : Type*} [TopologicalSpace Y] (f : OnePoint ℕ → Y) :
+    Continuous f ↔ Tendsto (fun x : ℕ ↦ f x) atTop (𝓝 (f ∞)) := by
+  rw [continuous_iff_of_discrete, Nat.cofinite_eq_atTop]
+
 /-- If `X` is not a compact space, then the natural embedding `X → OnePoint X` has dense range.
 -/
 theorem denseRange_coe [NoncompactSpace X] : DenseRange ((↑) : X → OnePoint X) := by
@@ -491,6 +510,27 @@ theorem not_continuous_cofiniteTopology_of_symm [Infinite X] [DiscreteTopology X
   simpa [nhds_coe_eq, nhds_discrete, CofiniteTopology.nhds_eq] using
     (finite_singleton ((default : X) : OnePoint X)).infinite_compl
 #align alexandroff.not_continuous_cofinite_topology_of_symm OnePoint.not_continuous_cofiniteTopology_of_symm
+
+instance (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
+    TotallySeparatedSpace (OnePoint X) where
+  isTotallySeparated_univ x _ y _ hxy := by
+    cases x with
+    | none =>
+      cases y with
+      | none => tauto
+      | some val =>
+        refine ⟨{some val}ᶜ, {some val}, isOpen_compl_singleton, ?_,
+          (Option.some_ne_none val).symm, rfl, ?_, disjoint_compl_left⟩
+        · refine (OnePoint.isOpen_iff_of_not_mem ?_).mpr (isOpen_discrete _)
+          exact (Option.some_ne_none val).symm
+        · simp [Set.union_comm]
+    | some val =>
+      refine ⟨{some val}, {some val}ᶜ, ?_, isOpen_compl_singleton, rfl, ?_, ?_,
+        disjoint_compl_right⟩
+      · refine (OnePoint.isOpen_iff_of_not_mem ?_).mpr (isOpen_discrete _)
+        exact (Option.some_ne_none val).symm
+      · simpa using hxy.symm
+      · simp
 
 end OnePoint
 
