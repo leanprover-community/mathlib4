@@ -39,7 +39,7 @@ open Filter Metric
 /-- `C_c(α, β)` is the type of continuous functions `α → β` with compact support from a topological
 space to a topological space with a zero element.
 
-When possible, instead of parametrizing results over `(f : C_c(α, β))`,
+When possible, instead of parametrizing results over `f : C_c(α, β)`,
 you should parametrize over `(F : Type*) [CompactlySupportedContinuousMapClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `CompactlySupportedContinuousMapClass`. -/
