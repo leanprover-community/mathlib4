@@ -232,31 +232,32 @@ theorem compact_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) : CompactSpa
 
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (IsHermitian : Matrix n n 𝕜 → Prop) where
-exists_cfc_of_predicate := by
-    intro a ha
-    use (φ ha)
-    constructor
-    · have h0 : FiniteDimensional ℝ C(spectrum ℝ a, ℝ) := by
-        have : Finite (spectrum ℝ a) := by refine finite_spectrum ha
-        apply FiniteDimensional.of_injective (ContinuousMap.coeFnLinearMap ℝ (M := ℝ))
-        exact DFunLike.coe_injective
-      have hφ : LinearMap.ker ha.φ = ⊥ := by
+exists_cfc_of_predicate a ha := by
+    refine ⟨φ ha, ?closedEmbedding, ?mapId, ?map_spec, ?hermitian⟩
+    case closedEmbedding =>
+          have h0 : FiniteDimensional ℝ C(spectrum ℝ a, ℝ) := by
+            have : Finite (spectrum ℝ a) := by refine finite_spectrum ha
+            apply FiniteDimensional.of_injective (ContinuousMap.coeFnLinearMap ℝ (M := ℝ))
+            exact DFunLike.coe_injective
+          have hφ : LinearMap.ker ha.φ = ⊥ := by
               refine LinearMap.ker_eq_bot'.mpr ?_
               intro f hf
+              ext x
               sorry
-      have H := ha.compact_spectrum
-      apply LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ a, ℝ))
+          have H := ha.compact_spectrum
+          apply LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ a, ℝ))
                 (F := Matrix n n 𝕜) (f := ha.φ) hφ
-    · constructor
-      · conv_rhs => rw [ha.spectral_theorem]
-        congr!
-      · constructor
-        · intro f
+    case mapId => conv_rhs => rw [ha.spectral_theorem]
+                  congr!
+    case map_spec =>
+          intro f
           rw [← ContinuousMap.spectrum_eq_range (𝕜 := ℝ) (X := spectrum ℝ a) f]
           congr!
           apply Set.eq_of_subset_of_subset
           apply AlgHom.spectrum_apply_subset
-        · intro f
+          sorry
+    case hermitian =>
+          intro f
           sorry
 
 end IsHermitian
