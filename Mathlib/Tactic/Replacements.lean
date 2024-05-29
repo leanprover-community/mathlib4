@@ -83,7 +83,7 @@ def parseCorrections : TSyntax `term → Array (Nat × Nat × Nat)
         | `(($a:num, ($b:num, $c:num))) => (a.getNat, b.getNat, c.getNat)
         | _ => default
       corrections := corrections.push new
-    return corrections
+    return corrections.qsort fun (_, l1, c1) (_, l2, c2) => l1 > l2 || (l1 == l2 && c1 > c2)
   | _ => default
 end parsers
 
@@ -111,8 +111,9 @@ elab "info:" "././././" t1:term ":" num ":" num ":" t:term : command => do
   let file : System.FilePath := parseFile t1
   dbg_trace file
   let corrections : Array (Nat × Nat × Nat) := parseCorrections t
-  let newContent := "\n".intercalate (substitutions (← IO.FS.lines file) corrections).toList
-  IO.FS.writeFile file newContent
+  let newContent := "\n".intercalate
+    ((substitutions (← IO.FS.lines file) corrections).push "\n").toList
+  --IO.FS.writeFile file newContent
 
 end syntax_and_elabs
 --info: ././././Mathlib/Data/Finset/Fold.lean:183:0: [(1, (194, 8))]
