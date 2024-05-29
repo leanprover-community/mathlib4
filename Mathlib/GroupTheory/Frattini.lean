@@ -9,6 +9,8 @@ open Subgroup
 
 -- Provided by Eric Wieser at https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Group.20isomorphism.20gives.20an.20order.20isomorphism.20on.20subgroups/near/441230172
 -- We may actually prefer the version via `comap` below!
+-- See also `Submodule.orderIsoMapComap`, which is stated in a slightly more general form,
+-- and uses `map` for the forward direction and `comap` for the reverse direction.
 def MulEquiv.mapSubgroup (f : G ≃* H) : Subgroup G ≃o Subgroup H where
   toFun := Subgroup.map f
   invFun := Subgroup.map f.symm
