@@ -1557,7 +1557,7 @@ theorem count_normalizedFactorsSpan_eq_count' {r X : R} (hr : r ≠ 0) (hX₁ : 
 /-- The number of times an ideal `I` occurs as normalized factor of another ideal `J` is stable
   when regarding at these ideals as associated elements of the monoid of ideals.-/
 theorem count_normalizedFactors_eq_associates_count [DecidableEq <| Associates (Ideal R)]
-    [∀ (p : Associates <| Ideal R) , Decidable (Irreducible p)]
+    [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
     (I J : Ideal R) (hI : I ≠ 0) (hJ : J.IsPrime) (hJ₀ : J ≠ ⊥) :
     Multiset.count J (normalizedFactors I) = (Associates.mk J).count (Associates.mk I).factors := by
   replace hI : Associates.mk I ≠ 0 := Associates.mk_ne_zero.mpr hI
