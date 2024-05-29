@@ -298,12 +298,10 @@ theorem isSeparable_of_sigmaFinite [CountablyGenerated X] [SigmaFinite μ] :
         ⟨μ.toFiniteSpanningSetsIn.set, fun _ hx ↦ hx⟩⟩
     refine ⟨generateSetAlgebra 𝒜, countable_generateSetAlgebra count_𝒜,
       measureDense_of_generateFrom_setAglebra_of_sigmaFinite isSetAlgebra_generateSetAlgebra
-      {
-        set := μ.toFiniteSpanningSetsIn.set
+      { set := μ.toFiniteSpanningSetsIn.set
         set_mem := fun n ↦ self_subset_generateSetAlgebra (𝒜 := 𝒜) <| Or.inr ⟨n, rfl⟩
         finite := μ.toFiniteSpanningSetsIn.finite
-        spanning := μ.toFiniteSpanningSetsIn.spanning
-      }
+        spanning := μ.toFiniteSpanningSetsIn.spanning }
       (le_antisymm ?_ (generateFrom_le (fun s hs ↦ ?_)))⟩
     · rw [← hgen]
       exact generateFrom_mono <| le_trans self_subset_generateSetAlgebra <|
@@ -319,14 +317,12 @@ theorem isSeparable_of_sigmaFinite [CountablyGenerated X] [SigmaFinite μ] :
 
 /-- If a measurable space is countably generated and equipped with an s-finite measure, then the
 measure is separable. -/
-instance instIsSeparableCountablyGeneratedSFinite [CountablyGenerated X] [SFinite μ] :
-    IsSeparable μ where
+instance [CountablyGenerated X] [SFinite μ] : IsSeparable μ where
   exists_countable_measureDense := by
     have := isSeparable_of_sigmaFinite (μ := μ.restrict μ.sigmaFiniteSet)
     rcases exists_countable_measureDense (μ := μ.restrict μ.sigmaFiniteSet) with ⟨𝒜, count_𝒜, h𝒜⟩
     let ℬ := {s ∩ μ.sigmaFiniteSet | s ∈ 𝒜}
-    refine ⟨ℬ, count_𝒜.image (fun s ↦ s ∩ μ.sigmaFiniteSet), ?_⟩
-    constructor
+    refine ⟨ℬ, count_𝒜.image (fun s ↦ s ∩ μ.sigmaFiniteSet), ?_, ?_⟩
     · rintro - ⟨s, s_mem, rfl⟩
       exact (h𝒜.measurable s s_mem).inter (measurableSet_sigmaFiniteSet μ)
     · intro s ms hμs ε ε_pos
@@ -359,11 +355,10 @@ section SecondCountableLp
 
 /-! ### A sufficient condition for $L^p$ spaces to be second-countable -/
 
-/-- If the measure `μ` is separable (in particular if `X` is countably generated and `m` is
-`σ`-finite), if `E` is a second-countable `NormedAddCommGroup`, and if `1 ≤ p < +∞`,
+/-- If the measure `μ` is separable (in particular if `X` is countably generated and `μ` is
+`s`-finite), if `E` is a second-countable `NormedAddCommGroup`, and if `1 ≤ p < +∞`,
 then the associated `Lᵖ` space is second-countable. -/
-instance instSecondCountableLp [IsSeparable μ] [SecondCountableTopology E] :
-    SecondCountableTopology (Lp E p μ) := by
+instance [IsSeparable μ] [SecondCountableTopology E] : SecondCountableTopology (Lp E p μ) := by
   -- It is enough to show that the space is separable, i.e. admits a countable and dense susbet.
   refine @UniformSpace.secondCountable_of_separable _ _ _ ?_
   -- There exists a countable and measure-dense family, and we can keep only the sets with finite
@@ -399,8 +394,7 @@ instance instSecondCountableLp [IsSeparable μ] [SecondCountableTopology E] :
     -- to show that the closure of `D` contains constant indicators which are in `Lᵖ` (i. e. the
     -- set has finite measure), is closed by sum and closed.
     -- This is given by `Lp.induction`.
-    intro f
-    apply Lp.induction p_ne_top.elim (P := fun f ↦ f ∈ closure D)
+    refine Lp.induction p_ne_top.elim (P := fun f ↦ f ∈ closure D) ?_ ?_ isClosed_closure
     · intro a s ms hμs
       -- We want to approximate `a • 𝟙ₛ`.
       apply ne_of_lt at hμs
@@ -486,8 +480,6 @@ instance instSecondCountableLp [IsSeparable μ] [SecondCountableTopology E] :
             = ‖(Memℒp.toLp f hf) - bf + ((Memℒp.toLp g hg) - bg)‖ := by congr; abel
           _ ≤ ‖(Memℒp.toLp f hf) - bf‖ + ‖(Memℒp.toLp g hg) - bg‖ := norm_add_le ..
           _ < ε := by linarith [hbf, hbg]
-    · -- Obviously the closure of `D` is closed.
-      exact isClosed_closure
 
 end SecondCountableLp
 
