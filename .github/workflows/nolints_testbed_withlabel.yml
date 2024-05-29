@@ -1,4 +1,4 @@
-name: Add comment
+name: Try to update the style exceptions files
 on:
   pull_request:
     types:
@@ -14,31 +14,38 @@ jobs:
       pull-requests: write
     steps:
 
-      - name: Checkout master branch
-        uses: adomani/get_mathlib4_with_cache@v1
+      # The Hoskinson runners may not have jq installed, so do that now.
+      - name: 'Setup jq'
+        uses: dcarbone/install-jq-action@v1.0.1
 
-      - id: mathlib_stats
+      - name: install elan
         run: |
-          git checkout origin/adomani/periodic_reports_dev_custom_action scripts/mathlib_stats.sh scripts/count_decls.lean
-          printf $'summary<<EOF\n%s\nEOF' "$(./scripts/mathlib_stats.sh)" >> "$GITHUB_OUTPUT"
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
-          printf '%s\n' "$(./scripts/mathlib_stats.sh)"
+      - uses: actions/checkout@v4
+      - name: get cache
+        run: |
+          lake exe cache clean
+          lake exe cache get
 
-      - name: Add comment
-        run: gh pr comment "$NUMBER" --body "$BODY"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_REPO: ${{ github.repository }}
-          NUMBER: ${{ github.event.pull_request.number }}
-          BODY: ${{ steps.mathlib_stats.outputs.summary }}
-
-      - name: Post report on Zulip
-        uses: zulip/github-actions-zulip/send-message@v1
+      - name: build mathlib
+        id: build
+        uses: liskin/gh-problem-matcher-wrap@v3
         with:
-          api-key: ${{ secrets.ZULIP_API_KEY }}
-          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
-          organization-url: 'https://leanprover.zulipchat.com'
-          to: 'mathlib4'
-          type: 'stream'
-          topic: 'Mathlib weekly change report'
-          content: ${{ steps.mathlib_stats.outputs.summary }}
+          linters: gcc
+          run: |
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+
+      - name: lint mathlib and update style exceptions files
+        id: lint
+        uses: liskin/gh-problem-matcher-wrap@v3
+        with:
+          linters: gcc
+          run: |
+            env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
+            mv nolints.json scripts/nolints.json
+            ./scripts/update-style-exceptions.sh
+            git diff
