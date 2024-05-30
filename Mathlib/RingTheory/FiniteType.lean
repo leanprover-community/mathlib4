@@ -798,10 +798,9 @@ end Orzech
 section Vasconcelos
 
 /-- A theorem/proof by Vasconcelos, given a finite module `M` over a commutative ring, any
-surjective endomorphism of `M` is also injective. The original proof in the git history is based on
-<https://math.stackexchange.com/a/239419/31917> and
-<https://www.ams.org/journals/tran/1969-138-00/S0002-9947-1969-0238839-5/>;
-now it is a consequence of the fact that any commutative ring `R` satisfies the `OrzechProperty`;
+surjective endomorphism of `M` is also injective.
+It is a consequence of the fact `commRing_orzechProperty`
+that any commutative ring `R` satisfies the `OrzechProperty`;
 please use `OrzechProperty.injective_of_surjective_endomorphism` instead.
 This is similar to `IsNoetherian.injective_of_surjective_endomorphism` but only applies in the
 commutative case, but does not use a Noetherian hypothesis. -/

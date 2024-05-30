@@ -19,28 +19,14 @@ module is well defined.
 
 ## Main result
 
-* `commRing_orzechProperty R` : `R` has the `OrzechProperty`, that is, for any finitely generated
-  `R`-module `M`, any surjective homomorphism `f : N → M` from a submodule `N` of `M` to `M`
-  is injective.
 * `commRing_strongRankCondition R` : `R` has the `StrongRankCondition`.
 
-## References
+The `commRing_strongRankCondition` comes from `commRing_orzechProperty`, proved in
+`Mathlib/RingTheory/FiniteType.lean`, which states that any commutative ring satisfies
+the `OrzechProperty`, that is, for any finitely generated
+`R`-module `M`, any surjective homomorphism `f : N → M` from a submodule `N` of `M` to `M`
+is injective.
 
-The original proof was adapted from <https://mathoverflow.net/a/47846/7845>.
-The argument is the following: it is enough to prove that for all `n`, there is no injective linear
-map `(Fin (n + 1) → R) →ₗ[R] Fin n → R`. Given such an `f`, we get by extension an injective
-linear map `g : (Fin (n + 1) → R) →ₗ[R] Fin (n + 1) → R`. Injectivity implies that `P`, the
-minimal polynomial of `g`, has non-zero constant term `a₀ ≠ 0`. But evaluating `0 = P(g)` at the
-vector `(0,...,0,1)` gives `a₀`, contradiction.
-
-The new proof directly proves that any commutative ring satisfies the `OrzechProperty`,
-see `Module.Finite.injective_of_surjective_of_submodule` and
-`Module.Finite.injective_of_surjective_of_injective`, which is a corollary of
-Noetherian rings satisfy the `OrzechProperty`
-(`IsNoetherianRing.orzechProperty`,
-see also `IsNoetherian.injective_of_surjective_of_submodule` and
-`IsNoetherian.injective_of_surjective_of_injective`)
-and Hilbert basis theorem.
 
 ## References
 
