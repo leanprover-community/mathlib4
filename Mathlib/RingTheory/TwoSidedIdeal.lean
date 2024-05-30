@@ -114,7 +114,7 @@ instance : Module Rᵐᵒᵖ I where
   smul_zero x := by
     ext; show 0 * _ = 0; simp only [zero_mul]
   smul_add x y z := by
-    ext ; show (y.1 + z.1) * _ = (y * _) + (z * _); simp only [right_distrib]
+    ext; show (y.1 + z.1) * _ = (y * _) + (z * _); simp only [right_distrib]
   add_smul x y z := by
     ext; show _ * (_ + _) = _ * _ + _ * _; simp only [left_distrib]
   zero_smul x := by
