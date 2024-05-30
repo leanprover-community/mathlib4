@@ -31,7 +31,7 @@ sums in the convergence range.)
 * Extend to cover Dirichlet L-functions.
 * The formulae are correct for `s = 0` as well, but we do not prove this case, since this requires
   Fourier series which are only conditionally convergent, which is difficult to approach using the
-  methods in the library at the present time.
+  methods in the library at the present time (May 2024).
 -/
 
 open Complex Real Set
