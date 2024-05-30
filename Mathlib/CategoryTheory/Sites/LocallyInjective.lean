@@ -212,6 +212,9 @@ is equivalent to the injectivity of all maps `φ.val.app X`,
 see `isLocallyInjective_iff_injective`. -/
 abbrev IsLocallyInjective := Presheaf.IsLocallyInjective J φ.val
 
+lemma isLocallyInjective_sheafToPresheaf_map_iff :
+    Presheaf.IsLocallyInjective J ((sheafToPresheaf J D).map φ) ↔ IsLocallyInjective φ := by rfl
+
 instance isLocallyInjective_of_iso [IsIso φ] : IsLocallyInjective φ := by
   change Presheaf.IsLocallyInjective J ((sheafToPresheaf _ _).map φ)
   infer_instance
@@ -228,6 +231,21 @@ lemma isLocallyInjective_iff_injective :
     apply Presieve.isSeparated_of_isSheaf
     rw [← isSheaf_iff_isSheaf_of_type]
     exact ((sheafCompose J (forget D)).obj F₁).2)
+
+lemma mono_of_injective
+    (hφ : ∀ (X : Cᵒᵖ), Function.Injective (φ.val.app X)) : Mono φ where
+  right_cancellation := by
+    intro H f₁ f₂ h
+    ext Z x
+    have eq := congr_fun ((forget D).congr_map (congr_app (congr_arg Sheaf.Hom.val h) Z)) x
+    dsimp at eq
+    simp only [FunctorToTypes.map_comp_apply] at eq
+    exact hφ Z eq
+
+lemma mono_of_isLocallyInjective [IsLocallyInjective φ] : Mono φ := by
+  apply mono_of_injective
+  rw [← isLocallyInjective_iff_injective]
+  infer_instance
 
 instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
     IsLocallyInjective (GrothendieckTopology.imageSheafι f) := by
