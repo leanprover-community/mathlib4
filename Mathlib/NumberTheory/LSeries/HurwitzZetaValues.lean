@@ -44,7 +44,7 @@ variable {k : ℕ} {x : ℝ}
 of the Bernoulli polynomial. -/
 theorem cosZeta_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
     cosZeta x (2 * k) = (-1) ^ (k + 1) * (2 * π) ^ (2 * k) / 2 / (2 * k)! *
-      ((Polynomial.bernoulli (2 * k)).map (algebraMap ℚ ℂ)).eval ↑x := by
+      ((Polynomial.bernoulli (2 * k)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   rw [← (hasSum_nat_cosZeta x (?_ : 1 < re (2 * k))).tsum_eq]
   refine Eq.trans ?_ <| (congr_arg ofReal' (hasSum_one_div_nat_pow_mul_cos hk hx).tsum_eq).trans ?_
   · rw [ofReal_tsum]
@@ -95,7 +95,7 @@ theorem sinZeta_two_mul_nat_add_one (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
 /-- Reformulation of `cosZeta_two_mul_nat` using `Gammaℂ`. -/
 theorem cosZeta_two_mul_nat' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
     cosZeta x (2 * k) = (-1) ^ (k + 1) / (2 * k) / Gammaℂ (2 * k) *
-      ((Polynomial.bernoulli (2 * k)).map (algebraMap ℚ ℂ)).eval ↑x := by
+      ((Polynomial.bernoulli (2 * k)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   rw [cosZeta_two_mul_nat hk hx]
   congr 1
   have : (2 * k)! = (2 * k) * Complex.Gamma (2 * k) := by
@@ -108,7 +108,7 @@ theorem cosZeta_two_mul_nat' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
 /-- Reformulation of `sinZeta_two_mul_nat_add_one` using `Gammaℂ`. -/
 theorem sinZeta_two_mul_nat_add_one' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
     sinZeta x (2 * k + 1) = (-1) ^ (k + 1) / (2 * k + 1) / Gammaℂ (2 * k + 1) *
-      ((Polynomial.bernoulli (2 * k + 1)).map (algebraMap ℚ ℂ)).eval ↑x := by
+      ((Polynomial.bernoulli (2 * k + 1)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   rw [sinZeta_two_mul_nat_add_one hk hx]
   congr 1
   have : (2 * k + 1)! = (2 * k + 1) * Complex.Gamma (2 * k + 1) := by
@@ -121,7 +121,7 @@ theorem sinZeta_two_mul_nat_add_one' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1)
 
 theorem hurwitzZetaEven_one_sub_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
     hurwitzZetaEven x (1 - 2 * k) =
-      -1 / (2 * k) * ((Polynomial.bernoulli (2 * k)).map (algebraMap ℚ ℂ)).eval ↑x := by
+      -1 / (2 * k) * ((Polynomial.bernoulli (2 * k)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   have h1 (n : ℕ) : (2 * k : ℂ) ≠ -n := by
     rw [← Int.cast_ofNat, ← Int.cast_natCast, ← Int.cast_mul, ← Int.cast_natCast n, ← Int.cast_neg,
       Ne, Int.cast_inj, ← Ne]
@@ -143,7 +143,7 @@ theorem hurwitzZetaEven_one_sub_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : 
 
 theorem hurwitzZetaOdd_neg_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
     hurwitzZetaOdd x (-(2 * k)) =
-    -1 / (2 * k + 1) * ((Polynomial.bernoulli (2 * k + 1)).map (algebraMap ℚ ℂ)).eval ↑x := by
+    -1 / (2 * k + 1) * ((Polynomial.bernoulli (2 * k + 1)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   have h1 (n : ℕ) : (2 * k + 1 : ℂ) ≠ -n := by
     rw [← Int.cast_ofNat, ← Int.cast_natCast, ← Int.cast_mul, ← Int.cast_natCast n, ← Int.cast_neg,
       ← Int.cast_one, ← Int.cast_add, Ne, Int.cast_inj, ← Ne]
@@ -167,7 +167,7 @@ theorem hurwitzZetaOdd_neg_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 
 -- private because it is superseded by `hurwitzZeta_neg_nat` below
 private lemma hurwitzZeta_one_sub_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
     hurwitzZeta x (1 - 2 * k) =
-      -1 / (2 * k) * ((Polynomial.bernoulli (2 * k)).map (algebraMap ℚ ℂ)).eval ↑x := by
+      -1 / (2 * k) * ((Polynomial.bernoulli (2 * k)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   suffices hurwitzZetaOdd x (1 - 2 * k) = 0 by
     rw [hurwitzZeta, this, add_zero, hurwitzZetaEven_one_sub_two_mul_nat hk hx]
   obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hk
@@ -177,7 +177,7 @@ private lemma hurwitzZeta_one_sub_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 
 -- private because it is superseded by `hurwitzZeta_neg_nat` below
 private lemma hurwitzZeta_neg_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
     hurwitzZeta x (-(2 * k)) =
-      -1 / (2 * k + 1) * ((Polynomial.bernoulli (2 * k + 1)).map (algebraMap ℚ ℂ)).eval ↑x := by
+      -1 / (2 * k + 1) * ((Polynomial.bernoulli (2 * k + 1)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   suffices hurwitzZetaEven x (-(2 * k)) = 0 by
     rw [hurwitzZeta, this, zero_add, hurwitzZetaOdd_neg_two_mul_nat hk hx]
   obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hk
@@ -189,7 +189,7 @@ TODO: This formula is also correct for `k = 0`; but our current proof does not w
 case. -/
 theorem hurwitzZeta_neg_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
     hurwitzZeta x (-k) =
-    -1 / (k + 1) * ((Polynomial.bernoulli (k + 1)).map (algebraMap ℚ ℂ)).eval ↑x := by
+    -1 / (k + 1) * ((Polynomial.bernoulli (k + 1)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   rcases Nat.even_or_odd' k with ⟨n, (rfl | rfl)⟩
   · exact_mod_cast hurwitzZeta_neg_two_mul_nat (by omega : n ≠ 0) hx
   · exact_mod_cast hurwitzZeta_one_sub_two_mul_nat (by omega : n + 1 ≠ 0) hx
