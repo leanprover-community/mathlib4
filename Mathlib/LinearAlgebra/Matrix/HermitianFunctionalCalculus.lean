@@ -213,45 +213,12 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
     ext
     simp
 
---spectrum of a matrix is a finite set, so C(σ(A), ℝ) might be finite-dimensional.
---If this is the case, then Continuous.closedEmbedding might work...but I don't think
---so, since the continuous functions will then only be Locally Compact...
---But LinearMap.closedEmbedding_of_injective might work, in this case.
---Otherwise, the best might be closedEmbedding_of_continuous_injective_closed.
---equivFnOfDiscrete gives that the continuous functions are the same as all functions
---if the domain is discrete
---Pi.discreteTopology gets that the product of discrete spaces is discrete. Can this
---be used to get that the spectrum has the discrete topology?
---finite_of_compact_of_discrete : a compact discrete space is finite
---Is the spectrum of any Hermitian matrix necessarily Hausdorff? If so, then the
---topology on the spectrum must be discrete. Maybe this isn't needed, though,
---because the dimension can only be less if there are fewer open sets. Check this.
---finiteDimensional_finsupp
--- linearEquivFunOnFinite
--- StarAlgHom.injective_codRestrict
-
---variable [CompactSpace (spectrum ℝ A)]
---isCompact_iff_compactSpace
--- Matrix.IsHermitian.eigenvalues (map to the reals) Is map with finite domain finite?
-
---#synth ContinuousSMul ℝ C(spectrum ℝ A, ℝ)
---#synth CompactSpace (spectrum ℝ A)
-
 theorem eigenvalues_eq_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) :
     (spectrum ℝ a) = Set.range (ha.eigenvalues) := by
-    apply Set.eq_of_subset_of_subset
-    swap
-    rintro x ⟨y , rfl⟩
-    exact eigenvalue_mem_real ha y
-    intro x hx
-    simp only [Set.mem_range]
-    sorry
-
-
-
-    --[toLin, Module.End.hasEigenvalue_iff_mem_spectrum]
-    --apply spectrum.of_algebraMap_mem (R := ℝ) (S := 𝕜)
-
+      ext x
+      conv_lhs => rw [ha.spectral_theorem, spectrum.unitary_conjugate, ← spectrum.algebraMap_mem_iff 𝕜,
+      spectrum_diagonal, RCLike.algebraMap_eq_ofReal]
+      simp
 
 theorem finite_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) : (spectrum ℝ a).Finite := by
    have H := Set.finite_range (ha.eigenvalues)
