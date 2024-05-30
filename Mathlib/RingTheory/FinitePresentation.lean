@@ -301,7 +301,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
         rw [add_mul, mul_add, add_assoc, ← map_mul]
         apply AddSubmonoid.add_mem_sup
         · exact Set.mem_range_self _
-        · refine' add_mem (Ideal.mul_mem_left _ _ hq₂) (Ideal.mul_mem_right _ _ hq₁)
+        · refine add_mem (Ideal.mul_mem_left _ _ hq₂) (Ideal.mul_mem_right _ _ hq₁)
     obtain ⟨_, ⟨p, rfl⟩, q, hq, rfl⟩ := AddSubmonoid.mem_sup.mp this
     rw [map_add, aeval_map_algebraMap, ← aeval_unique, show MvPolynomial.aeval (f ∘ X) q = 0
       from leI hq, add_zero] at hx

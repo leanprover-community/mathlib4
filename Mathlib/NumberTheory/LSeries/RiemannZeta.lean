@@ -46,7 +46,8 @@ proved in `Mathlib.NumberTheory.LSeries.HurwitzZetaEven`.
 -/
 
 
-open MeasureTheory Set Filter Asymptotics TopologicalSpace Real Asymptotics Classical
+open MeasureTheory Set Filter Asymptotics TopologicalSpace Real Asymptotics
+  Classical HurwitzZeta
 
 open Complex hiding exp norm_eq_abs abs_of_nonneg abs_two continuous_exp
 
@@ -67,17 +68,17 @@ def completedRiemannZeta₀ (s : ℂ) : ℂ := completedHurwitzZetaEven₀ 0 s
 def completedRiemannZeta (s : ℂ) : ℂ := completedHurwitzZetaEven 0 s
 #align riemann_completed_zeta completedRiemannZeta
 
-lemma completedHurwitzZetaEven_zero (s : ℂ) :
+lemma HurwitzZeta.completedHurwitzZetaEven_zero (s : ℂ) :
     completedHurwitzZetaEven 0 s = completedRiemannZeta s := by rfl
 
-lemma completedHurwitzZetaEven₀_zero (s : ℂ) :
+lemma HurwitzZeta.completedHurwitzZetaEven₀_zero (s : ℂ) :
     completedHurwitzZetaEven₀ 0 s = completedRiemannZeta₀ s := by rfl
 
-lemma completedCosZeta_zero (s : ℂ) :
+lemma HurwitzZeta.completedCosZeta_zero (s : ℂ) :
     completedCosZeta 0 s = completedRiemannZeta s := by
   rw [completedRiemannZeta, completedHurwitzZetaEven, completedCosZeta, hurwitzEvenFEPair_zero_symm]
 
-lemma completedCosZeta₀_zero (s : ℂ) :
+lemma HurwitzZeta.completedCosZeta₀_zero (s : ℂ) :
     completedCosZeta₀ 0 s = completedRiemannZeta₀ s := by
   rw [completedRiemannZeta₀,
     completedHurwitzZetaEven₀, completedCosZeta₀, hurwitzEvenFEPair_zero_symm]
@@ -126,17 +127,17 @@ lemma completedRiemannZeta_residue_one :
 def riemannZeta := hurwitzZetaEven 0
 #align riemann_zeta riemannZeta
 
-lemma hurwitzZetaEven_zero : hurwitzZetaEven 0 = riemannZeta := rfl
+lemma HurwitzZeta.hurwitzZetaEven_zero : hurwitzZetaEven 0 = riemannZeta := rfl
 
-lemma cosZeta_zero : cosZeta 0 = riemannZeta := by
+lemma HurwitzZeta.cosZeta_zero : cosZeta 0 = riemannZeta := by
   simp_rw [cosZeta, riemannZeta, hurwitzZetaEven, if_true, completedHurwitzZetaEven_zero,
     completedCosZeta_zero]
 
-lemma hurwitzZeta_zero : hurwitzZeta 0 = riemannZeta := by
+lemma HurwitzZeta.hurwitzZeta_zero : hurwitzZeta 0 = riemannZeta := by
   ext1 s
   simpa [hurwitzZeta, hurwitzZetaEven_zero] using hurwitzZetaOdd_neg 0 s
 
-lemma expZeta_zero : expZeta 0 = riemannZeta := by
+lemma HurwitzZeta.expZeta_zero : expZeta 0 = riemannZeta := by
   ext1 s
   rw [expZeta, cosZeta_zero, add_right_eq_self, mul_eq_zero, eq_false_intro I_ne_zero, false_or,
     ← eq_neg_self_iff, ← sinZeta_neg, neg_zero]

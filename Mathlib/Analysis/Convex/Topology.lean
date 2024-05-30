@@ -266,7 +266,8 @@ protected theorem Convex.strictConvex' {s : Set E} (hs : Convex 𝕜 s)
   by_cases hy' : y ∈ interior s
   · exact hs.openSegment_self_interior_subset_interior hx hy'
   rcases h ⟨hx, hx'⟩ ⟨hy, hy'⟩ hne with ⟨c, hc⟩
-  refine' (openSegment_subset_union x y ⟨c, rfl⟩).trans (insert_subset_iff.2 ⟨hc, union_subset _ _⟩)
+  refine (openSegment_subset_union x y ⟨c, rfl⟩).trans
+    (insert_subset_iff.2 ⟨hc, union_subset ?_ ?_⟩)
   exacts [hs.openSegment_self_interior_subset_interior hx hc,
     hs.openSegment_interior_self_subset_interior hc hy]
 #align convex.strict_convex' Convex.strictConvex'
@@ -280,7 +281,7 @@ protected theorem Convex.strictConvex {s : Set E} (hs : Convex 𝕜 s)
   refine' hs.strictConvex' <| h.imp_on fun x hx y hy _ => _
   simp only [segment_eq_image_lineMap, ← self_diff_frontier]
   rintro ⟨_, ⟨⟨c, hc, rfl⟩, hcs⟩⟩
-  refine' ⟨c, hs.segment_subset hx.1 hy.1 _, hcs⟩
+  refine ⟨c, hs.segment_subset hx.1 hy.1 ?_, hcs⟩
   exact (segment_eq_image_lineMap 𝕜 x y).symm ▸ mem_image_of_mem _ hc
 #align convex.strict_convex Convex.strictConvex
 
@@ -356,7 +357,7 @@ theorem JoinedIn.of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
 /-- A nonempty convex set is path connected. -/
 protected theorem Convex.isPathConnected {s : Set E} (hconv : Convex ℝ s) (hne : s.Nonempty) :
     IsPathConnected s := by
-  refine' isPathConnected_iff.mpr ⟨hne, _⟩
+  refine isPathConnected_iff.mpr ⟨hne, ?_⟩
   intro x x_in y y_in
   exact JoinedIn.of_segment_subset ((segment_subset_iff ℝ).2 (hconv x_in y_in))
 #align convex.is_path_connected Convex.isPathConnected
