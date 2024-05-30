@@ -25,6 +25,10 @@ Without duplication of code, it shall be possible to show these cylinders
 are functorial when a term `data : FunctorialFactorizationData W₁ W₂` is available,
 the existence of which is asserted in the type-class `HasFunctorialFactorization W₁ W₂`.
 
+We also introduce the class `W₁.comp W₂` of morphisms of the form `i ≫ p` with `W₁ i`
+and `W₂ p` and show that `W₁.comp W₂ = ⊤` iff `HasFactorization W₁ W₂` holds (this
+is `MorphismProperty.comp_eq_top_iff`).
+
 -/
 
 namespace CategoryTheory
@@ -61,6 +65,20 @@ class HasFactorization : Prop where
 /-- A chosen term in `FactorizationData W₁ W₂` when `HasFactorization W₁ W₂` holds. -/
 noncomputable def factorizationData [HasFactorization W₁ W₂] : FactorizationData W₁ W₂ :=
   fun _ => Nonempty.some (HasFactorization.nonempty_mapFactorizationData _)
+
+/-- The class of morphisms that are of the form `i ≫ p` with `W₁ i` and `W₂ p`. -/
+def comp : MorphismProperty C := fun _ _ f => Nonempty (MapFactorizationData W₁ W₂ f)
+
+lemma comp_eq_top_iff : W₁.comp W₂ = ⊤ ↔ HasFactorization W₁ W₂ := by
+  constructor
+  · intro h
+    refine' ⟨fun f => _⟩
+    have : W₁.comp W₂ f := by simp only [h, top_apply]
+    exact ⟨this.some⟩
+  · intro
+    ext X Y f
+    simp only [top_apply, iff_true]
+    exact ⟨factorizationData W₁ W₂ f⟩
 
 /-- The data of a functorial factorization of any morphism in `C` as a morphism in `W₁`
 followed by a morphism in `W₂`. -/
