@@ -325,8 +325,8 @@ theorem aemeasurable_withDensity_ennreal_iff' {f : α → ℝ≥0}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} :
     AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
       AEMeasurable (fun x => (f x : ℝ≥0∞) * g x) μ := by
-  have t : ∃f', Measurable f' ∧ f =ᵐ[μ] f' := hf;
-  rcases t with ⟨f', ⟨hf'_m, hf'_ae⟩⟩
+  have t : ∃ f', Measurable f' ∧ f =ᵐ[μ] f' := hf
+  rcases t with ⟨f', hf'_m, hf'_ae⟩
   constructor
   · rintro ⟨g', g'meas, hg'⟩
     have A : MeasurableSet {x | f' x ≠ 0} := hf'_m (measurableSet_singleton _).compl
