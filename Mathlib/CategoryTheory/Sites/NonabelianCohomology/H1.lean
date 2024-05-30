@@ -85,7 +85,7 @@ namespace OneCochain
 attribute [simp] OneCochain.ev_precomp
 
 instance : One (OneCochain G U) where
-  one := { ev := fun _ _ _ _ _ => 1 }
+  one := { ev := fun _ _ _ _ _ ↦ 1 }
 
 @[simp]
 lemma one_ev (i j : I) {T : C} (a : T ⟶ U i) (b : T ⟶ U j) :
