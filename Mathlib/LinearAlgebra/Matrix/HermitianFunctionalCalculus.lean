@@ -59,8 +59,7 @@ lemma spectrum.unitary_conjugate {a : A} {u : unitary A} :
 @[simp]
 lemma spectrum.unitary_conjugate' {a : A} {u : unitary A} :
    spectrum R (star u * a * u) = spectrum R a := by
-       convert spectrum.unitary_conjugate (u := star u)
-       rw [star_star]
+      simpa using spectrum.unitary_conjugate (u := star u)
 
 end UnitaryConjugate
 
@@ -272,14 +271,22 @@ exists_cfc_of_predicate a ha := by
     case map_spec =>
           intro f
           rw [← ContinuousMap.spectrum_eq_range (𝕜 := ℝ) (X := spectrum ℝ a) f]
-          --have := spectrum.conjugate_units ℝ (a := diagonal (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩))) (u := unitary.toUnits (eigenvectorUnitary ha))
-          --apply Set.eq_of_subset_of_subset
+          convert spectrum.unitary_conjugate
+          have := spectrum_diagonal (R := 𝕜) (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩))
+          apply Set.eq_of_subset_of_subset
+          intro t ht
+          apply spectrum.of_algebraMap_mem (R := ℝ) (S := 𝕜)
+          rw [this]
+          simp only [ContinuousMap.spectrum_eq_range] at ht
+          simp only [Set.mem_range, Function.comp_apply]
+          unfold Set.range at ht
+          obtain ⟨t, h, s⟩ := ht
+          use t
+
+
+
+
           --apply AlgHom.spectrum_apply_subset
-          have definition : spectrum ℝ (ha.φ f) = spectrum ℝ (((eigenvectorUnitary ha : Matrix n n 𝕜) *
-    diagonal (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩))
-    * star (eigenvectorUnitary ha : Matrix n n 𝕜))) := by sorry
-          rw [definition]
-          --simp only [unitary.toUnits ,spectrum.conjugate_units]
           sorry
     case hermitian =>
           intro f
