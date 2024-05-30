@@ -739,8 +739,8 @@ theorem basis_iff' :
     and_congr_left_iff, and_congr_right_iff, @Imp.swap (_ ⊆ X)]
 
 theorem basis_iff (hX : X ⊆ M.E := by aesop_mat) :
-    M.Basis I X ↔ (M.Indep I ∧ I ⊆ X ∧ ∀ J, M.Indep J → I ⊆ J → J ⊆ X → I = J) :=
-by rw [basis_iff', and_iff_left hX]
+    M.Basis I X ↔ (M.Indep I ∧ I ⊆ X ∧ ∀ J, M.Indep J → I ⊆ J → J ⊆ X → I = J) := by
+  rw [basis_iff', and_iff_left hX]
 
 theorem basis'_iff_basis_inter_ground : M.Basis' I X ↔ M.Basis I (X ∩ M.E) := by
   rw [Basis', Basis, and_iff_left (inter_subset_right _ _)]
