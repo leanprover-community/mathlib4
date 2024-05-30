@@ -122,7 +122,7 @@ lemma bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
   | 0 => rfl
   | succ n => by
     simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
-    refine' Eq.trans _ (congr_arg succ (bodd_add_div2 n))
+    refine Eq.trans ?_ (congr_arg succ (bodd_add_div2 n))
     cases bodd n
     · simp
     · simp; omega

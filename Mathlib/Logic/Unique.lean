@@ -258,7 +258,7 @@ end Pi
 attribute [local simp] eq_iff_true_of_subsingleton in
 theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bijective f := by
   rw [Function.bijective_iff_has_inverse]
-  refine' ⟨default, _, _⟩ <;> intro x <;> simp
+  refine ⟨default, ?_, ?_⟩ <;> intro x <;> simp
 #align unique.bijective Unique.bijective
 
 namespace Option

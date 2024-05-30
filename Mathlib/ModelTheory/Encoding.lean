@@ -216,7 +216,7 @@ def listDecode : ∀ l : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.R
     have : SizeOf.sizeOf
         (↑(listDecode l).2 : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.Relations n) ℕ))) <
         1 + (1 + 1) + SizeOf.sizeOf l := by
-      refine' lt_of_le_of_lt (listDecode l).2.2 (max_lt _ (Nat.lt_add_of_pos_left (by decide)))
+      refine lt_of_le_of_lt (listDecode l).2.2 (max_lt ?_ (Nat.lt_add_of_pos_left (by decide)))
       rw [add_assoc, lt_add_iff_pos_right, add_pos_iff]
       exact Or.inl zero_lt_two
     ⟨sigmaImp (listDecode l).1 (listDecode (listDecode l).2).1,

@@ -225,7 +225,7 @@ lemma map_apply : Relation.Map r f g c d ↔ ∃ a b, r a b ∧ f a = c ∧ g b 
     Relation.Map (Relation.Map r f₁ g₁) f₂ g₂ = Relation.Map r (f₂ ∘ f₁) (g₂ ∘ g₁) := by
   ext a b
   simp_rw [Relation.Map, Function.comp_apply, ← exists_and_right, @exists_comm γ, @exists_comm δ]
-  refine' exists₂_congr fun a b ↦ ⟨_, fun h ↦ ⟨_, _, ⟨⟨h.1, rfl, rfl⟩, h.2⟩⟩⟩
+  refine exists₂_congr fun a b ↦ ⟨?_, fun h ↦ ⟨_, _, ⟨⟨h.1, rfl, rfl⟩, h.2⟩⟩⟩
   rintro ⟨_, _, ⟨hab, rfl, rfl⟩, h⟩
   exact ⟨hab, h⟩
 #align relation.map_map Relation.map_map
@@ -557,7 +557,7 @@ theorem reflTransGen_iff_eq (h : ∀ b, ¬r a b) : ReflTransGen r a b ↔ b = a 
 #align relation.refl_trans_gen_iff_eq Relation.reflTransGen_iff_eq
 
 theorem reflTransGen_iff_eq_or_transGen : ReflTransGen r a b ↔ b = a ∨ TransGen r a b := by
-  refine' ⟨fun h ↦ _, fun h ↦ _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · cases' h with c _ hac hcb
     · exact Or.inl rfl
     · exact Or.inr (TransGen.tail' hac hcb)

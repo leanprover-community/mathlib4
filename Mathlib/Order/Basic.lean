@@ -1306,7 +1306,7 @@ theorem mk_lt_mk_iff_right : (a, b₁) < (a, b₂) ↔ b₁ < b₂ :=
 #align prod.mk_lt_mk_iff_right Prod.mk_lt_mk_iff_right
 
 theorem lt_iff : x < y ↔ x.1 < y.1 ∧ x.2 ≤ y.2 ∨ x.1 ≤ y.1 ∧ x.2 < y.2 := by
-  refine' ⟨fun h ↦ _, _⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · by_cases h₁ : y.1 ≤ x.1
     · exact Or.inr ⟨h.1.1, LE.le.lt_of_not_le h.1.2 fun h₂ ↦ h.2 ⟨h₁, h₂⟩⟩
     · exact Or.inl ⟨LE.le.lt_of_not_le h.1.1 h₁, h.1.2⟩

@@ -43,7 +43,7 @@ theorem seq_le_seq (hf : Monotone f) (n : ℕ) (h₀ : x 0 ≤ y 0) (hx : ∀ k 
     (hy : ∀ k < n, f (y k) ≤ y (k + 1)) : x n ≤ y n := by
   induction' n with n ihn
   · exact h₀
-  · refine' (hx _ n.lt_succ_self).trans ((hf <| ihn _ _).trans (hy _ n.lt_succ_self))
+  · refine (hx _ n.lt_succ_self).trans ((hf <| ihn ?_ ?_).trans (hy _ n.lt_succ_self))
     · exact fun k hk => hx _ (hk.trans n.lt_succ_self)
     · exact fun k hk => hy _ (hk.trans n.lt_succ_self)
 #align monotone.seq_le_seq Monotone.seq_le_seq
@@ -56,7 +56,7 @@ theorem seq_pos_lt_seq_of_lt_of_le (hf : Monotone f) {n : ℕ} (hn : 0 < n) (h�
   cases n with
   | zero => exact h₀
   | succ n =>
-    refine' (ihn n.zero_lt_succ (fun k hk => hx _ _) fun k hk => hy _ _).le <;>
+    refine (ihn n.zero_lt_succ (fun k hk => hx _ ?_) fun k hk => hy _ ?_).le <;>
     exact hk.trans n.succ.lt_succ_self
 #align monotone.seq_pos_lt_seq_of_lt_of_le Monotone.seq_pos_lt_seq_of_lt_of_le
 
