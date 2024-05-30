@@ -319,7 +319,7 @@ theorem ae_withDensity_iff_ae_restrict' {p : α → Prop} {f : α → ℝ≥0∞
 
 theorem ae_withDensity_iff_ae_restrict {p : α → Prop} {f : α → ℝ≥0∞} (hf : Measurable f) :
     (∀ᵐ x ∂μ.withDensity f, p x) ↔ ∀ᵐ x ∂μ.restrict { x | f x ≠ 0 }, p x :=
-  ae_withDensity_iff_ae_restrict' <| Measurable.aemeasurable hf
+  ae_withDensity_iff_ae_restrict' <| hf.aemeasurable
 #align measure_theory.ae_with_density_iff_ae_restrict MeasureTheory.ae_withDensity_iff_ae_restrict
 
 theorem aemeasurable_withDensity_ennreal_iff' {f : α → ℝ≥0}
