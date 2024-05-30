@@ -393,7 +393,7 @@ theorem continuousAt_coe {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y}
 
 lemma continuous_iff {Y : Type*} [TopologicalSpace Y] (f : OnePoint X → Y) : Continuous f ↔
     Tendsto (fun x : X ↦ f x) (coclosedCompact X) (𝓝 (f ∞)) ∧ Continuous (fun x : X ↦ f x) := by
-  simp_rw [continuous_iff_continuousAt, OnePoint.forall, continuousAt_coe, continuousAt_infty']
+  simp only [continuous_iff_continuousAt, OnePoint.forall, continuousAt_coe, continuousAt_infty']
   rfl
 
 lemma continuous_iff_of_discrete {Y : Type*} [TopologicalSpace Y]
