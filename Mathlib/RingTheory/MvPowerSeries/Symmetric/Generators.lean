@@ -224,8 +224,7 @@ section SymmOne
 lemma sum_eq_single_iff_single {s : σ →₀ ℕ} {i : σ} (hi : s i ≠ 0) (hs : ∀ x, s x ≥ 0) :
     s.sum (fun _ ↦ id) ≤ (s i) ↔ s = Finsupp.single i (s i) := by
   constructor
-  · intro h
-    ext j
+  · intro h; ext j
     rw [Finsupp.single_apply]
     split_ifs with hij
     · rw [hij]
@@ -243,19 +242,13 @@ lemma sum_eq_single_iff_single {s : σ →₀ ℕ} {i : σ} (hi : s i ≠ 0) (hs
         rw [(Finset.sum_pair hij).symm]
         exact Finset.sum_le_sum_of_ne_zero fun x a _ ↦ subset a
       linarith
-  · intro h
-    rw [h]
-    simp
+  · intro h; rw [h]; simp
 
-lemma sum_one_iff_single (s : σ →₀ ℕ) : (Finsupp.sum s fun _ ↦ id) = 1 ↔
-    ∃ i : σ, s = Finsupp.single i 1 := by
+lemma sum_one_iff_single (s : σ →₀ ℕ) : s.sum (fun _ ↦ id) = 1 ↔ ∃ i, s = Finsupp.single i 1 := by
   simp_rw [Finsupp.sum, id_eq]
   constructor
   · intro h
-    have : ∃ i, s i ≠ 0 := by
-      by_contra! h'
-      simp [h'] at h
-    obtain ⟨i, hi⟩ := this
+    obtain ⟨i, hi⟩ : ∃ i, s i ≠ 0 := by by_contra! h'; simp [h'] at h
     use i
     have hs : s i = 1 := by
       apply Nat.le_antisymm
@@ -276,26 +269,22 @@ lemma esymm_one_eq_hsymm_one : esymm σ R 1 = hsymm σ R 1 := by
   · exfalso; apply he; simp only [hs, true_and]
     by_contra! h
     obtain ⟨i, hi⟩ := h
-    simp_rw [Finsupp.sum, id_eq] at hs
-    have : s i ≤ ∑ i in s.support, s i := Finset.single_le_sum (fun i _ ↦ Nat.zero_le (s i))
-       (Finsupp.mem_support_iff.mpr ?_)
-    · rw [hs] at this
-      exact lt_irrefl _ (lt_of_le_of_lt this hi)
-    · linarith
+    apply not_le_of_gt hi
+    rw [← hs]
+    apply Finset.single_le_sum (fun x _ ↦ Nat.zero_le (s x)) (Finsupp.mem_support_iff.mpr ?_)
+    linarith
   · rfl
 
 lemma hsymm_one_eq_psum_one : hsymm σ R 1 = psum σ R 1 := by
   ext s
   simp only [coeff_hsymm, coeff_psum]
-  split_ifs with hh hp hs
+  split_ifs with hh hp' hp
   · rfl
-  · exfalso; apply hp;
-    simp only [hh, true_and]
-    rw [sum_one_iff_single] at hh
-    obtain ⟨i, hi⟩ := hh
-    rw [Finsupp.card_support_eq_one]
+  · exfalso; apply hp'
+    simp only [hh, true_and, Finsupp.card_support_eq_one]
+    obtain ⟨i, hi⟩ := ((sum_one_iff_single _ s).mp hh)
     use i; simp [hi]
-  · exfalso; apply hh; simp only [hs, true_and]
+  · exfalso; apply hh; simp only [hp, true_and]
   · rfl
 
 lemma esymm_one_eq_psum_one : esymm σ R 1 = psum σ R 1 := by
