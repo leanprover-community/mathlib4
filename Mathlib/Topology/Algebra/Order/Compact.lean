@@ -82,7 +82,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   rcases le_or_lt a b with hab | hab
   swap
   · simp [hab]
-  refine' isCompact_iff_ultrafilter_le_nhds.2 fun f hf => _
+  refine isCompact_iff_ultrafilter_le_nhds.2 fun f hf => ?_
   contrapose! hf
   rw [le_principal_iff]
   have hpt : ∀ x ∈ Icc a b, {x} ∉ f := fun x hx hxf =>
@@ -106,7 +106,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
       with ⟨x, hxc, hxU⟩
     rcases ((hsc.frequently_mem ⟨a, ha⟩).and_eventually
       (Ioc_mem_nhdsWithin_Iic ⟨hxc, le_rfl⟩)).exists with ⟨y, ⟨_hyab, hyf⟩, hy⟩
-    refine' mem_of_superset (f.diff_mem_iff.2 ⟨hcf, hyf⟩) (Subset.trans _ hxU)
+    refine mem_of_superset (f.diff_mem_iff.2 ⟨hcf, hyf⟩) (Subset.trans ?_ hxU)
     rw [diff_subset_iff]
     exact Subset.trans Icc_subset_Icc_union_Ioc <| union_subset_union Subset.rfl <|
       Ioc_subset_Ioc_left hy.1.le
@@ -117,10 +117,10 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   rcases (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
       (mem_nhdsWithin_of_mem_nhds hU) with
     ⟨y, hxy, hyU⟩
-  refine' mem_of_superset _ hyU; clear! U
+  refine mem_of_superset ?_ hyU; clear! U
   have hy : y ∈ Icc a b := ⟨hc.1.trans hxy.1.le, hxy.2⟩
   by_cases hay : Icc a y ∈ f
-  · refine' mem_of_superset (f.diff_mem_iff.2 ⟨f.diff_mem_iff.2 ⟨hay, hcs.2⟩, hpt y hy⟩) _
+  · refine mem_of_superset (f.diff_mem_iff.2 ⟨f.diff_mem_iff.2 ⟨hay, hcs.2⟩, hpt y hy⟩) ?_
     rw [diff_subset_iff, union_comm, Ico_union_right hxy.1.le, diff_subset_iff]
     exact Icc_subset_Icc_union_Icc
   · exact ((hsc.1 ⟨hy, hay⟩).not_lt hxy.1).elim

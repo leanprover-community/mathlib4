@@ -146,7 +146,7 @@ theorem smallSets_inf (l₁ l₂ : Filter α) : (l₁ ⊓ l₂).smallSets = l₁
 #align filter.small_sets_inf Filter.smallSets_inf
 
 instance smallSets_neBot (l : Filter α) : NeBot l.smallSets := by
-  refine' (lift'_neBot_iff _).2 fun _ _ => powerset_nonempty
+  refine (lift'_neBot_iff ?_).2 fun _ _ => powerset_nonempty
   exact monotone_powerset
 #align filter.small_sets_ne_bot Filter.smallSets_neBot
 

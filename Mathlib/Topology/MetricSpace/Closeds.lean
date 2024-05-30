@@ -104,7 +104,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
     We will have to show that a point in `s n` is close to a point in `t0`, and a point
     in `t0` is close to a point in `s n`. The completeness then follows from a
     standard criterion. -/
-  refine' complete_of_convergent_controlled_sequences B B_pos fun s hs => _
+  refine complete_of_convergent_controlled_sequences B B_pos fun s hs => ?_
   let t0 := ⋂ n, closure (⋃ m ≥ n, s m : Set α)
   let t : Closeds α := ⟨t0, isClosed_iInter fun _ => isClosed_closure⟩
   use t
@@ -178,7 +178,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
   have main : ∀ n : ℕ, edist (s n) t ≤ 2 * B n := fun n =>
     hausdorffEdist_le_of_mem_edist (I1 n) (I2 n)
   -- from this, the convergence of `s n` to `t0` follows.
-  refine' tendsto_atTop.2 fun ε εpos => _
+  refine tendsto_atTop.2 fun ε εpos => ?_
   have : Tendsto (fun n => 2 * B n) atTop (𝓝 (2 * 0)) :=
     ENNReal.Tendsto.const_mul (ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one <|
       by simp [ENNReal.one_lt_two]) (Or.inr <| by simp)
@@ -195,8 +195,8 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
         i.e., for all ε>0, there is a finite set which is ε-dense.
         start from a set `s` which is ε-dense in α. Then the subsets of `s`
         are finitely many, and ε-dense for the Hausdorff distance. -/
-    refine'
-      isCompact_of_totallyBounded_isClosed (EMetric.totallyBounded_iff.2 fun ε εpos => _)
+    refine
+      isCompact_of_totallyBounded_isClosed (EMetric.totallyBounded_iff.2 fun ε εpos => ?_)
         isClosed_univ
     rcases exists_between εpos with ⟨δ, δpos, δlt⟩
     obtain ⟨s : Set α, fs : s.Finite, hs : univ ⊆ ⋃ y ∈ s, ball y δ⟩ :=
@@ -207,7 +207,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
       intro u
       let v := { x : α | x ∈ s ∧ ∃ y ∈ u, edist x y < δ }
       exists v, (fun x hx => hx.1 : v ⊆ s)
-      refine' hausdorffEdist_le_of_mem_edist _ _
+      refine hausdorffEdist_le_of_mem_edist ?_ ?_
       · intro x hx
         have : x ∈ ⋃ y ∈ s, ball y δ := hs (by simp)
         rcases mem_iUnion₂.1 this with ⟨y, ys, dy⟩
@@ -217,7 +217,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
         exact ⟨y, yu, le_of_lt hy⟩
     -- introduce the set F of all subsets of `s` (seen as members of `Closeds α`).
     let F := { f : Closeds α | (f : Set α) ⊆ s }
-    refine' ⟨F, _, fun u _ => _⟩
+    refine ⟨F, ?_, fun u _ => ?_⟩
     -- `F` is finite
     · apply @Finite.of_finite_image _ _ F _
       · apply fs.finite_subsets.subset fun b => _
@@ -322,10 +322,10 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
     rcases exists_countable_dense α with ⟨s, cs, s_dense⟩
     let v0 := { t : Set α | t.Finite ∧ t ⊆ s }
     let v : Set (NonemptyCompacts α) := { t : NonemptyCompacts α | (t : Set α) ∈ v0 }
-    refine' ⟨⟨v, _, _⟩⟩
+    refine ⟨⟨v, ?_, ?_⟩⟩
     · have : v0.Countable := countable_setOf_finite_subset cs
       exact this.preimage SetLike.coe_injective
-    · refine' fun t => mem_closure_iff.2 fun ε εpos => _
+    · refine fun t => mem_closure_iff.2 fun ε εpos => ?_
       -- t is a compact nonempty set, that we have to approximate uniformly by a a set in `v`.
       rcases exists_between εpos with ⟨δ, δpos, δlt⟩
       have δpos' : 0 < δ / 2 := ENNReal.half_pos δpos.ne'

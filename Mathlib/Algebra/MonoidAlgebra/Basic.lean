@@ -274,6 +274,9 @@ theorem natCast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k)
   rfl
 #align monoid_algebra.nat_cast_def MonoidAlgebra.natCast_def
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_def := natCast_def
+
 end MulOneClass
 
 /-! #### Semiring structure -/
@@ -351,6 +354,9 @@ theorem intCast_def [Ring k] [MulOneClass G] (z : ℤ) :
     (z : MonoidAlgebra k G) = single (1 : G) (z : k) :=
   rfl
 #align monoid_algebra.int_cast_def MonoidAlgebra.intCast_def
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_def := intCast_def
 
 instance ring [Ring k] [Monoid G] : Ring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonAssocRing, MonoidAlgebra.semiring with }
@@ -1425,6 +1431,9 @@ theorem natCast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
   rfl
 #align add_monoid_algebra.nat_cast_def AddMonoidAlgebra.natCast_def
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_def := natCast_def
+
 end MulOneClass
 
 /-! #### Semiring structure -/
@@ -1503,6 +1512,9 @@ theorem intCast_def [Ring k] [AddZeroClass G] (z : ℤ) :
     (z : k[G]) = single (0 : G) (z : k) :=
   rfl
 #align add_monoid_algebra.int_cast_def AddMonoidAlgebra.intCast_def
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_def := intCast_def
 
 instance ring [Ring k] [AddMonoid G] : Ring k[G] :=
   { AddMonoidAlgebra.nonAssocRing, AddMonoidAlgebra.semiring with }
