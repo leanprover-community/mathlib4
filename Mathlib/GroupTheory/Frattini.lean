@@ -1,4 +1,5 @@
-import Mathlib.Algebra.Group.Subgroup.Basic
+--import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib
 
 /-- The Frattini subgroup of a group is the intersection of the maximal subgroups. -/
 def frattini (G : Type*) [Group G] : Subgroup G :=
@@ -46,12 +47,57 @@ theorem frattini_characteristic : (frattini G).Characteristic := by
 
 -- variable {X : Set (G)}
 
-theorem frattini_nongenerating : ∀ X : Set (G), Subgroup.closure ( X) ⊔ frattini G = ⊤ → Subgroup.closure (X) = G  := by
+theorem frattini_nongenerating_subset : ∀ X : Set (G), Subgroup.closure ( X) ⊔ frattini G = ⊤ → Subgroup.closure (X) = G  := by
   intro X
   intro h
   unfold frattini at h
   simp at h
   sorry
+
+#check Or
+
+lemma frattini_le_coatom(K : Subgroup G)(h: IsCoatom K) : frattini G ≤ K :=
+  biInf_le _ h
+
+variable {G}
+
+theorem frattini_nongenerating[IsCoatomic (Subgroup G)] {K : Subgroup G} (h: K ⊔ frattini G = ⊤): K = ⊤  := by
+  --unfold frattini at h
+  --simp at h
+  have w := eq_top_or_exists_le_coatom K
+  cases w
+  case inl p => assumption
+  case inr p =>
+    obtain ⟨ M, c, le⟩:= p
+    have q : K ⊔ frattini G ≤ M := by
+      have r:= frattini_le_coatom G M c
+      exact sup_le le r
+    rw [h] at q
+    simp at q
+    have:= c.1 q
+    contradiction
+
+-- fix implicitness of Sylow.nonempty
+
+theorem frattini_nilpotent[Fintype G] : Group.IsNilpotent (frattini G) := by
+  have n : Normal (frattini G) := inferInstance
+      -- normal_of_characteristic (frattini G)
+  have frat_fin : Fintype (frattini G) := sorry
+  have q := isNilpotent_of_finite_tFAE (G:= frattini G)
+  have r := q.out 0 3
+  rw [r]
+  intro p p_prime P
+  --obtain ⟨ P ⟩:= Sylow.nonempty ( p:= p) (G:= frattini G)
+  have frat_arg := Sylow.normalizer_sup_eq_top P
+  have := frattini_nongenerating frat_arg
+  have pn : Normal (G := frattini G) P := by
+        exact normal_inf_normal (G:= G) (map (frattini G).subtype P) (frattini G)
+
+  exact pn
+
+
+
+
 
 
 /-!
