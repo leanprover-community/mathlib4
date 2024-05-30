@@ -26,7 +26,7 @@ simply by proving:
 
 namespace SpectrumRestricts
 
-lemma compactSpace {R S A : Type*} [CommSemiring R] [CommSemiring S] [Ring A]
+lemma compactSpace {R S A : Type*} [Semifield R] [Semifield S] [Ring A]
     [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [TopologicalSpace R]
     [TopologicalSpace S] {a : A} (f : C(S, R)) (h : SpectrumRestricts a f)
     [h_cpct : CompactSpace (spectrum S a)] : CompactSpace (spectrum R a) := by
@@ -38,8 +38,8 @@ universe u v w
 /-- If the spectrum of an element restricts to a smaller scalar ring, then a continuous functional
 calculus over the larger scalar ring descends to the smaller one. -/
 @[simps!]
-def starAlgHom {R : Type u} {S : Type v} {A : Type w} [CommSemiring R]
-    [StarRing R] [TopologicalSpace R] [TopologicalSemiring R] [ContinuousStar R] [CommSemiring S]
+def starAlgHom {R : Type u} {S : Type v} {A : Type w} [Semifield R]
+    [StarRing R] [TopologicalSpace R] [TopologicalSemiring R] [ContinuousStar R] [Semifield S]
     [StarRing S] [TopologicalSpace S] [TopologicalSemiring S] [ContinuousStar S] [Ring A]
     [StarRing A] [Algebra R S] [Algebra R A] [Algebra S A]
     [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S] {a : A}
@@ -52,8 +52,8 @@ def starAlgHom {R : Type u} {S : Type v} {A : Type w} [CommSemiring R]
           fun x (hx : x ∈ spectrum S a) => h.subset_preimage hx⟩
 
 variable {R S A : Type*} {p q : A → Prop}
-variable [CommSemiring R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [CommSemiring S] [StarRing S] [MetricSpace S] [TopologicalSemiring S] [ContinuousStar S]
+variable [Semifield R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
+variable [Semifield S] [StarRing S] [MetricSpace S] [TopologicalSemiring S] [ContinuousStar S]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [Algebra S A] [ContinuousFunctionalCalculus S q]
 variable [Algebra R S] [Algebra R A] [IsScalarTower R S A] [StarModule R S] [ContinuousSMul R S]
 variable [CompleteSpace R]
@@ -121,7 +121,7 @@ protected theorem cfc (f : C(S, R)) (h_isom : Isometry (algebraMap R S))
       intro g
       rw [h]
       refine ⟨cfcHom_predicate _ _, ?_⟩
-      refine { rightInvOn := fun s hs ↦ ?_, left_inv := ((h a).mp ha).2.left_inv }
+      refine .of_rightInvOn (((h a).mp ha).2.left_inv) fun s hs ↦ ?_
       rw [SpectrumRestricts.starAlgHom_apply, cfcHom_map_spectrum] at hs
       obtain ⟨r, rfl⟩ := hs
       simp [((h a).mp ha).2.left_inv _]

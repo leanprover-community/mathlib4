@@ -169,15 +169,15 @@ private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧) (_h : order φ ≠ 
   suffices order (φ + ψ) = order φ by
     rw [le_inf_iff, this]
     exact ⟨le_rfl, le_of_lt H⟩
-  · rw [order_eq]
-    constructor
-    · intro i hi
-      rw [← hi] at H
-      rw [(coeff _ _).map_add, coeff_of_lt_order i H, add_zero]
-      exact (order_eq_nat.1 hi.symm).1
-    · intro i hi
-      rw [(coeff _ _).map_add, coeff_of_lt_order i hi, coeff_of_lt_order i (lt_trans hi H),
-        zero_add]
+  rw [order_eq]
+  constructor
+  · intro i hi
+    rw [← hi] at H
+    rw [(coeff _ _).map_add, coeff_of_lt_order i H, add_zero]
+    exact (order_eq_nat.1 hi.symm).1
+  · intro i hi
+    rw [(coeff _ _).map_add, coeff_of_lt_order i hi, coeff_of_lt_order i (lt_trans hi H),
+      zero_add]
 -- #align power_series.order_add_of_order_eq.aux power_series.order_add_of_order_eq.aux
 
 /-- The order of the sum of two formal power series

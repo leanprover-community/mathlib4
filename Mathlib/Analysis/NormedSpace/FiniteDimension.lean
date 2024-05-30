@@ -466,7 +466,10 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
     intro n
     simp only [g, norm_smul, dist_zero_right, Metric.mem_closedBall]
     calc
-      ‖c‖ * ‖f n‖ ≤ r / R * R := by gcongr; exact hc.2.le; apply fle
+      ‖c‖ * ‖f n‖ ≤ r / R * R := by
+        gcongr
+        · exact hc.2.le
+        · apply fle
       _ = r := by field_simp [(zero_lt_one.trans Rgt).ne']
   -- Porting note: moved type ascriptions because of exists_prop changes
   obtain ⟨x : E, _ : x ∈ Metric.closedBall (0 : E) r, φ : ℕ → ℕ, φmono : StrictMono φ,
