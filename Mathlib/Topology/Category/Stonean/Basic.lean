@@ -37,6 +37,9 @@ universe u
 open CategoryTheory
 open scoped Topology
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] ConcreteCategory.instFunLike
+
 /-- `Stonean` is the category of extremally disconnected compact Hausdorff spaces. -/
 structure Stonean where
   /-- The underlying compact Hausdorff space of a Stonean space. -/

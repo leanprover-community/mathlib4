@@ -132,9 +132,7 @@ def gluedScheme : Scheme := by
   swap
   · exact (D.U i).affineCover.map y
   constructor
-  · -- Without removing `Spec.topObj_forget`, we need an `erw` in the following line.
-    dsimp [-Spec.topObj_forget]
-    rw [coe_comp, Set.range_comp]
+  · erw [TopCat.coe_comp, Set.range_comp] -- now `erw` after #13170
     refine' Set.mem_image_of_mem _ _
     exact (D.U i).affineCover.Covers y
   · infer_instance
@@ -249,7 +247,9 @@ theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
       D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
       i j x y)
   rw [← ((TopCat.mono_iff_injective D.isoCarrier.inv).mp _).eq_iff]
-  · simp_rw [← comp_apply, ← D.ι_isoCarrier_inv]; rfl
+  · erw [← comp_apply] -- now `erw` after #13170
+    simp_rw [← D.ι_isoCarrier_inv]
+    rfl -- `rfl` was not needed before #13170
   · infer_instance
 #align algebraic_geometry.Scheme.glue_data.ι_eq_iff AlgebraicGeometry.Scheme.GlueData.ι_eq_iff
 
@@ -372,7 +372,8 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.1.base := by
   intro x y h
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x
   obtain ⟨j, y, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective y
-  simp_rw [← comp_apply, ← SheafedSpace.comp_base, ← LocallyRingedSpace.comp_val] at h
+  erw [← comp_apply, ← comp_apply] at h -- now `erw` after #13170
+  simp_rw [← SheafedSpace.comp_base, ← LocallyRingedSpace.comp_val] at h
   erw [ι_fromGlued, ι_fromGlued] at h
   let e :=
     (TopCat.pullbackConeIsLimit _ _).conePointUniqueUpToIso
@@ -427,7 +428,7 @@ instance : Epi 𝒰.fromGlued.val.base := by
   intro x
   obtain ⟨y, h⟩ := 𝒰.Covers x
   use (𝒰.gluedCover.ι (𝒰.f x)).1.base y
-  rw [← comp_apply]
+  erw [← comp_apply] -- now `erw` after #13170
   rw [← 𝒰.ι_fromGlued (𝒰.f x)] at h
   exact h
 

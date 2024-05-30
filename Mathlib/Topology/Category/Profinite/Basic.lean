@@ -35,6 +35,9 @@ profinite
 
 -/
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+
 set_option linter.uppercaseLean3 false
 
 universe v u
