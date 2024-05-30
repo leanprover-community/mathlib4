@@ -333,24 +333,23 @@ theorem support_esymm (n : ℕ) [DecidableEq σ] [Nontrivial R] :
   exact biUnion_singleton
 #align mv_polynomial.support_esymm MvPolynomial.support_esymm
 
-theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintype.card σ) :
-    (esymm σ R n).degrees = (univ : Finset σ).val := by
-  classical
-    have :
-      (Finsupp.toMultiset ∘ fun t : Finset σ => ∑ i : σ in t, Finsupp.single i 1) = val := by
-      funext
-      simp [Finsupp.toMultiset_sum_single]
-    rw [degrees_def, support_esymm, sup_image, this]
-    have : ((powersetCard n univ).sup (fun (x : Finset σ) => x)).val
-        = sup (powersetCard n univ) val := by
-      refine' comp_sup_eq_sup_comp _ _ _
-      · intros
-        simp only [union_val, sup_eq_union]
-        congr
-      · rfl
-    rw [← this]
-    obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hpos.ne'
-    simpa using powersetCard_sup _ _ (Nat.lt_of_succ_le hn)
+theorem degrees_esymm [Nontrivial R] [DecidableEq σ] (n : ℕ) (hpos : 0 < n)
+    (hn : n ≤ Fintype.card σ) : (esymm σ R n).degrees = (univ : Finset σ).val := by
+  have :
+    (Finsupp.toMultiset ∘ fun t : Finset σ => ∑ i : σ in t, Finsupp.single i 1) = val := by
+    funext
+    simp [Finsupp.toMultiset_sum_single]
+  rw [degrees_def, support_esymm, sup_image, this]
+  have : ((powersetCard n univ).sup (fun (x : Finset σ) => x)).val
+      = sup (powersetCard n univ) val := by
+    refine' comp_sup_eq_sup_comp _ _ _
+    · intros
+      simp only [union_val, sup_eq_union]
+      congr
+    · rfl
+  rw [← this]
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hpos.ne'
+  simpa using powersetCard_sup _ _ (Nat.lt_of_succ_le hn)
 #align mv_polynomial.degrees_esymm MvPolynomial.degrees_esymm
 
 end ElementarySymmetric

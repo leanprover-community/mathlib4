@@ -24,8 +24,8 @@ def symmetricSubalgebra : Subalgebra R (MvPowerSeries σ R) where
   add_mem' ha hb e := by simp only [map_add, ha e, hb e]
 
 /-- The algebra of symmetric functions. -/
-def SymmetricFunctions : Subalgebra R (MvPowerSeries σ R) where
-  carrier := (symmetricSubalgebra σ R ⊓ boundedDegreeSubalgebra σ R).carrier
+def SymmetricFunction : Subalgebra R (MvPowerSeries σ R) where
+  carrier := (symmetricSubalgebra σ R ⊓ boundedDegreeSubalgebra σ R)
   algebraMap_mem' r := by
     constructor
     · apply Subalgebra.algebraMap_mem
