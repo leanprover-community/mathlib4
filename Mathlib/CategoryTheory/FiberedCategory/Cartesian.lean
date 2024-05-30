@@ -9,7 +9,8 @@ import Mathlib.CategoryTheory.FiberedCategory.HomLift
 /-!
 # Cartesian morphisms
 
-This file defines cartesian resp. strongly cartesian morphisms in a based category.
+This file defines cartesian resp. strongly cartesian morphisms with respect to a functor
+`p : 𝒳 ⟶ 𝒮`.
 
 ## Main definitions
 
@@ -20,6 +21,7 @@ This structure extends `IsHomLift p f φ`.
 `p`. This structure also extends `IsHomLift p f φ`.
 
 ## Implementation
+
 The standard constructor of `IsStronglyCartesian` has both been renamed to `.mk'`, and we
 have provided an alternate constructor `IsStronglyCartesian.mk`. The difference between the two
 is that `IsStronglyCartesian.mk` peforms some substitutions of superfluous variables for the user.
@@ -32,6 +34,14 @@ Stacks project
 
 -/
 
+/-
+TODO:
+- Remove mk' alternate constructor, and instead make mk "weaker".
+- Fix variables in two remaining lemmas
+- Fix docstrings
+- clean up proofs
+-/
+
 universe v₁ v₂ u₁ u₂
 
 open CategoryTheory Functor Category IsHomLift
@@ -40,10 +50,13 @@ namespace CategoryTheory
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳] (p : 𝒳 ⥤ 𝒮)
 
+section
+
+variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+
 /-- The proposition that a morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is a
 cartesian morphism. See SGA 1 VI 5.1. -/
-class Functor.IsCartesian {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) extends
-    IsHomLift p f φ : Prop where
+class Functor.IsCartesian extends IsHomLift p f φ : Prop where
   universal_property {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p (𝟙 R) χ ∧ χ ≫ φ = φ'
 
@@ -51,24 +64,24 @@ class Functor.IsCartesian {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
 strongly cartesian morphism.
 
 See <https://stacks.math.columbia.edu/tag/02XK> -/
-class Functor.IsStronglyCartesian (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
-    extends IsHomLift p f φ : Prop where mk' ::
+class Functor.IsStronglyCartesian extends IsHomLift p f φ : Prop where mk' ::
   universal_property {R' : 𝒮} {a' : 𝒳} (g : R' ⟶ R) (f' : R' ⟶ S)
     (_ : f' = g ≫ f) (φ' : a' ⟶ b) [IsHomLift p f' φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p g χ ∧ χ ≫ φ = φ'
 
-protected lemma IsStronglyCartesian.mk {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : b ⟶ a}
-    [IsHomLift p f φ] (h : ∀ (a' : 𝒳) (g : p.obj a' ⟶ R) (φ' : a' ⟶ a), IsHomLift p (g ≫ f) φ' →
-      ∃! χ : a' ⟶ b, IsHomLift p g χ ∧ χ ≫ φ = φ') : IsStronglyCartesian p f φ where
+protected lemma IsStronglyCartesian.mk [IsHomLift p f φ] (h : ∀ (a' : 𝒳) (g : p.obj a' ⟶ R)
+    (φ' : a' ⟶ b), IsHomLift p (g ≫ f) φ' → ∃! χ : a' ⟶ a, IsHomLift p g χ ∧ χ ≫ φ = φ') :
+      IsStronglyCartesian p f φ where
   universal_property := by
     intro R' a' g f' hf' φ' hφ'
     subst_hom_lift p f' φ'
     apply h a' g φ' (hf' ▸ inferInstance)
 
-instance cartesian_of_stronglyCartesian (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
-    [p.IsStronglyCartesian f φ] : p.IsCartesian f φ where
+instance isCartesian_of_isStronglyCartesian [p.IsStronglyCartesian f φ] : p.IsCartesian f φ where
   universal_property := fun φ' =>
     IsStronglyCartesian.universal_property (φ:=φ) (f:=f) (𝟙 R) f (by simp) φ'
+
+end
 
 namespace IsCartesian
 
@@ -132,6 +145,10 @@ end IsCartesian
 
 namespace IsStronglyCartesian
 
+section
+
+variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [IsStronglyCartesian p f φ]
+
 /-- Given a diagram:
 ```
 a'        a --φ--> b
@@ -142,20 +159,17 @@ R' --g--> R --f--> S
 such that `φ` is a cartesian arrow, and an arrow `φ' : a' ⟶ b`,
 the induced map is the map `a' ⟶ a` obtained from the
 universal property of `φ`. -/
-noncomputable def inducedMap (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
-    [IsStronglyCartesian p f φ] {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
+noncomputable def inducedMap {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
     (φ' : a' ⟶ b) [IsHomLift p f' φ'] : a' ⟶ a :=
   Classical.choose <| IsStronglyCartesian.universal_property (p:=p) (f:=f) (φ:=φ) _ _ hf' φ'
 
-instance inducedMap_isHomLift (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
-    [IsStronglyCartesian p f φ] {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
+instance inducedMap_isHomLift {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
     (φ' : a' ⟶ b) [IsHomLift p f' φ'] : IsHomLift p g (inducedMap p f φ hf' φ') :=
   (Classical.choose_spec <|
     IsStronglyCartesian.universal_property (p:=p) (f:=f) (φ:=φ) _ _ hf' φ').1.1
 
 @[simp]
-lemma inducedMap_comp (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
-    [IsStronglyCartesian p f φ] {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
+lemma inducedMap_comp {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
     (φ' : a' ⟶ b) [IsHomLift p f' φ'] : (inducedMap p f φ hf' φ') ≫ φ = φ' :=
   (Classical.choose_spec <|
     IsStronglyCartesian.universal_property (p:=p) (f:=f) (φ:=φ) _ _ hf' φ').1.2
@@ -169,8 +183,7 @@ R' --g--> R --f--> S
 ```
 with `φ` a cartesian arrow. Then for any arrow `φ' : a' ⟶ b`, and `ψ : a' ⟶ a` such that
 `g ≫ ψ = φ'`. Then `ψ` is the map induced by the universal property. -/
-lemma inducedMap_unique (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
-    [IsStronglyCartesian p f φ] {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
+lemma inducedMap_unique {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
     (φ' : a' ⟶ b) [IsHomLift p f' φ'] (ψ : a' ⟶ a) [IsHomLift p g ψ] (hψ : ψ ≫ φ = φ') :
     ψ = inducedMap p f φ hf' φ' :=
   (Classical.choose_spec <|
@@ -185,15 +198,13 @@ R' --g--> R --f--> S
 ```
 with `φ` a cartesian arrow. Then for any arrow `φ' : a' ⟶ b`, any two arrows `ψ ψ' : a' ⟶ a` such
 that `g ≫ ψ = φ' = g ≫ ψ'`. Then `ψ = ψ'`. -/
-protected lemma uniqueness (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
-    [IsStronglyCartesian p f φ] {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
+protected lemma uniqueness {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
     (φ' : a' ⟶ b) [IsHomLift p f' φ'] {ψ ψ' : a' ⟶ a} [IsHomLift p g ψ]
     [IsHomLift p g ψ'] (hcomp : ψ ≫ φ = φ') (hcomp' : ψ' ≫ φ = φ') : ψ = ψ' := by
   rw [inducedMap_unique p f φ hf' φ' ψ hcomp, inducedMap_unique p f φ hf' φ' ψ' hcomp']
 
 @[simp]
-lemma inducedMap_self_eq_id (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
-    [IsStronglyCartesian p f φ] : inducedMap p f φ (id_comp f).symm φ = 𝟙 a := by
+lemma inducedMap_self_eq_id : inducedMap p f φ (id_comp f).symm φ = 𝟙 a := by
   subst_hom_lift p f φ; symm
   apply inducedMap_unique
   simp only [id_comp]
@@ -204,17 +215,17 @@ Given a diagrams
 a''         a'        a --φ--> b          a' --φ'--> b          a'' --φ''--> b
 |           |         |        |    and   |          |    and   |            |
 v           v         v        v          v          v          v            v
-R'' --h'--> R' --h--> R --f--> S          R' --f'--> S          R'' --f''--> S
+R'' --g'--> R' --g--> R --f--> S          R' --f'--> S          R'' --f''--> S
 ```
 such that `φ` and `φ'` are cartesian arrows. Composing the induced map from `a'' ⟶ a'` with the
 induced map from `a' ⟶ a` gives the induced map from `a'' ⟶ a`. -/
+-- TODO: fix assumptions here... Why are these compositions necessary? g, h are not mentioned...
 @[simp]
-lemma inducedMap_inducedMap (p : 𝒳 ⥤ 𝒮) {R R' R'' S: 𝒮} {a a' a'' b : 𝒳}
-    {f : R ⟶ S} {f' : R' ⟶ S} {f'' : R'' ⟶ S} {g : R' ⟶ R} {h : R'' ⟶ R'}
-    (H : f' = g ≫ f) (H' : f'' = h ≫ f') {φ : a ⟶ b} {φ' : a' ⟶ b} {φ'' : a'' ⟶ b}
-    [IsStronglyCartesian p f φ] [IsStronglyCartesian p f' φ'] [IsHomLift p f'' φ''] :
+lemma inducedMap_inducedMap {R' R'' : 𝒮} {a' a'' : 𝒳} {f' : R' ⟶ S} {f'' : R'' ⟶ S} {g : R' ⟶ R}
+    {g' : R'' ⟶ R'} (H : f' = g ≫ f) (H' : f'' = g' ≫ f') (φ' : a' ⟶ b) (φ'' : a'' ⟶ b)
+    [IsStronglyCartesian p f' φ'] [IsHomLift p f'' φ''] :
     inducedMap p f' φ' H' φ'' ≫ inducedMap p f φ H φ' =
-      inducedMap p f φ (show f'' = (h ≫ g) ≫ f by rwa [assoc, ← H]) φ'' := by
+      inducedMap p f φ (show f'' = (g' ≫ g) ≫ f by rwa [assoc, ← H]) φ'' := by
   apply inducedMap_unique p f φ
   simp only [assoc, inducedMap_comp]
 
@@ -226,7 +237,8 @@ v        v        v
 R --f--> S --g--> T
 ```
 Then the composite `φ ≫ ψ` is also cartesian. -/
-instance comp (p : 𝒳 ⥤ 𝒮) {R S T : 𝒮} {a b c: 𝒳} (f : R ⟶ S) (g : S ⟶ T) (φ : a ⟶ b)
+-- TODO: fix assumptions here...
+instance comp {T : 𝒮} {c : 𝒳} (f : R ⟶ S) (g : S ⟶ T) (φ : a ⟶ b)
     (ψ : b ⟶ c) [IsStronglyCartesian p f φ] [IsStronglyCartesian p g ψ] :
       IsStronglyCartesian p (f ≫ g) (φ ≫ ψ) := by
   apply IsStronglyCartesian.mk
@@ -248,7 +260,8 @@ v        v        v
 R --f--> S --g--> T
 ```
 such that the composite `φ ≫ ψ` and `ψ` are cartesian, then so is `φ`. -/
-protected lemma of_comp (p : 𝒳 ⥤ 𝒮) {R S T : 𝒮} {a b c: 𝒳} {f : R ⟶ S} {g : S ⟶ T}
+-- TODO: fix assumptions here...
+protected lemma of_comp {R S T : 𝒮} {a b c : 𝒳} {f : R ⟶ S} {g : S ⟶ T}
     {φ : a ⟶ b} {ψ : b ⟶ c} [IsStronglyCartesian p g ψ] [IsStronglyCartesian p (f ≫ g) (φ ≫ ψ)]
     [IsHomLift p f φ] : IsStronglyCartesian p f φ := by
   apply IsStronglyCartesian.mk
@@ -265,21 +278,24 @@ protected lemma of_comp (p : 𝒳 ⥤ 𝒮) {R S T : 𝒮} {a b c: 𝒳} {f : R 
   apply inducedMap_unique
   simp [hπ'₂.symm]
 
-instance of_iso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ≅ b) [IsHomLift p f φ.hom] :
-    IsStronglyCartesian p f φ.hom := by
+end
+
+section
+
+variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S)
+
+instance of_iso (φ : a ≅ b) [IsHomLift p f φ.hom] : IsStronglyCartesian p f φ.hom := by
   apply IsStronglyCartesian.mk
   intro a' g τ hτ
   use τ ≫ φ.inv
   refine ⟨?_, by aesop_cat⟩
   simpa using (IsHomLift.comp p (g ≫ f) (isoOfIsoLift p f φ).inv τ φ.inv)
 
-instance of_isIso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [IsHomLift p f φ]
-    [IsIso φ] : IsStronglyCartesian p f φ :=
+instance of_isIso (φ : a ⟶ b) [IsHomLift p f φ] [IsIso φ] : IsStronglyCartesian p f φ :=
   @IsStronglyCartesian.of_iso _ _ _ _ p _ _ _ _ f (asIso φ) (by aesop)
 
 /-- A cartesian arrow lying over an isomorphism is an isomorphism. -/
-lemma isIso_of_base_isIso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
-    [IsStronglyCartesian p f φ] (hf : IsIso f) : IsIso φ := by
+lemma isIso_of_base_isIso (φ : a ⟶ b) [IsStronglyCartesian p f φ] (hf : IsIso f) : IsIso φ := by
   -- The inverse will be given by applying the universal property to the arrows f⁻¹ : S ⟶ R and 𝟙 b
   -- TODO: this is annoying because now we have to state p.map φ instead of f....
   subst_hom_lift p f φ; clear a b R S -- TODO: make this into meta-code
@@ -299,9 +315,11 @@ lemma isIso_of_base_isIso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R �
   · apply Category.assoc
   · simp only [inv_hom, id_comp, comp_id]
 
+end
+
 /-- The canonical isomorphism between the domains of two cartesian arrows lying over
 isomorphic objects. -/
-noncomputable def isoOfBaseIso (p : 𝒳 ⥤ 𝒮) {R R' S : 𝒮} {a a' b : 𝒳} {f : R ⟶ S} {f' : R' ⟶ S}
+noncomputable def isoOfBaseIso {R R' S : 𝒮} {a a' b : 𝒳} {f : R ⟶ S} {f' : R' ⟶ S}
   {g : R' ≅ R} (h : f' = g.hom ≫ f) (φ : a ⟶ b) (φ' : a' ⟶ b) [IsStronglyCartesian p f φ]
     [IsStronglyCartesian p f' φ'] : a' ≅ a where
   hom := inducedMap p f φ h φ'
