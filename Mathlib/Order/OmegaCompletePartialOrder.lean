@@ -8,6 +8,7 @@ import Mathlib.Data.Part
 import Mathlib.Order.Chain
 import Mathlib.Order.Hom.Order
 import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Topology.Order.ScottTopology
 
 #align_import order.omega_complete_partial_order from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 

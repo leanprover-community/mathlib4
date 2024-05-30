@@ -64,6 +64,36 @@ variable {α β : Type*}
 
 /-! ### Prerequisite order properties -/
 
+section ScottContinuous
+variable [Preorder α] [Preorder β] {f : α → β} {a : α}
+
+/-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
+sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
+Scott topology.
+
+The dual notion
+
+```lean
+∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≥ ·) d → ∀ ⦃a⦄, IsGLB d a → IsGLB (f '' d) (f a)
+```
+
+does not appear to play a significant role in the literature, so is omitted here.
+-/
+def ScottContinuous (f : α → β) : Prop :=
+  ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
+#align scott_continuous ScottContinuous
+
+protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f := by
+  refine' fun a b hab =>
+    (h (insert_nonempty _ _) (directedOn_pair le_refl hab) _).1
+      (mem_image_of_mem _ <| mem_insert _ _)
+  rw [IsLUB, upperBounds_insert, upperBounds_singleton,
+    inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]
+  exact isLeast_Ici
+#align scott_continuous.monotone ScottContinuous.monotone
+
+end ScottContinuous
+
 section Preorder
 variable [Preorder α] {s t : Set α}
 
