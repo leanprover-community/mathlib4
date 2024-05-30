@@ -106,15 +106,11 @@ lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}
   exact ⟨x, h', by simp only [mulShift_mulShift, mul_comm r, h, mulShift_zero, not_ne_iff,
     isNontrivial_iff_ne_trivial]⟩
 
--- Porting note: Using `structure` gives a timeout, see
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/mysterious.20finsupp.20related.20timeout/near/365719262 and
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/mysterious.20finsupp.20related.20timeout
--- In Lean4, `set_option genInjectivity false in` may solve this issue.
--- can't prove that they always exist (referring to providing an `Inhabited` instance)
 /-- Definition for a primitive additive character on a finite ring `R` into a cyclotomic extension
 of a field `R'`. It records which cyclotomic extension it is, the character, and the
 fact that the character is primitive. -/
 -- Porting note(#5171): this linter isn't ported yet.
+-- can't prove that they always exist (referring to providing an `Inhabited` instance)
 -- @[nolint has_nonempty_instance]
 structure PrimitiveAddChar (R : Type u) [CommRing R] (R' : Type v) [Field R'] where
   /-- The first projection from `PrimitiveAddChar`, giving the cyclotomic field. -/
@@ -123,23 +119,9 @@ structure PrimitiveAddChar (R : Type u) [CommRing R] (R' : Type v) [Field R'] wh
   char : AddChar R (CyclotomicField n R')
   /-- The third projection from `PrimitiveAddChar`, showing that `χ.char` is primitive. -/
   prim : IsPrimitive char
-
-  -- Σ n : ℕ+, Σ' char : AddChar R (CyclotomicField n R'), IsPrimitive char
 #align add_char.primitive_add_char AddChar.PrimitiveAddChar
-
-/- /-- The first projection from `PrimitiveAddChar`, giving the cyclotomic field. -/
-noncomputable def PrimitiveAddChar.n {R : Type u} [CommRing R] {R' : Type v} [Field R'] :
-    PrimitiveAddChar R R' → ℕ+ := fun χ => χ.1 -/
 #align add_char.primitive_add_char.n AddChar.PrimitiveAddChar.n
-
-/- /-- The second projection from `PrimitiveAddChar`, giving the character. -/
-noncomputable def PrimitiveAddChar.char {R : Type u} [CommRing R] {R' : Type v} [Field R'] :
-    ∀ χ : PrimitiveAddChar R R', AddChar R (CyclotomicField χ.n R') := fun χ => χ.2.1 -/
 #align add_char.primitive_add_char.char AddChar.PrimitiveAddChar.char
-
-/- /-- The third projection from `PrimitiveAddChar`, showing that `χ.char` is primitive. -/
-theorem PrimitiveAddChar.prim {R : Type u} [CommRing R] {R' : Type v} [Field R'] :
-    ∀ χ : PrimitiveAddChar R R', IsPrimitive χ.char := fun χ => χ.2.2 -/
 #align add_char.primitive_add_char.prim AddChar.PrimitiveAddChar.prim
 
 /-!
