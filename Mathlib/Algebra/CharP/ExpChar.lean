@@ -401,6 +401,9 @@ theorem frobenius_natCast (n : ℕ) : frobenius R p n = n :=
   map_natCast (frobenius R p) n
 #align frobenius_nat_cast frobenius_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias frobenius_nat_cast := frobenius_natCast
+
 variable {R}
 
 theorem list_sum_pow_char (l : List R) : l.sum ^ p = (l.map (· ^ p : R → R)).sum :=

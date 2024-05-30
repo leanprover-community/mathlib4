@@ -88,6 +88,9 @@ theorem val_natCast {n : ℕ} (a : ℕ) : (a : ZMod n).val = a % n := by
   · apply Fin.val_natCast
 #align zmod.val_nat_cast ZMod.val_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias val_nat_cast := val_natCast
+
 theorem val_unit' {n : ZMod 0} : IsUnit n ↔ n.val = 1 := by
   simp only [val]
   rw [Int.isUnit_iff, Int.natAbs_eq_iff, Nat.cast_one]
@@ -97,6 +100,9 @@ lemma eq_one_of_isUnit_natCast {n : ℕ} (h : IsUnit (n : ZMod 0)) : n = 1 := by
 
 theorem val_natCast_of_lt {n a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
   rwa [val_natCast, Nat.mod_eq_of_lt]
+
+@[deprecated (since := "2024-04-17")]
+alias val_nat_cast_of_lt := val_natCast_of_lt
 
 instance charP (n : ℕ) : CharP (ZMod n) n where
   cast_eq_zero_iff' := by
@@ -138,10 +144,16 @@ theorem natCast_self (n : ℕ) : (n : ZMod n) = 0 :=
   CharP.cast_eq_zero (ZMod n) n
 #align zmod.nat_cast_self ZMod.natCast_self
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_self := natCast_self
+
 @[simp]
 theorem natCast_self' (n : ℕ) : (n + 1 : ZMod (n + 1)) = 0 := by
   rw [← Nat.cast_add_one, natCast_self (n + 1)]
 #align zmod.nat_cast_self' ZMod.natCast_self'
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_self' := natCast_self'
 
 section UniversalProperty
 
@@ -200,13 +212,22 @@ theorem natCast_zmod_val {n : ℕ} [NeZero n] (a : ZMod n) : (a.val : ZMod n) = 
   · apply Fin.cast_val_eq_self
 #align zmod.nat_cast_zmod_val ZMod.natCast_zmod_val
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_zmod_val := natCast_zmod_val
+
 theorem natCast_rightInverse [NeZero n] : Function.RightInverse val ((↑) : ℕ → ZMod n) :=
   natCast_zmod_val
 #align zmod.nat_cast_right_inverse ZMod.natCast_rightInverse
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_rightInverse := natCast_rightInverse
+
 theorem natCast_zmod_surjective [NeZero n] : Function.Surjective ((↑) : ℕ → ZMod n) :=
   natCast_rightInverse.surjective
 #align zmod.nat_cast_zmod_surjective ZMod.natCast_zmod_surjective
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_zmod_surjective := natCast_zmod_surjective
 
 /-- So-named because the outer coercion is `Int.cast` into `ZMod`. For `Int.cast` into an arbitrary
 ring, see `ZMod.intCast_cast`. -/
@@ -218,13 +239,22 @@ theorem intCast_zmod_cast (a : ZMod n) : ((cast a : ℤ) : ZMod n) = a := by
     erw [Int.cast_natCast, Fin.cast_val_eq_self]
 #align zmod.int_cast_zmod_cast ZMod.intCast_zmod_cast
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_zmod_cast := intCast_zmod_cast
+
 theorem intCast_rightInverse : Function.RightInverse (cast : ZMod n → ℤ) ((↑) : ℤ → ZMod n) :=
   intCast_zmod_cast
 #align zmod.int_cast_right_inverse ZMod.intCast_rightInverse
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_rightInverse := intCast_rightInverse
+
 theorem intCast_surjective : Function.Surjective ((↑) : ℤ → ZMod n) :=
   intCast_rightInverse.surjective
 #align zmod.int_cast_surjective ZMod.intCast_surjective
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_surjective := intCast_surjective
 
 theorem cast_id : ∀ (n) (i : ZMod n), (ZMod.cast i : ZMod n) = i
   | 0, _ => Int.cast_id
@@ -246,6 +276,9 @@ theorem natCast_comp_val [NeZero n] : ((↑) : ℕ → R) ∘ (val : ZMod n → 
   rfl
 #align zmod.nat_cast_comp_val ZMod.natCast_comp_val
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_comp_val := natCast_comp_val
+
 /-- The coercions are respectively `Int.cast`, `ZMod.cast`, and `ZMod.cast`. -/
 @[simp]
 theorem intCast_comp_cast : ((↑) : ℤ → R) ∘ (cast : ZMod n → ℤ) = cast := by
@@ -255,6 +288,9 @@ theorem intCast_comp_cast : ((↑) : ℤ → R) ∘ (cast : ZMod n → ℤ) = ca
     simp [ZMod, ZMod.cast]
 #align zmod.int_cast_comp_cast ZMod.intCast_comp_cast
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_comp_cast := intCast_comp_cast
+
 variable {R}
 
 @[simp]
@@ -262,10 +298,16 @@ theorem natCast_val [NeZero n] (i : ZMod n) : (i.val : R) = cast i :=
   congr_fun (natCast_comp_val R) i
 #align zmod.nat_cast_val ZMod.natCast_val
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_val := natCast_val
+
 @[simp]
 theorem intCast_cast (i : ZMod n) : ((cast i : ℤ) : R) = cast i :=
   congr_fun (intCast_comp_cast R) i
 #align zmod.int_cast_cast ZMod.intCast_cast
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_cast := intCast_cast
 
 theorem cast_add_eq_ite {n : ℕ} (a b : ZMod n) :
     (cast (a + b) : ℤ) =
@@ -361,10 +403,16 @@ theorem cast_natCast (h : m ∣ n) (k : ℕ) : (cast (k : ZMod n) : R) = k :=
   map_natCast (castHom h R) k
 #align zmod.cast_nat_cast ZMod.cast_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias cast_nat_cast := cast_natCast
+
 @[simp, norm_cast]
 theorem cast_intCast (h : m ∣ n) (k : ℤ) : (cast (k : ZMod n) : R) = k :=
   map_intCast (castHom h R) k
 #align zmod.cast_int_cast ZMod.cast_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias cast_int_cast := cast_intCast
 
 end CharDvd
 
@@ -405,10 +453,16 @@ theorem cast_natCast' (k : ℕ) : (cast (k : ZMod n) : R) = k :=
   cast_natCast dvd_rfl k
 #align zmod.cast_nat_cast' ZMod.cast_natCast'
 
+@[deprecated (since := "2024-04-17")]
+alias cast_nat_cast' := cast_natCast'
+
 @[simp, norm_cast]
 theorem cast_intCast' (k : ℤ) : (cast (k : ZMod n) : R) = k :=
   cast_intCast dvd_rfl k
 #align zmod.cast_int_cast' ZMod.cast_intCast'
+
+@[deprecated (since := "2024-04-17")]
+alias cast_int_cast' := cast_intCast'
 
 variable (R)
 
@@ -499,29 +553,50 @@ theorem intCast_eq_intCast_iff (a b : ℤ) (c : ℕ) : (a : ZMod c) = (b : ZMod 
   CharP.intCast_eq_intCast (ZMod c) c
 #align zmod.int_coe_eq_int_coe_iff ZMod.intCast_eq_intCast_iff
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_eq_int_cast_iff := intCast_eq_intCast_iff
+
 theorem intCast_eq_intCast_iff' (a b : ℤ) (c : ℕ) : (a : ZMod c) = (b : ZMod c) ↔ a % c = b % c :=
   ZMod.intCast_eq_intCast_iff a b c
 #align zmod.int_coe_eq_int_coe_iff' ZMod.intCast_eq_intCast_iff'
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_eq_int_cast_iff' := intCast_eq_intCast_iff'
 
 theorem natCast_eq_natCast_iff (a b c : ℕ) : (a : ZMod c) = (b : ZMod c) ↔ a ≡ b [MOD c] := by
   simpa [Int.natCast_modEq_iff] using ZMod.intCast_eq_intCast_iff a b c
 #align zmod.nat_coe_eq_nat_coe_iff ZMod.natCast_eq_natCast_iff
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_eq_nat_cast_iff := natCast_eq_natCast_iff
+
 theorem natCast_eq_natCast_iff' (a b c : ℕ) : (a : ZMod c) = (b : ZMod c) ↔ a % c = b % c :=
   ZMod.natCast_eq_natCast_iff a b c
 #align zmod.nat_coe_eq_nat_coe_iff' ZMod.natCast_eq_natCast_iff'
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_eq_nat_cast_iff' := natCast_eq_natCast_iff'
 
 theorem intCast_zmod_eq_zero_iff_dvd (a : ℤ) (b : ℕ) : (a : ZMod b) = 0 ↔ (b : ℤ) ∣ a := by
   rw [← Int.cast_zero, ZMod.intCast_eq_intCast_iff, Int.modEq_zero_iff_dvd]
 #align zmod.int_coe_zmod_eq_zero_iff_dvd ZMod.intCast_zmod_eq_zero_iff_dvd
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_zmod_eq_zero_iff_dvd := intCast_zmod_eq_zero_iff_dvd
+
 theorem intCast_eq_intCast_iff_dvd_sub (a b : ℤ) (c : ℕ) : (a : ZMod c) = ↑b ↔ ↑c ∣ b - a := by
   rw [ZMod.intCast_eq_intCast_iff, Int.modEq_iff_dvd]
 #align zmod.int_coe_eq_int_coe_iff_dvd_sub ZMod.intCast_eq_intCast_iff_dvd_sub
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_eq_int_cast_iff_dvd_sub := intCast_eq_intCast_iff_dvd_sub
+
 theorem natCast_zmod_eq_zero_iff_dvd (a b : ℕ) : (a : ZMod b) = 0 ↔ b ∣ a := by
   rw [← Nat.cast_zero, ZMod.natCast_eq_natCast_iff, Nat.modEq_zero_iff_dvd]
 #align zmod.nat_coe_zmod_eq_zero_iff_dvd ZMod.natCast_zmod_eq_zero_iff_dvd
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_zmod_eq_zero_iff_dvd := natCast_zmod_eq_zero_iff_dvd
 
 theorem val_intCast {n : ℕ} (a : ℤ) [NeZero n] : ↑(a : ZMod n).val = a % n := by
   have hle : (0 : ℤ) ≤ ↑(a : ZMod n).val := Int.natCast_nonneg _
@@ -530,11 +605,17 @@ theorem val_intCast {n : ℕ} (a : ℤ) [NeZero n] : ↑(a : ZMod n).val = a % n
   rw [← ZMod.intCast_eq_intCast_iff', Int.cast_natCast, ZMod.natCast_val, ZMod.cast_id]
 #align zmod.val_int_cast ZMod.val_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias val_int_cast := val_intCast
+
 theorem coe_intCast {n : ℕ} (a : ℤ) : cast (a : ZMod n) = a % n := by
   cases n
   · rw [Int.ofNat_zero, Int.emod_zero, Int.cast_id]; rfl
   · rw [← val_intCast, val]; rfl
 #align zmod.coe_int_cast ZMod.coe_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias coe_int_cast := coe_intCast
 
 @[simp]
 theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
@@ -597,12 +678,18 @@ theorem intCast_mod (a : ℤ) (b : ℕ) : ((a % b : ℤ) : ZMod b) = (a : ZMod b
   apply Int.mod_modEq
 #align zmod.int_cast_mod ZMod.intCast_mod
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_mod := intCast_mod
+
 theorem ker_intCastAddHom (n : ℕ) :
     (Int.castAddHom (ZMod n)).ker = AddSubgroup.zmultiples (n : ℤ) := by
   ext
   rw [Int.mem_zmultiples_iff, AddMonoidHom.mem_ker, Int.coe_castAddHom,
     intCast_zmod_eq_zero_iff_dvd]
 #align zmod.ker_int_cast_add_hom ZMod.ker_intCastAddHom
+
+@[deprecated (since := "2024-04-17")]
+alias ker_int_castAddHom := ker_intCastAddHom
 
 theorem cast_injective_of_le {m n : ℕ} [nzm : NeZero m] (h : m ≤ n) :
     Function.Injective (@cast (ZMod n) _ m) := by
@@ -628,6 +715,9 @@ theorem natCast_toNat (p : ℕ) : ∀ {z : ℤ} (_h : 0 ≤ z), (z.toNat : ZMod 
   | (n : ℕ), _h => by simp only [Int.cast_natCast, Int.toNat_natCast]
   | Int.negSucc n, h => by simp at h
 #align zmod.nat_cast_to_nat ZMod.natCast_toNat
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_toNat := natCast_toNat
 
 theorem val_injective (n : ℕ) [NeZero n] : Function.Injective (val : ZMod n → ℕ) := by
   cases n
@@ -749,6 +839,9 @@ theorem natCast_mod (a : ℕ) (n : ℕ) : ((a % n : ℕ) : ZMod n) = a := by
       rw [← Nat.mod_add_div a n]
   simp
 #align zmod.nat_cast_mod ZMod.natCast_mod
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_mod := natCast_mod
 
 theorem eq_iff_modEq_nat (n : ℕ) {a b : ℕ} : (a : ZMod n) = b ↔ a ≡ b [MOD n] := by
   cases n
@@ -1135,6 +1228,9 @@ theorem natCast_natAbs_valMinAbs {n : ℕ} [NeZero n] (a : ZMod n) :
   · rw [← Int.cast_natCast, Int.ofNat_natAbs_of_nonpos this, Int.cast_neg, Int.cast_sub,
       Int.cast_natCast, Int.cast_natCast, natCast_self, sub_zero, natCast_zmod_val]
 #align zmod.nat_cast_nat_abs_val_min_abs ZMod.natCast_natAbs_valMinAbs
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_natAbs_valMinAbs := natCast_natAbs_valMinAbs
 
 theorem valMinAbs_neg_of_ne_half {n : ℕ} {a : ZMod n} (ha : 2 * a.val ≠ n) :
     (-a).valMinAbs = -a.valMinAbs := by
