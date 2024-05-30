@@ -173,14 +173,14 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
   -- Add 7 and 8 using 2 → 8 → 7 → 3
   tfae_have 2 → 8
   · rintro ⟨a, ha, H⟩
-    refine' ⟨a, ha, (H.def zero_lt_one).mono fun n hn ↦ _⟩
+    refine ⟨a, ha, (H.def zero_lt_one).mono fun n hn ↦ ?_⟩
     rwa [Real.norm_eq_abs, Real.norm_eq_abs, one_mul, abs_pow, abs_of_pos ha.1] at hn
   tfae_have 8 → 7
   · exact fun ⟨a, ha, H⟩ ↦ ⟨a, ha.2, H⟩
   tfae_have 7 → 3
   · rintro ⟨a, ha, H⟩
     have : 0 ≤ a := nonneg_of_eventually_pow_nonneg (H.mono fun n ↦ (abs_nonneg _).trans)
-    refine' ⟨a, A ⟨this, ha⟩, IsBigO.of_bound 1 _⟩
+    refine ⟨a, A ⟨this, ha⟩, IsBigO.of_bound 1 ?_⟩
     simpa only [Real.norm_eq_abs, one_mul, abs_pow, abs_of_nonneg this]
   -- Porting note: used to work without explicitly having 6 → 7
   tfae_have 6 → 7
@@ -510,9 +510,9 @@ theorem NormedRing.tsum_geometric_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
     ‖∑' n : ℕ, x ^ n‖ ≤ ‖(1 : R)‖ - 1 + (1 - ‖x‖)⁻¹ := by
   rw [tsum_eq_zero_add (summable_geometric_of_norm_lt_one x h)]
   simp only [_root_.pow_zero]
-  refine' le_trans (norm_add_le _ _) _
+  refine le_trans (norm_add_le _ _) ?_
   have : ‖∑' b : ℕ, (fun n ↦ x ^ (n + 1)) b‖ ≤ (1 - ‖x‖)⁻¹ - 1 := by
-    refine' tsum_of_norm_bounded _ fun b ↦ norm_pow_le' _ (Nat.succ_pos b)
+    refine tsum_of_norm_bounded ?_ fun b ↦ norm_pow_le' _ (Nat.succ_pos b)
     convert (hasSum_nat_add_iff' 1).mpr (hasSum_geometric_of_lt_one (norm_nonneg x) h)
     simp
   linarith
