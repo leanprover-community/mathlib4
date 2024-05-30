@@ -31,6 +31,9 @@ We prove that these are equivalent.
 
 universe v u
 
+
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+
 noncomputable section
 
 open CategoryTheory
