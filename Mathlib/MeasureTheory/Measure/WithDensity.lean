@@ -285,7 +285,7 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
 
 theorem withDensity_apply_eq_zero {f : α → ℝ≥0∞} {s : Set α} (hf : Measurable f) :
     μ.withDensity f s = 0 ↔ μ ({ x | f x ≠ 0 } ∩ s) = 0 :=
-  withDensity_apply_eq_zero' <| Measurable.aemeasurable hf
+  withDensity_apply_eq_zero' <| hf.aemeasurable
 #align measure_theory.with_density_apply_eq_zero MeasureTheory.withDensity_apply_eq_zero
 
 theorem ae_withDensity_iff' {p : α → Prop} {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
