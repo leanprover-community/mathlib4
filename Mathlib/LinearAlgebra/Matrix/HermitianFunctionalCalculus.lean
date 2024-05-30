@@ -46,6 +46,24 @@ lemma spectrum.conjugate_units' {a : A} {u : Aˣ} :
 
 end ConjugateUnits
 
+section UnitaryConjugate
+
+universe u
+
+variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A] [StarMul A]
+
+@[simp]
+lemma spectrum.unitary_conjugate {a : A} {u : unitary A} :
+    spectrum R (u * a * star u) = spectrum R a := spectrum.conjugate_units (u := unitary.toUnits u)
+
+@[simp]
+lemma spectrum.unitary_conjugate' {a : A} {u : unitary A} :
+   spectrum R (star u * a * u) = spectrum R a := by
+       convert spectrum.unitary_conjugate (u := star u)
+       rw [star_star]
+
+end UnitaryConjugate
+
 section FiniteSpectrum
 
 universe u v w
@@ -242,7 +260,9 @@ exists_cfc_of_predicate a ha := by
           have hφ : LinearMap.ker ha.φ = ⊥ := by
               refine LinearMap.ker_eq_bot'.mpr ?_
               intro f hf
+              have : ∀ x, ha.φ f x = 0 := by sorry
               ext x
+              simp only [ContinuousMap.zero_apply]
               sorry
           have H := ha.compact_spectrum
           apply LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ a, ℝ))
@@ -252,14 +272,18 @@ exists_cfc_of_predicate a ha := by
     case map_spec =>
           intro f
           rw [← ContinuousMap.spectrum_eq_range (𝕜 := ℝ) (X := spectrum ℝ a) f]
-          congr!
-          apply Set.eq_of_subset_of_subset
-          apply AlgHom.spectrum_apply_subset
+          --have := spectrum.conjugate_units ℝ (a := diagonal (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩))) (u := unitary.toUnits (eigenvectorUnitary ha))
+          --apply Set.eq_of_subset_of_subset
+          --apply AlgHom.spectrum_apply_subset
+          have definition : spectrum ℝ (ha.φ f) = spectrum ℝ (((eigenvectorUnitary ha : Matrix n n 𝕜) *
+    diagonal (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩))
+    * star (eigenvectorUnitary ha : Matrix n n 𝕜))) := by sorry
+          rw [definition]
+          --simp only [unitary.toUnits ,spectrum.conjugate_units]
           sorry
     case hermitian =>
           intro f
           sorry
-
 end IsHermitian
 end Matrix
 
