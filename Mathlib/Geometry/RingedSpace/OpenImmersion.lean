@@ -165,8 +165,8 @@ instance comp {Z : PresheafedSpace C} (f : X ⟶ Y) [hf : IsOpenImmersion f] (g 
         ext1
         dsimp only [IsOpenMap.functor_obj_coe]
         -- Porting note: slightly more hand holding here: `g ∘ f` and `fun x => g (f x)`
-        rw [comp_base, coe_comp, show g.base ∘ f.base = fun x => g.base (f.base x) from rfl,
-          ← Set.image_image]
+        erw [comp_base, coe_comp, show g.base ∘ f.base = fun x => g.base (f.base x) from rfl,
+          ← Set.image_image]  -- now `erw` after #13170
       rw [this]
       infer_instance
     have : IsIso (f.c.app (op <| (Opens.map g.base).obj ((IsOpenMap.functor h).obj U))) := by
@@ -174,8 +174,9 @@ instance comp {Z : PresheafedSpace C} (f : X ⟶ Y) [hf : IsOpenImmersion f] (g 
         ext1
         dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe, comp_base]
         -- Porting note: slightly more hand holding here: `g ∘ f` and `fun x => g (f x)`
-        rw [coe_comp, show g.base ∘ f.base = fun x => g.base (f.base x) from rfl,
+        erw [coe_comp, show g.base ∘ f.base = fun x => g.base (f.base x) from rfl,
           ← Set.image_image g.base f.base, Set.preimage_image_eq _ hg.base_open.inj]
+           -- now `erw` after #13170
       rw [this]
       infer_instance
     apply IsIso.comp_isIso
@@ -364,10 +365,22 @@ def pullbackConeOfLeftFst :
                   · rintro _ ⟨_, h₁, h₂⟩
                     use (TopCat.pullbackIsoProdSubtype _ _).inv ⟨⟨_, _⟩, h₂⟩
                     -- Porting note: need a slight hand holding
+                    -- used to be `simpa using h₁` before #13170
                     change _ ∈ _ ⁻¹' _ ∧ _
-                    simpa using h₁
+                    simp only [TopCat.coe_of, restrict_carrier, Set.preimage_id', Set.mem_preimage,
+                      SetLike.mem_coe]
+                    constructor
+                    · change _ ∈ U.unop at h₁
+                      convert h₁
+                      erw [TopCat.pullbackIsoProdSubtype_inv_fst_apply]
+                    · erw [TopCat.pullbackIsoProdSubtype_inv_snd_apply]
                   · rintro _ ⟨x, h₁, rfl⟩
-                    exact ⟨_, h₁, ConcreteCategory.congr_hom pullback.condition x⟩))
+                    -- next line used to be
+                    --  `exact ⟨_, h₁, ConcreteCategory.congr_hom pullback.condition x⟩))`
+                    -- before #13170
+                    refine ⟨_, h₁, ?_⟩
+                    change (_ ≫ f.base) _ = (_ ≫ g.base) _
+                    rw [pullback.condition]))
       naturality := by
         intro U V i
         induction U using Opposite.rec'
@@ -432,7 +445,7 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
                   erw [← this]
                   dsimp [s']
                   -- Porting note: need a bit more hand holding here about function composition
-                  rw [coe_comp, show ∀ f g, f ∘ g = fun x => f (g x) from fun _ _ => rfl]
+                  rw [show ∀ f g, f ∘ g = fun x => f (g x) from fun _ _ => rfl]
                   erw [← Set.preimage_preimage]
                 erw [Set.preimage_image_eq _
                     (TopCat.snd_openEmbedding_of_left_openEmbedding hf.base_open g.base).inj]
@@ -1169,7 +1182,8 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
   have : _ = (pullback.fst : pullback f g ⟶ _).val.base :=
     PreservesPullback.iso_hom_fst
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) f g
-  rw [LocallyRingedSpace.comp_val, SheafedSpace.comp_base, ← this, ← Category.assoc, coe_comp]
+  erw [LocallyRingedSpace.comp_val, SheafedSpace.comp_base, ← this, ← Category.assoc, coe_comp]
+   -- now `erw` after #13170
   rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
   -- Porting note (#11224): change `rw` to `erw` on this lemma
   · erw [TopCat.pullback_fst_range]
@@ -1177,7 +1191,7 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
     constructor
     · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
     · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
-  · rw [← TopCat.epi_iff_surjective]
+  · erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
     rw [show (inv (pullback.snd : pullback f g ⟶ _)).val.base = _ from
         (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _).map_inv _]
     infer_instance

@@ -237,12 +237,31 @@ lemma quotientInfToPiQuotient_surj [Finite ι] {I : ι → Ideal R}
   · intros j hj
     simp [(he j).2 i hj.symm]
 
-/-- Chinese Remainder Theorem. Eisenbud Ex.2.6. Similar to Atiyah-Macdonald 1.10 and Stacks 00DT -/
+/-- **Chinese Remainder Theorem**. Eisenbud Ex.2.6.
+Similar to Atiyah-Macdonald 1.10 and Stacks 00DT -/
 noncomputable def quotientInfRingEquivPiQuotient [Finite ι] (f : ι → Ideal R)
     (hf : Pairwise fun i j => IsCoprime (f i) (f j)) : (R ⧸ ⨅ i, f i) ≃+* ∀ i, R ⧸ f i :=
   { Equiv.ofBijective _ ⟨quotientInfToPiQuotient_inj f, quotientInfToPiQuotient_surj hf⟩,
     quotientInfToPiQuotient f with }
 #align ideal.quotient_inf_ring_equiv_pi_quotient Ideal.quotientInfRingEquivPiQuotient
+
+/-- Corollary of Chinese Remainder Theorem: if `Iᵢ` are pairwise coprime ideals in a
+commutative ring then the canonical map `R → ∏ (R ⧸ Iᵢ)` is surjective. -/
+lemma pi_quotient_surjective {R : Type*} [CommRing R] {ι : Type*} [Finite ι] {I : ι → Ideal R}
+    (hf : Pairwise fun i j ↦ IsCoprime (I i) (I j)) (x : (i : ι) → R ⧸ I i) :
+    ∃ r : R, ∀ i, r = x i := by
+  obtain ⟨y, rfl⟩ := Ideal.quotientInfToPiQuotient_surj hf x
+  obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective y
+  exact ⟨r, fun i ↦ rfl⟩
+
+-- variant of `IsDedekindDomain.exists_forall_sub_mem_ideal` which doesn't assume Dedekind domain!
+/-- Corollary of Chinese Remainder Theorem: if `Iᵢ` are pairwise coprime ideals in a
+commutative ring then given elements `xᵢ` you can find `r` with `r - xᵢ ∈ Iᵢ` for all `i`. -/
+lemma exists_forall_sub_mem_ideal {R : Type*} [CommRing R] {ι : Type*} [Finite ι]
+    {I : ι → Ideal R} (hI : Pairwise fun i j ↦ IsCoprime (I i) (I j)) (x : ι → R) :
+    ∃ r : R, ∀ i, r - x i ∈ I i := by
+  obtain ⟨y, hy⟩ := Ideal.pi_quotient_surjective hI (fun i ↦ x i)
+  exact ⟨y, fun i ↦ (Submodule.Quotient.eq (I i)).mp <| hy i⟩
 
 /-- **Chinese remainder theorem**, specialized to two ideals. -/
 noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
