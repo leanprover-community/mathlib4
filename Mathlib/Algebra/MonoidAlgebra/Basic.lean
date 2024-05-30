@@ -54,8 +54,6 @@ Similarly, I attempted to just define
 
 noncomputable section
 
-open BigOperators
-
 open Finset
 
 open Finsupp hiding single mapDomain
@@ -276,6 +274,9 @@ theorem natCast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k)
   rfl
 #align monoid_algebra.nat_cast_def MonoidAlgebra.natCast_def
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_def := natCast_def
+
 end MulOneClass
 
 /-! #### Semiring structure -/
@@ -354,6 +355,9 @@ theorem intCast_def [Ring k] [MulOneClass G] (z : ℤ) :
   rfl
 #align monoid_algebra.int_cast_def MonoidAlgebra.intCast_def
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_def := intCast_def
+
 instance ring [Ring k] [Monoid G] : Ring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonAssocRing, MonoidAlgebra.semiring with }
 #align monoid_algebra.ring MonoidAlgebra.ring
@@ -429,21 +433,21 @@ theorem mul_apply [DecidableEq G] [Mul G] (f g : MonoidAlgebra k G) (x : G) :
 #align monoid_algebra.mul_apply MonoidAlgebra.mul_apply
 
 theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Finset (G × G))
-    (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 * p.2 = x) : (f * g) x = ∑ p in s, f p.1 * g p.2 := by
+    (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 * p.2 = x) : (f * g) x = ∑ p ∈ s, f p.1 * g p.2 := by
   classical exact
       let F : G × G → k := fun p => if p.1 * p.2 = x then f p.1 * g p.2 else 0
       calc
-        (f * g) x = ∑ a₁ in f.support, ∑ a₂ in g.support, F (a₁, a₂) := mul_apply f g x
-        _ = ∑ p in f.support ×ˢ g.support, F p := Finset.sum_product.symm
-        _ = ∑ p in (f.support ×ˢ g.support).filter fun p : G × G => p.1 * p.2 = x, f p.1 * g p.2 :=
+        (f * g) x = ∑ a₁ ∈ f.support, ∑ a₂ ∈ g.support, F (a₁, a₂) := mul_apply f g x
+        _ = ∑ p ∈ f.support ×ˢ g.support, F p := Finset.sum_product.symm
+        _ = ∑ p ∈ (f.support ×ˢ g.support).filter fun p : G × G => p.1 * p.2 = x, f p.1 * g p.2 :=
           (Finset.sum_filter _ _).symm
-        _ = ∑ p in s.filter fun p : G × G => p.1 ∈ f.support ∧ p.2 ∈ g.support, f p.1 * g p.2 :=
+        _ = ∑ p ∈ s.filter fun p : G × G => p.1 ∈ f.support ∧ p.2 ∈ g.support, f p.1 * g p.2 :=
           (sum_congr
             (by
               ext
               simp only [mem_filter, mem_product, hs, and_comm])
             fun _ _ => rfl)
-        _ = ∑ p in s, f p.1 * g p.2 :=
+        _ = ∑ p ∈ s, f p.1 * g p.2 :=
           sum_subset (filter_subset _ _) fun p hps hp => by
             simp only [mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
             by_cases h1 : f p.1 = 0
@@ -1081,7 +1085,7 @@ variable {ι : Type ui}
 -- attribute [local reducible] MonoidAlgebra -- Porting note: `reducible` cannot be `local`.
 
 theorem prod_single [CommSemiring k] [CommMonoid G] {s : Finset ι} {a : ι → G} {b : ι → k} :
-    (∏ i in s, single (a i) (b i)) = single (∏ i in s, a i) (∏ i in s, b i) :=
+    (∏ i ∈ s, single (a i) (b i)) = single (∏ i ∈ s, a i) (∏ i ∈ s, b i) :=
   Finset.cons_induction_on s rfl fun a s has ih => by
     rw [prod_cons has, ih, single_mul_single, prod_cons has, prod_cons has]
 #align monoid_algebra.prod_single MonoidAlgebra.prod_single
@@ -1427,6 +1431,9 @@ theorem natCast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
   rfl
 #align add_monoid_algebra.nat_cast_def AddMonoidAlgebra.natCast_def
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_def := natCast_def
+
 end MulOneClass
 
 /-! #### Semiring structure -/
@@ -1506,6 +1513,9 @@ theorem intCast_def [Ring k] [AddZeroClass G] (z : ℤ) :
   rfl
 #align add_monoid_algebra.int_cast_def AddMonoidAlgebra.intCast_def
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_def := intCast_def
+
 instance ring [Ring k] [AddMonoid G] : Ring k[G] :=
   { AddMonoidAlgebra.nonAssocRing, AddMonoidAlgebra.semiring with }
 #align add_monoid_algebra.ring AddMonoidAlgebra.ring
@@ -1570,7 +1580,7 @@ theorem mul_apply [DecidableEq G] [Add G] (f g : k[G]) (x : G) :
 #align add_monoid_algebra.mul_apply AddMonoidAlgebra.mul_apply
 
 theorem mul_apply_antidiagonal [Add G] (f g : k[G]) (x : G) (s : Finset (G × G))
-    (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 + p.2 = x) : (f * g) x = ∑ p in s, f p.1 * g p.2 :=
+    (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 + p.2 = x) : (f * g) x = ∑ p ∈ s, f p.1 * g p.2 :=
   @MonoidAlgebra.mul_apply_antidiagonal k (Multiplicative G) _ _ _ _ _ s @hs
 #align add_monoid_algebra.mul_apply_antidiagonal AddMonoidAlgebra.mul_apply_antidiagonal
 
@@ -2080,7 +2090,7 @@ universe ui
 variable {ι : Type ui}
 
 theorem prod_single [CommSemiring k] [AddCommMonoid G] {s : Finset ι} {a : ι → G} {b : ι → k} :
-    (∏ i in s, single (a i) (b i)) = single (∑ i in s, a i) (∏ i in s, b i) :=
+    (∏ i ∈ s, single (a i) (b i)) = single (∑ i ∈ s, a i) (∏ i ∈ s, b i) :=
   Finset.cons_induction_on s rfl fun a s has ih => by
     rw [prod_cons has, ih, single_mul_single, sum_cons has, prod_cons has]
 #align add_monoid_algebra.prod_single AddMonoidAlgebra.prod_single

@@ -144,7 +144,7 @@ theorem Iso.isZero_iff {X Y : C} (e : X ≅ Y) : IsZero X ↔ IsZero Y :=
 #align category_theory.iso.is_zero_iff CategoryTheory.Iso.isZero_iff
 
 theorem Functor.isZero (F : C ⥤ D) (hF : ∀ X, IsZero (F.obj X)) : IsZero F := by
-  constructor <;> intro G <;> refine' ⟨⟨⟨_⟩, _⟩⟩
+  constructor <;> intro G <;> refine ⟨⟨⟨?_⟩, ?_⟩⟩
   · refine
       { app := fun X => (hF _).to_ _
         naturality := ?_ }

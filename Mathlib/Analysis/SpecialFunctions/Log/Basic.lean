@@ -224,9 +224,15 @@ theorem log_natCast_nonneg (n : ℕ) : 0 ≤ log n := by
     have : (1 : ℝ) ≤ n := mod_cast Nat.one_le_of_lt <| Nat.pos_of_ne_zero hn
     exact log_nonneg this
 
+@[deprecated (since := "2024-04-17")]
+alias log_nat_cast_nonneg := log_natCast_nonneg
+
 theorem log_neg_natCast_nonneg (n : ℕ) : 0 ≤ log (-n) := by
   rw [← log_neg_eq_log, neg_neg]
   exact log_natCast_nonneg _
+
+@[deprecated (since := "2024-04-17")]
+alias log_neg_nat_cast_nonneg := log_neg_natCast_nonneg
 
 theorem log_intCast_nonneg (n : ℤ) : 0 ≤ log n := by
   cases lt_trichotomy 0 n with
@@ -240,6 +246,9 @@ theorem log_intCast_nonneg (n : ℤ) : 0 ≤ log n := by
           have : (1 : ℝ) ≤ -n := by rw [← neg_zero, ← lt_neg] at hn; exact mod_cast hn
           rw [← log_neg_eq_log]
           exact log_nonneg this
+
+@[deprecated (since := "2024-04-17")]
+alias log_int_cast_nonneg := log_intCast_nonneg
 
 theorem strictMonoOn_log : StrictMonoOn log (Set.Ioi 0) := fun _ hx _ _ hxy => log_lt_log hx hxy
 #align real.strict_mono_on_log Real.strictMonoOn_log
@@ -373,10 +382,8 @@ theorem continuousAt_log_iff : ContinuousAt log x ↔ x ≠ 0 := by
     (h.tendsto.mono_left inf_le_left)
 #align real.continuous_at_log_iff Real.continuousAt_log_iff
 
-open BigOperators
-
 theorem log_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
-    log (∏ i in s, f i) = ∑ i in s, log (f i) := by
+    log (∏ i ∈ s, f i) = ∑ i ∈ s, log (f i) := by
   induction' s using Finset.cons_induction_on with a s ha ih
   · simp
   · rw [Finset.forall_mem_cons] at hf

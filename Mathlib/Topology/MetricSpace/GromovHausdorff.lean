@@ -419,7 +419,7 @@ instance : MetricSpace GHSpace where
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   dist_self x := by
     rcases exists_rep x with ⟨y, hy⟩
-    refine' le_antisymm _ _
+    refine le_antisymm ?_ ?_
     · apply csInf_le
       · exact ⟨0, by rintro b ⟨⟨u, v⟩, -, rfl⟩; exact hausdorffDist_nonneg⟩
       · simp only [mem_image, mem_prod, mem_setOf_eq, Prod.exists]
@@ -497,8 +497,8 @@ instance : MetricSpace GHSpace where
               (range (toGlueL hΦ hΨ ∘ optimalGHInjr X Y)) +
             hausdorffDist (range (toGlueL hΦ hΨ ∘ optimalGHInjr X Y))
               (range (toGlueR hΦ hΨ ∘ optimalGHInjr Y Z)) := by
-        refine' hausdorffDist_triangle <| hausdorffEdist_ne_top_of_nonempty_of_bounded
-          (range_nonempty _) (range_nonempty _) _ _
+        refine hausdorffDist_triangle <| hausdorffEdist_ne_top_of_nonempty_of_bounded
+          (range_nonempty _) (range_nonempty _) ?_ ?_
         · exact (isCompact_range (Isometry.continuous
             ((toGlueL_isometry hΦ hΨ).comp (isometry_optimalGHInjl X Y)))).isBounded
         · exact (isCompact_range (Isometry.continuous
@@ -621,7 +621,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
   have : hausdorffDist (range Fl) (Fl '' s) ≤ ε₁ := by
     rw [← image_univ, hausdorffDist_image Il]
     have : 0 ≤ ε₁ := le_trans dist_nonneg Dxs
-    refine' hausdorffDist_le_of_mem_dist this (fun x _ => hs x) fun x _ =>
+    refine hausdorffDist_le_of_mem_dist this (fun x _ => hs x) fun x _ =>
       ⟨x, mem_univ _, by simpa only [dist_self]⟩
   have : hausdorffDist (Fl '' s) (Fr '' range Φ) ≤ ε₂ / 2 + δ := by
     refine hausdorffDist_le_of_mem_dist (by linarith) ?_ ?_
@@ -654,7 +654,7 @@ end
 --section
 /-- The Gromov-Hausdorff space is second countable. -/
 instance : SecondCountableTopology GHSpace := by
-  refine' secondCountable_of_countable_discretization fun δ δpos => _
+  refine secondCountable_of_countable_discretization fun δ δpos => ?_
   let ε := 2 / 5 * δ
   have εpos : 0 < ε := mul_pos (by norm_num) δpos
   have : ∀ p : GHSpace, ∃ s : Set p.Rep, s.Finite ∧ univ ⊆ ⋃ x ∈ s, ball x ε := fun p => by
@@ -676,7 +676,7 @@ instance : SecondCountableTopology GHSpace := by
   -- in the `ε`-dense set `s p`.
   let F : GHSpace → Σ n : ℕ, Fin n → Fin n → ℤ := fun p =>
     ⟨N p, fun a b => ⌊ε⁻¹ * dist ((E p).symm a) ((E p).symm b)⌋⟩
-  refine' ⟨Σ n, Fin n → Fin n → ℤ, by infer_instance, F, fun p q hpq => _⟩
+  refine ⟨Σ n, Fin n → Fin n → ℤ, by infer_instance, F, fun p q hpq => ?_⟩
   /- As the target space of F is countable, it suffices to show that two points
     `p` and `q` with `F p = F q` are at distance `≤ δ`.
     For this, we construct a map `Φ` from `s p ⊆ p.rep` (representing `p`)
@@ -691,7 +691,7 @@ instance : SecondCountableTopology GHSpace := by
   -- Use the almost isometry `Φ` to show that `p.rep` and `q.rep`
   -- are within controlled Gromov-Hausdorff distance.
   have main : ghDist p.Rep q.Rep ≤ ε + ε / 2 + ε := by
-    refine' ghDist_le_of_approx_subsets Φ _ _ _
+    refine ghDist_le_of_approx_subsets Φ ?_ ?_ ?_
     · show ∀ x : p.Rep, ∃ y ∈ s p, dist x y ≤ ε
       -- by construction, `s p` is `ε`-dense
       intro x
@@ -1010,7 +1010,7 @@ instance : CompleteSpace GHSpace := by
   set d := fun n : ℕ ↦ ((1 : ℝ) / 2) ^ n
   have : ∀ n : ℕ, 0 < d n := fun _ ↦ by positivity
   -- start from a sequence of nonempty compact metric spaces within distance `1/2^n` of each other
-  refine' Metric.complete_of_convergent_controlled_sequences d this fun u hu => _
+  refine Metric.complete_of_convergent_controlled_sequences d this fun u hu => ?_
   -- `X n` is a representative of `u n`
   let X n := (u n).Rep
   -- glue them together successively in an optimal way, getting a sequence of metric spaces `Y n`
@@ -1035,7 +1035,7 @@ instance : CompleteSpace GHSpace := by
   let X2 n := range (coeZ ∘ Φ n ∘ (Y n).embed)
   have isom : ∀ n, Isometry (coeZ ∘ Φ n ∘ (Y n).embed) := by
     intro n
-    refine' UniformSpace.Completion.coe_isometry.comp _
+    refine UniformSpace.Completion.coe_isometry.comp ?_
     exact (toInductiveLimit_isometry _ _).comp (Y n).isom
   -- The Hausdorff distance of `X2 n` and `X2 (n+1)` is by construction the distance between
   -- `u n` and `u (n+1)`, therefore bounded by `1/2^n`
@@ -1071,7 +1071,7 @@ instance : CompleteSpace GHSpace := by
   -- `X3 n` is a Cauchy sequence by construction, as the successive distances are
   -- bounded by `(1/2)^n`
   have : CauchySeq X3 := by
-    refine' cauchySeq_of_le_geometric (1 / 2) 1 (by norm_num) fun n => _
+    refine cauchySeq_of_le_geometric (1 / 2) 1 (by norm_num) fun n => ?_
     rw [one_mul]
     exact le_of_lt (D2 n)
   -- therefore, it converges to a limit `L`

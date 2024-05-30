@@ -21,7 +21,7 @@ show that `θ` is differentiable on `ℍ`, and `θ(τ) - 1` has exponential deca
 
 open Complex Real Asymptotics Filter Topology
 
-open scoped Real BigOperators UpperHalfPlane
+open scoped Real UpperHalfPlane
 
 /-- Jacobi's one-variable theta function `∑' (n : ℤ), exp (π * I * n ^ 2 * τ)`. -/
 noncomputable def jacobiTheta (τ : ℂ) : ℂ := ∑' n : ℤ, cexp (π * I * (n : ℂ) ^ 2 * τ)
