@@ -8,7 +8,8 @@ on:
 
 jobs:
   add-comment:
-    if: github.event.label.name == 'move-decls'
+    if: (github.event.label.name == 'move-decls') ||
+        ((github.event.issue.pull_request != 'null') && (startsWith(github.event.comment.body, 'move-decls') || contains(toJSON(github.event.comment.body), '\r\nmove-decls')))
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
