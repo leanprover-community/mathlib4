@@ -37,8 +37,6 @@ multiplicative character
 -/
 
 
-section DefinitionAndGroup
-
 /-!
 ### Definitions related to multiplicative characters
 
@@ -87,9 +85,9 @@ attribute [simp] MulCharClass.map_nonunit
 
 end Defi
 
-section Group
-
 namespace MulChar
+
+section Group
 
 -- The domain of our multiplicative characters
 variable {R : Type u} [CommMonoid R]
@@ -140,6 +138,9 @@ instance : MulCharClass (MulChar R R') R R' where
 theorem map_nonunit (χ : MulChar R R') {a : R} (ha : ¬IsUnit a) : χ a = 0 :=
   χ.map_nonunit' a ha
 #align mul_char.map_nonunit MulChar.map_nonunit
+
+lemma map_unit (χ : MulChar R R') (a : Rˣ) : IsUnit (χ a) :=
+  IsUnit.map χ <| a.isUnit
 
 /-- Extensionality. Since `MulChar`s always take the value zero on non-units, it is sufficient
 to compare the values on units. -/
@@ -347,10 +348,7 @@ theorem inv_apply {R : Type u} [CommMonoidWithZero R] (χ : MulChar R R') (a : R
     have h := IsUnit.map χ ha
     apply_fun (χ a * ·) using IsUnit.mul_right_injective h
     dsimp only
-    -- Porting note: was
-    -- rw [Ring.mul_inverse_cancel _ h, ← map_mul, Ring.mul_inverse_cancel _ ha, MulChar.map_one]
-    erw [Ring.mul_inverse_cancel _ h, ← map_mul, Ring.mul_inverse_cancel _ ha]
-    exact (MulChar.map_one χ).symm
+    rw [Ring.mul_inverse_cancel _ h, ← map_mul, Ring.mul_inverse_cancel _ ha, map_one]
   · revert ha
     nontriviality R
     intro ha
@@ -369,9 +367,7 @@ theorem inv_apply' {R : Type u} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ 
 theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
   ext x
   rw [coeToFun_mul, Pi.mul_apply, inv_apply_eq_inv]
-  -- Porting note: was
-  -- simp only [Ring.inverse_mul_cancel _ (IsUnit.map _ x.isUnit)]
-  erw [Ring.inverse_mul_cancel _ (IsUnit.map χ x.isUnit)]
+  simp only [Ring.inverse_mul_cancel _ (IsUnit.map χ x.isUnit)]
   rw [one_apply_coe]
 #align mul_char.inv_mul MulChar.inv_mul
 
@@ -407,11 +403,27 @@ theorem pow_apply' (χ : MulChar R R') {n : ℕ} (hn : n ≠ 0) (a : R) : (χ ^ 
   · rw [map_nonunit (χ ^ n) ha, map_nonunit χ ha, zero_pow hn]
 #align mul_char.pow_apply' MulChar.pow_apply'
 
-end MulChar
+lemma equivToUnitHom_mul_apply (χ₁ χ₂ : MulChar R R') (a : Rˣ) :
+    equivToUnitHom (χ₁ * χ₂) a = equivToUnitHom χ₁ a * equivToUnitHom χ₂ a := by
+  apply_fun ((↑) : R'ˣ → R') using Units.ext
+  push_cast
+  simp_rw [coe_equivToUnitHom]
+  rfl
+
+/-- The equivalence between multiplicative characters and homomorphisms of unit groups
+as a multiplicative equivalence. -/
+noncomputable
+def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
+  { equivToUnitHom with
+    map_mul' := by
+      intro χ ψ
+      ext
+      simp only [Equiv.toFun_as_coe, coe_equivToUnitHom, coeToFun_mul, Pi.mul_apply,
+        MonoidHom.mul_apply, Units.val_mul]
+  }
 
 end Group
 
-end DefinitionAndGroup
 
 /-!
 ### Properties of multiplicative characters
@@ -425,9 +437,7 @@ We now (mostly) assume that the target is a commutative ring.
 
 section Properties
 
-namespace MulChar
-
-universe u v w
+universe w
 
 section nontrivial
 
@@ -568,6 +578,53 @@ theorem sum_one_eq_card_units [DecidableEq R] :
 
 end sum
 
-end MulChar
-
 end Properties
+
+/-!
+### Multiplicative characters with finite domain
+-/
+
+section Finite
+
+variable {M : Type*} [CommMonoid M] [Fintype M] [DecidableEq M]
+variable {R : Type*} [CommMonoidWithZero R]
+
+/-- A multiplicative character on a finite commutative monoid has finite (= positive) order. -/
+lemma orderOf_pos (χ : MulChar M R) : 0 < orderOf χ := by
+  let e := MulChar.mulEquivToUnitHom (R := M) (R' := R)
+  rw [← MulEquiv.orderOf_eq e χ]
+  have : orderOf (e χ) ∣ Fintype.card Mˣ := by
+    refine orderOf_dvd_of_pow_eq_one ?_
+    ext1 x
+    change (e χ x) ^ _ = _
+    simp only [← map_pow, pow_card_eq_one, map_one, MonoidHom.one_apply]
+  exact Nat.pos_of_ne_zero <| ne_zero_of_dvd_ne_zero Fintype.card_ne_zero this
+
+variable (M) in
+/-- The order of the unit group of a finite monoid as a `PNat`. -/
+abbrev Monoid.orderUnits : ℕ+ := ⟨Fintype.card Mˣ, Fintype.card_pos⟩
+
+/-- If `χ` is a multiplicative character on a finite commutative monoid `M`, then `χ^#Mˣ = 1`. -/
+protected
+lemma pow_card_eq_one (χ : MulChar M R) : χ ^ (Fintype.card Mˣ) = 1 := by
+  ext1
+  rw [pow_apply_coe, ← map_pow, one_apply_coe, ← Units.val_pow_eq_pow_val, pow_card_eq_one,
+    Units.val_eq_one.mpr rfl, map_one]
+
+end Finite
+
+/-!
+### Multiplicative characters on rings
+-/
+
+section Ring
+
+variable {R R' : Type*} [CommRing R] [CommMonoidWithZero R']
+
+/-- If `χ` is of odd order, then `χ(-1) = 1` -/
+lemma val_neg_one_eq_one_of_odd {χ : MulChar R R'} {n : ℕ} (hn : Odd n) (hχ : χ ^ n = 1) :
+    χ (-1) = 1 := by
+  rw [← hn.neg_one_pow, map_pow, ← χ.pow_apply' (Nat.ne_of_odd_add hn), hχ]
+  exact MulChar.one_apply_coe (-1)
+
+end Ring
