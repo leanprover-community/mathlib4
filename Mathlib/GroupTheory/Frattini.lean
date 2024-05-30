@@ -8,7 +8,12 @@ variable {G H : Type*} [Group G] [Group H]
 
 open Subgroup
 
+/--
+An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
+defined by sending subgroups to their inverse images.
 
+See also `MulEquiv.mapSubgroup` which maps subgroups to their forward images.
+-/
 @[simps]
 def MulEquiv.comapSubgroup (f : G ≃* H) : Subgroup H ≃o Subgroup G where
   toFun := Subgroup.comap f
@@ -26,6 +31,7 @@ theorem MulEquiv.isCoatom_comap (f : G ≃* H) {K : Subgroup H} :
 
 variable (G)
 
+/-- The Frattini subgroup is characteristic. -/
 theorem frattini_characteristic : (frattini G).Characteristic := by
     rw [characteristic_iff_comap_eq]
     intro φ
