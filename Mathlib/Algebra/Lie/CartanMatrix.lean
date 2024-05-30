@@ -294,6 +294,7 @@ instance instCartanSubalgebra : IsCartanSubalgebra (cartanSubalgebra R A) where
     apply le_antisymm _ (le_normalizer _)
     intro x hx
     rw [mem_normalizer_iff] at hx
+    -- TODO: we will need to assume that `A` is a Cartan matrix
     sorry
 
 end cartanSubalgebra
