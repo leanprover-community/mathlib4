@@ -25,7 +25,7 @@ noncomputable section
 
 universe u v v' w
 
-open BigOperators Cardinal Basis Submodule Function Set DirectSum FiniteDimensional
+open Cardinal Basis Submodule Function Set DirectSum FiniteDimensional
 
 section Tower
 

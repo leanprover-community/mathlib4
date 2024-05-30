@@ -86,8 +86,6 @@ commutative ring, field of fractions
 
 open Function
 
-open BigOperators
-
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
@@ -1100,6 +1098,9 @@ theorem mk_natCast (m : ℕ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℕ) _
 #align localization.mk_nat_cast Localization.mk_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias mk_nat_cast := mk_natCast
+
 variable [IsLocalization M S]
 
 section
@@ -1200,7 +1201,7 @@ instance : CommRing (Localization M) :=
         (by
           intros
           simp only [add_mk, Localization.mk_mul, neg_mk, ← mk_zero 1]
-          refine' mk_eq_mk_iff.mpr (r_of_eq _)
+          refine mk_eq_mk_iff.mpr (r_of_eq ?_)
           simp only [Submonoid.coe_mul]
           ring) }
 
@@ -1216,6 +1217,9 @@ theorem sub_mk (a c) (b d) : (mk a b : Localization M) - mk c d =
 theorem mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℤ) _
 #align localization.mk_int_cast Localization.mk_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias mk_int_cast := mk_intCast
 
 end Localization
 

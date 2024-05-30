@@ -3,7 +3,6 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison
 -/
-import Mathlib.Algebra.Group.Fin
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.List.InsertNth
 import Mathlib.Logic.Relation
@@ -1482,7 +1481,7 @@ instance : Add PGame.{u} :=
     induction' x with xl xr _ _ IHxl IHxr generalizing y
     induction' y with yl yr yL yR IHyl IHyr
     have y := mk yl yr yL yR
-    refine' ⟨Sum xl yl, Sum xr yr, Sum.rec _ _, Sum.rec _ _⟩
+    refine ⟨Sum xl yl, Sum xr yr, Sum.rec ?_ ?_, Sum.rec ?_ ?_⟩
     · exact fun i => IHxl i y
     · exact IHyl
     · exact fun i => IHxr i y

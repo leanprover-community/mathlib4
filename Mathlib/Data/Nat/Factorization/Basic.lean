@@ -5,9 +5,9 @@ Authors: Stuart Presnell
 -/
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Nat.GCD.BigOperators
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import data.nat.factorization.basic from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
@@ -42,8 +42,6 @@ with a normalization function, and then deduplicated.  The basics of this have b
 attribute [-instance] instBEqNat
 
 open Nat Finset List Finsupp
-
-open BigOperators
 
 namespace Nat
 variable {a b m n p : ℕ}
@@ -384,7 +382,7 @@ theorem ord_compl_mul (a b p : ℕ) : ord_compl[p] (a * b) = ord_compl[p] a * or
   if ha : a = 0 then simp [ha] else
   if hb : b = 0 then simp [hb] else
   simp only [ord_proj_mul p ha hb]
-  rw [mul_div_mul_comm_of_dvd_dvd (ord_proj_dvd a p) (ord_proj_dvd b p)]
+  rw [div_mul_div_comm (ord_proj_dvd a p) (ord_proj_dvd b p)]
 #align nat.ord_compl_mul Nat.ord_compl_mul
 
 /-! ### Factorization and divisibility -/

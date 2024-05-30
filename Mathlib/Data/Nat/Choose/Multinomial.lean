@@ -28,7 +28,7 @@ This file defines the multinomial coefficient and several small lemma's for mani
 -/
 
 open Finset
-open scoped BigOperators Nat
+open scoped Nat
 
 namespace Nat
 

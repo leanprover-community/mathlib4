@@ -228,7 +228,7 @@ protected theorem IsClosed.balancedCore (hU : IsClosed U) : IsClosed (balancedCo
   by_cases h : (0 : E) ∈ U
   · rw [balancedCore_eq_iInter h]
     refine' isClosed_iInter fun a => _
-    refine' isClosed_iInter fun ha => _
+    refine isClosed_iInter fun ha => ?_
     have ha' := lt_of_lt_of_le zero_lt_one ha
     rw [norm_pos_iff] at ha'
     exact isClosedMap_smul_of_ne_zero ha' U hU

@@ -226,8 +226,8 @@ instance [SigmaCompactSpace Y] : SigmaCompactSpace (X × Y) :=
 
 instance [Finite ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, SigmaCompactSpace (X i)] :
     SigmaCompactSpace (∀ i, X i) := by
-  refine' ⟨⟨fun n => Set.pi univ fun i => compactCovering (X i) n,
-    fun n => isCompact_univ_pi fun i => isCompact_compactCovering (X i) _, _⟩⟩
+  refine ⟨⟨fun n => Set.pi univ fun i => compactCovering (X i) n,
+    fun n => isCompact_univ_pi fun i => isCompact_compactCovering (X i) _, ?_⟩⟩
   rw [iUnion_univ_pi_of_monotone]
   · simp only [iUnion_compactCovering, pi_univ]
   · exact fun i => compactCovering_subset (X i)
@@ -244,13 +244,13 @@ instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
   cases isEmpty_or_nonempty ι
   · infer_instance
   · rcases exists_surjective_nat ι with ⟨f, hf⟩
-    refine' ⟨⟨fun n => ⋃ k ≤ n, Sigma.mk (f k) '' compactCovering (X (f k)) n, fun n => _, _⟩⟩
-    · refine' (finite_le_nat _).isCompact_biUnion fun k _ => _
+    refine ⟨⟨fun n => ⋃ k ≤ n, Sigma.mk (f k) '' compactCovering (X (f k)) n, fun n => ?_, ?_⟩⟩
+    · refine (finite_le_nat _).isCompact_biUnion fun k _ => ?_
       exact (isCompact_compactCovering _ _).image continuous_sigmaMk
     · simp only [iUnion_eq_univ_iff, Sigma.forall, mem_iUnion, hf.forall]
       intro k y
       rcases exists_mem_compactCovering y with ⟨n, hn⟩
-      refine' ⟨max k n, k, le_max_left _ _, mem_image_of_mem _ _⟩
+      refine ⟨max k n, k, le_max_left _ _, mem_image_of_mem _ ?_⟩
       exact compactCovering_subset _ (le_max_right _ _) hn
 
 protected theorem ClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : ClosedEmbedding e) :

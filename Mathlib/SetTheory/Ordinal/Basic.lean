@@ -55,6 +55,8 @@ for the empty set by convention.
 * `ω` is a notation for the first infinite ordinal in the locale `Ordinal`.
 -/
 
+assert_not_exists Module
+assert_not_exists Field
 
 noncomputable section
 
@@ -1092,6 +1094,9 @@ theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
 theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
   rfl
 #align ordinal.nat_cast_succ Ordinal.natCast_succ
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_succ := natCast_succ
 
 instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
   default := ⟨0, by simp⟩
