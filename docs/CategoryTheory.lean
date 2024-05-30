@@ -454,9 +454,9 @@ example (X : ModuleCat R) :
 
 open MonoidalCategory
 
-section
-
 universe u
+
+section
 
 variable (C : Type u) [Category C] [MonoidalCategory C]
 
