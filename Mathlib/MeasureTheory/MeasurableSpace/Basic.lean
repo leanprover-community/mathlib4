@@ -1689,7 +1689,7 @@ def Set.singleton (a : α) : ({a} : Set α) ≃ᵐ Unit where
 def Set.rangeInl : (range Sum.inl : Set (α ⊕ β)) ≃ᵐ α where
   toEquiv := Equiv.Set.rangeInl α β
   measurable_toFun s (hs : MeasurableSet s) := by
-    refine' ⟨_, hs.inl_image, Set.ext _⟩
+    refine ⟨_, hs.inl_image, Set.ext ?_⟩
     rintro ⟨ab, a, rfl⟩
     simp [Set.range_inl]
   measurable_invFun := Measurable.subtype_mk measurable_inl
@@ -1699,7 +1699,7 @@ def Set.rangeInl : (range Sum.inl : Set (α ⊕ β)) ≃ᵐ α where
 def Set.rangeInr : (range Sum.inr : Set (Sum α β)) ≃ᵐ β where
   toEquiv := Equiv.Set.rangeInr α β
   measurable_toFun s (hs : MeasurableSet s) := by
-    refine' ⟨_, hs.inr_image, Set.ext _⟩
+    refine ⟨_, hs.inr_image, Set.ext ?_⟩
     rintro ⟨ab, b, rfl⟩
     simp [Set.range_inr]
   measurable_invFun := Measurable.subtype_mk measurable_inr
@@ -1710,16 +1710,16 @@ def sumProdDistrib (α β γ) [MeasurableSpace α] [MeasurableSpace β] [Measura
     (α ⊕ β) × γ ≃ᵐ (α × γ) ⊕ (β × γ) where
   toEquiv := .sumProdDistrib α β γ
   measurable_toFun := by
-    refine'
+    refine
       measurable_of_measurable_union_cover (range Sum.inl ×ˢ (univ : Set γ))
         (range Sum.inr ×ˢ (univ : Set γ)) (measurableSet_range_inl.prod MeasurableSet.univ)
         (measurableSet_range_inr.prod MeasurableSet.univ)
-        (by rintro ⟨a | b, c⟩ <;> simp [Set.prod_eq]) _ _
-    · refine' (Set.prod (range Sum.inl) univ).symm.measurable_comp_iff.1 _
-      refine' (prodCongr Set.rangeInl (Set.univ _)).symm.measurable_comp_iff.1 _
+        (by rintro ⟨a | b, c⟩ <;> simp [Set.prod_eq]) ?_ ?_
+    · refine (Set.prod (range Sum.inl) univ).symm.measurable_comp_iff.1 ?_
+      refine (prodCongr Set.rangeInl (Set.univ _)).symm.measurable_comp_iff.1 ?_
       exact measurable_inl
-    · refine' (Set.prod (range Sum.inr) univ).symm.measurable_comp_iff.1 _
-      refine' (prodCongr Set.rangeInr (Set.univ _)).symm.measurable_comp_iff.1 _
+    · refine (Set.prod (range Sum.inr) univ).symm.measurable_comp_iff.1 ?_
+      refine (prodCongr Set.rangeInr (Set.univ _)).symm.measurable_comp_iff.1 ?_
       exact measurable_inr
   measurable_invFun :=
     measurable_sum ((measurable_inl.comp measurable_fst).prod_mk measurable_snd)
