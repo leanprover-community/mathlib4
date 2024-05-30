@@ -142,6 +142,9 @@ theorem toComplex_inj {x y : ℤ[i]} : (x : ℂ) = y ↔ x = y := by
   cases x; cases y; simp [toComplex_def₂]
 #align gaussian_int.to_complex_inj GaussianInt.toComplex_inj
 
+lemma toComplex_injective : Function.Injective GaussianInt.toComplex :=
+  fun ⦃_ _⦄ ↦ toComplex_inj.mp
+
 @[simp]
 theorem toComplex_eq_zero {x : ℤ[i]} : (x : ℂ) = 0 ↔ x = 0 := by
   rw [← toComplex_zero, toComplex_inj]
