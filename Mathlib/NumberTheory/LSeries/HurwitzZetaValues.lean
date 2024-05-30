@@ -42,7 +42,7 @@ variable {k : ℕ} {x : ℝ}
 
 /-- Express the value of `cosZeta` at a positive even integer as a value
 of the Bernoulli polynomial. -/
-theorem cosZeta_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
+theorem cosZeta_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
     cosZeta x (2 * k) = (-1) ^ (k + 1) * (2 * π) ^ (2 * k) / 2 / (2 * k)! *
       ((Polynomial.bernoulli (2 * k)).map (algebraMap ℚ ℂ)).eval ↑x := by
   rw [← (hasSum_nat_cosZeta x (?_ : 1 < re (2 * k))).tsum_eq]
@@ -69,9 +69,9 @@ Note that this formula is also correct for `k = 0` (i.e. for the value at `s = 1
 prove it in this case, owing to the additional difficulty of working with series that are only
 conditionally convergent.
 -/
-theorem sinZeta_two_mul_nat_add_one (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
+theorem sinZeta_two_mul_nat_add_one (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
     sinZeta x (2 * k + 1) = (-1) ^ (k + 1) * (2 * π) ^ (2 * k + 1) / 2 / (2 * k + 1)! *
-      ((Polynomial.bernoulli (2 * k + 1)).map (algebraMap ℚ ℂ)).eval ↑x := by
+      ((Polynomial.bernoulli (2 * k + 1)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   rw [← (hasSum_nat_sinZeta x (?_ : 1 < re (2 * k + 1))).tsum_eq]
   refine Eq.trans ?_ <| (congr_arg ofReal' (hasSum_one_div_nat_pow_mul_sin hk hx).tsum_eq).trans ?_
   · rw [ofReal_tsum]
