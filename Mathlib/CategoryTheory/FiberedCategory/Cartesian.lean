@@ -254,7 +254,7 @@ protected lemma of_comp (p : 𝒳 ⥤ 𝒮) {R S T : 𝒮} {a b c: 𝒳} {f : R 
   apply IsStronglyCartesian.mk
   -- Fix a morphism `τ : a' ⟶ b` and a morphism `h : p(a') ⟶ R` such that `τ` lifts `h ≫ f`
   intro a' h τ hτ
-  have h₁ : IsHomLift p (h ≫ f ≫ g) (τ ≫ ψ) := by simpa using IsHomLift.comp (h ≫ f) _ τ ψ
+  have h₁ : IsHomLift p (h ≫ f ≫ g) (τ ≫ ψ) := by simpa using IsHomLift.comp p (h ≫ f) _ τ ψ
   -- We get a morphism `π : a' ⟶ a` from the universal property of `φ ≫ ψ`
   use inducedMap p (f ≫ g) (φ ≫ ψ) (f' := h ≫ f ≫ g) rfl (τ ≫ ψ)
   refine ⟨⟨inferInstance, ?_⟩,?_⟩
@@ -271,7 +271,7 @@ instance of_iso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ 
   intro a' g τ hτ
   use τ ≫ φ.inv
   refine ⟨?_, by aesop_cat⟩
-  simpa using (IsHomLift.comp (g ≫ f) (isoOfIsoLift p f φ).inv τ φ.inv)
+  simpa using (IsHomLift.comp p (g ≫ f) (isoOfIsoLift p f φ).inv τ φ.inv)
 
 instance of_isIso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [IsHomLift p f φ]
     [IsIso φ] : IsStronglyCartesian p f φ :=
@@ -294,7 +294,7 @@ lemma isIso_of_base_isIso (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R �
     rw [← IsIso.hom_inv_id (p.map φ)]
     apply IsHomLift.comp
   have h₂ : IsHomLift p (p.map φ) (φ ≫ φ' ≫ φ) := by
-    simpa using IsHomLift.comp (𝟙 (p.obj a)) (p.map φ) (φ ≫ φ') φ
+    simpa using IsHomLift.comp p (𝟙 (p.obj a)) (p.map φ) (φ ≫ φ') φ
   apply IsStronglyCartesian.uniqueness p _ φ (id_comp (p.map φ)).symm (φ ≫ φ' ≫ φ)
   · apply Category.assoc
   · simp only [inv_hom, id_comp, comp_id]
