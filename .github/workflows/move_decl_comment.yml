@@ -3,14 +3,12 @@ name:  move-decls (comment)
 on:
   issue_comment:
     types: [created, edited]
-  pull_request_target:
-    types: [issue_comment]
   pull_request_review_comment:
     types: [created, edited]
 
 jobs:
   move-decls-add-comment:
-    if: (github.event.issue.pull_request != 'null') && (startsWith(github.event.comment.body, 'move-decls') || contains(toJSON(github.event.comment.body), '\r\nmove-decls'))
+    if: contains(github.event.comment.body, 'move-decls') || ((github.event.issue.pull_request != 'null') && (startsWith(github.event.comment.body, 'move-decls') || contains(toJSON(github.event.comment.body), '\r\nmove-decls')))
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
