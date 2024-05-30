@@ -21,9 +21,9 @@ module, commutative algebra
 
 open scoped Pointwise
 
-variable {R} (M : Type*) {M' M''} [CommRing R]
+variable {R} [CommRing R] (r : R) (M : Type*) {M' M''}
     [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
-    [AddCommGroup M''] [Module R M''] (r : R)
+    [AddCommGroup M''] [Module R M'']
 
 /-- An abbreviation for `M⧸rM` that keeps us from having to write
 `(⊤ : Submodule R M)` over and over to satisfy the typechecker. -/
@@ -35,20 +35,20 @@ open Submodule Function TensorProduct
 
 /-- Reducing a module modulo `r` is the same as left tensoring with `R/(r)`. -/
 noncomputable def equivQuotTensor :
-    QuotSMulTop M r ≃ₗ[R] (R ⧸ Ideal.span {r}) ⊗[R] M :=
+    QuotSMulTop r M ≃ₗ[R] (R ⧸ Ideal.span {r}) ⊗[R] M :=
   quotEquivOfEq _ _ (ideal_span_singleton_smul _ _).symm ≪≫ₗ
    (quotTensorEquivQuotSMul M _).symm
 
 /-- Reducing a module modulo `r` is the same as right tensoring with `R/(r)`. -/
 noncomputable def equivTensorQuot :
-    QuotSMulTop M r ≃ₗ[R] M ⊗[R] (R ⧸ Ideal.span {r}) :=
+    QuotSMulTop r M ≃ₗ[R] M ⊗[R] (R ⧸ Ideal.span {r}) :=
   quotEquivOfEq _ _ (ideal_span_singleton_smul _ _).symm ≪≫ₗ
    (tensorQuotEquivQuotSMul M _).symm
 
 variable {M}
 
-/-- The action of the functor `QuotSMulTop · r` on morphisms. -/
-def map : (M →ₗ[R] M') →ₗ[R] QuotSMulTop M r →ₗ[R] QuotSMulTop M' r :=
+/-- The action of the functor `QuotSMulTop r` on morphisms. -/
+def map : (M →ₗ[R] M') →ₗ[R] QuotSMulTop r M →ₗ[R] QuotSMulTop r M'  :=
   Submodule.mapQLinear _ _ ∘ₗ LinearMap.id.codRestrict _ fun _ =>
     map_le_iff_le_comap.mp <| le_of_eq_of_le (map_pointwise_smul _ _ _) <|
       smul_mono_right r le_top
@@ -56,7 +56,7 @@ def map : (M →ₗ[R] M') →ₗ[R] QuotSMulTop M r →ₗ[R] QuotSMulTop M' r 
 @[simp]
 lemma map_apply_mk (f : M →ₗ[R] M') (x : M) :
     map r f (Submodule.Quotient.mk x) =
-      (Submodule.Quotient.mk (f x) : QuotSMulTop M' r) := rfl
+      (Submodule.Quotient.mk (f x) : QuotSMulTop r M') := rfl
 
 -- weirdly expensive to typecheck the type here?
 lemma map_comp_mkQ (f : M →ₗ[R] M') :
@@ -77,25 +77,25 @@ lemma map_comp (g : M' →ₗ[R] M'') (f : M →ₗ[R] M') :
   DFunLike.ext _ _ <| (mkQ_surjective _).forall.mpr fun _ => rfl
 
 lemma equivQuotTensor_naturality_mk (f : M →ₗ[R] M') (x : M) :
-    equivQuotTensor M' r (map r f (Submodule.Quotient.mk x)) =
+    equivQuotTensor r M' (map r f (Submodule.Quotient.mk x)) =
       f.lTensor (R ⧸ Ideal.span {r})
-        (equivQuotTensor M r (Submodule.Quotient.mk x)) :=
+        (equivQuotTensor r M (Submodule.Quotient.mk x)) :=
   (LinearMap.lTensor_tmul (R ⧸ Ideal.span {r}) f 1 x).symm
 
 lemma equivQuotTensor_naturality (f : M →ₗ[R] M') :
-    equivQuotTensor M' r ∘ₗ map r f =
-      f.lTensor (R ⧸ Ideal.span {r}) ∘ₗ equivQuotTensor M r :=
+    equivQuotTensor r M' ∘ₗ map r f =
+      f.lTensor (R ⧸ Ideal.span {r}) ∘ₗ equivQuotTensor r M :=
   quot_hom_ext _ _ _ (equivQuotTensor_naturality_mk r f)
 
 lemma equivTensorQuot_naturality_mk (f : M →ₗ[R] M') (x : M) :
-    equivTensorQuot M' r (map r f (Submodule.Quotient.mk x)) =
+    equivTensorQuot r M' (map r f (Submodule.Quotient.mk x)) =
       f.rTensor (R ⧸ Ideal.span {r})
-        (equivTensorQuot M r (Submodule.Quotient.mk x)) :=
+        (equivTensorQuot r M (Submodule.Quotient.mk x)) :=
   (LinearMap.rTensor_tmul (R ⧸ Ideal.span {r}) f 1 x).symm
 
 lemma equivTensorQuot_naturality (f : M →ₗ[R] M') :
-    equivTensorQuot M' r ∘ₗ map r f =
-      f.rTensor (R ⧸ Ideal.span {r}) ∘ₗ equivTensorQuot M r :=
+    equivTensorQuot r M' ∘ₗ map r f =
+      f.rTensor (R ⧸ Ideal.span {r}) ∘ₗ equivTensorQuot r M :=
   quot_hom_ext _ _ _ (equivTensorQuot_naturality_mk r f)
 
 lemma map_surjective {f : M →ₗ[R] M'} (hf : Surjective f) : Surjective (map r f) :=
@@ -112,20 +112,20 @@ lemma map_exact {f : M →ₗ[R] M'} {g : M' →ₗ[R] M''}
 variable (M M')
 
 -- TODO: Naturality for `tensorQuotSMulTopEquivQuotSMulTop`
--- and `modSMulByTensorEquivQuotSMulTop`
+-- and `quotSMulTopTensorEquivQuotSMulTop`
 
 /-- Tensoring on the left and applying `QuotSMulTop · r` commute. -/
 noncomputable def tensorQuotSMulTopEquivQuotSMulTop :
-    M ⊗[R] QuotSMulTop M' r ≃ₗ[R] QuotSMulTop (M ⊗[R] M') r :=
-  (equivTensorQuot M' r).lTensor M ≪≫ₗ
+    M ⊗[R] QuotSMulTop r M' ≃ₗ[R] QuotSMulTop r (M ⊗[R] M') :=
+  (equivTensorQuot r M').lTensor M ≪≫ₗ
     (TensorProduct.assoc R M M' (R ⧸ Ideal.span {r})).symm ≪≫ₗ
-      (equivTensorQuot (M ⊗[R] M') r).symm
+      (equivTensorQuot r (M ⊗[R] M')).symm
 
 /-- Tensoring on the right and applying `QuotSMulTop · r` commute. -/
-noncomputable def modSMulByTensorEquivQuotSMulTop :
-    QuotSMulTop M' r ⊗[R] M ≃ₗ[R] QuotSMulTop (M' ⊗[R] M) r :=
-  (equivQuotTensor M' r).rTensor M ≪≫ₗ
+noncomputable def quotSMulTopTensorEquivQuotSMulTop :
+    QuotSMulTop r M' ⊗[R] M ≃ₗ[R] QuotSMulTop r (M' ⊗[R] M) :=
+  (equivQuotTensor r M').rTensor M ≪≫ₗ
     TensorProduct.assoc R (R ⧸ Ideal.span {r}) M' M ≪≫ₗ
-      (equivQuotTensor (M' ⊗[R] M) r).symm
+      (equivQuotTensor r (M' ⊗[R] M)).symm
 
 end QuotSMulTop
