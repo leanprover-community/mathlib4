@@ -27,28 +27,28 @@ variable {R} (M : Type*) {M' M''} [CommRing R]
 
 /-- An abbreviation for `M⧸rM` that keeps us from having to write
 `(⊤ : Submodule R M)` over and over to satisfy the typechecker. -/
-abbrev ModSMulBy := M ⧸ r • (⊤ : Submodule R M)
+abbrev QuotSMulTop := M ⧸ r • (⊤ : Submodule R M)
 
-namespace ModSMulBy
+namespace QuotSMulTop
 
 open Submodule Function TensorProduct
 
 /-- Reducing a module modulo `r` is the same as left tensoring with `R/(r)`. -/
 noncomputable def equivQuotTensor :
-    ModSMulBy M r ≃ₗ[R] (R ⧸ Ideal.span {r}) ⊗[R] M :=
+    QuotSMulTop M r ≃ₗ[R] (R ⧸ Ideal.span {r}) ⊗[R] M :=
   quotEquivOfEq _ _ (ideal_span_singleton_smul _ _).symm ≪≫ₗ
    (quotTensorEquivQuotSMul M _).symm
 
 /-- Reducing a module modulo `r` is the same as right tensoring with `R/(r)`. -/
 noncomputable def equivTensorQuot :
-    ModSMulBy M r ≃ₗ[R] M ⊗[R] (R ⧸ Ideal.span {r}) :=
+    QuotSMulTop M r ≃ₗ[R] M ⊗[R] (R ⧸ Ideal.span {r}) :=
   quotEquivOfEq _ _ (ideal_span_singleton_smul _ _).symm ≪≫ₗ
    (tensorQuotEquivQuotSMul M _).symm
 
 variable {M}
 
-/-- The action of the functor `ModSMulBy · r` on morphisms. -/
-def map : (M →ₗ[R] M') →ₗ[R] ModSMulBy M r →ₗ[R] ModSMulBy M' r :=
+/-- The action of the functor `QuotSMulTop · r` on morphisms. -/
+def map : (M →ₗ[R] M') →ₗ[R] QuotSMulTop M r →ₗ[R] QuotSMulTop M' r :=
   Submodule.mapQLinear _ _ ∘ₗ LinearMap.id.codRestrict _ fun _ =>
     map_le_iff_le_comap.mp <| le_of_eq_of_le (map_pointwise_smul _ _ _) <|
       smul_mono_right r le_top
@@ -56,7 +56,7 @@ def map : (M →ₗ[R] M') →ₗ[R] ModSMulBy M r →ₗ[R] ModSMulBy M' r :=
 @[simp]
 lemma map_apply_mk (f : M →ₗ[R] M') (x : M) :
     map r f (Submodule.Quotient.mk x) =
-      (Submodule.Quotient.mk (f x) : ModSMulBy M' r) := rfl
+      (Submodule.Quotient.mk (f x) : QuotSMulTop M' r) := rfl
 
 -- weirdly expensive to typecheck the type here?
 lemma map_comp_mkQ (f : M →ₗ[R] M') :
@@ -111,21 +111,21 @@ lemma map_exact {f : M →ₗ[R] M'} {g : M' →ₗ[R] M''}
 
 variable (M M')
 
--- TODO: Naturality for `tensorModSMulByEquivModSMulBy`
--- and `modSMulByTensorEquivModSMulBy`
+-- TODO: Naturality for `tensorQuotSMulTopEquivQuotSMulTop`
+-- and `modSMulByTensorEquivQuotSMulTop`
 
-/-- Tensoring on the left and applying `ModSMulBy · r` commute. -/
-noncomputable def tensorModSMulByEquivModSMulBy :
-    M ⊗[R] ModSMulBy M' r ≃ₗ[R] ModSMulBy (M ⊗[R] M') r :=
+/-- Tensoring on the left and applying `QuotSMulTop · r` commute. -/
+noncomputable def tensorQuotSMulTopEquivQuotSMulTop :
+    M ⊗[R] QuotSMulTop M' r ≃ₗ[R] QuotSMulTop (M ⊗[R] M') r :=
   (equivTensorQuot M' r).lTensor M ≪≫ₗ
     (TensorProduct.assoc R M M' (R ⧸ Ideal.span {r})).symm ≪≫ₗ
       (equivTensorQuot (M ⊗[R] M') r).symm
 
-/-- Tensoring on the right and applying `ModSMulBy · r` commute. -/
-noncomputable def modSMulByTensorEquivModSMulBy :
-    ModSMulBy M' r ⊗[R] M ≃ₗ[R] ModSMulBy (M' ⊗[R] M) r :=
+/-- Tensoring on the right and applying `QuotSMulTop · r` commute. -/
+noncomputable def modSMulByTensorEquivQuotSMulTop :
+    QuotSMulTop M' r ⊗[R] M ≃ₗ[R] QuotSMulTop (M' ⊗[R] M) r :=
   (equivQuotTensor M' r).rTensor M ≪≫ₗ
     TensorProduct.assoc R (R ⧸ Ideal.span {r}) M' M ≪≫ₗ
       (equivQuotTensor (M' ⊗[R] M) r).symm
 
-end ModSMulBy
+end QuotSMulTop

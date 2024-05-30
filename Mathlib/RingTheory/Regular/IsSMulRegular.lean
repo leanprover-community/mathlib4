@@ -6,7 +6,7 @@ Authors: Brendan Murphy
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.Ideal.AssociatedPrime
-import Mathlib.RingTheory.Regular.ModSMulBy
+import Mathlib.RingTheory.QuotSMulTop
 
 /-!
 # Lemmas about the `IsSmulRegular` Predicate
@@ -176,13 +176,13 @@ lemma smul_top_inf_eq_smul_of_isSMulRegular_on_quot :
 
 -- Who knew this didn't rely on exactness at the right!?
 open Function IsSMulRegular in
-lemma _root_.ModSMulBy.map_first_exact_on_four_term_exact_of_isSMulRegular_last
+lemma _root_.QuotSMulTop.map_first_exact_on_four_term_exact_of_isSMulRegular_last
     {M'''} [AddCommGroup M'''] [Module R M''']
     {r : R} {f₁ : M →ₗ[R] M'} {f₂ : M' →ₗ[R] M''} {f₃ : M'' →ₗ[R] M'''}
     (h₁₂ : Exact f₁ f₂) (h₂₃ : Exact f₂ f₃) (h : IsSMulRegular M''' r) :
-    Exact (ModSMulBy.map r f₁) (ModSMulBy.map r f₂) :=
+    Exact (QuotSMulTop.map r f₁) (QuotSMulTop.map r f₂) :=
   suffices IsSMulRegular (M'' ⧸ LinearMap.range f₂) r by
-    dsimp [ModSMulBy.map, mapQLinear]
+    dsimp [QuotSMulTop.map, mapQLinear]
     rw [Exact.exact_mapQ_iff h₁₂, map_pointwise_smul, Submodule.map_top, inf_comm]
     exact smul_top_inf_eq_smul_of_isSMulRegular_on_quot this
   h.of_injective _ <| LinearMap.ker_eq_bot.mp <|
