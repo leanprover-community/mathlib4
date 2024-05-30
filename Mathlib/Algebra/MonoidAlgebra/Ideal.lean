@@ -30,6 +30,7 @@ theorem MonoidAlgebra.mem_ideal_span_of_image [Monoid G] [Semiring k] {s : Set G
       zero_mem' := fun m hm => by cases hm
       smul_mem' := fun x y hy m hm => by
         classical
+        rw [smul_eq_mul, mul_def] at hm
         replace hm := Finset.mem_biUnion.mp (Finsupp.support_sum hm)
         obtain ⟨xm, -, hm⟩ := hm
         replace hm := Finset.mem_biUnion.mp (Finsupp.support_sum hm)

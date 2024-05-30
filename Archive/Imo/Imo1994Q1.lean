@@ -3,9 +3,10 @@ Copyright (c) 2021 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
+import Mathlib.Algebra.Group.Fin
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Fin.Interval
+import Mathlib.Order.Interval.Finset.Fin
 import Mathlib.Tactic.Linarith
 
 #align_import imo.imo1994_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
@@ -28,8 +29,6 @@ would be `m` elements of the set of `aᵢ`'s all larger than `aₘ₊₁₋ᵢ`,
 -/
 
 
-open scoped BigOperators
-
 open Finset
 
 namespace Imo1994Q1
@@ -51,14 +50,14 @@ open Imo1994Q1
 theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     (hrange : ∀ a ∈ A, 0 < a ∧ a ≤ n)
     (hadd : ∀ a ∈ A, ∀ b ∈ A, a + b ≤ n → a + b ∈ A) :
-    (m + 1) * (n + 1) ≤ 2 * ∑ x in A, x := by
+    (m + 1) * (n + 1) ≤ 2 * ∑ x ∈ A, x := by
   set a := orderEmbOfFin A hm
   -- We sort the elements of `A`
   have ha : ∀ i, a i ∈ A := fun i => orderEmbOfFin_mem A hm i
   set rev := Equiv.subLeft (Fin.last m)
   -- `i ↦ m-i`
   -- We reindex the sum by fin (m+1)
-  have : ∑ x in A, x = ∑ i : Fin (m + 1), a i := by
+  have : ∑ x ∈ A, x = ∑ i : Fin (m + 1), a i := by
     convert sum_image (α := ℕ) (β := ℕ) fun x _ y _ => (OrderEmbedding.eq_iff_eq a).1
     rw [← coe_inj]; simp [a]
   rw [this]; clear this
@@ -89,7 +88,7 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     have h2 : a i + a (Fin.last m - k) ∈ A := hadd _ (ha _) _ (ha _) h1
     rw [← mem_coe, ← range_orderEmbOfFin A hm, Set.mem_range] at h2
     cases' h2 with j hj
-    refine' ⟨j, ⟨_, Fin.le_last j⟩, hj⟩
+    refine ⟨j, ⟨?_, Fin.le_last j⟩, hj⟩
     rw [← a.strictMono.lt_iff_lt, hj]
     simpa using (hrange (a i) (ha i)).1
   -- A set of size `k+1` embed in one of size `k`, which yields a contradiction

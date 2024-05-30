@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.RingTheory.EuclideanDomain
 
 #align_import data.polynomial.field_division from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
@@ -19,7 +19,7 @@ This file starts looking like the ring theory of $R[X]$
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 
@@ -337,7 +337,7 @@ theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :
   divByMonic_eq_div p (monic_X_sub_C a) ▸ mul_divByMonic_eq_iff_isRoot
 #align polynomial.mul_div_eq_iff_is_root Polynomial.mul_div_eq_iff_isRoot
 
-instance : EuclideanDomain R[X] :=
+instance instEuclideanDomain : EuclideanDomain R[X] :=
   { Polynomial.commRing,
     Polynomial.nontrivial with
     quotient := (· / ·)

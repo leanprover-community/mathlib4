@@ -147,11 +147,12 @@ theorem comp_eq_zero_of_image_eq_kernel {A B C : V} (f : A ⟶ B) (g : B ⟶ C)
 theorem imageToKernel_isIso_of_image_eq_kernel {A B C : V} (f : A ⟶ B) (g : B ⟶ C)
     (p : imageSubobject f = kernelSubobject g) :
     IsIso (imageToKernel f g (comp_eq_zero_of_image_eq_kernel f g p)) := by
-  refine' ⟨⟨Subobject.ofLE _ _ p.ge, _⟩⟩
+  refine ⟨⟨Subobject.ofLE _ _ p.ge, ?_⟩⟩
   dsimp [imageToKernel]
   simp only [Subobject.ofLE_comp_ofLE, Subobject.ofLE_refl, and_self]
 #align category_theory.image_to_kernel_is_iso_of_image_eq_kernel CategoryTheory.imageToKernel_isIso_of_image_eq_kernel
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 -- We'll prove the converse later, when `V` is abelian.
 theorem exact_of_image_eq_kernel {A B C : V} (f : A ⟶ B) (g : B ⟶ C)
     (p : imageSubobject f = kernelSubobject g) : Exact f g :=
@@ -172,7 +173,7 @@ section
 variable [HasZeroMorphisms V] [HasEqualizers V]
 
 theorem exact_comp_hom_inv_comp (i : B ≅ D) (h : Exact f g) : Exact (f ≫ i.hom) (i.inv ≫ g) := by
-  refine' ⟨by simp [h.w], _⟩
+  refine ⟨by simp [h.w], ?_⟩
   rw [imageToKernel_comp_hom_inv_comp]
   haveI := h.epi
   infer_instance
@@ -187,10 +188,10 @@ theorem exact_comp_hom_inv_comp_iff (i : B ≅ D) : Exact (f ≫ i.hom) (i.inv �
 #align category_theory.exact_comp_hom_inv_comp_iff CategoryTheory.exact_comp_hom_inv_comp_iff
 
 theorem exact_epi_comp (hgh : Exact g h) [Epi f] : Exact (f ≫ g) h := by
-  refine' ⟨by simp [hgh.w], _⟩
+  refine ⟨by simp [hgh.w], ?_⟩
   rw [imageToKernel_comp_left]
-  haveI := hgh.epi
-  infer_instance
+  · haveI := hgh.epi
+    infer_instance
 #align category_theory.exact_epi_comp CategoryTheory.exact_epi_comp
 
 @[simp]
@@ -201,7 +202,7 @@ theorem exact_iso_comp [IsIso f] : Exact (f ≫ g) h ↔ Exact g h :=
 #align category_theory.exact_iso_comp CategoryTheory.exact_iso_comp
 
 theorem exact_comp_mono (hfg : Exact f g) [Mono h] : Exact f (g ≫ h) := by
-  refine' ⟨by simp [hfg.w_assoc], _⟩
+  refine ⟨by simp [hfg.w_assoc], ?_⟩
   rw [imageToKernel_comp_right f g h hfg.w]
   haveI := hfg.epi
   infer_instance
@@ -209,8 +210,8 @@ theorem exact_comp_mono (hfg : Exact f g) [Mono h] : Exact f (g ≫ h) := by
 
 /-- The dual of this lemma is only true when `V` is abelian, see `Abelian.exact_epi_comp_iff`. -/
 theorem exact_comp_mono_iff [Mono h] : Exact f (g ≫ h) ↔ Exact f g := by
-  refine'
-    ⟨fun hfg => ⟨zero_of_comp_mono h (by rw [Category.assoc, hfg.1]), _⟩, fun h =>
+  refine
+    ⟨fun hfg => ⟨zero_of_comp_mono h (by rw [Category.assoc, hfg.1]), ?_⟩, fun h =>
       exact_comp_mono h⟩
   rw [← (Iso.eq_comp_inv _).1 (imageToKernel_comp_mono _ _ h hfg.1)]
   haveI := hfg.2; infer_instance
@@ -222,7 +223,7 @@ theorem exact_comp_iso [IsIso h] : Exact f (g ≫ h) ↔ Exact f g :=
 #align category_theory.exact_comp_iso CategoryTheory.exact_comp_iso
 
 theorem exact_kernelSubobject_arrow : Exact (kernelSubobject f).arrow f := by
-  refine' ⟨by simp, _⟩
+  refine ⟨by simp, ?_⟩
   refine @IsIso.epi_of_iso _ _ _ _ _ ?_
   exact ⟨⟨factorThruImageSubobject _, by aesop_cat, by aesop_cat⟩⟩
 #align category_theory.exact_kernel_subobject_arrow CategoryTheory.exact_kernelSubobject_arrow

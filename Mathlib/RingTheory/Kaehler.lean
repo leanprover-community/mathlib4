@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
@@ -632,10 +632,8 @@ theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A 
       (KaehlerDifferential.kerTotal S B).restrictScalars _ := by
   rw [KaehlerDifferential.kerTotal, Submodule.map_span, KaehlerDifferential.kerTotal,
     Submodule.restrictScalars_span _ _ h]
-  -- Porting note: the proof is diverging from the mathlib3 proof here.
-  -- `map_sub` and `map_add` are not firing so we need to use `LinearMap.map_*` instead
   simp_rw [Set.image_union, Submodule.span_union, ← Set.image_univ, Set.image_image, Set.image_univ,
-    LinearMap.map_sub, LinearMap.map_add]
+    map_sub, map_add]
   simp only [LinearMap.comp_apply, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply,
     map_one, map_add, map_mul]
@@ -829,14 +827,15 @@ lemma KaehlerDifferential.mvPolynomialBasis_repr_apply (σ) (x) (i) :
   intro j
   simp [Finsupp.single_apply, Pi.single_apply]
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 lemma KaehlerDifferential.mvPolynomialBasis_repr_symm_single (σ) (i) (x) :
-    (mvPolynomialBasis R σ).repr.symm (Finsupp.single i x) = x • D _ _ (.X i) := by
+    (mvPolynomialBasis R σ).repr.symm (Finsupp.single i x) = x • D R (MvPolynomial σ R) (.X i) := by
   apply (mvPolynomialBasis R σ).repr.injective; simp [LinearEquiv.map_smul, -map_smul]
 
-
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 lemma KaehlerDifferential.mvPolynomialBasis_apply (σ) (i) :
-    mvPolynomialBasis R σ i = D _ _ (.X i) :=
+    mvPolynomialBasis R σ i = D R (MvPolynomial σ R) (.X i) :=
   (mvPolynomialBasis_repr_symm_single R σ i 1).trans (one_smul _ _)
 
 instance (σ) : Module.Free (MvPolynomial σ R) (Ω[MvPolynomial σ R⁄R]) :=

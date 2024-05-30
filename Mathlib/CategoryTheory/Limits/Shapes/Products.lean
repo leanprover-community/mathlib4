@@ -183,14 +183,14 @@ abbrev sigmaObj (f : β → C) [HasCoproduct f] :=
   colimit (Discrete.functor f)
 #align category_theory.limits.sigma_obj CategoryTheory.Limits.sigmaObj
 
-/-- notation for categorical products -/
-notation "∏ " f:60 => piObj f
+/-- notation for categorical products. We need `ᶜ` to avoid conflict with `Finset.prod`. -/
+notation "∏ᶜ " f:60 => piObj f
 
 /-- notation for categorical coproducts -/
 notation "∐ " f:60 => sigmaObj f
 
-/-- The `b`-th projection from the pi object over `f` has the form `∏ f ⟶ f b`. -/
-abbrev Pi.π (f : β → C) [HasProduct f] (b : β) : ∏ f ⟶ f b :=
+/-- The `b`-th projection from the pi object over `f` has the form `∏ᶜ f ⟶ f b`. -/
+abbrev Pi.π (f : β → C) [HasProduct f] (b : β) : ∏ᶜ f ⟶ f b :=
   limit.π (Discrete.functor f) (Discrete.mk b)
 #align category_theory.limits.pi.π CategoryTheory.Limits.Pi.π
 
@@ -203,7 +203,7 @@ abbrev Sigma.ι (f : β → C) [HasCoproduct f] (b : β) : f b ⟶ ∐ f :=
 -- `limit.hom_ext` would be applied, but the goal would involve terms
 -- in `Discrete β` rather than `β` itself
 @[ext 1050]
-lemma Pi.hom_ext {f : β → C} [HasProduct f] {X : C} (g₁ g₂ : X ⟶ ∏ f)
+lemma Pi.hom_ext {f : β → C} [HasProduct f] {X : C} (g₁ g₂ : X ⟶ ∏ᶜ f)
     (h : ∀ (b : β), g₁ ≫ Pi.π f b = g₂ ≫ Pi.π f b) : g₁ = g₂ :=
   limit.hom_ext (fun ⟨j⟩ => h j)
 
@@ -240,8 +240,8 @@ theorem Sigma.eqToHom_comp_ι {J : Type*} (f : J → C) [HasCoproduct f] {j j' :
   cases w
   simp
 
-/-- A collection of morphisms `P ⟶ f b` induces a morphism `P ⟶ ∏ f`. -/
-abbrev Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ∏ f :=
+/-- A collection of morphisms `P ⟶ f b` induces a morphism `P ⟶ ∏ᶜ f`. -/
+abbrev Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ∏ᶜ f :=
   limit.lift _ (Fan.mk P p)
 #align category_theory.limits.pi.lift CategoryTheory.Limits.Pi.lift
 
@@ -278,12 +278,12 @@ def Cofan.isColimitOfIsIsoSigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f
 /-- Construct a morphism between categorical products (indexed by the same type)
 from a family of morphisms between the factors.
 -/
-abbrev Pi.map {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶ g b) : ∏ f ⟶ ∏ g :=
+abbrev Pi.map {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶ g b) : ∏ᶜ f ⟶ ∏ᶜ g :=
   limMap (Discrete.natTrans fun X => p X.as)
 #align category_theory.limits.pi.map CategoryTheory.Limits.Pi.map
 
 @[simp]
-lemma Pi.map_id {f : α → C} [HasProduct f] : Pi.map (fun a => 𝟙 (f a)) = 𝟙 (∏ f) := by
+lemma Pi.map_id {f : α → C} [HasProduct f] : Pi.map (fun a => 𝟙 (f a)) = 𝟙 (∏ᶜ f) := by
   ext; simp
 
 lemma Pi.map_comp_map {f g h : α → C} [HasProduct f] [HasProduct g] [HasProduct h]
@@ -300,7 +300,7 @@ instance Pi.map_mono {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, 
 /-- Construct a morphism between categorical products from a family of morphisms between the
     factors. -/
 def Pi.map' {f : α → C} {g : β → C} [HasProduct f] [HasProduct g] (p : β → α)
-    (q : ∀ (b : β), f (p b) ⟶ g b) : ∏ f ⟶ ∏ g :=
+    (q : ∀ (b : β), f (p b) ⟶ g b) : ∏ᶜ f ⟶ ∏ᶜ g :=
   Pi.lift (fun a => Pi.π _ _ ≫ q a)
 
 @[reassoc (attr := simp)]
@@ -308,7 +308,7 @@ lemma Pi.map'_comp_π {f : α → C} {g : β → C} [HasProduct f] [HasProduct g
     (q : ∀ (b : β), f (p b) ⟶ g b) (b : β) : Pi.map' p q ≫ Pi.π g b = Pi.π f (p b) ≫ q b :=
   limit.lift_π _ _
 
-lemma Pi.map'_id_id {f : α → C} [HasProduct f] : Pi.map' id (fun a => 𝟙 (f a)) = 𝟙 (∏ f) := by
+lemma Pi.map'_id_id {f : α → C} [HasProduct f] : Pi.map' id (fun a => 𝟙 (f a)) = 𝟙 (∏ᶜ f) := by
   ext; simp
 
 @[simp]
@@ -340,7 +340,7 @@ lemma Pi.map'_eq {f : α → C} {g : β → C} [HasProduct f] [HasProduct g] {p 
 /-- Construct an isomorphism between categorical products (indexed by the same type)
 from a family of isomorphisms between the factors.
 -/
-abbrev Pi.mapIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∏ f ≅ ∏ g :=
+abbrev Pi.mapIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∏ᶜ f ≅ ∏ᶜ g :=
   lim.mapIso (Discrete.natIso fun X => p X.as)
 #align category_theory.limits.pi.map_iso CategoryTheory.Limits.Pi.mapIso
 
@@ -352,10 +352,10 @@ section
 variable (X : Discrete α ⥤ C) [HasProduct (fun j => X.obj (Discrete.mk j))]
 
 /-- A limit cone for `X : Discrete α ⥤ C` that is given
-by `∏ (fun j => X.obj (Discrete.mk j))`. -/
+by `∏ᶜ (fun j => X.obj (Discrete.mk j))`. -/
 @[simps]
 def Pi.cone : Cone X where
-  pt := ∏ (fun j => X.obj (Discrete.mk j))
+  pt := ∏ᶜ (fun j => X.obj (Discrete.mk j))
   π := Discrete.natTrans (fun _ => Pi.π _ _)
 
 /-- The cone `Pi.cone X` is a limit cone. -/
@@ -371,9 +371,9 @@ def productIsProduct' :
 
 variable [HasLimit X]
 
-/-- The isomorphism `∏ (fun j => X.obj (Discrete.mk j)) ≅ limit X`. -/
+/-- The isomorphism `∏ᶜ (fun j => X.obj (Discrete.mk j)) ≅ limit X`. -/
 def Pi.isoLimit :
-    ∏ (fun j => X.obj (Discrete.mk j)) ≅ limit X :=
+    ∏ᶜ (fun j => X.obj (Discrete.mk j)) ≅ limit X :=
   IsLimit.conePointUniqueUpToIso (productIsProduct' X) (limit.isLimit X)
 
 @[reassoc (attr := simp)]
@@ -391,7 +391,8 @@ end
 /-- Construct a morphism between categorical coproducts (indexed by the same type)
 from a family of morphisms between the factors.
 -/
-abbrev Sigma.map {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b) : ∐ f ⟶ ∐ g :=
+abbrev Sigma.map {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b) :
+    ∐ f ⟶ ∐ g :=
   colimMap (Discrete.natTrans fun X => p X.as)
 #align category_theory.limits.sigma.map CategoryTheory.Limits.Sigma.map
 
@@ -465,7 +466,7 @@ and up to isomorphism in the factors, are isomorphic.
 -/
 @[simps]
 def Pi.whiskerEquiv {J K : Type*} {f : J → C} {g : K → C} (e : J ≃ K) (w : ∀ j, g (e j) ≅ f j)
-    [HasProduct f] [HasProduct g] : ∏ f ≅ ∏ g where
+    [HasProduct f] [HasProduct g] : ∏ᶜ f ≅ ∏ᶜ g where
   hom := Pi.map' e.symm fun k => (w (e.symm k)).inv ≫ eqToHom (by simp)
   inv := Pi.map' e fun j => (w j).hom
 
@@ -479,17 +480,20 @@ def Sigma.whiskerEquiv {J K : Type*} {f : J → C} {g : K → C} (e : J ≃ K) (
   inv := Sigma.map' e.symm fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom
 
 instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
-    [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ g i] :
+    [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ᶜ g i] :
     HasProduct fun p : Σ i, f i => g p.1 p.2 where
   exists_limit := Nonempty.intro
-    { cone := Fan.mk (∏ fun i => ∏ g i) (fun X => Pi.π (fun i => ∏ g i) X.1 ≫ Pi.π (g X.1) X.2)
-      isLimit := mkFanLimit _ (fun s => Pi.lift fun b => Pi.lift fun c => s.proj ⟨b, c⟩) }
+    { cone := Fan.mk (∏ᶜ fun i => ∏ᶜ g i) (fun X => Pi.π (fun i => ∏ᶜ g i) X.1 ≫ Pi.π (g X.1) X.2)
+      isLimit := mkFanLimit _ (fun s => Pi.lift fun b => Pi.lift fun c => s.proj ⟨b, c⟩)
+        -- Adaptation note: nightly-2024-04-01
+        -- Both of these proofs were previously by `aesop_cat`.
+        (by aesop_cat) (by intro s m w; simp only [Fan.mk_pt]; symm; ext i x; simp_all) }
 
 /-- An iterated product is a product over a sigma type. -/
 @[simps]
 def piPiIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
-    [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ g i] :
-    (∏ fun i => ∏ g i) ≅ (∏ fun p : Σ i, f i => g p.1 p.2) where
+    [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ᶜ g i] :
+    (∏ᶜ fun i => ∏ᶜ g i) ≅ (∏ᶜ fun p : Σ i, f i => g p.1 p.2) where
   hom := Pi.lift fun ⟨i, x⟩ => Pi.π _ i ≫ Pi.π _ x
   inv := Pi.lift fun i => Pi.lift fun x => Pi.π _ (⟨i, x⟩ : Σ i, f i)
 
@@ -500,7 +504,10 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     { cocone := Cofan.mk (∐ fun i => ∐ g i)
         (fun X => Sigma.ι (g X.1) X.2 ≫ Sigma.ι (fun i => ∐ g i) X.1)
       isColimit := mkCofanColimit _
-        (fun s => Sigma.desc fun b => Sigma.desc fun c => s.inj ⟨b, c⟩) }
+        (fun s => Sigma.desc fun b => Sigma.desc fun c => s.inj ⟨b, c⟩)
+        -- Adaptation note: nightly-2024-04-01
+        -- Both of these proofs were previously by `aesop_cat`.
+        (by aesop_cat) (by intro s m w; simp only [Cofan.mk_pt]; symm; ext i x; simp_all) }
 
 /-- An iterated coproduct is a coproduct over a sigma type. -/
 @[simps]
@@ -518,7 +525,7 @@ variable (f : β → C)
 /-- The comparison morphism for the product of `f`. This is an iso iff `G` preserves the product
 of `f`, see `PreservesProduct.ofIsoComparison`. -/
 def piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] :
-    G.obj (∏ f) ⟶ ∏ fun b => G.obj (f b) :=
+    G.obj (∏ᶜ f) ⟶ ∏ᶜ fun b => G.obj (f b) :=
   Pi.lift fun b => G.map (Pi.π f b)
 #align category_theory.limits.pi_comparison CategoryTheory.Limits.piComparison
 
@@ -603,8 +610,7 @@ variable [Unique β] (f : β → C)
 
 /-- The limit cone for the product over an index type with exactly one term. -/
 @[simps]
-def limitConeOfUnique : LimitCone (Discrete.functor f)
-    where
+def limitConeOfUnique : LimitCone (Discrete.functor f) where
   cone :=
     { pt := f default
       π := Discrete.natTrans (fun ⟨j⟩ => eqToHom (by
@@ -628,14 +634,13 @@ instance (priority := 100) hasProduct_unique : HasProduct f :=
 
 /-- A product over an index type with exactly one term is just the object over that term. -/
 @[simps!]
-def productUniqueIso : ∏ f ≅ f default :=
+def productUniqueIso : ∏ᶜ f ≅ f default :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitConeOfUnique f).isLimit
 #align category_theory.limits.product_unique_iso CategoryTheory.Limits.productUniqueIso
 
 /-- The colimit cocone for the coproduct over an index type with exactly one term. -/
 @[simps]
-def colimitCoconeOfUnique : ColimitCocone (Discrete.functor f)
-    where
+def colimitCoconeOfUnique : ColimitCocone (Discrete.functor f) where
   cocone :=
     { pt := f default
       ι := Discrete.natTrans (fun ⟨j⟩ => eqToHom (by

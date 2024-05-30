@@ -3,10 +3,11 @@ Copyright (c) 2023 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta, Doga Can Sertbas
 -/
-import Mathlib.Data.Nat.Interval
-import Mathlib.Data.Nat.Parity
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Real.Archimedean
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Schnirelmann density

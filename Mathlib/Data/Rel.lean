@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.GaloisConnection
 import Mathlib.Data.Set.Lattice
+import Mathlib.Tactic.AdaptationNote
 
 #align_import data.rel from "leanprover-community/mathlib"@"706d88f2b8fdfeb0b22796433d7a6c1a010af9f2"
 
@@ -30,6 +31,13 @@ Relations are also known as set-valued functions, or partial multifunctions.
   related to `x` are in `s`.
 * `Rel.restrict_domain`: Domain-restriction of a relation to a subtype.
 * `Function.graph`: Graph of a function as a relation.
+
+## TODOs
+
+The `Rel.comp` function uses the notation `r • s`, rather than the more common `r ∘ s` for things
+named `comp`. This is because the latter is already used for function composition, and causes a
+clash. A better notation should be found, perhaps a variant of `r ∘r s` or `r; s`.
+
 -/
 
 variable {α β γ : Type*}
@@ -90,7 +98,6 @@ def comp (r : Rel α β) (s : Rel β γ) : Rel α γ := fun x z => ∃ y, r x y 
 #align rel.comp Rel.comp
 
 -- Porting note: the original `∘` syntax can't be overloaded here, lean considers it ambiguous.
--- TODO: Change this syntax to something nicer?
 /-- Local syntax for composition of relations. -/
 local infixr:90 " • " => Rel.comp
 
@@ -147,14 +154,12 @@ theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = inv s • inv
 
 @[simp]
 theorem inv_bot : (⊥ : Rel α β).inv = (⊥ : Rel β α) := by
-  -- Adaptation note: nightly-2024-03-16: simp was
-  -- simp [Bot.bot, inv, flip]
+  #adaptation_note /-- nightly-2024-03-16: simp was `simp [Bot.bot, inv, flip]` -/
   simp [Bot.bot, inv, Function.flip_def]
 
 @[simp]
 theorem inv_top : (⊤ : Rel α β).inv = (⊤ : Rel β α) := by
-  -- Adaptation note: nightly-2024-03-16: simp was
-  -- simp [Top.top, inv, flip]
+  #adaptation_note /-- nightly-2024-03-16: simp was `simp [Top.top, inv, flip]` -/
   simp [Top.top, inv, Function.flip_def]
 
 /-- Image of a set under a relation -/
@@ -408,10 +413,8 @@ theorem Relation.is_graph_iff (r : Rel α β) : (∃! f, Function.graph f = r) �
 
 namespace Set
 
--- TODO: if image were defined with bounded quantification in corelib, the next two would
--- be definitional
 theorem image_eq (f : α → β) (s : Set α) : f '' s = (Function.graph f).image s := by
-  simp [Set.image, Rel.image]
+  rfl
 #align set.image_eq Set.image_eq
 
 theorem preimage_eq (f : α → β) (s : Set β) : f ⁻¹' s = (Function.graph f).preimage s := by

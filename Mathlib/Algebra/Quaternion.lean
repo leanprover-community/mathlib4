@@ -410,60 +410,96 @@ theorem natCast_re (n : ℕ) : (n : ℍ[R,c₁,c₂]).re = n :=
   rfl
 #align quaternion_algebra.nat_cast_re QuaternionAlgebra.natCast_re
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_re := natCast_re
+
 @[simp, norm_cast]
 theorem natCast_imI (n : ℕ) : (n : ℍ[R,c₁,c₂]).imI = 0 :=
   rfl
 #align quaternion_algebra.nat_cast_im_i QuaternionAlgebra.natCast_imI
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_imI := natCast_imI
 
 @[simp, norm_cast]
 theorem natCast_imJ (n : ℕ) : (n : ℍ[R,c₁,c₂]).imJ = 0 :=
   rfl
 #align quaternion_algebra.nat_cast_im_j QuaternionAlgebra.natCast_imJ
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_imJ := natCast_imJ
+
 @[simp, norm_cast]
 theorem natCast_imK (n : ℕ) : (n : ℍ[R,c₁,c₂]).imK = 0 :=
   rfl
 #align quaternion_algebra.nat_cast_im_k QuaternionAlgebra.natCast_imK
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_imK := natCast_imK
 
 @[simp, norm_cast]
 theorem natCast_im (n : ℕ) : (n : ℍ[R,c₁,c₂]).im = 0 :=
   rfl
 #align quaternion_algebra.nat_cast_im QuaternionAlgebra.natCast_im
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_im := natCast_im
+
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ↑(n : R) = (n : ℍ[R,c₁,c₂]) :=
   rfl
 #align quaternion_algebra.coe_nat_cast QuaternionAlgebra.coe_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias coe_nat_cast := coe_natCast
 
 @[simp, norm_cast]
 theorem intCast_re (z : ℤ) : (z : ℍ[R,c₁,c₂]).re = z :=
   rfl
 #align quaternion_algebra.int_cast_re QuaternionAlgebra.intCast_re
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_re := intCast_re
+
 @[simp, norm_cast]
 theorem intCast_imI (z : ℤ) : (z : ℍ[R,c₁,c₂]).imI = 0 :=
   rfl
 #align quaternion_algebra.int_cast_im_i QuaternionAlgebra.intCast_imI
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_imI := intCast_imI
 
 @[simp, norm_cast]
 theorem intCast_imJ (z : ℤ) : (z : ℍ[R,c₁,c₂]).imJ = 0 :=
   rfl
 #align quaternion_algebra.int_cast_im_j QuaternionAlgebra.intCast_imJ
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_imJ := intCast_imJ
+
 @[simp, norm_cast]
 theorem intCast_imK (z : ℤ) : (z : ℍ[R,c₁,c₂]).imK = 0 :=
   rfl
 #align quaternion_algebra.int_cast_im_k QuaternionAlgebra.intCast_imK
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_imK := intCast_imK
 
 @[simp, norm_cast]
 theorem intCast_im (z : ℤ) : (z : ℍ[R,c₁,c₂]).im = 0 :=
   rfl
 #align quaternion_algebra.int_cast_im QuaternionAlgebra.intCast_im
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_im := intCast_im
+
 @[norm_cast]
 theorem coe_intCast (z : ℤ) : ↑(z : R) = (z : ℍ[R,c₁,c₂]) :=
   rfl
 #align quaternion_algebra.coe_int_cast QuaternionAlgebra.coe_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias coe_int_cast := coe_intCast
 
 instance instRing : Ring ℍ[R,c₁,c₂] where
   __ := inferInstanceAs (AddCommGroupWithOne ℍ[R,c₁,c₂])
@@ -1005,49 +1041,85 @@ theorem coe_pow (n : ℕ) : (↑(x ^ n) : ℍ[R]) = (x : ℍ[R]) ^ n :=
 theorem natCast_re (n : ℕ) : (n : ℍ[R]).re = n := rfl
 #align quaternion.nat_cast_re Quaternion.natCast_re
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_re := natCast_re
+
 @[simp, norm_cast]
 theorem natCast_imI (n : ℕ) : (n : ℍ[R]).imI = 0 := rfl
 #align quaternion.nat_cast_im_i Quaternion.natCast_imI
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_imI := natCast_imI
 
 @[simp, norm_cast]
 theorem natCast_imJ (n : ℕ) : (n : ℍ[R]).imJ = 0 := rfl
 #align quaternion.nat_cast_im_j Quaternion.natCast_imJ
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_imJ := natCast_imJ
+
 @[simp, norm_cast]
 theorem natCast_imK (n : ℕ) : (n : ℍ[R]).imK = 0 := rfl
 #align quaternion.nat_cast_im_k Quaternion.natCast_imK
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_imK := natCast_imK
 
 @[simp, norm_cast]
 theorem natCast_im (n : ℕ) : (n : ℍ[R]).im = 0 := rfl
 #align quaternion.nat_cast_im Quaternion.natCast_im
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_im := natCast_im
+
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ↑(n : R) = (n : ℍ[R]) := rfl
 #align quaternion.coe_nat_cast Quaternion.coe_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias coe_nat_cast := coe_natCast
 
 @[simp, norm_cast]
 theorem intCast_re (z : ℤ) : (z : ℍ[R]).re = z := rfl
 #align quaternion.int_cast_re Quaternion.intCast_re
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_re := intCast_re
+
 @[simp, norm_cast]
 theorem intCast_imI (z : ℤ) : (z : ℍ[R]).imI = 0 := rfl
 #align quaternion.int_cast_im_i Quaternion.intCast_imI
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_imI := intCast_imI
 
 @[simp, norm_cast]
 theorem intCast_imJ (z : ℤ) : (z : ℍ[R]).imJ = 0 := rfl
 #align quaternion.int_cast_im_j Quaternion.intCast_imJ
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_imJ := intCast_imJ
+
 @[simp, norm_cast]
 theorem intCast_imK (z : ℤ) : (z : ℍ[R]).imK = 0 := rfl
 #align quaternion.int_cast_im_k Quaternion.intCast_imK
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_imK := intCast_imK
 
 @[simp, norm_cast]
 theorem intCast_im (z : ℤ) : (z : ℍ[R]).im = 0 := rfl
 #align quaternion.int_cast_im Quaternion.intCast_im
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_im := intCast_im
+
 @[norm_cast]
 theorem coe_intCast (z : ℤ) : ↑(z : R) = (z : ℍ[R]) := rfl
 #align quaternion.coe_int_cast Quaternion.coe_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias coe_int_cast := coe_intCast
 
 theorem coe_injective : Function.Injective (coe : R → ℍ[R]) :=
   QuaternionAlgebra.coe_injective
@@ -1247,10 +1319,16 @@ theorem normSq_natCast (n : ℕ) : normSq (n : ℍ[R]) = (n : R) ^ 2 := by
   rw [← coe_natCast, normSq_coe]
 #align quaternion.norm_sq_nat_cast Quaternion.normSq_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias normSq_nat_cast := normSq_natCast
+
 @[norm_cast]
 theorem normSq_intCast (z : ℤ) : normSq (z : ℍ[R]) = (z : R) ^ 2 := by
   rw [← coe_intCast, normSq_coe]
 #align quaternion.norm_sq_int_cast Quaternion.normSq_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias normSq_int_cast := normSq_intCast
 
 @[simp]
 theorem normSq_neg : normSq (-a) = normSq a := by simp only [normSq_def, star_neg, neg_mul_neg]
@@ -1295,7 +1373,7 @@ variable [LinearOrderedCommRing R] {a : ℍ[R]}
 
 @[simp]
 theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
-  refine' ⟨fun h => _, fun h => h.symm ▸ normSq.map_zero⟩
+  refine ⟨fun h => ?_, fun h => h.symm ▸ normSq.map_zero⟩
   rw [normSq_def', add_eq_zero_iff', add_eq_zero_iff', add_eq_zero_iff'] at h
   · exact ext a 0 (pow_eq_zero h.1.1.1) (pow_eq_zero h.1.1.2) (pow_eq_zero h.1.2) (pow_eq_zero h.2)
   all_goals apply_rules [sq_nonneg, add_nonneg]
@@ -1392,9 +1470,22 @@ instance instRatCast : RatCast ℍ[R] where ratCast q := (q : R)
 #align quaternion.rat_cast_im_j Quaternion.ratCast_imJ
 #align quaternion.rat_cast_im_k Quaternion.ratCast_imK
 
+@[deprecated (since := "2024-04-17")]
+alias rat_cast_imI := ratCast_imI
+
+@[deprecated (since := "2024-04-17")]
+alias rat_cast_imJ := ratCast_imJ
+
+@[deprecated (since := "2024-04-17")]
+alias rat_cast_imK := ratCast_imK
+
 @[norm_cast] lemma coe_nnratCast (q : ℚ≥0) : ↑(q : R) = (q : ℍ[R]) := rfl
+
 @[norm_cast] lemma coe_ratCast (q : ℚ) : ↑(q : R) = (q : ℍ[R]) := rfl
 #align quaternion.coe_rat_cast Quaternion.coe_ratCast
+
+@[deprecated (since := "2024-04-17")]
+alias coe_rat_cast := coe_ratCast
 
 instance instDivisionRing : DivisionRing ℍ[R] where
   __ := Quaternion.instGroupWithZero
@@ -1425,6 +1516,9 @@ theorem normSq_zpow (z : ℤ) : normSq (a ^ z) = normSq a ^ z :=
 theorem normSq_ratCast (q : ℚ) : normSq (q : ℍ[R]) = (q : ℍ[R]) ^ 2 := by
   rw [← coe_ratCast, normSq_coe, coe_pow]
 #align quaternion.norm_sq_rat_cast Quaternion.normSq_ratCast
+
+@[deprecated (since := "2024-04-17")]
+alias normSq_rat_cast := normSq_ratCast
 
 end Field
 

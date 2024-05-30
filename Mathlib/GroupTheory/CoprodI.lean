@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Joachim Breitner
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
-import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.Data.List.Chain
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Data.Set.Pointwise.SMul
@@ -394,7 +394,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
 theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
       m ≠ 1 ∧ (∃ h : i = j, m = h ▸ p.head) := by
-  simp only [rcons._eq_1, cons._eq_1, ne_eq]
+  simp only [rcons, cons, ne_eq]
   by_cases hij : i = j
   · subst i
     by_cases hm : m = p.head
@@ -489,7 +489,7 @@ theorem mem_equivPair_tail_iff {i j : ι} {w : Word M} (m : M i) :
     · subst k
       by_cases hij : j = i <;> simp_all
     · by_cases hik : i = k
-      · subst i; simp_all [eq_comm, and_comm, or_comm]
+      · subst i; simp_all [@eq_comm _ m g, @eq_comm _ k j, or_comm]
       · simp [hik, Ne.symm hik]
 
 theorem mem_of_mem_equivPair_tail {i j : ι} {w : Word M} (m : M i) :
@@ -581,7 +581,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
         · simp
         · simp (config := {contextual := true}) [Sigma.ext_iff]
   · rcases w with ⟨_ | _, _, _⟩ <;>
-    simp [or_comm, hij, Ne.symm hij, eq_comm]
+    simp [or_comm, hij, Ne.symm hij]; rw [eq_comm]
 
 theorem mem_smul_iff_of_ne {i j : ι} (hij : i ≠ j) {m₁ : M i} {m₂ : M j} {w : Word M} :
     ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔ ⟨i, m₁⟩ ∈ w.toList := by
@@ -718,8 +718,7 @@ theorem toList_getLast? {i j} (w : NeWord M i j) : w.toList.getLast? = Option.so
 #align free_product.neword.to_list_last' Monoid.CoprodI.NeWord.toList_getLast?
 
 /-- The `Word M` represented by a `NeWord M i j` -/
-def toWord {i j} (w : NeWord M i j) : Word M
-    where
+def toWord {i j} (w : NeWord M i j) : Word M where
   toList := w.toList
   ne_one := by
     induction w
@@ -743,7 +742,7 @@ def toWord {i j} (w : NeWord M i j) : Word M
 theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i j), w'.toWord = w := by
   suffices ∃ (i j : _) (w' : NeWord M i j), w'.toWord.toList = w.toList by
     rcases this with ⟨i, j, w, h⟩
-    refine' ⟨i, j, w, _⟩
+    refine ⟨i, j, w, ?_⟩
     ext
     rw [h]
   cases' w with l hnot1 hchain
@@ -751,13 +750,13 @@ theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i 
   · contradiction
   · rw [List.forall_mem_cons] at hnot1
     cases' l with y l
-    · refine' ⟨x.1, x.1, singleton x.2 hnot1.1, _⟩
+    · refine ⟨x.1, x.1, singleton x.2 hnot1.1, ?_⟩
       simp [toWord]
     · rw [List.chain'_cons] at hchain
       specialize hi hnot1.2 hchain.2 (by rintro ⟨rfl⟩)
       obtain ⟨i, j, w', hw' : w'.toList = y::l⟩ := hi
       obtain rfl : y = ⟨i, w'.head⟩ := by simpa [hw'] using w'.toList_head?
-      refine' ⟨x.1, j, append (singleton x.2 hnot1.1) hchain.1 w', _⟩
+      refine ⟨x.1, j, append (singleton x.2 hnot1.1) hchain.1 w', ?_⟩
       simpa [toWord] using hw'
 #align free_product.neword.of_word Monoid.CoprodI.NeWord.of_word
 
@@ -988,8 +987,7 @@ theorem lift_injective_of_ping_pong : Function.Injective (lift f) := by
     rw [(CoprodI.Word.equiv).forall_congr_left']
     intro w Heq
     dsimp [Word.equiv] at *
-    rw [empty_of_word_prod_eq_one f hcard X hXnonempty hXdisj hpp Heq]
-    rfl
+    rw [empty_of_word_prod_eq_one f hcard X hXnonempty hXdisj hpp Heq, Word.prod_empty]
 #align free_product.lift_injective_of_ping_pong Monoid.CoprodI.lift_injective_of_ping_pong
 
 end PingPongLemma
@@ -1017,7 +1015,7 @@ instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [∀ i, IsFreeGrou
 @[simps!]
 def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
     FreeGroup ι ≃* CoprodI fun _ : ι => FreeGroup Unit := by
-  refine' MonoidHom.toMulEquiv _ _ _ _
+  refine MonoidHom.toMulEquiv ?_ ?_ ?_ ?_
   · exact FreeGroup.lift fun i => @CoprodI.of ι _ _ i (FreeGroup.of Unit.unit)
   · exact CoprodI.lift fun i => FreeGroup.lift fun _ => FreeGroup.of i
   · ext; simp
@@ -1060,7 +1058,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     simp
   rw [this, MonoidHom.coe_comp]
   clear this
-  refine' Function.Injective.comp _ (MulEquiv.injective freeGroupEquivCoprodI)
+  refine Function.Injective.comp ?_ (MulEquiv.injective freeGroupEquivCoprodI)
   -- Step two: Invoke the ping-pong lemma for free products
   show Function.Injective (lift fun i : ι => FreeGroup.lift fun _ => a i)
   -- Prepare to instantiate lift_injective_of_ping_pong
@@ -1081,7 +1079,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   · show Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
     rintro i j hij
     -- use free_group unit ≃ ℤ
-    refine' FreeGroup.freeGroupUnitEquivInt.forall_congr_left'.mpr _
+    refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left'.mpr ?_
     intro n hne1
     change FreeGroup.lift (fun _ => a i) (FreeGroup.of () ^ n) • X' j ⊆ X' i
     simp only [map_zpow, FreeGroup.lift.of]
@@ -1120,7 +1118,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
         a i ^ n • X' j ⊆ a i ^ n • (X i)ᶜ :=
           smul_set_mono ((hXdisj hij.symm).union_left (hXYdisj i j).symm).subset_compl_right
         _ ⊆ Y i := by
-          refine' Int.le_induction_down (P := fun n => a i ^ n • (X i)ᶜ ⊆ Y i) _ _ _ h1n
+          refine Int.le_induction_down (P := fun n => a i ^ n • (X i)ᶜ ⊆ Y i) ?_ ?_ _ h1n
           · dsimp
             rw [zpow_neg, zpow_one]
             exact hY i

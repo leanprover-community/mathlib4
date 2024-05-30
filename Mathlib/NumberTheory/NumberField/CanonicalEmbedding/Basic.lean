@@ -100,7 +100,7 @@ theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     convert (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
     ext; constructor
     · rintro ⟨⟨_, ⟨x, rfl⟩, rfl⟩, hx⟩
-      exact ⟨↑x, ⟨SetLike.coe_mem x, fun φ => (heq x).mp hx φ⟩, rfl⟩
+      exact ⟨x, ⟨SetLike.coe_mem x, fun φ => (heq _).mp hx φ⟩, rfl⟩
     · rintro ⟨x, ⟨hx1, hx2⟩, rfl⟩
       exact ⟨⟨x, ⟨⟨x, hx1⟩, rfl⟩, rfl⟩, (heq x).mpr hx2⟩
 
@@ -142,13 +142,14 @@ theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 
     Function.comp_apply, Equiv.apply_symm_apply]
 
 theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
-    x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔ x ∈ canonicalEmbedding K '' (𝓞 K) := by
+    x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔
+      x ∈ ((canonicalEmbedding K).comp (algebraMap (𝓞 K) K)).range := by
   rw [show Set.range (latticeBasis K) =
       (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
     rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
-  rw [show (Submodule.span ℤ (Set.range (integralBasis K)) : Set K) = 𝓞 K by
-    ext; exact mem_span_integralBasis K]
+  rw [← RingHom.map_range, Subring.mem_map, Set.mem_image]
+  simp only [SetLike.mem_coe, mem_span_integralBasis K]
   rfl
 
 end NumberField.canonicalEmbedding
@@ -245,14 +246,12 @@ noncomputable section norm
 
 open scoped Classical
 
-open BigOperators
-
 variable [NumberField K] {K}
 
 /-- The norm of `x` is `∏ w real, ‖x‖_w * ∏ w complex, ‖x‖_w ^ 2`. It is defined such that
 the norm of `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a`
 over `ℚ`, see `norm_eq_norm`. -/
-protected def norm  : (E K) →*₀ ℝ where
+protected def norm : (E K) →*₀ ℝ where
   toFun := fun x ↦ (∏ w, ‖x.1 w‖) * ∏ w, ‖x.2 w‖ ^ 2
   map_one' := by simp only [Prod.fst_one, Pi.one_apply, norm_one, Finset.prod_const_one,
     Prod.snd_one, one_pow, mul_one]
@@ -484,13 +483,14 @@ theorem latticeBasis_apply (i : ChooseBasisIndex ℤ (𝓞 K)) :
     canonicalEmbedding.latticeBasis_apply, integralBasis_apply, commMap_canonical_eq_mixed]
 
 theorem mem_span_latticeBasis (x : (E K)) :
-    x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔ x ∈ mixedEmbedding K '' (𝓞 K) := by
+    x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔
+      x ∈ ((mixedEmbedding K).comp (algebraMap (𝓞 K) K)).range := by
   rw [show Set.range (latticeBasis K) =
       (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
     rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
-  rw [show (Submodule.span ℤ (Set.range (integralBasis K)) : Set K) = 𝓞 K by
-    ext; exact mem_span_integralBasis K]
+  simp only [Set.mem_image, SetLike.mem_coe, mem_span_integralBasis K,
+    RingHom.mem_range, exists_exists_eq_and]
   rfl
 
 theorem mem_rat_span_latticeBasis (x : K) :

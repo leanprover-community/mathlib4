@@ -176,7 +176,7 @@ theorem next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down �
 @[simp]
 theorem next_nat_zero : (ComplexShape.down ℕ).next 0 = 0 := by
   classical
-    refine' dif_neg _
+    refine dif_neg ?_
     push_neg
     intro
     apply Nat.noConfusion
@@ -205,7 +205,7 @@ theorem next (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
 @[simp]
 theorem prev_nat_zero : (ComplexShape.up ℕ).prev 0 = 0 := by
   classical
-    refine' dif_neg _
+    refine dif_neg ?_
     push_neg
     intro
     apply Nat.noConfusion
@@ -314,7 +314,7 @@ noncomputable def zero [HasZeroObject V] : HomologicalComplex V c where
 #align homological_complex.zero HomologicalComplex.zero
 
 theorem isZero_zero [HasZeroObject V] : IsZero (zero : HomologicalComplex V c) := by
-  refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
+  refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
   all_goals
     ext
     dsimp [zero]
@@ -331,6 +331,20 @@ theorem congr_hom {C D : HomologicalComplex V c} {f g : C ⟶ D} (w : f = g) (i 
     f.f i = g.f i :=
   congr_fun (congr_arg Hom.f w) i
 #align homological_complex.congr_hom HomologicalComplex.congr_hom
+
+lemma mono_of_mono_f {K L : HomologicalComplex V c} (φ : K ⟶ L)
+    (hφ : ∀ i, Mono (φ.f i)) : Mono φ where
+  right_cancellation g h eq := by
+    ext i
+    rw [← cancel_mono (φ.f i)]
+    exact congr_hom eq i
+
+lemma epi_of_epi_f {K L : HomologicalComplex V c} (φ : K ⟶ L)
+    (hφ : ∀ i, Epi (φ.f i)) : Epi φ where
+  left_cancellation g h eq := by
+    ext i
+    rw [← cancel_epi (φ.f i)]
+    exact congr_hom eq i
 
 section
 

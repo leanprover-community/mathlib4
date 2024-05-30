@@ -172,7 +172,7 @@ theorem measurable_compProdFun_of_finite (κ : kernel α β) [IsFiniteKernel κ]
 theorem measurable_compProdFun (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] (hs : MeasurableSet s) : Measurable fun a => compProdFun κ η a s := by
   simp_rw [compProdFun_tsum_right κ η _ hs]
-  refine' Measurable.ennreal_tsum fun n => _
+  refine Measurable.ennreal_tsum fun n => ?_
   simp only [compProdFun]
   have h_meas : Measurable (Function.uncurry fun a b => seq η n (a, b) {c : γ | (b, c) ∈ s}) := by
     have :
@@ -415,8 +415,8 @@ theorem lintegral_compProd' (κ : kernel α β) [IsSFiniteKernel κ] (η : kerne
   congr
   ext1 n
   -- Porting note: Added `(P := _)`
-  refine' SimpleFunc.induction (P := fun f => (∫⁻ (a : β × γ), f a ∂(κ ⊗ₖ η) a =
-      ∫⁻ (a_1 : β), ∫⁻ (c : γ), f (a_1, c) ∂η (a, a_1) ∂κ a)) _ _ (F n)
+  refine SimpleFunc.induction (P := fun f => (∫⁻ (a : β × γ), f a ∂(κ ⊗ₖ η) a =
+      ∫⁻ (a_1 : β), ∫⁻ (c : γ), f (a_1, c) ∂η (a, a_1) ∂κ a)) ?_ ?_ (F n)
   · intro c s hs
     classical -- Porting note: Added `classical` for `Set.piecewise_eq_indicator`
     simp (config := { unfoldPartialApp := true }) only [SimpleFunc.const_zero,
@@ -580,8 +580,7 @@ lemma compProd_add_right (μ : kernel α β) (κ η : kernel (α × β) γ)
     [IsSFiniteKernel μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     μ ⊗ₖ (κ + η) = μ ⊗ₖ κ + μ ⊗ₖ η := by
   ext a s hs
-  simp only [compProd_apply _ _ _ hs, coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure,
-    OuterMeasure.coe_add]
+  simp only [compProd_apply _ _ _ hs, coeFn_add, Pi.add_apply, Measure.coe_add]
   rw [lintegral_add_left]
   exact measurable_kernel_prod_mk_left' hs a
 
@@ -660,7 +659,7 @@ instance IsMarkovKernel.map (κ : kernel α β) [IsMarkovKernel κ] (hf : Measur
 
 instance IsFiniteKernel.map (κ : kernel α β) [IsFiniteKernel κ] (hf : Measurable f) :
     IsFiniteKernel (map κ f hf) := by
-  refine' ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => _⟩⟩
+  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
   rw [map_apply' κ hf a MeasurableSet.univ]
   exact measure_le_bound κ a _
 #align probability_theory.kernel.is_finite_kernel.map ProbabilityTheory.kernel.IsFiniteKernel.map
@@ -724,7 +723,7 @@ instance IsMarkovKernel.comap (κ : kernel α β) [IsMarkovKernel κ] (hg : Meas
 
 instance IsFiniteKernel.comap (κ : kernel α β) [IsFiniteKernel κ] (hg : Measurable g) :
     IsFiniteKernel (comap κ g hg) := by
-  refine' ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => _⟩⟩
+  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
   rw [comap_apply' κ hg a Set.univ]
   exact measure_le_bound κ _ _
 #align probability_theory.kernel.is_finite_kernel.comap ProbabilityTheory.kernel.IsFiniteKernel.comap
@@ -1095,7 +1094,7 @@ instance IsSFiniteKernel.comp (η : kernel β γ) [IsSFiniteKernel η] (κ : ker
 /-- Composition of kernels is associative. -/
 theorem comp_assoc {δ : Type*} {mδ : MeasurableSpace δ} (ξ : kernel γ δ) [IsSFiniteKernel ξ]
     (η : kernel β γ) (κ : kernel α β) : ξ ∘ₖ η ∘ₖ κ = ξ ∘ₖ (η ∘ₖ κ) := by
-  refine' ext_fun fun a f hf => _
+  refine ext_fun fun a f hf => ?_
   simp_rw [lintegral_comp _ _ _ hf, lintegral_comp _ _ _ hf.lintegral_kernel]
 #align probability_theory.kernel.comp_assoc ProbabilityTheory.kernel.comp_assoc
 

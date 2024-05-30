@@ -1,5 +1,4 @@
 /-
-
 Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
@@ -221,14 +220,14 @@ def lift (h : IsAdjoinRoot S f) : S →+* T where
   map_add' z w := by
     dsimp only -- Porting note (#10752): added `dsimp only`
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z + h.repr w), eval₂_add]
-    · rw [map_add, map_repr, map_repr]
+    rw [map_add, map_repr, map_repr]
   map_one' := by
     beta_reduce -- Porting note (#12129): additional beta reduction needed
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ (map_one _), eval₂_one]
   map_mul' z w := by
     dsimp only -- Porting note (#10752): added `dsimp only`
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z * h.repr w), eval₂_mul]
-    · rw [map_mul, map_repr, map_repr]
+    rw [map_mul, map_repr, map_repr]
 #align is_adjoin_root.lift IsAdjoinRoot.lift
 
 variable {i x}
@@ -429,14 +428,14 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         refine coeff_eq_zero_of_natDegree_lt (lt_of_lt_of_le ?_ hi)
         dsimp -- Porting note (#11227):added a `dsimp`
         rw [natDegree_lt_natDegree_iff hx]
-        · exact degree_modByMonic_lt _ h.Monic
+        exact degree_modByMonic_lt _ h.Monic
       right_inv := fun g => by
         nontriviality R
         ext i
         simp only [h.modByMonicHom_map, Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
         rw [(Polynomial.modByMonic_eq_self_iff h.Monic).mpr, Polynomial.coeff]
-        dsimp only -- Porting note (#10752): added `dsimp only`
-        rw [Finsupp.mapDomain_apply Fin.val_injective]
+        · dsimp only -- Porting note (#10752): added `dsimp only`
+          rw [Finsupp.mapDomain_apply Fin.val_injective]
         rw [degree_eq_natDegree h.Monic.ne_zero, degree_lt_iff_coeff_zero]
         intro m hm
         rw [Polynomial.coeff]
@@ -575,7 +574,7 @@ theorem coeff_algebraMap [Nontrivial S] (h : IsAdjoinRootMonic S f) (x : R) :
     h.coeff (algebraMap R S x) = Pi.single 0 x := by
   ext i
   rw [Algebra.algebraMap_eq_smul_one, map_smul, coeff_one, Pi.smul_apply, smul_eq_mul]
-  refine' (Pi.apply_single (fun _ y => x * y) _ 0 1 i).trans (by simp)
+  refine (Pi.apply_single (fun _ y => x * y) ?_ 0 1 i).trans (by simp)
   intros
   simp
 #align is_adjoin_root_monic.coeff_algebra_map IsAdjoinRootMonic.coeff_algebraMap

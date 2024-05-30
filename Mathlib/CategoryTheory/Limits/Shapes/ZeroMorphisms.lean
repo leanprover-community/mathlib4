@@ -512,7 +512,7 @@ open ZeroObject
 -/
 def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y ≅ 0) := by
   -- This is lame, because `Prod` can't cope with `Prop`, so we can't use `Equiv.prodCongr`.
-  refine' (isIsoZeroEquiv X Y).trans _
+  refine (isIsoZeroEquiv X Y).trans ?_
   symm
   fconstructor
   · rintro ⟨eX, eY⟩
@@ -545,7 +545,7 @@ end IsIso
 /-- If there are zero morphisms, any initial object is a zero object. -/
 theorem hasZeroObject_of_hasInitial_object [HasZeroMorphisms C] [HasInitial C] :
     HasZeroObject C := by
-  refine' ⟨⟨⊥_ C, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩⟩
+  refine ⟨⟨⊥_ C, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩⟩
   calc
     f = f ≫ 𝟙 _ := (Category.comp_id _).symm
     _ = f ≫ 0 := by congr!; apply Subsingleton.elim
@@ -555,7 +555,7 @@ theorem hasZeroObject_of_hasInitial_object [HasZeroMorphisms C] [HasInitial C] :
 /-- If there are zero morphisms, any terminal object is a zero object. -/
 theorem hasZeroObject_of_hasTerminal_object [HasZeroMorphisms C] [HasTerminal C] :
     HasZeroObject C := by
-  refine' ⟨⟨⊤_ C, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩⟩⟩
+  refine ⟨⟨⊤_ C, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩⟩⟩
   calc
     f = 𝟙 _ ≫ f := (Category.id_comp _).symm
     _ = 0 ≫ f := by congr!; apply Subsingleton.elim
