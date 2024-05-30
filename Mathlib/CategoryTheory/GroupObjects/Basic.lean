@@ -86,6 +86,7 @@ structure Hom (G H : GroupObject C) where
   hom : G.X ⟶ H.X
   one_hom : G.one ≫ hom = H.one := by aesop_cat
   mul_hom : G.mul ≫ hom = prod.map hom hom ≫ H.mul := by aesop_cat
+  inv_hom : G.inv ≫ hom = hom ≫ H.inv := by aesop_cat
 
 attribute [reassoc (attr := simp)] Hom.one_hom Hom.mul_hom
 
@@ -101,6 +102,7 @@ instance homInhabited (G : GroupObject C) : Inhabited (Hom G G) :=
 @[simps]
 def comp {G H K : GroupObject C} (f : Hom G H) (g : Hom H K) : Hom G K where
   hom := f.hom ≫ g.hom
+  inv_hom := by rw [← Category.assoc, f.inv_hom, Category.assoc, g.inv_hom, Category.assoc]
 
 instance : Category (GroupObject C) where
   Hom G H := Hom G H
@@ -142,8 +144,10 @@ instance {A B : GroupObject C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : Is
 instance : (forget C).ReflectsIsomorphisms where
   reflects f e :=
     ⟨⟨{ hom := CategoryTheory.inv f.hom
-        mul_hom := by simp only [IsIso.comp_inv_eq, Category.assoc, Hom.mul_hom, prod.map_map_assoc,
-          IsIso.inv_hom_id, prod.map_id_id, Category.id_comp]},
+        inv_hom := by
+          rw [IsIso.eq_inv_comp, ← Category.assoc, ← f.inv_hom,
+            Category.assoc, IsIso.hom_inv_id, Category.comp_id]
+        },
         by aesop_cat⟩⟩
 
 /-- Construct an isomorphism of groups by giving an isomorphism between the underlying objects
@@ -151,34 +155,43 @@ and checking compatibility with unit and multiplication only in the forward dire
 -/
 @[simps]
 def isoOfIso {G H : GroupObject C} (f : G.X ≅ H.X) (one_f : G.one ≫ f.hom = H.one)
-    (mul_f : G.mul ≫ f.hom = prod.map f.hom f.hom ≫ H.mul) : G ≅ H where
+    (mul_f : G.mul ≫ f.hom = prod.map f.hom f.hom ≫ H.mul)
+    (inv_f : G.inv ≫ f.hom = f.hom ≫ H.inv) : G ≅ H where
   hom :=
     { hom := f.hom
       one_hom := one_f
-      mul_hom := mul_f }
+      mul_hom := mul_f
+      inv_hom := inv_f
+    }
   inv :=
     { hom := f.inv
       one_hom := by rw [← one_f]; simp
       mul_hom := by
         rw [← cancel_mono f.hom]
         slice_rhs 2 3 => rw [mul_f]
-        simp }
+        simp
+      inv_hom := by
+        rw [Iso.eq_inv_comp, ← Category.assoc, ← inv_f, Category.assoc, Iso.hom_inv_id,
+          Category.comp_id]
+    }
 
 instance uniqueHomFromTrivial (A : GroupObject C) : Unique (trivial C ⟶ A) where
   default :=
     { hom := A.one
-      one_hom := by dsimp; simp
-      mul_hom := by dsimp; simp [A.one_mul]; rw [Subsingleton.elim prod.snd]}
+      mul_hom := by dsimp; simp [A.one_mul]; rw [Subsingleton.elim prod.snd]
+      inv_hom := by
+        dsimp; rw [Category.id_comp]
+        sorry
+    }
   uniq f := by
     ext; simp
     rw [← Category.id_comp f.hom]
     erw [f.one_hom]
+-- Might have to put this one later, it need G.one = G.one ≫ G.inv.
 
 instance uniqueHomToTrivial (A : GroupObject C) : Unique (A ⟶ trivial C) where
   default :=
-    { hom := (default : A.X ⟶ ⊤_ C)
-      one_hom := by dsimp; aesop_cat
-      mul_hom := by dsimp; aesop_cat}
+    { hom := (default : A.X ⟶ ⊤_ C) }
   uniq f := by
     ext; simp only [trivial_X]
     convert Subsingleton.elim f.hom default
@@ -227,10 +240,5 @@ def HomAsGroup (X : C) (G : GroupObject C) : Group (X ⟶ G.X) where
     rw [this, Category.assoc, G.mul_left_inv, ← Category.assoc,
       Subsingleton.elim (f ≫ default) default]
     rfl
-
-
-theorem inv_hom {G H : GroupObject C} (f : G ⟶ H) :
-    G.inv ≫ f.hom = f.hom ≫ H.inv := sorry
-
 
 end GroupObject

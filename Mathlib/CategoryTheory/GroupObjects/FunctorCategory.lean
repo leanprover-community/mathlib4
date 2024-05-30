@@ -21,9 +21,9 @@ instance functorCategoryHasFiniteProducts : HasFiniteProducts (C ⥤ D) where
 -- seem to be there. TODO: add it.
 
 --set_option diagnostics true
-set_option maxHeartbeats 5000000
+-- set_option maxHeartbeats 5000000
 --set_option profiler true
-set_option trace.profiler true
+-- set_option trace.profiler true
 
 namespace GroupObjectFunctorToFunctorGroupObject
 
@@ -114,6 +114,7 @@ def obj (G : GroupObject (C ⥤ D)) :
         IsIso.inv_comp_eq]
       rw [← evaluation_map_app, ← evaluation_map_app _ _ f G.X]
       exact (prodComparison_natTrans (α := (evaluation C D).map f) (X := G.X) (Y := G.X)).symm
+    inv_hom := by simp only [obj_obj, NatTrans.naturality]
   }
 
 def map {G H : GroupObject (C ⥤ D)} (α : G ⟶ H) : obj G ⟶ obj H where
@@ -133,6 +134,7 @@ def map {G H : GroupObject (C ⥤ D)} (α : G ⟶ H) : obj G ⟶ obj H where
            ((evaluation C D).obj X) α.hom α.hom]
          simp only [NatTrans.comp_app, evaluation_obj_obj, evaluation_obj_map, Category.assoc,
            IsIso.hom_inv_id_assoc]
+       inv_hom := by rw [← NatTrans.comp_app, α.inv_hom, NatTrans.comp_app]
      }
   naturality X Y f := by
     simp only [obj, id_eq]
@@ -181,6 +183,7 @@ def full : (GroupObjectFunctorToFunctorGroupObject C D).Full where
       hom := αhom
       one_hom := ?_
       mul_hom := ?_
+      inv_hom := ?_
      }
     · ext X
       simp only [NatTrans.comp_app, αhom]
@@ -199,7 +202,45 @@ def full : (GroupObjectFunctorToFunctorGroupObject C D).Full where
       rw [← that] at this
       simp only [evaluation_obj_obj, Category.assoc, IsIso.hom_inv_id_assoc] at this
       exact this
+    · ext X; dsimp
+      rw [(a.app X).inv_hom]
     · ext; simp only
+
+/-
+def essSurj_aux (F : C ⥤ (GroupObject D)) : GroupObject (C ⥤ D) where
+  X :=
+   {
+    obj := fun X ↦ (F.obj X).X
+    map := fun f ↦ (F.map f).hom
+   }
+  one :=
+   {
+    app := fun X ↦ terminalComparison ((evaluation C D).obj X) ≫ (F.obj X).one
+    naturality := by
+      intro X Y f
+      rw [Category.assoc, GroupObject.Hom.one_hom, ← Category.assoc]
+      congr 1
+      exact Subsingleton.elim _ _
+   }
+  mul :=
+   {
+    app := fun X ↦ prodComparison ((evaluation C D).obj X) X X ≫ (F.obj X).mul
+    naturality := by
+      intro X Y f
+      simp only [evaluation_obj_obj, Category.assoc, GroupObject.Hom.mul_hom]
+      have := prodComparison_natTrans ((evaluation C D).map f) (X := X) (Y :=GX)
+      simp only [evaluation_obj_obj, evaluation_map_app] at this
+      conv_rhs => rw [← Category.assoc, this]
+      simp only [Category.assoc]
+   }
+  inv :=
+   {
+    app := fun X ↦ (F.obj X).inv
+    naturality :=  fun _ _ f ↦ by
+      sorry
+   }
+-/
+
 
 def essSurj : (GroupObjectFunctorToFunctorGroupObject C D).EssSurj where
   mem_essImage F := by
@@ -208,36 +249,61 @@ def essSurj : (GroupObjectFunctorToFunctorGroupObject C D).EssSurj where
       obj := fun X ↦ (F.obj X).X
       map := fun f ↦ (F.map f).hom
      }
-    set Gone : ⊤_ (C ⥤ D) ⟶ GX :=
+    set G : GroupObject (C ⥤ D) :=
      {
-      app := fun X ↦ terminalComparison ((evaluation C D).obj X) ≫ (F.obj X).one
-      naturality := by
-        intro X Y f
-        simp only [Category.assoc, GroupObject.Hom.one_hom]
+      X := GX
+      one :=
+       {
+        app := fun X ↦ terminalComparison ((evaluation C D).obj X) ≫ (F.obj X).one
+        naturality := by
+          intro X Y f
+          rw [Category.assoc, GroupObject.Hom.one_hom, ← Category.assoc]
+          congr 1
+          exact Subsingleton.elim _ _
+       }
+      mul :=
+       {
+        app := fun X ↦ prodComparison ((evaluation C D).obj X) _ _ ≫ (F.obj X).mul
+        naturality := by
+          intro _ _ f
+          simp only [evaluation_obj_obj, Category.assoc, GroupObject.Hom.mul_hom]
+          have := prodComparison_natTrans ((evaluation C D).map f) (X := GX) (Y := GX)
+          simp only [evaluation_obj_obj, evaluation_map_app] at this
+          conv_rhs => rw [← Category.assoc, this]
+          simp only [Category.assoc]
+       }
+      inv :=
+       {
+        app := fun X ↦ (F.obj X).inv
+        naturality :=  fun _ _ f ↦ by rw [(F.map f).inv_hom]
+       }
+      one_mul := by
+        ext X
+        simp only [evaluation_obj_obj, NatTrans.comp_app, prod.leftUnitor_hom]
         rw [← Category.assoc]
-        congr 1
-        exact Subsingleton.elim _ _
+        erw [prodComparison_natural ((evaluation C D).obj X)]
+        simp only [evaluation_obj_obj, evaluation_obj_map, NatTrans.id_app, Category.assoc]
+        rw [prod_map_comp_left_id_right]
+        slice_lhs 3 4 => rw [(F.obj X).one_mul]
+        simp only [prod.leftUnitor_hom, prod.map_snd, Category.comp_id]
+        erw [prodComparison_snd]
+        simp only [evaluation_obj_map] 
+      mul_one := sorry
+      mul_assoc := sorry
+      mul_left_inv := sorry
      }
-    set Gmul : GX ⨯ GX ⟶ GX :=
-     {
-      app := fun X ↦ prodComparison ((evaluation C D).obj X) GX GX ≫ (F.obj X).mul
-      naturality := by
-        intro X Y f
-        simp only [evaluation_obj_obj, Category.assoc, GroupObject.Hom.mul_hom]
-        have := prodComparison_natTrans ((evaluation C D).map f) (X := GX) (Y := GX)
-        simp only [evaluation_obj_obj, evaluation_map_app] at this
-        conv_rhs => rw [← Category.assoc, this]
-        simp only [Category.assoc]
-     }
-    set Ginv : GX ⟶ GX :=
-     {
-      app := fun X ↦ (F.obj X).inv
-      naturality := by
-        intro X Y f
-        simp only
-        sorry -- cannot prove until we have lemma on group object homs and inversion
-     }
-    sorry
+    refine Functor.essImage.ofIso (NatIso.ofComponents ?_ ?_) (Functor.obj_mem_essImage _ G)
+    · intro X
+      simp only [GroupObjectFunctorToFunctorGroupObject, obj, obj_obj, GroupObject.id_hom',
+        GroupObject.comp_hom', id_eq, eq_mpr_eq_cast]
+      refine GroupObject.isoOfIso (Iso.refl _) ?_ ?_ ?_
+      · simp only [obj_obj_one, evaluation_obj_obj, GroupObject.id_hom', GroupObject.comp_hom',
+        id_eq, eq_mpr_eq_cast, PreservesTerminal.iso_inv, IsIso.inv_hom_id_assoc, Iso.refl_hom,
+        Category.comp_id]
+      · sorry --simp? [obj_obj_mul]
+      · sorry
+    · sorry
+
 
 end GroupObjectFunctorToFunctorGroupObject
 
