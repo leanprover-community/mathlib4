@@ -359,7 +359,7 @@ protected theorem coe_natCast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
 #align nnreal.coe_nat_cast NNReal.coe_natCast
 
 @[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := coe_natCast
+alias coe_nat_cast := NNReal.coe_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]

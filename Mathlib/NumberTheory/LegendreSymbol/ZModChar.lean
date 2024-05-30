@@ -56,9 +56,6 @@ theorem isQuadratic_χ₄ : χ₄.IsQuadratic := by
 theorem χ₄_nat_mod_four (n : ℕ) : χ₄ n = χ₄ (n % 4 : ℕ) := by rw [← ZMod.natCast_mod n 4]
 #align zmod.χ₄_nat_mod_four ZMod.χ₄_nat_mod_four
 
-@[deprecated (since := "2024-04-17")]
-alias χ₄_nat_mod_four := χ₄_nat_mod_four
-
 /-- The value of `χ₄ n`, for `n : ℤ`, depends only on `n % 4`. -/
 theorem χ₄_int_mod_four (n : ℤ) : χ₄ n = χ₄ (n % 4 : ℤ) := by
   rw [← ZMod.intCast_mod n 4]
@@ -152,9 +149,6 @@ theorem isQuadratic_χ₈ : χ₈.IsQuadratic := by
 /-- The value of `χ₈ n`, for `n : ℕ`, depends only on `n % 8`. -/
 theorem χ₈_nat_mod_eight (n : ℕ) : χ₈ n = χ₈ (n % 8 : ℕ) := by rw [← ZMod.natCast_mod n 8]
 #align zmod.χ₈_nat_mod_eight ZMod.χ₈_nat_mod_eight
-
-@[deprecated (since := "2024-04-17")]
-alias χ₈_nat_mod_eight := χ₈_nat_mod_eight
 
 /-- The value of `χ₈ n`, for `n : ℤ`, depends only on `n % 8`. -/
 theorem χ₈_int_mod_eight (n : ℤ) : χ₈ n = χ₈ (n % 8 : ℤ) := by
