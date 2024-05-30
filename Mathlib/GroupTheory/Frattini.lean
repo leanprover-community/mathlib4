@@ -43,17 +43,21 @@ theorem frattini_characteristic : (frattini G).Characteristic := by
       simp
       rfl
 
-variable {G}
+
+-- variable {X : Set (G)}
+
+theorem frattini_nongenerating : ∀ X : Set (G), Subgroup.closure ( X) ⊔ frattini G = ⊤ → Subgroup.closure (X) = G  := by
+  intro X
+  intro h
+  unfold frattini at h
+  simp at h
+  sorry
+
 
 /-!
 Some results we don't actually use above, but seem like they are missing and related!
 -/
 
-
--- Provided by Eric Wieser at https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Group.20isomorphism.20gives.20an.20order.20isomorphism.20on.20subgroups/near/441230172
--- We may actually prefer the version via `comap` below!
--- See also `Submodule.orderIsoMapComap`, which is stated in a slightly more general form,
--- and uses `map` for the forward direction and `comap` for the reverse direction.
 @[simps]
 def MulEquiv.mapSubgroup (f : G ≃* H) : Subgroup G ≃o Subgroup H where
   toFun := Subgroup.map f
