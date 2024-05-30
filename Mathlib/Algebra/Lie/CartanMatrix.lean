@@ -3,6 +3,7 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.Free
 import Mathlib.Algebra.Lie.Quotient
 import Mathlib.Data.Matrix.Notation
@@ -183,18 +184,121 @@ def Matrix.ToLieAlgebra :=
   FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A
 #align matrix.to_lie_algebra Matrix.ToLieAlgebra
 
+namespace Matrix.ToLieAlgebra
+
 -- Porting note: the following were derived automatically in mathlib3.
-instance Matrix.ToLieAlgebra.instLieRing : LieRing (Matrix.ToLieAlgebra R A) :=
+instance instLieRing : LieRing (Matrix.ToLieAlgebra R A) :=
   inferInstanceAs (LieRing (FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A))
 #align matrix.to_lie_algebra.lie_ring Matrix.ToLieAlgebra.instLieRing
 
-instance Matrix.ToLieAlgebra.instInhabited : Inhabited (Matrix.ToLieAlgebra R A) :=
+instance instInhabited : Inhabited (Matrix.ToLieAlgebra R A) :=
   inferInstanceAs (Inhabited (FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A))
 #align matrix.to_lie_algebra.inhabited Matrix.ToLieAlgebra.instInhabited
 
-instance Matrix.ToLieAlgebra.instLieAlgebra : LieAlgebra R (Matrix.ToLieAlgebra R A) :=
+instance instLieAlgebra : LieAlgebra R (Matrix.ToLieAlgebra R A) :=
   inferInstanceAs (LieAlgebra R (FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A))
 #align matrix.to_lie_algebra.lie_algebra Matrix.ToLieAlgebra.instLieAlgebra
+
+instance instLieRingModule :
+    LieRingModule (FreeLieAlgebra R (CartanMatrix.Generators B)) (ToLieAlgebra R A) :=
+  inferInstanceAs (LieRingModule (FreeLieAlgebra R (CartanMatrix.Generators B))
+    (FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A))
+
+section
+open CartanMatrix
+
+def q : FreeLieAlgebra R (Generators B) →ₗ⁅R,FreeLieAlgebra R (Generators B)⁆
+  A.ToLieAlgebra R := LieSubmodule.Quotient.mk' (Relations.toIdeal R A)
+
+lemma lie_q_q : ∀ x y, ⁅q R A x, q R A y⁆ = q R A ⁅x, y⁆ :=
+  LieSubmodule.Quotient.mk_bracket
+
+lemma q_apply_eq_zero (x) : q R A x = 0 ↔ x ∈ Relations.toIdeal R A :=
+  LieSubmodule.Quotient.mk_eq_zero' _
+
+def E : B → Matrix.ToLieAlgebra R A := q R A ∘ FreeLieAlgebra.of R ∘ Generators.E
+
+def F : B → Matrix.ToLieAlgebra R A := q R A ∘ FreeLieAlgebra.of R ∘ Generators.F
+
+def H : B → Matrix.ToLieAlgebra R A := q R A ∘ FreeLieAlgebra.of R ∘ Generators.H
+
+@[simp]
+lemma lie_H_H (i j : B) : ⁅H R A i, H R A j⁆ = 0 := by
+  simp only [H, Function.comp_apply, lie_q_q, q_apply_eq_zero]
+  apply LieSubmodule.subset_lieSpan
+  simp only [Relations.toSet, Set.union_assoc]
+  left
+  simp only [Relations.HH, Function.comp_apply, Set.mem_range, Prod.exists,
+    Function.uncurry_apply_pair, exists_apply_eq_apply2]
+
+@[simp]
+lemma lie_H_E (i j : B) : ⁅H R A i, E R A j⁆ = A i j • E R A j := by
+  simp only [H, E, Function.comp_apply]
+  have hq : ∀ x, q R A (A i j • x) = A i j • q R A x :=
+    fun x ↦ (q R A).toAddMonoidHom.map_zsmul x (A i j)
+  rw [← sub_eq_zero, ← hq, lie_q_q, ← (q R A).map_sub, q_apply_eq_zero]
+  apply LieSubmodule.subset_lieSpan
+  simp only [CartanMatrix.Relations.toSet, Set.union_assoc]
+  right; right; left
+  simp only [CartanMatrix.Relations.HE, Function.comp_apply, Set.mem_range, Prod.exists,
+    Function.uncurry_apply_pair, exists_apply_eq_apply2]
+
+@[simp]
+lemma lie_H_F (i j : B) : ⁅H R A i, F R A j⁆ = -A i j • F R A j := by
+  simp only [H, F, Function.comp_apply]
+  have hq : ∀ x, q R A (A i j • x) = A i j • q R A x :=
+    fun x ↦ (q R A).toAddMonoidHom.map_zsmul x (A i j)
+  rw [← sub_eq_zero, neg_smul, sub_neg_eq_add, ← hq, lie_q_q, ← (q R A).map_add, q_apply_eq_zero]
+  apply LieSubmodule.subset_lieSpan
+  simp only [CartanMatrix.Relations.toSet]
+  left; left; right
+  simp only [CartanMatrix.Relations.HF, Function.comp_apply, Set.mem_range, Prod.exists,
+    Function.uncurry_apply_pair, exists_apply_eq_apply2]
+
+end
+
+def cartanSubalgebra : LieSubalgebra R (Matrix.ToLieAlgebra R A) :=
+  LieSubalgebra.lieSpan _ _ <| Set.range (Matrix.ToLieAlgebra.H R A)
+
+namespace cartanSubalgebra
+
+open LieSubalgebra in
+instance : IsLieAbelian (cartanSubalgebra R A) where
+  trivial := by
+    rintro ⟨x, hx⟩ ⟨y, hy⟩
+    ext
+    dsimp
+    revert y
+    refine lieSpan_induction _ hx ?_ (fun y _ ↦ zero_lie y) ?_ ?_ ?_
+      (p := fun x ↦ ∀ y ∈ cartanSubalgebra R A, ⁅x, y⁆ = 0)
+    all_goals dsimp
+    · simp only [Set.mem_range, Function.comp_apply, forall_exists_index, forall_apply_eq_imp_iff]
+      intro a y hy
+      refine lieSpan_induction _ hy ?_ (lie_zero _) ?_ ?_ ?_ (p := fun y ↦ ⁅H R A a, y⁆ = 0)
+      · simp only [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff, lie_H_H,
+          implies_true]
+      · simp (config := { contextual := true }) only [lie_smul, smul_zero, implies_true]
+      · simp (config := { contextual := true }) only [lie_add, zero_add, implies_true]
+      · dsimp
+        intro x y ihx ihy
+        rw [← lie_skew, lie_lie, ← lie_skew y, ihy, neg_zero, lie_zero,
+            ← lie_skew x, ihx, neg_zero, lie_zero, sub_zero, neg_zero]
+    · simp (config := { contextual := true }) only [smul_lie, smul_zero, implies_true]
+    · simp (config := { contextual := true }) only [add_lie, add_zero, implies_true]
+    · simp (config := { contextual := true }) only [lie_lie, zero_mem, sub_self, implies_true]
+
+open LieSubalgebra in
+instance instCartanSubalgebra : IsCartanSubalgebra (cartanSubalgebra R A) where
+  nilpotent := inferInstance
+  self_normalizing := by
+    apply le_antisymm _ (le_normalizer _)
+    intro x hx
+    rw [mem_normalizer_iff] at hx
+    sorry
+
+end cartanSubalgebra
+
+end Matrix.ToLieAlgebra
 
 namespace CartanMatrix
 
