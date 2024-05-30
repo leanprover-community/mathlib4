@@ -413,12 +413,22 @@ theorem lt_nth_iff_count_lt (hp : (setOf p).Infinite) {a b : ℕ} : a < count p 
 
 end Count
 
-@[simp]
 theorem nth_true (hp : ∀ n, p n) : nth p = id := by
   ext n
   classical
   trans nth p (count p n)
   · rw [count_true hp, id_eq]
   rw [nth_count (hp n), id_eq]
+
+@[simp] theorem nth_True : nth (fun _ ↦ True) = id := nth_true fun _ ↦ trivial
+
+@[simp] theorem nth_False : nth (fun _ ↦ False) = 0 := by
+  ext n
+  apply nth_eq_zero_mono id (zero_le n)
+  simp [nth_zero]
+
+theorem nth_false (hp : ∀ n, ¬p n) : nth p = 0 := by
+  convert nth_False
+  simp [hp]
 
 end Nat
