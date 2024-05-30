@@ -76,7 +76,8 @@ protected theorem id_traverse {α} (xs : List α) : List.traverse (pure : α →
 #align list.id_traverse List.id_traverse
 
 protected theorem comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : List α) :
-    List.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x = Comp.mk (List.traverse f <$> List.traverse g x) := by
+    List.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
+    Comp.mk (List.traverse f <$> List.traverse g x) := by
   induction x <;> simp! [*, functor_norm] <;> rfl
 #align list.comp_traverse List.comp_traverse
 

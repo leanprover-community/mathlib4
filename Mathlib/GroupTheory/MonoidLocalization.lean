@@ -1778,8 +1778,8 @@ theorem mulEquivOfQuotient_mk (x y) : mulEquivOfQuotient f (mk x y) = f.mk' x y 
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 @[to_additive]
-theorem mulEquivOfQuotient_monoidOf (x) : mulEquivOfQuotient f ((monoidOf S).toMap x) = f.toMap x := by
-  simp
+theorem mulEquivOfQuotient_monoidOf (x) :
+    mulEquivOfQuotient f ((monoidOf S).toMap x) = f.toMap x := by simp
 #align localization.mul_equiv_of_quotient_monoid_of Localization.mulEquivOfQuotient_monoidOf
 #align add_localization.add_equiv_of_quotient_add_monoid_of AddLocalization.addEquivOfQuotient_addMonoidOf
 

@@ -964,7 +964,8 @@ theorem neighborSet_subgraphOfAdj_of_ne_of_ne {u v w : V} (hvw : G.Adj v w) (hv 
 #align simple_graph.neighbor_set_subgraph_of_adj_of_ne_of_ne SimpleGraph.neighborSet_subgraphOfAdj_of_ne_of_ne
 
 theorem neighborSet_subgraphOfAdj [DecidableEq V] {u v w : V} (hvw : G.Adj v w) :
-    (G.subgraphOfAdj hvw).neighborSet u = (if u = v then {w} else ∅) ∪ if u = w then {v} else ∅ := by
+    (G.subgraphOfAdj hvw).neighborSet u =
+    (if u = v then {w} else ∅) ∪ if u = w then {v} else ∅ := by
   split_ifs <;> subst_vars <;> simp [*, Set.singleton_def]
 #align simple_graph.neighbor_set_subgraph_of_adj SimpleGraph.neighborSet_subgraphOfAdj
 
@@ -1216,7 +1217,8 @@ lemma le_induce_union_left : G'.induce s ≤ G'.induce (s ∪ s') := by
 lemma le_induce_union_right : G'.induce s' ≤ G'.induce (s ∪ s') := by
   exact (sup_le_iff.mp le_induce_union).2
 
-theorem singletonSubgraph_eq_induce {v : V} : G.singletonSubgraph v = (⊤ : G.Subgraph).induce {v} := by
+theorem singletonSubgraph_eq_induce {v : V} :
+    G.singletonSubgraph v = (⊤ : G.Subgraph).induce {v} := by
   ext <;> simp (config := { contextual := true }) [-Set.bot_eq_empty, Prop.bot_eq_false]
 #align simple_graph.subgraph.singleton_subgraph_eq_induce SimpleGraph.Subgraph.singletonSubgraph_eq_induce
 
@@ -1286,7 +1288,8 @@ theorem deleteVerts_inter_verts_left_eq : G'.deleteVerts (G'.verts ∩ s) = G'.d
 #align simple_graph.subgraph.delete_verts_inter_verts_left_eq SimpleGraph.Subgraph.deleteVerts_inter_verts_left_eq
 
 @[simp]
-theorem deleteVerts_inter_verts_set_right_eq : G'.deleteVerts (s ∩ G'.verts) = G'.deleteVerts s := by
+theorem deleteVerts_inter_verts_set_right_eq :
+    G'.deleteVerts (s ∩ G'.verts) = G'.deleteVerts s := by
   ext <;> simp (config := { contextual := true }) [imp_false]
 #align simple_graph.subgraph.delete_verts_inter_verts_set_right_eq SimpleGraph.Subgraph.deleteVerts_inter_verts_set_right_eq
 

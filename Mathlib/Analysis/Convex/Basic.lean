@@ -462,7 +462,8 @@ theorem Convex.smul_preimage (hs : Convex 𝕜 s) (c : 𝕜) : Convex 𝕜 ((fun
   hs.linear_preimage (LinearMap.lsmul _ _ c)
 #align convex.smul_preimage Convex.smul_preimage
 
-theorem Convex.affinity (hs : Convex 𝕜 s) (z : E) (c : 𝕜) : Convex 𝕜 ((fun x => z + c • x) '' s) := by
+theorem Convex.affinity (hs : Convex 𝕜 s) (z : E) (c : 𝕜) :
+    Convex 𝕜 ((fun x => z + c • x) '' s) := by
   simpa only [← image_smul, ← image_vadd, image_image] using (hs.smul c).vadd z
 #align convex.affinity Convex.affinity
 
@@ -631,7 +632,8 @@ theorem Set.OrdConnected.convex [OrderedSemiring 𝕜] [LinearOrderedAddCommMono
   hs.convex_of_chain <| isChain_of_trichotomous s
 #align set.ord_connected.convex Set.OrdConnected.convex
 
-theorem convex_iff_ordConnected [LinearOrderedField 𝕜] {s : Set 𝕜} : Convex 𝕜 s ↔ s.OrdConnected := by
+theorem convex_iff_ordConnected [LinearOrderedField 𝕜] {s : Set 𝕜} :
+    Convex 𝕜 s ↔ s.OrdConnected := by
   simp_rw [convex_iff_segment_subset, segment_eq_uIcc, ordConnected_iff_uIcc_subset]
 #align convex_iff_ord_connected convex_iff_ordConnected
 

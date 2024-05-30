@@ -70,8 +70,8 @@ theorem map₂_coe_left (f : α → β → γ) (a : α) (b : Option β) : map₂
 
 -- Porting note: This proof was `rfl` in Lean3, but now is not.
 @[simp]
-theorem map₂_coe_right (f : α → β → γ) (a : Option α) (b : β) : map₂ f a b = a.map fun a => f a b := by
-  cases a <;> rfl
+theorem map₂_coe_right (f : α → β → γ) (a : Option α) (b : β) :
+    map₂ f a b = a.map fun a => f a b := by cases a <;> rfl
 #align option.map₂_coe_right Option.map₂_coe_right
 
 -- Porting note: Removed the `@[simp]` tag as membership of an `Option` is no-longer simp-normal.
@@ -174,8 +174,8 @@ theorem map₂_map_left_comm {f : α' → β → γ} {g : α → α'} {f' : α �
 
 /-- Symmetric statement to `Option.map_map₂_distrib_right`. -/
 theorem map_map₂_right_comm {f : α → β' → γ} {g : β → β'} {f' : α → β → δ} {g' : δ → γ}
-    (h_right_comm : ∀ a b, f a (g b) = g' (f' a b)) : map₂ f a (b.map g) = (map₂ f' a b).map g' := by
-  cases a <;> cases b <;> simp [h_right_comm]
+    (h_right_comm : ∀ a b, f a (g b) = g' (f' a b)) :
+    map₂ f a (b.map g) = (map₂ f' a b).map g' := by cases a <;> cases b <;> simp [h_right_comm]
 #align option.map_map₂_right_comm Option.map_map₂_right_comm
 
 theorem map_map₂_antidistrib {g : γ → δ} {f' : β' → α' → δ} {g₁ : β → β'} {g₂ : α → α'}
@@ -193,8 +193,8 @@ theorem map_map₂_antidistrib_left {g : γ → δ} {f' : β' → α → δ} {g'
 
 /-- Symmetric statement to `Option.map_map₂_right_anticomm`. -/
 theorem map_map₂_antidistrib_right {g : γ → δ} {f' : β → α' → δ} {g' : α → α'}
-    (h_antidistrib : ∀ a b, g (f a b) = f' b (g' a)) : (map₂ f a b).map g = map₂ f' b (a.map g') := by
-  cases a <;> cases b <;> simp [h_antidistrib]
+    (h_antidistrib : ∀ a b, g (f a b) = f' b (g' a)) :
+    (map₂ f a b).map g = map₂ f' b (a.map g') := by cases a <;> cases b <;> simp [h_antidistrib]
 #align option.map_map₂_antidistrib_right Option.map_map₂_antidistrib_right
 
 /-- Symmetric statement to `Option.map_map₂_antidistrib_left`. -/

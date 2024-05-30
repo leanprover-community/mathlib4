@@ -190,7 +190,8 @@ theorem HasMFDerivAt.mdifferentiableAt (h : HasMFDerivAt I I' f x f') :
 #align has_mfderiv_at.mdifferentiable_at HasMFDerivAt.mdifferentiableAt
 
 @[simp, mfld_simps]
-theorem hasMFDerivWithinAt_univ : HasMFDerivWithinAt I I' f univ x f' ↔ HasMFDerivAt I I' f x f' := by
+theorem hasMFDerivWithinAt_univ :
+    HasMFDerivWithinAt I I' f univ x f' ↔ HasMFDerivAt I I' f x f' := by
   simp only [HasMFDerivWithinAt, HasMFDerivAt, continuousWithinAt_univ, mfld_simps]
 #align has_mfderiv_within_at_univ hasMFDerivWithinAt_univ
 

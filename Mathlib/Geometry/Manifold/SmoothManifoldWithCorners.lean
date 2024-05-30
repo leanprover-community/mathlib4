@@ -1092,7 +1092,8 @@ theorem isOpen_extend_preimage' {s : Set E} (hs : IsOpen s) :
   (continuousOn_extend f I).isOpen_inter_preimage (isOpen_extend_source _ _) hs
 #align local_homeomorph.is_open_extend_preimage' PartialHomeomorph.isOpen_extend_preimage'
 
-theorem isOpen_extend_preimage {s : Set E} (hs : IsOpen s) : IsOpen (f.source ∩ f.extend I ⁻¹' s) := by
+theorem isOpen_extend_preimage {s : Set E} (hs : IsOpen s) :
+    IsOpen (f.source ∩ f.extend I ⁻¹' s) := by
   rw [← extend_source f I]; exact isOpen_extend_preimage' f I hs
 #align local_homeomorph.is_open_extend_preimage PartialHomeomorph.isOpen_extend_preimage
 

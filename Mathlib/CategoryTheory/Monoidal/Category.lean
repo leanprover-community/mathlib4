@@ -433,13 +433,13 @@ theorem dite_whiskerRight {P : Prop} [Decidable P]
   split_ifs <;> rfl
 
 theorem tensor_dite {P : Prop} [Decidable P] {W X Y Z : C} (f : W ⟶ X) (g : P → (Y ⟶ Z))
-    (g' : ¬P → (Y ⟶ Z)) : (f ⊗ if h : P then g h else g' h) = if h : P then f ⊗ g h else f ⊗ g' h := by
-  split_ifs <;> rfl
+    (g' : ¬P → (Y ⟶ Z)) : (f ⊗ if h : P then g h else g' h) =
+    if h : P then f ⊗ g h else f ⊗ g' h := by split_ifs <;> rfl
 #align category_theory.monoidal_category.tensor_dite CategoryTheory.MonoidalCategory.tensor_dite
 
 theorem dite_tensor {P : Prop} [Decidable P] {W X Y Z : C} (f : W ⟶ X) (g : P → (Y ⟶ Z))
-    (g' : ¬P → (Y ⟶ Z)) : (if h : P then g h else g' h) ⊗ f = if h : P then g h ⊗ f else g' h ⊗ f := by
-  split_ifs <;> rfl
+    (g' : ¬P → (Y ⟶ Z)) : (if h : P then g h else g' h) ⊗ f =
+    if h : P then g h ⊗ f else g' h ⊗ f := by split_ifs <;> rfl
 #align category_theory.monoidal_category.dite_tensor CategoryTheory.MonoidalCategory.dite_tensor
 
 @[simp]

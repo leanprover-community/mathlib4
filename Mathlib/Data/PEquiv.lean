@@ -175,8 +175,8 @@ theorem trans_refl (f : α ≃. β) : f.trans (PEquiv.refl β) = f := by
   ext; dsimp [PEquiv.trans]; simp
 #align pequiv.trans_refl PEquiv.trans_refl
 
-protected theorem inj (f : α ≃. β) {a₁ a₂ : α} {b : β} (h₁ : b ∈ f a₁) (h₂ : b ∈ f a₂) : a₁ = a₂ := by
-  rw [← mem_iff_mem] at *; cases h : f.symm b <;> simp_all
+protected theorem inj (f : α ≃. β) {a₁ a₂ : α} {b : β} (h₁ : b ∈ f a₁) (h₂ : b ∈ f a₂) :
+    a₁ = a₂ := by rw [← mem_iff_mem] at *; cases h : f.symm b <;> simp_all
 #align pequiv.inj PEquiv.inj
 
 /-- If the domain of a `PEquiv` is `α` except a point, its forward direction is injective. -/

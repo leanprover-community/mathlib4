@@ -1271,8 +1271,8 @@ theorem K'.elim_update_aux {a b c d c'} : update (K'.elim a b c d) aux c' = K'.e
 #align turing.partrec_to_TM2.K'.elim_update_aux Turing.PartrecToTM2.K'.elim_update_aux
 
 @[simp]
-theorem K'.elim_update_stack {a b c d d'} : update (K'.elim a b c d) stack d' = K'.elim a b c d' := by
-  funext x; cases x <;> rfl
+theorem K'.elim_update_stack {a b c d d'} :
+    update (K'.elim a b c d) stack d' = K'.elim a b c d' := by funext x; cases x <;> rfl
 #align turing.partrec_to_TM2.K'.elim_update_stack Turing.PartrecToTM2.K'.elim_update_stack
 
 /-- The halting state corresponding to a `List ℕ` output value. -/

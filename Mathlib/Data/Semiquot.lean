@@ -137,8 +137,8 @@ def bind (q : Semiquot α) (f : α → Semiquot β) : Semiquot β :=
 #align semiquot.bind Semiquot.bind
 
 @[simp]
-theorem mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) : b ∈ bind q f ↔ ∃ a ∈ q, b ∈ f a := by
-  simp_rw [← exists_prop]; exact Set.mem_iUnion₂
+theorem mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) :
+    b ∈ bind q f ↔ ∃ a ∈ q, b ∈ f a := by simp_rw [← exists_prop]; exact Set.mem_iUnion₂
 #align semiquot.mem_bind Semiquot.mem_bind
 
 instance : Monad Semiquot where

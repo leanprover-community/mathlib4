@@ -251,8 +251,8 @@ theorem preimage_id (s : Set α) : preimage (@Eq α) s = s := by
   simp only [preimage, inv_id, image_id]
 #align rel.preimage_id Rel.preimage_id
 
-theorem preimage_comp (s : Rel β γ) (t : Set γ) : preimage (r • s) t = preimage r (preimage s t) := by
-  simp only [preimage, inv_comp, image_comp]
+theorem preimage_comp (s : Rel β γ) (t : Set γ) :
+    preimage (r • s) t = preimage r (preimage s t) := by simp only [preimage, inv_comp, image_comp]
 #align rel.preimage_comp Rel.preimage_comp
 
 theorem preimage_univ : r.preimage Set.univ = r.dom := by rw [preimage, image_univ, codom_inv]

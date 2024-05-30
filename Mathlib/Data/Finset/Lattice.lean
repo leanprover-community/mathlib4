@@ -1251,7 +1251,8 @@ theorem sup'_inf_distrib_left (f : ι → α) (a : α) :
   | cons _ _ _ hs ih => simp_rw [sup'_cons hs, inf_sup_left, ih]
 #align finset.sup'_inf_distrib_left Finset.sup'_inf_distrib_left
 
-theorem sup'_inf_distrib_right (f : ι → α) (a : α) : s.sup' hs f ⊓ a = s.sup' hs fun i => f i ⊓ a := by
+theorem sup'_inf_distrib_right (f : ι → α) (a : α) :
+    s.sup' hs f ⊓ a = s.sup' hs fun i => f i ⊓ a := by
   rw [inf_comm, sup'_inf_distrib_left]; simp_rw [inf_comm]
 #align finset.sup'_inf_distrib_right Finset.sup'_inf_distrib_right
 

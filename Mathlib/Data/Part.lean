@@ -811,8 +811,8 @@ theorem right_dom_of_append_dom [Append α] {a b : Part α} (hab : Dom (a ++ b))
 #align part.right_dom_of_append_dom Part.right_dom_of_append_dom
 
 @[simp]
-theorem append_get_eq [Append α] (a b : Part α) (hab : Dom (a ++ b)) :
-    (a ++ b).get hab = a.get (left_dom_of_append_dom hab) ++ b.get (right_dom_of_append_dom hab) := by
+theorem append_get_eq [Append α] (a b : Part α) (hab : Dom (a ++ b)) : (a ++ b).get hab =
+    a.get (left_dom_of_append_dom hab) ++ b.get (right_dom_of_append_dom hab) := by
   simp [append_def]; aesop
 #align part.append_get_eq Part.append_get_eq
 

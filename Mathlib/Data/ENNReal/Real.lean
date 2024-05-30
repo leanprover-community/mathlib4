@@ -186,7 +186,8 @@ theorem ofReal_le_of_le_toReal {a : ℝ} {b : ℝ≥0∞} (h : a ≤ ENNReal.toR
 #align ennreal.of_real_le_of_le_to_real ENNReal.ofReal_le_of_le_toReal
 
 @[simp]
-theorem ofReal_le_ofReal_iff {p q : ℝ} (h : 0 ≤ q) : ENNReal.ofReal p ≤ ENNReal.ofReal q ↔ p ≤ q := by
+theorem ofReal_le_ofReal_iff {p q : ℝ} (h : 0 ≤ q) :
+    ENNReal.ofReal p ≤ ENNReal.ofReal q ↔ p ≤ q := by
   rw [ENNReal.ofReal, ENNReal.ofReal, coe_le_coe, Real.toNNReal_le_toNNReal_iff h]
 #align ennreal.of_real_le_of_real_iff ENNReal.ofReal_le_ofReal_iff
 
@@ -203,7 +204,8 @@ theorem ofReal_eq_ofReal_iff {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
 #align ennreal.of_real_eq_of_real_iff ENNReal.ofReal_eq_ofReal_iff
 
 @[simp]
-theorem ofReal_lt_ofReal_iff {p q : ℝ} (h : 0 < q) : ENNReal.ofReal p < ENNReal.ofReal q ↔ p < q := by
+theorem ofReal_lt_ofReal_iff {p q : ℝ} (h : 0 < q) :
+    ENNReal.ofReal p < ENNReal.ofReal q ↔ p < q := by
   rw [ENNReal.ofReal, ENNReal.ofReal, coe_lt_coe, Real.toNNReal_lt_toNNReal_iff h]
 #align ennreal.of_real_lt_of_real_iff ENNReal.ofReal_lt_ofReal_iff
 
@@ -361,7 +363,8 @@ theorem ofReal_mul' {p q : ℝ} (hq : 0 ≤ q) :
   rw [mul_comm, ofReal_mul hq, mul_comm]
 #align ennreal.of_real_mul' ENNReal.ofReal_mul'
 
-theorem ofReal_pow {p : ℝ} (hp : 0 ≤ p) (n : ℕ) : ENNReal.ofReal (p ^ n) = ENNReal.ofReal p ^ n := by
+theorem ofReal_pow {p : ℝ} (hp : 0 ≤ p) (n : ℕ) :
+    ENNReal.ofReal (p ^ n) = ENNReal.ofReal p ^ n := by
   rw [ofReal_eq_coe_nnreal hp, ← coe_pow, ← ofReal_coe_nnreal, NNReal.coe_pow, NNReal.coe_mk]
 #align ennreal.of_real_pow ENNReal.ofReal_pow
 

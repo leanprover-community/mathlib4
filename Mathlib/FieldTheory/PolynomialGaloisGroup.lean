@@ -268,7 +268,8 @@ theorem restrictDvd_def [Decidable (q = 0)] (hpq : p ∣ q) :
   convert rfl
 #align polynomial.gal.restrict_dvd_def Polynomial.Gal.restrictDvd_def
 
-theorem restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) : Function.Surjective (restrictDvd hpq) := by
+theorem restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) :
+    Function.Surjective (restrictDvd hpq) := by
   classical
     -- Porting note: was `simp only [restrictDvd_def, dif_neg hq, restrict_surjective]`
     haveI := Fact.mk <|

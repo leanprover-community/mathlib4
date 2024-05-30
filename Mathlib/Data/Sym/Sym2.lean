@@ -713,7 +713,8 @@ theorem other_invol' [DecidableEq α] {a : α} {z : Sym2 α} (ha : a ∈ z) (hb 
   aesop (rule_sets := [Sym2]) (add norm unfold [Sym2.rec, Quot.rec])
 #align sym2.other_invol' Sym2.other_invol'
 
-theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) : Mem.other hb = a := by
+theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) :
+    Mem.other hb = a := by
   classical
     rw [other_eq_other'] at hb ⊢
     convert other_invol' ha hb using 2
