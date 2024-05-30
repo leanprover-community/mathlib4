@@ -237,7 +237,7 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
 --#synth ContinuousSMul ℝ C(spectrum ℝ A, ℝ)
 --#synth CompactSpace (spectrum ℝ A)
 
-theorem eigenvalues_eq_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian A) : (spectrum ℝ a) = Set.range (ha.eigenvalues) := by
+theorem eigenvalues_eq_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) : (spectrum ℝ a) = Set.range (ha.eigenvalues) := by
     sorry --simp? [toLin, Module.End.hasEigenvalue_iff_mem_spectrum]
 
 theorem finite_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) : (spectrum ℝ a).Finite := by
@@ -277,12 +277,28 @@ exists_cfc_of_predicate a ha := by
       apply Set.eq_of_subset_of_subset
       · rw [← ContinuousMap.spectrum_eq_range f]
         apply AlgHom.spectrum_apply_subset
-      ·
+      · rw [φ_apply ,spectrum.unitary_conjugate]
+        rintro - ⟨x , rfl⟩
+        apply spectrum.of_algebraMap_mem (R := ℝ) (S := 𝕜)
+        simp only [spectrum_diagonal (R := 𝕜)
+            (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩))
+            , Function.comp_apply, Set.mem_range]
+        have := eigenvalues_eq_spectrum ha
+
+
+
+
+
+
+
+
+        --apply AlgHom.spectrum_apply_subset
+      --apply spectrum_diagonal spectrum_diagonal (R := ℝ) (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩))
       --convert spectrum.unitary_conjugate
       --have := spectrum_diagonal (R := 𝕜) (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩))
       --apply Set.eq_of_subset_of_subset
       --intro t ht
-      --apply spectrum.of_algebraMap_mem (R := ℝ) (S := 𝕜)
+      --apply [spectrum.of_algebraMap_mem (R := ℝ) (S := 𝕜)]
       --rw [this]
       --simp only [Set.mem_range, Function.comp_apply]
       --unfold Set.range at ht
