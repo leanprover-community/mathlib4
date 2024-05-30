@@ -235,6 +235,26 @@ lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective_fac
   subst fac
   exact isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective J f₁ f₂
 
+lemma comp_isLocallyInjective_iff
+    {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ ⟶ F₂) (f₂ : F₂ ⟶ F₃)
+    [IsLocallyInjective J f₁] [IsLocallySurjective J f₁] :
+    IsLocallyInjective J (f₁ ≫ f₂) ↔ IsLocallyInjective J f₂ := by
+  constructor
+  · intro
+    exact isLocallyInjective_of_isLocallyInjective_of_isLocallySurjective J f₁ f₂
+  · intro
+    infer_instance
+
+lemma isLocallySurjective_comp_iff
+    {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ ⟶ F₂) (f₂ : F₂ ⟶ F₃)
+    [IsLocallyInjective J f₂] [IsLocallySurjective J f₂] :
+    IsLocallySurjective J (f₁ ≫ f₂) ↔ IsLocallySurjective J f₁ := by
+  constructor
+  · intro
+    exact isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective J f₁ f₂
+  · intro
+    infer_instance
+
 instance {F₁ F₂ : Cᵒᵖ ⥤ Type w} (f : F₁ ⟶ F₂) :
     IsLocallySurjective J (toImagePresheafSheafify J f) where
   imageSieve_mem {X} := by
