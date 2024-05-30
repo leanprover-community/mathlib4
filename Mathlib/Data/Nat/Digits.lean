@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Shing Tak Lam, Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.List.Lemmas
-import Mathlib.Algebra.Parity
+import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Log
@@ -13,6 +12,7 @@ import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 #align_import data.nat.digits from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
@@ -259,7 +259,7 @@ theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L
         simpa using w₂
       · right
         contrapose! w₂
-        refine' digits_zero_of_eq_zero h.ne_bot w₂ _ _
+        refine digits_zero_of_eq_zero h.ne_bot w₂ _ ?_
         rw [List.getLast_cons h']
         exact List.getLast_mem h'
 #align nat.digits_of_digits Nat.digits_ofDigits
@@ -349,7 +349,7 @@ theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length
     simp [h, log_eq_zero_iff, ← Nat.div_eq_zero_iff hb0.bot_lt]
   · have : n / b < n := div_lt_self (Nat.pos_of_ne_zero hn) hb
     rw [IH _ this h, log_div_base, tsub_add_cancel_of_le]
-    refine' Nat.succ_le_of_lt (log_pos hb _)
+    refine Nat.succ_le_of_lt (log_pos hb ?_)
     contrapose! h
     exact div_eq_of_lt h
 #align nat.digits_len Nat.digits_len
@@ -371,7 +371,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   by_cases hnb : n < b + 2
   · simpa only [digits_of_lt (b + 2) n hn hnb]
   · rw [digits_getLast n (le_add_left 2 b)]
-    refine' IH _ (Nat.div_lt_self hn.bot_lt (one_lt_succ_succ b)) _
+    refine IH _ (Nat.div_lt_self hn.bot_lt (one_lt_succ_succ b)) ?_
     rw [← pos_iff_ne_zero]
     exact Nat.div_pos (le_of_not_lt hnb) (zero_lt_succ (succ b))
 #align nat.last_digit_ne_zero Nat.getLast_digit_ne_zero
@@ -465,7 +465,7 @@ theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
   rcases eq_or_lt_of_le (Nat.succ_le_of_lt hb) with (rfl | hb)
   · simp [List.replicate_add]
   rw [← ofDigits_digits_append_digits]
-  refine' (digits_ofDigits b hb _ (fun l hl => _) (fun h_append => _)).symm
+  refine (digits_ofDigits b hb _ (fun l hl => ?_) (fun h_append => ?_)).symm
   · rcases (List.mem_append.mp hl) with (h | h) <;> exact digits_lt_base hb h
   · by_cases h : digits b m = []
     · simp only [h, List.append_nil] at h_append ⊢
@@ -511,7 +511,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
   simp only [List.length_append, List.length, zero_add, List.length_dropLast, ofDigits_append,
     List.length_dropLast, ofDigits_singleton, add_comm (l.length - 1), pow_add, pow_one]
   apply Nat.mul_le_mul_left
-  refine' le_trans _ (Nat.le_add_left _ _)
+  refine le_trans ?_ (Nat.le_add_left _ _)
   have : 0 < l.getLast hl := by rwa [pos_iff_ne_zero]
   convert Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this using 1
   rw [Nat.mul_one]
@@ -543,7 +543,7 @@ lemma ofDigits_div_eq_ofDigits_tail {p : ℕ} (hpos : 0 < p) (digits : List ℕ)
     (w₁ : ∀ l ∈ digits, l < p) : ofDigits p digits / p = ofDigits p digits.tail := by
   induction' digits with hd tl
   · simp [ofDigits]
-  · refine' Eq.trans (add_mul_div_left hd _ hpos) _
+  · refine Eq.trans (add_mul_div_left hd _ hpos) ?_
     rw [Nat.div_eq_of_lt <| w₁ _ <| List.mem_cons_self _ _, zero_add]
     rfl
 
@@ -566,11 +566,11 @@ lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p):
     (fun l hl ↦ digits_lt_base h hl)
   exact (ofDigits_digits p n).symm
 
-open BigOperators Finset
+open Finset
 
 theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
     (L : List ℕ) {h_nonempty} (h_ne_zero : L.getLast h_nonempty ≠ 0) (h_lt : ∀ l ∈ L, l < p) :
-    (p - 1) * ∑ i in range L.length, (ofDigits p L) / p ^ i.succ = (ofDigits p L) - L.sum := by
+    (p - 1) * ∑ i ∈ range L.length, (ofDigits p L) / p ^ i.succ = (ofDigits p L) - L.sum := by
   obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · induction' L with hd tl ih
     · simp [ofDigits]
@@ -589,7 +589,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
         have := sum_singleton (fun x ↦ ofDigits p <| tl.drop x) tl.length
         rw [← Ico_succ_singleton, List.drop_length, ofDigits] at this
         have h₁ : 1 ≤ tl.length := List.length_pos.mpr h'
-        rw [← sum_range_add_sum_Ico _ <| h₁, ← add_zero (∑ x in Ico _ _, ofDigits p (tl.drop x)),
+        rw [← sum_range_add_sum_Ico _ <| h₁, ← add_zero (∑ x ∈ Ico _ _, ofDigits p (tl.drop x)),
             ← this, sum_Ico_consecutive _  h₁ <| (le_add_right tl.length 1),
             ← sum_Ico_add _ 0 tl.length 1,
             Ico_zero_eq_range, mul_add, mul_add, ih, range_one, sum_singleton, List.drop, ofDigits,
@@ -604,13 +604,13 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
     · simp [ofDigits]
 
 theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
-    (p - 1) * ∑ i in range (log p n).succ, n / p ^ i.succ = n - (p.digits n).sum := by
+    (p - 1) * ∑ i ∈ range (log p n).succ, n / p ^ i.succ = n - (p.digits n).sum := by
   obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · rcases eq_or_ne n 0 with rfl | hn
     · simp
     · convert sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n) (getLast_digit_ne_zero p hn) <|
           (fun l a ↦ digits_lt_base h a)
-      · refine' (digits_len p n h hn).symm
+      · refine (digits_len p n h hn).symm
       all_goals exact (ofDigits_digits p n).symm
   · simp
   · simp [lt_one_iff.mp h]
@@ -774,7 +774,7 @@ theorem eleven_dvd_of_palindrome (p : (digits 10 n).Palindrome) (h : Even (digit
     11 ∣ n := by
   let dig := (digits 10 n).map fun n : ℕ => (n : ℤ)
   replace h : Even dig.length := by rwa [List.length_map]
-  refine' eleven_dvd_iff.2 ⟨0, (_ : dig.alternatingSum = 0)⟩
+  refine eleven_dvd_iff.2 ⟨0, (?_ : dig.alternatingSum = 0)⟩
   have := dig.alternatingSum_reverse
   rw [(p.map _).reverse_eq, _root_.pow_succ', h.neg_one_pow, mul_one, neg_one_zsmul] at this
   exact eq_zero_of_neg_eq this.symm
@@ -868,7 +868,7 @@ theorem digits_succ (b n m r l) (e : r + b * m = n) (hr : r < b)
   rcases h with ⟨h, b2, m0⟩
   have b0 : 0 < b := by omega
   have n0 : 0 < n := by linarith [mul_pos b0 m0]
-  refine' ⟨_, b2, n0⟩
+  refine ⟨?_, b2, n0⟩
   obtain ⟨rfl, rfl⟩ := (Nat.div_mod_unique b0).2 ⟨e, hr⟩
   subst h; exact Nat.digits_def' b2 n0
 #align nat.norm_digits.digits_succ Nat.NormDigits.digits_succ
@@ -876,7 +876,7 @@ theorem digits_succ (b n m r l) (e : r + b * m = n) (hr : r < b)
 theorem digits_one (b n) (n0 : 0 < n) (nb : n < b) : Nat.digits b n = [n] ∧ 1 < b ∧ 0 < n := by
   have b2 : 1 < b :=
     lt_iff_add_one_le.mpr (le_trans (add_le_add_right (lt_iff_add_one_le.mp n0) 1) nb)
-  refine' ⟨_, b2, n0⟩
+  refine ⟨?_, b2, n0⟩
   rw [Nat.digits_def' b2 n0, Nat.mod_eq_of_lt nb,
     (Nat.div_eq_zero_iff ((zero_le n).trans_lt nb)).2 nb, Nat.digits_zero]
 #align nat.norm_digits.digits_one Nat.NormDigits.digits_one

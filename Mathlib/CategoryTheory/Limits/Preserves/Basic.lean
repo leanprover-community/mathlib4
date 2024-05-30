@@ -270,7 +270,7 @@ def preservesLimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : J 
         let equ := e.invFunIdAssoc (K ⋙ F)
         have := (isLimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsLimit.postcomposeHomEquiv equ _).symm this).ofIsoLimit
-        refine' Cones.ext (Iso.refl _) fun j => _
+        refine Cones.ext (Iso.refl _) fun j => ?_
         dsimp
         simp [equ, ← Functor.map_comp] }
 #align category_theory.limits.preserves_limits_of_shape_of_equiv CategoryTheory.Limits.preservesLimitsOfShapeOfEquiv
@@ -339,7 +339,7 @@ def preservesColimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : 
         let equ := e.invFunIdAssoc (K ⋙ F)
         have := (isColimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsColimit.precomposeInvEquiv equ _).symm this).ofIsoColimit
-        refine' Cocones.ext (Iso.refl _) fun j => _
+        refine Cocones.ext (Iso.refl _) fun j => ?_
         dsimp
         simp [equ, ← Functor.map_comp] }
 #align category_theory.limits.preserves_colimits_of_shape_of_equiv CategoryTheory.Limits.preservesColimitsOfShapeOfEquiv
@@ -676,8 +676,8 @@ def reflectsLimitsOfShapeOfReflectsIsomorphisms {G : C ⥤ D} [G.ReflectsIsomorp
 limits.
 -/
 def reflectsLimitsOfReflectsIsomorphisms {G : C ⥤ D} [G.ReflectsIsomorphisms]
-    [HasLimitsOfSize.{w', w} C] [PreservesLimitsOfSize.{w', w} G] : ReflectsLimitsOfSize.{w', w} G
-    where
+    [HasLimitsOfSize.{w', w} C] [PreservesLimitsOfSize.{w', w} G] :
+    ReflectsLimitsOfSize.{w', w} G where
   reflectsLimitsOfShape := reflectsLimitsOfShapeOfReflectsIsomorphisms
 #align category_theory.limits.reflects_limits_of_reflects_isomorphisms CategoryTheory.Limits.reflectsLimitsOfReflectsIsomorphisms
 

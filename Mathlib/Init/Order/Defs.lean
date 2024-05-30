@@ -389,8 +389,7 @@ theorem eq_or_lt_of_not_lt {a b : α} (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
 #align eq_or_lt_of_not_lt eq_or_lt_of_not_lt
 
-instance : IsTotalPreorder α (· ≤ ·)
-    where
+instance : IsTotalPreorder α (· ≤ ·) where
   trans := @le_trans _ _
   total := le_total
 

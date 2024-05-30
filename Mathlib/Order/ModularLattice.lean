@@ -300,7 +300,7 @@ def infIccOrderIsoIccSup (a b : α) : Set.Icc (a ⊓ b) a ≃o Set.Icc b (a ⊔ 
   map_rel_iff' := @fun x y => by
     simp only [Subtype.mk_le_mk, Equiv.coe_fn_mk, and_true_iff, le_sup_right]
     rw [← Subtype.coe_le_coe]
-    refine' ⟨fun h => _, fun h => sup_le_sup_right h _⟩
+    refine ⟨fun h => ?_, fun h => sup_le_sup_right h _⟩
     rw [← sup_eq_right.2 x.prop.1, inf_sup_assoc_of_le _ x.prop.2, sup_comm, ←
       sup_eq_right.2 y.prop.1, inf_sup_assoc_of_le _ y.prop.2, sup_comm b]
     exact inf_le_inf_left _ h
@@ -421,6 +421,14 @@ theorem isCompl_sup_left_of_isCompl_sup_right [Lattice α] [BoundedOrder α] [Is
   ⟨h.disjoint_sup_left_of_disjoint_sup_right hcomp.disjoint, codisjoint_assoc.mpr hcomp.codisjoint⟩
 
 end Disjoint
+
+lemma Set.Iic.isCompl_inf_inf_of_isCompl_of_le [Lattice α] [BoundedOrder α] [IsModularLattice α]
+    {a b c : α} (h₁ : IsCompl b c) (h₂ : b ≤ a) :
+    IsCompl (⟨a ⊓ b, inf_le_left⟩ : Iic a) (⟨a ⊓ c, inf_le_left⟩ : Iic a) := by
+  constructor
+  · simp [disjoint_iff, Subtype.ext_iff, inf_comm a c, inf_assoc a, ← inf_assoc b, h₁.inf_eq_bot]
+  · simp only [Iic.codisjoint_iff, inf_comm a, IsModularLattice.inf_sup_inf_assoc]
+    simp [inf_of_le_left h₂, h₁.sup_eq_top]
 
 namespace IsModularLattice
 

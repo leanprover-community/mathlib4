@@ -37,7 +37,7 @@ noncomputable section
 
 universe u v w z
 
-open BigOperators Finset Matrix Polynomial
+open Finset Matrix Polynomial
 
 variable {R : Type u} [CommRing R]
 variable {n G : Type v} [DecidableEq n] [Fintype n]
@@ -105,12 +105,12 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
   -- Porting note: added `↑` in front of `Fintype.card n`
   have h1 : (∏ i : n, (X - C (M i i))).degree = ↑(Fintype.card n) := by
     rw [degree_eq_iff_natDegree_eq_of_pos (Nat.pos_of_ne_zero h), natDegree_prod']
-    simp_rw [natDegree_X_sub_C]
-    rw [← Finset.card_univ, sum_const, smul_eq_mul, mul_one]
+    · simp_rw [natDegree_X_sub_C]
+      rw [← Finset.card_univ, sum_const, smul_eq_mul, mul_one]
     simp_rw [(monic_X_sub_C _).leadingCoeff]
     simp
   rw [degree_add_eq_right_of_degree_lt]
-  exact h1
+  · exact h1
   rw [h1]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
   rw [Nat.cast_lt]
