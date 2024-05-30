@@ -319,6 +319,8 @@ theorem is_one_at_infty {f : α → γ} [TopologicalSpace γ] [One γ]
   intro v hv
   rw [mem_preimage, image_eq_one_of_nmem_mulTSupport hv]
   exact mem_of_mem_nhds hN
+#align has_compact_mul_support.is_one_at_infty HasCompactMulSupport.is_one_at_infty
+#align has_compact_support.is_zero_at_infty HasCompactSupport.is_zero_at_infty
 
 end HasCompactMulSupport
 
