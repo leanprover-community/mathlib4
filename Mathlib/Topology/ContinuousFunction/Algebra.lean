@@ -1107,3 +1107,25 @@ def compStarAlgEquiv' (f : X ≃ₜ Y) : C(Y, A) ≃⋆ₐ[𝕜] C(X, A) :=
 #align homeomorph.comp_star_alg_equiv' Homeomorph.compStarAlgEquiv'
 
 end Homeomorph
+
+/-! ### Evaluation as a bundled map -/
+
+variable {X : Type*} (S R : Type*) [TopologicalSpace X] [CommSemiring S] [CommSemiring R]
+variable [Algebra S R] [TopologicalSpace R] [TopologicalSemiring R]
+
+/-- Evaluation of continuous maps at a point, bundled as an algebra homomorphism. -/
+@[simps]
+def ContinuousMap.evalAlgHom (x : X) : C(X, R) →ₐ[S] R where
+  toFun f := f x
+  map_zero' := rfl
+  map_one' := rfl
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
+  commutes' _ := rfl
+
+/-- Evaluation of continuous maps at a point, bundled as a star algebra homomorphism. -/
+@[simps!]
+def ContinuousMap.evalStarAlgHom [StarRing R] [ContinuousStar R] (x : X) :
+    C(X, R) →⋆ₐ[S] R :=
+  { ContinuousMap.evalAlgHom S R x with
+    map_star' := fun _ => rfl }

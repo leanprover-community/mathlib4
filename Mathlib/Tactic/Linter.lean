@@ -7,6 +7,6 @@ This file is ignored by `Shake`:
 * it is in `ignoreImport`, meaning that where it is imported, it is considered necessary.
 -/
 
-import Mathlib.Tactic.Linter.AttributeInstanceIn
+import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.Lint
