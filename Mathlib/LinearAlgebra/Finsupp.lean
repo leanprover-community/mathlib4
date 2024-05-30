@@ -407,7 +407,8 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
     exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
 #align finsupp.supported_Union Finsupp.supported_iUnion
 
-theorem supported_union (s t : Set α) : supported M R (s ∪ t) = supported M R s ⊔ supported M R t := by
+theorem supported_union (s t : Set α) :
+    supported M R (s ∪ t) = supported M R s ⊔ supported M R t := by
   erw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq]; rfl
 #align finsupp.supported_union Finsupp.supported_union
 
@@ -416,7 +417,8 @@ theorem supported_iInter {ι : Type*} (s : ι → Set α) :
   Submodule.ext fun x => by simp [mem_supported, subset_iInter_iff]
 #align finsupp.supported_Inter Finsupp.supported_iInter
 
-theorem supported_inter (s t : Set α) : supported M R (s ∩ t) = supported M R s ⊓ supported M R t := by
+theorem supported_inter (s t : Set α) :
+    supported M R (s ∩ t) = supported M R s ⊓ supported M R t := by
   rw [Set.inter_eq_iInter, supported_iInter, iInf_bool_eq]; rfl
 #align finsupp.supported_inter Finsupp.supported_inter
 

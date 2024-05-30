@@ -123,7 +123,8 @@ def delabLinearIndependent : Delab :=
 
 variable {R} {v}
 
-theorem linearIndependent_iff : LinearIndependent R v ↔ ∀ l, Finsupp.total ι M R v l = 0 → l = 0 := by
+theorem linearIndependent_iff :
+    LinearIndependent R v ↔ ∀ l, Finsupp.total ι M R v l = 0 → l = 0 := by
   simp [LinearIndependent, LinearMap.ker_eq_bot']
 #align linear_independent_iff linearIndependent_iff
 
@@ -597,7 +598,8 @@ theorem LinearIndependent.image_of_comp {ι ι'} (s : Set ι) (f : ι → ι') (
 #align linear_independent.image_of_comp LinearIndependent.image_of_comp
 
 theorem LinearIndependent.image {ι} {s : Set ι} {f : ι → M}
-    (hs : LinearIndependent R fun x : s => f x) : LinearIndependent R fun x : f '' s => (x : M) := by
+    (hs : LinearIndependent R fun x : s => f x) :
+    LinearIndependent R fun x : f '' s => (x : M) := by
   convert LinearIndependent.image_of_comp s f id hs
 #align linear_independent.image LinearIndependent.image
 
@@ -1328,9 +1330,9 @@ theorem LinearIndependent.option (hv : LinearIndependent K v)
   linearIndependent_option'.2 ⟨hv, hx⟩
 #align linear_independent.option LinearIndependent.option
 
-theorem linearIndependent_option {v : Option ι → V} :
-    LinearIndependent K v ↔
-      LinearIndependent K (v ∘ (↑) : ι → V) ∧ v none ∉ Submodule.span K (range (v ∘ (↑) : ι → V)) := by
+theorem linearIndependent_option {v : Option ι → V} : LinearIndependent K v ↔
+    LinearIndependent K (v ∘ (↑) : ι → V) ∧
+      v none ∉ Submodule.span K (range (v ∘ (↑) : ι → V)) := by
   simp only [← linearIndependent_option', Option.casesOn'_none_coe]
 #align linear_independent_option linearIndependent_option
 
@@ -1405,9 +1407,8 @@ theorem linearIndependent_fin_succ {n} {v : Fin (n + 1) → V} :
   rw [← linearIndependent_fin_cons, Fin.cons_self_tail]
 #align linear_independent_fin_succ linearIndependent_fin_succ
 
-theorem linearIndependent_fin_succ' {n} {v : Fin (n + 1) → V} :
-    LinearIndependent K v ↔
-      LinearIndependent K (Fin.init v) ∧ v (Fin.last _) ∉ Submodule.span K (range <| Fin.init v) := by
+theorem linearIndependent_fin_succ' {n} {v : Fin (n + 1) → V} : LinearIndependent K v ↔
+    LinearIndependent K (Fin.init v) ∧ v (Fin.last _) ∉ Submodule.span K (range <| Fin.init v) := by
   rw [← linearIndependent_fin_snoc, Fin.snoc_init_self]
 #align linear_independent_fin_succ' linearIndependent_fin_succ'
 
