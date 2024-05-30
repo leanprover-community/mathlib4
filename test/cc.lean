@@ -569,9 +569,12 @@ example {α : Type} {a b : α} (h : ¬ (a = b)) : ¬ (b = a) := by
 
 end Lean3Issue1608
 
-section rawNatLit
+section lit
 
 example : nat_lit 0 = nat_lit 0 := by
   cc
 
-end rawNatLit
+example : "Miyahara Kō" = "Miyahara Kō" := by
+  cc (config := { values := false })
+
+end lit
