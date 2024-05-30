@@ -146,19 +146,11 @@ theorem count_lt_card {n : ℕ} (hp : (setOf p).Finite) (hpn : p n) : count p n 
   (count_lt_count_succ_iff.2 hpn).trans_le (count_le_card hp _)
 #align nat.count_lt_card Nat.count_lt_card
 
-theorem count_true (hp : ∀ n, p n) : count p = id := by
-  ext n
-  induction n with
-  | zero => simp
-  | succ n IH => simp [count_succ, *]
+theorem count_true (hp : ∀ n, p n) : count p = id := by ext n; induction n <;> simp [count_succ, *]
 
 @[simp] theorem count_True : count (fun _ ↦ True) = id := count_true fun _ ↦ trivial
 
-theorem count_false (hp : ∀ n, ¬p n) : count p = 0 := by
-  ext n
-  induction n with
-  | zero => simp
-  | succ n IH => simp [count_succ, *]
+theorem count_false (hp : ∀ n, ¬p n) : count p = 0 := by ext n; induction n <;> simp [count_succ, *]
 
 @[simp] theorem count_False : count (fun _ ↦ False) = 0 := count_false fun _ ↦ id
 
