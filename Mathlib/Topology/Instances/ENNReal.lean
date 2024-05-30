@@ -19,7 +19,7 @@ import Mathlib.Topology.Order.T5
 noncomputable section
 
 open Set Filter Metric Function
-open scoped Classical Topology ENNReal NNReal BigOperators Filter
+open scoped Classical Topology ENNReal NNReal Filter
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
@@ -296,7 +296,7 @@ protected theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {f : β → �
 #align ennreal.tendsto_at_top ENNReal.tendsto_atTop
 
 instance : ContinuousAdd ℝ≥0∞ := by
-  refine' ⟨continuous_iff_continuousAt.2 _⟩
+  refine ⟨continuous_iff_continuousAt.2 ?_⟩
   rintro ⟨_ | a, b⟩
   · exact tendsto_nhds_top_mono' continuousAt_fst fun p => le_add_right le_rfl
   rcases b with (_ | b)
@@ -347,10 +347,10 @@ protected theorem tendsto_mul (ha : a ≠ 0 ∨ b ≠ ∞) (hb : b ≠ 0 ∨ a �
       (lt_mem_nhds <| div_lt_top coe_ne_top hε.ne').prod_nhds (lt_mem_nhds hεb)
     refine this.mono fun c hc => ?_
     exact (ENNReal.div_mul_cancel hε.ne' coe_ne_top).symm.trans_lt (mul_lt_mul hc.1 hc.2)
-  induction a using recTopCoe with
+  induction a with
   | top => simp only [ne_eq, or_false, not_true_eq_false] at hb; simp [ht b hb, top_mul hb]
   | coe a =>
-    induction b using recTopCoe with
+    induction b with
     | top =>
       simp only [ne_eq, or_false, not_true_eq_false] at ha
       simpa [(· ∘ ·), mul_comm, mul_top ha]

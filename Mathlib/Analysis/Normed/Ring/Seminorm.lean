@@ -125,7 +125,7 @@ instance [DecidableEq R] : One (RingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
       mul_le' := fun x y => by
         by_cases h : x * y = 0
-        · refine' (if_pos h).trans_le (mul_nonneg _ _) <;>
+        · refine (if_pos h).trans_le (mul_nonneg ?_ ?_) <;>
             · change _ ≤ ite _ _ _
               split_ifs
               exacts [le_rfl, zero_le_one]
@@ -145,7 +145,7 @@ section Ring
 variable [Ring R] (p : RingSeminorm R)
 
 theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 := by
-  refine'
+  refine
     ⟨fun h =>
       ne_zero_iff.mpr
         ⟨1, by

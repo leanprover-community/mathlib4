@@ -423,7 +423,7 @@ and say that the distance from `a` to `b` is the sum of the distances of `a` and
 their respective basepoints, plus the distance 1 between the basepoints.
 Since there is an arbitrary choice in this construction, it is not an instance by default. -/
 protected def metricSpace : MetricSpace (Σi, E i) := by
-  refine' MetricSpace.ofDistTopology Sigma.dist _ _ Sigma.dist_triangle Sigma.isOpen_iff _
+  refine MetricSpace.ofDistTopology Sigma.dist ?_ ?_ Sigma.dist_triangle Sigma.isOpen_iff ?_
   · rintro ⟨i, x⟩
     simp [Sigma.dist]
   · rintro ⟨i, x⟩ ⟨j, y⟩

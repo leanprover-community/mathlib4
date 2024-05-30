@@ -69,8 +69,9 @@ and they more frequently lead to the desired result.
 
 We set up the simplifier so that it can compute the derivative of simple functions. For instance,
 ```lean
-example (x : ℝ) : deriv (fun x ↦ cos (sin x) * exp x) x = (cos(sin(x))-sin(sin(x))*cos(x))*exp(x) :=
-by { simp, ring }
+example (x : ℝ) :
+    deriv (fun x ↦ cos (sin x) * exp x) x = (cos(sin(x))-sin(sin(x))*cos(x))*exp(x) := by
+  simp; ring
 ```
 
 The relationship between the derivative of a function and its definition from a standard
@@ -91,7 +92,7 @@ universe u v w
 
 noncomputable section
 
-open scoped Classical Topology BigOperators Filter ENNReal NNReal
+open scoped Classical Topology Filter ENNReal NNReal
 
 open Filter Asymptotics Set
 

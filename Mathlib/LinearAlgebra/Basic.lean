@@ -9,6 +9,7 @@ import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.Data.Set.Finite
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Tactic.Abel
 
 #align_import linear_algebra.basic from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
@@ -54,7 +55,7 @@ linear algebra, vector space, module
 
 open Function
 
-open BigOperators Pointwise
+open Pointwise
 
 variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} {R₄ : Type*}
 variable {S : Type*}
@@ -721,7 +722,7 @@ def equivSubtypeMap (p : Submodule R M) (q : Submodule R p) : q ≃ₗ[R] q.map 
   { (p.subtype.domRestrict q).codRestrict _ (by rintro ⟨x, hx⟩; exact ⟨x, hx, rfl⟩) with
     invFun := by
       rintro ⟨x, hx⟩
-      refine' ⟨⟨x, _⟩, _⟩ <;> rcases hx with ⟨⟨_, h⟩, _, rfl⟩ <;> assumption
+      refine ⟨⟨x, ?_⟩, ?_⟩ <;> rcases hx with ⟨⟨_, h⟩, _, rfl⟩ <;> assumption
     left_inv := fun ⟨⟨_, _⟩, _⟩ => rfl
     right_inv := fun ⟨x, ⟨_, h⟩, _, rfl⟩ => by ext; rfl }
 #align submodule.equiv_subtype_map Submodule.equivSubtypeMap

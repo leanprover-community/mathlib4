@@ -37,7 +37,7 @@ integrate, integration, integrable, integrability
 
 open Real Nat Set Finset
 
-open scoped Real BigOperators Interval
+open scoped Real Interval
 
 variable {a b : ℝ} (n : ℕ)
 
@@ -699,7 +699,7 @@ theorem integral_sin_pow_even :
 theorem integral_sin_pow_pos : 0 < ∫ x in (0)..π, sin x ^ n := by
   rcases even_or_odd' n with ⟨k, rfl | rfl⟩ <;>
   simp only [integral_sin_pow_even, integral_sin_pow_odd] <;>
-  refine' mul_pos (by norm_num [pi_pos]) (prod_pos fun n _ => div_pos _ _) <;>
+  refine mul_pos (by norm_num [pi_pos]) (prod_pos fun n _ => div_pos ?_ ?_) <;>
   norm_cast <;>
   omega
 #align integral_sin_pow_pos integral_sin_pow_pos

@@ -18,7 +18,7 @@ assert_not_exists Submodule.hasQuotient -- See `RingTheory.Ideal.QuotientOperati
 
 universe u v w x
 
-open BigOperators Pointwise
+open Pointwise
 
 namespace Submodule
 
@@ -1051,7 +1051,7 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
                 ⟨n + k, by
                   rw [pow_add, ← hpqrn, ← hcxq, ← hfgrk, ← hdyg, add_mul, mul_add (c * x),
                       mul_assoc c x (d * y), mul_left_comm x, ← mul_assoc];
-                    refine'
+                    refine
                       m.add_mem (m.mul_mem_right _ hpm)
                         (m.add_mem (m.mul_mem_left _ hfm) (m.mul_mem_left _ hxym))⟩⟩
     hrm <|
@@ -1327,8 +1327,6 @@ section Total
 variable (ι : Type*)
 variable (M : Type*) [AddCommGroup M] {R : Type*} [CommRing R] [Module R M] (I : Ideal R)
 variable (v : ι → M) (hv : Submodule.span R (Set.range v) = ⊤)
-
-open BigOperators
 
 /-- A variant of `Finsupp.total` that takes in vectors valued in `I`. -/
 noncomputable def finsuppTotal : (ι →₀ I) →ₗ[R] M :=

@@ -70,7 +70,7 @@ open CartesianClosed
 instance : ExponentialIdeal (subterminalInclusion C) := by
   apply ExponentialIdeal.mk'
   intro B A
-  refine' ⟨⟨A ⟹ B.1, fun Z g h => _⟩, ⟨Iso.refl _⟩⟩
+  refine ⟨⟨A ⟹ B.1, fun Z g h => ?_⟩, ⟨Iso.refl _⟩⟩
   exact uncurry_injective (B.2 (CartesianClosed.uncurry g) (CartesianClosed.uncurry h))
 
 /-- If `D` is a reflective subcategory, the property of being an exponential ideal is equivalent to
@@ -154,7 +154,7 @@ def cartesianClosedOfReflective : CartesianClosed D :=
         adj := by
           apply Adjunction.restrictFullyFaithful i i (exp.adjunction (i.obj B))
           · symm
-            refine' NatIso.ofComponents (fun X => _) (fun f => _)
+            refine NatIso.ofComponents (fun X => ?_) (fun f => ?_)
             · haveI :=
                 Adjunction.rightAdjointPreservesLimits.{0, 0} (reflectorAdjunction i)
               apply asIso (prodComparison i B X)

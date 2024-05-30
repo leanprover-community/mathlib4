@@ -35,7 +35,7 @@ section Contraction
 
 open TensorProduct LinearMap Matrix Module
 
-open TensorProduct BigOperators
+open TensorProduct
 
 section CommSemiring
 
