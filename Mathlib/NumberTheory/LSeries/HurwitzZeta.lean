@@ -28,7 +28,7 @@ This file gives the definition and properties of the following two functions:
 
 * `hurwitzZeta`: the Hurwitz zeta function (defined to be periodic in `a` with period 1)
 * `expZeta`: the exponential zeta function
-* `hasSum_nat_hurwitzZeta_of_mem_Icc` and `hasSum_expZeta_of_one_lt_re`:
+* `hasSum_hurwitzZeta_of_one_lt_re` and `hasSum_expZeta_of_one_lt_re`:
   relation to Dirichlet series for `1 < re s`
 * ` hurwitzZeta_residue_one` shows that the residue at `s = 1` equals `1`
 * `differentiableAt_hurwitzZeta` and `differentiableAt_expZeta`: analyticity away from `s = 1`
