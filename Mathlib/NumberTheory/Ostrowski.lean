@@ -1,6 +1,28 @@
+/-
+Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Kurniadi Angdinata, Fabrizio Barroero, Laura Capuano, Nirvana Coppola,
+María Inés de Frutos Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Turchet,
+Francesco Veneziano
+-/
+
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.Normed.Ring.Seminorm
+
+/-!
+# Ostrowski’s Theorem
+
+The goal of this file is to prove Ostrowski’s Theorem which gives a list of all the nontrivial
+absolute values on a number field up to equivalence.
+
+## References
+* https://kconrad.math.uconn.edu/blurbs/gradnumthy/ostrowskiQ.pdf
+* https://kconrad.math.uconn.edu/blurbs/gradnumthy/ostrowskinumbfield.pdf
+
+## Tags
+ring_norm, ostrowski
+-/
 
 noncomputable section
 open Int
