@@ -335,7 +335,7 @@ lemma Odd.of_mul_right (h : Odd (m * n)) : Odd n :=
 #align nat.odd.of_mul_right Nat.Odd.of_mul_right
 
 lemma even_div : Even (m / n) ↔ m % (2 * n) / n = 0 := by
-  rw [even_iff_two_dvd, dvd_iff_mod_eq_zero, Nat.div_mod_eq_mod_mul_div, mul_comm]
+  rw [even_iff_two_dvd, dvd_iff_mod_eq_zero, ← Nat.mod_mul_right_div_self, mul_comm]
 #align nat.even_div Nat.even_div
 
 @[parity_simps] lemma odd_add : Odd (m + n) ↔ (Odd m ↔ Even n) := by
