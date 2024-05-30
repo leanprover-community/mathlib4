@@ -96,6 +96,18 @@ theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
   simp only [h₁, h₂, LieRing.of_associative_ring_bracket, sub_eq_zero]
 #align commutative_ring_iff_abelian_lie_ring commutative_ring_iff_abelian_lie_ring
 
+-- TODO: introduce typeclass for perfect Lie algebras and use it here in the conclusion
+lemma lie_eq_self_of_isAtom_of_nonabelian {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
+    (I : LieIdeal R L) (hI : IsAtom I) (h : ¬IsLieAbelian I) :
+    ⁅I, I⁆ = I := by
+  rw [← hI.le_iff_eq]
+  · exact LieSubmodule.lie_le_right I I
+  · contrapose! h
+    rw [LieSubmodule.lie_eq_bot_iff] at h
+    constructor
+    simpa only [LieIdeal.coe_bracket_of_module, Subtype.ext_iff, LieSubmodule.coe_bracket,
+      ZeroMemClass.coe_zero, Subtype.forall, LieSubmodule.mem_coeSubmodule] using h
+
 section Center
 
 variable (R : Type u) (L : Type v) (M : Type w) (N : Type w₁)
