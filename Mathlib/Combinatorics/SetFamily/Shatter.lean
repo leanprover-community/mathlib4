@@ -120,7 +120,7 @@ lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : 𝒜.card ≤ 𝒜.sh
       mem_shatterer]
     exact fun s _ ↦ aux (fun t ht ↦ (mem_filter.1 ht).2)
   rw [← card_memberSubfamily_add_card_nonMemberSubfamily a]
-  refine (add_le_add ih₁ ih₀).trans ?_
+  refine (Nat.add_le_add ih₁ ih₀).trans ?_
   rw [← card_union_add_card_inter, ← hℬ, ← card_union_of_disjoint]
   swap
   · simp only [ℬ, disjoint_left, mem_union, mem_shatterer, mem_image, not_exists, not_and]
