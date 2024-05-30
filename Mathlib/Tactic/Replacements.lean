@@ -87,12 +87,12 @@ def substitutions (lines : Array String) (dat : Array (Nat × Nat × Nat)) : Arr
 
 /-- `getBuild` checks if there is an available cache.  If this is the case, then it returns
 the replayed build, otherwise it asks to build/download the cache. -/
-def getBuild : IO (Array String) := do
+def getBuild : IO String := do
   let build ← IO.Process.output { cmd := "lake", args := #["build", "--no-build"] }
   if build.exitCode != 0 then
     IO.println "There are out of date oleans. Run `lake build` or `lake exe cache get` first"
     return default
-  return (build.stdout.splitOn "\n").toArray
+  return build.stdout.trimRight.push '\n'
 
 open Lean
 
@@ -155,9 +155,16 @@ elab "info:" "././././" t1:term ":" num ":" num ":" t:term : command => do
   let corrections : Array (Nat × Nat × Nat) := parseCorrections t
   let newContent := "\n".intercalate
     ((substitutions (← IO.FS.lines file) corrections)).toList
-  --IO.FS.writeFile file (newContent.trimRight ++ "\n")
+  --IO.FS.writeFile file (newContent.trimRight.push '\n')
 
 end syntax_and_elabs
+
+def att (tgt : System.FilePath := "buildOutput.lean") : IO Unit := do
+  let build ← getBuild
+  unless build.isEmpty do
+    IO.FS.writeFile tgt ("import Mathlib.Tactic.Replacements\n\n" ++ build)
+
+--#eval att
 
 /-
 lake exe cache get
