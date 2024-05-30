@@ -3,7 +3,7 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Solvable
+import Mathlib.Algebra.Lie.Semisimple.Defs
 import Mathlib.Order.BooleanGenerators
 
 #align_import algebra.lie.semisimple from "leanprover-community/mathlib"@"356447fe00e75e54777321045cdff7c9ea212e60"
@@ -12,15 +12,11 @@ import Mathlib.Order.BooleanGenerators
 # Semisimple Lie algebras
 
 The famous Cartan-Dynkin-Killing classification of semisimple Lie algebras renders them one of the
-most important classes of Lie algebras. In this file we define simple and semisimple Lie algebras
-and prove some basic related results.
+most important classes of Lie algebras. In this file we prove basic results
+abot simple and semisimple Lie algebras.
 
 ## Main declarations
 
-* `LieModule.IsIrreducible`
-* `LieAlgebra.IsSimple`
-* `LieAlgebra.HasTrivialRadical`
-* `LieAlgebra.IsSemisimple`
 * `LieAlgebra.IsSemisimple.instHasTrivialRadical`: A semisimple Lie algebra has trivial radical.
 * `LieAlgebra.IsSemisimple.instBooleanAlgebra`:
   The lattice of ideals in a semisimple Lie algebra is a boolean algebra.
@@ -35,17 +31,9 @@ and prove some basic related results.
 lie algebra, radical, simple, semisimple
 -/
 
-
-universe u v w w₁ w₂
-
 section Irreducible
 
 variable (R L M : Type*) [CommRing R] [LieRing L] [AddCommGroup M] [Module R M] [LieRingModule L M]
-
-/-- A nontrivial Lie module is *irreducible* if its only Lie submodules are `⊥` and `⊤`. -/
-abbrev LieModule.IsIrreducible : Prop :=
-  IsSimpleOrder (LieSubmodule R L M)
-#align lie_module.is_irreducible LieModule.IsIrreducible
 
 lemma LieModule.nontrivial_of_isIrreducible [LieModule.IsIrreducible R L M] : Nontrivial M where
   exists_pair_ne := by
@@ -58,29 +46,7 @@ end Irreducible
 
 namespace LieAlgebra
 
-variable (R : Type u) (L : Type v)
-variable [CommRing R] [LieRing L] [LieAlgebra R L]
-
-/--
-A Lie algebra *has trivial radical* if its radical is trivial.
-This is equivalent to having no non-trivial solvable ideals,
-and further equivalent to having no non-trivial abelian ideals.
-
-In characteristic zero, it is also equivalent to `LieAlgebra.IsSemisimple`.
-
-Note that the label 'semisimple' is apparently not universally agreed
-[upon](https://mathoverflow.net/questions/149391/on-radicals-of-a-lie-algebra#comment383669_149391)
-for general coefficients.
-
-For example [Seligman, page 15](seligman1967) uses the label for `LieAlgebra.HasTrivialRadical`,
-whereas we reserve it for Lie algebras that are a direct sum of simple Lie algebras.
--/
-class HasTrivialRadical : Prop where
-  radical_eq_bot : radical R L = ⊥
-#align lie_algebra.is_semisimple LieAlgebra.HasTrivialRadical
-
-export HasTrivialRadical (radical_eq_bot)
-attribute [simp] radical_eq_bot
+variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
 variable {R L} in
 theorem HasTrivialRadical.eq_bot_of_isSolvable [HasTrivialRadical R L]
@@ -111,13 +77,6 @@ theorem hasTrivialRadical_iff_no_abelian_ideals :
     exact h₁ _ <| abelian_derivedAbelianOfIdeal I
 #align lie_algebra.is_semisimple_iff_no_abelian_ideals LieAlgebra.hasTrivialRadical_iff_no_abelian_ideals
 
-/-- A Lie algebra is simple if it is irreducible as a Lie module over itself via the adjoint
-action, and it is non-Abelian. -/
-class IsSimple : Prop where
-  eq_bot_or_eq_top : ∀ I : LieIdeal R L, I = ⊥ ∨ I = ⊤
-  non_abelian : ¬IsLieAbelian L
-#align lie_algebra.is_simple LieAlgebra.IsSimple
-
 namespace IsSimple
 
 variable [IsSimple R L]
@@ -134,7 +93,7 @@ lemma eq_top_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : I = ⊤ :=
   (IsSimple.eq_bot_or_eq_top I).resolve_left hI.1
 
 lemma isAtom_top : IsAtom (⊤ : LieIdeal R L) :=
-  ⟨bot_ne_top.symm, fun _ h ↦ IsSimpleOrder.LT.lt.eq_bot h⟩
+  ⟨bot_ne_top.symm, fun _ h ↦ h.eq_bot⟩
 
 variable {R L} in
 @[simp] lemma isAtom_iff_eq_top (I : LieIdeal R L) : IsAtom I ↔ I = ⊤ :=
@@ -149,25 +108,6 @@ instance : HasTrivialRadical R L := by
   exact IsSimple.non_abelian R (L := L) hI
 
 end IsSimple
-
-/--
-A *semisimple* Lie algebra is one that is a direct sum of non-abelian atomic ideals.
-These ideals are simple Lie algebras, by `isSimple_of_isAtom`.
-
-Note that the label 'semisimple' is apparently not universally agreed
-[upon](https://mathoverflow.net/questions/149391/on-radicals-of-a-lie-algebra#comment383669_149391)
-for general coefficients.
-
-For example [Seligman, page 15](seligman1967) uses the label for `LieAlgebra.HasTrivialRadical`,
-the weakest of the various properties which are all equivalent over a field of characteristic zero.
--/
-class IsSemisimple : Prop where
-  /-- In a semisimple Lie algebra, the supremum of the atoms is the whole Lie algebra. -/
-  sSup_atoms_eq_top : sSup {I : LieIdeal R L | IsAtom I} = ⊤
-  /-- In a semisimple Lie algebra, the atoms are independent. -/
-  setIndependent_isAtom : CompleteLattice.SetIndependent {I : LieIdeal R L | IsAtom I}
-  /-- In a semisimple Lie algebra, the atoms are non-abelian. -/
-  non_abelian_of_isAtom : ∀ I : LieIdeal R L, IsAtom I → ¬ IsLieAbelian I
 
 namespace IsSemisimple
 

@@ -242,7 +242,7 @@ theorem isIso_of_isIso_app (α : F ⟶ G) [∀ X : C, IsIso (α.app X)] : IsIso 
 /-- Horizontal composition of natural isomorphisms. -/
 @[simps]
 def hcomp {F G : C ⥤ D} {H I : D ⥤ E} (α : F ≅ G) (β : H ≅ I) : F ⋙ H ≅ G ⋙ I := by
-  refine' ⟨α.hom ◫ β.hom, α.inv ◫ β.inv, _, _⟩
+  refine ⟨α.hom ◫ β.hom, α.inv ◫ β.inv, ?_, ?_⟩
   · ext
     rw [← NatTrans.exchange]
     simp

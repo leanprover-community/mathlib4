@@ -160,7 +160,7 @@ def pullback : Stonean where
     dsimp at U
     have h : IsClopen (f ⁻¹' (Set.range i)) := by
       constructor
-      · refine' IsClosed.preimage f.continuous _
+      · refine IsClosed.preimage f.continuous ?_
         apply IsCompact.isClosed
         simp only [← Set.image_univ]
         exact IsCompact.image isCompact_univ i.continuous

@@ -72,7 +72,7 @@ instance OrderDual.infConvergenceClass [Preorder α] [TopologicalSpace α] [SupC
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrder.supConvergenceClass [TopologicalSpace α] [LinearOrder α]
     [OrderTopology α] : SupConvergenceClass α := by
-  refine' ⟨fun a s ha => tendsto_order.2 ⟨fun b hb => _, fun b hb => _⟩⟩
+  refine ⟨fun a s ha => tendsto_order.2 ⟨fun b hb => ?_, fun b hb => ?_⟩⟩
   · rcases ha.exists_between hb with ⟨c, hcs, bc, bca⟩
     lift c to s using hcs
     exact (eventually_ge_atTop c).mono fun x hx => bc.trans_le hx
