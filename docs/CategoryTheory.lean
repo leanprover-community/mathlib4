@@ -456,6 +456,8 @@ open MonoidalCategory
 
 section
 
+universe u
+
 variable (C : Type u) [Category C] [MonoidalCategory C]
 
 @[simps!]
