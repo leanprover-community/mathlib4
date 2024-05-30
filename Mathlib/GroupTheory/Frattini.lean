@@ -49,6 +49,18 @@ theorem frattini_characteristic :  (frattini G).Characteristic := by
       rfl
 
 
+
+
+-- variable {X : Set (G)}
+
+theorem frattini_nongenerating : ∀ X : Set (G), Subgroup.closure ( X) ⊔ frattini G = ⊤ → Subgroup.closure (X) = G  := by
+  intro X
+  intro h
+  unfold frattini at h
+  simp at h
+  sorry
+
+
 /-!
 Some results we don't actually use above, but seem like they are missing and related!
 -/
