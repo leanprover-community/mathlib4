@@ -81,10 +81,13 @@ lemma w_obj (a : 𝒳.cat) : 𝒴.p.obj (F.obj a) = 𝒳.p.obj a := by
 instance (a : 𝒳.cat) : IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (𝟙 (F.obj a)) :=
   IsHomLift.id (w_obj F a)
 
+section
+
+variable {R S : 𝒮} {a b : 𝒳.cat} (f : R ⟶ S) (φ : a ⟶ b)
+
 /-- For a based functor `F : 𝒳 ⟶ 𝒴`, then whenever an arrow `φ` in `𝒳` lifts some `f` in `𝒮`,
 then `F(φ)` also lifts `f` -/
-instance pres_IsHomLift {R S : 𝒮} {a b : 𝒳.cat} (f : R ⟶ S) (φ : a ⟶ b) [IsHomLift 𝒳.p f φ] :
-    IsHomLift 𝒴.p f (F.map φ) := by
+instance pres_IsHomLift [IsHomLift 𝒳.p f φ] : IsHomLift 𝒴.p f (F.map φ) := by
   apply of_fac 𝒴.p f (F.map φ) (Eq.trans (F.w_obj a) (domain_eq 𝒳.p f φ))
     (Eq.trans (F.w_obj b) (codomain_eq 𝒳.p f φ))
   rw [← Functor.comp_map, congr_hom F.w]
@@ -92,15 +95,15 @@ instance pres_IsHomLift {R S : 𝒮} {a b : 𝒳.cat} (f : R ⟶ S) (φ : a ⟶ 
 
 /-- For a based functor `F : 𝒳 ⟶ 𝒴`, and an arrow `φ` in `𝒳`, then `φ` lifts an arrow `f` in `𝒮`
 if `F(φ)` does -/
-lemma IsHomLift_ofImage {R S : 𝒮} {a b : 𝒳.cat} (f : R ⟶ S) (φ : a ⟶ b)
-    [IsHomLift 𝒴.p f (F.map φ)] : IsHomLift 𝒳.p f φ := by
+lemma IsHomLift_ofImage [IsHomLift 𝒴.p f (F.map φ)] : IsHomLift 𝒳.p f φ := by
   apply of_fac 𝒳.p f φ  (F.w_obj a ▸ domain_eq 𝒴.p f (F.map φ))
     (F.w_obj b ▸ codomain_eq 𝒴.p f (F.map φ))
   simp [congr_hom F.w.symm, fac 𝒴.p f (F.map φ)]
 
-lemma IsHomLift_iff {R S : 𝒮} {a b : 𝒳.cat} (φ : a ⟶ b) (f : R ⟶ S) :
-    IsHomLift 𝒴.p f (F.map φ) ↔ IsHomLift 𝒳.p f φ :=
+lemma IsHomLift_iff : IsHomLift 𝒴.p f (F.map φ) ↔ IsHomLift 𝒳.p f φ :=
   ⟨fun _ => IsHomLift_ofImage F f φ, fun _ => pres_IsHomLift F f φ⟩
+
+end
 
 end
 
@@ -118,21 +121,6 @@ open BasedFunctor
 
 variable {𝒳 𝒴 : BasedCategory 𝒮}
 
-instance app_isHomLift {F G : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) (a : 𝒳.cat) :
-    IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.toNatTrans.app a) :=
-  α.aboveId' a
-
-lemma aboveId {F G : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) {a : 𝒳.cat} {S : 𝒮}
-    (ha : 𝒳.p.obj a = S) : IsHomLift 𝒴.p (𝟙 S) (α.toNatTrans.app a) := by
-  subst ha; infer_instance
-
-@[ext]
-lemma ext {F G : BasedFunctor 𝒳 𝒴} (α β : BasedNatTrans F G)
-    (h : α.toNatTrans = β.toNatTrans) : α = β := by
-  cases α; subst h; rfl
-
--- TODO: move these following two lemmas up so I can introduce more variables
-
 /-- The identity natural transformation is a `BasedNatTrans` -/
 @[simps!]
 def id (F : BasedFunctor 𝒳 𝒴) : BasedNatTrans F F where
@@ -147,52 +135,38 @@ lemma id_toNatTrans (F : BasedFunctor 𝒳 𝒴) :
     (id F).toNatTrans = CategoryTheory.NatTrans.id F.toFunctor :=
   rfl
 
+section
+
+variable {F G : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G)
+
+instance app_isHomLift (a : 𝒳.cat) : IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.toNatTrans.app a) :=
+  α.aboveId' a
+
+lemma aboveId {a : 𝒳.cat} {S : 𝒮} (ha : 𝒳.p.obj a = S) :
+    IsHomLift 𝒴.p (𝟙 S) (α.toNatTrans.app a) := by
+  subst ha; infer_instance
+
+@[ext]
+lemma ext (β : BasedNatTrans F G) (h : α.toNatTrans = β.toNatTrans) : α = β := by
+  cases α; subst h; rfl
+
+end
+
 /-- Composition of `BasedNatTrans`, given by composition of the underlying natural
 transformations -/
--- TODO: WHY vcomp HERE??
 @[simps!]
-def comp {F G H : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G)
-    (β : BasedNatTrans G H) : BasedNatTrans F H where
+def comp {F G H : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H) :
+    BasedNatTrans F H where
   toNatTrans := CategoryTheory.NatTrans.vcomp α.toNatTrans β.toNatTrans
   aboveId' := by
     intro a
     rw [CategoryTheory.NatTrans.vcomp_app]
     infer_instance
 
--- TODO: should these two go into mathlib separately?
--- I feel this should already be in mathlib
-
-@[simp]
-lemma CategoryTheory.NatTrans.id_vcomp {C D : Type _} [Category C] [Category D] {F G : C ⥤ D}
-    (f : NatTrans F G) : NatTrans.vcomp (NatTrans.id F) f = f := by
-  aesop_cat
-
-@[simp]
-lemma CategoryTheory.NatTrans.vcomp_id {C D : Type _} [Category C] [Category D] {F G : C ⥤ D}
-    (f : NatTrans F G) : NatTrans.vcomp f (NatTrans.id G) = f := by
-  aesop_cat
-
 @[simp]
 lemma comp_toNatTrans {F G H : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H) :
     (comp α β).toNatTrans = NatTrans.vcomp α.toNatTrans β.toNatTrans :=
   rfl
-
--- these three are shown automatically in homCategory below
--- but not simp lemmas!!!! How did I do it in locallydiscrete?
-
--- @[simp]
--- lemma id_comp {F G : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) : comp (id F) α = α := by
---   ext1; rw [comp_toNatTrans, id_toNatTrans, CategoryTheory.NatTrans.id_vcomp]
-
--- @[simp]
--- lemma comp_id {F G : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) : comp α (id G) = α := by
---   ext1; rw [comp_toNatTrans, id_toNatTrans, CategoryTheory.NatTrans.vcomp_id]
-
--- lemma comp_assoc {F G H I : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H)
---     (γ : BasedNatTrans H I) : comp (comp α β) γ = comp α (comp β γ):= by
---   ext1
---   rw [comp_toNatTrans, comp_toNatTrans, comp_toNatTrans, comp_toNatTrans, NatTrans.vcomp_eq_comp,
---     NatTrans.vcomp_eq_comp, NatTrans.vcomp_eq_comp, NatTrans.vcomp_eq_comp, Category.assoc]
 
 end BasedNatTrans
 
@@ -200,74 +174,66 @@ namespace BasedCategory
 
 open BasedFunctor BasedNatTrans
 
-@[simps]
+@[simps!]
 instance homCategory (𝒳 𝒴 : BasedCategory 𝒮) : Category (BasedFunctor 𝒳 𝒴) where
   Hom := BasedNatTrans
   id := BasedNatTrans.id
   comp := BasedNatTrans.comp
 
+section
+
+variable {𝒳 𝒴 : BasedCategory 𝒮}
+
 @[ext]
-lemma homCategory.ext {𝒳 𝒴 : BasedCategory 𝒮} {F G : BasedFunctor 𝒳 𝒴} (α β : F ⟶ G)
-    (h : α.toNatTrans = β.toNatTrans) : α = β :=
+lemma homCategory.ext {F G : BasedFunctor 𝒳 𝒴} (α β : F ⟶ G) (h : α.toNatTrans = β.toNatTrans) :
+    α = β :=
   BasedNatTrans.ext α β h
 
--- TODO: I should be able to recycle the identical code in the next few definitions
-
-/-- The associator in the bicategory `BasedCategory` is given by the identity -/
-@[simps]
-def associator {𝒳 𝒴 𝒵 𝒱 : BasedCategory 𝒮} (F : BasedFunctor 𝒳 𝒴)
-    (G : BasedFunctor 𝒴 𝒵) (H : BasedFunctor 𝒵 𝒱) : BasedFunctor.comp (BasedFunctor.comp F G) H ≅
-      BasedFunctor.comp F (BasedFunctor.comp G H) where
-  hom := {
-    app := fun _ => 𝟙 _
-    aboveId' := by intro a; infer_instance
-  }
+/-- The inverse of a based natural transformation whose underlying natural tranformation is an
+isomorphism -/
+def BasedNatIso {F G : BasedFunctor 𝒳 𝒴} (α : F.toFunctor ≅ G.toFunctor)
+    (aboveId' : ∀ a : 𝒳.cat, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.hom.app a)) : F ≅ G where
+  hom := { toNatTrans := α.hom }
   inv := {
-    app := fun _ => 𝟙 _
-    aboveId' := by intro a; infer_instance
-  }
-
-/-- The left unitor in the bicategory `BasedCategory` is given by the identity -/
-@[simps]
-def leftUnitor {𝒳 𝒴 : BasedCategory 𝒮} (F : BasedFunctor 𝒳 𝒴) :
-    BasedFunctor.comp (BasedFunctor.id 𝒳) F ≅ F where
-  hom := {
-    app := fun a => 𝟙 (F.obj a)
-    aboveId' := by intro a; infer_instance
-  }
-  inv := {
-    app := fun a => 𝟙 (F.obj a)
-    aboveId' := by intro a; infer_instance
+    toNatTrans := α.inv
+    aboveId' := by
+      intro a
+      specialize aboveId' a
+      rw [← NatIso.app_inv]
+      rw [← NatIso.app_hom] at aboveId'
+      apply IsHomLift.lift_id_inv
   }
 
-/-- The right unitor in the bicategory `BasedCategory` is given by the identity -/
+/-- The inverse of a based natural transformation whose underlying natural tranformation carries an
+`IsIso` instance. -/
+noncomputable def BasedNatIso_of_isIso {F G : BasedFunctor 𝒳 𝒴} (α : F.toFunctor ⟶ G.toFunctor)
+    [IsIso α] (aboveId' : ∀ a : 𝒳.cat, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.app a)) : F ≅ G where
+  hom := { toNatTrans := α }
+  inv := { toNatTrans := inv α, aboveId' := fun a => by simp [lift_id_inv_isIso] }
+
+/-- The identity natural transformation is a based natural isomorphism -/
 @[simps]
-def rightUnitor {𝒳 𝒴 : BasedCategory 𝒮} (F : BasedFunctor 𝒳 𝒴) :
-    BasedFunctor.comp F (BasedFunctor.id 𝒴) ≅ F where
-  hom := {
-    app := fun a => 𝟙 (F.obj a)
-    aboveId' := by intro a; infer_instance
-  }
-  inv := {
-    app := fun a => 𝟙 (F.obj a)
-    aboveId' := by intro a; infer_instance
-  }
+def BasedNatIso.id (F : BasedFunctor 𝒳 𝒴) : F ≅ F where
+  hom := 𝟙 F
+  inv := 𝟙 F
 
 /-- Left-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying functors
 and natural transformations -/
 @[simps!]
-def whiskerLeft {𝒳 𝒴 𝒵 : BasedCategory 𝒮} (F : BasedFunctor 𝒳 𝒴)
-    {G H : BasedFunctor 𝒴 𝒵} (α : G ⟶ H) : BasedFunctor.comp F G ⟶ BasedFunctor.comp F H where
+def whiskerLeft {𝒵 : BasedCategory 𝒮} (F : BasedFunctor 𝒳 𝒴) {G H : BasedFunctor 𝒴 𝒵}
+    (α : G ⟶ H) : BasedFunctor.comp F G ⟶ BasedFunctor.comp F H where
   toNatTrans := CategoryTheory.whiskerLeft F.toFunctor α.toNatTrans
   aboveId' := fun a => α.aboveId (F.w_obj a)
 
 /-- Right-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying
 functors and natural transformations -/
 @[simps!]
-def whiskerRight {𝒳 𝒴 𝒵 : BasedCategory 𝒮} {F G : BasedFunctor 𝒳 𝒴} (α : F ⟶ G)
+def whiskerRight {𝒵 : BasedCategory 𝒮} {F G : BasedFunctor 𝒳 𝒴} (α : F ⟶ G)
     (H : BasedFunctor 𝒴 𝒵) : BasedFunctor.comp F H ⟶ BasedFunctor.comp G H where
   toNatTrans := CategoryTheory.whiskerRight α.toNatTrans H.toFunctor
   aboveId' := fun a => by apply BasedFunctor.pres_IsHomLift
+
+end
 
 /-- `BasedCategory 𝒮` forms a bicategory -/
 instance bicategory : Bicategory (BasedCategory 𝒮) where
@@ -275,11 +241,11 @@ instance bicategory : Bicategory (BasedCategory 𝒮) where
   id 𝒳 := BasedFunctor.id 𝒳
   comp F G := BasedFunctor.comp F G
   homCategory 𝒳 𝒴 := homCategory 𝒳 𝒴
-  whiskerLeft := whiskerLeft
+  whiskerLeft {𝒳 𝒴 𝒵} F {G H} α := whiskerLeft F α
   whiskerRight {𝒳 𝒴 𝒵} F G α H := whiskerRight α H
-  associator := associator
-  leftUnitor {𝒳 𝒴} F := leftUnitor F
-  rightUnitor {𝒳 𝒴} F := rightUnitor F
+  associator F G H := BasedNatIso.id _
+  leftUnitor {𝒳 𝒴} F := BasedNatIso.id F
+  rightUnitor {𝒳 𝒴} F := BasedNatIso.id F
 
 /-- The bicategory structure on `BasedCategory 𝒮` is strict -/
 instance : Bicategory.Strict (BasedCategory 𝒮) where
