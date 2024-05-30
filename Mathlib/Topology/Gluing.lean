@@ -404,7 +404,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
   f_id i := by
     -- Porting note (#12129): additional beta reduction needed
     beta_reduce
-    exact (h.V_id i).symm ▸ IsIso.of_iso (Opens.inclusionTopIso (h.U i))
+    exact (h.V_id i).symm ▸ (Opens.inclusionTopIso (h.U i)).isIso_hom
   f_open := fun i j : h.J => (h.V i j).openEmbedding
   t := h.t
   t_id i := by ext; erw [h.t_id]; rfl  -- now `erw` after #13170

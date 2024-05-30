@@ -330,7 +330,7 @@ theorem to_iso (f : X ⟶ Y) [h : IsOpenImmersion f] [h' : Epi f.base] : IsIso f
             ⟨x, by rw [Set.range_iff_surjective.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩
           left_inv := fun ⟨_, _⟩ => rfl
           right_inv := fun _ => rfl }
-    convert IsIso.of_iso (TopCat.isoOfHomeo t)
+    convert (TopCat.isoOfHomeo t).isIso_hom
   have : IsIso f.c := by apply NatIso.isIso_of_isIso_app
   apply isIso_of_components
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.to_iso AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.to_iso

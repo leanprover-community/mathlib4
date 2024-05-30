@@ -198,11 +198,11 @@ set_option linter.uppercaseLean3 false in
 theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding f) (F : X.Presheaf C)
     (x : X) : IsIso (F.stalkPushforward _ f x) := by
   haveI := Functor.initial_of_adjunction (hf.isOpenMap.adjunctionNhds x)
-  convert IsIso.of_iso
+  convert
       ((Functor.Final.colimitIso (hf.isOpenMap.functorNhds x).op
               ((OpenNhds.inclusion (f x)).op ⋙ f _* F) :
             _).symm ≪≫
-        colim.mapIso _)
+        colim.mapIso _).isIso_hom
   swap
   · fapply NatIso.ofComponents
     · intro U
