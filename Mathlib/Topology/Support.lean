@@ -301,21 +301,17 @@ theorem continuous_extend_one [TopologicalSpace β] {U : Set α'} (hU : IsOpen U
       ← (hU.openEmbedding_subtype_val).continuousAt_iff, extend_comp Subtype.val_injective]
     exact cont.continuousAt
 
-@[to_additive]
-lemma zero_at_infty_of_hasCompactMulSupport [TopologicalSpace β] {f : α → β}
-    (h : HasCompactMulSupport f):
-    Filter.Tendsto f (Filter.cocompact α) (𝓝 1) := by
-  rw [_root_.tendsto_nhds]
-  intro s _ hone
-  rw [Filter.mem_cocompact]
-  use mulTSupport f
-  constructor
-  · exact h
-  · intro x hx
-    simp only [Set.mem_preimage]
-    rw [← Set.not_mem_compl_iff, compl_compl] at hx
-    rw [image_eq_one_of_nmem_mulTSupport hx]
-    exact hone
+/-- If `f` has compact multiplicative support, then `f` tends to 1 at infinity. -/
+@[to_additive "If `f` has compact support, then `f` tends to zero at infinity."]
+theorem is_one_at_infty {f : α → γ} [TopologicalSpace γ] [One γ]
+    (h : HasCompactMulSupport f) : Tendsto f (cocompact α) (𝓝 1) := by
+  intro N hN
+  rw [mem_map, mem_cocompact']
+  refine' ⟨mulTSupport f, h.isCompact, _⟩
+  rw [compl_subset_comm]
+  intro v hv
+  rw [mem_preimage, image_eq_one_of_nmem_mulTSupport hv]
+  exact mem_of_mem_nhds hN
 
 end HasCompactMulSupport
 
@@ -349,9 +345,9 @@ theorem HasCompactMulSupport.mul (hf : HasCompactMulSupport f) (hf' : HasCompact
 
 end Monoid
 
-section DistribMulAction
+section SMulZeroClass
 
-variable [TopologicalSpace α] [MonoidWithZero R] [AddMonoid M] [DistribMulAction R M]
+variable [TopologicalSpace α] [Zero M] [SMulZeroClass R M]
 variable {f : α → R} {f' : α → M} {x : α}
 
 theorem HasCompactSupport.smul_left (hf : HasCompactSupport f') : HasCompactSupport (f • f') := by
@@ -359,7 +355,7 @@ theorem HasCompactSupport.smul_left (hf : HasCompactSupport f') : HasCompactSupp
   exact hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, smul_zero]
 #align has_compact_support.smul_left HasCompactSupport.smul_left
 
-end DistribMulAction
+end SMulZeroClass
 
 section SMulWithZero
 
