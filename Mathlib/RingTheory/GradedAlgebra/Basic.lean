@@ -41,7 +41,7 @@ graded algebra, graded ring, graded semiring, decomposition
 -/
 
 
-open DirectSum BigOperators
+open DirectSum
 
 variable {ι R A σ : Type*}
 

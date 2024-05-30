@@ -50,6 +50,8 @@ Some properties of the operations are also used to discuss general tools on ordi
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
 
+assert_not_exists Field
+assert_not_exists Module
 
 noncomputable section
 
@@ -849,7 +851,7 @@ theorem mul_isLimit_left {a b : Ordinal} (l : IsLimit a) (b0 : 0 < b) : IsLimit 
 #align ordinal.mul_is_limit_left Ordinal.mul_isLimit_left
 
 theorem smul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
-  | 0, a => by rw [zero_smul, Nat.cast_zero, mul_zero]
+  | 0, a => by rw [zero_nsmul, Nat.cast_zero, mul_zero]
   | n + 1, a => by rw [succ_nsmul, Nat.cast_add, mul_add, Nat.cast_one, mul_one, smul_eq_mul n]
 #align ordinal.smul_eq_mul Ordinal.smul_eq_mul
 

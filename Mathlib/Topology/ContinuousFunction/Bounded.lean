@@ -725,8 +725,6 @@ variable [PseudoMetricSpace β] [AddCommMonoid β] [BoundedAdd β] [ContinuousAd
 instance instAddCommMonoid : AddCommMonoid (α →ᵇ β) where
   add_comm f g := by ext; simp [add_comm]
 
-open BigOperators
-
 @[simp]
 theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) :
     ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, (f i : α → β) :=

@@ -21,12 +21,13 @@ open CategoryTheory Limits Opposite
 universe w' w v u
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-variable {D : Type w} [Category.{max v u} D]
-variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
 noncomputable section
 
 namespace CategoryTheory.GrothendieckTopology
+
+variable {D : Type w} [Category.{max v u} D]
+variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
 /-- An auxiliary definition to be used in the proof of the fact that
 `J.diagramFunctor D X` preserves limits. -/
@@ -221,6 +222,10 @@ end CategoryTheory.GrothendieckTopology
 
 namespace CategoryTheory
 
+section
+
+variable {D : Type w} [Category.{max v u} D]
+variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 variable [ConcreteCategory.{max v u} D]
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
@@ -272,27 +277,39 @@ def plusPlusFunctorIsoSheafification : J.sheafification D ≅ sheafification J D
 def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.sheafify P ≅ sheafify J P :=
   (sheafToPresheaf J D).mapIso  ((plusPlusSheafIsoPresheafToSheaf J D).app P)
 
+@[reassoc (attr := simp)]
+lemma toSheafify_plusPlusIsoSheafify_hom (P : Cᵒᵖ ⥤ D) :
+    J.toSheafify P ≫ (plusPlusIsoSheafify J D P).hom = toSheafify J P := by
+  convert Adjunction.unit_leftAdjointUniq_hom_app
+    (plusPlusAdjunction J D) (sheafificationAdjunction J D) P
+  ext1 P
+  dsimp [GrothendieckTopology.toSheafify, plusPlusAdjunction]
+  rw [Category.comp_id]
+
 instance [HasFiniteLimits D] : HasSheafify J D := HasSheafify.mk' J D (plusPlusAdjunction J D)
 
-variable {J D}
+end
 
-instance [FinitaryExtensive D] [HasFiniteCoproducts D] [HasPullbacks D] :
+variable {D : Type w} [Category.{w'} D]
+
+instance [FinitaryExtensive D] [HasPullbacks D] [HasSheafify J D] :
     FinitaryExtensive (Sheaf J D) :=
-  finitaryExtensive_of_reflective (plusPlusAdjunction _ _)
+  finitaryExtensive_of_reflective (sheafificationAdjunction _ _)
 
-instance [Adhesive D] [HasPullbacks D] [HasPushouts D] : Adhesive (Sheaf J D) :=
-  adhesive_of_reflective (plusPlusAdjunction _ _)
+instance [Adhesive D] [HasPullbacks D] [HasPushouts D] [HasSheafify J D] :
+    Adhesive (Sheaf J D) :=
+  adhesive_of_reflective (sheafificationAdjunction _ _)
 
-instance SheafOfTypes.finitary_extensive {C : Type u} [SmallCategory C]
-    (J : GrothendieckTopology C) : FinitaryExtensive (Sheaf J (Type u)) :=
+instance SheafOfTypes.finitary_extensive [HasSheafify J (Type w)] :
+    FinitaryExtensive (Sheaf J (Type w)) :=
   inferInstance
 
-instance SheafOfTypes.adhesive {C : Type u} [SmallCategory C] (J : GrothendieckTopology C) :
-    Adhesive (Sheaf J (Type u)) :=
+instance SheafOfTypes.adhesive [HasSheafify J (Type w)] :
+    Adhesive (Sheaf J (Type w)) :=
   inferInstance
 
-instance SheafOfTypes.balanced {C : Type u} [SmallCategory C] (J : GrothendieckTopology C) :
-    Balanced (Sheaf J (Type u)) :=
+instance SheafOfTypes.balanced [HasSheafify J (Type w)] :
+    Balanced (Sheaf J (Type w)) :=
   inferInstance
 
 end CategoryTheory

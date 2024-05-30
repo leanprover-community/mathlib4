@@ -18,7 +18,7 @@ taking values in the tensor product of the codomains of the original maps.
 
 suppress_compilation
 
-open BigOperators TensorProduct
+open TensorProduct
 
 variable {ιa ιb : Type*} [Fintype ιa] [Fintype ιb]
 variable {R' : Type*} {Mᵢ N₁ N₂ : Type*} [CommSemiring R'] [AddCommGroup N₁] [Module R' N₁]

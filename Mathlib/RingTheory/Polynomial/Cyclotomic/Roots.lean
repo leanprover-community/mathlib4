@@ -33,8 +33,6 @@ primitive root of unity `μ : K`, where `K` is a field of characteristic `0`.
 -/
 
 
-open scoped BigOperators
-
 namespace Polynomial
 
 variable {R : Type*} [CommRing R] {n : ℕ}

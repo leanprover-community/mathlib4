@@ -78,8 +78,6 @@ open LinearMap
 
 open Matrix
 
-open scoped BigOperators
-
 open scoped Matrix
 
 namespace Algebra

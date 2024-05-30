@@ -49,7 +49,7 @@ variable {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 
 open Polynomial
 
-open scoped Polynomial BigOperators
+open scoped Polynomial
 
 /-- An `I`-filtration on the module `M` is a sequence of decreasing submodules `N i` such that
 `I • (N i) ≤ N (i + 1)`. Note that we do not require the filtration to start from `⊤`. -/

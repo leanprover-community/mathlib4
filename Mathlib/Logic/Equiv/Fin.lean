@@ -215,7 +215,7 @@ theorem finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) 
 /-- `Fin.succAbove` as an order isomorphism between `Fin n` and `{x : Fin (n + 1) // x ≠ p}`. -/
 def finSuccAboveEquiv (p : Fin (n + 1)) : Fin n ≃o { x : Fin (n + 1) // x ≠ p } :=
   { Equiv.optionSubtype p ⟨(finSuccEquiv' p).symm, rfl⟩ with
-    map_rel_iff' := p.succAboveEmb.map_rel_iff' }
+    map_rel_iff' := p.succAboveOrderEmb.map_rel_iff' }
 #align fin_succ_above_equiv finSuccAboveEquiv
 
 theorem finSuccAboveEquiv_apply (p : Fin (n + 1)) (i : Fin n) :

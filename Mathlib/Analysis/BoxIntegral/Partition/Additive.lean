@@ -32,7 +32,7 @@ rectangular box, additive function
 noncomputable section
 
 open scoped Classical
-open BigOperators Function Set
+open Function Set
 
 namespace BoxIntegral
 

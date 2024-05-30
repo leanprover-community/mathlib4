@@ -56,7 +56,7 @@ noncomputable section
 
 open Function Set MeasureTheory.OuterMeasure Filter MeasurableSpace Encodable
 
-open scoped Classical BigOperators Topology ENNReal
+open scoped Classical Topology ENNReal
 
 universe u v
 
@@ -478,11 +478,11 @@ theorem ae_eval_ne (i : ι) [NoAtoms (μ i)] (x : α i) : ∀ᵐ y : ∀ i, α i
 
 variable {μ}
 
-theorem tendsto_eval_ae_ae {i : ι} : Tendsto (eval i) (Measure.pi μ).ae (μ i).ae := fun _ hs =>
+theorem tendsto_eval_ae_ae {i : ι} : Tendsto (eval i) (ae (Measure.pi μ)) (ae (μ i)) := fun _ hs =>
   pi_eval_preimage_null μ hs
 #align measure_theory.measure.tendsto_eval_ae_ae MeasureTheory.Measure.tendsto_eval_ae_ae
 
-theorem ae_pi_le_pi : (Measure.pi μ).ae ≤ Filter.pi fun i => (μ i).ae :=
+theorem ae_pi_le_pi : ae (Measure.pi μ) ≤ Filter.pi fun i => ae (μ i) :=
   le_iInf fun _ => tendsto_eval_ae_ae.le_comap
 #align measure_theory.measure.ae_pi_le_pi MeasureTheory.Measure.ae_pi_le_pi
 

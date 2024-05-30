@@ -27,7 +27,7 @@ this issue doesn't seem to arise in practice.
 
 -/
 
-open Finset Real Filter Asymptotics BigOperators
+open Finset Real Filter Asymptotics
 open scoped Topology
 
 namespace AkraBazziRecurrence

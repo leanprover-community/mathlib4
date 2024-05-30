@@ -86,8 +86,6 @@ commutative ring, field of fractions
 
 open Function
 
-open BigOperators
-
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]

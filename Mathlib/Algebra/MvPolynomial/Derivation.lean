@@ -20,8 +20,6 @@ builds a derivation from its values on `X i`s and a linear equivalence
 
 namespace MvPolynomial
 
-open scoped BigOperators
-
 noncomputable section
 
 variable {σ R A : Type*} [CommSemiring R] [AddCommMonoid A] [Module R A]

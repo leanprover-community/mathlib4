@@ -147,7 +147,7 @@ Cauchy-Goursat theorem, Cauchy integral formula
 
 open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
 
-open scoped Interval Real NNReal ENNReal Topology BigOperators
+open scoped Interval Real NNReal ENNReal Topology
 
 noncomputable section
 

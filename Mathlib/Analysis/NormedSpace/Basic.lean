@@ -22,7 +22,7 @@ about these definitions.
 variable {𝕜 𝕜' E F α : Type*}
 
 open Filter Metric Function Set Topology Bornology
-open scoped BigOperators NNReal ENNReal uniformity
+open scoped NNReal ENNReal uniformity
 
 section SeminormedAddCommGroup
 
