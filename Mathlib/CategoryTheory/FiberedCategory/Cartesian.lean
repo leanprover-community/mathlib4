@@ -147,6 +147,11 @@ instance isCartesian_of_isStronglyCartesian [p.IsStronglyCartesian f φ] : p.IsC
 
 -- TODO: section here
 
+section
+
+variable {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f) (φ' : a' ⟶ b)
+  [IsHomLift p f' φ']
+
 /-- Given a cartesian morphism `φ`, a diagram
 ```
 a'        a --φ--> b
@@ -156,17 +161,14 @@ R' --g--> R --f--> S
 ```
 and an arrow `φ' : a' ⟶ b`, then `inducedMap` is the map `a' ⟶ a` obtained from the
 universal property of `φ`. -/
-noncomputable def inducedMap {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
-    (φ' : a' ⟶ b) [IsHomLift p f' φ'] : a' ⟶ a :=
+noncomputable def inducedMap : a' ⟶ a :=
   Classical.choose <| universal_property p f φ _ _ hf' φ'
 
-instance inducedMap_isHomLift {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
-    (φ' : a' ⟶ b) [IsHomLift p f' φ'] : IsHomLift p g (inducedMap p f φ hf' φ') :=
+instance inducedMap_isHomLift : IsHomLift p g (inducedMap p f φ hf' φ') :=
   (Classical.choose_spec <| universal_property p f φ _ _ hf' φ').1.1
 
 @[simp]
-lemma inducedMap_comp {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
-    (φ' : a' ⟶ b) [IsHomLift p f' φ'] : (inducedMap p f φ hf' φ') ≫ φ = φ' :=
+lemma inducedMap_comp : (inducedMap p f φ hf' φ') ≫ φ = φ' :=
   (Classical.choose_spec <| universal_property p f φ _ _ hf' φ').1.2
 
 /-- Given a cartesian arrow `φ : a ⟶ b` in `𝒳` and a diagram:
@@ -178,8 +180,7 @@ R' --g--> R --f--> S
 ```
 Then for any arrow `φ' : a' ⟶ b`, and `ψ : a' ⟶ a` such that `g ≫ ψ = φ'`.
 Then `ψ` is the map induced by the universal property. -/
-lemma inducedMap_unique {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
-    (φ' : a' ⟶ b) [IsHomLift p f' φ'] (ψ : a' ⟶ a) [IsHomLift p g ψ] (hψ : ψ ≫ φ = φ') :
+lemma inducedMap_unique (ψ : a' ⟶ a) [IsHomLift p g ψ] (hψ : ψ ≫ φ = φ') :
     ψ = inducedMap p f φ hf' φ' :=
   (Classical.choose_spec <| universal_property p f φ _ _ hf' φ').2 ψ ⟨inferInstance, hψ⟩
 
@@ -192,10 +193,11 @@ R' --g--> R --f--> S
 ```
 with `φ` a cartesian arrow. Then for any arrow `φ' : a' ⟶ b`, any two arrows `ψ ψ' : a' ⟶ a` such
 that `g ≫ ψ = φ' = g ≫ ψ'`. Then `ψ = ψ'`. -/
-protected lemma uniqueness {R' : 𝒮} {a' : 𝒳} {g : R' ⟶ R} {f' : R' ⟶ S} (hf' : f' = g ≫ f)
-    (φ' : a' ⟶ b) [IsHomLift p f' φ'] {ψ ψ' : a' ⟶ a} [IsHomLift p g ψ]
-    [IsHomLift p g ψ'] (hcomp : ψ ≫ φ = φ') (hcomp' : ψ' ≫ φ = φ') : ψ = ψ' := by
+protected lemma uniqueness {ψ ψ' : a' ⟶ a} [IsHomLift p g ψ] [IsHomLift p g ψ']
+    (hcomp : ψ ≫ φ = φ') (hcomp' : ψ' ≫ φ = φ') : ψ = ψ' := by
   rw [inducedMap_unique p f φ hf' φ' ψ hcomp, inducedMap_unique p f φ hf' φ' ψ' hcomp']
+
+end
 
 @[simp]
 lemma inducedMap_self_eq_id : inducedMap p f φ (id_comp f).symm φ = 𝟙 a := by
