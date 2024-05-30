@@ -274,18 +274,20 @@ exists_cfc_of_predicate a ha := by
       congr!
     case map_spec =>
       intro f
-      --rw [← ContinuousMap.spectrum_eq_range (𝕜 := ℝ) (X := spectrum ℝ a) f]
-      convert spectrum.unitary_conjugate
-      have := spectrum_diagonal (R := 𝕜) (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩))
       apply Set.eq_of_subset_of_subset
-      intro t ht
-      apply spectrum.of_algebraMap_mem (R := ℝ) (S := 𝕜)
-      rw [this]
-      simp only [Set.mem_range, Function.comp_apply]
-      unfold Set.range at ht
-      obtain ⟨t, h, s⟩ := ht
+      · rw [← ContinuousMap.spectrum_eq_range f]
+        apply AlgHom.spectrum_apply_subset
+      ·
+      --convert spectrum.unitary_conjugate
+      --have := spectrum_diagonal (R := 𝕜) (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩))
+      --apply Set.eq_of_subset_of_subset
+      --intro t ht
+      --apply spectrum.of_algebraMap_mem (R := ℝ) (S := 𝕜)
+      --rw [this]
+      --simp only [Set.mem_range, Function.comp_apply]
+      --unfold Set.range at ht
+      --obtain ⟨t, h, s⟩ := ht
           --apply AlgHom.spectrum_apply_subset
-      sorry
     case hermitian =>
       intro f
       sorry
