@@ -590,7 +590,7 @@ theorem mul_eq_mul_iff_eq_and_eq_of_pos [PosMulStrictMono α] [MulPosStrictMono 
     a * c = b * d ↔ a = b ∧ c = d := by
   refine ⟨fun h ↦ ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
   simp only [eq_iff_le_not_lt, hab, hcd, true_and]
-  refine' ⟨fun hab ↦ h.not_lt _, fun hcd ↦ h.not_lt _⟩
+  refine ⟨fun hab ↦ h.not_lt ?_, fun hcd ↦ h.not_lt ?_⟩
   · exact (mul_le_mul_of_nonneg_left hcd a0.le).trans_lt (mul_lt_mul_of_pos_right hab d0)
   · exact (mul_lt_mul_of_pos_left hcd a0).trans_le (mul_le_mul_of_nonneg_right hab d0.le)
 #align mul_eq_mul_iff_eq_and_eq_of_pos mul_eq_mul_iff_eq_and_eq_of_pos
@@ -600,7 +600,7 @@ theorem mul_eq_mul_iff_eq_and_eq_of_pos' [PosMulStrictMono α] [MulPosStrictMono
     a * c = b * d ↔ a = b ∧ c = d := by
   refine ⟨fun h ↦ ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
   simp only [eq_iff_le_not_lt, hab, hcd, true_and]
-  refine' ⟨fun hab ↦ h.not_lt _, fun hcd ↦ h.not_lt _⟩
+  refine ⟨fun hab ↦ h.not_lt ?_, fun hcd ↦ h.not_lt ?_⟩
   · exact (mul_lt_mul_of_pos_right hab c0).trans_le (mul_le_mul_of_nonneg_left hcd b0.le)
   · exact (mul_le_mul_of_nonneg_right hab c0.le).trans_lt (mul_lt_mul_of_pos_left hcd b0)
 #align mul_eq_mul_iff_eq_and_eq_of_pos' mul_eq_mul_iff_eq_and_eq_of_pos'
@@ -614,11 +614,11 @@ variable [LinearOrder α]
 theorem pos_and_pos_or_neg_and_neg_of_mul_pos [PosMulMono α] [MulPosMono α] (hab : 0 < a * b) :
     0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
   rcases lt_trichotomy a 0 with (ha | rfl | ha)
-  · refine' Or.inr ⟨ha, lt_imp_lt_of_le_imp_le (fun hb => _) hab⟩
+  · refine Or.inr ⟨ha, lt_imp_lt_of_le_imp_le (fun hb => ?_) hab⟩
     exact mul_nonpos_of_nonpos_of_nonneg ha.le hb
   · rw [zero_mul] at hab
     exact hab.false.elim
-  · refine' Or.inl ⟨ha, lt_imp_lt_of_le_imp_le (fun hb => _) hab⟩
+  · refine Or.inl ⟨ha, lt_imp_lt_of_le_imp_le (fun hb => ?_) hab⟩
     exact mul_nonpos_of_nonneg_of_nonpos ha.le hb
 #align pos_and_pos_or_neg_and_neg_of_mul_pos pos_and_pos_or_neg_and_neg_of_mul_pos
 
