@@ -252,45 +252,41 @@ instance instContinuousFunctionalCalculus :
 exists_cfc_of_predicate a ha := by
     refine ⟨φ ha, ?closedEmbedding, ?mapId, ?map_spec, ?hermitian⟩
     case closedEmbedding =>
-          have h0 : FiniteDimensional ℝ C(spectrum ℝ a, ℝ) := by
-            have : Finite (spectrum ℝ a) := by refine finite_spectrum ha
-            apply FiniteDimensional.of_injective (ContinuousMap.coeFnLinearMap ℝ (M := ℝ))
-            exact DFunLike.coe_injective
-          have hφ : LinearMap.ker ha.φ = ⊥ := by
-              refine LinearMap.ker_eq_bot'.mpr ?_
-              intro f hf
-              have : ∀ x, ha.φ f x = 0 := by sorry
-              ext x
-              simp only [ContinuousMap.zero_apply]
-              sorry
-          have H := ha.compact_spectrum
-          apply LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ a, ℝ))
-                (F := Matrix n n 𝕜) (f := ha.φ) hφ
-    case mapId => conv_rhs => rw [ha.spectral_theorem]
-                  congr!
+      have h0 : FiniteDimensional ℝ C(spectrum ℝ a, ℝ) := by
+        have : Finite (spectrum ℝ a) := by refine finite_spectrum ha
+        apply FiniteDimensional.of_injective (ContinuousMap.coeFnLinearMap ℝ (M := ℝ))
+        exact DFunLike.coe_injective
+      have hφ : LinearMap.ker ha.φ = ⊥ := by
+        refine LinearMap.ker_eq_bot'.mpr ?_
+        intro f hf
+        have : ∀ x, ha.φ f x = 0 := by sorry
+        ext x
+        simp only [ContinuousMap.zero_apply]
+        sorry
+      have H := ha.compact_spectrum
+      apply LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ a, ℝ))
+        (F := Matrix n n 𝕜) (f := ha.φ) hφ
+    case mapId =>
+      conv_rhs => rw [ha.spectral_theorem]
+      congr!
     case map_spec =>
-          intro f
-          rw [← ContinuousMap.spectrum_eq_range (𝕜 := ℝ) (X := spectrum ℝ a) f]
-          convert spectrum.unitary_conjugate
-          have := spectrum_diagonal (R := 𝕜) (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩))
-          apply Set.eq_of_subset_of_subset
-          intro t ht
-          apply spectrum.of_algebraMap_mem (R := ℝ) (S := 𝕜)
-          rw [this]
-          simp only [ContinuousMap.spectrum_eq_range] at ht
-          simp only [Set.mem_range, Function.comp_apply]
-          unfold Set.range at ht
-          obtain ⟨t, h, s⟩ := ht
-          use t
-
-
-
-
+      intro f
+      rw [← ContinuousMap.spectrum_eq_range (𝕜 := ℝ) (X := spectrum ℝ a) f]
+      convert spectrum.unitary_conjugate
+      have := spectrum_diagonal (R := 𝕜) (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩))
+      apply Set.eq_of_subset_of_subset
+      intro t ht
+      apply spectrum.of_algebraMap_mem (R := ℝ) (S := 𝕜)
+      rw [this]
+      simp only [ContinuousMap.spectrum_eq_range] at ht
+      simp only [Set.mem_range, Function.comp_apply]
+      unfold Set.range at ht
+      obtain ⟨t, h, s⟩ := ht
           --apply AlgHom.spectrum_apply_subset
-          sorry
+      sorry
     case hermitian =>
-          intro f
-          sorry
+      intro f
+      sorry
 end IsHermitian
 end Matrix
 
