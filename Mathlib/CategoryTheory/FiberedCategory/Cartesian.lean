@@ -32,6 +32,7 @@ equalities.
 `p`. This structure also extends `IsHomLift p f φ`.
 
 ## Implementation
+
 The standard constructor of `IsStronglyCartesian` has both been renamed to `.mk'`, and we
 have provided an alternate constructor `IsStronglyCartesian.mk`. The difference between the two
 is that `IsStronglyCartesian.mk` peforms some substitutions of superfluous variables for the user.
@@ -42,6 +43,14 @@ around in the construction.
 SGA 1
 Stacks project
 
+-/
+
+/-
+TODO:
+- Remove mk' alternate constructor, and instead make mk "weaker".
+- Fix variables in two remaining lemmas
+- Fix docstrings
+- clean up proofs
 -/
 
 universe v₁ v₂ u₁ u₂
@@ -71,6 +80,8 @@ See <https://stacks.math.columbia.edu/tag/02XK> -/
 class Functor.IsStronglyCartesian extends IsHomLift p f φ : Prop where
   universal_property' {a' : 𝒳} (g : p.obj a' ⟶ R) (φ' : a' ⟶ b) [IsHomLift p (g ≫ f) φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p g χ ∧ χ ≫ φ = φ'
+
+end
 
 end
 
