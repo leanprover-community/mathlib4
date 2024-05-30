@@ -184,7 +184,7 @@ def Subpresheaf.sheafify : Subpresheaf F where
   obj U := { s | G.sieveOfSection s ∈ J (unop U) }
   map := by
     rintro U V i s hs
-    refine' J.superset_covering _ (J.pullback_stable i.unop hs)
+    refine J.superset_covering ?_ (J.pullback_stable i.unop hs)
     intro _ _ h
     dsimp at h ⊢
     rwa [← FunctorToTypes.map_comp_apply]

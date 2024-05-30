@@ -233,7 +233,7 @@ def toJordanDecomposition (s : SignedMeasure α) : JordanDecomposition α :=
     posPart_finite := inferInstance
     negPart_finite := inferInstance
     mutuallySingular := by
-      refine' ⟨iᶜ, hi.1.compl, _, _⟩
+      refine ⟨iᶜ, hi.1.compl, ?_, ?_⟩
       -- Porting note: added `← NNReal.eq_iff`
       · rw [toMeasureOfZeroLE_apply _ _ hi.1 hi.1.compl]; simp [← NNReal.eq_iff]
       · rw [toMeasureOfLEZero_apply _ _ hi.1.compl hi.1.compl.compl]; simp [← NNReal.eq_iff] }
@@ -401,7 +401,7 @@ theorem toSignedMeasure_injective : Injective <| @JordanDecomposition.toSignedMe
       show j₁.posPart (i ∩ S) = 0 from
         nonpos_iff_eq_zero.1 (hS₄ ▸ measure_mono (Set.inter_subset_right _ _)),
       zero_add]
-    · refine'
+    · refine
         Set.disjoint_of_subset_left (Set.inter_subset_right _ _)
           (Set.disjoint_of_subset_right (Set.inter_subset_right _ _) disjoint_compl_right)
     · exact hi.inter hS₁.compl
@@ -538,11 +538,11 @@ theorem totalVariation_absolutelyContinuous_iff (s : SignedMeasure α) (μ : Mea
   constructor <;> intro h
   · constructor
     all_goals
-      refine' Measure.AbsolutelyContinuous.mk fun S _ hS₂ => _
+      refine Measure.AbsolutelyContinuous.mk fun S _ hS₂ => ?_
       have := h hS₂
       rw [totalVariation, Measure.add_apply, add_eq_zero_iff] at this
     exacts [this.1, this.2]
-  · refine' Measure.AbsolutelyContinuous.mk fun S _ hS₂ => _
+  · refine Measure.AbsolutelyContinuous.mk fun S _ hS₂ => ?_
     rw [totalVariation, Measure.add_apply, h.1 hS₂, h.2 hS₂, add_zero]
 #align measure_theory.signed_measure.total_variation_absolutely_continuous_iff MeasureTheory.SignedMeasure.totalVariation_absolutelyContinuous_iff
 

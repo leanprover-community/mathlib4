@@ -146,7 +146,7 @@ def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] Dual 𝕜 (Dual 𝕜 E) :=
       apply le_antisymm
       · exact double_dual_bound 𝕜 E x
       rw [ContinuousLinearMap.norm_def]
-      refine' le_csInf ContinuousLinearMap.bounds_nonempty _
+      refine le_csInf ContinuousLinearMap.bounds_nonempty ?_
       rintro c ⟨hc1, hc2⟩
       exact norm_le_dual_bound 𝕜 x hc1 hc2 }
 #align normed_space.inclusion_in_double_dual_li NormedSpace.inclusionInDoubleDualLi
