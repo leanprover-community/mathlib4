@@ -62,7 +62,7 @@ universe uι uE uH uM uF
 
 open Function Filter FiniteDimensional Set
 
-open scoped Topology Manifold Classical Filter BigOperators
+open scoped Topology Manifold Classical Filter
 
 noncomputable section
 
@@ -249,15 +249,15 @@ theorem mem_finsupport {i : ι} : i ∈ ρ.finsupport x₀ ↔ i ∈ support fun
 theorem coe_finsupport : (ρ.finsupport x₀ : Set ι) = support fun i ↦ ρ i x₀ :=
   ρ.toPartitionOfUnity.coe_finsupport x₀
 
-theorem sum_finsupport (hx₀ : x₀ ∈ s) : ∑ i in ρ.finsupport x₀, ρ i x₀ = 1 :=
+theorem sum_finsupport (hx₀ : x₀ ∈ s) : ∑ i ∈ ρ.finsupport x₀, ρ i x₀ = 1 :=
   ρ.toPartitionOfUnity.sum_finsupport hx₀
 
 theorem sum_finsupport' (hx₀ : x₀ ∈ s) {I : Finset ι} (hI : ρ.finsupport x₀ ⊆ I) :
-    ∑ i in I, ρ i x₀ = 1 :=
+    ∑ i ∈ I, ρ i x₀ = 1 :=
   ρ.toPartitionOfUnity.sum_finsupport' hx₀ hI
 
 theorem sum_finsupport_smul_eq_finsum {A : Type*} [AddCommGroup A] [Module ℝ A] (φ : ι → M → A) :
-    ∑ i in ρ.finsupport x₀, ρ i x₀ • φ i x₀ = ∑ᶠ i, ρ i x₀ • φ i x₀ :=
+    ∑ i ∈ ρ.finsupport x₀, ρ i x₀ • φ i x₀ = ∑ᶠ i, ρ i x₀ • φ i x₀ :=
   ρ.toPartitionOfUnity.sum_finsupport_smul_eq_finsum φ
 
 end finsupport
@@ -422,9 +422,9 @@ theorem exists_isSubordinate [T2Space M] [SigmaCompactSpace M] (hs : IsClosed s)
   rcases exists_subset_iUnion_closed_subset hs (fun i => (f i).isOpen_support)
     (fun x _ => hfin.point_finite x) hsub' with ⟨V, hsV, hVc, hVf⟩
   choose r hrR hr using fun i => (f i).exists_r_pos_lt_subset_ball (hVc i) (hVf i)
-  refine' ⟨ι, ⟨c, fun i => (f i).updateRIn (r i) (hrR i), hcs, _, fun x hx => _⟩, fun i => _⟩
+  refine ⟨ι, ⟨c, fun i => (f i).updateRIn (r i) (hrR i), hcs, ?_, fun x hx => ?_⟩, fun i => ?_⟩
   · simpa only [SmoothBumpFunction.support_updateRIn]
-  · refine' (mem_iUnion.1 <| hsV hx).imp fun i hi => _
+  · refine (mem_iUnion.1 <| hsV hx).imp fun i hi => ?_
     exact ((f i).updateRIn _ _).eventuallyEq_one_of_dist_lt
       ((f i).support_subset_source <| hVf _ hi) (hr i hi).2
   · simpa only [SmoothBumpFunction.support_updateRIn, tsupport] using hfU i
@@ -516,14 +516,14 @@ theorem toSmoothPartitionOfUnity_apply (i : ι) (x : M) :
 theorem toSmoothPartitionOfUnity_eq_mul_prod (i : ι) (x : M) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → fs j x ≠ 0 → j ∈ t) :
     fs.toSmoothPartitionOfUnity i x =
-      fs i x * ∏ j in t.filter fun j => WellOrderingRel j i, (1 - fs j x) :=
+      fs i x * ∏ j ∈ t.filter fun j => WellOrderingRel j i, (1 - fs j x) :=
   fs.toBumpCovering.toPartitionOfUnity_eq_mul_prod i x t ht
 #align smooth_bump_covering.to_smooth_partition_of_unity_eq_mul_prod SmoothBumpCovering.toSmoothPartitionOfUnity_eq_mul_prod
 
 theorem exists_finset_toSmoothPartitionOfUnity_eventuallyEq (i : ι) (x : M) :
     ∃ t : Finset ι,
       fs.toSmoothPartitionOfUnity i =ᶠ[𝓝 x]
-        fs i * ∏ j in t.filter fun j => WellOrderingRel j i, ((1 : M → ℝ) - fs j) := by
+        fs i * ∏ j ∈ t.filter fun j => WellOrderingRel j i, ((1 : M → ℝ) - fs j) := by
   -- Porting note: was defeq, now the continuous lemma uses bundled homs
   simpa using fs.toBumpCovering.exists_finset_toPartitionOfUnity_eventuallyEq i x
 #align smooth_bump_covering.exists_finset_to_smooth_partition_of_unity_eventually_eq SmoothBumpCovering.exists_finset_toSmoothPartitionOfUnity_eventuallyEq
@@ -562,11 +562,11 @@ theorem exists_smooth_zero_one_of_isClosed [T2Space M] [SigmaCompactSpace M] {s 
   have : ∀ x ∈ t, sᶜ ∈ 𝓝 x := fun x hx => hs.isOpen_compl.mem_nhds (disjoint_right.1 hd hx)
   rcases SmoothBumpCovering.exists_isSubordinate I ht this with ⟨ι, f, hf⟩
   set g := f.toSmoothPartitionOfUnity
-  refine'
-    ⟨⟨_, g.smooth_sum⟩, fun x hx => _, fun x => g.sum_eq_one, fun x =>
+  refine
+    ⟨⟨_, g.smooth_sum⟩, fun x hx => ?_, fun x => g.sum_eq_one, fun x =>
       ⟨g.sum_nonneg x, g.sum_le_one x⟩⟩
   suffices ∀ i, g i x = 0 by simp only [this, ContMDiffMap.coeFn_mk, finsum_zero, Pi.zero_apply]
-  refine' fun i => f.toSmoothPartitionOfUnity_zero_of_zero _
+  refine fun i => f.toSmoothPartitionOfUnity_zero_of_zero ?_
   exact nmem_support.1 (subset_compl_comm.1 (hf.support_subset i) hx)
 #align exists_smooth_zero_one_of_closed exists_smooth_zero_one_of_isClosed
 
@@ -660,9 +660,9 @@ theorem exists_contMDiffOn_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t
   obtain ⟨f, hf⟩ :=
     SmoothPartitionOfUnity.exists_isSubordinate I isClosed_univ (fun x => interior (U x))
       (fun x => isOpen_interior) fun x _ => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x)⟩
-  refine' ⟨⟨fun x => ∑ᶠ i, f i x • g i x,
+  refine ⟨⟨fun x => ∑ᶠ i, f i x • g i x,
       hf.contMDiff_finsum_smul (fun i => isOpen_interior) fun i => (hgs i).mono interior_subset⟩,
-    fun x => f.finsum_smul_mem_convex (mem_univ x) (fun i hi => hgt _ _ _) (ht _)⟩
+    fun x => f.finsum_smul_mem_convex (mem_univ x) (fun i hi => hgt _ _ ?_) (ht _)⟩
   exact interior_subset (hf _ <| subset_closure hi)
 #align exists_cont_mdiff_forall_mem_convex_of_local exists_contMDiffOn_forall_mem_convex_of_local
 
@@ -717,7 +717,7 @@ theorem Metric.exists_smooth_forall_closedBall_subset {M} [MetricSpace M] [Chart
     ∃ δ : C^∞⟮I, M; 𝓘(ℝ, ℝ), ℝ⟯,
       (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, Metric.closedBall x (δ x) ⊆ U i := by
   rcases Emetric.exists_smooth_forall_closedBall_subset I hK hU hKU hfin with ⟨δ, hδ0, hδ⟩
-  refine' ⟨δ, hδ0, fun i x hx => _⟩
+  refine ⟨δ, hδ0, fun i x hx => ?_⟩
   rw [← Metric.emetric_closedBall (hδ0 _).le]
   exact hδ i x hx
 #align metric.exists_smooth_forall_closed_ball_subset Metric.exists_smooth_forall_closedBall_subset

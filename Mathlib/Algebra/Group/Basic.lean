@@ -22,6 +22,8 @@ one-liners from the corresponding axioms. For the definitions of semigroups, mon
 `Algebra/Group/Defs.lean`.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 open Function
 
@@ -678,6 +680,13 @@ lemma zpow_mul' (a : α) (m n : ℤ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Int.m
 #align zpow_mul' zpow_mul'
 #align mul_zsmul mul_zsmul
 
+#noalign zpow_bit0
+#noalign bit0_zsmul
+#noalign zpow_bit0'
+#noalign bit0_zsmul'
+#noalign zpow_bit1
+#noalign bit1_zsmul
+
 variable (a b c)
 
 @[to_additive, field_simps] -- The attributes are out of order on purpose
@@ -1127,14 +1136,14 @@ theorem leftInverse_inv_mul_mul_right (c : G) :
 lemma pow_natAbs_eq_one : a ^ n.natAbs = 1 ↔ a ^ n = 1 := by cases n <;> simp
 
 set_option linter.existingAttributeWarning false in
-@[to_additive, deprecated pow_natAbs_eq_one]
+@[to_additive, deprecated pow_natAbs_eq_one (since := "2024-02-14")]
 lemma exists_pow_eq_one_of_zpow_eq_one (hn : n ≠ 0) (h : a ^ n = 1) :
     ∃ n : ℕ, 0 < n ∧ a ^ n = 1 := ⟨_, Int.natAbs_pos.2 hn, pow_natAbs_eq_one.2 h⟩
 #align exists_npow_eq_one_of_zpow_eq_one exists_pow_eq_one_of_zpow_eq_one
 #align exists_nsmul_eq_zero_of_zsmul_eq_zero exists_nsmul_eq_zero_of_zsmul_eq_zero
 
--- 2024-02-14
-attribute [deprecated natAbs_nsmul_eq_zero] exists_nsmul_eq_zero_of_zsmul_eq_zero
+attribute [deprecated natAbs_nsmul_eq_zero (since := "2024-02-14")]
+exists_nsmul_eq_zero_of_zsmul_eq_zero
 
 @[to_additive sub_nsmul]
 lemma pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ :=

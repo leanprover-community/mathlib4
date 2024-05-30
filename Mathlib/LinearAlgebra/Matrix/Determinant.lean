@@ -3,17 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Anne Baanen
 -/
-import Mathlib.Data.Matrix.PEquiv
 import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.Notation
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.GroupTheory.Perm.Fin
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Tactic.Ring
-import Mathlib.LinearAlgebra.Alternating.Basic
-import Mathlib.LinearAlgebra.Pi
+import Mathlib.Data.Matrix.RowCol
 import Mathlib.GroupTheory.GroupAction.Ring
+import Mathlib.GroupTheory.Perm.Fin
+import Mathlib.LinearAlgebra.Alternating.Basic
 
 #align_import linear_algebra.matrix.determinant from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
@@ -48,7 +43,7 @@ open Equiv Equiv.Perm Finset Function
 
 namespace Matrix
 
-open Matrix BigOperators
+open Matrix
 
 variable {m n : Type*} [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
 variable {R : Type v} [CommRing R]
@@ -77,7 +72,7 @@ theorem det_apply' (M : Matrix n n R) : M.det = ∑ σ : Perm n, ε σ * ∏ i, 
 @[simp]
 theorem det_diagonal {d : n → R} : det (diagonal d) = ∏ i, d i := by
   rw [det_apply']
-  refine' (Finset.sum_eq_single 1 _ _).trans _
+  refine (Finset.sum_eq_single 1 ?_ ?_).trans ?_
   · rintro σ - h2
     cases' not_forall.1 (mt Equiv.ext h2) with x h3
     convert mul_zero (ε σ)
@@ -153,7 +148,7 @@ theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
       simp only [det_apply', mul_apply, prod_univ_sum, mul_sum, Fintype.piFinset_univ]
       rw [Finset.sum_comm]
     _ =
-        ∑ p in (@univ (n → n) _).filter Bijective,
+        ∑ p ∈ (@univ (n → n) _).filter Bijective,
           ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (p i) * N (p i) i :=
       (Eq.symm <|
         sum_subset (filter_subset _ _) fun f _ hbij =>
@@ -226,7 +221,7 @@ theorem det_units_conj' (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
 @[simp]
 theorem det_transpose (M : Matrix n n R) : Mᵀ.det = M.det := by
   rw [det_apply', det_apply']
-  refine' Fintype.sum_bijective _ inv_involutive.bijective _ _ _
+  refine Fintype.sum_bijective _ inv_involutive.bijective _ _ ?_
   intro σ
   rw [sign_inv]
   congr 1
@@ -268,14 +263,6 @@ For the `simp` version of this lemma, see `det_submatrix_equiv_self`; this one i
 theorem det_reindex_self (e : m ≃ n) (A : Matrix m m R) : det (reindex e e A) = det A :=
   det_submatrix_equiv_self e.symm A
 #align matrix.det_reindex_self Matrix.det_reindex_self
-
-/-- The determinant of a permutation matrix equals its sign. -/
-@[simp]
-theorem det_permutation (σ : Perm n) :
-    Matrix.det (σ.toPEquiv.toMatrix : Matrix n n R) = Perm.sign σ := by
-  rw [← Matrix.mul_one (σ.toPEquiv.toMatrix : Matrix n n R), PEquiv.toPEquiv_mul_matrix,
-    det_permute, det_one, mul_one]
-#align matrix.det_permutation Matrix.det_permutation
 
 theorem det_smul (A : Matrix n n R) (c : R) : det (c • A) = c ^ Fintype.card n * det A :=
   calc
@@ -519,10 +506,10 @@ theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
       {M N : Matrix (Fin n.succ) (Fin n.succ) R} (_h0 : ∀ j, M 0 j = N 0 j)
       (_hsucc : ∀ (i : Fin n) (j), M i.succ j = N i.succ j + c i * M (Fin.castSucc i) j),
       det M = det N := by
-  refine' Fin.induction _ (fun k ih => _) k <;> intro c hc M N h0 hsucc
+  refine Fin.induction ?_ (fun k ih => ?_) k <;> intro c hc M N h0 hsucc
   · congr
     ext i j
-    refine' Fin.cases (h0 j) (fun i => _) i
+    refine Fin.cases (h0 j) (fun i => ?_) i
     rw [hsucc, hc i (Fin.succ_pos _), zero_mul, add_zero]
   set M' := updateRow M k.succ (N k.succ) with hM'
   have hM : M = updateRow M' k.succ (M' k.succ + c k • M (Fin.castSucc k)) := by
@@ -620,7 +607,7 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
         ext
         · simp only [apply_inv_self]
         · simp only [hσ']
-      refine' ⟨fun k _ => ⟨fun x => (σ (x, k)).fst, fun x => (σ⁻¹ (x, k)).fst, _, _⟩, _, _⟩
+      refine ⟨fun k _ => ⟨fun x => (σ (x, k)).fst, fun x => (σ⁻¹ (x, k)).fst, ?_, ?_⟩, ?_, ?_⟩
       · intro x
         simp only [mk_apply_eq, inv_apply_self]
       · intro x
@@ -711,7 +698,7 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
     det A = ∑ i : Fin n.succ, (-1) ^ (i : ℕ) * A i 0 * det (A.submatrix i.succAbove Fin.succ) := by
   rw [Matrix.det_apply, Finset.univ_perm_fin_succ, ← Finset.univ_product_univ]
   simp only [Finset.sum_map, Equiv.toEmbedding_apply, Finset.sum_product, Matrix.submatrix]
-  refine' Finset.sum_congr rfl fun i _ => Fin.cases _ (fun i => _) i
+  refine Finset.sum_congr rfl fun i _ => Fin.cases ?_ (fun i => ?_) i
   · simp only [Fin.prod_univ_succ, Matrix.det_apply, Finset.mul_sum,
       Equiv.Perm.decomposeFin_symm_apply_zero, Fin.val_zero, one_mul,
       Equiv.Perm.decomposeFin.symm_sign, Equiv.swap_self, if_true, id, eq_self_iff_true,
@@ -724,7 +711,7 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
   rw [Fin.val_succ, pow_succ', this, mul_assoc, mul_assoc, mul_left_comm (ε _),
     ← det_permute, Matrix.det_apply, Finset.mul_sum, Finset.mul_sum]
   -- now we just need to move the corresponding parts to the same place
-  refine' Finset.sum_congr rfl fun σ _ => _
+  refine Finset.sum_congr rfl fun σ _ => ?_
   rw [Equiv.Perm.decomposeFin.symm_sign, if_neg (Fin.succ_ne_zero i)]
   calc
     ((-1 * Perm.sign σ : ℤ) • ∏ i', A (Perm.decomposeFin.symm (Fin.succ i, σ) i') i') =
@@ -742,7 +729,7 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
 theorem det_succ_row_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) :
     det A = ∑ j : Fin n.succ, (-1) ^ (j : ℕ) * A 0 j * det (A.submatrix Fin.succ j.succAbove) := by
   rw [← det_transpose A, det_succ_column_zero]
-  refine' Finset.sum_congr rfl fun i _ => _
+  refine Finset.sum_congr rfl fun i _ => ?_
   rw [← det_transpose]
   simp only [transpose_apply, transpose_submatrix, transpose_transpose]
 #align matrix.det_succ_row_zero Matrix.det_succ_row_zero
@@ -759,7 +746,7 @@ theorem det_succ_row {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (i : Fin
   rw [this, mul_assoc]
   congr
   rw [← det_permute, det_succ_row_zero]
-  refine' Finset.sum_congr rfl fun j _ => _
+  refine Finset.sum_congr rfl fun j _ => ?_
   rw [mul_assoc, Matrix.submatrix_apply, submatrix_submatrix, id_comp, Function.comp_def, id]
   congr
   · rw [Equiv.Perm.inv_def, Fin.cycleRange_symm_zero]
@@ -773,7 +760,7 @@ theorem det_succ_column {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (j : 
     det A =
       ∑ i : Fin n.succ, (-1) ^ (i + j : ℕ) * A i j * det (A.submatrix i.succAbove j.succAbove) := by
   rw [← det_transpose, det_succ_row _ j]
-  refine' Finset.sum_congr rfl fun i _ => _
+  refine Finset.sum_congr rfl fun i _ => ?_
   rw [add_comm, ← det_transpose, transpose_apply, transpose_submatrix, transpose_transpose]
 #align matrix.det_succ_column Matrix.det_succ_column
 

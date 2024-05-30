@@ -22,7 +22,6 @@ In this file, we prove the triangle counting lemma.
 attribute [-instance] decidableEq_of_subsingleton
 
 open Finset Fintype
-open scoped BigOperators
 
 variable {α : Type*} (G G' : SimpleGraph α) [DecidableRel G.Adj] {ε : ℝ} {s t u : Finset α}
 
@@ -91,8 +90,8 @@ private lemma good_vertices_triangle_card [DecidableEq α] (dst : 2 * ε ≤ G.e
   push_cast at this
   have hε := utu.pos.le
   refine le_trans ?_ (mul_le_of_nonneg_of_le_div (Nat.cast_nonneg _) (by positivity) this)
-  refine Eq.trans_le ?_ (mul_le_mul_of_nonneg_left (mul_le_mul hY hZ (by positivity) $
-    by positivity) hε)
+  refine Eq.trans_le ?_
+    (mul_le_mul_of_nonneg_left (mul_le_mul hY hZ (by positivity) (by positivity)) hε)
   ring
 
 /-- The **Triangle Counting Lemma**. If `G` is a graph and `s`, `t`, `u` are sets of vertices such
