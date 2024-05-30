@@ -53,9 +53,7 @@ variable (G : Cᵒᵖ ⥤ GroupCat.{w}) {X : C} {I : Type w'} (U : I → C)
 /-- A zero cochain consists of a family of sections. -/
 def ZeroCochain := ∀ (i : I), G.obj (Opposite.op (U i))
 
-instance : Group (ZeroCochain G U) := by
-  dsimp [ZeroCochain]
-  infer_instance
+instance : Group (ZeroCochain G U) := Pi.group
 
 namespace Cochain₀
 
