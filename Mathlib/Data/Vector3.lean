@@ -44,7 +44,7 @@ def nil : Vector3 α 0 :=
 /-- The vector cons operation -/
 @[match_pattern]
 def cons (a : α) (v : Vector3 α n) : Vector3 α (n + 1) := fun i => by
-  refine' i.cases' _ _
+  refine i.cases' ?_ ?_
   · exact a
   · exact v
 #align vector3.cons Vector3.cons
@@ -187,21 +187,21 @@ def insert (a : α) (v : Vector3 α n) (i : Fin2 (n + 1)) : Vector3 α (n + 1) :
 
 @[simp]
 theorem insert_fz (a : α) (v : Vector3 α n) : insert a v fz = a :: v := by
-  refine' funext fun j => j.cases' _ _ <;> intros <;> rfl
+  refine funext fun j => j.cases' ?_ ?_ <;> intros <;> rfl
 #align vector3.insert_fz Vector3.insert_fz
 
 @[simp]
 theorem insert_fs (a : α) (b : α) (v : Vector3 α n) (i : Fin2 (n + 1)) :
     insert a (b :: v) (fs i) = b :: insert a v i :=
   funext fun j => by
-    refine' j.cases' _ fun j => _ <;> simp [insert, insertPerm]
-    refine' Fin2.cases' _ _ (insertPerm i j) <;> simp [insertPerm]
+    refine j.cases' ?_ fun j => ?_ <;> simp [insert, insertPerm]
+    refine Fin2.cases' ?_ ?_ (insertPerm i j) <;> simp [insertPerm]
 #align vector3.insert_fs Vector3.insert_fs
 
 theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (n + 1))
     (e : (n + 1) + m = (n + m) + 1) :
     insert a (t +-+ v) (Eq.recOn e (i.add m)) = Eq.recOn e (t +-+ insert a v i) := by
-  refine' Vector3.recOn t (fun e => _) (@fun k b t IH _ => _) e
+  refine Vector3.recOn t (fun e => ?_) (@fun k b t IH _ => ?_) e
   · rfl
   have e' : (n + 1) + k = (n + k) + 1 := by omega
   change
@@ -279,14 +279,14 @@ theorem vectorAllP_cons (p : α → Prop) (x : α) (v : Vector3 α n) :
 
 theorem vectorAllP_iff_forall (p : α → Prop) (v : Vector3 α n) :
     VectorAllP p v ↔ ∀ i, p (v i) := by
-  refine' v.recOn _ _
+  refine v.recOn ?_ ?_
   · exact ⟨fun _ => Fin2.elim0, fun _ => trivial⟩
   · simp only [vectorAllP_cons]
-    refine' fun {n} a v IH =>
+    refine fun {n} a v IH =>
       (and_congr_right fun _ => IH).trans
         ⟨fun ⟨pa, h⟩ i => by
-          refine' i.cases' _ _
-          exacts [pa, h], fun h => ⟨_, fun i => _⟩⟩
+          refine i.cases' ?_ ?_
+          exacts [pa, h], fun h => ⟨?_, fun i => ?_⟩⟩
     · simpa using h fz
     · simpa using h (fs i)
 #align vector_allp_iff_forall vectorAllP_iff_forall

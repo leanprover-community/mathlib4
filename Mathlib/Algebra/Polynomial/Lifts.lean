@@ -41,7 +41,7 @@ that lift is a subalgebra. (By `lift_iff` this is true if `R` is commutative.)
 -/
 
 
-open BigOperators Polynomial
+open Polynomial
 
 noncomputable section
 
@@ -217,7 +217,7 @@ theorem lifts_and_degree_eq_and_monic [Nontrivial S] {p : S[X]} (hlifts : p ∈ 
     simpa only [hp.leadingCoeff, C_1, one_mul, eraseLead] using eraseLead_add_C_mul_X_pow p
   by_cases h0 : erase p.natDegree p = 0
   · rw [← H, h0, zero_add]
-    refine' ⟨X ^ p.natDegree, _, _, monic_X_pow p.natDegree⟩
+    refine ⟨X ^ p.natDegree, ?_, ?_, monic_X_pow p.natDegree⟩
     · rw [Polynomial.map_pow, map_X]
     · rw [degree_X_pow, degree_X_pow]
   obtain ⟨q, hq⟩ := mem_lifts_and_degree_eq (erase_mem_lifts p.natDegree hlifts)
@@ -225,7 +225,7 @@ theorem lifts_and_degree_eq_and_monic [Nontrivial S] {p : S[X]} (hlifts : p ∈ 
   have hdeg : q.degree < (X ^ p.natDegree).degree := by
     rw [@degree_X_pow R, hq.2, ← degree_eq_natDegree p_neq_0]
     exact degree_erase_lt p_neq_0
-  refine' ⟨q + X ^ p.natDegree, _, _, (monic_X_pow _).add_of_right hdeg⟩
+  refine ⟨q + X ^ p.natDegree, ?_, ?_, (monic_X_pow _).add_of_right hdeg⟩
   · rw [Polynomial.map_add, hq.1, Polynomial.map_pow, map_X, H]
   · rw [degree_add_eq_right_of_degree_lt hdeg, degree_X_pow, degree_eq_natDegree hp.ne_zero]
 #align polynomial.lifts_and_degree_eq_and_monic Polynomial.lifts_and_degree_eq_and_monic

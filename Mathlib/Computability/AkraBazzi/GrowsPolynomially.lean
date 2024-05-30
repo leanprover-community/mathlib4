@@ -27,7 +27,7 @@ this issue doesn't seem to arise in practice.
 
 -/
 
-open Finset Real Filter Asymptotics BigOperators
+open Finset Real Filter Asymptotics
 open scoped Topology
 
 namespace AkraBazziRecurrence
@@ -333,28 +333,28 @@ protected lemma GrowsPolynomially.mul {f g : ℝ → ℝ} (hf : GrowsPolynomiall
           simp [abs_of_nonpos hx₁, abs_of_nonpos hx₂]
         simp only [iff_eventuallyEq hmain, neg_mul]
         exact this
-  · intro b hb
-    have hf := hf.abs b hb
-    have hg := hg.abs b hb
-    obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf
-    obtain ⟨c₃, hc₃_mem, c₄, hc₄_mem, hg⟩ := hg
-    refine ⟨c₁ * c₃, by show 0 < c₁ * c₃; positivity, ?_⟩
-    refine ⟨c₂ * c₄, by show 0 < c₂ * c₄; positivity, ?_⟩
-    filter_upwards [hf, hg] with x hf hg
-    intro u hu
-    refine ⟨?lb, ?ub⟩
-    case lb => calc
-      c₁ * c₃ * (|f x| * |g x|) = (c₁ * |f x|) * (c₃ * |g x|) := by ring
-      _ ≤ |f u| * |g u| := by
-             gcongr
-             · exact (hf u hu).1
-             · exact (hg u hu).1
-    case ub => calc
-      |f u| * |g u| ≤ (c₂ * |f x|) * (c₄ * |g x|) := by
-             gcongr
-             · exact (hf u hu).2
-             · exact (hg u hu).2
-      _ = c₂ * c₄ * (|f x| * |g x|) := by ring
+  intro b hb
+  have hf := hf.abs b hb
+  have hg := hg.abs b hb
+  obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf
+  obtain ⟨c₃, hc₃_mem, c₄, hc₄_mem, hg⟩ := hg
+  refine ⟨c₁ * c₃, by show 0 < c₁ * c₃; positivity, ?_⟩
+  refine ⟨c₂ * c₄, by show 0 < c₂ * c₄; positivity, ?_⟩
+  filter_upwards [hf, hg] with x hf hg
+  intro u hu
+  refine ⟨?lb, ?ub⟩
+  case lb => calc
+    c₁ * c₃ * (|f x| * |g x|) = (c₁ * |f x|) * (c₃ * |g x|) := by ring
+    _ ≤ |f u| * |g u| := by
+           gcongr
+           · exact (hf u hu).1
+           · exact (hg u hu).1
+  case ub => calc
+    |f u| * |g u| ≤ (c₂ * |f x|) * (c₄ * |g x|) := by
+           gcongr
+           · exact (hf u hu).2
+           · exact (hg u hu).2
+    _ = c₂ * c₄ * (|f x| * |g x|) := by ring
 
 lemma GrowsPolynomially.const_mul {f : ℝ → ℝ} {c : ℝ} (hf : GrowsPolynomially f) :
     GrowsPolynomially fun x => c * f x :=

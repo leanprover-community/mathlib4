@@ -3,10 +3,8 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Nat.Units
 import Mathlib.Tactic.NthRewrite
 
 #align_import data.nat.gcd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
@@ -292,7 +290,7 @@ def prodDvdAndDvdOfDvdProd {m n k : ℕ} (H : k ∣ m * n) :
   | succ tmp =>
     have hpos : 0 < gcd k m := h0.symm ▸ Nat.zero_lt_succ _; clear h0 tmp
     have hd : gcd k m * (k / gcd k m) = k := Nat.mul_div_cancel' (gcd_dvd_left k m)
-    refine' ⟨⟨⟨gcd k m, gcd_dvd_right k m⟩, ⟨k / gcd k m, _⟩⟩, hd.symm⟩
+    refine ⟨⟨⟨gcd k m, gcd_dvd_right k m⟩, ⟨k / gcd k m, ?_⟩⟩, hd.symm⟩
     apply Nat.dvd_of_mul_dvd_mul_left hpos
     rw [hd, ← gcd_mul_right]
     exact dvd_gcd (dvd_mul_right _ _) H
@@ -308,7 +306,7 @@ theorem dvd_mul {x m n : ℕ} : x ∣ m * n ↔ ∃ y z, y ∣ m ∧ z ∣ n ∧
 #align nat.dvd_mul Nat.dvd_mul
 
 theorem pow_dvd_pow_iff {a b n : ℕ} (n0 : n ≠ 0) : a ^ n ∣ b ^ n ↔ a ∣ b := by
-  refine' ⟨fun h => _, fun h => pow_dvd_pow_of_dvd h _⟩
+  refine ⟨fun h => ?_, fun h => pow_dvd_pow_of_dvd h _⟩
   rcases Nat.eq_zero_or_pos (gcd a b) with g0 | g0
   · simp [eq_zero_of_gcd_eq_zero_right g0]
   rcases exists_coprime' g0 with ⟨g, a', b', g0', co, rfl, rfl⟩
@@ -341,7 +339,7 @@ theorem Coprime.mul_add_mul_ne_mul {m n a b : ℕ} (cop : Coprime m n) (ha : a �
       ((Nat.dvd_add_iff_right (Nat.dvd_mul_left m (n * x))).mpr
         ((congr_arg _ h).mpr (Nat.dvd_mul_right m n)))
   rw [mul_comm, mul_ne_zero_iff, ← one_le_iff_ne_zero] at ha hb
-  refine' mul_ne_zero hb.2 ha.2 (eq_zero_of_mul_eq_self_left (ne_of_gt (add_le_add ha.1 hb.1)) _)
+  refine mul_ne_zero hb.2 ha.2 (eq_zero_of_mul_eq_self_left (ne_of_gt (add_le_add ha.1 hb.1)) ?_)
   rw [← mul_assoc, ← h, add_mul, add_mul, mul_comm _ n, ← mul_assoc, mul_comm y]
 #align nat.coprime.mul_add_mul_ne_mul Nat.Coprime.mul_add_mul_ne_mul
 

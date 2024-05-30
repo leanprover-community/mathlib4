@@ -3,7 +3,7 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.Fin.Interval
+import Mathlib.Order.Interval.Finset.Fin
 
 #align_import data.fintype.fin from "leanprover-community/mathlib"@"759575657f189ccb424b990164c8b1fa9f55cdfe"
 
@@ -28,22 +28,22 @@ theorem map_valEmbedding_univ : (Finset.univ : Finset (Fin n)).map Fin.valEmbedd
 #align fin.map_subtype_embedding_univ Fin.map_valEmbedding_univ
 
 @[simp]
-theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmb _).toEmbedding :=
+theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmb _) :=
   coe_injective <| by ext; simp [pos_iff_ne_zero]
 #align fin.Ioi_zero_eq_map Fin.Ioi_zero_eq_map
 
 @[simp]
-theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb.toEmbedding :=
+theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb :=
   coe_injective <| by ext; simp [lt_def]
 #align fin.Iio_last_eq_map Fin.Iio_last_eq_map
 
 @[simp]
-theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _).toEmbedding := by
+theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _) := by
   ext i
   simp only [mem_filter, mem_Ioi, mem_map, mem_univ, true_and_iff, Function.Embedding.coeFn_mk,
     exists_true_left]
   constructor
-  · refine' cases _ _ i
+  · refine cases ?_ ?_ i
     · rintro ⟨⟨⟩⟩
     · intro i hi
       exact ⟨i, succ_lt_succ_iff.mp hi, rfl⟩
@@ -52,8 +52,7 @@ theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _).toEmbedd
 #align fin.Ioi_succ Fin.Ioi_succ
 
 @[simp]
-theorem Iio_castSucc (i : Fin n) :
-    Iio (castSucc i) = (Iio i).map Fin.castSuccEmb.toEmbedding := by
+theorem Iio_castSucc (i : Fin n) : Iio (castSucc i) = (Iio i).map Fin.castSuccEmb := by
   apply Finset.map_injective Fin.valEmbedding
   rw [Finset.map_map, Fin.map_valEmbedding_Iio]
   exact (Fin.map_valEmbedding_Iio i).symm

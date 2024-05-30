@@ -264,7 +264,7 @@ instance : Mul PGame.{u} :=
     induction' x with xl xr _ _ IHxl IHxr generalizing y
     induction' y with yl yr yL yR IHyl IHyr
     have y := mk yl yr yL yR
-    refine' ⟨Sum (xl × yl) (xr × yr), Sum (xl × yr) (xr × yl), _, _⟩ <;> rintro (⟨i, j⟩ | ⟨i, j⟩)
+    refine ⟨Sum (xl × yl) (xr × yr), Sum (xl × yr) (xr × yl), ?_, ?_⟩ <;> rintro (⟨i, j⟩ | ⟨i, j⟩)
     · exact IHxl i y + IHyl j - IHxl i (yL j)
     · exact IHxr i y + IHyr j - IHxr i (yR j)
     · exact IHxl i y + IHyr j - IHxl i (yR j)
@@ -526,7 +526,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
     let x := mk xl xr xL xR
     let y := mk yl yr yL yR
     let z := mk zl zr zL zR
-    refine' quot_eq_of_mk'_quot_eq _ _ _ _
+    refine quot_eq_of_mk'_quot_eq ?_ ?_ ?_ ?_
     · fconstructor
       · rintro (⟨_, _ | _⟩ | ⟨_, _ | _⟩) <;>
           -- Porting note: we've increased `maxDepth` here from `5` to `6`.
@@ -695,7 +695,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
     let x := mk xl xr xL xR
     let y := mk yl yr yL yR
     let z := mk zl zr zL zR
-    refine' quot_eq_of_mk'_quot_eq _ _ _ _
+    refine quot_eq_of_mk'_quot_eq ?_ ?_ ?_ ?_
     · fconstructor
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩, _⟩ | ⟨⟨_, _⟩ | ⟨_, _⟩, _⟩) <;>
           -- Porting note: as above, increased the `maxDepth` here by 1.
@@ -914,7 +914,7 @@ theorem zero_lf_inv' : ∀ x : PGame, 0 ⧏ inv' x
 /-- `inv' 0` has exactly the same moves as `1`. -/
 def inv'Zero : inv' 0 ≡r 1 := by
   change mk _ _ _ _ ≡r 1
-  refine' ⟨_, _, fun i => _, IsEmpty.elim _⟩
+  refine ⟨?_, ?_, fun i => ?_, IsEmpty.elim ?_⟩
   · apply Equiv.equivPUnit (InvTy _ _ _)
   · apply Equiv.equivPEmpty (InvTy _ _ _)
   · -- Porting note: had to add `rfl`, because `simp` only uses the built-in `rfl`.
@@ -933,7 +933,7 @@ def inv'One : inv' 1 ≡r (1 : PGame.{u}) := by
   have : IsEmpty { _i : PUnit.{u + 1} // (0 : PGame.{u}) < 0 } := by
     rw [lt_self_iff_false]
     infer_instance
-  refine' ⟨_, _, fun i => _, IsEmpty.elim _⟩ <;> dsimp
+  refine ⟨?_, ?_, fun i => ?_, IsEmpty.elim ?_⟩ <;> dsimp
   · apply Equiv.equivPUnit
   · apply Equiv.equivOfIsEmpty
   · -- Porting note: had to add `rfl`, because `simp` only uses the built-in `rfl`.

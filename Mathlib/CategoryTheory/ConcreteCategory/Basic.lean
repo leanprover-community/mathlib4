@@ -38,7 +38,7 @@ related work.
 -/
 
 
-universe w w' v v' u u'
+universe w w' v v' v'' u u' u''
 
 namespace CategoryTheory
 
@@ -95,6 +95,7 @@ variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
 -- Porting note: forget_obj_eq_coe has become a syntactic tautology.
 #noalign category_theory.forget_obj_eq_coe
 
+/-- In any concrete category, `(forget C).map` is injective. -/
 abbrev ConcreteCategory.instFunLike {X Y : C} : FunLike (X ⟶ Y) X Y where
   coe f := (forget C).map f
   coe_injective' _ _ h := (forget C).map_injective h
@@ -279,11 +280,22 @@ def HasForget₂.mk' {C : Type u} {D : Type u'} [Category.{v} C] [ConcreteCatego
     [Category.{v'} D] [ConcreteCategory.{w} D]
     (obj : C → D) (h_obj : ∀ X, (forget D).obj (obj X) = (forget C).obj X)
     (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
-    (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq ((forget D).map (map f)) ((forget C).map f)) : HasForget₂ C D
-    where
+    (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq ((forget D).map (map f)) ((forget C).map f)) :
+    HasForget₂ C D where
   forget₂ := Functor.Faithful.div _ _ _ @h_obj _ @h_map
   forget_comp := by apply Functor.Faithful.div_comp
 #align category_theory.has_forget₂.mk' CategoryTheory.HasForget₂.mk'
+
+/-- Composition of `HasForget₂` instances. -/
+@[reducible]
+def HasForget₂.trans (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C]
+    (D : Type u') [Category.{v'} D] [ConcreteCategory.{w} D]
+    (E : Type u'') [Category.{v''} E] [ConcreteCategory.{w} E]
+    [HasForget₂ C D] [HasForget₂ D E] : HasForget₂ C E where
+  forget₂ := CategoryTheory.forget₂ C D ⋙ CategoryTheory.forget₂ D E
+  forget_comp := by
+    show (CategoryTheory.forget₂ _ D) ⋙ (CategoryTheory.forget₂ D E ⋙ CategoryTheory.forget E) = _
+    simp only [HasForget₂.forget_comp]
 
 /-- Every forgetful functor factors through the identity functor. This is not a global instance as
     it is prone to creating type class resolution loops. -/
@@ -292,5 +304,11 @@ def hasForgetToType (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] :
   forget₂ := forget C
   forget_comp := Functor.comp_id _
 #align category_theory.has_forget_to_Type CategoryTheory.hasForgetToType
+
+@[simp]
+lemma NatTrans.naturality_apply {C D : Type*} [Category C] [Category D] [ConcreteCategory D]
+    {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y) (x : F.obj X) :
+    φ.app Y (F.map f x) = G.map f (φ.app X x) := by
+  simpa only [Functor.map_comp] using congr_fun ((forget D).congr_map (φ.naturality f)) x
 
 end CategoryTheory

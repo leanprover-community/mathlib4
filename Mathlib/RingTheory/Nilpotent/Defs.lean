@@ -3,6 +3,9 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Nat.Lattice
 
 #align_import ring_theory.nilpotent from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
@@ -154,7 +157,7 @@ lemma pow_pred_nilpotencyClass [Nontrivial R] (hx : IsNilpotent x) :
 
 lemma eq_zero_of_nilpotencyClass_eq_one (hx : nilpotencyClass x = 1) :
     x = 0 := by
-  have : IsNilpotent x := isNilpotent_of_pos_nilpotencyClass (hx ▸ one_pos)
+  have : IsNilpotent x := isNilpotent_of_pos_nilpotencyClass (hx ▸ Nat.one_pos)
   rw [← pow_nilpotencyClass this, hx, pow_one]
 
 @[simp] lemma nilpotencyClass_eq_one [Nontrivial R] :

@@ -101,8 +101,8 @@ theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
         Nat.mul_sub_left_distrib, ← Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
     have H : 2 * 3 ≤ 2 * 2 ^ 3 := by norm_num
     apply H.trans
-    set_option simprocs false in
-    simp [pow_le_pow_right (show 1 ≤ 2 by norm_num)]
+    rw [_root_.mul_le_mul_left two_pos]
+    exact pow_le_pow_right one_le_two (Nat.le_add_left 3 n)
 #align ack_three ack_three
 
 theorem ack_pos : ∀ m n, 0 < ack m n
@@ -314,23 +314,23 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
   -- Zero function:
   · exact ⟨0, ack_pos 0⟩
   -- Successor function:
-  · refine' ⟨1, fun n => _⟩
+  · refine ⟨1, fun n => ?_⟩
     rw [succ_eq_one_add]
     apply add_lt_ack
   -- Left projection:
-  · refine' ⟨0, fun n => _⟩
+  · refine ⟨0, fun n => ?_⟩
     rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_left_le n
   -- Right projection:
-  · refine' ⟨0, fun n => _⟩
+  · refine ⟨0, fun n => ?_⟩
     rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_right_le n
   all_goals cases' IHf with a ha; cases' IHg with b hb
   -- Pairing:
-  · refine'
+  · refine
       ⟨max a b + 3, fun n =>
         (pair_lt_max_add_one_sq _ _).trans_le <|
-          (Nat.pow_le_pow_left (add_le_add_right _ _) 2).trans <|
+          (Nat.pow_le_pow_left (add_le_add_right ?_ _) 2).trans <|
             ack_add_one_sq_lt_ack_add_three _ _⟩
     rw [max_ack_left]
     exact max_le_max (ha n).le (hb n).le

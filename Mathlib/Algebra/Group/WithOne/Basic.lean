@@ -21,6 +21,7 @@ that were not available in `Algebra/Group/WithOne/Defs`.
 -/
 
 assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 universe u v w
 
@@ -119,13 +120,13 @@ theorem map_coe (f : α →ₙ* β) (a : α) : map f (a : WithOne α) = f a :=
 @[to_additive (attr := simp)]
 theorem map_id : map (MulHom.id α) = MonoidHom.id (WithOne α) := by
   ext x
-  induction x using WithOne.cases_on <;> rfl
+  induction x <;> rfl
 #align with_one.map_id WithOne.map_id
 #align with_zero.map_id WithZero.map_id
 
 @[to_additive]
 theorem map_map (f : α →ₙ* β) (g : β →ₙ* γ) (x) : map g (map f x) = map (g.comp f) x := by
-  induction x using WithOne.cases_on <;> rfl
+  induction x <;> rfl
 #align with_one.map_map WithOne.map_map
 #align with_zero.map_map WithZero.map_map
 
@@ -142,8 +143,8 @@ theorem map_comp (f : α →ₙ* β) (g : β →ₙ* γ) : map (g.comp f) = (map
 def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :=
   { map e.toMulHom with
     toFun := map e.toMulHom, invFun := map e.symm.toMulHom,
-    left_inv := (by induction · using WithOne.cases_on <;> simp)
-    right_inv := (by induction · using WithOne.cases_on <;> simp) }
+    left_inv := (by induction · <;> simp)
+    right_inv := (by induction · <;> simp) }
 #align mul_equiv.with_one_congr MulEquiv.withOneCongr
 #align add_equiv.with_zero_congr AddEquiv.withZeroCongr
 #align mul_equiv.with_one_congr_apply MulEquiv.withOneCongr_apply

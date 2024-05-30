@@ -3,8 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Field.Rat
+import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Data.Rat.Field
+import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Rat.Lemmas
 
 #align_import data.rat.cast from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
@@ -152,7 +155,7 @@ theorem commute_cast (a : α) (r : ℚ) : Commute a r :=
 @[norm_cast]
 lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b : α) = a / b := by
   have b0' : b ≠ 0 := by
-    refine' mt _ b0
+    refine mt ?_ b0
     simp (config := { contextual := true })
   cases' e : a /. b with n d h c
   have d0 : (d : α) ≠ 0 := by

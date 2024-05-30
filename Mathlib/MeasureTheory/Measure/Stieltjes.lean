@@ -3,7 +3,7 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.Topology.Order.LeftRightLim
 
 #align_import measure_theory.measure.stieltjes from "leanprover-community/mathlib"@"20d5763051978e9bc6428578ed070445df6a18b3"
@@ -27,7 +27,7 @@ a Borel measure `f.measure`.
 noncomputable section
 
 open scoped Classical
-open Set Filter Function BigOperators ENNReal NNReal Topology MeasureTheory
+open Set Filter Function ENNReal NNReal Topology MeasureTheory
 
 open ENNReal (ofReal)
 
@@ -83,8 +83,8 @@ theorem iInf_Ioi_eq (f : StieltjesFunction) (x : ℝ) : ⨅ r : Ioi x, f r = f x
 theorem iInf_rat_gt_eq (f : StieltjesFunction) (x : ℝ) :
     ⨅ r : { r' : ℚ // x < r' }, f r = f x := by
   rw [← iInf_Ioi_eq f x]
-  refine' (Real.iInf_Ioi_eq_iInf_rat_gt _ _ f.mono).symm
-  refine' ⟨f x, fun y => _⟩
+  refine (Real.iInf_Ioi_eq_iInf_rat_gt _ ?_ f.mono).symm
+  refine ⟨f x, fun y => ?_⟩
   rintro ⟨y, hy_mem, rfl⟩
   exact f.mono (le_of_lt hy_mem)
 #align stieltjes_function.infi_rat_gt_eq StieltjesFunction.iInf_rat_gt_eq
@@ -123,7 +123,7 @@ noncomputable def _root_.Monotone.stieltjesFunction {f : ℝ → ℝ} (hf : Mono
     change ∀ᶠ y in 𝓝[≥] x, rightLim f y ∈ s
     filter_upwards [Ico_mem_nhdsWithin_Ici ⟨le_refl x, xy⟩] with z hz
     apply lus
-    refine' ⟨hlu.1.trans_le (hf.rightLim hz.1), _⟩
+    refine ⟨hlu.1.trans_le (hf.rightLim hz.1), ?_⟩
     obtain ⟨a, za, ay⟩ : ∃ a : ℝ, z < a ∧ a < y := exists_between hz.2
     calc
       rightLim f z ≤ f a := hf.rightLim_le za
@@ -158,9 +158,9 @@ theorem length_empty : f.length ∅ = 0 :=
 
 @[simp]
 theorem length_Ioc (a b : ℝ) : f.length (Ioc a b) = ofReal (f b - f a) := by
-  refine'
+  refine
     le_antisymm (iInf_le_of_le a <| iInf₂_le b Subset.rfl)
-      (le_iInf fun a' => le_iInf fun b' => le_iInf fun h => ENNReal.coe_le_coe.2 _)
+      (le_iInf fun a' => le_iInf fun b' => le_iInf fun h => ENNReal.coe_le_coe.2 ?_)
   rcases le_or_lt b a with ab | ab
   · rw [Real.toNNReal_of_nonpos (sub_nonpos.2 (f.mono ab))]
     apply zero_le
@@ -191,7 +191,7 @@ theorem length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b
     ofReal (f b - f a) ≤ ∑' i, ofReal (f (d i) - f (c i)) := by
   suffices
     ∀ (s : Finset ℕ) (b), Icc a b ⊆ (⋃ i ∈ (s : Set ℕ), Ioo (c i) (d i)) →
-      (ofReal (f b - f a) : ℝ≥0∞) ≤ ∑ i in s, ofReal (f (d i) - f (c i)) by
+      (ofReal (f b - f a) : ℝ≥0∞) ≤ ∑ i ∈ s, ofReal (f (d i) - f (c i)) by
     rcases isCompact_Icc.elim_finite_subcover_image
         (fun (i : ℕ) (_ : i ∈ univ) => @isOpen_Ioo _ _ _ _ (c i) (d i)) (by simpa using ss) with
       ⟨s, _, hf, hs⟩
@@ -199,10 +199,10 @@ theorem length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b
       simp only [ext_iff, exists_prop, Finset.set_biUnion_coe, mem_iUnion, forall_const,
         iff_self_iff, Finite.mem_toFinset]
     rw [ENNReal.tsum_eq_iSup_sum]
-    refine' le_trans _ (le_iSup _ hf.toFinset)
+    refine le_trans ?_ (le_iSup _ hf.toFinset)
     exact this hf.toFinset _ (by simpa only [e] )
   clear ss b
-  refine' fun s => Finset.strongInductionOn s fun s IH b cv => _
+  refine fun s => Finset.strongInductionOn s fun s IH b cv => ?_
   rcases le_total b a with ab | ab
   · rw [ENNReal.ofReal_eq_zero.2 (sub_nonpos.2 (f.mono ab))]
     exact zero_le _
@@ -213,8 +213,8 @@ theorem length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b
   rw [← Finset.insert_erase is] at cv ⊢
   rw [Finset.coe_insert, biUnion_insert] at cv
   rw [Finset.sum_insert (Finset.not_mem_erase _ _)]
-  refine' le_trans _ (add_le_add_left (IH _ (Finset.erase_ssubset is) (c i) _) _)
-  · refine' le_trans (ENNReal.ofReal_le_ofReal _) ENNReal.ofReal_add_le
+  refine le_trans ?_ (add_le_add_left (IH _ (Finset.erase_ssubset is) (c i) ?_) _)
+  · refine le_trans (ENNReal.ofReal_le_ofReal ?_) ENNReal.ofReal_add_le
     rw [sub_add_sub_cancel]
     exact sub_le_sub_right (f.mono bd.le) _
   · rintro x ⟨h₁, h₂⟩
@@ -235,18 +235,18 @@ theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
     slightly to the right, then the `f`-length will change very little by right continuity, and we
     will get an open interval `(p i, q' i)` covering `s i` with `f (q' i) - f (p i)` within `ε' i`
     of the `f`-length of `s i`. -/
-  refine'
+  refine
     le_antisymm
       (by
         rw [← f.length_Ioc]
         apply outer_le_length)
-      (le_iInf₂ fun s hs => ENNReal.le_of_forall_pos_le_add fun ε εpos h => _)
+      (le_iInf₂ fun s hs => ENNReal.le_of_forall_pos_le_add fun ε εpos h => ?_)
   let δ := ε / 2
   have δpos : 0 < (δ : ℝ≥0∞) := by simpa [δ] using εpos.ne'
   rcases ENNReal.exists_pos_sum_of_countable δpos.ne' ℕ with ⟨ε', ε'0, hε⟩
   obtain ⟨a', ha', aa'⟩ : ∃ a', f a' - f a < δ ∧ a < a' := by
     have A : ContinuousWithinAt (fun r => f r - f a) (Ioi a) a := by
-      refine' ContinuousWithinAt.sub _ continuousWithinAt_const
+      refine ContinuousWithinAt.sub ?_ continuousWithinAt_const
       exact (f.right_continuous a).mono Ioi_subset_Ici_self
     have B : f a - f a < δ := by rwa [sub_self, NNReal.coe_pos, ← ENNReal.coe_pos]
     exact (((tendsto_order.1 A).2 _ B).and self_mem_nhdsWithin).exists
@@ -262,7 +262,7 @@ theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
     rcases hl with ⟨p, q', spq, hq'⟩
     have : ContinuousWithinAt (fun r => ofReal (f r - f p)) (Ioi q') q' := by
       apply ENNReal.continuous_ofReal.continuousAt.comp_continuousWithinAt
-      refine' ContinuousWithinAt.sub _ continuousWithinAt_const
+      refine ContinuousWithinAt.sub ?_ continuousWithinAt_const
       exact (f.right_continuous q').mono Ioi_subset_Ici_self
     rcases (((tendsto_order.1 this).2 _ hq').and self_mem_nhdsWithin).exists with ⟨q, hq, q'q⟩
     exact ⟨⟨p, q⟩, spq.trans (Ioc_subset_Ioo_right q'q), hq⟩
@@ -287,11 +287,11 @@ theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
 
 theorem measurableSet_Ioi {c : ℝ} : MeasurableSet[f.outer.caratheodory] (Ioi c) := by
   refine OuterMeasure.ofFunction_caratheodory fun t => ?_
-  refine' le_iInf fun a => le_iInf fun b => le_iInf fun h => _
-  refine'
+  refine le_iInf fun a => le_iInf fun b => le_iInf fun h => ?_
+  refine
     le_trans
       (add_le_add (f.length_mono <| inter_subset_inter_left _ h)
-        (f.length_mono <| diff_subset_diff_left h)) _
+        (f.length_mono <| diff_subset_diff_left h)) ?_
   rcases le_total a c with hac | hac <;> rcases le_total b c with hbc | hbc
   · simp only [Ioc_inter_Ioi, f.length_Ioc, hac, _root_.sup_eq_max, hbc, le_refl, Ioc_eq_empty,
       max_eq_right, min_eq_left, Ioc_diff_Ioi, f.length_empty, zero_add, not_lt]
@@ -306,11 +306,11 @@ theorem measurableSet_Ioi {c : ℝ} : MeasurableSet[f.outer.caratheodory] (Ioi c
 #align stieltjes_function.measurable_set_Ioi StieltjesFunction.measurableSet_Ioi
 
 theorem outer_trim : f.outer.trim = f.outer := by
-  refine' le_antisymm (fun s => _) (OuterMeasure.le_trim _)
+  refine le_antisymm (fun s => ?_) (OuterMeasure.le_trim _)
   rw [OuterMeasure.trim_eq_iInf]
-  refine' le_iInf fun t => le_iInf fun ht => ENNReal.le_of_forall_pos_le_add fun ε ε0 h => _
+  refine le_iInf fun t => le_iInf fun ht => ENNReal.le_of_forall_pos_le_add fun ε ε0 h => ?_
   rcases ENNReal.exists_pos_sum_of_countable (ENNReal.coe_pos.2 ε0).ne' ℕ with ⟨ε', ε'0, hε⟩
-  refine' le_trans _ (add_le_add_left (le_of_lt hε) _)
+  refine le_trans ?_ (add_le_add_left (le_of_lt hε) _)
   rw [← ENNReal.tsum_add]
   choose g hg using
     show ∀ i, ∃ s, t i ⊆ s ∧ MeasurableSet s ∧ f.outer s ≤ f.length (t i) + ofReal (ε' i) by
@@ -328,12 +328,12 @@ theorem outer_trim : f.outer.trim = f.outer := by
   apply iInf_le_of_le (iUnion g) _
   apply iInf_le_of_le (ht.trans <| iUnion_mono fun i => (hg i).1) _
   apply iInf_le_of_le (MeasurableSet.iUnion fun i => (hg i).2.1) _
-  exact le_trans (f.outer.iUnion _) (ENNReal.tsum_le_tsum fun i => (hg i).2.2)
+  exact le_trans (measure_iUnion_le _) (ENNReal.tsum_le_tsum fun i => (hg i).2.2)
 #align stieltjes_function.outer_trim StieltjesFunction.outer_trim
 
 theorem borel_le_measurable : borel ℝ ≤ f.outer.caratheodory := by
   rw [borel_eq_generateFrom_Ioi]
-  refine' MeasurableSpace.generateFrom_le _
+  refine MeasurableSpace.generateFrom_le ?_
   simp (config := { contextual := true }) [f.measurableSet_Ioi]
 #align stieltjes_function.borel_le_measurable StieltjesFunction.borel_le_measurable
 
@@ -342,11 +342,10 @@ theorem borel_le_measurable : borel ℝ ≤ f.outer.caratheodory := by
 
 /-- The measure associated to a Stieltjes function, giving mass `f b - f a` to the
 interval `(a, b]`. -/
-protected irreducible_def measure : Measure ℝ :=
-  { toOuterMeasure := f.outer
-    m_iUnion := fun _s hs =>
-      f.outer.iUnion_eq_of_caratheodory fun i => f.borel_le_measurable _ (hs i)
-    trim_le := f.outer_trim.le }
+protected irreducible_def measure : Measure ℝ where
+  toOuterMeasure := f.outer
+  m_iUnion _s hs := f.outer.iUnion_eq_of_caratheodory fun i => f.borel_le_measurable _ (hs i)
+  trim_le := f.outer_trim.le
 #align stieltjes_function.measure StieltjesFunction.measure
 
 @[simp]
@@ -363,13 +362,13 @@ theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a)
     ∃ u : ℕ → ℝ, StrictMono u ∧ (∀ n : ℕ, u n < a) ∧ Tendsto u atTop (𝓝 a) :=
     exists_seq_strictMono_tendsto a
   have A : {a} = ⋂ n, Ioc (u n) a := by
-    refine' Subset.antisymm (fun x hx => by simp [mem_singleton_iff.1 hx, u_lt_a]) fun x hx => _
+    refine Subset.antisymm (fun x hx => by simp [mem_singleton_iff.1 hx, u_lt_a]) fun x hx => ?_
     simp? at hx says simp only [mem_iInter, mem_Ioc] at hx
     have : a ≤ x := le_of_tendsto' u_lim fun n => (hx n).1.le
     simp [le_antisymm this (hx 0).2]
   have L1 : Tendsto (fun n => f.measure (Ioc (u n) a)) atTop (𝓝 (f.measure {a})) := by
     rw [A]
-    refine' tendsto_measure_iInter (fun n => measurableSet_Ioc) (fun m n hmn => _) _
+    refine tendsto_measure_iInter (fun n => measurableSet_Ioc) (fun m n hmn => ?_) ?_
     · exact Ioc_subset_Ioc (u_mono.monotone hmn) le_rfl
     · exact ⟨0, by simpa only [measure_Ioc] using ENNReal.ofReal_ne_top⟩
   have L2 :
@@ -425,26 +424,26 @@ theorem measure_Ico (a b : ℝ) : f.measure (Ico a b) = ofReal (leftLim f b - le
 
 theorem measure_Iic {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : ℝ) :
     f.measure (Iic x) = ofReal (f x - l) := by
-  refine' tendsto_nhds_unique (tendsto_measure_Ioc_atBot _ _) _
+  refine tendsto_nhds_unique (tendsto_measure_Ioc_atBot _ _) ?_
   simp_rw [measure_Ioc]
   exact ENNReal.tendsto_ofReal (Tendsto.const_sub _ hf)
 #align stieltjes_function.measure_Iic StieltjesFunction.measure_Iic
 
 theorem measure_Ici {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : ℝ) :
     f.measure (Ici x) = ofReal (l - leftLim f x) := by
-  refine' tendsto_nhds_unique (tendsto_measure_Ico_atTop _ _) _
+  refine tendsto_nhds_unique (tendsto_measure_Ico_atTop _ _) ?_
   simp_rw [measure_Ico]
-  refine' ENNReal.tendsto_ofReal (Tendsto.sub_const _ _)
+  refine ENNReal.tendsto_ofReal (Tendsto.sub_const ?_ _)
   have h_le1 : ∀ x, f (x - 1) ≤ leftLim f x := fun x => Monotone.le_leftLim f.mono (sub_one_lt x)
   have h_le2 : ∀ x, leftLim f x ≤ f x := fun x => Monotone.leftLim_le f.mono le_rfl
-  refine' tendsto_of_tendsto_of_tendsto_of_le_of_le (hf.comp _) hf h_le1 h_le2
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le (hf.comp ?_) hf h_le1 h_le2
   rw [tendsto_atTop_atTop]
   exact fun y => ⟨y + 1, fun z hyz => by rwa [le_sub_iff_add_le]⟩
 #align stieltjes_function.measure_Ici StieltjesFunction.measure_Ici
 
 theorem measure_univ {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
     f.measure univ = ofReal (u - l) := by
-  refine' tendsto_nhds_unique (tendsto_measure_Iic_atTop _) _
+  refine tendsto_nhds_unique (tendsto_measure_Iic_atTop _) ?_
   simp_rw [measure_Iic f hfl]
   exact ENNReal.tendsto_ofReal (Tendsto.sub_const hfu _)
 #align stieltjes_function.measure_univ StieltjesFunction.measure_univ
