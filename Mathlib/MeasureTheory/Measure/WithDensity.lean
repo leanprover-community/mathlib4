@@ -297,7 +297,7 @@ theorem ae_withDensity_iff' {p : α → Prop} {f : α → ℝ≥0∞} (hf : AEMe
 
 theorem ae_withDensity_iff {p : α → Prop} {f : α → ℝ≥0∞} (hf : Measurable f) :
     (∀ᵐ x ∂μ.withDensity f, p x) ↔ ∀ᵐ x ∂μ, f x ≠ 0 → p x :=
-  ae_withDensity_iff' <| Measurable.aemeasurable hf
+  ae_withDensity_iff' <| hf.aemeasurable
 #align measure_theory.ae_with_density_iff MeasureTheory.ae_withDensity_iff
 
 theorem ae_withDensity_iff_ae_restrict' {p : α → Prop} {f : α → ℝ≥0∞}
