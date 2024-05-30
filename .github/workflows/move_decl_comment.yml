@@ -7,7 +7,7 @@ on:
     types: [created, edited]
 
 jobs:
-  add-comment:
+  move-decls-add-comment:
     if: (github.event.issue.pull_request != 'null') && (startsWith(github.event.comment.body, 'move-decls') || contains(toJSON(github.event.comment.body), '\r\nmove-decls'))
     runs-on: ubuntu-latest
     permissions:
