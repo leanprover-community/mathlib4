@@ -143,12 +143,13 @@ def isKan : IsKan <| (lanLeftExtension f g).whisker h := Classical.choice Lan.Co
 
 instance : HasLeftKanExtension f (g ≫ h) := (Lan.CommuteWith.isKan f g h).hasLeftKanExtension
 
-/-- If `h` commutes with `f⁺ g` and a left extension `t` is isomorphic to the left Kan extension
-of `g` along `f`, then `t.whisker h` is a left Kan extension. -/
-def isKanWhisker (t : LeftExtension f g) {x : B} (h : c ⟶ x) [Lan.CommuteWith f g h]
-    (i : lanLeftExtension f g ≅ t) :
+/-- If `h` commutes with `f⁺ g` and `t` is another left Kan extension of `g` along `f`, then
+`t.whisker h` is a left Kan extension of `g ≫ h` along `f`. -/
+def isKanWhisker
+    (t : LeftExtension f g) (H : IsKan t) {x : B} (h : c ⟶ x) [Lan.CommuteWith f g h] :
     IsKan (t.whisker h) :=
-  IsKan.whiskerOfCommute _ t i h (isKan f g h)
+  IsKan.whiskerOfCommute (lanLeftExtension f g) t (IsKan.uniqueUpToIso (lanIsKan f g) H) h
+    (isKan f g h)
 
 /-- The isomorphism `f⁺ (g ≫ h) ≅ f⁺ g ≫ h` at the level of structured arrows. -/
 def lanCompIsoWhisker : lanLeftExtension f (g ≫ h) ≅ (lanLeftExtension f g).whisker h :=
@@ -287,12 +288,13 @@ def isKan : IsKan <| (lanLiftLeftLift f g).whisker h :=
 
 instance : HasLeftKanLift f (h ≫ g) := (LanLift.CommuteWith.isKan f g h).hasLeftKanLift
 
-/-- If `h` commutes with `f₊ g` and a left lift `t` is isomorphic to the left Kan lift of `g`
-along `f`, then `t.whisker h` is a left Kan lift. -/
-def isKanWhisker (t : LeftLift f g) {x : B} (h : x ⟶ c) [LanLift.CommuteWith f g h]
-    (i : lanLiftLeftLift f g ≅ t) :
+/-- If `h` commutes with `f₊ g` and `t` is another left Kan lift of `g` along `f`, then
+`t.whisker h` is a left Kan lift of `h ≫ g` along `f`. -/
+def isKanWhisker
+    (t : LeftLift f g) (H : IsKan t) {x : B} (h : x ⟶ c) [LanLift.CommuteWith f g h] :
     IsKan (t.whisker h) :=
-  IsKan.whiskerOfCommute _ t i h (isKan f g h)
+  IsKan.whiskerOfCommute (lanLiftLeftLift f g) t (IsKan.uniqueUpToIso (lanLiftIsKan f g) H) h
+    (isKan f g h)
 
 /-- The isomorphism `f₊ (h ≫ g) ≅ h ≫ f₊ g` at the level of structured arrows. -/
 def lanLiftCompIsoWhisker :
