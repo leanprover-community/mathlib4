@@ -16,6 +16,16 @@ This file defines cartesian resp. strongly cartesian morphisms in a based catego
 - `IsCartesian p f φ` expresses that `φ` is a cartesian arrow lying over `f` with respect to `p`.
 This structure extends `IsHomLift p f φ`.
 
+`IsStronglyCartesian p f φ` expresses that `φ` is a cartesian arrow lying over `f` with respect to
+`p`. This structure also extends `IsHomLift p f φ`.
+
+## Implementation
+The standard constructor of `IsStronglyCartesian` has both been renamed to `.mk'`, and we
+have provided an alternate constructor `IsStronglyCartesian.mk`. The difference between the two
+is that `IsStronglyCartesian.mk` peforms some substitutions of superfluous variables for the user.
+It is recommended to use these instead to minimize the amount of equalities that needs to be carried
+around in the construction.
+
 ## References
 SGA 1
 Stacks project
@@ -31,11 +41,34 @@ namespace CategoryTheory
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳] (p : 𝒳 ⥤ 𝒮)
 
 /-- The proposition that a morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is a
-cartesian arrow, see SGA 1 VI 5.1. -/
+cartesian morphism. See SGA 1 VI 5.1. -/
 class Functor.IsCartesian {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) extends
     IsHomLift p f φ : Prop where
   universal_property {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p (𝟙 R) χ ∧ χ ≫ φ = φ'
+
+/-- The proposition that a morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is a
+strongly cartesian morphism.
+
+See <https://stacks.math.columbia.edu/tag/02XK> -/
+class Functor.IsStronglyCartesian (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+    extends IsHomLift p f φ : Prop where mk' ::
+  universal_property {R' : 𝒮} {a' : 𝒳} (g : R' ⟶ R) (f' : R' ⟶ S)
+    (_ : f' = g ≫ f) (φ' : a' ⟶ b) [IsHomLift p f' φ'] :
+      ∃! χ : a' ⟶ a, IsHomLift p g χ ∧ χ ≫ φ = φ'
+
+protected lemma IsStronglyCartesian.mk {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} {a b : 𝒳} {f : R ⟶ S} {φ : b ⟶ a}
+    [IsHomLift p f φ] (h : ∀ (a' : 𝒳) (g : p.obj a' ⟶ R) (φ' : a' ⟶ a), IsHomLift p (g ≫ f) φ' →
+      ∃! χ : a' ⟶ b, IsHomLift p g χ ∧ χ ≫ φ = φ') : IsStronglyCartesian p f φ where
+  universal_property := by
+    intro R' a' g f' hf' φ' hφ'
+    subst_hom_lift p f' φ'
+    apply h a' g φ' (hf' ▸ inferInstance)
+
+instance cartesian_of_stronglyCartesian (p : 𝒳 ⥤ 𝒮) {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
+    [p.IsStronglyCartesian f φ] : p.IsCartesian f φ where
+  universal_property := fun φ' =>
+    IsStronglyCartesian.universal_property (φ:=φ) (f:=f) (𝟙 R) f (by simp) φ'
 
 namespace IsCartesian
 
