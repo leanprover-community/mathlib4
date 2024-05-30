@@ -206,10 +206,10 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
 
 theorem eigenvalues_eq_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) :
     (spectrum ℝ a) = Set.range (ha.eigenvalues) := by
-      ext x
-      conv_lhs => rw [ha.spectral_theorem, spectrum.unitary_conjugate, ← spectrum.algebraMap_mem_iff 𝕜,
-      spectrum_diagonal, RCLike.algebraMap_eq_ofReal]
-      simp
+   ext x
+   conv_lhs => rw [ha.spectral_theorem, spectrum.unitary_conjugate,
+   ← spectrum.algebraMap_mem_iff 𝕜, spectrum_diagonal, RCLike.algebraMap_eq_ofReal]
+   simp
 
 theorem finite_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) : (spectrum ℝ a).Finite := by
    have H := Set.finite_range (ha.eigenvalues)
@@ -259,43 +259,12 @@ exists_cfc_of_predicate a ha := by
         exact ⟨i, rfl⟩
     case hermitian =>
       intro f
-      sorry
+      dsimp [IsHermitian]
+      rw [← star_eq_conjTranspose, star_mul, star_mul, star_star, mul_assoc]
+      congr!
+      rw [star_eq_conjTranspose, diagonal_conjTranspose]
+      congr!
+      simp only [Pi.star_def,Function.comp_apply, RCLike.star_def, RCLike.conj_ofReal]
+      rfl
 end IsHermitian
 end Matrix
-
-
-
-
-
-
---theorem spec_EuclideanCLM_eq_spec : spectrum 𝕜 (toEuclideanCLM (𝕜:= 𝕜) A) = spectrum 𝕜 A :=
---    AlgEquiv.spectrum_eq _ A
-
---theorem spec_EuclideanCLM_eq_spec_toEuclideanLin : spectrum 𝕜 (toEuclideanCLM (𝕜:= 𝕜) A)
---    = spectrum 𝕜 (toEuclideanLin A) := AlgEquiv.spectrum_eq (LinearAlgEquiv) _
-
---#check Matrix.coe_toEuclideanCLM_eq_toEuclideanLin
---the above might be useful when refactoring all of this
-
---noncomputable def f1 : n → spectrum ℝ A := by
---apply Set.codRestrict (fun (i : n) ↦ hA.eigenvalues i)
---apply eigenvalue_mem_real
-
---noncomputable def f2 : n → spectrum ℝ A := Set.codRestrict (fun (i : n) ↦ hA.eigenvalues i) (spectrum ℝ A) (hA.eigenvalue_mem_real)
-
---noncomputable def f : n → spectrum ℝ A := by
---apply Set.codRestrict fun (i : n) ↦ (RCLike.ofReal ∘ hA.eigenvalues) i
---have H := spec_toEuclideanLin_eq_spec (𝕜 := 𝕜) (n := n)
---      ▸ eigenvalue_mem_toEuclideanLin_spectrum_RCLike hA
---intro i
---apply spectrum.of_algebraMap_mem 𝕜
---refine H i
-
---noncomputable def φ₀ : C(spectrum ℝ A, ℝ) →  Matrix n n 𝕜 :=
---  fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ g ∘ f hA)
---      * star (eigenvectorUnitary hA : Matrix n n 𝕜)
-
---noncomputable def φ1 : C(spectrum ℝ A, ℝ) →  Matrix n n 𝕜 :=
---fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ g ∘ Set.codRestrict (fun (i : n) ↦ hA.eigenvalues i) (spectrum ℝ A) (hA.eigenvalue_mem_real))
---      * star (eigenvectorUnitary hA : Matrix n n 𝕜)
---
