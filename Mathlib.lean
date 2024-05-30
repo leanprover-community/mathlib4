@@ -1310,6 +1310,12 @@ import Mathlib.CategoryTheory.GradedObject.Single
 import Mathlib.CategoryTheory.GradedObject.Trifunctor
 import Mathlib.CategoryTheory.GradedObject.Unitor
 import Mathlib.CategoryTheory.Grothendieck
+import Mathlib.CategoryTheory.GroupObjects.Basic
+import Mathlib.CategoryTheory.GroupObjects.FunctorCategory
+import Mathlib.CategoryTheory.GroupObjects.MonoidAlgebra
+import Mathlib.CategoryTheory.GroupObjects.PreservesFiniteProducts
+import Mathlib.CategoryTheory.GroupObjects.ToMon_
+import Mathlib.CategoryTheory.GroupObjects.StupidLemmas
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
