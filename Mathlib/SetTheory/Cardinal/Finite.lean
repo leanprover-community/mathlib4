@@ -290,8 +290,8 @@ theorem _root_.Cardinal.natCast_lt_toPartENat_iff {n : ℕ} {c : Cardinal} :
 
 @[simp]
 theorem _root_.Cardinal.toPartENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
-    toPartENat c < ↑n ↔ c < ↑n :=
-by simp only [← not_le, Cardinal.natCast_le_toPartENat_iff]
+    toPartENat c < ↑n ↔ c < ↑n := by
+  simp only [← not_le, Cardinal.natCast_le_toPartENat_iff]
 #align lt_coe_nat_iff_lt Cardinal.toPartENat_lt_natCast_iff
 
 theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
