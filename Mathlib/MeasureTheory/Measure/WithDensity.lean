@@ -325,28 +325,29 @@ theorem aemeasurable_withDensity_ennreal_iff' {f : α → ℝ≥0}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} :
     AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
       AEMeasurable (fun x => (f x : ℝ≥0∞) * g x) μ := by
-  have t : ∃f', Measurable f' ∧ f =ᵐ[μ] f' := hf; rcases t with ⟨f', hf'⟩
+  have t : ∃f', Measurable f' ∧ f =ᵐ[μ] f' := hf;
+  rcases t with ⟨f', ⟨hf'_m, hf'_ae⟩⟩
   constructor
   · rintro ⟨g', g'meas, hg'⟩
-    have A : MeasurableSet {x | f' x ≠ 0} := hf'.1 (measurableSet_singleton _).compl
-    refine ⟨fun x => f' x * g' x, hf'.1.coe_nnreal_ennreal.smul g'meas, ?_⟩
+    have A : MeasurableSet {x | f' x ≠ 0} := hf'_m (measurableSet_singleton _).compl
+    refine ⟨fun x => f' x * g' x, hf'_m.coe_nnreal_ennreal.smul g'meas, ?_⟩
     apply ae_of_ae_restrict_of_ae_restrict_compl { x | f' x ≠ 0 }
     · rw [EventuallyEq, ae_withDensity_iff' hf.coe_nnreal_ennreal] at hg'
       rw [ae_restrict_iff' A]
-      filter_upwards [hg', hf'.2] with a ha h'a h_a_nonneg
+      filter_upwards [hg', hf'_ae] with a ha h'a h_a_nonneg
       have : (f' a : ℝ≥0∞) ≠ 0 := by simpa only [Ne, ENNReal.coe_eq_zero] using h_a_nonneg
       rw [← h'a] at this ⊢
       rw [ha this]
     · rw [ae_restrict_iff' A.compl]
-      filter_upwards [hf'.2] with a ha ha_null
+      filter_upwards [hf'_ae] with a ha ha_null
       have ha_null : f' a = 0 := Function.nmem_support.mp ha_null
       rw [ha_null] at ha ⊢
       rw [ha]
       simp only [ENNReal.coe_zero, zero_mul]
   · rintro ⟨g', g'meas, hg'⟩
-    refine ⟨fun x => ((f' x)⁻¹ : ℝ≥0∞) * g' x, hf'.1.coe_nnreal_ennreal.inv.smul g'meas, ?_⟩
+    refine ⟨fun x => ((f' x)⁻¹ : ℝ≥0∞) * g' x, hf'_m.coe_nnreal_ennreal.inv.smul g'meas, ?_⟩
     rw [EventuallyEq, ae_withDensity_iff' hf.coe_nnreal_ennreal]
-    filter_upwards [hg', hf'.2] with a hfga hff'a h'a
+    filter_upwards [hg', hf'_ae] with a hfga hff'a h'a
     rw [hff'a] at hfga h'a
     rw [← hfga, ← mul_assoc, ENNReal.inv_mul_cancel h'a ENNReal.coe_ne_top, one_mul]
 
