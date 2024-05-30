@@ -221,75 +221,51 @@ end PowerSums
 
 section SymmOne
 
-lemma sum_eq_single_iff_single {n : ℕ} [NeZero n] {s : σ →₀ ℕ} {i : σ} (hs : ∀ x, s x ≥ 0)
-    (hi : s i = n) : s.sum (fun _ ↦ id) ≤ n ↔ s = Finsupp.single i n := by
+lemma sum_eq_single_iff_single {s : σ →₀ ℕ} {i : σ} (hi : s i ≠ 0) (hs : ∀ x, s x ≥ 0) :
+    s.sum (fun _ ↦ id) ≤ (s i) ↔ s = Finsupp.single i (s i) := by
   constructor
   · intro h
     ext j
-    by_cases hij : i = j
-    · rw [← hij, Finsupp.single_apply]
-      simp [hi]
-    · rw [Finsupp.single_apply]
-      simp [hij]
-      by_contra! h'
-      rw [← hi] at h
-      rw [Finsupp.sum] at h
-      · have := le_antisymm (Finset.single_le_sum (fun i _ ↦ hs i)
-          (Finsupp.mem_support_iff.mpr ?_)) h
-        · have isupp : i ∈ s.support := by
-            apply Finsupp.mem_support_iff.mpr
-            rw [hi]
-            exact Ne.symm (NeZero.ne' n)
-          have jsupp : j ∈ s.support := by
-            apply Finsupp.mem_support_iff.mpr
-            exact h'
-          have subs : {i, j} ⊆ s.support := by
-            intro x hx
-            simp only [Finset.mem_insert, Finset.mem_singleton] at hx
-            cases hx with
-            | inl h => rw [h]; exact isupp
-            | inr h => rw [h]; exact jsupp
-          have that : s i + s j ≤ s i := by
-            apply le_trans ?_ h
-            have : s i + s j = ∑ x in {i, j}, s x := by
-              rw [Finset.sum_pair]
-              exact hij
-            simp_rw [this, id_eq]
-            exact Finset.sum_le_sum_of_ne_zero fun x a _ ↦ subs a
-          have : 0 < s j := by
-            apply lt_of_le_of_ne
-            · exact hs j
-            · exact h'.symm
-          linarith
-        · rw [hi]
-          exact Ne.symm (NeZero.ne' n)
+    rw [Finsupp.single_apply]
+    split_ifs with hij
+    · rw [hij]
+    · by_contra! h'
+      have := le_antisymm (Finset.single_le_sum (fun i _ ↦ hs i) (Finsupp.mem_support_iff.mpr hi))
+      have := Nat.zero_lt_of_ne_zero h'
+      have subset : {i, j} ⊆ s.support := by
+        intro x hx
+        simp only [Finset.mem_insert, Finset.mem_singleton] at hx
+        cases hx with
+        | inl h => apply Finsupp.mem_support_iff.mpr; rw [h]; exact hi
+        | inr h => rw [h]; exact Finsupp.mem_support_iff.mpr h'
+      have : s i + s j ≤ s i := by
+        apply le_trans _ h
+        rw [(Finset.sum_pair hij).symm]
+        exact Finset.sum_le_sum_of_ne_zero fun x a _ ↦ subset a
+      linarith
   · intro h
-    simp [h]
+    rw [h]
+    simp
 
 lemma sum_one_iff_single (s : σ →₀ ℕ) : (Finsupp.sum s fun _ ↦ id) = 1 ↔
     ∃ i : σ, s = Finsupp.single i 1 := by
+  simp_rw [Finsupp.sum, id_eq]
   constructor
   · intro h
-    rw [Finsupp.sum] at h
     have : ∃ i, s i ≠ 0 := by
       by_contra! h'
       simp [h'] at h
     obtain ⟨i, hi⟩ := this
     use i
-    have hl : ∑ x in s.support, s x ≤ s i := by
-      apply le_trans (le_of_eq h) (Nat.one_le_iff_ne_zero.mpr hi)
-    have hg : s i ≤ ∑ x in s.support, s x := Finset.single_le_sum (fun i _ ↦ Nat.zero_le (s i))
-       (Finsupp.mem_support_iff.mpr hi)
-    simp_rw [id_eq] at h
-    rw [h] at hg
-    have : s i = 1 := by exact Nat.le_antisymm hg (Nat.one_le_iff_ne_zero.mpr hi)
-    rw [this] at hl
-    rw [← sum_eq_single_iff_single]
-    · exact hl
-    · simp
-    · exact this
+    have hs : s i = 1 := by
+      apply Nat.le_antisymm
+      · rw [← h]
+        exact Finset.single_le_sum (fun i _ ↦ Nat.zero_le (s i)) (Finsupp.mem_support_iff.mpr hi)
+      · exact Nat.one_le_iff_ne_zero.mpr hi
+    rw [← hs, ← sum_eq_single_iff_single _ hi (fun x ↦ Nat.zero_le (s x)), hs]
+    exact Nat.le_of_eq h
   · rintro ⟨i, rfl⟩
-    simp
+    simp [Finsupp.single]
 
 lemma esymm_one_eq_hsymm_one : esymm σ R 1 = hsymm σ R 1 := by
   ext s
