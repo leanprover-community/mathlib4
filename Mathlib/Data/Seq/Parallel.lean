@@ -170,7 +170,6 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
         intro
         apply IH _ _ _ (Or.inr _) T
         rw [a]
-        cases' S with f al
         rfl
       induction' e : Seq'.get? S 0 with o
       · have D : Seq'.destruct S = none := by
