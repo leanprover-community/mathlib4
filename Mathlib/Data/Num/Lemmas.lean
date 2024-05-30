@@ -911,9 +911,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
 #align num.bitwise_to_nat Num.castNum_eq_bitwise
 
 @[simp, norm_cast]
-theorem castNum_or : ∀ m n : Num, ↑(m 
- n) = (↑m 
- ↑n : ℕ) := by
+theorem castNum_or : ∀ m n : Num, ↑(m ||| n) = (↑m ||| ↑n : ℕ) := by
   -- Porting note: A name of an implicit local hypothesis is not available so
   --               `cases_type*` is used.
   apply castNum_eq_bitwise fun x y => pos (PosNum.lor x y) <;>
