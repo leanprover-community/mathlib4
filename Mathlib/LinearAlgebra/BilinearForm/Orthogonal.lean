@@ -31,8 +31,6 @@ Bilinear form,
 -/
 
 
-open BigOperators
-
 open LinearMap (BilinForm)
 
 universe u v w
@@ -169,6 +167,10 @@ theorem orthogonal_le (h : N ≤ L) : B.orthogonal L ≤ B.orthogonal N := fun _
 theorem le_orthogonal_orthogonal (b : B.IsRefl) : N ≤ B.orthogonal (B.orthogonal N) :=
   fun n hn _ hm => b _ _ (hm n hn)
 #align bilin_form.le_orthogonal_orthogonal LinearMap.BilinForm.le_orthogonal_orthogonal
+
+lemma orthogonal_top (hB : B.Nondegenerate) (hB₀ : B.IsRefl) :
+    B.orthogonal ⊤ = ⊥ :=
+  (Submodule.eq_bot_iff _).mpr fun _ hx ↦ hB _ fun y ↦ hB₀ _ _ <| hx y Submodule.mem_top
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : ¬B.IsOrtho x x) :
@@ -333,6 +335,20 @@ theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) :
       add_comm, ← add_assoc, add_comm (finrank K (LinearMap.ker (B.domRestrict W))),
       LinearMap.finrank_range_add_finrank_ker]
 #align bilin_form.finrank_add_finrank_orthogonal LinearMap.BilinForm.finrank_add_finrank_orthogonal
+
+lemma finrank_orthogonal (hB : B.Nondegenerate) (hB₀ : B.IsRefl) (W : Submodule K V) :
+    finrank K (B.orthogonal W) = finrank K V - finrank K W := by
+  have := finrank_add_finrank_orthogonal hB₀ (W := W)
+  rw [B.orthogonal_top hB hB₀, inf_bot_eq, finrank_bot, add_zero] at this
+  have : finrank K W ≤ finrank K V := finrank_le W
+  omega
+
+lemma orthogonal_orthogonal (hB : B.Nondegenerate) (hB₀ : B.IsRefl) (W : Submodule K V) :
+    B.orthogonal (B.orthogonal W) = W := by
+  apply (eq_of_le_of_finrank_le (LinearMap.BilinForm.le_orthogonal_orthogonal hB₀) _).symm
+  simp only [finrank_orthogonal hB hB₀]
+  have : finrank K W ≤ finrank K V := finrank_le W
+  omega
 
 /-- A subspace is complement to its orthogonal complement with respect to some
 reflexive bilinear form if that bilinear form restricted on to the subspace is nondegenerate. -/

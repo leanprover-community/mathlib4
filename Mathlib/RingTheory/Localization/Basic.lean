@@ -86,8 +86,6 @@ commutative ring, field of fractions
 
 open Function
 
-open BigOperators
-
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
@@ -1200,7 +1198,7 @@ instance : CommRing (Localization M) :=
         (by
           intros
           simp only [add_mk, Localization.mk_mul, neg_mk, ← mk_zero 1]
-          refine' mk_eq_mk_iff.mpr (r_of_eq _)
+          refine mk_eq_mk_iff.mpr (r_of_eq ?_)
           simp only [Submonoid.coe_mul]
           ring) }
 

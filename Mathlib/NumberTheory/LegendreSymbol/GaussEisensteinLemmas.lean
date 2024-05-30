@@ -18,7 +18,7 @@ The main results are `ZMod.gauss_lemma` and `ZMod.eisenstein_lemma`.
 
 open Finset Nat
 
-open scoped BigOperators Nat
+open scoped Nat
 
 section GaussEisenstein
 

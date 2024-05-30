@@ -131,11 +131,17 @@ theorem succAbove_lt_succAbove_iff {i j : Fin n} (p : Fin (n + 1)) :
 theorem succAbove_le_succAbove_iff {i j : Fin n} (p : Fin (n + 1)) :
     succAbove p i ≤ succAbove p j ↔ i ≤ j := (strictMono_succAbove p).le_iff_le
 
-/--  `Fin.succAbove p` as an `OrderEmbedding`. -/
+/-- `Fin.succAbove p` as an `Embedding`. -/
+@[simps!]
+def succAboveEmb (p : Fin (n + 1)) : Fin n ↪ Fin (n + 1) := ⟨p.succAbove, succAbove_right_injective⟩
+
+@[simp, norm_cast] lemma coe_succAboveEmb (p : Fin (n + 1)) : p.succAboveEmb = p.succAbove := rfl
+
+/-- `Fin.succAbove p` as an `OrderEmbedding`. -/
 @[simps! apply toEmbedding]
-def succAboveEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
+def succAboveOrderEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
   OrderEmbedding.ofStrictMono (succAbove p) (strictMono_succAbove p)
-#align fin.succ_above Fin.succAboveEmb
+#align fin.succ_above Fin.succAboveOrderEmb
 
 @[simp]
 theorem succAbove_ne_zero_zero [NeZero n] {a : Fin (n + 1)} (ha : a ≠ 0) : a.succAbove 0 = 0 := by

@@ -47,7 +47,7 @@ topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and `Topolo
 
 noncomputable section
 
-open BigOperators Affine
+open Affine
 
 open Set
 
@@ -596,7 +596,7 @@ instance : CompleteLattice (AffineSubspace k P) :=
     inf_le_right := fun _ _ => Set.inter_subset_right _ _
     le_sInf := fun S s1 hs1 => by
       -- Porting note: surely there is an easier way?
-      refine' Set.subset_sInter (t := (s1 : Set P)) _
+      refine Set.subset_sInter (t := (s1 : Set P)) ?_
       rintro t ⟨s, _hs, rfl⟩
       exact Set.subset_iInter (hs1 s)
     top :=

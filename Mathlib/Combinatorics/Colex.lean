@@ -58,7 +58,6 @@ colex, colexicographic, binary
 -/
 
 open Finset Function
-open scoped BigOperators
 
 #align nat.sum_two_pow_lt Nat.geomSum_lt
 

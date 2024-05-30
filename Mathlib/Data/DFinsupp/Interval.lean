@@ -20,7 +20,7 @@ finite and calculates the cardinality of its finite intervals.
 
 open DFinsupp Finset
 
-open BigOperators Pointwise
+open Pointwise
 
 variable {ι : Type*} {α : ι → Type*}
 
@@ -165,7 +165,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (Π₀ i, α i) :=
   LocallyFiniteOrder.ofIcc (Π₀ i, α i)
     (fun f g => (f.support ∪ g.support).dfinsupp <| f.rangeIcc g)
     (fun f g x => by
-      refine' (mem_dfinsupp_iff_of_support_subset <| support_rangeIcc_subset).trans _
+      refine (mem_dfinsupp_iff_of_support_subset <| support_rangeIcc_subset).trans ?_
       simp_rw [mem_rangeIcc_apply_iff, forall_and]
       rfl)
 
