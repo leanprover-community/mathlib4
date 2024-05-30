@@ -560,6 +560,9 @@ theorem ofNat''_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : (Fin.ofNat'' a : Fin n)
 
 @[simp] lemma val_natCast (a n : ℕ) [NeZero n] : (a : Fin n).val = a % n := rfl
 
+@[deprecated (since := "2024-04-17")]
+alias val_nat_cast := val_natCast
+
 -- Porting note: is this the right name for things involving `Nat.cast`?
 /-- Converting an in-range number to `Fin (n + 1)` produces a result
 whose value is the original number.  -/
@@ -581,8 +584,14 @@ in the same value.  -/
 
 @[simp] lemma natCast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_self := natCast_self
+
 @[simp] lemma natCast_eq_zero {a n : ℕ} [NeZero n] : (a : Fin n) = 0 ↔ n ∣ a := by
   simp [ext_iff, Nat.dvd_iff_mod_eq_zero]
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_eq_zero := natCast_eq_zero
 
 @[simp]
 theorem natCast_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by ext; simp
