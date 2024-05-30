@@ -1,9 +1,48 @@
 --import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib
 
+/--
+The infimum of all coatoms.
+
+This notion specializes, e.g. in the subgroup lattice of a group to the Frattini subgroup,
+or in the lattices of ideals in a ring `R` to the Jacobson ideal.
+-/
+def Order.radical (α : Type*) [Preorder α] [OrderTop α] [InfSet α] : α :=
+   ⨅ a ∈ {H | IsCoatom H}, a
+
+namespace Order
+
+variable {α : Type*} [CompleteLattice α]
+
+lemma radical_le_coatom {a : α} (h : IsCoatom a) :
+    radical α ≤ a :=
+  biInf_le _ h
+
+variable {β : Type*} [CompleteLattice β]
+
+theorem radical_characteristic (f : α ≃o β) : f (Order.radical α) = Order.radical β := by
+  unfold radical
+  simp only [OrderIso.map_iInf]
+  fapply Equiv.iInf_congr
+  · exact f.toEquiv
+  · intros
+    simp
+
+theorem radical_nongenerating [IsCoatomic α] {a : α} (h : a ⊔ radical α = ⊤) :
+    a = ⊤ := by
+  obtain (rfl | w) := eq_top_or_exists_le_coatom a
+  · rfl
+  · obtain ⟨m, c, le⟩ := w
+    have q : a ⊔ radical α ≤ m := sup_le le (radical_le_coatom c)
+    rw [h] at q
+    simp only [top_le_iff] at q
+    simpa using c.1 q
+
+end Order
+
 /-- The Frattini subgroup of a group is the intersection of the maximal subgroups. -/
 def frattini (G : Type*) [Group G] : Subgroup G :=
-   ⨅ a ∈ {H | IsCoatom H}, a
+  Order.radical (Subgroup G)
 
 variable {G H : Type*} [Group G] [Group H]
 
@@ -34,25 +73,9 @@ variable (G)
 
 /-- The Frattini subgroup is characteristic. -/
 instance frattini_characteristic : (frattini G).Characteristic := by
-    rw [characteristic_iff_comap_eq]
-    intro φ
-    unfold frattini
-    simp only [comap_iInf]
-    fapply Equiv.iInf_congr
-    · exact φ.comapSubgroup.toEquiv
-    · intros
-      simp
-      rfl
-
-
--- variable {X : Set (G)}
-
-theorem frattini_nongenerating_subset : ∀ X : Set (G), Subgroup.closure ( X) ⊔ frattini G = ⊤ → Subgroup.closure (X) = G  := by
-  intro X
-  intro h
-  unfold frattini at h
-  simp at h
-  sorry
+  rw [characteristic_iff_comap_eq]
+  intro φ
+  apply Order.radical_characteristic φ.comapSubgroup
 
 variable {G}
 
@@ -60,19 +83,8 @@ lemma frattini_le_coatom {K : Subgroup G} (h: IsCoatom K) : frattini G ≤ K :=
   biInf_le _ h
 
 theorem frattini_nongenerating [IsCoatomic (Subgroup G)] {K : Subgroup G} (h : K ⊔ frattini G = ⊤) :
-    K = ⊤ := by
-  have w := eq_top_or_exists_le_coatom K
-  cases w
-  case inl p => assumption
-  case inr p =>
-    obtain ⟨ M, c, le⟩:= p
-    have q : K ⊔ frattini G ≤ M := by
-      have r := frattini_le_coatom c
-      exact sup_le le r
-    rw [h] at q
-    simp at q
-    have:= c.1 q
-    contradiction
+    K = ⊤ :=
+  Order.radical_nongenerating h
 
 noncomputable section
 
