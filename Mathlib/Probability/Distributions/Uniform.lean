@@ -223,7 +223,7 @@ section UniformOfFinset
 
 /-- Uniform distribution taking the same non-zero probability on the nonempty finset `s` -/
 def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
-  refine' ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s _ _
+  refine ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s ?_ ?_
   · simp only [Finset.sum_ite_mem, Finset.inter_self, Finset.sum_const, nsmul_eq_mul]
     have : (s.card : ℝ≥0∞) ≠ 0 := by
       simpa only [Ne, Nat.cast_eq_zero, Finset.card_eq_zero] using

@@ -39,7 +39,7 @@ def StrictUniversalPropertyFixedTarget.comp
     StrictUniversalPropertyFixedTarget (L₁ ⋙ L₂) W₃ E where
   inverts := hW₃
   lift F hF := h₂.lift (h₁.lift F (MorphismProperty.IsInvertedBy.of_le _ _  F hF hW₁₃)) (by
-    refine' MorphismProperty.IsInvertedBy.of_le _ _ _ _ hW₂₃
+    refine MorphismProperty.IsInvertedBy.of_le _ _ _ ?_ hW₂₃
     simpa only [MorphismProperty.IsInvertedBy.map_iff, h₁.fac F] using hF)
   fac F hF := by rw [Functor.assoc, h₂.fac, h₁.fac]
   uniq F₁ F₂ h := h₂.uniq _ _ (h₁.uniq _ _ (by simpa only [Functor.assoc] using h))

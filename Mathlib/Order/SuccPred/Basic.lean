@@ -1545,8 +1545,8 @@ variable [LinearOrder α]
 instance (priority := 100) IsWellOrder.toIsPredArchimedean [h : IsWellOrder α (· < ·)]
     [PredOrder α] : IsPredArchimedean α :=
   ⟨fun {a b} => by
-    refine' WellFounded.fix (C := fun b => a ≤ b → ∃ n, Nat.iterate pred n b = a)
-      h.wf _ b
+    refine WellFounded.fix (C := fun b => a ≤ b → ∃ n, Nat.iterate pred n b = a)
+      h.wf ?_ b
     intros b ih hab
     replace hab := eq_or_lt_of_le hab
     rcases hab with (rfl | hab)
