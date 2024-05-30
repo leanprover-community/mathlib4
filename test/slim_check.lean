@@ -1,3 +1,4 @@
+import Mathlib.Algebra.Group.Fin
 import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Data.Finsupp.Notation

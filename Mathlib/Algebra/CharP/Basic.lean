@@ -42,8 +42,8 @@ protected theorem add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ
 
 protected theorem add_pow_prime_eq (hp : p.Prime) (h : Commute x y) :
     (x + y) ^ p =
-      x ^ p + y ^ p + p * ∑ k ∈ Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) :=
-  by simpa using h.add_pow_prime_pow_eq hp 1
+      x ^ p + y ^ p + p * ∑ k ∈ Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) := by
+  simpa using h.add_pow_prime_pow_eq hp 1
 #align commute.add_pow_prime_eq Commute.add_pow_prime_eq
 
 protected theorem exists_add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ) :

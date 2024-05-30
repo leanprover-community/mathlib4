@@ -55,6 +55,11 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 * `HomogeneousLocalization.localRing`: `HomogeneousLocalization 𝒜 x` is a local ring when `x` is
   the complement of some prime ideals.
 
+* `HomogeneousLocalization.map`: Let `A` and `B` be two graded rings and `g : A → B` a grading
+  preserving ring map. If `P ≤ A` and `Q ≤ B` are submonoids such that `P ≤ g⁻¹(Q)`, then `g`
+  induces a ring map between the homogeneous localization of `A` at `P` and the homogeneous
+  localization of `B` at `Q`.
+
 ## References
 
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]
@@ -611,10 +616,9 @@ end
 section
 
 variable (𝒜)
-variable {B C : Type*} [CommRing B] [Algebra R B]
+variable {B : Type*} [CommRing B] [Algebra R B]
 variable (ℬ : ι → Submodule R B) [GradedAlgebra ℬ]
 variable {P : Submonoid A} {Q : Submonoid B}
-variable [CommRing C]
 
 /--
 Let `A, B` be two graded algebras with the same indexing set and `g : A → B` be a graded algebra

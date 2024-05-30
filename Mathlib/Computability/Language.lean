@@ -289,14 +289,14 @@ instance : KleeneAlgebra (Language α) :=
     kstar_mul_le_kstar := fun a ↦ (one_add_kstar_mul_self_eq_kstar a).le.trans' le_sup_right,
     kstar_mul_le_self := fun l m h ↦ by
       rw [kstar_eq_iSup_pow, iSup_mul]
-      refine' iSup_le (fun n ↦ _)
+      refine iSup_le (fun n ↦ ?_)
       induction' n with n ih
       · simp
       rw [pow_succ, mul_assoc (l^n) l m]
       exact le_trans (le_mul_congr le_rfl h) ih,
     mul_kstar_le_self := fun l m h ↦ by
       rw [kstar_eq_iSup_pow, mul_iSup]
-      refine' iSup_le (fun n ↦ _)
+      refine iSup_le (fun n ↦ ?_)
       induction' n with n ih
       · simp
       rw [pow_succ, ← mul_assoc m (l^n) l]

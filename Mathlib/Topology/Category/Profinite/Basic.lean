@@ -35,6 +35,9 @@ profinite
 
 -/
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+
 set_option linter.uppercaseLean3 false
 
 universe v u
@@ -338,7 +341,7 @@ instance forget_reflectsIsomorphisms : (forget Profinite).ReflectsIsomorphisms :
 noncomputable
 def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
   @asIso _ _ _ _ ⟨f, f.continuous⟩ (@isIso_of_reflects_iso _ _ _ _ _ _ _ profiniteToCompHaus
-    (IsIso.of_iso (CompHaus.isoOfHomeo f)) _)
+    (CompHaus.isoOfHomeo f).isIso_hom _)
 #align Profinite.iso_of_homeo Profinite.isoOfHomeo
 
 /-- Construct a homeomorphism from an isomorphism. -/

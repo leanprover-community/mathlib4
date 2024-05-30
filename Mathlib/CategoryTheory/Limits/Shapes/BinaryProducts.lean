@@ -793,7 +793,7 @@ def prod.mapIso {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f :
 
 instance isIso_prod {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : W ⟶ Y)
     (g : X ⟶ Z) [IsIso f] [IsIso g] : IsIso (prod.map f g) :=
-  IsIso.of_iso (prod.mapIso (asIso f) (asIso g))
+  (prod.mapIso (asIso f) (asIso g)).isIso_hom
 #align category_theory.limits.is_iso_prod CategoryTheory.Limits.isIso_prod
 
 instance prod.map_mono {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
@@ -933,7 +933,7 @@ def coprod.mapIso {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z
 
 instance isIso_coprod {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] (f : W ⟶ Y)
     (g : X ⟶ Z) [IsIso f] [IsIso g] : IsIso (coprod.map f g) :=
-  IsIso.of_iso (coprod.mapIso (asIso f) (asIso g))
+  (coprod.mapIso (asIso f) (asIso g)).isIso_hom
 #align category_theory.limits.is_iso_coprod CategoryTheory.Limits.isIso_coprod
 
 instance coprod.map_epi {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
