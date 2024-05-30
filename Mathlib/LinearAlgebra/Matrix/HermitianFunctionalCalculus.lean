@@ -233,10 +233,17 @@ exists_cfc_of_predicate a ha := by
       have hφ : LinearMap.ker ha.φ = ⊥ := by
         refine LinearMap.ker_eq_bot'.mpr ?_
         intro f hf
-        have : ∀ x, ha.φ f x = 0 := by sorry
+        --rw [φ_apply] at hf
+        --have h1 : 0 = ha.eigenvectorUnitary * (0 : Matrix n n 𝕜) * (star ha.eigenvectorUnitary) := by sorry
+        --rw [h1] at hf
+        have h2 : diagonal (RCLike.ofReal ∘ ⇑f ∘ fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩) = (0 : Matrix n n 𝕜) := by sorry
         ext x
         simp only [ContinuousMap.zero_apply]
-        sorry
+        obtain ⟨x, hx⟩ := x
+        obtain ⟨i, rfl⟩ := ha.eigenvalues_eq_spectrum ▸ hx
+        rw [← diagonal_zero] at h2
+        have := (diagonal_eq_diagonal_iff).mp h2
+        exact RCLike.ofReal_eq_zero.mp (this i)
       have H := ha.compact_spectrum
       apply LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ a, ℝ))
         (F := Matrix n n 𝕜) (f := ha.φ) hφ
