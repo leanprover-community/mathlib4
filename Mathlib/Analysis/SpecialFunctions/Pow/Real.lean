@@ -82,9 +82,6 @@ theorem exp_one_rpow (x : ℝ) : exp 1 ^ x = exp x := by rw [← exp_mul, one_mu
 
 @[simp] lemma exp_one_pow (n : ℕ) : exp 1 ^ n = exp n := by rw [← rpow_natCast, exp_one_rpow]
 
-@[deprecated (since := "2024-04-17")]
-alias exp_one_pow := exp_one_pow
-
 theorem rpow_eq_zero_iff_of_nonneg (hx : 0 ≤ x) : x ^ y = 0 ↔ x = 0 ∧ y ≠ 0 := by
   simp only [rpow_def_of_nonneg hx]
   split_ifs <;> simp [*, exp_ne_zero]
@@ -1062,4 +1059,4 @@ end Mathlib.Meta.NormNum
 
 end Tactics
 
-@[deprecated] alias rpow_nonneg_of_nonneg := rpow_nonneg -- 2024-01-07
+@[deprecated (since := "2024-01-07")] alias rpow_nonneg_of_nonneg := rpow_nonneg
