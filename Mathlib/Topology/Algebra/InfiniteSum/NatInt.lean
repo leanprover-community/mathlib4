@@ -12,7 +12,7 @@ import Mathlib.Logic.Encodable.Lattice
 
 This file contains lemmas about `HasSum`, `Summable`, `tsum`, `HasProd`, `Multipliable`, and `tprod`
 applied to the important special cases where the domain is `ℕ` or `ℤ`. For instance, we prove the
-formula `∑ i in range k, f i + ∑' i, f (i + k) = ∑' i, f i`, in `sum_add_tsum_nat_add`, as well as
+formula `∑ i ∈ range k, f i + ∑' i, f (i + k) = ∑' i, f i`, ∈ `sum_add_tsum_nat_add`, as well as
 several results relating sums and products on `ℕ` to sums and products on `ℤ`.
 -/
 
@@ -20,7 +20,7 @@ noncomputable section
 
 open Filter Finset Function Encodable
 
-open scoped BigOperators Topology
+open scoped Topology
 
 variable {M : Type*} [CommMonoid M] [TopologicalSpace M] {m m' : M}
 
@@ -37,21 +37,21 @@ section Monoid
 
 namespace HasProd
 
-/-- If `f : ℕ → M` has product `m`, then the partial products `∏ i in range n, f i` converge
+/-- If `f : ℕ → M` has product `m`, then the partial products `∏ i ∈ range n, f i` converge
 to `m`. -/
-@[to_additive "If `f : ℕ → M` has sum `m`, then the partial sums `∑ i in range n, f i` converge
+@[to_additive "If `f : ℕ → M` has sum `m`, then the partial sums `∑ i ∈ range n, f i` converge
 to `m`."]
 theorem tendsto_prod_nat {f : ℕ → M} (h : HasProd f m) :
-    Tendsto (fun n ↦ ∏ i in range n, f i) atTop (𝓝 m) :=
+    Tendsto (fun n ↦ ∏ i ∈ range n, f i) atTop (𝓝 m) :=
   h.comp tendsto_finset_range
 #align has_sum.tendsto_sum_nat HasSum.tendsto_sum_nat
 
-/-- If `f : ℕ → M` is multipliable, then the partial products `∏ i in range n, f i` converge
+/-- If `f : ℕ → M` is multipliable, then the partial products `∏ i ∈ range n, f i` converge
 to `∏' i, f i`. -/
-@[to_additive "If `f : ℕ → M` is summable, then the partial sums `∑ i in range n, f i` converge
+@[to_additive "If `f : ℕ → M` is summable, then the partial sums `∑ i ∈ range n, f i` converge
 to `∑' i, f i`."]
 theorem Multipliable.tendsto_prod_tprod_nat {f : ℕ → M} (h : Multipliable f) :
-    Tendsto (fun n ↦ ∏ i in range n, f i) atTop (𝓝 (∏' i, f i)) :=
+    Tendsto (fun n ↦ ∏ i ∈ range n, f i) atTop (𝓝 (∏' i, f i)) :=
   tendsto_prod_nat h.hasProd
 
 section ContinuousMul
@@ -60,7 +60,7 @@ variable [ContinuousMul M]
 
 @[to_additive]
 theorem prod_range_mul {f : ℕ → M} {k : ℕ} (h : HasProd (fun n ↦ f (n + k)) m) :
-    HasProd f ((∏ i in range k, f i) * m) := by
+    HasProd f ((∏ i ∈ range k, f i) * m) := by
   refine ((range k).hasProd f).mul_compl ?_
   rwa [← (notMemRangeEquiv k).symm.hasProd_iff]
 
@@ -86,7 +86,7 @@ namespace Multipliable
 
 @[to_additive]
 theorem hasProd_iff_tendsto_nat [T2Space M] {f : ℕ → M} (hf : Multipliable f) :
-    HasProd f m ↔ Tendsto (fun n : ℕ ↦ ∏ i in range n, f i) atTop (𝓝 m) := by
+    HasProd f m ↔ Tendsto (fun n : ℕ ↦ ∏ i ∈ range n, f i) atTop (𝓝 m) := by
   refine ⟨fun h ↦ h.tendsto_prod_nat, fun h ↦ ?_⟩
   rw [tendsto_nhds_unique h hf.hasProd.tendsto_prod_nat]
   exact hf.hasProd
@@ -164,7 +164,7 @@ theorem rel_iSup_tprod [CompleteLattice α] (m : α → M) (m0 : m ⊥ = 1) (R :
 @[to_additive "If a function is countably sub-additive then it is sub-additive on finite sets"]
 theorem rel_iSup_prod [CompleteLattice α] (m : α → M) (m0 : m ⊥ = 1) (R : M → M → Prop)
     (m_iSup : ∀ s : ℕ → α, R (m (⨆ i, s i)) (∏' i, m (s i))) (s : γ → α) (t : Finset γ) :
-    R (m (⨆ d ∈ t, s d)) (∏ d in t, m (s d)) := by
+    R (m (⨆ d ∈ t, s d)) (∏ d ∈ t, m (s d)) := by
   rw [iSup_subtype', ← Finset.tprod_subtype]
   exact rel_iSup_tprod m m0 R m_iSup _
 #align rel_supr_sum rel_iSup_sum
@@ -188,7 +188,7 @@ variable [ContinuousMul M]
 @[to_additive]
 theorem prod_mul_tprod_nat_mul'
     {f : ℕ → M} {k : ℕ} (h : Multipliable (fun n ↦ f (n + k))) :
-    ((∏ i in range k, f i) * ∏' i, f (i + k)) = ∏' i, f i :=
+    ((∏ i ∈ range k, f i) * ∏' i, f (i + k)) = ∏' i, f i :=
   h.hasProd.prod_range_mul.tprod_eq.symm
 
 @[to_additive]
@@ -216,7 +216,7 @@ variable [TopologicalSpace G] [TopologicalGroup G]
 
 @[to_additive]
 theorem hasProd_nat_add_iff {f : ℕ → G} (k : ℕ) :
-    HasProd (fun n ↦ f (n + k)) g ↔ HasProd f (g * ∏ i in range k, f i) := by
+    HasProd (fun n ↦ f (n + k)) g ↔ HasProd f (g * ∏ i ∈ range k, f i) := by
   refine Iff.trans ?_ (range k).hasProd_compl_iff
   rw [← (notMemRangeEquiv k).symm.hasProd_iff, Function.comp_def, coe_notMemRangeEquiv_symm]
 #align has_sum_nat_add_iff hasSum_nat_add_iff
@@ -225,19 +225,19 @@ theorem hasProd_nat_add_iff {f : ℕ → G} (k : ℕ) :
 theorem multipliable_nat_add_iff {f : ℕ → G} (k : ℕ) :
     (Multipliable fun n ↦ f (n + k)) ↔ Multipliable f :=
   Iff.symm <|
-    (Equiv.mulRight (∏ i in range k, f i)).surjective.multipliable_iff_of_hasProd_iff
+    (Equiv.mulRight (∏ i ∈ range k, f i)).surjective.multipliable_iff_of_hasProd_iff
       (hasProd_nat_add_iff k).symm
 #align summable_nat_add_iff summable_nat_add_iff
 
 @[to_additive]
 theorem hasProd_nat_add_iff' {f : ℕ → G} (k : ℕ) :
-    HasProd (fun n ↦ f (n + k)) (g / ∏ i in range k, f i) ↔ HasProd f g := by
+    HasProd (fun n ↦ f (n + k)) (g / ∏ i ∈ range k, f i) ↔ HasProd f g := by
   simp [hasProd_nat_add_iff]
 #align has_sum_nat_add_iff' hasSum_nat_add_iff'
 
 @[to_additive]
 theorem prod_mul_tprod_nat_add [T2Space G] {f : ℕ → G} (k : ℕ) (h : Multipliable f) :
-    ((∏ i in range k, f i) * ∏' i, f (i + k)) = ∏' i, f i :=
+    ((∏ i ∈ range k, f i) * ∏' i, f (i + k)) = ∏' i, f i :=
   prod_mul_tprod_nat_mul' <| (multipliable_nat_add_iff k).2 h
 #align sum_add_tsum_nat_add sum_add_tsum_nat_add
 
@@ -254,7 +254,7 @@ summability assumption on `f`, as otherwise all such sums are zero."]
 theorem tendsto_prod_nat_add [T2Space G] (f : ℕ → G) :
     Tendsto (fun i ↦ ∏' k, f (k + i)) atTop (𝓝 1) := by
   by_cases hf : Multipliable f
-  · have h₀ : (fun i ↦ (∏' i, f i) / ∏ j in range i, f j) = fun i ↦ ∏' k : ℕ, f (k + i) := by
+  · have h₀ : (fun i ↦ (∏' i, f i) / ∏ j ∈ range i, f j) = fun i ↦ ∏' k : ℕ, f (k + i) := by
       ext1 i
       rw [div_eq_iff_eq_mul, mul_comm, prod_mul_tprod_nat_add i hf]
     have h₁ : Tendsto (fun _ : ℕ ↦ ∏' i, f i) atTop (𝓝 (∏' i, f i)) := tendsto_const_nhds
@@ -271,7 +271,7 @@ variable [UniformSpace G] [UniformGroup G]
 
 @[to_additive]
 theorem cauchySeq_finset_iff_nat_tprod_vanishing {f : ℕ → G} :
-    (CauchySeq fun s : Finset ℕ ↦ ∏ n in s, f n) ↔
+    (CauchySeq fun s : Finset ℕ ↦ ∏ n ∈ s, f n) ↔
       ∀ e ∈ 𝓝 (1 : G), ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e := by
   refine cauchySeq_finset_iff_tprod_vanishing.trans ⟨fun vanish e he ↦ ?_, fun vanish e he ↦ ?_⟩
   · obtain ⟨s, hs⟩ := vanish e he
@@ -360,7 +360,6 @@ variable [ContinuousMul M]
 lemma HasProd.of_nat_of_neg_add_one {f : ℤ → M}
     (hf₁ : HasProd (fun n : ℕ ↦ f n) m) (hf₂ : HasProd (fun n : ℕ ↦ f (-(n + 1))) m') :
     HasProd f (m * m') := by
-  have hi₁ : Injective ((↑) : ℕ → ℤ) := @Int.ofNat.inj
   have hi₂ : Injective Int.negSucc := @Int.negSucc.inj
   have : IsCompl (Set.range ((↑) : ℕ → ℤ)) (Set.range Int.negSucc) := by
     constructor
@@ -368,7 +367,8 @@ lemma HasProd.of_nat_of_neg_add_one {f : ℤ → M}
       rintro _ ⟨⟨i, rfl⟩, ⟨j, ⟨⟩⟩⟩
     · rw [codisjoint_iff_le_sup]
       rintro (i | j) <;> simp
-  exact (hi₁.hasProd_range_iff.mpr hf₁).mul_isCompl this (hi₂.hasProd_range_iff.mpr hf₂)
+  exact (Nat.cast_injective.hasProd_range_iff.mpr hf₁).mul_isCompl
+    this (hi₂.hasProd_range_iff.mpr hf₂)
 #align has_sum.nonneg_add_neg HasSum.of_nat_of_neg_add_one
 
 -- deprecated 2024-03-04
@@ -433,8 +433,8 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
     · refine Or.inr ⟨_, hv' <| mem_image.mpr ⟨x, hx, rfl⟩, ?_⟩
       simp only [abs_of_nonpos h'x, Int.natCast_natAbs, neg_neg]
   exact ⟨_, A, calc
-    (∏ x in u1 ∪ u2, (f x * if x = 0 then f 0 else 1)) =
-        (∏ x in u1 ∪ u2, f x) * ∏ x in u1 ∩ u2, f x := by
+    (∏ x ∈ u1 ∪ u2, (f x * if x = 0 then f 0 else 1)) =
+        (∏ x ∈ u1 ∪ u2, f x) * ∏ x ∈ u1 ∩ u2, f x := by
       rw [prod_mul_distrib]
       congr 1
       refine (prod_subset_one_on_sdiff inter_subset_union ?_ ?_).symm
@@ -451,10 +451,10 @@ theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
           simp only [Right.neg_nonpos_iff, Nat.cast_nonneg]
         · rcases hx.1 with ⟨a, _, rfl⟩
           simp only [Nat.cast_nonneg]
-    _ = (∏ x in u1, f x) * ∏ x in u2, f x := prod_union_inter
-    _ = (∏ b in v', f b) * ∏ b in v', f (-b) := by
+    _ = (∏ x ∈ u1, f x) * ∏ x ∈ u2, f x := prod_union_inter
+    _ = (∏ b ∈ v', f b) * ∏ b ∈ v', f (-b) := by
       simp only [u1, u2, Nat.cast_inj, imp_self, implies_true, forall_const, prod_image, neg_inj]
-    _ = ∏ b in v', (f b * f (-b)) := prod_mul_distrib.symm⟩
+    _ = ∏ b ∈ v', (f b * f (-b)) := prod_mul_distrib.symm⟩
 #align has_sum.sum_nat_of_sum_int HasSum.nat_add_neg
 
 -- deprecated 2024-03-04

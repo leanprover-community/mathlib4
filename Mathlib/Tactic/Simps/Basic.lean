@@ -7,7 +7,6 @@ import Lean.Elab.Tactic.Simp
 import Lean.Elab.App
 import Mathlib.Tactic.Simps.NotationClass
 import Batteries.Data.String.Basic
-import Batteries.Util.LibraryNote
 import Mathlib.Lean.Expr.Basic
 
 /-!
@@ -483,7 +482,7 @@ partial def getCompositeOfProjectionsAux (proj : String) (e : Expr) (pos : Array
     throwError "{e} doesn't have a structure as type"
   let projs := getStructureFieldsFlattened env structName
   let projInfo := projs.toList.map fun p ↦ do
-    ((← proj.dropPrefix? (p.getString ++ "_")).toString, p)
+    ((← proj.dropPrefix? (p.lastComponentAsString ++ "_")).toString, p)
   let some (projRest, projName) := projInfo.reduceOption.getLast? |
     throwError "Failed to find constructor {proj.dropRight 1} in structure {structName}."
   let newE ← mkProjection e projName
@@ -588,7 +587,7 @@ def findProjection (str : Name) (proj : ParsedProjectionData)
     (rawUnivs : List Level) : CoreM ParsedProjectionData := do
   let env ← getEnv
   let (rawExpr, nrs) ← MetaM.run' <|
-    getCompositeOfProjections str proj.strName.getString
+    getCompositeOfProjections str proj.strName.lastComponentAsString
   if !proj.strStx.isMissing then
     _ ← MetaM.run' <| TermElabM.run' <| addTermInfo proj.strStx rawExpr
   trace[simps.debug] "Projection {proj.newName} has default projection {rawExpr} and
@@ -1107,7 +1106,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   trace[simps.debug] "Next todo: {todoNext}"
   -- check whether all elements in `todo` have a projection as prefix
   if let some (x, _) := todo.find? fun (x, _) ↦ projs.all
-    fun proj ↦ !(proj.getString ++ "_").isPrefixOf x then
+    fun proj ↦ !(proj.lastComponentAsString ++ "_").isPrefixOf x then
     let simpLemma := nm.appendAfter x
     let neededProj := (x.splitOn "_")[0]!
     throwError "Invalid simp lemma {simpLemma}. \
@@ -1121,11 +1120,11 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   let nms ← projInfo.concatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
     let newType ← inferType newRhs
     let newTodo := todo.filterMap
-      fun (x, stx) ↦ (x.dropPrefix? (proj.getString ++ "_")).map (·.toString, stx)
+      fun (x, stx) ↦ (x.dropPrefix? (proj.lastComponentAsString ++ "_")).map (·.toString, stx)
     -- we only continue with this field if it is default or mentioned in todo
     if !(isDefault && todo.isEmpty) && newTodo.isEmpty then return #[]
     let newLhs := projExpr.instantiateLambdasOrApps #[lhsAp]
-    let newName := updateName nm proj.getString isPrefix
+    let newName := updateName nm proj.lastComponentAsString isPrefix
     trace[simps.debug] "Recursively add projections for:{indentExpr newLhs}"
     addProjections newName newType newLhs newRhs newArgs false cfg newTodo projNrs
   return if addThisProjection then nms.push nm else nms
@@ -1154,7 +1153,7 @@ def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
   | `(attr| simps $[!%$bang]? $[?%$trc]? $[(config := $c)]? $[$ids]*) => do
     let cfg ← MetaM.run' <| TermElabM.run' <| withSaveInfoContext <| elabSimpsConfig stx[3][0]
     let cfg := if bang.isNone then cfg else { cfg with rhsMd := .default, simpRhs := true }
-    let ids := ids.map fun x => (x.getId.eraseMacroScopes.getString, x.raw)
+    let ids := ids.map fun x => (x.getId.eraseMacroScopes.lastComponentAsString, x.raw)
     simpsTac stx nm cfg ids.toList trc.isSome
   | _ => throwUnsupportedSyntax
 

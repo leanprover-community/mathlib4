@@ -49,8 +49,8 @@ theorem mem_sumLift₂ :
     · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩
-    · refine' fun h ↦ (not_mem_empty _ h).elim
-    · refine' fun h ↦ (not_mem_empty _ h).elim
+    · refine fun h ↦ (not_mem_empty _ h).elim
+    · refine fun h ↦ (not_mem_empty _ h).elim
     · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inr ⟨a, b, c, rfl, rfl, rfl, hc⟩
@@ -77,7 +77,7 @@ theorem sumLift₂_eq_empty :
     sumLift₂ f g a b = ∅ ↔
       (∀ a₁ b₁, a = inl a₁ → b = inl b₁ → f a₁ b₁ = ∅) ∧
         ∀ a₂ b₂, a = inr a₂ → b = inr b₂ → g a₂ b₂ = ∅ := by
-  refine' ⟨fun h ↦ _, fun h ↦ _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · constructor <;>
     · rintro a b rfl rfl
       exact map_eq_empty.1 h
@@ -151,7 +151,7 @@ lemma mem_sumLexLift :
     · rw [sumLexLift, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩
-    · refine' fun h ↦ (mem_disjSum.1 h).elim _ _
+    · refine fun h ↦ (mem_disjSum.1 h).elim ?_ ?_
       · rintro ⟨c, hc, rfl⟩
         exact Or.inr (Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩)
       · rintro ⟨c, hc, rfl⟩
@@ -195,7 +195,7 @@ lemma sumLexLift_eq_empty :
       (∀ a₁ b₁, a = inl a₁ → b = inl b₁ → f₁ a₁ b₁ = ∅) ∧
         (∀ a₁ b₂, a = inl a₁ → b = inr b₂ → g₁ a₁ b₂ = ∅ ∧ g₂ a₁ b₂ = ∅) ∧
           ∀ a₂ b₂, a = inr a₂ → b = inr b₂ → f₂ a₂ b₂ = ∅ := by
-  refine' ⟨fun h ↦ ⟨_, _, _⟩, fun h ↦ _⟩
+  refine ⟨fun h ↦ ⟨?_, ?_, ?_⟩, fun h ↦ ?_⟩
   any_goals rintro a b rfl rfl; exact map_eq_empty.1 h
   · rintro a b rfl rfl; exact disjSum_eq_empty.1 h
   cases a <;> cases b
@@ -232,8 +232,7 @@ section Disjoint
 
 variable [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
 
-instance instLocallyFiniteOrder : LocallyFiniteOrder (Sum α β)
-    where
+instance instLocallyFiniteOrder : LocallyFiniteOrder (Sum α β) where
   finsetIcc := sumLift₂ Icc Icc
   finsetIco := sumLift₂ Ico Ico
   finsetIoc := sumLift₂ Ioc Ioc

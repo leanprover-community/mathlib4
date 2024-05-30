@@ -35,7 +35,7 @@ tower law
 
 universe u v w u₁ v₁ w₁
 
-open BigOperators Cardinal Submodule
+open Cardinal Submodule
 
 variable (F : Type u) (K : Type v) (A : Type w)
 
@@ -75,14 +75,15 @@ theorem Subalgebra.isSimpleOrder_of_finrank_prime (F A) [Field F] [Ring A] [IsDo
     eq_bot_or_eq_top := fun K => by
       haveI : FiniteDimensional _ _ := .of_finrank_pos hp.pos
       letI := divisionRingOfFiniteDimensional F K
-      refine' (hp.eq_one_or_self_of_dvd _ ⟨_, (finrank_mul_finrank F K A).symm⟩).imp _ fun h => _
-      · exact Subalgebra.eq_bot_of_finrank_one
+      refine (hp.eq_one_or_self_of_dvd _ ⟨_, (finrank_mul_finrank F K A).symm⟩).imp ?_ fun h => ?_
+      · exact fun h' => Subalgebra.eq_bot_of_finrank_one h'
       · exact
           Algebra.toSubmodule_eq_top.1 (eq_top_of_finrank_eq <| K.finrank_toSubmodule.trans h) }
 #align finite_dimensional.subalgebra.is_simple_order_of_finrank_prime FiniteDimensional.Subalgebra.isSimpleOrder_of_finrank_prime
 -- TODO: `IntermediateField` version
 
-@[deprecated] alias finrank_linear_map' := FiniteDimensional.finrank_linearMap_self
+@[deprecated (since := "2024-01-12")]
+alias finrank_linear_map' := FiniteDimensional.finrank_linearMap_self
 #align finite_dimensional.finrank_linear_map' FiniteDimensional.finrank_linear_map'
 
 end FiniteDimensional

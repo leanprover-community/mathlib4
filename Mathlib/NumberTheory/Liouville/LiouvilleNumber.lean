@@ -35,7 +35,7 @@ lemmas for $m \in \mathbb{R}$.
 
 noncomputable section
 
-open scoped Nat BigOperators
+open scoped Nat
 
 open Real Finset
 
@@ -59,7 +59,7 @@ $$
 $$
 -/
 def partialSum (m : ℝ) (k : ℕ) : ℝ :=
-  ∑ i in range (k + 1), 1 / m ^ i !
+  ∑ i ∈ range (k + 1), 1 / m ^ i !
 #align liouville_number.partial_sum LiouvilleNumber.partialSum
 
 /-- `LiouvilleNumber.remainder` is the sum of the series of the terms in `liouvilleNumber m`
@@ -151,7 +151,7 @@ theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
       focus
         conv_rhs => rw [one_mul, mul_add, pow_add, mul_one, pow_mul, mul_comm, ← pow_mul]
         -- the second factors coincide, so we prove the inequality of the first factors*
-        refine' (mul_le_mul_right _).mpr _
+        refine (mul_le_mul_right ?_).mpr ?_
       -- solve all the inequalities `0 < m ^ ??`
       any_goals exact pow_pos (zero_lt_two.trans_le hm) _
       -- `2 ≤ m ^ n!` is a consequence of monotonicity of exponentiation at `2 ≤ m`.
@@ -197,7 +197,7 @@ theorem liouville_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) : Liouville (liouvill
   intro n
   -- the first `n` terms sum to `p / m ^ k!`
   rcases partialSum_eq_rat (zero_lt_two.trans_le hm) n with ⟨p, hp⟩
-  refine' ⟨p, m ^ n !, one_lt_pow mZ1 n.factorial_ne_zero, _⟩
+  refine ⟨p, m ^ n !, one_lt_pow mZ1 n.factorial_ne_zero, ?_⟩
   push_cast
   rw [Nat.cast_pow] at hp
   -- separate out the sum of the first `n` terms and the rest

@@ -71,7 +71,7 @@ lemma isIso_Q_map_iff_mem_quasiIso {K L : HomologicalComplex C c} (f : K ⟶ L) 
     rw [HomologicalComplex.mem_quasiIso_iff, quasiIso_iff]
     intro i
     rw [quasiIsoAt_iff_isIso_homologyMap]
-    refine' (NatIso.isIso_map_iff (homologyFunctorFactors C c i) f).1 _
+    refine (NatIso.isIso_map_iff (homologyFunctorFactors C c i) f).1 ?_
     dsimp
     infer_instance
   · intro h

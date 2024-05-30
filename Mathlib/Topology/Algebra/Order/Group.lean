@@ -25,12 +25,12 @@ variable {α G : Type*} [TopologicalSpace G] [LinearOrderedAddCommGroup G] [Orde
 variable {l : Filter α} {f g : α → G}
 
 -- see Note [lower instance priority]
-instance (priority := 100) LinearOrderedAddCommGroup.topologicalAddGroup : TopologicalAddGroup G
-    where
+instance (priority := 100) LinearOrderedAddCommGroup.topologicalAddGroup :
+    TopologicalAddGroup G where
   continuous_add := by
-    refine' continuous_iff_continuousAt.2 _
+    refine continuous_iff_continuousAt.2 ?_
     rintro ⟨a, b⟩
-    refine' LinearOrderedAddCommGroup.tendsto_nhds.2 fun ε ε0 => _
+    refine LinearOrderedAddCommGroup.tendsto_nhds.2 fun ε ε0 => ?_
     rcases dense_or_discrete 0 ε with (⟨δ, δ0, δε⟩ | ⟨_h₁, h₂⟩)
     · -- If there exists `δ ∈ (0, ε)`, then we choose `δ`-nhd of `a` and `(ε-δ)`-nhd of `b`
       filter_upwards [(eventually_abs_sub_lt a δ0).prod_nhds
@@ -66,7 +66,7 @@ protected theorem Filter.Tendsto.abs {a : G} (h : Tendsto f l (𝓝 a)) :
 
 theorem tendsto_zero_iff_abs_tendsto_zero (f : α → G) :
     Tendsto f l (𝓝 0) ↔ Tendsto (abs ∘ f) l (𝓝 0) := by
-  refine' ⟨fun h => (abs_zero : |(0 : G)| = 0) ▸ h.abs, fun h => _⟩
+  refine ⟨fun h => (abs_zero : |(0 : G)| = 0) ▸ h.abs, fun h => ?_⟩
   have : Tendsto (fun a => -|f a|) l (𝓝 0) := (neg_zero : -(0 : G) = 0) ▸ h.neg
   exact
     tendsto_of_tendsto_of_tendsto_of_le_of_le this h (fun x => neg_abs_le <| f x) fun x =>

@@ -147,7 +147,7 @@ theorem fourierIntegral_convergent_iff (he : Continuous e)
   exact this
 #align vector_fourier.fourier_integral_convergent_iff VectorFourier.fourierIntegral_convergent_iff
 
-@[deprecated] -- 2024-03-29
+@[deprecated (since := "2024-03-29")]
 alias fourier_integral_convergent_iff := VectorFourier.fourierIntegral_convergent_iff
 
 variable [CompleteSpace E]
@@ -349,8 +349,8 @@ theorem vector_fourierIntegral_eq_integral_exp_smul {V : Type*} [AddCommGroup V]
     [MeasurableSpace V] {W : Type*} [AddCommGroup W] [Module ℝ W] (L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ)
     (μ : Measure V) (f : V → E) (w : W) :
     VectorFourier.fourierIntegral fourierChar μ L f w =
-      ∫ v : V, Complex.exp (↑(-2 * π * L v w) * Complex.I) • f v ∂μ :=
-  by simp_rw [VectorFourier.fourierIntegral, Submonoid.smul_def, Real.fourierChar_apply, mul_neg,
+      ∫ v : V, Complex.exp (↑(-2 * π * L v w) * Complex.I) • f v ∂μ := by
+  simp_rw [VectorFourier.fourierIntegral, Submonoid.smul_def, Real.fourierChar_apply, mul_neg,
     neg_mul]
 #align real.vector_fourier_integral_eq_integral_exp_smul Real.vector_fourierIntegral_eq_integral_exp_smul
 
@@ -427,8 +427,8 @@ lemma fourierIntegralInv_eq' (f : V → E) (w : V) :
 
 lemma fourierIntegral_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V → E) (w : W) :
     𝓕 (f ∘ A) w = (𝓕 f) (A w) := by
-  simp only [fourierIntegral_eq, ← A.inner_map_map, Function.comp_apply, ←
-    MeasurePreserving.integral_comp A.measurePreserving A.toHomeomorph.measurableEmbedding]
+  simp only [fourierIntegral_eq, ← A.inner_map_map, Function.comp_apply,
+    ← MeasurePreserving.integral_comp A.measurePreserving A.toHomeomorph.measurableEmbedding]
 
 lemma fourierIntegralInv_eq_fourierIntegral_neg (f : V → E) (w : V) :
     𝓕⁻ f w = 𝓕 f (-w) := by
