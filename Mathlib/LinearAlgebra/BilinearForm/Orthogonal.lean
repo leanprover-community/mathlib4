@@ -231,6 +231,9 @@ theorem nondegenerate_restrict_of_disjoint_orthogonal (B : BilinForm R₁ M₁) 
   exact isOrtho_def.mpr (b x y b₁)
 #align bilin_form.nondegenerate_restrict_of_disjoint_orthogonal LinearMap.BilinForm.nondegenerate_restrict_of_disjoint_orthogonal
 
+@[deprecated (since := "2024-05-30")]
+alias nondegenerateRestrictOfDisjointOrthogonal := nondegenerate_restrict_of_disjoint_orthogonal
+
 /-- An orthogonal basis with respect to a nondegenerate bilinear form has no self-orthogonal
 elements. -/
 theorem iIsOrtho.not_isOrtho_basis_self_of_nondegenerate {n : Type w} [Nontrivial R]
@@ -442,5 +445,9 @@ theorem restrict_nondegenerate_orthogonal_spanSingleton (B : BilinForm K V) (b�
   rw [restrict] at hm
   erw [add_right, show B m.1 y = 0 by rw [b₂]; exact m.2 y hy, hm, add_zero]
 #align bilin_form.restrict_orthogonal_span_singleton_nondegenerate LinearMap.BilinForm.restrict_nondegenerate_orthogonal_spanSingleton
+
+@[deprecated (since := "2024-05-30")]
+alias restrictNondegenerateOrthogonalSpanSingleton :=
+  restrict_nondegenerate_orthogonal_spanSingleton
 
 end BilinForm
