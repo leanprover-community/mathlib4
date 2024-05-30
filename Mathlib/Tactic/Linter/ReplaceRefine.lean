@@ -123,6 +123,14 @@ def ToRefine (stx : Syntax) : Syntax := Id.run do
       return some (.node si ``Lean.Parser.Tactic.refine args)
     | _ => return none)
 
+/-- `mkReplMessage current repl l st` takes as input
+* the `current` string, representing the current text to be replaced;
+* the `repl` string, representing the new text that should be inserted instead of `current`;
+* the line number `l` where the replacement should take place;
+* the starting position `st` of the `current` string.
+
+It returns the text that the syntax `build` uses to automate the replacements.
+-/
 def mkReplMessage (current repl : String) (l st : Nat) : String :=
   s!"(\"{current}\", \"{repl}\") beginning {(l, st)}"
 

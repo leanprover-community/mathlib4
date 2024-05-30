@@ -187,12 +187,6 @@ syntax &"Build completed successfully." : build
 syntax "(" str "," str ")" &"beginning" "(" num "," num ")" : build
 syntax "[" build,* "]" : build
 
-#check `(build| [
-  ("refine'", "refine") beginning (19, 2),
-  ("_", "?_") beginning (19, 11),
-  ("_", "?_") beginning (19, 14)
-])
-
 def parseRepls : TSyntax `build → Array ((String × String) × Nat × Nat)
   | `(build| [ $rs,* ]) =>
     rs.getElems.map fun r => match r with
@@ -201,24 +195,25 @@ def parseRepls : TSyntax `build → Array ((String × String) × Nat × Nat)
       | _ => default
   | _ => default
 
-#eval show CoreM _ from do
+run_cmd Elab.Command.liftTermElabM do
   let bld ← `(build| [
     ("refine'", "refine") beginning (19, 2),
     ("_", "?_") beginning (19, 11),
     ("_", "?_") beginning (19, 14)])
-  let arr := parseRepls bld
-  IO.println arr
+  guard <| parseRepls bld ==
+    #[(("refine'", "refine"), (19, 2)), (("_", "?_"), (19, 11)), (("_", "?_"), (19, 14))]
 
 elab "read " bld:build : command => do
   let arr := parseRepls bld
   logInfo m!"{arr}"
 
+/-- info: [((refine', refine), (19, 2)), ((_, ?_), (19, 11)), ((_, ?_), (19, 14))] -/
+#guard_msgs in
 read [
   ("refine'", "refine") beginning (19, 2),
   ("_", "?_") beginning (19, 11),
   ("_", "?_") beginning (19, 14)
 ]
-
 
 /-- do nothing on a successfully built file. -/
 elab "ℹ [" num "/" num "]" ident ident : command => return
