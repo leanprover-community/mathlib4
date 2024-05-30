@@ -7,6 +7,7 @@ import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Tactic.RewriteSearch
 
 #align_import data.polynomial.coeff from "leanprover-community/mathlib"@"2651125b48fc5c170ab1111afd0817c903b1fc6c"
 
@@ -115,6 +116,15 @@ theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
   -- porting note (#10745): was `simp [Polynomial.sum, support, coeff]`.
   simp [Polynomial.sum, support_ofFinsupp, coeff_ofFinsupp]
 #align polynomial.coeff_sum Polynomial.coeff_sum
+
+lemma coeff_list_sum (l : List R[X]) (i : ℕ) :
+    l.sum.coeff i = (l.map (lcoeff R i)).sum := by
+  rw [← lcoeff_apply, map_list_sum]
+
+lemma coeff_list_sum_map {α : Type} (l : List α) (f : α → R[X]) (i : ℕ) :
+    (l.map f).sum.coeff i = (l.map (fun a => (f a).coeff i)).sum := by
+  rw [coeff_list_sum, List.map_map, Function.comp]
+  simp only [lcoeff_apply]
 
 /-- Decomposes the coefficient of the product `p * q` as a sum
 over `antidiagonal`. A version which sums over `range (n + 1)` can be obtained
