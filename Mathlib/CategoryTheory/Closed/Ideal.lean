@@ -70,7 +70,7 @@ open CartesianClosed
 instance : ExponentialIdeal (subterminalInclusion C) := by
   apply ExponentialIdeal.mk'
   intro B A
-  refine' ⟨⟨A ⟹ B.1, fun Z g h => _⟩, ⟨Iso.refl _⟩⟩
+  refine ⟨⟨A ⟹ B.1, fun Z g h => ?_⟩, ⟨Iso.refl _⟩⟩
   exact uncurry_injective (B.2 (CartesianClosed.uncurry g) (CartesianClosed.uncurry h))
 
 /-- If `D` is a reflective subcategory, the property of being an exponential ideal is equivalent to

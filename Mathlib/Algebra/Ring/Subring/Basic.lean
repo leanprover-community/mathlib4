@@ -953,7 +953,7 @@ def closureCommRingOfComm {s : Set R} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b =
     mul_comm := fun x y => by
       ext
       simp only [Subring.coe_mul]
-      refine'
+      refine
         closure_induction₂ x.prop y.prop hcomm (fun x => by simp only [mul_zero, zero_mul])
           (fun x => by simp only [mul_zero, zero_mul]) (fun x => by simp only [mul_one, one_mul])
           (fun x => by simp only [mul_one, one_mul])

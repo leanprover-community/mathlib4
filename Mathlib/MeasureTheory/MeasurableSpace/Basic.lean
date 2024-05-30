@@ -2052,7 +2052,7 @@ instance inf_isMeasurablyGenerated (f g : Filter α) [IsMeasurablyGenerated f]
   rintro t ⟨sf, hsf, sg, hsg, rfl⟩
   rcases IsMeasurablyGenerated.exists_measurable_subset hsf with ⟨s'f, hs'f, hmf, hs'sf⟩
   rcases IsMeasurablyGenerated.exists_measurable_subset hsg with ⟨s'g, hs'g, hmg, hs'sg⟩
-  refine' ⟨s'f ∩ s'g, inter_mem_inf hs'f hs'g, hmf.inter hmg, _⟩
+  refine ⟨s'f ∩ s'g, inter_mem_inf hs'f hs'g, hmf.inter hmg, ?_⟩
   exact inter_subset_inter hs'sf hs'sg
 #align filter.inf_is_measurably_generated Filter.inf_isMeasurablyGenerated
 
@@ -2075,7 +2075,7 @@ instance iInf_isMeasurablyGenerated {f : ι → Filter α} [∀ i, IsMeasurablyG
   rw [← Equiv.plift.surjective.iInf_comp, mem_iInf] at hs
   rcases hs with ⟨t, ht, ⟨V, hVf, rfl⟩⟩
   choose U hUf hU using fun i => IsMeasurablyGenerated.exists_measurable_subset (hVf i)
-  refine' ⟨⋂ i : t, U i, _, _, _⟩
+  refine ⟨⋂ i : t, U i, ?_, ?_, ?_⟩
   · rw [← Equiv.plift.surjective.iInf_comp, mem_iInf]
     exact ⟨t, ht, U, hUf, rfl⟩
   · haveI := ht.countable.toEncodable.countable
