@@ -237,8 +237,21 @@ noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) w
 --#synth ContinuousSMul ℝ C(spectrum ℝ A, ℝ)
 --#synth CompactSpace (spectrum ℝ A)
 
-theorem eigenvalues_eq_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) : (spectrum ℝ a) = Set.range (ha.eigenvalues) := by
-    sorry --simp? [toLin, Module.End.hasEigenvalue_iff_mem_spectrum]
+theorem eigenvalues_eq_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) :
+    (spectrum ℝ a) = Set.range (ha.eigenvalues) := by
+    apply Set.eq_of_subset_of_subset
+    swap
+    rintro x ⟨y , rfl⟩
+    exact eigenvalue_mem_real ha y
+    intro x hx
+    simp only [Set.mem_range]
+    sorry
+
+
+
+    --[toLin, Module.End.hasEigenvalue_iff_mem_spectrum]
+    --apply spectrum.of_algebraMap_mem (R := ℝ) (S := 𝕜)
+
 
 theorem finite_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) : (spectrum ℝ a).Finite := by
    have H := Set.finite_range (ha.eigenvalues)
