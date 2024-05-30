@@ -568,3 +568,10 @@ example {α : Type} {a b : α} (h : ¬ (a = b)) : ¬ (b = a) := by
   cc
 
 end Lean3Issue1608
+
+section rawNatLit
+
+example : nat_lit 0 = nat_lit 0 := by
+  cc
+
+end rawNatLit

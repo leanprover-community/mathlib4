@@ -1219,6 +1219,7 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
   else
     mkEntry e false
     if (← get).values && isValue e then return -- we treat values as atomic symbols
+  unless e.isApp do return
   if let some (_, lhs, rhs) ← e.relSidesIfSymm? then
     internalizeCore lhs (some e)
     internalizeCore rhs (some e)
