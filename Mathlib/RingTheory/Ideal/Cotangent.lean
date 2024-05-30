@@ -53,7 +53,7 @@ instance Cotangent.isScalarTower : IsScalarTower S S' I.Cotangent :=
 #align ideal.cotangent.is_scalar_tower Ideal.Cotangent.isScalarTower
 
 instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
-  Submodule.Quotient.isNoetherian _
+  inferInstanceAs (IsNoetherian R (I ⧸ (I • ⊤ : Submodule R I)))
 
 /-- The quotient map from `I` to `I ⧸ I ^ 2`. -/
 @[simps! (config := .lemmasOnly) apply]
@@ -88,7 +88,7 @@ theorem toCotangent_range : LinearMap.range I.toCotangent = ⊤ := Submodule.ran
 theorem cotangent_subsingleton_iff : Subsingleton I.Cotangent ↔ IsIdempotentElem I := by
   constructor
   · intro H
-    refine' (pow_two I).symm.trans (le_antisymm (Ideal.pow_le_self two_ne_zero) _)
+    refine (pow_two I).symm.trans (le_antisymm (Ideal.pow_le_self two_ne_zero) ?_)
     exact fun x hx => (I.toCotangent_eq_zero ⟨x, hx⟩).mp (Subsingleton.elim _ _)
   · exact fun e =>
       ⟨fun x y =>
@@ -128,6 +128,7 @@ theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
   · intro x y hx hy; exact add_mem hx hy
 #align ideal.cotangent_ideal_square Ideal.cotangentIdeal_square
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem to_quotient_square_range :
     LinearMap.range I.cotangentToQuotientSquare = I.cotangentIdeal.restrictScalars R := by
   trans LinearMap.range (I.cotangentToQuotientSquare.comp I.toCotangent)
@@ -135,6 +136,7 @@ theorem to_quotient_square_range :
   · rw [to_quotient_square_comp_toCotangent, LinearMap.range_comp, I.range_subtype]; ext; rfl
 #align ideal.to_quotient_square_range Ideal.to_quotient_square_range
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- The equivalence of the two definitions of `I / I ^ 2`, either as the quotient of `I` or the
 ideal of `R / I ^ 2`. -/
 noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal := by
@@ -201,8 +203,7 @@ namespace LocalRing
 variable (R : Type*) [CommRing R] [LocalRing R]
 
 /-- The `A ⧸ I`-vector space `I ⧸ I ^ 2`. -/
-@[reducible]
-def CotangentSpace : Type _ := (maximalIdeal R).Cotangent
+abbrev CotangentSpace : Type _ := (maximalIdeal R).Cotangent
 #align local_ring.cotangent_space LocalRing.CotangentSpace
 
 instance : Module (ResidueField R) (CotangentSpace R) := Ideal.cotangentModule _
@@ -236,8 +237,8 @@ lemma CotangentSpace.span_image_eq_top_iff [IsNoetherianRing R] {s : Set (maxima
       Submodule.span R s = ⊤ := by
   rw [← map_eq_top_iff, ← (Submodule.restrictScalars_injective R ..).eq_iff,
     Submodule.restrictScalars_span]
-  simp only [Ideal.toCotangent_apply, Submodule.restrictScalars_top, Submodule.map_span]
-  exact Ideal.Quotient.mk_surjective
+  · simp only [Ideal.toCotangent_apply, Submodule.restrictScalars_top, Submodule.map_span]
+  · exact Ideal.Quotient.mk_surjective
 
 open FiniteDimensional
 

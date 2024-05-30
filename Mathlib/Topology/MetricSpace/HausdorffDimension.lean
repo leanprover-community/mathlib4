@@ -521,7 +521,7 @@ theorem dimH_ball_pi (x : ι → ℝ) {r : ℝ} (hr : 0 < r) :
   · rw [← ENNReal.coe_natCast]
     have : μH[Fintype.card ι] (Metric.ball x r) = ENNReal.ofReal ((2 * r) ^ Fintype.card ι) := by
       rw [hausdorffMeasure_pi_real, Real.volume_pi_ball _ hr]
-    refine dimH_of_hausdorffMeasure_ne_zero_ne_top ?_ ?_ <;> rw [NNReal.coe_nat_cast, this]
+    refine dimH_of_hausdorffMeasure_ne_zero_ne_top ?_ ?_ <;> rw [NNReal.coe_natCast, this]
     · simp [pow_pos (mul_pos (zero_lt_two' ℝ) hr)]
     · exact ENNReal.ofReal_ne_top
 set_option linter.uppercaseLean3 false in
@@ -572,6 +572,16 @@ theorem dimH_univ : dimH (univ : Set ℝ) = 1 := by
   rw [dimH_univ_eq_finrank ℝ, FiniteDimensional.finrank_self, Nat.cast_one]
 set_option linter.uppercaseLean3 false in
 #align real.dimH_univ Real.dimH_univ
+
+variable {E}
+
+lemma hausdorffMeasure_of_finrank_lt [MeasurableSpace E] [BorelSpace E] {d : ℝ}
+    (hd : finrank ℝ E < d) : (μH[d] : Measure E) = 0 := by
+  lift d to ℝ≥0 using (Nat.cast_nonneg _).trans hd.le
+  rw [← measure_univ_eq_zero]
+  apply hausdorffMeasure_of_dimH_lt
+  rw [dimH_univ_eq_finrank]
+  exact mod_cast hd
 
 end Real
 

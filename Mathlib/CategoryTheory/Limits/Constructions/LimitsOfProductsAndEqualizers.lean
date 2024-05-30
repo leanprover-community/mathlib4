@@ -120,7 +120,8 @@ theorem hasLimit_of_equalizer_and_product (F : J ⥤ C) [HasLimit (Discrete.func
 
 /-- A limit can be realised as a subobject of a product. -/
 noncomputable def limitSubobjectProduct [HasLimitsOfSize.{w, w} C] (F : J ⥤ C) :
-    limit F ⟶ ∏ fun j => F.obj j :=
+    limit F ⟶ ∏ᶜ fun j => F.obj j :=
+  have := hasFiniteLimits_of_hasLimitsOfSize C
   (limit.isoLimitCone (limitConeOfEqualizerAndProduct F)).hom ≫ equalizer.ι _ _
 #align category_theory.limits.limit_subobject_product CategoryTheory.Limits.limitSubobjectProduct
 
@@ -166,8 +167,8 @@ variable (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
 /-- If a functor preserves equalizers and the appropriate products, it preserves limits. -/
 noncomputable def preservesLimitOfPreservesEqualizersAndProduct : PreservesLimitsOfShape J G where
   preservesLimit {K} := by
-    let P := ∏ K.obj
-    let Q := ∏ fun f : Σp : J × J, p.fst ⟶ p.snd => K.obj f.1.2
+    let P := ∏ᶜ K.obj
+    let Q := ∏ᶜ fun f : Σp : J × J, p.fst ⟶ p.snd => K.obj f.1.2
     let s : P ⟶ Q := Pi.lift fun f => limit.π (Discrete.functor K.obj) ⟨_⟩ ≫ K.map f.2
     let t : P ⟶ Q := Pi.lift fun f => limit.π (Discrete.functor K.obj) ⟨f.1.2⟩
     let I := equalizer s t
@@ -349,6 +350,7 @@ theorem hasColimit_of_coequalizer_and_coproduct (F : J ⥤ C) [HasColimit (Discr
 /-- A colimit can be realised as a quotient of a coproduct. -/
 noncomputable def colimitQuotientCoproduct [HasColimitsOfSize.{w, w} C] (F : J ⥤ C) :
     ∐ (fun j => F.obj j) ⟶ colimit F :=
+  have := hasFiniteColimits_of_hasColimitsOfSize C
   coequalizer.π _ _ ≫ (colimit.isoColimitCocone (colimitCoconeOfCoequalizerAndCoproduct F)).inv
 #align category_theory.limits.colimit_quotient_coproduct CategoryTheory.Limits.colimitQuotientCoproduct
 

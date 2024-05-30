@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Function.Indicator
-import Mathlib.Data.Rat.Field
+import Mathlib.Algebra.Field.Rat
+import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.Order.Field.Rat
 
 #align_import data.rat.nnrat from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
@@ -70,7 +71,7 @@ variable {p q : ℚ≥0}
 lemma num_div_den (q : ℚ≥0) : (q.num : ℚ≥0) / q.den = q := by
   ext : 1
   rw [coe_div, coe_natCast, coe_natCast, num, ← Int.cast_natCast,
-    Int.natAbs_of_nonneg (Rat.num_nonneg.2 q.prop)]
+    Int.natAbs_of_nonneg (Rat.num_nonneg.2 q.cast_nonneg)]
   exact Rat.num_div_den q
 #align nnrat.num_div_denom NNRat.num_div_den
 

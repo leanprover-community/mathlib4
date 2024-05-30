@@ -45,10 +45,9 @@ section
 variable (α : Type*) [Fintype α] [Nonempty α] {m n : ℕ}
 
 open Finset Fintype Nat
-open scoped BigOperators
 
 private lemma binomial_sum_eq (h : n < m) :
-    ∑ i in range (n + 1), (n.choose i * (m - n) / ((m - i) * m.choose i) : ℚ) = 1 := by
+    ∑ i ∈ range (n + 1), (n.choose i * (m - n) / ((m - i) * m.choose i) : ℚ) = 1 := by
   set f : ℕ → ℚ := fun i ↦ n.choose i * (m.choose i : ℚ)⁻¹ with hf
   suffices ∀ i ∈ range (n + 1), f i - f (i + 1) = n.choose i * (m - n) / ((m - i) * m.choose i) by
     rw [← sum_congr rfl this, sum_range_sub', hf]
@@ -73,7 +72,7 @@ private lemma binomial_sum_eq (h : n < m) :
 
 private lemma Fintype.sum_div_mul_card_choose_card :
     ∑ s : Finset α, (card α / ((card α - s.card) * (card α).choose s.card) : ℚ) =
-      card α * ∑ k in range (card α), (↑k)⁻¹ + 1 := by
+      card α * ∑ k ∈ range (card α), (↑k)⁻¹ + 1 := by
   rw [← powerset_univ, powerset_card_disjiUnion, sum_disjiUnion]
   have : ∀ {x : ℕ}, ∀ s ∈ powersetCard x (univ : Finset α),
     (card α / ((card α - Finset.card s) * (card α).choose (Finset.card s)) : ℚ) =
@@ -121,7 +120,7 @@ lemma truncatedSup_of_not_mem (h : a ∉ lowerClosure s) : truncatedSup s a = �
 @[simp] lemma truncatedSup_empty (a : α) : truncatedSup ∅ a = ⊤ := truncatedSup_of_not_mem $ by simp
 
 @[simp] lemma truncatedSup_singleton (b a : α) : truncatedSup {b} a = if a ≤ b then b else ⊤ := by
-  simp [truncatedSup]; split_ifs <;> simp [*]
+  simp [truncatedSup]; split_ifs <;> simp [Finset.filter_true_of_mem, *]
 
 lemma le_truncatedSup : a ≤ truncatedSup s a := by
   rw [truncatedSup]
@@ -165,7 +164,7 @@ lemma truncatedSup_union_of_not_mem (hs : a ∉ lowerClosure s) (ht : a ∉ lowe
 
 lemma truncatedSup_of_isAntichain (hs : IsAntichain (· ≤ ·) (s : Set α)) (ha : a ∈ s) :
     truncatedSup s a = a := by
-  refine' le_antisymm _ le_truncatedSup
+  refine le_antisymm ?_ le_truncatedSup
   simp_rw [truncatedSup_of_mem (subset_lowerClosure ha), sup'_le_iff, mem_filter]
   rintro b ⟨hb, hab⟩
   exact (hs.eq ha hb hab).ge
@@ -200,7 +199,7 @@ lemma truncatedInf_le : truncatedInf s a ≤ a := by
 @[simp] lemma truncatedInf_singleton (b a : α) : truncatedInf {b} a = if b ≤ a then b else ⊥ := by
   simp only [truncatedInf, coe_singleton, upperClosure_singleton, UpperSet.mem_Ici_iff,
     filter_congr_decidable, id_eq]
-  split_ifs <;> simp [*]
+  split_ifs <;> simp [Finset.filter_true_of_mem, *]
 
 lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :
     e (truncatedInf s a) = truncatedInf (s.map e.toEquiv.toEmbedding) (e a) := by
@@ -236,7 +235,7 @@ lemma truncatedInf_union_of_not_mem (hs : a ∉ upperClosure s) (ht : a ∉ uppe
 
 lemma truncatedInf_of_isAntichain (hs : IsAntichain (· ≤ ·) (s : Set α)) (ha : a ∈ s) :
     truncatedInf s a = a := by
-  refine' le_antisymm truncatedInf_le _
+  refine le_antisymm truncatedInf_le ?_
   simp_rw [truncatedInf_of_mem (subset_upperClosure ha), le_inf'_iff, mem_filter]
   rintro b ⟨hb, hba⟩
   exact (hs.eq hb ha hba).ge
@@ -322,7 +321,6 @@ end Finset
 
 open Finset hiding card
 open Fintype Nat
-open scoped BigOperators
 
 namespace AhlswedeZhang
 variable {α : Type*} [Fintype α] [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α}
@@ -352,11 +350,11 @@ lemma infSum_union_add_infSum_sups (𝒜 ℬ : Finset (Finset α)) :
   simp
 
 lemma IsAntichain.le_infSum (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) (h𝒜₀ : ∅ ∉ 𝒜) :
-    ∑ s in 𝒜, ((card α).choose s.card : ℚ)⁻¹ ≤ infSum 𝒜 := by
+    ∑ s ∈ 𝒜, ((card α).choose s.card : ℚ)⁻¹ ≤ infSum 𝒜 := by
   calc
-    _ = ∑ s in 𝒜, (truncatedInf 𝒜 s).card / (s.card * (card α).choose s.card : ℚ) := ?_
+    _ = ∑ s ∈ 𝒜, (truncatedInf 𝒜 s).card / (s.card * (card α).choose s.card : ℚ) := ?_
     _ ≤ _ := sum_le_univ_sum_of_nonneg fun s ↦ by positivity
-  refine' sum_congr rfl fun s hs ↦ _
+  refine sum_congr rfl fun s hs ↦ ?_
   rw [truncatedInf_of_isAntichain h𝒜 hs, div_mul_cancel_left₀]
   have := (nonempty_iff_ne_empty.2 $ ne_of_mem_of_not_mem hs h𝒜₀).card_pos
   positivity
@@ -364,7 +362,7 @@ lemma IsAntichain.le_infSum (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset
 variable [Nonempty α]
 
 @[simp] lemma supSum_singleton (hs : s ≠ univ) :
-    supSum ({s} : Finset (Finset α)) = card α * ∑ k in range (card α), (k : ℚ)⁻¹ := by
+    supSum ({s} : Finset (Finset α)) = card α * ∑ k ∈ range (card α), (k : ℚ)⁻¹ := by
   have : ∀ t : Finset α,
     (card α - (truncatedSup {s} t).card : ℚ) / ((card α - t.card) * (card α).choose t.card) =
     if t ⊆ s then (card α - s.card : ℚ) / ((card α - t.card) * (card α).choose t.card) else 0 := by
@@ -375,13 +373,13 @@ variable [Nonempty α]
     ← eq_sub_iff_add_eq', supSum, ← sum_sub_distrib, ← sub_div]
   rw [sum_congr rfl fun t _ ↦ this t, sum_ite, sum_const_zero, add_zero, filter_subset_univ,
     sum_powerset, ← binomial_sum_eq ((card_lt_iff_ne_univ _).2 hs), eq_comm]
-  refine' sum_congr rfl fun n _ ↦ _
+  refine sum_congr rfl fun n _ ↦ ?_
   rw [mul_div_assoc, ← nsmul_eq_mul]
   exact sum_powersetCard n s fun m ↦ (card α - s.card : ℚ) / ((card α - m) * (card α).choose m)
 
 /-- The **Ahlswede-Zhang Identity**. -/
 lemma infSum_compls_add_supSum (𝒜 : Finset (Finset α)) :
-    infSum 𝒜ᶜˢ + supSum 𝒜 = card α * ∑ k in range (card α), (k : ℚ)⁻¹ + 1 := by
+    infSum 𝒜ᶜˢ + supSum 𝒜 = card α * ∑ k ∈ range (card α), (k : ℚ)⁻¹ + 1 := by
   unfold infSum supSum
   rw [← @map_univ_of_surjective (Finset α) _ _ _ ⟨compl, compl_injective⟩ compl_surjective, sum_map]
   simp only [Function.Embedding.coeFn_mk, univ_map_embedding, ← compl_truncatedSup,
@@ -389,13 +387,13 @@ lemma infSum_compls_add_supSum (𝒜 : Finset (Finset α)) :
     div_add_div_same, sub_add_cancel, Fintype.sum_div_mul_card_choose_card]
 
 lemma supSum_of_not_univ_mem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ 𝒜) :
-    supSum 𝒜 = card α * ∑ k in range (card α), (k : ℚ)⁻¹ := by
+    supSum 𝒜 = card α * ∑ k ∈ range (card α), (k : ℚ)⁻¹ := by
   set m := 𝒜.card with hm
   clear_value m
   induction' m using Nat.strong_induction_on with m ih generalizing 𝒜
   replace ih := fun 𝒜 h𝒜 h𝒜₁ h𝒜₂ ↦ @ih _ h𝒜 𝒜 h𝒜₁ h𝒜₂ rfl
   obtain ⟨a, rfl⟩ | h𝒜₃ := h𝒜₁.exists_eq_singleton_or_nontrivial
-  · refine' supSum_singleton _
+  · refine supSum_singleton ?_
     simpa [eq_comm] using h𝒜₂
   cases m
   · cases h𝒜₁.card_pos.ne hm

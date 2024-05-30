@@ -8,7 +8,7 @@ import Mathlib.Order.Category.BoolAlg
 import Mathlib.Order.Category.FinBddDistLat
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import order.category.FinBoolAlg from "leanprover-community/mathlib"@"937b1c59c58710ef8ed91f8727ef402d49d621a2"
 
@@ -99,9 +99,9 @@ instance hasForgetToFinBddDistLat : HasForget₂ FinBoolAlg FinBddDistLat where
   forget_comp := rfl
 #align FinBoolAlg.has_forget_to_FinBddDistLat FinBoolAlg.hasForgetToFinBddDistLat
 
-instance forgetToBoolAlgFull : (forget₂ FinBoolAlg BoolAlg).Full :=
+instance forgetToBoolAlg_full : (forget₂ FinBoolAlg BoolAlg).Full :=
   InducedCategory.full _
-#align FinBoolAlg.forget_to_BoolAlg_full FinBoolAlg.forgetToBoolAlgFull
+#align FinBoolAlg.forget_to_BoolAlg_full FinBoolAlg.forgetToBoolAlg_full
 
 instance forgetToBoolAlgFaithful : (forget₂ FinBoolAlg BoolAlg).Faithful :=
   InducedCategory.faithful _

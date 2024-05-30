@@ -64,7 +64,7 @@ def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e) := 
   let .app (.app (.const ``mkRat _) (a : Q(ℤ))) (b : Q(ℕ)) ← whnfR e | failure
   haveI' : $e =Q mkRat $a $b := ⟨⟩
   let ra ← derive a
-  let some ⟨_, na, pa⟩ := ra.toInt (q(Int.instRingInt) : Q(Ring Int)) | failure
+  let some ⟨_, na, pa⟩ := ra.toInt (q(Int.instRing) : Q(Ring Int)) | failure
   let ⟨nb, pb⟩ ← deriveNat q($b) q(AddCommMonoidWithOne.toAddMonoidWithOne)
   let rab ← derive q($na / $nb : Rat)
   let ⟨q, n, d, p⟩ ← rab.toRat' q(Rat.instDivisionRing)

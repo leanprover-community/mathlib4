@@ -95,11 +95,9 @@ theorem map_zsmul {X Y : C} {f : X ⟶ Y} {r : ℤ} : F.map (r • f) = r • F.
   (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_zsmul _ _
 #align category_theory.functor.map_zsmul CategoryTheory.Functor.map_zsmul
 
-open BigOperators
-
 @[simp]
 nonrec theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
-    F.map (∑ a in s, f a) = ∑ a in s, F.map (f a) :=
+    F.map (∑ a ∈ s, f a) = ∑ a ∈ s, F.map (f a) :=
   map_sum F.mapAddHom f s
 #align category_theory.functor.map_sum CategoryTheory.Functor.map_sum
 
@@ -177,6 +175,13 @@ theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [Preserves
       ← biprod.mapBiprod_hom_desc, Category.assoc, Iso.inv_hom_id_assoc, F.map_id,
       biprod.add_eq_lift_id_desc]
 #align category_theory.functor.additive_of_preserves_binary_biproducts CategoryTheory.Functor.additive_of_preservesBinaryBiproducts
+
+lemma additive_of_preserves_binary_products
+    [HasBinaryProducts C] [PreservesLimitsOfShape (Discrete WalkingPair) F]
+    [F.PreservesZeroMorphisms] : F.Additive := by
+  have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryProducts
+  have := preservesBinaryBiproductsOfPreservesBinaryProducts F
+  exact Functor.additive_of_preservesBinaryBiproducts F
 
 end
 

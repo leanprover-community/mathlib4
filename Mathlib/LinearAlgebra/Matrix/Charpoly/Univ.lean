@@ -29,8 +29,6 @@ of a matrix are homogeneous polynomials in the matrix entries.
   the `i`-th coefficient of `univ` is a homogeneous polynomial of degree `n - i`.
 -/
 
-open BigOperators
-
 namespace Matrix.charpoly
 
 variable {R S : Type*} (n : Type*) [CommRing R] [CommRing S] [Fintype n] [DecidableEq n]
@@ -56,7 +54,8 @@ open MvPolynomial RingHomClass in
 @[simp]
 lemma univ_map_eval₂Hom (M : n × n → S) :
     (univ R n).map (eval₂Hom f M) = charpoly (Matrix.of M.curry) := by
-  erw [univ, ← charpoly_map, mvPolynomialX_map_eval₂ _ (Matrix.of M.curry)]
+  rw [univ, ← charpoly_map, coe_eval₂Hom, ← mvPolynomialX_map_eval₂ f (Matrix.of M.curry)]
+  simp only [of_apply, Function.curry_apply, Prod.mk.eta]
 
 lemma univ_map_map :
     (univ R n).map (MvPolynomial.map f) = univ S n := by

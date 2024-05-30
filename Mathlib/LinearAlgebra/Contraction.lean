@@ -35,7 +35,7 @@ section Contraction
 
 open TensorProduct LinearMap Matrix Module
 
-open TensorProduct BigOperators
+open TensorProduct
 
 section CommSemiring
 
@@ -247,7 +247,7 @@ theorem lTensorHomEquivHomLTensor_toLinearMap :
   classical -- Porting note: missing decidable for choosing basis
   let e := congr (LinearEquiv.refl R P) (dualTensorHomEquiv R M Q)
   have h : Function.Surjective e.toLinearMap := e.surjective
-  refine' (cancel_right h).1 _
+  refine (cancel_right h).1 ?_
   ext f q m
   dsimp [e, lTensorHomEquivHomLTensor]
   simp only [lTensorHomEquivHomLTensor, dualTensorHomEquiv, compr₂_apply, mk_apply, coe_comp,
@@ -262,7 +262,7 @@ theorem rTensorHomEquivHomRTensor_toLinearMap :
   classical -- Porting note: missing decidable for choosing basis
   let e := congr (dualTensorHomEquiv R M P) (LinearEquiv.refl R Q)
   have h : Function.Surjective e.toLinearMap := e.surjective
-  refine' (cancel_right h).1 _
+  refine (cancel_right h).1 ?_
   ext f p q m
   simp only [e, rTensorHomEquivHomRTensor, dualTensorHomEquiv, compr₂_apply, mk_apply, coe_comp,
     LinearEquiv.coe_toLinearMap, Function.comp_apply, map_tmul, LinearEquiv.coe_coe,

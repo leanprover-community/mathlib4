@@ -397,11 +397,9 @@ theorem frobenius_add : frobenius R p (x + y) = frobenius R p x + frobenius R p 
   (frobenius R p).map_add x y
 #align frobenius_add frobenius_add
 
-theorem frobenius_nat_cast (n : ℕ) : frobenius R p n = n :=
+theorem frobenius_natCast (n : ℕ) : frobenius R p n = n :=
   map_natCast (frobenius R p) n
-#align frobenius_nat_cast frobenius_nat_cast
-
-open BigOperators
+#align frobenius_nat_cast frobenius_natCast
 
 variable {R}
 
@@ -414,7 +412,7 @@ theorem multiset_sum_pow_char (s : Multiset R) : s.sum ^ p = (s.map (· ^ p : R 
 #align multiset_sum_pow_char multiset_sum_pow_char
 
 theorem sum_pow_char {ι : Type*} (s : Finset ι) (f : ι → R) :
-    (∑ i in s, f i) ^ p = ∑ i in s, f i ^ p :=
+    (∑ i ∈ s, f i) ^ p = ∑ i ∈ s, f i ^ p :=
   map_sum (frobenius R p) _ _
 #align sum_pow_char sum_pow_char
 
@@ -428,7 +426,7 @@ theorem multiset_sum_pow_char_pow (s : Multiset R) :
   map_multiset_sum (iterateFrobenius R p n) _
 
 theorem sum_pow_char_pow {ι : Type*} (s : Finset ι) (f : ι → R) :
-    (∑ i in s, f i) ^ p ^ n = ∑ i in s, f i ^ p ^ n :=
+    (∑ i ∈ s, f i) ^ p ^ n = ∑ i ∈ s, f i ^ p ^ n :=
   map_sum (iterateFrobenius R p n) _ _
 
 end CommSemiring

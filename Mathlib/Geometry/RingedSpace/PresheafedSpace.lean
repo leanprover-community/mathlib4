@@ -286,7 +286,7 @@ def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y wher
       c := Presheaf.toPushforwardOfIso H α.hom }
   hom_inv_id := by
     ext
-    simp only [comp_base, Iso.hom_inv_id, FunctorToTypes.map_id_apply, id_base]
+    · simp only [comp_base, Iso.hom_inv_id, FunctorToTypes.map_id_apply, id_base]
     rw [NatTrans.comp_app]
     simp only [id_base, comp_obj, op_obj, comp_base, Presheaf.pushforwardObj_obj,
       Opens.map_comp_obj, comp_c_app, unop_op, Presheaf.toPushforwardOfIso_app, assoc,
@@ -294,8 +294,8 @@ def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y wher
       ← Functor.map_comp, eqToHom_trans, eqToHom_refl]
   inv_hom_id := by
     ext
-    dsimp
-    rw [H.inv_hom_id]
+    · dsimp
+      rw [H.inv_hom_id]
     dsimp
     simp only [Presheaf.pushforwardObj_obj, op_obj, Opens.map_comp_obj, comp_obj,
       comp_c_app, unop_op, Presheaf.toPushforwardOfIso_app, whiskerRight_app, eqToHom_app,
@@ -516,12 +516,12 @@ def mapPresheaf (F : C ⥤ D) : PresheafedSpace C ⥤ PresheafedSpace D where
   -- Porting note: these proofs were automatic in mathlib3
   map_id X := by
     ext U
-    rfl
-    simp
+    · rfl
+    · simp
   map_comp f g := by
     ext U
-    rfl
-    simp
+    · rfl
+    · simp
 #align category_theory.functor.map_presheaf CategoryTheory.Functor.mapPresheaf
 
 @[simp]

@@ -12,6 +12,8 @@ import Mathlib.Data.Finset.Option
 # fintype instances for option
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists MulAction
 
 open Function
 
@@ -101,7 +103,7 @@ theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
       convert h_option α (Pα _)
     @truncRecEmptyOption (fun α => ∀ h, @P α h) (@fun α β e hα hβ => @of_equiv α β hβ e (hα _))
       f_empty h_option α _ (Classical.decEq α)
-  · exact p _
+  exact p _
   -- ·
 #align fintype.induction_empty_option Fintype.induction_empty_option
 
@@ -113,6 +115,6 @@ theorem Finite.induction_empty_option {P : Type u → Prop} (of_equiv : ∀ {α 
     (h_empty : P PEmpty) (h_option : ∀ {α} [Fintype α], P α → P (Option α)) (α : Type u)
     [Finite α] : P α := by
   cases nonempty_fintype α
-  refine' Fintype.induction_empty_option _ _ _ α
+  refine Fintype.induction_empty_option ?_ ?_ ?_ α
   exacts [fun α β _ => of_equiv, h_empty, @h_option]
 #align finite.induction_empty_option Finite.induction_empty_option

@@ -11,6 +11,7 @@ import Mathlib.Data.Int.Associated
 import Mathlib.LinearAlgebra.FreeModule.Determinant
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.RingTheory.DedekindDomain.PID
+import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.RingTheory.LocalProperties
 import Mathlib.RingTheory.Localization.NormTrace
 
@@ -47,8 +48,6 @@ the norms of elements in `I`.
  * `map_mul Ideal.relNorm`: multiplicativity of the relative ideal norm
 -/
 
-
-open scoped BigOperators
 
 open scoped nonZeroDivisors
 

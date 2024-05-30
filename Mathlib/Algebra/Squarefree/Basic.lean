@@ -3,6 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain
 
 #align_import algebra.squarefree from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
@@ -118,7 +119,7 @@ variable [CommMonoid R] [DecidableRel (Dvd.dvd : R → R → Prop)]
 
 theorem squarefree_iff_multiplicity_le_one (r : R) :
     Squarefree r ↔ ∀ x : R, multiplicity x r ≤ 1 ∨ IsUnit x := by
-  refine' forall_congr' fun a => _
+  refine forall_congr' fun a => ?_
   rw [← sq, pow_dvd_iff_le_multiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]
   norm_cast
   rw [← one_add_one_eq_two]
@@ -319,7 +320,6 @@ theorem squarefree_natCast {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := 
   rw [← squarefree_natAbs, natAbs_ofNat]
 #align int.squarefree_coe_nat Int.squarefree_natCast
 
--- 2024-04-05
-@[deprecated] alias squarefree_coe_nat := squarefree_natCast
+@[deprecated] alias squarefree_coe_nat := squarefree_natCast -- 2024-04-05
 
 end Int

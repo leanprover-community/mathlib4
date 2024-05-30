@@ -494,8 +494,8 @@ def negMulRelabelling (x y : PGame.{u}) : -x * y ≡r -(x * y) :=
         apply ((negAddRelabelling _ _).trans _).symm
         apply ((negAddRelabelling _ _).trans (Relabelling.addCongr _ _)).subCongr
         -- Porting note: we used to just do `<;> exact (negMulRelabelling _ _).symm` from here.
-        exact (negMulRelabelling _ _).symm
-        exact (negMulRelabelling _ _).symm
+        · exact (negMulRelabelling _ _).symm
+        · exact (negMulRelabelling _ _).symm
         -- Porting note: not sure what has gone wrong here.
         -- The goal is hideous here, and the `exact` doesn't work,
         -- but if we just `change` it to look like the mathlib3 goal then we're fine!?
@@ -526,7 +526,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
     let x := mk xl xr xL xR
     let y := mk yl yr yL yR
     let z := mk zl zr zL zR
-    refine' quot_eq_of_mk'_quot_eq _ _ _ _
+    refine quot_eq_of_mk'_quot_eq ?_ ?_ ?_ ?_
     · fconstructor
       · rintro (⟨_, _ | _⟩ | ⟨_, _ | _⟩) <;>
           -- Porting note: we've increased `maxDepth` here from `5` to `6`.
@@ -695,7 +695,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
     let x := mk xl xr xL xR
     let y := mk yl yr yL yR
     let z := mk zl zr zL zR
-    refine' quot_eq_of_mk'_quot_eq _ _ _ _
+    refine quot_eq_of_mk'_quot_eq ?_ ?_ ?_ ?_
     · fconstructor
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩, _⟩ | ⟨⟨_, _⟩ | ⟨_, _⟩, _⟩) <;>
           -- Porting note: as above, increased the `maxDepth` here by 1.
@@ -866,7 +866,7 @@ instance uniqueInvTy (l r : Type u) [IsEmpty l] [IsEmpty r] : Unique (InvTy l r 
   { InvTy.instInhabited l r with
     uniq := by
       rintro (a | a | a)
-      rfl
+      · rfl
       all_goals exact isEmptyElim a }
 #align pgame.unique_inv_ty SetTheory.PGame.uniqueInvTy
 

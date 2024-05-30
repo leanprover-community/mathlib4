@@ -20,7 +20,6 @@ mod `m ≠ 0` converges if and only if the sum over all of `ℕ` converges.
 -/
 
 
-open BigOperators in
 lemma Finset.sum_indicator_mod {R : Type*} [AddCommMonoid R] (m : ℕ) [NeZero m] (f : ℕ → R) :
     f = ∑ a : ZMod m, {n : ℕ | (n : ZMod m) = a}.indicator f := by
   ext n
@@ -64,7 +63,7 @@ class is not summable. -/
 lemma not_summable_indicator_mod_of_antitone_of_neg {m : ℕ} [hm : NeZero m] {f : ℕ → ℝ}
     (hf : Antitone f) {n : ℕ} (hn : f n < 0) (k : ZMod m) :
     ¬ Summable ({n : ℕ | (n : ZMod m) = k}.indicator f) := by
-  rw [← ZMod.nat_cast_zmod_val k, summable_indicator_mod_iff_summable]
+  rw [← ZMod.natCast_zmod_val k, summable_indicator_mod_iff_summable]
   exact not_summable_of_antitone_of_neg
     (hf.comp_monotone <| (Covariant.monotone_of_const m).add_const k.val) <|
     (hf <| (Nat.le_mul_of_pos_left n Fin.size_pos').trans <| Nat.le_add_right ..).trans_lt hn
@@ -76,9 +75,9 @@ lemma summable_indicator_mod_iff_summable_indicator_mod {m : ℕ} [NeZero m] {f 
     (hs : Summable ({n : ℕ | (n : ZMod m) = k}.indicator f)) :
     Summable ({n : ℕ | (n : ZMod m) = l}.indicator f) := by
   by_cases hf₀ : ∀ n, 0 ≤ f n -- the interesting case
-  · rw [← ZMod.nat_cast_zmod_val k, summable_indicator_mod_iff_summable] at hs
+  · rw [← ZMod.natCast_zmod_val k, summable_indicator_mod_iff_summable] at hs
     have hl : (l.val + m : ZMod m) = l := by
-      simp only [ZMod.nat_cast_val, ZMod.cast_id', id_eq, CharP.cast_eq_zero, add_zero]
+      simp only [ZMod.natCast_val, ZMod.cast_id', id_eq, CharP.cast_eq_zero, add_zero]
     rw [← hl, ← Nat.cast_add, summable_indicator_mod_iff_summable]
     exact hs.of_nonneg_of_le (fun _ ↦ hf₀ _)
       fun _ ↦ hf <| Nat.add_le_add Nat.le.refl (k.val_lt.trans_le <| m.le_add_left l.val).le
