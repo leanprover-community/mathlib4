@@ -58,7 +58,7 @@ pointwise subtraction
 
 open Function MulOpposite
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 variable {F α β γ : Type*}
 
@@ -1091,7 +1091,7 @@ scoped[Pointwise] attribute [instance] Finset.commMonoid Finset.addCommMonoid
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_prod {ι : Type*} (s : Finset ι) (f : ι → Finset α) :
-    ↑(∏ i in s, f i) = ∏ i in s, (f i : Set α) :=
+    ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : Set α) :=
   map_prod ((coeMonoidHom) : Finset α →* Set α) _ _
 #align finset.coe_prod Finset.coe_prod
 #align finset.coe_sum Finset.coe_sum
@@ -2363,10 +2363,10 @@ section CommMonoid
 variable [CommMonoid α] {ι : Type*} [DecidableEq ι]
 
 @[to_additive (attr := simp)] lemma prod_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∏ i in s⁻¹, f i = ∏ i in s, f i⁻¹ := prod_image <| inv_injective.injOn _
+    ∏ i ∈ s⁻¹, f i = ∏ i ∈ s, f i⁻¹ := prod_image <| inv_injective.injOn _
 
 @[to_additive existing, simp] lemma prod_neg_index [InvolutiveNeg ι] (s : Finset ι) (f : ι → α) :
-    ∏ i in -s, f i = ∏ i in s, f (-i) := prod_image <| neg_injective.injOn _
+    ∏ i ∈ -s, f i = ∏ i ∈ s, f (-i) := prod_image <| neg_injective.injOn _
 
 end CommMonoid
 
@@ -2374,7 +2374,7 @@ section AddCommMonoid
 variable [AddCommMonoid α] {ι : Type*} [DecidableEq ι]
 
 @[to_additive existing, simp] lemma sum_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∑ i in s⁻¹, f i = ∑ i in s, f i⁻¹ := sum_image <| inv_injective.injOn _
+    ∑ i ∈ s⁻¹, f i = ∑ i ∈ s, f i⁻¹ := sum_image <| inv_injective.injOn _
 
 end AddCommMonoid
 end BigOps

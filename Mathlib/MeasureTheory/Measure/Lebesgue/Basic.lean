@@ -40,7 +40,7 @@ open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
 open ENNReal (ofReal)
 
-open scoped BigOperators ENNReal NNReal Topology
+open scoped ENNReal NNReal Topology
 
 /-!
 ### Definition of the Lebesgue measure and lengths of intervals

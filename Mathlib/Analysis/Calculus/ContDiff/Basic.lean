@@ -37,7 +37,7 @@ derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor ser
 
 noncomputable section
 
-open scoped Classical BigOperators NNReal Nat
+open scoped Classical NNReal Nat
 
 local notation "∞" => (⊤ : ℕ∞)
 
@@ -1032,7 +1032,7 @@ theorem ContDiffWithinAt.fderivWithin'' {f : E → F → G} {g : E → F} {t : S
     refine hf'.congr_of_eventuallyEq_insert ?_
     filter_upwards [hv, ht]
     exact fun y hy h2y => (hvf' y hy).fderivWithin h2y
-  induction' m using ENat.recTopCoe with m
+  induction' m with m
   · obtain rfl := eq_top_iff.mpr hmn
     rw [contDiffWithinAt_top]
     exact fun m => this m le_top
@@ -1420,7 +1420,7 @@ theorem ContDiff.sub {f g : E → F} (hf : ContDiff 𝕜 n f) (hg : ContDiff �
 
 theorem ContDiffWithinAt.sum {ι : Type*} {f : ι → E → F} {s : Finset ι} {t : Set E} {x : E}
     (h : ∀ i ∈ s, ContDiffWithinAt 𝕜 n (fun x => f i x) t x) :
-    ContDiffWithinAt 𝕜 n (fun x => ∑ i in s, f i x) t x := by
+    ContDiffWithinAt 𝕜 n (fun x => ∑ i ∈ s, f i x) t x := by
   classical
     induction' s using Finset.induction_on with i s is IH
     · simp [contDiffWithinAt_const]
@@ -1431,35 +1431,35 @@ theorem ContDiffWithinAt.sum {ι : Type*} {f : ι → E → F} {s : Finset ι} {
 
 theorem ContDiffAt.sum {ι : Type*} {f : ι → E → F} {s : Finset ι} {x : E}
     (h : ∀ i ∈ s, ContDiffAt 𝕜 n (fun x => f i x) x) :
-    ContDiffAt 𝕜 n (fun x => ∑ i in s, f i x) x := by
+    ContDiffAt 𝕜 n (fun x => ∑ i ∈ s, f i x) x := by
   rw [← contDiffWithinAt_univ] at *; exact ContDiffWithinAt.sum h
 #align cont_diff_at.sum ContDiffAt.sum
 
 theorem ContDiffOn.sum {ι : Type*} {f : ι → E → F} {s : Finset ι} {t : Set E}
     (h : ∀ i ∈ s, ContDiffOn 𝕜 n (fun x => f i x) t) :
-    ContDiffOn 𝕜 n (fun x => ∑ i in s, f i x) t := fun x hx =>
+    ContDiffOn 𝕜 n (fun x => ∑ i ∈ s, f i x) t := fun x hx =>
   ContDiffWithinAt.sum fun i hi => h i hi x hx
 #align cont_diff_on.sum ContDiffOn.sum
 
 theorem ContDiff.sum {ι : Type*} {f : ι → E → F} {s : Finset ι}
-    (h : ∀ i ∈ s, ContDiff 𝕜 n fun x => f i x) : ContDiff 𝕜 n fun x => ∑ i in s, f i x := by
+    (h : ∀ i ∈ s, ContDiff 𝕜 n fun x => f i x) : ContDiff 𝕜 n fun x => ∑ i ∈ s, f i x := by
   simp only [← contDiffOn_univ] at *; exact ContDiffOn.sum h
 #align cont_diff.sum ContDiff.sum
 
 theorem iteratedFDerivWithin_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ} {x : E}
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : ∀ j ∈ u, ContDiffOn 𝕜 i (f j) s) :
-    iteratedFDerivWithin 𝕜 i (∑ j in u, f j ·) s x =
-      ∑ j in u, iteratedFDerivWithin 𝕜 i (f j) s x := by
+    iteratedFDerivWithin 𝕜 i (∑ j ∈ u, f j ·) s x =
+      ∑ j ∈ u, iteratedFDerivWithin 𝕜 i (f j) s x := by
   induction u using Finset.cons_induction with
   | empty => ext; simp [hs, hx]
-  | @cons a u ha IH =>
+  | cons a u ha IH =>
     simp only [Finset.mem_cons, forall_eq_or_imp] at h
     simp only [Finset.sum_cons]
     rw [iteratedFDerivWithin_add_apply' h.1 (ContDiffOn.sum h.2) hs hx, IH h.2]
 
 theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ}
     (h : ∀ j ∈ u, ContDiff 𝕜 i (f j)) :
-    iteratedFDeriv 𝕜 i (∑ j in u, f j ·) = ∑ j in u, iteratedFDeriv 𝕜 i (f j) :=
+    iteratedFDeriv 𝕜 i (∑ j ∈ u, f j ·) = ∑ j ∈ u, iteratedFDeriv 𝕜 i (f j) :=
   funext fun x ↦ by simpa [iteratedFDerivWithin_univ] using
     iteratedFDerivWithin_sum_apply uniqueDiffOn_univ (mem_univ x) fun j hj ↦ (h j hj).contDiffOn
 
@@ -1500,43 +1500,43 @@ theorem ContDiff.mul {f g : E → 𝔸} (hf : ContDiff 𝕜 n f) (hg : ContDiff 
 #align cont_diff.mul ContDiff.mul
 
 theorem contDiffWithinAt_prod' {t : Finset ι} {f : ι → E → 𝔸'}
-    (h : ∀ i ∈ t, ContDiffWithinAt 𝕜 n (f i) s x) : ContDiffWithinAt 𝕜 n (∏ i in t, f i) s x :=
+    (h : ∀ i ∈ t, ContDiffWithinAt 𝕜 n (f i) s x) : ContDiffWithinAt 𝕜 n (∏ i ∈ t, f i) s x :=
   Finset.prod_induction f (fun f => ContDiffWithinAt 𝕜 n f s x) (fun _ _ => ContDiffWithinAt.mul)
     (contDiffWithinAt_const (c := 1)) h
 #align cont_diff_within_at_prod' contDiffWithinAt_prod'
 
 theorem contDiffWithinAt_prod {t : Finset ι} {f : ι → E → 𝔸'}
     (h : ∀ i ∈ t, ContDiffWithinAt 𝕜 n (f i) s x) :
-    ContDiffWithinAt 𝕜 n (fun y => ∏ i in t, f i y) s x := by
+    ContDiffWithinAt 𝕜 n (fun y => ∏ i ∈ t, f i y) s x := by
   simpa only [← Finset.prod_apply] using contDiffWithinAt_prod' h
 #align cont_diff_within_at_prod contDiffWithinAt_prod
 
 theorem contDiffAt_prod' {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t, ContDiffAt 𝕜 n (f i) x) :
-    ContDiffAt 𝕜 n (∏ i in t, f i) x :=
+    ContDiffAt 𝕜 n (∏ i ∈ t, f i) x :=
   contDiffWithinAt_prod' h
 #align cont_diff_at_prod' contDiffAt_prod'
 
 theorem contDiffAt_prod {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t, ContDiffAt 𝕜 n (f i) x) :
-    ContDiffAt 𝕜 n (fun y => ∏ i in t, f i y) x :=
+    ContDiffAt 𝕜 n (fun y => ∏ i ∈ t, f i y) x :=
   contDiffWithinAt_prod h
 #align cont_diff_at_prod contDiffAt_prod
 
 theorem contDiffOn_prod' {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t, ContDiffOn 𝕜 n (f i) s) :
-    ContDiffOn 𝕜 n (∏ i in t, f i) s := fun x hx => contDiffWithinAt_prod' fun i hi => h i hi x hx
+    ContDiffOn 𝕜 n (∏ i ∈ t, f i) s := fun x hx => contDiffWithinAt_prod' fun i hi => h i hi x hx
 #align cont_diff_on_prod' contDiffOn_prod'
 
 theorem contDiffOn_prod {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t, ContDiffOn 𝕜 n (f i) s) :
-    ContDiffOn 𝕜 n (fun y => ∏ i in t, f i y) s := fun x hx =>
+    ContDiffOn 𝕜 n (fun y => ∏ i ∈ t, f i y) s := fun x hx =>
   contDiffWithinAt_prod fun i hi => h i hi x hx
 #align cont_diff_on_prod contDiffOn_prod
 
 theorem contDiff_prod' {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t, ContDiff 𝕜 n (f i)) :
-    ContDiff 𝕜 n (∏ i in t, f i) :=
+    ContDiff 𝕜 n (∏ i ∈ t, f i) :=
   contDiff_iff_contDiffAt.mpr fun _ => contDiffAt_prod' fun i hi => (h i hi).contDiffAt
 #align cont_diff_prod' contDiff_prod'
 
 theorem contDiff_prod {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t, ContDiff 𝕜 n (f i)) :
-    ContDiff 𝕜 n fun y => ∏ i in t, f i y :=
+    ContDiff 𝕜 n fun y => ∏ i ∈ t, f i y :=
   contDiff_iff_contDiffAt.mpr fun _ => contDiffAt_prod fun i hi => (h i hi).contDiffAt
 #align cont_diff_prod contDiff_prod
 

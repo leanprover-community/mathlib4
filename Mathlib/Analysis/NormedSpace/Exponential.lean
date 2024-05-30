@@ -90,7 +90,7 @@ namespace NormedSpace
 
 open Filter RCLike ContinuousMultilinearMap NormedField Asymptotics
 
-open scoped Nat Topology BigOperators ENNReal
+open scoped Nat Topology ENNReal
 
 section TopologicalAlgebra
 
@@ -525,7 +525,7 @@ end
 commute then `exp 𝕂 (∑ i, f i) = ∏ i, exp 𝕂 (f i)`. -/
 theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     (h : (s : Set ι).Pairwise fun i j => Commute (f i) (f j)) :
-    exp 𝕂 (∑ i in s, f i) =
+    exp 𝕂 (∑ i ∈ s, f i) =
       s.noncommProd (fun i => exp 𝕂 (f i)) fun i hi j hj _ => (h.of_refl hi hj).exp 𝕂 := by
   classical
     induction' s using Finset.induction_on with a s ha ih
@@ -658,7 +658,7 @@ theorem exp_add {x y : 𝔸} : exp 𝕂 (x + y) = exp 𝕂 x * exp 𝕂 y :=
 #align exp_add NormedSpace.exp_add
 
 /-- A version of `NormedSpace.exp_sum_of_commute` for a commutative Banach-algebra. -/
-theorem exp_sum {ι} (s : Finset ι) (f : ι → 𝔸) : exp 𝕂 (∑ i in s, f i) = ∏ i in s, exp 𝕂 (f i) := by
+theorem exp_sum {ι} (s : Finset ι) (f : ι → 𝔸) : exp 𝕂 (∑ i ∈ s, f i) = ∏ i ∈ s, exp 𝕂 (f i) := by
   rw [exp_sum_of_commute, Finset.noncommProd_eq_prod]
   exact fun i _hi j _hj _ => Commute.all _ _
 #align exp_sum NormedSpace.exp_sum

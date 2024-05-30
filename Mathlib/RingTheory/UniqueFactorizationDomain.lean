@@ -567,11 +567,11 @@ theorem factors_pos (x : α) (hx : x ≠ 0) : 0 < factors x ↔ ¬IsUnit x := by
         (mt Multiset.eq_zero_iff_forall_not_mem.mp (not_forall.mpr ⟨p, not_not.mpr hp⟩))
 #align unique_factorization_monoid.factors_pos UniqueFactorizationMonoid.factors_pos
 
-open BigOperators Multiset in
+open Multiset in
 theorem factors_pow_count_prod [DecidableEq α] {x : α} (hx : x ≠ 0) :
-    (∏ p in (factors x).toFinset, p ^ (factors x).count p) ~ᵤ x :=
+    (∏ p ∈ (factors x).toFinset, p ^ (factors x).count p) ~ᵤ x :=
   calc
-  _ = prod (∑ a in toFinset (factors x), count a (factors x) • {a}) := by
+  _ = prod (∑ a ∈ toFinset (factors x), count a (factors x) • {a}) := by
     simp only [prod_sum, prod_nsmul, prod_singleton]
   _ = prod (factors x) := by rw [toFinset_sum_count_nsmul_eq (factors x)]
   _ ~ᵤ x := factors_prod hx
@@ -854,7 +854,7 @@ theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
     simp
   induction s using Multiset.induction with
   | empty => simp
-  | cons IH =>
+  | cons _ _ IH =>
     rw [Multiset.prod_cons, Multiset.map_cons, Multiset.sum_cons, normalizedFactors_mul, IH]
     · exact fun h ↦ hs (Multiset.mem_cons_of_mem h)
     · exact fun h ↦ hs (h ▸ Multiset.mem_cons_self _ _)
@@ -1072,12 +1072,10 @@ section Multiplicative
 variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
 variable {β : Type*} [CancelCommMonoidWithZero β]
 
-open BigOperators
-
 theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α} (i : α → ℕ) (p : α)
     (hps : p ∉ s) (is_prime : ∀ q ∈ insert p s, Prime q)
     (is_coprime : ∀ᵉ (q ∈ insert p s) (q' ∈ insert p s), q ∣ q' → q = q') :
-    IsRelPrime (p ^ i p) (∏ p' in s, p' ^ i p') := by
+    IsRelPrime (p ^ i p) (∏ p' ∈ s, p' ^ i p') := by
   have hp := is_prime _ (Finset.mem_insert_self _ _)
   refine (isRelPrime_iff_no_prime_factors <| pow_ne_zero _ hp.ne_zero).mpr ?_
   intro d hdp hdprod hd
@@ -1100,7 +1098,7 @@ theorem induction_on_prime_power {P : α → Prop} (s : Finset α) (i : α → �
     (is_prime : ∀ p ∈ s, Prime p) (is_coprime : ∀ᵉ (p ∈ s) (q ∈ s), p ∣ q → p = q)
     (h1 : ∀ {x}, IsUnit x → P x) (hpr : ∀ {p} (i : ℕ), Prime p → P (p ^ i))
     (hcp : ∀ {x y}, IsRelPrime x y → P x → P y → P (x * y)) :
-    P (∏ p in s, p ^ i p) := by
+    P (∏ p ∈ s, p ^ i p) := by
   letI := Classical.decEq α
   induction' s using Finset.induction_on with p f' hpf' ih
   · simpa using h1 isUnit_one
@@ -1142,7 +1140,7 @@ theorem multiplicative_prime_power {f : α → β} (s : Finset α) (i j : α →
     (h1 : ∀ {x y}, IsUnit y → f (x * y) = f x * f y)
     (hpr : ∀ {p} (i : ℕ), Prime p → f (p ^ i) = f p ^ i)
     (hcp : ∀ {x y}, IsRelPrime x y → f (x * y) = f x * f y) :
-    f (∏ p in s, p ^ (i p + j p)) = f (∏ p in s, p ^ i p) * f (∏ p in s, p ^ j p) := by
+    f (∏ p ∈ s, p ^ (i p + j p)) = f (∏ p ∈ s, p ^ i p) * f (∏ p ∈ s, p ^ j p) := by
   letI := Classical.decEq α
   induction' s using Finset.induction_on with p s hps ih
   · simpa using h1 isUnit_one
@@ -1177,11 +1175,11 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
   haveI : Nontrivial α := ⟨⟨_, _, ha0⟩⟩
   letI : NormalizationMonoid α := UniqueFactorizationMonoid.normalizationMonoid
   suffices
-      f (∏ p in (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
+      f (∏ p ∈ (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
         p ^ ((normalizedFactors a).count p + (normalizedFactors b).count p)) =
-      f (∏ p in (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
+      f (∏ p ∈ (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
         p ^ (normalizedFactors a).count p) *
-      f (∏ p : α in (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
+      f (∏ p ∈ (normalizedFactors a).toFinset ∪ (normalizedFactors b).toFinset,
         p ^ (normalizedFactors b).count p) by
     obtain ⟨ua, a_eq⟩ := normalizedFactors_prod ha0
     obtain ⟨ub, b_eq⟩ := normalizedFactors_prod hb0
@@ -1286,7 +1284,8 @@ theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
 #align associates.prod_mono Associates.prod_mono
 
 theorem FactorSet.prod_eq_zero_iff [Nontrivial α] (p : FactorSet α) : p.prod = 0 ↔ p = ⊤ := by
-  induction p using WithTop.recTopCoe -- TODO: `induction_eliminator` doesn't work with `abbrev`
+  unfold FactorSet at p
+  induction p  -- TODO: `induction_eliminator` doesn't work with `abbrev`
   · simp only [iff_self_iff, eq_self_iff_true, Associates.prod_top]
   · rw [prod_coe, Multiset.prod_eq_zero_iff, Multiset.mem_map, eq_false WithTop.coe_ne_top,
       iff_false_iff, not_exists]
@@ -1391,7 +1390,8 @@ theorem unique' {p q : Multiset (Associates α)} :
 
 theorem FactorSet.unique [Nontrivial α] {p q : FactorSet α} (h : p.prod = q.prod) : p = q := by
   -- TODO: `induction_eliminator` doesn't work with `abbrev`
-  induction p using WithTop.recTopCoe <;> induction q using WithTop.recTopCoe
+  unfold FactorSet at p q
+  induction p <;> induction q
   · rfl
   · rw [eq_comm, ← FactorSet.prod_eq_zero_iff, ← h, Associates.prod_top]
   · rw [← FactorSet.prod_eq_zero_iff, h, Associates.prod_top]

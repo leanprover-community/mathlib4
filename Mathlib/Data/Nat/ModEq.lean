@@ -292,7 +292,7 @@ lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b 
     rw [mul_sub]
     exact modEq_iff_dvd.mp h
   · show Int.gcd (m / d) (c / d) = 1
-    simp only [← Int.natCast_div, Int.coe_nat_gcd (m / d) (c / d), gcd_div hmd hcd,
+    simp only [← Int.natCast_div, Int.gcd_natCast_natCast (m / d) (c / d), gcd_div hmd hcd,
       Nat.div_self (gcd_pos_of_pos_left c hm)]
 #align nat.modeq.cancel_left_div_gcd Nat.ModEq.cancel_left_div_gcd
 
@@ -353,7 +353,7 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
         have hcoedvd : ∀ t, (gcd n m : ℤ) ∣ t * (b - a) := fun t => h.dvd.mul_left _
         have := gcd_eq_gcd_ab n m
         constructor <;> rw [Int.emod_def, ← sub_add] <;>
-            refine' dvd_add _ (dvd_mul_of_dvd_left _ _) <;>
+            refine dvd_add ?_ (dvd_mul_of_dvd_left ?_ _) <;>
           try norm_cast
         · rw [← sub_eq_iff_eq_add'] at this
           rw [← this, sub_mul, ← add_sub_assoc, add_comm, add_sub_assoc, ← mul_sub,

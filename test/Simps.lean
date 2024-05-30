@@ -732,7 +732,7 @@ example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : α) {z} (h : e₂ (e₁ x) = 
   simp only [Equiv.trans_apply]; rw [h]
 
 example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : γ) {z} (h : e₁.symm (e₂.symm x) = z) :
-  (e₁.trans e₂).symm x = z := by
+    (e₁.trans e₂).symm x = z := by
   simp only [Equiv.trans_symm_apply]; rw [h]
 
 -- the new projection names are parsed correctly (the old projection names won't work anymore)

@@ -3,17 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Anne Baanen
 -/
-import Mathlib.Data.Matrix.PEquiv
 import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.Notation
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.GroupTheory.Perm.Fin
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Tactic.Ring
-import Mathlib.LinearAlgebra.Alternating.Basic
-import Mathlib.LinearAlgebra.Pi
+import Mathlib.Data.Matrix.RowCol
 import Mathlib.GroupTheory.GroupAction.Ring
+import Mathlib.GroupTheory.Perm.Fin
+import Mathlib.LinearAlgebra.Alternating.Basic
 
 #align_import linear_algebra.matrix.determinant from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
@@ -48,7 +43,7 @@ open Equiv Equiv.Perm Finset Function
 
 namespace Matrix
 
-open Matrix BigOperators
+open Matrix
 
 variable {m n : Type*} [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
 variable {R : Type v} [CommRing R]
@@ -153,7 +148,7 @@ theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
       simp only [det_apply', mul_apply, prod_univ_sum, mul_sum, Fintype.piFinset_univ]
       rw [Finset.sum_comm]
     _ =
-        ∑ p in (@univ (n → n) _).filter Bijective,
+        ∑ p ∈ (@univ (n → n) _).filter Bijective,
           ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (p i) * N (p i) i :=
       (Eq.symm <|
         sum_subset (filter_subset _ _) fun f _ hbij =>
@@ -268,14 +263,6 @@ For the `simp` version of this lemma, see `det_submatrix_equiv_self`; this one i
 theorem det_reindex_self (e : m ≃ n) (A : Matrix m m R) : det (reindex e e A) = det A :=
   det_submatrix_equiv_self e.symm A
 #align matrix.det_reindex_self Matrix.det_reindex_self
-
-/-- The determinant of a permutation matrix equals its sign. -/
-@[simp]
-theorem det_permutation (σ : Perm n) :
-    Matrix.det (σ.toPEquiv.toMatrix : Matrix n n R) = Perm.sign σ := by
-  rw [← Matrix.mul_one (σ.toPEquiv.toMatrix : Matrix n n R), PEquiv.toPEquiv_mul_matrix,
-    det_permute, det_one, mul_one]
-#align matrix.det_permutation Matrix.det_permutation
 
 theorem det_smul (A : Matrix n n R) (c : R) : det (c • A) = c ^ Fintype.card n * det A :=
   calc

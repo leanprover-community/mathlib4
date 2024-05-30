@@ -129,10 +129,10 @@ instance option : Denumerable (Option α) :=
   ⟨fun n => by
     cases n with
     | zero =>
-      refine' ⟨none, _, encode_none⟩
+      refine ⟨none, ?_, encode_none⟩
       rw [decode_option_zero, Option.mem_def]
     | succ n =>
-      refine' ⟨some (ofNat α n), _, _⟩
+      refine ⟨some (ofNat α n), ?_, ?_⟩
       · rw [decode_option_succ, decode_eq_ofNat, Option.map_some', Option.mem_def]
       rw [encode_some, encode_ofNat]⟩
 #align denumerable.option Denumerable.option

@@ -48,7 +48,7 @@ theorem dense_compl_compact (hs : IsCompact s) : Dense sᶜ :=
 #align rat.dense_compl_compact Rat.dense_compl_compact
 
 instance cocompact_inf_nhds_neBot : NeBot (cocompact ℚ ⊓ 𝓝 p) := by
-  refine' (hasBasis_cocompact.inf (nhds_basis_opens _)).neBot_iff.2 _
+  refine (hasBasis_cocompact.inf (nhds_basis_opens _)).neBot_iff.2 ?_
   rintro ⟨s, o⟩ ⟨hs, hpo, ho⟩; rw [inter_comm]
   exact (dense_compl_compact hs).inter_open_nonempty _ ho ⟨p, hpo⟩
 #align rat.cocompact_inf_nhds_ne_bot Rat.cocompact_inf_nhds_neBot
@@ -57,8 +57,8 @@ theorem not_countably_generated_cocompact : ¬IsCountablyGenerated (cocompact �
   intro H
   rcases exists_seq_tendsto (cocompact ℚ ⊓ 𝓝 0) with ⟨x, hx⟩
   rw [tendsto_inf] at hx; rcases hx with ⟨hxc, hx0⟩
-  obtain ⟨n, hn⟩ : ∃ n : ℕ, x n ∉ insert (0 : ℚ) (range x)
-  · exact (hxc.eventually hx0.isCompact_insert_range.compl_mem_cocompact).exists
+  obtain ⟨n, hn⟩ : ∃ n : ℕ, x n ∉ insert (0 : ℚ) (range x) :=
+    (hxc.eventually hx0.isCompact_insert_range.compl_mem_cocompact).exists
   exact hn (Or.inr ⟨n, rfl⟩)
 #align rat.not_countably_generated_cocompact Rat.not_countably_generated_cocompact
 

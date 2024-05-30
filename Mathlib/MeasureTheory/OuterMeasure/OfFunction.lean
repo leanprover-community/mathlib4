@@ -39,7 +39,7 @@ outer measure, Carathéodory-measurable, Carathéodory's criterion
 noncomputable section
 
 open Set Function Filter
-open scoped Classical BigOperators NNReal Topology ENNReal
+open scoped Classical NNReal Topology ENNReal
 
 namespace MeasureTheory
 namespace OuterMeasure
@@ -64,7 +64,7 @@ protected def ofFunction : OuterMeasure α :=
       ENNReal.le_of_forall_pos_le_add <| by
         intro ε hε (hb : (∑' i, μ (s i)) < ∞)
         rcases ENNReal.exists_pos_sum_of_countable (ENNReal.coe_pos.2 hε).ne' ℕ with ⟨ε', hε', hl⟩
-        refine' le_trans _ (add_le_add_left (le_of_lt hl) _)
+        refine le_trans ?_ (add_le_add_left (le_of_lt hl) _)
         rw [← ENNReal.tsum_add]
         choose f hf using
           show ∀ i, ∃ f : ℕ → Set α, (s i ⊆ ⋃ i, f i) ∧ (∑' i, m (f i)) < μ (s i) + ε' i by
@@ -76,9 +76,9 @@ protected def ofFunction : OuterMeasure α :=
             exists t
             contrapose! ht
             exact le_iInf ht
-        refine' le_trans _ (ENNReal.tsum_le_tsum fun i => le_of_lt (hf i).2)
+        refine le_trans ?_ (ENNReal.tsum_le_tsum fun i => le_of_lt (hf i).2)
         rw [← ENNReal.tsum_prod, ← Nat.pairEquiv.symm.tsum_eq]
-        refine' iInf_le_of_le _ (iInf_le _ _)
+        refine iInf_le_of_le _ (iInf_le _ ?_)
         apply iUnion_subset
         intro i
         apply Subset.trans (hf i).1

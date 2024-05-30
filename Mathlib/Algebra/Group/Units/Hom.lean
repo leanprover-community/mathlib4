@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2018 Johan Commelin All rights reserved.
+Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
 -/
@@ -21,6 +21,8 @@ also contains unrelated results about `Units` that depend on `MonoidHom`.
   `α` to `βˣ`.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 open Function
 

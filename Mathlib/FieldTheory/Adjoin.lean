@@ -665,8 +665,6 @@ theorem adjoin_rootSet_isSplittingField {p : F[X]} (hp : p.Splits (algebraMap F 
   isSplittingField_iff.mpr ⟨splits_of_splits hp fun _ hx ↦ subset_adjoin F (p.rootSet E) hx, rfl⟩
 #align intermediate_field.adjoin_root_set_is_splitting_field IntermediateField.adjoin_rootSet_isSplittingField
 
-open scoped BigOperators
-
 section Supremum
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E1 E2 : IntermediateField K L)
@@ -771,8 +769,8 @@ theorem finiteDimensional_iSup_of_finset'
 
 /-- A compositum of splitting fields is a splitting field -/
 theorem isSplittingField_iSup {p : ι → K[X]}
-    {s : Finset ι} (h0 : ∏ i in s, p i ≠ 0) (h : ∀ i ∈ s, (p i).IsSplittingField K (t i)) :
-    (∏ i in s, p i).IsSplittingField K (⨆ i ∈ s, t i : IntermediateField K L) := by
+    {s : Finset ι} (h0 : ∏ i ∈ s, p i ≠ 0) (h : ∀ i ∈ s, (p i).IsSplittingField K (t i)) :
+    (∏ i ∈ s, p i).IsSplittingField K (⨆ i ∈ s, t i : IntermediateField K L) := by
   let F : IntermediateField K L := ⨆ i ∈ s, t i
   have hF : ∀ i ∈ s, t i ≤ F := fun i hi ↦ le_iSup_of_le i (le_iSup (fun _ ↦ t i) hi)
   simp only [isSplittingField_iff] at h ⊢

@@ -36,8 +36,6 @@ In this file we prove various facts about membership in a submonoid:
 submonoid, submonoids
 -/
 
-open BigOperators
-
 variable {M A B : Type*}
 
 section Assoc
@@ -48,7 +46,7 @@ namespace SubmonoidClass
 
 @[to_additive (attr := norm_cast, simp)]
 theorem coe_list_prod (l : List S) : (l.prod : M) = (l.map (↑)).prod :=
-  (SubmonoidClass.subtype S : _ →* M).map_list_prod l
+  map_list_prod (SubmonoidClass.subtype S : _ →* M) l
 #align submonoid_class.coe_list_prod SubmonoidClass.coe_list_prod
 #align add_submonoid_class.coe_list_sum AddSubmonoidClass.coe_list_sum
 
@@ -61,7 +59,7 @@ theorem coe_multiset_prod {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
 
 @[to_additive (attr := norm_cast)] -- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem coe_finset_prod {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (f : ι → S)
-    (s : Finset ι) : ↑(∏ i in s, f i) = (∏ i in s, f i : M) :=
+    (s : Finset ι) : ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod (SubmonoidClass.subtype S) f s
 #align submonoid_class.coe_finset_prod SubmonoidClass.coe_finset_prod
 #align add_submonoid_class.coe_finset_sum AddSubmonoidClass.coe_finset_sum
@@ -97,7 +95,7 @@ theorem multiset_prod_mem {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
       "Sum of elements in an `AddSubmonoid` of an `AddCommMonoid` indexed by a `Finset`
       is in the `AddSubmonoid`."]
 theorem prod_mem {M : Type*} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] {ι : Type*}
-    {t : Finset ι} {f : ι → M} (h : ∀ c ∈ t, f c ∈ S) : (∏ c in t, f c) ∈ S :=
+    {t : Finset ι} {f : ι → M} (h : ∀ c ∈ t, f c ∈ S) : (∏ c ∈ t, f c) ∈ S :=
   multiset_prod_mem (t.1.map f) fun _x hx =>
     let ⟨i, hi, hix⟩ := Multiset.mem_map.1 hx
     hix ▸ h i hi
@@ -110,7 +108,7 @@ variable (s : Submonoid M)
 
 @[to_additive (attr := norm_cast)] -- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem coe_list_prod (l : List s) : (l.prod : M) = (l.map (↑)).prod :=
-  s.subtype.map_list_prod l
+  map_list_prod s.subtype l
 #align submonoid.coe_list_prod Submonoid.coe_list_prod
 #align add_submonoid.coe_list_sum AddSubmonoid.coe_list_sum
 
@@ -123,7 +121,7 @@ theorem coe_multiset_prod {M} [CommMonoid M] (S : Submonoid M) (m : Multiset S) 
 
 @[to_additive (attr := norm_cast, simp)]
 theorem coe_finset_prod {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (s : Finset ι) :
-    ↑(∏ i in s, f i) = (∏ i in s, f i : M) :=
+    ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod S.subtype f s
 #align submonoid.coe_finset_prod Submonoid.coe_finset_prod
 #align add_submonoid.coe_finset_sum AddSubmonoid.coe_finset_sum
@@ -164,7 +162,7 @@ theorem multiset_noncommProd_mem (S : Submonoid M) (m : Multiset M) (comm) (h : 
       "Sum of elements in an `AddSubmonoid` of an `AddCommMonoid` indexed by a `Finset`
       is in the `AddSubmonoid`."]
 theorem prod_mem {M : Type*} [CommMonoid M] (S : Submonoid M) {ι : Type*} {t : Finset ι}
-    {f : ι → M} (h : ∀ c ∈ t, f c ∈ S) : (∏ c in t, f c) ∈ S :=
+    {f : ι → M} (h : ∀ c ∈ t, f c ∈ S) : (∏ c ∈ t, f c) ∈ S :=
   S.multiset_prod_mem (t.1.map f) fun _ hx =>
     let ⟨i, hi, hix⟩ := Multiset.mem_map.1 hx
     hix ▸ h i hi

@@ -5,7 +5,8 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Zify
-import Mathlib.Data.Int.CharZero
+import Mathlib.Algebra.Order.Ring.Cast
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Rat.Order
 
 /-!
@@ -68,3 +69,6 @@ macro_rules
 @[qify_simps] lemma intCast_lt (a b : ℤ) : a < b ↔ (a : ℚ) < (b : ℚ) := Int.cast_lt.symm
 @[qify_simps] lemma intCast_ne (a b : ℤ) : a ≠ b ↔ (a : ℚ) ≠ (b : ℚ) := by
   simp only [ne_eq, Int.cast_inj]
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_ne := intCast_ne

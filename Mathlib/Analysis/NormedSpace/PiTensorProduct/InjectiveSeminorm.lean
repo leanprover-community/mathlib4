@@ -82,8 +82,6 @@ variable {F : Type uF} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 open scoped TensorProduct
 
-open BigOperators
-
 namespace PiTensorProduct
 
 section seminorm

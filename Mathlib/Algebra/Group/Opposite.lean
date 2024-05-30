@@ -17,6 +17,9 @@ import Mathlib.Tactic.Spread
 # Group structures on the multiplicative and additive opposites
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 variable {α : Type*}
 
 namespace MulOpposite

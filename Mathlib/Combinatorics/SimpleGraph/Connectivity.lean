@@ -1502,9 +1502,9 @@ theorem length_bypass_le {u v : V} (p : G.Walk u v) : p.bypass.length ≤ p.leng
     · trans
       · apply length_dropUntil_le
       rw [length_cons]
-      exact le_add_right ih
+      omega
     · rw [length_cons, length_cons]
-      exact add_le_add_right ih 1
+      exact Nat.add_le_add_right ih 1
 #align simple_graph.walk.length_bypass_le SimpleGraph.Walk.length_bypass_le
 
 lemma bypass_eq_self_of_length_le {u v : V} (p : G.Walk u v) (h : p.length ≤ p.bypass.length) :
@@ -1521,8 +1521,8 @@ lemma bypass_eq_self_of_length_le {u v : V} (p : G.Walk u v) (h : p.length ≤ p
         _ ≤ (p.bypass.dropUntil _ _).length := h
         _ ≤ p.bypass.length := Walk.length_dropUntil_le p.bypass hb
         _ ≤ p.length := Walk.length_bypass_le _
-    · simp only [hb, Walk.bypass, Walk.length_cons, not_false_iff, dif_neg, add_le_add_iff_right]
-       at h
+    · simp only [hb, Walk.bypass, Walk.length_cons, not_false_iff, dif_neg,
+        Nat.add_le_add_iff_right] at h
       rw [ih h]
 
 /-- Given a walk, produces a path with the same endpoints using `SimpleGraph.Walk.bypass`. -/

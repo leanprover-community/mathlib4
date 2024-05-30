@@ -78,7 +78,7 @@ theorem centralizer_eq_top_iff_subset {s : Set G} : centralizer s = ⊤ ↔ s �
 @[to_additive]
 instance Centralizer.characteristic [hH : H.Characteristic] :
     (centralizer (H : Set G)).Characteristic := by
-  refine' Subgroup.characteristic_iff_comap_le.mpr fun ϕ g hg h hh => ϕ.injective _
+  refine Subgroup.characteristic_iff_comap_le.mpr fun ϕ g hg h hh => ϕ.injective ?_
   rw [map_mul, map_mul]
   exact hg (ϕ h) (Subgroup.characteristic_iff_le_comap.mp hH ϕ hh)
 #align subgroup.subgroup.centralizer.characteristic Subgroup.Centralizer.characteristic

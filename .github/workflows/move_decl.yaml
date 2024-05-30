@@ -1,8 +1,9 @@
-name: Add comment
+name:  move-decls (label)
 on:
   pull_request:
     types:
       - labeled
+
 jobs:
   add-comment:
     if: github.event.label.name == 'move-decls'

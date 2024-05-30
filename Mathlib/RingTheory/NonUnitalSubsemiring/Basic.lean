@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2022 Jireh Loreaux All rights reserved.
+Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
@@ -23,8 +23,6 @@ We define bundled non-unital subsemirings and some standard constructions:
 `map`, `comap` and range (`srange`) of a `NonUnitalRingHom` etc.
 -/
 
-
-open BigOperators
 
 universe u v w
 
