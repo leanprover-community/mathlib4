@@ -62,7 +62,6 @@ lemma spectrum.unitary_conjugate' {a : A} {u : unitary A} :
     spectrum R ((star u : A) * a * u) = spectrum R a := by
   simpa using spectrum.unitary_conjugate (u := star u)
 
-
 end UnitaryConjugate
 
 section FiniteSpectrum
@@ -233,10 +232,25 @@ exists_cfc_of_predicate a ha := by
       have hφ : LinearMap.ker ha.φ = ⊥ := by
         refine LinearMap.ker_eq_bot'.mpr ?_
         intro f hf
-        --rw [φ_apply] at hf
+        --
         --have h1 : 0 = ha.eigenvectorUnitary * (0 : Matrix n n 𝕜) * (star ha.eigenvectorUnitary) := by sorry
         --rw [h1] at hf
-        have h2 : diagonal (RCLike.ofReal ∘ ⇑f ∘ fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩) = (0 : Matrix n n 𝕜) := by sorry
+        have h2 : diagonal
+             (RCLike.ofReal ∘ ⇑f ∘ fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩)
+             = (0 : Matrix n n 𝕜) := by
+           rw [φ_apply] at hf
+           have hlr : (star ha.eigenvectorUnitary : Matrix n n 𝕜) *
+              ((eigenvectorUnitary ha : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ f ∘
+                (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩)) *
+                star (eigenvectorUnitary ha : Matrix n n 𝕜)) *
+                (ha.eigenvectorUnitary : Matrix n n 𝕜) =
+                (star ha.eigenvectorUnitary : Matrix n n 𝕜) *
+                (0 : Matrix n n 𝕜) * (ha.eigenvectorUnitary : Matrix n n 𝕜)
+                := by congr
+           simp only [← mul_assoc, SetLike.coe_mem, unitary.star_mul_self_of_mem, one_mul,
+                    mul_zero, zero_mul] at hlr
+           simp only [mul_assoc, SetLike.coe_mem, unitary.star_mul_self_of_mem, mul_one] at hlr
+           exact hlr
         ext x
         simp only [ContinuousMap.zero_apply]
         obtain ⟨x, hx⟩ := x
