@@ -102,9 +102,9 @@ theorem cosZeta_two_mul_nat' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
     rw [(by { norm_cast; omega } : 2 * (k : ℂ) = ↑(2 * k - 1) + 1), Complex.Gamma_nat_eq_factorial,
       ← Nat.cast_add_one, ← Nat.cast_mul, ← Nat.factorial_succ, Nat.sub_add_cancel (by omega)]
   simp_rw [this, Gammaℂ, cpow_neg, ← div_div, div_inv_eq_mul, div_mul_eq_mul_div, div_div]
-  congr 2
-  · rw [(by simp : 2 * (k : ℂ) = ↑(2 * k)), cpow_natCast]
-  · ring
+  norm_num
+  rw [(by simp : 2 * (k : ℂ) = ↑(2 * k)), cpow_natCast]
+  ring
 
 /-- Reformulation of `sinZeta_two_mul_nat_add_one` using `Gammaℂ`. -/
 theorem sinZeta_two_mul_nat_add_one' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
@@ -117,9 +117,8 @@ theorem sinZeta_two_mul_nat_add_one' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1)
        Complex.Gamma_nat_eq_factorial, ← Nat.cast_ofNat (R := ℂ), ← Nat.cast_mul,
       ← Nat.cast_add_one, ← Nat.cast_mul, ← Nat.factorial_succ]
   simp_rw [this, Gammaℂ, cpow_neg, ← div_div, div_inv_eq_mul, div_mul_eq_mul_div, div_div]
-  congr 2
-  · rw [(by simp : 2 * (k : ℂ) + 1 = ↑(2 * k + 1)), cpow_natCast]
-  · ring
+  rw [(by simp : 2 * (k : ℂ) + 1 = ↑(2 * k + 1)), cpow_natCast]
+  ring
 
 theorem hurwitzZetaEven_one_sub_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
     hurwitzZetaEven x (1 - 2 * k) =
@@ -173,8 +172,8 @@ private lemma hurwitzZeta_one_sub_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 
   suffices hurwitzZetaOdd x (1 - 2 * k) = 0 by
     rw [hurwitzZeta, this, add_zero, hurwitzZetaEven_one_sub_two_mul_nat hk hx]
   obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hk
-  rw [Nat.cast_succ, show (1 : ℂ) - 2 * (k + 1) = - 2 * k - 1 by ring]
-  apply hurwitzZetaOdd_neg_two_mul_nat_sub_one
+  rw [Nat.cast_succ, show (1 : ℂ) - 2 * (k + 1) = - 2 * k - 1 by ring,
+    hurwitzZetaOdd_neg_two_mul_nat_sub_one]
 
 -- private because it is superseded by `hurwitzZeta_neg_nat` below
 private lemma hurwitzZeta_neg_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
