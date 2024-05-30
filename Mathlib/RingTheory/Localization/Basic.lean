@@ -86,8 +86,6 @@ commutative ring, field of fractions
 
 open Function
 
-open BigOperators
-
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
@@ -997,7 +995,7 @@ def mkAddMonoidHom (b : M) : R →+ Localization M where
 #align localization.mk_add_monoid_hom Localization.mkAddMonoidHom
 
 theorem mk_sum {ι : Type*} (f : ι → R) (s : Finset ι) (b : M) :
-    mk (∑ i in s, f i) b = ∑ i in s, mk (f i) b :=
+    mk (∑ i ∈ s, f i) b = ∑ i ∈ s, mk (f i) b :=
   map_sum (mkAddMonoidHom b) f s
 #align localization.mk_sum Localization.mk_sum
 

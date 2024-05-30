@@ -42,7 +42,7 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 open FiniteDimensional
 
-open scoped BigOperators RealInnerProductSpace
+open scoped RealInnerProductSpace
 
 namespace OrthonormalBasis
 

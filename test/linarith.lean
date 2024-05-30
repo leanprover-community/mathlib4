@@ -2,8 +2,8 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Rat.Order
+import Mathlib.Order.Interval.Finset.Nat
 
 private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
@@ -593,10 +593,8 @@ error: Argument passed to nlinarith has metavariables:
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
   nlinarith [p ?a]
 
-open BigOperators
-
 example (h : False): True := by
-  have : ∑ k in Finset.empty, k^2 = 0 := by contradiction
+  have : ∑ k ∈ Finset.empty, k^2 = 0 := by contradiction
   have : ∀ k : Nat, 0 ≤ k := by
     intro h
     -- this should not panic:

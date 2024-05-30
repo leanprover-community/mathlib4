@@ -30,7 +30,7 @@ variable {𝕜 E F β : Type*}
 
 open LinearMap Set
 
-open scoped BigOperators Convex Pointwise
+open scoped Convex Pointwise
 
 /-! ### Convexity of sets -/
 
@@ -243,7 +243,7 @@ theorem convex_multiset_sum {s : Multiset (Set E)} (h : ∀ i ∈ s, Convex 𝕜
 #align convex_multiset_sum convex_multiset_sum
 
 theorem convex_sum {ι} {s : Finset ι} (t : ι → Set E) (h : ∀ i ∈ s, Convex 𝕜 (t i)) :
-    Convex 𝕜 (∑ i in s, t i) :=
+    Convex 𝕜 (∑ i ∈ s, t i) :=
   (convexAddSubmonoid 𝕜 E).sum_mem h
 #align convex_sum convex_sum
 

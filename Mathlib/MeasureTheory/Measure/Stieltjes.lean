@@ -27,7 +27,7 @@ a Borel measure `f.measure`.
 noncomputable section
 
 open scoped Classical
-open Set Filter Function BigOperators ENNReal NNReal Topology MeasureTheory
+open Set Filter Function ENNReal NNReal Topology MeasureTheory
 
 open ENNReal (ofReal)
 
@@ -191,7 +191,7 @@ theorem length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b
     ofReal (f b - f a) ≤ ∑' i, ofReal (f (d i) - f (c i)) := by
   suffices
     ∀ (s : Finset ℕ) (b), Icc a b ⊆ (⋃ i ∈ (s : Set ℕ), Ioo (c i) (d i)) →
-      (ofReal (f b - f a) : ℝ≥0∞) ≤ ∑ i in s, ofReal (f (d i) - f (c i)) by
+      (ofReal (f b - f a) : ℝ≥0∞) ≤ ∑ i ∈ s, ofReal (f (d i) - f (c i)) by
     rcases isCompact_Icc.elim_finite_subcover_image
         (fun (i : ℕ) (_ : i ∈ univ) => @isOpen_Ioo _ _ _ _ (c i) (d i)) (by simpa using ss) with
       ⟨s, _, hf, hs⟩
