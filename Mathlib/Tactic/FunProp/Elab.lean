@@ -51,6 +51,17 @@ def funPropTac : Tactic
     goal.withContext do
       let goalType ← goal.getType
 
+      -- the whnf and telscope is here because the goal can be
+      -- `∀ y, let f := fun x => x + y; Continuous fun x => x + f x`
+      -- However it is still not complete solution. How should we deal with mix of let and forall?
+      withReducible <| forallTelescopeReducing (← whnfR goalType) fun _ type => do
+        unless (← getFunProp? type).isSome do
+          let hint :=
+            if let .some n := type.getAppFn.constName?
+            then s!" Maybe you forgot marking `{n}` with `@[fun_prop]`."
+            else ""
+          throwError "`{← ppExpr type}` is not a `fun_prop` goal!{hint}"
+
       let cfg : Config := {disch := disch, constToUnfold := .ofArray namesToUnfold _}
       let (r?, s) ← funProp goalType cfg |>.run {}
       if let .some r := r? then
