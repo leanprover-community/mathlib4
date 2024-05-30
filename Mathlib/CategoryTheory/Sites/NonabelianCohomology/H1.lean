@@ -105,7 +105,7 @@ instance : Inv (OneCochain G U) where
 
 @[simp]
 lemma inv_ev (γ : OneCochain G U) (i j : I) {T : C} (a : T ⟶ U i) (b : T ⟶ U j) :
-    (γ ⁻¹).ev i j a b = (γ.ev i j a b) ⁻¹ := rfl
+    (γ⁻¹).ev i j a b = (γ.ev i j a b)⁻¹ := rfl
 
 instance : Group (OneCochain G U) where
   mul_assoc _ _ _ := by ext; apply mul_assoc
