@@ -213,8 +213,8 @@ theorem map_π_preserves_coequalizer_inv :
 
 @[reassoc]
 theorem map_π_preserves_coequalizer_inv_desc {W : D} (k : G.obj Y ⟶ W)
-    (wk : G.map f ≫ k = G.map g ≫ k) :
-    G.map (coequalizer.π f g) ≫ (PreservesCoequalizer.iso G f g).inv ≫ coequalizer.desc k wk = k := by
+    (wk : G.map f ≫ k = G.map g ≫ k) : G.map (coequalizer.π f g) ≫
+      (PreservesCoequalizer.iso G f g).inv ≫ coequalizer.desc k wk = k := by
   rw [← Category.assoc, map_π_preserves_coequalizer_inv, coequalizer.π_desc]
 #align category_theory.limits.map_π_preserves_coequalizer_inv_desc CategoryTheory.Limits.map_π_preserves_coequalizer_inv_desc
 
