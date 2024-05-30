@@ -303,7 +303,7 @@ structure RightAdjoint (left : a ⟶ b) where
   adj : left ⊣ right
 
 /-- The existence of a right adjoint of `f`. -/
-class IsLeftAdjoint (left : a ⟶ b) : Prop where  mk' ::
+class IsLeftAdjoint (left : a ⟶ b) : Prop where mk' ::
   nonempty : Nonempty (RightAdjoint left)
 
 theorem IsLeftAdjoint.mk (adj : f ⊣ g) : IsLeftAdjoint f :=
