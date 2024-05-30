@@ -283,27 +283,9 @@ exists_cfc_of_predicate a ha := by
         simp only [spectrum_diagonal (R := 𝕜)
             (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩))
             , Function.comp_apply, Set.mem_range]
-        have := eigenvalues_eq_spectrum ha
-
-
-
-
-
-
-
-
-        --apply AlgHom.spectrum_apply_subset
-      --apply spectrum_diagonal spectrum_diagonal (R := ℝ) (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩))
-      --convert spectrum.unitary_conjugate
-      --have := spectrum_diagonal (R := 𝕜) (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩))
-      --apply Set.eq_of_subset_of_subset
-      --intro t ht
-      --apply [spectrum.of_algebraMap_mem (R := ℝ) (S := 𝕜)]
-      --rw [this]
-      --simp only [Set.mem_range, Function.comp_apply]
-      --unfold Set.range at ht
-      --obtain ⟨t, h, s⟩ := ht
-          --apply AlgHom.spectrum_apply_subset
+        obtain ⟨x, hx⟩ := x
+        obtain ⟨i, rfl⟩ := ha.eigenvalues_eq_spectrum ▸ hx
+        exact ⟨i, rfl⟩
     case hermitian =>
       intro f
       sorry
