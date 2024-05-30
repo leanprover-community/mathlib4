@@ -255,8 +255,7 @@ noncomputable def FiniteField.primitiveChar (F F' : Type*) [Field F] [Finite F] 
     exact ⟨a, fun hf => ha <| (ψ.prim.zmod_char_eq_one_iff pp <| Algebra.trace (ZMod p) F a).mp hf⟩
   exact ⟨ψ.n, ψ', hψ'.isPrimitive⟩
 #align add_char.primitive_char_finite_field AddChar.FiniteField.primitiveChar
-@[deprecated (since := "2024-05-30")] alias
-  AddChar.primitiveCharFiniteField := FiniteField.primitiveChar
+@[deprecated (since := "2024-05-30")] alias primitiveCharFiniteField := FiniteField.primitiveChar
 
 /-!
 ### The sum of all character values
