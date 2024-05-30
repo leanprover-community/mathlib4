@@ -5,8 +5,7 @@ on:
     types: [created, edited]
 
 jobs:
-  ping_zulip:
-    name: Ping maintainers on Zulip
+  add_comment:
     if: (github.event.issue.pull_request != 'null') && (startsWith(github.event.comment.body, 'move-decls') || contains(toJSON(github.event.comment.body), '\r\nmove-decls'))
     runs-on: ubuntu-latest
     permissions:
