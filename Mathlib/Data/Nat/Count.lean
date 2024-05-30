@@ -147,17 +147,15 @@ theorem count_lt_card {n : ℕ} (hp : (setOf p).Finite) (hpn : p n) : count p n 
 #align nat.count_lt_card Nat.count_lt_card
 
 theorem count_of_forall {n : ℕ} (hp : ∀ n' < n, p n') : count p n = n := by
-  induction n with
-  | zero => simp
-  | succ _ IH => simp [count_succ, IH (hp · <| lt_succ_of_lt ·), hp]
+  rw [count_eq_card_filter_range, filter_true_of_mem, card_range]
+  · simpa only [Finset.mem_range]
 
 @[simp] theorem count_true : count (fun _ ↦ True) = id :=
   funext fun _ ↦ count_of_forall fun _ _ ↦ trivial
 
 theorem count_of_forall_not {n : ℕ} (hp : ∀ n' < n, ¬p n') : count p n = 0 := by
-  induction n with
-  | zero => simp
-  | succ _ IH => simp [count_succ, IH (hp · <| lt_succ_of_lt ·), hp]
+  rw [count_eq_card_filter_range, filter_false_of_mem, card_empty]
+  · simpa only [Finset.mem_range]
 
 @[simp] theorem count_false : count (fun _ ↦ False) = 0 :=
   funext fun _ ↦ count_of_forall_not fun _ _ ↦ id
