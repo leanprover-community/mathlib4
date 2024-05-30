@@ -380,7 +380,7 @@ instance (h : MkCore.{u}) (i j : h.J) : IsIso (h.t i j) := by
 def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     pullback (h.V i j).inclusion (h.V i k).inclusion ⟶
       pullback (h.V j k).inclusion (h.V j i).inclusion := by
-  refine' (pullbackIsoProdSubtype _ _).hom ≫ ⟨_, _⟩ ≫ (pullbackIsoProdSubtype _ _).inv
+  refine (pullbackIsoProdSubtype _ _).hom ≫ ⟨?_, ?_⟩ ≫ (pullbackIsoProdSubtype _ _).inv
   · intro x
     refine ⟨⟨⟨(h.t i j x.1.1).1, ?_⟩, h.t i j x.1.1⟩, rfl⟩
     rcases x with ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
