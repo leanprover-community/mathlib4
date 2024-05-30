@@ -914,13 +914,13 @@ section count
 
 variable [MeasurableSingletonClass α] {f : α → β}
 
-/-- A function has finite integral for the counting measure iff it is summable. -/
+/-- A function has finite integral for the counting measure iff its norm is summable. -/
 lemma hasFiniteIntegral_count_iff :
     HasFiniteIntegral f Measure.count ↔ Summable (‖f ·‖) := by
   simp only [HasFiniteIntegral, lintegral_count, lt_top_iff_ne_top,
     ENNReal.tsum_coe_ne_top_iff_summable,  ← NNReal.summable_coe, coe_nnnorm]
 
-/-- A function is integrable for the counting measure iff it is summable. -/
+/-- A function is integrable for the counting measure iff its norm is summable. -/
 lemma integrable_count_iff :
     Integrable f Measure.count ↔ Summable (‖f ·‖) := by
   -- Note: this proof would be much easier if we assumed `SecondCountableTopology G`. Without
