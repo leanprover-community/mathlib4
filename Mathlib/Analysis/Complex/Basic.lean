@@ -729,6 +729,9 @@ lemma zero_not_mem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_
 lemma natCast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
   simpa [pos_iff_ne_zero] using @ofReal_mem_slitPlane n
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_mem_slitPlane := natCast_mem_slitPlane
+
 @[simp]
 lemma ofNat_mem_slitPlane (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n) ∈ slitPlane :=
   natCast_mem_slitPlane.2 (NeZero.ne n)

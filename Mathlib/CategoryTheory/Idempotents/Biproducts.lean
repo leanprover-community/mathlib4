@@ -131,13 +131,13 @@ def decomposition (P : Karoubi C) : P ⊞ P.complement ≅ (toKaroubi _).obj P.X
     apply biprod.hom_ext'
     · rw [biprod.inl_desc_assoc, comp_id, biprod.lift_eq, comp_add, ← decompId_assoc,
         add_right_eq_self, ← assoc]
-      refine' (_ =≫ _).trans zero_comp
+      refine (?_ =≫ _).trans zero_comp
       ext
       simp only [comp_f, toKaroubi_obj_X, decompId_i_f, decompId_p_f,
         complement_p, comp_sub, comp_id, idem, sub_self, instZero_zero]
     · rw [biprod.inr_desc_assoc, comp_id, biprod.lift_eq, comp_add, ← decompId_assoc,
         add_left_eq_self, ← assoc]
-      refine' (_ =≫ _).trans zero_comp
+      refine (?_ =≫ _).trans zero_comp
       ext
       simp only [complement_X, comp_f, decompId_i_f, complement_p,
         decompId_p_f, sub_comp, id_comp, idem, sub_self, instZero_zero]

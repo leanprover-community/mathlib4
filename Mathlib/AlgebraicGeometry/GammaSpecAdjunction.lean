@@ -243,7 +243,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     change t * t' = _ at he
     apply isUnit_of_mul_isUnit_left (y := t')
     rw [he]
-    refine' IsLocalization.map_units S (⟨r, _⟩ : p.asIdeal.primeCompl)
+    refine IsLocalization.map_units S (⟨r, ?_⟩ : p.asIdeal.primeCompl)
     apply (not_mem_prime_iff_unit_in_stalk _ _ _).mpr
     rw [← toStalk_stalkMap_toΓSpec]
     erw [comp_apply, ← he]

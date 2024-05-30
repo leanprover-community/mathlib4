@@ -43,7 +43,7 @@ attribute [ext] who in
 -- the `ext` attribute persists
 example {x y : Nat} : x = y := by ext
 ```
-Therefore, we lint against this patter on all instance.
+Therefore, we lint against this pattern on all instances.
 
 For *removing* attributes, the `in` works as expected.
 ```lean
