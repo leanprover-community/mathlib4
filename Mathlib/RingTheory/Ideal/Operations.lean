@@ -1387,6 +1387,13 @@ theorem Associates.mk_ne_zero' {R : Type*} [CommSemiring R] {r : R} :
   rw [Associates.mk_ne_zero, Ideal.zero_eq_bot, Ne, Ideal.span_singleton_eq_bot]
 #align associates.mk_ne_zero' Associates.mk_ne_zero'
 
+open scoped nonZeroDivisors in
+theorem Ideal.span_singleton_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZeroDivisors R]
+    [Nontrivial R] {r : R} :
+    span {r} ∈ (Ideal R)⁰ ↔ r ∈ R⁰ := by
+  rw [mem_nonZeroDivisors_iff_ne_zero, mem_nonZeroDivisors_iff_ne_zero, ne_eq, zero_eq_bot,
+    span_singleton_eq_bot]
+
 namespace Submodule
 
 variable {R : Type u} {M : Type v}

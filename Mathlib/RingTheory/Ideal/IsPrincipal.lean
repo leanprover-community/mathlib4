@@ -100,7 +100,6 @@ theorem associatesEquivIsPrincipal_map_one :
   rw [Associates.one_eq_mk_one, ← Associates.quotient_mk_eq_mk, associatesEquivIsPrincipal_apply,
     span_singleton_one, one_eq_top]
 
-
 variable (R) in
 /-- The `MulEquiv` version of `Ideal.associatesEquivIsPrincipal`. -/
 noncomputable def associatesMulEquivIsPrincipal :
@@ -110,32 +109,15 @@ noncomputable def associatesMulEquivIsPrincipal :
     erw [Subtype.ext_iff, associatesEquivIsPrincipal_mul]
     rfl
 
-theorem associatesEquivIsPrincipal_mem_nonZeroDivisors_iff {x : R} :
-    ↑(Ideal.associatesEquivIsPrincipal R ⟦x⟧) ∈ (Ideal R)⁰ ↔ x ∈ R⁰ := by
-  rw [Ideal.associatesEquivIsPrincipal_apply, mem_nonZeroDivisors_iff, mem_nonZeroDivisors_iff,
-    ← not_iff_not]
-  push_neg
-  refine ⟨fun ⟨I, hI₁, hI₂⟩ ↦ ?_, fun ⟨y, hy₁, hy₂⟩ ↦ ?_⟩
-  · rw [zero_eq_bot, Submodule.ne_bot_iff] at hI₂
-    refine ⟨hI₂.choose, ?_, hI₂.choose_spec.2⟩
-    · suffices hI₂.choose * x ∈ I * Ideal.span {x} by
-        rwa [hI₁] at this
-      rw [mem_mul_span_singleton]
-      exact ⟨hI₂.choose, hI₂.choose_spec.1, rfl⟩
-  · refine ⟨span {y}, ?_, ?_⟩
-    · rw [span_singleton_mul_span_singleton, hy₁, Set.singleton_zero, span_zero, zero_eq_bot]
-    · rw [zero_eq_bot, Submodule.ne_bot_iff]
-      exact ⟨y, Ideal.mem_span_singleton_self y, hy₂⟩
-
 variable (R) in
-/-- A version of `Ideal.associatesEquivIsPrincipal` for non-zero-divisor generators. -/
+/-- A version of `Ideal.associatesEquivIsPrincipal` for non-zero-divisors generators. -/
 noncomputable def associatesNonZeroDivisorsEquivIsPrincipal :
     Associates R⁰ ≃ {I : (Ideal R)⁰ // IsPrincipal (I : Ideal R)} :=
   calc Associates R⁰ ≃ (Associates R)⁰ := associatesNonZeroDivisorsEquiv.toEquiv.symm
     _ ≃ {I : {I : Ideal R // IsPrincipal I} // I.1 ∈ (Ideal R)⁰} :=
       Equiv.subtypeEquiv (associatesEquivIsPrincipal R)
         (fun x ↦ by rw [← Associates.quot_out x, mk_mem_nonZeroDivisors_associates,
-          associatesEquivIsPrincipal_mem_nonZeroDivisors_iff])
+          ← span_singleton_nonZeroDivisors, associatesEquivIsPrincipal_apply])
     _ ≃ {I : Ideal R // IsPrincipal I ∧ I ∈ (Ideal R)⁰} :=
       Equiv.subtypeSubtypeEquivSubtypeInter (fun I ↦ IsPrincipal I) (fun I ↦ I ∈ (Ideal R)⁰)
     _ ≃ {I : Ideal R // I ∈ (Ideal R)⁰ ∧ IsPrincipal I} := Equiv.setCongr (by simp_rw [and_comm])
@@ -143,9 +125,7 @@ noncomputable def associatesNonZeroDivisorsEquivIsPrincipal :
 
 @[simp]
 theorem associatesNonZeroDivisorsEquivIsPrincipal_apply (x : R⁰) :
-    associatesNonZeroDivisorsEquivIsPrincipal R ⟦x⟧  = Ideal.span {(x : R)} := by
-  rw [← Ideal.associatesEquivIsPrincipal_apply]
-  rfl
+    associatesNonZeroDivisorsEquivIsPrincipal R (Associates.mk x) = Ideal.span {(x : R)} := rfl
 
 theorem associatesNonZeroDivisorsEquivIsPrincipal_coe (x : Associates R⁰) :
     (associatesNonZeroDivisorsEquivIsPrincipal R x : Ideal R) =
@@ -155,9 +135,10 @@ theorem associatesNonZeroDivisorsEquivIsPrincipal_mul (x y : Associates R⁰) :
     (associatesNonZeroDivisorsEquivIsPrincipal R (x * y) : Ideal R) =
       (associatesNonZeroDivisorsEquivIsPrincipal R x) *
         (associatesNonZeroDivisorsEquivIsPrincipal R y) := by
-  simp_rw [associatesNonZeroDivisorsEquivIsPrincipal_coe, map_mul, Submonoid.coe_mul,
+  simp_rw [associatesNonZeroDivisorsEquivIsPrincipal_coe, _root_.map_mul, Submonoid.coe_mul,
     associatesEquivIsPrincipal_mul]
 
+@[simp]
 theorem associatesNonZeroDivisorsEquivIsPrincipal_map_one :
     (associatesNonZeroDivisorsEquivIsPrincipal R 1 : Ideal R) = 1 := by
   rw [associatesNonZeroDivisorsEquivIsPrincipal_coe, map_one, OneMemClass.coe_one,
