@@ -413,4 +413,12 @@ theorem lt_nth_iff_count_lt (hp : (setOf p).Infinite) {a b : ℕ} : a < count p 
 
 end Count
 
+@[simp]
+theorem nth_true (hp : ∀ n, p n) : nth p = id := by
+  ext n
+  classical
+  trans nth p (count p n)
+  · rw [count_true hp, id_eq]
+  rw [nth_count (hp n), id_eq]
+
 end Nat

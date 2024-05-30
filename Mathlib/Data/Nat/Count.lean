@@ -146,6 +146,13 @@ theorem count_lt_card {n : ℕ} (hp : (setOf p).Finite) (hpn : p n) : count p n 
   (count_lt_count_succ_iff.2 hpn).trans_le (count_le_card hp _)
 #align nat.count_lt_card Nat.count_lt_card
 
+@[simp]
+theorem count_true (hp : ∀ n, p n) : count p = id := by
+  ext n
+  induction n with
+  | zero => simp
+  | succ n IH => simp [count_succ, *]
+
 variable {q : ℕ → Prop}
 variable [DecidablePred q]
 
