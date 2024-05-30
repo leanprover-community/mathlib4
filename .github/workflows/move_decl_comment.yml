@@ -1,12 +1,13 @@
-name: Add comment
+name: move-decls (comment)
+
 on:
-  pull_request:
-    types:
-      - labeled
+  issue_comment:
+    types: [created, edited]
 
 jobs:
-  add-comment:
-    if: (github.event.label.name == 'move-decls')
+  ping_zulip:
+    name: Ping maintainers on Zulip
+    if: (github.event.issue.pull_request != 'null') && (startsWith(github.event.comment.body, 'move-decls') || contains(toJSON(github.event.comment.body), '\r\nmove-decls'))
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
