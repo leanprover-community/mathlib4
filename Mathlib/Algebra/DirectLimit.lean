@@ -701,10 +701,10 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
   have := Classical.decEq
   refine span_induction (Ideal.Quotient.eq_zero_iff_mem.1 H) ?_ ?_ ?_ ?_
   · rintro x (⟨i, j, hij, x, rfl⟩ | ⟨i, rfl⟩ | ⟨i, x, y, rfl⟩ | ⟨i, x, y, rfl⟩)
-    · refine'
+    · refine
         ⟨j, {⟨i, x⟩, ⟨j, f' i j hij x⟩}, ?_,
-          isSupported_sub (isSupported_of.2 <| Or.inr rfl) (isSupported_of.2 <| Or.inl rfl),
-            fun [_] => _⟩
+          isSupported_sub (isSupported_of.2 <| Or.inr (by exact rfl))
+            (isSupported_of.2 <| Or.inl rfl), fun [_] => ?_⟩
       · rintro k (rfl | ⟨rfl | _⟩)
         · exact hij
         · rfl
@@ -716,19 +716,20 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           rw [this]
           · exact sub_self _
         exacts [Or.inl rfl, Or.inr rfl]
-    · refine' ⟨i, {⟨i, 1⟩}, _, isSupported_sub (isSupported_of.2 rfl) isSupported_one, fun [_] => _⟩
+    · refine ⟨i, {⟨i, 1⟩}, ?_, isSupported_sub (isSupported_of.2 (by exact rfl))
+        isSupported_one, fun [_] => ?_⟩
       · rintro k (rfl | h)
         rfl
         -- Porting note: the Lean3 proof contained `rw [restriction_of]`, but this
         -- lemma does not seem to work here
       · rw [RingHom.map_sub, RingHom.map_sub]
         erw [lift_of, dif_pos rfl, RingHom.map_one, lift_of, RingHom.map_one, sub_self]
-    · refine'
+    · refine
         ⟨i, {⟨i, x + y⟩, ⟨i, x⟩, ⟨i, y⟩}, ?_,
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)
             (isSupported_add (isSupported_of.2 <| Or.inr <| Or.inl rfl)
-              (isSupported_of.2 <| Or.inr <| Or.inr rfl)),
-          fun [_] => _⟩
+              (isSupported_of.2 <| Or.inr <| Or.inr (by exact rfl))),
+          fun [_] => ?_⟩
       · rintro k (rfl | ⟨rfl | ⟨rfl | hk⟩⟩) <;> rfl
       · rw [(restriction _).map_sub, (restriction _).map_add, restriction_of, restriction_of,
           restriction_of, dif_pos, dif_pos, dif_pos, RingHom.map_sub,
@@ -738,11 +739,11 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           rw [(f' i i _).map_add]
           · exact sub_self _
         all_goals tauto
-    · refine'
-        ⟨i, {⟨i, x * y⟩, ⟨i, x⟩, ⟨i, y⟩}, _,
+    · refine
+        ⟨i, {⟨i, x * y⟩, ⟨i, x⟩, ⟨i, y⟩}, ?_,
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)
             (isSupported_mul (isSupported_of.2 <| Or.inr <| Or.inl rfl)
-              (isSupported_of.2 <| Or.inr <| Or.inr rfl)), fun [_] => _⟩
+              (isSupported_of.2 <| Or.inr <| Or.inr (by exact rfl))), fun [_] => ?_⟩
       · rintro k (rfl | ⟨rfl | ⟨rfl | hk⟩⟩) <;> rfl
       · rw [(restriction _).map_sub, (restriction _).map_mul, restriction_of, restriction_of,
           restriction_of, dif_pos, dif_pos, dif_pos, RingHom.map_sub,
