@@ -112,7 +112,7 @@ instance : Module Rᵐᵒᵖ I where
   mul_smul x y z := by
     ext; show z.1 * (y.unop * x.unop) = (z.1 * y.unop) * x.unop; simp only [mul_assoc]
   smul_zero x := by
-    ext ; show 0 * _ = 0; simp only [zero_mul]
+    ext; show 0 * _ = 0; simp only [zero_mul]
   smul_add x y z := by
     ext ; show (y.1 + z.1) * _ = (y * _) + (z * _); simp only [right_distrib]
   add_smul x y z := by
