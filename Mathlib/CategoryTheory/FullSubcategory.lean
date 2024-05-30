@@ -79,10 +79,16 @@ def inducedFunctor : InducedCategory D F ⥤ D where
 #align category_theory.induced_functor_map CategoryTheory.inducedFunctor_map
 #align category_theory.induced_functor_obj CategoryTheory.inducedFunctor_obj
 
-instance InducedCategory.full : (inducedFunctor F).Full where map_surjective f := ⟨f, rfl⟩
+/-- The induced functor `inducedFunctor F : InducedCategory D F ⥤ D` is fully faithful. -/
+def fullyFaithfulInducedFunctor : (inducedFunctor F).FullyFaithful where
+  preimage f := f
+
+instance InducedCategory.full : (inducedFunctor F).Full :=
+  (fullyFaithfulInducedFunctor F).full
 #align category_theory.induced_category.full CategoryTheory.InducedCategory.full
 
-instance InducedCategory.faithful : (inducedFunctor F).Faithful where
+instance InducedCategory.faithful : (inducedFunctor F).Faithful :=
+  (fullyFaithfulInducedFunctor F).faithful
 #align category_theory.induced_category.faithful CategoryTheory.InducedCategory.faithful
 
 end Induced
@@ -137,12 +143,17 @@ theorem fullSubcategoryInclusion.map {X Y} {f : X ⟶ Y} : (fullSubcategoryInclu
   rfl
 #align category_theory.full_subcategory_inclusion.map CategoryTheory.fullSubcategoryInclusion.map
 
+/-- The inclusion of a full subcategory is fully faithful. -/
+abbrev fullyFaithfulFullSubcategoryInclusion :
+    (fullSubcategoryInclusion Z).FullyFaithful :=
+  fullyFaithfulInducedFunctor _
+
 instance FullSubcategory.full : (fullSubcategoryInclusion Z).Full :=
-  InducedCategory.full _
+  (fullyFaithfulFullSubcategoryInclusion _).full
 #align category_theory.full_subcategory.full CategoryTheory.FullSubcategory.full
 
 instance FullSubcategory.faithful : (fullSubcategoryInclusion Z).Faithful :=
-  InducedCategory.faithful _
+  (fullyFaithfulFullSubcategoryInclusion _).faithful
 #align category_theory.full_subcategory.faithful CategoryTheory.FullSubcategory.faithful
 
 variable {Z} {Z' : C → Prop}

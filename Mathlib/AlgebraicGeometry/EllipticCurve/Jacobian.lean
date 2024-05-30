@@ -319,7 +319,10 @@ lemma eval_polynomialZ (P : Fin 3 → R) : eval P W'.polynomialZ =
 
 variable (W') in
 /-- The proposition that a point representative $(x, y, z)$ in `W'` is nonsingular.
-In other words, either $W_X(x, y, z) \ne 0$, $W_Y(x, y, z) \ne 0$, or $W_Z(x, y, z) \ne 0$. -/
+In other words, either $W_X(x, y, z) \ne 0$, $W_Y(x, y, z) \ne 0$, or $W_Z(x, y, z) \ne 0$.
+
+Note that this definition is only mathematically accurate for fields.
+TODO: generalise this definition to be mathematically accurate for a larger class of rings. -/
 def Nonsingular (P : Fin 3 → R) : Prop :=
   W'.Equation P ∧
     (eval P W'.polynomialX ≠ 0 ∨ eval P W'.polynomialY ≠ 0 ∨ eval P W'.polynomialZ ≠ 0)
@@ -584,8 +587,7 @@ lemma dblX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     toAffine_addX_of_eq hPz <| sub_ne_zero_of_ne <| Y_ne_negY_of_Y_ne' hP hQ hx hy]
 
 variable (W') in
-/-- The $Y$-coordinate of the doubling of a point representative, before applying the final negation
-that maps $Y$ to $-Y - a_1XZ - a_3Z^3$. -/
+/-- The $Y$-coordinate of the negated doubling of a point representative. -/
 def negDblY (P : Fin 3 → R) : R :=
   (3 * P x ^ 2 + 2 * W'.a₂ * P x * P z ^ 2 + W'.a₄ * P z ^ 4 - W'.a₁ * P y * P z)
       * (W'.dblX P - P x * (P y - W'.negY P) ^ 2) + P y * (P y - W'.negY P) ^ 3
@@ -798,8 +800,7 @@ lemma addX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     toAffine_addX_of_ne hPz hQz <| addZ_ne_zero_of_X_ne hx]
 
 variable (W') in
-/-- The $Y$-coordinate of the addition of two distinct point representatives, before applying the
-final negation that maps $Y$ to $-Y - a_1XZ - a_3Z^3$. -/
+/-- The $Y$-coordinate of the negated addition of two distinct point representatives. -/
 def negAddY (P Q : Fin 3 → R) : R :=
   -P y * Q x ^ 3 * P z ^ 3 + 2 * P y * Q y ^ 2 * P z ^ 3 - 3 * P x ^ 2 * Q x * Q y * P z ^ 2 * Q z
     + 3 * P x * P y * Q x ^ 2 * P z * Q z ^ 2 + P x ^ 3 * Q y * Q z ^ 3

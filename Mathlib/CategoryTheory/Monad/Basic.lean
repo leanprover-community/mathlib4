@@ -324,7 +324,7 @@ theorem monadToFunctor_mapIso_monad_iso_mk {M N : Monad C} (f : (M : C ⥤ C) �
 #align category_theory.monad_to_functor_map_iso_monad_iso_mk CategoryTheory.monadToFunctor_mapIso_monad_iso_mk
 
 instance : (monadToFunctor C).ReflectsIsomorphisms where
-  reflects f _ := IsIso.of_iso (MonadIso.mk (asIso ((monadToFunctor C).map f)) f.app_η f.app_μ)
+  reflects f _ := (MonadIso.mk (asIso ((monadToFunctor C).map f)) f.app_η f.app_μ).isIso_hom
 
 /-- The forgetful functor from the category of comonads to the category of endofunctors.
 -/
@@ -343,7 +343,7 @@ theorem comonadToFunctor_mapIso_comonad_iso_mk {M N : Comonad C} (f : (M : C ⥤
 #align category_theory.comonad_to_functor_map_iso_comonad_iso_mk CategoryTheory.comonadToFunctor_mapIso_comonad_iso_mk
 
 instance : (comonadToFunctor C).ReflectsIsomorphisms where
-  reflects f _ := IsIso.of_iso (ComonadIso.mk (asIso ((comonadToFunctor C).map f)) f.app_ε f.app_δ)
+  reflects f _ := (ComonadIso.mk (asIso ((comonadToFunctor C).map f)) f.app_ε f.app_δ).isIso_hom
 
 variable {C}
 

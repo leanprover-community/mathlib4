@@ -755,7 +755,7 @@ theorem integral_eq_norm_posPart_sub (f : α →₁[μ] ℝ) :
       (simpleFunc.denseRange one_ne_top) (isClosed_eq ?_ ?_) ?_ f
   · simp only [integral]
     exact cont _
-  · refine' Continuous.sub (continuous_norm.comp Lp.continuous_posPart)
+  · refine Continuous.sub (continuous_norm.comp Lp.continuous_posPart)
       (continuous_norm.comp Lp.continuous_negPart)
   -- Show that the property holds for all simple functions in the `L¹` space.
   · intro s
@@ -2015,7 +2015,7 @@ theorem integral_trim_ae (hm : m ≤ m0) {f : β → G} (hf : AEStronglyMeasurab
 theorem ae_eq_trim_of_stronglyMeasurable [TopologicalSpace γ] [MetrizableSpace γ] (hm : m ≤ m0)
     {f g : β → γ} (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m] g)
     (hfg : f =ᵐ[μ] g) : f =ᵐ[μ.trim hm] g := by
-  rwa [EventuallyEq, @ae_iff _ m, trim_measurableSet_eq hm _]
+  rwa [EventuallyEq, ae_iff, trim_measurableSet_eq hm]
   exact (hf.measurableSet_eq_fun hg).compl
 #align measure_theory.ae_eq_trim_of_strongly_measurable MeasureTheory.ae_eq_trim_of_stronglyMeasurable
 
@@ -2029,7 +2029,7 @@ theorem ae_le_trim_of_stronglyMeasurable [LinearOrder γ] [TopologicalSpace γ]
     [OrderClosedTopology γ] [PseudoMetrizableSpace γ] (hm : m ≤ m0) {f g : β → γ}
     (hf : StronglyMeasurable[m] f) (hg : StronglyMeasurable[m] g) (hfg : f ≤ᵐ[μ] g) :
     f ≤ᵐ[μ.trim hm] g := by
-  rwa [EventuallyLE, @ae_iff _ m, trim_measurableSet_eq hm _]
+  rwa [EventuallyLE, ae_iff, trim_measurableSet_eq hm]
   exact (hf.measurableSet_le hg).compl
 #align measure_theory.ae_le_trim_of_strongly_measurable MeasureTheory.ae_le_trim_of_stronglyMeasurable
 

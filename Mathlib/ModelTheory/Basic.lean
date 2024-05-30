@@ -806,11 +806,11 @@ def symm (f : M ≃[L] N) : N ≃[L] M :=
     map_fun' := fun n f' {x} => by
       simp only [Equiv.toFun_as_coe]
       rw [Equiv.symm_apply_eq]
-      refine' Eq.trans _ (f.map_fun' f' (f.toEquiv.symm ∘ x)).symm
+      refine Eq.trans ?_ (f.map_fun' f' (f.toEquiv.symm ∘ x)).symm
       rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp]
     map_rel' := fun n r {x} => by
       simp only [Equiv.toFun_as_coe]
-      refine' (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans _
+      refine (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans ?_
       rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
 #align first_order.language.equiv.symm FirstOrder.Language.Equiv.symm
 

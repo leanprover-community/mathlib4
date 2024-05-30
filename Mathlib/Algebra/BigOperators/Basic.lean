@@ -1534,7 +1534,7 @@ theorem prod_range_succ' (f : ℕ → β) :
 @[to_additive]
 theorem eventually_constant_prod {u : ℕ → β} {N : ℕ} (hu : ∀ n ≥ N, u n = 1) {n : ℕ} (hn : N ≤ n) :
     (∏ k ∈ range n, u k) = ∏ k ∈ range N, u k := by
-  obtain ⟨m, rfl : n = N + m⟩ := le_iff_exists_add.mp hn
+  obtain ⟨m, rfl : n = N + m⟩ := Nat.exists_eq_add_of_le hn
   clear hn
   induction' m with m hm
   · simp
@@ -2180,7 +2180,7 @@ theorem card_biUnion_le [DecidableEq β] {s : Finset α} {t : α → Finset β} 
     calc
       ((insert a s).biUnion t).card ≤ (t a).card + (s.biUnion t).card := by
         { rw [biUnion_insert]; exact Finset.card_union_le _ _ }
-      _ ≤ ∑ a ∈ insert a s, card (t a) := by rw [sum_insert has]; exact add_le_add_left ih _
+      _ ≤ ∑ a ∈ insert a s, card (t a) := by rw [sum_insert has]; exact Nat.add_le_add_left ih _
 #align finset.card_bUnion_le Finset.card_biUnion_le
 
 theorem card_eq_sum_card_fiberwise [DecidableEq β] {f : α → β} {s : Finset α} {t : Finset β}
@@ -2576,7 +2576,7 @@ theorem nat_abs_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℤ) :
     induction' s using Finset.induction_on with i s his IH
     · simp only [Finset.sum_empty, Int.natAbs_zero, le_refl]
     · simp only [his, Finset.sum_insert, not_false_iff]
-      exact (Int.natAbs_add_le _ _).trans (add_le_add le_rfl IH)
+      exact (Int.natAbs_add_le _ _).trans (Nat.add_le_add_left IH _)
 #align nat_abs_sum_le nat_abs_sum_le
 
 /-! ### `Additive`, `Multiplicative` -/

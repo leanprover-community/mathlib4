@@ -163,7 +163,7 @@ instance of_powerSeries_localization [CommRing R] :
     IsLocalization (Submonoid.powers (PowerSeries.X : PowerSeries R)) (LaurentSeries R) where
   map_units' := by
     rintro ⟨_, n, rfl⟩
-    refine' ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, _, _⟩, _⟩
+    refine ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, ?_, ?_⟩, ?_⟩
     · simp only [single_mul_single, mul_one, add_right_neg]
       rfl
     · simp only [single_mul_single, mul_one, add_left_neg]
@@ -171,11 +171,11 @@ instance of_powerSeries_localization [CommRing R] :
     · dsimp; rw [ofPowerSeries_X_pow]
   surj' z := by
     by_cases h : 0 ≤ z.order
-    · refine' ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, _⟩
+    · refine ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, ?_⟩
       simp only [RingHom.map_one, mul_one, RingHom.map_mul, coe_algebraMap, ofPowerSeries_X_pow,
         Submonoid.coe_one]
       rw [Int.natAbs_of_nonneg h, single_order_mul_powerSeriesPart]
-    · refine' ⟨⟨powerSeriesPart z, PowerSeries.X ^ Int.natAbs z.order, ⟨_, rfl⟩⟩, _⟩
+    · refine ⟨⟨powerSeriesPart z, PowerSeries.X ^ Int.natAbs z.order, ⟨_, rfl⟩⟩, ?_⟩
       simp only [coe_algebraMap, ofPowerSeries_powerSeriesPart]
       rw [mul_comm _ z]
       refine congr rfl ?_
