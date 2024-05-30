@@ -40,11 +40,13 @@ The set of nonsingular rational points forms an abelian group under a secant-and
         and has slope $\ell := (3x_1^2 + 2a_2x_1 + a_4 - a_1y_1) / (2y_1 + a_1x_1 + a_3)$.
       * Otherwise $x_1 \ne x_2$, then `L` is the secant of `W` through `P` and `Q`, and has slope
         $\ell := (y_1 - y_2) / (x_1 - x_2)$.
+
     In the latter two cases, the $X$-coordinate of `P + Q` is then the unique third solution of the
     equation obtained by substituting the line $Y = \ell(X - x_1) + y_1$ into the Weierstrass
     equation, and can be written down explicitly as $x := \ell^2 + a_1\ell - a_2 - x_1 - x_2$ by
     inspecting the $X^2$ terms. The $Y$-coordinate of `P + Q`, after applying the final negation
     that maps $Y$ to $-Y - a_1X - a_3$, is precisely $y := -(\ell(x - x_1) + y_1) - a_1x - a_3$.
+
 The group law on this set is then uniquely determined by these constructions.
 
 ## Main definitions
