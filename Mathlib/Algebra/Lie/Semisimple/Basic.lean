@@ -31,8 +31,6 @@ abot simple and semisimple Lie algebras.
 lie algebra, radical, simple, semisimple
 -/
 
-universe u v w w₁ w₂
-
 section Irreducible
 
 variable (R L M : Type*) [CommRing R] [LieRing L] [AddCommGroup M] [Module R M] [LieRingModule L M]
@@ -48,8 +46,7 @@ end Irreducible
 
 namespace LieAlgebra
 
-variable (R : Type u) (L : Type v)
-variable [CommRing R] [LieRing L] [LieAlgebra R L]
+variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
 variable {R L} in
 theorem HasTrivialRadical.eq_bot_of_isSolvable [HasTrivialRadical R L]

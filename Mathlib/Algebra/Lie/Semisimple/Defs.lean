@@ -22,7 +22,8 @@ In this file we define simple and semisimple Lie algebras, together with related
 lie algebra, radical, simple, semisimple
 -/
 
-variable (R L M : Type*) [CommRing R] [LieRing L] [AddCommGroup M] [Module R M] [LieRingModule L M]
+variable (R L M : Type*)
+variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M] [LieRingModule L M]
 
 /-- A nontrivial Lie module is *irreducible* if its only Lie submodules are `⊥` and `⊤`. -/
 abbrev LieModule.IsIrreducible : Prop :=
@@ -30,9 +31,6 @@ abbrev LieModule.IsIrreducible : Prop :=
 #align lie_module.is_irreducible LieModule.IsIrreducible
 
 namespace LieAlgebra
-
-variable (R : Type u) (L : Type v)
-variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /--
 A Lie algebra *has trivial radical* if its radical is trivial.
