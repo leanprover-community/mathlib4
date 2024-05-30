@@ -7,6 +7,7 @@ import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.GroupTheory.Congruence
+import Mathlib.Algebra.BigOperators.Basic
 
 #align_import ring_theory.congruence from "leanprover-community/mathlib"@"2f39bcbc98f8255490f8d4562762c9467694c809"
 
@@ -110,6 +111,24 @@ protected theorem add {w x y z} : c w x → c y z → c (w + y) (x + z) :=
 protected theorem mul {w x y z} : c w x → c y z → c (w * y) (x * z) :=
   c.mul'
 #align ring_con.mul RingCon.mul
+
+lemma sum {ι S : Type*} [AddCommMonoid S] [Mul S] (t : RingCon S) (s : Finset ι)
+    {f g : ι → S} (h : ∀ i ∈ s, t (f i) (g i)) :
+    t (s.sum f) (s.sum g) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simpa using t.refl 0
+  | @insert i s hi ih =>
+    rw [Finset.sum_insert hi, Finset.sum_insert hi]
+    exact t.add (h _ (by simp)) <| ih fun i hi ↦ h _ (by aesop)
+
+protected theorem sub {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
+    {a b c d : S} (h : t a b) (h' : t c d) : t (a - c) (b - d) :=
+  t.toAddCon.sub h h'
+
+protected theorem neg {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
+    {a b} (h : t a b) : t (-a) (-b) :=
+  t.toAddCon.neg h
 
 instance : Inhabited (RingCon R) :=
   ⟨ringConGen EmptyRelation⟩
