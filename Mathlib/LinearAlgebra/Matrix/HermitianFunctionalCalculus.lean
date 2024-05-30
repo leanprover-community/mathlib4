@@ -144,15 +144,6 @@ variable [DecidableEq n]
 
 variable {A : Matrix n n 𝕜} (hA : IsHermitian A)
 
-/-To do:
-
-1) Somehow make this natural map defined in terms of the diagonal into a *-alg hom,
-so I have to learn how to specify all of this data.
-
-2) Use the resulting * algebra hom as the φ in the instance of the CFC.
-
--/
-
 theorem eigenvalue_mem_toEuclideanLin_spectrum_RCLike (i : n) :
     (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) :=
   LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
