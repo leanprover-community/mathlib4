@@ -187,8 +187,11 @@ syntax &"Build completed successfully." : build
 syntax "(" str "," str ")" &"beginning" "(" num "," num ")" : build
 syntax "[" build,* "]" : build
 
---#check `(build|
---[("refine'", "refine") beginning (19, 2), ("_", "?_") beginning (19, 11), ("_", "?_") beginning (19, 14)])
+#check `(build| [
+  ("refine'", "refine") beginning (19, 2),
+  ("_", "?_") beginning (19, 11),
+  ("_", "?_") beginning (19, 14)
+])
 
 def parseRepls : TSyntax `build → Array ((String × String) × Nat × Nat)
   | `(build| [ $rs,* ]) =>
@@ -199,8 +202,10 @@ def parseRepls : TSyntax `build → Array ((String × String) × Nat × Nat)
   | _ => default
 
 #eval show CoreM _ from do
-  let bld ← `(build|
-[("refine'", "refine") beginning (19, 2), ("_", "?_") beginning (19, 11), ("_", "?_") beginning (19, 14)])
+  let bld ← `(build| [
+    ("refine'", "refine") beginning (19, 2),
+    ("_", "?_") beginning (19, 11),
+    ("_", "?_") beginning (19, 14)])
   let arr := parseRepls bld
   IO.println arr
 
@@ -208,8 +213,11 @@ elab "read " bld:build : command => do
   let arr := parseRepls bld
   logInfo m!"{arr}"
 
-read
-[("refine'", "refine") beginning (19, 2), ("_", "?_") beginning (19, 11), ("_", "?_") beginning (19, 14)]
+read [
+  ("refine'", "refine") beginning (19, 2),
+  ("_", "?_") beginning (19, 11),
+  ("_", "?_") beginning (19, 14)
+]
 
 
 /-- do nothing on a successfully built file. -/
