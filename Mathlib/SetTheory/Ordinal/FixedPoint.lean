@@ -120,7 +120,7 @@ theorem nfpFamily_fp {i} (H : IsNormal (f i)) (a) :
     f i (nfpFamily.{u, v} f a) = nfpFamily.{u, v} f a := by
   unfold nfpFamily
   rw [@IsNormal.sup.{u, v, v} _ H _ _ ⟨[]⟩]
-  apply le_antisymm <;> refine' Ordinal.sup_le fun l => _
+  apply le_antisymm <;> refine Ordinal.sup_le fun l => ?_
   · exact le_sup _ (i::l)
   · exact (H.self_le _).trans (le_sup _ _)
 #align ordinal.nfp_family_fp Ordinal.nfpFamily_fp

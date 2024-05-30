@@ -1015,7 +1015,7 @@ instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [∀ i, IsFreeGrou
 @[simps!]
 def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
     FreeGroup ι ≃* CoprodI fun _ : ι => FreeGroup Unit := by
-  refine' MonoidHom.toMulEquiv _ _ _ _
+  refine MonoidHom.toMulEquiv ?_ ?_ ?_ ?_
   · exact FreeGroup.lift fun i => @CoprodI.of ι _ _ i (FreeGroup.of Unit.unit)
   · exact CoprodI.lift fun i => FreeGroup.lift fun _ => FreeGroup.of i
   · ext; simp

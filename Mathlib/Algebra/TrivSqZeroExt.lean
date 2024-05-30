@@ -535,15 +535,24 @@ theorem fst_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M
   rfl
 #align triv_sq_zero_ext.fst_nat_cast TrivSqZeroExt.fst_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias fst_nat_cast := fst_natCast
+
 @[simp]
 theorem snd_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).snd = 0 :=
   rfl
 #align triv_sq_zero_ext.snd_nat_cast TrivSqZeroExt.snd_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias snd_nat_cast := snd_natCast
+
 @[simp]
 theorem inl_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (inl n : tsze R M) = n :=
   rfl
 #align triv_sq_zero_ext.inl_nat_cast TrivSqZeroExt.inl_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias inl_nat_cast := inl_natCast
 
 instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsze R M) :=
   { TrivSqZeroExt.addGroup, TrivSqZeroExt.addMonoidWithOne with
@@ -556,15 +565,24 @@ theorem fst_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).
   rfl
 #align triv_sq_zero_ext.fst_int_cast TrivSqZeroExt.fst_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias fst_int_cast := fst_intCast
+
 @[simp]
 theorem snd_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).snd = 0 :=
   rfl
 #align triv_sq_zero_ext.snd_int_cast TrivSqZeroExt.snd_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias snd_int_cast := snd_intCast
+
 @[simp]
 theorem inl_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (inl z : tsze R M) = z :=
   rfl
 #align triv_sq_zero_ext.inl_int_cast TrivSqZeroExt.inl_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias inl_int_cast := inl_intCast
 
 instance nonAssocSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] :
     NonAssocSemiring (tsze R M) :=
