@@ -205,7 +205,7 @@ theorem le_pi {m : ∀ i, OuterMeasure (α i)} {n : OuterMeasure (∀ i, α i)} 
     n ≤ OuterMeasure.pi m ↔
       ∀ s : ∀ i, Set (α i), (pi univ s).Nonempty → n (pi univ s) ≤ ∏ i, m i (s i) := by
   rw [OuterMeasure.pi, le_boundedBy']; constructor
-  · intro h s hs; refine' (h _ hs).trans_eq (piPremeasure_pi hs)
+  · intro h s hs; refine (h _ hs).trans_eq (piPremeasure_pi hs)
   · intro h s hs; refine le_trans (n.mono <| subset_pi_eval_image univ s) (h _ ?_)
     simp [univ_pi_nonempty_iff, hs]
 #align measure_theory.outer_measure.le_pi MeasureTheory.OuterMeasure.le_pi
@@ -588,7 +588,7 @@ instance pi.isLocallyFiniteMeasure
     IsLocallyFiniteMeasure (Measure.pi μ) := by
   refine ⟨fun x => ?_⟩
   choose s hxs ho hμ using fun i => (μ i).exists_isOpen_measure_lt_top (x i)
-  refine' ⟨pi univ s, set_pi_mem_nhds finite_univ fun i _ => IsOpen.mem_nhds (ho i) (hxs i), _⟩
+  refine ⟨pi univ s, set_pi_mem_nhds finite_univ fun i _ => IsOpen.mem_nhds (ho i) (hxs i), ?_⟩
   rw [pi_pi]
   exact ENNReal.prod_lt_top fun i _ => (hμ i).ne
 
@@ -603,7 +603,7 @@ variable (μ)
 @[to_additive]
 instance pi.isMulLeftInvariant [∀ i, Group (α i)] [∀ i, MeasurableMul (α i)]
     [∀ i, IsMulLeftInvariant (μ i)] : IsMulLeftInvariant (Measure.pi μ) := by
-  refine' ⟨fun v => (pi_eq fun s hs => _).symm⟩
+  refine ⟨fun v => (pi_eq fun s hs => ?_).symm⟩
   rw [map_apply (measurable_const_mul _) (MeasurableSet.univ_pi hs),
     show (v * ·) ⁻¹' univ.pi s = univ.pi fun i => (v i * ·) ⁻¹' s i by rfl, pi_pi]
   simp_rw [measure_preimage_mul]
@@ -619,7 +619,7 @@ instance {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [�
 @[to_additive]
 instance pi.isMulRightInvariant [∀ i, Group (α i)] [∀ i, MeasurableMul (α i)]
     [∀ i, IsMulRightInvariant (μ i)] : IsMulRightInvariant (Measure.pi μ) := by
-  refine' ⟨fun v => (pi_eq fun s hs => _).symm⟩
+  refine ⟨fun v => (pi_eq fun s hs => ?_).symm⟩
   rw [map_apply (measurable_mul_const _) (MeasurableSet.univ_pi hs),
     show (· * v) ⁻¹' univ.pi s = univ.pi fun i => (· * v i) ⁻¹' s i by rfl, pi_pi]
   simp_rw [measure_preimage_mul_right]
@@ -636,7 +636,7 @@ instance {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [�
 @[to_additive]
 instance pi.isInvInvariant [∀ i, Group (α i)] [∀ i, MeasurableInv (α i)]
     [∀ i, IsInvInvariant (μ i)] : IsInvInvariant (Measure.pi μ) := by
-  refine' ⟨(Measure.pi_eq fun s hs => _).symm⟩
+  refine ⟨(Measure.pi_eq fun s hs => ?_).symm⟩
   have A : Inv.inv ⁻¹' pi univ s = Set.pi univ fun i => Inv.inv ⁻¹' s i := by ext; simp
   simp_rw [Measure.inv, Measure.map_apply measurable_inv (MeasurableSet.univ_pi hs), A, pi_pi,
     measure_preimage_inv]
@@ -654,7 +654,7 @@ instance pi.isOpenPosMeasure [∀ i, TopologicalSpace (α i)] [∀ i, IsOpenPosM
   constructor
   rintro U U_open ⟨a, ha⟩
   obtain ⟨s, ⟨hs, hsU⟩⟩ := isOpen_pi_iff'.1 U_open a ha
-  refine' ne_of_gt (lt_of_lt_of_le _ (measure_mono hsU))
+  refine ne_of_gt (lt_of_lt_of_le ?_ (measure_mono hsU))
   simp only [pi_pi]
   rw [CanonicallyOrderedCommSemiring.prod_pos]
   intro i _
@@ -674,7 +674,7 @@ instance pi.isFiniteMeasureOnCompacts [∀ i, TopologicalSpace (α i)]
   suffices Measure.pi μ (Set.univ.pi fun j => Function.eval j '' K) < ⊤ by
     exact lt_of_le_of_lt (measure_mono (univ.subset_pi_eval_image K)) this
   rw [Measure.pi_pi]
-  refine' WithTop.prod_lt_top _
+  refine WithTop.prod_lt_top ?_
   exact fun i _ => ne_of_lt (IsCompact.measure_lt_top (IsCompact.image hK (continuous_apply i)))
 #align measure_theory.measure.pi.is_finite_measure_on_compacts MeasureTheory.Measure.pi.isFiniteMeasureOnCompacts
 

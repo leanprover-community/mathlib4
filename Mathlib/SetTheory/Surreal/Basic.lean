@@ -153,7 +153,7 @@ theorem lf_iff_lt {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y ↔ 
 theorem le_iff_forall_lt {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
     x ≤ y ↔ (∀ i, x.moveLeft i < y) ∧ ∀ j, x < y.moveRight j := by
   refine le_iff_forall_lf.trans (and_congr ?_ ?_) <;>
-      refine' forall_congr' fun i => lf_iff_lt _ _ <;>
+      refine forall_congr' fun i => lf_iff_lt ?_ ?_ <;>
     apply_rules [Numeric.moveLeft, Numeric.moveRight]
 #align pgame.le_iff_forall_lt SetTheory.PGame.le_iff_forall_lt
 

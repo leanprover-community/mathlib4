@@ -542,7 +542,7 @@ theorem totalVariation_absolutelyContinuous_iff (s : SignedMeasure α) (μ : Mea
       have := h hS₂
       rw [totalVariation, Measure.add_apply, add_eq_zero_iff] at this
     exacts [this.1, this.2]
-  · refine' Measure.AbsolutelyContinuous.mk fun S _ hS₂ => _
+  · refine Measure.AbsolutelyContinuous.mk fun S _ hS₂ => ?_
     rw [totalVariation, Measure.add_apply, h.1 hS₂, h.2 hS₂, add_zero]
 #align measure_theory.signed_measure.total_variation_absolutely_continuous_iff MeasureTheory.SignedMeasure.totalVariation_absolutelyContinuous_iff
 
