@@ -200,6 +200,10 @@ end Aux
 instance instUniformSpace : UniformSpace (Unitization 𝕜 A) :=
   instUniformSpaceProd.comap (addEquiv 𝕜 A)
 
+/-- The natural equivalence between `Unitization 𝕜 A` and `𝕜 × A` as a uniform equivalence. -/
+def uniformEquivProd : (Unitization 𝕜 A) ≃ᵤ (𝕜 × A) :=
+  Equiv.toUniformEquivOfUniformInducing (addEquiv 𝕜 A) ⟨rfl⟩
+
 /-- The bornology on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
 instance instBornology : Bornology (Unitization 𝕜 A) :=
   Bornology.induced <| addEquiv 𝕜 A
