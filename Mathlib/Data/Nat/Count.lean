@@ -146,13 +146,21 @@ theorem count_lt_card {n : ℕ} (hp : (setOf p).Finite) (hpn : p n) : count p n 
   (count_lt_count_succ_iff.2 hpn).trans_le (count_le_card hp _)
 #align nat.count_lt_card Nat.count_lt_card
 
-theorem count_true (hp : ∀ n, p n) : count p = id := by ext n; induction n <;> simp [count_succ, *]
+theorem count_of_forall {n : ℕ} (hp : ∀ n' < n, p n') : count p n = n := by
+  induction n with
+  | zero => simp
+  | succ _ IH => simp [count_succ, IH (hp · <| lt_succ_of_lt ·), hp]
 
-@[simp] theorem count_True : count (fun _ ↦ True) = id := count_true fun _ ↦ trivial
+@[simp] theorem count_true : count (fun _ ↦ True) = id :=
+  funext fun _ ↦ count_of_forall fun _ _ ↦ trivial
 
-theorem count_false (hp : ∀ n, ¬p n) : count p = 0 := by ext n; induction n <;> simp [count_succ, *]
+theorem count_of_forall_not {n : ℕ} (hp : ∀ n' < n, ¬p n') : count p n = 0 := by
+  induction n with
+  | zero => simp
+  | succ _ IH => simp [count_succ, IH (hp · <| lt_succ_of_lt ·), hp]
 
-@[simp] theorem count_False : count (fun _ ↦ False) = 0 := count_false fun _ ↦ id
+@[simp] theorem count_false : count (fun _ ↦ False) = 0 :=
+  funext fun _ ↦ count_of_forall_not fun _ _ ↦ id
 
 variable {q : ℕ → Prop}
 variable [DecidablePred q]

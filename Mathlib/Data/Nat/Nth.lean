@@ -413,18 +413,20 @@ theorem lt_nth_iff_count_lt (hp : (setOf p).Infinite) {a b : ℕ} : a < count p 
 
 end Count
 
-theorem nth_true (hp : ∀ n, p n) : nth p = id := by
-  ext n
-  classical nth_rw 1 [← id_eq n, ← count_true hp, nth_count (hp n), id_eq]
+theorem nth_of_forall {n : ℕ} (hp : ∀ n' ≤ n, p n') : nth p n = n := by
+  classical nth_rw 1 [← count_of_forall (hp · ·.le), nth_count (hp n le_rfl)]
 
-@[simp] theorem nth_True : nth (fun _ ↦ True) = id := nth_true fun _ ↦ trivial
+@[simp] theorem nth_true : nth (fun _ ↦ True) = id := funext fun _ ↦ nth_of_forall fun _ _ ↦ trivial
 
-@[simp] theorem nth_False : nth (fun _ ↦ False) = 0 := by
-  ext n
-  exact nth_eq_zero_mono id (zero_le n) (by simp [nth_zero])
+theorem nth_of_forall_not {n : ℕ} (hp : ∀ n' ≥ n, ¬p n') : nth p n = 0 := by
+  have : setOf p ⊆ Finset.range n := by
+    intro n' hn'
+    contrapose! hp
+    exact ⟨n', by simpa using hp, Set.mem_setOf.mp hn'⟩
+  rw [nth_of_card_le ((finite_toSet _).subset this)]
+  · refine (Finset.card_le_card ?_).trans_eq (Finset.card_range n)
+    exact Set.Finite.toFinset_subset.mpr this
 
-theorem nth_false (hp : ∀ n, ¬p n) : nth p = 0 := by
-  convert nth_False
-  simp [hp]
+@[simp] theorem nth_false : nth (fun _ ↦ False) = 0 := funext fun _ ↦ nth_of_forall_not fun _ _ ↦ id
 
 end Nat
