@@ -1518,7 +1518,7 @@ theorem insertWith.valid_aux [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ 
     split_ifs with h_1 h_2 <;> dsimp only
     · rcases h with ⟨⟨lx, xr⟩, hs, hb⟩
       rcases hf _ ⟨h_1, h_2⟩ with ⟨xf, fx⟩
-      refine'
+      refine
         ⟨⟨⟨lx.mono_right (le_trans h_2 xf), xr.mono_left (le_trans fx h_1)⟩, hs, hb⟩, Or.inl rfl⟩
     · rcases insertWith.valid_aux f x hf h.left bl (lt_of_le_not_le h_1 h_2) with ⟨vl, e⟩
       suffices H : _ by

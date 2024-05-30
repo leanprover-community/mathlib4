@@ -474,7 +474,7 @@ def orthogonalProjection : E →L[𝕜] K :=
         simp [eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero hm ho] }
     1 fun x => by
     simp only [one_mul, LinearMap.coe_mk]
-    refine' le_of_pow_le_pow_left two_ne_zero (norm_nonneg _) _
+    refine le_of_pow_le_pow_left two_ne_zero (norm_nonneg _) ?_
     change ‖orthogonalProjectionFn K x‖ ^ 2 ≤ ‖x‖ ^ 2
     nlinarith [orthogonalProjectionFn_norm_sq K x]
 #align orthogonal_projection orthogonalProjection

@@ -97,7 +97,7 @@ def comparisonLeftAdjointHomEquiv (A : adj.toMonad.Algebra) (B : D)
     (comparisonLeftAdjointObj adj A ⟶ B) ≃ { f : F.obj A.A ⟶ B // _ } :=
       Cofork.IsColimit.homIso (colimit.isColimit _) B
     _ ≃ { g : A.A ⟶ G.obj B // G.map (F.map g) ≫ G.map (adj.counit.app B) = A.a ≫ g } := by
-      refine' (adj.homEquiv _ _).subtypeEquiv _
+      refine (adj.homEquiv _ _).subtypeEquiv ?_
       intro f
       rw [← (adj.homEquiv _ _).injective.eq_iff, Adjunction.homEquiv_naturality_left,
         adj.homEquiv_unit, adj.homEquiv_unit, G.map_comp]
@@ -120,9 +120,9 @@ def leftAdjointComparison
     [∀ A : adj.toMonad.Algebra, HasCoequalizer (F.map A.a)
       (adj.counit.app (F.obj A.A))] :
     adj.toMonad.Algebra ⥤ D := by
-  refine'
+  refine
     Adjunction.leftAdjointOfEquiv (G := comparison adj)
-      (F_obj := fun A => comparisonLeftAdjointObj adj A) (fun A B => _) _
+      (F_obj := fun A => comparisonLeftAdjointObj adj A) (fun A B => ?_) ?_
   · apply comparisonLeftAdjointHomEquiv
   · intro A B B' g h
     ext1

@@ -320,7 +320,7 @@ def finSumFinEquiv : Sum (Fin m) (Fin n) ≃ Fin (m + n) where
   toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
   invFun i := @Fin.addCases m n (fun _ => Sum (Fin m) (Fin n)) Sum.inl Sum.inr i
   left_inv x := by cases' x with y y <;> dsimp <;> simp
-  right_inv x := by refine' Fin.addCases (fun i => _) (fun i => _) x <;> simp
+  right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp
 #align fin_sum_fin_equiv finSumFinEquiv
 
 @[simp]
@@ -497,7 +497,7 @@ def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
   -- TODO: is there a canonical order of `*` and `+` here?
   left_inv a := Nat.div_add_mod' _ _
   right_inv p := by
-    refine' Prod.ext _ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)
+    refine Prod.ext ?_ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)
     dsimp only
     rw [Nat.add_comm, Nat.add_mul_div_right _ _ n.pos_of_neZero, Nat.div_eq_of_lt p.2.is_lt,
       Nat.zero_add]

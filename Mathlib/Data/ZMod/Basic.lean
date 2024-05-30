@@ -964,9 +964,9 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
         conv_rhs => rw [← ZMod.natCast_zmod_val x]
         rw [if_neg hmn0, ZMod.eq_iff_modEq_nat, ← Nat.modEq_and_modEq_iff_modEq_mul h,
           Prod.fst_zmod_cast, Prod.snd_zmod_cast]
-        refine'
-          ⟨(Nat.chineseRemainder h (cast x : ZMod m).val (cast x : ZMod n).val).2.left.trans _,
-            (Nat.chineseRemainder h (cast x : ZMod m).val (cast x : ZMod n).val).2.right.trans _⟩
+        refine
+          ⟨(Nat.chineseRemainder h (cast x : ZMod m).val (cast x : ZMod n).val).2.left.trans ?_,
+            (Nat.chineseRemainder h (cast x : ZMod m).val (cast x : ZMod n).val).2.right.trans ?_⟩
         · rw [← ZMod.eq_iff_modEq_nat, ZMod.natCast_zmod_val, ZMod.natCast_val]
         · rw [← ZMod.eq_iff_modEq_nat, ZMod.natCast_zmod_val, ZMod.natCast_val]
       exact ⟨left_inv, left_inv.rightInverse_of_card_le (by simp)⟩

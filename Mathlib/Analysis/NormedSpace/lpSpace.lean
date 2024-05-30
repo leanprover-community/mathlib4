@@ -996,8 +996,8 @@ variable [DecidableEq α]
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
 protected def single (p) (i : α) (a : E i) : lp E p :=
   ⟨fun j => if h : j = i then Eq.ndrec a h.symm else 0, by
-    refine' (memℓp_zero _).of_exponent_ge (zero_le p)
-    refine' (Set.finite_singleton i).subset _
+    refine (memℓp_zero ?_).of_exponent_ge (zero_le p)
+    refine (Set.finite_singleton i).subset ?_
     intro j
     simp only [forall_exists_index, Set.mem_singleton_iff, Ne, dite_eq_right_iff,
       Set.mem_setOf_eq, not_forall]

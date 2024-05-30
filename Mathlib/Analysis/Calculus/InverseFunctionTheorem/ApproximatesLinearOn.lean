@@ -438,7 +438,7 @@ theorem toPartialHomeomorph_target (hf : ApproximatesLinearOn f (f' : E →L[�
 /-- A function `f` that approximates a linear equivalence on the whole space is a homeomorphism. -/
 def toHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
     (hc : Subsingleton E ∨ c < N⁻¹) : E ≃ₜ F := by
-  refine' (hf.toPartialHomeomorph _ _ hc isOpen_univ).toHomeomorphOfSourceEqUnivTargetEqUniv rfl _
+  refine (hf.toPartialHomeomorph _ _ hc isOpen_univ).toHomeomorphOfSourceEqUnivTargetEqUniv rfl ?_
   rw [toPartialHomeomorph_target, image_univ, range_iff_surjective]
   exact hf.surjective hc
 #align approximates_linear_on.to_homeomorph ApproximatesLinearOn.toHomeomorph

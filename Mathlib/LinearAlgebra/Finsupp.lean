@@ -296,7 +296,7 @@ def supported (s : Set α) : Submodule R (α →₀ M) where
   carrier := { p | ↑p.support ⊆ s }
   add_mem' {p q} hp hq := by
     classical
-    refine' Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) _) (union_subset hp hq)
+    refine Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) ?_) (union_subset hp hq)
     rw [Finset.coe_union]
   zero_mem' := by
     simp only [subset_def, Finset.mem_coe, Set.mem_setOf_eq, mem_support_iff, zero_apply]

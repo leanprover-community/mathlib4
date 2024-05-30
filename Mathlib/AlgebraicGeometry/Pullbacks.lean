@@ -99,7 +99,7 @@ abbrev fV (i j : 𝒰.J) : v 𝒰 f g i j ⟶ pullback (𝒰.map i ≫ f) g :=
 def t' (i j k : 𝒰.J) :
     pullback (fV 𝒰 f g i j) (fV 𝒰 f g i k) ⟶ pullback (fV 𝒰 f g j k) (fV 𝒰 f g j i) := by
   refine (pullbackRightPullbackFstIso ..).hom ≫ ?_
-  refine' _ ≫ (pullbackSymmetry _ _).hom
+  refine ?_ ≫ (pullbackSymmetry _ _).hom
   refine ?_ ≫ (pullbackRightPullbackFstIso ..).inv
   refine' pullback.map _ _ _ _ (t 𝒰 f g i j) (𝟙 _) (𝟙 _) _ _
   · simp_rw [Category.comp_id, t_fst_fst_assoc, ← pullback.condition]
@@ -260,7 +260,7 @@ This is used in `gluedLift`. -/
 def gluedLiftPullbackMap (i j : 𝒰.J) :
     pullback ((𝒰.pullbackCover s.fst).map i) ((𝒰.pullbackCover s.fst).map j) ⟶
       (gluing 𝒰 f g).V ⟨i, j⟩ := by
-  refine' (pullbackRightPullbackFstIso _ _ _).hom ≫ _
+  refine (pullbackRightPullbackFstIso _ _ _).hom ≫ ?_
   refine' pullback.map _ _ _ _ _ (𝟙 _) (𝟙 _) _ _
   · exact (pullbackSymmetry _ _).hom ≫
       pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition
@@ -431,7 +431,7 @@ theorem pullbackP1Iso_hom_ι (i : 𝒰.J) :
 def gluedIsLimit : IsLimit (PullbackCone.mk _ _ (p_comm 𝒰 f g)) := by
   apply PullbackCone.isLimitAux'
   intro s
-  refine' ⟨gluedLift 𝒰 f g s, gluedLift_p1 𝒰 f g s, gluedLift_p2 𝒰 f g s, _⟩
+  refine ⟨gluedLift 𝒰 f g s, gluedLift_p1 𝒰 f g s, gluedLift_p2 𝒰 f g s, ?_⟩
   intro m h₁ h₂
   simp_rw [PullbackCone.mk_pt, PullbackCone.mk_π_app] at h₁ h₂
   apply (𝒰.pullbackCover s.fst).hom_ext

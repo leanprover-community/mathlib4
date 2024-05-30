@@ -298,7 +298,7 @@ The usual Roth number corresponds to `addRothNumber (Finset.range n)`, see `roth
 def mulRothNumber : Finset α →o ℕ :=
   ⟨fun s ↦ Nat.findGreatest (fun m ↦ ∃ t ⊆ s, t.card = m ∧ ThreeGPFree (t : Set α)) s.card, by
     rintro t u htu
-    refine' Nat.findGreatest_mono (fun m => _) (card_le_card htu)
+    refine Nat.findGreatest_mono (fun m => ?_) (card_le_card htu)
     rintro ⟨v, hvt, hv⟩
     exact ⟨v, hvt.trans htu, hv⟩⟩
 #align mul_roth_number mulRothNumber

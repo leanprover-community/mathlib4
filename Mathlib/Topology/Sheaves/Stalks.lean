@@ -306,7 +306,7 @@ variable {C}
 /-- If `x` specializes to `y`, then there is a natural map `F.stalk y ⟶ F.stalk x`. -/
 noncomputable def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     F.stalk y ⟶ F.stalk x := by
-  refine' colimit.desc _ ⟨_, fun U => _, _⟩
+  refine colimit.desc _ ⟨_, fun U => ?_, ?_⟩
   · exact
       colimit.ι ((OpenNhds.inclusion x).op ⋙ F)
         (op ⟨(unop U).1, (specializes_iff_forall_open.mp h _ (unop U).1.2 (unop U).2 : _)⟩)

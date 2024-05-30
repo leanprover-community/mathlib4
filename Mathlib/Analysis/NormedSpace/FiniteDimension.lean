@@ -263,13 +263,13 @@ protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
     tendsto_finset_sum _ fun i _ =>
       Tendsto.norm <| ((continuous_apply i).tendsto _).sub tendsto_const_nhds
   simp only [sub_self, norm_zero, Finset.sum_const_zero] at this
-  refine' (this.eventually (gt_mem_nhds <| inv_pos.2 K0)).mono fun g hg => _
+  refine (this.eventually (gt_mem_nhds <| inv_pos.2 K0)).mono fun g hg => ?_
   replace hg : ∑ i, ‖g i - f i‖₊ < K⁻¹ := by
     rw [← NNReal.coe_lt_coe]
     push_cast
     exact hg
   rw [LinearMap.ker_eq_bot]
-  refine' (hK.add_sub_lipschitzWith (LipschitzWith.of_dist_le_mul fun v u => _) hg).injective
+  refine (hK.add_sub_lipschitzWith (LipschitzWith.of_dist_le_mul fun v u => ?_) hg).injective
   simp only [dist_eq_norm, LinearMap.lsum_apply, Pi.sub_apply, LinearMap.sum_apply,
     LinearMap.comp_apply, LinearMap.proj_apply, LinearMap.smulRight_apply, LinearMap.id_apply, ←
     Finset.sum_sub_distrib, ← smul_sub, ← sub_smul, NNReal.coe_sum, coe_nnnorm, Finset.sum_mul]
@@ -570,7 +570,7 @@ def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
     ((ι → 𝕜) →L[𝕜] E) ≃L[𝕜] ι → E :=
   { LinearMap.toContinuousLinearMap.symm.trans (LinearEquiv.piRing 𝕜 E ι 𝕜) with
     continuous_toFun := by
-      refine' continuous_pi fun i => _
+      refine continuous_pi fun i => ?_
       exact (ContinuousLinearMap.apply 𝕜 E (Pi.single i 1)).continuous
     continuous_invFun := by
       simp_rw [LinearEquiv.invFun_eq_symm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]

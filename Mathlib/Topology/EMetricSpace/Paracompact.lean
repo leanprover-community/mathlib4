@@ -89,7 +89,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       rcases isOpen_iff.1 (ho <| ind x) x (mem_ind x) with ⟨ε, ε0, hε⟩
       have : 0 < ε / 3 := ENNReal.div_pos_iff.2 ⟨ε0.lt.ne', ENNReal.coe_ne_top⟩
       rcases ENNReal.exists_inv_two_pow_lt this.ne' with ⟨n, hn⟩
-      refine' ⟨n, Subset.trans (ball_subset_ball _) hε⟩
+      refine ⟨n, Subset.trans (ball_subset_ball ?_) hε⟩
       simpa only [div_eq_mul_inv, mul_comm] using (ENNReal.mul_lt_of_lt_div hn).le
     by_contra! h
     apply h n (ind x)
@@ -97,7 +97,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   -- Each `D n i` is a union of open balls, hence it is an open set
   have Dopen : ∀ n i, IsOpen (D n i) := fun n i => by
     rw [Dn]
-    iterate 4 refine' isOpen_iUnion fun _ => _
+    iterate 4 refine isOpen_iUnion fun _ => ?_
     exact isOpen_ball
   -- the covering `D n i` is a refinement of the original covering: `D n i ⊆ s i`
   have HDS : ∀ n i, D n i ⊆ s i := fun n i x => by
@@ -109,7 +109,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   -- by a single parameter, we use `ℕ × ι` as the domain.
   refine' ⟨ℕ × ι, fun ni => D ni.1 ni.2, fun _ => Dopen _ _, _, _, fun ni => ⟨ni.2, HDS _ _⟩⟩
   -- The sets `D n i` cover the whole space as we proved earlier
-  · refine' iUnion_eq_univ_iff.2 fun x => _
+  · refine iUnion_eq_univ_iff.2 fun x => ?_
     rcases Dcov x with ⟨n, i, h⟩
     exact ⟨⟨n, i⟩, h⟩
   /- Let us prove that the covering `D n i` is locally finite. Take a point `x` and choose
@@ -121,7 +121,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     rcases (nhds_basis_uniformity uniformity_basis_edist_inv_two_pow).mem_iff.1 this with
       ⟨k, -, hsub : ball x (2⁻¹ ^ k) ⊆ D n i⟩
     set B := ball x (2⁻¹ ^ (n + k + 1))
-    refine' ⟨B, ball_mem_nhds _ (pow_pos _), _⟩
+    refine ⟨B, ball_mem_nhds _ (pow_pos _), ?_⟩
     -- The sets `D m i`, `m > n + k`, are disjoint with `B`
     have Hgt : ∀ m ≥ n + k + 1, ∀ (i : ι), Disjoint (D m i) B := fun m hm i => by
       rw [disjoint_iff_inf_le]

@@ -2161,7 +2161,7 @@ def rightSquareIsPushout (H : IsColimit (PushoutCocone.mk _ _ h₁))
   rcases PushoutCocone.IsColimit.desc' H' (g₁ ≫ s.inl) s.inr this with ⟨l₁, hl₁, hl₁'⟩
   dsimp at *
   use l₁
-  refine' ⟨_, _, _⟩
+  refine ⟨?_, ?_, ?_⟩
   · apply PushoutCocone.IsColimit.hom_ext H
     · erw [← Category.assoc, hl₁]
       rfl

@@ -174,7 +174,7 @@ theorem lt_def {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
       (∃ i, (∀ i', x.moveLeft i' < y.moveLeft i) ∧ ∀ j, x < (y.moveLeft i).moveRight j) ∨
         ∃ j, (∀ i, (x.moveRight j).moveLeft i < y) ∧ ∀ j', x.moveRight j < y.moveRight j' := by
   rw [← lf_iff_lt ox oy, lf_def]
-  refine or_congr ?_ ?_ <;> refine' exists_congr fun x_1 => _ <;> refine' and_congr _ _ <;>
+  refine or_congr ?_ ?_ <;> refine exists_congr fun x_1 => ?_ <;> refine and_congr ?_ ?_ <;>
       refine forall_congr' fun i => lf_iff_lt ?_ ?_ <;>
     apply_rules [Numeric.moveLeft, Numeric.moveRight]
 #align pgame.lt_def SetTheory.PGame.lt_def
