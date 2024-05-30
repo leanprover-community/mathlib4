@@ -2305,6 +2305,9 @@ theorem one_add_natCast (m : ℕ) : 1 + (m : Ordinal) = succ m := by
   rfl
 #align ordinal.one_add_nat_cast Ordinal.one_add_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias one_add_nat_cast := one_add_natCast
+
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem one_add_ofNat (m : ℕ) [m.AtLeastTwo] :
@@ -2317,15 +2320,24 @@ theorem natCast_mul (m : ℕ) : ∀ n : ℕ, ((m * n : ℕ) : Ordinal) = m * n
   | n + 1 => by rw [Nat.mul_succ, Nat.cast_add, natCast_mul m n, Nat.cast_succ, mul_add_one]
 #align ordinal.nat_cast_mul Ordinal.natCast_mul
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_mul := natCast_mul
+
 /-- Alias of `Nat.cast_le`, specialized to `Ordinal` --/
 theorem natCast_le {m n : ℕ} : (m : Ordinal) ≤ n ↔ m ≤ n := by
   rw [← Cardinal.ord_nat, ← Cardinal.ord_nat, Cardinal.ord_le_ord, Cardinal.natCast_le]
 #align ordinal.nat_cast_le Ordinal.natCast_le
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_le := natCast_le
+
 /-- Alias of `Nat.cast_inj`, specialized to `Ordinal` --/
 theorem natCast_inj {m n : ℕ} : (m : Ordinal) = n ↔ m = n := by
   simp only [le_antisymm_iff, natCast_le]
 #align ordinal.nat_cast_inj Ordinal.natCast_inj
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_inj := natCast_inj
 
 instance charZero : CharZero Ordinal where
   cast_injective _ _ := natCast_inj.mp
@@ -2334,17 +2346,29 @@ instance charZero : CharZero Ordinal where
 theorem natCast_lt {m n : ℕ} : (m : Ordinal) < n ↔ m < n := Nat.cast_lt
 #align ordinal.nat_cast_lt Ordinal.natCast_lt
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_lt := natCast_lt
+
 /-- Alias of `Nat.cast_eq_zero`, specialized to `Ordinal` --/
 theorem natCast_eq_zero {n : ℕ} : (n : Ordinal) = 0 ↔ n = 0 := Nat.cast_eq_zero
 #align ordinal.nat_cast_eq_zero Ordinal.natCast_eq_zero
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_eq_zero := natCast_eq_zero
 
 /-- Alias of `Nat.cast_eq_zero`, specialized to `Ordinal` --/
 theorem natCast_ne_zero {n : ℕ} : (n : Ordinal) ≠ 0 ↔ n ≠ 0 := Nat.cast_ne_zero
 #align ordinal.nat_cast_ne_zero Ordinal.natCast_ne_zero
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_ne_zero := natCast_ne_zero
+
 /-- Alias of `Nat.cast_pos'`, specialized to `Ordinal` --/
 theorem natCast_pos {n : ℕ} : (0 : Ordinal) < n ↔ 0 < n := Nat.cast_pos'
 #align ordinal.nat_cast_pos Ordinal.natCast_pos
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_pos := natCast_pos
 
 @[simp, norm_cast]
 theorem natCast_sub (m n : ℕ) : ((m - n : ℕ) : Ordinal) = m - n := by
@@ -2354,6 +2378,9 @@ theorem natCast_sub (m n : ℕ) : ((m - n : ℕ) : Ordinal) = m - n := by
   · apply (add_left_cancel n).1
     rw [← Nat.cast_add, add_tsub_cancel_of_le h, Ordinal.add_sub_cancel_of_le (natCast_le.2 h)]
 #align ordinal.nat_cast_sub Ordinal.natCast_sub
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_sub := natCast_sub
 
 @[simp, norm_cast]
 theorem natCast_div (m n : ℕ) : ((m / n : ℕ) : Ordinal) = m / n := by
@@ -2368,17 +2395,26 @@ theorem natCast_div (m n : ℕ) : ((m / n : ℕ) : Ordinal) = m / n := by
       apply Nat.lt_succ_self
 #align ordinal.nat_cast_div Ordinal.natCast_div
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_div := natCast_div
+
 @[simp, norm_cast]
 theorem natCast_mod (m n : ℕ) : ((m % n : ℕ) : Ordinal) = m % n := by
   rw [← add_left_cancel, div_add_mod, ← natCast_div, ← natCast_mul, ← Nat.cast_add,
     Nat.div_add_mod]
 #align ordinal.nat_cast_mod Ordinal.natCast_mod
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_mod := natCast_mod
+
 @[simp]
 theorem lift_natCast : ∀ n : ℕ, lift.{u, v} n = n
   | 0 => by simp
   | n + 1 => by simp [lift_natCast n]
 #align ordinal.lift_nat_cast Ordinal.lift_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias lift_nat_cast := lift_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
@@ -2456,6 +2492,9 @@ theorem omega_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
 theorem sup_natCast : sup Nat.cast = ω :=
   (sup_le fun n => (nat_lt_omega n).le).antisymm <| omega_le.2 <| le_sup _
 #align ordinal.sup_nat_cast Ordinal.sup_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias sup_nat_cast := sup_natCast
 
 theorem nat_lt_limit {o} (h : IsLimit o) : ∀ n : ℕ, ↑n < o
   | 0 => lt_of_le_of_ne (Ordinal.zero_le o) h.1.symm
