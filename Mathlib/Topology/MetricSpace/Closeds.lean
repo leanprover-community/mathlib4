@@ -123,9 +123,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
       have : ∀ (l) (z : s (n + l)), ∃ z' : s (n + l + 1), edist (z : α) z' ≤ B n / 2 ^ l := by
         intro l z
         obtain ⟨z', z'_mem, hz'⟩ : ∃ z' ∈ s (n + l + 1), edist (z : α) z' < B n / 2 ^ l := by
-          refine' exists_edist_lt_of_hausdorffEdist_lt _ _
-          · exact (s (n + l) : Set α)
-          · exact z.2
+          refine exists_edist_lt_of_hausdorffEdist_lt (s := s (n + l)) z.2 ?_
           simp only [ENNReal.inv_pow, div_eq_mul_inv]
           rw [← pow_add]
           apply hs <;> simp

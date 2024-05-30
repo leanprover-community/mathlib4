@@ -255,7 +255,7 @@ equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` 
 @[simps!]
 noncomputable def counitIso : inverse C ⋙ functor C ≅ 𝟭 _ :=
   NatIso.ofComponents (fun T => by
-    refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) _ _ _
+    refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_
     · aesop_cat
     · aesop_cat
     · dsimp

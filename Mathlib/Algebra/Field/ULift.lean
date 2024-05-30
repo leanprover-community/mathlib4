@@ -32,7 +32,7 @@ instance instRatCast [RatCast α] : RatCast (ULift α) where ratCast q := up q
 #align ulift.down_rat_cast ULift.down_ratCast
 
 instance divisionSemiring [DivisionSemiring α] : DivisionSemiring (ULift α) := by
-  refine' down_injective.divisionSemiring down .. <;> intros <;> rfl
+  apply down_injective.divisionSemiring down .. <;> intros <;> rfl
 #align ulift.division_semiring ULift.divisionSemiring
 
 instance semifield [Semifield α] : Semifield (ULift α) :=
@@ -40,7 +40,7 @@ instance semifield [Semifield α] : Semifield (ULift α) :=
 #align ulift.semifield ULift.semifield
 
 instance divisionRing [DivisionRing α] : DivisionRing (ULift α) := by
-  refine' down_injective.divisionRing down .. <;> intros <;> rfl
+  apply down_injective.divisionRing down .. <;> intros <;> rfl
 #align ulift.division_ring ULift.divisionRing
 
 instance field [Field α] : Field (ULift α) :=

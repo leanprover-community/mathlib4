@@ -771,7 +771,7 @@ variable (R M)
 
 /-- The localization at a module of units is isomorphic to the ring. -/
 noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
-  refine' AlgEquiv.ofBijective (Algebra.ofId R S) ⟨_, _⟩
+  refine AlgEquiv.ofBijective (Algebra.ofId R S) ⟨?_, ?_⟩
   · intro x y hxy
     obtain ⟨c, eq⟩ := (IsLocalization.eq_iff_exists M S).mp hxy
     obtain ⟨u, hu⟩ := H c.prop
