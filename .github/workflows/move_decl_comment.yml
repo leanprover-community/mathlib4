@@ -1,9 +1,10 @@
 name:  move-decls (comment)
+
 on:
   issue_comment:
-    types: [created]
+    types: [created, edited]
   pull_request_review_comment:
-    types: [created]
+    types: [created, edited]
 
 jobs:
   add-comment:
