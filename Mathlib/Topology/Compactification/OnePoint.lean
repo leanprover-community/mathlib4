@@ -396,10 +396,32 @@ lemma continuous_iff {Y : Type*} [TopologicalSpace Y] (f : OnePoint X → Y) : C
   simp only [continuous_iff_continuousAt, OnePoint.forall, continuousAt_coe, continuousAt_infty']
   rfl
 
+/--
+A constructor for continuous maps out of a one point compactification, given a continuous map from
+the underlying space and a limit value at infinity.
+-/
+def continuousMapMk {Y : Type*} [TopologicalSpace Y] (f : C(X, Y)) (y : Y)
+    (h : Tendsto f (coclosedCompact X) (𝓝 y)) : C(OnePoint X, Y) where
+  toFun
+    | ∞ => y
+    | some x => f x
+  continuous_toFun := by
+    rw [continuous_iff]
+    refine ⟨h, f.continuous⟩
+
 lemma continuous_iff_from_discrete {Y : Type*} [TopologicalSpace Y]
     [DiscreteTopology X] (f : OnePoint X → Y) :
     Continuous f ↔ Tendsto (fun x : X ↦ f x) cofinite (𝓝 (f ∞)) := by
   simp [continuous_iff, cocompact_eq_cofinite, continuous_of_discreteTopology]
+
+/--
+A constructor for continuous maps out of a one point compactification of a discrete space, given a
+map from the underlying space and a limit value at infinity.
+-/
+def continuousMapMkDiscrete {Y : Type*} [TopologicalSpace Y]
+    [DiscreteTopology X] (f : X → Y) (y : Y) (h : Tendsto f cofinite (𝓝 y)) :
+    C(OnePoint X, Y) :=
+  continuousMapMk ⟨f, continuous_of_discreteTopology⟩ y (by simpa [cocompact_eq_cofinite])
 
 variable (X) in
 /--
@@ -428,6 +450,15 @@ noncomputable def continuousMapDiscreteEquiv (Y : Type*) [DiscreteTopology X] [T
 lemma continuous_iff_from_nat {Y : Type*} [TopologicalSpace Y] (f : OnePoint ℕ → Y) :
     Continuous f ↔ Tendsto (fun x : ℕ ↦ f x) atTop (𝓝 (f ∞)) := by
   rw [continuous_iff_from_discrete, Nat.cofinite_eq_atTop]
+
+/--
+A constructor for continuous maps out of the one point compactification of `ℕ`, given a
+sequence and a limit value at infinity.
+-/
+def continuousMapMkNat {Y : Type*} [TopologicalSpace Y]
+    (f : ℕ → Y) (y : Y) (h : Tendsto f atTop (𝓝 y)) :
+    C(OnePoint ℕ, Y) :=
+  continuousMapMkDiscrete f y (by rwa [Nat.cofinite_eq_atTop])
 
 /--
 Continuous maps out of the one point compactification of `ℕ` to a Hausdorff space `Y` correspond
