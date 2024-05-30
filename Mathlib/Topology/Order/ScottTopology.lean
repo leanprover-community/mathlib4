@@ -104,7 +104,14 @@ def DirSupInaccOn (D : Set (Set α)) (s : Set α) : Prop :=
 
 /-- A set `s` is said to be inaccessible by directed joins if, when the least upper bound of a
 directed set `d` lies in `s` then `d` has non-empty intersection with `s`. -/
-def DirSupInacc := DirSupInaccOn (univ : Set (Set α))
+def DirSupInacc (s : Set α) : Prop :=
+  ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty
+
+@[simp] lemma dirSupInaccOn_univ : DirSupInaccOn univ s ↔ DirSupInacc s := by
+  simp [DirSupInaccOn, DirSupInacc]
+
+@[simp] lemma DirSupInacc.DirSupInaccOn {D : Set (Set α)} :
+    DirSupInacc s → DirSupInaccOn D s := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
 
 /--
 A set `s` is said to be closed under directed joins if, whenever a directed set `d` has a least
@@ -117,7 +124,14 @@ def DirSupClosedOn (D : Set (Set α)) (s : Set α) : Prop :=
 A set `s` is said to be closed under directed joins if, whenever a directed set `d` has a least
 upper bound `a` and is a subset of `s` then `a` also lies in `s`.
 -/
-def DirSupClosed := DirSupClosedOn (univ : Set (Set α))
+def DirSupClosed (s : Set α) : Prop :=
+  ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → d ⊆ s → a ∈ s
+
+@[simp] lemma DirSupClosedOn_univ : DirSupClosedOn univ s ↔ DirSupClosed s := by
+  simp [DirSupClosedOn, DirSupClosed]
+
+[@simp] lemma DirSupClosed.DirSupClosedOn {D : Set (Set α)} :
+    DirSupClosed s → DirSupClosedOn D s := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
 
 @[simp] lemma dirSupInaccOn_compl : DirSupInaccOn D sᶜ ↔ DirSupClosedOn D s := by
   simp [DirSupInaccOn, DirSupClosedOn, ← not_disjoint_iff_nonempty_inter, not_imp_not,
@@ -128,6 +142,9 @@ def DirSupClosed := DirSupClosedOn (univ : Set (Set α))
 
 alias ⟨DirSupInaccOn.of_compl, DirSupClosedOn.compl⟩ := dirSupInaccOn_compl
 alias ⟨DirSupClosedOn.of_compl, DirSupInaccOn.compl⟩ := dirSupClosedOn_compl
+
+alias ⟨DirSupInacc.of_compl, DirSupClosed.compl⟩ := dirSupInaccOn_compl
+alias ⟨DirSupClosed.of_compl, DirSupInacc.compl⟩ := dirSupClosedOn_compl
 
 lemma DirSupClosedOn.inter (hs : DirSupClosedOn D s) (ht : DirSupClosedOn D t) : DirSupClosedOn D (s ∩ t) :=
   fun _d hd₁ hd hd' _a ha hds ↦ ⟨hs hd₁ hd hd' ha <| hds.trans <| inter_subset_left _ _,
@@ -212,8 +229,12 @@ lemma isClosed_of_isUpperSet (h : IsUpperSet s) : IsClosed s :=
   isOpen_compl_iff.1 <| isOpen_of_isLowerSet h.compl
 
 lemma dirSupInacc_of_isOpen (h : IsOpen s) : DirSupInacc s :=
-  fun d _ hd₁ hd₂ a hda hd₃ ↦ by
+  fun d hd₁ hd₂ a hda hd₃ ↦ by
     obtain ⟨b, hbd, hb⟩ := isOpen_iff.1 h hd₁ hd₂ hda hd₃; exact ⟨b, hbd, hb ⟨le_rfl, hbd⟩⟩
+
+variable (h : IsClosed s)
+
+#check DirSupInacc.of_compl -- (dirSupInacc_of_isOpen h.isOpen_compl)
 
 lemma dirSupClosed_of_isClosed (h : IsClosed s) : DirSupClosed s :=
   (dirSupInacc_of_isOpen h.isOpen_compl).of_compl
@@ -263,12 +284,12 @@ lemma isOpen_iff_isUpperSet_and_dirSupInacc : IsOpen s ↔ IsUpperSet s ∧ DirS
   refine and_congr_right fun h ↦
     ⟨@IsScottHausdorff.dirSupInacc_of_isOpen _ _ (scottHausdorff α) _ _,
       fun h' d d₁ d₂ _ d₃ ha ↦ ?_⟩
-  obtain ⟨b, hbd, hbu⟩ := h' (trivial) d₁ d₂ d₃ ha
+  obtain ⟨b, hbd, hbu⟩ := h' d₁ d₂ d₃ ha
   exact ⟨b, hbd, Subset.trans (inter_subset_left (Ici b) d) (h.Ici_subset hbu)⟩
 
 lemma isClosed_iff_isLowerSet_and_dirSupClosed : IsClosed s ↔ IsLowerSet s ∧ DirSupClosed s := by
   rw [← isOpen_compl_iff, isOpen_iff_isUpperSet_and_dirSupInacc, isUpperSet_compl]
-  rw [DirSupInacc, dirSupInaccOn_compl, DirSupClosed]
+  rw [dirSupInaccOn_compl]
 
 lemma isUpperSet_of_isOpen : IsOpen s → IsUpperSet s := fun h ↦
   (isOpen_iff_isUpperSet_and_scottHausdorff_open.mp h).left
@@ -304,8 +325,8 @@ lemma monotone_of_continuous (hf : Continuous f) : Monotone f := fun _ b hab ↦
 @[simp] lemma scottContinuous_iff_continuous : ScottContinuous f ↔ Continuous f := by
   refine ⟨fun h ↦ continuous_def.2 fun u hu ↦ ?_, ?_⟩
   · rw [isOpen_iff_isUpperSet_and_dirSupInacc]
-    exact ⟨(isUpperSet_of_isOpen hu).preimage h.monotone, fun _ _ hd₁ hd₂ _ hd₃ ha ↦
-      image_inter_nonempty_iff.mp <| (isOpen_iff_isUpperSet_and_dirSupInacc.mp hu).2 (by trivial) (hd₁.image f)
+    exact ⟨(isUpperSet_of_isOpen hu).preimage h.monotone, fun _ hd₁ hd₂ _ hd₃ ha ↦
+      image_inter_nonempty_iff.mp <| (isOpen_iff_isUpperSet_and_dirSupInacc.mp hu).2 (hd₁.image f)
         (directedOn_image.mpr (hd₂.mono @(h.monotone))) (h hd₁ hd₂ hd₃) ha⟩
   · refine fun hf _ d₁ d₂ _ d₃ ↦ ⟨(monotone_of_continuous hf).mem_upperBounds_image d₃.1,
       fun b hb ↦ ?_⟩
@@ -313,7 +334,7 @@ lemma monotone_of_continuous (hf : Continuous f) : Monotone f := fun _ b hab ↦
     let u := (Iic b)ᶜ
     have hu : IsOpen (f ⁻¹' u) := (isOpen_compl_iff.2 isClosed_Iic).preimage hf
     rw [isOpen_iff_isUpperSet_and_dirSupInacc] at hu
-    obtain ⟨c, hcd, hfcb⟩ := hu.2 (trivial) d₁ d₂ d₃ h
+    obtain ⟨c, hcd, hfcb⟩ := hu.2 d₁ d₂ d₃ h
     simp [upperBounds] at hb
     exact hfcb <| hb _ hcd
 
