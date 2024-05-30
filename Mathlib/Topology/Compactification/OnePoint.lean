@@ -72,17 +72,17 @@ scoped notation "∞" => OnePoint.infty
 /-- Coercion from `X` to `OnePoint X`. -/
 @[coe, match_pattern] def some : X → OnePoint X := Option.some
 
-protected lemma «forall» {p : OnePoint X → Prop} :
-    (∀ (x : OnePoint X), p x) ↔ p ∞ ∧ ∀ (x : X), p (some x) :=
-  Option.forall
-
-protected lemma «exists» {p : OnePoint X → Prop} :
-    (∃ x, p x) ↔ p ∞ ∨ ∃ (x : X), p (some x) :=
-  Option.exists
-
 instance : CoeTC X (OnePoint X) := ⟨some⟩
 
 instance : Inhabited (OnePoint X) := ⟨∞⟩
+
+protected lemma «forall» {p : OnePoint X → Prop} :
+    (∀ (x : OnePoint X), p x) ↔ p ∞ ∧ ∀ (x : X), p x :=
+  Option.forall
+
+protected lemma «exists» {p : OnePoint X → Prop} :
+    (∃ x, p x) ↔ p ∞ ∨ ∃ (x : X), p x :=
+  Option.exists
 
 instance [Fintype X] : Fintype (OnePoint X) :=
   inferInstanceAs (Fintype (Option X))
