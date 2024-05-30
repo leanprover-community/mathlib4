@@ -9,7 +9,8 @@ import Mathlib.CategoryTheory.Sites.Localization
 /-!
 # Locally bijective morphisms of presheaves
 
-Let `C` a category equipped with a Grothendieck topology `J`. Let `A` be a concrete category.
+Let `C` a be category equipped with a Grothendieck topology `J`.
+Let `A` be a concrete category.
 In this file, we introduce a type-class `J.WEqualsLocallyBijective A` which says
 that the class `J.W` (of morphisms of presheaves which become isomorphisms
 after sheafification) is the class of morphisms that are both locally injective
