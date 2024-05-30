@@ -33,9 +33,9 @@ variable {𝒮 : Type u₁} [Category.{v₁} 𝒮]
 /-- A based category over `𝒮` is a category `𝒳` together with a functor `p : 𝒳 ⥤ 𝒮` -/
 structure BasedCategory (𝒮 : Type u₁) [Category.{v₁} 𝒮] where
   /-- The type of objects in a `BasedCategory`-/
-  cat : Type _
+  cat : Type u₁
   /-- The underlying category of a `BasedCategory` -/
-  isCat : Category cat
+  isCat : Category.{v₁} cat
   /-- The functor to the base -/
   p : cat ⥤ 𝒮
 
