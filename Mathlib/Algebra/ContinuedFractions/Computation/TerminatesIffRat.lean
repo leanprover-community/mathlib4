@@ -31,18 +31,11 @@ rational, continued fraction, termination
 -/
 
 
-namespace GeneralizedContinuedFraction
+namespace CF
 
-/- ./././Mathport/Syntax/Translate/Command.lean:230:11: unsupported: unusual advanced open style -/
-open GeneralizedContinuedFraction (of)
+open CF (of)
 
 variable {K : Type*} [LinearOrderedField K] [FloorRing K]
-
-/-
-We will have to constantly coerce along our structures in the following proofs using their provided
-map functions.
--/
-attribute [local simp] Pair.map IntFractPair.mapFr
 
 section RatOfTerminates
 
@@ -60,81 +53,25 @@ show that `v = ↑q`.
 
 variable (v : K) (n : ℕ)
 
-nonrec theorem exists_gcf_pair_rat_eq_of_nth_conts_aux :
-    ∃ conts : Pair ℚ, (of v).continuantsAux n = (conts.map (↑) : Pair K) :=
-  Nat.strong_induction_on n
-    (by
-      clear n
-      let g := of v
-      intro n IH
-      rcases n with (_ | _ | n)
-      -- n = 0
-      · suffices ∃ gp : Pair ℚ, Pair.mk (1 : K) 0 = gp.map (↑) by simpa [continuantsAux]
-        use Pair.mk 1 0
-        simp
-      -- n = 1
-      · suffices ∃ conts : Pair ℚ, Pair.mk g.h 1 = conts.map (↑) by simpa [continuantsAux]
-        use Pair.mk ⌊v⌋ 1
-        simp [g]
-      -- 2 ≤ n
-      · cases' IH (n + 1) <| lt_add_one (n + 1) with pred_conts pred_conts_eq
-        -- invoke the IH
-        cases' s_ppred_nth_eq : g.s.get? n with gp_n
-        -- option.none
-        · use pred_conts
-          have : g.continuantsAux (n + 2) = g.continuantsAux (n + 1) :=
-            continuantsAux_stable_of_terminated (n + 1).le_succ s_ppred_nth_eq
-          simp only [this, pred_conts_eq]
-        -- option.some
-        · -- invoke the IH a second time
-          cases' IH n <| lt_of_le_of_lt n.le_succ <| lt_add_one <| n + 1 with ppred_conts
-            ppred_conts_eq
-          obtain ⟨a_eq_one, z, b_eq_z⟩ : gp_n.a = 1 ∧ ∃ z : ℤ, gp_n.b = (z : K) :=
-            of_part_num_eq_one_and_exists_int_part_denom_eq s_ppred_nth_eq
-          -- finally, unfold the recurrence to obtain the required rational value.
-          simp only [a_eq_one, b_eq_z,
-            continuantsAux_recurrence s_ppred_nth_eq ppred_conts_eq pred_conts_eq]
-          use nextContinuants 1 (z : ℚ) ppred_conts pred_conts
-          cases ppred_conts; cases pred_conts
-          simp [nextContinuants, nextNumerator, nextDenominator])
-#align generalized_continued_fraction.exists_gcf_pair_rat_eq_of_nth_conts_aux GeneralizedContinuedFraction.exists_gcf_pair_rat_eq_of_nth_conts_aux
+#noalign generalized_continued_fraction.exists_gcf_pair_rat_eq_of_nth_conts_aux
 
-theorem exists_gcf_pair_rat_eq_nth_conts :
-    ∃ conts : Pair ℚ, (of v).continuants n = (conts.map (↑) : Pair K) := by
-  rw [nth_cont_eq_succ_nth_cont_aux]; exact exists_gcf_pair_rat_eq_of_nth_conts_aux v <| n + 1
-#align generalized_continued_fraction.exists_gcf_pair_rat_eq_nth_conts GeneralizedContinuedFraction.exists_gcf_pair_rat_eq_nth_conts
+#noalign generalized_continued_fraction.exists_gcf_pair_rat_eq_nth_conts
 
-theorem exists_rat_eq_nth_numerator : ∃ q : ℚ, (of v).numerators n = (q : K) := by
-  rcases exists_gcf_pair_rat_eq_nth_conts v n with ⟨⟨a, _⟩, nth_cont_eq⟩
-  use a
-  simp [num_eq_conts_a, nth_cont_eq]
-#align generalized_continued_fraction.exists_rat_eq_nth_numerator GeneralizedContinuedFraction.exists_rat_eq_nth_numerator
+#noalign generalized_continued_fraction.exists_rat_eq_nth_numerator
 
-theorem exists_rat_eq_nth_denominator : ∃ q : ℚ, (of v).denominators n = (q : K) := by
-  rcases exists_gcf_pair_rat_eq_nth_conts v n with ⟨⟨_, b⟩, nth_cont_eq⟩
-  use b
-  simp [denom_eq_conts_b, nth_cont_eq]
-#align generalized_continued_fraction.exists_rat_eq_nth_denominator GeneralizedContinuedFraction.exists_rat_eq_nth_denominator
+#noalign generalized_continued_fraction.exists_rat_eq_nth_denominator
 
-/-- Every finite convergent corresponds to a rational number. -/
-theorem exists_rat_eq_nth_convergent : ∃ q : ℚ, (of v).convergents n = (q : K) := by
-  rcases exists_rat_eq_nth_numerator v n with ⟨Aₙ, nth_num_eq⟩
-  rcases exists_rat_eq_nth_denominator v n with ⟨Bₙ, nth_denom_eq⟩
-  use Aₙ / Bₙ
-  simp [nth_num_eq, nth_denom_eq, convergent_eq_num_div_denom]
-#align generalized_continued_fraction.exists_rat_eq_nth_convergent GeneralizedContinuedFraction.exists_rat_eq_nth_convergent
+#noalign generalized_continued_fraction.exists_rat_eq_nth_convergent
 
 variable {v}
 
 /-- Every terminating continued fraction corresponds to a rational number. -/
-theorem exists_rat_eq_of_terminates (terminates : (of v).Terminates) : ∃ q : ℚ, v = ↑q := by
-  obtain ⟨n, v_eq_conv⟩ : ∃ n, v = (of v).convergents n :=
-    of_correctness_of_terminates terminates
-  obtain ⟨q, conv_eq_q⟩ : ∃ q : ℚ, (of v).convergents n = (↑q : K) :=
-    exists_rat_eq_nth_convergent v n
-  have : v = (↑q : K) := Eq.trans v_eq_conv conv_eq_q
-  use q, this
-#align generalized_continued_fraction.exists_rat_eq_of_terminates GeneralizedContinuedFraction.exists_rat_eq_of_terminates
+theorem exists_rat_eq_of_terminates (terminates : (of v).s.Terminates) : ∃ q : ℚ, v = ↑q := by
+  obtain ⟨n, hv⟩ : ∃ n, v = (of v).convergents n
+  exact of_correctness_of_terminates terminates
+  rw [hv]
+  simp [convergents]
+#align generalized_continued_fraction.exists_rat_eq_of_terminates CF.exists_rat_eq_of_terminates
 
 end RatOfTerminates
 
@@ -160,20 +97,16 @@ the Computation first and then lift the results step-by-step.
 
 
 -- The lifting works for arbitrary linear ordered fields with a floor function.
-variable {v : K} {q : ℚ} (v_eq_q : v = (↑q : K)) (n : ℕ)
+variable {q : ℚ} (n : ℕ)
 
 /-! First, we show the correspondence for the very basic functions in
 `GeneralizedContinuedFraction.IntFractPair`. -/
 
 
-namespace IntFractPair
-
-theorem coe_of_rat_eq : ((IntFractPair.of q).mapFr (↑) : IntFractPair K) = IntFractPair.of v := by
-  simp [IntFractPair.of, v_eq_q]
-#align generalized_continued_fraction.int_fract_pair.coe_of_rat_eq GeneralizedContinuedFraction.IntFractPair.coe_of_rat_eq
+#noalign generalized_continued_fraction.int_fract_pair.coe_of_rat_eq
 
 theorem coe_stream_nth_rat_eq :
-    ((IntFractPair.stream q n).map (mapFr (↑)) : Option <| IntFractPair K) =
+    ((IntFractPair.stream q n).map (mapFr (↑)) : Option (IntFractPair K)) =
       IntFractPair.stream v n := by
   induction n with
   | zero =>
@@ -196,7 +129,7 @@ theorem coe_stream_nth_rat_eq :
 #align generalized_continued_fraction.int_fract_pair.coe_stream_nth_rat_eq GeneralizedContinuedFraction.IntFractPair.coe_stream_nth_rat_eq
 
 theorem coe_stream'_rat_eq :
-    ((IntFractPair.stream q).map (Option.map (mapFr (↑))) : Stream' <| Option <| IntFractPair K) =
+    ((IntFractPair.stream q).map (Option.map (mapFr (↑))) : Stream' (Option (IntFractPair K))) =
       IntFractPair.stream v :=
   by funext n; exact IntFractPair.coe_stream_nth_rat_eq v_eq_q n
 #align generalized_continued_fraction.int_fract_pair.coe_stream_rat_eq GeneralizedContinuedFraction.IntFractPair.coe_stream'_rat_eq
@@ -213,7 +146,7 @@ theorem coe_of_h_rat_eq : (↑((of q).h : ℚ) : K) = (of v).h := by
 #align generalized_continued_fraction.coe_of_h_rat_eq GeneralizedContinuedFraction.coe_of_h_rat_eq
 
 theorem coe_of_s_get?_rat_eq :
-    (((of q).s.get? n).map (Pair.map (↑)) : Option <| Pair K) = (of v).s.get? n := by
+    (((of q).s.get? n).map (Pair.map (↑)) : Option (Pair K)) = (of v).s.get? n := by
   simp only [of, IntFractPair.seq1, Stream'.Seq.map_get?, Stream'.Seq.get?_tail]
   simp only [Stream'.Seq.get?]
   rw [← IntFractPair.coe_stream'_rat_eq v_eq_q]
@@ -221,7 +154,7 @@ theorem coe_of_s_get?_rat_eq :
     simp [Stream'.map, Stream'.get, succ_nth_stream_eq]
 #align generalized_continued_fraction.coe_of_s_nth_rat_eq GeneralizedContinuedFraction.coe_of_s_get?_rat_eq
 
-theorem coe_of_s_rat_eq : ((of q).s.map (Pair.map ((↑))) : Stream'.Seq <| Pair K) = (of v).s := by
+theorem coe_of_s_rat_eq : ((of q).s.map (Pair.map ((↑))) : Stream'.Seq (Pair K)) = (of v).s := by
   ext n; rw [← coe_of_s_get?_rat_eq v_eq_q]; rfl
 #align generalized_continued_fraction.coe_of_s_rat_eq GeneralizedContinuedFraction.coe_of_s_rat_eq
 

@@ -5,7 +5,7 @@ Authors: David Wärn
 -/
 import Mathlib.Topology.StoneCech
 import Mathlib.Topology.Algebra.Semigroup
-import Mathlib.Data.Stream.Init
+import Mathlib.Data.Stream
 
 #align_import combinatorics.hindman from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -270,9 +270,7 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
   -- Porting note: need to fix breakage of Set notation
   change _ ∈ FP _
   have := FP.singleton (a.drop i).tail d
-  rw [Stream'.tail_eq_drop, Stream'.get_drop, Stream'.get_drop] at this
-  convert this
-  rw [hd, add_comm, Nat.succ_add, Nat.add_succ]
+  rwa [Stream'.tail_eq_drop, Stream'.get_drop, Stream'.get_drop, ← Nat.add_assoc, ← hd] at this
 set_option linter.uppercaseLean3 false in
 #align hindman.FP.mul_two Hindman.FP.mul_two
 set_option linter.uppercaseLean3 false in
