@@ -134,7 +134,7 @@ lemma ev_refl (γ : OneCocycle G U) (i : I) ⦃T : C⦄ (a : T ⟶ U i) :
   simpa using γ.ev_trans i i i a a a
 
 lemma ev_symm (γ : OneCocycle G U) (i j : I) ⦃T : C⦄ (a : T ⟶ U i) (b : T ⟶ U j) :
-    γ.ev i j a b = (γ.ev j i b a) ⁻¹ := by
+    γ.ev i j a b = (γ.ev j i b a)⁻¹ := by
   rw [← mul_left_inj (γ.ev j i b a), γ.ev_trans i j i a b a,
     ev_refl, mul_left_inv]
 
