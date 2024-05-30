@@ -65,7 +65,7 @@ elliptic, divisibility, sequence
 
 universe u v w
 
-variable {R : Type u} [CommRing R] (W : ℤ → R)
+variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] (W : ℤ → R) (f : R →+* S)
 
 /-- The proposition that a sequence indexed by integers is an elliptic sequence. -/
 def IsEllSequence : Prop :=
@@ -313,3 +313,20 @@ noncomputable def normEDSRec {P : ℕ → Sort u}
   normEDSRec' zero one two three four
     (fun _ ih => by apply even <;> exact ih _ <| by linarith only)
     (fun _ ih => by apply odd <;> exact ih _ <| by linarith only) n
+
+lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f c) (f d) n := by
+  induction n using normEDSRec' with
+  | zero => exact map_zero f
+  | one => exact map_one f
+  | two => exact map_one f
+  | three => rfl
+  | four => rfl
+  | _ _ ih =>
+    simp only [preNormEDS'_odd, preNormEDS'_even, map_one, map_sub, map_mul, map_pow, apply_ite f]
+    repeat rw [ih _ <| by linarith only]
+
+lemma map_preNormEDS (n : ℤ) : f (preNormEDS b c d n) = preNormEDS (f b) (f c) (f d) n := by
+  rw [preNormEDS, map_mul, map_intCast, map_preNormEDS', preNormEDS]
+
+lemma map_normEDS (n : ℤ) : f (normEDS b c d n) = normEDS (f b) (f c) (f d) n := by
+  rw [normEDS, map_mul, map_preNormEDS, map_pow, apply_ite f, map_one, normEDS]
