@@ -397,7 +397,8 @@ theorem LowerSemicontinuousWithinAt.eventually_le {f : α → γ}
 theorem LowerSemicontinuousWithinAt.comp {g : γ → δ} {f : α → γ}
     (hg : LowerSemicontinuousWithinAt g (Iic (f x)) (f x))
     (hf : LowerSemicontinuousWithinAt f s x) (gmon : Monotone g) :
-    LowerSemicontinuousWithinAt (g ∘ f) s x := fun y hy => by
+    LowerSemicontinuousWithinAt (g ∘ f) s x := by
+  intro y hy
   obtain ⟨a, h₁, h₂, h₃⟩ := exists_Icc_mem_subset_of_mem_nhdsWithin_Iic (hg _ hy)
   refine (hf.eventually_le (mem_of_superset h₂ Icc_subset_Ici_self)).mono fun x hx ↦ ?_
   calc y < g a := h₃ ⟨le_rfl, h₁⟩
