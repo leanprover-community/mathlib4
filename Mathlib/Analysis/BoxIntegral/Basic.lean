@@ -752,7 +752,12 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt (l : IntegrationParams) 
     [IsLocallyFiniteMeasure μ]
     (hc : ∀ᵐ x ∂(μ.restrict (Box.Icc I)), ContinuousWithinAt f (Box.Icc I) x) :
     Integrable I l f μ.toBoxAdditive.toSMul := by
-  refine' integrable_iff_cauchy_basis.2 fun ε ε0 ↦ _
+  /- We prove that f is integrable by proving that we can ensure that the integralSums over any
+     two tagged prepartitions π₁ and π₂ can be made ε-close by making the partitions
+     sufficiently fine.
+
+     Start by defining some constants C, ε₁, ε₂ that will be useful later. -/
+  refine integrable_iff_cauchy_basis.2 fun ε ε0 ↦ ?_
   rcases exists_pos_mul_lt ε0 (2 * μ.toBoxAdditive I) with ⟨ε₁, ε₁0, hε₁⟩
   rcases hb with ⟨C, hC⟩
   by_cases C0 : C ≥ 0; swap
@@ -785,7 +790,7 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt (l : IntegrationParams) 
   /- We prove the claim for partitions π₁ and π₂ subordinate to r/2, by writing the difference as
      an integralSum over π₁ ⊓ π₂ and considering separately the boxes of π₁ ⊓ π₂ which are/aren't
      fully contained within U. -/
-  refine' ⟨fun _ _ ↦ ⟨r / 2, half_pos r0⟩, fun _ _ _ ↦ rfl, fun c₁ c₂ π₁ π₂ h₁ h₁p h₂ h₂p ↦ _⟩
+  refine ⟨fun _ _ ↦ ⟨r / 2, half_pos r0⟩, fun _ _ _ ↦ rfl, fun c₁ c₂ π₁ π₂ h₁ h₁p h₂ h₂p ↦ ?_⟩
   simp only [dist_eq_norm, integralSum_sub_partitions _ _ h₁p h₂p, BoxAdditiveMap.toSMul_apply,
     ← smul_sub]
   set B := (π₁.toPrepartition ⊓ π₂.toPrepartition).boxes

@@ -50,17 +50,13 @@ theorem oscillationWithin_univ_eq_oscillation [TopologicalSpace E] (f : E → F)
 /-- The oscillation within `D` of `f` at `x ∈ D` is 0 if and only if `ContinuousWithinAt f D x`. -/
 theorem oscillationWithin_zero_iff_continuousWithinAt [TopologicalSpace E] (f : E → F) {D : Set E}
     {x : E} (xD : x ∈ D): oscillationWithin f D x = 0 ↔ ContinuousWithinAt f D x := by
-  constructor
-  · intro hf
-    rw [ContinuousWithinAt, EMetric.tendsto_nhds]
-    intro ε ε0
-    simp only [← hf, oscillationWithin, Filter.mem_map, gt_iff_lt, iInf_lt_iff, exists_prop] at ε0
+  refine ⟨fun hf ↦ EMetric.tendsto_nhds.mpr (fun ε ε0 ↦ ?_), fun hf ↦ ?_⟩
+  · simp_rw [← hf, oscillationWithin, iInf_lt_iff] at ε0
     obtain ⟨S, hS, Sε⟩ := ε0
     refine Filter.mem_of_superset hS (fun y hy ↦ lt_of_le_of_lt ?_ Sε)
     exact edist_le_diam_of_mem (Set.mem_preimage.1 hy) <|
             Set.mem_preimage.1 (mem_of_mem_nhdsWithin xD hS)
-  · intro hf
-    refine le_antisymm (ENNReal.le_of_forall_pos_le_add fun ε hε _ ↦ ?_) (zero_le _)
+  · refine le_antisymm (ENNReal.le_of_forall_pos_le_add fun ε hε _ ↦ ?_) (zero_le _)
     rw [zero_add]
     have : ball (f x) (ε / 2) ∈ (𝓝[D] x).map f := hf <| ball_mem_nhds _ (by simp [ne_of_gt hε])
     refine (biInf_le diam this).trans (le_of_le_of_eq diam_ball ?_)
@@ -79,20 +75,13 @@ theorem uniform_oscillationWithin_of_compact [PseudoEMetricSpace E] {K : Set E} 
     ∃ δ > 0, ∀ x ∈ K, diam (f '' (EMetric.ball x (ENNReal.ofReal δ) ∩ D)) ≤ ε := by
   let S := fun r ↦ { x : E | ∃ (a : ℝ), (a > r ∧ diam (f '' (ball x (ENNReal.ofReal a) ∩ D)) ≤ ε) }
   have S_open : ∀ r > 0, IsOpen (S r) := by
-    intro r _
-    rw [isOpen_iff_nhds]
-    rintro x ⟨a, ar, ha⟩ t ht
-    rw [EMetric.mem_nhds_iff]
-    use ENNReal.ofReal ((a - r) / 2), by simp [ar]
-    intro y hy
-    apply ht
-    use a - (a - r) / 2, by linarith
-    refine le_trans (diam_mono (Set.image_mono fun z hz ↦ ?_)) ha
-    rw [EMetric.mem_ball] at *
-    refine ⟨?_, hz.2⟩
-    refine lt_of_le_of_lt (edist_triangle z y x) (lt_of_lt_of_eq (ENNReal.add_lt_add hz.1 hy) ?_)
-    rw [← ENNReal.ofReal_add (by linarith) (by linarith)]
-    simp
+    refine fun r _ ↦ EMetric.isOpen_iff.mpr fun x ⟨a, ar, ha⟩ ↦
+      ⟨ENNReal.ofReal ((a - r) / 2), by simp [ar], ?_⟩
+    refine fun y hy ↦ ⟨a - (a - r) / 2, by linarith,
+      le_trans (diam_mono (Set.image_mono fun z hz ↦ ?_)) ha⟩
+    refine ⟨lt_of_le_of_lt (edist_triangle z y x) (lt_of_lt_of_eq (ENNReal.add_lt_add hz.1 hy) ?_),
+      hz.2⟩
+    rw [← ENNReal.ofReal_add (by linarith) (by linarith), sub_add_cancel]
   have S_cover : K ⊆ ⋃ r > 0, S r := by
     intro x hx
     have : oscillationWithin f D x < ε := hK x hx
