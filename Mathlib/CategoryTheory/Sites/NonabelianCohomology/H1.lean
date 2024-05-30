@@ -150,7 +150,7 @@ def OneCohomologyRelation (γ₁ γ₂ : OneCochain G U) (α : ZeroCochain G U) 
 
 namespace OneCohomologyRelation
 
-lemma refl (γ : OneCochain G U) : OneCohomologyRelation γ γ 1 := fun _ _ _ _ _ => by simp
+lemma refl (γ : OneCochain G U) : OneCohomologyRelation γ γ 1 := fun _ _ _ _ _ ↦ by simp
 
 lemma symm {γ₁ γ₂ : OneCochain G U} {α : ZeroCochain G U} (h : OneCohomologyRelation γ₁ γ₂ α) :
     OneCohomologyRelation γ₂ γ₁ α⁻¹ := fun i j T a b => by
