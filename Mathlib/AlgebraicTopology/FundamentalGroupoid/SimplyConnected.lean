@@ -60,8 +60,8 @@ attribute [local instance] Path.Homotopic.setoid
 
 instance (priority := 100) : PathConnectedSpace X :=
   let unique_homotopic := (simply_connected_iff_unique_homotopic X).mp inferInstance
-  { Nonempty := unique_homotopic.1
-    Joined := fun x y => ⟨(unique_homotopic.2 x y).some.default.out⟩ }
+  { nonempty := unique_homotopic.1
+    joined := fun x y => ⟨(unique_homotopic.2 x y).some.default.out⟩ }
 
 /-- In a simply connected space, any two paths are homotopic -/
 theorem paths_homotopic {x y : X} (p₁ p₂ : Path x y) : Path.Homotopic p₁ p₂ :=

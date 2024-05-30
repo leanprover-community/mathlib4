@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
+Authors: Anne Baanen, Wen Yang
 -/
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Adjugate
-import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.Matrix.Transvection
+import Mathlib.RingTheory.RootsOfUnity.Basic
 
 #align_import linear_algebra.matrix.special_linear_group from "leanprover-community/mathlib"@"f06058e64b7e8397234455038f3f8aec83aaba5a"
 
@@ -70,6 +71,7 @@ def SpecialLinearGroup :=
 
 end
 
+@[inherit_doc]
 scoped[MatrixGroups] notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
 
 namespace SpecialLinearGroup
@@ -106,6 +108,13 @@ theorem ext (A B : SpecialLinearGroup n R) : (∀ i j, ↑ₘA i j = ↑ₘB i j
   (SpecialLinearGroup.ext_iff A B).mpr
 #align matrix.special_linear_group.ext Matrix.SpecialLinearGroup.ext
 
+instance subsingleton_of_subsingleton [Subsingleton n] : Subsingleton (SpecialLinearGroup n R) := by
+  refine ⟨fun ⟨A, hA⟩ ⟨B, hB⟩ ↦ ?_⟩
+  ext i j
+  rcases isEmpty_or_nonempty n with hn | hn; · exfalso; exact IsEmpty.false i
+  rw [det_eq_elem_of_subsingleton _ i] at hA hB
+  simp only [Subsingleton.elim j i, hA, hB]
+
 instance hasInv : Inv (SpecialLinearGroup n R) :=
   ⟨fun A => ⟨adjugate A, by rw [det_adjugate, A.prop, one_pow]⟩⟩
 #align matrix.special_linear_group.has_inv Matrix.SpecialLinearGroup.hasInv
@@ -123,6 +132,13 @@ instance : Pow (SpecialLinearGroup n R) ℕ where
 
 instance : Inhabited (SpecialLinearGroup n R) :=
   ⟨1⟩
+
+/-- The transpose of a matrix in `SL(n, R)` -/
+def transpose (A : SpecialLinearGroup n R) : SpecialLinearGroup n R :=
+  ⟨A.1.transpose, A.1.det_transpose ▸ A.2⟩
+
+@[inherit_doc]
+scoped postfix:1024 "ᵀ" => SpecialLinearGroup.transpose
 
 section CoeLemmas
 
@@ -157,6 +173,10 @@ theorem det_coe : det ↑ₘA = 1 :=
 theorem coe_pow (m : ℕ) : ↑ₘ(A ^ m) = ↑ₘA ^ m :=
   rfl
 #align matrix.special_linear_group.coe_pow Matrix.SpecialLinearGroup.coe_pow
+
+@[simp]
+lemma coe_transpose (A : SpecialLinearGroup n R) : ↑ₘAᵀ = (↑ₘA)ᵀ :=
+  rfl
 
 theorem det_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) : det ↑ₘg ≠ 0 := by
   rw [g.det_coe]
@@ -219,7 +239,7 @@ def toGL : SpecialLinearGroup n R →* GeneralLinearGroup R (n → R) :=
 set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.to_GL Matrix.SpecialLinearGroup.toGL
 
--- Porting note: broken dot notation
+-- Porting note (#11036): broken dot notation
 theorem coe_toGL (A : SpecialLinearGroup n R) : SpecialLinearGroup.toGL A = A.toLin'.toLinearMap :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -238,6 +258,78 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
   map_one' := Subtype.ext <| f.mapMatrix.map_one
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
 #align matrix.special_linear_group.map Matrix.SpecialLinearGroup.map
+
+section center
+
+open Subgroup
+
+@[simp]
+theorem center_eq_bot_of_subsingleton [Subsingleton n] :
+    center (SpecialLinearGroup n R) = ⊥ :=
+  eq_bot_iff.mpr fun x _ ↦ by rw [mem_bot, Subsingleton.elim x 1]
+
+theorem scalar_eq_self_of_mem_center
+    {A : SpecialLinearGroup n R} (hA : A ∈ center (SpecialLinearGroup n R)) (i : n) :
+    scalar n (A i i) = A := by
+  obtain ⟨r : R, hr : scalar n r = A⟩ := mem_range_scalar_of_commute_transvectionStruct fun t ↦
+    Subtype.ext_iff.mp <| Subgroup.mem_center_iff.mp hA ⟨t.toMatrix, by simp⟩
+  simp [← congr_fun₂ hr i i, ← hr]
+
+theorem scalar_eq_coe_self_center
+    (A : center (SpecialLinearGroup n R)) (i : n) :
+    scalar n ((A : Matrix n n R) i i) = A :=
+  scalar_eq_self_of_mem_center A.property i
+
+/-- The center of a special linear group of degree `n` is the subgroup of scalar matrices, for which
+the scalars are the `n`-th roots of unity. -/
+theorem mem_center_iff {A : SpecialLinearGroup n R} :
+    A ∈ center (SpecialLinearGroup n R) ↔ ∃ (r : R), r ^ (Fintype.card n) = 1 ∧ scalar n r = A := by
+  rcases isEmpty_or_nonempty n with hn | ⟨⟨i⟩⟩; · exact ⟨by aesop, by simp [Subsingleton.elim A 1]⟩
+  refine ⟨fun h ↦ ⟨A i i, ?_, ?_⟩, fun ⟨r, _, hr⟩ ↦ mem_center_iff.mpr fun B ↦ ?_⟩
+  · have : det ((scalar n) (A i i)) = 1 := (scalar_eq_self_of_mem_center h i).symm ▸ A.property
+    simpa using this
+  · exact scalar_eq_self_of_mem_center h i
+  · suffices ↑ₘ(B * A) = ↑ₘ(A * B) from Subtype.val_injective this
+    simpa only [coe_mul, ← hr] using (scalar_commute (n := n) r (Commute.all r) B).symm
+
+/-- An equivalence of groups, from the center of the special linear group to the roots of unity. -/
+@[simps]
+def center_equiv_rootsOfUnity' (i : n) :
+    center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R where
+  toFun A := rootsOfUnity.mkOfPowEq (↑ₘA i i) <| by
+    have : Nonempty n := ⟨i⟩
+    obtain ⟨r, hr, hr'⟩ := mem_center_iff.mp A.property
+    replace hr' : A.val i i = r := by simp [← hr']
+    simp [hr, hr']
+  invFun a := ⟨⟨a • (1 : Matrix n n R), by aesop⟩,
+    Subgroup.mem_center_iff.mpr fun B ↦ Subtype.val_injective <| by simp [coe_mul]⟩
+  left_inv A := by
+    refine SetCoe.ext <| SetCoe.ext ?_
+    obtain ⟨r, _, hr⟩ := mem_center_iff.mp A.property
+    simpa [← hr, Submonoid.smul_def, Units.smul_def] using smul_one_eq_diagonal r
+  right_inv a := by
+    obtain ⟨⟨a, _⟩, ha⟩ := a
+    exact SetCoe.ext <| Units.eq_iff.mp <| by simp
+  map_mul' A B := by
+    dsimp
+    ext
+    simp only [Submonoid.coe_mul, coe_mul, rootsOfUnity.val_mkOfPowEq_coe, Units.val_mul]
+    rw [← scalar_eq_coe_self_center A i, ← scalar_eq_coe_self_center B i]
+    simp
+
+open scoped Classical in
+/-- An equivalence of groups, from the center of the special linear group to the roots of unity.
+
+See also `center_equiv_rootsOfUnity'`. -/
+noncomputable def center_equiv_rootsOfUnity :
+    center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R :=
+  (isEmpty_or_nonempty n).by_cases
+  (fun hn ↦ by
+    rw [center_eq_bot_of_subsingleton, Fintype.card_eq_zero, Nat.toPNat'_zero, rootsOfUnity_one]
+    exact MulEquiv.mulEquivOfUnique)
+  (fun hn ↦ center_equiv_rootsOfUnity' (Classical.arbitrary n))
+
+end center
 
 section cast
 
@@ -259,7 +351,7 @@ variable [Fact (Even (Fintype.card n))]
 
 /-- Formal operation of negation on special linear group on even cardinality `n` given by negating
 each element. -/
-instance : Neg (SpecialLinearGroup n R) :=
+instance instNeg : Neg (SpecialLinearGroup n R) :=
   ⟨fun g => ⟨-g, by
     simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe] using det_smul (↑ₘg) (-1)⟩⟩
 
@@ -315,15 +407,73 @@ theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g 
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h_det
   replace hg : c = 0 := by simpa using hg
   have had : a * d = 1 := by rwa [hg, mul_zero, sub_zero] at h_det
-  refine' ⟨a, b, left_ne_zero_of_mul_eq_one had, _⟩
+  refine ⟨a, b, left_ne_zero_of_mul_eq_one had, ?_⟩
   simp_rw [eq_inv_of_mul_eq_one_right had, hg]
 #align matrix.special_linear_group.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero Matrix.SpecialLinearGroup.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero
+
+lemma isCoprime_row (A : SL(2, R)) (i : Fin 2): IsCoprime (A i 0) (A i 1) := by
+  refine match i with
+  | 0 => ⟨A 1 1, -(A 1 0), ?_⟩
+  | 1 => ⟨-(A 0 1), A 0 0, ?_⟩ <;>
+  · simp_rw [det_coe A ▸ det_fin_two A.1]
+    ring
+
+lemma isCoprime_col (A : SL(2, R)) (j : Fin 2): IsCoprime (A 0 j) (A 1 j) := by
+  refine match j with
+  | 0 => ⟨A 1 1, -(A 0 1), ?_⟩
+  | 1 => ⟨-(A 1 0), A 0 0, ?_⟩ <;>
+  · simp_rw [det_coe A ▸ det_fin_two A.1]
+    ring
 
 end SpecialCases
 
 end SpecialLinearGroup
 
 end Matrix
+
+namespace IsCoprime
+
+open Matrix MatrixGroups SpecialLinearGroup
+
+variable {R : Type*} [CommRing R]
+
+/-- Given any pair of coprime elements of `R`, there exists a matrix in `SL(2, R)` having those
+entries as its left or right column. -/
+lemma exists_SL2_col {a b : R} (hab : IsCoprime a b) (j : Fin 2):
+    ∃ g : SL(2, R), g 0 j = a ∧ g 1 j = b := by
+  obtain ⟨u, v, h⟩ := hab
+  refine match j with
+  | 0 => ⟨⟨!![a, -v; b, u], ?_⟩, rfl, rfl⟩
+  | 1 => ⟨⟨!![v, a; -u, b], ?_⟩, rfl, rfl⟩ <;>
+  · rw [Matrix.det_fin_two_of, ← h]
+    ring
+
+/-- Given any pair of coprime elements of `R`, there exists a matrix in `SL(2, R)` having those
+entries as its top or bottom row. -/
+lemma exists_SL2_row {a b : R} (hab : IsCoprime a b) (i : Fin 2):
+    ∃ g : SL(2, R), g i 0 = a ∧ g i 1 = b := by
+  obtain ⟨u, v, h⟩ := hab
+  refine match i with
+  | 0 => ⟨⟨!![a, b; -v, u], ?_⟩, rfl, rfl⟩
+  | 1 => ⟨⟨!![v, -u; a, b], ?_⟩, rfl, rfl⟩ <;>
+  · rw [Matrix.det_fin_two_of, ← h]
+    ring
+
+/-- A vector with coprime entries, right-multiplied by a matrix in `SL(2, R)`, has
+coprime entries. -/
+lemma vecMulSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
+    IsCoprime ((v ᵥ* A.1) 0) ((v ᵥ* A.1) 1) := by
+  obtain ⟨g, hg⟩ := hab.exists_SL2_row 0
+  have : v = g 0 := funext fun t ↦ by { fin_cases t <;> tauto }
+  simpa only [this] using isCoprime_row (g * A) 0
+
+/-- A vector with coprime entries, left-multiplied by a matrix in `SL(2, R)`, has
+coprime entries. -/
+lemma mulVecSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
+    IsCoprime ((A.1 *ᵥ v) 0) ((A.1 *ᵥ v) 1) := by
+  simpa only [← vecMul_transpose] using hab.vecMulSL A.transpose
+
+end IsCoprime
 
 namespace ModularGroup
 
@@ -342,12 +492,12 @@ This element acts naturally on the Euclidean plane as a rotation about the origi
 This element also acts naturally on the hyperbolic plane as rotation about `i` by `π`. It
 represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic isometry. -/
 def S : SL(2, ℤ) :=
-  ⟨!![0, -1; 1, 0], by norm_num [Matrix.det_fin_two_of] ⟩
+  ⟨!![0, -1; 1, 0], by norm_num [Matrix.det_fin_two_of]⟩
 #align modular_group.S ModularGroup.S
 
 /-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)` -/
 def T : SL(2, ℤ) :=
-  ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of] ⟩
+  ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of]⟩
 #align modular_group.T ModularGroup.T
 
 theorem coe_S : ↑ₘS = !![0, -1; 1, 0] :=

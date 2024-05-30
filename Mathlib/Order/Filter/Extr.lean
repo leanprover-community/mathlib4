@@ -86,18 +86,17 @@ open Filter
 section Preorder
 
 variable [Preorder β] [Preorder γ]
-
 variable (f : α → β) (s : Set α) (l : Filter α) (a : α)
 
 /-! ### Definitions -/
 
 
-/-- `IsMinFilter f l a` means that `f a ≤ f x` in some `l`-neighborhood of `a` -/
+/-- `IsMinFilter f l a` means that `f a ≤ f x` for all `x` in some `l`-neighborhood of `a` -/
 def IsMinFilter : Prop :=
   ∀ᶠ x in l, f a ≤ f x
 #align is_min_filter IsMinFilter
 
-/-- `is_maxFilter f l a` means that `f x ≤ f a` in some `l`-neighborhood of `a` -/
+/-- `is_maxFilter f l a` means that `f x ≤ f a` for all `x` in some `l`-neighborhood of `a` -/
 def IsMaxFilter : Prop :=
   ∀ᶠ x in l, f x ≤ f a
 #align is_max_filter IsMaxFilter
@@ -107,12 +106,12 @@ def IsExtrFilter : Prop :=
   IsMinFilter f l a ∨ IsMaxFilter f l a
 #align is_extr_filter IsExtrFilter
 
-/-- `IsMinOn f s a` means that `f a ≤ f x` for all `x ∈ a`. Note that we do not assume `a ∈ s`. -/
+/-- `IsMinOn f s a` means that `f a ≤ f x` for all `x ∈ s`. Note that we do not assume `a ∈ s`. -/
 def IsMinOn :=
   IsMinFilter f (𝓟 s) a
 #align is_min_on IsMinOn
 
-/-- `IsMaxOn f s a` means that `f x ≤ f a` for all `x ∈ a`. Note that we do not assume `a ∈ s`. -/
+/-- `IsMaxOn f s a` means that `f x ≤ f a` for all `x ∈ s`. Note that we do not assume `a ∈ s`. -/
 def IsMaxOn :=
   IsMaxFilter f (𝓟 s) a
 #align is_max_on IsMaxOn
@@ -636,7 +635,7 @@ section Eventually
 theorem Filter.EventuallyLE.isMaxFilter {α β : Type*} [Preorder β] {f g : α → β} {a : α}
     {l : Filter α} (hle : g ≤ᶠ[l] f) (hfga : f a = g a) (h : IsMaxFilter f l a) :
     IsMaxFilter g l a := by
-  refine' hle.mp (h.mono fun x hf hgf => _)
+  refine hle.mp (h.mono fun x hf hgf => ?_)
   rw [← hfga]
   exact le_trans hgf hf
 #align filter.eventually_le.is_max_filter Filter.EventuallyLE.isMaxFilter

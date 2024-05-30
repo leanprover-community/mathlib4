@@ -49,9 +49,7 @@ theorems that need it.
 
 noncomputable section
 
-open BigOperators
-
-open Classical
+open scoped Classical
 
 open RealInnerProductSpace
 
@@ -66,9 +64,7 @@ Euclidean affine spaces.
 
 
 variable {V : Type*} {P : Type*}
-
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-
 variable [NormedAddTorsor V P]
 
 /-- The midpoint of the segment AB is the same distance from A as it is from B. -/
@@ -80,10 +76,10 @@ theorem dist_left_midpoint_eq_dist_right_midpoint (p1 p2 : P) :
 /-- The inner product of two vectors given with `weightedVSub`, in
 terms of the pairwise distances. -/
 theorem inner_weightedVSub {ι₁ : Type*} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ} (p₁ : ι₁ → P)
-    (h₁ : ∑ i in s₁, w₁ i = 0) {ι₂ : Type*} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ} (p₂ : ι₂ → P)
-    (h₂ : ∑ i in s₂, w₂ i = 0) :
+    (h₁ : ∑ i ∈ s₁, w₁ i = 0) {ι₂ : Type*} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ} (p₂ : ι₂ → P)
+    (h₂ : ∑ i ∈ s₂, w₂ i = 0) :
     ⟪s₁.weightedVSub p₁ w₁, s₂.weightedVSub p₂ w₂⟫ =
-      (-∑ i₁ in s₁, ∑ i₂ in s₂, w₁ i₁ * w₂ i₂ * (dist (p₁ i₁) (p₂ i₂) * dist (p₁ i₁) (p₂ i₂))) /
+      (-∑ i₁ ∈ s₁, ∑ i₂ ∈ s₂, w₁ i₁ * w₂ i₂ * (dist (p₁ i₁) (p₂ i₂) * dist (p₁ i₁) (p₂ i₂))) /
         2 := by
   rw [Finset.weightedVSub_apply, Finset.weightedVSub_apply,
     inner_sum_smul_sum_smul_of_sum_eq_zero _ h₁ _ h₂]
@@ -95,15 +91,15 @@ theorem inner_weightedVSub {ι₁ : Type*} {s₁ : Finset ι₁} {w₁ : ι₁ �
 in terms of the pairwise distances between the points in that
 combination. -/
 theorem dist_affineCombination {ι : Type*} {s : Finset ι} {w₁ w₂ : ι → ℝ} (p : ι → P)
-    (h₁ : ∑ i in s, w₁ i = 1) (h₂ : ∑ i in s, w₂ i = 1) : by
+    (h₁ : ∑ i ∈ s, w₁ i = 1) (h₂ : ∑ i ∈ s, w₂ i = 1) : by
       have a₁ := s.affineCombination ℝ p w₁
       have a₂ := s.affineCombination ℝ p w₂
-      exact dist a₁ a₂ * dist a₁ a₂ = (-∑ i₁ in s, ∑ i₂ in s,
+      exact dist a₁ a₂ * dist a₁ a₂ = (-∑ i₁ ∈ s, ∑ i₂ ∈ s,
         (w₁ - w₂) i₁ * (w₁ - w₂) i₂ * (dist (p i₁) (p i₂) * dist (p i₁) (p i₂))) / 2 := by
   dsimp only
   rw [dist_eq_norm_vsub V (s.affineCombination ℝ p w₁) (s.affineCombination ℝ p w₂), ←
     @inner_self_eq_norm_mul_norm ℝ, Finset.affineCombination_vsub]
-  have h : (∑ i in s, (w₁ - w₂) i) = 0 := by
+  have h : (∑ i ∈ s, (w₁ - w₂) i) = 0 := by
     simp_rw [Pi.sub_apply, Finset.sum_sub_distrib, h₁, h₂, sub_self]
   exact inner_weightedVSub p h p h
 #align euclidean_geometry.dist_affine_combination EuclideanGeometry.dist_affineCombination
@@ -155,16 +151,16 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
     inner_vsub_vsub_of_dist_eq_of_dist_eq (hp₁c₁.trans hpc₁.symm) (hp₁c₂.trans hpc₂.symm)
   let b : Fin 2 → V := ![c₂ -ᵥ c₁, p₂ -ᵥ p₁]
   have hb : LinearIndependent ℝ b := by
-    refine' linearIndependent_of_ne_zero_of_inner_eq_zero _ _
+    refine linearIndependent_of_ne_zero_of_inner_eq_zero ?_ ?_
     · intro i
-      fin_cases i <;> simp [hc.symm, hp.symm]
+      fin_cases i <;> simp [b, hc.symm, hp.symm]
     · intro i j hij
       fin_cases i <;> fin_cases j <;> try exact False.elim (hij rfl)
       · exact ho
       · rw [real_inner_comm]
         exact ho
   have hbs : Submodule.span ℝ (Set.range b) = s.direction := by
-    refine' eq_of_le_of_finrank_eq _ _
+    refine eq_of_le_of_finrank_eq ?_ ?_
     · rw [Submodule.span_le, Set.range_subset_iff]
       intro i
       fin_cases i
@@ -176,7 +172,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
     have hr : Set.range b = {c₂ -ᵥ c₁, p₂ -ᵥ p₁} := by
       have hu : (Finset.univ : Finset (Fin 2)) = {0, 1} := by decide
       rw [← Fintype.coe_image_univ, hu]
-      simp
+      simp [b]
     rw [← hbs, hr, Submodule.mem_span_insert] at hv
     rcases hv with ⟨t₁, v', hv', hv⟩
     rw [Submodule.mem_span_singleton] at hv'
@@ -291,7 +287,7 @@ nonrec def orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
         mk' (v +ᵥ p) s.directionᗮ := by
       rw [← vsub_right_mem_direction_iff_mem (self_mem_mk' _ _) _, direction_mk',
         vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_comm, add_sub_assoc]
-      refine' Submodule.add_mem _ (orthogonalProjectionFn_vsub_mem_direction_orthogonal p) _
+      refine Submodule.add_mem _ (orthogonalProjectionFn_vsub_mem_direction_orthogonal p) ?_
       rw [Submodule.mem_orthogonal']
       intro w hw
       rw [← neg_sub, inner_neg_left, orthogonalProjection_inner_eq_zero _ w hw, neg_zero]
@@ -382,7 +378,7 @@ theorem orthogonalProjection_mem_subspace_eq_self {s : AffineSubspace ℝ P} [No
 #align euclidean_geometry.orthogonal_projection_mem_subspace_eq_self EuclideanGeometry.orthogonalProjection_mem_subspace_eq_self
 
 /-- Orthogonal projection is idempotent. -/
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem orthogonalProjection_orthogonalProjection (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] (p : P) :
     orthogonalProjection s (orthogonalProjection s p) = orthogonalProjection s p := by
@@ -448,9 +444,9 @@ theorem orthogonalProjection_vadd_eq_self {s : AffineSubspace ℝ P} [Nonempty s
     orthogonalProjection s (v +ᵥ p) = ⟨p, hp⟩ := by
   have h := vsub_orthogonalProjection_mem_direction_orthogonal s (v +ᵥ p)
   rw [vadd_vsub_assoc, Submodule.add_mem_iff_right _ hv] at h
-  refine' (eq_of_vsub_eq_zero _).symm
+  refine (eq_of_vsub_eq_zero ?_).symm
   ext
-  refine' Submodule.disjoint_def.1 s.direction.orthogonal_disjoint _ _ h
+  refine Submodule.disjoint_def.1 s.direction.orthogonal_disjoint _ ?_ h
   exact (_ : s.direction).2
 #align euclidean_geometry.orthogonal_projection_vadd_eq_self EuclideanGeometry.orthogonalProjection_vadd_eq_self
 

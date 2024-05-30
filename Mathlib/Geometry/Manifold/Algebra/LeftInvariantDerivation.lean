@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
@@ -31,6 +31,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [SmoothMul I G] (g h : G)
 
 -- Generate trivial has_sizeof instance. It prevents weird type class inference timeout problems
+-- Porting note(#12096): removed @[nolint instance_priority], linter not ported yet
 -- @[local nolint instance_priority, local instance 10000]
 -- private def disable_has_sizeof {α} : SizeOf α :=
 --   ⟨fun _ => 0⟩
@@ -60,14 +61,13 @@ theorem toDerivation_injective :
   fun X Y h => by cases X; cases Y; congr
 #align left_invariant_derivation.coe_derivation_injective LeftInvariantDerivation.toDerivation_injective
 
-instance : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
+instance : FunLike (LeftInvariantDerivation I G) C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   coe f := f.toDerivation
-  coe_injective' _ _ h := toDerivation_injective <| FunLike.ext' h
+  coe_injective' _ _ h := toDerivation_injective <| DFunLike.ext' h
+
+instance : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   map_add f := map_add f.1
   map_smulₛₗ f := map_smul f.1.1
-
-instance : CoeFun (LeftInvariantDerivation I G) fun _ => C^∞⟮I, G; 𝕜⟯ → C^∞⟮I, G; 𝕜⟯ :=
-  ⟨FunLike.coe⟩
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M} {r : 𝕜}
   {X Y : LeftInvariantDerivation I G} {f f' : C^∞⟮I, G; 𝕜⟯}
@@ -82,12 +82,12 @@ theorem toFun_eq_coe : X.toFun = ⇑X :=
 #noalign left_invariant_derivation.to_derivation_eq_coe
 
 theorem coe_injective :
-    @Function.Injective (LeftInvariantDerivation I G) (_ → C^∞⟮I, G; 𝕜⟯) FunLike.coe :=
-  FunLike.coe_injective
+    @Function.Injective (LeftInvariantDerivation I G) (_ → C^∞⟮I, G; 𝕜⟯) DFunLike.coe :=
+  DFunLike.coe_injective
 #align left_invariant_derivation.coe_injective LeftInvariantDerivation.coe_injective
 
 @[ext]
-theorem ext (h : ∀ f, X f = Y f) : X = Y := FunLike.ext _ _ h
+theorem ext (h : ∀ f, X f = Y f) : X = Y := DFunLike.ext _ _ h
 #align left_invariant_derivation.ext LeftInvariantDerivation.ext
 
 variable (X Y f)
@@ -140,18 +140,10 @@ instance : Add (LeftInvariantDerivation I G) where
       simp only [map_add, Derivation.coe_add, left_invariant', Pi.add_apply]⟩
 
 instance : Neg (LeftInvariantDerivation I G) where
-  neg X := ⟨-X, fun g => by
-    -- porting note: was simp [left_invariant']
-    -- `rw` fails without detailed type annotations too; also it needs a lot of time
-    rw [map_neg (Derivation.evalAt (𝕜 := 𝕜) (1 : G)), map_neg (𝒅ₕ (smoothLeftMul_one I g)),
-      left_invariant', map_neg (Derivation.evalAt (𝕜 := 𝕜) g)]⟩
+  neg X := ⟨-X, fun g => by simp [left_invariant']⟩
 
 instance : Sub (LeftInvariantDerivation I G) where
-  sub X Y := ⟨X - Y, fun g => by
-    -- porting note: was simp [left_invariant']
-    -- `rw` fails without detailed type annotations too; also it needs a lot of time
-    rw [map_sub (Derivation.evalAt (𝕜 := 𝕜) (1 : G)), map_sub (𝒅ₕ (smoothLeftMul_one I g)),
-      map_sub (Derivation.evalAt (𝕜 := 𝕜) g), left_invariant', left_invariant']⟩
+  sub X Y := ⟨X - Y, fun g => by simp [left_invariant']⟩
 
 @[simp]
 theorem coe_add : ⇑(X + Y) = X + Y :=
@@ -215,7 +207,7 @@ variable (I G)
 /-- The coercion to function is a monoid homomorphism. -/
 @[simps]
 def coeFnAddMonoidHom : LeftInvariantDerivation I G →+ C^∞⟮I, G; 𝕜⟯ → C^∞⟮I, G; 𝕜⟯ :=
-  ⟨⟨FunLike.coe, coe_zero⟩, coe_add⟩
+  ⟨⟨DFunLike.coe, coe_zero⟩, coe_add⟩
 #align left_invariant_derivation.coe_fn_add_monoid_hom LeftInvariantDerivation.coeFnAddMonoidHom
 
 variable {I G}

@@ -140,10 +140,10 @@ instance : Inhabited (GroupFilterBasis G) := ⟨by
     simp⟩
 
 @[to_additive]
-theorem prod_subset_self (B : GroupFilterBasis G) {U : Set G} (h : U ∈ B) : U ⊆ U * U :=
-  fun x x_in ↦ ⟨1, x, one h, x_in, one_mul x⟩
-#align group_filter_basis.prod_subset_self GroupFilterBasis.prod_subset_self
-#align add_group_filter_basis.sum_subset_self AddGroupFilterBasis.sum_subset_self
+theorem subset_mul_self (B : GroupFilterBasis G) {U : Set G} (h : U ∈ B) : U ⊆ U * U :=
+  fun x x_in ↦ ⟨1, one h, x, x_in, one_mul x⟩
+#align group_filter_basis.prod_subset_self GroupFilterBasis.subset_mul_self
+#align add_group_filter_basis.sum_subset_self AddGroupFilterBasis.subset_add_self
 
 /-- The neighborhood function of a `GroupFilterBasis`. -/
 @[to_additive "The neighborhood function of an `AddGroupFilterBasis`."]
@@ -178,26 +178,18 @@ def topology (B : GroupFilterBasis G) : TopologicalSpace G :=
 
 @[to_additive]
 theorem nhds_eq (B : GroupFilterBasis G) {x₀ : G} : @nhds G B.topology x₀ = B.N x₀ := by
-  rw [TopologicalSpace.nhds_mkOfNhds]
-  · intro x U U_in
-    rw [(B.hasBasis x).mem_iff] at U_in
-    rcases U_in with ⟨V, V_in, H⟩
-    simpa [mem_pure] using H (mem_image_of_mem _ (GroupFilterBasis.one V_in))
-  · intro x U U_in
-    rw [(B.hasBasis x).mem_iff] at U_in
-    rcases U_in with ⟨V, V_in, H⟩
-    rcases GroupFilterBasis.mul V_in with ⟨W, W_in, hW⟩
-    use (fun y ↦ x * y) '' W, image_mem_map (FilterBasis.mem_filter_of_mem _ W_in)
-    constructor
-    · rw [image_subset_iff] at H ⊢
-      exact ((B.prod_subset_self W_in).trans hW).trans H
-    · rintro y ⟨t, tW, rfl⟩
-      rw [(B.hasBasis _).mem_iff]
-      use W, W_in
-      apply Subset.trans _ H
-      clear H
-      rintro z ⟨w, wW, rfl⟩
-      exact ⟨t * w, hW (mul_mem_mul tW wW), by simp [mul_assoc]⟩
+  apply TopologicalSpace.nhds_mkOfNhds_of_hasBasis (fun x ↦ (FilterBasis.hasBasis _).map _)
+  · intro a U U_in
+    exact ⟨1, B.one U_in, mul_one a⟩
+  · intro a U U_in
+    rcases GroupFilterBasis.mul U_in with ⟨V, V_in, hVU⟩
+    filter_upwards [image_mem_map (B.mem_filter_of_mem V_in)]
+    rintro _ ⟨x, hx, rfl⟩
+    calc
+      a • U ⊇ a • (V * V) := smul_set_mono hVU
+      _ ⊇ a • x • V := smul_set_mono <| smul_set_subset_smul hx
+      _ = (a * x) • V := smul_smul ..
+      _ ∈ (a * x) • B.filter := smul_set_mem_smul_filter <| B.mem_filter_of_mem V_in
 #align group_filter_basis.nhds_eq GroupFilterBasis.nhds_eq
 #align add_group_filter_basis.nhds_eq AddGroupFilterBasis.nhds_eq
 
@@ -251,7 +243,7 @@ instance (priority := 100) isTopologicalGroup (B : GroupFilterBasis G) :
     rcases mul U_in with ⟨V, V_in, hV⟩
     refine' ⟨V, V, ⟨V_in, V_in⟩, _⟩
     intro a b a_in b_in
-    exact hV ⟨a, b, a_in, b_in, rfl⟩
+    exact hV <| mul_mem_mul a_in b_in
   · rw [basis.tendsto_iff basis]
     intro U U_in
     simpa using inv U_in
@@ -318,7 +310,7 @@ instance (priority := 100) isTopologicalRing {R : Type u} [Ring R] (B : RingFilt
     rcases B.mul U_in with ⟨V, V_in, hV⟩
     refine' ⟨V, V, ⟨V_in, V_in⟩, _⟩
     intro a b a_in b_in
-    exact hV ⟨a, b, a_in, b_in, rfl⟩
+    exact hV <| mul_mem_mul a_in b_in
   · intro x₀
     rw [basis.tendsto_iff basis]
     intro U
@@ -372,7 +364,7 @@ instance [DiscreteTopology R] : Inhabited (ModuleFilterBasis R M) :=
       smul' := by
         rintro U (rfl : U ∈ {{(0 : M)}})
         use univ, univ_mem, {0}, rfl
-        rintro a ⟨x, m, -, rfl, rfl⟩
+        rintro a ⟨x, -, m, rfl, rfl⟩
         simp only [smul_zero, mem_singleton_iff]
       smul_left' := by
         rintro x₀ U (h : U ∈ {{(0 : M)}})
@@ -409,8 +401,8 @@ But it turns out it's just easier to get it as a byproduct of the proof, so this
 quality-of-life improvement. -/
 theorem _root_.ContinuousSMul.of_basis_zero {ι : Type*} [TopologicalRing R] [TopologicalSpace M]
     [TopologicalAddGroup M] {p : ι → Prop} {b : ι → Set M} (h : HasBasis (𝓝 0) p b)
-    (hsmul : ∀ {i}, p i → ∃ V ∈ 𝓝 (0 : R), ∃ (j : _) (_ : p j), V • b j ⊆ b i)
-    (hsmul_left : ∀ (x₀ : R) {i}, p i → ∃ (j : _) (_ : p j), b j ⊆ (fun x ↦ x₀ • x) ⁻¹' b i)
+    (hsmul : ∀ {i}, p i → ∃ V ∈ 𝓝 (0 : R), ∃ j, p j ∧ V • b j ⊆ b i)
+    (hsmul_left : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (x₀ • ·) (b j) (b i))
     (hsmul_right : ∀ (m₀ : M) {i}, p i → ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ b i) : ContinuousSMul R M := by
   apply ContinuousSMul.of_nhds_zero
   · rw [h.tendsto_right_iff]

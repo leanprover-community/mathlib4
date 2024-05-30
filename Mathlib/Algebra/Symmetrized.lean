@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.Jordan.Basic
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 
 #align_import algebra.symmetrized from "leanprover-community/mathlib"@"933547832736be61a5de6576e22db351c6c2fbfd"
 
@@ -38,7 +38,6 @@ def SymAlg (α : Type*) : Type _ :=
   α
 #align sym_alg SymAlg
 
--- mathport name: «expr ˢʸᵐ»
 postfix:max "ˢʸᵐ" => SymAlg
 
 namespace SymAlg
@@ -47,13 +46,13 @@ variable {α : Type*}
 
 /-- The element of `SymAlg α` that represents `a : α`. -/
 @[match_pattern]
--- Porting note: removed @[pp_nodot]
+-- Porting note (#11180): removed @[pp_nodot]
 def sym : α ≃ αˢʸᵐ :=
   Equiv.refl _
 #align sym_alg.sym SymAlg.sym
 
 /-- The element of `α` represented by `x : αˢʸᵐ`. -/
--- Porting note: removed @[pp_nodot]
+-- Porting note (#11180): removed @[pp_nodot]
 def unsym : αˢʸᵐ ≃ α :=
   Equiv.refl _
 #align sym_alg.unsym SymAlg.unsym
@@ -112,12 +111,12 @@ theorem unsym_surjective : Surjective (unsym : αˢʸᵐ → α) :=
   unsym.surjective
 #align sym_alg.unsym_surjective SymAlg.unsym_surjective
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem sym_inj {a b : α} : sym a = sym b ↔ a = b :=
   sym_injective.eq_iff
 #align sym_alg.sym_inj SymAlg.sym_inj
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem unsym_inj {a b : αˢʸᵐ} : unsym a = unsym b ↔ a = b :=
   unsym_injective.eq_iff
 #align sym_alg.unsym_inj SymAlg.unsym_inj
@@ -336,8 +335,10 @@ theorem mul_comm [Mul α] [AddCommSemigroup α] [One α] [OfNat α 2] [Invertibl
     a * b = b * a := by rw [mul_def, mul_def, add_comm]
 #align sym_alg.mul_comm SymAlg.mul_comm
 
-instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
+instance [Ring α] [Invertible (2 : α)] : CommMagma αˢʸᵐ where
   mul_comm := SymAlg.mul_comm
+
+instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
   lmul_comm_rmul_rmul a b := by
     have commute_half_left := fun a : α => by
       -- Porting note: mathlib3 used `bit0_left`

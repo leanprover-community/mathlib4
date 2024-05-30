@@ -3,8 +3,8 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Bits
+import Mathlib.Order.Lattice
 
 #align_import data.nat.size from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
@@ -32,10 +32,7 @@ theorem shiftLeft'_tt_eq_mul_pow (m) : ∀ n, shiftLeft' true m n + 1 = (m + 1) 
 end
 
 #align nat.one_shiftl Nat.one_shiftLeft
-
-theorem zero_shiftLeft (n) : 0 <<< n = 0 := by simp
 #align nat.zero_shiftl Nat.zero_shiftLeft
-
 #align nat.shiftr_eq_div_pow Nat.shiftRight_eq_div_pow
 
 theorem shiftLeft'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftLeft' b m n ≠ 0 := by
@@ -96,9 +93,7 @@ theorem size_shiftLeft' {b m n} (h : shiftLeft' b m n ≠ 0) :
   rw [shiftLeft'_tt_eq_mul_pow] at this
   obtain rfl := succ.inj (eq_one_of_dvd_one ⟨_, this.symm⟩)
   simp only [zero_add, one_mul] at this
-  obtain rfl : n = 0 :=
-    Nat.eq_zero_of_le_zero
-      (le_of_not_gt fun hn => ne_of_gt (pow_lt_pow_of_lt_right (by decide) hn) this)
+  obtain rfl : n = 0 := not_ne_iff.1 fun hn ↦ ne_of_gt (Nat.one_lt_pow hn (by decide)) this
   rfl
 #align nat.size_shiftl' Nat.size_shiftLeft'
 
@@ -118,7 +113,7 @@ theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   by_cases h : bit b n = 0
   · apply this h
   rw [size_bit h, shiftLeft_succ, shiftLeft_eq, one_mul, ← bit0_val]
-  exact bit_lt_bit0 _ (by simpa [shiftRight_eq_div_pow] using IH)
+  exact bit_lt_bit0 _ (by simpa [shiftLeft_eq, shiftRight_eq_div_pow] using IH)
 #align nat.lt_size_self Nat.lt_size_self
 
 theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
@@ -134,7 +129,7 @@ theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
       cases' n with n
       · exact e.elim (Nat.eq_zero_of_le_zero (le_of_lt_succ h))
       · apply succ_le_succ (IH _)
-        apply lt_of_mul_lt_mul_left _ (zero_le 2)
+        apply Nat.lt_of_mul_lt_mul_left (a := 2)
         simp only [← bit0_val, shiftLeft_succ] at *
         exact lt_of_le_of_lt (bit0_le_bit b rfl.le) h⟩
 #align nat.size_le Nat.size_le
@@ -147,11 +142,11 @@ theorem size_pos {n : ℕ} : 0 < size n ↔ 0 < n := by rw [lt_size]; rfl
 #align nat.size_pos Nat.size_pos
 
 theorem size_eq_zero {n : ℕ} : size n = 0 ↔ n = 0 := by
-  have := @size_pos n; simp [pos_iff_ne_zero] at this; exact Decidable.not_iff_not.1 this
+  simpa [Nat.pos_iff_ne_zero, not_iff_not] using size_pos
 #align nat.size_eq_zero Nat.size_eq_zero
 
 theorem size_pow {n : ℕ} : size (2 ^ n) = n + 1 :=
-  le_antisymm (size_le.2 <| pow_lt_pow_of_lt_right (by decide) (lt_succ_self _))
+  le_antisymm (size_le.2 <| Nat.pow_lt_pow_right (by decide) (lt_succ_self _))
     (lt_size.2 <| le_rfl)
 #align nat.size_pow Nat.size_pow
 

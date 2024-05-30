@@ -3,12 +3,13 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Module.LinearMap
+import Mathlib.Algebra.Group.Equiv.TypeTags
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Contraction
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import representation_theory.basic from "leanprover-community/mathlib"@"c04bc6e93e23aa0182aba53661a2211e80b6feac"
 
@@ -29,7 +30,12 @@ representations.
 ## Implementation notes
 
 Representations of a monoid `G` on a `k`-module `V` are implemented as
-homomorphisms `G →* (V →ₗ[k] V)`.
+homomorphisms `G →* (V →ₗ[k] V)`. We use the abbreviation `Representation` for this hom space.
+
+The theorem `asAlgebraHom_def` constructs a module over the group `k`-algebra of `G` (implemented
+as `MonoidAlgebra k G`) corresponding to a representation. If `ρ : Representation k G V`, this
+module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G-module `M`
+`M.ofModule` is the associociated representation seen as a homomorphism.
 -/
 
 
@@ -83,7 +89,6 @@ end trivial
 section MonoidAlgebra
 
 variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
-
 variable (ρ : Representation k G V)
 
 /-- A `k`-linear representation of `G` on `V` can be thought of as
@@ -254,7 +259,6 @@ end MonoidAlgebra
 section AddCommGroup
 
 variable {k G V : Type*} [CommRing k] [Monoid G] [I : AddCommGroup V] [Module k V]
-
 variable (ρ : Representation k G V)
 
 instance : AddCommGroup ρ.asModule :=
@@ -268,7 +272,7 @@ variable (k : Type*) [CommSemiring k] (G : Type*) [Monoid G] (H : Type*) [MulAct
 
 /-- A `G`-action on `H` induces a representation `G →* End(k[H])` in the natural way. -/
 noncomputable def ofMulAction : Representation k G (H →₀ k) where
-  toFun g := Finsupp.lmapDomain k k ((· • ·) g)
+  toFun g := Finsupp.lmapDomain k k (g • ·)
   map_one' := by
     ext x y
     dsimp
@@ -280,7 +284,7 @@ noncomputable def ofMulAction : Representation k G (H →₀ k) where
 
 variable {k G H}
 
-theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k ((· • ·) g) :=
+theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k (g • ·) :=
   rfl
 #align representation.of_mul_action_def Representation.ofMulAction_def
 
@@ -290,11 +294,42 @@ theorem ofMulAction_single (g : G) (x : H) (r : k) :
 #align representation.of_mul_action_single Representation.ofMulAction_single
 
 end MulAction
+section DistribMulAction
 
+variable (k G A : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid A] [Module k A]
+  [DistribMulAction G A] [SMulCommClass G k A]
+
+/-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
+`k`-linear `G`-representation on `A`. -/
+def ofDistribMulAction : Representation k G A where
+  toFun := fun m =>
+    { DistribMulAction.toAddMonoidEnd G A m with
+      map_smul' := smul_comm _ }
+  map_one' := by ext; exact one_smul _ _
+  map_mul' := by intros; ext; exact mul_smul _ _ _
+
+variable {k G A}
+
+@[simp] theorem ofDistribMulAction_apply_apply (g : G) (a : A) :
+    ofDistribMulAction k G A g a = g • a := rfl
+
+end DistribMulAction
+section MulDistribMulAction
+variable (M G : Type*) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
+
+/-- Turns a `CommGroup` `G` with a `MulDistribMulAction` of a monoid `M` into a
+`ℤ`-linear `M`-representation on `Additive G`. -/
+def ofMulDistribMulAction : Representation ℤ M (Additive G) :=
+  (addMonoidEndRingEquivInt (Additive G) : AddMonoid.End (Additive G) →* _).comp
+    ((monoidEndToAdditive G : _ →* _).comp (MulDistribMulAction.toMonoidEnd M G))
+
+@[simp] theorem ofMulDistribMulAction_apply_apply (g : M) (a : Additive G) :
+    ofMulDistribMulAction M G g a = Additive.ofMul (g • Additive.toMul a) := rfl
+
+end MulDistribMulAction
 section Group
 
 variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
-
 variable (ρ : Representation k G V)
 
 @[simp]
@@ -303,7 +338,7 @@ theorem ofMulAction_apply {H : Type*} [MulAction G H] (g : G) (f : H →₀ k) (
   conv_lhs => rw [← smul_inv_smul g h]
   let h' := g⁻¹ • h
   change ofMulAction k G H g f (g • h') = f h'
-  have hg : Function.Injective ((· • ·) g : H → H) := by
+  have hg : Function.Injective (g • · : H → H) := by
     intro h₁ h₂
     simp
   simp only [ofMulAction_def, Finsupp.lmapDomain_apply, Finsupp.mapDomain_apply, hg]
@@ -322,13 +357,13 @@ theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k
       show asAlgebraHom (ofMulAction k G G) _ _ = _; ext;
       simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul,
         ofMulAction_apply, smul_eq_mul]
-      -- Porting note : single_mul_apply not firing in simp
+      -- Porting note: single_mul_apply not firing in simp
       rw [MonoidAlgebra.single_mul_apply, one_mul]
     )
     (fun x y hx hy => by simp only [hx, hy, add_mul, add_smul]) fun r x hx => by
     show asAlgebraHom (ofMulAction k G G) _ _ = _  -- Porting note: was simpa [← hx]
     simp only [map_smul, smul_apply, Algebra.smul_mul_assoc]
-    rw [←hx]
+    rw [← hx]
     rfl
 #align representation.of_mul_action_self_smul_eq_mul Representation.ofMulAction_self_smul_eq_mul
 
@@ -357,9 +392,7 @@ end Group
 section TensorProduct
 
 variable {k G V W : Type*} [CommSemiring k] [Monoid G]
-
 variable [AddCommMonoid V] [Module k V] [AddCommMonoid W] [Module k W]
-
 variable (ρV : Representation k G V) (ρW : Representation k G W)
 
 open TensorProduct
@@ -408,9 +441,7 @@ end TensorProduct
 section LinearHom
 
 variable {k G V W : Type*} [CommSemiring k] [Group G]
-
 variable [AddCommMonoid V] [Module k V] [AddCommMonoid W] [Module k W]
-
 variable (ρV : Representation k G V) (ρW : Representation k G W)
 
 /-- Given representations of `G` on `V` and `W`, there is a natural representation of `G` on the
@@ -423,11 +454,11 @@ def linHom : Representation k G (V →ₗ[k] W) where
       map_smul' := fun r f => by simp_rw [RingHom.id_apply, smul_comp, comp_smul] }
   map_one' :=
     LinearMap.ext fun x => by
-      dsimp -- Porting note: now needed
+      dsimp -- Porting note (#11227):now needed
       simp_rw [inv_one, map_one, one_eq_id, comp_id, id_comp]
   map_mul' g h :=
     LinearMap.ext fun x => by
-      dsimp -- Porting note: now needed
+      dsimp -- Porting note (#11227):now needed
       simp_rw [mul_inv_rev, map_mul, mul_eq_comp, comp_assoc]
 #align representation.lin_hom Representation.linHom
 
@@ -448,11 +479,11 @@ def dual : Representation k G (Module.Dual k V) where
         simp only [coe_comp, Function.comp_apply, smul_apply, RingHom.id_apply] }
   map_one' := by
     ext
-    dsimp -- Porting note: now needed
+    dsimp -- Porting note (#11227):now needed
     simp only [coe_comp, Function.comp_apply, map_one, inv_one, coe_mk, one_apply]
   map_mul' g h := by
     ext
-    dsimp -- Porting note: now needed
+    dsimp -- Porting note (#11227):now needed
     simp only [coe_comp, Function.comp_apply, mul_inv_rev, map_mul, coe_mk, mul_apply]
 #align representation.dual Representation.dual
 

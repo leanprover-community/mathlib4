@@ -29,7 +29,7 @@ universe v u
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 open CategoryTheory
 
@@ -61,7 +61,7 @@ noncomputable abbrev G : MonCat :=
 /-- The canonical projection into the colimit, as a quotient type. -/
 @[to_additive "The canonical projection into the colimit, as a quotient type."]
 abbrev G.mk : (Σ j, F.obj j) → G.{v, u} F :=
-  Quot.mk (Types.Quot.Rel.{v, u} (F ⋙ forget GroupCat.{max v u}))
+  Quot.mk (Types.Quot.Rel (F ⋙ forget GroupCat.{max v u}))
 #align Group.filtered_colimits.G.mk GroupCat.FilteredColimits.G.mk
 #align AddGroup.filtered_colimits.G.mk AddGroupCat.FilteredColimits.G.mk
 
@@ -82,7 +82,7 @@ def colimitInvAux (x : Σ j, F.obj j) : G.{v, u} F :=
 
 @[to_additive]
 theorem colimitInvAux_eq_of_rel (x y : Σ j, F.obj j)
-    (h : Types.FilteredColimit.Rel.{v, u} (F ⋙ forget GroupCat) x y) :
+    (h : Types.FilteredColimit.Rel (F ⋙ forget GroupCat) x y) :
     colimitInvAux.{v, u} F x = colimitInvAux F y := by
   apply G.mk_eq
   obtain ⟨k, f, g, hfg⟩ := h
@@ -96,7 +96,7 @@ theorem colimitInvAux_eq_of_rel (x y : Σ j, F.obj j)
 @[to_additive "Negation in the colimit. See also `colimitNegAux`."]
 instance colimitInv : Inv (G.{v, u} F) where
   inv x := by
-    refine' Quot.lift (colimitInvAux.{v, u} F) _ x
+    refine Quot.lift (colimitInvAux.{v, u} F) ?_ x
     intro x y h
     apply colimitInvAux_eq_of_rel
     apply Types.FilteredColimit.rel_of_quot_rel
@@ -146,14 +146,14 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
     MonCat.FilteredColimits.colimitDesc.{v, u} (F ⋙ forget₂ GroupCat MonCat.{max v u})
       ((forget₂ GroupCat MonCat).mapCocone t)
   fac t j :=
-    FunLike.coe_injective <|
-      (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget GroupCat)).fac
+    DFunLike.coe_injective <|
+      (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget GroupCat)).fac
       ((forget GroupCat).mapCocone t) j
   uniq t _ h :=
-    FunLike.coe_injective' <|
-      (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget GroupCat)).uniq
+    DFunLike.coe_injective' <|
+      (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget GroupCat)).uniq
       ((forget GroupCat).mapCocone t) _
-        fun j => funext fun x => FunLike.congr_fun (h j) x
+        fun j => funext fun x => DFunLike.congr_fun (h j) x
 #align Group.filtered_colimits.colimit_cocone_is_colimit GroupCat.FilteredColimits.colimitCoconeIsColimit
 #align AddGroup.filtered_colimits.colimit_cocone_is_colimit AddGroupCat.FilteredColimits.colimitCoconeIsColimit
 
@@ -230,13 +230,13 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
           (F ⋙ forget₂ CommGroupCat GroupCat.{max v u})).desc
       ((forget₂ CommGroupCat GroupCat.{max v u}).mapCocone t)
   fac t j :=
-    FunLike.coe_injective <|
-      (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommGroupCat)).fac
+    DFunLike.coe_injective <|
+      (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommGroupCat)).fac
         ((forget CommGroupCat).mapCocone t) j
   uniq t _ h :=
-    FunLike.coe_injective <|
-      (Types.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommGroupCat)).uniq
-        ((forget CommGroupCat).mapCocone t) _ fun j => funext fun x => FunLike.congr_fun (h j) x
+    DFunLike.coe_injective <|
+      (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommGroupCat)).uniq
+        ((forget CommGroupCat).mapCocone t) _ fun j => funext fun x => DFunLike.congr_fun (h j) x
 #align CommGroup.filtered_colimits.colimit_cocone_is_colimit CommGroupCat.FilteredColimits.colimitCoconeIsColimit
 #align AddCommGroup.filtered_colimits.colimit_cocone_is_colimit AddCommGroupCat.FilteredColimits.colimitCoconeIsColimit
 

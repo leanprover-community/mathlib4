@@ -3,14 +3,18 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Edward Ayers, Mario Carneiro
 -/
-import Lean
-import Mathlib.Data.Array.Defs
+import Lean.Elab.Binders
+import Lean.Elab.SyntheticMVars
+import Lean.Meta.Tactic.Assert
 
 /-!
 # Extending `have`, `let` and `suffices`
 
 This file extends the `have`, `let` and `suffices` tactics to allow the addition of hypotheses to
 the context without requiring their proofs to be provided immediately.
+
+As a style choice, this should not be used in mathlib; but is provided for downstream users who
+preferred the old style.
 -/
 
 namespace Mathlib.Tactic

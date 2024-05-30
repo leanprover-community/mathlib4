@@ -3,10 +3,12 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
-import Mathlib.Init.Logic
+import Mathlib.Tactic.Basic
 import Mathlib.Mathport.Rename
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Eqns
+import Mathlib.Tactic.TypeStar
 
 #align_import init.function from "leanprover-community/lean"@"03a6a6015c0b12dce7b36b4a1f7205a92dfaa592"
 
@@ -14,12 +16,11 @@ import Mathlib.Tactic.Eqns
 # General operations on functions
 -/
 
-
 universe u₁ u₂ u₃ u₄ u₅
 
 namespace Function
 
--- porting note: fix the universe of `ζ`, it used to be `u₁`
+-- Porting note: fix the universe of `ζ`, it used to be `u₁`
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
 #align function.comp Function.comp
@@ -28,7 +29,12 @@ attribute [eqns comp_def] comp
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
-attribute [eqns flip_def] flip
+#adaptation_note /-- nightly-2024-03-16
+Because of changes in how equation lemmas are generated,
+`@[eqns]` will only work properly when used immediately after the definition
+(and when none of the default equation lemmas are needed).
+Thus this usage is no longer allowed: -/
+-- attribute [eqns flip_def] flip
 
 /-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
 and type of `f (g x)` depends on `x` and `g x`. -/
@@ -39,20 +45,22 @@ def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : �
 
 infixr:80 " ∘' " => Function.dcomp
 
-@[reducible]
+@[reducible, deprecated] -- Deprecated since 13 January 2024
 def compRight (f : β → β → β) (g : α → β) : β → α → β := fun b a => f b (g a)
 #align function.comp_right Function.compRight
 
-@[reducible]
+@[reducible, deprecated] -- Deprecated since 13 January 2024
 def compLeft (f : β → β → β) (g : α → β) : α → β → β := fun a b => f (g a) b
 #align function.comp_left Function.compLeft
 
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
 from `β` to `α`. -/
-@[reducible]
-def onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
+abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
 #align function.on_fun Function.onFun
+
+@[inherit_doc onFun]
+infixl:2 " on " => onFun
 
 /-- Given functions `f : α → β → φ`, `g : α → β → δ` and a binary operator `op : φ → δ → ζ`,
 produce a function `α → β → ζ` that applies `f` and `g` on each argument and then applies
@@ -60,35 +68,42 @@ produce a function `α → β → ζ` that applies `f` and `g` on each argument 
 -/
 -- Porting note: the ζ variable was originally constrained to `Sort u₁`, but this seems to
 -- have been an oversight.
-@[reducible]
+@[reducible, deprecated] -- Deprecated since 13 January 2024
 def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ) : α → β → ζ := fun x y =>
   op (f x y) (g x y)
 #align function.combine Function.combine
 
 #align function.const Function.const
 
-@[reducible]
-def swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
+abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 #align function.swap Function.swap
 
-@[reducible]
+#adaptation_note /-- nightly-2024-03-16: added to replace simp [Function.swap] -/
+theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
+
+@[reducible, deprecated] -- Deprecated since 13 January 2024
 def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
   f x
 #align function.app Function.app
 
-@[inherit_doc onFun]
-infixl:2 " on " => onFun
-
--- porting note: removed, it was never used
+-- Porting note: removed, it was never used
 -- notation f " -[" op "]- " g => combine f op g
 
-theorem left_id (f : α → β) : id ∘ f = f :=
-  rfl
-#align function.left_id Function.left_id
+@[simp, mfld_simps]
+theorem id_comp (f : α → β) : id ∘ f = f := rfl
+#align function.left_id Function.id_comp
+#align function.comp.left_id Function.id_comp
 
-theorem right_id (f : α → β) : f ∘ id = f :=
-  rfl
-#align function.right_id Function.right_id
+@[deprecated] alias left_id := id_comp -- Deprecated since 14 January 2014
+@[deprecated] alias comp.left_id := id_comp -- Deprecated since 14 January 2014
+
+@[simp, mfld_simps]
+theorem comp_id (f : α → β) : f ∘ id = f := rfl
+#align function.right_id Function.comp_id
+#align function.comp.right_id Function.comp_id
+
+@[deprecated] alias right_id := comp_id -- Deprecated since 14 January 2014
+@[deprecated] alias comp.right_id := comp_id -- Deprecated since 14 January 2014
 
 #align function.comp_app Function.comp_apply
 
@@ -96,19 +111,13 @@ theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) �
   rfl
 #align function.comp.assoc Function.comp.assoc
 
-@[simp, mfld_simps]
-theorem comp.left_id (f : α → β) : id ∘ f = f :=
-  rfl
-#align function.comp.left_id Function.comp.left_id
+@[simp] theorem const_comp {γ : Sort*} (f : α → β) (c : γ) : const β c ∘ f = const α c := rfl
+#align function.const_comp Function.const_comp
 
-@[simp, mfld_simps]
-theorem comp.right_id (f : α → β) : f ∘ id = f :=
-  rfl
-#align function.comp.right_id Function.comp.right_id
+@[simp] theorem comp_const (f : β → φ) (b : β) : f ∘ const α b = const α (f b) := rfl
+#align function.comp_const_right Function.comp_const
 
-theorem comp_const_right (f : β → φ) (b : β) : f ∘ const α b = const α (f b) :=
-  rfl
-#align function.comp_const_right Function.comp_const_right
+@[deprecated] alias comp_const_right := comp_const -- Deprecated since 14 January 2014
 
 /-- A function `f : α → β` is called injective if `f x = f y` implies `x = y`. -/
 def Injective (f : α → β) : Prop :=
@@ -165,7 +174,7 @@ theorem LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f 
   fun h a b faeqfb =>
   calc
     a = g (f a) := (h a).symm
-    _ = g (f b) := (congr_arg g faeqfb)
+    _ = g (f b) := congr_arg g faeqfb
     _ = b := h b
 #align function.left_inverse.injective Function.LeftInverse.injective
 
@@ -192,7 +201,7 @@ theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α
   Exists.elim (surjf y) fun x hx =>
     calc
       f (g y) = f (g (f x)) := hx ▸ rfl
-      _ = f x := (Eq.symm (rfg x) ▸ rfl)
+      _ = f x := Eq.symm (rfg x) ▸ rfl
       _ = y := hx
 #align function.left_inverse_of_surjective_of_right_inverse Function.leftInverse_of_surjective_of_rightInverse
 

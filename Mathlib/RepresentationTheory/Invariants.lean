@@ -22,8 +22,6 @@ results that the order of `G` is invertible in `k` (e. g. `k` has characteristic
 
 suppress_compilation
 
-open scoped BigOperators
-
 open MonoidAlgebra
 
 open Representation
@@ -31,7 +29,6 @@ open Representation
 namespace GroupAlgebra
 
 variable (k G : Type*) [CommSemiring k] [Group G]
-
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 /-- The average of all elements of the group `G`, considered as an element of `MonoidAlgebra k G`.
@@ -71,7 +68,6 @@ section Invariants
 open GroupAlgebra
 
 variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
-
 variable (ρ : Representation k G V)
 
 /-- The subspace of invariants, consisting of the vectors fixed by all elements of `G`.

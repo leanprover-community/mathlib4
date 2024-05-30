@@ -1,5 +1,5 @@
 /-
-Copyright © 2023 Heather Macbeth. All rights reserved.
+Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Adam Topaz
 -/
@@ -292,7 +292,7 @@ def smoothSheafCommRing.forgetStalk (x : TopCat.of M) :
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.ι_forgetStalk_hom (x : TopCat.of M) (U) :
     CategoryStruct.comp
       (Z := (smoothSheaf IM I M R).presheaf.stalk x)
-      (FunLike.coe
+      (DFunLike.coe
         (α := ((forget CommRingCat).obj ((smoothSheafCommRing IM I M R).presheaf.obj
           (op ((OpenNhds.inclusion x).obj U.unop)))))
         (colimit.ι ((OpenNhds.inclusion x).op ⋙ (smoothSheafCommRing IM I M R).presheaf) U))
@@ -343,7 +343,7 @@ def smoothSheafCommRing.eval (x : M) : (smoothSheafCommRing IM I M R).presheaf.s
 @[simp, reassoc, elementwise] lemma smoothSheafCommRing.forgetStalk_inv_comp_eval
     (x : TopCat.of M) :
     (smoothSheafCommRing.forgetStalk IM I M R x).inv ≫
-     (FunLike.coe (smoothSheafCommRing.evalHom IM I M R x)) =
+     (DFunLike.coe (smoothSheafCommRing.evalHom IM I M R x)) =
     smoothSheaf.evalHom _ _ _ _ := by
   apply Limits.colimit.hom_ext
   intro U
