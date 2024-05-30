@@ -271,7 +271,7 @@ set_option linter.uppercaseLean3 false in
 In other words, either $W_X(x, y) \ne 0$ or $W_Y(x, y) \ne 0$.
 
 Note that this definition is only mathematically accurate for fields.
-TODO: generalise this definition to be mathematically accurate a larger class of rings. -/
+TODO: generalise this definition to be mathematically accurate for a larger class of rings. -/
 def Nonsingular (x y : R) : Prop :=
   W.Equation x y ∧ ((W.polynomialX.eval <| C y).eval x ≠ 0 ∨ (W.polynomialY.eval <| C y).eval x ≠ 0)
 #align weierstrass_curve.nonsingular WeierstrassCurve.Affine.Nonsingular
