@@ -24,7 +24,7 @@ Natural transformations between based functors `F G : BasedFunctor 𝒳 𝒴` ar
 underlying `F` and `G` such that `α.app a` lifts `𝟙 S` whenever `𝒳.p.obj a = S`.
 -/
 
-universe u₁ v₁ u₂ v₂
+universe u₁ v₁
 
 open CategoryTheory Functor Category NatTrans IsHomLift
 
@@ -32,8 +32,11 @@ variable {𝒮 : Type u₁} [Category.{v₁} 𝒮]
 
 /-- A based category over `𝒮` is a category `𝒳` together with a functor `p : 𝒳 ⥤ 𝒮` -/
 structure BasedCategory (𝒮 : Type u₁) [Category.{v₁} 𝒮] where
-  cat : Type u₂
-  isCat : Category.{v₂} cat
+  /-- The type of objects in a `BasedCategory`-/
+  cat : Type _
+  /-- The underlying category of a `BasedCategory` -/
+  isCat : Category cat
+  /-- The functor to the base -/
   p : cat ⥤ 𝒮
 
 instance (𝒳 : BasedCategory 𝒮) : Category 𝒳.cat := 𝒳.isCat
