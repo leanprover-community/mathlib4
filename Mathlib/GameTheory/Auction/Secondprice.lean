@@ -80,14 +80,11 @@ structure Auction where
    /-- A function mapping each participant to their valuation. -/
    v : I → ℝ
 
+attribute [instance] Auction.hF Auction.hI
+
 namespace Auction
 
 variable {a : Auction} (b : a.I → ℝ)
-
-instance : Fintype a.I := a.hF
-instance : Nontrivial a.I := a.hI
-instance : Nonempty a.I := by let ⟨x, _⟩ := @exists_pair_ne a.I a.hI; use x
--- attribute [instance] a.hF a.hI
 
 /-!### Helper Functions and Definitions -/
 
@@ -140,48 +137,23 @@ lemma utility_loser (i: a.I) (H : i≠ winner b) : utility b i = 0 := by
 def dominant (i : a.I) (bi : ℝ): Prop := ∀ b b': a.I → ℝ , (b i = bi) → (∀ j: a.I,j≠i→ b j = b' j)
    → utility b' i ≤ utility b i
 
-/-- If `i`'s bid is higher than all other bids, then `i` is the winner. -/
-lemma gt_wins (i : a.I) (H: ∀ j , i ≠ j → b j < b i) : i = winner b := by
-  have HH : ∀ j, i = j ↔ b j = maxb b:= by
-    have imax : b i = maxb b := by
-      have H1 : b i ≤ maxb b := by
-        apply Finset.le_sup'
-        simp only [Finset.mem_univ]
-      have H2 : maxb b ≤ b i := by
-        apply Finset.sup'_le
-        intro j _
-        by_cases hji : i=j
-        · rw [hji]
-        · exact le_of_lt (H j hji)
-      simp only [maxb]
-      exact Real.partialOrder.proof_4 (b i) (Finset.sup' Finset.univ maxb.proof_1 b) H1 H2
-    intro j
-    constructor
-    · intro hji
-      rw [← hji]
-      exact imax
-    · intro hbj
-      by_contra hji
-      have hji' := H j (by rw [ne_eq];exact hji)
-      aesop
-  rw [HH]
-  rw [← winner_take_max]
-
 /-- The bid of the winner is always greater than or equal to the bids of all other participants.-/
-lemma b_winner_max (H: i = winner b) : ∀ j: a.I, b j ≤ b i := by
+lemma b_winner_max : ∀ j: a.I, b j ≤ b (winner b) := by
   intro j
   have H_max: b (winner b) = maxb b := winner_take_max b
-  rw [← H] at H_max
   have H_sup: b j ≤ maxb b := by
     apply Finset.le_sup'; simp only [Finset.mem_univ]
   rw [← H_max] at H_sup
   exact H_sup
 
+/-- If `i`'s bid is higher than all other bids, then `i` is the winner. -/
+lemma gt_wins (i : a.I) (H: ∀ j , i ≠ j → b j < b i) : i = winner b := by
+  contrapose! H
+  exact ⟨winner b, H, b_winner_max b i⟩
 
 /-- The bid of the winner is always greater than or equal to the second highest bid. -/
-lemma b_winner (H: i = winner b) : secondprice b ≤ b i := by
+lemma b_winner : secondprice b ≤ b (winner b) := by
   have Hmax := winner_take_max b
-  rw [← H] at Hmax
   rw [Hmax]
   apply Finset.sup'_le
   apply delete_i_nonempty
@@ -203,11 +175,8 @@ lemma b_loser_max (H: i ≠ winner b) : B b i = maxb b := by
     exact (Ne.symm H)
   exact Real.partialOrder.proof_4 (B b i) (Finset.sup' Finset.univ maxb.proof_1 b) H1 H2
 
-
-
 /-- Utility is non-negative if the bid equals the valuation. -/
-lemma utility_nneg (i : a.I) : (b i = a.v i) → 0 ≤ utility b i := by
-  intro H
+lemma utility_nneg (i : a.I) (H : b i = a.v i) : 0 ≤ utility b i := by
   by_cases H2: i = winner b
   · rw [utility]
     simp only [H2]
