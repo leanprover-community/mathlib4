@@ -46,8 +46,6 @@ theorem const_inj [Nonempty α] {y₁ y₂ : β} : const α y₁ = const α y₂
   ⟨fun h ↦ const_injective h, fun h ↦ h ▸ rfl⟩
 #align function.const_inj Function.const_inj
 
-theorem id_def : @id α = fun x ↦ x :=
-  rfl
 #align function.id_def Function.id_def
 
 -- Porting note: `Function.onFun` is now reducible
@@ -767,7 +765,7 @@ lemma apply_extend {δ} {g : α → γ} (F : γ → δ) (f : α → β) (e' : β
 
 theorem extend_injective (hf : Injective f) (e' : β → γ) : Injective fun g ↦ extend f g e' := by
   intro g₁ g₂ hg
-  refine' funext fun x ↦ _
+  refine funext fun x ↦ ?_
   have H := congr_fun hg (f x)
   simp only [hf.extend_apply] at H
   exact H

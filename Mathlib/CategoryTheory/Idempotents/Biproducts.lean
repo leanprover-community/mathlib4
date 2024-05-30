@@ -65,8 +65,8 @@ def bicone [HasFiniteBiproducts C] {J : Type} [Finite J] (F : J → Karoubi C) :
       simp only [biproduct.ι_map, biproduct.bicone_π, biproduct.map_π, eqToHom_refl,
         id_eq, hom_ext_iff, comp_f, assoc, bicone_ι_π_self_assoc, idem]
     · dsimp
-      simp only [hom_ext_iff, biproduct.ι_map, biproduct.map_π, comp_f, assoc, ne_eq,
-        biproduct.ι_π_ne_assoc _ h, comp_zero, zero_comp]
+      simp only [biproduct.ι_map, biproduct.map_π, hom_ext_iff, comp_f,
+        assoc, biproduct.ι_π_ne_assoc _ h, zero_comp, comp_zero, instZero_zero]
 #align category_theory.idempotents.karoubi.biproducts.bicone CategoryTheory.Idempotents.Karoubi.Biproducts.bicone
 
 end Biproducts
@@ -76,7 +76,7 @@ theorem karoubi_hasFiniteBiproducts [HasFiniteBiproducts C] : HasFiniteBiproduct
       { has_biproduct := fun F => by
           apply hasBiproduct_of_total (Biproducts.bicone F)
           simp only [hom_ext_iff]
-          refine' biproduct.hom_ext' _ _ (fun j => _)
+          refine biproduct.hom_ext' _ _ (fun j => ?_)
           simp only [Biproducts.bicone_pt_X, sum_hom, comp_f, Biproducts.bicone_π_f,
             biproduct.bicone_π, biproduct.map_π, Biproducts.bicone_ι_f, biproduct.ι_map, assoc,
             idem_assoc, id_eq, Biproducts.bicone_pt_p, comp_sum]

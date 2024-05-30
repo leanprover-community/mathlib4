@@ -69,7 +69,7 @@ instance struct : CategoryStruct (WidePullbackShape J) where
   id j := Hom.id j
   comp f g := by
     cases f
-    exact g
+    · exact g
     cases g
     apply Hom.term _
 #align category_theory.limits.wide_pullback_shape.struct CategoryTheory.Limits.WidePullbackShape.struct
@@ -93,7 +93,9 @@ instance subsingleton_hom : Quiver.IsThin (WidePullbackShape J) := fun _ _ => by
   constructor
   intro a b
   casesm* WidePullbackShape _, (_: WidePullbackShape _) ⟶ (_ : WidePullbackShape _)
-  rfl; rfl; rfl
+  · rfl
+  · rfl
+  · rfl
 #align category_theory.limits.wide_pullback_shape.subsingleton_hom CategoryTheory.Limits.WidePullbackShape.subsingleton_hom
 
 instance category : SmallCategory (WidePullbackShape J) :=
@@ -145,8 +147,8 @@ def mkCone {F : WidePullbackShape J ⥤ C} {X : C} (f : X ⟶ F.obj none) (π : 
 #align category_theory.limits.wide_pullback_shape.mk_cone CategoryTheory.Limits.WidePullbackShape.mkCone
 
 /-- Wide pullback diagrams of equivalent index types are equivalent. -/
-def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePullbackShape J ≌ WidePullbackShape J'
-    where
+def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') :
+    WidePullbackShape J ≌ WidePullbackShape J' where
   functor := wideCospan none (fun j => some (h j)) fun j => Hom.term (h j)
   inverse := wideCospan none (fun j => some (h.invFun j)) fun j => Hom.term (h.invFun j)
   unitIso :=
@@ -186,7 +188,7 @@ instance struct : CategoryStruct (WidePushoutShape J) where
   id j := Hom.id j
   comp f g := by
     cases f
-    exact g
+    · exact g
     cases g
     apply Hom.init _
 #align category_theory.limits.wide_pushout_shape.struct CategoryTheory.Limits.WidePushoutShape.struct
@@ -241,7 +243,7 @@ def wideSpan (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : WideP
     cases f
     · simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.id_comp]; congr
     · cases g
-      · simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.comp_id]; congr
+      simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.comp_id]; congr
 #align category_theory.limits.wide_pushout_shape.wide_span CategoryTheory.Limits.WidePushoutShape.wideSpan
 
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideSpan` -/
@@ -265,8 +267,7 @@ def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι :
 #align category_theory.limits.wide_pushout_shape.mk_cocone CategoryTheory.Limits.WidePushoutShape.mkCocone
 
 /-- Wide pushout diagrams of equivalent index types are equivalent. -/
-def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ WidePushoutShape J'
-    where
+def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ WidePushoutShape J' where
   functor := wideSpan none (fun j => some (h j)) fun j => Hom.init (h j)
   inverse := wideSpan none (fun j => some (h.invFun j)) fun j => Hom.init (h.invFun j)
   unitIso :=
@@ -378,8 +379,8 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
 theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
     g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by aesop_cat) := by
   apply eq_lift_of_comp_eq
-  aesop_cat
-  rfl  -- Porting note: quite a few missing refl's in aesop_cat now
+  · aesop_cat
+  · rfl  -- Porting note: quite a few missing refl's in aesop_cat now
 #align category_theory.limits.wide_pullback.hom_eq_lift CategoryTheory.Limits.WidePullback.hom_eq_lift
 
 @[ext 1100]
@@ -457,8 +458,8 @@ theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
         rw [← Category.assoc]
         simp := by
   apply eq_desc_of_comp_eq
-  aesop_cat
-  rfl -- Porting note: another missing rfl
+  · aesop_cat
+  · rfl -- Porting note: another missing rfl
 #align category_theory.limits.wide_pushout.hom_eq_desc CategoryTheory.Limits.WidePushout.hom_eq_desc
 
 @[ext 1100]

@@ -32,7 +32,7 @@ noncomputable section
 
 open scoped Classical
 open Set Filter Metric TopologicalSpace Topology
-open scoped ENNReal NNReal BigOperators Filter
+open scoped ENNReal NNReal Filter
 
 variable {α : Type*} [TopologicalSpace α]
 
@@ -226,7 +226,7 @@ and at `(⊤, ⊥)`). -/
 theorem continuousAt_add {p : EReal × EReal} (h : p.1 ≠ ⊤ ∨ p.2 ≠ ⊥) (h' : p.1 ≠ ⊥ ∨ p.2 ≠ ⊤) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) p := by
   rcases p with ⟨x, y⟩
-  induction x using EReal.rec <;> induction y using EReal.rec
+  induction x <;> induction y
   · exact continuousAt_add_bot_bot
   · exact continuousAt_add_bot_coe _
   · simp at h'

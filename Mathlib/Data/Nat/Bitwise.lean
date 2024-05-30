@@ -3,10 +3,12 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
+import Mathlib.Data.Bool.Basic
 import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Bits
 import Mathlib.Algebra.Ring.Nat
 import Mathlib.Order.Basic
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Common
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
@@ -47,8 +49,8 @@ section
 variable {f : Bool → Bool → Bool}
 
 @[simp]
-lemma bitwise_zero_left (m : Nat) : bitwise f 0 m = if f false true then m else 0 :=
-  rfl
+lemma bitwise_zero_left (m : Nat) : bitwise f 0 m = if f false true then m else 0 := by
+  simp [bitwise]
 #align nat.bitwise_zero_left Nat.bitwise_zero_left
 
 @[simp]
@@ -83,8 +85,8 @@ theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n →
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   conv_lhs => unfold bitwise
-  -- Adaptation note: nightly-2024-03-16: simp was
-  -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, Bool.cond_eq_ite]
+  #adaptation_note /-- nightly-2024-03-16: simp was
+  -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, Bool.cond_eq_ite] -/
   simp only [bit, ite_apply, bit1, bit0, Bool.cond_eq_ite]
   have h1 x :     (x + x) % 2 = 0 := by rw [← two_mul, mul_comm]; apply mul_mod_left
   have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
@@ -96,9 +98,9 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
 
 lemma bit_mod_two (a : Bool) (x : ℕ) :
     bit a x % 2 = if a then 1 else 0 := by
-  -- Adaptation note: nightly-2024-03-16: simp was
+  #adaptation_note /-- nightly-2024-03-16: simp was
   -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, ← mul_two,
-  --   Bool.cond_eq_ite]
+  --   Bool.cond_eq_ite] -/
   simp only [bit, ite_apply, bit1, bit0, ← mul_two, Bool.cond_eq_ite]
   split_ifs <;> simp [Nat.add_mod]
 
@@ -235,11 +237,11 @@ theorem exists_most_significant_bit {n : ℕ} (h : n ≠ 0) :
     rw [show b = true by
         revert h
         cases b <;> simp]
-    refine' ⟨0, ⟨by rw [testBit_bit_zero], fun j hj => _⟩⟩
+    refine ⟨0, ⟨by rw [testBit_bit_zero], fun j hj => ?_⟩⟩
     obtain ⟨j', rfl⟩ := exists_eq_succ_of_ne_zero (ne_of_gt hj)
     rw [testBit_bit_succ, zero_testBit]
   · obtain ⟨k, ⟨hk, hk'⟩⟩ := hn h'
-    refine' ⟨k + 1, ⟨by rw [testBit_bit_succ, hk], fun j hj => _⟩⟩
+    refine ⟨k + 1, ⟨by rw [testBit_bit_succ, hk], fun j hj => ?_⟩⟩
     obtain ⟨j', rfl⟩ := exists_eq_succ_of_ne_zero (show j ≠ 0 by intro x; subst x; simp at hj)
     exact (testBit_bit_succ _ _ _).trans (hk' _ (lt_of_succ_lt_succ hj))
 #align nat.exists_most_significant_bit Nat.exists_most_significant_bit

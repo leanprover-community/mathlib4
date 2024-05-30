@@ -44,7 +44,7 @@ def reflTransSymmAux (x : I × I) : ℝ :=
 
 @[continuity]
 theorem continuous_reflTransSymmAux : Continuous reflTransSymmAux := by
-  refine' continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _
+  refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_
   · continuity
   · continuity
   · continuity
@@ -129,7 +129,7 @@ def transReflReparamAux (t : I) : ℝ :=
 
 @[continuity]
 theorem continuous_transReflReparamAux : Continuous transReflReparamAux := by
-  refine' continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _ <;>
+  refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_ <;>
     [continuity; continuity; continuity; continuity; skip]
   intro x hx
   simp [hx]
@@ -187,9 +187,10 @@ def transAssocReparamAux (t : I) : ℝ :=
 
 @[continuity]
 theorem continuous_transAssocReparamAux : Continuous transAssocReparamAux := by
-  refine' continuous_if_le _ _ (Continuous.continuousOn _)
-      (continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _).continuousOn
-      _ <;>
+  refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_)
+    (continuous_if_le ?_ ?_
+      (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_).continuousOn
+      ?_ <;>
     [continuity; continuity; continuity; continuity; continuity; continuity; continuity; skip;
       skip] <;>
     · intro x hx
@@ -368,22 +369,21 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
       map_id := fun X => rfl
       map_comp := fun {x y z} p q => by
         refine Quotient.inductionOn₂ p q fun a b => ?_
-        simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans]
-        -- This was not needed before leanprover/lean4#2644
-        erw [ ← Path.Homotopic.comp_lift]; rfl}
+        simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans] }
   map_id X := by
     simp only
     change _ = (⟨_, _, _⟩ : FundamentalGroupoid X ⥤ FundamentalGroupoid X)
     congr
     ext x y p
-    refine' Quotient.inductionOn p fun q => _
+    refine Quotient.inductionOn p fun q => ?_
     rw [← Path.Homotopic.map_lift]
     conv_rhs => rw [← q.map_id]
+    rfl
   map_comp f g := by
     simp only
     congr
     ext x y p
-    refine' Quotient.inductionOn p fun q => _
+    refine Quotient.inductionOn p fun q => ?_
     simp only [Quotient.map_mk, Path.map_map, Quotient.eq']
     rfl
 #align fundamental_groupoid.fundamental_groupoid_functor FundamentalGroupoid.fundamentalGroupoidFunctor
@@ -402,29 +402,25 @@ theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.
 
 /-- Help the typechecker by converting a point in a groupoid back to a point in
 the underlying topological space. -/
-@[reducible]
-def toTop {X : TopCat} (x : πₓ X) : X := x.as
+abbrev toTop {X : TopCat} (x : πₓ X) : X := x.as
 #align fundamental_groupoid.to_top FundamentalGroupoid.toTop
 
 /-- Help the typechecker by converting a point in a topological space to a
 point in the fundamental groupoid of that space. -/
-@[reducible]
-def fromTop {X : TopCat} (x : X) : πₓ X := ⟨x⟩
+abbrev fromTop {X : TopCat} (x : X) : πₓ X := ⟨x⟩
 #align fundamental_groupoid.from_top FundamentalGroupoid.fromTop
 
 /-- Help the typechecker by converting an arrow in the fundamental groupoid of
 a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient`). -/
 -- Porting note: Added `(X := X)` to the type.
-@[reducible]
-def toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
+abbrev toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
     Path.Homotopic.Quotient (X := X) x₀.as x₁.as :=
   p
 #align fundamental_groupoid.to_path FundamentalGroupoid.toPath
 
 /-- Help the typechecker by converting a path in a topological space to an arrow in the
 fundamental groupoid of that space. -/
-@[reducible]
-def fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
+abbrev fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
     FundamentalGroupoid.mk x₀ ⟶ FundamentalGroupoid.mk x₁ := p
 #align fundamental_groupoid.from_path FundamentalGroupoid.fromPath
 

@@ -3,7 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Scott Morrison, Ainsley Pahljina
 -/
-import Mathlib.Data.Nat.Parity
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Fintype
@@ -43,17 +43,49 @@ def mersenne (p : ℕ) : ℕ :=
   2 ^ p - 1
 #align mersenne mersenne
 
-theorem mersenne_pos {p : ℕ} (h : 0 < p) : 0 < mersenne p := by
-  dsimp [mersenne]
-  calc
-    0 < 2 ^ 1 - 1 := by norm_num
-    _ ≤ 2 ^ p - 1 := Nat.sub_le_sub_right (Nat.pow_le_pow_of_le_right (Nat.succ_pos 1) h) 1
+theorem strictMono_mersenne : StrictMono mersenne := fun m n h ↦
+  (Nat.sub_lt_sub_iff_right <| Nat.one_le_pow _ _ two_pos).2 <| by gcongr; norm_num1
+
+@[simp]
+theorem mersenne_lt_mersenne {p q : ℕ} : mersenne p < mersenne q ↔ p < q :=
+  strictMono_mersenne.lt_iff_lt
+
+@[gcongr] protected alias ⟨_, GCongr.mersenne_lt_mersenne⟩ := mersenne_lt_mersenne
+
+@[simp]
+theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q :=
+  strictMono_mersenne.le_iff_le
+
+@[gcongr] protected alias ⟨_, GCongr.mersenne_le_mersenne⟩ := mersenne_le_mersenne
+
+@[simp] theorem mersenne_zero : mersenne 0 = 0 := rfl
+
+@[simp] theorem mersenne_pos {p : ℕ} : 0 < mersenne p ↔ 0 < p := mersenne_lt_mersenne (p := 0)
 #align mersenne_pos mersenne_pos
 
-theorem one_lt_mersenne {p : ℕ} (hp : 1 < p) : 1 < mersenne p :=
-  lt_tsub_iff_right.2 <|
-    calc 1 + 1 = 2 ^ 1 := by rw [one_add_one_eq_two, pow_one]
-    _ < 2 ^ p := pow_lt_pow_right one_lt_two hp
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq Function
+
+alias ⟨_, mersenne_pos_of_pos⟩ := mersenne_pos
+
+/-- Extension for the `positivity` tactic: `mersenne`. -/
+@[positivity mersenne _]
+def evalMersenne : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(mersenne $a) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure (.positive q(mersenne_pos_of_pos $pa))
+    | _ => pure (.nonnegative q(Nat.zero_le (mersenne $a)))
+  | _, _, _ => throwError "not mersenne"
+
+end Mathlib.Meta.Positivity
+
+@[simp]
+theorem one_lt_mersenne {p : ℕ} : 1 < mersenne p ↔ 1 < p :=
+  mersenne_lt_mersenne (p := 1)
 
 @[simp]
 theorem succ_mersenne (k : ℕ) : mersenne k + 1 = 2 ^ k := by
@@ -125,13 +157,15 @@ theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p
 #align lucas_lehmer.s_zmod_eq_s LucasLehmer.sZMod_eq_s
 
 -- These next two don't make good `norm_cast` lemmas.
-theorem Int.coe_nat_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b : ℤ) ^ p - 1 := by
+theorem Int.natCast_pow_pred (b p : ℕ) (w : 0 < b) : ((b ^ p - 1 : ℕ) : ℤ) = (b : ℤ) ^ p - 1 := by
   have : 1 ≤ b ^ p := Nat.one_le_pow p b w
   norm_cast
-#align lucas_lehmer.int.coe_nat_pow_pred LucasLehmer.Int.coe_nat_pow_pred
+#align lucas_lehmer.int.coe_nat_pow_pred LucasLehmer.Int.natCast_pow_pred
+
+@[deprecated (since := "2024-05-25")] alias Int.coe_nat_pow_pred := Int.natCast_pow_pred
 
 theorem Int.coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 : ℤ) :=
-  Int.coe_nat_pow_pred 2 p (by decide)
+  Int.natCast_pow_pred 2 p (by decide)
 #align lucas_lehmer.int.coe_nat_two_pow_pred LucasLehmer.Int.coe_nat_two_pow_pred
 
 theorem sZMod_eq_sMod (p : ℕ) (i : ℕ) : sZMod p i = (sMod p i : ZMod (2 ^ p - 1)) := by
@@ -276,13 +310,13 @@ instance : Monoid (X q) :=
 instance : NatCast (X q) where
     natCast := fun n => ⟨n, 0⟩
 
-@[simp] theorem nat_coe_fst (n : ℕ) : (n : X q).fst = (n : ZMod q) := rfl
+@[simp] theorem fst_natCast (n : ℕ) : (n : X q).fst = (n : ZMod q) := rfl
 set_option linter.uppercaseLean3 false in
-#align lucas_lehmer.X.nat_coe_fst LucasLehmer.X.nat_coe_fst
+#align lucas_lehmer.X.nat_coe_fst LucasLehmer.X.fst_natCast
 
-@[simp] theorem nat_coe_snd (n : ℕ) : (n : X q).snd = (0 : ZMod q) := rfl
+@[simp] theorem snd_natCast (n : ℕ) : (n : X q).snd = (0 : ZMod q) := rfl
 set_option linter.uppercaseLean3 false in
-#align lucas_lehmer.X.nat_coe_snd LucasLehmer.X.nat_coe_snd
+#align lucas_lehmer.X.nat_coe_snd LucasLehmer.X.snd_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofNat_fst (n : ℕ) [n.AtLeastTwo] :
@@ -329,16 +363,21 @@ instance [Fact (1 < (q : ℕ))] : Nontrivial (X q) :=
   ⟨⟨0, 1, ne_of_apply_ne Prod.fst zero_ne_one⟩⟩
 
 @[simp]
-theorem int_coe_fst (n : ℤ) : (n : X q).fst = (n : ZMod q) :=
+theorem fst_intCast (n : ℤ) : (n : X q).fst = (n : ZMod q) :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align lucas_lehmer.X.int_coe_fst LucasLehmer.X.int_coe_fst
+#align lucas_lehmer.X.int_coe_fst LucasLehmer.X.fst_intCast
 
 @[simp]
-theorem int_coe_snd (n : ℤ) : (n : X q).snd = (0 : ZMod q) :=
+theorem snd_intCast (n : ℤ) : (n : X q).snd = (0 : ZMod q) :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align lucas_lehmer.X.int_coe_snd LucasLehmer.X.int_coe_snd
+#align lucas_lehmer.X.int_coe_snd LucasLehmer.X.snd_intCast
+
+@[deprecated (since := "2024-05-25")] alias nat_coe_fst := fst_natCast
+@[deprecated (since := "2024-05-25")] alias nat_coe_snd := snd_natCast
+@[deprecated (since := "2024-05-25")] alias int_coe_fst := fst_intCast
+@[deprecated (since := "2024-05-25")] alias int_coe_snd := snd_intCast
 
 @[norm_cast]
 theorem coe_mul (n m : ℤ) : ((n * m : ℤ) : X q) = (n : X q) * (m : X q) := by ext <;> simp
@@ -415,7 +454,7 @@ Here and below, we introduce `p' = p - 2`, in order to avoid using subtraction i
 
 /-- If `1 < p`, then `q p`, the smallest prime factor of `mersenne p`, is more than 2. -/
 theorem two_lt_q (p' : ℕ) : 2 < q (p' + 2) := by
-  refine (minFac_prime (one_lt_mersenne ?_).ne').two_le.lt_of_ne' ?_
+  refine (minFac_prime (one_lt_mersenne.2 ?_).ne').two_le.lt_of_ne' ?_
   · exact le_add_left _ _
   · rw [Ne, minFac_eq_two_iff, mersenne, Nat.pow_succ']
     exact Nat.two_not_dvd_two_mul_sub_one Nat.one_le_two_pow
@@ -527,7 +566,7 @@ theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (
   rw [z] at a
   rw [z] at t
   have h₁ := order_ineq p' t
-  have h₂ := Nat.minFac_sq_le_self (mersenne_pos (Nat.lt_of_succ_lt w)) a
+  have h₂ := Nat.minFac_sq_le_self (mersenne_pos.2 (Nat.lt_of_succ_lt w)) a
   have h := lt_of_lt_of_le h₁ h₂
   exact not_lt_of_ge (Nat.sub_le _ _) h
 #align lucas_lehmer_sufficiency lucas_lehmer_sufficiency

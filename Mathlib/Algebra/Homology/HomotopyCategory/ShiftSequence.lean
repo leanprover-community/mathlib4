@@ -28,6 +28,7 @@ open HomologicalComplex
 
 attribute [local simp] XIsoOfEq_hom_naturality smul_smul
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- The natural isomorphism `(K⟦n⟧).sc' i j k ≅ K.sc' i' j' k'` when `n + i = i'`,
 `n + j = j'` and `n + k = k'`. -/
 @[simps!]
@@ -118,8 +119,8 @@ instance {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n : ℤ) [QuasiIso φ] :
     QuasiIso (φ⟦n⟧') where
   quasiIsoAt a := by
     rw [quasiIsoAt_iff_isIso_homologyMap]
-    refine' (NatIso.isIso_map_iff
-      ((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso n a (n + a) rfl) φ).2 _
+    apply (NatIso.isIso_map_iff
+      ((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso n a (n + a) rfl) φ).2 ?_
     change IsIso (homologyMap φ _)
     infer_instance
 
@@ -134,8 +135,6 @@ noncomputable instance :
   Functor.ShiftSequence.induced (homologyFunctorFactors C (ComplexShape.up ℤ) 0) ℤ
     (homologyFunctor C (ComplexShape.up ℤ))
     (homologyFunctorFactors C (ComplexShape.up ℤ))
-    ⟨⟨Quotient.full_whiskeringLeft_functor _ _⟩,
-      Quotient.faithful_whiskeringLeft_functor _ _⟩
 
 variable {C}
 

@@ -285,8 +285,14 @@ theorem truncateFun_pow (x : 𝕎 R) (m : ℕ) : truncateFun n (x ^ m) = truncat
 theorem truncateFun_natCast (m : ℕ) : truncateFun n (m : 𝕎 R) = m := rfl
 #align witt_vector.truncate_fun_nat_cast WittVector.truncateFun_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias truncateFun_nat_cast := truncateFun_natCast
+
 theorem truncateFun_intCast (m : ℤ) : truncateFun n (m : 𝕎 R) = m := rfl
 #align witt_vector.truncate_fun_int_cast WittVector.truncateFun_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias truncateFun_int_cast := truncateFun_intCast
 
 end WittVector
 

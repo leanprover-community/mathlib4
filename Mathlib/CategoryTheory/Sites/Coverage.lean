@@ -232,7 +232,7 @@ def toGrothendieck (K : Coverage C) : GrothendieckTopology C where
     | top X => apply saturate.top
     | transitive X R S _ hS H1 _ =>
       apply saturate.transitive
-      apply H1 f
+      · apply H1 f
       intro Z g hg
       rw [← Sieve.pullback_comp]
       exact hS hg
@@ -303,6 +303,14 @@ instance : SemilatticeSup (Coverage C) where
 lemma sup_covering (x y : Coverage C) (B : C) :
     (x ⊔ y).covering B = x.covering B ∪ y.covering B :=
   rfl
+
+/--
+Any sieve that contains a covering presieve for a coverage is a covering sieve for the associated
+Grothendieck topology.
+-/
+theorem mem_toGrothendieck_sieves_of_superset (K : Coverage C) {X : C} {S : Sieve X}
+    {R : Presieve X} (h : R ≤ S) (hR : R ∈ K.covering X) : S ∈ (K.toGrothendieck C).sieves X :=
+  K.saturate_of_superset ((Sieve.sets_iff_generate _ _).mpr h) (Coverage.saturate.of X _ hR)
 
 end Coverage
 
@@ -376,10 +384,10 @@ theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
       refine ⟨t, fun Z g hg => ?_⟩
       refine (H1 (g ≫ f)).ext (fun ZZ gg hgg => ?_)
       rw [← types_comp_apply _ (P.map gg.op), ← P.map_comp, ← op_comp, ht]
-      swap; simpa using hgg
+      on_goal 2 => simpa using hgg
       refine (H2 hgg (𝟙 _)).ext (fun ZZZ ggg hggg => ?_)
       rw [← types_comp_apply _ (P.map ggg.op), ← P.map_comp, ← op_comp, hz]
-      swap; simpa using hggg
+      on_goal 2 => simpa using hggg
       refine (H2 hgg ggg).ext (fun ZZZZ gggg _ => ?_)
       rw [← types_comp_apply _ (P.map gggg.op), ← P.map_comp, ← op_comp]
       apply hx

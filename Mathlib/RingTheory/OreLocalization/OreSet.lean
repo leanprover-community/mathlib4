@@ -3,9 +3,9 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge
 -/
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.GroupTheory.Submonoid.Basic
+import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.Ring.Regular
 
 #align_import ring_theory.ore_localization.ore_set from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
@@ -71,8 +71,7 @@ def oreCondition (r : R) (s : S) : Σ'r' : R, Σ's' : S, r * s' = s * r' :=
 #align ore_localization.ore_condition OreLocalization.oreCondition
 
 /-- The trivial submonoid is an Ore set. -/
-instance oreSetBot : OreSet (⊥ : Submonoid R)
-    where
+instance oreSetBot : OreSet (⊥ : Submonoid R) where
   ore_left_cancel _ _ s h :=
     ⟨s, by
       rcases s with ⟨s, hs⟩
@@ -90,8 +89,7 @@ instance oreSetBot : OreSet (⊥ : Submonoid R)
 #align ore_localization.ore_set_bot OreLocalization.oreSetBot
 
 /-- Every submonoid of a commutative monoid is an Ore set. -/
-instance (priority := 100) oreSetComm {R} [CommMonoid R] (S : Submonoid R) : OreSet S
-    where
+instance (priority := 100) oreSetComm {R} [CommMonoid R] (S : Submonoid R) : OreSet S where
   ore_left_cancel m n s h := ⟨s, by rw [mul_comm n s, mul_comm m s, h]⟩
   oreNum r _ := r
   oreDenom _ s := s

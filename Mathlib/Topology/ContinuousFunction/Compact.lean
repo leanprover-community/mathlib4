@@ -29,7 +29,7 @@ you should restate it here. You can also use
 noncomputable section
 
 open scoped Classical
-open Topology NNReal BoundedContinuousFunction BigOperators
+open Topology NNReal BoundedContinuousFunction
 
 open Set Filter Metric
 
@@ -483,9 +483,9 @@ variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
-  refine' (ContinuousMap.exists_tendsto_compactOpen_iff_forall _).2 fun K hK => _
+  refine (ContinuousMap.exists_tendsto_compactOpen_iff_forall _).2 fun K hK => ?_
   lift K to Compacts X using hK
-  have A : ∀ s : Finset ι, restrict (↑K) (∑ i in s, F i) = ∑ i in s, restrict K (F i) := by
+  have A : ∀ s : Finset ι, restrict (↑K) (∑ i ∈ s, F i) = ∑ i ∈ s, restrict K (F i) := by
     intro s
     ext1 x
     simp
@@ -531,12 +531,12 @@ variable [TopologicalSpace α] [NormedRing β] [StarRing β]
 
 instance [CompactSpace α] [CstarRing β] : CstarRing C(α, β) where
   norm_star_mul_self {f} := by
-    refine' le_antisymm _ _
+    refine le_antisymm ?_ ?_
     · rw [← sq, ContinuousMap.norm_le _ (sq_nonneg _)]
       intro x
       simp only [ContinuousMap.coe_mul, coe_star, Pi.mul_apply, Pi.star_apply,
         CstarRing.norm_star_mul_self, ← sq]
-      refine' sq_le_sq' _ _
+      refine sq_le_sq' ?_ ?_
       · linarith [norm_nonneg (f x), norm_nonneg f]
       · exact ContinuousMap.norm_coe_le_norm f x
     · rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _),

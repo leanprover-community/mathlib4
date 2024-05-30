@@ -293,16 +293,16 @@ noncomputable instance preservesKernelZero :
     PreservesLimit (parallelPair (0 : X ⟶ Y) 0) G where
   preserves {c} hc := by
     have := KernelFork.IsLimit.isIso_ι c hc rfl
-    refine' (KernelFork.isLimitMapConeEquiv c G).symm _
-    refine' IsLimit.ofIsoLimit (KernelFork.IsLimit.ofId _ (G.map_zero _ _)) _
+    refine (KernelFork.isLimitMapConeEquiv c G).symm ?_
+    refine IsLimit.ofIsoLimit (KernelFork.IsLimit.ofId _ (G.map_zero _ _)) ?_
     exact (Fork.ext (G.mapIso (asIso (Fork.ι c))).symm (by simp))
 
 noncomputable instance preservesCokernelZero :
     PreservesColimit (parallelPair (0 : X ⟶ Y) 0) G where
   preserves {c} hc := by
     have := CokernelCofork.IsColimit.isIso_π c hc rfl
-    refine' (CokernelCofork.isColimitMapCoconeEquiv c G).symm _
-    refine' IsColimit.ofIsoColimit (CokernelCofork.IsColimit.ofId _ (G.map_zero _ _)) _
+    refine (CokernelCofork.isColimitMapCoconeEquiv c G).symm ?_
+    refine IsColimit.ofIsoColimit (CokernelCofork.IsColimit.ofId _ (G.map_zero _ _)) ?_
     exact (Cofork.ext (G.mapIso (asIso (Cofork.π c))) (by simp))
 
 variable {X Y}

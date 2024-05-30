@@ -43,7 +43,7 @@ theorem map_eq_C_mul_X_pow_of_forall_coeff_mem {f : R[X]} {P : Ideal R}
     · have : natDegree f = n := natDegree_eq_of_degree_eq_some h.symm
       rw [coeff_C_mul, coeff_X_pow, if_pos this.symm, mul_one, leadingCoeff, this, coeff_map]
     · rw [coeff_eq_zero_of_degree_lt, coeff_eq_zero_of_degree_lt]
-      · refine' lt_of_le_of_lt (degree_C_mul_X_pow_le _ _) _
+      · refine lt_of_le_of_lt (degree_C_mul_X_pow_le _ _) ?_
         rwa [← degree_eq_natDegree hf0]
       · exact lt_of_le_of_lt (degree_map_le _ _) h
 set_option linter.uppercaseLean3 false in
@@ -73,7 +73,7 @@ theorem isUnit_of_natDegree_eq_zero_of_isPrimitive {p q : R[X]}
     -- Porting note: stated using `IsPrimitive` which is defeq to old statement.
     (hu : IsPrimitive (p * q)) (hpm : p.natDegree = 0) : IsUnit p := by
   rw [eq_C_of_degree_le_zero (natDegree_eq_zero_iff_degree_le_zero.1 hpm), isUnit_C]
-  refine' hu _ _
+  refine hu _ ?_
   rw [← eq_C_of_degree_le_zero (natDegree_eq_zero_iff_degree_le_zero.1 hpm)]
   exact dvd_mul_right _ _
 #align polynomial.eisenstein_criterion_aux.is_unit_of_nat_degree_eq_zero_of_forall_dvd_is_unit Polynomial.EisensteinCriterionAux.isUnit_of_natDegree_eq_zero_of_isPrimitive
@@ -103,7 +103,7 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
       ⟨m, n, b, c, hmnd, hbc, hp, hq⟩
     have hmn : 0 < m → 0 < n → False := by
       intro hm0 hn0
-      refine' h0 _
+      refine h0 ?_
       rw [coeff_zero_eq_eval_zero, eval_mul, sq]
       exact
         Ideal.mul_mem_mul (eval_zero_mem_ideal_of_eq_mul_X_pow hp hm0.ne')

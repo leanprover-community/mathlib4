@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.FieldTheory.IntermediateField
+import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.UniformRing
 
 #align_import topology.instances.complex from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
@@ -31,13 +32,13 @@ theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set
     simp_rw [← SetLike.coe_set_eq, IntermediateField.coe_toSubalgebra] at this ⊢
     exact this
   suffices range (ofReal' : ℝ → ℂ) ⊆ closure (Set.range ((ofReal' : ℝ → ℂ) ∘ ((↑) : ℚ → ℝ))) by
-    refine' subset_trans this _
+    refine subset_trans this ?_
     rw [← IsClosed.closure_eq hc]
     apply closure_mono
     rintro _ ⟨_, rfl⟩
     simp only [Function.comp_apply, ofReal_ratCast, SetLike.mem_coe, SubfieldClass.ratCast_mem]
   nth_rw 1 [range_comp]
-  refine' subset_trans _ (image_closure_subset_closure_image continuous_ofReal)
+  refine subset_trans ?_ (image_closure_subset_closure_image continuous_ofReal)
   rw [DenseRange.closure_range Rat.denseEmbedding_coe_real.dense]
   simp only [image_univ]
   rfl

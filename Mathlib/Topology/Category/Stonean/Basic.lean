@@ -37,6 +37,9 @@ universe u
 open CategoryTheory
 open scoped Topology
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] ConcreteCategory.instFunLike
+
 /-- `Stonean` is the category of extremally disconnected compact Hausdorff spaces. -/
 structure Stonean where
   /-- The underlying compact Hausdorff space of a Stonean space. -/
@@ -95,7 +98,7 @@ def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is full. -/
 instance : toCompHaus.Full where
-  preimage := fun f => f
+  map_surjective f := ⟨f, rfl⟩
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is faithful. -/
 instance : toCompHaus.Faithful := {}
@@ -132,7 +135,7 @@ def toProfinite : Stonean.{u} ⥤ Profinite.{u} where
 
 /-- The functor from Stonean spaces to profinite spaces is full. -/
 instance : toProfinite.Full where
-  preimage f := f
+  map_surjective f := ⟨f, rfl⟩
 
 /-- The functor from Stonean spaces to profinite spaces is faithful. -/
 instance : toProfinite.Faithful := {}
@@ -219,7 +222,7 @@ instance {X Y : Stonean} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
   rwa [CompHaus.epi_iff_surjective] at *
 
 /-- Every Stonean space is projective in `CompHaus` -/
-instance (X : Stonean) : Projective X.compHaus where
+instance instProjectiveCompHausCompHaus (X : Stonean) : Projective X.compHaus where
   factors := by
     intro B C φ f _
     haveI : ExtremallyDisconnected X.compHaus.toTop := X.extrDisc
@@ -313,7 +316,7 @@ lemma Gleason (X : CompHaus.{u}) :
   · intro h
     let X' : Stonean := ⟨X⟩
     show Projective X'.compHaus
-    apply Stonean.instProjectiveCompHausCategoryCompHaus
+    apply Stonean.instProjectiveCompHausCompHaus
 
 end CompHaus
 

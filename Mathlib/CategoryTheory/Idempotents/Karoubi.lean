@@ -157,7 +157,7 @@ def toKaroubi : C ⥤ Karoubi C where
   map f := ⟨f, by simp only [comp_id, id_comp]⟩
 #align category_theory.idempotents.to_karoubi CategoryTheory.Idempotents.toKaroubi
 
-instance : (toKaroubi C).Full where preimage f := f.f
+instance : (toKaroubi C).Full where map_surjective f := ⟨f.f, rfl⟩
 
 instance : (toKaroubi C).Faithful where
   map_injective := fun h => congr_arg Karoubi.Hom.f h
@@ -211,7 +211,7 @@ def inclusionHom [Preadditive C] (P Q : Karoubi C) : AddMonoidHom (P ⟶ Q) (P.X
 
 @[simp]
 theorem sum_hom [Preadditive C] {P Q : Karoubi C} {α : Type*} (s : Finset α) (f : α → (P ⟶ Q)) :
-    (∑ x in s, f x).f = ∑ x in s, (f x).f :=
+    (∑ x ∈ s, f x).f = ∑ x ∈ s, (f x).f :=
   map_sum (inclusionHom P Q) f s
 #align category_theory.idempotents.karoubi.sum_hom CategoryTheory.Idempotents.Karoubi.sum_hom
 
@@ -228,7 +228,7 @@ open Karoubi
 variable (C)
 
 instance : IsIdempotentComplete (Karoubi C) := by
-  refine' ⟨_⟩
+  refine ⟨?_⟩
   intro P p hp
   simp only [hom_ext_iff, comp_f] at hp
   use ⟨P.X, p.f, hp⟩
@@ -246,14 +246,12 @@ instance [IsIdempotentComplete C] : (toKaroubi C).EssSurj :=
           inv := ⟨e, by erw [comp_id, ← h₂, assoc, h₁, comp_id]⟩ }⟩
 
 /-- If `C` is idempotent complete, the functor `toKaroubi : C ⥤ Karoubi C` is an equivalence. -/
-def toKaroubiIsEquivalence [IsIdempotentComplete C] : (toKaroubi C).IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj (toKaroubi C)
-#align category_theory.idempotents.to_karoubi_is_equivalence CategoryTheory.Idempotents.toKaroubiIsEquivalence
+instance toKaroubi_isEquivalence [IsIdempotentComplete C] : (toKaroubi C).IsEquivalence where
+#align category_theory.idempotents.to_karoubi_is_equivalence CategoryTheory.Idempotents.toKaroubi_isEquivalence
 
 /-- The equivalence `C ≅ Karoubi C` when `C` is idempotent complete. -/
 def toKaroubiEquivalence [IsIdempotentComplete C] : C ≌ Karoubi C :=
-  haveI := toKaroubiIsEquivalence C
-  Functor.asEquivalence (toKaroubi C)
+  (toKaroubi C).asEquivalence
 #align category_theory.idempotents.to_karoubi_equivalence CategoryTheory.Idempotents.toKaroubiEquivalence
 
 instance toKaroubiEquivalence_functor_additive [Preadditive C] [IsIdempotentComplete C] :
