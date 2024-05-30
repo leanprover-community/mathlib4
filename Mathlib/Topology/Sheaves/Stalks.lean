@@ -109,6 +109,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_res TopCat.Presheaf.germ_res
 
 -- Porting note: `@[elementwise]` did not generate the best lemma when applied to `germ_res`
+attribute [local instance] ConcreteCategory.instFunLike in
 theorem germ_res_apply (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) [ConcreteCategory C]
     (s) : germ F x (F.map i.op s) = germ F (i x) s := by rw [← comp_apply, germ_res]
 set_option linter.uppercaseLean3 false in
@@ -385,9 +386,7 @@ section Concrete
 variable {C}
 variable [ConcreteCategory.{v} C]
 
-attribute [local instance] ConcreteCategory.hasCoeToSort
--- Porting note: The following does not seem to be needed.
--- ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 -- Porting note (#11215): TODO: @[ext] attribute only applies to structures or lemmas proving x = y
 -- @[ext]

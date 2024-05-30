@@ -182,7 +182,7 @@ def Scheme.restrictRestrictComm (X : Scheme.{u}) (U V : Opens X.carrier) :
     X ∣_ᵤ U ∣_ᵤ ιOpens U ⁻¹ᵁ V ≅ X ∣_ᵤ V ∣_ᵤ ιOpens V ⁻¹ᵁ U := by
   refine IsOpenImmersion.isoOfRangeEq (ιOpens _ ≫ ιOpens U) (ιOpens _ ≫ ιOpens V) ?_
   simp only [Scheme.restrict_carrier, Scheme.ofRestrict_val_base, Scheme.comp_coeBase,
-    CategoryTheory.coe_comp, Opens.coe_inclusion, Set.range_comp, Opens.map]
+    TopCat.coe_comp, Opens.coe_inclusion, Set.range_comp, Opens.map]
   rw [Subtype.range_val, Subtype.range_val]
   dsimp
   rw [Set.image_preimage_eq_inter_range, Set.image_preimage_eq_inter_range,
@@ -194,7 +194,7 @@ def Scheme.restrictRestrict (X : Scheme.{u}) (U : Opens X.carrier) (V : Opens (X
     X ∣_ᵤ U ∣_ᵤ V ≅ X ∣_ᵤ U.openEmbedding.isOpenMap.functor.obj V := by
   refine IsOpenImmersion.isoOfRangeEq (ιOpens _ ≫ ιOpens U) (ιOpens _) ?_
   simp only [Scheme.restrict_carrier, Scheme.ofRestrict_val_base, Scheme.comp_coeBase,
-    CategoryTheory.coe_comp, Opens.coe_inclusion, Set.range_comp, Opens.map]
+    TopCat.coe_comp, Opens.coe_inclusion, Set.range_comp, Opens.map]
   rw [Subtype.range_val, Subtype.range_val]
   rfl
 
@@ -225,7 +225,7 @@ noncomputable abbrev Scheme.restrictMapIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsI
     (H := PresheafedSpace.IsOpenImmersion.comp (hf := inferInstance) (hg := inferInstance))
     (Y.ofRestrict _) _
   dsimp [restrict]
-  rw [coe_comp, Set.range_comp, Opens.coe_inclusion, Subtype.range_val, Subtype.range_coe]
+  rw [Set.range_comp, Subtype.range_val, Subtype.range_coe]
   refine' @Set.image_preimage_eq _ _ f.1.base U.1 _
   rw [← TopCat.epi_iff_surjective]
   infer_instance
