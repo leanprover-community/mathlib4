@@ -854,9 +854,8 @@ theorem Fin.univ_castSuccEmb (n : ℕ) :
 /-- Embed `Fin n` into `Fin (n + 1)` by inserting
 around a specified pivot `p : Fin (n + 1)` into the `univ` -/
 theorem Fin.univ_succAbove (n : ℕ) (p : Fin (n + 1)) :
-    (univ : Finset (Fin (n + 1))) =
-      Finset.cons p (univ.map <| (Fin.succAboveEmb p).toEmbedding) (by simp) :=
-  by simp [map_eq_image]
+    (univ : Finset (Fin (n + 1))) = Finset.cons p (univ.map <| Fin.succAboveEmb p) (by simp) := by
+  simp [map_eq_image]
 #align fin.univ_succ_above Fin.univ_succAbove
 
 @[simp] theorem Fin.univ_image_get [DecidableEq α] (l : List α) :

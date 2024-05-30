@@ -215,7 +215,7 @@ one given by the following generators and relations.
 
 /-- The `i`-th face map from `[n]` to `[n+1]` -/
 def δ {n} (i : Fin (n + 2)) : ([n] : SimplexCategory) ⟶ [n + 1] :=
-  mkHom (Fin.succAboveEmb i).toOrderHom
+  mkHom (Fin.succAboveOrderEmb i).toOrderHom
 #align simplex_category.δ SimplexCategory.δ
 
 /-- The `i`-th degeneracy map from `[n+1]` to `[n]` -/
