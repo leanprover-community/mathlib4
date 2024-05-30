@@ -35,7 +35,6 @@ open Polynomial
 universe u v
 
 open
-  BigOperators
   Finset
   Finsupp
   Polynomial

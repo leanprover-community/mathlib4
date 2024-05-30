@@ -38,7 +38,7 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 
 open Finpartition Finset Fintype Rel Nat
-open scoped BigOperators SzemerediRegularity.Positivity
+open scoped SzemerediRegularity.Positivity
 
 namespace SzemerediRegularity
 
@@ -258,7 +258,7 @@ private theorem density_sub_eps_le_sum_density_div_card [Nonempty α]
     {hU : U ∈ P.parts} {hV : V ∈ P.parts} {A B : Finset (Finset α)}
     (hA : A ⊆ (chunk hP G ε hU).parts) (hB : B ⊆ (chunk hP G ε hV).parts) :
     (G.edgeDensity (A.biUnion id) (B.biUnion id)) - ε ^ 5 / 50 ≤
-    (∑ ab in A.product B, (G.edgeDensity ab.1 ab.2 : ℝ)) / (A.card * B.card) := by
+    (∑ ab ∈ A.product B, (G.edgeDensity ab.1 ab.2 : ℝ)) / (A.card * B.card) := by
   have : ↑(G.edgeDensity (A.biUnion id) (B.biUnion id)) - ε ^ 5 / ↑50 ≤
       (↑1 - ε ^ 5 / 50) * G.edgeDensity (A.biUnion id) (B.biUnion id) := by
     rw [sub_mul, one_mul, sub_le_sub_iff_left]
@@ -295,7 +295,7 @@ private theorem sum_density_div_card_le_density_add_eps [Nonempty α]
     (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5)
     (hε₁ : ε ≤ 1) {hU : U ∈ P.parts} {hV : V ∈ P.parts} {A B : Finset (Finset α)}
     (hA : A ⊆ (chunk hP G ε hU).parts) (hB : B ⊆ (chunk hP G ε hV).parts) :
-    (∑ ab in A.product B, G.edgeDensity ab.1 ab.2 : ℝ) / (A.card * B.card) ≤
+    (∑ ab ∈ A.product B, G.edgeDensity ab.1 ab.2 : ℝ) / (A.card * B.card) ≤
     G.edgeDensity (A.biUnion id) (B.biUnion id) + ε ^ 5 / 49 := by
   have : (↑1 + ε ^ 5 / ↑49) * G.edgeDensity (A.biUnion id) (B.biUnion id) ≤
       G.edgeDensity (A.biUnion id) (B.biUnion id) + ε ^ 5 / 49 := by
@@ -333,14 +333,14 @@ private theorem average_density_near_total_density [Nonempty α]
     (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5)
     (hε₁ : ε ≤ 1) {hU : U ∈ P.parts} {hV : V ∈ P.parts} {A B : Finset (Finset α)}
     (hA : A ⊆ (chunk hP G ε hU).parts) (hB : B ⊆ (chunk hP G ε hV).parts) :
-    |(∑ ab in A.product B, G.edgeDensity ab.1 ab.2 : ℝ) / (A.card * B.card) -
+    |(∑ ab ∈ A.product B, G.edgeDensity ab.1 ab.2 : ℝ) / (A.card * B.card) -
       G.edgeDensity (A.biUnion id) (B.biUnion id)| ≤ ε ^ 5 / 49 := by
   rw [abs_sub_le_iff]
   constructor
   · rw [sub_le_iff_le_add']
     exact sum_density_div_card_le_density_add_eps hPα hPε hε₁ hA hB
   suffices (G.edgeDensity (A.biUnion id) (B.biUnion id) : ℝ) -
-      (∑ ab in A.product B, (G.edgeDensity ab.1 ab.2 : ℝ)) / (A.card * B.card) ≤ ε ^ 5 / 50 by
+      (∑ ab ∈ A.product B, (G.edgeDensity ab.1 ab.2 : ℝ)) / (A.card * B.card) ≤ ε ^ 5 / 50 by
     apply this.trans
     gcongr <;> [sz_positivity; norm_num]
   rw [sub_le_iff_le_add, ← sub_le_iff_le_add']
@@ -350,7 +350,7 @@ private theorem edgeDensity_chunk_aux [Nonempty α]
     (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5)
     (hU : U ∈ P.parts) (hV : V ∈ P.parts) :
     (G.edgeDensity U V : ℝ) ^ 2 - ε ^ 5 / ↑25 ≤
-    ((∑ ab in (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
+    ((∑ ab ∈ (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
       (G.edgeDensity ab.1 ab.2 : ℝ)) / ↑16 ^ P.parts.card) ^ 2 := by
   obtain hGε | hGε := le_total (G.edgeDensity U V : ℝ) (ε ^ 5 / 50)
   · refine (sub_nonpos_of_le <| (sq_le ?_ ?_).trans <| hGε.trans ?_).trans (sq_nonneg _)
@@ -359,7 +359,7 @@ private theorem edgeDensity_chunk_aux [Nonempty α]
     · exact div_le_div_of_nonneg_left (by sz_positivity) (by norm_num) (by norm_num)
   rw [← sub_nonneg] at hGε
   have : ↑(G.edgeDensity U V) - ε ^ 5 / ↑50 ≤
-      (∑ ab in (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
+      (∑ ab ∈ (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
         (G.edgeDensity ab.1 ab.2 : ℝ)) / ↑16 ^ P.parts.card := by
     have rflU := Set.Subset.refl (chunk hP G ε hU).parts.toSet
     have rflV := Set.Subset.refl (chunk hP G ε hV).parts.toSet
@@ -431,16 +431,16 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
     (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5)
     (hε₁ : ε ≤ 1) {hU : U ∈ P.parts} {hV : V ∈ P.parts} (hUVne : U ≠ V) (hUV : ¬G.IsUniform ε U V) :
     ↑3 / ↑4 * ε ≤
-    |(∑ ab in (star hP G ε hU V).product (star hP G ε hV U), (G.edgeDensity ab.1 ab.2 : ℝ)) /
+    |(∑ ab ∈ (star hP G ε hU V).product (star hP G ε hV U), (G.edgeDensity ab.1 ab.2 : ℝ)) /
       ((star hP G ε hU V).card * (star hP G ε hV U).card) -
-        (∑ ab in (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
+        (∑ ab ∈ (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
           (G.edgeDensity ab.1 ab.2 : ℝ)) / (16 : ℝ) ^ P.parts.card| := by
   rw [show (16 : ℝ) = ↑4 ^ 2 by norm_num, pow_right_comm, sq ((4 : ℝ) ^ _)]
   set p : ℝ :=
-    (∑ ab in (star hP G ε hU V).product (star hP G ε hV U), (G.edgeDensity ab.1 ab.2 : ℝ)) /
+    (∑ ab ∈ (star hP G ε hU V).product (star hP G ε hV U), (G.edgeDensity ab.1 ab.2 : ℝ)) /
       ((star hP G ε hU V).card * (star hP G ε hV U).card)
   set q : ℝ :=
-    (∑ ab in (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
+    (∑ ab ∈ (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
       (G.edgeDensity ab.1 ab.2 : ℝ)) / (↑4 ^ P.parts.card * ↑4 ^ P.parts.card)
   change _ ≤ |p - q|
   set r : ℝ := ↑(G.edgeDensity ((star hP G ε hU V).biUnion id) ((star hP G ε hV U).biUnion id))
@@ -474,7 +474,7 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ 
     (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5) (hε₁ : ε ≤ 1) {hU : U ∈ P.parts} {hV : V ∈ P.parts}
     (hUVne : U ≠ V) (hUV : ¬G.IsUniform ε U V) :
     (G.edgeDensity U V : ℝ) ^ 2 - ε ^ 5 / ↑25 + ε ^ 4 / ↑3 ≤
-    (∑ ab in (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
+    (∑ ab ∈ (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
       (G.edgeDensity ab.1 ab.2 : ℝ) ^ 2) / ↑16 ^ P.parts.card :=
   calc
     ↑(G.edgeDensity U V) ^ 2 - ε ^ 5 / 25 + ε ^ 4 / ↑3 ≤ ↑(G.edgeDensity U V) ^ 2 - ε ^ 5 / ↑25 +
@@ -498,7 +498,7 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ 
         nlinarith
       · norm_num
         positivity
-    _ ≤ (∑ ab in (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
+    _ ≤ (∑ ab ∈ (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
         (G.edgeDensity ab.1 ab.2 : ℝ) ^ 2) / ↑16 ^ P.parts.card := by
       have t : (star hP G ε hU V).product (star hP G ε hV U) ⊆
           (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts :=
@@ -526,7 +526,7 @@ blanket lower bound used the uniform parts. -/
 theorem edgeDensity_chunk_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
     (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5) (hU : U ∈ P.parts) (hV : V ∈ P.parts) :
     (G.edgeDensity U V : ℝ) ^ 2 - ε ^ 5 / ↑25 ≤
-    (∑ ab in (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
+    (∑ ab ∈ (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
       (G.edgeDensity ab.1 ab.2 : ℝ) ^ 2) / ↑16 ^ P.parts.card := by
   apply (edgeDensity_chunk_aux (hP := hP) hPα hPε hU hV).trans
   have key : ↑16 ^ P.parts.card =

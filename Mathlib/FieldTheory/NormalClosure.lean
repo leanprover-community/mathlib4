@@ -25,7 +25,7 @@ if `L/F` satisfies the abovementioned splitting condition, in particular if `L/K
 a tower and `L/F` is normal.
 -/
 
-open BigOperators IntermediateField IsScalarTower Polynomial
+open IntermediateField IsScalarTower Polynomial
 
 variable (F K L : Type*) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
 

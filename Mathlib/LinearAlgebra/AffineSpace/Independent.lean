@@ -38,7 +38,7 @@ This file defines affinely independent families of points.
 noncomputable section
 
 open Finset Function
-open scoped BigOperators Affine
+open scoped Affine
 
 section AffineIndependent
 
@@ -50,14 +50,14 @@ nontrivial weighted subtractions (where the sum of weights is 0) are
 0. -/
 def AffineIndependent (p : ι → P) : Prop :=
   ∀ (s : Finset ι) (w : ι → k),
-    ∑ i in s, w i = 0 → s.weightedVSub p w = (0 : V) → ∀ i ∈ s, w i = 0
+    ∑ i ∈ s, w i = 0 → s.weightedVSub p w = (0 : V) → ∀ i ∈ s, w i = 0
 #align affine_independent AffineIndependent
 
 /-- The definition of `AffineIndependent`. -/
 theorem affineIndependent_def (p : ι → P) :
     AffineIndependent k p ↔
       ∀ (s : Finset ι) (w : ι → k),
-        ∑ i in s, w i = 0 → s.weightedVSub p w = (0 : V) → ∀ i ∈ s, w i = 0 :=
+        ∑ i ∈ s, w i = 0 → s.weightedVSub p w = (0 : V) → ∀ i ∈ s, w i = 0 :=
   Iff.rfl
 #align affine_independent_def affineIndependent_def
 
@@ -90,7 +90,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
     · intro h
       rw [linearIndependent_iff']
       intro s g hg i hi
-      set f : ι → k := fun x => if hx : x = i1 then -∑ y in s, g y else g ⟨x, hx⟩ with hfdef
+      set f : ι → k := fun x => if hx : x = i1 then -∑ y ∈ s, g y else g ⟨x, hx⟩ with hfdef
       let s2 : Finset ι := insert i1 (s.map (Embedding.subtype _))
       have hfg : ∀ x : { x // x ≠ i1 }, g x = f x := by
         intro x
@@ -98,7 +98,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
         dsimp only
         erw [dif_neg x.property, Subtype.coe_eta]
       rw [hfg]
-      have hf : ∑ ι in s2, f ι = 0 := by
+      have hf : ∑ ι ∈ s2, f ι = 0 := by
         rw [Finset.sum_insert
             (Finset.not_mem_map_subtype_of_not_property s (Classical.not_not.2 rfl)),
           Finset.sum_subtype_map_embedding fun x _ => (hfg x).symm]
@@ -124,7 +124,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
       rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero s w p hw (p i1), ←
         s.weightedVSubOfPoint_erase w p i1, Finset.weightedVSubOfPoint_apply] at hs
       let f : ι → V := fun i => w i • (p i -ᵥ p i1)
-      have hs2 : (∑ i in (s.erase i1).subtype fun i => i ≠ i1, f i) = 0 := by
+      have hs2 : (∑ i ∈ (s.erase i1).subtype fun i => i ≠ i1, f i) = 0 := by
         rw [← hs]
         convert Finset.sum_subtype_of_mem f fun x => Finset.ne_of_mem_erase
       have h2 := h ((s.erase i1).subtype fun i => i ≠ i1) (fun x => w x) hs2
@@ -179,8 +179,8 @@ have equal `Set.indicator`. -/
 theorem affineIndependent_iff_indicator_eq_of_affineCombination_eq (p : ι → P) :
     AffineIndependent k p ↔
       ∀ (s1 s2 : Finset ι) (w1 w2 : ι → k),
-        ∑ i in s1, w1 i = 1 →
-          ∑ i in s2, w2 i = 1 →
+        ∑ i ∈ s1, w1 i = 1 →
+          ∑ i ∈ s2, w2 i = 1 →
             s1.affineCombination k p w1 = s2.affineCombination k p w2 →
               Set.indicator (↑s1) w1 = Set.indicator (↑s2) w2 := by
   classical
@@ -191,7 +191,7 @@ theorem affineIndependent_iff_indicator_eq_of_affineCombination_eq (p : ι → P
       · rw [← sub_eq_zero]
         rw [← Finset.sum_indicator_subset _ (Finset.subset_union_left s1 s2)] at hw1
         rw [← Finset.sum_indicator_subset _ (Finset.subset_union_right s1 s2)] at hw2
-        have hws : (∑ i in s1 ∪ s2, (Set.indicator (↑s1) w1 - Set.indicator (↑s2) w2) i) = 0 := by
+        have hws : (∑ i ∈ s1 ∪ s2, (Set.indicator (↑s1) w1 - Set.indicator (↑s2) w2) i) = 0 := by
           simp [hw1, hw2]
         rw [Finset.affineCombination_indicator_subset _ _ (Finset.subset_union_left s1 s2),
           Finset.affineCombination_indicator_subset _ _ (Finset.subset_union_right s1 s2),
@@ -211,14 +211,14 @@ theorem affineIndependent_iff_indicator_eq_of_affineCombination_eq (p : ι → P
         simp [h₁, h₂]
     · intro ha s w hw hs i0 hi0
       let w1 : ι → k := Function.update (Function.const ι 0) i0 1
-      have hw1 : ∑ i in s, w1 i = 1 := by
+      have hw1 : ∑ i ∈ s, w1 i = 1 := by
         rw [Finset.sum_update_of_mem hi0]
         simp only [Finset.sum_const_zero, add_zero, const_apply]
       have hw1s : s.affineCombination k p w1 = p i0 :=
         s.affineCombination_of_eq_one_of_eq_zero w1 p hi0 (Function.update_same _ _ _)
           fun _ _ hne => Function.update_noteq hne _ _
       let w2 := w + w1
-      have hw2 : ∑ i in s, w2 i = 1 := by
+      have hw2 : ∑ i ∈ s, w2 i = 1 := by
         simp_all only [w2, Pi.add_apply, Finset.sum_add_distrib, zero_add]
       have hw2s : s.affineCombination k p w2 = p i0 := by
         simp_all only [w2, ← Finset.weightedVSub_vadd_affineCombination, zero_vadd]
@@ -263,8 +263,8 @@ theorem AffineIndependent.units_lineMap {p : ι → P} (hp : AffineIndependent k
 #align affine_independent.units_line_map AffineIndependent.units_lineMap
 
 theorem AffineIndependent.indicator_eq_of_affineCombination_eq {p : ι → P}
-    (ha : AffineIndependent k p) (s₁ s₂ : Finset ι) (w₁ w₂ : ι → k) (hw₁ : ∑ i in s₁, w₁ i = 1)
-    (hw₂ : ∑ i in s₂, w₂ i = 1) (h : s₁.affineCombination k p w₁ = s₂.affineCombination k p w₂) :
+    (ha : AffineIndependent k p) (s₁ s₂ : Finset ι) (w₁ w₂ : ι → k) (hw₁ : ∑ i ∈ s₁, w₁ i = 1)
+    (hw₂ : ∑ i ∈ s₂, w₂ i = 1) (h : s₁.affineCombination k p w₁ = s₂.affineCombination k p w₂) :
     Set.indicator (↑s₁) w₁ = Set.indicator (↑s₂) w₂ :=
   (affineIndependent_iff_indicator_eq_of_affineCombination_eq k p).1 ha s₁ s₂ w₁ w₂ hw₁ hw₂ h
 #align affine_independent.indicator_eq_of_affine_combination_eq AffineIndependent.indicator_eq_of_affineCombination_eq
@@ -294,7 +294,7 @@ theorem AffineIndependent.comp_embedding {ι2 : Type*} (f : ι2 ↪ ι) {p : ι 
       have h : ∃ i : ι2, f i = f i2 := ⟨i2, rfl⟩
       have hs : h.choose = i2 := f.injective h.choose_spec
       simp_rw [w', dif_pos h, hs]
-    have hw's : ∑ i in fs', w' i = 0 := by
+    have hw's : ∑ i ∈ fs', w' i = 0 := by
       rw [← hw, Finset.sum_map]
       simp [hw']
     have hs' : fs'.weightedVSub p w' = (0 : V) := by
@@ -420,7 +420,7 @@ theorem AffineIndependent.exists_mem_inter_of_exists_mem_inter_affineSpan [Nontr
   rcases hp0s2 with ⟨fs2, hfs2, w2, hw2, hp0s2⟩
   rw [affineIndependent_iff_indicator_eq_of_affineCombination_eq] at ha
   replace ha := ha fs1 fs2 w1 w2 hw1 hw2 (hp0s1 ▸ hp0s2)
-  have hnz : ∑ i in fs1, w1 i ≠ 0 := hw1.symm ▸ one_ne_zero
+  have hnz : ∑ i ∈ fs1, w1 i ≠ 0 := hw1.symm ▸ one_ne_zero
   rcases Finset.exists_ne_zero_of_sum_ne_zero hnz with ⟨i, hifs1, hinz⟩
   simp_rw [← Set.indicator_of_mem (Finset.mem_coe.2 hifs1) w1, ha] at hinz
   use i, hfs1 hifs1
@@ -464,7 +464,7 @@ theorem AffineIndependent.not_mem_affineSpan_diff [Nontrivial k] {p : ι → P}
 
 theorem exists_nontrivial_relation_sum_zero_of_not_affine_ind {t : Finset V}
     (h : ¬AffineIndependent k ((↑) : t → V)) :
-    ∃ f : V → k, ∑ e in t, f e • e = 0 ∧ ∑ e in t, f e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
+    ∃ f : V → k, ∑ e ∈ t, f e • e = 0 ∧ ∑ e ∈ t, f e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
   classical
     rw [affineIndependent_iff_of_fintype] at h
     simp only [exists_prop, not_forall] at h
@@ -474,7 +474,7 @@ theorem exists_nontrivial_relation_sum_zero_of_not_affine_ind {t : Finset V}
     let f : ∀ x : V, x ∈ t → k := fun x hx => w ⟨x, hx⟩
     refine ⟨fun x => if hx : x ∈ t then f x hx else (0 : k), ?_, ?_, by use i; simp [hi]⟩
     on_goal 1 =>
-      suffices (∑ e : V in t, dite (e ∈ t) (fun hx => f e hx • e) fun _ => 0) = 0 by
+      suffices (∑ e ∈ t, dite (e ∈ t) (fun hx => f e hx • e) fun _ => 0) = 0 by
         convert this
         rename V => x
         by_cases hx : x ∈ t <;> simp [hx]
@@ -488,29 +488,29 @@ variable {s : Finset ι} {w w₁ w₂ : ι → k} {p : ι → V}
 in terms of linear combinations. -/
 theorem affineIndependent_iff {ι} {p : ι → V} :
     AffineIndependent k p ↔
-      ∀ (s : Finset ι) (w : ι → k), s.sum w = 0 → ∑ e in s, w e • p e = 0 → ∀ e ∈ s, w e = 0 :=
+      ∀ (s : Finset ι) (w : ι → k), s.sum w = 0 → ∑ e ∈ s, w e • p e = 0 → ∀ e ∈ s, w e = 0 :=
   forall₃_congr fun s w hw => by simp [s.weightedVSub_eq_linear_combination hw]
 #align affine_independent_iff affineIndependent_iff
 
 lemma AffineIndependent.eq_zero_of_sum_eq_zero (hp : AffineIndependent k p)
-    (hw₀ : ∑ i in s, w i = 0) (hw₁ : ∑ i in s, w i • p i = 0) : ∀ i ∈ s, w i = 0 :=
+    (hw₀ : ∑ i ∈ s, w i = 0) (hw₁ : ∑ i ∈ s, w i • p i = 0) : ∀ i ∈ s, w i = 0 :=
   affineIndependent_iff.1 hp _ _ hw₀ hw₁
 
 lemma AffineIndependent.eq_of_sum_eq_sum (hp : AffineIndependent k p)
-    (hw : ∑ i in s, w₁ i = ∑ i in s, w₂ i) (hwp : ∑ i in s, w₁ i • p i = ∑ i in s, w₂ i • p i) :
+    (hw : ∑ i ∈ s, w₁ i = ∑ i ∈ s, w₂ i) (hwp : ∑ i ∈ s, w₁ i • p i = ∑ i ∈ s, w₂ i • p i) :
     ∀ i ∈ s, w₁ i = w₂ i := by
   refine fun i hi ↦ sub_eq_zero.1 (hp.eq_zero_of_sum_eq_zero (w := w₁ - w₂) ?_ ?_ _ hi) <;>
     simpa [sub_mul, sub_smul, sub_eq_zero]
 
 lemma AffineIndependent.eq_zero_of_sum_eq_zero_subtype {s : Finset V}
-    (hp : AffineIndependent k ((↑) : s → V)) {w : V → k} (hw₀ : ∑ x in s, w x = 0)
-    (hw₁ : ∑ x in s, w x • x = 0) : ∀ x ∈ s, w x = 0 := by
+    (hp : AffineIndependent k ((↑) : s → V)) {w : V → k} (hw₀ : ∑ x ∈ s, w x = 0)
+    (hw₁ : ∑ x ∈ s, w x • x = 0) : ∀ x ∈ s, w x = 0 := by
   rw [← sum_attach] at hw₀ hw₁
   exact fun x hx ↦ hp.eq_zero_of_sum_eq_zero hw₀ hw₁ ⟨x, hx⟩ (mem_univ _)
 
 lemma AffineIndependent.eq_of_sum_eq_sum_subtype {s : Finset V}
-    (hp : AffineIndependent k ((↑) : s → V)) {w₁ w₂ : V → k} (hw : ∑ i in s, w₁ i = ∑ i in s, w₂ i)
-    (hwp : ∑ i in s, w₁ i • i = ∑ i in s, w₂ i • i) : ∀ i ∈ s, w₁ i = w₂ i := by
+    (hp : AffineIndependent k ((↑) : s → V)) {w₁ w₂ : V → k} (hw : ∑ i ∈ s, w₁ i = ∑ i ∈ s, w₂ i)
+    (hwp : ∑ i ∈ s, w₁ i • i = ∑ i ∈ s, w₂ i • i) : ∀ i ∈ s, w₁ i = w₂ i := by
   refine fun i hi => sub_eq_zero.1 (hp.eq_zero_of_sum_eq_zero_subtype (w := w₁ - w₂) ?_ ?_ _ hi) <;>
     simpa [sub_mul, sub_smul, sub_eq_zero]
 
@@ -518,8 +518,8 @@ lemma AffineIndependent.eq_of_sum_eq_sum_subtype {s : Finset V}
 `vectorSpan` of two points given as affine combinations if and only if it is a weighted
 subtraction with weights a multiple of the difference between the weights of the two points. -/
 theorem weightedVSub_mem_vectorSpan_pair {p : ι → P} (h : AffineIndependent k p) {w w₁ w₂ : ι → k}
-    {s : Finset ι} (hw : ∑ i in s, w i = 0) (hw₁ : ∑ i in s, w₁ i = 1)
-    (hw₂ : ∑ i in s, w₂ i = 1) :
+    {s : Finset ι} (hw : ∑ i ∈ s, w i = 0) (hw₁ : ∑ i ∈ s, w₁ i = 1)
+    (hw₂ : ∑ i ∈ s, w₂ i = 1) :
     s.weightedVSub p w ∈
         vectorSpan k ({s.affineCombination k p w₁, s.affineCombination k p w₂} : Set P) ↔
       ∃ r : k, ∀ i ∈ s, w i = r * (w₁ i - w₂ i) := by
@@ -528,7 +528,7 @@ theorem weightedVSub_mem_vectorSpan_pair {p : ι → P} (h : AffineIndependent k
   · rcases h with ⟨r, hr⟩
     refine ⟨r, fun i hi => ?_⟩
     rw [s.affineCombination_vsub, ← s.weightedVSub_const_smul, ← sub_eq_zero, ← map_sub] at hr
-    have hw' : (∑ j in s, (r • (w₁ - w₂) - w) j) = 0 := by
+    have hw' : (∑ j ∈ s, (r • (w₁ - w₂) - w) j) = 0 := by
       simp_rw [Pi.sub_apply, Pi.smul_apply, Pi.sub_apply, smul_sub, Finset.sum_sub_distrib, ←
         Finset.smul_sum, hw, hw₁, hw₂, sub_self]
     have hr' := h s _ hw' hr i hi
@@ -548,8 +548,8 @@ span of two points given as affine combinations if and only if it is an affine c
 with weights those of one point plus a multiple of the difference between the weights of the
 two points. -/
 theorem affineCombination_mem_affineSpan_pair {p : ι → P} (h : AffineIndependent k p)
-    {w w₁ w₂ : ι → k} {s : Finset ι} (_ : ∑ i in s, w i = 1) (hw₁ : ∑ i in s, w₁ i = 1)
-    (hw₂ : ∑ i in s, w₂ i = 1) :
+    {w w₁ w₂ : ι → k} {s : Finset ι} (_ : ∑ i ∈ s, w i = 1) (hw₁ : ∑ i ∈ s, w₁ i = 1)
+    (hw₂ : ∑ i ∈ s, w₂ i = 1) :
     s.affineCombination k p w ∈ line[k, s.affineCombination k p w₁, s.affineCombination k p w₂] ↔
       ∃ r : k, ∀ i ∈ s, w i = r * (w₂ i - w₁ i) + w₁ i := by
   rw [← vsub_vadd (s.affineCombination k p w) (s.affineCombination k p w₁),
@@ -662,10 +662,10 @@ theorem AffineIndependent.affineIndependent_of_not_mem_span {p : ι → P} {i : 
     · refine False.elim (hi ?_)
       let wm : ι → k := -(w i)⁻¹ • w
       have hms : s.weightedVSub p wm = (0 : V) := by simp [wm, hs]
-      have hwm : ∑ i in s, wm i = 0 := by simp [wm, ← Finset.mul_sum, hw]
+      have hwm : ∑ i ∈ s, wm i = 0 := by simp [wm, ← Finset.mul_sum, hw]
       have hwmi : wm i = -1 := by simp [wm, his.2]
       let w' : { y // y ≠ i } → k := fun x => wm x
-      have hw' : ∑ x in s', w' x = 1 := by
+      have hw' : ∑ x ∈ s', w' x = 1 := by
         simp_rw [w', s', Finset.sum_subtype_eq_sum_filter]
         rw [← s.sum_filter_add_sum_filter_not (· ≠ i)] at hwm
         simp_rw [Classical.not_not] at hwm
@@ -679,7 +679,7 @@ theorem AffineIndependent.affineIndependent_of_not_mem_span {p : ι → P} {i : 
       exact affineCombination_mem_affineSpan hw' p'
     · rw [not_and_or, Classical.not_not] at his
       let w' : { y // y ≠ i } → k := fun x => w x
-      have hw' : ∑ x in s', w' x = 0 := by
+      have hw' : ∑ x ∈ s', w' x = 0 := by
         simp_rw [w', s', Finset.sum_subtype_eq_sum_filter]
         rw [Finset.sum_filter_of_ne, hw]
         rintro x hxs hwx rfl
@@ -751,8 +751,8 @@ coefficients in the first point in the span are zero and those in the second poi
 have the same sign. Then the coefficients in the combination lying in the span have the same
 sign. -/
 theorem sign_eq_of_affineCombination_mem_affineSpan_pair {p : ι → P} (h : AffineIndependent k p)
-    {w w₁ w₂ : ι → k} {s : Finset ι} (hw : ∑ i in s, w i = 1) (hw₁ : ∑ i in s, w₁ i = 1)
-    (hw₂ : ∑ i in s, w₂ i = 1)
+    {w w₁ w₂ : ι → k} {s : Finset ι} (hw : ∑ i ∈ s, w i = 1) (hw₁ : ∑ i ∈ s, w₁ i = 1)
+    (hw₂ : ∑ i ∈ s, w₂ i = 1)
     (hs :
       s.affineCombination k p w ∈ line[k, s.affineCombination k p w₁, s.affineCombination k p w₂])
     {i j : ι} (hi : i ∈ s) (hj : j ∈ s) (hi0 : w₁ i = 0) (hj0 : w₁ j = 0)
@@ -768,7 +768,7 @@ the span of one point of that family and a combination of another two points of 
 by `lineMap` with coefficient between 0 and 1. Then the coefficients of those two points in the
 combination lying in the span have the same sign. -/
 theorem sign_eq_of_affineCombination_mem_affineSpan_single_lineMap {p : ι → P}
-    (h : AffineIndependent k p) {w : ι → k} {s : Finset ι} (hw : ∑ i in s, w i = 1) {i₁ i₂ i₃ : ι}
+    (h : AffineIndependent k p) {w : ι → k} {s : Finset ι} (hw : ∑ i ∈ s, w i = 1) {i₁ i₂ i₃ : ι}
     (h₁ : i₁ ∈ s) (h₂ : i₂ ∈ s) (h₃ : i₃ ∈ s) (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃)
     {c : k} (hc0 : 0 < c) (hc1 : c < 1)
     (hs : s.affineCombination k p w ∈ line[k, p i₁, AffineMap.lineMap (p i₂) (p i₃) c]) :

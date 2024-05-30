@@ -63,7 +63,7 @@ Schwartz space, tempered distributions
 
 noncomputable section
 
-open scoped BigOperators Nat NNReal
+open scoped Nat NNReal
 
 variable {𝕜 𝕜' D E F G V : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -540,7 +540,7 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
   have hk' : Finset.range (k + 1) ⊆ Finset.range (m.1 + 1) := by
     rwa [Finset.range_subset, add_le_add_iff_right]
   refine le_trans (Finset.sum_le_sum_of_subset_of_nonneg hk' fun _ _ _ => by positivity) ?_
-  gcongr ∑ _i in Finset.range (m.1 + 1), ?_ with i hi
+  gcongr ∑ _i ∈ Finset.range (m.1 + 1), ?_ with i hi
   move_mul [(Nat.choose k i : ℝ), (Nat.choose m.1 i : ℝ)]
   gcongr
   · apply (le_seminorm 𝕜 i n f x).trans
@@ -877,7 +877,7 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
       simp_rw [mul_assoc ‖B‖]
       gcongr _ * ?_
       rw [Finset.mul_sum]
-      have : (∑ _x : ℕ in Finset.range (n + 1), (1 : ℝ)) = n + 1 := by simp
+      have : (∑ _x ∈ Finset.range (n + 1), (1 : ℝ)) = n + 1 := by simp
       simp_rw [mul_assoc ((n : ℝ) + 1)]
       rw [← this, Finset.sum_mul]
       refine' Finset.sum_le_sum fun i hi => _
