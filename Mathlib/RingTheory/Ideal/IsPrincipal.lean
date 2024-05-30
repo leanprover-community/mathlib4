@@ -30,7 +30,7 @@ variable {R : Type*} [CommRing R]
 
 namespace Ideal
 
-open Submodule
+open Submodule Associates
 
 open scoped nonZeroDivisors
 
@@ -68,36 +68,34 @@ noncomputable def associatesEquivIsPrincipal :
     Associates R ≃ {I : Ideal R // IsPrincipal I} where
   toFun := Quotient.lift (fun x ↦ ⟨span {x}, x, rfl⟩)
     (fun _ _ _ ↦ by simpa [span_singleton_eq_span_singleton])
-  invFun I := Associates.mk I.2.generator
+  invFun I := .mk I.2.generator
   left_inv := Quotient.ind fun _ ↦ by simpa using
     Ideal.span_singleton_eq_span_singleton.mp (@Ideal.span_singleton_generator _ _ _ ⟨_, rfl⟩)
   right_inv I := by simp only [Quotient.lift_mk, span_singleton_generator, Subtype.coe_eta]
 
 @[simp]
 theorem associatesEquivIsPrincipal_apply (x : R) :
-    associatesEquivIsPrincipal R (Associates.mk x) = span {x} := rfl
+    associatesEquivIsPrincipal R (.mk x) = span {x} := rfl
 
 @[simp]
 theorem associatesEquivIsPrincipal_symm_apply {I : Ideal R} (hI : IsPrincipal I) :
-    (associatesEquivIsPrincipal R).symm ⟨I, hI⟩ = Associates.mk hI.generator := rfl
+    (associatesEquivIsPrincipal R).symm ⟨I, hI⟩ = .mk hI.generator := rfl
 
 theorem associatesEquivIsPrincipal_mul (x y : Associates R) :
     (associatesEquivIsPrincipal R (x * y) : Ideal R) =
       (associatesEquivIsPrincipal R x) * (associatesEquivIsPrincipal R y) := by
-  rw [← Associates.quot_out x, ← Associates.quot_out y]
-  simp_rw [Associates.mk_mul_mk, ← Associates.quotient_mk_eq_mk, associatesEquivIsPrincipal_apply,
-    span_singleton_mul_span_singleton]
+  rw [← quot_out x, ← quot_out y]
+  simp_rw [mk_mul_mk, associatesEquivIsPrincipal_apply, span_singleton_mul_span_singleton]
 
 @[simp]
 theorem associatesEquivIsPrincipal_map_zero :
     (associatesEquivIsPrincipal R 0 : Ideal R) = 0 := by
-  rw [← Associates.mk_zero, associatesEquivIsPrincipal_apply, Submodule.zero_eq_bot,
-    span_singleton_eq_bot]
+  rw [← mk_zero, associatesEquivIsPrincipal_apply, Submodule.zero_eq_bot, span_singleton_eq_bot]
 
 @[simp]
 theorem associatesEquivIsPrincipal_map_one :
     (associatesEquivIsPrincipal R 1 : Ideal R) = 1 := by
-  rw [Associates.one_eq_mk_one, associatesEquivIsPrincipal_apply, span_singleton_one, one_eq_top]
+  rw [one_eq_mk_one, associatesEquivIsPrincipal_apply, span_singleton_one, one_eq_top]
 
 variable (R) in
 /-- The `MulEquiv` version of `Ideal.associatesEquivIsPrincipal`. -/
@@ -115,8 +113,8 @@ noncomputable def associatesNonZeroDivisorsEquivIsPrincipal :
   calc Associates R⁰ ≃ (Associates R)⁰ := associatesNonZeroDivisorsEquiv.toEquiv.symm
     _ ≃ {I : {I : Ideal R // IsPrincipal I} // I.1 ∈ (Ideal R)⁰} :=
       Equiv.subtypeEquiv (associatesEquivIsPrincipal R)
-        (fun x ↦ by rw [← Associates.quot_out x, mk_mem_nonZeroDivisors_associates,
-          ← span_singleton_nonZeroDivisors, associatesEquivIsPrincipal_apply])
+        (fun x ↦ by rw [← quot_out x, mk_mem_nonZeroDivisors_associates,
+          associatesEquivIsPrincipal_apply, span_singleton_nonZeroDivisors])
     _ ≃ {I : Ideal R // IsPrincipal I ∧ I ∈ (Ideal R)⁰} :=
       Equiv.subtypeSubtypeEquivSubtypeInter (fun I ↦ IsPrincipal I) (fun I ↦ I ∈ (Ideal R)⁰)
     _ ≃ {I : Ideal R // I ∈ (Ideal R)⁰ ∧ IsPrincipal I} := Equiv.setCongr (by simp_rw [and_comm])
@@ -124,7 +122,7 @@ noncomputable def associatesNonZeroDivisorsEquivIsPrincipal :
 
 @[simp]
 theorem associatesNonZeroDivisorsEquivIsPrincipal_apply (x : R⁰) :
-    associatesNonZeroDivisorsEquivIsPrincipal R (Associates.mk x) = Ideal.span {(x : R)} := rfl
+    associatesNonZeroDivisorsEquivIsPrincipal R (.mk x) = Ideal.span {(x : R)} := rfl
 
 theorem associatesNonZeroDivisorsEquivIsPrincipal_coe (x : Associates R⁰) :
     (associatesNonZeroDivisorsEquivIsPrincipal R x : Ideal R) =
