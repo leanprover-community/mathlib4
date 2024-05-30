@@ -3,9 +3,10 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Algebra.Order.Interval.Finset
 import Mathlib.Combinatorics.Additive.FreimanHom
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Order.Interval.Finset.Fin
 
 #align_import combinatorics.additive.salem_spencer from "leanprover-community/mathlib"@"acf5258c81d0bc7cb254ed026c1352e685df306c"
 
@@ -297,7 +298,7 @@ The usual Roth number corresponds to `addRothNumber (Finset.range n)`, see `roth
 def mulRothNumber : Finset α →o ℕ :=
   ⟨fun s ↦ Nat.findGreatest (fun m ↦ ∃ t ⊆ s, t.card = m ∧ ThreeGPFree (t : Set α)) s.card, by
     rintro t u htu
-    refine' Nat.findGreatest_mono (fun m => _) (card_le_card htu)
+    refine Nat.findGreatest_mono (fun m => ?_) (card_le_card htu)
     rintro ⟨v, hvt, hv⟩
     exact ⟨v, hvt.trans htu, hv⟩⟩
 #align mul_roth_number mulRothNumber
@@ -510,5 +511,19 @@ theorem addRothNumber_Ico (a b : ℕ) : addRothNumber (Ico a b) = rothNumberNat 
   convert (image_add_left_Ico 0 (b - a) _).symm
   exact (add_tsub_cancel_of_le h).symm
 #align add_roth_number_Ico addRothNumber_Ico
+
+lemma Fin.addRothNumber_eq_rothNumberNat (hkn : 2 * k ≤ n) :
+    addRothNumber (Iio k : Finset (Fin n.succ)) = rothNumberNat k :=
+  IsAddFreimanIso.addRothNumber_congr $ mod_cast isAddFreimanIso_Iio two_ne_zero hkn
+
+lemma Fin.addRothNumber_le_rothNumberNat (k n : ℕ) (hkn : k ≤ n) :
+    addRothNumber (Iio k : Finset (Fin n.succ)) ≤ rothNumberNat k := by
+  suffices h : Set.BijOn (Nat.cast : ℕ → Fin n.succ) (range k) (Iio k : Finset (Fin n.succ)) by
+    exact (AddMonoidHomClass.isAddFreimanHom (Nat.castRingHom _) h.mapsTo).addRothNumber_mono h
+  refine ⟨?_, (CharP.natCast_injOn_Iio _ n.succ).mono (by simp; omega), ?_⟩
+  · simpa using fun x ↦ natCast_strictMono hkn
+  simp only [Set.SurjOn, coe_Iio, Set.subset_def, Set.mem_Iio, Set.mem_image, lt_iff_val_lt_val,
+    val_cast_of_lt, Nat.lt_succ_iff.2 hkn, coe_range]
+  exact fun x hx ↦ ⟨x, hx, by simp⟩
 
 end rothNumberNat

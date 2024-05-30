@@ -31,7 +31,7 @@ open Filter ENNReal
 open Function (support)
 
 open scoped Classical
-open Topology BigOperators NNReal ENNReal MeasureTheory
+open Topology NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
 
@@ -207,12 +207,12 @@ protected theorem aemeasurable [MeasurableSpace β] {μ : Measure α} (f : α �
 #align measure_theory.simple_func.ae_measurable MeasureTheory.SimpleFunc.aemeasurable
 
 protected theorem sum_measure_preimage_singleton (f : α →ₛ β) {μ : Measure α} (s : Finset β) :
-    (∑ y in s, μ (f ⁻¹' {y})) = μ (f ⁻¹' ↑s) :=
+    (∑ y ∈ s, μ (f ⁻¹' {y})) = μ (f ⁻¹' ↑s) :=
   sum_measure_preimage_singleton _ fun _ _ => f.measurableSet_fiber _
 #align measure_theory.simple_func.sum_measure_preimage_singleton MeasureTheory.SimpleFunc.sum_measure_preimage_singleton
 
 theorem sum_range_measure_preimage_singleton (f : α →ₛ β) (μ : Measure α) :
-    (∑ y in f.range, μ (f ⁻¹' {y})) = μ univ := by
+    (∑ y ∈ f.range, μ (f ⁻¹' {y})) = μ univ := by
   rw [f.sum_measure_preimage_singleton, coe_range, preimage_range]
 #align measure_theory.simple_func.sum_range_measure_preimage_singleton MeasureTheory.SimpleFunc.sum_range_measure_preimage_singleton
 
@@ -934,7 +934,7 @@ def eapproxDiff (f : α → ℝ≥0∞) : ℕ → α →ₛ ℝ≥0
 #align measure_theory.simple_func.eapprox_diff MeasureTheory.SimpleFunc.eapproxDiff
 
 theorem sum_eapproxDiff (f : α → ℝ≥0∞) (n : ℕ) (a : α) :
-    (∑ k in Finset.range (n + 1), (eapproxDiff f k a : ℝ≥0∞)) = eapprox f n a := by
+    (∑ k ∈ Finset.range (n + 1), (eapproxDiff f k a : ℝ≥0∞)) = eapprox f n a := by
   induction' n with n IH
   · simp only [Nat.zero_eq, Nat.zero_add, Finset.sum_singleton, Finset.range_one]
     rfl
@@ -962,12 +962,12 @@ variable {m : MeasurableSpace α} {μ ν : Measure α}
 
 /-- Integral of a simple function whose codomain is `ℝ≥0∞`. -/
 def lintegral {_m : MeasurableSpace α} (f : α →ₛ ℝ≥0∞) (μ : Measure α) : ℝ≥0∞ :=
-  ∑ x in f.range, x * μ (f ⁻¹' {x})
+  ∑ x ∈ f.range, x * μ (f ⁻¹' {x})
 #align measure_theory.simple_func.lintegral MeasureTheory.SimpleFunc.lintegral
 
 theorem lintegral_eq_of_subset (f : α →ₛ ℝ≥0∞) {s : Finset ℝ≥0∞}
     (hs : ∀ x, f x ≠ 0 → μ (f ⁻¹' {f x}) ≠ 0 → f x ∈ s) :
-    f.lintegral μ = ∑ x in s, x * μ (f ⁻¹' {x}) := by
+    f.lintegral μ = ∑ x ∈ s, x * μ (f ⁻¹' {x}) := by
   refine Finset.sum_bij_ne_zero (fun r _ _ => r) ?_ ?_ ?_ ?_
   · simpa only [forall_mem_range, mul_ne_zero_iff, and_imp]
   · intros
@@ -981,14 +981,14 @@ theorem lintegral_eq_of_subset (f : α →ₛ ℝ≥0∞) {s : Finset ℝ≥0∞
 #align measure_theory.simple_func.lintegral_eq_of_subset MeasureTheory.SimpleFunc.lintegral_eq_of_subset
 
 theorem lintegral_eq_of_subset' (f : α →ₛ ℝ≥0∞) {s : Finset ℝ≥0∞} (hs : f.range \ {0} ⊆ s) :
-    f.lintegral μ = ∑ x in s, x * μ (f ⁻¹' {x}) :=
+    f.lintegral μ = ∑ x ∈ s, x * μ (f ⁻¹' {x}) :=
   f.lintegral_eq_of_subset fun x hfx _ =>
     hs <| Finset.mem_sdiff.2 ⟨f.mem_range_self x, mt Finset.mem_singleton.1 hfx⟩
 #align measure_theory.simple_func.lintegral_eq_of_subset' MeasureTheory.SimpleFunc.lintegral_eq_of_subset'
 
 /-- Calculate the integral of `(g ∘ f)`, where `g : β → ℝ≥0∞` and `f : α →ₛ β`.  -/
 theorem map_lintegral (g : β → ℝ≥0∞) (f : α →ₛ β) :
-    (f.map g).lintegral μ = ∑ x in f.range, g x * μ (f ⁻¹' {x}) := by
+    (f.map g).lintegral μ = ∑ x ∈ f.range, g x * μ (f ⁻¹' {x}) := by
   simp only [lintegral, range_map]
   refine Finset.sum_image' _ fun b hb => ?_
   rcases mem_range.1 hb with ⟨a, rfl⟩
@@ -1004,10 +1004,10 @@ theorem map_lintegral (g : β → ℝ≥0∞) (f : α →ₛ β) :
 theorem add_lintegral (f g : α →ₛ ℝ≥0∞) : (f + g).lintegral μ = f.lintegral μ + g.lintegral μ :=
   calc
     (f + g).lintegral μ =
-        ∑ x in (pair f g).range, (x.1 * μ (pair f g ⁻¹' {x}) + x.2 * μ (pair f g ⁻¹' {x})) :=
+        ∑ x ∈ (pair f g).range, (x.1 * μ (pair f g ⁻¹' {x}) + x.2 * μ (pair f g ⁻¹' {x})) :=
       by rw [add_eq_map₂, map_lintegral]; exact Finset.sum_congr rfl fun a _ => add_mul _ _ _
-    _ = (∑ x in (pair f g).range, x.1 * μ (pair f g ⁻¹' {x})) +
-          ∑ x in (pair f g).range, x.2 * μ (pair f g ⁻¹' {x}) :=
+    _ = (∑ x ∈ (pair f g).range, x.1 * μ (pair f g ⁻¹' {x})) +
+          ∑ x ∈ (pair f g).range, x.2 * μ (pair f g ⁻¹' {x}) :=
       by rw [Finset.sum_add_distrib]
     _ = ((pair f g).map Prod.fst).lintegral μ + ((pair f g).map Prod.snd).lintegral μ := by
       rw [map_lintegral, map_lintegral]
@@ -1017,8 +1017,8 @@ theorem add_lintegral (f g : α →ₛ ℝ≥0∞) : (f + g).lintegral μ = f.li
 theorem const_mul_lintegral (f : α →ₛ ℝ≥0∞) (x : ℝ≥0∞) :
     (const α x * f).lintegral μ = x * f.lintegral μ :=
   calc
-    (f.map fun a => x * a).lintegral μ = ∑ r in f.range, x * r * μ (f ⁻¹' {r}) := map_lintegral _ _
-    _ = x * ∑ r in f.range, r * μ (f ⁻¹' {r}) := by simp_rw [Finset.mul_sum, mul_assoc]
+    (f.map fun a => x * a).lintegral μ = ∑ r ∈ f.range, x * r * μ (f ⁻¹' {r}) := map_lintegral _ _
+    _ = x * ∑ r ∈ f.range, r * μ (f ⁻¹' {r}) := by simp_rw [Finset.mul_sum, mul_assoc]
 #align measure_theory.simple_func.const_mul_lintegral MeasureTheory.SimpleFunc.const_mul_lintegral
 
 /-- Integral of a simple function `α →ₛ ℝ≥0∞` as a bilinear map. -/
@@ -1058,14 +1058,14 @@ theorem lintegral_sum {m : MeasurableSpace α} {ι} (f : α →ₛ ℝ≥0∞) (
 #align measure_theory.simple_func.lintegral_sum MeasureTheory.SimpleFunc.lintegral_sum
 
 theorem restrict_lintegral (f : α →ₛ ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
-    (restrict f s).lintegral μ = ∑ r in f.range, r * μ (f ⁻¹' {r} ∩ s) :=
+    (restrict f s).lintegral μ = ∑ r ∈ f.range, r * μ (f ⁻¹' {r} ∩ s) :=
   calc
-    (restrict f s).lintegral μ = ∑ r in f.range, r * μ (restrict f s ⁻¹' {r}) :=
+    (restrict f s).lintegral μ = ∑ r ∈ f.range, r * μ (restrict f s ⁻¹' {r}) :=
       lintegral_eq_of_subset _ fun x hx =>
         if hxs : x ∈ s then fun _ => by
           simp only [f.restrict_apply hs, indicator_of_mem hxs, mem_range_self]
         else False.elim <| hx <| by simp [*]
-    _ = ∑ r in f.range, r * μ (f ⁻¹' {r} ∩ s) :=
+    _ = ∑ r ∈ f.range, r * μ (f ⁻¹' {r} ∩ s) :=
       Finset.sum_congr rfl <|
         forall_mem_range.2 fun b =>
           if hb : f b = 0 then by simp only [hb, zero_mul]
@@ -1073,7 +1073,7 @@ theorem restrict_lintegral (f : α →ₛ ℝ≥0∞) {s : Set α} (hs : Measura
 #align measure_theory.simple_func.restrict_lintegral MeasureTheory.SimpleFunc.restrict_lintegral
 
 theorem lintegral_restrict {m : MeasurableSpace α} (f : α →ₛ ℝ≥0∞) (s : Set α) (μ : Measure α) :
-    f.lintegral (μ.restrict s) = ∑ y in f.range, y * μ (f ⁻¹' {y} ∩ s) := by
+    f.lintegral (μ.restrict s) = ∑ y ∈ f.range, y * μ (f ⁻¹' {y} ∩ s) := by
   simp only [lintegral, Measure.restrict_apply, f.measurableSet_preimage]
 #align measure_theory.simple_func.lintegral_restrict MeasureTheory.SimpleFunc.lintegral_restrict
 
@@ -1104,9 +1104,9 @@ theorem le_sup_lintegral (f g : α →ₛ ℝ≥0∞) : f.lintegral μ ⊔ g.lin
     f.lintegral μ ⊔ g.lintegral μ =
         ((pair f g).map Prod.fst).lintegral μ ⊔ ((pair f g).map Prod.snd).lintegral μ :=
       rfl
-    _ ≤ ∑ x in (pair f g).range, (x.1 ⊔ x.2) * μ (pair f g ⁻¹' {x}) := by
+    _ ≤ ∑ x ∈ (pair f g).range, (x.1 ⊔ x.2) * μ (pair f g ⁻¹' {x}) := by
       rw [map_lintegral, map_lintegral]
-      refine sup_le ?_ ?_ <;> refine' Finset.sum_le_sum fun a _ => mul_le_mul_right' _ _
+      refine sup_le ?_ ?_ <;> refine Finset.sum_le_sum fun a _ => mul_le_mul_right' ?_ _
       · exact le_sup_left
       · exact le_sup_right
     _ = (f ⊔ g).lintegral μ := by rw [sup_eq_map₂, map_lintegral]

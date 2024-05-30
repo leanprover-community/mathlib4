@@ -392,7 +392,7 @@ def toCycle (f : Perm α) (hf : IsCycle f) : Cycle α :=
     (fun x _ l => if f x = x then l else toList f x)
     (by
       intro x y _ s
-      refine' heq_of_eq _
+      refine heq_of_eq ?_
       split_ifs with hx hy hy <;> try rfl
       have hc : SameCycle f x y := IsCycle.sameCycle hf hx hy
       exact Quotient.sound' hc.toList_isRotated)
@@ -435,7 +435,7 @@ def isoCycle : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.
     apply Subtype.ext
     dsimp
     rw [toCycle_eq_toList _ _ x]
-    · refine' Quotient.sound' _
+    · refine Quotient.sound' ?_
       exact toList_formPerm_isRotated_self _ hl hn _ hx
     · rw [← mem_support, support_formPerm_of_nodup _ hn]
       · simpa using hx

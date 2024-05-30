@@ -40,7 +40,7 @@ The definitions of filtration and adapted can be found in `Probability.Process.S
 
 open TopologicalSpace Filter
 
-open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators
+open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
 
 namespace MeasureTheory
 
@@ -544,13 +544,13 @@ end Submartingale
 theorem Submartingale.sum_mul_sub [IsFiniteMeasure μ] {R : ℝ} {ξ f : ℕ → Ω → ℝ}
     (hf : Submartingale f 𝒢 μ) (hξ : Adapted 𝒢 ξ) (hbdd : ∀ n ω, ξ n ω ≤ R)
     (hnonneg : ∀ n ω, 0 ≤ ξ n ω) :
-    Submartingale (fun n => ∑ k in Finset.range n, ξ k * (f (k + 1) - f k)) 𝒢 μ := by
+    Submartingale (fun n => ∑ k ∈ Finset.range n, ξ k * (f (k + 1) - f k)) 𝒢 μ := by
   have hξbdd : ∀ i, ∃ C, ∀ ω, |ξ i ω| ≤ C := fun i =>
     ⟨R, fun ω => (abs_of_nonneg (hnonneg i ω)).trans_le (hbdd i ω)⟩
-  have hint : ∀ m, Integrable (∑ k in Finset.range m, ξ k * (f (k + 1) - f k)) μ := fun m =>
+  have hint : ∀ m, Integrable (∑ k ∈ Finset.range m, ξ k * (f (k + 1) - f k)) μ := fun m =>
     integrable_finset_sum' _ fun i _ => Integrable.bdd_mul ((hf.integrable _).sub (hf.integrable _))
       hξ.stronglyMeasurable.aestronglyMeasurable (hξbdd _)
-  have hadp : Adapted 𝒢 fun n => ∑ k in Finset.range n, ξ k * (f (k + 1) - f k) := by
+  have hadp : Adapted 𝒢 fun n => ∑ k ∈ Finset.range n, ξ k * (f (k + 1) - f k) := by
     intro m
     refine Finset.stronglyMeasurable_sum' _ fun i hi => ?_
     rw [Finset.mem_range] at hi
@@ -568,12 +568,12 @@ theorem Submartingale.sum_mul_sub [IsFiniteMeasure μ] {R : ℝ} {ξ f : ℕ →
 #align measure_theory.submartingale.sum_mul_sub MeasureTheory.Submartingale.sum_mul_sub
 
 /-- Given a discrete submartingale `f` and a predictable process `ξ` (i.e. `ξ (n + 1)` is adapted)
-the process defined by `fun n => ∑ k in Finset.range n, ξ (k + 1) * (f (k + 1) - f k)` is also a
+the process defined by `fun n => ∑ k ∈ Finset.range n, ξ (k + 1) * (f (k + 1) - f k)` is also a
 submartingale. -/
 theorem Submartingale.sum_mul_sub' [IsFiniteMeasure μ] {R : ℝ} {ξ f : ℕ → Ω → ℝ}
     (hf : Submartingale f 𝒢 μ) (hξ : Adapted 𝒢 fun n => ξ (n + 1)) (hbdd : ∀ n ω, ξ n ω ≤ R)
     (hnonneg : ∀ n ω, 0 ≤ ξ n ω) :
-    Submartingale (fun n => ∑ k in Finset.range n, ξ (k + 1) * (f (k + 1) - f k)) 𝒢 μ :=
+    Submartingale (fun n => ∑ k ∈ Finset.range n, ξ (k + 1) * (f (k + 1) - f k)) 𝒢 μ :=
   hf.sum_mul_sub hξ (fun _ => hbdd _) fun _ => hnonneg _
 #align measure_theory.submartingale.sum_mul_sub' MeasureTheory.Submartingale.sum_mul_sub'
 

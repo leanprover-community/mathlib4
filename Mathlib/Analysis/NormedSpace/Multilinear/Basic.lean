@@ -50,7 +50,7 @@ suppress_compilation
 
 noncomputable section
 
-open scoped BigOperators NNReal Topology Uniformity
+open scoped NNReal Topology Uniformity
 open Finset Metric Function Filter
 
 /-
@@ -165,7 +165,7 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
   have A :
     ∀ s : Finset ι,
       ‖f m₁ - f (s.piecewise m₂ m₁)‖ ≤
-        C * ∑ i in s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
+        C * ∑ i ∈ s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
     intro s
     induction' s using Finset.induction with i s his Hrec
     · simp
@@ -190,10 +190,10 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
             ‖f (s.piecewise m₂ m₁) - f ((insert i s).piecewise m₂ m₁)‖ := by
         rw [← dist_eq_norm, ← dist_eq_norm, ← dist_eq_norm]
         exact dist_triangle _ _ _
-      _ ≤ (C * ∑ i in s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖) +
+      _ ≤ (C * ∑ i ∈ s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖) +
             C * ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ :=
         (add_le_add Hrec I)
-      _ = C * ∑ i in insert i s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
+      _ = C * ∑ i ∈ insert i s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
         simp [his, add_comm, left_distrib]
   convert A univ
   simp
@@ -1444,7 +1444,7 @@ case from the multilinear case via a currying isomorphism. However, this would m
 and it is more satisfactory to have the simplest case as a standalone proof. -/
 instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearMap 𝕜 E G) := by
   -- We show that every Cauchy sequence converges.
-  refine' Metric.complete_of_cauchySeq_tendsto fun f hf => _
+  refine Metric.complete_of_cauchySeq_tendsto fun f hf => ?_
   -- We now expand out the definition of a Cauchy sequence,
   rcases cauchySeq_iff_le_tendsto_0.1 hf with ⟨b, b0, b_bound, b_lim⟩
   -- and establish that the evaluation at any point `v : Π i, E i` is Cauchy.
@@ -1500,7 +1500,7 @@ instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearM
     intro n
     apply opNorm_le_bound _ (b0 n) fun v => ?_
     have A : ∀ᶠ m in atTop, ‖(f n - f m) v‖ ≤ b n * ∏ i, ‖v i‖ := by
-      refine' eventually_atTop.2 ⟨n, fun m hm => _⟩
+      refine eventually_atTop.2 ⟨n, fun m hm => ?_⟩
       apply le_trans ((f n - f m).le_opNorm _) _
       exact mul_le_mul_of_nonneg_right (b_bound n m n le_rfl hm) <| by positivity
     have B : Tendsto (fun m => ‖(f n - f m) v‖) atTop (𝓝 ‖(f n - Fcont) v‖) :=

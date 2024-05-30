@@ -113,7 +113,7 @@ lemma rnDeriv_withDensity_withDensity_rnDeriv_right (μ ν : Measure α) [SigmaF
     (hf_ne_top : ∀ᵐ x ∂ν, f x ≠ ∞) :
     (ν.withDensity (μ.rnDeriv ν)).rnDeriv (ν.withDensity f) =ᵐ[ν] μ.rnDeriv (ν.withDensity f) := by
   conv_rhs => rw [μ.haveLebesgueDecomposition_add ν, add_comm]
-  have hν_ac : ν ≪ ν.withDensity f := withDensity_absolutelyContinuous' hf hf_ne_zero hf_ne_top
+  have hν_ac : ν ≪ ν.withDensity f := withDensity_absolutelyContinuous' hf hf_ne_zero
   refine hν_ac.ae_eq ?_
   have : SigmaFinite (ν.withDensity f) := SigmaFinite.withDensity_of_ne_top hf hf_ne_top
   refine (rnDeriv_add_of_mutuallySingular _ _ _ ?_).symm
@@ -155,7 +155,7 @@ lemma rnDeriv_withDensity_right_of_absolutelyContinuous {ν : Measure α} [Sigma
     (hf_ne_zero : ∀ᵐ x ∂ν, f x ≠ 0) (hf_ne_top : ∀ᵐ x ∂ν, f x ≠ ∞) :
     μ.rnDeriv (ν.withDensity f) =ᵐ[ν] fun x ↦ (f x)⁻¹ * μ.rnDeriv ν x := by
   have : SigmaFinite (ν.withDensity f) := SigmaFinite.withDensity_of_ne_top hf hf_ne_top
-  refine (withDensity_absolutelyContinuous' hf hf_ne_zero hf_ne_top).ae_eq ?_
+  refine (withDensity_absolutelyContinuous' hf hf_ne_zero).ae_eq ?_
   refine (Measure.eq_rnDeriv₀ (ν := ν.withDensity f) ?_ Measure.MutuallySingular.zero_left ?_).symm
   · exact (hf.inv.mono_ac (withDensity_absolutelyContinuous _ _)).mul
       (Measure.measurable_rnDeriv _ _).aemeasurable
@@ -426,7 +426,7 @@ theorem withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α) [Sigm
     all_goals
       rw [← integrableOn_univ]
       refine IntegrableOn.restrict ?_ MeasurableSet.univ
-      refine' ⟨_, hasFiniteIntegral_toReal_of_lintegral_ne_top _⟩
+      refine ⟨?_, hasFiniteIntegral_toReal_of_lintegral_ne_top ?_⟩
       · apply Measurable.aestronglyMeasurable
         measurability
       · rw [set_lintegral_univ]

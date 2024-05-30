@@ -31,7 +31,7 @@ If `τ` is a bounded stopping time and `σ` is another stopping time, then the v
 -/
 
 
-open scoped MeasureTheory BigOperators ENNReal
+open scoped MeasureTheory ENNReal
 
 open TopologicalSpace
 

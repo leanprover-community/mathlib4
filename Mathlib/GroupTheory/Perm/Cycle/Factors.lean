@@ -21,8 +21,6 @@ Let `β` be a `Fintype` and `f : Equiv.Perm β`.
 
 open Equiv Function Finset
 
-open BigOperators
-
 variable {ι α β : Type*}
 
 namespace Equiv.Perm

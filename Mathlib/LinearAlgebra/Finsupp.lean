@@ -47,7 +47,6 @@ function with finite support, module, linear algebra
 noncomputable section
 
 open Set LinearMap Submodule
-open BigOperators
 
 namespace Finsupp
 
@@ -297,7 +296,7 @@ def supported (s : Set α) : Submodule R (α →₀ M) where
   carrier := { p | ↑p.support ⊆ s }
   add_mem' {p q} hp hq := by
     classical
-    refine' Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) _) (union_subset hp hq)
+    refine Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) ?_) (union_subset hp hq)
     rw [Finset.coe_union]
   zero_mem' := by
     simp only [subset_def, Finset.mem_coe, Set.mem_setOf_eq, mem_support_iff, zero_apply]
@@ -1304,7 +1303,7 @@ theorem Submodule.mem_sSup_iff_exists_finset {S : Set (Submodule R M)} {m : M} :
     simpa only [Finset.mem_preimage, iSup_subtype, iSup_and', this]
 
 theorem mem_span_finset {s : Finset M} {x : M} :
-    x ∈ span R (↑s : Set M) ↔ ∃ f : M → R, ∑ i in s, f i • i = x :=
+    x ∈ span R (↑s : Set M) ↔ ∃ f : M → R, ∑ i ∈ s, f i • i = x :=
   ⟨fun hx =>
     let ⟨v, hvs, hvx⟩ :=
       (Finsupp.mem_span_image_iff_total _).1

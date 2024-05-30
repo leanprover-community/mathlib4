@@ -24,8 +24,6 @@ is the same as being a splitting field (`Normal.of_isSplittingField` and
 
 noncomputable section
 
-open scoped BigOperators
-
 open scoped Classical Polynomial
 
 open Polynomial IsScalarTower
@@ -159,13 +157,13 @@ instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i,
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).1) x.2
   let E : IntermediateField F K := ⨆ i ∈ s, adjoin F ((minpoly F (i.2 : _)).rootSet K)
   have hF : Normal F E := by
-    haveI : IsSplittingField F E (∏ i in s, minpoly F i.snd) := by
-      refine' isSplittingField_iSup _ fun i _ => adjoin_rootSet_isSplittingField _
+    haveI : IsSplittingField F E (∏ i ∈ s, minpoly F i.snd) := by
+      refine isSplittingField_iSup ?_ fun i _ => adjoin_rootSet_isSplittingField ?_
       · exact Finset.prod_ne_zero_iff.mpr fun i _ => minpoly.ne_zero ((h i.1).isIntegral i.2)
       · exact Polynomial.splits_comp_of_splits _ (algebraMap (t i.1) K) ((h i.1).splits i.2)
-    apply Normal.of_isSplittingField (∏ i in s, minpoly F i.2)
+    apply Normal.of_isSplittingField (∏ i ∈ s, minpoly F i.2)
   have hE : E ≤ ⨆ i, t i := by
-    refine' iSup_le fun i => iSup_le fun _ => le_iSup_of_le i.1 _
+    refine iSup_le fun i => iSup_le fun _ => le_iSup_of_le i.1 ?_
     rw [adjoin_le_iff, ← image_rootSet ((h i.1).splits i.2) (t i.1).val]
     exact fun _ ⟨a, _, h⟩ => h ▸ a.2
   have := hF.splits ⟨x, hx⟩
@@ -224,8 +222,8 @@ def AlgHom.restrictNormalAux [h : Normal F E] :
       rintro x ⟨y, ⟨z, hy⟩, hx⟩
       rw [← hx, ← hy]
       apply minpoly.mem_range_of_degree_eq_one E
-      refine'
-        Or.resolve_left (h.splits z).def (minpoly.ne_zero (h.isIntegral z)) (minpoly.irreducible _)
+      refine
+        Or.resolve_left (h.splits z).def (minpoly.ne_zero (h.isIntegral z)) (minpoly.irreducible ?_)
           (minpoly.dvd E _ (by simp [aeval_algHom_apply]))
       simp only [AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom]
       suffices IsIntegral F _ by exact this.tower_top

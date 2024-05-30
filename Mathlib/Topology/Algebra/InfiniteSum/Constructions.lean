@@ -18,7 +18,7 @@ noncomputable section
 
 open Filter Finset Function
 
-open scoped BigOperators Topology
+open scoped Topology
 
 variable {α β γ δ : Type*}
 
@@ -90,12 +90,12 @@ theorem HasProd.sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g : β
   use u.image Sigma.fst, trivial
   intro bs hbs
   simp only [Set.mem_preimage, ge_iff_le, Finset.le_iff_subset] at hu
-  have : Tendsto (fun t : Finset (Σb, γ b) ↦ ∏ p in t.filter fun p ↦ p.1 ∈ bs, f p) atTop
-      (𝓝 <| ∏ b in bs, g b) := by
+  have : Tendsto (fun t : Finset (Σb, γ b) ↦ ∏ p ∈ t.filter fun p ↦ p.1 ∈ bs, f p) atTop
+      (𝓝 <| ∏ b ∈ bs, g b) := by
     simp only [← sigma_preimage_mk, prod_sigma]
     refine tendsto_finset_prod _ fun b _ ↦ ?_
     change
-      Tendsto (fun t ↦ (fun t ↦ ∏ s in t, f ⟨b, s⟩) (preimage t (Sigma.mk b) _)) atTop (𝓝 (g b))
+      Tendsto (fun t ↦ (fun t ↦ ∏ s ∈ t, f ⟨b, s⟩) (preimage t (Sigma.mk b) _)) atTop (𝓝 (g b))
     exact (hf b).comp (tendsto_finset_preimage_atTop_atTop (sigma_mk_injective))
   refine hsc.mem_of_tendsto this (eventually_atTop.2 ⟨u, fun t ht ↦ hu _ fun x hx ↦ ?_⟩)
   exact mem_filter.2 ⟨ht hx, hbs <| mem_image_of_mem _ hx⟩

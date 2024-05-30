@@ -45,8 +45,8 @@ The examples of filters appearing in the description of the two motivating ideas
 * `𝓝 x` : made of neighborhoods of `x` in a topological space (defined in topology.basic)
 * `𝓤 X` : made of entourages of a uniform space (those space are generalizations of metric spaces
   defined in `Mathlib/Topology/UniformSpace/Basic.lean`)
-* `μ.ae` : made of sets whose complement has zero measure with respect to `μ` (defined in
-  `MeasureTheory.MeasureSpace`)
+* `MeasureTheory.ae` : made of sets whose complement has zero measure with respect to `μ`
+  (defined in `Mathlib/MeasureTheory/OuterMeasure/AE`)
 
 The general notion of limit of a map with respect to filters on the source and target types
 is `Filter.Tendsto`. It is defined in terms of the order and the push-forward operation.
@@ -429,13 +429,13 @@ instance : Inf (Filter α) :=
       univ_sets := ⟨_, univ_mem, _, univ_mem, by simp⟩
       sets_of_superset := by
         rintro x y ⟨a, ha, b, hb, rfl⟩ xy
-        refine'
+        refine
           ⟨a ∪ y, mem_of_superset ha (subset_union_left a y), b ∪ y,
-            mem_of_superset hb (subset_union_left b y), _⟩
+            mem_of_superset hb (subset_union_left b y), ?_⟩
         rw [← inter_union_distrib_right, union_eq_self_of_subset_left xy]
       inter_sets := by
         rintro x y ⟨a, ha, b, hb, rfl⟩ ⟨c, hc, d, hd, rfl⟩
-        refine' ⟨a ∩ c, inter_mem ha hc, b ∩ d, inter_mem hb hd, _⟩
+        refine ⟨a ∩ c, inter_mem ha hc, b ∩ d, inter_mem hb hd, ?_⟩
         ac_rfl }⟩
 
 theorem mem_inf_iff {f g : Filter α} {s : Set α} : s ∈ f ⊓ g ↔ ∃ t₁ ∈ f, ∃ t₂ ∈ g, s = t₁ ∩ t₂ :=
@@ -788,9 +788,8 @@ theorem NeBot.nonempty (f : Filter α) [hf : f.NeBot] : Nonempty α :=
 equal. -/
 theorem eq_top_of_neBot [Subsingleton α] (l : Filter α) [NeBot l] : l = ⊤ := by
   refine top_unique fun s hs => ?_
-  obtain rfl : s = univ
-  · exact Subsingleton.eq_univ_of_nonempty (nonempty_of_mem hs)
-  · exact univ_mem
+  obtain rfl : s = univ := Subsingleton.eq_univ_of_nonempty (nonempty_of_mem hs)
+  exact univ_mem
 #align filter.eq_top_of_ne_bot Filter.eq_top_of_neBot
 
 theorem forall_mem_nonempty_iff_neBot {f : Filter α} :
@@ -914,7 +913,7 @@ instance : Coframe (Filter α) :=
       obtain ⟨u, hu⟩ := h₂
       rw [← Finset.inf_eq_iInf] at hu
       suffices ⨅ i : s, f ⊔ ↑i ≤ f ⊔ u.inf fun i => ↑i from this ⟨h₁, hu⟩
-      refine' Finset.induction_on u (le_sup_of_le_right le_top) _
+      refine Finset.induction_on u (le_sup_of_le_right le_top) ?_
       rintro ⟨i⟩ u _ ih
       rw [Finset.inf_insert, sup_inf_left]
       exact le_inf (iInf_le _ _) ih }
@@ -2181,6 +2180,14 @@ theorem pure_bind (a : α) (m : α → Filter β) : bind (pure a) m = m a := by
   simp only [Bind.bind, bind, map_pure, join_pure]
 #align filter.pure_bind Filter.pure_bind
 
+theorem map_bind {α β} (m : β → γ) (f : Filter α) (g : α → Filter β) :
+    map m (bind f g) = bind f (map m ∘ g) :=
+  rfl
+
+theorem bind_map {α β} (m : α → β) (f : Filter α) (g : β → Filter γ) :
+    (bind (map m f) g) = bind f (g ∘ m) :=
+  rfl
+
 /-!
 ### `Filter` as a `Monad`
 
@@ -2350,6 +2357,11 @@ theorem comap_principal {t : Set β} : comap m (𝓟 t) = 𝓟 (m ⁻¹' t) :=
   Filter.ext fun _ => ⟨fun ⟨_u, hu, b⟩ => (preimage_mono hu).trans b,
     fun h => ⟨t, Subset.rfl, h⟩⟩
 #align filter.comap_principal Filter.comap_principal
+
+theorem principal_subtype {α : Type*} (s : Set α) (t : Set s) :
+    𝓟 t = comap (↑) (𝓟 (((↑) : s → α) '' t)) := by
+  rw [comap_principal, preimage_image_eq _ Subtype.coe_injective]
+#align principal_subtype Filter.principal_subtype
 
 @[simp]
 theorem comap_pure {b : β} : comap m (pure b) = 𝓟 (m ⁻¹' {b}) := by

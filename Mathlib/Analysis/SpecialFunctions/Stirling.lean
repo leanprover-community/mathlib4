@@ -33,7 +33,7 @@ formula for `π`.
 -/
 
 
-open scoped Topology Real BigOperators Nat Asymptotics
+open scoped Topology Real Nat Asymptotics
 
 open Finset Filter Nat Real
 
@@ -153,16 +153,16 @@ theorem log_stirlingSeq_bounded_aux :
   intro n
   have h₁ k : log_stirlingSeq' k - log_stirlingSeq' (k + 1) ≤ 1 / 4 * (1 / (↑(k + 1) : ℝ) ^ 2) := by
     convert log_stirlingSeq_sub_log_stirlingSeq_succ k using 1; field_simp
-  have h₂ : (∑ k : ℕ in range n, 1 / (↑(k + 1) : ℝ) ^ 2) ≤ d := by
+  have h₂ : (∑ k ∈ range n, 1 / (↑(k + 1) : ℝ) ^ 2) ≤ d := by
     have := (summable_nat_add_iff 1).mpr <| Real.summable_one_div_nat_pow.mpr one_lt_two
     exact sum_le_tsum (range n) (fun k _ => by positivity) this
   calc
     log (stirlingSeq 1) - log (stirlingSeq (n + 1)) = log_stirlingSeq' 0 - log_stirlingSeq' n :=
       rfl
-    _ = ∑ k in range n, (log_stirlingSeq' k - log_stirlingSeq' (k + 1)) := by
+    _ = ∑ k ∈ range n, (log_stirlingSeq' k - log_stirlingSeq' (k + 1)) := by
       rw [← sum_range_sub' log_stirlingSeq' n]
-    _ ≤ ∑ k in range n, 1 / 4 * (1 / ↑((k + 1)) ^ 2) := sum_le_sum fun k _ => h₁ k
-    _ = 1 / 4 * ∑ k in range n, 1 / ↑((k + 1)) ^ 2 := by rw [mul_sum]
+    _ ≤ ∑ k ∈ range n, 1 / 4 * (1 / ↑((k + 1)) ^ 2) := sum_le_sum fun k _ => h₁ k
+    _ = 1 / 4 * ∑ k ∈ range n, 1 / ↑((k + 1)) ^ 2 := by rw [mul_sum]
     _ ≤ 1 / 4 * d := by gcongr
 #align stirling.log_stirling_seq_bounded_aux Stirling.log_stirlingSeq_bounded_aux
 

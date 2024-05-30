@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.Algebra.Category.Ring.Constructions
+import Mathlib.CategoryTheory.Elementwise
 
 #align_import algebraic_geometry.Scheme from "leanprover-community/mathlib"@"88474d1b5af6d37c2ab728b757771bced7f5194c"
 
@@ -39,7 +40,7 @@ namespace AlgebraicGeometry
 
 /-- We define `Scheme` as an `X : LocallyRingedSpace`,
 along with a proof that every point has an open neighbourhood `U`
-so that that the restriction of `X` to `U` is isomorphic,
+so that the restriction of `X` to `U` is isomorphic,
 as a locally ringed space, to `Spec.toLocallyRingedSpace.obj (op R)`
 for some `R : CommRingCat`.
 -/
