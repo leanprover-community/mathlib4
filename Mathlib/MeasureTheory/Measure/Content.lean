@@ -420,7 +420,7 @@ instance regular [WeaklyLocallyCompactSpace G] : μ.measure.Regular := by
   rw [measure_apply _ hU.measurableSet, μ.outerMeasure_of_isOpen U hU] at hr
   simp only [innerContent, lt_iSup_iff] at hr
   rcases hr with ⟨K, hKU, hr⟩
-  refine' ⟨K, hKU, K.2, hr.trans_le _⟩
+  refine ⟨K, hKU, K.2, hr.trans_le ?_⟩
   exact (μ.le_outerMeasure_compacts K).trans (le_toMeasure_apply _ _ _)
 #align measure_theory.content.regular MeasureTheory.Content.regular
 

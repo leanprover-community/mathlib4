@@ -215,7 +215,7 @@ one given by the following generators and relations.
 
 /-- The `i`-th face map from `[n]` to `[n+1]` -/
 def δ {n} (i : Fin (n + 2)) : ([n] : SimplexCategory) ⟶ [n + 1] :=
-  mkHom (Fin.succAboveEmb i).toOrderHom
+  mkHom (Fin.succAboveOrderEmb i).toOrderHom
 #align simplex_category.δ SimplexCategory.δ
 
 /-- The `i`-th degeneracy map from `[n+1]` to `[n]` -/
@@ -479,9 +479,9 @@ instance : skeletalFunctor.EssSurj where
           (Nat.succ_pred_eq_of_pos <| Fintype.card_pos_iff.mpr ⟨⊥⟩).symm
         let f := monoEquivOfFin X aux
         have hf := (Finset.univ.orderEmbOfFin aux).strictMono
-        refine'
+        refine
           { hom := ⟨f, hf.monotone⟩
-            inv := ⟨f.symm, _⟩
+            inv := ⟨f.symm, ?_⟩
             hom_inv_id := by ext1; apply f.symm_apply_apply
             inv_hom_id := by ext1; apply f.apply_symm_apply }
         intro i j h
