@@ -388,4 +388,3 @@ lemma MulRingNorm_nat_le_nat {R : Type*} [Ring R] (n : ℕ) (f : MulRingNorm R) 
       f (n + 1) ≤ f (n) + f 1 := f.add_le' ↑n 1
       _ = f (n) + 1 := by rw [map_one]
       _ ≤ n + 1 := add_le_add_right hn 1
-

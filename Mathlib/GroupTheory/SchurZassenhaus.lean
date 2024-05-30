@@ -318,4 +318,3 @@ theorem exists_left_complement'_of_coprime {N : Subgroup G} [N.Normal]
 #align subgroup.exists_left_complement'_of_coprime Subgroup.exists_left_complement'_of_coprime
 
 end Subgroup
-

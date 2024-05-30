@@ -49,4 +49,3 @@ instance (priority := 100) RealTopologicalVectorSpace.contractibleSpace : Contra
   (Homeomorph.Set.univ E).contractibleSpace_iff.mp <|
     convex_univ.contractibleSpace Set.univ_nonempty
 #align real_topological_vector_space.contractible_space RealTopologicalVectorSpace.contractibleSpace
-

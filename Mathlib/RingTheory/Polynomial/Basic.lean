@@ -1354,6 +1354,3 @@ theorem Polynomial.exists_monic_irreducible_factor {F : Type*} [Field F] (f : F[
   have ha : Associated g (g * C g.leadingCoeff⁻¹) := associated_mul_unit_right _ _ <|
     isUnit_C.2 (leadingCoeff_ne_zero.2 hi.ne_zero).isUnit.inv
   exact ⟨_, monic_mul_leadingCoeff_inv hi.ne_zero, ha.irreducible hi, ha.dvd_iff_dvd_left.1 hf⟩
-
-
-

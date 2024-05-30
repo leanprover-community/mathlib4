@@ -1797,4 +1797,3 @@ def map {β} [Preorder β] (f : α → β) (f_strict_mono : StrictMono f) (s : O
 #align ordset.map Ordset.map
 
 end Ordset
-

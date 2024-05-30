@@ -377,4 +377,3 @@ theorem irreducible_of_coprime' (hp : IsUnitTrinomial p)
 end IsUnitTrinomial
 
 end Polynomial
-

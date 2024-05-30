@@ -161,4 +161,3 @@ theorem fg_of_fg_of_fg [IsNoetherianRing A] (hAC : (⊤ : Subalgebra A C).FG)
 end Ring
 
 end ArtinTate
-

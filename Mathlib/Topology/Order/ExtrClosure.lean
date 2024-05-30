@@ -60,4 +60,3 @@ protected theorem IsLocalExtrOn.closure (h : IsLocalExtrOn f s a)
     (hc : ContinuousOn f (closure s)) : IsLocalExtrOn f (closure s) a :=
   h.elim (fun h => Or.inl <| h.closure hc) fun h => Or.inr <| h.closure hc
 #align is_local_extr_on.closure IsLocalExtrOn.closure
-

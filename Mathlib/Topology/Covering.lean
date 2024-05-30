@@ -220,4 +220,3 @@ protected theorem FiberBundle.isCoveringMap {F : Type*} {E : X → Type*} [Topol
     [FiberBundle F E] : IsCoveringMap (π F E) :=
   IsFiberBundle.isCoveringMap fun x => ⟨trivializationAt F E x, mem_baseSet_trivializationAt F E x⟩
 #align fiber_bundle.is_covering_map FiberBundle.isCoveringMap
-

@@ -1414,4 +1414,3 @@ theorem set_smul_top_eq_span (s : Set R) :
     Eq.trans (smul_eq_mul (Ideal R)) (Ideal.mul_top (.span s))
 
 end Submodule
-

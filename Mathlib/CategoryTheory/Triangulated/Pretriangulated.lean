@@ -659,4 +659,3 @@ def isoTriangleOfIso₁₂ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang
 end Pretriangulated
 
 end CategoryTheory
-

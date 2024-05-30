@@ -680,4 +680,3 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
 end Atomise
 
 end Finpartition
-

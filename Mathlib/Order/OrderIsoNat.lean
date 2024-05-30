@@ -258,4 +258,3 @@ theorem WellFounded.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
     have : n ∈ {n | ∀ m, n ≤ m → a n = a m} := fun k hk => (a.mono hk).eq_of_not_lt (hn k hk)
     exact (Nat.sInf_mem ⟨n, this⟩ m hm.le).ge
 #align well_founded.supr_eq_monotonic_sequence_limit WellFounded.iSup_eq_monotonicSequenceLimit
-

@@ -1060,4 +1060,3 @@ theorem sign_eq_of_continuousOn {α : Type*} [TopologicalSpace α] {f : α → A
 end Angle
 
 end Real
-

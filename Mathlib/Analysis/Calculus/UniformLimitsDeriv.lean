@@ -565,4 +565,3 @@ theorem hasDerivAt_of_tendstoUniformly [NeBot l] (hf' : TendstoUniformly f' g' l
 #align has_deriv_at_of_tendsto_uniformly hasDerivAt_of_tendstoUniformly
 
 end deriv
-

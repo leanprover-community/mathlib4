@@ -451,4 +451,3 @@ theorem multiplicity_factor_dvd_iso_eq_multiplicity_of_mem_normalizedFactors {m 
       (mk_le_mk_of_dvd (dvd_of_mem_normalizedFactors hp))
   rwa [associated_iff_eq.mp hq']
 #align multiplicity_factor_dvd_iso_eq_multiplicity_of_mem_normalized_factor multiplicity_factor_dvd_iso_eq_multiplicity_of_mem_normalizedFactors
-

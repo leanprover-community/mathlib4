@@ -1375,4 +1375,3 @@ def closureCommSemiringOfComm {s : Set R'} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a 
 end Subsemiring
 
 end Actions
-

@@ -966,4 +966,3 @@ theorem uniformIntegrable_average_real (hp : 1 ≤ p) {f : ℕ → α → ℝ} (
 end UniformIntegrable
 
 end MeasureTheory
-

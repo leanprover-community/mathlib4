@@ -464,4 +464,3 @@ theorem exists_lt_modEq_of_infinite {s : Set ℕ} (hs : s.Infinite) {k : ℕ} (h
 #align nat.exists_lt_modeq_of_infinite Nat.exists_lt_modEq_of_infinite
 
 end Nat
-

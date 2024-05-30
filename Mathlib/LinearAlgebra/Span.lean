@@ -1191,4 +1191,3 @@ theorem coord_apply_smul (y : Submodule.span R ({x} : Set M)) : coord R M x h y 
 #align linear_equiv.coord_apply_smul LinearEquiv.coord_apply_smul
 
 end LinearEquiv
-

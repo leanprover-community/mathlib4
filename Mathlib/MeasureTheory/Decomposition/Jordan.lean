@@ -599,5 +599,3 @@ theorem totalVariation_mutuallySingular_iff (s : SignedMeasure α) (μ : Measure
 end SignedMeasure
 
 end MeasureTheory
-
-

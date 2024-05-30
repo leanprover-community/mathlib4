@@ -1069,4 +1069,3 @@ theorem fixed_point₂ {f : Code → ℕ →. ℕ} (hf : Partrec₂ f) : ∃ c :
 end
 
 end Nat.Partrec.Code
-
