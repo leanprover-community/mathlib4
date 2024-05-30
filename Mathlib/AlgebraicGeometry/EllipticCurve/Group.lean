@@ -174,7 +174,7 @@ set_option linter.uppercaseLean3 false in
 
 lemma XYIdeal_add_eq (x₁ x₂ y₁ L : R) : XYIdeal W (W.addX x₁ x₂ L) (C <| W.addY x₁ x₂ y₁ L) =
     span {mk W <| W.negPolynomial - C (linePolynomial x₁ y₁ L)} ⊔ XIdeal W (W.addX x₁ x₂ L) := by
-  simp only [XYIdeal, XIdeal, XClass, YClass, addY, addY', negY, negPolynomial, linePolynomial]
+  simp only [XYIdeal, XIdeal, XClass, YClass, addY, negAddY, negY, negPolynomial, linePolynomial]
   rw [sub_sub <| -(Y : R[X][Y]), neg_sub_left (Y : R[X][Y]), map_neg, span_singleton_neg, sup_comm,
     ← span_insert, ← span_pair_add_mul_right <| mk W <| C <| C <| W.a₁ + L, ← _root_.map_mul,
     ← map_add]
@@ -205,9 +205,9 @@ lemma XYIdeal_eq₂ {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁)
     XYIdeal W x₂ (C y₂) = XYIdeal W x₂ (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
   have hy₂ : y₂ = (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂).eval x₂ := by
     by_cases hx : x₁ = x₂
-    · rcases hx, Yeq_of_Yne h₁ h₂ hx <| hxy hx with ⟨rfl, rfl⟩
+    · rcases hx, Y_eq_of_Y_ne h₁ h₂ hx <| hxy hx with ⟨rfl, rfl⟩
       field_simp [linePolynomial, sub_ne_zero_of_ne <| hxy rfl]
-    · field_simp [linePolynomial, slope_of_Xne hx, sub_ne_zero_of_ne hx]
+    · field_simp [linePolynomial, slope_of_X_ne hx, sub_ne_zero_of_ne hx]
       ring1
   nth_rw 1 [hy₂]
   simp only [XYIdeal, XClass, YClass, linePolynomial]
@@ -282,7 +282,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     mem_map_iff_of_surjective _ AdjoinRoot.mk_surjective, ← span_insert, mem_span_insert',
     mem_span_singleton']
   by_cases hx : x₁ = x₂
-  · rcases hx, Yeq_of_Yne h₁ h₂ hx (hxy hx) with ⟨rfl, rfl⟩
+  · rcases hx, Y_eq_of_Y_ne h₁ h₂ hx (hxy hx) with ⟨rfl, rfl⟩
     let y := (y₁ - W.negY x₁ y₁) ^ 2
     replace hxy := pow_ne_zero 2 <| sub_ne_zero_of_ne <| hxy rfl
     refine ⟨1 + C (C <| y⁻¹ * 4) * W.polynomial,
@@ -554,12 +554,12 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
     by_cases hx : x₁ = x₂
     · by_cases hy : y₁ = W.negY x₂ y₂
       · substs hx hy
-        simpa only [some_add_some_of_Yeq rfl rfl] using
-          (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h₂).symm
-      · simpa only [some_add_some_of_Yne hx hy] using
-          (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ fun _ => hy).symm
-    · simpa only [some_add_some_of_Xne hx] using
-        (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ fun h => (hx h).elim).symm
+        rw [add_of_Y_eq rfl rfl]
+        exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h₂).symm
+      · rw [add_of_Y_ne hx hy]
+        exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ fun _ => hy).symm
+    · rw [add_of_X_ne hx]
+      exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ fun h => (hx h).elim).symm
 #align weierstrass_curve.point.to_class WeierstrassCurve.Affine.Point.toClass
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
@@ -583,11 +583,11 @@ lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
       by_cases hx : x₁ = x₂
       · by_cases hy : y₁ = W.negY x₂ y₂
         · exact ⟨hx, hy⟩
-        · rw [some_add_some_of_Yne hx hy] at h
+        · rw [add_of_Y_ne hx hy] at h
           contradiction
-      · rw [some_add_some_of_Xne hx] at h
+      · rw [add_of_X_ne hx] at h
         contradiction
-    · exact fun ⟨hx, hy⟩ => some_add_some_of_Yeq hx hy
+    · exact fun ⟨hx, hy⟩ => add_of_Y_eq hx hy
 #align weierstrass_curve.point.add_eq_zero WeierstrassCurve.Affine.Point.add_eq_zero
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
