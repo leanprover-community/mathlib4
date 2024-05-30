@@ -38,6 +38,8 @@ open Complex Real Set
 
 open scoped Nat
 
+namespace HurwitzZeta
+
 variable {k : ℕ} {x : ℝ}
 
 /-- Express the value of `cosZeta` at a positive even integer as a value
@@ -193,3 +195,5 @@ theorem hurwitzZeta_neg_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
   rcases Nat.even_or_odd' k with ⟨n, (rfl | rfl)⟩
   · exact_mod_cast hurwitzZeta_neg_two_mul_nat (by omega : n ≠ 0) hx
   · exact_mod_cast hurwitzZeta_one_sub_two_mul_nat (by omega : n + 1 ≠ 0) hx
+
+end HurwitzZeta

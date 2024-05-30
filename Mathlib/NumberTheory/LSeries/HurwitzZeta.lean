@@ -37,6 +37,8 @@ This file gives the definition and properties of the following two functions:
 
 open Set Real Complex Filter Topology
 
+namespace HurwitzZeta
+
 /-!
 ## The Hurwitz zeta function
 -/
@@ -185,3 +187,5 @@ lemma expZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1
   ring_nf
   rw [I_sq]
   ring_nf
+
+namespace HurwitzZeta
