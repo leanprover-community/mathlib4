@@ -387,7 +387,7 @@ def imageForgetAdj : image ⊣ forget X :=
             rw [assoc, Over.w k]
             apply image.fac
           invFun := fun k => by
-            refine' Over.homMk _ _
+            refine Over.homMk ?_ ?_
             · exact
                 image.lift
                   { I := g.obj.left
