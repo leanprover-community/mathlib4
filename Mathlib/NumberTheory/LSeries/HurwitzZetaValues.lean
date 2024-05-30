@@ -102,9 +102,9 @@ theorem cosZeta_two_mul_nat' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
     rw [(by { norm_cast; omega } : 2 * (k : ℂ) = ↑(2 * k - 1) + 1), Complex.Gamma_nat_eq_factorial,
       ← Nat.cast_add_one, ← Nat.cast_mul, ← Nat.factorial_succ, Nat.sub_add_cancel (by omega)]
   simp_rw [this, Gammaℂ, cpow_neg, ← div_div, div_inv_eq_mul, div_mul_eq_mul_div, div_div]
-  norm_num
-  rw [(by simp : 2 * (k : ℂ) = ↑(2 * k)), cpow_natCast]
-  ring
+  congr 2
+  · rw [(by simp : 2 * (k : ℂ) = ↑(2 * k)), cpow_natCast]
+  · ring
 
 /-- Reformulation of `sinZeta_two_mul_nat_add_one` using `Gammaℂ`. -/
 theorem sinZeta_two_mul_nat_add_one' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
