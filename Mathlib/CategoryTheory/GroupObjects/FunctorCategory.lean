@@ -150,9 +150,9 @@ def GroupObjectFunctorToFunctorGroupObject :
   obj G := GroupObjectFunctorToFunctorGroupObject.obj G
   map α := GroupObjectFunctorToFunctorGroupObject.map α
 
-namespace GroupObjectFunctorToFunctorGroupObject
-
 variable {C D}
+
+namespace GroupObjectFunctorToFunctorGroupObject
 
 def faithful : (GroupObjectFunctorToFunctorGroupObject C D).Faithful where
 map_injective := by
@@ -206,108 +206,162 @@ def full : (GroupObjectFunctorToFunctorGroupObject C D).Full where
       rw [(a.app X).inv_hom]
     · ext; simp only
 
-/-
-def essSurj_aux (F : C ⥤ (GroupObject D)) : GroupObject (C ⥤ D) where
-  X :=
-   {
-    obj := fun X ↦ (F.obj X).X
-    map := fun f ↦ (F.map f).hom
-   }
-  one :=
-   {
-    app := fun X ↦ terminalComparison ((evaluation C D).obj X) ≫ (F.obj X).one
-    naturality := by
-      intro X Y f
-      rw [Category.assoc, GroupObject.Hom.one_hom, ← Category.assoc]
-      congr 1
-      exact Subsingleton.elim _ _
-   }
-  mul :=
-   {
-    app := fun X ↦ prodComparison ((evaluation C D).obj X) X X ≫ (F.obj X).mul
-    naturality := by
-      intro X Y f
-      simp only [evaluation_obj_obj, Category.assoc, GroupObject.Hom.mul_hom]
-      have := prodComparison_natTrans ((evaluation C D).map f) (X := X) (Y :=GX)
-      simp only [evaluation_obj_obj, evaluation_map_app] at this
-      conv_rhs => rw [← Category.assoc, this]
-      simp only [Category.assoc]
-   }
-  inv :=
-   {
-    app := fun X ↦ (F.obj X).inv
-    naturality :=  fun _ _ f ↦ by
-      sorry
-   }
--/
+end GroupObjectFunctorToFunctorGroupObject
 
+namespace FunctorGroupObjectToGroupObjectFunctor
+
+variable (F : C ⥤ (GroupObject D))
+
+def obj_X : C ⥤ D where
+  obj := fun X ↦ (F.obj X).X
+  map := fun f ↦ (F.map f).hom
+
+def obj_one : ⊤_ (C ⥤ D) ⟶ obj_X F where
+  app := fun X ↦ terminalComparison ((evaluation C D).obj X) ≫ (F.obj X).one
+  naturality := by
+    intro X Y f
+    simp only [obj_X, Category.assoc, GroupObject.Hom.one_hom]
+    rw [← Category.assoc]
+    congr 1
+    exact Subsingleton.elim _ _
+
+def obj_mul : obj_X F ⨯ obj_X F ⟶ obj_X F where
+  app := fun X ↦ prodComparison ((evaluation C D).obj X) (obj_X F) (obj_X F) ≫ (F.obj X).mul
+  naturality := by
+    intro X Y f
+    simp only [evaluation_obj_obj, Category.assoc, GroupObject.Hom.mul_hom]
+    have := prodComparison_natTrans ((evaluation C D).map f) (X := obj_X F) (Y := obj_X F)
+    simp only [evaluation_obj_obj, evaluation_map_app] at this
+    conv_lhs => rw [← Category.assoc, ← this]
+    simp only [obj_X, Category.assoc, GroupObject.Hom.mul_hom]
+
+def obj_inv : obj_X F ⟶ obj_X F where
+  app := fun X ↦ (F.obj X).inv
+  naturality :=  fun X Y f ↦ by
+    simp only [obj_X]
+    rw [(F.map f).inv_hom]
+
+def obj : GroupObject (C ⥤ D) where
+  X := obj_X F
+  one := obj_one F
+  mul := obj_mul F
+  inv := obj_inv F
+  one_mul := by
+    ext X
+    simp only [obj_mul, evaluation_obj_obj, NatTrans.comp_app, prod.leftUnitor_hom]
+    have := prodComparison_natural ((evaluation C D).obj X) (obj_one F) (𝟙 (obj_X F))
+    simp only [evaluation_obj_obj, evaluation_obj_map, NatTrans.id_app] at this
+    rw [← Category.assoc, this]
+    simp only [obj_one, Category.assoc, obj_X]
+    rw [prod_map_comp_left_id_right]
+    slice_lhs 3 4 => rw [(F.obj X).one_mul]
+    simp only [prod.leftUnitor_hom, prod.map_snd, Category.comp_id]
+    erw [prodComparison_snd]
+    simp only [evaluation_obj_map]
+  mul_one := by
+    ext X
+    simp only [obj_mul, evaluation_obj_obj, NatTrans.comp_app, prod.rightUnitor_hom]
+    have := prodComparison_natural ((evaluation C D).obj X) (𝟙 (obj_X F)) (obj_one F)
+    simp only [evaluation_obj_obj, evaluation_obj_map, NatTrans.id_app] at this
+    rw [← Category.assoc, this]
+    simp only [obj_one, Category.assoc, obj_X]
+    rw [prod_map_comp_right_id_left]
+    slice_lhs 3 4 => rw [(F.obj X).mul_one]
+    simp only [prod.rightUnitor_hom, prod.map_fst, Category.comp_id]
+    erw [prodComparison_fst]
+    simp only [evaluation_obj_map]
+  mul_assoc := by
+    ext X
+    conv_lhs => congr; congr; rfl; rw [obj_mul]
+    simp only [evaluation_obj_obj, NatTrans.comp_app]
+    have := prodComparison_natural ((evaluation C D).obj X) (obj_mul F) (𝟙 (obj_X F))
+    simp only [evaluation_obj_obj, evaluation_obj_map, NatTrans.id_app] at this
+    rw [← Category.assoc, this]
+    conv_rhs => congr; rfl; rw [obj_mul]
+    simp only [Category.assoc, evaluation_obj_obj]
+    conv_lhs => congr; rfl
+                rw [obj_mul, prod_map_comp_left_id_right]
+    simp only [evaluation_obj_obj]
+    have heq : 𝟙 ((obj_X F).obj X) = 𝟙 (F.obj X).X := by simp only [obj_X]
+    rw [Category.assoc, heq, (F.obj X).mul_assoc]
+    conv_rhs => rw [← Category.assoc, ← Category.assoc]
+    conv_lhs => rw [← Category.assoc, ← Category.assoc, ← Category.assoc]
+    congr 1
+    have := prod.associator_comp_prodComparison (F := (evaluation C D).obj X)
+      (X := obj_X F) (Y := obj_X F) (Z := obj_X F)
+    simp only [evaluation_obj_obj, evaluation_obj_map] at this
+    rw [← Category.assoc] at this
+    erw [this]
+    conv_lhs => rw [Category.assoc]
+    conv_rhs => rw [Category.assoc]
+    congr 1
+    have := prodComparison_natural ((evaluation C D).obj X) (𝟙 (obj_X F)) (obj_mul F)
+    simp only [evaluation_obj_obj, evaluation_obj_map, NatTrans.id_app] at this
+    erw [this]
+    rw [Category.assoc]
+    congr 1
+    ext
+    · simp only [obj_X, prod.map_map, Category.comp_id, prod.map_fst]
+    · simp only [obj_X, prod.map_map, Category.comp_id, prod.map_snd, obj_mul, evaluation_obj_obj]
+  mul_left_inv := by
+    ext X
+    simp only [NatTrans.comp_app, obj_one]
+    rw [← Category.assoc, Subsingleton.elim ((default : obj_X F ⟶ ⊤_ (C ⥤ D)).app X ≫
+      terminalComparison ((evaluation C D).obj X)) default, ← (F.obj X).mul_left_inv]
+    simp only [obj_mul, evaluation_obj_obj]
+    rw [← Category.assoc]
+    congr 1
+    ext
+    · have := prodComparison_fst ((evaluation C D).obj X) (obj_X F) (obj_X F)
+      simp only [evaluation_obj_obj, evaluation_obj_map] at this
+      rw [Category.assoc, this]
+      simp only [obj_X, obj_inv, limit.lift_π_app, BinaryFan.mk_pt, Functor.const_obj_obj,
+        pair_obj_left, BinaryFan.π_app_left, BinaryFan.mk_fst, limit.lift_π]
+    · have := prodComparison_snd ((evaluation C D).obj X) (obj_X F) (obj_X F)
+      simp only [evaluation_obj_obj, evaluation_obj_map] at this
+      rw [Category.assoc, this]
+      simp only [obj_X, obj_inv, limit.lift_π_app, BinaryFan.mk_pt, Functor.const_obj_obj,
+        pair_obj_right, BinaryFan.π_app_right, BinaryFan.mk_snd, NatTrans.id_app, limit.lift_π]
+
+end FunctorGroupObjectToGroupObjectFunctor
+
+namespace GroupObjectFunctorToFunctorGroupObject
 
 def essSurj : (GroupObjectFunctorToFunctorGroupObject C D).EssSurj where
   mem_essImage F := by
-    set GX : C ⥤ D :=
-     {
-      obj := fun X ↦ (F.obj X).X
-      map := fun f ↦ (F.map f).hom
-     }
-    set G : GroupObject (C ⥤ D) :=
-     {
-      X := GX
-      one :=
-       {
-        app := fun X ↦ terminalComparison ((evaluation C D).obj X) ≫ (F.obj X).one
-        naturality := by
-          intro X Y f
-          rw [Category.assoc, GroupObject.Hom.one_hom, ← Category.assoc]
-          congr 1
-          exact Subsingleton.elim _ _
-       }
-      mul :=
-       {
-        app := fun X ↦ prodComparison ((evaluation C D).obj X) _ _ ≫ (F.obj X).mul
-        naturality := by
-          intro _ _ f
-          simp only [evaluation_obj_obj, Category.assoc, GroupObject.Hom.mul_hom]
-          have := prodComparison_natTrans ((evaluation C D).map f) (X := GX) (Y := GX)
-          simp only [evaluation_obj_obj, evaluation_map_app] at this
-          conv_rhs => rw [← Category.assoc, this]
-          simp only [Category.assoc]
-       }
-      inv :=
-       {
-        app := fun X ↦ (F.obj X).inv
-        naturality :=  fun _ _ f ↦ by rw [(F.map f).inv_hom]
-       }
-      one_mul := by
-        ext X
-        simp only [evaluation_obj_obj, NatTrans.comp_app, prod.leftUnitor_hom]
-        rw [← Category.assoc]
-        erw [prodComparison_natural ((evaluation C D).obj X)]
-        simp only [evaluation_obj_obj, evaluation_obj_map, NatTrans.id_app, Category.assoc]
-        rw [prod_map_comp_left_id_right]
-        slice_lhs 3 4 => rw [(F.obj X).one_mul]
-        simp only [prod.leftUnitor_hom, prod.map_snd, Category.comp_id]
-        erw [prodComparison_snd]
-        simp only [evaluation_obj_map] 
-      mul_one := sorry
-      mul_assoc := sorry
-      mul_left_inv := sorry
-     }
-    refine Functor.essImage.ofIso (NatIso.ofComponents ?_ ?_) (Functor.obj_mem_essImage _ G)
+    refine Functor.essImage.ofIso (NatIso.ofComponents ?_ ?_) (Functor.obj_mem_essImage _
+      (FunctorGroupObjectToGroupObjectFunctor.obj F))
     · intro X
-      simp only [GroupObjectFunctorToFunctorGroupObject, obj, obj_obj, GroupObject.id_hom',
-        GroupObject.comp_hom', id_eq, eq_mpr_eq_cast]
+      simp only [GroupObjectFunctorToFunctorGroupObject, obj, obj_obj,
+        FunctorGroupObjectToGroupObjectFunctor.obj, FunctorGroupObjectToGroupObjectFunctor.obj_X]
       refine GroupObject.isoOfIso (Iso.refl _) ?_ ?_ ?_
-      · simp only [obj_obj_one, evaluation_obj_obj, GroupObject.id_hom', GroupObject.comp_hom',
-        id_eq, eq_mpr_eq_cast, PreservesTerminal.iso_inv, IsIso.inv_hom_id_assoc, Iso.refl_hom,
-        Category.comp_id]
-      · sorry --simp? [obj_obj_mul]
-      · sorry
-    · sorry
+      · simp only [FunctorGroupObjectToGroupObjectFunctor.obj_one, obj_obj_one, evaluation_obj_obj,
+        PreservesTerminal.iso_inv, IsIso.inv_hom_id_assoc, Iso.refl_hom, Category.comp_id]
+      · simp only [FunctorGroupObjectToGroupObjectFunctor.obj_mul,
+        FunctorGroupObjectToGroupObjectFunctor.obj_X, evaluation_obj_obj, obj_obj_mul,
+        PreservesLimitPair.iso_inv, IsIso.inv_hom_id_assoc, Iso.refl_hom, Category.comp_id,
+        prod.map_id_id, Category.id_comp]
+      · dsimp; rw [Category.comp_id, Category.id_comp]
+        simp only [FunctorGroupObjectToGroupObjectFunctor.obj_inv]
+    · intro X Y f
+      ext
+      simp only [GroupObjectFunctorToFunctorGroupObject, FunctorGroupObjectToGroupObjectFunctor.obj,
+        id_eq, GroupObject.comp_hom', GroupObject.isoOfIso_hom_hom, Iso.refl_hom]
+      simp only [FunctorGroupObjectToGroupObjectFunctor.obj_X, obj]
+      erw [Category.id_comp, Category.comp_id]
 
+def isEquivalence : (GroupObjectFunctorToFunctorGroupObject C D).IsEquivalence where
+  full := full
+  faithful := faithful
+  essSurj := essSurj
 
 end GroupObjectFunctorToFunctorGroupObject
 
+
+
 #exit
+
+-- old version that timeouts
 def GroupObjectFunctorToFunctorGroupObject_obj (G : GroupObject (C ⥤ D)) :
     C ⥤ (GroupObject D) where
   obj X := {

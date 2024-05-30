@@ -187,7 +187,7 @@ instance uniqueHomFromTrivial (A : GroupObject C) : Unique (trivial C ⟶ A) whe
     ext; simp
     rw [← Category.id_comp f.hom]
     erw [f.one_hom]
--- Might have to put this one later, it need G.one = G.one ≫ G.inv.
+-- Might have to put this one later, it needs G.one = G.one ≫ G.inv.
 
 instance uniqueHomToTrivial (A : GroupObject C) : Unique (A ⟶ trivial C) where
   default :=

@@ -3,6 +3,9 @@ import Mathlib.Tactic.Widget.CommDiag
 import ProofWidgets.Component.Panel.GoalTypePanel
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import ProofWidgets.Component.Panel.SelectionPanel
+import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.Algebra.Category.Ring.Basic
+
 
 universe u v u' v' u'' v''
 
@@ -149,3 +152,118 @@ lemma inv_prodComparison_natTrans [IsIso (prodComparison F X Y)] [IsIso (prodCom
 end Limits
 
 end CategoryTheory
+
+open CategoryTheory CategoryTheory.Limits TensorProduct
+
+namespace CommRingCat
+
+#exit 
+
+section Coproduct
+
+variable (A B : CommRingCat.{u})
+
+/-- The explicit cocone with tensor products as the fibered product in `CommRingCat`. -/
+def pushoutCocone : Limits.PushoutCocone f g := by
+  letI := RingHom.toAlgebra f
+  letI := RingHom.toAlgebra g
+  fapply Limits.PushoutCocone.mk
+  · show CommRingCat; exact CommRingCat.of (A ⊗[R] B)
+  · show A ⟶ _; exact Algebra.TensorProduct.includeLeftRingHom
+  · show B ⟶ _; exact Algebra.TensorProduct.includeRight.toRingHom
+  · ext r
+    trans algebraMap R (A ⊗[R] B) r
+    · exact Algebra.TensorProduct.includeLeft.commutes (R := R) r
+    · exact (Algebra.TensorProduct.includeRight.commutes (R := R) r).symm
+set_option linter.uppercaseLean3 false in
+#align CommRing.pushout_cocone CommRingCat.pushoutCocone
+
+@[simp]
+theorem pushoutCocone_inl :
+    (pushoutCocone f g).inl = by
+      letI := f.toAlgebra
+      letI := g.toAlgebra
+      exact Algebra.TensorProduct.includeLeftRingHom :=
+  rfl
+set_option linter.uppercaseLean3 false in
+#align CommRing.pushout_cocone_inl CommRingCat.pushoutCocone_inl
+
+@[simp]
+theorem pushoutCocone_inr :
+    (pushoutCocone f g).inr = by
+      letI := f.toAlgebra
+      letI := g.toAlgebra
+      exact Algebra.TensorProduct.includeRight.toRingHom :=
+  rfl
+set_option linter.uppercaseLean3 false in
+#align CommRing.pushout_cocone_inr CommRingCat.pushoutCocone_inr
+
+@[simp]
+theorem pushoutCocone_pt :
+    (pushoutCocone f g).pt = by
+      letI := f.toAlgebra
+      letI := g.toAlgebra
+      exact CommRingCat.of (A ⊗[R] B) :=
+  rfl
+set_option linter.uppercaseLean3 false in
+#align CommRing.pushout_cocone_X CommRingCat.pushoutCocone_pt
+
+/-- Verify that the `pushout_cocone` is indeed the colimit. -/
+def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
+  Limits.PushoutCocone.isColimitAux' _ fun s => by
+    letI := RingHom.toAlgebra f
+    letI := RingHom.toAlgebra g
+    letI := RingHom.toAlgebra (f ≫ s.inl)
+    let f' : A →ₐ[R] s.pt :=
+      { s.inl with
+        commutes' := fun r => rfl }
+    let g' : B →ₐ[R] s.pt :=
+      { s.inr with
+        commutes' := fun r => by
+          change (g ≫ s.inr) r = (f ≫ s.inl) r
+          congr 1
+          exact
+            (s.ι.naturality Limits.WalkingSpan.Hom.snd).trans
+              (s.ι.naturality Limits.WalkingSpan.Hom.fst).symm }
+    -- Porting note: Lean has forget why `A ⊗[R] B` makes sense
+    letI : Algebra R A := f.toAlgebra
+    letI : Algebra R B := g.toAlgebra
+    letI : Algebra R (pushoutCocone f g).pt := show Algebra R (A ⊗[R] B) by infer_instance
+    -- The factor map is a ⊗ b ↦ f(a) * g(b).
+    use AlgHom.toRingHom (Algebra.TensorProduct.productMap f' g')
+    simp only [pushoutCocone_inl, pushoutCocone_inr]
+    constructor
+    · ext x
+      -- Porting note: Lean can't see through `forget` functor
+      letI : Semiring ((forget CommRingCat).obj A) := A.str.toSemiring
+      letI : Algebra R ((forget CommRingCat).obj A) := show Algebra R A by infer_instance
+      exact Algebra.TensorProduct.productMap_left_apply _ _ x
+    constructor
+    · ext x
+      -- Porting note: Lean can't see through `forget` functor
+      letI : Semiring ((forget CommRingCat).obj B) := B.str.toSemiring
+      letI : Algebra R ((forget CommRingCat).obj B) := show Algebra R B by infer_instance
+      exact Algebra.TensorProduct.productMap_right_apply _ _ x
+    intro h eq1 eq2
+    let h' : A ⊗[R] B →ₐ[R] s.pt :=
+      { h with
+        commutes' := fun r => by
+          change h (f r ⊗ₜ[R] 1) = s.inl (f r)
+          rw [← eq1]
+          simp only [pushoutCocone_pt, coe_of, AlgHom.toRingHom_eq_coe]
+          rfl }
+    suffices h' = Algebra.TensorProduct.productMap f' g' by
+      ext x
+      change h' x = Algebra.TensorProduct.productMap f' g' x
+      rw [this]
+    apply Algebra.TensorProduct.ext'
+    intro a b
+    simp only [f', g', ← eq1, pushoutCocone_pt, ← eq2, AlgHom.toRingHom_eq_coe,
+      Algebra.TensorProduct.productMap_apply_tmul, AlgHom.coe_mk]
+    change _ = h (a ⊗ₜ 1) * h (1 ⊗ₜ b)
+    rw [← h.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+    rfl
+set_option linter.uppercaseLean3 false in
+#align CommRing.pushout_cocone_is_colimit CommRingCat.pushoutCoconeIsColimit
+
+end Pushout
