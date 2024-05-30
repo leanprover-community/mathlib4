@@ -237,10 +237,16 @@ theorem natCast_toProd (n : ℕ) : (n : 𝓜(𝕜, A)).toProd = n :=
   rfl
 #align double_centralizer.nat_cast_to_prod DoubleCentralizer.natCast_toProd
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_toProd := natCast_toProd
+
 @[simp]
 theorem intCast_toProd (n : ℤ) : (n : 𝓜(𝕜, A)).toProd = n :=
   rfl
 #align double_centralizer.int_cast_to_prod DoubleCentralizer.intCast_toProd
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_toProd := intCast_toProd
 
 @[simp]
 theorem pow_toProd (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).toProd = a.toProd ^ n :=
@@ -301,17 +307,29 @@ theorem natCast_fst (n : ℕ) : (n : 𝓜(𝕜, A)).fst = n :=
   rfl
 #align double_centralizer.nat_cast_fst DoubleCentralizer.natCast_fst
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_fst := natCast_fst
+
 theorem natCast_snd (n : ℕ) : (n : 𝓜(𝕜, A)).snd = n :=
   rfl
 #align double_centralizer.nat_cast_snd DoubleCentralizer.natCast_snd
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_snd := natCast_snd
 
 theorem intCast_fst (n : ℤ) : (n : 𝓜(𝕜, A)).fst = n :=
   rfl
 #align double_centralizer.int_cast_fst DoubleCentralizer.intCast_fst
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_fst := intCast_fst
+
 theorem intCast_snd (n : ℤ) : (n : 𝓜(𝕜, A)).snd = n :=
   rfl
 #align double_centralizer.int_cast_snd DoubleCentralizer.intCast_snd
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_snd := intCast_snd
 
 theorem pow_fst (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).fst = a.fst ^ n :=
   rfl

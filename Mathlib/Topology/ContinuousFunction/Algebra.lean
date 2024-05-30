@@ -114,10 +114,16 @@ theorem coe_natCast [NatCast β] (n : ℕ) : ((n : C(α, β)) : α → β) = n :
   rfl
 #align continuous_map.coe_nat_cast ContinuousMap.coe_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias coe_nat_cast := coe_natCast
+
 @[simp]
 theorem natCast_apply [NatCast β] (n : ℕ) (x : α) : (n : C(α, β)) x = n :=
   rfl
 #align continuous_map.nat_cast_apply ContinuousMap.natCast_apply
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_apply := natCast_apply
 
 /-! ### `Int.cast` -/
 
@@ -129,10 +135,16 @@ theorem coe_intCast [IntCast β] (n : ℤ) : ((n : C(α, β)) : α → β) = n :
   rfl
 #align continuous_map.coe_int_cast ContinuousMap.coe_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias coe_int_cast := coe_intCast
+
 @[simp]
 theorem intCast_apply [IntCast β] (n : ℤ) (x : α) : (n : C(α, β)) x = n :=
   rfl
 #align continuous_map.int_cast_apply ContinuousMap.intCast_apply
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_apply := intCast_apply
 
 /-! ### `nsmul` and `pow` -/
 

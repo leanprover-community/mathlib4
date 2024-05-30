@@ -139,6 +139,9 @@ theorem eval₂_natCast (n : ℕ) : (n : R[X]).eval₂ f x = n := by
   · rw [n.cast_succ, eval₂_add, ih, eval₂_one, n.cast_succ]
 #align polynomial.eval₂_nat_cast Polynomial.eval₂_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias eval₂_nat_cast := eval₂_natCast
+
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 lemma eval₂_ofNat {S : Type*} [Semiring S] (n : ℕ) [n.AtLeastTwo] (f : R →+* S) (a : S) :
@@ -351,6 +354,9 @@ theorem eval₂_at_natCast {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) :
   simp
 #align polynomial.eval₂_at_nat_cast Polynomial.eval₂_at_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias eval₂_at_nat_cast := eval₂_at_natCast
+
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem eval₂_at_ofNat {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) [n.AtLeastTwo] :
@@ -365,6 +371,9 @@ theorem eval_C : (C a).eval x = a :=
 @[simp]
 theorem eval_natCast {n : ℕ} : (n : R[X]).eval x = n := by simp only [← C_eq_natCast, eval_C]
 #align polynomial.eval_nat_cast Polynomial.eval_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias eval_nat_cast := eval_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
@@ -461,6 +470,9 @@ def leval {R : Type*} [Semiring R] (r : R) : R[X] →ₗ[R] R where
 theorem eval_natCast_mul {n : ℕ} : ((n : R[X]) * p).eval x = n * p.eval x := by
   rw [← C_eq_natCast, eval_C_mul]
 #align polynomial.eval_nat_cast_mul Polynomial.eval_natCast_mul
+
+@[deprecated (since := "2024-04-17")]
+alias eval_nat_cast_mul := eval_natCast_mul
 
 @[simp]
 theorem eval_mul_X : (p * X).eval x = p.eval x * x := by
@@ -567,6 +579,9 @@ theorem C_comp : (C a).comp p = C a :=
 theorem natCast_comp {n : ℕ} : (n : R[X]).comp p = n := by rw [← C_eq_natCast, C_comp]
 #align polynomial.nat_cast_comp Polynomial.natCast_comp
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_comp := natCast_comp
+
 -- Porting note (#10756): new theorem
 @[simp]
 theorem ofNat_comp (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : R[X]).comp p = n :=
@@ -635,11 +650,17 @@ theorem natCast_mul_comp {n : ℕ} : ((n : R[X]) * p).comp r = n * p.comp r := b
   rw [← C_eq_natCast, C_mul_comp]
 #align polynomial.nat_cast_mul_comp Polynomial.natCast_mul_comp
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_mul_comp := natCast_mul_comp
+
 theorem mul_X_add_natCast_comp {n : ℕ} :
     (p * (X + (n : R[X]))).comp q = p.comp q * (q + n) := by
   rw [mul_add, add_comp, mul_X_comp, ← Nat.cast_comm, natCast_mul_comp, Nat.cast_comm, mul_add]
 set_option linter.uppercaseLean3 false in
 #align polynomial.mul_X_add_nat_cast_comp Polynomial.mul_X_add_natCast_comp
+
+@[deprecated (since := "2024-04-17")]
+alias mul_X_add_nat_cast_comp := mul_X_add_natCast_comp
 
 @[simp]
 theorem mul_comp {R : Type*} [CommSemiring R] (p q r : R[X]) :
@@ -778,6 +799,9 @@ theorem coe_mapRingHom (f : R →+* S) : ⇑(mapRingHom f) = map f :=
 protected theorem map_natCast (n : ℕ) : (n : R[X]).map f = n :=
   map_natCast (mapRingHom f) n
 #align polynomial.map_nat_cast Polynomial.map_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias map_nat_cast := map_natCast
 
 -- Porting note (#10756): new theorem
 -- See note [no_index around OfNat.ofNat]
@@ -1007,6 +1031,9 @@ theorem eval_natCast_map (f : R →+* S) (p : R[X]) (n : ℕ) :
     simp only [map_natCast f, eval_monomial, map_monomial, f.map_pow, f.map_mul]
 #align polynomial.eval_nat_cast_map Polynomial.eval_natCast_map
 
+@[deprecated (since := "2024-04-17")]
+alias eval_nat_cast_map := eval_natCast_map
+
 @[simp]
 theorem eval_intCast_map {R S : Type*} [Ring R] [Ring S] (f : R →+* S) (p : R[X]) (i : ℤ) :
     (p.map f).eval (i : S) = f (p.eval i) := by
@@ -1016,6 +1043,9 @@ theorem eval_intCast_map {R S : Type*} [Ring R] [Ring S] (f : R →+* S) (p : R[
   | h_monomial n r =>
     simp only [map_intCast, eval_monomial, map_monomial, map_pow, map_mul]
 #align polynomial.eval_int_cast_map Polynomial.eval_intCast_map
+
+@[deprecated (since := "2024-04-17")]
+alias eval_int_cast_map := eval_intCast_map
 
 end Map
 
@@ -1291,10 +1321,16 @@ protected theorem map_neg {S} [Ring S] (f : R →+* S) : (-p).map f = -p.map f :
   map_intCast (mapRingHom f) n
 #align polynomial.map_int_cast Polynomial.map_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias map_int_cast := map_intCast
+
 @[simp]
 theorem eval_intCast {n : ℤ} {x : R} : (n : R[X]).eval x = n := by
   simp only [← C_eq_intCast, eval_C]
 #align polynomial.eval_int_cast Polynomial.eval_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias eval_int_cast := eval_intCast
 
 @[simp]
 theorem eval₂_neg {S} [Ring S] (f : R →+* S) {x : S} : (-p).eval₂ f x = -p.eval₂ f x := by
@@ -1343,9 +1379,15 @@ theorem eval₂_at_intCast {S : Type*} [Ring S] (f : R →+* S) (n : ℤ) :
   convert eval₂_at_apply (p := p) f n
   simp
 
+@[deprecated (since := "2024-04-17")]
+alias eval₂_at_int_cast := eval₂_at_intCast
+
 theorem mul_X_sub_intCast_comp {n : ℕ} :
     (p * (X - (n : R[X]))).comp q = p.comp q * (q - n) := by
   rw [mul_sub, sub_comp, mul_X_comp, ← Nat.cast_comm, natCast_mul_comp, Nat.cast_comm, mul_sub]
+
+@[deprecated (since := "2024-04-17")]
+alias mul_X_sub_int_cast_comp := mul_X_sub_intCast_comp
 
 end Ring
 

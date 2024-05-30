@@ -656,12 +656,18 @@ theorem natCast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicativ
   ⟨by simp [h], fun {m n} cop => by simp [h.2 cop]⟩
 #align nat.arithmetic_function.is_multiplicative.nat_cast ArithmeticFunction.IsMultiplicative.natCast
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast := natCast
+
 @[arith_mult]
 theorem intCast {f : ArithmeticFunction ℤ} [Ring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
                                  -- Porting note: was `by simp [cop, h]`
   ⟨by simp [h], fun {m n} cop => by simp [h.2 cop]⟩
 #align nat.arithmetic_function.is_multiplicative.int_cast ArithmeticFunction.IsMultiplicative.intCast
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast := intCast
 
 @[arith_mult]
 theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)

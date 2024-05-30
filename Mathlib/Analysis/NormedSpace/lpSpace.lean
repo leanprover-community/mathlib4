@@ -889,9 +889,15 @@ theorem _root_.natCast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :=
   natCast_mem (lpInftySubring B) n
 #align nat_cast_mem_ℓp_infty natCast_memℓp_infty
 
+@[deprecated (since := "2024-04-17")]
+alias _root_.nat_cast_memℓp_infty := _root_.natCast_memℓp_infty
+
 theorem _root_.intCast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
   intCast_mem (lpInftySubring B) z
 #align int_cast_mem_ℓp_infty intCast_memℓp_infty
+
+@[deprecated (since := "2024-04-17")]
+alias _root_.int_cast_memℓp_infty := _root_.intCast_memℓp_infty
 
 @[simp]
 theorem infty_coeFn_one : ⇑(1 : lp B ∞) = 1 :=
@@ -908,10 +914,16 @@ theorem infty_coeFn_natCast (n : ℕ) : ⇑(n : lp B ∞) = n :=
   rfl
 #align lp.infty_coe_fn_nat_cast lp.infty_coeFn_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias infty_coeFn_nat_cast := infty_coeFn_natCast
+
 @[simp]
 theorem infty_coeFn_intCast (z : ℤ) : ⇑(z : lp B ∞) = z :=
   rfl
 #align lp.infty_coe_fn_int_cast lp.infty_coeFn_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias infty_coeFn_int_cast := infty_coeFn_intCast
 
 instance [Nonempty I] : NormOneClass (lp B ∞) where
   norm_one := by simp_rw [lp.norm_eq_ciSup, infty_coeFn_one, Pi.one_apply, norm_one, ciSup_const]

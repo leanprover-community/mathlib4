@@ -66,15 +66,24 @@ theorem rpow_intCast (x : ℝ) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
     Complex.ofReal_re]
 #align real.rpow_int_cast Real.rpow_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias rpow_int_cast := rpow_intCast
+
 @[simp, norm_cast]
 theorem rpow_natCast (x : ℝ) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by simpa using rpow_intCast x n
 #align real.rpow_nat_cast Real.rpow_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias rpow_nat_cast := rpow_natCast
 
 @[simp]
 theorem exp_one_rpow (x : ℝ) : exp 1 ^ x = exp x := by rw [← exp_mul, one_mul]
 #align real.exp_one_rpow Real.exp_one_rpow
 
 @[simp] lemma exp_one_pow (n : ℕ) : exp 1 ^ n = exp n := by rw [← rpow_natCast, exp_one_rpow]
+
+@[deprecated (since := "2024-04-17")]
+alias exp_one_pow := exp_one_pow
 
 theorem rpow_eq_zero_iff_of_nonneg (hx : 0 ≤ x) : x ^ y = 0 ↔ x = 0 ∧ y ≠ 0 := by
   simp only [rpow_def_of_nonneg hx]
