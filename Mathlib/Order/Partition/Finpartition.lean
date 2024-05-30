@@ -249,7 +249,7 @@ instance : PartialOrder (Finpartition a) :=
       exact ⟨d, hd, hbc.trans hcd⟩
     le_antisymm := fun P Q hPQ hQP ↦ by
       ext b
-      refine' ⟨fun hb ↦ _, fun hb ↦ _⟩
+      refine ⟨fun hb ↦ ?_, fun hb ↦ ?_⟩
       · obtain ⟨c, hc, hbc⟩ := hPQ hb
         obtain ⟨d, hd, hcd⟩ := hQP hc
         rwa [hbc.antisymm]
@@ -301,7 +301,7 @@ instance : Inf (Finpartition a) :=
           mem_product, Finset.disjoint_sup_right, mem_erase, Ne]
         rintro _ x₁ y₁ hx₁ hy₁ rfl _ h x₂ y₂ hx₂ hy₂ rfl
         rcases eq_or_ne x₁ x₂ with (rfl | xdiff)
-        · refine' Disjoint.mono inf_le_right inf_le_right (Q.disjoint hy₁ hy₂ _)
+        · refine Disjoint.mono inf_le_right inf_le_right (Q.disjoint hy₁ hy₂ ?_)
           intro t
           simp [t] at h
         exact Disjoint.mono inf_le_left inf_le_left (P.disjoint hx₁ hx₂ xdiff))

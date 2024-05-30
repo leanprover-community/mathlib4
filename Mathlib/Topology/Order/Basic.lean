@@ -133,7 +133,7 @@ instance tendstoIccClassNhds (a : α) : TendstoIxxClass Icc (𝓝 a) (𝓝 a) :=
   refine
     ((hasBasis_iInf_principal_finite _).inf (hasBasis_iInf_principal_finite _)).tendstoIxxClass
       fun s _ => ?_
-  refine' ((ordConnected_biInter _).inter (ordConnected_biInter _)).out <;> intro _ _
+  refine ((ordConnected_biInter ?_).inter (ordConnected_biInter ?_)).out <;> intro _ _
   exacts [ordConnected_Ioi, ordConnected_Iio]
 #align tendsto_Icc_class_nhds tendstoIccClassNhds
 

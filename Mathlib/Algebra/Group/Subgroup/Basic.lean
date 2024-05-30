@@ -1175,7 +1175,7 @@ def closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y 
     mul_comm := fun x y => by
       ext
       simp only [Subgroup.coe_mul]
-      refine'
+      refine
         closure_induction₂ x.prop y.prop hcomm (fun x => by simp only [mul_one, one_mul])
           (fun x => by simp only [mul_one, one_mul])
           (fun x y z h₁ h₂ => by rw [mul_assoc, h₂, ← mul_assoc, h₁, mul_assoc])
@@ -2331,7 +2331,7 @@ theorem le_normalClosure {H : Subgroup G} : H ≤ normalClosure ↑H := fun _ h 
 /-- The normal closure of `s` is a normal subgroup. -/
 instance normalClosure_normal : (normalClosure s).Normal :=
   ⟨fun n h g => by
-    refine' Subgroup.closure_induction h (fun x hx => _) _ (fun x y ihx ihy => _) fun x ihx => _
+    refine Subgroup.closure_induction h (fun x hx => ?_) ?_ (fun x y ihx ihy => ?_) fun x ihx => ?_
     · exact conjugatesOfSet_subset_normalClosure (conj_mem_conjugatesOfSet hx)
     · simpa using (normalClosure s).one_mem
     · rw [← conj_mul]

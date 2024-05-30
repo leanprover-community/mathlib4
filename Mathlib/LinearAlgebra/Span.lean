@@ -895,7 +895,7 @@ instance : IsModularLattice (Submodule R M) :=
     rw [mem_inf, mem_sup] at ha
     rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
     rw [mem_sup]
-    refine' ⟨b, hb, c, mem_inf.2 ⟨hc, _⟩, rfl⟩
+    refine ⟨b, hb, c, mem_inf.2 ⟨hc, ?_⟩, rfl⟩
     rw [← add_sub_cancel_right c b, add_comm]
     apply z.sub_mem haz (xz hb)⟩
 

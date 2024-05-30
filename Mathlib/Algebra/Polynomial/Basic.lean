@@ -363,7 +363,7 @@ instance unique [Subsingleton R] : Unique R[X] :=
   { Polynomial.inhabited with
     uniq := by
       rintro ⟨x⟩
-      refine' congr_arg ofFinsupp _
+      apply congr_arg ofFinsupp
       simp [eq_iff_true_of_subsingleton] }
 #align polynomial.unique Polynomial.unique
 

@@ -489,9 +489,9 @@ noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
               fun x hx => ⟨0, by rwa [map_zero, sub_zero, map_zero, add_zero]⟩
         simp_rw [Real.mul_iInf_of_nonneg (norm_nonneg a), mul_add, ← map_smul_eq_mul p, ←
           map_smul_eq_mul q, smul_sub]
-        refine'
+        refine
           Function.Surjective.iInf_congr ((a⁻¹ • ·) : E → E)
-            (fun u => ⟨a • u, inv_smul_smul₀ ha u⟩) fun u => _
+            (fun u => ⟨a • u, inv_smul_smul₀ ha u⟩) fun u => ?_
         rw [smul_inv_smul₀ ha] }
 
 @[simp]

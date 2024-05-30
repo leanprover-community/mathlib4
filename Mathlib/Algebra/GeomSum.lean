@@ -253,7 +253,7 @@ protected theorem Commute.geom_sum₂_comm {α : Type u} [Semiring α] {x y : α
   cases n; · simp
   simp only [Nat.succ_eq_add_one, Nat.add_sub_cancel]
   rw [← Finset.sum_flip]
-  refine' Finset.sum_congr rfl fun i hi => _
+  refine Finset.sum_congr rfl fun i hi => ?_
   simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using h.pow_pow _ _
 #align commute.geom_sum₂_comm Commute.geom_sum₂_comm
 
@@ -286,7 +286,7 @@ protected theorem Commute.mul_geom_sum₂_Ico [Ring α] {x y : α} (h : Commute 
   have :
     ∑ k ∈ range m, x ^ k * y ^ (n - 1 - k) =
       ∑ k ∈ range m, x ^ k * (y ^ (n - m) * y ^ (m - 1 - k)) := by
-    refine' sum_congr rfl fun j j_in => _
+    refine sum_congr rfl fun j j_in => ?_
     rw [← pow_add]
     congr
     rw [mem_range, Nat.lt_iff_add_one_le, add_comm] at j_in
@@ -305,7 +305,7 @@ protected theorem Commute.geom_sum₂_succ_eq {α : Type u} [Ring α] {x y : α}
       x ^ n + y * ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) := by
   simp_rw [mul_sum, sum_range_succ_comm, tsub_self, pow_zero, mul_one, add_right_inj, ← mul_assoc,
     (h.symm.pow_right _).eq, mul_assoc, ← pow_succ']
-  refine' sum_congr rfl fun i hi => _
+  refine sum_congr rfl fun i hi => ?_
   suffices n - 1 - i + 1 = n - i by rw [this]
   cases' n with n
   · exact absurd (List.mem_range.mp hi) i.not_lt_zero
@@ -331,7 +331,7 @@ protected theorem Commute.geom_sum₂_Ico_mul [Ring α] {x y : α} (h : Commute 
   simp only [op_sub, op_mul, op_pow, op_sum]
   have : (∑ k ∈ Ico m n, MulOpposite.op y ^ (n - 1 - k) * MulOpposite.op x ^ k) =
       ∑ k ∈ Ico m n, MulOpposite.op x ^ k * MulOpposite.op y ^ (n - 1 - k) := by
-    refine' sum_congr rfl fun k _ => _
+    refine sum_congr rfl fun k _ => ?_
     have hp := Commute.pow_pow (Commute.op h.symm) (n - 1 - k) k
     simpa [Commute, SemiconjBy] using hp
   simp only [this]

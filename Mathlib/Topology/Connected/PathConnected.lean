@@ -195,7 +195,7 @@ theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ := by
   ext x
   simp only [mem_range, Path.symm, DFunLike.coe, unitInterval.symm, SetCoe.exists, comp_apply,
     Subtype.coe_mk]
-  constructor <;> rintro ⟨y, hy, hxy⟩ <;> refine' ⟨1 - y, mem_iff_one_sub_mem.mp hy, _⟩ <;>
+  constructor <;> rintro ⟨y, hy, hxy⟩ <;> refine ⟨1 - y, mem_iff_one_sub_mem.mp hy, ?_⟩ <;>
     convert hxy
   simp
 #align path.symm_range Path.symm_range

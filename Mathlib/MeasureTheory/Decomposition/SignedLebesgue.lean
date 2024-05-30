@@ -280,11 +280,11 @@ private theorem haveLebesgueDecomposition_mk' (μ : Measure α) {f : α → ℝ}
   refine'
     { posPart := by
         use ⟨t.toJordanDecomposition.posPart, fun x => ENNReal.ofReal (f x)⟩
-        refine' ⟨hf.ennreal_ofReal, htμ.1, _⟩
+        refine ⟨hf.ennreal_ofReal, htμ.1, _⟩
         rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]
       negPart := by
         use ⟨t.toJordanDecomposition.negPart, fun x => ENNReal.ofReal (-f x)⟩
-        refine' ⟨hf.neg.ennreal_ofReal, htμ.2, _⟩
+        refine ⟨hf.neg.ennreal_ofReal, htμ.2, _⟩
         rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd] }
 
 theorem haveLebesgueDecomposition_mk (μ : Measure α) {f : α → ℝ} (hf : Measurable f)

@@ -2068,7 +2068,7 @@ theorem Fin.dist_insertNth_insertNth {n : ℕ} {α : Fin (n + 1) → Type*}
 theorem Real.dist_le_of_mem_pi_Icc {x y x' y' : β → ℝ} (hx : x ∈ Icc x' y') (hy : y ∈ Icc x' y') :
     dist x y ≤ dist x' y' := by
   refine (dist_pi_le_iff dist_nonneg).2 fun b =>
-    (Real.dist_le_of_mem_uIcc ?_ ?_).trans (dist_le_pi_dist x' y' b) <;> refine' Icc_subset_uIcc _
+    (Real.dist_le_of_mem_uIcc ?_ ?_).trans (dist_le_pi_dist x' y' b) <;> refine Icc_subset_uIcc ?_
   exacts [⟨hx.1 _, hx.2 _⟩, ⟨hy.1 _, hy.2 _⟩]
 #align real.dist_le_of_mem_pi_Icc Real.dist_le_of_mem_pi_Icc
 

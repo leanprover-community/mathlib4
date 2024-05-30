@@ -80,7 +80,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       intro hi
       rw [mem_image] at this
       obtain ⟨t, ht₁, ht₂⟩ := this
-      refine' ⟨t, by rwa [ht₂], _⟩
+      refine ⟨t, by rwa [ht₂], ?_⟩
       rw [mem_filter] at ht₁
       apply ht₁.2.2
   -- Show first that the pair of labels is unique.
@@ -106,7 +106,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       -- Ensure `t` ends at `i`.
       have : t.max = i := by simp only [ht₁.2.1]
       -- Now our new subsequence is given by adding `j` at the end of `t`.
-      refine' ⟨insert j t, _, _⟩
+      refine ⟨insert j t, ?_, ?_⟩
       -- First make sure it's valid, i.e., that this subsequence ends at `j` and is increasing
       · rw [mem_filter]
         refine ⟨?_, ?_, ?_⟩
@@ -155,7 +155,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       constructor <;>
         · apply le_max'
           rw [mem_image]
-          refine' ⟨{i}, by solve_by_elim, card_singleton i⟩
+          refine ⟨{i}, by solve_by_elim, card_singleton i⟩
     refine ⟨?_, ?_⟩
     -- Need to get `a_i ≤ r`, here phrased as: there is some `a < r` with `a+1 = a_i`.
     · refine ⟨(ab i).1 - 1, ?_, Nat.succ_pred_eq_of_pos z.1⟩

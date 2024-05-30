@@ -48,7 +48,7 @@ theorem dense_compl_compact (hs : IsCompact s) : Dense sᶜ :=
 #align rat.dense_compl_compact Rat.dense_compl_compact
 
 instance cocompact_inf_nhds_neBot : NeBot (cocompact ℚ ⊓ 𝓝 p) := by
-  refine' (hasBasis_cocompact.inf (nhds_basis_opens _)).neBot_iff.2 _
+  refine (hasBasis_cocompact.inf (nhds_basis_opens _)).neBot_iff.2 ?_
   rintro ⟨s, o⟩ ⟨hs, hpo, ho⟩; rw [inter_comm]
   exact (dense_compl_compact hs).inter_open_nonempty _ ho ⟨p, hpo⟩
 #align rat.cocompact_inf_nhds_ne_bot Rat.cocompact_inf_nhds_neBot

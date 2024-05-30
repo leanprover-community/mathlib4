@@ -332,7 +332,7 @@ instance [CommMonoidWithZero β] [ContinuousMul β] : CommMonoidWithZero C(α, �
 @[to_additive]
 instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(α, β) :=
   ⟨by
-    refine' continuous_of_continuous_uncurry _ _
+    refine continuous_of_continuous_uncurry _ ?_
     have h1 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.fst x.snd :=
       continuous_eval.comp (continuous_fst.prod_map continuous_id)
     have h2 : Continuous fun x : (C(α, β) × C(α, β)) × α => x.fst.snd x.snd :=
@@ -601,7 +601,7 @@ instance [LocallyCompactSpace α] [SMul R M] [ContinuousConstSMul R M] :
 instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMul R M] :
     ContinuousSMul R C(α, M) :=
   ⟨by
-    refine' continuous_of_continuous_uncurry _ _
+    refine continuous_of_continuous_uncurry _ ?_
     have h : Continuous fun x : (R × C(α, M)) × α => x.fst.snd x.snd :=
       continuous_eval.comp (continuous_snd.prod_map continuous_id)
     exact (continuous_fst.comp continuous_fst).smul h⟩

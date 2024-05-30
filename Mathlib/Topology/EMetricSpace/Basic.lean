@@ -206,7 +206,7 @@ For specific bases see `uniformity_basis_edist`, `uniformity_basis_edist'`,
 protected theorem EMetric.mk_uniformity_basis {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 < f x } := by
-  refine' ⟨fun s => uniformity_basis_edist.mem_iff.trans _⟩
+  refine ⟨fun s => uniformity_basis_edist.mem_iff.trans ?_⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
     rcases hf ε ε₀ with ⟨i, hi, H⟩
@@ -221,7 +221,7 @@ For specific bases see `uniformity_basis_edist_le` and `uniformity_basis_edist_l
 protected theorem EMetric.mk_uniformity_basis_le {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 ≤ f x } := by
-  refine' ⟨fun s => uniformity_basis_edist.mem_iff.trans _⟩
+  refine ⟨fun s => uniformity_basis_edist.mem_iff.trans ?_⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
     rcases exists_between ε₀ with ⟨ε', hε'⟩

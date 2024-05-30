@@ -1497,7 +1497,7 @@ theorem Valid'.merge_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' 
     rw [size_dual, add_comm, size_dual, ← dual_balanceR, ← Valid'.dual_iff, size_dual,
       add_comm rs] at this
     exact this e
-  · refine' Valid'.glue_aux hl hr sep (Or.inr ⟨not_lt.1 h_1, not_lt.1 h⟩)
+  · refine Valid'.glue_aux hl hr sep (Or.inr ⟨not_lt.1 h_1, not_lt.1 h⟩)
 #align ordnode.valid'.merge_aux Ordnode.Valid'.merge_aux
 
 theorem Valid.merge {l r} (hl : Valid l) (hr : Valid r)

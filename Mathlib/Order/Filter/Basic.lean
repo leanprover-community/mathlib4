@@ -429,13 +429,13 @@ instance : Inf (Filter α) :=
       univ_sets := ⟨_, univ_mem, _, univ_mem, by simp⟩
       sets_of_superset := by
         rintro x y ⟨a, ha, b, hb, rfl⟩ xy
-        refine'
+        refine
           ⟨a ∪ y, mem_of_superset ha (subset_union_left a y), b ∪ y,
-            mem_of_superset hb (subset_union_left b y), _⟩
+            mem_of_superset hb (subset_union_left b y), ?_⟩
         rw [← inter_union_distrib_right, union_eq_self_of_subset_left xy]
       inter_sets := by
         rintro x y ⟨a, ha, b, hb, rfl⟩ ⟨c, hc, d, hd, rfl⟩
-        refine' ⟨a ∩ c, inter_mem ha hc, b ∩ d, inter_mem hb hd, _⟩
+        refine ⟨a ∩ c, inter_mem ha hc, b ∩ d, inter_mem hb hd, ?_⟩
         ac_rfl }⟩
 
 theorem mem_inf_iff {f g : Filter α} {s : Set α} : s ∈ f ⊓ g ↔ ∃ t₁ ∈ f, ∃ t₂ ∈ g, s = t₁ ∩ t₂ :=
@@ -913,7 +913,7 @@ instance : Coframe (Filter α) :=
       obtain ⟨u, hu⟩ := h₂
       rw [← Finset.inf_eq_iInf] at hu
       suffices ⨅ i : s, f ⊔ ↑i ≤ f ⊔ u.inf fun i => ↑i from this ⟨h₁, hu⟩
-      refine' Finset.induction_on u (le_sup_of_le_right le_top) _
+      refine Finset.induction_on u (le_sup_of_le_right le_top) ?_
       rintro ⟨i⟩ u _ ih
       rw [Finset.inf_insert, sup_inf_left]
       exact le_inf (iInf_le _ _) ih }

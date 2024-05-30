@@ -505,9 +505,9 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
         rcases p.dichotomy with (rfl | hp')
         · cases isEmpty_or_nonempty α
           · simp only [lp.eq_zero' f, zero_add, norm_zero, le_refl]
-          refine' (lp.isLUB_norm (f + g)).2 _
+          refine (lp.isLUB_norm (f + g)).2 ?_
           rintro x ⟨i, rfl⟩
-          refine' le_trans _ (add_mem_upperBounds_add
+          refine le_trans ?_ (add_mem_upperBounds_add
             (lp.isLUB_norm f).1 (lp.isLUB_norm g).1 ⟨_, ⟨i, rfl⟩, _, ⟨i, rfl⟩, rfl⟩)
           exact norm_add_le (f i) (g i)
         · have hp'' : 0 < p.toReal := zero_lt_one.trans_le hp'
@@ -518,9 +518,9 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           -- apply Minkowski's inequality
           obtain ⟨C, hC₁, hC₂, hCfg⟩ :=
             Real.Lp_add_le_hasSum_of_nonneg hp' hf₁ hg₁ (norm_nonneg' _) (norm_nonneg' _) hf₂ hg₂
-          refine' le_trans _ hC₂
+          refine le_trans ?_ hC₂
           rw [← Real.rpow_le_rpow_iff (norm_nonneg' (f + g)) hC₁ hp'']
-          refine' hasSum_le _ (lp.hasSum_norm hp'' (f + g)) hCfg
+          refine hasSum_le ?_ (lp.hasSum_norm hp'' (f + g)) hCfg
           intro i
           gcongr
           apply norm_add_le
@@ -836,12 +836,12 @@ instance inftyCstarRing [∀ i, CstarRing (B i)] : CstarRing (lp B ∞) where
     intro f
     apply le_antisymm
     · rw [← sq]
-      refine' lp.norm_le_of_forall_le (sq_nonneg ‖f‖) fun i => _
+      refine lp.norm_le_of_forall_le (sq_nonneg ‖f‖) fun i => ?_
       simp only [lp.star_apply, CstarRing.norm_star_mul_self, ← sq, infty_coeFn_mul, Pi.mul_apply]
-      refine' sq_le_sq' _ (lp.norm_apply_le_norm ENNReal.top_ne_zero _ _)
+      refine sq_le_sq' ?_ (lp.norm_apply_le_norm ENNReal.top_ne_zero _ _)
       linarith [norm_nonneg (f i), norm_nonneg f]
     · rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _)]
-      refine' lp.norm_le_of_forall_le ‖star f * f‖.sqrt_nonneg fun i => _
+      refine lp.norm_le_of_forall_le ‖star f * f‖.sqrt_nonneg fun i => ?_
       rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CstarRing.norm_star_mul_self]
       exact lp.norm_apply_le_norm ENNReal.top_ne_zero (star f * f) i
 #align lp.infty_cstar_ring lp.inftyCstarRing

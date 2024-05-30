@@ -119,7 +119,7 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
       ← preimage_subtype_coe_eq_compl Subset.rfl]
     · exact hZ₁.preimage hφ
     · rw [hZ₁₂.inter_eq, inter_empty]
-  refine' (closure_minimal _ <| hZ₂.preimage hφ).antisymm fun x hx => _
+  refine (closure_minimal ?_ <| hZ₂.preimage hφ).antisymm fun x hx => ?_
   · intro x hx
     have : φ x ∈ Z₁ ∪ Z₂ := (g x).2
     -- Porting note: Originally `simpa [hx, hφ₁] using this`

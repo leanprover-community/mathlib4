@@ -198,7 +198,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
   rsuffices ⟨j, hj⟩ :
     ∃ j, ∀ i, t' i = j ↔ (cardPowDegree (A 0 % b - A i.succ % b) : ℝ) < cardPowDegree b • ε
   · refine ⟨Fin.cons j t', fun i₀ i₁ => ?_⟩
-    refine Fin.cases ?_ (fun i₀ => ?_) i₀ <;> refine' Fin.cases _ (fun i₁ => _) i₁
+    refine Fin.cases ?_ (fun i₀ => ?_) i₀ <;> refine Fin.cases ?_ (fun i₁ => ?_) i₁
     · simpa using hbε
     · rw [Fin.cons_succ, Fin.cons_zero, eq_comm, AbsoluteValue.map_sub]
       exact hj i₁

@@ -129,10 +129,10 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
   ⟨fun V =>
     isConnected_of_zigzag fun A B => by
       rcases A with ⟨⟨⟨⟩⟩, ⟨i⟩ | ⟨i, j⟩, a⟩ <;> rcases B with ⟨⟨⟨⟩⟩, ⟨i'⟩ | ⟨i', j'⟩, b⟩
-      · refine'
+      · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := pair i i'
-                hom := (le_inf a.le b.le).hom }, _], _, rfl⟩
+                hom := (le_inf a.le b.le).hom }, _], ?_, rfl⟩
         exact
           List.Chain.cons
             (Or.inr
@@ -143,13 +143,13 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                 ⟨{  left := 𝟙 _
                     right := right i i' }⟩)
               List.Chain.nil)
-      · refine'
+      · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := pair i' i
                 hom := (le_inf (b.le.trans inf_le_left) a.le).hom },
               { left := ⟨⟨⟩⟩
                 right := single i'
-                hom := (b.le.trans inf_le_left).hom }, _], _, rfl⟩
+                hom := (b.le.trans inf_le_left).hom }, _], ?_, rfl⟩
         exact
           List.Chain.cons
             (Or.inr
@@ -164,13 +164,13 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                   ⟨{  left := 𝟙 _
                       right := left i' j' }⟩)
                 List.Chain.nil))
-      · refine'
+      · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := single i
                 hom := (a.le.trans inf_le_left).hom },
               { left := ⟨⟨⟩⟩
                 right := pair i i'
-                hom := (le_inf (a.le.trans inf_le_left) b.le).hom }, _], _, rfl⟩
+                hom := (le_inf (a.le.trans inf_le_left) b.le).hom }, _], ?_, rfl⟩
         exact
           List.Chain.cons
             (Or.inl
@@ -185,7 +185,7 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                   ⟨{  left := 𝟙 _
                       right := right i i' }⟩)
                 List.Chain.nil))
-      · refine'
+      · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := single i
                 hom := (a.le.trans inf_le_left).hom },
@@ -194,7 +194,7 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                 hom := (le_inf (a.le.trans inf_le_left) (b.le.trans inf_le_left)).hom },
               { left := ⟨⟨⟩⟩
                 right := single i'
-                hom := (b.le.trans inf_le_left).hom }, _], _, rfl⟩
+                hom := (b.le.trans inf_le_left).hom }, _], ?_, rfl⟩
         exact
           List.Chain.cons
             (Or.inl

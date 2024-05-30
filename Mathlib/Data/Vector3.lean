@@ -285,7 +285,7 @@ theorem vectorAllP_iff_forall (p : α → Prop) (v : Vector3 α n) :
     refine fun {n} a v IH =>
       (and_congr_right fun _ => IH).trans
         ⟨fun ⟨pa, h⟩ i => by
-          refine' i.cases' _ _
+          refine i.cases' ?_ ?_
           exacts [pa, h], fun h => ⟨?_, fun i => ?_⟩⟩
     · simpa using h fz
     · simpa using h (fs i)

@@ -238,14 +238,14 @@ noncomputable instance prestructure : L.Prestructure (DirectLimit.setoid G f) wh
   toStructure := sigmaStructure G f
   fun_equiv {n} {F} x y xy := by
     obtain ⟨i, hx, hy, h⟩ := exists_unify_eq G f xy
-    refine'
+    refine
       Setoid.trans (funMap_equiv_unify G f F x i hx)
-        (Setoid.trans _ (Setoid.symm (funMap_equiv_unify G f F y i hy)))
+        (Setoid.trans ?_ (Setoid.symm (funMap_equiv_unify G f F y i hy)))
     rw [h]
   rel_equiv {n} {R} x y xy := by
     obtain ⟨i, hx, hy, h⟩ := exists_unify_eq G f xy
-    refine' _root_.trans (relMap_equiv_unify G f R x i hx)
-      (_root_.trans _ (symm (relMap_equiv_unify G f R y i hy)))
+    refine _root_.trans (relMap_equiv_unify G f R x i hx)
+      (_root_.trans ?_ (symm (relMap_equiv_unify G f R y i hy)))
     rw [h]
 #align first_order.language.direct_limit.prestructure FirstOrder.Language.DirectLimit.prestructure
 

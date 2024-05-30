@@ -63,7 +63,7 @@ lemma killingForm_nondegenerate :
 /-- The converse of this is true over a field of characteristic zero. There are counterexamples
 over fields with positive characteristic. -/
 instance instHasTrivialRadical [IsDomain R] [IsPrincipalIdealRing R] : HasTrivialRadical R L := by
-  refine' (hasTrivialRadical_iff_no_abelian_ideals R L).mpr fun I hI ↦ _
+  refine (hasTrivialRadical_iff_no_abelian_ideals R L).mpr fun I hI ↦ ?_
   rw [eq_bot_iff, ← killingCompl_top_eq_bot]
   exact I.le_killingCompl_top_of_isLieAbelian
 

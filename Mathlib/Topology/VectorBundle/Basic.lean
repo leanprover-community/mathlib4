@@ -770,7 +770,7 @@ instance vectorBundle : VectorBundle R F Z.Fiber where
     apply localTriv.isLinear
   continuousOn_coordChange' := by
     rintro _ _ ⟨i, rfl⟩ ⟨i', rfl⟩
-    refine' (Z.continuousOn_coordChange i i').congr fun b hb => _
+    refine (Z.continuousOn_coordChange i i').congr fun b hb => ?_
     ext v
     exact Z.localTriv_coordChange_eq i i' hb v
 #align vector_bundle_core.vector_bundle VectorBundleCore.vectorBundle

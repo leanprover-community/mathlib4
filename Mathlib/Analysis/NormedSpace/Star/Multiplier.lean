@@ -575,7 +575,7 @@ instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
   rw [completeSpace_iff_isComplete_range uniformEmbedding_toProdMulOpposite.toUniformInducing]
   apply IsClosed.isComplete
   simp only [range_toProdMulOpposite, Set.setOf_forall]
-  refine' isClosed_iInter fun x => isClosed_iInter fun y => isClosed_eq _ _
+  refine isClosed_iInter fun x => isClosed_iInter fun y => isClosed_eq ?_ ?_
   · exact
       ((ContinuousLinearMap.apply 𝕜 A _).continuous.comp <| continuous_unop.comp continuous_snd).mul
         continuous_const
@@ -684,9 +684,9 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
       simp only [mul_snd, ← sSup_closed_unit_ball_eq_nnnorm, star_snd, mul_apply]
       simp only [← @opNNNorm_mul_apply 𝕜 _ A]
       simp only [← sSup_closed_unit_ball_eq_nnnorm, mul_apply']
-      refine' csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) _ fun r hr => _
+      refine csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) ?_ fun r hr => ?_
       · rintro - ⟨x, hx, rfl⟩
-        refine' csSup_le (hball.image _) _
+        refine csSup_le (hball.image _) ?_
         rintro - ⟨y, hy, rfl⟩
         exact key x y (mem_closedBall_zero_iff.1 hx) (mem_closedBall_zero_iff.1 hy)
       · simp only [Set.mem_image, Set.mem_setOf_eq, exists_prop, exists_exists_and_eq_and]
@@ -694,9 +694,9 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
         simp_rw [← nnnorm_fst, ← sSup_closed_unit_ball_eq_nnnorm] at hr'
         obtain ⟨_, ⟨x, hx, rfl⟩, hxr⟩ := exists_lt_of_lt_csSup (hball.image _) hr'
         have hx' : ‖x‖₊ ≤ 1 := mem_closedBall_zero_iff.1 hx
-        refine' ⟨star x, mem_closedBall_zero_iff.2 ((nnnorm_star x).trans_le hx'), _⟩
-        refine' lt_csSup_of_lt _ ⟨x, hx, rfl⟩ _
-        · refine' ⟨‖a‖₊ * ‖a‖₊, _⟩
+        refine ⟨star x, mem_closedBall_zero_iff.2 ((nnnorm_star x).trans_le hx'), ?_⟩
+        refine lt_csSup_of_lt ?_ ⟨x, hx, rfl⟩ ?_
+        · refine ⟨‖a‖₊ * ‖a‖₊, ?_⟩
           rintro - ⟨y, hy, rfl⟩
           exact key (star x) y ((nnnorm_star x).trans_le hx') (mem_closedBall_zero_iff.1 hy)
         · simpa only [a.central, star_star, CstarRing.nnnorm_star_mul_self, NNReal.sq_sqrt, ← sq]

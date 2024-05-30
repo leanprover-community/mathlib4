@@ -2401,7 +2401,7 @@ instance (priority := 100) CompletelyNormalSpace.toNormalSpace
 
 theorem Embedding.completelyNormalSpace [TopologicalSpace Y] [CompletelyNormalSpace Y] {e : X → Y}
     (he : Embedding e) : CompletelyNormalSpace X := by
-  refine' ⟨fun s t hd₁ hd₂ => _⟩
+  refine ⟨fun s t hd₁ hd₂ => ?_⟩
   simp only [he.toInducing.nhdsSet_eq_comap]
   refine disjoint_comap (completely_normal ?_ ?_)
   · rwa [← subset_compl_iff_disjoint_left, image_subset_iff, preimage_compl,
@@ -2658,6 +2658,6 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
     exact ⟨U, (↑) '' U, hU, ha, subset_iInter₂ fun s _ => s.2.1.connectedComponent_subset s.2.2,
       (connectedComponents_preimage_image U).symm ▸ hU.biUnion_connectedComponent_eq⟩
   rw [ConnectedComponents.quotientMap_coe.isClopen_preimage] at hU
-  refine' ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, _, hb mem_connectedComponent, disjoint_compl_left⟩
+  refine ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, ?_, hb mem_connectedComponent, disjoint_compl_left⟩
   exact fun h => flip Set.Nonempty.ne_empty ha ⟨a, mem_connectedComponent, h⟩
 #align connected_components.t2 ConnectedComponents.t2

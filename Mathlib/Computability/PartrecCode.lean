@@ -667,7 +667,7 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       exact ⟨le_trans h₂ h, h₁ h₃⟩
     simp? at h ⊢ says simp only [Option.mem_def] at h ⊢
     induction' c with cf cg hf hg cf cg hf hg cf cg hf hg cf hf generalizing x n <;>
-      rw [evaln] at h ⊢ <;> refine' this hl' (fun h => _) h
+      rw [evaln] at h ⊢ <;> refine this hl' (fun h => ?_) h
     iterate 4 exact h
     · -- pair cf cg
       simp? [Seq.seq] at h ⊢ says
