@@ -600,10 +600,6 @@ lemma orderOf_pos (χ : MulChar M R) : 0 < orderOf χ := by
     simp only [← map_pow, pow_card_eq_one, map_one, MonoidHom.one_apply]
   exact Nat.pos_of_ne_zero <| ne_zero_of_dvd_ne_zero Fintype.card_ne_zero this
 
-variable (M) in
-/-- The order of the unit group of a finite monoid as a `PNat`. -/
-abbrev Monoid.orderUnits : ℕ+ := ⟨Fintype.card Mˣ, Fintype.card_pos⟩
-
 /-- If `χ` is a multiplicative character on a finite commutative monoid `M`, then `χ^#Mˣ = 1`. -/
 protected
 lemma pow_card_eq_one (χ : MulChar M R) : χ ^ (Fintype.card Mˣ) = 1 := by
