@@ -22,7 +22,7 @@ noncomputable section
 
 open Finset AddMonoidAlgebra
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 
@@ -168,7 +168,7 @@ theorem eval₂_multiset_sum (s : Multiset R[X]) (x : S) :
 #align polynomial.eval₂_multiset_sum Polynomial.eval₂_multiset_sum
 
 theorem eval₂_finset_sum (s : Finset ι) (g : ι → R[X]) (x : S) :
-    (∑ i in s, g i).eval₂ f x = ∑ i in s, (g i).eval₂ f x :=
+    (∑ i ∈ s, g i).eval₂ f x = ∑ i ∈ s, (g i).eval₂ f x :=
   map_sum (eval₂AddMonoidHom f x) _ _
 #align polynomial.eval₂_finset_sum Polynomial.eval₂_finset_sum
 
@@ -241,13 +241,13 @@ section
 variable [Semiring S] (f : R →+* S) (x : S)
 
 theorem eval₂_eq_sum_range :
-    p.eval₂ f x = ∑ i in Finset.range (p.natDegree + 1), f (p.coeff i) * x ^ i :=
+    p.eval₂ f x = ∑ i ∈ Finset.range (p.natDegree + 1), f (p.coeff i) * x ^ i :=
   _root_.trans (congr_arg _ p.as_sum_range)
     (_root_.trans (eval₂_finset_sum f _ _ x) (congr_arg _ (by simp)))
 #align polynomial.eval₂_eq_sum_range Polynomial.eval₂_eq_sum_range
 
 theorem eval₂_eq_sum_range' (f : R →+* S) {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : S) :
-    eval₂ f x p = ∑ i in Finset.range n, f (p.coeff i) * x ^ i := by
+    eval₂ f x p = ∑ i ∈ Finset.range n, f (p.coeff i) * x ^ i := by
   rw [eval₂_eq_sum, p.sum_over_range' _ _ hn]
   intro i
   rw [f.map_zero, zero_mul]
@@ -322,12 +322,12 @@ theorem eval_eq_sum : p.eval x = p.sum fun e a => a * x ^ e := by
 #align polynomial.eval_eq_sum Polynomial.eval_eq_sum
 
 theorem eval_eq_sum_range {p : R[X]} (x : R) :
-    p.eval x = ∑ i in Finset.range (p.natDegree + 1), p.coeff i * x ^ i := by
+    p.eval x = ∑ i ∈ Finset.range (p.natDegree + 1), p.coeff i * x ^ i := by
   rw [eval_eq_sum, sum_over_range]; simp
 #align polynomial.eval_eq_sum_range Polynomial.eval_eq_sum_range
 
 theorem eval_eq_sum_range' {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : R) :
-    p.eval x = ∑ i in Finset.range n, p.coeff i * x ^ i := by
+    p.eval x = ∑ i ∈ Finset.range n, p.coeff i * x ^ i := by
   rw [eval_eq_sum, p.sum_over_range' _ _ hn]; simp
 #align polynomial.eval_eq_sum_range' Polynomial.eval_eq_sum_range'
 
@@ -429,7 +429,7 @@ $$(d + 1) (1 + y)^d - (d + 1)y^d = \sum_{i = 0}^d {d + 1 \choose i} \cdot i \cdo
 -/
 theorem eval_monomial_one_add_sub [CommRing S] (d : ℕ) (y : S) :
     eval (1 + y) (monomial d (d + 1 : S)) - eval y (monomial d (d + 1 : S)) =
-      ∑ x_1 : ℕ in range (d + 1), ↑((d + 1).choose x_1) * (↑x_1 * y ^ (x_1 - 1)) := by
+      ∑ x_1 ∈ range (d + 1), ↑((d + 1).choose x_1) * (↑x_1 * y ^ (x_1 - 1)) := by
   have cast_succ : (d + 1 : S) = ((d.succ : ℕ) : S) := by simp only [Nat.cast_succ]
   rw [cast_succ, eval_monomial, eval_monomial, add_comm, add_pow]
   -- Porting note: `apply_congr` hadn't been ported yet, so `congr` & `ext` is used.
@@ -485,7 +485,7 @@ theorem eval_sum (p : R[X]) (f : ℕ → R → R[X]) (x : R) :
 #align polynomial.eval_sum Polynomial.eval_sum
 
 theorem eval_finset_sum (s : Finset ι) (g : ι → R[X]) (x : R) :
-    (∑ i in s, g i).eval x = ∑ i in s, (g i).eval x :=
+    (∑ i ∈ s, g i).eval x = ∑ i ∈ s, (g i).eval x :=
   eval₂_finset_sum _ _ _ _
 #align polynomial.eval_finset_sum Polynomial.eval_finset_sum
 
@@ -697,7 +697,7 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
 #align polynomial.coeff_comp_degree_mul_degree Polynomial.coeff_comp_degree_mul_degree
 
 @[simp] lemma sum_comp (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
-    (∑ i in s, p i).comp q = ∑ i in s, (p i).comp q := Polynomial.eval₂_finset_sum _ _ _ _
+    (∑ i ∈ s, p i).comp q = ∑ i ∈ s, (p i).comp q := Polynomial.eval₂_finset_sum _ _ _ _
 
 end Comp
 
@@ -969,7 +969,7 @@ theorem eval_map (x : S) : (p.map f).eval x = p.eval₂ f x :=
 #align polynomial.eval_map Polynomial.eval_map
 
 protected theorem map_sum {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
-    (∑ i in s, g i).map f = ∑ i in s, (g i).map f :=
+    (∑ i ∈ s, g i).map f = ∑ i ∈ s, (g i).map f :=
   map_sum (mapRingHom f) _ _
 #align polynomial.map_sum Polynomial.map_sum
 
@@ -1169,7 +1169,7 @@ theorem eval₂_multiset_prod (s : Multiset R[X]) (x : S) :
 #align polynomial.eval₂_multiset_prod Polynomial.eval₂_multiset_prod
 
 theorem eval₂_finset_prod (s : Finset ι) (g : ι → R[X]) (x : S) :
-    (∏ i in s, g i).eval₂ f x = ∏ i in s, (g i).eval₂ f x :=
+    (∏ i ∈ s, g i).eval₂ f x = ∏ i ∈ s, (g i).eval₂ f x :=
   map_prod (eval₂RingHom f x) _ _
 #align polynomial.eval₂_finset_prod Polynomial.eval₂_finset_prod
 
@@ -1188,7 +1188,7 @@ theorem eval_multiset_prod (s : Multiset R[X]) (x : R) : eval x s.prod = (s.map 
 /-- Polynomial evaluation commutes with `Finset.prod`
 -/
 theorem eval_prod {ι : Type*} (s : Finset ι) (p : ι → R[X]) (x : R) :
-    eval x (∏ j in s, p j) = ∏ j in s, eval x (p j) :=
+    eval x (∏ j ∈ s, p j) = ∏ j ∈ s, eval x (p j) :=
   map_prod (evalRingHom x) _ _
 #align polynomial.eval_prod Polynomial.eval_prod
 
@@ -1203,12 +1203,12 @@ theorem multiset_prod_comp (s : Multiset R[X]) (q : R[X]) :
 #align polynomial.multiset_prod_comp Polynomial.multiset_prod_comp
 
 theorem prod_comp {ι : Type*} (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
-    (∏ j in s, p j).comp q = ∏ j in s, (p j).comp q :=
+    (∏ j ∈ s, p j).comp q = ∏ j ∈ s, (p j).comp q :=
   map_prod (compRingHom q) _ _
 #align polynomial.prod_comp Polynomial.prod_comp
 
 theorem isRoot_prod {R} [CommRing R] [IsDomain R] {ι : Type*} (s : Finset ι) (p : ι → R[X])
-    (x : R) : IsRoot (∏ j in s, p j) x ↔ ∃ i ∈ s, IsRoot (p i) x := by
+    (x : R) : IsRoot (∏ j ∈ s, p j) x ↔ ∃ i ∈ s, IsRoot (p i) x := by
   simp only [IsRoot, eval_prod, Finset.prod_eq_zero_iff]
 #align polynomial.is_root_prod Polynomial.isRoot_prod
 
@@ -1222,7 +1222,7 @@ theorem eval_eq_zero_of_dvd_of_eval_eq_zero : p ∣ q → eval x p = 0 → eval 
 
 @[simp]
 theorem eval_geom_sum {R} [CommSemiring R] {n : ℕ} {x : R} :
-    eval x (∑ i in range n, X ^ i) = ∑ i in range n, x ^ i := by simp [eval_finset_sum]
+    eval x (∑ i ∈ range n, X ^ i) = ∑ i ∈ range n, x ^ i := by simp [eval_finset_sum]
 #align polynomial.eval_geom_sum Polynomial.eval_geom_sum
 
 end
@@ -1251,7 +1251,7 @@ protected theorem map_multiset_prod (m : Multiset R[X]) : m.prod.map f = (m.map 
 #align polynomial.map_multiset_prod Polynomial.map_multiset_prod
 
 protected theorem map_prod {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
-    (∏ i in s, g i).map f = ∏ i in s, (g i).map f :=
+    (∏ i ∈ s, g i).map f = ∏ i ∈ s, (g i).map f :=
   map_prod (mapRingHom f) _ _
 #align polynomial.map_prod Polynomial.map_prod
 
@@ -1332,8 +1332,10 @@ theorem sub_comp : (p - q).comp r = p.comp r - q.comp r :=
 #align polynomial.sub_comp Polynomial.sub_comp
 
 @[simp]
-theorem cast_int_comp (i : ℤ) : comp (i : R[X]) p = i := by cases i <;> simp
-#align polynomial.cast_int_comp Polynomial.cast_int_comp
+theorem intCast_comp (i : ℤ) : comp (i : R[X]) p = i := by cases i <;> simp
+#align polynomial.cast_int_comp Polynomial.intCast_comp
+
+@[deprecated (since := "2024-05-27")] alias cast_int_comp := intCast_comp
 
 @[simp]
 theorem eval₂_at_intCast {S : Type*} [Ring S] (f : R →+* S) (n : ℤ) :

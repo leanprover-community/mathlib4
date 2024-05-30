@@ -378,18 +378,16 @@ def compMonoidHom' {γ : Type*} [TopologicalSpace γ] [MulOneClass γ] [Continuo
 #align continuous_map.comp_monoid_hom' ContinuousMap.compMonoidHom'
 #align continuous_map.comp_add_monoid_hom' ContinuousMap.compAddMonoidHom'
 
-open BigOperators
-
 @[to_additive (attr := simp)]
 theorem coe_prod [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset ι) (f : ι → C(α, β)) :
-    ⇑(∏ i in s, f i) = ∏ i in s, (f i : α → β) :=
+    ⇑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : α → β) :=
   map_prod coeFnMonoidHom f s
 #align continuous_map.coe_prod ContinuousMap.coe_prod
 #align continuous_map.coe_sum ContinuousMap.coe_sum
 
 @[to_additive]
 theorem prod_apply [CommMonoid β] [ContinuousMul β] {ι : Type*} (s : Finset ι) (f : ι → C(α, β))
-    (a : α) : (∏ i in s, f i) a = ∏ i in s, f i a := by simp
+    (a : α) : (∏ i ∈ s, f i) a = ∏ i ∈ s, f i a := by simp
 #align continuous_map.prod_apply ContinuousMap.prod_apply
 #align continuous_map.sum_apply ContinuousMap.sum_apply
 
@@ -1109,3 +1107,25 @@ def compStarAlgEquiv' (f : X ≃ₜ Y) : C(Y, A) ≃⋆ₐ[𝕜] C(X, A) :=
 #align homeomorph.comp_star_alg_equiv' Homeomorph.compStarAlgEquiv'
 
 end Homeomorph
+
+/-! ### Evaluation as a bundled map -/
+
+variable {X : Type*} (S R : Type*) [TopologicalSpace X] [CommSemiring S] [CommSemiring R]
+variable [Algebra S R] [TopologicalSpace R] [TopologicalSemiring R]
+
+/-- Evaluation of continuous maps at a point, bundled as an algebra homomorphism. -/
+@[simps]
+def ContinuousMap.evalAlgHom (x : X) : C(X, R) →ₐ[S] R where
+  toFun f := f x
+  map_zero' := rfl
+  map_one' := rfl
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
+  commutes' _ := rfl
+
+/-- Evaluation of continuous maps at a point, bundled as a star algebra homomorphism. -/
+@[simps!]
+def ContinuousMap.evalStarAlgHom [StarRing R] [ContinuousStar R] (x : X) :
+    C(X, R) →⋆ₐ[S] R :=
+  { ContinuousMap.evalAlgHom S R x with
+    map_star' := fun _ => rfl }
