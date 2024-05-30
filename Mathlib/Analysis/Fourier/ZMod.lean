@@ -83,17 +83,6 @@ section fourier
 
 open MeasureTheory
 
-/-- Auxiliary lemma to translate integrability statements into summability -/
-lemma integrable_count_iff {𝓚 G : Type*} [NormedAddCommGroup G]
-    [SecondCountableTopology G] {f : 𝓚 → G} :
-    Integrable f (@Measure.count _ ⊤) ↔ Summable (fun k ↦ ‖f k‖) := by
-  letI : MeasurableSpace G := borel G
-  haveI : BorelSpace G := ⟨rfl⟩
-  letI : MeasurableSpace 𝓚 := ⊤
-  simp_rw [Integrable, (by measurability : AEStronglyMeasurable f Measure.count),
-    true_and, HasFiniteIntegral, lintegral_count, lt_top_iff_ne_top,
-    ENNReal.tsum_coe_ne_top_iff_summable, ← NNReal.summable_coe, coe_nnnorm]
-
 /-- The discrete measurable space structure (every set is measurable). -/
 local instance instMeasurableSpaceZMod (N : ℕ+) : MeasurableSpace (ZMod N) := ⊤
 
