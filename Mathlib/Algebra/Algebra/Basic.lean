@@ -9,6 +9,8 @@ import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Data.Int.CharZero
+import Mathlib.Data.Rat.Cast.CharZero
 
 #align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 

@@ -288,12 +288,11 @@ lemma absolutelyContinuous_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) : �
   cases eq_zero_or_neZero μ with
   | inl h => simp only [h, tilted_zero_measure]; exact fun _ _ ↦ by simp
   | inr h0 =>
-    refine withDensity_absolutelyContinuous' ?_ ?_ ?_
+    refine withDensity_absolutelyContinuous' ?_ ?_
     · exact (hf.1.aemeasurable.div_const _).ennreal_ofReal
     · filter_upwards
       simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
       exact fun _ ↦ div_pos (exp_pos _) (integral_exp_pos hf)
-    · refine ae_of_all _ (by simp)
 
 lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
     (hf : Integrable (fun x ↦ exp (f x)) ν) :
