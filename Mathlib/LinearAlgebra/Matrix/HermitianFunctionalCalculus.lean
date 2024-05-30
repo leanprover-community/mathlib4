@@ -232,9 +232,6 @@ exists_cfc_of_predicate a ha := by
       have hφ : LinearMap.ker ha.φ = ⊥ := by
         refine LinearMap.ker_eq_bot'.mpr ?_
         intro f hf
-        --
-        --have h1 : 0 = ha.eigenvectorUnitary * (0 : Matrix n n 𝕜) * (star ha.eigenvectorUnitary) := by sorry
-        --rw [h1] at hf
         have h2 : diagonal
              (RCLike.ofReal ∘ ⇑f ∘ fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalue_mem_real i⟩)
              = (0 : Matrix n n 𝕜) := by
