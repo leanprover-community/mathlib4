@@ -55,6 +55,7 @@ section
 variable {𝒳 𝒴 : BasedCategory 𝒮} (F : BasedFunctor 𝒳 𝒴)
 
 /-- Composition of `BasedFunctor`s is defined as the composition of the underlying functors -/
+-- should I have simps here...? Messes with automation later
 @[simps!]
 def comp {𝒵 : BasedCategory 𝒮} (G : BasedFunctor 𝒴 𝒵) : BasedFunctor 𝒳 𝒵 where
   toFunctor := F.toFunctor ⋙ G.toFunctor
@@ -176,19 +177,22 @@ lemma comp_toNatTrans {F G H : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) 
     (comp α β).toNatTrans = NatTrans.vcomp α.toNatTrans β.toNatTrans :=
   rfl
 
-@[simp]
-lemma id_comp {F G : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) : comp (id F) α = α := by
-  ext1; rw [comp_toNatTrans, id_toNatTrans, CategoryTheory.NatTrans.id_vcomp]
+-- these three are shown automatically in homCategory below
+-- but not simp lemmas!!!! How did I do it in locallydiscrete?
 
-@[simp]
-lemma comp_id {F G : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) : comp α (id G) = α := by
-  ext1; rw [comp_toNatTrans, id_toNatTrans, CategoryTheory.NatTrans.vcomp_id]
+-- @[simp]
+-- lemma id_comp {F G : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) : comp (id F) α = α := by
+--   ext1; rw [comp_toNatTrans, id_toNatTrans, CategoryTheory.NatTrans.id_vcomp]
 
-lemma comp_assoc {F G H I : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H)
-    (γ : BasedNatTrans H I) : comp (comp α β) γ = comp α (comp β γ):= by
-  ext1
-  rw [comp_toNatTrans, comp_toNatTrans, comp_toNatTrans, comp_toNatTrans, NatTrans.vcomp_eq_comp,
-    NatTrans.vcomp_eq_comp, NatTrans.vcomp_eq_comp, NatTrans.vcomp_eq_comp, Category.assoc]
+-- @[simp]
+-- lemma comp_id {F G : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) : comp α (id G) = α := by
+--   ext1; rw [comp_toNatTrans, id_toNatTrans, CategoryTheory.NatTrans.vcomp_id]
+
+-- lemma comp_assoc {F G H I : BasedFunctor 𝒳 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H)
+--     (γ : BasedNatTrans H I) : comp (comp α β) γ = comp α (comp β γ):= by
+--   ext1
+--   rw [comp_toNatTrans, comp_toNatTrans, comp_toNatTrans, comp_toNatTrans, NatTrans.vcomp_eq_comp,
+--     NatTrans.vcomp_eq_comp, NatTrans.vcomp_eq_comp, NatTrans.vcomp_eq_comp, Category.assoc]
 
 end BasedNatTrans
 
@@ -201,10 +205,6 @@ instance homCategory (𝒳 𝒴 : BasedCategory 𝒮) : Category (BasedFunctor �
   Hom := BasedNatTrans
   id := BasedNatTrans.id
   comp := BasedNatTrans.comp
-  -- TODO: can maybe remove these three? (will they still be simp lemmas then?)
-  id_comp := BasedNatTrans.id_comp
-  comp_id := BasedNatTrans.comp_id
-  assoc := BasedNatTrans.comp_assoc
 
 @[ext]
 lemma homCategory.ext {𝒳 𝒴 : BasedCategory 𝒮} {F G : BasedFunctor 𝒳 𝒴} (α β : F ⟶ G)
@@ -220,7 +220,6 @@ def associator {𝒳 𝒴 𝒵 𝒱 : BasedCategory 𝒮} (F : BasedFunctor 𝒳
       BasedFunctor.comp F (BasedFunctor.comp G H) where
   hom := {
     app := fun _ => 𝟙 _
-    -- can this be automated?
     aboveId' := by intro a; infer_instance
   }
   inv := {
