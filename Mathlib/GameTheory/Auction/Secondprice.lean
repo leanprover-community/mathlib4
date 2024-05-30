@@ -104,7 +104,7 @@ noncomputable def winner : a.I := Classical.choose (exists_max b)
 lemma winner_take_max : b (winner b) = maxb b := Classical.choose_spec (exists_max b)
 
 /-- Removing a participant `i` from all participants still leaves a non-empty set. -/
-lemma delete_i_nonempty (i : a.I) : Finset.Nonempty (Finset.erase Finset.univ i ) := by
+lemma delete_i_nonempty (i : a.I) : Finset.Nonempty (Finset.erase Finset.univ i) := by
   obtain ⟨j, hj⟩ := exists_ne i
   use j
   simp only [Finset.mem_univ, not_true, Finset.mem_erase, and_true]
@@ -112,7 +112,7 @@ lemma delete_i_nonempty (i : a.I) : Finset.Nonempty (Finset.erase Finset.univ i 
   exact Ne.symm hj
 
 /-- `B i` is the maximal bid of all participants but `i`. -/
-noncomputable def B (i: a.I) : ℝ := Finset.sup' (Finset.erase Finset.univ i)
+noncomputable def B (i : a.I) : ℝ := Finset.sup' (Finset.erase Finset.univ i)
 (delete_i_nonempty i) b
 
 /--The second highest bid: the highest bid excluding the winner’s bid.-/
@@ -123,31 +123,28 @@ which is their valuation minus the second highest bid if `i` is the winner, othe
 noncomputable def utility (i : a.I) : ℝ := if i = winner b then a.v i - secondprice b else 0
 
 /-! ### Proofs and Lemmas -/
-variable {i: a.I}
+variable {i : a.I}
 /-- If `i` is the winner, then their utility is their valuation minus the second highest bid. -/
 lemma utility_winner (H: i = winner b) : utility b i = a.v i - secondprice b:= by
   rw [utility]; simp only [ite_true, H]
 
 /-- If `i` is not the winner, then their utility is 0. -/
-lemma utility_loser (i: a.I) (H : i≠ winner b) : utility b i = 0 := by
+lemma utility_loser (i : a.I) (H : i≠ winner b) : utility b i = 0 := by
   rw [utility]; simp only [ite_false, H]
 
 /-- A strategy is dominant if bidding `bi` ensures that
 `i`'s utility is maximized relative to any other bids `b'` where `b i = bi`. -/
-def dominant (i : a.I) (bi : ℝ): Prop := ∀ b b': a.I → ℝ , (b i = bi) → (∀ j: a.I,j≠i→ b j = b' j)
+def dominant (i : a.I) (bi : ℝ) : Prop := ∀ b b' : a.I → ℝ,
+  (b i = bi) → (∀ j : a.I,j ≠ i→ b j = b' j)
    → utility b' i ≤ utility b i
 
 /-- The bid of the winner is always greater than or equal to the bids of all other participants.-/
-lemma b_winner_max : ∀ j: a.I, b j ≤ b (winner b) := by
-  intro j
-  have H_max: b (winner b) = maxb b := winner_take_max b
-  have H_sup: b j ≤ maxb b := by
-    apply Finset.le_sup'; simp only [Finset.mem_univ]
-  rw [← H_max] at H_sup
-  exact H_sup
+lemma b_winner_max (j : a.I) : b j ≤ b (winner b) := by
+  rw [winner_take_max b]
+  exact Finset.le_sup' b (Finset.mem_univ j)
 
 /-- If `i`'s bid is higher than all other bids, then `i` is the winner. -/
-lemma gt_wins (i : a.I) (H: ∀ j , i ≠ j → b j < b i) : i = winner b := by
+lemma gt_wins (i : a.I) (H : ∀ j , i ≠ j → b j < b i) : i = winner b := by
   contrapose! H
   exact ⟨winner b, H, b_winner_max b i⟩
 
