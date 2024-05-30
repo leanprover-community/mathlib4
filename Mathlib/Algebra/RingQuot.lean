@@ -87,7 +87,7 @@ def ringCon (r : R → R → Prop) : RingCon R where
   add' {a b c d} hab hcd := by
     induction hab generalizing c d with
     | rel _ _ hab =>
-      refine' (EqvGen.rel _ _ hab.add_left).trans _ _ _ _
+      refine (EqvGen.rel _ _ hab.add_left).trans _ _ _ ?_
       induction hcd with
       | rel _ _ hcd => exact EqvGen.rel _ _ hcd.add_right
       | refl => exact EqvGen.refl _
@@ -103,7 +103,7 @@ def ringCon (r : R → R → Prop) : RingCon R where
   mul' {a b c d} hab hcd := by
     induction hab generalizing c d with
     | rel _ _ hab =>
-      refine' (EqvGen.rel _ _ hab.mul_left).trans _ _ _ _
+      refine (EqvGen.rel _ _ hab.mul_left).trans _ _ _ ?_
       induction hcd with
       | rel _ _ hcd => exact EqvGen.rel _ _ hcd.mul_right
       | refl => exact EqvGen.refl _

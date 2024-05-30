@@ -101,7 +101,7 @@ def t' (i j k : 𝒰.J) :
   refine (pullbackRightPullbackFstIso ..).hom ≫ ?_
   refine ?_ ≫ (pullbackSymmetry _ _).hom
   refine ?_ ≫ (pullbackRightPullbackFstIso ..).inv
-  refine' pullback.map _ _ _ _ (t 𝒰 f g i j) (𝟙 _) (𝟙 _) _ _
+  refine pullback.map _ _ _ _ (t 𝒰 f g i j) (𝟙 _) (𝟙 _) ?_ ?_
   · simp_rw [Category.comp_id, t_fst_fst_assoc, ← pullback.condition]
   · rw [Category.comp_id, Category.id_comp]
 #align algebraic_geometry.Scheme.pullback.t' AlgebraicGeometry.Scheme.Pullback.t'
@@ -261,7 +261,7 @@ def gluedLiftPullbackMap (i j : 𝒰.J) :
     pullback ((𝒰.pullbackCover s.fst).map i) ((𝒰.pullbackCover s.fst).map j) ⟶
       (gluing 𝒰 f g).V ⟨i, j⟩ := by
   refine (pullbackRightPullbackFstIso _ _ _).hom ≫ ?_
-  refine' pullback.map _ _ _ _ _ (𝟙 _) (𝟙 _) _ _
+  refine pullback.map _ _ _ _ ?_ (𝟙 _) (𝟙 _) ?_ ?_
   · exact (pullbackSymmetry _ _).hom ≫
       pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition
   · simpa using pullback.condition
@@ -565,10 +565,10 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
       (𝒰.map i) pullback.snd pullback.snd g pullback.condition.symm pullback.condition.symm
       (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
       (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
-  refine'
+  refine
     @openCoverOfIsIso
       (f := (pullbackSymmetry _ _).hom ≫ (limit.isoLimitCone ⟨_, this⟩).inv ≫
-        pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) _ _) ?_
+        pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) ?_ ?_) ?_
   · simp [← pullback.condition]
   · simp only [Category.comp_id, Category.id_comp]
   · infer_instance

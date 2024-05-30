@@ -419,7 +419,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Open
         (f ∣_ U ∣_
           (Y ∣_ᵤ U).basicOpen (Y.presheaf.map (eqToHom U.openEmbedding_obj_top).op r)) ≅
       Arrow.mk (f ∣_ Y.basicOpen r) := by
-  refine' morphismRestrictRestrict _ _ _ ≪≫ morphismRestrictEq _ _
+  refine morphismRestrictRestrict _ _ _ ≪≫ morphismRestrictEq _ ?_
   have e := Scheme.preimage_basicOpen (Y.ofRestrict U.openEmbedding) r
   erw [Scheme.ofRestrict_val_c_app, Opens.adjunction_counit_app_self, eqToHom_op] at e
   rw [← (Y.restrict U.openEmbedding).basicOpen_res_eq _ (eqToHom U.inclusion_map_eq_top).op]

@@ -166,7 +166,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
   right_inv := by
     intro A
     ext x : 2
-    · refine' WidePullback.hom_ext _ _ _ (fun j => _) _
+    · refine WidePullback.hom_ext _ _ _ (fun j => ?_) ?_
       · dsimp
         simp
         rfl
@@ -314,7 +314,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
     intro A
     ext x : 2
     · rfl
-    · refine' WidePushout.hom_ext _ _ _ (fun j => _) _
+    · refine WidePushout.hom_ext _ _ _ (fun j => ?_) ?_
       · dsimp
         simp only [Category.assoc, ← NatTrans.naturality A.right, Arrow.augmentedCechConerve_right,
           SimplexCategory.len_mk, Arrow.cechConerve_map, colimit.ι_desc,
