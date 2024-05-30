@@ -190,9 +190,12 @@ theorem coe_mul [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : ⇑(f
 theorem mul_apply [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : (f * g) x = f x * g x :=
   rfl
 
-/-- the product of `f : C(α, β)` and `g : C_c(α, β)` is in `C_c(α, β)` -/
-instance [MulZeroClass β] [ContinuousMul β] : SMul C(α, β) C_c(α, β) :=
-   ⟨fun f g => ⟨f * g, HasCompactSupport.mul_left g.2⟩⟩
+/-- the product of `f : F` assuming `ContinuousMapClass F α γ` and `ContinuousSMul γ β` and
+`g : C_c(α, β)` is in `C_c(α, β)` -/
+instance [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
+    {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] : SMul F C_c(α, β) where
+  smul f g :=
+    ⟨⟨fun x ↦ f x • g x, (map_continuous f).smul g.continuous⟩, g.hasCompactSupport'.smul_left⟩
 
 @[simp]
 theorem coe_smulc [MulZeroClass β] [ContinuousMul β] (f : C(α, β)) (g : C_c(α, β)) :
@@ -377,7 +380,7 @@ variable [FunLike F β γ] [CompactlySupportedContinuousMapClass F β γ]
 
 theorem uniformContinuous (f : F) : UniformContinuous (f : β → γ) :=
   (map_continuous f).uniformContinuous_of_tendsto_cocompact
-  (HasCompactSupport.zero_at_infty_of_hasCompactSupport (hasCompactSupport f))
+  (HasCompactSupport.is_zero_at_infty (hasCompactSupport f))
 
 end Uniform
 
@@ -543,6 +546,6 @@ variable [FunLike F β γ] [CompactlySupportedContinuousMapClass F β γ]
 
 instance : ZeroAtInftyContinuousMapClass C_c(β, γ) β γ where
   map_continuous f := f.continuous_toFun
-  zero_at_infty f := HasCompactSupport.zero_at_infty_of_hasCompactSupport f.hasCompactSupport'
+  zero_at_infty f := HasCompactSupport.is_zero_at_infty f.hasCompactSupport'
 
 end ZeroAtInfty
