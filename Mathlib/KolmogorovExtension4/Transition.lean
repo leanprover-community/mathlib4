@@ -104,6 +104,9 @@ variable {i j k l : ι}
 def e_path_eq (M : MeasurableSpaceGraph ι) (h : j = k) : M.path i j ≃ᵐ M.path i k :=
   MeasurableEquiv.cast (by rw [h]) (by rw [h])
 
+theorem e_path_eq_eq (M : MeasurableSpaceGraph ι) :
+    e_path_eq M (rfl : j = j) = MeasurableEquiv.refl (M.path i j) := by aesop
+
 namespace MeasurableSpaceGraph
 
 def split (M : MeasurableSpaceGraph ι) (i j k : ι) (hij : i < j)
@@ -362,6 +365,10 @@ def transitionGraph (α : ι → Type*) [∀ i, MeasurableSpace (α i)] : Measur
   el_assoc := fun i j k hij hjk ↦ el_assoc hij hjk.le
   er_assoc := fun i j k l hij hjk hkl ↦ er_assoc hij hjk hkl.le
 
+theorem er_eq (α : ι → Type*) [∀ i, MeasurableSpace (α i)] {i j k : ι} (hij : i < j)
+    (hjk : j < k) :
+  (transitionGraph α).er i j k hij hjk = er i j k hij hjk.le := rfl
+
 namespace transitionGraph
 variable (α) {i j : ι}
 
@@ -450,6 +457,18 @@ def kerNat (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1))) (i j : ℕ)
     kernel (M.node i) (M.path i j) :=
   if i < j then kerInterval (κ i) κ j else 0
 
+theorem kerNat_cast (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1))) (i j k : ℕ)
+    (hjk : j = k) : kerNat κ i k = M.castPath (kerNat κ i j) hjk := by
+  subst hjk
+  simp_rw [kerNat]
+  split_ifs with h
+  · rw [MeasurableSpaceGraph.castPath]
+    conv_rhs =>
+      enter [2]
+      rw [e_path_eq_eq]
+    simp [MeasurableEquiv.refl]
+  · simp [MeasurableSpaceGraph.castPath]
+
 lemma kerNat_eq (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1))) (hij : i < j) :
     kerNat κ i j = kerInterval (κ i) κ j :=
   dif_pos hij
@@ -520,6 +539,9 @@ def MeasurableSpaceGraph.transition (κ : (k : ℕ) → kernel (M.node k) (M.pat
 { ker := kerNat κ,
   s_finite := fun _ _ ↦ inferInstance,
   comp := fun _ _ _ ↦ compProd_kerNat κ, }
+
+theorem MeasurableSpaceGraph.transition_ker (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
+  [∀ i, IsSFiniteKernel (κ i)] (k l : ℕ) : (M.transition κ).ker k l = kerNat κ k l := rfl
 
 def e_succ_nat {α : ℕ → Type*} [mα : ∀ n, MeasurableSpace (α n)] (j : ℕ) :
     α (j + 1) ≃ᵐ ((k : Ioc j (j + 1)) → α ↑k) where
