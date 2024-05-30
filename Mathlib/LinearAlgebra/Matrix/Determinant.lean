@@ -273,7 +273,8 @@ theorem det_smul (A : Matrix n n R) (c : R) : det (c • A) = c ^ Fintype.card n
 
 @[simp]
 theorem det_smul_of_tower {α} [Monoid α] [DistribMulAction α R] [IsScalarTower α R R]
-    [SMulCommClass α R R] (c : α) (A : Matrix n n R) : det (c • A) = c ^ Fintype.card n • det A := by
+    [SMulCommClass α R R] (c : α) (A : Matrix n n R) :
+    det (c • A) = c ^ Fintype.card n • det A := by
   rw [← smul_one_smul R c A, det_smul, smul_pow, one_pow, smul_mul_assoc, one_mul]
 #align matrix.det_smul_of_tower Matrix.det_smul_of_tower
 
@@ -283,7 +284,8 @@ theorem det_neg (A : Matrix n n R) : det (-A) = (-1) ^ Fintype.card n * det A :=
 
 /-- A variant of `Matrix.det_neg` with scalar multiplication by `Units ℤ` instead of multiplication
 by `R`. -/
-theorem det_neg_eq_smul (A : Matrix n n R) : det (-A) = (-1 : Units ℤ) ^ Fintype.card n • det A := by
+theorem det_neg_eq_smul (A : Matrix n n R) :
+    det (-A) = (-1 : Units ℤ) ^ Fintype.card n • det A := by
   rw [← det_smul_of_tower, Units.neg_smul, one_smul]
 #align matrix.det_neg_eq_smul Matrix.det_neg_eq_smul
 

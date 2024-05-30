@@ -458,7 +458,8 @@ noncomputable def coeq₃Hom {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : j₂ ⟶ 
         (coeqHom g h ≫ rightToMax (coeq f g) (coeq g h))
 #align category_theory.is_filtered.coeq₃_hom CategoryTheory.IsFiltered.coeq₃Hom
 
-theorem coeq₃_condition₁ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coeq₃Hom f g h = g ≫ coeq₃Hom f g h := by
+theorem coeq₃_condition₁ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
+    f ≫ coeq₃Hom f g h = g ≫ coeq₃Hom f g h := by
   simp only [coeq₃Hom, ← Category.assoc, coeq_condition f g]
 #align category_theory.is_filtered.coeq₃_condition₁ CategoryTheory.IsFiltered.coeq₃_condition₁
 

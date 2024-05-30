@@ -147,7 +147,7 @@ theorem whiskerLeft_naturality_id (f : a' ⟶ G.obj a) :
 @[reassoc (attr := simp)]
 theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
     η.naturality (𝟙 a) ▷ f ≫ (α_ _ _ _).hom ≫ η.app a ◁ G.mapId a ▷ f =
-      F.mapId a ▷ η.app a ▷ f ≫ (λ_ (η.app a)).hom ▷ f ≫ (ρ_ (η.app a)).inv ▷ f ≫ (α_ _ _ _).hom := by
+    F.mapId a ▷ η.app a ▷ f ≫ (λ_ (η.app a)).hom ▷ f ≫ (ρ_ (η.app a)).inv ▷ f ≫ (α_ _ _ _).hom := by
   rw [← associator_naturality_middle, ← comp_whiskerRight_assoc, naturality_id]; simp
 #align category_theory.oplax_nat_trans.whisker_right_naturality_id CategoryTheory.OplaxNatTrans.whiskerRight_naturality_id
 

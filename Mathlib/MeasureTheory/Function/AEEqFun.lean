@@ -318,7 +318,8 @@ theorem compMeasurable_mk (g : β → γ) (hg : Measurable g) (f : α → β)
 #align measure_theory.ae_eq_fun.comp_measurable_mk MeasureTheory.AEEqFun.compMeasurable_mk
 
 theorem compMeasurable_eq_mk (g : β → γ) (hg : Measurable g) (f : α →ₘ[μ] β) :
-    compMeasurable g hg f = mk (g ∘ f) (hg.comp_aemeasurable f.aemeasurable).aestronglyMeasurable := by
+    compMeasurable g hg f =
+    mk (g ∘ f) (hg.comp_aemeasurable f.aemeasurable).aestronglyMeasurable := by
   rw [← compMeasurable_mk g hg f f.aestronglyMeasurable, mk_coeFn]
 #align measure_theory.ae_eq_fun.comp_measurable_eq_mk MeasureTheory.AEEqFun.compMeasurable_eq_mk
 
@@ -376,10 +377,8 @@ theorem comp₂_eq_pair (g : β → γ → δ) (hg : Continuous (uncurry g)) (f�
 #align measure_theory.ae_eq_fun.comp₂_eq_pair MeasureTheory.AEEqFun.comp₂_eq_pair
 
 theorem comp₂_eq_mk (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β)
-    (f₂ : α →ₘ[μ] γ) :
-    comp₂ g hg f₁ f₂ =
-      mk (fun a => g (f₁ a) (f₂ a))
-        (hg.comp_aestronglyMeasurable (f₁.aestronglyMeasurable.prod_mk f₂.aestronglyMeasurable)) := by
+    (f₂ : α →ₘ[μ] γ) : comp₂ g hg f₁ f₂ = mk (fun a => g (f₁ a) (f₂ a))
+      (hg.comp_aestronglyMeasurable (f₁.aestronglyMeasurable.prod_mk f₂.aestronglyMeasurable)) := by
   rw [comp₂_eq_pair, pair_eq_mk, comp_mk]; rfl
 #align measure_theory.ae_eq_fun.comp₂_eq_mk MeasureTheory.AEEqFun.comp₂_eq_mk
 

@@ -306,13 +306,13 @@ def imageSubobjectIso : (imageSubobject f : C) ≅ image f :=
 #align category_theory.limits.image_subobject_iso CategoryTheory.Limits.imageSubobjectIso
 
 @[reassoc (attr := simp)]
-theorem imageSubobject_arrow : (imageSubobjectIso f).hom ≫ image.ι f = (imageSubobject f).arrow := by
-  simp [imageSubobjectIso]
+theorem imageSubobject_arrow :
+    (imageSubobjectIso f).hom ≫ image.ι f = (imageSubobject f).arrow := by simp [imageSubobjectIso]
 #align category_theory.limits.image_subobject_arrow CategoryTheory.Limits.imageSubobject_arrow
 
 @[reassoc (attr := simp)]
-theorem imageSubobject_arrow' : (imageSubobjectIso f).inv ≫ (imageSubobject f).arrow = image.ι f := by
-  simp [imageSubobjectIso]
+theorem imageSubobject_arrow' :
+    (imageSubobjectIso f).inv ≫ (imageSubobject f).arrow = image.ι f := by simp [imageSubobjectIso]
 #align category_theory.limits.image_subobject_arrow' CategoryTheory.Limits.imageSubobject_arrow'
 
 /-- A factorisation of `f : X ⟶ Y` through `imageSubobject f`. -/

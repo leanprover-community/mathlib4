@@ -913,8 +913,8 @@ protected theorem bijective : Bijective f := ⟨h.injective, h.surjective⟩
 #align function.involutive.bijective Function.Involutive.bijective
 
 /-- Involuting an `ite` of an involuted value `x : α` negates the `Prop` condition in the `ite`. -/
-protected theorem ite_not (P : Prop) [Decidable P] (x : α) : f (ite P x (f x)) = ite (¬P) x (f x) := by
-  rw [apply_ite f, h, ite_not]
+protected theorem ite_not (P : Prop) [Decidable P] (x : α) :
+    f (ite P x (f x)) = ite (¬P) x (f x) := by rw [apply_ite f, h, ite_not]
 #align function.involutive.ite_not Function.Involutive.ite_not
 
 /-- An involution commutes across an equality. Compare to `Function.Injective.eq_iff`. -/

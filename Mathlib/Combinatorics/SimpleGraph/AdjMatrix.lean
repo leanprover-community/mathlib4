@@ -61,8 +61,8 @@ namespace IsAdjMatrix
 variable {A : Matrix V V α}
 
 @[simp]
-theorem apply_diag_ne [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i : V) : ¬A i i = 1 := by
-  simp [h.apply_diag i]
+theorem apply_diag_ne [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i : V) :
+    ¬A i i = 1 := by simp [h.apply_diag i]
 #align matrix.is_adj_matrix.apply_diag_ne Matrix.IsAdjMatrix.apply_diag_ne
 
 @[simp]

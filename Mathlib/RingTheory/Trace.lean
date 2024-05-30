@@ -563,8 +563,8 @@ variable [Algebra K E]
 variable [Module.Finite K L] [IsSeparable K L] [IsAlgClosed E]
 variable (b : κ → L) (pb : PowerBasis K L)
 
-theorem traceMatrix_eq_embeddingsMatrix_mul_trans :
-    (traceMatrix K b).map (algebraMap K E) = embeddingsMatrix K E b * (embeddingsMatrix K E b)ᵀ := by
+theorem traceMatrix_eq_embeddingsMatrix_mul_trans : (traceMatrix K b).map (algebraMap K E) =
+    embeddingsMatrix K E b * (embeddingsMatrix K E b)ᵀ := by
   ext (i j); simp [trace_eq_sum_embeddings, embeddingsMatrix, Matrix.mul_apply]
 #align algebra.trace_matrix_eq_embeddings_matrix_mul_trans Algebra.traceMatrix_eq_embeddingsMatrix_mul_trans
 

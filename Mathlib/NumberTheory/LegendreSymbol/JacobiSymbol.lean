@@ -113,7 +113,8 @@ theorem one_right (a : ℤ) : J(a | 1) = 1 := by
 
 /-- The Legendre symbol `legendreSym p a` with an integer `a` and a prime number `p`
 is the same as the Jacobi symbol `J(a | p)`. -/
-theorem legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) : legendreSym p a = J(a | p) := by
+theorem legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) :
+    legendreSym p a = J(a | p) := by
   simp only [jacobiSym, factors_prime fp.1, List.prod_cons, List.prod_nil, mul_one, List.pmap]
 #align legendre_sym.to_jacobi_sym jacobiSym.legendreSym.to_jacobiSym
 

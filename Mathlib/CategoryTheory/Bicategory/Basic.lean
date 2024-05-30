@@ -396,8 +396,8 @@ theorem id_whiskerLeft_symm {f g : a ⟶ b} (η : f ⟶ g) : η = (λ_ f).inv �
 #align category_theory.bicategory.id_whisker_left_symm CategoryTheory.Bicategory.id_whiskerLeft_symm
 
 @[reassoc]
-theorem rightUnitor_naturality {f g : a ⟶ b} (η : f ⟶ g) : η ▷ 𝟙 b ≫ (ρ_ g).hom = (ρ_ f).hom ≫ η := by
-  simp
+theorem rightUnitor_naturality {f g : a ⟶ b} (η : f ⟶ g) :
+    η ▷ 𝟙 b ≫ (ρ_ g).hom = (ρ_ f).hom ≫ η := by simp
 #align category_theory.bicategory.right_unitor_naturality CategoryTheory.Bicategory.rightUnitor_naturality
 
 @[reassoc]

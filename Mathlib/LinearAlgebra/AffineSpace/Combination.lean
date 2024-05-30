@@ -667,8 +667,8 @@ def weightedVSubVSubWeights [DecidableEq ι] (i j : ι) : ι → k :=
 #align finset.weighted_vsub_vsub_weights Finset.weightedVSubVSubWeights
 
 @[simp]
-theorem weightedVSubVSubWeights_self [DecidableEq ι] (i : ι) : weightedVSubVSubWeights k i i = 0 := by
-  simp [weightedVSubVSubWeights]
+theorem weightedVSubVSubWeights_self [DecidableEq ι] (i : ι) :
+    weightedVSubVSubWeights k i i = 0 := by simp [weightedVSubVSubWeights]
 #align finset.weighted_vsub_vsub_weights_self Finset.weightedVSubVSubWeights_self
 
 @[simp]
@@ -874,7 +874,8 @@ theorem centroid_pair_fin [Invertible (2 : k)] (p : Fin 2 → P) :
 
 /-- A centroid, over the image of an embedding, equals a centroid with
 the same points and weights over the original `Finset`. -/
-theorem centroid_map (e : ι₂ ↪ ι) (p : ι → P) : (s₂.map e).centroid k p = s₂.centroid k (p ∘ e) := by
+theorem centroid_map (e : ι₂ ↪ ι) (p : ι → P) :
+    (s₂.map e).centroid k p = s₂.centroid k (p ∘ e) := by
   simp [centroid_def, affineCombination_map, centroidWeights]
 #align finset.centroid_map Finset.centroid_map
 

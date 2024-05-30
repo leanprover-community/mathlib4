@@ -708,8 +708,8 @@ theorem prod.comp_lift {V W X Y : C} [HasBinaryProduct X Y] (f : V ⟶ W) (g : W
 #align category_theory.limits.prod.comp_lift CategoryTheory.Limits.prod.comp_lift
 #align category_theory.limits.prod.comp_lift_assoc CategoryTheory.Limits.prod.comp_lift_assoc
 
-theorem prod.comp_diag {X Y : C} [HasBinaryProduct Y Y] (f : X ⟶ Y) : f ≫ diag Y = prod.lift f f := by
-  simp
+theorem prod.comp_diag {X Y : C} [HasBinaryProduct Y Y] (f : X ⟶ Y) :
+    f ≫ diag Y = prod.lift f f := by simp
 #align category_theory.limits.prod.comp_diag CategoryTheory.Limits.prod.comp_diag
 
 @[reassoc (attr := simp)]
