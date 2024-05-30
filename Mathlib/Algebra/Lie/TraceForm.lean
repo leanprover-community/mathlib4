@@ -3,12 +3,12 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.PID
 import Mathlib.Algebra.DirectSum.LinearMap
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
+import Mathlib.Algebra.Lie.InvariantForm
 import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Algebra.Lie.Weights.Linear
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.LinearAlgebra.PID
 
 /-!
 # The trace and Killing forms of a Lie algebra.
@@ -338,21 +338,17 @@ lemma killingForm_eq_zero_of_mem_zeroRoot_mem_posFitting
   LieModule.eq_zero_of_mem_weightSpace_mem_posFitting R H L
     (fun x y z ↦ LieModule.traceForm_apply_lie_apply' R L L x y z) hx₀ hx₁
 
+lemma killingForm_lieInvariant : (killingForm R L).lieInvariant L := by
+  intro x y z
+  rw [← lie_skew, map_neg, LinearMap.neg_apply, LieModule.traceForm_apply_lie_apply R L L]
+
 namespace LieIdeal
 
 variable (I : LieIdeal R L)
 
 /-- The orthogonal complement of an ideal with respect to the killing form is an ideal. -/
 noncomputable def killingCompl : LieIdeal R L :=
-  { __ := (killingForm R L).orthogonal I.toSubmodule
-    lie_mem := by
-      intro x y hy
-      simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-        Submodule.mem_toAddSubmonoid, LinearMap.BilinForm.mem_orthogonal_iff,
-        LieSubmodule.mem_coeSubmodule, LinearMap.BilinForm.IsOrtho]
-      intro z hz
-      rw [← LieModule.traceForm_apply_lie_apply]
-      exact hy _ <| lie_mem_left _ _ _ _ _ hz }
+  LieAlgebra.InvariantForm.orthogonal (killingForm R L) (killingForm_lieInvariant R L) I
 
 @[simp] lemma toSubmodule_killingCompl :
     LieSubmodule.toSubmodule I.killingCompl = (killingForm R L).orthogonal I.toSubmodule :=
