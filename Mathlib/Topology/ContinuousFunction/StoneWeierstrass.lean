@@ -482,6 +482,12 @@ open NonUnitalStarAlgebra Submodule
 
 namespace ContinuousMap
 
+/-
+`set_option maxSynthPendingDepth 2` after https://github.com/leanprover/lean4/pull/4119
+allows use to remove some shortcut instances.
+-/
+set_option maxSynthPendingDepth 2
+
 lemma adjoin_id_eq_span_one_union (s : Set 𝕜) :
     ((StarAlgebra.adjoin 𝕜 {(restrict s (.id 𝕜) : C(s, 𝕜))}) : Set C(s, 𝕜)) =
       span 𝕜 ({(1 : C(s, 𝕜))} ∪ (adjoin 𝕜 {(restrict s (.id 𝕜) : C(s, 𝕜))})) := by
@@ -499,10 +505,6 @@ lemma adjoin_id_eq_span_one_add (s : Set 𝕜) :
     ← StarSubalgebra.mem_toSubalgebra, ← Subalgebra.mem_toSubmodule,
     StarAlgebra.adjoin_nonUnitalStarSubalgebra_eq_span, mem_sup]
   simp [Set.mem_add]
-
--- annoyingly, things break below without these shortcut instances.
-instance : IsScalarTower 𝕜 C(X, 𝕜) C(X, 𝕜) := @IsScalarTower.right _ C(X, 𝕜) _ _ _
-instance : SMulCommClass 𝕜 C(X, 𝕜) C(X, 𝕜) := @Algebra.to_smulCommClass _ C(X, 𝕜) _ _ _
 
 lemma nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom {s : Set 𝕜} (h0 : 0 ∈ s) :
     (adjoin 𝕜 {restrict s (.id 𝕜)} : Set C(s, 𝕜)) ⊆
