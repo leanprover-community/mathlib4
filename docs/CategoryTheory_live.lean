@@ -60,19 +60,6 @@ example {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C}
     g₁ ≫ h₁ ≫ h₂ = f₁ ≫ f₂ ≫ g₃ := by
   sorry
 
-/-!
-For people who've already seen this, here are two alternative proofs of the same fact:
-```
-  simp [reassoc_of% comm₁, comm₂]
-```
-or
-```
-  slice_lhs 1 2 => rw [comm₁]
-  slice_lhs 2 3 => rw [comm₂]
-```
-How do these work?
--/
-
 end
 
 /-!
