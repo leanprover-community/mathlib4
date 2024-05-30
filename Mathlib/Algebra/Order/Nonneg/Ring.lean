@@ -228,7 +228,7 @@ protected theorem coe_natCast [OrderedSemiring α] (n : ℕ) : ((↑n : { x : α
 #align nonneg.coe_nat_cast Nonneg.coe_natCast
 
 @[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := coe_natCast
+alias coe_nat_cast := Nonneg.coe_natCast
 
 @[simp]
 theorem mk_natCast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : { x : α // 0 ≤ x }) = n :=

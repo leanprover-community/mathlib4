@@ -105,7 +105,7 @@ theorem isNat_natCast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
 @[deprecated (since := "2024-04-17")]
-alias isNat_cast := isnatCast
+alias isNat_cast := isNat_natCast
 
 /-- The `norm_num` extension which identifies an expression `Nat.cast n`, returning `n`. -/
 @[norm_num Nat.cast _, NatCast.natCast _] def evalNatCast : NormNumExt where eval {u α} e := do
