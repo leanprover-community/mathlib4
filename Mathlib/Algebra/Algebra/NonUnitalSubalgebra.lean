@@ -22,8 +22,6 @@ In this file we define `NonUnitalSubalgebra`s and the usual operations on them (
 
 universe u u' v v' w w'
 
-open scoped BigOperators
-
 section NonUnitalSubalgebraClass
 
 variable {S R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
@@ -63,13 +61,12 @@ variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [NonUnitalNonAssocSemiring C]
 variable [Module R A] [Module R B] [Module R C]
 
-instance : SetLike (NonUnitalSubalgebra R A) A
-    where
+instance : SetLike (NonUnitalSubalgebra R A) A where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance instNonUnitalSubsemiringClass : NonUnitalSubsemiringClass (NonUnitalSubalgebra R A) A
-    where
+instance instNonUnitalSubsemiringClass :
+    NonUnitalSubsemiringClass (NonUnitalSubalgebra R A) A where
   add_mem {s} := s.add_mem'
   mul_mem {s} := s.mul_mem'
   zero_mem {s} := s.zero_mem'
@@ -480,8 +477,7 @@ abbrev rangeRestrict (f : F) : A →ₙₐ[R] (NonUnitalAlgHom.range f : NonUnit
   NonUnitalAlgHom.codRestrict f (NonUnitalAlgHom.range f) (NonUnitalAlgHom.mem_range_self f)
 
 /-- The equalizer of two non-unital `R`-algebra homomorphisms -/
-def equalizer (ϕ ψ : F) : NonUnitalSubalgebra R A
-    where
+def equalizer (ϕ ψ : F) : NonUnitalSubalgebra R A where
   carrier := {a | (ϕ a : B) = ψ a}
   zero_mem' := by rw [Set.mem_setOf_eq, map_zero, map_zero]
   add_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
@@ -519,8 +515,8 @@ def adjoin (s : Set A) : NonUnitalSubalgebra R A :=
       @fun a b (ha : a ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A))
         (hb : b ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A)) =>
       show a * b ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A) by
-        refine' Submodule.span_induction ha _ _ _ _
-        · refine' Submodule.span_induction hb _ _ _ _
+        refine Submodule.span_induction ha ?_ ?_ ?_ ?_
+        · refine Submodule.span_induction hb ?_ ?_ ?_ ?_
           · exact fun x (hx : x ∈ NonUnitalSubsemiring.closure s) y
               (hy : y ∈ NonUnitalSubsemiring.closure s) => Submodule.subset_span (mul_mem hy hx)
           · exact fun x _hx => (mul_zero x).symm ▸ Submodule.zero_mem _
@@ -604,8 +600,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalSubalgebr
         NonUnitalSubsemiring.closure_le.2 H⟩
 
 /-- Galois insertion between `adjoin` and `Subtype.val`. -/
-protected def gi : GaloisInsertion (adjoin R : Set A → NonUnitalSubalgebra R A) (↑)
-    where
+protected def gi : GaloisInsertion (adjoin R : Set A → NonUnitalSubalgebra R A) (↑) where
   choice s hs := (adjoin R s).copy s <| le_antisymm (NonUnitalAlgebra.gc.le_u_l s) hs
   gc := NonUnitalAlgebra.gc
   le_l_u S := (NonUnitalAlgebra.gc (S : Set A) (adjoin R S)).1 <| le_rfl
@@ -848,8 +843,7 @@ theorem range_val : NonUnitalAlgHom.range (NonUnitalSubalgebraClass.subtype S) =
 /-- The map `S → T` when `S` is a non-unital subalgebra contained in the non-unital subalgebra `T`.
 
 This is the non-unital subalgebra version of `Submodule.inclusion`, or `Subring.inclusion`  -/
-def inclusion {S T : NonUnitalSubalgebra R A} (h : S ≤ T) : S →ₙₐ[R] T
-    where
+def inclusion {S T : NonUnitalSubalgebra R A} (h : S ≤ T) : S →ₙₐ[R] T where
   toFun := Set.inclusion h
   map_add' _ _ := rfl
   map_mul' _ _ := rfl

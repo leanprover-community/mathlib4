@@ -39,7 +39,7 @@ theorem biUnion_Ico_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOr
     (hf : Monotone f) (m n : α) : ⋃ i ∈ Ico m n, Ioc (f i) (f (succ i)) = Ioc (f m) (f n) := by
   rcases le_total n m with hnm | hmn
   · rw [Ico_eq_empty_of_le hnm, Ioc_eq_empty_of_le (hf hnm), biUnion_empty]
-  · refine' Succ.rec _ _ hmn
+  · refine Succ.rec ?_ ?_ hmn
     · simp only [Ioc_self, Ico_self, biUnion_empty]
     · intro k hmk ihk
       rw [← Ioc_union_Ioc_eq_Ioc (hf hmk) (hf <| le_succ _), union_comm, ← ihk]

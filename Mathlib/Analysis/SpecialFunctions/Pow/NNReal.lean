@@ -21,7 +21,7 @@ We also prove basic properties of these functions.
 noncomputable section
 
 open scoped Classical
-open Real NNReal ENNReal BigOperators ComplexConjugate
+open Real NNReal ENNReal ComplexConjugate
 
 open Finset Function Set
 
@@ -122,7 +122,7 @@ theorem div_rpow (x y : ℝ≥0) (z : ℝ) : (x / y) ^ z = x ^ z / y ^ z :=
 #align nnreal.div_rpow NNReal.div_rpow
 
 theorem sqrt_eq_rpow (x : ℝ≥0) : sqrt x = x ^ (1 / (2 : ℝ)) := by
-  refine' NNReal.eq _
+  refine NNReal.eq ?_
   push_cast
   exact Real.sqrt_eq_rpow x.1
 #align nnreal.sqrt_eq_rpow NNReal.sqrt_eq_rpow
@@ -131,6 +131,9 @@ theorem sqrt_eq_rpow (x : ℝ≥0) : sqrt x = x ^ (1 / (2 : ℝ)) := by
 theorem rpow_natCast (x : ℝ≥0) (n : ℕ) : x ^ (n : ℝ) = x ^ n :=
   NNReal.eq <| by simpa only [coe_rpow, coe_pow] using Real.rpow_natCast x n
 #align nnreal.rpow_nat_cast NNReal.rpow_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias rpow_nat_cast := rpow_natCast
 
 @[simp]
 lemma rpow_ofNat (x : ℝ≥0) (n : ℕ) [n.AtLeastTwo] :
@@ -167,7 +170,7 @@ lemma multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → ℝ≥0) (r : �
 
 /-- `rpow` version of `Finset.prod_pow` for `ℝ≥0`. -/
 lemma finset_prod_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
-    (∏ i in s, f i ^ r) = (∏ i in s, f i) ^ r :=
+    (∏ i ∈ s, f i ^ r) = (∏ i ∈ s, f i) ^ r :=
   multiset_prod_map_rpow _ _ _
 
 -- note: these don't really belong here, but they're much easier to prove in terms of the above
@@ -200,7 +203,7 @@ theorem _root_.Real.multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → �
 /-- `rpow` version of `Finset.prod_pow`. -/
 theorem _root_.Real.finset_prod_rpow
     {ι} (s : Finset ι) (f : ι → ℝ) (hs : ∀ i ∈ s, 0 ≤ f i) (r : ℝ) :
-    (∏ i in s, f i ^ r) = (∏ i in s, f i) ^ r :=
+    (∏ i ∈ s, f i ^ r) = (∏ i ∈ s, f i) ^ r :=
   Real.multiset_prod_map_rpow s.val f hs r
 
 end Real
@@ -570,6 +573,9 @@ theorem rpow_natCast (x : ℝ≥0∞) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by
   · simp [coe_rpow_of_nonneg _ (Nat.cast_nonneg n)]
 #align ennreal.rpow_nat_cast ENNReal.rpow_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias rpow_nat_cast := rpow_natCast
+
 @[simp]
 lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
     x ^ (no_index (OfNat.ofNat n) : ℝ) = x ^ (OfNat.ofNat n) :=
@@ -579,6 +585,9 @@ lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
 lemma rpow_intCast (x : ℝ≥0∞) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
   cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, rpow_natCast, zpow_natCast,
     Int.cast_negSucc, rpow_neg, zpow_negSucc]
+
+@[deprecated (since := "2024-04-17")]
+alias rpow_int_cast := rpow_intCast
 
 theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
 #align ennreal.rpow_two ENNReal.rpow_two
@@ -590,12 +599,12 @@ theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
   wlog hxy : x ≤ y
   · convert this y x z hz (le_of_not_le hxy) using 2 <;> simp only [mul_comm, and_comm, or_comm]
   rcases eq_or_ne x 0 with (rfl | hx0)
-  · induction y using ENNReal.recTopCoe <;> cases' hz with hz hz <;> simp [*, hz.not_lt]
+  · induction y <;> cases' hz with hz hz <;> simp [*, hz.not_lt]
   rcases eq_or_ne y 0 with (rfl | hy0)
   · exact (hx0 (bot_unique hxy)).elim
-  induction x using ENNReal.recTopCoe
+  induction x
   · cases' hz with hz hz <;> simp [hz, top_unique hxy]
-  induction y using ENNReal.recTopCoe
+  induction y
   · rw [ne_eq, coe_eq_zero] at hx0
     cases' hz with hz hz <;> simp [*]
   simp only [*, false_and_iff, and_false_iff, false_or_iff, if_false]
@@ -614,7 +623,7 @@ theorem coe_mul_rpow (x y : ℝ≥0) (z : ℝ) : ((x : ℝ≥0∞) * y) ^ z = (x
 #align ennreal.coe_mul_rpow ENNReal.coe_mul_rpow
 
 theorem prod_coe_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
-    ∏ i in s, (f i : ℝ≥0∞) ^ r = ((∏ i in s, f i : ℝ≥0) : ℝ≥0∞) ^ r := by
+    ∏ i ∈ s, (f i : ℝ≥0∞) ^ r = ((∏ i ∈ s, f i : ℝ≥0) : ℝ≥0∞) ^ r := by
   induction s using Finset.induction with
   | empty => simp
   | insert hi ih => simp_rw [prod_insert hi, ih, ← coe_mul_rpow, coe_mul]
@@ -628,7 +637,7 @@ theorem mul_rpow_of_nonneg (x y : ℝ≥0∞) {z : ℝ} (hz : 0 ≤ z) : (x * y)
 #align ennreal.mul_rpow_of_nonneg ENNReal.mul_rpow_of_nonneg
 
 theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : ∀ i ∈ s, f i ≠ ∞) (r : ℝ) :
-    ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r := by
+    ∏ i ∈ s, f i ^ r = (∏ i ∈ s, f i) ^ r := by
   induction s using Finset.induction with
   | empty => simp
   | @insert i s hi ih =>
@@ -637,7 +646,7 @@ theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : �
     apply prod_lt_top h2f |>.ne
 
 theorem prod_rpow_of_nonneg {ι} {s : Finset ι} {f : ι → ℝ≥0∞} {r : ℝ} (hr : 0 ≤ r) :
-    ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r := by
+    ∏ i ∈ s, f i ^ r = (∏ i ∈ s, f i) ^ r := by
   induction s using Finset.induction with
   | empty => simp
   | insert hi ih => simp_rw [prod_insert hi, ih, ← mul_rpow_of_nonneg _ _ hr]

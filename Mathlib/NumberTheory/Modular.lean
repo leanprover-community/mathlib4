@@ -100,7 +100,7 @@ theorem bottom_row_surj {R : Type*} [CommRing R] :
     convert gcd_eqn
     rw [det_fin_two]
     simp [A, (by ring : a * cd 1 + b₀ * cd 0 = b₀ * cd 0 + a * cd 1)]
-  refine' ⟨⟨A, det_A_1⟩, Set.mem_univ _, _⟩
+  refine ⟨⟨A, det_A_1⟩, Set.mem_univ _, ?_⟩
   ext; simp [A]
 #align modular_group.bottom_row_surj ModularGroup.bottom_row_surj
 
@@ -183,9 +183,9 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     Matrix (Fin 2) (Fin 2) ℝ ≃ₗ[ℝ] Matrix (Fin 2) (Fin 2) ℝ :=
   LinearEquiv.piCongrRight
     ![by
-      refine'
+      refine
         LinearMap.GeneralLinearGroup.generalLinearEquiv ℝ (Fin 2 → ℝ)
-          (GeneralLinearGroup.toLinear (planeConformalMatrix (cd 0 : ℝ) (-(cd 1 : ℝ)) _))
+          (GeneralLinearGroup.toLinear (planeConformalMatrix (cd 0 : ℝ) (-(cd 1 : ℝ)) ?_))
       norm_cast
       rw [neg_sq]
       exact hcd.sq_add_sq_ne_zero, LinearEquiv.refl ℝ (Fin 2 → ℝ)]
@@ -201,10 +201,10 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       (cocompact ℝ) := by
   let mB : ℝ → Matrix (Fin 2) (Fin 2) ℝ := fun t => of ![![t, (-(1 : ℤ) : ℝ)], (↑) ∘ cd]
   have hmB : Continuous mB := by
-    refine' continuous_matrix _
+    refine continuous_matrix ?_
     simp only [mB, Fin.forall_fin_two, continuous_const, continuous_id', of_apply, cons_val_zero,
       cons_val_one, and_self_iff]
-  refine' Filter.Tendsto.of_tendsto_comp _ (comap_cocompact_le hmB)
+  refine Filter.Tendsto.of_tendsto_comp ?_ (comap_cocompact_le hmB)
   let f₁ : SL(2, ℤ) → Matrix (Fin 2) (Fin 2) ℝ := fun g =>
     Matrix.map (↑g : Matrix _ _ ℤ) ((↑) : ℤ → ℝ)
   have cocompact_ℝ_to_cofinite_ℤ_matrix :
@@ -292,7 +292,7 @@ theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im �
   obtain ⟨p, hp_coprime, hp⟩ :=
     Filter.Tendsto.exists_within_forall_le hs (tendsto_normSq_coprime_pair z)
   obtain ⟨g, -, hg⟩ := bottom_row_surj hp_coprime
-  refine' ⟨g, fun g' => _⟩
+  refine ⟨g, fun g' => ?_⟩
   rw [ModularGroup.im_smul_eq_div_normSq, ModularGroup.im_smul_eq_div_normSq,
     div_le_div_left]
   · simpa [← hg] using hp ((↑ₘg') 1) (bottom_row_coprime g')
@@ -310,7 +310,7 @@ theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0
     let ⟨x, hx⟩ := bottom_row_surj hcd
     ⟨⟨x, hx.2⟩⟩
   obtain ⟨g, hg⟩ := Filter.Tendsto.exists_forall_le (tendsto_abs_re_smul z hcd)
-  refine' ⟨g, g.2, _⟩
+  refine ⟨g, g.2, ?_⟩
   intro g1 hg1
   have : g1 ∈ (fun g : SL(2, ℤ) => (↑ₘg) 1) ⁻¹' {cd} := by
     rw [Set.mem_preimage, Set.mem_singleton_iff]
@@ -365,7 +365,7 @@ theorem exists_eq_T_zpow_of_c_eq_zero (hc : (↑ₘg) 1 0 = 0) :
 theorem g_eq_of_c_eq_one (hc : (↑ₘg) 1 0 = 1) : g = T ^ (↑ₘg) 0 0 * S * T ^ (↑ₘg) 1 1 := by
   have hg := g.det_coe.symm
   replace hg : (↑ₘg) 0 1 = (↑ₘg) 0 0 * (↑ₘg) 1 1 - 1 := by rw [det_fin_two, hc] at hg; linarith
-  refine' Subtype.ext _
+  refine Subtype.ext ?_
   conv_lhs => rw [Matrix.eta_fin_two (↑ₘg)]
   rw [hc, hg]
   simp only [coe_mul, coe_T_zpow, coe_S, mul_fin_two]
@@ -445,7 +445,7 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
   obtain ⟨g₀, hg₀⟩ := exists_max_im z
   -- then among those, minimize re
   obtain ⟨g, hg, hg'⟩ := exists_row_one_eq_and_min_re z (bottom_row_coprime g₀)
-  refine' ⟨g, _⟩
+  refine ⟨g, ?_⟩
   -- `g` has same max im property as `g₀`
   have hg₀' : ∀ g' : SL(2, ℤ), (g' • z).im ≤ (g • z).im := by
     have hg'' : (g • z).im = (g₀ • z).im := by
@@ -455,7 +455,7 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
   constructor
   · -- Claim: `1 ≤ ⇑norm_sq ↑(g • z)`. If not, then `S•g•z` has larger imaginary part
     contrapose! hg₀'
-    refine' ⟨S * g, _⟩
+    refine ⟨S * g, ?_⟩
     rw [mul_smul]
     exact im_lt_im_S_smul hg₀'
   · show |(g • z).re| ≤ 1 / 2
@@ -463,11 +463,11 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
     rw [abs_le]
     constructor
     · contrapose! hg'
-      refine' ⟨T * g, (T_mul_apply_one _).symm, _⟩
+      refine ⟨T * g, (T_mul_apply_one _).symm, ?_⟩
       rw [mul_smul, re_T_smul]
       cases abs_cases ((g • z).re + 1) <;> cases abs_cases (g • z).re <;> linarith
     · contrapose! hg'
-      refine' ⟨T⁻¹ * g, (T_inv_mul_apply_one _).symm, _⟩
+      refine ⟨T⁻¹ * g, (T_inv_mul_apply_one _).symm, ?_⟩
       rw [mul_smul, re_T_inv_smul]
       cases abs_cases ((g • z).re - 1) <;> cases abs_cases (g • z).re <;> linarith
 #align modular_group.exists_smul_mem_fd ModularGroup.exists_smul_mem_fd
@@ -485,7 +485,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |(↑ₘg
   suffices c ≠ 0 → 9 * c ^ 4 < 16 by
     rcases eq_or_ne c 0 with (hc | hc)
     · rw [hc]; norm_num
-    · refine' (abs_lt_of_sq_lt_sq' _ (by norm_num)).2
+    · refine (abs_lt_of_sq_lt_sq' ?_ (by norm_num)).2
       specialize this hc
       linarith
   intro hc

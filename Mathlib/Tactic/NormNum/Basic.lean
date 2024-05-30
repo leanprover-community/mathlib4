@@ -7,7 +7,7 @@ import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Algebra.Ring.Int
-import Mathlib.Algebra.Invertible.Basic
+import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.Tactic.ClearExclamation
 import Mathlib.Data.Nat.Cast.Basic
 
@@ -104,6 +104,9 @@ theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) →
 theorem isNat_natCast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
+@[deprecated (since := "2024-04-17")]
+alias isNat_cast := isNat_natCast
+
 /-- The `norm_num` extension which identifies an expression `Nat.cast n`, returning `n`. -/
 @[norm_num Nat.cast _, NatCast.natCast _] def evalNatCast : NormNumExt where eval {u α} e := do
   let sα ← inferAddMonoidWithOne α
@@ -116,8 +119,14 @@ theorem isNat_natCast {R} [AddMonoidWithOne R] (n m : ℕ) :
 theorem isNat_intCast {R} [Ring R] (n : ℤ) (m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
+@[deprecated (since := "2024-04-17")]
+alias isNat_int_cast := isNat_intCast
+
 theorem isintCast {R} [Ring R] (n m : ℤ) :
     IsInt n m → IsInt (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
+
+@[deprecated (since := "2024-04-17")]
+alias isInt_cast := isintCast
 
 /-- The `norm_num` extension which identifies an expression `Int.cast n`, returning `n`. -/
 @[norm_num Int.cast _, IntCast.intCast _] def evalIntCast : NormNumExt where eval {u α} e := do

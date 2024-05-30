@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.GroupPower.Ring
-import Mathlib.Algebra.GroupWithZero.Bitwise
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Image
 
@@ -509,6 +508,9 @@ noncomputable instance instRatCast : RatCast ℂ where ratCast q := ofReal' q
 #align complex.of_real_int_cast Complex.ofReal_intCast
 #align complex.of_real_rat_cast Complex.ofReal_ratCast
 
+@[deprecated (since := "2024-04-17")]
+alias ofReal_rat_cast := ofReal_ratCast
+
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).re = OfNat.ofNat n := rfl
@@ -527,6 +529,9 @@ lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).re = 
 #align complex.int_cast_im Complex.intCast_im
 #align complex.rat_cast_re Complex.ratCast_re
 #align complex.rat_cast_im Complex.ratCast_im
+
+@[deprecated (since := "2024-04-17")]
+alias rat_cast_im := ratCast_im
 
 @[norm_cast] lemma ofReal_nsmul (n : ℕ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
 @[norm_cast] lemma ofReal_zsmul (n : ℤ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
@@ -567,6 +572,9 @@ theorem conj_I : conj I = -I :=
 #noalign complex.conj_bit1
 
 theorem conj_natCast (n : ℕ) : conj (n : ℂ) = n := map_natCast _ _
+
+@[deprecated (since := "2024-04-17")]
+alias conj_nat_cast := conj_natCast
 
 -- See note [no_index around OfNat.ofNat]
 theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
@@ -630,11 +638,20 @@ theorem normSq_ofReal (r : ℝ) : normSq r = r * r := by
 @[simp]
 theorem normSq_natCast (n : ℕ) : normSq n = n * n := normSq_ofReal _
 
+@[deprecated (since := "2024-04-17")]
+alias normSq_nat_cast := normSq_natCast
+
 @[simp]
 theorem normSq_intCast (z : ℤ) : normSq z = z * z := normSq_ofReal _
 
+@[deprecated (since := "2024-04-17")]
+alias normSq_int_cast := normSq_intCast
+
 @[simp]
 theorem normSq_ratCast (q : ℚ) : normSq q = q * q := normSq_ofReal _
+
+@[deprecated (since := "2024-04-17")]
+alias normSq_rat_cast := normSq_ratCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
@@ -839,20 +856,6 @@ lemma ofReal_nnqsmul (q : ℚ≥0) (r : ℝ) : ofReal' (q • r) = q • r := by
 @[simp, norm_cast]
 lemma ofReal_qsmul (q : ℚ) (r : ℝ) : ofReal' (q • r) = q • r := by simp [Rat.smul_def]
 
-section
-set_option linter.deprecated false
-@[simp]
-theorem I_zpow_bit0 (n : ℤ) : I ^ bit0 n = (-1 : ℂ) ^ n := by rw [zpow_bit0', I_mul_I]
-set_option linter.uppercaseLean3 false in
-#align complex.I_zpow_bit0 Complex.I_zpow_bit0
-
-@[simp]
-theorem I_zpow_bit1 (n : ℤ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [zpow_bit1', I_mul_I]
-set_option linter.uppercaseLean3 false in
-#align complex.I_zpow_bit1 Complex.I_zpow_bit1
-
-end
-
 theorem conj_inv (x : ℂ) : conj x⁻¹ = (conj x)⁻¹ :=
   star_inv' _
 #align complex.conj_inv Complex.conj_inv
@@ -899,11 +902,20 @@ lemma div_ofReal (z : ℂ) (x : ℝ) : z / x = ⟨z.re / x, z.im / x⟩ := by
 lemma div_natCast (z : ℂ) (n : ℕ) : z / n = ⟨z.re / n, z.im / n⟩ :=
   mod_cast div_ofReal z n
 
+@[deprecated (since := "2024-04-17")]
+alias div_nat_cast := div_natCast
+
 lemma div_intCast (z : ℂ) (n : ℤ) : z / n = ⟨z.re / n, z.im / n⟩ :=
   mod_cast div_ofReal z n
 
+@[deprecated (since := "2024-04-17")]
+alias div_int_cast := div_intCast
+
 lemma div_ratCast (z : ℂ) (x : ℚ) : z / x = ⟨z.re / x, z.im / x⟩ :=
   mod_cast div_ofReal z x
+
+@[deprecated (since := "2024-04-17")]
+alias div_rat_cast := div_ratCast
 
 lemma div_ofNat (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
     z / OfNat.ofNat n = ⟨z.re / OfNat.ofNat n, z.im / OfNat.ofNat n⟩ :=
@@ -917,6 +929,9 @@ lemma div_ofNat (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
 @[simp] lemma div_intCast_im (z : ℂ) (n : ℤ) : (z / n).im = z.im / n := by rw [div_intCast]
 @[simp] lemma div_ratCast_re (z : ℂ) (x : ℚ) : (z / x).re = z.re / x := by rw [div_ratCast]
 @[simp] lemma div_ratCast_im (z : ℂ) (x : ℚ) : (z / x).im = z.im / x := by rw [div_ratCast]
+
+@[deprecated (since := "2024-04-17")]
+alias div_rat_cast_im := div_ratCast_im
 
 @[simp]
 lemma div_ofNat_re (z : ℂ) (n : ℕ) [n.AtLeastTwo] :

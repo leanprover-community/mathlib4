@@ -1138,9 +1138,13 @@ variable {L}
 
 open Set
 
+theorem distinctConstantsTheory_mono {s t : Set α} (h : s ⊆ t) :
+    L.distinctConstantsTheory s ⊆ L.distinctConstantsTheory t := by
+  unfold distinctConstantsTheory; gcongr
+
 theorem monotone_distinctConstantsTheory :
     Monotone (L.distinctConstantsTheory : Set α → L[[α]].Theory) := fun _s _t st =>
-  image_subset _ (inter_subset_inter_left _ (prod_mono st st))
+  L.distinctConstantsTheory_mono st
 #align first_order.language.monotone_distinct_constants_theory FirstOrder.Language.monotone_distinctConstantsTheory
 
 theorem directed_distinctConstantsTheory :
@@ -1155,11 +1159,11 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
   classical
     simp only [distinctConstantsTheory]
     rw [← image_iUnion, ← iUnion_inter]
-    refine' congr rfl (congr (congr rfl _) rfl)
+    refine congr(_ '' ($(?_) ∩ _))
     ext ⟨i, j⟩
     simp only [prod_mk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
       mem_image, Finset.mem_coe, Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]
-    refine' ⟨fun h => ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, _⟩, ⟨h.2, _⟩⟩, _⟩
+    refine ⟨fun h => ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, ?_⟩, ⟨h.2, ?_⟩⟩, ?_⟩
     · simp
     · simp
     · rintro ⟨t, ⟨is, _⟩, ⟨js, _⟩⟩

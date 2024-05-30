@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.CategoryTheory.Elementwise
 
 #align_import topology.category.CompHaus.basic from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -31,6 +32,9 @@ introduced.
 
 
 universe v u
+
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
 open CategoryTheory
 
@@ -124,7 +128,7 @@ theorem isIso_of_bijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Function.Bi
     intro S hS
     rw [← E.image_eq_preimage]
     exact isClosedMap f S hS
-  refine' ⟨⟨⟨E.symm, hE⟩, _, _⟩⟩
+  refine ⟨⟨⟨E.symm, hE⟩, ?_, ?_⟩⟩
   · ext x
     apply E.symm_apply_apply
   · ext x

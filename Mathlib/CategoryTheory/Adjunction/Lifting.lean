@@ -74,7 +74,7 @@ coequalizer of something (i.e. a regular epi).
 def counitCoequalises [∀ X : B, RegularEpi (adj₁.counit.app X)] (X : B) :
     IsColimit (Cofork.ofπ (adj₁.counit.app X) (adj₁.counit_naturality _)) :=
   Cofork.IsColimit.mk' _ fun s => by
-    refine' ⟨(RegularEpi.desc' (adj₁.counit.app X) s.π _).1, _, _⟩
+    refine ⟨(RegularEpi.desc' (adj₁.counit.app X) s.π ?_).1, ?_, ?_⟩
     · rw [← cancel_epi (adj₁.counit.app (RegularEpi.W (adj₁.counit.app X)))]
       rw [← adj₁.counit_naturality_assoc RegularEpi.left]
       dsimp only [Functor.comp_obj]
@@ -192,11 +192,11 @@ lemma monadicAdjointTriangleLift (U : B ⥤ C) [MonadicRightAdjoint U] {R : A �
   rsuffices : R'.IsRightAdjoint
   · let this : (R' ⋙ (Monad.comparison (monadicAdjunction U)).inv).IsRightAdjoint := by
       infer_instance
-    refine' ((Adjunction.ofIsRightAdjoint
-      (R' ⋙ (Monad.comparison (monadicAdjunction U)).inv)).ofNatIsoRight _).isRightAdjoint
+    refine ((Adjunction.ofIsRightAdjoint
+      (R' ⋙ (Monad.comparison (monadicAdjunction U)).inv)).ofNatIsoRight ?_).isRightAdjoint
     exact isoWhiskerLeft R (Monad.comparison _).asEquivalence.unitIso.symm ≪≫ R.rightUnitor
   let this : (R' ⋙ Monad.forget (monadicAdjunction U).toMonad).IsRightAdjoint := by
-    refine' ((Adjunction.ofIsRightAdjoint (R ⋙ U)).ofNatIsoRight _).isRightAdjoint
+    refine ((Adjunction.ofIsRightAdjoint (R ⋙ U)).ofNatIsoRight ?_).isRightAdjoint
     exact isoWhiskerLeft R (Monad.comparisonForget (monadicAdjunction U)).symm
   let this : ∀ X, RegularEpi ((Monad.adj (monadicAdjunction U).toMonad).counit.app X) := by
     intro X

@@ -51,8 +51,8 @@ lemma map_ι : (c.map G).ι = G.map c.ι := rfl
 the mapped kernel fork is limit. -/
 def isLimitMapConeEquiv :
     IsLimit (G.mapCone c) ≃ IsLimit (c.map G) := by
-  refine' (IsLimit.postcomposeHomEquiv _ _).symm.trans (IsLimit.equivIsoLimit _)
-  refine' parallelPair.ext (Iso.refl _) (Iso.refl _) _ _ <;> simp
+  refine (IsLimit.postcomposeHomEquiv ?_ _).symm.trans (IsLimit.equivIsoLimit ?_)
+  refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ ?_ <;> simp
   exact Cones.ext (Iso.refl _) (by rintro (_|_) <;> aesop_cat)
 
 /-- A limit kernel fork is mapped to a limit kernel fork by a functor `G` when this functor
@@ -178,8 +178,8 @@ lemma map_π : (c.map G).π = G.map c.π := rfl
 the mapped cokernel cofork is colimit. -/
 def isColimitMapCoconeEquiv :
     IsColimit (G.mapCocone c) ≃ IsColimit (c.map G) := by
-  refine' (IsColimit.precomposeHomEquiv _ _).symm.trans (IsColimit.equivIsoColimit _)
-  refine' parallelPair.ext (Iso.refl _) (Iso.refl _) _ _ <;> simp
+  refine (IsColimit.precomposeHomEquiv ?_ _).symm.trans (IsColimit.equivIsoColimit ?_)
+  refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ ?_ <;> simp
   exact Cocones.ext (Iso.refl _) (by rintro (_|_) <;> aesop_cat)
 
 /-- A colimit cokernel cofork is mapped to a colimit cokernel cofork by a functor `G`
@@ -293,16 +293,16 @@ noncomputable instance preservesKernelZero :
     PreservesLimit (parallelPair (0 : X ⟶ Y) 0) G where
   preserves {c} hc := by
     have := KernelFork.IsLimit.isIso_ι c hc rfl
-    refine' (KernelFork.isLimitMapConeEquiv c G).symm _
-    refine' IsLimit.ofIsoLimit (KernelFork.IsLimit.ofId _ (G.map_zero _ _)) _
+    refine (KernelFork.isLimitMapConeEquiv c G).symm ?_
+    refine IsLimit.ofIsoLimit (KernelFork.IsLimit.ofId _ (G.map_zero _ _)) ?_
     exact (Fork.ext (G.mapIso (asIso (Fork.ι c))).symm (by simp))
 
 noncomputable instance preservesCokernelZero :
     PreservesColimit (parallelPair (0 : X ⟶ Y) 0) G where
   preserves {c} hc := by
     have := CokernelCofork.IsColimit.isIso_π c hc rfl
-    refine' (CokernelCofork.isColimitMapCoconeEquiv c G).symm _
-    refine' IsColimit.ofIsoColimit (CokernelCofork.IsColimit.ofId _ (G.map_zero _ _)) _
+    refine (CokernelCofork.isColimitMapCoconeEquiv c G).symm ?_
+    refine IsColimit.ofIsoColimit (CokernelCofork.IsColimit.ofId _ (G.map_zero _ _)) ?_
     exact (Cofork.ext (G.mapIso (asIso (Cofork.π c))) (by simp))
 
 variable {X Y}

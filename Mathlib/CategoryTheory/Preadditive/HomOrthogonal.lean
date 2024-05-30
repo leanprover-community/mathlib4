@@ -200,7 +200,7 @@ if two direct sums over `s` are isomorphic, then they have the same multipliciti
 theorem equiv_of_iso (o : HomOrthogonal s) {α β : Type} [Finite α] [Finite β] {f : α → ι}
     {g : β → ι} (i : (⨁ fun a => s (f a)) ≅ ⨁ fun b => s (g b)) :
     ∃ e : α ≃ β, ∀ a, g (e a) = f a := by
-  refine' ⟨Equiv.ofPreimageEquiv _, fun a => Equiv.ofPreimageEquiv_map _ _⟩
+  refine ⟨Equiv.ofPreimageEquiv ?_, fun a => Equiv.ofPreimageEquiv_map _ _⟩
   intro c
   apply Nonempty.some
   apply Cardinal.eq.1

@@ -12,6 +12,9 @@ import Mathlib.Algebra.Group.Units.Hom
 # Multiplicative and additive equivalence acting on units.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 variable {F α β A B M N P Q G H : Type*}
 
 /-- A group is isomorphic to its group of units. -/
@@ -226,6 +229,17 @@ theorem divRight_eq_mulRight_inv (a : G) : Equiv.divRight a = Equiv.mulRight a�
 end Group
 
 end Equiv
+
+variable (α) in
+/-- The `αˣ` type is equivalent to a subtype of `α × α`. -/
+@[simps]
+def unitsEquivProdSubtype [Monoid α] : αˣ ≃ {p : α × α // p.1 * p.2 = 1 ∧ p.2 * p.1 = 1} where
+  toFun u := ⟨(u, ↑u⁻¹), u.val_inv, u.inv_val⟩
+  invFun p := Units.mk (p : α × α).1 (p : α × α).2 p.prop.1 p.prop.2
+  left_inv _ := Units.ext rfl
+  right_inv _ := Subtype.ext <| Prod.ext rfl rfl
+#align units_equiv_prod_subtype unitsEquivProdSubtype
+#align units_equiv_prod_subtype_apply_coe unitsEquivProdSubtype_apply_coe
 
 -- Porting note: we don't put `@[simp]` on the additive version;
 -- mysteriously simp can already prove that one (although not the multiplicative one)!

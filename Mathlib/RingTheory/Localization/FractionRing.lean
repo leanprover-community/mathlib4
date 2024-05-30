@@ -54,7 +54,7 @@ instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
     simpa only [eq_intCast, isUnit_iff_ne_zero, Int.cast_eq_zero, Ne, Subtype.coe_mk] using hx
   surj' := by
     rintro ⟨n, d, hd, h⟩
-    refine' ⟨⟨n, ⟨d, _⟩⟩, Rat.mul_den_eq_num _⟩
+    refine ⟨⟨n, ⟨d, ?_⟩⟩, Rat.mul_den_eq_num _⟩
     rw [mem_nonZeroDivisors_iff_ne_zero, Int.natCast_ne_zero_iff_pos]
     exact Nat.zero_lt_of_ne_zero hd
   exists_of_eq {x y} := by
@@ -186,7 +186,7 @@ theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : 
 #align is_fraction_ring.mk'_eq_zero_iff_eq_zero IsFractionRing.mk'_eq_zero_iff_eq_zero
 
 theorem mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x = y := by
-  refine' ⟨_, fun hxy => by rw [hxy, mk'_self']⟩
+  refine ⟨?_, fun hxy => by rw [hxy, mk'_self']⟩
   intro hxy
   have hy : (algebraMap A K) ↑y ≠ (0 : K) :=
     IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors y.property

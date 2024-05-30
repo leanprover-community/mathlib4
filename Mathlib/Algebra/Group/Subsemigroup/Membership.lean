@@ -29,6 +29,8 @@ stub and only provides rudimentary support.
 subsemigroup
 -/
 
+assert_not_exists MonoidWithZero
+
 variable {ι : Sort*} {M A B : Type*}
 
 section NonAssoc
@@ -121,7 +123,7 @@ the supremum of `S`."]
 theorem iSup_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M} (hx₁ : x₁ ∈ ⨆ i, S i)
     (mem : ∀ i, ∀ x₂ ∈ S i, C x₂) (mul : ∀ x y, C x → C y → C (x * y)) : C x₁ := by
   rw [iSup_eq_closure] at hx₁
-  refine' closure_induction hx₁ (fun x₂ hx₂ => _) mul
+  refine closure_induction hx₁ (fun x₂ hx₂ => ?_) mul
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx₂
   exact mem _ _ hi
 #align subsemigroup.supr_induction Subsemigroup.iSup_induction

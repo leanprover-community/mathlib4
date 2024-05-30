@@ -34,7 +34,7 @@ filtration, stochastic process
 
 open Filter Order TopologicalSpace
 
-open scoped Classical MeasureTheory NNReal ENNReal Topology BigOperators
+open scoped Classical MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
 
@@ -124,15 +124,15 @@ instance : SupSet (Filtration ι m) :=
   ⟨fun s =>
     { seq := fun i => sSup ((fun f : Filtration ι m => f i) '' s)
       mono' := fun i j hij => by
-        refine' sSup_le fun m' hm' => _
+        refine sSup_le fun m' hm' => ?_
         rw [Set.mem_image] at hm'
         obtain ⟨f, hf_mem, hfm'⟩ := hm'
         rw [← hfm']
-        refine' (f.mono hij).trans _
+        refine (f.mono hij).trans ?_
         have hfj_mem : f j ∈ (fun g : Filtration ι m => g j) '' s := ⟨f, hf_mem, rfl⟩
         exact le_sSup hfj_mem
       le' := fun i => by
-        refine' sSup_le fun m' hm' => _
+        refine sSup_le fun m' hm' => ?_
         rw [Set.mem_image] at hm'
         obtain ⟨f, _, hfm'⟩ := hm'
         rw [← hfm']
@@ -151,7 +151,7 @@ noncomputable instance : InfSet (Filtration ι m) :=
         swap; · simp only [h_nonempty, Set.image_nonempty, if_false, le_refl]
         simp only [h_nonempty, if_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
           forall_apply_eq_imp_iff₂]
-        refine' fun f hf_mem => le_trans _ (f.mono hij)
+        refine fun f hf_mem => le_trans ?_ (f.mono hij)
         have hfi_mem : f i ∈ (fun g : Filtration ι m => g i) '' s := ⟨f, hf_mem, rfl⟩
         exact sInf_le hfi_mem
       le' := fun i => by
@@ -269,7 +269,7 @@ def natural (u : ι → Ω → β) (hum : ∀ i, StronglyMeasurable (u i)) : Fil
   seq i := ⨆ j ≤ i, MeasurableSpace.comap (u j) mβ
   mono' i j hij := biSup_mono fun k => ge_trans hij
   le' i := by
-    refine' iSup₂_le _
+    refine iSup₂_le ?_
     rintro j _ s ⟨t, ht, rfl⟩
     exact (hum j).measurable ht
 #align measure_theory.filtration.natural MeasureTheory.Filtration.natural
@@ -284,11 +284,11 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
       stronglyMeasurable_one.indicator (hsm i) := by
   simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop, mk.injEq]
   ext1 i
-  refine' le_antisymm (generateFrom_le _) (generateFrom_le _)
+  refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_)
   · rintro _ ⟨j, hij, rfl⟩
-    refine' measurableSet_generateFrom ⟨j, measurableSet_generateFrom ⟨hij, _⟩⟩
+    refine measurableSet_generateFrom ⟨j, measurableSet_generateFrom ⟨hij, ?_⟩⟩
     rw [comap_eq_generateFrom]
-    refine' measurableSet_generateFrom ⟨{1}, measurableSet_singleton 1, _⟩
+    refine measurableSet_generateFrom ⟨{1}, measurableSet_singleton 1, ?_⟩
     ext x
     simp [Set.indicator_const_preimage_eq_union]
   · rintro t ⟨n, ht⟩
@@ -296,7 +296,7 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
       MeasurableSet[MeasurableSpace.comap ((s n).indicator (fun _ => 1 : Ω → β)) mβ] t} ≤
         MeasurableSpace.generateFrom {t | ∃ (j : ι), j ≤ i ∧ s j = t} by
       exact this _ ht
-    refine' generateFrom_le _
+    refine generateFrom_le ?_
     rintro t ⟨hn, u, _, hu'⟩
     obtain heq | heq | heq | heq := Set.indicator_const_preimage (s n) u (1 : β)
     on_goal 4 => rw [Set.mem_singleton_iff] at heq
@@ -340,10 +340,10 @@ theorem memℒp_limitProcess_of_snorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
     (hbdd : ∀ n, snorm (f n) p μ ≤ R) : Memℒp (limitProcess f ℱ μ) p μ := by
   rw [limitProcess]
   split_ifs with h
-  · refine' ⟨StronglyMeasurable.aestronglyMeasurable
+  · refine ⟨StronglyMeasurable.aestronglyMeasurable
       ((Classical.choose_spec h).1.mono (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _)),
       lt_of_le_of_lt (Lp.snorm_lim_le_liminf_snorm hfm _ (Classical.choose_spec h).2)
-        (lt_of_le_of_lt _ (ENNReal.coe_lt_top : ↑R < ∞))⟩
+        (lt_of_le_of_lt ?_ (ENNReal.coe_lt_top : ↑R < ∞))⟩
     simp_rw [liminf_eq, eventually_atTop]
     exact sSup_le fun b ⟨a, ha⟩ => (ha a le_rfl).trans (hbdd _)
   · exact zero_memℒp

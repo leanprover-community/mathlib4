@@ -62,7 +62,7 @@ section dual
     obtain ⟨e, ⟨(heB'' : e ∉ _), heE⟩, heI⟩ := exists_of_ssubset hssu
     use e
     simp_rw [mem_diff, insert_subset_iff, and_iff_left heI, and_iff_right heE, and_iff_right hIE]
-    refine' ⟨by_contra (fun heX ↦ heB'' (hB''₁ ⟨_, heI⟩)), ⟨B'', hB'', _⟩⟩
+    refine ⟨by_contra (fun heX ↦ heB'' (hB''₁ ⟨?_, heI⟩)), ⟨B'', hB'', ?_⟩⟩
     · rw [hX]; exact ⟨heE, heX⟩
     rw [← union_singleton, disjoint_union_left, disjoint_singleton_left, and_iff_left heB'']
     exact disjoint_of_subset_left hB''₂.2 disjoint_compl_left
@@ -75,7 +75,7 @@ section dual
     · simp only [inter_subset_right, true_and]
       exact ⟨B', hB', disjoint_of_subset_left (inter_subset_left _ _) disjoint_sdiff_left⟩
     · rw [and_iff_right hI'X]
-      refine' disjoint_of_subset_right hB'IB _
+      refine disjoint_of_subset_right hB'IB ?_
       rw [disjoint_union_right, and_iff_left hI'B]
       exact disjoint_of_subset hI'X hI.subset disjoint_sdiff_right
     simp only [mem_setOf_eq, subset_inter_iff, and_imp, forall_exists_index]
@@ -105,7 +105,7 @@ section dual
 
     subst this
 
-    refine' subset_diff.mpr ⟨hJX, by_contra (fun hne ↦ _)⟩
+    refine subset_diff.mpr ⟨hJX, by_contra (fun hne ↦ ?_)⟩
     obtain ⟨e, heJ, heB'⟩ := not_disjoint_iff.mp hne
     obtain (heB'' | ⟨-,heX⟩ ) := hB₁I heB'
     · exact hdj.ne_of_mem heJ heB'' rfl
@@ -150,8 +150,8 @@ theorem dual_base_iff' : M✶.Base B ↔ M.Base (M.E \ B) ∧ B ⊆ M.E :=
 theorem setOf_dual_base_eq : {B | M✶.Base B} = (fun X ↦ M.E \ X) '' {B | M.Base B} := by
   ext B
   simp only [mem_setOf_eq, mem_image, dual_base_iff']
-  refine' ⟨fun h ↦ ⟨_, h.1, diff_diff_cancel_left h.2⟩,
-    fun ⟨B', hB', h⟩ ↦ ⟨_,h.symm.trans_subset (diff_subset _ _)⟩⟩
+  refine ⟨fun h ↦ ⟨_, h.1, diff_diff_cancel_left h.2⟩,
+    fun ⟨B', hB', h⟩ ↦ ⟨?_,h.symm.trans_subset (diff_subset _ _)⟩⟩
   rwa [← h, diff_diff_cancel_left hB'.subset_ground]
 
 @[simp] theorem dual_dual (M : Matroid α) : M✶✶ = M :=
@@ -180,13 +180,13 @@ theorem Base.compl_base_dual (h : M.Base B) : M✶.Base (M.E \ B) := by
 
 theorem Base.compl_inter_basis_of_inter_basis (hB : M.Base B) (hBX : M.Basis (B ∩ X) X) :
     M✶.Basis ((M.E \ B) ∩ (M.E \ X)) (M.E \ X) := by
-  refine' Indep.basis_of_forall_insert _ (inter_subset_right _ _) (fun e he ↦ _)
+  refine Indep.basis_of_forall_insert ?_ (inter_subset_right _ _) (fun e he ↦ ?_)
   · rw [dual_indep_iff_exists]
     exact ⟨B, hB, disjoint_of_subset_left (inter_subset_left _ _) disjoint_sdiff_left⟩
   simp only [diff_inter_self_eq_diff, mem_diff, not_and, not_not, imp_iff_right he.1.1] at he
   simp_rw [dual_dep_iff_forall, insert_subset_iff, and_iff_right he.1.1,
     and_iff_left ((inter_subset_left _ _).trans (diff_subset _ _))]
-  refine' fun B' hB' ↦ by_contra (fun hem ↦ _)
+  refine fun B' hB' ↦ by_contra (fun hem ↦ ?_)
   rw [nonempty_iff_ne_empty, not_ne_iff, ← union_singleton, diff_inter_diff,
    union_inter_distrib_right, union_empty_iff, singleton_inter_eq_empty, diff_eq,
    inter_right_comm, inter_eq_self_of_subset_right hB'.subset_ground, ← diff_eq,
@@ -194,14 +194,14 @@ theorem Base.compl_inter_basis_of_inter_basis (hB : M.Base B) (hBX : M.Basis (B 
   obtain ⟨f, hfb, hBf⟩ := hB.exchange hB' ⟨he.2, hem.2⟩
 
   have hi : M.Indep (insert f (B ∩ X)) := by
-    refine' hBf.indep.subset (insert_subset_insert _)
+    refine hBf.indep.subset (insert_subset_insert ?_)
     simp_rw [subset_diff, and_iff_right (inter_subset_left _ _), disjoint_singleton_right,
       mem_inter_iff, iff_false_intro he.1.2, and_false, not_false_iff]
   exact hfb.2 (hBX.mem_of_insert_indep (Or.elim (hem.1 hfb.1) (False.elim ∘ hfb.2) id) hi).1
 
 theorem Base.inter_basis_iff_compl_inter_basis_dual (hB : M.Base B) (hX : X ⊆ M.E := by aesop_mat):
     M.Basis (B ∩ X) X ↔ M✶.Basis ((M.E \ B) ∩ (M.E \ X)) (M.E \ X) := by
-  refine' ⟨hB.compl_inter_basis_of_inter_basis, fun h ↦ _⟩
+  refine ⟨hB.compl_inter_basis_of_inter_basis, fun h ↦ ?_⟩
   simpa [inter_eq_self_of_subset_right hX, inter_eq_self_of_subset_right hB.subset_ground] using
     hB.compl_base_dual.compl_inter_basis_of_inter_basis h
 

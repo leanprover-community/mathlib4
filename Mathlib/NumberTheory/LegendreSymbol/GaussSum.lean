@@ -50,8 +50,6 @@ additive character, multiplicative character, Gauss sum
 
 universe u v
 
-open scoped BigOperators
-
 open AddChar MulChar
 
 section GaussSumDef
@@ -102,7 +100,7 @@ private theorem gaussSum_mul_aux {χ : MulChar R R'} (hχ : IsNontrivial χ) (ψ
       Finset.sum_const_zero, map_zero_one, mul_one]
     exact (hχ.sum_eq_zero).symm
   · -- case `b ≠ 0`
-    refine' (Fintype.sum_bijective _ (mulLeft_bijective₀ b hb) _ _ fun x => _).symm
+    refine (Fintype.sum_bijective _ (mulLeft_bijective₀ b hb) _ _ fun x => ?_).symm
     rw [mul_assoc, mul_comm x, ← mul_assoc, mul_inv_cancel hb, one_mul, mul_sub, mul_one]
 
 /-- We have `gaussSum χ ψ * gaussSum χ⁻¹ ψ⁻¹ = Fintype.card R`
