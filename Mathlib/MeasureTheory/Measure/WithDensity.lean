@@ -354,7 +354,7 @@ theorem aemeasurable_withDensity_ennreal_iff' {f : α → ℝ≥0}
 theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurable f) {g : α → ℝ≥0∞} :
     AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
       AEMeasurable (fun x => (f x : ℝ≥0∞) * g x) μ :=
-  aemeasurable_withDensity_ennreal_iff' <| Measurable.aemeasurable hf
+  aemeasurable_withDensity_ennreal_iff' <| hf.aemeasurable
 #align measure_theory.ae_measurable_with_density_ennreal_iff MeasureTheory.aemeasurable_withDensity_ennreal_iff
 
 open MeasureTheory.SimpleFunc
