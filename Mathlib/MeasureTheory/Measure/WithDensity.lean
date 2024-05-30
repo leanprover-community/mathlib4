@@ -306,12 +306,11 @@ theorem ae_withDensity_iff_ae_restrict' {p : α → Prop} {f : α → ℝ≥0∞
   rw [ae_withDensity_iff' hf, ae_restrict_iff'₀]
   · simp only [mem_setOf]
   · rcases hf with ⟨g, hg, hfg⟩
-    have nonneg_eq_ae : {x | g x ≠ 0} =ᵐ[μ] {x | f x ≠ 0} := by {
+    have nonneg_eq_ae : {x | g x ≠ 0} =ᵐ[μ] {x | f x ≠ 0} := by
       filter_upwards [hfg] with a ha
       simp only [eq_iff_iff]
       exact ⟨fun (h : g a ≠ 0) ↦ by rwa [← ha] at h,
              fun (h : f a ≠ 0) ↦ by rwa [ha] at h⟩
-    }
     exact NullMeasurableSet.congr
       (MeasurableSet.nullMeasurableSet
         <| hg (measurableSet_singleton _)).compl
