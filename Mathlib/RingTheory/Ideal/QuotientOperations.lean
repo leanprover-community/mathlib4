@@ -257,6 +257,13 @@ noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCopr
             (Ideal.quotientInfRingEquivPiQuotient f hf).trans <| RingEquiv.piFinTwo fun i => R ⧸ f i
 #align ideal.quotient_inf_equiv_quotient_prod Ideal.quotientInfEquivQuotientProd
 
+/-- **Chinese remainder theorem**, specialized to two ideals. -/
+noncomputable def quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
+    R ⧸ I * J ≃+* (R ⧸ I) × R ⧸ J :=
+  Ideal.quotEquivOfEq (inf_eq_mul_of_isCoprime coprime).symm |>.trans <|
+    Ideal.quotientInfEquivQuotientProd I J coprime
+#align ideal.quotient_mul_equiv_quotient_prod Ideal.quotientMulEquivQuotientProd
+
 @[simp]
 theorem quotientInfEquivQuotientProd_fst (I J : Ideal R) (coprime : IsCoprime I J) (x : R ⧸ I ⊓ J) :
     (quotientInfEquivQuotientProd I J coprime x).fst =
