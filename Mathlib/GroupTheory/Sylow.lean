@@ -308,13 +308,13 @@ instance [hp : Fact p.Prime] [Finite (Sylow p G)] : IsPretransitive G (Sylow p G
           rw [← Sylow.ext (H.mp hR)]
           exact R.2
       apply Q.2.nonempty_fixed_point_of_prime_not_dvd_card
-      refine' fun h => hp.out.not_dvd_one (Nat.modEq_zero_iff_dvd.mp _)
+      refine fun h => hp.out.not_dvd_one (Nat.modEq_zero_iff_dvd.mp ?_)
       calc
         1 = card (fixedPoints P (orbit G P)) := ?_
         _ ≡ card (orbit G P) [MOD p] := (P.2.card_modEq_card_fixedPoints (orbit G P)).symm
         _ ≡ 0 [MOD p] := Nat.modEq_zero_iff_dvd.mpr h
       rw [← Set.card_singleton (⟨P, mem_orbit_self P⟩ : orbit G P)]
-      refine' card_congr' (congr_arg _ (Eq.symm _))
+      refine card_congr' (congr_arg _ (Eq.symm ?_))
       rw [Set.eq_singleton_iff_unique_mem]
       exact ⟨H.mpr rfl, fun R h => Subtype.ext (Sylow.ext (H.mp h))⟩⟩
 

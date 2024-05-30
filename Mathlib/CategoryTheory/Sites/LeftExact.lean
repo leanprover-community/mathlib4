@@ -79,7 +79,7 @@ instance preservesLimit_diagramFunctor
         fac := by
           intro E k
           dsimp [diagramNatTrans]
-          refine' Multiequalizer.hom_ext _ _ _ (fun a => _)
+          refine Multiequalizer.hom_ext _ _ _ (fun a => ?_)
           simp only [Multiequalizer.lift_ι, Multiequalizer.lift_ι_assoc, Category.assoc]
           change (_ ≫ _) ≫ _ = _
           dsimp [evaluateCombinedCones]
@@ -87,7 +87,7 @@ instance preservesLimit_diagramFunctor
           rfl
         uniq := by
           intro E m hm
-          refine' Multiequalizer.hom_ext _ _ _ (fun a => limit_obj_ext (fun j => _))
+          refine Multiequalizer.hom_ext _ _ _ (fun a => limit_obj_ext (fun j => ?_))
           delta liftToDiagramLimitObj
           erw [Multiequalizer.lift_ι, Category.assoc]
           change _ = (_ ≫ _) ≫ _
@@ -177,16 +177,16 @@ instance preservesLimitsOfShape_plusFunctor
     PreservesLimitsOfShape K (J.plusFunctor D) := by
   constructor; intro F; apply preservesLimitOfEvaluation; intro X
   apply preservesLimitOfPreservesLimitCone (limit.isLimit F)
-  refine' ⟨fun S => liftToPlusObjLimitObj.{w, v, u} F X.unop S, _, _⟩
+  refine ⟨fun S => liftToPlusObjLimitObj.{w, v, u} F X.unop S, ?_, ?_⟩
   · intro S k
     apply liftToPlusObjLimitObj_fac
   · intro S m hm
     dsimp [liftToPlusObjLimitObj]
     simp_rw [← Category.assoc, Iso.eq_comp_inv, ← Iso.comp_inv_eq]
-    refine' limit.hom_ext (fun k => _)
+    refine limit.hom_ext (fun k => ?_)
     simp only [limit.lift_π, Category.assoc, ← hm]
     congr 1
-    refine' colimit.hom_ext (fun k => _)
+    refine colimit.hom_ext (fun k => ?_)
     dsimp [plusMap, plusObj]
     erw [colimit.ι_map, colimit.ι_desc_assoc, limit.lift_π]
     conv_lhs => dsimp

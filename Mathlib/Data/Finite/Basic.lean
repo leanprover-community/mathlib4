@@ -133,7 +133,7 @@ instance Function.Embedding.finite {α β : Sort*} [Finite β] : Finite (α ↪ 
     -- "stuck at solving universe constraint" error.
     apply Finite.of_subsingleton
 
-  · refine' h.elim fun f => _
+  · refine h.elim fun f => ?_
     haveI : Finite α := Finite.of_injective _ f.injective
     exact Finite.of_injective _ DFunLike.coe_injective
 #align function.embedding.finite Function.Embedding.finite

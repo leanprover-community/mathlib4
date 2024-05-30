@@ -163,7 +163,7 @@ instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
     exact (eq_maximalIdeal hI).ge
   is_henselian := by
     intro f hf a₀ h₁ h₂
-    refine' HenselianLocalRing.is_henselian f hf a₀ h₁ _
+    refine HenselianLocalRing.is_henselian f hf a₀ h₁ ?_
     contrapose! h₂
     rw [← mem_nonunits_iff, ← LocalRing.mem_maximalIdeal, ← Ideal.Quotient.eq_zero_iff_mem] at h₂
     rw [h₂]

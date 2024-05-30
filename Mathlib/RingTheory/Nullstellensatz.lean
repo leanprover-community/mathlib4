@@ -118,8 +118,8 @@ instance vanishingIdeal_singleton_isMaximal {x : σ → k} :
     RingEquiv.ofBijective
       (Ideal.Quotient.lift _ (eval x) fun p h => (mem_vanishingIdeal_singleton_iff x p).mp h)
       (by
-        refine'
-          ⟨(injective_iff_map_eq_zero _).mpr fun p hp => _, fun z =>
+        refine
+          ⟨(injective_iff_map_eq_zero _).mpr fun p hp => ?_, fun z =>
             ⟨(Ideal.Quotient.mk (vanishingIdeal {x} : Ideal (MvPolynomial σ k))) (C z), by simp⟩⟩
         obtain ⟨q, rfl⟩ := Quotient.mk_surjective p
         rwa [Ideal.Quotient.lift_mk, ← mem_vanishingIdeal_singleton_iff,
