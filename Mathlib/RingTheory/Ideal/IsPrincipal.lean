@@ -91,14 +91,13 @@ theorem associatesEquivIsPrincipal_mul (x y : Associates R) :
 @[simp]
 theorem associatesEquivIsPrincipal_map_zero :
     (associatesEquivIsPrincipal R 0 : Ideal R) = 0 := by
-  rw [← Associates.mk_zero, ← Associates.quotient_mk_eq_mk, associatesEquivIsPrincipal_apply,
-    Set.singleton_zero, span_zero, zero_eq_bot]
+  rw [← Associates.mk_zero, associatesEquivIsPrincipal_apply, Submodule.zero_eq_bot,
+    span_singleton_eq_bot]
 
 @[simp]
 theorem associatesEquivIsPrincipal_map_one :
     (associatesEquivIsPrincipal R 1 : Ideal R) = 1 := by
-  rw [Associates.one_eq_mk_one, ← Associates.quotient_mk_eq_mk, associatesEquivIsPrincipal_apply,
-    span_singleton_one, one_eq_top]
+  rw [Associates.one_eq_mk_one, associatesEquivIsPrincipal_apply, span_singleton_one, one_eq_top]
 
 variable (R) in
 /-- The `MulEquiv` version of `Ideal.associatesEquivIsPrincipal`. -/
