@@ -3,7 +3,7 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Principal Ideals
@@ -28,7 +28,7 @@ open Submodule
 variable (R) in
 /-- The principal ideals of `R` form a submonoid of `Ideal R`. -/
 def isPrincipalSubmonoid : Submonoid (Ideal R) where
-  carrier := { I | IsPrincipal I}
+  carrier := {I | IsPrincipal I}
   mul_mem' := by
     rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
     exact ⟨x * y, Ideal.span_singleton_mul_span_singleton x y⟩
@@ -51,16 +51,21 @@ noncomputable def associatesEquivIsPrincipal :
     ⟨fun  _ _ h ↦ ?_, fun ⟨I, hI⟩ ↦ ?_⟩
   · rw [Subtype.mk_eq_mk, span_singleton_eq_span_singleton] at h
     exact Quotient.out_equiv_out.mp h
-  · obtain ⟨x, hx⟩ := hI
-    refine ⟨⟦x⟧, ?_⟩
-    rw [Subtype.mk_eq_mk, hx, submodule_span_eq, span_singleton_eq_span_singleton]
-    exact Associates.mk_quot_out x
+  · refine ⟨Associates.mk hI.generator, ?_⟩
+    rw [Subtype.mk.injEq, span_singleton_eq_span_singleton.mpr (Associates.mk_quot_out
+      hI.generator), span_singleton_generator]
 
 @[simp]
 theorem associatesEquivIsPrincipal_apply (x : R) :
-    associatesEquivIsPrincipal R ⟦x⟧ = span {x} := by
+    associatesEquivIsPrincipal R (Associates.mk x) = span {x} := by
   rw [associatesEquivIsPrincipal, Equiv.ofBijective_apply, span_singleton_eq_span_singleton]
   exact Associates.mk_quot_out x
+
+@[simp]
+theorem associatesEquivIsPrincipal_symm_apply {I : Ideal R} (hI : IsPrincipal I) :
+    (associatesEquivIsPrincipal R).symm ⟨I, hI⟩ = Associates.mk hI.generator := by
+  rw [Equiv.symm_apply_eq, Subtype.mk.injEq, associatesEquivIsPrincipal_apply,
+    span_singleton_generator]
 
 theorem associatesEquivIsPrincipal_mul (x y : Associates R) :
     (associatesEquivIsPrincipal R (x * y) : Ideal R) =
