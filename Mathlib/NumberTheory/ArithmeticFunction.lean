@@ -656,12 +656,18 @@ theorem natCast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicativ
   ⟨by simp [h], fun {m n} cop => by simp [h.2 cop]⟩
 #align nat.arithmetic_function.is_multiplicative.nat_cast ArithmeticFunction.IsMultiplicative.natCast
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast := natCast
+
 @[arith_mult]
 theorem intCast {f : ArithmeticFunction ℤ} [Ring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
                                  -- Porting note: was `by simp [cop, h]`
   ⟨by simp [h], fun {m n} cop => by simp [h.2 cop]⟩
 #align nat.arithmetic_function.is_multiplicative.int_cast ArithmeticFunction.IsMultiplicative.intCast
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast := intCast
 
 @[arith_mult]
 theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
@@ -1388,5 +1394,11 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
       Units.coeHom_apply, Units.val_zpow_eq_zpow_val, Units.val_mk0]
 
 end SpecialFunctions
+
+theorem card_divisors (n : ℕ) (hnne0 : n ≠ 0) :
+    n.divisors.card = n.primeFactors.prod (n.factorization · + 1) := by
+  rw [← sigma_zero_apply, isMultiplicative_sigma.multiplicative_factorization _ hnne0]
+  exact Finset.prod_congr n.support_factorization fun _ h =>
+    sigma_zero_apply_prime_pow <| Nat.prime_of_mem_primeFactors h
 
 end ArithmeticFunction

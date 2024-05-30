@@ -660,17 +660,17 @@ def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type max v₁ u₁)
       · apply PreservesProduct.iso s
       · apply PreservesProduct.iso s
     · rintro _ _ (_ | _)
-      · refine' limit.hom_ext (fun j => _)
+      · refine limit.hom_ext (fun j => ?_)
         dsimp [Equalizer.Presieve.firstMap, firstMap]
         simp only [limit.lift_π, map_lift_piComparison, assoc, Fan.mk_π_app, Functor.map_comp]
         rw [piComparison_comp_π_assoc]
-      · refine' limit.hom_ext (fun j => _)
+      · refine limit.hom_ext (fun j => ?_)
         dsimp [Equalizer.Presieve.secondMap, secondMap]
         simp only [limit.lift_π, map_lift_piComparison, assoc, Fan.mk_π_app, Functor.map_comp]
         rw [piComparison_comp_π_assoc]
       · dsimp
         simp
-  · refine' Fork.ext (Iso.refl _) _
+  · refine Fork.ext (Iso.refl _) ?_
     dsimp [Equalizer.forkMap, forkMap]
     simp [Fork.ι]
 #align category_theory.presheaf.is_sheaf_for_is_sheaf_for' CategoryTheory.Presheaf.isSheafForIsSheafFor'

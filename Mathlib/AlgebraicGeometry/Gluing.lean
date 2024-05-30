@@ -128,7 +128,7 @@ def gluedScheme : Scheme := by
     D.toLocallyRingedSpaceGlueData.toGlueData.glued
   intro x
   obtain ⟨i, y, rfl⟩ := D.toLocallyRingedSpaceGlueData.ι_jointly_surjective x
-  refine' ⟨_, _ ≫ D.toLocallyRingedSpaceGlueData.toGlueData.ι i, _⟩
+  refine ⟨?_, ?_ ≫ D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   swap
   · exact (D.U i).affineCover.map y
   constructor
@@ -284,9 +284,9 @@ def gluedCoverT' (x y z : 𝒰.J) :
         (pullback.fst : pullback (𝒰.map x) (𝒰.map z) ⟶ _) ⟶
       pullback (pullback.fst : pullback (𝒰.map y) (𝒰.map z) ⟶ _)
         (pullback.fst : pullback (𝒰.map y) (𝒰.map x) ⟶ _) := by
-  refine' (pullbackRightPullbackFstIso _ _ _).hom ≫ _
-  refine' _ ≫ (pullbackSymmetry _ _).hom
-  refine' _ ≫ (pullbackRightPullbackFstIso _ _ _).inv
+  refine (pullbackRightPullbackFstIso _ _ _).hom ≫ ?_
+  refine ?_ ≫ (pullbackSymmetry _ _).hom
+  refine ?_ ≫ (pullbackRightPullbackFstIso _ _ _).inv
   refine' pullback.map _ _ _ _ (pullbackSymmetry _ _).hom (𝟙 _) (𝟙 _) _ _
   · simp [pullback.condition]
   · simp
