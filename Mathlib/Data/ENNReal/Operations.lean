@@ -383,6 +383,9 @@ theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℝ≥0∞) := by
   rw [← coe_natCast, Nat.cast_tsub, coe_sub, coe_natCast, coe_natCast]
 #align ennreal.nat_cast_sub ENNReal.natCast_sub
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_sub := natCast_sub
+
 protected theorem sub_eq_of_eq_add (hb : b ≠ ∞) : a = c + b → a - b = c :=
   (cancel_of_ne hb).tsub_eq_of_eq_add
 #align ennreal.sub_eq_of_eq_add ENNReal.sub_eq_of_eq_add

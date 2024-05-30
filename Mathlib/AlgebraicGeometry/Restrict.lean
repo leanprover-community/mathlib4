@@ -182,7 +182,7 @@ def Scheme.restrictRestrictComm (X : Scheme.{u}) (U V : Opens X.carrier) :
     X ∣_ᵤ U ∣_ᵤ ιOpens U ⁻¹ᵁ V ≅ X ∣_ᵤ V ∣_ᵤ ιOpens V ⁻¹ᵁ U := by
   refine IsOpenImmersion.isoOfRangeEq (ιOpens _ ≫ ιOpens U) (ιOpens _ ≫ ιOpens V) ?_
   simp only [Scheme.restrict_carrier, Scheme.ofRestrict_val_base, Scheme.comp_coeBase,
-    CategoryTheory.coe_comp, Opens.coe_inclusion, Set.range_comp, Opens.map]
+    TopCat.coe_comp, Opens.coe_inclusion, Set.range_comp, Opens.map]
   rw [Subtype.range_val, Subtype.range_val]
   dsimp
   rw [Set.image_preimage_eq_inter_range, Set.image_preimage_eq_inter_range,
@@ -194,7 +194,7 @@ def Scheme.restrictRestrict (X : Scheme.{u}) (U : Opens X.carrier) (V : Opens (X
     X ∣_ᵤ U ∣_ᵤ V ≅ X ∣_ᵤ U.openEmbedding.isOpenMap.functor.obj V := by
   refine IsOpenImmersion.isoOfRangeEq (ιOpens _ ≫ ιOpens U) (ιOpens _) ?_
   simp only [Scheme.restrict_carrier, Scheme.ofRestrict_val_base, Scheme.comp_coeBase,
-    CategoryTheory.coe_comp, Opens.coe_inclusion, Set.range_comp, Opens.map]
+    TopCat.coe_comp, Opens.coe_inclusion, Set.range_comp, Opens.map]
   rw [Subtype.range_val, Subtype.range_val]
   rfl
 
@@ -225,7 +225,7 @@ noncomputable abbrev Scheme.restrictMapIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsI
     (H := PresheafedSpace.IsOpenImmersion.comp (hf := inferInstance) (hg := inferInstance))
     (Y.ofRestrict _) _
   dsimp [restrict]
-  rw [coe_comp, Set.range_comp, Opens.coe_inclusion, Subtype.range_val, Subtype.range_coe]
+  rw [Set.range_comp, Subtype.range_val, Subtype.range_coe]
   refine' @Set.image_preimage_eq _ _ f.1.base U.1 _
   rw [← TopCat.epi_iff_surjective]
   infer_instance
@@ -236,7 +236,7 @@ section MorphismRestrict
 /-- Given a morphism `f : X ⟶ Y` and an open set `U ⊆ Y`, we have `X ×[Y] U ≅ X |_{f ⁻¹ U}` -/
 def pullbackRestrictIsoRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
     pullback f (Scheme.ιOpens U) ≅ X ∣_ᵤ f ⁻¹ᵁ U := by
-  refine' IsOpenImmersion.isoOfRangeEq pullback.fst (X.ofRestrict _) _
+  refine IsOpenImmersion.isoOfRangeEq pullback.fst (X.ofRestrict _) ?_
   rw [IsOpenImmersion.range_pullback_fst_of_right]
   dsimp [Opens.coe_inclusion, Scheme.restrict]
   rw [Subtype.range_val, Subtype.range_coe]
@@ -439,7 +439,7 @@ def morphismRestrictStalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (x) 
     Arrow.mk (PresheafedSpace.stalkMap (f ∣_ U).1 x) ≅
       Arrow.mk (PresheafedSpace.stalkMap f.1 x.1) := by
   fapply Arrow.isoMk'
-  · refine' Y.restrictStalkIso U.openEmbedding ((f ∣_ U).1.1 x) ≪≫ TopCat.Presheaf.stalkCongr _ _
+  · refine Y.restrictStalkIso U.openEmbedding ((f ∣_ U).1.1 x) ≪≫ TopCat.Presheaf.stalkCongr _ ?_
     apply Inseparable.of_eq
     exact morphismRestrict_base_coe f U x
   · exact X.restrictStalkIso (Opens.openEmbedding _) _
