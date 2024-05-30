@@ -3,7 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.GroupTheory.Congruence
@@ -408,8 +408,7 @@ instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R
 end Algebraic
 
 /-- The natural homomorphism from a ring to its quotient by a congruence relation. -/
-def mk' [NonAssocSemiring R] (c : RingCon R) : R →+* c.Quotient
-    where
+def mk' [NonAssocSemiring R] (c : RingCon R) : R →+* c.Quotient where
   toFun := toQuotient
   map_zero' := rfl
   map_one' := rfl
@@ -508,6 +507,11 @@ theorem coe_inf {c d : RingCon R} : ⇑(c ⊓ d) = ⇑c ⊓ ⇑d := rfl
 /-- Definition of the infimum of two congruence relations. -/
 theorem inf_iff_and {c d : RingCon R} {x y} : (c ⊓ d) x y ↔ c x y ∧ d x y :=
   Iff.rfl
+
+instance [Nontrivial R] : Nontrivial (RingCon R) where
+  exists_pair_ne :=
+    let ⟨x, y, ne⟩ := exists_pair_ne R
+    ⟨⊥, ⊤, ne_of_apply_ne (· x y) <| by simp [ne]⟩
 
 /-- The inductively defined smallest congruence relation containing a binary relation `r` equals
     the infimum of the set of congruence relations containing `r`. -/

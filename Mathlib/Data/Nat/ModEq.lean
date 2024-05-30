@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Tactic.NormNum.Basic
@@ -285,14 +285,14 @@ lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b 
   have hmd := gcd_dvd_left m c
   have hcd := gcd_dvd_right m c
   rw [modEq_iff_dvd]
-  refine' @Int.dvd_of_dvd_mul_right_of_gcd_one (m / d) (c / d) (b - a) _ _
+  refine @Int.dvd_of_dvd_mul_right_of_gcd_one (m / d) (c / d) (b - a) ?_ ?_
   · show (m / d : ℤ) ∣ c / d * (b - a)
     rw [mul_comm, ← Int.mul_ediv_assoc (b - a) (Int.natCast_dvd_natCast.mpr hcd), mul_comm]
     apply Int.ediv_dvd_ediv (Int.natCast_dvd_natCast.mpr hmd)
     rw [mul_sub]
     exact modEq_iff_dvd.mp h
   · show Int.gcd (m / d) (c / d) = 1
-    simp only [← Int.natCast_div, Int.coe_nat_gcd (m / d) (c / d), gcd_div hmd hcd,
+    simp only [← Int.natCast_div, Int.gcd_natCast_natCast (m / d) (c / d), gcd_div hmd hcd,
       Nat.div_self (gcd_pos_of_pos_left c hm)]
 #align nat.modeq.cancel_left_div_gcd Nat.ModEq.cancel_left_div_gcd
 
@@ -420,15 +420,6 @@ theorem coprime_of_mul_modEq_one (b : ℕ) {a n : ℕ} (h : a * b ≡ 1 [MOD n])
 
 #align nat.mod_mul_right_mod Nat.mod_mul_right_mod
 #align nat.mod_mul_left_mod Nat.mod_mul_left_mod
-
-theorem div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
-  if hb0 : b = 0 then by simp [hb0]
-  else by
-    rw [← @add_right_cancel_iff _ _ _ (c * (a / b / c)), mod_add_div, Nat.div_div_eq_div_mul, ←
-      mul_right_inj' hb0, ← @add_left_cancel_iff _ _ _ (a % b), mod_add_div, mul_add, ←
-      @add_left_cancel_iff _ _ _ (a % (b * c) % b), add_left_comm, ← add_assoc (a % (b * c) % b),
-      mod_add_div, ← mul_assoc, mod_add_div, mod_mul_right_mod]
-#align nat.div_mod_eq_mod_mul_div Nat.div_mod_eq_mod_mul_div
 
 theorem add_mod_add_ite (a b c : ℕ) :
     ((a + b) % c + if c ≤ a % c + b % c then c else 0) = a % c + b % c :=

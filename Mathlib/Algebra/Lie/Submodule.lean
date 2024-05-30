@@ -220,6 +220,9 @@ theorem coe_bracket (x : L) (m : N) : (↑⁅x, m⁆ : M) = ⁅x, ↑m⁆ :=
   rfl
 #align lie_submodule.coe_bracket LieSubmodule.coe_bracket
 
+instance [Subsingleton M] : Unique (LieSubmodule R L M) :=
+  ⟨⟨0⟩, fun _ ↦ (coe_toSubmodule_eq_iff _ _).mp (Subsingleton.elim _ _)⟩
+
 end LieSubmodule
 
 section LieIdeal
@@ -533,9 +536,9 @@ theorem iSup_induction' {ι} (N : ι → LieSubmodule R L M) {C : (x : M) → (x
     (hN : ∀ (i) (x) (hx : x ∈ N i), C x (mem_iSup_of_mem i hx)) (h0 : C 0 (zero_mem _))
     (hadd : ∀ x y hx hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {x : M}
     (hx : x ∈ ⨆ i, N i) : C x hx := by
-  refine' Exists.elim _ fun (hx : x ∈ ⨆ i, N i) (hc : C x hx) => hc
-  refine' iSup_induction N (C := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, N i), C x hx) hx
-    (fun i x hx => _) _ fun x y => _
+  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, N i) (hc : C x hx) => hc
+  refine iSup_induction N (C := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, N i), C x hx) hx
+    (fun i x hx => ?_) ?_ fun x y => ?_
   · exact ⟨_, hN _ _ hx⟩
   · exact ⟨_, h0⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩

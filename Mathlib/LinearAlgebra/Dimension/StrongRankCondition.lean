@@ -45,7 +45,7 @@ universe u v w w'
 variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
 variable {ι : Type w} {ι' : Type w'}
 
-open BigOperators Cardinal Basis Submodule Function Set
+open Cardinal Basis Submodule Function Set
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
 
@@ -156,10 +156,10 @@ theorem Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) : #(r
       · subst b
         rcases mem_iUnion.1 (this (Finset.mem_singleton_self _)) with ⟨j, hj⟩
         exact mem_iUnion.2 ⟨j, (mem_image _ _ _).2 ⟨i, hj, rfl⟩⟩
-    refine' le_of_not_lt fun IJ => _
+    refine le_of_not_lt fun IJ => ?_
     suffices #(⋃ j, S' j) < #(range v) by exact not_le_of_lt this ⟨Set.embeddingOfSubset _ _ hs⟩
-    refine' lt_of_le_of_lt (le_trans Cardinal.mk_iUnion_le_sum_mk
-      (Cardinal.sum_le_sum _ (fun _ => ℵ₀) _)) _
+    refine lt_of_le_of_lt (le_trans Cardinal.mk_iUnion_le_sum_mk
+      (Cardinal.sum_le_sum _ (fun _ => ℵ₀) ?_)) ?_
     · exact fun j => (Cardinal.lt_aleph0_of_finite _).le
     · simpa
 #align basis.le_span Basis.le_span
@@ -466,7 +466,7 @@ theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
   simp only [Module.rank_def]
   -- Porting note: can't use `‹_›` as that pulls the unused `N` into the context
   obtain ⟨S, hS⟩ := Module.finite_def.mp ‹Module.Finite R M›
-  refine' (ciSup_le' fun i => _).trans_lt (nat_lt_aleph0 S.card)
+  refine (ciSup_le' fun i => ?_).trans_lt (nat_lt_aleph0 S.card)
   exact linearIndependent_le_span_finset _ i.prop S hS
 #align finite_dimensional.rank_lt_aleph_0 rank_lt_aleph0
 
