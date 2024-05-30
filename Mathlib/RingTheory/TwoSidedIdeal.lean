@@ -118,7 +118,7 @@ instance : Module Rᵐᵒᵖ I where
   add_smul x y z := by
     ext; show _ * (_ + _) = _ * _ + _ * _; simp only [left_distrib]
   zero_smul x := by
-    ext ; show _ * 0 = 0; simp only [mul_zero]
+    ext; show _ * 0 = 0; simp only [mul_zero]
 
 end RingCon
 
