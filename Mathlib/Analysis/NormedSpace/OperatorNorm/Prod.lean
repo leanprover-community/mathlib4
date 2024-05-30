@@ -53,18 +53,14 @@ theorem opNorm_prod (f : E →L[𝕜] F) (g : E →L[𝕜] G) : ‖f.prod g‖ =
         (le_max_right _ _).trans ((f.prod g).le_opNorm x))
 #align continuous_linear_map.op_norm_prod ContinuousLinearMap.opNorm_prod
 
-@[deprecated]
-alias op_norm_prod :=
-  opNorm_prod -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_prod := opNorm_prod -- deprecated on 2024-02-02
 
 @[simp]
 theorem opNNNorm_prod (f : E →L[𝕜] F) (g : E →L[𝕜] G) : ‖f.prod g‖₊ = ‖(f, g)‖₊ :=
   Subtype.ext <| opNorm_prod f g
 #align continuous_linear_map.op_nnnorm_prod ContinuousLinearMap.opNNNorm_prod
 
-@[deprecated]
-alias op_nnnorm_prod :=
-  opNNNorm_prod -- deprecated on 2024-02-02
+@[deprecated] alias op_nnnorm_prod := opNNNorm_prod -- deprecated on 2024-02-02
 
 /-- `ContinuousLinearMap.prod` as a `LinearIsometryEquiv`. -/
 def prodₗᵢ (R : Type*) [Semiring R] [Module R F] [Module R G] [ContinuousConstSMul R F]
@@ -105,7 +101,7 @@ def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ 
     (fun p : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) => p.1.prodMap p.2) (by
       apply funext
       rintro ⟨φ, ψ⟩
-      refine' ContinuousLinearMap.ext fun ⟨x₁, x₂⟩ => _
+      refine ContinuousLinearMap.ext fun ⟨x₁, x₂⟩ => ?_
       dsimp
       simp)
 #align continuous_linear_map.prod_mapL ContinuousLinearMap.prodMapL
@@ -164,7 +160,7 @@ variable (𝕜 E F)
     ‖fst 𝕜 E F‖ = 1 := by
   refine le_antisymm (norm_fst_le ..) ?_
   let ⟨e, he⟩ := exists_ne (0 : E)
-  have : ‖e‖ ≤ _ * max ‖e‖ ‖0‖ := (fst 𝕜 E F).le_opNorm (e, 0)
+  have : ‖e‖ ≤ _ * max ‖e‖ ‖(0 : F)‖ := (fst 𝕜 E F).le_opNorm (e, 0)
   rw [norm_zero, max_eq_left (norm_nonneg e)] at this
   rwa [← mul_le_mul_iff_of_pos_right (norm_pos_iff.mpr he), one_mul]
 
@@ -174,7 +170,7 @@ variable (𝕜 E F)
     ‖snd 𝕜 E F‖ = 1 := by
   refine le_antisymm (norm_snd_le ..) ?_
   let ⟨f, hf⟩ := exists_ne (0 : F)
-  have : ‖f‖ ≤ _ * max ‖0‖ ‖f‖ := (snd 𝕜 E F).le_opNorm (0, f)
+  have : ‖f‖ ≤ _ * max ‖(0 : E)‖ ‖f‖ := (snd 𝕜 E F).le_opNorm (0, f)
   rw [norm_zero, max_eq_right (norm_nonneg f)] at this
   rwa [← mul_le_mul_iff_of_pos_right (norm_pos_iff.mpr hf), one_mul]
 

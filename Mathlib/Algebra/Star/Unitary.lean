@@ -3,8 +3,8 @@ Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam, Frédéric Dupuis
 -/
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.GroupTheory.Submonoid.Operations
 
 #align_import algebra.star.unitary from "leanprover-community/mathlib"@"247a102b14f3cebfee126293341af5f6bed00237"
 
@@ -128,8 +128,7 @@ theorem star_eq_inv' : (star : unitary R → unitary R) = Inv.inv :=
 
 /-- The unitary elements embed into the units. -/
 @[simps]
-def toUnits : unitary R →* Rˣ
-    where
+def toUnits : unitary R →* Rˣ where
   toFun x := ⟨x, ↑x⁻¹, coe_mul_star_self x, coe_star_mul_self x⟩
   map_one' := Units.ext rfl
   map_mul' _ _ := Units.ext rfl

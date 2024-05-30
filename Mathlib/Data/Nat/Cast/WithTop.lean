@@ -12,7 +12,7 @@ import Mathlib.Algebra.Ring.Nat
 # Lemma about the coercion `ℕ → WithBot ℕ`.
 
 An orphaned lemma about casting from `ℕ` to `WithBot ℕ`,
-exiled here to minimize imports to `data.rat.order` for porting purposes.
+exiled here during the port to minimize imports of `Data.Rat.Order`.
 -/
 
 instance : WellFoundedRelation (WithTop ℕ) where

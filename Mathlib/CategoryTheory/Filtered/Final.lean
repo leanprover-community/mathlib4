@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Filtered.Connected
+import Mathlib.CategoryTheory.Limits.TypesFiltered
 import Mathlib.CategoryTheory.Limits.Final
 
 /-!
@@ -104,8 +105,8 @@ theorem Functor.initial_of_exists_of_isCofiltered [IsCofilteredOrEmpty C]
 
 /-- In this situation, `F` is also final, see
     `Functor.final_of_exists_of_isFiltered_of_fullyFaithful`. -/
-theorem IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful [IsFilteredOrEmpty D] [Full F]
-    [Faithful F] (h : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) : IsFilteredOrEmpty C where
+theorem IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful [IsFilteredOrEmpty D] [F.Full]
+    [F.Faithful] (h : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) : IsFilteredOrEmpty C where
   cocone_objs c c' := by
     obtain ⟨c₀, ⟨f⟩⟩ := h (IsFiltered.max (F.obj c) (F.obj c'))
     exact ⟨c₀, F.preimage (IsFiltered.leftToMax _ _ ≫ f),
@@ -118,7 +119,7 @@ theorem IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful [IsFilteredOr
 /-- In this situation, `F` is also initial, see
     `Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful`. -/
 theorem IsCofilteredOrEmpty.of_exists_of_isCofiltered_of_fullyFaithful [IsCofilteredOrEmpty D]
-    [Full F] [Faithful F] (h : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) : IsCofilteredOrEmpty C := by
+    [F.Full] [F.Faithful] (h : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) : IsCofilteredOrEmpty C := by
   suffices IsFilteredOrEmpty Cᵒᵖ from isCofilteredOrEmpty_of_isFilteredOrEmpty_op _
   refine IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful F.op (fun d => ?_)
   obtain ⟨c, ⟨f⟩⟩ := h d.unop
@@ -126,7 +127,7 @@ theorem IsCofilteredOrEmpty.of_exists_of_isCofiltered_of_fullyFaithful [IsCofilt
 
 /-- In this situation, `F` is also final, see
     `Functor.final_of_exists_of_isFiltered_of_fullyFaithful`. -/
-theorem IsFiltered.of_exists_of_isFiltered_of_fullyFaithful [IsFiltered D] [Full F] [Faithful F]
+theorem IsFiltered.of_exists_of_isFiltered_of_fullyFaithful [IsFiltered D] [F.Full] [F.Faithful]
     (h : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) : IsFiltered C :=
   { IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful F h with
     nonempty := by
@@ -136,8 +137,8 @@ theorem IsFiltered.of_exists_of_isFiltered_of_fullyFaithful [IsFiltered D] [Full
 
 /-- In this situation, `F` is also initial, see
     `Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful`. -/
-theorem IsCofiltered.of_exists_of_isCofiltered_of_fullyFaithful [IsCofiltered D] [Full F]
-    [Faithful F] (h : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) : IsCofiltered C :=
+theorem IsCofiltered.of_exists_of_isCofiltered_of_fullyFaithful [IsCofiltered D] [F.Full]
+    [F.Faithful] (h : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) : IsCofiltered C :=
   { IsCofilteredOrEmpty.of_exists_of_isCofiltered_of_fullyFaithful F h with
     nonempty := by
       have : Nonempty D := IsCofiltered.nonempty
@@ -146,8 +147,8 @@ theorem IsCofiltered.of_exists_of_isCofiltered_of_fullyFaithful [IsCofiltered D]
 
 /-- In this situation, `C` is also filtered, see
     `IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful`. -/
-theorem Functor.final_of_exists_of_isFiltered_of_fullyFaithful [IsFilteredOrEmpty D] [Full F]
-    [Faithful F] (h : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) : Final F := by
+theorem Functor.final_of_exists_of_isFiltered_of_fullyFaithful [IsFilteredOrEmpty D] [F.Full]
+    [F.Faithful] (h : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) : Final F := by
   have := IsFilteredOrEmpty.of_exists_of_isFiltered_of_fullyFaithful F h
   refine Functor.final_of_exists_of_isFiltered F h (fun {d c} s s' => ?_)
   obtain ⟨c₀, ⟨f⟩⟩ := h (IsFiltered.coeq s s')
@@ -156,7 +157,7 @@ theorem Functor.final_of_exists_of_isFiltered_of_fullyFaithful [IsFilteredOrEmpt
 
 /-- In this situation, `C` is also cofiltered, see
     `IsCofilteredOrEmpty.of_exists_of_isCofiltered_of_fullyFaithful`. -/
-theorem Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful [IsCofilteredOrEmpty D] [Full F]
+theorem Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful [IsCofilteredOrEmpty D] [F.Full]
     [Faithful F] (h : ∀ d, ∃ c, Nonempty (F.obj c ⟶ d)) : Initial F := by
   suffices Final F.op from initial_of_final_op _
   refine Functor.final_of_exists_of_isFiltered_of_fullyFaithful F.op (fun d => ?_)

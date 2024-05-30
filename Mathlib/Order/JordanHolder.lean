@@ -227,10 +227,8 @@ theorem toList_injective : Function.Injective (@CompositionSeries.toList X _ _) 
     Nat.succ_injective
       ((List.length_ofFn s₁).symm.trans <| (congr_arg List.length h).trans <| List.length_ofFn s₂)
   apply ext_fun h₁
-  -- Porting note: `List.nthLe_ofFn` has been deprecated but `List.get_ofFn` has a
-  --               different type, so we do golf here.
-  exact congr_fun <|
-          List.ofFn_injective <| h.trans <| List.ofFn_congr (congr_arg Nat.succ h₁).symm _
+  exact congr_fun <| List.ofFn_injective <| h.trans <|
+    List.ofFn_congr (congr_arg Nat.succ h₁).symm _
 #align composition_series.to_list_injective CompositionSeries.toList_injective
 
 theorem chain'_toList (s : CompositionSeries X) : List.Chain' IsMaximal s.toList :=
@@ -259,14 +257,9 @@ theorem mem_toList {s : CompositionSeries X} {x : X} : x ∈ s.toList ↔ x ∈ 
 #align composition_series.mem_to_list CompositionSeries.mem_toList
 
 /-- Make a `CompositionSeries X` from the ordered list of its elements. -/
-def ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l) : CompositionSeries X
-    where
+def ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l) : CompositionSeries X where
   length := l.length - 1
-  series i :=
-    l.nthLe i
-      (by
-        conv_rhs => rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt (List.length_pos_of_ne_nil hl))]
-        exact i.2)
+  series i := l.get <| i.cast <| by have := List.length_pos_of_ne_nil hl; omega
   step' := fun ⟨i, hi⟩ => List.chain'_iff_get.1 hc i hi
 #align composition_series.of_list CompositionSeries.ofList
 
@@ -277,11 +270,10 @@ theorem length_ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l
 
 theorem ofList_toList (s : CompositionSeries X) :
     ofList s.toList s.toList_ne_nil s.chain'_toList = s := by
-  refine' ext_fun _ _
+  refine ext_fun ?_ ?_
   · rw [length_ofList, length_toList, Nat.add_one_sub_one]
   · rintro ⟨i, hi⟩
-    -- Porting note: Was `dsimp [ofList, toList]; rw [List.nthLe_ofFn']`.
-    simp [ofList, toList, -List.ofFn_succ]
+    simp [ofList, toList]
 #align composition_series.of_list_to_list CompositionSeries.ofList_toList
 
 @[simp]
@@ -293,9 +285,10 @@ theorem ofList_toList' (s : CompositionSeries X) :
 @[simp]
 theorem toList_ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l) :
     toList (ofList l hl hc) = l := by
-  refine' List.ext_get _ _
-  · rw [length_toList, length_ofList,
-      tsub_add_cancel_of_le (Nat.succ_le_of_lt <| List.length_pos_of_ne_nil hl)]
+  refine List.ext_get ?_ ?_
+  · rw [length_toList, length_ofList]
+    have := List.length_pos_of_ne_nil hl
+    omega
   · intro i hi hi'
     dsimp [ofList, toList]
     rw [List.get_ofFn]
@@ -357,14 +350,12 @@ theorem length_pos_of_mem_ne {s : CompositionSeries X} {x y : X} (hx : x ∈ s) 
   let ⟨i, hi⟩ := hx
   let ⟨j, hj⟩ := hy
   have hij : i ≠ j := mt s.inj.2 fun h => hxy (hi ▸ hj ▸ h)
-  hij.lt_or_lt.elim
-    (fun hij => lt_of_le_of_lt (zero_le (i : ℕ)) (lt_of_lt_of_le hij (Nat.le_of_lt_succ j.2)))
-      fun hji => lt_of_le_of_lt (zero_le (j : ℕ)) (lt_of_lt_of_le hji (Nat.le_of_lt_succ i.2))
+  by omega
 #align composition_series.length_pos_of_mem_ne CompositionSeries.length_pos_of_mem_ne
 
 theorem forall_mem_eq_of_length_eq_zero {s : CompositionSeries X} (hs : s.length = 0) {x y}
     (hx : x ∈ s) (hy : y ∈ s) : x = y :=
-  by_contradiction fun hxy => pos_iff_ne_zero.1 (length_pos_of_mem_ne hx hy hxy) hs
+  by_contradiction fun hxy => Nat.pos_iff_ne_zero.1 (length_pos_of_mem_ne hx hy hxy) hs
 #align composition_series.forall_mem_eq_of_length_eq_zero CompositionSeries.forall_mem_eq_of_length_eq_zero
 
 /-- Remove the largest element from a `CompositionSeries`. If the series `s`
@@ -372,15 +363,14 @@ has length zero, then `s.eraseTop = s` -/
 @[simps]
 def eraseTop (s : CompositionSeries X) : CompositionSeries X where
   length := s.length - 1
-  series i := s ⟨i, lt_of_lt_of_le i.2 (Nat.succ_le_succ tsub_le_self)⟩
+  series i := s ⟨i, by omega⟩
   step' i := by
-    have := s.step ⟨i, lt_of_lt_of_le i.2 tsub_le_self⟩
+    have := s.step ⟨i, by omega⟩
     cases i
     exact this
 #align composition_series.erase_top CompositionSeries.eraseTop
 
-theorem top_eraseTop (s : CompositionSeries X) :
-    s.eraseTop.top = s ⟨s.length - 1, lt_of_le_of_lt tsub_le_self (Nat.lt_succ_self _)⟩ :=
+theorem top_eraseTop (s : CompositionSeries X) : s.eraseTop.top = s ⟨s.length - 1, by omega⟩ :=
   show s _ = s _ from
     congr_arg s
       (by
@@ -405,7 +395,7 @@ theorem mem_eraseTop_of_ne_of_mem {s : CompositionSeries X} {x : X} (hx : x ≠ 
     conv_rhs => rw [← Nat.succ_sub (length_pos_of_mem_ne ⟨i, rfl⟩ s.top_mem hx),
       Nat.add_one_sub_one]
     exact lt_of_le_of_ne (Nat.le_of_lt_succ i.2) (by simpa [top, s.inj, Fin.ext_iff] using hx)
-  refine' ⟨Fin.castSucc (n := s.length + 1) i, _⟩
+  refine ⟨Fin.castSucc (n := s.length + 1) i, ?_⟩
   simp [Fin.ext_iff, Nat.mod_eq_of_lt hi]
 #align composition_series.mem_erase_top_of_ne_of_mem CompositionSeries.mem_eraseTop_of_ne_of_mem
 
@@ -434,7 +424,7 @@ theorem isMaximal_eraseTop_top {s : CompositionSeries X} (h : 0 < s.length) :
   have : s.length - 1 + 1 = s.length := by
     conv_rhs => rw [← Nat.add_one_sub_one s.length]; rw [Nat.succ_sub h]
   rw [top_eraseTop, top]
-  convert s.step ⟨s.length - 1, Nat.sub_lt h zero_lt_one⟩; ext; simp [this]
+  convert s.step ⟨s.length - 1, by omega⟩; ext; simp [this]
 #align composition_series.is_maximal_erase_top_top CompositionSeries.isMaximal_eraseTop_top
 
 section FinLemmas
@@ -470,16 +460,16 @@ theorem append_natAdd_aux (i : Fin n) :
       (Fin.castSucc <| Fin.natAdd m i) =
       b (Fin.castSucc i) := by
   cases i
-  simp only [Matrix.vecAppend_eq_ite, Nat.not_lt_zero, Fin.natAdd_mk, add_lt_iff_neg_left,
-    add_tsub_cancel_left, dif_neg, Fin.castSucc_mk, not_false_iff, Fin.val_mk]
+  simp only [Matrix.vecAppend_eq_ite, Fin.natAdd_mk, Nat.add_sub_cancel_left, dif_neg,
+    Fin.castSucc_mk, not_false_iff, Fin.val_mk, (Nat.le_add_right ..).not_lt]
 #align composition_series.append_nat_add_aux CompositionSeries.append_natAdd_aux
 
 theorem append_succ_natAdd_aux (i : Fin n) :
     Matrix.vecAppend (Nat.add_succ _ _).symm (a ∘ Fin.castSucc) b (Fin.natAdd m i).succ =
       b i.succ := by
   cases' i with i hi
-  simp only [Matrix.vecAppend_eq_ite, add_assoc, Nat.not_lt_zero, Fin.natAdd_mk,
-    add_lt_iff_neg_left, add_tsub_cancel_left, Fin.succ_mk, dif_neg, not_false_iff, Fin.val_mk]
+  simp only [Fin.natAdd_mk, Fin.succ_mk, add_assoc, Matrix.vecAppend_eq_ite,
+    (Nat.le_add_right ..).not_lt, ↓reduceDite, Nat.add_sub_cancel_left]
 #align composition_series.append_succ_nat_add_aux CompositionSeries.append_succ_natAdd_aux
 
 end FinLemmas
@@ -571,7 +561,7 @@ theorem mem_snoc {s : CompositionSeries X} {x y : X} {hsat : IsMaximal s.top x} 
   simp only [snoc, mem_def]
   constructor
   · rintro ⟨i, rfl⟩
-    refine' Fin.lastCases _ (fun i => _) i
+    refine Fin.lastCases ?_ (fun i => ?_) i
     · right
       simp
     · left
@@ -598,7 +588,7 @@ theorem snoc_eraseTop_top {s : CompositionSeries X} (h : IsMaximal s.eraseTop.to
     Nat.pos_of_ne_zero
       (by
         intro hs
-        refine' ne_of_gt (lt_of_isMaximal h) _
+        refine ne_of_gt (lt_of_isMaximal h) ?_
         simp [top, Fin.ext_iff, hs])
   (eq_snoc_eraseTop h).symm
 #align composition_series.snoc_erase_top_top CompositionSeries.snoc_eraseTop_top
@@ -637,7 +627,7 @@ theorem append {s₁ s₂ t₁ t₂ : CompositionSeries X} (hs : s₁.top = s₂
   let e : Fin (s₁.length + s₂.length) ≃ Fin (t₁.length + t₂.length) :=
     calc
       Fin (s₁.length + s₂.length) ≃ Sum (Fin s₁.length) (Fin s₂.length) := finSumFinEquiv.symm
-      _ ≃ Sum (Fin t₁.length) (Fin t₂.length) := (Equiv.sumCongr h₁.choose h₂.choose)
+      _ ≃ Sum (Fin t₁.length) (Fin t₂.length) := Equiv.sumCongr h₁.choose h₂.choose
       _ ≃ Fin (t₁.length + t₂.length) := finSumFinEquiv
 
   ⟨e, by
@@ -655,11 +645,11 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
   let e : Fin s₁.length.succ ≃ Fin s₂.length.succ :=
     calc
       Fin (s₁.length + 1) ≃ Option (Fin s₁.length) := finSuccEquivLast
-      _ ≃ Option (Fin s₂.length) := (Functor.mapEquiv Option hequiv.choose)
+      _ ≃ Option (Fin s₂.length) := Functor.mapEquiv Option hequiv.choose
       _ ≃ Fin (s₂.length + 1) := finSuccEquivLast.symm
 
   ⟨e, fun i => by
-    refine' Fin.lastCases _ _ i
+    refine Fin.lastCases ?_ ?_ i
     · simpa [e, top] using htop
     · intro i
       simpa [e, Fin.succ_castSucc] using hequiv.choose_spec i⟩
@@ -685,12 +675,12 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
   ⟨e, by
     intro i
     dsimp only [e]
-    refine' Fin.lastCases _ (fun i => _) i
+    refine Fin.lastCases ?_ (fun i => ?_) i
     · erw [Equiv.swap_apply_left, snoc_castSucc, snoc_last, Fin.succ_last, snoc_last,
         snoc_castSucc, snoc_castSucc, Fin.succ_castSucc, snoc_castSucc, Fin.succ_last,
         snoc_last]
       exact hr₂
-    · refine' Fin.lastCases _ (fun i => _) i
+    · refine Fin.lastCases ?_ (fun i => ?_) i
       · erw [Equiv.swap_apply_right, snoc_castSucc, snoc_castSucc, snoc_castSucc,
           Fin.succ_castSucc, snoc_castSucc, Fin.succ_last, snoc_last, snoc_last,
           Fin.succ_last, snoc_last]
@@ -717,7 +707,7 @@ theorem length_pos_of_bot_eq_bot_of_top_eq_top_of_length_pos {s₁ s₂ : Compos
     (hb : s₁.bot = s₂.bot) (ht : s₁.top = s₂.top) : 0 < s₁.length → 0 < s₂.length :=
   not_imp_not.1
     (by
-      simp only [pos_iff_ne_zero, Ne, not_iff_not, Classical.not_not]
+      simp only [Nat.pos_iff_ne_zero, Ne, not_iff_not, Classical.not_not]
       exact length_eq_zero_of_bot_eq_bot_of_top_eq_top_of_length_eq_zero hb.symm ht.symm)
 #align composition_series.length_pos_of_bot_eq_bot_of_top_eq_top_of_length_pos CompositionSeries.length_pos_of_bot_eq_bot_of_top_eq_top_of_length_pos
 
@@ -761,13 +751,13 @@ theorem exists_top_eq_snoc_equivalant (s : CompositionSeries X) (x : X) (hm : Is
         isMaximal_of_eq_inf s.eraseTop.top s.top (by rw [inf_comm, htt]) hetx
           (isMaximal_eraseTop_top h0s) hm
       use snoc t x hmtx
-      refine' ⟨by simp [htb], by simp [htl], by simp, _⟩
+      refine ⟨by simp [htb], by simp [htl], by simp, ?_⟩
       have : s.Equivalent ((snoc t s.eraseTop.top (htt.symm ▸ imxs)).snoc s.top
           (by simpa using isMaximal_eraseTop_top h0s)) := by
         conv_lhs => rw [eq_snoc_eraseTop h0s]
         exact Equivalent.snoc hteqv (by simpa using (isMaximal_eraseTop_top h0s).iso_refl)
-      refine' this.trans _
-      refine' Equivalent.snoc_snoc_swap _ _
+      refine this.trans ?_
+      refine Equivalent.snoc_snoc_swap ?_ ?_
       · exact
           iso_symm
             (second_iso_of_eq hm
@@ -790,7 +780,7 @@ theorem jordan_holder (s₁ s₂ : CompositionSeries X) (hb : s₁.bot = s₂.bo
         (hb.symm ▸ s₂.bot_eraseTop ▸ bot_le_of_mem (top_mem _)) with
       ⟨t, htb, htl, htt, hteq⟩
     have := ih t s₂.eraseTop (by simp [htb, ← hb]) htt (Nat.succ_inj'.1 (htl.trans hle))
-    refine' hteq.trans _
+    refine hteq.trans ?_
     conv_rhs => rw [eq_snoc_eraseTop h0s₂]
     simp only [ht]
     exact Equivalent.snoc this (by simp [htt, (isMaximal_eraseTop_top h0s₂).iso_refl])

@@ -49,8 +49,6 @@ it should not be hard to fill in the details.
 
 noncomputable section
 
-open BigOperators
-
 open Finset (antidiagonal mem_antidiagonal)
 
 /-- Multivariate formal power series, where `σ` is the index set of the variables
@@ -197,10 +195,10 @@ instance : AddMonoidWithOne (MvPowerSeries σ R) :=
 
 instance : Mul (MvPowerSeries σ R) :=
   letI := Classical.decEq σ
-  ⟨fun φ ψ n => ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ⟩
+  ⟨fun φ ψ n => ∑ p ∈ antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ⟩
 
 theorem coeff_mul [DecidableEq σ] :
-    coeff R n (φ * ψ) = ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
+    coeff R n (φ * ψ) = ∑ p ∈ antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
   refine Finset.sum_congr ?_ fun _ _ => rfl
   rw [Subsingleton.elim (Classical.decEq σ) ‹DecidableEq σ›]
 #align mv_power_series.coeff_mul MvPowerSeries.coeff_mul
@@ -252,7 +250,7 @@ theorem coeff_add_mul_monomial (a : R) :
 @[simp]
 theorem commute_monomial {a : R} {n} :
     Commute φ (monomial R n a) ↔ ∀ m, Commute (coeff R m φ) a := by
-  refine' ext_iff.trans ⟨fun h m => _, fun h m => _⟩
+  refine ext_iff.trans ⟨fun h m => ?_, fun h m => ?_⟩
   · have := h (m + n)
     rwa [coeff_add_mul_monomial, add_comm, coeff_add_monomial_mul] at this
   · rw [coeff_mul_monomial, coeff_monomial_mul]
@@ -414,7 +412,7 @@ set_option linter.uppercaseLean3 false in
 theorem X_pow_eq (s : σ) (n : ℕ) : (X s : MvPowerSeries σ R) ^ n = monomial R (single s n) 1 := by
   induction' n with n ih
   · simp
-  · rw [pow_succ, ih, Nat.succ_eq_add_one, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
+  · rw [pow_succ, ih, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
 set_option linter.uppercaseLean3 false in
 #align mv_power_series.X_pow_eq MvPowerSeries.X_pow_eq
 
@@ -628,7 +626,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
     rw [← hij, Finsupp.add_apply, Finsupp.single_eq_same]
     exact Nat.le_add_right n _
   · intro h
-    refine' ⟨fun m => coeff R (m + single s n) φ, _⟩
+    refine ⟨fun m => coeff R (m + single s n) φ, ?_⟩
     ext m
     by_cases H : m - single s n + single s n = m
     · rw [coeff_mul, Finset.sum_eq_single (single s n, m - single s n)]
@@ -641,7 +639,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
         · exfalso
           apply hne
           rw [← hij, ← hi, Prod.mk.inj_iff]
-          refine' ⟨rfl, _⟩
+          refine ⟨rfl, ?_⟩
           ext t
           simp only [add_tsub_cancel_left, Finsupp.add_apply, Finsupp.tsub_apply]
         · exact zero_mul _
@@ -689,9 +687,9 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 /-- Coefficients of a product of power series -/
 theorem coeff_prod [DecidableEq σ]
     (f : ι → MvPowerSeries σ R) (d : σ →₀ ℕ) (s : Finset ι) :
-    coeff R d (∏ j in s, f j) =
-      ∑ l in piAntidiagonal s d,
-        ∏ i in s, coeff R (l i) (f i) := by
+    coeff R d (∏ j ∈ s, f j) =
+      ∑ l ∈ piAntidiagonal s d,
+        ∏ i ∈ s, coeff R (l i) (f i) := by
   induction s using Finset.induction_on generalizing d with
   | empty =>
     simp only [prod_empty, sum_const, nsmul_eq_mul, mul_one, coeff_one, piAntidiagonal_empty]
@@ -701,17 +699,17 @@ theorem coeff_prod [DecidableEq σ]
   | @insert a s ha ih =>
     rw [piAntidiagonal_insert ha, prod_insert ha, coeff_mul, sum_biUnion]
     · apply Finset.sum_congr rfl
-      · simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]
-        rintro u v rfl
-        rw [ih, Finset.mul_sum, ← Finset.sum_attach]
-        apply Finset.sum_congr rfl
-        simp only [mem_attach, Finset.prod_insert ha, Function.update_same, forall_true_left,
-          Subtype.forall]
-        rintro x -
-        rw [Finset.prod_congr rfl]
-        intro i hi
-        rw [Function.update_noteq]
-        exact ne_of_mem_of_not_mem hi ha
+      simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]
+      rintro u v rfl
+      rw [ih, Finset.mul_sum, ← Finset.sum_attach]
+      apply Finset.sum_congr rfl
+      simp only [mem_attach, Finset.prod_insert ha, Function.update_same, forall_true_left,
+        Subtype.forall]
+      rintro x -
+      rw [Finset.prod_congr rfl]
+      intro i hi
+      rw [Function.update_noteq]
+      exact ne_of_mem_of_not_mem hi ha
     · simp only [Set.PairwiseDisjoint, Set.Pairwise, mem_coe, mem_antidiagonal, ne_eq,
         disjoint_left, mem_map, mem_attach, Function.Embedding.coeFn_mk, true_and, Subtype.exists,
         exists_prop, not_exists, not_and, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
@@ -755,11 +753,11 @@ instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries 
       classical
       rw [Ne, SetLike.ext_iff, not_forall]
       inhabit σ
-      refine' ⟨X default, _⟩
+      refine ⟨X default, ?_⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top]
       intro x
       rw [ext_iff, not_forall]
-      refine' ⟨Finsupp.single default 1, _⟩
+      refine ⟨Finsupp.single default 1, ?_⟩
       simp [algebraMap_apply, coeff_C]⟩⟩
 
 end Algebra

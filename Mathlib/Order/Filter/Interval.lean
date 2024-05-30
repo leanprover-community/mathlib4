@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Data.Set.Intervals.OrdConnected
+import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.AtTopBot
 
@@ -289,7 +289,7 @@ instance tendsto_uIcc_of_Icc {l : Filter α} [TendstoIxxClass Icc l l] :
   refine' ⟨fun s hs => mem_map.2 <| mem_prod_self_iff.2 _⟩
   obtain ⟨t, htl, hts⟩ : ∃ t ∈ l, ∀ p ∈ (t : Set α) ×ˢ t, Icc (p : α × α).1 p.2 ∈ s :=
     mem_prod_self_iff.1 (mem_map.1 (tendsto_fst.Icc tendsto_snd hs))
-  refine' ⟨t, htl, fun p hp => _⟩
+  refine ⟨t, htl, fun p hp => ?_⟩
   rcases le_total p.1 p.2 with h | h
   · rw [mem_preimage, uIcc_of_le h]
     exact hts p hp

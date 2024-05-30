@@ -1,4 +1,5 @@
 import Mathlib.Data.Finsupp.Notation
+import Mathlib.Data.DFinsupp.Notation -- to ensure it does not interfere
 import Mathlib.Data.Nat.Factorization.Basic
 
 example : (fun₀ | 1 => 3) 1 = 3 :=
