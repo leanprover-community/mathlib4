@@ -6,9 +6,6 @@ Authors: Sébastien Gouëzel
 
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 
-open Filter Metric
-open scoped Topology
-
 /-!
 # Une introduction à Lean par le théorème de Riesz
 
@@ -32,6 +29,9 @@ et donc `1 ≤ ‖d⁻¹ * (x - y) - xᵢ‖` comme on le voulait.
 
 Pour expliquer cette preuve de 10 lignes à Lean, on va la couper en plusieurs sous-lemmes.
 -/
+
+open Filter Metric
+open scoped Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
@@ -63,7 +63,7 @@ lemma existe_point_loin_de_sousmodule
       _ ≤ d⁻¹ * dist x (y₀ + d • y)  := mul_le_mul_of_nonneg_left A (inv_nonneg.2 d_pos.le)
       _ = d⁻¹ * ‖(x - y₀) - d • y‖   := by rw [dist_eq_norm, sub_sub]
       _ = ‖d⁻¹ • ((x - y₀) - d • y)‖ := by simp [norm_smul, abs_of_nonneg d_pos.le]
-      _ = ‖z - y‖                    := by simp_rw [smul_sub, smul_smul, B, one_smul]
+      _ = ‖z - y‖                    := by simp_rw [z, smul_sub, smul_smul, B, one_smul]
   exact ⟨z, Nz, I⟩
 
 /-- Dans un espace vectoriel normé réel de dimension infinie, étant donné un ensemble
@@ -127,11 +127,11 @@ theorem ma_version_de_riesz (h : IsCompact (closedBall (0 : E) 2)) :
 informelle. C'est assez typique. -/
 
 theorem la_vraie_version_de_riesz
-  (𝕜 : Type*) [NontriviallyNormedField 𝕜] {F : Type*} [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] [CompleteSpace 𝕜] {r : ℝ}
-  (r_pos : 0 < r)  {c : F} (hc : IsCompact (closedBall c r)) :
-  FiniteDimensional 𝕜 F :=
-finiteDimensional_of_isCompact_closedBall 𝕜 r_pos hc
+    (𝕜 : Type*) [NontriviallyNormedField 𝕜] {F : Type*} [NormedAddCommGroup F]
+    [NormedSpace 𝕜 F] [CompleteSpace 𝕜] {r : ℝ}
+    (r_pos : 0 < r)  {c : F} (hc : IsCompact (closedBall c r)) :
+    FiniteDimensional 𝕜 F :=
+  .of_isCompact_closedBall 𝕜 r_pos hc
 -- by exact?
 
 /- Pour l'énoncé précédent :
