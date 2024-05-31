@@ -80,6 +80,15 @@ instance (priority := 100) reflectsIsomorphisms_of_reflectsMonomorphisms_of_refl
     exact isIso_of_mono_of_epi f
 #align category_theory.reflects_isomorphisms_of_reflects_monomorphisms_of_reflects_epimorphisms CategoryTheory.reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms
 
+instance (F : D ⥤ E) [F.ReflectsIsomorphisms] :
+    ((whiskeringRight C D E).obj F).ReflectsIsomorphisms where
+  reflects {X Y} f _ := by
+    rw [NatTrans.isIso_iff_isIso_app]
+    intro Z
+    rw [← isIso_iff_of_reflects_iso _ F]
+    change IsIso ((((whiskeringRight C D E).obj F).map f).app Z)
+    infer_instance
+
 end ReflectsIso
 
 end CategoryTheory
