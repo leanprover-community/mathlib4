@@ -94,7 +94,6 @@ theorem map_map {ε ζ : Type*} (f : α → β) (f' : γ → δ) (g : β → ε)
   rfl
 #align prod.map_map Prod.map_map
 
--- Porting note: mathlib3 proof uses `by cc` for the mpr direction
 -- Porting note: `@[simp]` tag removed because auto-generated `mk.injEq` simplifies LHS
 -- @[simp]
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ = b₂ :=

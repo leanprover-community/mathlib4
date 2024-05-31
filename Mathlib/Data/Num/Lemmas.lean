@@ -256,7 +256,6 @@ theorem ofNat'_succ : ∀ {n}, ofNat' (n + 1) = ofNat' n + 1 :=
     cases b
     · erw [ofNat'_bit true n, ofNat'_bit]
       simp only [← bit1_of_bit1, ← bit0_of_bit0, cond, _root_.bit1]
-    -- Porting note: `cc` was not ported yet so `exact Nat.add_left_comm n 1 1` is used.
     · erw [show n.bit true + 1 = (n + 1).bit false by
         simpa [Nat.bit, _root_.bit1, _root_.bit0] using Nat.add_left_comm n 1 1,
         ofNat'_bit, ofNat'_bit, ih]

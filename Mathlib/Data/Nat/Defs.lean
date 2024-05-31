@@ -1304,7 +1304,6 @@ set_option linter.deprecated false in
 @[simp]
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ bit1 n := by
   rw [bit1, Nat.dvd_add_right, Nat.dvd_one]
-  -- Porting note: was `cc`
   · decide
   · rw [bit0, ← Nat.two_mul]
     exact Nat.dvd_mul_right _ _
