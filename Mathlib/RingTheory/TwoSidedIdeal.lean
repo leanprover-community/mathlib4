@@ -47,14 +47,19 @@ lemma rel_iff (x y : R) : I x y ↔ x - y ∈ I := by
   · intro h; convert I.sub h (I.refl y); abel
   · intro h; convert I.add h (I.refl y) <;> abel
 
-lemma le_iff (I J : RingCon R) : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) := by
-  constructor
-  · intro h x hx
-    exact h hx
-  · intro h x y hxy
-    have h' : J _ _ := h <| sub_self y ▸ I.sub hxy (I.refl y)
-    convert J.add h' (J.refl y) <;>
-    abel
+/--
+the coercion from two-sided-ideals to sets is an order embedding
+-/
+@[simps]
+def coeOrderEmbedding : RingCon R ↪o Set R where
+  toFun := SetLike.coe
+  inj' := SetLike.coe_injective
+  map_rel_iff' {I J} := ⟨fun h x y hxy => by
+    convert J.add (h <| sub_self y ▸ I.sub hxy (I.refl y)) (J.refl y) <;>
+    abel, fun h _ h' => h h'⟩
+
+lemma le_iff {I J : RingCon R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) :=
+  coeOrderEmbedding.map_rel_iff.symm
 
 lemma lt_iff (I J : RingCon R) : I < J ↔ (I : Set R) ⊂ (J : Set R) := by
   rw [lt_iff_le_and_ne, Set.ssubset_iff_subset_ne, le_iff]
