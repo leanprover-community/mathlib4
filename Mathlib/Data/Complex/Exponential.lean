@@ -210,7 +210,6 @@ noncomputable def expMonoidHom : MonoidHom (Multiplicative ℂ) ℂ :=
     map_one' := by simp,
     map_mul' := by simp [exp_add] }
 
-set_option linter.deprecated false in
 theorem exp_list_sum (l : List ℂ) : exp l.sum = (l.map exp).prod :=
   map_list_prod (M := Multiplicative ℂ) expMonoidHom l
 #align complex.exp_list_sum Complex.exp_list_sum

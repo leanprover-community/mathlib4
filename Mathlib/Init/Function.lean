@@ -94,16 +94,16 @@ theorem id_comp (f : α → β) : id ∘ f = f := rfl
 #align function.left_id Function.id_comp
 #align function.comp.left_id Function.id_comp
 
-@[deprecated] alias left_id := id_comp -- 2024-01-14
-@[deprecated] alias comp.left_id := id_comp -- 2024-01-14
+@[deprecated (since := "2024-01-14")] alias left_id := id_comp
+@[deprecated (since := "2024-01-14")] alias comp.left_id := id_comp
 
 @[simp, mfld_simps]
 theorem comp_id (f : α → β) : f ∘ id = f := rfl
 #align function.right_id Function.comp_id
 #align function.comp.right_id Function.comp_id
 
-@[deprecated] alias right_id := comp_id -- 2024-01-14
-@[deprecated] alias comp.right_id := comp_id -- 2024-01-14
+@[deprecated (since := "2024-01-14")] alias right_id := comp_id
+@[deprecated (since := "2024-01-14")] alias comp.right_id := comp_id
 
 #align function.comp_app Function.comp_apply
 
@@ -117,7 +117,7 @@ theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) �
 @[simp] theorem comp_const (f : β → φ) (b : β) : f ∘ const α b = const α (f b) := rfl
 #align function.comp_const_right Function.comp_const
 
-@[deprecated] alias comp_const_right := comp_const -- 2024-01-14
+@[deprecated (since := "2024-01-14")] alias comp_const_right := comp_const
 
 /-- A function `f : α → β` is called injective if `f x = f y` implies `x = y`. -/
 def Injective (f : α → β) : Prop :=
