@@ -180,8 +180,8 @@ theorem kernel_map_comp_kernelSubobjectIso_inv (sq : Arrow.mk f ⟶ Arrow.mk f')
 @[reassoc]
 theorem kernelSubobjectIso_comp_kernel_map (sq : Arrow.mk f ⟶ Arrow.mk f') :
     (kernelSubobjectIso _).hom ≫ kernel.map f f' sq.1 sq.2 sq.3.symm =
-      kernelSubobjectMap sq ≫ (kernelSubobjectIso _).hom :=
-  by simp [← Iso.comp_inv_eq, kernel_map_comp_kernelSubobjectIso_inv]
+      kernelSubobjectMap sq ≫ (kernelSubobjectIso _).hom := by
+  simp [← Iso.comp_inv_eq, kernel_map_comp_kernelSubobjectIso_inv]
 #align category_theory.limits.kernel_subobject_iso_comp_kernel_map CategoryTheory.Limits.kernelSubobjectIso_comp_kernel_map
 
 end
@@ -210,15 +210,15 @@ def kernelSubobjectIsoComp {X' : C} (f : X' ⟶ X) [IsIso f] (g : X ⟶ Y) [HasK
 @[simp]
 theorem kernelSubobjectIsoComp_hom_arrow {X' : C} (f : X' ⟶ X) [IsIso f] (g : X ⟶ Y) [HasKernel g] :
     (kernelSubobjectIsoComp f g).hom ≫ (kernelSubobject g).arrow =
-      (kernelSubobject (f ≫ g)).arrow ≫ f :=
-  by simp [kernelSubobjectIsoComp]
+      (kernelSubobject (f ≫ g)).arrow ≫ f := by
+  simp [kernelSubobjectIsoComp]
 #align category_theory.limits.kernel_subobject_iso_comp_hom_arrow CategoryTheory.Limits.kernelSubobjectIsoComp_hom_arrow
 
 @[simp]
 theorem kernelSubobjectIsoComp_inv_arrow {X' : C} (f : X' ⟶ X) [IsIso f] (g : X ⟶ Y) [HasKernel g] :
     (kernelSubobjectIsoComp f g).inv ≫ (kernelSubobject (f ≫ g)).arrow =
-      (kernelSubobject g).arrow ≫ inv f :=
-  by simp [kernelSubobjectIsoComp]
+      (kernelSubobject g).arrow ≫ inv f := by
+  simp [kernelSubobjectIsoComp]
 #align category_theory.limits.kernel_subobject_iso_comp_inv_arrow CategoryTheory.Limits.kernelSubobjectIsoComp_inv_arrow
 
 /-- The kernel of `f` is always a smaller subobject than the kernel of `f ≫ h`. -/
@@ -249,7 +249,7 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
     Subobject.lift (fun A f _ => Subobject.mk (cokernel.π f).op)
       (by
         rintro A B f g hf hg i rfl
-        refine' Subobject.mk_eq_mk_of_comm _ _ (Iso.op _) (Quiver.Hom.unop_inj _)
+        refine Subobject.mk_eq_mk_of_comm _ _ (Iso.op ?_) (Quiver.Hom.unop_inj ?_)
         · exact (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
             (isCokernelEpiComp (colimit.isColimit _) i.hom rfl)).symm
         · simp only [Iso.comp_inv_eq, Iso.op_hom, Iso.symm_hom, unop_comp, Quiver.Hom.unop_op,
@@ -259,7 +259,7 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
     Subobject.ind₂ _ <| by
       intro A B f g hf hg h
       dsimp only [Subobject.lift_mk]
-      refine' Subobject.mk_le_mk_of_comm (cokernel.desc f (cokernel.π g) _).op _
+      refine Subobject.mk_le_mk_of_comm (cokernel.desc f (cokernel.π g) ?_).op ?_
       · rw [← Subobject.ofMkLEMk_comp h, Category.assoc, cokernel.condition, comp_zero]
       · exact Quiver.Hom.unop_inj (cokernel.π_desc _ _ _)
 #align category_theory.limits.cokernel_order_hom CategoryTheory.Limits.cokernelOrderHom
@@ -272,7 +272,7 @@ def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobj
     Subobject.lift (fun A f _ => Subobject.mk (kernel.ι f.unop))
       (by
         rintro A B f g hf hg i rfl
-        refine' Subobject.mk_eq_mk_of_comm _ _ _ _
+        refine Subobject.mk_eq_mk_of_comm _ _ ?_ ?_
         · exact
             IsLimit.conePointUniqueUpToIso (limit.isLimit _)
               (isKernelCompMono (limit.isLimit (parallelPair g.unop 0)) i.unop.hom rfl)
@@ -283,7 +283,7 @@ def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobj
     Subobject.ind₂ _ <| by
       intro A B f g hf hg h
       dsimp only [Subobject.lift_mk]
-      refine' Subobject.mk_le_mk_of_comm (kernel.lift g.unop (kernel.ι f.unop) _) _
+      refine Subobject.mk_le_mk_of_comm (kernel.lift g.unop (kernel.ι f.unop) ?_) ?_
       · rw [← Subobject.ofMkLEMk_comp h, unop_comp, kernel.condition_assoc, zero_comp]
       · exact Quiver.Hom.op_inj (by simp)
 #align category_theory.limits.kernel_order_hom CategoryTheory.Limits.kernelOrderHom
@@ -306,13 +306,13 @@ def imageSubobjectIso : (imageSubobject f : C) ≅ image f :=
 #align category_theory.limits.image_subobject_iso CategoryTheory.Limits.imageSubobjectIso
 
 @[reassoc (attr := simp)]
-theorem imageSubobject_arrow : (imageSubobjectIso f).hom ≫ image.ι f = (imageSubobject f).arrow :=
-  by simp [imageSubobjectIso]
+theorem imageSubobject_arrow :
+    (imageSubobjectIso f).hom ≫ image.ι f = (imageSubobject f).arrow := by simp [imageSubobjectIso]
 #align category_theory.limits.image_subobject_arrow CategoryTheory.Limits.imageSubobject_arrow
 
 @[reassoc (attr := simp)]
-theorem imageSubobject_arrow' : (imageSubobjectIso f).inv ≫ (imageSubobject f).arrow = image.ι f :=
-  by simp [imageSubobjectIso]
+theorem imageSubobject_arrow' :
+    (imageSubobjectIso f).inv ≫ (imageSubobject f).arrow = image.ι f := by simp [imageSubobjectIso]
 #align category_theory.limits.image_subobject_arrow' CategoryTheory.Limits.imageSubobject_arrow'
 
 /-- A factorisation of `f : X ⟶ Y` through `imageSubobject f`. -/
@@ -411,15 +411,15 @@ def imageSubobjectCompIso (f : X ⟶ Y) [HasImage f] {Y' : C} (h : Y ⟶ Y') [Is
 @[reassoc (attr := simp)]
 theorem imageSubobjectCompIso_hom_arrow (f : X ⟶ Y) [HasImage f] {Y' : C} (h : Y ⟶ Y') [IsIso h] :
     (imageSubobjectCompIso f h).hom ≫ (imageSubobject f).arrow =
-      (imageSubobject (f ≫ h)).arrow ≫ inv h :=
-  by simp [imageSubobjectCompIso]
+      (imageSubobject (f ≫ h)).arrow ≫ inv h := by
+  simp [imageSubobjectCompIso]
 #align category_theory.limits.image_subobject_comp_iso_hom_arrow CategoryTheory.Limits.imageSubobjectCompIso_hom_arrow
 
 @[reassoc (attr := simp)]
 theorem imageSubobjectCompIso_inv_arrow (f : X ⟶ Y) [HasImage f] {Y' : C} (h : Y ⟶ Y') [IsIso h] :
     (imageSubobjectCompIso f h).inv ≫ (imageSubobject (f ≫ h)).arrow =
-      (imageSubobject f).arrow ≫ h :=
-  by simp [imageSubobjectCompIso]
+      (imageSubobject f).arrow ≫ h := by
+  simp [imageSubobjectCompIso]
 #align category_theory.limits.image_subobject_comp_iso_inv_arrow CategoryTheory.Limits.imageSubobjectCompIso_inv_arrow
 
 end

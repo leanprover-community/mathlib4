@@ -46,8 +46,8 @@ theorem dist_eq_sub_of_le {n m : ℕ} (h : n ≤ m) : dist n m = m - n := by
   rw [dist, tsub_eq_zero_iff_le.mpr h, zero_add]
 #align nat.dist_eq_sub_of_le Nat.dist_eq_sub_of_le
 
-theorem dist_eq_sub_of_le_right {n m : ℕ} (h : m ≤ n) : dist n m = n - m :=
-  by rw [dist_comm]; apply dist_eq_sub_of_le h
+theorem dist_eq_sub_of_le_right {n m : ℕ} (h : m ≤ n) : dist n m = n - m := by
+  rw [dist_comm]; apply dist_eq_sub_of_le h
 #align nat.dist_eq_sub_of_le_right Nat.dist_eq_sub_of_le_right
 
 theorem dist_tri_left (n m : ℕ) : m ≤ dist n m + n :=

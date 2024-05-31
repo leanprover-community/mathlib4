@@ -123,7 +123,7 @@ theorem toNat_top : toNat ⊤ = 0 :=
 
 -- Porting note (#11445): new definition copied from `WithTop`
 /-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator, cases_eliminator]
 def recTopCoe {C : ℕ∞ → Sort*} (top : C ⊤) (coe : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
   | none => top
   | Option.some a => coe a
@@ -216,13 +216,13 @@ theorem toNat_add {m n : ℕ∞} (hm : m ≠ ⊤) (hn : n ≠ ⊤) : toNat (m + 
 
 theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = toNat m - toNat n := by
   lift n to ℕ using hn
-  induction m using ENat.recTopCoe
+  induction m
   · rw [top_sub_coe, toNat_top, zero_tsub]
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
 #align enat.to_nat_sub ENat.toNat_sub
 
 theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
-  induction m using ENat.recTopCoe <;> simp [hn.symm]
+  induction m <;> simp [hn.symm]
 #align enat.to_nat_eq_iff ENat.toNat_eq_iff
 
 @[simp]

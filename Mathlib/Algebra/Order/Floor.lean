@@ -7,7 +7,6 @@ import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Algebra.Group.Int
 import Mathlib.Data.Int.Lemmas
-import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.GaloisConnection

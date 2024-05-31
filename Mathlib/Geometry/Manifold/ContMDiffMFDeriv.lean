@@ -86,7 +86,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
   have h4f := h4f.preimage_mem_nhds (extChartAt_source_mem_nhds I' (f x₀ (g x₀)))
   have h3f := contMDiffAt_iff_contMDiffAt_nhds.mp (hf.of_le <| (self_le_add_left 1 m).trans hmn)
   have h2f : ∀ᶠ x₂ in 𝓝 x₀, ContMDiffAt I I' 1 (f x₂) (g x₂) := by
-    refine' ((continuousAt_id.prod hg.continuousAt).tendsto.eventually h3f).mono fun x hx => _
+    refine ((continuousAt_id.prod hg.continuousAt).tendsto.eventually h3f).mono fun x hx => ?_
     exact hx.comp (g x) (contMDiffAt_const.prod_mk contMDiffAt_id)
   have h2g := hg.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds I (g x₀))
   have :
@@ -99,7 +99,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
     rw [contMDiffAt_iff] at hf hg
     simp_rw [Function.comp, uncurry, extChartAt_prod, PartialEquiv.prod_coe_symm,
       ModelWithCorners.range_prod] at hf ⊢
-    refine' ContDiffWithinAt.fderivWithin _ hg.2 I.unique_diff hmn (mem_range_self _) _
+    refine ContDiffWithinAt.fderivWithin ?_ hg.2 I.unique_diff hmn (mem_range_self _) ?_
     · simp_rw [extChartAt_to_inv]; exact hf.2
     · rw [← image_subset_iff]
       rintro _ ⟨x, -, rfl⟩
@@ -122,7 +122,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
               writtenInExtChartAt I I' (g x) (f x) ∘
                 extChartAt I (g x) ∘ (extChartAt I (g x₀)).symm)
           (range I) (extChartAt I (g x₀) (g x))) x₀ := by
-    refine' this.congr_of_eventuallyEq _
+    refine this.congr_of_eventuallyEq ?_
     filter_upwards [h2g, h2f]
     intro x₂ hx₂ h2x₂
     have :
@@ -135,11 +135,11 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
       rintro x ⟨hx, h2x⟩
       simp_rw [writtenInExtChartAt, Function.comp_apply]
       rw [(extChartAt I (g x₂)).left_inv hx, (extChartAt I' (f x₂ (g x₂))).left_inv h2x]
-    refine' Filter.EventuallyEq.fderivWithin_eq_nhds _
-    refine' eventually_of_mem (inter_mem _ _) this
+    refine Filter.EventuallyEq.fderivWithin_eq_nhds ?_
+    refine eventually_of_mem (inter_mem ?_ ?_) this
     · exact extChartAt_preimage_mem_nhds' _ hx₂ (extChartAt_source_mem_nhds I (g x₂))
-    refine' extChartAt_preimage_mem_nhds' _ hx₂ _
-    exact h2x₂.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds _ _)
+    · refine extChartAt_preimage_mem_nhds' _ hx₂ ?_
+      exact h2x₂.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds _ _)
   /- The conclusion is equal to the following, when unfolding coord_change of
       `tangentBundleCore` -/
   -- Porting note: added
@@ -155,7 +155,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
           ((mfderiv I I' (f x) (g x)).comp
             (fderivWithin 𝕜 (extChartAt I (g x) ∘ (extChartAt I (g x₀)).symm) (range I)
               (extChartAt I (g x₀) (g x))))) x₀ := by
-    refine' this.congr_of_eventuallyEq _
+    refine this.congr_of_eventuallyEq ?_
     filter_upwards [h2g, h2f, h4f]
     intro x₂ hx₂ h2x₂ h3x₂
     symm
@@ -168,13 +168,13 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
             PartialEquiv.mem_symm_trans_source _ (mem_extChartAt_source I' (f x₂ (g x₂)))
               h3x₂).differentiableWithinAt le_top
     have h3f := (h2x₂.mdifferentiableAt le_rfl).differentiableWithinAt_writtenInExtChartAt
-    refine' fderivWithin.comp₃ _ hI' h3f hI _ _ _ _ (I.unique_diff _ <| mem_range_self _)
+    refine fderivWithin.comp₃ _ hI' h3f hI ?_ ?_ ?_ ?_ (I.unique_diff _ <| mem_range_self _)
     · exact fun x _ => mem_range_self _
     · exact fun x _ => mem_range_self _
     · simp_rw [writtenInExtChartAt, Function.comp_apply,
         (extChartAt I (g x₂)).left_inv (mem_extChartAt_source I (g x₂))]
     · simp_rw [Function.comp_apply, (extChartAt I (g x₀)).left_inv hx₂]
-  refine' this.congr_of_eventuallyEq _
+  refine this.congr_of_eventuallyEq ?_
   filter_upwards [h2g, h4f] with x hx h2x
   rw [inTangentCoordinates_eq]
   · rfl

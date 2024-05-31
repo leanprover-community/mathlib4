@@ -605,9 +605,10 @@ theorem eq_top_of_lt : b = ⊤ :=
   (IsSimpleOrder.eq_bot_or_eq_top _).resolve_left h.ne_bot
 #align is_simple_order.eq_top_of_lt IsSimpleOrder.eq_top_of_lt
 
-alias LT.lt.eq_bot := eq_bot_of_lt
-
-alias LT.lt.eq_top := eq_top_of_lt
+alias _root_.LT.lt.eq_bot := eq_bot_of_lt
+alias _root_.LT.lt.eq_top := eq_top_of_lt
+@[deprecated (since := "2024-05-29")] alias LT.lt.eq_bot := _root_.LT.lt.eq_bot
+@[deprecated (since := "2024-05-29")] alias LT.lt.eq_top := _root_.LT.lt.eq_top
 
 end Preorder
 
