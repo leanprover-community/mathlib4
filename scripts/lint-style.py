@@ -37,21 +37,9 @@ import sys
 import re
 import shutil
 
-ERR_COP = 0 # copyright header
 ERR_MOD = 2 # module docstring
-ERR_LIN = 3 # line length
-ERR_OPT = 6 # set_option
-ERR_AUT = 7 # malformed authors list
-ERR_TAC = 9 # imported Mathlib.Tactic
-ERR_IBY = 11 # isolated by
-ERR_DOT = 12 # isolated or low focusing dot
-ERR_SEM = 13 # the substring " ;"
-ERR_WIN = 14 # Windows line endings "\r\n"
-ERR_TWS = 15 # trailing whitespace
-ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
-ERR_NUM_LIN = 19 # file is too large
 ERR_NSP = 20 # non-terminal simp
 
 exceptions = []
@@ -64,20 +52,10 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
     for exline in f:
         filename, _, _, _, _, errno, *extra = exline.split()
         path = ROOT_DIR / filename
-        if errno == "ERR_COP":
-            exceptions += [(ERR_COP, path, None)]
-        elif errno == "ERR_MOD":
+        if errno == "ERR_MOD":
             exceptions += [(ERR_MOD, path, None)]
-        elif errno == "ERR_LIN":
-            exceptions += [(ERR_LIN, path, None)]
-        elif errno == "ERR_OPT":
-            exceptions += [(ERR_OPT, path, None)]
-        elif errno == "ERR_AUT":
-            exceptions += [(ERR_AUT, path, None)]
-        elif errno == "ERR_TAC":
-            exceptions += [(ERR_TAC, path, None)]
         elif errno == "ERR_NUM_LIN":
-            exceptions += [(ERR_NUM_LIN, path, extra[1])]
+            pass
         else:
             print(f"Error: unexpected errno in style-exceptions.txt: {errno}")
             sys.exit(1)
@@ -142,33 +120,6 @@ def annotate_strings(enumerate_lines):
                 continue
         yield line_nr, line, *rem, False
 
-def set_option_check(lines, path):
-    errors = []
-    newlines = []
-    for line_nr, line, in_comment, in_string in annotate_strings(annotate_comments(lines)):
-        if line.strip().startswith('set_option') and not in_comment and not in_string:
-            option_prefix = line.strip().split(' ', 2)[1].split('.', 1)[0]
-            # forbidden options: pp, profiler, trace
-            if option_prefix in {'pp', 'profiler', 'trace'}:
-                errors += [(ERR_OPT, line_nr, path)]
-                # skip adding this line to newlines so that we suggest removal
-                continue
-        newlines.append((line_nr, line))
-    return errors, newlines
-
-def line_endings_check(lines, path):
-    errors = []
-    newlines = []
-    for line_nr, line in lines:
-        if "\r\n" in line:
-            errors += [(ERR_WIN, line_nr, path)]
-            line = line.replace("\r\n", "\n")
-        if line.endswith(" \n"):
-            errors += [(ERR_TWS, line_nr, path)]
-            line = line.rstrip() + "\n"
-        newlines.append((line_nr, line))
-    return errors, newlines
-
 def four_spaces_in_second_line(lines, path):
     # TODO: also fix the space for all lines before ":=", right now we only fix the line after
     # the first line break
@@ -230,17 +181,8 @@ def nonterminal_simp_check(lines, path):
     newlines.append(lines[-1])
     return errors, newlines
 
-def long_lines_check(lines, path):
-    errors = []
-    # TODO: find a good way to break long lines
-    # TODO: some string literals (in e.g. tactic output messages) can be excepted from this rule
-    for line_nr, line in lines:
-        if "http" in line or "#align" in line:
-            continue
-        if len(line) > 101:
-            errors += [(ERR_LIN, line_nr, path)]
-    return errors, lines
 
+# True if the file consists only of imports and comments.
 def import_only_check(lines, path):
     for _, line, is_comment in annotate_comments(lines):
         if is_comment:
@@ -256,81 +198,28 @@ def regular_check(lines, path):
     errors = []
     copy_started = False
     copy_done = False
-    copy_start_line_nr = 1
     copy_lines = ""
     for line_nr, line in lines:
         if not copy_started and line == "\n":
-            errors += [(ERR_COP, copy_start_line_nr, path)]
             continue
         if not copy_started and line == "/-\n":
             copy_started = True
-            copy_start_line_nr = line_nr
             continue
-        if not copy_started:
-            errors += [(ERR_COP, line_nr, path)]
         if copy_started and not copy_done:
             copy_lines += line
-            if "Author" in line:
-                # Validating names is not a reasonable thing to do,
-                # so we just look for the two common variations:
-                # using ' and ' between names, and a '.' at the end of line.
-                if ((not line.startswith("Authors: ")) or
-                    ("  " in line) or
-                    (" and " in line) or
-                    (line[-2] == '.')):
-                    errors += [(ERR_AUT, line_nr, path)]
             if line == "-/\n":
-                if ((not "Copyright" in copy_lines) or
-                    (not "Apache" in copy_lines) or
-                    (not "Authors: " in copy_lines)):
-                    errors += [(ERR_COP, copy_start_line_nr, path)]
                 copy_done = True
             continue
         if copy_done and line == "\n":
             continue
         words = line.split()
         if words[0] != "import" and words[0] != "--" and words[0] != "/-!" and words[0] != "#align_import":
-            errors += [(ERR_MOD, line_nr, path)]
+            #errors += [(ERR_MOD, line_nr, path)]
             break
         if words[0] == "/-!":
             break
     return errors, lines
 
-def banned_import_check(lines, path):
-    errors = []
-    for line_nr, line, is_comment in annotate_comments(lines):
-        if is_comment:
-            continue
-        imports = line.split()
-        if imports[0] != "import":
-            break
-        if imports[1] in ["Mathlib.Tactic"]:
-            errors += [(ERR_TAC, line_nr, path)]
-    return errors, lines
-
-def isolated_by_dot_semicolon_check(lines, path):
-    errors = []
-    newlines = []
-    for line_nr, line in lines:
-        if line.strip() == "by":
-            # We excuse those "by"s following a comma or ", fun ... =>", since generally hanging "by"s
-            # should not be used in the second or later arguments of a tuple/anonymous constructor
-            # See https://github.com/leanprover-community/mathlib4/pull/3825#discussion_r1186702599
-            prev_line = lines[line_nr - 2][1].rstrip()
-            if not prev_line.endswith(",") and not re.search(", fun [^,]* (=>|↦)$", prev_line):
-                errors += [(ERR_IBY, line_nr, path)]
-        if line.lstrip().startswith(". "):
-            errors += [(ERR_DOT, line_nr, path)]
-            line = line.replace(". ", "· ", 1)
-        if line.strip() in (".", "·"):
-            errors += [(ERR_DOT, line_nr, path)]
-        if " ;" in line:
-            errors += [(ERR_SEM, line_nr, path)]
-            line = line.replace(" ;", ";")
-        if line.lstrip().startswith(":"):
-            errors += [(ERR_CLN, line_nr, path)]
-        newlines.append((line_nr, line))
-    return errors, newlines
 
 def left_arrow_check(lines, path):
     errors = []
@@ -353,13 +242,9 @@ def output_message(path, line_nr, code, msg):
         # filename first, then line so that we can call "sort" on the output
         print(f"{path} : line {line_nr} : {code} : {msg}")
     else:
-        if code.startswith("ERR"):
-            msg_type = "error"
-        if code.startswith("WRN"):
-            msg_type = "warning"
         # We are outputting for github. We duplicate path, line_nr and code,
         # so that they are also visible in the plaintext output.
-        print(f"::{msg_type} file={path},line={line_nr},code={code}::{path}:{line_nr} {code}: {msg}")
+        print(f"::error file={path},line={line_nr},code={code}::{path}:{line_nr} {code}: {msg}")
 
 def format_errors(errors):
     global new_exceptions
@@ -367,30 +252,8 @@ def format_errors(errors):
         if (errno, path.resolve(), None) in exceptions:
             continue
         new_exceptions = True
-        if errno == ERR_COP:
-            output_message(path, line_nr, "ERR_COP", "Malformed or missing copyright header")
         if errno == ERR_MOD:
             output_message(path, line_nr, "ERR_MOD", "Module docstring missing, or too late")
-        if errno == ERR_LIN:
-            output_message(path, line_nr, "ERR_LIN", "Line has more than 100 characters")
-        if errno == ERR_OPT:
-            output_message(path, line_nr, "ERR_OPT", "Forbidden set_option command")
-        if errno == ERR_AUT:
-            output_message(path, line_nr, "ERR_AUT", "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'")
-        if errno == ERR_TAC:
-            output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder")
-        if errno == ERR_IBY:
-            output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
-        if errno == ERR_DOT:
-            output_message(path, line_nr, "ERR_DOT", "Line is an isolated focusing dot or uses . instead of ·")
-        if errno == ERR_SEM:
-            output_message(path, line_nr, "ERR_SEM", "Line contains a space before a semicolon")
-        if errno == ERR_WIN:
-            output_message(path, line_nr, "ERR_WIN", "Windows line endings (\\r\\n) detected")
-        if errno == ERR_TWS:
-            output_message(path, line_nr, "ERR_TWS", "Trailing whitespace detected on line")
-        if errno == ERR_CLN:
-            output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
         if errno == ERR_IND:
             output_message(path, line_nr, "ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)")
         if errno == ERR_ARR:
@@ -406,35 +269,14 @@ def lint(path, fix=False):
         lines = f.readlines()
         enum_lines = enumerate(lines, 1)
         newlines = enum_lines
-        for error_check in [line_endings_check,
-                            four_spaces_in_second_line,
-                            long_lines_check,
-                            isolated_by_dot_semicolon_check,
-                            set_option_check,
-                            left_arrow_check,
-                            nonterminal_simp_check]:
-            errs, newlines = error_check(newlines, path)
-            format_errors(errs)
+        # for error_check in [four_spaces_in_second_line,
+        #                     left_arrow_check,
+        #                     nonterminal_simp_check]:
+        #     errs, newlines = error_check(newlines, path)
+        #     format_errors(errs)
 
         if not import_only_check(newlines, path):
-            # Check for too long files: either longer than 1500 lines, or not covered by an exception.
-            # Each exception contains a "watermark". If the file is longer than that, we also complain.
-            if len(lines) > 1500:
-                ex = [e for e in exceptions if e[1] == path.resolve()]
-                if ex:
-                    (_ERR_NUM, _path, watermark) = list(ex)[0]
-                    assert int(watermark) > 500 # protect against parse error
-                    is_too_long = len(lines) > int(watermark)
-                else:
-                    is_too_long = True
-                if is_too_long:
-                    new_exceptions = True
-                    # add up to 200 lines of slack, so simple PRs don't trigger this right away
-                    watermark = len(lines) // 100 * 100 + 200
-                    output_message(path, 1, "ERR_NUM_LIN", f"{watermark} file contains {len(lines)} lines, try to split it up")
             errs, newlines = regular_check(newlines, path)
-            format_errors(errs)
-            errs, newlines = banned_import_check(newlines, path)
             format_errors(errs)
     # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
     if fix and new_exceptions and enum_lines != newlines:

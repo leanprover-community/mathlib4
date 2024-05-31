@@ -3815,6 +3815,7 @@ import Mathlib.Tactic.Linter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.Lint
+import Mathlib.Tactic.Linter.TextBased
 import Mathlib.Tactic.Measurability
 import Mathlib.Tactic.Measurability.Init
 import Mathlib.Tactic.MkIffOfInductiveProp
@@ -3888,6 +3889,7 @@ import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
+import Mathlib.Tactic.StyleLinters
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Tactic.SudoSetOption

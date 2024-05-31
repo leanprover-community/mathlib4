@@ -173,6 +173,10 @@ jobs:
           lean --version
           lake --version
 
+      - name: run text-based style linters in Lean
+        run: |
+          lake exe lint_style
+
       - name: build cache
         run: |
           lake build cache
