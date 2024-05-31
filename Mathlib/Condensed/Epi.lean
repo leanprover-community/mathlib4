@@ -58,22 +58,16 @@ lemma coherentTopology.isLocallySurjective_sheafOfTypes
   apply presheaf_preserves_ext G Z _ (coproductIsCoproduct Z)
   intro a
   simp only [Cofan.mk_pt, cofan_mk_inj, Functor.mapIso_symm, Iso.symm_hom, Iso.trans_hom,
-    Functor.mapIso_inv, types_comp_apply, i', i]
-  rw [← NatTrans.naturality_apply]
+    Functor.mapIso_inv, types_comp_apply, i', i, ← NatTrans.naturality_apply]
   have : f.app ⟨Z a⟩ (x a) = G.map (π a).op y := (h' a).choose_spec
   convert this
   · change F.map _ (F.map _ _) = _
-    rw [← FunctorToTypes.map_comp_apply, opCoproductIsoProduct_inv_comp_ι]
-    rw [← piComparison_comp_π F (fun a ↦ ⟨Z a⟩) a]
-    have h : (piComparison F fun a ↦ { unop := Z a }) =
-      (PreservesProduct.iso F _).hom := rfl
-    rw [h]
-    simp only [types_comp_apply, inv_hom_id_apply]
+    rw [← FunctorToTypes.map_comp_apply, opCoproductIsoProduct_inv_comp_ι,
+      ← piComparison_comp_π F (fun a ↦ ⟨Z a⟩) a]
+    change ((PreservesProduct.iso F _).hom ≫ _) _ = _
     have := Types.productIso_hom_comp_eval (fun a ↦ F.obj (op (Z a))) a
     rw [← Iso.eq_inv_comp] at this
-    have := congrFun this x
-    rw [this]
-    rfl
+    simp only [types_comp_apply, inv_hom_id_apply, congrFun this x]
   · change G.map _ (G.map _ _) = _
     simp only [← FunctorToTypes.map_comp_apply, ← op_comp, Sigma.ι_desc]
 
