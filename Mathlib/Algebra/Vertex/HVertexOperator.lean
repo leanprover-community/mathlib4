@@ -77,10 +77,10 @@ condition, we produce a heterogeneous vertex operator. -/
 @[simps]
 def of_coeff (f : Γ → V →ₗ[R] W)
     (hf : ∀(x : V), (Function.support (f · x)).IsPWO) : HVertexOperator Γ R V W where
-  toFun x := { coeff := fun g => f g x, isPWO_support' := hf x }
+  toFun x := (of R) { coeff := fun g => f g x, isPWO_support' := hf x }
   map_add' _ _ := by
-    simp only [map_add]
-    exact rfl
+    ext
+    simp
   map_smul' _ _ := by
     simp only [map_smul, RingHom.id_apply]
     exact rfl
