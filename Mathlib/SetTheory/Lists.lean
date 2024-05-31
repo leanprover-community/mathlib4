@@ -164,7 +164,7 @@ theorem mem_cons {a y l} : a ∈ @cons α y l ↔ a ~ y ∨ a ∈ l := by
 #align lists'.mem_cons Lists'.mem_cons
 
 theorem cons_subset {a} {l₁ l₂ : Lists' α true} : Lists'.cons a l₁ ⊆ l₂ ↔ a ∈ l₂ ∧ l₁ ⊆ l₂ := by
-  refine' ⟨fun h => _, fun ⟨⟨a', m, e⟩, s⟩ => Subset.cons e m s⟩
+  refine ⟨fun h => ?_, fun ⟨⟨a', m, e⟩, s⟩ => Subset.cons e m s⟩
   generalize h' : Lists'.cons a l₁ = l₁' at h
   cases' h with l a' a'' l l' e m s;
   · cases a
@@ -175,7 +175,7 @@ theorem cons_subset {a} {l₁ l₂ : Lists' α true} : Lists'.cons a l₁ ⊆ l�
 theorem ofList_subset {l₁ l₂ : List (Lists α)} (h : l₁ ⊆ l₂) :
     Lists'.ofList l₁ ⊆ Lists'.ofList l₂ := by
   induction' l₁ with _ _ l₁_ih; · exact Subset.nil
-  refine' Subset.cons (Lists.Equiv.refl _) _ (l₁_ih (List.subset_of_cons_subset h))
+  refine Subset.cons (Lists.Equiv.refl _) ?_ (l₁_ih (List.subset_of_cons_subset h))
   simp only [List.cons_subset] at h; simp [h]
 #align lists'.of_list_subset Lists'.ofList_subset
 
@@ -296,7 +296,7 @@ theorem isList_of_mem {a : Lists α} : ∀ {l : Lists α}, a ∈ l → IsList l
 #align lists.is_list_of_mem Lists.isList_of_mem
 
 theorem Equiv.antisymm_iff {l₁ l₂ : Lists' α true} : of' l₁ ~ of' l₂ ↔ l₁ ⊆ l₂ ∧ l₂ ⊆ l₁ := by
-  refine' ⟨fun h => _, fun ⟨h₁, h₂⟩ => Equiv.antisymm h₁ h₂⟩
+  refine ⟨fun h => ?_, fun ⟨h₁, h₂⟩ => Equiv.antisymm h₁ h₂⟩
   cases' h with _ _ _ h₁ h₂
   · simp [Lists'.Subset.refl]
   · exact ⟨h₁, h₂⟩

@@ -34,6 +34,9 @@ theorem AbsoluteValue.map_units_intCast [Nontrivial R] (abv : AbsoluteValue R S)
     abv ((x : ℤ) : R) = 1 := by rcases Int.units_eq_one_or x with (rfl | rfl) <;> simp
 #align absolute_value.map_units_int_cast AbsoluteValue.map_units_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias AbsoluteValue.map_units_int_cast := AbsoluteValue.map_units_intCast
+
 @[simp]
 theorem AbsoluteValue.map_units_int_smul (abv : AbsoluteValue R S) (x : ℤˣ) (y : R) :
     abv (x • y) = abv y := by rcases Int.units_eq_one_or x with (rfl | rfl) <;> simp

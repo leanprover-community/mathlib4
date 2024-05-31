@@ -214,9 +214,9 @@ instance covariantClass_swap_add_le [LE α] [CovariantClass α α (swap (· + ·
 instance contravariantClass_add_lt [LT α] [ContravariantClass α α (· + ·) (· < ·)] :
     ContravariantClass (WithTop α) (WithTop α) (· + ·) (· < ·) :=
   ⟨fun a b c h => by
-    induction a using WithTop.recTopCoe; · exact (not_none_lt _ h).elim
-    induction b using WithTop.recTopCoe; · exact (not_none_lt _ h).elim
-    induction c using WithTop.recTopCoe
+    induction a; · exact (not_none_lt _ h).elim
+    induction b; · exact (not_none_lt _ h).elim
+    induction c
     · exact coe_lt_top _
     · exact coe_lt_coe.2 (lt_of_add_lt_add_left <| coe_lt_coe.1 h)⟩
 #align with_top.contravariant_class_add_lt WithTop.contravariantClass_add_lt
@@ -233,9 +233,9 @@ instance contravariantClass_swap_add_lt [LT α] [ContravariantClass α α (swap 
 protected theorem le_of_add_le_add_left [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)] (ha : a ≠ ⊤)
     (h : a + b ≤ a + c) : b ≤ c := by
   lift a to α using ha
-  induction c using WithTop.recTopCoe
+  induction c
   · exact le_top
-  · induction b using WithTop.recTopCoe
+  · induction b
     · exact (not_top_le_coe _ h).elim
     · simp only [← coe_add, coe_le_coe] at h ⊢
       exact le_of_add_le_add_left h
@@ -306,9 +306,9 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [CovariantClass α α (·
 protected theorem map_add {F} [Add β] [FunLike F α β] [AddHomClass F α β]
     (f : F) (a b : WithTop α) :
     (a + b).map f = a.map f + b.map f := by
-  induction a using WithTop.recTopCoe
+  induction a
   · exact (top_add _).symm
-  · induction b using WithTop.recTopCoe
+  · induction b
     · exact (add_top _).symm
     · rw [map_coe, map_coe, ← coe_add, ← coe_add, ← map_add]
       rfl

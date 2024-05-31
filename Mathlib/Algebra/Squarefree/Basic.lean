@@ -119,7 +119,7 @@ variable [CommMonoid R] [DecidableRel (Dvd.dvd : R → R → Prop)]
 
 theorem squarefree_iff_multiplicity_le_one (r : R) :
     Squarefree r ↔ ∀ x : R, multiplicity x r ≤ 1 ∨ IsUnit x := by
-  refine' forall_congr' fun a => _
+  refine forall_congr' fun a => ?_
   rw [← sq, pow_dvd_iff_le_multiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]
   norm_cast
   rw [← one_add_one_eq_two]

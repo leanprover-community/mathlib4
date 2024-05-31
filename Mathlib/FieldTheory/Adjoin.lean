@@ -228,8 +228,8 @@ noncomputable def botEquiv : (⊥ : IntermediateField F E) ≃ₐ[F] F :=
 variable {F E}
 
 -- Porting note: this was tagged `simp`.
-theorem botEquiv_def (x : F) : botEquiv F E (algebraMap F (⊥ : IntermediateField F E) x) = x :=
-  by simp
+theorem botEquiv_def (x : F) : botEquiv F E (algebraMap F (⊥ : IntermediateField F E) x) = x := by
+  simp
 #align intermediate_field.bot_equiv_def IntermediateField.botEquiv_def
 
 @[simp]
@@ -418,14 +418,14 @@ theorem adjoin_adjoin_left (T : Set E) :
   · exact subset_adjoin_of_subset_right _ _ (Set.subset_union_right _ _)
 -- Porting note: orginal proof times out
   · rintro x ⟨f, rfl⟩
-    refine' Subfield.subset_closure _
+    refine Subfield.subset_closure ?_
     left
     exact ⟨f, rfl⟩
 -- Porting note: orginal proof times out
-  · refine' Set.union_subset (fun x hx => Subfield.subset_closure _)
-      (fun x hx => Subfield.subset_closure _)
+  · refine Set.union_subset (fun x hx => Subfield.subset_closure ?_)
+      (fun x hx => Subfield.subset_closure ?_)
     · left
-      refine' ⟨⟨x, Subfield.subset_closure _⟩, rfl⟩
+      refine ⟨⟨x, Subfield.subset_closure ?_⟩, rfl⟩
       right
       exact hx
     · right
@@ -528,7 +528,7 @@ theorem eq_adjoin_of_eq_algebra_adjoin (K : IntermediateField F E)
     (h : K.toSubalgebra = Algebra.adjoin F S) : K = adjoin F S := by
   apply toSubalgebra_injective
   rw [h]
-  refine' (adjoin_eq_algebra_adjoin F _ _).symm
+  refine (adjoin_eq_algebra_adjoin F _ ?_).symm
   intro x
   convert K.inv_mem (x := x) <;> rw [← h] <;> rfl
 #align intermediate_field.eq_adjoin_of_eq_algebra_adjoin IntermediateField.eq_adjoin_of_eq_algebra_adjoin
@@ -665,8 +665,6 @@ theorem adjoin_rootSet_isSplittingField {p : F[X]} (hp : p.Splits (algebraMap F 
   isSplittingField_iff.mpr ⟨splits_of_splits hp fun _ hx ↦ subset_adjoin F (p.rootSet E) hx, rfl⟩
 #align intermediate_field.adjoin_root_set_is_splitting_field IntermediateField.adjoin_rootSet_isSplittingField
 
-open scoped BigOperators
-
 section Supremum
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E1 E2 : IntermediateField K L)
@@ -771,16 +769,16 @@ theorem finiteDimensional_iSup_of_finset'
 
 /-- A compositum of splitting fields is a splitting field -/
 theorem isSplittingField_iSup {p : ι → K[X]}
-    {s : Finset ι} (h0 : ∏ i in s, p i ≠ 0) (h : ∀ i ∈ s, (p i).IsSplittingField K (t i)) :
-    (∏ i in s, p i).IsSplittingField K (⨆ i ∈ s, t i : IntermediateField K L) := by
+    {s : Finset ι} (h0 : ∏ i ∈ s, p i ≠ 0) (h : ∀ i ∈ s, (p i).IsSplittingField K (t i)) :
+    (∏ i ∈ s, p i).IsSplittingField K (⨆ i ∈ s, t i : IntermediateField K L) := by
   let F : IntermediateField K L := ⨆ i ∈ s, t i
   have hF : ∀ i ∈ s, t i ≤ F := fun i hi ↦ le_iSup_of_le i (le_iSup (fun _ ↦ t i) hi)
   simp only [isSplittingField_iff] at h ⊢
-  refine'
+  refine
     ⟨splits_prod (algebraMap K F) fun i hi ↦
         splits_comp_of_splits (algebraMap K (t i)) (inclusion (hF i hi)).toRingHom
           (h i hi).1,
-      _⟩
+      ?_⟩
   simp only [rootSet_prod p s h0, ← Set.iSup_eq_iUnion, (@gc K _ L _ _).l_iSup₂]
   exact iSup_congr fun i ↦ iSup_congr fun hi ↦ (h i hi).2
 #align intermediate_field.is_splitting_field_supr IntermediateField.isSplittingField_iSup
@@ -901,10 +899,10 @@ theorem exists_finset_of_mem_supr'' {ι : Type*} {f : ι → IntermediateField F
     (h : ∀ i, Algebra.IsAlgebraic F (f i)) {x : E} (hx : x ∈ ⨆ i, f i) :
     ∃ s : Finset (Σ i, f i), x ∈ ⨆ i ∈ s, adjoin F ((minpoly F (i.2 : _)).rootSet E) := by
 -- Porting note: writing `fun i x1 hx1 => ...` does not work.
-  refine' exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le (fun i => _)) hx)
+  refine exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le (fun i => ?_)) hx)
   intro x1 hx1
-  refine' SetLike.le_def.mp (le_iSup_of_le ⟨i, x1, hx1⟩ _)
-    (subset_adjoin F (rootSet (minpoly F x1) E) _)
+  refine SetLike.le_def.mp (le_iSup_of_le ⟨i, x1, hx1⟩ ?_)
+    (subset_adjoin F (rootSet (minpoly F x1) E) ?_)
   · rw [IntermediateField.minpoly_eq, Subtype.coe_mk]
   · rw [mem_rootSet_of_ne, minpoly.aeval]
     exact minpoly.ne_zero (isIntegral_iff.mp (Algebra.IsIntegral.isIntegral (⟨x1, hx1⟩ : f i)))
@@ -1008,8 +1006,9 @@ theorem rank_adjoin_eq_one_iff : Module.rank F (adjoin F S) = 1 ↔ S ⊆ (⊥ :
   Iff.trans rank_eq_one_iff adjoin_eq_bot_iff
 #align intermediate_field.rank_adjoin_eq_one_iff IntermediateField.rank_adjoin_eq_one_iff
 
-theorem rank_adjoin_simple_eq_one_iff : Module.rank F F⟮α⟯ = 1 ↔ α ∈ (⊥ : IntermediateField F E) :=
-  by rw [rank_adjoin_eq_one_iff]; exact Set.singleton_subset_iff
+theorem rank_adjoin_simple_eq_one_iff :
+    Module.rank F F⟮α⟯ = 1 ↔ α ∈ (⊥ : IntermediateField F E) := by
+  rw [rank_adjoin_eq_one_iff]; exact Set.singleton_subset_iff
 #align intermediate_field.rank_adjoin_simple_eq_one_iff IntermediateField.rank_adjoin_simple_eq_one_iff
 
 theorem finrank_adjoin_eq_one_iff : finrank F (adjoin F S) = 1 ↔ S ⊆ (⊥ : IntermediateField F E) :=
@@ -1098,7 +1097,7 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
           exact ⟨y, Subtype.ext hy⟩
         refine' Subfield.closure_le.mpr (Set.union_subset (fun x hx => _) _)
         · obtain ⟨y, hy⟩ := hx
-          refine' ⟨y, _⟩
+          refine ⟨y, ?_⟩
           -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
           erw [RingHom.comp_apply, AdjoinRoot.lift_of (aeval_gen_minpoly F α)]
           exact hy
@@ -1366,7 +1365,7 @@ theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :
 theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E → Prop) (base : P ⊥)
     (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
     P (adjoin F S) := by
-  refine' Finset.induction_on' S _ (fun ha _ _ h => _)
+  refine Finset.induction_on' S ?_ (fun ha _ _ h => ?_)
   · simp [base]
   · rw [Finset.coe_insert, Set.insert_eq, Set.union_comm, ← adjoin_adjoin_left]
     exact ih (adjoin F _) _ ha h

@@ -55,7 +55,7 @@ the literature and turn the order around?
 -/
 
 
-open BigOperators Finset Function
+open Finset Function
 
 variable {α : Type*}
 
@@ -178,7 +178,7 @@ protected theorem le {b : α} (hb : b ∈ P.parts) : b ≤ a :=
 
 theorem ne_bot {b : α} (hb : b ∈ P.parts) : b ≠ ⊥ := by
   intro h
-  refine' P.not_bot_mem (_)
+  refine P.not_bot_mem (?_)
   rw [h] at hb
   exact hb
 #align finpartition.ne_bot Finpartition.ne_bot
@@ -191,7 +191,7 @@ variable {P}
 
 theorem parts_eq_empty_iff : P.parts = ∅ ↔ a = ⊥ := by
   simp_rw [← P.sup_parts]
-  refine' ⟨fun h ↦ _, fun h ↦ eq_empty_iff_forall_not_mem.2 fun b hb ↦ P.not_bot_mem _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ eq_empty_iff_forall_not_mem.2 fun b hb ↦ P.not_bot_mem ?_⟩
   · rw [h]
     exact Finset.sup_empty
   · rwa [← le_bot_iff.1 ((le_sup hb).trans h.le)]
@@ -249,7 +249,7 @@ instance : PartialOrder (Finpartition a) :=
       exact ⟨d, hd, hbc.trans hcd⟩
     le_antisymm := fun P Q hPQ hQP ↦ by
       ext b
-      refine' ⟨fun hb ↦ _, fun hb ↦ _⟩
+      refine ⟨fun hb ↦ ?_, fun hb ↦ ?_⟩
       · obtain ⟨c, hc, hbc⟩ := hPQ hb
         obtain ⟨d, hd, hcd⟩ := hQP hc
         rwa [hbc.antisymm]
@@ -301,7 +301,7 @@ instance : Inf (Finpartition a) :=
           mem_product, Finset.disjoint_sup_right, mem_erase, Ne]
         rintro _ x₁ y₁ hx₁ hy₁ rfl _ h x₂ y₂ hx₂ hy₂ rfl
         rcases eq_or_ne x₁ x₂ with (rfl | xdiff)
-        · refine' Disjoint.mono inf_le_right inf_le_right (Q.disjoint hy₁ hy₂ _)
+        · refine Disjoint.mono inf_le_right inf_le_right (Q.disjoint hy₁ hy₂ ?_)
           intro t
           simp [t] at h
         exact Disjoint.mono inf_le_left inf_le_left (P.disjoint hx₁ hx₂ xdiff))
@@ -333,7 +333,7 @@ instance : SemilatticeInf (Finpartition a) :=
       obtain ⟨c, hc, hbc⟩ := hPQ hb
       obtain ⟨d, hd, hbd⟩ := hPR hb
       have h := _root_.le_inf hbc hbd
-      refine'
+      refine
         ⟨c ⊓ d,
           mem_erase_of_ne_of_mem (ne_bot_of_le_ne_bot (P.ne_bot hb) h)
             (mem_image.2 ⟨(c, d), mem_product.2 ⟨hc, hd⟩, rfl⟩),
@@ -344,11 +344,11 @@ end Inf
 theorem exists_le_of_le {a b : α} {P Q : Finpartition a} (h : P ≤ Q) (hb : b ∈ Q.parts) :
     ∃ c ∈ P.parts, c ≤ b := by
   by_contra H
-  refine' Q.ne_bot hb (disjoint_self.1 <| Disjoint.mono_right (Q.le hb) _)
+  refine Q.ne_bot hb (disjoint_self.1 <| Disjoint.mono_right (Q.le hb) ?_)
   rw [← P.sup_parts, Finset.disjoint_sup_right]
   rintro c hc
   obtain ⟨d, hd, hcd⟩ := h hc
-  refine' (Q.disjoint hb hd _).mono_right hcd
+  refine (Q.disjoint hb hd ?_).mono_right hcd
   rintro rfl
   simp only [not_exists, not_and] at H
   exact H _ hc hcd
@@ -359,7 +359,7 @@ theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : Q.parts.card �
     have : ∀ b ∈ Q.parts, ∃ c ∈ P.parts, c ≤ b := fun b ↦ exists_le_of_le h
     choose f hP hf using this
     rw [← card_attach]
-    refine' card_le_card_of_inj_on (fun b ↦ f _ b.2) (fun b _ ↦ hP _ b.2) fun b _ c _ h ↦ _
+    refine card_le_card_of_inj_on (fun b ↦ f _ b.2) (fun b _ ↦ hP _ b.2) fun b _ c _ h ↦ ?_
     exact
       Subtype.coe_injective
         (Q.disjoint.elim b.2 c.2 fun H ↦
@@ -408,7 +408,7 @@ theorem mem_bind : b ∈ (P.bind Q).parts ↔ ∃ A hA, b ∈ (Q A hA).parts := 
 #align finpartition.mem_bind Finpartition.mem_bind
 
 theorem card_bind (Q : ∀ i ∈ P.parts, Finpartition i) :
-    (P.bind Q).parts.card = ∑ A in P.parts.attach, (Q _ A.2).parts.card := by
+    (P.bind Q).parts.card = ∑ A ∈ P.parts.attach, (Q _ A.2).parts.card := by
   apply card_biUnion
   rintro ⟨b, hb⟩ - ⟨c, hc⟩ - hbc
   rw [Finset.disjoint_left]
@@ -458,7 +458,7 @@ def avoid (b : α) : Finpartition (a \ b) :=
 theorem mem_avoid : c ∈ (P.avoid b).parts ↔ ∃ d ∈ P.parts, ¬d ≤ b ∧ d \ b = c := by
   simp only [avoid, ofErase, mem_erase, Ne, mem_image, exists_prop, ← exists_and_left,
     @and_left_comm (c ≠ ⊥)]
-  refine' exists_congr fun d ↦ and_congr_right' <| and_congr_left _
+  refine exists_congr fun d ↦ and_congr_right' <| and_congr_left ?_
   rintro rfl
   rw [sdiff_eq_bot_iff]
 #align finpartition.mem_avoid Finpartition.mem_avoid
@@ -492,7 +492,7 @@ theorem biUnion_parts : P.parts.biUnion id = s :=
 
 theorem existsUnique_mem (ha : a ∈ s) : ∃! t, t ∈ P.parts ∧ a ∈ t := by
   obtain ⟨t, ht, ht'⟩ := P.exists_mem ha
-  refine' ⟨t, ⟨ht, ht'⟩, _⟩
+  refine ⟨t, ⟨ht, ht'⟩, ?_⟩
   rintro u ⟨hu, hu'⟩
   exact P.eq_of_mem_parts hu ht hu' ht'
 
@@ -513,7 +513,7 @@ theorem exists_subset_part_bijOn : ∃ r ⊆ s, Set.BijOn P.part r P.parts := by
   lift r to Finset α using s.finite_toSet.subset hrs
   exact ⟨r, mod_cast hrs, hr⟩
 
-theorem sum_card_parts : ∑ i in P.parts, i.card = s.card := by
+theorem sum_card_parts : ∑ i ∈ P.parts, i.card = s.card := by
   convert congr_arg Finset.card P.biUnion_parts
   rw [card_biUnion P.supIndep.pairwiseDisjoint]
   rfl
@@ -615,11 +615,11 @@ def atomise (s : Finset α) (F : Finset (Finset α)) : Finpartition s :=
             rw [id, mem_filter] at hz1 hz2
             rw [mem_powerset] at hQ hR
             ext i
-            refine' ⟨fun hi ↦ _, fun hi ↦ _⟩
+            refine ⟨fun hi ↦ ?_, fun hi ↦ ?_⟩
             · rwa [hz2.2 _ (hQ hi), ← hz1.2 _ (hQ hi)]
             · rwa [hz1.2 _ (hR hi), ← hz2.2 _ (hR hi)]))
     (by
-      refine' (Finset.sup_le fun t ht ↦ _).antisymm fun a ha ↦ _
+      refine (Finset.sup_le fun t ht ↦ ?_).antisymm fun a ha ↦ ?_
       · rw [mem_image] at ht
         obtain ⟨A, _, rfl⟩ := ht
         exact s.filter_subset _
@@ -654,9 +654,9 @@ theorem card_atomise_le : (atomise s F).parts.card ≤ 2 ^ F.card :=
 theorem biUnion_filter_atomise (ht : t ∈ F) (hts : t ⊆ s) :
     ((atomise s F).parts.filter fun u ↦ u ⊆ t ∧ u.Nonempty).biUnion id = t := by
   ext a
-  refine' mem_biUnion.trans ⟨fun ⟨u, hu, ha⟩ ↦ (mem_filter.1 hu).2.1 ha, fun ha ↦ _⟩
+  refine mem_biUnion.trans ⟨fun ⟨u, hu, ha⟩ ↦ (mem_filter.1 hu).2.1 ha, fun ha ↦ ?_⟩
   obtain ⟨u, hu, hau⟩ := (atomise s F).exists_mem (hts ha)
-  refine' ⟨u, mem_filter.2 ⟨hu, fun b hb ↦ _, _, hau⟩, hau⟩
+  refine ⟨u, mem_filter.2 ⟨hu, fun b hb ↦ ?_, _, hau⟩, hau⟩
   obtain ⟨Q, _hQ, rfl⟩ := (mem_atomise.1 hu).2
   rw [mem_filter] at hau hb
   rwa [← hb.2 _ ht, hau.2 _ ht]
@@ -667,13 +667,13 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
   suffices h :
     ((atomise s F).parts.filter fun u ↦ u ⊆ t ∧ u.Nonempty) ⊆
       (F.erase t).powerset.image fun P ↦ s.filter fun i ↦ ∀ x ∈ F, x ∈ insert t P ↔ i ∈ x by
-    refine' (card_le_card h).trans (card_image_le.trans _)
+    refine (card_le_card h).trans (card_image_le.trans ?_)
     rw [card_powerset, card_erase_of_mem ht]
   rw [subset_iff]
   simp_rw [mem_image, mem_powerset, mem_filter, and_imp, Finset.Nonempty, exists_imp, mem_atomise,
     and_imp, Finset.Nonempty, exists_imp, and_imp]
   rintro P' i hi P PQ rfl hy₂ j _hj
-  refine' ⟨P.erase t, erase_subset_erase _ PQ, _⟩
+  refine ⟨P.erase t, erase_subset_erase _ PQ, ?_⟩
   simp only [insert_erase (((mem_filter.1 hi).2 _ ht).2 <| hy₂ hi)]
 #align finpartition.card_filter_atomise_le_two_pow Finpartition.card_filter_atomise_le_two_pow
 

@@ -39,7 +39,7 @@ outer measure, Carathéodory-measurable, Carathéodory's criterion
 noncomputable section
 
 open Set Function Filter
-open scoped Classical BigOperators NNReal Topology ENNReal
+open scoped Classical NNReal Topology ENNReal
 
 namespace MeasureTheory
 namespace OuterMeasure
@@ -64,7 +64,7 @@ protected def ofFunction : OuterMeasure α :=
       ENNReal.le_of_forall_pos_le_add <| by
         intro ε hε (hb : (∑' i, μ (s i)) < ∞)
         rcases ENNReal.exists_pos_sum_of_countable (ENNReal.coe_pos.2 hε).ne' ℕ with ⟨ε', hε', hl⟩
-        refine' le_trans _ (add_le_add_left (le_of_lt hl) _)
+        refine le_trans ?_ (add_le_add_left (le_of_lt hl) _)
         rw [← ENNReal.tsum_add]
         choose f hf using
           show ∀ i, ∃ f : ℕ → Set α, (s i ⊆ ⋃ i, f i) ∧ (∑' i, m (f i)) < μ (s i) + ε' i by
@@ -76,9 +76,9 @@ protected def ofFunction : OuterMeasure α :=
             exists t
             contrapose! ht
             exact le_iInf ht
-        refine' le_trans _ (ENNReal.tsum_le_tsum fun i => le_of_lt (hf i).2)
+        refine le_trans ?_ (ENNReal.tsum_le_tsum fun i => le_of_lt (hf i).2)
         rw [← ENNReal.tsum_prod, ← Nat.pairEquiv.symm.tsum_eq]
-        refine' iInf_le_of_le _ (iInf_le _ _)
+        refine iInf_le_of_le _ (iInf_le _ ?_)
         apply iUnion_subset
         intro i
         apply Subset.trans (hf i).1
@@ -118,7 +118,7 @@ theorem le_ofFunction {μ : OuterMeasure α} :
   ⟨fun H s => le_trans (H s) (ofFunction_le s), fun H _ =>
     le_iInf fun f =>
       le_iInf fun hs =>
-        le_trans (μ.mono hs) <| le_trans (μ.iUnion f) <| ENNReal.tsum_le_tsum fun _ => H _⟩
+        le_trans (μ.mono hs) <| le_trans (measure_iUnion_le f) <| ENNReal.tsum_le_tsum fun _ => H _⟩
 #align measure_theory.outer_measure.le_of_function MeasureTheory.OuterMeasure.le_ofFunction
 
 theorem isGreatest_ofFunction :
@@ -156,7 +156,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
         μ.mono fun x hx =>
           let ⟨i, hi⟩ := mem_iUnion.1 (hf (hu hx))
           mem_iUnion.2 ⟨⟨i, ⟨x, hx, hi⟩⟩, hi⟩
-      _ ≤ ∑' i : I u, μ (f i) := μ.iUnion _
+      _ ≤ ∑' i : I u, μ (f i) := measure_iUnion_le _
 
   calc
     μ s + μ t ≤ (∑' i : I s, μ (f i)) + ∑' i : I t, μ (f i) :=
@@ -172,14 +172,14 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
 theorem comap_ofFunction {β} (f : β → α) (h : Monotone m ∨ Surjective f) :
     comap f (OuterMeasure.ofFunction m m_empty) =
       OuterMeasure.ofFunction (fun s => m (f '' s)) (by simp; simp [m_empty]) := by
-  refine' le_antisymm (le_ofFunction.2 fun s => _) fun s => _
+  refine le_antisymm (le_ofFunction.2 fun s => ?_) fun s => ?_
   · rw [comap_apply]
     apply ofFunction_le
   · rw [comap_apply, ofFunction_apply, ofFunction_apply]
-    refine' iInf_mono' fun t => ⟨fun k => f ⁻¹' t k, _⟩
-    refine' iInf_mono' fun ht => _
+    refine iInf_mono' fun t => ⟨fun k => f ⁻¹' t k, ?_⟩
+    refine iInf_mono' fun ht => ?_
     rw [Set.image_subset_iff, preimage_iUnion] at ht
-    refine' ⟨ht, ENNReal.tsum_le_tsum fun n => _⟩
+    refine ⟨ht, ENNReal.tsum_le_tsum fun n => ?_⟩
     cases' h with hl hr
     exacts [hl (image_preimage_subset _ _), (congr_arg m (hr.image_preimage (t n))).le]
 #align measure_theory.outer_measure.comap_of_function MeasureTheory.OuterMeasure.comap_ofFunction
@@ -195,13 +195,13 @@ theorem map_ofFunction_le {β} (f : α → β) :
 theorem map_ofFunction {β} {f : α → β} (hf : Injective f) :
     map f (OuterMeasure.ofFunction m m_empty) =
       OuterMeasure.ofFunction (fun s => m (f ⁻¹' s)) m_empty := by
-  refine' (map_ofFunction_le _).antisymm fun s => _
+  refine (map_ofFunction_le _).antisymm fun s => ?_
   simp only [ofFunction_apply, map_apply, le_iInf_iff]
   intro t ht
-  refine' iInf_le_of_le (fun n => (range f)ᶜ ∪ f '' t n) (iInf_le_of_le _ _)
+  refine iInf_le_of_le (fun n => (range f)ᶜ ∪ f '' t n) (iInf_le_of_le ?_ ?_)
   · rw [← union_iUnion, ← inter_subset, ← image_preimage_eq_inter_range, ← image_iUnion]
     exact image_subset _ ht
-  · refine' ENNReal.tsum_le_tsum fun n => le_of_eq _
+  · refine ENNReal.tsum_le_tsum fun n => le_of_eq ?_
     simp [hf.preimage_image]
 #align measure_theory.outer_measure.map_of_function MeasureTheory.OuterMeasure.map_ofFunction
 
@@ -264,7 +264,7 @@ theorem boundedBy_eq (s : Set α) (m_empty : m ∅ = 0) (m_mono : ∀ ⦃t : Set
 
 @[simp]
 theorem boundedBy_eq_self (m : OuterMeasure α) : boundedBy m = m :=
-  ext fun _ => boundedBy_eq _ m.empty' (fun _ ht => m.mono' ht) m.iUnion
+  ext fun _ => boundedBy_eq _ measure_empty (fun _ ht => measure_mono ht) measure_iUnion_le
 #align measure_theory.outer_measure.bounded_by_eq_self MeasureTheory.OuterMeasure.boundedBy_eq_self
 
 theorem le_boundedBy {μ : OuterMeasure α} : μ ≤ boundedBy m ↔ ∀ s, μ s ≤ m s := by
@@ -302,8 +302,8 @@ theorem smul_boundedBy {c : ℝ≥0∞} (hc : c ≠ ∞) : c • boundedBy m = b
 theorem comap_boundedBy {β} (f : β → α)
     (h : (Monotone fun s : { s : Set α // s.Nonempty } => m s) ∨ Surjective f) :
     comap f (boundedBy m) = boundedBy fun s => m (f '' s) := by
-  refine' (comap_ofFunction _ _).trans _
-  · refine' h.imp (fun H s t hst => iSup_le fun hs => _) id
+  refine (comap_ofFunction _ ?_).trans ?_
+  · refine h.imp (fun H s t hst => iSup_le fun hs => ?_) id
     have ht : t.Nonempty := hs.mono hst
     exact (@H ⟨s, hs⟩ ⟨t, ht⟩ hst).trans (le_iSup (fun _ : t.Nonempty => m t) ht)
   · dsimp only [boundedBy]
@@ -345,10 +345,10 @@ theorem sInfGen_def (m : Set (OuterMeasure α)) (t : Set α) :
 
 theorem sInf_eq_boundedBy_sInfGen (m : Set (OuterMeasure α)) :
     sInf m = OuterMeasure.boundedBy (sInfGen m) := by
-  refine' le_antisymm _ _
-  · refine' le_boundedBy.2 fun s => le_iInf₂ fun μ hμ => _
+  refine le_antisymm ?_ ?_
+  · refine le_boundedBy.2 fun s => le_iInf₂ fun μ hμ => ?_
     apply sInf_le hμ
-  · refine' le_sInf _
+  · refine le_sInf ?_
     intro μ hμ t
     exact le_trans (boundedBy_le t) (iInf₂_le μ hμ)
 #align measure_theory.outer_measure.Inf_eq_bounded_by_Inf_gen MeasureTheory.OuterMeasure.sInf_eq_boundedBy_sInfGen
@@ -365,8 +365,8 @@ the minimum value of a measure on that set: it is the infimum sum of measures of
 sets that covers that set, where a different measure can be used for each set in the cover. -/
 theorem sInf_apply {m : Set (OuterMeasure α)} {s : Set α} (h : m.Nonempty) :
     sInf m s =
-      ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ (μ : OuterMeasure α) (_ : μ ∈ m), μ (t n) :=
-  by simp_rw [sInf_eq_boundedBy_sInfGen, boundedBy_apply, iSup_sInfGen_nonempty h]
+      ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ (μ : OuterMeasure α) (_ : μ ∈ m), μ (t n) := by
+  simp_rw [sInf_eq_boundedBy_sInfGen, boundedBy_apply, iSup_sInfGen_nonempty h]
 #align measure_theory.outer_measure.Inf_apply MeasureTheory.OuterMeasure.sInf_apply
 
 /-- The value of the Infimum of a set of outer measures on a nonempty set is not simply
@@ -420,29 +420,29 @@ theorem map_iInf_le {ι β} (f : α → β) (m : ι → OuterMeasure α) :
 
 theorem comap_iInf {ι β} (f : α → β) (m : ι → OuterMeasure β) :
     comap f (⨅ i, m i) = ⨅ i, comap f (m i) := by
-  refine' ext_nonempty fun s hs => _
-  refine' ((comap_mono f).map_iInf_le s).antisymm _
+  refine ext_nonempty fun s hs => ?_
+  refine ((comap_mono f).map_iInf_le s).antisymm ?_
   simp only [comap_apply, iInf_apply' _ hs, iInf_apply' _ (hs.image _), le_iInf_iff,
     Set.image_subset_iff, preimage_iUnion]
-  refine' fun t ht => iInf_le_of_le _ (iInf_le_of_le ht <| ENNReal.tsum_le_tsum fun k => _)
+  refine fun t ht => iInf_le_of_le _ (iInf_le_of_le ht <| ENNReal.tsum_le_tsum fun k => ?_)
   exact iInf_mono fun i => (m i).mono (image_preimage_subset _ _)
 #align measure_theory.outer_measure.comap_infi MeasureTheory.OuterMeasure.comap_iInf
 
 theorem map_iInf {ι β} {f : α → β} (hf : Injective f) (m : ι → OuterMeasure α) :
     map f (⨅ i, m i) = restrict (range f) (⨅ i, map f (m i)) := by
-  refine' Eq.trans _ (map_comap _ _)
+  refine Eq.trans ?_ (map_comap _ _)
   simp only [comap_iInf, comap_map hf]
 #align measure_theory.outer_measure.map_infi MeasureTheory.OuterMeasure.map_iInf
 
 theorem map_iInf_comap {ι β} [Nonempty ι] {f : α → β} (m : ι → OuterMeasure β) :
     map f (⨅ i, comap f (m i)) = ⨅ i, map f (comap f (m i)) := by
-  refine' (map_iInf_le _ _).antisymm fun s => _
+  refine (map_iInf_le _ _).antisymm fun s => ?_
   simp only [map_apply, comap_apply, iInf_apply, le_iInf_iff]
-  refine' fun t ht => iInf_le_of_le (fun n => f '' t n ∪ (range f)ᶜ) (iInf_le_of_le _ _)
+  refine fun t ht => iInf_le_of_le (fun n => f '' t n ∪ (range f)ᶜ) (iInf_le_of_le ?_ ?_)
   · rw [← iUnion_union, Set.union_comm, ← inter_subset, ← image_iUnion, ←
       image_preimage_eq_inter_range]
     exact image_subset _ ht
-  · refine' ENNReal.tsum_le_tsum fun n => iInf_mono fun i => (m i).mono _
+  · refine ENNReal.tsum_le_tsum fun n => iInf_mono fun i => (m i).mono ?_
     simp only [preimage_union, preimage_compl, preimage_range, compl_univ, union_empty,
       image_subset_iff]
     exact subset_refl _

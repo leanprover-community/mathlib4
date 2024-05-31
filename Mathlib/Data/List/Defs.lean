@@ -549,4 +549,31 @@ def replaceIf : List α → List Bool → List α → List α
 #align list.map_with_prefix_suffix List.mapWithPrefixSuffix
 #align list.map_with_complement List.mapWithComplement
 
+/-- `iterate f a n` is `[a, f a, ..., f^[n - 1] a]`. -/
+@[simp]
+def iterate (f : α → α) (a : α) : (n : ℕ) → List α
+  | 0     => []
+  | n + 1 => a :: iterate f (f a) n
+
+/-- Tail-recursive version of `List.iterate`. -/
+@[inline]
+def iterateTR (f : α → α) (a : α) (n : ℕ) : List α :=
+  loop a n []
+where
+  /-- `iterateTR.loop f a n l := iterate f a n ++ reverse l`. -/
+  @[simp, specialize]
+  loop (a : α) (n : ℕ) (l : List α) : List α :=
+    match n with
+    | 0     => reverse l
+    | n + 1 => loop (f a) n (a :: l)
+
+theorem iterateTR_loop_eq (f : α → α) (a : α) (n : ℕ) (l : List α) :
+    iterateTR.loop f a n l = reverse l ++ iterate f a n := by
+  induction n generalizing a l <;> simp [*]
+
+@[csimp]
+theorem iterate_eq_iterateTR : @iterate = @iterateTR := by
+  funext α f a n
+  exact Eq.symm <| iterateTR_loop_eq f a n []
+
 end List

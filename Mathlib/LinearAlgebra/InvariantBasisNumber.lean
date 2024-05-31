@@ -14,6 +14,8 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 
 ## Main definitions
 
+Let `R` be a (not necessary commutative) ring.
+
 - `InvariantBasisNumber R` is a type class stating that `(Fin n → R) ≃ₗ[R] (Fin m → R)`
   implies `n = m`, a property known as the *invariant basis number property.*
 
@@ -30,12 +32,8 @@ It is also useful to consider the following stronger conditions:
   implies `n ≤ m`.
 
 - `OrzechProperty R`, defined in `Mathlib/RingTheory/OrzechProperty.lean`,
-  is a type class stating that `R` satisfies the following property:
-  for any finitely generated `R`-module `M`, any surjective homomorphism `f : N → M`
+  states that for any finitely generated `R`-module `M`, any surjective homomorphism `f : N → M`
   from a submodule `N` of `M` to `M` is injective.
-  It was introduced in papers by Orzech [orzech1971], Djoković [djokovic1973] and
-  Ribenboim [ribenboim1971], under the names `Π`-ring or `Π₁`-ring.
-  It implies the strong rank condition if the ring is nontrivial.
 
 
 ## Instances
@@ -47,17 +45,19 @@ It is also useful to consider the following stronger conditions:
 - `strongRankCondition_of_orzechProperty` : the Orzech property implies the strong rank condition
   (for non trivial rings).
 
+- `IsNoetherianRing.strongRankCondition` : every nontrivial left-noetherian ring satisfies the
+  strong rank condition (and so in particular every division ring or field).
+
 - `rankCondition_of_strongRankCondition` : the strong rank condition implies the rank condition.
 
 - `invariantBasisNumber_of_rankCondition` : the rank condition implies the
   invariant basis number property.
 
 - `invariantBasisNumber_of_nontrivial_of_commRing`: a nontrivial commutative ring satisfies
-  the invariant basis number property
+  the invariant basis number property.
 
-More generally, every commutative ring satisfies the Orzech property and the strong rank condition.
-The corresponding instances are proved in
-`Mathlib/RingTheory/FiniteType.lean`.
+More generally, every commutative ring satisfies the Orzech property,
+hence the strong rank condition, which is proved in `Mathlib/RingTheory/FiniteType.lean`.
 We keep `invariantBasisNumber_of_nontrivial_of_commRing` here since it imports fewer files.
 
 
@@ -66,8 +66,10 @@ We keep `invariantBasisNumber_of_nontrivial_of_commRing` here since it imports f
 The following examples can be found in the book of Lam [lam_1999]
 (see also <https://math.stackexchange.com/questions/4711904>):
 
-- The free algebra `k⟨x, y⟩` satisfies the rank condition but not the strong rank condition.
-- The ring `ℚ⟨a, b, c, d⟩ / (ac − 1, bd − 1, ab, cd)` satisfies the invariant basis number property
+- Let `k` be a field, then the free (non-commutative) algebra `k⟨x, y⟩` satisfies
+  the rank condition but not the strong rank condition.
+- The free (non-commutative) algebra `ℚ⟨a, b, c, d⟩` quotient by the
+  two-sided ideal `(ac − 1, bd − 1, ab, cd)` satisfies the invariant basis number property
   but not the rank condition.
 
 
@@ -102,8 +104,6 @@ free module, rank, Orzech property, (strong) rank condition, invariant basis num
 
 noncomputable section
 
-open BigOperators
-
 open Function
 
 universe u v w
@@ -130,7 +130,7 @@ theorem le_of_fin_injective [StrongRankCondition R] {n m : ℕ} (f : (Fin n → 
 theorem strongRankCondition_iff_succ :
     StrongRankCondition R ↔
       ∀ (n : ℕ) (f : (Fin (n + 1) → R) →ₗ[R] Fin n → R), ¬Function.Injective f := by
-  refine' ⟨fun h n => fun f hf => _, fun h => ⟨@fun n m f hf => _⟩⟩
+  refine ⟨fun h n => fun f hf => ?_, fun h => ⟨@fun n m f hf => ?_⟩⟩
   · letI : StrongRankCondition R := h
     exact Nat.not_succ_le_self n (le_of_fin_injective R f hf)
   · by_contra H
@@ -248,7 +248,7 @@ theorem card_eq_of_linearEquiv {α β : Type*} [Fintype α] [Fintype β] (f : (�
 
 theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
   by_contra h
-  refine' zero_ne_one (eq_of_fin_equiv R _)
+  refine zero_ne_one (eq_of_fin_equiv R ?_)
   haveI := not_nontrivial_iff_subsingleton.1 h
   haveI : Subsingleton (Fin 1 → R) :=
     Subsingleton.intro fun a b => funext fun x => Subsingleton.elim _ _
@@ -299,7 +299,7 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
     (ι → R) ⧸ I.pi ι → (ι' → R) ⧸ I.pi ι' := fun x =>
   Quotient.liftOn' x (fun y => Ideal.Quotient.mk (I.pi ι') (e y))
     (by
-      refine' fun a b hab => Ideal.Quotient.eq.2 fun h => _
+      refine fun a b hab => Ideal.Quotient.eq.2 fun h => ?_
       rw [Submodule.quotientRel_r_def] at hab
       rw [← LinearMap.map_sub]
       exact Ideal.map_pi _ _ hab e h)

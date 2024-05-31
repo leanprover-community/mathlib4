@@ -27,7 +27,7 @@ open scoped Classical
 open Set Filter TopologicalSpace
 
 open scoped Classical
-open Topology BigOperators Pointwise
+open Topology Pointwise
 
 variable {ι α M N X : Type*} [TopologicalSpace X]
 
@@ -578,7 +578,7 @@ theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
     ContinuousOn (fun a => (l.map fun i => f i a).prod) t := by
   intro x hx
   rw [continuousWithinAt_iff_continuousAt_restrict _ hx]
-  refine' tendsto_list_prod _ fun i hi => _
+  refine tendsto_list_prod _ fun i hi => ?_
   specialize h i hi x hx
   rw [continuousWithinAt_iff_continuousAt_restrict _ hx] at h
   exact h
@@ -776,7 +776,7 @@ theorem tendsto_multiset_prod {f : ι → α → M} {x : Filter α} {a : ι → 
 @[to_additive]
 theorem tendsto_finset_prod {f : ι → α → M} {x : Filter α} {a : ι → M} (s : Finset ι) :
     (∀ i ∈ s, Tendsto (f i) x (𝓝 (a i))) →
-      Tendsto (fun b => ∏ c in s, f c b) x (𝓝 (∏ c in s, a c)) :=
+      Tendsto (fun b => ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) :=
   tendsto_multiset_prod _
 #align tendsto_finset_prod tendsto_finset_prod
 #align tendsto_finset_sum tendsto_finset_sum
@@ -799,21 +799,21 @@ theorem continuousOn_multiset_prod {f : ι → X → M} (s : Multiset ι) {t : S
 
 @[to_additive (attr := continuity)]
 theorem continuous_finset_prod {f : ι → X → M} (s : Finset ι) :
-    (∀ i ∈ s, Continuous (f i)) → Continuous fun a => ∏ i in s, f i a :=
+    (∀ i ∈ s, Continuous (f i)) → Continuous fun a => ∏ i ∈ s, f i a :=
   continuous_multiset_prod _
 #align continuous_finset_prod continuous_finset_prod
 #align continuous_finset_sum continuous_finset_sum
 
 @[to_additive]
 theorem continuousOn_finset_prod {f : ι → X → M} (s : Finset ι) {t : Set X} :
-    (∀ i ∈ s, ContinuousOn (f i) t) → ContinuousOn (fun a => ∏ i in s, f i a) t :=
+    (∀ i ∈ s, ContinuousOn (f i) t) → ContinuousOn (fun a => ∏ i ∈ s, f i a) t :=
   continuousOn_multiset_prod _
 #align continuous_on_finset_prod continuousOn_finset_prod
 #align continuous_on_finset_sum continuousOn_finset_sum
 
 @[to_additive]
 theorem eventuallyEq_prod {X M : Type*} [CommMonoid M] {s : Finset ι} {l : Filter X}
-    {f g : ι → X → M} (hs : ∀ i ∈ s, f i =ᶠ[l] g i) : ∏ i in s, f i =ᶠ[l] ∏ i in s, g i := by
+    {f g : ι → X → M} (hs : ∀ i ∈ s, f i =ᶠ[l] g i) : ∏ i ∈ s, f i =ᶠ[l] ∏ i ∈ s, g i := by
   replace hs : ∀ᶠ x in l, ∀ i ∈ s, f i x = g i x := by rwa [eventually_all_finset]
   filter_upwards [hs] with x hx
   simp only [Finset.prod_apply, Finset.prod_congr rfl hx]
@@ -827,7 +827,7 @@ theorem LocallyFinite.exists_finset_mulSupport {M : Type*} [CommMonoid M] {f : �
     (hf : LocallyFinite fun i => mulSupport <| f i) (x₀ : X) :
     ∃ I : Finset ι, ∀ᶠ x in 𝓝 x₀, (mulSupport fun i => f i x) ⊆ I := by
   rcases hf x₀ with ⟨U, hxU, hUf⟩
-  refine' ⟨hUf.toFinset, mem_of_superset hxU fun y hy i hi => _⟩
+  refine ⟨hUf.toFinset, mem_of_superset hxU fun y hy i hi => ?_⟩
   rw [hUf.coe_toFinset]
   exact ⟨y, hi, hy⟩
 #align locally_finite.exists_finset_mul_support LocallyFinite.exists_finset_mulSupport
@@ -836,7 +836,7 @@ theorem LocallyFinite.exists_finset_mulSupport {M : Type*} [CommMonoid M] {f : �
 @[to_additive]
 theorem finprod_eventually_eq_prod {M : Type*} [CommMonoid M] {f : ι → X → M}
     (hf : LocallyFinite fun i => mulSupport (f i)) (x : X) :
-    ∃ s : Finset ι, ∀ᶠ y in 𝓝 x, ∏ᶠ i, f i y = ∏ i in s, f i y :=
+    ∃ s : Finset ι, ∀ᶠ y in 𝓝 x, ∏ᶠ i, f i y = ∏ i ∈ s, f i y :=
   let ⟨I, hI⟩ := hf.exists_finset_mulSupport x
   ⟨I, hI.mono fun _ hy => finprod_eq_prod_of_mulSupport_subset _ fun _ hi => hy hi⟩
 #align finprod_eventually_eq_prod finprod_eventually_eq_prod
@@ -845,9 +845,9 @@ theorem finprod_eventually_eq_prod {M : Type*} [CommMonoid M] {f : ι → X → 
 @[to_additive]
 theorem continuous_finprod {f : ι → X → M} (hc : ∀ i, Continuous (f i))
     (hf : LocallyFinite fun i => mulSupport (f i)) : Continuous fun x => ∏ᶠ i, f i x := by
-  refine' continuous_iff_continuousAt.2 fun x => _
+  refine continuous_iff_continuousAt.2 fun x => ?_
   rcases finprod_eventually_eq_prod hf x with ⟨s, hs⟩
-  refine' ContinuousAt.congr _ (EventuallyEq.symm hs)
+  refine ContinuousAt.congr ?_ (EventuallyEq.symm hs)
   exact tendsto_finset_prod _ fun i _ => (hc i).continuousAt
 #align continuous_finprod continuous_finprod
 #align continuous_finsum continuous_finsum
@@ -895,7 +895,7 @@ theorem continuousMul_iInf {ts : ι' → TopologicalSpace M}
 theorem continuousMul_inf {t₁ t₂ : TopologicalSpace M} (h₁ : @ContinuousMul M t₁ _)
     (h₂ : @ContinuousMul M t₂ _) : @ContinuousMul M (t₁ ⊓ t₂) _ := by
   rw [inf_eq_iInf]
-  refine' continuousMul_iInf fun b => _
+  refine continuousMul_iInf fun b => ?_
   cases b <;> assumption
 #align has_continuous_mul_inf continuousMul_inf
 #align has_continuous_add_inf continuousAdd_inf

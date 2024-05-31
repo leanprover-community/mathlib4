@@ -219,7 +219,7 @@ set_option linter.uppercaseLean3 false in
 theorem functorCategoryMonoidalEquivalence.μIso_inv_app (A B : Action V G) :
     ((functorCategoryMonoidalEquivalence V G).μIso A B).inv.app PUnit.unit = 𝟙 _ := by
   rw [← NatIso.app_inv, ← IsIso.Iso.inv_hom]
-  refine' IsIso.inv_eq_of_hom_inv_id _
+  refine IsIso.inv_eq_of_hom_inv_id ?_
   rw [Category.comp_id, NatIso.app_hom, MonoidalFunctor.μIso_hom,
     functorCategoryMonoidalEquivalence.μ_app]
 set_option linter.uppercaseLean3 false in
@@ -332,14 +332,14 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
     { hom := fun g => ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
-        refine' Prod.ext rfl _
+        refine Prod.ext rfl ?_
         change (X.ρ ((g * x₁)⁻¹ : G) * X.ρ g) x₂ = X.ρ _ _
         rw [mul_inv_rev, ← X.ρ.map_mul, inv_mul_cancel_right] }
   inv :=
     { hom := fun g => ⟨g.1, X.ρ g.1 g.2⟩
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
-        refine' Prod.ext rfl _
+        refine Prod.ext rfl ?_
         erw [tensor_rho, tensor_rho]
         dsimp
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -349,13 +349,13 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
   hom_inv_id := by
     apply Hom.ext
     funext x
-    refine' Prod.ext rfl _
+    refine Prod.ext rfl ?_
     change (X.ρ x.1 * X.ρ (x.1⁻¹ : G)) x.2 = x.2
     rw [← X.ρ.map_mul, mul_inv_self, X.ρ.map_one, MonCat.one_of, End.one_def, types_id_apply]
   inv_hom_id := by
     apply Hom.ext
     funext x
-    refine' Prod.ext rfl _
+    refine Prod.ext rfl ?_
     change (X.ρ (x.1⁻¹ : G) * X.ρ x.1) x.2 = x.2
     rw [← X.ρ.map_mul, inv_mul_self, X.ρ.map_one, MonCat.one_of, End.one_def, types_id_apply]
 set_option linter.uppercaseLean3 false in

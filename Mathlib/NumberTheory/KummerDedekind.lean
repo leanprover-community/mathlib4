@@ -235,7 +235,7 @@ theorem quotAdjoinEquivQuotMap_apply_mk (hx : (conductor R x).comap (algebraMap 
 
 namespace KummerDedekind
 
-open scoped BigOperators Polynomial Classical
+open scoped Polynomial Classical
 
 variable [IsDomain R] [IsIntegrallyClosed R]
 variable [IsDedekindDomain S]
@@ -304,7 +304,7 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
   rw [multiplicity_eq_count_normalizedFactors, multiplicity_eq_count_normalizedFactors,
     UniqueFactorizationMonoid.normalize_normalized_factor _ hJ,
     UniqueFactorizationMonoid.normalize_normalized_factor, PartENat.natCast_inj] at this
-  · refine' this.trans _
+  · refine this.trans ?_
     -- Get rid of the `map` by applying the equiv to both sides.
     generalize hJ' :
       (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx') ⟨J, hJ⟩ = J'

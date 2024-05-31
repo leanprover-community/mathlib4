@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Data.Nat.Interval
 import Mathlib.Order.Antichain
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import data.finset.slice from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -30,8 +30,6 @@ the set family made of its `r`-sets.
 
 
 open Finset Nat
-
-open BigOperators
 
 variable {α : Type*} {ι : Sort*} {κ : ι → Sort*}
 
@@ -173,7 +171,7 @@ theorem biUnion_slice [DecidableEq α] : (Iic <| Fintype.card α).biUnion 𝒜.s
 #align finset.bUnion_slice Finset.biUnion_slice
 
 @[simp]
-theorem sum_card_slice : (∑ r in Iic (Fintype.card α), (𝒜 # r).card) = 𝒜.card := by
+theorem sum_card_slice : (∑ r ∈ Iic (Fintype.card α), (𝒜 # r).card) = 𝒜.card := by
   letI := Classical.decEq α
   rw [← card_biUnion, biUnion_slice]
   exact Finset.pairwiseDisjoint_slice.subset (Set.subset_univ _)

@@ -41,11 +41,11 @@ theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t
     (adjoin R (s ∪ t)).toSubmodule.FG := by
   rcases fg_def.1 h1 with ⟨p, hp, hp'⟩
   rcases fg_def.1 h2 with ⟨q, hq, hq'⟩
-  refine' fg_def.2 ⟨p * q, hp.mul hq, le_antisymm _ _⟩
+  refine fg_def.2 ⟨p * q, hp.mul hq, le_antisymm ?_ ?_⟩
   · rw [span_le, Set.mul_subset_iff]
     intro x hx y hy
     change x * y ∈ adjoin R (s ∪ t)
-    refine' Subalgebra.mul_mem _ _ _
+    refine Subalgebra.mul_mem _ ?_ ?_
     · have : x ∈ Subalgebra.toSubmodule (adjoin R s) := by
         rw [← hp']
         exact subset_span hx
@@ -63,7 +63,7 @@ theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t
     rcases hr with ⟨l, hlq, rfl⟩
     have := @Finsupp.total_apply A A (adjoin R s)
     rw [this, Finsupp.sum]
-    refine' sum_mem _
+    refine sum_mem ?_
     intro z hz
     change (l z).1 * _ ∈ _
     have : (l z).1 ∈ Subalgebra.toSubmodule (adjoin R s) := (l z).2
@@ -72,11 +72,11 @@ theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t
     have := @Finsupp.total_apply A A R
     rw [this] at hl
     rw [← hl, Finsupp.sum_mul]
-    refine' sum_mem _
+    refine sum_mem ?_
     intro t ht
     change _ * _ ∈ _
     rw [smul_mul_assoc]
-    refine' smul_mem _ _ _
+    refine smul_mem _ _ ?_
     exact subset_span ⟨t, hlp ht, z, hlq hz, rfl⟩
 #align algebra.fg_trans Algebra.fg_trans
 
@@ -172,7 +172,7 @@ theorem induction_on_adjoin [IsNoetherian R A] (P : Subalgebra R A → Prop) (ba
     (S : Subalgebra R A) : P S := by
   classical
   obtain ⟨t, rfl⟩ := S.fg_of_noetherian
-  refine' Finset.induction_on t _ _
+  refine Finset.induction_on t ?_ ?_
   · simpa using base
   intro x t _ h
   rw [Finset.coe_insert]

@@ -35,8 +35,6 @@ multiset enumeration
 -/
 
 
-open BigOperators
-
 variable {α : Type*} [DecidableEq α] {m : Multiset α}
 
 /-- Auxiliary definition for the `CoeSort` instance. This prevents the `CoeOut m α`
@@ -78,9 +76,7 @@ theorem Multiset.coe_mk {x : α} {i : Fin (m.count x)} : ↑(m.mkToType x i) = x
   rfl
 #align multiset.coe_mk Multiset.coe_mk
 
-@[simp]
-theorem Multiset.coe_mem {x : m} : ↑x ∈ m :=
-  Multiset.count_pos.mp (pos_of_gt x.2.2)
+@[simp] lemma Multiset.coe_mem {x : m} : ↑x ∈ m := Multiset.count_pos.mp (by have := x.2.2; omega)
 #align multiset.coe_mem Multiset.coe_mem
 
 @[simp]
@@ -103,7 +99,7 @@ instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
       simp only [Finset.mem_biUnion, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
         Function.Embedding.coeFn_mk, Prod.mk.inj_iff, Set.mem_setOf_eq]
       simp only [← and_assoc, exists_eq_right, and_iff_right_iff_imp]
-      exact fun h ↦ Multiset.count_pos.mp (pos_of_gt h))
+      exact fun h ↦ Multiset.count_pos.mp (by omega))
 
 /-- Construct a finset whose elements enumerate the elements of the multiset `m`.
 The `ℕ` component is used to differentiate between equal elements: if `x` appears `n` times
@@ -119,7 +115,7 @@ theorem Multiset.mem_toEnumFinset (m : Multiset α) (p : α × ℕ) :
 #align multiset.mem_to_enum_finset Multiset.mem_toEnumFinset
 
 theorem Multiset.mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1 ∈ m :=
-  Multiset.count_pos.mp <| pos_of_gt <| (m.mem_toEnumFinset p).mp h
+  have := (m.mem_toEnumFinset p).mp h; Multiset.count_pos.mp (by omega)
 #align multiset.mem_of_mem_to_enum_finset Multiset.mem_of_mem_toEnumFinset
 
 @[mono]
@@ -133,7 +129,7 @@ theorem Multiset.toEnumFinset_mono {m₁ m₂ : Multiset α} (h : m₁ ≤ m₂)
 @[simp]
 theorem Multiset.toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :
     m₁.toEnumFinset ⊆ m₂.toEnumFinset ↔ m₁ ≤ m₂ := by
-  refine' ⟨fun h ↦ _, Multiset.toEnumFinset_mono⟩
+  refine ⟨fun h ↦ ?_, Multiset.toEnumFinset_mono⟩
   rw [Multiset.le_iff_count]
   intro x
   by_cases hx : x ∈ m₁
@@ -258,7 +254,7 @@ theorem Multiset.prod_eq_prod_coe [CommMonoid α] (m : Multiset α) : m.prod = �
 
 @[to_additive]
 theorem Multiset.prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :
-    m.prod = ∏ x in m.toEnumFinset, x.1 := by
+    m.prod = ∏ x ∈ m.toEnumFinset, x.1 := by
   congr
   simp
 #align multiset.prod_eq_prod_to_enum_finset Multiset.prod_eq_prod_toEnumFinset
@@ -266,7 +262,7 @@ theorem Multiset.prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :
 
 @[to_additive]
 theorem Multiset.prod_toEnumFinset {β : Type*} [CommMonoid β] (m : Multiset α) (f : α → ℕ → β) :
-    ∏ x in m.toEnumFinset, f x.1 x.2 = ∏ x : m, f x x.2 := by
+    ∏ x ∈ m.toEnumFinset, f x.1 x.2 = ∏ x : m, f x x.2 := by
   rw [Fintype.prod_equiv m.coeEquiv (fun x ↦ f x x.2) fun x ↦ f x.1.1 x.1.2]
   · rw [← m.toEnumFinset.prod_coe_sort fun x ↦ f x.1 x.2]
   · intro x

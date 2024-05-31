@@ -166,7 +166,7 @@ theorem Step.cons_left_iff {a : α} {b : Bool} :
       simp [*]
     · simp at hL
       rcases hL with ⟨rfl, rfl⟩
-      refine' Or.inl ⟨s' ++ e, Step.not, _⟩
+      refine Or.inl ⟨s' ++ e, Step.not, ?_⟩
       simp
   · rintro (⟨L, h, rfl⟩ | rfl)
     · exact Step.cons h
@@ -428,7 +428,7 @@ theorem length (h : Red L₁ L₂) : ∃ n, L₁.length = L₂.length + 2 * n :=
   · exact ⟨0, rfl⟩
   · rcases ih with ⟨n, eq⟩
     exists 1 + n
-    simp [mul_add, eq, (Step.length h₂₃).symm, add_assoc]
+    simp [Nat.mul_add, eq, (Step.length h₂₃).symm, add_assoc]
 #align free_group.red.length FreeGroup.Red.length
 #align free_add_group.red.length FreeAddGroup.Red.length
 
@@ -561,8 +561,8 @@ theorem invRev_length : (invRev L₁).length = L₁.length := by simp [invRev]
 #align free_add_group.neg_rev_length FreeAddGroup.negRev_length
 
 @[to_additive (attr := simp)]
-theorem invRev_invRev : invRev (invRev L₁) = L₁ :=
-  by simp [invRev, List.map_reverse, (· ∘ ·)]
+theorem invRev_invRev : invRev (invRev L₁) = L₁ := by
+  simp [invRev, List.map_reverse, (· ∘ ·)]
 #align free_group.inv_rev_inv_rev FreeGroup.invRev_invRev
 #align free_add_group.neg_rev_neg_rev FreeAddGroup.negRev_negRev
 

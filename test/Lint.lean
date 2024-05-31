@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Lint
+import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.ToAdditive
 
 -- Adaptation note: test disabled.
