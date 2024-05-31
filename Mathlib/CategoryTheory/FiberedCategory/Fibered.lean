@@ -64,6 +64,8 @@ namespace IsPreFibered
 
 open IsCartesian
 
+variable {p : 𝒳 ⥤ 𝒮} [IsPreFibered p] {R S : 𝒮} {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S)
+
 /-- Given a prefibered category `p : 𝒳 ⥤ 𝒫`, and a diagram
 ```
            a
@@ -95,8 +97,7 @@ instance pullbackMap.IsCartesian {p : 𝒳 ⥤ 𝒮} [IsPreFibered p] {R S : �
     {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) : IsCartesian p f (pullbackMap ha f) :=
   Classical.choose_spec (Classical.choose_spec (IsPreFibered.has_pullbacks ha f))
 
-lemma pullbackObj_proj {p : 𝒳 ⥤ 𝒮} [IsPreFibered p] {R S : 𝒮} {a : 𝒳} (ha : p.obj a = S)
-    (f : R ⟶ S) : p.obj (pullbackObj ha f) = R :=
+lemma pullbackObj_proj : p.obj (pullbackObj ha f) = R :=
   domain_eq p f (pullbackMap ha f)
 
 end IsPreFibered
