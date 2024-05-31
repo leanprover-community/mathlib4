@@ -650,7 +650,7 @@ theorem evaln_bound : ∀ {k c n x}, x ∈ evaln k c n → n < k
   | k + 1, c, n, x, h => by
     suffices ∀ {o : Option ℕ}, x ∈ do { guard (n ≤ k); o } → n < k + 1 by
       cases c <;> rw [evaln] at h <;> exact this h
-    simpa [Bind.bind] using Nat.lt_succ_of_le
+    simpa [Option.bind_eq_some] using Nat.lt_succ_of_le
 #align nat.partrec.code.evaln_bound Nat.Partrec.Code.evaln_bound
 
 theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c n → x ∈ evaln k₂ c n
@@ -680,7 +680,7 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
     · -- prec cf cg
       revert h
       simp only [unpaired, bind, Option.mem_def]
-      induction n.unpair.2 <;> simp
+      induction n.unpair.2 <;> simp [Option.bind_eq_some]
       · apply hf
       · exact fun y h₁ h₂ => ⟨y, evaln_mono hl' h₁, hg _ _ h₂⟩
     · -- rfind' cf
@@ -696,7 +696,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
   | 0, _, n, x, h => by simp [evaln] at h
   | k + 1, c, n, x, h => by
     induction' c with cf cg hf hg cf cg hf hg cf cg hf hg cf hf generalizing x n <;>
-        simp [eval, evaln, Bind.bind, Seq.seq] at h ⊢ <;>
+        simp [eval, evaln, Option.bind_eq_some, Seq.seq] at h ⊢ <;>
       cases' h with _ h
     iterate 4 simpa [pure, PFun.pure, eq_comm] using h
     · -- pair cf cg
@@ -707,11 +707,11 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
       exact ⟨_, hg _ _ eg, hf _ _ ef⟩
     · -- prec cf cg
       revert h
-      induction' n.unpair.2 with m IH generalizing x <;> simp
+      induction' n.unpair.2 with m IH generalizing x <;> simp [Option.bind_eq_some]
       · apply hf
       · refine fun y h₁ h₂ => ⟨y, IH _ ?_, ?_⟩
         · have := evaln_mono k.le_succ h₁
-          simp [evaln, Bind.bind] at this
+          simp [evaln, Option.bind_eq_some] at this
           exact this.2
         · exact hg _ _ h₂
     · -- rfind' cf
@@ -735,7 +735,8 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
   refine ⟨fun h => ?_, fun ⟨k, h⟩ => evaln_sound h⟩
   rsuffices ⟨k, h⟩ : ∃ k, x ∈ evaln (k + 1) c n
   · exact ⟨k + 1, h⟩
-  induction c generalizing n x with simp [eval, evaln, pure, PFun.pure, Seq.seq, Bind.bind] at h ⊢
+  induction c generalizing n x with
+      simp [eval, evaln, pure, PFun.pure, Seq.seq, Option.bind_eq_some] at h ⊢
   | pair cf cg hf hg =>
     rcases h with ⟨x, hx, y, hy, rfl⟩
     rcases hf hx with ⟨k₁, hk₁⟩; rcases hg hy with ⟨k₂, hk₂⟩
@@ -755,7 +756,7 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
   | prec cf cg hf hg =>
     revert h
     generalize n.unpair.1 = n₁; generalize n.unpair.2 = n₂
-    induction' n₂ with m IH generalizing x n <;> simp
+    induction' n₂ with m IH generalizing x n <;> simp [Option.bind_eq_some]
     · intro h
       rcases hf h with ⟨k, hk⟩
       exact ⟨_, le_max_left _ _, evaln_mono (Nat.succ_le_succ <| le_max_right _ _) hk⟩
@@ -774,11 +775,11 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
   | rfind' cf hf =>
     rcases h with ⟨y, ⟨hy₁, hy₂⟩, rfl⟩
     suffices ∃ k, y + n.unpair.2 ∈ evaln (k + 1) (rfind' cf) (Nat.pair n.unpair.1 n.unpair.2) by
-      simpa [evaln, Bind.bind]
+      simpa [evaln, Option.bind_eq_some]
     revert hy₁ hy₂
     generalize n.unpair.2 = m
     intro hy₁ hy₂
-    induction' y with y IH generalizing m <;> simp [evaln, Bind.bind]
+    induction' y with y IH generalizing m <;> simp [evaln, Option.bind_eq_some]
     · simp at hy₁
       rcases hf hy₁ with ⟨k, hk⟩
       exact ⟨_, Nat.le_of_lt_succ <| evaln_bound hk, _, hk, by simp⟩
