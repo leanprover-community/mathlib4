@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric W
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Span
-import Mathlib.Order.PartialSups
 
 #align_import linear_algebra.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
@@ -883,137 +882,22 @@ end LinearMap
 
 namespace LinearMap
 
-/-!
-## Tunnels and tailings
+-- NOTE: the tunnel and tailing APIs are removed
 
-Some preliminary work for establishing the strong rank condition for noetherian rings.
-
-Given a morphism `f : M × N →ₗ[R] M` which is `i : Injective f`,
-we can find an infinite decreasing `tunnel f i n` of copies of `M` inside `M`,
-and sitting beside these, an infinite sequence of copies of `N`.
-
-We picturesquely name these as `tailing f i n` for each individual copy of `N`,
-and `tailings f i n` for the supremum of the first `n+1` copies:
-they are the pieces left behind, sitting inside the tunnel.
-
-By construction, each `tailing f i (n+1)` is disjoint from `tailings f i n`;
-later, when we assume `M` is noetherian, this implies that `N` must be trivial,
-and establishes the strong rank condition for any left-noetherian ring.
--/
-
-
-noncomputable section Tunnel
-
--- (This doesn't work over a semiring: we need to use that `Submodule R M` is a modular lattice,
--- which requires cancellation.)
-variable [Ring R]
-variable {N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-
-open Function
-
-/-- An auxiliary construction for `tunnel`.
-The composition of `f`, followed by the isomorphism back to `K`,
-followed by the inclusion of this submodule back into `M`. -/
-def tunnelAux (f : M × N →ₗ[R] M) (Kφ : ΣK : Submodule R M, K ≃ₗ[R] M) : M × N →ₗ[R] M :=
-  (Kφ.1.subtype.comp Kφ.2.symm.toLinearMap).comp f
-#align linear_map.tunnel_aux LinearMap.tunnelAux
-
-theorem tunnelAux_injective (f : M × N →ₗ[R] M) (i : Injective f)
-    (Kφ : ΣK : Submodule R M, K ≃ₗ[R] M) : Injective (tunnelAux f Kφ) :=
-  (Subtype.val_injective.comp Kφ.2.symm.injective).comp i
-#align linear_map.tunnel_aux_injective LinearMap.tunnelAux_injective
-
-/-- Auxiliary definition for `tunnel`. -/
-def tunnel' (f : M × N →ₗ[R] M) (i : Injective f) : ℕ → ΣK : Submodule R M, K ≃ₗ[R] M
-  | 0 => ⟨⊤, LinearEquiv.ofTop ⊤ rfl⟩
-  | n + 1 =>
-    ⟨(Submodule.fst R M N).map (tunnelAux f (tunnel' f i n)),
-      ((Submodule.fst R M N).equivMapOfInjective _
-        (tunnelAux_injective f i (tunnel' f i n))).symm.trans (Submodule.fstEquiv R M N)⟩
-#align linear_map.tunnel' LinearMap.tunnel'ₓ -- Porting note: different universes
-
-/-- Give an injective map `f : M × N →ₗ[R] M` we can find a nested sequence of submodules
-all isomorphic to `M`.
--/
-def tunnel (f : M × N →ₗ[R] M) (i : Injective f) : ℕ →o (Submodule R M)ᵒᵈ :=
-  -- Note: the hint `(α := _)` had to be added in #8386
-  ⟨fun n => OrderDual.toDual (α := Submodule R M) (tunnel' f i n).1,
-    monotone_nat_of_le_succ fun n => by
-      dsimp [tunnel', tunnelAux]
-      rw [Submodule.map_comp, Submodule.map_comp]
-      apply Submodule.map_subtype_le⟩
-#align linear_map.tunnel LinearMap.tunnel
-
-/-- Give an injective map `f : M × N →ₗ[R] M` we can find a sequence of submodules
-all isomorphic to `N`.
--/
-def tailing (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) : Submodule R M :=
-  (Submodule.snd R M N).map (tunnelAux f (tunnel' f i n))
-#align linear_map.tailing LinearMap.tailing
-
-/-- Each `tailing f i n` is a copy of `N`. -/
-def tailingLinearEquiv (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) : tailing f i n ≃ₗ[R] N :=
-  ((Submodule.snd R M N).equivMapOfInjective _ (tunnelAux_injective f i (tunnel' f i n))).symm.trans
-    (Submodule.sndEquiv R M N)
-#align linear_map.tailing_linear_equiv LinearMap.tailingLinearEquiv
-
-theorem tailing_le_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    tailing f i n ≤ OrderDual.ofDual (α := Submodule R M) (tunnel f i n) := by
-  dsimp [tailing, tunnelAux]
-  rw [Submodule.map_comp, Submodule.map_comp]
-  apply Submodule.map_subtype_le
-#align linear_map.tailing_le_tunnel LinearMap.tailing_le_tunnel
-
-theorem tailing_disjoint_tunnel_succ (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    Disjoint (tailing f i n) (OrderDual.ofDual (α := Submodule R M) <| tunnel f i (n + 1)) := by
-  rw [disjoint_iff]
-  dsimp [tailing, tunnel, tunnel']
-  erw [Submodule.map_inf_eq_map_inf_comap,
-    Submodule.comap_map_eq_of_injective (tunnelAux_injective _ i _), inf_comm,
-    Submodule.fst_inf_snd, Submodule.map_bot]
-#align linear_map.tailing_disjoint_tunnel_succ LinearMap.tailing_disjoint_tunnel_succ
-
-theorem tailing_sup_tunnel_succ_le_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    tailing f i n ⊔ (OrderDual.ofDual (α := Submodule R M) $ tunnel f i (n + 1)) ≤
-      (OrderDual.ofDual (α := Submodule R M) <| tunnel f i n) := by
-  dsimp [tailing, tunnel, tunnel', tunnelAux]
-  erw [← Submodule.map_sup, sup_comm, Submodule.fst_sup_snd, Submodule.map_comp, Submodule.map_comp]
-  apply Submodule.map_subtype_le
-#align linear_map.tailing_sup_tunnel_succ_le_tunnel LinearMap.tailing_sup_tunnel_succ_le_tunnel
-
-/-- The supremum of all the copies of `N` found inside the tunnel. -/
-def tailings (f : M × N →ₗ[R] M) (i : Injective f) : ℕ → Submodule R M :=
-  partialSups (tailing f i)
-#align linear_map.tailings LinearMap.tailings
-
-@[simp]
-theorem tailings_zero (f : M × N →ₗ[R] M) (i : Injective f) : tailings f i 0 = tailing f i 0 := by
-  simp [tailings]
-#align linear_map.tailings_zero LinearMap.tailings_zero
-
-@[simp]
-theorem tailings_succ (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    tailings f i (n + 1) = tailings f i n ⊔ tailing f i (n + 1) := by simp [tailings]
-#align linear_map.tailings_succ LinearMap.tailings_succ
-
-theorem tailings_disjoint_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    Disjoint (tailings f i n) (OrderDual.ofDual (α := Submodule R M) <| tunnel f i (n + 1)) := by
-  induction' n with n ih
-  · simp only [tailings_zero]
-    apply tailing_disjoint_tunnel_succ
-  · simp only [tailings_succ]
-    refine Disjoint.disjoint_sup_left_of_disjoint_sup_right ?_ ?_
-    · apply tailing_disjoint_tunnel_succ
-    · apply Disjoint.mono_right _ ih
-      apply tailing_sup_tunnel_succ_le_tunnel
-#align linear_map.tailings_disjoint_tunnel LinearMap.tailings_disjoint_tunnel
-
-theorem tailings_disjoint_tailing (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    Disjoint (tailings f i n) (tailing f i (n + 1)) :=
-  Disjoint.mono_right (tailing_le_tunnel f i _) (tailings_disjoint_tunnel f i _)
-#align linear_map.tailings_disjoint_tailing LinearMap.tailings_disjoint_tailing
-
-end Tunnel
+#noalign linear_map.tunnel_aux
+#noalign linear_map.tunnel_aux_injective
+#noalign linear_map.tunnel'
+#noalign linear_map.tunnel
+#noalign linear_map.tailing
+#noalign linear_map.tailing_linear_equiv
+#noalign linear_map.tailing_le_tunnel
+#noalign linear_map.tailing_disjoint_tunnel_succ
+#noalign linear_map.tailing_sup_tunnel_succ_le_tunnel
+#noalign linear_map.tailings
+#noalign linear_map.tailings_zero
+#noalign linear_map.tailings_succ
+#noalign linear_map.tailings_disjoint_tunnel
+#noalign linear_map.tailings_disjoint_tailing
 
 section Graph
 
