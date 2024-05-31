@@ -234,11 +234,6 @@ lemma dirSupInacc_of_isOpen (h : IsOpen s) : DirSupInacc s :=
 
 variable (h : IsClosed s)
 
-#check DirSupInacc.of_compl -- (dirSupInacc_of_isOpen h.isOpen_compl)
-
-lemma dirSupClosed_of_isClosed (h : IsClosed s) : DirSupClosed s :=
-  (dirSupInacc_of_isOpen h.isOpen_compl).of_compl
-
 end IsScottHausdorff
 end ScottHausdorff
 
