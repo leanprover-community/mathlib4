@@ -36,7 +36,6 @@ Based on the tensor library found in <https://www.isa-afp.org/entries/Deep_Learn
 universe u
 
 open List
-open BigOperators
 
 /-- `HolorIndex ds` is the type of valid index tuples used to identify an entry of a holor
 of dimensions `ds`. -/
@@ -278,9 +277,9 @@ theorem slice_zero [Zero α] (i : ℕ) (hid : i < d) : slice (0 : Holor α (d ::
 #align holor.slice_zero Holor.slice_zero
 
 theorem slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Finset β)
-    (f : β → Holor α (d :: ds)) : (∑ x in s, slice (f x) i hid) = slice (∑ x in s, f x) i hid := by
+    (f : β → Holor α (d :: ds)) : (∑ x ∈ s, slice (f x) i hid) = slice (∑ x ∈ s, f x) i hid := by
   letI := Classical.decEq β
-  refine' Finset.induction_on s _ _
+  refine Finset.induction_on s ?_ ?_
   · simp [slice_zero]
   · intro _ _ h_not_in ih
     rw [Finset.sum_insert h_not_in, ih, slice_add, Finset.sum_insert h_not_in]
@@ -290,7 +289,7 @@ theorem slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Fi
 summing up. -/
 @[simp]
 theorem sum_unitVec_mul_slice [Ring α] (x : Holor α (d :: ds)) :
-    (∑ i in (Finset.range d).attach,
+    (∑ i ∈ (Finset.range d).attach,
         unitVec d i ⊗ slice x i (Nat.succ_le_of_lt (Finset.mem_range.1 i.prop))) =
       x := by
   apply slice_eq _ _ _
@@ -361,7 +360,7 @@ theorem cprankMax_mul [Ring α] :
 #align holor.cprank_max_mul Holor.cprankMax_mul
 
 theorem cprankMax_sum [Ring α] {β} {n : ℕ} (s : Finset β) (f : β → Holor α ds) :
-    (∀ x ∈ s, CPRankMax n (f x)) → CPRankMax (s.card * n) (∑ x in s, f x) :=
+    (∀ x ∈ s, CPRankMax n (f x)) → CPRankMax (s.card * n) (∑ x ∈ s, f x) :=
   letI := Classical.decEq β
   Finset.induction_on s (by simp [CPRankMax.zero])
     (by
@@ -369,7 +368,7 @@ theorem cprankMax_sum [Ring α] {β} {n : ℕ} (s : Finset β) (f : β → Holor
       simp only [Finset.sum_insert h_x_notin_s, Finset.card_insert_of_not_mem h_x_notin_s]
       rw [Nat.right_distrib]
       simp only [Nat.one_mul, Nat.add_comm]
-      have ih' : CPRankMax (Finset.card s * n) (∑ x in s, f x) := by
+      have ih' : CPRankMax (Finset.card s * n) (∑ x ∈ s, f x) := by
         apply ih
         intro (x : β) (h_x_in_s : x ∈ s)
         simp only [h_cprank, Finset.mem_insert_of_mem, h_x_in_s]
@@ -387,12 +386,12 @@ theorem cprankMax_upper_bound [Ring α] : ∀ {ds}, ∀ x : Holor α ds, CPRankM
       simp [Finset.card_range]
     have :
       CPRankMax (Finset.card (Finset.attach (Finset.range d)) * prod ds)
-        (∑ i in Finset.attach (Finset.range d),
+        (∑ i ∈ Finset.attach (Finset.range d),
           unitVec d i.val ⊗ slice x i.val (mem_range.1 i.2)) :=
       cprankMax_sum (Finset.range d).attach _ fun i _ => h_summands i
     have h_cprankMax_sum :
       CPRankMax (Finset.card (Finset.range d) * prod ds)
-        (∑ i in Finset.attach (Finset.range d),
+        (∑ i ∈ Finset.attach (Finset.range d),
           unitVec d i.val ⊗ slice x i.val (mem_range.1 i.2)) := by rwa [Finset.card_attach] at this
     rw [← sum_unitVec_mul_slice x]
     rw [h_dds_prod]

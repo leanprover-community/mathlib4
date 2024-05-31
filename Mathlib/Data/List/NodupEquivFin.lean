@@ -148,11 +148,11 @@ theorem sublist_iff_exists_orderEmbedding_get?_eq {l l' : List α} :
     induction' H with xs ys y _H IH xs ys x _H IH
     · simp
     · obtain ⟨f, hf⟩ := IH
-      refine' ⟨f.trans (OrderEmbedding.ofStrictMono (· + 1) fun _ => by simp), _⟩
+      refine ⟨f.trans (OrderEmbedding.ofStrictMono (· + 1) fun _ => by simp), ?_⟩
       simpa using hf
     · obtain ⟨f, hf⟩ := IH
-      refine'
-        ⟨OrderEmbedding.ofMapLEIff (fun ix : ℕ => if ix = 0 then 0 else (f ix.pred).succ) _, _⟩
+      refine
+        ⟨OrderEmbedding.ofMapLEIff (fun ix : ℕ => if ix = 0 then 0 else (f ix.pred).succ) ?_, ?_⟩
       · rintro ⟨_ | a⟩ ⟨_ | b⟩ <;> simp [Nat.succ_le_succ_iff]
       · rintro ⟨_ | i⟩
         · simp
@@ -178,16 +178,16 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       rw [get?_eq_get hi, eq_comm, get?_eq_some] at hf
       obtain ⟨h, -⟩ := hf
       exact h
-    refine' ⟨OrderEmbedding.ofMapLEIff (fun ix => ⟨f ix, h ix.is_lt⟩) _, _⟩
+    refine ⟨OrderEmbedding.ofMapLEIff (fun ix => ⟨f ix, h ix.is_lt⟩) ?_, ?_⟩
     · simp
     · intro i
       apply Option.some_injective
       simpa [get?_eq_get i.2, get?_eq_get (h i.2)] using hf i
   · rintro ⟨f, hf⟩
-    refine'
+    refine
       ⟨OrderEmbedding.ofStrictMono (fun i => if hi : i < l.length then f ⟨i, hi⟩ else i + l'.length)
-          _,
-        _⟩
+          ?_,
+        ?_⟩
     · intro i j h
       dsimp only
       split_ifs with hi hj hj
@@ -220,7 +220,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
       refine ⟨f ⟨0, by simp⟩, f ⟨1, by simp⟩, f.lt_iff_lt.2 (Nat.zero_lt_one), ?_⟩
       rw [← hf, ← hf]; simp
     · rintro ⟨n, m, hnm, h, h'⟩
-      refine' ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then n else m) _, _⟩
+      refine ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then n else m) ?_, ?_⟩
       · rintro ⟨⟨_ | i⟩, hi⟩ ⟨⟨_ | j⟩, hj⟩
         · simp
         · simp [hnm]

@@ -343,7 +343,7 @@ theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) =
     exact (Nat.mod_eq_of_lt h).symm
   · rw [Fin.val_mk, not_lt] at h
     simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk, Nat.mod_eq_sub_mod h]
-    refine' (Nat.mod_eq_of_lt _).symm
+    refine (Nat.mod_eq_of_lt ?_).symm
     omega
 #align matrix.vec_alt0_vec_append Matrix.vecAlt0_vecAppend
 
@@ -439,7 +439,7 @@ theorem smul_empty (x : M) (v : Fin 0 → α) : x • v = ![] :=
 @[simp]
 theorem smul_cons (x : M) (y : α) (v : Fin n → α) : x • vecCons y v = vecCons (x • y) (x • v) := by
   ext i
-  refine' Fin.cases _ _ i <;> simp
+  refine Fin.cases ?_ ?_ i <;> simp
 #align matrix.smul_cons Matrix.smul_cons
 
 end SMul
@@ -457,14 +457,14 @@ theorem empty_add_empty (v w : Fin 0 → α) : v + w = ![] :=
 theorem cons_add (x : α) (v : Fin n → α) (w : Fin n.succ → α) :
     vecCons x v + w = vecCons (x + vecHead w) (v + vecTail w) := by
   ext i
-  refine' Fin.cases _ _ i <;> simp [vecHead, vecTail]
+  refine Fin.cases ?_ ?_ i <;> simp [vecHead, vecTail]
 #align matrix.cons_add Matrix.cons_add
 
 @[simp]
 theorem add_cons (v : Fin n.succ → α) (y : α) (w : Fin n → α) :
     v + vecCons y w = vecCons (vecHead v + y) (vecTail v + w) := by
   ext i
-  refine' Fin.cases _ _ i <;> simp [vecHead, vecTail]
+  refine Fin.cases ?_ ?_ i <;> simp [vecHead, vecTail]
 #align matrix.add_cons Matrix.add_cons
 
 -- @[simp] -- Porting note (#10618): simp can prove this
@@ -497,14 +497,14 @@ theorem empty_sub_empty (v w : Fin 0 → α) : v - w = ![] :=
 theorem cons_sub (x : α) (v : Fin n → α) (w : Fin n.succ → α) :
     vecCons x v - w = vecCons (x - vecHead w) (v - vecTail w) := by
   ext i
-  refine' Fin.cases _ _ i <;> simp [vecHead, vecTail]
+  refine Fin.cases ?_ ?_ i <;> simp [vecHead, vecTail]
 #align matrix.cons_sub Matrix.cons_sub
 
 @[simp]
 theorem sub_cons (v : Fin n.succ → α) (y : α) (w : Fin n → α) :
     v - vecCons y w = vecCons (vecHead v - y) (vecTail v - w) := by
   ext i
-  refine' Fin.cases _ _ i <;> simp [vecHead, vecTail]
+  refine Fin.cases ?_ ?_ i <;> simp [vecHead, vecTail]
 #align matrix.sub_cons Matrix.sub_cons
 
 -- @[simp] -- Porting note (#10618): simp can prove this
@@ -536,7 +536,7 @@ theorem zero_empty : (0 : Fin 0 → α) = ![] :=
 @[simp]
 theorem cons_zero_zero : vecCons (0 : α) (0 : Fin n → α) = 0 := by
   ext i
-  refine' Fin.cases _ _ i
+  refine Fin.cases ?_ ?_ i
   · rfl
   simp
 #align matrix.cons_zero_zero Matrix.cons_zero_zero
@@ -580,7 +580,7 @@ theorem neg_empty (v : Fin 0 → α) : -v = ![] :=
 @[simp]
 theorem neg_cons (x : α) (v : Fin n → α) : -vecCons x v = vecCons (-x) (-v) := by
   ext i
-  refine' Fin.cases _ _ i <;> simp
+  refine Fin.cases ?_ ?_ i <;> simp
 #align matrix.neg_cons Matrix.neg_cons
 
 @[simp]

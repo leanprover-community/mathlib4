@@ -184,10 +184,10 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*)
   intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
   let φ := fun j => f.app (Discrete.mk j)
   have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
-  refine' (hW₀.arrow_mk_iso_iff _).2 hf'
-  refine' Arrow.isoMk
+  refine (hW₀.arrow_mk_iso_iff ?_).2 hf'
+  refine Arrow.isoMk
     (IsLimit.conePointUniqueUpToIso hc₁ (limit.isLimit X₁) ≪≫ (Pi.isoLimit _).symm)
-    (IsLimit.conePointUniqueUpToIso hc₂ (limit.isLimit X₂) ≪≫ (Pi.isoLimit _).symm) _
+    (IsLimit.conePointUniqueUpToIso hc₂ (limit.isLimit X₂) ≪≫ (Pi.isoLimit _).symm) ?_
   apply limit.hom_ext
   rintro ⟨j⟩
   simp

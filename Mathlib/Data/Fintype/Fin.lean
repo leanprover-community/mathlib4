@@ -3,7 +3,7 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.Fin.Interval
+import Mathlib.Order.Interval.Finset.Fin
 
 #align_import data.fintype.fin from "leanprover-community/mathlib"@"759575657f189ccb424b990164c8b1fa9f55cdfe"
 
@@ -43,7 +43,7 @@ theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _) := by
   simp only [mem_filter, mem_Ioi, mem_map, mem_univ, true_and_iff, Function.Embedding.coeFn_mk,
     exists_true_left]
   constructor
-  · refine' cases _ _ i
+  · refine cases ?_ ?_ i
     · rintro ⟨⟨⟩⟩
     · intro i hi
       exact ⟨i, succ_lt_succ_iff.mp hi, rfl⟩

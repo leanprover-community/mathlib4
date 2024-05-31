@@ -31,7 +31,7 @@ variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [NormedRing E] [StarRing 
 theorem unitary.spectrum_subset_circle (u : unitary E) :
     spectrum 𝕜 (u : E) ⊆ Metric.sphere 0 1 := by
   nontriviality E
-  refine' fun k hk => mem_sphere_zero_iff_norm.mpr (le_antisymm _ _)
+  refine fun k hk => mem_sphere_zero_iff_norm.mpr (le_antisymm ?_ ?_)
   · simpa only [CstarRing.norm_coe_unitary u] using norm_le_norm_of_mem hk
   · rw [← unitary.val_toUnits_apply u] at hk
     have hnk := ne_zero_of_mem_of_unit hk
@@ -60,7 +60,7 @@ local notation "↑ₐ" => algebraMap ℂ A
 theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
     spectralRadius ℂ a = ‖a‖₊ := by
   have hconst : Tendsto (fun _n : ℕ => (‖a‖₊ : ℝ≥0∞)) atTop _ := tendsto_const_nhds
-  refine' tendsto_nhds_unique _ hconst
+  refine tendsto_nhds_unique ?_ hconst
   convert
     (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a : A)).comp
       (Nat.tendsto_pow_atTop_atTop_of_one_lt one_lt_two) using 1
@@ -71,7 +71,7 @@ theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
 
 theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
     spectralRadius ℂ a = ‖a‖₊ := by
-  refine' (ENNReal.pow_strictMono two_ne_zero).injective _
+  refine (ENNReal.pow_strictMono two_ne_zero).injective ?_
   have heq :
     (fun n : ℕ => (‖(a⋆ * a) ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ)) =
       (fun x => x ^ 2) ∘ fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by

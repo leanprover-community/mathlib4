@@ -93,8 +93,6 @@ Composition, partition
 
 open List
 
-open BigOperators
-
 variable {n : ℕ}
 
 /-- A composition of `n` is a list of positive integers summing to `n`. -/
@@ -285,7 +283,7 @@ def toCompositionAsSet : CompositionAsSet n where
 exactly `c.boundary`. -/
 theorem orderEmbOfFin_boundaries :
     c.boundaries.orderEmbOfFin c.card_boundaries_eq_succ_length = c.boundary := by
-  refine' (Finset.orderEmbOfFin_unique' _ _).symm
+  refine (Finset.orderEmbOfFin_unique' _ ?_).symm
   exact fun i => (Finset.mem_map' _).2 (Finset.mem_univ _)
 #align composition.order_emb_of_fin_boundaries Composition.orderEmbOfFin_boundaries
 
@@ -312,7 +310,7 @@ theorem index_exists {j : ℕ} (h : j < n) : ∃ i : ℕ, j < c.sizeUpTo (i + 1)
   have n_pos : 0 < n := lt_of_le_of_lt (zero_le j) h
   have : 0 < c.blocks.sum := by rwa [← c.blocks_sum] at n_pos
   have length_pos : 0 < c.blocks.length := length_pos_of_sum_pos (blocks c) this
-  refine' ⟨c.length - 1, _, Nat.pred_lt (ne_of_gt length_pos)⟩
+  refine ⟨c.length - 1, ?_, Nat.pred_lt (ne_of_gt length_pos)⟩
   have : c.length - 1 + 1 = c.length := Nat.succ_pred_eq_of_pos length_pos
   simp [this, h]
 #align composition.index_exists Composition.index_exists
@@ -372,7 +370,7 @@ theorem mem_range_embedding_iff {j : Fin n} {i : Fin c.length} :
     simp [sizeUpTo_succ', k.is_lt]
   · intro h
     apply Set.mem_range.2
-    refine' ⟨⟨j - c.sizeUpTo i, _⟩, _⟩
+    refine ⟨⟨j - c.sizeUpTo i, ?_⟩, ?_⟩
     · rw [tsub_lt_iff_left, ← sizeUpTo_succ']
       · exact h.2
       · exact h.1
@@ -518,7 +516,7 @@ theorem eq_ones_iff {c : Composition n} : c = ones n ↔ ∀ i ∈ c.blocks, i =
 #align composition.eq_ones_iff Composition.eq_ones_iff
 
 theorem ne_ones_iff {c : Composition n} : c ≠ ones n ↔ ∃ i ∈ c.blocks, 1 < i := by
-  refine' (not_congr eq_ones_iff).trans _
+  refine (not_congr eq_ones_iff).trans ?_
   have : ∀ j ∈ c.blocks, j = 1 ↔ j ≤ 1 := fun j hj => by simp [le_antisymm_iff, c.one_le_blocks hj]
   simp (config := { contextual := true }) [this]
 #align composition.ne_ones_iff Composition.ne_ones_iff
@@ -803,7 +801,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       have A : (1 + (i - 1) : ℕ) = (i : ℕ) := by
         rw [add_comm]
         exact Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr i_ne_zero)
-      refine' ⟨⟨i - 1, _⟩, _, _⟩
+      refine ⟨⟨i - 1, ?_⟩, ?_, ?_⟩
       · have : (i : ℕ) < n + 1 := i.2
         simp? [Nat.lt_succ_iff_lt_or_eq, i_ne_last] at this says
           simp only [Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, i_ne_last, or_false] at this
@@ -1026,7 +1024,7 @@ theorem CompositionAsSet.toComposition_boundaries (c : CompositionAsSet n) :
   simp only [c.mem_boundaries_iff_exists_blocks_sum_take_eq, Composition.boundaries, Finset.mem_map]
   constructor
   · rintro ⟨i, _, hi⟩
-    refine' ⟨i.1, _, _⟩
+    refine ⟨i.1, ?_, ?_⟩
     · simpa [c.card_boundaries_eq_succ_length] using i.2
     · simp [Composition.boundary, Composition.sizeUpTo, ← hi]
   · rintro ⟨i, i_lt, hi⟩

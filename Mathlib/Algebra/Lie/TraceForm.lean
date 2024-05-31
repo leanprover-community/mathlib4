@@ -3,12 +3,12 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.PID
 import Mathlib.Algebra.DirectSum.LinearMap
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
+import Mathlib.Algebra.Lie.InvariantForm
 import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Algebra.Lie.Weights.Linear
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.LinearAlgebra.PID
 
 /-!
 # The trace and Killing forms of a Lie algebra.
@@ -39,7 +39,7 @@ variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 local notation "φ" => LieModule.toEnd R L M
 
 open LinearMap (trace)
-open Set BigOperators FiniteDimensional
+open Set FiniteDimensional
 
 namespace LieModule
 
@@ -84,6 +84,10 @@ lemma traceForm_apply_lie_apply' (x y z : L) :
   calc traceForm R L M ⁅x, y⁆ z
       = - traceForm R L M ⁅y, x⁆ z := by rw [← lie_skew x y, map_neg, LinearMap.neg_apply]
     _ = - traceForm R L M y ⁅x, z⁆ := by rw [traceForm_apply_lie_apply]
+
+lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
+  intro x y z
+  rw [← lie_skew, map_neg, LinearMap.neg_apply, LieModule.traceForm_apply_lie_apply R L M]
 
 /-- This lemma justifies the terminology "invariant" for trace forms. -/
 @[simp] lemma lie_traceForm_eq_zero (x : L) : ⁅x, traceForm R L M⁆ = 0 := by
@@ -208,7 +212,7 @@ variable [LieAlgebra.IsNilpotent R L] [IsDomain R] [IsPrincipalIdealRing R]
 
 lemma traceForm_eq_sum_weightSpaceOf [IsTriangularizable R L M] (z : L) :
     traceForm R L M =
-    ∑ χ in (finite_weightSpaceOf_ne_bot R L M z).toFinset, traceForm R L (weightSpaceOf M χ z) := by
+    ∑ χ ∈ (finite_weightSpaceOf_ne_bot R L M z).toFinset, traceForm R L (weightSpaceOf M χ z) := by
   ext x y
   have hxy : ∀ χ : R, MapsTo ((toEnd R L M x).comp (toEnd R L M y))
       (weightSpaceOf M χ z) (weightSpaceOf M χ z) :=
@@ -344,15 +348,7 @@ variable (I : LieIdeal R L)
 
 /-- The orthogonal complement of an ideal with respect to the killing form is an ideal. -/
 noncomputable def killingCompl : LieIdeal R L :=
-  { __ := (killingForm R L).orthogonal I.toSubmodule
-    lie_mem := by
-      intro x y hy
-      simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-        Submodule.mem_toAddSubmonoid, LinearMap.BilinForm.mem_orthogonal_iff,
-        LieSubmodule.mem_coeSubmodule, LinearMap.BilinForm.IsOrtho]
-      intro z hz
-      rw [← LieModule.traceForm_apply_lie_apply]
-      exact hy _ <| lie_mem_left _ _ _ _ _ hz }
+  LieAlgebra.InvariantForm.orthogonal (killingForm R L) (LieModule.traceForm_lieInvariant R L L) I
 
 @[simp] lemma toSubmodule_killingCompl :
     LieSubmodule.toSubmodule I.killingCompl = (killingForm R L).orthogonal I.toSubmodule :=

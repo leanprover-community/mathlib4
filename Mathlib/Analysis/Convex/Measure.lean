@@ -34,7 +34,7 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
   /- If `s` is included in a hyperplane, then `frontier s ⊆ closure s` is included in the same
     hyperplane, hence it has measure zero. -/
   cases' ne_or_eq (affineSpan ℝ s) ⊤ with hspan hspan
-  · refine' measure_mono_null _ (addHaar_affineSubspace _ _ hspan)
+  · refine measure_mono_null ?_ (addHaar_affineSubspace _ _ hspan)
     exact frontier_subset_closure.trans
       (closure_minimal (subset_affineSpan _ _) (affineSpan ℝ s).closed_of_finiteDimensional)
   rw [← hs.interior_nonempty_iff_affineSpan_eq_top] at hspan
@@ -45,13 +45,13 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
   suffices H : ∀ t : Set E, Convex ℝ t → x ∈ interior t → IsBounded t → μ (frontier t) = 0 by
     let B : ℕ → Set E := fun n => ball x (n + 1)
     have : μ (⋃ n : ℕ, frontier (s ∩ B n)) = 0 := by
-      refine' measure_iUnion_null fun n =>
-        H _ (hs.inter (convex_ball _ _)) _ (isBounded_ball.subset (inter_subset_right _ _))
+      refine measure_iUnion_null fun n =>
+        H _ (hs.inter (convex_ball _ _)) ?_ (isBounded_ball.subset (inter_subset_right _ _))
       rw [interior_inter, isOpen_ball.interior_eq]
       exact ⟨hx, mem_ball_self (add_pos_of_nonneg_of_pos n.cast_nonneg zero_lt_one)⟩
-    refine' measure_mono_null (fun y hy => _) this; clear this
+    refine measure_mono_null (fun y hy => ?_) this; clear this
     set N : ℕ := ⌊dist y x⌋₊
-    refine' mem_iUnion.2 ⟨N, _⟩
+    refine mem_iUnion.2 ⟨N, ?_⟩
     have hN : y ∈ B N := by simp [B, N, Nat.lt_floor_add_one]
     suffices y ∈ frontier (s ∩ B N) ∩ B N from this.1
     rw [frontier_inter_open_inter isOpen_ball]
@@ -74,9 +74,9 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
   have : ∀ᶠ (r : ℝ≥0) in 𝓝[>] 1, μ (closure s) ≤ ↑(r ^ d) * μ (interior s) :=
     mem_of_superset self_mem_nhdsWithin this
   -- Taking the limit as `r → 1`, we get `μ (closure s) ≤ μ (interior s)`.
-  refine' ge_of_tendsto _ this
-  refine' (((ENNReal.continuous_mul_const hb).comp
-    (ENNReal.continuous_coe.comp (continuous_pow d))).tendsto' _ _ _).mono_left nhdsWithin_le_nhds
+  refine ge_of_tendsto ?_ this
+  refine (((ENNReal.continuous_mul_const hb).comp
+    (ENNReal.continuous_coe.comp (continuous_pow d))).tendsto' _ _ ?_).mono_left nhdsWithin_le_nhds
   simp
 #align convex.add_haar_frontier Convex.addHaar_frontier
 

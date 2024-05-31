@@ -93,7 +93,7 @@ theorem zipWith_swap_prod_support [Fintype α] (l l' : List α) :
 #align list.zip_with_swap_prod_support List.zipWith_swap_prod_support
 
 theorem support_formPerm_le' : { x | formPerm l x ≠ x } ≤ l.toFinset := by
-  refine' (zipWith_swap_prod_support' l l.tail).trans _
+  refine (zipWith_swap_prod_support' l l.tail).trans ?_
   simpa [Finset.subset_iff] using tail_subset l
 #align list.support_form_perm_le' List.support_formPerm_le'
 

@@ -380,7 +380,7 @@ protected theorem inf_eq {u₁ u₂ : UniformSpace γ} :
   -- This follows directly from the fact that the upper adjoint in a Galois connection maps
   -- infimas to infimas.
   rw [inf_eq_iInf, inf_eq_iInf, UniformFun.iInf_eq]
-  refine' iInf_congr fun i => _
+  refine iInf_congr fun i => ?_
   cases i <;> rfl
 #align uniform_fun.inf_eq UniformFun.inf_eq
 
@@ -530,7 +530,7 @@ protected def uniformEquivPiComm : UniformEquiv (α →ᵤ ∀ i, δ i) (∀ i, 
       unfold Pi.uniformSpace
       rw [UniformSpace.ofCoreEq_toCore, UniformSpace.ofCoreEq_toCore,
         UniformSpace.comap_iInf, UniformFun.iInf_eq]
-      refine' iInf_congr fun i => _
+      refine iInf_congr fun i => ?_
       rw [← UniformSpace.comap_comap, UniformFun.comap_eq]
       rfl
 #align uniform_fun.uniform_equiv_Pi_comm UniformFun.uniformEquivPiComm
@@ -844,7 +844,7 @@ protected theorem iInf_eq {u : ι → UniformSpace γ} :
 protected theorem inf_eq {u₁ u₂ : UniformSpace γ} :
     𝒱(α, γ, 𝔖, u₁ ⊓ u₂) = 𝒱(α, γ, 𝔖, u₁) ⊓ 𝒱(α, γ, 𝔖, u₂) := by
   rw [inf_eq_iInf, inf_eq_iInf, UniformOnFun.iInf_eq]
-  refine' iInf_congr fun i => _
+  refine iInf_congr fun i => ?_
   cases i <;> rfl
 #align uniform_on_fun.inf_eq UniformOnFun.inf_eq
 
@@ -1045,7 +1045,7 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((
     congr
     rw [Pi.uniformSpace, UniformSpace.ofCoreEq_toCore, Pi.uniformSpace,
       UniformSpace.ofCoreEq_toCore, UniformSpace.comap_iInf, UniformOnFun.iInf_eq]
-    refine' iInf_congr fun i => _
+    refine iInf_congr fun i => ?_
     rw [← UniformSpace.comap_comap, UniformOnFun.comap_eq]
     rfl
 #align uniform_on_fun.uniform_equiv_Pi_comm UniformOnFun.uniformEquivPiComm

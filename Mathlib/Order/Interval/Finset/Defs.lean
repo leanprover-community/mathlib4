@@ -54,10 +54,10 @@ A `LocallyFiniteOrder` instance can be built
   `OrderEmbedding.locallyFiniteOrder`.
 
 Instances for concrete types are proved in their respective files:
-* `ℕ` is in `Data.Nat.Interval`
+* `ℕ` is in `Order.Interval.Finset.Nat`
 * `ℤ` is in `Data.Int.Interval`
 * `ℕ+` is in `Data.PNat.Interval`
-* `Fin n` is in `Data.Fin.Interval`
+* `Fin n` is in `Order.Interval.Finset.Fin`
 * `Finset α` is in `Data.Finset.Interval`
 * `Σ i, α i` is in `Data.Sigma.Interval`
 Along, you will find lemmas about the cardinality of those finite intervals.
@@ -1157,28 +1157,28 @@ variable (hp : ∀ ⦃a b x⦄, a ≤ x → x ≤ b → p a → p b → p x)
 
 theorem map_subtype_embedding_Icc : (Icc a b).map (Embedding.subtype p) = (Icc a b : Finset α) := by
   rw [subtype_Icc_eq]
-  refine' Finset.subtype_map_of_mem fun x hx => _
+  refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Icc] at hx
   exact hp hx.1 hx.2 a.prop b.prop
 #align finset.map_subtype_embedding_Icc Finset.map_subtype_embedding_Icc
 
 theorem map_subtype_embedding_Ico : (Ico a b).map (Embedding.subtype p) = (Ico a b : Finset α) := by
   rw [subtype_Ico_eq]
-  refine' Finset.subtype_map_of_mem fun x hx => _
+  refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Ico] at hx
   exact hp hx.1 hx.2.le a.prop b.prop
 #align finset.map_subtype_embedding_Ico Finset.map_subtype_embedding_Ico
 
 theorem map_subtype_embedding_Ioc : (Ioc a b).map (Embedding.subtype p) = (Ioc a b : Finset α) := by
   rw [subtype_Ioc_eq]
-  refine' Finset.subtype_map_of_mem fun x hx => _
+  refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Ioc] at hx
   exact hp hx.1.le hx.2 a.prop b.prop
 #align finset.map_subtype_embedding_Ioc Finset.map_subtype_embedding_Ioc
 
 theorem map_subtype_embedding_Ioo : (Ioo a b).map (Embedding.subtype p) = (Ioo a b : Finset α) := by
   rw [subtype_Ioo_eq]
-  refine' Finset.subtype_map_of_mem fun x hx => _
+  refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Ioo] at hx
   exact hp hx.1.le hx.2.le a.prop b.prop
 #align finset.map_subtype_embedding_Ioo Finset.map_subtype_embedding_Ioo

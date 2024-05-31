@@ -49,8 +49,6 @@ universe v u
 
 open CategoryTheory.Limits
 
-open BigOperators
-
 namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]
@@ -181,13 +179,13 @@ theorem comp_zsmul (n : ℤ) : f ≫ (n • g) = n • f ≫ g :=
 
 @[reassoc]
 theorem comp_sum {P Q R : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J → (Q ⟶ R)) :
-    (f ≫ ∑ j in s, g j) = ∑ j in s, f ≫ g j :=
+    (f ≫ ∑ j ∈ s, g j) = ∑ j ∈ s, f ≫ g j :=
   map_sum (leftComp R f) _ _
 #align category_theory.preadditive.comp_sum CategoryTheory.Preadditive.comp_sum
 
 @[reassoc]
 theorem sum_comp {P Q R : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g : Q ⟶ R) :
-    (∑ j in s, f j) ≫ g = ∑ j in s, f j ≫ g :=
+    (∑ j ∈ s, f j) ≫ g = ∑ j ∈ s, f j ≫ g :=
   map_sum (rightComp P g) _ _
 #align category_theory.preadditive.sum_comp CategoryTheory.Preadditive.sum_comp
 
