@@ -81,16 +81,12 @@ instance : Add I where add x y := ⟨x.1 + y.1, I.add_mem x.2 y.2⟩
 
 instance : Zero I where zero := ⟨0, I.zero_mem⟩
 
-theorem nsmul (n : ℕ) {x y : R} (hx : I x y) : I (n • x) (n • y) := I.toAddCon.nsmul n hx
-
 instance : SMul ℕ I where
   smul n x := ⟨n • x.1, by simpa using I.nsmul _ x.2⟩
 
 instance : Neg I where neg x := ⟨-x.1, I.neg_mem x.2⟩
 
 instance : Sub I where sub x y := ⟨x.1 - y.1, I.sub_mem x.2 y.2⟩
-
-theorem zsmul (z : ℤ) {x y : R} (hx : I x y) : I (z • x) (z • y) := I.toAddCon.zsmul z hx
 
 instance : SMul ℤ I where
   smul n x := ⟨n • x.1, by simpa using I.zsmul n x.2⟩
