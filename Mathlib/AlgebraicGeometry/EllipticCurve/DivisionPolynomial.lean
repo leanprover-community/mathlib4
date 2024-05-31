@@ -378,7 +378,7 @@ lemma addY_smul_one_smul_one :
 
 private lemma smulY_neg_aux {F} [Field F] {a₁ a₃ x y z : F} (hz : z ≠ 0) :
     (y + a₁ * x * z + a₃ * z ^ 3) / (-z) ^ 3 = -(y / z ^ 3) - a₁ * (x / z ^ 2) - a₃ := by
-  ring_nf; field_simp; ring
+  rw [neg_pow]; field_simp; ring
 
 lemma smulY_neg (h0 : n ≠ 0) :
     smulY (-n) = pointedCurve.toAffine.negY (smulX n) (smulY n) := by
@@ -403,8 +403,7 @@ private lemma smulY_add_sub_negY_aux {F} [Field F] {m n m₂ n₂ a s am an : F}
     (m₂ / m ^ 4 * (an * m / (a * n) ^ 2) - n₂ / n ^ 4 * (am * n / (a * m) ^ 2))
       / (a * s / (n * m) ^ 2)
       = (an * m₂ * n - am * n₂ * m) * a / (s * n * m) / a ^ 4 := by
-  field_simp; rw [div_eq_iff]; · ring
-  apply_rules [pow_ne_zero, mul_ne_zero]
+  field_simp (config := {maxDischargeDepth := 9}); ring
 
 lemma smulY_add_sub_negY (hm : m ≠ 0) (hn : n ≠ 0) (add_ne : n + m ≠ 0) (sub_ne : n - m ≠ 0) :
     let ψ₂ x y := y - pointedCurve.toAffine.negY x y
@@ -431,12 +430,11 @@ theorem zsmul_eq_quotient_divisionPolynomial : n ≠ 0 →
     · exact (h0 rfl).elim
     · simp_rw [zero_add, Nat.cast_one, one_zsmul, smulX_one, smulY_one]
       exact ⟨EllipticCurve.Affine.nonsingular pointedCurve equation_point, rfl⟩
-    · obtain ⟨ns, e⟩ := ih 1 (by omega) one_ne_zero
-      erw [← addX_smul_one_smul_one, ← addY_smul_one_smul_one, zero_add, Nat.cast_add, add_zsmul, e]
+    all_goals obtain ⟨ns, eq⟩ := ih 1 (by omega) one_ne_zero
+    · erw [← addX_smul_one_smul_one, ← addY_smul_one_smul_one, zero_add, add_zsmul _ 1 1, eq]
       exact ⟨Affine.nonsingular_add ns ns fun _ ↦ smulY_one_ne_negY,
         dif_neg fun h ↦ smulY_one_ne_negY h.2⟩
     set n2 := n + 1 + 1
-    obtain ⟨ns, eq⟩ := ih 1 (by omega) one_ne_zero
     obtain ⟨ns1, eq1⟩ := ih (n + 1) (by omega) (by omega)
     obtain ⟨ns2, eq2⟩ := ih n2 (by omega) (by omega)
     have ne : smulX n2 ≠ smulX 1 := smulX_ne_smulX (by omega) (by omega)
