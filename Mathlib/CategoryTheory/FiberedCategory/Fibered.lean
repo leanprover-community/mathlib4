@@ -30,6 +30,7 @@ provide an alternate constructor for `IsFibered` in this sense, see `IsFibered.o
 
 ## References
 * [A. Grothendieck, M. Raynaud, *SGA 1*](https://arxiv.org/abs/math/0206203)
+
 -/
 
 universe v₁ v₂ u₁ u₂
@@ -52,6 +53,8 @@ namespace IsPreFibered
 
 open IsCartesian
 
+variable {p : 𝒳 ⥤ 𝒮} [IsPreFibered p] {R S : 𝒮} {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S)
+
 /-- Given a prefibered category `p : 𝒳 ⥤ 𝒫`, and a diagram
 ```
            a
@@ -62,8 +65,7 @@ open IsCartesian
 ```
 `pullbackObj` is defined as the domain `R ×_S a` of some cartesian arrow lying over
 `f`, which exists by the fibered category structure on `p`. -/
-noncomputable def pullbackObj {p : 𝒳 ⥤ 𝒮} [IsPreFibered p] {R S : 𝒮}
-    {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) : 𝒳 :=
+noncomputable def pullbackObj : 𝒳 :=
   Classical.choose (IsPreFibered.has_pullbacks p ha f)
 
 /-- Given a fibered category `p : 𝒳 ⥤ 𝒫`, and a diagram
@@ -75,16 +77,13 @@ noncomputable def pullbackObj {p : 𝒳 ⥤ 𝒮} [IsPreFibered p] {R S : 𝒮}
 R --f--> S
 ```
 we get a map `R ×_S b ⟶ a` -/
-noncomputable def pullbackMap {p : 𝒳 ⥤ 𝒮} [IsPreFibered p] {R S : 𝒮}
-    {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) : pullbackObj ha f ⟶ a :=
+noncomputable def pullbackMap : pullbackObj ha f ⟶ a :=
   Classical.choose (Classical.choose_spec (IsPreFibered.has_pullbacks p ha f))
 
-instance pullbackMap.IsCartesian {p : 𝒳 ⥤ 𝒮} [IsPreFibered p] {R S : 𝒮}
-    {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) : IsCartesian p f (pullbackMap ha f) :=
+instance pullbackMap.IsCartesian : IsCartesian p f (pullbackMap ha f) :=
   Classical.choose_spec (Classical.choose_spec (IsPreFibered.has_pullbacks p ha f))
 
-lemma pullbackObj_proj {p : 𝒳 ⥤ 𝒮} [IsPreFibered p] {R S : 𝒮} {a : 𝒳} (ha : p.obj a = S)
-    (f : R ⟶ S) : p.obj (pullbackObj ha f) = R :=
+lemma pullbackObj_proj : p.obj (pullbackObj ha f) = R :=
   domain_eq p f (pullbackMap ha f)
 
 end IsPreFibered
