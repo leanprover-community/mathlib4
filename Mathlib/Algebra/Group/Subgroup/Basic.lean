@@ -1963,6 +1963,13 @@ theorem mem_comm_iff {a b : G} : a * b ∈ H ↔ b * a ∈ H :=
 #align subgroup.normal.mem_comm_iff Subgroup.Normal.mem_comm_iff
 #align add_subgroup.normal.mem_comm_iff AddSubgroup.Normal.mem_comm_iff
 
+theorem of_map_subtype_normal {K : Subgroup G} {L : Subgroup K}
+    (n : (map K.subtype L).Normal) : L.Normal := by
+  obtain ⟨conj_mem⟩ := n
+  simp only [mem_map, coeSubtype, Subtype.exists, exists_and_right, exists_eq_right,
+    forall_exists_index] at conj_mem
+  exact ⟨fun l l_mem k => (conj_mem l l.2 l_mem k).2⟩
+
 end Normal
 
 variable (H)
@@ -2260,6 +2267,53 @@ instance subgroupOf_isCommutative [H.IsCommutative] : (H.subgroupOf K).IsCommuta
 #align add_subgroup.add_subgroup_of_is_commutative AddSubgroup.addSubgroupOf_isCommutative
 
 end Subgroup
+
+namespace MulEquiv
+variable {H : Type*} [Group H]
+
+/--
+An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
+defined by sending subgroups to their inverse images.
+
+See also `MulEquiv.mapSubgroup` which maps subgroups to their forward images.
+-/
+@[simps]
+def comapSubgroup (f : G ≃* H) : Subgroup H ≃o Subgroup G where
+  toFun := Subgroup.comap f
+  invFun := Subgroup.comap f.symm
+  left_inv sg := by simp [Subgroup.comap_comap]
+  right_inv sh := by simp [Subgroup.comap_comap]
+  map_rel_iff' {sg1 sg2} :=
+    ⟨fun h => by simpa [Subgroup.comap_comap] using
+      Subgroup.comap_mono (f := (f.symm : H →* G)) h, Subgroup.comap_mono⟩
+
+/--
+An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
+defined by sending subgroups to their forward images.
+
+See also `MulEquiv.comapSubgroup` which maps subgroups to their inverse images.
+-/
+@[simps]
+def mapSubgroup {H : Type*} [Group H] (f : G ≃* H) : Subgroup G ≃o Subgroup H where
+  toFun := Subgroup.map f
+  invFun := Subgroup.map f.symm
+  left_inv sg := by simp [Subgroup.map_map]
+  right_inv sh := by simp [Subgroup.map_map]
+  map_rel_iff' {sg1 sg2} :=
+    ⟨fun h => by simpa [Subgroup.map_map] using
+      Subgroup.map_mono (f := (f.symm : H →* G)) h, Subgroup.map_mono⟩
+
+@[simp]
+theorem isCoatom_comap {H : Type*} [Group H] (f : G ≃* H) {K : Subgroup H} :
+    IsCoatom (Subgroup.comap (f : G →* H) K) ↔ IsCoatom K :=
+  OrderIso.isCoatom_iff (f.comapSubgroup) K
+
+@[simp]
+theorem isCoatom_map (f : G ≃* H) {K : Subgroup G} :
+    IsCoatom (Subgroup.map (f : G →* H) K) ↔ IsCoatom K :=
+  OrderIso.isCoatom_iff (f.mapSubgroup) K
+
+end MulEquiv
 
 namespace Group
 
