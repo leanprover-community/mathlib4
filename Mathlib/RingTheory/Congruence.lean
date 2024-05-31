@@ -114,13 +114,8 @@ protected theorem mul {w x y z} : c w x → c y z → c (w * y) (x * z) :=
 
 lemma sum {ι S : Type*} [AddCommMonoid S] [Mul S] (t : RingCon S) (s : Finset ι)
     {f g : ι → S} (h : ∀ i ∈ s, t (f i) (g i)) :
-    t (s.sum f) (s.sum g) := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simpa using t.refl 0
-  | @insert i s hi ih =>
-    rw [Finset.sum_insert hi, Finset.sum_insert hi]
-    exact t.add (h _ (by simp)) <| ih fun i hi ↦ h _ (by aesop)
+    t (s.sum f) (s.sum g) :=
+  t.toAddCon.finset_sum s h
 
 protected theorem sub {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
     {a b c d : S} (h : t a b) (h' : t c d) : t (a - c) (b - d) :=

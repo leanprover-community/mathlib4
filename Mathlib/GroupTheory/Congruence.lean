@@ -6,6 +6,7 @@ Authors: Amelia Livingston
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Data.Setoid.Basic
+import Mathlib.Algebra.BigOperators.Basic
 
 #align_import group_theory.congruence from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -1256,6 +1257,18 @@ protected theorem div : ∀ {w x y z}, c w x → c y z → c (w / y) (x / z) := 
   simpa only [div_eq_mul_inv] using c.mul h1 (c.inv h2)
 #align con.div Con.div
 #align add_con.sub AddCon.sub
+
+/-- Multiplicative congruence relations preserve finite product. -/
+@[to_additive "Additive congruence relations preserve finite sum."]
+protected theorem finset_prod {ι M : Type*} [CommMonoid M] (c : Con M) (s : Finset ι)
+    {f g : ι → M} (h : ∀ i ∈ s, c (f i) (g i)) :
+    c (s.prod f) (s.prod g) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simpa using c.refl 1
+  | @insert i s hi ih =>
+    rw [Finset.prod_insert hi, Finset.prod_insert hi]
+    exact c.mul (h _ (by simp)) <| ih fun i hi ↦ h _ (by aesop)
 
 /-- Multiplicative congruence relations preserve integer powers. -/
 @[to_additive "Additive congruence relations preserve integer scaling."]
