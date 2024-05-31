@@ -15,7 +15,7 @@ to surjective and injective morphisms, and we show that if `C` has
 strong epi mono factorizations and is such that `forget C` preserves
 both epi and mono, then any morphism in `C` can be factored in a
 functorial manner as a composition of a surjective morphism followed
-an injective morphism.
+by an injective morphism.
 
 -/
 
