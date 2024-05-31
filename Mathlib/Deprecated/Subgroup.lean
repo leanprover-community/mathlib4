@@ -241,8 +241,8 @@ theorem mem_trivial {g : G} : g ∈ trivial G ↔ g = 1 :=
 #align is_add_subgroup.mem_trivial IsAddSubgroup.mem_trivial
 
 @[to_additive]
-theorem trivial_normal : IsNormalSubgroup (trivial G) := by
-  refine' { .. } <;> simp (config := { contextual := true }) [trivial]
+theorem trivial_normal : IsNormalSubgroup (trivial G) :=
+  { one_mem := by simp, inv_mem := by simp, mul_mem := by simp, normal := by simp }
 #align is_subgroup.trivial_normal IsSubgroup.trivial_normal
 #align is_add_subgroup.trivial_normal IsAddSubgroup.trivial_normal
 
@@ -254,7 +254,8 @@ theorem eq_trivial_iff {s : Set G} (hs : IsSubgroup s) : s = trivial G ↔ ∀ x
 #align is_add_subgroup.eq_trivial_iff IsAddSubgroup.eq_trivial_iff
 
 @[to_additive]
-theorem univ_subgroup : IsNormalSubgroup (@univ G) := by refine' { .. } <;> simp
+theorem univ_subgroup : IsNormalSubgroup (@univ G) :=
+  { one_mem := by simp, inv_mem := by simp, mul_mem := by simp, normal := by simp }
 #align is_subgroup.univ_subgroup IsSubgroup.univ_subgroup
 #align is_add_subgroup.univ_add_subgroup IsAddSubgroup.univ_addSubgroup
 
@@ -420,10 +421,12 @@ attribute [local simp] IsSubmonoid.one_mem IsSubgroup.inv_mem
 
 @[to_additive]
 theorem preimage {f : G → H} (hf : IsGroupHom f) {s : Set H} (hs : IsSubgroup s) :
-    IsSubgroup (f ⁻¹' s) := by
-  refine' { .. } <;>
-    simp (config := { contextual := true }) [hs.one_mem, hs.mul_mem, hs.inv_mem, hf.map_mul,
-      hf.map_one, hf.map_inv, InvMemClass.inv_mem]
+    IsSubgroup (f ⁻¹' s) where
+  one_mem := by simp only [mem_preimage, hf.map_one, hs.one_mem]
+  mul_mem := by simp (config := { contextual := true }) only
+    [mem_preimage, hf.map_mul, hs.mul_mem, implies_true]
+  inv_mem := by simp (config := { contextual := true }) only
+    [mem_preimage, hf.map_inv, hs.inv_mem, implies_true]
 #align is_group_hom.preimage IsGroupHom.preimage
 #align is_add_group_hom.preimage IsAddGroupHom.preimage
 

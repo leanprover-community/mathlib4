@@ -219,7 +219,7 @@ abbrev _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a
     have h : ∀ b ∈ P.parts, b = a := fun _ hb ↦
       (ha.le_iff.mp <| P.le hb).resolve_left (P.ne_bot hb)
     ext b
-    refine' Iff.trans ⟨h b, _⟩ mem_singleton.symm
+    refine Iff.trans ⟨h b, ?_⟩ mem_singleton.symm
     rintro rfl
     obtain ⟨c, hc⟩ := P.parts_nonempty ha.1
     simp_rw [← h c hc]

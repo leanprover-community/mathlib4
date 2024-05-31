@@ -276,9 +276,10 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
     `R^n/I^n ≃ R^m/I^m`. -/
 private def induced_equiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] ι' → R) :
     ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] (ι' → R) ⧸ I.pi ι' := by
-  refine'
+  refine
     { toFun := induced_map I e
-      invFun := induced_map I e.symm.. }
+      invFun := induced_map I e.symm
+      map_add' := ?_, map_smul' := ?_, left_inv := ?_, right_inv := ?_ }
   all_goals
     first |rintro ⟨a⟩ ⟨b⟩|rintro ⟨a⟩
   -- Porting note: the next 4 lines were necessary because Lean couldn't correctly infer `(I.pi ι)`

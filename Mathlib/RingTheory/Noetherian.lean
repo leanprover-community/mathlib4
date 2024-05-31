@@ -493,8 +493,7 @@ theorem IsNoetherian.disjoint_partialSups_eventually_bot
       (h m).eq_bot_of_ge <| sup_eq_left.1 <| (w (m + 1) <| le_add_right p).symm.trans <| w m p⟩
 #align is_noetherian.disjoint_partial_sups_eventually_bot IsNoetherian.disjoint_partialSups_eventually_bot
 
-/-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial.
--/
+/-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial. -/
 noncomputable def IsNoetherian.equivPUnitOfProdInjective (f : M × N →ₗ[R] M)
     (i : Injective f) : N ≃ₗ[R] PUnit.{w + 1} := by
   apply Nonempty.some
@@ -502,7 +501,6 @@ noncomputable def IsNoetherian.equivPUnitOfProdInjective (f : M × N →ₗ[R] M
     IsNoetherian.disjoint_partialSups_eventually_bot (f.tailing i) (f.tailings_disjoint_tailing i)
   specialize w n (le_refl n)
   apply Nonempty.intro
-  -- Porting note: refine' makes this line time out at elaborator
   refine (LinearMap.tailingLinearEquiv f i n).symm ≪≫ₗ ?_
   rw [w]
   apply Submodule.botEquivPUnit
