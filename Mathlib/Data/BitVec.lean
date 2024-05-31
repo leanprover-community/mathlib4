@@ -9,7 +9,11 @@ import Mathlib.Data.ZMod.Defs
 /-!
 # Basic Theorems About Bitvectors
 
-This file contains theorems about bitvectors.
+This file contains theorems about bitvectors which can only be stated in Mathlib or downstream
+because they refer to other notions defined in Mathlib.
+
+Please do not extend this file further: material about BitVec needed in downstream projects
+can either be PR'd to Lean, or kept downstream if it also relies on Mathlib.
 -/
 
 namespace BitVec
