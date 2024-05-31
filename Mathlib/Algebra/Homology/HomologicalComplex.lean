@@ -516,8 +516,9 @@ set_option linter.uppercaseLean3 false in
 #align homological_complex.X_prev_iso_self_comp_d_to HomologicalComplex.xPrevIsoSelf_comp_dTo
 
 @[reassoc (attr := simp)]
-theorem dFrom_comp_xNextIso {i j : ι} (r : c.Rel i j) : C.dFrom i ≫ (C.xNextIso r).hom = C.d i j :=
-  by simp [C.dFrom_eq r]
+theorem dFrom_comp_xNextIso {i j : ι} (r : c.Rel i j) :
+    C.dFrom i ≫ (C.xNextIso r).hom = C.d i j := by
+  simp [C.dFrom_eq r]
 set_option linter.uppercaseLean3 false in
 #align homological_complex.d_from_comp_X_next_iso HomologicalComplex.dFrom_comp_xNextIso
 

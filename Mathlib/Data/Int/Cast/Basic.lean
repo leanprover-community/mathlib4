@@ -134,8 +134,8 @@ theorem cast_bit0 (n : ℤ) : ((bit0 n : ℤ) : R) = bit0 (n : R) :=
 #align int.cast_bit0 Int.cast_bit0
 
 @[norm_cast, deprecated]
-theorem cast_bit1 (n : ℤ) : ((bit1 n : ℤ) : R) = bit1 (n : R) :=
-  by rw [bit1, Int.cast_add, Int.cast_one, cast_bit0]; rfl
+theorem cast_bit1 (n : ℤ) : ((bit1 n : ℤ) : R) = bit1 (n : R) := by
+  rw [bit1, Int.cast_add, Int.cast_one, cast_bit0]; rfl
 #align int.cast_bit1 Int.cast_bit1
 
 end deprecated

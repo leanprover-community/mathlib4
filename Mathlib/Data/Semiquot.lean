@@ -117,8 +117,8 @@ def liftOn (q : Semiquot α) (f : α → β) (h : ∀ a ∈ q, ∀ b ∈ q, f a 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
 warning: expanding binder collection (a b «expr ∈ » q) -/
 theorem liftOn_ofMem (q : Semiquot α) (f : α → β)
-    (h : ∀ a ∈ q, ∀ b ∈ q, f a = f b) (a : α) (aq : a ∈ q) : liftOn q f h = f a :=
-  by revert h; rw [eq_mk_of_mem aq]; intro; rfl
+    (h : ∀ a ∈ q, ∀ b ∈ q, f a = f b) (a : α) (aq : a ∈ q) : liftOn q f h = f a := by
+  revert h; rw [eq_mk_of_mem aq]; intro; rfl
 #align semiquot.lift_on_of_mem Semiquot.liftOn_ofMem
 
 /-- Apply a function to the unknown value stored in a `Semiquot α`. -/
@@ -137,8 +137,8 @@ def bind (q : Semiquot α) (f : α → Semiquot β) : Semiquot β :=
 #align semiquot.bind Semiquot.bind
 
 @[simp]
-theorem mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) : b ∈ bind q f ↔ ∃ a ∈ q, b ∈ f a :=
-  by simp_rw [← exists_prop]; exact Set.mem_iUnion₂
+theorem mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) :
+    b ∈ bind q f ↔ ∃ a ∈ q, b ∈ f a := by simp_rw [← exists_prop]; exact Set.mem_iUnion₂
 #align semiquot.mem_bind Semiquot.mem_bind
 
 instance : Monad Semiquot where

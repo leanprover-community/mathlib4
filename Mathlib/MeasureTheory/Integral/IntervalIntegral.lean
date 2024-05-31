@@ -744,13 +744,15 @@ theorem integral_comp_mul_left (hc : c ≠ 0) :
 #align interval_integral.integral_comp_mul_left intervalIntegral.integral_comp_mul_left
 
 -- Porting note (#10618): was @[simp]
-theorem smul_integral_comp_mul_left (c) : (c • ∫ x in a..b, f (c * x)) = ∫ x in c * a..c * b, f x :=
-  by by_cases hc : c = 0 <;> simp [hc, integral_comp_mul_left]
+theorem smul_integral_comp_mul_left (c) :
+    (c • ∫ x in a..b, f (c * x)) = ∫ x in c * a..c * b, f x := by
+  by_cases hc : c = 0 <;> simp [hc, integral_comp_mul_left]
 #align interval_integral.smul_integral_comp_mul_left intervalIntegral.smul_integral_comp_mul_left
 
 -- Porting note (#10618): was @[simp]
-theorem integral_comp_div (hc : c ≠ 0) : (∫ x in a..b, f (x / c)) = c • ∫ x in a / c..b / c, f x :=
-  by simpa only [inv_inv] using integral_comp_mul_right f (inv_ne_zero hc)
+theorem integral_comp_div (hc : c ≠ 0) :
+    (∫ x in a..b, f (x / c)) = c • ∫ x in a / c..b / c, f x := by
+  simpa only [inv_inv] using integral_comp_mul_right f (inv_ne_zero hc)
 #align interval_integral.integral_comp_div intervalIntegral.integral_comp_div
 
 -- Porting note (#10618): was @[simp]
@@ -1054,8 +1056,9 @@ section
 variable {f g : ℝ → ℝ} {a b : ℝ} {μ : Measure ℝ}
 
 theorem integral_eq_zero_iff_of_le_of_nonneg_ae (hab : a ≤ b) (hf : 0 ≤ᵐ[μ.restrict (Ioc a b)] f)
-    (hfi : IntervalIntegrable f μ a b) : ∫ x in a..b, f x ∂μ = 0 ↔ f =ᵐ[μ.restrict (Ioc a b)] 0 :=
-  by rw [integral_of_le hab, integral_eq_zero_iff_of_nonneg_ae hf hfi.1]
+    (hfi : IntervalIntegrable f μ a b) :
+    ∫ x in a..b, f x ∂μ = 0 ↔ f =ᵐ[μ.restrict (Ioc a b)] 0 := by
+  rw [integral_of_le hab, integral_eq_zero_iff_of_nonneg_ae hf hfi.1]
 #align interval_integral.integral_eq_zero_iff_of_le_of_nonneg_ae intervalIntegral.integral_eq_zero_iff_of_le_of_nonneg_ae
 
 theorem integral_eq_zero_iff_of_nonneg_ae (hf : 0 ≤ᵐ[μ.restrict (Ioc a b ∪ Ioc b a)] f)

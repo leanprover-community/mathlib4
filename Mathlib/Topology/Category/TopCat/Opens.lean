@@ -414,8 +414,8 @@ theorem map_functor_eq {X : TopCat} {U : Opens X} (V : Opens U) :
 @[simp]
 theorem adjunction_counit_map_functor {X : TopCat} {U : Opens X} (V : Opens U) :
     U.openEmbedding.isOpenMap.adjunction.counit.app (U.openEmbedding.isOpenMap.functor.obj V) =
-      eqToHom (by dsimp; rw [map_functor_eq V]) :=
-  by apply Subsingleton.elim
+      eqToHom (by dsimp; rw [map_functor_eq V]) := by
+  apply Subsingleton.elim
 #align topological_space.opens.adjunction_counit_map_functor TopologicalSpace.Opens.adjunction_counit_map_functor
 
 end TopologicalSpace.Opens
