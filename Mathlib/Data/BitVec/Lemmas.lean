@@ -159,10 +159,6 @@ end
 section
 variable (x y : BitVec w)
 
-@[simp] lemma toFin_neg : toFin (-x) = -(toFin x) := by
-  ext; rw [neg_eq_zero_sub]; simp; rfl
-  -- v4.7.0-rc1 issues remove?
-
 -- These should be simp, but Std's simp-lemmas do not allow this yet.
 lemma toFin_zero : toFin (0 : BitVec w) = 0 := rfl
 lemma toFin_one  : toFin (1 : BitVec w) = 1 := by
