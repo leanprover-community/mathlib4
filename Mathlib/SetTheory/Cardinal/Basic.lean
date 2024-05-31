@@ -82,7 +82,7 @@ assert_not_exists Field
 assert_not_exists Module
 
 open scoped Classical
-open Function Set Order
+open Mathlib Function Set Order
 
 noncomputable section
 
