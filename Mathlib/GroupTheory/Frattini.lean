@@ -22,12 +22,8 @@ the Frattini subgroup consists of the non-generating elements of the group.
 def frattini (G : Type*) [Group G] : Subgroup G :=
   Order.radical (Subgroup G)
 
-variable {G H : Type*} [Group G] [Group H]
-
+variable (G : Type*) [Group G]
 open Subgroup
-
-
-variable (G)
 
 /-- The Frattini subgroup is characteristic. -/
 instance frattini_characteristic : (frattini G).Characteristic := by
@@ -46,28 +42,16 @@ The Frattini subgroup consists of "non-generating" elements in the following sen
 If a subgroup together with the Frattini subgroup generates the whole group,
 then the subgroup is already the whole group.
 -/
-theorem frattini_nongenerating [IsCoatomic (Subgroup G)] {K : Subgroup G} (h : K ⊔ frattini G = ⊤) :
-    K = ⊤ :=
+theorem frattini_nongenerating [IsCoatomic (Subgroup G)] {K : Subgroup G}
+    (h : K ⊔ frattini G = ⊤) : K = ⊤ :=
   Order.radical_nongenerating h
-
-noncomputable section
 
 -- The Sylow files unnecessarily use `Fintype` (computable) where often `Finite` would suffice,
 -- so wwe need this:
 attribute [local instance] Fintype.ofFinite
 
--- This is surely in Mathlib?!
--- Asked at https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/normal.20subgroups/near/441573924
--- No answer, so it is apparently not in Mathlib.
-theorem normal_of_map_subtype_normal {K : Subgroup G} {L : Subgroup K}
-    (n : (map K.subtype L).Normal) : L.Normal := by
-  obtain ⟨conj_mem⟩ := n
-  simp only [mem_map, coeSubtype, Subtype.exists, exists_and_right, exists_eq_right,
-    forall_exists_index] at conj_mem
-  exact ⟨fun l l_mem k => (conj_mem l l.2 l_mem k).2⟩
-
 /-- When `G` is finite, the Frattini subgroup is nilpotent. -/
-theorem frattini_nilpotent [Fintype G] : Group.IsNilpotent (frattini G) := by
+theorem frattini_nilpotent [Finite G] : Group.IsNilpotent (frattini G) := by
   -- We use the characterisation of nilpotency in terms of all Sylow subgroups being normal.
   have q := (isNilpotent_of_finite_tFAE (G := frattini G)).out 0 3
   rw [q]; clear q
@@ -82,4 +66,4 @@ theorem frattini_nilpotent [Fintype G] : Group.IsNilpotent (frattini G) := by
   -- This means that `P` is normal as a subgroup of `G`
   have P_normal_in_G : (map (frattini G).subtype ↑P).Normal := normalizer_eq_top.mp normalizer_P
   -- and hence also as a subgroup of `frattini G`, which was the remaining goal.
-  exact normal_of_map_subtype_normal P_normal_in_G
+  exact P_normal_in_G.of_map_subtype_normal
