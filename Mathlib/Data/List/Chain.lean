@@ -79,8 +79,8 @@ theorem chain_iff_forall₂ :
     simp [@chain_iff_forall₂ b l, dropLast, *]
 #align list.chain_iff_forall₂ List.chain_iff_forall₂
 
-theorem chain_append_singleton_iff_forall₂ : Chain R a (l ++ [b]) ↔ Forall₂ R (a :: l) (l ++ [b]) :=
-  by simp [chain_iff_forall₂]
+theorem chain_append_singleton_iff_forall₂ :
+    Chain R a (l ++ [b]) ↔ Forall₂ R (a :: l) (l ++ [b]) := by simp [chain_iff_forall₂]
 #align list.chain_append_singleton_iff_forall₂ List.chain_append_singleton_iff_forall₂
 
 theorem chain_map (f : β → α) {b : β} {l : List β} :
@@ -170,8 +170,8 @@ set_option linter.deprecated false in
 theorem chain_iff_nthLe {R} {a : α} {l : List α} : Chain R a l ↔
     (∀ h : 0 < length l, R a (nthLe l 0 h)) ∧
     ∀ (i) (h : i < length l - 1),
-    R (nthLe l i (by omega)) (nthLe l (i + 1) (by omega)) :=
-  by rw [chain_iff_get]; simp [nthLe]
+    R (nthLe l i (by omega)) (nthLe l (i + 1) (by omega)) := by
+  rw [chain_iff_get]; simp [nthLe]
 #align list.chain_iff_nth_le List.chain_iff_nthLe
 
 theorem Chain'.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {l : List α} (p : Chain' R l) :
