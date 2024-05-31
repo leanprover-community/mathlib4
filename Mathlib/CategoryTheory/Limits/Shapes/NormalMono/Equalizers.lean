@@ -35,17 +35,15 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
   let ⟨Q, g, hbg, i'⟩ := normalMonoOfMono b
   let ⟨a', ha'⟩ :=
     KernelFork.IsLimit.lift' i (kernel.ι (prod.lift f g)) <|
-      calc
-        kernel.ι (prod.lift f g) ≫ f = kernel.ι (prod.lift f g) ≫ prod.lift f g ≫ Limits.prod.fst :=
-          by rw [prod.lift_fst]
+      calc kernel.ι (prod.lift f g) ≫ f
+        _ = kernel.ι (prod.lift f g) ≫ prod.lift f g ≫ Limits.prod.fst := by rw [prod.lift_fst]
         _ = (0 : kernel (prod.lift f g) ⟶ P ⨯ Q) ≫ Limits.prod.fst := by rw [kernel.condition_assoc]
         _ = 0 := zero_comp
 
   let ⟨b', hb'⟩ :=
     KernelFork.IsLimit.lift' i' (kernel.ι (prod.lift f g)) <|
-      calc
-        kernel.ι (prod.lift f g) ≫ g = kernel.ι (prod.lift f g) ≫ prod.lift f g ≫ Limits.prod.snd :=
-          by rw [prod.lift_snd]
+      calc kernel.ι (prod.lift f g) ≫ g
+        _ = kernel.ι (prod.lift f g) ≫ prod.lift f g ≫ Limits.prod.snd := by rw [prod.lift_snd]
         _ = (0 : kernel (prod.lift f g) ⟶ P ⨯ Q) ≫ Limits.prod.snd := by rw [kernel.condition_assoc]
         _ = 0 := zero_comp
 
