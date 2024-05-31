@@ -59,8 +59,8 @@ theorem hasDerivAtFilter_iff_tendsto_slope {x : 𝕜} {L : Filter 𝕜} :
   _ ↔ Tendsto (fun y ↦ slope f x y - f') (L ⊓ 𝓟 {x}ᶜ) (𝓝 0) := tendsto_congr' <| by
         refine (EqOn.eventuallyEq fun y hy ↦ ?_).filter_mono inf_le_right
         rw [inv_smul_smul₀ (sub_ne_zero.2 hy) f']
-  _ ↔ Tendsto (slope f x) (L ⊓ 𝓟 {x}ᶜ) (𝓝 f') :=
-        by rw [← nhds_translation_sub f', tendsto_comap_iff]; rfl
+  _ ↔ Tendsto (slope f x) (L ⊓ 𝓟 {x}ᶜ) (𝓝 f') := by
+        rw [← nhds_translation_sub f', tendsto_comap_iff]; rfl
 #align has_deriv_at_filter_iff_tendsto_slope hasDerivAtFilter_iff_tendsto_slope
 
 theorem hasDerivWithinAt_iff_tendsto_slope :

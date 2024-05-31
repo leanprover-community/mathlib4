@@ -410,8 +410,8 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
 
       have H :
         1 + (1 + 1) + (1 + (1 + 1) + sizeOf L2) =
-          sizeOf L2 + (1 + ((1 + 1) + (1 + 1) + 1)) :=
-        by ac_rfl
+          sizeOf L2 + (1 + ((1 + 1) + (1 + 1) + 1)) := by
+        ac_rfl
       rw [H]
       apply Nat.lt_add_of_pos_right
       apply Nat.lt_add_right

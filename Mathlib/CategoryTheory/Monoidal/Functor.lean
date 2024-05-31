@@ -137,11 +137,11 @@ def LaxMonoidalFunctor.ofTensorHom (F : C ⥤ D)
       aesop_cat)
     /- unitality -/
     (left_unitality :
-      ∀ X : C, (λ_ (F.obj X)).hom = (ε ⊗ 𝟙 (F.obj X)) ≫ μ (𝟙_ C) X ≫ F.map (λ_ X).hom :=
-        by aesop_cat)
+      ∀ X : C, (λ_ (F.obj X)).hom = (ε ⊗ 𝟙 (F.obj X)) ≫ μ (𝟙_ C) X ≫ F.map (λ_ X).hom := by
+        aesop_cat)
     (right_unitality :
-      ∀ X : C, (ρ_ (F.obj X)).hom = (𝟙 (F.obj X) ⊗ ε) ≫ μ X (𝟙_ C) ≫ F.map (ρ_ X).hom :=
-        by aesop_cat) :
+      ∀ X : C, (ρ_ (F.obj X)).hom = (𝟙 (F.obj X) ⊗ ε) ≫ μ X (𝟙_ C) ≫ F.map (ρ_ X).hom := by
+        aesop_cat) :
         LaxMonoidalFunctor C D where
   obj := F.obj
   map := F.map

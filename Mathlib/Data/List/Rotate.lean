@@ -95,8 +95,8 @@ theorem rotate'_length_mul (l : List α) : ∀ n : ℕ, l.rotate' (l.length * n)
   | n + 1 =>
     calc
       l.rotate' (l.length * (n + 1)) =
-          (l.rotate' (l.length * n)).rotate' (l.rotate' (l.length * n)).length :=
-        by simp [-rotate'_length, Nat.mul_succ, rotate'_rotate']
+          (l.rotate' (l.length * n)).rotate' (l.rotate' (l.length * n)).length := by
+        simp [-rotate'_length, Nat.mul_succ, rotate'_rotate']
       _ = l := by rw [rotate'_length, rotate'_length_mul l n]
 #align list.rotate'_length_mul List.rotate'_length_mul
 

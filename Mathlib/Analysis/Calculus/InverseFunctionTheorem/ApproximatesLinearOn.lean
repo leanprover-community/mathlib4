@@ -208,8 +208,8 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
     rw [div_mul_eq_mul_div, div_le_iff]; swap; · linarith
     calc
       (f'symm.nnnorm : ℝ) * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) * dist (f b) y =
-          f'symm.nnnorm * dist (f b) y * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) :=
-        by ring
+          f'symm.nnnorm * dist (f b) y * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) := by
+        ring
       _ ≤ f'symm.nnnorm * dist (f b) y * 1 := by
         gcongr
         rw [sub_le_self_iff]
