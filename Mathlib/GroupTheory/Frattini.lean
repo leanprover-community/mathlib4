@@ -10,35 +10,32 @@ or in the lattices of ideals in a ring `R` to the Jacobson ideal.
 def Order.radical (α : Type*) [Preorder α] [OrderTop α] [InfSet α] : α :=
    ⨅ a ∈ {H | IsCoatom H}, a
 
-namespace Order
+section Order.radical
 
 variable {α : Type*} [CompleteLattice α]
 
-lemma radical_le_coatom {a : α} (h : IsCoatom a) :
-    radical α ≤ a :=
-  biInf_le _ h
+lemma Order.radical_le_coatom {a : α} (h : IsCoatom a) : radical α ≤ a := biInf_le _ h
 
 variable {β : Type*} [CompleteLattice β]
 
-theorem radical_characteristic (f : α ≃o β) : f (Order.radical α) = Order.radical β := by
-  unfold radical
+theorem OrderIso.map_radical(f : α ≃o β) : f (Order.radical α) = Order.radical β := by
+  unfold Order.radical
   simp only [OrderIso.map_iInf]
   fapply Equiv.iInf_congr
   · exact f.toEquiv
   · intros
     simp
 
-theorem radical_nongenerating [IsCoatomic α] {a : α} (h : a ⊔ radical α = ⊤) :
+theorem Order.radical_nongenerating [IsCoatomic α] {a : α} (h : a ⊔ radical α = ⊤) :
     a = ⊤ := by
   obtain (rfl | w) := eq_top_or_exists_le_coatom a
   · rfl
   · obtain ⟨m, c, le⟩ := w
     have q : a ⊔ radical α ≤ m := sup_le le (radical_le_coatom c)
-    rw [h] at q
-    simp only [top_le_iff] at q
+    rw [h, top_le_iff] at q
     simpa using c.1 q
 
-end Order
+end Order.radical
 
 /-- The Frattini subgroup of a group is the intersection of the maximal subgroups. -/
 def frattini (G : Type*) [Group G] : Subgroup G :=
@@ -75,13 +72,19 @@ variable (G)
 instance frattini_characteristic : (frattini G).Characteristic := by
   rw [characteristic_iff_comap_eq]
   intro φ
-  apply Order.radical_characteristic φ.comapSubgroup
+  apply φ.comapSubgroup.map_radical
 
 variable {G}
 
-lemma frattini_le_coatom {K : Subgroup G} (h: IsCoatom K) : frattini G ≤ K :=
-  biInf_le _ h
+lemma frattini_le_coatom {K : Subgroup G} (h : IsCoatom K) : frattini G ≤ K :=
+  Order.radical_le_coatom h
 
+/--
+The Frattini subgroup consists of "non-generating" elements in the following sense:
+
+If a subgroup together with the Frattini subgroup generates the whole group,
+then the subgroup is already the whole group.
+-/
 theorem frattini_nongenerating [IsCoatomic (Subgroup G)] {K : Subgroup G} (h : K ⊔ frattini G = ⊤) :
     K = ⊤ :=
   Order.radical_nongenerating h
@@ -94,38 +97,31 @@ attribute [local instance] Fintype.ofFinite
 
 -- This is surely in Mathlib?!
 -- Asked at https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/normal.20subgroups/near/441573924
-theorem foo {K : Subgroup G} {L : Subgroup K} (n : (map K.subtype L).Normal) : L.Normal := by
+-- No answer, so it is apparently not in Mathlib.
+theorem normal_of_map_subtype_normal {K : Subgroup G} {L : Subgroup K}
+    (n : (map K.subtype L).Normal) : L.Normal := by
   obtain ⟨conj_mem⟩ := n
-  simp at conj_mem
-  constructor
-  intro l l_mem k
-  specialize conj_mem l l.2 l_mem k
-  obtain ⟨_, h⟩ := conj_mem
-  exact h
+  simp only [mem_map, coeSubtype, Subtype.exists, exists_and_right, exists_eq_right,
+    forall_exists_index] at conj_mem
+  exact ⟨fun l l_mem k => (conj_mem l l.2 l_mem k).2⟩
 
 /-- When `G` is finite, the Frattini subgroup is nilpotent. -/
 theorem frattini_nilpotent [Fintype G] : Group.IsNilpotent (frattini G) := by
   -- We use the characterisation of nilpotency in terms of all Sylow subgroups being normal.
-  have q := isNilpotent_of_finite_tFAE (G := frattini G)
-  have r := q.out 0 3
-  rw [r]; clear q r
+  have q := (isNilpotent_of_finite_tFAE (G := frattini G)).out 0 3
+  rw [q]; clear q
   -- Consider each prime `p` and Sylow `p`-subgroup `P` of `frattini G`.
   intro p p_prime P
   -- The Frattini argument shows that the normalizer of `P` in `G`
   -- together with `frattini G` generates `G`.
-  have frat_arg := Sylow.normalizer_sup_eq_top P
+  have frattini_argument := Sylow.normalizer_sup_eq_top P
   -- and hence by the nongenerating property of the Frattini subgroup that
-  -- the normalzer of `P` in `G` is `G`.
-  have := frattini_nongenerating frat_arg
+  -- the normalizer of `P` in `G` is `G`.
+  have normalizer_P := frattini_nongenerating frattini_argument
   -- This means that `P` is normal as a subgroup of `G`
-  have : (map (frattini G).subtype ↑P).Normal := by exact normalizer_eq_top.mp this
-  -- and hence also as a subgroup of `frattini G`.
-  have pn : Normal (G := frattini G) P := foo this
-  exact pn
-
-
-
-
+  have P_normal_in_G : (map (frattini G).subtype ↑P).Normal := normalizer_eq_top.mp normalizer_P
+  -- and hence also as a subgroup of `frattini G`, which was the remaining goal.
+  exact normal_of_map_subtype_normal P_normal_in_G
 
 
 /-!
