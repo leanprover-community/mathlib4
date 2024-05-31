@@ -34,11 +34,6 @@ Stacks project
 
 -/
 
-/-
-TODO:
-- clean up proofs
--/
-
 universe v₁ v₂ u₁ u₂
 
 open CategoryTheory Functor Category IsHomLift
