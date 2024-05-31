@@ -8,7 +8,8 @@ import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 
 /-!
 # Regulator of a number field
-We prove results about the regulator of a number field `K`.
+
+We define and prove basic results about the regulator of a number field `K`.
 
 ## Main definition
 
@@ -37,12 +38,17 @@ theorem regulator_ne_zero : regulator K ≠ 0 := Zlattice.covolume_ne_zero (unit
 
 theorem regulator_pos : 0 < regulator K := Zlattice.covolume_pos (unitLattice K) volume
 
-def regulatorOfFamily (w' : InfinitePlace K) (u : Fin (rank K) → (𝓞 K)ˣ)
-    (e : {w : InfinitePlace K // w ≠ w'} ≃ Fin (rank K)) :=
-  (Matrix.of (fun w₁ : {w // w ≠ w'} ↦ fun w₂ ↦ mult w₁.val * Real.log (w₁.val (u (e w₂))))).det
+theorem regulator_eq_det'
+    (e : {w : InfinitePlace K // w ≠ dirichletUnitTheorem.w₀} ≃ Fin (rank K)) :
+    regulator K = |(Matrix.of fun x ↦ (logEmbedding K) (fundSystem K (e x))).det| := by
+  simp_rw [regulator, Zlattice.covolume_eq_det _
+    (((basisModTorsion K).map (logEmbeddingEquiv K)).reindex e.symm), Basis.coe_reindex,
+    Function.comp, Basis.map_apply, ← fundSystem_mk, logEmbeddingEquiv_apply, Equiv.symm_symm]
 
-theorem regulator_eq_regulatorOfFamily (w' : InfinitePlace K) {u : Fin (rank K) → (𝓞 K)ˣ}
-    (h : ∀ x : (𝓞 K)ˣ, ∃ ζe : torsion K × (Fin (rank K) → ℤ), x = ζe.1 * ∏ i, (u i ^ (ζe.2 i)))
-    (e : {w : InfinitePlace K // w ≠ w'} ≃ Fin (rank K)) :
-    regulator K = regulatorOfFamily K w' u e := by
-  sorry
+example {e : {w : InfinitePlace K // w ≠ dirichletUnitTheorem.w₀} ≃ Fin (rank K)} :
+    regulator K =
+      |(Matrix.of fun i w : {w // w ≠ dirichletUnitTheorem.w₀} ↦
+        (mult w.val : ℝ) * Real.log (w.val (fundSystem K (e i) : K))).det| := by
+  rw [regulator_eq_det' K e]
+  simp_rw [logEmbedding, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+  rfl
