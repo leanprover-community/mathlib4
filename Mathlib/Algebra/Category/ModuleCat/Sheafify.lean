@@ -224,7 +224,13 @@ variable (X)
 set_option maxHeartbeats 800000 in
 noncomputable def module : Module (R.val.obj X) (A.val.obj X) where
   smul r m := smul α φ r m
-  one_smul m := by
+  one_smul := sorry
+  zero_smul := sorry
+  smul_add := sorry
+  smul_zero := sorry
+  add_smul := sorry
+  mul_smul := sorry
+/-  one_smul m := by
     apply A.isSeparated _ _ (Presheaf.imageSieve_mem J φ m)
     rintro Y f ⟨m₀, hm₀⟩
     rw [← hm₀]
@@ -273,7 +279,7 @@ noncomputable def module : Module (R.val.obj X) (A.val.obj X) where
     erw [map_smul_eq α φ (r * r') m f.op (r₀ * r₀')
       (by rw [map_mul, map_mul, hr₀, hr₀']; rfl) m₀ hm₀, mul_smul,
       map_smul_eq α φ r (smul α φ r' m) f.op r₀ hr₀ (r₀' • m₀)
-        (map_smul_eq α φ r' m f.op r₀' hr₀' m₀ hm₀).symm]
+        (map_smul_eq α φ r' m f.op r₀' hr₀' m₀ hm₀).symm]-/
 
 lemma map_smul :
     A.val.map π (smul α φ r m) = smul α φ (R.val.map π r) (A.val.map π m) := by
@@ -297,7 +303,7 @@ noncomputable def sheafify : SheafOfModules.{v} R where
       map_smul := fun _ _ _ => by apply Sheafify.map_smul }
   isSheaf := A.cond
 
-noncomputable def toSheafify : M₀ ⟶ (sheafify α φ).val.restrictScalars α where
+/-noncomputable def toSheafify : M₀ ⟶ (sheafify α φ).val.restrictScalars α where
   hom := φ ≫ ((sheafify α φ).val.restrictScalarsPresheafIso α).inv
   map_smul X r x := by
     dsimp [restrictScalarsPresheafIso]
@@ -307,6 +313,6 @@ noncomputable def toSheafify : M₀ ⟶ (sheafify α φ).val.restrictScalars α 
     rfl
 
 lemma toSheafify_app_apply {X : Cᵒᵖ} (x : M₀.obj X) :
-    (toSheafify α φ).app X x = φ.app X x := rfl
+    (toSheafify α φ).app X x = φ.app X x := rfl-/
 
 end PresheafOfModules
