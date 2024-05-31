@@ -183,8 +183,9 @@ theorem completedZeta_eq_tsum_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
   simp only [this, Gammaℝ_def, mul_zero, zero_mul, Real.cos_zero, ofReal_one, mul_one, mul_one_div,
     ← tsum_mul_left]
   congr 1 with n
-  split_ifs with h <;>
-  simp only [h, Nat.cast_zero, zero_cpow (Complex.ne_zero_of_one_lt_re hs), div_zero, mul_zero]
+  split_ifs with h
+  · simp only [h, Nat.cast_zero, zero_cpow (Complex.ne_zero_of_one_lt_re hs), div_zero]
+  · rfl
 #align completed_zeta_eq_tsum_of_one_lt_re completedZeta_eq_tsum_of_one_lt_re
 
 /-- The Riemann zeta function agrees with the naive Dirichlet-series definition when the latter
@@ -200,15 +201,13 @@ theorem zeta_eq_tsum_one_div_nat_cpow {s : ℂ} (hs : 1 < re s) :
 on mathlib's conventions for `0 ^ s`).  -/
 theorem zeta_eq_tsum_one_div_nat_add_one_cpow {s : ℂ} (hs : 1 < re s) :
     riemannZeta s = ∑' n : ℕ, 1 / (n + 1 : ℂ) ^ s := by
-  have hs' : s ≠ 0 := fun h ↦ (not_lt.mpr zero_le_one) (zero_re ▸ h ▸ hs)
   have := zeta_eq_tsum_one_div_nat_cpow hs
   rw [tsum_eq_zero_add] at this
-  · simpa [Nat.cast_zero, zero_cpow hs', div_zero, zero_add, Nat.cast_add, Nat.cast_one]
+  · simpa [zero_cpow (Complex.ne_zero_of_one_lt_re hs)]
   · refine .of_norm ?_
-    simp_rw [norm_div, norm_one, Complex.norm_eq_abs, ← ofReal_natCast,
+    simpa only [← ofReal_natCast, norm_div, norm_one, Complex.norm_eq_abs,
       abs_cpow_eq_rpow_re_of_nonneg (Nat.cast_nonneg _) (zero_lt_one.trans hs).ne',
-      summable_one_div_nat_rpow]
-    assumption
+      summable_one_div_nat_rpow] using hs
 #align zeta_eq_tsum_one_div_nat_add_one_cpow zeta_eq_tsum_one_div_nat_add_one_cpow
 
 /-- Special case of `zeta_eq_tsum_one_div_nat_cpow` when the argument is in `ℕ`, so the power
