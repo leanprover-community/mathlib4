@@ -79,7 +79,10 @@ instance instSemisimple [IsKilling K L] [Module.Finite K L] : IsSemisimple K L :
     exact h₁.1 <| IsKilling.ideal_eq_bot_of_isLieAbelian I
 
 /-- The converse of this is true over a field of characteristic zero. There are counterexamples
-over fields with positive characteristic. -/
+over fields with positive characteristic.
+
+Note that when the coefficients are a field this instance is redundant since we have
+`LieAlgebra.IsKilling.instSemisimple` and `LieAlgebra.IsSemisimple.instHasTrivialRadical`. -/
 instance instHasTrivialRadical [IsDomain R] [IsPrincipalIdealRing R] : HasTrivialRadical R L :=
   (hasTrivialRadical_iff_no_abelian_ideals R L).mpr IsKilling.ideal_eq_bot_of_isLieAbelian
 
