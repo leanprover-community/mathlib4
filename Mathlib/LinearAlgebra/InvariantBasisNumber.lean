@@ -32,20 +32,11 @@ It is also useful to consider the following stronger conditions:
   implies `n ≤ m`.
 
 - `OrzechProperty R`, defined in `Mathlib/RingTheory/OrzechProperty.lean`,
-  is a type class stating that `R` satisfies the following property:
-  for any finitely generated `R`-module `M`, any surjective homomorphism `f : N → M`
+  states that for any finitely generated `R`-module `M`, any surjective homomorphism `f : N → M`
   from a submodule `N` of `M` to `M` is injective.
-  It was introduced in papers by Orzech [orzech1971], Djoković [djokovic1973] and
-  Ribenboim [ribenboim1971], under the names `Π`-ring or `Π₁`-ring.
-  It implies the strong rank condition if the ring is nontrivial.
 
 
 ## Instances
-
-- `IsNoetherianRing.orzechProperty` (defined in `Mathlib/RingTheory/Noetherian.lean`) :
-  (TODO: in a future PR)
-  any left-noetherian ring satisfies the Orzech property.
-  This applies in particular to division rings.
 
 - `strongRankCondition_of_orzechProperty` : the Orzech property implies the strong rank condition
   (for non trivial rings).
@@ -58,9 +49,7 @@ It is also useful to consider the following stronger conditions:
 - `invariantBasisNumber_of_nontrivial_of_commRing`: a nontrivial commutative ring satisfies
   the invariant basis number property
 
-More generally, every commutative ring satisfies the Orzech property and the strong rank condition.
-The corresponding instances are proved in
-`Mathlib/RingTheory/FiniteType.lean` (TODO: in a future PR).
+More generally, every commutative ring satisfies the strong rank condition.
 We keep `invariantBasisNumber_of_nontrivial_of_commRing` here since it imports fewer files.
 
 
