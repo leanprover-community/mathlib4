@@ -290,46 +290,14 @@ lemma Ψ_odd (m : ℕ) : W.Ψ (2 * (m + 2) + 1) =
         (if Even m then W.Ψ'' (m + 4) * W.Ψ'' (m + 2) ^ 3
           else -W.Ψ'' (m + 1) * W.Ψ'' (m + 3) ^ 3) := by
   repeat erw [Ψ_ofNat]
-  rw [Ψ''_odd, if_neg (m + 2).not_even_two_mul_add_one]
-  by_cases hm : Even m
-  · have hm1 : ¬Even (m + 1) := fun h => Nat.even_add_one.mp h hm
-    have hm2 : Even (m + 2) := Nat.even_add_one.mpr hm1
-    have hm3 : ¬Even (m + 3) := fun h => Nat.even_add_one.mp h hm2
-    have hm4 : Even (m + 4) := Nat.even_add_one.mpr hm3
-    rw [if_pos hm, if_pos hm, if_pos hm4, if_pos hm2, if_neg hm1, if_neg hm3, if_pos hm]
-    C_simp
-    rw [C_Ψ₂Sq_eq]
-    ring1
-  · have hm1 : Even (m + 1) := Nat.even_add_one.mpr hm
-    have hm2 : ¬Even (m + 2) := fun h => Nat.even_add_one.mp h hm1
-    have hm3 : Even (m + 3) := Nat.even_add_one.mpr hm2
-    have hm4 : ¬Even (m + 4) := fun h => Nat.even_add_one.mp h hm3
-    rw [if_neg hm, if_neg hm, if_neg hm4, if_neg hm2, if_pos hm1, if_pos hm3, if_neg hm]
-    C_simp
-    rw [C_Ψ₂Sq_eq]
-    ring1
+  simp_rw [Ψ''_odd, if_neg (m + 2).not_even_two_mul_add_one, Nat.even_add_one, ite_not]
+  split_ifs <;> C_simp <;> rw [C_Ψ₂Sq_eq] <;> ring1
 
 lemma Ψ_even (m : ℕ) : W.Ψ (2 * (m + 3)) * W.ψ₂ =
     W.Ψ (m + 2) ^ 2 * W.Ψ (m + 3) * W.Ψ (m + 5) - W.Ψ (m + 1) * W.Ψ (m + 3) * W.Ψ (m + 4) ^ 2 := by
   repeat erw [Ψ_ofNat]
-  erw [Ψ''_even, if_pos <| even_two_mul _]
-  by_cases hm : Even m
-  · have hm1 : ¬Even (m + 1) := fun h => Nat.even_add_one.mp h hm
-    have hm2 : Even (m + 2) := Nat.even_add_one.mpr hm1
-    have hm3 : ¬Even (m + 3) := fun h => Nat.even_add_one.mp h hm2
-    have hm4 : Even (m + 4) := Nat.even_add_one.mpr hm3
-    have hm5 : ¬Even (m + 5) := fun h => Nat.even_add_one.mp h hm4
-    rw [if_pos hm2, if_neg hm3, if_neg hm5, if_neg hm1, if_pos hm4]
-    C_simp
-    ring1
-  · have hm1 : Even (m + 1) := Nat.even_add_one.mpr hm
-    have hm2 : ¬Even (m + 2) := fun h => Nat.even_add_one.mp h hm1
-    have hm3 : Even (m + 3) := Nat.even_add_one.mpr hm2
-    have hm4 : ¬Even (m + 4) := fun h => Nat.even_add_one.mp h hm3
-    have hm5 : Even (m + 5) := Nat.even_add_one.mpr hm4
-    rw [if_neg hm2, if_pos hm3, if_pos hm5, if_pos hm1, if_neg hm4]
-    C_simp
-    ring1
+  simp_rw [Ψ''_even, if_pos <| even_two_mul _, Nat.even_add_one, ite_not]
+  split_ifs <;> C_simp <;> ring1
 
 @[simp]
 lemma Ψ_neg (n : ℤ) : W.Ψ (-n) = -W.Ψ n := by
