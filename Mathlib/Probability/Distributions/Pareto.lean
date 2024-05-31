@@ -6,14 +6,13 @@ Authors: Alvan Arulandu
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Cdf
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.Algebra.Field.Defs
 
 /-! # Pareto distributions over ℝ
 
 Define the pareto measure over the reals.
 
 ## Main definitions
-* `paretoPDFReal`: the function `t r x ↦ r * t ^ r / x ^ (r + 1)`
+* `paretoPDFReal`: the function `t r x ↦ r * t ^ r * x ^ -(r + 1)`
   for `t ≤ x` or `0` else, which is the probability density function of a pareto distribution with
   scale `t` and shape `r` (when `ht : 0 < t ` and `hr : 0 < r`).
 * `paretoPDF`: `ℝ≥0∞`-valued pdf,
@@ -34,7 +33,7 @@ section ParetoPDF
 /-- The pdf of the pareto distribution depending on its scale and rate -/
 noncomputable
 def paretoPDFReal (t r x : ℝ) : ℝ :=
-  if t ≤ x then r * t ^ r / x ^ (r + 1) else 0
+  if t ≤ x then r * t ^ r * x ^ (-(r + 1)) else 0
 
 /-- The pdf of the pareto distribution, as a function valued in `ℝ≥0∞` -/
 noncomputable
@@ -42,13 +41,13 @@ def paretoPDF (t r x : ℝ) : ℝ≥0∞ :=
   ENNReal.ofReal (paretoPDFReal t r x)
 
 lemma paretoPDF_eq (t r x : ℝ) :
-    paretoPDF t r x = ENNReal.ofReal (if t ≤ x then r * t ^ r / (x ^ (r + 1)) else 0) := rfl
+    paretoPDF t r x = ENNReal.ofReal (if t ≤ x then r * t ^ r * x ^ (-(r + 1)) else 0) := rfl
 
 lemma paretoPDF_of_neg {t r x : ℝ} (hx : x < t) : paretoPDF t r x = 0 := by
   simp only [paretoPDF_eq, if_neg (not_le.mpr hx), ENNReal.ofReal_zero]
 
 lemma paretoPDF_of_nonneg {t r x : ℝ} (hx : t ≤ x) :
-    paretoPDF t r x = ENNReal.ofReal (r * t ^ r / (x ^ (r + 1))) := by
+    paretoPDF t r x = ENNReal.ofReal (r * t ^ r * x ^ (-(r + 1))) := by
   simp only [paretoPDF_eq, if_pos hx]
 
 /-- The Lebesgue integral of the pareto pdf over reals < t equals 0 -/
@@ -63,7 +62,7 @@ lemma lintegral_paretoPDF_of_nonpos {t r x : ℝ} (hx : x < t) :
 /-- The pareto pdf is measurable. -/
 @[measurability]
 lemma measurable_paretoPDFReal (t r : ℝ) : Measurable (paretoPDFReal t r) :=
-  Measurable.ite measurableSet_Ici ((measurable_id.pow_const _).const_div _) measurable_const
+  Measurable.ite measurableSet_Ici ((measurable_id.pow_const _).const_mul _) measurable_const
 
 /-- The pareto pdf is strongly measurable -/
 @[measurability]
@@ -90,20 +89,6 @@ lemma paretoPDFReal_nonneg {t r : ℝ} (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
 
 open Measure
 
-
-lemma integral_custom {t r : ℝ} (ht : 0 < t) (hr : 0 < r) :
-    ∫ x : ℝ in Ioi t, r * t ^ r * x ^ (-(r + 1)) = 1 := by
-    rw [integral_mul_left]
-    have hp : -(r+1) < -1 := by linarith
-    rw [integral_Ioi_rpow_of_lt hp ht]
-    ring
-    repeat rw [mul_assoc]
-    rw [mul_comm]
-    repeat rw [mul_assoc]
-
-    have _ : t ^ r * (t ^ (-r) * (r⁻¹ * r)) = 1 := by sorry
-    assumption
-
 /-- The pdf of the pareto distribution integrates to 1 -/
 @[simp]
 lemma lintegral_paretoPDF_eq_one {t r : ℝ} (ht : 0 < t) (hr : 0 < r) :
@@ -112,12 +97,18 @@ lemma lintegral_paretoPDF_eq_one {t r : ℝ} (ht : 0 < t) (hr : 0 < r) :
     rw [set_lintegral_congr_fun measurableSet_Iio
       (ae_of_all _ (fun x (hx : x < t) ↦ paretoPDF_of_neg hx)), lintegral_zero]
   have rightSide : ∫⁻ x in Ici t, paretoPDF t r x =
-      ∫⁻ x in Ici t, ENNReal.ofReal (r * t ^ r / x ^ (r + 1)) :=
+      ∫⁻ x in Ici t, ENNReal.ofReal (r * t ^ r * x ^ (-(r + 1))) :=
     set_lintegral_congr_fun measurableSet_Ici (ae_of_all _ (fun _ ↦ paretoPDF_of_nonneg))
   rw [← ENNReal.toReal_eq_one_iff, ← lintegral_add_compl _ measurableSet_Ici, compl_Ici,
     leftSide, rightSide, add_zero, ← integral_eq_lintegral_of_nonneg_ae]
   . rw [integral_Ici_eq_integral_Ioi]
-    sorry
+    rw [integral_mul_left]
+    rw [integral_Ioi_rpow_of_lt _ ht]
+    . simp
+      rw [← mul_div_assoc, mul_assoc, mul_comm, mul_div_assoc, div_self, mul_one, ← rpow_add ht]
+      . rw [add_neg_self, rpow_zero]
+      . linarith
+    . linarith
   . rw [EventuallyLE, ae_restrict_iff' measurableSet_Ici]
     exact ae_of_all _ (fun x (hx : t ≤ x) ↦ by
       have _ : 0 < x := by linarith
