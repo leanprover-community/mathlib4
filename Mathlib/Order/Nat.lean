@@ -14,7 +14,7 @@ See note [foundational algebra order theory].
 
 ## TODO
 
-Move the `LinearOrder ℕ` instance here (#13082).
+Move the `LinearOrder ℕ` instance here (#13092).
 -/
 
 namespace Nat
