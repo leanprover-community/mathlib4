@@ -77,6 +77,12 @@ lemma mul_mem_left (x y) (hy : y ∈ I) : x * y ∈ I := by
 lemma mul_mem_right (x y) (hx : x ∈ I) : x * y ∈ I := by
   simpa using I.mul hx (I.refl y)
 
+lemma nsmul_mem {x} (n : ℕ) (hx : x ∈ I) : n • x ∈ I := by
+  simpa using I.nsmul _ hx
+
+lemma zsmul_mem {x} (n : ℤ) (hx : x ∈ I) : n • x ∈ I := by
+  simpa using I.zsmul _ hx
+
 instance : AddSubgroupClass (RingCon R) R where
   zero_mem := zero_mem
   add_mem := @add_mem _ _
@@ -87,14 +93,14 @@ instance : Add I where add x y := ⟨x.1 + y.1, I.add_mem x.2 y.2⟩
 instance : Zero I where zero := ⟨0, I.zero_mem⟩
 
 instance : SMul ℕ I where
-  smul n x := ⟨n • x.1, by simpa using I.nsmul _ x.2⟩
+  smul n x := ⟨n • x.1, I.nsmul_mem n x.2⟩
 
 instance : Neg I where neg x := ⟨-x.1, I.neg_mem x.2⟩
 
 instance : Sub I where sub x y := ⟨x.1 - y.1, I.sub_mem x.2 y.2⟩
 
 instance : SMul ℤ I where
-  smul n x := ⟨n • x.1, by simpa using I.zsmul n x.2⟩
+  smul n x := ⟨n • x.1, I.zsmul_mem n x.2⟩
 
 instance : AddCommGroup I :=
   Function.Injective.addCommGroup _ Subtype.coe_injective
