@@ -127,7 +127,8 @@ instance : SMulCommClass R Rᵐᵒᵖ I where
   smul_comm r s x := Subtype.ext <| smul_comm r s x.1
 
 /--
-For any `RingCon R`, when we view it as an ideal, `subtype` is the injective linear map.
+For any `I : RingCon R`, when we view it as an ideal, `I.subtype` is the injective `R`-linear map
+`I → R`.
 -/
 @[simps]
 def subtype : I →ₗ[R] R where
@@ -136,7 +137,8 @@ def subtype : I →ₗ[R] R where
   map_smul' _ _ := rfl
 
 /--
-For any `RingCon R`, when we view it as an ideal in `Rᵒᵖ`, `subtype` is the injective linear map.
+For any `RingCon R`, when we view it as an ideal in `Rᵒᵖ`, `subtype` is the injective `Rᵐᵒᵖ`-linear
+map `I → Rᵐᵒᵖ`.
 -/
 @[simps]
 def subtypeMop : I →ₗ[Rᵐᵒᵖ] Rᵐᵒᵖ where
@@ -150,13 +152,30 @@ section operations
 
 variable {R : Type*} [Ring R] (I : RingCon R)
 
-/--every two-sided ideal is also a left ideal. -/
+/--
+Every two-sided ideal is also a left ideal.
+-/
 def toIdeal : Ideal R := LinearMap.range I.subtype
 
-/--every two-sided ideal is also a right ideal. -/
+lemma mem_toIdeal {x} : x ∈ I.toIdeal ↔ x ∈ I := by simp [toIdeal]
+
+/--
+Every two-sided ideal is also a right ideal.
+-/
 def toIdealMop : Ideal Rᵐᵒᵖ := LinearMap.range I.subtypeMop
 
-/--the smallest two-sided-ideal contain a set. -/
+lemma mem_toIdealMop {x} : x ∈ I.toIdealMop ↔ x.unop ∈ I := by
+  simp only [toIdealMop, LinearMap.mem_range, subtypeMop_apply, Subtype.exists, exists_prop]
+  constructor
+  · rintro ⟨a, ha, rfl⟩; simpa
+  · intro h; exact ⟨x.unop, h, rfl⟩
+
+lemma mem_toIdealMop' {x} : (MulOpposite.op x) ∈ I.toIdealMop ↔ x ∈ I := by
+  rw [mem_toIdealMop]; rfl
+
+/--
+The smallest two-sided-ideal contain a set.
+-/
 def span (s : Set R) : RingCon R := ringConGen (fun a b ↦ a - b ∈ s)
 
 lemma subset_span {s : Set R} : s ⊆ (span s : Set R) := by
@@ -175,7 +194,9 @@ lemma mem_span_iff {s : Set R} {x} :
   specialize hI hxy
   rwa [SetLike.mem_coe, ← rel_iff] at hI
 
-/-- every left ideal generates a two sided ideal. -/
+/--
+Every left ideal generates a two sided ideal.
+-/
 def fromIdeal (I : Ideal R) : RingCon R := span I
 
 lemma fromIdeal_toIdeal : fromIdeal I.toIdeal = I := by
