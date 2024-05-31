@@ -13,13 +13,19 @@ import Mathlib.Tactic.Abel
 
 In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two sided ideal of a ring.
 
+## Notes
+`SetLike (RingCon R) R` makes sense for any `NonUnitalNonAssocRing R`. But later the `module` part,
+we will assume `R` is a ring.
+
 -/
 
 section ideal
 
 namespace RingCon
 
-variable {R : Type*} [Ring R]
+section NonUnitalNonAssocRing
+
+variable {R : Type*} [NonUnitalNonAssocRing R] (I : RingCon R)
 
 instance : SetLike (RingCon R) R where
   coe t := {r | t r 0}
@@ -44,8 +50,6 @@ lemma le_iff (I J : RingCon R) : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) := by
 lemma lt_iff (I J : RingCon R) : I < J ↔ (I : Set R) ⊂ (J : Set R) := by
   rw [lt_iff_le_and_ne, Set.ssubset_iff_subset_ne, le_iff]
   simp
-
-variable (I : RingCon R)
 
 lemma zero_mem : 0 ∈ I := I.refl 0
 
@@ -76,6 +80,7 @@ instance : Neg I where neg x := ⟨-x.1, I.neg_mem x.2⟩
 
 instance : Sub I where sub x y := ⟨x.1 - y.1, I.sub_mem x.2 y.2⟩
 
+
 instance : SMul ℤ I where
   smul n x := ⟨n • x.1, n.rec (fun a ↦ a.rec (by simpa using I.zero_mem)
     (fun a ha ↦ by
@@ -84,13 +89,19 @@ instance : SMul ℤ I where
       exact I.add_mem ha x.2))
     (fun a ↦ a.rec (by simpa using I.neg_mem x.2)
     (fun a ha ↦ by
-      simp only [Nat.succ_eq_add_one, negSucc_zsmul, nsmul_eq_mul, Nat.cast_add, Nat.cast_one,
-        add_mul, one_mul, neg_add_rev] at ha ⊢
-      exact I.add_mem (I.neg_mem x.2) ha))⟩
+      simp only [negSucc_zsmul, Nat.succ_eq_add_one] at ha ⊢
+      rw [add_smul, one_smul, neg_add]
+      exact I.add_mem ha (I.neg_mem x.2)))⟩
 
 instance : AddCommGroup I :=
   Function.Injective.addCommGroup (fun (x : I) ↦ x.1) (fun _ _ h ↦ by ext; exact h)
     rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+end NonUnitalNonAssocRing
+
+section ring
+
+variable {R : Type*} [Ring R] (I : RingCon R)
 
 instance : Module R I where
   smul r x := ⟨r * x.1, I.mul_mem_left _ _ x.2⟩
@@ -119,6 +130,8 @@ instance : Module Rᵐᵒᵖ I where
     ext; show _ * (_ + _) = _ * _ + _ * _; simp only [left_distrib]
   zero_smul x := by
     ext; show _ * 0 = 0; simp only [mul_zero]
+
+end ring
 
 end RingCon
 
