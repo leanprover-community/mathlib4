@@ -155,9 +155,13 @@ variable {R : Type*} [Ring R] (I : RingCon R)
 /--
 Every two-sided ideal is also a left ideal.
 -/
-def toIdeal : Ideal R := LinearMap.range I.subtype
+def toIdeal : Ideal R where
+  carrier := I
+  add_mem' := I.add_mem
+  zero_mem' := I.zero_mem
+  smul_mem' := I.mul_mem_left
 
-lemma mem_toIdeal {x} : x ∈ I.toIdeal ↔ x ∈ I := by simp [toIdeal]
+lemma mem_toIdeal {x} : x ∈ I.toIdeal ↔ x ∈ I := Iff.rfl
 
 /--
 Every two-sided ideal is also a right ideal.
@@ -202,13 +206,7 @@ def fromIdeal (I : Ideal R) : RingCon R := span I
 lemma fromIdeal_toIdeal : fromIdeal I.toIdeal = I := by
   refine SetLike.ext fun x ↦ ?_
   simp only [fromIdeal, toIdeal, mem_span_iff]
-  constructor
-  · intro H
-    refine H I ?_
-    rintro _ ⟨x, rfl⟩
-    exact x.2
-  · intro hx J hJ
-    exact hJ ⟨⟨x, hx⟩, rfl⟩
+  exact ⟨fun H => H I fun _ => id, fun hx _ hJ => hJ hx⟩
 
 lemma le_toIdeal_fromIdeal (J : Ideal R) : J ≤ (fromIdeal J).toIdeal  := by
   intro x hx
