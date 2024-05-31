@@ -28,16 +28,16 @@ generally recommended to use the lemma `IsStronglyCartesian.universal_property` 
 difference between the two is that the latter is more flexible with respect to non-definitional
 equalities.
 
-`IsStronglyCartesian p f φ` expresses that `φ` is a cartesian arrow lying over `f` with respect to
-`p`. This structure also extends `IsHomLift p f φ`.
+`IsStronglyCartesian p f φ` expresses that `φ` is a strongly cartesian morphism lying over `f` with
+respect to `p`, see <https://stacks.math.columbia.edu/tag/02XK>.
 
 ## Implementation
 
-The standard constructor of `IsStronglyCartesian` has both been renamed to `.mk'`, and we
-have provided an alternate constructor `IsStronglyCartesian.mk`. The difference between the two
-is that `IsStronglyCartesian.mk` peforms some substitutions of superfluous variables for the user.
-It is recommended to use these instead to minimize the amount of equalities that needs to be carried
-around in the construction.
+The constructor of `IsStronglyCartesian` has been named `universal_property'`, and is mainly
+intended to be used for constructing instances of this class. To use the universal property, we
+generally recommended to use the lemma `IsStronglyCartesian.universal_property` instead. The
+difference between the two is that the latter is more flexible with respect to non-definitional
+equalities.
 
 ## References
 SGA 1
