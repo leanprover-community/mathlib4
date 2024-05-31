@@ -34,11 +34,6 @@ equalities.
 * [Stacks: Fibred Categories](https://stacks.math.columbia.edu/tag/02XJ)
 -/
 
-/-
-TODO:
-- clean up proofs
--/
-
 universe v₁ v₂ u₁ u₂
 
 open CategoryTheory Functor Category IsHomLift
