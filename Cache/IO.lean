@@ -368,7 +368,7 @@ def unpackCache (hashMap : HashMap) (force : Bool) : CacheM Unit := do
     let exitCode ← child.wait
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
     IO.println s!"Unpacked in {(← IO.monoMsNow) - now} ms"
-    IO.println s!"Completed successfully!"
+    IO.println "Completed successfully!"
   else IO.println "No cache files to decompress"
 
 instance : Ord FilePath where
