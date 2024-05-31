@@ -75,12 +75,12 @@ theorem isRegular_compl (a : α) : IsRegular aᶜ :=
   compl_compl_compl _
 #align heyting.is_regular_compl Heyting.isRegular_compl
 
-protected theorem IsRegular.disjoint_compl_left_iff (ha : IsRegular a) : Disjoint aᶜ b ↔ b ≤ a :=
-  by rw [← le_compl_iff_disjoint_left, ha.eq]
+protected theorem IsRegular.disjoint_compl_left_iff (ha : IsRegular a) :
+    Disjoint aᶜ b ↔ b ≤ a := by rw [← le_compl_iff_disjoint_left, ha.eq]
 #align heyting.is_regular.disjoint_compl_left_iff Heyting.IsRegular.disjoint_compl_left_iff
 
-protected theorem IsRegular.disjoint_compl_right_iff (hb : IsRegular b) : Disjoint a bᶜ ↔ a ≤ b :=
-  by rw [← le_compl_iff_disjoint_right, hb.eq]
+protected theorem IsRegular.disjoint_compl_right_iff (hb : IsRegular b) :
+    Disjoint a bᶜ ↔ a ≤ b := by rw [← le_compl_iff_disjoint_right, hb.eq]
 #align heyting.is_regular.disjoint_compl_right_iff Heyting.IsRegular.disjoint_compl_right_iff
 
 -- See note [reducible non-instances]

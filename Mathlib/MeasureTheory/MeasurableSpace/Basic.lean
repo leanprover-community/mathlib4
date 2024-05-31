@@ -1580,8 +1580,8 @@ theorem measurableSet_preimage (e : α ≃ᵐ β) {s : Set β} :
 #align measurable_equiv.measurable_set_preimage MeasurableEquiv.measurableSet_preimage
 
 @[simp]
-theorem measurableSet_image (e : α ≃ᵐ β) {s : Set α} : MeasurableSet (e '' s) ↔ MeasurableSet s :=
-  by rw [image_eq_preimage, measurableSet_preimage]
+theorem measurableSet_image (e : α ≃ᵐ β) {s : Set α} :
+    MeasurableSet (e '' s) ↔ MeasurableSet s := by rw [image_eq_preimage, measurableSet_preimage]
 #align measurable_equiv.measurable_set_image MeasurableEquiv.measurableSet_image
 
 @[simp] theorem map_eq (e : α ≃ᵐ β) : MeasurableSpace.map e ‹_› = ‹_› :=

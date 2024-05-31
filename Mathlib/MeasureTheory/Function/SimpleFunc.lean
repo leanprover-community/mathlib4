@@ -879,8 +879,9 @@ def ennrealRatEmbed (n : ℕ) : ℝ≥0∞ :=
   ENNReal.ofReal ((Encodable.decode (α := ℚ) n).getD (0 : ℚ))
 #align measure_theory.simple_func.ennreal_rat_embed MeasureTheory.SimpleFunc.ennrealRatEmbed
 
-theorem ennrealRatEmbed_encode (q : ℚ) : ennrealRatEmbed (Encodable.encode q) = Real.toNNReal q :=
-  by rw [ennrealRatEmbed, Encodable.encodek]; rfl
+theorem ennrealRatEmbed_encode (q : ℚ) :
+    ennrealRatEmbed (Encodable.encode q) = Real.toNNReal q := by
+  rw [ennrealRatEmbed, Encodable.encodek]; rfl
 #align measure_theory.simple_func.ennreal_rat_embed_encode MeasureTheory.SimpleFunc.ennrealRatEmbed_encode
 
 /-- Approximate a function `α → ℝ≥0∞` by a sequence of simple functions. -/

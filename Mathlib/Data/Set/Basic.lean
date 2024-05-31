@@ -1595,8 +1595,8 @@ lemma disjoint_singleton_right : Disjoint s {a} ↔ a ∉ s :=
   disjoint_comm.trans disjoint_singleton_left
 #align set.disjoint_singleton_right Set.disjoint_singleton_right
 
-lemma disjoint_singleton : Disjoint ({a} : Set α) {b} ↔ a ≠ b :=
-  by simp
+lemma disjoint_singleton : Disjoint ({a} : Set α) {b} ↔ a ≠ b := by
+  simp
 #align set.disjoint_singleton Set.disjoint_singleton
 
 lemma subset_diff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.symm.trans le_sdiff
