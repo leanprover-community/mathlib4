@@ -22,8 +22,7 @@ When `β` has more structures, `C_c(α, β)` inherits such structures as `AddCom
 `NonUnitalRing`, `NormedSpace` and `CstarRing`.
 
 When the domain `α` is compact, `ContinuousMap.liftCompactlySupported` gives the identification
-`C(α, β) ≃ C_c(α, β)`. When the codomain is a metric space, every continuous compactly supported map
-is a bounded continuous function by `bounded`.
+`C(α, β) ≃ C_c(α, β)`.
 
 ## TODO
 
