@@ -202,9 +202,10 @@ end HurwitzZeta
 
 open HurwitzZeta
 
-/-- Explicit formula for `ζ (2 * k)`, for `k ∈ ℕ` with `k ≠ 0`: we have
-`ζ (2 * k) = (-1) ^ (k + 1) * 2 ^ (2 * k - 1) * π ^ (2 * k) * bernoulli (2 * k) / (2 * k)!`.
-Compare `hasSum_zeta_nat` for a version formulated explicitly as a sum, and
+/-- Explicit formula for `ζ (2 * k)`, for `k ∈ ℕ` with `k ≠ 0`, in terms of the Bernoulli number
+`bernoulli (2 * k)`.
+
+Compare `hasSum_zeta_nat` for a version formulated in terms of a sum over `1 / n ^ (2 * k)`, and
 `riemannZeta_neg_nat_eq_bernoulli` for values at negative integers (equivalent to the above via
 the functional equation). -/
 theorem riemannZeta_two_mul_nat {k : ℕ} (hk : k ≠ 0) :

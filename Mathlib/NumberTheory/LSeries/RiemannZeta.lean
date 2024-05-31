@@ -6,6 +6,7 @@ Authors: David Loeffler
 import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 import Mathlib.NumberTheory.LSeries.HurwitzZeta
 import Mathlib.Analysis.Complex.RemovableSingularity
+import Mathlib.Analysis.PSeriesComplex
 
 #align_import number_theory.zeta_function from "leanprover-community/mathlib"@"57f9349f2fe19d2de7207e99b0341808d977cdcf"
 
@@ -204,10 +205,7 @@ theorem zeta_eq_tsum_one_div_nat_add_one_cpow {s : ℂ} (hs : 1 < re s) :
   have := zeta_eq_tsum_one_div_nat_cpow hs
   rw [tsum_eq_zero_add] at this
   · simpa [zero_cpow (Complex.ne_zero_of_one_lt_re hs)]
-  · refine .of_norm ?_
-    simpa only [← ofReal_natCast, norm_div, norm_one, Complex.norm_eq_abs,
-      abs_cpow_eq_rpow_re_of_nonneg (Nat.cast_nonneg _) (zero_lt_one.trans hs).ne',
-      summable_one_div_nat_rpow] using hs
+  · rwa [Complex.summable_one_div_nat_cpow]
 #align zeta_eq_tsum_one_div_nat_add_one_cpow zeta_eq_tsum_one_div_nat_add_one_cpow
 
 /-- Special case of `zeta_eq_tsum_one_div_nat_cpow` when the argument is in `ℕ`, so the power
