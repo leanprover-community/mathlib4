@@ -207,7 +207,7 @@ jobs:
         with:
           linters: gcc
           run: |
-            bash -o pipefail -c "./scripts/update-style-exceptions.sh"
+            ./scripts/update-style-exceptions.sh
 
       - name: configure git setup
         run: |
