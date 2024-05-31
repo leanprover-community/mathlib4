@@ -77,7 +77,6 @@ variable [Limits.HasColimits C] [Limits.PreservesFilteredColimits (forget C)]
 is for all the induced maps on stalks to be surjective. -/
 theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔ ∀ x : X, Function.Surjective ((stalkFunctor C x).map T) := by
-  rw [isLocallySurjective_iff]
   constructor <;> intro hT
   · /- human proof:
         Let g ∈ Γₛₜ 𝒢 x be a germ. Represent it on an open set U ⊆ X
