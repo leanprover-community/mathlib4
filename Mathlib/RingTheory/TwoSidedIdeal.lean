@@ -41,7 +41,7 @@ instance : SetLike (RingCon R) R where
 
 lemma mem_iff (x : R) : x ∈ I ↔ I x 0 := Iff.rfl
 
-lemma rel_iff (x y : R) : I x y ↔ (x - y) ∈ I := by
+lemma rel_iff (x y : R) : I x y ↔ x - y ∈ I := by
   rw [mem_iff]
   constructor
   · intro h; convert I.sub h (I.refl y); abel
