@@ -807,8 +807,8 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
   have C :
     Tendsto
       (fun n => ∑ i ∈ compPartialSumTarget 0 n n, q.compAlongComposition p i.2 fun _j => y)
-      atTop (𝓝 (g (f (x + y)))) :=
-    by simpa [comp_partialSum] using B
+      atTop (𝓝 (g (f (x + y)))) := by
+    simpa [comp_partialSum] using B
   -- Fourth step: the sum over all compositions is `g (f (x + y))`. This follows from the
   -- convergence along a subsequence proved in the third step, and the fact that the sum is Cauchy
   -- thanks to the summability properties.

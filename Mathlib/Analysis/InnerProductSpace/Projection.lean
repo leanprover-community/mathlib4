@@ -635,8 +635,8 @@ theorem orthogonalProjection_singleton {v : E} (w : E) :
   have hv' : ‖v‖ ≠ 0 := ne_of_gt (norm_pos_iff.mpr hv)
   have key :
     (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • ((orthogonalProjection (𝕜 ∙ v) w) : E) =
-      (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v :=
-    by simp [mul_smul, smul_orthogonalProjection_singleton 𝕜 w, -ofReal_pow]
+      (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v := by
+    simp [mul_smul, smul_orthogonalProjection_singleton 𝕜 w, -ofReal_pow]
   convert key using 1 <;> field_simp [hv']
 #align orthogonal_projection_singleton orthogonalProjection_singleton
 

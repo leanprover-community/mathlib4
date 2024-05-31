@@ -581,8 +581,8 @@ theorem tensor_left_unitality (X₁ X₂ : C) :
   have :
     ((λ_ (𝟙_ C)).inv ▷ (X₁ ⊗ X₂)) ≫
         (α_ (𝟙_ C) (𝟙_ C) (X₁ ⊗ X₂)).hom ≫ (𝟙_ C ◁ (α_ (𝟙_ C) X₁ X₂).inv) =
-      𝟙_ C ◁ (λ_ X₁).inv ▷ X₂ :=
-    by coherence
+      𝟙_ C ◁ (λ_ X₁).inv ▷ X₂ := by
+    coherence
   slice_rhs 1 3 => rw [this]
   clear this
   slice_rhs 1 2 => rw [← MonoidalCategory.whiskerLeft_comp, ← comp_whiskerRight,
@@ -599,8 +599,8 @@ theorem tensor_right_unitality (X₁ X₂ : C) :
   have :
     ((X₁ ⊗ X₂) ◁ (λ_ (𝟙_ C)).inv) ≫
         (α_ X₁ X₂ (𝟙_ C ⊗ 𝟙_ C)).hom ≫ (X₁ ◁ (α_ X₂ (𝟙_ C) (𝟙_ C)).inv) =
-      (α_ X₁ X₂ (𝟙_ C)).hom ≫ (X₁ ◁ (ρ_ X₂).inv ▷ 𝟙_ C) :=
-    by coherence
+      (α_ X₁ X₂ (𝟙_ C)).hom ≫ (X₁ ◁ (ρ_ X₂).inv ▷ 𝟙_ C) := by
+    coherence
   slice_rhs 1 3 => rw [this]
   clear this
   slice_rhs 2 3 => rw [← MonoidalCategory.whiskerLeft_comp, ← comp_whiskerRight,

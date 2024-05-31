@@ -90,8 +90,8 @@ theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R] {f : R[X]}
     (Subalgebra.equivOfEq _ _ <| integralClosure_eq_bot R _).trans
       (Algebra.botEquivOfInjective <| IsFractionRing.injective R <| K)
   have :
-    (algebraMap R _).comp algeq.toAlgHom.toRingHom = (integralClosure R _).toSubring.subtype :=
-    by ext x; (conv_rhs => rw [← algeq.symm_apply_apply x]); rfl
+    (algebraMap R _).comp algeq.toAlgHom.toRingHom = (integralClosure R _).toSubring.subtype := by
+    ext x; (conv_rhs => rw [← algeq.symm_apply_apply x]); rfl
   have H :=
     (mem_lifts _).1
       (integralClosure.mem_lifts_of_monic_of_dvd_map K hf (monic_mul_leadingCoeff_inv g_ne_0)

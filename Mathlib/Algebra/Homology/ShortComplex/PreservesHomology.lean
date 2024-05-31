@@ -36,11 +36,11 @@ variable (F : C ⥤ D)
 /-- A functor preserves homology when it preserves both kernels and cokernels. -/
 class PreservesHomology (F : C ⥤ D) [PreservesZeroMorphisms F] where
   /-- the functor preserves kernels -/
-  preservesKernels ⦃X Y : C⦄ (f : X ⟶ Y) : PreservesLimit (parallelPair f 0) F :=
-    by infer_instance
+  preservesKernels ⦃X Y : C⦄ (f : X ⟶ Y) : PreservesLimit (parallelPair f 0) F := by
+    infer_instance
   /-- the functor preserves cokernels -/
-  preservesCokernels ⦃X Y : C⦄ (f : X ⟶ Y) : PreservesColimit (parallelPair f 0) F :=
-    by infer_instance
+  preservesCokernels ⦃X Y : C⦄ (f : X ⟶ Y) : PreservesColimit (parallelPair f 0) F := by
+    infer_instance
 
 variable [PreservesZeroMorphisms F]
 

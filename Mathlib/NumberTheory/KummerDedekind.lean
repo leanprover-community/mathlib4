@@ -332,8 +332,8 @@ theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I
     (hf : Irreducible (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))) :
     Irreducible (I.map (algebraMap R S)) := by
   have mem_norm_factors : normalize (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) ∈
-      normalizedFactors (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) :=
-    by simp [normalizedFactors_irreducible hf]
+      normalizedFactors (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) := by
+    simp [normalizedFactors_irreducible hf]
   suffices ∃ y, normalizedFactors (I.map (algebraMap R S)) = {y} by
     obtain ⟨y, hy⟩ := this
     have h := normalizedFactors_prod (show I.map (algebraMap R S) ≠ 0 by

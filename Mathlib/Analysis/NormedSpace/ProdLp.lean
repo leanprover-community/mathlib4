@@ -434,8 +434,8 @@ theorem prod_aux_uniformity_eq [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     (prod_antilipschitzWith_equiv_aux p α β).uniformInducing
       (prod_lipschitzWith_equiv_aux p α β).uniformContinuous
   have : (fun x : WithLp p (α × β) × WithLp p (α × β) =>
-    ((WithLp.equiv p (α × β)) x.fst, (WithLp.equiv p (α × β)) x.snd)) = id :=
-    by ext i <;> rfl
+    ((WithLp.equiv p (α × β)) x.fst, (WithLp.equiv p (α × β)) x.snd)) = id := by
+    ext i <;> rfl
   rw [← A.comap_uniformity, this, comap_id]
 
 theorem prod_aux_cobounded_eq [PseudoMetricSpace α] [PseudoMetricSpace β] :
