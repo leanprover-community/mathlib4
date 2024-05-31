@@ -20,7 +20,7 @@ noncomputable section
 
 open Filter Finset Function Encodable
 
-open scoped BigOperators Topology
+open scoped Topology
 
 variable {M : Type*} [CommMonoid M] [TopologicalSpace M] {m m' : M}
 

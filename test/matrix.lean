@@ -79,29 +79,29 @@ end safety
 #guard !![1,2,;3,4,] = of ![![1,2], ![3,4]]
 
 example {a a' b b' c c' d d' : α} :
-  !![a, b; c, d] + !![a', b'; c', d'] = !![a + a', b + b'; c + c', d + d'] :=
-by simp
+  !![a, b; c, d] + !![a', b'; c', d'] = !![a + a', b + b'; c + c', d + d'] := by
+  simp
 
 example {a a' b b' c c' d d' : β} :
-  !![a, b; c, d] - !![a', b'; c', d'] = !![a - a', b - b'; c - c', d - d'] :=
-by simp
+  !![a, b; c, d] - !![a', b'; c', d'] = !![a - a', b - b'; c - c', d - d'] := by
+  simp
 
 example {a a' b b' c c' d d' : α} :
   !![a, b; c, d] * !![a', b'; c', d'] =
-    !![a * a' + b * c', a * b' + b * d'; c * a' + d * c', c * b' + d * d'] :=
-by simp
+    !![a * a' + b * c', a * b' + b * d'; c * a' + d * c', c * b' + d * d'] := by
+  simp
 
 example {a b c d x y : α} :
-  !![a, b; c, d] *ᵥ ![x, y] = ![a * x + b * y, c * x + d * y] :=
-by simp
+  !![a, b; c, d] *ᵥ ![x, y] = ![a * x + b * y, c * x + d * y] := by
+  simp
 
 /-!
 TODO: the below lemmas rely on simp lemmas assuming the indexing numerals are assembled from
 `bit0` and `bit1`, so no longer work in Lean 4
 -/
 /-
-example {a b c d : α} : submatrix !![a, b; c, d] ![1, 0] ![0] = !![c; a] :=
-by ext; simp
+example {a b c d : α} : submatrix !![a, b; c, d] ![1, 0] ![0] = !![c; a] := by
+  ext; simp
 
 example {a b c : α} : ![a, b, c] 0 = a := by simp
 example {a b c : α} : ![a, b, c] 1 = b := by simp

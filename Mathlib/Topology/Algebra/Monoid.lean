@@ -27,7 +27,7 @@ open scoped Classical
 open Set Filter TopologicalSpace
 
 open scoped Classical
-open Topology BigOperators Pointwise
+open Topology Pointwise
 
 variable {ι α M N X : Type*} [TopologicalSpace X]
 

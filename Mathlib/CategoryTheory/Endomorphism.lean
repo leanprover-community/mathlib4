@@ -205,19 +205,26 @@ def mapAut : Aut X →* Aut (f.obj X) where
 set_option linter.uppercaseLean3 false in
 #align category_theory.functor.map_Aut CategoryTheory.Functor.mapAut
 
-/-- `equivOfFullyFaithful f` as an isomorphism between endomorphism monoids. -/
+namespace FullyFaithful
+
+variable {f}
+variable (hf : FullyFaithful f)
+
+/-- `mulEquivEnd` as an isomorphism between endomorphism monoids. -/
 @[simps!]
-noncomputable def mulEquivOfFullyFaithful [Full f] [Faithful f] :
+noncomputable def mulEquivEnd (X : C) :
     End X ≃* End (f.obj X) where
-  toEquiv := equivOfFullyFaithful f
+  toEquiv := hf.homEquiv
   __ := mapEnd X f
 
-/-- `isoEquivOfFullyFaithful f` as an isomorphism between automorphism groups. -/
+/-- `mulEquivAut` as an isomorphism between automorphism groups. -/
 @[simps!]
-noncomputable def autMulEquivOfFullyFaithful [Full f] [Faithful f] :
+noncomputable def autMulEquivOfFullyFaithful (X : C) :
     Aut X ≃* Aut (f.obj X) where
-  toEquiv := isoEquivOfFullyFaithful f
+  toEquiv := hf.isoEquiv
   __ := mapAut X f
+
+end FullyFaithful
 
 end Functor
 

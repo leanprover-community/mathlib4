@@ -51,7 +51,7 @@ Legendre, p-adic
 
 open Finset Nat multiplicity
 
-open BigOperators Nat
+open Nat
 
 namespace Nat
 

@@ -18,8 +18,6 @@ More lemmas about `adjoin` can be found in `RingTheory.Adjoin`.
 
 universe u u' v w w'
 
-open BigOperators
-
 /-- A subalgebra is a sub(semi)ring that includes the range of `algebraMap`. -/
 structure Subalgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] extends
   Subsemiring A : Type v where

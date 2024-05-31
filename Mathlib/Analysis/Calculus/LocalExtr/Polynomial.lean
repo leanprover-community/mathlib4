@@ -31,8 +31,6 @@ polynomial, Rolle's Theorem, root
 
 namespace Polynomial
 
-open scoped BigOperators
-
 /-- The number of roots of a real polynomial `p` is at most the number of roots of its derivative
 that are not roots of `p` plus one. -/
 theorem card_roots_toFinset_le_card_roots_derivative_diff_roots_succ (p : ℝ[X]) :

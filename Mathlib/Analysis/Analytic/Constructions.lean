@@ -20,7 +20,7 @@ We show that the following are analytic:
 noncomputable section
 
 open scoped Classical
-open Topology BigOperators NNReal Filter ENNReal
+open Topology NNReal Filter ENNReal
 
 open Set Filter Asymptotics
 

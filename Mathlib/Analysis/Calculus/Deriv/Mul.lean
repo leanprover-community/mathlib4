@@ -27,7 +27,7 @@ universe u v w
 
 noncomputable section
 
-open scoped Classical Topology BigOperators Filter ENNReal
+open scoped Classical Topology Filter ENNReal
 
 open Filter Asymptotics Set
 
@@ -356,6 +356,23 @@ theorem derivWithin_finset_prod (hxs : UniqueDiffWithinAt 𝕜 s x)
       ∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • derivWithin (f i) s x :=
   (HasDerivWithinAt.finset_prod fun i hi ↦ (hf i hi).hasDerivWithinAt).derivWithin hxs
 
+theorem DifferentiableAt.finset_prod (hd : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
+    DifferentiableAt 𝕜 (∏ i ∈ u, f i ·) x :=
+  (HasDerivAt.finset_prod (fun i hi ↦ DifferentiableAt.hasDerivAt (hd i hi))).differentiableAt
+
+theorem DifferentiableWithinAt.finset_prod (hd : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
+    DifferentiableWithinAt 𝕜 (∏ i ∈ u, f i ·) s x :=
+  (HasDerivWithinAt.finset_prod (fun i hi ↦
+    DifferentiableWithinAt.hasDerivWithinAt (hd i hi))).differentiableWithinAt
+
+theorem DifferentiableOn.finset_prod (hd : ∀ i ∈ u, DifferentiableOn 𝕜 (f i) s) :
+    DifferentiableOn 𝕜 (∏ i ∈ u, f i ·) s :=
+  fun x hx ↦ .finset_prod (fun i hi ↦ hd i hi x hx)
+
+theorem Differentiable.finset_prod (hd : ∀ i ∈ u, Differentiable 𝕜 (f i)) :
+    Differentiable 𝕜 (∏ i ∈ u, f i ·) :=
+  fun x ↦ .finset_prod (fun i hi ↦ hd i hi x)
+
 end Prod
 
 section Div
@@ -397,9 +414,10 @@ theorem Differentiable.div_const (hc : Differentiable 𝕜 c) (d : 𝕜') :
     Differentiable 𝕜 fun x => c x / d := fun x => (hc x).div_const d
 #align differentiable.div_const Differentiable.div_const
 
-theorem derivWithin_div_const (hc : DifferentiableWithinAt 𝕜 c s x) (d : 𝕜')
-    (hxs : UniqueDiffWithinAt 𝕜 s x) : derivWithin (fun x => c x / d) s x = derivWithin c s x / d :=
-  by simp [div_eq_inv_mul, derivWithin_const_mul, hc, hxs]
+theorem derivWithin_div_const (hc : DifferentiableWithinAt 𝕜 c s x)
+    (d : 𝕜') (hxs : UniqueDiffWithinAt 𝕜 s x) :
+    derivWithin (fun x => c x / d) s x = derivWithin c s x / d := by
+  simp [div_eq_inv_mul, derivWithin_const_mul, hc, hxs]
 #align deriv_within_div_const derivWithin_div_const
 
 @[simp]

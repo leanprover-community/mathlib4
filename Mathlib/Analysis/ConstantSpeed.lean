@@ -40,7 +40,7 @@ arc-length, parameterization
 -/
 
 
-open scoped BigOperators NNReal ENNReal
+open scoped NNReal ENNReal
 
 open Set MeasureTheory Classical
 

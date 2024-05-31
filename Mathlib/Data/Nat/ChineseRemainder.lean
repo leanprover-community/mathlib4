@@ -25,7 +25,6 @@ Chinese Remainder Theorem, Gödel, beta function
 namespace Nat
 
 variable {ι : Type*}
-open BigOperators
 
 lemma modEq_list_prod_iff {a b} {l : List ℕ} (co : l.Pairwise Coprime) :
     a ≡ b [MOD l.prod] ↔ ∀ i, a ≡ b [MOD l.get i] := by

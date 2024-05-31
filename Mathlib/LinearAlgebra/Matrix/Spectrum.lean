@@ -24,8 +24,6 @@ namespace Matrix
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 variable {A : Matrix n n 𝕜}
 
-open scoped BigOperators
-
 namespace IsHermitian
 
 section DecidableEq

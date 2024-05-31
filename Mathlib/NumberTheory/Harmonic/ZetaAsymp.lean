@@ -3,7 +3,7 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.ZetaFunction
+import Mathlib.NumberTheory.LSeries.RiemannZeta
 import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 
 /-!
@@ -27,7 +27,7 @@ exists and is equal to `γ`. Finally, using this and the Riemann removable singu
 we obtain the limit along punctured neighbourhoods of 1 in `ℂ`.
 -/
 
-open Real BigOperators Set MeasureTheory Filter Topology
+open Real Set MeasureTheory Filter Topology
 
 namespace ZetaAsymptotics
 -- since the intermediate lemmas are of little interest in themselves we put them in a namespace

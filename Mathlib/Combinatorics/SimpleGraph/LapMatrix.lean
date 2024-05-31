@@ -23,7 +23,7 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 -/
 
 
-open BigOperators Finset Matrix
+open Finset Matrix
 
 namespace SimpleGraph
 

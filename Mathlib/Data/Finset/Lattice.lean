@@ -3,17 +3,15 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Multiset.Lattice
 import Mathlib.Data.Set.Lattice
-import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Nat
 
 #align_import data.finset.lattice from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 
@@ -21,11 +19,15 @@ import Mathlib.Order.Hom.Lattice
 # Lattice operations on finsets
 -/
 
+-- TODO:
+-- assert_not_exists OrderedCommMonoid
+assert_not_exists MonoidWithZero
+
+open Function Multiset OrderDual
+
 variable {F α β γ ι κ : Type*}
 
 namespace Finset
-
-open Multiset OrderDual
 
 /-! ### sup -/
 
@@ -307,8 +309,8 @@ theorem sup_set_eq_biUnion (s : Finset α) (f : α → Set β) : s.sup f = ⋃ x
 #align finset.sup_set_eq_bUnion Finset.sup_set_eq_biUnion
 
 theorem sup_eq_sSup_image [CompleteLattice β] (s : Finset α) (f : α → β) :
-    s.sup f = sSup (f '' s) :=
-  by classical rw [← Finset.coe_image, ← sup_id_eq_sSup, sup_image, Function.id_comp]
+    s.sup f = sSup (f '' s) := by
+  classical rw [← Finset.coe_image, ← sup_id_eq_sSup, sup_image, Function.id_comp]
 #align finset.sup_eq_Sup_image Finset.sup_eq_sSup_image
 
 /-! ### inf -/
@@ -1249,8 +1251,9 @@ theorem sup'_inf_distrib_left (f : ι → α) (a : α) :
   | cons _ _ _ hs ih => simp_rw [sup'_cons hs, inf_sup_left, ih]
 #align finset.sup'_inf_distrib_left Finset.sup'_inf_distrib_left
 
-theorem sup'_inf_distrib_right (f : ι → α) (a : α) : s.sup' hs f ⊓ a = s.sup' hs fun i => f i ⊓ a :=
-  by rw [inf_comm, sup'_inf_distrib_left]; simp_rw [inf_comm]
+theorem sup'_inf_distrib_right (f : ι → α) (a : α) :
+    s.sup' hs f ⊓ a = s.sup' hs fun i => f i ⊓ a := by
+  rw [inf_comm, sup'_inf_distrib_left]; simp_rw [inf_comm]
 #align finset.sup'_inf_distrib_right Finset.sup'_inf_distrib_right
 
 theorem sup'_inf_sup' (f : ι → α) (g : κ → α) :
@@ -1811,7 +1814,7 @@ theorem card_le_of_interleaved {s t : Finset α}
       card_mono <| image_subset_iff.2 fun x _ =>
           insert_subset_insert _ (image_subset_image <| filter_subset _ _)
             (min_mem_insert_top_image_coe _)
-    _ ≤ t.card + 1 := (card_insert_le _ _).trans (add_le_add_right card_image_le _)
+    _ ≤ t.card + 1 := (card_insert_le _ _).trans (Nat.add_le_add_right card_image_le _)
 #align finset.card_le_of_interleaved Finset.card_le_of_interleaved
 
 /-- If finsets `s` and `t` are interleaved, then `Finset.card s ≤ Finset.card (t \ s) + 1`. -/
@@ -2074,37 +2077,6 @@ end Set
 
 namespace Finset
 
-/-! ### Interaction with ordered algebra structures -/
-
-
-theorem sup_mul_le_mul_sup_of_nonneg [LinearOrderedSemiring α] [OrderBot α] {a b : ι → α}
-    (s : Finset ι) (ha : ∀ i ∈ s, 0 ≤ a i) (hb : ∀ i ∈ s, 0 ≤ b i) :
-    s.sup (a * b) ≤ s.sup a * s.sup b :=
-  Finset.sup_le fun _i hi =>
-    mul_le_mul (le_sup hi) (le_sup hi) (hb _ hi) ((ha _ hi).trans <| le_sup hi)
-#align finset.sup_mul_le_mul_sup_of_nonneg Finset.sup_mul_le_mul_sup_of_nonneg
-
-theorem mul_inf_le_inf_mul_of_nonneg [LinearOrderedSemiring α] [OrderTop α] {a b : ι → α}
-    (s : Finset ι) (ha : ∀ i ∈ s, 0 ≤ a i) (hb : ∀ i ∈ s, 0 ≤ b i) :
-    s.inf a * s.inf b ≤ s.inf (a * b) :=
-  Finset.le_inf fun i hi => mul_le_mul (inf_le hi) (inf_le hi) (Finset.le_inf hb) (ha i hi)
-#align finset.mul_inf_le_inf_mul_of_nonneg Finset.mul_inf_le_inf_mul_of_nonneg
-
-theorem sup'_mul_le_mul_sup'_of_nonneg [LinearOrderedSemiring α] {a b : ι → α} (s : Finset ι)
-    (H : s.Nonempty) (ha : ∀ i ∈ s, 0 ≤ a i) (hb : ∀ i ∈ s, 0 ≤ b i) :
-    s.sup' H (a * b) ≤ s.sup' H a * s.sup' H b :=
-  (sup'_le _ _) fun _i hi =>
-    mul_le_mul (le_sup' _ hi) (le_sup' _ hi) (hb _ hi) ((ha _ hi).trans <| le_sup' _ hi)
-#align finset.sup'_mul_le_mul_sup'_of_nonneg Finset.sup'_mul_le_mul_sup'_of_nonneg
-
-theorem inf'_mul_le_mul_inf'_of_nonneg [LinearOrderedSemiring α] {a b : ι → α} (s : Finset ι)
-    (H : s.Nonempty) (ha : ∀ i ∈ s, 0 ≤ a i) (hb : ∀ i ∈ s, 0 ≤ b i) :
-    s.inf' H a * s.inf' H b ≤ s.inf' H (a * b) :=
-  (le_inf' _ _) fun _i hi => mul_le_mul (inf'_le _ hi) (inf'_le _ hi) (le_inf' _ _ hb) (ha _ hi)
-#align finset.inf'_mul_le_mul_inf'_of_nonneg Finset.inf'_mul_le_mul_inf'_of_nonneg
-
-open Function
-
 /-! ### Interaction with big lattice/set operations -/
 
 
@@ -2126,8 +2098,8 @@ theorem iSup_singleton (a : α) (s : α → β) : ⨆ x ∈ ({a} : Finset α), s
 theorem iInf_singleton (a : α) (s : α → β) : ⨅ x ∈ ({a} : Finset α), s x = s a := by simp
 #align finset.infi_singleton Finset.iInf_singleton
 
-theorem iSup_option_toFinset (o : Option α) (f : α → β) : ⨆ x ∈ o.toFinset, f x = ⨆ x ∈ o, f x :=
-  by simp
+theorem iSup_option_toFinset (o : Option α) (f : α → β) : ⨆ x ∈ o.toFinset, f x = ⨆ x ∈ o, f x := by
+  simp
 #align finset.supr_option_to_finset Finset.iSup_option_toFinset
 
 theorem iInf_option_toFinset (o : Option α) (f : α → β) : ⨅ x ∈ o.toFinset, f x = ⨅ x ∈ o, f x :=

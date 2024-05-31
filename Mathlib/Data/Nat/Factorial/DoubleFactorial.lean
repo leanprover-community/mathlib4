@@ -68,8 +68,6 @@ theorem doubleFactorial_two_mul : ∀ n : ℕ, (2 * n)‼ = 2 ^ n * n !
     ring
 #align nat.double_factorial_two_mul Nat.doubleFactorial_two_mul
 
-open BigOperators
-
 theorem doubleFactorial_eq_prod_even : ∀ n : ℕ, (2 * n)‼ = ∏ i ∈ Finset.range n, 2 * (i + 1)
   | 0 => rfl
   | n + 1 => by

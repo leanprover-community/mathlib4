@@ -29,8 +29,6 @@ open Ideal
 
 open UniqueFactorizationMonoid
 
-open scoped BigOperators
-
 open scoped nonZeroDivisors
 
 open UniqueFactorizationMonoid
