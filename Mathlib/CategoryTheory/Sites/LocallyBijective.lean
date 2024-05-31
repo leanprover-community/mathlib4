@@ -55,7 +55,7 @@ private lemma isLocallyBijective_iff_isIso' :
       have eq₂ := FunctorToTypes.naturality _ _ f.val g₂.op (t f₂ hf₂)
       have eq₃ := congr_arg (G.val.map g₁.op) (Presheaf.app_localPreimage f.val s _ hf₁)
       have eq₄ := congr_arg (G.val.map g₂.op) (Presheaf.app_localPreimage f.val s _ hf₂)
-      refine' eq₁.trans (eq₃.trans (Eq.trans _ (eq₄.symm.trans eq₂.symm)))
+      refine eq₁.trans (eq₃.trans (Eq.trans ?_ (eq₄.symm.trans eq₂.symm)))
       erw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply]
       simp only [← op_comp, w]
     refine ⟨H.amalgamate t ht, ?_⟩
