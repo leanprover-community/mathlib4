@@ -788,8 +788,8 @@ abbrev image.map : image f.hom ⟶ image g.hom :=
   (HasImageMap.imageMap sq).map
 #align category_theory.limits.image.map CategoryTheory.Limits.image.map
 
-theorem image.factor_map : factorThruImage f.hom ≫ image.map sq = sq.left ≫ factorThruImage g.hom :=
-  by simp
+theorem image.factor_map :
+    factorThruImage f.hom ≫ image.map sq = sq.left ≫ factorThruImage g.hom := by simp
 #align category_theory.limits.image.factor_map CategoryTheory.Limits.image.factor_map
 
 theorem image.map_ι : image.map sq ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by simp
