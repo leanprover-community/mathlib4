@@ -69,10 +69,10 @@ def completedRiemannZeta (s : ℂ) : ℂ := completedHurwitzZetaEven 0 s
 #align riemann_completed_zeta completedRiemannZeta
 
 lemma HurwitzZeta.completedHurwitzZetaEven_zero (s : ℂ) :
-    completedHurwitzZetaEven 0 s = completedRiemannZeta s := by rfl
+    completedHurwitzZetaEven 0 s = completedRiemannZeta s := rfl
 
 lemma HurwitzZeta.completedHurwitzZetaEven₀_zero (s : ℂ) :
-    completedHurwitzZetaEven₀ 0 s = completedRiemannZeta₀ s := by rfl
+    completedHurwitzZetaEven₀ 0 s = completedRiemannZeta₀ s := rfl
 
 lemma HurwitzZeta.completedCosZeta_zero (s : ℂ) :
     completedCosZeta 0 s = completedRiemannZeta s := by
@@ -80,8 +80,8 @@ lemma HurwitzZeta.completedCosZeta_zero (s : ℂ) :
 
 lemma HurwitzZeta.completedCosZeta₀_zero (s : ℂ) :
     completedCosZeta₀ 0 s = completedRiemannZeta₀ s := by
-  rw [completedRiemannZeta₀,
-    completedHurwitzZetaEven₀, completedCosZeta₀, hurwitzEvenFEPair_zero_symm]
+  rw [completedRiemannZeta₀, completedHurwitzZetaEven₀, completedCosZeta₀,
+    hurwitzEvenFEPair_zero_symm]
 
 lemma completedRiemannZeta_eq (s : ℂ) :
     completedRiemannZeta s = completedRiemannZeta₀ s - 1 / s - 1 / (1 - s) := by
@@ -103,9 +103,6 @@ theorem completedRiemannZeta₀_one_sub (s : ℂ) :
     completedRiemannZeta₀ (1 - s) = completedRiemannZeta₀ s := by
   rw [← completedHurwitzZetaEven₀_zero, ← completedCosZeta₀_zero, completedHurwitzZetaEven₀_one_sub]
 #align riemann_completed_zeta₀_one_sub completedRiemannZeta₀_one_sub
-
-@[deprecated completedRiemannZeta₀_one_sub (since := "2024-05-27")]
-alias riemannCompletedZeta₀_one_sub := completedRiemannZeta₀_one_sub
 
 /-- Riemann zeta functional equation, formulated for `Λ`: for any complex `s` we have
 `Λ (1 - s) = Λ s`. -/
@@ -179,8 +176,8 @@ def RiemannHypothesis : Prop :=
 -/
 
 theorem completedZeta_eq_tsum_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
-    completedRiemannZeta s = (π : ℂ) ^ (-s / 2) * Gamma (s / 2) *
-    ∑' n : ℕ, 1 / (n : ℂ) ^ s := by
+    completedRiemannZeta s =
+      (π : ℂ) ^ (-s / 2) * Gamma (s / 2) * ∑' n : ℕ, 1 / (n : ℂ) ^ s := by
   have := (hasSum_nat_completedCosZeta 0 hs).tsum_eq.symm
   simp only [QuotientAddGroup.mk_zero, completedCosZeta_zero] at this
   simp only [this, Gammaℝ_def, mul_zero, zero_mul, Real.cos_zero, ofReal_one, mul_one, mul_one_div,
@@ -236,6 +233,9 @@ noncomputable alias riemannCompletedZeta₀ := completedRiemannZeta₀
 
 @[deprecated completedRiemannZeta (since := "2024-05-27")]
 noncomputable alias riemannCompletedZeta := completedRiemannZeta
+
+@[deprecated completedRiemannZeta₀_one_sub (since := "2024-05-27")]
+alias riemannCompletedZeta₀_one_sub := completedRiemannZeta₀_one_sub
 
 @[deprecated completedRiemannZeta_one_sub (since := "2024-05-27")]
 alias riemannCompletedZeta_one_sub := completedRiemannZeta_one_sub
