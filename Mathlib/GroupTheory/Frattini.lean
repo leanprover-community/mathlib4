@@ -9,12 +9,14 @@ import Mathlib.GroupTheory.Nilpotent
 import Mathlib.Order.Radical
 
 /-!
+# The Frattini subgroup
+
 This contains the definition of the Frattini subgroup of a group, and
-three elementary results
-* The frattini subgroup is characteristic
+three elementary results:
+* The Frattini subgroup is characteristic.
 * If every subgroup of a group is contained in a maximal subgroup, then
-the frattini subgroup consists of the non-generating elements of the group
-* The frattini subgroup of a finite group is nilpotent
+the Frattini subgroup consists of the non-generating elements of the group.
+* The Frattini subgroup of a finite group is nilpotent.
 -/
 
 /-- The Frattini subgroup of a group is the intersection of the maximal subgroups. -/
