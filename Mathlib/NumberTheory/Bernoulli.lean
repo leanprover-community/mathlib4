@@ -403,11 +403,9 @@ theorem sum_Ico_pow (n p : ℕ) :
         ∑ k ∈ Ico 1 n.succ, (k : ℚ) ^ p.succ) = ∑ k ∈ range n.succ, (k : ℚ) ^ p.succ := by
       simp [sum_Ico_eq_sub _ hle, succ_ne_zero]
     -- extract the last term of the sum
-        _ = (∑ k ∈ range n, (k : ℚ) ^ p.succ) + (n : ℚ) ^ p.succ := by
-      rw [sum_range_succ]
+        _ = (∑ k ∈ range n, (k : ℚ) ^ p.succ) + (n : ℚ) ^ p.succ := by rw [sum_range_succ]
     -- apply the key lemma, `sum_range_pow`
-        _ = (∑ i ∈ range p.succ.succ, f i) + (n : ℚ) ^ p.succ := by
-      simp [f, sum_range_pow]
+        _ = (∑ i ∈ range p.succ.succ, f i) + (n : ℚ) ^ p.succ := by simp [f, sum_range_pow]
     -- extract the first two terms of the sum
         _ = (∑ i ∈ range p, f i.succ.succ) + f 1 + f 0 + (n : ℚ) ^ p.succ := by
       simp_rw [sum_range_succ']
@@ -417,8 +415,7 @@ theorem sum_Ico_pow (n p : ℕ) :
         _ = (∑ i ∈ range p, f' i.succ.succ) + f' 1 + f' 0 := by
       simpa [f, f', h1, fun i => show i + 2 = i + 1 + 1 from rfl]
     -- rejoin the first two terms of the sum
-        _ = ∑ i ∈ range p.succ.succ, f' i := by
-      simp_rw [sum_range_succ']
+        _ = ∑ i ∈ range p.succ.succ, f' i := by simp_rw [sum_range_succ']
 #align sum_Ico_pow sum_Ico_pow
 
 end Faulhaber

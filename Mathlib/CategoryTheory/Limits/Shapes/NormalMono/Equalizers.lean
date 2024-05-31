@@ -46,7 +46,8 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
       calc
         kernel.ι (prod.lift f g) ≫ g = kernel.ι (prod.lift f g) ≫ prod.lift f g ≫ Limits.prod.snd :=
           by rw [prod.lift_snd]
-        _ = (0 : kernel (prod.lift f g) ⟶ P ⨯ Q) ≫ Limits.prod.snd := by rw [kernel.condition_assoc]
+        _ = (0 : kernel (prod.lift f g) ⟶ P ⨯ Q) ≫ Limits.prod.snd := by
+          rw [kernel.condition_assoc]
         _ = 0 := zero_comp
 
   HasLimit.mk
@@ -62,8 +63,7 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
               prod.hom_ext
                 (calc
                   ((PullbackCone.snd s ≫ b) ≫ prod.lift f g) ≫ Limits.prod.fst =
-                      PullbackCone.snd s ≫ b ≫ f := by
-                    simp only [prod.lift_fst, Category.assoc]
+                      PullbackCone.snd s ≫ b ≫ f := by simp only [prod.lift_fst, Category.assoc]
                   _ = PullbackCone.fst s ≫ a ≫ f := by rw [PullbackCone.condition_assoc]
                   _ = PullbackCone.fst s ≫ 0 := by rw [haf]
                   _ = 0 ≫ Limits.prod.fst := by rw [comp_zero, zero_comp]
@@ -222,16 +222,14 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
               coprod.hom_ext
                 (calc
                   coprod.inl ≫ coprod.desc f g ≫ b ≫ PushoutCocone.inr s =
-                      f ≫ b ≫ PushoutCocone.inr s := by
-                    rw [coprod.inl_desc_assoc]
+                      f ≫ b ≫ PushoutCocone.inr s := by rw [coprod.inl_desc_assoc]
                   _ = f ≫ a ≫ PushoutCocone.inl s := by rw [PushoutCocone.condition]
                   _ = 0 ≫ PushoutCocone.inl s := by rw [← Category.assoc, eq_whisker hfa]
                   _ = coprod.inl ≫ 0 := by rw [comp_zero, zero_comp]
                   )
                 (calc
                   coprod.inr ≫ coprod.desc f g ≫ b ≫ PushoutCocone.inr s =
-                      g ≫ b ≫ PushoutCocone.inr s := by
-                    rw [coprod.inr_desc_assoc]
+                      g ≫ b ≫ PushoutCocone.inr s := by rw [coprod.inr_desc_assoc]
                   _ = 0 ≫ PushoutCocone.inr s := by rw [← Category.assoc, eq_whisker hgb]
                   _ = coprod.inr ≫ 0 := by rw [comp_zero, zero_comp]
                   ))
