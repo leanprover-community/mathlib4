@@ -157,7 +157,7 @@ theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s: ℤ) :
   intro i hi
   simp_all only [Finset.mem_range]
   congr 1
-  rw [Ring.choose_eq_Nat_choose, natCast_zsmul]
+  rw [Ring.choose_natCast, natCast_zsmul]
   congr 1
   rw [Int.neg_sub_one_sub_nat i r 1 (-s - order R b c) (le_of_lt (Int.lt_toNat.mp hi)),
     show -s - 1 - i = -i + -s - 1 by linarith]
@@ -184,7 +184,7 @@ theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s: ℤ) : Finset.sum (F
   simp only [zpow_add, mul_neg, mul_one, zpow_natCast, zpow_one, Units.val_neg, Units.val_mul,
     Units.val_pow_eq_pow_val, Units.val_one]
   exact le_of_lt hi
-  rw [Ring.choose_eq_Nat_choose, natCast_zsmul]
+  rw [Ring.choose_natCast, natCast_zsmul]
   congr 1
   rw [Nat.choose_symm (le_of_lt hi)]
   rw [Int.neg_sub_one_sub_nat i s 1 (-r - order R a c) (le_of_lt (Int.lt_toNat.mp hi)),
