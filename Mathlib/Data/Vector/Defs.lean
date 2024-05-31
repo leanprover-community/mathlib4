@@ -285,4 +285,5 @@ instance : GetElem (Vector α n) Nat α fun _ i => i < n where
   getElem := fun x i h => get x ⟨i, h⟩
 
 end Vector
+
 end Mathlib
