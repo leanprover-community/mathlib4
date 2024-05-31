@@ -14,8 +14,8 @@ import Mathlib.Tactic.Abel
 In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two sided ideal of a ring.
 
 ## Notes
-`SetLike (RingCon R) R` makes sense for any `NonUnitalNonAssocRing R`. But later the `module` part,
-we will assume `R` is a ring.
+`SetLike (RingCon R) R` makes sense for any `NonUnitalNonAssocRing R`.
+But later for the `module` part, we will assume `R` is a ring.
 
 -/
 
@@ -75,7 +75,8 @@ instance : Add I where add x y := ⟨x.1 + y.1, I.add_mem x.2 y.2⟩
 instance : Zero I where zero := ⟨0, I.zero_mem⟩
 
 instance : SMul ℕ I where
-  smul n x := ⟨n • x.1, n.rec (by simpa using I.zero_mem) fun n hn ↦ by
+  smul n x :=
+  ⟨n • x.1, n.rec (by simpa using I.zero_mem) fun n hn ↦ by
     simpa only [Nat.succ_eq_add_one, add_smul, one_smul] using I.add_mem hn x.2⟩
 
 instance : Neg I where neg x := ⟨-x.1, I.neg_mem x.2⟩
