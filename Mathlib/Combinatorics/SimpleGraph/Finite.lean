@@ -3,6 +3,7 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov
 -/
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Sym.Card
 
@@ -100,8 +101,8 @@ theorem edgeFinset_inf [DecidableEq V] : (G₁ ⊓ G₂).edgeFinset = G₁.edgeF
 #align simple_graph.edge_finset_inf SimpleGraph.edgeFinset_inf
 
 @[simp]
-theorem edgeFinset_sdiff [DecidableEq V] : (G₁ \ G₂).edgeFinset = G₁.edgeFinset \ G₂.edgeFinset :=
-  by simp [edgeFinset]
+theorem edgeFinset_sdiff [DecidableEq V] :
+    (G₁ \ G₂).edgeFinset = G₁.edgeFinset \ G₂.edgeFinset := by simp [edgeFinset]
 #align simple_graph.edge_finset_sdiff SimpleGraph.edgeFinset_sdiff
 
 theorem edgeFinset_card : G.edgeFinset.card = Fintype.card G.edgeSet :=
@@ -424,7 +425,7 @@ theorem maxDegree_le_of_forall_degree_le [DecidableRel G.Adj] (k : ℕ) (h : ∀
     apply h
   · rw [not_nonempty_iff_eq_empty] at hV
     rw [maxDegree, hV, image_empty]
-    exact zero_le k
+    exact k.zero_le
 #align simple_graph.max_degree_le_of_forall_degree_le SimpleGraph.maxDegree_le_of_forall_degree_le
 
 theorem degree_lt_card_verts [DecidableRel G.Adj] (v : V) : G.degree v < Fintype.card V := by

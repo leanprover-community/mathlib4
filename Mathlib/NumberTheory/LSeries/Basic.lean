@@ -47,8 +47,6 @@ to `N` and `R` coerces to `ℂ`) as arguments to `LSeries` etc.
 L-series
 -/
 
-open scoped BigOperators
-
 open Complex
 
 /-!

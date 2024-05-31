@@ -40,7 +40,7 @@ It is naturally endowed with a topology: the Zariski topology.
 
 noncomputable section
 
-open DirectSum BigOperators Pointwise SetLike TopCat TopologicalSpace CategoryTheory Opposite
+open DirectSum Pointwise SetLike TopCat TopologicalSpace CategoryTheory Opposite
 
 variable {R A : Type*}
 variable [CommSemiring R] [CommRing A] [Algebra R A]
@@ -262,8 +262,8 @@ theorem zeroLocus_iUnion {γ : Sort*} (s : γ → Set A) :
 #align projective_spectrum.zero_locus_Union ProjectiveSpectrum.zeroLocus_iUnion
 
 theorem zeroLocus_bUnion (s : Set (Set A)) :
-    zeroLocus 𝒜 (⋃ s' ∈ s, s' : Set A) = ⋂ s' ∈ s, zeroLocus 𝒜 s' :=
-  by simp only [zeroLocus_iUnion]
+    zeroLocus 𝒜 (⋃ s' ∈ s, s' : Set A) = ⋂ s' ∈ s, zeroLocus 𝒜 s' := by
+  simp only [zeroLocus_iUnion]
 #align projective_spectrum.zero_locus_bUnion ProjectiveSpectrum.zeroLocus_bUnion
 
 theorem vanishingIdeal_iUnion {γ : Sort*} (t : γ → Set (ProjectiveSpectrum 𝒜)) :

@@ -21,7 +21,7 @@ variable {K S : Type*} [Field K] [CommRing S] [Algebra K S]
 
 namespace Algebra
 
-open BigOperators
+
 open Polynomial
 open PowerBasis
 

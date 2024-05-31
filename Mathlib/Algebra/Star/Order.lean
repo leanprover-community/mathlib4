@@ -178,8 +178,9 @@ theorem conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
   exact ⟨star c * p * c, conjugate_nonneg hp c, by simp only [add_mul, mul_add]⟩
 #align conjugate_le_conjugate conjugate_le_conjugate
 
-theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) : c * a * star c ≤ c * b * star c :=
-  by simpa only [star_star] using conjugate_le_conjugate hab (star c)
+theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) :
+    c * a * star c ≤ c * b * star c := by
+  simpa only [star_star] using conjugate_le_conjugate hab (star c)
 #align conjugate_le_conjugate' conjugate_le_conjugate'
 
 @[simp]

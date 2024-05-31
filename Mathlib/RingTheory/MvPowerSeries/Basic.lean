@@ -49,8 +49,6 @@ it should not be hard to fill in the details.
 
 noncomputable section
 
-open BigOperators
-
 open Finset (antidiagonal mem_antidiagonal)
 
 /-- Multivariate formal power series, where `σ` is the index set of the variables
@@ -197,10 +195,10 @@ instance : AddMonoidWithOne (MvPowerSeries σ R) :=
 
 instance : Mul (MvPowerSeries σ R) :=
   letI := Classical.decEq σ
-  ⟨fun φ ψ n => ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ⟩
+  ⟨fun φ ψ n => ∑ p ∈ antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ⟩
 
 theorem coeff_mul [DecidableEq σ] :
-    coeff R n (φ * ψ) = ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
+    coeff R n (φ * ψ) = ∑ p ∈ antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
   refine Finset.sum_congr ?_ fun _ _ => rfl
   rw [Subsingleton.elim (Classical.decEq σ) ‹DecidableEq σ›]
 #align mv_power_series.coeff_mul MvPowerSeries.coeff_mul
@@ -689,9 +687,9 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 /-- Coefficients of a product of power series -/
 theorem coeff_prod [DecidableEq σ]
     (f : ι → MvPowerSeries σ R) (d : σ →₀ ℕ) (s : Finset ι) :
-    coeff R d (∏ j in s, f j) =
-      ∑ l in piAntidiagonal s d,
-        ∏ i in s, coeff R (l i) (f i) := by
+    coeff R d (∏ j ∈ s, f j) =
+      ∑ l ∈ piAntidiagonal s d,
+        ∏ i ∈ s, coeff R (l i) (f i) := by
   induction s using Finset.induction_on generalizing d with
   | empty =>
     simp only [prod_empty, sum_const, nsmul_eq_mul, mul_one, coeff_one, piAntidiagonal_empty]

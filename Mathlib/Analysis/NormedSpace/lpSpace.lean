@@ -58,7 +58,7 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
 
 noncomputable section
 
-open scoped NNReal ENNReal BigOperators Function
+open scoped NNReal ENNReal Function
 
 variable {α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
 
@@ -114,10 +114,10 @@ theorem memℓp_gen {f : ∀ i, E i} (hf : Summable fun i => ‖f i‖ ^ p.toRea
   exact (memℓp_gen_iff hp).2 hf
 #align mem_ℓp_gen memℓp_gen
 
-theorem memℓp_gen' {C : ℝ} {f : ∀ i, E i} (hf : ∀ s : Finset α, ∑ i in s, ‖f i‖ ^ p.toReal ≤ C) :
+theorem memℓp_gen' {C : ℝ} {f : ∀ i, E i} (hf : ∀ s : Finset α, ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ C) :
     Memℓp f p := by
   apply memℓp_gen
-  use ⨆ s : Finset α, ∑ i in s, ‖f i‖ ^ p.toReal
+  use ⨆ s : Finset α, ∑ i ∈ s, ‖f i‖ ^ p.toReal
   apply hasSum_of_isLUB_of_nonneg
   · intro b
     exact Real.rpow_nonneg (norm_nonneg _) _
@@ -244,7 +244,7 @@ theorem sub {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
 #align mem_ℓp.sub Memℓp.sub
 
 theorem finset_sum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ s, Memℓp (f i) p) :
-    Memℓp (fun a => ∑ i in s, f i a) p := by
+    Memℓp (fun a => ∑ i ∈ s, f i a) p := by
   haveI : DecidableEq ι := Classical.decEq _
   revert hf
   refine Finset.induction_on s ?_ ?_
@@ -376,7 +376,7 @@ theorem coeFn_add (f g : lp E p) : ⇑(f + g) = f + g :=
 
 -- porting note (#10618): removed `@[simp]` because `simp` can prove this
 theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
-    ⇑(∑ i in s, f i) = ∑ i in s, ⇑(f i) := by
+    ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, ⇑(f i) := by
   simp
 #align lp.coe_fn_sum lp.coeFn_sum
 
@@ -505,9 +505,9 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
         rcases p.dichotomy with (rfl | hp')
         · cases isEmpty_or_nonempty α
           · simp only [lp.eq_zero' f, zero_add, norm_zero, le_refl]
-          refine' (lp.isLUB_norm (f + g)).2 _
+          refine (lp.isLUB_norm (f + g)).2 ?_
           rintro x ⟨i, rfl⟩
-          refine' le_trans _ (add_mem_upperBounds_add
+          refine le_trans ?_ (add_mem_upperBounds_add
             (lp.isLUB_norm f).1 (lp.isLUB_norm g).1 ⟨_, ⟨i, rfl⟩, _, ⟨i, rfl⟩, rfl⟩)
           exact norm_add_le (f i) (g i)
         · have hp'' : 0 < p.toReal := zero_lt_one.trans_le hp'
@@ -518,9 +518,9 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           -- apply Minkowski's inequality
           obtain ⟨C, hC₁, hC₂, hCfg⟩ :=
             Real.Lp_add_le_hasSum_of_nonneg hp' hf₁ hg₁ (norm_nonneg' _) (norm_nonneg' _) hf₂ hg₂
-          refine' le_trans _ hC₂
+          refine le_trans ?_ hC₂
           rw [← Real.rpow_le_rpow_iff (norm_nonneg' (f + g)) hC₁ hp'']
-          refine' hasSum_le _ (lp.hasSum_norm hp'' (f + g)) hCfg
+          refine hasSum_le ?_ (lp.hasSum_norm hp'' (f + g)) hCfg
           intro i
           gcongr
           apply norm_add_le
@@ -565,7 +565,7 @@ theorem norm_apply_le_norm (hp : p ≠ 0) (f : lp E p) (i : α) : ‖f i‖ ≤ 
 #align lp.norm_apply_le_norm lp.norm_apply_le_norm
 
 theorem sum_rpow_le_norm_rpow (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
-    ∑ i in s, ‖f i‖ ^ p.toReal ≤ ‖f‖ ^ p.toReal := by
+    ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ ‖f‖ ^ p.toReal := by
   rw [lp.norm_rpow_eq_tsum hp f]
   have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i => Real.rpow_nonneg (norm_nonneg _) _
   refine sum_le_tsum _ (fun i _ => this i) ?_
@@ -593,7 +593,7 @@ theorem norm_le_of_tsum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp 
 #align lp.norm_le_of_tsum_le lp.norm_le_of_tsum_le
 
 theorem norm_le_of_forall_sum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp E p}
-    (hf : ∀ s : Finset α, ∑ i in s, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal) : ‖f‖ ≤ C :=
+    (hf : ∀ s : Finset α, ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal) : ‖f‖ ≤ C :=
   norm_le_of_tsum_le hp hC (tsum_le_of_sum_le ((lp.memℓp f).summable hp) hf)
 #align lp.norm_le_of_forall_sum_le lp.norm_le_of_forall_sum_le
 
@@ -836,12 +836,12 @@ instance inftyCstarRing [∀ i, CstarRing (B i)] : CstarRing (lp B ∞) where
     intro f
     apply le_antisymm
     · rw [← sq]
-      refine' lp.norm_le_of_forall_le (sq_nonneg ‖f‖) fun i => _
+      refine lp.norm_le_of_forall_le (sq_nonneg ‖f‖) fun i => ?_
       simp only [lp.star_apply, CstarRing.norm_star_mul_self, ← sq, infty_coeFn_mul, Pi.mul_apply]
-      refine' sq_le_sq' _ (lp.norm_apply_le_norm ENNReal.top_ne_zero _ _)
+      refine sq_le_sq' ?_ (lp.norm_apply_le_norm ENNReal.top_ne_zero _ _)
       linarith [norm_nonneg (f i), norm_nonneg f]
     · rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _)]
-      refine' lp.norm_le_of_forall_le ‖star f * f‖.sqrt_nonneg fun i => _
+      refine lp.norm_le_of_forall_le ‖star f * f‖.sqrt_nonneg fun i => ?_
       rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CstarRing.norm_star_mul_self]
       exact lp.norm_apply_le_norm ENNReal.top_ne_zero (star f * f) i
 #align lp.infty_cstar_ring lp.inftyCstarRing
@@ -889,9 +889,15 @@ theorem _root_.natCast_memℓp_infty (n : ℕ) : Memℓp (n : ∀ i, B i) ∞ :=
   natCast_mem (lpInftySubring B) n
 #align nat_cast_mem_ℓp_infty natCast_memℓp_infty
 
+@[deprecated (since := "2024-04-17")]
+alias _root_.nat_cast_memℓp_infty := _root_.natCast_memℓp_infty
+
 theorem _root_.intCast_memℓp_infty (z : ℤ) : Memℓp (z : ∀ i, B i) ∞ :=
   intCast_mem (lpInftySubring B) z
 #align int_cast_mem_ℓp_infty intCast_memℓp_infty
+
+@[deprecated (since := "2024-04-17")]
+alias _root_.int_cast_memℓp_infty := _root_.intCast_memℓp_infty
 
 @[simp]
 theorem infty_coeFn_one : ⇑(1 : lp B ∞) = 1 :=
@@ -908,10 +914,16 @@ theorem infty_coeFn_natCast (n : ℕ) : ⇑(n : lp B ∞) = n :=
   rfl
 #align lp.infty_coe_fn_nat_cast lp.infty_coeFn_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias infty_coeFn_nat_cast := infty_coeFn_natCast
+
 @[simp]
 theorem infty_coeFn_intCast (z : ℤ) : ⇑(z : lp B ∞) = z :=
   rfl
 #align lp.infty_coe_fn_int_cast lp.infty_coeFn_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias infty_coeFn_int_cast := infty_coeFn_intCast
 
 instance [Nonempty I] : NormOneClass (lp B ∞) where
   norm_one := by simp_rw [lp.norm_eq_ciSup, infty_coeFn_one, Pi.one_apply, norm_one, ciSup_const]
@@ -984,8 +996,8 @@ variable [DecidableEq α]
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
 protected def single (p) (i : α) (a : E i) : lp E p :=
   ⟨fun j => if h : j = i then Eq.ndrec a h.symm else 0, by
-    refine' (memℓp_zero _).of_exponent_ge (zero_le p)
-    refine' (Set.finite_singleton i).subset _
+    refine (memℓp_zero ?_).of_exponent_ge (zero_le p)
+    refine (Set.finite_singleton i).subset ?_
     intro j
     simp only [forall_exists_index, Set.mem_singleton_iff, Ne, dite_eq_right_iff,
       Set.mem_setOf_eq, not_forall]
@@ -1029,8 +1041,8 @@ protected theorem single_smul (p) (i : α) (a : E i) (c : 𝕜) :
 #align lp.single_smul lp.single_smul
 
 protected theorem norm_sum_single (hp : 0 < p.toReal) (f : ∀ i, E i) (s : Finset α) :
-    ‖∑ i in s, lp.single p i (f i)‖ ^ p.toReal = ∑ i in s, ‖f i‖ ^ p.toReal := by
-  refine (hasSum_norm hp (∑ i in s, lp.single p i (f i))).unique ?_
+    ‖∑ i ∈ s, lp.single p i (f i)‖ ^ p.toReal = ∑ i ∈ s, ‖f i‖ ^ p.toReal := by
+  refine (hasSum_norm hp (∑ i ∈ s, lp.single p i (f i))).unique ?_
   simp only [lp.single_apply, coeFn_sum, Finset.sum_apply, Finset.sum_dite_eq]
   have h : ∀ i ∉ s, ‖ite (i ∈ s) (f i) 0‖ ^ p.toReal = 0 := fun i hi ↦ by
     simp [if_neg hi, Real.zero_rpow hp.ne']
@@ -1047,10 +1059,10 @@ protected theorem norm_single (hp : 0 < p.toReal) (f : ∀ i, E i) (i : α) :
 #align lp.norm_single lp.norm_single
 
 protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
-    ‖f‖ ^ p.toReal - ‖f - ∑ i in s, lp.single p i (f i)‖ ^ p.toReal =
-      ∑ i in s, ‖f i‖ ^ p.toReal := by
-  refine ((hasSum_norm hp f).sub (hasSum_norm hp (f - ∑ i in s, lp.single p i (f i)))).unique ?_
-  let F : α → ℝ := fun i => ‖f i‖ ^ p.toReal - ‖(f - ∑ i in s, lp.single p i (f i)) i‖ ^ p.toReal
+    ‖f‖ ^ p.toReal - ‖f - ∑ i ∈ s, lp.single p i (f i)‖ ^ p.toReal =
+      ∑ i ∈ s, ‖f i‖ ^ p.toReal := by
+  refine ((hasSum_norm hp f).sub (hasSum_norm hp (f - ∑ i ∈ s, lp.single p i (f i)))).unique ?_
+  let F : α → ℝ := fun i => ‖f i‖ ^ p.toReal - ‖(f - ∑ i ∈ s, lp.single p i (f i)) i‖ ^ p.toReal
   have hF : ∀ i ∉ s, F i = 0 := by
     intro i hi
     suffices ‖f i‖ ^ p.toReal - ‖f i - ite (i ∈ s) (f i) 0‖ ^ p.toReal = 0 by
@@ -1062,13 +1074,13 @@ protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p
     simp only [F, coeFn_sum, lp.single_apply, if_pos hi, sub_self, eq_self_iff_true, coeFn_sub,
       Pi.sub_apply, Finset.sum_apply, Finset.sum_dite_eq, sub_eq_self]
     simp [Real.zero_rpow hp.ne']
-  have : HasSum F (∑ i in s, F i) := hasSum_sum_of_ne_finset_zero hF
+  have : HasSum F (∑ i ∈ s, F i) := hasSum_sum_of_ne_finset_zero hF
   rwa [Finset.sum_congr rfl hF'] at this
 #align lp.norm_sub_norm_compl_sub_single lp.norm_sub_norm_compl_sub_single
 
 protected theorem norm_compl_sum_single (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
-    ‖f - ∑ i in s, lp.single p i (f i)‖ ^ p.toReal = ‖f‖ ^ p.toReal - ∑ i in s, ‖f i‖ ^ p.toReal :=
-  by linarith [lp.norm_sub_norm_compl_sub_single hp f s]
+    ‖f - ∑ i ∈ s, lp.single p i (f i)‖ ^ p.toReal = ‖f‖ ^ p.toReal - ∑ i ∈ s, ‖f i‖ ^ p.toReal := by
+  linarith [lp.norm_sub_norm_compl_sub_single hp f s]
 #align lp.norm_compl_sum_single lp.norm_compl_sum_single
 
 /-- The canonical finitely-supported approximations to an element `f` of `lp` converge to it, in the
@@ -1085,13 +1097,13 @@ protected theorem hasSum_single [Fact (1 ≤ p)] (hp : p ≠ ⊤) (f : lp E p) :
   rw [← Real.rpow_lt_rpow_iff dist_nonneg (le_of_lt hε) hp']
   rw [dist_comm] at hs
   simp only [dist_eq_norm, Real.norm_eq_abs] at hs ⊢
-  have H : ‖(∑ i in s, lp.single p i (f i : E i)) - f‖ ^ p.toReal =
-      ‖f‖ ^ p.toReal - ∑ i in s, ‖f i‖ ^ p.toReal := by
+  have H : ‖(∑ i ∈ s, lp.single p i (f i : E i)) - f‖ ^ p.toReal =
+      ‖f‖ ^ p.toReal - ∑ i ∈ s, ‖f i‖ ^ p.toReal := by
     simpa only [coeFn_neg, Pi.neg_apply, lp.single_neg, Finset.sum_neg_distrib, neg_sub_neg,
       norm_neg, _root_.norm_neg] using lp.norm_compl_sum_single hp' (-f) s
   rw [← H] at hs
-  have : |‖(∑ i in s, lp.single p i (f i : E i)) - f‖ ^ p.toReal| =
-      ‖(∑ i in s, lp.single p i (f i : E i)) - f‖ ^ p.toReal := by
+  have : |‖(∑ i ∈ s, lp.single p i (f i : E i)) - f‖ ^ p.toReal| =
+      ‖(∑ i ∈ s, lp.single p i (f i : E i)) - f‖ ^ p.toReal := by
     simp only [Real.abs_rpow_of_nonneg (norm_nonneg _), abs_norm]
   exact this ▸ hs
 #align lp.has_sum_single lp.hasSum_single
@@ -1134,10 +1146,10 @@ variable [_i : Fact (1 ≤ p)]
 
 theorem sum_rpow_le_of_tendsto (hp : p ≠ ∞) {C : ℝ} {F : ι → lp E p} (hCF : ∀ᶠ k in l, ‖F k‖ ≤ C)
     {f : ∀ a, E a} (hf : Tendsto (id fun i => F i : ι → ∀ a, E a) l (𝓝 f)) (s : Finset α) :
-    ∑ i : α in s, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal := by
+    ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal := by
   have hp' : p ≠ 0 := (zero_lt_one.trans_le _i.elim).ne'
   have hp'' : 0 < p.toReal := ENNReal.toReal_pos hp' hp
-  let G : (∀ a, E a) → ℝ := fun f => ∑ a in s, ‖f a‖ ^ p.toReal
+  let G : (∀ a, E a) → ℝ := fun f => ∑ a ∈ s, ‖f a‖ ^ p.toReal
   have hG : Continuous G := by
     refine continuous_finset_sum s ?_
     intro a _

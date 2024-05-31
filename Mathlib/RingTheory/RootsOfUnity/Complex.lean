@@ -19,6 +19,7 @@ are exactly the complex numbers `exp (2 * π * I * (i / n))` for `i ∈ Finset.r
 * `Complex.mem_rootsOfUnity`: the complex `n`-th roots of unity are exactly the
   complex numbers of the form `exp (2 * π * I * (i / n))` for some `i < n`.
 * `Complex.card_rootsOfUnity`: the number of `n`-th roots of unity is exactly `n`.
+* `Complex.norm_rootOfUnity_eq_one`: A complex root of unity has norm `1`.
 
 -/
 
@@ -186,3 +187,10 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
     exact mod_cast not_le.mp h₂
   · exact Nat.cast_pos.mpr hn.bot_lt
 #align is_primitive_root.arg IsPrimitiveRoot.arg
+
+lemma Complex.norm_eq_one_of_mem_rootsOfUnity {ζ : ℂˣ} {n : ℕ+} (hζ : ζ ∈ rootsOfUnity n ℂ) :
+    ‖(ζ : ℂ)‖ = 1 := by
+  refine norm_eq_one_of_pow_eq_one ?_ <| n.ne_zero
+  norm_cast
+  rw [show ζ ^ (n : ℕ) = 1 from hζ]
+  rfl

@@ -386,7 +386,7 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
       rotate_left
       · exact hφ hq
       · exact hφ hq'
-      refine' Localization.r_of_eq _
+      refine Localization.r_of_eq ?_
       simpa only [map_mul] using congr_arg φ h
   map_one' := by
     beta_reduce -- Porting note(#12129): force the function to be applied
@@ -660,8 +660,8 @@ theorem liftMonoidWithZeroHom_apply_div {L : Type*} [CommGroupWithZero L]
 theorem liftMonoidWithZeroHom_apply_div' {L : Type*} [CommGroupWithZero L]
     (φ : MonoidWithZeroHom K[X] L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (p q : K[X]) :
     liftMonoidWithZeroHom φ hφ (algebraMap _ _ p) / liftMonoidWithZeroHom φ hφ (algebraMap _ _ q) =
-      φ p / φ q :=
-  by rw [← map_div₀, liftMonoidWithZeroHom_apply_div]
+      φ p / φ q := by
+  rw [← map_div₀, liftMonoidWithZeroHom_apply_div]
 
 theorem liftRingHom_apply_div {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
     (p q : K[X]) : liftRingHom φ hφ (algebraMap _ _ p / algebraMap _ _ q) = φ p / φ q :=
@@ -1123,8 +1123,8 @@ theorem map_apply {R F : Type*} [CommRing R] [IsDomain R]
 
 theorem liftMonoidWithZeroHom_apply {L : Type*} [CommGroupWithZero L] (φ : K[X] →*₀ L)
     (hφ : K[X]⁰ ≤ L⁰.comap φ) (f : RatFunc K) :
-    liftMonoidWithZeroHom φ hφ f = φ f.num / φ f.denom :=
-  by rw [← num_div_denom f, liftMonoidWithZeroHom_apply_div, num_div_denom]
+    liftMonoidWithZeroHom φ hφ f = φ f.num / φ f.denom := by
+  rw [← num_div_denom f, liftMonoidWithZeroHom_apply_div, num_div_denom]
 #align ratfunc.lift_monoid_with_zero_hom_apply RatFunc.liftMonoidWithZeroHom_apply
 
 theorem liftRingHom_apply {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)

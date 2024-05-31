@@ -36,8 +36,6 @@ noncomputable section
 
 open LinearMap Matrix Set Submodule
 
-open BigOperators
-
 open Matrix
 
 section BasisToMatrix

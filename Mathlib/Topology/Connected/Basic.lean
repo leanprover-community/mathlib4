@@ -377,8 +377,8 @@ theorem IsPreconnected.preimage_of_isOpenMap [TopologicalSpace β] {f : α → �
     (hs : IsPreconnected s) (hinj : Function.Injective f) (hf : IsOpenMap f) (hsf : s ⊆ range f) :
     IsPreconnected (f ⁻¹' s) := fun u v hu hv hsuv hsu hsv => by
   replace hsf : f '' (f ⁻¹' s) = s := image_preimage_eq_of_subset hsf
-  obtain ⟨_, has, ⟨a, hau, rfl⟩, hav⟩ : (s ∩ (f '' u ∩ f '' v)).Nonempty
-  · refine hs (f '' u) (f '' v) (hf u hu) (hf v hv) ?_ ?_ ?_
+  obtain ⟨_, has, ⟨a, hau, rfl⟩, hav⟩ : (s ∩ (f '' u ∩ f '' v)).Nonempty := by
+    refine hs (f '' u) (f '' v) (hf u hu) (hf v hv) ?_ ?_ ?_
     · simpa only [hsf, image_union] using image_subset f hsuv
     · simpa only [image_preimage_inter] using hsu.image f
     · simpa only [image_preimage_inter] using hsv.image f
@@ -390,8 +390,8 @@ theorem IsPreconnected.preimage_of_isClosedMap [TopologicalSpace β] {s : Set β
     (hsf : s ⊆ range f) : IsPreconnected (f ⁻¹' s) :=
   isPreconnected_closed_iff.2 fun u v hu hv hsuv hsu hsv => by
     replace hsf : f '' (f ⁻¹' s) = s := image_preimage_eq_of_subset hsf
-    obtain ⟨_, has, ⟨a, hau, rfl⟩, hav⟩ : (s ∩ (f '' u ∩ f '' v)).Nonempty
-    · refine isPreconnected_closed_iff.1 hs (f '' u) (f '' v) (hf u hu) (hf v hv) ?_ ?_ ?_
+    obtain ⟨_, has, ⟨a, hau, rfl⟩, hav⟩ : (s ∩ (f '' u ∩ f '' v)).Nonempty := by
+      refine isPreconnected_closed_iff.1 hs (f '' u) (f '' v) (hf u hu) (hf v hv) ?_ ?_ ?_
       · simpa only [hsf, image_union] using image_subset f hsuv
       · simpa only [image_preimage_inter] using hsu.image f
       · simpa only [image_preimage_inter] using hsv.image f
@@ -593,8 +593,9 @@ theorem mem_connectedComponent {x : α} : x ∈ connectedComponent x :=
   mem_sUnion_of_mem (mem_singleton x) ⟨isPreconnected_singleton, mem_singleton x⟩
 #align mem_connected_component mem_connectedComponent
 
-theorem mem_connectedComponentIn {x : α} {F : Set α} (hx : x ∈ F) : x ∈ connectedComponentIn F x :=
-  by simp [connectedComponentIn_eq_image hx, mem_connectedComponent, hx]
+theorem mem_connectedComponentIn {x : α} {F : Set α} (hx : x ∈ F) :
+    x ∈ connectedComponentIn F x := by
+  simp [connectedComponentIn_eq_image hx, mem_connectedComponent, hx]
 #align mem_connected_component_in mem_connectedComponentIn
 
 theorem connectedComponent_nonempty {x : α} : (connectedComponent x).Nonempty :=
@@ -855,8 +856,8 @@ the components `π i`. See also `ContinuousMap.exists_lift_sigma` for a version 
 theorem Continuous.exists_lift_sigma [ConnectedSpace α] [∀ i, TopologicalSpace (π i)]
     {f : α → Σ i, π i} (hf : Continuous f) :
     ∃ (i : ι) (g : α → π i), Continuous g ∧ f = Sigma.mk i ∘ g := by
-  obtain ⟨i, hi⟩ : ∃ i, range f ⊆ range (.mk i)
-  · rcases Sigma.isConnected_iff.1 (isConnected_range hf) with ⟨i, s, -, hs⟩
+  obtain ⟨i, hi⟩ : ∃ i, range f ⊆ range (.mk i) := by
+    rcases Sigma.isConnected_iff.1 (isConnected_range hf) with ⟨i, s, -, hs⟩
     exact ⟨i, hs.trans_subset (image_subset_range _ _)⟩
   rcases range_subset_range_iff_exists_comp.1 hi with ⟨g, rfl⟩
   refine ⟨i, g, ?_, rfl⟩

@@ -70,7 +70,7 @@ open CartesianClosed
 instance : ExponentialIdeal (subterminalInclusion C) := by
   apply ExponentialIdeal.mk'
   intro B A
-  refine' ⟨⟨A ⟹ B.1, fun Z g h => _⟩, ⟨Iso.refl _⟩⟩
+  refine ⟨⟨A ⟹ B.1, fun Z g h => ?_⟩, ⟨Iso.refl _⟩⟩
   exact uncurry_injective (B.2 (CartesianClosed.uncurry g) (CartesianClosed.uncurry h))
 
 /-- If `D` is a reflective subcategory, the property of being an exponential ideal is equivalent to
@@ -152,9 +152,10 @@ def cartesianClosedOfReflective : CartesianClosed D :=
     closed := fun B =>
       { rightAdj :=i ⋙ exp (i.obj B) ⋙ reflector i
         adj := by
-          apply Adjunction.restrictFullyFaithful i i (exp.adjunction (i.obj B))
+          apply Adjunction.restrictFullyFaithful i.fullyFaithfulOfReflective
+            i.fullyFaithfulOfReflective (exp.adjunction (i.obj B))
           · symm
-            refine' NatIso.ofComponents (fun X => _) (fun f => _)
+            refine NatIso.ofComponents (fun X => ?_) (fun f => ?_)
             · haveI :=
                 Adjunction.rightAdjointPreservesLimits.{0, 0} (reflectorAdjunction i)
               apply asIso (prodComparison i B X)
@@ -196,7 +197,8 @@ noncomputable def bijection (A B : C) (X : D) :
       haveI : PreservesLimits i := (reflectorAdjunction i).rightAdjointPreservesLimits
       haveI := preservesSmallestLimitsOfPreservesLimits i
       Iso.homCongr (PreservesLimitPair.iso _ _ _).symm (Iso.refl (i.obj X))
-    _ ≃ ((reflector i).obj A ⨯ (reflector i).obj B ⟶ X) := (equivOfFullyFaithful _).symm
+    _ ≃ ((reflector i).obj A ⨯ (reflector i).obj B ⟶ X) :=
+      i.fullyFaithfulOfReflective.homEquiv.symm
 #align category_theory.bijection CategoryTheory.bijection
 
 theorem bijection_symm_apply_id (A B : C) :
@@ -226,7 +228,8 @@ theorem bijection_natural (A B : C) (X X' : D) (f : (reflector i).obj (A ⨯ B) 
   erw [homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq,
     homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq]
   apply i.map_injective
-  rw [i.map_preimage, i.map_comp, i.map_preimage, comp_id, comp_id, comp_id, comp_id, comp_id,
+  rw [Functor.FullyFaithful.map_preimage, i.map_comp, Functor.FullyFaithful.map_preimage,
+    comp_id, comp_id, comp_id, comp_id, comp_id,
     comp_id, Adjunction.homEquiv_naturality_right, ← assoc, curry_natural_right _ (i.map g),
     unitCompPartialBijective_natural, uncurry_natural_right, ← assoc, curry_natural_right,
     unitCompPartialBijective_natural, uncurry_natural_right, assoc]
