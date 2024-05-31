@@ -874,119 +874,119 @@ lemma map_slope {F : Type u} [Field F] (W : Affine F) {K : Type v} [Field K] (f 
 
 variable {R : Type r} [CommRing R] (W : Affine R) {S : Type s} [CommRing S] [Algebra R S]
   {A : Type u} [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-  {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (φ : A →ₐ[S] B)
+  {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (g : A →ₐ[S] B)
 
 lemma baseChange_polynomial : (W.baseChange B).toAffine.polynomial =
-    (W.baseChange A).toAffine.polynomial.map (mapRingHom φ) := by
+    (W.baseChange A).toAffine.polynomial.map (mapRingHom g) := by
   rw [← map_polynomial, map_baseChange]
 
 lemma baseChange_eval_polynomial (x : A[X]) (y : A) :
-    ((W.baseChange B).toAffine.polynomial.eval <| x.map φ).eval (φ y) =
-      φ (((W.baseChange A).toAffine.polynomial.eval x).eval y) := by
+    ((W.baseChange B).toAffine.polynomial.eval <| x.map g).eval (g y) =
+      g (((W.baseChange A).toAffine.polynomial.eval x).eval y) := by
   erw [← map_eval_polynomial, map_baseChange]
   rfl
 
-variable {φ} in
-lemma baseChange_equation (hφ : Function.Injective φ) (x y : A) :
-    (W.baseChange B).toAffine.Equation (φ x) (φ y) ↔ (W.baseChange A).toAffine.Equation x y := by
-  erw [← map_equation _ hφ, map_baseChange]
+variable {g} in
+lemma baseChange_equation (hg : Function.Injective g) (x y : A) :
+    (W.baseChange B).toAffine.Equation (g x) (g y) ↔ (W.baseChange A).toAffine.Equation x y := by
+  erw [← map_equation _ hg, map_baseChange]
   rfl
 #align weierstrass_curve.equation_iff_base_change_of_base_change WeierstrassCurve.Affine.baseChange_equation
 
 lemma baseChange_polynomialX : (W.baseChange B).toAffine.polynomialX =
-    (W.baseChange A).toAffine.polynomialX.map (mapRingHom φ) := by
+    (W.baseChange A).toAffine.polynomialX.map (mapRingHom g) := by
   rw [← map_polynomialX, map_baseChange]
 
 lemma baseChange_eval_polynomialX (x : A[X]) (y : A) :
-    ((W.baseChange B).toAffine.polynomialX.eval <| x.map φ).eval (φ y) =
-      φ (((W.baseChange A).toAffine.polynomialX.eval x).eval y) := by
+    ((W.baseChange B).toAffine.polynomialX.eval <| x.map g).eval (g y) =
+      g (((W.baseChange A).toAffine.polynomialX.eval x).eval y) := by
   erw [← map_eval_polynomialX, map_baseChange]
   rfl
 
 lemma baseChange_polynomialY : (W.baseChange B).toAffine.polynomialY =
-    (W.baseChange A).toAffine.polynomialY.map (mapRingHom φ) := by
+    (W.baseChange A).toAffine.polynomialY.map (mapRingHom g) := by
   rw [← map_polynomialY, map_baseChange]
 
 lemma baseChange_eval_polynomialY (x : A[X]) (y : A) :
-    ((W.baseChange B).toAffine.polynomialY.eval <| x.map φ).eval (φ y) =
-      φ (((W.baseChange A).toAffine.polynomialY.eval x).eval y) := by
+    ((W.baseChange B).toAffine.polynomialY.eval <| x.map g).eval (g y) =
+      g (((W.baseChange A).toAffine.polynomialY.eval x).eval y) := by
   erw [← map_eval_polynomialY, map_baseChange]
   rfl
 
-variable {φ} in
-lemma baseChange_nonsingular (hφ : Function.Injective φ) (x y : A) :
-    (W.baseChange B).toAffine.Nonsingular (φ x) (φ y) ↔
+variable {g} in
+lemma baseChange_nonsingular (hg : Function.Injective g) (x y : A) :
+    (W.baseChange B).toAffine.Nonsingular (g x) (g y) ↔
       (W.baseChange A).toAffine.Nonsingular x y := by
-  erw [← map_nonsingular _ hφ, map_baseChange]
+  erw [← map_nonsingular _ hg, map_baseChange]
   rfl
 #align weierstrass_curve.nonsingular_iff_base_change_of_base_change WeierstrassCurve.Affine.baseChange_nonsingular
 
 lemma baseChange_negPolynomial :
     (W.baseChange B).toAffine.negPolynomial =
-      (W.baseChange A).toAffine.negPolynomial.map (mapRingHom φ) := by
+      (W.baseChange A).toAffine.negPolynomial.map (mapRingHom g) := by
   rw [← map_negPolynomial, map_baseChange]
 
 lemma baseChange_negY (x y : A) :
-    (W.baseChange B).toAffine.negY (φ x) (φ y) = φ ((W.baseChange A).toAffine.negY x y) := by
+    (W.baseChange B).toAffine.negY (g x) (g y) = g ((W.baseChange A).toAffine.negY x y) := by
   erw [← map_negY, map_baseChange]
   rfl
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_neg_Y_of_base_change WeierstrassCurve.Affine.baseChange_negY
 
 lemma baseChange_addPolynomial (x y L : A) :
-    (W.baseChange B).toAffine.addPolynomial (φ x) (φ y) (φ L) =
-      ((W.baseChange A).toAffine.addPolynomial x y L).map φ := by
+    (W.baseChange B).toAffine.addPolynomial (g x) (g y) (g L) =
+      ((W.baseChange A).toAffine.addPolynomial x y L).map g := by
   rw [← map_addPolynomial, map_baseChange]
   rfl
 
 lemma baseChange_addX (x₁ x₂ L : A) :
-    (W.baseChange B).toAffine.addX (φ x₁) (φ x₂) (φ L) =
-      φ ((W.baseChange A).toAffine.addX x₁ x₂ L) := by
+    (W.baseChange B).toAffine.addX (g x₁) (g x₂) (g L) =
+      g ((W.baseChange A).toAffine.addX x₁ x₂ L) := by
   erw [← map_addX, map_baseChange]
   rfl
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_add_X_of_base_change WeierstrassCurve.Affine.baseChange_addX
 
 lemma baseChange_negAddY (x₁ x₂ y₁ L : A) :
-    (W.baseChange B).toAffine.negAddY (φ x₁) (φ x₂) (φ y₁) (φ L) =
-      φ ((W.baseChange A).toAffine.negAddY x₁ x₂ y₁ L) := by
+    (W.baseChange B).toAffine.negAddY (g x₁) (g x₂) (g y₁) (g L) =
+      g ((W.baseChange A).toAffine.negAddY x₁ x₂ y₁ L) := by
   erw [← map_negAddY, map_baseChange]
   rfl
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_add_Y'_of_base_change WeierstrassCurve.Affine.baseChange_negAddY
 
 lemma baseChange_addY (x₁ x₂ y₁ L : A) :
-    (W.baseChange B).toAffine.addY (φ x₁) (φ x₂) (φ y₁) (φ L) =
-      φ ((W.baseChange A).toAffine.addY x₁ x₂ y₁ L) := by
+    (W.baseChange B).toAffine.addY (g x₁) (g x₂) (g y₁) (g L) =
+      g ((W.baseChange A).toAffine.addY x₁ x₂ y₁ L) := by
   erw [← map_addY, map_baseChange]
   rfl
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_add_Y_of_base_change WeierstrassCurve.Affine.baseChange_addY
 
 variable {F : Type u} [Field F] [Algebra R F] [Algebra S F] [IsScalarTower R S F]
-  {K : Type v} [Field K] [Algebra R K] [Algebra S K] [IsScalarTower R S K] (φ : F →ₐ[S] K)
-  {L : Type w} [Field L] [Algebra R L] [Algebra S L] [IsScalarTower R S L] (ψ : K →ₐ[S] L)
+  {K : Type v} [Field K] [Algebra R K] [Algebra S K] [IsScalarTower R S K] (f : F →ₐ[S] K)
+  {L : Type w} [Field L] [Algebra R L] [Algebra S L] [IsScalarTower R S L] (g : K →ₐ[S] L)
 
 lemma baseChange_slope (x₁ x₂ y₁ y₂ : F) :
-    (W.baseChange K).toAffine.slope (φ x₁) (φ x₂) (φ y₁) (φ y₂) =
-      φ ((W.baseChange F).toAffine.slope x₁ x₂ y₁ y₂) := by
+    (W.baseChange K).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) =
+      f ((W.baseChange F).toAffine.slope x₁ x₂ y₁ y₂) := by
   erw [← map_slope, map_baseChange]
   rfl
 #align weierstrass_curve.base_change_slope_of_base_change WeierstrassCurve.Affine.baseChange_slope
 
 namespace Point
 
-/-- The function from `W⟮F⟯` to `W⟮K⟯` induced by an algebra homomorphism `φ : F →ₐ[S] K`,
+/-- The function from `W⟮F⟯` to `W⟮K⟯` induced by an algebra homomorphism `f : F →ₐ[S] K`,
 where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
 def mapFun : W⟮F⟯ → W⟮K⟯
   | 0 => 0
-  | some h => some <| (W.baseChange_nonsingular φ.injective ..).mpr h
+  | some h => some <| (W.baseChange_nonsingular f.injective ..).mpr h
 #align weierstrass_curve.point.of_base_change_fun WeierstrassCurve.Affine.Point.mapFun
 
-/-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by an algebra homomorphism `φ : F →ₐ[S] K`,
+/-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by an algebra homomorphism `f : F →ₐ[S] K`,
 where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
 def map : W⟮F⟯ →+ W⟮K⟯ where
-  toFun := mapFun W φ
+  toFun := mapFun W f
   map_zero' := rfl
   map_add' := by
     rintro (_ | @⟨x₁, y₁, _⟩) (_ | @⟨x₂, y₂, _⟩)
@@ -997,45 +997,42 @@ def map : W⟮F⟯ →+ W⟮K⟯ where
         rw [add_of_Y_eq (congr_arg _ hx) <| by rw [hy, baseChange_negY]]
       · simp only [add_of_Y_ne hx hy, mapFun]
         rw [add_of_Y_ne (congr_arg _ hx) <|
-          by simpa only [baseChange_negY] using fun h => hy <| φ.injective h]
+          by simpa only [baseChange_negY] using fun h => hy <| f.injective h]
         simp only [some.injEq, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope]
-    · simp only [add_of_X_ne hx, mapFun, add_of_X_ne fun h => hx <| φ.injective h,
+    · simp only [add_of_X_ne hx, mapFun, add_of_X_ne fun h => hx <| f.injective h,
         some.injEq, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope]
 #align weierstrass_curve.point.of_base_change WeierstrassCurve.Affine.Point.map
 
-lemma map_zero : map W φ (0 : W⟮F⟯) = 0 :=
+lemma map_zero : map W f (0 : W⟮F⟯) = 0 :=
   rfl
 
 lemma map_some {x y : F} (h : (W.baseChange F).toAffine.Nonsingular x y) :
-    map W φ (some h) = some ((W.baseChange_nonsingular φ.injective ..).mpr h) :=
+    map W f (some h) = some ((W.baseChange_nonsingular f.injective ..).mpr h) :=
   rfl
 
 lemma map_id (P : W⟮F⟯) : map W (Algebra.ofId F F) P = P := by
   cases P <;> rfl
 
-lemma map_map (P : W⟮F⟯) : map W ψ (map W φ P) = map W (ψ.comp φ) P := by
+lemma map_map (P : W⟮F⟯) : map W g (map W f P) = map W (g.comp f) P := by
   cases P <;> rfl
 
-lemma map_injective : Function.Injective <| map W φ := by
+lemma map_injective : Function.Injective <| map W f := by
   rintro (_ | _) (_ | _) h
   any_goals contradiction
   · rfl
-  · simpa only [some.injEq] using ⟨φ.injective (some.inj h).left, φ.injective (some.inj h).right⟩
+  · simpa only [some.injEq] using ⟨f.injective (some.inj h).left, f.injective (some.inj h).right⟩
 #align weierstrass_curve.point.of_base_change_injective WeierstrassCurve.Affine.Point.map_injective
 
-variable (F K)
-
+variable (F K) in
 /-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by the base change from `F` to `K`,
 where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
 abbrev baseChange [Algebra F K] [IsScalarTower R F K] : W⟮F⟯ →+ W⟮K⟯ :=
   map W <| Algebra.ofId F K
 
-variable {F K}
-
 lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalarTower R F L]
-    (ψ : K →ₐ[F] L) (P : W⟮F⟯) : map W ψ (baseChange W F K P) = baseChange W F L P := by
+    (g : K →ₐ[F] L) (P : W⟮F⟯) : map W g (baseChange W F K P) = baseChange W F L P := by
   have : Subsingleton (F →ₐ[F] L) := inferInstance
-  convert map_map W (Algebra.ofId F K) ψ P
+  convert map_map W (Algebra.ofId F K) g P
 
 end Point
 
