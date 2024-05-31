@@ -316,6 +316,16 @@ def isolated_by_dot_semicolon_check(lines, path):
             prev_line = lines[line_nr - 2][1].rstrip()
             if not prev_line.endswith(",") and not re.search(", fun [^,]* (=>|↦)$", prev_line):
                 errors += [(ERR_IBY, line_nr, path)]
+        elif line.lstrip().startswith("by "):
+            # We also error if the previous line ends on := and the current line starts with "by ".
+            prev_line = newlines[-1][1].rstrip()
+            if prev_line.endswith(":="):
+                errors += [(ERR_IBY, line_nr, path)]
+                # If the previous line is short enough, we can suggest an auto-fix.
+                if len(prev_line) <= 97:
+                    newlines[-1] = (line_nr - 1, prev_line + " by\n")
+                    indent = " " * (len(line) - len(line.lstrip()))
+                    line = f"{indent}{line.lstrip()[3:]}"
         elif line.lstrip() == "where":
             errors += [(ERR_IWH, line_nr, path)]
         if line.lstrip().startswith(". "):
