@@ -125,6 +125,12 @@ lemma PreservesLimitPair.iso.inv_comp_lift :
   rw [Category.assoc, Iso.inv_hom_id, Category.comp_id, PreservesLimitPair.iso_hom,
     prodComparison_comp_lift]
 
+lemma default_comp_inv_terminalComparison :
+    (default : F.obj X ⟶ ⊤_ D) ≫ inv (terminalComparison F) = F.map default := by
+  simp only [IsIso.comp_inv_eq]
+  convert Subsingleton.elim _ _
+  infer_instance
+
 variable {G : C ⥤ D}
 
 variable [HasBinaryProduct (G.obj X) (G.obj Y)] [HasBinaryProduct (F.obj X) (F.obj Y)]
