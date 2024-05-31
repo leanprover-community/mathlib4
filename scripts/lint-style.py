@@ -320,9 +320,11 @@ def isolated_by_dot_semicolon_check(lines, path):
             # We also error if the previous line ends on := and the current line starts with "by ".
             prev_line = newlines[-1][1].rstrip()
             if prev_line.endswith(":="):
-                errors += [(ERR_IBY, line_nr, path)]
                 # If the previous line is short enough, we can suggest an auto-fix.
+                # Future: error also if it is not: currently, mathlib contains about 30 such
+                # instances which are not obvious to fix.
                 if len(prev_line) <= 97:
+                    errors += [(ERR_IBY, line_nr, path)]
                     newlines[-1] = (line_nr - 1, prev_line + " by\n")
                     indent = " " * (len(line) - len(line.lstrip()))
                     line = f"{indent}{line.lstrip()[3:]}"
