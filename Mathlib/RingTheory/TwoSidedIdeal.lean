@@ -207,7 +207,7 @@ end ring
 
 section operations
 
-variable {R : Type*} [Ring R] (I : RingCon R)
+variable {R : Type*} [Ring R] {R' : Type*} [Ring R'] (I : RingCon R)
 
 /--
 Every two-sided ideal is also a left ideal.
@@ -268,6 +268,11 @@ lemma le_toIdeal_fromIdeal (J : Ideal R) : J ≤ (fromIdeal J).toIdeal  := by
   simp only [toIdeal, fromIdeal, LinearMap.mem_range, subtype_apply, Subtype.exists, exists_prop,
     exists_eq_right] at hx ⊢
   exact subset_span hx
+
+@[simp] lemma mem_comap {F : Type*} [FunLike F R R'] [RingHomClass F R R']
+    (J : RingCon R') (f : F) (x) :
+    x ∈ J.comap f ↔ f x ∈ J :=
+  show J (f x) (f 0) ↔ J (f x) 0 by simp
 
 end operations
 
