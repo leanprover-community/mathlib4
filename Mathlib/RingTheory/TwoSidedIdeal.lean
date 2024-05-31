@@ -38,6 +38,8 @@ instance : SetLike (RingCon R) R where
       rw [← h] at H'
       convert t₁.add H' (t₁.refl b) using 1 <;> abel
 
+lemma mem_iff (x : R) : x ∈ I ↔ I x 0 := Iff.rfl
+
 lemma le_iff (I J : RingCon R) : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) := by
   constructor
   · intro h x hx
