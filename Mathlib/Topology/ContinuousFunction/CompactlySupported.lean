@@ -32,7 +32,7 @@ When the domain `α` is compact, `ContinuousMap.liftCompactlySupported` gives th
 
 variable {F α β γ : Type*} [TopologicalSpace α]
 
-open BoundedContinuousFunction Topology Bornology
+open Topology
 
 open Filter Metric
 
