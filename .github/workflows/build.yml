@@ -200,17 +200,12 @@ jobs:
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
-      - name: lint mathlib
-        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
-        id: lint
-        uses: liskin/gh-problem-matcher-wrap@v3
+      - name: lint mathlib and update style exceptions files
         with:
           linters: gcc
           run: |
-            bash -o pipefail -c "./scripts/update-style-exceptions.sh"
-            bash -c "echo style-exceptions-complete"
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib"
-            bash -c "echo both-steps-complete"
+            bash -o pipefail -c "./scripts/update-style-exceptions.sh"
 
       - name: configure git setup
         run: |
