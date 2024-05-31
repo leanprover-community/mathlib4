@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 
 /-!
 # Presheaves of modules over a presheaf of rings.
@@ -134,25 +133,6 @@ theorem ext {f g : P ⟶ Q} (w : ∀ X, f.app X = g.app X) : f = g := by
   congr
   ext X x
   exact LinearMap.congr_fun (w X) x
-
-section
-
-variable (app : ∀ X, P.obj X →ₗ[R.obj X] Q.obj X)
-  (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y) (x : P.obj X),
-    app Y (P.map f x) = Q.map f (app X x))
-
-/-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
-of a family of linear maps over the various rings `R.obj X`. -/
-def mk' : P ⟶ Q where
-  hom :=
-    { app := fun X => (app X).toAddMonoidHom
-      naturality := fun X Y f => by ext x; apply naturality }
-  map_smul X := (app X).map_smul
-
-@[simp]
-lemma mk'_app : (mk' app naturality).app = app := rfl
-
-end
 
 instance : Zero (P ⟶ Q) := ⟨mk 0 (by
   intros
@@ -295,6 +275,24 @@ lemma restrictionApp_comp (M : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶
 namespace Hom
 
 variable {P Q : PresheafOfModules R} (app : ∀ X, P.obj X →ₗ[R.obj X] Q.obj X)
+
+section
+
+variable (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y) (x : P.obj X),
+  app Y (P.map f x) = Q.map f (app X x))
+
+/-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
+of a family of linear maps over the various rings `R.obj X`. -/
+def mk' : P ⟶ Q where
+  hom :=
+    { app := fun X => (app X).toAddMonoidHom
+      naturality := fun X Y f => by ext x; apply naturality }
+  map_smul X := (app X).map_smul
+
+@[simp]
+lemma mk'_app : (mk' app naturality).app = app := rfl
+
+end
 
 /-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
 of a family of linear maps over the various rings `R.obj X`, and for which the
