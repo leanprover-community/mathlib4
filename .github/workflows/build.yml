@@ -207,7 +207,10 @@ jobs:
         with:
           linters: gcc
           run: |
+            bash -o pipefail -c "./scripts/update-style-exceptions.sh"
+            bash -c "echo style-exceptions-complete"
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib"
+            bash -c "echo both-steps-complete"
 
       - name: configure git setup
         run: |
