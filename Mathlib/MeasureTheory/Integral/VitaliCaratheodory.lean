@@ -475,7 +475,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
   have ae_g : ∀ᵐ x ∂μ, (g x).toReal = (gp x : EReal).toReal - (gm x : EReal).toReal := by
     filter_upwards [gp_lt_top] with _ hx
     rw [EReal.toReal_sub] <;> simp [hx.ne]
-  refine' ⟨g, ?lt, ?lsc, ?int, ?aelt, ?intlt⟩
+  refine ⟨g, ?lt, ?lsc, ?int, ?aelt, ?intlt⟩
   case int =>
     show Integrable (fun x => EReal.toReal (g x)) μ
     rw [integrable_congr ae_g]

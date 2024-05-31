@@ -103,6 +103,9 @@ theorem AddMonoid.End.intCast_apply [AddCommGroup M] (z : ℤ) (m : M) :
   rfl
 #align add_monoid.End.int_cast_apply AddMonoid.End.intCast_apply
 
+@[deprecated (since := "2024-04-17")]
+alias AddMonoid.End.int_cast_apply := AddMonoid.End.intCast_apply
+
 /-!
 ### Morphisms of morphisms
 

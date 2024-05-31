@@ -336,8 +336,8 @@ def toArrow : Augmented C ⥤ Arrow C where
 @[reassoc]
 theorem w₀ {X Y : Augmented C} (f : X ⟶ Y) :
     (Augmented.drop.map f).app (op (SimplexCategory.mk 0)) ≫ Y.hom.app (op (SimplexCategory.mk 0)) =
-      X.hom.app (op (SimplexCategory.mk 0)) ≫ Augmented.point.map f :=
-  by convert congr_app f.w (op (SimplexCategory.mk 0))
+      X.hom.app (op (SimplexCategory.mk 0)) ≫ Augmented.point.map f := by
+  convert congr_app f.w (op (SimplexCategory.mk 0))
 #align category_theory.simplicial_object.augmented.w₀ CategoryTheory.SimplicialObject.Augmented.w₀
 
 variable (C)

@@ -21,7 +21,7 @@ We also define `rootMultiplicity`.
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 open Finset
 
@@ -467,7 +467,7 @@ lemma coeff_divByMonic_X_sub_C_rec (p : R[X]) (a : R) (n : ℕ) :
   simp [sub_mul, add_sub, coeff_eq_zero_of_degree_lt this]
 
 theorem coeff_divByMonic_X_sub_C (p : R[X]) (a : R) (n : ℕ) :
-    (p /ₘ (X - C a)).coeff n = ∑ i in Icc (n + 1) p.natDegree, a ^ (i - (n + 1)) * p.coeff i := by
+    (p /ₘ (X - C a)).coeff n = ∑ i ∈ Icc (n + 1) p.natDegree, a ^ (i - (n + 1)) * p.coeff i := by
   wlog h : p.natDegree ≤ n generalizing n
   · refine Nat.decreasingInduction' (fun n hn _ ih ↦ ?_) (le_of_not_le h) ?_
     · rw [coeff_divByMonic_X_sub_C_rec, ih, eq_comm, Icc_eq_cons_Ioc (Nat.succ_le.mpr hn),
@@ -682,8 +682,9 @@ theorem rootMultiplicity_eq_zero {p : R[X]} {x : R} (h : ¬IsRoot p x) : rootMul
 #align polynomial.root_multiplicity_eq_zero Polynomial.rootMultiplicity_eq_zero
 
 @[simp]
-theorem rootMultiplicity_pos' {p : R[X]} {x : R} : 0 < rootMultiplicity x p ↔ p ≠ 0 ∧ IsRoot p x :=
-  by rw [pos_iff_ne_zero, Ne, rootMultiplicity_eq_zero_iff, Classical.not_imp, and_comm]
+theorem rootMultiplicity_pos' {p : R[X]} {x : R} :
+    0 < rootMultiplicity x p ↔ p ≠ 0 ∧ IsRoot p x := by
+  rw [pos_iff_ne_zero, Ne, rootMultiplicity_eq_zero_iff, Classical.not_imp, and_comm]
 #align polynomial.root_multiplicity_pos' Polynomial.rootMultiplicity_pos'
 
 theorem rootMultiplicity_pos {p : R[X]} (hp : p ≠ 0) {x : R} :

@@ -93,8 +93,6 @@ Composition, partition
 
 open List
 
-open BigOperators
-
 variable {n : ℕ}
 
 /-- A composition of `n` is a list of positive integers summing to `n`. -/
@@ -803,7 +801,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       have A : (1 + (i - 1) : ℕ) = (i : ℕ) := by
         rw [add_comm]
         exact Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr i_ne_zero)
-      refine' ⟨⟨i - 1, _⟩, _, _⟩
+      refine ⟨⟨i - 1, ?_⟩, ?_, ?_⟩
       · have : (i : ℕ) < n + 1 := i.2
         simp? [Nat.lt_succ_iff_lt_or_eq, i_ne_last] at this says
           simp only [Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, i_ne_last, or_false] at this

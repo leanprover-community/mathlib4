@@ -34,7 +34,7 @@ Finally, we prove a version of the
 [Fundamental theorem of calculus](https://en.wikipedia.org/wiki/Fundamental_theorem_of_calculus)
 for set integral, see `Filter.Tendsto.integral_sub_linear_isLittleO_ae` and its corollaries.
 Namely, consider a measurably generated filter `l`, a measure `μ` finite at this filter, and
-a function `f` that has a finite limit `c` at `l ⊓ μ.ae`. Then `∫ x in s, f x ∂μ = μ s • c + o(μ s)`
+a function `f` that has a finite limit `c` at `l ⊓ ae μ`. Then `∫ x in s, f x ∂μ = μ s • c + o(μ s)`
 as `s` tends to `l.smallSets`, i.e. for any `ε>0` there exists `t ∈ l` such that
 `‖∫ x in s, f x ∂μ - μ s • c‖ ≤ ε * μ s` whenever `s ⊆ t`. We also formulate a version of this
 theorem for a locally finite measure `μ` and a function `f` continuous at a point `a`.
@@ -57,7 +57,7 @@ noncomputable section
 
 open Set Filter TopologicalSpace MeasureTheory Function RCLike
 
-open scoped Classical Topology BigOperators ENNReal NNReal
+open scoped Classical Topology ENNReal NNReal
 
 variable {X Y E F : Type*} [MeasurableSpace X]
 
@@ -144,7 +144,7 @@ theorem integral_inter_add_diff (ht : MeasurableSet t) (hfs : IntegrableOn f s �
 theorem integral_finset_biUnion {ι : Type*} (t : Finset ι) {s : ι → Set X}
     (hs : ∀ i ∈ t, MeasurableSet (s i)) (h's : Set.Pairwise (↑t) (Disjoint on s))
     (hf : ∀ i ∈ t, IntegrableOn f (s i) μ) :
-    ∫ x in ⋃ i ∈ t, s i, f x ∂μ = ∑ i in t, ∫ x in s i, f x ∂μ := by
+    ∫ x in ⋃ i ∈ t, s i, f x ∂μ = ∑ i ∈ t, ∫ x in s i, f x ∂μ := by
   induction' t using Finset.induction_on with a t hat IH hs h's
   · simp
   · simp only [Finset.coe_insert, Finset.forall_mem_insert, Set.pairwise_insert,
@@ -1209,7 +1209,7 @@ variable {ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace 
 
 /-- Fundamental theorem of calculus for set integrals:
 if `μ` is a measure that is finite at a filter `l` and
-`f` is a measurable function that has a finite limit `b` at `l ⊓ μ.ae`, then
+`f` is a measurable function that has a finite limit `b` at `l ⊓ ae μ`, then
 `∫ x in s i, f x ∂μ = μ (s i) • b + o(μ (s i))` at a filter `li` provided that
 `s i` tends to `l.smallSets` along `li`.
 Since `μ (s i)` is an `ℝ≥0∞` number, we use `(μ (s i)).toReal` in the actual statement.
@@ -1219,7 +1219,7 @@ argument `m` with this formula and a proof of `(fun i => (μ (s i)).toReal) =ᶠ
 arguments, `m i = (μ (s i)).toReal` is used in the output. -/
 theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae
     {μ : Measure X} {l : Filter X} [l.IsMeasurablyGenerated] {f : X → E} {b : E}
-    (h : Tendsto f (l ⊓ μ.ae) (𝓝 b)) (hfm : StronglyMeasurableAtFilter f l μ)
+    (h : Tendsto f (l ⊓ ae μ) (𝓝 b)) (hfm : StronglyMeasurableAtFilter f l μ)
     (hμ : μ.FiniteAtFilter l) {s : ι → Set X} {li : Filter ι} (hs : Tendsto s li l.smallSets)
     (m : ι → ℝ := fun i => (μ (s i)).toReal)
     (hsμ : (fun i => (μ (s i)).toReal) =ᶠ[li] m := by rfl) :
@@ -1229,7 +1229,7 @@ theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae
     (this.comp_tendsto hs).congr'
       (hsμ.mono fun a ha => by dsimp only [Function.comp_apply] at ha ⊢; rw [ha]) hsμ
   refine isLittleO_iff.2 fun ε ε₀ => ?_
-  have : ∀ᶠ s in l.smallSets, ∀ᶠ x in μ.ae, x ∈ s → f x ∈ closedBall b ε :=
+  have : ∀ᶠ s in l.smallSets, ∀ᵐ x ∂μ, x ∈ s → f x ∈ closedBall b ε :=
     eventually_smallSets_eventually.2 (h.eventually <| closedBall_mem_nhds _ ε₀)
   filter_upwards [hμ.eventually, (hμ.integrableAtFilter_of_tendsto_ae hfm h).eventually,
     hfm.eventually, this]

@@ -61,7 +61,7 @@ boilerplate lemmas to `ValuationClass`.
 
 
 open scoped Classical
-open BigOperators Function Ideal
+open Function Ideal
 
 noncomputable section
 
@@ -184,7 +184,7 @@ theorem map_add_lt {x y g} (hx : v x < g) (hy : v y < g) : v (x + y) < g :=
 #align valuation.map_add_lt Valuation.map_add_lt
 
 theorem map_sum_le {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf : ∀ i ∈ s, v (f i) ≤ g) :
-    v (∑ i in s, f i) ≤ g := by
+    v (∑ i ∈ s, f i) ≤ g := by
   refine
     Finset.induction_on s (fun _ => v.map_zero ▸ zero_le')
       (fun a s has ih hf => ?_) hf
@@ -193,7 +193,7 @@ theorem map_sum_le {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf :
 #align valuation.map_sum_le Valuation.map_sum_le
 
 theorem map_sum_lt {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g ≠ 0)
-    (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i in s, f i) < g := by
+    (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i ∈ s, f i) < g := by
   refine
     Finset.induction_on s (fun _ => v.map_zero ▸ (zero_lt_iff.2 hg))
       (fun a s has ih hf => ?_) hf
@@ -202,7 +202,7 @@ theorem map_sum_lt {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg :
 #align valuation.map_sum_lt Valuation.map_sum_lt
 
 theorem map_sum_lt' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : 0 < g)
-    (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i in s, f i) < g :=
+    (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i ∈ s, f i) < g :=
   v.map_sum_lt (ne_of_gt hg) hf
 #align valuation.map_sum_lt' Valuation.map_sum_lt'
 
@@ -688,17 +688,17 @@ theorem map_lt_add {x y : R} {g : Γ₀} (hx : g < v x) (hy : g < v y) : g < v (
 #align add_valuation.map_lt_add AddValuation.map_lt_add
 
 theorem map_le_sum {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf : ∀ i ∈ s, g ≤ v (f i)) :
-    g ≤ v (∑ i in s, f i) :=
+    g ≤ v (∑ i ∈ s, f i) :=
   v.map_sum_le hf
 #align add_valuation.map_le_sum AddValuation.map_le_sum
 
 theorem map_lt_sum {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g ≠ ⊤)
-    (hf : ∀ i ∈ s, g < v (f i)) : g < v (∑ i in s, f i) :=
+    (hf : ∀ i ∈ s, g < v (f i)) : g < v (∑ i ∈ s, f i) :=
   v.map_sum_lt hg hf
 #align add_valuation.map_lt_sum AddValuation.map_lt_sum
 
 theorem map_lt_sum' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g < ⊤)
-    (hf : ∀ i ∈ s, g < v (f i)) : g < v (∑ i in s, f i) :=
+    (hf : ∀ i ∈ s, g < v (f i)) : g < v (∑ i ∈ s, f i) :=
   v.map_sum_lt' hg hf
 #align add_valuation.map_lt_sum' AddValuation.map_lt_sum'
 

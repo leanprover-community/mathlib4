@@ -68,20 +68,18 @@ end Monoid
 
 section CommMonoid
 
-open BigOperators
-
 variable {ι R : Type*} [CommMonoid R] {s : Finset ι} {f : ι → R}
 
 lemma IsLeftRegular.prod (h : ∀ i ∈ s, IsLeftRegular (f i)) :
-    IsLeftRegular (∏ i in s, f i) :=
+    IsLeftRegular (∏ i ∈ s, f i) :=
   s.prod_induction _ _ (@IsLeftRegular.mul R _) isRegular_one.left h
 
 lemma IsRightRegular.prod (h : ∀ i ∈ s, IsRightRegular (f i)) :
-    IsRightRegular (∏ i in s, f i) :=
+    IsRightRegular (∏ i ∈ s, f i) :=
   s.prod_induction _ _ (@IsRightRegular.mul R _) isRegular_one.right h
 
 lemma IsRegular.prod (h : ∀ i ∈ s, IsRegular (f i)) :
-    IsRegular (∏ i in s, f i) :=
+    IsRegular (∏ i ∈ s, f i) :=
   ⟨IsLeftRegular.prod fun a ha ↦ (h a ha).left,
    IsRightRegular.prod fun a ha ↦ (h a ha).right⟩
 
