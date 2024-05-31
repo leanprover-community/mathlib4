@@ -25,6 +25,7 @@ ring_norm, ostrowski
 -/
 
 noncomputable section
+namespace Rat.MulRingNorm
 open Int
 
 variable {f g : MulRingNorm ℚ}
@@ -34,9 +35,9 @@ integers. -/
 lemma NormRat_eq_on_Int_iff_eq_on_Nat : (∀ n : ℕ , f n = g n) ↔ (∀ n : ℤ , f n = g n) := by
   refine' ⟨_, fun a n => a n⟩
   intro h z
-  obtain ⟨n,rfl | rfl ⟩ := eq_nat_or_neg z
+  obtain ⟨n,rfl | rfl⟩ := eq_nat_or_neg z
   · exact h n
-  · simp only [cast_neg, cast_ofNat, map_neg_eq_map]
+  · simp only [Int.cast_neg, Int.cast_natCast, map_neg_eq_map]
     exact h n
 
 /-- Values of a multiplicative norm of the rationals are determined by the values on the natural
@@ -59,3 +60,5 @@ lemma NormRat_equiv_iff_equiv_on_Nat : (∃ c : ℝ, 0 < c ∧ (∀ n : ℕ , (f
     rw [← Rat.num_div_den x, map_div₀, map_div₀, Real.div_rpow (apply_nonneg f _)
       (apply_nonneg f _), h x.den, ← MulRingNorm.apply_natAbs_eq,← MulRingNorm.apply_natAbs_eq,
       h (natAbs x.num)]
+
+end Rat.MulRingNorm
