@@ -62,44 +62,6 @@ lemma rel_iff (x y : R) : I x y ↔ x - y ∈ I := by
   · intro h; convert I.add h (I.refl y) <;> abel
 
 /--
-Any two-sided-ideal in `A` corresponds to a two-sided-ideal in `Aᵒᵖ`.
--/
-@[simps]
-def toMop (rel : RingCon R) : (RingCon Rᵐᵒᵖ) :=
-{ r := fun a b ↦ rel b.unop a.unop
-  iseqv :=
-  { refl := fun a ↦ rel.refl a.unop
-    symm := rel.symm
-    trans := fun h1 h2 ↦ rel.trans h2 h1 }
-  mul' := fun h1 h2 ↦ rel.mul h2 h1
-  add' := rel.add }
-
-/--
-Any two-sided-ideal in `Aᵒᵖ` corresponds to a two-sided-ideal in `A`.
--/
-@[simps]
-def fromMop (rel : RingCon Rᵐᵒᵖ) : (RingCon R) :=
-{ r := fun a b ↦ rel (op b) (op a)
-  iseqv :=
-  { refl := fun a ↦ rel.refl (op a)
-    symm := rel.symm
-    trans := fun h1 h2 ↦ rel.trans h2 h1 }
-  mul' := fun h1 h2 ↦ rel.mul h2 h1
-  add' := rel.add }
-
-/--
-Two-sided-ideals of `A` and that of `Aᵒᵖ` corresponds bijectively to each other.
--/
-@[simps]
-def orderIsoRingConMop : (RingCon R) ≃o (RingCon Rᵐᵒᵖ) where
-  toFun := toMop
-  invFun := fromMop
-  left_inv := unop_op
-  right_inv := unop_op
-  map_rel_iff' {a b} := by
-    constructor <;> exact fun h _ _ H => h H
-
-/--
 the coercion from two-sided-ideals to sets is an order embedding
 -/
 @[simps]
