@@ -5,8 +5,9 @@ Authors: Jujian Zhang
 -/
 
 import Mathlib.RingTheory.Congruence
+import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Module.Opposites
 
 /-!
 # Two Sided Ideals
@@ -39,6 +40,12 @@ instance : SetLike (RingCon R) R where
       convert t₁.add H' (t₁.refl b) using 1 <;> abel
 
 lemma mem_iff (x : R) : x ∈ I ↔ I x 0 := Iff.rfl
+
+lemma rel_iff (x y : R) : I x y ↔ (x - y) ∈ I := by
+  rw [mem_iff]
+  constructor
+  · intro h; convert I.sub h (I.refl y); abel
+  · intro h; convert I.add h (I.refl y) <;> abel
 
 lemma le_iff (I J : RingCon R) : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) := by
   constructor
@@ -82,7 +89,6 @@ instance : SMul ℕ I where
 instance : Neg I where neg x := ⟨-x.1, I.neg_mem x.2⟩
 
 instance : Sub I where sub x y := ⟨x.1 - y.1, I.sub_mem x.2 y.2⟩
-
 
 instance : SMul ℤ I where
   smul n x := ⟨n • x.1, n.rec (fun a ↦ a.rec (by simpa using I.zero_mem)
@@ -138,7 +144,76 @@ instance : SMulCommClass R Rᵐᵒᵖ I where
   smul_comm r s x := by
     ext; show r * (x.1 * s.unop) = (r * x.1) * s.unop; simp only [mul_assoc]
 
+/--
+For any `RingCon R`, when we view it as an ideal, `subtype` is the injective linear map.
+-/
+@[simps]
+def subtype : I →ₗ[R] R where
+  toFun x := x.1
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/--
+For any `RingCon R`, when we view it as an ideal in `Rᵒᵖ`, `subtype` is the injective linear map.
+-/
+@[simps]
+def subtypeMop : I →ₗ[Rᵐᵒᵖ] Rᵐᵒᵖ where
+  toFun x := MulOpposite.op x.1
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
 end ring
+
+section operations
+
+variable {R : Type*} [Ring R] (I : RingCon R)
+
+/--every two-sided ideal is also a left ideal. -/
+def toIdeal : Ideal R := LinearMap.range I.subtype
+
+/--every two-sided ideal is also a right ideal. -/
+def toIdealMop : Ideal Rᵐᵒᵖ := LinearMap.range I.subtypeMop
+
+/--the smallest two-sided-ideal contain a set. -/
+def span (s : Set R) : RingCon R := ringConGen (fun a b ↦ a - b ∈ s)
+
+lemma subset_span {s : Set R} : s ⊆ (span s : Set R) := by
+  intro x hx
+  rw [SetLike.mem_coe, mem_iff]
+  exact RingConGen.Rel.of _ _ (by simpa using hx)
+
+lemma mem_span_iff {s : Set R} {x} :
+    x ∈ span s ↔ ∀ (I : RingCon R), s ⊆ I → x ∈ I := by
+  refine ⟨?_, fun h => h _ subset_span⟩
+  delta span
+  rw [ringConGen_eq]
+  intro h I hI
+  refine sInf_le (α := RingCon R) ?_ h
+  intro x y hxy
+  specialize hI hxy
+  rwa [SetLike.mem_coe, ← rel_iff] at hI
+
+/-- every left ideal generates a two sided ideal. -/
+def fromIdeal (I : Ideal R) : RingCon R := span I
+
+lemma fromIdeal_toIdeal : fromIdeal I.toIdeal = I := by
+  refine SetLike.ext fun x ↦ ?_
+  simp only [fromIdeal, toIdeal, mem_span_iff]
+  constructor
+  · intro H
+    refine H I ?_
+    rintro _ ⟨x, rfl⟩
+    exact x.2
+  · intro hx J hJ
+    exact hJ ⟨⟨x, hx⟩, rfl⟩
+
+lemma le_toIdeal_fromIdeal (J : Ideal R) : J ≤ (fromIdeal J).toIdeal  := by
+  intro x hx
+  simp only [toIdeal, fromIdeal, LinearMap.mem_range, subtype_apply, Subtype.exists, exists_prop,
+    exists_eq_right] at hx ⊢
+  exact subset_span hx
+
+end operations
 
 end RingCon
 
