@@ -31,7 +31,6 @@ inductive Duplicate (x : α) : List α → Prop
   | cons_duplicate {y : α} {l : List α} : Duplicate x l → Duplicate x (y :: l)
 #align list.duplicate List.Duplicate
 
--- mathport name: «expr ∈+ »
 local infixl:50 " ∈+ " => List.Duplicate
 
 variable {l : List α} {x : α}
@@ -87,7 +86,7 @@ theorem Duplicate.elim_singleton {y : α} (h : x ∈+ [y]) : False :=
 #align list.duplicate.elim_singleton List.Duplicate.elim_singleton
 
 theorem duplicate_cons_iff {y : α} : x ∈+ y :: l ↔ y = x ∧ x ∈ l ∨ x ∈+ l := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · cases' h with _ hm _ _ hm
     · exact Or.inl ⟨rfl, hm⟩
     · exact Or.inr hm
@@ -119,9 +118,9 @@ theorem duplicate_iff_sublist : x ∈+ l ↔ [x, x] <+ l := by
   induction' l with y l IH
   · simp
   · by_cases hx : x = y
-    · simp [hx, cons_sublist_cons_iff, singleton_sublist]
+    · simp [hx, cons_sublist_cons, singleton_sublist]
     · rw [duplicate_cons_iff_of_ne hx, IH]
-      refine' ⟨sublist_cons_of_sublist y, fun h => _⟩
+      refine ⟨sublist_cons_of_sublist y, fun h => ?_⟩
       cases h
       · assumption
       · contradiction

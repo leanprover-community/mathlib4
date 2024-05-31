@@ -23,16 +23,11 @@ definition, which is made irreducible for this purpose.
 Since everything runs in parallel for quotients of `R`-algebras, we do that case at the same time.
 -/
 
-set_option autoImplicit true
-
-
-universe uR uS uT uA
+universe uR uS uT uA u₄
 
 variable {R : Type uR} [Semiring R]
-
 variable {S : Type uS} [CommSemiring S]
 variable {T : Type uT}
-
 variable {A : Type uA} [Semiring A] [Algebra S A]
 
 namespace RingCon
@@ -92,7 +87,7 @@ def ringCon (r : R → R → Prop) : RingCon R where
   add' {a b c d} hab hcd := by
     induction hab generalizing c d with
     | rel _ _ hab =>
-      refine' (EqvGen.rel _ _ hab.add_left).trans _ _ _ _
+      refine (EqvGen.rel _ _ hab.add_left).trans _ _ _ ?_
       induction hcd with
       | rel _ _ hcd => exact EqvGen.rel _ _ hcd.add_right
       | refl => exact EqvGen.refl _
@@ -108,7 +103,7 @@ def ringCon (r : R → R → Prop) : RingCon R where
   mul' {a b c d} hab hcd := by
     induction hab generalizing c d with
     | rel _ _ hab =>
-      refine' (EqvGen.rel _ _ hab.mul_left).trans _ _ _ _
+      refine (EqvGen.rel _ _ hab.mul_left).trans _ _ _ ?_
       induction hcd with
       | rel _ _ hcd => exact EqvGen.rel _ _ hcd.mul_right
       | refl => exact EqvGen.refl _
@@ -193,7 +188,7 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
             -- Porting note:
             -- `simpa [mul_def] using congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) (Quot.sound h) ih`
             -- mysteriously doesn't work
-            have := congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) (Quot.sound h) ih
+            have := congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) ih (Quot.sound h)
             dsimp only at this
             simp? [mul_def] at this says simp only [mul_def, Quot.map₂_mk, mk.injEq] at this
             exact this)
@@ -379,7 +374,7 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
       simp [smul_quot, neg_quot, add_mul]
     intCast := intCast r
     intCast_ofNat := fun n => congrArg RingQuot.mk <| by
-      exact congrArg (Quot.mk _) (Int.cast_ofNat _)
+      exact congrArg (Quot.mk _) (Int.cast_natCast _)
     intCast_negSucc := fun n => congrArg RingQuot.mk <| by
       simp_rw [neg_def]
       exact congrArg (Quot.mk _) (Int.cast_negSucc n) }
@@ -528,7 +523,7 @@ theorem ringQuotToIdealQuotient_apply (r : B → B → Prop) (x : B) :
 def idealQuotientToRingQuot (r : B → B → Prop) : B ⧸ Ideal.ofRel r →+* RingQuot r :=
   Ideal.Quotient.lift (Ideal.ofRel r) (mkRingHom r)
     (by
-      refine' fun x h ↦ Submodule.span_induction h _ _ _ _
+      refine fun x h ↦ Submodule.span_induction h ?_ ?_ ?_ ?_
       · rintro y ⟨a, b, h, su⟩
         symm at su
         rw [← sub_eq_iff_eq_add] at su
@@ -629,8 +624,8 @@ theorem mkAlgHom_rel {s : A → A → Prop} {x y : A} (w : s x y) :
 #align ring_quot.mk_alg_hom_rel RingQuot.mkAlgHom_rel
 
 theorem mkAlgHom_surjective (s : A → A → Prop) : Function.Surjective (mkAlgHom S s) := by
-  suffices : Function.Surjective fun x ↦ (⟨.mk (Rel s) x⟩ : RingQuot s)
-  · simpa [mkAlgHom_def, mkRingHom_def]
+  suffices Function.Surjective fun x ↦ (⟨.mk (Rel s) x⟩ : RingQuot s) by
+    simpa [mkAlgHom_def, mkRingHom_def]
   rintro ⟨⟨a⟩⟩
   use a
 #align ring_quot.mk_alg_hom_surjective RingQuot.mkAlgHom_surjective

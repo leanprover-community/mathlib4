@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Kyle Miller All rights reserved.
+Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
@@ -44,6 +44,8 @@ The element `Sym2.mk (a, b)` can be written as `s(a, b)` for short.
 symmetric square, unordered pairs, symmetric powers
 -/
 
+assert_not_exists MonoidWithZero
+
 open Finset Function Sym
 
 universe u
@@ -53,7 +55,7 @@ variable {α β γ : Type*}
 namespace Sym2
 
 /-- This is the relation capturing the notion of pairs equivalent up to permutations. -/
-@[aesop (rule_sets [Sym2]) [safe [constructors, cases], norm]]
+@[aesop (rule_sets := [Sym2]) [safe [constructors, cases], norm]]
 inductive Rel (α : Type u) : α × α → α × α → Prop
   | refl (x y : α) : Rel _ (x, y) (x, y)
   | swap (x y : α) : Rel _ (x, y) (y, x)
@@ -64,12 +66,12 @@ inductive Rel (α : Type u) : α × α → α × α → Prop
 attribute [refl] Rel.refl
 
 @[symm]
-theorem Rel.symm {x y : α × α} : Rel α x y → Rel α y x := by aesop (rule_sets [Sym2])
+theorem Rel.symm {x y : α × α} : Rel α x y → Rel α y x := by aesop (rule_sets := [Sym2])
 #align sym2.rel.symm Sym2.Rel.symm
 
 @[trans]
 theorem Rel.trans {x y z : α × α} (a : Rel α x y) (b : Rel α y z) : Rel α x z := by
-  aesop (rule_sets [Sym2])
+  aesop (rule_sets := [Sym2])
 #align sym2.rel.trans Sym2.Rel.trans
 
 theorem Rel.is_equivalence : Equivalence (Rel α) :=
@@ -84,7 +86,7 @@ def Rel.setoid (α : Type u) : Setoid (α × α) :=
 
 @[simp]
 theorem rel_iff' {p q : α × α} : Rel α p q ↔ p = q ∨ p = q.swap := by
-  aesop (rule_sets [Sym2])
+  aesop (rule_sets := [Sym2])
 
 theorem rel_iff {x y z w : α} : Rel α (x, y) (z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
   simp
@@ -98,8 +100,7 @@ type of unordered pairs.
 It is equivalent in a natural way to multisets of cardinality 2 (see
 `Sym2.equivMultiset`).
 -/
-@[reducible]
-def Sym2 (α : Type u) := Quot (Sym2.Rel α)
+abbrev Sym2 (α : Type u) := Quot (Sym2.Rel α)
 #align sym2 Sym2
 
 /-- Constructor for `Sym2`. This is the quotient map `α × α → Sym2 α`. -/
@@ -184,8 +185,8 @@ theorem congr_left {a b c : α} : s(b, a) = s(c, a) ↔ b = c := by
   simp (config := {contextual := true})
 #align sym2.congr_left Sym2.congr_left
 
-theorem eq_iff {x y z w : α} : s(x, y) = s(z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z :=
-  by simp
+theorem eq_iff {x y z w : α} : s(x, y) = s(z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
+  simp
 #align sym2.eq_iff Sym2.eq_iff
 
 theorem mk_eq_mk_iff {p q : α × α} : Sym2.mk p = Sym2.mk q ↔ p = q ∨ p = q.swap := by
@@ -197,8 +198,7 @@ theorem mk_eq_mk_iff {p q : α × α} : Sym2.mk p = Sym2.mk q ↔ p = q ∨ p = 
 /-- The universal property of `Sym2`; symmetric functions of two arguments are equivalent to
 functions from `Sym2`. Note that when `β` is `Prop`, it can sometimes be more convenient to use
 `Sym2.fromRel` instead. -/
-def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } ≃ (Sym2 α → β)
-    where
+def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } ≃ (Sym2 α → β) where
   toFun f :=
     Quot.lift (uncurry ↑f) <| by
       rintro _ _ ⟨⟩
@@ -224,8 +224,7 @@ theorem coe_lift_symm_apply (F : Sym2 α → β) (a₁ a₂ : α) :
 def lift₂ :
     { f : α → α → β → β → γ //
         ∀ a₁ a₂ b₁ b₂, f a₁ a₂ b₁ b₂ = f a₂ a₁ b₁ b₂ ∧ f a₁ a₂ b₁ b₂ = f a₁ a₂ b₂ b₁ } ≃
-      (Sym2 α → Sym2 β → γ)
-    where
+      (Sym2 α → Sym2 β → γ) where
   toFun f :=
     Quotient.lift₂ (s₁ := Sym2.Rel.setoid α) (s₂ := Sym2.Rel.setoid β)
       (fun (a : α × α) (b : β × β) => f.1 a.1 a.2 b.1 b.2)
@@ -301,7 +300,7 @@ protected def Mem (x : α) (z : Sym2 α) : Prop :=
   ∃ y : α, z = s(x, y)
 #align sym2.mem Sym2.Mem
 
-@[aesop norm (rule_sets [Sym2])]
+@[aesop norm (rule_sets := [Sym2])]
 theorem mem_iff' {a b c : α} : Sym2.Mem a s(b, c) ↔ a = b ∨ a = c :=
   { mp := by
       rintro ⟨_, h⟩
@@ -347,7 +346,7 @@ theorem mem_mk_right (x y : α) : y ∈ s(x, y) :=
   eq_swap.subst <| mem_mk_left y x
 #align sym2.mem_mk_right Sym2.mem_mk_right
 
-@[simp, aesop norm (rule_sets [Sym2])]
+@[simp, aesop norm (rule_sets := [Sym2])]
 theorem mem_iff {a b c : α} : a ∈ s(b, c) ↔ a = b ∨ a = c :=
   mem_iff'
 #align sym2.mem_iff Sym2.mem_iff
@@ -361,7 +360,7 @@ theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
 #align sym2.out_snd_mem Sym2.out_snd_mem
 
 theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧ p b := by
-  refine' ⟨fun h => ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc => _⟩
+  refine ⟨fun h => ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc => ?_⟩
   obtain rfl | rfl := Sym2.mem_iff.1 hc
   · exact h.1
   · exact h.2
@@ -587,8 +586,7 @@ private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
           first | done | apply List.Perm.swap'; rfl }
 
 /-- The symmetric square is equivalent to length-2 vectors up to permutations. -/
-def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2)
-    where
+def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
   toFun :=
     Quot.map (fun x : α × α => ⟨[x.1, x.2], rfl⟩)
       (by
@@ -615,17 +613,17 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2)
         apply Sym2.Rel.swap)
   left_inv := by apply Sym2.ind; aesop (add norm unfold [Sym2.fromVector])
   right_inv x := by
-    refine' x.recOnSubsingleton fun x => _
-    · cases' x with x hx
-      cases' x with _ x
-      · simp at hx
-      cases' x with _ x
-      · simp at hx
-      cases' x with _ x
-      swap
-      · exfalso
-        simp at hx
-      rfl
+    refine x.recOnSubsingleton fun x => ?_
+    cases' x with x hx
+    cases' x with _ x
+    · simp at hx
+    cases' x with _ x
+    · simp at hx
+    cases' x with _ x
+    swap
+    · exfalso
+      simp at hx
+    rfl
 #align sym2.sym2_equiv_sym' Sym2.sym2EquivSym'
 
 /-- The symmetric square is equivalent to the second symmetric power. -/
@@ -669,14 +667,14 @@ instance [DecidableEq α] : DecidableEq (Sym2 α) :=
 /--
 A function that gives the other element of a pair given one of the elements.  Used in `Mem.other'`.
 -/
-@[aesop norm unfold (rule_sets [Sym2])]
+@[aesop norm unfold (rule_sets := [Sym2])]
 private def pairOther [DecidableEq α] (a : α) (z : α × α) : α :=
   if a = z.1 then z.2 else z.1
 
 
 /-- Get the other element of the unordered pair using the decidable equality.
 This is the computable version of `Mem.other`. -/
-@[aesop norm unfold (rule_sets [Sym2])]
+@[aesop norm unfold (rule_sets := [Sym2])]
 def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
   Sym2.rec (fun s _ => pairOther a s) (by
     clear h z
@@ -696,7 +694,7 @@ def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
 theorem other_spec' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : s(a, Mem.other' h) = z := by
   induction z using Sym2.ind
   have h' := mem_iff.mp h
-  aesop (add norm unfold [Sym2.rec, Quot.rec]) (rule_sets [Sym2])
+  aesop (add norm unfold [Sym2.rec, Quot.rec]) (rule_sets := [Sym2])
 #align sym2.other_spec' Sym2.other_spec'
 
 @[simp]
@@ -712,11 +710,12 @@ theorem other_mem' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.o
 theorem other_invol' [DecidableEq α] {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other' ha ∈ z) :
     Mem.other' hb = a := by
   induction z using Sym2.ind
-  aesop (rule_sets [Sym2]) (add norm unfold [Sym2.rec, Quot.rec])
+  aesop (rule_sets := [Sym2]) (add norm unfold [Sym2.rec, Quot.rec])
 #align sym2.other_invol' Sym2.other_invol'
 
-theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) : Mem.other hb = a :=
-  by classical
+theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈ z) :
+    Mem.other hb = a := by
+  classical
     rw [other_eq_other'] at hb ⊢
     convert other_invol' ha hb using 2
     apply other_eq_other'
@@ -747,7 +746,7 @@ theorem filter_image_mk_not_isDiag [DecidableEq α] (s : Finset α) :
     rw [← h, Sym2.mk_isDiag_iff] at hab
     exact ⟨a, b, ⟨ha, hb, hab⟩, h⟩
   · rintro ⟨a, b, ⟨ha, hb, hab⟩, h⟩
-    rw [Ne.def, ← Sym2.mk_isDiag_iff, h] at hab
+    rw [Ne, ← Sym2.mk_isDiag_iff, h] at hab
     exact ⟨⟨a, b, ⟨ha, hb⟩, h⟩, hab⟩
 #align sym2.filter_image_quotient_mk_not_is_diag Sym2.filter_image_mk_not_isDiag
 

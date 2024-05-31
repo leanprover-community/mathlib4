@@ -41,7 +41,6 @@ namespace Polynomial
 section Semiring
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable (R)
 
 /-- `annIdeal R a` is the *annihilating ideal* of all `p : R[X]` such that `p(a) = 0`.
@@ -67,7 +66,6 @@ end Semiring
 section Field
 
 variable {𝕜 A : Type*} [Field 𝕜] [Ring A] [Algebra 𝕜 A]
-
 variable (𝕜)
 
 open Submodule
@@ -157,7 +155,7 @@ theorem annIdealGenerator_eq_minpoly (a : A) : annIdealGenerator 𝕜 a = minpol
   by_cases h : annIdealGenerator 𝕜 a = 0
   · rw [h, minpoly.eq_zero]
     rintro ⟨p, p_monic, hp : aeval a p = 0⟩
-    refine' p_monic.ne_zero (Ideal.mem_bot.mp _)
+    refine p_monic.ne_zero (Ideal.mem_bot.mp ?_)
     simpa only [annIdealGenerator_eq_zero_iff.mp h] using mem_annIdeal_iff_aeval_eq_zero.mpr hp
   · exact minpoly.unique _ _ (monic_annIdealGenerator _ _ h) (annIdealGenerator_aeval_eq_zero _ _)
       fun q q_monic hq =>
@@ -174,8 +172,13 @@ theorem monic_generator_eq_minpoly (a : A) (p : 𝕜[X]) (p_monic : p.Monic)
   · rw [← span_singleton_annIdealGenerator, Ideal.span_singleton_eq_span_singleton] at p_gen
     rw [eq_comm]
     apply eq_of_monic_of_associated p_monic _ p_gen
-    · apply monic_annIdealGenerator _ _ ((Associated.ne_zero_iff p_gen).mp h)
+    apply monic_annIdealGenerator _ _ ((Associated.ne_zero_iff p_gen).mp h)
 #align polynomial.monic_generator_eq_minpoly Polynomial.monic_generator_eq_minpoly
+
+theorem span_minpoly_eq_annihilator {M} [AddCommGroup M] [Module 𝕜 M] (f : Module.End 𝕜 M) :
+    Ideal.span {minpoly 𝕜 f} = Module.annihilator 𝕜[X] (Module.AEval' f) := by
+  rw [← annIdealGenerator_eq_minpoly, span_singleton_annIdealGenerator]; ext
+  rw [mem_annIdeal_iff_aeval_eq_zero, DFunLike.ext_iff, Module.mem_annihilator]; rfl
 
 end Field
 

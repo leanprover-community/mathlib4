@@ -5,7 +5,7 @@ Authors: Simon Hudon, Johan Commelin
 -/
 import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.SuccessIfFailWithMsg
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Ring.Nat
 
 example {x y : ℕ} : True := by
   wlog h : x ≤ y

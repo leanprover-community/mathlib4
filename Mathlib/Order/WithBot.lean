@@ -86,16 +86,16 @@ theorem some_eq_coe (a : α) : (Option.some a : WithBot α) = (↑a : WithBot α
 
 @[simp]
 theorem bot_ne_coe : ⊥ ≠ (a : WithBot α) :=
-  fun.
+  nofun
 #align with_bot.bot_ne_coe WithBot.bot_ne_coe
 
 @[simp]
 theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
-  fun.
+  nofun
 #align with_bot.coe_ne_bot WithBot.coe_ne_bot
 
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 def recBotCoe {C : WithBot α → Sort*} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
   | ⊥ => bot
   | (a : α) => coe a
@@ -133,7 +133,7 @@ theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b := coe_inj
 #align with_bot.coe_eq_coe WithBot.coe_eq_coe
 
 theorem unbot'_eq_iff {d y : α} {x : WithBot α} : unbot' d x = y ↔ x = y ∨ x = ⊥ ∧ y = d := by
-  induction x using recBotCoe <;> simp [@eq_comm _ d]
+  induction x <;> simp [@eq_comm _ d]
 #align with_bot.unbot'_eq_iff WithBot.unbot'_eq_iff
 
 @[simp] theorem unbot'_eq_self_iff {d : α} {x : WithBot α} : unbot' d x = d ↔ x = d ∨ x = ⊥ := by
@@ -142,7 +142,7 @@ theorem unbot'_eq_iff {d y : α} {x : WithBot α} : unbot' d x = y ↔ x = y ∨
 
 theorem unbot'_eq_unbot'_iff {d : α} {x y : WithBot α} :
     unbot' d x = unbot' d y ↔ x = y ∨ x = d ∧ y = ⊥ ∨ x = ⊥ ∧ y = d := by
- induction y using recBotCoe <;> simp [unbot'_eq_iff, or_comm]
+ induction y <;> simp [unbot'_eq_iff, or_comm]
 #align with_bot.unbot'_eq_unbot'_iff WithBot.unbot'_eq_unbot'_iff
 
 /-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
@@ -276,7 +276,7 @@ theorem unbot_le_iff {a : WithBot α} (h : a ≠ ⊥) {b : α} :
 
 theorem unbot'_le_iff {a : WithBot α} {b c : α} (h : a = ⊥ → b ≤ c) :
     a.unbot' b ≤ c ↔ a ≤ c := by
-  induction a using recBotCoe
+  induction a
   · simpa using h rfl
   · simp
 #align with_bot.unbot'_bot_le_iff WithBot.unbot'_le_iff
@@ -328,13 +328,13 @@ theorem lt_coe_iff : ∀ {x : WithBot α}, x < b ↔ ∀ a : α, x = a → a < b
 /-- A version of `bot_lt_iff_ne_bot` for `WithBot` that only requires `LT α`, not
 `PartialOrder α`. -/
 protected theorem bot_lt_iff_ne_bot : ∀ {x : WithBot α}, ⊥ < x ↔ x ≠ ⊥
-  | ⊥ => by simpa using not_lt_none ⊥
+  | ⊥ => iff_of_false (not_lt_none _) <| by simp
   | (x : α) => by simp [bot_lt_coe]
 #align with_bot.bot_lt_iff_ne_bot WithBot.bot_lt_iff_ne_bot
 
 theorem unbot'_lt_iff {a : WithBot α} {b c : α} (h : a = ⊥ → b < c) :
     a.unbot' b < c ↔ a < c := by
-  induction a using recBotCoe
+  induction a
   · simpa [bot_lt_coe] using h rfl
   · simp
 
@@ -376,8 +376,8 @@ theorem coe_mono : Monotone (fun (a : α) => (a : WithBot α)) := fun _ _ => coe
 #align with_bot.coe_mono WithBot.coe_mono
 
 theorem monotone_iff {f : WithBot α → β} :
-    Monotone f ↔ Monotone (λ a => f a : α → β) ∧ ∀ x : α, f ⊥ ≤ f x :=
-  ⟨fun h => ⟨h.comp WithBot.coe_mono, fun _ => h bot_le⟩, fun h =>
+    Monotone f ↔ Monotone (fun a ↦ f a : α → β) ∧ ∀ x : α, f ⊥ ≤ f x :=
+  ⟨fun h ↦ ⟨h.comp WithBot.coe_mono, fun _ ↦ h bot_le⟩, fun h ↦
     WithBot.forall.2
       ⟨WithBot.forall.2 ⟨fun _ => le_rfl, fun x _ => h.2 x⟩, fun _ =>
         WithBot.forall.2 ⟨fun h => (not_coe_le_bot _ h).elim,
@@ -401,7 +401,7 @@ theorem strictMono_iff {f : WithBot α → β} :
 #align with_bot.strict_mono_iff WithBot.strictMono_iff
 
 theorem strictAnti_iff {f : WithBot α → β} :
-    StrictAnti f ↔ StrictAnti (λ a => f a : α → β) ∧ ∀ x : α, f x < f ⊥ :=
+    StrictAnti f ↔ StrictAnti (fun a ↦ f a : α → β) ∧ ∀ x : α, f x < f ⊥ :=
   strictMono_iff (β := βᵒᵈ)
 
 @[simp]
@@ -442,7 +442,7 @@ instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) :=
       · exact h₂ a rfl
       · exact h₁ a rfl
       · rcases h₁ b rfl with ⟨d, ⟨⟩, h₁'⟩
-        simp at h₂
+        simp only [some_le_some] at h₂
         exact ⟨d, rfl, sup_le h₁' h₂⟩ }
 
 theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithBot α) = (a : WithBot α) ⊔ b :=
@@ -484,8 +484,8 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) :=
       | (a₁ : α), (a₂ : α), ⊥ => inf_le_right
       | (a₁ : α), (a₂ : α), (a₃ : α) => coe_le_coe.mpr le_sup_inf }
 
--- porting note: added, previously this was found via unfolding `WithBot`
-instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) := instDecidableEqOption
+instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
+  inferInstanceAs <| DecidableEq (Option α)
 
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] : @DecidableRel (WithBot α) (· ≤ ·)
   | none, x => isTrue fun a h => Option.noConfusion h
@@ -525,7 +525,7 @@ theorem coe_max [LinearOrder α] (x y : α) : ((max x y : α) : WithBot α) = ma
 
 instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot α) where
   wf :=
-  have not_lt_bot : ∀ a : WithBot α, ¬ a < ⊥ := (fun.)
+  have not_lt_bot : ∀ a : WithBot α, ¬ a < ⊥ := nofun
   have acc_bot := ⟨_, by simp [not_lt_bot]⟩
   .intro fun
     | ⊥ => acc_bot
@@ -651,16 +651,16 @@ theorem some_eq_coe (a : α) : (Option.some a : WithTop α) = (↑a : WithTop α
 
 @[simp]
 theorem top_ne_coe : ⊤ ≠ (a : WithTop α) :=
-  fun.
+  nofun
 #align with_top.top_ne_coe WithTop.top_ne_coe
 
 @[simp]
 theorem coe_ne_top : (a : WithTop α) ≠ ⊤ :=
-  fun.
+  nofun
 #align with_top.coe_ne_top WithTop.coe_ne_top
 
 /-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 def recTopCoe {C : WithTop α → Sort*} (top : C ⊤) (coe : ∀ a : α, C a) : ∀ n : WithTop α, C n
   | none => top
   | Option.some a => coe a
@@ -754,7 +754,7 @@ theorem untop'_coe {α} (d x : α) : untop' d x = x :=
   rfl
 #align with_top.untop'_coe WithTop.untop'_coe
 
-@[simp, norm_cast] -- porting note: added `simp`
+@[simp, norm_cast] -- Porting note: added `simp`
 theorem coe_eq_coe : (a : WithTop α) = b ↔ a = b :=
   Option.some_inj
 #align with_top.coe_eq_coe WithTop.coe_eq_coe
@@ -1223,7 +1223,7 @@ theorem strictMono_iff {f : WithTop α → β} :
 #align with_top.strict_mono_iff WithTop.strictMono_iff
 
 theorem strictAnti_iff {f : WithTop α → β} :
-    StrictAnti f ↔ StrictAnti (λ a => f a : α → β) ∧ ∀ x : α, f ⊤ < f x :=
+    StrictAnti f ↔ StrictAnti (fun a ↦ f a : α → β) ∧ ∀ x : α, f ⊤ < f x :=
   strictMono_iff (β := βᵒᵈ)
 
 @[simp]
@@ -1279,8 +1279,8 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithTop α) :=
   { WithTop.lattice with
     le_sup_inf := @le_sup_inf (WithBot αᵒᵈ)ᵒᵈ _ }
 
--- porting note: added, previously this was found via unfolding `WithTop`
-instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) := instDecidableEqOption
+instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) :=
+  inferInstanceAs <| DecidableEq (Option α)
 
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] :
     @DecidableRel (WithTop α) (· ≤ ·) := fun _ _ =>

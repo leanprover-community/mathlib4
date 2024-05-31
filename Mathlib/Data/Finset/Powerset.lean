@@ -44,16 +44,17 @@ theorem coe_powerset (s : Finset α) :
   simp
 #align finset.coe_powerset Finset.coe_powerset
 
---Porting note: remove @[simp], simp can prove it
+-- Porting note: remove @[simp], simp can prove it
 theorem empty_mem_powerset (s : Finset α) : ∅ ∈ powerset s :=
   mem_powerset.2 (empty_subset _)
 #align finset.empty_mem_powerset Finset.empty_mem_powerset
 
---Porting note: remove @[simp], simp can prove it
+-- Porting note: remove @[simp], simp can prove it
 theorem mem_powerset_self (s : Finset α) : s ∈ powerset s :=
   mem_powerset.2 Subset.rfl
 #align finset.mem_powerset_self Finset.mem_powerset_self
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem powerset_nonempty (s : Finset α) : s.powerset.Nonempty :=
   ⟨∅, empty_mem_powerset _⟩
 #align finset.powerset_nonempty Finset.powerset_nonempty
@@ -126,18 +127,16 @@ instance decidableForallOfDecidableSubsets {s : Finset α} {p : ∀ t ⊆ s, Pro
     ⟨fun h t hs => h t (mem_powerset.2 hs), fun h _ _ => h _ _⟩
 #align finset.decidable_forall_of_decidable_subsets Finset.decidableForallOfDecidableSubsets
 
-/-- A version of `Finset.decidableExistsOfDecidableSubsets` with a non-dependent `p`.
-Typeclass inference cannot find `hu` here, so this is not an instance. -/
-def decidableExistsOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
-    (hu : ∀ t ⊆ s, Decidable (p t)) : Decidable (∃ (t : _) (_h : t ⊆ s), p t) :=
-  @Finset.decidableExistsOfDecidableSubsets _ _ _ hu
+/-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for any subset. -/
+instance decidableExistsOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
+    [∀ t, Decidable (p t)] : Decidable (∃ t ⊆ s, p t) :=
+  decidable_of_iff (∃ (t : _) (_h : t ⊆ s), p t) $ by simp
 #align finset.decidable_exists_of_decidable_subsets' Finset.decidableExistsOfDecidableSubsets'
 
-/-- A version of `Finset.decidableForallOfDecidableSubsets` with a non-dependent `p`.
-Typeclass inference cannot find `hu` here, so this is not an instance. -/
-def decidableForallOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
-    (hu : ∀ t ⊆ s, Decidable (p t)) : Decidable (∀ t ⊆ s, p t) :=
-  @Finset.decidableForallOfDecidableSubsets _ _ _ hu
+/-- For predicate `p` decidable on subsets, it is decidable whether `p` holds for every subset. -/
+instance decidableForallOfDecidableSubsets' {s : Finset α} {p : Finset α → Prop}
+    [∀ t, Decidable (p t)] : Decidable (∀ t ⊆ s, p t) :=
+  decidable_of_iff (∀ (t : _) (_h : t ⊆ s), p t) $ by simp
 #align finset.decidable_forall_of_decidable_subsets' Finset.decidableForallOfDecidableSubsets'
 
 end Powerset
@@ -220,7 +219,7 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
 @[simp]
 theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
   ext; rw [mem_powersetCard, mem_singleton, card_eq_zero]
-  refine'
+  refine
     ⟨fun h => h.2, fun h => by
       rw [h]
       exact ⟨empty_subset s, rfl⟩⟩
@@ -271,19 +270,9 @@ theorem powersetCard_succ_insert [DecidableEq α] {x : α} {s : Finset α} (h : 
   simp [card_insert_of_not_mem this, Nat.succ_inj']
 #align finset.powerset_len_succ_insert Finset.powersetCard_succ_insert
 
-theorem powersetCard_nonempty {n : ℕ} {s : Finset α} (h : n ≤ s.card) :
-    (powersetCard n s).Nonempty := by
-  classical
-    induction' s using Finset.induction_on with x s hx IH generalizing n
-    · rw [card_empty, le_zero_iff] at h
-      rw [h, powersetCard_zero]
-      exact Finset.singleton_nonempty _
-    · cases n
-      · simp
-      · rw [card_insert_of_not_mem hx, Nat.succ_le_succ_iff] at h
-        rw [powersetCard_succ_insert hx]
-        refine' Nonempty.mono _ ((IH h).image (insert x))
-        exact subset_union_right _ _
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+lemma powersetCard_nonempty : (powersetCard n s).Nonempty ↔ n ≤ s.card := by
+  aesop (add simp [Finset.Nonempty, exists_smaller_set, card_le_card])
 #align finset.powerset_len_nonempty Finset.powersetCard_nonempty
 
 @[simp]
@@ -306,7 +295,7 @@ theorem powerset_card_disjiUnion (s : Finset α) :
     Finset.powerset s =
       (range (s.card + 1)).disjiUnion (fun i => powersetCard i s)
         (s.pairwise_disjoint_powersetCard.set_pairwise _) := by
-  refine' ext fun a => ⟨fun ha => _, fun ha => _⟩
+  refine ext fun a => ⟨fun ha => ?_, fun ha => ?_⟩
   · rw [mem_disjiUnion]
     exact
       ⟨a.card, mem_range.mpr (Nat.lt_succ_of_le (card_le_card (mem_powerset.mp ha))),
@@ -328,12 +317,12 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
     exact h
   · rw [sup_eq_biUnion, le_iff_subset, subset_iff]
     intro x hx
-    simp only [mem_biUnion, exists_prop, id.def]
-    obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty
+    simp only [mem_biUnion, exists_prop, id]
+    obtain ⟨t, ht⟩ : ∃ t, t ∈ powersetCard n (u.erase x) := powersetCard_nonempty.2
       (le_trans (Nat.le_sub_one_of_lt hn) pred_card_le_card_erase)
-    · refine' ⟨insert x t, _, mem_insert_self _ _⟩
-      rw [← insert_erase hx, powersetCard_succ_insert (not_mem_erase _ _)]
-      exact mem_union_right _ (mem_image_of_mem _ ht)
+    refine ⟨insert x t, ?_, mem_insert_self _ _⟩
+    rw [← insert_erase hx, powersetCard_succ_insert (not_mem_erase _ _)]
+    exact mem_union_right _ (mem_image_of_mem _ ht)
 #align finset.powerset_len_sup Finset.powersetCard_sup
 
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
@@ -348,11 +337,11 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
         simp only [mem_map, mem_filter, decide_eq_true_eq]
         exact ⟨fun ⟨_y, ⟨_hy₁, hy₂⟩, hy₃⟩ => hy₃ ▸ hy₂,
           fun hx => let ⟨y, hy⟩ := mem_map.1 (h.1 hx); ⟨y, ⟨hy.1, hy.2 ▸ hx⟩, hy.2⟩⟩
-      refine' ⟨_, _, this⟩
+      refine ⟨_, ?_, this⟩
       rw [← card_map f, this, h.2]; simp
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩
       dsimp [RelEmbedding.coe_toEmbedding]
-      --Porting note: Why is `rw` required here and not `simp`?
+      -- Porting note: Why is `rw` required here and not `simp`?
       rw [mapEmbedding_apply]
       simp [has]
 #align finset.powerset_len_map Finset.powersetCard_map

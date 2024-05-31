@@ -19,9 +19,6 @@ Note that this definition allows for Automaton with infinite states; a `Fintype`
 supplied for true NFA's.
 -/
 
-set_option autoImplicit true
-
-
 open Set
 
 open Computability
@@ -108,7 +105,8 @@ theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.ste
 def accepts : Language α := {x | ∃ S ∈ M.accept, S ∈ M.eval x}
 #align NFA.accepts NFA.accepts
 
-theorem mem_accepts : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by rfl
+theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by
+  rfl
 
 /-- `M.toDFA` is a `DFA` constructed from an `NFA` `M` using the subset construction. The
   states is the type of `Set`s of `M.state` and the step function is `M.stepSet`. -/
@@ -140,8 +138,7 @@ namespace DFA
 
 /-- `M.toNFA` is an `NFA` constructed from a `DFA` `M` by using the same start and accept
   states and a transition function which sends `s` with input `a` to the singleton `M.step s a`. -/
-@[simps] def toNFA (M : DFA α σ') : NFA α σ'
-    where
+@[simps] def toNFA (M : DFA α σ') : NFA α σ' where
   step s a := {M.step s a}
   start := {M.start}
   accept := M.accept

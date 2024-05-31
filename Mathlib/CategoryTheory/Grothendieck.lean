@@ -41,7 +41,6 @@ universe u
 namespace CategoryTheory
 
 variable {C D : Type*} [Category C] [Category D]
-
 variable (F : C ⥤ Cat)
 
 /--
@@ -52,7 +51,7 @@ gives a category whose
   `base : X.base ⟶ Y.base` and
   `f.fiber : (F.map base).obj X.fiber ⟶ Y.fiber`
 -/
--- porting note: no such linter yet
+-- Porting note(#5171): no such linter yet
 -- @[nolint has_nonempty_instance]
 structure Grothendieck where
   /-- The underlying object in `C` -/

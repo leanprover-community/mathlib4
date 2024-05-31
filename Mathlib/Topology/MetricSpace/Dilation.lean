@@ -224,7 +224,7 @@ def mkOfNNDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α �
   toFun := f
   edist_eq' := by
     rcases h with ⟨r, hne, h⟩
-    refine' ⟨r, hne, fun x y => _⟩
+    refine ⟨r, hne, fun x y => ?_⟩
     rw [edist_nndist, edist_nndist, ← ENNReal.coe_mul, h x y]
 #align dilation.mk_of_nndist_eq Dilation.mkOfNNDistEq
 
@@ -265,9 +265,7 @@ end Setup
 section PseudoEmetricDilation
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-
 variable [FunLike F α β] [DilationClass F α β] [FunLike G β γ] [DilationClass G β γ]
-
 variable (f : F) (g : G) {x y z : α} {s : Set α}
 
 /-- Every isometry is a dilation of ratio `1`. -/
@@ -303,7 +301,7 @@ protected theorem injective {α : Type*} [EMetricSpace α] [FunLike F α β]  [D
 /-- The identity is a dilation -/
 protected def id (α) [PseudoEMetricSpace α] : α →ᵈ α where
   toFun := id
-  edist_eq' := ⟨1, one_ne_zero, fun x y => by simp only [id.def, ENNReal.coe_one, one_mul]⟩
+  edist_eq' := ⟨1, one_ne_zero, fun x y => by simp only [id, ENNReal.coe_one, one_mul]⟩
 #align dilation.id Dilation.id
 
 instance : Inhabited (α →ᵈ α) :=
@@ -319,7 +317,7 @@ theorem ratio_id : ratio (Dilation.id α) = 1 := by
   · rw [ratio, if_pos h]
   · push_neg at h
     rcases h with ⟨x, y, hne⟩
-    refine' (ratio_unique hne.1 hne.2 _).symm
+    refine (ratio_unique hne.1 hne.2 ?_).symm
     simp
 #align dilation.id_ratio Dilation.ratio_id
 
@@ -440,7 +438,7 @@ theorem toContinuous : Continuous (f : α → β) :=
 
 /-- Dilations scale the diameter by `ratio f` in pseudoemetric spaces. -/
 theorem ediam_image (s : Set α) : EMetric.diam ((f : α → β) '' s) = ratio f * EMetric.diam s := by
-  refine' ((lipschitz f).ediam_image_le s).antisymm _
+  refine ((lipschitz f).ediam_image_le s).antisymm ?_
   apply ENNReal.mul_le_of_le_div'
   rw [div_eq_mul_inv, mul_comm, ← ENNReal.coe_inv]
   exacts [(antilipschitz f).le_mul_ediam_image s, ratio_ne_zero f]

@@ -96,7 +96,7 @@ needs to have a complete control over the choice of the implicit function.
 * both functions are strictly differentiable at `a`;
 * the derivatives are surjective;
 * the kernels of the derivatives are complementary subspaces of `E`. -/
--- Porting note: not yet supported @[nolint has_nonempty_instance]
+-- Porting note(#5171): linter not yet ported @[nolint has_nonempty_instance]
 structure ImplicitFunctionData (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] (F : Type*) [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] (G : Type*) [NormedAddCommGroup G] [NormedSpace 𝕜 G]
@@ -205,9 +205,9 @@ theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
   have := φ.hasStrictFDerivAt.to_localInverse
   simp only [prodFun] at this
   convert this.comp (φ.rightFun φ.pt) ((hasStrictFDerivAt_const _ _).prod (hasStrictFDerivAt_id _))
-  -- porting note: added parentheses to help `simp`
+  -- Porting note: added parentheses to help `simp`
   simp only [ContinuousLinearMap.ext_iff, (ContinuousLinearMap.comp_apply)] at hg'inv hg'invf ⊢
-  -- porting note: was `simp [ContinuousLinearEquiv.eq_symm_apply]`;
+  -- porting note (#10745): was `simp [ContinuousLinearEquiv.eq_symm_apply]`;
   -- both `simp` and `rw` fail here, `erw` works
   intro x
   erw [ContinuousLinearEquiv.eq_symm_apply]
@@ -293,7 +293,7 @@ theorem implicitToPartialHomeomorphOfComplemented_apply (hf : HasStrictFDerivAt 
 theorem implicitToPartialHomeomorphOfComplemented_apply_ker (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) (y : ker f') :
     hf.implicitToPartialHomeomorphOfComplemented f f' hf' hker (y + a) = (f (y + a), y) := by
-  simp only [implicitToPartialHomeomorphOfComplemented_apply, add_sub_cancel,
+  simp only [implicitToPartialHomeomorphOfComplemented_apply, add_sub_cancel_right,
     Classical.choose_spec hker]
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_of_complemented_apply_ker HasStrictFDerivAt.implicitToPartialHomeomorphOfComplemented_apply_ker
 
@@ -356,8 +356,8 @@ theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
   · ext
     -- Porting note: added parentheses to help `simp`
     simp only [Classical.choose_spec hker, implicitFunctionDataOfComplemented,
-      (ContinuousLinearMap.comp_apply), Submodule.coe_subtypeL', Submodule.coeSubtype,
-      (ContinuousLinearMap.id_apply)]
+      ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL', Submodule.coeSubtype,
+      ContinuousLinearMap.id_apply]
   swap
   · ext
     -- Porting note: added parentheses to help `simp`
@@ -416,7 +416,7 @@ theorem implicitToPartialHomeomorph_fst (hf : HasStrictFDerivAt f f' a) (hf' : r
 @[simp]
 theorem implicitToPartialHomeomorph_apply_ker (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
     (y : ker f') : hf.implicitToPartialHomeomorph f f' hf' (y + a) = (f (y + a), y) :=
-  -- porting note: had to add `haveI` (here and below)
+  -- Porting note: had to add `haveI` (here and below)
   haveI := FiniteDimensional.complete 𝕜 F
   implicitToPartialHomeomorphOfComplemented_apply_ker ..
 #align has_strict_fderiv_at.implicit_to_local_homeomorph_apply_ker HasStrictFDerivAt.implicitToPartialHomeomorph_apply_ker
@@ -444,8 +444,8 @@ theorem tendsto_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f'
     {l : Filter α} {g₁ : α → F} {g₂ : α → ker f'} (h₁ : Tendsto g₁ l (𝓝 <| f a))
     (h₂ : Tendsto g₂ l (𝓝 0)) :
     Tendsto (fun t => hf.implicitFunction f f' hf' (g₁ t) (g₂ t)) l (𝓝 a) := by
-  refine' ((hf.implicitToPartialHomeomorph f f' hf').tendsto_symm
-    (hf.mem_implicitToPartialHomeomorph_source hf')).comp _
+  refine ((hf.implicitToPartialHomeomorph f f' hf').tendsto_symm
+    (hf.mem_implicitToPartialHomeomorph_source hf')).comp ?_
   rw [implicitToPartialHomeomorph_self]
   exact h₁.prod_mk_nhds h₂
 #align has_strict_fderiv_at.tendsto_implicit_function HasStrictFDerivAt.tendsto_implicitFunction

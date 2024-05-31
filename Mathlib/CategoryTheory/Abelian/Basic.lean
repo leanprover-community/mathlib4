@@ -5,6 +5,7 @@ Authors: Markus Himmel, Johan Commelin, Scott Morrison
 -/
 import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
 import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
@@ -95,7 +96,6 @@ universe v u
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
-
 variable (C)
 
 /-- A (preadditive) category `C` is called abelian if it has all finite products,
@@ -130,7 +130,6 @@ is an abelian category.
 namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]
-
 variable [Limits.HasKernels C] [Limits.HasCokernels C]
 
 namespace OfCoimageImageComparisonIsIso
@@ -203,8 +202,8 @@ def normalMonoCategory : NormalMonoCategory C where
         have aux : ∀ (s : KernelFork (cokernel.π f)), (limit.lift (parallelPair (cokernel.π f) 0) s
           ≫ inv (imageMonoFactorisation f).e) ≫ Fork.ι (KernelFork.ofι f (by simp))
             = Fork.ι s := ?_
-        refine' isLimitAux _ (fun A => limit.lift _ _ ≫ inv (imageMonoFactorisation f).e) aux _
-        · intro A g hg
+        · refine isLimitAux _ (fun A => limit.lift _ _ ≫ inv (imageMonoFactorisation f).e) aux ?_
+          intro A g hg
           rw [KernelFork.ι_ofι] at hg
           rw [← cancel_mono f, hg, ← aux, KernelFork.ι_ofι]
         · intro A
@@ -229,9 +228,9 @@ def normalEpiCategory : NormalEpiCategory C where
         have aux : ∀ (s : CokernelCofork (kernel.ι f)), Cofork.π (CokernelCofork.ofπ f (by simp)) ≫
           inv (imageMonoFactorisation f).m ≫ inv (Abelian.coimageImageComparison f) ≫
           colimit.desc (parallelPair (kernel.ι f) 0) s = Cofork.π s := ?_
-        refine' isColimitAux _ (fun A => inv (imageMonoFactorisation f).m ≫
-                inv (Abelian.coimageImageComparison f) ≫ colimit.desc _ _) aux _
-        · intro A g hg
+        · refine isColimitAux _ (fun A => inv (imageMonoFactorisation f).m ≫
+                  inv (Abelian.coimageImageComparison f) ≫ colimit.desc _ _) aux ?_
+          intro A g hg
           rw [CokernelCofork.π_ofπ] at hg
           rw [← cancel_epi f, hg, ← aux, CokernelCofork.π_ofπ]
         · intro A
@@ -396,7 +395,7 @@ See `CategoryTheory.Abelian.ofCoimageImageComparisonIsIso` for the converse.
 -/
 instance : IsIso (coimageImageComparison f) := by
   convert
-    IsIso.of_iso
+    Iso.isIso_hom
       (IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage
         (imageStrongEpiMonoFactorisation f).toMonoIsImage)
   ext
@@ -499,6 +498,44 @@ theorem monoLift_comp [Mono f] {T : C} (g : T ⟶ Y) (hg : g ≫ cokernel.π f =
   (monoIsKernelOfCokernel _ (colimit.isColimit _)).fac (KernelFork.ofι _ hg)
     WalkingParallelPair.zero
 #align category_theory.abelian.mono_lift_comp CategoryTheory.Abelian.monoLift_comp
+
+section
+
+variable {D : Type*} [Category D] [HasZeroMorphisms D]
+
+/-- If `F : D ⥤ C` is a functor to an abelian category, `i : X ⟶ Y` is a morphism
+admitting a cokernel such that `F` preserves this cokernel and `F.map i` is a mono,
+then `F.map X` identifies to the kernel of `F.map (cokernel.π i)`. -/
+noncomputable def isLimitMapConeOfKernelForkOfι
+    {X Y : D} (i : X ⟶ Y) [HasCokernel i] (F : D ⥤ C)
+    [F.PreservesZeroMorphisms] [Mono (F.map i)]
+    [PreservesColimit (parallelPair i 0) F] :
+    IsLimit (F.mapCone (KernelFork.ofι i (cokernel.condition i))) := by
+  let e : parallelPair (cokernel.π (F.map i)) 0 ≅ parallelPair (cokernel.π i) 0 ⋙ F :=
+    parallelPair.ext (Iso.refl _) (asIso (cokernelComparison i F)) (by simp) (by simp)
+  refine IsLimit.postcomposeInvEquiv e _ ?_
+  let hi := Abelian.monoIsKernelOfCokernel _ (cokernelIsCokernel (F.map i))
+  refine IsLimit.ofIsoLimit hi (Fork.ext (Iso.refl _) ?_)
+  change 𝟙 _ ≫ F.map i ≫ 𝟙 _ = F.map i
+  rw [Category.comp_id, Category.id_comp]
+
+/-- If `F : D ⥤ C` is a functor to an abelian category, `p : X ⟶ Y` is a morphisms
+admitting a kernel such that `F` preserves this kernel and `F.map p` is an epi,
+then `F.map Y` identifies to the cokernel of `F.map (kernel.ι p)`. -/
+noncomputable def isColimitMapCoconeOfCokernelCoforkOfπ
+    {X Y : D} (p : X ⟶ Y) [HasKernel p] (F : D ⥤ C)
+    [F.PreservesZeroMorphisms] [Epi (F.map p)]
+    [PreservesLimit (parallelPair p 0) F] :
+    IsColimit (F.mapCocone (CokernelCofork.ofπ p (kernel.condition p))) := by
+  let e : parallelPair (kernel.ι p) 0 ⋙ F ≅ parallelPair (kernel.ι (F.map p)) 0 :=
+    parallelPair.ext (asIso (kernelComparison p F)) (Iso.refl _) (by simp) (by simp)
+  refine IsColimit.precomposeInvEquiv e _ ?_
+  let hp := Abelian.epiIsCokernelOfKernel _ (kernelIsKernel (F.map p))
+  refine IsColimit.ofIsoColimit hp (Cofork.ext (Iso.refl _) ?_)
+  change F.map p ≫ 𝟙 _ = 𝟙 _ ≫ F.map p
+  rw [Category.comp_id, Category.id_comp]
+
+end
 
 end CokernelOfKernel
 
@@ -620,7 +657,7 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd : pullback f g ⟶ Y)
     -- Consider the morphism u := (0, e) : X ⊞ Y⟶ R.
     let u := biprod.desc (0 : X ⟶ R) e
     -- The composite pullback f g ⟶ X ⊞ Y ⟶ R is zero by assumption.
-    have hu : PullbackToBiproductIsKernel.pullbackToBiproduct f g ≫ u = 0 := by simpa
+    have hu : PullbackToBiproductIsKernel.pullbackToBiproduct f g ≫ u = 0 := by simpa [u]
     -- pullback_to_biproduct f g is a kernel of (f, -g), so (f, -g) is a
     -- cokernel of pullback_to_biproduct f g
     have :=
@@ -628,10 +665,9 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd : pullback f g ⟶ Y)
         (PullbackToBiproductIsKernel.isLimitPullbackToBiproduct f g)
     -- We use this fact to obtain a factorization of u through (f, -g) via some d : Z ⟶ R.
     obtain ⟨d, hd⟩ := CokernelCofork.IsColimit.desc' this u hu
-    dsimp at d; dsimp at hd
+    dsimp at d; dsimp [u] at hd
     -- But then f ≫ d = 0:
-    have : f ≫ d = 0;
-    calc
+    have : f ≫ d = 0 := calc
       f ≫ d = (biprod.inl ≫ biprod.desc f (-g)) ≫ d := by rw [biprod.inl_desc]
       _ = biprod.inl ≫ u := by rw [Category.assoc, hd]
       _ = 0 := biprod.inl_desc _ _
@@ -654,7 +690,7 @@ instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst : pullback f g ⟶ X)
     -- Consider the morphism u := (e, 0) : X ⊞ Y ⟶ R.
     let u := biprod.desc e (0 : Y ⟶ R)
     -- The composite pullback f g ⟶ X ⊞ Y ⟶ R is zero by assumption.
-    have hu : PullbackToBiproductIsKernel.pullbackToBiproduct f g ≫ u = 0 := by simpa
+    have hu : PullbackToBiproductIsKernel.pullbackToBiproduct f g ≫ u = 0 := by simpa [u]
     -- pullback_to_biproduct f g is a kernel of (f, -g), so (f, -g) is a
     -- cokernel of pullback_to_biproduct f g
     have :=
@@ -662,10 +698,9 @@ instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst : pullback f g ⟶ X)
         (PullbackToBiproductIsKernel.isLimitPullbackToBiproduct f g)
     -- We use this fact to obtain a factorization of u through (f, -g) via some d : Z ⟶ R.
     obtain ⟨d, hd⟩ := CokernelCofork.IsColimit.desc' this u hu
-    dsimp at d; dsimp at hd
+    dsimp at d; dsimp [u] at hd
     -- But then (-g) ≫ d = 0:
-    have : (-g) ≫ d = 0;
-    calc
+    have : (-g) ≫ d = 0 := calc
       (-g) ≫ d = (biprod.inr ≫ biprod.desc f (-g)) ≫ d := by rw [biprod.inr_desc]
       _ = biprod.inr ≫ u := by rw [Category.assoc, hd]
       _ = 0 := biprod.inr_desc _ _
@@ -710,15 +745,14 @@ variable [Limits.HasPushouts C] {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
 instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr : Z ⟶ pushout f g) :=
   mono_of_cancel_zero _ fun {R} e h => by
     let u := biprod.lift (0 : R ⟶ Y) e
-    have hu : u ≫ BiproductToPushoutIsCokernel.biproductToPushout f g = 0 := by simpa
+    have hu : u ≫ BiproductToPushoutIsCokernel.biproductToPushout f g = 0 := by simpa [u]
     have :=
       monoIsKernelOfCokernel _
         (BiproductToPushoutIsCokernel.isColimitBiproductToPushout f g)
     obtain ⟨d, hd⟩ := KernelFork.IsLimit.lift' this u hu
     dsimp at d
-    dsimp at hd
-    have : d ≫ f = 0;
-    calc
+    dsimp [u] at hd
+    have : d ≫ f = 0 := calc
       d ≫ f = d ≫ biprod.lift f (-g) ≫ biprod.fst := by rw [biprod.lift_fst]
       _ = u ≫ biprod.fst := by rw [← Category.assoc, hd]
       _ = 0 := biprod.lift_fst _ _
@@ -734,15 +768,14 @@ instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr : Z ⟶ pushout f g
 instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl : Y ⟶ pushout f g) :=
   mono_of_cancel_zero _ fun {R} e h => by
     let u := biprod.lift e (0 : R ⟶ Z)
-    have hu : u ≫ BiproductToPushoutIsCokernel.biproductToPushout f g = 0 := by simpa
+    have hu : u ≫ BiproductToPushoutIsCokernel.biproductToPushout f g = 0 := by simpa [u]
     have :=
       monoIsKernelOfCokernel _
         (BiproductToPushoutIsCokernel.isColimitBiproductToPushout f g)
     obtain ⟨d, hd⟩ := KernelFork.IsLimit.lift' this u hu
     dsimp at d
-    dsimp at hd
-    have : d ≫ (-g) = 0;
-    calc
+    dsimp [u] at hd
+    have : d ≫ (-g) = 0 := calc
       d ≫ (-g) = d ≫ biprod.lift f (-g) ≫ biprod.snd := by rw [biprod.lift_snd]
       _ = biprod.lift e (0 : R ⟶ Z) ≫ biprod.snd := by rw [← Category.assoc, hd]
       _ = 0 := biprod.lift_snd _ _
@@ -793,9 +826,10 @@ def abelian : Abelian C :=
        case of `NonPreadditiveAbelian`, this instance is an explicit argument. However, in the case
        of `abelian`, the `HasZeroMorphisms` instance is derived from `Preadditive`. So we need to
        transform an instance of "has kernels with NonPreadditiveAbelian.HasZeroMorphisms" to an
-       instance of "has kernels with NonPreadditiveAbelian.Preadditive.HasZeroMorphisms". Luckily,
-       we have a `subsingleton` instance for `HasZeroMorphisms`, so `convert` can immediately close
-       the goal it creates for the two instances of `HasZeroMorphisms`, and the proof is complete.-/
+       instance of "has kernels with NonPreadditiveAbelian.Preadditive.HasZeroMorphisms".
+       Luckily, we have a `subsingleton` instance for `HasZeroMorphisms`, so `convert` can
+       immediately close the goal it creates for the two instances of `HasZeroMorphisms`,
+       and the proof is complete. -/
     NonPreadditiveAbelian.preadditive with
     has_finite_products := by infer_instance
     has_kernels := by convert (by infer_instance : Limits.HasKernels C)

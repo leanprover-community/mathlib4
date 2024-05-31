@@ -59,7 +59,6 @@ namespace Metric
 section ApproxGluing
 
 variable {X : Type u} {Y : Type v} {Z : Type w}
-
 variable [MetricSpace X] [MetricSpace Y] {Φ : Z → X} {Ψ : Z → Y} {ε : ℝ}
 
 /-- Define a predistance on `X ⊕ Y`, for which `Φ p` and `Ψ p` are at distance `ε` -/
@@ -79,10 +78,10 @@ theorem glueDist_glued_points [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : �
   have : ⨅ q, dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) = 0 := by
     have A : ∀ q, 0 ≤ dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) := fun _ =>
       add_nonneg dist_nonneg dist_nonneg
-    refine' le_antisymm _ (le_ciInf A)
+    refine le_antisymm ?_ (le_ciInf A)
     have : 0 = dist (Φ p) (Φ p) + dist (Ψ p) (Ψ p) := by simp
     rw [this]
-    exact ciInf_le ⟨0, forall_range_iff.2 A⟩ p
+    exact ciInf_le ⟨0, forall_mem_range.2 A⟩ p
   simp only [glueDist, this, zero_add]
 #align metric.glue_dist_glued_points Metric.glueDist_glued_points
 
@@ -116,7 +115,7 @@ private theorem glueDist_triangle_inl_inr_inr (Φ : Z → X) (Ψ : Z → Y) (ε 
   simp only [glueDist]
   rw [add_right_comm, add_le_add_iff_right]
   refine le_ciInf_add fun p => ciInf_le_of_le ⟨0, ?_⟩ p ?_
-  · exact forall_range_iff.2 fun _ => add_nonneg dist_nonneg dist_nonneg
+  · exact forall_mem_range.2 fun _ => add_nonneg dist_nonneg dist_nonneg
   · linarith [dist_triangle_left z (Ψ p) y]
 
 private theorem glueDist_triangle_inl_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)
@@ -183,7 +182,7 @@ def glueMetricApprox (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε)
   dist_triangle := glueDist_triangle Φ Ψ ε H
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   eq_of_dist_eq_zero := eq_of_glueDist_eq_zero Φ Ψ ε ε0 _ _
-  toUniformSpace := Sum.uniformSpace
+  toUniformSpace := Sum.instUniformSpace
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ <| Sum.mem_uniformity_iff_glueDist ε0
 #align metric.glue_metric_approx Metric.glueMetricApprox
 
@@ -200,7 +199,6 @@ the distance, without `iInf`, as it is easier to use in applications, and show t
 the gluing distance defined above to take advantage of the lemmas we have already proved.
 -/
 variable {X : Type u} {Y : Type v} {Z : Type w}
-
 variable [MetricSpace X] [MetricSpace Y]
 
 /-- Distance on a disjoint union. There are many (noncanonical) ways to put a distance compatible
@@ -245,7 +243,7 @@ private theorem Sum.mem_uniformity (s : Set (Sum X Y × Sum X Y)) :
   · rintro ⟨hsX, hsY⟩
     rcases mem_uniformity_dist.1 hsX with ⟨εX, εX0, hX⟩
     rcases mem_uniformity_dist.1 hsY with ⟨εY, εY0, hY⟩
-    refine' ⟨min (min εX εY) 1, lt_min (lt_min εX0 εY0) zero_lt_one, _⟩
+    refine ⟨min (min εX εY) 1, lt_min (lt_min εX0 εY0) zero_lt_one, ?_⟩
     rintro (a | a) (b | b) h
     · exact hX (lt_of_lt_of_le h (le_trans (min_le_left _ _) (min_le_left _ _)))
     · cases not_le_of_lt (lt_of_lt_of_le h (min_le_right _ _)) Sum.one_le_dist_inl_inr
@@ -265,12 +263,15 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
   dist_triangle
     | .inl p, .inl q, .inl r => dist_triangle p q r
     | .inl p, .inr q, _ => by
+      set_option tactic.skipAssignedInstances false in
       simp only [Sum.dist_eq_glueDist p q]
       exact glueDist_triangle _ _ _ (by norm_num) _ _ _
     | _, .inl q, .inr r => by
+      set_option tactic.skipAssignedInstances false in
       simp only [Sum.dist_eq_glueDist q r]
       exact glueDist_triangle _ _ _ (by norm_num) _ _ _
     | .inr p, _, .inl r => by
+      set_option tactic.skipAssignedInstances false in
       simp only [Sum.dist_eq_glueDist r p]
       exact glueDist_triangle _ _ _ (by norm_num) _ _ _
     | .inr p, .inr q, .inr r => dist_triangle p q r
@@ -281,7 +282,7 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
     · exact eq_of_glueDist_eq_zero _ _ _ one_pos _ _ ((Sum.dist_eq_glueDist q p).symm.trans h)
     · rw [eq_of_dist_eq_zero h]
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
-  toUniformSpace := Sum.uniformSpace
+  toUniformSpace := Sum.instUniformSpace
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ Sum.mem_uniformity
 #align metric.metric_space_sum Metric.metricSpaceSum
 
@@ -308,7 +309,7 @@ namespace Sigma
 of two spaces. I.e., work with sigma types instead of sum types. -/
 variable {ι : Type*} {E : ι → Type*} [∀ i, MetricSpace (E i)]
 
-open Classical
+open scoped Classical
 
 /-- Distance on a disjoint union. There are many (noncanonical) ways to put a distance compatible
 with each factor.
@@ -384,7 +385,7 @@ protected theorem dist_triangle (x y z : Σi, E i) : dist x z ≤ dist x y + dis
               dist x (Nonempty.some ⟨x⟩) + 1 + (dist (Nonempty.some ⟨z⟩) y + dist y z) := by
             apply_rules [add_le_add, le_rfl, dist_triangle]
           _ = _ := by abel
-      · simp only [hik, hij, hjk, Sigma.dist_ne, Ne.def, not_false_iff]
+      · simp only [hik, hij, hjk, Sigma.dist_ne, Ne, not_false_iff]
         calc
           dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨z⟩) z =
               dist x (Nonempty.some ⟨x⟩) + 1 + 0 + (0 + 0 + dist (Nonempty.some ⟨z⟩) z) := by
@@ -398,7 +399,7 @@ protected theorem isOpen_iff (s : Set (Σi, E i)) :
   · rintro hs ⟨i, x⟩ hx
     obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ball x ε ⊆ Sigma.mk i ⁻¹' s :=
       Metric.isOpen_iff.1 (isOpen_sigma_iff.1 hs i) x hx
-    refine' ⟨min ε 1, lt_min εpos zero_lt_one, _⟩
+    refine ⟨min ε 1, lt_min εpos zero_lt_one, ?_⟩
     rintro ⟨j, y⟩ hy
     rcases eq_or_ne i j with (rfl | hij)
     · simp only [Sigma.dist_same, lt_min_iff] at hy
@@ -410,7 +411,7 @@ protected theorem isOpen_iff (s : Set (Σi, E i)) :
   · refine fun H => isOpen_sigma_iff.2 fun i => Metric.isOpen_iff.2 fun x hx => ?_
     obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ∀ y, dist (⟨i, x⟩ : Σj, E j) y < ε → y ∈ s :=
       H ⟨i, x⟩ hx
-    refine' ⟨ε, εpos, fun y hy => _⟩
+    refine ⟨ε, εpos, fun y hy => ?_⟩
     apply hε ⟨i, y⟩
     rw [Sigma.dist_same]
     exact mem_ball'.1 hy
@@ -422,7 +423,7 @@ and say that the distance from `a` to `b` is the sum of the distances of `a` and
 their respective basepoints, plus the distance 1 between the basepoints.
 Since there is an arbitrary choice in this construction, it is not an instance by default. -/
 protected def metricSpace : MetricSpace (Σi, E i) := by
-  refine' MetricSpace.ofDistTopology Sigma.dist _ _ Sigma.dist_triangle Sigma.isOpen_iff _
+  refine MetricSpace.ofDistTopology Sigma.dist ?_ ?_ Sigma.dist_triangle Sigma.isOpen_iff ?_
   · rintro ⟨i, x⟩
     simp [Sigma.dist]
   · rintro ⟨i, x⟩ ⟨j, y⟩
@@ -456,13 +457,13 @@ protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ
   set s : ι → Set (Σi, E i) := fun i => Sigma.fst ⁻¹' {i}
   set U := { p : (Σk, E k) × Σk, E k | dist p.1 p.2 < 1 }
   have hc : ∀ i, IsComplete (s i) := fun i => by
-    simp only [← range_sigmaMk]
+    simp only [s, ← range_sigmaMk]
     exact (isometry_mk i).uniformInducing.isComplete_range
   have hd : ∀ (i j), ∀ x ∈ s i, ∀ y ∈ s j, (x, y) ∈ U → i = j := fun i j x hx y hy hxy =>
     (Eq.symm hx).trans ((fst_eq_of_dist_lt_one _ _ hxy).trans hy)
-  refine' completeSpace_of_isComplete_univ _
+  refine completeSpace_of_isComplete_univ ?_
   convert isComplete_iUnion_separated hc (dist_mem_uniformity zero_lt_one) hd
-  simp only [← preimage_iUnion, iUnion_of_singleton, preimage_univ]
+  simp only [s, ← preimage_iUnion, iUnion_of_singleton, preimage_univ]
 #align metric.sigma.complete_space Metric.Sigma.completeSpace
 
 end Sigma
@@ -471,11 +472,8 @@ section Gluing
 
 -- Exact gluing of two metric spaces along isometric subsets.
 variable {X : Type u} {Y : Type v} {Z : Type w}
-
 variable [Nonempty Z] [MetricSpace Z] [MetricSpace X] [MetricSpace Y] {Φ : Z → X} {Ψ : Z → Y}
   {ε : ℝ}
-
-attribute [local instance] UniformSpace.separationSetoid
 
 /-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a pseudo metric space
 structure on `X ⊕ Y` by declaring that `Φ x` and `Ψ x` are at distance `0`. -/
@@ -490,13 +488,12 @@ def gluePremetric (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : PseudoMetricSpace (X
 /-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a
 space `GlueSpace hΦ hΨ` by identifying in `X ⊕ Y` the points `Φ x` and `Ψ x`. -/
 def GlueSpace (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Type _ :=
-  @UniformSpace.SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace
+  @SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace.toTopologicalSpace
 #align metric.glue_space Metric.GlueSpace
 
--- porting note: TODO: w/o `@`, tries to generate some `[MetricSpace _]` before finding `X` `Y`
-instance (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (@GlueSpace X Y Z _ _ _ _ _ _ hΦ hΨ) :=
+instance (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (GlueSpace hΦ hΨ) :=
   inferInstanceAs <| MetricSpace <|
-    @UniformSpace.SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace
+    @SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace.toTopologicalSpace
 
 /-- The canonical map from `X` to the space obtained by gluing isometric subsets in `X` and `Y`. -/
 def toGlueL (hΦ : Isometry Φ) (hΨ : Isometry Ψ) (x : X) : GlueSpace hΦ hΨ :=
@@ -521,10 +518,10 @@ instance inhabitedRight (hΦ : Isometry Φ) (hΨ : Isometry Ψ) [Inhabited Y] :
 theorem toGlue_commute (hΦ : Isometry Φ) (hΨ : Isometry Ψ) :
     toGlueL hΦ hΨ ∘ Φ = toGlueR hΦ hΨ ∘ Ψ := by
   let i : PseudoMetricSpace (X ⊕ Y) := gluePremetric hΦ hΨ
-  let _ := i.toUniformSpace
+  let _ := i.toUniformSpace.toTopologicalSpace
   funext
   simp only [comp, toGlueL, toGlueR]
-  refine' UniformSpace.SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 _)
+  refine SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 ?_)
   exact glueDist_glued_points Φ Ψ 0 _
 #align metric.to_glue_commute Metric.toGlue_commute
 
@@ -591,7 +588,7 @@ theorem inductiveLimitDist_eq_dist (I : ∀ n, Isometry (f n)) (x y : Σn, X n) 
       exact inductiveLimitDist_eq_dist I x y m xm ym
 #align metric.inductive_limit_dist_eq_dist Metric.inductiveLimitDist_eq_dist
 
-/-- Premetric space structure on `Σ n, X n`.-/
+/-- Premetric space structure on `Σ n, X n`. -/
 def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σn, X n) where
   dist := inductiveLimitDist f
   dist_self x := by simp [dist, inductiveLimitDist]
@@ -622,13 +619,13 @@ attribute [local instance] inductivePremetric
 
 /-- The type giving the inductive limit in a metric space context. -/
 def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=
-  @UniformSpace.SeparationQuotient _ (inductivePremetric I).toUniformSpace
+  @SeparationQuotient _ (inductivePremetric I).toUniformSpace.toTopologicalSpace
 #align metric.inductive_limit Metric.InductiveLimit
 
 set_option autoImplicit true in
 instance : MetricSpace (InductiveLimit (f := f) I) :=
   inferInstanceAs <| MetricSpace <|
-    @UniformSpace.SeparationQuotient _ (inductivePremetric I).toUniformSpace
+    @SeparationQuotient _ (inductivePremetric I).toUniformSpace.toTopologicalSpace
 
 /-- Mapping each `X n` to the inductive limit. -/
 def toInductiveLimit (I : ∀ n, Isometry (f n)) (n : ℕ) (x : X n) : Metric.InductiveLimit I :=
@@ -650,10 +647,11 @@ theorem toInductiveLimit_isometry (I : ∀ n, Isometry (f n)) (n : ℕ) :
 /-- The maps `toInductiveLimit n` are compatible with the maps `f n`. -/
 theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
     toInductiveLimit I n.succ ∘ f n = toInductiveLimit I n := by
-  let _ := inductivePremetric I
+  let h := inductivePremetric I
+  let _ := h.toUniformSpace.toTopologicalSpace
   funext x
   simp only [comp, toInductiveLimit]
-  refine' UniformSpace.SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 _)
+  refine SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 ?_)
   show inductiveLimitDist f ⟨n.succ, f n x⟩ ⟨n, x⟩ = 0
   rw [inductiveLimitDist_eq_dist I ⟨n.succ, f n x⟩ ⟨n, x⟩ n.succ, leRecOn_self,
     leRecOn_succ, leRecOn_self, dist_self]

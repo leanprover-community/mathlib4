@@ -26,9 +26,6 @@ This file introduces various `simp` lemmas which in favourable circumstances
 result in the various `eqToHom` morphisms to drop out at the appropriate moment!
 -/
 
-set_option autoImplicit true
-
-
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
@@ -70,6 +67,8 @@ theorem eqToHom_comp_iff {X X' Y : C} (p : X = X') (f : X ⟶ Y) (g : X' ⟶ Y) 
   { mp := fun h => h ▸ by simp
     mpr := fun h => h ▸ by simp [whisker_eq _ h] }
 #align category_theory.eq_to_hom_comp_iff CategoryTheory.eqToHom_comp_iff
+
+variable {β : Sort*}
 
 /-- We can push `eqToHom` to the left through families of morphisms. -/
 -- The simpNF linter incorrectly claims that this will never apply.
@@ -185,7 +184,7 @@ theorem eqToHom_unop {X Y : Cᵒᵖ} (h : X = Y) :
 #align category_theory.eq_to_hom_unop CategoryTheory.eqToHom_unop
 
 instance {X Y : C} (h : X = Y) : IsIso (eqToHom h) :=
-  IsIso.of_iso (eqToIso h)
+  (eqToIso h).isIso_hom
 
 @[simp]
 theorem inv_eqToHom {X Y : C} (h : X = Y) : inv (eqToHom h) = eqToHom h.symm := by
@@ -251,9 +250,6 @@ theorem congr_inv_of_congr_hom (F G : C ⥤ D) {X Y : C} (e : X ≅ Y) (hX : F.o
     Category.assoc]
 #align category_theory.functor.congr_inv_of_congr_hom CategoryTheory.Functor.congr_inv_of_congr_hom
 
-theorem congr_map (F : C ⥤ D) {X Y : C} {f g : X ⟶ Y} (h : f = g) : F.map f = F.map g := by rw [h]
-#align category_theory.functor.congr_map CategoryTheory.Functor.congr_map
-
 section HEq
 
 -- Composition of functors and maps w.r.t. heq
@@ -284,8 +280,8 @@ theorem postcomp_map_heq (H : D ⥤ E) (hx : F.obj X = G.obj X) (hy : F.obj Y = 
 #align category_theory.functor.postcomp_map_heq CategoryTheory.Functor.postcomp_map_heq
 
 theorem postcomp_map_heq' (H : D ⥤ E) (hobj : ∀ X : C, F.obj X = G.obj X)
-    (hmap : ∀ {X Y} (f : X ⟶ Y), HEq (F.map f) (G.map f)) : HEq ((F ⋙ H).map f) ((G ⋙ H).map f) :=
-  by rw [Functor.hext hobj fun _ _ => hmap]
+    (hmap : ∀ {X Y} (f : X ⟶ Y), HEq (F.map f) (G.map f)) :
+    HEq ((F ⋙ H).map f) ((G ⋙ H).map f) := by rw [Functor.hext hobj fun _ _ => hmap]
 #align category_theory.functor.postcomp_map_heq' CategoryTheory.Functor.postcomp_map_heq'
 
 theorem hcongr_hom {F G : C ⥤ D} (h : F = G) {X Y} (f : X ⟶ Y) : HEq (F.map f) (G.map f) := by

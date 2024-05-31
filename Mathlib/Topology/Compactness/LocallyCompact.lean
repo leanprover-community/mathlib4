@@ -15,7 +15,6 @@ We define the following classes of topological spaces:
 open Set Filter Topology TopologicalSpace Classical
 
 variable {X : Type*} {Y : Type*} {ι : Type*}
-
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 
@@ -93,7 +92,7 @@ instance Pi.locallyCompactSpace_of_finite [Finite ι] : LocallyCompactSpace (∀
     obtain ⟨s, -, n', hn', hsub⟩ := hn
     choose n'' hn'' hsub' hc using fun i =>
       LocallyCompactSpace.local_compact_nhds (t i) (n' i) (hn' i)
-    refine' ⟨(Set.univ : Set ι).pi n'', _, subset_trans (fun _ h => _) hsub, isCompact_univ_pi hc⟩
+    refine ⟨(Set.univ : Set ι).pi n'', ?_, subset_trans (fun _ h => ?_) hsub, isCompact_univ_pi hc⟩
     · exact (set_pi_mem_nhds_iff (@Set.finite_univ ι _) _).mpr fun i _ => hn'' i
     · exact fun i _ => hsub' i (h i trivial)⟩
 #align pi.locally_compact_space_of_finite Pi.locallyCompactSpace_of_finite
@@ -105,11 +104,11 @@ instance Pi.locallyCompactSpace [∀ i, CompactSpace (X i)] : LocallyCompactSpac
     obtain ⟨s, hs, n', hn', hsub⟩ := hn
     choose n'' hn'' hsub' hc using fun i =>
       LocallyCompactSpace.local_compact_nhds (t i) (n' i) (hn' i)
-    refine' ⟨s.pi n'', _, subset_trans (fun _ => _) hsub, _⟩
+    refine ⟨s.pi n'', ?_, subset_trans (fun _ => ?_) hsub, ?_⟩
     · exact (set_pi_mem_nhds_iff hs _).mpr fun i _ => hn'' i
     · exact forall₂_imp fun i _ hi' => hsub' i hi'
     · rw [← Set.univ_pi_ite]
-      refine' isCompact_univ_pi fun i => _
+      refine isCompact_univ_pi fun i => ?_
       by_cases h : i ∈ s
       · rw [if_pos h]
         exact hc i
@@ -188,7 +187,7 @@ protected theorem OpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f :
   have : ∀ x : X,
       (𝓝 x).HasBasis (fun s ↦ (s ∈ 𝓝 (f x) ∧ IsCompact s) ∧ s ⊆ range f) (f ⁻¹' ·) := fun x ↦ by
     rw [hf.nhds_eq_comap]
-    exact ((compact_basis_nhds _).restrict_subset <| hf.open_range.mem_nhds <|
+    exact ((compact_basis_nhds _).restrict_subset <| hf.isOpen_range.mem_nhds <|
       mem_range_self _).comap _
   refine .of_hasBasis this fun x s hs => ?_
   rw [hf.toInducing.isCompact_iff, image_preimage_eq_of_subset hs.2]

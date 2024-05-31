@@ -54,7 +54,7 @@ noncomputable section
 
 /-- A type synonym for ordinals with natural addition and multiplication. -/
 def NatOrdinal : Type _ :=
-  -- porting note: used to derive LinearOrder & SuccOrder but need to manually define
+  -- Porting note: used to derive LinearOrder & SuccOrder but need to manually define
   Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
 #align nat_ordinal NatOrdinal
 
@@ -83,7 +83,7 @@ theorem toOrdinal_symm_eq : NatOrdinal.toOrdinal.symm = Ordinal.toNatOrdinal :=
   rfl
 #align nat_ordinal.to_ordinal_symm_eq NatOrdinal.toOrdinal_symm_eq
 
--- porting note: used to use dot notation, but doesn't work in Lean 4 with `OrderIso`
+-- Porting note: used to use dot notation, but doesn't work in Lean 4 with `OrderIso`
 @[simp]
 theorem toOrdinal_toNatOrdinal (a : NatOrdinal) :
     Ordinal.toNatOrdinal (NatOrdinal.toOrdinal a) = a := rfl
@@ -270,7 +270,6 @@ theorem nadd_comm : ∀ a b, a ♯ b = b ♯ a
   | a, b => by
     rw [nadd_def, nadd_def, max_comm]
     congr <;> ext <;> apply nadd_comm
-    -- porting note: below was decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
   termination_by a b => (a,b)
 #align ordinal.nadd_comm Ordinal.nadd_comm
 
@@ -281,8 +280,8 @@ theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
       max (blsub.{u, v} a fun a' ha' => f (a' ♯ b) <| nadd_lt_nadd_right ha' b)
         (blsub.{u, v} b fun b' hb' => f (a ♯ b') <| nadd_lt_nadd_left hb' a) := by
   apply (blsub_le_iff.2 fun i h => _).antisymm (max_le _ _)
-  intro i h
-  · rcases lt_nadd_iff.1 h with (⟨a', ha', hi⟩ | ⟨b', hb', hi⟩)
+  · intro i h
+    rcases lt_nadd_iff.1 h with (⟨a', ha', hi⟩ | ⟨b', hb', hi⟩)
     · exact lt_max_of_lt_left ((hf h (nadd_lt_nadd_right ha' b) hi).trans_lt (lt_blsub _ _ ha'))
     · exact lt_max_of_lt_right ((hf h (nadd_lt_nadd_left hb' a) hi).trans_lt (lt_blsub _ _ hb'))
   all_goals
@@ -293,12 +292,10 @@ theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
 
 theorem nadd_assoc (a b c) : a ♯ b ♯ c = a ♯ (b ♯ c) := by
   rw [nadd_def a (b ♯ c), nadd_def, blsub_nadd_of_mono, blsub_nadd_of_mono, max_assoc]
-  · congr <;> ext (d hd) <;> apply nadd_assoc
+  · congr <;> ext <;> apply nadd_assoc
   · exact fun _ _ h => nadd_le_nadd_left h a
   · exact fun _ _ h => nadd_le_nadd_right h c
 termination_by (a, b, c)
--- Porting note: above lines replaces
--- decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
 #align ordinal.nadd_assoc Ordinal.nadd_assoc
 
 @[simp]
@@ -386,7 +383,8 @@ instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
     zero := 0
     zero_add := zero_nadd
     add_zero := nadd_zero
-    add_comm := nadd_comm }
+    add_comm := nadd_comm
+    nsmul := nsmulRec }
 
 instance addMonoidWithOne : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
@@ -538,7 +536,7 @@ theorem nmul_nadd_le {a' b' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) :
 #align ordinal.nmul_nadd_le Ordinal.nmul_nadd_le
 
 theorem lt_nmul_iff : c < a ⨳ b ↔ ∃ a' < a, ∃ b' < b, c ♯ a' ⨳ b' ≤ a' ⨳ b ♯ a ⨳ b' := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · rw [nmul] at h
     simpa using not_mem_of_lt_csInf h ⟨0, fun _ _ => bot_le⟩
   · rintro ⟨a', ha, b', hb, h⟩
@@ -582,7 +580,7 @@ theorem nmul_one (a : Ordinal) : a ⨳ 1 = a := by
   -- Porting note: added this `simp` line, as the result from `convert`
   -- is slightly different.
   simp only [Set.mem_setOf_eq, Set.mem_Ici]
-  refine' ⟨fun H => le_of_forall_lt fun c hc => _, fun ha c hc => _⟩
+  refine ⟨fun H => le_of_forall_lt fun c hc => ?_, fun ha c hc => ?_⟩
   -- Porting note: had to add arguments to `nmul_one` in the next two lines
   -- for the termination checker.
   · simpa only [nmul_one c] using H c hc
@@ -698,7 +696,7 @@ theorem lt_nmul_iff₃ :
   · intro h
     rcases lt_nmul_iff.1 h with ⟨e, he, c', hc, H₁⟩
     rcases lt_nmul_iff.1 he with ⟨a', ha, b', hb, H₂⟩
-    refine' ⟨a', ha, b', hb, c', hc, _⟩
+    refine ⟨a', ha, b', hb, c', hc, ?_⟩
     have := nadd_le_nadd H₁ (nmul_nadd_le H₂ hc.le)
     simp only [nadd_nmul, nadd_assoc] at this
     rw [nadd_left_comm, nadd_left_comm d, nadd_left_comm, nadd_le_nadd_iff_left,

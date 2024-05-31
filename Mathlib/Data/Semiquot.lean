@@ -24,7 +24,7 @@ predicate `S`) but are not completely determined.
   of the set `s`. The specific element of `s` that the VM computes
   is hidden by a quotient construction, allowing for the representation
   of nondeterministic functions. -/
-  -- porting notes: removed universe parameter
+  -- Porting note: removed universe parameter
 structure Semiquot (α : Type*) where mk' ::
   /-- Set containing some element of `α`-/
   s : Set α
@@ -45,7 +45,7 @@ def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=
 #align semiquot.mk Semiquot.mk
 
 theorem ext_s {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ q₁.s = q₂.s := by
-  refine' ⟨congr_arg _, fun h => _⟩
+  refine ⟨congr_arg _, fun h => ?_⟩
   cases' q₁ with _ v₁; cases' q₂ with _ v₂; congr
   exact Subsingleton.helim (congrArg Trunc (congrArg Set.Elem h)) v₁ v₂
 #align semiquot.ext_s Semiquot.ext_s
@@ -117,8 +117,8 @@ def liftOn (q : Semiquot α) (f : α → β) (h : ∀ a ∈ q, ∀ b ∈ q, f a 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
 warning: expanding binder collection (a b «expr ∈ » q) -/
 theorem liftOn_ofMem (q : Semiquot α) (f : α → β)
-    (h : ∀ a ∈ q, ∀ b ∈ q, f a = f b) (a : α) (aq : a ∈ q) : liftOn q f h = f a :=
-  by revert h; rw [eq_mk_of_mem aq]; intro; rfl
+    (h : ∀ a ∈ q, ∀ b ∈ q, f a = f b) (a : α) (aq : a ∈ q) : liftOn q f h = f a := by
+  revert h; rw [eq_mk_of_mem aq]; intro; rfl
 #align semiquot.lift_on_of_mem Semiquot.liftOn_ofMem
 
 /-- Apply a function to the unknown value stored in a `Semiquot α`. -/
@@ -137,8 +137,8 @@ def bind (q : Semiquot α) (f : α → Semiquot β) : Semiquot β :=
 #align semiquot.bind Semiquot.bind
 
 @[simp]
-theorem mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) : b ∈ bind q f ↔ ∃ a ∈ q, b ∈ f a :=
-  by simp_rw [← exists_prop]; exact Set.mem_iUnion₂
+theorem mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) :
+    b ∈ bind q f ↔ ∃ a ∈ q, b ∈ f a := by simp_rw [← exists_prop]; exact Set.mem_iUnion₂
 #align semiquot.mem_bind Semiquot.mem_bind
 
 instance : Monad Semiquot where

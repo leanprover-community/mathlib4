@@ -16,14 +16,13 @@ respect to some affine basis.
 -/
 
 
-open Affine BigOperators Matrix
+open Affine Matrix
 
 open Set
 
 universe u₁ u₂ u₃ u₄
 
 variable {ι : Type u₁} {k : Type u₂} {V : Type u₃} {P : Type u₄}
-
 variable [AddCommGroup V] [AffineSpace V P]
 
 namespace AffineBasis
@@ -51,16 +50,17 @@ theorem toMatrix_self [DecidableEq ι] : b.toMatrix b = (1 : Matrix ι ι k) := 
   rw [toMatrix_apply, coord_apply, Matrix.one_eq_pi_single, Pi.single_apply]
 #align affine_basis.to_matrix_self AffineBasis.toMatrix_self
 
-variable {ι' : Type*} [Fintype ι'] [Fintype ι] (b₂ : AffineBasis ι k P)
+variable {ι' : Type*}
 
-theorem toMatrix_row_sum_one {ι' : Type*} (q : ι' → P) (i : ι') : ∑ j, b.toMatrix q i j = 1 := by
+theorem toMatrix_row_sum_one [Fintype ι] (q : ι' → P) (i : ι') : ∑ j, b.toMatrix q i j = 1 := by
   simp
 #align affine_basis.to_matrix_row_sum_one AffineBasis.toMatrix_row_sum_one
 
 /-- Given a family of points `p : ι' → P` and an affine basis `b`, if the matrix whose rows are the
 coordinates of `p` with respect `b` has a right inverse, then `p` is affine independent. -/
-theorem affineIndependent_of_toMatrix_right_inv [DecidableEq ι'] (p : ι' → P) {A : Matrix ι ι' k}
-    (hA : b.toMatrix p * A = 1) : AffineIndependent k p := by
+theorem affineIndependent_of_toMatrix_right_inv [Fintype ι] [Finite ι'] [DecidableEq ι']
+    (p : ι' → P) {A : Matrix ι ι' k} (hA : b.toMatrix p * A = 1) : AffineIndependent k p := by
+  cases nonempty_fintype ι'
   rw [affineIndependent_iff_eq_of_fintype_affineCombination_eq]
   intro w₁ w₂ hw₁ hw₂ hweq
   have hweq' : w₁ ᵥ* b.toMatrix p = w₂ ᵥ* b.toMatrix p := by
@@ -78,8 +78,10 @@ theorem affineIndependent_of_toMatrix_right_inv [DecidableEq ι'] (p : ι' → P
 
 /-- Given a family of points `p : ι' → P` and an affine basis `b`, if the matrix whose rows are the
 coordinates of `p` with respect `b` has a left inverse, then `p` spans the entire space. -/
-theorem affineSpan_eq_top_of_toMatrix_left_inv [DecidableEq ι] [Nontrivial k] (p : ι' → P)
-    {A : Matrix ι ι' k} (hA : A * b.toMatrix p = 1) : affineSpan k (range p) = ⊤ := by
+theorem affineSpan_eq_top_of_toMatrix_left_inv [Finite ι] [Fintype ι'] [DecidableEq ι]
+    [Nontrivial k] (p : ι' → P) {A : Matrix ι ι' k} (hA : A * b.toMatrix p = 1) :
+    affineSpan k (range p) = ⊤ := by
+  cases nonempty_fintype ι
   suffices ∀ i, b i ∈ affineSpan k (range p) by
     rw [eq_top_iff, ← b.tot, affineSpan_le]
     rintro q ⟨i, rfl⟩
@@ -102,6 +104,8 @@ theorem affineSpan_eq_top_of_toMatrix_left_inv [DecidableEq ι] [Nontrivial k] (
   rw [hbi]
   exact affineCombination_mem_affineSpan hAi p
 #align affine_basis.affine_span_eq_top_of_to_matrix_left_inv AffineBasis.affineSpan_eq_top_of_toMatrix_left_inv
+
+variable [Fintype ι] (b₂ : AffineBasis ι k P)
 
 /-- A change of basis formula for barycentric coordinates.
 
@@ -147,7 +151,6 @@ end Ring
 section CommRing
 
 variable [CommRing k] [Module k V] [DecidableEq ι] [Fintype ι]
-
 variable (b b₂ : AffineBasis ι k P)
 
 /-- A change of basis formula for barycentric coordinates.

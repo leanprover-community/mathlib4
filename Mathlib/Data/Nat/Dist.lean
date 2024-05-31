@@ -3,7 +3,7 @@ Copyright (c) 2014 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Jeremy Avigad
 -/
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 
 #align_import data.nat.dist from "leanprover-community/mathlib"@"d50b12ae8e2bd910d08a94823976adae9825718b"
 
@@ -21,15 +21,14 @@ def dist (n m : ℕ) :=
   n - m + (m - n)
 #align nat.dist Nat.dist
 
-theorem dist.def (n m : ℕ) : dist n m = n - m + (m - n) :=
-  rfl
-#align nat.dist.def Nat.dist.def
+-- Should be aligned to `Nat.dist.eq_def`, but that is generated on demand and isn't present yet.
+#noalign nat.dist.def
 
-theorem dist_comm (n m : ℕ) : dist n m = dist m n := by simp [dist.def, add_comm]
+theorem dist_comm (n m : ℕ) : dist n m = dist m n := by simp [dist, add_comm]
 #align nat.dist_comm Nat.dist_comm
 
 @[simp]
-theorem dist_self (n : ℕ) : dist n n = 0 := by simp [dist.def, tsub_self]
+theorem dist_self (n : ℕ) : dist n n = 0 := by simp [dist, tsub_self]
 #align nat.dist_self Nat.dist_self
 
 theorem eq_of_dist_eq_zero {n m : ℕ} (h : dist n m = 0) : n = m :=
@@ -44,11 +43,11 @@ theorem dist_eq_zero {n m : ℕ} (h : n = m) : dist n m = 0 := by rw [h, dist_se
 #align nat.dist_eq_zero Nat.dist_eq_zero
 
 theorem dist_eq_sub_of_le {n m : ℕ} (h : n ≤ m) : dist n m = m - n := by
-  rw [dist.def, tsub_eq_zero_iff_le.mpr h, zero_add]
+  rw [dist, tsub_eq_zero_iff_le.mpr h, zero_add]
 #align nat.dist_eq_sub_of_le Nat.dist_eq_sub_of_le
 
-theorem dist_eq_sub_of_le_right {n m : ℕ} (h : m ≤ n) : dist n m = n - m :=
-  by rw [dist_comm]; apply dist_eq_sub_of_le h
+theorem dist_eq_sub_of_le_right {n m : ℕ} (h : m ≤ n) : dist n m = n - m := by
+  rw [dist_comm]; apply dist_eq_sub_of_le h
 #align nat.dist_eq_sub_of_le_right Nat.dist_eq_sub_of_le_right
 
 theorem dist_tri_left (n m : ℕ) : m ≤ dist n m + n :=
@@ -92,13 +91,13 @@ theorem dist_eq_intro {n m k l : ℕ} (h : n + m = k + l) : dist n k = dist l m 
 
 theorem dist.triangle_inequality (n m k : ℕ) : dist n k ≤ dist n m + dist m k := by
   have : dist n m + dist m k = n - m + (m - k) + (k - m + (m - n)) := by
-    simp [dist.def, add_comm, add_left_comm, add_assoc]
-  rw [this, dist.def]
+    simp [dist, add_comm, add_left_comm, add_assoc]
+  rw [this, dist]
   exact add_le_add tsub_le_tsub_add_tsub tsub_le_tsub_add_tsub
 #align nat.dist.triangle_inequality Nat.dist.triangle_inequality
 
 theorem dist_mul_right (n k m : ℕ) : dist (n * k) (m * k) = dist n m * k := by
-  rw [dist.def, dist.def, right_distrib, tsub_mul n, tsub_mul m]
+  rw [dist, dist, right_distrib, tsub_mul n, tsub_mul m]
 #align nat.dist_mul_right Nat.dist_mul_right
 
 theorem dist_mul_left (k n m : ℕ) : dist (k * n) (k * m) = k * dist n m := by
@@ -111,7 +110,7 @@ theorem dist_eq_max_sub_min {i j : ℕ} : dist i j = (max i j) - min i j :=
   (by intro h; rw [max_eq_left h, min_eq_right h, dist_eq_sub_of_le_right h])
 
 theorem dist_succ_succ {i j : Nat} : dist (succ i) (succ j) = dist i j := by
-  simp [dist.def, succ_sub_succ]
+  simp [dist, succ_sub_succ]
 #align nat.dist_succ_succ Nat.dist_succ_succ
 
 theorem dist_pos_of_ne {i j : Nat} : i ≠ j → 0 < dist i j := fun hne =>

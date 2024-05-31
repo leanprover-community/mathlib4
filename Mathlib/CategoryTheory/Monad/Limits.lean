@@ -36,9 +36,7 @@ universe v u v₁ v₂ u₁ u₂
 namespace Monad
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {T : Monad C}
-
 variable {J : Type u} [Category.{v} J]
 
 namespace ForgetCreatesLimits
@@ -165,8 +163,7 @@ Define the map `λ : TL ⟶ L`, which will serve as the structure of the coalgeb
 we will show is the colimiting object. We use the cocone constructed by `c` and the fact that
 `T` preserves colimits to produce this morphism.
 -/
-@[reducible]
-def lambda : ((T : C ⥤ C).mapCocone c).pt ⟶ c.pt :=
+abbrev lambda : ((T : C ⥤ C).mapCocone c).pt ⟶ c.pt :=
   (isColimitOfPreserves _ t).desc (newCocone c)
 #align category_theory.monad.forget_creates_colimits.lambda CategoryTheory.Monad.ForgetCreatesColimits.lambda
 
@@ -195,7 +192,7 @@ def coconePoint : Algebra T where
     dsimp; simp
   -- See library note [dsimp, simp]
   assoc := by
-    refine' (isColimitOfPreserves _ (isColimitOfPreserves _ t)).hom_ext fun j => _
+    refine (isColimitOfPreserves _ (isColimitOfPreserves _ t)).hom_ext fun j => ?_
     rw [Functor.mapCocone_ι_app, Functor.mapCocone_ι_app,
       show (T : C ⥤ C).map ((T : C ⥤ C).map _) ≫ _ ≫ _ = _ from T.μ.naturality_assoc _ _, ←
       Functor.map_comp_assoc, commuting, Functor.map_comp, Category.assoc, commuting]
@@ -279,64 +276,63 @@ theorem forget_creates_colimits_of_monad_preserves [PreservesColimitsOfShape J (
 end Monad
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-
 variable {J : Type u} [Category.{v} J]
 
 instance comp_comparison_forget_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoint R]
     [HasLimit (F ⋙ R)] :
-    HasLimit ((F ⋙ Monad.comparison (Adjunction.ofRightAdjoint R)) ⋙ Monad.forget _) :=
+    HasLimit ((F ⋙ Monad.comparison (monadicAdjunction R)) ⋙ Monad.forget _) :=
   @hasLimitOfIso _ _ _ _ (F ⋙ R) _ _
-    (isoWhiskerLeft F (Monad.comparisonForget (Adjunction.ofRightAdjoint R)).symm)
+    (isoWhiskerLeft F (Monad.comparisonForget (monadicAdjunction R)).symm)
 #align category_theory.comp_comparison_forget_has_limit CategoryTheory.comp_comparison_forget_hasLimit
 
 instance comp_comparison_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoint R]
-    [HasLimit (F ⋙ R)] : HasLimit (F ⋙ Monad.comparison (Adjunction.ofRightAdjoint R)) :=
-  Monad.hasLimit_of_comp_forget_hasLimit (F ⋙ Monad.comparison (Adjunction.ofRightAdjoint R))
+    [HasLimit (F ⋙ R)] : HasLimit (F ⋙ Monad.comparison (monadicAdjunction R)) :=
+  Monad.hasLimit_of_comp_forget_hasLimit (F ⋙ Monad.comparison (monadicAdjunction R))
 #align category_theory.comp_comparison_has_limit CategoryTheory.comp_comparison_hasLimit
 
 /-- Any monadic functor creates limits. -/
 noncomputable def monadicCreatesLimits (R : D ⥤ C) [MonadicRightAdjoint R] :
     CreatesLimitsOfSize.{v, u} R :=
-  createsLimitsOfNatIso (Monad.comparisonForget (Adjunction.ofRightAdjoint R))
+  createsLimitsOfNatIso (Monad.comparisonForget (monadicAdjunction R))
 #align category_theory.monadic_creates_limits CategoryTheory.monadicCreatesLimits
 
 /-- The forgetful functor from the Eilenberg-Moore category for a monad creates any colimit
 which the monad itself preserves.
 -/
 noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J ⥤ D)
-    [MonadicRightAdjoint R] [PreservesColimit (K ⋙ R) (leftAdjoint R ⋙ R)]
-    [PreservesColimit ((K ⋙ R) ⋙ leftAdjoint R ⋙ R) (leftAdjoint R ⋙ R)] :
+    [MonadicRightAdjoint R] [PreservesColimit (K ⋙ R) (monadicLeftAdjoint R ⋙ R)]
+    [PreservesColimit ((K ⋙ R) ⋙ monadicLeftAdjoint R ⋙ R) (monadicLeftAdjoint R ⋙ R)] :
       CreatesColimit K R := by
   -- Porting note: It would be nice to have a variant of apply which introduces goals for missing
   -- instances.
-  letI A := Monad.comparison (Adjunction.ofRightAdjoint R)
-  letI B := Monad.forget (Adjunction.toMonad (Adjunction.ofRightAdjoint R))
-  let i : (K ⋙ Monad.comparison (Adjunction.ofRightAdjoint R)) ⋙ Monad.forget _ ≅ K ⋙ R :=
+  letI A := Monad.comparison (monadicAdjunction R)
+  letI B := Monad.forget (Adjunction.toMonad (monadicAdjunction R))
+  let i : (K ⋙ Monad.comparison (monadicAdjunction R)) ⋙ Monad.forget _ ≅ K ⋙ R :=
     Functor.associator _ _ _ ≪≫
-      isoWhiskerLeft K (Monad.comparisonForget (Adjunction.ofRightAdjoint R))
+      isoWhiskerLeft K (Monad.comparisonForget (monadicAdjunction R))
   letI : PreservesColimit ((K ⋙ A) ⋙ Monad.forget
-    (Adjunction.toMonad (Adjunction.ofRightAdjoint R)))
-      (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor := by
+    (Adjunction.toMonad (monadicAdjunction R)))
+      (Adjunction.toMonad (monadicAdjunction R)).toFunctor := by
     dsimp
-    refine' preservesColimitOfIsoDiagram _ i.symm
+    exact preservesColimitOfIsoDiagram _ i.symm
   letI : PreservesColimit
-    (((K ⋙ A) ⋙ Monad.forget (Adjunction.toMonad (Adjunction.ofRightAdjoint R))) ⋙
-      (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor)
-      (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor := by
+    (((K ⋙ A) ⋙ Monad.forget (Adjunction.toMonad (monadicAdjunction R))) ⋙
+      (Adjunction.toMonad (monadicAdjunction R)).toFunctor)
+      (Adjunction.toMonad (monadicAdjunction R)).toFunctor := by
     dsimp
-    refine' preservesColimitOfIsoDiagram _ (isoWhiskerRight i (leftAdjoint R ⋙ R)).symm
+    exact preservesColimitOfIsoDiagram _ (isoWhiskerRight i (monadicLeftAdjoint R ⋙ R)).symm
   letI : CreatesColimit (K ⋙ A) B := CategoryTheory.Monad.forgetCreatesColimit _
   letI : CreatesColimit K (A ⋙ B) := CategoryTheory.compCreatesColimit _ _
-  let e := (Monad.comparisonForget (Adjunction.ofRightAdjoint R))
+  let e := Monad.comparisonForget (monadicAdjunction R)
   apply createsColimitOfNatIso e
 #align category_theory.monadic_creates_colimit_of_preserves_colimit CategoryTheory.monadicCreatesColimitOfPreservesColimit
 
 /-- A monadic functor creates any colimits of shapes it preserves. -/
 noncomputable def monadicCreatesColimitsOfShapeOfPreservesColimitsOfShape (R : D ⥤ C)
     [MonadicRightAdjoint R] [PreservesColimitsOfShape J R] : CreatesColimitsOfShape J R :=
-  letI : PreservesColimitsOfShape J (leftAdjoint R) := by
-    apply (Adjunction.leftAdjointPreservesColimits (Adjunction.ofRightAdjoint R)).1
-  letI : PreservesColimitsOfShape J (leftAdjoint R ⋙ R) := by
+  letI : PreservesColimitsOfShape J (monadicLeftAdjoint R) := by
+    apply (Adjunction.leftAdjointPreservesColimits (monadicAdjunction R)).1
+  letI : PreservesColimitsOfShape J (monadicLeftAdjoint R ⋙ R) := by
     apply CategoryTheory.Limits.compPreservesColimitsOfShape _ _
   ⟨monadicCreatesColimitOfPreservesColimit _ _⟩
 #align category_theory.monadic_creates_colimits_of_shape_of_preserves_colimits_of_shape CategoryTheory.monadicCreatesColimitsOfShapeOfPreservesColimitsOfShape
@@ -372,13 +368,13 @@ theorem hasLimits_of_reflective (R : D ⥤ C) [HasLimitsOfSize.{v, u} C] [Reflec
 theorem hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimitsOfShape J C] :
     HasColimitsOfShape J D where
   has_colimit := fun F => by
-      let c := (leftAdjoint R).mapCocone (colimit.cocone (F ⋙ R))
+      let c := (monadicLeftAdjoint R).mapCocone (colimit.cocone (F ⋙ R))
       letI : PreservesColimitsOfShape J _ :=
-        (Adjunction.ofRightAdjoint R).leftAdjointPreservesColimits.1
-      let t : IsColimit c := isColimitOfPreserves (leftAdjoint R) (colimit.isColimit _)
+        (monadicAdjunction R).leftAdjointPreservesColimits.1
+      let t : IsColimit c := isColimitOfPreserves (monadicLeftAdjoint R) (colimit.isColimit _)
       apply HasColimit.mk ⟨_, (IsColimit.precomposeInvEquiv _ _).symm t⟩
       apply
-        (isoWhiskerLeft F (asIso (Adjunction.ofRightAdjoint R).counit) : _) ≪≫ F.rightUnitor
+        (isoWhiskerLeft F (asIso (monadicAdjunction R).counit) : _) ≪≫ F.rightUnitor
 #align category_theory.has_colimits_of_shape_of_reflective CategoryTheory.hasColimitsOfShape_of_reflective
 
 /-- If `C` has colimits then any reflective subcategory has colimits. -/
@@ -391,19 +387,19 @@ theorem hasColimits_of_reflective (R : D ⥤ C) [Reflective R] [HasColimitsOfSiz
 limit.
 -/
 noncomputable def leftAdjointPreservesTerminalOfReflective (R : D ⥤ C) [Reflective R] :
-    PreservesLimitsOfShape (Discrete.{v} PEmpty) (leftAdjoint R) where
+    PreservesLimitsOfShape (Discrete.{v} PEmpty) (monadicLeftAdjoint R) where
   preservesLimit {K} := by
     let F := Functor.empty.{v} D
-    letI : PreservesLimit (F ⋙ R) (leftAdjoint R) := by
+    letI : PreservesLimit (F ⋙ R) (monadicLeftAdjoint R) := by
       constructor
       intro c h
       haveI : HasLimit (F ⋙ R) := ⟨⟨⟨c, h⟩⟩⟩
       haveI : HasLimit F := hasLimit_of_reflective F R
       apply isLimitChangeEmptyCone D (limit.isLimit F)
-      apply (asIso ((Adjunction.ofRightAdjoint R).counit.app _)).symm.trans
-      apply (leftAdjoint R).mapIso
+      apply (asIso ((monadicAdjunction R).counit.app _)).symm.trans
+      apply (monadicLeftAdjoint R).mapIso
       letI := monadicCreatesLimits.{v, v} R
-      let A := (CategoryTheory.preservesLimitOfCreatesLimitAndHasLimit F R)
+      let A := CategoryTheory.preservesLimitOfCreatesLimitAndHasLimit F R
       apply (A.preserves (limit.isLimit F)).conePointUniqueUpToIso h
     apply preservesLimitOfIsoDiagram _ (Functor.emptyExt (F ⋙ R) _)
 #align category_theory.left_adjoint_preserves_terminal_of_reflective CategoryTheory.leftAdjointPreservesTerminalOfReflective

@@ -56,13 +56,13 @@ protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
   calc
     derangements (Subtype p) ≃ { f : { f : Perm α // ∀ a, ¬p a → a ∈ fixedPoints f } //
         ∀ a, a ∈ fixedPoints f → ¬p a } := by
-      refine' (Perm.subtypeEquivSubtypePerm p).subtypeEquiv fun f => ⟨fun hf a hfa ha => _, _⟩
-      · refine' hf ⟨a, ha⟩ (Subtype.ext _)
+      refine (Perm.subtypeEquivSubtypePerm p).subtypeEquiv fun f => ⟨fun hf a hfa ha => ?_, ?_⟩
+      · refine hf ⟨a, ha⟩ (Subtype.ext ?_)
         simp_rw [mem_fixedPoints, IsFixedPt, Perm.subtypeEquivSubtypePerm,
         Equiv.coe_fn_mk, Perm.ofSubtype_apply_of_mem _ ha] at hfa
         assumption
       rintro hf ⟨a, ha⟩ hfa
-      refine' hf _ _ ha
+      refine hf _ ?_ ha
       simp only [Perm.subtypeEquivSubtypePerm_apply_coe, mem_fixedPoints]
       dsimp [IsFixedPt]
       simp_rw [Perm.ofSubtype_apply_of_mem _ ha, hfa]
@@ -86,8 +86,8 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
       (Equiv.sumCompl _).symm
     _ ≃ Sum { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∈ fixedPoints f }
           { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∉ fixedPoints f } := by
-      -- porting note: `subtypeSubtypeEquivSubtypeInter` no longer works with placeholder `_`s.
-      refine' Equiv.sumCongr _ _
+      -- Porting note: `subtypeSubtypeEquivSubtypeInter` no longer works with placeholder `_`s.
+      refine Equiv.sumCongr ?_ ?_
       · exact subtypeSubtypeEquivSubtypeInter
           (fun x : Perm α => fixedPoints x ⊆ {a})
           (a ∈ fixedPoints ·)
@@ -95,16 +95,16 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
           (fun x : Perm α => fixedPoints x ⊆ {a})
           (¬a ∈ fixedPoints ·)
     _ ≃ Sum { f : Perm α // fixedPoints f = {a} } { f : Perm α // fixedPoints f = ∅ } := by
-      refine' Equiv.sumCongr (subtypeEquivRight fun f => _) (subtypeEquivRight fun f => _)
+      refine Equiv.sumCongr (subtypeEquivRight fun f => ?_) (subtypeEquivRight fun f => ?_)
       · rw [Set.eq_singleton_iff_unique_mem, and_comm]
         rfl
       · rw [Set.eq_empty_iff_forall_not_mem]
-        refine' ⟨fun h x hx => h.2 (h.1 hx ▸ hx), fun h => ⟨fun x hx => (h _ hx).elim, h _⟩⟩
+        exact ⟨fun h x hx => h.2 (h.1 hx ▸ hx), fun h => ⟨fun x hx => (h _ hx).elim, h _⟩⟩
     _ ≃ Sum (derangements ({a}ᶜ : Set α)) (derangements α) := by
-      -- porting note: was `subtypeEquiv _` but now needs the placeholder to be provided explicitly
-      refine'
+      -- Porting note: was `subtypeEquiv _` but now needs the placeholder to be provided explicitly
+      refine
         Equiv.sumCongr ((derangements.subtypeEquiv (· ∈ ({a}ᶜ : Set α))).trans <|
-            subtypeEquivRight fun x => _).symm
+            subtypeEquivRight fun x => ?_).symm
           (subtypeEquivRight fun f => mem_derangements_iff_fixedPoints_eq_empty.symm)
       rw [eq_comm, Set.ext_iff]
       simp_rw [Set.mem_compl_iff, Classical.not_not]
@@ -122,8 +122,8 @@ def RemoveNone.fiber (a : Option α) : Set (Perm α) :=
 
 theorem RemoveNone.mem_fiber (a : Option α) (f : Perm α) :
     f ∈ RemoveNone.fiber a ↔
-      ∃ F : Perm (Option α), F ∈ derangements (Option α) ∧ F none = a ∧ removeNone F = f :=
-  by simp [RemoveNone.fiber, derangements]
+      ∃ F : Perm (Option α), F ∈ derangements (Option α) ∧ F none = a ∧ removeNone F = f := by
+  simp [RemoveNone.fiber, derangements]
 #align derangements.equiv.remove_none.mem_fiber derangements.Equiv.RemoveNone.mem_fiber
 
 theorem RemoveNone.fiber_none : RemoveNone.fiber (@none α) = ∅ := by

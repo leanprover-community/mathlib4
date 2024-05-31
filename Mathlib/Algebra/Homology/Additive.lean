@@ -15,7 +15,6 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 When `V` is preadditive, `HomologicalComplex V c` is also preadditive,
 and `homologyFunctor` is additive.
 
-TODO: similarly for `R`-linear.
 -/
 
 
@@ -24,11 +23,10 @@ universe v u
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits HomologicalComplex
 
 variable {ι : Type*}
-
 variable {V : Type u} [Category.{v} V] [Preadditive V]
-
+variable {W : Type*} [Category W] [Preadditive W]
+variable {W₁ W₂ : Type*} [Category W₁] [Category W₂] [HasZeroMorphisms W₁] [HasZeroMorphisms W₂]
 variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
-
 variable (f g : C ⟶ D) (h k : D ⟶ E) (i : ι)
 
 namespace HomologicalComplex
@@ -91,7 +89,7 @@ instance : AddCommGroup (C ⟶ D) :=
   Function.Injective.addCommGroup Hom.f HomologicalComplex.hom_f_injective
     (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat)
 
--- porting note: proofs had to be provided here, otherwise Lean tries to apply
+-- Porting note: proofs had to be provided here, otherwise Lean tries to apply
 -- `Preadditive.add_comp/comp_add` to `HomologicalComplex V c`
 instance : Preadditive (HomologicalComplex V c) where
   add_comp _ _ _ f f' g := by
@@ -140,14 +138,12 @@ end HomologicalComplex
 
 namespace CategoryTheory
 
-variable {W : Type*} [Category W] [Preadditive W]
-
 /-- An additive functor induces a functor between homological complexes.
 This is sometimes called the "prolongation".
 -/
 @[simps]
-def Functor.mapHomologicalComplex (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
-    HomologicalComplex V c ⥤ HomologicalComplex W c where
+def Functor.mapHomologicalComplex (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (c : ComplexShape ι) :
+    HomologicalComplex W₁ c ⥤ HomologicalComplex W₂ c where
   obj C :=
     { X := fun i => F.obj (C.X i)
       d := fun i j => F.map (C.d i j)
@@ -162,70 +158,78 @@ def Functor.mapHomologicalComplex (F : V ⥤ W) [F.Additive] (c : ComplexShape �
         rw [← F.map_comp, ← F.map_comp, f.comm] }
 #align category_theory.functor.map_homological_complex CategoryTheory.Functor.mapHomologicalComplex
 
-variable (V)
-
-/-- The functor on homological complexes induced by the identity functor is
-isomorphic to the identity functor. -/
-@[simps!]
-def Functor.mapHomologicalComplexIdIso (c : ComplexShape ι) :
-    (𝟭 V).mapHomologicalComplex c ≅ 𝟭 _ :=
-  NatIso.ofComponents fun K => Hom.isoOfComponents fun i => Iso.refl _
-#align category_theory.functor.map_homological_complex_id_iso CategoryTheory.Functor.mapHomologicalComplexIdIso
-
-variable {V}
+instance (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (c : ComplexShape ι) :
+    (F.mapHomologicalComplex c).PreservesZeroMorphisms where
 
 instance Functor.map_homogical_complex_additive (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
     (F.mapHomologicalComplex c).Additive where
 #align category_theory.functor.map_homogical_complex_additive CategoryTheory.Functor.map_homogical_complex_additive
 
-instance Functor.mapHomologicalComplex_reflects_iso (F : V ⥤ W) [F.Additive]
+variable (W₁)
+
+/-- The functor on homological complexes induced by the identity functor is
+isomorphic to the identity functor. -/
+@[simps!]
+def Functor.mapHomologicalComplexIdIso (c : ComplexShape ι) :
+    (𝟭 W₁).mapHomologicalComplex c ≅ 𝟭 _ :=
+  NatIso.ofComponents fun K => Hom.isoOfComponents fun i => Iso.refl _
+#align category_theory.functor.map_homological_complex_id_iso CategoryTheory.Functor.mapHomologicalComplexIdIso
+
+instance Functor.mapHomologicalComplex_reflects_iso (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
     [ReflectsIsomorphisms F] (c : ComplexShape ι) :
     ReflectsIsomorphisms (F.mapHomologicalComplex c) :=
   ⟨fun f => by
     intro
     haveI : ∀ n : ι, IsIso (F.map (f.f n)) := fun n =>
-      IsIso.of_iso
-        ((HomologicalComplex.eval W c n).mapIso (asIso ((F.mapHomologicalComplex c).map f)))
+        ((HomologicalComplex.eval W₂ c n).mapIso
+          (asIso ((F.mapHomologicalComplex c).map f))).isIso_hom
     haveI := fun n => isIso_of_reflects_iso (f.f n) F
     exact HomologicalComplex.Hom.isIso_of_components f⟩
 #align category_theory.functor.map_homological_complex_reflects_iso CategoryTheory.Functor.mapHomologicalComplex_reflects_iso
+
+variable {W₁}
 
 /-- A natural transformation between functors induces a natural transformation
 between those functors applied to homological complexes.
 -/
 @[simps]
-def NatTrans.mapHomologicalComplex {F G : V ⥤ W} [F.Additive] [G.Additive] (α : F ⟶ G)
+def NatTrans.mapHomologicalComplex {F G : W₁ ⥤ W₂}
+    [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] (α : F ⟶ G)
     (c : ComplexShape ι) : F.mapHomologicalComplex c ⟶ G.mapHomologicalComplex c where
   app C := { f := fun i => α.app _ }
 #align category_theory.nat_trans.map_homological_complex CategoryTheory.NatTrans.mapHomologicalComplex
 
 @[simp]
-theorem NatTrans.mapHomologicalComplex_id (c : ComplexShape ι) (F : V ⥤ W) [F.Additive] :
+theorem NatTrans.mapHomologicalComplex_id
+    (c : ComplexShape ι) (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] :
     NatTrans.mapHomologicalComplex (𝟙 F) c = 𝟙 (F.mapHomologicalComplex c) := by aesop_cat
 #align category_theory.nat_trans.map_homological_complex_id CategoryTheory.NatTrans.mapHomologicalComplex_id
 
 @[simp]
-theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : V ⥤ W} [F.Additive]
-    [G.Additive] [H.Additive] (α : F ⟶ G) (β : G ⟶ H) :
+theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : W₁ ⥤ W₂}
+    [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] [H.PreservesZeroMorphisms]
+    (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.mapHomologicalComplex (α ≫ β) c =
-      NatTrans.mapHomologicalComplex α c ≫ NatTrans.mapHomologicalComplex β c :=
-  by aesop_cat
+      NatTrans.mapHomologicalComplex α c ≫ NatTrans.mapHomologicalComplex β c := by
+  aesop_cat
 #align category_theory.nat_trans.map_homological_complex_comp CategoryTheory.NatTrans.mapHomologicalComplex_comp
 
 @[reassoc (attr := simp 1100)]
-theorem NatTrans.mapHomologicalComplex_naturality {c : ComplexShape ι} {F G : V ⥤ W} [F.Additive]
-    [G.Additive] (α : F ⟶ G) {C D : HomologicalComplex V c} (f : C ⟶ D) :
+theorem NatTrans.mapHomologicalComplex_naturality {c : ComplexShape ι} {F G : W₁ ⥤ W₂}
+    [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms]
+    (α : F ⟶ G) {C D : HomologicalComplex W₁ c} (f : C ⟶ D) :
     (F.mapHomologicalComplex c).map f ≫ (NatTrans.mapHomologicalComplex α c).app D =
-      (NatTrans.mapHomologicalComplex α c).app C ≫ (G.mapHomologicalComplex c).map f :=
-  by aesop_cat
+      (NatTrans.mapHomologicalComplex α c).app C ≫ (G.mapHomologicalComplex c).map f := by
+  aesop_cat
 #align category_theory.nat_trans.map_homological_complex_naturality CategoryTheory.NatTrans.mapHomologicalComplex_naturality
 
 /-- A natural isomorphism between functors induces a natural isomorphism
 between those functors applied to homological complexes.
 -/
 @[simps!]
-def NatIso.mapHomologicalComplex {F G : V ⥤ W} [F.Additive] [G.Additive] (α : F ≅ G)
-    (c : ComplexShape ι) : F.mapHomologicalComplex c ≅ G.mapHomologicalComplex c where
+def NatIso.mapHomologicalComplex {F G : W₁ ⥤ W₂} [F.PreservesZeroMorphisms]
+    [G.PreservesZeroMorphisms] (α : F ≅ G) (c : ComplexShape ι) :
+    F.mapHomologicalComplex c ≅ G.mapHomologicalComplex c where
   hom := NatTrans.mapHomologicalComplex α.hom c
   inv := NatTrans.mapHomologicalComplex α.inv c
   hom_inv_id := by simp only [← NatTrans.mapHomologicalComplex_comp, α.hom_inv_id,
@@ -238,29 +242,29 @@ def NatIso.mapHomologicalComplex {F G : V ⥤ W} [F.Additive] [G.Additive] (α :
 of homological complex.
 -/
 @[simps]
-def Equivalence.mapHomologicalComplex (e : V ≌ W) [e.functor.Additive] (c : ComplexShape ι) :
-    HomologicalComplex V c ≌ HomologicalComplex W c where
+def Equivalence.mapHomologicalComplex (e : W₁ ≌ W₂) [e.functor.PreservesZeroMorphisms]
+    (c : ComplexShape ι) :
+    HomologicalComplex W₁ c ≌ HomologicalComplex W₂ c where
   functor := e.functor.mapHomologicalComplex c
   inverse := e.inverse.mapHomologicalComplex c
   unitIso :=
-    (Functor.mapHomologicalComplexIdIso V c).symm ≪≫ NatIso.mapHomologicalComplex e.unitIso c
-  counitIso := NatIso.mapHomologicalComplex e.counitIso c ≪≫ Functor.mapHomologicalComplexIdIso W c
+    (Functor.mapHomologicalComplexIdIso W₁ c).symm ≪≫ NatIso.mapHomologicalComplex e.unitIso c
+  counitIso := NatIso.mapHomologicalComplex e.counitIso c ≪≫
+  Functor.mapHomologicalComplexIdIso W₂ c
 #align category_theory.equivalence.map_homological_complex CategoryTheory.Equivalence.mapHomologicalComplex
 
 end CategoryTheory
 
 namespace ChainComplex
 
-variable {W : Type*} [Category W] [Preadditive W]
-
 variable {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
-theorem map_chain_complex_of (F : V ⥤ W) [F.Additive] (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n)
-    (sq : ∀ n, d (n + 1) ≫ d n = 0) :
+theorem map_chain_complex_of (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (X : α → W₁)
+    (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
     (F.mapHomologicalComplex _).obj (ChainComplex.of X d sq) =
       ChainComplex.of (fun n => F.obj (X n)) (fun n => F.map (d n)) fun n => by
         rw [← F.map_comp, sq n, Functor.map_zero] := by
-  refine' HomologicalComplex.ext rfl _
+  refine HomologicalComplex.ext rfl ?_
   rintro i j (rfl : j + 1 = i)
   simp only [CategoryTheory.Functor.mapHomologicalComplex_obj_d, of_d, eqToHom_refl, comp_id,
     id_comp]
@@ -268,16 +272,18 @@ theorem map_chain_complex_of (F : V ⥤ W) [F.Additive] (X : α → V) (d : ∀ 
 
 end ChainComplex
 
-variable [HasZeroObject V] {W : Type*} [Category W] [Preadditive W] [HasZeroObject W]
+variable [HasZeroObject W₁] [HasZeroObject W₂]
 
 namespace HomologicalComplex
+
+variable (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
+    (c : ComplexShape ι) [DecidableEq ι]
 
 /-- Turning an object into a complex supported at `j` then applying a functor is
 the same as applying the functor then forming the complex.
 -/
-noncomputable def singleMapHomologicalComplex (F : V ⥤ W) [F.Additive] (c : ComplexShape ι)
-    [DecidableEq ι] (j : ι) :
-    single V c j ⋙ F.mapHomologicalComplex _ ≅ F ⋙ single W c j :=
+noncomputable def singleMapHomologicalComplex (j : ι) :
+    single W₁ c j ⋙ F.mapHomologicalComplex _ ≅ F ⋙ single W₂ c j :=
   NatIso.ofComponents
     (fun X =>
       { hom := { f := fun i => if h : i = j then eqToHom (by simp [h]) else 0 }
@@ -304,30 +310,28 @@ noncomputable def singleMapHomologicalComplex (F : V ⥤ W) [F.Additive] (c : Co
       · apply (isZero_single_obj_X c j _ _ h).eq_of_tgt
 #align homological_complex.single_map_homological_complex HomologicalComplex.singleMapHomologicalComplex
 
-variable (F : V ⥤ W) [Functor.Additive F] (c) [DecidableEq ι]
-
 @[simp]
-theorem singleMapHomologicalComplex_hom_app_self (j : ι) (X : V) :
+theorem singleMapHomologicalComplex_hom_app_self (j : ι) (X : W₁) :
     ((singleMapHomologicalComplex F c j).hom.app X).f j =
       F.map (singleObjXSelf c j X).hom ≫ (singleObjXSelf c j (F.obj X)).inv := by
   simp [singleMapHomologicalComplex, singleObjXSelf, singleObjXIsoOfEq, eqToHom_map]
 #align homological_complex.single_map_homological_complex_hom_app_self HomologicalComplex.singleMapHomologicalComplex_hom_app_self
 
 @[simp]
-theorem singleMapHomologicalComplex_hom_app_ne {i j : ι} (h : i ≠ j) (X : V) :
+theorem singleMapHomologicalComplex_hom_app_ne {i j : ι} (h : i ≠ j) (X : W₁) :
     ((singleMapHomologicalComplex F c j).hom.app X).f i = 0 := by
   simp [singleMapHomologicalComplex, h]
 #align homological_complex.single_map_homological_complex_hom_app_ne HomologicalComplex.singleMapHomologicalComplex_hom_app_ne
 
 @[simp]
-theorem singleMapHomologicalComplex_inv_app_self (j : ι) (X : V) :
+theorem singleMapHomologicalComplex_inv_app_self (j : ι) (X : W₁) :
     ((singleMapHomologicalComplex F c j).inv.app X).f j =
       (singleObjXSelf c j (F.obj X)).hom ≫ F.map (singleObjXSelf c j X).inv := by
   simp [singleMapHomologicalComplex, singleObjXSelf, singleObjXIsoOfEq, eqToHom_map]
 #align homological_complex.single_map_homological_complex_inv_app_self HomologicalComplex.singleMapHomologicalComplex_inv_app_self
 
 @[simp]
-theorem singleMapHomologicalComplex_inv_app_ne {i j : ι} (h : i ≠ j) (X : V) :
+theorem singleMapHomologicalComplex_inv_app_ne {i j : ι} (h : i ≠ j) (X : W₁) :
     ((singleMapHomologicalComplex F c j).inv.app X).f i = 0 := by
   simp [singleMapHomologicalComplex, h]
 #align homological_complex.single_map_homological_complex_inv_app_ne HomologicalComplex.singleMapHomologicalComplex_inv_app_ne

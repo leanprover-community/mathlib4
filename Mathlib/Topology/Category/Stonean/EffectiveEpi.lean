@@ -122,7 +122,7 @@ theorem effectiveEpiFamily_tfae
     rw [Iso.inv_comp_eq]
     apply colimit.hom_ext
     rintro ⟨a⟩
-    simp only [Discrete.functor_obj, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
+    simp only [i, Discrete.functor_obj, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
       colimit.comp_coconePointUniqueUpToIso_hom_assoc]
     ext; rfl
   tfae_finish
@@ -140,7 +140,7 @@ theorem _root_.CategoryTheory.EffectiveEpiFamily.toCompHaus
     {α : Type} [Finite α] {B : Stonean.{u}}
     {X : α → Stonean.{u}} {π : (a : α) → (X a ⟶ B)} (H : EffectiveEpiFamily X π) :
     EffectiveEpiFamily (toCompHaus.obj <| X ·) (toCompHaus.map <| π ·) := by
-  refine' ((CompHaus.effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => _)
+  refine ((CompHaus.effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => ?_)
   exact (((effectiveEpiFamily_tfae _ _).out 0 2).1 H : ∀ _, ∃ _, _) _
 
 end Stonean

@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
@@ -22,7 +22,6 @@ section ToSquareZero
 universe u v w
 
 variable {R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [CommSemiring A] [CommRing B]
-
 variable [Algebra R A] [Algebra R B] (I : Ideal B) (hI : I ^ 2 = ⊥)
 
 /-- If `f₁ f₂ : A →ₐ[R] B` are two lifts of the same `A →ₐ[R] B ⧸ I`,
@@ -50,10 +49,10 @@ of the canonical map `A →ₐ[R] B ⧸ I` corresponds to an `R`-derivation from
 def derivationToSquareZeroOfLift (f : A →ₐ[R] B)
     (e : (Ideal.Quotient.mkₐ R I).comp f = IsScalarTower.toAlgHom R A (B ⧸ I)) :
     Derivation R A I := by
-  refine'
-    { diffToIdealOfQuotientCompEq I f (IsScalarTower.toAlgHom R A B) _ with
-      map_one_eq_zero' := _
-      leibniz' := _ }
+  refine
+    { diffToIdealOfQuotientCompEq I f (IsScalarTower.toAlgHom R A B) ?_ with
+      map_one_eq_zero' := ?_
+      leibniz' := ?_ }
   · rw [e]; ext; rfl
   · ext; change f 1 - algebraMap A B 1 = 0; rw [map_one, map_one, sub_self]
   · intro x y
@@ -122,10 +121,10 @@ lifts `A →ₐ[R] B` of the canonical map `A →ₐ[R] B ⧸ I`. -/
 @[simps!]
 def derivationToSquareZeroEquivLift : Derivation R A I ≃
     { f : A →ₐ[R] B // (Ideal.Quotient.mkₐ R I).comp f = IsScalarTower.toAlgHom R A (B ⧸ I) } := by
-  refine' ⟨fun d => ⟨liftOfDerivationToSquareZero I hI d, _⟩, fun f =>
-    (derivationToSquareZeroOfLift I hI f.1 f.2 : _), _, _⟩
+  refine ⟨fun d => ⟨liftOfDerivationToSquareZero I hI d, ?_⟩, fun f =>
+    (derivationToSquareZeroOfLift I hI f.1 f.2 : _), ?_, ?_⟩
   · ext x; exact liftOfDerivationToSquareZero_mk_apply I hI d x
-  · intro d; ext x; exact add_sub_cancel (d x : B) (algebraMap A B x)
+  · intro d; ext x; exact add_sub_cancel_right (d x : B) (algebraMap A B x)
   · rintro ⟨f, hf⟩; ext x; exact sub_add_cancel (f x) (algebraMap A B x)
 #align derivation_to_square_zero_equiv_lift derivationToSquareZeroEquivLift
 

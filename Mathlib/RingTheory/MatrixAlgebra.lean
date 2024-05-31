@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Eric Wieser
 -/
 import Mathlib.Data.Matrix.Basis
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import ring_theory.matrix_algebra from "leanprover-community/mathlib"@"6c351a8fb9b06e5a542fdf427bfb9f46724f9453"
 
@@ -18,8 +18,6 @@ universe u v w
 
 open TensorProduct
 
-open BigOperators
-
 open TensorProduct
 
 open Algebra.TensorProduct
@@ -27,11 +25,8 @@ open Algebra.TensorProduct
 open Matrix
 
 variable {R : Type u} [CommSemiring R]
-
 variable {A : Type v} [Semiring A] [Algebra R A]
-
 variable {n : Type w}
-
 variable (R A n)
 
 namespace MatrixEquivTensor
@@ -95,13 +90,15 @@ theorem invFun_zero : invFun R A n 0 = 0 := by simp [invFun]
 #align matrix_equiv_tensor.inv_fun_zero MatrixEquivTensor.invFun_zero
 
 @[simp]
-theorem invFun_add (M N : Matrix n n A) : invFun R A n (M + N) = invFun R A n M + invFun R A n N :=
-  by simp [invFun, add_tmul, Finset.sum_add_distrib]
+theorem invFun_add (M N : Matrix n n A) :
+    invFun R A n (M + N) = invFun R A n M + invFun R A n N := by
+  simp [invFun, add_tmul, Finset.sum_add_distrib]
 #align matrix_equiv_tensor.inv_fun_add MatrixEquivTensor.invFun_add
 
 @[simp]
-theorem invFun_smul (a : A) (M : Matrix n n A) : invFun R A n (a • M) = a ⊗ₜ 1 * invFun R A n M :=
-  by simp [invFun, Finset.mul_sum]
+theorem invFun_smul (a : A) (M : Matrix n n A) :
+    invFun R A n (a • M) = a ⊗ₜ 1 * invFun R A n M := by
+  simp [invFun, Finset.mul_sum]
 #align matrix_equiv_tensor.inv_fun_smul MatrixEquivTensor.invFun_smul
 
 @[simp]
@@ -162,7 +159,7 @@ theorem matrixEquivTensor_apply (M : Matrix n n A) :
   rfl
 #align matrix_equiv_tensor_apply matrixEquivTensor_apply
 
--- Porting note : short circuiting simplifier from simplifying left hand side
+-- Porting note: short circuiting simplifier from simplifying left hand side
 @[simp (high)]
 theorem matrixEquivTensor_apply_std_basis (i j : n) (x : A) :
     matrixEquivTensor R A n (stdBasisMatrix i j x) = x ⊗ₜ stdBasisMatrix i j 1 := by

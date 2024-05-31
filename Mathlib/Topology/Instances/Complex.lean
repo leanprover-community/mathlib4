@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.FieldTheory.IntermediateField
+import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.UniformRing
 
 #align_import topology.instances.complex from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
@@ -31,13 +32,13 @@ theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set
     simp_rw [← SetLike.coe_set_eq, IntermediateField.coe_toSubalgebra] at this ⊢
     exact this
   suffices range (ofReal' : ℝ → ℂ) ⊆ closure (Set.range ((ofReal' : ℝ → ℂ) ∘ ((↑) : ℚ → ℝ))) by
-    refine' subset_trans this _
+    refine subset_trans this ?_
     rw [← IsClosed.closure_eq hc]
     apply closure_mono
     rintro _ ⟨_, rfl⟩
-    simp only [Function.comp_apply, ofReal_rat_cast, SetLike.mem_coe, SubfieldClass.coe_rat_mem]
+    simp only [Function.comp_apply, ofReal_ratCast, SetLike.mem_coe, SubfieldClass.ratCast_mem]
   nth_rw 1 [range_comp]
-  refine' subset_trans _ (image_closure_subset_closure_image continuous_ofReal)
+  refine subset_trans ?_ (image_closure_subset_closure_image continuous_ofReal)
   rw [DenseRange.closure_range Rat.denseEmbedding_coe_real.dense]
   simp only [image_univ]
   rfl
@@ -66,7 +67,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
       -- ψ₁ is the continuous ring hom `ℝ →+* ℂ` constructed from `j : closure (K) ≃+* ℝ`
       -- and `extψ : closure (K) →+* ℂ`
       let ψ₁ := RingHom.comp extψ (RingHom.comp j.symm.toRingHom ofReal.rangeRestrict)
-      -- porting note: was `by continuity!` and was used inline
+      -- Porting note: was `by continuity!` and was used inline
       have hψ₁ : Continuous ψ₁ := by
         simpa only [RingHom.coe_comp] using hψ.comp ((continuous_algebraMap ℝ ℂ).subtype_mk _)
       ext1 x
@@ -87,7 +88,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
         RingHom.comp extψ
           (RingHom.comp (RingEquiv.subfieldCongr h).symm.toRingHom
             (@Subfield.topEquiv ℂ _).symm.toRingHom)
-      -- porting note: was `by continuity!` and was used inline
+      -- Porting note: was `by continuity!` and was used inline
       have hψ₁ : Continuous ψ₁ := by
         simpa only [RingHom.coe_comp] using hψ.comp (continuous_id.subtype_mk _)
       cases' ringHom_eq_id_or_conj_of_continuous hψ₁ with h h
@@ -103,7 +104,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
       fun x =>
       ⟨x, by
         convert x.prop
-        simp only [id.def, Set.image_id']
+        simp only [id, Set.image_id']
         rfl ⟩
     convert DenseRange.comp (Function.Surjective.denseRange _)
         (DenseEmbedding.subtype denseEmbedding_id (K : Set ℂ)).dense (by continuity : Continuous j)
@@ -111,7 +112,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
     use
       ⟨y, by
         convert hy
-        simp only [id.def, Set.image_id']
+        simp only [id, Set.image_id']
         rfl ⟩
 #align complex.uniform_continuous_ring_hom_eq_id_or_conj Complex.uniformContinuous_ringHom_eq_id_or_conj
 

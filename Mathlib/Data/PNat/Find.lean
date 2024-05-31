@@ -26,13 +26,11 @@ instance decidablePredExistsNat : DecidablePred fun n' : ℕ => ∃ (n : ℕ+) (
       simp_rw [mk_coe, @exists_comm (_ < _) (_ = _), exists_prop, exists_eq_left']
 #align pnat.decidable_pred_exists_nat PNat.decidablePredExistsNat
 
---include h
-
 /-- The `PNat` version of `Nat.findX` -/
 protected def findX : { n // p n ∧ ∀ m : ℕ+, m < n → ¬p m } := by
   have : ∃ (n' : ℕ) (n : ℕ+) (_ : n' = n), p n := Exists.elim h fun n hn => ⟨n, n, rfl, hn⟩
   have n := Nat.findX this
-  refine' ⟨⟨n, _⟩, _, fun m hm pm => _⟩
+  refine ⟨⟨n, ?_⟩, ?_, fun m hm pm => ?_⟩
   · obtain ⟨n', hn', -⟩ := n.prop.1
     rw [hn']
     exact n'.prop
@@ -103,7 +101,7 @@ theorem lt_find_iff (n : ℕ+) : n < PNat.find h ↔ ∀ m ≤ n, ¬p m := by
 theorem find_eq_one : PNat.find h = 1 ↔ p 1 := by simp [find_eq_iff]
 #align pnat.find_eq_one PNat.find_eq_one
 
--- porting notes: deleted `@[simp]` to satisfy the linter because `le_find_iff` is more general
+-- Porting note: deleted `@[simp]` to satisfy the linter because `le_find_iff` is more general
 theorem one_le_find : 1 < PNat.find h ↔ ¬p 1 :=
   not_iff_not.mp <| by simp
 #align pnat.one_le_find PNat.one_le_find
@@ -119,7 +117,7 @@ theorem find_le {h : ∃ n, p n} (hn : p n) : PNat.find h ≤ n :=
 
 theorem find_comp_succ (h : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h1 : ¬p 1) :
     PNat.find h = PNat.find h₂ + 1 := by
-  refine' (find_eq_iff _).2 ⟨PNat.find_spec h₂, fun n => PNat.recOn n _ _⟩
+  refine (find_eq_iff _).2 ⟨PNat.find_spec h₂, fun n => PNat.recOn n ?_ ?_⟩
   · simp [h1]
   intro m _ hm
   simp only [add_lt_add_iff_right, lt_find_iff] at hm

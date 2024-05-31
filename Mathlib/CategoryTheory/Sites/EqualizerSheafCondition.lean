@@ -50,12 +50,12 @@ The middle object of the fork diagram given in Equation (3) of [MM92], as well a
 of <https://stacks.math.columbia.edu/tag/00VM>.
 -/
 def FirstObj : Type max v u :=
-  ∏ fun f : ΣY, { f : Y ⟶ X // R f } => P.obj (op f.1)
+  ∏ᶜ fun f : ΣY, { f : Y ⟶ X // R f } => P.obj (op f.1)
 #align category_theory.equalizer.first_obj CategoryTheory.Equalizer.FirstObj
 
 variable {P R}
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma FirstObj.ext (z₁ z₂ : FirstObj P R) (h : ∀ (Y : C) (f : Y ⟶ X)
     (hf : R f), (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶ _) z₁ =
@@ -76,7 +76,7 @@ def firstObjEqFamily : FirstObj P R ≅ R.FamilyOfElements P where
 instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
   (firstObjEqFamily P _).toEquiv.inhabited
 
--- porting note: was not needed in mathlib
+-- Porting note: was not needed in mathlib
 instance : Inhabited (FirstObj P ((⊥ : Sieve X) : Presieve X)) :=
   (inferInstance : Inhabited (FirstObj P (⊥ : Presieve X)))
 
@@ -100,12 +100,12 @@ namespace Sieve
 to check a family is compatible.
 -/
 def SecondObj : Type max v u :=
-  ∏ fun f : Σ(Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
+  ∏ᶜ fun f : Σ(Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
 #align category_theory.equalizer.sieve.second_obj CategoryTheory.Equalizer.Sieve.SecondObj
 
 variable {P S}
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma SecondObj.ext (z₁ z₂ : SecondObj P S) (h : ∀ (Y Z : C) (g : Z ⟶ Y) (f : Y ⟶ X)
     (hf : S.arrows f), (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶ _) z₁ =
@@ -159,7 +159,7 @@ theorem equalizer_sheaf_condition :
     ← Equiv.forall_congr_left (firstObjEqFamily P (S : Presieve X)).toEquiv.symm]
   simp_rw [← compatible_iff]
   simp only [inv_hom_id_apply, Iso.toEquiv_symm_fun]
-  apply ball_congr
+  apply forall₂_congr
   intro x _
   apply exists_unique_congr
   intro t
@@ -191,7 +191,7 @@ The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag
 contains the data used to check a family of elements for a presieve is compatible.
 -/
 @[simp] def SecondObj : Type max v u :=
-  ∏ fun fg : (ΣY, { f : Y ⟶ X // R f }) × ΣZ, { g : Z ⟶ X // R g } =>
+  ∏ᶜ fun fg : (ΣY, { f : Y ⟶ X // R f }) × ΣZ, { g : Z ⟶ X // R g } =>
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 #align category_theory.equalizer.presieve.second_obj CategoryTheory.Equalizer.Presieve.SecondObj
@@ -247,7 +247,7 @@ theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P
   rw [Types.type_equalizer_iff_unique]
   erw [← Equiv.forall_congr_left (firstObjEqFamily P R).toEquiv.symm]
   simp_rw [← compatible_iff, ← Iso.toEquiv_fun, Equiv.apply_symm_apply]
-  apply ball_congr
+  apply forall₂_congr
   intro x _
   apply exists_unique_congr
   intro t
@@ -263,9 +263,11 @@ theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P
 
 namespace Arrows
 
+variable (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Presieve X) (S : Sieve X)
+
 open Presieve
 
-variable {B : C} {I : Type} (X : I → C) (π : (i : I) → X i ⟶ B) [UnivLE.{w, max v u}]
+variable {B : C} {I : Type} (X : I → C) (π : (i : I) → X i ⟶ B)
     [(Presieve.ofArrows X π).hasPullbacks]
 -- TODO: allow `I : Type w` 
 
@@ -274,7 +276,7 @@ The middle object of the fork diagram of <https://stacks.math.columbia.edu/tag/0
 The difference between this and `Equalizer.FirstObj P (ofArrows X π)` arrises if the family of
 arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
-def FirstObj : Type max v u := ∏ (fun i ↦ P.obj (op (X i)))
+def FirstObj : Type w := ∏ᶜ (fun i ↦ P.obj (op (X i)))
 
 @[ext]
 lemma FirstObj.ext (z₁ z₂ : FirstObj P X) (h : ∀ i, (Pi.π _ i : FirstObj P X ⟶ _) z₁ =
@@ -288,8 +290,8 @@ The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag
 The difference between this and `Equalizer.Presieve.SecondObj P (ofArrows X π)` arrises if the
 family of arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
-def SecondObj : Type max v u  :=
-  ∏ (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2))))
+def SecondObj : Type w  :=
+  ∏ᶜ (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2))))
 
 @[ext]
 lemma SecondObj.ext (z₁ z₂ : SecondObj P X π) (h : ∀ ij, (Pi.π _ ij : SecondObj P X π ⟶ _) z₁ =
@@ -344,7 +346,7 @@ theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔
   rw [Types.type_equalizer_iff_unique, isSheafFor_arrows_iff]
   erw [← Equiv.forall_congr_left (Types.productIso _).toEquiv.symm]
   simp_rw [← compatible_iff, ← Iso.toEquiv_fun, Equiv.apply_symm_apply]
-  apply ball_congr
+  apply forall₂_congr
   intro x _
   apply exists_unique_congr
   intro t

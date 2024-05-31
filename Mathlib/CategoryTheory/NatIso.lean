@@ -49,7 +49,7 @@ namespace Iso
 
 /-- The application of a natural isomorphism to an object. We put this definition in a different
 namespace, so that we can use `α.app` -/
-@[simps, pp_dot]
+@[simps]
 def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     F.obj X ≅ G.obj X where
   hom := α.hom.app X
@@ -236,13 +236,13 @@ theorem ofComponents.app (app' : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (X
 /-- A natural transformation is an isomorphism if all its components are isomorphisms.
 -/
 theorem isIso_of_isIso_app (α : F ⟶ G) [∀ X : C, IsIso (α.app X)] : IsIso α :=
-  ⟨(IsIso.of_iso (ofComponents (fun X => asIso (α.app X)) (by aesop))).1⟩
+  (ofComponents (fun X => asIso (α.app X)) (by aesop)).isIso_hom
 #align category_theory.nat_iso.is_iso_of_is_iso_app CategoryTheory.NatIso.isIso_of_isIso_app
 
 /-- Horizontal composition of natural isomorphisms. -/
 @[simps]
 def hcomp {F G : C ⥤ D} {H I : D ⥤ E} (α : F ≅ G) (β : H ≅ I) : F ⋙ H ≅ G ⋙ I := by
-  refine' ⟨α.hom ◫ β.hom, α.inv ◫ β.inv, _, _⟩
+  refine ⟨α.hom ◫ β.hom, α.inv ◫ β.inv, ?_, ?_⟩
   · ext
     rw [← NatTrans.exchange]
     simp
@@ -257,12 +257,16 @@ theorem isIso_map_iff {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) {X Y : C} (f : X
   suffices ∀ {F₁ F₂ : C ⥤ D} (_ : F₁ ≅ F₂) (_ : IsIso (F₁.map f)), IsIso (F₂.map f) by
     exact fun F₁ F₂ e => ⟨this e, this e.symm⟩
   intro F₁ F₂ e hf
-  refine' IsIso.mk ⟨e.inv.app Y ≫ inv (F₁.map f) ≫ e.hom.app X, _, _⟩
+  refine IsIso.mk ⟨e.inv.app Y ≫ inv (F₁.map f) ≫ e.hom.app X, ?_, ?_⟩
   · simp only [NatTrans.naturality_assoc, IsIso.hom_inv_id_assoc, Iso.inv_hom_id_app]
   · simp only [assoc, ← e.hom.naturality, IsIso.inv_hom_id_assoc, Iso.inv_hom_id_app]
 #align category_theory.nat_iso.is_iso_map_iff CategoryTheory.NatIso.isIso_map_iff
 
 end NatIso
+
+lemma NatTrans.isIso_iff_isIso_app {F G : C ⥤ D} (τ : F ⟶ G) :
+    IsIso τ ↔ ∀ X, IsIso (τ.app X) :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ NatIso.isIso_of_isIso_app _⟩
 
 namespace Functor
 

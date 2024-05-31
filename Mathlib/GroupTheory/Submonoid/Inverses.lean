@@ -3,7 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.GroupTheory.Submonoid.Pointwise
+import Mathlib.Algebra.Group.Submonoid.Pointwise
 
 #align_import group_theory.submonoid.inverses from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
@@ -17,7 +17,11 @@ since the inverses are unique. When `N ≤ IsUnit.Submonoid M`, this is precisel
 the pointwise inverse of `N`, and we may define `leftInvEquiv : S.leftInv ≃* S`.
 
 For the pointwise inverse of submonoids of groups, please refer to
-`GroupTheory.Submonoid.Pointwise`.
+`Mathlib.GroupTheory.Submonoid.Pointwise`.
+
+`N.leftInv` is distinct from `N.units`, which is the subgroup of `Mˣ` containing all units that are
+in `N`. See the implementation notes of `Mathlib.GroupTheory.Submonoid.Units` for more details on
+related constructions.
 
 ## TODO
 
@@ -81,7 +85,7 @@ theorem unit_mem_leftInv (x : Mˣ) (hx : (x : M) ∈ S) : ((x⁻¹ : _) : M) ∈
 
 @[to_additive]
 theorem leftInv_leftInv_eq (hS : S ≤ IsUnit.submonoid M) : S.leftInv.leftInv = S := by
-  refine' le_antisymm S.leftInv_leftInv_le _
+  refine le_antisymm S.leftInv_leftInv_le ?_
   intro x hx
   have : x = ((hS hx).unit⁻¹⁻¹ : Mˣ) := by
     rw [inv_inv (hS hx).unit]
@@ -131,8 +135,9 @@ theorem leftInv_le_isUnit : S.leftInv ≤ IsUnit.submonoid M := fun x ⟨y, hx�
 #align add_submonoid.left_neg_le_is_add_unit AddSubmonoid.leftNeg_le_isAddUnit
 
 @[to_additive]
-theorem fromLeftInv_eq_iff (a : S.leftInv) (b : M) : (S.fromLeftInv a : M) = b ↔ (a : M) * b = 1 :=
-  by rw [← IsUnit.mul_right_inj (leftInv_le_isUnit _ a.prop), S.mul_fromLeftInv, eq_comm]
+theorem fromLeftInv_eq_iff (a : S.leftInv) (b : M) :
+    (S.fromLeftInv a : M) = b ↔ (a : M) * b = 1 := by
+  rw [← IsUnit.mul_right_inj (leftInv_le_isUnit _ a.prop), S.mul_fromLeftInv, eq_comm]
 #align submonoid.from_left_inv_eq_iff Submonoid.fromLeftInv_eq_iff
 #align add_submonoid.from_left_neg_eq_iff AddSubmonoid.fromLeftNeg_eq_iff
 
@@ -151,9 +156,6 @@ noncomputable def fromCommLeftInv : S.leftInv →* S where
 #align add_submonoid.from_comm_left_neg AddSubmonoid.fromCommLeftNeg
 
 variable (hS : S ≤ IsUnit.submonoid M)
-
--- Porting note: commented out next line
- -- include hS
 
 /-- The submonoid of pointwise inverse of `S` is `MulEquiv` to `S`. -/
 @[to_additive (attr := simps apply) "The additive submonoid of pointwise additive inverse of `S` is

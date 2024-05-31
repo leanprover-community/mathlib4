@@ -40,12 +40,11 @@ arc-length, parameterization
 -/
 
 
-open scoped BigOperators NNReal ENNReal
+open scoped NNReal ENNReal
 
 open Set MeasureTheory Classical
 
 variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
-
 variable (f : ℝ → E) (s : Set ℝ) (l : ℝ≥0)
 
 /-- `f` has constant speed `l` on `s` if the variation of `f` on `s ∩ Icc x y` is equal to
@@ -59,7 +58,7 @@ variable {f s l}
 
 theorem HasConstantSpeedOnWith.hasLocallyBoundedVariationOn (h : HasConstantSpeedOnWith f s l) :
     LocallyBoundedVariationOn f s := fun x y hx hy => by
-  simp only [BoundedVariationOn, h hx hy, Ne.def, ENNReal.ofReal_ne_top, not_false_iff]
+  simp only [BoundedVariationOn, h hx hy, Ne, ENNReal.ofReal_ne_top, not_false_iff]
 #align has_constant_speed_on_with.has_locally_bounded_variation_on HasConstantSpeedOnWith.hasLocallyBoundedVariationOn
 
 theorem hasConstantSpeedOnWith_of_subsingleton (f : ℝ → E) {s : Set ℝ} (hs : s.Subsingleton)
@@ -72,7 +71,7 @@ theorem hasConstantSpeedOnWith_of_subsingleton (f : ℝ → E) {s : Set ℝ} (hs
 theorem hasConstantSpeedOnWith_iff_ordered :
     HasConstantSpeedOnWith f s l ↔ ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ (_ : y ∈ s),
       x ≤ y → eVariationOn f (s ∩ Icc x y) = ENNReal.ofReal (l * (y - x)) := by
-  refine' ⟨fun h x xs y ys _ => h xs ys, fun h x xs y ys => _⟩
+  refine ⟨fun h x xs y ys _ => h xs ys, fun h x xs y ys => ?_⟩
   rcases le_total x y with (xy | yx)
   · exact h xs ys xy
   · rw [eVariationOn.subsingleton, ENNReal.ofReal_of_nonpos]
@@ -87,7 +86,7 @@ theorem hasConstantSpeedOnWith_iff_variationOnFromTo_eq :
     HasConstantSpeedOnWith f s l ↔ LocallyBoundedVariationOn f s ∧
       ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ (_ : y ∈ s), variationOnFromTo f s x y = l * (y - x) := by
   constructor
-  · rintro h; refine' ⟨h.hasLocallyBoundedVariationOn, fun x xs y ys => _⟩
+  · rintro h; refine ⟨h.hasLocallyBoundedVariationOn, fun x xs y ys => ?_⟩
     rw [hasConstantSpeedOnWith_iff_ordered] at h
     rcases le_total x y with (xy | yx)
     · rw [variationOnFromTo.eq_of_le f s xy, h xs ys xy]
@@ -119,11 +118,11 @@ theorem HasConstantSpeedOnWith.union {t : Set ℝ} (hfs : HasConstantSpeedOnWith
       · rintro (⟨ws, zw, wx⟩ | ⟨wt, xw, wy⟩)
         exacts [⟨Or.inl ws, zw, wx.trans (ht.2 yt)⟩, ⟨Or.inr wt, (hs.2 zs).trans xw, wy⟩]
     rw [this, @eVariationOn.union _ _ _ _ f _ _ x, hfs zs hs.1 (hs.2 zs), hft ht.1 yt (ht.2 yt)]
-    have q := ENNReal.ofReal_add (mul_nonneg l.prop (sub_nonneg.mpr (hs.2 zs)))
-      (mul_nonneg l.prop (sub_nonneg.mpr (ht.2 yt)))
-    simp only [NNReal.val_eq_coe] at q
-    rw [← q]
-    ring_nf
+    · have q := ENNReal.ofReal_add (mul_nonneg l.prop (sub_nonneg.mpr (hs.2 zs)))
+        (mul_nonneg l.prop (sub_nonneg.mpr (ht.2 yt)))
+      simp only [NNReal.val_eq_coe] at q
+      rw [← q]
+      ring_nf
     exacts [⟨⟨hs.1, hs.2 zs, le_rfl⟩, fun w ⟨_, _, wx⟩ => wx⟩,
       ⟨⟨ht.1, le_rfl, ht.2 yt⟩, fun w ⟨_, xw, _⟩ => xw⟩]
   · cases le_antisymm zy ((hs.2 ys).trans (ht.2 zt))
@@ -141,13 +140,13 @@ theorem HasConstantSpeedOnWith.union {t : Set ℝ} (hfs : HasConstantSpeedOnWith
 theorem HasConstantSpeedOnWith.Icc_Icc {x y z : ℝ} (hfs : HasConstantSpeedOnWith f (Icc x y) l)
     (hft : HasConstantSpeedOnWith f (Icc y z) l) : HasConstantSpeedOnWith f (Icc x z) l := by
   rcases le_total x y with (xy | yx)
-  rcases le_total y z with (yz | zy)
-  · rw [← Set.Icc_union_Icc_eq_Icc xy yz]
-    exact hfs.union hft (isGreatest_Icc xy) (isLeast_Icc yz)
-  · rintro u ⟨xu, uz⟩ v ⟨xv, vz⟩
-    rw [Icc_inter_Icc, sup_of_le_right xu, inf_of_le_right vz, ←
-      hfs ⟨xu, uz.trans zy⟩ ⟨xv, vz.trans zy⟩, Icc_inter_Icc, sup_of_le_right xu,
-      inf_of_le_right (vz.trans zy)]
+  · rcases le_total y z with (yz | zy)
+    · rw [← Set.Icc_union_Icc_eq_Icc xy yz]
+      exact hfs.union hft (isGreatest_Icc xy) (isLeast_Icc yz)
+    · rintro u ⟨xu, uz⟩ v ⟨xv, vz⟩
+      rw [Icc_inter_Icc, sup_of_le_right xu, inf_of_le_right vz, ←
+        hfs ⟨xu, uz.trans zy⟩ ⟨xv, vz.trans zy⟩, Icc_inter_Icc, sup_of_le_right xu,
+        inf_of_le_right (vz.trans zy)]
   · rintro u ⟨xu, uz⟩ v ⟨xv, vz⟩
     rw [Icc_inter_Icc, sup_of_le_right xu, inf_of_le_right vz, ←
       hft ⟨yx.trans xu, uz⟩ ⟨yx.trans xv, vz⟩, Icc_inter_Icc, sup_of_le_right (yx.trans xu),
@@ -169,7 +168,7 @@ theorem hasConstantSpeedOnWith_zero_iff :
     · rw [edist_comm] at hxy
       exact hxy (h ys xs y ⟨ys, le_rfl, yx⟩ x ⟨xs, yx, le_rfl⟩)
   · rintro h x _ y _
-    refine' le_antisymm _ zero_le'
+    refine le_antisymm ?_ zero_le'
     rw [← h]
     exact eVariationOn.mono f (inter_subset_left s (Icc x y))
 #align has_constant_speed_on_with_zero_iff hasConstantSpeedOnWith_zero_iff

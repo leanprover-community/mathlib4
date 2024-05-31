@@ -1,10 +1,11 @@
 /-
-Copyright (c) 2024 Tomáš Skřivan All rights reserved.
+Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Topology.Constructions
 
@@ -72,9 +73,11 @@ attribute [fun_prop]
 A silly example on which `measurability` fails and `fun_prop` succeeds. Let's turn on tracing to see what is going on
 set_option trace.Meta.Tactic.fun_prop true in
 -/
-
 example {α} [MeasurableSpace α] (f : α → α → α) (hf : Measurable fun (x,y) => f x y) (a : α) :
-    Measurable (fun x => (f x a, f (f x x) (f (f x x) x))) := by (try measurability); fun_prop
+    Measurable (fun x => (f x a, f (f x x) (f (f x x) x))) := by
+  -- This now takes longer than 200,000 heartbeats to fail, so I've commented it out.
+  -- fail_if_success measurability
+  fun_prop
 
 /-!
 To give more complicated examples we mark theorems about arithmetic operations with `@[fun_prop]`

@@ -59,11 +59,11 @@ theorem norm_coe_mul (x : ℝ) (t : ℝ) :
     (∃ y, y - t * x ∈ zmultiples (t * p) ∧ |y| = z) ↔ ∃ w, w - x ∈ zmultiples p ∧ |w| = |t|⁻¹ * z
   constructor
   · rintro ⟨y, hy, rfl⟩
-    refine' ⟨t⁻¹ * y, _, by rw [abs_mul, abs_inv]⟩
+    refine ⟨t⁻¹ * y, ?_, by rw [abs_mul, abs_inv]⟩
     rw [← inv_mul_cancel_left₀ ht x, ← inv_mul_cancel_left₀ ht p, ← mul_sub]
     exact aux hy
   · rintro ⟨w, hw, hw'⟩
-    refine' ⟨t * w, _, by rw [← (eq_inv_mul_iff_mul_eq₀ ht').mp hw', abs_mul]⟩
+    refine ⟨t * w, ?_, by rw [← (eq_inv_mul_iff_mul_eq₀ ht').mp hw', abs_mul]⟩
     rw [← mul_sub]
     exact aux hw
 #align add_circle.norm_coe_mul AddCircle.norm_coe_mul
@@ -87,7 +87,6 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
   suffices ∀ x : ℝ, ‖(x : AddCircle (1 : ℝ))‖ = |x - round x| by
     rcases eq_or_ne p 0 with (rfl | hp)
     · simp
-    intros
     have hx := norm_coe_mul p x p⁻¹
     rw [abs_inv, eq_inv_mul_iff_mul_eq₀ ((not_congr abs_eq_zero).mpr hp)] at hx
     rw [← hx, inv_mul_cancel hp, this, ← abs_mul, mul_sub, mul_inv_cancel_left₀ hp, mul_comm p]
@@ -100,18 +99,18 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
   apply le_antisymm
   · simp_rw [Real.norm_eq_abs, csInf_le_iff h₁ h₂, le_min_iff]
     intro b h
-    refine'
-      ⟨mem_lowerBounds.1 h _ ⟨fract x, _, abs_fract⟩,
-        mem_lowerBounds.1 h _ ⟨fract x - 1, _, by rw [abs_sub_comm, abs_one_sub_fract]⟩⟩
+    refine
+      ⟨mem_lowerBounds.1 h _ ⟨fract x, ?_, abs_fract⟩,
+        mem_lowerBounds.1 h _ ⟨fract x - 1, ?_, by rw [abs_sub_comm, abs_one_sub_fract]⟩⟩
     · simp only [mem_setOf, fract, sub_eq_self, QuotientAddGroup.mk_sub,
-        QuotientAddGroup.eq_zero_iff, int_cast_mem_zmultiples_one]
+        QuotientAddGroup.eq_zero_iff, intCast_mem_zmultiples_one]
     · simp only [mem_setOf, fract, sub_eq_self, QuotientAddGroup.mk_sub,
-        QuotientAddGroup.eq_zero_iff, int_cast_mem_zmultiples_one, sub_sub,
+        QuotientAddGroup.eq_zero_iff, intCast_mem_zmultiples_one, sub_sub,
         (by norm_cast : (⌊x⌋ : ℝ) + 1 = (↑(⌊x⌋ + 1) : ℝ))]
   · simp only [QuotientAddGroup.mk'_apply, Real.norm_eq_abs, le_csInf_iff h₁ h₂]
     rintro b' ⟨b, hb, rfl⟩
     simp only [mem_setOf, QuotientAddGroup.eq_iff_sub_mem, mem_zmultiples_iff,
-      smul_one_eq_coe] at hb
+      smul_one_eq_cast] at hb
     obtain ⟨z, hz⟩ := hb
     rw [(by rw [hz]; abel : x = b - z), fract_sub_int, ← abs_sub_round_eq_min]
     convert round_le b 0
@@ -141,7 +140,7 @@ theorem norm_half_period_eq : ‖(↑(p / 2) : AddCircle p)‖ = |p| / 2 := by
 #align add_circle.norm_half_period_eq AddCircle.norm_half_period_eq
 
 theorem norm_coe_eq_abs_iff {x : ℝ} (hp : p ≠ 0) : ‖(x : AddCircle p)‖ = |x| ↔ |x| ≤ |p| / 2 := by
-  refine' ⟨fun hx => hx ▸ norm_le_half_period p hp, fun hx => _⟩
+  refine ⟨fun hx => hx ▸ norm_le_half_period p hp, fun hx => ?_⟩
   suffices ∀ p : ℝ, 0 < p → |x| ≤ p / 2 → ‖(x : AddCircle p)‖ = |x| by
     -- Porting note: replaced `lt_trichotomy` which had trouble substituting `p = 0`.
     rcases hp.symm.lt_or_lt with (hp | hp)
@@ -189,7 +188,7 @@ theorem coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
   ext y
   simp only [dist_eq_norm, mem_preimage, mem_closedBall, zsmul_eq_mul, mem_iUnion, Real.norm_eq_abs,
     ← QuotientAddGroup.mk_sub, norm_eq, ← sub_sub]
-  refine' ⟨fun h => ⟨round (p⁻¹ * (y - x)), h⟩, _⟩
+  refine ⟨fun h => ⟨round (p⁻¹ * (y - x)), h⟩, ?_⟩
   rintro ⟨n, hn⟩
   rw [← mul_le_mul_left (abs_pos.mpr <| inv_ne_zero hp), ← abs_mul, mul_sub, mul_comm _ p,
     inv_mul_cancel_left₀ hp] at hn ⊢
@@ -222,20 +221,16 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
     obtain ⟨hy₃, hy₄⟩ := hs hy₀
     rcases lt_trichotomy 0 p with (hp | (rfl : 0 = p) | hp)
     · cases' Int.cast_le_neg_one_or_one_le_cast_of_ne_zero ℝ hz with hz' hz'
-      · have : ↑z * p ≤ -p
-        nlinarith
+      · have : ↑z * p ≤ -p := by nlinarith
         linarith [abs_eq_self.mpr hp.le]
-      · have : p ≤ ↑z * p
-        nlinarith
+      · have : p ≤ ↑z * p := by nlinarith
         linarith [abs_eq_self.mpr hp.le]
     · simp only [mul_zero, add_zero, abs_zero, zero_div] at hy₁ hy₂ hε
       linarith
     · cases' Int.cast_le_neg_one_or_one_le_cast_of_ne_zero ℝ hz with hz' hz'
-      · have : -p ≤ ↑z * p
-        nlinarith
+      · have : -p ≤ ↑z * p := by nlinarith
         linarith [abs_eq_neg_self.mpr hp.le]
-      · have : ↑z * p ≤ p
-        nlinarith
+      · have : ↑z * p ≤ p := by nlinarith
         linarith [abs_eq_neg_self.mpr hp.le]
 #align add_circle.coe_real_preimage_closed_ball_inter_eq AddCircle.coe_real_preimage_closedBall_inter_eq
 
@@ -243,29 +238,32 @@ section FiniteOrderPoints
 
 variable {p} [hp : Fact (0 < p)]
 
-theorem norm_div_nat_cast {m n : ℕ} :
+theorem norm_div_natCast {m n : ℕ} :
     ‖(↑(↑m / ↑n * p) : AddCircle p)‖ = p * (↑(min (m % n) (n - m % n)) / n) := by
   have : p⁻¹ * (↑m / ↑n * p) = ↑m / ↑n := by rw [mul_comm _ p, inv_mul_cancel_left₀ hp.out.ne.symm]
   rw [norm_eq' p hp.out, this, abs_sub_round_div_natCast_eq]
-#align add_circle.norm_div_nat_cast AddCircle.norm_div_nat_cast
+#align add_circle.norm_div_nat_cast AddCircle.norm_div_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias norm_div_nat_cast := norm_div_natCast
 
 theorem exists_norm_eq_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrder u) :
     ∃ k : ℕ, ‖u‖ = p * (k / addOrderOf u) := by
   let n := addOrderOf u
   change ∃ k : ℕ, ‖u‖ = p * (k / n)
   obtain ⟨m, -, -, hm⟩ := exists_gcd_eq_one_of_isOfFinAddOrder hu
-  refine' ⟨min (m % n) (n - m % n), _⟩
-  rw [← hm, norm_div_nat_cast]
+  refine ⟨min (m % n) (n - m % n), ?_⟩
+  rw [← hm, norm_div_natCast]
 #align add_circle.exists_norm_eq_of_fin_add_order AddCircle.exists_norm_eq_of_isOfFinAddOrder
 
 theorem le_add_order_smul_norm_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrder u)
     (hu' : u ≠ 0) : p ≤ addOrderOf u • ‖u‖ := by
   obtain ⟨n, hn⟩ := exists_norm_eq_of_isOfFinAddOrder hu
-  replace hu : (addOrderOf u : ℝ) ≠ 0
-  · norm_cast
+  replace hu : (addOrderOf u : ℝ) ≠ 0 := by
+    norm_cast
     exact (addOrderOf_pos_iff.mpr hu).ne'
   conv_lhs => rw [← mul_one p]
-  rw [hn, nsmul_eq_mul, ← mul_assoc, mul_comm _ p, mul_assoc, mul_div_cancel' _ hu,
+  rw [hn, nsmul_eq_mul, ← mul_assoc, mul_comm _ p, mul_assoc, mul_div_cancel₀ _ hu,
     mul_le_mul_left hp.out, Nat.one_le_cast, Nat.one_le_iff_ne_zero]
   contrapose! hu'
   simpa only [hu', Nat.cast_zero, zero_div, mul_zero, norm_eq_zero] using hn

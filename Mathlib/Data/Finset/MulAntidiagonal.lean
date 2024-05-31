@@ -12,7 +12,7 @@ import Mathlib.Data.Set.MulAntidiagonal
 
 We construct the `Finset` of all pairs
 of an element in `s` and an element in `t` that multiply to `a`,
-given that `s` and `t` are well-ordered.-/
+given that `s` and `t` are well-ordered. -/
 
 
 namespace Set
@@ -39,7 +39,7 @@ theorem IsWF.mul (hs : s.IsWF) (ht : t.IsWF) : IsWF (s * t) :=
 @[to_additive]
 theorem IsWF.min_mul (hs : s.IsWF) (ht : t.IsWF) (hsn : s.Nonempty) (htn : t.Nonempty) :
     (hs.mul ht).min (hsn.mul htn) = hs.min hsn * ht.min htn := by
-  refine' le_antisymm (IsWF.min_le _ _ (mem_mul.2 ⟨_, hs.min_mem _, _, ht.min_mem _, rfl⟩)) _
+  refine le_antisymm (IsWF.min_le _ _ (mem_mul.2 ⟨_, hs.min_mem _, _, ht.min_mem _, rfl⟩)) ?_
   rw [IsWF.le_min_iff]
   rintro _ ⟨x, hx, y, hy, rfl⟩
   exact mul_le_mul' (hs.min_le _ hx) (ht.min_le _ hy)
@@ -53,7 +53,6 @@ namespace Finset
 open Pointwise
 
 variable {α : Type*}
-
 variable [OrderedCancelCommMonoid α] {s t : Set α} (hs : s.IsPWO) (ht : t.IsPWO) (a : α)
 
 /-- `Finset.mulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
@@ -129,4 +128,3 @@ theorem mulAntidiagonal_min_mul_min {α} [LinearOrderedCancelCommMonoid α] {s t
 #align finset.add_antidiagonal_min_add_min Finset.addAntidiagonal_min_add_min
 
 end Finset
-

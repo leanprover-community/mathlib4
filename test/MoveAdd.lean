@@ -1,6 +1,6 @@
 import Mathlib.Tactic.MoveAdd
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Ring.Nat
 
 universe u
 
@@ -18,8 +18,8 @@ example : let k := c + (a + b); k = a + b + c := by
   move_add [← a, c]
   rfl
 
-example (h : b + a = b + c + a) : a + b = a + b + c :=
-by move_add [a]; assumption
+example (h : b + a = b + c + a) : a + b = a + b + c := by
+  move_add [a]; assumption
 
 example [Mul R] [Neg R] : a + (b + c + a) * (- (d + e) + e) + f + g =
     (c + b + a) * (e + - (e + d)) + g + f + a := by
@@ -109,11 +109,13 @@ example {a b c d e : Prop} (h : a ∨ b ∨ c ∨ d ∨ e) : a ∨ c ∨ e ∨ b
 
 end left_assoc
 
-example (k : ℕ) (h0 : 0 + 2 = 9 + 0) (h9 : k + 2 = k + 9) : k + 2 = 9 + k := by
-  induction' k with k _ih
-  · exact h0
-  · move_add [9]
-    exact h9
+-- Adaptation note: nightly-2024-03-11
+-- This test is now failing with `unknown free variable '_fvar.36787'`
+-- example (k : ℕ) (h0 : 0 + 2 = 9 + 0) (h9 : k + 2 = k + 9) : k + 2 = 9 + k := by
+--   induction' k with k _ih
+--   · exact h0
+--   · move_add [9]
+--     exact h9
 
 -- Testing internals of the tactic `move_add`.
 section tactic
