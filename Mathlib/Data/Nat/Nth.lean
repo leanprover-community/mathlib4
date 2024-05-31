@@ -416,7 +416,7 @@ end Count
 theorem nth_of_forall {n : ℕ} (hp : ∀ n' ≤ n, p n') : nth p n = n := by
   classical nth_rw 1 [← count_of_forall (hp · ·.le), nth_count (hp n le_rfl)]
 
-@[simp] theorem nth_true : nth (fun _ ↦ True) = id := funext fun _ ↦ nth_of_forall fun _ _ ↦ trivial
+@[simp] theorem nth_true (n : ℕ) : nth (fun _ ↦ True) n = n := nth_of_forall fun _ _ ↦ trivial
 
 theorem nth_of_forall_not {n : ℕ} (hp : ∀ n' ≥ n, ¬p n') : nth p n = 0 := by
   have : setOf p ⊆ Finset.range n := by
@@ -427,6 +427,6 @@ theorem nth_of_forall_not {n : ℕ} (hp : ∀ n' ≥ n, ¬p n') : nth p n = 0 :=
   · refine (Finset.card_le_card ?_).trans_eq (Finset.card_range n)
     exact Set.Finite.toFinset_subset.mpr this
 
-@[simp] theorem nth_false : nth (fun _ ↦ False) = 0 := funext fun _ ↦ nth_of_forall_not fun _ _ ↦ id
+@[simp] theorem nth_false (n : ℕ) : nth (fun _ ↦ False) n = 0 := nth_of_forall_not fun _ _ ↦ id
 
 end Nat

@@ -150,15 +150,14 @@ theorem count_of_forall {n : ℕ} (hp : ∀ n' < n, p n') : count p n = n := by
   rw [count_eq_card_filter_range, filter_true_of_mem, card_range]
   · simpa only [Finset.mem_range]
 
-@[simp] theorem count_true : count (fun _ ↦ True) = id :=
-  funext fun _ ↦ count_of_forall fun _ _ ↦ trivial
+@[simp] theorem count_true (n : ℕ) : count (fun _ ↦ True) n = n := count_of_forall fun _ _ ↦ trivial
 
 theorem count_of_forall_not {n : ℕ} (hp : ∀ n' < n, ¬p n') : count p n = 0 := by
   rw [count_eq_card_filter_range, filter_false_of_mem, card_empty]
   · simpa only [Finset.mem_range]
 
-@[simp] theorem count_false : count (fun _ ↦ False) = 0 :=
-  funext fun _ ↦ count_of_forall_not fun _ _ ↦ id
+@[simp] theorem count_false (n : ℕ) : count (fun _ ↦ False) n = 0 :=
+  count_of_forall_not fun _ _ ↦ id
 
 variable {q : ℕ → Prop}
 variable [DecidablePred q]
