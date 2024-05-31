@@ -127,8 +127,9 @@ theorem integrable_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs 
     simpa [abs_of_nonneg h'x] using abs_rpow_le_abs_rpow (-x) s
 #align integrable_rpow_mul_exp_neg_mul_sq integrable_rpow_mul_exp_neg_mul_sq
 
-theorem integrable_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) : Integrable fun x : ℝ => exp (-b * x ^ 2) :=
-  by simpa using integrable_rpow_mul_exp_neg_mul_sq hb (by norm_num : (-1 : ℝ) < 0)
+theorem integrable_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
+    Integrable fun x : ℝ => exp (-b * x ^ 2) := by
+  simpa using integrable_rpow_mul_exp_neg_mul_sq hb (by norm_num : (-1 : ℝ) < 0)
 #align integrable_exp_neg_mul_sq integrable_exp_neg_mul_sq
 
 theorem integrableOn_Ioi_exp_neg_mul_sq_iff {b : ℝ} :

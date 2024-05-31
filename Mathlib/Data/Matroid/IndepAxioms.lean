@@ -131,7 +131,7 @@ namespace IndepMatroid
 
     have hfB' : f ∉ B := by (intro hfB; obtain rfl := hf.2 hfB; exact he.2 hf.1)
 
-    refine' ⟨f, ⟨hf.1, hfB'⟩, by_contra (fun hnot ↦ _)⟩
+    refine ⟨f, ⟨hf.1, hfB'⟩, by_contra (fun hnot ↦ ?_)⟩
     obtain ⟨x,hxB, hind⟩ := M.indep_aug hfB hnot ⟨hB, hBmax⟩
     simp only [mem_diff, mem_insert_iff, mem_singleton_iff, not_or, not_and, not_not] at hxB
     obtain rfl := hxB.2.2 hxB.1
@@ -472,8 +472,8 @@ namespace Matroid
   (base_exchange := base_exchange)
   (maximality := by
     obtain ⟨B, hB, hfin⟩ := exists_finite_base
-    refine' fun X _ ↦ Matroid.existsMaximalSubsetProperty_of_bdd
-      ⟨B.ncard, fun Y ⟨B', hB', hYB'⟩ ↦ _⟩ X
+    refine fun X _ ↦ Matroid.existsMaximalSubsetProperty_of_bdd
+      ⟨B.ncard, fun Y ⟨B', hB', hYB'⟩ ↦ ?_⟩ X
     rw [hfin.cast_ncard_eq, base_exchange.encard_base_eq hB hB']
     exact encard_mono hYB')
   (subset_ground := subset_ground)

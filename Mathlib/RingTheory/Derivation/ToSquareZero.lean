@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
@@ -49,10 +49,10 @@ of the canonical map `A →ₐ[R] B ⧸ I` corresponds to an `R`-derivation from
 def derivationToSquareZeroOfLift (f : A →ₐ[R] B)
     (e : (Ideal.Quotient.mkₐ R I).comp f = IsScalarTower.toAlgHom R A (B ⧸ I)) :
     Derivation R A I := by
-  refine'
-    { diffToIdealOfQuotientCompEq I f (IsScalarTower.toAlgHom R A B) _ with
-      map_one_eq_zero' := _
-      leibniz' := _ }
+  refine
+    { diffToIdealOfQuotientCompEq I f (IsScalarTower.toAlgHom R A B) ?_ with
+      map_one_eq_zero' := ?_
+      leibniz' := ?_ }
   · rw [e]; ext; rfl
   · ext; change f 1 - algebraMap A B 1 = 0; rw [map_one, map_one, sub_self]
   · intro x y

@@ -23,15 +23,11 @@ finiteness of the class group for number fields and function fields.
    its integral closure has a finite class group
 -/
 
-open scoped BigOperators
-
 open scoped nonZeroDivisors
 
 namespace ClassGroup
 
 open Ring
-
-open scoped BigOperators
 
 section EuclideanDomain
 
@@ -69,7 +65,7 @@ theorem normBound_pos : 0 < normBound abv bS := by
     ext j k
     simp [h, DMatrix.zero_apply]
   simp only [normBound, Algebra.smul_def, eq_natCast]
-  refine mul_pos (Int.natCast_pos.mpr (Nat.factorial_pos _)) ?_
+  apply mul_pos (Int.natCast_pos.mpr (Nat.factorial_pos _))
   refine pow_pos (mul_pos (Int.natCast_pos.mpr (Fintype.card_pos_iff.mpr ⟨i⟩)) ?_) _
   refine lt_of_lt_of_le (abv.pos hijk) (Finset.le_max' _ _ ?_)
   exact Finset.mem_image.mpr ⟨⟨i, j, k⟩, Finset.mem_univ _, rfl⟩
@@ -227,8 +223,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     intro j
     rw [← bS.sum_repr a]
     simp only [μ, qs, rs, Finset.smul_sum, ← Finset.sum_add_distrib]
-    refine
-      Finset.sum_congr rfl fun i _ => ?_
+    refine Finset.sum_congr rfl fun i _ => ?_
 -- Porting note `← hμ, ← r_eq` and the final `← μ_eq` were not needed.
     rw [← hμ, ← r_eq, ← s_eq, ← mul_smul, μ_eq, add_smul, mul_smul, ← μ_eq]
   obtain ⟨j, k, j_ne_k, hjk⟩ := adm.exists_approx hε hb fun j i => μ j * s i
@@ -275,7 +270,7 @@ theorem exists_mem_finset_approx' [Algebra.IsAlgebraic R L] (a : S) {b : S} (hb 
 
 end Real
 
-theorem prod_finsetApprox_ne_zero : algebraMap R S (∏ m in finsetApprox bS adm, m) ≠ 0 := by
+theorem prod_finsetApprox_ne_zero : algebraMap R S (∏ m ∈ finsetApprox bS adm, m) ≠ 0 := by
   refine mt ((injective_iff_map_eq_zero _).mp bS.algebraMap_injective _) ?_
   simp only [Finset.prod_eq_zero_iff, not_exists]
   rintro x ⟨hx, rfl⟩
@@ -283,7 +278,7 @@ theorem prod_finsetApprox_ne_zero : algebraMap R S (∏ m in finsetApprox bS adm
 #align class_group.prod_finset_approx_ne_zero ClassGroup.prod_finsetApprox_ne_zero
 
 theorem ne_bot_of_prod_finsetApprox_mem (J : Ideal S)
-    (h : algebraMap _ _ (∏ m in finsetApprox bS adm, m) ∈ J) : J ≠ ⊥ :=
+    (h : algebraMap _ _ (∏ m ∈ finsetApprox bS adm, m) ∈ J) : J ≠ ⊥ :=
   (Submodule.ne_bot_iff _).mpr ⟨_, h, prod_finsetApprox_ne_zero _ _⟩
 #align class_group.ne_bot_of_prod_finset_approx_mem ClassGroup.ne_bot_of_prod_finsetApprox_mem
 
@@ -292,8 +287,8 @@ such that `M := Π m ∈ finsetApprox` is in `J`. -/
 theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R L] (I : (Ideal S)⁰) :
     ∃ J : (Ideal S)⁰,
       ClassGroup.mk0 I = ClassGroup.mk0 J ∧
-        algebraMap _ _ (∏ m in finsetApprox bS adm, m) ∈ (J : Ideal S) := by
-  set M := ∏ m in finsetApprox bS adm, m
+        algebraMap _ _ (∏ m ∈ finsetApprox bS adm, m) ∈ (J : Ideal S) := by
+  set M := ∏ m ∈ finsetApprox bS adm, m
   have hM : algebraMap R S M ≠ 0 := prod_finsetApprox_ne_zero bS adm
   obtain ⟨b, b_mem, b_ne_zero, b_min⟩ := exists_min abv I
   suffices Ideal.span {b} ∣ Ideal.span {algebraMap _ _ M} * I.1 by
@@ -325,10 +320,10 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R L] (I : (I
 #align class_group.exists_mk0_eq_mk0 ClassGroup.exists_mk0_eq_mk0
 
 /-- `ClassGroup.mkMMem` is a specialization of `ClassGroup.mk0` to (the finite set of)
-ideals that contain `M := ∏ m in finsetApprox L f abs, m`.
+ideals that contain `M := ∏ m ∈ finsetApprox L f abs, m`.
 By showing this function is surjective, we prove that the class group is finite. -/
 noncomputable def mkMMem [IsDedekindDomain S]
-    (J : { J : Ideal S // algebraMap _ _ (∏ m in finsetApprox bS adm, m) ∈ J }) : ClassGroup S :=
+    (J : { J : Ideal S // algebraMap _ _ (∏ m ∈ finsetApprox bS adm, m) ∈ J }) : ClassGroup S :=
   ClassGroup.mk0
     ⟨J.1, mem_nonZeroDivisors_iff_ne_zero.mpr (ne_bot_of_prod_finsetApprox_mem bS adm J.1 J.2)⟩
 set_option linter.uppercaseLean3 false in
@@ -355,7 +350,7 @@ noncomputable def fintypeOfAdmissibleOfAlgebraic [IsDedekindDomain S]
     [Algebra.IsAlgebraic R L] : Fintype (ClassGroup S) :=
   @Fintype.ofSurjective _ _ _
     (@Fintype.ofEquiv _
-      { J // J ∣ Ideal.span ({algebraMap R S (∏ m : R in finsetApprox bS adm, m)} : Set S) }
+      { J // J ∣ Ideal.span ({algebraMap R S (∏ m ∈ finsetApprox bS adm, m)} : Set S) }
       (UniqueFactorizationMonoid.fintypeSubtypeDvd _
         (by
           rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
@@ -381,7 +376,7 @@ noncomputable def fintypeOfAdmissibleOfFinite : Fintype (ClassGroup S) := by
 -- Porting note: `this` and `f` below where solved at the end rather than being defined at first.
   have : LinearIndependent R ((Algebra.traceForm K L).dualBasis
       (traceForm_nondegenerate K L) b) := by
-    refine' (Basis.linearIndependent _).restrict_scalars _
+    apply (Basis.linearIndependent _).restrict_scalars
     simp only [Algebra.smul_def, mul_one]
     apply IsFractionRing.injective
   obtain ⟨n, b⟩ :=

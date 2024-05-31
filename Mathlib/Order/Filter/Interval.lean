@@ -286,7 +286,7 @@ instance tendsto_Ioc_uIcc_uIcc {a b : α} : TendstoIxxClass Ioc (𝓟 [[a, b]]) 
 
 instance tendsto_uIcc_of_Icc {l : Filter α} [TendstoIxxClass Icc l l] :
     TendstoIxxClass uIcc l l := by
-  refine' ⟨fun s hs => mem_map.2 <| mem_prod_self_iff.2 _⟩
+  refine ⟨fun s hs => mem_map.2 <| mem_prod_self_iff.2 ?_⟩
   obtain ⟨t, htl, hts⟩ : ∃ t ∈ l, ∀ p ∈ (t : Set α) ×ˢ t, Icc (p : α × α).1 p.2 ∈ s :=
     mem_prod_self_iff.1 (mem_map.1 (tendsto_fst.Icc tendsto_snd hs))
   refine ⟨t, htl, fun p hp => ?_⟩

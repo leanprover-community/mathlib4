@@ -20,7 +20,7 @@ in `Data.FP.Basic`. We have not yet integrated these with the rest of the librar
 
 open Function Set
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 universe u
 
@@ -658,7 +658,7 @@ theorem length_sub : (s - t).length = s.length + t.length := by simp [sub_eq_add
 
 @[simp]
 theorem length_sum (f : ι → NonemptyInterval α) (s : Finset ι) :
-    (∑ i in s, f i).length = ∑ i in s, (f i).length :=
+    (∑ i ∈ s, f i).length = ∑ i ∈ s, (f i).length :=
   map_sum (⟨⟨length, length_zero⟩, length_add⟩ : NonemptyInterval α →+ α) _ _
 #align nonempty_interval.length_sum NonemptyInterval.length_sum
 
@@ -708,7 +708,7 @@ theorem length_sub_le : (s - t).length ≤ s.length + t.length := by
 #align interval.length_sub_le Interval.length_sub_le
 
 theorem length_sum_le (f : ι → Interval α) (s : Finset ι) :
-    (∑ i in s, f i).length ≤ ∑ i in s, (f i).length := by
+    (∑ i ∈ s, f i).length ≤ ∑ i ∈ s, (f i).length := by
   -- Porting note: Old proof was `:= Finset.le_sum_of_subadditive _ length_zero length_add_le _ _`
   apply Finset.le_sum_of_subadditive
   · exact length_zero

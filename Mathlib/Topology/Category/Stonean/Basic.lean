@@ -37,6 +37,9 @@ universe u
 open CategoryTheory
 open scoped Topology
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] ConcreteCategory.instFunLike
+
 /-- `Stonean` is the category of extremally disconnected compact Hausdorff spaces. -/
 structure Stonean where
   /-- The underlying compact Hausdorff space of a Stonean space. -/
@@ -86,6 +89,10 @@ instance : LargeCategory Stonean.{u} :=
 def toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
   inducedFunctor _
 
+/-- The forgetful functor `Stonean ⥤ CompHaus` is fully faithful. -/
+def fullyFaithfulToCompHaus : toCompHaus.FullyFaithful  :=
+  fullyFaithfulInducedFunctor _
+
 /-- Construct a term of `Stonean` from a type endowed with the structure of a
 compact, Hausdorff and extremally disconnected topological space.
 -/
@@ -94,11 +101,10 @@ def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
   ⟨⟨⟨X, inferInstance⟩⟩⟩
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is full. -/
-instance : toCompHaus.Full where
-  map_surjective f := ⟨f, rfl⟩
+instance : toCompHaus.Full := fullyFaithfulToCompHaus.full
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is faithful. -/
-instance : toCompHaus.Faithful := {}
+instance : toCompHaus.Faithful := fullyFaithfulToCompHaus.faithful
 
 /-- Stonean spaces are a concrete category. -/
 instance : ConcreteCategory Stonean where
@@ -147,7 +153,7 @@ example : toProfinite ⋙ profiniteToCompHaus = toCompHaus :=
 noncomputable
 def isoOfHomeo {X Y : Stonean} (f : X ≃ₜ Y) : X ≅ Y :=
   @asIso _ _ _ _ ⟨f, f.continuous⟩
-  (@isIso_of_reflects_iso _ _ _ _ _ _ _ toCompHaus (IsIso.of_iso (CompHaus.isoOfHomeo f)) _)
+  (@isIso_of_reflects_iso _ _ _ _ _ _ _ toCompHaus (CompHaus.isoOfHomeo f).isIso_hom _)
 
 /-- Construct a homeomorphism from an isomorphism. -/
 @[simps!]

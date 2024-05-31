@@ -57,7 +57,7 @@ universe u u' v
 
 variable {l : Type*} {m : Type u} {n : Type u'} {α : Type v}
 
-open Matrix BigOperators Equiv Equiv.Perm Finset
+open Matrix Equiv Equiv.Perm Finset
 
 /-! ### Matrices are `Invertible` iff their determinants are -/
 
@@ -784,8 +784,8 @@ section Det
 variable [Fintype m] [DecidableEq m] [CommRing α]
 
 /-- A variant of `Matrix.det_units_conj`. -/
-theorem det_conj {M : Matrix m m α} (h : IsUnit M) (N : Matrix m m α) : det (M * N * M⁻¹) = det N :=
-  by rw [← h.unit_spec, ← coe_units_inv, det_units_conj]
+theorem det_conj {M : Matrix m m α} (h : IsUnit M) (N : Matrix m m α) :
+    det (M * N * M⁻¹) = det N := by rw [← h.unit_spec, ← coe_units_inv, det_units_conj]
 #align matrix.det_conj Matrix.det_conj
 
 /-- A variant of `Matrix.det_units_conj'`. -/

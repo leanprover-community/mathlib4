@@ -1324,16 +1324,16 @@ of `α` provided that `f x y _ _ = f x' y' _ _` whenever `c x x'` and `c y y'`. 
 def liftOnUnits (u : Units c.Quotient) (f : ∀ x y : M, c (x * y) 1 → c (y * x) 1 → α)
     (Hf : ∀ x y hxy hyx x' y' hxy' hyx',
       c x x' → c y y' → f x y hxy hyx = f x' y' hxy' hyx') : α := by
-  refine'
+  refine
     Con.hrecOn₂ (cN := c) (φ := fun x y => x * y = 1 → y * x = 1 → α) (u : c.Quotient)
       (↑u⁻¹ : c.Quotient)
       (fun (x y : M) (hxy : (x * y : c.Quotient) = 1) (hyx : (y * x : c.Quotient) = 1) =>
         f x y (c.eq.1 hxy) (c.eq.1 hyx))
-      (fun x y x' y' hx hy => _) u.3 u.4
-  refine' Function.hfunext _ _
+      (fun x y x' y' hx hy => ?_) u.3 u.4
+  refine Function.hfunext ?_ ?_
   · rw [c.eq.2 hx, c.eq.2 hy]
   · rintro Hxy Hxy' -
-    refine' Function.hfunext _ _
+    refine Function.hfunext ?_ ?_
     · rw [c.eq.2 hx, c.eq.2 hy]
     · rintro Hyx Hyx' -
       exact heq_of_eq (Hf _ _ _ _ _ _ _ _ hx hy)

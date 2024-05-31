@@ -143,9 +143,9 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     intro x hx hc _
     exact absurd hx hc
   have : s'.card = (s ∪ s'.image fun z => z.1).card - s.card := by
-    simp [disj, card_image_of_injective _ Subtype.coe_injective]
+    simp [disj, card_image_of_injective _ Subtype.coe_injective, Nat.add_sub_cancel_left]
   rw [this, hus]
-  refine (tsub_le_tsub_right (ht _) _).trans ?_
+  refine (Nat.sub_le_sub_right (ht _) _).trans ?_
   rw [← card_sdiff]
   · refine (card_le_card ?_).trans le_rfl
     intro t
@@ -207,7 +207,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     rw [← h]
     apply f'_mem_biUnion x
   refine ⟨fun x => if h : x ∈ s then f' ⟨x, h⟩ else f'' ⟨x, h⟩, ?_, ?_⟩
-  · refine' hf'.dite _ hf'' (@fun x x' => im_disj x x' _ _)
+  · refine hf'.dite _ hf'' (@fun x x' => im_disj x x' _ _)
   · intro x
     simp only [of_eq_true]
     split_ifs with h
@@ -236,7 +236,7 @@ theorem hall_hard_inductive (ht : ∀ s : Finset ι, s.card ≤ (s.biUnion t).ca
       intro ι' _ _ hι' ht'
       exact ih _ (Nat.lt_succ_of_le hι') ht' _ rfl
     by_cases h : ∀ s : Finset ι, s.Nonempty → s ≠ univ → s.card < (s.biUnion t).card
-    · refine' hall_hard_inductive_step_A hn ht (@fun ι' => ih' ι') h
+    · refine hall_hard_inductive_step_A hn ht (@fun ι' => ih' ι') h
     · push_neg at h
       rcases h with ⟨s, sne, snu, sle⟩
       exact hall_hard_inductive_step_B hn ht (@fun ι' => ih' ι')
