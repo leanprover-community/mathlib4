@@ -196,8 +196,8 @@ namespace pdf
 
 variable {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E}
 
-protected theorem congr {X Y : Ω → E} (hXY : X =ᵐ[ℙ] Y) : pdf X ℙ μ = pdf Y ℙ μ :=
-  by rw [pdf_def, pdf_def, map_congr hXY]
+protected theorem congr {X Y : Ω → E} (hXY : X =ᵐ[ℙ] Y) : pdf X ℙ μ = pdf Y ℙ μ := by
+  rw [pdf_def, pdf_def, map_congr hXY]
 
 theorem lintegral_eq_measure_univ {X : Ω → E} [HasPDF X ℙ μ] :
     ∫⁻ x, pdf X ℙ μ x ∂μ = ℙ Set.univ := by

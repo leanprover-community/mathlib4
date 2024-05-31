@@ -610,8 +610,9 @@ theorem ContinuousOn.surjOn_Icc {s : Set α} [hs : OrdConnected s] {f : α → �
 /-- **Intermediate value theorem**: if `f` is continuous on an order-connected set `s` and `a`,
 `b` are two points of this set, then `f` sends `s` to a superset of `[f x, f y]`. -/
 theorem ContinuousOn.surjOn_uIcc {s : Set α} [hs : OrdConnected s] {f : α → δ}
-    (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) : SurjOn f s (uIcc (f a) (f b)) :=
-  by rcases le_total (f a) (f b) with hab | hab <;> simp [hf.surjOn_Icc, *]
+    (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
+    SurjOn f s (uIcc (f a) (f b)) := by
+  rcases le_total (f a) (f b) with hab | hab <;> simp [hf.surjOn_Icc, *]
 #align continuous_on.surj_on_uIcc ContinuousOn.surjOn_uIcc
 
 /-- A continuous function which tendsto `Filter.atTop` along `Filter.atTop` and to `atBot` along

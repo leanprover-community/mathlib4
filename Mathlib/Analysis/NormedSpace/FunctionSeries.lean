@@ -51,8 +51,9 @@ theorem tendstoUniformlyOn_tsum_nat {f : ℕ → β → F} {u : ℕ → ℝ} (hu
 /-- An infinite sum of functions with summable sup norm is the uniform limit of its partial sums.
 Version with general index set. -/
 theorem tendstoUniformly_tsum {f : α → β → F} (hu : Summable u) (hfu : ∀ n x, ‖f n x‖ ≤ u n) :
-    TendstoUniformly (fun t : Finset α => fun x => ∑ n ∈ t, f n x) (fun x => ∑' n, f n x) atTop :=
-  by rw [← tendstoUniformlyOn_univ]; exact tendstoUniformlyOn_tsum hu fun n x _ => hfu n x
+    TendstoUniformly (fun t : Finset α => fun x => ∑ n ∈ t, f n x)
+      (fun x => ∑' n, f n x) atTop := by
+  rw [← tendstoUniformlyOn_univ]; exact tendstoUniformlyOn_tsum hu fun n x _ => hfu n x
 #align tendsto_uniformly_tsum tendstoUniformly_tsum
 
 /-- An infinite sum of functions with summable sup norm is the uniform limit of its partial sums.

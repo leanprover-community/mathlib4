@@ -132,8 +132,8 @@ theorem EquitableOn.le_add_one (h : EquitableOn (s : Set α) f) (ha : a ∈ s) :
 
 theorem equitableOn_iff :
     EquitableOn (s : Set α) f ↔
-      ∀ a ∈ s, f a = (∑ i ∈ s, f i) / s.card ∨ f a = (∑ i ∈ s, f i) / s.card + 1 :=
-  by simp_rw [equitableOn_iff_le_le_add_one, Nat.le_and_le_add_one_iff]
+      ∀ a ∈ s, f a = (∑ i ∈ s, f i) / s.card ∨ f a = (∑ i ∈ s, f i) / s.card + 1 := by
+  simp_rw [equitableOn_iff_le_le_add_one, Nat.le_and_le_add_one_iff]
 #align finset.equitable_on_iff Finset.equitableOn_iff
 
 end Finset

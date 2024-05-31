@@ -791,8 +791,8 @@ theorem isUnit_iff_ker_eq_bot [FiniteDimensional K V] (f : V →ₗ[K] V) :
 #align linear_map.is_unit_iff_ker_eq_bot LinearMap.isUnit_iff_ker_eq_bot
 
 theorem isUnit_iff_range_eq_top [FiniteDimensional K V] (f : V →ₗ[K] V) :
-    IsUnit f ↔ (LinearMap.range f) = ⊤ :=
-  by rw [isUnit_iff_ker_eq_bot, ker_eq_bot_iff_range_eq_top]
+    IsUnit f ↔ (LinearMap.range f) = ⊤ := by
+  rw [isUnit_iff_ker_eq_bot, ker_eq_bot_iff_range_eq_top]
 #align linear_map.is_unit_iff_range_eq_top LinearMap.isUnit_iff_range_eq_top
 
 end LinearMap

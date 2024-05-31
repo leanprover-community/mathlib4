@@ -1095,6 +1095,9 @@ theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
   rfl
 #align ordinal.nat_cast_succ Ordinal.natCast_succ
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_succ := natCast_succ
+
 instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
   default := ⟨0, by simp⟩
   uniq a := Subtype.ext <| lt_one_iff_zero.1 a.2
@@ -1634,8 +1637,8 @@ theorem card_eq_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
   card_eq_nat
 
 @[simp]
-theorem type_fintype (r : α → α → Prop) [IsWellOrder α r] [Fintype α] : type r = Fintype.card α :=
-  by rw [← card_eq_nat, card_type, mk_fintype]
+theorem type_fintype (r : α → α → Prop) [IsWellOrder α r] [Fintype α] :
+    type r = Fintype.card α := by rw [← card_eq_nat, card_type, mk_fintype]
 #align ordinal.type_fintype Ordinal.type_fintype
 
 theorem type_fin (n : ℕ) : @type (Fin n) (· < ·) _ = n := by simp

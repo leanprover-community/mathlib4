@@ -441,7 +441,7 @@ theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
 
 -- Porting note: was a @[simp]
 theorem finRotate_apply_zero : finRotate n.succ 0 = 1 := by
-  rw [finRotate_succ_apply, zero_add]
+  rw [finRotate_succ_apply, Fin.zero_add]
 #align fin_rotate_apply_zero finRotate_apply_zero
 
 theorem coe_finRotate_of_ne_last {i : Fin n.succ} (h : i ≠ Fin.last n) :

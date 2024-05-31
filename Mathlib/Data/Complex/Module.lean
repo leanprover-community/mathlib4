@@ -212,8 +212,8 @@ example {ι : Type*} [Fintype ι] :
   rfl
 
 example {A : Type*} [Ring A] [inst : Algebra ℂ A] :
-    (inst.complexToReal).toModule = (inst.toModule).complexToReal :=
-  by with_reducible_and_instances rfl
+    (inst.complexToReal).toModule = (inst.toModule).complexToReal := by
+  with_reducible_and_instances rfl
 
 @[simp, norm_cast]
 theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (y : E) :

@@ -3,7 +3,6 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison
 -/
-import Mathlib.Algebra.Group.Fin
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.List.InsertNth
 import Mathlib.Logic.Relation
@@ -1354,16 +1353,16 @@ theorem moveLeft_neg_symm {x : PGame} (i) :
     x.moveLeft (toRightMovesNeg.symm i) = -(-x).moveRight i := by simp
 #align pgame.move_left_neg_symm SetTheory.PGame.moveLeft_neg_symm
 
-theorem moveLeft_neg_symm' {x : PGame} (i) : x.moveLeft i = -(-x).moveRight (toRightMovesNeg i) :=
-  by simp
+theorem moveLeft_neg_symm' {x : PGame} (i) :
+    x.moveLeft i = -(-x).moveRight (toRightMovesNeg i) := by simp
 #align pgame.move_left_neg_symm' SetTheory.PGame.moveLeft_neg_symm'
 
 theorem moveRight_neg_symm {x : PGame} (i) :
     x.moveRight (toLeftMovesNeg.symm i) = -(-x).moveLeft i := by simp
 #align pgame.move_right_neg_symm SetTheory.PGame.moveRight_neg_symm
 
-theorem moveRight_neg_symm' {x : PGame} (i) : x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) :=
-  by simp
+theorem moveRight_neg_symm' {x : PGame} (i) :
+    x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) := by simp
 #align pgame.move_right_neg_symm' SetTheory.PGame.moveRight_neg_symm'
 
 /-- If `x` has the same moves as `y`, then `-x` has the same moves as `-y`. -/

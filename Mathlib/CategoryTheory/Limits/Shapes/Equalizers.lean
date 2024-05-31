@@ -874,7 +874,7 @@ def isLimitIdFork (h : f = g) : IsLimit (idFork h) :=
 /-- Every equalizer of `(f, g)`, where `f = g`, is an isomorphism. -/
 theorem isIso_limit_cone_parallelPair_of_eq (h₀ : f = g) {c : Fork f g} (h : IsLimit c) :
     IsIso c.ι :=
-  IsIso.of_iso <| IsLimit.conePointUniqueUpToIso h <| isLimitIdFork h₀
+  Iso.isIso_hom <| IsLimit.conePointUniqueUpToIso h <| isLimitIdFork h₀
 #align category_theory.limits.is_iso_limit_cone_parallel_pair_of_eq CategoryTheory.Limits.isIso_limit_cone_parallelPair_of_eq
 
 /-- The equalizer of `(f, g)`, where `f = g`, is an isomorphism. -/
@@ -1002,8 +1002,8 @@ theorem coequalizer.π_colimMap_desc {X' Y' Z : C} (f' g' : X' ⟶ Y') [HasCoequ
     (p : X ⟶ X') (q : Y ⟶ Y') (wf : f ≫ q = p ≫ f') (wg : g ≫ q = p ≫ g') (h : Y' ⟶ Z)
     (wh : f' ≫ h = g' ≫ h) :
     coequalizer.π f g ≫ colimMap (parallelPairHom f g f' g' p q wf wg) ≫ coequalizer.desc h wh =
-      q ≫ h :=
-  by rw [ι_colimMap_assoc, parallelPairHom_app_one, coequalizer.π_desc]
+      q ≫ h := by
+  rw [ι_colimMap_assoc, parallelPairHom_app_one, coequalizer.π_desc]
 #align category_theory.limits.coequalizer.π_colim_map_desc CategoryTheory.Limits.coequalizer.π_colimMap_desc
 
 /-- Any morphism `k : Y ⟶ W` satisfying `f ≫ k = g ≫ k` induces a morphism
@@ -1063,7 +1063,7 @@ def isColimitIdCofork (h : f = g) : IsColimit (idCofork h) :=
 /-- Every coequalizer of `(f, g)`, where `f = g`, is an isomorphism. -/
 theorem isIso_colimit_cocone_parallelPair_of_eq (h₀ : f = g) {c : Cofork f g} (h : IsColimit c) :
     IsIso c.π :=
-  IsIso.of_iso <| IsColimit.coconePointUniqueUpToIso (isColimitIdCofork h₀) h
+  Iso.isIso_hom <| IsColimit.coconePointUniqueUpToIso (isColimitIdCofork h₀) h
 #align category_theory.limits.is_iso_colimit_cocone_parallel_pair_of_eq CategoryTheory.Limits.isIso_colimit_cocone_parallelPair_of_eq
 
 /-- The coequalizer of `(f, g)`, where `f = g`, is an isomorphism. -/
