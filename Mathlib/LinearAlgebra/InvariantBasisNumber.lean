@@ -41,6 +41,9 @@ It is also useful to consider the following stronger conditions:
 - `strongRankCondition_of_orzechProperty` : the Orzech property implies the strong rank condition
   (for non trivial rings).
 
+- `IsNoetherianRing.strongRankCondition` : every nontrivial left-noetherian ring satisfies the
+  strong rank condition (and so in particular every division ring or field).
+
 - `rankCondition_of_strongRankCondition` : the strong rank condition implies the rank condition.
 
 - `invariantBasisNumber_of_rankCondition` : the rank condition implies the
