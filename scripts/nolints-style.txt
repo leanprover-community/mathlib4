@@ -6,9 +6,7 @@
 -- In this case, it's a side-effect of making the linter stricter than its Python ancestor.
 
 -- This file was recognised as import-only by the old heuristic, but not by the new, simpler one.
-Mathlib/Tactic/Linter.lean : line 2 : ERR_COP : Malformed or missing copyright header: Copyright line is malformed
-Mathlib/Tactic/Linter.lean : line 3 : ERR_COP : Malformed or missing copyright header: Second line should be "Released under Apache 2.0 license as described in the file LICENSE."
-Mathlib/Tactic/Linter.lean : line 4 : ERR_COP : Malformed or missing copyright header: The third line should describe the file's main authors
+-- removed errors for testing purposes
 
 -- The first line of the copyright is split in two (because of many authors, it is longer than
 -- 100 characters). Suggestion: tweak the line length linter and put this on one line?

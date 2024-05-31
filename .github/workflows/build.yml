@@ -64,11 +64,6 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      - name: print lean and lake versions
-        run: |
-          lean --version
-          lake --version
-
       - name: run text-based style linters in Lean
         run: |
           lake exe lint_style
