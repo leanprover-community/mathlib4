@@ -69,7 +69,7 @@ lemma neg_mem {x} (hx : x ∈ I) : -x ∈ I := by
   simpa using I.neg hx
 
 lemma sub_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x - y ∈ I := by
-  convert I.add_mem hx (I.neg_mem hy) using 1; abel
+  simpa using I.sub hx hy
 
 lemma mul_mem_left (x y) (hy : y ∈ I) : x * y ∈ I := by
   simpa using I.mul (I.refl x) hy
@@ -81,30 +81,30 @@ instance : Add I where add x y := ⟨x.1 + y.1, I.add_mem x.2 y.2⟩
 
 instance : Zero I where zero := ⟨0, I.zero_mem⟩
 
+theorem nsmul (n : ℕ) {x y : R} (hx : I x y) : I (n • x) (n • y) := I.toAddCon.nsmul n hx
+
 instance : SMul ℕ I where
-  smul n x :=
-  ⟨n • x.1, n.rec (by simpa using I.zero_mem) fun n hn ↦ by
-    simpa only [Nat.succ_eq_add_one, add_smul, one_smul] using I.add_mem hn x.2⟩
+  smul n x := ⟨n • x.1, by simpa using I.nsmul _ x.2⟩
 
 instance : Neg I where neg x := ⟨-x.1, I.neg_mem x.2⟩
 
 instance : Sub I where sub x y := ⟨x.1 - y.1, I.sub_mem x.2 y.2⟩
 
+theorem zsmul (z : ℤ) {x y : R} (hx : I x y) : I (z • x) (z • y) := I.toAddCon.zsmul z hx
+
 instance : SMul ℤ I where
-  smul n x := ⟨n • x.1, n.rec (fun a ↦ a.rec (by simpa using I.zero_mem)
-    (fun a ha ↦ by
-      simp only [Nat.succ_eq_add_one, Int.ofNat_eq_coe, Nat.cast_add, Nat.cast_one,
-        Int.cast_add, Int.cast_natCast, Int.cast_one, add_smul, one_smul]
-      exact I.add_mem ha x.2))
-    (fun a ↦ a.rec (by simpa using I.neg_mem x.2)
-    (fun a ha ↦ by
-      simp only [negSucc_zsmul, Nat.succ_eq_add_one] at ha ⊢
-      rw [add_smul, one_smul, neg_add]
-      exact I.add_mem ha (I.neg_mem x.2)))⟩
+  smul n x := ⟨n • x.1, by simpa using I.zsmul n x.2⟩
 
 instance : AddCommGroup I :=
-  Function.Injective.addCommGroup (fun (x : I) ↦ x.1) (fun _ _ h ↦ by ext; exact h)
+  Function.Injective.addCommGroup _ Subtype.coe_injective
     rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+/-- The coercion into the ring as a `AddMonoidHom` -/
+@[simp]
+def coeAddMonoidHom : I →+ R where
+  toFun := (↑)
+  map_zero' := rfl
+  map_add' _ _ := rfl
 
 end NonUnitalNonAssocRing
 
@@ -112,37 +112,18 @@ section ring
 
 variable {R : Type*} [Ring R] (I : RingCon R)
 
-instance : Module R I where
-  smul r x := ⟨r * x.1, I.mul_mem_left _ _ x.2⟩
-  one_smul x := by ext; show 1 * x.1 = x.1; simp
-  mul_smul x y z := by
-    ext; show (x * y) * z.1 = x * (y * z.1); simp [mul_assoc]
-  smul_zero x := by
-    ext; show x * 0 = 0; simp
-  smul_add x y z := by
-    ext; show x • (y.1 + z.1) = x • y.1 + x • z.1; simp [mul_add]
-  add_smul x y z := by
-    ext; show (x + y) • z.1 = x • z.1 + y • z.1; simp [add_mul]
-  zero_smul x := by
-    ext; show 0 * x.1 = 0; simp
+instance : SMul R I where smul r x := ⟨r • x.1, I.mul_mem_left _ _ x.2⟩
 
-instance : Module Rᵐᵒᵖ I where
-  smul r x := ⟨x.1 * r.unop, I.mul_mem_right _ _ x.2⟩
-  one_smul x := by ext; show x.1 * 1 = x.1; simp
-  mul_smul x y z := by
-    ext; show z.1 * (y.unop * x.unop) = (z.1 * y.unop) * x.unop; simp only [mul_assoc]
-  smul_zero x := by
-    ext; show 0 * _ = 0; simp only [zero_mul]
-  smul_add x y z := by
-    ext; show (y.1 + z.1) * _ = (y * _) + (z * _); simp only [right_distrib]
-  add_smul x y z := by
-    ext; show _ * (_ + _) = _ * _ + _ * _; simp only [left_distrib]
-  zero_smul x := by
-    ext; show _ * 0 = 0; simp only [mul_zero]
+instance : SMul Rᵐᵒᵖ I where smul r x := ⟨r • x.1, I.mul_mem_right _ _ x.2⟩
+
+instance : Module R I :=
+  Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ => rfl
+
+instance : Module Rᵐᵒᵖ I :=
+  Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ => rfl
 
 instance : SMulCommClass R Rᵐᵒᵖ I where
-  smul_comm r s x := by
-    ext; show r * (x.1 * s.unop) = (r * x.1) * s.unop; simp only [mul_assoc]
+  smul_comm r s x := Subtype.ext <| smul_comm r s x.1
 
 /--
 For any `RingCon R`, when we view it as an ideal, `subtype` is the injective linear map.
