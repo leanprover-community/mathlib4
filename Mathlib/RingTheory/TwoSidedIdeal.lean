@@ -134,6 +134,10 @@ instance : Module Rᵐᵒᵖ I where
   zero_smul x := by
     ext; show _ * 0 = 0; simp only [mul_zero]
 
+instance : SMulCommClass R Rᵐᵒᵖ I where
+  smul_comm r s x := by
+    ext; show r * (x.1 * s.unop) = (r * x.1) * s.unop; simp only [mul_assoc]
+
 end ring
 
 end RingCon
