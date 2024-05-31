@@ -211,13 +211,13 @@ def directionOfNonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) : Su
   add_mem' := by
     rintro _ _ ⟨p1, hp1, p2, hp2, rfl⟩ ⟨p3, hp3, p4, hp4, rfl⟩
     rw [← vadd_vsub_assoc]
-    refine' vsub_mem_vsub _ hp4
+    refine vsub_mem_vsub ?_ hp4
     convert s.smul_vsub_vadd_mem 1 hp1 hp2 hp3
     rw [one_smul]
   smul_mem' := by
     rintro c _ ⟨p1, hp1, p2, hp2, rfl⟩
     rw [← vadd_vsub (c • (p1 -ᵥ p2)) p2]
-    refine' vsub_mem_vsub _ hp2
+    refine vsub_mem_vsub ?_ hp2
     exact s.smul_vsub_vadd_mem c hp1 hp2 hp2
 #align affine_subspace.direction_of_nonempty AffineSubspace.directionOfNonempty
 
@@ -596,7 +596,7 @@ instance : CompleteLattice (AffineSubspace k P) :=
     inf_le_right := fun _ _ => Set.inter_subset_right _ _
     le_sInf := fun S s1 hs1 => by
       -- Porting note: surely there is an easier way?
-      refine' Set.subset_sInter (t := (s1 : Set P)) _
+      refine Set.subset_sInter (t := (s1 : Set P)) ?_
       rintro t ⟨s, _hs, rfl⟩
       exact Set.subset_iInter (hs1 s)
     top :=
@@ -650,8 +650,9 @@ theorem exists_of_lt {s1 s2 : AffineSubspace k P} (h : s1 < s2) : ∃ p ∈ s2, 
 
 /-- A subspace is less than another if and only if it is less than or equal to the second subspace
 and there is a point only in the second. -/
-theorem lt_iff_le_and_exists (s1 s2 : AffineSubspace k P) : s1 < s2 ↔ s1 ≤ s2 ∧ ∃ p ∈ s2, p ∉ s1 :=
-  by rw [lt_iff_le_not_le, not_le_iff_exists]
+theorem lt_iff_le_and_exists (s1 s2 : AffineSubspace k P) :
+    s1 < s2 ↔ s1 ≤ s2 ∧ ∃ p ∈ s2, p ∉ s1 := by
+  rw [lt_iff_le_not_le, not_le_iff_exists]
 #align affine_subspace.lt_iff_le_and_exists AffineSubspace.lt_iff_le_and_exists
 
 /-- If an affine subspace is nonempty and contained in another with the same direction, they are
@@ -1586,8 +1587,9 @@ theorem map_map (s : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) (g : P₂ 
 #align affine_subspace.map_map AffineSubspace.map_map
 
 @[simp]
-theorem map_direction (s : AffineSubspace k P₁) : (s.map f).direction = s.direction.map f.linear :=
-  by rw [direction_eq_vectorSpan, direction_eq_vectorSpan, coe_map,
+theorem map_direction (s : AffineSubspace k P₁) :
+    (s.map f).direction = s.direction.map f.linear := by
+  rw [direction_eq_vectorSpan, direction_eq_vectorSpan, coe_map,
     AffineMap.vectorSpan_image_eq_submodule_map]
   -- Porting note: again, Lean unfolds too aggressively with `simp`
 #align affine_subspace.map_direction AffineSubspace.map_direction

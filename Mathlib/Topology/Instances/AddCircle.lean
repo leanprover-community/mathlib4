@@ -492,7 +492,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
   Equiv.symm <|
     Equiv.ofBijective (fun m => ⟨↑((m : 𝕜) / n * p), addOrderOf_div_of_gcd_eq_one hn m.prop.2⟩)
       (by
-        refine' ⟨fun m₁ m₂ h => Subtype.ext _, fun u => _⟩
+        refine ⟨fun m₁ m₂ h => Subtype.ext ?_, fun u => ?_⟩
         · simp_rw [Subtype.ext_iff] at h
           rw [← sub_eq_zero, ← coe_sub, ← sub_mul, ← sub_div, ← Int.cast_natCast m₁,
             ← Int.cast_natCast m₂, ← Int.cast_sub, coe_eq_zero_iff] at h
@@ -503,7 +503,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
           swap
           · exact Nat.cast_ne_zero.2 hn.ne'
           rw [← @Nat.cast_inj ℤ, ← sub_eq_zero]
-          refine' Int.eq_zero_of_abs_lt_dvd ⟨_, hm.symm⟩ (abs_sub_lt_iff.2 ⟨_, _⟩) <;>
+          refine Int.eq_zero_of_abs_lt_dvd ⟨_, hm.symm⟩ (abs_sub_lt_iff.2 ⟨?_, ?_⟩) <;>
             apply (Int.sub_le_self _ <| Nat.cast_nonneg _).trans_lt (Nat.cast_lt.2 _)
           exacts [m₁.2.1, m₂.2.1]
         obtain ⟨m, hmn, hg, he⟩ := (addOrderOf_eq_pos_iff hn).mp u.2

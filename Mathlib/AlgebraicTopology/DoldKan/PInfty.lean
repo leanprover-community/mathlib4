@@ -194,8 +194,8 @@ variable {C}
 theorem map_PInfty_f {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (n : ℕ) :
     (PInfty : K[((whiskering C D).obj G).obj X] ⟶ _).f n =
-      G.map ((PInfty : AlternatingFaceMapComplex.obj X ⟶ _).f n) :=
-  by simp only [PInfty_f, map_P]
+      G.map ((PInfty : AlternatingFaceMapComplex.obj X ⟶ _).f n) := by
+  simp only [PInfty_f, map_P]
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.map_P_infty_f AlgebraicTopology.DoldKan.map_PInfty_f
 

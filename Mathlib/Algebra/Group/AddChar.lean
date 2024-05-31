@@ -237,6 +237,14 @@ instance instCommGroup : CommGroup (AddChar A M) :=
 
 end fromAddCommGroup
 
+section fromAddGrouptoCommMonoid
+
+/-- The values of an additive character on an additive group are units. -/
+lemma val_isUnit {A M} [AddGroup A] [Monoid M] (φ : AddChar A M) (a : A) : IsUnit (φ a) :=
+  IsUnit.map φ.toMonoidHom <| Group.isUnit (Multiplicative.ofAdd a)
+
+end fromAddGrouptoCommMonoid
+
 section fromAddGrouptoDivisionMonoid
 
 variable {A M : Type*} [AddGroup A] [DivisionMonoid M]

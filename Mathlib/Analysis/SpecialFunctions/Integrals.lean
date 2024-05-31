@@ -676,8 +676,8 @@ theorem integral_sin_pow :
 #align integral_sin_pow integral_sin_pow
 
 @[simp]
-theorem integral_sin_sq : ∫ x in a..b, sin x ^ 2 = (sin a * cos a - sin b * cos b + b - a) / 2 :=
-  by field_simp [integral_sin_pow, add_sub_assoc]
+theorem integral_sin_sq : ∫ x in a..b, sin x ^ 2 = (sin a * cos a - sin b * cos b + b - a) / 2 := by
+  field_simp [integral_sin_pow, add_sub_assoc]
 #align integral_sin_sq integral_sin_sq
 
 theorem integral_sin_pow_odd :
@@ -699,7 +699,7 @@ theorem integral_sin_pow_even :
 theorem integral_sin_pow_pos : 0 < ∫ x in (0)..π, sin x ^ n := by
   rcases even_or_odd' n with ⟨k, rfl | rfl⟩ <;>
   simp only [integral_sin_pow_even, integral_sin_pow_odd] <;>
-  refine' mul_pos (by norm_num [pi_pos]) (prod_pos fun n _ => div_pos _ _) <;>
+  refine mul_pos (by norm_num [pi_pos]) (prod_pos fun n _ => div_pos ?_ ?_) <;>
   norm_cast <;>
   omega
 #align integral_sin_pow_pos integral_sin_pow_pos
@@ -753,8 +753,8 @@ theorem integral_cos_pow :
 #align integral_cos_pow integral_cos_pow
 
 @[simp]
-theorem integral_cos_sq : ∫ x in a..b, cos x ^ 2 = (cos b * sin b - cos a * sin a + b - a) / 2 :=
-  by field_simp [integral_cos_pow, add_sub_assoc]
+theorem integral_cos_sq : ∫ x in a..b, cos x ^ 2 = (cos b * sin b - cos a * sin a + b - a) / 2 := by
+  field_simp [integral_cos_pow, add_sub_assoc]
 #align integral_cos_sq integral_cos_sq
 
 /-! ### Integral of `sin x ^ m * cos x ^ n` -/
@@ -837,8 +837,8 @@ theorem integral_sin_pow_three :
 /-- Simplification of the integral of `sin x ^ m * cos x ^ n`, case `m` and `n` are both even. -/
 theorem integral_sin_pow_even_mul_cos_pow_even (m n : ℕ) :
     (∫ x in a..b, sin x ^ (2 * m) * cos x ^ (2 * n)) =
-      ∫ x in a..b, ((1 - cos (2 * x)) / 2) ^ m * ((1 + cos (2 * x)) / 2) ^ n :=
-  by field_simp [pow_mul, sin_sq, cos_sq, ← sub_sub, (by ring : (2 : ℝ) - 1 = 1)]
+      ∫ x in a..b, ((1 - cos (2 * x)) / 2) ^ m * ((1 + cos (2 * x)) / 2) ^ n := by
+  field_simp [pow_mul, sin_sq, cos_sq, ← sub_sub, (by ring : (2 : ℝ) - 1 = 1)]
 #align integral_sin_pow_even_mul_cos_pow_even integral_sin_pow_even_mul_cos_pow_even
 
 @[simp]

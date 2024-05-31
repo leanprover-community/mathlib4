@@ -592,7 +592,7 @@ alias set_integral_restrict :=
 
 instance IsFiniteKernel.restrict (κ : kernel α β) [IsFiniteKernel κ] (hs : MeasurableSet s) :
     IsFiniteKernel (kernel.restrict κ hs) := by
-  refine' ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => _⟩⟩
+  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
   rw [restrict_apply' κ hs a MeasurableSet.univ]
   exact measure_le_bound κ a _
 #align probability_theory.kernel.is_finite_kernel.restrict ProbabilityTheory.kernel.IsFiniteKernel.restrict
@@ -649,7 +649,7 @@ theorem IsMarkovKernel.comapRight (κ : kernel α β) (hf : MeasurableEmbedding 
 
 instance IsFiniteKernel.comapRight (κ : kernel α β) [IsFiniteKernel κ]
     (hf : MeasurableEmbedding f) : IsFiniteKernel (comapRight κ hf) := by
-  refine' ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => _⟩⟩
+  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
   rw [comapRight_apply' κ hf a .univ]
   exact measure_le_bound κ a _
 #align probability_theory.kernel.is_finite_kernel.comap_right ProbabilityTheory.kernel.IsFiniteKernel.comapRight
@@ -701,7 +701,7 @@ instance IsMarkovKernel.piecewise [IsMarkovKernel κ] [IsMarkovKernel η] :
 
 instance IsFiniteKernel.piecewise [IsFiniteKernel κ] [IsFiniteKernel η] :
     IsFiniteKernel (piecewise hs κ η) := by
-  refine' ⟨⟨max (IsFiniteKernel.bound κ) (IsFiniteKernel.bound η), _, fun a => _⟩⟩
+  refine ⟨⟨max (IsFiniteKernel.bound κ) (IsFiniteKernel.bound η), ?_, fun a => ?_⟩⟩
   · exact max_lt (IsFiniteKernel.bound_lt_top κ) (IsFiniteKernel.bound_lt_top η)
   rw [piecewise_apply']
   exact (ite_le_sup _ _ _).trans (sup_le_sup (measure_le_bound _ _ _) (measure_le_bound _ _ _))
@@ -722,8 +722,8 @@ theorem lintegral_piecewise (a : α) (g : β → ℝ≥0∞) :
 
 theorem set_lintegral_piecewise (a : α) (g : β → ℝ≥0∞) (t : Set β) :
     ∫⁻ b in t, g b ∂piecewise hs κ η a =
-      if a ∈ s then ∫⁻ b in t, g b ∂κ a else ∫⁻ b in t, g b ∂η a :=
-  by simp_rw [piecewise_apply]; split_ifs <;> rfl
+      if a ∈ s then ∫⁻ b in t, g b ∂κ a else ∫⁻ b in t, g b ∂η a := by
+  simp_rw [piecewise_apply]; split_ifs <;> rfl
 #align probability_theory.kernel.set_lintegral_piecewise ProbabilityTheory.kernel.set_lintegral_piecewise
 
 theorem integral_piecewise {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -735,8 +735,8 @@ theorem integral_piecewise {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
 theorem setIntegral_piecewise {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (a : α) (g : β → E) (t : Set β) :
     ∫ b in t, g b ∂piecewise hs κ η a =
-      if a ∈ s then ∫ b in t, g b ∂κ a else ∫ b in t, g b ∂η a :=
-  by simp_rw [piecewise_apply]; split_ifs <;> rfl
+      if a ∈ s then ∫ b in t, g b ∂κ a else ∫ b in t, g b ∂η a := by
+  simp_rw [piecewise_apply]; split_ifs <;> rfl
 #align probability_theory.kernel.set_integral_piecewise ProbabilityTheory.kernel.setIntegral_piecewise
 
 @[deprecated]

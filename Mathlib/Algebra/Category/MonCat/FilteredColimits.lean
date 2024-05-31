@@ -167,7 +167,7 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
 @[to_additive "Addition in the colimit. See also `colimitAddAux`."]
 noncomputable instance colimitMul : Mul (M.{v, u} F) :=
 { mul := fun x y => by
-    refine' Quot.lift₂ (colimitMulAux F) _ _ x y
+    refine Quot.lift₂ (colimitMulAux F) ?_ ?_ x y
     · intro x y y' h
       apply colimitMulAux_eq_of_rel_right
       apply Types.FilteredColimit.rel_of_quot_rel

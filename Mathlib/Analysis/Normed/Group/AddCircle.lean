@@ -244,6 +244,9 @@ theorem norm_div_natCast {m n : ℕ} :
   rw [norm_eq' p hp.out, this, abs_sub_round_div_natCast_eq]
 #align add_circle.norm_div_nat_cast AddCircle.norm_div_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias norm_div_nat_cast := norm_div_natCast
+
 theorem exists_norm_eq_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrder u) :
     ∃ k : ℕ, ‖u‖ = p * (k / addOrderOf u) := by
   let n := addOrderOf u

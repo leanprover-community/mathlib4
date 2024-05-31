@@ -48,6 +48,8 @@ noncomputable section
 
 open Complex Filter Topology Asymptotics Real Set Classical MeasureTheory
 
+namespace HurwitzZeta
+
 section kernel_defs
 /-!
 ## Definitions and elementary properties of kernels
@@ -801,3 +803,5 @@ lemma cosZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1
     hurwitzZetaEven_def_of_ne_or_ne (Or.inr (by simpa using hs 1))]
   generalize Gammaℂ s * cos (π * s / 2) = A -- speeds up ring_nf call
   ring_nf
+
+end HurwitzZeta

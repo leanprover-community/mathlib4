@@ -322,8 +322,8 @@ theorem map_smul'' (f : M →ₗ[R] M') : (I • N).map f = I • N.map f :=
 open Pointwise in
 @[simp]
 theorem map_pointwise_smul (r : R) (N : Submodule R M) (f : M →ₗ[R] M') :
-    (r • N).map f = r • N.map f :=
-  by simp_rw [← ideal_span_singleton_smul, map_smul'']
+    (r • N).map f = r • N.map f := by
+  simp_rw [← ideal_span_singleton_smul, map_smul'']
 
 variable {I}
 
@@ -364,8 +364,9 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type*} (f : ι → M) (x : M) :
 #align submodule.mem_ideal_smul_span_iff_exists_sum Submodule.mem_ideal_smul_span_iff_exists_sum
 
 theorem mem_ideal_smul_span_iff_exists_sum' {ι : Type*} (s : Set ι) (f : ι → M) (x : M) :
-    x ∈ I • span R (f '' s) ↔ ∃ (a : s →₀ R) (_ : ∀ i, a i ∈ I), (a.sum fun i c => c • f i) = x :=
-  by rw [← Submodule.mem_ideal_smul_span_iff_exists_sum, ← Set.image_eq_range]
+    x ∈ I • span R (f '' s) ↔
+    ∃ (a : s →₀ R) (_ : ∀ i, a i ∈ I), (a.sum fun i c => c • f i) = x := by
+  rw [← Submodule.mem_ideal_smul_span_iff_exists_sum, ← Set.image_eq_range]
 #align submodule.mem_ideal_smul_span_iff_exists_sum' Submodule.mem_ideal_smul_span_iff_exists_sum'
 
 theorem mem_smul_top_iff (N : Submodule R M) (x : N) :
@@ -587,8 +588,8 @@ theorem eq_span_singleton_mul {x : R} (I J : Ideal R) :
 
 theorem span_singleton_mul_eq_span_singleton_mul {x y : R} (I J : Ideal R) :
     span {x} * I = span {y} * J ↔
-      (∀ zI ∈ I, ∃ zJ ∈ J, x * zI = y * zJ) ∧ ∀ zJ ∈ J, ∃ zI ∈ I, x * zI = y * zJ :=
-  by simp only [le_antisymm_iff, span_singleton_mul_le_span_singleton_mul, eq_comm]
+      (∀ zI ∈ I, ∃ zJ ∈ J, x * zI = y * zJ) ∧ ∀ zJ ∈ J, ∃ zI ∈ I, x * zI = y * zJ := by
+  simp only [le_antisymm_iff, span_singleton_mul_le_span_singleton_mul, eq_comm]
 #align ideal.span_singleton_mul_eq_span_singleton_mul Ideal.span_singleton_mul_eq_span_singleton_mul
 
 theorem prod_span {ι : Type*} (s : Finset ι) (I : ι → Set R) :
@@ -1051,7 +1052,7 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
                 ⟨n + k, by
                   rw [pow_add, ← hpqrn, ← hcxq, ← hfgrk, ← hdyg, add_mul, mul_add (c * x),
                       mul_assoc c x (d * y), mul_left_comm x, ← mul_assoc];
-                    refine'
+                    refine
                       m.add_mem (m.mul_mem_right _ hpm)
                         (m.add_mem (m.mul_mem_left _ hfm) (m.mul_mem_left _ hxym))⟩⟩
     hrm <|

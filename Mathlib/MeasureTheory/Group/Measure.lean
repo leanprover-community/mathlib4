@@ -291,8 +291,8 @@ section DivInvMonoid
 variable [DivInvMonoid G]
 
 @[to_additive]
-theorem map_div_right_eq_self (μ : Measure G) [IsMulRightInvariant μ] (g : G) : map (· / g) μ = μ :=
-  by simp_rw [div_eq_mul_inv, map_mul_right_eq_self μ g⁻¹]
+theorem map_div_right_eq_self (μ : Measure G) [IsMulRightInvariant μ] (g : G) :
+    map (· / g) μ = μ := by simp_rw [div_eq_mul_inv, map_mul_right_eq_self μ g⁻¹]
 #align measure_theory.map_div_right_eq_self MeasureTheory.map_div_right_eq_self
 #align measure_theory.map_sub_right_eq_self MeasureTheory.map_sub_right_eq_self
 

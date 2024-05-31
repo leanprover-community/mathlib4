@@ -625,8 +625,8 @@ theorem measure_spanningSets_lt_top (μ : Measure α) [SigmaFinite μ] (i : ℕ)
   measure_biUnion_lt_top (finite_le_nat i) fun j _ => (μ.toFiniteSpanningSetsIn.finite j).ne
 #align measure_theory.measure_spanning_sets_lt_top MeasureTheory.measure_spanningSets_lt_top
 
-theorem iUnion_spanningSets (μ : Measure α) [SigmaFinite μ] : ⋃ i : ℕ, spanningSets μ i = univ :=
-  by simp_rw [spanningSets, iUnion_accumulate, μ.toFiniteSpanningSetsIn.spanning]
+theorem iUnion_spanningSets (μ : Measure α) [SigmaFinite μ] : ⋃ i : ℕ, spanningSets μ i = univ := by
+  simp_rw [spanningSets, iUnion_accumulate, μ.toFiniteSpanningSetsIn.spanning]
 #align measure_theory.Union_spanning_sets MeasureTheory.iUnion_spanningSets
 
 theorem isCountablySpanning_spanningSets (μ : Measure α) [SigmaFinite μ] :
@@ -1072,7 +1072,7 @@ theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFinite
 
 instance Restrict.sigmaFinite (μ : Measure α) [SigmaFinite μ] (s : Set α) :
     SigmaFinite (μ.restrict s) := by
-  refine' ⟨⟨⟨spanningSets μ, fun _ => trivial, fun i => _, iUnion_spanningSets μ⟩⟩⟩
+  refine ⟨⟨⟨spanningSets μ, fun _ => trivial, fun i => ?_, iUnion_spanningSets μ⟩⟩⟩
   rw [Measure.restrict_apply (measurable_spanningSets μ i)]
   exact (measure_mono <| inter_subset_left _ _).trans_lt (measure_spanningSets_lt_top μ i)
 #align measure_theory.restrict.sigma_finite MeasureTheory.Restrict.sigmaFinite
@@ -1082,7 +1082,7 @@ instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, Sigma
   cases nonempty_fintype ι
   have : ∀ n, MeasurableSet (⋂ i : ι, spanningSets (μ i) n) := fun n =>
     MeasurableSet.iInter fun i => measurable_spanningSets (μ i) n
-  refine' ⟨⟨⟨fun n => ⋂ i, spanningSets (μ i) n, fun _ => trivial, fun n => _, _⟩⟩⟩
+  refine ⟨⟨⟨fun n => ⋂ i, spanningSets (μ i) n, fun _ => trivial, fun n => ?_, ?_⟩⟩⟩
   · rw [sum_apply _ (this n), tsum_fintype, ENNReal.sum_lt_top_iff]
     rintro i -
     exact (measure_mono <| iInter_subset _ i).trans_lt (measure_spanningSets_lt_top (μ i) n)
@@ -1094,7 +1094,7 @@ instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, Sigma
 instance Add.sigmaFinite (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
     SigmaFinite (μ + ν) := by
   rw [← sum_cond]
-  refine' @sum.sigmaFinite _ _ _ _ _ (Bool.rec _ _) <;> simpa
+  refine @sum.sigmaFinite _ _ _ _ _ (Bool.rec ?_ ?_) <;> simpa
 #align measure_theory.add.sigma_finite MeasureTheory.Add.sigmaFinite
 
 instance SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
@@ -1176,7 +1176,7 @@ instance isLocallyFiniteMeasureSMulNNReal [TopologicalSpace α] (μ : Measure α
     [IsLocallyFiniteMeasure μ] (c : ℝ≥0) : IsLocallyFiniteMeasure (c • μ) := by
   refine ⟨fun x => ?_⟩
   rcases μ.exists_isOpen_measure_lt_top x with ⟨o, xo, o_open, μo⟩
-  refine' ⟨o, o_open.mem_nhds xo, _⟩
+  refine ⟨o, o_open.mem_nhds xo, ?_⟩
   apply ENNReal.mul_lt_top _ μo.ne
   simp
 #align measure_theory.is_locally_finite_measure_smul_nnreal MeasureTheory.isLocallyFiniteMeasureSMulNNReal
@@ -1258,7 +1258,7 @@ instance (priority := 100) sigmaFinite_of_locallyFinite [TopologicalSpace α]
     [SecondCountableTopology α] [IsLocallyFiniteMeasure μ] : SigmaFinite μ := by
   choose s hsx hsμ using μ.finiteAt_nhds
   rcases TopologicalSpace.countable_cover_nhds hsx with ⟨t, htc, htU⟩
-  refine' Measure.sigmaFinite_of_countable (htc.image s) (forall_mem_image.2 fun x _ => hsμ x) _
+  refine Measure.sigmaFinite_of_countable (htc.image s) (forall_mem_image.2 fun x _ => hsμ x) ?_
   rwa [sUnion_image]
 #align measure_theory.sigma_finite_of_locally_finite MeasureTheory.sigmaFinite_of_locallyFinite
 
@@ -1451,7 +1451,7 @@ theorem exists_open_superset_measure_lt_top' (h : IsCompact s)
   · rintro s t hst ⟨U, htU, hUo, hU⟩
     exact ⟨U, hst.trans htU, hUo, hU⟩
   · rintro s t ⟨U, hsU, hUo, hU⟩ ⟨V, htV, hVo, hV⟩
-    refine'
+    refine
       ⟨U ∪ V, union_subset_union hsU htV, hUo.union hVo,
         (measure_union_le _ _).trans_lt <| ENNReal.add_lt_top.2 ⟨hU, hV⟩⟩
   · intro x hx
@@ -1551,11 +1551,11 @@ noncomputable irreducible_def MeasureTheory.Measure.finiteSpanningSetsInOpen' [T
     apply TS
     rw [hf]
     exact mem_range_self n
-  refine'
+  refine
     ⟨{  set := f
         set_mem := fun n => (fS n).1
         finite := fun n => (fS n).2
-        spanning := _ }⟩
+        spanning := ?_ }⟩
   refine eq_univ_of_forall fun x => ?_
   obtain ⟨t, tT, xt⟩ : ∃ t : Set α, t ∈ range f ∧ x ∈ t := by
     have : x ∈ ⋃₀ T := by simp only [hT, mem_univ]

@@ -280,7 +280,7 @@ def coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear 
     continuous_toFun := by
       by_cases hb : b ∈ e.baseSet ∩ e'.baseSet
       · rw [dif_pos hb]
-        refine' (e'.continuousOn.comp_continuous _ _).snd
+        refine (e'.continuousOn.comp_continuous ?_ ?_).snd
         · exact e.continuousOn_symm.comp_continuous (Continuous.Prod.mk b) fun y =>
             mk_mem_prod hb.1 (mem_univ y)
         · exact fun y => e'.mem_source.mpr hb.2
@@ -289,7 +289,7 @@ def coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear 
     continuous_invFun := by
       by_cases hb : b ∈ e.baseSet ∩ e'.baseSet
       · rw [dif_pos hb]
-        refine' (e.continuousOn.comp_continuous _ _).snd
+        refine (e.continuousOn.comp_continuous ?_ ?_).snd
         · exact e'.continuousOn_symm.comp_continuous (Continuous.Prod.mk b) fun y =>
             mk_mem_prod hb.2 (mem_univ y)
         exact fun y => e.mem_source.mpr hb.1
@@ -448,7 +448,7 @@ def symmL (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →L[R] E b
       · rw [(FiberBundle.totalSpaceMk_inducing F E b).continuous_iff]
         exact e.continuousOn_symm.comp_continuous (continuous_const.prod_mk continuous_id) fun x ↦
           mk_mem_prod hb (mem_univ x)
-      · refine' continuous_zero.congr fun x => (e.symm_apply_of_not_mem hb x).symm }
+      · refine continuous_zero.congr fun x => (e.symm_apply_of_not_mem hb x).symm }
 set_option linter.uppercaseLean3 false in
 #align trivialization.symmL Trivialization.symmL
 
@@ -770,7 +770,7 @@ instance vectorBundle : VectorBundle R F Z.Fiber where
     apply localTriv.isLinear
   continuousOn_coordChange' := by
     rintro _ _ ⟨i, rfl⟩ ⟨i', rfl⟩
-    refine' (Z.continuousOn_coordChange i i').congr fun b hb => _
+    refine (Z.continuousOn_coordChange i i').congr fun b hb => ?_
     ext v
     exact Z.localTriv_coordChange_eq i i' hb v
 #align vector_bundle_core.vector_bundle VectorBundleCore.vectorBundle
@@ -911,7 +911,7 @@ def toFiberPrebundle (a : VectorPrebundle R F E) : FiberPrebundle F E :=
         isBoundedBilinearMap_apply.continuous.comp_continuousOn
           ((a.continuousOn_coordChange he' he).prod_map continuousOn_id)
       rw [e.target_inter_preimage_symm_source_eq e', inter_comm]
-      refine' (continuousOn_fst.prod this).congr _
+      refine (continuousOn_fst.prod this).congr ?_
       rintro ⟨b, f⟩ ⟨hb, -⟩
       dsimp only [Function.comp_def, Prod.map]
       rw [a.mk_coordChange _ _ hb, e'.mk_symm hb.1] }

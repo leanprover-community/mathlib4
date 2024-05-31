@@ -104,7 +104,7 @@ theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * 
 theorem sin_eq_sin_iff {x y : ℂ} :
     sin x = sin y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = (2 * k + 1) * π - x := by
   simp only [← Complex.cos_sub_pi_div_two, cos_eq_cos_iff, sub_eq_iff_eq_add]
-  refine exists_congr fun k => or_congr ?_ ?_ <;> refine' Eq.congr rfl _ <;> field_simp <;> ring
+  refine exists_congr fun k => or_congr ?_ ?_ <;> refine Eq.congr rfl ?_ <;> field_simp <;> ring
 #align complex.sin_eq_sin_iff Complex.sin_eq_sin_iff
 
 theorem cos_eq_one_iff {x : ℂ} : cos x = 1 ↔ ∃ k : ℤ, k * (2 * π) = x := by

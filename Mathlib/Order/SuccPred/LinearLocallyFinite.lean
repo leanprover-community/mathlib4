@@ -131,14 +131,14 @@ instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFi
     rw [le_iff_lt_or_eq] at hij
     cases' hij with hij hij
     swap
-    · refine' ⟨0, _⟩
+    · refine ⟨0, ?_⟩
       simpa only [Function.iterate_zero, id] using hij
     by_contra! h
     have h_lt : ∀ n, succ^[n] i < j := by
       intro n
       induction' n with n hn
       · simpa only [Function.iterate_zero, id] using hij
-      · refine' lt_of_le_of_ne _ (h _)
+      · refine lt_of_le_of_ne ?_ (h _)
         rw [Function.iterate_succ', Function.comp_apply]
         exact succ_le_of_lt hn
     have h_mem : ∀ n, succ^[n] i ∈ Finset.Icc i j :=
@@ -169,7 +169,7 @@ instance (priority := 100) LinearOrder.isPredArchimedean_of_isSuccArchimedean [S
     · rw [pred_succ_iterate_of_not_isMax]
       rw [Nat.succ_sub_succ_eq_sub, tsub_zero]
       suffices succ^[n] i < succ^[n.succ] i from not_isMax_of_lt this
-      refine' lt_of_le_of_ne _ _
+      refine lt_of_le_of_ne ?_ ?_
       · rw [Function.iterate_succ']
         exact le_succ _
       · rw [hn_eq]
@@ -428,7 +428,7 @@ def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
   right_inv n := by
     ext1
     simp only [Subtype.coe_mk]
-    refine' le_antisymm _ _
+    refine le_antisymm ?_ ?_
     · rw [Int.toNat_le]
       exact toZ_iterate_succ_le _
     by_cases hn_max : IsMax (succ^[↑n] (⊥ : ι))

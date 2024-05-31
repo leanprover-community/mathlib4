@@ -99,8 +99,8 @@ theorem iff_adjoin_eq_top :
 /-- A reformulation of `IsCyclotomicExtension` in the case `S` is a singleton. -/
 theorem iff_singleton :
     IsCyclotomicExtension {n} A B ↔
-      (∃ r : B, IsPrimitiveRoot r n) ∧ ∀ x, x ∈ adjoin A {b : B | b ^ (n : ℕ) = 1} :=
-  by simp [isCyclotomicExtension_iff]
+      (∃ r : B, IsPrimitiveRoot r n) ∧ ∀ x, x ∈ adjoin A {b : B | b ^ (n : ℕ) = 1} := by
+  simp [isCyclotomicExtension_iff]
 #align is_cyclotomic_extension.iff_singleton IsCyclotomicExtension.iff_singleton
 
 /-- If `IsCyclotomicExtension ∅ A B`, then the image of `A` in `B` equals `B`. -/
@@ -583,7 +583,7 @@ instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicF
   SplittingField.isScalarTower _
 
 instance CyclotomicField.noZeroSMulDivisors : NoZeroSMulDivisors A (CyclotomicField n K) := by
-  refine' NoZeroSMulDivisors.of_algebraMap_injective _
+  refine NoZeroSMulDivisors.of_algebraMap_injective ?_
   rw [IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
   exact
     (Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective K (CyclotomicField n K))
@@ -651,15 +651,15 @@ instance isCyclotomicExtension [NeZero ((n : ℕ) : A)] :
     haveI := NeZero.of_noZeroSMulDivisors A K n
     haveI := NeZero.of_noZeroSMulDivisors A (CyclotomicField n K) n
     obtain ⟨μ, hμ⟩ := (CyclotomicField.isCyclotomicExtension n K).exists_prim_root (mem_singleton n)
-    refine' ⟨⟨μ, subset_adjoin _⟩, _⟩
+    refine ⟨⟨μ, subset_adjoin ?_⟩, ?_⟩
     · apply (isRoot_of_unity_iff n.pos (CyclotomicField n K)).mpr
-      refine' ⟨n, Nat.mem_divisors_self _ n.ne_zero, _⟩
+      refine ⟨n, Nat.mem_divisors_self _ n.ne_zero, ?_⟩
       rwa [← isRoot_cyclotomic_iff] at hμ
     · rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk]
   adjoin_roots x := by
-    refine'
-      adjoin_induction' (fun y hy => _) (fun a => _) (fun y z hy hz => _) (fun y z hy hz => _) x
-    · refine' subset_adjoin _
+    refine
+      adjoin_induction' (fun y hy => ?_) (fun a => ?_) (fun y z hy hz => ?_) (fun y z hy hz => ?_) x
+    · refine subset_adjoin ?_
       simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq]
       rwa [← Subalgebra.coe_eq_one, Subalgebra.coe_pow, Subtype.coe_mk]
     · exact Subalgebra.algebraMap_mem _ a
@@ -687,20 +687,20 @@ instance [IsDomain A] [NeZero ((n : ℕ) : A)] :
     · have : IsLocalization (nonZeroDivisors A) K := inferInstance
       replace := this.surj
       obtain ⟨⟨z, w⟩, hw⟩ := this k
-      refine' ⟨⟨algebraMap A (CyclotomicRing n A K) z, algebraMap A (CyclotomicRing n A K) w,
-        map_mem_nonZeroDivisors _ (algebraBase_injective n A K) w.2⟩, _⟩
+      refine ⟨⟨algebraMap A (CyclotomicRing n A K) z, algebraMap A (CyclotomicRing n A K) w,
+        map_mem_nonZeroDivisors _ (algebraBase_injective n A K) w.2⟩, ?_⟩
       letI : IsScalarTower A K (CyclotomicField n K) :=
         IsScalarTower.of_algebraMap_eq (congr_fun rfl)
       rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
         @IsScalarTower.algebraMap_apply A K _ _ _ _ _ (_root_.CyclotomicField.algebra n K) _ _ w,
         ← RingHom.map_mul, hw, ← IsScalarTower.algebraMap_apply]
     · rintro y z ⟨a, ha⟩ ⟨b, hb⟩
-      refine' ⟨⟨a.1 * b.2 + b.1 * a.2, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, _⟩
+      refine ⟨⟨a.1 * b.2 + b.1 * a.2, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, ?_⟩
       rw [RingHom.map_mul, add_mul, ← mul_assoc, ha,
         mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, hb]
       simp only [map_add, map_mul]
     · rintro y z ⟨a, ha⟩ ⟨b, hb⟩
-      refine' ⟨⟨a.1 * b.1, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, _⟩
+      refine ⟨⟨a.1 * b.1, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, ?_⟩
       rw [RingHom.map_mul, mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), mul_assoc, ←
         mul_assoc z, hb, ← mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, ha]
       simp only [map_mul]
