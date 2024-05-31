@@ -58,6 +58,8 @@ variable [AddGroupWithOne α]
 @[simp] lemma coe_castAddHom : ⇑(castAddHom α) = fun x : ℤ => (x : α) := rfl
 #align int.coe_cast_add_hom Int.coe_castAddHom
 
+lemma Even.intCast {n : ℤ} (h : Even n) : Even (n : α) := h.map (castAddHom α)
+
 variable [CharZero α] {m n : ℤ}
 
 @[simp] lemma cast_eq_zero : (n : α) = 0 ↔ n = 0 where
