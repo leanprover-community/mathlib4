@@ -53,6 +53,9 @@ theorem coe_castAddMonoidHom [AddMonoidWithOne α] : (castAddMonoidHom α : ℕ 
   rfl
 #align nat.coe_cast_add_monoid_hom Nat.coe_castAddMonoidHom
 
+lemma _root_.Even.natCast [AddMonoidWithOne α] {n : ℕ} (hn : Even n) : Even (n : α) :=
+  hn.map <| Nat.castAddMonoidHom α
+
 section NonAssocSemiring
 variable [NonAssocSemiring α]
 
