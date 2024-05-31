@@ -2190,7 +2190,7 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
     by_contra c_empty
     apply h_nonempty
     rw [not_nonempty_iff_eq_empty.mp c_empty] at c_cov
-    simp at c_cov
+    simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty] at c_cov
     exact eq_empty_of_subset_empty c_cov
   rw [Set.countable_iff_exists_surjective this] at c_count
   rcases c_count with ⟨ f, f_surj ⟩
@@ -2198,7 +2198,7 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
     by_contra d_empty
     apply k_nonempty
     rw [not_nonempty_iff_eq_empty.mp d_empty] at d_cov
-    simp at d_cov
+    simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty] at d_cov
     exact eq_empty_of_subset_empty d_cov
   rw [Set.countable_iff_exists_surjective this] at d_count
   rcases d_count with ⟨ g, g_surj ⟩
@@ -2220,16 +2220,15 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
   · intro x xinh
     rcases c_cov xinh with ⟨ ui , ⟨ i, ui' ⟩ , xinui ⟩
     rw [← ui'] at xinui
-    simp at xinui
+    simp only [mem_iUnion, exists_prop] at xinui
     rcases f_surj ⟨ i,xinui.1 ⟩ with ⟨ n, fni ⟩
     simp only [mem_iUnion, mem_diff]
     use n
     constructor
     · rw [fni]
-      simp
       exact xinui.2
     · rw [Set.Finite.closure_biUnion]
-      · simp
+      · simp only [mem_setOf_eq, mem_iUnion, exists_prop, not_exists, not_and]
         intro m _
         exact Set.disjoint_right.mp (v_props (g m)).2 xinh
       · exact finite_le_nat n
@@ -2237,16 +2236,15 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
   · intro x xink
     rcases d_cov xink with ⟨ vi , ⟨ i, vi' ⟩ , xinvi ⟩
     rw [← vi'] at xinvi
-    simp at xinvi
+    simp only [mem_iUnion, exists_prop] at xinvi
     rcases g_surj ⟨ i,xinvi.1 ⟩ with ⟨ n, gni ⟩
     simp only [mem_iUnion, mem_diff]
     use n
     constructor
     · rw [gni]
-      simp
       exact xinvi.2
     · rw [Set.Finite.closure_biUnion]
-      · simp
+      · simp only [mem_setOf_eq, mem_iUnion, exists_prop, not_exists, not_and]
         intro m _
         exact Set.disjoint_right.mp (u_props (f m)).2 xink
       · exact finite_le_nat n
@@ -2260,15 +2258,15 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
   have : n ≤ m := by
     by_contra m_gt_n
     apply xinun.2
-    simp at m_gt_n
+    simp only [not_le] at m_gt_n
     apply subset_closure
     apply mem_biUnion
-    · simp
+    · simp only [mem_setOf_eq]
       exact le_of_lt m_gt_n
     · exact xinvgm
   apply subset_closure
   apply mem_biUnion
-  · simp
+  · simp only [mem_setOf_eq]
     exact this
   · exact xinun.1
 
