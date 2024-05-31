@@ -126,7 +126,7 @@ protected theorem neg {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
   t.toAddCon.neg h
 
 protected theorem nsmul {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
-    (m : ℕ) {x y : S} (hx : t x y) : t (m • x) (m • y) := t.toAddCon.nsmul z hx
+    (m : ℕ) {x y : S} (hx : t x y) : t (m • x) (m • y) := t.toAddCon.nsmul m hx
 
 protected theorem zsmul {S : Type*} [AddGroup S] [Mul S] (t : RingCon S)
     (z : ℤ) {x y : S} (hx : t x y) : t (z • x) (z • y) := t.toAddCon.zsmul z hx
