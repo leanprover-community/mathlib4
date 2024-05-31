@@ -1084,19 +1084,13 @@ theorem finset_card_const_le_le_of_tsum_le {ι : Type*} {a : ι → ℝ≥0∞} 
 #align ennreal.finset_card_const_le_le_of_tsum_le ENNReal.finset_card_const_le_le_of_tsum_le
 
 theorem HasSum_fiberwise {f : β → ENNReal} {a : ENNReal} (hf : HasSum f a) (g : β → γ) :
-    HasSum (fun (c : γ) ↦ ∑' (b : (g ⁻¹' {c})), f b) a := by
-  have B := @Equiv.hasSum_iff ENNReal β ((y : γ) × { x // g x = y }) _ _ f a (Equiv.sigmaFiberEquiv g)
-  replace B := B.2 hf
-  have C := @HasSum.sigma ENNReal γ _ _ _ _ (fun y : γ => { x // g x = y }) (f ∘ ⇑(Equiv.sigmaFiberEquiv g)) (fun c => ∑' (b : ↑(g ⁻¹' {c})), f ↑b) a B
-  apply C
-  intro b
-  have F := @Summable.hasSum_iff ENNReal _ _ _ (fun c => (f ∘ ⇑(Equiv.sigmaFiberEquiv g)) { fst := b, snd := c }) ((fun c => ∑' (b : ↑(g ⁻¹' {c})), f ↑b) b) _
-  apply (F _).2 rfl
-  apply ENNReal.summable
+    HasSum (fun (c : γ) ↦ ∑' (b : (g ⁻¹' {c})), f b) a :=
+  (((Equiv.sigmaFiberEquiv g).hasSum_iff).mpr hf).sigma <|
+    (fun _ ↦ ((ENNReal.summable).hasSum_iff).mpr rfl)
 
 theorem tsum_fiberwise (f : β → ENNReal) (g : β → γ) :
     ∑' (x : γ), ∑' (b : (g ⁻¹' {x})), f b = ∑' i : β, f i :=
-  HasSum.tsum_eq <| ENNReal.HasSum_fiberwise (Summable.hasSum ENNReal.summable) g
+  HasSum.tsum_eq <| HasSum_fiberwise (Summable.hasSum ENNReal.summable) g
 
 end tsum
 
