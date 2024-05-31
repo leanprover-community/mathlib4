@@ -886,9 +886,7 @@ lemma mulEquivOfOrderOfEq_symm_apply_gen : (mulEquivOfOrderOfEq hg hg' h).symm g
 
 @[to_additive (attr := simp)]
 lemma mulEquivOfOrderOfEq_symm :
-    (mulEquivOfOrderOfEq hg hg' h).symm = mulEquivOfOrderOfEq hg' hg h.symm := by
-  rw [MulEquiv.eq_iff_eq_on_generator hg', mulEquivOfOrderOfEq_symm_apply_gen,
-    mulEquivOfOrderOfEq_apply_gen]
+    (mulEquivOfOrderOfEq hg hg' h).symm = mulEquivOfOrderOfEq hg' hg h.symm := rfl
 
 end mulEquiv
 
