@@ -49,8 +49,9 @@ It is also useful to consider the following stronger conditions:
 - `invariantBasisNumber_of_nontrivial_of_commRing`: a nontrivial commutative ring satisfies
   the invariant basis number property
 
-More generally, every commutative ring satisfies the strong rank condition.
-We keep `invariantBasisNumber_of_nontrivial_of_commRing` here since it imports fewer files.
+More generally, every commutative ring satisfies the strong rank condition. This is proved in
+`LinearAlgebra/FreeModule/StrongRankCondition`. We keep
+`invariantBasisNumber_of_nontrivial_of_commRing` here since it imports fewer files.
 
 
 ## Counterexamples to converse results
