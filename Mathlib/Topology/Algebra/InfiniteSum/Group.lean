@@ -16,7 +16,7 @@ noncomputable section
 
 open Filter Finset Function
 
-open scoped BigOperators Topology
+open scoped Topology
 
 variable {α β γ δ : Type*}
 
@@ -90,7 +90,7 @@ theorem Multipliable.update (hf : Multipliable f) (b : β) [DecidableEq β] (a :
 @[to_additive]
 theorem HasProd.hasProd_compl_iff {s : Set β} (hf : HasProd (f ∘ (↑) : s → α) a₁) :
     HasProd (f ∘ (↑) : ↑sᶜ → α) a₂ ↔ HasProd f (a₁ * a₂) := by
-  refine' ⟨fun h ↦ hf.mul_compl h, fun h ↦ _⟩
+  refine ⟨fun h ↦ hf.mul_compl h, fun h ↦ ?_⟩
   rw [hasProd_subtype_iff_mulIndicator] at hf ⊢
   rw [Set.mulIndicator_compl]
   simpa only [div_eq_mul_inv, mul_inv_cancel_comm] using h.div hf
@@ -104,20 +104,20 @@ theorem HasProd.hasProd_iff_compl {s : Set β} (hf : HasProd (f ∘ (↑) : s �
 
 @[to_additive]
 theorem Multipliable.multipliable_compl_iff {s : Set β} (hf : Multipliable (f ∘ (↑) : s → α)) :
-    Multipliable (f ∘ (↑) : ↑sᶜ → α) ↔ Multipliable f :=
-  ⟨fun ⟨_, ha⟩ ↦ (hf.hasProd.hasProd_compl_iff.1 ha).multipliable, fun ⟨_, ha⟩ ↦
-    (hf.hasProd.hasProd_iff_compl.1 ha).multipliable⟩
+    Multipliable (f ∘ (↑) : ↑sᶜ → α) ↔ Multipliable f where
+  mp := fun ⟨_, ha⟩ ↦ (hf.hasProd.hasProd_compl_iff.1 ha).multipliable
+  mpr := fun ⟨_, ha⟩ ↦ (hf.hasProd.hasProd_iff_compl.1 ha).multipliable
 #align summable.summable_compl_iff Summable.summable_compl_iff
 
 @[to_additive]
 protected theorem Finset.hasProd_compl_iff (s : Finset β) :
-    HasProd (fun x : { x // x ∉ s } ↦ f x) a ↔ HasProd f (a * ∏ i in s, f i) :=
+    HasProd (fun x : { x // x ∉ s } ↦ f x) a ↔ HasProd f (a * ∏ i ∈ s, f i) :=
   (s.hasProd f).hasProd_compl_iff.trans <| by rw [mul_comm]
 #align finset.has_sum_compl_iff Finset.hasSum_compl_iff
 
 @[to_additive]
 protected theorem Finset.hasProd_iff_compl (s : Finset β) :
-    HasProd f a ↔ HasProd (fun x : { x // x ∉ s } ↦ f x) (a / ∏ i in s, f i) :=
+    HasProd f a ↔ HasProd (fun x : { x // x ∉ s } ↦ f x) (a / ∏ i ∈ s, f i) :=
   (s.hasProd f).hasProd_iff_compl
 #align finset.has_sum_iff_compl Finset.hasSum_iff_compl
 
@@ -162,7 +162,7 @@ theorem tprod_div (hf : Multipliable f) (hg : Multipliable g) :
 
 @[to_additive]
 theorem prod_mul_tprod_compl {s : Finset β} (hf : Multipliable f) :
-    (∏ x in s, f x) * ∏' x : ↑(s : Set β)ᶜ, f x = ∏' x, f x :=
+    (∏ x ∈ s, f x) * ∏' x : ↑(s : Set β)ᶜ, f x = ∏' x, f x :=
   ((s.hasProd f).mul_compl (s.multipliable_compl_iff.2 hf).hasProd).tprod_eq.symm
 #align sum_add_tsum_compl sum_add_tsum_compl
 
@@ -190,7 +190,7 @@ variable [CommGroup α] [UniformSpace α]
 @[to_additive "The **Cauchy criterion** for infinite sums, also known as the
 **Cauchy convergence test**"]
 theorem multipliable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
-    Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b in s, f b := by
+    Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b := by
   classical exact cauchy_map_iff_exists_tendsto.symm
 #align summable_iff_cauchy_seq_finset summable_iff_cauchySeq_finset
 
@@ -198,8 +198,8 @@ variable [UniformGroup α] {f g : β → α} {a a₁ a₂ : α}
 
 @[to_additive]
 theorem cauchySeq_finset_iff_prod_vanishing :
-    (CauchySeq fun s : Finset β ↦ ∏ b in s, f b) ↔
-      ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∏ b in t, f b) ∈ e := by
+    (CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b) ↔
+      ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∏ b ∈ t, f b) ∈ e := by
   classical
   simp only [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
     uniformity_eq_comap_nhds_one α, tendsto_comap_iff, (· ∘ ·), atTop_neBot, true_and]
@@ -216,7 +216,7 @@ theorem cauchySeq_finset_iff_prod_vanishing :
     rcases h d hd with ⟨s, h⟩
     use (s, s)
     rintro ⟨t₁, t₂⟩ ⟨ht₁, ht₂⟩
-    have : ((∏ b in t₂, f b) / ∏ b in t₁, f b) = (∏ b in t₂ \ s, f b) / ∏ b in t₁ \ s, f b := by
+    have : ((∏ b ∈ t₂, f b) / ∏ b ∈ t₁, f b) = (∏ b ∈ t₂ \ s, f b) / ∏ b ∈ t₁ \ s, f b := by
       rw [← Finset.prod_sdiff ht₁, ← Finset.prod_sdiff ht₂, mul_div_mul_right_eq_div]
     simp only [this]
     exact hde _ (h _ Finset.sdiff_disjoint) _ (h _ Finset.sdiff_disjoint)
@@ -224,7 +224,7 @@ theorem cauchySeq_finset_iff_prod_vanishing :
 
 @[to_additive]
 theorem cauchySeq_finset_iff_tprod_vanishing :
-    (CauchySeq fun s : Finset β ↦ ∏ b in s, f b) ↔
+    (CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b) ↔
       ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t : Set β, Disjoint t s → (∏' b : t, f b) ∈ e := by
   simp_rw [cauchySeq_finset_iff_prod_vanishing, Set.disjoint_left, disjoint_left]
   refine ⟨fun vanish e he ↦ ?_, fun vanish e he ↦ ?_⟩
@@ -248,7 +248,7 @@ variable [CompleteSpace α]
 @[to_additive]
 theorem multipliable_iff_vanishing :
     Multipliable f ↔
-    ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∏ b in t, f b) ∈ e := by
+    ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∏ b ∈ t, f b) ∈ e := by
   rw [multipliable_iff_cauchySeq_finset, cauchySeq_finset_iff_prod_vanishing]
 #align summable_iff_vanishing summable_iff_vanishing
 
@@ -265,12 +265,12 @@ theorem Multipliable.multipliable_of_eq_one_or_self (hf : Multipliable f)
   exact multipliable_iff_vanishing.2 fun e he ↦
     let ⟨s, hs⟩ := multipliable_iff_vanishing.1 hf e he
     ⟨s, fun t ht ↦
-      have eq : ∏ b in t.filter fun b ↦ g b = f b, f b = ∏ b in t, g b :=
+      have eq : ∏ b ∈ t.filter fun b ↦ g b = f b, f b = ∏ b ∈ t, g b :=
         calc
-          ∏ b in t.filter fun b ↦ g b = f b, f b = ∏ b in t.filter fun b ↦ g b = f b, g b :=
+          ∏ b ∈ t.filter fun b ↦ g b = f b, f b = ∏ b ∈ t.filter fun b ↦ g b = f b, g b :=
             Finset.prod_congr rfl fun b hb ↦ (Finset.mem_filter.1 hb).2.symm
-          _ = ∏ b in t, g b := by
-           {refine' Finset.prod_subset (Finset.filter_subset _ _) _
+          _ = ∏ b ∈ t, g b := by
+           {refine Finset.prod_subset (Finset.filter_subset _ _) ?_
             intro b hbt hb
             simp only [Finset.mem_filter, and_iff_right hbt] at hb
             exact (h b).resolve_right hb}
@@ -310,7 +310,7 @@ theorem tprod_subtype_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf :
 
 @[to_additive]
 theorem prod_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Multipliable f) (s : Finset β) :
-    (∏ x in s, f x) * ∏' x : { x // x ∉ s }, f x = ∏' x, f x := by
+    (∏ x ∈ s, f x) * ∏' x : { x // x ∉ s }, f x = ∏' x, f x := by
   rw [← tprod_subtype_mul_tprod_subtype_compl hf s]
   simp only [Finset.tprod_subtype', mul_right_inj]
   rfl
@@ -324,7 +324,7 @@ variable {G : Type*} [TopologicalSpace G] [CommGroup G] [TopologicalGroup G] {f 
 
 @[to_additive]
 theorem Multipliable.vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (1 : G)) :
-    ∃ s : Finset α, ∀ t, Disjoint t s → (∏ k in t, f k) ∈ e := by
+    ∃ s : Finset α, ∀ t, Disjoint t s → (∏ k ∈ t, f k) ∈ e := by
   classical
   letI : UniformSpace G := TopologicalGroup.toUniformSpace G
   have : UniformGroup G := comm_topologicalGroup_is_uniform
@@ -364,7 +364,7 @@ theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofi
   intro e he
   rw [Filter.mem_map]
   rcases hf.vanishing he with ⟨s, hs⟩
-  refine' s.eventually_cofinite_nmem.mono fun x hx ↦ _
+  refine s.eventually_cofinite_nmem.mono fun x hx ↦ ?_
   · simpa using hs {x} (disjoint_singleton_left.2 hx)
 #align summable.tendsto_cofinite_zero Summable.tendsto_cofinite_zero
 

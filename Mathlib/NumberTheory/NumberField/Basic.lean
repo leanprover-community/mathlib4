@@ -41,7 +41,7 @@ class NumberField (K : Type*) [Field K] : Prop where
 
 open Function Module
 
-open scoped Classical BigOperators nonZeroDivisors
+open scoped Classical nonZeroDivisors
 
 /-- `ℤ` with its usual ring structure is not a field. -/
 theorem Int.not_isField : ¬IsField ℤ := fun h =>
@@ -94,6 +94,10 @@ instance : NoZeroSMulDivisors (𝓞 K) K :=
   inferInstanceAs (NoZeroSMulDivisors (integralClosure _ _) _)
 instance : Nontrivial (𝓞 K) :=
   inferInstanceAs (Nontrivial (integralClosure _ _))
+instance {L : Type*} [Ring L] [Algebra K L] : Algebra (𝓞 K) L :=
+  inferInstanceAs (Algebra (integralClosure _ _) L)
+instance {L : Type*} [Ring L] [Algebra K L] :  IsScalarTower (𝓞 K) K L :=
+  inferInstanceAs (IsScalarTower (integralClosure _ _) K L)
 
 variable {K}
 
@@ -111,6 +115,10 @@ lemma coe_eq_algebraMap (x : 𝓞 K) : (x : K) = algebraMap _ _ x := rfl
 
 theorem ext_iff {x y : 𝓞 K} : x = y ↔ (x : K) = (y : K) :=
   Subtype.ext_iff
+
+@[norm_cast]
+theorem eq_iff {x y : 𝓞 K} : (x : K) = (y : K) ↔ x = y :=
+  NumberField.RingOfIntegers.ext_iff.symm
 
 @[simp] lemma map_mk (x : K) (hx) : algebraMap (𝓞 K) K ⟨x, hx⟩ = x := rfl
 
@@ -184,7 +192,7 @@ theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (algebraMap _ K x) :=
 
 theorem isIntegral (x : 𝓞 K) : IsIntegral ℤ x := by
   obtain ⟨P, hPm, hP⟩ := x.isIntegral_coe
-  refine' ⟨P, hPm, _⟩
+  refine ⟨P, hPm, ?_⟩
   rwa [IsScalarTower.algebraMap_eq (S := 𝓞 K), ← Polynomial.hom_eval₂, coe_eq_zero_iff] at hP
 #align number_field.is_integral_of_mem_ring_of_integers NumberField.RingOfIntegers.isIntegral
 
@@ -321,7 +329,7 @@ attribute [-instance] algebraRat
 is a number field. -/
 instance {f : Polynomial ℚ} [hf : Fact (Irreducible f)] : NumberField (AdjoinRoot f) where
   to_charZero := charZero_of_injective_algebraMap (algebraMap ℚ _).injective
-  to_finiteDimensional := by convert (AdjoinRoot.powerBasis hf.out.ne_zero).finiteDimensional
+  to_finiteDimensional := by convert (AdjoinRoot.powerBasis hf.out.ne_zero).finite
 
 end
 

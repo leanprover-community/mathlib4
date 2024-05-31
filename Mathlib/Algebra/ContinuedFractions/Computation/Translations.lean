@@ -88,8 +88,8 @@ theorem succ_nth_stream_eq_some_iff {ifp_succ_n : IntFractPair K} :
     IntFractPair.stream v (n + 1) = some ifp_succ_n ↔
       ∃ ifp_n : IntFractPair K,
         IntFractPair.stream v n = some ifp_n ∧
-          ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n :=
-  by simp [IntFractPair.stream, ite_eq_iff]
+          ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n := by
+  simp [IntFractPair.stream, ite_eq_iff]
 #align generalized_continued_fraction.int_fract_pair.succ_nth_stream_eq_some_iff GeneralizedContinuedFraction.IntFractPair.succ_nth_stream_eq_some_iff
 
 /-- An easier to use version of one direction of
@@ -104,7 +104,7 @@ theorem stream_succ_of_some {p : IntFractPair K} (h : IntFractPair.stream v n = 
 -/
 theorem stream_succ_of_int (a : ℤ) (n : ℕ) : IntFractPair.stream (a : K) (n + 1) = none := by
   induction' n with n ih
-  · refine' IntFractPair.stream_eq_none_of_fr_eq_zero (IntFractPair.stream_zero (a : K)) _
+  · refine IntFractPair.stream_eq_none_of_fr_eq_zero (IntFractPair.stream_zero (a : K)) ?_
     simp only [IntFractPair.of, Int.fract_intCast]
   · exact IntFractPair.succ_nth_stream_eq_none_iff.mpr (Or.inl ih)
 #align generalized_continued_fraction.int_fract_pair.stream_succ_of_int GeneralizedContinuedFraction.IntFractPair.stream_succ_of_int
@@ -117,7 +117,7 @@ theorem exists_succ_nth_stream_of_fr_zero {ifp_succ_n : IntFractPair K}
   -- properties
   rcases succ_nth_stream_eq_some_iff.mp stream_succ_nth_eq with
     ⟨ifp_n, seq_nth_eq, _, rfl⟩
-  refine' ⟨ifp_n, seq_nth_eq, _⟩
+  refine ⟨ifp_n, seq_nth_eq, ?_⟩
   simpa only [IntFractPair.of, Int.fract, sub_eq_zero] using succ_nth_fr_eq_zero
 #align generalized_continued_fraction.int_fract_pair.exists_succ_nth_stream_of_fr_zero GeneralizedContinuedFraction.IntFractPair.exists_succ_nth_stream_of_fr_zero
 

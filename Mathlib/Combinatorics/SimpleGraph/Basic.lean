@@ -339,7 +339,7 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
     bot_le := fun x v w h => h.elim
     sdiff_eq := fun x y => by
       ext v w
-      refine' ⟨fun h => ⟨h.1, ⟨_, h.2⟩⟩, fun h => ⟨h.1, h.2.2⟩⟩
+      refine ⟨fun h => ⟨h.1, ⟨?_, h.2⟩⟩, fun h => ⟨h.1, h.2.2⟩⟩
       rintro rfl
       exact x.irrefl h.1
     inf_compl_le_bot := fun G v w h => False.elim <| h.2.2 h.1
@@ -565,7 +565,7 @@ which is necessary since when `v = w` the existential
 `∃ (e ∈ G.edgeSet), v ∈ e ∧ w ∈ e` is satisfied by every edge
 incident to `v`. -/
 theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.edgeSet, v ∈ e ∧ w ∈ e := by
-  refine' ⟨fun _ => ⟨G.ne_of_adj ‹_›, s(v, w), by simpa⟩, _⟩
+  refine ⟨fun _ => ⟨G.ne_of_adj ‹_›, s(v, w), by simpa⟩, ?_⟩
   rintro ⟨hne, e, he, hv⟩
   rw [Sym2.mem_and_mem_iff hne] at hv
   subst e
@@ -659,23 +659,23 @@ theorem fromEdgeSet_univ : fromEdgeSet (Set.univ : Set (Sym2 V)) = ⊤ := by
 #align simple_graph.from_edge_set_univ SimpleGraph.fromEdgeSet_univ
 
 @[simp]
-theorem fromEdgeSet_inf (s t : Set (Sym2 V)) :
-    fromEdgeSet s ⊓ fromEdgeSet t = fromEdgeSet (s ∩ t) := by
+theorem fromEdgeSet_inter (s t : Set (Sym2 V)) :
+    fromEdgeSet (s ∩ t) = fromEdgeSet s ⊓ fromEdgeSet t := by
   ext v w
   simp only [fromEdgeSet_adj, Set.mem_inter_iff, Ne, inf_adj]
   tauto
-#align simple_graph.from_edge_set_inf SimpleGraph.fromEdgeSet_inf
+#align simple_graph.from_edge_set_inf SimpleGraph.fromEdgeSet_inter
 
 @[simp]
-theorem fromEdgeSet_sup (s t : Set (Sym2 V)) :
-    fromEdgeSet s ⊔ fromEdgeSet t = fromEdgeSet (s ∪ t) := by
+theorem fromEdgeSet_union (s t : Set (Sym2 V)) :
+    fromEdgeSet (s ∪ t) = fromEdgeSet s ⊔ fromEdgeSet t := by
   ext v w
   simp [Set.mem_union, or_and_right]
-#align simple_graph.from_edge_set_sup SimpleGraph.fromEdgeSet_sup
+#align simple_graph.from_edge_set_sup SimpleGraph.fromEdgeSet_union
 
 @[simp]
 theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
-    fromEdgeSet s \ fromEdgeSet t = fromEdgeSet (s \ t) := by
+    fromEdgeSet (s \ t) = fromEdgeSet s \ fromEdgeSet t := by
   ext v w
   constructor <;> simp (config := { contextual := true })
 #align simple_graph.from_edge_set_sdiff SimpleGraph.fromEdgeSet_sdiff
@@ -738,7 +738,7 @@ theorem incidenceSet_inter_incidenceSet_subset (h : a ≠ b) :
 
 theorem incidenceSet_inter_incidenceSet_of_adj (h : G.Adj a b) :
     G.incidenceSet a ∩ G.incidenceSet b = {s(a, b)} := by
-  refine' (G.incidenceSet_inter_incidenceSet_subset <| h.ne).antisymm _
+  refine (G.incidenceSet_inter_incidenceSet_subset <| h.ne).antisymm ?_
   rintro _ (rfl : _ = s(a, b))
   exact ⟨G.mk'_mem_incidenceSet_left_iff.2 h, G.mk'_mem_incidenceSet_right_iff.2 h⟩
 #align simple_graph.incidence_set_inter_incidence_set_of_adj SimpleGraph.incidenceSet_inter_incidenceSet_of_adj
@@ -774,15 +774,16 @@ theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w 
   simp [incidenceSet]
 #align simple_graph.mem_incidence_set SimpleGraph.mem_incidenceSet
 
-theorem mem_incidence_iff_neighbor {v w : V} : s(v, w) ∈ G.incidenceSet v ↔ w ∈ G.neighborSet v :=
-  by simp only [mem_incidenceSet, mem_neighborSet]
+theorem mem_incidence_iff_neighbor {v w : V} :
+    s(v, w) ∈ G.incidenceSet v ↔ w ∈ G.neighborSet v := by
+  simp only [mem_incidenceSet, mem_neighborSet]
 #align simple_graph.mem_incidence_iff_neighbor SimpleGraph.mem_incidence_iff_neighbor
 
 theorem adj_incidenceSet_inter {v : V} {e : Sym2 V} (he : e ∈ G.edgeSet) (h : v ∈ e) :
     G.incidenceSet v ∩ G.incidenceSet (Sym2.Mem.other h) = {e} := by
   ext e'
   simp only [incidenceSet, Set.mem_sep_iff, Set.mem_inter_iff, Set.mem_singleton_iff]
-  refine' ⟨fun h' => _, _⟩
+  refine ⟨fun h' => ?_, ?_⟩
   · rw [← Sym2.other_spec h]
     exact (Sym2.mem_and_mem_iff (edge_other_ne G he h).symm).mp ⟨h'.1.2, h'.2.2⟩
   · rintro rfl
@@ -908,73 +909,45 @@ end Incidence
 
 /-! ## Edge deletion -/
 
+section deleteEdges
 
 /-- Given a set of vertex pairs, remove all of the corresponding edges from the
 graph's edge set, if present.
 
 See also: `SimpleGraph.Subgraph.deleteEdges`. -/
-def deleteEdges (s : Set (Sym2 V)) : SimpleGraph V where
-  Adj := G.Adj \ Sym2.ToRel s
-  symm a b := by simp [adj_comm, Sym2.eq_swap]
-  loopless a := by simp [SDiff.sdiff] -- Porting note: used to be handled by `obviously`
+def deleteEdges (s : Set (Sym2 V)) : SimpleGraph V := G \ fromEdgeSet s
 #align simple_graph.delete_edges SimpleGraph.deleteEdges
+#align simple_graph.delete_edges_eq_sdiff_from_edge_set SimpleGraph.deleteEdges
+#align simple_graph.sdiff_eq_delete_edges SimpleGraph.deleteEdges
+#align simple_graph.compl_eq_delete_edges SimpleGraph.deleteEdges
 
-@[simp]
-theorem deleteEdges_adj (s : Set (Sym2 V)) (v w : V) :
-    (G.deleteEdges s).Adj v w ↔ G.Adj v w ∧ ¬s(v, w) ∈ s :=
-  Iff.rfl
+variable {G} {H : SimpleGraph V} {s s₁ s₂ : Set (Sym2 V)}
+
+@[simp] lemma deleteEdges_adj : (G.deleteEdges s).Adj v w ↔ G.Adj v w ∧ ¬s(v, w) ∈ s :=
+  and_congr_right fun h ↦ (and_iff_left h.ne).not
 #align simple_graph.delete_edges_adj SimpleGraph.deleteEdges_adj
 
-theorem sdiff_eq_deleteEdges (G G' : SimpleGraph V) : G \ G' = G.deleteEdges G'.edgeSet := by
-  ext
-  simp
-#align simple_graph.sdiff_eq_delete_edges SimpleGraph.sdiff_eq_deleteEdges
-
-theorem deleteEdges_eq_sdiff_fromEdgeSet (s : Set (Sym2 V)) :
-    G.deleteEdges s = G \ fromEdgeSet s := by
-  ext
-  exact ⟨fun h => ⟨h.1, not_and_of_not_left _ h.2⟩, fun h => ⟨h.1, not_and'.mp h.2 h.ne⟩⟩
-#align simple_graph.delete_edges_eq_sdiff_from_edge_set SimpleGraph.deleteEdges_eq_sdiff_fromEdgeSet
-
-@[simp]
-lemma deleteEdges_eq_self {s : Set (Sym2 V)} : G.deleteEdges s = G ↔ Disjoint G.edgeSet s := by
-  rw [deleteEdges_eq_sdiff_fromEdgeSet, sdiff_eq_left, disjoint_fromEdgeSet]
-#align simple_graph.delete_edges_eq SimpleGraph.deleteEdges_eq_self
-
-theorem compl_eq_deleteEdges : Gᶜ = (⊤ : SimpleGraph V).deleteEdges G.edgeSet := by
-  ext
-  simp
-#align simple_graph.compl_eq_delete_edges SimpleGraph.compl_eq_deleteEdges
+@[simp] lemma deleteEdges_edgeSet (G G' : SimpleGraph V) : G.deleteEdges G'.edgeSet = G \ G' := by
+  ext; simp
 
 @[simp]
 theorem deleteEdges_deleteEdges (s s' : Set (Sym2 V)) :
-    (G.deleteEdges s).deleteEdges s' = G.deleteEdges (s ∪ s') := by
-  ext
-  simp [and_assoc, not_or]
+    (G.deleteEdges s).deleteEdges s' = G.deleteEdges (s ∪ s') := by simp [deleteEdges, sdiff_sdiff]
 #align simple_graph.delete_edges_delete_edges SimpleGraph.deleteEdges_deleteEdges
 
-@[simp]
-theorem deleteEdges_empty_eq : G.deleteEdges ∅ = G := by
-  ext
-  simp
-#align simple_graph.delete_edges_empty_eq SimpleGraph.deleteEdges_empty_eq
+@[simp] lemma deleteEdges_empty : G.deleteEdges ∅ = G := by simp [deleteEdges]
+@[simp] lemma deleteEdges_univ : G.deleteEdges Set.univ = ⊥ := by simp [deleteEdges]
+#align simple_graph.delete_edges_empty_eq SimpleGraph.deleteEdges_empty
+#align simple_graph.delete_edges_univ_eq SimpleGraph.deleteEdges_univ
 
-@[simp]
-theorem deleteEdges_univ_eq : G.deleteEdges Set.univ = ⊥ := by
-  ext
-  simp
-#align simple_graph.delete_edges_univ_eq SimpleGraph.deleteEdges_univ_eq
-
-theorem deleteEdges_le (s : Set (Sym2 V)) : G.deleteEdges s ≤ G := by
-  intro
-  simp (config := { contextual := true })
+lemma deleteEdges_le (s : Set (Sym2 V)) : G.deleteEdges s ≤ G := sdiff_le
 #align simple_graph.delete_edges_le SimpleGraph.deleteEdges_le
 
-theorem deleteEdges_le_of_le {s s' : Set (Sym2 V)} (h : s ⊆ s') :
-    G.deleteEdges s' ≤ G.deleteEdges s := fun v w => by
-  simp (config := { contextual := true }) only [deleteEdges_adj, and_imp, true_and_iff]
-  exact fun _ hn hs => hn (h hs)
-#align simple_graph.delete_edges_le_of_le SimpleGraph.deleteEdges_le_of_le
+lemma deleteEdges_anti (h : s₁ ⊆ s₂) : G.deleteEdges s₂ ≤ G.deleteEdges s₁ :=
+  sdiff_le_sdiff_left $ fromEdgeSet_mono h
+#align simple_graph.delete_edges_le_of_le SimpleGraph.deleteEdges_anti
+
+lemma deleteEdges_mono (h : G ≤ H) : G.deleteEdges s ≤ H.deleteEdges s := sdiff_le_sdiff_right h
 
 theorem deleteEdges_eq_inter_edgeSet (s : Set (Sym2 V)) :
     G.deleteEdges s = G.deleteEdges (s ∩ G.edgeSet) := by
@@ -984,14 +957,12 @@ theorem deleteEdges_eq_inter_edgeSet (s : Set (Sym2 V)) :
 
 theorem deleteEdges_sdiff_eq_of_le {H : SimpleGraph V} (h : H ≤ G) :
     G.deleteEdges (G.edgeSet \ H.edgeSet) = H := by
-  ext v w
-  constructor <;> simp (config := { contextual := true }) [@h v w]
+  rw [← edgeSet_sdiff, deleteEdges_edgeSet, sdiff_sdiff_eq_self h]
 #align simple_graph.delete_edges_sdiff_eq_of_le SimpleGraph.deleteEdges_sdiff_eq_of_le
 
 theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.edgeSet \ s := by
-  ext e
-  refine' Sym2.ind _ e
-  simp
+  simp [deleteEdges]
 #align simple_graph.edge_set_delete_edges SimpleGraph.edgeSet_deleteEdges
 
+end deleteEdges
 end SimpleGraph

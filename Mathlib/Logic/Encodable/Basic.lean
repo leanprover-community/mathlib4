@@ -236,8 +236,7 @@ def decidableRangeEncode (α : Type*) [Encodable α] : DecidablePred (· ∈ Set
 #align encodable.decidable_range_encode Encodable.decidableRangeEncode
 
 /-- An encodable type is equivalent to the range of its encoding function. -/
-def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α _)
-    where
+def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α _) where
   toFun := fun a : α => ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
     Option.get _
@@ -481,11 +480,11 @@ def ULower (α : Type*) [Encodable α] : Type :=
   Set.range (Encodable.encode : α → ℕ)
 #align ulower ULower
 
-instance {α : Type*} [Encodable α] : DecidableEq (ULower α) :=
-  by delta ULower; exact Encodable.decidableEqOfEncodable _
+instance {α : Type*} [Encodable α] : DecidableEq (ULower α) := by
+  delta ULower; exact Encodable.decidableEqOfEncodable _
 
-instance {α : Type*} [Encodable α] : Encodable (ULower α) :=
-  by delta ULower; infer_instance
+instance {α : Type*} [Encodable α] : Encodable (ULower α) := by
+  delta ULower; infer_instance
 
 end ULower
 
@@ -606,9 +605,6 @@ There is a total ordering on the elements of an encodable type, induced by the m
 def encode' (α) [Encodable α] : α ↪ ℕ :=
   ⟨Encodable.encode, Encodable.encode_injective⟩
 #align encodable.encode' Encodable.encode'
-
-instance {α} [Encodable α] : IsTrans _ (encode' α ⁻¹'o (· ≤ ·)) :=
-  (RelEmbedding.preimage _ _).isTrans
 
 instance {α} [Encodable α] : IsAntisymm _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
   (RelEmbedding.preimage _ _).isAntisymm

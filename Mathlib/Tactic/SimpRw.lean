@@ -47,13 +47,13 @@ For example, neither `simp` nor `rw` can solve the following, but `simp_rw` can:
 
 ```lean
 example {a : ℕ}
-  (h1 : ∀ a b : ℕ, a - 1 ≤ b ↔ a ≤ b + 1)
-  (h2 : ∀ a b : ℕ, a ≤ b ↔ ∀ c, c < a → c < b) :
-  (∀ b, a - 1 ≤ b) = ∀ b c : ℕ, c < a → c < b + 1 :=
-by simp_rw [h1, h2]
+    (h1 : ∀ a b : ℕ, a - 1 ≤ b ↔ a ≤ b + 1)
+    (h2 : ∀ a b : ℕ, a ≤ b ↔ ∀ c, c < a → c < b) :
+    (∀ b, a - 1 ≤ b) = ∀ b c : ℕ, c < a → c < b + 1 := by
+  simp_rw [h1, h2]
 ```
 -/
-elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => do
+elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => focus do
   let cfg' : TSyntax `Lean.Parser.Tactic.config ← do
     match cfg with
     | Option.none =>

@@ -566,10 +566,10 @@ theorem prod_smul_empty (w : NormalWord d) :
     erw [(d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1]
     ext <;> simp
     -- The next 4 were not needed before leanprover/lean4#2644
-    · erw [(d.compl _).equiv_snd_eq_inv_mul]
-      simp_rw [SetLike.coe_sort_coe]
-      erw [(d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1]
-      simp
+    erw [(d.compl _).equiv_snd_eq_inv_mul]
+    simp_rw [SetLike.coe_sort_coe]
+    erw [(d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1]
+    simp
 
 variable (d)
 /-- The equivalence between elements of the HNN extension and words in normal form. -/

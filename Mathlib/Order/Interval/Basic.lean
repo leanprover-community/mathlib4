@@ -302,8 +302,8 @@ end NonemptyInterval
 We represent intervals either as `⊥` or a nonempty interval given by its endpoints `fst`, `snd`.
 To convert intervals to the set of elements between these endpoints, use the coercion
 `Interval α → Set α`. -/
-@[reducible] -- Porting note: added reducible, it seems to help with coercions
-def Interval (α : Type*) [LE α] :=
+-- Porting note: added reducible, it seems to help with coercions
+abbrev Interval (α : Type*) [LE α] :=
   WithBot (NonemptyInterval α) -- deriving Inhabited, LE, OrderBot
 #align interval Interval
 
@@ -582,7 +582,7 @@ theorem coe_inf (s t : Interval α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
       rw [WithBot.none_eq_bot, inf_bot_eq]
       exact (inter_empty _).symm
     | some t =>
-      refine' (_ : setLike.coe (dite
+      refine (?_ : setLike.coe (dite
         -- Porting note: Needed to fill this first `_` explicitly.
         (s.toProd.fst ≤ t.toProd.snd ∧ t.toProd.fst ≤ s.toProd.snd)
         _ _) = _).trans Icc_inter_Icc.symm
@@ -745,9 +745,9 @@ theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
     simp [WithBot.some_eq_coe, Interval.forall, h.1, ← forall_and, ← NonemptyInterval.mem_def]
   simp_rw [not_and_or, Classical.not_not] at h
   rcases h with h | h
-  · refine' (eq_empty_of_subset_empty _).symm
+  · refine (eq_empty_of_subset_empty ?_).symm
     exact iInter₂_subset_of_subset _ h Subset.rfl
-  · refine' (not_nonempty_iff_eq_empty.1 _).symm
+  · refine (not_nonempty_iff_eq_empty.1 ?_).symm
     rintro ⟨x, hx⟩
     rw [mem_iInter₂] at hx
     exact h fun s ha t hb => (hx _ ha).1.trans (hx _ hb).2

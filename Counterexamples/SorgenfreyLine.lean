@@ -83,7 +83,7 @@ theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := b
   rw [TopologicalSpace.nhds_generateFrom]
   haveI : Nonempty { x // x ≤ a } := Set.nonempty_Iic_subtype
   have : (⨅ x : { i // i ≤ a }, 𝓟 (Ici ↑x)) = 𝓟 (Ici a) := by
-    refine' (IsLeast.isGLB _).iInf_eq
+    refine (IsLeast.isGLB ?_).iInf_eq
     exact ⟨⟨⟨a, le_rfl⟩, rfl⟩, forall_mem_range.2 fun b => principal_mono.2 <| Ici_subset_Ici.2 b.2⟩
   simp only [mem_setOf_eq, iInf_and, iInf_exists, @iInf_comm _ (_ ∈ _), @iInf_comm _ (Set ℝₗ),
     iInf_iInf_eq_right, mem_Ico]
@@ -96,7 +96,7 @@ theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := b
 
 theorem nhds_basis_Ico_rat (a : ℝₗ) :
     (𝓝 a).HasCountableBasis (fun r : ℚ => a < r) fun r => Ico a r := by
-  refine' ⟨(nhds_basis_Ico a).to_hasBasis (fun b hb => _) fun r hr => ⟨_, hr, Subset.rfl⟩,
+  refine ⟨(nhds_basis_Ico a).to_hasBasis (fun b hb => ?_) fun r hr => ⟨_, hr, Subset.rfl⟩,
     Set.to_countable _⟩
   rcases exists_rat_btwn hb with ⟨r, har, hrb⟩
   exact ⟨r, har, Ico_subset_Ico_right hrb.le⟩
@@ -104,7 +104,7 @@ theorem nhds_basis_Ico_rat (a : ℝₗ) :
 
 theorem nhds_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasBasis (fun _ : ℕ+ => True) fun n => Ico a (a + (n : ℝₗ)⁻¹) := by
-  refine' (nhds_basis_Ico a).to_hasBasis (fun b hb => _) fun n hn =>
+  refine (nhds_basis_Ico a).to_hasBasis (fun b hb => ?_) fun n hn =>
     ⟨_, lt_add_of_pos_right _ (inv_pos.2 <| Nat.cast_pos.2 n.pos), Subset.rfl⟩
   rcases exists_nat_one_div_lt (sub_pos.2 hb) with ⟨k, hk⟩
   rw [one_div] at hk
@@ -139,7 +139,7 @@ theorem exists_Ico_disjoint_closed {a : ℝₗ} {s : Set ℝₗ} (hs : IsClosed 
 
 @[simp]
 theorem map_toReal_nhds (a : ℝₗ) : map toReal (𝓝 a) = 𝓝[≥] toReal a := by
-  refine' ((nhds_basis_Ico a).map _).eq_of_same_basis _
+  refine ((nhds_basis_Ico a).map _).eq_of_same_basis ?_
   simpa only [toReal.image_eq_preimage] using nhdsWithin_Ici_basis_Ico (toReal a)
 #align counterexample.sorgenfrey_line.map_to_real_nhds Counterexample.SorgenfreyLine.map_toReal_nhds
 
@@ -162,7 +162,7 @@ instance : OrderClosedTopology ℝₗ :=
   ⟨isClosed_le_prod.preimage (continuous_toReal.prod_map continuous_toReal)⟩
 
 instance : ContinuousAdd ℝₗ := by
-  refine' ⟨continuous_iff_continuousAt.2 _⟩
+  refine ⟨continuous_iff_continuousAt.2 ?_⟩
   rintro ⟨x, y⟩
   rw [ContinuousAt, nhds_prod_eq, nhds_eq_comap (x + y), tendsto_comap_iff,
     nhds_eq_map, nhds_eq_map, prod_map_map_eq, ← nhdsWithin_prod_eq, Ici_prod_Ici]
@@ -188,8 +188,9 @@ instance : TotallyDisconnectedSpace ℝₗ :=
 instance : FirstCountableTopology ℝₗ :=
   ⟨fun x => (nhds_basis_Ico_rat x).isCountablyGenerated⟩
 
-/-- Sorgenfrey line is a completely normal Hausdorff topological space. -/
-instance : T5Space ℝₗ := by
+/-- Sorgenfrey line is a completely normal topological space.
+    (Hausdorff follows as TotallyDisconnectedSpace → T₁) -/
+instance : CompletelyNormalSpace ℝₗ := by
   /-
   Let `s` and `t` be disjoint closed sets.
   For each `x ∈ s` we choose `X x` such that `Set.Ico x (X x)` is disjoint with `t`.
@@ -197,12 +198,12 @@ instance : T5Space ℝₗ := by
   Then `⋃ x ∈ s, Ico x (X x)` and `⋃ y ∈ t, Ico y (Y y)` are
   disjoint open sets that include `s` and `t`.
   -/
-  refine' ⟨fun s t hd₁ hd₂ => _⟩
+  refine ⟨fun s t hd₁ hd₂ => ?_⟩
   choose! X hX hXd using fun x (hx : x ∈ s) =>
     exists_Ico_disjoint_closed isClosed_closure (disjoint_left.1 hd₂ hx)
   choose! Y hY hYd using fun y (hy : y ∈ t) =>
     exists_Ico_disjoint_closed isClosed_closure (disjoint_right.1 hd₁ hy)
-  refine' disjoint_of_disjoint_of_mem _
+  refine disjoint_of_disjoint_of_mem ?_
     (bUnion_mem_nhdsSet fun x hx => (isOpen_Ico x (X x)).mem_nhds <| left_mem_Ico.2 (hX x hx))
     (bUnion_mem_nhdsSet fun y hy => (isOpen_Ico y (Y y)).mem_nhds <| left_mem_Ico.2 (hY y hy))
   simp only [disjoint_iUnion_left, disjoint_iUnion_right, Ico_disjoint_Ico]
@@ -218,7 +219,7 @@ instance : T5Space ℝₗ := by
       _ ≤ max x y := le_max_left _ _
 
 theorem denseRange_ratCast : DenseRange ((↑) : ℚ → ℝₗ) := by
-  refine' dense_iff_inter_open.2 _
+  refine dense_iff_inter_open.2 ?_
   rintro U Uo ⟨x, hx⟩
   rcases isOpen_iff.1 Uo _ hx with ⟨y, hxy, hU⟩
   rcases exists_rat_btwn hxy with ⟨z, hxz, hzy⟩
@@ -253,9 +254,9 @@ theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ
   rcases mem_closure_iff.1 H (Ici (x, y)) (isClopen_Ici_prod _).2 left_mem_Ici with
     ⟨⟨x', y'⟩, ⟨hx : x ≤ x', hy : y ≤ y'⟩, H⟩
   convert H
-  · refine' hx.antisymm _
+  · refine hx.antisymm ?_
     rwa [← add_le_add_iff_right, hs _ H, add_le_add_iff_left]
-  · refine' hy.antisymm _
+  · refine hy.antisymm ?_
     rwa [← add_le_add_iff_left, hs _ H, add_le_add_iff_right]
 #align counterexample.sorgenfrey_line.is_closed_of_subset_antidiagonal Counterexample.SorgenfreyLine.isClosed_of_subset_antidiagonal
 
@@ -333,12 +334,12 @@ theorem not_separatedNhds_rat_irrational_antidiag :
       exact h₀'.le
     rcases mem_closure_iff_nhds.1 this _ (mem_interior_iff_mem_nhds.1 hr) with ⟨x', hx', hx'ε⟩
     exact mem_closure_iff.1 hx' _ isOpen_Ioo hx'ε
-  refine' UV.le_bot (_ : (toReal.symm x, -(r : ℝₗ)) ∈ _)
-  refine' ⟨hn ⟨_, _⟩, hkV (toReal.symm x) hx_irr ⟨_, _⟩⟩
+  refine UV.le_bot (?_ : (toReal.symm x, -(r : ℝₗ)) ∈ _)
+  refine ⟨hn ⟨?_, ?_⟩, hkV (toReal.symm x) hx_irr ⟨?_, ?_⟩⟩
   · exact Ioo_subset_Ico_self hxn
   · exact left_mem_Ico.2 h₀'
   · exact left_mem_Ico.2 h₀'
-  · refine' (nhds_antitone_basis_Ico_inv_pnat (-x)).2 hnN ⟨neg_le_neg hxn.1.le, _⟩
+  · refine (nhds_antitone_basis_Ico_inv_pnat (-x)).2 hnN ⟨neg_le_neg hxn.1.le, ?_⟩
     simp only [add_neg_lt_iff_le_add', lt_neg_add_iff_add_lt]
     exact hxn.2
 

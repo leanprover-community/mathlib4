@@ -50,7 +50,7 @@ example : x < x + 1 := exact?%
 /-- info: Try this: exact p -/
 #guard_msgs in
 example (P : Prop) (p : P) : P := by apply?
-/-- info: Try this: exact (np p).elim -/
+/-- info: Try this: exact False.elim (np p) -/
 #guard_msgs in
 example (P : Prop) (p : P) (np : ¬P) : false := by apply?
 /-- info: Try this: exact h x rfl -/
@@ -68,18 +68,18 @@ example (α : Prop) : α → α := by apply?
 
 /-- info: Try this: exact Nat.add_comm a b -/
 #guard_msgs in
-example (a b : ℕ) : a + b = b + a :=
-by apply?
+example (a b : ℕ) : a + b = b + a := by
+  apply?
 
 /-- info: Try this: exact Nat.mul_sub_left_distrib n m k -/
 #guard_msgs in
-example (n m k : ℕ) : n * (m - k) = n * m - n * k :=
-by apply?
+example (n m k : ℕ) : n * (m - k) = n * m - n * k := by
+  apply?
 
-/-- info: Try this: exact (Nat.mul_sub_left_distrib n m k).symm -/
+/-- info: Try this: exact Eq.symm (Nat.mul_sub_left_distrib n m k) -/
 #guard_msgs in
-example (n m k : ℕ) : n * m - n * k = n * (m - k) :=
-by apply?
+example (n m k : ℕ) : n * m - n * k = n * (m - k) := by
+  apply?
 
 /- info: Try this: exact eq_comm -/
 #guard_msgs (drop info) in
@@ -103,8 +103,8 @@ example (a b : ℕ) (_ha : a > 0) (_hb : 0 < b) : 0 < a + b := by apply?
 
 /-- info: Try this: exact Nat.le_of_dvd w h -/
 #guard_msgs in
-example (a b : ℕ) (h : a ∣ b) (w : b > 0) : a ≤ b :=
-by apply?
+example (a b : ℕ) (h : a ∣ b) (w : b > 0) : a ≤ b := by
+  apply?
 
 /-- info: Try this: exact Nat.le_of_dvd w h -/
 #guard_msgs in
@@ -191,13 +191,13 @@ example (P Q : List ℕ) (_h : ℕ) : List ℕ := by apply? using P, Q
 -- Check that we don't use sorryAx:
 -- (see https://github.com/leanprover-community/mathlib4/issues/226)
 
-theorem Bool_eq_iff {A B : Bool} : (A = B) = (A ↔ B) :=
-  by (cases A <;> cases B <;> simp)
+theorem Bool_eq_iff {A B : Bool} : (A = B) = (A ↔ B) := by
+  (cases A <;> cases B <;> simp)
 
 /-- info: Try this: exact Bool_eq_iff -/
 #guard_msgs in
-theorem Bool_eq_iff2 {A B : Bool} : (A = B) = (A ↔ B) :=
-  by apply? -- exact Bool_eq_iff
+theorem Bool_eq_iff2 {A B : Bool} : (A = B) = (A ↔ B) := by
+  apply? -- exact Bool_eq_iff
 
 assert_no_sorry Bool_eq_iff2
 

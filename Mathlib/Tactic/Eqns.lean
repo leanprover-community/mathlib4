@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Lean.Meta.Eqns
-import Std.Lean.NameMapAttribute
+import Batteries.Lean.NameMapAttribute
 import Lean.Elab.Exception
 import Lean.Elab.InfoTree.Main
 

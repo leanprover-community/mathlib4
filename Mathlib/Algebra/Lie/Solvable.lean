@@ -272,7 +272,7 @@ def radical :=
 instance radicalIsSolvable [IsNoetherian R L] : IsSolvable R (radical R L) := by
   have hwf := LieSubmodule.wellFounded_of_noetherian R L L
   rw [← CompleteLattice.isSupClosedCompact_iff_wellFounded] at hwf
-  refine' hwf { I : LieIdeal R L | IsSolvable R I } ⟨⊥, _⟩ fun I hI J hJ => _
+  refine hwf { I : LieIdeal R L | IsSolvable R I } ⟨⊥, ?_⟩ fun I hI J hJ => ?_
   · exact LieAlgebra.isSolvableBot R L
   · rw [Set.mem_setOf_eq] at hI hJ ⊢
     apply LieAlgebra.isSolvableAdd R L
@@ -359,7 +359,7 @@ theorem derivedLength_zero (I : LieIdeal R L) [hI : IsSolvable R I] :
   change sInf s = 0 ↔ _
   have hne : s ≠ ∅ := by
     obtain ⟨k, hk⟩ := id hI
-    refine' Set.Nonempty.ne_empty ⟨k, _⟩
+    refine Set.Nonempty.ne_empty ⟨k, ?_⟩
     rw [derivedSeries_def, LieIdeal.derivedSeries_eq_bot_iff] at hk; exact hk
   simp [s, hne]
 #align lie_algebra.derived_length_zero LieAlgebra.derivedLength_zero

@@ -78,8 +78,8 @@ theorem toFunLinear_tmul_apply (a : A) (p : R[X]) :
 -- We apparently need to provide the decidable instance here
 -- in order to successfully rewrite by this lemma.
 theorem toFunLinear_mul_tmul_mul_aux_1 (p : R[X]) (k : ℕ) (h : Decidable ¬p.coeff k = 0) (a : A) :
-    ite (¬coeff p k = 0) (a * (algebraMap R A) (coeff p k)) 0 = a * (algebraMap R A) (coeff p k) :=
-  by classical split_ifs <;> simp [*]
+    ite (¬coeff p k = 0) (a * (algebraMap R A) (coeff p k)) 0 =
+    a * (algebraMap R A) (coeff p k) := by classical split_ifs <;> simp [*]
 #align poly_equiv_tensor.to_fun_linear_mul_tmul_mul_aux_1 PolyEquivTensor.toFunLinear_mul_tmul_mul_aux_1
 
 theorem toFunLinear_mul_tmul_mul_aux_2 (k : ℕ) (a₁ a₂ : A) (p₁ p₂ : R[X]) :
@@ -205,7 +205,7 @@ theorem polyEquivTensor_symm_apply_tmul (a : A) (p : R[X]) :
   toFunAlgHom_apply_tmul _ _ _ _
 #align poly_equiv_tensor_symm_apply_tmul polyEquivTensor_symm_apply_tmul
 
-open DMatrix Matrix BigOperators
+open DMatrix Matrix
 
 variable {R}
 variable {n : Type w} [DecidableEq n] [Fintype n]

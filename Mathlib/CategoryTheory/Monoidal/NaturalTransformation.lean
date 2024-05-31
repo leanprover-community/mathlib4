@@ -3,6 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.FullSubcategory
 
@@ -170,78 +171,54 @@ theorem ofComponents.inv_app (app : ∀ X : C, F.obj X ≅ G.obj X) (naturality)
 #align category_theory.monoidal_nat_iso.of_components.inv_app CategoryTheory.MonoidalNatIso.ofComponents.inv_app
 
 instance isIso_of_isIso_app (α : F ⟶ G) [∀ X : C, IsIso (α.app X)] : IsIso α :=
-  ⟨(IsIso.of_iso
-        (ofComponents (fun X => asIso (α.app X)) (fun f => α.toNatTrans.naturality f) α.unit
-          α.tensor)).1⟩
+  (ofComponents (fun X => asIso (α.app X)) (fun f => α.toNatTrans.naturality f)
+    α.unit α.tensor).isIso_hom
 #align category_theory.monoidal_nat_iso.is_iso_of_is_iso_app CategoryTheory.MonoidalNatIso.isIso_of_isIso_app
 
 end MonoidalNatIso
 
-noncomputable section
+variable (F : MonoidalFunctor C D) {G : D ⥤ C} (h : F.toFunctor ⊣ G)
 
-/-- The unit of a monoidal equivalence can be upgraded to a monoidal natural transformation. -/
-@[simps! toNatTrans] -- Porting note: have to manually specify the toNatTrans projection
-def monoidalUnit (F : MonoidalFunctor C D) [F.IsEquivalence] :
-    LaxMonoidalFunctor.id C ⟶ F.toLaxMonoidalFunctor ⊗⋙ (monoidalInverse F).toLaxMonoidalFunctor :=
-  let e := F.toFunctor.asEquivalence
-  { toNatTrans := e.unit
-    tensor := fun X Y => by
-      -- This proof is not pretty; golfing welcome!
-      dsimp
-      simp only [Adjunction.homEquiv_unit, Adjunction.homEquiv_naturality_right,
-        id_comp, assoc]
-      simp only [← Functor.map_comp, assoc]
-      erw [e.counit_app_functor, e.counit_app_functor,
-        F.toLaxMonoidalFunctor.μ_natural, IsIso.inv_hom_id_assoc]
-      simp only [Functor.IsEquivalence.inv_fun_map]
-      slice_rhs 2 3 => erw [Iso.hom_inv_id_app]
-      dsimp
-      simp only [CategoryTheory.Category.id_comp]
-      slice_rhs 1 2 =>
-        rw [← tensor_comp, Iso.hom_inv_id_app, Iso.hom_inv_id_app]
-        dsimp
-        rw [tensor_id]
-      simp }
+/-- The unit of a adjunction can be upgraded to a monoidal natural transformation. -/
+def monoidalUnit  :
+    LaxMonoidalFunctor.id C ⟶ F.toLaxMonoidalFunctor ⊗⋙ (monoidalAdjoint F h) where
+  toNatTrans := h.unit
+  tensor X Y := by
+    dsimp
+    simp only [id_comp, comp_id, assoc, Adjunction.homEquiv_unit,
+      ← h.unit_naturality_assoc, ← Functor.map_comp,
+      F.map_tensor, IsIso.hom_inv_id_assoc, ← tensor_comp_assoc,
+      Adjunction.left_triangle_components, tensorHom_id, id_whiskerRight,
+      IsIso.inv_hom_id, map_id]
 #align category_theory.monoidal_unit CategoryTheory.monoidalUnit
 
-instance (F : MonoidalFunctor C D) [F.IsEquivalence] : IsIso (monoidalUnit F) :=
-  haveI : ∀ X : C, IsIso ((monoidalUnit F).toNatTrans.app X) := by
-    dsimp; infer_instance
-  MonoidalNatIso.isIso_of_isIso_app _
-
-/-- The counit of a monoidal equivalence can be upgraded to a monoidal natural transformation. -/
-@[simps! toNatTrans] -- Porting note: have to manually specify the toNatTrans projection
-def monoidalCounit (F : MonoidalFunctor C D) [F.IsEquivalence] :
-    (monoidalInverse F).toLaxMonoidalFunctor ⊗⋙ F.toLaxMonoidalFunctor ⟶ LaxMonoidalFunctor.id D :=
-  let e := F.toFunctor.asEquivalence
-  { toNatTrans := e.counit
-    unit := by
-      dsimp
-      simp only [comp_id, assoc, Functor.map_inv, Functor.map_comp,
-        NatIso.inv_inv_app, IsIso.inv_comp, Functor.IsEquivalence.fun_inv_map,
-        Adjunction.homEquiv_unit]
-      erw [e.counit_app_functor, ← e.functor.map_comp_assoc, Iso.hom_inv_id_app]
-      dsimp; simp
-    tensor := fun X Y => by
-      dsimp
-      simp only [Adjunction.homEquiv_unit, Adjunction.homEquiv_naturality_right, assoc,
-        comp_id, Functor.map_comp]
-      simp only [Functor.IsEquivalence.fun_inv_map]
-      erw [e.counit_app_functor]
-      simp only [assoc]
-      erw [← e.functor.map_comp_assoc]
-      simp only [CategoryTheory.Iso.inv_hom_id_app, CategoryTheory.Iso.inv_hom_id_app_assoc]
-      erw [Iso.hom_inv_id_app, CategoryTheory.Functor.map_id]
-      simp only [id_comp, CategoryTheory.Iso.inv_hom_id_app,
-        CategoryTheory.IsIso.hom_inv_id_assoc]
-      erw [comp_id] }
+/-- The unit of a adjunction can be upgraded to a monoidal natural transformation. -/
+@[simps]
+def monoidalCounit :
+    (monoidalAdjoint F h) ⊗⋙ F.toLaxMonoidalFunctor ⟶ LaxMonoidalFunctor.id D where
+  toNatTrans := h.counit
+  tensor X Y := by
+    have eq := h.counit_naturality (F.μ (G.obj X) (G.obj Y)) =≫ inv (F.μ _ _)
+    simp only [assoc, IsIso.hom_inv_id, comp_id] at eq
+    dsimp
+    simp only [Adjunction.homEquiv_unit, comp_id, assoc,
+      map_comp, map_inv, h.counit_naturality, ← eq,
+      h.left_triangle_components_assoc,
+      IsIso.inv_hom_id_assoc, IsIso.hom_inv_id_assoc]
+  unit := by
+    have eq := h.counit.naturality F.ε
+    dsimp at eq ⊢
+    rw [Adjunction.homEquiv_unit, map_inv, map_comp, assoc, assoc, map_inv,
+      ← cancel_mono F.ε, assoc, assoc, assoc, ← eq, IsIso.inv_hom_id_assoc,
+      Adjunction.left_triangle_components, comp_id, id_comp]
 #align category_theory.monoidal_counit CategoryTheory.monoidalCounit
 
-instance (F : MonoidalFunctor C D) [F.IsEquivalence] : IsIso (monoidalCounit F) :=
-  haveI : ∀ X : D, IsIso ((monoidalCounit F).toNatTrans.app X) :=
-    by dsimp; infer_instance
-  MonoidalNatIso.isIso_of_isIso_app _
+instance [F.IsEquivalence] : IsIso (monoidalUnit F h) := by
+  dsimp [monoidalUnit]
+  infer_instance
 
-end
+instance [F.IsEquivalence] : IsIso (monoidalCounit F h) := by
+  dsimp [monoidalCounit]
+  infer_instance
 
 end CategoryTheory

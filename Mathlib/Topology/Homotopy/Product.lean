@@ -61,8 +61,7 @@ variable {I A : Type*} {X : I → Type*} [∀ i, TopologicalSpace (X i)] [Topolo
 -- Porting note: this definition is already in `Topology.Homotopy.Basic`
 -- /-- The product homotopy of `homotopies` between functions `f` and `g` -/
 -- @[simps]
--- def Homotopy.pi (homotopies : ∀ i, Homotopy (f i) (g i)) : Homotopy (pi f) (pi g)
---     where
+-- def Homotopy.pi (homotopies : ∀ i, Homotopy (f i) (g i)) : Homotopy (pi f) (pi g) where
 --   toFun t i := homotopies i t
 --   map_zero_left t := by ext i; simp only [pi_eval, Homotopy.apply_zero]
 --   map_one_left t := by ext i; simp only [pi_eval, Homotopy.apply_one]
@@ -151,8 +150,7 @@ theorem comp_pi_eq_pi_comp (γ₀ : ∀ i, Path.Homotopic.Quotient (as i) (bs i)
 #align path.homotopic.comp_pi_eq_pi_comp Path.Homotopic.comp_pi_eq_pi_comp
 
 /-- Abbreviation for projection onto the ith coordinate. -/
-@[reducible]
-def proj (i : ι) (p : Path.Homotopic.Quotient as bs) : Path.Homotopic.Quotient (as i) (bs i) :=
+abbrev proj (i : ι) (p : Path.Homotopic.Quotient as bs) : Path.Homotopic.Quotient (as i) (bs i) :=
   p.mapFn ⟨_, continuous_apply i⟩
 #align path.homotopic.proj Path.Homotopic.proj
 
@@ -217,14 +215,12 @@ theorem comp_prod_eq_prod_comp : prod q₁ q₂ ⬝ prod r₁ r₂ = prod (q₁ 
 variable {c₁ c₂ : α × β}
 
 /-- Abbreviation for projection onto the left coordinate of a path class. -/
-@[reducible]
-def projLeft (p : Path.Homotopic.Quotient c₁ c₂) : Path.Homotopic.Quotient c₁.1 c₂.1 :=
+abbrev projLeft (p : Path.Homotopic.Quotient c₁ c₂) : Path.Homotopic.Quotient c₁.1 c₂.1 :=
   p.mapFn ⟨_, continuous_fst⟩
 #align path.homotopic.proj_left Path.Homotopic.projLeft
 
 /-- Abbreviation for projection onto the right coordinate of a path class. -/
-@[reducible]
-def projRight (p : Path.Homotopic.Quotient c₁ c₂) : Path.Homotopic.Quotient c₁.2 c₂.2 :=
+abbrev projRight (p : Path.Homotopic.Quotient c₁ c₂) : Path.Homotopic.Quotient c₁.2 c₂.2 :=
   p.mapFn ⟨_, continuous_snd⟩
 #align path.homotopic.proj_right Path.Homotopic.projRight
 

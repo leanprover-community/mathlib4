@@ -44,7 +44,7 @@ attribute [local ext] TensorProduct.ext
 expression of the fact that `L` acts by linear endomorphisms. It simplifies the proofs in
 `lieRingModule` below. -/
 def hasBracketAux (x : L) : Module.End R (M ⊗[R] N) :=
-  (toEndomorphism R L M x).rTensor N + (toEndomorphism R L N x).lTensor M
+  (toEnd R L M x).rTensor N + (toEnd R L N x).lTensor M
 #align tensor_product.lie_module.has_bracket_aux TensorProduct.LieModule.hasBracketAux
 
 /-- The tensor product of two Lie modules is a Lie ring module. -/
@@ -62,7 +62,7 @@ instance lieRingModule : LieRingModule L (M ⊗[R] N) where
     ext m n
     simp only [hasBracketAux, AlgebraTensorModule.curry_apply, curry_apply, sub_tmul, tmul_sub,
       LinearMap.coe_restrictScalars, Function.comp_apply, LinearMap.coe_comp,
-      LinearMap.rTensor_tmul, LieHom.map_lie, toEndomorphism_apply_apply, LinearMap.add_apply,
+      LinearMap.rTensor_tmul, LieHom.map_lie, toEnd_apply_apply, LinearMap.add_apply,
       LinearMap.map_add, LieHom.lie_apply, Module.End.lie_apply, LinearMap.lTensor_tmul]
     abel
 #align tensor_product.lie_module.lie_ring_module TensorProduct.LieModule.lieRingModule
@@ -79,7 +79,7 @@ instance lieModule : LieModule R L (M ⊗[R] N) where
 @[simp]
 theorem lie_tmul_right (x : L) (m : M) (n : N) : ⁅x, m ⊗ₜ[R] n⁆ = ⁅x, m⁆ ⊗ₜ n + m ⊗ₜ ⁅x, n⁆ :=
   show hasBracketAux x (m ⊗ₜ[R] n) = _ by
-    simp only [hasBracketAux, LinearMap.rTensor_tmul, toEndomorphism_apply_apply,
+    simp only [hasBracketAux, LinearMap.rTensor_tmul, toEnd_apply_apply,
       LinearMap.add_apply, LinearMap.lTensor_tmul]
 #align tensor_product.lie_module.lie_tmul_right TensorProduct.LieModule.lie_tmul_right
 
@@ -135,7 +135,7 @@ nonrec def map (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) : M ⊗[R] N 
   { map (f : M →ₗ[R] P) (g : N →ₗ[R] Q) with
     map_lie' := fun {x t} => by
       simp only [LinearMap.toFun_eq_coe]
-      refine' t.induction_on _ _ _
+      refine t.induction_on ?_ ?_ ?_
       · simp only [LinearMap.map_zero, lie_zero]
       · intro m n
         simp only [LieModuleHom.coe_toLinearMap, lie_tmul_right, LieModuleHom.map_lie, map_tmul,
@@ -181,14 +181,14 @@ variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 /-- The action of the Lie algebra on one of its modules, regarded as a morphism of Lie modules. -/
 def toModuleHom : L ⊗[R] M →ₗ⁅R,L⁆ M :=
   TensorProduct.LieModule.liftLie R L L M M
-    { (toEndomorphism R L M : L →ₗ[R] M →ₗ[R] M) with
+    { (toEnd R L M : L →ₗ[R] M →ₗ[R] M) with
       map_lie' := fun {x m} => by ext n; simp [LieRing.of_associative_ring_bracket] }
 #align lie_module.to_module_hom LieModule.toModuleHom
 
 @[simp]
 theorem toModuleHom_apply (x : L) (m : M) : toModuleHom R L M (x ⊗ₜ m) = ⁅x, m⁆ := by
   simp only [toModuleHom, TensorProduct.LieModule.liftLie_apply, LieModuleHom.coe_mk,
-    LinearMap.coe_mk, LinearMap.coe_toAddHom, LieHom.coe_toLinearMap, toEndomorphism_apply_apply]
+    LinearMap.coe_mk, LinearMap.coe_toAddHom, LieHom.coe_toLinearMap, toEnd_apply_apply]
 #align lie_module.to_module_hom_apply LieModule.toModuleHom_apply
 
 end LieModule
