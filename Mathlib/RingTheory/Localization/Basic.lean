@@ -749,8 +749,8 @@ noncomputable def algEquiv : S ≃ₐ[R] Q :=
 end
 
 -- Porting note (#10618): removed `simp`, `simp` can prove it
-theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y :=
-  by simp
+theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y := by
+  simp
 #align is_localization.alg_equiv_mk' IsLocalization.algEquiv_mk'
 
 -- Porting note (#10618): removed `simp`, `simp` can prove it

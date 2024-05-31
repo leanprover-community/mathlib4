@@ -142,8 +142,8 @@ lemma le_schnirelmannDensity_iff {x : ℝ} :
   (le_ciInf_iff ⟨0, fun _ ⟨_, hx⟩ => hx ▸ by positivity⟩).trans Subtype.forall
 
 lemma schnirelmannDensity_lt_iff {x : ℝ} :
-    schnirelmannDensity A < x ↔ ∃ n : ℕ, 0 < n ∧ ((Ioc 0 n).filter (· ∈ A)).card / n < x :=
-  by rw [← not_le, le_schnirelmannDensity_iff]; simp
+    schnirelmannDensity A < x ↔ ∃ n : ℕ, 0 < n ∧ ((Ioc 0 n).filter (· ∈ A)).card / n < x := by
+  rw [← not_le, le_schnirelmannDensity_iff]; simp
 
 lemma schnirelmannDensity_le_iff_forall {x : ℝ} :
     schnirelmannDensity A ≤ x ↔
@@ -152,8 +152,8 @@ lemma schnirelmannDensity_le_iff_forall {x : ℝ} :
   simp only [schnirelmannDensity_lt_iff]
 
 lemma schnirelmannDensity_congr' {B : Set ℕ} [DecidablePred (· ∈ B)]
-    (h : ∀ n > 0, n ∈ A ↔ n ∈ B) : schnirelmannDensity A = schnirelmannDensity B :=
-  by rw [schnirelmannDensity, schnirelmannDensity]; congr; ext ⟨n, hn⟩; congr 3; ext x; aesop
+    (h : ∀ n > 0, n ∈ A ↔ n ∈ B) : schnirelmannDensity A = schnirelmannDensity B := by
+  rw [schnirelmannDensity, schnirelmannDensity]; congr; ext ⟨n, hn⟩; congr 3; ext x; aesop
 
 /-- The Schnirelmann density is unaffected by adding `0`. -/
 @[simp] lemma schnirelmannDensity_insert_zero [DecidablePred (· ∈ insert 0 A)] :

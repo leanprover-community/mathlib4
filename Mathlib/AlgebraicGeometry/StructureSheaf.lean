@@ -1188,8 +1188,8 @@ are not definitionally equal.
 -/
 theorem comap_id {U V : Opens (PrimeSpectrum.Top R)} (hUV : U = V) :
     (comap (RingHom.id R) U V fun p hpV => by rwa [hUV, PrimeSpectrum.comap_id]) =
-      eqToHom (show (structureSheaf R).1.obj (op U) = _ by rw [hUV]) :=
-  by erw [comap_id_eq_map U V (eqToHom hUV.symm), eqToHom_op, eqToHom_map]
+      eqToHom (show (structureSheaf R).1.obj (op U) = _ by rw [hUV]) := by
+  erw [comap_id_eq_map U V (eqToHom hUV.symm), eqToHom_op, eqToHom_map]
 #align algebraic_geometry.structure_sheaf.comap_id AlgebraicGeometry.StructureSheaf.comap_id
 
 @[simp]

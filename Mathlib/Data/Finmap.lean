@@ -666,8 +666,9 @@ variable [DecidableEq α]
 
 instance : DecidableRel (@Disjoint α β) := fun x y => by dsimp only [Disjoint]; infer_instance
 
-theorem disjoint_union_left (x y z : Finmap β) : Disjoint (x ∪ y) z ↔ Disjoint x z ∧ Disjoint y z :=
-  by simp [Disjoint, Finmap.mem_union, or_imp, forall_and]
+theorem disjoint_union_left (x y z : Finmap β) :
+    Disjoint (x ∪ y) z ↔ Disjoint x z ∧ Disjoint y z := by
+  simp [Disjoint, Finmap.mem_union, or_imp, forall_and]
 #align finmap.disjoint_union_left Finmap.disjoint_union_left
 
 theorem disjoint_union_right (x y z : Finmap β) :

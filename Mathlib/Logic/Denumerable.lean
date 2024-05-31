@@ -170,8 +170,8 @@ instance prod : Denumerable (α × β) :=
 #align denumerable.prod Denumerable.prod
 
 -- Porting note: removed @[simp] - simp can prove it
-theorem prod_ofNat_val (n : ℕ) : ofNat (α × β) n = (ofNat α (unpair n).1, ofNat β (unpair n).2) :=
-  by simp
+theorem prod_ofNat_val (n : ℕ) :
+    ofNat (α × β) n = (ofNat α (unpair n).1, ofNat β (unpair n).2) := by simp
 #align denumerable.prod_of_nat_val Denumerable.prod_ofNat_val
 
 @[simp]
