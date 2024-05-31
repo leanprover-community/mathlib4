@@ -48,8 +48,6 @@ definitions, or introduce two more definitions for the other combinations of dec
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
-open BigOperators
-
 variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
 variable (β)
 
@@ -286,13 +284,13 @@ instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, �
 
 @[simp, norm_cast]
 theorem coe_finset_sum {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) :
-    ⇑(∑ a in s, g a) = ∑ a in s, ⇑(g a) :=
+    ⇑(∑ a ∈ s, g a) = ∑ a ∈ s, ⇑(g a) :=
   map_sum coeFnAddMonoidHom g s
 #align dfinsupp.coe_finset_sum DFinsupp.coe_finset_sum
 
 @[simp]
 theorem finset_sum_apply {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) (i : ι) :
-    (∑ a in s, g a) i = ∑ a in s, g a i :=
+    (∑ a ∈ s, g a) i = ∑ a ∈ s, g a i :=
   map_sum (evalAddMonoidHom i) g s
 #align dfinsupp.finset_sum_apply DFinsupp.finset_sum_apply
 
@@ -1700,7 +1698,7 @@ section ProdAndSum
 @[to_additive "`sum f g` is the sum of `g i (f i)` over the support of `f`."]
 def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ] (f : Π₀ i, β i)
     (g : ∀ i, β i → γ) : γ :=
-  ∏ i in f.support, g i (f i)
+  ∏ i ∈ f.support, g i (f i)
 #align dfinsupp.prod DFinsupp.prod
 #align dfinsupp.sum DFinsupp.sum
 
@@ -1826,17 +1824,17 @@ theorem smul_sum {α : Type*} [Monoid α] [∀ i, Zero (β i)] [∀ (i) (x : β 
 theorem prod_add_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [CommMonoid γ] {f g : Π₀ i, β i} {h : ∀ i, β i → γ} (h_zero : ∀ i, h i 0 = 1)
     (h_add : ∀ i b₁ b₂, h i (b₁ + b₂) = h i b₁ * h i b₂) : (f + g).prod h = f.prod h * g.prod h :=
-  have f_eq : (∏ i in f.support ∪ g.support, h i (f i)) = f.prod h :=
+  have f_eq : (∏ i ∈ f.support ∪ g.support, h i (f i)) = f.prod h :=
     (Finset.prod_subset (Finset.subset_union_left _ _) <| by
         simp (config := { contextual := true }) [mem_support_iff, h_zero]).symm
-  have g_eq : (∏ i in f.support ∪ g.support, h i (g i)) = g.prod h :=
+  have g_eq : (∏ i ∈ f.support ∪ g.support, h i (g i)) = g.prod h :=
     (Finset.prod_subset (Finset.subset_union_right _ _) <| by
         simp (config := { contextual := true }) [mem_support_iff, h_zero]).symm
   calc
-    (∏ i in (f + g).support, h i ((f + g) i)) = ∏ i in f.support ∪ g.support, h i ((f + g) i) :=
+    (∏ i ∈ (f + g).support, h i ((f + g) i)) = ∏ i ∈ f.support ∪ g.support, h i ((f + g) i) :=
       Finset.prod_subset support_add <| by
         simp (config := { contextual := true }) [mem_support_iff, h_zero]
-    _ = (∏ i in f.support ∪ g.support, h i (f i)) * ∏ i in f.support ∪ g.support, h i (g i) := by
+    _ = (∏ i ∈ f.support ∪ g.support, h i (f i)) * ∏ i ∈ f.support ∪ g.support, h i (g i) := by
       { simp [h_add, Finset.prod_mul_distrib] }
     _ = _ := by rw [f_eq, g_eq]
 #align dfinsupp.prod_add_index DFinsupp.prod_add_index
@@ -1856,7 +1854,7 @@ theorem prod_eq_prod_fintype [Fintype ι] [∀ i, Zero (β i)] [∀ (i : ι) (x 
     -- Porting note: `f` was a typeclass argument
     [CommMonoid γ] (v : Π₀ i, β i) {f : ∀ i, β i → γ} (hf : ∀ i, f i 0 = 1) :
     v.prod f = ∏ i, f i (DFinsupp.equivFunOnFintype v i) := by
-  suffices (∏ i in v.support, f i (v i)) = ∏ i, f i (v i) by simp [DFinsupp.prod, this]
+  suffices (∏ i ∈ v.support, f i (v i)) = ∏ i, f i (v i) by simp [DFinsupp.prod, this]
   apply Finset.prod_subset v.support.subset_univ
   intro i _ hi
   rw [mem_support_iff, not_not] at hi
@@ -1881,14 +1879,14 @@ also an `AddMonoidHom`.
 def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) :
     (Π₀ i, β i) →+ γ where
   toFun f :=
-    (f.support'.lift fun s => ∑ i in Multiset.toFinset s.1, φ i (f i)) <| by
+    (f.support'.lift fun s => ∑ i ∈ Multiset.toFinset s.1, φ i (f i)) <| by
       rintro ⟨sx, hx⟩ ⟨sy, hy⟩
       dsimp only [Subtype.coe_mk, toFun_eq_coe] at *
       have H1 : sx.toFinset ∩ sy.toFinset ⊆ sx.toFinset := Finset.inter_subset_left _ _
       have H2 : sx.toFinset ∩ sy.toFinset ⊆ sy.toFinset := Finset.inter_subset_right _ _
-      refine'
-        (Finset.sum_subset H1 _).symm.trans
-          ((Finset.sum_congr rfl _).trans (Finset.sum_subset H2 _))
+      refine
+        (Finset.sum_subset H1 ?_).symm.trans
+          ((Finset.sum_congr rfl ?_).trans (Finset.sum_subset H2 ?_))
       · intro i H1 H2
         rw [Finset.mem_inter] at H2
         simp only [Multiset.mem_toFinset] at H1 H2
@@ -1903,17 +1901,17 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
         exact (hx i).resolve_left (mt (fun H3 => And.intro H3 H1) H2)
   map_add' := by
     rintro ⟨f, sf, hf⟩ ⟨g, sg, hg⟩
-    change (∑ i in _, _) = (∑ i in _, _) + ∑ i in _, _
+    change (∑ i ∈ _, _) = (∑ i ∈ _, _) + ∑ i ∈ _, _
     simp only [coe_add, coe_mk', Subtype.coe_mk, Pi.add_apply, map_add, Finset.sum_add_distrib]
     congr 1
-    · refine' (Finset.sum_subset _ _).symm
+    · refine (Finset.sum_subset ?_ ?_).symm
       · intro i
         simp only [Multiset.mem_toFinset, Multiset.mem_add]
         exact Or.inl
       · intro i _ H2
         simp only [Multiset.mem_toFinset, Multiset.mem_add] at H2
         rw [(hf i).resolve_left H2, AddMonoidHom.map_zero]
-    · refine' (Finset.sum_subset _ _).symm
+    · refine (Finset.sum_subset ?_ ?_).symm
       · intro i
         simp only [Multiset.mem_toFinset, Multiset.mem_add]
         exact Or.inr
@@ -1941,7 +1939,7 @@ theorem sumAddHom_comp_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f
 theorem sumAddHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) (f : Π₀ i, β i) : sumAddHom φ f = f.sum fun x => φ x := by
   rcases f with ⟨f, s, hf⟩
-  change (∑ i in _, _) = ∑ i in Finset.filter _ _, _
+  change (∑ i ∈ _, _) = ∑ i ∈ Finset.filter _ _, _
   rw [Finset.sum_filter, Finset.sum_congr rfl]
   intro i _
   dsimp only [coe_mk', Subtype.coe_mk] at *
@@ -2102,7 +2100,7 @@ theorem prod_finset_sum_index {γ : Type w} {α : Type x} [∀ i, AddCommMonoid 
     [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ] {s : Finset α} {g : α → Π₀ i, β i}
     {h : ∀ i, β i → γ} (h_zero : ∀ i, h i 0 = 1)
     (h_add : ∀ i b₁ b₂, h i (b₁ + b₂) = h i b₁ * h i b₂) :
-    (∏ i in s, (g i).prod h) = (∑ i in s, g i).prod h := by
+    (∏ i ∈ s, (g i).prod h) = (∑ i ∈ s, g i).prod h := by
   classical
   exact Finset.induction_on s (by simp [prod_zero_index])
         (by simp (config := { contextual := true }) [prod_add_index, h_zero, h_add])
@@ -2138,7 +2136,7 @@ theorem prod_subtypeDomain_index [∀ i, Zero (β i)] [∀ (i) (x : β i), Decid
 
 theorem subtypeDomain_sum [∀ i, AddCommMonoid (β i)] {s : Finset γ} {h : γ → Π₀ i, β i}
     {p : ι → Prop} [DecidablePred p] :
-    (∑ c in s, h c).subtypeDomain p = ∑ c in s, (h c).subtypeDomain p :=
+    (∑ c ∈ s, h c).subtypeDomain p = ∑ c ∈ s, (h c).subtypeDomain p :=
   map_sum (subtypeDomainAddMonoidHom β p) _ s
 #align dfinsupp.subtype_domain_sum DFinsupp.subtypeDomain_sum
 

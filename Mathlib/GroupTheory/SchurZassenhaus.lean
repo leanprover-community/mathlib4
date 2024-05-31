@@ -24,8 +24,6 @@ In this file we prove the Schur-Zassenhaus theorem.
 -/
 
 
-open scoped BigOperators
-
 namespace Subgroup
 
 section SchurZassenhausAbelian
@@ -195,7 +193,7 @@ private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K
   contrapose! h4
   have h5 : Fintype.card (G ⧸ K) < Fintype.card G := by
     rw [← index_eq_card, ← K.index_mul_card]
-    refine'
+    refine
       lt_mul_of_one_lt_right (Nat.pos_of_ne_zero index_ne_zero_of_finite)
         (K.one_lt_card_iff_ne_bot.mpr h4.1)
   have h6 :

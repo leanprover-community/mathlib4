@@ -32,7 +32,7 @@ algebraic manipulation.
  -/
 
 
-open scoped Real Topology BigOperators Nat
+open scoped Real Topology Nat
 
 open Filter Finset intervalIntegral
 
@@ -44,7 +44,7 @@ set_option linter.uppercaseLean3 false
 
 /-- The product of the first `k` terms in Wallis' formula for `π`. -/
 noncomputable def W (k : ℕ) : ℝ :=
-  ∏ i in range k, (2 * i + 2) / (2 * i + 1) * ((2 * i + 2) / (2 * i + 3))
+  ∏ i ∈ range k, (2 * i + 2) / (2 * i + 1) * ((2 * i + 2) / (2 * i + 3))
 #align real.wallis.W Real.Wallis.W
 
 theorem W_succ (k : ℕ) :
@@ -120,7 +120,7 @@ end Real
 
 /-- Wallis' product formula for `π / 2`. -/
 theorem Real.tendsto_prod_pi_div_two :
-    Tendsto (fun k => ∏ i in range k, ((2 : ℝ) * i + 2) / (2 * i + 1) * ((2 * i + 2) / (2 * i + 3)))
+    Tendsto (fun k => ∏ i ∈ range k, ((2 : ℝ) * i + 2) / (2 * i + 1) * ((2 * i + 2) / (2 * i + 3)))
       atTop (𝓝 (π / 2)) :=
   Real.Wallis.tendsto_W_nhds_pi_div_two
 #align real.tendsto_prod_pi_div_two Real.tendsto_prod_pi_div_two

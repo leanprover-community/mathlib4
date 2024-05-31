@@ -23,6 +23,12 @@ which may be useful due to their definitional properties.
 
 universe u w
 
+/-
+Previously, this had accidentally been made a global instance,
+and we now turn it on locally when convenient.
+-/
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+
 open CategoryTheory Profinite TopologicalSpace Limits
 
 namespace LightProfinite

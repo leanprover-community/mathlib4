@@ -243,7 +243,7 @@ theorem Continuous.matrix_fromBlocks {A : X → Matrix n l R} {B : X → Matrix 
     (hC : Continuous C) (hD : Continuous D) :
     Continuous fun x => Matrix.fromBlocks (A x) (B x) (C x) (D x) :=
   continuous_matrix <| by
-    rintro (i | i) (j | j) <;> refine' Continuous.matrix_elem _ i j <;> assumption
+    rintro (i | i) (j | j) <;> refine Continuous.matrix_elem ?_ i j <;> assumption
 #align continuous.matrix_from_blocks Continuous.matrix_fromBlocks
 
 @[continuity]

@@ -3,7 +3,6 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Finite
 import Mathlib.Order.Category.FinPartOrd
@@ -219,7 +218,7 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
       exact Nonempty.intro ⟨(hf y).choose, (hf y).choose_spec⟩
     let φ : Y → X := fun y => (H y).some.1
     have hφ : ∀ y : Y, f (φ y) = y := fun y => (H y).some.2
-    refine' IsSplitEpi.mk' ⟨⟨φ, _⟩, _⟩
+    refine IsSplitEpi.mk' ⟨⟨φ, ?_⟩, ?_⟩
     swap
     · ext b
       apply hφ

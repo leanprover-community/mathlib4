@@ -702,7 +702,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
   refine span_induction (Ideal.Quotient.eq_zero_iff_mem.1 H) ?_ ?_ ?_ ?_
   · rintro x (⟨i, j, hij, x, rfl⟩ | ⟨i, rfl⟩ | ⟨i, x, y, rfl⟩ | ⟨i, x, y, rfl⟩)
     · refine'
-        ⟨j, {⟨i, x⟩, ⟨j, f' i j hij x⟩}, _,
+        ⟨j, {⟨i, x⟩, ⟨j, f' i j hij x⟩}, ?_,
           isSupported_sub (isSupported_of.2 <| Or.inr rfl) (isSupported_of.2 <| Or.inl rfl),
             fun [_] => _⟩
       · rintro k (rfl | ⟨rfl | _⟩)
@@ -724,7 +724,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       · rw [RingHom.map_sub, RingHom.map_sub]
         erw [lift_of, dif_pos rfl, RingHom.map_one, lift_of, RingHom.map_one, sub_self]
     · refine'
-        ⟨i, {⟨i, x + y⟩, ⟨i, x⟩, ⟨i, y⟩}, _,
+        ⟨i, {⟨i, x + y⟩, ⟨i, x⟩, ⟨i, y⟩}, ?_,
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)
             (isSupported_add (isSupported_of.2 <| Or.inr <| Or.inl rfl)
               (isSupported_of.2 <| Or.inr <| Or.inr rfl)),

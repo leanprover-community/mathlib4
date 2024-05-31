@@ -316,10 +316,10 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
     ∃ g : Y →ᵇ ℝ, (∀ y, ∃ x₁ x₂, g y ∈ Icc (f x₁) (f x₂)) ∧ g ∘ e = f := by
   inhabit X
   -- Put `a = ⨅ x, f x` and `b = ⨆ x, f x`
-  obtain ⟨a, ha⟩ : ∃ a, IsGLB (range f) a
-  · exact ⟨_, isGLB_ciInf (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).1⟩
-  obtain ⟨b, hb⟩ : ∃ b, IsLUB (range f) b
-  · exact ⟨_, isLUB_ciSup (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).2⟩
+  obtain ⟨a, ha⟩ : ∃ a, IsGLB (range f) a :=
+    ⟨_, isGLB_ciInf (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).1⟩
+  obtain ⟨b, hb⟩ : ∃ b, IsLUB (range f) b :=
+    ⟨_, isLUB_ciSup (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).2⟩
   -- Then `f x ∈ [a, b]` for all `x`
   have hmem : ∀ x, f x ∈ Icc a b := fun x => ⟨ha.1 ⟨x, rfl⟩, hb.1 ⟨x, rfl⟩⟩
   -- Rule out the trivial case `a = b`

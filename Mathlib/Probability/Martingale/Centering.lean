@@ -33,7 +33,7 @@ From a process `f`, a filtration `ℱ` and a measure `μ`, we define two process
 
 open TopologicalSpace Filter
 
-open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators
+open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
 
 namespace MeasureTheory
 
@@ -43,7 +43,7 @@ variable {Ω E : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} [NormedAddCo
 /-- Any `ℕ`-indexed stochastic process can be written as the sum of a martingale and a predictable
 process. This is the predictable process. See `martingalePart` for the martingale. -/
 noncomputable def predictablePart {m0 : MeasurableSpace Ω} (f : ℕ → Ω → E) (ℱ : Filtration ℕ m0)
-    (μ : Measure Ω) : ℕ → Ω → E := fun n => ∑ i in Finset.range n, μ[f (i + 1) - f i|ℱ i]
+    (μ : Measure Ω) : ℕ → Ω → E := fun n => ∑ i ∈ Finset.range n, μ[f (i + 1) - f i|ℱ i]
 #align measure_theory.predictable_part MeasureTheory.predictablePart
 
 @[simp]
@@ -73,7 +73,7 @@ theorem martingalePart_add_predictablePart (ℱ : Filtration ℕ m0) (μ : Measu
 #align measure_theory.martingale_part_add_predictable_part MeasureTheory.martingalePart_add_predictablePart
 
 theorem martingalePart_eq_sum : martingalePart f ℱ μ = fun n =>
-    f 0 + ∑ i in Finset.range n, (f (i + 1) - f i - μ[f (i + 1) - f i|ℱ i]) := by
+    f 0 + ∑ i ∈ Finset.range n, (f (i + 1) - f i - μ[f (i + 1) - f i|ℱ i]) := by
   unfold martingalePart predictablePart
   ext1 n
   rw [Finset.eq_sum_range_sub f n, ← add_sub, ← Finset.sum_sub_distrib]
@@ -95,7 +95,7 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
   refine ⟨adapted_martingalePart hf, fun i j hij => ?_⟩
   -- ⊢ μ[martingalePart f ℱ μ j | ℱ i] =ᵐ[μ] martingalePart f ℱ μ i
   have h_eq_sum : μ[martingalePart f ℱ μ j|ℱ i] =ᵐ[μ]
-      f 0 + ∑ k in Finset.range j, (μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i]) := by
+      f 0 + ∑ k ∈ Finset.range j, (μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i]) := by
     rw [martingalePart_eq_sum]
     refine (condexp_add (hf_int 0) ?_).trans ?_
     · exact integrable_finset_sum' _ fun i _ => ((hf_int _).sub (hf_int _)).sub integrable_condexp
@@ -124,7 +124,7 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
   rw [martingalePart_eq_sum]
   refine EventuallyEq.add EventuallyEq.rfl ?_
   rw [← Finset.sum_range_add_sum_Ico _ hij, ←
-    add_zero (∑ i in Finset.range i, (f (i + 1) - f i - μ[f (i + 1) - f i|ℱ i]))]
+    add_zero (∑ i ∈ Finset.range i, (f (i + 1) - f i - μ[f (i + 1) - f i|ℱ i]))]
   refine (eventuallyEq_sum fun k hk => h_lt k (Finset.mem_range.mp hk)).add ?_
   refine (eventuallyEq_sum fun k hk => h_ge k (Finset.mem_Ico.mp hk).1).trans ?_
   simp only [Finset.sum_const_zero, Pi.zero_apply]

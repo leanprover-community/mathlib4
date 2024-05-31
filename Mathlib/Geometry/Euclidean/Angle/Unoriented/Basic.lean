@@ -31,8 +31,6 @@ noncomputable section
 
 open Real Set
 
-open BigOperators
-
 open Real
 
 open RealInnerProductSpace

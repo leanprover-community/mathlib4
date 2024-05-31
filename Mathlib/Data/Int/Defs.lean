@@ -85,6 +85,8 @@ protected lemma sub_nonneg : 0 ≤ a - b ↔ b ≤ a := ⟨Int.le_of_sub_nonneg,
 
 instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
+@[simp] lemma ofNat_injective : Function.Injective ofNat := @Int.ofNat.inj
+
 @[simp] lemma ofNat_eq_natCast (n : ℕ) : Int.ofNat n = n := rfl
 
 @[deprecated ofNat_eq_natCast] -- 2024-03-24
@@ -697,10 +699,10 @@ lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
   (toNat_lt' hn).2 <| emod_lt_of_pos _ <| by omega
 #align int.nat_mod_lt Int.natMod_lt
 
--- We want to use this lemma earlier than the lemmas simp can prove it with
-@[simp, nolint simpNF] lemma coe_nat_pow (m n : ℕ) : ↑(m ^ n : ℕ) = (m ^ n : ℤ) := by
-  induction n <;> simp [Int.pow_succ, Nat.pow_succ, Int.pow_zero, *]
-#align int.coe_nat_pow Int.coe_nat_pow
+attribute [simp] natCast_pow
+
+@[deprecated (since := "2024-05-25")] alias coe_nat_pow := natCast_pow
+#align int.coe_nat_pow Int.natCast_pow
 
 #align int.le_to_nat Int.self_le_toNat
 #align int.le_to_nat_iff Int.le_toNat

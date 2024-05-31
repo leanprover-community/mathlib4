@@ -774,8 +774,9 @@ theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w 
   simp [incidenceSet]
 #align simple_graph.mem_incidence_set SimpleGraph.mem_incidenceSet
 
-theorem mem_incidence_iff_neighbor {v w : V} : s(v, w) ∈ G.incidenceSet v ↔ w ∈ G.neighborSet v :=
-  by simp only [mem_incidenceSet, mem_neighborSet]
+theorem mem_incidence_iff_neighbor {v w : V} :
+    s(v, w) ∈ G.incidenceSet v ↔ w ∈ G.neighborSet v := by
+  simp only [mem_incidenceSet, mem_neighborSet]
 #align simple_graph.mem_incidence_iff_neighbor SimpleGraph.mem_incidence_iff_neighbor
 
 theorem adj_incidenceSet_inter {v : V} {e : Sym2 V} (he : e ∈ G.edgeSet) (h : v ∈ e) :

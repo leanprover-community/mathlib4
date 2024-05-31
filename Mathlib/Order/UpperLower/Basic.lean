@@ -628,13 +628,13 @@ theorem coe_iInf (f : ι → UpperSet α) : (↑(⨅ i, f i) : Set α) = ⋃ i, 
 #align upper_set.coe_infi UpperSet.coe_iInf
 
 @[norm_cast] -- Porting note: no longer a `simp`
-theorem coe_iSup₂ (f : ∀ i, κ i → UpperSet α) : (↑(⨆ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j :=
-  by simp_rw [coe_iSup]
+theorem coe_iSup₂ (f : ∀ i, κ i → UpperSet α) :
+    (↑(⨆ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j := by simp_rw [coe_iSup]
 #align upper_set.coe_supr₂ UpperSet.coe_iSup₂
 
 @[norm_cast] -- Porting note: no longer a `simp`
-theorem coe_iInf₂ (f : ∀ i, κ i → UpperSet α) : (↑(⨅ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j :=
-  by simp_rw [coe_iInf]
+theorem coe_iInf₂ (f : ∀ i, κ i → UpperSet α) :
+    (↑(⨅ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp_rw [coe_iInf]
 #align upper_set.coe_infi₂ UpperSet.coe_iInf₂
 
 @[simp]
@@ -782,13 +782,13 @@ theorem coe_iInf (f : ι → LowerSet α) : (↑(⨅ i, f i) : Set α) = ⋂ i, 
 #align lower_set.coe_infi LowerSet.coe_iInf
 
 @[norm_cast] -- Porting note: no longer a `simp`
-theorem coe_iSup₂ (f : ∀ i, κ i → LowerSet α) : (↑(⨆ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j :=
-  by simp_rw [coe_iSup]
+theorem coe_iSup₂ (f : ∀ i, κ i → LowerSet α) :
+    (↑(⨆ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp_rw [coe_iSup]
 #align lower_set.coe_supr₂ LowerSet.coe_iSup₂
 
 @[norm_cast] -- Porting note: no longer a `simp`
-theorem coe_iInf₂ (f : ∀ i, κ i → LowerSet α) : (↑(⨅ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j :=
-  by simp_rw [coe_iInf]
+theorem coe_iInf₂ (f : ∀ i, κ i → LowerSet α) :
+    (↑(⨅ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j := by simp_rw [coe_iInf]
 #align lower_set.coe_infi₂ LowerSet.coe_iInf₂
 
 @[simp]

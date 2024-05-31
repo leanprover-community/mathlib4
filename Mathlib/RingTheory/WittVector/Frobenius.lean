@@ -58,8 +58,6 @@ noncomputable section
 
 open MvPolynomial Finset
 
-open scoped BigOperators
-
 variable (p)
 
 /-- The rational polynomials that give the coefficients of `frobenius x`,
@@ -89,7 +87,7 @@ This makes it easy to show that `frobeniusPoly p n` is congruent to `X n ^ p`
 modulo `p`. -/
 noncomputable def frobeniusPolyAux : ℕ → MvPolynomial ℕ ℤ
   | n => X (n + 1) -  ∑ i : Fin n, have _ := i.is_lt
-      ∑ j in range (p ^ (n - i)),
+      ∑ j ∈ range (p ^ (n - i)),
         (((X (i : ℕ) ^ p) ^ (p ^ (n - (i : ℕ)) - (j + 1)) : MvPolynomial ℕ ℤ) *
         (frobeniusPolyAux i) ^ (j + 1)) *
         C (((p ^ (n - i)).choose (j + 1) / (p ^ (n - i - v p ⟨j + 1, Nat.succ_pos j⟩))
@@ -98,12 +96,12 @@ noncomputable def frobeniusPolyAux : ℕ → MvPolynomial ℕ ℤ
 
 theorem frobeniusPolyAux_eq (n : ℕ) :
     frobeniusPolyAux p n =
-      X (n + 1) - ∑ i in range n,
-          ∑ j in range (p ^ (n - i)),
+      X (n + 1) - ∑ i ∈ range n,
+          ∑ j ∈ range (p ^ (n - i)),
             (X i ^ p) ^ (p ^ (n - i) - (j + 1)) * frobeniusPolyAux p i ^ (j + 1) *
               C ↑((p ^ (n - i)).choose (j + 1) / p ^ (n - i - v p ⟨j + 1, Nat.succ_pos j⟩) *
-                ↑p ^ (j - v p ⟨j + 1, Nat.succ_pos j⟩) : ℕ) :=
-  by rw [frobeniusPolyAux, ← Fin.sum_univ_eq_sum_range]
+                ↑p ^ (j - v p ⟨j + 1, Nat.succ_pos j⟩) : ℕ) := by
+  rw [frobeniusPolyAux, ← Fin.sum_univ_eq_sum_range]
 #align witt_vector.frobenius_poly_aux_eq WittVector.frobeniusPolyAux_eq
 
 /-- The polynomials that give the coefficients of `frobenius x`,

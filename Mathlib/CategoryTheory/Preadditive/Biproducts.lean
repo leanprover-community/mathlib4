@@ -67,8 +67,6 @@ open CategoryTheory.Preadditive
 
 open scoped Classical
 
-open BigOperators
-
 universe v v' u u'
 
 noncomputable section
@@ -380,7 +378,7 @@ theorem inr_of_isLimit {X Y : C} {t : BinaryBicone X Y} (ht : IsLimit t.toCone) 
     bicone. -/
 def isBinaryBilimitOfIsLimit {X Y : C} (t : BinaryBicone X Y) (ht : IsLimit t.toCone) :
     t.IsBilimit :=
-  isBinaryBilimitOfTotal _ (by refine' BinaryFan.IsLimit.hom_ext ht _ _ <;> simp)
+  isBinaryBilimitOfTotal _ (by refine BinaryFan.IsLimit.hom_ext ht ?_ ?_ <;> simp)
 #align category_theory.limits.is_binary_bilimit_of_is_limit CategoryTheory.Limits.isBinaryBilimitOfIsLimit
 
 /-- We can turn any limit cone over a pair into a bilimit bicone. -/
@@ -431,7 +429,7 @@ theorem snd_of_isColimit {X Y : C} {t : BinaryBicone X Y} (ht : IsColimit t.toCo
 def isBinaryBilimitOfIsColimit {X Y : C} (t : BinaryBicone X Y) (ht : IsColimit t.toCocone) :
     t.IsBilimit :=
   isBinaryBilimitOfTotal _ <| by
-    refine' BinaryCofan.IsColimit.hom_ext ht _ _ <;> simp
+    refine BinaryCofan.IsColimit.hom_ext ht ?_ ?_ <;> simp
 #align category_theory.limits.is_binary_bilimit_of_is_colimit CategoryTheory.Limits.isBinaryBilimitOfIsColimit
 
 /-- We can turn any colimit cocone over a pair into a bilimit bicone. -/

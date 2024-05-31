@@ -67,7 +67,7 @@ conditional expectation, conditional expected value
 
 open TopologicalSpace MeasureTheory.Lp Filter
 
-open scoped ENNReal Topology BigOperators MeasureTheory
+open scoped ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
 
@@ -224,9 +224,7 @@ theorem setIntegral_condexp (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hf : Int
   exact setIntegral_condexpL1 hf hs
 #align measure_theory.set_integral_condexp MeasureTheory.setIntegral_condexp
 
-@[deprecated]
-alias set_integral_condexp :=
-  setIntegral_condexp -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")] alias set_integral_condexp := setIntegral_condexp
 
 theorem integral_condexp (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
     ∫ x, (μ[f|m]) x ∂μ = ∫ x, f x ∂μ := by
@@ -249,9 +247,8 @@ theorem ae_eq_condexp_of_forall_setIntegral_eq (hm : m ≤ m0) [SigmaFinite (μ.
   rw [hg_eq s hs hμs, setIntegral_condexp hm hf hs]
 #align measure_theory.ae_eq_condexp_of_forall_set_integral_eq MeasureTheory.ae_eq_condexp_of_forall_setIntegral_eq
 
-@[deprecated]
-alias ae_eq_condexp_of_forall_set_integral_eq :=
-  ae_eq_condexp_of_forall_setIntegral_eq -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias ae_eq_condexp_of_forall_set_integral_eq := ae_eq_condexp_of_forall_setIntegral_eq
 
 theorem condexp_bot' [hμ : NeZero μ] (f : α → F') :
     μ[f|⊥] = fun _ => (μ Set.univ).toReal⁻¹ • ∫ x, f x ∂μ := by
@@ -299,7 +296,7 @@ theorem condexp_add (hf : Integrable f μ) (hg : Integrable g μ) :
 #align measure_theory.condexp_add MeasureTheory.condexp_add
 
 theorem condexp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → F'}
-    (hf : ∀ i ∈ s, Integrable (f i) μ) : μ[∑ i in s, f i|m] =ᵐ[μ] ∑ i in s, μ[f i|m] := by
+    (hf : ∀ i ∈ s, Integrable (f i) μ) : μ[∑ i ∈ s, f i|m] =ᵐ[μ] ∑ i ∈ s, μ[f i|m] := by
   induction' s using Finset.induction_on with i s his heq hf
   · rw [Finset.sum_empty, Finset.sum_empty, condexp_zero]
   · rw [Finset.sum_insert his, Finset.sum_insert his]

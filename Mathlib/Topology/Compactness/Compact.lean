@@ -551,30 +551,45 @@ theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
   contradiction
 #align exists_subset_nhds_of_is_compact' exists_subset_nhds_of_isCompact'
 
+lemma eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open (b : ι → Set X)
+    (hb : IsTopologicalBasis (Set.range b)) (U : Set X) (hUc : IsCompact U) (hUo : IsOpen U) :
+    ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
+  obtain ⟨Y, f, e, hf⟩ := hb.open_eq_iUnion hUo
+  choose f' hf' using hf
+  have : b ∘ f' = f := funext hf'
+  subst this
+  obtain ⟨t, ht⟩ :=
+    hUc.elim_finite_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) (by rw [e])
+  refine ⟨t.image f', Set.toFinite _, le_antisymm ?_ ?_⟩
+  · refine Set.Subset.trans ht ?_
+    simp only [Set.iUnion_subset_iff]
+    intro i hi
+    erw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i => b i.1]
+    exact Set.subset_iUnion (fun i : t.image f' => b i) ⟨_, Finset.mem_image_of_mem _ hi⟩
+  · apply Set.iUnion₂_subset
+    rintro i hi
+    obtain ⟨j, -, rfl⟩ := Finset.mem_image.mp hi
+    rw [e]
+    exact Set.subset_iUnion (b ∘ f') j
+
+lemma eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open (b : Set (Set X))
+    (hb : IsTopologicalBasis b) (U : Set X) (hUc : IsCompact U) (hUo : IsOpen U) :
+    ∃ s : Finset b, U = s.toSet.sUnion := by
+  have hb' : b = range (fun i ↦ i : b → Set X) := by simp
+  rw [hb'] at hb
+  choose s hs hU using eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open _ hb U hUc hUo
+  have : Finite s := hs
+  let _ : Fintype s := Fintype.ofFinite _
+  use s.toFinset
+  simp [hU]
+
 /-- If `X` has a basis consisting of compact opens, then an open set in `X` is compact open iff
   it is a finite union of some elements in the basis -/
 theorem isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis (b : ι → Set X)
     (hb : IsTopologicalBasis (Set.range b)) (hb' : ∀ i, IsCompact (b i)) (U : Set X) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set ι, s.Finite ∧ U = ⋃ i ∈ s, b i := by
   constructor
-  · rintro ⟨h₁, h₂⟩
-    obtain ⟨Y, f, e, hf⟩ := hb.open_eq_iUnion h₂
-    choose f' hf' using hf
-    have : b ∘ f' = f := funext hf'
-    subst this
-    obtain ⟨t, ht⟩ :=
-      h₁.elim_finite_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) (by rw [e])
-    refine ⟨t.image f', Set.toFinite _, le_antisymm ?_ ?_⟩
-    · refine Set.Subset.trans ht ?_
-      simp only [Set.iUnion_subset_iff]
-      intro i hi
-      erw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i => b i.1]
-      exact Set.subset_iUnion (fun i : t.image f' => b i) ⟨_, Finset.mem_image_of_mem _ hi⟩
-    · apply Set.iUnion₂_subset
-      rintro i hi
-      obtain ⟨j, -, rfl⟩ := Finset.mem_image.mp hi
-      rw [e]
-      exact Set.subset_iUnion (b ∘ f') j
+  · exact fun ⟨h₁, h₂⟩ ↦ eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open _ hb U h₁ h₂
   · rintro ⟨s, hs, rfl⟩
     constructor
     · exact hs.isCompact_biUnion fun i _ => hb' i
@@ -784,8 +799,8 @@ theorem isCompact_univ [h : CompactSpace X] : IsCompact (univ : Set X) :=
 #align is_compact_univ isCompact_univ
 
 theorem exists_clusterPt_of_compactSpace [CompactSpace X] (f : Filter X) [NeBot f] :
-    ∃ x, ClusterPt x f :=
-  by simpa using isCompact_univ (show f ≤ 𝓟 univ by simp)
+    ∃ x, ClusterPt x f := by
+  simpa using isCompact_univ (show f ≤ 𝓟 univ by simp)
 #align cluster_point_of_compact exists_clusterPt_of_compactSpace
 
 @[deprecated] -- Since 28 January 2024

@@ -58,7 +58,6 @@ colex, colexicographic, binary
 -/
 
 open Finset Function
-open scoped BigOperators
 
 #align nat.sum_two_pow_lt Nat.geomSum_lt
 
@@ -399,7 +398,7 @@ The colexicographic order agrees with the order induced by interpreting a set of
 section Nat
 variable {s t : Finset ℕ} {n : ℕ}
 
-lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k in ofColex s, n ^ k := by
+lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k ∈ ofColex s, n ^ k := by
   rintro ⟨s⟩ ⟨t⟩ hst
   rw [toColex_lt_toColex_iff_exists_forall_lt] at hst
   obtain ⟨a, hat, has, ha⟩ := hst
@@ -410,13 +409,13 @@ lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k in 
 /-- For finsets of naturals of naturals, the colexicographic order is equivalent to the order
 induced by the `n`-ary expansion. -/
 lemma geomSum_le_geomSum_iff_toColex_le_toColex (hn : 2 ≤ n) :
-    ∑ k in s, n ^ k ≤ ∑ k in t, n ^ k ↔ toColex s ≤ toColex t :=
+    ∑ k ∈ s, n ^ k ≤ ∑ k ∈ t, n ^ k ↔ toColex s ≤ toColex t :=
   (geomSum_ofColex_strictMono hn).le_iff_le
 
 /-- For finsets of naturals of naturals, the colexicographic order is equivalent to the order
 induced by the `n`-ary expansion. -/
 lemma geomSum_lt_geomSum_iff_toColex_lt_toColex (hn : 2 ≤ n) :
-    ∑ i in s, n ^ i < ∑ i in t, n ^ i ↔ toColex s < toColex t :=
+    ∑ i ∈ s, n ^ i < ∑ i ∈ t, n ^ i ↔ toColex s < toColex t :=
   (geomSum_ofColex_strictMono hn).lt_iff_lt
 
 -- TODO: Package the above in the `n = 2` case as an order isomorphism `Colex ℕ ≃o ℕ`

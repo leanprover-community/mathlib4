@@ -670,7 +670,7 @@ protected theorem ContDiffWithinAt.eventually {n : ℕ} (h : ContDiffWithinAt �
   rcases h.contDiffOn le_rfl with ⟨u, hu, _, hd⟩
   have : ∀ᶠ y : E in 𝓝[insert x s] x, u ∈ 𝓝[insert x s] y ∧ y ∈ u :=
     (eventually_nhdsWithin_nhdsWithin.2 hu).and hu
-  refine' this.mono fun y hy => (hd y hy.2).mono_of_mem _
+  refine this.mono fun y hy => (hd y hy.2).mono_of_mem ?_
   exact nhdsWithin_mono y (subset_insert _ _) hy.1
 #align cont_diff_within_at.eventually ContDiffWithinAt.eventually
 
@@ -868,8 +868,8 @@ theorem iteratedFDerivWithin_succ_eq_comp_right {n : ℕ} (hs : UniqueDiffOn �
     iteratedFDerivWithin 𝕜 (n + 1) f s x =
       (continuousMultilinearCurryRightEquiv' 𝕜 n E F ∘
           iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s)
-        x :=
-  by ext m; rw [iteratedFDerivWithin_succ_apply_right hs hx]; rfl
+        x := by
+  ext m; rw [iteratedFDerivWithin_succ_apply_right hs hx]; rfl
 #align iterated_fderiv_within_succ_eq_comp_right iteratedFDerivWithin_succ_eq_comp_right
 
 theorem norm_iteratedFDerivWithin_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
@@ -1055,7 +1055,7 @@ protected theorem ContDiffOn.ftaylorSeriesWithin (h : ContDiffOn 𝕜 n f s) (hs
     rcases mem_nhdsWithin.1 hu with ⟨o, o_open, xo, ho⟩
     rw [insert_eq_of_mem hx] at ho
     rw [inter_comm] at ho
-    refine' ⟨o, o_open, xo, _⟩
+    refine ⟨o, o_open, xo, ?_⟩
     have A : ∀ y ∈ s ∩ o, p y m = ftaylorSeriesWithin 𝕜 f s y m := by
       rintro y ⟨hy, yo⟩
       change p y m = iteratedFDerivWithin 𝕜 m f s y
@@ -1657,8 +1657,8 @@ and the `n`-th derivative of the derivative. -/
 theorem iteratedFDeriv_succ_eq_comp_right {n : ℕ} :
     iteratedFDeriv 𝕜 (n + 1) f x =
       (continuousMultilinearCurryRightEquiv' 𝕜 n E F ∘ iteratedFDeriv 𝕜 n fun y => fderiv 𝕜 f y)
-        x :=
-  by ext m; rw [iteratedFDeriv_succ_apply_right]; rfl
+        x := by
+  ext m; rw [iteratedFDeriv_succ_apply_right]; rfl
 #align iterated_fderiv_succ_eq_comp_right iteratedFDeriv_succ_eq_comp_right
 
 theorem norm_iteratedFDeriv_fderiv {n : ℕ} :

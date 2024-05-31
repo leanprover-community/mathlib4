@@ -396,8 +396,8 @@ theorem realize_mapTermRel_add_castLe [L'.Structure M] {k : ℕ}
 theorem realize_relabel {m n : ℕ} {φ : L.BoundedFormula α n} {g : α → Sum β (Fin m)} {v : β → M}
     {xs : Fin (m + n) → M} :
     (φ.relabel g).Realize v xs ↔
-      φ.Realize (Sum.elim v (xs ∘ Fin.castAdd n) ∘ g) (xs ∘ Fin.natAdd m) :=
-  by rw [relabel, realize_mapTermRel_add_castLe] <;> intros <;> simp
+      φ.Realize (Sum.elim v (xs ∘ Fin.castAdd n) ∘ g) (xs ∘ Fin.natAdd m) := by
+  rw [relabel, realize_mapTermRel_add_castLe] <;> intros <;> simp
 #align first_order.language.bounded_formula.realize_relabel FirstOrder.Language.BoundedFormula.realize_relabel
 
 theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M} {xs : Fin (n + n') → M}
