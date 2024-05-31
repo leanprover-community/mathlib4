@@ -240,10 +240,6 @@ theorem mulSupport_along_fiber_subset (f : α × β → M) (a : α) :
 #align function.support_along_fiber_subset Function.support_along_fiber_subset
 
 @[to_additive]
-theorem mulSupport_in_fiber (f : α × β → M) (a : α) :
-    (mulSupport fun b => f (a, b)) = {b | (a, b) ∈ (mulSupport f)} := rfl
-
-@[to_additive]
 theorem mulSupport_curry (f : α × β → M) :
     (mulSupport f.curry) = (mulSupport f).image Prod.fst := by
   simp [mulSupport, funext_iff, image]
