@@ -302,8 +302,8 @@ noncomputable instance instPreservesColimitsForget [HasColimits V] :
 end Forget
 
 theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
-    N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) :=
-      by rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
+    N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) := by
+      rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
 set_option linter.uppercaseLean3 false in
 #align Action.iso.conj_ρ Action.Iso.conj_ρ
 

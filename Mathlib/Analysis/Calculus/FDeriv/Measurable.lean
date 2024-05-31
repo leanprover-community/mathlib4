@@ -170,8 +170,8 @@ theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : E} (hx : Differen
   refine ⟨r, this, fun y hy z hz => ?_⟩
   calc
     ‖f z - f y - (fderiv 𝕜 f x) (z - y)‖ =
-        ‖f z - f x - (fderiv 𝕜 f x) (z - x) - (f y - f x - (fderiv 𝕜 f x) (y - x))‖ :=
-      by simp only [map_sub]; abel_nf
+        ‖f z - f x - (fderiv 𝕜 f x) (z - x) - (f y - f x - (fderiv 𝕜 f x) (y - x))‖ := by
+      simp only [map_sub]; abel_nf
     _ ≤ ‖f z - f x - (fderiv 𝕜 f x) (z - x)‖ + ‖f y - f x - (fderiv 𝕜 f x) (y - x)‖ :=
       norm_sub_le _ _
     _ ≤ δ * ‖z - x‖ + δ * ‖y - x‖ :=
@@ -522,8 +522,8 @@ theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : ℝ}
   calc
     ‖f z - f y - (z - y) • derivWithin f (Ici x) x‖ =
         ‖f z - f x - (z - x) • derivWithin f (Ici x) x -
-            (f y - f x - (y - x) • derivWithin f (Ici x) x)‖ :=
-      by congr 1; simp only [sub_smul]; abel
+            (f y - f x - (y - x) • derivWithin f (Ici x) x)‖ := by
+      congr 1; simp only [sub_smul]; abel
     _ ≤
         ‖f z - f x - (z - x) • derivWithin f (Ici x) x‖ +
           ‖f y - f x - (y - x) • derivWithin f (Ici x) x‖ :=

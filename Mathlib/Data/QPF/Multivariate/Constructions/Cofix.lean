@@ -227,8 +227,8 @@ private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
     intro a b r'ab
     have h₀ :
       appendFun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> MvQPF.abs (M.dest q.P a) =
-        appendFun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> MvQPF.abs (M.dest q.P b) :=
-      by rw [appendFun_comp_id, comp_map, comp_map]; exact h _ _ r'ab
+        appendFun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> MvQPF.abs (M.dest q.P b) := by
+      rw [appendFun_comp_id, comp_map, comp_map]; exact h _ _ r'ab
     have h₁ : ∀ u v : q.P.M α, Mcongr u v → Quot.mk r' u = Quot.mk r' v := by
       intro u v cuv
       apply Quot.sound

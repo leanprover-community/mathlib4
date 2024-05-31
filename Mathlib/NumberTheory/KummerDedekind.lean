@@ -309,8 +309,8 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
     generalize hJ' :
       (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx') ⟨J, hJ⟩ = J'
     have : ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm J' : Ideal S) =
-        J :=
-      by rw [← hJ', Equiv.symm_apply_apply _ _, Subtype.coe_mk]
+        J := by
+      rw [← hJ', Equiv.symm_apply_apply _ _, Subtype.coe_mk]
     subst this
     -- Get rid of the `attach` by applying the subtype `coe` to both sides.
     rw [Multiset.count_map_eq_count' fun f =>

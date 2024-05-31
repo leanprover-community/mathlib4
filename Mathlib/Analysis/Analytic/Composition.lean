@@ -954,8 +954,8 @@ theorem sigma_pi_composition_eq_iff
     ext1
     have :
       map List.sum (ofFn fun i : Fin (Composition.length a) => (b i).blocks) =
-        map List.sum (ofFn fun i : Fin (Composition.length a') => (b' i).blocks) :=
-      by rw [H]
+        map List.sum (ofFn fun i : Fin (Composition.length a') => (b' i).blocks) := by
+      rw [H]
     simp only [map_ofFn] at this
     change
       (ofFn fun i : Fin (Composition.length a) => (b i).blocks.sum) =

@@ -114,8 +114,8 @@ theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} 
       spanning := iUnion_spanningSets _ }
   calc
     (μ.trim hm) (spanningSets (μ.trim (hm₂.trans hm)) i) =
-        ((μ.trim hm).trim hm₂) (spanningSets (μ.trim (hm₂.trans hm)) i) :=
-      by rw [@trim_measurableSet_eq α m₂ m (μ.trim hm) _ hm₂ (measurable_spanningSets _ _)]
+        ((μ.trim hm).trim hm₂) (spanningSets (μ.trim (hm₂.trans hm)) i) := by
+      rw [@trim_measurableSet_eq α m₂ m (μ.trim hm) _ hm₂ (measurable_spanningSets _ _)]
     _ = (μ.trim (hm₂.trans hm)) (spanningSets (μ.trim (hm₂.trans hm)) i) := by
       rw [@trim_trim _ _ μ _ _ hm₂ hm]
     _ < ∞ := measure_spanningSets_lt_top _ _

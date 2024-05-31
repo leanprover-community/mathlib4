@@ -204,8 +204,8 @@ if h : IsSFiniteKernel κ ∧ IsSFiniteKernel η then
       (fun a =>
           Measure.ofMeasurable (fun s _ => compProdFun κ η a s) (compProdFun_empty κ η a)
             (compProdFun_iUnion κ η a) s) =
-        fun a => compProdFun κ η a s :=
-      by ext1 a; rwa [Measure.ofMeasurable_apply]
+        fun a => compProdFun κ η a s := by
+      ext1 a; rwa [Measure.ofMeasurable_apply]
     rw [this]
     exact measurable_compProdFun κ η hs }
 else 0
@@ -401,8 +401,8 @@ theorem lintegral_compProd' (κ : kernel α β) [IsSFiniteKernel κ] (η : kerne
     intro f'
     have :
       (fun b => ∫⁻ c, f' (b, c) ∂η (a, b)) =
-        (fun ab => ∫⁻ c, f' (ab.2, c) ∂η ab) ∘ fun b => (a, b) :=
-      by ext1 ab; rfl
+        (fun ab => ∫⁻ c, f' (ab.2, c) ∂η ab) ∘ fun b => (a, b) := by
+      ext1 ab; rfl
     rw [this]
     refine' Measurable.comp _ measurable_prod_mk_left
     exact

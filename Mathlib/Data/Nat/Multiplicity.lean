@@ -190,8 +190,8 @@ theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
     ∑ i ∈ Finset.Ico 1 b, n / p ^ i = ∑ i ∈ Finset.Ico 1 b, (k + (n - k)) / p ^ i := by
       simp only [add_tsub_cancel_of_le hkn]
     _ = ∑ i ∈ Finset.Ico 1 b,
-          (k / p ^ i + (n - k) / p ^ i + if p ^ i ≤ k % p ^ i + (n - k) % p ^ i then 1 else 0) :=
-      by simp only [Nat.add_div (pow_pos hp.pos _)]
+          (k / p ^ i + (n - k) / p ^ i + if p ^ i ≤ k % p ^ i + (n - k) % p ^ i then 1 else 0) := by
+      simp only [Nat.add_div (pow_pos hp.pos _)]
     _ = _ := by simp [sum_add_distrib, sum_boole]
 #align nat.prime.multiplicity_choose_aux Nat.Prime.multiplicity_choose_aux
 
