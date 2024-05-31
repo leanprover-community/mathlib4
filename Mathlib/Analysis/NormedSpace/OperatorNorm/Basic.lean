@@ -493,6 +493,14 @@ theorem coe_restrict_scalarsL' : ⇑(restrictScalarsL 𝕜 E Fₗ 𝕜' 𝕜'') 
 
 end RestrictScalars
 
+lemma norm_pi_le_of_le {ι : Type*} [Fintype ι]
+    {M : ι → Type*} [∀ i, SeminormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)] {C : ℝ}
+    {L : (i : ι) → (E →L[𝕜] M i)} (hL : ∀ i, ‖L i‖ ≤ C) (hC : 0 ≤ C) :
+    ‖pi L‖ ≤ C := by
+  refine opNorm_le_bound _ hC (fun x ↦ ?_)
+  refine (pi_norm_le_iff_of_nonneg (by positivity)).mpr (fun i ↦ ?_)
+  exact (L i).le_of_opNorm_le (hL i) _
+
 end ContinuousLinearMap
 
 namespace LinearMap

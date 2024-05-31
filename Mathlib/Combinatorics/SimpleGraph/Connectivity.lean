@@ -601,8 +601,8 @@ theorem support_nonempty {u v : V} (p : G.Walk u v) : { w | w ∈ p.support }.No
   ⟨u, by simp⟩
 #align simple_graph.walk.support_nonempty SimpleGraph.Walk.support_nonempty
 
-theorem mem_support_iff {u v w : V} (p : G.Walk u v) : w ∈ p.support ↔ w = u ∨ w ∈ p.support.tail :=
-  by cases p <;> simp
+theorem mem_support_iff {u v w : V} (p : G.Walk u v) :
+    w ∈ p.support ↔ w = u ∨ w ∈ p.support.tail := by cases p <;> simp
 #align simple_graph.walk.mem_support_iff SimpleGraph.Walk.mem_support_iff
 
 theorem mem_support_nil_iff {u v : V} : u ∈ (nil : G.Walk v v).support ↔ u = v := by simp
@@ -642,8 +642,8 @@ theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
   simp (config := { contextual := true }) only [mem_support_append_iff, or_true_iff, imp_true_iff]
 #align simple_graph.walk.subset_support_append_right SimpleGraph.Walk.subset_support_append_right
 
-theorem coe_support {u v : V} (p : G.Walk u v) : (p.support : Multiset V) = {u} + p.support.tail :=
-  by cases p <;> rfl
+theorem coe_support {u v : V} (p : G.Walk u v) :
+    (p.support : Multiset V) = {u} + p.support.tail := by cases p <;> rfl
 #align simple_graph.walk.coe_support SimpleGraph.Walk.coe_support
 
 theorem coe_support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
@@ -1445,8 +1445,8 @@ theorem loop_eq {v : V} (p : G.Path v v) : p = Path.nil := by
   · simp at h
 #align simple_graph.path.loop_eq SimpleGraph.Path.loop_eq
 
-theorem not_mem_edges_of_loop {v : V} {e : Sym2 V} {p : G.Path v v} : ¬e ∈ (p : G.Walk v v).edges :=
-  by simp [p.loop_eq]
+theorem not_mem_edges_of_loop {v : V} {e : Sym2 V} {p : G.Path v v} :
+    ¬e ∈ (p : G.Walk v v).edges := by simp [p.loop_eq]
 #align simple_graph.path.not_mem_edges_of_loop SimpleGraph.Path.not_mem_edges_of_loop
 
 theorem cons_isCycle {u v : V} (p : G.Path v u) (h : G.Adj u v)
@@ -1502,9 +1502,9 @@ theorem length_bypass_le {u v : V} (p : G.Walk u v) : p.bypass.length ≤ p.leng
     · trans
       · apply length_dropUntil_le
       rw [length_cons]
-      exact le_add_right ih
+      omega
     · rw [length_cons, length_cons]
-      exact add_le_add_right ih 1
+      exact Nat.add_le_add_right ih 1
 #align simple_graph.walk.length_bypass_le SimpleGraph.Walk.length_bypass_le
 
 lemma bypass_eq_self_of_length_le {u v : V} (p : G.Walk u v) (h : p.length ≤ p.bypass.length) :
@@ -1521,8 +1521,8 @@ lemma bypass_eq_self_of_length_le {u v : V} (p : G.Walk u v) (h : p.length ≤ p
         _ ≤ (p.bypass.dropUntil _ _).length := h
         _ ≤ p.bypass.length := Walk.length_dropUntil_le p.bypass hb
         _ ≤ p.length := Walk.length_bypass_le _
-    · simp only [hb, Walk.bypass, Walk.length_cons, not_false_iff, dif_neg, add_le_add_iff_right]
-       at h
+    · simp only [hb, Walk.bypass, Walk.length_cons, not_false_iff, dif_neg,
+        Nat.add_le_add_iff_right] at h
       rw [ih h]
 
 /-- Given a walk, produces a path with the same endpoints using `SimpleGraph.Walk.bypass`. -/
@@ -2424,8 +2424,8 @@ theorem toSubgraph_rotate [DecidableEq V] (c : G.Walk v v) (h : u ∈ c.support)
 #align simple_graph.walk.to_subgraph_rotate SimpleGraph.Walk.toSubgraph_rotate
 
 @[simp]
-theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) : (p.map f).toSubgraph = p.toSubgraph.map f :=
-  by induction p <;> simp [*, Subgraph.map_sup]
+theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) :
+    (p.map f).toSubgraph = p.toSubgraph.map f := by induction p <;> simp [*, Subgraph.map_sup]
 #align simple_graph.walk.to_subgraph_map SimpleGraph.Walk.toSubgraph_map
 
 @[simp]

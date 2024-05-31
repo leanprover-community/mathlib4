@@ -104,7 +104,7 @@ universe u
 
 open Metric Set Filter Fin MeasureTheory TopologicalSpace
 
-open scoped Topology Classical BigOperators ENNReal MeasureTheory NNReal
+open scoped Topology Classical ENNReal MeasureTheory NNReal
 
 /-!
 ### Satellite configurations
@@ -638,7 +638,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
   -- Since `s` might not be measurable, we express this in terms of the measurable superset `o`.
   obtain ⟨w, hw⟩ :
     ∃ w : Finset (u i), μ s / (N + 1) <
-      ∑ x : u i in w, μ (o ∩ closedBall (x : α) (r (x : α))) := by
+      ∑ x ∈ w, μ (o ∩ closedBall (x : α) (r (x : α))) := by
     have C : HasSum (fun x : u i => μ (o ∩ closedBall x (r x))) (μ (o ∩ v i)) := by
       rw [B]; exact ENNReal.summable.hasSum
     have : μ s / (N + 1) < μ (o ∩ v i) := hi.trans_le (measure_mono (inter_subset_inter_left _ so))
@@ -1084,7 +1084,7 @@ protected def vitaliFamily (μ : Measure α) [SigmaFinite μ] : VitaliFamily μ 
                 t.PairwiseDisjoint fun x => closedBall x (r x) :=
       exists_disjoint_closedBall_covering_ae μ g s A (fun _ => 1) fun _ _ => zero_lt_one
     let F : α → α × Set α := fun x => (x, closedBall x (r x))
-    refine' ⟨F '' t, _, _, _, _⟩
+    refine ⟨F '' t, ?_, ?_, ?_, ?_⟩
     · rintro - ⟨x, hx, rfl⟩; exact ts hx
     · rintro p ⟨x, hx, rfl⟩ q ⟨y, hy, rfl⟩ hxy
       exact tdisj hx hy (ne_of_apply_ne F hxy)

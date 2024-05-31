@@ -310,10 +310,8 @@ theorem not_int_of_not_padic_int (p : ℕ) {a : ℚ} [hp : Fact (Nat.Prime p)]
   rw [Rat.eq_num_of_isInt H]
   apply padicNorm.of_int
 
-open BigOperators
-
 theorem sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
-    s.Nonempty → (∀ i ∈ s, padicNorm p (F i) < t) → padicNorm p (∑ i in s, F i) < t := by
+    s.Nonempty → (∀ i ∈ s, padicNorm p (F i) < t) → padicNorm p (∑ i ∈ s, F i) < t := by
   classical
     refine s.induction_on (by rintro ⟨-, ⟨⟩⟩) ?_
     rintro a S haS IH - ht
@@ -327,7 +325,7 @@ theorem sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
 #align padic_norm.sum_lt padicNorm.sum_lt
 
 theorem sum_le {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
-    s.Nonempty → (∀ i ∈ s, padicNorm p (F i) ≤ t) → padicNorm p (∑ i in s, F i) ≤ t := by
+    s.Nonempty → (∀ i ∈ s, padicNorm p (F i) ≤ t) → padicNorm p (∑ i ∈ s, F i) ≤ t := by
   classical
     refine s.induction_on (by rintro ⟨-, ⟨⟩⟩) ?_
     rintro a S haS IH - ht
@@ -341,14 +339,14 @@ theorem sum_le {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
 #align padic_norm.sum_le padicNorm.sum_le
 
 theorem sum_lt' {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α}
-    (hF : ∀ i ∈ s, padicNorm p (F i) < t) (ht : 0 < t) : padicNorm p (∑ i in s, F i) < t := by
+    (hF : ∀ i ∈ s, padicNorm p (F i) < t) (ht : 0 < t) : padicNorm p (∑ i ∈ s, F i) < t := by
   obtain rfl | hs := Finset.eq_empty_or_nonempty s
   · simp [ht]
   · exact sum_lt hs hF
 #align padic_norm.sum_lt' padicNorm.sum_lt'
 
 theorem sum_le' {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α}
-    (hF : ∀ i ∈ s, padicNorm p (F i) ≤ t) (ht : 0 ≤ t) : padicNorm p (∑ i in s, F i) ≤ t := by
+    (hF : ∀ i ∈ s, padicNorm p (F i) ≤ t) (ht : 0 ≤ t) : padicNorm p (∑ i ∈ s, F i) ≤ t := by
   obtain rfl | hs := Finset.eq_empty_or_nonempty s
   · simp [ht]
   · exact sum_le hs hF

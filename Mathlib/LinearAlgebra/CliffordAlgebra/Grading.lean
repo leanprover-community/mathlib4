@@ -171,7 +171,7 @@ theorem evenOdd_induction (n : ZMod 2) {motive : ∀ x, x ∈ evenOdd Q n → Pr
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : motive x hx := by
   apply Submodule.iSup_induction' (C := motive) _ (range_ι_pow 0 (Submodule.zero_mem _)) add
   refine Subtype.rec ?_
-  simp_rw [ZMod.nat_coe_zmod_eq_iff, add_comm n.val]
+  simp_rw [ZMod.natCast_eq_iff, add_comm n.val]
   rintro n' ⟨k, rfl⟩ xv
   simp_rw [pow_add, pow_mul]
   intro hxv

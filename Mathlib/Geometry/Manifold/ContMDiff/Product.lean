@@ -294,8 +294,8 @@ theorem contMDiffWithinAt_prod_iff (f : M → M' × N') {s : Set M} {x : M} :
 
 theorem contMDiffAt_prod_iff (f : M → M' × N') {x : M} :
     ContMDiffAt I (I'.prod J') n f x ↔
-      ContMDiffAt I I' n (Prod.fst ∘ f) x ∧ ContMDiffAt I J' n (Prod.snd ∘ f) x :=
-  by simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_prod_iff f
+      ContMDiffAt I I' n (Prod.fst ∘ f) x ∧ ContMDiffAt I J' n (Prod.snd ∘ f) x := by
+  simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_prod_iff f
 #align cont_mdiff_at_prod_iff contMDiffAt_prod_iff
 
 theorem contMDiff_prod_iff (f : M → M' × N') :

@@ -220,8 +220,6 @@ end DecEq
 
 section FinrankQuotientMap
 
-open scoped BigOperators
-
 open scoped nonZeroDivisors
 
 variable [Algebra R S]
@@ -264,7 +262,7 @@ theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDedekindDomain R]
     simp only [FractionalIdeal.mem_coeIdeal, not_exists, not_and'] at hgI
     exact hgI _ (hg' j hjs)
   refine ⟨fun i => algebraMap R S (g' i), ?_, j, hjs, hgI⟩
-  have eq : f (∑ i in s, g' i • b i) = 0 := by
+  have eq : f (∑ i ∈ s, g' i • b i) = 0 := by
     rw [map_sum, ← smul_zero a, ← eq, Finset.smul_sum]
     refine Finset.sum_congr rfl ?_
     intro i hi
@@ -381,7 +379,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
       have : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective hRL
       rw [← IsFractionRing.isAlgebraic_iff' R S]
       infer_instance
-    refine' IsFractionRing.ideal_span_singleton_map_subset R hRL span_d hx
+    refine IsFractionRing.ideal_span_singleton_map_subset R hRL span_d hx
 #align ideal.finrank_quotient_map.span_eq_top Ideal.FinrankQuotientMap.span_eq_top
 
 variable (K L)
@@ -508,7 +506,7 @@ noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem
     fun x y h => by
     rw [Submodule.quotientRel_r_def] at h ⊢
     simp only [_root_.map_mul, LinearMap.mem_range]
-    refine' ⟨⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_mul a_mem h)⟩, _⟩
+    refine ⟨⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_mul a_mem h)⟩, ?_⟩
     ext
     rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Submodule.coe_sub, Subtype.coe_mk,
       Subtype.coe_mk, _root_.map_mul, map_sub, mul_sub]
@@ -516,8 +514,8 @@ noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem
 
 theorem quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
     quotientToQuotientRangePowQuotSuccAux f p P a_mem (Submodule.Quotient.mk x) =
-      Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ :=
-  by apply Quotient.map'_mk''
+      Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ := by
+  apply Quotient.map'_mk''
 #align ideal.quotient_to_quotient_range_pow_quot_succ_aux_mk Ideal.quotientToQuotientRangePowQuotSuccAux_mk
 
 /-- `S ⧸ P` embeds into the quotient by `P^(i+1) ⧸ P^e` as a subspace of `P^i ⧸ P^e`. -/
@@ -802,8 +800,6 @@ noncomputable def Factors.piQuotientLinearEquiv (p : Ideal R) (hp : map (algebra
 
 variable {S}
 
-open scoped BigOperators
-
 /-- The **fundamental identity** of ramification index `e` and inertia degree `f`:
 for `P` ranging over the primes lying over `p`, `∑ P, e P * f P = [Frac(S) : Frac(R)]`;
 here `S` is a finite `R`-module (and thus `Frac(S) : Frac(R)` is a finite extension) and `p`
@@ -813,7 +809,7 @@ theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDo
     [Algebra R K] [IsFractionRing R K] [Algebra S L] [IsFractionRing S L] [Algebra K L]
     [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [IsNoetherian R S]
     [IsIntegralClosure S R L] [p.IsMaximal] (hp0 : p ≠ ⊥) :
-    (∑ P in (factors (map (algebraMap R S) p)).toFinset,
+    (∑ P ∈ (factors (map (algebraMap R S) p)).toFinset,
         ramificationIdx (algebraMap R S) p P * inertiaDeg (algebraMap R S) p P) =
       finrank K L := by
   set e := ramificationIdx (algebraMap R S) p
@@ -826,8 +822,8 @@ theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDo
     rw [← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq]
     exact inj_RL
   calc
-    (∑ P in (factors (map (algebraMap R S) p)).toFinset, e P * f P) =
-        ∑ P in (factors (map (algebraMap R S) p)).toFinset.attach,
+    (∑ P ∈ (factors (map (algebraMap R S) p)).toFinset, e P * f P) =
+        ∑ P ∈ (factors (map (algebraMap R S) p)).toFinset.attach,
           finrank (R ⧸ p) (S ⧸ (P : Ideal S) ^ e P) := ?_
     _ = finrank (R ⧸ p)
           (∀ P : (factors (map (algebraMap R S) p)).toFinset, S ⧸ (P : Ideal S) ^ e P) :=

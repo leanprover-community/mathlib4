@@ -33,7 +33,7 @@ an s-finite kernel.
 
 open MeasureTheory ProbabilityTheory
 
-open scoped MeasureTheory ENNReal NNReal BigOperators
+open scoped MeasureTheory ENNReal NNReal
 
 namespace ProbabilityTheory.kernel
 
@@ -239,7 +239,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : kernel α β) [IsFin
     ext a b : 2
     rw [tsum_apply (Pi.summable.mpr h_sum_a), tsum_apply (h_sum_a a),
       ENNReal.tsum_eq_liminf_sum_nat]
-    have h_finset_sum : ∀ n, ∑ i in Finset.range n, fs i a b = min (f a b) n := by
+    have h_finset_sum : ∀ n, ∑ i ∈ Finset.range n, fs i a b = min (f a b) n := by
       intro n
       induction' n with n hn
       · simp

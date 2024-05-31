@@ -323,8 +323,8 @@ theorem lookupAll_eq_dlookup (a : α) {l : List (Sigma β)} (h : l.NodupKeys) :
   exact absurd h1 (by simp)
 #align list.lookup_all_eq_lookup List.lookupAll_eq_dlookup
 
-theorem lookupAll_nodup (a : α) {l : List (Sigma β)} (h : l.NodupKeys) : (lookupAll a l).Nodup :=
-  by (rw [lookupAll_eq_dlookup a h]; apply Option.toList_nodup)
+theorem lookupAll_nodup (a : α) {l : List (Sigma β)} (h : l.NodupKeys) : (lookupAll a l).Nodup := by
+  (rw [lookupAll_eq_dlookup a h]; apply Option.toList_nodup)
 #align list.lookup_all_nodup List.lookupAll_nodup
 
 theorem perm_lookupAll (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.NodupKeys) (nd₂ : l₂.NodupKeys)
