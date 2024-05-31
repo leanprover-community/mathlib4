@@ -62,7 +62,7 @@ lemma neg_mem {x} (hx : x ∈ I) : -x ∈ I := by
   simpa using I.neg hx
 
 lemma sub_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x - y ∈ I := by
-  convert I.add_mem hx (I.neg_mem hy) using 1; abel
+  simpa using I.sub hx hy
 
 lemma mul_mem_left (x y) (hy : y ∈ I) : x * y ∈ I := by
   simpa using I.mul (I.refl x) hy
@@ -74,27 +74,19 @@ instance : Add I where add x y := ⟨x.1 + y.1, I.add_mem x.2 y.2⟩
 
 instance : Zero I where zero := ⟨0, I.zero_mem⟩
 
+theorem nsmul (n : ℕ) {x y : R} (hx : I x y) : I (n • x) (n • y) := I.toAddCon.nsmul n hx
+
 instance : SMul ℕ I where
-  smul n x :=
-  ⟨n • x.1, n.rec (by simpa using I.zero_mem) fun n hn ↦ by
-    simpa only [Nat.succ_eq_add_one, add_smul, one_smul] using I.add_mem hn x.2⟩
+  smul n x := ⟨n • x.1, by simpa using I.nsmul _ x.2⟩
 
 instance : Neg I where neg x := ⟨-x.1, I.neg_mem x.2⟩
 
 instance : Sub I where sub x y := ⟨x.1 - y.1, I.sub_mem x.2 y.2⟩
 
+theorem zsmul (z : ℤ) {x y : R} (hx : I x y) : I (z • x) (z • y) := I.toAddCon.zsmul z hx
 
 instance : SMul ℤ I where
-  smul n x := ⟨n • x.1, n.rec (fun a ↦ a.rec (by simpa using I.zero_mem)
-    (fun a ha ↦ by
-      simp only [Nat.succ_eq_add_one, Int.ofNat_eq_coe, Nat.cast_add, Nat.cast_one,
-        Int.cast_add, Int.cast_natCast, Int.cast_one, add_smul, one_smul]
-      exact I.add_mem ha x.2))
-    (fun a ↦ a.rec (by simpa using I.neg_mem x.2)
-    (fun a ha ↦ by
-      simp only [negSucc_zsmul, Nat.succ_eq_add_one] at ha ⊢
-      rw [add_smul, one_smul, neg_add]
-      exact I.add_mem ha (I.neg_mem x.2)))⟩
+  smul n x := ⟨n • x.1, by simpa using I.zsmul n x.2⟩
 
 instance : AddCommGroup I :=
   Function.Injective.addCommGroup (fun (x : I) ↦ x.1) (fun _ _ h ↦ by ext; exact h)
