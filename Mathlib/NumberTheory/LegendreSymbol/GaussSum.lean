@@ -215,7 +215,7 @@ theorem Char.card_pow_card {F : Type*} [Field F] [Fintype F] {F' : Type*} [Field
     (χ (-1) * Fintype.card F) ^ (Fintype.card F' / 2) = χ (Fintype.card F') := by
   obtain ⟨n, hp, hc⟩ := FiniteField.card F (ringChar F)
   obtain ⟨n', hp', hc'⟩ := FiniteField.card F' (ringChar F')
-  let ψ := primitiveCharFiniteField F F' hch₁
+  let ψ := FiniteField.primitiveChar F F' hch₁
   -- Porting note: this was a `let` but then Lean would time out at
   -- unification so it is changed to a `set` and `FF'` is replaced by its
   -- definition before unification
