@@ -514,3 +514,46 @@ def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
 end NormedAlgebra
 
 end RestrictScalars
+
+section Core
+
+/-- A structure encapsulating minimal axioms needed to defined a normed vector space, as found
+in textbooks. This is meant to be used to easily define `NormedAddCommGroup E` and `NormedSpace E`
+instances from scratch on a type with no preexisting distance. -/
+structure NormedSpace.Core (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    [Norm E] : Prop where
+  norm_nonneg (x : E) : 0 ≤ ‖x‖
+  norm_eq_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0
+  norm_smul (c : 𝕜) (x : E) : ‖c • x‖ = ‖c‖ * ‖x‖
+  norm_triangle (x y : E) : ‖x + y‖ ≤ ‖x‖ + ‖y‖
+
+variable {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Norm E]
+
+/-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core`. Note that if this is
+used to define an instance on a type, it also provides a new distance measure from the norm.
+it must therefore not be used on a type with a preexisting distance measure. -/
+def NormedAddCommGroup.ofCore (core : NormedSpace.Core 𝕜 E) : NormedAddCommGroup E where
+  dist_self x := by
+    show ‖x - x‖ = 0
+    simp only [sub_self, core.norm_eq_zero_iff]
+  dist_comm x y := by
+    show ‖x - y‖ = ‖y - x‖
+    have : y - x = (-1 : 𝕜) • (x - y) := by simp
+    rw [this, core.norm_smul]
+    simp
+  dist_triangle x y z := by
+    show ‖x - z‖ ≤ ‖x - y‖ + ‖y - z‖
+    have : x - z = (x - y) + (y - z) := by abel
+    rw [this]
+    exact core.norm_triangle _ _
+  edist_dist x y := by exact (ENNReal.ofReal_eq_coe_nnreal _).symm
+  eq_of_dist_eq_zero {x} {y} h := by
+    rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+    exact h
+
+/-- Produces a `NormedSpace 𝕜 E` instance from a `NormedSpace.Core`. -/
+def NormedSpace.ofCore {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [NormedAddCommGroup E] [Module 𝕜 E]
+    (core : NormedSpace.Core 𝕜 E) : NormedSpace 𝕜 E where
+  norm_smul_le r x := by rw [core.norm_smul r x]
+
+end Core
