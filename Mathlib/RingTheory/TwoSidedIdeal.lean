@@ -89,7 +89,7 @@ instance : SMul ℤ I where
   smul n x := ⟨n • x.1, by simpa using I.zsmul n x.2⟩
 
 instance : AddCommGroup I :=
-  Function.Injective.addCommGroup (fun (x : I) ↦ x.1) (fun _ _ h ↦ by ext; exact h)
+  Function.Injective.addCommGroup _ Subtype.coe_injective
     rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- The coercion into the ring as a `AddMonoidHom` -/
