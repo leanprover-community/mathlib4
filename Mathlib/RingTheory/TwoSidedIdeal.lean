@@ -77,6 +77,11 @@ lemma mul_mem_left (x y) (hy : y ∈ I) : x * y ∈ I := by
 lemma mul_mem_right (x y) (hx : x ∈ I) : x * y ∈ I := by
   simpa using I.mul hx (I.refl y)
 
+instance : AddSubgroupClass (RingCon R) R where
+  zero_mem := zero_mem
+  add_mem := @add_mem _ _
+  neg_mem := @neg_mem _ _
+
 instance : Add I where add x y := ⟨x.1 + y.1, I.add_mem x.2 y.2⟩
 
 instance : Zero I where zero := ⟨0, I.zero_mem⟩
