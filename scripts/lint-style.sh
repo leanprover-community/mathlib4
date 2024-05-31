@@ -26,6 +26,7 @@ set -exo pipefail
 # 1. A Python script `scripts/lint-style.py` that lints the contents of a Lean file.
 #    This script is called below on all Lean files in the repository.
 #    Exceptions are maintained in `scripts/style-exceptions.txt`.
+#    (Rewriting these checks in Lean is work in progress.)
 # 2. The remainder of this shell script
 #    contains some lints on the global repository.
 #
@@ -41,7 +42,8 @@ git ls-files 'Mathlib/*.lean' | xargs ./scripts/lint-style.py "$@"
 git ls-files 'Archive/*.lean' | xargs ./scripts/lint-style.py "$@"
 git ls-files 'Counterexamples/*.lean' | xargs ./scripts/lint-style.py "$@"
 
-# Also call the in-progress Lean rewrite of these Python lints: do this in the build step.
+# Call the in-progress Lean rewrite of these Python lints.
+lake exe lint_style
 
 # 2. Global checks on the mathlib repository
 

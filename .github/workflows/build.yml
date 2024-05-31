@@ -64,11 +64,7 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      - name: run text-based style linters in Lean
-        run: |
-          lake exe lint_style
-
-      - name: run Python style linters
+      - name: "run style linters: Python ones and their Lean rewrite"
         run: |
           ./scripts/lint-style.sh
 
