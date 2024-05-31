@@ -58,7 +58,7 @@ private lemma isLocallyBijective_iff_isIso' :
       refine' eq₁.trans (eq₃.trans (Eq.trans _ (eq₄.symm.trans eq₂.symm)))
       erw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply]
       simp only [← op_comp, w]
-    refine' ⟨H.amalgamate t ht, _⟩
+    refine ⟨H.amalgamate t ht, ?_⟩
     · apply (Presieve.isSeparated_of_isSheaf _ _
         ((isSheaf_iff_isSheaf_of_type J G.val).1 G.cond) _
         (Presheaf.imageSieve_mem J f.val s)).ext
