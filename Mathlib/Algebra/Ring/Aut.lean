@@ -72,24 +72,24 @@ instance : Inhabited (RingAut R) :=
   ⟨1⟩
 
 /-- Monoid homomorphism from ring automorphisms to additive automorphisms. -/
-def toAddAut : RingAut R →* AddAut R := by
-  refine'
-  { toFun := RingEquiv.toAddEquiv
-    .. } <;> (intros; rfl)
+def toAddAut : RingAut R →* AddAut R where
+  toFun := RingEquiv.toAddEquiv
+  map_one' := rfl
+  map_mul' _ _ := rfl
 #align ring_aut.to_add_aut RingAut.toAddAut
 
 /-- Monoid homomorphism from ring automorphisms to multiplicative automorphisms. -/
-def toMulAut : RingAut R →* MulAut R := by
-  refine'
-  { toFun := RingEquiv.toMulEquiv
-    .. } <;> (intros; rfl)
+def toMulAut : RingAut R →* MulAut R where
+  toFun := RingEquiv.toMulEquiv
+  map_one' := rfl
+  map_mul' _ _ := rfl
 #align ring_aut.to_mul_aut RingAut.toMulAut
 
 /-- Monoid homomorphism from ring automorphisms to permutations. -/
-def toPerm : RingAut R →* Equiv.Perm R := by
-  refine'
-  { toFun := RingEquiv.toEquiv
-    .. } <;> (intros; rfl)
+def toPerm : RingAut R →* Equiv.Perm R where
+  toFun := RingEquiv.toEquiv
+  map_one' := rfl
+  map_mul' _ _ := rfl
 #align ring_aut.to_perm RingAut.toPerm
 
 end mul_add

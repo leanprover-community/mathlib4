@@ -590,11 +590,11 @@ namespace PUnit
 variable (s : Set PUnit.{u + 1}) (x y : PUnit.{u + 1})
 
 instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit := by
-  refine'
+  refine
     { PUnit.instBooleanAlgebra with
       sSup := fun _ => unit
       sInf := fun _ => unit
-      .. } <;>
+      le_sSup := ?_, sSup_le := ?_, sInf_le := ?_, le_sInf := ?_, iInf_iSup_eq := ?_ } <;>
   (intros; trivial)
 
 instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance

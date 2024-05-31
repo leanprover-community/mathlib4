@@ -301,7 +301,9 @@ lemma monotone_image {f : α → β} : Monotone (image f) := fun _ _ => image_su
 theorem image_union (f : α → β) (s t : Set α) : f '' (s ∪ t) = f '' s ∪ f '' t :=
   ext fun x =>
     ⟨by rintro ⟨a, h | h, rfl⟩ <;> [left; right] <;> exact ⟨_, h, rfl⟩, by
-      rintro (⟨a, h, rfl⟩ | ⟨a, h, rfl⟩) <;> refine' ⟨_, _, rfl⟩ <;> [left; right] <;> exact h⟩
+      rintro (⟨a, h, rfl⟩ | ⟨a, h, rfl⟩) <;> refine ⟨_, ?_, rfl⟩
+      · exact mem_union_left t h
+      · exact mem_union_right s h⟩
 #align set.image_union Set.image_union
 
 @[simp]
