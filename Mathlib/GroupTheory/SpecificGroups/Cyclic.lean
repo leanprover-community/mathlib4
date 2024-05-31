@@ -881,12 +881,12 @@ lemma mulEquivOfOrderOfEq_apply_gen : mulEquivOfOrderOfEq hg hg' h g = g' :=
   monoidHomOfForallMemZpowers_apply_gen hg h.symm.dvd
 
 @[to_additive (attr := simp)]
-lemma mulEquivOfOrderOfEq_symm_apply_gen : (mulEquivOfOrderOfEq hg hg' h).symm g' = g :=
-  monoidHomOfForallMemZpowers_apply_gen hg' h.dvd
-
-@[to_additive (attr := simp)]
 lemma mulEquivOfOrderOfEq_symm :
     (mulEquivOfOrderOfEq hg hg' h).symm = mulEquivOfOrderOfEq hg' hg h.symm := rfl
+
+@[to_additive] -- `simp` can prove this by a combination of the two preceding lemmas
+lemma mulEquivOfOrderOfEq_symm_apply_gen : (mulEquivOfOrderOfEq hg hg' h).symm g' = g :=
+  monoidHomOfForallMemZpowers_apply_gen hg' h.dvd
 
 end mulEquiv
 
