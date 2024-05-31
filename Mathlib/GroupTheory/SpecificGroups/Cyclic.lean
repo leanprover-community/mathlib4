@@ -187,6 +187,10 @@ theorem orderOf_eq_card_of_forall_mem_zpowers [Fintype α] {g : α} (hx : ∀ x,
 #align add_order_of_eq_card_of_forall_mem_zmultiples addOrderOf_eq_card_of_forall_mem_zmultiples
 
 @[to_additive]
+lemma orderOf_generator_eq_natCard (h : ∀ x, x ∈ Subgroup.zpowers a) : orderOf a = Nat.card α :=
+  Nat.card_zpowers a ▸ (Nat.card_congr <| Equiv.subtypeUnivEquiv h)
+
+@[to_additive]
 theorem exists_pow_ne_one_of_isCyclic {G : Type*} [Group G] [Fintype G] [G_cyclic : IsCyclic G]
     {k : ℕ} (k_pos : k ≠ 0) (k_lt_card_G : k < Fintype.card G) : ∃ a : G, a ^ k ≠ 1 := by
   rcases G_cyclic with ⟨a, ha⟩
@@ -801,10 +805,6 @@ specified by the image of the given generator.
 -/
 
 variable {G G' : Type*} [Group G] [Group G'] {g : G} (hg : ∀ x, x ∈ Subgroup.zpowers g) {g' : G'}
-
-@[to_additive]
-lemma orderOf_generator_eq_natCard : orderOf g = Nat.card G :=
-  Nat.card_zpowers g ▸ (Nat.card_congr <| Equiv.subtypeUnivEquiv hg)
 
 section monoidHom
 
