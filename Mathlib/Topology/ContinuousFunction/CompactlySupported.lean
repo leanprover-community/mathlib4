@@ -86,6 +86,8 @@ instance : FunLike C_c(α, β) α β where
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
 
+protected lemma hasCompactSupport (f : C_c(α, β)) : HasCompactSupport f := f.hasCompactSupport'
+
 instance : CompactlySupportedContinuousMapClass C_c(α, β) α β where
   map_continuous f := f.continuous_toFun
   hasCompactSupport f := f.hasCompactSupport'
@@ -392,8 +394,7 @@ It is possible to equip `C_c(α, β)` with a pointwise `star` operation whenever
 `star : β → β` for which `star (0 : β) = 0`. We don't have quite this weak a typeclass, but
 `StarAddMonoid` is close enough.
 
-The `StarAddMonoid` and `NormedStarGroup` classes on `C_c(α, β)` are inherited from their
-counterparts on `α →ᵇ β`. Ultimately, when `β` is a C⋆-ring, then so is `C_c(α, β)`.
+The `StarAddMonoid` class on `C_c(α, β)` is inherited from their counterparts on `α →ᵇ β`.
 -/
 
 
