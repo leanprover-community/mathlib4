@@ -482,7 +482,7 @@ theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
     have : IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b'))).det :=
       IsIntegral.det fun i j => h' _ _
     obtain ⟨r', hr'⟩ := IsIntegrallyClosed.isIntegral_iff.1 this
-    refine' isUnit_iff_exists_inv.2 ⟨r', _⟩
+    refine isUnit_iff_exists_inv.2 ⟨r', ?_⟩
     suffices algebraMap ℤ ℚ (r * r') = 1 by
       rw [← RingHom.map_one (algebraMap ℤ ℚ)] at this
       exact (IsFractionRing.injective ℤ ℚ) this
