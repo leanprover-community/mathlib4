@@ -50,7 +50,7 @@ the Fréchet derivative.)
 open Filter Set
 
 open scoped Classical
-open Topology BigOperators Filter NNReal
+open Topology Filter NNReal
 
 namespace Asymptotics
 
@@ -1843,20 +1843,20 @@ section Sum
 variable {ι : Type*} {A : ι → α → E'} {C : ι → ℝ} {s : Finset ι}
 
 theorem IsBigOWith.sum (h : ∀ i ∈ s, IsBigOWith (C i) l (A i) g) :
-    IsBigOWith (∑ i in s, C i) l (fun x => ∑ i in s, A i x) g := by
+    IsBigOWith (∑ i ∈ s, C i) l (fun x => ∑ i ∈ s, A i x) g := by
   induction' s using Finset.induction_on with i s is IH
   · simp only [isBigOWith_zero', Finset.sum_empty, forall_true_iff]
   · simp only [is, Finset.sum_insert, not_false_iff]
     exact (h _ (Finset.mem_insert_self i s)).add (IH fun j hj => h _ (Finset.mem_insert_of_mem hj))
 #align asymptotics.is_O_with.sum Asymptotics.IsBigOWith.sum
 
-theorem IsBigO.sum (h : ∀ i ∈ s, A i =O[l] g) : (fun x => ∑ i in s, A i x) =O[l] g := by
+theorem IsBigO.sum (h : ∀ i ∈ s, A i =O[l] g) : (fun x => ∑ i ∈ s, A i x) =O[l] g := by
   simp only [IsBigO_def] at *
   choose! C hC using h
   exact ⟨_, IsBigOWith.sum hC⟩
 #align asymptotics.is_O.sum Asymptotics.IsBigO.sum
 
-theorem IsLittleO.sum (h : ∀ i ∈ s, A i =o[l] g') : (fun x => ∑ i in s, A i x) =o[l] g' := by
+theorem IsLittleO.sum (h : ∀ i ∈ s, A i =o[l] g') : (fun x => ∑ i ∈ s, A i x) =o[l] g' := by
   induction' s using Finset.induction_on with i s is IH
   · simp only [isLittleO_zero, Finset.sum_empty, forall_true_iff]
   · simp only [is, Finset.sum_insert, not_false_iff]
@@ -2224,10 +2224,16 @@ theorem IsBigO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean 
     (fun (n : ℕ) => f n) =O[atTop] (fun n => g n) :=
   IsBigO.comp_tendsto h tendsto_natCast_atTop_atTop
 
+@[deprecated (since := "2024-04-17")]
+alias IsBigO.nat_cast_atTop := IsBigO.natCast_atTop
+
 theorem IsLittleO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
     {f : R → E} {g : R → F} (h : f =o[atTop] g) :
     (fun (n : ℕ) => f n) =o[atTop] (fun n => g n) :=
   IsLittleO.comp_tendsto h tendsto_natCast_atTop_atTop
+
+@[deprecated (since := "2024-04-17")]
+alias IsLittleO.nat_cast_atTop := IsLittleO.natCast_atTop
 
 theorem isBigO_atTop_iff_eventually_exists {α : Type*} [SemilatticeSup α] [Nonempty α]
     {f : α → E} {g : α → F} : f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c, ∀ n ≥ n₀, ‖f n‖ ≤ c * ‖g n‖ := by

@@ -1,6 +1,8 @@
-import Mathlib.Tactic.CC
-import Mathlib.Data.Vector
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Set.Basic
+import Mathlib.Data.Vector.Defs
+import Mathlib.Tactic.CC
 
 set_option linter.unusedVariables false
 
@@ -566,3 +568,13 @@ example {α : Type} {a b : α} (h : ¬ (a = b)) : ¬ (b = a) := by
   cc
 
 end Lean3Issue1608
+
+section lit
+
+example : nat_lit 0 = nat_lit 0 := by
+  cc
+
+example : "Miyahara Kō" = "Miyahara Kō" := by
+  cc (config := { values := false })
+
+end lit

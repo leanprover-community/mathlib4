@@ -39,7 +39,7 @@ This file defines a number of uniform `PMF` distributions from various inputs,
 * Refactor the `PMF` definitions to come from a `uniformMeasure` on a `Finset`/`Fintype`/`Multiset`.
 -/
 
-open scoped Classical MeasureTheory BigOperators NNReal ENNReal
+open scoped Classical MeasureTheory NNReal ENNReal
 
 -- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` locale :(
 open TopologicalSpace MeasureTheory.Measure PMF
@@ -217,13 +217,13 @@ namespace PMF
 
 variable {α β γ : Type*}
 
-open scoped Classical BigOperators NNReal ENNReal
+open scoped Classical NNReal ENNReal
 
 section UniformOfFinset
 
 /-- Uniform distribution taking the same non-zero probability on the nonempty finset `s` -/
 def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
-  refine' ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s _ _
+  refine ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s ?_ ?_
   · simp only [Finset.sum_ite_mem, Finset.inter_self, Finset.sum_const, nsmul_eq_mul]
     have : (s.card : ℝ≥0∞) ≠ 0 := by
       simpa only [Ne, Nat.cast_eq_zero, Finset.card_eq_zero] using
@@ -271,9 +271,9 @@ theorem toOuterMeasure_uniformOfFinset_apply :
       toOuterMeasure_apply (uniformOfFinset s hs) t
     _ = ∑' x, if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
       (tsum_congr fun x => by simp_rw [uniformOfFinset_apply, ← ite_and, and_comm])
-    _ = ∑ x in s.filter (· ∈ t), if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
+    _ = ∑ x ∈ s.filter (· ∈ t), if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
       (tsum_eq_sum fun x hx => if_neg fun h => hx (Finset.mem_filter.2 h))
-    _ = ∑ _x in s.filter (· ∈ t), (s.card : ℝ≥0∞)⁻¹ :=
+    _ = ∑ _x ∈ s.filter (· ∈ t), (s.card : ℝ≥0∞)⁻¹ :=
       (Finset.sum_congr rfl fun x hx => by
         let this : x ∈ s ∧ x ∈ t := by simpa using hx
         simp only [this, and_self_iff, if_true])
@@ -345,7 +345,7 @@ def ofMultiset (s : Multiset α) (hs : s ≠ 0) : PMF α :=
         (∑' b : α, (s.count b : ℝ≥0∞) / (Multiset.card s))
           = (Multiset.card s : ℝ≥0∞)⁻¹ * ∑' b, (s.count b : ℝ≥0∞) := by
             simp_rw [ENNReal.div_eq_inv_mul, ENNReal.tsum_mul_left]
-        _ = (Multiset.card s : ℝ≥0∞)⁻¹ * ∑ b in s.toFinset, (s.count b : ℝ≥0∞) :=
+        _ = (Multiset.card s : ℝ≥0∞)⁻¹ * ∑ b ∈ s.toFinset, (s.count b : ℝ≥0∞) :=
           (congr_arg (fun x => (Multiset.card s : ℝ≥0∞)⁻¹ * x)
             (tsum_eq_sum fun a ha =>
               Nat.cast_eq_zero.2 <| by rwa [Multiset.count_eq_zero, ← Multiset.mem_toFinset]))

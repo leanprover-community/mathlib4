@@ -280,8 +280,6 @@ variable {K}
 
 section
 
-open BigOperators
-
 open Finset
 
 section
@@ -295,7 +293,7 @@ we can ensure a positive coefficient, not just a nonzero coefficient.
 -/
 theorem exists_relation_sum_zero_pos_coefficient_of_finrank_succ_lt_card [FiniteDimensional L W]
     {t : Finset W} (h : finrank L W + 1 < t.card) :
-    ∃ f : W → L, ∑ e in t, f e • e = 0 ∧ ∑ e in t, f e = 0 ∧ ∃ x ∈ t, 0 < f x := by
+    ∃ f : W → L, ∑ e ∈ t, f e • e = 0 ∧ ∑ e ∈ t, f e = 0 ∧ ∃ x ∈ t, 0 < f x := by
   obtain ⟨f, sum, total, nonzero⟩ :=
     Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card h
   exact ⟨f, sum, total, exists_pos_of_sum_zero_of_exists_nonzero f total nonzero⟩
@@ -448,9 +446,9 @@ Note that strictly this only needs `∀ i ∈ s, FiniteDimensional K (S i)`, but
 work well with typeclass search. -/
 instance finiteDimensional_finset_sup {ι : Type*} (s : Finset ι) (S : ι → Submodule K V)
     [∀ i, FiniteDimensional K (S i)] : FiniteDimensional K (s.sup S : Submodule K V) := by
-  refine'
+  refine
     @Finset.sup_induction _ _ _ _ s S (fun i => FiniteDimensional K ↑i) (finiteDimensional_bot K V)
-      _ fun i _ => by infer_instance
+      ?_ fun i _ => by infer_instance
   intro S₁ hS₁ S₂ hS₂
   exact Submodule.finiteDimensional_sup S₁ S₂
 #align submodule.finite_dimensional_finset_sup Submodule.finiteDimensional_finset_sup
@@ -793,8 +791,8 @@ theorem isUnit_iff_ker_eq_bot [FiniteDimensional K V] (f : V →ₗ[K] V) :
 #align linear_map.is_unit_iff_ker_eq_bot LinearMap.isUnit_iff_ker_eq_bot
 
 theorem isUnit_iff_range_eq_top [FiniteDimensional K V] (f : V →ₗ[K] V) :
-    IsUnit f ↔ (LinearMap.range f) = ⊤ :=
-  by rw [isUnit_iff_ker_eq_bot, ker_eq_bot_iff_range_eq_top]
+    IsUnit f ↔ (LinearMap.range f) = ⊤ := by
+  rw [isUnit_iff_ker_eq_bot, ker_eq_bot_iff_range_eq_top]
 #align linear_map.is_unit_iff_range_eq_top LinearMap.isUnit_iff_range_eq_top
 
 end LinearMap

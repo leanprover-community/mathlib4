@@ -528,7 +528,7 @@ theorem IsLindelof.ne_univ [NonLindelofSpace X] (hs : IsLindelof s) : s ≠ univ
   nonLindelof_univ X (h ▸ hs)
 
 instance [NonLindelofSpace X] : NeBot (Filter.coLindelof X) := by
-  refine' hasBasis_coLindelof.neBot_iff.2 fun {s} hs => _
+  refine hasBasis_coLindelof.neBot_iff.2 fun {s} hs => ?_
   contrapose hs
   rw [not_nonempty_iff_eq_empty, compl_empty_iff] at hs
   rw [hs]
@@ -580,8 +580,8 @@ theorem Filter.comap_coLindelof_le {f : X → Y} (hf : Continuous f) :
   refine ⟨f '' t, ht.image hf, ?_⟩
   simpa using t.subset_preimage_image f
 
-theorem isLindelof_range [LindelofSpace X] {f : X → Y} (hf : Continuous f) : IsLindelof (range f) :=
-  by rw [← image_univ]; exact isLindelof_univ.image hf
+theorem isLindelof_range [LindelofSpace X] {f : X → Y} (hf : Continuous f) :
+    IsLindelof (range f) := by  rw [← image_univ]; exact isLindelof_univ.image hf
 
 theorem isLindelof_diagonal [LindelofSpace X] : IsLindelof (diagonal X) :=
   @range_diag X ▸ isLindelof_range (continuous_id.prod_mk continuous_id)

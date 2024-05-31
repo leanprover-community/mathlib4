@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
-import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Topology.ContinuousFunction.Basic
 
 #align_import topology.category.Top.basic from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
@@ -56,11 +55,17 @@ instance topologicalSpaceUnbundled (X : TopCat) : TopologicalSpace X :=
 set_option linter.uppercaseLean3 false in
 #align Top.topological_space_unbundled TopCat.topologicalSpaceUnbundled
 
--- TODO(#13170): remove this global instance
--- Porting note: cannot find a coercion to function otherwise
-attribute [instance] ConcreteCategory.instFunLike
-instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe f := f
+-- We leave this temporarily as a reminder of the downstream instances #13170
+-- -- Porting note: cannot find a coercion to function otherwise
+-- -- attribute [instance] ConcreteCategory.instFunLike in
+-- instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
+--   coe (f : C(X, Y)) := f
+
+instance instFunLike (X Y : TopCat) : FunLike (X ⟶ Y) X Y :=
+  inferInstanceAs <| FunLike C(X, Y) X Y
+
+instance instMonoidHomClass (X Y : TopCat) : ContinuousMapClass (X ⟶ Y) X Y :=
+  inferInstanceAs <| ContinuousMapClass C(X, Y) X Y
 
 -- Porting note (#10618): simp can prove this; removed simp
 theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
@@ -72,6 +77,19 @@ theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     (f ≫ g : X → Z) x = g (f x) := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.comp_app TopCat.comp_app
+
+@[simp] theorem coe_id (X : TopCat.{u}) : (𝟙 X : X → X) = id := rfl
+
+@[simp] theorem coe_comp {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g : X → Z) = g ∘ f := rfl
+
+@[simp]
+lemma hom_inv_id_apply {X Y : TopCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
+  DFunLike.congr_fun f.hom_inv_id x
+
+@[simp]
+lemma inv_hom_id_apply {X Y : TopCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
+  DFunLike.congr_fun f.inv_hom_id y
 
 /-- Construct a bundled `Top` from the underlying type and the typeclass. -/
 def of (X : Type u) [TopologicalSpace X] : TopCat :=

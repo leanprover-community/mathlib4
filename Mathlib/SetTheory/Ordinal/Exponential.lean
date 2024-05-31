@@ -263,8 +263,8 @@ theorem log_nonempty {b x : Ordinal} (h : 1 < b) : { o : Ordinal | x < b ^ o }.N
   ⟨_, succ_le_iff.1 (right_le_opow _ h)⟩
 #align ordinal.log_nonempty Ordinal.log_nonempty
 
-theorem log_def {b : Ordinal} (h : 1 < b) (x : Ordinal) : log b x = pred (sInf { o | x < b ^ o }) :=
-  by simp only [log, dif_pos h]
+theorem log_def {b : Ordinal} (h : 1 < b) (x : Ordinal) :
+    log b x = pred (sInf { o | x < b ^ o }) := by simp only [log, dif_pos h]
 #align ordinal.log_def Ordinal.log_def
 
 theorem log_of_not_one_lt_left {b : Ordinal} (h : ¬1 < b) (x : Ordinal) : log b x = 0 := by
@@ -458,6 +458,9 @@ theorem natCast_opow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^
   | n + 1 => by
     rw [pow_succ, natCast_mul, natCast_opow m n, Nat.cast_succ, add_one_eq_succ, opow_succ]
 #align ordinal.nat_cast_opow Ordinal.natCast_opow
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_opow := natCast_opow
 
 theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ (n : Ordinal)) = o ^ ω := by
   rcases lt_or_eq_of_le (one_le_iff_pos.2 ho) with (ho₁ | rfl)

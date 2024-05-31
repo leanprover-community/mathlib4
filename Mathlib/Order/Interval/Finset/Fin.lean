@@ -3,8 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Nat.Interval
-import Mathlib.Order.Interval.Finset.Basic
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import data.fin.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
@@ -14,6 +13,8 @@ import Mathlib.Order.Interval.Finset.Basic
 This file proves that `Fin n` is a `LocallyFiniteOrder` and calculates the cardinality of its
 intervals as Finsets and Fintypes.
 -/
+
+assert_not_exists MonoidWithZero
 
 namespace Fin
 
@@ -179,7 +180,7 @@ theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Icc ↑a (n - 1) :
   simp only [exists_prop, Embedding.coe_subtype, mem_Ici, mem_map, mem_Icc]
   constructor
   · rintro ⟨x, hx, rfl⟩
-    exact ⟨hx, le_tsub_of_add_le_right <| x.2⟩
+    exact ⟨hx, Nat.le_sub_of_add_le <| x.2⟩
   cases n
   · exact Fin.elim0 a
   · exact fun hx => ⟨⟨x, Nat.lt_succ_iff.2 hx.2⟩, hx.1, rfl⟩
@@ -194,7 +195,7 @@ theorem map_valEmbedding_Ioi : (Ioi a).map Fin.valEmbedding = Ioc ↑a (n - 1) :
   simp only [exists_prop, Embedding.coe_subtype, mem_Ioi, mem_map, mem_Ioc]
   constructor
   · rintro ⟨x, hx, rfl⟩
-    exact ⟨hx, le_tsub_of_add_le_right <| x.2⟩
+    exact ⟨hx, Nat.le_sub_of_add_le <| x.2⟩
   cases n
   · exact Fin.elim0 a
   · exact fun hx => ⟨⟨x, Nat.lt_succ_iff.2 hx.2⟩, hx.1, rfl⟩

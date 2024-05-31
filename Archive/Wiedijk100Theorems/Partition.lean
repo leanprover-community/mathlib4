@@ -66,8 +66,6 @@ variable {α : Type*}
 
 open Finset
 
-open scoped BigOperators
-
 open scoped Classical
 
 /-- The partial product for the generating function for odd partitions.
@@ -78,7 +76,7 @@ natural number `i`: proved in `oddGF_prop`.
 It is stated for an arbitrary field `α`, though it usually suffices to use `ℚ` or `ℝ`.
 -/
 def partialOddGF (m : ℕ) [Field α] :=
-  ∏ i in range m, (1 - (X : PowerSeries α) ^ (2 * i + 1))⁻¹
+  ∏ i ∈ range m, (1 - (X : PowerSeries α) ^ (2 * i + 1))⁻¹
 #align theorems_100.partial_odd_gf Theorems100.partialOddGF
 
 /-- The partial product for the generating function for distinct partitions.
@@ -90,7 +88,7 @@ It is stated for an arbitrary commutative semiring `α`, though it usually suffi
 or `ℝ`.
 -/
 def partialDistinctGF (m : ℕ) [CommSemiring α] :=
-  ∏ i in range m, (1 + (X : PowerSeries α) ^ (i + 1))
+  ∏ i ∈ range m, (1 + (X : PowerSeries α) ^ (i + 1))
 #align theorems_100.partial_distinct_gf Theorems100.partialDistinctGF
 
 open Finset.HasAntidiagonal Finset
@@ -187,7 +185,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
           ((univ : Finset (Nat.Partition n)).filter fun p =>
             (∀ j, p.parts.count j ∈ c j) ∧ ∀ j ∈ p.parts, j ∈ s) :
         α) =
-      (coeff α n) (∏ i in s, indicatorSeries α ((· * i) '' c i)) := by
+      (coeff α n) (∏ i ∈ s, indicatorSeries α ((· * i) '' c i)) := by
   simp_rw [coeff_prod, coeff_indicator, prod_boole, sum_boole]
   apply congr_arg
   simp only [mem_univ, forall_true_left, not_and, not_forall, exists_prop,
@@ -239,7 +237,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     rintro f ⟨hf, hf₃, hf₄⟩
     have hf' : f ∈ piAntidiagonal s n := mem_piAntidiagonal.mpr ⟨hf, hf₃⟩
     simp only [mem_piAntidiagonal'] at hf'
-    refine ⟨⟨∑ i in s, Multiset.replicate (f i / i) i, ?_, ?_⟩, ?_, ?_, ?_⟩
+    refine ⟨⟨∑ i ∈ s, Multiset.replicate (f i / i) i, ?_, ?_⟩, ?_, ?_, ?_⟩
     · intro i hi
       simp only [exists_prop, mem_sum, mem_map, Function.Embedding.coeFn_mk] at hi
       rcases hi with ⟨t, ht, z⟩
@@ -373,25 +371,25 @@ theorem same_gf [Field α] (m : ℕ) :
   rw [partialOddGF, partialDistinctGF]
   induction' m with m ih
   · simp
-  set! π₀ : PowerSeries α := ∏ i in range m, (1 - X ^ (m + 1 + i + 1)) with hπ₀
-  set! π₁ : PowerSeries α := ∏ i in range m, (1 - X ^ (2 * i + 1))⁻¹ with hπ₁
-  set! π₂ : PowerSeries α := ∏ i in range m, (1 - X ^ (m + i + 1)) with hπ₂
-  set! π₃ : PowerSeries α := ∏ i in range m, (1 + X ^ (i + 1)) with hπ₃
+  set! π₀ : PowerSeries α := ∏ i ∈ range m, (1 - X ^ (m + 1 + i + 1)) with hπ₀
+  set! π₁ : PowerSeries α := ∏ i ∈ range m, (1 - X ^ (2 * i + 1))⁻¹ with hπ₁
+  set! π₂ : PowerSeries α := ∏ i ∈ range m, (1 - X ^ (m + i + 1)) with hπ₂
+  set! π₃ : PowerSeries α := ∏ i ∈ range m, (1 + X ^ (i + 1)) with hπ₃
   rw [← hπ₃] at ih
   have h : constantCoeff α (1 - X ^ (2 * m + 1)) ≠ 0 := by
     rw [RingHom.map_sub, RingHom.map_pow, constantCoeff_one, constantCoeff_X,
       zero_pow (2 * m).succ_ne_zero, sub_zero]
     exact one_ne_zero
   calc
-    (∏ i in range (m + 1), (1 - X ^ (2 * i + 1))⁻¹) *
-          ∏ i in range (m + 1), (1 - X ^ (m + 1 + i + 1)) =
+    (∏ i ∈ range (m + 1), (1 - X ^ (2 * i + 1))⁻¹) *
+          ∏ i ∈ range (m + 1), (1 - X ^ (m + 1 + i + 1)) =
         π₁ * (1 - X ^ (2 * m + 1))⁻¹ * (π₀ * (1 - X ^ (m + 1 + m + 1))) := by
       rw [prod_range_succ _ m, ← hπ₁, prod_range_succ _ m, ← hπ₀]
     _ = π₁ * (1 - X ^ (2 * m + 1))⁻¹ * (π₀ * ((1 + X ^ (m + 1)) * (1 - X ^ (m + 1)))) := by
       rw [← sq_sub_sq, one_pow, add_assoc _ m 1, ← two_mul (m + 1), pow_mul']
     _ = π₀ * (1 - X ^ (m + 1)) * (1 - X ^ (2 * m + 1))⁻¹ * (π₁ * (1 + X ^ (m + 1))) := by ring
     _ =
-        (∏ i in range (m + 1), (1 - X ^ (m + 1 + i))) * (1 - X ^ (2 * m + 1))⁻¹ *
+        (∏ i ∈ range (m + 1), (1 - X ^ (m + 1 + i))) * (1 - X ^ (2 * m + 1))⁻¹ *
           (π₁ * (1 + X ^ (m + 1))) := by
       rw [prod_range_succ', add_zero, hπ₀]; simp_rw [← add_assoc]
     _ = π₂ * (1 - X ^ (m + 1 + m)) * (1 - X ^ (2 * m + 1))⁻¹ * (π₁ * (1 + X ^ (m + 1))) := by

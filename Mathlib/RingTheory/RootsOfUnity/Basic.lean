@@ -62,7 +62,7 @@ This creates a little bit of friction, but lemmas like `IsPrimitiveRoot.isUnit` 
 -/
 
 
-open scoped Classical BigOperators Polynomial
+open scoped Classical Polynomial
 
 noncomputable section
 
@@ -700,16 +700,16 @@ theorem neg_one (p : ℕ) [Nontrivial R] [h : CharP R p] (hp : p ≠ 2) :
   rwa [ringChar.eq_iff.mpr h]
 #align is_primitive_root.neg_one IsPrimitiveRoot.neg_one
 
-/-- If `1 < k` then `(∑ i in range k, ζ ^ i) = 0`. -/
+/-- If `1 < k` then `(∑ i ∈ range k, ζ ^ i) = 0`. -/
 theorem geom_sum_eq_zero [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
-    ∑ i in range k, ζ ^ i = 0 := by
+    ∑ i ∈ range k, ζ ^ i = 0 := by
   refine eq_zero_of_ne_zero_of_mul_left_eq_zero (sub_ne_zero_of_ne (hζ.ne_one hk).symm) ?_
   rw [mul_neg_geom_sum, hζ.pow_eq_one, sub_self]
 #align is_primitive_root.geom_sum_eq_zero IsPrimitiveRoot.geom_sum_eq_zero
 
-/-- If `1 < k`, then `ζ ^ k.pred = -(∑ i in range k.pred, ζ ^ i)`. -/
+/-- If `1 < k`, then `ζ ^ k.pred = -(∑ i ∈ range k.pred, ζ ^ i)`. -/
 theorem pow_sub_one_eq [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
-    ζ ^ k.pred = -∑ i in range k.pred, ζ ^ i := by
+    ζ ^ k.pred = -∑ i ∈ range k.pred, ζ ^ i := by
   rw [eq_neg_iff_add_eq_zero, add_comm, ← sum_range_succ, ← Nat.succ_eq_add_one,
     Nat.succ_pred_eq_of_pos (pos_of_gt hk), hζ.geom_sum_eq_zero hk]
 #align is_primitive_root.pow_sub_one_eq IsPrimitiveRoot.pow_sub_one_eq
@@ -833,6 +833,16 @@ theorem eq_pow_of_mem_rootsOfUnity {k : ℕ+} {ζ ξ : Rˣ} (h : IsPrimitiveRoot
   · rw [← zpow_natCast, hi₀, ← Int.emod_add_ediv n k, zpow_add, zpow_mul, h.zpow_eq_one, one_zpow,
       mul_one]
 #align is_primitive_root.eq_pow_of_mem_roots_of_unity IsPrimitiveRoot.eq_pow_of_mem_rootsOfUnity
+
+/-- A version of `IsPrimitiveRoot.eq_pow_of_mem_rootsOfUnity` that takes a natural number `k`
+as argument instead of a `PNat` (and `ζ : R` instead of `ζ : Rˣ`). -/
+lemma eq_pow_of_mem_rootsOfUnity' {k : ℕ} (hk : 0 < k) {ζ : R} (hζ : IsPrimitiveRoot ζ k) {ξ : Rˣ}
+    (hξ : ξ ∈ rootsOfUnity (⟨k, hk⟩ : ℕ+) R) :
+    ∃ i < k, ζ ^ i = ξ := by
+  have hζ' : IsPrimitiveRoot (hζ.isUnit hk).unit (⟨k, hk⟩ : ℕ+) := isUnit_unit hk hζ
+  obtain ⟨i, hi₁, hi₂⟩ := hζ'.eq_pow_of_mem_rootsOfUnity hξ
+  simpa only [Units.val_pow_eq_pow_val, IsUnit.unit_spec]
+    using ⟨i, hi₁, congrArg ((↑) : Rˣ → R) hi₂⟩
 
 theorem eq_pow_of_pow_eq_one {k : ℕ} {ζ ξ : R} (h : IsPrimitiveRoot ζ k) (hξ : ξ ^ k = 1)
     (h0 : 0 < k) : ∃ i < k, ζ ^ i = ξ := by

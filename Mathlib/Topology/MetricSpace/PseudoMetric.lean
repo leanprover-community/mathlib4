@@ -41,7 +41,7 @@ pseudo_metric, dist
 -/
 
 open Set Filter TopologicalSpace Bornology
-open scoped BigOperators ENNReal NNReal Uniformity Topology
+open scoped ENNReal NNReal Uniformity Topology
 
 universe u v w
 
@@ -218,20 +218,20 @@ theorem dist_triangle4_right (x₁ y₁ x₂ y₂ : α) :
 
 /-- The triangle (polygon) inequality for sequences of points; `Finset.Ico` version. -/
 theorem dist_le_Ico_sum_dist (f : ℕ → α) {m n} (h : m ≤ n) :
-    dist (f m) (f n) ≤ ∑ i in Finset.Ico m n, dist (f i) (f (i + 1)) := by
+    dist (f m) (f n) ≤ ∑ i ∈ Finset.Ico m n, dist (f i) (f (i + 1)) := by
   induction n, h using Nat.le_induction with
   | base => rw [Finset.Ico_self, Finset.sum_empty, dist_self]
   | succ n hle ihn =>
     calc
       dist (f m) (f (n + 1)) ≤ dist (f m) (f n) + dist (f n) (f (n + 1)) := dist_triangle _ _ _
-      _ ≤ (∑ i in Finset.Ico m n, _) + _ := add_le_add ihn le_rfl
-      _ = ∑ i in Finset.Ico m (n + 1), _ := by
+      _ ≤ (∑ i ∈ Finset.Ico m n, _) + _ := add_le_add ihn le_rfl
+      _ = ∑ i ∈ Finset.Ico m (n + 1), _ := by
       { rw [Nat.Ico_succ_right_eq_insert_Ico hle, Finset.sum_insert, add_comm]; simp }
 #align dist_le_Ico_sum_dist dist_le_Ico_sum_dist
 
 /-- The triangle (polygon) inequality for sequences of points; `Finset.range` version. -/
 theorem dist_le_range_sum_dist (f : ℕ → α) (n : ℕ) :
-    dist (f 0) (f n) ≤ ∑ i in Finset.range n, dist (f i) (f (i + 1)) :=
+    dist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, dist (f i) (f (i + 1)) :=
   Nat.Ico_zero_eq_range ▸ dist_le_Ico_sum_dist f (Nat.zero_le n)
 #align dist_le_range_sum_dist dist_le_range_sum_dist
 
@@ -239,7 +239,7 @@ theorem dist_le_range_sum_dist (f : ℕ → α) (n : ℕ) :
 with an upper estimate. -/
 theorem dist_le_Ico_sum_of_dist_le {f : ℕ → α} {m n} (hmn : m ≤ n) {d : ℕ → ℝ}
     (hd : ∀ {k}, m ≤ k → k < n → dist (f k) (f (k + 1)) ≤ d k) :
-    dist (f m) (f n) ≤ ∑ i in Finset.Ico m n, d i :=
+    dist (f m) (f n) ≤ ∑ i ∈ Finset.Ico m n, d i :=
   le_trans (dist_le_Ico_sum_dist f hmn) <|
     Finset.sum_le_sum fun _k hk => hd (Finset.mem_Ico.1 hk).1 (Finset.mem_Ico.1 hk).2
 #align dist_le_Ico_sum_of_dist_le dist_le_Ico_sum_of_dist_le
@@ -248,7 +248,7 @@ theorem dist_le_Ico_sum_of_dist_le {f : ℕ → α} {m n} (hmn : m ≤ n) {d : �
 with an upper estimate. -/
 theorem dist_le_range_sum_of_dist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ}
     (hd : ∀ {k}, k < n → dist (f k) (f (k + 1)) ≤ d k) :
-    dist (f 0) (f n) ≤ ∑ i in Finset.range n, d i :=
+    dist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, d i :=
   Nat.Ico_zero_eq_range ▸ dist_le_Ico_sum_of_dist_le (zero_le n) fun _ => hd
 #align dist_le_range_sum_of_dist_le dist_le_range_sum_of_dist_le
 
@@ -1915,7 +1915,7 @@ instance pseudoMetricSpacePi : PseudoMetricSpace (∀ b, π b) := by
   refine i.replaceBornology fun s => ?_
   simp only [← isBounded_def, isBounded_iff_eventually, ← forall_isBounded_image_eval_iff,
     forall_mem_image, ← Filter.eventually_all, Function.eval_apply, @dist_nndist (π _)]
-  refine' eventually_congr ((eventually_ge_atTop 0).mono fun C hC => _)
+  refine eventually_congr ((eventually_ge_atTop 0).mono fun C hC ↦ ?_)
   lift C to ℝ≥0 using hC
   refine ⟨fun H x hx y hy ↦ NNReal.coe_le_coe.2 <| Finset.sup_le fun b _ ↦ H b hx hy,
     fun H b x hx y hy ↦ NNReal.coe_le_coe.2 ?_⟩
@@ -2068,7 +2068,7 @@ theorem Fin.dist_insertNth_insertNth {n : ℕ} {α : Fin (n + 1) → Type*}
 theorem Real.dist_le_of_mem_pi_Icc {x y x' y' : β → ℝ} (hx : x ∈ Icc x' y') (hy : y ∈ Icc x' y') :
     dist x y ≤ dist x' y' := by
   refine (dist_pi_le_iff dist_nonneg).2 fun b =>
-    (Real.dist_le_of_mem_uIcc ?_ ?_).trans (dist_le_pi_dist x' y' b) <;> refine' Icc_subset_uIcc _
+    (Real.dist_le_of_mem_uIcc ?_ ?_).trans (dist_le_pi_dist x' y' b) <;> refine Icc_subset_uIcc ?_
   exacts [⟨hx.1 _, hx.2 _⟩, ⟨hy.1 _, hy.2 _⟩]
 #align real.dist_le_of_mem_pi_Icc Real.dist_le_of_mem_pi_Icc
 
