@@ -17,7 +17,7 @@ function on `ℕ`.
 -/
 
 
-open Nat List
+open Mathlib Nat List
 
 namespace Encodable
 

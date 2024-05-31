@@ -19,6 +19,7 @@ import Mathlib.Data.Vector.Basic
 * arithmetic operations for `SNum`.
 -/
 
+open Mathlib
 
 namespace PosNum
 

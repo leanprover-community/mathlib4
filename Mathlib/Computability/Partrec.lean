@@ -23,7 +23,7 @@ using the `Part` monad, and there is an additional operation, called
 -/
 
 
-open Encodable Denumerable Part
+open Mathlib Encodable Denumerable Part
 
 attribute [-simp] not_forall
 

@@ -29,7 +29,7 @@ for this.)
 -/
 
 
-open Denumerable Encodable Function
+open Mathlib Denumerable Encodable Function
 
 namespace Nat
 

@@ -19,7 +19,7 @@ A universal partial recursive function, Rice's theorem, and the halting problem.
 -/
 
 
-open Encodable Denumerable
+open Mathlib Encodable Denumerable
 
 namespace Nat.Partrec
 
