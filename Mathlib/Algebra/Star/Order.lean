@@ -256,6 +256,56 @@ lemma star_lt_one_iff {x : R} : star x < 1 ↔ x < 1 := by
 
 end Semiring
 
+section StarModule
+
+variable {A : Type*} [Semiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
+  [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A] [Module R A]
+  [StarModule R A] [NoZeroSMulDivisors R A] [IsScalarTower R A A] [SMulCommClass R A A]
+
+lemma StarModule.smul_lt_smul_of_pos {a b : A} {c : R} (hab : a < b) (hc : 0 < c) :
+    c • a < c • b := by
+  rw [← sub_pos] at hab ⊢
+  rw [← smul_sub]
+  refine lt_of_le_of_ne ?le ?ne
+  case le =>
+    have hab := le_of_lt hab
+    rw [StarOrderedRing.nonneg_iff] at hab ⊢
+    refine AddSubmonoid.closure_induction hab ?mem ?zero ?add
+    case mem =>
+      intro x hx
+      have hc := le_of_lt hc
+      rw [StarOrderedRing.nonneg_iff] at hc
+      refine AddSubmonoid.closure_induction hc ?memc ?zeroc ?addc
+      case memc =>
+        intro c' hc'
+        rw [Set.mem_range] at hc'
+        rw [Set.mem_range] at hx
+        obtain ⟨z, hz⟩ := hc'
+        obtain ⟨y, hy⟩ := hx
+        apply AddSubmonoid.subset_closure
+        refine ⟨z • y, ?_⟩
+        simp only [star_smul, smul_mul_smul, hz, hy]
+      case zeroc =>
+        simp only [zero_smul]
+        exact AddSubmonoid.zero_mem (AddSubmonoid.closure (Set.range fun s => star s * s))
+      case addc =>
+        intro c' d hc' hd
+        simp only [add_smul]
+        exact AddSubmonoid.add_mem (AddSubmonoid.closure (Set.range fun s => star s * s)) hc' hd
+    case zero =>
+      simp only [smul_zero]
+      exact AddSubmonoid.zero_mem (AddSubmonoid.closure (Set.range fun s => star s * s))
+    case add =>
+      intro x y hx hy
+      rw [smul_add]
+      exact AddSubmonoid.add_mem (AddSubmonoid.closure (Set.range fun s => star s * s)) hx hy
+  case ne =>
+    refine (smul_ne_zero ?_ ?_).symm
+    · exact (ne_of_lt hc).symm
+    · exact (ne_of_lt hab).symm
+
+end StarModule
+
 section OrderClass
 
 variable {F R S : Type*} [NonUnitalSemiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
