@@ -42,7 +42,7 @@ basis, det, determinant
 
 noncomputable section
 
-open BigOperators Matrix LinearMap Submodule Set Function
+open Matrix LinearMap Submodule Set Function
 
 universe u v w
 

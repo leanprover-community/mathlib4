@@ -15,7 +15,7 @@ import Mathlib.GroupTheory.Perm.Cycle.Basic
 
 This file proves the Chebyshev sum inequality.
 
-Chebyshev's inequality states `(∑ i in s, f i) * (∑ i in s, g i) ≤ s.card * ∑ i in s, f i * g i`
+Chebyshev's inequality states `(∑ i ∈ s, f i) * (∑ i ∈ s, g i) ≤ s.card * ∑ i ∈ s, f i * g i`
 when `f g : ι → α` monovary, and the reverse inequality when `f` and `g` antivary.
 
 
@@ -40,8 +40,6 @@ file because it is easily deducible from the `Monovary` API.
 
 open Equiv Equiv.Perm Finset Function OrderDual
 
-open BigOperators
-
 variable {ι α β : Type*}
 
 /-! ### Scalar multiplication versions -/
@@ -56,7 +54,7 @@ variable [LinearOrderedRing α] [LinearOrderedAddCommGroup β] [Module α β] [O
 monotone/antitone), the scalar product of their sum is less than the size of the set times their
 scalar product. -/
 theorem MonovaryOn.sum_smul_sum_le_card_smul_sum (hfg : MonovaryOn f g s) :
-    ((∑ i in s, f i) • ∑ i in s, g i) ≤ s.card • ∑ i in s, f i • g i := by
+    ((∑ i ∈ s, f i) • ∑ i ∈ s, g i) ≤ s.card • ∑ i ∈ s, f i • g i := by
   classical
     obtain ⟨σ, hσ, hs⟩ := s.countable_toSet.exists_cycleOn
     rw [← card_range s.card, sum_smul_sum_eq_sum_perm hσ]
@@ -69,7 +67,7 @@ theorem MonovaryOn.sum_smul_sum_le_card_smul_sum (hfg : MonovaryOn f g s) :
 other is antitone), the scalar product of their sum is less than the size of the set times their
 scalar product. -/
 theorem AntivaryOn.card_smul_sum_le_sum_smul_sum (hfg : AntivaryOn f g s) :
-    (s.card • ∑ i in s, f i • g i) ≤ (∑ i in s, f i) • ∑ i in s, g i := by
+    (s.card • ∑ i ∈ s, f i • g i) ≤ (∑ i ∈ s, f i) • ∑ i ∈ s, g i := by
   exact hfg.dual_right.sum_smul_sum_le_card_smul_sum
 #align antivary_on.card_smul_sum_le_sum_smul_sum AntivaryOn.card_smul_sum_le_sum_smul_sum
 
@@ -108,7 +106,7 @@ variable [LinearOrderedRing α] {s : Finset ι} {σ : Perm ι} {f g : ι → α}
 monotone/antitone), the product of their sum is less than the size of the set times their scalar
 product. -/
 theorem MonovaryOn.sum_mul_sum_le_card_mul_sum (hfg : MonovaryOn f g s) :
-    ((∑ i in s, f i) * ∑ i in s, g i) ≤ s.card * ∑ i in s, f i * g i := by
+    ((∑ i ∈ s, f i) * ∑ i ∈ s, g i) ≤ s.card * ∑ i ∈ s, f i * g i := by
   rw [← nsmul_eq_mul]
   exact hfg.sum_smul_sum_le_card_smul_sum
 #align monovary_on.sum_mul_sum_le_card_mul_sum MonovaryOn.sum_mul_sum_le_card_mul_sum
@@ -117,14 +115,14 @@ theorem MonovaryOn.sum_mul_sum_le_card_mul_sum (hfg : MonovaryOn f g s) :
 other is antitone), the product of their sum is greater than the size of the set times their scalar
 product. -/
 theorem AntivaryOn.card_mul_sum_le_sum_mul_sum (hfg : AntivaryOn f g s) :
-    ((s.card : α) * ∑ i in s, f i * g i) ≤ (∑ i in s, f i) * ∑ i in s, g i := by
+    ((s.card : α) * ∑ i ∈ s, f i * g i) ≤ (∑ i ∈ s, f i) * ∑ i ∈ s, g i := by
   rw [← nsmul_eq_mul]
   exact hfg.card_smul_sum_le_sum_smul_sum
 #align antivary_on.card_mul_sum_le_sum_mul_sum AntivaryOn.card_mul_sum_le_sum_mul_sum
 
 /-- Special case of **Chebyshev's Sum Inequality** or the **Cauchy-Schwarz Inequality**: The square
 of the sum is less than the size of the set times the sum of the squares. -/
-theorem sq_sum_le_card_mul_sum_sq : (∑ i in s, f i) ^ 2 ≤ s.card * ∑ i in s, f i ^ 2 := by
+theorem sq_sum_le_card_mul_sum_sq : (∑ i ∈ s, f i) ^ 2 ≤ s.card * ∑ i ∈ s, f i ^ 2 := by
   simp_rw [sq]
   exact (monovaryOn_self _ _).sum_mul_sum_le_card_mul_sum
 #align sq_sum_le_card_mul_sum_sq sq_sum_le_card_mul_sum_sq
@@ -152,7 +150,7 @@ end Mul
 variable [LinearOrderedField α] {s : Finset ι} {f : ι → α}
 
 theorem sum_div_card_sq_le_sum_sq_div_card :
-    ((∑ i in s, f i) / s.card) ^ 2 ≤ (∑ i in s, f i ^ 2) / s.card := by
+    ((∑ i ∈ s, f i) / s.card) ^ 2 ≤ (∑ i ∈ s, f i ^ 2) / s.card := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
   rw [← card_pos, ← @Nat.cast_pos α] at hs

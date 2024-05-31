@@ -27,8 +27,6 @@ common positive multiple.
 
 noncomputable section
 
-open BigOperators
-
 section StrictOrderedCommSemiring
 
 variable (R : Type*) [StrictOrderedCommSemiring R]

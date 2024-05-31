@@ -38,7 +38,7 @@ intermediate field, field extension
 
 open FiniteDimensional Polynomial
 
-open BigOperators Polynomial
+open Polynomial
 
 variable (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
 
@@ -215,14 +215,14 @@ protected theorem multiset_sum_mem (m : Multiset L) : (∀ a ∈ m, a ∈ S) →
 /-- Product of elements of an intermediate field indexed by a `Finset` is in the intermediate_field.
 -/
 protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → L} (h : ∀ c ∈ t, f c ∈ S) :
-    (∏ i in t, f i) ∈ S :=
+    (∏ i ∈ t, f i) ∈ S :=
   prod_mem h
 #align intermediate_field.prod_mem IntermediateField.prod_mem
 
 /-- Sum of elements in an `IntermediateField` indexed by a `Finset` is in the `IntermediateField`.
 -/
 protected theorem sum_mem {ι : Type*} {t : Finset ι} {f : ι → L} (h : ∀ c ∈ t, f c ∈ S) :
-    (∑ i in t, f i) ∈ S :=
+    (∑ i ∈ t, f i) ∈ S :=
   sum_mem h
 #align intermediate_field.sum_mem IntermediateField.sum_mem
 

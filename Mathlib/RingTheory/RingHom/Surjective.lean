@@ -45,8 +45,6 @@ theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective := b
   | add x y ex ey => obtain ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩ := ex, ey; exact ⟨x + y, map_add _ x y⟩
 #align ring_hom.surjective_stable_under_base_change RingHom.surjective_stableUnderBaseChange
 
-open scoped BigOperators
-
 theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   introv R hs H
   letI := f.toAlgebra

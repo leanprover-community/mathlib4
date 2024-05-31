@@ -123,7 +123,7 @@ theorem toNat_top : toNat ⊤ = 0 :=
 
 -- Porting note (#11445): new definition copied from `WithTop`
 /-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
-@[elab_as_elim, induction_eliminator]
+@[elab_as_elim, induction_eliminator, cases_eliminator]
 def recTopCoe {C : ℕ∞ → Sort*} (top : C ⊤) (coe : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n
   | none => top
   | Option.some a => coe a

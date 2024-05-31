@@ -32,7 +32,7 @@ derivative, polynomial
 
 universe u v w
 
-open scoped Classical Topology BigOperators Filter ENNReal Polynomial
+open scoped Classical Topology Filter ENNReal Polynomial
 
 open Filter Asymptotics Set
 

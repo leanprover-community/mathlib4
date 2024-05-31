@@ -140,7 +140,7 @@ theorem coe_one : ((1 : ℝ) : EReal) = 1 := rfl
 /-- A recursor for `EReal` in terms of the coercion.
 
 When working in term mode, note that pattern matching can be used directly. -/
-@[elab_as_elim, induction_eliminator]
+@[elab_as_elim, induction_eliminator, cases_eliminator]
 protected def rec {C : EReal → Sort*} (h_bot : C ⊥) (h_real : ∀ a : ℝ, C a) (h_top : C ⊤) :
     ∀ a : EReal, C a
   | ⊥ => h_bot
