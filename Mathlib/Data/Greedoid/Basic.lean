@@ -5,6 +5,7 @@ Authors: Jihoon Hyun
 -/
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
+import Init.Data.Nat.Basic
 
 /-!
 This file contains the definition of `ExchangeProperty` and `AccessibleProperty`, along with the
@@ -21,6 +22,16 @@ If a set system `S` satisfies the accessible property, then there is some elemen
 which `s \ {x} ∈ S` for every nonempty set `s ∈ S`.
 These two properties are defined in this file as `ExchangeProperty` and `AccessibleProperty`.
 -/
+
+theorem subset_card_succ_eq_cons {α : Type*}
+  {s t : Finset α} (h₁ : s ⊆ t) (h₂ : s.card + 1 = t.card)
+  {a : α} (h₃ : a ∈ t) (h₄ : a ∉ s) :
+    Finset.cons a s h₄ = t := by
+  apply Finset.eq_of_subset_of_card_le _ (by simp; omega)
+  intro _ h
+  apply Or.elim (Finset.mem_cons.mp h) <;> intro h
+  · exact h ▸ h₃
+  · exact h₁ h
 
 namespace Greedoid
 
@@ -131,5 +142,55 @@ end Membership
 
 @[simp]
 theorem greedoid_nonempty : G.feasible_set.Nonempty := ⟨∅, G.contains_emptyset⟩
+
+section ExchangeProperty
+
+variable {α : Type*}
+variable {Sys : Finset (Finset α)} (hSys : ExchangeProperty Sys)
+variable {s₁ : Finset α} (hs₁ : s₁ ∈ Sys)
+variable {s₂ : Finset α} (hs₂ : s₂ ∈ Sys)
+
+theorem exchangeProperty_exists_superset_of_card_le
+  {n : ℕ} (hn₁ : n ≤ s₁.card) (hn₂ : s₂.card ≤ n) :
+    ∃ s ∈ Sys, s₂ ⊆ s ∧ (∀ e ∈ s, e ∈ s₁ ∨ e ∈ s₂) ∧ s.card = n := by
+  induction n, hn₂ using le_induction with
+  | base => use s₂; simp [hs₂]; intro _ h; exact Or.inr h
+  | succ n hn ihn =>
+    rcases ihn (by omega) with ⟨s, hs, h₁, h₂, rfl⟩
+    rcases hSys hs₁ hs hn₁ with ⟨x, hx₁, hx₂, hx₃⟩
+    use cons x s hx₂
+    simp [*]
+    exact ⟨Finset.Subset.trans h₁ (Finset.subset_cons hx₂), h₂⟩
+
+theorem exchangeProperty_exists_feasible_superset_add_element_feasible'
+  (hs : s₂ ⊆ s₁)
+  {n : ℕ} (hn : n = s₁.card - s₂.card)
+  {a : α} (ha₁ : a ∈ s₁) (ha₂ : a ∉ s₂) :
+    ∃ s ∈ Sys, s₂ ⊆ s ∧ s ⊆ s₁ ∧ ∃ h : a ∉ s, cons a s h ∈ Sys := by
+  induction n generalizing s₂ with
+  | zero =>
+    exact False.elim ((eq_of_subset_of_card_le hs (Nat.le_of_sub_eq_zero hn.symm) ▸ ha₂) ha₁)
+  | succ n ih =>
+    rcases exchangeProperty_exists_superset_of_card_le hSys hs₁ hs₂ (by omega) (le_succ _)
+      with ⟨s, hs₁, hs₂, hs₃, hs₄⟩
+    by_cases h : a ∈ s
+    · use s₂; simp [*]
+      sorry
+    · sorry
+
+theorem exchangeProperty_exists_feasible_superset_add_element_feasible
+  (hs : s₂ ⊆ s₁)
+  {a : α} (ha₁ : a ∈ s₁) (ha₂ : a ∉ s₂) :
+    ∃ s ∈ Sys, s₂ ⊆ s ∧ s ⊆ s₁ ∧ ∃ h : a ∉ s, cons a s h ∈ Sys := by
+  have hcard : s₂.card < s₁.card := by
+    simp [*, Nat.lt_iff_le_and_ne, card_le_card]
+    exact fun h => ha₂ (eq_of_subset_of_card_le hs (Nat.le_of_eq h.symm) ▸ ha₁)
+  rcases hSys hs₁ hs₂ hcard with ⟨x, hx₁, hx₂, hx₃⟩
+  by_cases h : a = x
+  · use s₂; simp [*]
+  · 
+    sorry
+
+end ExchangeProperty
 
 end Greedoid
