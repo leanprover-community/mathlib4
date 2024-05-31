@@ -2178,7 +2178,100 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
       ∀ i, IsOpen (u i) ∧ Disjoint (closure (u i)) k)
     (k_cov: ∃ u : ι → Set X, ∃ c : Set ι, c.Countable ∧ k ⊆ ⋃ i ∈ c, u i ∧
       ∀ i, IsOpen (u i) ∧ Disjoint (closure (u i)) h) : SeparatedNhds h k := by
-  sorry
+  by_cases h_nonempty : h = ∅
+  · rw [h_nonempty]
+    simp only [SeparatedNhds.empty_left]
+  by_cases k_nonempty : k = ∅
+  · rw [k_nonempty]
+    simp only [SeparatedNhds.empty_right]
+  rcases h_cov with ⟨ u, c, c_count, c_cov, u_props ⟩
+  rcases k_cov with ⟨ v, d, d_count, d_cov, v_props ⟩
+  have : c.Nonempty := by
+    by_contra c_empty
+    apply h_nonempty
+    rw [not_nonempty_iff_eq_empty.mp c_empty] at c_cov
+    simp at c_cov
+    exact eq_empty_of_subset_empty c_cov
+  rw [Set.countable_iff_exists_surjective this] at c_count
+  rcases c_count with ⟨ f, f_surj ⟩
+  have : d.Nonempty := by
+    by_contra d_empty
+    apply k_nonempty
+    rw [not_nonempty_iff_eq_empty.mp d_empty] at d_cov
+    simp at d_cov
+    exact eq_empty_of_subset_empty d_cov
+  rw [Set.countable_iff_exists_surjective this] at d_count
+  rcases d_count with ⟨ g, g_surj ⟩
+  use ⋃ n : ℕ, (u (f n)) \ (closure (⋃ m ∈ {m | m ≤ n}, v (g m)))
+  use ⋃ n : ℕ, (v (g n)) \ (closure (⋃ m ∈ {m | m ≤ n}, u (f m)))
+  constructor
+  · apply isOpen_iUnion
+    intro n
+    apply IsOpen.sdiff
+    · exact (u_props (f n)).1
+    · exact isClosed_closure
+  constructor
+  · apply isOpen_iUnion
+    intro n
+    apply IsOpen.sdiff
+    · exact (v_props (g n)).1
+    · exact isClosed_closure
+  constructor
+  · intro x xinh
+    rcases c_cov xinh with ⟨ ui , ⟨ i, ui' ⟩ , xinui ⟩
+    rw [← ui'] at xinui
+    simp at xinui
+    rcases f_surj ⟨ i,xinui.1 ⟩ with ⟨ n, fni ⟩
+    simp only [mem_iUnion, mem_diff]
+    use n
+    constructor
+    · rw [fni]
+      simp
+      exact xinui.2
+    · rw [Set.Finite.closure_biUnion]
+      · simp
+        intro m _
+        exact Set.disjoint_right.mp (v_props (g m)).2 xinh
+      · exact finite_le_nat n
+  constructor
+  · intro x xink
+    rcases d_cov xink with ⟨ vi , ⟨ i, vi' ⟩ , xinvi ⟩
+    rw [← vi'] at xinvi
+    simp at xinvi
+    rcases g_surj ⟨ i,xinvi.1 ⟩ with ⟨ n, gni ⟩
+    simp only [mem_iUnion, mem_diff]
+    use n
+    constructor
+    · rw [gni]
+      simp
+      exact xinvi.2
+    · rw [Set.Finite.closure_biUnion]
+      · simp
+        intro m _
+        exact Set.disjoint_right.mp (u_props (f m)).2 xink
+      · exact finite_le_nat n
+  rw [Set.disjoint_left]
+  intro x xinunion
+  rcases xinunion with ⟨ un, ⟨ n, un' ⟩, xinun ⟩
+  rw [← un'] at xinun
+  simp only [mem_iUnion, mem_diff] at xinun
+  simp only [mem_iUnion, mem_diff, not_exists, not_and, Decidable.not_not]
+  intro m xinvgm
+  have : n ≤ m := by
+    by_contra m_gt_n
+    apply xinun.2
+    simp at m_gt_n
+    apply subset_closure
+    apply mem_biUnion
+    · simp
+      exact le_of_lt m_gt_n
+    · exact xinvgm
+  apply subset_closure
+  apply mem_biUnion
+  · simp
+    exact this
+  · exact xinun.1
+
 
 /-- A regular topological space with Lindelöf topology is a normal space. -/
 instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
