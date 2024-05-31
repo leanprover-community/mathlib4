@@ -36,7 +36,8 @@ In this file we define the cycle type of a permutation.
 
 namespace Equiv.Perm
 
-open Mathlib Equiv List Multiset
+open Mathlib (Vector)
+open Equiv List Multiset
 
 variable {α : Type*} [Fintype α]
 

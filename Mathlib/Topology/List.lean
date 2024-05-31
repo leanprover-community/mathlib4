@@ -192,7 +192,7 @@ namespace Vector
 
 open List
 
-open Mathlib
+open Mathlib (Vector)
 
 instance (n : ℕ) : TopologicalSpace (Vector α n) := by unfold Vector; infer_instance
 

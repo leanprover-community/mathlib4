@@ -29,7 +29,8 @@ for this.)
 -/
 
 
-open Mathlib Denumerable Encodable Function
+open Mathlib (Vector)
+open Denumerable Encodable Function
 
 namespace Nat
 
@@ -1342,7 +1343,7 @@ end Primrec
 
 namespace Nat
 
-open Vector
+open Mathlib.Vector
 
 /-- An alternative inductive definition of `Primrec` which
   does not use the pairing function on ℕ, and so has to
@@ -1366,7 +1367,7 @@ end Nat
 
 namespace Nat.Primrec'
 
-open Vector Primrec
+open Mathlib.Vector Primrec
 
 theorem to_prim {n f} (pf : @Nat.Primrec' n f) : Primrec f := by
   induction pf with

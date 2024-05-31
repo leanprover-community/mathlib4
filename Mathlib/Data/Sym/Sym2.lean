@@ -46,7 +46,8 @@ symmetric square, unordered pairs, symmetric powers
 
 assert_not_exists MonoidWithZero
 
-open Mathlib Finset Function Sym
+open Mathlib (Vector)
+open Finset Function Sym
 
 universe u
 

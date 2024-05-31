@@ -33,7 +33,7 @@ assert_not_exists MonoidWithZero
 
 set_option autoImplicit true
 
-open Mathlib
+open Mathlib (Vector)
 open Function
 
 /-- The nth symmetric power is n-tuples up to permutation.  We define it

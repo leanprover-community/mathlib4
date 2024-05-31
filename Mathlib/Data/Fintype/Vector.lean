@@ -12,7 +12,7 @@ import Mathlib.Data.Sym.Basic
 # `Vector α n` and `Sym α n` are fintypes when `α` is.
 -/
 
-open Mathlib
+open Mathlib (Vector)
 
 variable {α : Type*}
 

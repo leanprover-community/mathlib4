@@ -22,8 +22,8 @@ using the `Part` monad, and there is an additional operation, called
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
 
-
-open Mathlib Encodable Denumerable Part
+open Mathlib (Vector)
+open Encodable Denumerable Part
 
 attribute [-simp] not_forall
 

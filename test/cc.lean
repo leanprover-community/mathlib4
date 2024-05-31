@@ -8,7 +8,8 @@ set_option linter.unusedVariables false
 
 section CC1
 
-open Mathlib Mathlib.Tactic.CC
+open Mathlib (Vector)
+open Mathlib.Tactic.CC
 
 open Lean Meta Elab Tactic
 
