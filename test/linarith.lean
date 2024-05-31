@@ -626,9 +626,8 @@ example (a b c d e : ℚ)
     e = 3 := by
   linarith
 
-set_option autoImplicit true in
 /-- https://github.com/leanprover-community/mathlib4/issues/2717 -/
-example :
+example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     (3 * x4 - x3 - x2 - x1 : ℚ) < 0 →
     x5 - x4 < 0 →
     2 * (x5 - x4) < 0 →
@@ -657,7 +656,6 @@ a✝ : e < 3
 failed
 -/
 #guard_msgs in
-set_option autoImplicit true in
 /-- https://github.com/leanprover-community/mathlib4/issues/8875 -/
 example (a b c d e : ℚ)
     (ha : 2 * a + b + c + d + e = 4)
@@ -671,7 +669,7 @@ example (a b c d e : ℚ)
 -- TODO: still broken with Fourier-Motzkin
 /--
 error: linarith failed to find a contradiction
-x4 x3 x2 x1 x5 x6 x8 x7 : ℚ
+x1 x2 x3 x4 x5 x6 x7 x8 : ℚ
 a✝⁹ : 3 * x4 - x3 - x2 - x1 < 0
 a✝⁸ : x5 - x4 < 0
 a✝⁷ : 2 * (x5 - x4) < 0
@@ -686,9 +684,8 @@ a✝ : x7 - x5 < 0
 failed
 -/
 #guard_msgs in
-set_option autoImplicit true in
 /-- https://github.com/leanprover-community/mathlib4/issues/2717 -/
-example :
+example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     (3 * x4 - x3 - x2 - x1 : ℚ) < 0 →
     x5 - x4 < 0 →
     2 * (x5 - x4) < 0 →
