@@ -829,7 +829,7 @@ def monoidHomOfForallMemZpowers : G →* G' where
     rw [← zpow_eq_zpow_iff_modEq, zpow_add]
     simp only [fun x ↦ Classical.choose_spec <| mem_zpowers_iff.mp <| hg x]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma monoidHomOfForallMemZpowers_apply_gen :
     monoidHomOfForallMemZpowers hg hg' g = g' := by
   simp only [monoidHomOfForallMemZpowers, MonoidHom.coe_mk, OneHom.coe_mk]
@@ -876,15 +876,15 @@ def mulEquivOfOrderOfEq : G ≃* G' := by
   simp only [MonoidHom.coe_comp, Function.comp_apply, monoidHomOfForallMemZpowers_apply_gen,
     MonoidHom.id_apply]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma mulEquivOfOrderOfEq_apply_gen : mulEquivOfOrderOfEq hg hg' h g = g' :=
   monoidHomOfForallMemZpowers_apply_gen hg h.symm.dvd
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma mulEquivOfOrderOfEq_symm_apply_gen : (mulEquivOfOrderOfEq hg hg' h).symm g' = g :=
   monoidHomOfForallMemZpowers_apply_gen hg' h.dvd
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma mulEquivOfOrderOfEq_symm :
     (mulEquivOfOrderOfEq hg hg' h).symm = mulEquivOfOrderOfEq hg' hg h.symm := by
   rw [MulEquiv.eq_iff_eq_on_generator hg', mulEquivOfOrderOfEq_symm_apply_gen,
