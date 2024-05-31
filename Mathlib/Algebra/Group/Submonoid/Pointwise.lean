@@ -71,7 +71,7 @@ theorem mul_subset_closure (hs : s ⊆ u) (ht : t ⊆ u) : s * t ⊆ Submonoid.c
 @[to_additive]
 theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := by
   ext x
-  refine' ⟨_, fun h => ⟨x, h, 1, s.one_mem, mul_one x⟩⟩
+  refine ⟨?_, fun h => ⟨x, h, 1, s.one_mem, mul_one x⟩⟩
   rintro ⟨a, ha, b, hb, rfl⟩
   exact s.mul_mem ha hb
 #align submonoid.coe_mul_self_eq Submonoid.coe_mul_self_eq
@@ -97,7 +97,7 @@ theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) 
 @[to_additive]
 theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
     (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
-  refine' @closure_induction N _ s (fun x : N => ∃ n : ℕ, r ^ n • x ∈ closure (r • s)) _ hx _ _ _
+  refine @closure_induction N _ s (fun x : N => ∃ n : ℕ, r ^ n • x ∈ closure (r • s)) _ hx ?_ ?_ ?_
   · intro x hx
     exact ⟨1, subset_closure ⟨_, hx, by rw [pow_one]⟩⟩
   · exact ⟨0, by simpa using one_mem _⟩
@@ -611,16 +611,16 @@ This is available as an instance in the `Pointwise` locale. -/
 protected def hasDistribNeg : HasDistribNeg (AddSubmonoid R) :=
   { AddSubmonoid.involutiveNeg with
     neg_mul := fun x y => by
-      refine'
-          le_antisymm (mul_le.2 fun m hm n hn => _)
-            ((AddSubmonoid.neg_le _ _).2 <| mul_le.2 fun m hm n hn => _) <;>
+      refine
+          le_antisymm (mul_le.2 fun m hm n hn => ?_)
+            ((AddSubmonoid.neg_le _ _).2 <| mul_le.2 fun m hm n hn => ?_) <;>
         simp only [AddSubmonoid.mem_neg, ← neg_mul] at *
       · exact mul_mem_mul hm hn
       · exact mul_mem_mul (neg_mem_neg.2 hm) hn
     mul_neg := fun x y => by
-      refine'
-          le_antisymm (mul_le.2 fun m hm n hn => _)
-            ((AddSubmonoid.neg_le _ _).2 <| mul_le.2 fun m hm n hn => _) <;>
+      refine
+          le_antisymm (mul_le.2 fun m hm n hn => ?_)
+            ((AddSubmonoid.neg_le _ _).2 <| mul_le.2 fun m hm n hn => ?_) <;>
         simp only [AddSubmonoid.mem_neg, ← mul_neg] at *
       · exact mul_mem_mul hm hn
       · exact mul_mem_mul hm (neg_mem_neg.2 hn) }
@@ -700,7 +700,7 @@ variable [OrderedCancelCommMonoid α] {s : Set α}
 theorem submonoid_closure (hpos : ∀ x : α, x ∈ s → 1 ≤ x) (h : s.IsPWO) :
     IsPWO (Submonoid.closure s : Set α) := by
   rw [Submonoid.closure_eq_image_prod]
-  refine' (h.partiallyWellOrderedOn_sublistForall₂ (· ≤ ·)).image_of_monotone_on _
+  refine (h.partiallyWellOrderedOn_sublistForall₂ (· ≤ ·)).image_of_monotone_on ?_
   exact fun l1 _ l2 hl2 h12 => h12.prod_le_prod' fun x hx => hpos x <| hl2 x hx
 #align set.is_pwo.submonoid_closure Set.IsPWO.submonoid_closure
 #align set.is_pwo.add_submonoid_closure Set.IsPWO.addSubmonoid_closure

@@ -322,16 +322,16 @@ instance hasLeftHomology_of_preserves [S.HasLeftHomology] [F.PreservesLeftHomolo
   HasLeftHomology.mk' (S.leftHomologyData.map F)
 
 instance hasLeftHomology_of_preserves' [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :
-    (F.mapShortComplex.obj S).HasLeftHomology :=
-  by dsimp; infer_instance
+    (F.mapShortComplex.obj S).HasLeftHomology := by
+  dsimp; infer_instance
 
 instance hasRightHomology_of_preserves [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
     (S.map F).HasRightHomology :=
   HasRightHomology.mk' (S.rightHomologyData.map F)
 
 instance hasRightHomology_of_preserves' [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
-    (F.mapShortComplex.obj S).HasRightHomology :=
-  by dsimp; infer_instance
+    (F.mapShortComplex.obj S).HasRightHomology := by
+  dsimp; infer_instance
 
 instance hasHomology_of_preserves [S.HasHomology] [F.PreservesLeftHomologyOf S]
     [F.PreservesRightHomologyOf S] :
@@ -340,8 +340,8 @@ instance hasHomology_of_preserves [S.HasHomology] [F.PreservesLeftHomologyOf S]
 
 instance hasHomology_of_preserves' [S.HasHomology] [F.PreservesLeftHomologyOf S]
     [F.PreservesRightHomologyOf S] :
-    (F.mapShortComplex.obj S).HasHomology :=
-  by dsimp; infer_instance
+    (F.mapShortComplex.obj S).HasHomology := by
+  dsimp; infer_instance
 
 section
 

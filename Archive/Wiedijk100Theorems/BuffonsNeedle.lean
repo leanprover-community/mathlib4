@@ -135,10 +135,10 @@ lemma measurable_needleCrossesIndicator : Measurable (needleCrossesIndicator l) 
   unfold needleCrossesIndicator
   refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.inter ?l ?r))
   all_goals simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
-  case' l => refine' isClosed_le continuous_fst _
-  case' r => refine' isClosed_le (Continuous.neg continuous_fst) _
+  case' l => refine isClosed_le continuous_fst ?_
+  case' r => refine isClosed_le (Continuous.neg continuous_fst) ?_
   all_goals
-    refine' Continuous.mul (Continuous.mul _ continuous_const) continuous_const
+    refine Continuous.mul (Continuous.mul ?_ continuous_const) continuous_const
     simp_rw [← Function.comp_apply (f := Real.sin) (g := Prod.snd),
       Continuous.comp Real.continuous_sin continuous_snd]
 
@@ -170,9 +170,9 @@ lemma integrable_needleCrossesIndicator :
     by_cases hp : 0 ∈ needleProjX l p.1 p.2
     · simp_rw [Set.indicator_of_mem hp, Pi.one_apply, le_refl]
     · simp_rw [Set.indicator_of_not_mem hp, zero_le_one]
-  refine' And.intro
+  refine And.intro
     (stronglyMeasurable_needleCrossesIndicator l).aestronglyMeasurable
-    ((MeasureTheory.hasFiniteIntegral_iff_norm (needleCrossesIndicator l)).mpr _)
+    ((MeasureTheory.hasFiniteIntegral_iff_norm (needleCrossesIndicator l)).mpr ?_)
   refine lt_of_le_of_lt (MeasureTheory.lintegral_mono (g := 1) ?le_const) ?lt_top
   case le_const =>
     intro p
@@ -207,7 +207,7 @@ lemma buffon_integral :
     ← ENNReal.ofReal_inv_of_pos (mul_pos hd Real.pi_pos),
     ENNReal.toReal_ofReal (inv_nonneg.mpr (mul_nonneg hd.le Real.pi_pos.le)), smul_eq_mul,
   ]
-  refine' mul_eq_mul_left_iff.mpr (Or.inl _)
+  refine mul_eq_mul_left_iff.mpr (Or.inl ?_)
   have : MeasureTheory.IntegrableOn (needleCrossesIndicator l)
       (Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π) := by
     simp_rw [MeasureTheory.IntegrableOn, Measure.volume_eq_prod, ← Measure.prod_restrict,

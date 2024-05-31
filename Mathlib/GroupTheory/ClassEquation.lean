@@ -25,8 +25,6 @@ This file establishes the class equation for finite groups.
 
 open MulAction ConjClasses
 
-open scoped BigOperators
-
 variable (G : Type*) [Group G]
 
 /-- Conjugacy classes form a partition of G, stated in terms of cardinality. -/
@@ -74,7 +72,7 @@ theorem Group.nat_card_center_add_sum_card_noncenter_eq_card [Finite G] :
 theorem Group.card_center_add_sum_card_noncenter_eq_card (G) [Group G]
     [∀ x : ConjClasses G, Fintype x.carrier] [Fintype G] [Fintype <| Subgroup.center G]
     [Fintype <| noncenter G] : Fintype.card (Subgroup.center G) +
-  ∑ x in (noncenter G).toFinset, x.carrier.toFinset.card = Fintype.card G := by
+  ∑ x ∈ (noncenter G).toFinset, x.carrier.toFinset.card = Fintype.card G := by
   convert Group.nat_card_center_add_sum_card_noncenter_eq_card G using 2
   · simp
   · rw [← finsum_set_coe_eq_finsum_mem (noncenter G), finsum_eq_sum_of_fintype,

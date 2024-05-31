@@ -173,7 +173,7 @@ theorem normalize_eq_normalize {a b : α} (hab : a ∣ b) (hba : b ∣ a) :
     normalize a = normalize b := by
   nontriviality α
   rcases associated_of_dvd_dvd hab hba with ⟨u, rfl⟩
-  refine' by_cases (by rintro rfl; simp only [zero_mul]) fun ha : a ≠ 0 => _
+  refine by_cases (by rintro rfl; simp only [zero_mul]) fun ha : a ≠ 0 => ?_
   suffices a * ↑(normUnit a) = a * ↑u * ↑(normUnit a) * ↑u⁻¹ by
     simpa only [normalize_apply, mul_assoc, normUnit_mul ha u.ne_zero, normUnit_coe_units]
   calc
@@ -485,8 +485,9 @@ theorem gcd_mul_right [NormalizedGCDMonoid α] (a b c : α) :
 #align gcd_mul_right gcd_mul_right
 
 @[simp]
-theorem gcd_mul_right' [GCDMonoid α] (a b c : α) : Associated (gcd (b * a) (c * a)) (gcd b c * a) :=
-  by simp only [mul_comm, gcd_mul_left']
+theorem gcd_mul_right' [GCDMonoid α] (a b c : α) :
+    Associated (gcd (b * a) (c * a)) (gcd b c * a) := by
+  simp only [mul_comm, gcd_mul_left']
 #align gcd_mul_right' gcd_mul_right'
 
 theorem gcd_eq_left_iff [NormalizedGCDMonoid α] (a b : α) (h : normalize a = a) :
@@ -553,16 +554,10 @@ instance [h : Nonempty (GCDMonoid α)] : DecompositionMonoid α where
     by_cases h0 : gcd k m = 0
     · rw [gcd_eq_zero_iff] at h0
       rcases h0 with ⟨rfl, rfl⟩
-      refine' ⟨0, n, dvd_refl 0, dvd_refl n, _⟩
-      simp
+      exact ⟨0, n, dvd_refl 0, dvd_refl n, by simp⟩
     · obtain ⟨a, ha⟩ := gcd_dvd_left k m
-      refine' ⟨gcd k m, a, gcd_dvd_right _ _, _, ha⟩
-      suffices h : gcd k m * a ∣ gcd k m * n by
-        cases' h with b hb
-        use b
-        rw [mul_assoc] at hb
-        apply mul_left_cancel₀ h0 hb
-      rw [← ha]
+      refine ⟨gcd k m, a, gcd_dvd_right _ _, ?_, ha⟩
+      rw [← mul_dvd_mul_iff_left h0, ← ha]
       exact dvd_gcd_mul_of_dvd_mul H
 
 theorem gcd_mul_dvd_mul_gcd [GCDMonoid α] (k m n : α) : gcd k (m * n) ∣ gcd k m * gcd k n := by
@@ -692,7 +687,7 @@ theorem isUnit_gcd_of_eq_mul_gcd {α : Type*} [CancelCommMonoidWithZero α] [GCD
     {x y x' y' : α} (ex : x = gcd x y * x') (ey : y = gcd x y * y') (h : gcd x y ≠ 0) :
     IsUnit (gcd x' y') := by
   rw [← associated_one_iff_isUnit]
-  refine' Associated.of_mul_left _ (Associated.refl <| gcd x y) h
+  refine Associated.of_mul_left ?_ (Associated.refl <| gcd x y) h
   convert (gcd_mul_left' (gcd x y) x' y').symm using 1
   rw [← ex, ← ey, mul_one]
 #align is_unit_gcd_of_eq_mul_gcd isUnit_gcd_of_eq_mul_gcd
@@ -925,9 +920,9 @@ theorem lcm_eq_of_associated_right [NormalizedGCDMonoid α] {m n : α} (h : Asso
 
 end LCM
 
-@[deprecated] alias GCDMonoid.prime_of_irreducible := Irreducible.prime
+@[deprecated (since := "2024-02-12")] alias GCDMonoid.prime_of_irreducible := Irreducible.prime
 #align gcd_monoid.prime_of_irreducible Irreducible.prime
-@[deprecated] alias GCDMonoid.irreducible_iff_prime := irreducible_iff_prime
+@[deprecated (since := "2024-02-12")] alias GCDMonoid.irreducible_iff_prime := irreducible_iff_prime
 #align gcd_monoid.irreducible_iff_prime irreducible_iff_prime
 
 end GCDMonoid
@@ -953,14 +948,14 @@ instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
   ⟨fun g₁ g₂ => by
     have hgcd : g₁.gcd = g₂.gcd := by
       ext a b
-      refine' associated_iff_eq.mp (associated_of_dvd_dvd _ _)
+      refine associated_iff_eq.mp (associated_of_dvd_dvd ?_ ?_)
       -- Porting note: Lean4 seems to need help specifying `g₁` and `g₂`
       · exact dvd_gcd (@gcd_dvd_left _ _ g₁ _ _) (@gcd_dvd_right _ _ g₁ _ _)
       · exact @dvd_gcd _ _ g₁ _ _ _ (@gcd_dvd_left _ _ g₂ _ _) (@gcd_dvd_right _ _ g₂ _ _)
     have hlcm : g₁.lcm = g₂.lcm := by
       ext a b
       -- Porting note: Lean4 seems to need help specifying `g₁` and `g₂`
-      refine' associated_iff_eq.mp (associated_of_dvd_dvd _ _)
+      refine associated_iff_eq.mp (associated_of_dvd_dvd ?_ ?_)
       · exact (@lcm_dvd_iff _ _ g₁ ..).mpr ⟨@dvd_lcm_left _ _ g₂ _ _, @dvd_lcm_right _ _ g₂ _ _⟩
       · exact lcm_dvd_iff.mpr ⟨@dvd_lcm_left _ _ g₁ _ _, @dvd_lcm_right _ _ g₁ _ _⟩
     cases g₁
@@ -1013,7 +1008,7 @@ variable [CommRing α] [IsDomain α] [NormalizedGCDMonoid α]
 theorem gcd_eq_of_dvd_sub_right {a b c : α} (h : a ∣ b - c) : gcd a b = gcd a c := by
   apply dvd_antisymm_of_normalize_eq (normalize_gcd _ _) (normalize_gcd _ _) <;>
     rw [dvd_gcd_iff] <;>
-    refine' ⟨gcd_dvd_left _ _, _⟩
+    refine ⟨gcd_dvd_left _ _, ?_⟩
   · rcases h with ⟨d, hd⟩
     rcases gcd_dvd_right a b with ⟨e, he⟩
     rcases gcd_dvd_left a b with ⟨f, hf⟩
@@ -1274,7 +1269,7 @@ noncomputable def normalizedGCDMonoidOfLCM [NormalizationMonoid α] [DecidableEq
         · exact absurd ‹a = 0› h
         · exact absurd ‹b = 0› h_1
       apply mul_left_cancel₀ h0
-      refine' _root_.trans _ (Classical.choose_spec (exists_gcd a b))
+      refine _root_.trans ?_ (Classical.choose_spec (exists_gcd a b))
       conv_lhs =>
         congr
         rw [← normalize_lcm a b]
@@ -1427,9 +1422,9 @@ instance (priority := 100) : NormalizedGCDMonoid G₀ where
     · apply dvd_zero
     · rw [not_and_or] at h
       cases h
-      · refine' isUnit_iff_dvd_one.mp (isUnit_of_dvd_unit _ (IsUnit.mk0 _ ‹c ≠ 0›))
+      · refine isUnit_iff_dvd_one.mp (isUnit_of_dvd_unit ?_ (IsUnit.mk0 _ ‹c ≠ 0›))
         exact hac
-      · refine' isUnit_iff_dvd_one.mp (isUnit_of_dvd_unit _ (IsUnit.mk0 _ ‹b ≠ 0›))
+      · refine isUnit_iff_dvd_one.mp (isUnit_of_dvd_unit ?_ (IsUnit.mk0 _ ‹b ≠ 0›))
         exact hab
   gcd_mul_lcm a b := by
     by_cases ha : a = 0

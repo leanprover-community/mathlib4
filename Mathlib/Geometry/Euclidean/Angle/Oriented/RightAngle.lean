@@ -526,7 +526,7 @@ theorem oangle_add_left_smul_rotation_pi_div_two {x : V} (h : x ≠ 0) (r : ℝ)
     neg_neg ((π / 2 : ℝ) : Real.Angle), ← rotation_neg_orientation_eq_neg, add_comm]
   have hx : x = r⁻¹ • (-o).rotation (π / 2 : ℝ) (r • (-o).rotation (-(π / 2 : ℝ)) x) := by simp [hr]
   nth_rw 3 [hx]
-  refine' (-o).oangle_add_right_smul_rotation_pi_div_two _ _
+  refine (-o).oangle_add_right_smul_rotation_pi_div_two ?_ _
   simp [hr, h]
 #align orientation.oangle_add_left_smul_rotation_pi_div_two Orientation.oangle_add_left_smul_rotation_pi_div_two
 
@@ -541,8 +541,8 @@ theorem tan_oangle_add_right_smul_rotation_pi_div_two {x : V} (h : x ≠ 0) (r :
 rotation of another by `π / 2`. -/
 theorem tan_oangle_add_left_smul_rotation_pi_div_two {x : V} (h : x ≠ 0) (r : ℝ) :
     Real.Angle.tan (o.oangle (x + r • o.rotation (π / 2 : ℝ) x) (r • o.rotation (π / 2 : ℝ) x)) =
-      r⁻¹ :=
-  by rw [o.oangle_add_left_smul_rotation_pi_div_two h, Real.Angle.tan_coe, Real.tan_arctan]
+      r⁻¹ := by
+  rw [o.oangle_add_left_smul_rotation_pi_div_two h, Real.Angle.tan_coe, Real.tan_arctan]
 #align orientation.tan_oangle_add_left_smul_rotation_pi_div_two Orientation.tan_oangle_add_left_smul_rotation_pi_div_two
 
 /-- An angle in a right-angled triangle expressed using `arctan`, where one side is a multiple

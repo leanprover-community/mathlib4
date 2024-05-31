@@ -35,7 +35,8 @@ removed.
 
 -- TODO
 -- assert_not_exists OrderedCommMonoid
--- assert_not_exists Ring
+assert_not_exists MonoidWithZero
+assert_not_exists MulAction
 
 variable {α β γ : Type*}
 
@@ -233,7 +234,7 @@ theorem map_filter {f : α ≃ β} {p : α → Prop} [DecidablePred p] :
 theorem disjoint_map {s t : Finset α} (f : α ↪ β) :
     Disjoint (s.map f) (t.map f) ↔ Disjoint s t := by
   simp only [disjoint_iff_ne, mem_map, exists_prop, exists_imp, and_imp]
-  refine' ⟨fun h a ha b hb hab => h _ _ ha rfl _ _ hb rfl <| congr_arg _ hab, _⟩
+  refine ⟨fun h a ha b hb hab => h _ _ ha rfl _ _ hb rfl <| congr_arg _ hab, ?_⟩
   rintro h _ a ha rfl _ b hb rfl
   exact f.injective.ne (h _ ha _ hb)
 #align finset.disjoint_map Finset.disjoint_map
@@ -395,7 +396,7 @@ theorem image_congr (h : (s : Set α).EqOn f g) : Finset.image f s = Finset.imag
 
 theorem _root_.Function.Injective.mem_finset_image (hf : Injective f) :
     f a ∈ s.image f ↔ a ∈ s := by
-  refine' ⟨fun h => _, Finset.mem_image_of_mem f⟩
+  refine ⟨fun h => ?_, Finset.mem_image_of_mem f⟩
   obtain ⟨y, hy, heq⟩ := mem_image.1 h
   exact hf heq ▸ hy
 #align function.injective.mem_finset_image Function.Injective.mem_finset_image
@@ -560,7 +561,7 @@ theorem erase_image_subset_image_erase [DecidableEq α] (f : α → β) (s : Fin
 @[simp]
 theorem image_erase [DecidableEq α] {f : α → β} (hf : Injective f) (s : Finset α) (a : α) :
     (s.erase a).image f = (s.image f).erase (f a) := by
-  refine' (erase_image_subset_image_erase _ _ _).antisymm' fun b => _
+  refine (erase_image_subset_image_erase _ _ _).antisymm' fun b => ?_
   simp only [mem_image, exists_prop, mem_erase]
   rintro ⟨a', ⟨haa', ha'⟩, rfl⟩
   exact ⟨hf.ne haa', a', ha', rfl⟩
@@ -836,7 +837,7 @@ theorem subset_image_iff [DecidableEq β] {s : Set α} {t : Finset β} {f : α �
   intro h
   letI : CanLift β s (f ∘ (↑)) fun y => y ∈ f '' s := ⟨fun y ⟨x, hxt, hy⟩ => ⟨⟨x, hxt⟩, hy⟩⟩
   lift t to Finset s using h
-  refine' ⟨t.map (Embedding.subtype _), map_subtype_subset _, _⟩
+  refine ⟨t.map (Embedding.subtype _), map_subtype_subset _, ?_⟩
   ext y; simp
 #align finset.subset_image_iff Finset.subset_image_iff
 

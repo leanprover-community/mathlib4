@@ -42,6 +42,10 @@ def nonZeroDivisorsLeft : Submonoid M₀ where
     x ∈ nonZeroDivisorsLeft M₀ ↔ ∀ y, y * x = 0 → y = 0 :=
   Iff.rfl
 
+lemma nmem_nonZeroDivisorsLeft_iff {r : M₀} :
+    r ∉ nonZeroDivisorsLeft M₀ ↔ {s | s * r = 0 ∧ s ≠ 0}.Nonempty := by
+  simpa [mem_nonZeroDivisorsLeft_iff] using Set.nonempty_def.symm
+
 /-- The collection of elements of a `MonoidWithZero` that are not right zero divisors form a
 `Submonoid`. -/
 def nonZeroDivisorsRight : Submonoid M₀ where
@@ -52,6 +56,10 @@ def nonZeroDivisorsRight : Submonoid M₀ where
 @[simp] lemma mem_nonZeroDivisorsRight_iff {x : M₀} :
     x ∈ nonZeroDivisorsRight M₀ ↔ ∀ y, x * y = 0 → y = 0 :=
   Iff.rfl
+
+lemma nmem_nonZeroDivisorsRight_iff {r : M₀} :
+    r ∉ nonZeroDivisorsRight M₀ ↔ {s | r * s = 0 ∧ s ≠ 0}.Nonempty := by
+  simpa [mem_nonZeroDivisorsRight_iff] using Set.nonempty_def.symm
 
 lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsLeft M₀ = nonZeroDivisorsRight M₀ := by
@@ -107,6 +115,9 @@ variable {M M' M₁ R R' F : Type*} [MonoidWithZero M] [MonoidWithZero M'] [Comm
 theorem mem_nonZeroDivisors_iff {r : M} : r ∈ M⁰ ↔ ∀ x, x * r = 0 → x = 0 := Iff.rfl
 #align mem_non_zero_divisors_iff mem_nonZeroDivisors_iff
 
+lemma nmem_nonZeroDivisors_iff {r : M} : r ∉ M⁰ ↔ {s | s * r = 0 ∧ s ≠ 0}.Nonempty := by
+  simpa [mem_nonZeroDivisors_iff] using Set.nonempty_def.symm
+
 theorem mul_right_mem_nonZeroDivisors_eq_zero_iff {x r : M} (hr : r ∈ M⁰) : x * r = 0 ↔ x = 0 :=
   ⟨hr _, by simp (config := { contextual := true })⟩
 #align mul_right_mem_non_zero_divisors_eq_zero_iff mul_right_mem_nonZeroDivisors_eq_zero_iff
@@ -134,8 +145,9 @@ theorem mul_cancel_right_coe_nonZeroDivisors {x y : R} {c : R⁰} : x * c = y * 
 #align mul_cancel_right_coe_non_zero_divisor mul_cancel_right_coe_nonZeroDivisors
 
 @[simp]
-theorem mul_cancel_left_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) : r * x = r * y ↔ x = y :=
-  by simp_rw [mul_comm r, mul_cancel_right_mem_nonZeroDivisors hr]
+theorem mul_cancel_left_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) :
+    r * x = r * y ↔ x = y := by
+  simp_rw [mul_comm r, mul_cancel_right_mem_nonZeroDivisors hr]
 #align mul_cancel_left_mem_non_zero_divisor mul_cancel_left_mem_nonZeroDivisors
 
 theorem mul_cancel_left_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : (c : R') * x = c * y ↔ x = y :=

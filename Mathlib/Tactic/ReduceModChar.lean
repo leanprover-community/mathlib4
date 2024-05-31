@@ -44,7 +44,7 @@ namespace ReduceModChar
 
 open Mathlib.Meta.NormNum
 
-lemma CharP.cast_int_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ) :
+lemma CharP.intCast_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ) :
     (k : R) = (k % p : ℤ) := by
   calc
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Int.emod_add_ediv]
@@ -52,7 +52,7 @@ lemma CharP.cast_int_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ
 
 lemma CharP.isInt_of_mod {α : Type _} [Ring α] {n n' : ℕ} (inst : CharP α n) {e : α}
     (he : IsInt e e') (hn : IsNat n n') (h₂ : IsInt (e' % n') r) : IsInt e r :=
-  ⟨by rw [he.out, CharP.cast_int_eq_mod α n, show n = n' from hn.out, h₂.out, Int.cast_id]⟩
+  ⟨by rw [he.out, CharP.intCast_eq_mod α n, show n = n' from hn.out, h₂.out, Int.cast_id]⟩
 
 /-- Given an integral expression `e : t` such that `t` is a ring of characteristic `n`,
 reduce `e` modulo `n`. -/
