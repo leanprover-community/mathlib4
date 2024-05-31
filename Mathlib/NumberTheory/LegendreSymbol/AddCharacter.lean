@@ -51,9 +51,8 @@ variable {R : Type u} [CommRing R] {R' : Type v} [CommMonoid R']
 /-- The values of an additive character on a ring of positive characteristic are roots of unity. -/
 lemma val_mem_rootsOfUnity (φ : AddChar R R') (a : R) (h : 0 < ringChar R) :
     (φ.val_isUnit a).unit ∈ rootsOfUnity (ringChar R).toPNat' R' := by
-  simp only [mem_rootsOfUnity, Nat.toPNat'_coe, h, ↓reduceIte, Units.ext_iff, CharP.cast_eq_zero,
-    Units.val_pow_eq_pow_val, IsUnit.unit_spec, ← map_nsmul_pow, nsmul_eq_mul, zero_mul,
-    map_zero_one, Units.val_one]
+  simp only [mem_rootsOfUnity', IsUnit.unit_spec, Nat.toPNat'_coe, h, ↓reduceIte, ← map_nsmul_pow,
+    nsmul_eq_mul, CharP.cast_eq_zero, zero_mul, map_zero_one]
 
 /-- An additive character is *primitive* iff all its multiplicative shifts by nonzero
 elements are nontrivial. -/
@@ -63,7 +62,7 @@ def IsPrimitive (ψ : AddChar R R') : Prop :=
 
 /-- The composition of a primitive additive character with an injective mooid homomorphism
 is also primitive. -/
-lemma isPrimitive_homComp_of_isPrimitive {R'' : Type*} [CommMonoid R''] {φ : AddChar R R'}
+lemma IsPrimitive.compMulHom_of_isPrimitive {R'' : Type*} [CommMonoid R''] {φ : AddChar R R'}
     {f : R' →* R''} (hφ : φ.IsPrimitive) (hf : Function.Injective f) :
     (f.compAddChar φ).IsPrimitive := by
   intro a a_ne_zero
@@ -342,7 +341,7 @@ noncomputable def FiniteField.primitiveChar_to_Complex : AddChar F ℂ := by
 
 lemma FiniteField.primitiveChar_to_Complex_isPrimitive :
     (primitiveChar_to_Complex F).IsPrimitive := by
-  refine isPrimitive_homComp_of_isPrimitive (PrimitiveAddChar.prim _) ?_
+  refine IsPrimitive.compMulHom_of_isPrimitive (PrimitiveAddChar.prim _) ?_
   let nn := (primitiveChar F ℂ <| ringChar_ne F).n
   exact (IsCyclotomicExtension.algEquiv nn ℂ (CyclotomicField nn ℂ) ℂ).injective
 
