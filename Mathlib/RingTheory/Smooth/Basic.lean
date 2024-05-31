@@ -211,7 +211,7 @@ theorem of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRi
   constructor
   intro C _ _ I hI i
   let l : P ⧸ (RingHom.ker f.toRingHom) ^ 2 →ₐ[R] C := by
-    refine' Ideal.Quotient.liftₐ _ (FormallySmooth.lift I ⟨2, hI⟩ (i.comp f)) _
+    refine Ideal.Quotient.liftₐ _ (FormallySmooth.lift I ⟨2, hI⟩ (i.comp f)) ?_
     have : RingHom.ker f ≤ I.comap (FormallySmooth.lift I ⟨2, hI⟩ (i.comp f)) := by
       rintro x (hx : f x = 0)
       have : _ = i (f x) := (FormallySmooth.mk_lift I ⟨2, hI⟩ (i.comp f) x : _)
