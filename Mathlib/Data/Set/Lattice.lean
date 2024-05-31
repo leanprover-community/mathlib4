@@ -772,29 +772,29 @@ theorem iInter₂_comm (s : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Se
 @[simp]
 theorem biUnion_and (p : ι → Prop) (q : ι → ι' → Prop) (s : ∀ x y, p x ∧ q x y → Set α) :
     ⋃ (x : ι) (y : ι') (h : p x ∧ q x y), s x y h =
-      ⋃ (x : ι) (hx : p x) (y : ι') (hy : q x y), s x y ⟨hx, hy⟩ :=
-  by simp only [iUnion_and, @iUnion_comm _ ι']
+      ⋃ (x : ι) (hx : p x) (y : ι') (hy : q x y), s x y ⟨hx, hy⟩ := by
+  simp only [iUnion_and, @iUnion_comm _ ι']
 #align set.bUnion_and Set.biUnion_and
 
 @[simp]
 theorem biUnion_and' (p : ι' → Prop) (q : ι → ι' → Prop) (s : ∀ x y, p y ∧ q x y → Set α) :
     ⋃ (x : ι) (y : ι') (h : p y ∧ q x y), s x y h =
-      ⋃ (y : ι') (hy : p y) (x : ι) (hx : q x y), s x y ⟨hy, hx⟩ :=
-  by simp only [iUnion_and, @iUnion_comm _ ι]
+      ⋃ (y : ι') (hy : p y) (x : ι) (hx : q x y), s x y ⟨hy, hx⟩ := by
+  simp only [iUnion_and, @iUnion_comm _ ι]
 #align set.bUnion_and' Set.biUnion_and'
 
 @[simp]
 theorem biInter_and (p : ι → Prop) (q : ι → ι' → Prop) (s : ∀ x y, p x ∧ q x y → Set α) :
     ⋂ (x : ι) (y : ι') (h : p x ∧ q x y), s x y h =
-      ⋂ (x : ι) (hx : p x) (y : ι') (hy : q x y), s x y ⟨hx, hy⟩ :=
-  by simp only [iInter_and, @iInter_comm _ ι']
+      ⋂ (x : ι) (hx : p x) (y : ι') (hy : q x y), s x y ⟨hx, hy⟩ := by
+  simp only [iInter_and, @iInter_comm _ ι']
 #align set.bInter_and Set.biInter_and
 
 @[simp]
 theorem biInter_and' (p : ι' → Prop) (q : ι → ι' → Prop) (s : ∀ x y, p y ∧ q x y → Set α) :
     ⋂ (x : ι) (y : ι') (h : p y ∧ q x y), s x y h =
-      ⋂ (y : ι') (hy : p y) (x : ι) (hx : q x y), s x y ⟨hy, hx⟩ :=
-  by simp only [iInter_and, @iInter_comm _ ι]
+      ⋂ (y : ι') (hy : p y) (x : ι) (hx : q x y), s x y ⟨hy, hx⟩ := by
+  simp only [iInter_and, @iInter_comm _ ι]
 #align set.bInter_and' Set.biInter_and'
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (x h) -/
@@ -964,8 +964,8 @@ theorem biUnion_insert (a : α) (s : Set α) (t : α → Set β) :
     ⋃ x ∈ insert a s, t x = t a ∪ ⋃ x ∈ s, t x := by simp
 #align set.bUnion_insert Set.biUnion_insert
 
-theorem biUnion_pair (a b : α) (s : α → Set β) : ⋃ x ∈ ({a, b} : Set α), s x = s a ∪ s b :=
-  by simp
+theorem biUnion_pair (a b : α) (s : α → Set β) : ⋃ x ∈ ({a, b} : Set α), s x = s a ∪ s b := by
+  simp
 #align set.bUnion_pair Set.biUnion_pair
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -1181,8 +1181,8 @@ theorem iUnion_eq_univ_iff {f : ι → Set α} : ⋃ i, f i = univ ↔ ∀ x, �
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem iUnion₂_eq_univ_iff {s : ∀ i, κ i → Set α} :
-    ⋃ (i) (j), s i j = univ ↔ ∀ a, ∃ i j, a ∈ s i j :=
-  by simp only [iUnion_eq_univ_iff, mem_iUnion]
+    ⋃ (i) (j), s i j = univ ↔ ∀ a, ∃ i j, a ∈ s i j := by
+  simp only [iUnion_eq_univ_iff, mem_iUnion]
 #align set.Union₂_eq_univ_iff Set.iUnion₂_eq_univ_iff
 
 theorem sUnion_eq_univ_iff {c : Set (Set α)} : ⋃₀c = univ ↔ ∀ a, ∃ b ∈ c, a ∈ b := by
@@ -1911,8 +1911,8 @@ theorem image2_iUnion₂_left (s : ∀ i, κ i → Set α) (t : Set β) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem image2_iUnion₂_right (s : Set α) (t : ∀ i, κ i → Set β) :
-    image2 f s (⋃ (i) (j), t i j) = ⋃ (i) (j), image2 f s (t i j) :=
-  by simp_rw [image2_iUnion_right]
+    image2 f s (⋃ (i) (j), t i j) = ⋃ (i) (j), image2 f s (t i j) := by
+  simp_rw [image2_iUnion_right]
 #align set.image2_Union₂_right Set.image2_iUnion₂_right
 
 theorem image2_iInter_subset_left (s : ι → Set α) (t : Set β) :

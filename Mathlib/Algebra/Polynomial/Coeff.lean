@@ -262,8 +262,9 @@ theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
 #align polynomial.coeff_mul_X_pow Polynomial.coeff_mul_X_pow
 
 @[simp]
-theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) : coeff (Polynomial.X ^ n * p) (d + n) = coeff p d :=
-  by rw [(commute_X_pow p n).eq, coeff_mul_X_pow]
+theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) :
+    coeff (Polynomial.X ^ n * p) (d + n) = coeff p d := by
+  rw [(commute_X_pow p n).eq, coeff_mul_X_pow]
 #align polynomial.coeff_X_pow_mul Polynomial.coeff_X_pow_mul
 
 theorem coeff_mul_X_pow' (p : R[X]) (n d : ℕ) :

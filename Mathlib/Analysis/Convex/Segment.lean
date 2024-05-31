@@ -61,14 +61,14 @@ def openSegment (x y : E) : Set E :=
 
 theorem segment_eq_image₂ (x y : E) :
     [x -[𝕜] y] =
-      (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 ≤ p.1 ∧ 0 ≤ p.2 ∧ p.1 + p.2 = 1 } :=
-  by simp only [segment, image, Prod.exists, mem_setOf_eq, exists_prop, and_assoc]
+      (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 ≤ p.1 ∧ 0 ≤ p.2 ∧ p.1 + p.2 = 1 } := by
+  simp only [segment, image, Prod.exists, mem_setOf_eq, exists_prop, and_assoc]
 #align segment_eq_image₂ segment_eq_image₂
 
 theorem openSegment_eq_image₂ (x y : E) :
     openSegment 𝕜 x y =
-      (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 < p.1 ∧ 0 < p.2 ∧ p.1 + p.2 = 1 } :=
-  by simp only [openSegment, image, Prod.exists, mem_setOf_eq, exists_prop, and_assoc]
+      (fun p : 𝕜 × 𝕜 => p.1 • x + p.2 • y) '' { p | 0 < p.1 ∧ 0 < p.2 ∧ p.1 + p.2 = 1 } := by
+  simp only [openSegment, image, Prod.exists, mem_setOf_eq, exists_prop, and_assoc]
 #align open_segment_eq_image₂ openSegment_eq_image₂
 
 theorem segment_symm (x y : E) : [x -[𝕜] y] = [y -[𝕜] x] :=

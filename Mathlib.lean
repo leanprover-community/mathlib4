@@ -287,6 +287,7 @@ import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Embedding.Basic
 import Mathlib.Algebra.Homology.Exact
 import Mathlib.Algebra.Homology.ExactSequence
+import Mathlib.Algebra.Homology.Factorizations.Basic
 import Mathlib.Algebra.Homology.Functor
 import Mathlib.Algebra.Homology.HomologicalBicomplex
 import Mathlib.Algebra.Homology.HomologicalComplex
@@ -295,6 +296,7 @@ import Mathlib.Algebra.Homology.HomologicalComplexBiprod
 import Mathlib.Algebra.Homology.HomologicalComplexLimits
 import Mathlib.Algebra.Homology.Homology
 import Mathlib.Algebra.Homology.HomologySequence
+import Mathlib.Algebra.Homology.HomologySequenceLemmas
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
@@ -356,6 +358,7 @@ import Mathlib.Algebra.Lie.Engel
 import Mathlib.Algebra.Lie.EngelSubalgebra
 import Mathlib.Algebra.Lie.Free
 import Mathlib.Algebra.Lie.IdealOperations
+import Mathlib.Algebra.Lie.InvariantForm
 import Mathlib.Algebra.Lie.Killing
 import Mathlib.Algebra.Lie.Matrix
 import Mathlib.Algebra.Lie.Nilpotent
@@ -1166,6 +1169,7 @@ import Mathlib.Analysis.SumOverResidueClass
 import Mathlib.Analysis.VonNeumannAlgebra.Basic
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+import Mathlib.CategoryTheory.Abelian.EpiWithInjectiveKernel
 import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
@@ -1301,6 +1305,7 @@ import Mathlib.CategoryTheory.Functor.Hom
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+import Mathlib.CategoryTheory.Functor.OfSequence
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Functor.Trifunctor
 import Mathlib.CategoryTheory.Galois.Basic
@@ -1508,10 +1513,10 @@ import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
-import Mathlib.CategoryTheory.MorphismProperty
 import Mathlib.CategoryTheory.MorphismProperty.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Concrete
 import Mathlib.CategoryTheory.MorphismProperty.Composition
+import Mathlib.CategoryTheory.MorphismProperty.Concrete
+import Mathlib.CategoryTheory.MorphismProperty.Factorization
 import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.NatIso
@@ -1649,6 +1654,7 @@ import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Combinatorics.Additive.AP.Three.Behrend
 import Mathlib.Combinatorics.Additive.AP.Three.Defs
 import Mathlib.Combinatorics.Additive.Corner.Defs
+import Mathlib.Combinatorics.Additive.Dissociation
 import Mathlib.Combinatorics.Additive.ETransform
 import Mathlib.Combinatorics.Additive.Energy
 import Mathlib.Combinatorics.Additive.FreimanHom
@@ -3568,6 +3574,7 @@ import Mathlib.RingTheory.NormTrace
 import Mathlib.RingTheory.Nullstellensatz
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
+import Mathlib.RingTheory.OrzechProperty
 import Mathlib.RingTheory.Perfection
 import Mathlib.RingTheory.PiTensorProduct
 import Mathlib.RingTheory.Polynomial.Basic

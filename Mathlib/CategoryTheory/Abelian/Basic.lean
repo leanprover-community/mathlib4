@@ -395,7 +395,7 @@ See `CategoryTheory.Abelian.ofCoimageImageComparisonIsIso` for the converse.
 -/
 instance : IsIso (coimageImageComparison f) := by
   convert
-    IsIso.of_iso
+    Iso.isIso_hom
       (IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage
         (imageStrongEpiMonoFactorisation f).toMonoIsImage)
   ext
