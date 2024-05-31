@@ -93,14 +93,17 @@ def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar 
   let (r, _) ← simp prop ctx_result.ctx
   applySimpResultToProp' proof prop r
 
-@[zify_simps] lemma nat_cast_eq (a b : Nat) : a = b ↔ (a : Int) = (b : Int) := Int.ofNat_inj.symm
-@[zify_simps] lemma nat_cast_le (a b : Nat) : a ≤ b ↔ (a : Int) ≤ (b : Int) := Int.ofNat_le.symm
-@[zify_simps] lemma nat_cast_lt (a b : Nat) : a < b ↔ (a : Int) < (b : Int) := Int.ofNat_lt.symm
-@[zify_simps] lemma nat_cast_ne (a b : Nat) : a ≠ b ↔ (a : Int) ≠ (b : Int) :=
+@[zify_simps] lemma natCast_eq (a b : Nat) : a = b ↔ (a : Int) = (b : Int) := Int.ofNat_inj.symm
+@[zify_simps] lemma natCast_le (a b : Nat) : a ≤ b ↔ (a : Int) ≤ (b : Int) := Int.ofNat_le.symm
+@[zify_simps] lemma natCast_lt (a b : Nat) : a < b ↔ (a : Int) < (b : Int) := Int.ofNat_lt.symm
+@[zify_simps] lemma natCast_ne (a b : Nat) : a ≠ b ↔ (a : Int) ≠ (b : Int) :=
   not_congr Int.ofNat_inj.symm
-@[zify_simps] lemma nat_cast_dvd (a b : Nat) : a ∣ b ↔ (a : Int) ∣ (b : Int) := Int.ofNat_dvd.symm
+@[zify_simps] lemma natCast_dvd (a b : Nat) : a ∣ b ↔ (a : Int) ∣ (b : Int) := Int.ofNat_dvd.symm
 -- TODO: is it worth adding lemmas for Prime and Coprime as well?
 -- Doing so in this file would require adding imports.
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_dvd := natCast_dvd
 
 
 -- `Nat.cast_sub` is already tagged as `norm_cast` but it does allow to use assumptions like

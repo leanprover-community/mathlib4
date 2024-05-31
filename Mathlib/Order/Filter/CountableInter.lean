@@ -15,12 +15,16 @@ In this file we define `CountableInterFilter` to be the class of filters with th
 property: for any countable collection of sets `s ∈ l` their intersection belongs to `l` as well.
 
 Two main examples are the `residual` filter defined in `Mathlib.Topology.GDelta` and
-the `MeasureTheory.Measure.ae` filter defined in `MeasureTheory.MeasureSpace`.
+the `MeasureTheory.ae` filter defined in `Mathlib/MeasureTheory.OuterMeasure/AE`.
 
 We reformulate the definition in terms of indexed intersection and in terms of `Filter.Eventually`
 and provide instances for some basic constructions (`⊥`, `⊤`, `Filter.principal`, `Filter.map`,
 `Filter.comap`, `Inf.inf`). We also provide a custom constructor `Filter.ofCountableInter`
 that deduces two axioms of a `Filter` from the countable intersection property.
+
+Note that there also exists a typeclass `CardinalInterFilter`, and thus an alternative spelling of
+`CountableInterFilter` as `CardinalInterFilter l (aleph 1)`. The former (defined here) is the
+preferred spelling; it has the advantage of not requiring the user to import the theory ordinals.
 
 ## Tags
 filter, countable
@@ -127,26 +131,26 @@ theorem EventuallyEq.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countabl
 /-- Construct a filter with countable intersection property. This constructor deduces
 `Filter.univ_sets` and `Filter.inter_sets` from the countable intersection property. -/
 def Filter.ofCountableInter (l : Set (Set α))
-    (hp : ∀ S : Set (Set α), S.Countable → S ⊆ l → ⋂₀ S ∈ l)
+    (hl : ∀ S : Set (Set α), S.Countable → S ⊆ l → ⋂₀ S ∈ l)
     (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l) : Filter α where
   sets := l
-  univ_sets := @sInter_empty α ▸ hp _ countable_empty (empty_subset _)
+  univ_sets := @sInter_empty α ▸ hl _ countable_empty (empty_subset _)
   sets_of_superset := h_mono _ _
   inter_sets {s t} hs ht := sInter_pair s t ▸
-    hp _ ((countable_singleton _).insert _) (insert_subset_iff.2 ⟨hs, singleton_subset_iff.2 ht⟩)
+    hl _ ((countable_singleton _).insert _) (insert_subset_iff.2 ⟨hs, singleton_subset_iff.2 ht⟩)
 #align filter.of_countable_Inter Filter.ofCountableInter
 
 instance Filter.countableInter_ofCountableInter (l : Set (Set α))
-    (hp : ∀ S : Set (Set α), S.Countable → S ⊆ l → ⋂₀ S ∈ l)
+    (hl : ∀ S : Set (Set α), S.Countable → S ⊆ l → ⋂₀ S ∈ l)
     (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l) :
-    CountableInterFilter (Filter.ofCountableInter l hp h_mono) :=
-  ⟨hp⟩
+    CountableInterFilter (Filter.ofCountableInter l hl h_mono) :=
+  ⟨hl⟩
 #align filter.countable_Inter_of_countable_Inter Filter.countableInter_ofCountableInter
 
 @[simp]
 theorem Filter.mem_ofCountableInter {l : Set (Set α)}
-    (hp : ∀ S : Set (Set α), S.Countable → S ⊆ l → ⋂₀ S ∈ l) (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l)
-    {s : Set α} : s ∈ Filter.ofCountableInter l hp h_mono ↔ s ∈ l :=
+    (hl : ∀ S : Set (Set α), S.Countable → S ⊆ l → ⋂₀ S ∈ l) (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l)
+    {s : Set α} : s ∈ Filter.ofCountableInter l hl h_mono ↔ s ∈ l :=
   Iff.rfl
 #align filter.mem_of_countable_Inter Filter.mem_ofCountableInter
 
@@ -154,25 +158,28 @@ theorem Filter.mem_ofCountableInter {l : Set (Set α)}
 Similarly to `Filter.comk`, a set belongs to this filter if its complement satisfies the property.
 Similarly to `Filter.ofCountableInter`,
 this constructor deduces some properties from the countable intersection property
-which becomes the countable union property because we take complements of all sets.
-
-Another small difference from `Filter.ofCountableInter`
-is that this definition takes `p : Set α → Prop` instead of `Set (Set α)`. -/
-def Filter.ofCountableUnion (p : Set α → Prop)
-    (hUnion : ∀ S : Set (Set α), S.Countable → (∀ s ∈ S, p s) → p (⋃₀ S))
-    (hmono : ∀ t, p t → ∀ s ⊆ t, p s) : Filter α := by
-  refine .ofCountableInter {s | p sᶜ} (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ ?_
+which becomes the countable union property because we take complements of all sets. -/
+def Filter.ofCountableUnion (l : Set (Set α))
+    (hUnion : ∀ S : Set (Set α), S.Countable → (∀ s ∈ S, s ∈ l) → ⋃₀ S ∈ l)
+    (hmono : ∀ t ∈ l, ∀ s ⊆ t, s ∈ l) : Filter α := by
+  refine .ofCountableInter {s | sᶜ ∈ l} (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ ?_
   · rw [mem_setOf_eq, compl_sInter]
-    exact hUnion _ (hSc.image _) (forall_mem_image.2 hSp)
-  · exact hmono _ ht _ (compl_subset_compl.2 hsub)
+    apply hUnion (compl '' S) (hSc.image _)
+    intro s hs
+    rw [mem_image] at hs
+    rcases hs with ⟨t, ht, rfl⟩
+    apply hSp ht
+  · rw [mem_setOf_eq]
+    rw [← compl_subset_compl] at hsub
+    exact hmono sᶜ ht tᶜ hsub
 
-instance Filter.countableInter_ofCountableUnion (p : Set α → Prop) (h₁ h₂) :
-    CountableInterFilter (Filter.ofCountableUnion p h₁ h₂) :=
+instance Filter.countableInter_ofCountableUnion (l : Set (Set α)) (h₁ h₂) :
+    CountableInterFilter (Filter.ofCountableUnion l h₁ h₂) :=
   countableInter_ofCountableInter ..
 
 @[simp]
-theorem Filter.mem_ofCountableUnion {p : Set α → Prop} {hunion hmono s} :
-    s ∈ ofCountableUnion p hunion hmono ↔ p sᶜ :=
+theorem Filter.mem_ofCountableUnion {l : Set (Set α)} {hunion hmono s} :
+    s ∈ ofCountableUnion l hunion hmono ↔ l sᶜ :=
   Iff.rfl
 
 instance countableInterFilter_principal (s : Set α) : CountableInterFilter (𝓟 s) :=
@@ -191,14 +198,14 @@ instance countableInterFilter_top : CountableInterFilter (⊤ : Filter α) := by
 
 instance (l : Filter β) [CountableInterFilter l] (f : α → β) :
     CountableInterFilter (comap f l) := by
-  refine' ⟨fun S hSc hS => _⟩
+  refine ⟨fun S hSc hS => ?_⟩
   choose! t htl ht using hS
   have : (⋂ s ∈ S, t s) ∈ l := (countable_bInter_mem hSc).2 htl
-  refine' ⟨_, this, _⟩
+  refine ⟨_, this, ?_⟩
   simpa [preimage_iInter] using iInter₂_mono ht
 
 instance (l : Filter α) [CountableInterFilter l] (f : α → β) : CountableInterFilter (map f l) := by
-  refine' ⟨fun S hSc hS => _⟩
+  refine ⟨fun S hSc hS => ?_⟩
   simp only [mem_map, sInter_eq_biInter, preimage_iInter₂] at hS ⊢
   exact (countable_bInter_mem hSc).2 hS
 
@@ -206,11 +213,11 @@ instance (l : Filter α) [CountableInterFilter l] (f : α → β) : CountableInt
 to automatically get an instance for `residual α ⊓ 𝓟 s`. -/
 instance countableInterFilter_inf (l₁ l₂ : Filter α) [CountableInterFilter l₁]
     [CountableInterFilter l₂] : CountableInterFilter (l₁ ⊓ l₂) := by
-  refine' ⟨fun S hSc hS => _⟩
+  refine ⟨fun S hSc hS => ?_⟩
   choose s hs t ht hst using hS
   replace hs : (⋂ i ∈ S, s i ‹_›) ∈ l₁ := (countable_bInter_mem hSc).2 hs
   replace ht : (⋂ i ∈ S, t i ‹_›) ∈ l₂ := (countable_bInter_mem hSc).2 ht
-  refine' mem_of_superset (inter_mem_inf hs ht) (subset_sInter fun i hi => _)
+  refine mem_of_superset (inter_mem_inf hs ht) (subset_sInter fun i hi => ?_)
   rw [hst i hi]
   apply inter_subset_inter <;> exact iInter_subset_of_subset i (iInter_subset _ _)
 #align countable_Inter_filter_inf countableInterFilter_inf
@@ -218,7 +225,7 @@ instance countableInterFilter_inf (l₁ l₂ : Filter α) [CountableInterFilter 
 /-- Supremum of two `CountableInterFilter`s is a `CountableInterFilter`. -/
 instance countableInterFilter_sup (l₁ l₂ : Filter α) [CountableInterFilter l₁]
     [CountableInterFilter l₂] : CountableInterFilter (l₁ ⊔ l₂) := by
-  refine' ⟨fun S hSc hS => ⟨_, _⟩⟩ <;> refine' (countable_sInter_mem hSc).2 fun s hs => _
+  refine ⟨fun S hSc hS => ⟨?_, ?_⟩⟩ <;> refine (countable_sInter_mem hSc).2 fun s hs => ?_
   exacts [(hS s hs).1, (hS s hs).2]
 #align countable_Inter_filter_sup countableInterFilter_sup
 
@@ -227,7 +234,7 @@ namespace Filter
 variable (g : Set (Set α))
 
 /-- `Filter.CountableGenerateSets g` is the (sets of the)
-greatest `countableInterFilter` containing `g`.-/
+greatest `countableInterFilter` containing `g`. -/
 inductive CountableGenerateSets : Set α → Prop
   | basic {s : Set α} : s ∈ g → CountableGenerateSets s
   | univ : CountableGenerateSets univ
@@ -236,7 +243,7 @@ inductive CountableGenerateSets : Set α → Prop
     S.Countable → (∀ s ∈ S, CountableGenerateSets s) → CountableGenerateSets (⋂₀ S)
 #align filter.countable_generate_sets Filter.CountableGenerateSets
 
-/-- `Filter.countableGenerate g` is the greatest `countableInterFilter` containing `g`.-/
+/-- `Filter.countableGenerate g` is the greatest `countableInterFilter` containing `g`. -/
 def countableGenerate : Filter α :=
   ofCountableInter (CountableGenerateSets g) (fun _ => CountableGenerateSets.sInter) fun _ _ =>
     CountableGenerateSets.superset
@@ -257,15 +264,15 @@ theorem mem_countableGenerate_iff {s : Set α} :
   · induction' h with s hs s t _ st ih S Sct _ ih
     · exact ⟨{s}, by simp [hs, subset_refl]⟩
     · exact ⟨∅, by simp⟩
-    · refine' Exists.imp (fun S => _) ih
+    · refine Exists.imp (fun S => ?_) ih
       tauto
     choose T Tg Tct hT using ih
-    refine' ⟨⋃ (s) (H : s ∈ S), T s H, by simpa, Sct.biUnion Tct, _⟩
+    refine ⟨⋃ (s) (H : s ∈ S), T s H, by simpa, Sct.biUnion Tct, ?_⟩
     apply subset_sInter
     intro s H
     exact subset_trans (sInter_subset_sInter (subset_iUnion₂ s H)) (hT s H)
   rcases h with ⟨S, Sg, Sct, hS⟩
-  refine' mem_of_superset ((countable_sInter_mem Sct).mpr _) hS
+  refine mem_of_superset ((countable_sInter_mem Sct).mpr ?_) hS
   intro s H
   exact CountableGenerateSets.basic (Sg H)
 #align filter.mem_countable_generate_iff Filter.mem_countableGenerate_iff
@@ -284,10 +291,10 @@ theorem le_countableGenerate_iff_of_countableInterFilter {f : Filter α} [Counta
 
 variable (g)
 
-/-- `countableGenerate g` is the greatest `countableInterFilter` containing `g`.-/
+/-- `countableGenerate g` is the greatest `countableInterFilter` containing `g`. -/
 theorem countableGenerate_isGreatest :
     IsGreatest { f : Filter α | CountableInterFilter f ∧ g ⊆ f.sets } (countableGenerate g) := by
-  refine' ⟨⟨inferInstance, fun s => CountableGenerateSets.basic⟩, _⟩
+  refine ⟨⟨inferInstance, fun s => CountableGenerateSets.basic⟩, ?_⟩
   rintro f ⟨fct, hf⟩
   rwa [@le_countableGenerate_iff_of_countableInterFilter _ _ _ fct]
 #align filter.countable_generate_is_greatest Filter.countableGenerate_isGreatest

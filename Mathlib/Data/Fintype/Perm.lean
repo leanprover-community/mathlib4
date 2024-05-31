@@ -53,7 +53,7 @@ theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x
     exact List.mem_singleton.2 (Equiv.ext fun x => Decidable.by_contradiction <| h x)
   | cons a l IH =>
   by_cases hfa : f a = a
-  · refine' mem_append_left _ (IH fun x hx => mem_of_ne_of_mem _ (h x hx))
+  · refine mem_append_left _ (IH fun x hx => mem_of_ne_of_mem ?_ (h x hx))
     rintro rfl
     exact hx hfa
   have hfa' : f (f a) ≠ f a := mt (fun h => f.injective h) hfa
@@ -63,13 +63,13 @@ theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x
       rintro rfl
       apply hx
       simp only [mul_apply, swap_apply_right]
-    refine' List.mem_of_ne_of_mem hxa (h x fun h => _)
-    simp only [mul_apply, swap_apply_def, mul_apply, Ne.def, apply_eq_iff_eq] at hx
+    refine List.mem_of_ne_of_mem hxa (h x fun h => ?_)
+    simp only [mul_apply, swap_apply_def, mul_apply, Ne, apply_eq_iff_eq] at hx
     split_ifs at hx with h_1
     exacts [hxa (h.symm.trans h_1), hx h]
   suffices f ∈ permsOfList l ∨ ∃ b ∈ l, ∃ g ∈ permsOfList l, Equiv.swap a b * g = f by
     simpa only [permsOfList, exists_prop, List.mem_map, mem_append, List.mem_bind]
-  refine' or_iff_not_imp_left.2 fun _hfl => ⟨f a, _, Equiv.swap a (f a) * f, IH this, _⟩
+  refine or_iff_not_imp_left.2 fun _hfl => ⟨f a, ?_, Equiv.swap a (f a) * f, IH this, ?_⟩
   · exact mem_of_ne_of_mem hfa (h _ hfa')
   · rw [← mul_assoc, mul_def (swap a (f a)) (swap a (f a)), swap_swap, ← Perm.one_def, one_mul]
 #align mem_perms_of_list_of_mem mem_permsOfList_of_mem

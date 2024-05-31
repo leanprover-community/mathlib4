@@ -238,21 +238,19 @@ theorem comap_map_mk_uniformity : comap (Prod.map mk mk) (map (Prod.map mk mk) (
   simp only [Prod.map, Prod.ext_iff, mk_eq_mk] at hxy
   exact ((hxy.1.prod hxy.2).mem_open_iff hU.2).1 hyU
 
-instance instUniformSpace : UniformSpace (SeparationQuotient α) :=
-  .ofNhdsEqComap
-    { uniformity := map (Prod.map mk mk) (𝓤 α)
-      refl := le_trans (by simpa using surjective_mk) (Filter.map_mono refl_le_uniformity)
-      symm := tendsto_map' <| tendsto_map.comp tendsto_swap_uniformity
-      comp := fun t ht ↦ by
-        rcases comp_open_symm_mem_uniformity_sets ht with ⟨U, hU, hUo, -, hUt⟩
-        refine mem_of_superset (mem_lift' <| image_mem_map hU) ?_
-        simp only [subset_def, Prod.forall, mem_compRel, mem_image, Prod.ext_iff]
-        rintro _ _ ⟨_, ⟨⟨x, y⟩, hxyU, rfl, rfl⟩, ⟨⟨y', z⟩, hyzU, hy, rfl⟩⟩
-        have : y' ⤳ y := (mk_eq_mk.1 hy).specializes
-        exact @hUt (x, z) ⟨y', this.mem_open (UniformSpace.isOpen_ball _ hUo) hxyU, hyzU⟩ }
-    inferInstance <| surjective_mk.forall.2 fun x ↦ comap_injective surjective_mk <| by
-      conv_lhs => rw [comap_mk_nhds_mk, nhds_eq_comap_uniformity, ← comap_map_mk_uniformity]
-      simp only [Filter.comap_comap]; rfl
+instance instUniformSpace : UniformSpace (SeparationQuotient α) where
+  uniformity := map (Prod.map mk mk) (𝓤 α)
+  symm := tendsto_map' <| tendsto_map.comp tendsto_swap_uniformity
+  comp := fun t ht ↦ by
+    rcases comp_open_symm_mem_uniformity_sets ht with ⟨U, hU, hUo, -, hUt⟩
+    refine mem_of_superset (mem_lift' <| image_mem_map hU) ?_
+    simp only [subset_def, Prod.forall, mem_compRel, mem_image, Prod.ext_iff]
+    rintro _ _ ⟨_, ⟨⟨x, y⟩, hxyU, rfl, rfl⟩, ⟨⟨y', z⟩, hyzU, hy, rfl⟩⟩
+    have : y' ⤳ y := (mk_eq_mk.1 hy).specializes
+    exact @hUt (x, z) ⟨y', this.mem_open (UniformSpace.isOpen_ball _ hUo) hxyU, hyzU⟩
+  nhds_eq_comap_uniformity := surjective_mk.forall.2 fun x ↦ comap_injective surjective_mk <| by
+    conv_lhs => rw [comap_mk_nhds_mk, nhds_eq_comap_uniformity, ← comap_map_mk_uniformity]
+    simp only [Filter.comap_comap, Function.comp, Prod_map]
 
 theorem uniformity_eq : 𝓤 (SeparationQuotient α) = (𝓤 α).map (Prod.map mk mk) := rfl
 #align uniform_space.uniformity_quotient SeparationQuotient.uniformity_eq
@@ -306,7 +304,7 @@ def lift' [T0Space β] (f : α → β) : SeparationQuotient α → β :=
 #align uniform_space.separation_quotient.lift SeparationQuotient.lift'
 
 theorem lift'_mk [T0Space β] {f : α → β} (h : UniformContinuous f) (a : α) :
-    lift' f (mk a) = f a := by rw [lift', dif_pos h]; rfl
+    lift' f (mk a) = f a := by rw [lift', dif_pos h, lift_mk]
 #align uniform_space.separation_quotient.lift_mk SeparationQuotient.lift'_mk
 
 theorem uniformContinuous_lift' [T0Space β] (f : α → β) : UniformContinuous (lift' f) := by

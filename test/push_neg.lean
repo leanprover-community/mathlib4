@@ -183,7 +183,7 @@ def g : G Nat where
 example {p q : Nat} : ¬ g.Adj p q := by
   rw [g]
   guard_target =ₛ ¬ G.Adj { Adj := fun a b => (a ≠ b) ∧ ((a ∣ b) ∨ (b ∣ a)) } p q
-  push_neg
+  fail_if_success push_neg
   guard_target =ₛ ¬ G.Adj { Adj := fun a b => (a ≠ b) ∧ ((a ∣ b) ∨ (b ∣ a)) } p q
   dsimp only
   guard_target =ₛ ¬ ((p ≠ q) ∧ ((p ∣ q) ∨ (q ∣ p)))

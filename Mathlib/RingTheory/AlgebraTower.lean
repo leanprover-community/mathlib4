@@ -98,7 +98,6 @@ section Semiring
 open Finsupp
 
 open scoped Classical
-open BigOperators
 
 universe v₁ w₁
 
@@ -111,7 +110,7 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
     LinearIndependent R fun p : ι × ι' => b p.1 • c p.2 := by
   rw [linearIndependent_iff'] at hb hc; rw [linearIndependent_iff'']; rintro s g hg hsg ⟨i, k⟩
   by_cases hik : (i, k) ∈ s
-  · have h1 : ∑ i in s.image Prod.fst ×ˢ s.image Prod.snd, g i • b i.1 • c i.2 = 0 := by
+  · have h1 : ∑ i ∈ s.image Prod.fst ×ˢ s.image Prod.snd, g i • b i.1 • c i.2 = 0 := by
       rw [← hsg]
       exact
         (Finset.sum_subset Finset.subset_product fun p _ hp =>
@@ -149,8 +148,7 @@ noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R 
 @[simp]
 theorem Basis.smul_repr {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
     (b.smul c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by
-  set_option tactic.skipAssignedInstances false in
-  simp [Basis.smul]; rfl
+  simp [Basis.smul]
 #align basis.smul_repr Basis.smul_repr
 
 theorem Basis.smul_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A)
@@ -223,8 +221,8 @@ def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ (f.restrictDomain B).toRingHom.
 variable {B}
 
 /-- `AlgHom`s from the top of a tower are equivalent to a pair of `AlgHom`s. -/
-def algHomEquivSigma : (C →ₐ[A] D) ≃ Σf : B →ₐ[A] D, @AlgHom B C D _ _ _ _ f.toRingHom.toAlgebra
-    where
+def algHomEquivSigma :
+    (C →ₐ[A] D) ≃ Σf : B →ₐ[A] D, @AlgHom B C D _ _ _ _ f.toRingHom.toAlgebra where
   toFun f := ⟨f.restrictDomain B, f.extendScalars B⟩
   invFun fg :=
     let _ := fg.1.toRingHom.toAlgebra

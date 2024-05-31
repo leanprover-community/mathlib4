@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.Algebra.Module.Submodule.Localization
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.OreLocalization.OreSet
 
 /-!
 # Rank of localization
@@ -23,10 +24,24 @@ section CommRing
 universe u u' v v'
 
 variable {R : Type u} (S : Type u') {M : Type v} {N : Type v'}
-variable [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N] [Module R M]
+variable [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N]
 variable [Module R M] [Module R N] [Algebra R S] [Module S N] [IsScalarTower R S N]
 variable (p : Submonoid R) [IsLocalization p S] (f : M →ₗ[R] N) [IsLocalizedModule p f]
 variable (hp : p ≤ R⁰)
+
+variable {S} in
+lemma IsLocalizedModule.linearIndependent_lift {ι} {v : ι → N} (hf : LinearIndependent S v) :
+    ∃ w : ι → M, LinearIndependent R w := by
+  choose sec hsec using IsLocalizedModule.surj p f
+  use fun i ↦ (sec (v i)).1
+  rw [linearIndependent_iff'] at hf ⊢
+  intro t g hg i hit
+  apply hp (sec (v i)).2.prop
+  apply IsLocalization.injective S hp
+  rw [map_zero]
+  refine hf t (fun i ↦ algebraMap R S (g i * (sec (v i)).2)) ?_ _ hit
+  simp only [map_mul, mul_smul, algebraMap_smul, ← Submonoid.smul_def,
+    hsec, ← map_smul, ← map_sum, hg, map_zero]
 
 lemma IsLocalizedModule.lift_rank_eq :
     Cardinal.lift.{v} (Module.rank S N) = Cardinal.lift.{v'} (Module.rank R M) := by
@@ -37,16 +52,7 @@ lemma IsLocalizedModule.lift_rank_eq :
   · rw [Module.rank_def, lift_iSup (bddAbove_range.{v', v'} _)]
     apply ciSup_le'
     intro ⟨s, hs⟩
-    choose sec hsec using IsLocalizedModule.surj p f
-    refine LinearIndependent.cardinal_lift_le_rank (ι := s) (v := fun i ↦ (sec i).1) ?_
-    rw [linearIndependent_iff'] at hs ⊢
-    intro t g hg i hit
-    apply hp (sec i).2.prop
-    apply IsLocalization.injective S hp
-    rw [map_zero]
-    refine hs t (fun i ↦ algebraMap R S (g i * (sec i).2)) ?_ _ hit
-    simp only [map_mul, mul_smul, algebraMap_smul, ← Submonoid.smul_def,
-      hsec, ← map_smul, ← map_sum, hg, map_zero]
+    exact (IsLocalizedModule.linearIndependent_lift p f hp hs).choose_spec.cardinal_lift_le_rank
   · rw [Module.rank_def, lift_iSup (bddAbove_range.{v, v} _)]
     apply ciSup_le'
     intro ⟨s, hs⟩
@@ -75,13 +81,74 @@ lemma IsLocalizedModule.rank_eq {N : Type v} [AddCommGroup N]
     [Module R N] [Module S N] [IsScalarTower R S N] (f : M →ₗ[R] N) [IsLocalizedModule p f] :
     Module.rank S N = Module.rank R M := by simpa using IsLocalizedModule.lift_rank_eq S p f hp
 
-/-- The **rank-nullity theorem** for commutative domains. -/
+variable (R M) in
+theorem exists_set_linearIndependent_of_isDomain [IsDomain R] :
+    ∃ s : Set M, #s = Module.rank R M ∧ LinearIndependent (ι := s) R Subtype.val := by
+  obtain ⟨w, hw⟩ :=
+    IsLocalizedModule.linearIndependent_lift R⁰ (LocalizedModule.mkLinearMap R⁰ M) le_rfl
+      (Module.Free.chooseBasis (FractionRing R) (LocalizedModule R⁰ M)).linearIndependent
+  refine ⟨Set.range w, ?_, (linearIndependent_subtype_range hw.injective).mpr hw⟩
+  apply Cardinal.lift_injective.{max u v}
+  rw [Cardinal.mk_range_eq_of_injective hw.injective, ← Module.Free.rank_eq_card_chooseBasisIndex,
+  IsLocalizedModule.lift_rank_eq (FractionRing R) R⁰ (LocalizedModule.mkLinearMap R⁰ M) le_rfl]
+
+/-- The **rank-nullity theorem** for commutative domains. Also see `rank_quotient_add_rank`. -/
 theorem rank_quotient_add_rank_of_isDomain [IsDomain R] (M' : Submodule R M) :
     Module.rank R (M ⧸ M') + Module.rank R M' = Module.rank R M := by
   apply lift_injective.{max u v}
   rw [lift_add, ← IsLocalizedModule.lift_rank_eq (FractionRing R) R⁰ (M'.toLocalized R⁰) le_rfl,
     ← IsLocalizedModule.lift_rank_eq (FractionRing R) R⁰ (LocalizedModule.mkLinearMap R⁰ M) le_rfl,
     ← IsLocalizedModule.lift_rank_eq (FractionRing R) R⁰ (M'.toLocalizedQuotient R⁰) le_rfl,
-    ← lift_add, rank_quotient_add_rank]
+    ← lift_add, rank_quotient_add_rank_of_divisionRing]
+
+universe w in
+instance IsDomain.hasRankNullity [IsDomain R] : HasRankNullity.{w} R where
+  rank_quotient_add_rank := rank_quotient_add_rank_of_isDomain
+  exists_set_linearIndependent M := exists_set_linearIndependent_of_isDomain R M
 
 end CommRing
+
+section Ring
+
+variable {R} [Ring R] [IsDomain R] (S : Submonoid R)
+
+/-- A domain that is not (right) Ore is of infinite (right) rank.
+See [cohn_1995] Proposition 1.3.6 -/
+lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R⁰)) :
+    ℵ₀ ≤ Module.rank Rᵐᵒᵖ R := by
+  classical
+  rw [← not_nonempty_iff, OreLocalization.nonempty_oreSet_iff_of_noZeroDivisors] at hS
+  push_neg at hS
+  obtain ⟨r, s, h⟩ := hS
+  refine Cardinal.aleph0_le.mpr fun n ↦ ?_
+  suffices LinearIndependent Rᵐᵒᵖ (fun (i : Fin n) ↦ s ^ (i : ℕ) * r) by
+    simpa using this.cardinal_lift_le_rank
+  suffices ∀ (g : ℕ → Rᵐᵒᵖ) (x), (∑ i ∈ Finset.range n, g i • (s ^ (i + x) * r)) = 0 →
+      ∀ i < n, g i = 0 by
+    refine Fintype.linearIndependent_iff.mpr fun g hg i ↦ ?_
+    simpa only [dif_pos i.prop] using this (fun i ↦ if h : i < n then g ⟨i, h⟩ else 0) 0
+      (by simp [← Fin.sum_univ_eq_sum_range, ← hg]) i i.prop
+  intro g x hg i hin
+  induction' n with n IH generalizing g x i
+  · exact (hin.not_le (zero_le i)).elim
+  · rw [Finset.sum_range_succ'] at hg
+    by_cases hg0 : g 0 = 0
+    · simp only [hg0, zero_smul, add_zero, add_assoc] at hg
+      cases i; exacts [hg0, IH _ _ hg _ (Nat.succ_lt_succ_iff.mp hin)]
+    simp only [MulOpposite.smul_eq_mul_unop, zero_add, ← add_comm x, pow_add _ x,
+      mul_assoc, pow_succ', ← Finset.mul_sum, pow_zero, one_mul] at hg
+    rw [← neg_eq_iff_add_eq_zero, ← neg_mul, neg_mul_comm, ← neg_mul, neg_mul_comm] at hg
+    have := mul_left_cancel₀ (mem_nonZeroDivisors_iff_ne_zero.mp (s ^ x).prop) hg
+    exact (h _ ⟨(g 0).unop, mem_nonZeroDivisors_iff_ne_zero.mpr (by simpa)⟩ this.symm).elim
+
+-- TODO: Upgrade this to an iff. See [lam_1999] Exercise 10.21
+lemma nonempty_oreSet_of_strongRankCondition [StrongRankCondition R] :
+    Nonempty (OreLocalization.OreSet Rᵐᵒᵖ⁰) := by
+  by_contra h
+  have H : Module.rank R R = Module.rank Rᵐᵒᵖᵐᵒᵖ Rᵐᵒᵖ := rank_eq_of_equiv_equiv (RingEquiv.opOp R)
+    MulOpposite.opAddEquiv (RingEquiv.opOp R).bijective (by simp)
+  have := aleph0_le_rank_of_isEmpty_oreSet (not_nonempty_iff.mp h)
+  rw [← H, rank_self] at this
+  exact this.not_lt one_lt_aleph0
+
+end Ring

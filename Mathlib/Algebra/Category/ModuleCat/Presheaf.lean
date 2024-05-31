@@ -1,8 +1,9 @@
 /-
-Copyright (c) 2023 Scott Morrison All rights reserved.
+Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 
@@ -13,11 +14,11 @@ We give a hands-on description of a presheaf of modules over a fixed presheaf of
 as a presheaf of abelian groups with additional data.
 
 We also provide two alternative constructors :
-* `mk' : CorePresheafOfModules R → PresheafOfModules R` where `M : CorePresheafOfModules R`
-consists of a family of unbundled modules over `R.obj X` for all `X`
-* `mk'' : BundledCorePresheafOfModules R → PresheafOfModules R`
-where `M : BundledCorePresheafOfModules R` consists of a family of objects in
-`ModuleCat (R.obj X)` for all `X`
+* When `M : CorePresheafOfModules R` consists of a family of unbundled modules over `R.obj X`
+for all `X`, the corresponding presheaf of modules is `M.toPresheafOfModules`.
+* When `M : BundledCorePresheafOfModules R` consists of a family of objects in
+`ModuleCat (R.obj X)` for all `X`, the corresponding presheaf of modules
+is `M.toPresheafOfModules`.
 
 ## Future work
 
@@ -203,13 +204,18 @@ instance : Preadditive (PresheafOfModules R) where
 
 end Hom
 
+lemma naturality_apply {P Q : PresheafOfModules R} (f : P ⟶ Q)
+    {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : P.obj X) :
+    f.app Y (P.presheaf.map g x) = Q.presheaf.map g (f.app X x) :=
+  congr_fun ((forget _).congr_map (f.hom.naturality g)) x
+
 variable (R)
 
 /-- The functor from presheaves of modules over a specified presheaf of rings,
 to presheaves of abelian groups.
 -/
 @[simps obj]
-def toPresheaf : PresheafOfModules R ⥤ (Cᵒᵖ ⥤ AddCommGroupCat) where
+def toPresheaf : PresheafOfModules.{v} R ⥤ (Cᵒᵖ ⥤ AddCommGroupCat.{v}) where
   obj P := P.presheaf
   map f := f.hom
 
@@ -222,7 +228,7 @@ lemma toPresheaf_map_app {P Q : PresheafOfModules R}
 
 instance : (toPresheaf R).Additive where
 
-instance : Faithful (toPresheaf R) where
+instance : (toPresheaf R).Faithful where
   map_injective {P Q} f g h := by
     ext X x
     have eq := congr_app h X
@@ -238,38 +244,87 @@ def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) w
   obj M := M.obj X
   map f := f.app X
 
+instance (X : Cᵒᵖ) : (evaluation R X).Additive where
+
+variable {R}
+
+/-- Given a presheaf of modules `M` on a category `C` and `f : X ⟶ Y` in `Cᵒᵖ`, this
+is the restriction map `M.obj X ⟶ M.obj Y`, considered as a linear map to
+the restriction of scalars of `M.obj Y`. -/
+noncomputable def restrictionApp {X Y : Cᵒᵖ} (f : X ⟶ Y) (M : PresheafOfModules.{v} R) :
+    M.obj X ⟶ (ModuleCat.restrictScalars (R.map f)).obj (M.obj Y) :=
+  ModuleCat.semilinearMapAddEquiv (R.map f) _ _ (M.map f)
+
+lemma restrictionApp_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (M : PresheafOfModules R) (x : M.obj X) :
+    restrictionApp f M x = M.map f x := by
+  rfl
+
+variable (R)
+
 /-- The restriction natural transformation on presheaves of modules, considered as linear maps
 to restriction of scalars. -/
+@[simps]
 noncomputable def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     evaluation R X ⟶ evaluation R Y ⋙ ModuleCat.restrictScalars (R.map f) where
-  app M := ModuleCat.semilinearMapAddEquiv (R.map f) _ _ (M.map f)
+  app := restrictionApp f
   naturality := fun M N φ => by
     ext x
     exact (congr_hom (φ.hom.naturality f) x).symm
 
 variable {R}
 
-lemma restriction_app_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (M : PresheafOfModules R) (x : M.obj X) :
-    (restriction R f).app M x = M.map f x := by
-  rfl
+@[reassoc (attr := simp)]
+lemma restrictionApp_naturality {X Y : Cᵒᵖ} (f : X ⟶ Y)
+    {M N : PresheafOfModules R} (φ : M ⟶ N) :
+    restrictionApp f M ≫ (ModuleCat.restrictScalars (R.map f)).map (Hom.app φ Y) =
+      ModuleCat.ofHom (Hom.app φ X) ≫ restrictionApp f N :=
+  ((restriction R f).naturality φ).symm
 
-lemma restriction_app_id (M : PresheafOfModules R) (X : Cᵒᵖ) :
-    (restriction R (𝟙 X)).app M =
-      (ModuleCat.restrictScalarsId' (R.map (𝟙 X)) (R.map_id X)).inv.app (M.obj X) := by
-  ext x
-  rw [restriction_app_apply, map_id, id'_apply]
-  erw [ModuleCat.restrictScalarsId'_inv_apply]
+attribute [local simp] restrictionApp_apply
 
-lemma restriction_app_comp (M : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (restriction R (f ≫ g)).app M =
-      (restriction R f).app M ≫
-        (ModuleCat.restrictScalars (R.map f)).map ((restriction R g).app M) ≫
-        (ModuleCat.restrictScalarsComp' _ _ _ (R.map_comp f g)).inv.app (M.obj Z) := by
-  ext x
-  dsimp
-  erw [ModuleCat.restrictScalarsComp'_inv_apply, M.restriction_app_apply f,
-    M.restriction_app_apply g, M.restriction_app_apply (f ≫ g), map_comp]
-  rfl
+lemma restrictionApp_id (M : PresheafOfModules R) (X : Cᵒᵖ) :
+    restrictionApp (𝟙 X) M =
+      (ModuleCat.restrictScalarsId' (R.map (𝟙 X)) (R.map_id X)).inv.app (M.obj X) := by aesop
+
+lemma restrictionApp_comp (M : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    restrictionApp (f ≫ g) M =
+      restrictionApp f M ≫
+        (ModuleCat.restrictScalars (R.map f)).map (restrictionApp g M) ≫
+        (ModuleCat.restrictScalarsComp' _ _ _ (R.map_comp f g)).inv.app (M.obj Z) := by aesop
+
+namespace Hom
+
+variable {P Q : PresheafOfModules R} (app : ∀ X, P.obj X →ₗ[R.obj X] Q.obj X)
+
+section
+
+variable (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y) (x : P.obj X),
+  app Y (P.map f x) = Q.map f (app X x))
+
+/-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
+of a family of linear maps over the various rings `R.obj X`. -/
+def mk' : P ⟶ Q where
+  hom :=
+    { app := fun X => (app X).toAddMonoidHom
+      naturality := fun X Y f => by ext x; apply naturality }
+  map_smul X := (app X).map_smul
+
+@[simp]
+lemma mk'_app : (mk' app naturality).app = app := rfl
+
+end
+
+/-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
+of a family of linear maps over the various rings `R.obj X`, and for which the
+naturality condition is stated using the restriction of scalars. -/
+abbrev mk''
+    (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y),
+      restrictionApp f P ≫ (ModuleCat.restrictScalars (R.map f)).map (app Y) =
+        ModuleCat.ofHom (app X) ≫ restrictionApp f Q) :
+    P ⟶ Q :=
+  mk' app (fun _ _ f x => congr_hom (naturality f) x)
+
+end Hom
 
 end PresheafOfModules
 
@@ -314,21 +369,21 @@ def presheaf : Cᵒᵖ ⥤ AddCommGroupCat.{v} where
 
 instance (X : Cᵒᵖ) : Module (R.obj X) (M.presheaf.obj X) := M.module X
 
-end CorePresheafOfModules
-
-namespace PresheafOfModules
-
 /-- Constructor for `PresheafOfModules R` based on a collection of types
 equipped with module structures over the various rings `R.obj X`, see
 the structure `CorePresheafOfModules`. -/
-def mk' (M : CorePresheafOfModules R) : PresheafOfModules R where
+def toPresheafOfModules : PresheafOfModules R where
   presheaf := M.presheaf
 
 @[simp]
-lemma mk'_obj (M : CorePresheafOfModules R) (X : Cᵒᵖ) :
-    (mk' M).obj X = ModuleCat.of _ (M.obj X) := rfl
+lemma toPresheafOfModules_obj (X : Cᵒᵖ) :
+    M.toPresheafOfModules.obj X = ModuleCat.of _ (M.obj X) := rfl
 
-end PresheafOfModules
+@[simp]
+lemma toPresheafOfModules_presheaf_map_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
+    M.toPresheafOfModules.presheaf.map f x = M.map f x := rfl
+
+end CorePresheafOfModules
 
 variable (R) in
 /-- This structure contains the data and axioms in order to
@@ -354,122 +409,30 @@ namespace BundledCorePresheafOfModules
 
 variable (M : BundledCorePresheafOfModules R)
 
+attribute [local simp] map_id map_comp
+
 /-- The obvious map `BundledCorePresheafOfModules R → CorePresheafOfModules R`. -/
 noncomputable def toCorePresheafOfModules : CorePresheafOfModules R where
   obj X := (M.obj X).carrier
   map {X Y} f := (ModuleCat.semilinearMapAddEquiv (R.map f) (M.obj X) (M.obj Y)).symm (M.map f)
-  map_id X x := by
-    dsimp
-    erw [M.map_id, ModuleCat.restrictScalarsId'_inv_apply]
-  map_comp {X Y Z} f g x := by
-    dsimp
-    erw [M.map_comp, ModuleCat.restrictScalarsComp'_inv_apply]
-    rfl
-
-end BundledCorePresheafOfModules
-
-namespace PresheafOfModules
 
 /-- Constructor for `PresheafOfModules R` based on a collection of objects
 of type `ModuleCat (R.obj X)` for all `X`, and restriction maps expressed
 as linear maps to restriction of scalars, see
 the structure `BundledCorePresheafOfModules`. -/
-noncomputable def mk'' (M : BundledCorePresheafOfModules R) : PresheafOfModules R :=
-  mk' M.toCorePresheafOfModules
+noncomputable def toPresheafOfModules : PresheafOfModules R :=
+  M.toCorePresheafOfModules.toPresheafOfModules
 
 @[simp]
-lemma mk''_obj (M : BundledCorePresheafOfModules R) (X : Cᵒᵖ) :
-    (mk'' M).obj X = (M.obj X).carrier := rfl
+lemma toPresheafOfModules_obj (X : Cᵒᵖ) :
+    M.toPresheafOfModules.obj X = (M.obj X).carrier := rfl
 
 @[simp]
-lemma restriction_app_mk'' (M : BundledCorePresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-    (restriction R f).app (mk'' M) = M.map f := rfl
+lemma toPresheafOfModules_presheaf_map_apply {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
+    M.toPresheafOfModules.presheaf.map f x = M.map f x := rfl
 
 @[simp]
-lemma mk''_presheaf_map_apply (M : BundledCorePresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y)
-    (x : M.obj X) :
-    (mk'' M).presheaf.map f x = M.map f x := rfl
+lemma restrictionApp_toPresheafOfModules {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    PresheafOfModules.restrictionApp f M.toPresheafOfModules = M.map f := rfl
 
-namespace Hom
-
-variable {P Q : PresheafOfModules R}
-  (app : ∀ X, P.obj X →ₗ[R.obj X] Q.obj X)
-  (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y),
-    (restriction R f).app P ≫ (ModuleCat.restrictScalars (R.map f)).map (app Y) =
-      ModuleCat.ofHom (app X) ≫ (restriction R f).app Q)
-
-/-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
-of a family of linear maps over the various rings `R.obj X`, and for which the
-naturality condition is stated using the restriction of scalars. -/
-def mk'' : P ⟶ Q where
-  hom :=
-    { app := fun X => (app X).toAddMonoidHom
-      naturality := fun X Y f => by
-        ext x
-        exact congr_hom (naturality f) x }
-  map_smul X := (app X).map_smul
-
-@[simp]
-lemma mk''_app : (mk'' app naturality).app = app := rfl
-
-end Hom
-
-variable {R' : Cᵒᵖ ⥤ RingCat.{u}} (M' M'' : PresheafOfModules.{v} R') (ψ : M' ⟶ M'') (φ : R ⟶ R')
-
-@[simps]
-noncomputable def restrictScalarsBundledCore : BundledCorePresheafOfModules.{v} R where
-  obj X := (ModuleCat.restrictScalars (φ.app X)).obj (M'.obj X)
-  map {X Y} f := (ModuleCat.restrictScalars (φ.app X)).map ((restriction R' f).app M') ≫
-    (ModuleCat.restrictScalarsComp' _ _ _ (φ.naturality f)).inv.app _
-  map_id X := by
-    ext x
-    dsimp
-    erw [ModuleCat.restrictScalarsId'_inv_apply, ModuleCat.restrictScalarsComp'_inv_apply,
-      restriction_app_apply, map_id]
-    rfl
-  map_comp f g := by
-    ext x
-    dsimp
-    erw [ModuleCat.restrictScalarsComp'_inv_apply, ModuleCat.restrictScalarsComp'_inv_apply,
-      ModuleCat.restrictScalarsComp'_inv_apply, ModuleCat.restrictScalarsComp'_inv_apply,
-      restriction_app_apply f, restriction_app_apply g, restriction_app_apply, map_comp]
-    rfl
-
-noncomputable abbrev restrictScalars : PresheafOfModules.{v} R :=
-  mk'' (restrictScalarsBundledCore M' φ)
-
-noncomputable def restrictScalarsPresheafIso :
-    (M'.restrictScalars φ).presheaf ≅ M'.presheaf :=
-  NatIso.ofComponents (fun X => Iso.refl _) (fun {X Y} f => by
-    ext x
-    dsimp
-    erw [ModuleCat.restrictScalarsComp'_inv_apply]
-    rfl)
-
-variable {M' M''}
-
-noncomputable def restrictScalarsMap : M'.restrictScalars φ ⟶ M''.restrictScalars φ :=
-  Hom.mk'' (fun X => (ModuleCat.restrictScalars (φ.app X)).map (ψ.app X)) (fun X Y f => by
-    ext x
-    dsimp
-    erw [ModuleCat.coe_comp, ModuleCat.coe_comp]
-    dsimp
-    erw [ModuleCat.restrictScalarsComp'_inv_apply,
-      ModuleCat.restrictScalars.map_apply,
-      ModuleCat.restrictScalarsComp'_inv_apply,
-      ModuleCat.restrictScalars.map_apply]
-    rw [ModuleCat.ofHom_apply, ModuleCat.restrictScalars.map_apply]
-    erw [restriction_app_apply f, NatTrans.naturality_apply ψ.hom f,
-      restriction_app_apply])
-
-@[simp]
-lemma restrictScalarsMap_app_apply {X : Cᵒᵖ} (x : M'.obj X) :
-    (restrictScalarsMap ψ φ).app X x = ψ.app X x := rfl
-
-@[simps]
-noncomputable def restrictScalarsFunctor :
-    PresheafOfModules.{v} R' ⥤ PresheafOfModules.{v} R where
-  obj M' := M'.restrictScalars φ
-  map ψ := restrictScalarsMap ψ φ
-
-end PresheafOfModules
+end BundledCorePresheafOfModules

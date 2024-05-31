@@ -3,7 +3,7 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Data.Polynomial.Eval
+import Mathlib.Algebra.Polynomial.Eval
 import Mathlib.LinearAlgebra.Dimension.Constructions
 
 #align_import algebra.linear_recurrence from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
@@ -42,7 +42,7 @@ noncomputable section
 
 open Finset
 
-open BigOperators Polynomial
+open Polynomial
 
 /-- A "linear recurrence relation" over a commutative semiring is given by its
   order `n` and `n` coefficients. -/
@@ -155,7 +155,7 @@ def toInit : E.solSpace ≃ₗ[α] Fin E.order → α where
 /-- Two solutions are equal iff they are equal on `range E.order`. -/
 theorem sol_eq_of_eq_init (u v : ℕ → α) (hu : E.IsSolution u) (hv : E.IsSolution v) :
     u = v ↔ Set.EqOn u v ↑(range E.order) := by
-  refine' Iff.intro (fun h x _ ↦ h ▸ rfl) _
+  refine Iff.intro (fun h x _ ↦ h ▸ rfl) ?_
   intro h
   set u' : ↥E.solSpace := ⟨u, hu⟩
   set v' : ↥E.solSpace := ⟨v, hv⟩

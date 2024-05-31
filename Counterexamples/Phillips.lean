@@ -272,7 +272,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   have : ∀ s : A, ∃ t : A, ∀ u : A, f (↑u \ ↑s) ≤ 2 * f (↑t \ ↑s) := by
     intro s
     have B : BddAbove (range fun u : A => f (↑u \ ↑s)) := by
-      refine' ⟨f.C, fun x hx => _⟩
+      refine ⟨f.C, fun x hx => ?_⟩
       rcases hx with ⟨u, hu⟩
       rw [← hu]
       exact f.le_bound _
@@ -284,7 +284,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
       change f (↑t' \ ↑s) ≤ S
       exact le_ciSup B t'
     rcases exists_lt_of_lt_ciSup (half_lt_self S_pos) with ⟨t, ht⟩
-    refine' ⟨t, fun u => _⟩
+    refine ⟨t, fun u => ?_⟩
     calc
       f (↑u \ ↑s) ≤ S := le_ciSup B _
       _ ≤ 2 * f (↑t \ ↑s) := (div_le_iff' two_pos).1 ht.le
@@ -312,13 +312,13 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   have I2 : ∀ n : ℕ, (n : ℝ) * (ε / 2) ≤ f ↑(s n) := by
     intro n
     induction' n with n IH
-    · simp only [s, BoundedAdditiveMeasure.empty, id.def, Nat.cast_zero, zero_mul,
+    · simp only [s, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
         Function.iterate_zero, Subtype.coe_mk, Nat.zero_eq]
       rfl
     · have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
         simpa only [s, Function.iterate_succ', union_diff_self]
           using (diff_union_of_subset <| subset_union_left _ _).symm
-      rw [Nat.succ_eq_add_one, this, f.additive]
+      rw [this, f.additive]
       swap; · exact disjoint_sdiff_self_left
       calc
         ((n + 1 : ℕ) : ℝ) * (ε / 2) = ε / 2 + n * (ε / 2) := by simp only [Nat.cast_succ]; ring
@@ -333,7 +333,7 @@ theorem exists_discrete_support (f : BoundedAdditiveMeasure α) :
     ∃ s : Set α, s.Countable ∧ ∀ t : Set α, t.Countable → f (t \ s) = 0 := by
   rcases f.exists_discrete_support_nonpos with ⟨s₁, s₁_count, h₁⟩
   rcases (-f).exists_discrete_support_nonpos with ⟨s₂, s₂_count, h₂⟩
-  refine' ⟨s₁ ∪ s₂, s₁_count.union s₂_count, fun t ht => le_antisymm _ _⟩
+  refine ⟨s₁ ∪ s₂, s₁_count.union s₂_count, fun t ht => le_antisymm ?_ ?_⟩
   · have : t \ (s₁ ∪ s₂) = (t \ (s₁ ∪ s₂)) \ s₁ := by
       rw [diff_diff, union_comm, union_assoc, union_self]
     rw [this]
@@ -374,7 +374,7 @@ def continuousPart (f : BoundedAdditiveMeasure α) : BoundedAdditiveMeasure α :
 theorem eq_add_parts (f : BoundedAdditiveMeasure α) (s : Set α) :
     f s = f.discretePart s + f.continuousPart s := by
   simp only [discretePart, continuousPart, restrict_apply]
-  rw [← f.additive, ← inter_distrib_right]
+  rw [← f.additive, ← union_inter_distrib_right]
   · simp only [union_univ, union_diff_self, univ_inter]
   · have : Disjoint f.discreteSupport (univ \ f.discreteSupport) := disjoint_sdiff_self_right
     exact this.mono (inter_subset_left _ _) (inter_subset_left _ _)
@@ -498,7 +498,7 @@ We need the continuum hypothesis to construct it.
 theorem sierpinski_pathological_family (Hcont : #ℝ = aleph 1) :
     ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
   rcases Cardinal.ord_eq ℝ with ⟨r, hr, H⟩
-  refine' ⟨fun x => {y | r x y}, fun x => _, fun y => _⟩
+  refine ⟨fun x => {y | r x y}, fun x => ?_, fun y => ?_⟩
   · have : univ \ {y | r x y} = {y | r y x} ∪ {x} := by
       ext y
       simp only [true_and_iff, mem_univ, mem_setOf_eq, mem_insert_iff, union_singleton, mem_diff]
@@ -577,7 +577,7 @@ theorem countable_ne (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ
       ⋃ y ∈ φ.toBoundedAdditiveMeasure.discreteSupport, {x | y ∈ spf Hcont x} := by
     intro x hx
     dsimp at hx
-    rw [← Ne.def, ← nonempty_iff_ne_empty] at hx
+    rw [← Ne, ← nonempty_iff_ne_empty] at hx
     simp only [exists_prop, mem_iUnion, mem_setOf_eq]
     exact hx
   apply Countable.mono (Subset.trans A B)
@@ -588,7 +588,7 @@ theorem comp_ae_eq_const (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ
     ∀ᵐ x ∂volume.restrict (Icc (0 : ℝ) 1),
       φ.toBoundedAdditiveMeasure.continuousPart univ = φ (f Hcont x) := by
   apply ae_restrict_of_ae
-  refine' measure_mono_null _ ((countable_ne Hcont φ).measure_zero _)
+  refine measure_mono_null ?_ ((countable_ne Hcont φ).measure_zero _)
   intro x
   simp only [imp_self, mem_setOf_eq, mem_compl_iff]
 #align counterexample.phillips_1940.comp_ae_eq_const Counterexample.Phillips1940.comp_ae_eq_const
@@ -621,7 +621,7 @@ example : CompleteSpace (DiscreteCopy ℝ →ᵇ ℝ) := by infer_instance
 theorem measurable_comp (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     Measurable fun x => φ (f Hcont x) := by
   have : Measurable fun _ : ℝ => φ.toBoundedAdditiveMeasure.continuousPart univ := measurable_const
-  refine' this.measurable_of_countable_ne _
+  refine this.measurable_of_countable_ne ?_
   exact countable_ne Hcont φ
 #align counterexample.phillips_1940.measurable_comp Counterexample.Phillips1940.measurable_comp
 

@@ -38,10 +38,10 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 open Finset Fintype SimpleGraph SzemerediRegularity
 
-open scoped BigOperators Classical SzemerediRegularity.Positivity
+open scoped SzemerediRegularity.Positivity
 
-variable {α : Type*} [Fintype α] {P : Finpartition (univ : Finset α)} (hP : P.IsEquipartition)
-  (G : SimpleGraph α) (ε : ℝ)
+variable {α : Type*} [Fintype α] [DecidableEq α] {P : Finpartition (univ : Finset α)}
+  (hP : P.IsEquipartition) (G : SimpleGraph α) [DecidableRel G.Adj] (ε : ℝ)
 
 local notation3 "m" => (card α / stepBound P.parts.card : ℕ)
 
@@ -77,27 +77,30 @@ theorem card_increment (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hP
   rw [filter_card_add_filter_neg_card_eq_card, card_attach]
 #align szemeredi_regularity.card_increment SzemerediRegularity.card_increment
 
-theorem increment_isEquipartition (hP : P.IsEquipartition) (G : SimpleGraph α) (ε : ℝ) :
-    (increment hP G ε).IsEquipartition := by
+variable (hP G ε)
+
+theorem increment_isEquipartition : (increment hP G ε).IsEquipartition := by
   simp_rw [IsEquipartition, Set.equitableOn_iff_exists_eq_eq_add_one]
-  refine' ⟨m, fun A hA => _⟩
+  refine ⟨m, fun A hA => ?_⟩
   rw [mem_coe, increment, mem_bind] at hA
   obtain ⟨U, hU, hA⟩ := hA
   exact card_eq_of_mem_parts_chunk hA
 #align szemeredi_regularity.increment_is_equipartition SzemerediRegularity.increment_isEquipartition
 
 /-- The contribution to `Finpartition.energy` of a pair of distinct parts of a `Finpartition`. -/
-private noncomputable def distinctPairs (G : SimpleGraph α) (ε : ℝ) (hP : P.IsEquipartition)
-    (x : {x // x ∈ P.parts.offDiag}) : Finset (Finset α × Finset α) :=
+private noncomputable def distinctPairs (x : {x // x ∈ P.parts.offDiag}) :
+    Finset (Finset α × Finset α) :=
   (chunk hP G ε (mem_offDiag.1 x.2).1).parts ×ˢ (chunk hP G ε (mem_offDiag.1 x.2).2.1).parts
 
+variable {hP G ε}
+
 private theorem distinctPairs_increment :
-    P.parts.offDiag.attach.biUnion (distinctPairs G ε hP) ⊆ (increment hP G ε).parts.offDiag := by
+    P.parts.offDiag.attach.biUnion (distinctPairs hP G ε) ⊆ (increment hP G ε).parts.offDiag := by
   rintro ⟨Ui, Vj⟩
   simp only [distinctPairs, increment, mem_offDiag, bind_parts, mem_biUnion, Prod.exists,
     exists_and_left, exists_prop, mem_product, mem_attach, true_and_iff, Subtype.exists, and_imp,
-    mem_offDiag, forall_exists_index, bex_imp, Ne.def]
-  refine' fun U V hUV hUi hVj => ⟨⟨_, hUV.1, hUi⟩, ⟨_, hUV.2.1, hVj⟩, _⟩
+    mem_offDiag, forall_exists_index, exists₂_imp, Ne]
+  refine fun U V hUV hUi hVj => ⟨⟨_, hUV.1, hUi⟩, ⟨_, hUV.2.1, hVj⟩, ?_⟩
   rintro rfl
   obtain ⟨i, hi⟩ := nonempty_of_mem_parts _ hUi
   exact hUV.2.2 (P.disjoint.elim_finset hUV.1 hUV.2.1 i (Finpartition.le _ hUi hi) <|
@@ -105,7 +108,7 @@ private theorem distinctPairs_increment :
 
 private lemma pairwiseDisjoint_distinctPairs :
     (P.parts.offDiag.attach : Set {x // x ∈ P.parts.offDiag}).PairwiseDisjoint
-      (distinctPairs G ε hP) := by
+      (distinctPairs hP G ε) := by
   simp (config := { unfoldPartialApp := true }) only [distinctPairs, Set.PairwiseDisjoint,
     Function.onFun, disjoint_left, inf_eq_inter, mem_inter, mem_product]
   rintro ⟨⟨s₁, s₂⟩, hs⟩ _ ⟨⟨t₁, t₂⟩, ht⟩ _ hst ⟨u, v⟩ huv₁ huv₂
@@ -124,7 +127,7 @@ lemma le_sum_distinctPairs_edgeDensity_sq (x : {i // i ∈ P.parts.offDiag}) (h�
     (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5) :
     (G.edgeDensity x.1.1 x.1.2 : ℝ) ^ 2 +
       ((if G.IsUniform ε x.1.1 x.1.2 then 0 else ε ^ 4 / 3) - ε ^ 5 / 25) ≤
-    (∑ i in distinctPairs G ε hP x, G.edgeDensity i.1 i.2 ^ 2 : ℝ) / 16 ^ P.parts.card := by
+    (∑ i ∈ distinctPairs hP G ε x, G.edgeDensity i.1 i.2 ^ 2 : ℝ) / 16 ^ P.parts.card := by
   rw [distinctPairs, ← add_sub_assoc, add_sub_right_comm]
   split_ifs with h
   · rw [add_zero]
@@ -141,12 +144,12 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
     (hPG : ¬P.IsUniform G ε) (hε₀ : 0 ≤ ε) (hε₁ : ε ≤ 1) :
     ↑(P.energy G) + ε ^ 5 / 4 ≤ (increment hP G ε).energy G := by
   calc
-    _ = (∑ x in P.parts.offDiag, (G.edgeDensity x.1 x.2 : ℝ) ^ 2 +
+    _ = (∑ x ∈ P.parts.offDiag, (G.edgeDensity x.1 x.2 : ℝ) ^ 2 +
           P.parts.card ^ 2 * (ε ^ 5 / 4) : ℝ) / P.parts.card ^ 2 := by
-        rw [coe_energy, add_div, mul_div_cancel_left]; positivity
-    _ ≤ (∑ x in P.parts.offDiag.attach, (∑ i in distinctPairs G ε hP x,
+        rw [coe_energy, add_div, mul_div_cancel_left₀]; positivity
+    _ ≤ (∑ x ∈ P.parts.offDiag.attach, (∑ i ∈ distinctPairs hP G ε x,
           G.edgeDensity i.1 i.2 ^ 2 : ℝ) / 16 ^ P.parts.card) / P.parts.card ^ 2 := ?_
-    _ = (∑ x in P.parts.offDiag.attach, ∑ i in distinctPairs G ε hP x,
+    _ = (∑ x ∈ P.parts.offDiag.attach, ∑ i ∈ distinctPairs hP G ε x,
           G.edgeDensity i.1 i.2 ^ 2 : ℝ) / (increment hP G ε).parts.card ^ 2 := by
         rw [card_increment hPα hPG, coe_stepBound, mul_pow, pow_right_comm,
           div_mul_eq_div_div_swap, ← sum_div]; norm_num
@@ -158,10 +161,10 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
   gcongr
   rw [Finpartition.IsUniform, not_le, mul_tsub, mul_one, ← offDiag_card] at hPG
   calc
-    _ ≤ ∑ x in P.parts.offDiag, (edgeDensity G x.1 x.2 : ℝ) ^ 2 +
+    _ ≤ ∑ x ∈ P.parts.offDiag, (edgeDensity G x.1 x.2 : ℝ) ^ 2 +
         ((nonUniforms P G ε).card * (ε ^ 4 / 3) - P.parts.offDiag.card * (ε ^ 5 / 25)) :=
         add_le_add_left ?_ _
-    _ = ∑ x in P.parts.offDiag, ((G.edgeDensity x.1 x.2 : ℝ) ^ 2 +
+    _ = ∑ x ∈ P.parts.offDiag, ((G.edgeDensity x.1 x.2 : ℝ) ^ 2 +
         ((if G.IsUniform ε x.1 x.2 then (0 : ℝ) else ε ^ 4 / 3) - ε ^ 5 / 25) : ℝ) := by
         rw [sum_add_distrib, sum_sub_distrib, sum_const, nsmul_eq_mul, sum_ite, sum_const_zero,
           zero_add, sum_const, nsmul_eq_mul, ← Finpartition.nonUniforms, ← add_sub_assoc,

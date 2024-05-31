@@ -8,6 +8,7 @@ import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Set.Pointwise.ListOfFn
+import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.SetTheory.Cardinal.Finite
 
 #align_import data.finset.pointwise from "leanprover-community/mathlib"@"eba7871095e834365616b5e43c8c7bb0b37058d0"
@@ -57,7 +58,7 @@ pointwise subtraction
 
 open Function MulOpposite
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 variable {F α β γ : Type*}
 
@@ -850,7 +851,7 @@ protected def zsmul [Zero α] [Add α] [Neg α] : SMul ℤ (Finset α) :=
 multiplication/division!) of a `Finset`. See note [pointwise nat action]. -/
 @[to_additive existing]
 protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
-  ⟨fun s n => zpowRec n s⟩
+  ⟨fun s n => zpowRec npowRec n s⟩
 #align finset.has_zpow Finset.zpow
 
 scoped[Pointwise] attribute [instance] Finset.nsmul Finset.npow Finset.zsmul Finset.zpow
@@ -991,7 +992,7 @@ theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
     exact one_mem_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_mem_mul ha (pow_mem_pow ha n)
+    exact mul_mem_mul (pow_mem_pow ha n) ha
 #align finset.pow_mem_pow Finset.pow_mem_pow
 #align finset.nsmul_mem_nsmul Finset.nsmul_mem_nsmul
 
@@ -1001,7 +1002,7 @@ theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
     simp [pow_zero]
   | n + 1 => by
     rw [pow_succ]
-    exact mul_subset_mul hst (pow_subset_pow hst n)
+    exact mul_subset_mul (pow_subset_pow hst n) hst
 #align finset.pow_subset_pow Finset.pow_subset_pow
 #align finset.nsmul_subset_nsmul Finset.nsmul_subset_nsmul
 
@@ -1011,7 +1012,7 @@ theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) : m ≤ n → s ^ m ⊆ 
   · exact fun _ hn => hn
   · intro n _ hmn
     rw [pow_succ]
-    exact hmn.trans (subset_mul_right (s ^ n) hs)
+    exact hmn.trans (subset_mul_left (s ^ n) hs)
 #align finset.pow_subset_pow_of_one_mem Finset.pow_subset_pow_of_one_mem
 #align finset.nsmul_subset_nsmul_of_zero_mem Finset.nsmul_subset_nsmul_of_zero_mem
 
@@ -1039,7 +1040,7 @@ theorem mem_pow {a : α} {n : ℕ} :
 
 @[to_additive (attr := simp)]
 theorem empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by
-  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ, empty_mul]
+  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ', empty_mul]
 #align finset.empty_pow Finset.empty_pow
 #align finset.empty_nsmul Finset.empty_nsmul
 
@@ -1090,7 +1091,7 @@ scoped[Pointwise] attribute [instance] Finset.commMonoid Finset.addCommMonoid
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_prod {ι : Type*} (s : Finset ι) (f : ι → Finset α) :
-    ↑(∏ i in s, f i) = ∏ i in s, (f i : Set α) :=
+    ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : Set α) :=
   map_prod ((coeMonoidHom) : Finset α →* Set α) _ _
 #align finset.coe_prod Finset.coe_prod
 #align finset.coe_sum Finset.coe_sum
@@ -1107,7 +1108,7 @@ variable [DivisionMonoid α] {s t : Finset α}
 theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s : Set α) ^ n
   | Int.ofNat n => coe_pow _ _
   | Int.negSucc n => by
-    refine' (coe_inv _).trans _
+    refine (coe_inv _).trans ?_
     exact congr_arg Inv.inv (coe_pow _ _)
 #align finset.coe_zpow Finset.coe_zpow
 #align finset.coe_zsmul Finset.coe_zsmul
@@ -1133,7 +1134,7 @@ theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
   constructor
   · rintro ⟨u, rfl⟩
     obtain ⟨a, b, ha, hb, h⟩ := Finset.mul_eq_one_iff.1 u.mul_inv
-    refine' ⟨a, ha, ⟨a, b, h, singleton_injective _⟩, rfl⟩
+    refine ⟨a, ha, ⟨a, b, h, singleton_injective ?_⟩, rfl⟩
     rw [← singleton_mul_singleton, ← ha, ← hb]
     exact u.inv_mul
   · rintro ⟨a, rfl, ha⟩
@@ -1870,8 +1871,8 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 @[to_additive
       "An additive action of an additive monoid `α` on a type `β` gives an additive action
       of `Finset α` on `Finset β`"]
-protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] : MulAction (Finset α) (Finset β)
-    where
+protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
+    MulAction (Finset α) (Finset β) where
   mul_smul _ _ _ := image₂_assoc mul_smul
   one_smul s := image₂_singleton_left.trans <| by simp_rw [one_smul, image_id']
 #align finset.mul_action Finset.mulAction
@@ -2362,10 +2363,10 @@ section CommMonoid
 variable [CommMonoid α] {ι : Type*} [DecidableEq ι]
 
 @[to_additive (attr := simp)] lemma prod_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∏ i in s⁻¹, f i = ∏ i in s, f i⁻¹ := prod_image <| inv_injective.injOn _
+    ∏ i ∈ s⁻¹, f i = ∏ i ∈ s, f i⁻¹ := prod_image <| inv_injective.injOn _
 
 @[to_additive existing, simp] lemma prod_neg_index [InvolutiveNeg ι] (s : Finset ι) (f : ι → α) :
-    ∏ i in -s, f i = ∏ i in s, f (-i) := prod_image <| neg_injective.injOn _
+    ∏ i ∈ -s, f i = ∏ i ∈ s, f (-i) := prod_image <| neg_injective.injOn _
 
 end CommMonoid
 
@@ -2373,7 +2374,7 @@ section AddCommMonoid
 variable [AddCommMonoid α] {ι : Type*} [DecidableEq ι]
 
 @[to_additive existing, simp] lemma sum_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∑ i in s⁻¹, f i = ∑ i in s, f i⁻¹ := sum_image <| inv_injective.injOn _
+    ∑ i ∈ s⁻¹, f i = ∑ i ∈ s, f i⁻¹ := sum_image <| inv_injective.injOn _
 
 end AddCommMonoid
 end BigOps

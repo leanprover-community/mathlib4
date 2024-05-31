@@ -102,7 +102,7 @@ theorem convexHull_empty_iff : convexHull 𝕜 s = ∅ ↔ s = ∅ := by
 
 @[simp]
 theorem convexHull_nonempty_iff : (convexHull 𝕜 s).Nonempty ↔ s.Nonempty := by
-  rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne.def, Ne.def]
+  rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne, Ne]
   exact not_congr convexHull_empty_iff
 #align convex_hull_nonempty_iff convexHull_nonempty_iff
 
@@ -212,7 +212,7 @@ theorem convexHull_subset_affineSpan (s : Set E) : convexHull 𝕜 s ⊆ (affine
 
 @[simp]
 theorem affineSpan_convexHull (s : Set E) : affineSpan 𝕜 (convexHull 𝕜 s) = affineSpan 𝕜 s := by
-  refine' le_antisymm _ (affineSpan_mono 𝕜 (subset_convexHull 𝕜 s))
+  refine le_antisymm ?_ (affineSpan_mono 𝕜 (subset_convexHull 𝕜 s))
   rw [affineSpan_le]
   exact convexHull_subset_affineSpan s
 #align affine_span_convex_hull affineSpan_convexHull

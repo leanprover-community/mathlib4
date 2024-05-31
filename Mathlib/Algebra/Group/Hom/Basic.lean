@@ -26,9 +26,40 @@ variable {G : Type*} {H : Type*}
 -- groups
 variable {F : Type*}
 
+section CommMonoid
+variable [CommMonoid α]
+
+/-- The `n`th power map on a commutative monoid for a natural `n`, considered as a morphism of
+monoids. -/
+@[to_additive (attr := simps) "Multiplication by a natural `n` on a commutative additive monoid,
+considered as a morphism of additive monoids."]
+def powMonoidHom (n : ℕ) : α →* α where
+  toFun := (· ^ n)
+  map_one' := one_pow _
+  map_mul' a b := mul_pow a b n
+#align pow_monoid_hom powMonoidHom
+#align nsmul_add_monoid_hom nsmulAddMonoidHom
+#align pow_monoid_hom_apply powMonoidHom_apply
+#align nsmul_add_monoid_hom_apply nsmulAddMonoidHom_apply
+
+end CommMonoid
+
 section DivisionCommMonoid
 
 variable [DivisionCommMonoid α]
+
+/-- The `n`-th power map (for an integer `n`) on a commutative group, considered as a group
+homomorphism. -/
+@[to_additive (attr := simps) "Multiplication by an integer `n` on a commutative additive group,
+considered as an additive group homomorphism."]
+def zpowGroupHom (n : ℤ) : α →* α where
+  toFun := (· ^ n)
+  map_one' := one_zpow n
+  map_mul' a b := mul_zpow a b n
+#align zpow_group_hom zpowGroupHom
+#align zsmul_add_group_hom zsmulAddGroupHom
+#align zpow_group_hom_apply zpowGroupHom_apply
+#align zsmul_add_group_hom_apply zsmulAddGroupHom_apply
 
 /-- Inversion on a commutative group, considered as a monoid homomorphism. -/
 @[to_additive "Negation on a commutative additive group, considered as an additive monoid
@@ -190,7 +221,7 @@ lemma mul_comp [MulOneClass P] (g₁ g₂ : M →* N) (f : P →* M) :
 #align add_monoid_hom.add_comp AddMonoidHom.add_comp
 
 @[to_additive]
-lemma comp_mul [CommMonoid N] [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
+lemma comp_mul [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
     g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
   ext; simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
 #align monoid_hom.comp_mul MonoidHom.comp_mul
@@ -244,3 +275,5 @@ lemma comp_div (f : G →* H) (g h : M →* G) : f.comp (g / h) = f.comp g / f.c
   ext; simp only [Function.comp_apply, div_apply, map_div, coe_comp]
 
 end InvDiv
+
+end MonoidHom

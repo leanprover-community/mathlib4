@@ -73,6 +73,9 @@ theorem coe_div (hr : r ≠ 0) : (↑(p / r) : ℝ≥0∞) = p / r := by
   rw [div_eq_mul_inv, div_eq_mul_inv, coe_mul, coe_inv hr]
 #align ennreal.coe_div ENNReal.coe_div
 
+lemma coe_div_le : ↑(p / r) ≤ (p / r : ℝ≥0∞) := by
+  simpa only [div_eq_mul_inv, coe_mul] using mul_le_mul_left' coe_inv_le _
+
 theorem div_zero (h : a ≠ 0) : a / 0 = ∞ := by simp [div_eq_mul_inv, h]
 #align ennreal.div_zero ENNReal.div_zero
 
@@ -153,17 +156,17 @@ protected theorem div_pos (ha : a ≠ 0) (hb : b ≠ ∞) : 0 < a / b :=
 
 protected theorem mul_inv {a b : ℝ≥0∞} (ha : a ≠ 0 ∨ b ≠ ∞) (hb : a ≠ ∞ ∨ b ≠ 0) :
     (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
-  induction' b using recTopCoe with b
+  induction' b with b
   · replace ha : a ≠ 0 := ha.neg_resolve_right rfl
     simp [ha]
-  induction' a using recTopCoe with a
+  induction' a with a
   · replace hb : b ≠ 0 := coe_ne_zero.1 (hb.neg_resolve_left rfl)
     simp [hb]
   by_cases h'a : a = 0
-  · simp only [h'a, top_mul, ENNReal.inv_zero, ENNReal.coe_ne_top, zero_mul, Ne.def,
+  · simp only [h'a, top_mul, ENNReal.inv_zero, ENNReal.coe_ne_top, zero_mul, Ne,
       not_false_iff, ENNReal.coe_zero, ENNReal.inv_eq_zero]
   by_cases h'b : b = 0
-  · simp only [h'b, ENNReal.inv_zero, ENNReal.coe_ne_top, mul_top, Ne.def, not_false_iff,
+  · simp only [h'b, ENNReal.inv_zero, ENNReal.coe_ne_top, mul_top, Ne, not_false_iff,
       mul_zero, ENNReal.coe_zero, ENNReal.inv_eq_zero]
   rw [← ENNReal.coe_mul, ← ENNReal.coe_inv, ← ENNReal.coe_inv h'a, ← ENNReal.coe_inv h'b, ←
     ENNReal.coe_mul, mul_inv_rev, mul_comm]
@@ -195,7 +198,7 @@ protected theorem inv_pos : 0 < a⁻¹ ↔ a ≠ ∞ :=
 theorem inv_strictAnti : StrictAnti (Inv.inv : ℝ≥0∞ → ℝ≥0∞) := by
   intro a b h
   lift a to ℝ≥0 using h.ne_top
-  induction b using recTopCoe; · simp
+  induction b; · simp
   rw [coe_lt_coe] at h
   rcases eq_or_ne a 0 with (rfl | ha); · simp [h]
   rw [← coe_inv h.ne_bot, ← coe_inv ha, coe_lt_coe]
@@ -288,7 +291,7 @@ theorem div_eq_top : a / b = ∞ ↔ a ≠ 0 ∧ b = 0 ∨ a = ∞ ∧ b ≠ ∞
 
 protected theorem le_div_iff_mul_le (h0 : b ≠ 0 ∨ c ≠ 0) (ht : b ≠ ∞ ∨ c ≠ ∞) :
     a ≤ c / b ↔ a * b ≤ c := by
-  induction' b using recTopCoe with b
+  induction' b with b
   · lift c to ℝ≥0 using ht.neg_resolve_left rfl
     rw [div_top, nonpos_iff_eq_zero]
     rcases eq_or_ne a 0 with (rfl | ha) <;> simp [*]
@@ -302,7 +305,7 @@ protected theorem le_div_iff_mul_le (h0 : b ≠ 0 ∨ c ≠ 0) (ht : b ≠ ∞ �
 protected theorem div_le_iff_le_mul (hb0 : b ≠ 0 ∨ c ≠ ∞) (hbt : b ≠ ∞ ∨ c ≠ 0) :
     a / b ≤ c ↔ a ≤ c * b := by
   suffices a * b⁻¹ ≤ c ↔ a ≤ c / b⁻¹ by simpa [div_eq_mul_inv]
-  refine' (ENNReal.le_div_iff_mul_le _ _).symm <;> simpa
+  refine (ENNReal.le_div_iff_mul_le ?_ ?_).symm <;> simpa
 #align ennreal.div_le_iff_le_mul ENNReal.div_le_iff_le_mul
 
 protected theorem lt_div_iff_mul_lt (hb0 : b ≠ 0 ∨ c ≠ ∞) (hbt : b ≠ ∞ ∨ c ≠ 0) :
@@ -398,7 +401,7 @@ instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
 #align ennreal.inv_smul_le_iff_of_pos inv_smul_le_iff_of_pos
 
 theorem le_of_forall_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r < x → ↑r ≤ y) : x ≤ y := by
-  refine' le_of_forall_ge_of_dense fun r hr => _
+  refine le_of_forall_ge_of_dense fun r hr => ?_
   lift r to ℝ≥0 using ne_top_of_lt hr
   exact h r hr
 #align ennreal.le_of_forall_nnreal_lt ENNReal.le_of_forall_nnreal_lt
@@ -575,7 +578,7 @@ theorem exists_nnreal_pos_mul_lt (ha : a ≠ ∞) (hb : b ≠ 0) : ∃ n > 0, �
 
 theorem exists_inv_two_pow_lt (ha : a ≠ 0) : ∃ n : ℕ, 2⁻¹ ^ n < a := by
   rcases exists_inv_nat_lt ha with ⟨n, hn⟩
-  refine' ⟨n, lt_trans _ hn⟩
+  refine ⟨n, lt_trans ?_ hn⟩
   rw [← ENNReal.inv_pow, ENNReal.inv_lt_inv]
   norm_cast
   exact n.lt_two_pow
@@ -584,7 +587,7 @@ theorem exists_inv_two_pow_lt (ha : a ≠ 0) : ∃ n : ℕ, 2⁻¹ ^ n < a := by
 @[simp, norm_cast]
 theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ≥0∞) ^ n := by
   cases' n with n n
-  · simp only [Int.ofNat_eq_coe, coe_pow, zpow_coe_nat]
+  · simp only [Int.ofNat_eq_coe, coe_pow, zpow_natCast]
   · have : r ^ n.succ ≠ 0 := pow_ne_zero (n + 1) hr
     simp only [zpow_negSucc, coe_inv this, coe_pow]
 #align ennreal.coe_zpow ENNReal.coe_zpow
@@ -592,7 +595,7 @@ theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ
 theorem zpow_pos (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : 0 < a ^ n := by
   cases n
   · simpa using ENNReal.pow_pos ha.bot_lt _
-  · simp only [h'a, pow_eq_top_iff, zpow_negSucc, Ne.def, not_false, ENNReal.inv_pos, false_and,
+  · simp only [h'a, pow_eq_top_iff, zpow_negSucc, Ne, not_false, ENNReal.inv_pos, false_and,
       not_false_eq_true]
 #align ennreal.zpow_pos ENNReal.zpow_pos
 
@@ -606,11 +609,11 @@ theorem exists_mem_Ico_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) 
     ∃ n : ℤ, x ∈ Ico (y ^ n) (y ^ (n + 1)) := by
   lift x to ℝ≥0 using h'x
   lift y to ℝ≥0 using h'y
-  have A : y ≠ 0 := by simpa only [Ne.def, coe_eq_zero] using (zero_lt_one.trans hy).ne'
+  have A : y ≠ 0 := by simpa only [Ne, coe_eq_zero] using (zero_lt_one.trans hy).ne'
   obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n ≤ x ∧ x < y ^ (n + 1) := by
-    refine' NNReal.exists_mem_Ico_zpow _ (one_lt_coe_iff.1 hy)
-    simpa only [Ne.def, coe_eq_zero] using hx
-  refine' ⟨n, _, _⟩
+    refine NNReal.exists_mem_Ico_zpow ?_ (one_lt_coe_iff.1 hy)
+    simpa only [Ne, coe_eq_zero] using hx
+  refine ⟨n, ?_, ?_⟩
   · rwa [← ENNReal.coe_zpow A, ENNReal.coe_le_coe]
   · rwa [← ENNReal.coe_zpow A, ENNReal.coe_lt_coe]
 #align ennreal.exists_mem_Ico_zpow ENNReal.exists_mem_Ico_zpow
@@ -619,11 +622,11 @@ theorem exists_mem_Ioc_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) 
     ∃ n : ℤ, x ∈ Ioc (y ^ n) (y ^ (n + 1)) := by
   lift x to ℝ≥0 using h'x
   lift y to ℝ≥0 using h'y
-  have A : y ≠ 0 := by simpa only [Ne.def, coe_eq_zero] using (zero_lt_one.trans hy).ne'
+  have A : y ≠ 0 := by simpa only [Ne, coe_eq_zero] using (zero_lt_one.trans hy).ne'
   obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n < x ∧ x ≤ y ^ (n + 1) := by
-    refine' NNReal.exists_mem_Ioc_zpow _ (one_lt_coe_iff.1 hy)
-    simpa only [Ne.def, coe_eq_zero] using hx
-  refine' ⟨n, _, _⟩
+    refine NNReal.exists_mem_Ioc_zpow ?_ (one_lt_coe_iff.1 hy)
+    simpa only [Ne, coe_eq_zero] using hx
+  refine ⟨n, ?_, ?_⟩
   · rwa [← ENNReal.coe_zpow A, ENNReal.coe_lt_coe]
   · rwa [← ENNReal.coe_zpow A, ENNReal.coe_le_coe]
 #align ennreal.exists_mem_Ioc_zpow ENNReal.exists_mem_Ioc_zpow
@@ -646,12 +649,12 @@ theorem Ioo_zero_top_eq_iUnion_Ico_zpow {y : ℝ≥0∞} (hy : 1 < y) (h'y : y �
 @[gcongr]
 theorem zpow_le_of_le {x : ℝ≥0∞} (hx : 1 ≤ x) {a b : ℤ} (h : a ≤ b) : x ^ a ≤ x ^ b := by
   induction' a with a a <;> induction' b with b b
-  · simp only [Int.ofNat_eq_coe, zpow_coe_nat]
+  · simp only [Int.ofNat_eq_coe, zpow_natCast]
     exact pow_le_pow_right hx (Int.le_of_ofNat_le_ofNat h)
   · apply absurd h (not_le_of_gt _)
     exact lt_of_lt_of_le (Int.negSucc_lt_zero _) (Int.ofNat_nonneg _)
-  · simp only [zpow_negSucc, Int.ofNat_eq_coe, zpow_coe_nat]
-    refine' (ENNReal.inv_le_one.2 _).trans _ <;> exact one_le_pow_of_one_le' hx _
+  · simp only [zpow_negSucc, Int.ofNat_eq_coe, zpow_natCast]
+    refine (ENNReal.inv_le_one.2 ?_).trans ?_ <;> exact one_le_pow_of_one_le' hx _
   · simp only [zpow_negSucc, ENNReal.inv_le_inv]
     apply pow_le_pow_right hx
     simpa only [← Int.ofNat_le, neg_le_neg_iff, Int.ofNat_add, Int.ofNat_one, Int.negSucc_eq] using
@@ -665,7 +668,7 @@ theorem monotone_zpow {x : ℝ≥0∞} (hx : 1 ≤ x) : Monotone ((x ^ ·) : ℤ
 protected theorem zpow_add {x : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (m n : ℤ) :
     x ^ (m + n) = x ^ m * x ^ n := by
   lift x to ℝ≥0 using h'x
-  replace hx : x ≠ 0 := by simpa only [Ne.def, coe_eq_zero] using hx
+  replace hx : x ≠ 0 := by simpa only [Ne, coe_eq_zero] using hx
   simp only [← coe_zpow hx, zpow_add₀ hx, coe_mul]
 #align ennreal.zpow_add ENNReal.zpow_add
 

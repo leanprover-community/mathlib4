@@ -194,7 +194,7 @@ def scott (α : Type*) [Preorder α] : TopologicalSpace α := upperSet α ⊔ sc
 
 lemma upperSet_le_scott : upperSet α ≤ scott α := le_sup_left
 
-lemma scottHausdorff_le_scott : @scottHausdorff α ≤ @scott α := le_sup_right
+lemma scottHausdorff_le_scott : scottHausdorff α ≤ scott α := le_sup_right
 
 variable (α) [TopologicalSpace α]
 
@@ -238,8 +238,8 @@ lemma isLowerSet_of_isClosed : IsClosed s → IsLowerSet s := fun h ↦
 
 lemma lowerClosure_subset_closure : ↑(lowerClosure s) ⊆ closure s := by
   convert closure.mono (@upperSet_le_scott α _)
-  rw [@IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) ?_ s]
-  · exact instIsUpperSetUpperSet
+  · rw [@IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) ?_ s]
+    infer_instance
   · exact topology_eq α
 
 lemma isClosed_Iic : IsClosed (Iic a) :=
@@ -336,11 +336,17 @@ lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :
 end WithScott
 end Scott
 
-variable [Preorder α] [TopologicalSpace α]
+variable [Preorder α]
+
+lemma scottHausdorff_le_lower : scottHausdorff α ≤ lower α :=
+  fun s h => @IsScottHausdorff.isOpen_of_isLowerSet  _ _ (scottHausdorff α) _ _
+      <| (@IsLower.isLowerSet_of_isOpen (Topology.WithLower α) _ _  _ s h)
+
+variable [TopologicalSpace α]
 
 /-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScott α`.
 -/
-def IsScott.withScottHomeomorph [TopologicalSpace α] [IsScott α] : WithScott α ≃ₜ α :=
+def IsScott.withScottHomeomorph [IsScott α] : WithScott α ≃ₜ α :=
   WithScott.ofScott.toHomeomorphOfInducing ⟨by erw [IsScott.topology_eq α, induced_id]; rfl⟩
 
 lemma IsScott.scottHausdorff_le [IsScott α] : scottHausdorff α ≤ ‹TopologicalSpace α› := by

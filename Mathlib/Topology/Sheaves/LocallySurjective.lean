@@ -31,6 +31,9 @@ We prove that these are equivalent.
 
 universe v u
 
+
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+
 noncomputable section
 
 open CategoryTheory
@@ -61,12 +64,8 @@ set_option linter.uppercaseLean3 false in
 
 theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔
-      ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, T.app _ s = t |_ₕ ι) ∧ x ∈ V := by
-  constructor
-  · intro h U
-    apply h.imageSieve_mem
-  · intro h
-    refine' ⟨fun _ => h _ _⟩
+      ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, T.app _ s = t |_ₕ ι) ∧ x ∈ V :=
+  ⟨fun h _ => h.imageSieve_mem, fun h => ⟨h _⟩⟩
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_locally_surjective_iff TopCat.Presheaf.isLocallySurjective_iff
 
@@ -91,7 +90,7 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     obtain ⟨U, hxU, t, rfl⟩ := 𝒢.germ_exist x g
     -- By local surjectivity, pass to a smaller open set V
     -- on which there exists s ∈ Γ_ ℱ V mapping to t |_ V.
-    rcases hT U t x hxU with ⟨V, ι, ⟨s, h_eq⟩, hxV⟩
+    rcases hT.imageSieve_mem t x hxU with ⟨V, ι, ⟨s, h_eq⟩, hxV⟩
     -- Then the germ of s maps to g.
     use ℱ.germ ⟨x, hxV⟩ s
     -- Porting note: `convert` went too deep and swapped LHS and RHS of the remaining goal relative
@@ -104,6 +103,7 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
         some germ f ∈ Γₛₜ ℱ x. Represent f on some open set V ⊆ X as ⟨s, V⟩.
         Then there is some possibly smaller open set x ∈ W ⊆ V ∩ U on which
         we have T(s) |_ W = t |_ W. -/
+    constructor
     intro U t x hxU
     set t_x := 𝒢.germ ⟨x, hxU⟩ t with ht_x
     obtain ⟨s_x, hs_x : ((stalkFunctor C x).map T) s_x = t_x⟩ := hT x t_x
@@ -114,7 +114,7 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
       symm
       convert stalkFunctor_map_germ_apply _ _ _ s
     obtain ⟨W, hxW, hWV, hWU, h_eq⟩ := key_W
-    refine' ⟨W, hWU, ⟨ℱ.map hWV.op s, _⟩, hxW⟩
+    refine ⟨W, hWU, ⟨ℱ.map hWV.op s, ?_⟩, hxW⟩
     convert h_eq using 1
     simp only [← comp_apply, T.naturality]
 set_option linter.uppercaseLean3 false in

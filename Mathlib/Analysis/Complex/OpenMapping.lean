@@ -100,9 +100,9 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
   have h8 : (sphere z₀ r).Nonempty := NormedSpace.sphere_nonempty.mpr hr.le
   have h9 : ContinuousOn (fun x => ‖f x - f z₀‖) (sphere z₀ r) := continuous_norm.comp_continuousOn
     ((h6.sub_const (f z₀)).continuousOn_ball.mono sphere_subset_closedBall)
-  obtain ⟨x, hx, hfx⟩ := (isCompact_sphere z₀ r).exists_forall_le h8 h9
+  obtain ⟨x, hx, hfx⟩ := (isCompact_sphere z₀ r).exists_isMinOn h8 h9
   refine ⟨‖f x - f z₀‖ / 2, half_pos (norm_sub_pos_iff.mpr (h7 x hx)), ?_⟩
-  exact (h6.ball_subset_image_closedBall hr (fun z hz => hfx z hz) (not_eventually.mp h)).trans
+  exact (h6.ball_subset_image_closedBall hr (fun z hz => hfx hz) (not_eventually.mp h)).trans
     (image_subset f (closedBall_subset_closedBall inf_le_right))
 #align analytic_at.eventually_constant_or_nhds_le_map_nhds_aux AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux
 
@@ -131,7 +131,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
     -- If g is eventually constant along every direction, then it is eventually constant
     refine eventually_of_mem (ball_mem_nhds z₀ hr) fun z hz => ?_
     refine (eq_or_ne z z₀).casesOn (congr_arg g) fun h' => ?_
-    replace h' : ‖z - z₀‖ ≠ 0 := by simpa only [Ne.def, norm_eq_zero, sub_eq_zero]
+    replace h' : ‖z - z₀‖ ≠ 0 := by simpa only [Ne, norm_eq_zero, sub_eq_zero]
     let w : E := ‖z - z₀‖⁻¹ • (z - z₀)
     have h3 : ∀ t ∈ ball (0 : ℂ) r, gray w t = g z₀ := by
       have e1 : IsPreconnected (ball (0 : ℂ) r) := (convex_ball 0 r).isPreconnected
@@ -142,7 +142,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
     have h4 : ‖z - z₀‖ < r := by simpa [dist_eq_norm] using mem_ball.mp hz
     replace h4 : ↑‖z - z₀‖ ∈ ball (0 : ℂ) r := by
       simpa only [mem_ball_zero_iff, norm_eq_abs, abs_ofReal, abs_norm]
-    simpa only [ray, gray, w, smul_smul, mul_inv_cancel h', one_smul, add_sub_cancel'_right,
+    simpa only [ray, gray, w, smul_smul, mul_inv_cancel h', one_smul, add_sub_cancel,
       Function.comp_apply, coe_smul] using h3 (↑‖z - z₀‖) h4
   · right
     -- Otherwise, it is open along at least one direction and that implies the result

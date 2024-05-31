@@ -99,7 +99,7 @@ instance : Fintype (IndexSet Δ) :=
         ext1
         simpa only [Fin.mk_eq_mk] using h₁.1
       subst h₂
-      refine' ext _ _ rfl _
+      refine ext _ _ rfl ?_
       ext : 2
       exact eq_of_heq h₁.2)
 
@@ -134,10 +134,10 @@ theorem eqId_iff_eq : A.EqId ↔ A.1 = Δ := by
     rcases A with ⟨_, ⟨f, hf⟩⟩
     simp only at h
     subst h
-    refine' ext _ _ rfl _
-    · haveI := hf
-      simp only [eqToHom_refl, comp_id]
-      exact eq_id_of_epi f
+    refine ext _ _ rfl ?_
+    haveI := hf
+    simp only [eqToHom_refl, comp_id]
+    exact eq_id_of_epi f
 #align simplicial_object.splitting.index_set.eq_id_iff_eq SimplicialObject.Splitting.IndexSet.eqId_iff_eq
 
 theorem eqId_iff_len_eq : A.EqId ↔ A.1.unop.len = Δ.unop.len := by
@@ -214,7 +214,7 @@ def cofan' (Δ : SimplexCategoryᵒᵖ) : Cofan (summand N Δ) :=
 
 end Splitting
 
---porting note (#10927): removed @[nolint has_nonempty_instance]
+--porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- A splitting of a simplicial object `X` consists of the datum of a sequence
 of objects `N`, a sequence of morphisms `ι : N n ⟶ X _[n]` such that
 for all `Δ : SimplexCategoryᵒᵖ`, the canonical map `Splitting.map X ι Δ`
@@ -314,7 +314,7 @@ end Splitting
 
 variable (C)
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The category `SimplicialObject.Split C` is the category of simplicial objects
 in `C` equipped with a splitting, and morphisms are morphisms of simplicial objects
 which are compatible with the splittings. -/
@@ -337,7 +337,7 @@ def mk' {X : SimplicialObject C} (s : Splitting X) : Split C :=
   ⟨X, s⟩
 #align simplicial_object.split.mk' SimplicialObject.Split.mk'
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Morphisms in `SimplicialObject.Split C` are morphisms of simplicial objects that
 are compatible with the splittings. -/
 structure Hom (S₁ S₂ : Split C) where

@@ -72,9 +72,9 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
     have hδ₀ : ∀ᶠ j in l, 0 < δ j :=
       (hu₂.eventually_gt_atTop 0).mono fun j hj => div_pos hT₀ <| by positivity
     have hδ₁ : Tendsto δ l (𝓝[>] 0) := by
-      refine' tendsto_nhdsWithin_iff.mpr ⟨_, hδ₀⟩
+      refine tendsto_nhdsWithin_iff.mpr ⟨?_, hδ₀⟩
       replace hu₂ : Tendsto (fun j => T⁻¹ * 2 * n j) l atTop :=
-        (tendsto_nat_cast_atTop_iff.mpr hu₂).const_mul_atTop (by positivity : 0 < T⁻¹ * 2)
+        (tendsto_natCast_atTop_iff.mpr hu₂).const_mul_atTop (by positivity : 0 < T⁻¹ * 2)
       convert hu₂.inv_tendsto_atTop
       ext j
       simp only [δ, Pi.inv_apply, mul_inv_rev, inv_inv, div_eq_inv_mul, ← mul_assoc]
@@ -85,7 +85,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
   suffices ∀ᶠ j in l, μ (s ∩ I j) / μ (I j) = μ s / ENNReal.ofReal T by
     replace hd := hd.congr' this
     rwa [tendsto_const_nhds_iff, ENNReal.div_eq_one_iff hT₁ ENNReal.ofReal_ne_top] at hd
-  refine' (hu₂.eventually_gt_atTop 0).mono fun j hj => _
+  refine (hu₂.eventually_gt_atTop 0).mono fun j hj => ?_
   have : addOrderOf (u j) = n j := rfl
   have huj : IsOfFinAddOrder (u j) := addOrderOf_pos_iff.mp hj
   have huj' : 1 ≤ (↑(n j) : ℝ) := by norm_cast
@@ -94,7 +94,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
   have hI₂ : μ (I j) * ↑(n j) = ENNReal.ofReal T := by
     rw [volume_closedBall, mul_div, mul_div_mul_left T _ two_ne_zero,
       min_eq_right (div_le_self hT₀.le huj'), mul_comm, ← nsmul_eq_mul, ← ENNReal.ofReal_nsmul,
-      nsmul_eq_mul, mul_div_cancel']
+      nsmul_eq_mul, mul_div_cancel₀]
     exact Nat.cast_ne_zero.mpr hj.ne'
   rw [ENNReal.div_eq_div_iff hT₁ ENNReal.ofReal_ne_top hI₀ hI₁,
     volume_of_add_preimage_eq s _ (u j) d huj (hu₁ j) closedBall_ae_eq_ball, nsmul_eq_mul, ←
@@ -111,7 +111,7 @@ theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => 
           (pow_pos (pos_of_gt hn) j) (gcd_one_left _)
         norm_cast
       have hnu : ∀ j, n ^ j • u j = 0 := fun j => by
-        rw [← addOrderOf_dvd_iff_zsmul_eq_zero, hu₀, Int.coe_nat_pow, Int.coe_natAbs, ← abs_pow,
+        rw [← addOrderOf_dvd_iff_zsmul_eq_zero, hu₀, Int.natCast_pow, Int.natCast_natAbs, ← abs_pow,
           abs_dvd]
       have hu₁ : ∀ j, (u j +ᵥ s : Set _) =ᵐ[volume] s := fun j => by
         rw [vadd_eq_self_of_preimage_zsmul_eq_self hs' (hnu j)]

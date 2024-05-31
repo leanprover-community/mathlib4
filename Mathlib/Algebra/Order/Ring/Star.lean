@@ -25,23 +25,23 @@ namespace StarOrderedRing
 must commute. We provide this only as an example as opposed to a lemma because we never expect the
 type class assumptions to be satisfied without a `CommSemiring` intance already in scope; not that
 it is impossible, only that it shouldn't occur in practice. -/
-example {R : Type*} [OrderedSemiring R] [StarOrderedRing R] {x y : R} (hx : 0 ≤ x) (hy : 0 ≤ y) :
-    x * y = y * x := by
+example {R : Type*} [OrderedSemiring R] [StarRing R] [StarOrderedRing R] {x y : R} (hx : 0 ≤ x)
+    (hy : 0 ≤ y) : x * y = y * x := by
   rw [← IsSelfAdjoint.of_nonneg (mul_nonneg hy hx), star_mul, IsSelfAdjoint.of_nonneg hx,
     IsSelfAdjoint.of_nonneg hy]
 
 /- This will be implied by the instance below, we only prove it to avoid duplicating the
 argument in the instance below for `mul_le_mul_of_nonneg_right`. -/
 private lemma mul_le_mul_of_nonneg_left {R : Type*} [CommSemiring R] [PartialOrder R]
-    [StarOrderedRing R] {a b c : R} (hab : a ≤ b) (hc : 0 ≤ c) : c * a ≤ c * b := by
+    [StarRing R] [StarOrderedRing R] {a b c : R} (hab : a ≤ b) (hc : 0 ≤ c) : c * a ≤ c * b := by
   rw [StarOrderedRing.nonneg_iff] at hc
   induction hc using AddSubmonoid.closure_induction' with
-  | Hs _ h =>
+  | mem _ h =>
     obtain ⟨x, rfl⟩ := h
     simp_rw [mul_assoc, mul_comm x, ← mul_assoc]
     exact conjugate_le_conjugate hab x
-  | H1 => simp
-  | Hmul x hx y hy =>
+  | one => simp
+  | mul x hx y hy =>
     simp only [← nonneg_iff, add_mul] at hx hy ⊢
     apply add_le_add <;> aesop
 
@@ -51,9 +51,8 @@ This is not registered as an instance because it introduces a type class loop be
 and `OrderedCommSemiring`, and it seem loops still cause issues sometimes.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def toOrderedCommSemiring (R : Type*) [CommSemiring R] [PartialOrder R]
-    [StarOrderedRing R] : OrderedCommSemiring R where
+abbrev toOrderedCommSemiring (R : Type*) [CommSemiring R] [PartialOrder R]
+    [StarRing R] [StarOrderedRing R] : OrderedCommSemiring R where
   add_le_add_left _ _ := add_le_add_left
   zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
   mul_comm := mul_comm
@@ -66,9 +65,8 @@ This is not registered as an instance because it introduces a type class loop be
 and `OrderedCommSemiring`, and it seem loops still cause issues sometimes.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def toOrderedCommRing (R : Type*) [CommRing R] [PartialOrder R]
-    [StarOrderedRing R] : OrderedCommRing R where
+abbrev toOrderedCommRing (R : Type*) [CommRing R] [PartialOrder R]
+    [StarRing R] [StarOrderedRing R] : OrderedCommRing R where
   add_le_add_left _ _ := add_le_add_left
   zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
   mul_comm := mul_comm

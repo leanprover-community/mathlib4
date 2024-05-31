@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Yury Kudryashov
 -/
@@ -67,7 +67,7 @@ variable (I I' M M' n)
 
 /-- `n`-times continuously differentiable diffeomorphism between `M` and `M'` with respect to `I`
 and `I'`. -/
--- Porting note: was @[nolint has_nonempty_instance]
+-- Porting note(#5171): was @[nolint has_nonempty_instance]
 structure Diffeomorph extends M ≃ M' where
   protected contMDiff_toFun : ContMDiff I I' n toEquiv
   protected contMDiff_invFun : ContMDiff I' I n toEquiv.symm
@@ -558,8 +558,8 @@ variable (e : E ≃ₘ[𝕜] F)
 instance smoothManifoldWithCorners_transDiffeomorph [SmoothManifoldWithCorners I M] :
     SmoothManifoldWithCorners (I.transDiffeomorph e) M := by
   refine smoothManifoldWithCorners_of_contDiffOn (I.transDiffeomorph e) M fun e₁ e₂ h₁ h₂ => ?_
-  refine' e.contDiff.comp_contDiffOn
-      (((contDiffGroupoid ⊤ I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn _)
+  refine e.contDiff.comp_contDiffOn
+      (((contDiffGroupoid ⊤ I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
   mfld_set_tac
 #align diffeomorph.smooth_manifold_with_corners_trans_diffeomorph Diffeomorph.smoothManifoldWithCorners_transDiffeomorph
 
@@ -570,16 +570,15 @@ with model `I.trans_diffeomorph e`. -/
 def toTransDiffeomorph (e : E ≃ₘ[𝕜] F) : M ≃ₘ⟮I, I.transDiffeomorph e⟯ M where
   toEquiv := Equiv.refl M
   contMDiff_toFun x := by
-    refine' contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, _⟩
-    refine' e.contDiff.contDiffWithinAt.congr' (fun y hy => _) _
-    · simp only [Equiv.coe_refl, id, (· ∘ ·), I.coe_extChartAt_transDiffeomorph]
-      -- Porting note: `simp only` failed to used next lemma, converted to `rw`
-      rw [(extChartAt I x).right_inv hy.1]
-    exact
+    refine contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, ?_⟩
+    refine e.contDiff.contDiffWithinAt.congr' (fun y hy ↦ ?_) ?_
+    · simp only [Equiv.coe_refl, id, (· ∘ ·), I.coe_extChartAt_transDiffeomorph,
+        (extChartAt I x).right_inv hy.1]
+    · exact
       ⟨(extChartAt I x).map_source (mem_extChartAt_source I x), trivial, by simp only [mfld_simps]⟩
   contMDiff_invFun x := by
-    refine' contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, _⟩
-    refine' e.symm.contDiff.contDiffWithinAt.congr' (fun y hy => _) _
+    refine contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, ?_⟩
+    refine e.symm.contDiff.contDiffWithinAt.congr' (fun y hy => ?_) ?_
     · simp only [mem_inter_iff, I.extChartAt_transDiffeomorph_target] at hy
       simp only [Equiv.coe_refl, Equiv.refl_symm, id, (· ∘ ·),
         I.coe_extChartAt_transDiffeomorph_symm, (extChartAt I x).right_inv hy.1]
@@ -613,7 +612,7 @@ theorem contMDiff_transDiffeomorph_right {f : M' → M} :
   (toTransDiffeomorph I M e).contMDiff_diffeomorph_comp_iff le_top
 #align diffeomorph.cont_mdiff_trans_diffeomorph_right Diffeomorph.contMDiff_transDiffeomorph_right
 
--- Porting note: was `@[simp]` but now `simp` can prove it
+-- Porting note (#10618): was `@[simp]` but now `simp` can prove it
 theorem smooth_transDiffeomorph_right {f : M' → M} :
     Smooth I' (I.transDiffeomorph e) f ↔ Smooth I' I f :=
   contMDiff_transDiffeomorph_right e
@@ -643,7 +642,7 @@ theorem contMDiff_transDiffeomorph_left {f : M → M'} :
   ((toTransDiffeomorph I M e).contMDiff_comp_diffeomorph_iff le_top).symm
 #align diffeomorph.cont_mdiff_trans_diffeomorph_left Diffeomorph.contMDiff_transDiffeomorph_left
 
--- Porting note: was `@[simp]` but now `simp` can prove it
+-- Porting note (#10618): was `@[simp]` but now `simp` can prove it
 theorem smooth_transDiffeomorph_left {f : M → M'} :
     Smooth (I.transDiffeomorph e) I' f ↔ Smooth I I' f :=
   e.contMDiff_transDiffeomorph_left

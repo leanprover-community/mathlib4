@@ -95,9 +95,9 @@ check this for points of norm one and some `a`, `b` such that `a + b = 1`. -/
 theorem StrictConvexSpace.of_norm_combo_lt_one
     (h : ∀ x y : E, ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ∃ a b : ℝ, a + b = 1 ∧ ‖a • x + b • y‖ < 1) :
     StrictConvexSpace ℝ E := by
-  refine'
+  refine
     StrictConvexSpace.of_strictConvex_closed_unit_ball ℝ
-      ((convex_closedBall _ _).strictConvex' fun x hx y hy hne => _)
+      ((convex_closedBall _ _).strictConvex' fun x hx y hy hne => ?_)
   rw [interior_closedBall (0 : E) one_ne_zero, closedBall_diff_ball,
     mem_sphere_zero_iff_norm] at hx hy
   rcases h x y hx hy hne with ⟨a, b, hab, hlt⟩
@@ -111,8 +111,8 @@ theorem StrictConvexSpace.of_norm_combo_ne_one
       ∀ x y : E,
         ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ∃ a b : ℝ, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ ‖a • x + b • y‖ ≠ 1) :
     StrictConvexSpace ℝ E := by
-  refine' StrictConvexSpace.of_strictConvex_closed_unit_ball ℝ
-    ((convex_closedBall _ _).strictConvex _)
+  refine StrictConvexSpace.of_strictConvex_closed_unit_ball ℝ
+    ((convex_closedBall _ _).strictConvex ?_)
   simp only [interior_closedBall _ one_ne_zero, closedBall_diff_ball, Set.Pairwise,
     frontier_closedBall _ one_ne_zero, mem_sphere_zero_iff_norm]
   intro x hx y hy hne
@@ -122,10 +122,10 @@ theorem StrictConvexSpace.of_norm_combo_ne_one
 
 theorem StrictConvexSpace.of_norm_add_ne_two
     (h : ∀ ⦃x y : E⦄, ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ‖x + y‖ ≠ 2) : StrictConvexSpace ℝ E := by
-  refine'
+  refine
     StrictConvexSpace.of_norm_combo_ne_one fun x y hx hy hne =>
-      ⟨1 / 2, 1 / 2, one_half_pos.le, one_half_pos.le, add_halves _, _⟩
-  rw [← smul_add, norm_smul, Real.norm_of_nonneg one_half_pos.le, one_div, ← div_eq_inv_mul, Ne.def,
+      ⟨1 / 2, 1 / 2, one_half_pos.le, one_half_pos.le, add_halves _, ?_⟩
+  rw [← smul_add, norm_smul, Real.norm_of_nonneg one_half_pos.le, one_div, ← div_eq_inv_mul, Ne,
     div_eq_one_iff_eq (two_ne_zero' ℝ)]
   exact h hx hy hne
 #align strict_convex_space.of_norm_add_ne_two StrictConvexSpace.of_norm_add_ne_two
@@ -140,7 +140,7 @@ theorem StrictConvexSpace.of_pairwise_sphere_norm_ne_two
 convex space. See also a more -/
 theorem StrictConvexSpace.of_norm_add
     (h : ∀ x y : E, ‖x‖ = 1 → ‖y‖ = 1 → ‖x + y‖ = 2 → SameRay ℝ x y) : StrictConvexSpace ℝ E := by
-  refine' StrictConvexSpace.of_pairwise_sphere_norm_ne_two fun x hx y hy => mt fun h₂ => _
+  refine StrictConvexSpace.of_pairwise_sphere_norm_ne_two fun x hx y hy => mt fun h₂ => ?_
   rw [mem_sphere_zero_iff_norm] at hx hy
   exact (sameRay_iff_of_norm_eq (hx.trans hy.symm)).1 (h x y hx hy h₂)
 #align strict_convex_space.of_norm_add StrictConvexSpace.of_norm_add
@@ -176,7 +176,7 @@ theorem norm_combo_lt_of_ne (hx : ‖x‖ ≤ r) (hy : ‖y‖ ≤ r) (hne : x �
 /-- In a strictly convex space, if `x` and `y` are not in the same ray, then `‖x + y‖ < ‖x‖ + ‖y‖`.
 -/
 theorem norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x‖ + ‖y‖ := by
-  simp only [sameRay_iff_inv_norm_smul_eq, not_or, ← Ne.def] at h
+  simp only [sameRay_iff_inv_norm_smul_eq, not_or, ← Ne.eq_def] at h
   rcases h with ⟨hx, hy, hne⟩
   rw [← norm_pos_iff] at hx hy
   have hxy : 0 < ‖x‖ + ‖y‖ := add_pos hx hy
@@ -195,7 +195,7 @@ theorem lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x‖ - ‖y‖ <
 #align lt_norm_sub_of_not_same_ray lt_norm_sub_of_not_sameRay
 
 theorem abs_lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : |‖x‖ - ‖y‖| < ‖x - y‖ := by
-  refine' abs_sub_lt_iff.2 ⟨lt_norm_sub_of_not_sameRay h, _⟩
+  refine abs_sub_lt_iff.2 ⟨lt_norm_sub_of_not_sameRay h, ?_⟩
   rw [norm_sub_rev]
   exact lt_norm_sub_of_not_sameRay (mt SameRay.symm h)
 #align abs_lt_norm_sub_of_not_same_ray abs_lt_norm_sub_of_not_sameRay

@@ -44,7 +44,7 @@ See `LipschitzWith.hasFderivAt_of_hasLineDerivAt_of_closure`.
 
 open Filter MeasureTheory Measure FiniteDimensional Metric Set Asymptotics
 
-open scoped BigOperators NNReal ENNReal Topology
+open scoped NNReal ENNReal Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
@@ -148,7 +148,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
         rw [← Function.nmem_support]
         contrapose! hx
         apply mem_cthickening_of_dist_le _ _ (‖v‖) (tsupport f) (subset_tsupport _ hx)
-        simp only [dist_eq_norm, sub_add_cancel', norm_neg, norm_smul, Real.norm_eq_abs,
+        simp only [dist_eq_norm, sub_add_cancel_left, norm_neg, norm_smul, Real.norm_eq_abs,
           abs_of_nonneg t_pos.le, norm_pos_iff]
         exact mul_le_of_le_one_left (norm_nonneg v) ht.2
       simp only [B, A, _root_.sub_self, smul_eq_mul, mul_zero, zero_mul, norm_zero]
@@ -198,7 +198,7 @@ theorem integral_lineDeriv_mul_eq
 coefficients. -/
 theorem ae_lineDeriv_sum_eq
     (hf : LipschitzWith C f) {ι : Type*} (s : Finset ι) (a : ι → ℝ) (v : ι → E) :
-    ∀ᵐ x ∂μ, lineDeriv ℝ f x (∑ i in s, a i • v i) = ∑ i in s, a i • lineDeriv ℝ f x (v i) := by
+    ∀ᵐ x ∂μ, lineDeriv ℝ f x (∑ i ∈ s, a i • v i) = ∑ i ∈ s, a i • lineDeriv ℝ f x (v i) := by
   /- Clever argument by Morrey: integrate against a smooth compactly supported function `g`, switch
   the derivative to `g` by integration by parts, and use the linearity of the derivative of `g` to
   conclude that the initial integrals coincide. -/
@@ -210,17 +210,17 @@ theorem ae_lineDeriv_sum_eq
     fun i hi ↦ (g_smooth.continuous.integrable_of_hasCompactSupport g_comp).smul_of_top_left
       ((hf.memℒp_lineDeriv (v i)).const_smul (a i))
   rw [integral_finset_sum _ A]
-  suffices S1 : ∫ x, lineDeriv ℝ f x (∑ i in s, a i • v i) * g x ∂μ
-      = ∑ i in s, a i * ∫ x, lineDeriv ℝ f x (v i) * g x ∂μ by
+  suffices S1 : ∫ x, lineDeriv ℝ f x (∑ i ∈ s, a i • v i) * g x ∂μ
+      = ∑ i ∈ s, a i * ∫ x, lineDeriv ℝ f x (v i) * g x ∂μ by
     dsimp only [smul_eq_mul, Pi.smul_apply]
     simp_rw [← mul_assoc, mul_comm _ (a _), mul_assoc, integral_mul_left, mul_comm (g _), S1]
-  suffices S2 : ∫ x, (∑ i in s, a i * fderiv ℝ g x (v i)) * f x ∂μ =
-                  ∑ i in s, a i * ∫ x, fderiv ℝ g x (v i) * f x ∂μ by
+  suffices S2 : ∫ x, (∑ i ∈ s, a i * fderiv ℝ g x (v i)) * f x ∂μ =
+                  ∑ i ∈ s, a i * ∫ x, fderiv ℝ g x (v i) * f x ∂μ by
     obtain ⟨D, g_lip⟩ : ∃ D, LipschitzWith D g :=
       ContDiff.lipschitzWith_of_hasCompactSupport g_comp g_smooth le_top
     simp_rw [integral_lineDeriv_mul_eq hf g_lip g_comp]
     simp_rw [(g_smooth.differentiable le_top).differentiableAt.lineDeriv_eq_fderiv]
-    simp only [map_neg, _root_.map_sum, SMulHomClass.map_smul, smul_eq_mul, neg_mul]
+    simp only [map_neg, _root_.map_sum, _root_.map_smul, smul_eq_mul, neg_mul]
     simp only [integral_neg, mul_neg, Finset.sum_neg_distrib, neg_inj]
     exact S2
   suffices B : ∀ i ∈ s, Integrable (fun x ↦ a i * (fderiv ℝ g x (v i) * f x)) μ by
@@ -261,7 +261,7 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
   rw [hasFDerivAt_iff_isLittleO_nhds_zero, isLittleO_iff]
   intro ε εpos
   obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ (C + ‖L‖ + 1) * δ = ε :=
-    ⟨ε / (C + ‖L‖ + 1), by positivity, mul_div_cancel' ε (by positivity)⟩
+    ⟨ε / (C + ‖L‖ + 1), by positivity, mul_div_cancel₀ ε (by positivity)⟩
   obtain ⟨q, hqs, q_fin, hq⟩ : ∃ q, q ⊆ s ∧ q.Finite ∧ sphere 0 1 ⊆ ⋃ y ∈ q, ball y δ := by
     have : sphere 0 1 ⊆ ⋃ y ∈ s, ball y δ := by
       apply hs.trans (fun z hz ↦ ?_)

@@ -18,7 +18,7 @@ This file contains lemmas about continuity of the power functions on `ℂ`, `ℝ
 noncomputable section
 
 open scoped Classical
-open Real Topology NNReal ENNReal Filter BigOperators ComplexConjugate
+open Real Topology NNReal ENNReal Filter ComplexConjugate
 
 open Filter Finset Set
 
@@ -56,7 +56,7 @@ theorem cpow_eq_nhds' {p : ℂ × ℂ} (hp_fst : p.fst ≠ 0) :
     this.mono fun x hx ↦ by
       dsimp only
       rw [cpow_def_of_ne_zero hx]
-  refine' IsOpen.eventually_mem _ hp_fst
+  refine IsOpen.eventually_mem ?_ hp_fst
   change IsOpen { x : ℂ × ℂ | x.1 = 0 }ᶜ
   rw [isOpen_compl_iff]
   exact isClosed_eq continuous_fst continuous_const
@@ -84,7 +84,7 @@ works for `z = 0` but assumes `0 < re w`. -/
 theorem continuousAt_cpow {p : ℂ × ℂ} (hp_fst : p.fst ∈ slitPlane) :
     ContinuousAt (fun x : ℂ × ℂ => x.1 ^ x.2) p := by
   rw [continuousAt_congr (cpow_eq_nhds' <| slitPlane_ne_zero hp_fst)]
-  refine' continuous_exp.continuousAt.comp _
+  refine continuous_exp.continuousAt.comp ?_
   exact
     ContinuousAt.mul
       (ContinuousAt.comp (continuousAt_clog hp_fst) continuous_fst.continuousAt)
@@ -92,7 +92,7 @@ theorem continuousAt_cpow {p : ℂ × ℂ} (hp_fst : p.fst ∈ slitPlane) :
 #align continuous_at_cpow continuousAt_cpow
 
 theorem continuousAt_cpow_const {a b : ℂ} (ha : a ∈ slitPlane) :
-    ContinuousAt (fun x => cpow x b) a :=
+    ContinuousAt (· ^ b) a :=
   Tendsto.comp (@continuousAt_cpow (a, b) ha) (continuousAt_id.prod continuousAt_const)
 #align continuous_at_cpow_const continuousAt_cpow_const
 
@@ -167,23 +167,17 @@ section RpowLimits
 
 namespace Real
 
-theorem continuousAt_const_rpow {a b : ℝ} (h : a ≠ 0) : ContinuousAt (rpow a) b := by
-  have : rpow a = fun x : ℝ => ((a : ℂ) ^ (x : ℂ)).re := by
-    ext1 x
-    rw [rpow_eq_pow, rpow_def]
-  rw [this]
-  refine' Complex.continuous_re.continuousAt.comp _
-  refine' (continuousAt_const_cpow _).comp Complex.continuous_ofReal.continuousAt
+theorem continuousAt_const_rpow {a b : ℝ} (h : a ≠ 0) : ContinuousAt (a ^ ·) b := by
+  simp only [rpow_def]
+  refine Complex.continuous_re.continuousAt.comp ?_
+  refine (continuousAt_const_cpow ?_).comp Complex.continuous_ofReal.continuousAt
   norm_cast
 #align real.continuous_at_const_rpow Real.continuousAt_const_rpow
 
-theorem continuousAt_const_rpow' {a b : ℝ} (h : b ≠ 0) : ContinuousAt (rpow a) b := by
-  have : rpow a = fun x : ℝ => ((a : ℂ) ^ (x : ℂ)).re := by
-    ext1 x
-    rw [rpow_eq_pow, rpow_def]
-  rw [this]
-  refine' Complex.continuous_re.continuousAt.comp _
-  refine' (continuousAt_const_cpow' _).comp Complex.continuous_ofReal.continuousAt
+theorem continuousAt_const_rpow' {a b : ℝ} (h : b ≠ 0) : ContinuousAt (a ^ ·) b := by
+  simp only [rpow_def]
+  refine Complex.continuous_re.continuousAt.comp ?_
+  refine (continuousAt_const_cpow' ?_).comp Complex.continuous_ofReal.continuousAt
   norm_cast
 #align real.continuous_at_const_rpow' Real.continuousAt_const_rpow'
 
@@ -211,15 +205,15 @@ theorem continuousAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
   cases hp with
   | inl hp =>
     rw [continuousAt_congr (rpow_eq_nhds_of_neg hp)]
-    refine' ContinuousAt.mul _ (continuous_cos.continuousAt.comp _)
-    · refine' continuous_exp.continuousAt.comp (ContinuousAt.mul _ continuous_snd.continuousAt)
-      refine' (continuousAt_log _).comp continuous_fst.continuousAt
+    refine ContinuousAt.mul ?_ (continuous_cos.continuousAt.comp ?_)
+    · refine continuous_exp.continuousAt.comp (ContinuousAt.mul ?_ continuous_snd.continuousAt)
+      refine (continuousAt_log ?_).comp continuous_fst.continuousAt
       exact hp.ne
     · exact continuous_snd.continuousAt.mul continuousAt_const
   | inr hp =>
     rw [continuousAt_congr (rpow_eq_nhds_of_pos hp)]
-    refine' continuous_exp.continuousAt.comp (ContinuousAt.mul _ continuous_snd.continuousAt)
-    refine' (continuousAt_log _).comp continuous_fst.continuousAt
+    refine continuous_exp.continuousAt.comp (ContinuousAt.mul ?_ continuous_snd.continuousAt)
+    refine (continuousAt_log ?_).comp continuous_fst.continuousAt
     exact hp.lt.ne.symm
 #align real.continuous_at_rpow_of_ne Real.continuousAt_rpow_of_ne
 
@@ -332,19 +326,19 @@ theorem continuousAt_cpow_zero_of_re_pos {z : ℂ} (hz : 0 < z.re) :
     ContinuousAt (fun x : ℂ × ℂ => x.1 ^ x.2) (0, z) := by
   have hz₀ : z ≠ 0 := ne_of_apply_ne re hz.ne'
   rw [ContinuousAt, zero_cpow hz₀, tendsto_zero_iff_norm_tendsto_zero]
-  refine' squeeze_zero (fun _ => norm_nonneg _) (fun _ => abs_cpow_le _ _) _
+  refine squeeze_zero (fun _ => norm_nonneg _) (fun _ => abs_cpow_le _ _) ?_
   simp only [div_eq_mul_inv, ← Real.exp_neg]
-  refine' Tendsto.zero_mul_isBoundedUnder_le _ _
+  refine Tendsto.zero_mul_isBoundedUnder_le ?_ ?_
   · convert
         (continuous_fst.norm.tendsto ((0 : ℂ), z)).rpow
           ((continuous_re.comp continuous_snd).tendsto _) _ <;>
       simp [hz, Real.zero_rpow hz.ne']
   · simp only [Function.comp, Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)]
     rcases exists_gt |im z| with ⟨C, hC⟩
-    refine' ⟨Real.exp (π * C), eventually_map.2 _⟩
-    refine'
+    refine ⟨Real.exp (π * C), eventually_map.2 ?_⟩
+    refine
       (((continuous_im.comp continuous_snd).abs.tendsto (_, z)).eventually (gt_mem_nhds hC)).mono
-        fun z hz => Real.exp_le_exp.2 <| (neg_le_abs _).trans _
+        fun z hz => Real.exp_le_exp.2 <| (neg_le_abs _).trans ?_
     rw [_root_.abs_mul]
     exact
       mul_le_mul (abs_le.2 ⟨(neg_pi_lt_arg _).le, arg_le_pi _⟩) hz.le (_root_.abs_nonneg _)
@@ -357,7 +351,7 @@ assumptions about `p.2`. -/
 theorem continuousAt_cpow_of_re_pos {p : ℂ × ℂ} (h₁ : 0 ≤ p.1.re ∨ p.1.im ≠ 0) (h₂ : 0 < p.2.re) :
     ContinuousAt (fun x : ℂ × ℂ => x.1 ^ x.2) p := by
   cases' p with z w
-  rw [← not_lt_zero_iff, lt_iff_le_and_ne, not_and_or, Ne.def, Classical.not_not,
+  rw [← not_lt_zero_iff, lt_iff_le_and_ne, not_and_or, Ne, Classical.not_not,
     not_le_zero_iff] at h₁
   rcases h₁ with (h₁ | (rfl : z = 0))
   exacts [continuousAt_cpow h₁, continuousAt_cpow_zero_of_re_pos h₂]
@@ -377,7 +371,7 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
   · -- x > 0 : easy case
     have : ContinuousAt (fun p => ⟨↑p.1, p.2⟩ : ℝ × ℂ → ℂ × ℂ) (x, y) :=
       continuous_ofReal.continuousAt.prod_map continuousAt_id
-    refine' (continuousAt_cpow (Or.inl _)).comp this
+    refine (continuousAt_cpow (Or.inl ?_)).comp this
     rwa [ofReal_re]
   · -- x = 0 : reduce to continuousAt_cpow_zero_of_re_pos
     have A : ContinuousAt (fun p => p.1 ^ p.2 : ℂ × ℂ → ℂ) ⟨↑(0 : ℝ), y⟩ := by
@@ -389,12 +383,12 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
     exact A.comp_of_eq B rfl
   · -- x < 0 : difficult case
     suffices ContinuousAt (fun p => (-(p.1 : ℂ)) ^ p.2 * exp (π * I * p.2) : ℝ × ℂ → ℂ) (x, y) by
-      refine' this.congr (eventually_of_mem (prod_mem_nhds (Iio_mem_nhds hx) univ_mem) _)
+      refine this.congr (eventually_of_mem (prod_mem_nhds (Iio_mem_nhds hx) univ_mem) ?_)
       exact fun p hp => (ofReal_cpow_of_nonpos (le_of_lt hp.1) p.2).symm
     have A : ContinuousAt (fun p => ⟨-↑p.1, p.2⟩ : ℝ × ℂ → ℂ × ℂ) (x, y) :=
       ContinuousAt.prod_map continuous_ofReal.continuousAt.neg continuousAt_id
     apply ContinuousAt.mul
-    · refine' (continuousAt_cpow (Or.inl _)).comp A
+    · refine (continuousAt_cpow (Or.inl ?_)).comp A
       rwa [neg_re, ofReal_re, neg_pos]
     · exact (continuous_exp.comp (continuous_const.mul continuous_snd)).continuousAt
 #align complex.continuous_at_of_real_cpow Complex.continuousAt_ofReal_cpow
@@ -428,7 +422,7 @@ theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
     erw [coe_rpow, Real.coe_toNNReal _ (Real.rpow_nonneg p.1.2 _)]
     rfl
   rw [this]
-  refine' continuous_real_toNNReal.continuousAt.comp (ContinuousAt.comp _ _)
+  refine continuous_real_toNNReal.continuousAt.comp (ContinuousAt.comp ?_ ?_)
   · apply Real.continuousAt_rpow
     simpa using h
   · exact ((continuous_subtype_val.comp continuous_fst).prod_mk continuous_snd).continuousAt
@@ -438,9 +432,9 @@ theorem eventually_pow_one_div_le (x : ℝ≥0) {y : ℝ≥0} (hy : 1 < y) :
     ∀ᶠ n : ℕ in atTop, x ^ (1 / n : ℝ) ≤ y := by
   obtain ⟨m, hm⟩ := add_one_pow_unbounded_of_pos x (tsub_pos_of_lt hy)
   rw [tsub_add_cancel_of_le hy.le] at hm
-  refine' eventually_atTop.2 ⟨m + 1, fun n hn => _⟩
+  refine eventually_atTop.2 ⟨m + 1, fun n hn => ?_⟩
   simpa only [NNReal.rpow_one_div_le_iff (Nat.cast_pos.2 <| m.succ_pos.trans_le hn),
-    NNReal.rpow_nat_cast] using hm.le.trans (pow_le_pow_right hy.le (m.le_succ.trans hn))
+    NNReal.rpow_natCast] using hm.le.trans (pow_le_pow_right hy.le (m.le_succ.trans hn))
 #align nnreal.eventually_pow_one_div_le NNReal.eventually_pow_one_div_le
 
 end NNReal
@@ -480,7 +474,7 @@ theorem eventually_pow_one_div_le {x : ℝ≥0∞} (hx : x ≠ ∞) {y : ℝ≥0
   · exact eventually_of_forall fun n => h.symm ▸ le_top
   · lift y to ℝ≥0 using h
     have := NNReal.eventually_pow_one_div_le x (mod_cast hy : 1 < y)
-    refine' this.congr (eventually_of_forall fun n => _)
+    refine this.congr (eventually_of_forall fun n => ?_)
     rw [coe_rpow_of_nonneg x (by positivity : 0 ≤ (1 / n : ℝ)), coe_le_coe]
 #align ennreal.eventually_pow_one_div_le ENNReal.eventually_pow_one_div_le
 

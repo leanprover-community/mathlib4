@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Associated
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Choose.Dvd
-import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Nat.Prime
 
 #align_import number_theory.primorial from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
@@ -28,15 +28,14 @@ open Finset
 
 open Nat
 
-open BigOperators Nat
+open Nat
 
 /-- The primorial `n#` of `n` is the product of the primes less than or equal to `n`.
 -/
 def primorial (n : ℕ) : ℕ :=
-  ∏ p in filter Nat.Prime (range (n + 1)), p
+  ∏ p ∈ filter Nat.Prime (range (n + 1)), p
 #align primorial primorial
 
--- mathport name: «expr #»
 local notation x "#" => primorial x
 
 theorem primorial_pos (n : ℕ) : 0 < n# :=
@@ -50,7 +49,7 @@ theorem primorial_succ {n : ℕ} (hn1 : n ≠ 1) (hn : Odd n) : (n + 1)# = n# :=
 #align primorial_succ primorial_succ
 
 theorem primorial_add (m n : ℕ) :
-    (m + n)# = m# * ∏ p in filter Nat.Prime (Ico (m + 1) (m + n + 1)), p := by
+    (m + n)# = m# * ∏ p ∈ filter Nat.Prime (Ico (m + 1) (m + n + 1)), p := by
   rw [primorial, primorial, ← Ico_zero_eq_range, ← prod_union, ← filter_union, Ico_union_Ico_eq_Ico]
   exacts [Nat.zero_le _, add_le_add_right (Nat.le_add_right _ _) _,
     disjoint_filter_filter <| Ico_disjoint_Ico_consecutive _ _ _]
@@ -58,7 +57,7 @@ theorem primorial_add (m n : ℕ) :
 
 theorem primorial_add_dvd {m n : ℕ} (h : n ≤ m) : (m + n)# ∣ m# * choose (m + n) m :=
   calc
-    (m + n)# = m# * ∏ p in filter Nat.Prime (Ico (m + 1) (m + n + 1)), p := primorial_add _ _
+    (m + n)# = m# * ∏ p ∈ filter Nat.Prime (Ico (m + 1) (m + n + 1)), p := primorial_add _ _
     _ ∣ m# * choose (m + n) m :=
       mul_dvd_mul_left _ <|
         prod_primes_dvd _ (fun k hk ↦ (mem_filter.1 hk).2.prime) fun p hp ↦ by

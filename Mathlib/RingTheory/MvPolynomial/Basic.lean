@@ -3,9 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.MvPolynomial.Degrees
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.MvPolynomial.Degrees
+import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
@@ -41,7 +41,7 @@ noncomputable section
 
 open Set LinearMap Submodule
 
-open BigOperators Polynomial
+open Polynomial
 
 universe u v
 
@@ -67,8 +67,8 @@ section Homomorphism
 
 theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
     (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p := by
-  rw [p.as_sum, Finsupp.mapRange_finset_sum, (map f).map_sum]
-  refine' Finset.sum_congr rfl fun n _ => _
+  rw [p.as_sum, Finsupp.mapRange_finset_sum, map_sum (map f)]
+  refine Finset.sum_congr rfl fun n _ => ?_
   rw [map_monomial, ← single_eq_monomial, Finsupp.mapRange_single, single_eq_monomial]
 #align mv_polynomial.map_range_eq_map MvPolynomial.mapRange_eq_map
 
@@ -91,13 +91,13 @@ theorem restrictSupport_mono {s t : Set (σ →₀ ℕ)} (h : s ⊆ t) :
 
 variable (σ)
 
-/-- The submodule of polynomials of total degree less than or equal to `m`.-/
+/-- The submodule of polynomials of total degree less than or equal to `m`. -/
 def restrictTotalDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
   restrictSupport R { n | (n.sum fun _ e => e) ≤ m }
 #align mv_polynomial.restrict_total_degree MvPolynomial.restrictTotalDegree
 
 /-- The submodule of polynomials such that the degree with respect to each individual variable is
-less than or equal to `m`.-/
+less than or equal to `m`. -/
 def restrictDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
   restrictSupport R { n | ∀ i, n i ≤ m }
 #align mv_polynomial.restrict_degree MvPolynomial.restrictDegree
@@ -140,6 +140,10 @@ theorem coe_basisMonomials :
     (basisMonomials σ R : (σ →₀ ℕ) → MvPolynomial σ R) = fun s => monomial s 1 :=
   rfl
 #align mv_polynomial.coe_basis_monomials MvPolynomial.coe_basisMonomials
+
+/-- The `R`-module `MvPolynomial σ R` is free. -/
+instance : Module.Free R (MvPolynomial σ R) :=
+  Module.Free.of_basis (MvPolynomial.basisMonomials σ R)
 
 theorem linearIndependent_X : LinearIndependent R (X : σ → MvPolynomial σ R) :=
   (basisMonomials σ R).linearIndependent.comp (fun s : σ => Finsupp.single s 1)

@@ -51,7 +51,7 @@ open scoped ZeroObject
 def uniqueHomsetOfZero [HasZeroObject C] (X Y : C) : Unique (X ⟶ Y) := by
   haveI : HasInitial C := HasZeroObject.hasInitial
   apply uniqueHomsetOfInitialIsoTerminal _ X Y
-  refine' ⟨default, (default : ⊤_ C ⟶ 0) ≫ default, _, _⟩ <;> simp [eq_iff_true_of_subsingleton]
+  refine ⟨default, (default : ⊤_ C ⟶ 0) ≫ default, ?_, ?_⟩ <;> simp [eq_iff_true_of_subsingleton]
 #align category_theory.unique_homset_of_zero CategoryTheory.uniqueHomsetOfZero
 
 attribute [local instance] uniqueHomsetOfZero

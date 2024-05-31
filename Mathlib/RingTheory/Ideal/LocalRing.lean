@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.JacobsonIdeal
 import Mathlib.Logic.Equiv.TransferInstance
@@ -81,8 +81,8 @@ theorem of_unique_nonzero_prime (h : ∃! P : Ideal R, P ≠ ⊥ ∧ Ideal.IsPri
   of_unique_max_ideal
     (by
       rcases h with ⟨P, ⟨hPnonzero, hPnot_top, _⟩, hPunique⟩
-      refine' ⟨P, ⟨⟨hPnot_top, _⟩⟩, fun M hM => hPunique _ ⟨_, Ideal.IsMaximal.isPrime hM⟩⟩
-      · refine' Ideal.maximal_of_no_maximal fun M hPM hM => ne_of_lt hPM _
+      refine ⟨P, ⟨⟨hPnot_top, ?_⟩⟩, fun M hM => hPunique _ ⟨?_, Ideal.IsMaximal.isPrime hM⟩⟩
+      · refine Ideal.maximal_of_no_maximal fun M hPM hM => ne_of_lt hPM ?_
         exact (hPunique _ ⟨ne_bot_of_gt hPM, Ideal.IsMaximal.isPrime hM⟩).symm
       · rintro rfl
         exact hPnot_top (hM.1.2 P (bot_lt_iff_ne_bot.2 hPnonzero)))
@@ -161,13 +161,13 @@ namespace LocalRing
 
 theorem of_isUnit_or_isUnit_one_sub_self [Nontrivial R] (h : ∀ a : R, IsUnit a ∨ IsUnit (1 - a)) :
     LocalRing R :=
-  ⟨fun {a b} hab => add_sub_cancel' a b ▸ hab.symm ▸ h a⟩
+  ⟨fun {a b} hab => add_sub_cancel_left a b ▸ hab.symm ▸ h a⟩
 #align local_ring.of_is_unit_or_is_unit_one_sub_self LocalRing.of_isUnit_or_isUnit_one_sub_self
 
 variable [LocalRing R]
 
 theorem isUnit_or_isUnit_one_sub_self (a : R) : IsUnit a ∨ IsUnit (1 - a) :=
-  isUnit_or_isUnit_of_isUnit_add <| (add_sub_cancel'_right a 1).symm ▸ isUnit_one
+  isUnit_or_isUnit_of_isUnit_add <| (add_sub_cancel a 1).symm ▸ isUnit_one
 #align local_ring.is_unit_or_is_unit_one_sub_self LocalRing.isUnit_or_isUnit_one_sub_self
 
 theorem isUnit_of_mem_nonunits_one_sub_self (a : R) (h : 1 - a ∈ nonunits R) : IsUnit a :=
@@ -188,11 +188,14 @@ theorem of_surjective' [CommRing S] [Nontrivial S] (f : R →+* S) (hf : Functio
     apply f.isUnit_map)
 #align local_ring.of_surjective' LocalRing.of_surjective'
 
+theorem maximalIdeal_le_jacobson (I : Ideal R) :
+    LocalRing.maximalIdeal R ≤ I.jacobson :=
+  le_sInf fun _ ⟨_, h⟩ => le_of_eq (LocalRing.eq_maximalIdeal h).symm
+
 theorem jacobson_eq_maximalIdeal (I : Ideal R) (h : I ≠ ⊤) :
-    I.jacobson = LocalRing.maximalIdeal R := by
-  apply le_antisymm
-  · exact sInf_le ⟨LocalRing.le_maximalIdeal h, LocalRing.maximalIdeal.isMaximal R⟩
-  · exact le_sInf fun J (hJ : I ≤ J ∧ J.IsMaximal) => le_of_eq (LocalRing.eq_maximalIdeal hJ.2).symm
+    I.jacobson = LocalRing.maximalIdeal R :=
+  le_antisymm (sInf_le ⟨le_maximalIdeal h, maximalIdeal.isMaximal R⟩)
+              (maximalIdeal_le_jacobson I)
 #align local_ring.jacobson_eq_maximal_ideal LocalRing.jacobson_eq_maximalIdeal
 
 end LocalRing
@@ -533,7 +536,6 @@ theorem LocalRing.maximalIdeal_eq_bot {R : Type*} [Field R] : LocalRing.maximalI
 
 namespace RingEquiv
 
-@[reducible]
 protected theorem localRing {A B : Type*} [CommSemiring A] [LocalRing A] [CommSemiring B]
     (e : A ≃+* B) : LocalRing B :=
   haveI := e.symm.toEquiv.nontrivial

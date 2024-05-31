@@ -3,6 +3,7 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 #align_import topology.category.Top.limits.konig from "leanprover-community/mathlib"@"dbdf71cee7bb20367cb7e37279c08b0c218cf967"
@@ -88,7 +89,7 @@ theorem partialSections.directed :
     ⟨f.1, f.2.1, Finset.mem_union_left _ f.2.2.1, Finset.mem_union_left _ f.2.2.2.1, f.2.2.2.2⟩
   let ιB : FiniteDiagramArrow B.1 → FiniteDiagramArrow (A.1 ⊔ B.1) := fun f =>
     ⟨f.1, f.2.1, Finset.mem_union_right _ f.2.2.1, Finset.mem_union_right _ f.2.2.2.1, f.2.2.2.2⟩
-  refine' ⟨⟨A.1 ⊔ B.1, A.2.image ιA ⊔ B.2.image ιB⟩, _, _⟩
+  refine ⟨⟨A.1 ⊔ B.1, A.2.image ιA ⊔ B.2.image ιB⟩, ?_, ?_⟩
   · rintro u hu f hf
     have : ιA f ∈ A.2.image ιA ⊔ B.2.image ιB := by
       apply Finset.mem_union_left
@@ -125,8 +126,8 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
 
 /-- Cofiltered limits of nonempty compact Hausdorff spaces are nonempty topological spaces.
 -/
--- Porting note: generalized from `TopCat.{u}` to `TopCatMax.{u,v}`
-theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCatMax.{u,v})
+-- Porting note: generalized from `TopCat.{u}` to `TopCat.{max v u}`
+theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCat.{max v u})
     [IsCofilteredOrEmpty J]
     [∀ j : J, Nonempty (F.obj j)] [∀ j : J, CompactSpace (F.obj j)] [∀ j : J, T2Space (F.obj j)] :
     Nonempty (TopCat.limitCone F).pt := by

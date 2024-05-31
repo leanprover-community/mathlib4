@@ -64,7 +64,8 @@ Vitali families are provided by covering theorems such as the Besicovitch coveri
 Vitali covering theorem. They make it possible to formulate general versions of theorems on
 differentiations of measure that apply in both contexts.
 -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 structure VitaliFamily {m : MeasurableSpace α} (μ : Measure α) where
   /-- Sets of the family "centered" at a given point. -/
   setsAt :  α → Set (Set α)
@@ -204,11 +205,11 @@ def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ 
     let g : α → Set (Set α) := fun x => f x ∩ v.setsAt x
     have : ∀ x ∈ s, ∀ ε : ℝ, ε > 0 → ∃ (a : Set α), a ∈ g x ∧ a ⊆ closedBall x ε := by
       intro x hx ε εpos
-      obtain ⟨a, af, ha⟩ : ∃ a ∈ f x, a ⊆ closedBall x (min ε δ)
-      exact ffine x hx (min ε δ) (lt_min εpos δpos)
+      obtain ⟨a, af, ha⟩ : ∃ a ∈ f x, a ⊆ closedBall x (min ε δ) :=
+        ffine x hx (min ε δ) (lt_min εpos δpos)
       rcases fset x hx af with (h'a | h'a)
       · exact ⟨a, ⟨af, h'a⟩, ha.trans (closedBall_subset_closedBall (min_le_left _ _))⟩
-      · refine' False.elim (h'a.2.2 _)
+      · refine False.elim (h'a.2.2 ?_)
         exact ha.trans (closedBall_subset_closedBall (min_le_right _ _))
     rcases v.covering s g (fun x _ => inter_subset_right _ _) this with ⟨t, ts, tdisj, tg, μt⟩
     exact ⟨t, ts, tdisj, fun p hp => (tg p hp).1, μt⟩

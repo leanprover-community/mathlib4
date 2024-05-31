@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Rat.Floor
@@ -71,13 +70,13 @@ theorem existsUnique_zsmul_near_of_pos {a : α} (ha : 0 < a) (g : α) :
   have h_bdd : ∀ n ∈ s, n ≤ (k : ℤ) := by
     intro n hn
     apply (zsmul_le_zsmul_iff ha).mp
-    rw [← coe_nat_zsmul] at hk
+    rw [← natCast_zsmul] at hk
     exact le_trans hn hk
   obtain ⟨m, hm, hm'⟩ := Int.exists_greatest_of_bdd ⟨k, h_bdd⟩ h_ne
   have hm'' : g < (m + 1) • a := by
     contrapose! hm'
     exact ⟨m + 1, hm', lt_add_one _⟩
-  refine' ⟨m, ⟨hm, hm''⟩, fun n hn => (hm' n hn.1).antisymm <| Int.le_of_lt_add_one _⟩
+  refine ⟨m, ⟨hm, hm''⟩, fun n hn => (hm' n hn.1).antisymm <| Int.le_of_lt_add_one ?_⟩
   rw [← zsmul_lt_zsmul_iff ha]
   exact lt_of_le_of_lt hm hn.2
 #align exists_unique_zsmul_near_of_pos existsUnique_zsmul_near_of_pos
@@ -162,7 +161,7 @@ variable [StrictOrderedRing α] [Archimedean α]
 
 theorem exists_int_gt (x : α) : ∃ n : ℤ, x < n :=
   let ⟨n, h⟩ := exists_nat_gt x
-  ⟨n, by rwa [Int.cast_ofNat]⟩
+  ⟨n, by rwa [Int.cast_natCast]⟩
 #align exists_int_gt exists_int_gt
 
 theorem exists_int_lt (x : α) : ∃ n : ℤ, (n : α) < x :=
@@ -178,7 +177,7 @@ theorem exists_floor (x : α) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α)
       ⟨n, fun z h' => Int.cast_le.1 <| le_trans h' <| le_of_lt hn⟩)
       (let ⟨n, hn⟩ := exists_int_lt x
       ⟨n, le_of_lt hn⟩)
-  refine' this.imp fun fl h z => _
+  refine this.imp fun fl h z => ?_
   cases' h with h₁ h₂
   exact ⟨fun h => le_trans (Int.cast_le.2 h) h₁, h₂ z⟩
 #align exists_floor exists_floor
@@ -217,14 +216,14 @@ theorem exists_mem_Ico_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ico (
         ⟨-N,
           le_of_lt
             (by
-              rw [zpow_neg y ↑N, zpow_coe_nat]
+              rw [zpow_neg y ↑N, zpow_natCast]
               exact (inv_lt hx (lt_trans (inv_pos.2 hx) hN)).1 hN)⟩
       let ⟨M, hM⟩ := pow_unbounded_of_one_lt x hy
       have hb : ∃ b : ℤ, ∀ m, y ^ m ≤ x → m ≤ b :=
         ⟨M, fun m hm =>
           le_of_not_lt fun hlt =>
             not_lt_of_ge (zpow_le_of_le hy.le hlt.le)
-              (lt_of_le_of_lt hm (by rwa [← zpow_coe_nat] at hM))⟩
+              (lt_of_le_of_lt hm (by rwa [← zpow_natCast] at hM))⟩
       let ⟨n, hn₁, hn₂⟩ := Int.exists_greatest_of_bdd hb he
       ⟨n, hn₁, lt_of_not_ge fun hge => not_le_of_gt (Int.lt_succ _) (hn₂ _ hge)⟩
 #align exists_mem_Ico_zpow exists_mem_Ico_zpow
@@ -256,7 +255,7 @@ theorem exists_nat_pow_near_of_lt_one (xpos : 0 < x) (hx : x ≤ 1) (ypos : 0 < 
     ∃ n : ℕ, y ^ (n + 1) < x ∧ x ≤ y ^ n := by
   rcases exists_nat_pow_near (one_le_inv_iff.2 ⟨xpos, hx⟩) (one_lt_inv_iff.2 ⟨ypos, hy⟩) with
     ⟨n, hn, h'n⟩
-  refine' ⟨n, _, _⟩
+  refine ⟨n, ?_, ?_⟩
   · rwa [inv_pow, inv_lt_inv xpos (pow_pos ypos _)] at h'n
   · rwa [inv_pow, inv_le_inv (pow_pos ypos _) xpos] at hn
 #align exists_nat_pow_near_of_lt_one exists_nat_pow_near_of_lt_one
@@ -277,33 +276,31 @@ variable [LinearOrderedField α] [Archimedean α] {x y ε : α}
 
 theorem exists_rat_gt (x : α) : ∃ q : ℚ, x < q :=
   let ⟨n, h⟩ := exists_nat_gt x
-  ⟨n, by rwa [Rat.cast_coe_nat]⟩
+  ⟨n, by rwa [Rat.cast_natCast]⟩
 #align exists_rat_gt exists_rat_gt
 
 theorem exists_rat_lt (x : α) : ∃ q : ℚ, (q : α) < x :=
   let ⟨n, h⟩ := exists_int_lt x
-  ⟨n, by rwa [Rat.cast_coe_int]⟩
+  ⟨n, by rwa [Rat.cast_intCast]⟩
 #align exists_rat_lt exists_rat_lt
 
 theorem exists_rat_btwn {x y : α} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : α) < y := by
   cases' exists_nat_gt (y - x)⁻¹ with n nh
   cases' exists_floor (x * n) with z zh
-  refine' ⟨(z + 1 : ℤ) / n, _⟩
+  refine ⟨(z + 1 : ℤ) / n, ?_⟩
   have n0' := (inv_pos.2 (sub_pos.2 h)).trans nh
   have n0 := Nat.cast_pos.1 n0'
-  rw [Rat.cast_div_of_ne_zero, Rat.cast_coe_nat, Rat.cast_coe_int, div_lt_iff n0']
-  refine' ⟨(lt_div_iff n0').2 <| (lt_iff_lt_of_le_iff_le (zh _)).1 (lt_add_one _), _⟩
-  rw [Int.cast_add, Int.cast_one]
-  refine' lt_of_le_of_lt (add_le_add_right ((zh _).1 le_rfl) _) _
-  rwa [← lt_sub_iff_add_lt', ← sub_mul, ← div_lt_iff' (sub_pos.2 h), one_div]
-  · rw [Rat.coe_int_den, Nat.cast_one]
+  rw [Rat.cast_div_of_ne_zero, Rat.cast_natCast, Rat.cast_intCast, div_lt_iff n0']
+  · refine ⟨(lt_div_iff n0').2 <| (lt_iff_lt_of_le_iff_le (zh _)).1 (lt_add_one _), ?_⟩
+    rw [Int.cast_add, Int.cast_one]
+    refine lt_of_le_of_lt (add_le_add_right ((zh _).1 le_rfl) _) ?_
+    rwa [← lt_sub_iff_add_lt', ← sub_mul, ← div_lt_iff' (sub_pos.2 h), one_div]
+  · rw [Rat.den_intCast, Nat.cast_one]
     exact one_ne_zero
   · intro H
-    rw [Rat.num_natCast, Int.cast_ofNat, Nat.cast_eq_zero] at H
+    rw [Rat.num_natCast, Int.cast_natCast, Nat.cast_eq_zero] at H
     subst H
     cases n0
-  · rw [Rat.den_natCast, Nat.cast_one]
-    exact one_ne_zero
 #align exists_rat_btwn exists_rat_btwn
 
 theorem le_of_forall_rat_lt_imp_le (h : ∀ q : ℚ, (q : α) < x → (q : α) ≤ y) : x ≤ y :=
@@ -368,7 +365,7 @@ theorem archimedean_iff_int_lt : Archimedean α ↔ ∀ x : α, ∃ n : ℤ, x <
     rw [archimedean_iff_nat_lt]
     intro h x
     obtain ⟨n, h⟩ := h x
-    refine' ⟨n.toNat, h.trans_le _⟩
+    refine ⟨n.toNat, h.trans_le ?_⟩
     exact mod_cast Int.self_le_toNat _⟩
 #align archimedean_iff_int_lt archimedean_iff_int_lt
 
@@ -385,7 +382,7 @@ theorem archimedean_iff_rat_lt : Archimedean α ↔ ∀ x : α, ∃ q : ℚ, x <
       let ⟨q, h⟩ := H x
       ⟨⌈q⌉₊,
         lt_of_lt_of_le h <| by
-          simpa only [Rat.cast_coe_nat] using (@Rat.cast_le α _ _ _).2 (Nat.le_ceil _)⟩⟩
+          simpa only [Rat.cast_natCast] using (@Rat.cast_le α _ _ _).2 (Nat.le_ceil _)⟩⟩
 #align archimedean_iff_rat_lt archimedean_iff_rat_lt
 
 theorem archimedean_iff_rat_le : Archimedean α ↔ ∀ x : α, ∃ q : ℚ, x ≤ q :=

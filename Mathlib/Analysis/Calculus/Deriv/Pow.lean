@@ -24,7 +24,7 @@ derivative, power
 universe u v w
 
 open scoped Classical
-open Topology BigOperators Filter ENNReal
+open Topology Filter ENNReal
 
 open Filter Asymptotics Set
 
@@ -47,7 +47,7 @@ theorem hasStrictDerivAt_pow :
   | 0, x => by simp [hasStrictDerivAt_const]
   | 1, x => by simpa using hasStrictDerivAt_id x
   | n + 1 + 1, x => by
-    simpa [pow_succ', add_mul, mul_assoc] using
+    simpa [pow_succ, add_mul, mul_assoc] using
       (hasStrictDerivAt_pow (n + 1) x).mul (hasStrictDerivAt_id x)
 #align has_strict_deriv_at_pow hasStrictDerivAt_pow
 
