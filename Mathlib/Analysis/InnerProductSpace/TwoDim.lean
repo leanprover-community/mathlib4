@@ -108,7 +108,7 @@ theorem areaForm_to_volumeForm (x y : E) : ω x y = o.volumeForm ![x, y] := by s
 @[simp]
 theorem areaForm_apply_self (x : E) : ω x x = 0 := by
   rw [areaForm_to_volumeForm]
-  refine' o.volumeForm.map_eq_zero_of_eq ![x, x] _ (_ : (0 : Fin 2) ≠ 1)
+  refine o.volumeForm.map_eq_zero_of_eq ![x, x] ?_ (?_ : (0 : Fin 2) ≠ 1)
   · simp
   · norm_num
 #align orientation.area_form_apply_self Orientation.areaForm_apply_self
@@ -211,11 +211,11 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
   { o.rightAngleRotationAux₁ with
     norm_map' := fun x => by
       dsimp
-      refine' le_antisymm _ _
+      refine le_antisymm ?_ ?_
       · cases' eq_or_lt_of_le (norm_nonneg (o.rightAngleRotationAux₁ x)) with h h
         · rw [← h]
           positivity
-        refine' le_of_mul_le_mul_right _ h
+        refine le_of_mul_le_mul_right ?_ h
         rw [← real_inner_self_eq_norm_mul_norm, o.inner_rightAngleRotationAux₁_left]
         exact o.areaForm_le x (o.rightAngleRotationAux₁ x)
       · let K : Submodule ℝ E := ℝ ∙ x
@@ -231,7 +231,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
         obtain ⟨w, hw₀⟩ : ∃ w : Kᗮ, w ≠ 0 := exists_ne 0
         have hw' : ⟪x, (w : E)⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
         have hw : (w : E) ≠ 0 := fun h => hw₀ (Submodule.coe_eq_zero.mp h)
-        refine' le_of_mul_le_mul_right _ (by rwa [norm_pos_iff] : 0 < ‖(w : E)‖)
+        refine le_of_mul_le_mul_right ?_ (by rwa [norm_pos_iff] : 0 < ‖(w : E)‖)
         rw [← o.abs_areaForm_of_orthogonal hw']
         rw [← o.inner_rightAngleRotationAux₁_left x w]
         exact abs_real_inner_le_norm (o.rightAngleRotationAux₁ x) w }
@@ -566,7 +566,7 @@ theorem eq_zero_or_eq_zero_of_kahler_eq_zero {x y : E} (hx : o.kahler x y = 0) :
 #align orientation.eq_zero_or_eq_zero_of_kahler_eq_zero Orientation.eq_zero_or_eq_zero_of_kahler_eq_zero
 
 theorem kahler_eq_zero_iff (x y : E) : o.kahler x y = 0 ↔ x = 0 ∨ y = 0 := by
-  refine' ⟨o.eq_zero_or_eq_zero_of_kahler_eq_zero, _⟩
+  refine ⟨o.eq_zero_or_eq_zero_of_kahler_eq_zero, ?_⟩
   rintro (rfl | rfl) <;> simp
 #align orientation.kahler_eq_zero_iff Orientation.kahler_eq_zero_iff
 
@@ -576,7 +576,7 @@ theorem kahler_ne_zero {x y : E} (hx : x ≠ 0) (hy : y ≠ 0) : o.kahler x y �
 #align orientation.kahler_ne_zero Orientation.kahler_ne_zero
 
 theorem kahler_ne_zero_iff (x y : E) : o.kahler x y ≠ 0 ↔ x ≠ 0 ∧ y ≠ 0 := by
-  refine' ⟨_, fun h => o.kahler_ne_zero h.1 h.2⟩
+  refine ⟨?_, fun h => o.kahler_ne_zero h.1 h.2⟩
   contrapose
   simp only [not_and_or, Classical.not_not, kahler_apply_apply, Complex.real_smul]
   rintro (rfl | rfl) <;> simp

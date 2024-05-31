@@ -73,7 +73,7 @@ theorem discr_prime_pow_eq_unit_mul_pow' [IsCyclotomicExtension {p ^ k} ℚ K]
 integral closure of `ℤ` in `K`. -/
 theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ k)) : IsIntegralClosure (adjoin ℤ ({ζ} : Set K)) ℤ K := by
-  refine' ⟨Subtype.val_injective, @fun x => ⟨fun h => ⟨⟨x, _⟩, rfl⟩, _⟩⟩
+  refine ⟨Subtype.val_injective, @fun x => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
   swap
   · rintro ⟨y, rfl⟩
     exact
@@ -112,8 +112,8 @@ theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExt
       rw [IsPrimitiveRoot.subOnePowerBasis_gen,
         map_injective (algebraMap ℤ ℚ) (algebraMap ℤ ℚ).injective_int h₂]
       exact cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt p _
-    refine'
-      adjoin_le _
+    refine
+      adjoin_le ?_
         (mem_adjoin_of_smul_prime_pow_smul_of_minpoly_isEisensteinAt (n := n)
           (Nat.prime_iff_prime_int.1 hp.out) hint h (by simpa using H) hmin)
     simp only [Set.singleton_subset_iff, SetLike.mem_coe]
@@ -136,7 +136,7 @@ theorem cyclotomicRing_isIntegralClosure_of_prime_pow :
 -- Porting note: having `.isIntegral_iff` inside the definition of `this` causes an error.
   · have := isIntegralClosure_adjoin_singleton_of_prime_pow hζ
     obtain ⟨y, rfl⟩ := this.isIntegral_iff.1 h
-    refine' adjoin_mono _ y.2
+    refine adjoin_mono ?_ y.2
     simp only [PNat.pow_coe, Set.singleton_subset_iff, Set.mem_setOf_eq]
     exact hζ.pow_eq_one
   · rintro ⟨y, rfl⟩
@@ -256,8 +256,8 @@ noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]
 theorem subOneIntegralPowerBasis_gen [IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ k)) :
     hζ.subOneIntegralPowerBasis.gen =
-      ⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral (p ^ k).pos) (Subalgebra.one_mem _)⟩ :=
-  by simp [subOneIntegralPowerBasis]
+      ⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral (p ^ k).pos) (Subalgebra.one_mem _)⟩ := by
+  simp [subOneIntegralPowerBasis]
 #align is_primitive_root.sub_one_integral_power_basis_gen IsPrimitiveRoot.subOneIntegralPowerBasis_gen
 
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a `p`-th cyclotomic

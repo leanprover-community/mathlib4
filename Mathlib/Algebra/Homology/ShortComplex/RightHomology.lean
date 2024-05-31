@@ -178,8 +178,8 @@ def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsCo
   hι := KernelFork.IsLimit.ofId _ (Cofork.IsColimit.hom_ext hc (by simp [hg]))
 
 @[simp] lemma ofIsColimitCokernelCofork_g' (hg : S.g = 0) (c : CokernelCofork S.f)
-  (hc : IsColimit c) : (ofIsColimitCokernelCofork S hg c hc).g' = 0 :=
-by rw [← cancel_epi (ofIsColimitCokernelCofork S hg c hc).p, p_g', hg, comp_zero]
+  (hc : IsColimit c) : (ofIsColimitCokernelCofork S hg c hc).g' = 0 := by
+  rw [← cancel_epi (ofIsColimitCokernelCofork S hg c hc).p, p_g', hg, comp_zero]
 
 /-- When the second map `S.g` is zero, this is the right homology data on `S` given
 by the chosen `cokernel S.f` -/
@@ -1242,7 +1242,7 @@ of short complexes to induce an isomorphism on opcycles. -/
 lemma isIso_opcyclesMap'_of_isIso_of_epi (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ₂) (h₁ : Epi φ.τ₁)
     (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
     IsIso (opcyclesMap' φ h₁ h₂) := by
-  refine' ⟨h₂.descQ (inv φ.τ₂ ≫ h₁.p) _, _, _⟩
+  refine ⟨h₂.descQ (inv φ.τ₂ ≫ h₁.p) ?_, ?_, ?_⟩
   · simp only [← cancel_epi φ.τ₁, comp_zero, φ.comm₁₂_assoc, IsIso.hom_inv_id_assoc, h₁.wp]
   · simp only [← cancel_epi h₁.p, p_opcyclesMap'_assoc, h₂.p_descQ,
       IsIso.hom_inv_id_assoc, comp_id]

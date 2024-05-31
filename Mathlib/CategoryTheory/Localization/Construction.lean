@@ -142,7 +142,7 @@ set_option linter.uppercaseLean3 false in
 variable (W)
 
 theorem _root_.CategoryTheory.MorphismProperty.Q_inverts : W.IsInvertedBy W.Q := fun _ _ w hw =>
-  IsIso.of_iso (Localization.Construction.wIso w hw)
+  (Localization.Construction.wIso w hw).isIso_hom
 set_option linter.uppercaseLean3 false in
 #align category_theory.morphism_property.Q_inverts CategoryTheory.MorphismProperty.Q_inverts
 
@@ -190,12 +190,12 @@ theorem fac : W.Q ⋙ lift G hG = G :=
 
 theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂) : G₁ = G₂ := by
   suffices h' : Quotient.functor _ ⋙ G₁ = Quotient.functor _ ⋙ G₂ by
-    refine' Functor.ext _ _
+    refine Functor.ext ?_ ?_
     · rintro ⟨⟨X⟩⟩
       apply Functor.congr_obj h
     · rintro ⟨⟨X⟩⟩ ⟨⟨Y⟩⟩ ⟨f⟩
       apply Functor.congr_hom h'
-  refine' Paths.ext_functor _ _
+  refine Paths.ext_functor ?_ ?_
   · ext X
     cases X
     apply Functor.congr_obj h
@@ -204,7 +204,7 @@ theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂
     · have hw : W.Q.map w = (wIso w hw).hom := rfl
       have hw' := Functor.congr_hom h w
       simp only [Functor.comp_map, hw] at hw'
-      refine' Functor.congr_inv_of_congr_hom _ _ _ _ _ hw'
+      refine Functor.congr_inv_of_congr_hom _ _ _ ?_ ?_ hw'
       all_goals apply Functor.congr_obj h
 #align category_theory.localization.construction.uniq CategoryTheory.Localization.Construction.uniq
 
@@ -249,7 +249,7 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
     · simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
     · let p' : X₁ ⟶X₂ := p
       rw [show p'.cons g = p' ≫ Quiver.Hom.toPath g by rfl, G.map_comp]
-      refine' P.comp_mem _ _ hp _
+      refine P.comp_mem _ _ hp ?_
       rcases g with (g | ⟨g, hg⟩)
       · apply hP₁
       · apply hP₂
@@ -294,9 +294,9 @@ def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ 
     suffices MorphismProperty.naturalityProperty (NatTransExtension.app τ) = ⊤ by
       intro X Y f
       simpa only [← this] using MorphismProperty.top_apply f
-    refine' morphismProperty_is_top'
+    refine morphismProperty_is_top'
       (MorphismProperty.naturalityProperty (NatTransExtension.app τ))
-      _ (MorphismProperty.naturalityProperty.stableUnderInverse _)
+      ?_ (MorphismProperty.naturalityProperty.stableUnderInverse _)
     intros X Y f
     dsimp
     simpa only [NatTransExtension.app_eq] using τ.naturality f
@@ -356,7 +356,7 @@ def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D where
 def unitIso : 𝟭 (W.Localization ⥤ D) ≅ functor W D ⋙ inverse W D :=
   eqToIso
     (by
-      refine' Functor.ext (fun G => _) fun G₁ G₂ τ => _
+      refine Functor.ext (fun G => ?_) fun G₁ G₂ τ => ?_
       · apply uniq
         dsimp [Functor]
         erw [fac]
@@ -371,7 +371,7 @@ def unitIso : 𝟭 (W.Localization ⥤ D) ≅ functor W D ⋙ inverse W D :=
 def counitIso : inverse W D ⋙ functor W D ≅ 𝟭 (W.FunctorsInverting D) :=
   eqToIso
     (by
-      refine' Functor.ext _ _
+      refine Functor.ext ?_ ?_
       · rintro ⟨G, hG⟩
         ext
         exact fac G hG

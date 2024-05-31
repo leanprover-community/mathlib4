@@ -210,7 +210,7 @@ theorem IsPreirreducible.image (H : IsPreirreducible s) (f : X → Y) (hf : Cont
   rw [inter_comm s u', ← u'_eq] at this
   rw [inter_comm s v', ← v'_eq] at this
   rcases this ⟨x, hxu, hx⟩ ⟨y, hyv, hy⟩ with ⟨x, hxs, hxu', hxv'⟩
-  refine' ⟨f x, mem_image_of_mem f hxs, _, _⟩
+  refine ⟨f x, mem_image_of_mem f hxs, ?_, ?_⟩
   all_goals
     rw [← mem_preimage]
     apply mem_of_mem_inter_left
@@ -308,8 +308,8 @@ theorem IsPreirreducible.subset_irreducible {S U : Set X} (ht : IsPreirreducible
   replace ht : IsIrreducible t := ⟨⟨z, h₂ (h₁ hz)⟩, ht⟩
   refine ⟨⟨z, h₁ hz⟩, ?_⟩
   rintro u v hu hv ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
-  obtain ⟨x, -, hx'⟩ : Set.Nonempty (t ∩ ⋂₀ ↑({U, u, v} : Finset (Set X)))
-  · refine isIrreducible_iff_sInter.mp ht {U, u, v} ?_ ?_
+  obtain ⟨x, -, hx'⟩ : Set.Nonempty (t ∩ ⋂₀ ↑({U, u, v} : Finset (Set X))) := by
+    refine isIrreducible_iff_sInter.mp ht {U, u, v} ?_ ?_
     · simp [*]
     · intro U H
       simp only [Finset.mem_insert, Finset.mem_singleton] at H

@@ -103,7 +103,8 @@ variable {F : C ⥤ D} {G : D ⥤ C} (adj : G ⊣ F) [F.Full] [F.Faithful]
 
 lemma W_adj_unit_app (X : D) : W (· ∈ Set.range F.obj) (adj.unit.app X) := by
   rintro _ ⟨Y, rfl⟩
-  convert ((equivOfFullyFaithful F).symm.trans (adj.homEquiv X Y)).bijective using 1
+  convert ((Functor.FullyFaithful.ofFullyFaithful F).homEquiv.symm.trans
+    (adj.homEquiv X Y)).bijective using 1
   aesop
 
 lemma W_iff_isIso_map {X Y : D} (f : X ⟶ Y) :

@@ -24,8 +24,6 @@ is the same as being a splitting field (`Normal.of_isSplittingField` and
 
 noncomputable section
 
-open scoped BigOperators
-
 open scoped Classical Polynomial
 
 open Polynomial IsScalarTower
@@ -68,16 +66,16 @@ instance normal_self : Normal F F where
 theorem Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] :
     ∃ p : F[X], IsSplittingField F K p := by
   let s := Basis.ofVectorSpace F K
-  refine'
+  refine
     ⟨∏ x, minpoly F (s x), splits_prod _ fun x _ => h.splits (s x),
-      Subalgebra.toSubmodule.injective _⟩
+      Subalgebra.toSubmodule.injective ?_⟩
   rw [Algebra.top_toSubmodule, eq_top_iff, ← s.span_eq, Submodule.span_le, Set.range_subset_iff]
-  refine' fun x =>
+  refine fun x =>
     Algebra.subset_adjoin
       (Multiset.mem_toFinset.mpr <|
         (mem_roots <|
               mt (Polynomial.map_eq_zero <| algebraMap F K).1 <|
-                Finset.prod_ne_zero_iff.2 fun x _ => _).2 _)
+                Finset.prod_ne_zero_iff.2 fun x _ => ?_).2 ?_)
   · exact minpoly.ne_zero (h.isIntegral (s x))
   rw [IsRoot.def, eval_map, ← aeval_def, AlgHom.map_prod]
   exact Finset.prod_eq_zero (Finset.mem_univ _) (minpoly.aeval _ _)
@@ -159,13 +157,13 @@ instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i,
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).1) x.2
   let E : IntermediateField F K := ⨆ i ∈ s, adjoin F ((minpoly F (i.2 : _)).rootSet K)
   have hF : Normal F E := by
-    haveI : IsSplittingField F E (∏ i in s, minpoly F i.snd) := by
-      refine' isSplittingField_iSup _ fun i _ => adjoin_rootSet_isSplittingField _
+    haveI : IsSplittingField F E (∏ i ∈ s, minpoly F i.snd) := by
+      refine isSplittingField_iSup ?_ fun i _ => adjoin_rootSet_isSplittingField ?_
       · exact Finset.prod_ne_zero_iff.mpr fun i _ => minpoly.ne_zero ((h i.1).isIntegral i.2)
       · exact Polynomial.splits_comp_of_splits _ (algebraMap (t i.1) K) ((h i.1).splits i.2)
-    apply Normal.of_isSplittingField (∏ i in s, minpoly F i.2)
+    apply Normal.of_isSplittingField (∏ i ∈ s, minpoly F i.2)
   have hE : E ≤ ⨆ i, t i := by
-    refine' iSup_le fun i => iSup_le fun _ => le_iSup_of_le i.1 _
+    refine iSup_le fun i => iSup_le fun _ => le_iSup_of_le i.1 ?_
     rw [adjoin_le_iff, ← image_rootSet ((h i.1).splits i.2) (t i.1).val]
     exact fun _ ⟨a, _, h⟩ => h ▸ a.2
   have := hF.splits ⟨x, hx⟩
@@ -224,8 +222,8 @@ def AlgHom.restrictNormalAux [h : Normal F E] :
       rintro x ⟨y, ⟨z, hy⟩, hx⟩
       rw [← hx, ← hy]
       apply minpoly.mem_range_of_degree_eq_one E
-      refine'
-        Or.resolve_left (h.splits z).def (minpoly.ne_zero (h.isIntegral z)) (minpoly.irreducible _)
+      refine
+        Or.resolve_left (h.splits z).def (minpoly.ne_zero (h.isIntegral z)) (minpoly.irreducible ?_)
           (minpoly.dvd E _ (by simp [aeval_algHom_apply]))
       simp only [AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom]
       suffices IsIntegral F _ by exact this.tower_top
@@ -398,9 +396,9 @@ theorem isSolvable_of_isScalarTower [Normal F K₁] [h1 : IsSolvable (K₁ ≃�
           (AlgHom.ext fun x => ϕ.apply_symm_apply x) (AlgHom.ext fun x => ϕ.symm_apply_apply x)
       map_one' := AlgEquiv.ext fun _ => rfl
       map_mul' := fun _ _ => AlgEquiv.ext fun _ => rfl }
-  refine'
+  refine
     solvable_of_ker_le_range f (AlgEquiv.restrictNormalHom K₁) fun ϕ hϕ =>
-      ⟨{ ϕ with commutes' := fun x => _ }, AlgEquiv.ext fun _ => rfl⟩
+      ⟨{ ϕ with commutes' := fun x => ?_ }, AlgEquiv.ext fun _ => rfl⟩
   exact Eq.trans (ϕ.restrictNormal_commutes K₁ x).symm (congr_arg _ (AlgEquiv.ext_iff.mp hϕ x))
 #align is_solvable_of_is_scalar_tower isSolvable_of_isScalarTower
 

@@ -41,15 +41,15 @@ to function. Coercion to function of the result is definitionally equal to `f`. 
 def ofMemClosureImageCoeBounded (f : E' → F) {s : Set (E' →SL[σ₁₂] F)} (hs : IsBounded s)
     (hf : f ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s)) : E' →SL[σ₁₂] F := by
   -- `f` is a linear map due to `linearMapOfMemClosureRangeCoe`
-  refine' (linearMapOfMemClosureRangeCoe f _).mkContinuousOfExistsBound _
-  · refine' closure_mono (image_subset_iff.2 fun g _ => _) hf
+  refine (linearMapOfMemClosureRangeCoe f ?_).mkContinuousOfExistsBound ?_
+  · refine closure_mono (image_subset_iff.2 fun g _ => ?_) hf
     exact ⟨g, rfl⟩
   · -- We need to show that `f` has bounded norm. Choose `C` such that `‖g‖ ≤ C` for all `g ∈ s`.
     rcases isBounded_iff_forall_norm_le.1 hs with ⟨C, hC⟩
     -- Then `‖g x‖ ≤ C * ‖x‖` for all `g ∈ s`, `x : E`, hence `‖f x‖ ≤ C * ‖x‖` for all `x`.
     have : ∀ x, IsClosed { g : E' → F | ‖g x‖ ≤ C * ‖x‖ } := fun x =>
       isClosed_Iic.preimage (@continuous_apply E' (fun _ => F) _ x).norm
-    refine' ⟨C, fun x => (this x).closure_subset_iff.2 (image_subset_iff.2 fun g hg => _) hf⟩
+    refine ⟨C, fun x => (this x).closure_subset_iff.2 (image_subset_iff.2 fun g hg => ?_) hf⟩
     exact g.le_of_opNorm_le (hC _ hg) _
 #align continuous_linear_map.of_mem_closure_image_coe_bounded ContinuousLinearMap.ofMemClosureImageCoeBounded
 
@@ -81,7 +81,7 @@ theorem tendsto_of_tendsto_pointwise_of_cauchySeq {f : ℕ → E' →SL[σ₁₂
   have : Tendsto (fun m => ‖f n x - f m x‖) atTop (𝓝 ‖f n x - g x‖) :=
     (tendsto_const_nhds.sub <| tendsto_pi_nhds.1 hg _).norm
   -- Thus it suffices to verify `‖f n x - f m x‖ ≤ b n * ‖x‖` for `m ≥ n`.
-  refine' le_of_tendsto this (eventually_atTop.2 ⟨n, fun m hm => _⟩)
+  refine le_of_tendsto this (eventually_atTop.2 ⟨n, fun m hm => ?_⟩)
   -- This inequality follows from `‖f n - f m‖ ≤ b n`.
   exact (f n - f m).le_of_opNorm_le (hfb _ _ _ le_rfl hm) _
 #align continuous_linear_map.tendsto_of_tendsto_pointwise_of_cauchy_seq ContinuousLinearMap.tendsto_of_tendsto_pointwise_of_cauchySeq
@@ -90,7 +90,7 @@ theorem tendsto_of_tendsto_pointwise_of_cauchySeq {f : ℕ → E' →SL[σ₁₂
 complete. This works also if the source space is seminormed. -/
 instance [CompleteSpace F] : CompleteSpace (E' →SL[σ₁₂] F) := by
   -- We show that every Cauchy sequence converges.
-  refine' Metric.complete_of_cauchySeq_tendsto fun f hf => _
+  refine Metric.complete_of_cauchySeq_tendsto fun f hf => ?_
   -- The evaluation at any point `v : E` is Cauchy.
   have cau : ∀ v, CauchySeq fun n => f n v := fun v => hf.map (lipschitz_apply v).uniformContinuous
   -- We assemble the limits points of those Cauchy sequences
@@ -158,10 +158,10 @@ theorem is_weak_closed_closedBall (f₀ : E' →SL[σ₁₂] F) (r : ℝ) ⦃f :
     (hf : ⇑f ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' closedBall f₀ r)) :
     f ∈ closedBall f₀ r := by
   have hr : 0 ≤ r := nonempty_closedBall.1 (closure_nonempty_iff.1 ⟨_, hf⟩).of_image
-  refine' mem_closedBall_iff_norm.2 (opNorm_le_bound _ hr fun x => _)
+  refine mem_closedBall_iff_norm.2 (opNorm_le_bound _ hr fun x => ?_)
   have : IsClosed { g : E' → F | ‖g x - f₀ x‖ ≤ r * ‖x‖ } :=
     isClosed_Iic.preimage ((@continuous_apply E' (fun _ => F) _ x).sub continuous_const).norm
-  refine' this.closure_subset_iff.2 (image_subset_iff.2 fun g hg => _) hf
+  refine this.closure_subset_iff.2 (image_subset_iff.2 fun g hg => ?_) hf
   exact (g - f₀).le_of_opNorm_le (mem_closedBall_iff_norm.1 hg) _
 #align continuous_linear_map.is_weak_closed_closed_ball ContinuousLinearMap.is_weak_closed_closedBall
 
@@ -202,14 +202,14 @@ def extend : Fₗ →SL[σ₁₂] F :=
   have eq := uniformly_extend_of_ind h_e h_dense f.uniformContinuous
   { toFun := (h_e.denseInducing h_dense).extend f
     map_add' := by
-      refine' h_dense.induction_on₂ _ _
+      refine h_dense.induction_on₂ ?_ ?_
       · exact isClosed_eq (cont.comp continuous_add)
           ((cont.comp continuous_fst).add (cont.comp continuous_snd))
       · intro x y
         simp only [eq, ← e.map_add]
         exact f.map_add _ _
     map_smul' := fun k => by
-      refine' fun b => h_dense.induction_on b _ _
+      refine fun b => h_dense.induction_on b ?_ ?_
       · exact isClosed_eq (cont.comp (continuous_const_smul _))
           ((continuous_const_smul _).comp cont)
       · intro x

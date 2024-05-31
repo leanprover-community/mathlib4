@@ -195,7 +195,7 @@ variable (A : Type*) [Ring A] [UniformSpace A] [UniformAddGroup A] [TopologicalR
 theorem map_smul_eq_mul_coe (r : R) :
     Completion.map (r • ·) = ((algebraMap R A r : Completion A) * ·) := by
   ext x
-  refine' Completion.induction_on x _ fun a => _
+  refine Completion.induction_on x ?_ fun a => ?_
   · exact isClosed_eq Completion.continuous_map (continuous_mul_left _)
   · simp_rw [map_coe (uniformContinuous_const_smul r) a, Algebra.smul_def, coe_mul]
 #align uniform_space.completion.map_smul_eq_mul_coe UniformSpace.Completion.map_smul_eq_mul_coe
@@ -311,14 +311,14 @@ noncomputable def DenseInducing.extendRingHom {i : α →+* β} {f : α →+* γ
     simp only [map_zero]
   map_add' := by
     have h := (uniformContinuous_uniformly_extend ue dr hf).continuous
-    refine' fun x y => DenseRange.induction_on₂ dr _ (fun a b => _) x y
+    refine fun x y => DenseRange.induction_on₂ dr ?_ (fun a b => ?_) x y
     · exact isClosed_eq (Continuous.comp h continuous_add)
         ((h.comp continuous_fst).add (h.comp continuous_snd))
     · simp_rw [← i.map_add, DenseInducing.extend_eq (ue.denseInducing dr) hf.continuous _,
         ← f.map_add]
   map_mul' := by
     have h := (uniformContinuous_uniformly_extend ue dr hf).continuous
-    refine' fun x y => DenseRange.induction_on₂ dr _ (fun a b => _) x y
+    refine fun x y => DenseRange.induction_on₂ dr ?_ (fun a b => ?_) x y
     · exact isClosed_eq (Continuous.comp h continuous_mul)
         ((h.comp continuous_fst).mul (h.comp continuous_snd))
     · simp_rw [← i.map_mul, DenseInducing.extend_eq (ue.denseInducing dr) hf.continuous _,

@@ -64,6 +64,7 @@ In this file we define various operations on `Submonoid`s and `MonoidHom`s.
 submonoid, range, product, map, comap
 -/
 
+assert_not_exists MonoidWithZero
 
 variable {M N P : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass P] (S : Submonoid M)
 

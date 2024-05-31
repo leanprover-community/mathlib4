@@ -30,7 +30,7 @@ instance decidablePredExistsNat : DecidablePred fun n' : ℕ => ∃ (n : ℕ+) (
 protected def findX : { n // p n ∧ ∀ m : ℕ+, m < n → ¬p m } := by
   have : ∃ (n' : ℕ) (n : ℕ+) (_ : n' = n), p n := Exists.elim h fun n hn => ⟨n, n, rfl, hn⟩
   have n := Nat.findX this
-  refine' ⟨⟨n, _⟩, _, fun m hm pm => _⟩
+  refine ⟨⟨n, ?_⟩, ?_, fun m hm pm => ?_⟩
   · obtain ⟨n', hn', -⟩ := n.prop.1
     rw [hn']
     exact n'.prop
@@ -117,7 +117,7 @@ theorem find_le {h : ∃ n, p n} (hn : p n) : PNat.find h ≤ n :=
 
 theorem find_comp_succ (h : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h1 : ¬p 1) :
     PNat.find h = PNat.find h₂ + 1 := by
-  refine' (find_eq_iff _).2 ⟨PNat.find_spec h₂, fun n => PNat.recOn n _ _⟩
+  refine (find_eq_iff _).2 ⟨PNat.find_spec h₂, fun n => PNat.recOn n ?_ ?_⟩
   · simp [h1]
   intro m _ hm
   simp only [add_lt_add_iff_right, lt_find_iff] at hm
