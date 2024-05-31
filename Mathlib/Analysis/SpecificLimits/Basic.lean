@@ -97,7 +97,7 @@ statement simultaneously on `ℚ`, `ℝ` and `ℂ`. -/
 theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [TopologicalSpace 𝕜]
     [CharZero 𝕜] [Algebra ℝ 𝕜] [ContinuousSMul ℝ 𝕜] [TopologicalDivisionRing 𝕜] (x : 𝕜) :
     Tendsto (fun n : ℕ ↦ (n : 𝕜) / (n + x)) atTop (𝓝 1) := by
-  refine' Tendsto.congr' ((eventually_ne_atTop 0).mp (eventually_of_forall fun n hn ↦ _)) _
+  convert Tendsto.congr' ((eventually_ne_atTop 0).mp (eventually_of_forall fun n hn ↦ _)) _
   · exact fun n : ℕ ↦ 1 / (1 + x / n)
   · field_simp [Nat.cast_ne_zero.mpr hn]
   · have : 𝓝 (1 : 𝕜) = 𝓝 (1 / (1 + x * (0 : 𝕜))) := by
