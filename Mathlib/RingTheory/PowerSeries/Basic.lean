@@ -5,7 +5,7 @@ Authors: Johan Commelin, Kenny Lau
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.MvPowerSeries.Basic
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
@@ -47,8 +47,6 @@ Occasionally this leads to proofs that are uglier than expected.
 -/
 
 noncomputable section
-
-open BigOperators
 
 open Finset (antidiagonal mem_antidiagonal)
 
@@ -233,8 +231,8 @@ theorem coeff_zero_eq_constantCoeff : ⇑(coeff R 0) = constantCoeff R := by
   rfl
 #align power_series.coeff_zero_eq_constant_coeff PowerSeries.coeff_zero_eq_constantCoeff
 
-theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = constantCoeff R φ :=
-  by rw [coeff_zero_eq_constantCoeff]
+theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = constantCoeff R φ := by
+  rw [coeff_zero_eq_constantCoeff]
 #align power_series.coeff_zero_eq_constant_coeff_apply PowerSeries.coeff_zero_eq_constantCoeff_apply
 
 @[simp]
@@ -330,7 +328,7 @@ theorem coeff_zero_one : coeff R 0 (1 : R⟦X⟧) = 1 :=
 #align power_series.coeff_zero_one PowerSeries.coeff_zero_one
 
 theorem coeff_mul (n : ℕ) (φ ψ : R⟦X⟧) :
-    coeff R n (φ * ψ) = ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
+    coeff R n (φ * ψ) = ∑ p ∈ antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
   -- `rw` can't see that `PowerSeries = MvPowerSeries Unit`, so use `.trans`
   refine (MvPowerSeries.coeff_mul _ φ ψ).trans ?_
   rw [Finsupp.antidiagonal_single, Finset.sum_map]
@@ -354,6 +352,11 @@ theorem coeff_smul {S : Type*} [Semiring S] [Module R S] (n : ℕ) (φ : PowerSe
     coeff S n (a • φ) = a • coeff S n φ :=
   rfl
 #align power_series.coeff_smul PowerSeries.coeff_smul
+
+@[simp]
+theorem constantCoeff_smul {S : Type*} [Semiring S] [Module R S] (φ : PowerSeries S) (a : R) :
+    constantCoeff S (a • φ) = a • constantCoeff S φ :=
+  rfl
 
 theorem smul_eq_C_mul (f : R⟦X⟧) (a : R) : a • f = C R a * f := by
   ext
@@ -463,7 +466,7 @@ theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
     coeff R d (p * X ^ n) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
-  · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
     rw [coeff_X_pow, if_neg, mul_zero]
     exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
 set_option linter.uppercaseLean3 false in
@@ -474,7 +477,7 @@ theorem coeff_X_pow_mul' (p : R⟦X⟧) (n d : ℕ) :
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_X_pow_mul]
     simp
-  · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
     rw [coeff_X_pow, if_neg, zero_mul]
     have := mem_antidiagonal.mp hx
     rw [add_comm] at this
@@ -655,7 +658,7 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 
 /-- Coefficients of a product of power series -/
 theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
-    coeff R d (∏ j in s, f j) = ∑ l in piAntidiagonal s d, ∏ i in s, coeff R (l i) (f i) := by
+    coeff R d (∏ j ∈ s, f j) = ∑ l ∈ piAntidiagonal s d, ∏ i ∈ s, coeff R (l i) (f i) := by
   simp only [coeff]
   convert MvPowerSeries.coeff_prod _ _ _
   rw [← AddEquiv.finsuppUnique_symm d, ← mapRange_piAntidiagonal_eq, sum_map, sum_congr rfl]
@@ -680,9 +683,9 @@ theorem not_isField : ¬IsField A⟦X⟧ := by
     rw [Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
     use Ideal.span {X}
     constructor
-    · rw [bot_lt_iff_ne_bot, Ne.def, Ideal.span_singleton_eq_bot]
+    · rw [bot_lt_iff_ne_bot, Ne, Ideal.span_singleton_eq_bot]
       exact X_ne_zero
-    · rw [lt_top_iff_ne_top, Ne.def, Ideal.eq_top_iff_one, Ideal.mem_span_singleton,
+    · rw [lt_top_iff_ne_top, Ne, Ideal.eq_top_iff_one, Ideal.mem_span_singleton,
         X_dvd_iff, constantCoeff_one]
       exact one_ne_zero
 

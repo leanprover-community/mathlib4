@@ -68,8 +68,7 @@ structure YoungDiagram where
 
 namespace YoungDiagram
 
-instance : SetLike YoungDiagram (ℕ × ℕ)
-    where
+instance : SetLike YoungDiagram (ℕ × ℕ) where
   -- Porting note (#11215): TODO: figure out how to do this correctly
   coe := fun y => y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
@@ -173,11 +172,11 @@ theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
 -- @[simp] -- Porting note (#10618): simp can prove this
 @[norm_cast]
 theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by
-  refine' Set.eq_of_subset_of_subset _ _
-  intros x h
-  simp? [mem_mk, Finset.coe_empty, Set.mem_empty_iff_false] at h says
-    simp only [cells_bot, Finset.coe_empty, Set.mem_empty_iff_false] at h
-  simp only [cells_bot, Finset.coe_empty, Set.empty_subset]
+  refine Set.eq_of_subset_of_subset ?_ ?_
+  · intros x h
+    simp? [mem_mk, Finset.coe_empty, Set.mem_empty_iff_false] at h says
+      simp only [cells_bot, Finset.coe_empty, Set.mem_empty_iff_false] at h
+  · simp only [cells_bot, Finset.coe_empty, Set.empty_subset]
 #align young_diagram.coe_bot YoungDiagram.coe_bot
 
 @[simp]
@@ -195,8 +194,7 @@ instance : DistribLattice YoungDiagram :=
 end DistribLattice
 
 /-- Cardinality of a Young diagram -/
-@[reducible]
-protected def card (μ : YoungDiagram) : ℕ :=
+protected abbrev card (μ : YoungDiagram) : ℕ :=
   μ.cells.card
 #align young_diagram.card YoungDiagram.card
 
@@ -475,7 +473,7 @@ def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram where
     rintro ⟨i2, j2⟩ ⟨i1, j1⟩ ⟨hi : i1 ≤ i2, hj : j1 ≤ j2⟩ hcell
     rw [Finset.mem_coe, YoungDiagram.mem_cellsOfRowLens] at hcell ⊢
     obtain ⟨h1, h2⟩ := hcell
-    refine' ⟨hi.trans_lt h1, _⟩
+    refine ⟨hi.trans_lt h1, ?_⟩
     calc
       j1 ≤ j2 := hj
       _ < w.get ⟨i2, _⟩  := h2
@@ -521,8 +519,7 @@ theorem rowLens_ofRowLens_eq_self {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hp
 /-- Equivalence between Young diagrams and weakly decreasing lists of positive natural numbers.
 A Young diagram `μ` is equivalent to a list of row lengths. -/
 @[simps]
-def equivListRowLens : YoungDiagram ≃ { w : List ℕ // w.Sorted (· ≥ ·) ∧ ∀ x ∈ w, 0 < x }
-    where
+def equivListRowLens : YoungDiagram ≃ { w : List ℕ // w.Sorted (· ≥ ·) ∧ ∀ x ∈ w, 0 < x } where
   toFun μ := ⟨μ.rowLens, μ.rowLens_sorted, μ.pos_of_mem_rowLens⟩
   invFun ww := ofRowLens ww.1 ww.2.1
   left_inv _ := ofRowLens_to_rowLens_eq_self

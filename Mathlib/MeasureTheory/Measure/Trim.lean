@@ -28,7 +28,6 @@ cannot be a measure on `m`, hence the definition of `μ.trim hm`.
 
 This notion is related to `OuterMeasure.trim`, see the lemma
 `toOuterMeasure_trim_eq_trim_toOuterMeasure`. -/
-@[pp_dot]
 noncomputable
 def Measure.trim {m m0 : MeasurableSpace α} (μ : @Measure α m0) (hm : m ≤ m0) : @Measure α m :=
   @OuterMeasure.toMeasure α m μ.toOuterMeasure (hm.trans (le_toOuterMeasure_caratheodory μ))
@@ -52,7 +51,7 @@ theorem zero_trim (hm : m ≤ m0) : (0 : Measure α).trim hm = (0 : @Measure α 
 #align measure_theory.zero_trim MeasureTheory.zero_trim
 
 theorem trim_measurableSet_eq (hm : m ≤ m0) (hs : @MeasurableSet α m s) : μ.trim hm s = μ s := by
-  rw [Measure.trim, toMeasure_apply (ms := m) _ _ hs]
+  rw [Measure.trim, toMeasure_apply (ms := m) _ _ hs, Measure.coe_toOuterMeasure]
 #align measure_theory.trim_measurable_set_eq MeasureTheory.trim_measurableSet_eq
 
 theorem le_trim (hm : m ≤ m0) : μ s ≤ μ.trim hm s := by
@@ -75,12 +74,12 @@ theorem ae_of_ae_trim (hm : m ≤ m0) {μ : Measure α} {P : α → Prop} (h : �
 #align measure_theory.ae_of_ae_trim MeasureTheory.ae_of_ae_trim
 
 theorem ae_eq_of_ae_eq_trim {E} {hm : m ≤ m0} {f₁ f₂ : α → E}
-    (h12 : f₁ =ᶠ[@Measure.ae α m (μ.trim hm)] f₂) : f₁ =ᵐ[μ] f₂ :=
+    (h12 : f₁ =ᵐ[μ.trim hm] f₂) : f₁ =ᵐ[μ] f₂ :=
   measure_eq_zero_of_trim_eq_zero hm h12
 #align measure_theory.ae_eq_of_ae_eq_trim MeasureTheory.ae_eq_of_ae_eq_trim
 
 theorem ae_le_of_ae_le_trim {E} [LE E] {hm : m ≤ m0} {f₁ f₂ : α → E}
-    (h12 : f₁ ≤ᶠ[@Measure.ae α m (μ.trim hm)] f₂) : f₁ ≤ᵐ[μ] f₂ :=
+    (h12 : f₁ ≤ᵐ[μ.trim hm] f₂) : f₁ ≤ᵐ[μ] f₂ :=
   measure_eq_zero_of_trim_eq_zero hm h12
 #align measure_theory.ae_le_of_ae_le_trim MeasureTheory.ae_le_of_ae_le_trim
 
@@ -124,7 +123,7 @@ theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} 
 
 theorem sigmaFinite_trim_bot_iff : SigmaFinite (μ.trim bot_le) ↔ IsFiniteMeasure μ := by
   rw [sigmaFinite_bot_iff]
-  refine' ⟨fun h => ⟨_⟩, fun h => ⟨_⟩⟩ <;> have h_univ := h.measure_univ_lt_top
+  refine ⟨fun h => ⟨?_⟩, fun h => ⟨?_⟩⟩ <;> have h_univ := h.measure_univ_lt_top
   · rwa [trim_measurableSet_eq bot_le MeasurableSet.univ] at h_univ
   · rwa [trim_measurableSet_eq bot_le MeasurableSet.univ]
 #align measure_theory.sigma_finite_trim_bot_iff MeasureTheory.sigmaFinite_trim_bot_iff

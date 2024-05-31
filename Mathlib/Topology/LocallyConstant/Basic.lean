@@ -3,7 +3,7 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Function.Indicator
+import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Tactic.FinCases
 import Mathlib.Topology.Sets.Closeds
 
@@ -45,16 +45,19 @@ protected theorem tfae (f : X → Y) :
       ∀ x, IsOpen { x' | f x' = f x },
       ∀ y, IsOpen (f ⁻¹' {y}),
       ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x] := by
-  tfae_have 1 → 4; exact fun h y => h {y}
-  tfae_have 4 → 3; exact fun h x => h (f x)
-  tfae_have 3 → 2; exact fun h x => IsOpen.mem_nhds (h x) rfl
+  tfae_have 1 → 4
+  · exact fun h y => h {y}
+  tfae_have 4 → 3
+  · exact fun h x => h (f x)
+  tfae_have 3 → 2
+  · exact fun h x => IsOpen.mem_nhds (h x) rfl
   tfae_have 2 → 5
   · intro h x
     rcases mem_nhds_iff.1 (h x) with ⟨U, eq, hU, hx⟩
     exact ⟨U, hU, hx, eq⟩
   tfae_have 5 → 1
   · intro h s
-    refine' isOpen_iff_forall_mem_open.2 fun x hx => _
+    refine isOpen_iff_forall_mem_open.2 fun x hx ↦ ?_
     rcases h x with ⟨U, hU, hxU, eq⟩
     exact ⟨U, fun x' hx' => mem_preimage.2 <| (eq x' hx').symm ▸ hx, hU, hxU⟩
   tfae_finish
@@ -602,7 +605,7 @@ def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) 
     rw [IsLocallyConstant.iff_continuous] at hf hg ⊢
     dsimp only [coe_mk]
     rw [Set.union_eq_iUnion] at h
-    refine' (locallyFinite_of_finite _).continuous h (fun i ↦ _) (fun i ↦ _)
+    refine (locallyFinite_of_finite _).continuous h (fun i ↦ ?_) (fun i ↦ ?_)
     · cases i <;> [exact h₂; exact h₁]
     · cases i <;> rw [continuousOn_iff_continuous_restrict]
       · convert hg

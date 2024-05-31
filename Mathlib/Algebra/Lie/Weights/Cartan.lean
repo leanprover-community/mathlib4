@@ -66,8 +66,19 @@ theorem lie_mem_weightSpace_of_mem_weightSpace {χ₁ χ₂ : H → R} {x : L} {
     rw [rootSpace, weightSpace, LieSubmodule.mem_iInf] at hx; exact hx y
   replace hm : m ∈ weightSpaceOf M (χ₂ y) y := by
     rw [weightSpace, LieSubmodule.mem_iInf] at hm; exact hm y
-  exact lie_mem_maxGenEigenspace_toEndomorphism hx hm
+  exact lie_mem_maxGenEigenspace_toEnd hx hm
 #align lie_algebra.lie_mem_weight_space_of_mem_weight_space LieAlgebra.lie_mem_weightSpace_of_mem_weightSpace
+
+lemma toEnd_pow_apply_mem {χ₁ χ₂ : H → R} {x : L} {m : M}
+    (hx : x ∈ rootSpace H χ₁) (hm : m ∈ weightSpace M χ₂) (n) :
+    (toEnd R L M x ^ n : Module.End R M) m ∈ weightSpace M (n • χ₁ + χ₂) := by
+  induction n
+  · simpa using hm
+  · next n IH =>
+    simp only [pow_succ', LinearMap.mul_apply, toEnd_apply_apply,
+      Nat.cast_add, Nat.cast_one, rootSpace]
+    convert lie_mem_weightSpace_of_mem_weightSpace hx IH using 2
+    rw [succ_nsmul, ← add_assoc, add_comm (n • _)]
 
 variable (R L H M)
 
@@ -84,7 +95,8 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
         dsimp only
         conv_lhs =>
           congr
-          rw [LieSubmodule.coe_smul, lie_smul] }
+          rw [LieSubmodule.coe_smul, lie_smul]
+        rfl }
   map_add' x y := by
     ext m
     simp only [AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, add_lie, LinearMap.coe_mk,
@@ -120,9 +132,9 @@ theorem coe_rootSpaceWeightSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ 
     Submodule.coe_mk]
 #align lie_algebra.coe_root_space_weight_space_product_tmul LieAlgebra.coe_rootSpaceWeightSpaceProduct_tmul
 
-theorem mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace (α χ : H → R)
+theorem mapsTo_toEnd_weightSpace_add_of_mem_rootSpace (α χ : H → R)
     {x : L} (hx : x ∈ rootSpace H α) :
-    MapsTo (toEndomorphism R L M x) (weightSpace M χ) (weightSpace M (α + χ)) := by
+    MapsTo (toEnd R L M x) (weightSpace M χ) (weightSpace M (α + χ)) := by
   intro m hm
   let x' : rootSpace H α := ⟨x, hx⟩
   let m' : weightSpace M χ := ⟨m, hm⟩
@@ -139,9 +151,10 @@ def rootSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃)
 theorem rootSpaceProduct_def : rootSpaceProduct R L H = rootSpaceWeightSpaceProduct R L H L := rfl
 #align lie_algebra.root_space_product_def LieAlgebra.rootSpaceProduct_def
 
-theorem rootSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃) (x : rootSpace H χ₁)
-    (y : rootSpace H χ₂) : (rootSpaceProduct R L H χ₁ χ₂ χ₃ hχ (x ⊗ₜ y) : L) = ⁅(x : L), (y : L)⁆ :=
-  by simp only [rootSpaceProduct_def, coe_rootSpaceWeightSpaceProduct_tmul]
+theorem rootSpaceProduct_tmul
+    (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃) (x : rootSpace H χ₁) (y : rootSpace H χ₂) :
+    (rootSpaceProduct R L H χ₁ χ₂ χ₃ hχ (x ⊗ₜ y) : L) = ⁅(x : L), (y : L)⁆ := by
+  simp only [rootSpaceProduct_def, coe_rootSpaceWeightSpaceProduct_tmul]
 #align lie_algebra.root_space_product_tmul LieAlgebra.rootSpaceProduct_tmul
 
 /-- Given a nilpotent Lie subalgebra `H ⊆ L`, the root space of the zero map `0 : H → R` is a Lie
@@ -160,7 +173,7 @@ theorem coe_zeroRootSubalgebra : (zeroRootSubalgebra R L H : Submodule R L) = ro
 #align lie_algebra.coe_zero_root_subalgebra LieAlgebra.coe_zeroRootSubalgebra
 
 theorem mem_zeroRootSubalgebra (x : L) :
-    x ∈ zeroRootSubalgebra R L H ↔ ∀ y : H, ∃ k : ℕ, (toEndomorphism R H L y ^ k) x = 0 := by
+    x ∈ zeroRootSubalgebra R L H ↔ ∀ y : H, ∃ k : ℕ, (toEnd R H L y ^ k) x = 0 := by
   change x ∈ rootSpace H 0 ↔ _
   simp only [mem_weightSpace, Pi.zero_apply, zero_smul, sub_zero]
 #align lie_algebra.mem_zero_root_subalgebra LieAlgebra.mem_zeroRootSubalgebra
@@ -172,22 +185,28 @@ theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 :=
   intro y
   obtain ⟨k, hk⟩ := (inferInstance : IsNilpotent R H)
   use k
-  let f : Module.End R H := toEndomorphism R H H y
-  let g : Module.End R L := toEndomorphism R H L y
+  let f : Module.End R H := toEnd R H H y
+  let g : Module.End R L := toEnd R H L y
   have hfg : g.comp (H : Submodule R L).subtype = (H : Submodule R L).subtype.comp f := by
     ext z
-    simp only [toEndomorphism_apply_apply, Submodule.subtype_apply,
+    simp only [toEnd_apply_apply, Submodule.subtype_apply,
       LieSubalgebra.coe_bracket_of_module, LieSubalgebra.coe_bracket, Function.comp_apply,
       LinearMap.coe_comp]
     rfl
   change (g ^ k).comp (H : Submodule R L).subtype ⟨x, hx⟩ = 0
   rw [LinearMap.commute_pow_left_of_commute hfg k]
-  have h := iterate_toEndomorphism_mem_lowerCentralSeries R H H y ⟨x, hx⟩ k
+  have h := iterate_toEnd_mem_lowerCentralSeries R H H y ⟨x, hx⟩ k
   rw [hk, LieSubmodule.mem_bot] at h
   simp only [Submodule.subtype_apply, Function.comp_apply, LinearMap.pow_apply, LinearMap.coe_comp,
     Submodule.coe_eq_zero]
   exact h
 #align lie_algebra.to_lie_submodule_le_root_space_zero LieAlgebra.toLieSubmodule_le_rootSpace_zero
+
+/-- This enables the instance `Zero (Weight R H L)`. -/
+instance [Nontrivial H] : Nontrivial (weightSpace L (0 : H → R)) := by
+  obtain ⟨⟨x, hx⟩, ⟨y, hy⟩, e⟩ := exists_pair_ne H
+  exact ⟨⟨x, toLieSubmodule_le_rootSpace_zero R L H hx⟩,
+    ⟨y, toLieSubmodule_le_rootSpace_zero R L H hy⟩, by simpa using e⟩
 
 theorem le_zeroRootSubalgebra : H ≤ zeroRootSubalgebra R L H := by
   rw [← LieSubalgebra.coe_submodule_le_coe_submodule, ← H.coe_toLieSubmodule,
@@ -198,7 +217,7 @@ theorem le_zeroRootSubalgebra : H ≤ zeroRootSubalgebra R L H := by
 @[simp]
 theorem zeroRootSubalgebra_normalizer_eq_self :
     (zeroRootSubalgebra R L H).normalizer = zeroRootSubalgebra R L H := by
-  refine' le_antisymm _ (LieSubalgebra.le_normalizer _)
+  refine le_antisymm ?_ (LieSubalgebra.le_normalizer _)
   intro x hx
   rw [LieSubalgebra.mem_normalizer_iff] at hx
   rw [mem_zeroRootSubalgebra]
@@ -208,7 +227,7 @@ theorem zeroRootSubalgebra_normalizer_eq_self :
   obtain ⟨k, hk⟩ := hx ⟨y, hy⟩
   rw [← lie_skew, LinearMap.map_neg, neg_eq_zero] at hk
   use k + 1
-  rw [LinearMap.iterate_succ, LinearMap.coe_comp, Function.comp_apply, toEndomorphism_apply_apply,
+  rw [LinearMap.iterate_succ, LinearMap.coe_comp, Function.comp_apply, toEnd_apply_apply,
     LieSubalgebra.coe_bracket_of_module, Submodule.coe_mk, hk]
 #align lie_algebra.zero_root_subalgebra_normalizer_eq_self LieAlgebra.zeroRootSubalgebra_normalizer_eq_self
 
@@ -226,7 +245,7 @@ theorem is_cartan_of_zeroRootSubalgebra_eq (h : zeroRootSubalgebra R L H = H) :
 @[simp]
 theorem zeroRootSubalgebra_eq_of_is_cartan (H : LieSubalgebra R L) [H.IsCartanSubalgebra]
     [IsNoetherian R L] : zeroRootSubalgebra R L H = H := by
-  refine' le_antisymm _ (le_zeroRootSubalgebra R L H)
+  refine le_antisymm ?_ (le_zeroRootSubalgebra R L H)
   suffices rootSpace H 0 ≤ H.toLieSubmodule by exact fun x hx => this hx
   obtain ⟨k, hk⟩ := (rootSpace H 0).isNilpotent_iff_exists_self_le_ucs.mp (by infer_instance)
   exact hk.trans (LieSubmodule.ucs_le_of_normalizer_eq_self (by simp) k)
@@ -250,8 +269,9 @@ variable [H.IsCartanSubalgebra] [IsNoetherian R L] (α : H → R)
 an element of the `α` root space and an element of the `-α` root space. Informally it is often
 denoted `⁅H(α), H(-α)⁆`.
 
-When `L` is semisimple over a field of characteristic zero, it is spanned by the coroot
-corresponding to `α`, see `LieAlgebra.IsKilling.coe_corootSpace_eq_span_singleton`.
+If the Killing form is non-degenerate and the coefficients are a perfect field, this space is
+one-dimensional. See `LieAlgebra.IsKilling.coe_corootSpace_eq_span_singleton` and
+`LieAlgebra.IsKilling.coe_corootSpace_eq_span_singleton'`.
 
 Note that the name "coroot space" is not standard as this space does not seem to have a name in the
 informal literature. -/

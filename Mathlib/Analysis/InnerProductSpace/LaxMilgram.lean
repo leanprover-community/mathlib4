@@ -50,10 +50,10 @@ local postfix:1024 "♯" => @continuousLinearMapOfBilin ℝ V _ _ _ _
 
 theorem bounded_below (coercive : IsCoercive B) : ∃ C, 0 < C ∧ ∀ v, C * ‖v‖ ≤ ‖B♯ v‖ := by
   rcases coercive with ⟨C, C_ge_0, coercivity⟩
-  refine' ⟨C, C_ge_0, _⟩
+  refine ⟨C, C_ge_0, ?_⟩
   intro v
   by_cases h : 0 < ‖v‖
-  · refine' (mul_le_mul_right h).mp _
+  · refine (mul_le_mul_right h).mp ?_
     calc
       C * ‖v‖ * ‖v‖ ≤ B v v := coercivity v
       _ = ⟪B♯ v, v⟫_ℝ := (continuousLinearMapOfBilin_apply B v v).symm
@@ -64,8 +64,8 @@ theorem bounded_below (coercive : IsCoercive B) : ∃ C, 0 < C ∧ ∀ v, C * �
 
 theorem antilipschitz (coercive : IsCoercive B) : ∃ C : ℝ≥0, 0 < C ∧ AntilipschitzWith C B♯ := by
   rcases coercive.bounded_below with ⟨C, C_pos, below_bound⟩
-  refine' ⟨C⁻¹.toNNReal, Real.toNNReal_pos.mpr (inv_pos.mpr C_pos), _⟩
-  refine' ContinuousLinearMap.antilipschitz_of_bound B♯ _
+  refine ⟨C⁻¹.toNNReal, Real.toNNReal_pos.mpr (inv_pos.mpr C_pos), ?_⟩
+  refine ContinuousLinearMap.antilipschitz_of_bound B♯ ?_
   simp_rw [Real.coe_toNNReal', max_eq_left_of_lt (inv_pos.mpr C_pos), ←
     inv_mul_le_iff (inv_pos.mpr C_pos)]
   simpa using below_bound
@@ -82,7 +82,7 @@ theorem isClosed_range (coercive : IsCoercive B) : IsClosed (range B♯ : Set V)
   exact antilipschitz.isClosed_range B♯.uniformContinuous
 #align is_coercive.closed_range IsCoercive.isClosed_range
 
-@[deprecated] alias closed_range := isClosed_range -- 2024-03-29
+@[deprecated (since := "2024-03-19")] alias closed_range := isClosed_range
 
 theorem range_eq_top (coercive : IsCoercive B) : range B♯ = ⊤ := by
   haveI := coercive.isClosed_range.completeSpace_coe

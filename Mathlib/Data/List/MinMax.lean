@@ -138,8 +138,8 @@ theorem not_lt_of_mem_argmin : a ∈ l → m ∈ argmin f l → ¬f a < f m :=
 
 theorem argmax_concat (f : α → β) (a : α) (l : List α) :
     argmax f (l ++ [a]) =
-      Option.casesOn (argmax f l) (some a) fun c => if f c < f a then some a else some c :=
-  by rw [argmax, argmax]; simp [argAux]
+      Option.casesOn (argmax f l) (some a) fun c => if f c < f a then some a else some c := by
+  rw [argmax, argmax]; simp [argAux]
 #align list.argmax_concat List.argmax_concat
 
 theorem argmin_concat (f : α → β) (a : α) (l : List α) :
@@ -218,7 +218,7 @@ theorem index_of_argmax :
     · cases not_le_of_lt ‹_› ‹_›
     · rw [if_pos rfl]
     · rw [if_neg, if_neg]
-      exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
+      · exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
       · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne
       · exact ne_of_apply_ne _ ‹f hd < f _›.ne
     · rw [if_pos rfl]
@@ -509,8 +509,8 @@ theorem le_max_of_le {l : List α} {a x : α} (hx : x ∈ l) (h : a ≤ x) : a �
   induction' l with y l IH
   · exact absurd hx (not_mem_nil _)
   · obtain hl | hl := hx
-    simp only [foldr, foldr_cons]
-    · exact le_max_of_le_left h
+    · simp only [foldr, foldr_cons]
+      exact le_max_of_le_left h
     · exact le_max_of_le_right (IH (by assumption))
 #align list.le_max_of_le List.le_max_of_le
 

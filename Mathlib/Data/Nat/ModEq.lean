@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Tactic.NormNum.Basic
@@ -285,14 +285,14 @@ lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b 
   have hmd := gcd_dvd_left m c
   have hcd := gcd_dvd_right m c
   rw [modEq_iff_dvd]
-  refine' @Int.dvd_of_dvd_mul_right_of_gcd_one (m / d) (c / d) (b - a) _ _
-  show (m / d : ℤ) ∣ c / d * (b - a)
-  · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) (Int.natCast_dvd_natCast.mpr hcd), mul_comm]
+  refine @Int.dvd_of_dvd_mul_right_of_gcd_one (m / d) (c / d) (b - a) ?_ ?_
+  · show (m / d : ℤ) ∣ c / d * (b - a)
+    rw [mul_comm, ← Int.mul_ediv_assoc (b - a) (Int.natCast_dvd_natCast.mpr hcd), mul_comm]
     apply Int.ediv_dvd_ediv (Int.natCast_dvd_natCast.mpr hmd)
     rw [mul_sub]
     exact modEq_iff_dvd.mp h
-  show Int.gcd (m / d) (c / d) = 1
-  · simp only [← Int.natCast_div, Int.coe_nat_gcd (m / d) (c / d), gcd_div hmd hcd,
+  · show Int.gcd (m / d) (c / d) = 1
+    simp only [← Int.natCast_div, Int.gcd_natCast_natCast (m / d) (c / d), gcd_div hmd hcd,
       Nat.div_self (gcd_pos_of_pos_left c hm)]
 #align nat.modeq.cancel_left_div_gcd Nat.ModEq.cancel_left_div_gcd
 
@@ -331,9 +331,15 @@ end ModEq
 
 /-- The natural number less than `lcm n m` congruent to `a` mod `n` and `b` mod `m` -/
 def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k ≡ b [MOD m] } :=
-  if hn : n = 0 then ⟨a, by rw [hn, gcd_zero_left] at h; constructor; rfl; exact h⟩
+  if hn : n = 0 then ⟨a, by
+    rw [hn, gcd_zero_left] at h; constructor
+    · rfl
+    · exact h⟩
   else
-    if hm : m = 0 then ⟨b, by rw [hm, gcd_zero_right] at h; constructor; exact h.symm; rfl⟩
+    if hm : m = 0 then ⟨b, by
+      rw [hm, gcd_zero_right] at h; constructor
+      · exact h.symm
+      · rfl⟩
     else
       ⟨let (c, d) := xgcd n m; Int.toNat ((n * c * b + m * d * a) / gcd n m % lcm n m), by
         rw [xgcd_val]
@@ -347,13 +353,13 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
         have hcoedvd : ∀ t, (gcd n m : ℤ) ∣ t * (b - a) := fun t => h.dvd.mul_left _
         have := gcd_eq_gcd_ab n m
         constructor <;> rw [Int.emod_def, ← sub_add] <;>
-            refine' dvd_add _ (dvd_mul_of_dvd_left _ _) <;>
+            refine dvd_add ?_ (dvd_mul_of_dvd_left ?_ _) <;>
           try norm_cast
         · rw [← sub_eq_iff_eq_add'] at this
           rw [← this, sub_mul, ← add_sub_assoc, add_comm, add_sub_assoc, ← mul_sub,
             Int.add_ediv_of_dvd_left, Int.mul_ediv_cancel_left _ hnonzero,
             Int.mul_ediv_assoc _ h.dvd, ← sub_sub, sub_self, zero_sub, dvd_neg, mul_assoc]
-          exact dvd_mul_right _ _
+          · exact dvd_mul_right _ _
           norm_cast
           exact dvd_mul_right _ _
         · exact dvd_lcm_left n m
@@ -361,8 +367,8 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
           rw [← this, sub_mul, sub_add, ← mul_sub, Int.sub_ediv_of_dvd,
             Int.mul_ediv_cancel_left _ hnonzero, Int.mul_ediv_assoc _ h.dvd, ← sub_add, sub_self,
             zero_add, mul_assoc]
-          exact dvd_mul_right _ _
-          exact hcoedvd _
+          · exact dvd_mul_right _ _
+          · exact hcoedvd _
         · exact dvd_lcm_right n m⟩
 #align nat.chinese_remainder' Nat.chineseRemainder'
 
@@ -415,15 +421,6 @@ theorem coprime_of_mul_modEq_one (b : ℕ) {a n : ℕ} (h : a * b ≡ 1 [MOD n])
 #align nat.mod_mul_right_mod Nat.mod_mul_right_mod
 #align nat.mod_mul_left_mod Nat.mod_mul_left_mod
 
-theorem div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
-  if hb0 : b = 0 then by simp [hb0]
-  else by
-    rw [← @add_right_cancel_iff _ _ _ (c * (a / b / c)), mod_add_div, Nat.div_div_eq_div_mul, ←
-      mul_right_inj' hb0, ← @add_left_cancel_iff _ _ _ (a % b), mod_add_div, mul_add, ←
-      @add_left_cancel_iff _ _ _ (a % (b * c) % b), add_left_comm, ← add_assoc (a % (b * c) % b),
-      mod_add_div, ← mul_assoc, mod_add_div, mod_mul_right_mod]
-#align nat.div_mod_eq_mod_mul_div Nat.div_mod_eq_mod_mul_div
-
 theorem add_mod_add_ite (a b c : ℕ) :
     ((a + b) % c + if c ≤ a % c + b % c then c else 0) = a % c + b % c :=
   have : (a + b) % c = (a % c + b % c) % c := ((mod_modEq _ _).add <| mod_modEq _ _).symm
@@ -444,8 +441,8 @@ theorem add_mod_add_ite (a b c : ℕ) :
     · rw [Nat.mod_eq_of_lt (lt_of_not_ge h), add_zero]
 #align nat.add_mod_add_ite Nat.add_mod_add_ite
 
-theorem add_mod_of_add_mod_lt {a b c : ℕ} (hc : a % c + b % c < c) : (a + b) % c = a % c + b % c :=
-  by rw [← add_mod_add_ite, if_neg (not_le_of_lt hc), add_zero]
+theorem add_mod_of_add_mod_lt {a b c : ℕ} (hc : a % c + b % c < c) :
+    (a + b) % c = a % c + b % c := by rw [← add_mod_add_ite, if_neg (not_le_of_lt hc), add_zero]
 #align nat.add_mod_of_add_mod_lt Nat.add_mod_of_add_mod_lt
 
 theorem add_mod_add_of_le_add_mod {a b c : ℕ} (hc : c ≤ a % c + b % c) :

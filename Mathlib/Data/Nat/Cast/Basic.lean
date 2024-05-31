@@ -23,6 +23,13 @@ the natural numbers into an additive monoid with a one (`Nat.cast`).
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
 
+assert_not_exists OrderedCommGroup
+assert_not_exists Commute.zero_right
+assert_not_exists Commute.add_right
+assert_not_exists abs_eq_max_neg
+assert_not_exists natCast_ne
+assert_not_exists MulOpposite.natCast
+
 -- Porting note: There are many occasions below where we need `simp [map_zero f]`
 -- where `simp [map_zero]` should suffice. (Similarly for `map_one`.)
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simp.20regression.20with.20MonoidHomClass
@@ -101,9 +108,9 @@ theorem ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = 
   DFunLike.ext f g <| by
     intro n
     induction n with
-    | zero => simp_rw [Nat.zero_eq, map_zero f, map_zero g]
+    | zero => simp_rw [map_zero f, map_zero g]
     | succ n ihn =>
-      simp [Nat.succ_eq_add_one, h, ihn]
+      simp [h, ihn]
 #align ext_nat' ext_nat'
 
 @[ext]
@@ -335,12 +342,3 @@ theorem Sum.elim_natCast_natCast {α β γ : Type*} [NatCast γ] (n : ℕ) :
     Sum.elim (n : α → γ) (n : β → γ) = n :=
   Sum.elim_lam_const_lam_const (γ := γ) n
 #align sum.elim_nat_cast_nat_cast Sum.elim_natCast_natCast
-
--- Guard against import creep regression.
-assert_not_exists OrderedCommGroup
-assert_not_exists CharZero
-assert_not_exists Commute.zero_right
-assert_not_exists Commute.add_right
-assert_not_exists abs_eq_max_neg
-assert_not_exists natCast_ne
-assert_not_exists MulOpposite.natCast

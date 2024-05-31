@@ -53,20 +53,17 @@ section Types
 
 
 /-- Value type shared by both source and target languages. -/
-@[reducible]
-def Word :=
+abbrev Word :=
   ℕ
 #align arithcc.word Arithcc.Word
 
 /-- Variable identifier type in the source language. -/
-@[reducible]
-def Identifier :=
+abbrev Identifier :=
   String
 #align arithcc.identifier Arithcc.Identifier
 
 /-- Register name type in the target language. -/
-@[reducible]
-def Register :=
+abbrev Register :=
   ℕ
 #align arithcc.register Arithcc.Register
 

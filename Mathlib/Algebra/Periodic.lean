@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
 import Mathlib.Algebra.Field.Opposite
+import Mathlib.Algebra.Group.Subgroup.ZPowers
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.GroupTheory.Coset
-import Mathlib.GroupTheory.Subgroup.ZPowers
-import Mathlib.GroupTheory.Submonoid.Membership
-import Mathlib.Algebra.GroupPower.NegOnePow
 
 #align_import algebra.periodic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
@@ -35,7 +35,7 @@ period, periodic, periodicity, antiperiodic
 
 variable {α β γ : Type*} {f g : α → β} {c c₁ c₂ x : α}
 
-open Set BigOperators
+open Set
 
 namespace Function
 
@@ -92,7 +92,7 @@ theorem _root_.Multiset.periodic_prod [Add α] [CommMonoid β] (s : Multiset (α
 
 @[to_additive]
 theorem _root_.Finset.periodic_prod [Add α] [CommMonoid β] {ι : Type*} {f : ι → α → β}
-    (s : Finset ι) (hs : ∀ i ∈ s, Periodic (f i) c) : Periodic (∏ i in s, f i) c :=
+    (s : Finset ι) (hs : ∀ i ∈ s, Periodic (f i) c) : Periodic (∏ i ∈ s, f i) c :=
   s.prod_to_list f ▸ (s.toList.map f).periodic_prod (by simpa [-Periodic] )
 #align finset.periodic_prod Finset.periodic_prod
 #align finset.periodic_sum Finset.periodic_sum

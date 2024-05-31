@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
@@ -479,7 +479,7 @@ pairwise on intersections, can be glued to construct a continuous map in `C(α, 
 noncomputable def liftCover' : C(α, β) := by
   let S : A → Set α := (↑)
   let F : ∀ i : A, C(i, β) := fun i => F i i.prop
-  refine' liftCover S F (fun i j => hF i i.prop j j.prop) _
+  refine liftCover S F (fun i j => hF i i.prop j j.prop) ?_
   intro x
   obtain ⟨s, hs, hsx⟩ := hA x
   exact ⟨⟨s, hs⟩, hsx⟩

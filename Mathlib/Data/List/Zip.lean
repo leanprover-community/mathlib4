@@ -264,8 +264,8 @@ theorem get?_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List β) (
   induction' l₁ with head tail generalizing l₂ i
   · rw [zipWith] <;> simp
   · cases l₂
-    simp only [zipWith, Seq.seq, Functor.map, get?, Option.map_none']
-    · cases (head :: tail).get? i <;> rfl
+    · simp only [zipWith, Seq.seq, Functor.map, get?, Option.map_none']
+      cases (head :: tail).get? i <;> rfl
     · cases i <;> simp only [Option.map_some', get?, Option.some_bind', *]
 #align list.nth_zip_with List.get?_zip_with
 
@@ -298,7 +298,8 @@ theorem get_zipWith {f : α → β → γ} {l : List α} {l' : List β} {i : Fin
     ⟨l.get ⟨i, lt_length_left_of_zipWith i.isLt⟩, l'.get ⟨i, lt_length_right_of_zipWith i.isLt⟩,
       by rw [get?_eq_get], by rw [get?_eq_get]; exact ⟨rfl, rfl⟩⟩
 
-@[simp]
+set_option linter.deprecated false in
+@[simp, deprecated get_zipWith (since := "2024-05-09")]
 theorem nthLe_zipWith {f : α → β → γ} {l : List α} {l' : List β} {i : ℕ}
     {h : i < (zipWith f l l').length} :
     (zipWith f l l').nthLe i h =
@@ -312,7 +313,8 @@ theorem get_zip {l : List α} {l' : List β} {i : Fin (zip l l').length} :
       (l.get ⟨i, lt_length_left_of_zip i.isLt⟩, l'.get ⟨i, lt_length_right_of_zip i.isLt⟩) :=
   get_zipWith
 
-@[simp]
+set_option linter.deprecated false in
+@[simp, deprecated get_zip (since := "2024-05-09")]
 theorem nthLe_zip {l : List α} {l' : List β} {i : ℕ} {h : i < (zip l l').length} :
     (zip l l').nthLe i h =
       (l.nthLe i (lt_length_left_of_zip h), l'.nthLe i (lt_length_right_of_zip h)) :=
@@ -370,4 +372,5 @@ theorem zipWith_distrib_reverse (h : l.length = l'.length) :
 #align list.zip_with_distrib_reverse List.zipWith_distrib_reverse
 
 end Distrib
+
 end List

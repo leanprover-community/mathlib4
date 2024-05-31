@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Group.Int
-import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.Data.Set.Subsingleton
@@ -148,7 +147,6 @@ theorem comapEq_trans {β γ : Type w} {f g h : β → γ} (k : f = g) (l : g = 
     comapEq C (k.trans l) = comapEq C k ≪≫ comapEq C l := by aesop_cat
 #align category_theory.graded_object.comap_eq_trans CategoryTheory.GradedObject.comapEq_trans
 
-@[simp]
 theorem eqToHom_apply {β : Type w} {X Y : β → C} (h : X = Y) (b : β) :
     (eqToHom h : X ⟶ Y) b = eqToHom (by rw [h]) := by
   subst h
@@ -211,8 +209,8 @@ open ZeroObject
 
 instance hasZeroObject [HasZeroObject C] [HasZeroMorphisms C] (β : Type w) :
     HasZeroObject.{max w v} (GradedObject β C) := by
-  refine' ⟨⟨fun _ => 0, fun X => ⟨⟨⟨fun b => 0⟩, fun f => _⟩⟩, fun X =>
-    ⟨⟨⟨fun b => 0⟩, fun f => _⟩⟩⟩⟩ <;> aesop_cat
+  refine ⟨⟨fun _ => 0, fun X => ⟨⟨⟨fun b => 0⟩, fun f => ?_⟩⟩, fun X =>
+    ⟨⟨⟨fun b => 0⟩, fun f => ?_⟩⟩⟩⟩ <;> aesop_cat
 #align category_theory.graded_object.has_zero_object CategoryTheory.GradedObject.hasZeroObject
 
 end

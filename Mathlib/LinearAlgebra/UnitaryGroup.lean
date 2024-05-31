@@ -64,12 +64,12 @@ variable {n : Type u} [DecidableEq n] [Fintype n]
 variable {α : Type v} [CommRing α] [StarRing α] {A : Matrix n n α}
 
 theorem mem_unitaryGroup_iff : A ∈ Matrix.unitaryGroup n α ↔ A * star A = 1 := by
-  refine' ⟨And.right, fun hA => ⟨_, hA⟩⟩
+  refine ⟨And.right, fun hA => ⟨?_, hA⟩⟩
   simpa only [mul_eq_one_comm] using hA
 #align matrix.mem_unitary_group_iff Matrix.mem_unitaryGroup_iff
 
 theorem mem_unitaryGroup_iff' : A ∈ Matrix.unitaryGroup n α ↔ star A * A = 1 := by
-  refine' ⟨And.left, fun hA => ⟨hA, _⟩⟩
+  refine ⟨And.left, fun hA => ⟨hA, ?_⟩⟩
   rwa [mul_eq_one_comm] at hA
 #align matrix.mem_unitary_group_iff' Matrix.mem_unitaryGroup_iff'
 
@@ -110,6 +110,10 @@ theorem ext (A B : unitaryGroup n α) : (∀ i j, A i j = B i j) → A = B :=
 theorem star_mul_self (A : unitaryGroup n α) : star A.1 * A.1 = 1 :=
   A.2.1
 #align matrix.unitary_group.star_mul_self Matrix.UnitaryGroup.star_mul_self
+
+@[simp]
+theorem det_isUnit (A : unitaryGroup n α) : IsUnit (A : Matrix n n α).det :=
+  isUnit_iff_isUnit_det _ |>.mp <| (unitary.toUnits A).isUnit
 
 section CoeLemmas
 
@@ -202,7 +206,7 @@ section specialUnitaryGroup
 
 variable (n) (α)
 
-/--`Matrix.specialUnitaryGroup` is the group of unitary `n` by `n` matrices where the determinant
+/-- `Matrix.specialUnitaryGroup` is the group of unitary `n` by `n` matrices where the determinant
 is 1. (This definition is only correct if 2 is invertible.)-/
 abbrev specialUnitaryGroup := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
 
@@ -230,13 +234,13 @@ abbrev orthogonalGroup := unitaryGroup n β
 
 theorem mem_orthogonalGroup_iff {A : Matrix n n β} :
     A ∈ Matrix.orthogonalGroup n β ↔ A * star A = 1 := by
-  refine' ⟨And.right, fun hA => ⟨_, hA⟩⟩
+  refine ⟨And.right, fun hA => ⟨?_, hA⟩⟩
   simpa only [mul_eq_one_comm] using hA
 #align matrix.mem_orthogonal_group_iff Matrix.mem_orthogonalGroup_iff
 
 theorem mem_orthogonalGroup_iff' {A : Matrix n n β} :
     A ∈ Matrix.orthogonalGroup n β ↔ star A * A = 1 := by
-  refine' ⟨And.left, fun hA => ⟨hA, _⟩⟩
+  refine ⟨And.left, fun hA => ⟨hA, ?_⟩⟩
   rwa [mul_eq_one_comm] at hA
 #align matrix.mem_orthogonal_group_iff' Matrix.mem_orthogonalGroup_iff'
 

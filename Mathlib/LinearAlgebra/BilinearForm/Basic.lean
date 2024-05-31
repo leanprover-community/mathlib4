@@ -46,8 +46,6 @@ Bilinear form,
 
 export LinearMap (BilinForm)
 
-open BigOperators
-
 open LinearMap (BilinForm)
 
 universe u v w
@@ -64,7 +62,7 @@ namespace BilinForm
 
 #noalign bilin_form.coe_fn_mk
 
-@[deprecated]
+@[deprecated (since := "2024-04-14")]
 theorem coeFn_congr : ∀ {x x' y y' : M}, x = x' → y = y' → B x y = B x' y'
   | _, _, _, _, rfl, rfl => rfl
 #align bilin_form.coe_fn_congr LinearMap.BilinForm.coeFn_congr
@@ -124,7 +122,7 @@ theorem congr_fun (h : B = D) (x y : M) : B x y = D x y := congr_fun₂ h _ _
 theorem ext_iff : B = D ↔ ∀ x y, B x y = D x y := ext_iff₂
 #align bilin_form.ext_iff LinearMap.BilinForm.ext_iff
 
-@[deprecated]
+@[deprecated (since := "2024-04-14")]
 theorem coe_zero : ⇑(0 : BilinForm R M) = 0 :=
   rfl
 #align bilin_form.coe_zero LinearMap.BilinForm.coe_zero
@@ -136,7 +134,7 @@ theorem zero_apply (x y : M) : (0 : BilinForm R M) x y = 0 :=
 
 variable (B D B₁ D₁)
 
-@[deprecated]
+@[deprecated (since := "2024-04-14")]
 theorem coe_add : ⇑(B + D) = B + D :=
   rfl
 #align bilin_form.coe_add LinearMap.BilinForm.coe_add
@@ -149,7 +147,7 @@ theorem add_apply (x y : M) : (B + D) x y = B x y + D x y :=
 #noalign bilin_form.coe_smul
 #noalign bilin_form.smul_apply
 
-@[deprecated]
+@[deprecated (since := "2024-04-14")]
 theorem coe_neg : ⇑(-B₁) = -B₁ :=
   rfl
 #align bilin_form.coe_neg LinearMap.BilinForm.coe_neg
@@ -159,7 +157,7 @@ theorem neg_apply (x y : M₁) : (-B₁) x y = -B₁ x y :=
   rfl
 #align bilin_form.neg_apply LinearMap.BilinForm.neg_apply
 
-@[deprecated]
+@[deprecated (since := "2024-04-14")]
 theorem coe_sub : ⇑(B₁ - D₁) = B₁ - D₁ :=
   rfl
 #align bilin_form.coe_sub LinearMap.BilinForm.coe_sub

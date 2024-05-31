@@ -7,6 +7,8 @@ import Mathlib.Data.Int.Interval
 import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
+import Mathlib.FieldTheory.RatFunc.AsPolynomial
+import Mathlib.RingTheory.Localization.FractionRing
 
 #align_import ring_theory.laurent_series from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
@@ -21,19 +23,22 @@ import Mathlib.RingTheory.HahnSeries.Summable
 * Defines `LaurentSeries.powerSeriesPart`
 * Defines the localization map `LaurentSeries.of_powerSeries_localization` which evaluates to
   `HahnSeries.ofPowerSeries`.
+* Embedding of rational functions into Laurent series, provided as a coercion, utilizing
+the underlying `RatFunc.coeAlgHom`.
 
 ## Main Results
 * Basic properties of Hasse derivatives
 
 -/
+universe u
 
 open scoped Classical
-open HahnSeries BigOperators Polynomial
+open HahnSeries Polynomial
 
 noncomputable section
 
 /-- A `LaurentSeries` is implemented as a `HahnSeries` with value group `ℤ`. -/
-abbrev LaurentSeries (R : Type*) [Zero R] :=
+abbrev LaurentSeries (R : Type u) [Zero R] :=
   HahnSeries ℤ R
 #align laurent_series LaurentSeries
 
@@ -110,7 +115,7 @@ theorem powerSeriesPart_eq_zero (x : LaurentSeries R) : x.powerSeriesPart = 0 �
     simp only [ne_eq]
     intro h
     rw [PowerSeries.ext_iff, not_forall]
-    refine' ⟨0, _⟩
+    refine ⟨0, ?_⟩
     simp [coeff_order_ne_zero h]
   · rintro rfl
     simp
@@ -137,7 +142,7 @@ theorem single_order_mul_powerSeriesPart (x : LaurentSeries R) :
 
 theorem ofPowerSeries_powerSeriesPart (x : LaurentSeries R) :
     ofPowerSeries ℤ R x.powerSeriesPart = single (-x.order) 1 * x := by
-  refine' Eq.trans _ (congr rfl x.single_order_mul_powerSeriesPart)
+  refine Eq.trans ?_ (congr rfl x.single_order_mul_powerSeriesPart)
   rw [← mul_assoc, single_mul_single, neg_add_self, mul_one, ← C_apply, C_one, one_mul]
 #align laurent_series.of_power_series_power_series_part LaurentSeries.ofPowerSeries_powerSeriesPart
 
@@ -158,7 +163,7 @@ instance of_powerSeries_localization [CommRing R] :
     IsLocalization (Submonoid.powers (PowerSeries.X : PowerSeries R)) (LaurentSeries R) where
   map_units' := by
     rintro ⟨_, n, rfl⟩
-    refine' ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, _, _⟩, _⟩
+    refine ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, ?_, ?_⟩, ?_⟩
     · simp only [single_mul_single, mul_one, add_right_neg]
       rfl
     · simp only [single_mul_single, mul_one, add_left_neg]
@@ -166,14 +171,14 @@ instance of_powerSeries_localization [CommRing R] :
     · dsimp; rw [ofPowerSeries_X_pow]
   surj' z := by
     by_cases h : 0 ≤ z.order
-    · refine' ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, _⟩
+    · refine ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, ?_⟩
       simp only [RingHom.map_one, mul_one, RingHom.map_mul, coe_algebraMap, ofPowerSeries_X_pow,
         Submonoid.coe_one]
       rw [Int.natAbs_of_nonneg h, single_order_mul_powerSeriesPart]
-    · refine' ⟨⟨powerSeriesPart z, PowerSeries.X ^ Int.natAbs z.order, ⟨_, rfl⟩⟩, _⟩
+    · refine ⟨⟨powerSeriesPart z, PowerSeries.X ^ Int.natAbs z.order, ⟨_, rfl⟩⟩, ?_⟩
       simp only [coe_algebraMap, ofPowerSeries_powerSeriesPart]
       rw [mul_comm _ z]
-      refine' congr rfl _
+      refine congr rfl ?_
       rw [ofPowerSeries_X_pow, Int.ofNat_natAbs_of_nonpos]
       exact le_of_not_ge h
   exists_of_eq {x y} := by
@@ -267,3 +272,165 @@ theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPow
 #align power_series.coe_pow PowerSeries.coe_pow
 
 end PowerSeries
+
+namespace RatFunc
+section RatFunc
+
+open RatFunc
+
+variable {F : Type u} [Field F] (p q : F[X]) (f g : RatFunc F)
+
+/-- The coercion `RatFunc F → LaurentSeries F` as bundled alg hom. -/
+def coeAlgHom (F : Type u) [Field F] : RatFunc F →ₐ[F[X]] LaurentSeries F :=
+  liftAlgHom (Algebra.ofId _ _) <|
+    nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ <|
+      Polynomial.algebraMap_hahnSeries_injective _
+#align ratfunc.coe_alg_hom RatFunc.coeAlgHom
+
+/-- The coercion `RatFunc F → LaurentSeries F` as a function.
+
+This is the implementation of `coeToLaurentSeries`.
+-/
+@[coe]
+def coeToLaurentSeries_fun {F : Type u} [Field F] : RatFunc F → LaurentSeries F :=
+  coeAlgHom F
+
+instance coeToLaurentSeries : Coe (RatFunc F) (LaurentSeries F) :=
+  ⟨coeToLaurentSeries_fun⟩
+#align ratfunc.coe_to_laurent_series RatFunc.coeToLaurentSeries
+
+theorem coe_def : (f : LaurentSeries F) = coeAlgHom F f :=
+  rfl
+#align ratfunc.coe_def RatFunc.coe_def
+
+theorem coe_num_denom : (f : LaurentSeries F) = f.num / f.denom :=
+  liftAlgHom_apply _ _ f
+#align ratfunc.coe_num_denom RatFunc.coe_num_denom
+
+theorem coe_injective : Function.Injective ((↑) : RatFunc F → LaurentSeries F) :=
+  liftAlgHom_injective _ (Polynomial.algebraMap_hahnSeries_injective _)
+#align ratfunc.coe_injective RatFunc.coe_injective
+
+-- Porting note: removed the `norm_cast` tag:
+-- `norm_cast: badly shaped lemma, rhs can't start with coe `↑(coeAlgHom F) f`
+@[simp]
+theorem coe_apply : coeAlgHom F f = f :=
+  rfl
+#align ratfunc.coe_apply RatFunc.coe_apply
+
+theorem coe_coe (P : Polynomial F) : (P : LaurentSeries F) = (P : RatFunc F) := by
+  simp only [coePolynomial, coe_def, AlgHom.commutes, algebraMap_hahnSeries_apply]
+
+@[simp, norm_cast]
+theorem coe_zero : ((0 : RatFunc F) : LaurentSeries F) = 0 :=
+  (coeAlgHom F).map_zero
+#align ratfunc.coe_zero RatFunc.coe_zero
+
+theorem coe_ne_zero {f : Polynomial F} (hf : f ≠ 0) : (↑f : PowerSeries F) ≠ 0 := by
+  simp only [ne_eq, Polynomial.coe_eq_zero_iff, hf, not_false_eq_true]
+
+@[simp, norm_cast]
+theorem coe_one : ((1 : RatFunc F) : LaurentSeries F) = 1 :=
+  (coeAlgHom F).map_one
+#align ratfunc.coe_one RatFunc.coe_one
+
+@[simp, norm_cast]
+theorem coe_add : ((f + g : RatFunc F) : LaurentSeries F) = f + g :=
+  (coeAlgHom F).map_add _ _
+#align ratfunc.coe_add RatFunc.coe_add
+
+@[simp, norm_cast]
+theorem coe_sub : ((f - g : RatFunc F) : LaurentSeries F) = f - g :=
+  (coeAlgHom F).map_sub _ _
+#align ratfunc.coe_sub RatFunc.coe_sub
+
+@[simp, norm_cast]
+theorem coe_neg : ((-f : RatFunc F) : LaurentSeries F) = -f :=
+  (coeAlgHom F).map_neg _
+#align ratfunc.coe_neg RatFunc.coe_neg
+
+@[simp, norm_cast]
+theorem coe_mul : ((f * g : RatFunc F) : LaurentSeries F) = f * g :=
+  (coeAlgHom F).map_mul _ _
+#align ratfunc.coe_mul RatFunc.coe_mul
+
+@[simp, norm_cast]
+theorem coe_pow (n : ℕ) : ((f ^ n : RatFunc F) : LaurentSeries F) = (f : LaurentSeries F) ^ n :=
+  (coeAlgHom F).map_pow _ _
+#align ratfunc.coe_pow RatFunc.coe_pow
+
+@[simp, norm_cast]
+theorem coe_div :
+    ((f / g : RatFunc F) : LaurentSeries F) = (f : LaurentSeries F) / (g : LaurentSeries F) :=
+  map_div₀ (coeAlgHom F) _ _
+#align ratfunc.coe_div RatFunc.coe_div
+
+@[simp, norm_cast]
+theorem coe_C (r : F) : ((RatFunc.C r : RatFunc F) : LaurentSeries F) = HahnSeries.C r := by
+  rw [coe_num_denom, num_C, denom_C, Polynomial.coe_C, -- Porting note: removed `coe_C`
+    Polynomial.coe_one,
+    PowerSeries.coe_one, div_one]
+  simp only [algebraMap_eq_C, ofPowerSeries_C, C_apply]  -- Porting note: added
+set_option linter.uppercaseLean3 false in
+#align ratfunc.coe_C RatFunc.coe_C
+
+-- TODO: generalize over other modules
+@[simp, norm_cast]
+theorem coe_smul (r : F) : ((r • f : RatFunc F) : LaurentSeries F) = r • (f : LaurentSeries F) := by
+  rw [RatFunc.smul_eq_C_mul, ← C_mul_eq_smul, coe_mul, coe_C]
+#align ratfunc.coe_smul RatFunc.coe_smul
+
+-- Porting note: removed `norm_cast` because "badly shaped lemma, rhs can't start with coe"
+-- even though `single 1 1` is a bundled function application, not a "real" coercion
+@[simp, nolint simpNF] -- Added `simpNF` to avoid timeout #8386
+theorem coe_X : ((X : RatFunc F) : LaurentSeries F) = single 1 1 := by
+  rw [coe_num_denom, num_X, denom_X, Polynomial.coe_X, -- Porting note: removed `coe_C`
+     Polynomial.coe_one,
+     PowerSeries.coe_one, div_one]
+  simp only [ofPowerSeries_X]  -- Porting note: added
+set_option linter.uppercaseLean3 false in
+#align ratfunc.coe_X RatFunc.coe_X
+
+theorem single_one_eq_pow {R : Type _} [Ring R] (n : ℕ) :
+    single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
+  induction' n with n h_ind
+  · simp only [Nat.cast_zero, pow_zero]
+    rfl
+  · rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
+      add_comm]
+
+theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
+    single (-d) (α⁻¹ : F) = (single (d : ℤ) (α : F))⁻¹ := by
+  apply eq_inv_of_mul_eq_one_right
+  rw [HahnSeries.single_mul_single, add_right_neg, mul_comm,
+    inv_mul_cancel hα]
+  rfl
+
+theorem single_zpow (n : ℤ) :
+    single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by
+  induction' n with n_pos n_neg
+  · apply single_one_eq_pow
+  · rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one,
+      single_inv (n_neg + 1 : ℤ) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
+      Nat.cast_one, inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
+
+instance : Algebra (RatFunc F) (LaurentSeries F) :=
+  RingHom.toAlgebra (coeAlgHom F).toRingHom
+
+theorem algebraMap_apply_div :
+    algebraMap (RatFunc F) (LaurentSeries F) (algebraMap _ _ p / algebraMap _ _ q) =
+      algebraMap F[X] (LaurentSeries F) p / algebraMap _ _ q := by
+  -- Porting note: had to supply implicit arguments to `convert`
+  convert coe_div (algebraMap F[X] (RatFunc F) p) (algebraMap F[X] (RatFunc F) q) <;>
+    rw [← mk_one, coe_def, coeAlgHom, mk_eq_div, liftAlgHom_apply_div, map_one, div_one,
+      Algebra.ofId_apply]
+#align ratfunc.algebra_map_apply_div RatFunc.algebraMap_apply_div
+
+instance : IsScalarTower F[X] (RatFunc F) (LaurentSeries F) :=
+  ⟨fun x y z => by
+    ext
+    simp⟩
+
+end RatFunc
+
+end RatFunc

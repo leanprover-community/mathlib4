@@ -227,7 +227,7 @@ protected theorem insert [MeasurableSingletonClass (NullMeasurableSpace α μ)]
 theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
     ∃ t ⊇ s, MeasurableSet t ∧ t =ᵐ[μ] s := by
   rcases h with ⟨t, htm, hst⟩
-  refine' ⟨t ∪ toMeasurable μ (s \ t), _, htm.union (measurableSet_toMeasurable _ _), _⟩
+  refine ⟨t ∪ toMeasurable μ (s \ t), ?_, htm.union (measurableSet_toMeasurable _ _), ?_⟩
   · exact diff_subset_iff.1 (subset_toMeasurable _ _)
   · have : toMeasurable μ (s \ t) =ᵐ[μ] (∅ : Set α) := by simp [ae_le_set.1 hst.le]
     simpa only [union_empty] using hst.symm.union this
@@ -299,22 +299,16 @@ theorem measure_union₀_aux (hs : NullMeasurableSet s μ) (ht : NullMeasurableS
 `μ (s ∩ t) + μ (s \ t) = μ s`. -/
 theorem measure_inter_add_diff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
     μ (s ∩ t) + μ (s \ t) = μ s := by
-  refine' le_antisymm _ _
-  · rcases exists_measurable_superset μ s with ⟨s', hsub, hs'm, hs'⟩
-    replace hs'm : NullMeasurableSet s' μ := hs'm.nullMeasurableSet
-    calc
-      μ (s ∩ t) + μ (s \ t) ≤ μ (s' ∩ t) + μ (s' \ t) :=
-        add_le_add (measure_mono <| inter_subset_inter_left _ hsub)
-          (measure_mono <| diff_subset_diff_left hsub)
-      _ = μ (s' ∩ t ∪ s' \ t) :=
-        (measure_union₀_aux (hs'm.inter ht) (hs'm.diff ht) <|
-            (@disjoint_inf_sdiff _ s' t _).aedisjoint).symm
-      _ = μ s' := congr_arg μ (inter_union_diff _ _)
-      _ = μ s := hs'
-  · calc
-      μ s = μ (s ∩ t ∪ s \ t) := by rw [inter_union_diff]
-      _ ≤ μ (s ∩ t) + μ (s \ t) := measure_union_le _ _
-
+  refine le_antisymm ?_ (measure_le_inter_add_diff _ _ _)
+  rcases exists_measurable_superset μ s with ⟨s', hsub, hs'm, hs'⟩
+  replace hs'm : NullMeasurableSet s' μ := hs'm.nullMeasurableSet
+  calc
+    μ (s ∩ t) + μ (s \ t) ≤ μ (s' ∩ t) + μ (s' \ t) := by gcongr
+    _ = μ (s' ∩ t ∪ s' \ t) :=
+      (measure_union₀_aux (hs'm.inter ht) (hs'm.diff ht) <|
+          (@disjoint_inf_sdiff _ s' t _).aedisjoint).symm
+    _ = μ s' := congr_arg μ (inter_union_diff _ _)
+    _ = μ s := hs'
 #align measure_theory.measure_inter_add_diff₀ MeasureTheory.measure_inter_add_diff₀
 
 theorem measure_union_add_inter₀ (s : Set α) (ht : NullMeasurableSet t μ) :
@@ -362,8 +356,8 @@ protected theorem _root_.Set.Finite.nullMeasurableSet (hs : s.Finite) : NullMeas
   Finite.measurableSet hs
 #align set.finite.null_measurable_set Set.Finite.nullMeasurableSet
 
-protected theorem _root_.Finset.nullMeasurableSet (s : Finset α) : NullMeasurableSet (↑s) μ :=
-  by apply Finset.measurableSet
+protected theorem _root_.Finset.nullMeasurableSet (s : Finset α) : NullMeasurableSet (↑s) μ := by
+  apply Finset.measurableSet
 #align finset.null_measurable_set Finset.nullMeasurableSet
 
 end MeasurableSingletonClass
@@ -479,19 +473,16 @@ theorem _root_.Measurable.congr_ae {α β} [MeasurableSpace α] [MeasurableSpace
 
 namespace Measure
 
-/-- Given a measure we can complete it to a (complete) measure on all null measurable sets. -/
+/-- Given a measure we can complete it to a (complete) measure on all null measurable sets.
+
+TODO: generalize to any larger σ-algebra. -/
 def completion {_ : MeasurableSpace α} (μ : Measure α) :
-    @MeasureTheory.Measure (NullMeasurableSpace α μ) _ where
+    MeasureTheory.Measure (NullMeasurableSpace α μ) where
   toOuterMeasure := μ.toOuterMeasure
   m_iUnion s hs hd := measure_iUnion₀ (hd.mono fun i j h => h.aedisjoint) hs
-  trimmed := by
-    refine' le_antisymm (fun s => _)
-      (@OuterMeasure.le_trim (NullMeasurableSpace α μ) _ _)
-    rw [@OuterMeasure.trim_eq_iInf (NullMeasurableSpace α μ) _];
-    have : ∀ s, μ.toOuterMeasure s = μ s := by simp only [forall_const]
-    rw [this, measure_eq_iInf]
-    apply iInf₂_mono
-    exact fun t _ht => iInf_mono' fun h => ⟨MeasurableSet.nullMeasurableSet h, le_rfl⟩
+  trim_le := by
+    nth_rewrite 2 [← μ.trimmed]
+    exact OuterMeasure.trim_anti_measurableSpace _ fun _ ↦ MeasurableSet.nullMeasurableSet
 #align measure_theory.measure.completion MeasureTheory.Measure.completion
 
 instance completion.isComplete {_m : MeasurableSpace α} (μ : Measure α) : μ.completion.IsComplete :=
@@ -509,7 +500,7 @@ theorem completion_apply {_ : MeasurableSpace α} (μ : Measure α) (s : Set α)
 #align measure_theory.measure.completion_apply MeasureTheory.Measure.completion_apply
 
 @[simp]
-theorem ae_completion {_ : MeasurableSpace α} (μ : Measure α) : μ.completion.ae = μ.ae := rfl
+theorem ae_completion {_ : MeasurableSpace α} (μ : Measure α) : ae μ.completion = ae μ := rfl
 
 end Measure
 

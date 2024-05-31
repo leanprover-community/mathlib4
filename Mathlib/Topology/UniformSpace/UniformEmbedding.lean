@@ -73,6 +73,12 @@ theorem UniformInducing.comp {g : β → γ} (hg : UniformInducing g) {f : α �
   ⟨by rw [← hf.1, ← hg.1, comap_comap]; rfl⟩
 #align uniform_inducing.comp UniformInducing.comp
 
+theorem UniformInducing.of_comp_iff {g : β → γ} (hg : UniformInducing g) {f : α → β} :
+    UniformInducing (g ∘ f) ↔ UniformInducing f := by
+  refine ⟨fun h ↦ ?_, hg.comp⟩
+  rw [uniformInducing_iff, ← hg.comap_uniformity, comap_comap, ← h.comap_uniformity,
+    Function.comp, Function.comp]
+
 theorem UniformInducing.basis_uniformity {f : α → β} (hf : UniformInducing f) {ι : Sort*}
     {p : ι → Prop} {s : ι → Set (β × β)} (H : (𝓤 β).HasBasis p s) :
     (𝓤 α).HasBasis p fun i => Prod.map f f ⁻¹' s i :=
@@ -86,7 +92,7 @@ theorem UniformInducing.cauchy_map_iff {f : α → β} (hf : UniformInducing f) 
 
 theorem uniformInducing_of_compose {f : α → β} {g : β → γ} (hf : UniformContinuous f)
     (hg : UniformContinuous g) (hgf : UniformInducing (g ∘ f)) : UniformInducing f := by
-  refine' ⟨le_antisymm _ hf.le_comap⟩
+  refine ⟨le_antisymm ?_ hf.le_comap⟩
   rw [← hgf.1, ← Prod.map_def, ← Prod.map_def, ← Prod.map_comp_map f f g g, ← comap_comap]
   exact comap_mono hg.le_comap
 #align uniform_inducing_of_compose uniformInducing_of_compose
@@ -182,6 +188,10 @@ theorem UniformEmbedding.comp {g : β → γ} (hg : UniformEmbedding g) {f : α 
   { hg.toUniformInducing.comp hf.toUniformInducing with inj := hg.inj.comp hf.inj }
 #align uniform_embedding.comp UniformEmbedding.comp
 
+theorem UniformEmbedding.of_comp_iff {g : β → γ} (hg : UniformEmbedding g) {f : α → β} :
+    UniformEmbedding (g ∘ f) ↔ UniformEmbedding f := by
+  simp_rw [uniformEmbedding_iff, hg.toUniformInducing.of_comp_iff, hg.inj.of_comp_iff f]
+
 theorem Equiv.uniformEmbedding {α β : Type*} [UniformSpace α] [UniformSpace β] (f : α ≃ β)
     (h₁ : UniformContinuous f) (h₂ : UniformContinuous f.symm) : UniformEmbedding f :=
   uniformEmbedding_iff'.2 ⟨f.injective, h₁, by rwa [← Equiv.prodCongr_apply, ← map_equiv_symm]⟩
@@ -217,7 +227,7 @@ the preimage of `𝓤 β` under `Prod.map f f` is the principal filter generated
 `α × α`. -/
 theorem comap_uniformity_of_spaced_out {α} {f : α → β} {s : Set (β × β)} (hs : s ∈ 𝓤 β)
     (hf : Pairwise fun x y => (f x, f y) ∉ s) : comap (Prod.map f f) (𝓤 β) = 𝓟 idRel := by
-  refine' le_antisymm _ (@refl_le_uniformity α (UniformSpace.comap f _))
+  refine le_antisymm ?_ (@refl_le_uniformity α (UniformSpace.comap f _))
   calc
     comap (Prod.map f f) (𝓤 β) ≤ comap (Prod.map f f) (𝓟 s) := comap_mono (le_principal_iff.2 hs)
     _ = 𝓟 (Prod.map f f ⁻¹' s) := comap_principal
@@ -281,37 +291,17 @@ theorem UniformEmbedding.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [Un
   { h₁.toUniformInducing.prod h₂.toUniformInducing with inj := h₁.inj.Prod_map h₂.inj }
 #align uniform_embedding.prod UniformEmbedding.prod
 
-theorem isComplete_of_complete_image {m : α → β} {s : Set α} (hm : UniformInducing m)
-    (hs : IsComplete (m '' s)) : IsComplete s := by
-  intro f hf hfs
-  rw [le_principal_iff] at hfs
-  obtain ⟨_, ⟨x, hx, rfl⟩, hyf⟩ : ∃ y ∈ m '' s, map m f ≤ 𝓝 y
-  exact hs (f.map m) (hf.map hm.uniformContinuous) (le_principal_iff.2 (image_mem_map hfs))
-  rw [map_le_iff_le_comap, ← nhds_induced, ← hm.inducing.induced] at hyf
-  exact ⟨x, hx, hyf⟩
-#align is_complete_of_complete_image isComplete_of_complete_image
-
-theorem IsComplete.completeSpace_coe {s : Set α} (hs : IsComplete s) : CompleteSpace s :=
-  completeSpace_iff_isComplete_univ.2 <|
-    isComplete_of_complete_image uniformEmbedding_subtype_val.toUniformInducing <| by simp [hs]
-#align is_complete.complete_space_coe IsComplete.completeSpace_coe
-
 /-- A set is complete iff its image under a uniform inducing map is complete. -/
 theorem isComplete_image_iff {m : α → β} {s : Set α} (hm : UniformInducing m) :
     IsComplete (m '' s) ↔ IsComplete s := by
-  refine' ⟨isComplete_of_complete_image hm, fun c => _⟩
-  haveI : CompleteSpace s := c.completeSpace_coe
-  set m' : s → β := m ∘ (↑)
-  suffices IsComplete (range m') by rwa [range_comp, Subtype.range_coe] at this
-  have hm' : UniformInducing m' := hm.comp uniformEmbedding_subtype_val.toUniformInducing
-  intro f hf hfm
-  rw [Filter.le_principal_iff] at hfm
-  have cf' : Cauchy (comap m' f) :=
-    hf.comap' hm'.comap_uniformity.le (NeBot.comap_of_range_mem hf.1 hfm)
-  rcases CompleteSpace.complete cf' with ⟨x, hx⟩
-  rw [hm'.inducing.nhds_eq_comap, comap_le_comap_iff hfm] at hx
-  exact ⟨m' x, mem_range_self _, hx⟩
+  have fact1 : SurjOn (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 <| m '' s) := surjOn_image .. |>.filter_map_Iic
+  have fact2 : MapsTo (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 <| m '' s) := mapsTo_image .. |>.filter_map_Iic
+  simp_rw [IsComplete, imp.swap (a := Cauchy _), ← mem_Iic (b := 𝓟 _), fact1.forall fact2,
+    hm.cauchy_map_iff, exists_mem_image, map_le_iff_le_comap, hm.inducing.nhds_eq_comap]
 #align is_complete_image_iff isComplete_image_iff
+
+alias ⟨isComplete_of_complete_image, _⟩ := isComplete_image_iff
+#align is_complete_of_complete_image isComplete_of_complete_image
 
 theorem completeSpace_iff_isComplete_range {f : α → β} (hf : UniformInducing f) :
     CompleteSpace α ↔ IsComplete (range f) := by
@@ -343,6 +333,9 @@ theorem completeSpace_coe_iff_isComplete {s : Set α} : CompleteSpace s ↔ IsCo
   (completeSpace_iff_isComplete_range uniformEmbedding_subtype_val.toUniformInducing).trans <| by
     rw [Subtype.range_coe]
 #align complete_space_coe_iff_is_complete completeSpace_coe_iff_isComplete
+
+alias ⟨_, IsComplete.completeSpace_coe⟩ := completeSpace_coe_iff_isComplete
+#align is_complete.complete_space_coe IsComplete.completeSpace_coe
 
 theorem IsClosed.completeSpace_coe [CompleteSpace α] {s : Set α} (hs : IsClosed s) :
     CompleteSpace s :=
@@ -408,7 +401,7 @@ theorem totallyBounded_preimage {f : α → β} {s : Set β} (hf : UniformEmbedd
   rcases mem_comap.2 ht with ⟨t', ht', ts⟩
   rcases totallyBounded_iff_subset.1 (totallyBounded_subset (image_preimage_subset f s) hs) _ ht'
     with ⟨c, cs, hfc, hct⟩
-  refine' ⟨f ⁻¹' c, hfc.preimage (hf.inj.injOn _), fun x h => _⟩
+  refine ⟨f ⁻¹' c, hfc.preimage (hf.inj.injOn _), fun x h => ?_⟩
   have := hct (mem_image_of_mem f h); simp at this ⊢
   rcases this with ⟨z, zc, zt⟩
   rcases cs zc with ⟨y, -, rfl⟩

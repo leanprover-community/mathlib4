@@ -39,8 +39,6 @@ sesquilinear_form, matrix, basis
 
 variable {R R₁ R₂ M M₁ M₂ M₁' M₂' n m n' m' ι : Type*}
 
-open BigOperators
-
 open Finset LinearMap Matrix
 
 open Matrix
@@ -118,7 +116,7 @@ theorem LinearMap.toLinearMap₂'Aux_toMatrix₂Aux (f : (n → R₁) →ₛₗ[
         (LinearMap.toMatrix₂Aux (fun i => stdBasis R₁ (fun _ => R₁) i 1)
           (fun j => stdBasis R₂ (fun _ => R₂) j 1) f) =
       f := by
-  refine' ext_basis (Pi.basisFun R₁ n) (Pi.basisFun R₂ m) fun i j => _
+  refine ext_basis (Pi.basisFun R₁ n) (Pi.basisFun R₂ m) fun i j => ?_
   simp_rw [Pi.basisFun_apply, Matrix.toLinearMap₂'Aux_stdBasis, LinearMap.toMatrix₂Aux_apply]
 #align linear_map.to_linear_map₂'_aux_to_matrix₂_aux LinearMap.toLinearMap₂'Aux_toMatrix₂Aux
 
@@ -196,9 +194,9 @@ theorem Matrix.toLinearMap₂'_apply (M : Matrix n m R) (x : n → R) (y : m →
 theorem Matrix.toLinearMap₂'_apply' (M : Matrix n m R) (v : n → R) (w : m → R) :
     Matrix.toLinearMap₂' M v w = Matrix.dotProduct v (M *ᵥ w) := by
   simp_rw [Matrix.toLinearMap₂'_apply, Matrix.dotProduct, Matrix.mulVec, Matrix.dotProduct]
-  refine' Finset.sum_congr rfl fun _ _ => _
+  refine Finset.sum_congr rfl fun _ _ => ?_
   rw [Finset.mul_sum]
-  refine' Finset.sum_congr rfl fun _ _ => _
+  refine Finset.sum_congr rfl fun _ _ => ?_
   rw [← mul_assoc]
 #align matrix.to_linear_map₂'_apply' Matrix.toLinearMap₂'_apply'
 
@@ -466,8 +464,8 @@ theorem LinearMap.toMatrix₂_mul_basis_toMatrix (c₁ : Basis n' R M₁) (c₂ 
 theorem LinearMap.mul_toMatrix₂_mul (B : M₁ →ₗ[R] M₂ →ₗ[R] R) (M : Matrix n' n R)
     (N : Matrix m m' R) :
     M * LinearMap.toMatrix₂ b₁ b₂ B * N =
-      LinearMap.toMatrix₂ b₁' b₂' (B.compl₁₂ (toLin b₁' b₁ Mᵀ) (toLin b₂' b₂ N)) :=
-  by simp_rw [LinearMap.toMatrix₂_compl₁₂ b₁ b₂, toMatrix_toLin, transpose_transpose]
+      LinearMap.toMatrix₂ b₁' b₂' (B.compl₁₂ (toLin b₁' b₁ Mᵀ) (toLin b₂' b₂ N)) := by
+  simp_rw [LinearMap.toMatrix₂_compl₁₂ b₁ b₂, toMatrix_toLin, transpose_transpose]
 #align linear_map.mul_to_matrix₂_mul LinearMap.mul_toMatrix₂_mul
 
 theorem LinearMap.mul_toMatrix₂ (B : M₁ →ₗ[R] M₂ →ₗ[R] R) (M : Matrix n' n R) :
@@ -606,7 +604,7 @@ theorem mem_pairSelfAdjointMatricesSubmodule :
     rw [← isAdjointPair_toLinearMap₂']
     exact hf
   · intro h
-    refine' ⟨toLin' A₁, _, LinearMap.toMatrix'_toLin' _⟩
+    refine ⟨toLin' A₁, ?_, LinearMap.toMatrix'_toLin' _⟩
     exact (isAdjointPair_toLinearMap₂' _ _ _ _).mpr h
 #align mem_pair_self_adjoint_matrices_submodule mem_pairSelfAdjointMatricesSubmodule
 

@@ -68,8 +68,8 @@ something the simplifier can easily do). This means that one can write
 If there are divisions, one needs to supply to the simplifier proofs that the denominators do
 not vanish, as in
 ```lean
-example (x : ℝ) (h : 1 + sin x ≠ 0) : DifferentiableAt ℝ (fun x ↦ exp x / (1 + sin x)) x :=
-by simp [h]
+example (x : ℝ) (h : 1 + sin x ≠ 0) : DifferentiableAt ℝ (fun x ↦ exp x / (1 + sin x)) x := by
+  simp [h]
 ```
 Of course, these examples only work once `exp`, `cos` and `sin` have been shown to be
 differentiable, in `Analysis.SpecialFunctions.Trigonometric`.
@@ -335,8 +335,8 @@ on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C
 only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a neighborhood of `x`. -/
 theorem HasFDerivAt.le_of_lip' {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
     {C : ℝ} (hC₀ : 0 ≤ C) (hlip : ∀ᶠ x in 𝓝 x₀, ‖f x - f x₀‖ ≤ C * ‖x - x₀‖) : ‖f'‖ ≤ C := by
-  refine' le_of_forall_pos_le_add fun ε ε0 => opNorm_le_of_nhds_zero _ _
-  exact add_nonneg hC₀ ε0.le
+  refine le_of_forall_pos_le_add fun ε ε0 => opNorm_le_of_nhds_zero ?_ ?_
+  · exact add_nonneg hC₀ ε0.le
   rw [← map_add_left_nhds_zero x₀, eventually_map] at hlip
   filter_upwards [isLittleO_iff.1 (hasFDerivAt_iff_isLittleO_nhds_zero.1 hf) ε0, hlip] with y hy hyC
   rw [add_sub_cancel_left] at hyC
@@ -352,7 +352,7 @@ on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C
 theorem HasFDerivAt.le_of_lipschitzOn
     {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
     {s : Set E} (hs : s ∈ 𝓝 x₀) {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖f'‖ ≤ C := by
-  refine' hf.le_of_lip' C.coe_nonneg _
+  refine hf.le_of_lip' C.coe_nonneg ?_
   filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
 #align has_fderiv_at.le_of_lip HasFDerivAt.le_of_lipschitzOn
 
@@ -422,7 +422,7 @@ theorem hasFDerivWithinAt_insert {y : E} :
   · simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO]
     apply Asymptotics.isLittleO_insert
     simp only [sub_self, map_zero]
-  refine' ⟨fun h => h.mono <| subset_insert y s, fun hf => hf.mono_of_mem _⟩
+  refine ⟨fun h => h.mono <| subset_insert y s, fun hf => hf.mono_of_mem ?_⟩
   simp_rw [nhdsWithin_insert_of_ne h, self_mem_nhdsWithin]
 #align has_fderiv_within_at_insert hasFDerivWithinAt_insert
 
@@ -487,9 +487,9 @@ theorem HasStrictFDerivAt.exists_lipschitzOnWith (hf : HasStrictFDerivAt f f' x)
 theorem HasFDerivAt.lim (hf : HasFDerivAt f f' x) (v : E) {α : Type*} {c : α → 𝕜} {l : Filter α}
     (hc : Tendsto (fun n => ‖c n‖) l atTop) :
     Tendsto (fun n => c n • (f (x + (c n)⁻¹ • v) - f x)) l (𝓝 (f' v)) := by
-  refine' (hasFDerivWithinAt_univ.2 hf).lim _ univ_mem hc _
+  refine (hasFDerivWithinAt_univ.2 hf).lim _ univ_mem hc ?_
   intro U hU
-  refine' (eventually_ne_of_tendsto_norm_atTop hc (0 : 𝕜)).mono fun y hy => _
+  refine (eventually_ne_of_tendsto_norm_atTop hc (0 : 𝕜)).mono fun y hy => ?_
   convert mem_of_mem_nhds hU
   dsimp only
   rw [← mul_smul, mul_inv_cancel hy, one_smul]
@@ -599,7 +599,7 @@ Version using `fderiv`. -/
 -- Porting note: renamed so that dot-notation makes sense
 theorem norm_fderiv_le_of_lipschitzOn {f : E → F} {x₀ : E} {s : Set E} (hs : s ∈ 𝓝 x₀)
     {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖fderiv 𝕜 f x₀‖ ≤ C := by
-  refine' norm_fderiv_le_of_lip' 𝕜 C.coe_nonneg _
+  refine norm_fderiv_le_of_lip' 𝕜 C.coe_nonneg ?_
   filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
 #align fderiv_at.le_of_lip norm_fderiv_le_of_lipschitzOn
 
@@ -628,8 +628,9 @@ theorem DifferentiableWithinAt.mono_of_mem (h : DifferentiableWithinAt 𝕜 f s 
   (h.hasFDerivWithinAt.mono_of_mem hst).differentiableWithinAt
 #align differentiable_within_at.mono_of_mem DifferentiableWithinAt.mono_of_mem
 
-theorem differentiableWithinAt_univ : DifferentiableWithinAt 𝕜 f univ x ↔ DifferentiableAt 𝕜 f x :=
-  by simp only [DifferentiableWithinAt, hasFDerivWithinAt_univ, DifferentiableAt]
+theorem differentiableWithinAt_univ :
+    DifferentiableWithinAt 𝕜 f univ x ↔ DifferentiableAt 𝕜 f x := by
+  simp only [DifferentiableWithinAt, hasFDerivWithinAt_univ, DifferentiableAt]
 #align differentiable_within_at_univ differentiableWithinAt_univ
 
 theorem differentiableWithinAt_inter (ht : t ∈ 𝓝 x) :
@@ -720,10 +721,9 @@ theorem fderivWithin_eq_fderiv (hs : UniqueDiffWithinAt 𝕜 s x) (h : Different
   exact fderivWithin_subset (subset_univ _) hs h.differentiableWithinAt
 #align fderiv_within_eq_fderiv fderivWithin_eq_fderiv
 
-theorem fderiv_mem_iff {f : E → F} {s : Set (E →L[𝕜] F)} {x : E} :
-    fderiv 𝕜 f x ∈ s ↔
-      DifferentiableAt 𝕜 f x ∧ fderiv 𝕜 f x ∈ s ∨ ¬DifferentiableAt 𝕜 f x ∧ (0 : E →L[𝕜] F) ∈ s :=
-  by by_cases hx : DifferentiableAt 𝕜 f x <;> simp [fderiv_zero_of_not_differentiableAt, *]
+theorem fderiv_mem_iff {f : E → F} {s : Set (E →L[𝕜] F)} {x : E} : fderiv 𝕜 f x ∈ s ↔
+    DifferentiableAt 𝕜 f x ∧ fderiv 𝕜 f x ∈ s ∨ ¬DifferentiableAt 𝕜 f x ∧ (0 : E →L[𝕜] F) ∈ s := by
+  by_cases hx : DifferentiableAt 𝕜 f x <;> simp [fderiv_zero_of_not_differentiableAt, *]
 #align fderiv_mem_iff fderiv_mem_iff
 
 theorem fderivWithin_mem_iff {f : E → F} {t : Set E} {s : Set (E →L[𝕜] F)} {x : E} :
@@ -780,7 +780,7 @@ section Continuous
 theorem HasFDerivAtFilter.tendsto_nhds (hL : L ≤ 𝓝 x) (h : HasFDerivAtFilter f f' x L) :
     Tendsto f L (𝓝 (f x)) := by
   have : Tendsto (fun x' => f x' - f x) L (𝓝 0) := by
-    refine' h.isBigO_sub.trans_tendsto (Tendsto.mono_left _ hL)
+    refine h.isBigO_sub.trans_tendsto (Tendsto.mono_left ?_ hL)
     rw [← sub_self x]
     exact tendsto_id.sub tendsto_const_nhds
   have := this.add (tendsto_const_nhds (x := f x))
@@ -899,7 +899,7 @@ theorem fderivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
 
 theorem Filter.EventuallyEq.hasStrictFDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) (h' : ∀ y, f₀' y = f₁' y) :
     HasStrictFDerivAt f₀ f₀' x ↔ HasStrictFDerivAt f₁ f₁' x := by
-  refine' isLittleO_congr ((h.prod_mk_nhds h).mono _) .rfl
+  refine isLittleO_congr ((h.prod_mk_nhds h).mono ?_) .rfl
   rintro p ⟨hp₁, hp₂⟩
   simp only [*]
 #align filter.eventually_eq.has_strict_fderiv_at_iff Filter.EventuallyEq.hasStrictFDerivAt_iff

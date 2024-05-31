@@ -241,7 +241,7 @@ set_option linter.uppercaseLean3 false in
  `Field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
  version of them. -/
 
-instance : Ring ℝ := by infer_instance
+instance instRing : Ring ℝ := by infer_instance
 
 instance : CommSemiring ℝ := by infer_instance
 
@@ -616,7 +616,7 @@ theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j
   obtain ⟨i, H⟩ := exists_forall_ge_and h (exists_forall_ge_and hK (f.cauchy₃ <| half_pos K0))
   apply not_lt_of_le (H _ le_rfl).1
   erw [mk_lt]
-  refine' ⟨_, half_pos K0, i, fun j ij => _⟩
+  refine ⟨_, half_pos K0, i, fun j ij => ?_⟩
   have := add_le_add (H _ ij).2.1 (le_of_lt (abs_lt.1 <| (H _ le_rfl).2.2 _ ij).1)
   rwa [← sub_eq_add_neg, sub_self_div_two, sub_apply, sub_add_sub_cancel] at this
 #align real.le_mk_of_forall_le Real.le_mk_of_forall_le
@@ -639,3 +639,8 @@ theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
 #align real.mk_near_of_forall_near Real.mk_near_of_forall_near
 
 end Real
+
+/-- A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong triangle inequality
+  `f (r + s) ≤ max (f r) (f s)` for all `r s : R`. -/
+def IsNonarchimedean {A : Type _} [Add A] (f : A → ℝ) : Prop :=
+  ∀ r s, f (r + s) ≤ max (f r) (f s)
