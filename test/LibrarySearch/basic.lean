@@ -191,13 +191,13 @@ example (P Q : List ℕ) (_h : ℕ) : List ℕ := by apply? using P, Q
 -- Check that we don't use sorryAx:
 -- (see https://github.com/leanprover-community/mathlib4/issues/226)
 
-theorem Bool_eq_iff {A B : Bool} : (A = B) = (A ↔ B) :=
-  by (cases A <;> cases B <;> simp)
+theorem Bool_eq_iff {A B : Bool} : (A = B) = (A ↔ B) := by
+  (cases A <;> cases B <;> simp)
 
 /-- info: Try this: exact Bool_eq_iff -/
 #guard_msgs in
-theorem Bool_eq_iff2 {A B : Bool} : (A = B) = (A ↔ B) :=
-  by apply? -- exact Bool_eq_iff
+theorem Bool_eq_iff2 {A B : Bool} : (A = B) = (A ↔ B) := by
+  apply? -- exact Bool_eq_iff
 
 assert_no_sorry Bool_eq_iff2
 
