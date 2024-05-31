@@ -12,7 +12,8 @@ import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 In this file we prove that a finite-dimensional Lie algebra over a field is semisimple
 if it does not have non-trivial abelian ideals and it admits a
 non-degenerate reflexive invariant bilinear form.
-Here a form is *invariant* if it is compatible with the Lie bracket: `Φ ⁅x, y⁆ z = Φ x ⁅y, z⁆`.
+Here a form is *invariant* if it invariant under the Lie bracket
+in the sense that `⁅x, Φ⁆ = 0` for all `x` or equivalently, `Φ ⁅x, y⁆ z = Φ x ⁅y, z⁆`.
 
 ## Main results
 
@@ -154,7 +155,7 @@ lemma atomistic : ∀ I : LieIdeal K L, sSup {J : LieIdeal K L | IsAtom J ∧ J 
     exact hJ'
   by_cases hI : I = ⊥
   · exact hI.le.trans bot_le
-  obtain ⟨J, hJ, hJI⟩ := LieSubmodule.exists_atom_le_of_finite I hI
+  obtain ⟨J, hJ, hJI⟩ := (eq_bot_or_exists_atom_le I).resolve_left hI
   let J' := orthogonal Φ hΦ_inv J
   suffices I ≤ J ⊔ (J' ⊓ I) by
     refine this.trans ?_
