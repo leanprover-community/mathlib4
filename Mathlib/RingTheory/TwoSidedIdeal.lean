@@ -176,6 +176,28 @@ def coeAddMonoidHom : I →+ R where
   map_zero' := rfl
   map_add' _ _ := rfl
 
+
+/--
+The smallest two-sided-ideal contain a set.
+-/
+def span (s : Set R) : RingCon R := ringConGen (fun a b ↦ a - b ∈ s)
+
+lemma subset_span {s : Set R} : s ⊆ (span s : Set R) := by
+  intro x hx
+  rw [SetLike.mem_coe, mem_iff]
+  exact RingConGen.Rel.of _ _ (by simpa using hx)
+
+lemma mem_span_iff {s : Set R} {x} :
+    x ∈ span s ↔ ∀ (I : RingCon R), s ⊆ I → x ∈ I := by
+  refine ⟨?_, fun h => h _ subset_span⟩
+  delta span
+  rw [ringConGen_eq]
+  intro h I hI
+  refine sInf_le (α := RingCon R) ?_ h
+  intro x y hxy
+  specialize hI hxy
+  rwa [SetLike.mem_coe, ← rel_iff] at hI
+
 end NonUnitalNonAssocRing
 
 section ring
@@ -243,27 +265,6 @@ lemma mem_toIdealMop {x} : x ∈ I.toIdealMop ↔ x.unop ∈ I := by
 
 lemma mem_toIdealMop' {x} : (MulOpposite.op x) ∈ I.toIdealMop ↔ x ∈ I := by
   rw [mem_toIdealMop]; rfl
-
-/--
-The smallest two-sided-ideal contain a set.
--/
-def span (s : Set R) : RingCon R := ringConGen (fun a b ↦ a - b ∈ s)
-
-lemma subset_span {s : Set R} : s ⊆ (span s : Set R) := by
-  intro x hx
-  rw [SetLike.mem_coe, mem_iff]
-  exact RingConGen.Rel.of _ _ (by simpa using hx)
-
-lemma mem_span_iff {s : Set R} {x} :
-    x ∈ span s ↔ ∀ (I : RingCon R), s ⊆ I → x ∈ I := by
-  refine ⟨?_, fun h => h _ subset_span⟩
-  delta span
-  rw [ringConGen_eq]
-  intro h I hI
-  refine sInf_le (α := RingCon R) ?_ h
-  intro x y hxy
-  specialize hI hxy
-  rwa [SetLike.mem_coe, ← rel_iff] at hI
 
 /--
 Every left ideal generates a two sided ideal.
