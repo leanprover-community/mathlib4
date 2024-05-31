@@ -109,21 +109,22 @@ theorem finset_sum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ
   map_sum (lcoeff R n) _ _
 #align polynomial.finset_sum_coeff Polynomial.finset_sum_coeff
 
+lemma coeff_list_sum (l : List R[X]) (i : ℕ) :
+    l.sum.coeff i = (l.map (lcoeff R i)).sum := by
+  rw [← lcoeff_apply, map_list_sum]
+
+@[simp]
+lemma coeff_list_sum_map {ι : Type*} (l : List ι) (f : ι → R[X]) (i : ℕ) :
+    (l.map f).sum.coeff i = (l.map (fun a => (f a).coeff i)).sum := by
+  rw [coeff_list_sum, List.map_map, Function.comp]
+  simp only [lcoeff_apply]
+
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
   rcases p with ⟨⟩
   -- porting note (#10745): was `simp [Polynomial.sum, support, coeff]`.
   simp [Polynomial.sum, support_ofFinsupp, coeff_ofFinsupp]
 #align polynomial.coeff_sum Polynomial.coeff_sum
-
-lemma coeff_list_sum (l : List R[X]) (i : ℕ) :
-    l.sum.coeff i = (l.map (lcoeff R i)).sum := by
-  rw [← lcoeff_apply, map_list_sum]
-
-lemma coeff_list_sum_map {α : Type} (l : List α) (f : α → R[X]) (i : ℕ) :
-    (l.map f).sum.coeff i = (l.map (fun a => (f a).coeff i)).sum := by
-  rw [coeff_list_sum, List.map_map, Function.comp]
-  simp only [lcoeff_apply]
 
 /-- Decomposes the coefficient of the product `p * q` as a sum
 over `antidiagonal`. A version which sums over `range (n + 1)` can be obtained
