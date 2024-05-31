@@ -46,7 +46,7 @@ set_option linter.uppercaseLean3 false
 open Finset Function
 
 open scoped Classical
-open BigOperators Pointwise
+open Pointwise
 
 noncomputable section
 
@@ -394,7 +394,7 @@ instance : SMul (HahnSeries Γ R) (SummableFamily Γ R α) where
     { toFun := fun a => x * s a
       isPWO_iUnion_support' := by
         apply (x.isPWO_support.add s.isPWO_iUnion_support).mono
-        refine' Set.Subset.trans (Set.iUnion_mono fun a => support_mul_subset_add_support) _
+        refine Set.Subset.trans (Set.iUnion_mono fun a => support_mul_subset_add_support) ?_
         intro g
         simp only [Set.mem_iUnion, exists_imp]
         exact fun a ha => (Set.add_subset_add (Set.Subset.refl _) (Set.subset_iUnion _ a)) ha
@@ -402,7 +402,7 @@ instance : SMul (HahnSeries Γ R) (SummableFamily Γ R α) where
         refine'
           ((addAntidiagonal x.isPWO_support s.isPWO_iUnion_support g).finite_toSet.biUnion'
                 fun ij _ => _).subset
-            fun a ha => _
+            fun a ha => ?_
         · exact fun ij _ => Function.support fun a => (s a).coeff ij.2
         · apply s.finite_co_support
         · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support ha
@@ -513,13 +513,13 @@ def ofFinsupp (f : α →₀ HahnSeries Γ R) : SummableFamily Γ R α where
   toFun := f
   isPWO_iUnion_support' := by
     apply (f.support.isPWO_bUnion.2 fun a _ => (f a).isPWO_support).mono
-    refine' Set.iUnion_subset_iff.2 fun a g hg => _
+    refine Set.iUnion_subset_iff.2 fun a g hg => ?_
     have haf : a ∈ f.support := by
       rw [Finsupp.mem_support_iff, ← support_nonempty_iff]
       exact ⟨g, hg⟩
     exact Set.mem_biUnion haf hg
   finite_co_support' g := by
-    refine' f.support.finite_toSet.subset fun a ha => _
+    refine f.support.finite_toSet.subset fun a ha => ?_
     simp only [coeff.addMonoidHom_apply, mem_coe, Finsupp.mem_support_iff, Ne,
       Function.mem_support]
     contrapose! ha
@@ -553,7 +553,7 @@ variable [PartialOrder Γ] [AddCommMonoid R] {α β : Type*}
 def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R β where
   toFun b := if h : b ∈ Set.range f then s (Classical.choose h) else 0
   isPWO_iUnion_support' := by
-    refine' s.isPWO_iUnion_support.mono (Set.iUnion_subset fun b g h => _)
+    refine s.isPWO_iUnion_support.mono (Set.iUnion_subset fun b g h => ?_)
     by_cases hb : b ∈ Set.range f
     · dsimp only at h
       rw [dif_pos hb] at h

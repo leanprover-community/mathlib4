@@ -342,7 +342,8 @@ theorem le_or_le_of_add_eq_add_pred (h : a + c = b + d - 1) : b ≤ a ∨ d ≤ 
 
 /-! ### `sub` -/
 
-attribute [simp] Nat.sub_eq_zero_of_le Nat.sub_le_iff_le_add
+attribute [simp] Nat.sub_eq_zero_of_le Nat.sub_le_iff_le_add Nat.add_sub_cancel_left
+  Nat.add_sub_cancel_right
 
 /-- A version of `Nat.sub_succ` in the form `_ - 1` instead of `Nat.pred _`. -/
 lemma sub_succ' (m n : ℕ) : m - n.succ = m - n - 1 := rfl
@@ -1072,14 +1073,9 @@ attribute [simp] Nat.dvd_zero
   cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
 #align nat.mod_two_ne_zero Nat.mod_two_ne_zero
 
-lemma div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b := by
-  obtain rfl | hb := eq_or_ne b 0
-  · simp
-  · rw [← @Nat.add_left_inj _ _ (c * (a / b / c)), mod_add_div, Nat.div_div_eq_div_mul, ←
-      Nat.mul_right_inj hb, ← @Nat.add_right_inj _ _ (a % b), mod_add_div, Nat.mul_add, ←
-      @Nat.add_right_inj _ _ (a % (b * c) % b), Nat.add_left_comm,
-      ← Nat.add_assoc (a % (b * c) % b), mod_add_div, ← Nat.mul_assoc, mod_add_div,
-      mod_mul_right_mod]
+@[deprecated mod_mul_right_div_self (since := "2024-05-29")]
+lemma div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
+  (mod_mul_right_div_self a b c).symm
 #align nat.div_mod_eq_mod_mul_div Nat.div_mod_eq_mod_mul_div
 
 protected lemma lt_div_iff_mul_lt (hdn : d ∣ n) (a : ℕ) : a < n / d ↔ d * a < n := by
@@ -1117,14 +1113,10 @@ protected lemma div_ne_zero_iff (hb : b ≠ 0) : a / b ≠ 0 ↔ b ≤ a := by
 protected lemma div_pos_iff (hb : b ≠ 0) : 0 < a / b ↔ b ≤ a := by
   rw [Nat.pos_iff_ne_zero, Nat.div_ne_zero_iff hb]
 
+@[deprecated div_mul_div_comm (since := "2024-05-29")]
 lemma mul_div_mul_comm_of_dvd_dvd (hba : b ∣ a) (hdc : d ∣ c) :
-    a * c / (b * d) = a / b * (c / d) := by
-  obtain rfl | hb := b.eq_zero_or_pos; · simp
-  obtain rfl | hd := d.eq_zero_or_pos; · simp
-  obtain ⟨_, rfl⟩ := hba
-  obtain ⟨_, rfl⟩ := hdc
-  rw [Nat.mul_mul_mul_comm, Nat.mul_div_cancel_left _ hb, Nat.mul_div_cancel_left _ hd,
-    Nat.mul_div_cancel_left _ (Nat.mul_pos hb hd)]
+    a * c / (b * d) = a / b * (c / d) :=
+  (div_mul_div_comm hba hdc).symm
 #align nat.mul_div_mul_comm_of_dvd_dvd Nat.mul_div_mul_comm_of_dvd_dvd
 
 @[simp] lemma mul_mod_mod (a b c : ℕ) : (a * (b % c)) % c = a * b % c := by

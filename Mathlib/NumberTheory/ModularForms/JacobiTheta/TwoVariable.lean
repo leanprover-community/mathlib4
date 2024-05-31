@@ -27,7 +27,7 @@ of even Dirichlet characters, and that of `θ'` will do the same for odd Dirichl
 
 open Complex Real Asymptotics Filter Topology
 
-open scoped BigOperators ComplexConjugate
+open scoped ComplexConjugate
 
 noncomputable section
 

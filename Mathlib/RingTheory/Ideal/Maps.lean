@@ -16,7 +16,7 @@ assert_not_exists Submodule.hasQuotient -- See `RingTheory.Ideal.QuotientOperati
 
 universe u v w x
 
-open BigOperators Pointwise
+open Pointwise
 
 namespace Ideal
 

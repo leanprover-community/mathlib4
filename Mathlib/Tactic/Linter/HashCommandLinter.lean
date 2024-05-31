@@ -63,7 +63,7 @@ private abbrev allowed_commands : HashSet String :=
 except for the ones in `allowed_commands`.
 
 If `warningAsError` is `true`, then the linter logs an info (rather than a warning).
-This means that CI will eventually fail on `#`-commands, but not stop it from continuing.
+This means that CI will eventually fail on `#`-commands, but does not stop it from continuing.
 
 However, in order to avoid local clutter, when `warningAsError` is `false`, the linter
 logs a warning only for the `#`-commands that do not already emit a message. -/

@@ -385,6 +385,9 @@ theorem choose_mul' [NatPowAssoc R] (r : R) (n k : ℕ) :
     (Nat.choose (n + k) k) • choose (r + k) (n + k) = choose (r + k) k * choose r n := by
   rw [choose_mul (r + k) (n + k) k (Nat.le_add_left k n), Nat.add_sub_cancel, add_sub_cancel_right]
 
+@[deprecated (since := "2024-04-17")]
+alias choose_nat_cast := choose_natCast
+
 end Ring
 
 end Choose

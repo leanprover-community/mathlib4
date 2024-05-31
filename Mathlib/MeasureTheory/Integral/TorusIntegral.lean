@@ -63,7 +63,7 @@ noncomputable section
 
 open Complex Set MeasureTheory Function Filter TopologicalSpace
 
-open scoped Real BigOperators
+open scoped Real
 
 -- Porting note: notation copied from `./DivergenceTheorem`
 local macro:arg t:term:max noWs "ⁿ⁺¹" : term => `(Fin (n + 1) → $t)
