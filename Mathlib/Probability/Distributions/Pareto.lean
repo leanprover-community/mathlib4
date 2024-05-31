@@ -16,7 +16,7 @@ Define the pareto measure over the reals.
   for `t ≤ x` or `0` else, which is the probability density function of a pareto distribution with
   scale `t` and shape `r` (when `ht : 0 < t ` and `hr : 0 < r`).
 * `paretoPDF`: `ℝ≥0∞`-valued pdf,
-  `paretoPDF a r = ENNReal.ofReal (paretoPDFReal a r)`.
+  `paretoPDF t r = ENNReal.ofReal (paretoPDFReal t r)`.
 * `paretoMeasure`: a pareto measure on `ℝ`, parametrized by its scale `t` and shape `r`.
 * `paretoCDFReal`: the CDF given by the definition of CDF in `ProbabilityTheory.CDF` applied to the
   pareto measure.
@@ -123,31 +123,31 @@ open MeasureTheory
 
 /-- Measure defined by the pareto distribution -/
 noncomputable
-def paretoMeasure (a r : ℝ) : Measure ℝ :=
-  volume.withDensity (paretoPDF a r)
+def paretoMeasure (t r : ℝ) : Measure ℝ :=
+  volume.withDensity (paretoPDF t r)
 
-lemma isProbabilityMeasurePareto {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
-    IsProbabilityMeasure (paretoMeasure a r) where
-  measure_univ := by simp [paretoMeasure, lintegral_paretoPDF_eq_one ha hr]
+lemma isProbabilityMeasurePareto {t r : ℝ} (ht : 0 < t) (hr : 0 < r) :
+    IsProbabilityMeasure (paretoMeasure t r) where
+  measure_univ := by simp [paretoMeasure, lintegral_paretoPDF_eq_one ht hr]
 
 section ParetoCDF
 
 /-- CDF of the pareto distribution -/
 noncomputable
-def paretoCDFReal (a r : ℝ) : StieltjesFunction :=
-  cdf (paretoMeasure a r)
+def paretoCDFReal (t r : ℝ) : StieltjesFunction :=
+  cdf (paretoMeasure t r)
 
-lemma paretoCDFReal_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
-    paretoCDFReal a r x = ∫ x in Iic x, paretoPDFReal a r x := by
-  have : IsProbabilityMeasure (paretoMeasure a r) := isProbabilityMeasurePareto ha hr
+lemma paretoCDFReal_eq_integral {t r : ℝ} (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
+    paretoCDFReal t r x = ∫ x in Iic x, paretoPDFReal t r x := by
+  have : IsProbabilityMeasure (paretoMeasure t r) := isProbabilityMeasurePareto ht hr
   rw [paretoCDFReal, cdf_eq_toReal, paretoMeasure, withDensity_apply _ measurableSet_Iic]
   refine (integral_eq_lintegral_of_nonneg_ae ?_ ?_).symm
-  · exact ae_of_all _ fun b ↦ by simp only [Pi.zero_apply, paretoPDFReal_nonneg ha hr]
-  · exact (measurable_paretoPDFReal a r).aestronglyMeasurable.restrict
+  · exact ae_of_all _ fun b ↦ by simp only [Pi.zero_apply, paretoPDFReal_nonneg ht hr]
+  · exact (measurable_paretoPDFReal t r).aestronglyMeasurable.restrict
 
-lemma paretoCDFReal_eq_lintegral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
-    paretoCDFReal a r x = ENNReal.toReal (∫⁻ x in Iic x, paretoPDF a r x) := by
-  have : IsProbabilityMeasure (paretoMeasure a r) := isProbabilityMeasurePareto ha hr
+lemma paretoCDFReal_eq_lintegral {t r : ℝ} (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
+    paretoCDFReal t r x = ENNReal.toReal (∫⁻ x in Iic x, paretoPDF t r x) := by
+  have : IsProbabilityMeasure (paretoMeasure t r) := isProbabilityMeasurePareto ht hr
   simp only [paretoPDF, paretoCDFReal, cdf_eq_toReal]
   simp only [paretoMeasure, measurableSet_Iic, withDensity_apply, paretoPDF]
 
