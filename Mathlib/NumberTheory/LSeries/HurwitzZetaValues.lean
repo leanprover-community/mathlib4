@@ -105,9 +105,9 @@ theorem cosZeta_two_mul_nat' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
   have : (2 * k)! = (2 * k) * Complex.Gamma (2 * k) := by
     rw [(by { norm_cast; omega } : 2 * (k : ℂ) = ↑(2 * k - 1) + 1), Complex.Gamma_nat_eq_factorial,
       ← Nat.cast_add_one, ← Nat.cast_mul, ← Nat.factorial_succ, Nat.sub_add_cancel (by omega)]
-  simp_rw [this, Gammaℂ, cpow_neg, ← div_div, div_inv_eq_mul, div_mul_eq_mul_div, div_div]
+  simp_rw [this, Gammaℂ, cpow_neg, ← div_div, div_inv_eq_mul, div_mul_eq_mul_div, div_div,
+    mul_right_comm (2 : ℂ) (k : ℂ)]
   norm_cast
-  ring_nf
 
 /-- Reformulation of `sinZeta_two_mul_nat_add_one` using `Gammaℂ`. -/
 theorem sinZeta_two_mul_nat_add_one' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
@@ -211,28 +211,24 @@ theorem riemannZeta_two_mul_nat {k : ℕ} (hk : k ≠ 0) :
     riemannZeta (2 * k) = (-1) ^ (k + 1) * (2 : ℂ) ^ (2 * k - 1)
       * (π : ℂ) ^ (2 * k) * bernoulli (2 * k) / (2 * k)! := by
   convert congr_arg ((↑) : ℝ → ℂ) (hasSum_zeta_nat hk).tsum_eq
-  · rw [← Nat.cast_two, ← Nat.cast_mul, zeta_nat_eq_tsum_of_gt_one]
-    · rw [ofReal_tsum]
-      norm_num
-    · refine one_lt_two.trans_le ?_
-      conv_lhs => rw [← mul_one 2]
-      rwa [mul_le_mul_left (zero_lt_two' ℕ), Nat.one_le_iff_ne_zero]
-  · norm_num
+  · rw [← Nat.cast_two, ← Nat.cast_mul, zeta_nat_eq_tsum_of_gt_one (by omega)]
+    simp only [push_cast]
+  · norm_cast
 #align riemann_zeta_two_mul_nat riemannZeta_two_mul_nat
 
 theorem riemannZeta_two : riemannZeta 2 = (π : ℂ) ^ 2 / 6 := by
   convert congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_two.tsum_eq
-  · rw [← Nat.cast_two, zeta_nat_eq_tsum_of_gt_one one_lt_two, ofReal_tsum]
-    norm_num
-  · norm_num
+  · rw [← Nat.cast_two, zeta_nat_eq_tsum_of_gt_one one_lt_two]
+    simp only [push_cast]
+  · norm_cast
 #align riemann_zeta_two riemannZeta_two
 
 theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
   convert congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_four.tsum_eq
   · rw [← Nat.cast_one, show (4 : ℂ) = (4 : ℕ) by norm_num,
-      zeta_nat_eq_tsum_of_gt_one (by norm_num : 1 < 4), ofReal_tsum]
-    norm_num
-  · norm_num
+      zeta_nat_eq_tsum_of_gt_one (by norm_num : 1 < 4)]
+    simp only [push_cast]
+  · norm_cast
 #align riemann_zeta_four riemannZeta_four
 
 /-- Value of Riemann zeta at `-ℕ` in terms of `bernoulli'`. -/
