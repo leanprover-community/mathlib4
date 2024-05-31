@@ -136,13 +136,13 @@ namespace PresheafOfModules
 variable {M₀ : PresheafOfModules.{v} R₀} {A : Sheaf J AddCommGroupCat.{v}}
   (φ : M₀.presheaf ⟶ A.val)
   [Presheaf.IsLocallyInjective J φ] [Presheaf.IsLocallySurjective J φ]
-  [GrothendieckTopology.HasSheafCompose J (forget AddCommGroupCat.{v})] -- automatic
+  [GrothendieckTopology.HasSheafCompose J (forget AddCommGroupCat.{v})] -- should be automatic
 
 namespace Sheafify
 
 open Presheaf
 
-variable {X Y : Cᵒᵖ} (π : X ⟶ Y) (r : R.val.obj X) (m : A.val.obj X)
+variable {X Y : Cᵒᵖ} (π : X ⟶ Y) (r r' : R.val.obj X) (m m' : A.val.obj X)
 
 structure SMulCandidate where
   x : A.val.obj X
@@ -219,67 +219,72 @@ lemma map_smul_eq {Y : Cᵒᵖ} (f : X ⟶ Y) (r₀ : R₀.obj Y) (hr₀ : α.ap
     A.val.map f (smul α φ r m) = φ.app Y (r₀ • m₀) :=
   (smulCandidate α φ r m).h f r₀ hr₀ m₀ hm₀
 
+protected lemma one_smul : smul α φ 1 m = m := by
+  apply A.isSeparated _ _ (Presheaf.imageSieve_mem J φ m)
+  rintro Y f ⟨m₀, hm₀⟩
+  rw [← hm₀]
+  erw [map_smul_eq α φ 1 m f.op 1 (by simp) m₀ hm₀, one_smul]
+  rfl
+
+protected lemma zero_smul : smul α φ 0 m = 0 := by
+  apply A.isSeparated _ _ (Presheaf.imageSieve_mem J φ m)
+  rintro Y f ⟨m₀, hm₀⟩
+  erw [map_smul_eq α φ 0 m f.op 0 (by simp) m₀ hm₀, zero_smul, map_zero,
+    (A.val.map f.op).map_zero]
+
+protected lemma smul_zero : smul α φ r 0 = 0 := by
+  apply A.isSeparated _ _ (Presheaf.imageSieve_mem J α r)
+  rintro Y f ⟨r₀, hr₀⟩
+  erw [(A.val.map f.op).map_zero, map_smul_eq α φ r 0 f.op r₀ hr₀ 0 (by simp),
+    smul_zero, map_zero]
+
+protected lemma smul_add : smul α φ r (m + m') = smul α φ r m + smul α φ r m' := by
+  let S := Presheaf.imageSieve α r ⊓ Presheaf.imageSieve φ m ⊓ Presheaf.imageSieve φ m'
+  have hS : S ∈ J X.unop := by
+    refine' J.intersection_covering (J.intersection_covering ?_ ?_) ?_
+    all_goals apply Presheaf.imageSieve_mem
+  apply A.isSeparated _ _ hS
+  rintro Y f ⟨⟨⟨r₀, hr₀⟩, ⟨m₀ : M₀.presheaf.obj _, hm₀⟩⟩, ⟨m₀' : M₀.presheaf.obj _, hm₀'⟩⟩
+  erw [(A.val.map f.op).map_add, map_smul_eq α φ r m f.op r₀ hr₀ m₀ hm₀,
+    map_smul_eq α φ r m' f.op r₀ hr₀ m₀' hm₀',
+    map_smul_eq α φ r (m + m') f.op r₀ hr₀ (m₀ + m₀')
+      (by erw [map_add, map_add, hm₀, hm₀']; rfl),
+    smul_add, map_add]
+
+protected lemma add_smul : smul α φ (r + r') m = smul α φ r m + smul α φ r' m := by
+  let S := Presheaf.imageSieve α r ⊓ Presheaf.imageSieve α r' ⊓ Presheaf.imageSieve φ m
+  have hS : S ∈ J X.unop := by
+    refine' J.intersection_covering (J.intersection_covering ?_ ?_) ?_
+    all_goals apply Presheaf.imageSieve_mem
+  apply A.isSeparated _ _ hS
+  rintro Y f ⟨⟨⟨r₀ : R₀.obj _, hr₀⟩, ⟨r₀' : R₀.obj _, hr₀'⟩⟩, ⟨m₀, hm₀⟩⟩
+  erw [(A.val.map f.op).map_add, map_smul_eq α φ r m f.op r₀ hr₀ m₀ hm₀,
+    map_smul_eq α φ r' m f.op r₀' hr₀' m₀ hm₀,
+    map_smul_eq α φ (r + r') m f.op (r₀ + r₀') (by rw [map_add, map_add, hr₀, hr₀'])
+      m₀ hm₀, add_smul, map_add]
+
+protected lemma mul_smul : smul α φ (r * r') m = smul α φ r (smul α φ r' m) := by
+  let S := Presheaf.imageSieve α r ⊓ Presheaf.imageSieve α r' ⊓ Presheaf.imageSieve φ m
+  have hS : S ∈ J X.unop := by
+    refine' J.intersection_covering (J.intersection_covering ?_ ?_) ?_
+    all_goals apply Presheaf.imageSieve_mem
+  apply A.isSeparated _ _ hS
+  rintro Y f ⟨⟨⟨r₀ : R₀.obj _, hr₀⟩, ⟨r₀' : R₀.obj _, hr₀'⟩⟩, ⟨m₀ : M₀.presheaf.obj _, hm₀⟩⟩
+  erw [map_smul_eq α φ (r * r') m f.op (r₀ * r₀')
+    (by rw [map_mul, map_mul, hr₀, hr₀']) m₀ hm₀, mul_smul,
+    map_smul_eq α φ r (smul α φ r' m) f.op r₀ hr₀ (r₀' • m₀)
+      (map_smul_eq α φ r' m f.op r₀' hr₀' m₀ hm₀).symm]
+
 variable (X)
 
-set_option maxHeartbeats 800000 in
 noncomputable def module : Module (R.val.obj X) (A.val.obj X) where
   smul r m := smul α φ r m
-  one_smul := sorry
-  zero_smul := sorry
-  smul_add := sorry
-  smul_zero := sorry
-  add_smul := sorry
-  mul_smul := sorry
-/-  one_smul m := by
-    apply A.isSeparated _ _ (Presheaf.imageSieve_mem J φ m)
-    rintro Y f ⟨m₀, hm₀⟩
-    rw [← hm₀]
-    erw [map_smul_eq α φ 1 m f.op 1 (by simp) m₀ hm₀, one_smul]
-    rfl
-  zero_smul m := by
-    apply A.isSeparated _ _ (Presheaf.imageSieve_mem J φ m)
-    rintro Y f ⟨m₀, hm₀⟩
-    erw [map_smul_eq α φ 0 m f.op 0 (by simp) m₀ hm₀, zero_smul, map_zero,
-      (A.val.map f.op).map_zero]
-  smul_zero r := by
-    apply A.isSeparated _ _ (Presheaf.imageSieve_mem J α r)
-    rintro Y f ⟨r₀, hr₀⟩
-    erw [(A.val.map f.op).map_zero, map_smul_eq α φ r 0 f.op r₀ hr₀ 0 (by simp),
-      smul_zero, map_zero]
-  smul_add r m m' := by
-    let S := Presheaf.imageSieve α r ⊓ Presheaf.imageSieve φ m ⊓ Presheaf.imageSieve φ m'
-    have hS : S ∈ J X.unop := by
-      refine' J.intersection_covering (J.intersection_covering ?_ ?_) ?_
-      all_goals apply Presheaf.imageSieve_mem
-    apply A.isSeparated _ _ hS
-    rintro Y f ⟨⟨⟨r₀, hr₀⟩, ⟨m₀ : M₀.presheaf.obj _, hm₀⟩⟩, ⟨m₀' : M₀.presheaf.obj _, hm₀'⟩⟩
-    erw [(A.val.map f.op).map_add, map_smul_eq α φ r m f.op r₀ hr₀ m₀ hm₀,
-      map_smul_eq α φ r m' f.op r₀ hr₀ m₀' hm₀',
-      map_smul_eq α φ r (m + m') f.op r₀ hr₀ (m₀ + m₀')
-        (by erw [map_add, map_add, hm₀, hm₀']; rfl),
-      smul_add, map_add]
-  add_smul r r' m := by
-    let S := Presheaf.imageSieve α r ⊓ Presheaf.imageSieve α r' ⊓ Presheaf.imageSieve φ m
-    have hS : S ∈ J X.unop := by
-      refine' J.intersection_covering (J.intersection_covering ?_ ?_) ?_
-      all_goals apply Presheaf.imageSieve_mem
-    apply A.isSeparated _ _ hS
-    rintro Y f ⟨⟨⟨r₀, hr₀⟩, ⟨r₀', hr₀'⟩⟩, ⟨m₀, hm₀⟩⟩
-    erw [(A.val.map f.op).map_add, map_smul_eq α φ r m f.op r₀ hr₀ m₀ hm₀,
-      map_smul_eq α φ r' m f.op r₀' hr₀' m₀ hm₀,
-      map_smul_eq α φ (r + r') m f.op (r₀ + r₀') (by rw [map_add, map_add, hr₀, hr₀']; rfl)
-        m₀ hm₀, add_smul, map_add]
-  mul_smul r r' m := by
-    let S := Presheaf.imageSieve α r ⊓ Presheaf.imageSieve α r' ⊓ Presheaf.imageSieve φ m
-    have hS : S ∈ J X.unop := by
-      refine' J.intersection_covering (J.intersection_covering ?_ ?_) ?_
-      all_goals apply Presheaf.imageSieve_mem
-    apply A.isSeparated _ _ hS
-    rintro Y f ⟨⟨⟨r₀ : R₀.obj _, hr₀⟩, ⟨r₀' : R₀.obj _, hr₀'⟩⟩, ⟨m₀ : M₀.presheaf.obj _, hm₀⟩⟩
-    erw [map_smul_eq α φ (r * r') m f.op (r₀ * r₀')
-      (by rw [map_mul, map_mul, hr₀, hr₀']; rfl) m₀ hm₀, mul_smul,
-      map_smul_eq α φ r (smul α φ r' m) f.op r₀ hr₀ (r₀' • m₀)
-        (map_smul_eq α φ r' m f.op r₀' hr₀' m₀ hm₀).symm]-/
+  one_smul := Sheafify.one_smul α φ
+  zero_smul := Sheafify.zero_smul α φ
+  smul_zero := Sheafify.smul_zero α φ
+  smul_add := Sheafify.smul_add α φ
+  add_smul := Sheafify.add_smul α φ
+  mul_smul := Sheafify.mul_smul α φ
 
 lemma map_smul :
     A.val.map π (smul α φ r m) = smul α φ (R.val.map π r) (A.val.map π m) := by
@@ -290,7 +295,7 @@ lemma map_smul :
   apply A.isSeparated _ _ hS
   rintro Y f ⟨⟨r₀, hr₀⟩, ⟨m₀, hm₀⟩⟩
   erw [← comp_apply, ← Functor.map_comp,
-    map_smul_eq α φ r m (π ≫ f.op) r₀ (by erw [hr₀, Functor.map_comp, comp_apply]; rfl) m₀
+    map_smul_eq α φ r m (π ≫ f.op) r₀ (by erw [hr₀, Functor.map_comp, comp_apply]) m₀
       (by erw [hm₀, Functor.map_comp, comp_apply]; rfl),
     map_smul_eq α φ (R.val.map π r) (A.val.map π m) f.op r₀ hr₀ m₀ hm₀]
 
