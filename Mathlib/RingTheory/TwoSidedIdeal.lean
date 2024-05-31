@@ -20,6 +20,8 @@ But later for the `module` part, we will assume `R` is a ring.
 
 -/
 
+open MulOpposite
+
 section ideal
 
 namespace RingCon
@@ -46,6 +48,44 @@ lemma rel_iff (x y : R) : I x y ↔ x - y ∈ I := by
   constructor
   · intro h; convert I.sub h (I.refl y); abel
   · intro h; convert I.add h (I.refl y) <;> abel
+
+/--
+Any two-sided-ideal in `A` corresponds to a two-sided-ideal in `Aᵒᵖ`.
+-/
+@[simps]
+def toMop (rel : RingCon R) : (RingCon Rᵐᵒᵖ) :=
+{ r := fun a b ↦ rel b.unop a.unop
+  iseqv :=
+  { refl := fun a ↦ rel.refl a.unop
+    symm := rel.symm
+    trans := fun h1 h2 ↦ rel.trans h2 h1 }
+  mul' := fun h1 h2 ↦ rel.mul h2 h1
+  add' := rel.add }
+
+/--
+Any two-sided-ideal in `Aᵒᵖ` corresponds to a two-sided-ideal in `A`.
+-/
+@[simps]
+def fromMop (rel : RingCon Rᵐᵒᵖ) : (RingCon R) :=
+{ r := fun a b ↦ rel (op b) (op a)
+  iseqv :=
+  { refl := fun a ↦ rel.refl (op a)
+    symm := rel.symm
+    trans := fun h1 h2 ↦ rel.trans h2 h1 }
+  mul' := fun h1 h2 ↦ rel.mul h2 h1
+  add' := rel.add }
+
+/--
+Two-sided-ideals of `A` and that of `Aᵒᵖ` corresponds bijectively to each other.
+-/
+@[simps]
+def orderIsoRingConMop : (RingCon R) ≃o (RingCon Rᵐᵒᵖ) where
+  toFun := toMop
+  invFun := fromMop
+  left_inv := unop_op
+  right_inv := unop_op
+  map_rel_iff' {a b} := by
+    constructor <;> exact fun h _ _ H => h H
 
 /--
 the coercion from two-sided-ideals to sets is an order embedding
@@ -172,6 +212,7 @@ variable {R : Type*} [Ring R] (I : RingCon R)
 /--
 Every two-sided ideal is also a left ideal.
 -/
+@[simps]
 def toIdeal : Ideal R where
   carrier := I
   add_mem' := I.add_mem
@@ -183,13 +224,10 @@ lemma mem_toIdeal {x} : x ∈ I.toIdeal ↔ x ∈ I := Iff.rfl
 /--
 Every two-sided ideal is also a right ideal.
 -/
-def toIdealMop : Ideal Rᵐᵒᵖ := LinearMap.range I.subtypeMop
+def toIdealMop : Ideal Rᵐᵒᵖ := (orderIsoRingConMop I).toIdeal
 
 lemma mem_toIdealMop {x} : x ∈ I.toIdealMop ↔ x.unop ∈ I := by
-  simp only [toIdealMop, LinearMap.mem_range, subtypeMop_apply, Subtype.exists, exists_prop]
-  constructor
-  · rintro ⟨a, ha, rfl⟩; simpa
-  · intro h; exact ⟨x.unop, h, rfl⟩
+  simpa [toIdealMop, toMop, mem_toIdeal, mem_iff] using ⟨I.symm, I.symm⟩
 
 lemma mem_toIdealMop' {x} : (MulOpposite.op x) ∈ I.toIdealMop ↔ x ∈ I := by
   rw [mem_toIdealMop]; rfl
