@@ -18,20 +18,23 @@ lemma Order.radical_le_coatom {a : α} (h : IsCoatom a) : radical α ≤ a := bi
 
 variable {β : Type*} [CompleteLattice β]
 
-theorem OrderIso.map_radical(f : α ≃o β) : f (Order.radical α) = Order.radical β := by
+theorem OrderIso.map_radical (f : α ≃o β) : f (Order.radical α) = Order.radical β := by
   unfold Order.radical
-  simp only [OrderIso.map_iInf]
-  fapply Equiv.iInf_congr
-  · exact f.toEquiv
-  · intros
-    simp
+  rw [OrderIso.map_iInf]
+  exact Equiv.iInf_congr f.toEquiv (by simp)
 
 theorem Order.radical_nongenerating [IsCoatomic α] {a : α} (h : a ⊔ radical α = ⊤) :
     a = ⊤ := by
+  -- Since the lattice is coatomic, either `a` is already the top element,
+  -- or there is a coatom above it.
   obtain (rfl | w) := eq_top_or_exists_le_coatom a
-  · rfl
+  · -- In the first case, we're done, this was already the goal.
+    rfl
   · obtain ⟨m, c, le⟩ := w
+    -- Now note that `a ⊔ radical α ≤ m` since both `a ≤ m` and `radical α ≤ m`.
     have q : a ⊔ radical α ≤ m := sup_le le (radical_le_coatom c)
+    -- Combined with the original assumption `h : a ⊔ radical α = ⊤`
+    -- this gives a contradiction since the coatom `m` cannot equal `⊤`.
     rw [h, top_le_iff] at q
     simpa using c.1 q
 
