@@ -193,20 +193,22 @@ section Field
 variable {F : Type u} [Field F] {W : Affine F}
 
 lemma C_addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
-    (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) : mk W (C <| W.addPolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) =
+    (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
+    mk W (C <| W.addPolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) =
       -(XClass W x₁ * XClass W x₂ * XClass W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)) := by
   simp only [addPolynomial_slope h₁ h₂ hxy, C_neg, mk, map_neg, neg_inj, _root_.map_mul]
   rfl
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.C_add_polynomial_slope WeierstrassCurve.Affine.CoordinateRing.C_addPolynomial_slope
 
-lemma XYIdeal_eq₂ {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁)
-    (h₂ : W.Equation x₂ y₂) (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
+lemma XYIdeal_eq₂ {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
+    (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     XYIdeal W x₂ (C y₂) = XYIdeal W x₂ (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
   have hy₂ : y₂ = (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂).eval x₂ := by
     by_cases hx : x₁ = x₂
-    · rcases hx, Y_eq_of_Y_ne h₁ h₂ hx <| hxy hx with ⟨rfl, rfl⟩
-      field_simp [linePolynomial, sub_ne_zero_of_ne <| hxy rfl]
+    · have hy : y₁ ≠ W.negY x₂ y₂ := fun h => hxy ⟨hx, h⟩
+      rcases hx, Y_eq_of_Y_ne h₁ h₂ hx hy with ⟨rfl, rfl⟩
+      field_simp [linePolynomial, sub_ne_zero_of_ne hy]
     · field_simp [linePolynomial, slope_of_X_ne hx, sub_ne_zero_of_ne hx]
       ring1
   nth_rw 1 [hy₂]
@@ -226,7 +228,7 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
       C (X - C x) * (C (X ^ 2 + C (x + W.a₂) * X + C (x ^ 2 + W.a₂ * x + W.a₄)) - C (C W.a₁) * Y) =
         W.polynomial * 1 := by
     linear_combination (norm := (rw [negY, polynomial]; C_simp; ring1))
-      congr_arg C (congr_arg C ((W.equation_iff _ _).mp h.left).symm)
+      congr_arg C (congr_arg C ((equation_iff ..).mp h.left).symm)
   simp_rw [XYIdeal, XClass, YClass, span_pair_mul_span_pair, mul_comm, ← _root_.map_mul,
     AdjoinRoot.mk_eq_mk.mpr ⟨1, Y_rw⟩, _root_.map_mul, span_insert,
     ← span_singleton_mul_span_singleton, ← Ideal.mul_sup, ← span_insert]
@@ -235,7 +237,7 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
   convert map_top (R := F[X][Y]) (mk W) using 1
   apply congr_arg
   simp_rw [eq_top_iff_one, mem_span_insert', mem_span_singleton']
-  rcases ((W.nonsingular_iff' _ _).mp h).right with hx | hy
+  rcases ((nonsingular_iff' ..).mp h).right with hx | hy
   · let W_X := W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄)
     refine
       ⟨C <| C W_X⁻¹ * -(X + C (2 * x + W.a₂)), C <| C <| W_X⁻¹ * W.a₁, 0, C <| C <| W_X⁻¹ * -1, ?_⟩
@@ -255,11 +257,11 @@ set_option linter.uppercaseLean3 false in
 private lemma XYIdeal'_mul_inv {x y : F} (h : W.Nonsingular x y) :
     XYIdeal W x (C y) * (XYIdeal W x (C <| W.negY x y) *
         (XIdeal W x : FractionalIdeal W.CoordinateRing⁰ W.FunctionField)⁻¹) = 1 := by
-  rw [← mul_assoc, ← FractionalIdeal.coeIdeal_mul, mul_comm <| XYIdeal W _ _, XYIdeal_neg_mul h,
+  rw [← mul_assoc, ← FractionalIdeal.coeIdeal_mul, mul_comm <| XYIdeal W .., XYIdeal_neg_mul h,
     XIdeal, FractionalIdeal.coe_ideal_span_singleton_mul_inv W.FunctionField <| XClass_ne_zero W x]
 
 lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
-    (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
+    (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     XIdeal W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) * (XYIdeal W x₁ (C y₁) * XYIdeal W x₂ (C y₂)) =
       YIdeal W (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) *
         XYIdeal W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)
@@ -282,9 +284,10 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     mem_map_iff_of_surjective _ AdjoinRoot.mk_surjective, ← span_insert, mem_span_insert',
     mem_span_singleton']
   by_cases hx : x₁ = x₂
-  · rcases hx, Y_eq_of_Y_ne h₁ h₂ hx (hxy hx) with ⟨rfl, rfl⟩
+  · have hy : y₁ ≠ W.negY x₂ y₂ := fun h => hxy ⟨hx, h⟩
+    rcases hx, Y_eq_of_Y_ne h₁ h₂ hx hy with ⟨rfl, rfl⟩
     let y := (y₁ - W.negY x₁ y₁) ^ 2
-    replace hxy := pow_ne_zero 2 <| sub_ne_zero_of_ne <| hxy rfl
+    replace hxy := pow_ne_zero 2 <| sub_ne_zero_of_ne hy
     refine ⟨1 + C (C <| y⁻¹ * 4) * W.polynomial,
       ⟨C <| C y⁻¹ * (C 4 * X ^ 2 + C (4 * x₁ + W.b₂) * X + C (4 * x₁ ^ 2 + W.b₂ * x₁ + 2 * W.b₄)),
         0, C (C y⁻¹) * (Y - W.negPolynomial), ?_⟩, by
@@ -292,7 +295,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     rw [polynomial, negPolynomial, ← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hxy]
     simp only [mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel hxy]
     linear_combination (norm := (rw [b₂, b₄, negY]; C_simp; ring1))
-      -4 * congr_arg C (congr_arg C <| (W.equation_iff _ _).mp h₁)
+      -4 * congr_arg C (congr_arg C <| (W.equation_iff ..).mp h₁)
   · replace hx := sub_ne_zero_of_ne hx
     refine ⟨_, ⟨⟨C <| C (x₁ - x₂)⁻¹, C <| C <| (x₁ - x₂)⁻¹ * -1, 0, ?_⟩, map_one _⟩⟩
     rw [← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hx]
@@ -320,13 +323,13 @@ lemma mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq {x y : F} (h : W.Nonsingular x y) :
     ClassGroup.mk (XYIdeal' <| nonsingular_neg h) * ClassGroup.mk (XYIdeal' h) = 1 := by
   rw [← _root_.map_mul]
   exact
-    (ClassGroup.mk_eq_one_of_coe_ideal <| by exact (FractionalIdeal.coeIdeal_mul _ _).symm.trans <|
+    (ClassGroup.mk_eq_one_of_coe_ideal <| by exact (FractionalIdeal.coeIdeal_mul ..).symm.trans <|
       FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero W _, rfl⟩
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.mk_XY_ideal'_mul_mk_XY_ideal'_of_Yeq WeierstrassCurve.Affine.CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq
 
 lemma mk_XYIdeal'_mul_mk_XYIdeal' {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
-    (h₂ : W.Nonsingular x₂ y₂) (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
+    (h₂ : W.Nonsingular x₂ y₂) (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     ClassGroup.mk (XYIdeal' h₁) * ClassGroup.mk (XYIdeal' h₂) =
       ClassGroup.mk (XYIdeal' <| nonsingular_add h₁ h₂ hxy) := by
   rw [← _root_.map_mul]
@@ -550,16 +553,12 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
   map_zero' := rfl
   map_add' := by
     rintro (_ | @⟨x₁, y₁, h₁⟩) (_ | @⟨x₂, y₂, h₂⟩)
-    any_goals simp only [zero_def, toClassFun, _root_.zero_add, _root_.add_zero]
-    by_cases hx : x₁ = x₂
-    · by_cases hy : y₁ = W.negY x₂ y₂
-      · substs hx hy
-        rw [add_of_Y_eq rfl rfl]
-        exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h₂).symm
-      · rw [add_of_Y_ne hx hy]
-        exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ fun _ => hy).symm
-    · rw [add_of_X_ne hx]
-      exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ fun h => (hx h).elim).symm
+    any_goals simp only [← zero_def, toClassFun, zero_add, add_zero]
+    by_cases hxy : x₁ = x₂ ∧ y₁ = W.negY x₂ y₂
+    · simp only [hxy.left, hxy.right, add_of_Y_eq rfl rfl]
+      exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq h₂).symm
+    · simp only [add_some hxy]
+      exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ hxy).symm
 #align weierstrass_curve.point.to_class WeierstrassCurve.Affine.Point.toClass
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
@@ -576,17 +575,11 @@ lemma toClass_some {x y : F} (h : W.Nonsingular x y) :
 lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
   rcases P, Q with ⟨_ | @⟨x₁, y₁, _⟩, _ | @⟨x₂, y₂, _⟩⟩
   any_goals rfl
-  · rw [zero_def, zero_add, ← neg_eq_iff_eq_neg, neg_zero, eq_comm]
+  · erw [zero_add, ← neg_eq_iff_eq_neg, neg_zero, eq_comm]
   · rw [neg_some, some.injEq]
     constructor
-    · intro h
-      by_cases hx : x₁ = x₂
-      · by_cases hy : y₁ = W.negY x₂ y₂
-        · exact ⟨hx, hy⟩
-        · rw [add_of_Y_ne hx hy] at h
-          contradiction
-      · rw [add_of_X_ne hx] at h
-        contradiction
+    · contrapose
+      exact fun hxy => by simp only [add_some hxy, not_false_eq_true]
     · exact fun ⟨hx, hy⟩ => add_of_Y_eq hx hy
 #align weierstrass_curve.point.add_eq_zero WeierstrassCurve.Affine.Point.add_eq_zero
 
