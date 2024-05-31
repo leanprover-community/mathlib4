@@ -12,7 +12,19 @@ import Mathlib.Algebra.Module.Opposites
 /-!
 # Two Sided Ideals
 
-In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two sided ideal of a ring.
+In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two-sided-ideal of a ring.
+
+## Main definitions and results
+* `RingCon.setLike`: Every `I : RingCon R` can be interpreted as a set of `R` where `x ∈ I` if and
+  only if `I x 0`. In this sense, two-sided-ideals of `R` are exactly `RingCon R`.
+* `RingCon.orderIsoRingConMop`: The two-sided-ideals of `R` and that of `Rᵐᵒᵖ` correspond
+  bijectively to each other.
+
+* `RingCon.addCommGroup`: when viewing `I : RingCon R` as a set, it is an abelian group.
+* `RingCon.leftModule`: when viewing `I : RingCon R` as a set, it is a left module over `R`.
+* `RingCon.rightModule`: when viewing `I : RingCon R` as a set, it is a right module over `R`.
+
+* `RingCon.span`: let `s ⊆ R` be a subset, `span s` is the smallest two-sided-ideal containing `s`.
 
 ## Notes
 `SetLike (RingCon R) R` makes sense for any `NonUnitalNonAssocRing R`.
@@ -30,7 +42,7 @@ section NonUnitalNonAssocRing
 
 variable {R : Type*} [NonUnitalNonAssocRing R] (I : RingCon R)
 
-instance : SetLike (RingCon R) R where
+instance setLike : SetLike (RingCon R) R where
   coe t := {r | t r 0}
   coe_injective' t₁ t₂ (h : {x | _} = {x | _}) := by
     refine RingCon.ext fun a b ↦ ⟨fun H ↦ ?_, fun H ↦ ?_⟩
@@ -153,7 +165,7 @@ instance : Sub I where sub x y := ⟨x.1 - y.1, I.sub_mem x.2 y.2⟩
 instance : SMul ℤ I where
   smul n x := ⟨n • x.1, I.zsmul_mem n x.2⟩
 
-instance : AddCommGroup I :=
+instance addCommGroup : AddCommGroup I :=
   Function.Injective.addCommGroup _ Subtype.coe_injective
     rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
@@ -174,10 +186,10 @@ instance : SMul R I where smul r x := ⟨r • x.1, I.mul_mem_left _ _ x.2⟩
 
 instance : SMul Rᵐᵒᵖ I where smul r x := ⟨r • x.1, I.mul_mem_right _ _ x.2⟩
 
-instance : Module R I :=
+instance leftModule : Module R I :=
   Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ => rfl
 
-instance : Module Rᵐᵒᵖ I :=
+instance rightModule : Module Rᵐᵒᵖ I :=
   Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ => rfl
 
 instance : SMulCommClass R Rᵐᵒᵖ I where
