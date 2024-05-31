@@ -36,7 +36,6 @@ Stacks project
 
 /-
 TODO:
-- Fix in-proof documentation
 - clean up proofs
 -/
 
@@ -258,19 +257,20 @@ such that the `φ ≫ ψ` and `ψ` are cartesian, then so is `φ`. -/
 protected lemma of_comp [IsStronglyCartesian p g ψ] [IsStronglyCartesian p (f ≫ g) (φ ≫ ψ)]
     [IsHomLift p f φ] : IsStronglyCartesian p f φ where
   universal_property' := by
-    -- Fix a morphism `τ : a' ⟶ b` and a morphism `h : p(a') ⟶ R` such that `τ` lifts `h ≫ f`
     intro a' h τ hτ
     have h₁ : IsHomLift p (h ≫ f ≫ g) (τ ≫ ψ) := by simpa using IsHomLift.comp p (h ≫ f) _ τ ψ
-    -- We get a morphism `π : a' ⟶ a` from the universal property of `φ ≫ ψ`
+    /- We get a morphism `π : a' ⟶ a` such that `π ≫ φ ≫ ψ` = `τ = ψ` from the universal property
+    of `φ ≫ ψ`. -/
     use inducedMap p (f ≫ g) (φ ≫ ψ) (f' := h ≫ f ≫ g) rfl (τ ≫ ψ)
+    -- This will be the morphism induced by `φ`.
     refine ⟨⟨inferInstance, ?_⟩, ?_⟩
     /- The fact that `π ≫ φ = τ` follows from `π ≫ φ ≫ ψ = τ ≫ ψ` and the universal property of
-    `ψ` -/
+    `ψ`. -/
     · apply IsStronglyCartesian.uniqueness p g ψ (g := h ≫ f) rfl (τ ≫ ψ) (by simp) rfl
-    -- Finally, uniqueness of `π` comes from the universal property of `φ ≫ ψ`
-    intro π' ⟨hπ'₁, hπ'₂⟩
-    apply inducedMap_unique
-    simp [hπ'₂.symm]
+    -- Finally, uniqueness of `π` comes from the universal property of `φ ≫ ψ`.
+    · intro π' ⟨hπ'₁, hπ'₂⟩
+      apply inducedMap_unique
+      simp [hπ'₂.symm]
 
 end
 
@@ -290,22 +290,21 @@ instance of_isIso (φ : a ⟶ b) [IsHomLift p f φ] [IsIso φ] : IsStronglyCarte
 
 /-- A cartesian arrow lying over an isomorphism is an isomorphism. -/
 lemma isIso_of_base_isIso (φ : a ⟶ b) [IsStronglyCartesian p f φ] (hf : IsIso f) : IsIso φ := by
-  -- The inverse will be given by applying the universal property to the arrows f⁻¹ : S ⟶ R and 𝟙 b
   subst_hom_lift p f φ; clear a b R S
+  -- Let `φ` be the morphism induced by applying universal property to `𝟙 b` lying over `f⁻¹ ≫ f`.
   let φ' := inducedMap p (p.map φ) φ (IsIso.inv_hom_id (p.map φ)).symm (𝟙 b)
   use φ'
-  -- `φ' ≫ φ = 𝟙 b` follows immediately from the universal property
+  -- `φ' ≫ φ = 𝟙 b` follows immediately from the universal property.
   have inv_hom : φ' ≫ φ = 𝟙 b := inducedMap_comp p (p.map φ) φ _ (𝟙 b)
   refine ⟨?_, inv_hom⟩
-  -- We now show that `φ ≫ φ' = 𝟙 a` by applying the universal property of `φ` to the equality
-  -- `φ ≫ φ' ≫ φ = φ ≫ 𝟙 b = 𝟙 a ≫ φ`
+  /- We now show that `φ ≫ φ' = 𝟙 a` by applying the universal property of `φ` to the equality
+  `(φ ≫ φ') ≫ φ = φ ≫ 𝟙 b = 𝟙 a ≫ φ`. -/
   have h₁ : IsHomLift p (𝟙 (p.obj a)) (φ  ≫ φ') := by
     rw [← IsIso.hom_inv_id (p.map φ)]
     apply IsHomLift.comp
   have h₂ : IsHomLift p (p.map φ) (φ ≫ φ' ≫ φ) := by
     simpa using IsHomLift.comp p (𝟙 (p.obj a)) (p.map φ) (φ ≫ φ') φ
-  apply IsStronglyCartesian.uniqueness p _ φ (id_comp (p.map φ)).symm (φ ≫ φ' ≫ φ)
-  · apply Category.assoc
+  apply IsStronglyCartesian.uniqueness p _ φ (id_comp (p.map φ)).symm (φ ≫ φ' ≫ φ) (assoc _ _ _)
   · simp only [inv_hom, id_comp, comp_id]
 
 end
