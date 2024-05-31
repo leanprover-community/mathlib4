@@ -368,8 +368,9 @@ protected theorem mul {q r : ℚ} (hq : q ≠ 0) (hr : r ≠ 0) :
 #align padic_val_rat.mul padicValRat.mul
 
 /-- A rewrite lemma for `padicValRat p (q^k)` with condition `q ≠ 0`. -/
-protected theorem pow {q : ℚ} (hq : q ≠ 0) {k : ℕ} : padicValRat p (q ^ k) = k * padicValRat p q :=
-  by induction k <;>
+protected theorem pow {q : ℚ} (hq : q ≠ 0) {k : ℕ} :
+    padicValRat p (q ^ k) = k * padicValRat p q := by
+  induction k <;>
     simp [*, padicValRat.mul hq (pow_ne_zero _ hq), _root_.pow_succ', add_mul, add_comm]
 #align padic_val_rat.pow padicValRat.pow
 
@@ -479,8 +480,6 @@ lemma lt_add_of_lt {q r₁ r₂ : ℚ} (hqr : r₁ + r₂ ≠ 0)
 lemma self_pow_inv (r : ℕ) : padicValRat p ((p : ℚ) ^ r)⁻¹ = -r := by
   rw [padicValRat.inv, neg_inj, padicValRat.pow (Nat.cast_ne_zero.mpr hp.elim.ne_zero),
       padicValRat.self hp.elim.one_lt, mul_one]
-
-open BigOperators
 
 /-- A finite sum of rationals with positive `p`-adic valuation has positive `p`-adic valuation
 (if the sum is non-zero). -/
@@ -646,8 +645,6 @@ lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) :
   replace h := le_antisymm (add_one_le_iff.mpr (lt_pow_of_log_lt one_lt_two h))
     (pow_log_le_self 2 n.succ_ne_zero)
   rw [h, padicValNat.prime_pow, ← h]
-
-open BigOperators
 
 theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :
     (Finset.range (padicValNat p n + 1)).image (p ^ ·) ⊆ n.divisors := by

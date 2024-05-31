@@ -567,7 +567,7 @@ theorem factors_pos (x : α) (hx : x ≠ 0) : 0 < factors x ↔ ¬IsUnit x := by
         (mt Multiset.eq_zero_iff_forall_not_mem.mp (not_forall.mpr ⟨p, not_not.mpr hp⟩))
 #align unique_factorization_monoid.factors_pos UniqueFactorizationMonoid.factors_pos
 
-open BigOperators Multiset in
+open Multiset in
 theorem factors_pow_count_prod [DecidableEq α] {x : α} (hx : x ≠ 0) :
     (∏ p ∈ (factors x).toFinset, p ^ (factors x).count p) ~ᵤ x :=
   calc
@@ -854,7 +854,7 @@ theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
     simp
   induction s using Multiset.induction with
   | empty => simp
-  | cons IH =>
+  | cons _ _ IH =>
     rw [Multiset.prod_cons, Multiset.map_cons, Multiset.sum_cons, normalizedFactors_mul, IH]
     · exact fun h ↦ hs (Multiset.mem_cons_of_mem h)
     · exact fun h ↦ hs (h ▸ Multiset.mem_cons_self _ _)
@@ -1071,8 +1071,6 @@ section Multiplicative
 
 variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
 variable {β : Type*} [CancelCommMonoidWithZero β]
-
-open BigOperators
 
 theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α} (i : α → ℕ) (p : α)
     (hps : p ∉ s) (is_prime : ∀ q ∈ insert p s, Prime q)
@@ -1757,8 +1755,8 @@ theorem count_ne_zero_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
 #align associates.count_ne_zero_iff_dvd Associates.count_ne_zero_iff_dvd
 
 theorem count_self [Nontrivial α] [DecidableEq (Associates α)] {p : Associates α}
-    (hp : Irreducible p) : p.count p.factors = 1 :=
-  by simp [factors_self hp, Associates.count_some hp]
+    (hp : Irreducible p) : p.count p.factors = 1 := by
+  simp [factors_self hp, Associates.count_some hp]
 #align associates.count_self Associates.count_self
 
 theorem count_eq_zero_of_ne [DecidableEq (Associates α)] {p q : Associates α} (hp : Irreducible p)

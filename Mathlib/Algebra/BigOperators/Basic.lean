@@ -17,8 +17,7 @@ In this file we define products and sums indexed by finite sets (specifically, `
 
 ## Notation
 
-We introduce the following notation, localized in `BigOperators`.
-To enable the notation, use `open BigOperators`.
+We introduce the following notation.
 
 Let `s` be a `Finset α`, and `f : α → β` a function.
 
@@ -91,7 +90,6 @@ In practice, this means that parentheses should be placed as follows:
 (Example taken from page 490 of Knuth's *Concrete Mathematics*.)
 -/
 
--- TODO: Use scoped[NS], when implemented?
 namespace BigOperators
 open Batteries.ExtendedBinder Lean Meta
 
@@ -167,7 +165,7 @@ def bigOpBindersProd (processed : (Array (Term × Term))) :
 These support destructuring, for example `∑ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
 Notation: `"∑" bigOpBinders* ("with" term)? "," term` -/
-scoped syntax (name := bigsum) "∑ " bigOpBinders ("with " term)? ", " term:67 : term
+syntax (name := bigsum) "∑ " bigOpBinders ("with " term)? ", " term:67 : term
 
 /--
 - `∏ x, f x` is notation for `Finset.prod Finset.univ f`. It is the product of `f x`,
@@ -180,9 +178,9 @@ scoped syntax (name := bigsum) "∑ " bigOpBinders ("with " term)? ", " term:67 
 These support destructuring, for example `∏ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
 Notation: `"∏" bigOpBinders* ("with" term)? "," term` -/
-scoped syntax (name := bigprod) "∏ " bigOpBinders ("with " term)? ", " term:67 : term
+syntax (name := bigprod) "∏ " bigOpBinders ("with " term)? ", " term:67 : term
 
-scoped macro_rules (kind := bigsum)
+macro_rules (kind := bigsum)
   | `(∑ $bs:bigOpBinders $[with $p?]?, $v) => do
     let processed ← processBigOpBinders bs
     let x ← bigOpBindersPattern processed
@@ -191,7 +189,7 @@ scoped macro_rules (kind := bigsum)
     | some p => `(Finset.sum (Finset.filter (fun $x ↦ $p) $s) (fun $x ↦ $v))
     | none => `(Finset.sum $s (fun $x ↦ $v))
 
-scoped macro_rules (kind := bigprod)
+macro_rules (kind := bigprod)
   | `(∏ $bs:bigOpBinders $[with $p?]?, $v) => do
     let processed ← processBigOpBinders bs
     let x ← bigOpBindersPattern processed
@@ -203,16 +201,16 @@ scoped macro_rules (kind := bigprod)
 /-- (Deprecated, use `∑ x ∈ s, f x`)
 `∑ x in s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
 where `x` ranges over the finite set `s`. -/
-scoped syntax (name := bigsumin) "∑ " extBinder " in " term ", " term:67 : term
-scoped macro_rules (kind := bigsumin)
+syntax (name := bigsumin) "∑ " extBinder " in " term ", " term:67 : term
+macro_rules (kind := bigsumin)
   | `(∑ $x:ident in $s, $r) => `(∑ $x:ident ∈ $s, $r)
   | `(∑ $x:ident : $t in $s, $r) => `(∑ $x:ident ∈ ($s : Finset $t), $r)
 
 /-- (Deprecated, use `∏ x ∈ s, f x`)
 `∏ x in s, f x` is notation for `Finset.prod s f`. It is the product of `f x`,
 where `x` ranges over the finite set `s`. -/
-scoped syntax (name := bigprodin) "∏ " extBinder " in " term ", " term:67 : term
-scoped macro_rules (kind := bigprodin)
+syntax (name := bigprodin) "∏ " extBinder " in " term ", " term:67 : term
+macro_rules (kind := bigprodin)
   | `(∏ $x:ident in $s, $r) => `(∏ $x:ident ∈ $s, $r)
   | `(∏ $x:ident : $t in $s, $r) => `(∏ $x:ident ∈ ($s : Finset $t), $r)
 
@@ -221,7 +219,7 @@ open Batteries.ExtendedBinder
 
 /-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
 to show the domain type when the product is over `Finset.univ`. -/
-@[scoped delab app.Finset.prod] def delabFinsetProd : Delab :=
+@[delab app.Finset.prod] def delabFinsetProd : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
@@ -242,7 +240,7 @@ to show the domain type when the product is over `Finset.univ`. -/
 
 /-- Delaborator for `Finset.sum`. The `pp.piBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
-@[scoped delab app.Finset.sum] def delabFinsetSum : Delab :=
+@[delab app.Finset.sum] def delabFinsetSum : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
@@ -262,8 +260,6 @@ to show the domain type when the sum is over `Finset.univ`. -/
     `(∑ $(.mk i):ident ∈ $ss, $body)
 
 end BigOperators
-
-open BigOperators
 
 namespace Finset
 
@@ -1538,7 +1534,7 @@ theorem prod_range_succ' (f : ℕ → β) :
 @[to_additive]
 theorem eventually_constant_prod {u : ℕ → β} {N : ℕ} (hu : ∀ n ≥ N, u n = 1) {n : ℕ} (hn : N ≤ n) :
     (∏ k ∈ range n, u k) = ∏ k ∈ range N, u k := by
-  obtain ⟨m, rfl : n = N + m⟩ := le_iff_exists_add.mp hn
+  obtain ⟨m, rfl : n = N + m⟩ := Nat.exists_eq_add_of_le hn
   clear hn
   induction' m with m hm
   · simp
@@ -2184,7 +2180,7 @@ theorem card_biUnion_le [DecidableEq β] {s : Finset α} {t : α → Finset β} 
     calc
       ((insert a s).biUnion t).card ≤ (t a).card + (s.biUnion t).card := by
         { rw [biUnion_insert]; exact Finset.card_union_le _ _ }
-      _ ≤ ∑ a ∈ insert a s, card (t a) := by rw [sum_insert has]; exact add_le_add_left ih _
+      _ ≤ ∑ a ∈ insert a s, card (t a) := by rw [sum_insert has]; exact Nat.add_le_add_left ih _
 #align finset.card_bUnion_le Finset.card_biUnion_le
 
 theorem card_eq_sum_card_fiberwise [DecidableEq β] {f : α → β} {s : Finset α} {t : Finset β}
@@ -2580,7 +2576,7 @@ theorem nat_abs_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℤ) :
     induction' s using Finset.induction_on with i s his IH
     · simp only [Finset.sum_empty, Int.natAbs_zero, le_refl]
     · simp only [his, Finset.sum_insert, not_false_iff]
-      exact (Int.natAbs_add_le _ _).trans (add_le_add le_rfl IH)
+      exact (Int.natAbs_add_le _ _).trans (Nat.add_le_add_left IH _)
 #align nat_abs_sum_le nat_abs_sum_le
 
 /-! ### `Additive`, `Multiplicative` -/

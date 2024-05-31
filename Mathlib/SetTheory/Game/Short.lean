@@ -160,9 +160,9 @@ theorem short_birthday (x : PGame.{u}) : [Short x] → x.birthday < Ordinal.omeg
     constructor
     all_goals
       rw [← Cardinal.ord_aleph0]
-      refine'
+      refine
         Cardinal.lsub_lt_ord_of_isRegular.{u, u} Cardinal.isRegular_aleph0
-          (Cardinal.lt_aleph0_of_finite _) fun i => _
+          (Cardinal.lt_aleph0_of_finite _) fun i => ?_
       rw [Cardinal.ord_aleph0]
     · apply ihl
     · apply ihr

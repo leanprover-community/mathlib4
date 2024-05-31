@@ -25,8 +25,6 @@ by the Rearrangement Inequality
 -/
 
 
-open scoped BigOperators
-
 /- Let `n` be a natural number, `x` and `y` be as in the problem statement and `σ` be the
 permutation of natural numbers such that `z = y ∘ σ` -/
 variable (n : ℕ) (σ : Equiv.Perm ℕ) (hσ : {x | σ x ≠ x} ⊆ Finset.Icc 1 n) (x y : ℕ → ℝ)

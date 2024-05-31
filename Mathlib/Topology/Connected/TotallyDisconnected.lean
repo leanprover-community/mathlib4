@@ -74,14 +74,14 @@ instance Prod.totallyDisconnectedSpace [TopologicalSpace β] [TotallyDisconnecte
 
 instance [TopologicalSpace β] [TotallyDisconnectedSpace α] [TotallyDisconnectedSpace β] :
     TotallyDisconnectedSpace (Sum α β) := by
-  refine' ⟨fun s _ hs => _⟩
+  refine ⟨fun s _ hs => ?_⟩
   obtain ⟨t, ht, rfl⟩ | ⟨t, ht, rfl⟩ := Sum.isPreconnected_iff.1 hs
   · exact ht.subsingleton.image _
   · exact ht.subsingleton.image _
 
 instance [∀ i, TopologicalSpace (π i)] [∀ i, TotallyDisconnectedSpace (π i)] :
     TotallyDisconnectedSpace (Σi, π i) := by
-  refine' ⟨fun s _ hs => _⟩
+  refine ⟨fun s _ hs => ?_⟩
   obtain rfl | h := s.eq_empty_or_nonempty
   · exact subsingleton_empty
   · obtain ⟨a, t, ht, rfl⟩ := Sigma.isConnected_iff.1 ⟨h, hs⟩
@@ -296,10 +296,10 @@ theorem Continuous.connectedComponentsLift_unique (h : Continuous f) (g : Connec
 instance ConnectedComponents.totallyDisconnectedSpace :
     TotallyDisconnectedSpace (ConnectedComponents α) := by
   rw [totallyDisconnectedSpace_iff_connectedComponent_singleton]
-  refine' ConnectedComponents.surjective_coe.forall.2 fun x => _
+  refine ConnectedComponents.surjective_coe.forall.2 fun x => ?_
   rw [← ConnectedComponents.quotientMap_coe.image_connectedComponent, ←
     connectedComponents_preimage_singleton, image_preimage_eq _ ConnectedComponents.surjective_coe]
-  refine' ConnectedComponents.surjective_coe.forall.2 fun y => _
+  refine ConnectedComponents.surjective_coe.forall.2 fun y => ?_
   rw [connectedComponents_preimage_singleton]
   exact isConnected_connectedComponent
 #align connected_components.totally_disconnected_space ConnectedComponents.totallyDisconnectedSpace

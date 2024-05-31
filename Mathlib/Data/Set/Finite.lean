@@ -42,6 +42,9 @@ instances since they do not compute anything.
 finite sets
 -/
 
+assert_not_exists OrderedRing
+assert_not_exists MonoidWithZero
+
 open Set Function
 
 universe u v w x
@@ -1764,7 +1767,7 @@ lemma Directed.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} [Nonem
     ∃ i, (s : Set α) ⊆ f i := by
   induction s using Finset.cons_induction with
   | empty => simp
-  | cons hbt iht =>
+  | cons b t hbt iht =>
     simp only [Finset.coe_cons, Set.insert_subset_iff, Set.mem_iUnion] at hs ⊢
     rcases hs.imp_right iht with ⟨⟨i, hi⟩, j, hj⟩
     rcases h i j with ⟨k, hik, hjk⟩

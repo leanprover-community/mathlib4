@@ -34,8 +34,8 @@ def IsEquipartition : Prop :=
 theorem isEquipartition_iff_card_parts_eq_average :
     P.IsEquipartition ↔
       ∀ a : Finset α,
-        a ∈ P.parts → a.card = s.card / P.parts.card ∨ a.card = s.card / P.parts.card + 1 :=
-  by simp_rw [IsEquipartition, Finset.equitableOn_iff, P.sum_card_parts]
+        a ∈ P.parts → a.card = s.card / P.parts.card ∨ a.card = s.card / P.parts.card + 1 := by
+  simp_rw [IsEquipartition, Finset.equitableOn_iff, P.sum_card_parts]
 #align finpartition.is_equipartition_iff_card_parts_eq_average Finpartition.isEquipartition_iff_card_parts_eq_average
 
 variable {P}

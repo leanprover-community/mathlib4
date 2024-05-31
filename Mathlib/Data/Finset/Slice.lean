@@ -31,8 +31,6 @@ the set family made of its `r`-sets.
 
 open Finset Nat
 
-open BigOperators
-
 variable {α : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 namespace Set

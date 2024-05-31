@@ -39,7 +39,7 @@ open MeasureTheory Filter Finset
 
 noncomputable section
 
-open scoped BigOperators MeasureTheory ProbabilityTheory ENNReal NNReal
+open scoped MeasureTheory ProbabilityTheory ENNReal NNReal
 
 namespace ProbabilityTheory
 
@@ -233,7 +233,7 @@ theorem variance_le_expectation_sq [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → 
       apply hX
       convert A.add B
       simp
-  · exact @ae_of_all _ (_) _ _ fun x => sq_nonneg _
+  · exact eventually_of_forall fun x => sq_nonneg _
   · exact (AEMeasurable.pow_const (hm.aemeasurable.sub_const _) _).aestronglyMeasurable
 #align probability_theory.variance_le_expectation_sq ProbabilityTheory.variance_le_expectation_sq
 

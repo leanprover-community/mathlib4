@@ -158,15 +158,15 @@ theorem cons_inj_right (a : α) : ∀ {s t : Multiset α}, a ::ₘ s = a ::ₘ t
   rintro ⟨l₁⟩ ⟨l₂⟩; simp
 #align multiset.cons_inj_right Multiset.cons_inj_right
 
-@[recursor 5]
+@[elab_as_elim]
 protected theorem induction {p : Multiset α → Prop} (empty : p 0)
-    (cons : ∀ ⦃a : α⦄ {s : Multiset α}, p s → p (a ::ₘ s)) : ∀ s, p s := by
-  rintro ⟨l⟩; induction' l with _ _ ih <;> [exact empty; exact cons ih]
+    (cons : ∀ (a : α) (s : Multiset α), p s → p (a ::ₘ s)) : ∀ s, p s := by
+  rintro ⟨l⟩; induction' l with _ _ ih <;> [exact empty; exact cons _ _ ih]
 #align multiset.induction Multiset.induction
 
 @[elab_as_elim]
 protected theorem induction_on {p : Multiset α → Prop} (s : Multiset α) (empty : p 0)
-    (cons : ∀ ⦃a : α⦄ {s : Multiset α}, p s → p (a ::ₘ s)) : p s :=
+    (cons : ∀ (a : α) (s : Multiset α), p s → p (a ::ₘ s)) : p s :=
   Multiset.induction empty cons s
 #align multiset.induction_on Multiset.induction_on
 
@@ -1486,12 +1486,11 @@ theorem foldl_swap (f : β → α → β) (H : RightCommutative f) (b : β) (s :
 theorem foldr_induction' (f : α → β → β) (H : LeftCommutative f) (x : β) (q : α → Prop)
     (p : β → Prop) (s : Multiset α) (hpqf : ∀ a b, q a → p b → p (f a b)) (px : p x)
     (q_s : ∀ a ∈ s, q a) : p (foldr f H x s) := by
-  revert s
-  refine Multiset.induction (by simp [px]) ?_
-  intro a s hs hsa
-  rw [foldr_cons]
-  have hps : ∀ x : α, x ∈ s → q x := fun x hxs => hsa x (mem_cons_of_mem hxs)
-  exact hpqf a (foldr f H x s) (hsa a (mem_cons_self a s)) (hs hps)
+  induction s using Multiset.induction with
+  | empty => simpa
+  | cons a s ihs =>
+    simp only [forall_mem_cons, foldr_cons] at q_s ⊢
+    exact hpqf _ _ q_s.1 (ihs q_s.2)
 #align multiset.foldr_induction' Multiset.foldr_induction'
 
 theorem foldr_induction (f : α → α → α) (H : LeftCommutative f) (x : α) (p : α → Prop)
@@ -3052,8 +3051,8 @@ theorem disjoint_singleton {l : Multiset α} {a : α} : Disjoint l {a} ↔ a ∉
 #align multiset.disjoint_singleton Multiset.disjoint_singleton
 
 @[simp]
-theorem disjoint_add_left {s t u : Multiset α} : Disjoint (s + t) u ↔ Disjoint s u ∧ Disjoint t u :=
-  by simp [Disjoint, or_imp, forall_and]
+theorem disjoint_add_left {s t u : Multiset α} :
+    Disjoint (s + t) u ↔ Disjoint s u ∧ Disjoint t u := by simp [Disjoint, or_imp, forall_and]
 #align multiset.disjoint_add_left Multiset.disjoint_add_left
 
 @[simp]
@@ -3074,8 +3073,8 @@ theorem disjoint_cons_right {a : α} {s t : Multiset α} :
   rw [disjoint_comm, disjoint_cons_left]; tauto
 #align multiset.disjoint_cons_right Multiset.disjoint_cons_right
 
-theorem inter_eq_zero_iff_disjoint [DecidableEq α] {s t : Multiset α} : s ∩ t = 0 ↔ Disjoint s t :=
-  by rw [← subset_zero]; simp [subset_iff, Disjoint]
+theorem inter_eq_zero_iff_disjoint [DecidableEq α] {s t : Multiset α} :
+    s ∩ t = 0 ↔ Disjoint s t := by rw [← subset_zero]; simp [subset_iff, Disjoint]
 #align multiset.inter_eq_zero_iff_disjoint Multiset.inter_eq_zero_iff_disjoint
 
 @[simp]

@@ -458,8 +458,6 @@ theorem tmul_ite (x₁ : M) (x₂ : N) (P : Prop) [Decidable P] :
 
 section
 
-open BigOperators
-
 theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
     (∑ a ∈ s, m a) ⊗ₜ[R] n = ∑ a ∈ s, m a ⊗ₜ[R] n := by
   classical
@@ -1115,8 +1113,8 @@ theorem tensorTensorTensorComm_tmul (m : M) (n : N) (p : P) (q : Q) :
 -- Porting note: the proof here was `rfl` but that caused a timeout.
 @[simp]
 theorem tensorTensorTensorComm_symm :
-    (tensorTensorTensorComm R M N P Q).symm = tensorTensorTensorComm R M P N Q :=
-  by ext; rfl
+    (tensorTensorTensorComm R M N P Q).symm = tensorTensorTensorComm R M P N Q := by
+  ext; rfl
 #align tensor_product.tensor_tensor_tensor_comm_symm TensorProduct.tensorTensorTensorComm_symm
 
 variable (M N P Q)

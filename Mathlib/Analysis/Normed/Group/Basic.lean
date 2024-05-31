@@ -51,7 +51,7 @@ variable {𝓕 𝕜 α ι κ E F G : Type*}
 
 open Filter Function Metric Bornology
 
-open BigOperators ENNReal Filter NNReal Uniformity Pointwise Topology
+open ENNReal Filter NNReal Uniformity Pointwise Topology
 
 /-- Auxiliary class, endowing a type `E` with a function `norm : E → ℝ` with notation `‖x‖`. This
 class is designed to be extended in more interesting classes specifying the properties of the norm.
@@ -1397,8 +1397,9 @@ theorem eventually_ne_of_tendsto_norm_atTop' {l : Filter α} {f : α → E}
 #align eventually_ne_of_tendsto_norm_at_top eventually_ne_of_tendsto_norm_atTop
 
 @[to_additive]
-theorem SeminormedCommGroup.mem_closure_iff : a ∈ closure s ↔ ∀ ε, 0 < ε → ∃ b ∈ s, ‖a / b‖ < ε :=
-  by simp [Metric.mem_closure_iff, dist_eq_norm_div]
+theorem SeminormedCommGroup.mem_closure_iff :
+    a ∈ closure s ↔ ∀ ε, 0 < ε → ∃ b ∈ s, ‖a / b‖ < ε := by
+  simp [Metric.mem_closure_iff, dist_eq_norm_div]
 #align seminormed_comm_group.mem_closure_iff SeminormedCommGroup.mem_closure_iff
 #align seminormed_add_comm_group.mem_closure_iff SeminormedAddCommGroup.mem_closure_iff
 

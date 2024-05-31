@@ -37,7 +37,7 @@ seminorm, locally convex, LCTVS
 
 open NormedField Set Filter
 
-open scoped BigOperators NNReal Pointwise Topology Uniformity
+open scoped NNReal Pointwise Topology Uniformity
 
 variable {R R' 𝕜 𝕜₂ 𝕜₃ 𝕝 E E₂ E₃ F G ι : Type*}
 
@@ -87,7 +87,7 @@ def Seminorm.ofSMulLE [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E
     (add_le : ∀ x y, f (x + y) ≤ f x + f y) (smul_le : ∀ (r : 𝕜) (x), f (r • x) ≤ ‖r‖ * f x) :
     Seminorm 𝕜 E :=
   Seminorm.of f add_le fun r x => by
-    refine' le_antisymm (smul_le r x) _
+    refine le_antisymm (smul_le r x) ?_
     by_cases h : r = 0
     · simp [h, map_zero]
     rw [← mul_le_mul_left (inv_pos.mpr (norm_pos_iff.mpr h))]
@@ -489,9 +489,9 @@ noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
               fun x hx => ⟨0, by rwa [map_zero, sub_zero, map_zero, add_zero]⟩
         simp_rw [Real.mul_iInf_of_nonneg (norm_nonneg a), mul_add, ← map_smul_eq_mul p, ←
           map_smul_eq_mul q, smul_sub]
-        refine'
+        refine
           Function.Surjective.iInf_congr ((a⁻¹ • ·) : E → E)
-            (fun u => ⟨a • u, inv_smul_smul₀ ha u⟩) fun u => _
+            (fun u => ⟨a • u, inv_smul_smul₀ ha u⟩) fun u => ?_
         rw [smul_inv_smul₀ ha] }
 
 @[simp]
@@ -748,7 +748,7 @@ theorem ball_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H : s.Non
     ball (s.sup' H p) e r = s.inf' H fun i => ball (p i) e r := by
   induction H using Finset.Nonempty.cons_induction with
   | singleton => simp
-  | cons _ _ hs ih =>
+  | cons _ _ _ hs ih =>
     rw [Finset.sup'_cons hs, Finset.inf'_cons hs, ball_sup]
     -- Porting note: `rw` can't use `inf_eq_inter` here, but `simp` can?
     simp only [inf_eq_inter, ih]
@@ -758,7 +758,7 @@ theorem closedBall_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H :
     (r : ℝ) : closedBall (s.sup' H p) e r = s.inf' H fun i => closedBall (p i) e r := by
   induction H using Finset.Nonempty.cons_induction with
   | singleton => simp
-  | cons _ _ hs ih =>
+  | cons _ _ _ hs ih =>
     rw [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup]
     -- Porting note: `rw` can't use `inf_eq_inter` here, but `simp` can?
     simp only [inf_eq_inter, ih]

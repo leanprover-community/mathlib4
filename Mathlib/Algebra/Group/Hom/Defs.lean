@@ -412,8 +412,9 @@ theorem MonoidHom.coe_coe [MonoidHomClass F M N] (f : F) : ((f : M →* N) : M �
 #align add_monoid_hom.coe_coe AddMonoidHom.coe_coe
 
 @[to_additive]
-theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) : f a * f b = 1 :=
-  by rw [← map_mul, h, map_one]
+theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) :
+    f a * f b = 1 := by
+  rw [← map_mul, h, map_one]
 #align map_mul_eq_one map_mul_eq_one
 #align map_add_eq_zero map_add_eq_zero
 

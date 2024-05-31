@@ -54,11 +54,14 @@ lemma isIso_iff_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [F.Reflect
     IsIso (F.map f) ↔ IsIso f :=
   ⟨fun _ => isIso_of_reflects_iso f F, fun _ => inferInstance⟩
 
+lemma Functor.FullyFaithful.reflectsIsomorphisms {F : C ⥤ D} (hF : F.FullyFaithful) :
+    F.ReflectsIsomorphisms where
+  reflects _ _ := hF.isIso_of_isIso_map _
+
 instance (priority := 100) reflectsIsomorphisms_of_full_and_faithful
     (F : C ⥤ D) [F.Full] [F.Faithful] :
-    F.ReflectsIsomorphisms where
-  reflects f i :=
-    ⟨⟨F.preimage (inv (F.map f)), ⟨F.map_injective (by simp), F.map_injective (by simp)⟩⟩⟩
+    F.ReflectsIsomorphisms :=
+  (Functor.FullyFaithful.ofFullyFaithful F).reflectsIsomorphisms
 #align category_theory.of_full_and_faithful CategoryTheory.reflectsIsomorphisms_of_full_and_faithful
 
 instance reflectsIsomorphisms_of_comp (F : C ⥤ D) (G : D ⥤ E)

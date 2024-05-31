@@ -49,7 +49,7 @@ variable {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 
 open Polynomial
 
-open scoped Polynomial BigOperators
+open scoped Polynomial
 
 /-- An `I`-filtration on the module `M` is a sequence of decreasing submodules `N i` such that
 `I • (N i) ≤ N (i + 1)`. Note that we do not require the filtration to start from `⊤`. -/
@@ -124,7 +124,7 @@ instance : InfSet (I.Filtration M) :=
         exact ⟨_, ⟨⟨_, F, hF, rfl⟩, rfl⟩, F.mono i⟩
       smul_le := fun i => by
         rw [sInf_eq_iInf', iInf_apply, iInf_apply]
-        refine' smul_iInf_le.trans _
+        refine smul_iInf_le.trans ?_
         apply iInf_mono _
         rintro ⟨_, F, hF, rfl⟩
         exact F.smul_le i }⟩

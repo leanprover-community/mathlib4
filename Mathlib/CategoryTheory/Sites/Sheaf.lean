@@ -348,14 +348,6 @@ instance (X : Sheaf J A) : Inhabited (Hom X X) :=
 lemma hom_ext {X Y : Sheaf J A} (x y : X ⟶ Y) (h : x.val = y.val) : x = y :=
   Sheaf.Hom.ext _ _ h
 
-/-- The bijection `(X ⟶ Y) ≃ (X.val ⟶ Y.val)` when `X` and `Y` are sheaves. -/
-@[simps]
-def homEquiv {X Y : Sheaf J A} : (X ⟶ Y) ≃ (X.val ⟶ Y.val) where
-  toFun f := f.val
-  invFun f := ⟨f⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
-
 end Sheaf
 
 /-- The inclusion functor from sheaves to presheaves. -/
@@ -371,9 +363,21 @@ set_option linter.uppercaseLean3 false in
 /-- The sections of a sheaf (i.e. evaluation as a presheaf on `C`). -/
 abbrev sheafSections : Cᵒᵖ ⥤ Sheaf J A ⥤ A := (sheafToPresheaf J A).flip
 
-instance : (sheafToPresheaf J A).Full where map_surjective f := ⟨⟨f⟩, rfl⟩
+/-- The functor `Sheaf J A ⥤ Cᵒᵖ ⥤ A` is fully faithful. -/
+@[simps]
+def fullyFaithfulSheafToPresheaf : (sheafToPresheaf J A).FullyFaithful where
+  preimage f := ⟨f⟩
 
-instance : (sheafToPresheaf J A).Faithful where
+variable {J A} in
+/-- The bijection `(X ⟶ Y) ≃ (X.val ⟶ Y.val)` when `X` and `Y` are sheaves. -/
+abbrev Sheaf.homEquiv {X Y : Sheaf J A} : (X ⟶ Y) ≃ (X.val ⟶ Y.val) :=
+  (fullyFaithfulSheafToPresheaf J A).homEquiv
+
+instance : (sheafToPresheaf J A).Full :=
+  (fullyFaithfulSheafToPresheaf J A).full
+
+instance : (sheafToPresheaf J A).Faithful :=
+  (fullyFaithfulSheafToPresheaf J A).faithful
 
 /-- This is stated as a lemma to prevent class search from forming a loop since a sheaf morphism is
 monic if and only if it is monic as a presheaf morphism (under suitable assumption). -/
@@ -660,17 +664,17 @@ def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type max v₁ u₁)
       · apply PreservesProduct.iso s
       · apply PreservesProduct.iso s
     · rintro _ _ (_ | _)
-      · refine' limit.hom_ext (fun j => _)
+      · refine limit.hom_ext (fun j => ?_)
         dsimp [Equalizer.Presieve.firstMap, firstMap]
         simp only [limit.lift_π, map_lift_piComparison, assoc, Fan.mk_π_app, Functor.map_comp]
         rw [piComparison_comp_π_assoc]
-      · refine' limit.hom_ext (fun j => _)
+      · refine limit.hom_ext (fun j => ?_)
         dsimp [Equalizer.Presieve.secondMap, secondMap]
         simp only [limit.lift_π, map_lift_piComparison, assoc, Fan.mk_π_app, Functor.map_comp]
         rw [piComparison_comp_π_assoc]
       · dsimp
         simp
-  · refine' Fork.ext (Iso.refl _) _
+  · refine Fork.ext (Iso.refl _) ?_
     dsimp [Equalizer.forkMap, forkMap]
     simp [Fork.ι]
 #align category_theory.presheaf.is_sheaf_for_is_sheaf_for' CategoryTheory.Presheaf.isSheafForIsSheafFor'
