@@ -277,12 +277,11 @@ exists_cfc_of_predicate a ha := by
         exact ⟨i, rfl⟩
     case hermitian =>
       intro f
-      dsimp [IsHermitian]
-      rw [← star_eq_conjTranspose, star_mul, star_mul, star_star, mul_assoc]
+      simp only [φ_apply, mul_assoc, IsHermitian, ← star_eq_conjTranspose, star_mul, star_star]
       congr!
       rw [star_eq_conjTranspose, diagonal_conjTranspose]
       congr!
-      simp only [Pi.star_def,Function.comp_apply, RCLike.star_def, RCLike.conj_ofReal]
+      simp only [Pi.star_def, Function.comp_apply, RCLike.star_def, RCLike.conj_ofReal]
       rfl
 end IsHermitian
 end Matrix
