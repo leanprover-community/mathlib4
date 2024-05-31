@@ -135,8 +135,9 @@ theorem leftInv_le_isUnit : S.leftInv ≤ IsUnit.submonoid M := fun x ⟨y, hx�
 #align add_submonoid.left_neg_le_is_add_unit AddSubmonoid.leftNeg_le_isAddUnit
 
 @[to_additive]
-theorem fromLeftInv_eq_iff (a : S.leftInv) (b : M) : (S.fromLeftInv a : M) = b ↔ (a : M) * b = 1 :=
-  by rw [← IsUnit.mul_right_inj (leftInv_le_isUnit _ a.prop), S.mul_fromLeftInv, eq_comm]
+theorem fromLeftInv_eq_iff (a : S.leftInv) (b : M) :
+    (S.fromLeftInv a : M) = b ↔ (a : M) * b = 1 := by
+  rw [← IsUnit.mul_right_inj (leftInv_le_isUnit _ a.prop), S.mul_fromLeftInv, eq_comm]
 #align submonoid.from_left_inv_eq_iff Submonoid.fromLeftInv_eq_iff
 #align add_submonoid.from_left_neg_eq_iff AddSubmonoid.fromLeftNeg_eq_iff
 

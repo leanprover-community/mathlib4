@@ -132,8 +132,9 @@ theorem setIntegral_comp_smul_of_pos (f : E → F) {R : ℝ} (s : Set E) (hR : 0
 @[deprecated (since := "2024-04-17")]
 alias set_integral_comp_smul_of_pos := setIntegral_comp_smul_of_pos
 
-theorem integral_comp_mul_left (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (a * x)) = |a⁻¹| • ∫ y : ℝ, g y :=
-  by simp_rw [← smul_eq_mul, Measure.integral_comp_smul, FiniteDimensional.finrank_self, pow_one]
+theorem integral_comp_mul_left (g : ℝ → F) (a : ℝ) :
+    (∫ x : ℝ, g (a * x)) = |a⁻¹| • ∫ y : ℝ, g y := by
+  simp_rw [← smul_eq_mul, Measure.integral_comp_smul, FiniteDimensional.finrank_self, pow_one]
 #align measure_theory.measure.integral_comp_mul_left MeasureTheory.Measure.integral_comp_mul_left
 
 theorem integral_comp_inv_mul_left (g : ℝ → F) (a : ℝ) :
@@ -141,8 +142,9 @@ theorem integral_comp_inv_mul_left (g : ℝ → F) (a : ℝ) :
   simp_rw [← smul_eq_mul, Measure.integral_comp_inv_smul, FiniteDimensional.finrank_self, pow_one]
 #align measure_theory.measure.integral_comp_inv_mul_left MeasureTheory.Measure.integral_comp_inv_mul_left
 
-theorem integral_comp_mul_right (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (x * a)) = |a⁻¹| • ∫ y : ℝ, g y :=
-  by simpa only [mul_comm] using integral_comp_mul_left g a
+theorem integral_comp_mul_right (g : ℝ → F) (a : ℝ) :
+    (∫ x : ℝ, g (x * a)) = |a⁻¹| • ∫ y : ℝ, g y := by
+  simpa only [mul_comm] using integral_comp_mul_left g a
 #align measure_theory.measure.integral_comp_mul_right MeasureTheory.Measure.integral_comp_mul_right
 
 theorem integral_comp_inv_mul_right (g : ℝ → F) (a : ℝ) :

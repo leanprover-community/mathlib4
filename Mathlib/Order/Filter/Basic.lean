@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Set.Finite
 
 #align_import order.filter.basic from "leanprover-community/mathlib"@"d4f691b9e5f94cfc64639973f3544c95f8d5d494"
@@ -3362,8 +3363,8 @@ theorem Filter.map_mapsTo_Iic_iff_tendsto {m : α → β} :
 alias ⟨_, Filter.Tendsto.map_mapsTo_Iic⟩ := Filter.map_mapsTo_Iic_iff_tendsto
 
 theorem Filter.map_mapsTo_Iic_iff_mapsTo {m : α → β} :
-    MapsTo (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 t) ↔ MapsTo m s t :=
-  by rw [map_mapsTo_Iic_iff_tendsto, tendsto_principal_principal, MapsTo]
+    MapsTo (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 t) ↔ MapsTo m s t := by
+  rw [map_mapsTo_Iic_iff_tendsto, tendsto_principal_principal, MapsTo]
 
 alias ⟨_, Set.MapsTo.filter_map_Iic⟩ := Filter.map_mapsTo_Iic_iff_mapsTo
 
