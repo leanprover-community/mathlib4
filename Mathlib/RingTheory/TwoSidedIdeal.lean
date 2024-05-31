@@ -220,10 +220,10 @@ lemma mem_toIdeal {x} : x ∈ I.toIdeal ↔ x ∈ I := Iff.rfl
 /--
 Every two-sided ideal is also a right ideal.
 -/
-def toIdealMop : Ideal Rᵐᵒᵖ := (orderIsoRingConMop I).toIdeal
+def toIdealMop : Ideal Rᵐᵒᵖ := (orderIsoOp I).toIdeal
 
 lemma mem_toIdealMop {x} : x ∈ I.toIdealMop ↔ x.unop ∈ I := by
-  simpa [toIdealMop, toMop, mem_toIdeal, mem_iff] using ⟨I.symm, I.symm⟩
+  simpa [toIdealMop, op, mem_toIdeal, mem_iff] using ⟨I.symm, I.symm⟩
 
 lemma mem_toIdealMop' {x} : (MulOpposite.op x) ∈ I.toIdealMop ↔ x ∈ I := by
   rw [mem_toIdealMop]; rfl
