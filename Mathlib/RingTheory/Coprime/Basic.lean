@@ -117,8 +117,8 @@ theorem IsCoprime.mul_left (H1 : IsCoprime x z) (H2 : IsCoprime y z) : IsCoprime
   ⟨a * c, a * x * d + b * c * y + b * d * z,
     calc
       a * c * (x * y) + (a * x * d + b * c * y + b * d * z) * z =
-          (a * x + b * z) * (c * y + d * z) :=
-        by ring
+          (a * x + b * z) * (c * y + d * z) := by
+        ring
       _ = 1 := by rw [h1, h2, mul_one]
       ⟩
 #align is_coprime.mul_left IsCoprime.mul_left
