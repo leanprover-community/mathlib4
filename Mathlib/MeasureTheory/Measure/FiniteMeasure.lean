@@ -245,8 +245,7 @@ theorem toMeasure_add (μ ν : FiniteMeasure Ω) : ↑(μ + ν) = (↑μ + ↑ν
   rfl
 #align measure_theory.finite_measure.coe_add MeasureTheory.FiniteMeasure.toMeasure_add
 
--- Porting note: with `simp` here the `coeFn` lemmas below fall prey to `simpNF`: the LHS simplifies
-@[norm_cast]
+@[simp, norm_cast]
 theorem toMeasure_smul (c : R) (μ : FiniteMeasure Ω) : ↑(c • μ) = c • (μ : Measure Ω) :=
   rfl
 #align measure_theory.finite_measure.coe_smul MeasureTheory.FiniteMeasure.toMeasure_smul
@@ -262,10 +261,7 @@ theorem coeFn_add (μ ν : FiniteMeasure Ω) : (⇑(μ + ν) : Set Ω → ℝ≥
 @[simp, norm_cast]
 theorem coeFn_smul [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure Ω) :
     (⇑(c • μ) : Set Ω → ℝ≥0) = c • (⇑μ : Set Ω → ℝ≥0) := by
-  funext
-  simp only [Pi.smul_apply, ← ENNReal.coe_inj, ne_eq, ennreal_coeFn_eq_coeFn_toMeasure,
-    ENNReal.coe_smul]
-  norm_cast
+  funext; simp [← ENNReal.coe_inj, ENNReal.coe_smul]
 #align measure_theory.finite_measure.coe_fn_smul MeasureTheory.FiniteMeasure.coeFn_smul
 
 instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) :=
@@ -282,12 +278,11 @@ def toMeasureAddMonoidHom : FiniteMeasure Ω →+ Measure Ω where
 instance {Ω : Type*} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) :=
   Function.Injective.module _ toMeasureAddMonoidHom toMeasure_injective toMeasure_smul
 
--- Porting note: `@[simp]` breaks the LHS of `coeFn_smul`
-theorem coeFn_smul_apply [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure Ω) (s : Set Ω) :
+@[simp]
+theorem smul_apply [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure Ω) (s : Set Ω) :
     (c • μ) s = c • μ s := by
   rw [coeFn_smul, Pi.smul_apply]
-  -- Porting note: why doesn't `simp only` work in place of `rw` here?
-#align measure_theory.finite_measure.coe_fn_smul_apply MeasureTheory.FiniteMeasure.coeFn_smul_apply
+#align measure_theory.finite_measure.coe_fn_smul_apply MeasureTheory.FiniteMeasure.smul_apply
 
 /-- Restrict a finite measure μ to a set A. -/
 def restrict (μ : FiniteMeasure Ω) (A : Set Ω) : FiniteMeasure Ω where

@@ -388,7 +388,7 @@ theorem self_eq_mass_mul_normalize (s : Set Ω) : μ s = μ.mass * μ.normalize 
 theorem self_eq_mass_smul_normalize : μ = μ.mass • μ.normalize.toFiniteMeasure := by
   apply eq_of_forall_apply_eq
   intro s _s_mble
-  rw [μ.self_eq_mass_mul_normalize s, coeFn_smul_apply, smul_eq_mul,
+  rw [μ.self_eq_mass_mul_normalize s, smul_apply, smul_eq_mul,
     ProbabilityMeasure.coeFn_comp_toFiniteMeasure_eq_coeFn]
 #align measure_theory.finite_measure.self_eq_mass_smul_normalize MeasureTheory.FiniteMeasure.self_eq_mass_smul_normalize
 

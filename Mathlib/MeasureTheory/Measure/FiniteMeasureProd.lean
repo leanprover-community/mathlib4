@@ -67,19 +67,8 @@ lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t 
 @[simp] lemma prod_zero : μ.prod (0 : FiniteMeasure β) = 0 := by
   rw [← mass_zero_iff, mass_prod, zero_mass, mul_zero]
 
-@[simp] lemma map_fst_prod : (μ.prod ν).map Prod.fst = ν univ • μ := by
-  apply Subtype.ext
-  simp only [val_eq_toMeasure, toMeasure_map, toMeasure_prod, Measure.map_fst_prod]
-  ext s _
-  simp only [coeFn_def, Measure.smul_apply, smul_eq_mul, coe_smul, Measure.nnreal_smul_coe_apply,
-    ennreal_coeFn_eq_coeFn_toMeasure]
-
-@[simp] lemma map_snd_prod : (μ.prod ν).map Prod.snd = μ univ • ν := by
-  apply Subtype.ext
-  simp only [val_eq_toMeasure, toMeasure_map, toMeasure_prod, Measure.map_fst_prod]
-  ext s _
-  simp only [Measure.map_snd_prod, Measure.smul_apply, smul_eq_mul, coe_smul,
-    Measure.nnreal_smul_coe_apply, ennreal_coeFn_eq_coeFn_toMeasure]
+@[simp] lemma map_fst_prod : (μ.prod ν).map Prod.fst = ν univ • μ := by ext; simp
+@[simp] lemma map_snd_prod : (μ.prod ν).map Prod.snd = μ univ • ν := by ext; simp
 
 lemma map_prod_map {α' : Type*} [MeasurableSpace α'] {β' : Type*} [MeasurableSpace β']
     {f : α → α'} {g : β → β'}  (f_mble : Measurable f) (g_mble : Measurable g):
