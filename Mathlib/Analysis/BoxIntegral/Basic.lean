@@ -396,9 +396,10 @@ theorem norm_integral_le_of_norm_le {g : ℝⁿ → ℝ} (hle : ∀ x ∈ Box.Ic
     exact integral_nonneg (fun x hx => (norm_nonneg _).trans (hle x hx)) μ
 #align box_integral.norm_integral_le_of_norm_le BoxIntegral.norm_integral_le_of_norm_le
 
-theorem norm_integral_le_of_le_const {c : ℝ} (hc : ∀ x ∈ Box.Icc I, ‖f x‖ ≤ c) (μ : Measure ℝⁿ)
-    [IsLocallyFiniteMeasure μ] : ‖(integral I l f μ.toBoxAdditive.toSMul : E)‖ ≤ (μ I).toReal * c :=
-  by simpa only [integral_const] using norm_integral_le_of_norm_le hc μ (integrable_const c)
+theorem norm_integral_le_of_le_const {c : ℝ}
+    (hc : ∀ x ∈ Box.Icc I, ‖f x‖ ≤ c) (μ : Measure ℝⁿ) [IsLocallyFiniteMeasure μ] :
+    ‖(integral I l f μ.toBoxAdditive.toSMul : E)‖ ≤ (μ I).toReal * c := by
+  simpa only [integral_const] using norm_integral_le_of_norm_le hc μ (integrable_const c)
 #align box_integral.norm_integral_le_of_le_const BoxIntegral.norm_integral_le_of_le_const
 
 /-!

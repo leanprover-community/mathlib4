@@ -1092,8 +1092,9 @@ theorem isOpen_extend_preimage' {s : Set E} (hs : IsOpen s) :
   (continuousOn_extend f I).isOpen_inter_preimage (isOpen_extend_source _ _) hs
 #align local_homeomorph.is_open_extend_preimage' PartialHomeomorph.isOpen_extend_preimage'
 
-theorem isOpen_extend_preimage {s : Set E} (hs : IsOpen s) : IsOpen (f.source ∩ f.extend I ⁻¹' s) :=
-  by rw [← extend_source f I]; exact isOpen_extend_preimage' f I hs
+theorem isOpen_extend_preimage {s : Set E} (hs : IsOpen s) :
+    IsOpen (f.source ∩ f.extend I ⁻¹' s) := by
+  rw [← extend_source f I]; exact isOpen_extend_preimage' f I hs
 #align local_homeomorph.is_open_extend_preimage PartialHomeomorph.isOpen_extend_preimage
 
 theorem map_extend_nhdsWithin_eq_image {y : M} (hy : y ∈ f.source) :
@@ -1527,8 +1528,8 @@ theorem extChartAt_preimage_mem_nhds {x : M} (ht : t ∈ 𝓝 x) :
 bring it into a convenient form to apply derivative lemmas. -/
 theorem extChartAt_preimage_inter_eq (x : M) :
     (extChartAt I x).symm ⁻¹' (s ∩ t) ∩ range I =
-      (extChartAt I x).symm ⁻¹' s ∩ range I ∩ (extChartAt I x).symm ⁻¹' t :=
-  by mfld_set_tac
+      (extChartAt I x).symm ⁻¹' s ∩ range I ∩ (extChartAt I x).symm ⁻¹' t := by
+  mfld_set_tac
 #align ext_chart_at_preimage_inter_eq extChartAt_preimage_inter_eq
 
 theorem ContinuousWithinAt.nhdsWithin_extChartAt_symm_preimage_inter_range

@@ -575,8 +575,8 @@ theorem mul_eq_mul (I J : FractionalIdeal S P) : mul I J = I * J :=
   rfl
 #align fractional_ideal.mul_eq_mul FractionalIdeal.mul_eq_mul
 
-theorem mul_def (I J : FractionalIdeal S P) : I * J = ⟨I * J, I.isFractional.mul J.isFractional⟩ :=
-  by simp only [← mul_eq_mul, mul]
+theorem mul_def (I J : FractionalIdeal S P) :
+    I * J = ⟨I * J, I.isFractional.mul J.isFractional⟩ := by simp only [← mul_eq_mul, mul]
 #align fractional_ideal.mul_def FractionalIdeal.mul_def
 
 @[simp, norm_cast]

@@ -51,8 +51,9 @@ theorem birthday_def (x : PGame) :
   cases x; rw [birthday]; rfl
 #align pgame.birthday_def SetTheory.PGame.birthday_def
 
-theorem birthday_moveLeft_lt {x : PGame} (i : x.LeftMoves) : (x.moveLeft i).birthday < x.birthday :=
-  by cases x; rw [birthday]; exact lt_max_of_lt_left (lt_lsub _ i)
+theorem birthday_moveLeft_lt {x : PGame} (i : x.LeftMoves) :
+    (x.moveLeft i).birthday < x.birthday := by
+  cases x; rw [birthday]; exact lt_max_of_lt_left (lt_lsub _ i)
 #align pgame.birthday_move_left_lt SetTheory.PGame.birthday_moveLeft_lt
 
 theorem birthday_moveRight_lt {x : PGame} (i : x.RightMoves) :

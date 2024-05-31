@@ -554,8 +554,8 @@ def im (hφ : Function.Injective φ.obj) :=
 theorem mem_im_iff (hφ : Function.Injective φ.obj) {c d : D} (f : c ⟶ d) :
     f ∈ (im φ hφ).arrows c d ↔
       ∃ (a b : C) (g : a ⟶ b) (ha : φ.obj a = c) (hb : φ.obj b = d),
-        f = eqToHom ha.symm ≫ φ.map g ≫ eqToHom hb :=
-  by convert Map.arrows_iff φ hφ ⊤ f; simp only [Top.top, mem_univ, exists_true_left]
+        f = eqToHom ha.symm ≫ φ.map g ≫ eqToHom hb := by
+  convert Map.arrows_iff φ hφ ⊤ f; simp only [Top.top, mem_univ, exists_true_left]
 #align category_theory.subgroupoid.mem_im_iff CategoryTheory.Subgroupoid.mem_im_iff
 
 theorem mem_im_objs_iff (hφ : Function.Injective φ.obj) (d : D) :

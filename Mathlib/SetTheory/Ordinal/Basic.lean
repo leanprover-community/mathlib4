@@ -1637,8 +1637,8 @@ theorem card_eq_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
   card_eq_nat
 
 @[simp]
-theorem type_fintype (r : α → α → Prop) [IsWellOrder α r] [Fintype α] : type r = Fintype.card α :=
-  by rw [← card_eq_nat, card_type, mk_fintype]
+theorem type_fintype (r : α → α → Prop) [IsWellOrder α r] [Fintype α] :
+    type r = Fintype.card α := by rw [← card_eq_nat, card_type, mk_fintype]
 #align ordinal.type_fintype Ordinal.type_fintype
 
 theorem type_fin (n : ℕ) : @type (Fin n) (· < ·) _ = n := by simp

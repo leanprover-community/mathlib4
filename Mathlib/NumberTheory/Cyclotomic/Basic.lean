@@ -99,8 +99,8 @@ theorem iff_adjoin_eq_top :
 /-- A reformulation of `IsCyclotomicExtension` in the case `S` is a singleton. -/
 theorem iff_singleton :
     IsCyclotomicExtension {n} A B ↔
-      (∃ r : B, IsPrimitiveRoot r n) ∧ ∀ x, x ∈ adjoin A {b : B | b ^ (n : ℕ) = 1} :=
-  by simp [isCyclotomicExtension_iff]
+      (∃ r : B, IsPrimitiveRoot r n) ∧ ∀ x, x ∈ adjoin A {b : B | b ^ (n : ℕ) = 1} := by
+  simp [isCyclotomicExtension_iff]
 #align is_cyclotomic_extension.iff_singleton IsCyclotomicExtension.iff_singleton
 
 /-- If `IsCyclotomicExtension ∅ A B`, then the image of `A` in `B` equals `B`. -/
