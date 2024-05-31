@@ -190,14 +190,18 @@ theorem mul_apply (f g : Poly α) (x : α → ℕ) : (f * g) x = f x * g x := rf
 instance (α : Type*) : Inhabited (Poly α) := ⟨0⟩
 
 instance : AddCommGroup (Poly α) := by
-  refine' { add := ((· + ·) : Poly α → Poly α → Poly α)
-            neg := (Neg.neg : Poly α → Poly α)
-            sub := Sub.sub
-            zero := 0
-            nsmul := @nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩
-            zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩
-              (@nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩)
-            .. }
+  refine {
+    add := ((· + ·) : Poly α → Poly α → Poly α)
+    neg := (Neg.neg : Poly α → Poly α)
+    sub := Sub.sub
+    zero := 0
+    nsmul := @nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩
+    zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩ (@nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩)
+    add_assoc := ?_
+    zero_add := ?_
+    add_zero := ?_
+    add_left_neg := ?_
+    add_comm := ?_ }
   all_goals
     intros
     first
@@ -217,11 +221,19 @@ instance : AddGroupWithOne (Poly α) :=
       intCast := Poly.const }
 
 instance : CommRing (Poly α) := by
-  refine' { (inferInstance : AddCommGroup (Poly α)),
-            (inferInstance : AddGroupWithOne (Poly α)) with
-              mul := (· * ·)
-              npow := @npowRec _ ⟨(1 : Poly α)⟩ ⟨(· * ·)⟩
-              .. }
+  refine {
+    (inferInstance : AddCommGroup (Poly α)),
+    (inferInstance : AddGroupWithOne (Poly α)) with
+    mul := (· * ·)
+    npow := @npowRec _ ⟨(1 : Poly α)⟩ ⟨(· * ·)⟩
+    left_distrib := ?_
+    right_distrib := ?_
+    zero_mul := ?_
+    mul_zero := ?_
+    mul_assoc := ?_
+    one_mul := ?_
+    mul_one := ?_
+    mul_comm := ?_ }
   all_goals
     intros
     first

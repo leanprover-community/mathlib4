@@ -466,11 +466,9 @@ theorem Sylow.normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N
   apply mul_mem_sup (N.inv_mem n.2)
   rw [Sylow.smul_def, ← mul_smul, ← MulAut.conjNormal_val, ← MulAut.conjNormal.map_mul,
     Sylow.ext_iff, Sylow.pointwise_smul_def, Subgroup.pointwise_smul_def] at hn
-  refine' fun x =>
-    (mem_map_iff_mem
-            (show Function.Injective (MulAut.conj (↑n * g)).toMonoidHom from
-              (MulAut.conj (↑n * g)).injective)).symm.trans
-      _
+  convert fun x ↦ (mem_map_iff_mem
+    (show Function.Injective (MulAut.conj (↑n * g)).toMonoidHom from
+      (MulAut.conj (↑n * g)).injective)).symm.trans _
   rw [map_map, ← congr_arg (map N.subtype) hn, map_map]
   rfl
 #align sylow.normalizer_sup_eq_top Sylow.normalizer_sup_eq_top

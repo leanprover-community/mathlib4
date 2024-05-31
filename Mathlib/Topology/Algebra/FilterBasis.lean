@@ -121,9 +121,14 @@ is discrete. -/
 @[to_additive "The trivial additive group filter basis consists of `{0}` only. The associated
 topology is discrete."]
 instance : Inhabited (GroupFilterBasis G) := ⟨by
-  refine'
+  refine
     { sets := {{1}}
-      nonempty := singleton_nonempty _.. }
+      nonempty := singleton_nonempty _
+      inter_sets := ?_
+      one' := ?_
+      mul' := ?_
+      inv' := ?_
+      conj' := ?_ }
   all_goals simp only [exists_prop, mem_singleton_iff]
   · rintro - - rfl rfl
     use {1}
