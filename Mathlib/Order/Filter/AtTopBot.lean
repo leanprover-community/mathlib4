@@ -2053,7 +2053,7 @@ theorem Function.Injective.map_atTop_finset_prod_eq [CommMonoid α] {g : γ → 
     (hg : Function.Injective g) {f : β → α} (hf : ∀ x, x ∉ Set.range g → f x = 1) :
     map (fun s => ∏ i ∈ s, f (g i)) atTop = map (fun s => ∏ i ∈ s, f i) atTop := by
   haveI := Classical.decEq β
-  apply le_antisymm <;> refine' map_atTop_finset_prod_le_of_prod_eq fun s => _
+  apply le_antisymm <;> refine map_atTop_finset_prod_le_of_prod_eq fun s => ?_
   · refine ⟨s.preimage g (hg.injOn _), fun t ht => ?_⟩
     refine ⟨t.image g ∪ s, Finset.subset_union_right _ _, ?_⟩
     rw [← Finset.prod_image (hg.injOn _)]

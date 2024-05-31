@@ -231,7 +231,7 @@ instance {a : ℝ} : DiscreteTopology (AddSubgroup.zmultiples a) := by
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
     exact Subsingleton.discreteTopology (α := (⊥ : Submodule ℤ ℝ))
   rw [discreteTopology_iff_isOpen_singleton_zero, isOpen_induced_iff]
-  refine' ⟨ball 0 |a|, isOpen_ball, _⟩
+  refine ⟨ball 0 |a|, isOpen_ball, ?_⟩
   ext ⟨x, hx⟩
   obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
   simp [ha, Real.dist_eq, abs_mul, (by norm_cast : |(k : ℝ)| < 1 ↔ |k| < 1)]

@@ -74,7 +74,7 @@ theorem ae_mem_imp_eq_mk {s} (h : AEMeasurable f (μ.restrict s)) :
   ae_imp_of_ae_restrict h.ae_eq_mk
 #align ae_measurable.ae_mem_imp_eq_mk AEMeasurable.ae_mem_imp_eq_mk
 
-theorem ae_inf_principal_eq_mk {s} (h : AEMeasurable f (μ.restrict s)) : f =ᶠ[μ.ae ⊓ 𝓟 s] h.mk f :=
+theorem ae_inf_principal_eq_mk {s} (h : AEMeasurable f (μ.restrict s)) : f =ᶠ[ae μ ⊓ 𝓟 s] h.mk f :=
   le_ae_restrict h.ae_eq_mk
 #align ae_measurable.ae_inf_principal_eq_mk AEMeasurable.ae_inf_principal_eq_mk
 

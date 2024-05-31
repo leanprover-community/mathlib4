@@ -102,10 +102,10 @@ lemma nodup_entries (f : Finmap β) : f.entries.Nodup := f.nodupKeys.nodup
 -- @[elab_as_elim] Porting note: we can't add `elab_as_elim` attr in this type
 def liftOn {γ} (s : Finmap β) (f : AList β → γ)
     (H : ∀ a b : AList β, a.entries ~ b.entries → f a = f b) : γ := by
-  refine'
+  refine
     (Quotient.liftOn s.entries
       (fun (l : List (Sigma β)) => (⟨_, fun nd => f ⟨l, nd⟩⟩ : Part γ))
-      (fun l₁ l₂ p => Part.ext' (perm_nodupKeys p) _) : Part γ).get _
+      (fun l₁ l₂ p => Part.ext' (perm_nodupKeys p) ?_) : Part γ).get ?_
   · exact fun h1 h2 => H _ _ p
   · have := s.nodupKeys
     -- Porting note: `revert` required because `rcases` behaves differently

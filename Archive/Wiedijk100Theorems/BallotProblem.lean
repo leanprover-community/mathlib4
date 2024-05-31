@@ -374,7 +374,7 @@ theorem ballot_problem' :
       field_simp [h₄, h₅, h₆] at *
       ring
     all_goals
-      refine' (ENNReal.mul_lt_top _ _).ne
+      refine (ENNReal.mul_lt_top ?_ ?_).ne
       · exact (measure_lt_top _ _).ne
       · simp [Ne, ENNReal.div_eq_top]
 #align ballot.ballot_problem' Ballot.ballot_problem'

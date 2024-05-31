@@ -379,7 +379,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
       have : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective hRL
       rw [← IsFractionRing.isAlgebraic_iff' R S]
       infer_instance
-    refine' IsFractionRing.ideal_span_singleton_map_subset R hRL span_d hx
+    refine IsFractionRing.ideal_span_singleton_map_subset R hRL span_d hx
 #align ideal.finrank_quotient_map.span_eq_top Ideal.FinrankQuotientMap.span_eq_top
 
 variable (K L)
@@ -506,7 +506,7 @@ noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem
     fun x y h => by
     rw [Submodule.quotientRel_r_def] at h ⊢
     simp only [_root_.map_mul, LinearMap.mem_range]
-    refine' ⟨⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_mul a_mem h)⟩, _⟩
+    refine ⟨⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_mul a_mem h)⟩, ?_⟩
     ext
     rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Submodule.coe_sub, Subtype.coe_mk,
       Subtype.coe_mk, _root_.map_mul, map_sub, mul_sub]

@@ -3,7 +3,7 @@ Copyright (c) 2023 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
+import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
 import Mathlib.LinearAlgebra.FreeModule.Norm
 import Mathlib.RingTheory.ClassGroup
 
@@ -11,7 +11,8 @@ import Mathlib.RingTheory.ClassGroup
 # Group law on Weierstrass curves
 
 This file proves that the nonsingular rational points on a Weierstrass curve forms an abelian group
-under the geometric group law defined in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine`.
+under the geometric group law defined in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine` and in
+`Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian`.
 
 ## Mathematical background
 
@@ -31,6 +32,9 @@ Injectivity can then be shown by computing the degree of such a norm $N(p + qY)$
 ways, which is done in `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis` and in the
 auxiliary lemmas in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroupPoint`.
 
+When `W` is given in Jacobian coordinates, `WeierstrassCurve.Jacobian.Point.toAffine_addEquiv`
+pulls back the group law on `WeierstrassCurve.Affine.Point` to `WeierstrassCurve.Jacobian.Point`.
+
 ## Main definitions
 
  * `WeierstrassCurve.Affine.CoordinateRing`: the coordinate ring `F[W]` of a Weierstrass curve `W`.
@@ -38,12 +42,14 @@ auxiliary lemmas in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroup
 
 ## Main statements
 
- * `WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing`: the coordinate ring of a
-    Weierstrass curve is an integral domain.
+ * `WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing`: the coordinate ring of an
+    affine Weierstrass curve is an integral domain.
  * `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis`: the degree of the norm of an
-    element in the coordinate ring in terms of the power basis.
+    element in the coordinate ring of an affine Weierstrass curve in terms of the power basis.
  * `WeierstrassCurve.Affine.Point.instAddCommGroupPoint`: the type of nonsingular rational points on
-    a Weierstrass curve forms an abelian group under addition.
+    an affine Weierstrass curve forms an abelian group under addition.
+ * `WeierstrassCurve.Jacobian.Point.instAddCommGroupPoint`: the type of nonsingular rational
+    points on a Jacobian Weierstrass curve forms an abelian group under addition.
 
 ## References
 
@@ -634,6 +640,43 @@ noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
 end Point
 
 end WeierstrassCurve.Affine
+
+namespace WeierstrassCurve.Jacobian.Point
+
+/-! ## Weierstrass curves in Jacobian coordinates -/
+
+variable {F : Type u} [Field F] {W : Jacobian F}
+
+lemma zero_add (P : W.Point) : 0 + P = P :=
+  toAffineAddEquiv.injective <| by
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, _root_.zero_add]
+
+lemma add_zero (P : W.Point) : P + 0 = P :=
+  toAffineAddEquiv.injective <| by
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_zero, _root_.add_zero]
+
+lemma add_left_neg (P : W.Point) : -P + P = 0 :=
+  toAffineAddEquiv.injective <| by
+    rcases P with @⟨⟨_⟩, _⟩
+    simp only [map_add, toAffineAddEquiv_apply, toAffineLift_neg, _root_.add_left_neg,
+      toAffineLift_zero]
+
+lemma add_comm (P Q : W.Point) : P + Q = Q + P :=
+  toAffineAddEquiv.injective <| by simp only [map_add, _root_.add_comm]
+
+lemma add_assoc (P Q R : W.Point) : P + Q + R = P + (Q + R) :=
+  toAffineAddEquiv.injective <| by simp only [map_add, _root_.add_assoc]
+
+noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
+  nsmul := nsmulRec
+  zsmul := zsmulRec
+  zero_add := zero_add
+  add_zero := add_zero
+  add_left_neg := add_left_neg
+  add_comm := add_comm
+  add_assoc := add_assoc
+
+end WeierstrassCurve.Jacobian.Point
 
 namespace EllipticCurve.Affine
 

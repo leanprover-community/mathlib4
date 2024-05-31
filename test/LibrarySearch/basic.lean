@@ -68,18 +68,18 @@ example (α : Prop) : α → α := by apply?
 
 /-- info: Try this: exact Nat.add_comm a b -/
 #guard_msgs in
-example (a b : ℕ) : a + b = b + a :=
-by apply?
+example (a b : ℕ) : a + b = b + a := by
+  apply?
 
 /-- info: Try this: exact Nat.mul_sub_left_distrib n m k -/
 #guard_msgs in
-example (n m k : ℕ) : n * (m - k) = n * m - n * k :=
-by apply?
+example (n m k : ℕ) : n * (m - k) = n * m - n * k := by
+  apply?
 
 /-- info: Try this: exact Eq.symm (Nat.mul_sub_left_distrib n m k) -/
 #guard_msgs in
-example (n m k : ℕ) : n * m - n * k = n * (m - k) :=
-by apply?
+example (n m k : ℕ) : n * m - n * k = n * (m - k) := by
+  apply?
 
 /- info: Try this: exact eq_comm -/
 #guard_msgs (drop info) in
@@ -103,8 +103,8 @@ example (a b : ℕ) (_ha : a > 0) (_hb : 0 < b) : 0 < a + b := by apply?
 
 /-- info: Try this: exact Nat.le_of_dvd w h -/
 #guard_msgs in
-example (a b : ℕ) (h : a ∣ b) (w : b > 0) : a ≤ b :=
-by apply?
+example (a b : ℕ) (h : a ∣ b) (w : b > 0) : a ≤ b := by
+  apply?
 
 /-- info: Try this: exact Nat.le_of_dvd w h -/
 #guard_msgs in

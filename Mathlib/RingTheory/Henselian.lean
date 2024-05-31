@@ -163,7 +163,7 @@ instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
     exact (eq_maximalIdeal hI).ge
   is_henselian := by
     intro f hf a₀ h₁ h₂
-    refine' HenselianLocalRing.is_henselian f hf a₀ h₁ _
+    refine HenselianLocalRing.is_henselian f hf a₀ h₁ ?_
     contrapose! h₂
     rw [← mem_nonunits_iff, ← LocalRing.mem_maximalIdeal, ← Ideal.Quotient.eq_zero_iff_mem] at h₂
     rw [h₂]
@@ -196,7 +196,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         rw [hc, sub_eq_add_neg, ← add_zero a₀]
         refine ih.add ?_
         rw [SModEq.zero, Ideal.neg_mem_iff]
-        refine' I.mul_mem_right _ _
+        refine I.mul_mem_right _ ?_
         rw [← SModEq.zero] at h₁ ⊢
         exact (ih.eval f).trans h₁
       have hf'c : ∀ n, IsUnit (f'.eval (c n)) := by
@@ -216,17 +216,17 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         swap
         · intro i
           rw [zero_mul]
-        refine' Ideal.add_mem _ _ _
+        refine Ideal.add_mem _ ?_ ?_
         · erw [Finset.sum_range_succ]
           rw [Finset.range_one, Finset.sum_singleton,
             taylor_coeff_zero, taylor_coeff_one, pow_zero, pow_one, mul_one, mul_neg,
             mul_left_comm, Ring.mul_inverse_cancel _ (hf'c n), mul_one, add_neg_self]
           exact Ideal.zero_mem _
-        · refine' Submodule.sum_mem _ _
+        · refine Submodule.sum_mem _ ?_
           simp only [Finset.mem_Ico]
           rintro i ⟨h2i, _⟩
           have aux : n + 2 ≤ i * (n + 1) := by trans 2 * (n + 1) <;> nlinarith only [h2i]
-          refine' Ideal.mul_mem_left _ _ (Ideal.pow_le_pow_right aux _)
+          refine Ideal.mul_mem_left _ _ (Ideal.pow_le_pow_right aux ?_)
           rw [pow_mul']
           exact Ideal.pow_mem_pow ((Ideal.neg_mem_iff _).2 <| Ideal.mul_mem_right _ _ ih) _
       -- we are now in the position to show that `c : ℕ → R` is a Cauchy sequence
@@ -247,12 +247,12 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         refine ih.add ?_
         symm
         rw [SModEq.zero, Ideal.neg_mem_iff]
-        refine' Ideal.mul_mem_right _ _ (Ideal.pow_le_pow_right _ (hfcI _))
+        refine Ideal.mul_mem_right _ _ (Ideal.pow_le_pow_right ?_ (hfcI _))
         rw [add_assoc]
         exact le_self_add
       -- hence the sequence converges to some limit point `a`, which is the `a` we are looking for
       obtain ⟨a, ha⟩ := IsPrecomplete.prec' c (aux _ _)
-      refine' ⟨a, _, _⟩
+      refine ⟨a, ?_, ?_⟩
       · show f.IsRoot a
         suffices ∀ n, f.eval a ≡ 0 [SMOD (I ^ n • ⊤ : Ideal R)] by exact IsHausdorff.haus' _ this
         intro n
