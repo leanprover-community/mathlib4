@@ -113,7 +113,6 @@ lemma coeff_list_sum (l : List R[X]) (n : ℕ) :
     l.sum.coeff n = (l.map (lcoeff R n)).sum :=
   map_list_sum (lcoeff R n) _
 
-@[simp]
 lemma coeff_list_sum_map {ι : Type*} (l : List ι) (f : ι → R[X]) (n : ℕ) :
     (l.map f).sum.coeff n = (l.map (fun a => (f a).coeff n)).sum := by
   rw [coeff_list_sum, List.map_map, Function.comp]
