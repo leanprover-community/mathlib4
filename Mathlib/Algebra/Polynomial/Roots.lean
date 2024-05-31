@@ -651,8 +651,8 @@ set_option linter.uppercaseLean3 false in
 
 theorem prod_multiset_root_eq_finset_root [DecidableEq R] :
     (p.roots.map fun a => X - C a).prod =
-      p.roots.toFinset.prod fun a => (X - C a) ^ rootMultiplicity a p :=
-  by simp only [count_roots, Finset.prod_multiset_map_count]
+      p.roots.toFinset.prod fun a => (X - C a) ^ rootMultiplicity a p := by
+  simp only [count_roots, Finset.prod_multiset_map_count]
 #align polynomial.prod_multiset_root_eq_finset_root Polynomial.prod_multiset_root_eq_finset_root
 
 /-- The product `∏ (X - a)` for `a` inside the multiset `p.roots` divides `p`. -/

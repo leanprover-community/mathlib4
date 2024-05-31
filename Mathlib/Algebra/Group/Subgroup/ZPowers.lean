@@ -269,8 +269,8 @@ theorem center_eq_iInf (S : Set G) (hS : closure S = ⊤) :
 
 @[to_additive]
 theorem center_eq_infi' (S : Set G) (hS : closure S = ⊤) :
-    center G = ⨅ g : S, centralizer (zpowers (g : G)) :=
-  by rw [center_eq_iInf S hS, ← iInf_subtype'']
+    center G = ⨅ g : S, centralizer (zpowers (g : G)) := by
+  rw [center_eq_iInf S hS, ← iInf_subtype'']
 #align subgroup.center_eq_infi' Subgroup.center_eq_infi'
 #align add_subgroup.center_eq_infi' AddSubgroup.center_eq_infi'
 

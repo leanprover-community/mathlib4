@@ -360,8 +360,8 @@ theorem Base.exchange (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) (hx : e ∈ B�
   M.base_exchange B₁ B₂ hB₁ hB₂ _ hx
 
 theorem Base.exchange_mem (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) (hxB₁ : e ∈ B₁) (hxB₂ : e ∉ B₂) :
-    ∃ y, (y ∈ B₂ ∧ y ∉ B₁) ∧ M.Base (insert y (B₁ \ {e})) :=
-  by simpa using hB₁.exchange hB₂ ⟨hxB₁, hxB₂⟩
+    ∃ y, (y ∈ B₂ ∧ y ∉ B₁) ∧ M.Base (insert y (B₁ \ {e})) := by
+  simpa using hB₁.exchange hB₂ ⟨hxB₁, hxB₂⟩
 
 theorem Base.eq_of_subset_base (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) (hB₁B₂ : B₁ ⊆ B₂) :
     B₁ = B₂ :=
@@ -739,8 +739,8 @@ theorem basis_iff' :
     and_congr_left_iff, and_congr_right_iff, @Imp.swap (_ ⊆ X)]
 
 theorem basis_iff (hX : X ⊆ M.E := by aesop_mat) :
-    M.Basis I X ↔ (M.Indep I ∧ I ⊆ X ∧ ∀ J, M.Indep J → I ⊆ J → J ⊆ X → I = J) :=
-by rw [basis_iff', and_iff_left hX]
+    M.Basis I X ↔ (M.Indep I ∧ I ⊆ X ∧ ∀ J, M.Indep J → I ⊆ J → J ⊆ X → I = J) := by
+  rw [basis_iff', and_iff_left hX]
 
 theorem basis'_iff_basis_inter_ground : M.Basis' I X ↔ M.Basis I (X ∩ M.E) := by
   rw [Basis', Basis, and_iff_left (inter_subset_right _ _)]
