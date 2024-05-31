@@ -3,8 +3,8 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.RingTheory.HahnSeries.Basic
 
 
@@ -176,19 +176,30 @@ end Domain
 
 end AddMonoid
 
-instance [AddCommMonoid R] : AddCommMonoid (HahnSeries Γ R) :=
+section AddCommMonoid
+
+variable [AddCommMonoid R] {α : Type*} {s : Finset α}
+
+instance : AddCommMonoid (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
     add_comm := fun x y => by
       ext
       apply add_comm }
 
-/-!
 open BigOperators
-theorem inf_orderTop_le_orderTop_sum {Γ} [LinearOrder Γ] [AddCommMonoid R] {α : Type*} {x : α → HahnSeries Γ R}
-    {s : Finset α} :
-    (min fun (i : s) => orderTop (x i)) ≤ (∑ i ∈ s, x i).orderTop := by
-  sorry
--/
+
+@[simp]
+theorem sum_coeff {x : α → HahnSeries Γ R} (g : Γ) :
+    (∑ i ∈ s, x i).coeff g = ∑ i ∈ s, (x i).coeff g :=
+  cons_induction rfl (fun i s his hsum => by rw [sum_cons, sum_cons, add_coeff, hsum]) s
+
+theorem inf_orderTop_le_orderTop_sum {Γ} [LinearOrder Γ] {α : Type*} {x : α → HahnSeries Γ R}
+    {s : Finset α} : (s.inf fun i => orderTop (x i)) ≤ (∑ i ∈ s, x i).orderTop := by
+  refine le_orderTop_iff.mpr fun g hg => ?_
+  simp_all only [gt_iff_lt, WithTop.coe_lt_top, Finset.lt_inf_iff, sum_coeff]
+  exact Finset.sum_eq_zero fun i hi ↦ coeff_eq_zero_of_lt_orderTop (hg i hi)
+
+end AddCommMonoid
 
 section AddGroup
 
