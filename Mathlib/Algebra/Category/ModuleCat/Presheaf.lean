@@ -296,24 +296,6 @@ namespace Hom
 
 variable {P Q : PresheafOfModules R} (app : ∀ X, P.obj X →ₗ[R.obj X] Q.obj X)
 
-section
-
-variable (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y) (x : P.obj X),
-  app Y (P.map f x) = Q.map f (app X x))
-
-/-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
-of a family of linear maps over the various rings `R.obj X`. -/
-def mk' : P ⟶ Q where
-  hom :=
-    { app := fun X => (app X).toAddMonoidHom
-      naturality := fun X Y f => by ext x; apply naturality }
-  map_smul X := (app X).map_smul
-
-@[simp]
-lemma mk'_app : (mk' app naturality).app = app := rfl
-
-end
-
 /-- A constructor for morphisms in `PresheafOfModules R` that is based on the data
 of a family of linear maps over the various rings `R.obj X`, and for which the
 naturality condition is stated using the restriction of scalars. -/

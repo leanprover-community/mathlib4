@@ -286,15 +286,6 @@ lemma toSheafify_plusPlusIsoSheafify_hom (P : Cᵒᵖ ⥤ D) :
   dsimp [GrothendieckTopology.toSheafify, plusPlusAdjunction]
   rw [Category.comp_id]
 
-@[reassoc (attr := simp)]
-lemma toSheafify_plusPlusIsoSheafify_hom (P : Cᵒᵖ ⥤ D) :
-    J.toSheafify P ≫ (plusPlusIsoSheafify J D P).hom = toSheafify J P := by
-  convert Adjunction.unit_leftAdjointUniq_hom_app
-    (plusPlusAdjunction J D) (sheafificationAdjunction J D) P
-  ext1 P
-  dsimp [GrothendieckTopology.toSheafify, plusPlusAdjunction]
-  rw [Category.comp_id]
-
 instance [HasFiniteLimits D] : HasSheafify J D := HasSheafify.mk' J D (plusPlusAdjunction J D)
 
 end
