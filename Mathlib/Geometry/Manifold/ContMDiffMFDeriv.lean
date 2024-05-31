@@ -505,8 +505,8 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
       · simp only [hq, mfld_simps]
         have :
           tangentMapWithin I I' f s' q ∈
-            (chartAt (ModelProd H' E') (tangentMapWithin I I' f s p)).source :=
-          by simp only [hq, mfld_simps]
+            (chartAt (ModelProd H' E') (tangentMapWithin I I' f s p)).source := by
+          simp only [hq, mfld_simps]
         exact (chartAt (ModelProd H' E') (tangentMapWithin I I' f s p)).left_inv this
       · simp only [hq, mfld_simps]
     have E : tangentMapWithin I I' f s' q = tangentMapWithin I I' f s q := by

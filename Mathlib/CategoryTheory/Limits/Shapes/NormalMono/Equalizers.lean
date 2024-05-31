@@ -196,8 +196,8 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
     CokernelCofork.IsColimit.desc' i (cokernel.π (coprod.desc f g)) <|
       calc
         f ≫ cokernel.π (coprod.desc f g) =
-            coprod.inl ≫ coprod.desc f g ≫ cokernel.π (coprod.desc f g) :=
-          by rw [coprod.inl_desc_assoc]
+            coprod.inl ≫ coprod.desc f g ≫ cokernel.π (coprod.desc f g) := by
+          rw [coprod.inl_desc_assoc]
         _ = coprod.inl ≫ (0 : P ⨿ Q ⟶ cokernel (coprod.desc f g)) := by rw [cokernel.condition]
         _ = 0 := HasZeroMorphisms.comp_zero _ _
 
@@ -205,8 +205,8 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
     CokernelCofork.IsColimit.desc' i' (cokernel.π (coprod.desc f g)) <|
       calc
         g ≫ cokernel.π (coprod.desc f g) =
-            coprod.inr ≫ coprod.desc f g ≫ cokernel.π (coprod.desc f g) :=
-          by rw [coprod.inr_desc_assoc]
+            coprod.inr ≫ coprod.desc f g ≫ cokernel.π (coprod.desc f g) := by
+          rw [coprod.inr_desc_assoc]
         _ = coprod.inr ≫ (0 : P ⨿ Q ⟶ cokernel (coprod.desc f g)) := by rw [cokernel.condition]
         _ = 0 := HasZeroMorphisms.comp_zero _ _
 

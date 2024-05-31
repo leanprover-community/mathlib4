@@ -823,8 +823,8 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
       rintro ⟨n, c⟩
       calc
         ‖(compAlongComposition q p c) fun _j : Fin n => y‖ ≤
-            ‖compAlongComposition q p c‖ * ∏ _j : Fin n, ‖y‖ :=
-          by apply ContinuousMultilinearMap.le_opNorm
+            ‖compAlongComposition q p c‖ * ∏ _j : Fin n, ‖y‖ := by
+          apply ContinuousMultilinearMap.le_opNorm
         _ ≤ ‖compAlongComposition q p c‖ * (r : ℝ) ^ n := by
           apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
           rw [Finset.prod_const, Finset.card_fin]
