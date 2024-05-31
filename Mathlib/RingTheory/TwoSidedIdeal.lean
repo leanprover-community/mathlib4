@@ -32,10 +32,10 @@ instance : SetLike (RingCon R) R where
   coe t := {r | t r 0}
   coe_injective' t₁ t₂ (h : {x | _} = {x | _}) := by
     refine RingCon.ext fun a b ↦ ⟨fun H ↦ ?_, fun H ↦ ?_⟩
-    · have H' : a - b ∈ {x | t₁ x 0} := sub_self b ▸  t₁.sub H (t₁.refl b)
+    · have H' : a - b ∈ {x | t₁ x 0} := sub_self b ▸ t₁.sub H (t₁.refl b)
       rw [h] at H'
       convert t₂.add H' (t₂.refl b) using 1 <;> abel
-    · have H' : a - b ∈ {x | t₂ x 0} := sub_self b ▸  t₂.sub H (t₂.refl b)
+    · have H' : a - b ∈ {x | t₂ x 0} := sub_self b ▸ t₂.sub H (t₂.refl b)
       rw [← h] at H'
       convert t₁.add H' (t₁.refl b) using 1 <;> abel
 
