@@ -9,13 +9,13 @@ import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Tactic.Common
 
 
-namespace Mathlib
 #align_import data.vector from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
 /-!
 The type `Vector` represents lists with fixed length.
 -/
 
+namespace Mathlib
 assert_not_exists Monoid
 
 universe u v w
