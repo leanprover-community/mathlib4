@@ -1095,7 +1095,7 @@ theorem HasSum_fiberwise {f : β → ENNReal} {a : ENNReal} (hf : HasSum f a) (g
   apply ENNReal.summable
 
 theorem tsum_fiberwise (f : β → ENNReal) (g : β → γ) :
-  ∑' (x : γ), ∑' (b : (g ⁻¹' {x})), f b = ∑' i : β, f i :=
+    ∑' (x : γ), ∑' (b : (g ⁻¹' {x})), f b = ∑' i : β, f i :=
   HasSum.tsum_eq <| ENNReal.HasSum_fiberwise (Summable.hasSum ENNReal.summable) g
 
 end tsum
