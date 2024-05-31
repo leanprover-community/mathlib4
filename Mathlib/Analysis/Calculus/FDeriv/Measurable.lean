@@ -545,8 +545,8 @@ theorem norm_sub_le_of_mem_A {r x : ℝ} (hr : 0 < r) (ε : ℝ) {L₁ L₂ : F}
   calc
     ‖(r / 2) • (L₁ - L₂)‖ =
         ‖f (x + r / 2) - f x - (x + r / 2 - x) • L₂ -
-            (f (x + r / 2) - f x - (x + r / 2 - x) • L₁)‖ :=
-      by simp [smul_sub]
+            (f (x + r / 2) - f x - (x + r / 2 - x) • L₁)‖ := by
+      simp [smul_sub]
     _ ≤ ‖f (x + r / 2) - f x - (x + r / 2 - x) • L₂‖ +
           ‖f (x + r / 2) - f x - (x + r / 2 - x) • L₁‖ :=
       norm_sub_le _ _
