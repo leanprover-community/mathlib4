@@ -335,8 +335,7 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     conv_lhs => rw [← hf'.some.fac]
     simp only [← Category.assoc, op_comp, Functor.map_comp]
     congr 1
-    refine' (appHom_restrict (homOver α (unop X)) hf'.some.map.op x).trans _
-    simp
+    exact (appHom_restrict (homOver α (unop X)) hf'.some.map.op x).trans (by simp)
 #align category_theory.cover_dense.sheaf_coyoneda_hom CategoryTheory.Functor.IsCoverDense.sheafCoyonedaHom
 
 /--
@@ -345,11 +344,11 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
 noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     ℱ ⋙ yoneda ⟶ ℱ'.val ⋙ yoneda := by
   let α := sheafCoyonedaHom α
-  refine'
-    { app := _
-      naturality := _ }
+  refine
+    { app := ?_
+      naturality := ?_ }
   · intro U
-    refine'
+    exact
       { app := fun X => (α.app X).app U
         naturality := fun X Y f => by simpa using congr_app (α.naturality f) U }
   · intro U V i

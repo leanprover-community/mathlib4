@@ -1753,7 +1753,7 @@ def piCongrRight (e : ∀ a, π a ≃ᵐ π' a) : (∀ a, π a) ≃ᵐ ∀ a, π
 variable (π) in
 /-- Moving a dependent type along an equivalence of coordinates, as a measurable equivalence. -/
 def piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ a, π a := by
-  refine' { Equiv.piCongrLeft π f with .. }
+  refine { Equiv.piCongrLeft π f with measurable_toFun := ?_, measurable_invFun := ?_ }
   · exact measurable_piCongrLeft f
   simp only [invFun_as_coe, coe_fn_symm_mk]
   rw [measurable_pi_iff]
@@ -1829,7 +1829,7 @@ def piEquivPiSubtypeProd (p : δ' → Prop) [DecidablePred p] :
 This is similar to `MeasurableEquiv.piEquivPiSubtypeProd`. -/
 def sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
     (∀ i, α i) ≃ᵐ (∀ i, α (.inl i)) × ∀ i', α (.inr i') := by
-  refine' { Equiv.sumPiEquivProdPi α with .. }
+  refine { Equiv.sumPiEquivProdPi α with measurable_toFun := ?_, measurable_invFun := ?_ }
   · refine Measurable.prod ?_ ?_ <;>
       rw [measurable_pi_iff] <;> rintro i <;> apply measurable_pi_apply
   · rw [measurable_pi_iff]; rintro (i|i)
@@ -1961,9 +1961,8 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
     rcases this with ⟨A, Ameas, Afp⟩
     let B := f '' A
     have Bmeas : MeasurableSet B := hf.measurableSet_image' Ameas
-    refine'
-      (MeasurableEquiv.sumCompl Ameas).symm.trans
-        (MeasurableEquiv.trans _ (MeasurableEquiv.sumCompl Bmeas))
+    refine (MeasurableEquiv.sumCompl Ameas).symm.trans
+      (MeasurableEquiv.trans ?_ (MeasurableEquiv.sumCompl Bmeas))
     apply MeasurableEquiv.sumCongr (hf.equivImage _)
     have : Aᶜ = g '' Bᶜ := by
       apply compl_injective
@@ -1974,7 +1973,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   have Fmono : ∀ {A B}, A ⊆ B → F A ⊆ F B := fun h =>
     compl_subset_compl.mpr <| Set.image_subset _ <| compl_subset_compl.mpr <| Set.image_subset _ h
   let X : ℕ → Set α := fun n => F^[n] univ
-  refine' ⟨iInter X, _, _⟩
+  refine ⟨iInter X, ?_, ?_⟩
   · apply MeasurableSet.iInter
     intro n
     induction' n with n ih

@@ -164,7 +164,7 @@ lemma presheafHom_isSheafFor  :
     Presieve.IsSheafFor (presheafHom F G) S.arrows := by
   intro x hx
   apply exists_unique_of_exists_of_unique
-  · refine' ⟨
+  · refine ⟨
       { app := fun Y => app hG x hx Y.unop.hom
         naturality := by
           rintro ⟨Y₁ : Over X⟩ ⟨Y₂ : Over X⟩ ⟨φ : Y₂ ⟶ Y₁⟩
@@ -175,7 +175,7 @@ lemma presheafHom_isSheafFor  :
           erw [app_cond hG x hx Y₁.hom (Z.hom ≫ φ.left) (by simpa using hZ),
             ← F.map_comp_assoc, op_comp]
           congr 3
-          simp }, _⟩
+          simp }, ?_⟩
     rw [PresheafHom.isAmalgamation_iff _ _ hx]
     intro Y g hg
     dsimp
