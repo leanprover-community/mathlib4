@@ -85,6 +85,10 @@ lemma traceForm_apply_lie_apply' (x y z : L) :
       = - traceForm R L M ⁅y, x⁆ z := by rw [← lie_skew x y, map_neg, LinearMap.neg_apply]
     _ = - traceForm R L M y ⁅x, z⁆ := by rw [traceForm_apply_lie_apply]
 
+lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
+  intro x y z
+  rw [← lie_skew, map_neg, LinearMap.neg_apply, LieModule.traceForm_apply_lie_apply R L M]
+
 /-- This lemma justifies the terminology "invariant" for trace forms. -/
 @[simp] lemma lie_traceForm_eq_zero (x : L) : ⁅x, traceForm R L M⁆ = 0 := by
   ext y z
@@ -338,17 +342,13 @@ lemma killingForm_eq_zero_of_mem_zeroRoot_mem_posFitting
   LieModule.eq_zero_of_mem_weightSpace_mem_posFitting R H L
     (fun x y z ↦ LieModule.traceForm_apply_lie_apply' R L L x y z) hx₀ hx₁
 
-lemma killingForm_lieInvariant : (killingForm R L).lieInvariant L := by
-  intro x y z
-  rw [← lie_skew, map_neg, LinearMap.neg_apply, LieModule.traceForm_apply_lie_apply R L L]
-
 namespace LieIdeal
 
 variable (I : LieIdeal R L)
 
 /-- The orthogonal complement of an ideal with respect to the killing form is an ideal. -/
 noncomputable def killingCompl : LieIdeal R L :=
-  LieAlgebra.InvariantForm.orthogonal (killingForm R L) (killingForm_lieInvariant R L) I
+  LieAlgebra.InvariantForm.orthogonal (killingForm R L) (LieModule.traceForm_lieInvariant R L L) I
 
 @[simp] lemma toSubmodule_killingCompl :
     LieSubmodule.toSubmodule I.killingCompl = (killingForm R L).orthogonal I.toSubmodule :=
