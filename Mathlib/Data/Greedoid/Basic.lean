@@ -133,9 +133,9 @@ theorem mem_accessible {s : Finset α} (hs₁ : s ∈ G.feasible_set) (hs₂ : s
   G.accessible_property hs₁ hs₂
 
 theorem mem_exchange
-  {s₁ : Finset α} (hs₁ : s₁ ∈ G)
-  {s₂ : Finset α} (hs₂ : s₂ ∈ G)
-  (hs : s₂.card < s₁.card) :
+    {s₁ : Finset α} (hs₁ : s₁ ∈ G)
+    {s₂ : Finset α} (hs₂ : s₂ ∈ G)
+    (hs : s₂.card < s₁.card) :
     ∃ x ∈ s₁, ∃ h : x ∉ s₂, cons x s₂ h ∈ G :=
   G.exchange_property hs₁ hs₂ hs
 
@@ -153,7 +153,7 @@ variable {s₂ : Finset α} (hs₂ : s₂ ∈ Sys)
 
 -- TODO: Find better name.
 theorem exchangeProperty_exists_superset_of_card_le
-  {n : ℕ} (hn₁ : n ≤ s₁.card) (hn₂ : s₂.card ≤ n) :
+    {n : ℕ} (hn₁ : n ≤ s₁.card) (hn₂ : s₂.card ≤ n) :
     ∃ s ∈ Sys, s₂ ⊆ s ∧ (∀ e ∈ s, e ∈ s₁ ∨ e ∈ s₂) ∧ s.card = n := by
   induction n, hn₂ using le_induction with
   | base => use s₂; simp [hs₂]; intro _ h; exact Or.inr h
@@ -165,9 +165,9 @@ theorem exchangeProperty_exists_superset_of_card_le
 
 -- TODO: Find better name.
 theorem exchangeProperty_exists_feasible_superset_add_element_feasible'
-  (hs : s₂ ⊆ s₁)
-  {n : ℕ} (hn : n = s₁.card - s₂.card)
-  {a : α} (ha₁ : a ∈ s₁) (ha₂ : a ∉ s₂) :
+    (hs : s₂ ⊆ s₁)
+    {n : ℕ} (hn : n = s₁.card - s₂.card)
+    {a : α} (ha₁ : a ∈ s₁) (ha₂ : a ∉ s₂) :
     ∃ s ∈ Sys, s₂ ⊆ s ∧ s ⊆ s₁ ∧ ∃ h : a ∉ s, cons a s h ∈ Sys := by
   induction n generalizing s₂ with
   | zero =>
@@ -184,7 +184,7 @@ theorem exchangeProperty_exists_feasible_superset_add_element_feasible'
       use t; simp_all [Finset.Subset.trans hs₂]
 
 theorem exchangeProperty_exists_feasible_superset_add_element_feasible
-  (hs : s₂ ⊆ s₁) {a : α} (ha₁ : a ∈ s₁) (ha₂ : a ∉ s₂) :
+    (hs : s₂ ⊆ s₁) {a : α} (ha₁ : a ∈ s₁) (ha₂ : a ∉ s₂) :
     ∃ s ∈ Sys, s₂ ⊆ s ∧ s ⊆ s₁ ∧ ∃ h : a ∉ s, cons a s h ∈ Sys :=
   exchangeProperty_exists_feasible_superset_add_element_feasible' hs₁ hs₂ hs rfl ha₁ ha₂
 
@@ -196,7 +196,7 @@ variable {α : Type*}
 variable {Sys : Finset (Finset α)} [Accessible Sys]
 
 theorem accessible_nonempty_contains_emptyset'
-  {s : Finset α} (hs : s ∈ Sys) {n : ℕ} (hn : n = s.card) :
+    {s : Finset α} (hs : s ∈ Sys) {n : ℕ} (hn : n = s.card) :
     ∅ ∈ Sys := by
   induction n generalizing s with
   | zero => exact card_eq_zero.mp hn.symm ▸ hs
@@ -211,11 +211,12 @@ theorem accessible_nonempty_contains_emptyset [Nonempty Sys] : ∅ ∈ Sys :=
 
 -- TODO: Find better name.
 theorem induction_on_accessible' [Nonempty Sys]
-  {p : (s : Finset α) → s ∈ Sys → Prop} (empty : p ∅ accessible_nonempty_contains_emptyset)
-  (insert : ∀ ⦃s₁ : Finset α⦄, (hs₁ : s₁ ∈ Sys) →
+    {p : (s : Finset α) → s ∈ Sys → Prop}
+    (empty : p ∅ accessible_nonempty_contains_emptyset)
+    (insert : ∀ ⦃s₁ : Finset α⦄, (hs₁ : s₁ ∈ Sys) →
     ∀ ⦃s₂ : Finset α⦄, (hs₂ : s₂ ∈ Sys) →
     s₂ ⊆ s₁ → s₂.card + 1 = s₁.card → p s₂ hs₂ → p s₁ hs₁)
-  (s : Finset α) (hs : s ∈ Sys) {n : ℕ} (hn : n = s.card) :
+    (s : Finset α) (hs : s ∈ Sys) {n : ℕ} (hn : n = s.card) :
     p s hs := by
   induction n generalizing s with
   | zero => exact card_eq_zero.mp hn.symm ▸ empty
@@ -226,8 +227,8 @@ theorem induction_on_accessible' [Nonempty Sys]
 
 -- TODO: Find better name.
 theorem induction_on_accessible [Nonempty Sys]
-  {p : (s : Finset α) → s ∈ Sys → Prop} (empty : p ∅ accessible_nonempty_contains_emptyset)
-  (insert : ∀ ⦃s₁ : Finset α⦄, (hs₁ : s₁ ∈ Sys) →
+    {p : (s : Finset α) → s ∈ Sys → Prop} (empty : p ∅ accessible_nonempty_contains_emptyset)
+    (insert : ∀ ⦃s₁ : Finset α⦄, (hs₁ : s₁ ∈ Sys) →
     ∀ ⦃s₂ : Finset α⦄, (hs₂ : s₂ ∈ Sys) →
     s₂ ⊆ s₁ → s₂.card + 1 = s₁.card → p s₂ hs₂ → p s₁ hs₁) :
     ∀ (s : Finset α) (hs : s ∈ Sys), p s hs
@@ -235,7 +236,7 @@ theorem induction_on_accessible [Nonempty Sys]
 
 -- TODO: Find better name.
 theorem construction_on_accessible [Nonempty Sys]
-  {s : Finset α} (hs : s ∈ Sys) :
+    {s : Finset α} (hs : s ∈ Sys) :
     ∃ l : List α, l.Nodup ∧ Multiset.ofList l = s.val ∧ ∀ l', l' <:+ l →
       ∃ s' : Finset α, Multiset.ofList l' = s'.val ∧ s' ∈ Sys := by
   induction s, hs using induction_on_accessible with
