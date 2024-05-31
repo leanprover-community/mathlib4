@@ -36,7 +36,9 @@ namespace CategoryTheory
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
-/-- Definition of a prefibered category. SGA 1 VI.6.1. -/
+/-- Definition of a prefibered category.
+
+See SGA 1 VI.6.1. -/
 class Functor.IsPreFibered (p : 𝒳 ⥤ 𝒮) : Prop where
   has_pullbacks' {a : 𝒳} {R : 𝒮} (f : R ⟶ p.obj a) : ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ
 
