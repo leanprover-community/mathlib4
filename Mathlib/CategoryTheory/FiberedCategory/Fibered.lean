@@ -20,14 +20,9 @@ SGA VI.6.1
 
 ## Implementation
 
-The standard constructor of `IsPreFibered` has been renamed to `.mk'`, and we have provided an
-alternate constructor `IsPreFibered.mk`, which peforms substitutions of some superfluous variables.
-It is recommended to use these instead to minimize the amount of equalities that needs to be carried
-around in the construction.
-
-There are different notions of fibered categories in the literature, and another common definition
-is the existence of strongly cartesian morphisms lying over any given morphism in the base. We also
-provide an alternate constructor for `IsFibered` in this sense, see `IsFibered.of_has_pullbacks'`.
+The constructor of `IsPreFibered` is called `has_pullbacks'`. The reason for the prime is that when
+wanting to apply this condition, it is recommended to instead use the lemma `has_pullbacks`
+(without the prime), which is more applicable with respect to non-definitional equalities.
 
 ## References
 SGA 1
