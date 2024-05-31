@@ -446,7 +446,7 @@ instance : StarRing C_c(α, β) :=
 
 end StarRing
 
-/-! ### C_c as a functor
+/-! ### `C_c` as a functor
 
 For each `β` with sufficient structure, there is a contravariant functor `C_c(-, β)` from the
 category of topological spaces with morphisms given by `CocompactMap`s.
