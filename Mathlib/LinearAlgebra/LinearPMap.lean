@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Yury Kudryashov All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Moritz Doll
 -/
@@ -763,8 +763,8 @@ def graph (f : E →ₗ.[R] F) : Submodule R (E × F) :=
   f.toFun.graph.map (f.domain.subtype.prodMap (LinearMap.id : F →ₗ[R] F))
 #align linear_pmap.graph LinearPMap.graph
 
-theorem mem_graph_iff' (f : E →ₗ.[R] F) {x : E × F} : x ∈ f.graph ↔ ∃ y : f.domain, (↑y, f y) = x :=
-  by simp [graph]
+theorem mem_graph_iff' (f : E →ₗ.[R] F) {x : E × F} :
+    x ∈ f.graph ↔ ∃ y : f.domain, (↑y, f y) = x := by simp [graph]
 #align linear_pmap.mem_graph_iff' LinearPMap.mem_graph_iff'
 
 @[simp]

@@ -138,7 +138,7 @@ lemma measurable_needleCrossesIndicator : Measurable (needleCrossesIndicator l) 
   case' l => refine isClosed_le continuous_fst ?_
   case' r => refine isClosed_le (Continuous.neg continuous_fst) ?_
   all_goals
-    refine' Continuous.mul (Continuous.mul _ continuous_const) continuous_const
+    refine Continuous.mul (Continuous.mul ?_ continuous_const) continuous_const
     simp_rw [← Function.comp_apply (f := Real.sin) (g := Prod.snd),
       Continuous.comp Real.continuous_sin continuous_snd]
 

@@ -21,8 +21,6 @@ This file defines bundled isomorphisms of `R`-bialgebras. We simply mimic the ea
 * `A ≃ₐc[R] B` : `R`-bialgebra equivalence from `A` to `B`.
 -/
 
-open BigOperators
-
 universe u v w u₁ v₁
 
 variable {R : Type u} {A : Type v} {B : Type w} {C : Type u₁}

@@ -17,8 +17,6 @@ The ring of integers is integrally closed inside the original ring.
 
 universe u v w
 
-open scoped BigOperators
-
 namespace Valuation
 
 namespace Integers

@@ -121,6 +121,11 @@ theorem prod_nsmul (m : Multiset α) : ∀ n : ℕ, (n • m).prod = m.prod ^ n
   | n + 1 => by rw [add_nsmul, one_nsmul, pow_add, pow_one, prod_add, prod_nsmul m n]
 #align multiset.prod_nsmul Multiset.prod_nsmul
 
+@[to_additive]
+theorem prod_filter_mul_prod_filter_not (p) [DecidablePred p] :
+    (s.filter p).prod * (s.filter (fun a ↦ ¬ p a)).prod = s.prod := by
+  rw [← prod_add, filter_add_not]
+
 @[to_additive (attr := simp)]
 theorem prod_replicate (n : ℕ) (a : α) : (replicate n a).prod = a ^ n := by
   simp [replicate, List.prod_replicate]
@@ -227,7 +232,7 @@ theorem prod_induction (p : α → Prop) (s : Multiset α) (p_mul : ∀ a b, p a
 @[to_additive]
 theorem prod_induction_nonempty (p : α → Prop) (p_mul : ∀ a b, p a → p b → p (a * b)) (hs : s ≠ ∅)
     (p_s : ∀ a ∈ s, p a) : p s.prod := by
-  -- Porting note: used `refine' Multiset.induction _ _`
+  -- Porting note: used to be `refine' Multiset.induction _ _`
   induction' s using Multiset.induction_on with a s hsa
   · simp at hs
   rw [prod_cons]

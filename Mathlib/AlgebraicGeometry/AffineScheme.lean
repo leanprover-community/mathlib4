@@ -273,9 +273,9 @@ instance isOpenImmersion_fromSpec :
 theorem fromSpec_range :
     Set.range hU.fromSpec.1.base = (U : Set X) := by
   delta IsAffineOpen.fromSpec; dsimp
-  rw [← Category.assoc, coe_comp, Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
+  rw [Function.comp.assoc, Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
   · exact Subtype.range_coe
-  rw [← TopCat.epi_iff_surjective]
+  erw [← coe_comp, ← TopCat.epi_iff_surjective] -- now `erw` after #13170
   infer_instance
 #align algebraic_geometry.is_affine_open.from_Spec_range AlgebraicGeometry.IsAffineOpen.fromSpec_range
 
@@ -306,9 +306,9 @@ theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
   refine ⟨fun hU => @isAffineOfIso _ _
     (IsOpenImmersion.isoOfRangeEq (X.ofRestrict U.openEmbedding ≫ f) (Y.ofRestrict _) ?_).hom ?_ hU,
     fun hU => hU.imageIsOpenImmersion f⟩
-  · rw [Scheme.comp_val_base, coe_comp, Set.range_comp]
+  · erw [Scheme.comp_val_base, coe_comp, Set.range_comp] -- now `erw` after #13170
     dsimp [Opens.coe_inclusion, Scheme.restrict]
-    rw [Subtype.range_coe, Subtype.range_coe]
+    erw [Subtype.range_coe, Subtype.range_coe] -- now `erw` after #13170
     rfl
   · infer_instance
 #align algebraic_geometry.is_affine_open_iff_of_is_open_immersion AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
@@ -515,11 +515,12 @@ theorem fromSpec_primeIdealOf (x : U) :
   -- Porting note: in the porting note of `Scheme.comp_val_base`, it says that `elementwise` is
   -- unnecessary, indeed, the linter did not like it, so I just use `elementwise_of%` instead of
   -- adding the corresponding lemma in `Scheme.lean` file
-  rw [← elementwise_of% Scheme.comp_val_base]
+  erw [← elementwise_of% Scheme.comp_val_base] -- now `erw` after #13170
   simp only [Scheme.Γ_obj, unop_op, Scheme.restrict_presheaf_obj, Category.assoc, ←
     Functor.map_comp_assoc, ← op_comp, ← Functor.map_comp, eqToHom_trans, eqToHom_refl, op_id,
     CategoryTheory.Functor.map_id, Category.id_comp, Iso.hom_inv_id_assoc,
     Scheme.ofRestrict_val_base, Scheme.restrict_carrier, Opens.coe_inclusion]
+  rfl -- `rfl` was not needed before #13170
 #align algebraic_geometry.is_affine_open.from_Spec_prime_ideal_of AlgebraicGeometry.IsAffineOpen.fromSpec_primeIdealOf
 
 set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534

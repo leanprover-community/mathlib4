@@ -55,7 +55,7 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 
 set_option linter.uppercaseLean3 false
 
-open Real Set Filter RCLike Submodule Function BigOperators Uniformity Topology NNReal ENNReal
+open Real Set Filter RCLike Submodule Function Uniformity Topology NNReal ENNReal
   ComplexConjugate DirectSum
 
 noncomputable section

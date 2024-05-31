@@ -64,7 +64,7 @@ We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
 
 set_option linter.uppercaseLean3 false
 
-open Real Set Filter RCLike Bornology BigOperators Uniformity Topology NNReal ENNReal
+open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal
 
 noncomputable section
 
@@ -803,7 +803,7 @@ variable [DecidableEq ι]
 theorem nnnorm_equiv_symm_single [hp : Fact (1 ≤ p)] (i : ι) (b : β i) :
     ‖(WithLp.equiv p (∀ i, β i)).symm (Pi.single i b)‖₊ = ‖b‖₊ := by
   haveI : Nonempty ι := ⟨i⟩
-  induction p using ENNReal.recTopCoe generalizing hp with
+  induction p generalizing hp with
   | top =>
     simp_rw [nnnorm_eq_ciSup, WithLp.equiv_symm_pi_apply]
     refine

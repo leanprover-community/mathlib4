@@ -92,7 +92,7 @@ theorem equiv_punit_iff_unique :
     simp [eq_iff_true_of_subsingleton]
   · rintro ⟨⟨p⟩, h⟩
     haveI := fun x y => (h x y).some
-    refine'
+    refine
       Nonempty.intro
         (CategoryTheory.Equivalence.mk ((Functor.const _).obj ⟨⟨⟩⟩)
           ((@Functor.const <| Discrete PUnit).obj p) ?_ (by apply Functor.punitExt))

@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Yury Kudryashov All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
@@ -22,8 +22,6 @@ We define bundled subsemirings and some standard constructions: `CompleteLattice
 a `RingHom` etc.
 -/
 
-
-open BigOperators
 
 universe u v w
 
@@ -311,14 +309,14 @@ protected theorem multiset_sum_mem (m : Multiset R) : (∀ a ∈ m, a ∈ s) →
 /-- Product of elements of a subsemiring of a `CommSemiring` indexed by a `Finset` is in the
     subsemiring. -/
 protected theorem prod_mem {R : Type*} [CommSemiring R] (s : Subsemiring R) {ι : Type*}
-    {t : Finset ι} {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∏ i in t, f i) ∈ s :=
+    {t : Finset ι} {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∏ i ∈ t, f i) ∈ s :=
   prod_mem h
 #align subsemiring.prod_mem Subsemiring.prod_mem
 
 /-- Sum of elements in a `Subsemiring` of a `Semiring` indexed by a `Finset`
 is in the `add_subsemiring`. -/
 protected theorem sum_mem (s : Subsemiring R) {ι : Type*} {t : Finset ι} {f : ι → R}
-    (h : ∀ c ∈ t, f c ∈ s) : (∑ i in t, f i) ∈ s :=
+    (h : ∀ c ∈ t, f c ∈ s) : (∑ i ∈ t, f i) ∈ s :=
   sum_mem h
 #align subsemiring.sum_mem Subsemiring.sum_mem
 
@@ -866,7 +864,7 @@ theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}
     (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {a : R} (ha : a ∈ closure s) : p a ha := by
   refine Exists.elim ?_ fun (ha : a ∈ closure s) (hc : p a ha) => hc
-  refine'
+  refine
     closure_induction ha (fun m hm => ⟨subset_closure hm, mem m hm⟩) ⟨zero_mem _, zero⟩
       ⟨one_mem _, one⟩ ?_ ?_
   · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
@@ -1364,7 +1362,7 @@ def closureCommSemiringOfComm {s : Set R'} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a 
     mul_comm := fun x y => by
       ext
       simp only [Subsemiring.coe_mul]
-      refine'
+      refine
         closure_induction₂ x.prop y.prop hcomm (fun x => by simp only [zero_mul, mul_zero])
           (fun x => by simp only [zero_mul, mul_zero]) (fun x => by simp only [one_mul, mul_one])
           (fun x => by simp only [one_mul, mul_one])

@@ -322,8 +322,8 @@ goals over arbitrary types that instantiate `LinearOrderedCommRing`.
 An example:
 ```lean
 example (x y z : ℚ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0)
-        (h3 : 12*y - 4* z < 0)  : False :=
-by linarith
+        (h3 : 12*y - 4* z < 0)  : False := by
+  linarith
 ```
 
 `linarith` will use all appropriate hypotheses and the negation of the goal, if applicable.
@@ -337,8 +337,8 @@ Disequality hypotheses require case splitting and are not normally considered
 
 `linarith!` will use a stronger reducibility setting to try to identify atoms. For example,
 ```lean
-example (x : ℚ) : id x ≥ x :=
-by linarith
+example (x : ℚ) : id x ≥ x := by
+  linarith
 ```
 will fail, because `linarith` will not identify `x` and `id x`. `linarith!` will.
 This can sometimes be expensive.

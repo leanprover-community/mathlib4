@@ -66,7 +66,7 @@ def quotientSpanEquivZMod (a : ℤ) : ℤ ⧸ Ideal.span ({a} : Set ℤ) ≃+* Z
 end Int
 
 noncomputable section ChineseRemainder
-open BigOperators Ideal
+open Ideal
 
 /-- The **Chinese remainder theorem**, elementary version for `ZMod`. See also
 `Mathlib.Data.ZMod.Basic` for versions involving only two numbers. -/
