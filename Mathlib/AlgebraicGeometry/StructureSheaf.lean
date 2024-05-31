@@ -1220,6 +1220,13 @@ theorem toOpen_comp_comap (f : R →+* S) (U : Opens (PrimeSpectrum.Top R)) :
   RingHom.ext fun _ => Subtype.eq <| funext fun _ => Localization.localRingHom_to_map _ _ _ _ _
 #align algebraic_geometry.structure_sheaf.to_open_comp_comap AlgebraicGeometry.StructureSheaf.toOpen_comp_comap
 
+lemma comap_basicOpen (f : R →+* S) (x : R) :
+    comap f (PrimeSpectrum.basicOpen x) (PrimeSpectrum.basicOpen (f x))
+        (PrimeSpectrum.comap_basicOpen f x).le =
+      IsLocalization.map (M := .powers x) (T := .powers (f x)) _ f
+        (Submonoid.powers_le.mpr (Submonoid.mem_powers _)) :=
+  IsLocalization.ringHom_ext (.powers x) <| by simpa using toOpen_comp_comap f _
+
 end Comap
 
 end StructureSheaf
