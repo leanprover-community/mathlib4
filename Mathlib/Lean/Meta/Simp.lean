@@ -159,7 +159,8 @@ Given a simplifier `S : Expr → MetaM Simp.Result`,
 and an expression `e : Expr`, run `S` on the type of `e`, and then
 convert `e` into that simplified type, using a combination of type hints and `Eq.mp`.
 -/
-def simpType (S : Expr → MetaM Simp.Result) (e : Expr) (typeHint : Option Expr := none) : MetaM Expr := do
+def simpType (S : Expr → MetaM Simp.Result) (e : Expr) (typeHint : Option Expr := none) : 
+    MetaM Expr := do
   let type ← typeHint.getDM  (inferType e)
   match ← S type with
   | ⟨ty', none, _⟩ => mkExpectedTypeHint e ty'
