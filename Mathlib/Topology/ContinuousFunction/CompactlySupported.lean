@@ -153,7 +153,7 @@ end Basics
 
 /-! ### Algebraic structure
 
-Whenever `β` has the structure of continuous addtive monoid and a compatible topological structure,
+Whenever `β` has the structure of continuous additive monoid and a compatible topological structure,
 then `C_c(α, β)` inherits a corresponding algebraic structure. The primary exception to this is that
 `C_c(α, β)` will not have a multiplicative identity.
 -/
