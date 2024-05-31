@@ -1389,10 +1389,11 @@ theorem Associates.mk_ne_zero' {R : Type*} [CommSemiring R] {r : R} :
 
 open scoped nonZeroDivisors in
 theorem Ideal.span_singleton_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZeroDivisors R]
-    [Nontrivial R] {r : R} :
-    span {r} ∈ (Ideal R)⁰ ↔ r ∈ R⁰ := by
-  rw [mem_nonZeroDivisors_iff_ne_zero, mem_nonZeroDivisors_iff_ne_zero, ne_eq, zero_eq_bot,
-    span_singleton_eq_bot]
+    {r : R} : span {r} ∈ (Ideal R)⁰ ↔ r ∈ R⁰ := by
+  cases subsingleton_or_nontrivial R
+  · exact ⟨fun _ _ _ ↦ Subsingleton.eq_zero _, fun _ _ _ ↦ Subsingleton.eq_zero _⟩
+  · rw [mem_nonZeroDivisors_iff_ne_zero, mem_nonZeroDivisors_iff_ne_zero, ne_eq, zero_eq_bot,
+      span_singleton_eq_bot]
 
 namespace Submodule
 
