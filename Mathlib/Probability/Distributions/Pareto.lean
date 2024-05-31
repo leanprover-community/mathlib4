@@ -5,6 +5,8 @@ Authors: Alvan Arulandu
 -/
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Cdf
+import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+import Mathlib.Algebra.Field.Defs
 
 /-! # Pareto distributions over ℝ
 
@@ -73,7 +75,7 @@ lemma measurable_paretoPDFReal (t r : ℝ) : Measurable (paretoPDFReal t r) :=
 lemma paretoPDFReal_pos {t r x : ℝ} (ht : 0 < t) (hr : 0 < r) (hx : t ≤ x) :
   0 < paretoPDFReal t r x := by
   rw [paretoPDFReal, if_pos hx]
-  have h1 : 0 < x := by linarith
+  have _ : 0 < x := by linarith
   positivity
 
 /-- The pareto pdf is nonnegative -/
@@ -88,12 +90,42 @@ lemma paretoPDFReal_nonneg {t r : ℝ} (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
 
 open Measure
 
+
+lemma integral_custom {t r : ℝ} (ht : 0 < t) (hr : 0 < r) :
+    ∫ x : ℝ in Ioi t, r * t ^ r * x ^ (-(r + 1)) = 1 := by
+    rw [integral_mul_left]
+    have hp : -(r+1) < -1 := by linarith
+    rw [integral_Ioi_rpow_of_lt hp ht]
+    ring
+    repeat rw [mul_assoc]
+    rw [mul_comm]
+    repeat rw [mul_assoc]
+
+    have _ : t ^ r * (t ^ (-r) * (r⁻¹ * r)) = 1 := by sorry
+    assumption
+
 /-- The pdf of the pareto distribution integrates to 1 -/
 @[simp]
-lemma lintegral_paretoPDF_eq_one {t r : ℝ} (ha : 0 < t) (hr : 0 < r) :
+lemma lintegral_paretoPDF_eq_one {t r : ℝ} (ht : 0 < t) (hr : 0 < r) :
     ∫⁻ x, paretoPDF t r x = 1 := by
-  sorry
-
+  have leftSide : ∫⁻ x in Iio t, paretoPDF t r x = 0 := by
+    rw [set_lintegral_congr_fun measurableSet_Iio
+      (ae_of_all _ (fun x (hx : x < t) ↦ paretoPDF_of_neg hx)), lintegral_zero]
+  have rightSide : ∫⁻ x in Ici t, paretoPDF t r x =
+      ∫⁻ x in Ici t, ENNReal.ofReal (r * t ^ r / x ^ (r + 1)) :=
+    set_lintegral_congr_fun measurableSet_Ici (ae_of_all _ (fun _ ↦ paretoPDF_of_nonneg))
+  rw [← ENNReal.toReal_eq_one_iff, ← lintegral_add_compl _ measurableSet_Ici, compl_Ici,
+    leftSide, rightSide, add_zero, ← integral_eq_lintegral_of_nonneg_ae]
+  . rw [integral_Ici_eq_integral_Ioi]
+    sorry
+  . rw [EventuallyLE, ae_restrict_iff' measurableSet_Ici]
+    exact ae_of_all _ (fun x (hx : t ≤ x) ↦ by
+      have _ : 0 < x := by linarith
+      positivity
+    )
+  . apply (measurable_paretoPDFReal t r).aestronglyMeasurable.congr
+    refine (ae_restrict_iff' measurableSet_Ici).mpr <| ae_of_all _ fun x (hx : t ≤ x) ↦ ?_
+    simp_rw [paretoPDFReal, eq_true_intro hx, ite_true]
 end ParetoPDF
 
 open MeasureTheory
