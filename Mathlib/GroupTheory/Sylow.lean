@@ -268,8 +268,8 @@ theorem Sylow.smul_eq_iff_mem_normalizer {g : G} {P : Sylow p G} :
           fun hh => ⟨(MulAut.conj g)⁻¹ h, hh, MulAut.apply_inv_self G (MulAut.conj g) h⟩⟩
 #align sylow.smul_eq_iff_mem_normalizer Sylow.smul_eq_iff_mem_normalizer
 
-theorem Sylow.smul_eq_of_normal {g : G} {P : Sylow p G} [h : (P : Subgroup G).Normal] : g • P = P :=
-  by simp only [Sylow.smul_eq_iff_mem_normalizer, normalizer_eq_top.mpr h, mem_top]
+theorem Sylow.smul_eq_of_normal {g : G} {P : Sylow p G} [h : (P : Subgroup G).Normal] :
+    g • P = P := by simp only [Sylow.smul_eq_iff_mem_normalizer, normalizer_eq_top.mpr h, mem_top]
 #align sylow.smul_eq_of_normal Sylow.smul_eq_of_normal
 
 theorem Subgroup.sylow_mem_fixedPoints_iff (H : Subgroup G) {P : Sylow p G} :
@@ -308,13 +308,13 @@ instance [hp : Fact p.Prime] [Finite (Sylow p G)] : IsPretransitive G (Sylow p G
           rw [← Sylow.ext (H.mp hR)]
           exact R.2
       apply Q.2.nonempty_fixed_point_of_prime_not_dvd_card
-      refine' fun h => hp.out.not_dvd_one (Nat.modEq_zero_iff_dvd.mp _)
+      refine fun h => hp.out.not_dvd_one (Nat.modEq_zero_iff_dvd.mp ?_)
       calc
         1 = card (fixedPoints P (orbit G P)) := ?_
         _ ≡ card (orbit G P) [MOD p] := (P.2.card_modEq_card_fixedPoints (orbit G P)).symm
         _ ≡ 0 [MOD p] := Nat.modEq_zero_iff_dvd.mpr h
       rw [← Set.card_singleton (⟨P, mem_orbit_self P⟩ : orbit G P)]
-      refine' card_congr' (congr_arg _ (Eq.symm _))
+      refine card_congr' (congr_arg _ (Eq.symm ?_))
       rw [Set.eq_singleton_iff_unique_mem]
       exact ⟨H.mpr rfl, fun R h => Subtype.ext (Sylow.ext (H.mp h))⟩⟩
 
@@ -486,8 +486,6 @@ theorem Sylow.normalizer_sup_eq_top' {p : ℕ} [Fact p.Prime] {N : Subgroup G} [
 end InfiniteSylow
 
 open Equiv Equiv.Perm Finset Function List QuotientGroup
-
-open BigOperators
 
 universe u v w
 
@@ -806,8 +804,6 @@ theorem normal_of_normalizerCondition (hnc : NormalizerCondition G) {p : ℕ} [F
     normalizerCondition_iff_only_full_group_self_normalizing.mp hnc _ <| normalizer_normalizer _
 #align sylow.normal_of_normalizer_condition Sylow.normal_of_normalizerCondition
 
-open BigOperators
-
 /-- If all its Sylow subgroups are normal, then a finite group is isomorphic to the direct product
 of these Sylow subgroups.
 -/
@@ -851,7 +847,7 @@ noncomputable def directProductOfNormal [Fintype G]
       _ = ∏ p : ps, p.1 ^ (card G).factorization p.1 := by
         congr 1 with ⟨p, hp⟩
         exact @card_eq_multiplicity _ _ _ p ⟨Nat.prime_of_mem_primeFactors hp⟩ (P p)
-      _ = ∏ p in ps, p ^ (card G).factorization p :=
+      _ = ∏ p ∈ ps, p ^ (card G).factorization p :=
         (Finset.prod_finset_coe (fun p => p ^ (card G).factorization p) _)
       _ = (card G).factorization.prod (· ^ ·) := rfl
       _ = card G := Nat.factorization_prod_pow_eq_self Fintype.card_ne_zero

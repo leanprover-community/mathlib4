@@ -48,7 +48,7 @@ open RCLike Real Filter
 
 open LinearMap (ker range)
 
-open BigOperators Topology
+open Topology
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -474,7 +474,7 @@ def orthogonalProjection : E →L[𝕜] K :=
         simp [eq_orthogonalProjectionFn_of_mem_of_inner_eq_zero hm ho] }
     1 fun x => by
     simp only [one_mul, LinearMap.coe_mk]
-    refine' le_of_pow_le_pow_left two_ne_zero (norm_nonneg _) _
+    refine le_of_pow_le_pow_left two_ne_zero (norm_nonneg _) ?_
     change ‖orthogonalProjectionFn K x‖ ^ 2 ≤ ‖x‖ ^ 2
     nlinarith [orthogonalProjectionFn_norm_sq K x]
 #align orthogonal_projection orthogonalProjection
@@ -578,7 +578,7 @@ theorem LinearIsometry.map_orthogonalProjection {E E' : Type*} [NormedAddCommGro
     (p : Submodule 𝕜 E) [HasOrthogonalProjection p] [HasOrthogonalProjection (p.map f.toLinearMap)]
     (x : E) : f (orthogonalProjection p x) = orthogonalProjection (p.map f.toLinearMap) (f x) := by
   refine (eq_orthogonalProjection_of_mem_of_inner_eq_zero ?_ fun y hy => ?_).symm
-  · refine' Submodule.apply_coe_mem_map _ _
+  · refine Submodule.apply_coe_mem_map _ _
   rcases hy with ⟨x', hx', rfl : f x' = y⟩
   rw [← f.map_sub, f.inner_map_map, orthogonalProjection_inner_eq_zero x x' hx']
 #align linear_isometry.map_orthogonal_projection LinearIsometry.map_orthogonalProjection

@@ -991,8 +991,8 @@ theorem bidirectionalRec_nil {motive : List α → Sort*}
 theorem bidirectionalRec_singleton {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) (a : α):
-    bidirectionalRec nil singleton cons_append [a] = singleton a :=
-  by simp [bidirectionalRec]
+    bidirectionalRec nil singleton cons_append [a] = singleton a := by
+  simp [bidirectionalRec]
 
 @[simp]
 theorem bidirectionalRec_cons_append {motive : List α → Sort*}
@@ -1831,8 +1831,8 @@ theorem takeD_eq_take : ∀ {n} {l : List α} a, n ≤ length l → takeD n l a 
 theorem takeD_left (l₁ l₂ : List α) (a : α) : takeD (length l₁) (l₁ ++ l₂) a = l₁ :=
   (takeD_eq_take a (by simp only [length_append, Nat.le_add_right])).trans (take_left _ _)
 
-theorem takeD_left' {l₁ l₂ : List α} {n} {a} (h : length l₁ = n) : takeD n (l₁ ++ l₂) a = l₁ :=
-  by rw [← h]; apply takeD_left
+theorem takeD_left' {l₁ l₂ : List α} {n} {a} (h : length l₁ = n) : takeD n (l₁ ++ l₂) a = l₁ := by
+  rw [← h]; apply takeD_left
 
 end TakeD
 
@@ -1913,8 +1913,8 @@ theorem foldr_join (f : α → β → β) :
 
 -- Porting note (#10618): simp can prove this
 -- @[simp]
-theorem foldr_eta : ∀ l : List α, foldr cons [] l = l :=
-  by simp only [foldr_self_append, append_nil, forall_const]
+theorem foldr_eta : ∀ l : List α, foldr cons [] l = l := by
+  simp only [foldr_self_append, append_nil, forall_const]
 #align list.foldr_eta List.foldr_eta
 
 @[simp]
@@ -1980,7 +1980,7 @@ def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β)
   induction l with
   | nil => exact hb
   | cons hd tl IH =>
-    refine' hl _ _ hd (mem_cons_self hd tl)
+    refine hl _ ?_ hd (mem_cons_self hd tl)
     refine IH ?_
     intro y hy x hx
     exact hl y hy x (mem_cons_of_mem hd hx)
@@ -1995,7 +1995,7 @@ def foldlRecOn {C : β → Sort*} (l : List α) (op : β → α → β) (b : β)
   induction l generalizing b with
   | nil => exact hb
   | cons hd tl IH =>
-    refine' IH _ _ _
+    refine IH _ ?_ ?_
     · exact hl b hb hd (mem_cons_self hd tl)
     · intro y hy x hx
       exact hl y hy x (mem_cons_of_mem hd hx)

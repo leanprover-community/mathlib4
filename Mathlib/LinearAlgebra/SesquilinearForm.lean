@@ -38,8 +38,6 @@ Sesquilinear form, Sesquilinear map,
 -/
 
 
-open BigOperators
-
 variable {R R₁ R₂ R₃ M M₁ M₂ M₃ Mₗ₁ Mₗ₁' Mₗ₂ Mₗ₂' K K₁ K₂ V V₁ V₂ n : Type*}
 
 namespace LinearMap
@@ -760,7 +758,7 @@ theorem IsRefl.nondegenerate_of_separatingRight {B : M →ₗ[R] M →ₗ[R] M�
 /-- The restriction of a reflexive bilinear map `B` onto a submodule `W` is
 nondegenerate if `W` has trivial intersection with its orthogonal complement,
 that is `Disjoint W (W.orthogonalBilin B)`. -/
-theorem nondegenerateRestrictOfDisjointOrthogonal {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
+theorem nondegenerate_restrict_of_disjoint_orthogonal {B : M →ₗ[R] M →ₗ[R] M₁} (hB : B.IsRefl)
     {W : Submodule R M} (hW : Disjoint W (W.orthogonalBilin B)) :
     (B.domRestrict₁₂ W W).Nondegenerate := by
   refine (hB.domRestrict W).nondegenerate_of_separatingLeft ?_
@@ -771,7 +769,7 @@ theorem nondegenerateRestrictOfDisjointOrthogonal {B : M →ₗ[R] M →ₗ[R] M
   simp_rw [domRestrict₁₂_apply] at b₁
   rw [hB.ortho_comm]
   exact b₁
-#align linear_map.nondegenerate_restrict_of_disjoint_orthogonal LinearMap.nondegenerateRestrictOfDisjointOrthogonal
+#align linear_map.nondegenerate_restrict_of_disjoint_orthogonal LinearMap.nondegenerate_restrict_of_disjoint_orthogonal
 
 /-- An orthogonal basis with respect to a left-separating bilinear map has no self-orthogonal
 elements. -/

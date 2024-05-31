@@ -166,7 +166,7 @@ def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C where
   transitive' X S hS R hR Z g := by
     -- This is the hard part of the construction, showing that the given set of sieves satisfies
     -- the transitivity axiom.
-    refine' isSheafFor_trans P (pullback g S) _ (hS Z g) _ _
+    refine isSheafFor_trans P (pullback g S) _ (hS Z g) ?_ ?_
     · intro Y f _
       rw [← pullback_comp]
       apply (hS _ _).isSeparatedFor

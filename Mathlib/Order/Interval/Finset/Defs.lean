@@ -54,10 +54,10 @@ A `LocallyFiniteOrder` instance can be built
   `OrderEmbedding.locallyFiniteOrder`.
 
 Instances for concrete types are proved in their respective files:
-* `ℕ` is in `Data.Nat.Interval`
+* `ℕ` is in `Order.Interval.Finset.Nat`
 * `ℤ` is in `Data.Int.Interval`
 * `ℕ+` is in `Data.PNat.Interval`
-* `Fin n` is in `Data.Fin.Interval`
+* `Fin n` is in `Order.Interval.Finset.Fin`
 * `Finset α` is in `Data.Finset.Interval`
 * `Σ i, α i` is in `Data.Sigma.Interval`
 Along, you will find lemmas about the cardinality of those finite intervals.

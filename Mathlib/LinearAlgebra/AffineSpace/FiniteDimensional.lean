@@ -25,7 +25,7 @@ subspaces of affine spaces.
 
 noncomputable section
 
-open BigOperators Affine
+open Affine
 
 section AffineSpace'
 

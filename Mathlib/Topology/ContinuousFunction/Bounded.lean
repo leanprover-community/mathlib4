@@ -342,11 +342,11 @@ instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
     have fF_bdd : ∀ x N, dist (f N x) (F x) ≤ b N :=
       fun x N => le_of_tendsto (tendsto_const_nhds.dist (hF x))
         (Filter.eventually_atTop.2 ⟨N, fun n hn => f_bdd x N n N (le_refl N) hn⟩)
-    refine' ⟨⟨⟨F, _⟩, _⟩, _⟩
+    refine ⟨⟨⟨F, ?_⟩, ?_⟩, ?_⟩
     · -- Check that `F` is continuous, as a uniform limit of continuous functions
       have : TendstoUniformly (fun n x => f n x) F atTop := by
-        refine' Metric.tendstoUniformly_iff.2 fun ε ε0 => _
-        refine' ((tendsto_order.1 b_lim).2 ε ε0).mono fun n hn x => _
+        refine Metric.tendstoUniformly_iff.2 fun ε ε0 => ?_
+        refine ((tendsto_order.1 b_lim).2 ε ε0).mono fun n hn x => ?_
         rw [dist_comm]
         exact lt_of_le_of_lt (fF_bdd x n) hn
       exact this.continuous (eventually_of_forall fun N => (f N).continuous)
@@ -359,7 +359,7 @@ instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
         _ ≤ C + (b 0 + b 0) := add_le_add (hC _ _) (add_le_add (fF_bdd _ _) (fF_bdd _ _))
                                -- Porting note: was --by mono*
     · -- Check that `F` is close to `f N` in distance terms
-      refine' tendsto_iff_dist_tendsto_zero.2 (squeeze_zero (fun _ => dist_nonneg) _ b_lim)
+      refine tendsto_iff_dist_tendsto_zero.2 (squeeze_zero (fun _ => dist_nonneg) ?_ b_lim)
       exact fun N => (dist_le (b0 _)).2 fun x => fF_bdd x N
 
 /-- Composition of a bounded continuous function and a continuous function. -/
@@ -725,16 +725,14 @@ variable [PseudoMetricSpace β] [AddCommMonoid β] [BoundedAdd β] [ContinuousAd
 instance instAddCommMonoid : AddCommMonoid (α →ᵇ β) where
   add_comm f g := by ext; simp [add_comm]
 
-open BigOperators
-
 @[simp]
 theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) :
-    ⇑(∑ i in s, f i) = ∑ i in s, (f i : α → β) :=
+    ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, (f i : α → β) :=
   map_sum coeFnAddHom f s
 #align bounded_continuous_function.coe_sum BoundedContinuousFunction.coe_sum
 
 theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) (a : α) :
-    (∑ i in s, f i) a = ∑ i in s, f i a := by simp
+    (∑ i ∈ s, f i) a = ∑ i ∈ s, f i a := by simp
 #align bounded_continuous_function.sum_apply BoundedContinuousFunction.sum_apply
 
 end comm_add
@@ -763,8 +761,8 @@ instance instLipschitzAdd : LipschitzAdd (α →ᵇ β) where
       rintro ⟨f₁, g₁⟩ ⟨f₂, g₂⟩
       rw [dist_le (mul_nonneg C_nonneg dist_nonneg)]
       intro x
-      refine' le_trans (lipschitz_with_lipschitz_const_add ⟨f₁ x, g₁ x⟩ ⟨f₂ x, g₂ x⟩) _
-      refine' mul_le_mul_of_nonneg_left _ C_nonneg
+      refine le_trans (lipschitz_with_lipschitz_const_add ⟨f₁ x, g₁ x⟩ ⟨f₂ x, g₂ x⟩) ?_
+      refine mul_le_mul_of_nonneg_left ?_ C_nonneg
       apply max_le_max <;> exact dist_coe_le_dist x⟩
 
 end LipschitzAdd
@@ -1139,8 +1137,8 @@ instance instSMul : SMul 𝕜 (α →ᵇ β) where
       map_bounded' :=
         let ⟨b, hb⟩ := f.bounded
         ⟨dist c 0 * b, fun x y => by
-          refine' (dist_smul_pair c (f x) (f y)).trans _
-          refine' mul_le_mul_of_nonneg_left _ dist_nonneg
+          refine (dist_smul_pair c (f x) (f y)).trans ?_
+          refine mul_le_mul_of_nonneg_left ?_ dist_nonneg
           exact hb x y⟩ }
 
 @[simp]
@@ -1157,13 +1155,13 @@ instance instBoundedSMul : BoundedSMul 𝕜 (α →ᵇ β) where
   dist_smul_pair' c f₁ f₂ := by
     rw [dist_le (mul_nonneg dist_nonneg dist_nonneg)]
     intro x
-    refine' (dist_smul_pair c (f₁ x) (f₂ x)).trans _
+    refine (dist_smul_pair c (f₁ x) (f₂ x)).trans ?_
     exact mul_le_mul_of_nonneg_left (dist_coe_le_dist x) dist_nonneg
   dist_pair_smul' c₁ c₂ f := by
     rw [dist_le (mul_nonneg dist_nonneg dist_nonneg)]
     intro x
-    refine' (dist_pair_smul c₁ c₂ (f x)).trans _
-    refine' mul_le_mul_of_nonneg_left _ dist_nonneg
+    refine (dist_pair_smul c₁ c₂ (f x)).trans ?_
+    refine mul_le_mul_of_nonneg_left ?_ dist_nonneg
     convert dist_coe_le_dist (β := β) x
     simp
 
@@ -1240,7 +1238,7 @@ variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 
 instance instNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 β] : NormedSpace 𝕜 (α →ᵇ β) :=
   ⟨fun c f => by
-    refine' norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) _
+    refine norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) ?_
     exact fun x =>
       norm_smul c (f x) ▸ mul_le_mul_of_nonneg_left (f.norm_coe_le_norm _) (norm_nonneg _)⟩
 
@@ -1536,12 +1534,12 @@ variable [CstarRing β]
 
 instance instCstarRing : CstarRing (α →ᵇ β) where
   norm_star_mul_self {f} := by
-    refine' le_antisymm _ _
+    refine le_antisymm ?_ ?_
     · rw [← sq, norm_le (sq_nonneg _)]
       dsimp [star_apply]
       intro x
       rw [CstarRing.norm_star_mul_self, ← sq]
-      refine' sq_le_sq' _ _
+      refine sq_le_sq' ?_ ?_
       · linarith [norm_nonneg (f x), norm_nonneg f]
       · exact norm_coe_le_norm f x
     · rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _), norm_le (Real.sqrt_nonneg _)]
