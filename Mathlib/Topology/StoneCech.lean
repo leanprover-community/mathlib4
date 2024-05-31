@@ -43,7 +43,7 @@ instance Ultrafilter.topologicalSpace : TopologicalSpace (Ultrafilter α) :=
 theorem ultrafilterBasis_is_basis : TopologicalSpace.IsTopologicalBasis (ultrafilterBasis α) :=
   ⟨by
     rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ u ⟨ua, ub⟩
-    refine' ⟨_, ⟨a ∩ b, rfl⟩, inter_mem ua ub, fun v hv => ⟨_, _⟩⟩ <;> apply mem_of_superset hv <;>
+    refine ⟨_, ⟨a ∩ b, rfl⟩, inter_mem ua ub, fun v hv => ⟨?_, ?_⟩⟩ <;> apply mem_of_superset hv <;>
       simp [inter_subset_right a b],
     eq_univ_of_univ_subset <| subset_sUnion_of_mem <| ⟨univ, eq_univ_of_forall fun u => univ_mem⟩,
     rfl⟩
@@ -98,7 +98,7 @@ instance : TotallyDisconnectedSpace (Ultrafilter α) := by
   intro s hs
   rw [connectedComponent_eq_iInter_isClopen, Set.mem_iInter] at hB
   let Z := { F : Ultrafilter α | s ∈ F }
-  have hZ : IsClopen Z := ⟨ultrafilter_isOpen_basic s, ultrafilter_isClosed_basic s⟩
+  have hZ : IsClopen Z := ⟨ultrafilter_isClosed_basic s, ultrafilter_isOpen_basic s⟩
   exact hB ⟨Z, hZ, hs⟩
 
 @[simp] theorem Ultrafilter.tendsto_pure_self (b : Ultrafilter α) : Tendsto pure b (𝓝 b) := by
@@ -112,8 +112,8 @@ theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) �
   simp only [comap_iInf, comap_principal]
   intro s hs
   rw [← le_principal_iff]
-  refine' iInf_le_of_le { u | s ∈ u } _
-  refine' iInf_le_of_le ⟨hs, ⟨s, rfl⟩⟩ _
+  refine iInf_le_of_le { u | s ∈ u } ?_
+  refine iInf_le_of_le ⟨hs, ⟨s, rfl⟩⟩ ?_
   exact principal_mono.2 fun a => id
 #align ultrafilter_comap_pure_nhds ultrafilter_comap_pure_nhds
 
@@ -205,7 +205,7 @@ theorem ultrafilter_extend_eq_iff {f : α → γ} {b : Ultrafilter α} {c : γ} 
     have t : ↑b' ≤ 𝓝 b := ultrafilter_converges_iff.mpr (bind_pure _).symm
     rw [← h]
     have := (continuous_ultrafilter_extend f).tendsto b
-    refine' le_trans _ (le_trans (map_mono t) this)
+    refine le_trans ?_ (le_trans (map_mono t) this)
     change _ ≤ map (Ultrafilter.extend f ∘ pure) ↑b
     rw [ultrafilter_extend_extends]
     exact le_rfl, fun h =>
@@ -228,8 +228,7 @@ section StoneCech
   point of γ. -/
 variable (α : Type u) [TopologicalSpace α]
 
-instance stoneCechSetoid : Setoid (Ultrafilter α)
-    where
+instance stoneCechSetoid : Setoid (Ultrafilter α) where
   r x y :=
     ∀ (γ : Type u) [TopologicalSpace γ],
       ∀ [T2Space γ] [CompactSpace γ] (f : α → γ) (_ : Continuous f),
@@ -264,9 +263,7 @@ theorem denseRange_stoneCechUnit : DenseRange (stoneCechUnit : α → StoneCech 
 section Extension
 
 variable {γ : Type u} [TopologicalSpace γ] [T2Space γ] [CompactSpace γ]
-
 variable {γ' : Type u} [TopologicalSpace γ'] [T2Space γ']
-
 variable {f : α → γ} (hf : Continuous f)
 
 -- Porting note: missing attribute
@@ -297,9 +294,8 @@ end Extension
 
 theorem convergent_eqv_pure {u : Ultrafilter α} {x : α} (ux : ↑u ≤ 𝓝 x) : u ≈ pure x :=
   fun γ tγ h₁ h₂ f hf => by
-  skip
-  trans f x; swap; symm
-  all_goals refine' ultrafilter_extend_eq_iff.mpr (le_trans (map_mono _) (hf.tendsto _))
+  trans f x; swap; on_goal 1 => symm
+  all_goals refine ultrafilter_extend_eq_iff.mpr (le_trans (map_mono ?_) (hf.tendsto _))
   · apply pure_le_nhds
   · exact ux
 #align convergent_eqv_pure convergent_eqv_pure
@@ -319,7 +315,6 @@ instance StoneCech.t2Space : T2Space (StoneCech α) := by
   rintro ⟨x⟩ ⟨y⟩ g gx gy
   apply Quotient.sound
   intro γ tγ h₁ h₂ f hf
-  skip
   let ff := stoneCechExtend hf
   change ff ⟦x⟧ = ff ⟦y⟧
   have lim := fun (z : Ultrafilter α) (gz : (g : Filter (StoneCech α)) ≤ 𝓝 ⟦z⟧) =>

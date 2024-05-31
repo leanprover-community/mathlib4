@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Category.Grpd
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Homotopy.Path
+import Mathlib.Data.Set.Subsingleton
 
 #align_import algebraic_topology.fundamental_groupoid.basic from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
@@ -24,7 +25,6 @@ open CategoryTheory
 universe u v
 
 variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
-
 variable {x₀ x₁ : X}
 
 noncomputable section
@@ -44,7 +44,7 @@ def reflTransSymmAux (x : I × I) : ℝ :=
 
 @[continuity]
 theorem continuous_reflTransSymmAux : Continuous reflTransSymmAux := by
-  refine' continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _
+  refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_
   · continuity
   · continuity
   · continuity
@@ -107,6 +107,7 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
     cases hx with
     | inl hx
     | inr hx =>
+      set_option tactic.skipAssignedInstances false in
       rw [hx]
       norm_num [reflTransSymmAux]
 #align path.homotopy.refl_trans_symm Path.Homotopy.reflTransSymm
@@ -128,7 +129,7 @@ def transReflReparamAux (t : I) : ℝ :=
 
 @[continuity]
 theorem continuous_transReflReparamAux : Continuous transReflReparamAux := by
-  refine' continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _ <;>
+  refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_ <;>
     [continuity; continuity; continuity; continuity; skip]
   intro x hx
   simp [hx]
@@ -141,11 +142,11 @@ set_option linter.uppercaseLean3 false in
 #align path.homotopy.trans_refl_reparam_aux_mem_I Path.Homotopy.transReflReparamAux_mem_I
 
 theorem transReflReparamAux_zero : transReflReparamAux 0 = 0 := by
-  norm_num [transReflReparamAux]
+  set_option tactic.skipAssignedInstances false in norm_num [transReflReparamAux]
 #align path.homotopy.trans_refl_reparam_aux_zero Path.Homotopy.transReflReparamAux_zero
 
 theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
-  norm_num [transReflReparamAux]
+  set_option tactic.skipAssignedInstances false in norm_num [transReflReparamAux]
 #align path.homotopy.trans_refl_reparam_aux_one Path.Homotopy.transReflReparamAux_one
 
 theorem trans_refl_reparam (p : Path x₀ x₁) :
@@ -186,13 +187,14 @@ def transAssocReparamAux (t : I) : ℝ :=
 
 @[continuity]
 theorem continuous_transAssocReparamAux : Continuous transAssocReparamAux := by
-  refine' continuous_if_le _ _ (Continuous.continuousOn _)
-      (continuous_if_le _ _ (Continuous.continuousOn _) (Continuous.continuousOn _) _).continuousOn
-      _ <;>
+  refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_)
+    (continuous_if_le ?_ ?_
+      (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_).continuousOn
+      ?_ <;>
     [continuity; continuity; continuity; continuity; continuity; continuity; continuity; skip;
       skip] <;>
     · intro x hx
-      norm_num [hx]
+      set_option tactic.skipAssignedInstances false in norm_num [hx]
 #align path.homotopy.continuous_trans_assoc_reparam_aux Path.Homotopy.continuous_transAssocReparamAux
 
 theorem transAssocReparamAux_mem_I (t : I) : transAssocReparamAux t ∈ I := by
@@ -202,11 +204,11 @@ set_option linter.uppercaseLean3 false in
 #align path.homotopy.trans_assoc_reparam_aux_mem_I Path.Homotopy.transAssocReparamAux_mem_I
 
 theorem transAssocReparamAux_zero : transAssocReparamAux 0 = 0 := by
-  norm_num [transAssocReparamAux]
+  set_option tactic.skipAssignedInstances false in norm_num [transAssocReparamAux]
 #align path.homotopy.trans_assoc_reparam_aux_zero Path.Homotopy.transAssocReparamAux_zero
 
 theorem transAssocReparamAux_one : transAssocReparamAux 1 = 1 := by
-  norm_num [transAssocReparamAux]
+  set_option tactic.skipAssignedInstances false in norm_num [transAssocReparamAux]
 #align path.homotopy.trans_assoc_reparam_aux_one Path.Homotopy.transAssocReparamAux_one
 
 theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
@@ -216,7 +218,7 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
         (Subtype.ext transAssocReparamAux_zero) (Subtype.ext transAssocReparamAux_one) := by
   ext x
   simp only [transAssocReparamAux, Path.trans_apply, mul_inv_cancel_left₀, not_le,
-    Function.comp_apply, Ne.def, not_false_iff, bit0_eq_zero, one_ne_zero, mul_ite, Subtype.coe_mk,
+    Function.comp_apply, Ne, not_false_iff, bit0_eq_zero, one_ne_zero, mul_ite, Subtype.coe_mk,
     Path.coe_reparam]
   -- TODO: why does split_ifs not reduce the ifs??????
   split_ifs with h₁ h₂ h₃ h₄ h₅
@@ -270,7 +272,7 @@ end Path
 subsequently put a `CategoryTheory.Groupoid` structure on it. -/
 @[ext]
 structure FundamentalGroupoid (X : Type u) where
-  /-- View a term of `FundamentalGroupoid X` as a term of `X`.-/
+  /-- View a term of `FundamentalGroupoid X` as a term of `X`. -/
   as : X
 #align fundamental_groupoid FundamentalGroupoid
 
@@ -367,28 +369,31 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
       map_id := fun X => rfl
       map_comp := fun {x y z} p q => by
         refine Quotient.inductionOn₂ p q fun a b => ?_
-        simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans]
-        -- This was not needed before leanprover/lean4#2644
-        erw [ ← Path.Homotopic.comp_lift]; rfl}
+        simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans] }
   map_id X := by
     simp only
     change _ = (⟨_, _, _⟩ : FundamentalGroupoid X ⥤ FundamentalGroupoid X)
     congr
     ext x y p
-    refine' Quotient.inductionOn p fun q => _
+    refine Quotient.inductionOn p fun q => ?_
     rw [← Path.Homotopic.map_lift]
     conv_rhs => rw [← q.map_id]
+    rfl
   map_comp f g := by
     simp only
     congr
     ext x y p
-    refine' Quotient.inductionOn p fun q => _
+    refine Quotient.inductionOn p fun q => ?_
     simp only [Quotient.map_mk, Path.map_map, Quotient.eq']
     rfl
 #align fundamental_groupoid.fundamental_groupoid_functor FundamentalGroupoid.fundamentalGroupoidFunctor
 
-scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
+@[inherit_doc] scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
+
+/-- The fundamental groupoid of a topological space. -/
 scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
+
+/-- The functor between fundamental groupoids induced by a continuous map. -/
 scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
 theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
@@ -397,29 +402,25 @@ theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.
 
 /-- Help the typechecker by converting a point in a groupoid back to a point in
 the underlying topological space. -/
-@[reducible]
-def toTop {X : TopCat} (x : πₓ X) : X := x.as
+abbrev toTop {X : TopCat} (x : πₓ X) : X := x.as
 #align fundamental_groupoid.to_top FundamentalGroupoid.toTop
 
 /-- Help the typechecker by converting a point in a topological space to a
 point in the fundamental groupoid of that space. -/
-@[reducible]
-def fromTop {X : TopCat} (x : X) : πₓ X := ⟨x⟩
+abbrev fromTop {X : TopCat} (x : X) : πₓ X := ⟨x⟩
 #align fundamental_groupoid.from_top FundamentalGroupoid.fromTop
 
 /-- Help the typechecker by converting an arrow in the fundamental groupoid of
 a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient`). -/
 -- Porting note: Added `(X := X)` to the type.
-@[reducible]
-def toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
+abbrev toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
     Path.Homotopic.Quotient (X := X) x₀.as x₁.as :=
   p
 #align fundamental_groupoid.to_path FundamentalGroupoid.toPath
 
 /-- Help the typechecker by converting a path in a topological space to an arrow in the
 fundamental groupoid of that space. -/
-@[reducible]
-def fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
+abbrev fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
     FundamentalGroupoid.mk x₀ ⟶ FundamentalGroupoid.mk x₁ := p
 #align fundamental_groupoid.from_path FundamentalGroupoid.fromPath
 

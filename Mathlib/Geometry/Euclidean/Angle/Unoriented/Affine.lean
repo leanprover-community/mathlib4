@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
 import Mathlib.Analysis.Convex.Between
+import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+import Mathlib.Analysis.NormedSpace.AffineIsometry
 
 #align_import geometry.euclidean.angle.unoriented.affine from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
@@ -18,19 +20,22 @@ This file defines unoriented angles in Euclidean affine spaces.
 * `EuclideanGeometry.angle`, with notation `∠`, is the undirected angle determined by three
   points.
 
+## TODO
+
+Prove the triangle inequality for the angle.
 -/
 
 
 noncomputable section
 
-open BigOperators Real RealInnerProductSpace
+open Real RealInnerProductSpace
 
 namespace EuclideanGeometry
 
 open InnerProductGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+  [NormedAddTorsor V P] {p p₀ p₁ p₂ : P}
 
 /-- The undirected angle at `p2` between the line segments to `p1` and
 `p3`. If either of those points equals `p2`, this is π/2. Use
@@ -40,7 +45,7 @@ nonrec def angle (p1 p2 p3 : P) : ℝ :=
   angle (p1 -ᵥ p2 : V) (p3 -ᵥ p2)
 #align euclidean_geometry.angle EuclideanGeometry.angle
 
-scoped notation "∠" => EuclideanGeometry.angle
+@[inherit_doc] scoped notation "∠" => EuclideanGeometry.angle
 
 theorem continuousAt_angle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
     ContinuousAt (fun y : P × P × P => ∠ y.1 y.2.1 y.2.2) x := by
@@ -137,21 +142,25 @@ nonrec theorem angle_le_pi (p1 p2 p3 : P) : ∠ p1 p2 p3 ≤ π :=
   angle_le_pi _ _
 #align euclidean_geometry.angle_le_pi EuclideanGeometry.angle_le_pi
 
-/-- The angle ∠AAB at a point. -/
-theorem angle_eq_left (p1 p2 : P) : ∠ p1 p1 p2 = π / 2 := by
+/-- The angle ∠AAB at a point is always `π / 2`. -/
+@[simp] lemma angle_self_left (p₀ p : P) : ∠ p₀ p₀ p = π / 2 := by
   unfold angle
   rw [vsub_self]
   exact angle_zero_left _
-#align euclidean_geometry.angle_eq_left EuclideanGeometry.angle_eq_left
+#align euclidean_geometry.angle_eq_left EuclideanGeometry.angle_self_left
 
-/-- The angle ∠ABB at a point. -/
-theorem angle_eq_right (p1 p2 : P) : ∠ p1 p2 p2 = π / 2 := by rw [angle_comm, angle_eq_left]
-#align euclidean_geometry.angle_eq_right EuclideanGeometry.angle_eq_right
+/-- The angle ∠ABB at a point is always `π / 2`. -/
+@[simp] lemma angle_self_right (p₀ p : P) : ∠ p p₀ p₀ = π / 2 := by rw [angle_comm, angle_self_left]
+#align euclidean_geometry.angle_eq_right EuclideanGeometry.angle_self_right
 
-/-- The angle ∠ABA at a point. -/
-theorem angle_eq_of_ne {p1 p2 : P} (h : p1 ≠ p2) : ∠ p1 p2 p1 = 0 :=
-  angle_self fun he => h (vsub_eq_zero_iff_eq.1 he)
-#align euclidean_geometry.angle_eq_of_ne EuclideanGeometry.angle_eq_of_ne
+/-- The angle ∠ABA at a point is `0`, unless `A = B`. -/
+theorem angle_self_of_ne (h : p ≠ p₀) : ∠ p p₀ p = 0 := angle_self $ vsub_ne_zero.2 h
+#align euclidean_geometry.angle_eq_of_ne EuclideanGeometry.angle_self_of_ne
+
+-- 2024-02-14
+@[deprecated] alias angle_eq_left := angle_self_left
+@[deprecated] alias angle_eq_right := angle_self_right
+@[deprecated] alias angle_eq_of_ne := angle_self_of_ne
 
 /-- If the angle ∠ABC at a point is π, the angle ∠BAC is 0. -/
 theorem angle_eq_zero_of_angle_eq_pi_left {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π) : ∠ p2 p1 p3 = 0 := by
@@ -205,7 +214,7 @@ theorem angle_eq_angle_of_angle_eq_pi_of_angle_eq_pi {p1 p2 p3 p4 p5 : P} (hapc 
 theorem left_dist_ne_zero_of_angle_eq_pi {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π) : dist p1 p2 ≠ 0 := by
   by_contra heq
   rw [dist_eq_zero] at heq
-  rw [heq, angle_eq_left] at h
+  rw [heq, angle_self_left] at h
   exact Real.pi_ne_zero (by linarith)
 #align euclidean_geometry.left_dist_ne_zero_of_angle_eq_pi EuclideanGeometry.left_dist_ne_zero_of_angle_eq_pi
 
@@ -279,7 +288,7 @@ is π. -/
 theorem _root_.Sbtw.angle₁₂₃_eq_pi {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p₂ p₃) : ∠ p₁ p₂ p₃ = π := by
   rw [angle, angle_eq_pi_iff]
   rcases h with ⟨⟨r, ⟨hr0, hr1⟩, hp₂⟩, hp₂p₁, hp₂p₃⟩
-  refine' ⟨vsub_ne_zero.2 hp₂p₁.symm, -(1 - r) / r, _⟩
+  refine ⟨vsub_ne_zero.2 hp₂p₁.symm, -(1 - r) / r, ?_⟩
   have hr0' : r ≠ 0 := by
     rintro rfl
     rw [← hp₂] at hp₂p₁
@@ -290,9 +299,9 @@ theorem _root_.Sbtw.angle₁₂₃_eq_pi {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁
     simp at hp₂p₃
   replace hr0 := hr0.lt_of_ne hr0'.symm
   replace hr1 := hr1.lt_of_ne hr1'
-  refine' ⟨div_neg_of_neg_of_pos (Left.neg_neg_iff.2 (sub_pos.2 hr1)) hr0, _⟩
+  refine ⟨div_neg_of_neg_of_pos (Left.neg_neg_iff.2 (sub_pos.2 hr1)) hr0, ?_⟩
   rw [← hp₂, AffineMap.lineMap_apply, vsub_vadd_eq_vsub_sub, vsub_vadd_eq_vsub_sub, vsub_self,
-    zero_sub, smul_neg, smul_smul, div_mul_cancel _ hr0', neg_smul, neg_neg, sub_eq_iff_eq_add, ←
+    zero_sub, smul_neg, smul_smul, div_mul_cancel₀ _ hr0', neg_smul, neg_neg, sub_eq_iff_eq_add, ←
     add_smul, sub_add_cancel, one_smul]
 #align sbtw.angle₁₂₃_eq_pi Sbtw.angle₁₂₃_eq_pi
 
@@ -305,12 +314,12 @@ theorem _root_.Sbtw.angle₃₂₁_eq_pi {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁
 /-- The angle between three points is π if and only if the second point is strictly between the
 other two. -/
 theorem angle_eq_pi_iff_sbtw {p₁ p₂ p₃ : P} : ∠ p₁ p₂ p₃ = π ↔ Sbtw ℝ p₁ p₂ p₃ := by
-  refine' ⟨_, fun h => h.angle₁₂₃_eq_pi⟩
+  refine ⟨?_, fun h => h.angle₁₂₃_eq_pi⟩
   rw [angle, angle_eq_pi_iff]
   rintro ⟨hp₁p₂, r, hr, hp₃p₂⟩
-  refine' ⟨⟨1 / (1 - r), ⟨div_nonneg zero_le_one (sub_nonneg.2 (hr.le.trans zero_le_one)),
-    (div_le_one (sub_pos.2 (hr.trans zero_lt_one))).2 ((le_sub_self_iff 1).2 hr.le)⟩, _⟩,
-    (vsub_ne_zero.1 hp₁p₂).symm, _⟩
+  refine ⟨⟨1 / (1 - r), ⟨div_nonneg zero_le_one (sub_nonneg.2 (hr.le.trans zero_le_one)),
+    (div_le_one (sub_pos.2 (hr.trans zero_lt_one))).2 ((le_sub_self_iff 1).2 hr.le)⟩, ?_⟩,
+    (vsub_ne_zero.1 hp₁p₂).symm, ?_⟩
   · rw [← eq_vadd_iff_vsub_eq] at hp₃p₂
     rw [AffineMap.lineMap_apply, hp₃p₂, vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev p₂ p₁, smul_neg, ←
       neg_smul, smul_add, smul_smul, ← add_smul, eq_comm, eq_vadd_iff_vsub_eq]
@@ -331,7 +340,7 @@ theorem _root_.Wbtw.angle₂₁₃_eq_zero_of_ne {p₁ p₂ p₃ : P} (h : Wbtw 
     rintro rfl
     simp at hp₂p₁
   replace hr0 := hr0.lt_of_ne hr0'.symm
-  refine' ⟨vsub_ne_zero.2 hp₂p₁, r⁻¹, inv_pos.2 hr0, _⟩
+  refine ⟨vsub_ne_zero.2 hp₂p₁, r⁻¹, inv_pos.2 hr0, ?_⟩
   rw [AffineMap.lineMap_apply, vadd_vsub_assoc, vsub_self, add_zero, smul_smul, inv_mul_cancel hr0',
     one_smul]
 #align wbtw.angle₂₁₃_eq_zero_of_ne Wbtw.angle₂₁₃_eq_zero_of_ne
@@ -388,10 +397,10 @@ theorem angle_eq_zero_iff_ne_and_wbtw {p₁ p₂ p₃ : P} :
   · rw [angle, angle_eq_zero_iff]
     rintro ⟨hp₁p₂, r, hr0, hp₃p₂⟩
     rcases le_or_lt 1 r with (hr1 | hr1)
-    · refine' Or.inl ⟨vsub_ne_zero.1 hp₁p₂, r⁻¹, ⟨(inv_pos.2 hr0).le, inv_le_one hr1⟩, _⟩
+    · refine Or.inl ⟨vsub_ne_zero.1 hp₁p₂, r⁻¹, ⟨(inv_pos.2 hr0).le, inv_le_one hr1⟩, ?_⟩
       rw [AffineMap.lineMap_apply, hp₃p₂, smul_smul, inv_mul_cancel hr0.ne.symm, one_smul,
         vsub_vadd]
-    · refine' Or.inr ⟨_, r, ⟨hr0.le, hr1.le⟩, _⟩
+    · refine Or.inr ⟨?_, r, ⟨hr0.le, hr1.le⟩, ?_⟩
       · rw [← @vsub_ne_zero V, hp₃p₂, smul_ne_zero_iff]
         exact ⟨hr0.ne.symm, hp₁p₂⟩
       · rw [AffineMap.lineMap_apply, ← hp₃p₂, vsub_vadd]
@@ -415,7 +424,7 @@ theorem angle_eq_zero_iff_eq_and_ne_or_sbtw {p₁ p₂ p₃ : P} :
 angle between them is 0 or π. -/
 theorem collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi {p₁ p₂ p₃ : P} :
     Collinear ℝ ({p₁, p₂, p₃} : Set P) ↔ p₁ = p₂ ∨ p₃ = p₂ ∨ ∠ p₁ p₂ p₃ = 0 ∨ ∠ p₁ p₂ p₃ = π := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · replace h := h.wbtw_or_wbtw_or_wbtw
     by_cases h₁₂ : p₁ = p₂
     · exact Or.inl h₁₂

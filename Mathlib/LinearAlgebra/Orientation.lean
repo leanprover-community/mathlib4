@@ -36,21 +36,16 @@ that index type is a `Fintype` and there exists a basis of the same cardinality.
 
 noncomputable section
 
-open BigOperators
-
 section OrderedCommSemiring
 
 variable (R : Type*) [StrictOrderedCommSemiring R]
-
 variable (M : Type*) [AddCommMonoid M] [Module R M]
-
 variable {N : Type*} [AddCommMonoid N] [Module R N]
-
 variable (ι ι' : Type*)
 
 /-- An orientation of a module, intended to be used when `ι` is a `Fintype` with the same
 cardinality as a basis. -/
-abbrev Orientation := Module.Ray R (M [Λ^ι]→ₗ[R] R)
+abbrev Orientation := Module.Ray R (M [⋀^ι]→ₗ[R] R)
 #align orientation Orientation
 
 /-- A type class fixing an orientation of a module. -/
@@ -69,7 +64,7 @@ def Orientation.map (e : M ≃ₗ[R] N) : Orientation R M ι ≃ Orientation R N
 #align orientation.map Orientation.map
 
 @[simp]
-theorem Orientation.map_apply (e : M ≃ₗ[R] N) (v : M [Λ^ι]→ₗ[R] R) (hv : v ≠ 0) :
+theorem Orientation.map_apply (e : M ≃ₗ[R] N) (v : M [⋀^ι]→ₗ[R] R) (hv : v ≠ 0) :
     Orientation.map ι e (rayOfNeZero _ v hv) =
       rayOfNeZero _ (v.compLinearMap e.symm) (mt (v.compLinearEquiv_eq_zero_iff e.symm).mp hv) :=
   rfl
@@ -95,7 +90,7 @@ def Orientation.reindex (e : ι ≃ ι') : Orientation R M ι ≃ Orientation R 
 #align orientation.reindex Orientation.reindex
 
 @[simp]
-theorem Orientation.reindex_apply (e : ι ≃ ι') (v : M [Λ^ι]→ₗ[R] R) (hv : v ≠ 0) :
+theorem Orientation.reindex_apply (e : ι ≃ ι') (v : M [⋀^ι]→ₗ[R] R) (hv : v ≠ 0) :
     Orientation.reindex R M e (rayOfNeZero _ v hv) =
       rayOfNeZero _ (v.domDomCongr e) (mt (v.domDomCongr_eq_zero_iff e).mp hv) :=
   rfl
@@ -143,7 +138,6 @@ end OrderedCommSemiring
 section OrderedCommRing
 
 variable {R : Type*} [StrictOrderedCommRing R]
-
 variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 @[simp]
@@ -220,9 +214,7 @@ end OrderedCommRing
 section LinearOrderedCommRing
 
 variable {R : Type*} [LinearOrderedCommRing R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M]
-
 variable {ι : Type*}
 
 namespace Orientation
@@ -237,11 +229,11 @@ theorem eq_or_eq_neg_of_isEmpty [IsEmpty ι] (o : Orientation R M ι) :
   simp only [ray_eq_iff, sameRay_neg_swap]
   rw [sameRay_or_sameRay_neg_iff_not_linearIndependent]
   intro h
-  set f : (M [Λ^ι]→ₗ[R] R) ≃ₗ[R] R := AlternatingMap.constLinearEquivOfIsEmpty.symm
+  set f : (M [⋀^ι]→ₗ[R] R) ≃ₗ[R] R := AlternatingMap.constLinearEquivOfIsEmpty.symm
   have H : LinearIndependent R ![f x, 1] := by
     convert h.map' f.toLinearMap f.ker
     ext i
-    fin_cases i <;> simp
+    fin_cases i <;> simp [f]
   rw [linearIndependent_iff'] at H
   simpa using H Finset.univ ![1, -f x] (by simp [Fin.sum_univ_succ]) 0 (by simp)
 #align orientation.eq_or_eq_neg_of_is_empty Orientation.eq_or_eq_neg_of_isEmpty
@@ -363,9 +355,7 @@ end LinearOrderedCommRing
 section LinearOrderedField
 
 variable {R : Type*} [LinearOrderedField R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M]
-
 variable {ι : Type*}
 
 namespace Orientation
@@ -427,7 +417,7 @@ theorem map_eq_neg_iff_det_neg (x : Orientation R M ι) (f : M ≃ₗ[R] M)
   have H : 0 < finrank R M := by
     rw [← h]
     exact Fintype.card_pos
-  haveI : FiniteDimensional R M := finiteDimensional_of_finrank H
+  haveI : FiniteDimensional R M := of_finrank_pos H
   rw [map_eq_det_inv_smul _ _ h, units_inv_smul, units_smul_eq_neg_iff, LinearEquiv.coe_det]
 #align orientation.map_eq_neg_iff_det_neg Orientation.map_eq_neg_iff_det_neg
 

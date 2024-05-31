@@ -19,11 +19,8 @@ import Mathlib.LinearAlgebra.Quotient
 universe u v
 
 variable {R M M₂ M₃ : Type*}
-
 variable [Ring R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
-
 variable [Module R M] [Module R M₂] [Module R M₃]
-
 variable (f : M →ₗ[R] M₂)
 
 /-! The first and second isomorphism theorems for modules. -/
@@ -62,8 +59,7 @@ theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range 
 
 -- Porting note: breaking up original definition of quotientInfToSupQuotient to avoid timing out
 /-- Linear map from `p` to `p+p'/p'` where `p p'` are submodules of `R` -/
-@[reducible]
-def subToSupQuotient (p p' : Submodule R M) :
+abbrev subToSupQuotient (p p' : Submodule R M) :
     { x // x ∈ p } →ₗ[R] { x // x ∈ p ⊔ p' } ⧸ comap (Submodule.subtype (p ⊔ p')) p' :=
   (comap (p ⊔ p').subtype p').mkQ.comp (Submodule.inclusion le_sup_left)
 
@@ -94,7 +90,7 @@ theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
   rw [← range_eq_top, quotientInfToSupQuotient, range_liftQ, eq_top_iff']
   rintro ⟨x, hx⟩; rcases mem_sup.1 hx with ⟨y, hy, z, hz, rfl⟩
   use ⟨y, hy⟩; apply (Submodule.Quotient.eq _).2
-  simp only [mem_comap, map_sub, coeSubtype, coe_inclusion, sub_add_cancel', neg_mem_iff, hz]
+  simp only [mem_comap, map_sub, coeSubtype, coe_inclusion, sub_add_cancel_left, neg_mem_iff, hz]
 
 /--
 Second Isomorphism Law : the canonical map from `p/(p ∩ p')` to `(p+p')/p'` as a linear isomorphism.
@@ -106,7 +102,7 @@ noncomputable def quotientInfEquivSupQuotient (p p' : Submodule R M) :
 #align linear_map.quotient_inf_equiv_sup_quotient LinearMap.quotientInfEquivSupQuotient
 
 -- @[simp]
--- Porting note: `simp` affects the type arguments of `FunLike.coe`, so this theorem can't be
+-- Porting note: `simp` affects the type arguments of `DFunLike.coe`, so this theorem can't be
 --               a simp theorem anymore, even if it has high priority.
 theorem coe_quotientInfToSupQuotient (p p' : Submodule R M) :
     ⇑(quotientInfToSupQuotient p p') = quotientInfEquivSupQuotient p p' :=
@@ -127,16 +123,16 @@ theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : 
     (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) =
       Submodule.Quotient.mk ⟨x, hx⟩ :=
   (LinearEquiv.symm_apply_eq _).2 <| by
-    -- Porting note: Was `simp`.
+    -- porting note (#10745): was `simp`.
     rw [quotientInfEquivSupQuotient_apply_mk, inclusion_apply]
 #align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_left LinearMap.quotientInfEquivSupQuotient_symm_apply_left
 
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem quotientInfEquivSupQuotient_symm_apply_eq_zero_iff {p p' : Submodule R M} {x : ↥(p ⊔ p')} :
     (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) = 0 ↔ (x : M) ∈ p' :=
   (LinearEquiv.symm_apply_eq _).trans <| by
-    -- Porting note: Was `simp`.
+    -- porting note (#10745): was `simp`.
     rw [_root_.map_zero, Quotient.mk_eq_zero, mem_comap, Submodule.coeSubtype]
 #align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_eq_zero_iff LinearMap.quotientInfEquivSupQuotient_symm_apply_eq_zero_iff
 
@@ -171,7 +167,8 @@ theorem quotientQuotientEquivQuotientAux_mk (x : M ⧸ S) :
   liftQ_apply _ _ _
 #align submodule.quotient_quotient_equiv_quotient_aux_mk Submodule.quotientQuotientEquivQuotientAux_mk
 
--- @[simp] -- Porting note: simp can prove this
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem quotientQuotientEquivQuotientAux_mk_mk (x : M) :
     quotientQuotientEquivQuotientAux S T h (Quotient.mk (Quotient.mk x)) = Quotient.mk x := by simp
 #align submodule.quotient_quotient_equiv_quotient_aux_mk_mk Submodule.quotientQuotientEquivQuotientAux_mk_mk
@@ -184,6 +181,12 @@ def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ 
     left_inv := fun x => Quotient.inductionOn' x fun x => Quotient.inductionOn' x fun x => by simp
     right_inv := fun x => Quotient.inductionOn' x fun x => by simp }
 #align submodule.quotient_quotient_equiv_quotient Submodule.quotientQuotientEquivQuotient
+
+/-- Essentially the same equivalence as in the third isomorphism theorem,
+except restated in terms of suprema/addition of submodules instead of `≤`. -/
+def quotientQuotientEquivQuotientSup : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ S ⊔ T :=
+  quotEquivOfEq _ _ (by rw [map_sup, mkQ_map_self, bot_sup_eq]) ≪≫ₗ
+    quotientQuotientEquivQuotient S (S ⊔ T) le_sup_left
 
 /-- Corollary of the third isomorphism theorem: `[S : T] [M : S] = [M : T]` -/
 theorem card_quotient_mul_card_quotient (S T : Submodule R M) (hST : T ≤ S)

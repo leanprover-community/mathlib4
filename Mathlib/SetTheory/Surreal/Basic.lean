@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Scott Morrison
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.SetTheory.Game.Ordinal
 
-#align_import set_theory.surreal.basic from "leanprover-community/mathlib"@"ee02a30e209a2a77b93eac1254e8c66e76192f54"
+#align_import set_theory.surreal.basic from "leanprover-community/mathlib"@"8900d545017cd21961daa2a1734bb658ef52c618"
 
 /-!
 # Surreal numbers
@@ -121,9 +121,9 @@ theorem Relabelling.numeric_congr {x y : PGame} (r : x ≡r y) : Numeric x ↔ N
 #align pgame.relabelling.numeric_congr SetTheory.PGame.Relabelling.numeric_congr
 
 theorem lf_asymm {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y → ¬y ⧏ x := by
-  refine' numeric_rec (C := fun x => ∀ z (_oz : Numeric z), x ⧏ z → ¬z ⧏ x)
-    (fun xl xr xL xR hx _oxl _oxr IHxl IHxr => _) x ox y oy
-  refine' numeric_rec fun yl yr yL yR hy oyl oyr _IHyl _IHyr => _
+  refine numeric_rec (C := fun x => ∀ z (_oz : Numeric z), x ⧏ z → ¬z ⧏ x)
+    (fun xl xr xL xR hx _oxl _oxr IHxl IHxr => ?_) x ox y oy
+  refine numeric_rec fun yl yr yL yR hy oyl oyr _IHyl _IHyr => ?_
   rw [mk_lf_mk, mk_lf_mk]; rintro (⟨i, h₁⟩ | ⟨j, h₁⟩) (⟨i, h₂⟩ | ⟨j, h₂⟩)
   · exact IHxl _ _ (oyl _) (h₁.moveLeft_lf _) (h₂.moveLeft_lf _)
   · exact (le_trans h₂ h₁).not_gf (lf_of_lt (hy _ _))
@@ -152,8 +152,8 @@ theorem lf_iff_lt {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y ↔ 
 /-- Definition of `x ≤ y` on numeric pre-games, in terms of `<` -/
 theorem le_iff_forall_lt {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
     x ≤ y ↔ (∀ i, x.moveLeft i < y) ∧ ∀ j, x < y.moveRight j := by
-  refine' le_iff_forall_lf.trans (and_congr _ _) <;>
-      refine' forall_congr' fun i => lf_iff_lt _ _ <;>
+  refine le_iff_forall_lf.trans (and_congr ?_ ?_) <;>
+      refine forall_congr' fun i => lf_iff_lt ?_ ?_ <;>
     apply_rules [Numeric.moveLeft, Numeric.moveRight]
 #align pgame.le_iff_forall_lt SetTheory.PGame.le_iff_forall_lt
 
@@ -174,8 +174,8 @@ theorem lt_def {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
       (∃ i, (∀ i', x.moveLeft i' < y.moveLeft i) ∧ ∀ j, x < (y.moveLeft i).moveRight j) ∨
         ∃ j, (∀ i, (x.moveRight j).moveLeft i < y) ∧ ∀ j', x.moveRight j < y.moveRight j' := by
   rw [← lf_iff_lt ox oy, lf_def]
-  refine' or_congr _ _ <;> refine' exists_congr fun x_1 => _ <;> refine' and_congr _ _ <;>
-      refine' forall_congr' fun i => lf_iff_lt _ _ <;>
+  refine or_congr ?_ ?_ <;> refine exists_congr fun x_1 => ?_ <;> refine and_congr ?_ ?_ <;>
+      refine forall_congr' fun i => lf_iff_lt ?_ ?_ <;>
     apply_rules [Numeric.moveLeft, Numeric.moveRight]
 #align pgame.lt_def SetTheory.PGame.lt_def
 
@@ -250,8 +250,7 @@ theorem add : ∀ {x y : PGame} (_ : Numeric x) (_ : Numeric y), Numeric (x + y)
       · rintro (jx | jy)
         · apply (ox.moveRight jx).add oy
         · apply ox.add (oy.moveRight jy)⟩
-termination_by _ x y _ _ => (x, y) -- Porting note: Added `termination_by`
-decreasing_by pgame_wf_tac
+termination_by x y => (x, y) -- Porting note: Added `termination_by`
 #align pgame.numeric.add SetTheory.PGame.Numeric.add
 
 theorem sub {x y : PGame} (ox : Numeric x) (oy : Numeric y) : Numeric (x - y) :=
@@ -322,6 +321,9 @@ instance instLE : LE Surreal :=
   ⟨lift₂ (fun x y _ _ => x ≤ y) fun _ _ _ _ hx hy => propext (le_congr hx hy)⟩
 #align surreal.has_le Surreal.instLE
 
+@[simp]
+lemma mk_le_mk {x y : PGame.{u}} {hx hy} : mk x hx ≤ mk y hy ↔ x ≤ y := Iff.rfl
+
 instance instLT : LT Surreal :=
   ⟨lift₂ (fun x y _ _ => x < y) fun _ _ _ _ hx hy => propext (lt_congr hx hy)⟩
 #align surreal.has_lt Surreal.instLT
@@ -353,6 +355,8 @@ instance orderedAddCommGroup : OrderedAddCommGroup Surreal where
   lt_iff_le_not_le := by rintro ⟨_, ox⟩ ⟨_, oy⟩; apply @lt_iff_le_not_le PGame
   le_antisymm := by rintro ⟨_⟩ ⟨_⟩ h₁ h₂; exact Quotient.sound ⟨h₁, h₂⟩
   add_le_add_left := by rintro ⟨_⟩ ⟨_⟩ hx ⟨_⟩; exact @add_le_add_left PGame _ _ _ _ _ hx _
+  nsmul := nsmulRec
+  zsmul := zsmulRec
 
 noncomputable instance : LinearOrderedAddCommGroup Surreal :=
   { Surreal.orderedAddCommGroup with
@@ -385,6 +389,53 @@ theorem one_toGame : toGame 1 = 1 :=
 theorem nat_toGame : ∀ n : ℕ, toGame n = n :=
   map_natCast' _ one_toGame
 #align surreal.nat_to_game Surreal.nat_toGame
+
+#noalign upper_bound_numeric
+#noalign lower_bound_numeric
+
+/-- A small family of surreals is bounded above. -/
+lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u}) :
+    BddAbove (Set.range f) := by
+  induction' f using Quotient.induction_on_pi with f
+  let g : ι → PGame.{u} := Subtype.val ∘ f
+  have hg (i) : (g i).Numeric := Subtype.prop _
+  conv in (⟦f _⟧) =>
+    change mk (g i) (hg i)
+  clear_value g
+  clear f
+  let x : PGame.{u} := ⟨Σ i, (g <| (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
+    fun x ↦ moveLeft _ x.2, PEmpty.elim⟩
+  refine ⟨mk x (.mk (by simp [x]) (fun _ ↦ (hg _).moveLeft _) (by simp [x])),
+    Set.forall_mem_range.2 fun i ↦ ?_⟩
+  rw [mk_le_mk, ← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
+  simpa [x] using fun j ↦ @moveLeft_lf x ⟨equivShrink ι i, j⟩
+
+/-- A small set of surreals is bounded above. -/
+lemma bddAbove_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddAbove s := by
+  simpa using bddAbove_range_of_small (Subtype.val : s → Surreal.{u})
+#align surreal.bdd_above_of_small Surreal.bddAbove_of_small
+
+/-- A small family of surreals is bounded below. -/
+lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u}) :
+    BddBelow (Set.range f) := by
+  induction' f using Quotient.induction_on_pi with f
+  let g : ι → PGame.{u} := Subtype.val ∘ f
+  have hg (i) : (g i).Numeric := Subtype.prop _
+  conv in (⟦f _⟧) =>
+    change mk (g i) (hg i)
+  clear_value g
+  clear f
+  let x : PGame.{u} := ⟨PEmpty, Σ i, (g <| (equivShrink.{u} ι).symm i).RightMoves,
+    PEmpty.elim, fun x ↦ moveRight _ x.2⟩
+  refine ⟨mk x (.mk (by simp [x]) (by simp [x]) (fun _ ↦ (hg _).moveRight _) ),
+    Set.forall_mem_range.2 fun i ↦ ?_⟩
+  rw [mk_le_mk, ← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
+  simpa [x] using fun j ↦ @lf_moveRight x ⟨equivShrink ι i, j⟩
+
+/-- A small set of surreals is bounded below. -/
+lemma bddBelow_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddBelow s := by
+  simpa using bddBelow_range_of_small (Subtype.val : s → Surreal.{u})
+#align surreal.bdd_below_of_small Surreal.bddBelow_of_small
 
 end Surreal
 

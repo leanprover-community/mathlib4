@@ -116,7 +116,7 @@ open AddMonoidHom
 private theorem one_smul' [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M]
     (x : ⨁ i, M i) :
     (1 : ⨁ i, A i) • x = x := by
-  suffices smulAddMonoidHom A M 1 = AddMonoidHom.id (⨁ i, M i) from FunLike.congr_fun this x
+  suffices smulAddMonoidHom A M 1 = AddMonoidHom.id (⨁ i, M i) from DFunLike.congr_fun this x
   apply DirectSum.addHom_ext; intro i xi
   rw [show (1 : DirectSum ιA fun i => A i) = (of A 0) GOne.one by rfl]
   rw [smulAddMonoidHom_apply_of_of]
@@ -135,7 +135,7 @@ private theorem mul_smul' [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmo
       (AddMonoidHom.compHom AddMonoidHom.flipHom <|
           (smulAddMonoidHom A M).flip.compHom.comp <| smulAddMonoidHom A M).flip
     from-- `fun a b c ↦ a • (b • c)` as a bundled hom
-      FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this a) b) c
+      DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
   ext ai ax bi bx ci cx : 6
   dsimp only [coe_comp, Function.comp_apply, compHom_apply_apply, flip_apply, flipHom_apply]
   rw [smulAddMonoidHom_apply_of_of, smulAddMonoidHom_apply_of_of, DirectSum.mulHom_of_of,
@@ -164,14 +164,11 @@ end DirectSum
 
 end
 
-open DirectSum BigOperators
+open DirectSum
 
 variable {ιA ιM R A M σ σ' : Type*}
-
 variable [AddMonoid ιA] [AddAction ιA ιM] [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable (𝓐 : ιA → σ') [SetLike σ' A]
-
 variable (𝓜 : ιM → σ)
 
 namespace SetLike
@@ -211,7 +208,6 @@ namespace GradedModule
 variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
   [AddSubmonoidClass σ M] [SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜]
 
-set_option maxHeartbeats 300000 in -- Porting note: needs more Heartbeats to elaborate
 /-- The smul multiplication of `A` on `⨁ i, 𝓜 i` from `(⨁ i, 𝓐 i) →+ (⨁ i, 𝓜 i) →+ ⨁ i, 𝓜 i`
 turns `⨁ i, 𝓜 i` into an `A`-module
 -/

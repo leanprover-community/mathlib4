@@ -40,9 +40,11 @@ conservative dynamical system, Poincare recurrence theorem
 
 noncomputable section
 
-open Classical Set Filter MeasureTheory Finset Function TopologicalSpace
+open scoped Classical
+open Set Filter MeasureTheory Finset Function TopologicalSpace
 
-open Classical Topology
+open scoped Classical
+open Topology
 
 variable {ι : Type*} {α : Type*} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
 
@@ -56,8 +58,7 @@ returns back to `s` under some iteration of `f`. -/
 structure Conservative (f : α → α) (μ : Measure α) extends QuasiMeasurePreserving f μ μ : Prop where
   /-- If `f` is a conservative self-map and `s` is a measurable set of nonzero measure,
   then there exists a point `x ∈ s` that returns to `s` under a non-zero iteration of `f`. -/
-  exists_mem_iterate_mem :
-    ∀ ⦃s⦄, MeasurableSet s → μ s ≠ 0 → ∃ x ∈ s, ∃ m, m ≠ 0 ∧ f^[m] x ∈ s
+  exists_mem_iterate_mem : ∀ ⦃s⦄, MeasurableSet s → μ s ≠ 0 → ∃ x ∈ s, ∃ m ≠ 0, f^[m] x ∈ s
 #align measure_theory.conservative MeasureTheory.Conservative
 
 /-- A self-map preserving a finite measure is conservative. -/
@@ -82,7 +83,7 @@ after `m` iterations of `f`. -/
 theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : MeasurableSet s)
     (h0 : μ s ≠ 0) : ∃ᶠ m in atTop, μ (s ∩ f^[m] ⁻¹' s) ≠ 0 := by
   by_contra H
-  simp only [not_frequently, eventually_atTop, Ne.def, Classical.not_not] at H
+  simp only [not_frequently, eventually_atTop, Ne, Classical.not_not] at H
   rcases H with ⟨N, hN⟩
   induction' N with N ihN
   · apply h0
@@ -100,7 +101,7 @@ theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : Measurab
   have : μ ((s ∩ f^[n] ⁻¹' s) \ T) ≠ 0 := by rwa [measure_diff_null hμT]
   rcases hf.exists_mem_iterate_mem ((hs.inter (hf.measurable.iterate n hs)).diff hT) this with
     ⟨x, ⟨⟨hxs, _⟩, hxT⟩, m, hm0, ⟨_, hxm⟩, _⟩
-  refine' hxT ⟨hxs, mem_iUnion₂.2 ⟨n + m, _, _⟩⟩
+  refine hxT ⟨hxs, mem_iUnion₂.2 ⟨n + m, ?_, ?_⟩⟩
   · exact add_le_add hn (Nat.one_le_of_lt <| pos_iff_ne_zero.2 hm0)
   · rwa [Set.mem_preimage, ← iterate_add_apply] at hxm
 #align measure_theory.conservative.frequently_measure_inter_ne_zero MeasureTheory.Conservative.frequently_measure_inter_ne_zero
@@ -154,15 +155,15 @@ set, then for `μ`-a.e. `x`, if the orbit of `x` visits `s` at least once, then 
 infinitely many times.  -/
 theorem ae_forall_image_mem_imp_frequently_image_mem (hf : Conservative f μ)
     (hs : MeasurableSet s) : ∀ᵐ x ∂μ, ∀ k, f^[k] x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := by
-  refine' ae_all_iff.2 fun k => _
-  refine' (hf.ae_mem_imp_frequently_image_mem (hf.measurable.iterate k hs)).mono fun x hx hk => _
+  refine ae_all_iff.2 fun k => ?_
+  refine (hf.ae_mem_imp_frequently_image_mem (hf.measurable.iterate k hs)).mono fun x hx hk => ?_
   rw [← map_add_atTop_eq_nat k, frequently_map]
-  refine' (hx hk).mono fun n hn => _
+  refine (hx hk).mono fun n hn => ?_
   rwa [add_comm, iterate_add_apply]
 #align measure_theory.conservative.ae_forall_image_mem_imp_frequently_image_mem MeasureTheory.Conservative.ae_forall_image_mem_imp_frequently_image_mem
 
 /-- If `f` is a conservative self-map and `s` is a measurable set of positive measure, then
-`μ.ae`-frequently we have `x ∈ s` and `s` returns to `s` under infinitely many iterations of `f`. -/
+`ae μ`-frequently we have `x ∈ s` and `s` returns to `s` under infinitely many iterations of `f`. -/
 theorem frequently_ae_mem_and_frequently_image_mem (hf : Conservative f μ) (hs : MeasurableSet s)
     (h0 : μ s ≠ 0) : ∃ᵐ x ∂μ, x ∈ s ∧ ∃ᶠ n in atTop, f^[n] x ∈ s :=
   ((frequently_ae_mem_iff.2 h0).and_eventually (hf.ae_mem_imp_frequently_image_mem hs)).mono
@@ -177,7 +178,7 @@ theorem ae_frequently_mem_of_mem_nhds [TopologicalSpace α] [SecondCountableTopo
     ∀ᵐ x ∂μ, ∀ s ∈ 𝓝 x, ∃ᶠ n in atTop, f^[n] x ∈ s := by
   have : ∀ s ∈ countableBasis α, ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := fun s hs =>
     h.ae_mem_imp_frequently_image_mem (isOpen_of_mem_countableBasis hs).measurableSet
-  refine' ((ae_ball_iff <| countable_countableBasis α).2 this).mono fun x hx s hs => _
+  refine ((ae_ball_iff <| countable_countableBasis α).2 this).mono fun x hx s hs => ?_
   rcases (isBasis_countableBasis α).mem_nhds_iff.1 hs with ⟨o, hoS, hxo, hos⟩
   exact (hx o hoS hxo).mono fun n hn => hos hn
 #align measure_theory.conservative.ae_frequently_mem_of_mem_nhds MeasureTheory.Conservative.ae_frequently_mem_of_mem_nhds
@@ -187,7 +188,7 @@ protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n
   cases' n with n
   · exact Conservative.id μ
   -- Discharge the trivial case `n = 0`
-  refine' ⟨hf.1.iterate _, fun s hs hs0 => _⟩
+  refine ⟨hf.1.iterate _, fun s hs hs0 => ?_⟩
   rcases (hf.frequently_ae_mem_and_frequently_image_mem hs hs0).exists with ⟨x, _, hx⟩
   /- We take a point `x ∈ s` such that `f^[k] x ∈ s` for infinitely many values of `k`,
     then we choose two of these values `k < l` such that `k ≡ l [MOD (n + 1)]`.
@@ -198,7 +199,7 @@ protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n
   have : (n + 1) * m = l - k := by
     apply Nat.mul_div_cancel'
     exact (Nat.modEq_iff_dvd' hkl.le).1 hn
-  refine' ⟨f^[k] x, hk, m, _, _⟩
+  refine ⟨f^[k] x, hk, m, ?_, ?_⟩
   · intro hm
     rw [hm, mul_zero, eq_comm, tsub_eq_zero_iff_le] at this
     exact this.not_lt hkl

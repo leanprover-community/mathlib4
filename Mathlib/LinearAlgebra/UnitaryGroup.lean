@@ -64,12 +64,12 @@ variable {n : Type u} [DecidableEq n] [Fintype n]
 variable {α : Type v} [CommRing α] [StarRing α] {A : Matrix n n α}
 
 theorem mem_unitaryGroup_iff : A ∈ Matrix.unitaryGroup n α ↔ A * star A = 1 := by
-  refine' ⟨And.right, fun hA => ⟨_, hA⟩⟩
+  refine ⟨And.right, fun hA => ⟨?_, hA⟩⟩
   simpa only [mul_eq_one_comm] using hA
 #align matrix.mem_unitary_group_iff Matrix.mem_unitaryGroup_iff
 
 theorem mem_unitaryGroup_iff' : A ∈ Matrix.unitaryGroup n α ↔ star A * A = 1 := by
-  refine' ⟨And.left, fun hA => ⟨hA, _⟩⟩
+  refine ⟨And.left, fun hA => ⟨hA, ?_⟩⟩
   rwa [mul_eq_one_comm] at hA
 #align matrix.mem_unitary_group_iff' Matrix.mem_unitaryGroup_iff'
 
@@ -111,6 +111,10 @@ theorem star_mul_self (A : unitaryGroup n α) : star A.1 * A.1 = 1 :=
   A.2.1
 #align matrix.unitary_group.star_mul_self Matrix.UnitaryGroup.star_mul_self
 
+@[simp]
+theorem det_isUnit (A : unitaryGroup n α) : IsUnit (A : Matrix n n α).det :=
+  isUnit_iff_isUnit_det _ |>.mp <| (unitary.toUnits A).isUnit
+
 section CoeLemmas
 
 variable (A B : unitaryGroup n α)
@@ -145,10 +149,10 @@ theorem toLin'_one : toLin' (1 : unitaryGroup n α) = LinearMap.id :=
 
 end CoeLemmas
 
--- porting note: todo: redefine `toGL`/`embeddingGL` as in this example:
+-- Porting note (#11215): TODO: redefine `toGL`/`embeddingGL` as in this example:
 example : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
   .toHomUnits ⟨⟨toLin', toLin'_one⟩, toLin'_mul⟩
--- porting note: then we can get `toLinearEquiv` from `GeneralLinearGroup.toLinearEquiv`
+-- Porting note: then we can get `toLinearEquiv` from `GeneralLinearGroup.toLinearEquiv`
 
 /-- `Matrix.unitaryGroup.toLinearEquiv A` is matrix multiplication of vectors by `A`, as a linear
 equivalence. -/
@@ -198,11 +202,27 @@ set_option linter.uppercaseLean3 false in
 
 end UnitaryGroup
 
+section specialUnitaryGroup
+
+variable (n) (α)
+
+/-- `Matrix.specialUnitaryGroup` is the group of unitary `n` by `n` matrices where the determinant
+is 1. (This definition is only correct if 2 is invertible.)-/
+abbrev specialUnitaryGroup := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
+
+variable {n} {α}
+
+theorem mem_specialUnitaryGroup_iff :
+    A ∈ specialUnitaryGroup n α ↔ A ∈ unitaryGroup n α ∧ A.det = 1 :=
+  Iff.rfl
+
+end specialUnitaryGroup
+
 section OrthogonalGroup
 
 variable (n) (β : Type v) [CommRing β]
 
--- Porting note: todo: will lemmas about `Matrix.orthogonalGroup` work without making
+-- Porting note (#11215): TODO: will lemmas about `Matrix.orthogonalGroup` work without making
 -- `starRingOfComm` a local instance? E.g., can we talk about unitary group and orthogonal group
 -- at the same time?
 attribute [local instance] starRingOfComm
@@ -214,16 +234,34 @@ abbrev orthogonalGroup := unitaryGroup n β
 
 theorem mem_orthogonalGroup_iff {A : Matrix n n β} :
     A ∈ Matrix.orthogonalGroup n β ↔ A * star A = 1 := by
-  refine' ⟨And.right, fun hA => ⟨_, hA⟩⟩
+  refine ⟨And.right, fun hA => ⟨?_, hA⟩⟩
   simpa only [mul_eq_one_comm] using hA
 #align matrix.mem_orthogonal_group_iff Matrix.mem_orthogonalGroup_iff
 
 theorem mem_orthogonalGroup_iff' {A : Matrix n n β} :
     A ∈ Matrix.orthogonalGroup n β ↔ star A * A = 1 := by
-  refine' ⟨And.left, fun hA => ⟨hA, _⟩⟩
+  refine ⟨And.left, fun hA => ⟨hA, ?_⟩⟩
   rwa [mul_eq_one_comm] at hA
 #align matrix.mem_orthogonal_group_iff' Matrix.mem_orthogonalGroup_iff'
 
 end OrthogonalGroup
+
+section specialOrthogonalGroup
+
+variable (n) (β : Type v) [CommRing β]
+
+attribute [local instance] starRingOfComm
+
+/-- `Matrix.specialOrthogonalGroup n` is the group of orthogonal `n` by `n` where the determinant
+is one. (This definition is only correct if 2 is invertible.)-/
+abbrev specialOrthogonalGroup := specialUnitaryGroup n β
+
+variable {n} {β} {A : Matrix n n β}
+
+theorem mem_specialOrthogonalGroup_iff :
+    A ∈ specialOrthogonalGroup n β ↔ A ∈ orthogonalGroup n β ∧ A.det = 1 :=
+  Iff.rfl
+
+end specialOrthogonalGroup
 
 end Matrix

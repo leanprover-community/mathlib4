@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2019 Johan Commelin All rights reserved.
+Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
@@ -167,8 +167,8 @@ instance : Inhabited (OpenSubgroup G) :=
 @[to_additive]
 theorem isClosed [ContinuousMul G] (U : OpenSubgroup G) : IsClosed (U : Set G) := by
   apply isOpen_compl_iff.1
-  refine' isOpen_iff_forall_mem_open.2 fun x hx => ⟨(fun y => y * x⁻¹) ⁻¹' U, _, _, _⟩
-  · refine' fun u hux hu => hx _
+  refine isOpen_iff_forall_mem_open.2 fun x hx => ⟨(fun y => y * x⁻¹) ⁻¹' U, ?_, ?_, ?_⟩
+  · refine fun u hux hu => hx ?_
     simp only [Set.mem_preimage, SetLike.mem_coe] at hux hu ⊢
     convert U.mul_mem (U.inv_mem hux) hu
     simp
@@ -179,7 +179,7 @@ theorem isClosed [ContinuousMul G] (U : OpenSubgroup G) : IsClosed (U : Set G) :
 
 @[to_additive]
 theorem isClopen [ContinuousMul G] (U : OpenSubgroup G) : IsClopen (U : Set G) :=
-  ⟨U.isOpen, U.isClosed⟩
+  ⟨U.isClosed, U.isOpen⟩
 #align open_subgroup.is_clopen OpenSubgroup.isClopen
 #align open_add_subgroup.is_clopen OpenAddSubgroup.isClopen
 
@@ -241,7 +241,7 @@ theorem mem_inf {x} : x ∈ U ⊓ V ↔ x ∈ U ∧ x ∈ V :=
 @[to_additive]
 instance instPartialOrderOpenSubgroup : PartialOrder (OpenSubgroup G) := inferInstance
 
--- porting note: we override `toPartialorder` to get better `le`
+-- Porting note: we override `toPartialorder` to get better `le`
 @[to_additive]
 instance instSemilatticeInfOpenSubgroup : SemilatticeInf (OpenSubgroup G) :=
   { SetLike.coe_injective.semilatticeInf ((↑) : OpenSubgroup G → Set G) fun _ _ => rfl with
@@ -307,7 +307,7 @@ variable {G : Type*} [Group G] [TopologicalSpace G] [ContinuousMul G] (H : Subgr
 
 @[to_additive]
 theorem isOpen_of_mem_nhds {g : G} (hg : (H : Set G) ∈ 𝓝 g) : IsOpen (H : Set G) := by
-  refine' isOpen_iff_mem_nhds.2 fun x hx => _
+  refine isOpen_iff_mem_nhds.2 fun x hx => ?_
   have hg' : g ∈ H := SetLike.mem_coe.1 (mem_of_mem_nhds hg)
   have : Filter.Tendsto (fun y => y * (x⁻¹ * g)) (𝓝 x) (𝓝 g) :=
     (continuous_id.mul continuous_const).tendsto' _ _ (mul_inv_cancel_left _ _)
@@ -353,7 +353,7 @@ theorem toSubgroup_sup (U V : OpenSubgroup G) : (↑(U ⊔ V) : Subgroup G) = �
 #align open_subgroup.coe_subgroup_sup OpenSubgroup.toSubgroup_sup
 #align open_add_subgroup.coe_add_subgroup_sup OpenAddSubgroup.toAddSubgroup_sup
 
--- porting note: we override `toPartialorder` to get better `le`
+-- Porting note: we override `toPartialorder` to get better `le`
 @[to_additive]
 instance : Lattice (OpenSubgroup G) :=
   { instSemilatticeInfOpenSubgroup,
@@ -367,7 +367,6 @@ namespace Submodule
 open OpenAddSubgroup
 
 variable {R : Type*} {M : Type*} [CommRing R]
-
 variable [AddCommGroup M] [TopologicalSpace M] [TopologicalAddGroup M] [Module R M]
 
 theorem isOpen_mono {U P : Submodule R M} (h : U ≤ P) (hU : IsOpen (U : Set M)) :
@@ -380,7 +379,6 @@ end Submodule
 namespace Ideal
 
 variable {R : Type*} [CommRing R]
-
 variable [TopologicalSpace R] [TopologicalRing R]
 
 theorem isOpen_of_isOpen_subideal {U I : Ideal R} (h : U ≤ I) (hU : IsOpen (U : Set R)) :

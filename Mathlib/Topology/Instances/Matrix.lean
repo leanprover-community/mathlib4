@@ -150,14 +150,14 @@ theorem Continuous.matrix_vecMulVec [Mul R] [ContinuousMul R] {A : X → m → R
 @[continuity]
 theorem Continuous.matrix_mulVec [NonUnitalNonAssocSemiring R] [ContinuousAdd R] [ContinuousMul R]
     [Fintype n] {A : X → Matrix m n R} {B : X → n → R} (hA : Continuous A) (hB : Continuous B) :
-    Continuous fun x => (A x).mulVec (B x) :=
+    Continuous fun x => A x *ᵥ B x :=
   continuous_pi fun i => ((continuous_apply i).comp hA).matrix_dotProduct hB
 #align continuous.matrix_mul_vec Continuous.matrix_mulVec
 
 @[continuity]
 theorem Continuous.matrix_vecMul [NonUnitalNonAssocSemiring R] [ContinuousAdd R] [ContinuousMul R]
     [Fintype m] {A : X → m → R} {B : X → Matrix m n R} (hA : Continuous A) (hB : Continuous B) :
-    Continuous fun x => vecMul (A x) (B x) :=
+    Continuous fun x => A x ᵥ* B x :=
   continuous_pi fun _i => hA.matrix_dotProduct <| continuous_pi fun _j => hB.matrix_elem _ _
 #align continuous.matrix_vec_mul Continuous.matrix_vecMul
 
@@ -194,8 +194,8 @@ theorem Continuous.matrix_trace [Fintype n] [AddCommMonoid R] [ContinuousAdd R]
 theorem Continuous.matrix_det [Fintype n] [DecidableEq n] [CommRing R] [TopologicalRing R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => (A x).det := by
   simp_rw [Matrix.det_apply]
-  refine' continuous_finset_sum _ fun l _ => Continuous.const_smul _ _
-  refine' continuous_finset_prod _ fun l _ => hA.matrix_elem _ _
+  refine continuous_finset_sum _ fun l _ => Continuous.const_smul ?_ _
+  exact continuous_finset_prod _ fun l _ => hA.matrix_elem _ _
 #align continuous.matrix_det Continuous.matrix_det
 
 @[continuity]
@@ -243,7 +243,7 @@ theorem Continuous.matrix_fromBlocks {A : X → Matrix n l R} {B : X → Matrix 
     (hC : Continuous C) (hD : Continuous D) :
     Continuous fun x => Matrix.fromBlocks (A x) (B x) (C x) (D x) :=
   continuous_matrix <| by
-    rintro (i | i) (j | j) <;> refine' Continuous.matrix_elem _ i j <;> assumption
+    rintro (i | i) (j | j) <;> refine Continuous.matrix_elem ?_ i j <;> assumption
 #align continuous.matrix_from_blocks Continuous.matrix_fromBlocks
 
 @[continuity]

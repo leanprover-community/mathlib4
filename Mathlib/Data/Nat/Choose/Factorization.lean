@@ -28,8 +28,6 @@ These results appear in the [Erdős proof of Bertrand's postulate](aigner1999pro
 -/
 
 
-open BigOperators
-
 namespace Nat
 
 variable {p n k : ℕ}
@@ -40,11 +38,11 @@ theorem factorization_choose_le_log : (choose n k).factorization p ≤ log p n :
   · simp [h]
   have hp : p.Prime := Not.imp_symm (choose n k).factorization_eq_zero_of_non_prime h
   have hkn : k ≤ n := by
-    refine' le_of_not_lt fun hnk => h _
+    refine le_of_not_lt fun hnk => h ?_
     simp [choose_eq_zero_of_lt hnk]
   rw [factorization_def _ hp, @padicValNat_def _ ⟨hp⟩ _ (choose_pos hkn)]
   simp only [hp.multiplicity_choose hkn (lt_add_one _), PartENat.get_natCast]
-  refine (Finset.card_filter_le _ _).trans (le_of_eq (Nat.card_Ico _ _))
+  exact (Finset.card_filter_le _ _).trans (le_of_eq (Nat.card_Ico _ _))
 #align nat.factorization_choose_le_log Nat.factorization_choose_le_log
 
 /-- A `pow` form of `Nat.factorization_choose_le` -/
@@ -57,7 +55,7 @@ in the binomial coefficient. -/
 theorem factorization_choose_le_one (p_large : n < p ^ 2) : (choose n k).factorization p ≤ 1 := by
   apply factorization_choose_le_log.trans
   rcases eq_or_ne n 0 with (rfl | hn0); · simp
-  exact lt_succ_iff.1 (log_lt_of_lt_pow hn0 p_large)
+  exact Nat.lt_succ_iff.1 (log_lt_of_lt_pow hn0 p_large)
 #align nat.factorization_choose_le_one Nat.factorization_choose_le_one
 
 theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk' : p ≤ n - k)
@@ -79,9 +77,9 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
           (add_le_add_right (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk'))
             ((n - k) % p)))
         (by rwa [div_add_mod, div_add_mod, add_tsub_cancel_of_le hkn])
-  · replace hn : n < p ^ i
-    have : 3 ≤ p := lt_of_le_of_ne hp.two_le hp'.symm
-    · calc
+  · replace hn : n < p ^ i := by
+      have : 3 ≤ p := lt_of_le_of_ne hp.two_le hp'.symm
+      calc
         n < 3 * p := hn
         _ ≤ p * p := mul_le_mul_right' this p
         _ = p ^ 2 := (sq p).symm
@@ -94,9 +92,8 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
 `centralBinom n`. -/
 theorem factorization_centralBinom_of_two_mul_self_lt_three_mul (n_big : 2 < n) (p_le_n : p ≤ n)
     (big : 2 * n < 3 * p) : (centralBinom n).factorization p = 0 := by
-  refine' factorization_choose_of_lt_three_mul _ p_le_n (p_le_n.trans _) big
-  · rintro rfl
-    linarith
+  refine factorization_choose_of_lt_three_mul ?_ p_le_n (p_le_n.trans ?_) big
+  · omega
   · rw [two_mul, add_tsub_cancel_left]
 #align nat.factorization_central_binom_of_two_mul_self_lt_three_mul Nat.factorization_centralBinom_of_two_mul_self_lt_three_mul
 
@@ -128,7 +125,7 @@ theorem le_two_mul_of_factorization_centralBinom_pos
 
 /-- A binomial coefficient is the product of its prime factors, which are at most `n`. -/
 theorem prod_pow_factorization_choose (n k : ℕ) (hkn : k ≤ n) :
-    (∏ p in Finset.range (n + 1), p ^ (Nat.choose n k).factorization p) = choose n k := by
+    (∏ p ∈ Finset.range (n + 1), p ^ (Nat.choose n k).factorization p) = choose n k := by
   conv => -- Porting note: was `nth_rw_rhs`
     rhs
     rw [← factorization_prod_pow_eq_self (choose_pos hkn).ne']
@@ -145,9 +142,9 @@ theorem prod_pow_factorization_choose (n k : ℕ) (hkn : k ≤ n) :
 /-- The `n`th central binomial coefficient is the product of its prime factors, which are
 at most `2n`. -/
 theorem prod_pow_factorization_centralBinom (n : ℕ) :
-    (∏ p in Finset.range (2 * n + 1), p ^ (centralBinom n).factorization p) = centralBinom n := by
+    (∏ p ∈ Finset.range (2 * n + 1), p ^ (centralBinom n).factorization p) = centralBinom n := by
   apply prod_pow_factorization_choose
-  linarith
+  omega
 #align nat.prod_pow_factorization_central_binom Nat.prod_pow_factorization_centralBinom
 
 end Nat

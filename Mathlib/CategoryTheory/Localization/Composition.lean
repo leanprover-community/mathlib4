@@ -26,6 +26,7 @@ namespace CategoryTheory
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {E : Type u₄}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} E]
   {L₁ : C₁ ⥤ C₂} {L₂ : C₂ ⥤ C₃} {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
+
 namespace Localization
 
 /-- Under some conditions on the `MorphismProperty`, functors satisfying the strict
@@ -34,11 +35,11 @@ def StrictUniversalPropertyFixedTarget.comp
     (h₁ : StrictUniversalPropertyFixedTarget L₁ W₁ E)
     (h₂ : StrictUniversalPropertyFixedTarget L₂ W₂ E)
     (W₃ : MorphismProperty C₁) (hW₃ : W₃.IsInvertedBy (L₁ ⋙ L₂))
-    (hW₁₃ : W₁ ⊆ W₃) (hW₂₃ : W₂ ⊆ W₃.map L₁) :
+    (hW₁₃ : W₁ ≤ W₃) (hW₂₃ : W₂ ≤ W₃.map L₁) :
     StrictUniversalPropertyFixedTarget (L₁ ⋙ L₂) W₃ E where
   inverts := hW₃
-  lift F hF := h₂.lift (h₁.lift F (MorphismProperty.IsInvertedBy.of_subset _ _  F hF hW₁₃)) (by
-    refine' MorphismProperty.IsInvertedBy.of_subset _ _ _ _ hW₂₃
+  lift F hF := h₂.lift (h₁.lift F (MorphismProperty.IsInvertedBy.of_le _ _  F hF hW₁₃)) (by
+    refine MorphismProperty.IsInvertedBy.of_le _ _ _ ?_ hW₂₃
     simpa only [MorphismProperty.IsInvertedBy.map_iff, h₁.fac F] using hF)
   fac F hF := by rw [Functor.assoc, h₂.fac, h₁.fac]
   uniq F₁ F₂ h := h₂.uniq _ _ (h₁.uniq _ _ (by simpa only [Functor.assoc] using h))
@@ -55,7 +56,7 @@ variable (L₁ W₁ L₂ W₂)
 
 lemma comp [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
     (W₃ : MorphismProperty C₁) (hW₃ : W₃.IsInvertedBy (L₁ ⋙ L₂))
-    (hW₁₃ : W₁ ⊆ W₃) (hW₂₃ : W₂ ⊆ W₃.map L₁) :
+    (hW₁₃ : W₁ ≤ W₃) (hW₂₃ : W₂ ≤ W₃.map L₁) :
     (L₁ ⋙ L₂).IsLocalization W₃ := by
   -- The proof proceeds by reducing to the case of the constructed
   -- localized categories, which satisfy the strict universal property
@@ -74,7 +75,7 @@ lemma comp [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
           W₂.isoClosure_respectsIso E₂.functor
         rw [MorphismProperty.map_isoClosure] at eq
         rw [eq]
-        apply W₂.subset_isoClosure }
+        apply W₂.le_isoClosure }
   have := LocalizerMorphism.IsLocalizedEquivalence.of_equivalence Φ (by rfl)
   -- The fact that `Φ` is a localized equivalence allows to consider
   -- the induced equivalence of categories `E₃ : C₃ ≅ W₂'.Localization`, and
@@ -94,11 +95,11 @@ lemma comp [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
   have hW₃' : W₃.IsInvertedBy (W₁.Q ⋙ W₂'.Q) := by
     simpa only [← MorphismProperty.IsInvertedBy.iff_comp _ _ E₃.inverse,
       MorphismProperty.IsInvertedBy.iff_of_iso W₃ iso] using hW₃
-  have hW₂₃' : W₂' ⊆ W₃.map W₁.Q := (MorphismProperty.monotone_map _ _ E₂.functor hW₂₃).trans
+  have hW₂₃' : W₂' ≤ W₃.map W₁.Q := (MorphismProperty.monotone_map E₂.functor hW₂₃).trans
     (by simpa only [W₃.map_map]
-      using subset_of_eq (W₃.map_eq_of_iso (compUniqFunctor L₁ W₁.Q W₁)))
+      using le_of_eq (W₃.map_eq_of_iso (compUniqFunctor L₁ W₁.Q W₁)))
   have : (W₁.Q ⋙ W₂'.Q).IsLocalization W₃ := by
-    refine' IsLocalization.mk' _ _ _ _
+    refine IsLocalization.mk' _ _ ?_ ?_
     all_goals
       exact (StrictUniversalPropertyFixedTarget.comp
         (strictUniversalPropertyFixedTargetQ W₁ _)
@@ -108,12 +109,12 @@ lemma comp [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
 
 lemma of_comp (W₃ : MorphismProperty C₁)
     [L₁.IsLocalization W₁] [(L₁ ⋙ L₂).IsLocalization W₃]
-    (hW₁₃ : W₁ ⊆ W₃) (hW₂₃ : W₂ = W₃.map L₁) :
+    (hW₁₃ : W₁ ≤ W₃) (hW₂₃ : W₂ = W₃.map L₁) :
     L₂.IsLocalization W₂ := by
     have : (L₁ ⋙ W₂.Q).IsLocalization W₃ :=
       comp L₁ W₂.Q W₁ W₂ W₃ (fun X Y f hf => Localization.inverts W₂.Q W₂ _
         (by simpa only [hW₂₃] using W₃.map_mem_map _ _ hf)) hW₁₃
-        (by rw [hW₂₃, MorphismProperty.subset_iff_le])
+        (by rw [hW₂₃])
     exact IsLocalization.of_equivalence_target W₂.Q W₂ L₂
       (Localization.uniq (L₁ ⋙ W₂.Q) (L₁ ⋙ L₂) W₃)
       (liftNatIso L₁ W₁ _ _ _ _

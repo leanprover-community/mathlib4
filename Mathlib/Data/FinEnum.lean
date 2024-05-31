@@ -40,21 +40,19 @@ namespace FinEnum
 variable {α : Type u} {β : α → Type v}
 
 /-- transport a `FinEnum` instance across an equivalence -/
-def ofEquiv (α) {β} [FinEnum α] (h : β ≃ α) : FinEnum β
-    where
+def ofEquiv (α) {β} [FinEnum α] (h : β ≃ α) : FinEnum β where
   card := card α
   equiv := h.trans (equiv)
   decEq := (h.trans (equiv)).decidableEq
 #align fin_enum.of_equiv FinEnum.ofEquiv
 
 /-- create a `FinEnum` instance from an exhaustive list without duplicates -/
-def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' : List.Nodup xs) : FinEnum α
-    where
+def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' : List.Nodup xs) :
+    FinEnum α where
   card := xs.length
   equiv :=
-    ⟨fun x => ⟨xs.indexOf x, by rw [List.indexOf_lt_length]; apply h⟩, fun ⟨i, h⟩ =>
-      xs.nthLe _ h, fun x => by simp, fun ⟨i, h⟩ => by
-      simp [*]⟩
+    ⟨fun x => ⟨xs.indexOf x, by rw [List.indexOf_lt_length]; apply h⟩, xs.get, fun x => by simp,
+      fun i => by ext; simp [List.get_indexOf h']⟩
 #align fin_enum.of_nodup_list FinEnum.ofNodupList
 
 /-- create a `FinEnum` instance from an exhaustive list; duplicates are removed -/
@@ -233,7 +231,7 @@ theorem mem_pi {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : L
   · ext a ⟨⟩
   · exists Pi.cons xs_hd xs_tl (f _ (List.mem_cons_self _ _))
     constructor
-    exact ⟨_, rfl⟩
+    · exact ⟨_, rfl⟩
     exists Pi.tail f
     constructor
     · apply xs_ih
@@ -251,7 +249,7 @@ def pi.enum (β : α → Type (max u v)) [FinEnum α] [∀ a, FinEnum (β a)] : 
 #align fin_enum.pi.enum FinEnum.pi.enum
 
 theorem pi.mem_enum {β : α → Type (max u v)} [FinEnum α] [∀ a, FinEnum (β a)] (f : ∀ a, β a) :
-    f ∈ pi.enum.{u, v} β := by simp [pi.enum]; refine' ⟨fun a _ => f a, mem_pi _ _, rfl⟩
+    f ∈ pi.enum.{u, v} β := by simp [pi.enum]; refine ⟨fun a _ => f a, mem_pi _ _, rfl⟩
 #align fin_enum.pi.mem_enum FinEnum.pi.mem_enum
 
 instance pi.finEnum {β : α → Type (max u v)} [FinEnum α] [∀ a, FinEnum (β a)] :

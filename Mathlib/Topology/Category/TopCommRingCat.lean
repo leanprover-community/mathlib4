@@ -21,7 +21,7 @@ universe u
 
 open CategoryTheory
 
-set_option linter.uppercaseLean3 false -- `TopCommRing`
+set_option linter.uppercaseLean3 false -- `TopCommRingCat`
 
 /-- A bundled topological commutative ring. -/
 structure TopCommRingCat where
@@ -56,7 +56,7 @@ instance : ConcreteCategory TopCommRingCat.{u} where
   forget :=
     { obj := fun R => R
       map := fun f => f.val }
-  -- Porting note : Old proof was `forget_faithful := { }`
+  -- Porting note: Old proof was `forget_faithful := { }`
   forget_faithful :=
     { map_injective := fun {_ _ a b} h => Subtype.ext <| RingHom.coe_inj h }
 
@@ -112,7 +112,7 @@ instance forgetToTopCatTopologicalRing (R : TopCommRingCat) :
 /-- The forgetful functors to `Type` do not reflect isomorphisms,
 but the forgetful functor from `TopCommRingCat` to `TopCat` does.
 -/
-instance : ReflectsIsomorphisms (forget₂ TopCommRingCat.{u} TopCat.{u}) where
+instance : (forget₂ TopCommRingCat.{u} TopCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     -- We have an isomorphism in `TopCat`,
     let i_Top := asIso ((forget₂ TopCommRingCat TopCat).map f)

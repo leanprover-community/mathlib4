@@ -38,16 +38,15 @@ universe v u
 
 namespace CategoryTheory
 
-open CategoryTheory Category Limits Sieve Classical
+open scoped Classical
+open CategoryTheory Category Limits Sieve
 
 variable {C : Type u} [Category.{v} C]
 
 namespace Sheaf
 
 variable {P : Cᵒᵖ ⥤ Type v}
-
 variable {X Y : C} {S : Sieve X} {R : Presieve X}
-
 variable (J J₂ : GrothendieckTopology C)
 
 /--
@@ -84,7 +83,7 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
     apply (hB' hf (l ≫ h)).ext
     intro M m hm
     have : bind U B (m ≫ l ≫ h ≫ f) := by
-      -- porting note: had to make explicit the parameter `((m ≫ l ≫ h) ≫ f)` and
+      -- Porting note: had to make explicit the parameter `((m ≫ l ≫ h) ≫ f)` and
       -- using `by exact`
       have : bind U B ((m ≫ l ≫ h) ≫ f) := by exact Presieve.bind_comp f hf hm
       simpa using this
@@ -93,15 +92,15 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
       rw [op_comp, FunctorToTypes.map_comp_apply] at this
       rw [this]
       change s _ _ = s _ _
-      -- porting note: the proof was `by simp`
+      -- Porting note: the proof was `by simp`
       congr 1
       simp only [assoc]
     · have h : s _ _ = _ := (ht hf _ hm).symm
-      -- porting note: this was done by `simp only [assoc] at`
+      -- Porting note: this was done by `simp only [assoc] at`
       conv_lhs at h => congr; rw [assoc, assoc]
       rw [h]
       simp only [op_comp, assoc, FunctorToTypes.map_comp_apply]
-  refine' ⟨hU.amalgamate t hT, _, _⟩
+  refine ⟨hU.amalgamate t hT, ?_, ?_⟩
   · rintro Z _ ⟨Y, f, g, hg, hf, rfl⟩
     rw [op_comp, FunctorToTypes.map_comp_apply, Presieve.IsSheafFor.valid_glue _ _ _ hg]
     apply ht hg _ hf
@@ -132,8 +131,8 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
     rintro Z f ⟨W, f, g, hg, hf : S _, rfl⟩
     apply hf
   apply Presieve.isSheafFor_subsieve_aux P this
-  apply isSheafFor_bind _ _ _ hR hS
-  · intro Y f hf Z g
+  · apply isSheafFor_bind _ _ _ hR hS
+    intro Y f hf Z g
     rw [← pullback_comp]
     apply (hS (R.downward_closed hf _)).isSeparatedFor
   · intro Y f hf
@@ -145,7 +144,7 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
         rw [pullback_apply, ← comm]
         simp [hl]
       · intro a
-        refine' ⟨Z, 𝟙 Z, _, a, _⟩
+        refine ⟨Z, 𝟙 Z, _, a, ?_⟩
         simp [hf]
     rw [this]
     apply hR' hf
@@ -167,7 +166,7 @@ def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C where
   transitive' X S hS R hR Z g := by
     -- This is the hard part of the construction, showing that the given set of sieves satisfies
     -- the transitivity axiom.
-    refine' isSheafFor_trans P (pullback g S) _ (hS Z g) _ _
+    refine isSheafFor_trans P (pullback g S) _ (hS Z g) ?_ ?_
     · intro Y f _
       rw [← pullback_comp]
       apply (hS _ _).isSeparatedFor

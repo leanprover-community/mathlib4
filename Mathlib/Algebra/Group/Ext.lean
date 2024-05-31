@@ -27,6 +27,11 @@ former uses `HMul.hMul` which is the canonical spelling.
 monoid, group, extensionality
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
+open Function
+
 universe u
 
 @[to_additive (attr := ext)]
@@ -34,7 +39,7 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄
     (h_mul : (letI := m₁; HMul.hMul : M → M → M) = (letI := m₂; HMul.hMul : M → M → M)) :
     m₁ = m₂ := by
   have : m₁.toMulOneClass = m₂.toMulOneClass := MulOneClass.ext h_mul
-  have h₁ : m₁.one = m₂.one := congr_arg (·.one) (this)
+  have h₁ : m₁.one = m₂.one := congr_arg (·.one) this
   let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
@@ -144,13 +149,19 @@ theorem DivInvMonoid.ext {M : Type*} ⦃m₁ m₂ : DivInvMonoid M⦄
   have : m₁.div = m₂.div := by
     ext a b
     exact @map_div' _ _
-      (@MonoidHom _ _ (_) _) (id _) _
-      (@MonoidHom.monoidHomClass _ _ (_) _) f (congr_fun h_inv) a b
+      (F := @MonoidHom _ _ (_) _) _ (id _) _
+      (@MonoidHom.instMonoidHomClass _ _ (_) _) f (congr_fun h_inv) a b
   rcases m₁ with @⟨_, ⟨_⟩, ⟨_⟩⟩
   rcases m₂ with @⟨_, ⟨_⟩, ⟨_⟩⟩
   congr
 #align div_inv_monoid.ext DivInvMonoid.ext
 #align sub_neg_monoid.ext SubNegMonoid.ext
+
+@[to_additive]
+lemma Group.toDivInvMonoid_injective {G : Type*} : Injective (@Group.toDivInvMonoid G) := by
+  rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
+#align group.to_div_inv_monoid_injective Group.toDivInvMonoid_injective
+#align add_group.to_sub_neg_add_monoid_injective AddGroup.toSubNegAddMonoid_injective
 
 @[to_additive (attr := ext)]
 theorem Group.ext {G : Type*} ⦃g₁ g₂ : Group G⦄ (h_mul : g₁.mul = g₂.mul) : g₁ = g₂ := by
@@ -164,6 +175,12 @@ theorem Group.ext {G : Type*} ⦃g₁ g₂ : Group G⦄ (h_mul : g₁.mul = g₂
         (funext <| @MonoidHom.map_inv G G g₁ g₂.toDivisionMonoid f))
 #align group.ext Group.ext
 #align add_group.ext AddGroup.ext
+
+@[to_additive]
+lemma CommGroup.toGroup_injective {G : Type*} : Injective (@CommGroup.toGroup G) := by
+  rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
+#align comm_group.to_group_injective CommGroup.toGroup_injective
+#align add_comm_group.to_add_group_injective AddCommGroup.toAddGroup_injective
 
 @[to_additive (attr := ext)]
 theorem CommGroup.ext {G : Type*} ⦃g₁ g₂ : CommGroup G⦄ (h_mul : g₁.mul = g₂.mul) : g₁ = g₂ :=

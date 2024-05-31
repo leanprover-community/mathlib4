@@ -5,8 +5,6 @@ Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hu
   Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.GroupPower.Basic
-import Mathlib.Algebra.Ring.Basic
 
 #align_import algebra.hom.group_instances from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
 
@@ -23,6 +21,7 @@ operations.
 Finally, we provide the `Ring` structure on `AddMonoid.End`.
 -/
 
+assert_not_exists AddMonoidWithOne
 
 universe uM uN uP uQ
 
@@ -68,46 +67,44 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
       simp,
     zpow_succ' := fun n f => by
       ext x
-      simp [zpow_ofNat, pow_succ],
+      -- Adaptation note: nightly-2024-03-24
+      -- We used to need a `simp [mul_comm]` after `simp [zpow_add_one]`.
+      -- Writing `simp [zpow_add_one, mul_comm]` still shows the bug mentioned below.
+      -- Adaptation note: nightly-2024-03-13
+      -- https://github.com/leanprover-community/mathlib4/issues/11357
+      -- If we add `mul_comm` to the simp call we reveal a bug: "unexpected bound variable #0"
+      -- Hopefully we can minimize this.
+      simp [zpow_add_one],
     zpow_neg' := fun n f => by
       ext x
-      simp [Nat.succ_eq_add_one, zpow_ofNat, -Int.natCast_add] }
+      simp [Nat.succ_eq_add_one, zpow_natCast, -Int.natCast_add] }
 
 instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
   AddMonoidHom.addCommMonoid
 
-instance AddMonoid.End.instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) :=
-  { AddMonoid.End.monoid M, AddMonoidHom.addCommMonoid with
-    zero_mul := fun _ => AddMonoidHom.ext fun _ => rfl,
-    mul_zero := fun _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_zero _,
-    left_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_add _ _ _,
-    right_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => rfl,
-    natCast := fun n => n • (1 : AddMonoid.End M),
-    natCast_zero := AddMonoid.nsmul_zero _,
-    natCast_succ := fun n => (AddMonoid.nsmul_succ n 1).trans (add_comm _ _) }
-
-/-- See also `AddMonoid.End.natCast_def`. -/
 @[simp]
-theorem AddMonoid.End.natCast_apply [AddCommMonoid M] (n : ℕ) (m : M) :
-    (↑n : AddMonoid.End M) m = n • m :=
+theorem AddMonoid.End.zero_apply [AddCommMonoid M] (m : M) : (0 : AddMonoid.End M) m = 0 :=
   rfl
-#align add_monoid.End.nat_cast_apply AddMonoid.End.natCast_apply
+
+-- Note: `@[simp]` omitted because `(1 : AddMonoid.End M) = id` by `AddMonoid.coe_one`
+theorem AddMonoid.End.one_apply [AddCommMonoid M] (m : M) : (1 : AddMonoid.End M) m = m :=
+  rfl
 
 instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
   AddMonoidHom.addCommGroup
 
-instance AddMonoid.End.instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
-  { AddMonoid.End.instSemiring, AddMonoid.End.instAddCommGroup with
-    intCast := fun z => z • (1 : AddMonoid.End M),
-    intCast_ofNat := ofNat_zsmul _,
-    intCast_negSucc := negSucc_zsmul _ }
+instance AddMonoid.End.instIntCast [AddCommGroup M] : IntCast (AddMonoid.End M) :=
+  { intCast := fun z => z • (1 : AddMonoid.End M) }
 
 /-- See also `AddMonoid.End.intCast_def`. -/
 @[simp]
-theorem AddMonoid.End.int_cast_apply [AddCommGroup M] (z : ℤ) (m : M) :
+theorem AddMonoid.End.intCast_apply [AddCommGroup M] (z : ℤ) (m : M) :
     (↑z : AddMonoid.End M) m = z • m :=
   rfl
-#align add_monoid.End.int_cast_apply AddMonoid.End.int_cast_apply
+#align add_monoid.End.int_cast_apply AddMonoid.End.intCast_apply
+
+@[deprecated (since := "2024-04-17")]
+alias AddMonoid.End.int_cast_apply := AddMonoid.End.intCast_apply
 
 /-!
 ### Morphisms of morphisms
@@ -122,7 +119,7 @@ namespace MonoidHom
 @[to_additive]
 theorem ext_iff₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} {f g : M →* N →* P} :
     f = g ↔ ∀ x y, f x y = g x y :=
-  FunLike.ext_iff.trans <| forall_congr' fun _ => FunLike.ext_iff
+  DFunLike.ext_iff.trans <| forall_congr' fun _ => DFunLike.ext_iff
 #align monoid_hom.ext_iff₂ MonoidHom.ext_iff₂
 #align add_monoid_hom.ext_iff₂ AddMonoidHom.ext_iff₂
 
@@ -280,91 +277,4 @@ theorem compr₂_apply [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoi
 
 end MonoidHom
 
-/-!
-### Miscellaneous definitions
-
-Due to the fact this file imports `Algebra.GroupPower.Basic`, it is not possible to import it in
-some of the lower-level files like `Algebra.Ring.Basic`. The following lemmas should be rehomed
-if the import structure permits them to be.
--/
-
-
-section Semiring
-
-variable {R S : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
-
-/-- Multiplication of an element of a (semi)ring is an `AddMonoidHom` in both arguments.
-
-This is a more-strongly bundled version of `AddMonoidHom.mulLeft` and `AddMonoidHom.mulRight`.
-
-Stronger versions of this exists for algebras as `LinearMap.mul`, `NonUnitalAlgHom.mul`
-and `Algebra.lmul`.
--/
-def AddMonoidHom.mul : R →+ R →+ R where
-  toFun := AddMonoidHom.mulLeft
-  map_zero' := AddMonoidHom.ext <| zero_mul
-  map_add' a b := AddMonoidHom.ext <| add_mul a b
-#align add_monoid_hom.mul AddMonoidHom.mul
-
-theorem AddMonoidHom.mul_apply (x y : R) : AddMonoidHom.mul x y = x * y :=
-  rfl
-#align add_monoid_hom.mul_apply AddMonoidHom.mul_apply
-
-@[simp]
-theorem AddMonoidHom.coe_mul : ⇑(AddMonoidHom.mul : R →+ R →+ R) = AddMonoidHom.mulLeft :=
-  rfl
-#align add_monoid_hom.coe_mul AddMonoidHom.coe_mul
-
-@[simp]
-theorem AddMonoidHom.coe_flip_mul :
-    ⇑(AddMonoidHom.mul : R →+ R →+ R).flip = AddMonoidHom.mulRight :=
-  rfl
-#align add_monoid_hom.coe_flip_mul AddMonoidHom.coe_flip_mul
-
-/-- An `AddMonoidHom` preserves multiplication if pre- and post- composition with
-`AddMonoidHom.mul` are equivalent. By converting the statement into an equality of
-`AddMonoidHom`s, this lemma allows various specialized `ext` lemmas about `→+` to then be applied.
--/
-theorem AddMonoidHom.map_mul_iff (f : R →+ S) :
-    (∀ x y, f (x * y) = f x * f y) ↔
-      (AddMonoidHom.mul : R →+ R →+ R).compr₂ f = (AddMonoidHom.mul.comp f).compl₂ f :=
-  Iff.symm AddMonoidHom.ext_iff₂
-#align add_monoid_hom.map_mul_iff AddMonoidHom.map_mul_iff
-
-lemma AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute {a : R} :
-    mulLeft a = mulRight a ↔ ∀ b, Commute a b :=
-  FunLike.ext_iff
-
-lemma AddMonoidHom.mulRight_eq_mulLeft_iff_forall_commute {b : R} :
-    mulRight b = mulLeft b ↔ ∀ a, Commute a b :=
-  FunLike.ext_iff
-
-/-- The left multiplication map: `(a, b) ↦ a * b`. See also `AddMonoidHom.mulLeft`. -/
-@[simps!]
-def AddMonoid.End.mulLeft : R →+ AddMonoid.End R :=
-  AddMonoidHom.mul
-#align add_monoid.End.mul_left AddMonoid.End.mulLeft
-#align add_monoid.End.mul_left_apply_apply AddMonoid.End.mulLeft_apply_apply
-
-/-- The right multiplication map: `(a, b) ↦ b * a`. See also `AddMonoidHom.mulRight`. -/
-@[simps!]
-def AddMonoid.End.mulRight : R →+ AddMonoid.End R :=
-  (AddMonoidHom.mul : R →+ AddMonoid.End R).flip
-#align add_monoid.End.mul_right AddMonoid.End.mulRight
-#align add_monoid.End.mul_right_apply_apply AddMonoid.End.mulRight_apply_apply
-
-end Semiring
-
-section CommSemiring
-
-variable {R S : Type*} [NonUnitalNonAssocCommSemiring R]
-
-namespace AddMonoid.End
-
-lemma mulRight_eq_mulLeft : mulRight = (mulLeft : R →+ AddMonoid.End R) :=
-  AddMonoidHom.ext fun _ =>
-    Eq.symm <| AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute.2 (.all _)
-
-end AddMonoid.End
-
-end CommSemiring
+assert_not_exists Ring

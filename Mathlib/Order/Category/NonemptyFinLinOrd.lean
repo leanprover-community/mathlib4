@@ -9,6 +9,7 @@ import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.LinOrd
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+import Mathlib.Data.Set.Subsingleton
 
 #align_import order.category.NonemptyFinLinOrd from "leanprover-community/mathlib"@"fa4a805d16a9cd9c96e0f8edeb57dc5a07af1a19"
 
@@ -136,17 +137,19 @@ def dualEquiv : NonemptyFinLinOrd ≌ NonemptyFinLinOrd where
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.dual_equiv NonemptyFinLinOrd.dualEquiv
 
--- porting note: this instance was not necessary in mathlib
-instance {A B : NonemptyFinLinOrd.{u}} : OrderHomClass (A ⟶ B) A B where
+instance {A B : NonemptyFinLinOrd.{u}} : FunLike (A ⟶ B) A B where
   coe f := ⇑(show OrderHom A B from f)
   coe_injective' _ _ h := by
     ext x
     exact congr_fun h x
+
+-- porting note (#10670): this instance was not necessary in mathlib
+instance {A B : NonemptyFinLinOrd.{u}} : OrderHomClass (A ⟶ B) A B where
   map_rel f _ _ h := f.monotone h
 
 theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     Mono f ↔ Function.Injective f := by
-  refine' ⟨_, ConcreteCategory.mono_of_injective f⟩
+  refine ⟨?_, ConcreteCategory.mono_of_injective f⟩
   intro
   intro a₁ a₂ h
   let X := NonemptyFinLinOrd.of (ULift (Fin 1))
@@ -161,7 +164,7 @@ theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.mono_iff_injective NonemptyFinLinOrd.mono_iff_injective
 
--- porting note: added to ease the following proof
+-- Porting note: added to ease the following proof
 lemma forget_map_apply {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) (a : A) :
     (forget NonemptyFinLinOrd).map f a = (f : OrderHom A B).toFun a := rfl
 
@@ -201,7 +204,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
         exact h₂ (le_of_lt h₁)
       · exfalso
         exact hm a (eq_of_le_of_not_lt h₂ h₁)
-    simp [FunLike.coe] at h
+    simp [Y, DFunLike.coe] at h
   · intro h
     exact ConcreteCategory.epi_of_surjective f h
 set_option linter.uppercaseLean3 false in
@@ -215,7 +218,7 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
       exact Nonempty.intro ⟨(hf y).choose, (hf y).choose_spec⟩
     let φ : Y → X := fun y => (H y).some.1
     have hφ : ∀ y : Y, f (φ y) = y := fun y => (H y).some.2
-    refine' IsSplitEpi.mk' ⟨⟨φ, _⟩, _⟩
+    refine IsSplitEpi.mk' ⟨⟨φ, ?_⟩, ?_⟩
     swap
     · ext b
       apply hφ
@@ -254,11 +257,10 @@ theorem nonemptyFinLinOrd_dual_comp_forget_to_linOrd :
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd_dual_comp_forget_to_LinOrd nonemptyFinLinOrd_dual_comp_forget_to_linOrd
 
-/-- The forgetful functor `NonemptyFinLinOrd ⥤ FinPartOrd` and `order_dual` commute. -/
+/-- The forgetful functor `NonemptyFinLinOrd ⥤ FinPartOrd` and `OrderDual` commute. -/
 def nonemptyFinLinOrdDualCompForgetToFinPartOrd :
     NonemptyFinLinOrd.dual ⋙ forget₂ NonemptyFinLinOrd FinPartOrd ≅
-      forget₂ NonemptyFinLinOrd FinPartOrd ⋙ FinPartOrd.dual
-    where
+      forget₂ NonemptyFinLinOrd FinPartOrd ⋙ FinPartOrd.dual where
   hom := { app := fun X => OrderHom.id }
   inv := { app := fun X => OrderHom.id }
 set_option linter.uppercaseLean3 false in

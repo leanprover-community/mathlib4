@@ -19,7 +19,7 @@ universe w v u
 
 open CategoryTheory
 
-open Classical
+open scoped Classical
 
 namespace CategoryTheory.Limits
 
@@ -51,7 +51,7 @@ instance hasLimitsOfShape_discrete [HasFiniteProducts C] (ι : Type w) [Finite �
 
 /-- We can now write this for powers. -/
 noncomputable example [HasFiniteProducts C] (X : C) : C :=
-  ∏ fun _ : Fin 5 => X
+  ∏ᶜ fun _ : Fin 5 => X
 
 /-- If a category has all products then in particular it has finite products.
 -/

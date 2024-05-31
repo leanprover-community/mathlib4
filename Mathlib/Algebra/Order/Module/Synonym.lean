@@ -3,30 +3,30 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Ring.OrderSynonym
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Synonym
+import Mathlib.Algebra.Order.Ring.Synonym
 
 /-!
 # Action instances for `OrderDual`
 
 This file provides instances of algebraic actions for `OrderDual`. Note that the `SMul` instances
-are already defined in `Mathlib.Algebra.Group.OrderSynonym`.
+are already defined in `Mathlib.Algebra.Order.Group.Synonym`.
 
 ## See also
 
-* `Mathlib.Algebra.Group.OrderSynonym`
-* `Mathlib.Algebra.Ring.OrderSynonym`
+* `Mathlib.Algebra.Order.Group.Synonym`
+* `Mathlib.Algebra.Order.Ring.Synonym`
 -/
 
 namespace OrderDual
 variable {α β γ : Type*}
 
-instance instSMulWithZero [Zero α] [AddZeroClass β] [SMulWithZero α β] : SMulWithZero αᵒᵈ β where
+instance instSMulWithZero [Zero α] [Zero β] [SMulWithZero α β] : SMulWithZero αᵒᵈ β where
   zero_smul := zero_smul α
   smul_zero := smul_zero (M := α)
 
-instance instSMulWithZero' [Zero α] [AddZeroClass β] [SMulWithZero α β] : SMulWithZero α βᵒᵈ where
+instance instSMulWithZero' [Zero α] [Zero β] [SMulWithZero α β] : SMulWithZero α βᵒᵈ where
   zero_smul := zero_smul _ (M := β)
   smul_zero := smul_zero (A := β)
 

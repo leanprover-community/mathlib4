@@ -3,7 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.GroupTheory.Congruence
@@ -72,9 +72,9 @@ section Basic
 
 variable [Add R] [Mul R] (c : RingCon R)
 
---Porting note: upgrade to `FunLike`
+-- Porting note: upgrade to `FunLike`
 /-- A coercion from a congruence relation to its underlying binary relation. -/
-instance : FunLike (RingCon R) R fun _ => R → Prop :=
+instance : FunLike (RingCon R) R (R → Prop) :=
   { coe := fun c => c.r,
     coe_injective' := fun x y h => by
       rcases x with ⟨⟨x, _⟩, _⟩
@@ -119,7 +119,7 @@ theorem rel_mk {s : Con R} {h a b} : RingCon.mk s h a b ↔ s a b :=
   Iff.rfl
 
 /-- The map sending a congruence relation to its underlying binary relation is injective. -/
-theorem ext' {c d : RingCon R} (H : ⇑c = ⇑d) : c = d := FunLike.coe_injective H
+theorem ext' {c d : RingCon R} (H : ⇑c = ⇑d) : c = d := DFunLike.coe_injective H
 
 /-- Extensionality rule for congruence relations. -/
 theorem ext {c d : RingCon R} (H : ∀ x y, c x y ↔ d x y) : c = d :=
@@ -301,9 +301,12 @@ instance : NatCast c.Quotient :=
   ⟨fun n => ↑(n : R)⟩
 
 @[simp, norm_cast]
-theorem coe_nat_cast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
+theorem coe_natCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
-#align ring_con.coe_nat_cast RingCon.coe_nat_cast
+#align ring_con.coe_nat_cast RingCon.coe_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias coe_nat_cast := coe_natCast
 
 end NatCast
 
@@ -315,9 +318,12 @@ instance : IntCast c.Quotient :=
   ⟨fun z => ↑(z : R)⟩
 
 @[simp, norm_cast]
-theorem coe_int_cast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
+theorem coe_intCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
-#align ring_con.coe_int_cast RingCon.coe_int_cast
+#align ring_con.coe_int_cast RingCon.coe_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias coe_int_cast := coe_intCast
 
 end IntCast
 
@@ -408,8 +414,7 @@ instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R
 end Algebraic
 
 /-- The natural homomorphism from a ring to its quotient by a congruence relation. -/
-def mk' [NonAssocSemiring R] (c : RingCon R) : R →+* c.Quotient
-    where
+def mk' [NonAssocSemiring R] (c : RingCon R) : R →+* c.Quotient where
   toFun := toQuotient
   map_zero' := rfl
   map_one' := rfl
@@ -497,6 +502,9 @@ instance : CompleteLattice (RingCon R) where
 @[simp, norm_cast]
 theorem coe_top : ⇑(⊤ : RingCon R) = ⊤ := rfl
 
+@[simp, norm_cast]
+theorem coe_bot : ⇑(⊥ : RingCon R) = Eq := rfl
+
 /-- The infimum of two congruence relations equals the infimum of the underlying binary
 operations. -/
 @[simp, norm_cast]
@@ -505,6 +513,11 @@ theorem coe_inf {c d : RingCon R} : ⇑(c ⊓ d) = ⇑c ⊓ ⇑d := rfl
 /-- Definition of the infimum of two congruence relations. -/
 theorem inf_iff_and {c d : RingCon R} {x y} : (c ⊓ d) x y ↔ c x y ∧ d x y :=
   Iff.rfl
+
+instance [Nontrivial R] : Nontrivial (RingCon R) where
+  exists_pair_ne :=
+    let ⟨x, y, ne⟩ := exists_pair_ne R
+    ⟨⊥, ⊤, ne_of_apply_ne (· x y) <| by simp [ne]⟩
 
 /-- The inductively defined smallest congruence relation containing a binary relation `r` equals
     the infimum of the set of congruence relations containing `r`. -/
