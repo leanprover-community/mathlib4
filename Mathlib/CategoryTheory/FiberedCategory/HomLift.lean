@@ -112,7 +112,7 @@ lemma of_commSq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.o
   obtain rfl : f = p.map φ := by simpa using h.1.symm
   infer_instance
 
-instance comp {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (g : S ⟶ T) (φ : a ⟶ b)
+instance comp {R S T : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (g : S ⟶ T) (φ : a ⟶ b)
     (ψ : b ⟶ c) [p.IsHomLift f φ] [p.IsHomLift g ψ] : p.IsHomLift (f ≫ g) (φ ≫ ψ) := by
   apply of_commSq
   rw [p.map_comp]
@@ -121,7 +121,7 @@ instance comp {p : 𝒳 ⥤ 𝒮} {R S T : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (g
 /-- If `φ : a ⟶ b` and `ψ : b ⟶ c` lift `𝟙 R`, then so does `φ ≫ ψ` -/
 instance lift_id_comp {p : 𝒳 ⥤ 𝒮} (R : 𝒮) {a b c : 𝒳} (φ : a ⟶ b) (ψ : b ⟶ c)
     [p.IsHomLift (𝟙 R) φ] [p.IsHomLift (𝟙 R) ψ] : p.IsHomLift (𝟙 R) (φ ≫ ψ) :=
-  comp_id (𝟙 R) ▸ comp _ _ φ ψ
+  comp_id (𝟙 R) ▸ comp p (𝟙 R) (𝟙 R) φ ψ
 
 /-- If `φ : a ⟶ b` lifts `f` and `ψ : b ⟶ c` lifts `𝟙 T`, then `φ  ≫ ψ` lifts `f` -/
 lemma comp_lift_id_right {R S : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ]

@@ -14,8 +14,9 @@ This file defines cartesian resp. strongly cartesian morphisms with respect to a
 
 ## Main definitions
 
-- `IsCartesian p f φ` expresses that `φ` is a cartesian arrow lying over `f` with respect to `p`.
-This structure extends `IsHomLift p f φ`.
+`IsCartesian p f φ` expresses that `φ` is a cartesian morphism lying over `f` with respect to `p` in
+the sense of SGA 1 VI 5.1. This means that for any morphism `φ' : a' ⟶ b` lying over `f` there is
+a unique morphism `τ : a' ⟶ a` lying over `𝟙 R`, such that `φ' = τ ≫ φ`.
 
 `IsStronglyCartesian p f φ` expresses that `φ` is a strongly cartesian morphism lying over `f` with
 respect to `p`, see <https://stacks.math.columbia.edu/tag/02XK>.
@@ -29,9 +30,8 @@ difference between the two is that the latter is more flexible with respect to n
 equalities.
 
 ## References
-SGA 1
-Stacks project
-
+* [A. Grothendieck, M. Raynaud, *SGA 1*](https://arxiv.org/abs/math/0206203)
+* [Stacks: Fibred Categories](https://stacks.math.columbia.edu/tag/02XJ)
 -/
 
 universe v₁ v₂ u₁ u₂
