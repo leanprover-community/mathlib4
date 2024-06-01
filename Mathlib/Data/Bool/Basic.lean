@@ -3,8 +3,8 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
+import Mathlib.Init.Order.Defs
 
 #align_import data.bool.basic from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -276,7 +276,7 @@ theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
   | isFalse hn =>
     cases Nat.decEq m 0 with
     | isFalse hm => rw [_root_.decide_eq_false hm]; exact Bool.le_true _
-    | isTrue hm => subst hm; have h := le_antisymm h (Nat.zero_le n); contradiction
+    | isTrue hm => subst hm; have h := Nat.le_antisymm h (Nat.zero_le n); contradiction
 #align bool.of_nat_le_of_nat Bool.ofNat_le_ofNat
 
 theorem toNat_le_toNat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
