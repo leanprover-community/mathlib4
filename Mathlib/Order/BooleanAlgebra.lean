@@ -188,7 +188,8 @@ instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgeb
         (le_of_eq
           (calc
             y ⊓ y \ x = y \ x := inf_of_le_right sdiff_le'
-            _ = x ⊓ y \ x ⊔ z ⊓ y \ x := by rw [inf_eq_right.2 h, inf_sdiff_self_right, bot_sup_eq]
+            _ = x ⊓ y \ x ⊔ z ⊓ y \ x := by
+              rw [inf_eq_right.2 h, inf_sdiff_self_right, bot_sup_eq]
             _ = (x ⊔ z) ⊓ y \ x := by rw [← inf_sup_right]))
         (calc
           y ⊔ y \ x = y := sup_of_le_left sdiff_le'

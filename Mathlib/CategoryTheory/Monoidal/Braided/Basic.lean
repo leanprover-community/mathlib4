@@ -654,8 +654,8 @@ theorem leftUnitor_monoidal (X₁ X₂ : C) :
   have :
     (λ_ X₁).hom ⊗ (λ_ X₂).hom =
       (α_ (𝟙_ C) X₁ (𝟙_ C ⊗ X₂)).hom ≫
-        (𝟙_ C ◁ (α_ X₁ (𝟙_ C) X₂).inv) ≫ (λ_ ((X₁ ⊗ 𝟙_ C) ⊗ X₂)).hom ≫ ((ρ_ X₁).hom ▷ X₂) :=
-    by coherence
+        (𝟙_ C ◁ (α_ X₁ (𝟙_ C) X₂).inv) ≫ (λ_ ((X₁ ⊗ 𝟙_ C) ⊗ X₂)).hom ≫ ((ρ_ X₁).hom ▷ X₂) := by
+    coherence
   rw [this]; clear this
   rw [← braiding_leftUnitor]
   dsimp only [tensor_obj, prodMonoidal_tensorObj]
@@ -670,8 +670,8 @@ theorem rightUnitor_monoidal (X₁ X₂ : C) :
   have :
     (ρ_ X₁).hom ⊗ (ρ_ X₂).hom =
       (α_ X₁ (𝟙_ C) (X₂ ⊗ 𝟙_ C)).hom ≫
-        (X₁ ◁ (α_ (𝟙_ C) X₂ (𝟙_ C)).inv) ≫ (X₁ ◁ (ρ_ (𝟙_ C ⊗ X₂)).hom) ≫ (X₁ ◁ (λ_ X₂).hom) :=
-    by coherence
+        (X₁ ◁ (α_ (𝟙_ C) X₂ (𝟙_ C)).inv) ≫ (X₁ ◁ (ρ_ (𝟙_ C ⊗ X₂)).hom) ≫ (X₁ ◁ (λ_ X₂).hom) := by
+    coherence
   rw [this]; clear this
   rw [← braiding_rightUnitor]
   dsimp only [tensor_obj, prodMonoidal_tensorObj]

@@ -60,8 +60,7 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
               prod.hom_ext
                 (calc
                   ((PullbackCone.snd s ≫ b) ≫ prod.lift f g) ≫ Limits.prod.fst =
-                      PullbackCone.snd s ≫ b ≫ f := by
-                    simp only [prod.lift_fst, Category.assoc]
+                      PullbackCone.snd s ≫ b ≫ f := by simp only [prod.lift_fst, Category.assoc]
                   _ = PullbackCone.fst s ≫ a ≫ f := by rw [PullbackCone.condition_assoc]
                   _ = PullbackCone.fst s ≫ 0 := by rw [haf]
                   _ = 0 ≫ Limits.prod.fst := by rw [comp_zero, zero_comp]
