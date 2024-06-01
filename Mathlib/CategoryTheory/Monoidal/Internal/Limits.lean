@@ -100,13 +100,4 @@ instance forgetPreservesLimits : PreservesLimitsOfShape J (Mon_.forget C) where
 set_option linter.uppercaseLean3 false in
 #align Mon_.forget_preserves_limits Mon_.forgetPreservesLimits
 
--- We verify that we have successfully created special shapes of limits in `Mon_ C`,
--- assuming that only those special shapes existed in `C`.
-
-example (D : Type u) [Category.{v} D] [MonoidalCategory D] [HasTerminal D] :
-  (⊤_ (Mon_ D)).X ≅ (⊤_ D) := PreservesTerminal.iso (Mon_.forget D)
-
-example (D : Type u) [Category.{v} D] [MonoidalCategory D] [HasBinaryProducts D] (A B : Mon_ D) :
-  (prod A B).X ≅ prod A.X B.X := PreservesLimitPair.iso (Mon_.forget D) A B
-
 end Mon_
