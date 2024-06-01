@@ -184,27 +184,25 @@ theorem ae_mem_iff_measure_eq [IsFiniteMeasure μ] {s : Set α} (hs : NullMeasur
   ae_iff_measure_eq hs
 #align measure_theory.ae_mem_iff_measure_eq MeasureTheory.ae_mem_iff_measure_eq
 
-lemma tendsto_measure_biUnion_Ici_zero_of_iUnion_eq_univ_of_pairwise_disjoint
+lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     {X : Type*} [MeasurableSpace X] {μ : Measure X} [IsFiniteMeasure μ]
-    {Es : ℕ → Set X} (Es_union : ⋃ i, Es i = univ) (Es_mble : ∀ i, MeasurableSet (Es i))
+    {Es : ℕ → Set X} (Es_mble : ∀ i, MeasurableSet (Es i))
     (Es_disj : Pairwise fun n m ↦ Disjoint (Es n) (Es m)) :
-    Tendsto (μ ∘ fun n => ⋃ i, ⋃ (_ : n ≤ i), Es i) atTop (𝓝 0) := by
-  have obs : ∀ n, ⋃ i, ⋃ (_ : n ≤ i), Es i = (⋃ i, ⋃ (_ : i < n), Es i)ᶜ :=
-    fun n ↦ by simpa only [mem_Iio, compl_Iio, mem_Ici]
-      using (biUnion_compl_eq_of_pairwise_disjoint_of_iUnion_eq_univ Es_union Es_disj (Iio n)).symm
-  simp_rw [obs]
-  have key : Tendsto (fun n ↦ (μ univ - μ (⋃ i, ⋃ (_ : i < n), Es i))) atTop (𝓝 0) := by
-    have aux := (@ENNReal.continuous_sub_left (μ univ) (measure_ne_top _ _)).tendsto (μ univ)
-    simp only [ge_iff_le, le_refl, tsub_eq_zero_of_le] at aux
-    apply aux.comp
-    convert tendsto_measure_iUnion <| show Monotone (fun (n : ℕ) ↦ ⋃ i ∈ Iio n, Es i) from
-      fun _ _ hnm ↦ biUnion_mono (Iio_subset_Iio_iff.mpr hnm) (fun _ _ ↦ le_rfl)
-    simpa only [← biUnion_iUnion, iUnion_Iio, mem_univ, iUnion_true] using Es_union.symm
+    Tendsto (μ ∘ fun n ↦ ⋃ i ≥ n, Es i) atTop (𝓝 0) := by
+  have decr : Antitone fun n ↦ ⋃ i ≥ n, Es i :=
+    fun n m hnm ↦ biUnion_mono (fun _ hi ↦ le_trans hnm hi) (fun _ _ ↦ subset_rfl)
+  have nothing : ⋂ n, ⋃ i ≥ n, Es i = ∅ := by
+    apply subset_antisymm _ (empty_subset _)
+    intro x hx
+    simp only [ge_iff_le, mem_iInter, mem_iUnion, exists_prop] at hx
+    obtain ⟨j, _, x_in_Es_j⟩ := hx 0
+    obtain ⟨k, k_gt_j, x_in_Es_k⟩ := hx (j+1)
+    have oops := (Es_disj (Nat.ne_of_lt k_gt_j)).ne_of_mem x_in_Es_j x_in_Es_k
+    contradiction
+  have key :=
+    tendsto_measure_iInter (μ := μ) (fun n ↦ by measurability) decr ⟨0, measure_ne_top _ _⟩
+  simp only [ge_iff_le, nothing, measure_empty] at key
   convert key
-  simp only [Function.comp_apply]
-  apply measure_compl
-  · exact MeasurableSet.iUnion fun i ↦ MeasurableSet.iUnion fun _ ↦ Es_mble i
-  · exact measure_ne_top _ _
 
 open scoped symmDiff
 
