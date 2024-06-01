@@ -268,37 +268,6 @@ lemma levyProkhorovDist_le_of_forall_le
   convert h ε.toReal B ε_gt' B_mble
   exact (ENNReal.ofReal_toReal ε_lt_top.ne).symm
 
--- TODO: Should this be removed?
-/-- A simple sufficient condition for bounding `levyProkhorovEDist` between probability measures
-from above. The condition involves only one of two natural bounds, the other bound is for free. -/
-lemma levyProkhorovEDist_le_of_forall_add_pos_le'
-    (μ ν : Measure Ω) [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] (δ : ℝ≥0∞)
-    (h : ∀ ε B, 0 < ε → ε < ∞ → MeasurableSet B → μ B ≤ ν (thickening (δ + ε).toReal B) + δ + ε) :
-    levyProkhorovEDist μ ν ≤ δ := by
-  apply levyProkhorovEDist_le_of_forall_le μ ν δ
-  intro η B η_gt η_lt_top B_mble
-  let ε := η - δ
-  simpa [show η = δ + ε from (add_tsub_cancel_of_le η_gt.le).symm, ← add_assoc]
-    using h ε B (tsub_pos_of_lt η_gt) (tsub_lt_of_lt η_lt_top) B_mble
-
--- TODO: Should this be removed?
-/-- A simple sufficient condition for bounding `levyProkhorovDist` between probability measures
-from above. The condition involves only one of two natural bounds, the other bound is for free. -/
-lemma levyProkhorovDist_le_of_forall_add_pos_le
-    (μ ν : Measure Ω) [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {δ : ℝ} (δ_nn : 0 ≤ δ)
-    (h : ∀ ε B, 0 < ε → MeasurableSet B → μ B ≤ ν (thickening (δ + ε) B) + ENNReal.ofReal (δ + ε)) :
-    levyProkhorovDist μ ν ≤ δ := by
-  apply toReal_le_of_le_ofReal δ_nn
-  apply levyProkhorovEDist_le_of_forall_add_pos_le' μ ν (ENNReal.ofReal δ)
-  intro ε B ε_pos ε_lt_top B_mble
-  have aux₁ : δ + ENNReal.toReal ε = ENNReal.toReal (ENNReal.ofReal δ + ε) := by
-    rw [ENNReal.toReal_add ofReal_ne_top ε_lt_top.ne, toReal_ofReal δ_nn]
-  have aux₂ : ENNReal.ofReal δ + ε = ENNReal.ofReal (δ + ENNReal.toReal ε) := by
-    rw [ENNReal.ofReal_add δ_nn toReal_nonneg, ofReal_toReal ε_lt_top.ne]
-  rw [add_assoc, ← aux₁, aux₂]
-  have ε_pos' : 0 < ε.toReal := toReal_pos ε_pos.ne.symm ε_lt_top.ne
-  exact h ε.toReal B ε_pos' B_mble
-
 end Levy_Prokhorov --section
 
 section Levy_Prokhorov_is_finer
@@ -555,8 +524,8 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
   have third_ε_pos : 0 < ε / 3 := by linarith
   have third_ε_pos' : 0 < ENNReal.ofReal (ε / 3) := ofReal_pos.mpr third_ε_pos
 
-  -- First use separability to choose a countable partition of `Ω` to measurable subsets `Es n ⊆ Ω`
-  -- of small diamater, `diam (Es n) < ε/3`.
+  -- First use separability to choose a countable partition of `Ω` into measurable
+  -- subsets `Es n ⊆ Ω` of small diamater, `diam (Es n) < ε/3`.
   obtain ⟨Es, Es_mble, Es_bdd, Es_diam, Es_cover, Es_disjoint⟩ :=
     SeparableSpace.exists_measurable_partition_diam_le Ω third_ε_pos
 
