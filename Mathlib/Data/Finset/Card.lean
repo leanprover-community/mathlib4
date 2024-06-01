@@ -447,7 +447,7 @@ lemma card_le_card_of_injOn (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj
   calc
     s.card = (s.image f).card := (card_image_of_injOn f_inj).symm
     _      ≤ t.card           := card_le_card <| image_subset_iff.2 hf
-#align finset.card_le_card_of_inj_on Finset.card_le_card_of_injOn
+@[deprecated (since := "2024-06-01")] alias card_le_card_of_inj_on := card_le_card_of_injOn
 
 lemma card_le_card_of_surjOn (f : α → β) (hf : Set.SurjOn f s t) : t.card ≤ s.card := by
   classical unfold Set.SurjOn at hf; exact (card_le_card (mod_cast hf)).trans card_image_le
