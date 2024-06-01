@@ -4,17 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Richard Copley
 -/
 
-import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.GroupTheory.Complement
-import Mathlib.GroupTheory.Coset
-import Mathlib.GroupTheory.Index
-
 
 /-! # Lemma of B. H. Neumann on coverings of a group by cosets.
 
 Let the group $G$ be the union of finitely many, let us say $n$, left cosets
 of subgroups $C₁$, $C₂$, ..., $Cₙ$: $$ G = ⋃_{i = 1}^n C_i g_i. $$
+
+* `Subgroup.exists_finiteIndex_of_leftCoset_cover`
+  at least one subgroup `H i` has finite index in `G`.
 
 * `Subgroup.leftCoset_cover_filter_FiniteIndex`
   the cosets of subgroups of infinite index may be omitted from the covering.
