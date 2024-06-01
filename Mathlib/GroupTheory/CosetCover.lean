@@ -254,7 +254,7 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex :
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 Then the sum of the inverses of the indexes of the subgroups `H i` is greater than or equal to 1. -/
-@[to_additive]
+@[to_additive one_le_sum_inv_index_of_leftCoset_cover]
 theorem Subgroup.one_le_sum_inv_index_of_leftCoset_cover :
     1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ :=
   (Subgroup.leftCoset_cover_filter_FiniteIndex_aux hcovers).2
