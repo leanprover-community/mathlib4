@@ -250,7 +250,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
           K.coe_to_submodule_eq_iff]
       exact Submodule.Quotient.nontrivial_of_lt_top _ hK₂.lt_top
     have : LieModule.IsNilpotent R K (L' ⧸ K.toLieSubmodule) := by
-      -- Porting note: was refine hK₁ _ fun x ↦ ?_
+      -- Porting note: was refine' hK₁ _ fun x => _
       apply hK₁
       intro x
       have hx := LieAlgebra.isNilpotent_ad_of_isNilpotent (h x)
