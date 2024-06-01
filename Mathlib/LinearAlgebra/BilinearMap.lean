@@ -132,8 +132,6 @@ theorem flip_flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : f.flip.f
   LinearMap.ext₂ fun _x _y => (f.flip.flip_apply _ _).trans (f.flip_apply _ _)
 #align linear_map.flip_flip LinearMap.flip_flip
 
-open BigOperators
-
 theorem flip_inj {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : flip f = flip g) : f = g :=
   ext₂ fun m n => show flip f n m = flip g n m by rw [H]
 #align linear_map.flip_inj LinearMap.flip_inj
@@ -163,7 +161,7 @@ theorem map_smulₛₗ₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (r
 #align linear_map.map_smulₛₗ₂ LinearMap.map_smulₛₗ₂
 
 theorem map_sum₂ {ι : Type*} (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (t : Finset ι) (x : ι → M) (y) :
-    f (∑ i in t, x i) y = ∑ i in t, f (x i) y :=
+    f (∑ i ∈ t, x i) y = ∑ i ∈ t, f (x i) y :=
   _root_.map_sum (flip f y) _ _
 #align linear_map.map_sum₂ LinearMap.map_sum₂
 

@@ -38,7 +38,7 @@ hitting times indexed by the natural numbers or the reals. By taking the bounds 
 
 open Filter Order TopologicalSpace
 
-open scoped Classical MeasureTheory NNReal ENNReal Topology BigOperators
+open scoped Classical MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
 

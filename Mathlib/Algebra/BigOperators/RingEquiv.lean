@@ -16,8 +16,6 @@ import Mathlib.Algebra.Ring.Opposite
 
 namespace RingEquiv
 
-open BigOperators
-
 variable {α R S : Type*}
 
 protected theorem map_list_prod [Semiring R] [Semiring S] (f : R ≃+* S) (l : List R) :
@@ -45,12 +43,12 @@ protected theorem map_multiset_sum [NonAssocSemiring R] [NonAssocSemiring S] (f 
 #align ring_equiv.map_multiset_sum RingEquiv.map_multiset_sum
 
 protected theorem map_prod [CommSemiring R] [CommSemiring S] (g : R ≃+* S) (f : α → R)
-    (s : Finset α) : g (∏ x in s, f x) = ∏ x in s, g (f x) :=
+    (s : Finset α) : g (∏ x ∈ s, f x) = ∏ x ∈ s, g (f x) :=
   map_prod g f s
 #align ring_equiv.map_prod RingEquiv.map_prod
 
 protected theorem map_sum [NonAssocSemiring R] [NonAssocSemiring S] (g : R ≃+* S) (f : α → R)
-    (s : Finset α) : g (∑ x in s, f x) = ∑ x in s, g (f x) :=
+    (s : Finset α) : g (∑ x ∈ s, f x) = ∑ x ∈ s, g (f x) :=
   map_sum g f s
 #align ring_equiv.map_sum RingEquiv.map_sum
 

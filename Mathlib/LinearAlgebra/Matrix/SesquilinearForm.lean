@@ -40,8 +40,6 @@ Sesquilinear form, Sesquilinear map, matrix, basis
 
 variable {R R₁ S₁ R₂ S₂ M M₁ M₂ M₁' M₂' N₂ n m n' m' ι : Type*}
 
-open BigOperators
-
 open Finset LinearMap Matrix
 
 open Matrix

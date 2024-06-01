@@ -163,7 +163,7 @@ instance instIsScalarTower [SMul N X] [SMul M N] [UniformContinuousConstSMul M X
   ⟨fun m n x => by
     have : _ = (_ : Completion X → Completion X) :=
       map_comp (uniformContinuous_const_smul m) (uniformContinuous_const_smul n)
-    refine' Eq.trans _ (congr_fun this.symm x)
+    refine Eq.trans ?_ (congr_fun this.symm x)
     exact congr_arg (fun f => Completion.map f x) (funext (smul_assoc _ _))⟩
 #align uniform_space.completion.is_scalar_tower UniformSpace.Completion.instIsScalarTower
 #align uniform_space.completion.vadd_assoc_class UniformSpace.Completion.instVAddAssocClass

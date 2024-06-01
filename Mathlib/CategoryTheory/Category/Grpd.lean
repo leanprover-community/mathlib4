@@ -142,7 +142,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The product of a family of groupoids is isomorphic
 to the product object in the category of Groupoids -/
-noncomputable def piIsoPi (J : Type u) (f : J → Grpd.{u, u}) : @of (∀ j, f j) _ ≅ ∏ f :=
+noncomputable def piIsoPi (J : Type u) (f : J → Grpd.{u, u}) : @of (∀ j, f j) _ ≅ ∏ᶜ f :=
   Limits.IsLimit.conePointUniqueUpToIso (piLimitFanIsLimit f)
     (Limits.limit.isLimit (Discrete.functor f))
 set_option linter.uppercaseLean3 false in

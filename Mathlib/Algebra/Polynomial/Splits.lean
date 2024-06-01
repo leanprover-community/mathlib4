@@ -26,7 +26,7 @@ irreducible factors over `L` have degree `1`.
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 universe u v w
 
@@ -144,7 +144,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.splits_X Polynomial.splits_X
 
 theorem splits_prod {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
-    (∀ j ∈ t, (s j).Splits i) → (∏ x in t, s x).Splits i := by
+    (∀ j ∈ t, (s j).Splits i) → (∏ x ∈ t, s x).Splits i := by
   classical
   refine Finset.induction_on t (fun _ => splits_one i) fun a t hat ih ht => ?_
   rw [Finset.forall_mem_insert] at ht; rw [Finset.prod_insert hat]
@@ -265,7 +265,7 @@ theorem splits_mul_iff {f g : K[X]} (hf : f ≠ 0) (hg : g ≠ 0) :
 #align polynomial.splits_mul_iff Polynomial.splits_mul_iff
 
 theorem splits_prod_iff {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
-    (∀ j ∈ t, s j ≠ 0) → ((∏ x in t, s x).Splits i ↔ ∀ j ∈ t, (s j).Splits i) := by
+    (∀ j ∈ t, s j ≠ 0) → ((∏ x ∈ t, s x).Splits i ↔ ∀ j ∈ t, (s j).Splits i) := by
   classical
   refine
     Finset.induction_on t (fun _ =>

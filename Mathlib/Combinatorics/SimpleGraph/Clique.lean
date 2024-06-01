@@ -357,7 +357,7 @@ protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
   rw [not_cliqueFree_iff]
   by_cases mw : w ∈ Set.range f
   · obtain ⟨x, hx⟩ := mw
-    use ⟨f ∘ x.succAboveEmb, (f.2.of_comp_iff _).mpr (RelEmbedding.injective _)⟩
+    use ⟨f ∘ x.succAboveEmb, f.2.comp Fin.succAbove_right_injective⟩
     intro a b
     simp_rw [Embedding.coeFn_mk, comp_apply, Fin.succAboveEmb_apply, top_adj]
     have hs := @ha (x.succAbove a) (x.succAbove b)

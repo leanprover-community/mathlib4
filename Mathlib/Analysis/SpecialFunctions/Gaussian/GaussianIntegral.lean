@@ -127,8 +127,9 @@ theorem integrable_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs 
     simpa [abs_of_nonneg h'x] using abs_rpow_le_abs_rpow (-x) s
 #align integrable_rpow_mul_exp_neg_mul_sq integrable_rpow_mul_exp_neg_mul_sq
 
-theorem integrable_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) : Integrable fun x : ℝ => exp (-b * x ^ 2) :=
-  by simpa using integrable_rpow_mul_exp_neg_mul_sq hb (by norm_num : (-1 : ℝ) < 0)
+theorem integrable_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
+    Integrable fun x : ℝ => exp (-b * x ^ 2) := by
+  simpa using integrable_rpow_mul_exp_neg_mul_sq hb (by norm_num : (-1 : ℝ) < 0)
 #align integrable_exp_neg_mul_sq integrable_exp_neg_mul_sq
 
 theorem integrableOn_Ioi_exp_neg_mul_sq_iff {b : ℝ} :
@@ -208,8 +209,8 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
   `integral_mul_cexp_neg_mul_sq` using the fact that this function has an obvious primitive. -/
   calc
     (∫ x : ℝ, cexp (-b * (x : ℂ) ^ 2)) ^ 2 =
-        ∫ p : ℝ × ℝ, cexp (-b * (p.1 : ℂ) ^ 2) * cexp (-b * (p.2 : ℂ) ^ 2) :=
-      by rw [pow_two, ← integral_prod_mul]; rfl
+        ∫ p : ℝ × ℝ, cexp (-b * (p.1 : ℂ) ^ 2) * cexp (-b * (p.2 : ℂ) ^ 2) := by
+      rw [pow_two, ← integral_prod_mul]; rfl
     _ = ∫ p : ℝ × ℝ, cexp (-b * ((p.1 : ℂ)^ 2 + (p.2 : ℂ) ^ 2)) := by
       congr
       ext1 p

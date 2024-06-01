@@ -133,7 +133,7 @@ instance tendstoIccClassNhds (a : α) : TendstoIxxClass Icc (𝓝 a) (𝓝 a) :=
   refine
     ((hasBasis_iInf_principal_finite _).inf (hasBasis_iInf_principal_finite _)).tendstoIxxClass
       fun s _ => ?_
-  refine' ((ordConnected_biInter _).inter (ordConnected_biInter _)).out <;> intro _ _
+  refine ((ordConnected_biInter ?_).inter (ordConnected_biInter ?_)).out <;> intro _ _
   exacts [ordConnected_Ioi, ordConnected_Iio]
 #align tendsto_Icc_class_nhds tendstoIccClassNhds
 
@@ -191,12 +191,11 @@ instance tendstoIccClassNhdsPi {ι : Type*} {α : ι → Type*} [∀ i, Preorder
     TendstoIxxClass Icc (𝓝 f) (𝓝 f) := by
   constructor
   conv in (𝓝 f).smallSets => rw [nhds_pi, Filter.pi]
-  simp only [smallSets_iInf, smallSets_comap, tendsto_iInf, tendsto_lift', (· ∘ ·),
-    mem_powerset_iff]
-  intro i s hs
+  simp only [smallSets_iInf, smallSets_comap_eq_comap_image, tendsto_iInf, tendsto_comap_iff]
+  intro i
   have : Tendsto (fun g : ∀ i, α i => g i) (𝓝 f) (𝓝 (f i)) := (continuous_apply i).tendsto f
-  refine' (tendsto_lift'.1 ((this.comp tendsto_fst).Icc (this.comp tendsto_snd)) s hs).mono _
-  exact fun p hp g hg => hp ⟨hg.1 _, hg.2 _⟩
+  refine (this.comp tendsto_fst).Icc (this.comp tendsto_snd) |>.smallSets_mono ?_
+  filter_upwards [] using fun ⟨f, g⟩ ↦ image_subset_iff.mpr fun p hp ↦ ⟨hp.1 i, hp.2 i⟩
 #align tendsto_Icc_class_nhds_pi tendstoIccClassNhdsPi
 
 -- Porting note (#10756): new lemma

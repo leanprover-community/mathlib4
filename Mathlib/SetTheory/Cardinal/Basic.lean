@@ -3,15 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Set
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
-import Mathlib.Tactic.PPWithUniv
 
 #align_import set_theory.cardinal.basic from "leanprover-community/mathlib"@"3ff3f2d6a3118b8711063de7111a0d77a53219a8"
 
@@ -80,9 +78,11 @@ cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
 Cantor's theorem, König's theorem, Konig's theorem
 -/
 
+assert_not_exists Field
+assert_not_exists Module
 
 open scoped Classical
-open Function Set Order BigOperators
+open Function Set Order
 
 noncomputable section
 
@@ -1798,12 +1798,12 @@ theorem aleph0_mul_nat {n : ℕ} (hn : n ≠ 0) : ℵ₀ * n = ℵ₀ := by rw [
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_mul_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) * ℵ₀ = ℵ₀ :=
-  nat_mul_aleph0 (OfNat.ofNat_ne_zero n)
+  nat_mul_aleph0 (NeZero.ne n)
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem aleph0_mul_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ * no_index (OfNat.ofNat n) = ℵ₀ :=
-  aleph0_mul_nat (OfNat.ofNat_ne_zero n)
+  aleph0_mul_nat (NeZero.ne n)
 
 @[simp]
 theorem add_le_aleph0 {c₁ c₂ : Cardinal} : c₁ + c₂ ≤ ℵ₀ ↔ c₁ ≤ ℵ₀ ∧ c₂ ≤ ℵ₀ :=
@@ -2078,8 +2078,8 @@ theorem mk_set_eq_nat_iff_finset {α} {s : Set α} {n : ℕ} :
 #align cardinal.mk_set_eq_nat_iff_finset Cardinal.mk_set_eq_nat_iff_finset
 
 theorem mk_eq_nat_iff_finset {n : ℕ} :
-    #α = n ↔ ∃ t : Finset α, (t : Set α) = univ ∧ t.card = n :=
-  by rw [← mk_univ, mk_set_eq_nat_iff_finset]
+    #α = n ↔ ∃ t : Finset α, (t : Set α) = univ ∧ t.card = n := by
+  rw [← mk_univ, mk_set_eq_nat_iff_finset]
 #align cardinal.mk_eq_nat_iff_finset Cardinal.mk_eq_nat_iff_finset
 
 theorem mk_eq_nat_iff_fintype {n : ℕ} : #α = n ↔ ∃ h : Fintype α, @Fintype.card α h = n := by
@@ -2333,16 +2333,6 @@ theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
 #align cardinal.powerlt_zero Cardinal.powerlt_zero
 
 end powerlt
-
-/-- The cardinality of a nontrivial module over a ring is at least the cardinality of the ring if
-there are no zero divisors (for instance if the ring is a field) -/
-theorem mk_le_of_module (R : Type u) (E : Type v)
-    [AddCommGroup E] [Ring R] [Module R E] [Nontrivial E] [NoZeroSMulDivisors R E] :
-    Cardinal.lift.{v} (#R) ≤ Cardinal.lift.{u} (#E) := by
-  obtain ⟨x, hx⟩ : ∃ (x : E), x ≠ 0 := exists_ne 0
-  have : Injective (fun k ↦ k • x) := smul_left_injective R hx
-  exact lift_mk_le_lift_mk_of_injective this
-
 end Cardinal
 
 -- namespace Tactic

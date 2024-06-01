@@ -117,8 +117,9 @@ theorem abs_circleMap_zero (R : ℝ) (θ : ℝ) : abs (circleMap 0 R θ) = |R| :
 theorem circleMap_mem_sphere' (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∈ sphere c |R| := by simp
 #align circle_map_mem_sphere' circleMap_mem_sphere'
 
-theorem circleMap_mem_sphere (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) : circleMap c R θ ∈ sphere c R :=
-  by simpa only [_root_.abs_of_nonneg hR] using circleMap_mem_sphere' c R θ
+theorem circleMap_mem_sphere (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
+    circleMap c R θ ∈ sphere c R := by
+  simpa only [_root_.abs_of_nonneg hR] using circleMap_mem_sphere' c R θ
 #align circle_map_mem_sphere circleMap_mem_sphere
 
 theorem circleMap_mem_closedBall (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
@@ -194,8 +195,8 @@ theorem deriv_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) : deriv (circleMap c R) �
   (hasDerivAt_circleMap _ _ _).deriv
 #align deriv_circle_map deriv_circleMap
 
-theorem deriv_circleMap_eq_zero_iff {c : ℂ} {R : ℝ} {θ : ℝ} : deriv (circleMap c R) θ = 0 ↔ R = 0 :=
-  by simp [I_ne_zero]
+theorem deriv_circleMap_eq_zero_iff {c : ℂ} {R : ℝ} {θ : ℝ} :
+    deriv (circleMap c R) θ = 0 ↔ R = 0 := by simp [I_ne_zero]
 #align deriv_circle_map_eq_zero_iff deriv_circleMap_eq_zero_iff
 
 theorem deriv_circleMap_ne_zero {c : ℂ} {R : ℝ} {θ : ℝ} (hR : R ≠ 0) :
