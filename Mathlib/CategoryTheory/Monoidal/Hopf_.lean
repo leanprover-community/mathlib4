@@ -23,7 +23,9 @@ variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] [Braide
 A Hopf monoid in a braided category `C` is a bimonoid object in `C` equipped with an antipode.
 -/
 structure Hopf_ where
+  /-- The underlying bimonoid of a Hopf monoid. -/
   X : Bimon_ C
+  /-- The antipode is an endomorphism of the underlying object of the Hopf monoid. -/
   antipode : X.X.X ⟶ X.X.X
   antipode_left : X.comul.hom ≫ (antipode ▷ X.X.X) ≫ X.X.mul = X.counit.hom ≫ X.X.one
   antipode_right : X.comul.hom ≫ (X.X.X ◁ antipode) ≫ X.X.mul = X.counit.hom ≫ X.X.one
