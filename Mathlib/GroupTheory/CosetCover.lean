@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir, Richard Copley
 -/
 
 import Mathlib.GroupTheory.Complement
+import Mathlib.LinearAlgebra.Dimension.DivisionRing
 
 /-! # Lemma of B. H. Neumann on coverings of a group by cosets.
 
@@ -23,12 +24,17 @@ of subgroups $C₁$, $C₂$, ..., $Cₙ$: $$ G = ⋃_{i = 1}^n C_i g_i. $$
 * `Subgroup.exists_index_le_card_of_leftCoset_cover` :
   the index of (at least) one of these subgroups does not exceed $n$.
 
+A corollary of `Subgroup.exists_finiteIndex_of_leftCoset_cover` is:
+
+* `Subspace.union_ne_univ_of_lt_top` :
+  a vector space over an infinite field cannot be a finite union of proper subspaces
+
+This can be used to show that an algebraic extension of fields is determined by the
+set of all minimal polynomials (not proved here).
+
 [1] [Neumann-1954], *Groups Covered By Permutable Subsets*, Lemma 4.1
 [2] <https://mathoverflow.net/a/17398/3332>
 [3] <http://alpha.math.uga.edu/~pete/Neumann54.pdf>
-
-The result is also needed to show an algebraic extension of fields is
-determined by the set of all minimal polynomials.
 
 -/
 
@@ -85,6 +91,8 @@ theorem Subgroup.index_le_of_leftCoset_cover_const : H.index ≤ s.card := by
     exact (Nat.card_le_card_of_surjective _ hcovers).trans_eq (Nat.card_eq_finsetCard _)
 
 end leftCoset_cover_const
+
+section
 
 variable {G : Type*} [Group G]
     [DecidableEq (Subgroup G)]
@@ -278,3 +286,37 @@ theorem Subgroup.exists_index_le_card_of_leftCoset_cover :
   apply (Finset.sum_lt_sum_of_nonempty hs hlt).trans_eq
   rw [Finset.sum_const, nsmul_eq_mul,
     mul_inv_eq_iff_eq_mul₀ (Nat.cast_ne_zero.mpr hs'.ne'), one_mul]
+
+end
+
+section Submodule
+
+variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {ι : Type*} {p : ι → Submodule R M} {s : Finset ι}
+    (hcovers : ⋃ i ∈ s, (p i : Set M) = Set.univ)
+
+theorem Submodule.exists_finiteIndex_of_cover :
+    ∃ k ∈ s, (p k).toAddSubgroup.FiniteIndex :=
+  have := Classical.decEq (AddSubgroup M)
+  have hcovers' : ⋃ i ∈ s, (0 : M) +ᵥ ((p i).toAddSubgroup : Set M) = Set.univ := by
+    simpa only [zero_vadd] using hcovers
+  AddSubgroup.exists_finiteIndex_of_leftCoset_cover hcovers'
+
+end Submodule
+
+section Subspace
+
+variable {k E ι : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module k E]
+
+theorem Subspace.union_ne_univ_of_lt_top (s : Finset (Subspace k E)) (hs : ∀ p ∈ s, p < ⊤) :
+    ⋃ p ∈ s, (p : Set E) ≠ Set.univ := by
+  intro hcovers
+  obtain ⟨p, hp, hfi⟩ := Submodule.exists_finiteIndex_of_cover hcovers
+  have hlt : p < ⊤ := hs p hp
+  have : Finite (E ⧸ p) :=
+    (Equiv.refl _).finite_iff.mpr <| AddSubgroup.finite_quotient_of_finiteIndex _
+  have : Nontrivial (E ⧸ p) := Submodule.Quotient.nontrivial_of_lt_top p hlt
+  have : Infinite (E ⧸ p) := Module.Free.infinite k (E ⧸ p)
+  exact not_finite (E ⧸ p)
+
+end Subspace
