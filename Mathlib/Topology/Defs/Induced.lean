@@ -65,6 +65,10 @@ def induced (f : X → Y) (t : TopologicalSpace Y) : TopologicalSpace X where
     exact iUnion₂_congr hfg
 #align topological_space.induced TopologicalSpace.induced
 
+instance instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpace X] :
+    TopologicalSpace (Subtype p) :=
+  induced (↑) t
+
 /-- Given `f : X → Y` and a topology on `X`,
   the coinduced topology on `Y` is defined such that
   `s : Set Y` is open if the preimage of `s` is open.
@@ -76,6 +80,10 @@ def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
   isOpen_sUnion s h := by simpa only [preimage_sUnion] using isOpen_biUnion h
 #align topological_space.coinduced TopologicalSpace.coinduced
 
+end TopologicalSpace
+
+variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+
 /-- We say that restrictions of the topology on `X` to sets from a family `S`
 generates the original topology,
 if either of the following equivalent conditions hold:
@@ -85,13 +93,8 @@ if either of the following equivalent conditions hold:
 - for any topological space `Y`, a function `f : X → Y` is continuous
   provided that it is continuous on each `s ∈ S`.
 -/
-structure RestrGenFamily [t : TopologicalSpace X] (S : Set (Set X)) : Prop where
-  isOpen_of_forall_induced (u : Set X) : (∀ s ∈ S, IsOpen[.induced (↑) t] ((↑) ⁻¹' u : Set s)) →
-    IsOpen u
-
-end TopologicalSpace
-
-variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+structure RestrictGenTopology (S : Set (Set X)) : Prop where
+  isOpen_of_forall_induced (u : Set X) : (∀ s ∈ S, IsOpen ((↑) ⁻¹' u : Set s)) → IsOpen u
 
 /-- A function `f : X → Y` between topological spaces is inducing if the topology on `X` is induced
 by the topology on `Y` through `f`, meaning that a set `s : Set X` is open iff it is the preimage
