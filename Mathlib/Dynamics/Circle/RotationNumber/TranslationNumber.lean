@@ -210,13 +210,13 @@ instance unitsHasCoeToFun : CoeFun CircleDeg1Liftˣ fun _ => ℝ → ℝ :=
 #noalign circle_deg1_lift.units_coe -- now LHS = RHS
 
 @[simp]
-theorem units_inv_apply_apply (f : CircleDeg1Liftˣ) (x : ℝ) : (f⁻¹ : CircleDeg1Liftˣ) (f x) = x :=
-  by simp only [← mul_apply, f.inv_mul, coe_one, id]
+theorem units_inv_apply_apply (f : CircleDeg1Liftˣ) (x : ℝ) :
+    (f⁻¹ : CircleDeg1Liftˣ) (f x) = x := by simp only [← mul_apply, f.inv_mul, coe_one, id]
 #align circle_deg1_lift.units_inv_apply_apply CircleDeg1Lift.units_inv_apply_apply
 
 @[simp]
-theorem units_apply_inv_apply (f : CircleDeg1Liftˣ) (x : ℝ) : f ((f⁻¹ : CircleDeg1Liftˣ) x) = x :=
-  by simp only [← mul_apply, f.mul_inv, coe_one, id]
+theorem units_apply_inv_apply (f : CircleDeg1Liftˣ) (x : ℝ) :
+    f ((f⁻¹ : CircleDeg1Liftˣ) x) = x := by simp only [← mul_apply, f.mul_inv, coe_one, id]
 #align circle_deg1_lift.units_apply_inv_apply CircleDeg1Lift.units_apply_inv_apply
 
 /-- If a lift of a circle map is bijective, then it is an order automorphism of the line. -/

@@ -69,13 +69,11 @@ natural.
     `aₙ₊₁ * ((aₙ + aₙ₊₂)/aₙ₊₁ * b - (aₙ * b - a₀)/aₙ₊₁) - a₀ = aₙ₊₁aₙ₊₂b` is divisible by `aₙ₊₂`.
 -/
 
-open scoped BigOperators
-
 variable {α : Type*} [LinearOrderedField α]
 
 theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ n, 0 < a i)
     (ha : ∀ i, i + 2 ≤ n → a (i + 1) ∣ a i + a (i + 2)) :
-    ∃ b : ℕ, (b : α) = ∑ i in Finset.range n, (a 0 : α) * a n / (a i * a (i + 1)) := by
+    ∃ b : ℕ, (b : α) = ∑ i ∈ Finset.range n, (a 0 : α) * a n / (a i * a (i + 1)) := by
   -- Treat separately `n = 0` and `n ≥ 1`
   cases' n with n
   /- Case `n = 0`
@@ -86,7 +84,7 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
     Set up the stronger induction hypothesis -/
   rsuffices ⟨b, hb, -⟩ :
     ∃ b : ℕ,
-      (b : α) = ∑ i in Finset.range (n + 1), (a 0 : α) * a (n + 1) / (a i * a (i + 1)) ∧
+      (b : α) = ∑ i ∈ Finset.range (n + 1), (a 0 : α) * a (n + 1) / (a i * a (i + 1)) ∧
         a (n + 1) ∣ a n * b - a 0
   · exact ⟨b, hb⟩
   simp_rw [← @Nat.cast_pos α] at a_pos
@@ -133,7 +131,7 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
       _ = a (n + 2) / a (n + 1) * b + a 0 * a (n + 2) / (a (n + 1) * a (n + 2)) := by
         rw [add_div, add_mul, sub_div, mul_div_right_comm, add_sub_sub_cancel,
           mul_div_mul_right _ _ (a_pos _ le_rfl).ne']
-      _ = ∑ i : ℕ in Finset.range (n + 2), (a 0 : α) * a (n + 2) / (a i * a (i + 1)) := by
+      _ = ∑ i ∈ Finset.range (n + 2), (a 0 : α) * a (n + 2) / (a i * a (i + 1)) := by
         rw [Finset.sum_range_succ, hb, Finset.mul_sum]
         congr; ext i
         rw [← mul_div_assoc, ← mul_div_right_comm, mul_div_assoc,

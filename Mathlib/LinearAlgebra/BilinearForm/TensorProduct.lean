@@ -71,7 +71,7 @@ protected abbrev tmul (B₁ : BilinMap A M₁ A) (B₂ : BilinMap  R M₂ R) : B
   tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
 #align bilin_form.tmul LinearMap.BilinMap.tmul
 
-attribute [ext] TensorProduct.ext in
+attribute [local ext] TensorProduct.ext in
 /-- A tensor product of symmetric bilinear forms is symmetric. -/
 lemma _root_.LinearMap.IsSymm.tmul {B₁ : BilinMap A M₁ A} {B₂ : BilinMap R M₂ R}
     (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := by

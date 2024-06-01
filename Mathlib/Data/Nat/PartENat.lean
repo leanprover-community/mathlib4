@@ -707,7 +707,7 @@ theorem ofENat_ofNat (n : Nat) [n.AtLeastTwo] : ofENat (no_index (OfNat.ofNat n)
 -- Porting note (#10756): new theorem
 @[simp, norm_cast]
 theorem toWithTop_ofENat (n : ℕ∞) {_ : Decidable (n : PartENat).Dom} : toWithTop (↑n) = n := by
-  cases n using ENat.recTopCoe with
+  cases n with
   | top => simp
   | coe n => simp
 

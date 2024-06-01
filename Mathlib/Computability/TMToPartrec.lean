@@ -1271,8 +1271,8 @@ theorem K'.elim_update_aux {a b c d c'} : update (K'.elim a b c d) aux c' = K'.e
 #align turing.partrec_to_TM2.K'.elim_update_aux Turing.PartrecToTM2.K'.elim_update_aux
 
 @[simp]
-theorem K'.elim_update_stack {a b c d d'} : update (K'.elim a b c d) stack d' = K'.elim a b c d' :=
-  by funext x; cases x <;> rfl
+theorem K'.elim_update_stack {a b c d d'} :
+    update (K'.elim a b c d) stack d' = K'.elim a b c d' := by funext x; cases x <;> rfl
 #align turing.partrec_to_TM2.K'.elim_update_stack Turing.PartrecToTM2.K'.elim_update_stack
 
 /-- The halting state corresponding to a `List ℕ` output value. -/
@@ -1580,7 +1580,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
     simp
     rfl
   · obtain ⟨a, l, e, h⟩ : ∃ a l, (trPosNum m = a::l) ∧ natEnd a = false := by
-      cases m <;> refine' ⟨_, _, rfl, rfl⟩
+      cases m <;> refine ⟨_, _, rfl, rfl⟩
     refine ⟨Γ'.bit0 :: l₁, _, some a, rfl, TransGen.single ?_⟩
     simp [trPosNum, PosNum.succ, e, h, show some Γ'.bit1 ≠ some Γ'.bit0 by decide,
       Option.iget, -natEnd]
@@ -1594,7 +1594,7 @@ theorem trNormal_respects (c k v s) :
           ⟨some (trNormal c (trCont k)), s, K'.elim (trList v) [] [] (trContStack k)⟩ b₂ := by
   induction c generalizing k v s with
   | zero' => refine ⟨_, ⟨s, rfl⟩, TransGen.single ?_⟩; simp
-  | succ => refine' ⟨_, ⟨none, rfl⟩, head_main_ok.trans succ_ok⟩
+  | succ => refine ⟨_, ⟨none, rfl⟩, head_main_ok.trans succ_ok⟩
   | tail =>
     let o : Option Γ' := List.casesOn v none fun _ _ => some Γ'.cons
     refine ⟨_, ⟨o, rfl⟩, ?_⟩; convert clear_ok _ using 2
@@ -1828,8 +1828,8 @@ theorem codeSupp_tail (k) : codeSupp Code.tail k = trStmts₁ (trNormal Code.tai
 @[simp]
 theorem codeSupp_cons (f fs k) :
     codeSupp (Code.cons f fs) k =
-      trStmts₁ (trNormal (Code.cons f fs) k) ∪ codeSupp f (Cont'.cons₁ fs k) :=
-  by simp [codeSupp, codeSupp', contSupp, Finset.union_assoc]
+      trStmts₁ (trNormal (Code.cons f fs) k) ∪ codeSupp f (Cont'.cons₁ fs k) := by
+  simp [codeSupp, codeSupp', contSupp, Finset.union_assoc]
 #align turing.partrec_to_TM2.code_supp_cons Turing.PartrecToTM2.codeSupp_cons
 
 @[simp]
@@ -1844,8 +1844,8 @@ theorem codeSupp_comp (f g k) :
 @[simp]
 theorem codeSupp_case (f g k) :
     codeSupp (Code.case f g) k =
-      trStmts₁ (trNormal (Code.case f g) k) ∪ (codeSupp f k ∪ codeSupp g k) :=
-  by simp [codeSupp, codeSupp', contSupp, Finset.union_assoc, Finset.union_left_comm]
+      trStmts₁ (trNormal (Code.case f g) k) ∪ (codeSupp f k ∪ codeSupp g k) := by
+  simp [codeSupp, codeSupp', contSupp, Finset.union_assoc, Finset.union_left_comm]
 #align turing.partrec_to_TM2.code_supp_case Turing.PartrecToTM2.codeSupp_case
 
 @[simp]
@@ -1862,8 +1862,8 @@ theorem contSupp_cons₁ (fs k) :
           (move₂ (fun _ => false) main aux <|
             move₂ (fun s => s = Γ'.consₗ) stack main <|
               move₂ (fun _ => false) aux stack <| trNormal fs (Cont'.cons₂ k)) ∪
-        codeSupp fs (Cont'.cons₂ k) :=
-  by simp [codeSupp, codeSupp', contSupp, Finset.union_assoc]
+        codeSupp fs (Cont'.cons₂ k) := by
+  simp [codeSupp, codeSupp', contSupp, Finset.union_assoc]
 #align turing.partrec_to_TM2.cont_supp_cons₁ Turing.PartrecToTM2.contSupp_cons₁
 
 @[simp]
@@ -1942,7 +1942,7 @@ theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (�
     rw [contSupp_fix] at H₁
     have L := @Finset.mem_union_left; have R := @Finset.mem_union_right
     intro s; dsimp only; cases natEnd s.iget
-    · refine' H₁ (R _ <| L _ <| R _ <| R _ <| L _ W)
+    · refine H₁ (R _ <| L _ <| R _ <| R _ <| L _ W)
     · exact H₁ (R _ <| L _ <| R _ <| R _ <| R _ <| Finset.mem_singleton_self _)
 #align turing.partrec_to_TM2.ret_supports Turing.PartrecToTM2.ret_supports
 

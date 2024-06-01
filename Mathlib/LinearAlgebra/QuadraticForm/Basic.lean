@@ -79,9 +79,6 @@ universe u v w
 variable {S T : Type*}
 variable {R : Type*} {M N A : Type*}
 
-open BigOperators
-
-open LinearMap (BilinMap)
 open LinearMap (BilinForm)
 
 section Polar
@@ -1314,7 +1311,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
   refine ⟨b, ?_⟩
   rw [Basis.coe_mkFinCons]
   intro j i
-  refine Fin.cases ?_ (fun i => ?_) i <;> refine' Fin.cases _ (fun j => _) j <;> intro hij <;>
+  refine Fin.cases ?_ (fun i => ?_) i <;> refine Fin.cases ?_ (fun j => ?_) j <;> intro hij <;>
     simp only [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
   · exact (hij rfl).elim
   · rw [IsOrtho, ← hB₂]

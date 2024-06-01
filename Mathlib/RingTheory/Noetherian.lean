@@ -51,7 +51,7 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 -/
 
 
-open Set Filter BigOperators Pointwise
+open Set Filter Pointwise
 
 /-- `IsNoetherian R M` is the proposition that `M` is a Noetherian `R`-module,
 implemented as the predicate that all `R`-submodules of `M` are finitely generated.
@@ -566,15 +566,15 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
       R ((↑s : Set M) → R) N _ _ _ (Pi.module _ _ _) _ ?_ ?_ isNoetherian_pi
   · fapply LinearMap.mk
     · fapply AddHom.mk
-      · exact fun f => ⟨∑ i in s.attach, f i • i.1, N.sum_mem fun c _ => N.smul_mem _ <| this _ c.2⟩
+      · exact fun f => ⟨∑ i ∈ s.attach, f i • i.1, N.sum_mem fun c _ => N.smul_mem _ <| this _ c.2⟩
       · intro f g
         apply Subtype.eq
-        change (∑ i in s.attach, (f i + g i) • _) = _
+        change (∑ i ∈ s.attach, (f i + g i) • _) = _
         simp only [add_smul, Finset.sum_add_distrib]
         rfl
     · intro c f
       apply Subtype.eq
-      change (∑ i in s.attach, (c • f i) • _) = _
+      change (∑ i ∈ s.attach, (c • f i) • _) = _
       simp only [smul_eq_mul, mul_smul]
       exact Finset.smul_sum.symm
   · rw [LinearMap.range_eq_top]
@@ -583,7 +583,7 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
     rw [← hs, ← Set.image_id (s : Set M), Finsupp.mem_span_image_iff_total] at hn
     rcases hn with ⟨l, hl1, hl2⟩
     refine ⟨fun x => l x, Subtype.ext ?_⟩
-    change (∑ i in s.attach, l i • (i : M)) = n
+    change (∑ i ∈ s.attach, l i • (i : M)) = n
     rw [s.sum_attach fun i ↦ l i • i, ← hl2,
       Finsupp.total_apply, Finsupp.sum, eq_comm]
     refine Finset.sum_subset hl1 fun x _ hx => ?_

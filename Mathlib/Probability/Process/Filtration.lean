@@ -34,7 +34,7 @@ filtration, stochastic process
 
 open Filter Order TopologicalSpace
 
-open scoped Classical MeasureTheory NNReal ENNReal Topology BigOperators
+open scoped Classical MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
 
@@ -124,7 +124,7 @@ instance : SupSet (Filtration ι m) :=
   ⟨fun s =>
     { seq := fun i => sSup ((fun f : Filtration ι m => f i) '' s)
       mono' := fun i j hij => by
-        refine' sSup_le fun m' hm' => _
+        refine sSup_le fun m' hm' => ?_
         rw [Set.mem_image] at hm'
         obtain ⟨f, hf_mem, hfm'⟩ := hm'
         rw [← hfm']
@@ -132,7 +132,7 @@ instance : SupSet (Filtration ι m) :=
         have hfj_mem : f j ∈ (fun g : Filtration ι m => g j) '' s := ⟨f, hf_mem, rfl⟩
         exact le_sSup hfj_mem
       le' := fun i => by
-        refine' sSup_le fun m' hm' => _
+        refine sSup_le fun m' hm' => ?_
         rw [Set.mem_image] at hm'
         obtain ⟨f, _, hfm'⟩ := hm'
         rw [← hfm']
@@ -151,7 +151,7 @@ noncomputable instance : InfSet (Filtration ι m) :=
         swap; · simp only [h_nonempty, Set.image_nonempty, if_false, le_refl]
         simp only [h_nonempty, if_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
           forall_apply_eq_imp_iff₂]
-        refine' fun f hf_mem => le_trans _ (f.mono hij)
+        refine fun f hf_mem => le_trans ?_ (f.mono hij)
         have hfi_mem : f i ∈ (fun g : Filtration ι m => g i) '' s := ⟨f, hf_mem, rfl⟩
         exact sInf_le hfi_mem
       le' := fun i => by
@@ -269,7 +269,7 @@ def natural (u : ι → Ω → β) (hum : ∀ i, StronglyMeasurable (u i)) : Fil
   seq i := ⨆ j ≤ i, MeasurableSpace.comap (u j) mβ
   mono' i j hij := biSup_mono fun k => ge_trans hij
   le' i := by
-    refine' iSup₂_le _
+    refine iSup₂_le ?_
     rintro j _ s ⟨t, ht, rfl⟩
     exact (hum j).measurable ht
 #align measure_theory.filtration.natural MeasureTheory.Filtration.natural

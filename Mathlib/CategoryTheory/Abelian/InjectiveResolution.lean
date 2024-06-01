@@ -322,7 +322,7 @@ lemma ofCocomplex_d_0_1 :
     (ofCocomplex Z).d 0 1 = d (Injective.ι Z) := by
   simp [ofCocomplex]
 
-#adaptation_note /-- Since nightly-2024-03-11, this takes takes forever now -/
+#adaptation_note /-- Since nightly-2024-03-11, this takes forever now -/
 lemma ofCocomplex_exactAt_succ (n : ℕ) :
     (ofCocomplex Z).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ n (n + 1) (n + 1 + 1) (by simp) (by simp)]
@@ -348,7 +348,7 @@ irreducible_def of : InjectiveResolution Z where
   quasiIso := ⟨fun n => by
     cases n
     · rw [CochainComplex.quasiIsoAt₀_iff, ShortComplex.quasiIso_iff_of_zeros]
-      · refine' (ShortComplex.exact_and_mono_f_iff_of_iso _).2
+      · refine (ShortComplex.exact_and_mono_f_iff_of_iso ?_).2
           ⟨exact_f_d (Injective.ι Z), by dsimp; infer_instance⟩
         exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp)
           (by simp [ofCocomplex])
