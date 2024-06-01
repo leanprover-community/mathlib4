@@ -93,7 +93,7 @@ noncomputable def functorialSurjectiveInjectiveFactorizationData :
     (by rw [surjective_eq_epimorphisms])
     (by rw [injective_eq_monomorphisms])
 
-instance : HasFunctorialSurjectiveInjectiveFactorization C where
+instance (priority := 100) : HasFunctorialSurjectiveInjectiveFactorization C where
   nonempty_functorialFactorizationData :=
     ⟨functorialSurjectiveInjectiveFactorizationData C⟩
 

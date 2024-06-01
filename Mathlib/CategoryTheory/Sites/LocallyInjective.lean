@@ -233,14 +233,9 @@ lemma isLocallyInjective_iff_injective :
     exact ((sheafCompose J (forget D)).obj F₁).2)
 
 lemma mono_of_injective
-    (hφ : ∀ (X : Cᵒᵖ), Function.Injective (φ.val.app X)) : Mono φ where
-  right_cancellation := by
-    intro H f₁ f₂ h
-    ext Z x
-    have eq := congr_fun ((forget D).congr_map (congr_app (congr_arg Sheaf.Hom.val h) Z)) x
-    dsimp at eq
-    simp only [FunctorToTypes.map_comp_apply] at eq
-    exact hφ Z eq
+    (hφ : ∀ (X : Cᵒᵖ), Function.Injective (φ.val.app X)) : Mono φ :=
+  have := fun X ↦ ConcreteCategory.mono_of_injective _ (hφ X)
+  (sheafToPresheaf _ _).mono_of_mono_map (NatTrans.mono_of_mono_app φ.1)
 
 lemma mono_of_isLocallyInjective [IsLocallyInjective φ] : Mono φ := by
   apply mono_of_injective
