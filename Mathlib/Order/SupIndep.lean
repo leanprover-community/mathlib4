@@ -308,6 +308,9 @@ theorem SetIndependent.pairwiseDisjoint : s.PairwiseDisjoint id := fun _ hx y hy
   disjoint_sSup_right (hs hx) ((mem_diff y).mpr ⟨hy, h.symm⟩)
 #align complete_lattice.set_independent.pairwise_disjoint CompleteLattice.SetIndependent.pairwiseDisjoint
 
+theorem setIndependent_singleton (a : α) : SetIndependent ({a} : Set α) := fun i hi ↦ by
+  simp_all
+
 theorem setIndependent_pair {a b : α} (hab : a ≠ b) :
     SetIndependent ({a, b} : Set α) ↔ Disjoint a b := by
   constructor

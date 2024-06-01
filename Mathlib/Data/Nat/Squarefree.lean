@@ -316,12 +316,10 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
         apply hy hz
 #align nat.divisors_filter_squarefree Nat.divisors_filter_squarefree
 
-open BigOperators
-
 theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type*} [AddCommMonoid α]
     {f : ℕ → α} :
-    ∑ i in n.divisors.filter Squarefree, f i =
-      ∑ i in (UniqueFactorizationMonoid.normalizedFactors n).toFinset.powerset, f i.val.prod := by
+    ∑ i ∈ n.divisors.filter Squarefree, f i =
+      ∑ i ∈ (UniqueFactorizationMonoid.normalizedFactors n).toFinset.powerset, f i.val.prod := by
   rw [Finset.sum_eq_multiset_sum, divisors_filter_squarefree h0, Multiset.map_map,
     Finset.sum_eq_multiset_sum]
   rfl
@@ -393,12 +391,12 @@ lemma coprime_div_gcd_of_squarefree (hm : Squarefree m) (hn : n ≠ 0) : Coprime
   simpa [Nat.div_mul_cancel, gcd_dvd_right] using
     (coprime_div_gcd_div_gcd (m := m) (gcd_ne_zero_right hn).bot_lt).mul_right this
 
-lemma prod_primeFactors_of_squarefree (hn : Squarefree n) : ∏ p in n.primeFactors, p = n := by
+lemma prod_primeFactors_of_squarefree (hn : Squarefree n) : ∏ p ∈ n.primeFactors, p = n := by
   rw [← toFinset_factors, List.prod_toFinset _ hn.nodup_factors, List.map_id',
     Nat.prod_factors hn.ne_zero]
 
-lemma primeFactors_prod (hs : ∀ p ∈ s, p.Prime) : primeFactors (∏ p in s, p) = s := by
-  have hn : ∏ p in s, p ≠ 0 := prod_ne_zero_iff.2 fun p hp ↦ (hs _ hp).ne_zero
+lemma primeFactors_prod (hs : ∀ p ∈ s, p.Prime) : primeFactors (∏ p ∈ s, p) = s := by
+  have hn : ∏ p ∈ s, p ≠ 0 := prod_ne_zero_iff.2 fun p hp ↦ (hs _ hp).ne_zero
   ext p
   rw [mem_primeFactors_of_ne_zero hn, and_congr_right (fun hp ↦ hp.prime.dvd_finset_prod_iff _)]
   refine ⟨?_, fun hp ↦ ⟨hs _ hp, _, hp, dvd_rfl⟩⟩
@@ -419,13 +417,13 @@ lemma primeFactors_div_gcd (hm : Squarefree m) (hn : n ≠ 0) :
   exact fun hpn ↦ hp.2 hp.1.1 <| hpn.trans <| gcd_dvd_right _ _
 
 lemma prod_primeFactors_invOn_squarefree :
-    Set.InvOn (fun n : ℕ ↦ (factorization n).support) (fun s ↦ ∏ p in s, p)
+    Set.InvOn (fun n : ℕ ↦ (factorization n).support) (fun s ↦ ∏ p ∈ s, p)
       {s | ∀ p ∈ s, p.Prime} {n | Squarefree n} :=
   ⟨fun _s ↦ primeFactors_prod, fun _n ↦ prod_primeFactors_of_squarefree⟩
 
 theorem prod_primeFactors_sdiff_of_squarefree {n : ℕ} (hn : Squarefree n) {t : Finset ℕ}
     (ht : t ⊆ n.primeFactors) :
-    ∏ a in (n.primeFactors \ t), a = n / ∏ a in t, a := by
+    ∏ a ∈ (n.primeFactors \ t), a = n / ∏ a ∈ t, a := by
   refine symm <| Nat.div_eq_of_eq_mul_left (Finset.prod_pos
     fun p hp => (prime_of_mem_factors (List.mem_toFinset.mp (ht hp))).pos) ?_
   rw [Finset.prod_sdiff ht, prod_primeFactors_of_squarefree hn]

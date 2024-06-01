@@ -21,8 +21,6 @@ This file defines bundled isomorphisms of `R`-algebras.
 * `A ≃ₐ[R] B` : `R`-algebra equivalence from `A` to `B`.
 -/
 
-open BigOperators
-
 universe u v w u₁ v₁
 
 /-- An equivalence of algebras is an equivalence of rings commuting with the actions of scalars. -/
@@ -226,7 +224,7 @@ theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x := by
 
 @[deprecated _root_.map_sum (since := "2023-12-26")]
 nonrec theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
-    e (∑ x in s, f x) = ∑ x in s, e (f x) :=
+    e (∑ x ∈ s, f x) = ∑ x ∈ s, e (f x) :=
   map_sum e f s
 #align alg_equiv.map_sum AlgEquiv.map_sum
 
@@ -821,7 +819,7 @@ variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
 -- Porting note: Added nonrec
 nonrec theorem map_prod {ι : Type*} (f : ι → A₁) (s : Finset ι) :
-    e (∏ x in s, f x) = ∏ x in s, e (f x) :=
+    e (∏ x ∈ s, f x) = ∏ x ∈ s, e (f x) :=
   map_prod _ f s
 #align alg_equiv.map_prod AlgEquiv.map_prod
 

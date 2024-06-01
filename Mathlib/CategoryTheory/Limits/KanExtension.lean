@@ -172,18 +172,12 @@ set_option linter.uppercaseLean3 false in
 
 theorem reflective [ι.Full] [ι.Faithful] [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
     IsIso (adjunction D ι).counit := by
-  suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).counit X) by
-    apply NatIso.isIso_of_isIso_app
-  intro F
-  suffices ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).counit F) X) by
-    apply NatIso.isIso_of_isIso_app
-  intro X
+  simp only [NatTrans.isIso_iff_isIso_app]
+  intro F X
   dsimp [adjunction, equiv]
   simp only [Category.id_comp]
-  exact
-    IsIso.of_iso
-      ((limit.isLimit _).conePointUniqueUpToIso
-        (limitOfDiagramInitial StructuredArrow.mkIdInitial _))
+  exact ((limit.isLimit _).conePointUniqueUpToIso
+    (limitOfDiagramInitial StructuredArrow.mkIdInitial _)).isIso_hom
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran.reflective CategoryTheory.Ran.reflective
 
@@ -354,7 +348,7 @@ theorem coreflective [ι.Full] [ι.Faithful] [∀ F : S ⥤ D, ∀ x, HasColimit
   dsimp [adjunction, equiv]
   simp only [Category.comp_id]
   exact
-    IsIso.of_iso
+    Iso.isIso_hom
       ((colimit.isColimit _).coconePointUniqueUpToIso
           (colimitOfDiagramTerminal CostructuredArrow.mkIdTerminal _)).symm
 set_option linter.uppercaseLean3 false in

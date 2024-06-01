@@ -20,7 +20,7 @@ is to prove a recurrence relation for the integrals `∫ x in 0..π/2, cos 2 z x
 generalising the arguments used to prove Wallis' limit formula for `π`.
 -/
 
-open scoped Real Topology BigOperators
+open scoped Real Topology
 
 open Real Set Filter intervalIntegral MeasureTheory.MeasureSpace
 
@@ -207,7 +207,7 @@ theorem integral_cos_pow_pos (n : ℕ) : 0 < ∫ x in (0 : ℝ)..π / 2, cos x ^
 integrals. -/
 theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
     Complex.sin (π * z) =
-      ((π * z * ∏ j in Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2)) *
+      ((π * z * ∏ j ∈ Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2)) *
           ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n)) /
         (∫ x in (0 : ℝ)..π / 2, cos x ^ (2 * n) : ℝ) := by
   rcases eq_or_ne z 0 with (rfl | hz)
@@ -221,7 +221,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
     field_simp [Complex.ofReal_ne_zero.mpr pi_pos.ne']
     ring
   · rw [hn, Finset.prod_range_succ]
-    set A := ∏ j in Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2)
+    set A := ∏ j ∈ Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2)
     set B := ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n)
     set C := ∫ x in (0 : ℝ)..π / 2, cos x ^ (2 * n)
     have aux' : 2 * n.succ = 2 * n + 2 := by rw [Nat.succ_eq_add_one, mul_add, mul_one]
@@ -297,12 +297,12 @@ theorem tendsto_integral_cos_pow_mul_div {f : ℝ → ℂ} (hf : ContinuousOn f 
 
 /-- Euler's infinite product formula for the complex sine function. -/
 theorem _root_.Complex.tendsto_euler_sin_prod (z : ℂ) :
-    Tendsto (fun n : ℕ => π * z * ∏ j in Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2))
+    Tendsto (fun n : ℕ => π * z * ∏ j ∈ Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2))
       atTop (𝓝 <| Complex.sin (π * z)) := by
   have A :
     Tendsto
       (fun n : ℕ =>
-        ((π * z * ∏ j in Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2)) *
+        ((π * z * ∏ j ∈ Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2)) *
             ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n)) /
           (∫ x in (0 : ℝ)..π / 2, cos x ^ (2 * n) : ℝ))
       atTop (𝓝 <| _) :=
@@ -323,14 +323,14 @@ theorem _root_.Complex.tendsto_euler_sin_prod (z : ℂ) :
 
 /-- Euler's infinite product formula for the real sine function. -/
 theorem _root_.Real.tendsto_euler_sin_prod (x : ℝ) :
-    Tendsto (fun n : ℕ => π * x * ∏ j in Finset.range n, ((1 : ℝ) - x ^ 2 / ((j : ℝ) + 1) ^ 2))
+    Tendsto (fun n : ℕ => π * x * ∏ j ∈ Finset.range n, ((1 : ℝ) - x ^ 2 / ((j : ℝ) + 1) ^ 2))
       atTop (𝓝 <| sin (π * x)) := by
   convert (Complex.continuous_re.tendsto _).comp (Complex.tendsto_euler_sin_prod x) using 1
   · ext1 n
     rw [Function.comp_apply, ← Complex.ofReal_mul, Complex.re_ofReal_mul]
     suffices
-      (∏ j : ℕ in Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℂ) =
-        (∏ j : ℕ in Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℝ) by
+      (∏ j ∈ Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℂ) =
+        (∏ j ∈ Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℝ) by
       rw [this, Complex.ofReal_re]
     rw [Complex.ofReal_prod]
     refine Finset.prod_congr (by rfl) fun n _ => ?_

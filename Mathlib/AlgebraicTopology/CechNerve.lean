@@ -348,7 +348,7 @@ end CosimplicialObject
 /-- Given an object `X : C`, the natural simplicial object sending `[n]` to `Xⁿ⁺¹`. -/
 def cechNerveTerminalFrom {C : Type u} [Category.{v} C] [HasFiniteProducts C] (X : C) :
     SimplicialObject C where
-  obj n := ∏ fun _ : Fin (n.unop.len + 1) => X
+  obj n := ∏ᶜ fun _ : Fin (n.unop.len + 1) => X
   map f := Limits.Pi.lift fun i => Limits.Pi.π _ (f.unop.toOrderHom i)
 #align category_theory.cech_nerve_terminal_from CategoryTheory.cechNerveTerminalFrom
 
@@ -371,7 +371,7 @@ variable [HasFiniteProducts C]
 /-- The product `Xᶥ` is the vertex of a limit cone on `wideCospan ι X`. -/
 def wideCospan.limitCone [Finite ι] (X : C) : LimitCone (wideCospan ι X) where
   cone :=
-    { pt := ∏ fun _ : ι => X
+    { pt := ∏ᶜ fun _ : ι => X
       π :=
         { app := fun X => Option.casesOn X (terminal.from _) fun i => limit.π _ ⟨i⟩
           naturality := fun i j f => by
@@ -414,7 +414,7 @@ instance hasLimit_wideCospan [Finite ι] (X : C) : HasLimit (wideCospan ι X) :=
 -- Porting note: added to ease the definition of `iso`
 /-- the isomorphism to the product induced by the limit cone `wideCospan ι X` -/
 def wideCospan.limitIsoPi [Finite ι] (X : C) :
-    limit (wideCospan ι X) ≅ ∏ fun _ : ι => X :=
+    limit (wideCospan ι X) ≅ ∏ᶜ fun _ : ι => X :=
   (IsLimit.conePointUniqueUpToIso (limit.isLimit _)
     (wideCospan.limitCone ι X).2)
 

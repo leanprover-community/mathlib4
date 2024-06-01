@@ -152,11 +152,13 @@ theorem dickson_one_one_eq_chebyshev_T [Invertible (2 : R)] :
     simp only [Chebyshev.T_zero, mul_one, one_comp, dickson_zero]
     norm_num
   | 1 => by
-    rw [dickson_one, Chebyshev.T_one, X_comp, ← mul_assoc, two_mul_C_half_eq_one, one_mul]
+    rw [dickson_one, Nat.cast_one, Chebyshev.T_one, X_comp, ← mul_assoc, two_mul_C_half_eq_one,
+      one_mul]
   | n + 2 => by
-    rw [dickson_add_two, C_1, Chebyshev.T_add_two, dickson_one_one_eq_chebyshev_T (n + 1),
-      dickson_one_one_eq_chebyshev_T n, sub_comp, mul_comp, mul_comp, X_comp, ofNat_comp]
-    simp_rw [← mul_assoc, Nat.cast_ofNat, two_mul_C_half_eq_one]
+    rw [dickson_add_two, C_1, Nat.cast_add, Nat.cast_two, Chebyshev.T_add_two,
+      dickson_one_one_eq_chebyshev_T (n + 1), dickson_one_one_eq_chebyshev_T n, sub_comp, mul_comp,
+      mul_comp, X_comp, ofNat_comp]
+    simp_rw [← mul_assoc, Nat.cast_ofNat, two_mul_C_half_eq_one, Nat.cast_add, Nat.cast_one]
     ring
 set_option linter.uppercaseLean3 false in
 #align polynomial.dickson_one_one_eq_chebyshev_T Polynomial.dickson_one_one_eq_chebyshev_T
@@ -178,7 +180,7 @@ theorem dickson_one_one_mul (m n : ℕ) :
   congr 1
   apply map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [map_dickson, map_comp, eq_intCast, Int.cast_one, dickson_one_one_eq_chebyshev_T,
-    Chebyshev.T_mul, two_mul, ← add_comp]
+    Nat.cast_mul, Chebyshev.T_mul, two_mul, ← add_comp]
   simp only [← two_mul, ← comp_assoc]
   apply eval₂_congr rfl rfl
   rw [comp_assoc]

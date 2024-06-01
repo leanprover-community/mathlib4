@@ -32,7 +32,7 @@ Carathéodory-measurable, Carathéodory's criterion
 noncomputable section
 
 open Set Function Filter
-open scoped Classical BigOperators NNReal Topology ENNReal
+open scoped Classical NNReal Topology ENNReal
 
 namespace MeasureTheory
 namespace OuterMeasure
@@ -102,7 +102,7 @@ theorem isCaratheodory_inter (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodo
 
 theorem isCaratheodory_sum {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
     (hd : Pairwise (Disjoint on s)) {t : Set α} :
-    ∀ {n}, (∑ i in Finset.range n, m (t ∩ s i)) = m (t ∩ ⋃ i < n, s i)
+    ∀ {n}, (∑ i ∈ Finset.range n, m (t ∩ s i)) = m (t ∩ ⋃ i < n, s i)
   | 0 => by simp [Nat.not_lt_zero, m.empty]
   | Nat.succ n => by
     rw [biUnion_lt_succ, Finset.sum_range_succ, Set.union_comm, isCaratheodory_sum h hd,
