@@ -318,7 +318,7 @@ noncomputable def isColimitCofan₃MapBifunctor₁₂BifunctorMapObj (j : J) :
       right_inv := fun _ => rfl }
   let c₁₂'' : ∀ (i : ρ₁₂.q ⁻¹' {j}), CofanMapObjFun Z p' (i.1.1, i.1.2) :=
     fun ⟨⟨i₁₂, i₃⟩, hi⟩ => by
-      refine' (Cocones.precompose (Iso.hom _)).obj ((Cocones.whiskeringEquivalence
+      refine (Cocones.precompose (Iso.hom ?_)).obj ((Cocones.whiskeringEquivalence
         (Discrete.equivalence (e i₁₂ i₃))).functor.obj (c₁₂' ⟨⟨i₁₂, i₃⟩, hi⟩))
       refine' (Discrete.natIso (fun ⟨⟨i₁, i₂, i₃'⟩, hi⟩ =>
         (G.obj ((F₁₂.obj (X₁ i₁)).obj (X₂ i₂))).mapIso (eqToIso _)))
@@ -459,9 +459,9 @@ noncomputable def isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (j : J) :
       right_inv := fun _ => rfl }
   let c₂₃'' : ∀ (i : ρ₂₃.q ⁻¹' {j}), CofanMapObjFun Z p' (i.1.1, i.1.2) :=
     fun ⟨⟨i₁, i₂₃⟩, hi⟩ => by
-      refine' (Cocones.precompose (Iso.hom _)).obj ((Cocones.whiskeringEquivalence
+      refine (Cocones.precompose (Iso.hom ?_)).obj ((Cocones.whiskeringEquivalence
         (Discrete.equivalence (e i₁ i₂₃))).functor.obj (c₂₃' ⟨⟨i₁, i₂₃⟩, hi⟩))
-      refine' Discrete.natIso (fun ⟨⟨i₁', i₂, i₃⟩, hi⟩ => eqToIso _)
+      refine Discrete.natIso (fun ⟨⟨i₁', i₂, i₃⟩, hi⟩ => eqToIso ?_)
       obtain rfl : i₁' = i₁ := congr_arg _root_.Prod.fst hi
       rfl
   have h₂₃'' : ∀ i, IsColimit (c₂₃'' i) := fun _ =>

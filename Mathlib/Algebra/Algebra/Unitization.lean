@@ -528,8 +528,7 @@ variable (R A)
 
 /-- The canonical inclusion of rings `R →+* Unitization R A`. -/
 @[simps apply]
-def inlRingHom [Semiring R] [NonUnitalSemiring A] [Module R A] : R →+* Unitization R A
-    where
+def inlRingHom [Semiring R] [NonUnitalSemiring A] [Module R A] : R →+* Unitization R A where
   toFun := inl
   map_one' := inl_one A
   map_mul' := inl_mul A
@@ -572,8 +571,7 @@ theorem inr_star [AddMonoid R] [StarAddMonoid R] [Star A] (a : A) :
 #align unitization.coe_star Unitization.inr_star
 
 instance instStarAddMonoid [AddMonoid R] [AddMonoid A] [StarAddMonoid R] [StarAddMonoid A] :
-    StarAddMonoid (Unitization R A)
-    where
+    StarAddMonoid (Unitization R A) where
   star_involutive x := ext (star_star x.fst) (star_star x.snd)
   star_add x y := ext (star_add x.fst y.fst) (star_add x.snd y.snd)
 
@@ -787,5 +785,32 @@ theorem starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
   rfl
 
 end StarAlgHom
+
+section StarNormal
+
+variable {R A : Type*} [Semiring R] [AddCommMonoid A] [Mul A] [SMulWithZero R A]
+variable [StarAddMonoid R] [Star A] {a : A}
+
+@[simp]
+lemma isStarNormal_inr : IsStarNormal (a : Unitization R A) ↔ IsStarNormal a := by
+  simp only [isStarNormal_iff, commute_iff_eq, ← inr_star, ← inr_mul, inr_injective.eq_iff]
+
+variable (R a) in
+instance instIsStarNormal (a : A) [IsStarNormal a] :
+    IsStarNormal (a : Unitization R A) :=
+  isStarNormal_inr.mpr ‹_›
+
+@[simp]
+lemma isSelfAdjoint_inr : IsSelfAdjoint (a : Unitization R A) ↔ IsSelfAdjoint a := by
+  simp only [isSelfAdjoint_iff, ← inr_star, ← inr_mul, inr_injective.eq_iff]
+
+variable (R) in
+lemma _root_.IsSelfAdjoint.inr (ha : IsSelfAdjoint a) : IsSelfAdjoint (a : Unitization R A) :=
+  isSelfAdjoint_inr.mpr ha
+
+alias ⟨_root_.IsSelfAdjoint.of_inr, _⟩ := isSelfAdjoint_inr
+alias ⟨_root_.IsStarNormal.of_inr, _⟩ := isStarNormal_inr
+
+end StarNormal
 
 end Unitization

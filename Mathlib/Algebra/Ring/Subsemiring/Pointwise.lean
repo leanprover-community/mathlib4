@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Submonoid.Pointwise
-import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Data.Set.Pointwise.Basic
 
@@ -37,8 +37,7 @@ variable [Monoid M] [Semiring R] [MulSemiringAction M R]
 /-- The action on a subsemiring corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseMulAction : MulAction M (Subsemiring R)
-    where
+protected def pointwiseMulAction : MulAction M (Subsemiring R) where
   smul a S := S.map (MulSemiringAction.toRingHom _ _ a)
   one_smul S := (congr_arg (fun f => S.map f) (RingHom.ext <| one_smul M)).trans S.map_id
   mul_smul _a₁ _a₂ S :=

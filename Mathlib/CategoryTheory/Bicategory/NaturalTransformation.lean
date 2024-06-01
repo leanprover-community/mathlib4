@@ -75,9 +75,6 @@ attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.app
   CategoryTheory.OplaxNatTrans.naturality_id
   CategoryTheory.OplaxNatTrans.naturality_comp
 
-/- Porting note: removed primes from field names and removed `restate_axiom` since that is no longer
-  needed in Lean 4 -/
-
 attribute [reassoc (attr := simp)] OplaxNatTrans.naturality_naturality OplaxNatTrans.naturality_id
   OplaxNatTrans.naturality_comp
 
@@ -106,15 +103,15 @@ variable {a b c : B} {a' : C}
 @[reassoc (attr := simp)]
 theorem whiskerLeft_naturality_naturality (f : a' ⟶ G.obj a) {g h : a ⟶ b} (β : g ⟶ h) :
     f ◁ G.map₂ β ▷ θ.app b ≫ f ◁ θ.naturality h =
-      f ◁ θ.naturality g ≫ f ◁ θ.app a ◁ H.map₂ β :=
-  by simp_rw [← whiskerLeft_comp, naturality_naturality]
+      f ◁ θ.naturality g ≫ f ◁ θ.app a ◁ H.map₂ β := by
+  simp_rw [← whiskerLeft_comp, naturality_naturality]
 #align category_theory.oplax_nat_trans.whisker_left_naturality_naturality CategoryTheory.OplaxNatTrans.whiskerLeft_naturality_naturality
 
 @[reassoc (attr := simp)]
 theorem whiskerRight_naturality_naturality {f g : a ⟶ b} (β : f ⟶ g) (h : G.obj b ⟶ a') :
     F.map₂ β ▷ η.app b ▷ h ≫ η.naturality g ▷ h =
-      η.naturality f ▷ h ≫ (α_ _ _ _).hom ≫ η.app a ◁ G.map₂ β ▷ h ≫ (α_ _ _ _).inv :=
-  by rw [← comp_whiskerRight, naturality_naturality, comp_whiskerRight, whisker_assoc]
+      η.naturality f ▷ h ≫ (α_ _ _ _).hom ≫ η.app a ◁ G.map₂ β ▷ h ≫ (α_ _ _ _).inv := by
+  rw [← comp_whiskerRight, naturality_naturality, comp_whiskerRight, whisker_assoc]
 #align category_theory.oplax_nat_trans.whisker_right_naturality_naturality CategoryTheory.OplaxNatTrans.whiskerRight_naturality_naturality
 
 @[reassoc (attr := simp)]
@@ -123,8 +120,8 @@ theorem whiskerLeft_naturality_comp (f : a' ⟶ G.obj a) (g : a ⟶ b) (h : b �
       f ◁ G.mapComp g h ▷ θ.app c ≫
         f ◁ (α_ _ _ _).hom ≫
           f ◁ G.map g ◁ θ.naturality h ≫
-            f ◁ (α_ _ _ _).inv ≫ f ◁ θ.naturality g ▷ H.map h ≫ f ◁ (α_ _ _ _).hom :=
-  by simp_rw [← whiskerLeft_comp, naturality_comp]
+            f ◁ (α_ _ _ _).inv ≫ f ◁ θ.naturality g ▷ H.map h ≫ f ◁ (α_ _ _ _).hom := by
+  simp_rw [← whiskerLeft_comp, naturality_comp]
 #align category_theory.oplax_nat_trans.whisker_left_naturality_comp CategoryTheory.OplaxNatTrans.whiskerLeft_naturality_comp
 
 @[reassoc (attr := simp)]
@@ -136,22 +133,22 @@ theorem whiskerRight_naturality_comp (f : a ⟶ b) (g : b ⟶ c) (h : G.obj c �
             F.map f ◁ η.naturality g ▷ h ≫
               (α_ _ _ _).inv ≫
                 (α_ _ _ _).inv ▷ h ≫
-                  η.naturality f ▷ G.map g ▷ h ≫ (α_ _ _ _).hom ▷ h ≫ (α_ _ _ _).hom :=
-  by rw [← associator_naturality_middle, ← comp_whiskerRight_assoc, naturality_comp]; simp
+                  η.naturality f ▷ G.map g ▷ h ≫ (α_ _ _ _).hom ▷ h ≫ (α_ _ _ _).hom := by
+  rw [← associator_naturality_middle, ← comp_whiskerRight_assoc, naturality_comp]; simp
 #align category_theory.oplax_nat_trans.whisker_right_naturality_comp CategoryTheory.OplaxNatTrans.whiskerRight_naturality_comp
 
 @[reassoc (attr := simp)]
 theorem whiskerLeft_naturality_id (f : a' ⟶ G.obj a) :
     f ◁ θ.naturality (𝟙 a) ≫ f ◁ θ.app a ◁ H.mapId a =
-      f ◁ G.mapId a ▷ θ.app a ≫ f ◁ (λ_ (θ.app a)).hom ≫ f ◁ (ρ_ (θ.app a)).inv :=
-  by simp_rw [← whiskerLeft_comp, naturality_id]
+      f ◁ G.mapId a ▷ θ.app a ≫ f ◁ (λ_ (θ.app a)).hom ≫ f ◁ (ρ_ (θ.app a)).inv := by
+  simp_rw [← whiskerLeft_comp, naturality_id]
 #align category_theory.oplax_nat_trans.whisker_left_naturality_id CategoryTheory.OplaxNatTrans.whiskerLeft_naturality_id
 
 @[reassoc (attr := simp)]
 theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
     η.naturality (𝟙 a) ▷ f ≫ (α_ _ _ _).hom ≫ η.app a ◁ G.mapId a ▷ f =
-      F.mapId a ▷ η.app a ▷ f ≫ (λ_ (η.app a)).hom ▷ f ≫ (ρ_ (η.app a)).inv ▷ f ≫ (α_ _ _ _).hom :=
-  by rw [← associator_naturality_middle, ← comp_whiskerRight_assoc, naturality_id]; simp
+    F.mapId a ▷ η.app a ▷ f ≫ (λ_ (η.app a)).hom ▷ f ≫ (ρ_ (η.app a)).inv ▷ f ≫ (α_ _ _ _).hom := by
+  rw [← associator_naturality_middle, ← comp_whiskerRight_assoc, naturality_id]; simp
 #align category_theory.oplax_nat_trans.whisker_right_naturality_id CategoryTheory.OplaxNatTrans.whiskerRight_naturality_id
 
 end
@@ -176,11 +173,11 @@ def vcomp (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H) : OplaxNatTrans F H 
                         ?_ ≫ η.app a ◁ θ.naturality f ▷ H.map g ≫ ?_ :=
         ?_
       _ = _ := ?_
-    exact (α_ _ _ _).inv
-    exact (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom
-    exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
-    exact (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv
-    exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
+    · exact (α_ _ _ _).inv
+    · exact (α_ _ _ _).hom ▷ _ ≫ (α_ _ _ _).hom
+    · exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
+    · exact (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv
+    · exact _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv
     · rw [whisker_exchange_assoc]
       simp
     · simp
@@ -216,8 +213,6 @@ structure Modification (η θ : F ⟶ G) where
 #align category_theory.oplax_nat_trans.modification.app CategoryTheory.OplaxNatTrans.Modification
 #align category_theory.oplax_nat_trans.modification.naturality' CategoryTheory.OplaxNatTrans.Modification.naturality
 #align category_theory.oplax_nat_trans.modification.naturality CategoryTheory.OplaxNatTrans.Modification.naturality
-
-attribute [pp_dot] Modification.app
 
 attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.Modification.app
   CategoryTheory.OplaxNatTrans.Modification.naturality
@@ -256,8 +251,8 @@ theorem whiskerLeft_naturality (f : a' ⟶ F.obj b) (g : b ⟶ c) :
 @[reassoc (attr := simp)]
 theorem whiskerRight_naturality (f : a ⟶ b) (g : G.obj b ⟶ a') :
     F.map f ◁ Γ.app b ▷ g ≫ (α_ _ _ _).inv ≫ θ.naturality f ▷ g =
-      (α_ _ _ _).inv ≫ η.naturality f ▷ g ≫ Γ.app a ▷ G.map f ▷ g :=
-  by simp_rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight, naturality]
+      (α_ _ _ _).inv ≫ η.naturality f ▷ g ≫ Γ.app a ▷ G.map f ▷ g := by
+  simp_rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight, naturality]
 #align category_theory.oplax_nat_trans.modification.whisker_right_naturality CategoryTheory.OplaxNatTrans.Modification.whiskerRight_naturality
 
 end

@@ -9,8 +9,6 @@ import Mathlib.Data.NNRat.Defs
 /-! # Casting lemmas for non-negative rational numbers involving sums and products
 -/
 
-open BigOperators
-
 variable {ι α : Type*}
 
 namespace NNRat
@@ -36,23 +34,23 @@ theorem coe_multiset_prod (s : Multiset ℚ≥0) : (s.prod : ℚ) = (s.map (↑)
 #align nnrat.coe_multiset_prod NNRat.coe_multiset_prod
 
 @[norm_cast]
-theorem coe_sum {s : Finset α} {f : α → ℚ≥0} : ↑(∑ a in s, f a) = ∑ a in s, (f a : ℚ) :=
+theorem coe_sum {s : Finset α} {f : α → ℚ≥0} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : ℚ) :=
   map_sum coeHom _ _
 #align nnrat.coe_sum NNRat.coe_sum
 
 theorem toNNRat_sum_of_nonneg {s : Finset α} {f : α → ℚ} (hf : ∀ a, a ∈ s → 0 ≤ f a) :
-    (∑ a in s, f a).toNNRat = ∑ a in s, (f a).toNNRat := by
+    (∑ a ∈ s, f a).toNNRat = ∑ a ∈ s, (f a).toNNRat := by
   rw [← coe_inj, coe_sum, Rat.coe_toNNRat _ (Finset.sum_nonneg hf)]
   exact Finset.sum_congr rfl fun x hxs ↦ by rw [Rat.coe_toNNRat _ (hf x hxs)]
 #align nnrat.to_nnrat_sum_of_nonneg NNRat.toNNRat_sum_of_nonneg
 
 @[norm_cast]
-theorem coe_prod {s : Finset α} {f : α → ℚ≥0} : ↑(∏ a in s, f a) = ∏ a in s, (f a : ℚ) :=
+theorem coe_prod {s : Finset α} {f : α → ℚ≥0} : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : ℚ) :=
   map_prod coeHom _ _
 #align nnrat.coe_prod NNRat.coe_prod
 
 theorem toNNRat_prod_of_nonneg {s : Finset α} {f : α → ℚ} (hf : ∀ a ∈ s, 0 ≤ f a) :
-    (∏ a in s, f a).toNNRat = ∏ a in s, (f a).toNNRat := by
+    (∏ a ∈ s, f a).toNNRat = ∏ a ∈ s, (f a).toNNRat := by
   rw [← coe_inj, coe_prod, Rat.coe_toNNRat _ (Finset.prod_nonneg hf)]
   exact Finset.prod_congr rfl fun x hxs ↦ by rw [Rat.coe_toNNRat _ (hf x hxs)]
 #align nnrat.to_nnrat_prod_of_nonneg NNRat.toNNRat_prod_of_nonneg

@@ -5,8 +5,8 @@ Authors: Kenny Lau, Antoine Chambert-Loir
 
 -/
 
-import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
 
@@ -90,8 +90,7 @@ notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulA
 You should extend this class when you extend `MulActionHom`. -/
 class MulActionSemiHomClass (F : Type*)
     {M N : outParam (Type*)} (φ : outParam (M → N))
-    (X Y : outParam (Type*)) [SMul M X] [SMul N Y] [FunLike F X Y] : Prop
-   where
+    (X Y : outParam (Type*)) [SMul M X] [SMul N Y] [FunLike F X Y] : Prop where
   /-- The proposition that the function preserves the action. -/
   map_smulₛₗ : ∀ (f : F) (c : M) (x : X), f (c • x) = (φ c) • (f x)
 #align smul_hom_class MulActionSemiHomClass
@@ -175,8 +174,7 @@ protected theorem congr_fun {f g : X →ₑ[φ] Y} (h : f = g) (x : X) :
 #align mul_action_hom.congr_fun MulActionHom.congr_fun
 
 /-- Two equal maps on scalars give rise to an equivariant map for identity -/
-def ofEq {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) : X →ₑ[φ'] Y
-    where
+def ofEq {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) : X →ₑ[φ'] Y where
   toFun := f.toFun
   map_smul' m a := h ▸ f.map_smul' m a
 #align equivariant_map.of_eq MulActionHom.ofEq
@@ -261,8 +259,7 @@ variable {Y₁ : Type*} [SMul M Y₁]
 /-- The inverse of a bijective equivariant map is equivariant. -/
 @[simps]
 def inverse (f : X →[M] Y₁) (g : Y₁ → X)
-    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : Y₁ →[M] X
-    where
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : Y₁ →[M] X where
   toFun := g
   map_smul' m x :=
     calc
@@ -413,8 +410,7 @@ instance : FunLike (A →ₑ+[φ] B) A B where
     rcases f with ⟨tF, _, _⟩; rcases g with ⟨tG, _, _⟩
     cases tF; cases tG; congr
 
-instance : DistribMulActionSemiHomClass (A →ₑ+[φ] B) φ A B
-    where
+instance : DistribMulActionSemiHomClass (A →ₑ+[φ] B) φ A B where
   map_smulₛₗ m := m.map_smul'
   map_zero := DistribMulActionHom.map_zero'
   map_add := DistribMulActionHom.map_add'

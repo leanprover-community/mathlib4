@@ -524,7 +524,7 @@ theorem nonempty_of_nonempty_subtype [Nonempty (↥s)] : s.Nonempty :=
 /-! ### Lemmas about the empty set -/
 
 
-theorem empty_def : (↥(∅ : Set α)) = { _x : α | False } :=
+theorem empty_def : (∅ : Set α) = { _x : α | False } :=
   rfl
 #align set.empty_def Set.empty_def
 
@@ -1595,8 +1595,8 @@ lemma disjoint_singleton_right : Disjoint s {a} ↔ a ∉ s :=
   disjoint_comm.trans disjoint_singleton_left
 #align set.disjoint_singleton_right Set.disjoint_singleton_right
 
-lemma disjoint_singleton : Disjoint ({a} : Set α) {b} ↔ a ≠ b :=
-  by simp
+lemma disjoint_singleton : Disjoint ({a} : Set α) {b} ↔ a ≠ b := by
+  simp
 #align set.disjoint_singleton Set.disjoint_singleton
 
 lemma subset_diff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.symm.trans le_sdiff
@@ -1803,6 +1803,9 @@ theorem nonempty_diff {s t : Set α} : (s \ t).Nonempty ↔ ¬s ⊆ t :=
 theorem diff_subset (s t : Set α) : s \ t ⊆ s :=
   show s \ t ≤ s from sdiff_le
 #align set.diff_subset Set.diff_subset
+
+theorem diff_subset_compl (s t : Set α) : s \ t ⊆ tᶜ :=
+  diff_eq_compl_inter ▸ inter_subset_left _ _
 
 theorem union_diff_cancel' {s t u : Set α} (h₁ : s ⊆ t) (h₂ : t ⊆ u) : t ∪ u \ s = u :=
   sup_sdiff_cancel' h₁ h₂
@@ -2456,7 +2459,7 @@ theorem inclusion_inj (h : s ⊆ t) {x y : s} : inclusion h x = inclusion h y �
 
 theorem eq_of_inclusion_surjective {s t : Set α} {h : s ⊆ t}
     (h_surj : Function.Surjective (inclusion h)) : s = t := by
-  refine' Set.Subset.antisymm h (fun x hx => _)
+  refine Set.Subset.antisymm h (fun x hx => ?_)
   obtain ⟨y, hy⟩ := h_surj ⟨x, hx⟩
   exact mem_of_eq_of_mem (congr_arg Subtype.val hy).symm y.prop
 #align set.eq_of_inclusion_surjective Set.eq_of_inclusion_surjective

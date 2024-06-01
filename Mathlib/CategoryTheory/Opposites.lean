@@ -50,9 +50,15 @@ theorem Quiver.Hom.unop_op {X Y : C} (f : X ⟶ Y) : f.op.unop = f :=
 #align quiver.hom.unop_op Quiver.Hom.unop_op
 
 @[simp]
+theorem Quiver.Hom.unop_op' {X Y : Cᵒᵖ} {x} :
+    @Quiver.Hom.unop C _ X Y no_index (Opposite.op (unop := x)) = x := rfl
+
+@[simp]
 theorem Quiver.Hom.op_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) : f.unop.op = f :=
   rfl
 #align quiver.hom.op_unop Quiver.Hom.op_unop
+
+@[simp] theorem Quiver.Hom.unop_mk {X Y : Cᵒᵖ} (f : X ⟶ Y) : Quiver.Hom.unop {unop := f} = f := rfl
 
 end Quiver
 
@@ -172,7 +178,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /-- The opposite of a functor, i.e. considering a functor `F : C ⥤ D` as a functor `Cᵒᵖ ⥤ Dᵒᵖ`.
 In informal mathematics no distinction is made between these. -/
-@[simps, pp_dot]
+@[simps]
 protected def op (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒᵖ where
   obj X := op (F.obj (unop X))
   map f := (F.map f.unop).op
@@ -181,7 +187,7 @@ protected def op (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒᵖ where
 /-- Given a functor `F : Cᵒᵖ ⥤ Dᵒᵖ` we can take the "unopposite" functor `F : C ⥤ D`.
 In informal mathematics no distinction is made between these.
 -/
-@[simps, pp_dot]
+@[simps]
 protected def unop (F : Cᵒᵖ ⥤ Dᵒᵖ) : C ⥤ D where
   obj X := unop (F.obj (op X))
   map f := (F.map f.op).unop
@@ -228,7 +234,7 @@ variable {C D}
 Another variant of the opposite of functor, turning a functor `C ⥤ Dᵒᵖ` into a functor `Cᵒᵖ ⥤ D`.
 In informal mathematics no distinction is made.
 -/
-@[simps, pp_dot]
+@[simps]
 protected def leftOp (F : C ⥤ Dᵒᵖ) : Cᵒᵖ ⥤ D where
   obj X := unop (F.obj (unop X))
   map f := (F.map f.unop).unop
@@ -238,7 +244,7 @@ protected def leftOp (F : C ⥤ Dᵒᵖ) : Cᵒᵖ ⥤ D where
 Another variant of the opposite of functor, turning a functor `Cᵒᵖ ⥤ D` into a functor `C ⥤ Dᵒᵖ`.
 In informal mathematics no distinction is made.
 -/
-@[simps, pp_dot]
+@[simps]
 protected def rightOp (F : Cᵒᵖ ⥤ D) : C ⥤ Dᵒᵖ where
   obj X := op (F.obj (op X))
   map f := (F.map f.op).op

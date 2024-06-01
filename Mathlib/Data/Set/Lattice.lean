@@ -534,15 +534,6 @@ theorem diff_iInter (s : Set β) (t : ι → Set β) : (s \ ⋂ i, t i) = ⋃ i,
   rw [diff_eq, compl_iInter, inter_iUnion]; rfl
 #align set.diff_Inter Set.diff_iInter
 
-theorem directed_on_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
-    (h : ∀ x, DirectedOn r (f x)) : DirectedOn r (⋃ x, f x) := by
-  simp only [DirectedOn, exists_prop, mem_iUnion, exists_imp]
-  exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ =>
-    let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
-    let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
-    ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
-#align set.directed_on_Union Set.directed_on_iUnion
-
 theorem iUnion_inter_subset {ι α} {s t : ι → Set α} : ⋃ i, s i ∩ t i ⊆ (⋃ i, s i) ∩ ⋃ i, t i :=
   le_iSup_inf_iSup s t
 #align set.Union_inter_subset Set.iUnion_inter_subset
@@ -615,7 +606,7 @@ theorem image_projection_prod {ι : Type*} {α : ι → Type*} {v : ∀ i : ι, 
     · intro y y_in
       simp only [mem_image, mem_iInter, mem_preimage]
       rcases hv with ⟨z, hz⟩
-      refine' ⟨Function.update z i y, _, update_same i y z⟩
+      refine ⟨Function.update z i y, ?_, update_same i y z⟩
       rw [@forall_update_iff ι α _ z i y fun i t => t ∈ v i]
       exact ⟨y_in, fun j _ => by simpa using hz j⟩
 #align set.image_projection_prod Set.image_projection_prod
@@ -781,29 +772,29 @@ theorem iInter₂_comm (s : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Se
 @[simp]
 theorem biUnion_and (p : ι → Prop) (q : ι → ι' → Prop) (s : ∀ x y, p x ∧ q x y → Set α) :
     ⋃ (x : ι) (y : ι') (h : p x ∧ q x y), s x y h =
-      ⋃ (x : ι) (hx : p x) (y : ι') (hy : q x y), s x y ⟨hx, hy⟩ :=
-  by simp only [iUnion_and, @iUnion_comm _ ι']
+      ⋃ (x : ι) (hx : p x) (y : ι') (hy : q x y), s x y ⟨hx, hy⟩ := by
+  simp only [iUnion_and, @iUnion_comm _ ι']
 #align set.bUnion_and Set.biUnion_and
 
 @[simp]
 theorem biUnion_and' (p : ι' → Prop) (q : ι → ι' → Prop) (s : ∀ x y, p y ∧ q x y → Set α) :
     ⋃ (x : ι) (y : ι') (h : p y ∧ q x y), s x y h =
-      ⋃ (y : ι') (hy : p y) (x : ι) (hx : q x y), s x y ⟨hy, hx⟩ :=
-  by simp only [iUnion_and, @iUnion_comm _ ι]
+      ⋃ (y : ι') (hy : p y) (x : ι) (hx : q x y), s x y ⟨hy, hx⟩ := by
+  simp only [iUnion_and, @iUnion_comm _ ι]
 #align set.bUnion_and' Set.biUnion_and'
 
 @[simp]
 theorem biInter_and (p : ι → Prop) (q : ι → ι' → Prop) (s : ∀ x y, p x ∧ q x y → Set α) :
     ⋂ (x : ι) (y : ι') (h : p x ∧ q x y), s x y h =
-      ⋂ (x : ι) (hx : p x) (y : ι') (hy : q x y), s x y ⟨hx, hy⟩ :=
-  by simp only [iInter_and, @iInter_comm _ ι']
+      ⋂ (x : ι) (hx : p x) (y : ι') (hy : q x y), s x y ⟨hx, hy⟩ := by
+  simp only [iInter_and, @iInter_comm _ ι']
 #align set.bInter_and Set.biInter_and
 
 @[simp]
 theorem biInter_and' (p : ι' → Prop) (q : ι → ι' → Prop) (s : ∀ x y, p y ∧ q x y → Set α) :
     ⋂ (x : ι) (y : ι') (h : p y ∧ q x y), s x y h =
-      ⋂ (y : ι') (hy : p y) (x : ι) (hx : q x y), s x y ⟨hy, hx⟩ :=
-  by simp only [iInter_and, @iInter_comm _ ι]
+      ⋂ (y : ι') (hy : p y) (x : ι) (hx : q x y), s x y ⟨hy, hx⟩ := by
+  simp only [iInter_and, @iInter_comm _ ι]
 #align set.bInter_and' Set.biInter_and'
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (x h) -/
@@ -973,8 +964,8 @@ theorem biUnion_insert (a : α) (s : Set α) (t : α → Set β) :
     ⋃ x ∈ insert a s, t x = t a ∪ ⋃ x ∈ s, t x := by simp
 #align set.bUnion_insert Set.biUnion_insert
 
-theorem biUnion_pair (a b : α) (s : α → Set β) : ⋃ x ∈ ({a, b} : Set α), s x = s a ∪ s b :=
-  by simp
+theorem biUnion_pair (a b : α) (s : α → Set β) : ⋃ x ∈ ({a, b} : Set α), s x = s a ∪ s b := by
+  simp
 #align set.bUnion_pair Set.biUnion_pair
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -1190,8 +1181,8 @@ theorem iUnion_eq_univ_iff {f : ι → Set α} : ⋃ i, f i = univ ↔ ∀ x, �
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem iUnion₂_eq_univ_iff {s : ∀ i, κ i → Set α} :
-    ⋃ (i) (j), s i j = univ ↔ ∀ a, ∃ i j, a ∈ s i j :=
-  by simp only [iUnion_eq_univ_iff, mem_iUnion]
+    ⋃ (i) (j), s i j = univ ↔ ∀ a, ∃ i j, a ∈ s i j := by
+  simp only [iUnion_eq_univ_iff, mem_iUnion]
 #align set.Union₂_eq_univ_iff Set.iUnion₂_eq_univ_iff
 
 theorem sUnion_eq_univ_iff {c : Set (Set α)} : ⋃₀c = univ ↔ ∀ a, ∃ b ∈ c, a ∈ b := by
@@ -1376,11 +1367,11 @@ theorem iUnion_range_eq_sUnion {α β : Type*} (C : Set (Set α)) {f : ∀ s : C
     (hf : ∀ s : C, Surjective (f s)) : ⋃ y : β, range (fun s : C => (f s y).val) = ⋃₀C := by
   ext x; constructor
   · rintro ⟨s, ⟨y, rfl⟩, ⟨s, hs⟩, rfl⟩
-    refine' ⟨_, hs, _⟩
+    refine ⟨_, hs, ?_⟩
     exact (f ⟨s, hs⟩ y).2
   · rintro ⟨s, hs, hx⟩
     cases' hf ⟨s, hs⟩ ⟨x, hx⟩ with y hy
-    refine' ⟨_, ⟨y, rfl⟩, ⟨s, hs⟩, _⟩
+    refine ⟨_, ⟨y, rfl⟩, ⟨s, hs⟩, ?_⟩
     exact congr_arg Subtype.val hy
 #align set.Union_range_eq_sUnion Set.iUnion_range_eq_sUnion
 
@@ -1508,7 +1499,7 @@ variable (s : Set β) {f : α → β} {U : ι → Set β} (hU : iUnion U = univ)
 
 theorem injective_iff_injective_of_iUnion_eq_univ :
     Injective f ↔ ∀ i, Injective ((U i).restrictPreimage f) := by
-  refine' ⟨fun H i => (U i).restrictPreimage_injective H, fun H x y e => _⟩
+  refine ⟨fun H i => (U i).restrictPreimage_injective H, fun H x y e => ?_⟩
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp
       (show f x ∈ Set.iUnion U by rw [hU]; trivial)
   injection @H i ⟨x, hi⟩ ⟨y, show f y ∈ U i from e ▸ hi⟩ (Subtype.ext e)
@@ -1516,7 +1507,7 @@ theorem injective_iff_injective_of_iUnion_eq_univ :
 
 theorem surjective_iff_surjective_of_iUnion_eq_univ :
     Surjective f ↔ ∀ i, Surjective ((U i).restrictPreimage f) := by
-  refine' ⟨fun H i => (U i).restrictPreimage_surjective H, fun H x => _⟩
+  refine ⟨fun H i => (U i).restrictPreimage_surjective H, fun H x => ?_⟩
   obtain ⟨i, hi⟩ :=
     Set.mem_iUnion.mp
       (show x ∈ Set.iUnion U by rw [hU]; trivial)
@@ -1538,10 +1529,10 @@ end
 theorem InjOn.image_iInter_eq [Nonempty ι] {s : ι → Set α} {f : α → β} (h : InjOn f (⋃ i, s i)) :
     (f '' ⋂ i, s i) = ⋂ i, f '' s i := by
   inhabit ι
-  refine' Subset.antisymm (image_iInter_subset s f) fun y hy => _
+  refine Subset.antisymm (image_iInter_subset s f) fun y hy => ?_
   simp only [mem_iInter, mem_image] at hy
   choose x hx hy using hy
-  refine' ⟨x default, mem_iInter.2 fun i => _, hy _⟩
+  refine ⟨x default, mem_iInter.2 fun i => ?_, hy _⟩
   suffices x default = x i by
     rw [this]
     apply hx
@@ -1854,7 +1845,7 @@ theorem sInter_prod_sInter {S : Set (Set α)} {T : Set (Set β)} (hS : S.Nonempt
     ⋂₀ S ×ˢ ⋂₀ T = ⋂ r ∈ S ×ˢ T, r.1 ×ˢ r.2 := by
   obtain ⟨s₁, h₁⟩ := hS
   obtain ⟨s₂, h₂⟩ := hT
-  refine' Set.Subset.antisymm (sInter_prod_sInter_subset S T) fun x hx => _
+  refine Set.Subset.antisymm (sInter_prod_sInter_subset S T) fun x hx => ?_
   rw [mem_iInter₂] at hx
   exact ⟨fun s₀ h₀ => (hx (s₀, s₂) ⟨h₀, h₂⟩).1, fun s₀ h₀ => (hx (s₁, s₀) ⟨h₁, h₀⟩).2⟩
 #align set.sInter_prod_sInter Set.sInter_prod_sInter
@@ -1920,8 +1911,8 @@ theorem image2_iUnion₂_left (s : ∀ i, κ i → Set α) (t : Set β) :
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem image2_iUnion₂_right (s : Set α) (t : ∀ i, κ i → Set β) :
-    image2 f s (⋃ (i) (j), t i j) = ⋃ (i) (j), image2 f s (t i j) :=
-  by simp_rw [image2_iUnion_right]
+    image2 f s (⋃ (i) (j), t i j) = ⋃ (i) (j), image2 f s (t i j) := by
+  simp_rw [image2_iUnion_right]
 #align set.image2_Union₂_right Set.image2_iUnion₂_right
 
 theorem image2_iInter_subset_left (s : ι → Set α) (t : Set β) :
@@ -2027,7 +2018,7 @@ theorem univ_pi_eq_iInter (t : ∀ i, Set (π i)) : pi univ t = ⋂ i, eval i �
 
 theorem pi_diff_pi_subset (i : Set α) (s t : ∀ a, Set (π a)) :
     pi i s \ pi i t ⊆ ⋃ a ∈ i, eval a ⁻¹' (s a \ t a) := by
-  refine' diff_subset_comm.2 fun x hx a ha => _
+  refine diff_subset_comm.2 fun x hx a ha => ?_
   simp only [mem_diff, mem_pi, mem_iUnion, not_exists, mem_preimage, not_and, not_not,
     eval_apply] at hx
   exact hx.2 _ ha (hx.1 _ ha)
@@ -2040,6 +2031,27 @@ theorem iUnion_univ_pi {ι : α → Type*} (t : (a : α) → ι a → Set (π a)
 #align set.Union_univ_pi Set.iUnion_univ_pi
 
 end Pi
+
+section Directed
+
+theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
+    (h : ∀ x, DirectedOn r (f x)) : DirectedOn r (⋃ x, f x) := by
+  simp only [DirectedOn, exists_prop, mem_iUnion, exists_imp]
+  exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ =>
+    let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
+    let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
+    ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
+#align set.directed_on_Union Set.directedOn_iUnion
+
+@[deprecated (since := "2024-05-05")]
+alias directed_on_iUnion := directedOn_iUnion
+
+theorem directedOn_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
+    (h : ∀ x ∈ S, DirectedOn r x) : DirectedOn r (⋃₀ S) := by
+  rw [sUnion_eq_iUnion]
+  exact directedOn_iUnion (directedOn_iff_directed.mp hd) (fun i ↦ h i.1 i.2)
+
+end Directed
 
 end Set
 

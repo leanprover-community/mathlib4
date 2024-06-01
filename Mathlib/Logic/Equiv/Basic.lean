@@ -353,8 +353,7 @@ def subtypeSum {p : α ⊕ β → Prop} : {c // p c} ≃ {a // p (Sum.inl a)} �
 namespace Perm
 
 /-- Combine a permutation of `α` and of `β` into a permutation of `α ⊕ β`. -/
-@[reducible]
-def sumCongr (ea : Equiv.Perm α) (eb : Equiv.Perm β) : Equiv.Perm (Sum α β) :=
+abbrev sumCongr (ea : Equiv.Perm α) (eb : Equiv.Perm β) : Equiv.Perm (Sum α β) :=
   Equiv.sumCongr ea eb
 #align equiv.perm.sum_congr Equiv.Perm.sumCongr
 
@@ -947,8 +946,7 @@ open Sum
 /-- The type of dependent functions on a sum type `ι ⊕ ι'` is equivalent to the type of pairs of
 functions on `ι` and on `ι'`. This is a dependent version of `Equiv.sumArrowEquivProdArrow`. -/
 @[simps]
-def sumPiEquivProdPi (π : ι ⊕ ι' → Type*) : (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i')
-    where
+def sumPiEquivProdPi (π : ι ⊕ ι' → Type*) : (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i') where
   toFun f := ⟨fun i => f (inl i), fun i' => f (inr i')⟩
   invFun g := Sum.rec g.1 g.2
   left_inv f := by ext (i | i) <;> rfl
@@ -1381,6 +1379,14 @@ def subtypeProdEquivProd {p : α → Prop} {q : β → Prop} :
   right_inv := fun ⟨⟨_, _⟩, ⟨_, _⟩⟩ => rfl
 #align equiv.subtype_prod_equiv_prod Equiv.subtypeProdEquivProd
 
+/-- A subtype of a `Prod` that depends only on the first component is equivalent to the
+corresponding subtype of the first type times the second type. -/
+def prodSubtypeFstEquivSubtypeProd {p : α → Prop} : {s : α × β // p s.1} ≃ {a // p a} × β where
+  toFun x := ⟨⟨x.1.1, x.2⟩, x.1.2⟩
+  invFun x := ⟨⟨x.1.1, x.2⟩, x.1.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 /-- A subtype of a `Prod` is equivalent to a sigma type whose fibers are subtypes. -/
 def subtypeProdEquivSigmaSubtype (p : α → β → Prop) :
     { x : α × β // p x.1 x.2 } ≃ Σa, { b : β // p a b } where
@@ -1555,10 +1561,9 @@ end
 equivalence relation `~`. Let `p₂` be a predicate on the quotient type `α/~`, and `p₁` be the lift
 of this predicate to `α`: `p₁ a ↔ p₂ ⟦a⟧`. Let `~₂` be the restriction of `~` to `{x // p₁ x}`.
 Then `{x // p₂ x}` is equivalent to the quotient of `{x // p₁ x}` by `~₂`. -/
-def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) [s₁ : Setoid α] [s₂ : Setoid (Subtype p₁)]
+def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) {s₁ : Setoid α} {s₂ : Setoid (Subtype p₁)}
     (p₂ : Quotient s₁ → Prop) (hp₂ : ∀ a, p₁ a ↔ p₂ ⟦a⟧)
-    (h : ∀ x y : Subtype p₁, @Setoid.r _ s₂ x y ↔ (x : α) ≈ y) :
-    { x // p₂ x } ≃ Quotient s₂ where
+    (h : ∀ x y : Subtype p₁, s₂.r x y ↔ s₁.r x y) : {x // p₂ x} ≃ Quotient s₂ where
   toFun a :=
     Quotient.hrecOn a.1 (fun a h => ⟦⟨a, (hp₂ _).2 h⟩⟧)
       (fun a b hab => hfunext (by rw [Quotient.sound hab]) fun h₁ h₂ _ =>

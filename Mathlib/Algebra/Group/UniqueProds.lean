@@ -458,8 +458,8 @@ open UniqueMul in
     obtain ⟨ai, hA, bi, hB, hi⟩ := uniqueMul_of_nonempty (hA.image (· i)) (hB.image (· i))
     rw [mem_image, ← filter_nonempty_iff] at hA hB
     let A' := A.filter (· i = ai); let B' := B.filter (· i = bi)
-    obtain ⟨a0, ha0, b0, hb0, hu⟩ : ∃ a0 ∈ A', ∃ b0 ∈ B', UniqueMul A' B' a0 b0
-    · rcases hc with hc | hc; · exact ihA A' (hc.2 ai) hA hB
+    obtain ⟨a0, ha0, b0, hb0, hu⟩ : ∃ a0 ∈ A', ∃ b0 ∈ B', UniqueMul A' B' a0 b0 := by
+      rcases hc with hc | hc; · exact ihA A' (hc.2 ai) hA hB
       by_cases hA' : A' = A
       · rw [hA']
         exact ihB B' (hc.2 bi) hB
@@ -634,15 +634,22 @@ instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
 
 end TwoUniqueProds
 
--- deprecated 2024-02-04
-@[deprecated] alias UniqueProds.mulHom_image_of_injective := UniqueProds.of_injective_mulHom
-@[deprecated] alias UniqueSums.addHom_image_of_injective := UniqueSums.of_injective_addHom
-@[deprecated] alias UniqueProds.mulHom_image_iff := MulEquiv.uniqueProds_iff
-@[deprecated] alias UniqueSums.addHom_image_iff := AddEquiv.uniqueSums_iff
-@[deprecated] alias TwoUniqueProds.mulHom_image_of_injective := TwoUniqueProds.of_injective_mulHom
-@[deprecated] alias TwoUniqueSums.addHom_image_of_injective := TwoUniqueSums.of_injective_addHom
-@[deprecated] alias TwoUniqueProds.mulHom_image_iff := MulEquiv.twoUniqueProds_iff
-@[deprecated] alias TwoUniqueSums.addHom_image_iff := AddEquiv.twoUniqueSums_iff
+@[deprecated (since := "2024-02-04")]
+alias UniqueProds.mulHom_image_of_injective := UniqueProds.of_injective_mulHom
+@[deprecated (since := "2024-02-04")]
+alias UniqueSums.addHom_image_of_injective := UniqueSums.of_injective_addHom
+@[deprecated (since := "2024-02-04")]
+alias UniqueProds.mulHom_image_iff := MulEquiv.uniqueProds_iff
+@[deprecated (since := "2024-02-04")]
+alias UniqueSums.addHom_image_iff := AddEquiv.uniqueSums_iff
+@[deprecated (since := "2024-02-04")]
+alias TwoUniqueProds.mulHom_image_of_injective := TwoUniqueProds.of_injective_mulHom
+@[deprecated (since := "2024-02-04")]
+alias TwoUniqueSums.addHom_image_of_injective := TwoUniqueSums.of_injective_addHom
+@[deprecated (since := "2024-02-04")]
+alias TwoUniqueProds.mulHom_image_iff := MulEquiv.twoUniqueProds_iff
+@[deprecated (since := "2024-02-04")]
+alias TwoUniqueSums.addHom_image_iff := AddEquiv.twoUniqueSums_iff
 
 instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSums (G i)] :
     TwoUniqueSums (Π₀ i, G i) :=

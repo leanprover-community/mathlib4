@@ -98,7 +98,7 @@ theorem of_iso {P Q : C} (i : P ≅ Q) (hP : Injective P) : Injective Q :=
   {
     factors := fun g f mono => by
       obtain ⟨h, h_eq⟩ := @Injective.factors C _ P _ _ _ (g ≫ i.inv) f mono
-      refine' ⟨h ≫ i.hom, _⟩
+      refine ⟨h ≫ i.hom, ?_⟩
       rw [← Category.assoc, h_eq, Category.assoc, Iso.inv_hom_id, Category.comp_id] }
 #align category_theory.injective.of_iso CategoryTheory.Injective.of_iso
 
@@ -140,16 +140,16 @@ instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injectiv
     · simp only [prod.lift_fst]
     · simp only [prod.lift_snd]
 
-instance {β : Type v} (c : β → C) [HasProduct c] [∀ b, Injective (c b)] : Injective (∏ c) where
+instance {β : Type v} (c : β → C) [HasProduct c] [∀ b, Injective (c b)] : Injective (∏ᶜ c) where
   factors g f mono := by
-    refine' ⟨Pi.lift fun b => factorThru (g ≫ Pi.π c _) f, _⟩
+    refine ⟨Pi.lift fun b => factorThru (g ≫ Pi.π c _) f, ?_⟩
     ext b
     simp only [Category.assoc, limit.lift_π, Fan.mk_π_app, comp_factorThru]
 
 instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Injective P] [Injective Q] :
     Injective (P ⊞ Q) where
   factors g f mono := by
-    refine' ⟨biprod.lift (factorThru (g ≫ biprod.fst) f) (factorThru (g ≫ biprod.snd) f), _⟩
+    refine ⟨biprod.lift (factorThru (g ≫ biprod.fst) f) (factorThru (g ≫ biprod.snd) f), ?_⟩
     ext
     · simp only [Category.assoc, biprod.lift_fst, comp_factorThru]
     · simp only [Category.assoc, biprod.lift_snd, comp_factorThru]
@@ -157,15 +157,15 @@ instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Injective P] [
 instance {β : Type v} (c : β → C) [HasZeroMorphisms C] [HasBiproduct c] [∀ b, Injective (c b)] :
     Injective (⨁ c) where
   factors g f mono := by
-    refine' ⟨biproduct.lift fun b => factorThru (g ≫ biproduct.π _ _) f, _⟩
+    refine ⟨biproduct.lift fun b => factorThru (g ≫ biproduct.π _ _) f, ?_⟩
     ext
     simp only [Category.assoc, biproduct.lift_π, comp_factorThru]
 
-instance {P : Cᵒᵖ} [Projective P] : Injective (unop P) where
+instance {P : Cᵒᵖ} [Projective P] : Injective no_index (unop P) where
   factors g f mono :=
     ⟨(@Projective.factorThru Cᵒᵖ _ P _ _ _ g.op f.op _).unop, Quiver.Hom.op_inj (by simp)⟩
 
-instance {J : Cᵒᵖ} [Injective J] : Projective (unop J) where
+instance {J : Cᵒᵖ} [Injective J] : Projective no_index (unop J) where
   factors f e he :=
     ⟨(@factorThru Cᵒᵖ _ J _ _ _ f.op e.op _).unop, Quiver.Hom.op_inj (by simp)⟩
 

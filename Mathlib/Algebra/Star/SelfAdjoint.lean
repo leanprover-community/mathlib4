@@ -50,6 +50,7 @@ def IsSelfAdjoint [Star R] (x : R) : Prop :=
 #align is_self_adjoint IsSelfAdjoint
 
 /-- An element of a star monoid is normal if it commutes with its adjoint. -/
+@[mk_iff]
 class IsStarNormal [Mul R] [Star R] (x : R) : Prop where
   /-- A normal element of a star monoid commutes with its adjoint. -/
   star_comm_self : Commute (star x) x

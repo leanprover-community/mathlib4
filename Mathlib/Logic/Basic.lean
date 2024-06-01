@@ -6,8 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Init.Logic
 import Mathlib.Init.Function
 import Mathlib.Init.Algebra.Classes
-import Std.Util.LibraryNote
-import Std.Tactic.Lint.Basic
+import Batteries.Util.LibraryNote
+import Batteries.Tactic.Lint.Basic
 
 #align_import logic.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 #align_import init.ite_simp from "leanprover-community/lean"@"4a03bdeb31b3688c31d02d7ff8e0ff2e5d6174db"
@@ -42,7 +42,7 @@ attribute [simp] cast_eq cast_heq imp_false
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
 as done in the `elide` and `unelide` tactics. -/
-@[reducible] def hidden {α : Sort*} {a : α} := a
+abbrev hidden {α : Sort*} {a : α} := a
 #align hidden hidden
 
 variable {α : Sort*}
@@ -132,7 +132,7 @@ instance {p : Prop} [Decidable p] : Decidable (Fact p) :=
   decidable_of_iff _ fact_iff.symm
 
 /-- Swaps two pairs of arguments to a function. -/
-@[reducible] def Function.swap₂ {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*}
+abbrev Function.swap₂ {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*}
     {φ : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Sort*} (f : ∀ i₁ j₁ i₂ j₂, φ i₁ j₁ i₂ j₂)
     (i₂ j₂ i₁ j₁) : φ i₁ j₁ i₂ j₂ := f i₁ j₁ i₂ j₂
 #align function.swap₂ Function.swap₂
@@ -553,7 +553,7 @@ theorem eq_equivalence {α : Sort*} : Equivalence (@Eq α) :=
   ⟨Eq.refl, @Eq.symm _, @Eq.trans _⟩
 #align eq_equivalence eq_equivalence
 
--- These were migrated to Std but the `@[simp]` attributes were (mysteriously?) removed.
+-- These were migrated to Batteries but the `@[simp]` attributes were (mysteriously?) removed.
 attribute [simp] eq_mp_eq_cast eq_mpr_eq_cast
 
 #align eq_mp_eq_cast eq_mp_eq_cast
@@ -595,8 +595,8 @@ theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) 
 -- Porting note (#10756): new theorem. More general version of `eqRec_heq`
 theorem eqRec_heq' {α : Sort*} {a' : α} {motive : (a : α) → a' = a → Sort*}
     (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
-    HEq (@Eq.rec α a' motive p a t) p :=
-  by subst t; rfl
+    HEq (@Eq.rec α a' motive p a t) p := by
+  subst t; rfl
 
 set_option autoImplicit true in
 theorem rec_heq_of_heq {C : α → Sort*} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
@@ -637,7 +637,7 @@ theorem pi_congr {β' : α → Sort _} (h : ∀ a, β a = β' a) : (∀ a, β a)
 #align pi_congr pi_congr
 
 -- Porting note: some higher order lemmas such as `forall₂_congr` and `exists₂_congr`
--- were moved to `Std4`
+-- were moved to `Batteries`
 
 theorem forall₂_imp {p q : ∀ a, β a → Prop} (h : ∀ a b, p a b → q a b) :
     (∀ a b, p a b) → ∀ a b, q a b :=
@@ -934,12 +934,6 @@ theorem exists_prop_congr {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h ↔
     Exists q ↔ ∃ h : p', q' (hp.2 h) :=
   ⟨fun ⟨_, _⟩ ↦ ⟨hp.1 ‹_›, (hq _).1 ‹_›⟩, fun ⟨_, _⟩ ↦ ⟨_, (hq _).2 ‹_›⟩⟩
 #align exists_prop_congr exists_prop_congr
-
-@[congr]
-theorem exists_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h ↔ q' h) (hp : p ↔ p') :
-    Exists q = ∃ h : p', q' (hp.2 h) :=
-  propext (exists_prop_congr hq hp)
-#align exists_prop_congr' exists_prop_congr'
 
 /-- See `IsEmpty.exists_iff` for the `False` version. -/
 @[simp] theorem exists_true_left (p : True → Prop) : (∃ x, p x) ↔ p True.intro :=

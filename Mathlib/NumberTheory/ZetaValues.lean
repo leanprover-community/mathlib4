@@ -134,7 +134,7 @@ theorem bernoulliFourierCoeff_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
   rcases eq_or_ne n 0 with (rfl | hn)
   · rw [bernoulliFourierCoeff_zero hk, Int.cast_zero, mul_zero, zero_pow hk,
       div_zero]
-  refine' Nat.le_induction _ (fun k hk h'k => _) k (Nat.one_le_iff_ne_zero.mpr hk)
+  refine Nat.le_induction ?_ (fun k hk h'k => ?_) k (Nat.one_le_iff_ne_zero.mpr hk)
   · rw [bernoulliFourierCoeff_recurrence 1 hn]
     simp only [Nat.cast_one, tsub_self, neg_mul, one_mul, eq_self_iff_true, if_true,
       Nat.factorial_one, pow_one, inv_I, mul_neg]
@@ -236,7 +236,7 @@ theorem hasSum_one_div_nat_pow_mul_fourier {k : ℕ} (hk : 2 ≤ k) {x : ℝ} (h
       (fun n : ℕ =>
         (1 : ℂ) / (n : ℂ) ^ k * (fourier n (x : 𝕌) + (-1 : ℂ) ^ k * fourier (-n) (x : 𝕌)))
       (-(2 * π * I) ^ k / k ! * bernoulliFun k x) := by
-  convert (hasSum_one_div_pow_mul_fourier_mul_bernoulliFun hk hx).sum_nat_of_sum_int using 1
+  convert (hasSum_one_div_pow_mul_fourier_mul_bernoulliFun hk hx).nat_add_neg using 1
   · ext1 n
     rw [Int.cast_neg, mul_add, ← mul_assoc]
     conv_rhs => rw [neg_eq_neg_one_mul, mul_pow, ← div_div]

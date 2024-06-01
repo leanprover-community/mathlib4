@@ -54,7 +54,7 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
-open scoped BigOperators ComplexConjugate
+open scoped ComplexConjugate
 
 open Module.End
 
@@ -87,7 +87,7 @@ theorem orthogonalFamily_eigenspaces :
   · simp [hv']
   have H := hT.conj_eigenvalue_eq_self (hasEigenvalue_of_hasEigenvector ⟨hv, hv'⟩)
   rw [mem_eigenspace_iff] at hv hw
-  refine' Or.resolve_left _ hμν.symm
+  refine Or.resolve_left ?_ hμν.symm
   simpa [inner_smul_left, inner_smul_right, hv, hw, H] using (hT v w).symm
 #align linear_map.is_symmetric.orthogonal_family_eigenspaces LinearMap.IsSymmetric.orthogonalFamily_eigenspaces
 
@@ -110,7 +110,7 @@ product space has no eigenvalues. -/
 theorem orthogonalComplement_iSup_eigenspaces (μ : 𝕜) :
     eigenspace (T.restrict hT.orthogonalComplement_iSup_eigenspaces_invariant) μ = ⊥ := by
   set p : Submodule 𝕜 E := (⨆ μ, eigenspace T μ)ᗮ
-  refine' eigenspace_restrict_eq_bot hT.orthogonalComplement_iSup_eigenspaces_invariant _
+  refine eigenspace_restrict_eq_bot hT.orthogonalComplement_iSup_eigenspaces_invariant ?_
   have H₂ : eigenspace T μ ⟂ p := (Submodule.isOrtho_orthogonal_right _).mono_left (le_iSup _ _)
   exact H₂.disjoint
 #align linear_map.is_symmetric.orthogonal_supr_eigenspaces LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces

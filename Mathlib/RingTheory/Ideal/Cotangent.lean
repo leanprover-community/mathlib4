@@ -88,7 +88,7 @@ theorem toCotangent_range : LinearMap.range I.toCotangent = ⊤ := Submodule.ran
 theorem cotangent_subsingleton_iff : Subsingleton I.Cotangent ↔ IsIdempotentElem I := by
   constructor
   · intro H
-    refine' (pow_two I).symm.trans (le_antisymm (Ideal.pow_le_self two_ne_zero) _)
+    refine (pow_two I).symm.trans (le_antisymm (Ideal.pow_le_self two_ne_zero) ?_)
     exact fun x hx => (I.toCotangent_eq_zero ⟨x, hx⟩).mp (Subsingleton.elim _ _)
   · exact fun e =>
       ⟨fun x y =>
@@ -203,8 +203,7 @@ namespace LocalRing
 variable (R : Type*) [CommRing R] [LocalRing R]
 
 /-- The `A ⧸ I`-vector space `I ⧸ I ^ 2`. -/
-@[reducible]
-def CotangentSpace : Type _ := (maximalIdeal R).Cotangent
+abbrev CotangentSpace : Type _ := (maximalIdeal R).Cotangent
 #align local_ring.cotangent_space LocalRing.CotangentSpace
 
 instance : Module (ResidueField R) (CotangentSpace R) := Ideal.cotangentModule _

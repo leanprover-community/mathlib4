@@ -218,7 +218,9 @@ theorem EquicontinuousOn.comap_uniformOnFun_eq {𝔖 : Set (Set X)} (𝔖_compac
   -- `K.restrict ∘ F : ι → (K →ᵤ α)` for `K ∈ 𝔖`.
   have H1 : (UniformOnFun.uniformSpace X α 𝔖).comap F =
       ⨅ (K ∈ 𝔖), (UniformFun.uniformSpace _ _).comap (K.restrict ∘ F) := by
-    simp_rw [UniformOnFun.uniformSpace, UniformSpace.comap_iInf, ← UniformSpace.comap_comap]; rfl
+    simp_rw [UniformOnFun.uniformSpace, UniformSpace.comap_iInf, ← UniformSpace.comap_comap,
+      UniformFun.ofFun, Equiv.coe_fn_mk, UniformOnFun.toFun, UniformOnFun.ofFun, Function.comp,
+      UniformFun, Equiv.coe_fn_symm_mk]
   -- Now, note that a similar fact is true for the uniform structure on `X → α` induced by
   -- the map `(⋃₀ 𝔖).restrict : (X → α) → ((⋃₀ 𝔖) → α)`: it is equal to the one induced by
   -- all maps `K.restrict : (X → α) → (K → α)` for `K ∈ 𝔖`, which means that the RHS of our

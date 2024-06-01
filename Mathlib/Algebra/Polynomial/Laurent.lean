@@ -72,7 +72,7 @@ Lots is missing!
 -/
 
 
-open Polynomial BigOperators Function AddMonoidAlgebra Finsupp
+open Polynomial Function AddMonoidAlgebra Finsupp
 
 noncomputable section
 
@@ -110,9 +110,8 @@ theorem Polynomial.toLaurent_apply [Semiring R] (p : R[X]) :
 
 /-- The `R`-algebra map, taking a polynomial with coefficients in `R` to a Laurent polynomial
 with coefficients in `R`. -/
-def Polynomial.toLaurentAlg [CommSemiring R] : R[X] →ₐ[R] R[T;T⁻¹] := by
-  refine' AlgHom.comp _ (toFinsuppIsoAlg R).toAlgHom
-  exact mapDomainAlgHom R R Int.ofNatHom
+def Polynomial.toLaurentAlg [CommSemiring R] : R[X] →ₐ[R] R[T;T⁻¹] :=
+  (mapDomainAlgHom R R Int.ofNatHom).comp (toFinsuppIsoAlg R).toAlgHom
 #align polynomial.to_laurent_alg Polynomial.toLaurentAlg
 
 @[simp] lemma Polynomial.coe_toLaurentAlg [CommSemiring R] :
@@ -322,7 +321,7 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
 protected theorem induction_on' {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹])
     (h_add : ∀ p q, M p → M q → M (p + q)) (h_C_mul_T : ∀ (n : ℤ) (a : R), M (C a * T n)) :
     M p := by
-  refine' p.induction_on (fun a => _) (fun {p q} => h_add p q) _ _ <;>
+  refine p.induction_on (fun a => ?_) (fun {p q} => h_add p q) ?_ ?_ <;>
       try exact fun n f _ => h_C_mul_T _ f
   convert h_C_mul_T 0 a
   exact (mul_one _).symm
@@ -351,12 +350,10 @@ def trunc : R[T;T⁻¹] →+ R[X] :=
 
 @[simp]
 theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (monomial n.toNat r) 0 := by
-  -- Porting note: added. Should move elsewhere after the port.
-  have : Function.Injective Int.ofNat := fun x y h => Int.ofNat_inj.mp h
   apply (toFinsuppIso R).injective
   rw [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply]
   -- Porting note (#10691): was `rw`
-  erw [comapDomain.addMonoidHom_apply this]
+  erw [comapDomain.addMonoidHom_apply Int.ofNat_injective]
   rw [toFinsuppIso_apply]
   -- Porting note: rewrote proof below relative to mathlib3.
   by_cases n0 : 0 ≤ n
@@ -375,7 +372,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem leftInverse_trunc_toLaurent :
     Function.LeftInverse (trunc : R[T;T⁻¹] → R[X]) Polynomial.toLaurent := by
-  refine' fun f => f.induction_on' _ _
+  refine fun f => f.induction_on' ?_ ?_
   · intro f g hf hg
     simp only [hf, hg, _root_.map_add]
   · intro n r
@@ -405,12 +402,12 @@ theorem _root_.Polynomial.toLaurent_ne_zero {f : R[X]} : f ≠ 0 ↔ toLaurent f
 theorem exists_T_pow (f : R[T;T⁻¹]) : ∃ (n : ℕ) (f' : R[X]), toLaurent f' = f * T n := by
   refine f.induction_on' ?_ fun n a => ?_ <;> clear f
   · rintro f g ⟨m, fn, hf⟩ ⟨n, gn, hg⟩
-    refine' ⟨m + n, fn * X ^ n + gn * X ^ m, _⟩
+    refine ⟨m + n, fn * X ^ n + gn * X ^ m, ?_⟩
     simp only [hf, hg, add_mul, add_comm (n : ℤ), map_add, map_mul, Polynomial.toLaurent_X_pow,
       mul_T_assoc, Int.ofNat_add]
   · cases' n with n n
     · exact ⟨0, Polynomial.C a * X ^ n, by simp⟩
-    · refine' ⟨n + 1, Polynomial.C a, _⟩
+    · refine ⟨n + 1, Polynomial.C a, ?_⟩
       simp only [Int.negSucc_eq, Polynomial.toLaurent_C, Int.ofNat_succ, mul_T_assoc, add_left_neg,
         T_zero, mul_one]
 set_option linter.uppercaseLean3 false in
@@ -464,13 +461,13 @@ inclusion `ℕ ↪ ℤ`. -/
 theorem toLaurent_support (f : R[X]) : f.toLaurent.support = f.support.map Nat.castEmbedding := by
   generalize hd : f.support = s
   revert f
-  refine' Finset.induction_on s _ _ <;> clear s
+  refine Finset.induction_on s ?_ ?_ <;> clear s
   · simp (config := { contextual := true }) only [Polynomial.support_eq_empty, map_zero,
       Finsupp.support_zero, eq_self_iff_true, imp_true_iff, Finset.map_empty,
       Finsupp.support_eq_empty]
   · intro a s as hf f fs
     have : (erase a f).toLaurent.support = s.map Nat.castEmbedding := by
-      refine' hf (f.erase a) _
+      refine hf (f.erase a) ?_
       simp only [fs, Finset.erase_eq_of_not_mem as, Polynomial.support_erase,
         Finset.erase_insert_eq_erase]
     rw [← monomial_add_erase f a, Finset.map_insert, ← this, map_add, Polynomial.toLaurent_C_mul_T,
@@ -499,10 +496,10 @@ theorem degree_zero : degree (0 : R[T;T⁻¹]) = ⊥ :=
 
 @[simp]
 theorem degree_eq_bot_iff {f : R[T;T⁻¹]} : f.degree = ⊥ ↔ f = 0 := by
-  refine' ⟨fun h => _, fun h => by rw [h, degree_zero]⟩
+  refine ⟨fun h => ?_, fun h => by rw [h, degree_zero]⟩
   rw [degree, Finset.max_eq_sup_withBot] at h
   ext n
-  refine' not_not.mp fun f0 => _
+  refine not_not.mp fun f0 => ?_
   simp_rw [Finset.sup_eq_bot_iff, Finsupp.mem_support_iff, Ne, WithBot.coe_ne_bot] at h
   exact h n f0
 #align laurent_polynomial.degree_eq_bot_iff LaurentPolynomial.degree_eq_bot_iff
@@ -514,7 +511,7 @@ theorem degree_C_mul_T (n : ℤ) (a : R) (a0 : a ≠ 0) : degree (C a * T n) = n
   rw [degree]
   -- Porting note: was `convert Finset.max_singleton`
   have : Finsupp.support (C a * T n) = {n} := by
-    refine' support_eq_singleton.mpr _
+    refine support_eq_singleton.mpr ?_
     rw [← single_eq_C_mul_T]
     simp only [single_eq_same, a0, Ne, not_false_iff, eq_self_iff_true, and_self_iff]
   rw [this]
@@ -609,7 +606,7 @@ theorem isLocalization : IsLocalization (Submonoid.closure ({X} : Set R[X])) R[T
     surj' := fun f => by
       induction' f using LaurentPolynomial.induction_on_mul_T with f n
       have := (Submonoid.closure ({X} : Set R[X])).pow_mem Submonoid.mem_closure_singleton_self n
-      refine' ⟨(f, ⟨_, this⟩), _⟩
+      refine ⟨(f, ⟨_, this⟩), ?_⟩
       simp only [algebraMap_eq_toLaurent, Polynomial.toLaurent_X_pow, mul_T_assoc,
         add_left_neg, T_zero, mul_one]
     exists_of_eq := fun {f g} => by

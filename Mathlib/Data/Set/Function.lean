@@ -970,6 +970,10 @@ theorem eqOn_comp_right_iff : s.EqOn (g₁ ∘ f) (g₂ ∘ f) ↔ (f '' s).EqOn
   (s.surjOn_image f).cancel_right <| s.mapsTo_image f
 #align set.eq_on_comp_right_iff Set.eqOn_comp_right_iff
 
+theorem SurjOn.forall {p : β → Prop} (hf : s.SurjOn f t) (hf' : s.MapsTo f t) :
+    (∀ y ∈ t, p y) ↔ (∀ x ∈ s, p (f x)) :=
+  ⟨fun H x hx ↦ H (f x) (hf' hx), fun H _y hy ↦ let ⟨x, hx, hxy⟩ := hf hy; hxy ▸ H x hx⟩
+
 end surjOn
 
 /-! ### Bijectivity -/
@@ -1299,8 +1303,8 @@ theorem invFunOn_eq (h : ∃ a ∈ s, f a = b) : f (invFunOn f s b) = b :=
   (invFunOn_pos h).right
 #align function.inv_fun_on_eq Function.invFunOn_eq
 
-theorem invFunOn_neg (h : ¬∃ a ∈ s, f a = b) : invFunOn f s b = Classical.choice ‹Nonempty α› :=
-  by rw [invFunOn, dif_neg h]
+theorem invFunOn_neg (h : ¬∃ a ∈ s, f a = b) : invFunOn f s b = Classical.choice ‹Nonempty α› := by
+  rw [invFunOn, dif_neg h]
 #align function.inv_fun_on_neg Function.invFunOn_neg
 
 @[simp]
@@ -1587,8 +1591,8 @@ theorem apply_piecewise {δ' : α → Sort*} (h : ∀ i, δ i → δ' i) {x : α
 theorem apply_piecewise₂ {δ' δ'' : α → Sort*} (f' g' : ∀ i, δ' i) (h : ∀ i, δ i → δ' i → δ'' i)
     {x : α} :
     h x (s.piecewise f g x) (s.piecewise f' g' x) =
-      s.piecewise (fun x => h x (f x) (f' x)) (fun x => h x (g x) (g' x)) x :=
-  by by_cases hx : x ∈ s <;> simp [hx]
+      s.piecewise (fun x => h x (f x) (f' x)) (fun x => h x (g x) (g' x)) x := by
+  by_cases hx : x ∈ s <;> simp [hx]
 #align set.apply_piecewise₂ Set.apply_piecewise₂
 
 theorem piecewise_op {δ' : α → Sort*} (h : ∀ i, δ i → δ' i) :

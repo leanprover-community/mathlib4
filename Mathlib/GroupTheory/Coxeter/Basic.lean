@@ -5,6 +5,7 @@ Authors: Newell Jensen, Mitchell Lee
 -/
 import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.GroupTheory.Coxeter.Matrix
+import Mathlib.Data.Int.Parity
 
 /-!
 # Coxeter groups and Coxeter systems
@@ -31,7 +32,8 @@ homomorphism $W \to G$ (`CoxeterSystem.lift`) in a unique way.
 
 A *word* is a sequence of elements of $B$. The word $(i_1, \ldots, i_\ell)$ has a corresponding
 product $s_{i_1} \cdots s_{i_\ell} \in W$ (`CoxeterSystem.wordProd`). Every element of $W$ is the
-product of some word (`CoxeterSystem.wordProd_surjective`).
+product of some word (`CoxeterSystem.wordProd_surjective`). The words that alternate between two
+elements of $B$ (`CoxeterSystem.alternatingWord`) are particularly important.
 
 ## Implementation details
 
@@ -51,6 +53,7 @@ reflections unless necessary; instead, we state our results in terms of $B$ wher
 * `CoxeterSystem.lift` : Extend a function `f : B → G` to a monoid homomorphism `f' : W → G`
   satisfying `f' (cs.simple i) = f i` for all `i`.
 * `CoxeterSystem.wordProd`
+* `CoxeterSystem.alternatingWord`
 
 ## References
 
@@ -113,17 +116,19 @@ theorem reindex_relationsSet :
       apply congrArg Set.range
       ext ⟨i, i'⟩
       simp [relation, reindex_apply, M']
-  _ = _ := by simp [Set.range_comp]; rfl
+  _ = _ := by simp [Set.range_comp, relationsSet]
 
 /-- The isomorphism between the Coxeter group associated to the reindexed matrix `M.reindex e` and
 the Coxeter group associated to `M`. -/
 def reindexGroupEquiv : (M.reindex e).Group ≃* M.Group :=
-  (QuotientGroup.congr (Subgroup.normalClosure M.relationsSet)
+  .symm <| QuotientGroup.congr
+    (Subgroup.normalClosure M.relationsSet)
     (Subgroup.normalClosure (M.reindex e).relationsSet)
-    (FreeGroup.freeGroupCongr e) (by
+    (FreeGroup.freeGroupCongr e)
+    (by
       rw [reindex_relationsSet,
         Subgroup.map_normalClosure _ _ (by simpa using (FreeGroup.freeGroupCongr e).surjective),
-        MonoidHom.coe_coe])).symm
+        MonoidHom.coe_coe])
 
 theorem reindexGroupEquiv_apply_simple (i : B') :
     (M.reindexGroupEquiv e) ((M.reindex e).simple i) = M.simple (e.symm i) := rfl
@@ -316,15 +321,14 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
     ext i
     simp only [MonoidHom.comp_apply, comp_apply, mem_setOf_eq, groupLift, simple]
     rw [← MonoidHom.toFun_eq_coe, toMonoidHom_apply_symm_apply, PresentedGroup.toGroup.of,
-      OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, Units.coeHom_apply]
-    rfl
+      OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, Units.coeHom_apply, restrictUnit]
   right_inv ι := by
     apply cs.ext_simple
     intro i
     dsimp only
     rw [groupLift, simple, MonoidHom.comp_apply, MonoidHom.comp_apply, toMonoidHom_apply_symm_apply,
       PresentedGroup.toGroup.of, CoxeterSystem.restrictUnit, Units.coeHom_apply]
-    rfl
+    simp only [comp_apply, simple]
 
 @[simp]
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
@@ -372,5 +376,95 @@ theorem wordProd_surjective : Surjective cs.wordProd := by
   · rintro _ i ⟨ω, rfl⟩
     use i :: ω
     rw [wordProd_cons]
+
+/-- The word of length `m` that alternates between `i` and `i'`, ending with `i'`. -/
+def alternatingWord (i i' : B) (m : ℕ) : List B :=
+  match m with
+  | 0    => []
+  | m+1  => (alternatingWord i' i m).concat i'
+
+/-- The word of length `M i i'` that alternates between `i` and `i'`, ending with `i'`. -/
+abbrev braidWord (M : CoxeterMatrix B) (i i' : B) : List B := alternatingWord i i' (M i i')
+
+theorem alternatingWord_succ (i i' : B) (m : ℕ) :
+    alternatingWord i i' (m + 1) = (alternatingWord i' i m).concat i' := rfl
+
+theorem alternatingWord_succ' (i i' : B) (m : ℕ) :
+    alternatingWord i i' (m + 1) = (if Even m then i' else i) :: alternatingWord i i' m := by
+  induction' m with m ih generalizing i i'
+  · simp [alternatingWord]
+  · rw [alternatingWord]
+    nth_rw 1 [ih i' i]
+    rw [alternatingWord]
+    simp [Nat.even_add_one]
+
+@[simp]
+theorem length_alternatingWord (i i' : B) (m : ℕ) :
+    List.length (alternatingWord i i' m) = m := by
+  induction' m with m ih generalizing i i'
+  · dsimp [alternatingWord]
+  · simpa [alternatingWord] using ih i' i
+
+theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
+    π (alternatingWord i i' m) = (if Even m then 1 else s i') * (s i * s i') ^ (m / 2) := by
+  induction' m with m ih
+  · simp [alternatingWord]
+  · rw [alternatingWord_succ', wordProd_cons, ih]
+    rcases Nat.even_or_odd m with even | odd
+    · rcases even with ⟨k, rfl⟩
+      ring_nf
+      have : Odd (1 + k * 2) := by use k; ring
+      simp [← two_mul, Nat.odd_iff_not_even.mp this]
+      rw [Nat.add_mul_div_right _ _ (by norm_num : 0 < 2)]
+      norm_num
+    · rcases odd with ⟨k, rfl⟩
+      ring_nf
+      have h₁ : Odd (1 + k * 2) := by use k; ring
+      have h₂ : Even (2 + k * 2) := by use (k + 1); ring
+      simp [Nat.odd_iff_not_even.mp h₁, h₂]
+      rw [Nat.add_mul_div_right _ _ (by norm_num : 0 < 2)]
+      norm_num
+      rw [pow_succ', mul_assoc]
+
+theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (hm : m ≤ M i i' * 2) :
+    π (alternatingWord i i' m) = π (alternatingWord i' i (M i i' * 2 - m)) := by
+  simp_rw [prod_alternatingWord_eq_mul_pow, ← Int.even_coe_nat]
+
+  /- Rewrite everything in terms of an integer m' which is equal to m.
+  The resulting equation holds for all integers m'. -/
+  simp_rw [← zpow_natCast, Int.ofNat_ediv, Int.ofNat_sub hm]
+  generalize (m : ℤ) = m'
+  clear hm
+  push_cast
+
+  rcases Int.even_or_odd' m' with ⟨k, rfl | rfl⟩
+  · rw [if_pos (by use k; ring), if_pos (by use -k + (M i i'); ring), mul_comm 2 k, ← sub_mul]
+    repeat rw [Int.mul_ediv_cancel _ (by norm_num)]
+    rw [zpow_sub, zpow_natCast, simple_mul_simple_pow' cs i i', ← inv_zpow]
+    simp
+  · have : ¬Even (2 * k + 1) := Int.odd_iff_not_even.mp ⟨k, rfl⟩
+    rw [if_neg this]
+    have : ¬Even (↑(M i i') * 2 - (2 * k + 1)) :=
+      Int.odd_iff_not_even.mp ⟨↑(M i i') - k - 1, by ring⟩
+    rw [if_neg this]
+
+    rw [(by ring : ↑(M i i') * 2 - (2 * k + 1) = -1 + (-k + ↑(M i i')) * 2),
+      (by ring : 2 * k + 1 = 1 + k * 2)]
+    repeat rw [Int.add_mul_ediv_right _ _ (by norm_num)]
+    norm_num
+
+    rw [zpow_add, zpow_add, zpow_natCast, simple_mul_simple_pow', zpow_neg, ← inv_zpow, zpow_neg,
+      ← inv_zpow]
+    simp [← mul_assoc]
+
+/-- The two words of length `M i i'` that alternate between `i` and `i'` have the same product.
+This is known as the "braid relation" or "Artin-Tits relation". -/
+theorem wordProd_braidWord_eq (i i' : B) :
+    π (braidWord M i i') = π (braidWord M i' i) := by
+  have := cs.prod_alternatingWord_eq_prod_alternatingWord_sub i i' (M i i')
+    (Nat.le_mul_of_pos_right _ (by norm_num))
+  rw [tsub_eq_of_eq_add (mul_two (M i i'))] at this
+  nth_rw 2 [M.symmetric i i'] at this
+  exact this
 
 end CoxeterSystem

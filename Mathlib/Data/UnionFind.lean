@@ -3,9 +3,9 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Order.LinearOrder
-import Std.Data.Array.Lemmas
+import Batteries.Data.Array.Lemmas
+import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Init.Order.Defs
 
 set_option autoImplicit true
 
@@ -25,7 +25,7 @@ def push {n} (m : UFModel n) (k) (le : n ≤ k) : UFModel k where
   parent i :=
     if h : i < n then
       let ⟨a, h'⟩ := m.parent ⟨i, h⟩
-      ⟨a, lt_of_lt_of_le h' le⟩
+      ⟨a, Nat.lt_of_lt_of_le h' le⟩
     else i
   rank i := if i < n then m.rank i else 0
   rank_lt i := by
@@ -51,7 +51,7 @@ def setParentBump {n} (m : UFModel n) (x y : Fin n)
         (intro h; try simp [h] at h₂ <;> simp [h₁, h₂, h]))
     · simp [← h₁]; split <;> rename_i h₃
       · rw [h₃]; apply Nat.lt_succ_self
-      · exact lt_of_le_of_ne H h₃
+      · exact Nat.lt_of_le_of_ne H h₃
     · have := Fin.eq_of_val_eq h₂.1; subst this
       simp [hroot] at h
     · have := m.rank_lt i h
@@ -98,7 +98,7 @@ theorem push {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m)
   refine mk' this fun i h₁ h₂ ↦ ?_
   simp [Array.get_push]; split <;> (rename_i h; simp at hm₁ ⊢)
   · rw [← hm₁ ⟨i, h₂⟩]; assumption
-  · cases show i = arr.size by apply le_antisymm <;> simp_all [Nat.lt_succ]
+  · cases show i = arr.size by apply Nat.le_antisymm <;> simp_all [Nat.lt_succ]
     rw [hm₂]
 
 theorem set {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m)
@@ -181,9 +181,9 @@ def rankMaxAux (self : UnionFind α) : ∀ (i : Nat),
   | i+1 => by
     let ⟨k, H⟩ := rankMaxAux self i
     refine ⟨max k (if h : _ then (self.arr.get ⟨i, h⟩).rank else 0), fun j hj h ↦ ?_⟩
-    match j, lt_or_eq_of_le (Nat.le_of_lt_succ hj) with
-    | j, Or.inl hj => exact le_trans (H _ hj h) (le_max_left _ _)
-    | _, Or.inr rfl => simp [h, le_max_right]
+    match j, Nat.lt_or_eq_of_le (Nat.le_of_lt_succ hj) with
+    | j, Or.inl hj => exact Nat.le_trans (H _ hj h) (Nat.le_max_left _ _)
+    | _, Or.inr rfl => simp [h, Nat.le_max_right]
 
 def rankMax (self : UnionFind α) := (rankMaxAux self self.size).1 + 1
 
@@ -217,7 +217,7 @@ def findAux (self : UnionFind α) (x : Fin self.size) :
       m.Models self.arr ∧ m'.Models s ∧ m'.rank = m.rank ∧
       (∃ hr, (m'.parent ⟨root, hr⟩).1 = root) ∧
       m.rank x ≤ m.rank root := by
-  let y := self.arr[x].parent
+  let y := (self.arr[x]'(Fin.isLt x)).parent
   refine if h : y = x then ⟨self.arr, x, ?a'⟩ else
     have := Nat.sub_lt_sub_left (self.lt_rankMax x) (self.rank_lt _ h)
     let ⟨arr₁, root, H⟩ := self.findAux ⟨y, self.parent_lt _ x.2⟩
@@ -227,7 +227,7 @@ def findAux (self : UnionFind α) (x : Fin self.size) :
   -- start proof
   case a' => -- FIXME: hygiene bug causes `case a` to fail
     let ⟨m, hm⟩ := self.model'
-    exact ⟨_, m, m, hm, hm, rfl, ⟨x.2, by rwa [← hm.parent_eq]⟩, le_refl _⟩
+    exact ⟨_, m, m, hm, hm, rfl, ⟨x.2, by rwa [← hm.parent_eq]⟩, Nat.le_refl _⟩
   all_goals let ⟨n, m, m', hm, hm', e, ⟨_, hr⟩, le⟩ := H
   case hx => exact hm'.size_eq ▸ hm.size_eq.symm ▸ x.2
   case b' =>
@@ -235,11 +235,11 @@ def findAux (self : UnionFind α) (x : Fin self.size) :
     let root : Fin n := ⟨root, hm'.size_eq.symm ▸ root.2⟩
     have hy : (UFModel.parent m x').1 = y := by rw [← hm.parent_eq x x.2 x'.2]; rfl
     have := m.rank_lt x'; rw [hy] at this
-    have := lt_of_lt_of_le (this h) le
+    have := Nat.lt_of_lt_of_le (this h) le
     refine ⟨n, m, _, hm,
       hm'.setParent x' root (by rw [e]; exact this) hx _ rfl rfl, e,
-      ⟨root.2, ?_⟩, le_of_lt this⟩
-    have : x.1 ≠ root := mt (congrArg _) (ne_of_lt this); dsimp only at this
+      ⟨root.2, ?_⟩, Nat.le_of_lt this⟩
+    have : x.1 ≠ root := mt (congrArg _) (Nat.ne_of_lt this); dsimp only at this
     simp [UFModel.setParent, this, hr]
 termination_by self.rankMax - self.rank x
 
@@ -255,8 +255,8 @@ def find (self : UnionFind α) (x : Fin self.size) :
 def link (self : UnionFind α) (x y : Fin self.size)
     (yroot : (self.arr.get y).parent = y) : UnionFind α := by
   refine if ne : x.1 = y then self else
-    let nx := self.arr[x]
-    let ny := self.arr[y]
+    let nx := self.arr[x]'(Fin.isLt x)
+    let ny := self.arr[y]'(Fin.isLt y)
     if h : ny.rank < nx.rank then
       ⟨self.arr.set y {ny with parent := x}, ?a⟩
     else
@@ -277,7 +277,7 @@ def link (self : UnionFind α) (x y : Fin self.size)
     have : UFModel.Agrees arr₁ (·.parent) parent :=
       hm.1.set (fun i h ↦ by simp [parent]; rw [if_neg h.symm]) (fun _ ↦ by simp [parent])
     have H1 : UFModel.Agrees arr₂ (·.parent) parent := by
-      simp only [arr₂, getElem_fin]; split
+      simp only [arr₂, Fin.getElem_fin]; split
       · exact this.set (fun i h ↦ by simp [h.symm]) fun _ ↦ by simp [ne, hm.parent_eq', ny, parent]
       · exact this
     have : UFModel.Agrees arr₁ (·.rank) (fun i : Fin n ↦ m.rank i) :=

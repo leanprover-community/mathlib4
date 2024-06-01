@@ -8,7 +8,7 @@ import Lean.Meta.Tactic.SolveByElim
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Basic
-import Std.Util.Cache
+import Batteries.Util.Cache
 import Mathlib.Tactic.Core
 
 /-!
@@ -24,7 +24,7 @@ It is a relative of `apply?` but for *forward reasoning* (i.e. looking at the hy
 rather than backward reasoning.
 
 ```
-import Std.Data.List.Basic
+import Batteries.Data.List.Basic
 import Mathlib.Tactic.Propose
 
 example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
@@ -37,7 +37,7 @@ set_option autoImplicit true
 
 namespace Mathlib.Tactic.Propose
 
-open Lean Meta Std.Tactic Tactic.TryThis
+open Lean Meta Batteries.Tactic Tactic.TryThis
 
 initialize registerTraceClass `Tactic.propose
 
