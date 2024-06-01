@@ -131,14 +131,20 @@ theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fint
 @[deprecated] -- 2024-02-21
 alias isAddCyclic_of_orderOf_eq_card := isAddCyclic_of_addOrderOf_eq_card
 
+@[to_additive]
+theorem Subgroup.eq_bot_or_eq_top_of_prime_card {G : Type*} [Group G] {_ : Fintype G}
+    (H : Subgroup G) {p : ℕ} [hp : Fact p.Prime] (h : Fintype.card G = p) : H = ⊥ ∨ H = ⊤ := by
+  classical
+  have := card_subgroup_dvd_card H
+  rwa [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card, h, Nat.dvd_prime hp.1, ← h,
+    ← eq_bot_iff_card, card_eq_iff_eq_top] at this
+
 /-- Any non-identity element of a finite group of prime order generates the group. -/
 @[to_additive "Any non-identity element of a finite group of prime order generates the group."]
 theorem zpowers_eq_top_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ}
     [hp : Fact p.Prime] (h : Fintype.card G = p) {g : G} (hg : g ≠ 1) : zpowers g = ⊤ := by
-  have := card_subgroup_dvd_card (zpowers g)
-  simp_rw [h, Nat.dvd_prime hp.1, ← eq_bot_iff_card, zpowers_eq_bot, hg, false_or, ← h,
-    card_eq_iff_eq_top] at this
-  exact this
+  have := (zpowers g).eq_bot_or_eq_top_of_prime_card h
+  rwa [zpowers_eq_bot, or_iff_right hg] at this
 
 @[to_additive]
 theorem mem_zpowers_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ} [hp : Fact p.Prime]
@@ -516,14 +522,7 @@ theorem isSimpleGroup_of_prime_card {α : Type u} [Group α] [Fintype α] {p : �
     have h' := Nat.Prime.one_lt (Fact.out (p := p.Prime))
     rw [← h] at h'
     exact Fintype.one_lt_card_iff_nontrivial.1 h'
-  ⟨fun H _ => by
-    classical
-      have hcard := card_subgroup_dvd_card H
-      rw [h, dvd_prime (Fact.out (p := p.Prime))] at hcard
-      refine hcard.imp (fun h1 => ?_) fun hp => ?_
-      · haveI := Fintype.card_le_one_iff_subsingleton.1 (le_of_eq h1)
-        apply eq_bot_of_subsingleton
-      · exact eq_top_of_card_eq _ (hp.trans h.symm)⟩
+  ⟨fun H _ => H.eq_bot_or_eq_top_of_prime_card h⟩
 #align is_simple_group_of_prime_card isSimpleGroup_of_prime_card
 #align is_simple_add_group_of_prime_card isSimpleAddGroup_of_prime_card
 
