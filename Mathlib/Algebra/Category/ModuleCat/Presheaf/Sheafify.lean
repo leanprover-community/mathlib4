@@ -326,6 +326,11 @@ instance : Presheaf.IsLocallyInjective J (toSheafify α φ).hom :=
 instance : Presheaf.IsLocallySurjective J (toSheafify α φ).hom :=
   by dsimp; infer_instance
 
+variable [J.WEqualsLocallyBijective AddCommGroupCat.{v}]
+
+/-- The bijection `((sheafify α φ).val ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj F)` which
+is part of the universal property of the sheafification of the presheaf of modules `M₀`,
+when `F` is a presheaf of modules which is a sheaf. -/
 noncomputable def sheafifyHomEquiv' {F : PresheafOfModules.{v} R.val}
     (hF : Presheaf.IsSheaf J F.presheaf) :
     ((sheafify α φ).val ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj F) :=
@@ -333,6 +338,10 @@ noncomputable def sheafifyHomEquiv' {F : PresheafOfModules.{v} R.val}
     (homEquivOfIsLocallyBijective (f := toSheafify α φ)
       (N := (restrictScalars α).obj F) hF)
 
+/-- The bijection
+`(sheafify α φ ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F))`
+which is part of the universal property of the sheafification of the presheaf of modules `M₀`,
+for any sheaf of modules `F`. -/
 noncomputable def sheafifyHomEquiv {F : SheafOfModules.{v} R} :
     (sheafify α φ ⟶ F) ≃
       (M₀ ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) :=

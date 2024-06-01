@@ -46,12 +46,17 @@ noncomputable def sheafificationCompForgetCompToPresheaf :
       toPresheaf _ ⋙ presheafToSheaf J AddCommGroupCat ⋙ sheafToPresheaf J AddCommGroupCat :=
   Iso.refl _
 
+/-- The bijection between types of morphisms which is part of the adjunction
+`sheafificationAdjunction`. -/
 noncomputable def sheafificationHomEquiv
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R} :
     ((sheafification α).obj P ⟶ F) ≃
       (P ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) := by
   apply sheafifyHomEquiv
 
+/-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a preasheaf of rings
+and `R` a sheaf of rings, this is the adjunction
+`sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α`. -/
 noncomputable def sheafificationAdjunction :
     sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α :=
   Adjunction.mkOfHomEquiv

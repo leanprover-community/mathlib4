@@ -89,19 +89,33 @@ namespace PresheafOfModules
 variable {R : Cᵒᵖ ⥤ RingCat.{u}} {M₁ M₂ : PresheafOfModules.{v} R}
     (f : M₁ ⟶ M₂) {N : PresheafOfModules.{v} R}
     (hN : Presheaf.IsSheaf J N.presheaf)
+    [J.WEqualsLocallyBijective AddCommGroupCat.{v}]
     [Presheaf.IsLocallySurjective J f.hom]
     [Presheaf.IsLocallyInjective J f.hom]
 
+/-- The bijection `(M₂ ⟶ N) ≃ (M₁ ⟶ N)` induced by a locally bijective morphism
+`f : M₁ ⟶ M₂` of presheaves of modules, when `N` is a sheaf. -/
 @[simps]
-noncomputable def homEquivOfIsLocallyBijective :
-    (M₂ ⟶ N) ≃ (M₁ ⟶ N) where
+noncomputable def homEquivOfIsLocallyBijective : (M₂ ⟶ N) ≃ (M₁ ⟶ N) where
   toFun φ := f ≫ φ
-  invFun := by
-    have := hN
-    have : Presheaf.IsLocallySurjective J f.hom := inferInstance
-    have : Presheaf.IsLocallyInjective J f.hom := inferInstance
-    sorry
-  left_inv := sorry
-  right_inv := sorry
+  invFun ψ :=
+    { hom := ((J.W_of_isLocallyBijective f.hom).homEquiv _ hN).symm ψ.hom
+      map_smul := by
+        obtain ⟨φ, hφ⟩ := ((J.W_of_isLocallyBijective f.hom).homEquiv _ hN).surjective ψ.hom
+        simp only [← hφ, Equiv.symm_apply_apply]
+        dsimp at hφ
+        intro X r y
+        apply hN.isSeparated _ _ (Presheaf.imageSieve_mem J f.hom y)
+        rintro Y p ⟨x, hx⟩
+        have eq := ψ.map_smul _ (R.map p.op r) x
+        simp only [← hφ] at eq
+        dsimp at eq
+        erw [← NatTrans.naturality_apply φ p.op (r • y), N.map_smul, M₂.map_smul,
+          ← NatTrans.naturality_apply φ p.op y, ← hx, ← eq, f.map_smul]
+        rfl }
+  left_inv φ := (toPresheaf _).map_injective
+    (((J.W_of_isLocallyBijective f.hom).homEquiv _ hN).left_inv φ.hom)
+  right_inv ψ := (toPresheaf _).map_injective
+    (((J.W_of_isLocallyBijective f.hom).homEquiv _ hN).right_inv ψ.hom)
 
 end PresheafOfModules
