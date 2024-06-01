@@ -48,11 +48,17 @@ morphisms if `α` is locally surjective and the target presheaf is a sheaf. -/
 noncomputable def restrictHomEquivOfIsLocallySurjective :
     (M₁ ⟶ M₂) ≃ ((restrictScalars α).obj M₁ ⟶ (restrictScalars α).obj M₂) where
   toFun f := (restrictScalars α).map f
-  invFun := by
-    have : Presheaf.IsLocallySurjective J α := inferInstance
-    have := hM₂
-    sorry
-  left_inv := sorry
-  right_inv := sorry
+  invFun g :=
+    { hom := g.hom
+      map_smul := fun X r' m => by
+        apply hM₂.isSeparated _ _ (Presheaf.imageSieve_mem J α r')
+        rintro Y p ⟨r : R.obj _, hr⟩
+        erw [M₂.map_smul, ← NatTrans.naturality_apply g.hom p.op m,
+          ← hr, ← g.map_smul _ r (M₁.presheaf.map p.op m),
+          ← NatTrans.naturality_apply g.hom p.op (r' • m),
+          M₁.map_smul p.op r' m, ← hr]
+        rfl }
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 end PresheafOfModules
