@@ -1,9 +1,6 @@
 import Mathlib.Tactic.Abel
 
 variable {α : Type _} {a b : α}
-def id' (x : α) := x
-
-section additive
 
 example [AddCommMonoid α] : a + (b + a) = a + a + b := by abel
 example [AddCommGroup α] : (a + b) - ((b + a) + a) = -a := by abel
@@ -55,6 +52,7 @@ example [AddCommGroup α] (a b c : α) :
   right; trivial
 
 -- `abel!` should see through terms that are definitionally equal,
+def id' (x : α) := x
 example [AddCommGroup α] (a b : α) : a + b - b - id' a = 0 := by
   fail_if_success
     abel1
@@ -126,4 +124,3 @@ example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False :
   abel_nf at *
   guard_hyp w : 0 = y + z
   assumption
-end additive
