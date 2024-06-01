@@ -1245,7 +1245,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (h
   refine ⟨b, ?_⟩
   rw [Basis.coe_mkFinCons]
   intro j i
-  refine Fin.cases ?_ (fun i => ?_) i <;> refine' Fin.cases _ (fun j => _) j <;> intro hij <;>
+  refine Fin.cases ?_ (fun i => ?_) i <;> refine Fin.cases ?_ (fun j => ?_) j <;> intro hij <;>
     simp only [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
   · exact (hij rfl).elim
   · rw [IsOrtho, ← hB₂]

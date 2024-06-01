@@ -839,8 +839,6 @@ and the lcm is their infimum, and use this to instantiate `NormalizedGCDMonoid (
 
 @[simp]
 theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
-  letI := Classical.decEq (Ideal A)
-  letI := Classical.decEq (Associates (Ideal A))
   letI := UniqueFactorizationMonoid.toNormalizedGCDMonoid (Ideal A)
   have hgcd : gcd I J = I ⊔ J := by
     rw [gcd_eq_normalize _ _, normalize_eq]
@@ -1245,10 +1243,8 @@ theorem Ideal.IsPrime.mem_pow_mul (I : Ideal R) [hI : I.IsPrime] {a b : R} {n : 
 
 section
 
-open scoped Classical
-
 theorem Ideal.count_normalizedFactors_eq {p x : Ideal R} [hp : p.IsPrime] {n : ℕ} (hle : x ≤ p ^ n)
-    (hlt : ¬x ≤ p ^ (n + 1)) : (normalizedFactors x).count p = n :=
+    [DecidableEq (Ideal R)] (hlt : ¬x ≤ p ^ (n + 1)) : (normalizedFactors x).count p = n :=
   count_normalizedFactors_eq' ((Ideal.isPrime_iff_bot_or_prime.mp hp).imp_right Prime.irreducible)
     (normalize_eq _) (Ideal.dvd_iff_le.mpr hle) (mt Ideal.le_of_dvd hlt)
   #align ideal.count_normalized_factors_eq Ideal.count_normalizedFactors_eq
@@ -1514,7 +1510,8 @@ noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r �
 variable [DecidableRel ((· ∣ ·) : R → R → Prop)] [DecidableRel ((· ∣ ·) : Ideal R → Ideal R → Prop)]
 
 /-- The bijection `normalizedFactorsEquivSpanNormalizedFactors` between the set of prime
-    factors of `r` and the set of prime factors of the ideal `⟨r⟩` preserves multiplicities. -/
+    factors of `r` and the set of prime factors of the ideal `⟨r⟩` preserves multiplicities. See
+    `count_normalizedFactorsSpan_eq_count` for the version stated in terms of multisets `count`.-/
 theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity {r d : R}
     (hr : r ≠ 0) (hd : d ∈ normalizedFactors r) :
     multiplicity d r =
@@ -1535,5 +1532,42 @@ theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multipl
   rw [hx.symm, Equiv.symm_apply_apply, Subtype.coe_mk,
     multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity hr ha]
 #align multiplicity_normalized_factors_equiv_span_normalized_factors_symm_eq_multiplicity multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multiplicity
+
+/-- The bijection between the set of prime factors of the ideal `⟨r⟩` and the set of prime factors
+  of `r` preserves `count` of the corresponding multisets. See
+  `multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity` for the version
+  stated in terms of multiplicity. -/
+theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) :
+    Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r}))  =
+        Multiset.count (normalize X) (normalizedFactors r) := by
+  have := multiplicity_eq_multiplicity_span (R := R) (a := X) (b := r)
+  rw [multiplicity_eq_count_normalizedFactors (Prime.irreducible hX) hr,
+    multiplicity_eq_count_normalizedFactors (Prime.irreducible ?_), normalize_apply,
+    normUnit_eq_one, Units.val_one, one_eq_top, mul_top, Nat.cast_inj] at this
+  simp only [normalize_apply, this]
+  · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, hr, not_false_eq_true]
+  · simpa only [prime_span_singleton_iff]
+
+theorem count_span_normalizedFactors_eq_of_normUnit {r X : R}
+    (hr : r ≠ 0) (hX₁ : normUnit X = 1) (hX : Prime X) :
+      Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r})) =
+        Multiset.count X (normalizedFactors r) := by
+  simpa [hX₁] using count_span_normalizedFactors_eq hr hX
+
+/-- The number of times an ideal `I` occurs as normalized factor of another ideal `J` is stable
+  when regarding at these ideals as associated elements of the monoid of ideals.-/
+theorem count_associates_factors_eq [DecidableEq <| Associates (Ideal R)]
+    [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
+    (I J : Ideal R) (hI : I ≠ 0) (hJ : J.IsPrime) (hJ₀ : J ≠ ⊥) :
+    (Associates.mk J).count (Associates.mk I).factors = Multiset.count J (normalizedFactors I) := by
+  replace hI : Associates.mk I ≠ 0 := Associates.mk_ne_zero.mpr hI
+  have hJ' : Irreducible (Associates.mk J) := by
+    simpa only [Associates.irreducible_mk] using (Ideal.prime_of_isPrime hJ₀ hJ).irreducible
+  apply (Ideal.count_normalizedFactors_eq (p := J) (x := I) _ _).symm
+  all_goals
+    rw [← Ideal.dvd_iff_le, ← Associates.mk_dvd_mk, Associates.mk_pow]
+    simp only [Associates.dvd_eq_le]
+    rw [Associates.prime_pow_dvd_iff_le hI hJ']
+  linarith
 
 end PID

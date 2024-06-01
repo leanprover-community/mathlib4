@@ -236,12 +236,12 @@ instance (priority := 100) isTopologicalGroup (B : GroupFilterBasis G) :
   letI := B.topology
   have basis := B.nhds_one_hasBasis
   have basis' := basis.prod basis
-  refine' TopologicalGroup.of_nhds_one _ _ _ _
+  refine TopologicalGroup.of_nhds_one ?_ ?_ ?_ ?_
   · rw [basis'.tendsto_iff basis]
     suffices ∀ U ∈ B, ∃ V W, (V ∈ B ∧ W ∈ B) ∧ ∀ a b, a ∈ V → b ∈ W → a * b ∈ U by simpa
     intro U U_in
     rcases mul U_in with ⟨V, V_in, hV⟩
-    refine' ⟨V, V, ⟨V_in, V_in⟩, _⟩
+    refine ⟨V, V, ⟨V_in, V_in⟩, ?_⟩
     intro a b a_in b_in
     exact hV <| mul_mem_mul a_in b_in
   · rw [basis.tendsto_iff basis]
@@ -308,7 +308,7 @@ instance (priority := 100) isTopologicalRing {R : Type u} [Ring R] (B : RingFilt
     suffices ∀ U ∈ B', ∃ V W, (V ∈ B' ∧ W ∈ B') ∧ ∀ a b, a ∈ V → b ∈ W → a * b ∈ U by simpa
     intro U U_in
     rcases B.mul U_in with ⟨V, V_in, hV⟩
-    refine' ⟨V, V, ⟨V_in, V_in⟩, _⟩
+    refine ⟨V, V, ⟨V_in, V_in⟩, ?_⟩
     intro a b a_in b_in
     exact hV <| mul_mem_mul a_in b_in
   · intro x₀

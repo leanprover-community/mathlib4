@@ -68,8 +68,8 @@ theorem sized_iUnion {f : ι → Set (Finset α)} : (⋃ i, f i).Sized r ↔ ∀
 
 -- @[simp] -- Porting note: left hand side is not simp-normal form.
 theorem sized_iUnion₂ {f : ∀ i, κ i → Set (Finset α)} :
-    (⋃ (i) (j), f i j).Sized r ↔ ∀ i j, (f i j).Sized r :=
- by simp only [Set.sized_iUnion]
+    (⋃ (i) (j), f i j).Sized r ↔ ∀ i j, (f i j).Sized r := by
+ simp only [Set.sized_iUnion]
 #align set.sized_Union₂ Set.sized_iUnion₂
 
 protected theorem Sized.isAntichain (hA : A.Sized r) : IsAntichain (· ⊆ ·) A :=

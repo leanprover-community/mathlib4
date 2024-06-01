@@ -296,7 +296,7 @@ protected theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {f : β → �
 #align ennreal.tendsto_at_top ENNReal.tendsto_atTop
 
 instance : ContinuousAdd ℝ≥0∞ := by
-  refine' ⟨continuous_iff_continuousAt.2 _⟩
+  refine ⟨continuous_iff_continuousAt.2 ?_⟩
   rintro ⟨_ | a, b⟩
   · exact tendsto_nhds_top_mono' continuousAt_fst fun p => le_add_right le_rfl
   rcases b with (_ | b)

@@ -512,7 +512,7 @@ instance GroupCat.forget_reflects_isos : (forget GroupCat.{u}).ReflectsIsomorphi
   reflects {X Y} f _ := by
     let i := asIso ((forget GroupCat).map f)
     let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _ }
-    exact IsIso.of_iso e.toGroupCatIso
+    exact e.toGroupCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align Group.forget_reflects_isos GroupCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
@@ -523,7 +523,7 @@ instance CommGroupCat.forget_reflects_isos : (forget CommGroupCat.{u}).ReflectsI
   reflects {X Y} f _ := by
     let i := asIso ((forget CommGroupCat).map f)
     let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _}
-    exact IsIso.of_iso e.toCommGroupCatIso
+    exact e.toCommGroupCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget_reflects_isos CommGroupCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in

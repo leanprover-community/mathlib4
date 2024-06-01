@@ -799,8 +799,8 @@ theorem isCompact_univ [h : CompactSpace X] : IsCompact (univ : Set X) :=
 #align is_compact_univ isCompact_univ
 
 theorem exists_clusterPt_of_compactSpace [CompactSpace X] (f : Filter X) [NeBot f] :
-    ∃ x, ClusterPt x f :=
-  by simpa using isCompact_univ (show f ≤ 𝓟 univ by simp)
+    ∃ x, ClusterPt x f := by
+  simpa using isCompact_univ (show f ≤ 𝓟 univ by simp)
 #align cluster_point_of_compact exists_clusterPt_of_compactSpace
 
 @[deprecated] -- Since 28 January 2024
