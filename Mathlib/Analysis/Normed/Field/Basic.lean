@@ -5,6 +5,7 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Order.Ring.Finset
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Topology.Instances.NNReal
@@ -858,7 +859,7 @@ end Filter
 
 -- see Note [lower instance priority]
 instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContinuousInv₀ α := by
-  refine' ⟨fun r r0 => tendsto_iff_norm_sub_tendsto_zero.2 _⟩
+  refine ⟨fun r r0 => tendsto_iff_norm_sub_tendsto_zero.2 ?_⟩
   have r0' : 0 < ‖r‖ := norm_pos_iff.2 r0
   rcases exists_between r0' with ⟨ε, ε0, εr⟩
   have : ∀ᶠ e in 𝓝 r, ‖e⁻¹ - r⁻¹‖ ≤ ‖r - e‖ / ‖r‖ / ε := by
@@ -871,7 +872,7 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
       -- Porting note: `ENNReal.{mul_sub, sub_mul}` should be `protected`
       _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field_simp [mul_comm]
       _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
-  refine' squeeze_zero' (eventually_of_forall fun _ => norm_nonneg _) this _
+  refine squeeze_zero' (eventually_of_forall fun _ => norm_nonneg _) this ?_
   refine' (((continuous_const.sub continuous_id).norm.div_const _).div_const _).tendsto' _ _ _
   simp
 #align normed_division_ring.to_has_continuous_inv₀ NormedDivisionRing.to_hasContinuousInv₀

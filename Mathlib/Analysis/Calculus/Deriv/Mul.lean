@@ -414,9 +414,10 @@ theorem Differentiable.div_const (hc : Differentiable 𝕜 c) (d : 𝕜') :
     Differentiable 𝕜 fun x => c x / d := fun x => (hc x).div_const d
 #align differentiable.div_const Differentiable.div_const
 
-theorem derivWithin_div_const (hc : DifferentiableWithinAt 𝕜 c s x) (d : 𝕜')
-    (hxs : UniqueDiffWithinAt 𝕜 s x) : derivWithin (fun x => c x / d) s x = derivWithin c s x / d :=
-  by simp [div_eq_inv_mul, derivWithin_const_mul, hc, hxs]
+theorem derivWithin_div_const (hc : DifferentiableWithinAt 𝕜 c s x)
+    (d : 𝕜') (hxs : UniqueDiffWithinAt 𝕜 s x) :
+    derivWithin (fun x => c x / d) s x = derivWithin c s x / d := by
+  simp [div_eq_inv_mul, derivWithin_const_mul, hc, hxs]
 #align deriv_within_div_const derivWithin_div_const
 
 @[simp]

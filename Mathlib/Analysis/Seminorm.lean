@@ -87,7 +87,7 @@ def Seminorm.ofSMulLE [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E
     (add_le : ∀ x y, f (x + y) ≤ f x + f y) (smul_le : ∀ (r : 𝕜) (x), f (r • x) ≤ ‖r‖ * f x) :
     Seminorm 𝕜 E :=
   Seminorm.of f add_le fun r x => by
-    refine' le_antisymm (smul_le r x) _
+    refine le_antisymm (smul_le r x) ?_
     by_cases h : r = 0
     · simp [h, map_zero]
     rw [← mul_le_mul_left (inv_pos.mpr (norm_pos_iff.mpr h))]
@@ -489,9 +489,9 @@ noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
               fun x hx => ⟨0, by rwa [map_zero, sub_zero, map_zero, add_zero]⟩
         simp_rw [Real.mul_iInf_of_nonneg (norm_nonneg a), mul_add, ← map_smul_eq_mul p, ←
           map_smul_eq_mul q, smul_sub]
-        refine'
+        refine
           Function.Surjective.iInf_congr ((a⁻¹ • ·) : E → E)
-            (fun u => ⟨a • u, inv_smul_smul₀ ha u⟩) fun u => _
+            (fun u => ⟨a • u, inv_smul_smul₀ ha u⟩) fun u => ?_
         rw [smul_inv_smul₀ ha] }
 
 @[simp]

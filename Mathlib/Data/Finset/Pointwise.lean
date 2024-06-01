@@ -1340,8 +1340,8 @@ theorem preimage_mul_right_singleton :
 #align finset.preimage_add_right_singleton Finset.preimage_add_right_singleton
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_left_one : preimage 1 (a * ·) ((mul_right_injective _).injOn _) = {a⁻¹} :=
-  by classical rw [← image_mul_left', image_one, mul_one]
+theorem preimage_mul_left_one : preimage 1 (a * ·) ((mul_right_injective _).injOn _) = {a⁻¹} := by
+  classical rw [← image_mul_left', image_one, mul_one]
 #align finset.preimage_mul_left_one Finset.preimage_mul_left_one
 #align finset.preimage_add_left_zero Finset.preimage_add_left_zero
 
@@ -1352,8 +1352,8 @@ theorem preimage_mul_right_one : preimage 1 (· * b) ((mul_left_injective _).inj
 #align finset.preimage_add_right_zero Finset.preimage_add_right_zero
 
 @[to_additive]
-theorem preimage_mul_left_one' : preimage 1 (a⁻¹ * ·) ((mul_right_injective _).injOn _) = {a} :=
-  by rw [preimage_mul_left_one, inv_inv]
+theorem preimage_mul_left_one' : preimage 1 (a⁻¹ * ·) ((mul_right_injective _).injOn _) = {a} := by
+  rw [preimage_mul_left_one, inv_inv]
 #align finset.preimage_mul_left_one' Finset.preimage_mul_left_one'
 #align finset.preimage_add_left_zero' Finset.preimage_add_left_zero'
 

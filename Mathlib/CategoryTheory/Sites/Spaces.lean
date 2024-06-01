@@ -48,7 +48,7 @@ def grothendieckTopology : GrothendieckTopology (Opens T) where
   top_mem' X x hx := ⟨_, 𝟙 _, trivial, hx⟩
   pullback_stable' X Y S f hf y hy := by
     rcases hf y (f.le hy) with ⟨U, g, hg, hU⟩
-    refine' ⟨U ⊓ Y, homOfLE inf_le_right, _, hU, hy⟩
+    refine ⟨U ⊓ Y, homOfLE inf_le_right, ?_, hU, hy⟩
     apply S.downward_closed hg (homOfLE inf_le_left)
   transitive' X S hS R hR x hx := by
     rcases hS x hx with ⟨U, f, hf, hU⟩
