@@ -887,12 +887,12 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
       simp only [Nat.lt_succ_iff, length_permutations'Aux] at hn hm
       rw [← nthLe, nthLe_permutations'Aux] at hn' hm'
       have hx :
-        nthLe (insertNth n x as) m (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff, hl]) = x :=
-        by simp [hn', ← hm', hm]
+        nthLe (insertNth n x as) m (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff, hl]) = x := by
+        simp [hn', ← hm', hm]
       have hx' :
         nthLe (insertNth m x bs) n (by rwa [length_insertNth _ _ hm, Nat.lt_succ_iff, ← hl]) =
-          x :=
-        by simp [hm', ← hn', hn]
+          x := by
+        simp [hm', ← hn', hn]
       rcases lt_trichotomy n m with (ht | ht | ht)
       · suffices x ∈ bs by exact h x (hb.subset this) rfl
         rw [← hx', nthLe_insertNth_of_lt _ _ _ _ ht (ht.trans_le hm)]

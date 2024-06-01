@@ -886,10 +886,10 @@ theorem pi_update_of_mem [DecidableEq ι] (hi : i ∈ s) (f : ∀ j, α j) (a : 
     (t : ∀ j, α j → Set (β j)) :
     (s.pi fun j => t j (update f i a j)) = { x | x i ∈ t i a } ∩ (s \ {i}).pi fun j => t j (f j) :=
   calc
-    (s.pi fun j => t j (update f i a j)) = ({i} ∪ s \ {i}).pi fun j => t j (update f i a j) :=
-        by rw [union_diff_self, union_eq_self_of_subset_left (singleton_subset_iff.2 hi)]
-    _ = { x | x i ∈ t i a } ∩ (s \ {i}).pi fun j => t j (f j) :=
-        by rw [union_pi, singleton_pi', update_same, pi_update_of_not_mem]; simp
+    (s.pi fun j => t j (update f i a j)) = ({i} ∪ s \ {i}).pi fun j => t j (update f i a j) := by
+        rw [union_diff_self, union_eq_self_of_subset_left (singleton_subset_iff.2 hi)]
+    _ = { x | x i ∈ t i a } ∩ (s \ {i}).pi fun j => t j (f j) := by
+        rw [union_pi, singleton_pi', update_same, pi_update_of_not_mem]; simp
 #align set.pi_update_of_mem Set.pi_update_of_mem
 
 theorem univ_pi_update [DecidableEq ι] {β : ι → Type*} (i : ι) (f : ∀ j, α j) (a : α i)
