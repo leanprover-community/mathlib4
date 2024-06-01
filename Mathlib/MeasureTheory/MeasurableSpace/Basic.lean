@@ -1752,12 +1752,13 @@ def piCongrRight (e : ∀ a, π a ≃ᵐ π' a) : (∀ a, π a) ≃ᵐ ∀ a, π
 
 variable (π) in
 /-- Moving a dependent type along an equivalence of coordinates, as a measurable equivalence. -/
-def piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ a, π a := by
-  refine { Equiv.piCongrLeft π f with measurable_toFun := ?_, measurable_invFun := ?_ }
-  · exact measurable_piCongrLeft f
-  simp only [invFun_as_coe, coe_fn_symm_mk]
-  rw [measurable_pi_iff]
-  exact fun i => measurable_pi_apply (f i)
+def piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ a, π a where
+  __ := Equiv.piCongrLeft π f
+  measurable_toFun := measurable_piCongrLeft f
+  measurable_invFun := by
+    simp only [invFun_as_coe, coe_fn_symm_mk]
+    rw [measurable_pi_iff]
+    exact fun i => measurable_pi_apply (f i)
 
 theorem coe_piCongrLeft (f : δ ≃ δ') :
     ⇑(MeasurableEquiv.piCongrLeft π f) = f.piCongrLeft π := by rfl
@@ -1828,11 +1829,12 @@ def piEquivPiSubtypeProd (p : δ' → Prop) [DecidablePred p] :
 /-- The measurable equivalence between the pi type over a sum type and a product of pi-types.
 This is similar to `MeasurableEquiv.piEquivPiSubtypeProd`. -/
 def sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
-    (∀ i, α i) ≃ᵐ (∀ i, α (.inl i)) × ∀ i', α (.inr i') := by
-  refine { Equiv.sumPiEquivProdPi α with measurable_toFun := ?_, measurable_invFun := ?_ }
-  · refine Measurable.prod ?_ ?_ <;>
-      rw [measurable_pi_iff] <;> rintro i <;> apply measurable_pi_apply
-  · rw [measurable_pi_iff]; rintro (i|i)
+    (∀ i, α i) ≃ᵐ (∀ i, α (.inl i)) × ∀ i', α (.inr i') where
+  __ := Equiv.sumPiEquivProdPi α
+  measurable_toFun := by
+    apply Measurable.prod <;> rw [measurable_pi_iff] <;> rintro i <;> apply measurable_pi_apply
+  measurable_invFun := by
+    rw [measurable_pi_iff]; rintro (i | i)
     · exact measurable_pi_iff.1 measurable_fst _
     · exact measurable_pi_iff.1 measurable_snd _
 
