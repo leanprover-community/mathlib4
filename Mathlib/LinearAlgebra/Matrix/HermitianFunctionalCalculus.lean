@@ -5,14 +5,9 @@ Authors: Jon Bannon, Jireh Loreaux
 -/
 
 import Mathlib.LinearAlgebra.Matrix.Spectrum
-import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus.Restrict
 import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
-import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Topology.ContinuousFunction.UniqueCFC
 import Mathlib.Analysis.NormedSpace.Star.Matrix
-import Mathlib.Algebra.Star.StarAlgHom
-import Mathlib.Algebra.Algebra.Spectrum
-import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-
 This file defines an instance of the continuous functional calculus for Hermitian matrices over an
