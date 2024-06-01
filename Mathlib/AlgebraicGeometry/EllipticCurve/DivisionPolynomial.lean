@@ -99,11 +99,13 @@ local macro "map_simp" : tactic =>
     Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_pow, Polynomial.map_div, coe_mapRingHom,
     apply_ite <| mapRingHom _, WeierstrassCurve.map])
 
-universe u v
+universe r s u v
 
 namespace WeierstrassCurve
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] (W : WeierstrassCurve R) (f : R →+* S)
+variable {R : Type r} {S : Type s} [CommRing R] [CommRing S] (W : WeierstrassCurve R)
+
+section Ψ₂Sq
 
 /-! ### The univariate polynomial $\Psi_2^{[2]}$ -/
 
@@ -123,6 +125,10 @@ lemma C_Ψ₂Sq_eq : C W.Ψ₂Sq = W.ψ₂ ^ 2 - 4 * W.toAffine.polynomial := by
 -- TODO: remove `twoTorsionPolynomial` in favour of `Ψ₂Sq`
 lemma Ψ₂Sq_eq : W.Ψ₂Sq = W.twoTorsionPolynomial.toPoly :=
   rfl
+
+end Ψ₂Sq
+
+section Ψ''
 
 /-! ### The univariate polynomials $\tilde{\Psi}_n$ for $n \in \mathbb{N}$ -/
 
@@ -171,6 +177,10 @@ lemma Ψ''_even (m : ℕ) : W.Ψ'' (2 * (m + 3)) =
       W.Ψ'' (m + 1) * W.Ψ'' (m + 3) * W.Ψ'' (m + 4) ^ 2 :=
   preNormEDS'_even ..
 
+end Ψ''
+
+section Ψ'
+
 /-! ### The univariate polynomials $\tilde{\Psi}_n$ for $n \in \mathbb{Z}$ -/
 
 /-- The univariate polynomials $\tilde{\Psi}_n$ for $n \in \mathbb{Z}$, which are auxiliary to the
@@ -216,6 +226,10 @@ lemma Ψ'_even (m : ℕ) : W.Ψ' (2 * (m + 3)) =
 lemma Ψ'_neg (n : ℤ) : W.Ψ' (-n) = -W.Ψ' n :=
   preNormEDS_neg ..
 
+end Ψ'
+
+section ΨSq
+
 /-! ### The univariate polynomials $\Psi_n^{[2]}$ -/
 
 /-- The univariate polynomials $\Psi_n^{[2]}$ congruent to $\psi_n^2$. -/
@@ -259,6 +273,10 @@ lemma ΨSq_even (m : ℕ) : W.ΨSq (2 * (m + 3)) =
 @[simp]
 lemma ΨSq_neg (n : ℤ) : W.ΨSq (-n) = W.ΨSq n := by
   rw [WeierstrassCurve.ΨSq, Ψ'_neg, neg_sq, Int.natAbs_neg, WeierstrassCurve.ΨSq]
+
+end ΨSq
+
+section Ψ
 
 /-! ### The bivariate polynomials $\Psi_n$ -/
 
@@ -341,6 +359,10 @@ lemma Ψ_even (m : ℕ) : W.Ψ (2 * (m + 3)) * W.ψ₂ =
 lemma Ψ_neg (n : ℤ) : W.Ψ (-n) = -W.Ψ n := by
   rw [WeierstrassCurve.Ψ, Ψ'_neg, C_neg, neg_mul (α := R[X][Y]), Int.natAbs_neg, WeierstrassCurve.Ψ]
 
+end Ψ
+
+section Φ
+
 /-! ### The univariate polynomials $\Phi_n$ -/
 
 /-- The univariate polynomials $\Phi_n$ congruent to $\phi_n$. -/
@@ -386,6 +408,10 @@ lemma Φ_neg (n : ℤ) : W.Φ (-n) = W.Φ n := by
   rw [WeierstrassCurve.Φ, ΨSq_neg, neg_add_eq_sub, ← neg_sub n, Ψ'_neg, ← neg_add', Ψ'_neg,
     neg_mul_neg, mul_comm <| W.Ψ' _, Int.natAbs_neg, WeierstrassCurve.Φ]
 
+end Φ
+
+section ψ
+
 /-! ### The bivariate polynomials $\psi_n$ -/
 
 /-- The bivariate $n$-division polynomials $\psi_n$. -/
@@ -424,6 +450,10 @@ lemma ψ_even (m : ℕ) : W.ψ (2 * (m + 3)) * W.ψ₂ =
 lemma ψ_neg (n : ℤ) : W.ψ (-n) = -W.ψ n :=
   normEDS_neg ..
 
+end ψ
+
+section φ
+
 /-! ### The bivariate polynomials $\phi_n$ -/
 
 /-- The bivariate polynomials $\phi_n$. -/
@@ -457,6 +487,12 @@ lemma φ_four : W.φ 4 = C X * C W.Ψ₄' ^ 2 * W.ψ₂ ^ 2 - C W.Ψ₄' * W.ψ�
 lemma φ_neg (n : ℤ) : W.φ (-n) = W.φ n := by
   rw [WeierstrassCurve.φ, ψ_neg, neg_sq (R := R[X][Y]), neg_add_eq_sub, ← neg_sub n, ψ_neg,
     ← neg_add', ψ_neg, neg_mul_neg, mul_comm <| W.ψ _, WeierstrassCurve.φ]
+
+end φ
+
+section Map
+
+variable (f : R →+* S)
 
 lemma map_ψ₂ : (W.map f).ψ₂ = W.ψ₂.map (mapRingHom f) := by
   simp only [WeierstrassCurve.ψ₂, Affine.map_polynomialY]
@@ -500,5 +536,47 @@ lemma map_ψ (n : ℤ) : (W.map f).ψ n = (W.ψ n).map (mapRingHom f) := by
 lemma map_φ (n : ℤ) : (W.map f).φ n = (W.φ n).map (mapRingHom f) := by
   simp only [WeierstrassCurve.φ, map_ψ]
   map_simp
+
+end Map
+
+section BaseChange
+
+variable [Algebra R S] {A : Type u} [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+  {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B)
+
+lemma baseChange_ψ₂ : (W.baseChange B).ψ₂ = (W.baseChange A).ψ₂.map (mapRingHom f) := by
+  rw [← map_ψ₂, map_baseChange]
+
+lemma baseChange_Ψ₂Sq : (W.baseChange B).Ψ₂Sq = (W.baseChange A).Ψ₂Sq.map f := by
+  rw [← map_Ψ₂Sq, map_baseChange]
+
+lemma baseChange_Ψ₃ : (W.baseChange B).Ψ₃ = (W.baseChange A).Ψ₃.map f := by
+  rw [← map_Ψ₃, map_baseChange]
+
+lemma baseChange_Ψ₄' : (W.baseChange B).Ψ₄' = (W.baseChange A).Ψ₄'.map f := by
+  rw [← map_Ψ₄', map_baseChange]
+
+lemma baseChange_Ψ'' (n : ℕ) : (W.baseChange B).Ψ'' n = ((W.baseChange A).Ψ'' n).map f := by
+  rw [← map_Ψ'', map_baseChange]
+
+lemma baseChange_Ψ' (n : ℤ) : (W.baseChange B).Ψ' n = ((W.baseChange A).Ψ' n).map f := by
+  rw [← map_Ψ', map_baseChange]
+
+lemma baseChange_ΨSq (n : ℤ) : (W.baseChange B).ΨSq n = ((W.baseChange A).ΨSq n).map f := by
+  rw [← map_ΨSq, map_baseChange]
+
+lemma baseChange_Ψ (n : ℤ) : (W.baseChange B).Ψ n = ((W.baseChange A).Ψ n).map (mapRingHom f) := by
+  rw [← map_Ψ, map_baseChange]
+
+lemma baseChange_Φ (n : ℤ) : (W.baseChange B).Φ n = ((W.baseChange A).Φ n).map f := by
+  rw [← map_Φ, map_baseChange]
+
+lemma baseChange_ψ (n : ℤ) : (W.baseChange B).ψ n = ((W.baseChange A).ψ n).map (mapRingHom f) := by
+  rw [← map_ψ, map_baseChange]
+
+lemma baseChange_φ (n : ℤ) : (W.baseChange B).φ n = ((W.baseChange A).φ n).map (mapRingHom f) := by
+  rw [← map_φ, map_baseChange]
+
+end BaseChange
 
 end WeierstrassCurve
