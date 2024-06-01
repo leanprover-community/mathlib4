@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir, Richard Copley
 -/
 
 import Mathlib.GroupTheory.Complement
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
 
 /-! # Lemma of B. H. Neumann on coverings of a group by cosets.
 
