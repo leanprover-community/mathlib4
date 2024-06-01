@@ -359,7 +359,7 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
   map_smul' r x := rfl
   invFun x := leftRegularHom A x
   left_inv f := by
-    refine' Action.Hom.ext _ _ (Finsupp.lhom_ext' fun x : G => LinearMap.ext_ring _)
+    refine Action.Hom.ext _ _ (Finsupp.lhom_ext' fun x : G => LinearMap.ext_ring ?_)
     have :
       f.hom ((ofMulAction k G G).ρ x (Finsupp.single (1 : G) (1 : k))) =
         A.ρ x (f.hom (Finsupp.single (1 : G) (1 : k))) :=

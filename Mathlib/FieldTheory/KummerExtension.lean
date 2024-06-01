@@ -82,12 +82,27 @@ theorem X_pow_sub_C_splits_of_isPrimitiveRoot
   | inr hn =>
     rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C, if_pos ⟨α, e⟩]
 
-theorem X_pow_sub_C_eq_prod
+open BigOperators
+
+-- make this private, as we only use it to prove a strictly more general version
+private
+theorem X_pow_sub_C_eq_prod'
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (hn : 0 < n) (e : α ^ n = a) :
     (X ^ n - C a) = ∏ i ∈ Finset.range n, (X - C (ζ ^ i * α)) := by
   rw [eq_prod_roots_of_monic_of_splits_id (monic_X_pow_sub_C _ (Nat.pos_iff_ne_zero.mp hn))
     (X_pow_sub_C_splits_of_isPrimitiveRoot hζ e), ← nthRoots, hζ.nthRoots_eq e, Multiset.map_map]
   rfl
+
+lemma X_pow_sub_C_eq_prod {R : Type*} [CommRing R] [IsDomain R]
+    {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) {α a : R} (hn : 0 < n) (e : α ^ n = a) :
+    (X ^ n - C a) = ∏ i ∈ Finset.range n, (X - C (ζ ^ i * α)) := by
+  let K := FractionRing R
+  let i := algebraMap R K
+  have h := NoZeroSMulDivisors.algebraMap_injective R K
+  apply_fun Polynomial.map i using map_injective i h
+  simpa only [Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, map_mul, map_pow,
+    Polynomial.map_prod, Polynomial.map_mul]
+    using X_pow_sub_C_eq_prod' (hζ.map_of_injective h) hn <| map_pow i α n ▸ congrArg i e
 
 end Splits
 

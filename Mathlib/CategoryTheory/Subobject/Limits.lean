@@ -249,7 +249,7 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
     Subobject.lift (fun A f _ => Subobject.mk (cokernel.π f).op)
       (by
         rintro A B f g hf hg i rfl
-        refine' Subobject.mk_eq_mk_of_comm _ _ (Iso.op _) (Quiver.Hom.unop_inj _)
+        refine Subobject.mk_eq_mk_of_comm _ _ (Iso.op ?_) (Quiver.Hom.unop_inj ?_)
         · exact (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
             (isCokernelEpiComp (colimit.isColimit _) i.hom rfl)).symm
         · simp only [Iso.comp_inv_eq, Iso.op_hom, Iso.symm_hom, unop_comp, Quiver.Hom.unop_op,
@@ -259,7 +259,7 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
     Subobject.ind₂ _ <| by
       intro A B f g hf hg h
       dsimp only [Subobject.lift_mk]
-      refine' Subobject.mk_le_mk_of_comm (cokernel.desc f (cokernel.π g) _).op _
+      refine Subobject.mk_le_mk_of_comm (cokernel.desc f (cokernel.π g) ?_).op ?_
       · rw [← Subobject.ofMkLEMk_comp h, Category.assoc, cokernel.condition, comp_zero]
       · exact Quiver.Hom.unop_inj (cokernel.π_desc _ _ _)
 #align category_theory.limits.cokernel_order_hom CategoryTheory.Limits.cokernelOrderHom
@@ -272,7 +272,7 @@ def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobj
     Subobject.lift (fun A f _ => Subobject.mk (kernel.ι f.unop))
       (by
         rintro A B f g hf hg i rfl
-        refine' Subobject.mk_eq_mk_of_comm _ _ _ _
+        refine Subobject.mk_eq_mk_of_comm _ _ ?_ ?_
         · exact
             IsLimit.conePointUniqueUpToIso (limit.isLimit _)
               (isKernelCompMono (limit.isLimit (parallelPair g.unop 0)) i.unop.hom rfl)
@@ -283,7 +283,7 @@ def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobj
     Subobject.ind₂ _ <| by
       intro A B f g hf hg h
       dsimp only [Subobject.lift_mk]
-      refine' Subobject.mk_le_mk_of_comm (kernel.lift g.unop (kernel.ι f.unop) _) _
+      refine Subobject.mk_le_mk_of_comm (kernel.lift g.unop (kernel.ι f.unop) ?_) ?_
       · rw [← Subobject.ofMkLEMk_comp h, unop_comp, kernel.condition_assoc, zero_comp]
       · exact Quiver.Hom.op_inj (by simp)
 #align category_theory.limits.kernel_order_hom CategoryTheory.Limits.kernelOrderHom

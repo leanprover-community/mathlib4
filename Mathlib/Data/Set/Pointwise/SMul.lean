@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 
@@ -946,6 +946,11 @@ theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=
   image_inter <| MulAction.injective a
 #align set.smul_set_inter Set.smul_set_inter
 #align set.vadd_set_inter Set.vadd_set_inter
+
+@[to_additive]
+theorem smul_set_iInter {ι : Type*}
+    (a : α) (t : ι → Set β) : (a • ⋂ i, t i) = ⋂ i, a • t i :=
+  image_iInter (MulAction.bijective a) t
 
 @[to_additive]
 theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=

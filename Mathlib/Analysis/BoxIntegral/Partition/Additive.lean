@@ -134,7 +134,7 @@ def ofMapSplitAdd [Finite ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
     induction' s using Finset.induction_on with a s _ ihs
     · simp
     rw [splitMany_insert, inf_split, ← ihs, biUnion_boxes, sum_biUnion_boxes]
-    refine' Finset.sum_congr rfl fun J' hJ' => _
+    refine Finset.sum_congr rfl fun J' hJ' => ?_
     by_cases h : a.2 ∈ Ioo (J'.lower a.1) (J'.upper a.1)
     · rw [sum_split_boxes]
       exact hf _ ((WithTop.coe_le_coe.2 <| le_of_mem _ hJ').trans hI) h

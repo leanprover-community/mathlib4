@@ -250,7 +250,7 @@ instance AlgebraCat.forget_reflects_isos : (forget (AlgebraCat.{u} R)).ReflectsI
   reflects {X Y} f _ := by
     let i := asIso ((forget (AlgebraCat.{u} R)).map f)
     let e : X ≃ₐ[R] Y := { f, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toAlgebraIso).1⟩
+    exact e.toAlgebraIso.isIso_hom
 #align Algebra.forget_reflects_isos AlgebraCat.forget_reflects_isos
 
 /-!

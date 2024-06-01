@@ -394,7 +394,7 @@ theorem multiplicity_mk_eq_multiplicity
   · suffices ¬Finite (Associates.mk a) (Associates.mk b) by
       rw [finite_iff_dom, PartENat.not_dom_iff_eq_top] at h this
       rw [h, this]
-    refine'
+    refine
       not_finite_iff_forall.mpr fun n => by
         rw [← Associates.mk_pow, Associates.mk_dvd_mk]
         exact not_finite_iff_forall.mp h n

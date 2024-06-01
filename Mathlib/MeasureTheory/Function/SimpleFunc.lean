@@ -1106,7 +1106,7 @@ theorem le_sup_lintegral (f g : α →ₛ ℝ≥0∞) : f.lintegral μ ⊔ g.lin
       rfl
     _ ≤ ∑ x ∈ (pair f g).range, (x.1 ⊔ x.2) * μ (pair f g ⁻¹' {x}) := by
       rw [map_lintegral, map_lintegral]
-      refine sup_le ?_ ?_ <;> refine' Finset.sum_le_sum fun a _ => mul_le_mul_right' _ _
+      refine sup_le ?_ ?_ <;> refine Finset.sum_le_sum fun a _ => mul_le_mul_right' ?_ _
       · exact le_sup_left
       · exact le_sup_right
     _ = (f ⊔ g).lintegral μ := by rw [sup_eq_map₂, map_lintegral]

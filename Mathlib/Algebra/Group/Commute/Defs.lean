@@ -27,6 +27,8 @@ This file defines only a few operations (`mul_left`, `inv_right`, etc).  Other o
 Most of the proofs come from the properties of `SemiconjBy`.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 variable {G M S : Type*}
 

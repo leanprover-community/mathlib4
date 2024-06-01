@@ -149,10 +149,16 @@ theorem intCast_mul_mem_zmultiples : ↑(k : ℤ) * r ∈ zmultiples r := by
   simpa only [← zsmul_eq_mul] using zsmul_mem_zmultiples r k
 #align add_subgroup.int_cast_mul_mem_zmultiples AddSubgroup.intCast_mul_mem_zmultiples
 
+@[deprecated (since := "2024-04-17")]
+alias int_cast_mul_mem_zmultiples := intCast_mul_mem_zmultiples
+
 @[simp]
 theorem intCast_mem_zmultiples_one : ↑(k : ℤ) ∈ zmultiples (1 : R) :=
   mem_zmultiples_iff.mp ⟨k, by simp⟩
 #align add_subgroup.int_cast_mem_zmultiples_one AddSubgroup.intCast_mem_zmultiples_one
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_mem_zmultiples_one := intCast_mem_zmultiples_one
 
 end Ring
 

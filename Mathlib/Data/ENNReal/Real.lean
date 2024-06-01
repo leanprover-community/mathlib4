@@ -232,6 +232,9 @@ alias ⟨_, ofReal_of_nonpos⟩ := ofReal_eq_zero
 lemma ofReal_lt_natCast {p : ℝ} {n : ℕ} (hn : n ≠ 0) : ENNReal.ofReal p < n ↔ p < n := by
   exact mod_cast ofReal_lt_ofReal_iff (Nat.cast_pos.2 hn.bot_lt)
 
+@[deprecated (since := "2024-04-17")]
+alias ofReal_lt_nat_cast := ofReal_lt_natCast
+
 @[simp]
 lemma ofReal_lt_one {p : ℝ} : ENNReal.ofReal p < 1 ↔ p < 1 := by
   exact mod_cast ofReal_lt_natCast one_ne_zero
@@ -244,6 +247,9 @@ lemma ofReal_lt_ofNat {p : ℝ} {n : ℕ} [n.AtLeastTwo] :
 @[simp]
 lemma natCast_le_ofReal {n : ℕ} {p : ℝ} (hn : n ≠ 0) : n ≤ ENNReal.ofReal p ↔ n ≤ p := by
   simp only [← not_lt, ofReal_lt_natCast hn]
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_le_ofReal := natCast_le_ofReal
 
 @[simp]
 lemma one_le_ofReal {p : ℝ} : 1 ≤ ENNReal.ofReal p ↔ 1 ≤ p := by
@@ -258,6 +264,9 @@ lemma ofNat_le_ofReal {n : ℕ} [n.AtLeastTwo] {p : ℝ} :
 lemma ofReal_le_natCast {r : ℝ} {n : ℕ} : ENNReal.ofReal r ≤ n ↔ r ≤ n :=
   coe_le_coe.trans Real.toNNReal_le_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias ofReal_le_nat_cast := ofReal_le_natCast
+
 @[simp]
 lemma ofReal_le_one {r : ℝ} : ENNReal.ofReal r ≤ 1 ↔ r ≤ 1 :=
   coe_le_coe.trans Real.toNNReal_le_one
@@ -271,6 +280,9 @@ lemma ofReal_le_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
 lemma natCast_lt_ofReal {n : ℕ} {r : ℝ} : n < ENNReal.ofReal r ↔ n < r :=
   coe_lt_coe.trans Real.natCast_lt_toNNReal
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_lt_ofReal := natCast_lt_ofReal
+
 @[simp]
 lemma one_lt_ofReal {r : ℝ} : 1 < ENNReal.ofReal r ↔ 1 < r := coe_lt_coe.trans Real.one_lt_toNNReal
 
@@ -282,6 +294,9 @@ lemma ofNat_lt_ofReal {n : ℕ} [n.AtLeastTwo] {r : ℝ} :
 @[simp]
 lemma ofReal_eq_natCast {r : ℝ} {n : ℕ} (h : n ≠ 0) : ENNReal.ofReal r = n ↔ r = n :=
   ENNReal.coe_inj.trans <| Real.toNNReal_eq_natCast h
+
+@[deprecated (since := "2024-04-17")]
+alias ofReal_eq_nat_cast := ofReal_eq_natCast
 
 @[simp]
 lemma ofReal_eq_one {r : ℝ} : ENNReal.ofReal r = 1 ↔ r = 1 :=

@@ -474,7 +474,7 @@ if the pullback of `α` along `G` is iso, then `α` is also iso.
 -/
 theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIso (whiskerLeft G.op α.val)) :
     IsIso α := by
-  convert IsIso.of_iso (sheafIso (asIso (whiskerLeft G.op α.val))) using 1
+  convert (sheafIso (asIso (whiskerLeft G.op α.val))).isIso_hom using 1
   ext1
   apply (sheafHom_eq _ _).symm
 #align category_theory.cover_dense.iso_of_restrict_iso CategoryTheory.Functor.IsCoverDense.iso_of_restrict_iso
@@ -531,7 +531,7 @@ variable [G.IsCoverDense K] [G.IsContinuous J K] [G.IsCocontinuous J K]
 instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by
     let α := G.sheafAdjunctionCocontinuous A J K
     haveI : IsIso ((sheafToPresheaf J A).map (α.counit.app Y)) :=
-      IsIso.of_iso ((@asIso _ _ _ _ _ (Ran.reflective A G.op)).app Y.val)
+      ((@asIso _ _ _ _ _ (Ran.reflective A G.op)).app Y.val).isIso_hom
     apply ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
 
 variable (A)
