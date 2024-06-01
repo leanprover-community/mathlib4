@@ -22,6 +22,7 @@ section ConjugateUnits
 
 variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
 
+/-- Conjugation by a unit preserves the spectrum, inverse on right. -/
 @[simp]
 lemma spectrum.conjugate_units {a : A} {u : Aˣ} :
     spectrum R (u * a * u⁻¹) = spectrum R a := by
@@ -34,6 +35,7 @@ lemma spectrum.conjugate_units {a : A} {u : Aˣ} :
   contrapose! hμ
   simpa [mul_sub, sub_mul, Algebra.right_comm] using u.isUnit.mul hμ |>.mul u⁻¹.isUnit
 
+/-- Conjugation by a unit preserves the spectrum, inverse on left. -/
 @[simp]
 lemma spectrum.conjugate_units' {a : A} {u : Aˣ} :
     spectrum R (u⁻¹ * a * u) = spectrum R a := by
@@ -47,11 +49,13 @@ universe u
 
 variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A] [StarMul A]
 
+/-- Unitary conjugation preserves the spectrum, star on left. -/
 @[simp]
 lemma spectrum.unitary_conjugate {a : A} {u : unitary A} :
     spectrum R (u * a * (star u : A)) = spectrum R a :=
   spectrum.conjugate_units (u := unitary.toUnits u)
 
+/-- Unitary conjugation preserves the spectrum, star on right. -/
 @[simp]
 lemma spectrum.unitary_conjugate' {a : A} {u : unitary A} :
     spectrum R ((star u : A) * a * u) = spectrum R a := by
@@ -63,6 +67,7 @@ section FiniteSpectrum
 
 universe u v w
 
+/-- An endomorphism of a finite-dimensional vector space has a finite spectrum. -/
 theorem Module.End.finite_spectrum {K : Type v} {V : Type w} [Field K] [AddCommGroup V]
     [Module K V] [FiniteDimensional K V] (f : Module.End K V) :
     Set.Finite (spectrum K f) := by
@@ -72,6 +77,7 @@ theorem Module.End.finite_spectrum {K : Type v} {V : Type w} [Field K] [AddCommG
 
 variable {n R : Type*} [Field R] [Fintype n] [DecidableEq n]
 
+/-- An n x n matrix over a ring has a finite spectrum. -/
 theorem Matrix.finite_spectrum (A : Matrix n n R) : Set.Finite (spectrum R A) := by
   rw [← AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv <| Pi.basisFun R n) A]
   exact Module.End.finite_spectrum _
