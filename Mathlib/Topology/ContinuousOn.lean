@@ -3,7 +3,6 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Function.Indicator
 import Mathlib.Topology.Constructions
 
 #align_import topology.continuous_on from "leanprover-community/mathlib"@"d4f691b9e5f94cfc64639973f3544c95f8d5d494"
@@ -32,7 +31,6 @@ equipped with the subspace topology.
 open Set Filter Function Topology Filter
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
-
 variable [TopologicalSpace α]
 
 @[simp]
@@ -52,8 +50,8 @@ theorem eventually_nhdsWithin_iff {a : α} {s : Set α} {p : α → Prop} :
 #align eventually_nhds_within_iff eventually_nhdsWithin_iff
 
 theorem frequently_nhdsWithin_iff {z : α} {s : Set α} {p : α → Prop} :
-    (∃ᶠ x in 𝓝[s] z, p x) ↔ ∃ᶠ x in 𝓝 z, p x ∧ x ∈ s := by
-  simp only [Filter.Frequently, eventually_nhdsWithin_iff, not_and']
+    (∃ᶠ x in 𝓝[s] z, p x) ↔ ∃ᶠ x in 𝓝 z, p x ∧ x ∈ s :=
+  frequently_inf_principal.trans <| by simp only [and_comm]
 #align frequently_nhds_within_iff frequently_nhdsWithin_iff
 
 theorem mem_closure_ne_iff_frequently_within {z : α} {s : Set α} :
@@ -64,7 +62,7 @@ theorem mem_closure_ne_iff_frequently_within {z : α} {s : Set α} :
 @[simp]
 theorem eventually_nhdsWithin_nhdsWithin {a : α} {s : Set α} {p : α → Prop} :
     (∀ᶠ y in 𝓝[s] a, ∀ᶠ x in 𝓝[s] y, p x) ↔ ∀ᶠ x in 𝓝[s] a, p x := by
-  refine' ⟨fun h => _, fun h => (eventually_nhds_nhdsWithin.2 h).filter_mono inf_le_left⟩
+  refine ⟨fun h => ?_, fun h => (eventually_nhds_nhdsWithin.2 h).filter_mono inf_le_left⟩
   simp only [eventually_nhdsWithin_iff] at h ⊢
   exact h.mono fun x hx hxs => (hx hxs).self_of_nhds hxs
 #align eventually_nhds_within_nhds_within eventually_nhdsWithin_nhdsWithin
@@ -133,7 +131,7 @@ theorem nhdsWithin_le_iff {s t : Set α} {x : α} : 𝓝[s] x ≤ 𝓝[t] x ↔ 
   set_eventuallyLE_iff_inf_principal_le.symm.trans set_eventuallyLE_iff_mem_inf_principal
 #align nhds_within_le_iff nhdsWithin_le_iff
 
--- porting note: golfed, dropped an unneeded assumption
+-- Porting note: golfed, dropped an unneeded assumption
 theorem preimage_nhdsWithin_coinduced' {π : α → β} {s : Set β} {t : Set α} {a : α} (h : a ∈ t)
     (hs : s ∈ @nhds β (.coinduced (fun x : t => π x) inferInstance) (π a)) :
     π ⁻¹' s ∈ 𝓝[t] a := by
@@ -387,12 +385,6 @@ theorem tendsto_nhds_of_tendsto_nhdsWithin {f : β → α} {a : α} {s : Set α}
     (h : Tendsto f l (𝓝[s] a)) : Tendsto f l (𝓝 a) :=
   h.mono_right nhdsWithin_le_nhds
 #align tendsto_nhds_of_tendsto_nhds_within tendsto_nhds_of_tendsto_nhdsWithin
-
--- todo: move to `Mathlib.Filter.Order.Basic` or drop
-theorem principal_subtype {α : Type*} (s : Set α) (t : Set s) :
-    𝓟 t = comap (↑) (𝓟 (((↑) : s → α) '' t)) := by
-  rw [comap_principal, preimage_image_eq _ Subtype.coe_injective]
-#align principal_subtype principal_subtype
 
 theorem nhdsWithin_neBot_of_mem {s : Set α} {x : α} (hx : x ∈ s) : NeBot (𝓝[s] x) :=
   mem_closure_iff_nhdsWithin_neBot.1 <| subset_closure hx
@@ -660,7 +652,7 @@ theorem continuousOn_iff_continuous_restrict {f : α → β} {s : Set α} :
   exact (continuousWithinAt_iff_continuousAt_restrict f xs).mpr (h ⟨x, xs⟩)
 #align continuous_on_iff_continuous_restrict continuousOn_iff_continuous_restrict
 
--- porting note: 2 new lemmas
+-- Porting note: 2 new lemmas
 alias ⟨ContinuousOn.restrict, _⟩ := continuousOn_iff_continuous_restrict
 
 theorem ContinuousOn.restrict_mapsTo {f : α → β} {s : Set α} {t : Set β} (hf : ContinuousOn f s)
@@ -860,7 +852,7 @@ theorem continuousAt_update_same [DecidableEq α] {f : α → β} {x : α} {y : 
 theorem IsOpenMap.continuousOn_image_of_leftInvOn {f : α → β} {s : Set α}
     (h : IsOpenMap (s.restrict f)) {finv : β → α} (hleft : LeftInvOn finv f s) :
     ContinuousOn finv (f '' s) := by
-  refine' continuousOn_iff'.2 fun t ht => ⟨f '' (t ∩ s), _, _⟩
+  refine continuousOn_iff'.2 fun t ht => ⟨f '' (t ∩ s), ?_, ?_⟩
   · rw [← image_restrict]
     exact h _ (ht.preimage continuous_subtype_val)
   · rw [inter_eq_self_of_subset_left (image_subset f (inter_subset_right t s)), hleft.image_inter']
@@ -909,7 +901,7 @@ theorem ContinuousWithinAt.continuousAt {f : α → β} {s : Set α} {x : α}
 
 theorem IsOpen.continuousOn_iff {f : α → β} {s : Set α} (hs : IsOpen s) :
     ContinuousOn f s ↔ ∀ ⦃a⦄, a ∈ s → ContinuousAt f a :=
-  ball_congr fun _ => continuousWithinAt_iff_continuousAt ∘ hs.mem_nhds
+  forall₂_congr fun _ => continuousWithinAt_iff_continuousAt ∘ hs.mem_nhds
 #align is_open.continuous_on_iff IsOpen.continuousOn_iff
 
 theorem ContinuousOn.continuousAt {f : α → β} {s : Set α} {x : α} (h : ContinuousOn f s)
@@ -1008,7 +1000,7 @@ theorem Set.LeftInvOn.map_nhdsWithin_eq {f : α → β} {g : β → α} {x : β}
   · exact hg.tendsto_nhdsWithin (mapsTo_image _ _)
   · have A : g ∘ f =ᶠ[𝓝[g '' s] g x] id :=
       h.rightInvOn_image.eqOn.eventuallyEq_of_mem self_mem_nhdsWithin
-    refine' le_map_of_right_inverse A _
+    refine le_map_of_right_inverse A ?_
     simpa only [hx] using hf.tendsto_nhdsWithin (h.mapsTo (surjOn_image _ _))
 #align set.left_inv_on.map_nhds_within_eq Set.LeftInvOn.map_nhdsWithin_eq
 
@@ -1084,7 +1076,7 @@ theorem continuousOn_open_iff {f : α → β} {s : Set α} (hs : IsOpen s) :
     rw [inter_comm, hu]
     apply IsOpen.inter u_open hs
   · intro h t ht
-    refine' ⟨s ∩ f ⁻¹' t, h t ht, _⟩
+    refine ⟨s ∩ f ⁻¹' t, h t ht, ?_⟩
     rw [@inter_comm _ s (f ⁻¹' t), inter_assoc, inter_self]
 #align continuous_on_open_iff continuousOn_open_iff
 
@@ -1123,7 +1115,7 @@ theorem continuousOn_of_locally_continuousOn {f : α → β} {s : Set α}
   rwa [ContinuousWithinAt, ← nhdsWithin_restrict _ xt open_t] at this
 #align continuous_on_of_locally_continuous_on continuousOn_of_locally_continuousOn
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem continuousOn_to_generateFrom_iff {s : Set α} {T : Set (Set β)} {f : α → β} :
     @ContinuousOn α β _ (.generateFrom T) f s ↔ ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
   forall₂_congr fun x _ => by
@@ -1132,7 +1124,7 @@ theorem continuousOn_to_generateFrom_iff {s : Set α} {T : Set (Set β)} {f : α
       and_imp]
     exact forall_congr' fun t => forall_swap
 
--- porting note: dropped an unneeded assumption
+-- Porting note: dropped an unneeded assumption
 theorem continuousOn_isOpen_of_generateFrom {β : Type*} {s : Set α} {T : Set (Set β)} {f : α → β}
     (h : ∀ t ∈ T, IsOpen (s ∩ f ⁻¹' t)) :
     @ContinuousOn α β _ (.generateFrom T) f s :=
@@ -1151,6 +1143,19 @@ theorem ContinuousOn.prod {f : α → β} {g : α → γ} {s : Set α} (hf : Con
     (hg : ContinuousOn g s) : ContinuousOn (fun x => (f x, g x)) s := fun x hx =>
   ContinuousWithinAt.prod (hf x hx) (hg x hx)
 #align continuous_on.prod ContinuousOn.prod
+
+theorem ContinuousAt.comp₂_continuousWithinAt {f : β × γ → δ} {g : α → β} {h : α → γ} {x : α}
+    {s : Set α} (hf : ContinuousAt f (g x, h x)) (hg : ContinuousWithinAt g s x)
+    (hh : ContinuousWithinAt h s x) :
+    ContinuousWithinAt (fun x ↦ f (g x, h x)) s x :=
+  ContinuousAt.comp_continuousWithinAt hf (hg.prod hh)
+
+theorem ContinuousAt.comp₂_continuousWithinAt_of_eq {f : β × γ → δ} {g : α → β}
+    {h : α → γ} {x : α} {s : Set α} {y : β × γ} (hf : ContinuousAt f y)
+    (hg : ContinuousWithinAt g s x) (hh : ContinuousWithinAt h s x) (e : (g x, h x) = y) :
+    ContinuousWithinAt (fun x ↦ f (g x, h x)) s x := by
+  rw [← e] at hf
+  exact hf.comp₂_continuousWithinAt hg hh
 
 theorem Inducing.continuousWithinAt_iff {f : α → β} {g : β → γ} (hg : Inducing g) {s : Set α}
     {x : α} : ContinuousWithinAt f s x ↔ ContinuousWithinAt (g ∘ f) s x := by
@@ -1176,7 +1181,7 @@ theorem Embedding.map_nhdsWithin_eq {f : α → β} (hf : Embedding f) (s : Set 
 theorem OpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf : OpenEmbedding f) (s : Set β)
     (x : α) : map f (𝓝[f ⁻¹' s] x) = 𝓝[s] f x := by
   rw [hf.toEmbedding.map_nhdsWithin_eq, image_preimage_eq_inter_range]
-  apply nhdsWithin_eq_nhdsWithin (mem_range_self _) hf.open_range
+  apply nhdsWithin_eq_nhdsWithin (mem_range_self _) hf.isOpen_range
   rw [inter_assoc, inter_self]
 #align open_embedding.map_nhds_within_preimage_eq OpenEmbedding.map_nhdsWithin_preimage_eq
 

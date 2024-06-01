@@ -101,7 +101,6 @@ def comapId : comap C (id : I → I) ≅ 𝟭 (∀ i, C i) where
 example (g : J → I) : (j : J) → Category (C (g j)) := by infer_instance
 
 variable {I}
-
 variable {K : Type w₂}
 
 /-- The natural isomorphism comparing between
@@ -197,7 +196,6 @@ end Pi
 namespace Functor
 
 variable {C}
-
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)] {A : Type u₃} [Category.{v₃} A]
 
 /-- Assemble an `I`-indexed family of functors into a functor between the pi types.
@@ -238,8 +236,8 @@ end EqToHom
 @[simp]
 theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i := by
   apply Functor.ext
-  intro _ _ _
-  · simp
+  · intro _ _ _
+    simp
   · intro _
     rfl
 #align category_theory.functor.pi'_eval CategoryTheory.Functor.pi'_eval
@@ -266,9 +264,7 @@ end Functor
 namespace NatTrans
 
 variable {C}
-
 variable {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
-
 variable {F G : ∀ i, C i ⥤ D i}
 
 /-- Assemble an `I`-indexed family of natural transformations into a single natural transformation.
@@ -319,7 +315,7 @@ lemma isIso_pi_iff {X Y : ∀ i, C i} (f : X ⟶ Y) :
     IsIso f ↔ ∀ i, IsIso (f i) := by
   constructor
   · intro _ i
-    exact IsIso.of_iso (Pi.isoApp (asIso f) i)
+    exact (Pi.isoApp (asIso f) i).isIso_hom
   · intro
     exact ⟨fun i => inv (f i), by aesop_cat, by aesop_cat⟩
 
@@ -391,9 +387,9 @@ def pi (E : ∀ i, C i ≌ D i) : (∀ i, C i) ≌ (∀ i, D i) where
   unitIso := NatIso.pi (fun i => (E i).unitIso)
   counitIso := NatIso.pi (fun i => (E i).counitIso)
 
-instance (F : ∀ i, C i ⥤ D i) [∀ i, IsEquivalence (F i)] :
-    IsEquivalence (Functor.pi F) :=
-  IsEquivalence.ofEquivalence (pi (fun i => (F i).asEquivalence))
+instance (F : ∀ i, C i ⥤ D i) [∀ i, (F i).IsEquivalence] :
+    (Functor.pi F).IsEquivalence :=
+  (pi (fun i => (F i).asEquivalence)).isEquivalence_functor
 
 end Equivalence
 

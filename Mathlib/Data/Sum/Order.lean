@@ -688,8 +688,9 @@ theorem sumLexAssoc_symm_apply_inr_inr : (sumLexAssoc α β γ).symm (inr (inr c
 def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ :=
   { Equiv.sumComm α β with
     map_rel_iff' := @fun a b => by
-      rcases a with (a | a) <;> rcases b with (b | b); simp
-      · change
+      rcases a with (a | a) <;> rcases b with (b | b);
+      · simp
+        change
           toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
             toDual (toLex <| inl a) ≤ toDual (toLex <| inl b)
         simp [toDual_le_toDual, Lex.inl_le_inl_iff, Lex.inr_le_inr_iff]

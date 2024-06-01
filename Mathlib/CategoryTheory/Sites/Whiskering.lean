@@ -30,15 +30,10 @@ open CategoryTheory.Limits
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {A : Type u₂} [Category.{v₂} A]
-
 variable {B : Type u₃} [Category.{v₃} B]
-
 variable (J : GrothendieckTopology C)
-
 variable {U : C} (R : Presieve U)
-
 variable (F G H : A ⥤ B) (η : F ⟶ G) (γ : G ⟶ H)
 
 /-- Describes the property of a functor to "preserve sheaves". -/
@@ -57,6 +52,25 @@ def sheafCompose : Sheaf J A ⥤ Sheaf J B where
   map_comp _ _ := Sheaf.Hom.ext _ _ <| whiskerRight_comp _ _ _
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_compose CategoryTheory.sheafCompose
+
+instance [F.Faithful] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Faithful :=
+  show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Faithful from inferInstance
+
+instance [F.Faithful] [F.Full] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Full :=
+  show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Full from inferInstance
+
+instance [F.Faithful] : (sheafCompose J F).Faithful :=
+  Functor.Faithful.of_comp (sheafCompose J F) (sheafToPresheaf _ _)
+
+instance [F.Full] [F.Faithful] : (sheafCompose J F).Full :=
+  Functor.Full.of_comp_faithful (sheafCompose J F) (sheafToPresheaf _ _)
+
+instance [F.ReflectsIsomorphisms] : (sheafCompose J F).ReflectsIsomorphisms where
+  reflects {G₁ G₂} f _ := by
+    rw [← isIso_iff_of_reflects_iso _ (sheafToPresheaf _ _),
+      ← isIso_iff_of_reflects_iso _ ((whiskeringRight Cᵒᵖ A B).obj F)]
+    change IsIso ((sheafToPresheaf _ _).map ((sheafCompose J F).map f))
+    infer_instance
 
 variable {F G}
 
@@ -77,7 +91,6 @@ lemma sheafCompose_comp :
 namespace GrothendieckTopology.Cover
 
 variable (F G) {J}
-
 variable (P : Cᵒᵖ ⥤ A) {X : C} (S : J.Cover X)
 
 /-- The multicospan associated to a cover `S : J.Cover X` and a presheaf of the form `P ⋙ F`

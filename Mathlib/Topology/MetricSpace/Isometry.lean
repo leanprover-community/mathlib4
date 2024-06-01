@@ -1,7 +1,6 @@
 /-
 Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Isometries of emetric and metric spaces
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.MetricSpace.Antilipschitz
@@ -70,7 +69,6 @@ namespace Isometry
 section PseudoEmetricIsometry
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-
 variable {f : α → β} {x y z : α} {s : Set α}
 
 /-- An isometry preserves edistances. -/
@@ -151,7 +149,7 @@ theorem preimage_emetric_ball (h : Isometry f) (x : α) (r : ℝ≥0∞) :
 
 /-- Isometries preserve the diameter in pseudoemetric spaces. -/
 theorem ediam_image (hf : Isometry f) (s : Set α) : EMetric.diam (f '' s) = EMetric.diam s :=
-  eq_of_forall_ge_iff fun d => by simp only [EMetric.diam_le_iff, ball_image_iff, hf.edist_eq]
+  eq_of_forall_ge_iff fun d => by simp only [EMetric.diam_le_iff, forall_mem_image, hf.edist_eq]
 #align isometry.ediam_image Isometry.ediam_image
 
 theorem ediam_range (hf : Isometry f) : EMetric.diam (range f) = EMetric.diam (univ : Set α) := by
@@ -288,7 +286,7 @@ theorem Embedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f 
 
 -- such a bijection need not exist
 /-- `α` and `β` are isometric if there is an isometric bijection between them. -/
--- porting note: was @[nolint has_nonempty_instance]
+-- Porting note(#5171): was @[nolint has_nonempty_instance]
 structure IsometryEquiv (α : Type u) (β : Type v) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
     extends α ≃ β where
   isometry_toFun : Isometry toFun
@@ -303,7 +301,7 @@ section PseudoEMetricSpace
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 
--- Porting note: TODO: add `IsometryEquivClass`
+-- Porting note (#11215): TODO: add `IsometryEquivClass`
 
 theorem toEquiv_injective : Injective (toEquiv : (α ≃ᵢ β) → (α ≃ β))
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
@@ -655,3 +653,10 @@ def Isometry.isometryEquivOnRange [EMetricSpace α] [PseudoEMetricSpace β] {f :
 #align isometry.isometry_equiv_on_range Isometry.isometryEquivOnRange
 #align isometry.isometry_equiv_on_range_to_equiv Isometry.isometryEquivOnRange_toEquiv
 #align isometry.isometry_equiv_on_range_apply Isometry.isometryEquivOnRange_apply
+
+open NNReal in
+/-- Post-composition by an isometry does not change the Lipschitz-property of a function. -/
+lemma Isometry.lipschitzWith_iff {α β γ : Type*} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+    [PseudoEMetricSpace γ] {f : α → β} {g : β → γ} (K : ℝ≥0) (h : Isometry g) :
+    LipschitzWith K (g ∘ f) ↔ LipschitzWith K f := by
+  simp [LipschitzWith, h.edist_eq]

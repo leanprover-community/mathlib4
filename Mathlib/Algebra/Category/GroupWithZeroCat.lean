@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.Category.Bipointed
 import Mathlib.Algebra.Category.MonCat.Basic
+import Mathlib.Algebra.GroupWithZero.WithZero
+import Mathlib.CategoryTheory.Category.Bipointed
 
 #align_import algebra.category.GroupWithZero from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -13,9 +14,6 @@ import Mathlib.Algebra.Category.MonCat.Basic
 
 This file defines `GroupWithZeroCat`, the category of groups with zero.
 -/
-
-set_option autoImplicit true
-
 
 universe u
 
@@ -73,7 +71,9 @@ instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
   forget_faithful := ⟨fun h => DFunLike.coe_injective h⟩
 
 -- porting note (#10756): added lemma
-@[simp] lemma forget_map (f : X ⟶ Y) : (forget GroupWithZeroCat).map f = f := rfl
+@[simp] lemma forget_map {X Y : GroupWithZeroCat} (f : X ⟶ Y) :
+  (forget GroupWithZeroCat).map f = f := rfl
+
 instance hasForgetToBipointed : HasForget₂ GroupWithZeroCat Bipointed where
   forget₂ :=
       { obj := fun X => ⟨X, 0, 1⟩

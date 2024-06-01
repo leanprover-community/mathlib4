@@ -188,17 +188,17 @@ noncomputable instance (X : Type*) [TopologicalSpace X]
     [TopologicalSpace.PseudoMetrizableSpace X] : HasOuterApproxClosed X := by
   letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
   refine ⟨fun F hF ↦ ?_⟩
-  · use fun n ↦ thickenedIndicator (δ := (1 : ℝ) / (n + 1)) Nat.one_div_pos_of_nat F
-    refine ⟨?_, ⟨?_, ?_⟩⟩
-    · exact fun n x ↦ thickenedIndicator_le_one Nat.one_div_pos_of_nat F x
-    · exact fun n x hxF ↦ one_le_thickenedIndicator_apply X Nat.one_div_pos_of_nat hxF
-    · have key := thickenedIndicator_tendsto_indicator_closure
-                (δseq := fun (n : ℕ) ↦ (1 : ℝ) / (n + 1))
-                (fun _ ↦ Nat.one_div_pos_of_nat) tendsto_one_div_add_atTop_nhds_zero_nat F
-      rw [tendsto_pi_nhds] at *
-      intro x
-      nth_rw 2 [← IsClosed.closure_eq hF]
-      exact key x
+  use fun n ↦ thickenedIndicator (δ := (1 : ℝ) / (n + 1)) Nat.one_div_pos_of_nat F
+  refine ⟨?_, ⟨?_, ?_⟩⟩
+  · exact fun n x ↦ thickenedIndicator_le_one Nat.one_div_pos_of_nat F x
+  · exact fun n x hxF ↦ one_le_thickenedIndicator_apply X Nat.one_div_pos_of_nat hxF
+  · have key := thickenedIndicator_tendsto_indicator_closure
+              (δseq := fun (n : ℕ) ↦ (1 : ℝ) / (n + 1))
+              (fun _ ↦ Nat.one_div_pos_of_nat) tendsto_one_div_add_atTop_nhds_zero_nat F
+    rw [tendsto_pi_nhds] at *
+    intro x
+    nth_rw 2 [← IsClosed.closure_eq hF]
+    exact key x
 
 namespace MeasureTheory
 

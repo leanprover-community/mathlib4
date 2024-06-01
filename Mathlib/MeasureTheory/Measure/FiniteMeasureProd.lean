@@ -28,7 +28,7 @@ the underlying space is metrizable and separable.
 
 open MeasureTheory Topology Metric Filter Set ENNReal NNReal
 
-open scoped Topology ENNReal NNReal BoundedContinuousFunction BigOperators
+open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 namespace MeasureTheory
 
@@ -71,7 +71,7 @@ lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t 
   apply Subtype.ext
   simp only [val_eq_toMeasure, toMeasure_map, toMeasure_prod, Measure.map_fst_prod]
   ext s _
-  simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, smul_eq_mul]
+  simp only [Measure.coe_smul, Pi.smul_apply, smul_eq_mul]
   have aux := coeFn_smul_apply (ν univ) μ s
   simpa using congr_arg ENNReal.ofNNReal aux.symm
 
@@ -79,8 +79,7 @@ lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t 
   apply Subtype.ext
   simp only [val_eq_toMeasure, toMeasure_map, toMeasure_prod, Measure.map_fst_prod]
   ext s _
-  simp only [Measure.map_snd_prod, Measure.smul_toOuterMeasure, OuterMeasure.coe_smul,
-    Pi.smul_apply, smul_eq_mul]
+  simp only [Measure.map_snd_prod, Measure.coe_smul, Pi.smul_apply, smul_eq_mul]
   have aux := coeFn_smul_apply (μ univ) ν s
   simpa using congr_arg ENNReal.ofNNReal aux.symm
 

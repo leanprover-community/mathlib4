@@ -43,7 +43,7 @@ so `d : X i ⟶ X j` is nonzero only when `i = j + 1`.
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 /-- A `c : ComplexShape ι` describes the shape of a chain complex,
 with chain groups indexed by `ι`.

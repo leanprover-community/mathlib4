@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.PUnitInstances
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import algebra.module.submodule.lattice from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -34,9 +34,7 @@ variable {R S M : Type*}
 section AddCommMonoid
 
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]
-
 variable [SMul S R] [IsScalarTower S R M]
-
 variable {p q : Submodule R M}
 
 namespace Submodule
@@ -243,7 +241,7 @@ theorem sInf_coe (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P
 theorem finset_inf_coe {ι} (s : Finset ι) (p : ι → Submodule R M) :
     (↑(s.inf p) : Set M) = ⋂ i ∈ s, ↑(p i) := by
   letI := Classical.decEq ι
-  refine' s.induction_on _ fun i s _ ih ↦ _
+  refine s.induction_on ?_ fun i s _ ih ↦ ?_
   · simp
   · rw [Finset.inf_insert, inf_coe, ih]
     simp
@@ -297,15 +295,13 @@ theorem mem_iSup_of_mem {ι : Sort*} {b : M} {p : ι → Submodule R M} (i : ι)
   (le_iSup p i) h
 #align submodule.mem_supr_of_mem Submodule.mem_iSup_of_mem
 
-open BigOperators
-
 theorem sum_mem_iSup {ι : Type*} [Fintype ι] {f : ι → M} {p : ι → Submodule R M}
     (h : ∀ i, f i ∈ p i) : (∑ i, f i) ∈ ⨆ i, p i :=
   sum_mem fun i _ ↦ mem_iSup_of_mem i (h i)
 #align submodule.sum_mem_supr Submodule.sum_mem_iSup
 
 theorem sum_mem_biSup {ι : Type*} {s : Finset ι} {f : ι → M} {p : ι → Submodule R M}
-    (h : ∀ i ∈ s, f i ∈ p i) : (∑ i in s, f i) ∈ ⨆ i ∈ s, p i :=
+    (h : ∀ i ∈ s, f i ∈ p i) : (∑ i ∈ s, f i) ∈ ⨆ i ∈ s, p i :=
   sum_mem fun i hi ↦ mem_iSup_of_mem i <| mem_iSup_of_mem hi (h i hi)
 #align submodule.sum_mem_bsupr Submodule.sum_mem_biSup
 

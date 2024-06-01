@@ -3,6 +3,7 @@ import Mathlib.Data.Real.Sqrt
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.MeasureTheory.Integral.Bochner
 
 /-! # Tests for the `positivity` tactic
 
@@ -11,7 +12,6 @@ This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 set_option autoImplicit true
 
 open Finset Function Nat NNReal ENNReal
-open scoped BigOperators
 
 variable {ι α β : Type _}
 
@@ -195,6 +195,10 @@ example (hq : 0 ≤ q) : 0 ≤ q.num := by positivity
 
 end
 
+example (a : ℤ) : 0 ≤ a⁺ := by positivity
+example (a : ℤ) (ha : 0 < a) : 0 < a⁺ := by positivity
+example (a : ℤ) : 0 ≤ a⁻ := by positivity
+
 /-! ### Exponentiation -/
 
 example [OrderedSemiring α] [Nontrivial α] (a : α) : 0 < a ^ 0 := by positivity
@@ -277,6 +281,7 @@ example : 0 ≤ max (-3 : ℤ) 5 := by positivity
 --   [OrderedSMul α β] {a : α} (ha : 0 < a) {b : β} (hb : 0 < b) : 0 ≤ a • b := by positivity
 
 example (n : ℕ) : 0 < n.succ := by positivity
+example (n : ℕ+) : 0 < (↑n : ℕ) := by positivity
 example (n : ℕ) : 0 < n ! := by positivity
 example (n k : ℕ) : 0 < (n+1).ascFactorial k := by positivity
 
@@ -346,24 +351,61 @@ example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ) < r := by positivity
 -- example {r : ℝ≥0} : 0 ≤ ((r : ℝ) : ereal) := by positivity
 -- example {r : ℝ≥0} : 0 < ((r + 1 : ℝ) : ereal) := by positivity
 
+/- ## Integrals -/
+
+section Integral
+
+open MeasureTheory
+
+variable {D : Type*} [NormedAddCommGroup D] [NormedSpace ℝ D]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace D] [BorelSpace D]
+  (μ : Measure D)
+
+example (f : D → E) : 0 ≤ ∫ x, ‖f x‖ ∂μ := by positivity
+example (f g : D → E) : 0 ≤ ∫ x, ‖f x‖ + ‖g x‖ ∂μ := by positivity
+example (f : D → E) (c : ℝ) (hc : 0 < c): 0 ≤ ∫ x, c * ‖f x‖ ∂μ := by positivity
+
+end Integral
+
 /-! ## Big operators -/
 
-example (n : ℕ) (f : ℕ → ℤ) : 0 ≤ ∑ j in range n, f j ^ 2 := by positivity
-example (f : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∑ j in s, f j ^ 2 := by positivity
-example (n : ℕ) (f : ℕ → ℤ) : 0 ≤ ∑ j : Fin 8, ∑ i in range n, (f j ^ 2 + i ^ 2) := by positivity
+example (n : ℕ) (f : ℕ → ℤ) : 0 ≤ ∑ j ∈ range n, f j ^ 2 := by positivity
+example (f : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∑ j ∈ s, f j ^ 2 := by positivity
+example (n : ℕ) (f : ℕ → ℤ) : 0 ≤ ∑ j : Fin 8, ∑ i ∈ range n, (f j ^ 2 + i ^ 2) := by positivity
 example (n : ℕ) (f : ℕ → ℤ) : 0 < ∑ j : Fin (n + 1), (f j ^ 2 + 1) := by positivity
 example (f : Empty → ℤ) : 0 ≤ ∑ j : Empty, f j ^ 2 := by positivity
-example (f : ℕ → ℤ) : 0 < ∑ j in ({1} : Finset ℕ), (f j ^ 2 + 1) := by
+example (f : ℕ → ℤ) : 0 < ∑ j ∈ ({1} : Finset ℕ), (f j ^ 2 + 1) := by
   have : Finset.Nonempty {1} := singleton_nonempty 1
   positivity
-example (s : Finset ℕ) : 0 ≤ ∑ j in s, j := by positivity
+example (s : Finset ℕ) : 0 ≤ ∑ j ∈ s, j := by positivity
 example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
 example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity
 
 -- Make sure that the extension doesn't produce an invalid term by accidentally unifying `?n` with
 -- `0` because of the `hf` assumption
 set_option linter.unusedVariables false in
-example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∑ n in Finset.range 10, f n := by positivity
+example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∑ n ∈ Finset.range 10, f n := by positivity
+
+example (n : ℕ) : ∏ j ∈ range n, (-1) ≠ 0 := by positivity
+example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∏ j ∈ range n, a j^2 := by positivity
+example (a : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∏ j ∈ s, a j^2 := by positivity
+example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∏ j : Fin 8, ∏ i ∈ range n, (a j^2 + i ^ 2) := by positivity
+example (n : ℕ) (a : ℕ → ℤ) : 0 < ∏ j : Fin (n + 1), (a j^2 + 1) := by positivity
+example (a : ℕ → ℤ) : 0 < ∏ j ∈ ({1} : Finset ℕ), (a j^2 + 1) := by
+  have : Finset.Nonempty {1} := singleton_nonempty 1
+  positivity
+example (s : Finset ℕ) : 0 ≤ ∏ j ∈ s, j := by positivity
+example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
+example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity
+
+-- Make sure that the extension doesn't produce an invalid term by accidentally unifying `?n` with
+-- `0` because of the `hf` assumption
+set_option linter.unusedVariables false in
+example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∏ n ∈ Finset.range 10, f n := by positivity
+
+-- Make sure that `positivity` isn't too greedy by trying to prove that a product is positive
+-- because its body is even if multiplication isn't strictly monotone
+example [OrderedCommSemiring α] {a : α} (ha : 0 < a) : 0 ≤ ∏ _i ∈ {(0 : α)}, a := by positivity
 
 /- ## Other extensions -/
 

@@ -3,8 +3,9 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Benjamin Davidson
 -/
-import Mathlib.Data.Nat.Parity
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Int.Sqrt
 import Mathlib.Tactic.Abel
 
 #align_import data.int.parity from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
@@ -94,6 +95,11 @@ theorem two_dvd_ne_zero : ¬2 ∣ n ↔ n % 2 = 1 :=
 instance : DecidablePred (Even : ℤ → Prop) := fun _ => decidable_of_iff _ even_iff.symm
 
 instance : DecidablePred (Odd : ℤ → Prop) := fun _ => decidable_of_iff _ odd_iff_not_even.symm
+
+/-- `IsSquare` can be decided on `ℤ` by checking against the square root. -/
+instance : DecidablePred (IsSquare : ℤ → Prop) :=
+  fun m ↦ decidable_of_iff' (sqrt m * sqrt m = m) <| by
+    simp_rw [← exists_mul_self m, IsSquare, eq_comm]
 
 @[simp]
 theorem not_even_one : ¬Even (1 : ℤ) := by
@@ -217,7 +223,7 @@ theorem odd_coe_nat (n : ℕ) : Odd (n : ℤ) ↔ Odd n := by
 
 @[simp]
 theorem natAbs_even : Even n.natAbs ↔ Even n := by
-  simp [even_iff_two_dvd, dvd_natAbs, coe_nat_dvd_left.symm]
+  simp [even_iff_two_dvd, dvd_natAbs, natCast_dvd.symm]
 #align int.nat_abs_even Int.natAbs_even
 
 -- Porting note (#10618): was simp. simp can prove this.
@@ -245,7 +251,7 @@ theorem four_dvd_add_or_sub_of_odd {a b : ℤ} (ha : Odd a) (hb : Odd b) :
     rw [Int.even_add, ← Int.even_sub] at h
     obtain ⟨k, hk⟩ := h
     convert dvd_mul_right 4 k using 1
-    rw [eq_add_of_sub_eq hk, mul_add, add_assoc, add_sub_cancel, ← two_mul, ← mul_assoc]
+    rw [eq_add_of_sub_eq hk, mul_add, add_assoc, add_sub_cancel_right, ← two_mul, ← mul_assoc]
     rfl
   · left
     obtain ⟨k, hk⟩ := h

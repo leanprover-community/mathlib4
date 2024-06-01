@@ -59,7 +59,7 @@ section Abelian
 
 variable [Abelian C]
 
-lemma exact₀ [Abelian C] {Z : C} (P : ProjectiveResolution Z) :
+lemma exact₀ {Z : C} (P : ProjectiveResolution Z) :
     (ShortComplex.mk _ _ P.complex_d_comp_π_f_zero).Exact :=
   ShortComplex.exact_of_g_is_cokernel _ P.isColimitCokernelCofork
 
@@ -334,7 +334,7 @@ irreducible_def of : ProjectiveResolution Z where
     cases n
     · rw [ChainComplex.quasiIsoAt₀_iff, ShortComplex.quasiIso_iff_of_zeros']
       · dsimp
-        refine' (ShortComplex.exact_and_epi_g_iff_of_iso _).2
+        refine (ShortComplex.exact_and_epi_g_iff_of_iso ?_).2
           ⟨exact_d_f (Projective.π Z), by dsimp; infer_instance⟩
         exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
           (by simp [ofComplex]) (by simp)

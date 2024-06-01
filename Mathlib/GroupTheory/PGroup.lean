@@ -22,8 +22,6 @@ It also contains proofs of some corollaries of this lemma about existence of fix
 -/
 
 
-open BigOperators
-
 open Fintype MulAction
 
 variable (p : ℕ) (G : Type*) [Group G]
@@ -55,7 +53,7 @@ theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
 
 theorem iff_card [Fact p.Prime] [Fintype G] : IsPGroup p G ↔ ∃ n : ℕ, card G = p ^ n := by
   have hG : card G ≠ 0 := card_ne_zero
-  refine' ⟨fun h => _, fun ⟨n, hn⟩ => of_card hn⟩
+  refine ⟨fun h => ?_, fun ⟨n, hn⟩ => of_card hn⟩
   suffices ∀ q ∈ Nat.factors (card G), q = p by
     use (card G).factors.length
     rw [← List.prod_replicate, ← List.eq_replicate_of_mem this, Nat.prod_factors hG]
@@ -85,7 +83,7 @@ theorem to_subgroup (H : Subgroup G) : IsPGroup p H :=
 
 theorem of_surjective {H : Type*} [Group H] (ϕ : G →* H) (hϕ : Function.Surjective ϕ) :
     IsPGroup p H := by
-  refine' fun h => Exists.elim (hϕ h) fun g hg => Exists.imp (fun k hk => _) (hG g)
+  refine fun h => Exists.elim (hϕ h) fun g hg => Exists.imp (fun k hk => ?_) (hG g)
   rw [← hg, ← ϕ.map_pow, hk, ϕ.map_one]
 #align is_p_group.of_surjective IsPGroup.of_surjective
 
@@ -129,8 +127,7 @@ theorem powEquiv_symm_apply {n : ℕ} (hn : p.Coprime n) (g : G) :
 variable [hp : Fact p.Prime]
 
 /-- If `p ∤ n`, then the `n`th power map is a bijection. -/
-@[reducible]
-noncomputable def powEquiv' {n : ℕ} (hn : ¬p ∣ n) : G ≃ G :=
+noncomputable abbrev powEquiv' {n : ℕ} (hn : ¬p ∣ n) : G ≃ G :=
   powEquiv hG (hp.out.coprime_iff_not_dvd.mpr hn)
 #align is_p_group.pow_equiv' IsPGroup.powEquiv'
 
@@ -150,7 +147,7 @@ theorem card_eq_or_dvd : Nat.card G = 1 ∨ p ∣ Nat.card G := by
     rw [Nat.card_eq_fintype_card, hn]
     cases' n with n n
     · exact Or.inl rfl
-    · exact Or.inr ⟨p ^ n, by rw [pow_succ]⟩
+    · exact Or.inr ⟨p ^ n, by rw [pow_succ']⟩
   · rw [Nat.card_eq_zero_of_infinite]
     exact Or.inr ⟨0, rfl⟩
 #align is_p_group.card_eq_or_dvd IsPGroup.card_eq_or_dvd
@@ -187,25 +184,25 @@ theorem card_modEq_card_fixedPoints [Fintype (fixedPoints G α)] :
     calc
       card α = card (Σy : Quotient (orbitRel G α), { x // Quotient.mk'' x = y }) :=
         card_congr (Equiv.sigmaFiberEquiv (@Quotient.mk'' _ (orbitRel G α))).symm
-      _ = ∑ a : Quotient (orbitRel G α), card { x // Quotient.mk'' x = a } := (card_sigma _)
+      _ = ∑ a : Quotient (orbitRel G α), card { x // Quotient.mk'' x = a } := card_sigma
       _ ≡ ∑ _a : fixedPoints G α, 1 [MOD p] := ?_
-      _ = _ := by simp; rfl
+      _ = _ := by simp
     rw [← ZMod.eq_iff_modEq_nat p, Nat.cast_sum, Nat.cast_sum]
     have key :
       ∀ x,
         card { y // (Quotient.mk'' y : Quotient (orbitRel G α)) = Quotient.mk'' x } =
           card (orbit G x) :=
       fun x => by simp only [Quotient.eq'']; congr
-    refine'
+    refine
       Eq.symm
         (Finset.sum_bij_ne_zero (fun a _ _ => Quotient.mk'' a.1) (fun _ _ _ => Finset.mem_univ _)
           (fun a₁ _ _ a₂ _ _ h =>
             Subtype.eq (mem_fixedPoints'.mp a₂.2 a₁.1 (Quotient.exact' h)))
-          (fun b => Quotient.inductionOn' b fun b _ hb => _) fun a ha _ => by
+          (fun b => Quotient.inductionOn' b fun b _ hb => ?_) fun a ha _ => by
           rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.2])
     obtain ⟨k, hk⟩ := hG.card_orbit b
     have : k = 0 :=
-      le_zero_iff.1
+      Nat.le_zero.1
         (Nat.le_of_lt_succ
           (lt_of_not_ge
             (mt (pow_dvd_pow p)
@@ -319,8 +316,7 @@ theorem to_sup_of_normal_right {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPG
 #align is_p_group.to_sup_of_normal_right IsPGroup.to_sup_of_normal_right
 
 theorem to_sup_of_normal_left {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPGroup p K)
-    [H.Normal] : IsPGroup p (H ⊔ K : Subgroup G) :=
-  (congr_arg (fun H : Subgroup G => IsPGroup p H) sup_comm).mp (to_sup_of_normal_right hK hH)
+    [H.Normal] : IsPGroup p (H ⊔ K : Subgroup G) := sup_comm H K ▸ to_sup_of_normal_right hK hH
 #align is_p_group.to_sup_of_normal_left IsPGroup.to_sup_of_normal_left
 
 theorem to_sup_of_normal_right' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPGroup p K)
@@ -336,7 +332,7 @@ theorem to_sup_of_normal_right' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsP
 
 theorem to_sup_of_normal_left' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPGroup p K)
     (hHK : K ≤ H.normalizer) : IsPGroup p (H ⊔ K : Subgroup G) :=
-  (congr_arg (fun H : Subgroup G => IsPGroup p H) sup_comm).mp (to_sup_of_normal_right' hK hH hHK)
+  sup_comm H K ▸ to_sup_of_normal_right' hK hH hHK
 #align is_p_group.to_sup_of_normal_left' IsPGroup.to_sup_of_normal_left'
 
 /-- finite p-groups with different p have coprime orders -/

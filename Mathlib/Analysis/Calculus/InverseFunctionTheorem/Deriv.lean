@@ -25,8 +25,7 @@ namespace HasStrictDerivAt
 variable (f' a : 𝕜) (hf : HasStrictDerivAt f f' a) (hf' : f' ≠ 0)
 
 /-- A function that is inverse to `f` near `a`. -/
-@[reducible]
-def localInverse : 𝕜 → 𝕜 :=
+abbrev localInverse : 𝕜 → 𝕜 :=
   (hf.hasStrictFDerivAt_equiv hf').localInverse _ _ _
 #align has_strict_deriv_at.local_inverse HasStrictDerivAt.localInverse
 
@@ -50,7 +49,8 @@ end HasStrictDerivAt
 variable {f}
 
 /-- If a function has a non-zero strict derivative at all points, then it is an open map. -/
-theorem open_map_of_strict_deriv {f' : 𝕜 → 𝕜}
+theorem isOpenMap_of_hasStrictDerivAt {f' : 𝕜 → 𝕜}
     (hf : ∀ x, HasStrictDerivAt f (f' x) x) (h0 : ∀ x, f' x ≠ 0) : IsOpenMap f :=
   isOpenMap_iff_nhds_le.2 fun x => ((hf x).map_nhds_eq (h0 x)).ge
-#align open_map_of_strict_deriv open_map_of_strict_deriv
+#align open_map_of_strict_deriv isOpenMap_of_hasStrictDerivAt
+@[deprecated] alias open_map_of_strict_deriv := isOpenMap_of_hasStrictDerivAt -- 2024-03-23
