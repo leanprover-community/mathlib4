@@ -93,6 +93,7 @@ variable {R : Type*} [Field R] {n : Type*} [DecidableEq n][Fintype n]
 
 open Module.End
 
+/--  Standard basis vectors are eigenvectors of any associated diagonal linear operator. -/
 lemma Matrix.hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
     Module.End.HasEigenvector (Matrix.toLin' (diagonal d)) (d i) (Pi.basisFun R n i) := by
   constructor
@@ -104,6 +105,7 @@ lemma Matrix.hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
     all_goals simp_all
   · rw [Function.ne_iff]; simp
 
+/-- Eigenvalues of a diagonal linear operator are the diagonal entries. -/
 lemma Matrix.hasEigenvalue_toLin'_diagonal_iff (d : n → R) {μ : R} :
     HasEigenvalue (toLin' (diagonal d)) μ ↔ ∃ i, d i = μ := by
   have (i : n) : HasEigenvalue (toLin' (diagonal d)) (d i) := by
@@ -126,6 +128,7 @@ lemma Matrix.hasEigenvalue_toLin'_diagonal_iff (d : n → R) {μ : R} :
   · rintro ⟨i, rfl⟩
     exact this i
 
+/-- The spectrum of the diagonal operator is the range of the diagonal viewed as a function. -/
 lemma Matrix.spectrum_diagonal (d : n → R) :
     spectrum R (diagonal d) = Set.range d := by
   ext μ
