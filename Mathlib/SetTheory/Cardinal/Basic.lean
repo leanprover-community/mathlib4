@@ -8,10 +8,8 @@ import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Set
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
-import Mathlib.Tactic.PPWithUniv
 
 #align_import set_theory.cardinal.basic from "leanprover-community/mathlib"@"3ff3f2d6a3118b8711063de7111a0d77a53219a8"
 

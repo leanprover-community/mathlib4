@@ -191,6 +191,9 @@ theorem birthday_natCast : ∀ n : ℕ, birthday n = n
   | n + 1 => by simp [birthday_natCast]
 #align pgame.birthday_nat_cast SetTheory.PGame.birthday_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias birthday_nat_cast := birthday_natCast
+
 theorem birthday_add_nat (n : ℕ) : (a + n).birthday = a.birthday + n := by simp
 #align pgame.birthday_add_nat SetTheory.PGame.birthday_add_nat
 

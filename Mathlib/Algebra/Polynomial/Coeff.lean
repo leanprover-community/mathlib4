@@ -395,6 +395,9 @@ theorem natCast_coeff_zero {n : ℕ} {R : Type*} [Semiring R] : (n : R[X]).coeff
   simp only [coeff_natCast_ite, ite_true]
 #align polynomial.nat_cast_coeff_zero Polynomial.natCast_coeff_zero
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_coeff_zero := natCast_coeff_zero
+
 @[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem natCast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     (↑m : R[X]) = ↑n ↔ m = n := by
@@ -406,10 +409,16 @@ theorem natCast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     rfl
 #align polynomial.nat_cast_inj Polynomial.natCast_inj
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_inj := natCast_inj
+
 @[simp]
 theorem intCast_coeff_zero {i : ℤ} {R : Type*} [Ring R] : (i : R[X]).coeff 0 = i := by
   cases i <;> simp
 #align polynomial.int_cast_coeff_zero Polynomial.intCast_coeff_zero
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_coeff_zero := intCast_coeff_zero
 
 @[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
@@ -420,6 +429,9 @@ theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]
   · rintro rfl
     rfl
 #align polynomial.int_cast_inj Polynomial.intCast_inj
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_inj := intCast_inj
 
 end cast
 

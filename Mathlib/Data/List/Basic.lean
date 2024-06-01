@@ -1980,7 +1980,7 @@ def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β)
   induction l with
   | nil => exact hb
   | cons hd tl IH =>
-    refine' hl _ _ hd (mem_cons_self hd tl)
+    refine hl _ ?_ hd (mem_cons_self hd tl)
     refine IH ?_
     intro y hy x hx
     exact hl y hy x (mem_cons_of_mem hd hx)
@@ -1995,7 +1995,7 @@ def foldlRecOn {C : β → Sort*} (l : List α) (op : β → α → β) (b : β)
   induction l generalizing b with
   | nil => exact hb
   | cons hd tl IH =>
-    refine' IH _ _ _
+    refine IH _ ?_ ?_
     · exact hl b hb hd (mem_cons_self hd tl)
     · intro y hy x hx
       exact hl y hy x (mem_cons_of_mem hd hx)

@@ -386,7 +386,7 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
       rotate_left
       · exact hφ hq
       · exact hφ hq'
-      refine' Localization.r_of_eq _
+      refine Localization.r_of_eq ?_
       simpa only [map_mul] using congr_arg φ h
   map_one' := by
     beta_reduce -- Porting note(#12129): force the function to be applied

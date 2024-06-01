@@ -434,10 +434,10 @@ theorem coeFn_comp₂Measurable (g : β → γ → δ) (hg : Measurable (uncurry
 
 end
 
-/-- Interpret `f : α →ₘ[μ] β` as a germ at `μ.ae` forgetting that `f` is almost everywhere
+/-- Interpret `f : α →ₘ[μ] β` as a germ at `ae μ` forgetting that `f` is almost everywhere
     strongly measurable. -/
-def toGerm (f : α →ₘ[μ] β) : Germ μ.ae β :=
-  Quotient.liftOn' f (fun f => ((f : α → β) : Germ μ.ae β)) fun _ _ H => Germ.coe_eq.2 H
+def toGerm (f : α →ₘ[μ] β) : Germ (ae μ) β :=
+  Quotient.liftOn' f (fun f => ((f : α → β) : Germ (ae μ) β)) fun _ _ H => Germ.coe_eq.2 H
 #align measure_theory.ae_eq_fun.to_germ MeasureTheory.AEEqFun.toGerm
 
 @[simp]
@@ -448,7 +448,7 @@ theorem mk_toGerm (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β).toGerm = f
 theorem toGerm_eq (f : α →ₘ[μ] β) : f.toGerm = (f : α → β) := by rw [← mk_toGerm, mk_coeFn]
 #align measure_theory.ae_eq_fun.to_germ_eq MeasureTheory.AEEqFun.toGerm_eq
 
-theorem toGerm_injective : Injective (toGerm : (α →ₘ[μ] β) → Germ μ.ae β) := fun f g H =>
+theorem toGerm_injective : Injective (toGerm : (α →ₘ[μ] β) → Germ (ae μ) β) := fun f g H =>
   ext <| Germ.coe_eq.1 <| by rwa [← toGerm_eq, ← toGerm_eq]
 #align measure_theory.ae_eq_fun.to_germ_injective MeasureTheory.AEEqFun.toGerm_injective
 
@@ -770,7 +770,7 @@ instance instMonoid : Monoid (α →ₘ[μ] γ) :=
 
 /-- `AEEqFun.toGerm` as a `MonoidHom`. -/
 @[to_additive (attr := simps) "`AEEqFun.toGerm` as an `AddMonoidHom`."]
-def toGermMonoidHom : (α →ₘ[μ] γ) →* μ.ae.Germ γ where
+def toGermMonoidHom : (α →ₘ[μ] γ) →* (ae μ).Germ γ where
   toFun := toGerm
   map_one' := one_toGerm
   map_mul' := mul_toGerm

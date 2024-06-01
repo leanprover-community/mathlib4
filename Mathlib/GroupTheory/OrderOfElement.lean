@@ -362,12 +362,19 @@ theorem orderOf_eq_orderOf_iff {H : Type*} [Monoid H] {y : H} :
 #align order_of_eq_order_of_iff orderOf_eq_orderOf_iff
 #align add_order_of_eq_add_order_of_iff addOrderOf_eq_addOrderOf_iff
 
-@[to_additive]
+/-- An injective homomorphism of monoids preserves orders of elements. -/
+@[to_additive "An injective homomorphism of additive monoids preserves orders of elements."]
 theorem orderOf_injective {H : Type*} [Monoid H] (f : G →* H) (hf : Function.Injective f) (x : G) :
     orderOf (f x) = orderOf x := by
   simp_rw [orderOf_eq_orderOf_iff, ← f.map_pow, ← f.map_one, hf.eq_iff, forall_const]
 #align order_of_injective orderOf_injective
 #align add_order_of_injective addOrderOf_injective
+
+/-- A multiplicative equivalence preserves orders of elements. -/
+@[to_additive (attr := simp) "An additive equivalence preserves orders of elements."]
+lemma MulEquiv.orderOf_eq {H : Type*} [Monoid H] (e : G ≃* H) (x : G) :
+    orderOf (e x) = orderOf x :=
+  orderOf_injective e e.injective x
 
 @[to_additive]
 theorem Function.Injective.isOfFinOrder_iff [Monoid H] {f : G →* H} (hf : Injective f) :

@@ -181,8 +181,8 @@ instance Functor.mapHomologicalComplex_reflects_iso (F : W₁ ⥤ W₂) [F.Prese
   ⟨fun f => by
     intro
     haveI : ∀ n : ι, IsIso (F.map (f.f n)) := fun n =>
-      IsIso.of_iso
-        ((HomologicalComplex.eval W₂ c n).mapIso (asIso ((F.mapHomologicalComplex c).map f)))
+        ((HomologicalComplex.eval W₂ c n).mapIso
+          (asIso ((F.mapHomologicalComplex c).map f))).isIso_hom
     haveI := fun n => isIso_of_reflects_iso (f.f n) F
     exact HomologicalComplex.Hom.isIso_of_components f⟩
 #align category_theory.functor.map_homological_complex_reflects_iso CategoryTheory.Functor.mapHomologicalComplex_reflects_iso

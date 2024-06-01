@@ -66,9 +66,15 @@ theorem rpow_intCast (x : ℝ) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
     Complex.ofReal_re]
 #align real.rpow_int_cast Real.rpow_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias rpow_int_cast := rpow_intCast
+
 @[simp, norm_cast]
 theorem rpow_natCast (x : ℝ) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by simpa using rpow_intCast x n
 #align real.rpow_nat_cast Real.rpow_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias rpow_nat_cast := rpow_natCast
 
 @[simp]
 theorem exp_one_rpow (x : ℝ) : exp 1 ^ x = exp x := by rw [← exp_mul, one_mul]
@@ -1053,4 +1059,4 @@ end Mathlib.Meta.NormNum
 
 end Tactics
 
-@[deprecated] alias rpow_nonneg_of_nonneg := rpow_nonneg -- 2024-01-07
+@[deprecated (since := "2024-01-07")] alias rpow_nonneg_of_nonneg := rpow_nonneg
