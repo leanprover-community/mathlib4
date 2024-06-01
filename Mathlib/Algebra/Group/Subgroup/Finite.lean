@@ -113,8 +113,6 @@ instance fintypeBot : Fintype (⊥ : Subgroup G) :=
 #align subgroup.fintype_bot Subgroup.fintypeBot
 #align add_subgroup.fintype_bot AddSubgroup.fintypeBot
 
-/- curly brackets `{}` are used here instead of instance brackets `[]` because
-  the instance in a goal is often not the same as the one inferred by type class inference.  -/
 @[to_additive] -- Porting note: removed `simp` because `simpNF` says it can prove it.
 theorem card_bot : Nat.card (⊥ : Subgroup G) = 1 :=
   Nat.card_unique
@@ -124,10 +122,6 @@ theorem card_bot : Nat.card (⊥ : Subgroup G) = 1 :=
 @[to_additive]
 theorem card_top : Nat.card (⊤ : Subgroup G) = Nat.card G :=
   Nat.card_congr Subgroup.topEquiv.toEquiv
-
-@[to_additive]
-theorem card_le_card_group [Finite G] : Nat.card H ≤ Nat.card G :=
-  Nat.card_le_card_of_injective _ Subtype.coe_injective
 
 @[to_additive]
 theorem eq_top_of_card_eq [Finite H] (h : Nat.card H = Nat.card G) :
@@ -150,7 +144,7 @@ theorem card_eq_iff_eq_top [Finite H] : Nat.card H = Nat.card G ↔ H = ⊤ :=
 
 @[to_additive]
 theorem eq_top_of_le_card [Finite G] (h : Nat.card G ≤ Nat.card H) : H = ⊤ :=
-  eq_top_of_card_eq H (le_antisymm H.card_le_card_group h)
+  eq_top_of_card_eq H (le_antisymm (Nat.card_le_card_of_injective H.subtype H.subtype_injective) h)
 #align subgroup.eq_top_of_le_card Subgroup.eq_top_of_le_card
 #align add_subgroup.eq_top_of_le_card AddSubgroup.eq_top_of_le_card
 
@@ -182,6 +176,10 @@ theorem one_lt_card_iff_ne_bot [Finite H] : 1 < Nat.card H ↔ H ≠ ⊥ :=
   lt_iff_not_le.trans H.card_le_one_iff_eq_bot.not
 #align subgroup.one_lt_card_iff_ne_bot Subgroup.one_lt_card_iff_ne_bot
 #align add_subgroup.pos_card_iff_ne_bot AddSubgroup.one_lt_card_iff_ne_bot
+
+@[to_additive]
+theorem card_le_card_group [Finite G] : Nat.card H ≤ Nat.card G :=
+  Nat.card_le_card_of_injective _ Subtype.coe_injective
 
 end Subgroup
 
