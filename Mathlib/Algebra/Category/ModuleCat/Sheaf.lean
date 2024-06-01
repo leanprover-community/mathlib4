@@ -69,6 +69,7 @@ def forget : SheafOfModules.{v} R ⥤ PresheafOfModules R.val where
   obj F := F.val
   map φ := φ.val
 
+/-- The forget functor `SheafOfModules R ⥤ PresheafOfModules R.val` is fully faithful. -/
 @[simps]
 def fullyFaithfulForget : (forget R).FullyFaithful where
   preimage φ := ⟨φ⟩
