@@ -1416,15 +1416,15 @@ theorem totallyBounded_Icc (a b : α) : TotallyBounded (Icc a b) :=
 #align totally_bounded_Icc totallyBounded_Icc
 
 theorem totallyBounded_Ico (a b : α) : TotallyBounded (Ico a b) :=
-  totallyBounded_subset Ico_subset_Icc_self (totallyBounded_Icc a b)
+  (totallyBounded_Icc a b).subset Ico_subset_Icc_self
 #align totally_bounded_Ico totallyBounded_Ico
 
 theorem totallyBounded_Ioc (a b : α) : TotallyBounded (Ioc a b) :=
-  totallyBounded_subset Ioc_subset_Icc_self (totallyBounded_Icc a b)
+  (totallyBounded_Icc a b).subset Ioc_subset_Icc_self
 #align totally_bounded_Ioc totallyBounded_Ioc
 
 theorem totallyBounded_Ioo (a b : α) : TotallyBounded (Ioo a b) :=
-  totallyBounded_subset Ioo_subset_Icc_self (totallyBounded_Icc a b)
+  (totallyBounded_Icc a b).subset Ioo_subset_Icc_self
 #align totally_bounded_Ioo totallyBounded_Ioo
 
 end MetricOrdered
