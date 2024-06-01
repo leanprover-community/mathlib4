@@ -634,7 +634,7 @@ inductive Point
 #align weierstrass_curve.point WeierstrassCurve.Affine.Point
 
 /-- For an algebraic extension `S` of `R`, the type of nonsingular `S`-rational points on `W`. -/
-scoped[WeierstrassCurve] notation3 W "⟮" S "⟯" => Affine.Point <| baseChange W S
+scoped[WeierstrassCurve] notation3:9000 W "⟮" S "⟯" => Affine.Point <| baseChange W S
 
 namespace Point
 
