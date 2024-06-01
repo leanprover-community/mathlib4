@@ -949,7 +949,8 @@ theorem toOrderedSMul : OrderedSMul ℝ K :=
 
 scoped[ComplexOrder] attribute [instance] RCLike.toOrderedSMul
 
-def _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A]
+/-- A star algebra over `K` has a scalar multiplication that respects the order.  -/
+lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A]
     [StarOrderedRing A] [Module K A] [StarModule K A] [IsScalarTower K A A] [SMulCommClass K A A] :
     OrderedSMul K A where
   smul_lt_smul_of_pos {x} {y} {c} hxy hc := StarModule.smul_lt_smul_of_pos hxy hc
