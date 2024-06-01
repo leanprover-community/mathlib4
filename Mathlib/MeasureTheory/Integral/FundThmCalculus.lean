@@ -148,7 +148,7 @@ noncomputable section
 open scoped Classical
 open MeasureTheory Set Filter Function
 
-open scoped Classical Topology Filter ENNReal BigOperators Interval NNReal
+open scoped Classical Topology Filter ENNReal Interval NNReal
 
 variable {ι 𝕜 E F A : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
@@ -177,7 +177,7 @@ only that `f` has finite limits almost surely at `a` and `b`.
 
 Namely, let `f` be a measurable function integrable on `a..b`. Let `(la, la')` be a pair of
 `intervalIntegral.FTCFilter`s around `a`; let `(lb, lb')` be a pair of `intervalIntegral.FTCFilter`s
-around `b`. Suppose that `f` has finite limits `ca` and `cb` at `la' ⊓ μ.ae` and `lb' ⊓ μ.ae`,
+around `b`. Suppose that `f` has finite limits `ca` and `cb` at `la' ⊓ ae μ` and `lb' ⊓ ae μ`,
 respectively.  Then
 `∫ x in va..vb, f x ∂μ - ∫ x in ua..ub, f x ∂μ = ∫ x in ub..vb, cb ∂μ - ∫ x in ua..va, ca ∂μ +
   o(‖∫ x in ua..va, (1:ℝ) ∂μ‖ + ‖∫ x in ub..vb, (1:ℝ) ∂μ‖)`
@@ -259,7 +259,7 @@ variable {f : ℝ → E} {a b : ℝ} {c ca cb : E} {l l' la la' lb lb' : Filter 
 
 /-- **Fundamental theorem of calculus-1**, local version for any measure.
 Let filters `l` and `l'` be related by `TendstoIxxClass Ioc`.
-If `f` has a finite limit `c` at `l' ⊓ μ.ae`, where `μ` is a measure
+If `f` has a finite limit `c` at `l' ⊓ ae μ`, where `μ` is a measure
 finite at `l'`, then `∫ x in u..v, f x ∂μ = ∫ x in u..v, c ∂μ + o(∫ x in u..v, 1 ∂μ)` as both
 `u` and `v` tend to `l`.
 
@@ -272,7 +272,7 @@ We use integrals of constants instead of measures because this way it is easier 
 a statement that works in both cases `u ≤ v` and `v ≤ u`. -/
 theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae' [IsMeasurablyGenerated l']
     [TendstoIxxClass Ioc l l'] (hfm : StronglyMeasurableAtFilter f l' μ)
-    (hf : Tendsto f (l' ⊓ μ.ae) (𝓝 c)) (hl : μ.FiniteAtFilter l') (hu : Tendsto u lt l)
+    (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c)) (hl : μ.FiniteAtFilter l') (hu : Tendsto u lt l)
     (hv : Tendsto v lt l) :
     (fun t => (∫ x in u t..v t, f x ∂μ) - ∫ _ in u t..v t, c ∂μ) =o[lt] fun t =>
       ∫ _ in u t..v t, (1 : ℝ) ∂μ := by
@@ -292,7 +292,7 @@ variable [CompleteSpace E]
 
 /-- **Fundamental theorem of calculus-1**, local version for any measure.
 Let filters `l` and `l'` be related by `TendstoIxxClass Ioc`.
-If `f` has a finite limit `c` at `l ⊓ μ.ae`, where `μ` is a measure
+If `f` has a finite limit `c` at `l ⊓ ae μ`, where `μ` is a measure
 finite at `l`, then `∫ x in u..v, f x ∂μ = μ (Ioc u v) • c + o(μ(Ioc u v))` as both
 `u` and `v` tend to `l` so that `u ≤ v`.
 
@@ -302,7 +302,7 @@ of `𝓝[≥] a`, `𝓝[≤] a`, `𝓝 a`, then it's easier to apply the non-pri
 also works, e.g., for `l = l' = Filter.atTop`. -/
 theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le' [IsMeasurablyGenerated l']
     [TendstoIxxClass Ioc l l'] (hfm : StronglyMeasurableAtFilter f l' μ)
-    (hf : Tendsto f (l' ⊓ μ.ae) (𝓝 c)) (hl : μ.FiniteAtFilter l') (hu : Tendsto u lt l)
+    (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c)) (hl : μ.FiniteAtFilter l') (hu : Tendsto u lt l)
     (hv : Tendsto v lt l) (huv : u ≤ᶠ[lt] v) :
     (fun t => (∫ x in u t..v t, f x ∂μ) - (μ (Ioc (u t) (v t))).toReal • c) =o[lt] fun t =>
       (μ <| Ioc (u t) (v t)).toReal :=
@@ -313,7 +313,7 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le' [IsMeasurably
 
 /-- **Fundamental theorem of calculus-1**, local version for any measure.
 Let filters `l` and `l'` be related by `TendstoIxxClass Ioc`.
-If `f` has a finite limit `c` at `l ⊓ μ.ae`, where `μ` is a measure
+If `f` has a finite limit `c` at `l ⊓ ae μ`, where `μ` is a measure
 finite at `l`, then `∫ x in u..v, f x ∂μ = -μ (Ioc v u) • c + o(μ(Ioc v u))` as both
 `u` and `v` tend to `l` so that `v ≤ u`.
 
@@ -323,7 +323,7 @@ of `𝓝[≥] a`, `𝓝[≤] a`, `𝓝 a`, then it's easier to apply the non-pri
 also works, e.g., for `l = l' = Filter.atTop`. -/
 theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_ge' [IsMeasurablyGenerated l']
     [TendstoIxxClass Ioc l l'] (hfm : StronglyMeasurableAtFilter f l' μ)
-    (hf : Tendsto f (l' ⊓ μ.ae) (𝓝 c)) (hl : μ.FiniteAtFilter l') (hu : Tendsto u lt l)
+    (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c)) (hl : μ.FiniteAtFilter l') (hu : Tendsto u lt l)
     (hv : Tendsto v lt l) (huv : v ≤ᶠ[lt] u) :
     (fun t => (∫ x in u t..v t, f x ∂μ) + (μ (Ioc (v t) (u t))).toReal • c) =o[lt] fun t =>
       (μ <| Ioc (v t) (u t)).toReal :=
@@ -339,7 +339,7 @@ variable [IsLocallyFiniteMeasure μ] [FTCFilter a l l']
 /-- **Fundamental theorem of calculus-1**, local version for any measure.
 
 Let filters `l` and `l'` be related by `[intervalIntegral.FTCFilter a l l']`; let `μ` be a locally
-finite measure.  If `f` has a finite limit `c` at `l' ⊓ μ.ae`, then
+finite measure.  If `f` has a finite limit `c` at `l' ⊓ ae μ`, then
 `∫ x in u..v, f x ∂μ = ∫ x in u..v, c ∂μ + o(∫ x in u..v, 1 ∂μ)` as both `u` and `v` tend to `l`.
 
 See also `measure_integral_sub_linear_isLittleO_of_tendsto_ae'` for a version that also works, e.g.,
@@ -348,7 +348,7 @@ for `l = l' = Filter.atTop`.
 We use integrals of constants instead of measures because this way it is easier to formulate
 a statement that works in both cases `u ≤ v` and `v ≤ u`. -/
 theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae
-    (hfm : StronglyMeasurableAtFilter f l' μ) (hf : Tendsto f (l' ⊓ μ.ae) (𝓝 c))
+    (hfm : StronglyMeasurableAtFilter f l' μ) (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c))
     (hu : Tendsto u lt l) (hv : Tendsto v lt l) :
     (fun t => (∫ x in u t..v t, f x ∂μ) - ∫ _ in u t..v t, c ∂μ) =o[lt] fun t =>
       ∫ _ in u t..v t, (1 : ℝ) ∂μ :=
@@ -359,13 +359,13 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae
 /-- **Fundamental theorem of calculus-1**, local version for any measure.
 
 Let filters `l` and `l'` be related by `[intervalIntegral.FTCFilter a l l']`; let `μ` be a locally
-finite measure.  If `f` has a finite limit `c` at `l' ⊓ μ.ae`, then
+finite measure.  If `f` has a finite limit `c` at `l' ⊓ ae μ`, then
 `∫ x in u..v, f x ∂μ = μ (Ioc u v) • c + o(μ(Ioc u v))` as both `u` and `v` tend to `l`.
 
 See also `measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le'` for a version that also works,
 e.g., for `l = l' = Filter.atTop`. -/
 theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le
-    (hfm : StronglyMeasurableAtFilter f l' μ) (hf : Tendsto f (l' ⊓ μ.ae) (𝓝 c))
+    (hfm : StronglyMeasurableAtFilter f l' μ) (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c))
     (hu : Tendsto u lt l) (hv : Tendsto v lt l) (huv : u ≤ᶠ[lt] v) :
     (fun t => (∫ x in u t..v t, f x ∂μ) - (μ (Ioc (u t) (v t))).toReal • c) =o[lt] fun t =>
       (μ <| Ioc (u t) (v t)).toReal :=
@@ -377,13 +377,13 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_le
 /-- **Fundamental theorem of calculus-1**, local version for any measure.
 
 Let filters `l` and `l'` be related by `[intervalIntegral.FTCFilter a l l']`; let `μ` be a locally
-finite measure.  If `f` has a finite limit `c` at `l' ⊓ μ.ae`, then
+finite measure.  If `f` has a finite limit `c` at `l' ⊓ ae μ`, then
 `∫ x in u..v, f x ∂μ = -μ (Set.Ioc v u) • c + o(μ(Set.Ioc v u))` as both `u` and `v` tend to `l`.
 
 See also `measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_ge'` for a version that also works,
 e.g., for `l = l' = Filter.atTop`. -/
 theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae_of_ge
-    (hfm : StronglyMeasurableAtFilter f l' μ) (hf : Tendsto f (l' ⊓ μ.ae) (𝓝 c))
+    (hfm : StronglyMeasurableAtFilter f l' μ) (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c))
     (hu : Tendsto u lt l) (hv : Tendsto v lt l) (huv : v ≤ᶠ[lt] u) :
     (fun t => (∫ x in u t..v t, f x ∂μ) + (μ (Ioc (v t) (u t))).toReal • c) =o[lt] fun t =>
       (μ <| Ioc (v t) (u t)).toReal :=
@@ -401,7 +401,7 @@ measure.
 
 Let `f` be a measurable function integrable on `a..b`. Let `(la, la')` be a pair of
 `intervalIntegral.FTCFilter`s around `a`; let `(lb, lb')` be a pair of `intervalIntegral.FTCFilter`s
-around `b`. Suppose that `f` has finite limits `ca` and `cb` at `la' ⊓ μ.ae` and `lb' ⊓ μ.ae`,
+around `b`. Suppose that `f` has finite limits `ca` and `cb` at `la' ⊓ ae μ` and `lb' ⊓ ae μ`,
 respectively.
 Then `∫ x in va..vb, f x ∂μ - ∫ x in ua..ub, f x ∂μ =
   ∫ x in ub..vb, cb ∂μ - ∫ x in ua..va, ca ∂μ +
@@ -410,8 +410,8 @@ as `ua` and `va` tend to `la` while `ub` and `vb` tend to `lb`.
 -/
 theorem measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae
     (hab : IntervalIntegrable f μ a b) (hmeas_a : StronglyMeasurableAtFilter f la' μ)
-    (hmeas_b : StronglyMeasurableAtFilter f lb' μ) (ha_lim : Tendsto f (la' ⊓ μ.ae) (𝓝 ca))
-    (hb_lim : Tendsto f (lb' ⊓ μ.ae) (𝓝 cb)) (hua : Tendsto ua lt la) (hva : Tendsto va lt la)
+    (hmeas_b : StronglyMeasurableAtFilter f lb' μ) (ha_lim : Tendsto f (la' ⊓ ae μ) (𝓝 ca))
+    (hb_lim : Tendsto f (lb' ⊓ ae μ) (𝓝 cb)) (hua : Tendsto ua lt la) (hva : Tendsto va lt la)
     (hub : Tendsto ub lt lb) (hvb : Tendsto vb lt lb) :
     (fun t =>
         ((∫ x in va t..vb t, f x ∂μ) - ∫ x in ua t..ub t, f x ∂μ) -
@@ -442,14 +442,14 @@ theorem measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae
 measure.
 
 Let `f` be a measurable function integrable on `a..b`. Let `(lb, lb')` be a pair of
-`intervalIntegral.FTCFilter`s around `b`. Suppose that `f` has a finite limit `c` at `lb' ⊓ μ.ae`.
+`intervalIntegral.FTCFilter`s around `b`. Suppose that `f` has a finite limit `c` at `lb' ⊓ ae μ`.
 
 Then `∫ x in a..v, f x ∂μ - ∫ x in a..u, f x ∂μ = ∫ x in u..v, c ∂μ + o(∫ x in u..v, (1:ℝ) ∂μ)` as
 `u` and `v` tend to `lb`.
 -/
 theorem measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right
     (hab : IntervalIntegrable f μ a b) (hmeas : StronglyMeasurableAtFilter f lb' μ)
-    (hf : Tendsto f (lb' ⊓ μ.ae) (𝓝 c)) (hu : Tendsto u lt lb) (hv : Tendsto v lt lb) :
+    (hf : Tendsto f (lb' ⊓ ae μ) (𝓝 c)) (hu : Tendsto u lt lb) (hv : Tendsto v lt lb) :
     (fun t => ((∫ x in a..v t, f x ∂μ) - ∫ x in a..u t, f x ∂μ) - ∫ _ in u t..v t, c ∂μ) =o[lt]
       fun t => ∫ _ in u t..v t, (1 : ℝ) ∂μ := by
   simpa using
@@ -462,14 +462,14 @@ theorem measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right
 measure.
 
 Let `f` be a measurable function integrable on `a..b`. Let `(la, la')` be a pair of
-`intervalIntegral.FTCFilter`s around `a`. Suppose that `f` has a finite limit `c` at `la' ⊓ μ.ae`.
+`intervalIntegral.FTCFilter`s around `a`. Suppose that `f` has a finite limit `c` at `la' ⊓ ae μ`.
 
 Then `∫ x in v..b, f x ∂μ - ∫ x in u..b, f x ∂μ = -∫ x in u..v, c ∂μ + o(∫ x in u..v, (1:ℝ) ∂μ)`
 as `u` and `v` tend to `la`.
 -/
 theorem measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_left
     (hab : IntervalIntegrable f μ a b) (hmeas : StronglyMeasurableAtFilter f la' μ)
-    (hf : Tendsto f (la' ⊓ μ.ae) (𝓝 c)) (hu : Tendsto u lt la) (hv : Tendsto v lt la) :
+    (hf : Tendsto f (la' ⊓ ae μ) (𝓝 c)) (hu : Tendsto u lt la) (hv : Tendsto v lt la) :
     (fun t => ((∫ x in v t..b, f x ∂μ) - ∫ x in u t..b, f x ∂μ) + ∫ _ in u t..v t, c ∂μ) =o[lt]
       fun t => ∫ _ in u t..v t, (1 : ℝ) ∂μ := by
   simpa using
@@ -508,7 +508,7 @@ If `f` has a finite limit `c` almost surely at `l'`, where `(l, l')` is an
 `intervalIntegral.FTCFilter` pair around `a`, then `∫ x in u..v, f x ∂μ = (v - u) • c + o (v - u)`
 as both `u` and `v` tend to `l`. -/
 theorem integral_sub_linear_isLittleO_of_tendsto_ae [FTCFilter a l l']
-    (hfm : StronglyMeasurableAtFilter f l') (hf : Tendsto f (l' ⊓ volume.ae) (𝓝 c)) {u v : ι → ℝ}
+    (hfm : StronglyMeasurableAtFilter f l') (hf : Tendsto f (l' ⊓ ae volume) (𝓝 c)) {u v : ι → ℝ}
     (hu : Tendsto u lt l) (hv : Tendsto v lt l) :
     (fun t => (∫ x in u t..v t, f x) - (v t - u t) • c) =o[lt] (v - u) := by
   simpa [integral_const] using measure_integral_sub_linear_isLittleO_of_tendsto_ae hfm hf hu hv
@@ -526,8 +526,8 @@ This lemma could've been formulated using `HasStrictFDerivAtFilter` if we had th
 definition. -/
 theorem integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae
     (hab : IntervalIntegrable f volume a b) (hmeas_a : StronglyMeasurableAtFilter f la')
-    (hmeas_b : StronglyMeasurableAtFilter f lb') (ha_lim : Tendsto f (la' ⊓ volume.ae) (𝓝 ca))
-    (hb_lim : Tendsto f (lb' ⊓ volume.ae) (𝓝 cb)) (hua : Tendsto ua lt la) (hva : Tendsto va lt la)
+    (hmeas_b : StronglyMeasurableAtFilter f lb') (ha_lim : Tendsto f (la' ⊓ ae volume) (𝓝 ca))
+    (hb_lim : Tendsto f (lb' ⊓ ae volume) (𝓝 cb)) (hua : Tendsto ua lt la) (hva : Tendsto va lt la)
     (hub : Tendsto ub lt lb) (hvb : Tendsto vb lt lb) :
     (fun t =>
         ((∫ x in va t..vb t, f x) - ∫ x in ua t..ub t, f x) -
@@ -547,7 +547,7 @@ pair around `b`, and `f` has a finite limit `c` almost surely at `lb'`, then
 This lemma could've been formulated using `HasStrictDerivAtFilter` if we had this definition. -/
 theorem integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right
     (hab : IntervalIntegrable f volume a b) (hmeas : StronglyMeasurableAtFilter f lb')
-    (hf : Tendsto f (lb' ⊓ volume.ae) (𝓝 c)) (hu : Tendsto u lt lb) (hv : Tendsto v lt lb) :
+    (hf : Tendsto f (lb' ⊓ ae volume) (𝓝 c)) (hu : Tendsto u lt lb) (hv : Tendsto v lt lb) :
     (fun t => ((∫ x in a..v t, f x) - ∫ x in a..u t, f x) - (v t - u t) • c) =o[lt] (v - u) := by
   simpa only [integral_const, smul_eq_mul, mul_one] using
     measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right hab hmeas hf hu hv
@@ -562,7 +562,7 @@ pair around `a`, and `f` has a finite limit `c` almost surely at `la'`, then
 This lemma could've been formulated using `HasStrictDerivAtFilter` if we had this definition. -/
 theorem integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_left
     (hab : IntervalIntegrable f volume a b) (hmeas : StronglyMeasurableAtFilter f la')
-    (hf : Tendsto f (la' ⊓ volume.ae) (𝓝 c)) (hu : Tendsto u lt la) (hv : Tendsto v lt la) :
+    (hf : Tendsto f (la' ⊓ ae volume) (𝓝 c)) (hu : Tendsto u lt la) (hv : Tendsto v lt la) :
     (fun t => ((∫ x in v t..b, f x) - ∫ x in u t..b, f x) + (v t - u t) • c) =o[lt] (v - u) := by
   simpa only [integral_const, smul_eq_mul, mul_one] using
     measure_integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_left hab hmeas hf hu hv
@@ -608,7 +608,7 @@ If `f : ℝ → E` is integrable on `a..b` and `f x` has finite limits `ca` and 
 in the sense of strict differentiability. -/
 theorem integral_hasStrictFDerivAt_of_tendsto_ae (hf : IntervalIntegrable f volume a b)
     (hmeas_a : StronglyMeasurableAtFilter f (𝓝 a)) (hmeas_b : StronglyMeasurableAtFilter f (𝓝 b))
-    (ha : Tendsto f (𝓝 a ⊓ volume.ae) (𝓝 ca)) (hb : Tendsto f (𝓝 b ⊓ volume.ae) (𝓝 cb)) :
+    (ha : Tendsto f (𝓝 a ⊓ ae volume) (𝓝 ca)) (hb : Tendsto f (𝓝 b ⊓ ae volume) (𝓝 cb)) :
     HasStrictFDerivAt (fun p : ℝ × ℝ => ∫ x in p.1..p.2, f x)
       ((snd ℝ ℝ ℝ).smulRight cb - (fst ℝ ℝ ℝ).smulRight ca) (a, b) := by
   have :=
@@ -641,7 +641,7 @@ theorem integral_hasStrictFDerivAt (hf : IntervalIntegrable f volume a b)
 If `f : ℝ → E` is integrable on `a..b` and `f x` has a finite limit `c` almost surely at `b`, then
 `u ↦ ∫ x in a..u, f x` has derivative `c` at `b` in the sense of strict differentiability. -/
 theorem integral_hasStrictDerivAt_of_tendsto_ae_right (hf : IntervalIntegrable f volume a b)
-    (hmeas : StronglyMeasurableAtFilter f (𝓝 b)) (hb : Tendsto f (𝓝 b ⊓ volume.ae) (𝓝 c)) :
+    (hmeas : StronglyMeasurableAtFilter f (𝓝 b)) (hb : Tendsto f (𝓝 b ⊓ ae volume) (𝓝 c)) :
     HasStrictDerivAt (fun u => ∫ x in a..u, f x) c b :=
   integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right hf hmeas hb continuousAt_snd
     continuousAt_fst
@@ -662,7 +662,7 @@ theorem integral_hasStrictDerivAt_right (hf : IntervalIntegrable f volume a b)
 If `f : ℝ → E` is integrable on `a..b` and `f x` has a finite limit `c` almost surely at `a`, then
 `u ↦ ∫ x in u..b, f x` has derivative `-c` at `a` in the sense of strict differentiability. -/
 theorem integral_hasStrictDerivAt_of_tendsto_ae_left (hf : IntervalIntegrable f volume a b)
-    (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (ha : Tendsto f (𝓝 a ⊓ volume.ae) (𝓝 c)) :
+    (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (ha : Tendsto f (𝓝 a ⊓ ae volume) (𝓝 c)) :
     HasStrictDerivAt (fun u => ∫ x in u..b, f x) (-c) a := by
   simpa only [← integral_symm] using
     (integral_hasStrictDerivAt_of_tendsto_ae_right hf.symm hmeas ha).neg
@@ -709,7 +709,7 @@ finite limits `ca` and `cb` almost surely as `x` tends to `a` and `b`, respectiv
 `(u, v) ↦ ∫ x in u..v, f x` has derivative `(u, v) ↦ v • cb - u • ca` at `(a, b)`. -/
 theorem integral_hasFDerivAt_of_tendsto_ae (hf : IntervalIntegrable f volume a b)
     (hmeas_a : StronglyMeasurableAtFilter f (𝓝 a)) (hmeas_b : StronglyMeasurableAtFilter f (𝓝 b))
-    (ha : Tendsto f (𝓝 a ⊓ volume.ae) (𝓝 ca)) (hb : Tendsto f (𝓝 b ⊓ volume.ae) (𝓝 cb)) :
+    (ha : Tendsto f (𝓝 a ⊓ ae volume) (𝓝 ca)) (hb : Tendsto f (𝓝 b ⊓ ae volume) (𝓝 cb)) :
     HasFDerivAt (fun p : ℝ × ℝ => ∫ x in p.1..p.2, f x)
       ((snd ℝ ℝ ℝ).smulRight cb - (fst ℝ ℝ ℝ).smulRight ca) (a, b) :=
   (integral_hasStrictFDerivAt_of_tendsto_ae hf hmeas_a hmeas_b ha hb).hasFDerivAt
@@ -731,7 +731,7 @@ finite limits `ca` and `cb` almost surely as `x` tends to `a` and `b`, respectiv
 derivative of `(u, v) ↦ ∫ x in u..v, f x` at `(a, b)` equals `(u, v) ↦ v • cb - u • ca`. -/
 theorem fderiv_integral_of_tendsto_ae (hf : IntervalIntegrable f volume a b)
     (hmeas_a : StronglyMeasurableAtFilter f (𝓝 a)) (hmeas_b : StronglyMeasurableAtFilter f (𝓝 b))
-    (ha : Tendsto f (𝓝 a ⊓ volume.ae) (𝓝 ca)) (hb : Tendsto f (𝓝 b ⊓ volume.ae) (𝓝 cb)) :
+    (ha : Tendsto f (𝓝 a ⊓ ae volume) (𝓝 ca)) (hb : Tendsto f (𝓝 b ⊓ ae volume) (𝓝 cb)) :
     fderiv ℝ (fun p : ℝ × ℝ => ∫ x in p.1..p.2, f x) (a, b) =
       (snd ℝ ℝ ℝ).smulRight cb - (fst ℝ ℝ ℝ).smulRight ca :=
   (integral_hasFDerivAt_of_tendsto_ae hf hmeas_a hmeas_b ha hb).fderiv
@@ -751,7 +751,7 @@ theorem fderiv_integral (hf : IntervalIntegrable f volume a b)
 /-- **Fundamental theorem of calculus-1**: if `f : ℝ → E` is integrable on `a..b` and `f x` has a
 finite limit `c` almost surely at `b`, then `u ↦ ∫ x in a..u, f x` has derivative `c` at `b`. -/
 theorem integral_hasDerivAt_of_tendsto_ae_right (hf : IntervalIntegrable f volume a b)
-    (hmeas : StronglyMeasurableAtFilter f (𝓝 b)) (hb : Tendsto f (𝓝 b ⊓ volume.ae) (𝓝 c)) :
+    (hmeas : StronglyMeasurableAtFilter f (𝓝 b)) (hb : Tendsto f (𝓝 b ⊓ ae volume) (𝓝 c)) :
     HasDerivAt (fun u => ∫ x in a..u, f x) c b :=
   (integral_hasStrictDerivAt_of_tendsto_ae_right hf hmeas hb).hasDerivAt
 #align interval_integral.integral_has_deriv_at_of_tendsto_ae_right intervalIntegral.integral_hasDerivAt_of_tendsto_ae_right
@@ -767,7 +767,7 @@ theorem integral_hasDerivAt_right (hf : IntervalIntegrable f volume a b)
 /-- Fundamental theorem of calculus: if `f : ℝ → E` is integrable on `a..b` and `f` has a finite
 limit `c` almost surely at `b`, then the derivative of `u ↦ ∫ x in a..u, f x` at `b` equals `c`. -/
 theorem deriv_integral_of_tendsto_ae_right (hf : IntervalIntegrable f volume a b)
-    (hmeas : StronglyMeasurableAtFilter f (𝓝 b)) (hb : Tendsto f (𝓝 b ⊓ volume.ae) (𝓝 c)) :
+    (hmeas : StronglyMeasurableAtFilter f (𝓝 b)) (hb : Tendsto f (𝓝 b ⊓ ae volume) (𝓝 c)) :
     deriv (fun u => ∫ x in a..u, f x) b = c :=
   (integral_hasDerivAt_of_tendsto_ae_right hf hmeas hb).deriv
 #align interval_integral.deriv_integral_of_tendsto_ae_right intervalIntegral.deriv_integral_of_tendsto_ae_right
@@ -783,7 +783,7 @@ theorem deriv_integral_right (hf : IntervalIntegrable f volume a b)
 /-- **Fundamental theorem of calculus-1**: if `f : ℝ → E` is integrable on `a..b` and `f x` has a
 finite limit `c` almost surely at `a`, then `u ↦ ∫ x in u..b, f x` has derivative `-c` at `a`. -/
 theorem integral_hasDerivAt_of_tendsto_ae_left (hf : IntervalIntegrable f volume a b)
-    (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (ha : Tendsto f (𝓝 a ⊓ volume.ae) (𝓝 c)) :
+    (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (ha : Tendsto f (𝓝 a ⊓ ae volume) (𝓝 c)) :
     HasDerivAt (fun u => ∫ x in u..b, f x) (-c) a :=
   (integral_hasStrictDerivAt_of_tendsto_ae_left hf hmeas ha).hasDerivAt
 #align interval_integral.integral_has_deriv_at_of_tendsto_ae_left intervalIntegral.integral_hasDerivAt_of_tendsto_ae_left
@@ -799,7 +799,7 @@ theorem integral_hasDerivAt_left (hf : IntervalIntegrable f volume a b)
 /-- Fundamental theorem of calculus: if `f : ℝ → E` is integrable on `a..b` and `f` has a finite
 limit `c` almost surely at `a`, then the derivative of `u ↦ ∫ x in u..b, f x` at `a` equals `-c`. -/
 theorem deriv_integral_of_tendsto_ae_left (hf : IntervalIntegrable f volume a b)
-    (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (hb : Tendsto f (𝓝 a ⊓ volume.ae) (𝓝 c)) :
+    (hmeas : StronglyMeasurableAtFilter f (𝓝 a)) (hb : Tendsto f (𝓝 a ⊓ ae volume) (𝓝 c)) :
     deriv (fun u => ∫ x in u..b, f x) a = -c :=
   (integral_hasDerivAt_of_tendsto_ae_left hf hmeas hb).deriv
 #align interval_integral.deriv_integral_of_tendsto_ae_left intervalIntegral.deriv_integral_of_tendsto_ae_left
@@ -832,7 +832,7 @@ and `cb` almost surely at the filters `la` and `lb` from the following table.
 theorem integral_hasFDerivWithinAt_of_tendsto_ae (hf : IntervalIntegrable f volume a b)
     {s t : Set ℝ} [FTCFilter a (𝓝[s] a) la] [FTCFilter b (𝓝[t] b) lb]
     (hmeas_a : StronglyMeasurableAtFilter f la) (hmeas_b : StronglyMeasurableAtFilter f lb)
-    (ha : Tendsto f (la ⊓ volume.ae) (𝓝 ca)) (hb : Tendsto f (lb ⊓ volume.ae) (𝓝 cb)) :
+    (ha : Tendsto f (la ⊓ ae volume) (𝓝 ca)) (hb : Tendsto f (lb ⊓ ae volume) (𝓝 cb)) :
     HasFDerivWithinAt (fun p : ℝ × ℝ => ∫ x in p.1..p.2, f x)
       ((snd ℝ ℝ ℝ).smulRight cb - (fst ℝ ℝ ℝ).smulRight ca) (s ×ˢ t) (a, b) := by
   rw [HasFDerivWithinAt, nhdsWithin_prod_eq]
@@ -890,7 +890,7 @@ is equal to `(u, v) ↦ u • cb - v • ca`.
 theorem fderivWithin_integral_of_tendsto_ae (hf : IntervalIntegrable f volume a b)
     (hmeas_a : StronglyMeasurableAtFilter f la) (hmeas_b : StronglyMeasurableAtFilter f lb)
     {s t : Set ℝ} [FTCFilter a (𝓝[s] a) la] [FTCFilter b (𝓝[t] b) lb]
-    (ha : Tendsto f (la ⊓ volume.ae) (𝓝 ca)) (hb : Tendsto f (lb ⊓ volume.ae) (𝓝 cb))
+    (ha : Tendsto f (la ⊓ ae volume) (𝓝 ca)) (hb : Tendsto f (lb ⊓ ae volume) (𝓝 cb))
     (hs : UniqueDiffWithinAt ℝ s a := by uniqueDiffWithinAt_Ici_Iic_univ)
     (ht : UniqueDiffWithinAt ℝ t b := by uniqueDiffWithinAt_Ici_Iic_univ) :
     fderivWithin ℝ (fun p : ℝ × ℝ => ∫ x in p.1..p.2, f x) (s ×ˢ t) (a, b) =
@@ -903,7 +903,7 @@ limit `c` almost surely as `x` tends to `b` from the right or from the left,
 then `u ↦ ∫ x in a..u, f x` has right (resp., left) derivative `c` at `b`. -/
 theorem integral_hasDerivWithinAt_of_tendsto_ae_right (hf : IntervalIntegrable f volume a b)
     {s t : Set ℝ} [FTCFilter b (𝓝[s] b) (𝓝[t] b)] (hmeas : StronglyMeasurableAtFilter f (𝓝[t] b))
-    (hb : Tendsto f (𝓝[t] b ⊓ volume.ae) (𝓝 c)) :
+    (hb : Tendsto f (𝓝[t] b ⊓ ae volume) (𝓝 c)) :
     HasDerivWithinAt (fun u => ∫ x in a..u, f x) c s b :=
   .of_isLittleO <| integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right hf hmeas hb
     (tendsto_const_pure.mono_right FTCFilter.pure_le) tendsto_id
@@ -923,7 +923,7 @@ limit `c` almost surely as `x` tends to `b` from the right or from the left, the
 (resp., left) derivative of `u ↦ ∫ x in a..u, f x` at `b` equals `c`. -/
 theorem derivWithin_integral_of_tendsto_ae_right (hf : IntervalIntegrable f volume a b)
     {s t : Set ℝ} [FTCFilter b (𝓝[s] b) (𝓝[t] b)] (hmeas : StronglyMeasurableAtFilter f (𝓝[t] b))
-    (hb : Tendsto f (𝓝[t] b ⊓ volume.ae) (𝓝 c))
+    (hb : Tendsto f (𝓝[t] b ⊓ ae volume) (𝓝 c))
     (hs : UniqueDiffWithinAt ℝ s b := by uniqueDiffWithinAt_Ici_Iic_univ) :
     derivWithin (fun u => ∫ x in a..u, f x) s b = c :=
   (integral_hasDerivWithinAt_of_tendsto_ae_right hf hmeas hb).derivWithin hs
@@ -945,7 +945,7 @@ limit `c` almost surely as `x` tends to `a` from the right or from the left,
 then `u ↦ ∫ x in u..b, f x` has right (resp., left) derivative `-c` at `a`. -/
 theorem integral_hasDerivWithinAt_of_tendsto_ae_left (hf : IntervalIntegrable f volume a b)
     {s t : Set ℝ} [FTCFilter a (𝓝[s] a) (𝓝[t] a)] (hmeas : StronglyMeasurableAtFilter f (𝓝[t] a))
-    (ha : Tendsto f (𝓝[t] a ⊓ volume.ae) (𝓝 c)) :
+    (ha : Tendsto f (𝓝[t] a ⊓ ae volume) (𝓝 c)) :
     HasDerivWithinAt (fun u => ∫ x in u..b, f x) (-c) s a := by
   simp only [integral_symm b]
   exact (integral_hasDerivWithinAt_of_tendsto_ae_right hf.symm hmeas ha).neg
@@ -965,7 +965,7 @@ limit `c` almost surely as `x` tends to `a` from the right or from the left, the
 (resp., left) derivative of `u ↦ ∫ x in u..b, f x` at `a` equals `-c`. -/
 theorem derivWithin_integral_of_tendsto_ae_left (hf : IntervalIntegrable f volume a b) {s t : Set ℝ}
     [FTCFilter a (𝓝[s] a) (𝓝[t] a)] (hmeas : StronglyMeasurableAtFilter f (𝓝[t] a))
-    (ha : Tendsto f (𝓝[t] a ⊓ volume.ae) (𝓝 c))
+    (ha : Tendsto f (𝓝[t] a ⊓ ae volume) (𝓝 c))
     (hs : UniqueDiffWithinAt ℝ s a := by uniqueDiffWithinAt_Ici_Iic_univ) :
     derivWithin (fun u => ∫ x in u..b, f x) s a = -c :=
   (integral_hasDerivWithinAt_of_tendsto_ae_left hf hmeas ha).derivWithin hs

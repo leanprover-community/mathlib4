@@ -35,6 +35,7 @@ The results here should be used to golf the basic `Group` lemmas.
 -/
 
 assert_not_exists Multiplicative
+assert_not_exists MonoidWithZero
 assert_not_exists DenselyOrdered
 
 open Function
@@ -1175,8 +1176,8 @@ end DivisionCommMonoid
 end IsUnit
 
 @[field_simps]
-lemma divp_eq_div [DivisionMonoid α] (a : α) (u : αˣ) : a /ₚ u = a / u :=
-  by rw [div_eq_mul_inv, divp, u.val_inv_eq_inv_val]
+lemma divp_eq_div [DivisionMonoid α] (a : α) (u : αˣ) : a /ₚ u = a / u := by
+  rw [div_eq_mul_inv, divp, u.val_inv_eq_inv_val]
 #align divp_eq_div divp_eq_div
 
 @[to_additive]

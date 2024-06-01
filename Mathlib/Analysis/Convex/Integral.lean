@@ -39,7 +39,7 @@ convex, integral, center mass, average value, Jensen's inequality
 
 open MeasureTheory MeasureTheory.Measure Metric Set Filter TopologicalSpace Function
 
-open scoped Topology BigOperators ENNReal Convex
+open scoped Topology ENNReal Convex
 
 variable {α E F : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [CompleteSpace E] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {μ : Measure α}

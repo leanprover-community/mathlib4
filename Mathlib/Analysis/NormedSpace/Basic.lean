@@ -22,7 +22,7 @@ about these definitions.
 variable {𝕜 𝕜' E F α : Type*}
 
 open Filter Metric Function Set Topology Bornology
-open scoped BigOperators NNReal ENNReal uniformity
+open scoped NNReal ENNReal uniformity
 
 section SeminormedAddCommGroup
 
@@ -97,7 +97,7 @@ instance NormedSpace.discreteTopology_zmultiples
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
     exact Subsingleton.discreteTopology (α := ↑(⊥ : Subspace ℚ E))
   · rw [discreteTopology_iff_isOpen_singleton_zero, isOpen_induced_iff]
-    refine' ⟨Metric.ball 0 ‖e‖, Metric.isOpen_ball, _⟩
+    refine ⟨Metric.ball 0 ‖e‖, Metric.isOpen_ball, ?_⟩
     ext ⟨x, hx⟩
     obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
     rw [mem_preimage, mem_ball_zero_iff, AddSubgroup.coe_mk, mem_singleton_iff, Subtype.ext_iff,

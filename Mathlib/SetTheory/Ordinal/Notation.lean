@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Init.Data.Ordering.Lemmas
 import Mathlib.SetTheory.Ordinal.Principal
+import Mathlib.Tactic.NormNum
 
 #align_import set_theory.ordinal.notation from "leanprover-community/mathlib"@"b67044ba53af18680e1dd246861d9584e968495d"
 
@@ -936,8 +938,8 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
             mul_le_mul_left' (succ_le_succ_iff.2 (natCast_le.2 (le_of_lt k.lt_succ_self))) _)
   calc
     (ω0 ^ (k.succ : Ordinal)) * α' + R'
-    _ = (ω0 ^ succ (k : Ordinal)) * α' + ((ω0 ^ (k : Ordinal)) * α' * m + R) :=
-        by rw [natCast_succ, RR, ← mul_assoc]
+    _ = (ω0 ^ succ (k : Ordinal)) * α' + ((ω0 ^ (k : Ordinal)) * α' * m + R) := by
+        rw [natCast_succ, RR, ← mul_assoc]
     _ = ((ω0 ^ (k : Ordinal)) * α' + R) * α' + ((ω0 ^ (k : Ordinal)) * α' + R) * m := ?_
     _ = (α' + m) ^ succ (k.succ : Ordinal) := by rw [← mul_add, natCast_succ, opow_succ, IH.2]
   congr 1

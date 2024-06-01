@@ -24,7 +24,7 @@ noncomputable section
 
 open Finset Filter Metric Asymptotics Set Function Bornology
 
-open scoped Classical Topology BigOperators Nat
+open scoped Classical Topology Nat
 
 namespace Complex
 
@@ -78,7 +78,7 @@ theorem continuousOn_exp {s : Set ℂ} : ContinuousOn exp s :=
 #align complex.continuous_on_exp Complex.continuousOn_exp
 
 lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
-    (fun x ↦ exp x - ∑ i in Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
+    (fun x ↦ exp x - ∑ i ∈ Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
   rcases (zero_le n).eq_or_lt with rfl | hn
   · simpa using continuous_exp.continuousAt.norm.isBoundedUnder_le
   · refine .of_bound (n.succ / (n ! * n)) ?_
@@ -88,7 +88,7 @@ lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     field_simp [mul_comm]
 
 lemma exp_sub_sum_range_succ_isLittleO_pow (n : ℕ) :
-    (fun x ↦ exp x - ∑ i in Finset.range (n + 1), x ^ i / i !) =o[𝓝 0] (· ^ n) :=
+    (fun x ↦ exp x - ∑ i ∈ Finset.range (n + 1), x ^ i / i !) =o[𝓝 0] (· ^ n) :=
   (exp_sub_sum_range_isBigO_pow (n + 1)).trans_isLittleO <| isLittleO_pow_pow n.lt_succ_self
 
 end Complex
@@ -142,14 +142,14 @@ theorem continuousOn_exp {s : Set ℝ} : ContinuousOn exp s :=
 #align real.continuous_on_exp Real.continuousOn_exp
 
 lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
-    (fun x ↦ exp x - ∑ i in Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
+    (fun x ↦ exp x - ∑ i ∈ Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
   have := (Complex.exp_sub_sum_range_isBigO_pow n).comp_tendsto
     (Complex.continuous_ofReal.tendsto' 0 0 rfl)
   simp only [(· ∘ ·)] at this
   norm_cast at this
 
 lemma exp_sub_sum_range_succ_isLittleO_pow (n : ℕ) :
-    (fun x ↦ exp x - ∑ i in Finset.range (n + 1), x ^ i / i !) =o[𝓝 0] (· ^ n) :=
+    (fun x ↦ exp x - ∑ i ∈ Finset.range (n + 1), x ^ i / i !) =o[𝓝 0] (· ^ n) :=
   (exp_sub_sum_range_isBigO_pow (n + 1)).trans_isLittleO <| isLittleO_pow_pow n.lt_succ_self
 
 end Real
@@ -274,7 +274,7 @@ theorem tendsto_pow_mul_exp_neg_atTop_nhds_zero (n : ℕ) :
   (tendsto_inv_atTop_zero.comp (tendsto_exp_div_pow_atTop n)).congr fun x => by
     rw [comp_apply, inv_eq_one_div, div_div_eq_mul_div, one_mul, div_eq_mul_inv, exp_neg]
 #align real.tendsto_pow_mul_exp_neg_at_top_nhds_0 Real.tendsto_pow_mul_exp_neg_atTop_nhds_zero
-@[deprecated] -- 2024-01-31
+@[deprecated (since := "2024-01-31")]
 alias tendsto_pow_mul_exp_neg_atTop_nhds_0 := tendsto_pow_mul_exp_neg_atTop_nhds_zero
 
 /-- The function `(b * exp x + c) / (x ^ n)` tends to `+∞` at `+∞`, for any natural number

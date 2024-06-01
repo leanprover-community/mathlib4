@@ -27,8 +27,6 @@ universe u v
 
 open Equiv Function Fintype Finset
 
-open BigOperators
-
 variable {α : Type u} [DecidableEq α] {β : Type v}
 
 namespace Equiv.Perm
@@ -158,7 +156,7 @@ theorem mem_finPairsLT {n : ℕ} {a : Σ_ : Fin n, Fin n} : a ∈ finPairsLT n �
 /-- `signAux σ` is the sign of a permutation on `Fin n`, defined as the parity of the number of
   pairs `(x₁, x₂)` such that `x₂ < x₁` but `σ x₁ ≤ σ x₂` -/
 def signAux {n : ℕ} (a : Perm (Fin n)) : ℤˣ :=
-  ∏ x in finPairsLT n, if a x.1 ≤ a x.2 then -1 else 1
+  ∏ x ∈ finPairsLT n, if a x.1 ≤ a x.2 then -1 else 1
 #align equiv.perm.sign_aux Equiv.Perm.signAux
 
 @[simp]
@@ -246,7 +244,7 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
 #align equiv.perm.sign_aux_mul Equiv.Perm.signAux_mul
 
 private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2)) 1) = -1 :=
-  show _ = ∏ x : Σ_a : Fin (n + 2), Fin (n + 2) in {(⟨1, 0⟩ : Σa : Fin (n + 2), Fin (n + 2))},
+  show _ = ∏ x ∈ {(⟨1, 0⟩ : Σ a : Fin (n + 2), Fin (n + 2))},
       if (Equiv.swap 0 1) x.1 ≤ swap 0 1 x.2 then (-1 : ℤˣ) else 1 by
     refine Eq.symm (prod_subset (fun ⟨x₁, x₂⟩ => by
       simp (config := { contextual := true }) [mem_finPairsLT, Fin.one_pos]) fun a ha₁ ha₂ => ?_)
@@ -570,7 +568,7 @@ theorem sign_prodCongrRight (σ : α → Perm β) : sign (prodCongrRight σ) = �
     apply eq_top_iff.mpr
     intro b _
     exact List.mem_toFinset.mpr (mem_l b)
-  rw [← prod_prodExtendRight σ hl mem_l, sign.map_list_prod, List.map_map, ← l_to_finset,
+  rw [← prod_prodExtendRight σ hl mem_l, map_list_prod sign, List.map_map, ← l_to_finset,
     List.prod_toFinset _ hl]
   simp_rw [← fun a => sign_prodExtendRight a (σ a), Function.comp]
 #align equiv.perm.sign_prod_congr_right Equiv.Perm.sign_prodCongrRight

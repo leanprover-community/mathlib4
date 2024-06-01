@@ -193,7 +193,7 @@ instance : LaxMonoidal.{u} (free R).obj := .ofTensorHom
   (associativity := associativity R)
 
 instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
-  refine' ⟨⟨Finsupp.lapply PUnit.unit, ⟨_, _⟩⟩⟩
+  refine ⟨⟨Finsupp.lapply PUnit.unit, ⟨?_, ?_⟩⟩⟩
   · -- Porting note (#11041): broken ext
     apply LinearMap.ext_ring
     -- Porting note (#10959): simp used to be able to close this goal

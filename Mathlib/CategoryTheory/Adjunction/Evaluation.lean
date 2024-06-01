@@ -96,7 +96,7 @@ variable [∀ a b : C, HasProductsOfShape (a ⟶ b) D]
 @[simps]
 def evaluationRightAdjoint (c : C) : D ⥤ C ⥤ D where
   obj d :=
-    { obj := fun t => ∏ fun _ : t ⟶ c => d
+    { obj := fun t => ∏ᶜ fun _ : t ⟶ c => d
       map := fun f => Pi.lift fun g => Pi.π _ <| f ≫ g }
   map f :=
     { app := fun t => Pi.lift fun g => Pi.π _ g ≫ f

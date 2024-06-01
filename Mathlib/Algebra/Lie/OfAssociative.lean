@@ -231,7 +231,7 @@ theorem LieSubalgebra.toEnd_mk (K : LieSubalgebra R L) {x : L} (hx : x ∈ K) :
 
 section
 
-open BigOperators LieAlgebra LieModule
+open LieAlgebra LieModule
 
 lemma LieSubmodule.coe_toEnd (N : LieSubmodule R L M) (x : L) (y : N) :
     (toEnd R L N x y : M) = toEnd R L M x y := rfl
@@ -264,7 +264,7 @@ lemma LieAlgebra.ad_lie (x y z : L) :
 open Finset in
 lemma LieModule.toEnd_pow_lie (x y : L) (z : M) (n : ℕ) :
     ((φ x) ^ n) ⁅y, z⁆ =
-      ∑ ij in antidiagonal n, n.choose ij.1 • ⁅((ad R L x) ^ ij.1) y, ((φ x) ^ ij.2) z⁆ := by
+      ∑ ij ∈ antidiagonal n, n.choose ij.1 • ⁅((ad R L x) ^ ij.1) y, ((φ x) ^ ij.2) z⁆ := by
   induction n with
   | zero => simp
   | succ n ih =>
@@ -280,7 +280,7 @@ lemma LieModule.toEnd_pow_lie (x y : L) (z : M) (n : ℕ) :
 open Finset in
 lemma LieAlgebra.ad_pow_lie (x y z : L) (n : ℕ) :
     ((ad R L x) ^ n) ⁅y, z⁆ =
-      ∑ ij in antidiagonal n, n.choose ij.1 • ⁅((ad R L x) ^ ij.1) y, ((ad R L x) ^ ij.2) z⁆ :=
+      ∑ ij ∈ antidiagonal n, n.choose ij.1 • ⁅((ad R L x) ^ ij.1) y, ((ad R L x) ^ ij.2) z⁆ :=
   toEnd_pow_lie _ x y z n
 
 end
