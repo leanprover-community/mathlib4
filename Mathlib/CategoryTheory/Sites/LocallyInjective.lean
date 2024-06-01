@@ -212,6 +212,10 @@ is equivalent to the injectivity of all maps `φ.val.app X`,
 see `isLocallyInjective_iff_injective`. -/
 abbrev IsLocallyInjective := Presheaf.IsLocallyInjective J φ.val
 
+instance isLocallyInjective_of_iso [IsIso φ] : IsLocallyInjective φ := by
+  change Presheaf.IsLocallyInjective J ((sheafToPresheaf _ _).map φ)
+  infer_instance
+
 variable [J.HasSheafCompose (forget D)]
 
 instance isLocallyInjective_forget [IsLocallyInjective φ] :
