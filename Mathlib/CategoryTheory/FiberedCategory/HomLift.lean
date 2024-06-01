@@ -124,16 +124,27 @@ instance lift_id_comp {p : 𝒳 ⥤ 𝒮} (R : 𝒮) {a b c : 𝒳} (φ : a ⟶ 
   comp_id (𝟙 R) ▸ comp p (𝟙 R) (𝟙 R) φ ψ
 
 /-- If `φ : a ⟶ b` lifts `f` and `ψ : b ⟶ c` lifts `𝟙 T`, then `φ  ≫ ψ` lifts `f` -/
+instance comp_lift_id_right' {a b c : 𝒳} {S T : 𝒮} (f : S ⟶ T) (φ : a ⟶ b) [p.IsHomLift f φ]
+    (ψ : b ⟶ c) [p.IsHomLift (𝟙 T) ψ] : p.IsHomLift f (φ ≫ ψ) := by
+  simpa using inferInstanceAs (p.IsHomLift (f ≫ 𝟙 T) (φ ≫ ψ))
+
+-- TODO: remove??
+/-- If `φ : a ⟶ b` lifts `f` and `ψ : b ⟶ c` lifts `𝟙 T`, then `φ  ≫ ψ` lifts `f` -/
 lemma comp_lift_id_right {R S : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ]
     (T : 𝒮) (ψ : b ⟶ c) [p.IsHomLift (𝟙 T) ψ] : p.IsHomLift f (φ ≫ ψ) := by
   obtain rfl : S = T := by rw [← codomain_eq p f φ, domain_eq p (𝟙 T) ψ]
-  simpa using inferInstanceAs (p.IsHomLift (f ≫ 𝟙 S) (φ ≫ ψ))
+  infer_instance
+
+/-- If `φ : a ⟶ b` lifts `𝟙 T` and `ψ : b ⟶ c` lifts `f`, then `φ  ≫ ψ` lifts `f` -/
+instance comp_lift_id_left' {a b c : 𝒳} {S T : 𝒮} (f : S ⟶ T) (ψ : b ⟶ c) [p.IsHomLift f ψ]
+    (φ : a ⟶ b) [p.IsHomLift (𝟙 S) φ] : p.IsHomLift f (φ ≫ ψ) := by
+  simpa using inferInstanceAs (p.IsHomLift (𝟙 S ≫ f) (φ ≫ ψ))
 
 /-- If `φ : a ⟶ b` lifts `𝟙 T` and `ψ : b ⟶ c` lifts `f`, then `φ  ≫ ψ` lifts `f` -/
 lemma comp_lift_id_left {a b c : 𝒳} (R : 𝒮) (φ : a ⟶ b) [p.IsHomLift (𝟙 R) φ]
     {S T : 𝒮} (f : S ⟶ T) (ψ : b ⟶ c) [p.IsHomLift f ψ] : p.IsHomLift f (φ ≫ ψ) := by
   obtain rfl : R = S := by rw [← codomain_eq p (𝟙 R) φ, domain_eq p f ψ]
-  simpa using inferInstanceAs (p.IsHomLift (𝟙 R ≫ f) (φ ≫ ψ))
+  infer_instance
 
 lemma eqToHom_domain_lift_id {p : 𝒳 ⥤ 𝒮} {a b : 𝒳} (hab : a = b) {R : 𝒮} (hR : p.obj a = R) :
     p.IsHomLift (𝟙 R) (eqToHom hab) := by

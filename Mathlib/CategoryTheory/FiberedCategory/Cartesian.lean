@@ -122,6 +122,15 @@ noncomputable def naturalIso {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] [I
     subst_hom_lift p f φ
     apply IsCartesian.uniqueness p (p.map φ) φ φ (by simp) (id_comp _)
 
+instance {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] [IsCartesian p f φ'] :
+    IsHomLift p (𝟙 R) (naturalIso p f φ φ').hom := by
+  simp only [naturalIso_hom]; infer_instance
+
+-- TODO: this should be inferInstance only, after I add another IsHomLift inv instance!
+instance {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] [IsCartesian p f φ'] :
+    IsHomLift p (𝟙 R) (naturalIso p f φ φ').inv := by
+  simp only [naturalIso_inv]; infer_instance
+
 end IsCartesian
 
 namespace IsStronglyCartesian
