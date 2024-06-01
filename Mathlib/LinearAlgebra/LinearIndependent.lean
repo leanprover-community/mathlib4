@@ -1156,12 +1156,12 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
                   Finset.sum_sub_distrib
                 _ =
                     (g a * a x * a y + ∑ i ∈ s, g i * i x * i y) -
-                      (g a * a x * a y + ∑ i ∈ s, g i * a x * i y) :=
-                  by rw [add_sub_add_left_eq_sub]
+                      (g a * a x * a y + ∑ i ∈ s, g i * a x * i y) := by
+                  rw [add_sub_add_left_eq_sub]
                 _ =
                     (∑ i ∈ insert a s, g i * i x * i y) -
-                      ∑ i ∈ insert a s, g i * a x * i y :=
-                  by rw [Finset.sum_insert has, Finset.sum_insert has]
+                      ∑ i ∈ insert a s, g i * a x * i y := by
+                  rw [Finset.sum_insert has, Finset.sum_insert has]
                 _ =
                     (∑ i ∈ insert a s, g i * i (x * y)) -
                       ∑ i ∈ insert a s, a x * (g i * i y) :=
@@ -1171,8 +1171,8 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
                     (Finset.sum_congr rfl fun _ _ => by rw [mul_assoc, mul_left_comm])
                 _ =
                     (∑ i ∈ insert a s, (g i • (i : G → L))) (x * y) -
-                      a x * (∑ i ∈ insert a s, (g i • (i : G → L))) y :=
-                  by rw [Finset.sum_apply, Finset.sum_apply, Finset.mul_sum]; rfl
+                      a x * (∑ i ∈ insert a s, (g i • (i : G → L))) y := by
+                  rw [Finset.sum_apply, Finset.sum_apply, Finset.mul_sum]; rfl
                 _ = 0 - a x * 0 := by rw [hg]; rfl
                 _ = 0 := by rw [mul_zero, sub_zero]
                 )

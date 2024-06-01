@@ -70,16 +70,16 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
   refine ⟨2 * (max N M + 1), fun K hK ↦ ?_⟩
   have h₁ :
     (∑ m ∈ range K, ∑ k ∈ range (m + 1), f k * g (m - k)) =
-      ∑ m ∈ range K, ∑ n ∈ range (K - m), f m * g n :=
-    by simpa using sum_range_diag_flip K fun m n ↦ f m * g n
+      ∑ m ∈ range K, ∑ n ∈ range (K - m), f m * g n := by
+    simpa using sum_range_diag_flip K fun m n ↦ f m * g n
   have h₂ :
     (fun i ↦ ∑ k ∈ range (K - i), f i * g k) = fun i ↦ f i * ∑ k ∈ range (K - i), g k := by
     simp [Finset.mul_sum]
   have h₃ :
     ∑ i ∈ range K, f i * ∑ k ∈ range (K - i), g k =
       ∑ i ∈ range K, f i * (∑ k ∈ range (K - i), g k - ∑ k ∈ range K, g k) +
-        ∑ i ∈ range K, f i * ∑ k ∈ range K, g k :=
-    by rw [← sum_add_distrib]; simp [(mul_add _ _ _).symm]
+        ∑ i ∈ range K, f i * ∑ k ∈ range K, g k := by
+    rw [← sum_add_distrib]; simp [(mul_add _ _ _).symm]
   have two_mul_two : (4 : α) = 2 * 2 := by norm_num
   have hQ0 : Q ≠ 0 := fun h ↦ by simp [h, lt_irrefl] at hQε0
   have h2Q0 : 2 * Q ≠ 0 := mul_ne_zero two_ne_zero hQ0

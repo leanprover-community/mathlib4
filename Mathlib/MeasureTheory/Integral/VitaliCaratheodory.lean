@@ -297,8 +297,7 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
   · rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
     · calc
         ENNReal.toReal (∫⁻ a : α, ENNReal.ofReal (g a).toReal ∂μ) =
-            ENNReal.toReal (∫⁻ a : α, g a ∂μ) :=
-          by congr 1
+            ENNReal.toReal (∫⁻ a : α, g a ∂μ) := by congr 1
         _ ≤ ENNReal.toReal ((∫⁻ a : α, f a ∂μ) + δ) := by
           apply ENNReal.toReal_mono _ gint
           simpa using int_f_ne_top

@@ -328,13 +328,13 @@ theorem map_setToSimpleFunc (T : Set α → F →L[ℝ] F') (h_add : FinMeasAddi
     rw [hx.2, ContinuousLinearMap.map_zero]
   have h_left_eq :
     T (map g f ⁻¹' {g (f a)}) (g (f a)) =
-      T (f ⁻¹' (f.range.filter fun b => g b = g (f a))) (g (f a)) :=
-    by congr; rw [map_preimage_singleton]
+      T (f ⁻¹' (f.range.filter fun b => g b = g (f a))) (g (f a)) := by
+    congr; rw [map_preimage_singleton]
   rw [h_left_eq]
   have h_left_eq' :
     T (f ⁻¹' (filter (fun b : G => g b = g (f a)) f.range)) (g (f a)) =
-      T (⋃ y ∈ filter (fun b : G => g b = g (f a)) f.range, f ⁻¹' {y}) (g (f a)) :=
-    by congr; rw [← Finset.set_biUnion_preimage_singleton]
+      T (⋃ y ∈ filter (fun b : G => g b = g (f a)) f.range, f ⁻¹' {y}) (g (f a)) := by
+    congr; rw [← Finset.set_biUnion_preimage_singleton]
   rw [h_left_eq']
   rw [h_add.map_iUnion_fin_meas_set_eq_sum T T_empty]
   · simp only [sum_apply, ContinuousLinearMap.coe_sum']

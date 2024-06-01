@@ -455,8 +455,8 @@ def LinearEquiv.ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' : Basis 
   right_inv x :=
     calc
       f (toLin v' v (toMatrix v v' f)⁻¹ x) =
-          toLin v' v' (toMatrix v v' f * (toMatrix v v' f)⁻¹) x :=
-        by rw [toLin_mul v' v v', LinearMap.comp_apply, toLin_toMatrix v v']
+          toLin v' v' (toMatrix v v' f * (toMatrix v v' f)⁻¹) x := by
+        rw [toLin_mul v' v v', LinearMap.comp_apply, toLin_toMatrix v v']
       _ = x := by simp [h]
 #align linear_equiv.of_is_unit_det LinearEquiv.ofIsUnitDet
 

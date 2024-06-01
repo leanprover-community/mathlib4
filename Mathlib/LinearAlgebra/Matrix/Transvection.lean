@@ -405,8 +405,8 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
     rw [List.drop_eq_get_cons hn']
     have A :
       (listTransvecCol M).get ⟨n, hn'⟩ =
-        transvection (inl n') (inr unit) (-M (inl n') (inr unit) / M (inr unit) (inr unit)) :=
-      by simp [listTransvecCol]
+        transvection (inl n') (inr unit) (-M (inl n') (inr unit) / M (inr unit) (inr unit)) := by
+      simp [listTransvecCol]
     simp only [Matrix.mul_assoc, A, List.prod_cons]
     by_cases h : n' = i
     · have hni : n = i := by

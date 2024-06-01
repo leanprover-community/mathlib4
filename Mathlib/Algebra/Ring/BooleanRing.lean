@@ -222,8 +222,7 @@ theorem le_sup_inf_aux (a b c : α) : (a + b + a * b) * (a + c + a * c) = a + b 
   calc
     (a + b + a * b) * (a + c + a * c) =
         a * a + b * c + a * (b * c) + (a * b + a * a * b) + (a * c + a * a * c) +
-          (a * b * c + a * a * b * c) :=
-      by ring
+          (a * b * c + a * a * b * c) := by ring
     _ = a + b * c + a * (b * c) := by simp only [mul_self, add_self, add_zero]
 
 #align boolean_ring.le_sup_inf_aux BooleanRing.le_sup_inf_aux

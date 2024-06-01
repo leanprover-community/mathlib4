@@ -926,10 +926,8 @@ protected irreducible_def add (z w : Localization M) : Localization M :=
         cases' h2 with t₆ ht₆
         use t₅ * t₆
         dsimp only
-        calc
-          ↑t₅ * ↑t₆ * (↑b' * ↑d' * ((b : R) * c + d * a)) =
-              t₆ * (d' * c) * (t₅ * (b' * b)) + t₅ * (b' * a) * (t₆ * (d' * d)) :=
-            by ring
+        calc ↑t₅ * ↑t₆ * (↑b' * ↑d' * ((b : R) * c + d * a))
+          _ = t₆ * (d' * c) * (t₅ * (b' * b)) + t₅ * (b' * a) * (t₆ * (d' * d)) := by ring
           _ = t₅ * t₆ * (b * d * (b' * c' + d' * a')) := by rw [ht₆, ht₅]; ring
           )
 #align localization.add Localization.add

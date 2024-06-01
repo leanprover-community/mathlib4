@@ -613,8 +613,8 @@ theorem det_traceForm_ne_zero [IsSeparable K L] [DecidableEq ι] (b : Basis ι K
       (pb.basis.toMatrix b * (pb.basis.toMatrix b)ᵀ).det *
             ((b.toMatrix pb.basis)ᵀ * b.toMatrix pb.basis).det =
           (pb.basis.toMatrix b * (b.toMatrix pb.basis * pb.basis.toMatrix b)ᵀ *
-              b.toMatrix pb.basis).det :=
-        by simp only [← det_mul, Matrix.mul_assoc, Matrix.transpose_mul]
+              b.toMatrix pb.basis).det := by
+        simp only [← det_mul, Matrix.mul_assoc, Matrix.transpose_mul]
       _ = 1 := by
         simp only [Basis.toMatrix_mul_toMatrix_flip, Matrix.transpose_one, Matrix.mul_one,
           Matrix.det_one]

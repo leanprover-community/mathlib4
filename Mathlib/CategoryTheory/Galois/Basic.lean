@@ -77,8 +77,8 @@ namespace PreGaloisCategory
 class FiberFunctor {C : Type u₁} [Category.{u₂, u₁} C] [PreGaloisCategory C]
     (F : C ⥤ FintypeCat.{w}) where
   /-- `F` preserves terminal objects (G4). -/
-  preservesTerminalObjects : PreservesLimitsOfShape (CategoryTheory.Discrete PEmpty.{1}) F :=
-    by infer_instance
+  preservesTerminalObjects : PreservesLimitsOfShape (CategoryTheory.Discrete PEmpty.{1}) F := by
+    infer_instance
   /-- `F` preserves pullbacks (G4). -/
   preservesPullbacks : PreservesLimitsOfShape WalkingCospan F := by infer_instance
   /-- `F` preserves finite coproducts (G5). -/

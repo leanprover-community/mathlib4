@@ -170,8 +170,8 @@ theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : E} (hx : Differen
   refine ⟨r, this, fun y hy z hz => ?_⟩
   calc
     ‖f z - f y - (fderiv 𝕜 f x) (z - y)‖ =
-        ‖f z - f x - (fderiv 𝕜 f x) (z - x) - (f y - f x - (fderiv 𝕜 f x) (y - x))‖ :=
-      by simp only [map_sub]; abel_nf
+        ‖f z - f x - (fderiv 𝕜 f x) (z - x) - (f y - f x - (fderiv 𝕜 f x) (y - x))‖ := by
+      simp only [map_sub]; abel_nf
     _ ≤ ‖f z - f x - (fderiv 𝕜 f x) (z - x)‖ + ‖f y - f x - (fderiv 𝕜 f x) (y - x)‖ :=
       norm_sub_le _ _
     _ ≤ δ * ‖z - x‖ + δ * ‖y - x‖ :=
@@ -269,8 +269,8 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
       exact norm_sub_le_of_mem_A hc P P (A_mono _ _ I I1) (A_mono _ _ I I2)
     calc
       ‖L e p q - L e' p' q'‖ =
-          ‖L e p q - L e p r + (L e p r - L e' p' r) + (L e' p' r - L e' p' q')‖ :=
-        by congr 1; abel
+          ‖L e p q - L e p r + (L e p r - L e' p' r) + (L e' p' r - L e' p' q')‖ := by
+        congr 1; abel
       _ ≤ ‖L e p q - L e p r‖ + ‖L e p r - L e' p' r‖ + ‖L e' p' r - L e' p' q'‖ :=
         norm_add₃_le _ _ _
       _ ≤ 4 * ‖c‖ * (1 / 2) ^ e + 4 * ‖c‖ * (1 / 2) ^ e + 4 * ‖c‖ * (1 / 2) ^ e := by gcongr
@@ -522,8 +522,8 @@ theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : ℝ}
   calc
     ‖f z - f y - (z - y) • derivWithin f (Ici x) x‖ =
         ‖f z - f x - (z - x) • derivWithin f (Ici x) x -
-            (f y - f x - (y - x) • derivWithin f (Ici x) x)‖ :=
-      by congr 1; simp only [sub_smul]; abel
+            (f y - f x - (y - x) • derivWithin f (Ici x) x)‖ := by
+      congr 1; simp only [sub_smul]; abel
     _ ≤
         ‖f z - f x - (z - x) • derivWithin f (Ici x) x‖ +
           ‖f y - f x - (y - x) • derivWithin f (Ici x) x‖ :=
@@ -545,8 +545,8 @@ theorem norm_sub_le_of_mem_A {r x : ℝ} (hr : 0 < r) (ε : ℝ) {L₁ L₂ : F}
   calc
     ‖(r / 2) • (L₁ - L₂)‖ =
         ‖f (x + r / 2) - f x - (x + r / 2 - x) • L₂ -
-            (f (x + r / 2) - f x - (x + r / 2 - x) • L₁)‖ :=
-      by simp [smul_sub]
+            (f (x + r / 2) - f x - (x + r / 2 - x) • L₁)‖ := by
+      simp [smul_sub]
     _ ≤ ‖f (x + r / 2) - f x - (x + r / 2 - x) • L₂‖ +
           ‖f (x + r / 2) - f x - (x + r / 2 - x) • L₁‖ :=
       norm_sub_le _ _
@@ -621,8 +621,8 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
       exact norm_sub_le_of_mem_A P _ (A_mono _ _ I I1) (A_mono _ _ I I2)
     calc
       ‖L e p q - L e' p' q'‖ =
-          ‖L e p q - L e p r + (L e p r - L e' p' r) + (L e' p' r - L e' p' q')‖ :=
-        by congr 1; abel
+          ‖L e p q - L e p r + (L e p r - L e' p' r) + (L e' p' r - L e' p' q')‖ := by
+        congr 1; abel
       _ ≤ ‖L e p q - L e p r‖ + ‖L e p r - L e' p' r‖ + ‖L e' p' r - L e' p' q'‖ :=
         (le_trans (norm_add_le _ _) (add_le_add_right (norm_add_le _ _) _))
       _ ≤ 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e := by gcongr
@@ -701,8 +701,8 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
         _ = 4 * (1 / 2) ^ e * ‖y - x‖ := by rw [Real.norm_of_nonneg yzero.le]
     calc
       ‖f y - f x - (y - x) • f'‖ =
-          ‖f y - f x - (y - x) • L e (n e) m + (y - x) • (L e (n e) m - f')‖ :=
-        by simp only [smul_sub, sub_add_sub_cancel]
+          ‖f y - f x - (y - x) • L e (n e) m + (y - x) • (L e (n e) m - f')‖ := by
+        simp only [smul_sub, sub_add_sub_cancel]
       _ ≤ 4 * (1 / 2) ^ e * ‖y - x‖ + ‖y - x‖ * (12 * (1 / 2) ^ e) :=
         norm_add_le_of_le J <| by rw [norm_smul]; gcongr; exact Lf' _ _ m_ge
       _ = 16 * ‖y - x‖ * (1 / 2) ^ e := by ring

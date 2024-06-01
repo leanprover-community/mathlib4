@@ -390,8 +390,8 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     · apply hf.of_le (Nat.cast_le.2 (hi.trans n.le_succ))
     · intro j hj
       have : ‖iteratedFDerivWithin 𝕜 j (fderivWithin 𝕜 g t) t (f x)‖ =
-          ‖iteratedFDerivWithin 𝕜 (j + 1) g t (f x)‖ :=
-        by rw [iteratedFDerivWithin_succ_eq_comp_right ht (hst hx), comp_apply,
+          ‖iteratedFDerivWithin 𝕜 (j + 1) g t (f x)‖ := by
+        rw [iteratedFDerivWithin_succ_eq_comp_right ht (hst hx), comp_apply,
           LinearIsometryEquiv.norm_map]
       rw [this]
       exact hC (j + 1) (add_le_add (hj.trans hi) le_rfl)

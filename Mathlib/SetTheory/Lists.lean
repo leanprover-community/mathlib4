@@ -394,13 +394,13 @@ mutual
     | ⟨true, l₁⟩, ⟨true, l₂⟩ => by
       haveI : Decidable (l₁ ⊆ l₂) :=
         have : SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂ <
-            SizeOf.sizeOf (⟨true, l₁⟩ : Lists α) + SizeOf.sizeOf (⟨true, l₂⟩ : Lists α) :=
-          by decreasing_tactic
+            SizeOf.sizeOf (⟨true, l₁⟩ : Lists α) + SizeOf.sizeOf (⟨true, l₂⟩ : Lists α) := by
+          decreasing_tactic
         Subset.decidable l₁ l₂
       haveI : Decidable (l₂ ⊆ l₁) :=
         have : SizeOf.sizeOf l₂ + SizeOf.sizeOf l₁ <
-            SizeOf.sizeOf (⟨true, l₁⟩ : Lists α) + SizeOf.sizeOf (⟨true, l₂⟩ : Lists α) :=
-          by decreasing_tactic
+            SizeOf.sizeOf (⟨true, l₁⟩ : Lists α) + SizeOf.sizeOf (⟨true, l₂⟩ : Lists α) := by
+          decreasing_tactic
         Subset.decidable l₂ l₁
       exact decidable_of_iff' _ Equiv.antisymm_iff
   termination_by x y => sizeOf x + sizeOf y
@@ -412,8 +412,8 @@ mutual
         mem.decidable ⟨b, a⟩ l₂
       haveI :=
         have : SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂ <
-            SizeOf.sizeOf (Lists'.cons' a l₁) + SizeOf.sizeOf l₂ :=
-          by decreasing_tactic
+            SizeOf.sizeOf (Lists'.cons' a l₁) + SizeOf.sizeOf l₂ := by
+          decreasing_tactic
         Subset.decidable l₁ l₂
       exact decidable_of_iff' _ (@Lists'.cons_subset _ ⟨_, _⟩ _ _)
   termination_by x y => sizeOf x + sizeOf y
@@ -426,8 +426,8 @@ mutual
       haveI :=
         have :
           SizeOf.sizeOf a + SizeOf.sizeOf l₂ <
-            SizeOf.sizeOf a + SizeOf.sizeOf (Lists'.cons' b l₂) :=
-          by decreasing_tactic
+            SizeOf.sizeOf a + SizeOf.sizeOf (Lists'.cons' b l₂) := by
+          decreasing_tactic
         mem.decidable a l₂
       refine' decidable_of_iff' (a ~ ⟨_, b⟩ ∨ a ∈ l₂) _
       rw [← Lists'.mem_cons]; rfl
