@@ -201,9 +201,10 @@ jobs:
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
       - name: lint mathlib and update style exceptions files
+        shell: bash
         run: |
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib"
-          bash -o pipefail -c "./scripts/update-style-exceptions.sh"
+          env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
+          ./scripts/update-style-exceptions.sh
 
       - name: configure git setup
         run: |
