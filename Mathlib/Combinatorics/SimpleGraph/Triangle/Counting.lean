@@ -163,7 +163,7 @@ lemma triangle_counting
     simp only [and_imp, mem_filter, mem_product, mem_cliqueFinset_iff, is3Clique_triple_iff]
     exact fun _ _ _ hxy hxz hyz ↦ ⟨hxy, hxz, hyz⟩
   rintro ⟨x₁, y₁, z₁⟩ h₁ ⟨x₂, y₂, z₂⟩ h₂ t
-  simp only [mem_filter, mem_product] at h₁ h₂
+  simp only [mem_coe, mem_filter, mem_product] at h₁ h₂
   apply triple_eq_triple_of_mem hst hsu htu t <;> tauto
 
 end SimpleGraph
