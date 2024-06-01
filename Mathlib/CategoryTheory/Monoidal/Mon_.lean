@@ -205,15 +205,15 @@ def mapMon (F : LaxMonoidalFunctor C D) : Mon_ C ⥤ Mon_ D where
       one := F.ε ≫ F.map A.one
       mul := F.μ _ _ ≫ F.map A.mul
       one_mul := by
-        simp only [comp_whiskerRight, Category.assoc, μ_natural_left_assoc, left_unitality]
+        simp_rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc, left_unitality]
         slice_lhs 3 4 => rw [← F.toFunctor.map_comp, A.one_mul]
       mul_one := by
-        simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right_assoc,
+        simp_rw [MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right_assoc,
           right_unitality]
         slice_lhs 3 4 => rw [← F.toFunctor.map_comp, A.mul_one]
       mul_assoc := by
-        simp only [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
-          MonoidalCategory.whiskerLeft_comp, μ_natural_right_assoc]
+        simp_rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
+          MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right_assoc]
         slice_lhs 3 4 => rw [← F.toFunctor.map_comp, A.mul_assoc]
         simp }
   map f :=
@@ -478,6 +478,19 @@ instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) :=
 
 @[simp]
 theorem tensorUnit_X : (𝟙_ (Mon_ C)).X = 𝟙_ C := rfl
+
+@[simp]
+theorem tensorUnit_one : (𝟙_ (Mon_ C)).one = 𝟙 (𝟙_ C) := rfl
+
+@[simp]
+theorem tensorUnit_mul : (𝟙_ (Mon_ C)).mul = (λ_ (𝟙_ C)).hom := rfl
+
+@[simp]
+theorem tensorObj_one (X Y : Mon_ C) : (X ⊗ Y).one = (λ_ (𝟙_ C)).inv ≫ (X.one ⊗ Y.one) := rfl
+
+@[simp]
+theorem tensorObj_mul (X Y : Mon_ C) :
+    (X ⊗ Y).mul = tensor_μ C (X.X, Y.X) (X.X, Y.X) ≫ (X.mul ⊗ Y.mul) := rfl
 
 @[simp]
 theorem whiskerLeft_hom {X Y : Mon_ C} (f : X ⟶ Y) (Z : Mon_ C) :

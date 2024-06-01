@@ -148,7 +148,7 @@ theorem two_mul_card_image_offDiag (s : Finset α) :
   obtain ⟨a, ⟨ha₁, ha₂, ha⟩, h⟩ := hxy
   replace h := Sym2.eq.1 h
   obtain ⟨hx, hy, hxy⟩ : x ∈ s ∧ y ∈ s ∧ x ≠ y := by
-    cases h <;> refine' ⟨‹_›, ‹_›, _⟩ <;> [exact ha; exact ha.symm]
+    cases h <;> refine ⟨‹_›, ‹_›, ?_⟩ <;> [exact ha; exact ha.symm]
   have hxy' : y ≠ x := hxy.symm
   have : (s.offDiag.filter fun z => Sym2.mk z = s(x, y)) = ({(x, y), (y, x)} : Finset _) := by
     ext ⟨x₁, y₁⟩

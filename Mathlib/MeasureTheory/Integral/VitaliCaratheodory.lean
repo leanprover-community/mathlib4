@@ -297,8 +297,7 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
   · rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
     · calc
         ENNReal.toReal (∫⁻ a : α, ENNReal.ofReal (g a).toReal ∂μ) =
-            ENNReal.toReal (∫⁻ a : α, g a ∂μ) :=
-          by congr 1
+            ENNReal.toReal (∫⁻ a : α, g a ∂μ) := by congr 1
         _ ≤ ENNReal.toReal ((∫⁻ a : α, f a ∂μ) + δ) := by
           apply ENNReal.toReal_mono _ gint
           simpa using int_f_ne_top
@@ -475,7 +474,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
   have ae_g : ∀ᵐ x ∂μ, (g x).toReal = (gp x : EReal).toReal - (gm x : EReal).toReal := by
     filter_upwards [gp_lt_top] with _ hx
     rw [EReal.toReal_sub] <;> simp [hx.ne]
-  refine' ⟨g, ?lt, ?lsc, ?int, ?aelt, ?intlt⟩
+  refine ⟨g, ?lt, ?lsc, ?int, ?aelt, ?intlt⟩
   case int =>
     show Integrable (fun x => EReal.toReal (g x)) μ
     rw [integrable_congr ae_g]

@@ -186,8 +186,8 @@ theorem guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp
 #align guard_true guard_true
 
 @[simp]
-theorem guard_false {h : Decidable False} : @guard F _ False h = failure :=
-  by simp [guard, if_neg not_false]
+theorem guard_false {h : Decidable False} : @guard F _ False h = failure := by
+  simp [guard, if_neg not_false]
 #align guard_false guard_false
 
 end Alternative

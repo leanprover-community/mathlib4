@@ -257,7 +257,7 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
   · -- the product is invertible because all the factors are
     letI : Invertible (1 : Matrix n n α) := invertibleOne
     letI : Invertible (1 : Matrix m m α) := invertibleOne
-    refine' Invertible.mul _ (fromBlocksZero₁₂Invertible _ _ _)
+    refine Invertible.mul ?_ (fromBlocksZero₁₂Invertible _ _ _)
     exact
       Invertible.mul (fromBlocksZero₂₁Invertible _ _ _)
         (fromBlocksZero₂₁Invertible _ _ _)
@@ -324,7 +324,7 @@ def invertibleOfFromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n �
   letI iBD : Invertible (fromBlocks 1 (B * ⅟ D) 0 1 : Matrix (Sum m n) (Sum m n) α) :=
     fromBlocksZero₂₁Invertible _ _ _
   letI iBDC := Invertible.copy ‹_› _ (fromBlocks_eq_of_invertible₂₂ A B C D).symm
-  refine' (iBD.mulLeft _).symm _
+  refine (iBD.mulLeft _).symm ?_
   exact (iDC.mulRight _).symm iBDC
 #align matrix.invertible_of_from_blocks₂₂_invertible Matrix.invertibleOfFromBlocks₂₂Invertible
 

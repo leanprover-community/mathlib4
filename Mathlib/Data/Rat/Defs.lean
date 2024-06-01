@@ -37,6 +37,8 @@ assert_not_exists Lattice
 assert_not_exists PNat
 assert_not_exists Nat.dvd_mul
 
+open Function
+
 namespace Rat
 
 -- Porting note: the definition of `ℚ` has changed; in mathlib3 this was a field.
@@ -73,6 +75,18 @@ theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
 -- 2024-04-29
 @[deprecated] alias coe_int_num := num_intCast
 @[deprecated] alias coe_int_den := den_intCast
+
+lemma intCast_injective : Injective (Int.cast : ℤ → ℚ) := fun _ _ ↦ congr_arg num
+lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
+  intCast_injective.comp fun _ _ ↦ Int.natCast_inj.1
+
+-- We want to use these lemmas earlier than the lemmas simp can prove them with
+@[simp, nolint simpNF, norm_cast] lemma natCast_inj {m n : ℕ} : (m : ℚ) = n ↔ m = n :=
+  natCast_injective.eq_iff
+@[simp, nolint simpNF, norm_cast] lemma intCast_eq_zero {n : ℤ} : (n : ℚ) = 0 ↔ n = 0 := intCast_inj
+@[simp, nolint simpNF, norm_cast] lemma natCast_eq_zero {n : ℕ} : (n : ℚ) = 0 ↔ n = 0 := natCast_inj
+@[simp, nolint simpNF, norm_cast] lemma intCast_eq_one {n : ℤ} : (n : ℚ) = 1 ↔ n = 1 := intCast_inj
+@[simp, nolint simpNF, norm_cast] lemma natCast_eq_one {n : ℕ} : (n : ℚ) = 1 ↔ n = 1 := natCast_inj
 
 #noalign rat.mk_pnat
 #noalign rat.mk_pnat_eq

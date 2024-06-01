@@ -123,8 +123,9 @@ def delabLinearIndependent : Delab :=
 
 variable {R} {v}
 
-theorem linearIndependent_iff : LinearIndependent R v ↔ ∀ l, Finsupp.total ι M R v l = 0 → l = 0 :=
-  by simp [LinearIndependent, LinearMap.ker_eq_bot']
+theorem linearIndependent_iff :
+    LinearIndependent R v ↔ ∀ l, Finsupp.total ι M R v l = 0 → l = 0 := by
+  simp [LinearIndependent, LinearMap.ker_eq_bot']
 #align linear_independent_iff linearIndependent_iff
 
 theorem linearIndependent_iff' :
@@ -184,8 +185,8 @@ theorem Fintype.linearIndependent_iff [Fintype ι] :
 `c : ι → R` to `∑ i, c i • v i` has the trivial kernel. -/
 theorem Fintype.linearIndependent_iff' [Fintype ι] [DecidableEq ι] :
     LinearIndependent R v ↔
-      LinearMap.ker (LinearMap.lsum R (fun _ ↦ R) ℕ fun i ↦ LinearMap.id.smulRight (v i)) = ⊥ :=
-  by simp [Fintype.linearIndependent_iff, LinearMap.ker_eq_bot', funext_iff]
+      LinearMap.ker (LinearMap.lsum R (fun _ ↦ R) ℕ fun i ↦ LinearMap.id.smulRight (v i)) = ⊥ := by
+  simp [Fintype.linearIndependent_iff, LinearMap.ker_eq_bot', funext_iff]
 #align fintype.linear_independent_iff' Fintype.linearIndependent_iff'
 
 theorem Fintype.not_linearIndependent_iff [Fintype ι] :
@@ -215,6 +216,7 @@ lemma LinearIndependent.eq_zero_of_pair {x y : M} (h : LinearIndependent R ![x, 
     Finset.mem_univ, forall_true_left] at this
   exact ⟨this 0, this 1⟩
 
+/-- Also see `LinearIndependent.pair_iff'` for a simpler version over fields. -/
 lemma LinearIndependent.pair_iff {x y : M} :
     LinearIndependent R ![x, y] ↔ ∀ (s t : R), s • x + t • y = 0 → s = 0 ∧ t = 0 := by
   refine ⟨fun h s t hst ↦ h.eq_zero_of_pair hst, fun h ↦ ?_⟩
@@ -450,8 +452,8 @@ theorem linearIndependent_comp_subtype {s : Set ι} :
 
 theorem linearDependent_comp_subtype' {s : Set ι} :
     ¬LinearIndependent R (v ∘ (↑) : s → M) ↔
-      ∃ f : ι →₀ R, f ∈ Finsupp.supported R R s ∧ Finsupp.total ι M R v f = 0 ∧ f ≠ 0 :=
-  by simp [linearIndependent_comp_subtype, and_left_comm]
+      ∃ f : ι →₀ R, f ∈ Finsupp.supported R R s ∧ Finsupp.total ι M R v f = 0 ∧ f ≠ 0 := by
+  simp [linearIndependent_comp_subtype, and_left_comm]
 #align linear_dependent_comp_subtype' linearDependent_comp_subtype'
 
 /-- A version of `linearDependent_comp_subtype'` with `Finsupp.total` unfolded. -/
@@ -463,20 +465,20 @@ theorem linearDependent_comp_subtype {s : Set ι} :
 
 theorem linearIndependent_subtype {s : Set M} :
     LinearIndependent R (fun x => x : s → M) ↔
-      ∀ l ∈ Finsupp.supported R R s, (Finsupp.total M M R id) l = 0 → l = 0 :=
-  by apply linearIndependent_comp_subtype (v := id)
+      ∀ l ∈ Finsupp.supported R R s, (Finsupp.total M M R id) l = 0 → l = 0 := by
+  apply linearIndependent_comp_subtype (v := id)
 #align linear_independent_subtype linearIndependent_subtype
 
 theorem linearIndependent_comp_subtype_disjoint {s : Set ι} :
     LinearIndependent R (v ∘ (↑) : s → M) ↔
-      Disjoint (Finsupp.supported R R s) (LinearMap.ker <| Finsupp.total ι M R v) :=
-  by rw [linearIndependent_comp_subtype, LinearMap.disjoint_ker]
+      Disjoint (Finsupp.supported R R s) (LinearMap.ker <| Finsupp.total ι M R v) := by
+  rw [linearIndependent_comp_subtype, LinearMap.disjoint_ker]
 #align linear_independent_comp_subtype_disjoint linearIndependent_comp_subtype_disjoint
 
 theorem linearIndependent_subtype_disjoint {s : Set M} :
     LinearIndependent R (fun x => x : s → M) ↔
-      Disjoint (Finsupp.supported R R s) (LinearMap.ker <| Finsupp.total M M R id) :=
-  by apply linearIndependent_comp_subtype_disjoint (v := id)
+      Disjoint (Finsupp.supported R R s) (LinearMap.ker <| Finsupp.total M M R id) := by
+  apply linearIndependent_comp_subtype_disjoint (v := id)
 #align linear_independent_subtype_disjoint linearIndependent_subtype_disjoint
 
 theorem linearIndependent_iff_totalOn {s : Set M} :
@@ -596,8 +598,9 @@ theorem LinearIndependent.image_of_comp {ι ι'} (s : Set ι) (f : ι → ι') (
 #align linear_independent.image_of_comp LinearIndependent.image_of_comp
 
 theorem LinearIndependent.image {ι} {s : Set ι} {f : ι → M}
-    (hs : LinearIndependent R fun x : s => f x) : LinearIndependent R fun x : f '' s => (x : M) :=
-  by convert LinearIndependent.image_of_comp s f id hs
+    (hs : LinearIndependent R fun x : s => f x) :
+    LinearIndependent R fun x : f '' s => (x : M) := by
+  convert LinearIndependent.image_of_comp s f id hs
 #align linear_independent.image LinearIndependent.image
 
 theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [DistribMulAction G R]
@@ -1153,12 +1156,12 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
                   Finset.sum_sub_distrib
                 _ =
                     (g a * a x * a y + ∑ i ∈ s, g i * i x * i y) -
-                      (g a * a x * a y + ∑ i ∈ s, g i * a x * i y) :=
-                  by rw [add_sub_add_left_eq_sub]
+                      (g a * a x * a y + ∑ i ∈ s, g i * a x * i y) := by
+                  rw [add_sub_add_left_eq_sub]
                 _ =
                     (∑ i ∈ insert a s, g i * i x * i y) -
-                      ∑ i ∈ insert a s, g i * a x * i y :=
-                  by rw [Finset.sum_insert has, Finset.sum_insert has]
+                      ∑ i ∈ insert a s, g i * a x * i y := by
+                  rw [Finset.sum_insert has, Finset.sum_insert has]
                 _ =
                     (∑ i ∈ insert a s, g i * i (x * y)) -
                       ∑ i ∈ insert a s, a x * (g i * i y) :=
@@ -1168,8 +1171,8 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
                     (Finset.sum_congr rfl fun _ _ => by rw [mul_assoc, mul_left_comm])
                 _ =
                     (∑ i ∈ insert a s, (g i • (i : G → L))) (x * y) -
-                      a x * (∑ i ∈ insert a s, (g i • (i : G → L))) y :=
-                  by rw [Finset.sum_apply, Finset.sum_apply, Finset.mul_sum]; rfl
+                      a x * (∑ i ∈ insert a s, (g i • (i : G → L))) y := by
+                  rw [Finset.sum_apply, Finset.sum_apply, Finset.mul_sum]; rfl
                 _ = 0 - a x * 0 := by rw [hg]; rfl
                 _ = 0 := by rw [mul_zero, sub_zero]
                 )
@@ -1327,10 +1330,10 @@ theorem LinearIndependent.option (hv : LinearIndependent K v)
   linearIndependent_option'.2 ⟨hv, hx⟩
 #align linear_independent.option LinearIndependent.option
 
-theorem linearIndependent_option {v : Option ι → V} :
-    LinearIndependent K v ↔
-      LinearIndependent K (v ∘ (↑) : ι → V) ∧ v none ∉ Submodule.span K (range (v ∘ (↑) : ι → V)) :=
-  by simp only [← linearIndependent_option', Option.casesOn'_none_coe]
+theorem linearIndependent_option {v : Option ι → V} : LinearIndependent K v ↔
+    LinearIndependent K (v ∘ (↑) : ι → V) ∧
+      v none ∉ Submodule.span K (range (v ∘ (↑) : ι → V)) := by
+  simp only [← linearIndependent_option', Option.casesOn'_none_coe]
 #align linear_independent_option linearIndependent_option
 
 theorem linearIndependent_insert' {ι} {s : Set ι} {a : ι} {f : ι → V} (has : a ∉ s) :
@@ -1357,6 +1360,21 @@ theorem linearIndependent_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x
   pair_comm y x ▸ (linearIndependent_singleton hx).insert <|
     mt mem_span_singleton.1 (not_exists.2 hy)
 #align linear_independent_pair linearIndependent_pair
+
+/-- Also see `LinearIndependent.pair_iff` for the version over arbitrary rings. -/
+theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :
+    LinearIndependent K ![x, y] ↔ ∀ a : K, a • x ≠ y := by
+  rw [LinearIndependent.pair_iff]
+  constructor
+  · intro H a ha
+    have := (H a (-1) (by simpa [← sub_eq_add_neg, sub_eq_zero])).2
+    simp only [neg_eq_zero, one_ne_zero] at this
+  · intro H s t hst
+    by_cases ht : t = 0
+    · exact ⟨by simpa [ht, hx] using hst, ht⟩
+    apply_fun (t⁻¹ • ·) at hst
+    simp only [smul_add, smul_smul, inv_mul_cancel ht, one_smul, smul_zero] at hst
+    cases H (-(t⁻¹ * s)) (by rwa [neg_smul, neg_eq_iff_eq_neg, eq_neg_iff_add_eq_zero])
 
 theorem linearIndependent_fin_cons {n} {v : Fin n → V} :
     LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) ↔
@@ -1385,14 +1403,13 @@ theorem LinearIndependent.fin_cons {n} {v : Fin n → V} (hv : LinearIndependent
 
 theorem linearIndependent_fin_succ {n} {v : Fin (n + 1) → V} :
     LinearIndependent K v ↔
-      LinearIndependent K (Fin.tail v) ∧ v 0 ∉ Submodule.span K (range <| Fin.tail v) :=
-  by rw [← linearIndependent_fin_cons, Fin.cons_self_tail]
+      LinearIndependent K (Fin.tail v) ∧ v 0 ∉ Submodule.span K (range <| Fin.tail v) := by
+  rw [← linearIndependent_fin_cons, Fin.cons_self_tail]
 #align linear_independent_fin_succ linearIndependent_fin_succ
 
-theorem linearIndependent_fin_succ' {n} {v : Fin (n + 1) → V} :
-    LinearIndependent K v ↔
-      LinearIndependent K (Fin.init v) ∧ v (Fin.last _) ∉ Submodule.span K (range <| Fin.init v) :=
-  by rw [← linearIndependent_fin_snoc, Fin.snoc_init_self]
+theorem linearIndependent_fin_succ' {n} {v : Fin (n + 1) → V} : LinearIndependent K v ↔
+    LinearIndependent K (Fin.init v) ∧ v (Fin.last _) ∉ Submodule.span K (range <| Fin.init v) := by
+  rw [← linearIndependent_fin_snoc, Fin.snoc_init_self]
 #align linear_independent_fin_succ' linearIndependent_fin_succ'
 
 theorem linearIndependent_fin2 {f : Fin 2 → V} :

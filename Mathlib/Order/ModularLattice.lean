@@ -300,7 +300,7 @@ def infIccOrderIsoIccSup (a b : α) : Set.Icc (a ⊓ b) a ≃o Set.Icc b (a ⊔ 
   map_rel_iff' := @fun x y => by
     simp only [Subtype.mk_le_mk, Equiv.coe_fn_mk, and_true_iff, le_sup_right]
     rw [← Subtype.coe_le_coe]
-    refine' ⟨fun h => _, fun h => sup_le_sup_right h _⟩
+    refine ⟨fun h => ?_, fun h => sup_le_sup_right h _⟩
     rw [← sup_eq_right.2 x.prop.1, inf_sup_assoc_of_le _ x.prop.2, sup_comm, ←
       sup_eq_right.2 y.prop.1, inf_sup_assoc_of_le _ y.prop.2, sup_comm b]
     exact inf_le_inf_left _ h

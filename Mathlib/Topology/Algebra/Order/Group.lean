@@ -28,9 +28,9 @@ variable {l : Filter α} {f g : α → G}
 instance (priority := 100) LinearOrderedAddCommGroup.topologicalAddGroup :
     TopologicalAddGroup G where
   continuous_add := by
-    refine' continuous_iff_continuousAt.2 _
+    refine continuous_iff_continuousAt.2 ?_
     rintro ⟨a, b⟩
-    refine' LinearOrderedAddCommGroup.tendsto_nhds.2 fun ε ε0 => _
+    refine LinearOrderedAddCommGroup.tendsto_nhds.2 fun ε ε0 => ?_
     rcases dense_or_discrete 0 ε with (⟨δ, δ0, δε⟩ | ⟨_h₁, h₂⟩)
     · -- If there exists `δ ∈ (0, ε)`, then we choose `δ`-nhd of `a` and `(ε-δ)`-nhd of `b`
       filter_upwards [(eventually_abs_sub_lt a δ0).prod_nhds

@@ -203,8 +203,9 @@ theorem Nodup.of_append_right : Nodup (l₁ ++ l₂) → Nodup l₂ :=
   Nodup.sublist (sublist_append_right l₁ l₂)
 #align list.nodup.of_append_right List.Nodup.of_append_right
 
-theorem nodup_append {l₁ l₂ : List α} : Nodup (l₁ ++ l₂) ↔ Nodup l₁ ∧ Nodup l₂ ∧ Disjoint l₁ l₂ :=
-  by simp only [Nodup, pairwise_append, disjoint_iff_ne]
+theorem nodup_append {l₁ l₂ : List α} :
+    Nodup (l₁ ++ l₂) ↔ Nodup l₁ ∧ Nodup l₂ ∧ Disjoint l₁ l₂ := by
+  simp only [Nodup, pairwise_append, disjoint_iff_ne]
 #align list.nodup_append List.nodup_append
 
 theorem disjoint_of_nodup_append {l₁ l₂ : List α} (d : Nodup (l₁ ++ l₂)) : Disjoint l₁ l₂ :=
