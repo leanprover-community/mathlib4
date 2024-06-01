@@ -342,18 +342,14 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
 (Implementation). `sheafCoyonedaHom` but the order of the arguments of the functor are swapped.
 -/
 noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
-    ℱ ⋙ yoneda ⟶ ℱ'.val ⋙ yoneda := by
-  let α := sheafCoyonedaHom α
-  refine
-    { app := ?_
-      naturality := ?_ }
-  · intro U
-    exact
-      { app := fun X => (α.app X).app U
-        naturality := fun X Y f => by simpa using congr_app (α.naturality f) U }
-  · intro U V i
+    ℱ ⋙ yoneda ⟶ ℱ'.val ⋙ yoneda where
+  app U :=
+    let α := (sheafCoyonedaHom α)
+    { app := fun X => (α.app X).app U
+      naturality := fun X Y f => by simpa using congr_app (α.naturality f) U }
+  naturality U V i := by
     ext X x
-    exact congr_fun ((α.app X).naturality i) x
+    exact congr_fun (((sheafCoyonedaHom α).app X).naturality i) x
 #align category_theory.cover_dense.sheaf_yoneda_hom CategoryTheory.Functor.IsCoverDense.sheafYonedaHom
 
 /-- Given a natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of arbitrary category,

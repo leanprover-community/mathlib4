@@ -144,9 +144,10 @@ theorem domRestrict_apply (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) (
 
 /-- A linear map `f : M₂ → M` whose values lie in a submodule `p ⊆ M` can be restricted to a
 linear map M₂ → p. -/
-def codRestrict (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M₂) (h : ∀ c, f c ∈ p) : M →ₛₗ[σ₁₂] p := by
-  refine { toFun := fun c => ⟨f c, h c⟩, map_add' := ?_, map_smul' := ?_ } <;>
-  intros <;> apply SetCoe.ext <;> simp
+def codRestrict (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M₂) (h : ∀ c, f c ∈ p) : M →ₛₗ[σ₁₂] p where
+  toFun := fun c => ⟨f c, h c⟩
+  map_add' _ _ := by simp
+  map_smul' _ _ := by simp
 #align linear_map.cod_restrict LinearMap.codRestrict
 
 @[simp]
