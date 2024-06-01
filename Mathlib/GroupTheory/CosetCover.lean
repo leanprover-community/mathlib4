@@ -111,8 +111,8 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
         by simpa using Set.eq_univ_iff_forall.mp hcovers (x * (y⁻¹ * z))
       rw [mem_leftCoset_iff, SetLike.mem_coe, ← QuotientGroup.eq] at hmem
       refine ⟨i, ⟨hi, fun hij => hx i hi hij ?_⟩, ?_⟩
-      · rwa [hmem, QuotientGroup.eq, hij, mul_inv_rev, inv_mul_cancel_right,
-          Subgroup.inv_mem_iff, ← SetLike.mem_coe, ← mem_leftCoset_iff]
+      · rwa [hmem, eq_comm, QuotientGroup.eq, hij, inv_mul_cancel_left,
+          ← SetLike.mem_coe, ← mem_leftCoset_iff]
       · simpa [mem_leftCoset_iff, SetLike.mem_coe, QuotientGroup.eq, mul_assoc] using hmem
     -- Thus `G` can also be covered by a finite union `U k, f k • K k` of left cosets
     -- of the subgroups `H k ≠ H j`.
