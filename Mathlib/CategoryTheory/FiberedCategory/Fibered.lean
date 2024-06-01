@@ -18,6 +18,16 @@ as in SGA VI.6.1
 - `IsFibered p` expresses that `p` gives `𝒳` the structure of a fibered category over `𝒮` as in
 SGA VI.6.1
 
+- `IsPreFibered p` expresses `𝒳` is fibered over `𝒮` via a functor `p : 𝒳 ⥤ 𝒮`, as in SGA VI.6.1.
+This means that it is prefibered, and that the composition of any two cartesian morphisms is
+cartesian.
+
+In the literature one often sees the notion of a fibered category defined as the existence of
+strongly cartesian morphisms lying over any given morphism in the base. This is equivalent to the
+notion above, and we give an alternate constructor `IsFibered.of_has_pullbacks'` for constructing
+a fibered category this way.
+
+
 ## Implementation
 
 The constructor of `IsPreFibered` is called `has_pullbacks'`. The reason for the prime is that when
