@@ -6,9 +6,6 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 #align_import category_theory.monoidal.internal.limits from "leanprover-community/mathlib"@"12921e9eaa574d0087ae4856860e6dda8690a438"
 
