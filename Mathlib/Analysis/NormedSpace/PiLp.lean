@@ -200,7 +200,8 @@ protected theorem edist_self (f : PiLp p β) : edist f f = 0 := by
   rcases p.trichotomy with (rfl | rfl | h)
   · simp [edist_eq_card]
   · simp [edist_eq_iSup]
-  · simp [edist_eq_sum h, ENNReal.zero_rpow_of_pos h, ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
+  · simp [edist_eq_sum h, ENNReal.zero_rpow_of_pos h, ENNReal.zero_rpow_of_pos
+          (_root_.inv_pos.2 <| h)]
 #align pi_Lp.edist_self PiLp.edist_self
 
 /-- This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate

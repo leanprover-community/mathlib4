@@ -190,7 +190,7 @@ theorem prod_edist_self (f : WithLp p (α × β)) : edist f f = 0 := by
     simp
   · simp [prod_edist_eq_sup]
   · simp [prod_edist_eq_add h, ENNReal.zero_rpow_of_pos h,
-      ENNReal.zero_rpow_of_pos (inv_pos.2 <| h)]
+      ENNReal.zero_rpow_of_pos (_root_.inv_pos.2 <| h)]
 
 /-- The distance is symmetric.
 
