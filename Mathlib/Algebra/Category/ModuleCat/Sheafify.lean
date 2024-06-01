@@ -35,45 +35,9 @@ variable {C : Type u₁} [Category.{v₁} C] {J : GrothendieckTopology C}
 
 namespace CategoryTheory
 
-namespace Presieve
+namespace Presieve.FamilyOfElements
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
-
-namespace FamilyOfElements
-
-section map
-
-variable {R R' : Cᵒᵖ ⥤ Type w} {X : C} {P : Presieve X} (hR : FamilyOfElements R P) (φ : R ⟶ R')
-
-/-- The image of a family of elements by a morphism of presheaves. -/
-def map : FamilyOfElements R' P := fun _ f hf => φ.app _ (hR f hf)
-
-@[simp]
-lemma map_apply {Y : C} (f : Y ⟶ X) (hf : P f) :
-    hR.map φ f hf = φ.app _ (hR f hf) := rfl
-
-lemma restrict_map {P' : Presieve X} (h : P' ≤ P) :
-    (hR.restrict h).map φ = (hR.map φ).restrict h := rfl
-
-end map
-
-section
-
-variable {R R' : Cᵒᵖ ⥤ Type w} (φ : R ⟶ R') {X : Cᵒᵖ} (r' : R'.obj X)
-
-/-- Given a morphism `φ : R ⟶ R'` of presheaves of types and `r' : R'.obj X`,
-this is the family of elements of `R` defined over the sieve `Presheaf.imageSieve φ r'`
-which sends a map in this sieve to an arbitrary choice of a preimage of the
-restriction of `r'`. -/
-noncomputable def localPreimage :
-    FamilyOfElements R (Presheaf.imageSieve φ r').arrows :=
-  fun _ f hf => Presheaf.localPreimage φ r' f hf
-
-lemma isAmalgamation_map_localPreimage :
-    ((localPreimage φ r').map φ).IsAmalgamation r' :=
-  fun _ f hf => (Presheaf.app_localPreimage φ r' f hf).symm
-
-end
 
 section smul
 
@@ -155,9 +119,7 @@ lemma isCompatible_map_smul : ((r₀.smul m₀).map (whiskerRight φ (forget _))
 
 end
 
-end FamilyOfElements
-
-end Presieve
+end Presieve.FamilyOfElements
 
 end CategoryTheory
 
@@ -171,8 +133,6 @@ variable {M₀ : PresheafOfModules.{v} R₀} {A : Sheaf J AddCommGroupCat.{v}}
   [Presheaf.IsLocallyInjective J φ] [Presheaf.IsLocallySurjective J φ]
 
 namespace Sheafify
-
-open Presheaf
 
 variable {X Y : Cᵒᵖ} (π : X ⟶ Y) (r r' : R.val.obj X) (m m' : A.val.obj X)
 
