@@ -15,10 +15,7 @@ This file defines what it means for a functor `p : 𝒳 ⥤ 𝒮` to be (pre)fib
 ## Main definitions
 - `IsPreFibered p` expresses that `p` gives `𝒳` the structure of a prefibered category over `𝒮`,
 as in SGA VI.6.1
-- `IsFibered p` expresses that `p` gives `𝒳` the structure of a fibered category over `𝒮` as in
-SGA VI.6.1
-
-- `IsPreFibered p` expresses `𝒳` is fibered over `𝒮` via a functor `p : 𝒳 ⥤ 𝒮`, as in SGA VI.6.1.
+- `IsFibered p` expresses `𝒳` is fibered over `𝒮` via a functor `p : 𝒳 ⥤ 𝒮`, as in SGA VI.6.1.
 This means that it is prefibered, and that the composition of any two cartesian morphisms is
 cartesian.
 
@@ -35,7 +32,7 @@ wanting to apply this condition, it is recommended to instead use the lemma `has
 (without the prime), which is more applicable with respect to non-definitional equalities.
 
 ## References
-SGA 1
+* [A. Grothendieck, M. Raynaud, *SGA 1*](https://arxiv.org/abs/math/0206203)
 
 -/
 
@@ -47,23 +44,14 @@ namespace CategoryTheory
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
-/-- Definition of a prefibered category. SGA 1 VI.6.1. -/
-class Functor.IsPreFibered (p : 𝒳 ⥤ 𝒮) : Prop where mk' ::
-  has_pullbacks {a : 𝒳} {R S : 𝒮} (_ : p.obj a = S) (f : R ⟶ S) :
-    ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ
+/-- Definition of a prefibered category.
+See SGA 1 VI.6.1. -/
+class Functor.IsPreFibered (p : 𝒳 ⥤ 𝒮) : Prop where
+  has_pullbacks' {a : 𝒳} {R : 𝒮} (f : R ⟶ p.obj a) : ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ
 
-protected lemma IsPreFibered.mk (p : 𝒳 ⥤ 𝒮) (h : ∀ (a : 𝒳) (R : 𝒮) (f : R ⟶ p.obj a),
-    ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ) : IsPreFibered p where
-  has_pullbacks := @fun a R S ha f => by subst ha; apply h a R f
-
-/-- Definition of a fibered category. SGA 1 VI.6.1. -/
-class Functor.IsFibered (p : 𝒳 ⥤ 𝒮) extends IsPreFibered p : Prop where
-  comp {R S T : 𝒮} (f : R ⟶ S) (g : S ⟶ T) {a b c : 𝒳} (φ : a ⟶ b) (ψ : b ⟶ c)
-    [IsCartesian p f φ] [IsCartesian p g ψ] : IsCartesian p (f ≫ g) (φ ≫ ψ)
-
-instance (p : 𝒳 ⥤ 𝒮) [p.IsFibered] {R S T : 𝒮} (f : R ⟶ S) (g : S ⟶ T) {a b c : 𝒳} (φ : a ⟶ b)
-    (ψ : b ⟶ c) [IsCartesian p f φ] [IsCartesian p g ψ] : IsCartesian p (f ≫ g) (φ ≫ ψ) :=
-  IsFibered.comp f g φ ψ
+protected lemma IsPreFibered.has_pullbacks {p : 𝒳 ⥤ 𝒮} [p.IsPreFibered] {a : 𝒳} {R S : 𝒮}
+    (ha : p.obj a = S) (f : R ⟶ S) : ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ := by
+  subst ha; exact IsPreFibered.has_pullbacks' f
 
 /-- Definition of a fibered category.
 
