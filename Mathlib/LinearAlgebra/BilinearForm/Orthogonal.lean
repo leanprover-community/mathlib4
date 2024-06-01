@@ -81,7 +81,7 @@ theorem IsSymm.ortho_comm (H : B.IsSymm) {x y : M} : IsOrtho B x y ↔ IsOrtho B
 if for all `i ≠ j`, `B (v i) (v j) = 0`. For orthogonality between two elements, use
 `BilinForm.IsOrtho` -/
 def iIsOrtho {n : Type w} (B : BilinForm R M) (v : n → M) : Prop :=
-  LinearMap.IsOrthoᵢ B v
+  B.IsOrthoᵢ v
 set_option linter.uppercaseLean3 false in
 #align bilin_form.is_Ortho LinearMap.BilinForm.iIsOrtho
 
@@ -286,7 +286,7 @@ theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K
     constructor
     · simp [hx]
     · intro y _
-      rw [IsOrtho, b.eq_zero]
+      rw [IsOrtho, b]
       change (B.domRestrict W) ⟨x, hx⟩ y = 0
       rw [hker]
       rfl
@@ -294,7 +294,7 @@ theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K
     refine ⟨⟨x, hx.1⟩, ?_, rfl⟩
     ext y
     change B x y = 0
-    rw [b.eq_zero]
+    rw [b]
     exact hx.2 _ Submodule.mem_top
 #align bilin_form.to_lin_restrict_ker_eq_inf_orthogonal LinearMap.BilinForm.toLin_restrict_ker_eq_inf_orthogonal
 
