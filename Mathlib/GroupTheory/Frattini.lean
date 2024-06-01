@@ -71,4 +71,4 @@ theorem frattini_nilpotent [Finite G] : Group.IsNilpotent (frattini G) := by
   -- This means that `P` is normal as a subgroup of `G`
   have P_normal_in_G : (map (frattini G).subtype ↑P).Normal := normalizer_eq_top.mp normalizer_P
   -- and hence also as a subgroup of `frattini G`, which was the remaining goal.
-  exact P_normal_in_G.of_map_subtype_normal
+  exact P_normal_in_G.of_map_subtype

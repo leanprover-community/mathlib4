@@ -1963,13 +1963,6 @@ theorem mem_comm_iff {a b : G} : a * b ∈ H ↔ b * a ∈ H :=
 #align subgroup.normal.mem_comm_iff Subgroup.Normal.mem_comm_iff
 #align add_subgroup.normal.mem_comm_iff AddSubgroup.Normal.mem_comm_iff
 
-theorem of_map_subtype_normal {K : Subgroup G} {L : Subgroup K}
-    (n : (map K.subtype L).Normal) : L.Normal := by
-  obtain ⟨conj_mem⟩ := n
-  simp only [mem_map, coeSubtype, Subtype.exists, exists_and_right, exists_eq_right,
-    forall_exists_index] at conj_mem
-  exact ⟨fun l l_mem k => (conj_mem l l.2 l_mem k).2⟩
-
 end Normal
 
 variable (H)
@@ -3343,15 +3336,17 @@ end MonoidHom
 
 variable {N : Type*} [Group N]
 
+namespace Subgroup
+
 -- Here `H.Normal` is an explicit argument so we can use dot notation with `comap`.
 @[to_additive]
-theorem Subgroup.Normal.comap {H : Subgroup N} (hH : H.Normal) (f : G →* N) : (H.comap f).Normal :=
+theorem Normal.comap {H : Subgroup N} (hH : H.Normal) (f : G →* N) : (H.comap f).Normal :=
   ⟨fun _ => by simp (config := { contextual := true }) [Subgroup.mem_comap, hH.conj_mem]⟩
 #align subgroup.normal.comap Subgroup.Normal.comap
 #align add_subgroup.normal.comap AddSubgroup.Normal.comap
 
 @[to_additive]
-instance (priority := 100) Subgroup.normal_comap {H : Subgroup N} [nH : H.Normal] (f : G →* N) :
+instance (priority := 100) normal_comap {H : Subgroup N} [nH : H.Normal] (f : G →* N) :
     (H.comap f).Normal :=
   nH.comap _
 #align subgroup.normal_comap Subgroup.normal_comap
@@ -3359,20 +3354,20 @@ instance (priority := 100) Subgroup.normal_comap {H : Subgroup N} [nH : H.Normal
 
 -- Here `H.Normal` is an explicit argument so we can use dot notation with `subgroupOf`.
 @[to_additive]
-theorem Subgroup.Normal.subgroupOf {H : Subgroup G} (hH : H.Normal) (K : Subgroup G) :
+theorem Normal.subgroupOf {H : Subgroup G} (hH : H.Normal) (K : Subgroup G) :
     (H.subgroupOf K).Normal :=
   hH.comap _
 #align subgroup.normal.subgroup_of Subgroup.Normal.subgroupOf
 #align add_subgroup.normal.add_subgroup_of AddSubgroup.Normal.addSubgroupOf
 
 @[to_additive]
-instance (priority := 100) Subgroup.normal_subgroupOf {H N : Subgroup G} [N.Normal] :
+instance (priority := 100) normal_subgroupOf {H N : Subgroup G} [N.Normal] :
     (N.subgroupOf H).Normal :=
   Subgroup.normal_comap _
 #align subgroup.normal_subgroup_of Subgroup.normal_subgroupOf
 #align add_subgroup.normal_add_subgroup_of AddSubgroup.normal_addSubgroupOf
 
-theorem Subgroup.map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f) :
+theorem map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f) :
     (normalClosure s).map f = normalClosure (f '' s) := by
   have : Normal (map f (normalClosure s)) := Normal.map inferInstance f hf
   apply le_antisymm
@@ -3380,10 +3375,20 @@ theorem Subgroup.map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f
       ← Set.image_subset_iff, subset_normalClosure]
   · exact normalClosure_le_normal (Set.image_subset f subset_normalClosure)
 
-theorem Subgroup.comap_normalClosure (s : Set N) (f : G ≃* N) :
+theorem comap_normalClosure (s : Set N) (f : G ≃* N) :
     normalClosure (f ⁻¹' s) = (normalClosure s).comap f := by
   have := Set.preimage_equiv_eq_image_symm s f.toEquiv
   simp_all [comap_equiv_eq_map_symm, map_normalClosure s f.symm f.symm.surjective]
+
+lemma Normal.of_map_injective {G H : Type*} [Group G] [Group H] {φ : G →* H}
+    (hφ : Function.Injective φ) {L : Subgroup G} (n : (L.map φ).Normal) : L.Normal :=
+  L.comap_map_eq_self_of_injective hφ ▸ n.comap φ
+
+theorem Normal.of_map_subtype {K : Subgroup G} {L : Subgroup K}
+    (n : (Subgroup.map K.subtype L).Normal) : L.Normal :=
+  n.of_map_injective K.subtype_injective
+
+end Subgroup
 
 namespace MonoidHom
 
