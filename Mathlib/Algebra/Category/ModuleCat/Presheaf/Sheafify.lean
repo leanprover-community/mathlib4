@@ -3,8 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Sheaf
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
+import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
 import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
@@ -321,10 +320,18 @@ def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val where
     simpa using (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
       r₀ (by aesop) m₀ (by simp)).symm
 
+instance : Presheaf.IsLocallyInjective J (toSheafify α φ).hom :=
+  by dsimp; infer_instance
+
+instance : Presheaf.IsLocallySurjective J (toSheafify α φ).hom :=
+  by dsimp; infer_instance
+
 noncomputable def sheafifyHomEquiv' {F : PresheafOfModules.{v} R.val}
     (hF : Presheaf.IsSheaf J F.presheaf) :
-    ((sheafify α φ).val ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj F) := by
-  sorry
+    ((sheafify α φ).val ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj F) :=
+  (restrictHomEquivOfIsLocallySurjective α hF).trans
+    (homEquivOfIsLocallyBijective (f := toSheafify α φ)
+      (N := (restrictScalars α).obj F) hF)
 
 noncomputable def sheafifyHomEquiv {F : SheafOfModules.{v} R} :
     (sheafify α φ ⟶ F) ≃

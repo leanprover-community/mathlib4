@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
-import Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 /-!
 # Sheaves of modules over a sheaf of rings
@@ -83,3 +83,25 @@ def evaluation (X : Cᵒᵖ) : SheafOfModules.{v} R ⥤ ModuleCat.{v} (R.val.obj
   forget _ ⋙ PresheafOfModules.evaluation _ X
 
 end SheafOfModules
+
+namespace PresheafOfModules
+
+variable {R : Cᵒᵖ ⥤ RingCat.{u}} {M₁ M₂ : PresheafOfModules.{v} R}
+    (f : M₁ ⟶ M₂) {N : PresheafOfModules.{v} R}
+    (hN : Presheaf.IsSheaf J N.presheaf)
+    [Presheaf.IsLocallySurjective J f.hom]
+    [Presheaf.IsLocallyInjective J f.hom]
+
+@[simps]
+noncomputable def homEquivOfIsLocallyBijective :
+    (M₂ ⟶ N) ≃ (M₁ ⟶ N) where
+  toFun φ := f ≫ φ
+  invFun := by
+    have := hN
+    have : Presheaf.IsLocallySurjective J f.hom := inferInstance
+    have : Presheaf.IsLocallyInjective J f.hom := inferInstance
+    sorry
+  left_inv := sorry
+  right_inv := sorry
+
+end PresheafOfModules
