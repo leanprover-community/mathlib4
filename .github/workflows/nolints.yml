@@ -22,9 +22,9 @@ jobs:
           set -o pipefail
           curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
           ./elan-init -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: print lean and lake versions
         run: |
@@ -47,11 +47,11 @@ jobs:
 
       - name: build mathlib
         id: build
-        uses: liskin/gh-problem-matcher-wrap@v2
+        uses: liskin/gh-problem-matcher-wrap@v3
         with:
           linters: gcc
           run: |
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI | tee stdout.log"
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
       - name: update nolints.json and style-exceptions.txt
         shell: bash

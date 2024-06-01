@@ -326,6 +326,9 @@ variable {F₁ F₂ F₃ : Sheaf J A} (φ : F₁ ⟶ F₂) (ψ: F₂ ⟶ F₃)
 `Presheaf.IsLocallySurjective J φ.val`. -/
 abbrev IsLocallySurjective := Presheaf.IsLocallySurjective J φ.val
 
+lemma isLocallySurjective_sheafToPresheaf_map_iff :
+    Presheaf.IsLocallySurjective J ((sheafToPresheaf J A).map φ) ↔ IsLocallySurjective φ := by rfl
+
 instance isLocallySurjective_comp [IsLocallySurjective φ] [IsLocallySurjective ψ] :
     IsLocallySurjective (φ ≫ ψ) :=
   Presheaf.isLocallySurjective_comp J φ.val ψ.val
