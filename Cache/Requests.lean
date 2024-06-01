@@ -170,7 +170,7 @@ def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompre
   if decompress then
     IO.unpackCache hashMap forceUnpack
   else
-    IO.println "Downloading all files completed successfully"
+    IO.println "Downloaded all files successfully!"
 
 end Get
 
