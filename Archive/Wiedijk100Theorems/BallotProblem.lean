@@ -233,7 +233,7 @@ theorem first_vote_pos :
         countedSequence (p + 1) (q + 1) ∩ List.cons 1 '' countedSequence p (q + 1) =
           List.cons 1 '' countedSequence p (q + 1) := by
         rw [inter_eq_right, counted_succ_succ]
-        exact inter_subset_left
+        exact subset_union_left
       rw [(condCount_eq_zero_iff <| (countedSequence_finite _ _).image _).2 this, condCount,
         cond_apply _ list_int_measurableSet, hint, count_injective_image List.cons_injective,
         count_countedSequence, count_countedSequence, one_mul, zero_mul, add_zero,
