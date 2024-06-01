@@ -296,8 +296,8 @@ theorem BlockTriangular.toBlock_inverse_mul_toBlock_eq_one [LinearOrder α] [Inv
   have h_sum :
     M⁻¹.toBlock p p * M.toBlock p p +
         (M⁻¹.toBlock p fun i => ¬p i) * M.toBlock (fun i => ¬p i) p =
-      1 :=
-    by rw [← toBlock_mul_eq_add, inv_mul_of_invertible M, toBlock_one_self]
+      1 := by
+    rw [← toBlock_mul_eq_add, inv_mul_of_invertible M, toBlock_one_self]
   have h_zero : M.toBlock (fun i => ¬p i) p = 0 := by
     ext i j
     simpa using hM (lt_of_lt_of_le j.2 (le_of_not_lt i.2))
