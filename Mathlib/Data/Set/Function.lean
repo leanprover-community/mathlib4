@@ -830,6 +830,8 @@ theorem surjOn_empty (f : α → β) (s : Set α) : SurjOn f s ∅ :=
   empty_subset _
 #align set.surj_on_empty Set.surjOn_empty
 
+@[simp] lemma surjOn_empty_iff : SurjOn f ∅ t ↔ t = ∅ := by simp [SurjOn, subset_empty_iff]
+
 @[simp] lemma surjOn_singleton : SurjOn f s {b} ↔ b ∈ f '' s := singleton_subset_iff
 #align set.surj_on_singleton Set.surjOn_singleton
 

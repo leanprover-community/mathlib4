@@ -124,7 +124,7 @@ theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) 
     Finset.card (Finset.univ.filter (fun g ↦ g^n = g₀)) ≤ Multiset.card (nthRoots n (f g₀)) := by
   haveI : DecidableEq R := Classical.decEq _
   refine le_trans ?_ (nthRoots n (f g₀)).toFinset_card_le
-  apply card_le_card_of_inj_on f
+  apply card_le_card_of_injOn f
   · intro g hg
     rw [mem_filter] at hg
     rw [Multiset.mem_toFinset, mem_nthRoots hn, ← f.map_pow, hg.2]
