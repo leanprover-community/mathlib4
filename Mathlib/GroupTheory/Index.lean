@@ -586,6 +586,7 @@ theorem finiteIndex_iInf' {ι : Type*} {s : Finset ι}
   rw [iInf_subtype']
   exact finiteIndex_iInf fun ⟨i, hi⟩ => hs i hi
 
+@[to_additive]
 instance instFiniteIndex_subgroupOf (H K : Subgroup G) [H.FiniteIndex] :
     (H.subgroupOf K).FiniteIndex :=
   ⟨fun h => H.index_ne_zero_of_finite <| H.index_eq_zero_of_relindex_eq_zero h⟩

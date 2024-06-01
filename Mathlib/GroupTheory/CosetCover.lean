@@ -40,6 +40,7 @@ section leftCoset_cover_const
 
 variable {G : Type*} [Group G]
 
+@[to_additive]
 theorem Subgroup.exists_leftTransversal_of_FiniteIndex
     {D H : Subgroup G} [D.FiniteIndex] (hD_le_H : D ≤ H) :
     ∃ t : Finset H,
@@ -61,6 +62,7 @@ theorem Subgroup.exists_leftTransversal_of_FiniteIndex
 
 variable {ι : Type*} {s : Finset ι} {H : Subgroup G} {g : ι → G}
 
+@[to_additive]
 theorem Subgroup.leftCoset_cover_const_iff_surjOn :
     ⋃ i ∈ s, g i • (H : Set G) = Set.univ ↔ Set.SurjOn (g · : ι → G ⧸ H) s Set.univ := by
   simp [Set.eq_univ_iff_forall, mem_leftCoset_iff, Set.SurjOn,
@@ -70,11 +72,13 @@ variable (hcovers : ⋃ i ∈ s, g i • (H : Set G) = Set.univ)
 
 /-- If `H` is a subgroup of `G` and `G` is the union of a finite family of left cosets of `H`
 then `H` has finite index. -/
+@[to_additive]
 theorem Subgroup.finiteIndex_of_leftCoset_cover_const : H.FiniteIndex := by
   simp_rw [leftCoset_cover_const_iff_surjOn] at hcovers
   have := Set.finite_univ_iff.mp <| Set.Finite.of_surjOn _ hcovers s.finite_toSet
   exact H.finiteIndex_of_finite_quotient
 
+@[to_additive]
 theorem Subgroup.index_le_of_leftCoset_cover_const : H.index ≤ s.card := by
   cases H.index.eq_zero_or_pos with
   | inl h => exact h ▸ s.card.zero_le
@@ -91,6 +95,7 @@ variable {G : Type*} [Group G]
     (hcovers : ⋃ i ∈ s, (g i) • (H i : Set G) = Set.univ)
 
 -- Inductive inner part of `Subgroup.exists_finiteIndex_of_leftCoset_cover`
+@[to_additive]
 theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
     (j : ι) (hj : j ∈ s) (hcovers' : ⋃ i ∈ s.filter (H · = H j), g i • (H i : Set G) ≠ Set.univ) :
     ∃ i ∈ s, H i ≠ H j ∧ (H i).FiniteIndex := by
@@ -157,6 +162,7 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 Then at least one subgroup `H i` has finite index in `G`. -/
+@[to_additive]
 theorem Subgroup.exists_finiteIndex_of_leftCoset_cover : ∃ k ∈ s, (H k).FiniteIndex := by
   classical
   have ⟨j, hj⟩ : s.Nonempty := Finset.nonempty_iff_ne_empty.mpr fun hempty => by
@@ -171,6 +177,7 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover : ∃ k ∈ s, (H k).Fini
     exact ⟨i, hi, hfi⟩
 
 -- Auxiliary to `leftCoset_cover_filter_FiniteIndex` and `one_le_sum_inv_index_of_leftCoset_cover`.
+@[to_additive]
 theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux :
     ⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ ∧
     1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ := by
@@ -240,12 +247,14 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux :
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 Then the cosets of subgroups of infinite index may be omitted from the covering. -/
+@[to_additive]
 theorem Subgroup.leftCoset_cover_filter_FiniteIndex :
     ⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ :=
   (Subgroup.leftCoset_cover_filter_FiniteIndex_aux hcovers).1
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 Then the sum of the inverses of the indexes of the subgroups `H i` is greater than or equal to 1. -/
+@[to_additive]
 theorem Subgroup.one_le_sum_inv_index_of_leftCoset_cover :
     1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ :=
   (Subgroup.leftCoset_cover_filter_FiniteIndex_aux hcovers).2
@@ -253,12 +262,13 @@ theorem Subgroup.one_le_sum_inv_index_of_leftCoset_cover :
 /-- B. H. Neumann Lemma :
 If a finite family of cosets of subgroups covers the group, then at least one
 of these subgroups has index not exceeding the number of cosets. -/
+@[to_additive]
 theorem Subgroup.exists_index_le_card_of_leftCoset_cover :
     ∃ i ∈ s, (H i).FiniteIndex ∧ (H i).index ≤ s.card := by
   by_contra! h
   apply (one_le_sum_inv_index_of_leftCoset_cover hcovers).not_lt
   by_cases hs : s = ∅
-  · simp only [hs, Finset.sum_empty, zero_lt_one]
+  · simp only [hs, Finset.sum_empty, show (0 : ℚ) < 1 from rfl]
   rw [← ne_eq, ← Finset.nonempty_iff_ne_empty] at hs
   have hs' : 0 < s.card := Nat.pos_of_ne_zero (Finset.card_ne_zero.mpr hs)
   have hlt : ∀ i ∈ s, ((H i).index : ℚ)⁻¹ < (s.card : ℚ)⁻¹ := fun i hi ↦ by
