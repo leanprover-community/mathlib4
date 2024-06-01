@@ -878,11 +878,10 @@ lemma not_nil_iff {p : G.Walk v w} :
   cases p <;> simp [*]
 
 /-- A walk with its endpoints defeq is `Nil` if and only if it is equal to `nil`. -/
-@[simp]
-lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p = nil ↔ p.Nil
+lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
   | .nil | .cons _ _ => by simp
 
-alias ⟨_, Nil.eq_nil⟩ := nil_iff_eq_nil
+alias ⟨Nil.eq_nil, _⟩ := nil_iff_eq_nil
 
 @[elab_as_elim]
 def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → Sort*}
