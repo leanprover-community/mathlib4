@@ -307,13 +307,13 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
 instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
   ⟨fun H => by
     intro Hn
-    refine' or_not.imp id fun Hb => _
+    refine or_not.imp id fun Hb => ?_
     rw [eq_bot_iff_forall] at Hb
     push_neg at Hb
     obtain ⟨⟨g, gA⟩, gH, g1⟩ : ∃ x : ↥(alternatingGroup (Fin 5)), x ∈ H ∧ x ≠ 1 := Hb
     -- `g` is a non-identity alternating permutation in a normal subgroup `H` of $A_5$.
     rw [← SetLike.mem_coe, ← Set.singleton_subset_iff] at gH
-    refine' eq_top_iff.2 (le_trans (ge_of_eq _) (normalClosure_le_normal gH))
+    refine eq_top_iff.2 (le_trans (ge_of_eq ?_) (normalClosure_le_normal gH))
     -- It suffices to show that the normal closure of `g` in $A_5$ is $A_5$.
     by_cases h2 : ∀ n ∈ g.cycleType, n = 2
     -- If the cycle decomposition of `g` consists entirely of swaps, then the cycle type is $(2,2)$.
@@ -338,7 +338,7 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
     -- `g^2` is in the normal closure of `g`, so that normal closure must be $A_5$.
     · rw [eq_top_iff, ← (isThreeCycle_sq_of_three_mem_cycleType_five ng).alternating_normalClosure
         (by rw [card_fin])]
-      refine' normalClosure_le_normal _
+      refine normalClosure_le_normal ?_
       rw [Set.singleton_subset_iff, SetLike.mem_coe]
       have h := SetLike.mem_coe.1 (subset_normalClosure
         (G := alternatingGroup (Fin 5)) (Set.mem_singleton ⟨g, gA⟩))
@@ -349,7 +349,7 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
       have : Odd 5 := by decide
       simp [this] at con
     · -- If `n = 5`, then `g` is itself a 5-cycle, conjugate to `finRotate 5`.
-      refine' (isConj_iff_cycleType_eq.2 _).normalClosure_eq_top_of normalClosure_finRotate_five
+      refine (isConj_iff_cycleType_eq.2 ?_).normalClosure_eq_top_of normalClosure_finRotate_five
       rw [cycleType_of_card_le_mem_cycleType_add_two (by decide) ng, cycleType_finRotate]⟩
 #align alternating_group.is_simple_group_five alternatingGroup.isSimpleGroup_five
 

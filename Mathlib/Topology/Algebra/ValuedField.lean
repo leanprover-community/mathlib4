@@ -101,7 +101,7 @@ instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := 
   suffices T2Space K by infer_instance
   apply TopologicalAddGroup.t2Space_of_zero_sep
   intro x x_ne
-  refine' ⟨{ k | v k < v x }, _, fun h => lt_irrefl _ h⟩
+  refine ⟨{ k | v k < v x }, ?_, fun h => lt_irrefl _ h⟩
   rw [Valued.mem_nhds]
   have vx_ne := (Valuation.ne_zero_iff <| v).mpr x_ne
   let γ' := Units.mk0 _ vx_ne
@@ -157,7 +157,7 @@ instance (priority := 100) completable : CompletableTopField K :=
         rwa [H] at this
       rcases this with ⟨γ₀, M₀, M₀_in, H₀⟩
       rw [Valued.cauchy_iff] at hF ⊢
-      refine' ⟨hF.1.map _, _⟩
+      refine ⟨hF.1.map _, ?_⟩
       replace hF := hF.2
       intro γ
       rcases hF (min (γ * γ₀ * γ₀) γ₀) with ⟨M₁, M₁_in, H₁⟩
@@ -178,7 +178,7 @@ instance (priority := 100) completable : CompletableTopField K :=
             rw [h] at x_in₀
             simp at x_in₀
           exact (Valuation.ne_zero_iff _).mp this
-        · refine' lt_of_lt_of_le H₁ _
+        · refine lt_of_lt_of_le H₁ ?_
           rw [Units.min_val]
           apply min_le_min _ x_in₀
           rw [mul_assoc]

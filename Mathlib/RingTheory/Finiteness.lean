@@ -37,8 +37,6 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 open Function (Surjective)
 
-open BigOperators
-
 namespace Submodule
 
 variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
@@ -781,9 +779,9 @@ Note that strictly this only needs `∀ i ∈ s, FiniteDimensional K (S i)`, but
 work well with typeclass search. -/
 instance finite_finset_sup {ι : Type*} (s : Finset ι) (S : ι → Submodule R V)
     [∀ i, Module.Finite R (S i)] : Module.Finite R (s.sup S : Submodule R V) := by
-  refine'
+  refine
     @Finset.sup_induction _ _ _ _ s S (fun i => Module.Finite R ↑i) (Module.Finite.bot R V)
-      _ fun i _ => by infer_instance
+      ?_ fun i _ => by infer_instance
   intro S₁ hS₁ S₂ hS₂
   exact Submodule.finite_sup S₁ S₂
 

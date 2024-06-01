@@ -36,7 +36,7 @@ This files is a straight-forward adaption of `Mathlib.Analysis.NormedSpace.PiLp`
 
 -/
 
-open Real Set Filter RCLike Bornology BigOperators Uniformity Topology NNReal ENNReal
+open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal
 
 noncomputable section
 
@@ -434,8 +434,8 @@ theorem prod_aux_uniformity_eq [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     (prod_antilipschitzWith_equiv_aux p α β).uniformInducing
       (prod_lipschitzWith_equiv_aux p α β).uniformContinuous
   have : (fun x : WithLp p (α × β) × WithLp p (α × β) =>
-    ((WithLp.equiv p (α × β)) x.fst, (WithLp.equiv p (α × β)) x.snd)) = id :=
-    by ext i <;> rfl
+    ((WithLp.equiv p (α × β)) x.fst, (WithLp.equiv p (α × β)) x.snd)) = id := by
+    ext i <;> rfl
   rw [← A.comap_uniformity, this, comap_id]
 
 theorem prod_aux_cobounded_eq [PseudoMetricSpace α] [PseudoMetricSpace β] :
@@ -674,7 +674,7 @@ section Single
 @[simp]
 theorem nnnorm_equiv_symm_fst (x : α) :
     ‖(WithLp.equiv p (α × β)).symm (x, 0)‖₊ = ‖x‖₊ := by
-  induction p using ENNReal.recTopCoe generalizing hp with
+  induction p generalizing hp with
   | top =>
     simp [prod_nnnorm_eq_sup]
   | coe p =>
@@ -684,7 +684,7 @@ theorem nnnorm_equiv_symm_fst (x : α) :
 @[simp]
 theorem nnnorm_equiv_symm_snd (y : β) :
     ‖(WithLp.equiv p (α × β)).symm (0, y)‖₊ = ‖y‖₊ := by
-  induction p using ENNReal.recTopCoe generalizing hp with
+  induction p generalizing hp with
   | top =>
     simp [prod_nnnorm_eq_sup]
   | coe p =>

@@ -479,9 +479,8 @@ theorem setIntegral_condexpL2_indicator (hs : MeasurableSet[m] s) (ht : Measurab
     _ = (μ (t ∩ s)).toReal := by rw [smul_eq_mul, mul_one]
 #align measure_theory.set_integral_condexp_L2_indicator MeasureTheory.setIntegral_condexpL2_indicator
 
-@[deprecated]
-alias set_integral_condexpL2_indicator :=
-  setIntegral_condexpL2_indicator -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_condexpL2_indicator := setIntegral_condexpL2_indicator
 
 theorem setIntegral_condexpIndSMul (hs : MeasurableSet[m] s) (ht : MeasurableSet t)
     (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (x : G') :
@@ -496,9 +495,8 @@ theorem setIntegral_condexpIndSMul (hs : MeasurableSet[m] s) (ht : MeasurableSet
     _ = (μ (t ∩ s)).toReal • x := by rw [setIntegral_condexpL2_indicator hs ht hμs hμt]
 #align measure_theory.set_integral_condexp_ind_smul MeasureTheory.setIntegral_condexpIndSMul
 
-@[deprecated]
-alias set_integral_condexpIndSMul :=
-  setIntegral_condexpIndSMul -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_condexpIndSMul := setIntegral_condexpIndSMul
 
 theorem condexpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     [SigmaFinite (μ.trim hm)] : (0 : α → ℝ) ≤ᵐ[μ]

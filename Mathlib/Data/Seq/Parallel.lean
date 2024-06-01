@@ -310,7 +310,7 @@ def parallelRec {S : WSeq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S
   let T : WSeq (Computation (α × Computation α)) := S.map fun c => c.map fun a => (a, c)
   have : S = T.map (map fun c => c.1) := by
     rw [← WSeq.map_comp]
-    refine' (WSeq.map_id _).symm.trans (congr_arg (fun f => WSeq.map f S) _)
+    refine (WSeq.map_id _).symm.trans (congr_arg (fun f => WSeq.map f S) ?_)
     funext c
     dsimp [id, Function.comp_def]
     rw [← map_comp]

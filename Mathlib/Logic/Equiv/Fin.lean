@@ -215,7 +215,7 @@ theorem finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) 
 /-- `Fin.succAbove` as an order isomorphism between `Fin n` and `{x : Fin (n + 1) // x ≠ p}`. -/
 def finSuccAboveEquiv (p : Fin (n + 1)) : Fin n ≃o { x : Fin (n + 1) // x ≠ p } :=
   { Equiv.optionSubtype p ⟨(finSuccEquiv' p).symm, rfl⟩ with
-    map_rel_iff' := p.succAboveEmb.map_rel_iff' }
+    map_rel_iff' := p.succAboveOrderEmb.map_rel_iff' }
 #align fin_succ_above_equiv finSuccAboveEquiv
 
 theorem finSuccAboveEquiv_apply (p : Fin (n + 1)) (i : Fin n) :
@@ -320,7 +320,7 @@ def finSumFinEquiv : Sum (Fin m) (Fin n) ≃ Fin (m + n) where
   toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
   invFun i := @Fin.addCases m n (fun _ => Sum (Fin m) (Fin n)) Sum.inl Sum.inr i
   left_inv x := by cases' x with y y <;> dsimp <;> simp
-  right_inv x := by refine' Fin.addCases (fun i => _) (fun i => _) x <;> simp
+  right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp
 #align fin_sum_fin_equiv finSumFinEquiv
 
 @[simp]
@@ -441,7 +441,7 @@ theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
 
 -- Porting note: was a @[simp]
 theorem finRotate_apply_zero : finRotate n.succ 0 = 1 := by
-  rw [finRotate_succ_apply, zero_add]
+  rw [finRotate_succ_apply, Fin.zero_add]
 #align fin_rotate_apply_zero finRotate_apply_zero
 
 theorem coe_finRotate_of_ne_last {i : Fin n.succ} (h : i ≠ Fin.last n) :
@@ -497,7 +497,7 @@ def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
   -- TODO: is there a canonical order of `*` and `+` here?
   left_inv a := Nat.div_add_mod' _ _
   right_inv p := by
-    refine' Prod.ext _ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)
+    refine Prod.ext ?_ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)
     dsimp only
     rw [Nat.add_comm, Nat.add_mul_div_right _ _ n.pos_of_neZero, Nat.div_eq_of_lt p.2.is_lt,
       Nat.zero_add]
