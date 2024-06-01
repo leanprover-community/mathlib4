@@ -311,10 +311,9 @@ variable {k E ι : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module
 theorem Subspace.union_ne_univ_of_lt_top (s : Finset (Subspace k E)) (hs : ∀ p ∈ s, p < ⊤) :
     ⋃ p ∈ s, (p : Set E) ≠ Set.univ := by
   intro hcovers
-  obtain ⟨p, hp, hfi⟩ := Submodule.exists_finiteIndex_of_cover hcovers
+  have ⟨p, hp, hfi⟩ := Submodule.exists_finiteIndex_of_cover hcovers
   have hlt : p < ⊤ := hs p hp
-  have : Finite (E ⧸ p) :=
-    (Equiv.refl _).finite_iff.mpr <| AddSubgroup.finite_quotient_of_finiteIndex _
+  have : Finite (E ⧸ p) := AddSubgroup.finite_quotient_of_finiteIndex _
   have : Nontrivial (E ⧸ p) := Submodule.Quotient.nontrivial_of_lt_top p hlt
   have : Infinite (E ⧸ p) := Module.Free.infinite k (E ⧸ p)
   exact not_finite (E ⧸ p)
