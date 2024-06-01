@@ -155,6 +155,9 @@ class AddMonoidHomClass (F M N : Type*) [AddZeroClass M] [AddZeroClass N] [FunLi
   extends AddHomClass F M N, ZeroHomClass F M N : Prop
 #align add_monoid_hom_class AddMonoidHomClass
 
+-- increase priority to make sure this is tried early
+attribute [instance 1100] AddMonoidHomClass.toAddHomClass
+
 -- Instances and lemmas are defined below through `@[to_additive]`.
 end add_zero
 
@@ -369,6 +372,10 @@ class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOneClass M] [MulOneC
   [FunLike F M N]
   extends MulHomClass F M N, OneHomClass F M N : Prop
 #align monoid_hom_class MonoidHomClass
+
+-- increase priority to make sure this is tried early
+attribute [instance 1100] MonoidHomClass.toMulHomClass
+attribute [instance 1100] AddMonoidHomClass.toAddHomClass
 
 @[to_additive]
 instance MonoidHom.instFunLike : FunLike (M →* N) M N where
