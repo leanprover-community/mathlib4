@@ -410,8 +410,8 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
 
       have H :
         1 + (1 + 1) + (1 + (1 + 1) + sizeOf L2) =
-          sizeOf L2 + (1 + ((1 + 1) + (1 + 1) + 1)) :=
-        by ac_rfl
+          sizeOf L2 + (1 + ((1 + 1) + (1 + 1) + 1)) := by
+        ac_rfl
       rw [H]
       apply Nat.lt_add_of_pos_right
       apply Nat.lt_add_right
@@ -561,8 +561,8 @@ theorem invRev_length : (invRev L₁).length = L₁.length := by simp [invRev]
 #align free_add_group.neg_rev_length FreeAddGroup.negRev_length
 
 @[to_additive (attr := simp)]
-theorem invRev_invRev : invRev (invRev L₁) = L₁ :=
-  by simp [invRev, List.map_reverse, (· ∘ ·)]
+theorem invRev_invRev : invRev (invRev L₁) = L₁ := by
+  simp [invRev, List.map_reverse, (· ∘ ·)]
 #align free_group.inv_rev_inv_rev FreeGroup.invRev_invRev
 #align free_add_group.neg_rev_neg_rev FreeAddGroup.negRev_negRev
 

@@ -75,8 +75,8 @@ protected def Theory.simpleGraph : Language.graph.Theory :=
 theorem Theory.simpleGraph_model_iff [Language.graph.Structure V] :
     V ⊨ Theory.simpleGraph ↔
       (Irreflexive fun x y : V => RelMap adj ![x, y]) ∧
-        Symmetric fun x y : V => RelMap adj ![x, y] :=
-  by simp [Theory.simpleGraph]
+        Symmetric fun x y : V => RelMap adj ![x, y] := by
+  simp [Theory.simpleGraph]
 #align first_order.language.Theory.simple_graph_model_iff FirstOrder.Language.Theory.simpleGraph_model_iff
 
 instance simpleGraph_model (G : SimpleGraph V) :
