@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Rat.Order
 import Mathlib.Order.Interval.Finset.Nat

@@ -1,4 +1,4 @@
-Mathlib/Algebra/BigOperators/Basic.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2675 lines, try to split it up
+Mathlib/Algebra/BigOperators/Group/Finset.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2675 lines, try to split it up
 Mathlib/Algebra/Group/Subgroup/Basic.lean : line 1 : ERR_NUM_LIN : 4000 file contains 3878 lines, try to split it up
 Mathlib/Algebra/Group/Submonoid/Operations.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1504 lines, try to split it up
 Mathlib/Algebra/Lie/Submodule.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1528 lines, try to split it up
