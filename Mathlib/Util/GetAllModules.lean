@@ -41,12 +41,12 @@ def getAllFiles (git : Bool) (ml : String) : IO (Array System.FilePath) := do
       let all ← walkDir ml
       return all.filter (·.extension == some "lean"))
   let files := (allModules.erase ml.lean).qsort (·.toString < ·.toString)
-  let withImport ← files.mapM fun f => do
+  let existingFiles ← files.mapM fun f => do
     -- this check is helpful in case the `git` option is on and a local file has been removed
     if ← pathExists f then
       return f
     else return ""
-  return withImport.filter (· != "")
+  return existingFiles.filter (· != "")
 
 /-- Like `getAllFiles`, but return an array of *module* names instead,
 i.e. names of the form `"Mathlib.Algebra.Algebra.Basic"`. -/
