@@ -375,7 +375,6 @@ class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOneClass M] [MulOneC
 
 -- increase priority to make sure this is tried early
 attribute [instance 1100] MonoidHomClass.toMulHomClass
-attribute [instance 1100] AddMonoidHomClass.toAddHomClass
 
 @[to_additive]
 instance MonoidHom.instFunLike : FunLike (M →* N) M N where
