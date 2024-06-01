@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir, Richard Copley
 -/
 
 import Mathlib.GroupTheory.Complement
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-! # Lemma of B. H. Neumann on coverings of a group by cosets.
 
