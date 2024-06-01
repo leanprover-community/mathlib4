@@ -75,7 +75,7 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
               · exact (PullbackCone.fst S)|>.continuous_toFun
               · exact (PullbackCone.snd S)|>.continuous_toFun
           }
-      refine' ⟨_, _, _⟩
+      refine ⟨?_, ?_, ?_⟩
       · delta pullbackCone
         ext a
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -386,7 +386,7 @@ theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {
             exact ⟨_, (H (Set.mem_range_self x)).choose_spec.symm⟩⟩
         left_inv := fun ⟨_, _⟩ => rfl
         right_inv := fun x => rfl }
-  convert IsIso.of_iso (isoOfHomeo esto)
+  convert (isoOfHomeo esto).isIso_hom
 #align Top.fst_iso_of_right_embedding_range_subset TopCat.fst_iso_of_right_embedding_range_subset
 
 theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat} {f : X ⟶ S} (hf : Embedding f)
@@ -400,7 +400,7 @@ theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat} {f : X ⟶ S} (h
             exact ⟨_, (H (Set.mem_range_self x)).choose_spec⟩⟩
         left_inv := fun ⟨_, _⟩ => rfl
         right_inv := fun x => rfl }
-  convert IsIso.of_iso (isoOfHomeo esto)
+  convert (isoOfHomeo esto).isIso_hom
 #align Top.snd_iso_of_left_embedding_range_subset TopCat.snd_iso_of_left_embedding_range_subset
 
 theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) :

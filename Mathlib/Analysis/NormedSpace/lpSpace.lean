@@ -996,8 +996,8 @@ variable [DecidableEq α]
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
 protected def single (p) (i : α) (a : E i) : lp E p :=
   ⟨fun j => if h : j = i then Eq.ndrec a h.symm else 0, by
-    refine' (memℓp_zero _).of_exponent_ge (zero_le p)
-    refine' (Set.finite_singleton i).subset _
+    refine (memℓp_zero ?_).of_exponent_ge (zero_le p)
+    refine (Set.finite_singleton i).subset ?_
     intro j
     simp only [forall_exists_index, Set.mem_singleton_iff, Ne, dite_eq_right_iff,
       Set.mem_setOf_eq, not_forall]
@@ -1079,8 +1079,8 @@ protected theorem norm_sub_norm_compl_sub_single (hp : 0 < p.toReal) (f : lp E p
 #align lp.norm_sub_norm_compl_sub_single lp.norm_sub_norm_compl_sub_single
 
 protected theorem norm_compl_sum_single (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
-    ‖f - ∑ i ∈ s, lp.single p i (f i)‖ ^ p.toReal = ‖f‖ ^ p.toReal - ∑ i ∈ s, ‖f i‖ ^ p.toReal :=
-  by linarith [lp.norm_sub_norm_compl_sub_single hp f s]
+    ‖f - ∑ i ∈ s, lp.single p i (f i)‖ ^ p.toReal = ‖f‖ ^ p.toReal - ∑ i ∈ s, ‖f i‖ ^ p.toReal := by
+  linarith [lp.norm_sub_norm_compl_sub_single hp f s]
 #align lp.norm_compl_sum_single lp.norm_compl_sum_single
 
 /-- The canonical finitely-supported approximations to an element `f` of `lp` converge to it, in the

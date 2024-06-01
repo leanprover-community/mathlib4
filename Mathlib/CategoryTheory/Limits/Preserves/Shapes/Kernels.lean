@@ -51,8 +51,8 @@ lemma map_ι : (c.map G).ι = G.map c.ι := rfl
 the mapped kernel fork is limit. -/
 def isLimitMapConeEquiv :
     IsLimit (G.mapCone c) ≃ IsLimit (c.map G) := by
-  refine' (IsLimit.postcomposeHomEquiv _ _).symm.trans (IsLimit.equivIsoLimit _)
-  refine' parallelPair.ext (Iso.refl _) (Iso.refl _) _ _ <;> simp
+  refine (IsLimit.postcomposeHomEquiv ?_ _).symm.trans (IsLimit.equivIsoLimit ?_)
+  refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ ?_ <;> simp
   exact Cones.ext (Iso.refl _) (by rintro (_|_) <;> aesop_cat)
 
 /-- A limit kernel fork is mapped to a limit kernel fork by a functor `G` when this functor
@@ -178,8 +178,8 @@ lemma map_π : (c.map G).π = G.map c.π := rfl
 the mapped cokernel cofork is colimit. -/
 def isColimitMapCoconeEquiv :
     IsColimit (G.mapCocone c) ≃ IsColimit (c.map G) := by
-  refine' (IsColimit.precomposeHomEquiv _ _).symm.trans (IsColimit.equivIsoColimit _)
-  refine' parallelPair.ext (Iso.refl _) (Iso.refl _) _ _ <;> simp
+  refine (IsColimit.precomposeHomEquiv ?_ _).symm.trans (IsColimit.equivIsoColimit ?_)
+  refine parallelPair.ext (Iso.refl _) (Iso.refl _) ?_ ?_ <;> simp
   exact Cocones.ext (Iso.refl _) (by rintro (_|_) <;> aesop_cat)
 
 /-- A colimit cokernel cofork is mapped to a colimit cokernel cofork by a functor `G`

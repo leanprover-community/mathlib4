@@ -180,7 +180,7 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
         (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
     is_extension := fun m => by
-      refine' Eq.trans (hnonempty.some.is_extension m) _
+      refine Eq.trans (hnonempty.some.is_extension m) ?_
       symm
       generalize_proofs _ h1
       exact

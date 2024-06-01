@@ -128,7 +128,7 @@ def gluedScheme : Scheme := by
     D.toLocallyRingedSpaceGlueData.toGlueData.glued
   intro x
   obtain ⟨i, y, rfl⟩ := D.toLocallyRingedSpaceGlueData.ι_jointly_surjective x
-  refine' ⟨_, _ ≫ D.toLocallyRingedSpaceGlueData.toGlueData.ι i, _⟩
+  refine ⟨?_, ?_ ≫ D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   swap
   · exact (D.U i).affineCover.map y
   constructor
@@ -284,9 +284,9 @@ def gluedCoverT' (x y z : 𝒰.J) :
         (pullback.fst : pullback (𝒰.map x) (𝒰.map z) ⟶ _) ⟶
       pullback (pullback.fst : pullback (𝒰.map y) (𝒰.map z) ⟶ _)
         (pullback.fst : pullback (𝒰.map y) (𝒰.map x) ⟶ _) := by
-  refine' (pullbackRightPullbackFstIso _ _ _).hom ≫ _
-  refine' _ ≫ (pullbackSymmetry _ _).hom
-  refine' _ ≫ (pullbackRightPullbackFstIso _ _ _).inv
+  refine (pullbackRightPullbackFstIso _ _ _).hom ≫ ?_
+  refine ?_ ≫ (pullbackSymmetry _ _).hom
+  refine ?_ ≫ (pullbackRightPullbackFstIso _ _ _).inv
   refine' pullback.map _ _ _ _ (pullbackSymmetry _ _).hom (𝟙 _) (𝟙 _) _ _
   · simp [pullback.condition]
   · simp
@@ -318,14 +318,14 @@ theorem gluedCoverT'_snd_snd (x y z : 𝒰.J) :
 
 theorem glued_cover_cocycle_fst (x y z : 𝒰.J) :
     gluedCoverT' 𝒰 x y z ≫ gluedCoverT' 𝒰 y z x ≫ gluedCoverT' 𝒰 z x y ≫ pullback.fst =
-      pullback.fst :=
-  by apply pullback.hom_ext <;> simp
+      pullback.fst := by
+  apply pullback.hom_ext <;> simp
 #align algebraic_geometry.Scheme.open_cover.glued_cover_cocycle_fst AlgebraicGeometry.Scheme.OpenCover.glued_cover_cocycle_fst
 
 theorem glued_cover_cocycle_snd (x y z : 𝒰.J) :
     gluedCoverT' 𝒰 x y z ≫ gluedCoverT' 𝒰 y z x ≫ gluedCoverT' 𝒰 z x y ≫ pullback.snd =
-      pullback.snd :=
-  by apply pullback.hom_ext <;> simp [pullback.condition]
+      pullback.snd := by
+  apply pullback.hom_ext <;> simp [pullback.condition]
 #align algebraic_geometry.Scheme.open_cover.glued_cover_cocycle_snd AlgebraicGeometry.Scheme.OpenCover.glued_cover_cocycle_snd
 
 theorem glued_cover_cocycle (x y z : 𝒰.J) :

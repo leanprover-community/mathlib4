@@ -323,8 +323,8 @@ path on `[0, 1/2]` and the second one on `[1/2, 1]`. -/
 def trans (γ : Path x y) (γ' : Path y z) : Path x z where
   toFun := (fun t : ℝ => if t ≤ 1 / 2 then γ.extend (2 * t) else γ'.extend (2 * t - 1)) ∘ (↑)
   continuous_toFun := by
-    refine'
-      (Continuous.if_le _ _ continuous_id continuous_const (by norm_num)).comp
+    refine
+      (Continuous.if_le ?_ ?_ continuous_id continuous_const (by norm_num)).comp
         continuous_subtype_val <;>
     continuity
   source' := by norm_num

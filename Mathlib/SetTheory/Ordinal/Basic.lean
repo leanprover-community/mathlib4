@@ -1244,7 +1244,7 @@ theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
   `ordinal.{v}` as a principal segment when `u < v`. -/
 def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < ·) (· < ·) :=
   ⟨↑lift.initialSeg.{u, max (u + 1) v}, univ.{u, v}, by
-    refine' fun b => inductionOn b _; intro β s _
+    refine fun b => inductionOn b ?_; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
     · rw [← lift_id (type s)] at h ⊢
       cases' lift_type_lt.{_,_,v}.1 h with f
@@ -1254,11 +1254,11 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
       -- Porting note: apply inductionOn does not work, refine does
       refine inductionOn a ?_
       intro α r _ hf
-      refine'
+      refine
         lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
-          ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone _ _) _).symm⟩
+          ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ ?_) ?_).symm⟩
       · exact fun b => enum r (f b) ((hf _).2 ⟨_, rfl⟩)
-      · refine' fun a b h => (typein_lt_typein r).1 _
+      · refine fun a b h => (typein_lt_typein r).1 ?_
         rw [typein_enum, typein_enum]
         exact f.map_rel_iff.2 h
       · intro a'
@@ -1312,7 +1312,7 @@ def ord (c : Cardinal) : Ordinal :=
       suffices ∀ {α β}, α ≈ β → F α ≤ F β from
         fun α β h => (this h).antisymm (this (Setoid.symm h))
       rintro α β ⟨f⟩
-      refine' le_ciInf_iff'.2 fun i => _
+      refine le_ciInf_iff'.2 fun i => ?_
       haveI := @RelEmbedding.isWellOrder _ _ (f ⁻¹'o i.1) _ (↑(RelIso.preimage f i.1)) i.2
       exact
         (ciInf_le' _
@@ -1637,8 +1637,8 @@ theorem card_eq_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
   card_eq_nat
 
 @[simp]
-theorem type_fintype (r : α → α → Prop) [IsWellOrder α r] [Fintype α] : type r = Fintype.card α :=
-  by rw [← card_eq_nat, card_type, mk_fintype]
+theorem type_fintype (r : α → α → Prop) [IsWellOrder α r] [Fintype α] :
+    type r = Fintype.card α := by rw [← card_eq_nat, card_type, mk_fintype]
 #align ordinal.type_fintype Ordinal.type_fintype
 
 theorem type_fin (n : ℕ) : @type (Fin n) (· < ·) _ = n := by simp

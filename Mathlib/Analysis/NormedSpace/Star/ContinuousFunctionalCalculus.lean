@@ -164,8 +164,8 @@ theorem elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
   exact ENNReal.coe_lt_coe.1
     (calc
       (‖star a' * a' - algebraMap ℂ _ ‖star a * a‖‖₊ : ℝ≥0∞) =
-          ‖algebraMap ℂ A ‖star a * a‖ - star a * a‖₊ :=
-        by rw [← nnnorm_neg, neg_sub]; rfl
+          ‖algebraMap ℂ A ‖star a * a‖ - star a * a‖₊ := by
+        rw [← nnnorm_neg, neg_sub]; rfl
       _ = spectralRadius ℂ (algebraMap ℂ A ‖star a * a‖ - star a * a) := by
         refine (IsSelfAdjoint.spectralRadius_eq_nnnorm ?_).symm
         rw [IsSelfAdjoint, star_sub, star_mul, star_star, ← algebraMap_star_comm]

@@ -411,13 +411,13 @@ theorem cospanExt_app_one : (cospanExt iX iY iZ wf wg).app WalkingCospan.one = i
 #align category_theory.limits.cospan_ext_app_one CategoryTheory.Limits.cospanExt_app_one
 
 @[simp]
-theorem cospanExt_hom_app_left : (cospanExt iX iY iZ wf wg).hom.app WalkingCospan.left = iX.hom :=
-  by dsimp [cospanExt]
+theorem cospanExt_hom_app_left :
+    (cospanExt iX iY iZ wf wg).hom.app WalkingCospan.left = iX.hom := by dsimp [cospanExt]
 #align category_theory.limits.cospan_ext_hom_app_left CategoryTheory.Limits.cospanExt_hom_app_left
 
 @[simp]
-theorem cospanExt_hom_app_right : (cospanExt iX iY iZ wf wg).hom.app WalkingCospan.right = iY.hom :=
-  by dsimp [cospanExt]
+theorem cospanExt_hom_app_right :
+    (cospanExt iX iY iZ wf wg).hom.app WalkingCospan.right = iY.hom := by dsimp [cospanExt]
 #align category_theory.limits.cospan_ext_hom_app_right CategoryTheory.Limits.cospanExt_hom_app_right
 
 @[simp]
@@ -426,13 +426,13 @@ theorem cospanExt_hom_app_one : (cospanExt iX iY iZ wf wg).hom.app WalkingCospan
 #align category_theory.limits.cospan_ext_hom_app_one CategoryTheory.Limits.cospanExt_hom_app_one
 
 @[simp]
-theorem cospanExt_inv_app_left : (cospanExt iX iY iZ wf wg).inv.app WalkingCospan.left = iX.inv :=
-  by dsimp [cospanExt]
+theorem cospanExt_inv_app_left :
+    (cospanExt iX iY iZ wf wg).inv.app WalkingCospan.left = iX.inv := by dsimp [cospanExt]
 #align category_theory.limits.cospan_ext_inv_app_left CategoryTheory.Limits.cospanExt_inv_app_left
 
 @[simp]
-theorem cospanExt_inv_app_right : (cospanExt iX iY iZ wf wg).inv.app WalkingCospan.right = iY.inv :=
-  by dsimp [cospanExt]
+theorem cospanExt_inv_app_right :
+    (cospanExt iX iY iZ wf wg).inv.app WalkingCospan.right = iY.inv := by dsimp [cospanExt]
 #align category_theory.limits.cospan_ext_inv_app_right CategoryTheory.Limits.cospanExt_inv_app_right
 
 @[simp]
@@ -2161,7 +2161,7 @@ def rightSquareIsPushout (H : IsColimit (PushoutCocone.mk _ _ h₁))
   rcases PushoutCocone.IsColimit.desc' H' (g₁ ≫ s.inl) s.inr this with ⟨l₁, hl₁, hl₁'⟩
   dsimp at *
   use l₁
-  refine' ⟨_, _, _⟩
+  refine ⟨?_, ?_, ?_⟩
   · apply PushoutCocone.IsColimit.hom_ext H
     · erw [← Category.assoc, hl₁]
       rfl
@@ -2463,8 +2463,8 @@ theorem pullbackAssoc_hom_snd_snd [HasPullback ((pullback.snd : Z₁ ⟶ X₂) �
 @[reassoc (attr := simp)]
 theorem pullbackAssoc_inv_fst_snd [HasPullback ((pullback.snd : Z₁ ⟶ X₂) ≫ f₃) f₄]
     [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] :
-    (pullbackAssoc f₁ f₂ f₃ f₄).inv ≫ pullback.fst ≫ pullback.snd = pullback.snd ≫ pullback.fst :=
-  by rw [Iso.inv_comp_eq, pullbackAssoc_hom_snd_fst]
+    (pullbackAssoc f₁ f₂ f₃ f₄).inv ≫ pullback.fst ≫ pullback.snd =
+    pullback.snd ≫ pullback.fst := by rw [Iso.inv_comp_eq, pullbackAssoc_hom_snd_fst]
 #align category_theory.limits.pullback_assoc_inv_fst_snd CategoryTheory.Limits.pullbackAssoc_inv_fst_snd
 
 @[reassoc (attr := simp)]

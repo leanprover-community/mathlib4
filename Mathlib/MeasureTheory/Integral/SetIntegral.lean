@@ -1059,8 +1059,8 @@ theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → 
   have S' :
     Summable fun i : ι =>
       (⟨∫ x : X in s i, ‖f x‖₊ ∂μ, setIntegral_nonneg (hs i) fun x _ => NNReal.coe_nonneg _⟩ :
-        NNReal) :=
-    by rw [← NNReal.summable_coe]; exact h
+        NNReal) := by
+    rw [← NNReal.summable_coe]; exact h
   have S'' := ENNReal.tsum_coe_eq S'.hasSum
   simp_rw [ENNReal.coe_nnreal_eq, NNReal.coe_mk, coe_nnnorm] at S''
   convert ENNReal.ofReal_lt_top

@@ -241,8 +241,8 @@ theorem det_kroneckerMapBilinear [CommSemiring R] [Fintype m] [Fintype n] [Decid
       det (A.map fun a => f a 1) ^ Fintype.card n * det (B.map fun b => f 1 b) ^ Fintype.card m :=
   calc
     det (kroneckerMapBilinear f A B) =
-        det (kroneckerMapBilinear f A 1 * kroneckerMapBilinear f 1 B) :=
-      by rw [← kroneckerMapBilinear_mul_mul f h_comm, Matrix.mul_one, Matrix.one_mul]
+        det (kroneckerMapBilinear f A 1 * kroneckerMapBilinear f 1 B) := by
+      rw [← kroneckerMapBilinear_mul_mul f h_comm, Matrix.mul_one, Matrix.one_mul]
     _ = det (blockDiagonal fun _ => A.map fun a => f a 1) *
         det (blockDiagonal fun _ => B.map fun b => f 1 b) := by
       rw [det_mul, ← diagonal_one, ← diagonal_one, kroneckerMapBilinear_apply_apply,

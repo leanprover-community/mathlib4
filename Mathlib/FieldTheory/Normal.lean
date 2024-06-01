@@ -222,8 +222,8 @@ def AlgHom.restrictNormalAux [h : Normal F E] :
       rintro x ⟨y, ⟨z, hy⟩, hx⟩
       rw [← hx, ← hy]
       apply minpoly.mem_range_of_degree_eq_one E
-      refine'
-        Or.resolve_left (h.splits z).def (minpoly.ne_zero (h.isIntegral z)) (minpoly.irreducible _)
+      refine
+        Or.resolve_left (h.splits z).def (minpoly.ne_zero (h.isIntegral z)) (minpoly.irreducible ?_)
           (minpoly.dvd E _ (by simp [aeval_algHom_apply]))
       simp only [AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom]
       suffices IsIntegral F _ by exact this.tower_top

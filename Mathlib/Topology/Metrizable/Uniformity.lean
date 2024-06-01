@@ -62,7 +62,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
       nonpos_iff_eq_zero.1 <| (ciInf_le (OrderBot.bddBelow _) []).trans_eq <| by simp [dist_self]
   dist_comm x y :=
     NNReal.coe_inj.2 <| by
-      refine' reverse_surjective.iInf_congr _ fun l => _
+      refine reverse_surjective.iInf_congr _ fun l ↦ ?_
       rw [← sum_reverse, zipWith_distrib_reverse, reverse_append, reverse_reverse,
         reverse_singleton, singleton_append, reverse_cons, reverse_reverse,
         zipWith_comm_of_comm _ dist_comm]
@@ -71,7 +71,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
     -- Porting note: added `unfold`
     unfold dist
     rw [← NNReal.coe_add, NNReal.coe_le_coe]
-    refine' NNReal.le_iInf_add_iInf fun lxy lyz => _
+    refine NNReal.le_iInf_add_iInf fun lxy lyz ↦ ?_
     calc
       ⨅ l, (zipWith d (x::l) (l ++ [z])).sum ≤
           (zipWith d (x::lxy ++ y::lyz) ((lxy ++ y::lyz) ++ [z])).sum :=
@@ -208,7 +208,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
   set d : X → X → ℝ≥0 := fun x y => if h : ∃ n, (x, y) ∉ U n then (1 / 2) ^ Nat.find h else 0
   have hd₀ : ∀ {x y}, d x y = 0 ↔ Inseparable x y := by
     intro x y
-    refine' Iff.trans _ hB.inseparable_iff_uniformity.symm
+    refine Iff.trans ?_ hB.inseparable_iff_uniformity.symm
     simp only [d, true_imp_iff]
     split_ifs with h
     · rw [← not_forall] at h
@@ -229,22 +229,22 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     · push_neg at h
       simp only [h, not_true, (pow_pos hr.1 _).not_le]
   have hd_le : ∀ x y, ↑(d x y) ≤ 2 * dist x y := by
-    refine' PseudoMetricSpace.le_two_mul_dist_ofPreNNDist _ _ _ fun x₁ x₂ x₃ x₄ => _
+    refine PseudoMetricSpace.le_two_mul_dist_ofPreNNDist _ _ _ fun x₁ x₂ x₃ x₄ => ?_
     by_cases H : ∃ n, (x₁, x₄) ∉ U n
-    · refine' (dif_pos H).trans_le _
+    · refine (dif_pos H).trans_le ?_
       rw [← NNReal.div_le_iff' two_ne_zero, ← mul_one_div (_ ^ _), ← pow_succ]
       simp only [le_max_iff, hle_d, ← not_and_or]
       rintro ⟨h₁₂, h₂₃, h₃₄⟩
-      refine' Nat.find_spec H (hU_comp (lt_add_one <| Nat.find H) _)
+      refine Nat.find_spec H (hU_comp (lt_add_one <| Nat.find H) ?_)
       exact ⟨x₂, h₁₂, x₃, h₂₃, h₃₄⟩
     · exact (dif_neg H).trans_le (zero_le _)
   -- Porting note: without the next line, `uniformity_basis_dist_pow` ends up introducing some
   -- `Subtype.val` applications instead of `NNReal.toReal`.
   rw [mem_Ioo, ← NNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at hr
-  refine' ⟨I, UniformSpace.ext <| (uniformity_basis_dist_pow hr.1 hr.2).ext hB.toHasBasis _ _⟩
-  · refine' fun n hn => ⟨n, hn, fun x hx => (hdist_le _ _).trans_lt _⟩
+  refine ⟨I, UniformSpace.ext <| (uniformity_basis_dist_pow hr.1 hr.2).ext hB.toHasBasis ?_ ?_⟩
+  · refine fun n hn => ⟨n, hn, fun x hx => (hdist_le _ _).trans_lt ?_⟩
     rwa [← NNReal.coe_pow, NNReal.coe_lt_coe, ← not_le, hle_d, Classical.not_not]
-  · refine' fun n _ => ⟨n + 1, trivial, fun x hx => _⟩
+  · refine fun n _ => ⟨n + 1, trivial, fun x hx => ?_⟩
     rw [mem_setOf_eq] at hx
     contrapose! hx
     refine le_trans ?_ ((div_le_iff' (zero_lt_two' ℝ)).2 (hd_le x.1 x.2))

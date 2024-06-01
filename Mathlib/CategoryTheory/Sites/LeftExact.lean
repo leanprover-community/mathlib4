@@ -132,7 +132,7 @@ def liftToPlusObjLimitObj {K : Type max v u} [SmallCategory K] [FinCategory K]
       (by
         intro i j f
         rw [← Iso.eq_comp_inv, Category.assoc, ← Iso.inv_comp_eq]
-        refine' colimit.hom_ext (fun w => _)
+        refine colimit.hom_ext (fun w => ?_)
         dsimp [plusMap]
         erw [colimit.ι_map_assoc,
           colimitObjIsoColimitCompEvaluation_ι_inv (F ⋙ J.diagramFunctor D X).flip w j,

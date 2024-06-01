@@ -96,18 +96,6 @@ theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
   simp only [h₁, h₂, LieRing.of_associative_ring_bracket, sub_eq_zero]
 #align commutative_ring_iff_abelian_lie_ring commutative_ring_iff_abelian_lie_ring
 
--- TODO: introduce typeclass for perfect Lie algebras and use it here in the conclusion
-lemma lie_eq_self_of_isAtom_of_nonabelian {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
-    (I : LieIdeal R L) (hI : IsAtom I) (h : ¬IsLieAbelian I) :
-    ⁅I, I⁆ = I := by
-  rw [← hI.le_iff_eq]
-  · exact LieSubmodule.lie_le_right I I
-  · contrapose! h
-    rw [LieSubmodule.lie_eq_bot_iff] at h
-    constructor
-    simpa only [LieIdeal.coe_bracket_of_module, Subtype.ext_iff, LieSubmodule.coe_bracket,
-      ZeroMemClass.coe_zero, Subtype.forall, LieSubmodule.mem_coeSubmodule] using h
-
 section Center
 
 variable (R : Type u) (L : Type v) (M : Type w) (N : Type w₁)
@@ -330,12 +318,22 @@ theorem LieSubmodule.trivial_lie_oper_zero [LieModule.IsTrivial L M] : ⁅I, N�
 theorem LieSubmodule.lie_abelian_iff_lie_self_eq_bot : IsLieAbelian I ↔ ⁅I, I⁆ = ⊥ := by
   simp only [_root_.eq_bot_iff, lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le,
     LieSubmodule.bot_coe, Set.subset_singleton_iff, Set.mem_setOf_eq, exists_imp]
-  refine'
+  refine
     ⟨fun h z x y hz =>
       hz.symm.trans
         (((I : LieSubalgebra R L).coe_bracket x y).symm.trans
           ((coe_zero_iff_zero _ _).mpr (by apply h.trivial))),
       fun h => ⟨fun x y => ((I : LieSubalgebra R L).coe_zero_iff_zero _).mp (h _ x y rfl)⟩⟩
 #align lie_submodule.lie_abelian_iff_lie_self_eq_bot LieSubmodule.lie_abelian_iff_lie_self_eq_bot
+
+variable {I N} in
+lemma lie_eq_self_of_isAtom_of_ne_bot (hN : IsAtom N) (h : ⁅I, N⁆ ≠ ⊥) : ⁅I, N⁆ = N :=
+  (hN.le_iff_eq h).mp <| LieSubmodule.lie_le_right N I
+
+-- TODO: introduce typeclass for perfect Lie algebras and use it here in the conclusion
+lemma lie_eq_self_of_isAtom_of_nonabelian {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
+    (I : LieIdeal R L) (hI : IsAtom I) (h : ¬IsLieAbelian I) :
+    ⁅I, I⁆ = I :=
+  lie_eq_self_of_isAtom_of_ne_bot hI <| not_imp_not.mpr (lie_abelian_iff_lie_self_eq_bot I).mpr h
 
 end IdealOperations

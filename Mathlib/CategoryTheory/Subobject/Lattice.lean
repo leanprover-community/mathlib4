@@ -165,7 +165,7 @@ def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
 /-- A morphism version of the `le_inf` axiom. -/
 def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf.obj f).obj g) := by
   intro k₁ k₂
-  refine' homMk (pullback.lift k₂.left k₁.left _) _
+  refine homMk (pullback.lift k₂.left k₁.left ?_) ?_
   · rw [w k₁, w k₂]
   · erw [pullback.lift_snd_assoc, w k₁]
 #align category_theory.mono_over.le_inf CategoryTheory.MonoOver.leInf
@@ -185,14 +185,14 @@ def sup {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A :=
 
 /-- A morphism version of `le_sup_left`. -/
 def leSupLeft {A : C} (f g : MonoOver A) : f ⟶ (sup.obj f).obj g := by
-  refine' homMk (coprod.inl ≫ factorThruImage _) _
+  refine homMk (coprod.inl ≫ factorThruImage _) ?_
   erw [Category.assoc, image.fac, coprod.inl_desc]
   rfl
 #align category_theory.mono_over.le_sup_left CategoryTheory.MonoOver.leSupLeft
 
 /-- A morphism version of `le_sup_right`. -/
 def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
-  refine' homMk (coprod.inr ≫ factorThruImage _) _
+  refine homMk (coprod.inr ≫ factorThruImage _) ?_
   erw [Category.assoc, image.fac, coprod.inr_desc]
   rfl
 #align category_theory.mono_over.le_sup_right CategoryTheory.MonoOver.leSupRight
@@ -200,7 +200,7 @@ def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
 /-- A morphism version of `sup_le`. -/
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by
   intro k₁ k₂
-  refine' homMk _ _
+  refine homMk ?_ ?_
   · apply image.lift ⟨_, h.arrow, coprod.desc k₁.left k₂.left, _⟩
     ext
     · simp [w k₁]
@@ -258,7 +258,7 @@ theorem top_factors {A B : C} (f : A ⟶ B) : (⊤ : Subobject B).Factors f :=
 theorem isIso_iff_mk_eq_top {X Y : C} (f : X ⟶ Y) [Mono f] : IsIso f ↔ mk f = ⊤ :=
   ⟨fun _ => mk_eq_mk_of_comm _ _ (asIso f) (Category.comp_id _), fun h => by
     rw [← ofMkLEMk_comp h.le, Category.comp_id]
-    exact IsIso.of_iso (isoOfMkEqMk _ _ h)⟩
+    exact (isoOfMkEqMk _ _ h).isIso_hom⟩
 #align category_theory.subobject.is_iso_iff_mk_eq_top CategoryTheory.Subobject.isIso_iff_mk_eq_top
 
 theorem isIso_arrow_iff_eq_top {Y : C} (P : Subobject Y) : IsIso P.arrow ↔ P = ⊤ := by

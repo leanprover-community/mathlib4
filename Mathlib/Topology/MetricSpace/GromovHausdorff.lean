@@ -327,14 +327,14 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
                 cases z
                 · apply mem_union_left; apply mem_range_self
                 · apply mem_union_right; apply mem_range_self
-              refine' dist_le_diam_of_mem _ (A _) (A _)
+              refine dist_le_diam_of_mem ?_ (A _) (A _)
               rw [Φrange, Ψrange]
               exact (p ⊔ q).isCompact.isBounded
             _ ≤ 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := I
     let Fb := candidatesBOfCandidates F Fgood
     have : hausdorffDist (range (optimalGHInjl X Y)) (range (optimalGHInjr X Y)) ≤ HD Fb :=
       hausdorffDist_optimal_le_HD _ _ (candidatesBOfCandidates_mem F Fgood)
-    refine' le_trans this (le_of_forall_le_of_dense fun r hr => _)
+    refine le_trans this (le_of_forall_le_of_dense fun r hr => ?_)
     have I1 : ∀ x : X, (⨅ y, Fb (inl x, inr y)) ≤ r := by
       intro x
       have : f (inl x) ∈ ↑p := Φrange.subst (mem_range_self _)
@@ -386,9 +386,9 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
           hausdorffDist_optimal_le_HD _ _ candidatesBDist_mem_candidatesB
         _ ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := HD_candidatesBDist_le
         _ ≤ hausdorffDist (p : Set ℓ_infty_ℝ) q := not_lt.1 h
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · apply le_csInf
-    · refine' (Set.Nonempty.prod _ _).image _ <;> exact ⟨_, rfl⟩
+    · refine (Set.Nonempty.prod ?_ ?_).image _ <;> exact ⟨_, rfl⟩
     · rintro b ⟨⟨p, q⟩, ⟨hp, hq⟩, rfl⟩
       exact B p q hp hq
   · exact ghDist_le_hausdorffDist (isometry_optimalGHInjl X Y) (isometry_optimalGHInjr X Y)
@@ -621,7 +621,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
   have : hausdorffDist (range Fl) (Fl '' s) ≤ ε₁ := by
     rw [← image_univ, hausdorffDist_image Il]
     have : 0 ≤ ε₁ := le_trans dist_nonneg Dxs
-    refine' hausdorffDist_le_of_mem_dist this (fun x _ => hs x) fun x _ =>
+    refine hausdorffDist_le_of_mem_dist this (fun x _ => hs x) fun x _ =>
       ⟨x, mem_univ _, by simpa only [dist_self]⟩
   have : hausdorffDist (Fl '' s) (Fr '' range Φ) ≤ ε₂ / 2 + δ := by
     refine hausdorffDist_le_of_mem_dist (by linarith) ?_ ?_

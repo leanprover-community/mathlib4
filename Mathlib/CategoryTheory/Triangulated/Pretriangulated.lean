@@ -537,7 +537,7 @@ lemma binaryBiproductTriangle_distinguished (X₁ X₂ : C) :
   obtain ⟨e, ⟨he₁, he₂⟩⟩ := exists_iso_binaryBiproduct_of_distTriang _ mem rfl
   dsimp at he₁ he₂
   refine isomorphic_distinguished _ mem _ (Iso.symm ?_)
-  refine' Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
+  refine Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
     (by aesop_cat) (by aesop_cat) (by aesop_cat)
 
 lemma binaryProductTriangle_distinguished (X₁ X₂ : C) :
@@ -597,8 +597,8 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
       rw [← cancel_mono (φ'.hom₁⟦1⟧'), zero_comp, assoc, φ'.comm₃, reassoc_of% hf, zero_comp]
     obtain ⟨g, hg⟩ := T'.coyoneda_exact₃ hT' f hf'
     have hg' : ∀ j, (g ≫ Pi.π _ j) ≫ (T j).mor₂ = 0 := fun j => by
-      have : g ≫ T'.mor₂ ≫ φ'.hom₃ ≫ Pi.π _ j = 0 :=
-        by rw [← reassoc_of% hg, reassoc_of% hf, zero_comp]
+      have : g ≫ T'.mor₂ ≫ φ'.hom₃ ≫ Pi.π _ j = 0 := by
+        rw [← reassoc_of% hg, reassoc_of% hf, zero_comp]
       rw [φ'.comm₂_assoc, h₂, id_comp] at this
       simpa using this
     have hg'' := fun j => (T j).coyoneda_exact₂ (hT j) _ (hg' j)

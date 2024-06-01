@@ -242,16 +242,16 @@ theorem length_toList_pos_of_mem_support (h : x ∈ p.support) : 0 < length (toL
   zero_lt_two.trans_le (two_le_length_toList_iff_mem_support.mpr h)
 #align equiv.perm.length_to_list_pos_of_mem_support Equiv.Perm.length_toList_pos_of_mem_support
 
-theorem get_toList (n : ℕ) (hn : n < length (toList p x)) : (toList p x).get ⟨n, hn⟩ = (p ^ n) x :=
-  by simp [toList]
+theorem get_toList (n : ℕ) (hn : n < length (toList p x)) :
+    (toList p x).get ⟨n, hn⟩ = (p ^ n) x := by simp [toList]
 
 theorem toList_get_zero (h : x ∈ p.support) :
     (toList p x).get ⟨0, (length_toList_pos_of_mem_support _ _ h)⟩ = x := by simp [toList]
 
 set_option linter.deprecated false in
 @[deprecated get_toList (since := "2024-05-08")]
-theorem nthLe_toList (n : ℕ) (hn : n < length (toList p x)) : (toList p x).nthLe n hn = (p ^ n) x :=
-  by simp [toList]
+theorem nthLe_toList (n : ℕ) (hn : n < length (toList p x)) :
+    (toList p x).nthLe n hn = (p ^ n) x := by simp [toList]
 #align equiv.perm.nth_le_to_list Equiv.Perm.nthLe_toList
 
 set_option linter.deprecated false in
@@ -407,7 +407,7 @@ def toCycle (f : Perm α) (hf : IsCycle f) : Cycle α :=
     (fun x _ l => if f x = x then l else toList f x)
     (by
       intro x y _ s
-      refine' heq_of_eq _
+      refine heq_of_eq ?_
       split_ifs with hx hy hy <;> try rfl
       have hc : SameCycle f x y := IsCycle.sameCycle hf hx hy
       exact Quotient.sound' hc.toList_isRotated)
@@ -450,7 +450,7 @@ def isoCycle : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.
     apply Subtype.ext
     dsimp
     rw [toCycle_eq_toList _ _ x]
-    · refine' Quotient.sound' _
+    · refine Quotient.sound' ?_
       exact toList_formPerm_isRotated_self _ hl hn _ hx
     · rw [← mem_support, support_formPerm_of_nodup _ hn]
       · simpa using hx

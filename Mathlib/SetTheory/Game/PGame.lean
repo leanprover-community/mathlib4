@@ -1353,16 +1353,16 @@ theorem moveLeft_neg_symm {x : PGame} (i) :
     x.moveLeft (toRightMovesNeg.symm i) = -(-x).moveRight i := by simp
 #align pgame.move_left_neg_symm SetTheory.PGame.moveLeft_neg_symm
 
-theorem moveLeft_neg_symm' {x : PGame} (i) : x.moveLeft i = -(-x).moveRight (toRightMovesNeg i) :=
-  by simp
+theorem moveLeft_neg_symm' {x : PGame} (i) :
+    x.moveLeft i = -(-x).moveRight (toRightMovesNeg i) := by simp
 #align pgame.move_left_neg_symm' SetTheory.PGame.moveLeft_neg_symm'
 
 theorem moveRight_neg_symm {x : PGame} (i) :
     x.moveRight (toLeftMovesNeg.symm i) = -(-x).moveLeft i := by simp
 #align pgame.move_right_neg_symm SetTheory.PGame.moveRight_neg_symm
 
-theorem moveRight_neg_symm' {x : PGame} (i) : x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) :=
-  by simp
+theorem moveRight_neg_symm' {x : PGame} (i) :
+    x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) := by simp
 #align pgame.move_right_neg_symm' SetTheory.PGame.moveRight_neg_symm'
 
 /-- If `x` has the same moves as `y`, then `-x` has the same moves as `-y`. -/
@@ -1528,7 +1528,7 @@ theorem add_zero_equiv (x : PGame.{u}) : x + 0 ≈ x :=
 /-- `0 + x` has exactly the same moves as `x`. -/
 def zeroAddRelabelling : ∀ x : PGame.{u}, 0 + x ≡r x
   | ⟨xl, xr, xL, xR⟩ => by
-    refine' ⟨Equiv.emptySum PEmpty xl, Equiv.emptySum PEmpty xr, _, _⟩ <;> rintro (⟨⟨⟩⟩ | ⟨i⟩) <;>
+    refine ⟨Equiv.emptySum PEmpty xl, Equiv.emptySum PEmpty xr, ?_, ?_⟩ <;> rintro (⟨⟨⟩⟩ | ⟨i⟩) <;>
       apply zeroAddRelabelling
 #align pgame.zero_add_relabelling SetTheory.PGame.zeroAddRelabelling
 
