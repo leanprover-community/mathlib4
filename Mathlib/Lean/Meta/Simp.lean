@@ -157,7 +157,11 @@ def simpOnlyNames (lemmas : List Name) (e : Expr) (config : Simp.Config := {}) :
 /--
 Given a simplifier `S : Expr → MetaM Simp.Result`,
 and an expression `e : Expr`, run `S` on the type of `e`, and then
-convert `e` into that simplified type, using a combination of type hints and `Eq.mp`.
+convert `e` into that simplified type,
+using a combination of type hints as well as casting if the proof is not definitional `Eq.mp`.
+
+The optional argument `type?`, if present, must be definitionally equal to the type of `e`.
+When it is specified we simplify this type rather than the inferred type of `e`.
 -/
 def simpType (S : Expr → MetaM Simp.Result) (e : Expr) (type? : Option Expr := none) :
     MetaM Expr := do
