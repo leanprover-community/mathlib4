@@ -3,7 +3,7 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Commute.Hom
 import Mathlib.Data.Fintype.Card
 
@@ -292,8 +292,8 @@ theorem noncommProd_congr {s₁ s₂ : Finset α} {f g : α → β} (h₁ : s₁
         dsimp only
         rw [← h₂ _ hx, ← h₂ _ hy]
         subst h₁
-        exact comm hx hy h :=
-  by simp_rw [noncommProd, Multiset.map_congr (congr_arg _ h₁) h₂]
+        exact comm hx hy h := by
+  simp_rw [noncommProd, Multiset.map_congr (congr_arg _ h₁) h₂]
 #align finset.noncomm_prod_congr Finset.noncommProd_congr
 #align finset.noncomm_sum_congr Finset.noncommSum_congr
 
@@ -358,8 +358,8 @@ variable [FunLike F β γ]
 @[to_additive]
 theorem noncommProd_map [MonoidHomClass F β γ] (s : Finset α) (f : α → β) (comm) (g : F) :
     g (s.noncommProd f comm) =
-      s.noncommProd (fun i => g (f i)) fun x hx y hy _ => (comm.of_refl hx hy).map g :=
-  by simp [noncommProd, Multiset.noncommProd_map]
+      s.noncommProd (fun i => g (f i)) fun x hx y hy _ => (comm.of_refl hx hy).map g := by
+  simp [noncommProd, Multiset.noncommProd_map]
 #align finset.noncomm_prod_map Finset.noncommProd_map
 #align finset.noncomm_sum_map Finset.noncommSum_map
 

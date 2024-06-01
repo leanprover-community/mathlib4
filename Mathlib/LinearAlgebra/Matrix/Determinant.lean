@@ -273,8 +273,9 @@ theorem det_smul (A : Matrix n n R) (c : R) : det (c • A) = c ^ Fintype.card n
 
 @[simp]
 theorem det_smul_of_tower {α} [Monoid α] [DistribMulAction α R] [IsScalarTower α R R]
-    [SMulCommClass α R R] (c : α) (A : Matrix n n R) : det (c • A) = c ^ Fintype.card n • det A :=
-  by rw [← smul_one_smul R c A, det_smul, smul_pow, one_pow, smul_mul_assoc, one_mul]
+    [SMulCommClass α R R] (c : α) (A : Matrix n n R) :
+    det (c • A) = c ^ Fintype.card n • det A := by
+  rw [← smul_one_smul R c A, det_smul, smul_pow, one_pow, smul_mul_assoc, one_mul]
 #align matrix.det_smul_of_tower Matrix.det_smul_of_tower
 
 theorem det_neg (A : Matrix n n R) : det (-A) = (-1) ^ Fintype.card n * det A := by
@@ -283,8 +284,9 @@ theorem det_neg (A : Matrix n n R) : det (-A) = (-1) ^ Fintype.card n * det A :=
 
 /-- A variant of `Matrix.det_neg` with scalar multiplication by `Units ℤ` instead of multiplication
 by `R`. -/
-theorem det_neg_eq_smul (A : Matrix n n R) : det (-A) = (-1 : Units ℤ) ^ Fintype.card n • det A :=
-  by rw [← det_smul_of_tower, Units.neg_smul, one_smul]
+theorem det_neg_eq_smul (A : Matrix n n R) :
+    det (-A) = (-1 : Units ℤ) ^ Fintype.card n • det A := by
+  rw [← det_smul_of_tower, Units.neg_smul, one_smul]
 #align matrix.det_neg_eq_smul Matrix.det_neg_eq_smul
 
 /-- Multiplying each row by a fixed `v i` multiplies the determinant by
@@ -316,8 +318,8 @@ section HomMap
 variable {S : Type w} [CommRing S]
 
 theorem _root_.RingHom.map_det (f : R →+* S) (M : Matrix n n R) :
-    f M.det = Matrix.det (f.mapMatrix M) :=
-  by simp [Matrix.det_apply', map_sum f, map_prod f]
+    f M.det = Matrix.det (f.mapMatrix M) := by
+  simp [Matrix.det_apply', map_sum f, map_prod f]
 #align ring_hom.map_det RingHom.map_det
 
 theorem _root_.RingEquiv.map_det (f : R ≃+* S) (M : Matrix n n R) :

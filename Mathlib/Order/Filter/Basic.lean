@@ -3363,8 +3363,8 @@ theorem Filter.map_mapsTo_Iic_iff_tendsto {m : α → β} :
 alias ⟨_, Filter.Tendsto.map_mapsTo_Iic⟩ := Filter.map_mapsTo_Iic_iff_tendsto
 
 theorem Filter.map_mapsTo_Iic_iff_mapsTo {m : α → β} :
-    MapsTo (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 t) ↔ MapsTo m s t :=
-  by rw [map_mapsTo_Iic_iff_tendsto, tendsto_principal_principal, MapsTo]
+    MapsTo (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 t) ↔ MapsTo m s t := by
+  rw [map_mapsTo_Iic_iff_tendsto, tendsto_principal_principal, MapsTo]
 
 alias ⟨_, Set.MapsTo.filter_map_Iic⟩ := Filter.map_mapsTo_Iic_iff_mapsTo
 

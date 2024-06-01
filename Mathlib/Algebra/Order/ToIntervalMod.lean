@@ -279,8 +279,9 @@ theorem toIcoDiv_sub_zsmul (a b : α) (m : ℤ) : toIcoDiv hp a (b - m • p) = 
 #align to_Ico_div_sub_zsmul toIcoDiv_sub_zsmul
 
 @[simp]
-theorem toIcoDiv_sub_zsmul' (a b : α) (m : ℤ) : toIcoDiv hp (a - m • p) b = toIcoDiv hp a b + m :=
-  by rw [sub_eq_add_neg, ← neg_smul, toIcoDiv_add_zsmul', sub_neg_eq_add]
+theorem toIcoDiv_sub_zsmul' (a b : α) (m : ℤ) :
+    toIcoDiv hp (a - m • p) b = toIcoDiv hp a b + m := by
+  rw [sub_eq_add_neg, ← neg_smul, toIcoDiv_add_zsmul', sub_neg_eq_add]
 #align to_Ico_div_sub_zsmul' toIcoDiv_sub_zsmul'
 
 @[simp]
@@ -289,8 +290,9 @@ theorem toIocDiv_sub_zsmul (a b : α) (m : ℤ) : toIocDiv hp a (b - m • p) = 
 #align to_Ioc_div_sub_zsmul toIocDiv_sub_zsmul
 
 @[simp]
-theorem toIocDiv_sub_zsmul' (a b : α) (m : ℤ) : toIocDiv hp (a - m • p) b = toIocDiv hp a b + m :=
-  by rw [sub_eq_add_neg, ← neg_smul, toIocDiv_add_zsmul', sub_neg_eq_add]
+theorem toIocDiv_sub_zsmul' (a b : α) (m : ℤ) :
+    toIocDiv hp (a - m • p) b = toIocDiv hp a b + m := by
+  rw [sub_eq_add_neg, ← neg_smul, toIocDiv_add_zsmul', sub_neg_eq_add]
 #align to_Ioc_div_sub_zsmul' toIocDiv_sub_zsmul'
 
 @[simp]
@@ -367,12 +369,14 @@ theorem toIocDiv_sub_eq_toIocDiv_add (a b c : α) :
   exact sub_toIocDiv_zsmul_mem_Ioc hp (a + c) b
 #align to_Ioc_div_sub_eq_to_Ioc_div_add toIocDiv_sub_eq_toIocDiv_add
 
-theorem toIcoDiv_sub_eq_toIcoDiv_add' (a b c : α) : toIcoDiv hp (a - c) b = toIcoDiv hp a (b + c) :=
-  by rw [← sub_neg_eq_add, toIcoDiv_sub_eq_toIcoDiv_add, sub_eq_add_neg]
+theorem toIcoDiv_sub_eq_toIcoDiv_add' (a b c : α) :
+    toIcoDiv hp (a - c) b = toIcoDiv hp a (b + c) := by
+  rw [← sub_neg_eq_add, toIcoDiv_sub_eq_toIcoDiv_add, sub_eq_add_neg]
 #align to_Ico_div_sub_eq_to_Ico_div_add' toIcoDiv_sub_eq_toIcoDiv_add'
 
-theorem toIocDiv_sub_eq_toIocDiv_add' (a b c : α) : toIocDiv hp (a - c) b = toIocDiv hp a (b + c) :=
-  by rw [← sub_neg_eq_add, toIocDiv_sub_eq_toIocDiv_add, sub_eq_add_neg]
+theorem toIocDiv_sub_eq_toIocDiv_add' (a b c : α) :
+    toIocDiv hp (a - c) b = toIocDiv hp a (b + c) := by
+  rw [← sub_neg_eq_add, toIocDiv_sub_eq_toIocDiv_add, sub_eq_add_neg]
 #align to_Ioc_div_sub_eq_to_Ioc_div_add' toIocDiv_sub_eq_toIocDiv_add'
 
 theorem toIcoDiv_neg (a b : α) : toIcoDiv hp a (-b) = -(toIocDiv hp (-a) b + 1) := by
@@ -535,12 +539,14 @@ theorem toIocMod_sub_eq_sub (a b c : α) : toIocMod hp a (b - c) = toIocMod hp (
   simp_rw [toIocMod, toIocDiv_sub_eq_toIocDiv_add, sub_right_comm]
 #align to_Ioc_mod_sub_eq_sub toIocMod_sub_eq_sub
 
-theorem toIcoMod_add_right_eq_add (a b c : α) : toIcoMod hp a (b + c) = toIcoMod hp (a - c) b + c :=
-  by simp_rw [toIcoMod, toIcoDiv_sub_eq_toIcoDiv_add', sub_add_eq_add_sub]
+theorem toIcoMod_add_right_eq_add (a b c : α) :
+    toIcoMod hp a (b + c) = toIcoMod hp (a - c) b + c := by
+  simp_rw [toIcoMod, toIcoDiv_sub_eq_toIcoDiv_add', sub_add_eq_add_sub]
 #align to_Ico_mod_add_right_eq_add toIcoMod_add_right_eq_add
 
-theorem toIocMod_add_right_eq_add (a b c : α) : toIocMod hp a (b + c) = toIocMod hp (a - c) b + c :=
-  by simp_rw [toIocMod, toIocDiv_sub_eq_toIocDiv_add', sub_add_eq_add_sub]
+theorem toIocMod_add_right_eq_add (a b c : α) :
+    toIocMod hp a (b + c) = toIocMod hp (a - c) b + c := by
+  simp_rw [toIocMod, toIocDiv_sub_eq_toIocDiv_add', sub_add_eq_add_sub]
 #align to_Ioc_mod_add_right_eq_add toIocMod_add_right_eq_add
 
 theorem toIcoMod_neg (a b : α) : toIcoMod hp a (-b) = p - toIocMod hp (-a) b := by
@@ -779,12 +785,14 @@ theorem toIocMod_eq_sub (a b : α) : toIocMod hp a b = toIocMod hp 0 (b - a) + a
   rw [toIocMod_sub_eq_sub, zero_add, sub_add_cancel]
 #align to_Ioc_mod_eq_sub toIocMod_eq_sub
 
-theorem toIcoMod_add_toIocMod_zero (a b : α) : toIcoMod hp 0 (a - b) + toIocMod hp 0 (b - a) = p :=
-  by rw [toIcoMod_zero_sub_comm, sub_add_cancel]
+theorem toIcoMod_add_toIocMod_zero (a b : α) :
+    toIcoMod hp 0 (a - b) + toIocMod hp 0 (b - a) = p := by
+  rw [toIcoMod_zero_sub_comm, sub_add_cancel]
 #align to_Ico_mod_add_to_Ioc_mod_zero toIcoMod_add_toIocMod_zero
 
-theorem toIocMod_add_toIcoMod_zero (a b : α) : toIocMod hp 0 (a - b) + toIcoMod hp 0 (b - a) = p :=
-  by rw [_root_.add_comm, toIcoMod_add_toIocMod_zero]
+theorem toIocMod_add_toIcoMod_zero (a b : α) :
+    toIocMod hp 0 (a - b) + toIcoMod hp 0 (b - a) = p := by
+  rw [_root_.add_comm, toIcoMod_add_toIocMod_zero]
 #align to_Ioc_mod_add_to_Ico_mod_zero toIocMod_add_toIcoMod_zero
 
 end Zero
@@ -934,8 +942,8 @@ theorem btw_coe_iff' {x₁ x₂ x₃ : α} :
 -- maybe harder to use than the primed one?
 theorem btw_coe_iff {x₁ x₂ x₃ : α} :
     Btw.btw (x₁ : α ⧸ AddSubgroup.zmultiples p) x₂ x₃ ↔
-      toIcoMod hp'.out x₁ x₂ ≤ toIocMod hp'.out x₁ x₃ :=
-  by rw [btw_coe_iff', toIocMod_sub_eq_sub, toIcoMod_sub_eq_sub, zero_add, sub_le_sub_iff_right]
+      toIcoMod hp'.out x₁ x₂ ≤ toIocMod hp'.out x₁ x₃ := by
+  rw [btw_coe_iff', toIocMod_sub_eq_sub, toIcoMod_sub_eq_sub, zero_add, sub_le_sub_iff_right]
 #align quotient_add_group.btw_coe_iff QuotientAddGroup.btw_coe_iff
 
 instance circularPreorder : CircularPreorder (α ⧸ AddSubgroup.zmultiples p) where

@@ -639,13 +639,13 @@ def op {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : Pullbac
 #align category_theory.limits.pushout_cocone.op CategoryTheory.Limits.PushoutCocone.op
 
 -- Porting note (#10618): removed simp attribute as the equality can already be obtained by simp
-theorem op_fst {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : c.op.fst = c.inl.op :=
-  by aesop_cat
+theorem op_fst {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
+    c.op.fst = c.inl.op := by aesop_cat
 #align category_theory.limits.pushout_cocone.op_fst CategoryTheory.Limits.PushoutCocone.op_fst
 
 -- Porting note (#10618): removed simp attribute as the equality can already be obtained by simp
-theorem op_snd {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : c.op.snd = c.inr.op :=
-  by aesop_cat
+theorem op_snd {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
+    c.op.snd = c.inr.op := by aesop_cat
 #align category_theory.limits.pushout_cocone.op_snd CategoryTheory.Limits.PushoutCocone.op_snd
 
 end PushoutCocone
@@ -680,13 +680,13 @@ def op {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : PushoutC
 #align category_theory.limits.pullback_cone.op CategoryTheory.Limits.PullbackCone.op
 
 -- Porting note (#10618): removed simp attribute as the equality can already be obtained by simp
-theorem op_inl {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.op.inl = c.fst.op :=
-  by aesop_cat
+theorem op_inl {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
+    c.op.inl = c.fst.op := by aesop_cat
 #align category_theory.limits.pullback_cone.op_inl CategoryTheory.Limits.PullbackCone.op_inl
 
 -- Porting note (#10618): removed simp attribute as the equality can already be obtained by simp
-theorem op_inr {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.op.inr = c.snd.op :=
-  by aesop_cat
+theorem op_inr {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
+    c.op.inr = c.snd.op := by aesop_cat
 #align category_theory.limits.pullback_cone.op_inr CategoryTheory.Limits.PullbackCone.op_inr
 
 /-- If `c` is a pullback cone, then `c.op.unop` is isomorphic to `c`. -/

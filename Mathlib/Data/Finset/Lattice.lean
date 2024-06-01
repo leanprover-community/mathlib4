@@ -309,8 +309,8 @@ theorem sup_set_eq_biUnion (s : Finset α) (f : α → Set β) : s.sup f = ⋃ x
 #align finset.sup_set_eq_bUnion Finset.sup_set_eq_biUnion
 
 theorem sup_eq_sSup_image [CompleteLattice β] (s : Finset α) (f : α → β) :
-    s.sup f = sSup (f '' s) :=
-  by classical rw [← Finset.coe_image, ← sup_id_eq_sSup, sup_image, Function.id_comp]
+    s.sup f = sSup (f '' s) := by
+  classical rw [← Finset.coe_image, ← sup_id_eq_sSup, sup_image, Function.id_comp]
 #align finset.sup_eq_Sup_image Finset.sup_eq_sSup_image
 
 /-! ### inf -/
@@ -1251,8 +1251,9 @@ theorem sup'_inf_distrib_left (f : ι → α) (a : α) :
   | cons _ _ _ hs ih => simp_rw [sup'_cons hs, inf_sup_left, ih]
 #align finset.sup'_inf_distrib_left Finset.sup'_inf_distrib_left
 
-theorem sup'_inf_distrib_right (f : ι → α) (a : α) : s.sup' hs f ⊓ a = s.sup' hs fun i => f i ⊓ a :=
-  by rw [inf_comm, sup'_inf_distrib_left]; simp_rw [inf_comm]
+theorem sup'_inf_distrib_right (f : ι → α) (a : α) :
+    s.sup' hs f ⊓ a = s.sup' hs fun i => f i ⊓ a := by
+  rw [inf_comm, sup'_inf_distrib_left]; simp_rw [inf_comm]
 #align finset.sup'_inf_distrib_right Finset.sup'_inf_distrib_right
 
 theorem sup'_inf_sup' (f : ι → α) (g : κ → α) :
@@ -2097,8 +2098,8 @@ theorem iSup_singleton (a : α) (s : α → β) : ⨆ x ∈ ({a} : Finset α), s
 theorem iInf_singleton (a : α) (s : α → β) : ⨅ x ∈ ({a} : Finset α), s x = s a := by simp
 #align finset.infi_singleton Finset.iInf_singleton
 
-theorem iSup_option_toFinset (o : Option α) (f : α → β) : ⨆ x ∈ o.toFinset, f x = ⨆ x ∈ o, f x :=
-  by simp
+theorem iSup_option_toFinset (o : Option α) (f : α → β) : ⨆ x ∈ o.toFinset, f x = ⨆ x ∈ o, f x := by
+  simp
 #align finset.supr_option_to_finset Finset.iSup_option_toFinset
 
 theorem iInf_option_toFinset (o : Option α) (f : α → β) : ⨅ x ∈ o.toFinset, f x = ⨅ x ∈ o, f x :=

@@ -98,8 +98,8 @@ theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n)
 #noalign vector.length_coe
 
 @[simp]
-theorem toList_map {β : Type*} (v : Vector α n) (f : α → β) : (v.map f).toList = v.toList.map f :=
-  by cases v; rfl
+theorem toList_map {β : Type*} (v : Vector α n) (f : α → β) :
+    (v.map f).toList = v.toList.map f := by cases v; rfl
 #align vector.to_list_map Vector.toList_map
 
 @[simp]

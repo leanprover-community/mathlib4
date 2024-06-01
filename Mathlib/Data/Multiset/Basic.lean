@@ -3051,8 +3051,8 @@ theorem disjoint_singleton {l : Multiset α} {a : α} : Disjoint l {a} ↔ a ∉
 #align multiset.disjoint_singleton Multiset.disjoint_singleton
 
 @[simp]
-theorem disjoint_add_left {s t u : Multiset α} : Disjoint (s + t) u ↔ Disjoint s u ∧ Disjoint t u :=
-  by simp [Disjoint, or_imp, forall_and]
+theorem disjoint_add_left {s t u : Multiset α} :
+    Disjoint (s + t) u ↔ Disjoint s u ∧ Disjoint t u := by simp [Disjoint, or_imp, forall_and]
 #align multiset.disjoint_add_left Multiset.disjoint_add_left
 
 @[simp]
@@ -3073,8 +3073,8 @@ theorem disjoint_cons_right {a : α} {s t : Multiset α} :
   rw [disjoint_comm, disjoint_cons_left]; tauto
 #align multiset.disjoint_cons_right Multiset.disjoint_cons_right
 
-theorem inter_eq_zero_iff_disjoint [DecidableEq α] {s t : Multiset α} : s ∩ t = 0 ↔ Disjoint s t :=
-  by rw [← subset_zero]; simp [subset_iff, Disjoint]
+theorem inter_eq_zero_iff_disjoint [DecidableEq α] {s t : Multiset α} :
+    s ∩ t = 0 ↔ Disjoint s t := by rw [← subset_zero]; simp [subset_iff, Disjoint]
 #align multiset.inter_eq_zero_iff_disjoint Multiset.inter_eq_zero_iff_disjoint
 
 @[simp]
