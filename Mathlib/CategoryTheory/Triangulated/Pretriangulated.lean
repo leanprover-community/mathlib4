@@ -509,7 +509,7 @@ instance : HasBinaryBiproducts C := ⟨fun X₁ X₃ => by
     Triangle.coyoneda_exact₂ _ mem (𝟙 X₂ - snd ≫ inr) (by
       dsimp
       simp only [sub_comp, assoc, id_comp, ← inr_snd, comp_id, sub_self])
-  refine' ⟨⟨binaryBiproductData _ mem rfl inr inr_snd.symm fst _⟩⟩
+  refine ⟨⟨binaryBiproductData _ mem rfl inr inr_snd.symm fst ?_⟩⟩
   dsimp
   simp only [← hfst, sub_add_cancel]⟩
 
@@ -537,7 +537,7 @@ lemma binaryBiproductTriangle_distinguished (X₁ X₂ : C) :
   obtain ⟨e, ⟨he₁, he₂⟩⟩ := exists_iso_binaryBiproduct_of_distTriang _ mem rfl
   dsimp at he₁ he₂
   refine isomorphic_distinguished _ mem _ (Iso.symm ?_)
-  refine' Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
+  refine Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
     (by aesop_cat) (by aesop_cat) (by aesop_cat)
 
 lemma binaryProductTriangle_distinguished (X₁ X₂ : C) :

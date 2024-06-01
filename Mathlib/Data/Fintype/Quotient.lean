@@ -84,3 +84,14 @@ theorem Quotient.finChoice_eq {ι : Type*} [DecidableEq ι] [Fintype ι] {α : �
       exact Quotient.inductionOn (@Finset.univ ι _).1 fun l => Quotient.finChoiceAux_eq _ _
   rfl
 #align quotient.fin_choice_eq Quotient.finChoice_eq
+
+/-- Given a function that for each `i : ι` gives a term of the corresponding
+truncation type, then there is corresponding term in the truncation of the product. -/
+def Trunc.finChoice {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → Type*}
+    (f : ∀ i, Trunc (α i)) : Trunc (∀ i, α i) :=
+  Quotient.map' id (fun _ _ _ => trivial)
+    (Quotient.finChoice f (S := fun _ => trueSetoid))
+
+theorem Trunc.finChoice_eq {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → Type*}
+    (f : ∀ i, α i) : (Trunc.finChoice fun i => Trunc.mk (f i)) = Trunc.mk f :=
+  Subsingleton.elim _ _

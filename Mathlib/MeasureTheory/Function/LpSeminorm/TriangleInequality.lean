@@ -16,7 +16,7 @@ as well as simple corollaries.
 -/
 
 open Filter
-open scoped ENNReal Topology BigOperators
+open scoped ENNReal Topology
 
 namespace MeasureTheory
 
@@ -159,7 +159,7 @@ theorem snorm_add_lt_top {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g 
 
 theorem snorm'_sum_le {ι} {f : ι → α → E} {s : Finset ι}
     (hfs : ∀ i, i ∈ s → AEStronglyMeasurable (f i) μ) (hq1 : 1 ≤ q) :
-    snorm' (∑ i in s, f i) q μ ≤ ∑ i in s, snorm' (f i) q μ :=
+    snorm' (∑ i ∈ s, f i) q μ ≤ ∑ i ∈ s, snorm' (f i) q μ :=
   Finset.le_sum_of_subadditive_on_pred (fun f : α → E => snorm' f q μ)
     (fun f => AEStronglyMeasurable f μ) (snorm'_zero (zero_lt_one.trans_le hq1))
     (fun _f _g hf hg => snorm'_add_le hf hg hq1) (fun _f _g hf hg => hf.add hg) _ hfs
@@ -167,7 +167,7 @@ theorem snorm'_sum_le {ι} {f : ι → α → E} {s : Finset ι}
 
 theorem snorm_sum_le {ι} {f : ι → α → E} {s : Finset ι}
     (hfs : ∀ i, i ∈ s → AEStronglyMeasurable (f i) μ) (hp1 : 1 ≤ p) :
-    snorm (∑ i in s, f i) p μ ≤ ∑ i in s, snorm (f i) p μ :=
+    snorm (∑ i ∈ s, f i) p μ ≤ ∑ i ∈ s, snorm (f i) p μ :=
   Finset.le_sum_of_subadditive_on_pred (fun f : α → E => snorm f p μ)
     (fun f => AEStronglyMeasurable f μ) snorm_zero (fun _f _g hf hg => snorm_add_le hf hg hp1)
     (fun _f _g hf hg => hf.add hg) _ hfs
@@ -183,7 +183,7 @@ theorem Memℒp.sub {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ)
 #align measure_theory.mem_ℒp.sub MeasureTheory.Memℒp.sub
 
 theorem memℒp_finset_sum {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ i ∈ s, Memℒp (f i) p μ) :
-    Memℒp (fun a => ∑ i in s, f i a) p μ := by
+    Memℒp (fun a => ∑ i ∈ s, f i a) p μ := by
   haveI : DecidableEq ι := Classical.decEq _
   revert hf
   refine Finset.induction_on s ?_ ?_
@@ -194,7 +194,7 @@ theorem memℒp_finset_sum {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ 
 #align measure_theory.mem_ℒp_finset_sum MeasureTheory.memℒp_finset_sum
 
 theorem memℒp_finset_sum' {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ i ∈ s, Memℒp (f i) p μ) :
-    Memℒp (∑ i in s, f i) p μ := by
+    Memℒp (∑ i ∈ s, f i) p μ := by
   convert memℒp_finset_sum s hf using 1
   ext x
   simp

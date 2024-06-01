@@ -36,7 +36,7 @@ matrix, diagonal, det, block triangular
 
 open Finset Function OrderDual
 
-open BigOperators Matrix
+open Matrix
 
 universe v
 
@@ -217,7 +217,7 @@ theorem twoBlockTriangular_det' (M : Matrix m m R) (p : m → Prop) [DecidablePr
 #align matrix.two_block_triangular_det' Matrix.twoBlockTriangular_det'
 
 protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : BlockTriangular M b) :
-    M.det = ∏ a in univ.image b, (M.toSquareBlock b a).det := by
+    M.det = ∏ a ∈ univ.image b, (M.toSquareBlock b a).det := by
   clear N
   induction' hs : univ.image b using Finset.strongInduction with s ih generalizing m
   subst hs

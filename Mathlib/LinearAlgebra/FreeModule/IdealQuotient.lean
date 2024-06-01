@@ -22,7 +22,7 @@ import Mathlib.RingTheory.Ideal.Basis
 
 namespace Ideal
 
-open scoped BigOperators DirectSum
+open scoped DirectSum
 
 variable {ι R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable [IsDomain R] [IsPrincipalIdealRing R] [IsDomain S] [Finite ι]

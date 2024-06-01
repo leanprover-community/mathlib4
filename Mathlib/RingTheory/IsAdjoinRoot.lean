@@ -1,5 +1,4 @@
 /-
-
 Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
@@ -246,8 +245,8 @@ theorem lift_root (h : IsAdjoinRoot S f) : h.lift i x hx h.root = x := by
 #align is_adjoin_root.lift_root IsAdjoinRoot.lift_root
 
 @[simp]
-theorem lift_algebraMap (h : IsAdjoinRoot S f) (a : R) : h.lift i x hx (algebraMap R S a) = i a :=
-  by rw [h.algebraMap_apply, lift_map, eval₂_C]
+theorem lift_algebraMap (h : IsAdjoinRoot S f) (a : R) :
+    h.lift i x hx (algebraMap R S a) = i a := by rw [h.algebraMap_apply, lift_map, eval₂_C]
 #align is_adjoin_root.lift_algebra_map IsAdjoinRoot.lift_algebraMap
 
 /-- Auxiliary lemma for `apply_eq_lift` -/
@@ -649,8 +648,8 @@ theorem aequiv_map (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) (z : R[X]) :
 #align is_adjoin_root.aequiv_map IsAdjoinRoot.aequiv_map
 
 @[simp]
-theorem aequiv_root (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) : h.aequiv h' h.root = h'.root :=
-  by rw [aequiv, AlgEquiv.coe_mk, liftHom_root]
+theorem aequiv_root (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) :
+    h.aequiv h' h.root = h'.root := by rw [aequiv, AlgEquiv.coe_mk, liftHom_root]
 #align is_adjoin_root.aequiv_root IsAdjoinRoot.aequiv_root
 
 @[simp]

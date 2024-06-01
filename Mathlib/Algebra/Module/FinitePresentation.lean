@@ -204,7 +204,7 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
 end Ring
 
 section CommRing
-open BigOperators
+
 variable {R M N N'} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable [AddCommGroup N'] [Module R N'] (S : Submonoid R) (f : N →ₗ[R] N') [IsLocalizedModule S f]
 
@@ -219,8 +219,8 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
   classical
   choose s hs using IsLocalizedModule.surj S f
   let i : σ → N :=
-    fun x ↦ (∏ j in σ.erase x.1, (s (g j)).2) • (s (g x)).1
-  let s₀ := ∏ j in σ, (s (g j)).2
+    fun x ↦ (∏ j ∈ σ.erase x.1, (s (g j)).2) • (s (g x)).1
+  let s₀ := ∏ j ∈ σ, (s (g j)).2
   have hi : f ∘ₗ Finsupp.total σ N R i = (s₀ • g) ∘ₗ π := by
     ext j
     simp only [LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply, Finsupp.total_single,

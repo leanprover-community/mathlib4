@@ -35,7 +35,7 @@ lemmas for $m \in \mathbb{R}$.
 
 noncomputable section
 
-open scoped Nat BigOperators
+open scoped Nat
 
 open Real Finset
 
@@ -59,7 +59,7 @@ $$
 $$
 -/
 def partialSum (m : ℝ) (k : ℕ) : ℝ :=
-  ∑ i in range (k + 1), 1 / m ^ i !
+  ∑ i ∈ range (k + 1), 1 / m ^ i !
 #align liouville_number.partial_sum LiouvilleNumber.partialSum
 
 /-- `LiouvilleNumber.remainder` is the sum of the series of the terms in `liouvilleNumber m`

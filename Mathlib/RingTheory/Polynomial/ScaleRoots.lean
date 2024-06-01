@@ -22,7 +22,7 @@ variable {R S A K : Type*}
 
 namespace Polynomial
 
-open BigOperators Polynomial
+open Polynomial
 
 section Semiring
 
@@ -30,7 +30,7 @@ variable [Semiring R] [Semiring S]
 
 /-- `scaleRoots p s` is a polynomial with root `r * s` for each root `r` of `p`. -/
 noncomputable def scaleRoots (p : R[X]) (s : R) : R[X] :=
-  ∑ i in p.support, monomial i (p.coeff i * s ^ (p.natDegree - i))
+  ∑ i ∈ p.support, monomial i (p.coeff i * s ^ (p.natDegree - i))
 #align polynomial.scale_roots Polynomial.scaleRoots
 
 @[simp]
@@ -195,7 +195,7 @@ lemma mul_scaleRoots (p q : R[X]) (r : R) :
     r ^ (natDegree p + natDegree q - natDegree (p * q)) • (p * q).scaleRoots r =
       p.scaleRoots r * q.scaleRoots r := by
   ext n; simp only [coeff_scaleRoots, coeff_smul, smul_eq_mul]
-  trans (∑ x in Finset.antidiagonal n, coeff p x.1 * coeff q x.2) *
+  trans (∑ x ∈ Finset.antidiagonal n, coeff p x.1 * coeff q x.2) *
     r ^ (natDegree p + natDegree q - n)
   · rw [← coeff_mul]
     cases lt_or_le (natDegree (p * q)) n with

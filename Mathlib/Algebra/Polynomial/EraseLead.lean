@@ -43,8 +43,9 @@ theorem eraseLead_support (f : R[X]) : f.eraseLead.support = f.support.erase f.n
   simp only [eraseLead, support_erase]
 #align polynomial.erase_lead_support Polynomial.eraseLead_support
 
-theorem eraseLead_coeff (i : ℕ) : f.eraseLead.coeff i = if i = f.natDegree then 0 else f.coeff i :=
-  by simp only [eraseLead, coeff_erase]
+theorem eraseLead_coeff (i : ℕ) :
+    f.eraseLead.coeff i = if i = f.natDegree then 0 else f.coeff i := by
+  simp only [eraseLead, coeff_erase]
 #align polynomial.erase_lead_coeff Polynomial.eraseLead_coeff
 
 @[simp]
@@ -358,8 +359,6 @@ theorem map_natDegree_eq_natDegree {S F : Type*} [Semiring S]
   (map_natDegree_eq_sub (fun f h => (Nat.not_lt_zero _ h).elim) (by simpa)).trans
     p.natDegree.sub_zero
 #align polynomial.map_nat_degree_eq_nat_degree Polynomial.map_natDegree_eq_natDegree
-
-open BigOperators
 
 theorem card_support_eq' {n : ℕ} (k : Fin n → ℕ) (x : Fin n → R) (hk : Function.Injective k)
     (hx : ∀ i, x i ≠ 0) : (∑ i, C (x i) * X ^ k i).support.card = n := by

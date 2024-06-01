@@ -28,7 +28,7 @@ matrix determinant, polynomial
 
 set_option linter.uppercaseLean3 false
 
-open Matrix BigOperators Polynomial
+open Matrix Polynomial
 
 variable {n α : Type*} [DecidableEq n] [Fintype n] [CommRing α]
 

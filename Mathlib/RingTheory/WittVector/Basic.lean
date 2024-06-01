@@ -51,8 +51,6 @@ noncomputable section
 
 open MvPolynomial Function
 
-open scoped BigOperators
-
 variable {p : ℕ} {R S T : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S] [CommRing T]
 variable {α : Type*} {β : Type*}
 
@@ -133,10 +131,16 @@ theorem natCast (n : ℕ) : mapFun f (n : 𝕎 R) = n :=
     induction n <;> simp [*, Nat.unaryCast, add, one, zero] <;> rfl
 #align witt_vector.map_fun.nat_cast WittVector.mapFun.natCast
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast := natCast
+
 theorem intCast (n : ℤ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.castDef = (n : WittVector p S) by
     cases n <;> simp [*, Int.castDef, add, one, neg, zero, natCast] <;> rfl
 #align witt_vector.map_fun.int_cast WittVector.mapFun.intCast
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast := intCast
 
 end mapFun
 
@@ -195,6 +199,9 @@ private theorem ghostFun_natCast (i : ℕ) : ghostFun (i : 𝕎 R) = i :=
     induction i <;>
       simp [*, Nat.unaryCast, ghostFun_zero, ghostFun_one, ghostFun_add, -Pi.natCast_def]
 
+@[deprecated (since := "2024-04-17")]
+alias ghostFun_nat_cast := ghostFun_natCast
+
 private theorem ghostFun_sub : ghostFun (x - y) = ghostFun x - ghostFun y := by
   ghost_fun_tac X 0 - X 1, ![x.coeff, y.coeff]
 
@@ -207,6 +214,9 @@ private theorem ghostFun_intCast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
   show ghostFun i.castDef = _ by
     cases i <;> simp [*, Int.castDef, ghostFun_natCast, ghostFun_neg, -Pi.natCast_def,
       -Pi.intCast_def]
+
+@[deprecated (since := "2024-04-17")]
+alias ghostFun_int_cast := ghostFun_intCast
 
 private lemma ghostFun_nsmul (m : ℕ) (x : WittVector p R) : ghostFun (m • x) = m • ghostFun x := by
   -- porting note: I had to add the explicit type ascription.
