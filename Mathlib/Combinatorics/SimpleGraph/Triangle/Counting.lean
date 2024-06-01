@@ -123,7 +123,7 @@ lemma triangle_counting'
     refine (Nat.cast_le.2 $ card_union_le _ _).trans ?_
     rw [Nat.cast_add]
     exact add_le_add h₁ h₂
-  rintro a ha b hy t
+  rintro a _ b _ t
   rw [disjoint_left]
   simp only [Prod.forall, mem_image, not_exists, exists_prop, mem_filter, Prod.mk.inj_iff,
     exists_imp, and_imp, not_and, mem_product, or_assoc]
