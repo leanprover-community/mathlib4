@@ -113,7 +113,7 @@ support of `f`, if it's finite, zero otherwise. Taking the sum over multiple arg
 conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
 notation3"∑ᶠ "(...)", "r:67:(scoped f => finsum f) => r
 
-/-- `∏ᶠ x, f x` is notation for `finprod f`. It is the sum of `f x`, where `x` ranges over the
+/-- `∏ᶠ x, f x` is notation for `finprod f`. It is the product of `f x`, where `x` ranges over the
 multiplicative support of `f`, if it's finite, one otherwise. Taking the product over multiple
 arguments or conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
 notation3"∏ᶠ "(...)", "r:67:(scoped f => finprod f) => r
