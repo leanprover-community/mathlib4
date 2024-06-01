@@ -292,7 +292,7 @@ end
 section Submodule
 
 variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    {ι : Type*} {p : ι → Submodule R M} {s : Finset ι}
+    {p : ι → Submodule R M} {s : Finset ι}
     (hcovers : ⋃ i ∈ s, (p i : Set M) = Set.univ)
 
 theorem Submodule.exists_finiteIndex_of_cover :
@@ -307,8 +307,9 @@ end Submodule
 section Subspace
 
 variable {k E ι : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module k E]
+    (s : Finset (Subspace k E)) (hs : ∀ p ∈ s, p < ⊤)
 
-theorem Subspace.union_ne_univ_of_lt_top (s : Finset (Subspace k E)) (hs : ∀ p ∈ s, p < ⊤) :
+theorem Subspace.biUnion_ne_univ_of_lt_top :
     ⋃ p ∈ s, (p : Set E) ≠ Set.univ := by
   intro hcovers
   have ⟨p, hp, hfi⟩ := Submodule.exists_finiteIndex_of_cover hcovers
