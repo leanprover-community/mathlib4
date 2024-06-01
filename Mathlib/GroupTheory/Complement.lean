@@ -534,9 +534,8 @@ noncomputable def toEquiv (hS : S ∈ Subgroup.leftTransversals (H : Set G)) : G
 theorem finite_iff
     (h : S ∈ Subgroup.leftTransversals (H : Set G)) :
     Finite S ↔ H.FiniteIndex := by
-  rw [← Equiv.finite_iff (Subgroup.MemLeftTransversals.toEquiv h)]
-  exact ⟨fun _ ↦ finiteIndex_of_finite_quotient H,
-    fun _ ↦ finite_quotient_of_finiteIndex H⟩
+  rw [← (Subgroup.MemLeftTransversals.toEquiv h).finite_iff]
+  exact ⟨fun _ ↦ finiteIndex_of_finite_quotient H, fun _ ↦ finite_quotient_of_finiteIndex H⟩
 
 @[to_additive]
 theorem mk''_toEquiv (hS : S ∈ Subgroup.leftTransversals (H : Set G)) (q : G ⧸ H) :
@@ -592,10 +591,9 @@ noncomputable def toEquiv (hS : S ∈ Subgroup.rightTransversals (H : Set G)) :
 theorem finite_iff
     (h : S ∈ Subgroup.rightTransversals (H : Set G)) :
     Finite S ↔ H.FiniteIndex := by
-  rw [← Equiv.finite_iff (Subgroup.MemRightTransversals.toEquiv h)]
-  rw [Equiv.finite_iff (QuotientGroup.quotientRightRelEquivQuotientLeftRel H)]
-  exact ⟨fun _ ↦ finiteIndex_of_finite_quotient H,
-    fun _ ↦ finite_quotient_of_finiteIndex H⟩
+  rw [← (Subgroup.MemRightTransversals.toEquiv h).finite_iff,
+    (QuotientGroup.quotientRightRelEquivQuotientLeftRel H).finite_iff]
+  exact ⟨fun _ ↦ finiteIndex_of_finite_quotient H, fun _ ↦ finite_quotient_of_finiteIndex H⟩
 
 @[to_additive]
 theorem mk''_toEquiv (hS : S ∈ Subgroup.rightTransversals (H : Set G))
