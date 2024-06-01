@@ -867,7 +867,7 @@ theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, St
         C • (δ : ℝ≥0∞) ^ (1 / p.toReal) ≤ C • μ { x | C ≤ ‖f (ℐ C) x‖₊ } ^ (1 / p.toReal) := by
           rw [ENNReal.smul_def, ENNReal.smul_def, smul_eq_mul, smul_eq_mul]
           simp_rw [ENNReal.ofReal_coe_nnreal] at hℐ
-          refine' mul_le_mul' le_rfl
+          refine mul_le_mul' le_rfl
             (ENNReal.rpow_le_rpow (hℐ C).le (one_div_nonneg.2 ENNReal.toReal_nonneg))
         _ ≤ snorm ({ x | C ≤ ‖f (ℐ C) x‖₊ }.indicator (f (ℐ C))) p μ := by
           refine snorm_indicator_ge_of_bdd_below hp hp' _

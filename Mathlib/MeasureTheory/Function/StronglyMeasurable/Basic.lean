@@ -1827,16 +1827,16 @@ theorem _root_.aestronglyMeasurable_iUnion_iff [PseudoMetrizableSpace β] {s : �
 @[simp]
 theorem _root_.aestronglyMeasurable_union_iff [PseudoMetrizableSpace β] {s t : Set α} :
     AEStronglyMeasurable f (μ.restrict (s ∪ t)) ↔
-      AEStronglyMeasurable f (μ.restrict s) ∧ AEStronglyMeasurable f (μ.restrict t) :=
-  by simp only [union_eq_iUnion, aestronglyMeasurable_iUnion_iff, Bool.forall_bool, cond, and_comm]
+      AEStronglyMeasurable f (μ.restrict s) ∧ AEStronglyMeasurable f (μ.restrict t) := by
+  simp only [union_eq_iUnion, aestronglyMeasurable_iUnion_iff, Bool.forall_bool, cond, and_comm]
 #align ae_strongly_measurable_union_iff aestronglyMeasurable_union_iff
 
 theorem aestronglyMeasurable_uIoc_iff [LinearOrder α] [PseudoMetrizableSpace β] {f : α → β}
     {a b : α} :
     AEStronglyMeasurable f (μ.restrict <| uIoc a b) ↔
       AEStronglyMeasurable f (μ.restrict <| Ioc a b) ∧
-        AEStronglyMeasurable f (μ.restrict <| Ioc b a) :=
-  by rw [uIoc_eq_union, aestronglyMeasurable_union_iff]
+        AEStronglyMeasurable f (μ.restrict <| Ioc b a) := by
+  rw [uIoc_eq_union, aestronglyMeasurable_union_iff]
 #align measure_theory.ae_strongly_measurable.ae_strongly_measurable_uIoc_iff MeasureTheory.AEStronglyMeasurable.aestronglyMeasurable_uIoc_iff
 
 @[measurability]

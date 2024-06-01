@@ -595,8 +595,8 @@ theorem comap_upperCentralSeries_quotient_center (n : ℕ) :
   · let Hn := upperCentralSeries (G ⧸ center G) n
     calc
       comap (mk' (center G)) (upperCentralSeriesStep Hn) =
-          comap (mk' (center G)) (comap (mk' Hn) (center ((G ⧸ center G) ⧸ Hn))) :=
-        by rw [upperCentralSeriesStep_eq_comap_center]
+          comap (mk' (center G)) (comap (mk' Hn) (center ((G ⧸ center G) ⧸ Hn))) := by
+        rw [upperCentralSeriesStep_eq_comap_center]
       _ = comap (mk' (comap (mk' (center G)) Hn)) (center (G ⧸ comap (mk' (center G)) Hn)) :=
         QuotientGroup.comap_comap_center
       _ = comap (mk' (upperCentralSeries G n.succ)) (center (G ⧸ upperCentralSeries G n.succ)) :=
@@ -708,8 +708,8 @@ theorem lowerCentralSeries_prod (n : ℕ) :
   · calc
       lowerCentralSeries (G₁ × G₂) n.succ = ⁅lowerCentralSeries (G₁ × G₂) n, ⊤⁆ := rfl
       _ = ⁅(lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n), ⊤⁆ := by rw [ih]
-      _ = ⁅(lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n), (⊤ : Subgroup G₁).prod ⊤⁆ :=
-        by simp
+      _ = ⁅(lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n), (⊤ : Subgroup G₁).prod ⊤⁆ := by
+        simp
       _ = ⁅lowerCentralSeries G₁ n, (⊤ : Subgroup G₁)⁆.prod ⁅lowerCentralSeries G₂ n, ⊤⁆ :=
         (commutator_prod_prod _ _ _ _)
       _ = (lowerCentralSeries G₁ n.succ).prod (lowerCentralSeries G₂ n.succ) := rfl

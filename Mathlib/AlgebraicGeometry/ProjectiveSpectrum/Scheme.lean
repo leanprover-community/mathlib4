@@ -273,7 +273,7 @@ theorem mem_carrier_iff' (q : Spec.T A⁰_ f) (a : A) :
   (mem_carrier_iff f_deg q a).trans
     (by
       constructor <;> intro h i <;> specialize h i
-      · rw [Set.mem_image]; refine' ⟨_, h, rfl⟩
+      · rw [Set.mem_image]; refine ⟨_, h, rfl⟩
       · rw [Set.mem_image] at h; rcases h with ⟨x, h, hx⟩
         change x ∈ q.asIdeal at h
         convert h

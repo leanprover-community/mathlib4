@@ -54,15 +54,10 @@ jobs:
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
       - name: update nolints.json and style-exceptions.txt
-        id: lint
-        uses: liskin/gh-problem-matcher-wrap@v3
-        with:
-          linters: gcc
-          run: |
-            env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
-            mv nolints.json scripts/nolints.json
-            ./scripts/update-style-exceptions.sh
-            git diff
+        shell: bash
+        run: |
+          env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
+          ./scripts/update-style-exceptions.sh
 
       - name: configure git setup
         run: |

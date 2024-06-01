@@ -291,8 +291,8 @@ theorem restrict_add_restrict_compl (hs : MeasurableSet s) :
 #align measure_theory.measure.restrict_add_restrict_compl MeasureTheory.Measure.restrict_add_restrict_compl
 
 @[simp]
-theorem restrict_compl_add_restrict (hs : MeasurableSet s) : μ.restrict sᶜ + μ.restrict s = μ :=
-  by rw [add_comm, restrict_add_restrict_compl hs]
+theorem restrict_compl_add_restrict (hs : MeasurableSet s) : μ.restrict sᶜ + μ.restrict s = μ := by
+  rw [add_comm, restrict_add_restrict_compl hs]
 #align measure_theory.measure.restrict_compl_add_restrict MeasureTheory.Measure.restrict_compl_add_restrict
 
 theorem restrict_union_le (s s' : Set α) : μ.restrict (s ∪ s') ≤ μ.restrict s + μ.restrict s' :=
@@ -607,8 +607,8 @@ theorem ae_restrict_uIoc_eq [LinearOrder α] (a b : α) :
 /-- See also `MeasureTheory.ae_uIoc_iff`. -/
 theorem ae_restrict_uIoc_iff [LinearOrder α] {a b : α} {P : α → Prop} :
     (∀ᵐ x ∂μ.restrict (Ι a b), P x) ↔
-      (∀ᵐ x ∂μ.restrict (Ioc a b), P x) ∧ ∀ᵐ x ∂μ.restrict (Ioc b a), P x :=
-  by rw [ae_restrict_uIoc_eq, eventually_sup]
+      (∀ᵐ x ∂μ.restrict (Ioc a b), P x) ∧ ∀ᵐ x ∂μ.restrict (Ioc b a), P x := by
+  rw [ae_restrict_uIoc_eq, eventually_sup]
 #align measure_theory.ae_restrict_uIoc_iff MeasureTheory.ae_restrict_uIoc_iff
 
 theorem ae_restrict_iff₀ {p : α → Prop} (hp : NullMeasurableSet { x | p x } (μ.restrict s)) :
