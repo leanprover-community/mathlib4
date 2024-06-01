@@ -28,29 +28,10 @@ generally recommended to use the lemma `IsStronglyCartesian.universal_property` 
 difference between the two is that the latter is more flexible with respect to non-definitional
 equalities.
 
-`IsStronglyCartesian p f φ` expresses that `φ` is a strongly cartesian morphism lying over `f` with
-respect to `p`, see <https://stacks.math.columbia.edu/tag/02XK>.
-
-## Implementation
-
-The constructor of `IsStronglyCartesian` has been named `universal_property'`, and is mainly
-intended to be used for constructing instances of this class. To use the universal property, we
-generally recommended to use the lemma `IsStronglyCartesian.universal_property` instead. The
-difference between the two is that the latter is more flexible with respect to non-definitional
-equalities.
-
 ## References
 SGA 1
 Stacks project
 
--/
-
-/-
-TODO:
-- Remove mk' alternate constructor, and instead make mk "weaker".
-- Fix variables in two remaining lemmas
-- Fix docstrings
-- clean up proofs
 -/
 
 universe v₁ v₂ u₁ u₂
@@ -80,8 +61,6 @@ See <https://stacks.math.columbia.edu/tag/02XK> -/
 class Functor.IsStronglyCartesian extends IsHomLift p f φ : Prop where
   universal_property' {a' : 𝒳} (g : p.obj a' ⟶ R) (φ' : a' ⟶ b) [IsHomLift p (g ≫ f) φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p g χ ∧ χ ≫ φ = φ'
-
-end
 
 end
 
