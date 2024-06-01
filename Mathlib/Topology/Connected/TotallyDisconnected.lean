@@ -74,14 +74,14 @@ instance Prod.totallyDisconnectedSpace [TopologicalSpace β] [TotallyDisconnecte
 
 instance [TopologicalSpace β] [TotallyDisconnectedSpace α] [TotallyDisconnectedSpace β] :
     TotallyDisconnectedSpace (Sum α β) := by
-  refine' ⟨fun s _ hs => _⟩
+  refine ⟨fun s _ hs => ?_⟩
   obtain ⟨t, ht, rfl⟩ | ⟨t, ht, rfl⟩ := Sum.isPreconnected_iff.1 hs
   · exact ht.subsingleton.image _
   · exact ht.subsingleton.image _
 
 instance [∀ i, TopologicalSpace (π i)] [∀ i, TotallyDisconnectedSpace (π i)] :
     TotallyDisconnectedSpace (Σi, π i) := by
-  refine' ⟨fun s _ hs => _⟩
+  refine ⟨fun s _ hs => ?_⟩
   obtain rfl | h := s.eq_empty_or_nonempty
   · exact subsingleton_empty
   · obtain ⟨a, t, ht, rfl⟩ := Sigma.isConnected_iff.1 ⟨h, hs⟩
@@ -185,12 +185,11 @@ end TotallyDisconnected
 
 section TotallySeparated
 
--- todo: reformulate using `Set.Pairwise`
 /-- A set `s` is called totally separated if any two points of this set can be separated
 by two disjoint open sets covering `s`. -/
 def IsTotallySeparated (s : Set α) : Prop :=
-  ∀ x ∈ s, ∀ y ∈ s, x ≠ y →
-    ∃ u v : Set α, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ s ⊆ u ∪ v ∧ Disjoint u v
+  Set.Pairwise s fun x y =>
+  ∃ u v : Set α, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ y ∈ v ∧ s ⊆ u ∪ v ∧ Disjoint u v
 #align is_totally_separated IsTotallySeparated
 
 theorem isTotallySeparated_empty : IsTotallySeparated (∅ : Set α) := fun _ => False.elim
@@ -207,8 +206,8 @@ theorem isTotallyDisconnected_of_isTotallySeparated {s : Set α} (H : IsTotallyS
   obtain
     ⟨u : Set α, v : Set α, hu : IsOpen u, hv : IsOpen v, hxu : x ∈ u, hyv : y ∈ v, hs : s ⊆ u ∪ v,
       huv⟩ :=
-    H x (hts x_in) y (hts y_in) h
-  refine' (ht _ _ hu hv (hts.trans hs) ⟨x, x_in, hxu⟩ ⟨y, y_in, hyv⟩).ne_empty _
+    H (hts x_in) (hts y_in) h
+  refine (ht _ _ hu hv (hts.trans hs) ⟨x, x_in, hxu⟩ ⟨y, y_in, hyv⟩).ne_empty ?_
   rw [huv.inter_eq, inter_empty]
 #align is_totally_disconnected_of_is_totally_separated isTotallyDisconnected_of_isTotallySeparated
 
@@ -239,7 +238,7 @@ theorem exists_isClopen_of_totally_separated {α : Type*} [TopologicalSpace α]
     [TotallySeparatedSpace α] {x y : α} (hxy : x ≠ y) :
     ∃ U : Set α, IsClopen U ∧ x ∈ U ∧ y ∈ Uᶜ := by
   obtain ⟨U, V, hU, hV, Ux, Vy, f, disj⟩ :=
-    TotallySeparatedSpace.isTotallySeparated_univ x (Set.mem_univ x) y (Set.mem_univ y) hxy
+    TotallySeparatedSpace.isTotallySeparated_univ (Set.mem_univ x) (Set.mem_univ y) hxy
   have hU := isClopen_inter_of_disjoint_cover_clopen isClopen_univ f hU hV disj
   rw [univ_inter _] at hU
   rw [← Set.subset_compl_iff_disjoint_right, subset_compl_comm] at disj
@@ -297,10 +296,10 @@ theorem Continuous.connectedComponentsLift_unique (h : Continuous f) (g : Connec
 instance ConnectedComponents.totallyDisconnectedSpace :
     TotallyDisconnectedSpace (ConnectedComponents α) := by
   rw [totallyDisconnectedSpace_iff_connectedComponent_singleton]
-  refine' ConnectedComponents.surjective_coe.forall.2 fun x => _
+  refine ConnectedComponents.surjective_coe.forall.2 fun x => ?_
   rw [← ConnectedComponents.quotientMap_coe.image_connectedComponent, ←
     connectedComponents_preimage_singleton, image_preimage_eq _ ConnectedComponents.surjective_coe]
-  refine' ConnectedComponents.surjective_coe.forall.2 fun y => _
+  refine ConnectedComponents.surjective_coe.forall.2 fun y => ?_
   rw [connectedComponents_preimage_singleton]
   exact isConnected_connectedComponent
 #align connected_components.totally_disconnected_space ConnectedComponents.totallyDisconnectedSpace

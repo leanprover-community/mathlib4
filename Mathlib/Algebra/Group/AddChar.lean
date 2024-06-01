@@ -237,6 +237,14 @@ instance instCommGroup : CommGroup (AddChar A M) :=
 
 end fromAddCommGroup
 
+section fromAddGrouptoCommMonoid
+
+/-- The values of an additive character on an additive group are units. -/
+lemma val_isUnit {A M} [AddGroup A] [Monoid M] (φ : AddChar A M) (a : A) : IsUnit (φ a) :=
+  IsUnit.map φ.toMonoidHom <| Group.isUnit (Multiplicative.ofAdd a)
+
+end fromAddGrouptoCommMonoid
+
 section fromAddGrouptoDivisionMonoid
 
 variable {A M : Type*} [AddGroup A] [DivisionMonoid M]
@@ -303,11 +311,30 @@ theorem mulShift_mul (ψ : AddChar R M) (r s : R) :
   rw [mulShift_apply, right_distrib, map_add_mul]; norm_cast
 #align add_char.mul_shift_mul AddChar.mulShift_mul
 
+lemma mulShift_mulShift (ψ : AddChar R M) (r s : R) :
+    mulShift (mulShift ψ r) s = mulShift ψ (r * s) := by
+  ext
+  simp only [mulShift_apply, mul_assoc]
+
 /-- `mulShift ψ 0` is the trivial character. -/
 @[simp]
 theorem mulShift_zero (ψ : AddChar R M) : mulShift ψ 0 = 1 := by
   ext; rw [mulShift_apply, zero_mul, map_zero_one, one_apply]
 #align add_char.mul_shift_zero AddChar.mulShift_zero
+
+@[simp]
+lemma mulShift_one (ψ : AddChar R M) : mulShift ψ 1 = ψ := by
+  ext; rw [mulShift_apply, one_mul]
+
+lemma mulShift_unit_eq_one_iff (ψ : AddChar R M) {u : R} (hu : IsUnit u) :
+    ψ.mulShift u = 1 ↔ ψ = 1 := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · ext1 y
+    rw [show y = u * (hu.unit⁻¹ * y) by rw [← mul_assoc, IsUnit.mul_val_inv, one_mul]]
+    simpa only [mulShift_apply] using DFunLike.ext_iff.mp h (hu.unit⁻¹ * y)
+  · rintro rfl
+    ext1 y
+    rw [mulShift_apply, one_apply, one_apply]
 
 end Ring
 

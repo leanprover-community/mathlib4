@@ -3,8 +3,8 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes
 -/
-import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Associated
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Nat.PartENat
 import Mathlib.Tactic.Linarith
@@ -29,7 +29,6 @@ several basic results on it.
 variable {α β : Type*}
 
 open Nat Part
-open scoped BigOperators
 
 /-- `multiplicity a b` returns the largest natural number `n` such that
   `a ^ n ∣ b`, as a `PartENat` or natural with infinity. If `∀ n, a ^ n ∣ b`,
@@ -45,8 +44,7 @@ section Monoid
 variable [Monoid α] [Monoid β]
 
 /-- `multiplicity.Finite a b` indicates that the multiplicity of `a` in `b` is finite. -/
-@[reducible]
-def Finite (a b : α) : Prop :=
+abbrev Finite (a b : α) : Prop :=
   ∃ n : ℕ, ¬a ^ (n + 1) ∣ b
 #align multiplicity.finite multiplicity.Finite
 
@@ -125,7 +123,7 @@ theorem is_greatest' {a b : α} {m : ℕ} (h : Finite a b) (hm : get (multiplici
 
 theorem pos_of_dvd {a b : α} (hfin : Finite a b) (hdiv : a ∣ b) :
     0 < (multiplicity a b).get hfin := by
-  refine' zero_lt_iff.2 fun h => _
+  refine zero_lt_iff.2 fun h => ?_
   simpa [hdiv] using is_greatest' hfin (lt_one_iff.mpr h)
 #align multiplicity.pos_of_dvd multiplicity.pos_of_dvd
 
@@ -226,7 +224,7 @@ theorem lt_top_iff_finite {a b : α} : multiplicity a b < ⊤ ↔ Finite a b := 
 theorem exists_eq_pow_mul_and_not_dvd {a b : α} (hfin : Finite a b) :
     ∃ c : α, b = a ^ (multiplicity a b).get hfin * c ∧ ¬a ∣ c := by
   obtain ⟨c, hc⟩ := multiplicity.pow_multiplicity_dvd hfin
-  refine' ⟨c, hc, _⟩
+  refine ⟨c, hc, ?_⟩
   rintro ⟨k, hk⟩
   rw [hk, ← mul_assoc, ← _root_.pow_succ] at hc
   have h₁ : a ^ ((multiplicity a b).get hfin + 1) ∣ b := ⟨k, hc⟩
@@ -386,9 +384,9 @@ theorem multiplicity_mk_eq_multiplicity
     multiplicity (Associates.mk a) (Associates.mk b) = multiplicity a b := by
   by_cases h : Finite a b
   · rw [← PartENat.natCast_get (finite_iff_dom.mp h)]
-    refine'
+    refine
         (multiplicity.unique
-            (show Associates.mk a ^ (multiplicity a b).get h ∣ Associates.mk b from _) _).symm <;>
+            (show Associates.mk a ^ (multiplicity a b).get h ∣ Associates.mk b from ?_) ?_).symm <;>
       rw [← Associates.mk_pow, Associates.mk_dvd_mk]
     · exact pow_multiplicity_dvd h
     · exact is_greatest
@@ -396,7 +394,7 @@ theorem multiplicity_mk_eq_multiplicity
   · suffices ¬Finite (Associates.mk a) (Associates.mk b) by
       rw [finite_iff_dom, PartENat.not_dom_iff_eq_top] at h this
       rw [h, this]
-    refine'
+    refine
       not_finite_iff_forall.mpr fun n => by
         rw [← Associates.mk_pow, Associates.mk_dvd_mk]
         exact not_finite_iff_forall.mp h n
@@ -448,8 +446,8 @@ theorem multiplicity_add_of_gt {p a b : α} (h : multiplicity p b < multiplicity
     cases' PartENat.ne_top_iff.mp (PartENat.ne_top_of_lt h) with k hk
     rw [hk]
     rw_mod_cast [multiplicity_lt_iff_not_dvd, dvd_add_right]
-    intro h_dvd
-    · apply multiplicity.is_greatest _ h_dvd
+    · intro h_dvd
+      apply multiplicity.is_greatest _ h_dvd
       rw [hk, ← Nat.succ_eq_add_one]
       norm_cast
       apply Nat.lt_succ_self k
@@ -559,13 +557,13 @@ protected theorem mul' {p a b : α} (hp : Prime p) (h : (multiplicity p (a * b))
     p ^ (get (multiplicity p a) ((finite_mul_iff hp).1 h).1 +
           get (multiplicity p b) ((finite_mul_iff hp).1 h).2) =
       p ^ get (multiplicity p a) ((finite_mul_iff hp).1 h).1 *
-        p ^ get (multiplicity p b) ((finite_mul_iff hp).1 h).2 :=
-    by simp [pow_add]
+        p ^ get (multiplicity p b) ((finite_mul_iff hp).1 h).2 := by
+    simp [pow_add]
   have hdiv :
     p ^ (get (multiplicity p a) ((finite_mul_iff hp).1 h).1 +
           get (multiplicity p b) ((finite_mul_iff hp).1 h).2) ∣
-      a * b :=
-    by rw [hpoweq]; apply mul_dvd_mul <;> assumption
+      a * b := by
+    rw [hpoweq]; apply mul_dvd_mul <;> assumption
   have hsucc :
     ¬p ^ (get (multiplicity p a) ((finite_mul_iff hp).1 h).1 +
               get (multiplicity p b) ((finite_mul_iff hp).1 h).2 +
@@ -592,7 +590,7 @@ protected theorem mul {p a b : α} (hp : Prime p) :
 #align multiplicity.mul multiplicity.mul
 
 theorem Finset.prod {β : Type*} {p : α} (hp : Prime p) (s : Finset β) (f : β → α) :
-    multiplicity p (∏ x in s, f x) = ∑ x in s, multiplicity p (f x) := by
+    multiplicity p (∏ x ∈ s, f x) = ∑ x ∈ s, multiplicity p (f x) := by
   classical
     induction' s using Finset.induction with a s has ih h
     · simp only [Finset.sum_empty, Finset.prod_empty]
@@ -608,7 +606,7 @@ protected theorem pow' {p a : α} (hp : Prime p) (ha : Finite p a) :
   induction' k with k hk
   · simp [one_right hp.not_unit]
   · have : multiplicity p (a ^ (k + 1)) = multiplicity p (a * a ^ k) := by rw [_root_.pow_succ']
-    rw [succ_eq_add_one, get_eq_get_of_eq _ _ this,
+    rw [get_eq_get_of_eq _ _ this,
       multiplicity.mul' hp, hk, add_mul, one_mul, add_comm]
 #align multiplicity.pow' multiplicity.pow'
 

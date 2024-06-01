@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Algebra.Function.Support
 import Mathlib.Order.Filter.Lift
 import Mathlib.Topology.Defs.Filter
 
@@ -646,9 +645,8 @@ theorem dense_compl_singleton_iff_not_open :
   constructor
   · intro hd ho
     exact (hd.inter_open_nonempty _ ho (singleton_nonempty _)).ne_empty (inter_compl_self _)
-  · refine' fun ho => dense_iff_inter_open.2 fun U hU hne => inter_compl_nonempty_iff.2 fun hUx => _
-    obtain rfl : U = {x}
-    exact eq_singleton_iff_nonempty_unique_mem.2 ⟨hne, hUx⟩
+  · refine fun ho => dense_iff_inter_open.2 fun U hU hne => inter_compl_nonempty_iff.2 fun hUx => ?_
+    obtain rfl : U = {x} := eq_singleton_iff_nonempty_unique_mem.2 ⟨hne, hUx⟩
     exact ho hU
 #align dense_compl_singleton_iff_not_open dense_compl_singleton_iff_not_open
 
@@ -714,7 +712,7 @@ theorem frontier_empty : frontier (∅ : Set X) = ∅ := by simp [frontier]
 theorem frontier_inter_subset (s t : Set X) :
     frontier (s ∩ t) ⊆ frontier s ∩ closure t ∪ closure s ∩ frontier t := by
   simp only [frontier_eq_closure_inter_closure, compl_inter, closure_union]
-  refine' (inter_subset_inter_left _ (closure_inter_subset_inter_closure s t)).trans_eq _
+  refine (inter_subset_inter_left _ (closure_inter_subset_inter_closure s t)).trans_eq ?_
   simp only [inter_union_distrib_left, union_inter_distrib_right, inter_assoc,
     inter_comm (closure t)]
 #align frontier_inter_subset frontier_inter_subset
@@ -1225,7 +1223,7 @@ alias ⟨_, Filter.Frequently.mem_closure⟩ := mem_closure_iff_frequently
 to `s` then `x` is in `s`. -/
 theorem isClosed_iff_frequently : IsClosed s ↔ ∀ x, (∃ᶠ y in 𝓝 x, y ∈ s) → x ∈ s := by
   rw [← closure_subset_iff_isClosed]
-  refine' forall_congr' fun x => _
+  refine forall_congr' fun x => ?_
   rw [mem_closure_iff_frequently]
 #align is_closed_iff_frequently isClosed_iff_frequently
 
@@ -1233,7 +1231,7 @@ theorem isClosed_iff_frequently : IsClosed s ↔ ∀ x, (∃ᶠ y in 𝓝 x, y �
 of a sequence is closed. -/
 theorem isClosed_setOf_clusterPt {f : Filter X} : IsClosed { x | ClusterPt x f } := by
   simp only [ClusterPt, inf_neBot_iff_frequently_left, setOf_forall, imp_iff_not_or]
-  refine' isClosed_iInter fun p => IsClosed.union _ _ <;> apply isClosed_compl_iff.2
+  refine isClosed_iInter fun p => IsClosed.union ?_ ?_ <;> apply isClosed_compl_iff.2
   exacts [isOpen_setOf_eventually_nhds, isOpen_const]
 #align is_closed_set_of_cluster_pt isClosed_setOf_clusterPt
 
@@ -1454,7 +1452,7 @@ theorem tendsto_inf_principal_nhds_iff_of_forall_eq {f : α → X} {l : Filter �
     rintro U ⟨t, ht, htU⟩ x hx
     have : f x ∈ t := (h x hx).symm ▸ mem_of_mem_nhds ht
     exact htU this
-  refine' ⟨fun h' => _, le_trans inf_le_left⟩
+  refine ⟨fun h' => ?_, le_trans inf_le_left⟩
   have := sup_le h' h
   rw [sup_inf_right, sup_principal, union_compl_self, principal_univ, inf_top_eq, sup_le_iff]
     at this

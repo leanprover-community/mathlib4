@@ -3,7 +3,7 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Function.Indicator
+import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.Instances.ENNReal
 
@@ -68,7 +68,7 @@ ones for lower semicontinuous functions using `OrderDual`.
 -/
 
 
-open Topology BigOperators ENNReal
+open Topology ENNReal
 
 open Set Function Filter
 
@@ -358,7 +358,9 @@ theorem lowerSemicontinuous_iff_isClosed_epigraph {f : α → γ} :
     rw [nhds_prod_eq, le_prod] at h'
     calc f x ≤ liminf f (𝓝 x) := hf x
     _ ≤ liminf f (map Prod.fst F) := liminf_le_liminf_of_le h'.1
-    _ ≤ liminf Prod.snd F := liminf_le_liminf <| (eventually_principal.2 fun _ ↦ id).filter_mono h
+    _ = liminf (f ∘ Prod.fst) F := (Filter.liminf_comp _ _ _).symm
+    _ ≤ liminf Prod.snd F := liminf_le_liminf <| by
+          simpa using (eventually_principal.2 fun (_ : α × γ) ↦ id).filter_mono h
     _ = y := h'.2.liminf_eq
   · rw [lowerSemicontinuous_iff_isClosed_preimage]
     exact fun hf y ↦ hf.preimage (Continuous.Prod.mk_left y)
@@ -601,7 +603,7 @@ theorem LowerSemicontinuous.add {f g : α → γ} (hf : LowerSemicontinuous f)
 
 theorem lowerSemicontinuousWithinAt_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, LowerSemicontinuousWithinAt (f i) s x) :
-    LowerSemicontinuousWithinAt (fun z => ∑ i in a, f i z) s x := by
+    LowerSemicontinuousWithinAt (fun z => ∑ i ∈ a, f i z) s x := by
   classical
     induction' a using Finset.induction_on with i a ia IH
     · exact lowerSemicontinuousWithinAt_const
@@ -613,19 +615,19 @@ theorem lowerSemicontinuousWithinAt_sum {f : ι → α → γ} {a : Finset ι}
 
 theorem lowerSemicontinuousAt_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, LowerSemicontinuousAt (f i) x) :
-    LowerSemicontinuousAt (fun z => ∑ i in a, f i z) x := by
+    LowerSemicontinuousAt (fun z => ∑ i ∈ a, f i z) x := by
   simp_rw [← lowerSemicontinuousWithinAt_univ_iff] at *
   exact lowerSemicontinuousWithinAt_sum ha
 #align lower_semicontinuous_at_sum lowerSemicontinuousAt_sum
 
 theorem lowerSemicontinuousOn_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, LowerSemicontinuousOn (f i) s) :
-    LowerSemicontinuousOn (fun z => ∑ i in a, f i z) s := fun x hx =>
+    LowerSemicontinuousOn (fun z => ∑ i ∈ a, f i z) s := fun x hx =>
   lowerSemicontinuousWithinAt_sum fun i hi => ha i hi x hx
 #align lower_semicontinuous_on_sum lowerSemicontinuousOn_sum
 
 theorem lowerSemicontinuous_sum {f : ι → α → γ} {a : Finset ι}
-    (ha : ∀ i ∈ a, LowerSemicontinuous (f i)) : LowerSemicontinuous fun z => ∑ i in a, f i z :=
+    (ha : ∀ i ∈ a, LowerSemicontinuous (f i)) : LowerSemicontinuous fun z => ∑ i ∈ a, f i z :=
   fun x => lowerSemicontinuousAt_sum fun i hi => ha i hi x
 #align lower_semicontinuous_sum lowerSemicontinuous_sum
 
@@ -1107,25 +1109,25 @@ theorem UpperSemicontinuous.add {f g : α → γ} (hf : UpperSemicontinuous f)
 
 theorem upperSemicontinuousWithinAt_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, UpperSemicontinuousWithinAt (f i) s x) :
-    UpperSemicontinuousWithinAt (fun z => ∑ i in a, f i z) s x :=
+    UpperSemicontinuousWithinAt (fun z => ∑ i ∈ a, f i z) s x :=
   @lowerSemicontinuousWithinAt_sum α _ x s ι γᵒᵈ _ _ _ _ f a ha
 #align upper_semicontinuous_within_at_sum upperSemicontinuousWithinAt_sum
 
 theorem upperSemicontinuousAt_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, UpperSemicontinuousAt (f i) x) :
-    UpperSemicontinuousAt (fun z => ∑ i in a, f i z) x := by
+    UpperSemicontinuousAt (fun z => ∑ i ∈ a, f i z) x := by
   simp_rw [← upperSemicontinuousWithinAt_univ_iff] at *
   exact upperSemicontinuousWithinAt_sum ha
 #align upper_semicontinuous_at_sum upperSemicontinuousAt_sum
 
 theorem upperSemicontinuousOn_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, UpperSemicontinuousOn (f i) s) :
-    UpperSemicontinuousOn (fun z => ∑ i in a, f i z) s := fun x hx =>
+    UpperSemicontinuousOn (fun z => ∑ i ∈ a, f i z) s := fun x hx =>
   upperSemicontinuousWithinAt_sum fun i hi => ha i hi x hx
 #align upper_semicontinuous_on_sum upperSemicontinuousOn_sum
 
 theorem upperSemicontinuous_sum {f : ι → α → γ} {a : Finset ι}
-    (ha : ∀ i ∈ a, UpperSemicontinuous (f i)) : UpperSemicontinuous fun z => ∑ i in a, f i z :=
+    (ha : ∀ i ∈ a, UpperSemicontinuous (f i)) : UpperSemicontinuous fun z => ∑ i ∈ a, f i z :=
   fun x => upperSemicontinuousAt_sum fun i hi => ha i hi x
 #align upper_semicontinuous_sum upperSemicontinuous_sum
 
@@ -1215,7 +1217,7 @@ variable {γ : Type*} [LinearOrder γ] [TopologicalSpace γ] [OrderTopology γ]
 theorem continuousWithinAt_iff_lower_upperSemicontinuousWithinAt {f : α → γ} :
     ContinuousWithinAt f s x ↔
       LowerSemicontinuousWithinAt f s x ∧ UpperSemicontinuousWithinAt f s x := by
-  refine' ⟨fun h => ⟨h.lowerSemicontinuousWithinAt, h.upperSemicontinuousWithinAt⟩, _⟩
+  refine ⟨fun h => ⟨h.lowerSemicontinuousWithinAt, h.upperSemicontinuousWithinAt⟩, ?_⟩
   rintro ⟨h₁, h₂⟩
   intro v hv
   simp only [Filter.mem_map]

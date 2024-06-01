@@ -1,11 +1,12 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
 import Mathlib.RingTheory.Derivation.ToSquareZero
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.IsTensorProduct
+import Mathlib.Algebra.Exact
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.Algebra.Polynomial.Derivation
 
@@ -28,8 +29,12 @@ import Mathlib.Algebra.Polynomial.Derivation
   1. `dx + dy = d(x + y)`
   2. `x dy + y dx = d(x * y)`
   3. `dr = 0` for `r ∈ R`
-- `KaehlerDifferential.map`: Given a map between the arrows `R → A` and `S → B`, we have an
+- `KaehlerDifferential.map`: Given a map between the arrows `R →+* A` and `S →+* B`, we have an
   `A`-linear map `Ω[A⁄R] → Ω[B⁄S]`.
+- `KaehlerDifferential.map_surjective`:
+  The sequence `Ω[B⁄R] → Ω[B⁄A] → 0` is exact.
+- `KaehlerDifferential.exact_mapBaseChange_map`:
+  The sequence `B ⊗[A] Ω[A⁄R] → Ω[B⁄R] → Ω[B⁄A]` is exact.
 
 ## Future project
 
@@ -339,6 +344,7 @@ theorem KaehlerDifferential.tensorProductTo_surjective :
 
 /-- The `S`-linear maps from `Ω[S⁄R]` to `M` are (`S`-linearly) equivalent to `R`-derivations
 from `S` to `M`.  -/
+@[simps! symm_apply apply_apply]
 def KaehlerDifferential.linearMapEquivDerivation : (Ω[S⁄R] →ₗ[S] M) ≃ₗ[S] Derivation R S M :=
   { Derivation.llcomp.flip <| KaehlerDifferential.D R S with
     invFun := Derivation.liftKaehlerDifferential
@@ -591,38 +597,6 @@ theorem KaehlerDifferential.quotKerTotalEquiv_symm_comp_D :
 set_option linter.uppercaseLean3 false in
 #align kaehler_differential.quot_ker_total_equiv_symm_comp_D KaehlerDifferential.quotKerTotalEquiv_symm_comp_D
 
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra S B] [Algebra R B]
-variable [Algebra A B] [IsScalarTower R S B] [IsScalarTower R A B]
-
-unsuppress_compilation in
--- The map `(A →₀ A) →ₗ[A] (B →₀ B)`
-local macro "finsupp_map" : term =>
-  `((Finsupp.mapRange.linearMap (Algebra.linearMap A B)).comp
-    (Finsupp.lmapDomain A A (algebraMap A B)))
-
-theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A B)) :
-    (KaehlerDifferential.kerTotal R A).map finsupp_map ⊔
-        Submodule.span A (Set.range fun x : S => single (algebraMap S B x) (1 : B)) =
-      (KaehlerDifferential.kerTotal S B).restrictScalars _ := by
-  rw [KaehlerDifferential.kerTotal, Submodule.map_span, KaehlerDifferential.kerTotal,
-    Submodule.restrictScalars_span _ _ h]
-  -- Porting note: the proof is diverging from the mathlib3 proof here.
-  -- `map_sub` and `map_add` are not firing so we need to use `LinearMap.map_*` instead
-  simp_rw [Set.image_union, Submodule.span_union, ← Set.image_univ, Set.image_image, Set.image_univ,
-    LinearMap.map_sub, LinearMap.map_add]
-  simp only [LinearMap.comp_apply, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single,
-    Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply,
-    map_one, map_add, map_mul]
-  simp_rw [sup_assoc, ← (h.Prod_map h).range_comp]
-  congr!
-  -- Porting note: new
-  simp_rw [← IsScalarTower.algebraMap_apply R A B]
-  rw [sup_eq_right]
-  apply Submodule.span_mono
-  simp_rw [IsScalarTower.algebraMap_apply R S B]
-  exact Set.range_comp_subset_range (algebraMap R S) fun x => single (algebraMap S B x) (1 : B)
-#align kaehler_differential.ker_total_map KaehlerDifferential.kerTotal_map
-
 end Presentation
 
 section ExactSequence
@@ -635,6 +609,58 @@ R --→ S -/
 variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 variable [Algebra A B] [Algebra S B] [IsScalarTower R A B] [IsScalarTower R S B]
 variable [SMulCommClass S A B]
+
+unsuppress_compilation in
+-- The map `(A →₀ A) →ₗ[A] (B →₀ B)`
+local macro "finsupp_map" : term =>
+  `((Finsupp.mapRange.linearMap (Algebra.linearMap A B)).comp
+    (Finsupp.lmapDomain A A (algebraMap A B)))
+
+/--
+Given the commutative diagram
+A --→ B
+↑     ↑
+|     |
+R --→ S
+The kernel of the presentation `⊕ₓ B dx ↠ Ω_{B/S}` is spanned by the image of the
+kernel of `⊕ₓ A dx ↠ Ω_{A/R}` and all `ds` with `s : S`.
+See `kerTotal_map'` for the special case where `R = S`.
+-/
+theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A B)) :
+    (KaehlerDifferential.kerTotal R A).map finsupp_map ⊔
+        Submodule.span A (Set.range fun x : S => .single (algebraMap S B x) (1 : B)) =
+      (KaehlerDifferential.kerTotal S B).restrictScalars _ := by
+  rw [KaehlerDifferential.kerTotal, Submodule.map_span, KaehlerDifferential.kerTotal,
+    Submodule.restrictScalars_span _ _ h]
+  simp_rw [Set.image_union, Submodule.span_union, ← Set.image_univ, Set.image_image, Set.image_univ,
+    map_sub, map_add]
+  simp only [LinearMap.comp_apply, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single,
+    Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply,
+    map_one, map_add, map_mul]
+  simp_rw [sup_assoc, ← (h.Prod_map h).range_comp]
+  congr!
+  -- Porting note: new
+  simp_rw [← IsScalarTower.algebraMap_apply R A B]
+  rw [sup_eq_right]
+  apply Submodule.span_mono
+  simp_rw [IsScalarTower.algebraMap_apply R S B]
+  exact Set.range_comp_subset_range (algebraMap R S)
+    fun x => Finsupp.single (algebraMap S B x) (1 : B)
+#align kaehler_differential.ker_total_map KaehlerDifferential.kerTotal_map
+
+/--
+This is a special case of `kerTotal_map` where `R = S`.
+The kernel of the presentation `⊕ₓ B dx ↠ Ω_{B/R}` is spanned by the image of the
+kernel of `⊕ₓ A dx ↠ Ω_{A/R}` and all `da` with `a : A`.
+-/
+theorem KaehlerDifferential.kerTotal_map' (h : Function.Surjective (algebraMap A B)) :
+    (KaehlerDifferential.kerTotal R A ⊔
+      Submodule.span A (Set.range fun x ↦ .single (algebraMap R A x) 1)).map finsupp_map =
+      (KaehlerDifferential.kerTotal R B).restrictScalars _ := by
+  rw [Submodule.map_sup, ← kerTotal_map R R A B h, Submodule.map_span, ← Set.range_comp]
+  congr
+  refine congr_arg Set.range ?_
+  ext; simp [IsScalarTower.algebraMap_eq R A B]
 
 /-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄S]` given a square
 A --→ B
@@ -652,12 +678,30 @@ theorem KaehlerDifferential.map_compDer :
   Derivation.liftKaehlerDifferential_comp _
 #align kaehler_differential.map_comp_der KaehlerDifferential.map_compDer
 
+@[simp]
 theorem KaehlerDifferential.map_D (x : A) :
     KaehlerDifferential.map R S A B (KaehlerDifferential.D R A x) =
       KaehlerDifferential.D S B (algebraMap A B x) :=
   Derivation.congr_fun (KaehlerDifferential.map_compDer R S A B) x
 set_option linter.uppercaseLean3 false in
 #align kaehler_differential.map_D KaehlerDifferential.map_D
+
+theorem KaehlerDifferential.ker_map :
+    LinearMap.ker (KaehlerDifferential.map R S A B) =
+      (((kerTotal S B).restrictScalars A).comap finsupp_map).map
+        (Finsupp.total A (Ω[A⁄R]) A (D R A)) := by
+  rw [← Submodule.map_comap_eq_of_surjective (total_surjective R A) (LinearMap.ker _)]
+  congr 1
+  ext x
+  simp only [Submodule.mem_comap, LinearMap.mem_ker, Finsupp.apply_total, ← kerTotal_eq,
+    Submodule.restrictScalars_mem]
+  simp only [Finsupp.total_apply, Function.comp_apply, LinearMap.coe_comp, Finsupp.lmapDomain_apply,
+    Finsupp.mapRange.linearMap_apply]
+  rw [Finsupp.sum_mapRange_index, Finsupp.sum_mapDomain_index]
+  · simp [ofId]
+  · simp
+  · simp [add_smul]
+  · simp
 
 open IsScalarTower (toAlgHom)
 
@@ -673,6 +717,10 @@ theorem KaehlerDifferential.map_surjective_of_surjective
   exact ⟨_, rfl⟩
 #align kaehler_differential.map_surjective_of_surjective KaehlerDifferential.map_surjective_of_surjective
 
+theorem KaehlerDifferential.map_surjective :
+    Function.Surjective (KaehlerDifferential.map R S B B) :=
+  map_surjective_of_surjective R S B B Function.surjective_id
+
 /-- The lift of the map `Ω[A⁄R] →ₗ[A] Ω[B⁄R]` to the base change along `A → B`.
 This is the first map in the exact sequence `B ⊗[A] Ω[A⁄R] → Ω[B⁄R] → Ω[B⁄A] → 0`. -/
 noncomputable def KaehlerDifferential.mapBaseChange : B ⊗[A] Ω[A⁄R] →ₗ[B] Ω[B⁄R] :=
@@ -686,6 +734,36 @@ theorem KaehlerDifferential.mapBaseChange_tmul (x : B) (y : Ω[A⁄R]) :
   congr 1
   exact IsBaseChange.lift_eq _ _ _
 #align kaehler_differential.map_base_change_tmul KaehlerDifferential.mapBaseChange_tmul
+
+lemma KaehlerDifferential.range_mapBaseChange :
+    LinearMap.range (mapBaseChange R A B) = LinearMap.ker (map R A B B) := by
+  apply le_antisymm
+  · rintro _ ⟨x, rfl⟩
+    induction' x using TensorProduct.induction_on with r s
+    · simp
+    · obtain ⟨x, rfl⟩ := total_surjective _ _ s
+      simp only [mapBaseChange_tmul, LinearMap.mem_ker, map_smul]
+      induction x using Finsupp.induction_linear
+      · simp
+      · simp [smul_add, *]
+      · simp
+    · rw [map_add]; exact add_mem ‹_› ‹_›
+  · convert_to (kerTotal A B).map (Finsupp.total B (Ω[B⁄R]) B (D R B)) ≤ _
+    · rw [KaehlerDifferential.ker_map]
+      congr 1
+      convert Submodule.comap_id _
+      · ext; simp
+    rw [Submodule.map_le_iff_le_comap, kerTotal, Submodule.span_le]
+    rintro f ((⟨⟨x, y⟩, rfl⟩|⟨⟨x, y⟩, rfl⟩)|⟨x, rfl⟩)
+    · use 0; simp
+    · use 0; simp
+    · use 1 ⊗ₜ D _ _ x; simp
+
+/-- The sequence `B ⊗[A] Ω[A⁄R] → Ω[B⁄R] → Ω[B⁄A] → 0` is exact.
+Also see `KaehlerDifferential.map_surjective`. -/
+lemma KaehlerDifferential.exact_mapBaseChange_map :
+    Function.Exact (mapBaseChange R A B) (map R A B B) :=
+  SetLike.ext_iff.mp (range_mapBaseChange R A B).symm
 
 end ExactSequence
 
@@ -749,14 +827,15 @@ lemma KaehlerDifferential.mvPolynomialBasis_repr_apply (σ) (x) (i) :
   intro j
   simp [Finsupp.single_apply, Pi.single_apply]
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 lemma KaehlerDifferential.mvPolynomialBasis_repr_symm_single (σ) (i) (x) :
-    (mvPolynomialBasis R σ).repr.symm (Finsupp.single i x) = x • D _ _ (.X i) := by
+    (mvPolynomialBasis R σ).repr.symm (Finsupp.single i x) = x • D R (MvPolynomial σ R) (.X i) := by
   apply (mvPolynomialBasis R σ).repr.injective; simp [LinearEquiv.map_smul, -map_smul]
 
-
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 lemma KaehlerDifferential.mvPolynomialBasis_apply (σ) (i) :
-    mvPolynomialBasis R σ i = D _ _ (.X i) :=
+    mvPolynomialBasis R σ i = D R (MvPolynomial σ R) (.X i) :=
   (mvPolynomialBasis_repr_symm_single R σ i 1).trans (one_smul _ _)
 
 instance (σ) : Module.Free (MvPolynomial σ R) (Ω[MvPolynomial σ R⁄R]) :=

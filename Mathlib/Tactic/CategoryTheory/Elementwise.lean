@@ -6,7 +6,7 @@ Authors: Scott Morrison, Kyle Miller
 
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Util.AddRelatedDecl
-import Std.Tactic.Lint
+import Batteries.Tactic.Lint
 
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories

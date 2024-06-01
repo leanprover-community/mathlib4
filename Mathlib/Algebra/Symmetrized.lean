@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.Jordan.Basic
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 
 #align_import algebra.symmetrized from "leanprover-community/mathlib"@"933547832736be61a5de6576e22db351c6c2fbfd"
 

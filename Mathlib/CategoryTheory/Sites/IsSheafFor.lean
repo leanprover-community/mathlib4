@@ -456,7 +456,7 @@ the proof of C2.1.4 of [Elephant], and the discussion in [MM92], Chapter III, Se
 def natTransEquivCompatibleFamily {P : Cᵒᵖ ⥤ Type v₁} :
     (S.functor ⟶ P) ≃ { x : FamilyOfElements P (S : Presieve X) // x.Compatible } where
   toFun α := by
-    refine' ⟨fun Y f hf => _, _⟩
+    refine ⟨fun Y f hf => ?_, ?_⟩
     · apply α.app (op Y) ⟨_, hf⟩
     · rw [compatible_iff_sieveCompatible]
       intro Y Z f g hf
@@ -491,7 +491,8 @@ theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ Type v₁} (x : S.functor �
     ext Y ⟨f, hf⟩
     convert h f hf
     rw [yonedaEquiv_naturality]
-    simp [yonedaEquiv]
+    dsimp [yonedaEquiv]
+    simp
 #align category_theory.presieve.extension_iff_amalgamation CategoryTheory.Presieve.extension_iff_amalgamation
 
 /-- The yoneda version of the sheaf condition is equivalent to the sheaf condition.
@@ -568,7 +569,7 @@ theorem isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor :
   · intro z hx
     exact exists_unique_of_exists_of_unique (z.2 hx) z.1
   · intro h
-    refine' ⟨_, ExistsUnique.exists ∘ h⟩
+    refine ⟨?_, ExistsUnique.exists ∘ h⟩
     intro t₁ t₂ ht₁ ht₂
     apply (h _).unique ht₁ ht₂
     exact is_compatible_of_exists_amalgamation x ⟨_, ht₂⟩
@@ -628,7 +629,7 @@ theorem isSheafFor_iff_generate (R : Presieve X) :
 -/
 theorem isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (Presieve.singleton (𝟙 X)) := by
   intro x _
-  refine' ⟨x _ (Presieve.singleton_self _), _, _⟩
+  refine ⟨x _ (Presieve.singleton_self _), ?_, ?_⟩
   · rintro _ _ ⟨rfl, rfl⟩
     simp
   · intro t ht

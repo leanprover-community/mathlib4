@@ -220,6 +220,9 @@ theorem coe_bracket (x : L) (m : N) : (↑⁅x, m⁆ : M) = ⁅x, ↑m⁆ :=
   rfl
 #align lie_submodule.coe_bracket LieSubmodule.coe_bracket
 
+instance [Subsingleton M] : Unique (LieSubmodule R L M) :=
+  ⟨⟨0⟩, fun _ ↦ (coe_toSubmodule_eq_iff _ _).mp (Subsingleton.elim _ _)⟩
+
 end LieSubmodule
 
 section LieIdeal
@@ -372,6 +375,10 @@ theorem bot_coeSubmodule : ((⊥ : LieSubmodule R L M) : Submodule R M) = ⊥ :=
 theorem coeSubmodule_eq_bot_iff : (N : Submodule R M) = ⊥ ↔ N = ⊥ := by
   rw [← coe_toSubmodule_eq_iff, bot_coeSubmodule]
 
+@[simp] theorem mk_eq_bot_iff {N : Submodule R M} {h} :
+    (⟨N, h⟩ : LieSubmodule R L M) = ⊥ ↔ N = ⊥ := by
+  rw [← coe_toSubmodule_eq_iff, bot_coeSubmodule]
+
 @[simp]
 theorem mem_bot (x : M) : x ∈ (⊥ : LieSubmodule R L M) ↔ x = 0 :=
   mem_singleton_iff
@@ -392,6 +399,10 @@ theorem top_coeSubmodule : ((⊤ : LieSubmodule R L M) : Submodule R M) = ⊤ :=
 
 @[simp]
 theorem coeSubmodule_eq_top_iff : (N : Submodule R M) = ⊤ ↔ N = ⊤ := by
+  rw [← coe_toSubmodule_eq_iff, top_coeSubmodule]
+
+@[simp] theorem mk_eq_top_iff {N : Submodule R M} {h} :
+    (⟨N, h⟩ : LieSubmodule R L M) = ⊤ ↔ N = ⊤ := by
   rw [← coe_toSubmodule_eq_iff, top_coeSubmodule]
 
 @[simp]
@@ -525,9 +536,9 @@ theorem iSup_induction' {ι} (N : ι → LieSubmodule R L M) {C : (x : M) → (x
     (hN : ∀ (i) (x) (hx : x ∈ N i), C x (mem_iSup_of_mem i hx)) (h0 : C 0 (zero_mem _))
     (hadd : ∀ x y hx hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {x : M}
     (hx : x ∈ ⨆ i, N i) : C x hx := by
-  refine' Exists.elim _ fun (hx : x ∈ ⨆ i, N i) (hc : C x hx) => hc
-  refine' iSup_induction N (C := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, N i), C x hx) hx
-    (fun i x hx => _) _ fun x y => _
+  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, N i) (hc : C x hx) => hc
+  refine iSup_induction N (C := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, N i), C x hx) hx
+    (fun i x hx => ?_) ?_ fun x y => ?_
   · exact ⟨_, hN _ _ hx⟩
   · exact ⟨_, h0⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
@@ -543,11 +554,15 @@ theorem codisjoint_iff_coe_toSubmodule :
   rw [codisjoint_iff, codisjoint_iff, ← coe_toSubmodule_eq_iff, sup_coe_toSubmodule,
     top_coeSubmodule, ← codisjoint_iff]
 
+theorem isCompl_iff_coe_toSubmodule :
+    IsCompl N N' ↔ IsCompl (N : Submodule R M) (N' : Submodule R M) := by
+  simp only [isCompl_iff, disjoint_iff_coe_toSubmodule, codisjoint_iff_coe_toSubmodule]
+
 theorem independent_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
     CompleteLattice.Independent N ↔ CompleteLattice.Independent fun i ↦ (N i : Submodule R M) := by
   simp [CompleteLattice.independent_def, disjoint_iff_coe_toSubmodule]
 
-theorem iSup_eq_top_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
+theorem iSup_eq_top_iff_coe_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R L M} :
     ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
   rw [← iSup_coe_toSubmodule, ← top_coeSubmodule (L := L), coe_toSubmodule_eq_iff]
 
@@ -609,6 +624,9 @@ theorem wellFounded_of_isArtinian [IsArtinian R M] :
     WellFounded ((· < ·) : LieSubmodule R L M → LieSubmodule R L M → Prop) :=
   RelHomClass.wellFounded (toSubmodule_orderEmbedding R L M).ltEmbedding <|
     IsArtinian.wellFounded_submodule_lt R M
+
+instance [IsArtinian R M] : IsAtomic (LieSubmodule R L M) :=
+  isAtomic_of_orderBot_wellFounded_lt <| wellFounded_of_isArtinian R L M
 
 @[simp]
 theorem subsingleton_iff : Subsingleton (LieSubmodule R L M) ↔ Subsingleton M :=
@@ -1113,6 +1131,9 @@ def IsIdealMorphism : Prop :=
 theorem isIdealMorphism_def : f.IsIdealMorphism ↔ (f.idealRange : LieSubalgebra R L') = f.range :=
   Iff.rfl
 #align lie_hom.is_ideal_morphism_def LieHom.isIdealMorphism_def
+
+variable {f} in
+theorem IsIdealMorphism.eq (hf : f.IsIdealMorphism) : f.idealRange = f.range := hf
 
 theorem isIdealMorphism_iff : f.IsIdealMorphism ↔ ∀ (x : L') (y : L), ∃ z : L, ⁅x, f y⁆ = f z := by
   simp only [isIdealMorphism_def, idealRange_eq_lieSpan_range, ←

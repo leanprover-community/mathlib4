@@ -95,7 +95,7 @@ theorem lieIdeal_oper_eq_linear_span' :
 
 theorem lie_le_iff : ⁅I, N⁆ ≤ N' ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅x, m⁆ ∈ N' := by
   rw [lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
-  refine' ⟨fun h x hx m hm => h ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, _⟩
+  refine ⟨fun h x hx m hm => h ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, ?_⟩
   rintro h _ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩
   exact h x hx m hm
 #align lie_submodule.lie_le_iff LieSubmodule.lie_le_iff
@@ -140,7 +140,7 @@ theorem bot_lie : ⁅(⊥ : LieIdeal R L), N⁆ = ⊥ := by
 
 theorem lie_eq_bot_iff : ⁅I, N⁆ = ⊥ ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅(x : L), m⁆ = 0 := by
   rw [lieIdeal_oper_eq_span, LieSubmodule.lieSpan_eq_bot_iff]
-  refine' ⟨fun h x hx m hm => h ⁅x, m⁆ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, _⟩
+  refine ⟨fun h x hx m hm => h ⁅x, m⁆ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, ?_⟩
   rintro h - ⟨⟨x, hx⟩, ⟨⟨n, hn⟩, rfl⟩⟩
   exact h x hx n hn
 #align lie_submodule.lie_eq_bot_iff LieSubmodule.lie_eq_bot_iff
@@ -329,7 +329,8 @@ theorem comap_bracket_incl {I₁ I₂ : LieIdeal R L} :
     next => skip
     rw [← I.incl_idealRange]
   rw [comap_bracket_eq]
-  simp only [ker_incl, sup_bot_eq]; exact I.incl_isIdealMorphism
+  · simp only [ker_incl, sup_bot_eq]
+  · exact I.incl_isIdealMorphism
 #align lie_ideal.comap_bracket_incl LieIdeal.comap_bracket_incl
 
 /-- This is a very useful result; it allows us to use the fact that inclusion distributes over the

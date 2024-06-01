@@ -54,7 +54,7 @@ theorem bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[�
   cases' @NontriviallyNormedField.non_trivial 𝕜 _ with k hk
   use c * (‖k‖ / r)
   intro z
-  refine' bound_of_shell _ r_pos hk (fun x hko hxo => _) _
+  refine bound_of_shell _ r_pos hk (fun x hko hxo => ?_) _
   calc
     ‖f x‖ ≤ c := h _ (mem_ball_zero_iff.mpr hxo)
     _ ≤ c * (‖x‖ * ‖k‖ / r) := le_mul_of_one_le_right ?_ ?_
@@ -70,7 +70,7 @@ theorem antilipschitz_of_comap_nhds_le [h : RingHomIsometric σ₁₂] (f : E �
   simp only [Set.subset_def, Set.mem_preimage, mem_ball_zero_iff] at hε
   lift ε to ℝ≥0 using ε0.le
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  refine' ⟨ε⁻¹ * ‖c‖₊, AddMonoidHomClass.antilipschitz_of_bound f fun x => _⟩
+  refine ⟨ε⁻¹ * ‖c‖₊, AddMonoidHomClass.antilipschitz_of_bound f fun x => ?_⟩
   by_cases hx : f x = 0
   · rw [← hx] at hf
     obtain rfl : x = 0 := Specializes.eq (specializes_iff_pure.2 <|
@@ -107,14 +107,12 @@ theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
       exact opNorm_zero)
 #align continuous_linear_map.op_norm_zero_iff ContinuousLinearMap.opNorm_zero_iff
 
-@[deprecated]
-alias op_norm_zero_iff :=
-  opNorm_zero_iff -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_zero_iff := opNorm_zero_iff -- deprecated on 2024-02-02
 
 /-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
 @[simp]
 theorem norm_id [Nontrivial E] : ‖id 𝕜 E‖ = 1 := by
-  refine' norm_id_of_nontrivial_seminorm _
+  refine norm_id_of_nontrivial_seminorm ?_
   obtain ⟨x, hx⟩ := exists_ne (0 : E)
   exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
 #align continuous_linear_map.norm_id ContinuousLinearMap.norm_id
@@ -201,7 +199,7 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
   cases subsingleton_or_nontrivial F'
   · haveI := g.symm.toLinearEquiv.toEquiv.subsingleton
     simp
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · convert f.opNorm_comp_le g.toLinearIsometry.toContinuousLinearMap
     simp [g.toLinearIsometry.norm_toContinuousLinearMap]
   · convert (f.comp g.toLinearIsometry.toContinuousLinearMap).opNorm_comp_le
@@ -212,16 +210,15 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
     simp [g.symm.toLinearIsometry.norm_toContinuousLinearMap]
 #align continuous_linear_map.op_norm_comp_linear_isometry_equiv ContinuousLinearMap.opNorm_comp_linearIsometryEquiv
 
-@[deprecated]
-alias op_norm_comp_linearIsometryEquiv :=
-  opNorm_comp_linearIsometryEquiv -- deprecated on 2024-02-02
+@[deprecated] -- deprecated on 2024-02-02
+alias op_norm_comp_linearIsometryEquiv := opNorm_comp_linearIsometryEquiv
 
 /-- The norm of the tensor product of a scalar linear map and of an element of a normed space
 is the product of the norms. -/
 @[simp]
 theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c f‖ = ‖c‖ * ‖f‖ := by
-  refine' le_antisymm _ _
-  · refine' opNorm_le_bound _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun x => _
+  refine le_antisymm ?_ ?_
+  · refine opNorm_le_bound _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun x => ?_
     calc
       ‖c x • f‖ = ‖c x‖ * ‖f‖ := norm_smul _ _
       _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := mul_le_mul_of_nonneg_right (le_opNorm _ _) (norm_nonneg _)
@@ -230,7 +227,7 @@ theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c
     · simp [h]
     · have : 0 < ‖f‖ := norm_pos_iff.2 h
       rw [← le_div_iff this]
-      refine' opNorm_le_bound _ (div_nonneg (norm_nonneg _) (norm_nonneg f)) fun x => _
+      refine opNorm_le_bound _ (div_nonneg (norm_nonneg _) (norm_nonneg f)) fun x => ?_
       rw [div_mul_eq_mul_div, le_div_iff this]
       calc
         ‖c x‖ * ‖f‖ = ‖c x • f‖ := (norm_smul _ _).symm

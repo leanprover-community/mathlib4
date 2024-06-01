@@ -21,7 +21,7 @@ def coeTypeSet? (e : Expr) : Option Expr := do
     let .lam _ _ body _ := e.appArg! | failure
     guard <| body.isAppOfArity ``Membership.mem 5
     let #[_, _, inst, .bvar 0, s] := body.getAppArgs | failure
-    guard <| inst.isAppOfArity ``Set.instMembershipSet 1
+    guard <| inst.isAppOfArity ``Set.instMembership 1
     return s
   else
     failure

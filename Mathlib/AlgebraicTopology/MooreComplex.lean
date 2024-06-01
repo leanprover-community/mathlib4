@@ -81,10 +81,10 @@ def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
   | n + 1 => by
     -- The differential is `Subobject.arrow _ ≫ X.δ (0 : Fin (n+3))`,
     -- factored through the intersection of the kernels.
-    refine' factorThru _ (arrow _ ≫ X.δ (0 : Fin (n + 3))) _
+    refine factorThru _ (arrow _ ≫ X.δ (0 : Fin (n + 3))) ?_
     -- We now need to show that it factors!
     -- A morphism factors through an intersection of subobjects if it factors through each.
-    refine' (finset_inf_factors _).mpr fun i _ => _
+    refine (finset_inf_factors _).mpr fun i _ => ?_
     -- A morphism `f` factors through the kernel of `g` exactly if `f ≫ g = 0`.
     apply kernelSubobject_factors
     dsimp [objX]

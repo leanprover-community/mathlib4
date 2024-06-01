@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Alistair Tucker, Wen Yang
 -/
-import Mathlib.Data.Set.Intervals.Image
+import Mathlib.Order.Interval.Set.Image
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Topology.Order.DenselyOrdered
 import Mathlib.Topology.Order.Monotone
@@ -69,8 +69,7 @@ variable {X : Type u} {α : Type v} [TopologicalSpace X] [LinearOrder α] [Topol
 on a preconnected space and `f a ≤ g a` and `g b ≤ f b`, then for some `x` we have `f x = g x`. -/
 theorem intermediate_value_univ₂ [PreconnectedSpace X] {a b : X} {f g : X → α} (hf : Continuous f)
     (hg : Continuous g) (ha : f a ≤ g a) (hb : g b ≤ f b) : ∃ x, f x = g x := by
-  obtain ⟨x, _, hfg, hgf⟩ : (univ ∩ { x | f x ≤ g x ∧ g x ≤ f x }).Nonempty
-  exact
+  obtain ⟨x, _, hfg, hgf⟩ : (univ ∩ { x | f x ≤ g x ∧ g x ≤ f x }).Nonempty :=
     isPreconnected_closed_iff.1 PreconnectedSpace.isPreconnected_univ _ _ (isClosed_le hf hg)
       (isClosed_le hg hf) (fun _ _ => le_total _ _) ⟨a, trivial, ha⟩ ⟨b, trivial, hb⟩
   exact ⟨x, le_antisymm hfg hgf⟩
@@ -235,7 +234,7 @@ theorem IsConnected.Icc_subset {s : Set α} (hs : IsConnected s) {a b : α} (ha 
 space. -/
 theorem IsPreconnected.eq_univ_of_unbounded {s : Set α} (hs : IsPreconnected s) (hb : ¬BddBelow s)
     (ha : ¬BddAbove s) : s = univ := by
-  refine' eq_univ_of_forall fun x => _
+  refine eq_univ_of_forall fun x => ?_
   obtain ⟨y, ys, hy⟩ : ∃ y ∈ s, y < x := not_bddBelow_iff.1 hb x
   obtain ⟨z, zs, hz⟩ : ∃ z ∈ s, x < z := not_bddAbove_iff.1 ha x
   exact hs.Icc_subset ys zs ⟨le_of_lt hy, le_of_lt hz⟩
@@ -272,7 +271,7 @@ theorem IsPreconnected.Ioi_csInf_subset {s : Set α} (hs : IsPreconnected s) (hb
 
 theorem IsPreconnected.Iio_csSup_subset {s : Set α} (hs : IsPreconnected s) (hb : ¬BddBelow s)
     (ha : BddAbove s) : Iio (sSup s) ⊆ s :=
-  @IsPreconnected.Ioi_csInf_subset αᵒᵈ _ _ _ s hs ha hb
+  IsPreconnected.Ioi_csInf_subset (α := αᵒᵈ) hs ha hb
 #align is_preconnected.Iio_cSup_subset IsPreconnected.Iio_csSup_subset
 
 /-- A preconnected set in a conditionally complete linear order is either one of the intervals
@@ -282,19 +281,16 @@ theorem IsPreconnected.Iio_csSup_subset {s : Set α} (hs : IsPreconnected s) (hb
 theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
     s ∈
       ({Icc (sInf s) (sSup s), Ico (sInf s) (sSup s), Ioc (sInf s) (sSup s), Ioo (sInf s) (sSup s),
-          Ici (sInf s), Ioi (sInf s), Iic (sSup s), Iio (sSup s), univ, ∅} :
-        Set (Set α)) := by
+          Ici (sInf s), Ioi (sInf s), Iic (sSup s), Iio (sSup s), univ, ∅} : Set (Set α)) := by
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · apply_rules [Or.inr, mem_singleton]
   have hs' : IsConnected s := ⟨hne, hs⟩
   by_cases hb : BddBelow s <;> by_cases ha : BddAbove s
-  · rcases mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset (hs'.Ioo_csInf_csSup_subset hb ha)
-        (subset_Icc_csInf_csSup hb ha) with (hs | hs | hs | hs)
-    · exact Or.inl hs
-    · exact Or.inr <| Or.inl hs
-    · exact Or.inr <| Or.inr <| Or.inl hs
-    · exact Or.inr <| Or.inr <| Or.inr <| Or.inl hs
-  · refine' Or.inr <| Or.inr <| Or.inr <| Or.inr _
+  · refine mem_of_subset_of_mem ?_ <| mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset
+      (hs'.Ioo_csInf_csSup_subset hb ha) (subset_Icc_csInf_csSup hb ha)
+    simp only [insert_subset_iff, mem_insert_iff, mem_singleton_iff, true_or, or_true,
+      singleton_subset_iff, and_self]
+  · refine Or.inr <| Or.inr <| Or.inr <| Or.inr ?_
     cases'
       mem_Ici_Ioi_of_subset_of_subset (hs.Ioi_csInf_subset hb ha) fun x hx => csInf_le hb hx with
       hs hs
@@ -311,7 +307,7 @@ theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
 
 /-- A preconnected set is either one of the intervals `Icc`, `Ico`, `Ioc`, `Ioo`, `Ici`, `Ioi`,
 `Iic`, `Iio`, or `univ`, or `∅`. The converse statement requires `α` to be densely ordered. Though
-one can represent `∅` as `(Inf s, Inf s)`, we include it into the list of possible cases to improve
+one can represent `∅` as `(Inf ∅, Inf ∅)`, we include it into the list of possible cases to improve
 readability. -/
 theorem setOf_isPreconnected_subset_of_ordered :
     { s : Set α | IsPreconnected s } ⊆
@@ -320,17 +316,9 @@ theorem setOf_isPreconnected_subset_of_ordered :
       -- unbounded intervals and `univ`
       (range Ici ∪ range Ioi ∪ range Iic ∪ range Iio ∪ {univ, ∅}) := by
   intro s hs
-  rcases hs.mem_intervals with (hs | hs | hs | hs | hs | hs | hs | hs | hs | hs)
-  · exact Or.inl <| Or.inl <| Or.inl <| Or.inl ⟨(sInf s, sSup s), hs.symm⟩
-  · exact Or.inl <| Or.inl <| Or.inl <| Or.inr ⟨(sInf s, sSup s), hs.symm⟩
-  · exact Or.inl <| Or.inl <| Or.inr ⟨(sInf s, sSup s), hs.symm⟩
-  · exact Or.inl <| Or.inr ⟨(sInf s, sSup s), hs.symm⟩
-  · exact Or.inr <| Or.inl <| Or.inl <| Or.inl <| Or.inl ⟨sInf s, hs.symm⟩
-  · exact Or.inr <| Or.inl <| Or.inl <| Or.inl <| Or.inr ⟨sInf s, hs.symm⟩
-  · exact Or.inr <| Or.inl <| Or.inl <| Or.inr ⟨sSup s, hs.symm⟩
-  · exact Or.inr <| Or.inl <| Or.inr ⟨sSup s, hs.symm⟩
-  · exact Or.inr <| Or.inr <| Or.inl hs
-  · exact Or.inr <| Or.inr <| Or.inr hs
+  rcases hs.mem_intervals with (hs | hs | hs | hs | hs | hs | hs | hs | hs | hs) <;> rw [hs] <;>
+    simp only [union_insert, union_singleton, mem_insert_iff, mem_union, mem_range, Prod.exists,
+      uncurry_apply_pair, exists_apply_eq_apply, true_or, or_true, exists_apply_eq_apply2]
 #align set_of_is_preconnected_subset_of_ordered setOf_isPreconnected_subset_of_ordered
 
 /-!
@@ -352,7 +340,7 @@ theorem IsClosed.mem_of_ge_of_forall_exists_gt {a b : α} {s : Set α} (hs : IsC
   have c_mem : c ∈ S := hs.csSup_mem ⟨_, ha⟩ Sbd
   have c_le : c ≤ b := csSup_le ⟨_, ha⟩ fun x hx => hx.2.2
   cases' eq_or_lt_of_le c_le with hc hc
-  exact hc ▸ c_mem.1
+  · exact hc ▸ c_mem.1
   exfalso
   rcases hgt c ⟨c_mem.1, c_mem.2.1, hc⟩ with ⟨x, xs, cx, xb⟩
   exact not_lt_of_le (le_csSup Sbd ⟨xs, le_trans (le_csSup Sbd ha) (le_of_lt cx), xb⟩) cx
@@ -509,7 +497,7 @@ theorem setOf_isPreconnected_eq_of_ordered :
       range (uncurry Icc) ∪ range (uncurry Ico) ∪ range (uncurry Ioc) ∪ range (uncurry Ioo) ∪
       -- unbounded intervals and `univ`
       (range Ici ∪ range Ioi ∪ range Iic ∪ range Iio ∪ {univ, ∅}) := by
-  refine' Subset.antisymm setOf_isPreconnected_subset_of_ordered _
+  refine Subset.antisymm setOf_isPreconnected_subset_of_ordered ?_
   simp only [subset_def, forall_mem_range, uncurry, or_imp, forall_and, mem_union,
     mem_setOf_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true_iff,
     isPreconnected_Icc, isPreconnected_Ico, isPreconnected_Ioc, isPreconnected_Ioo,
@@ -622,8 +610,9 @@ theorem ContinuousOn.surjOn_Icc {s : Set α} [hs : OrdConnected s] {f : α → �
 /-- **Intermediate value theorem**: if `f` is continuous on an order-connected set `s` and `a`,
 `b` are two points of this set, then `f` sends `s` to a superset of `[f x, f y]`. -/
 theorem ContinuousOn.surjOn_uIcc {s : Set α} [hs : OrdConnected s] {f : α → δ}
-    (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) : SurjOn f s (uIcc (f a) (f b)) :=
-  by rcases le_total (f a) (f b) with hab | hab <;> simp [hf.surjOn_Icc, *]
+    (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
+    SurjOn f s (uIcc (f a) (f b)) := by
+  rcases le_total (f a) (f b) with hab | hab <;> simp [hf.surjOn_Icc, *]
 #align continuous_on.surj_on_uIcc ContinuousOn.surjOn_uIcc
 
 /-- A continuous function which tendsto `Filter.atTop` along `Filter.atTop` and to `atBot` along
@@ -659,7 +648,7 @@ surjective. We formulate the conclusion as `Function.surjOn f s Set.univ`. -/
 theorem ContinuousOn.surjOn_of_tendsto' {f : α → δ} {s : Set α} [OrdConnected s] (hs : s.Nonempty)
     (hf : ContinuousOn f s) (hbot : Tendsto (fun x : s => f x) atBot atTop)
     (htop : Tendsto (fun x : s => f x) atTop atBot) : SurjOn f s univ :=
-  @ContinuousOn.surjOn_of_tendsto α _ _ _ _ δᵒᵈ _ _ _ _ _ _ hs hf hbot htop
+  ContinuousOn.surjOn_of_tendsto (δ := δᵒᵈ) hs hf hbot htop
 #align continuous_on.surj_on_of_tendsto' ContinuousOn.surjOn_of_tendsto'
 
 theorem Continuous.strictMono_of_inj_boundedOrder [BoundedOrder α] {f : α → δ}
@@ -691,6 +680,7 @@ theorem Continuous.strictMono_of_inj_boundedOrder' [BoundedOrder α] {f : α →
     (hf_c.strictMono_of_inj_boundedOrder · hf_i)
     (hf_c.strictAnti_of_inj_boundedOrder · hf_i)
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- Suppose `α` is equipped with a conditionally complete linear dense order and `f : α → δ` is
 continuous and injective. Then `f` is strictly monotone (increasing) if
 it is strictly monotone (increasing) on some closed interval `[a, b]`. -/
@@ -721,6 +711,7 @@ theorem Continuous.strictMonoOn_of_inj_rigidity {f : α → δ}
   replace : StrictMonoOn f (Icc x y) := StrictMonoOn.mono hf_mono_st this
   exact this (left_mem_Icc.mpr (le_of_lt hxy)) (right_mem_Icc.mpr (le_of_lt hxy)) hxy
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- Suppose `f : [a, b] → δ` is
 continuous and injective. Then `f` is strictly monotone (increasing) if `f(a) ≤ f(b)`. -/
 theorem ContinuousOn.strictMonoOn_of_injOn_Icc {a b : α} {f : α → δ}

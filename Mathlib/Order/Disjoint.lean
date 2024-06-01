@@ -723,8 +723,8 @@ end ComplementedLattice
 
 -- TODO: Define as a sublattice?
 /-- The sublattice of complemented elements. -/
-@[reducible]
-def Complementeds (α : Type*) [Lattice α] [BoundedOrder α] : Type _ := {a : α // IsComplemented a}
+abbrev Complementeds (α : Type*) [Lattice α] [BoundedOrder α] : Type _ :=
+  {a : α // IsComplemented a}
 #align complementeds Complementeds
 
 namespace Complementeds

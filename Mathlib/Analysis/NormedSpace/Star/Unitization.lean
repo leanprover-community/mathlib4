@@ -37,16 +37,12 @@ lemma opNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖ = ‖a‖ := by
   calc ‖mul 𝕜 E (star a) b‖ = ‖(mul 𝕜 E).flip a (star b)‖ := by simpa using norm_star (star b * a)
     _ ≤ ‖(mul 𝕜 E).flip a‖ * ‖b‖ := by simpa using le_opNorm ((mul 𝕜 E).flip a) (star b)
 
-@[deprecated]
-alias op_norm_mul_flip_apply :=
-  opNorm_mul_flip_apply -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_mul_flip_apply := opNorm_mul_flip_apply -- deprecated on 2024-02-02
 
 lemma opNNNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖₊ = ‖a‖₊ :=
   Subtype.ext (opNorm_mul_flip_apply 𝕜 a)
 
-@[deprecated]
-alias op_nnnorm_mul_flip_apply :=
-  opNNNorm_mul_flip_apply -- deprecated on 2024-02-02
+@[deprecated] alias op_nnnorm_mul_flip_apply := opNNNorm_mul_flip_apply -- deprecated on 2024-02-02
 
 variable (E)
 
@@ -64,7 +60,7 @@ instance CstarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 E) fun a => NNReal.eq_iff.mpr <|
     show ‖mul 𝕜 E a‖₊ = ‖a‖₊ by
     rw [← sSup_closed_unit_ball_eq_nnnorm]
-    refine' csSup_eq_of_forall_le_of_forall_lt_exists_gt _ _ fun r hr => _
+    refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ?_ ?_ fun r hr => ?_
     · exact (Metric.nonempty_closedBall.mpr zero_le_one).image _
     · rintro - ⟨x, hx, rfl⟩
       exact
@@ -74,7 +70,7 @@ instance CstarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
       rw [← inv_inv ‖a‖₊, NNReal.lt_inv_iff_mul_lt (inv_ne_zero ha.ne')] at hr
       obtain ⟨k, hk₁, hk₂⟩ :=
         NormedField.exists_lt_nnnorm_lt 𝕜 (mul_lt_mul_of_pos_right hr <| inv_pos.2 ha)
-      refine' ⟨_, ⟨k • star a, _, rfl⟩, _⟩
+      refine ⟨_, ⟨k • star a, ?_, rfl⟩, ?_⟩
       · simpa only [mem_closedBall_zero_iff, norm_smul, one_mul, norm_star] using
           (NNReal.le_inv_iff_mul_le ha.ne').1 (one_mul ‖a‖₊⁻¹ ▸ hk₂.le : ‖k‖₊ ≤ ‖a‖₊⁻¹)
       · simp only [map_smul, nnnorm_smul, mul_apply', mul_smul_comm, CstarRing.nnnorm_self_mul_star]

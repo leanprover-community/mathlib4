@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.LatticeIntervals
-import Mathlib.Data.Set.Intervals.OrdConnected
+import Mathlib.Order.Interval.Set.OrdConnected
 
 #align_import order.complete_lattice_intervals from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -121,8 +121,7 @@ attribute [local instance] subsetInfSet
 linear order, it suffices that it contain the `sSup` of all its nonempty bounded-above subsets, and
 the `sInf` of all its nonempty bounded-below subsets.
 See note [reducible non-instances]. -/
-@[reducible]
-noncomputable def subsetConditionallyCompleteLinearOrder [Inhabited s]
+noncomputable abbrev subsetConditionallyCompleteLinearOrder [Inhabited s]
     (h_Sup : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddAbove t), sSup ((↑) '' t : Set α) ∈ s)
     (h_Inf : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddBelow t), sInf ((↑) '' t : Set α) ∈ s) :
     ConditionallyCompleteLinearOrder s :=
@@ -153,7 +152,7 @@ theorem sSup_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Se
     (h_bdd : BddAbove t) : sSup ((↑) '' t : Set α) ∈ s := by
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ upperBounds t := h_bdd
-  refine' hs.out c.2 B.2 ⟨_, _⟩
+  refine hs.out c.2 B.2 ⟨?_, ?_⟩
   · exact (Subtype.mono_coe s).le_csSup_image hct ⟨B, hB⟩
   · exact (Subtype.mono_coe s).csSup_image_le ⟨c, hct⟩ hB
 #align Sup_within_of_ord_connected sSup_within_of_ordConnected
@@ -164,7 +163,7 @@ theorem sInf_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Se
     (h_bdd : BddBelow t) : sInf ((↑) '' t : Set α) ∈ s := by
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ lowerBounds t := h_bdd
-  refine' hs.out B.2 c.2 ⟨_, _⟩
+  refine hs.out B.2 c.2 ⟨?_, ?_⟩
   · exact (Subtype.mono_coe s).le_csInf_image ⟨c, hct⟩ hB
   · exact (Subtype.mono_coe s).csInf_image_le hct ⟨B, hB⟩
 #align Inf_within_of_ord_connected sInf_within_of_ordConnected

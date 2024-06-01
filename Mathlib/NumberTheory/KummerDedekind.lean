@@ -140,9 +140,9 @@ theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
         rfl
   refine Finset.sum_induction _ (fun u => u ∈ algebraMap R<x> S '' I.map (algebraMap R R<x>))
       (fun a b => ?_) ?_ ?_
-  rintro ⟨z, hz, rfl⟩ ⟨y, hy, rfl⟩
-  rw [← RingHom.map_add]
-  exact ⟨z + y, Ideal.add_mem _ (SetLike.mem_coe.mp hz) hy, rfl⟩
+  · rintro ⟨z, hz, rfl⟩ ⟨y, hy, rfl⟩
+    rw [← RingHom.map_add]
+    exact ⟨z + y, Ideal.add_mem _ (SetLike.mem_coe.mp hz) hy, rfl⟩
   · exact ⟨0, SetLike.mem_coe.mpr <| Ideal.zero_mem _, RingHom.map_zero _⟩
   · intro y hy
     exact lem ((Finsupp.mem_supported _ l).mp H hy)
@@ -174,12 +174,12 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
       exact Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ hq)
     refine ⟨fun h => ?_,
       fun h => (Set.mem_image _ _ _).mpr (Exists.intro ⟨z, hz⟩ ⟨by simp [h], rfl⟩)⟩
-    · obtain ⟨x₁, hx₁, hx₂⟩ := (Set.mem_image _ _ _).mp h
-      have : x₁ = ⟨z, hz⟩ := by
-        apply h_alg
-        simp [hx₂]
-        rfl
-      rwa [← this]
+    obtain ⟨x₁, hx₁, hx₂⟩ := (Set.mem_image _ _ _).mp h
+    have : x₁ = ⟨z, hz⟩ := by
+      apply h_alg
+      simp [hx₂]
+      rfl
+    rwa [← this]
   · -- The converse inclusion is trivial
     have : algebraMap R S = (algebraMap _ S).comp (algebraMap R R<x>) := by ext; rfl
     rw [this, ← Ideal.map_map]
@@ -217,10 +217,10 @@ noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap
           from Ideal.map_comap_le)
           (le_refl (I.map (algebraMap R S)))) hx
     rw [← Ideal.mem_quotient_iff_mem_sup, hz, Ideal.mem_map_iff_of_surjective] at this
-    obtain ⟨u, hu, hu'⟩ := this
-    use ⟨u, conductor_subset_adjoin hu⟩
-    simp only [← hu']
-    rfl
+    · obtain ⟨u, hu, hu'⟩ := this
+      use ⟨u, conductor_subset_adjoin hu⟩
+      simp only [← hu']
+      rfl
     · exact Ideal.Quotient.mk_surjective
 #align quot_adjoin_equiv_quot_map quotAdjoinEquivQuotMap
 
@@ -235,7 +235,7 @@ theorem quotAdjoinEquivQuotMap_apply_mk (hx : (conductor R x).comap (algebraMap 
 
 namespace KummerDedekind
 
-open scoped BigOperators Polynomial Classical
+open scoped Polynomial Classical
 
 variable [IsDomain R] [IsIntegrallyClosed R]
 variable [IsDedekindDomain S]
@@ -304,20 +304,20 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
   rw [multiplicity_eq_count_normalizedFactors, multiplicity_eq_count_normalizedFactors,
     UniqueFactorizationMonoid.normalize_normalized_factor _ hJ,
     UniqueFactorizationMonoid.normalize_normalized_factor, PartENat.natCast_inj] at this
-  refine' this.trans _
-  -- Get rid of the `map` by applying the equiv to both sides.
-  generalize hJ' :
-    (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx') ⟨J, hJ⟩ = J'
-  have : ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm J' : Ideal S) =
-      J :=
-    by rw [← hJ', Equiv.symm_apply_apply _ _, Subtype.coe_mk]
-  subst this
-  -- Get rid of the `attach` by applying the subtype `coe` to both sides.
-  rw [Multiset.count_map_eq_count' fun f =>
-      ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm f :
-        Ideal S),
-    Multiset.count_attach]
-  · exact Subtype.coe_injective.comp (Equiv.injective _)
+  · refine this.trans ?_
+    -- Get rid of the `map` by applying the equiv to both sides.
+    generalize hJ' :
+      (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx') ⟨J, hJ⟩ = J'
+    have : ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm J' : Ideal S) =
+        J := by
+      rw [← hJ', Equiv.symm_apply_apply _ _, Subtype.coe_mk]
+    subst this
+    -- Get rid of the `attach` by applying the subtype `coe` to both sides.
+    rw [Multiset.count_map_eq_count' fun f =>
+        ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm f :
+          Ideal S),
+      Multiset.count_attach]
+    · exact Subtype.coe_injective.comp (Equiv.injective _)
   · exact (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' _).prop
   · exact irreducible_of_normalized_factor _
         (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' _).prop
@@ -332,8 +332,8 @@ theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I
     (hf : Irreducible (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))) :
     Irreducible (I.map (algebraMap R S)) := by
   have mem_norm_factors : normalize (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) ∈
-      normalizedFactors (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) :=
-    by simp [normalizedFactors_irreducible hf]
+      normalizedFactors (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) := by
+    simp [normalizedFactors_irreducible hf]
   suffices ∃ y, normalizedFactors (I.map (algebraMap R S)) = {y} by
     obtain ⟨y, hy⟩ := this
     have h := normalizedFactors_prod (show I.map (algebraMap R S) ≠ 0 by

@@ -43,8 +43,8 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
       (fun t (ht : 0 < t) ↦ ?_) measurableSet_Ioi).const_mul _
     simp_rw [mul_comm (↑(rexp _) : ℂ), ← mul_assoc, neg_mul, ofReal_mul]
     rw [mul_cpow_ofReal_nonneg hpi.le ht.le, ← mul_assoc, one_div, inv_mul_cancel, one_mul]
-    · rw [Ne, cpow_eq_zero_iff, not_and_or]
-      exact Or.inl (ofReal_ne_zero.mpr hpi.ne')
+    rw [Ne, cpow_eq_zero_iff, not_and_or]
+    exact Or.inl (ofReal_ne_zero.mpr hpi.ne')
   · -- summability of integrals of norms
     apply Summable.of_norm
     convert h_sum.mul_left (Real.Gamma s.re) using 2 with i
@@ -119,7 +119,7 @@ lemma hasSum_mellin_pi_mul_sq {a : ι → ℂ} {r : ι → ℝ} {F : ℝ → ℂ
   convert hasSum_mellin_pi_mul₀ (fun i ↦ sq_nonneg (r i)) hs' hF ?_ using 3 with i
   · rw [← neg_div, Gammaℝ_def]
   · rw [← _root_.sq_abs, ofReal_pow, ← cpow_nat_mul']
-    ring_nf
+    · ring_nf
     all_goals rw [arg_ofReal_of_nonneg (abs_nonneg _)]; linarith [pi_pos]
   · convert h_sum using 3 with i
     rw [← _root_.sq_abs, ← rpow_natCast_mul (abs_nonneg _), div_ofNat_re, Nat.cast_ofNat,

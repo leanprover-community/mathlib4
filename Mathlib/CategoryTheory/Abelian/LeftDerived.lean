@@ -267,7 +267,7 @@ instance (F : C ⥤ D) [F.Additive] (X : C) [Projective X] :
     IsIso ((ProjectiveResolution.self X).fromLeftDerivedZero' F) := by
   dsimp [ProjectiveResolution.fromLeftDerivedZero']
   rw [ChainComplex.isIso_descOpcycles_iff]
-  refine' ⟨ShortComplex.Splitting.exact _, inferInstance⟩
+  refine ⟨ShortComplex.Splitting.exact ?_, inferInstance⟩
   exact
     { r := 0
       s := 𝟙 _

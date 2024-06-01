@@ -10,7 +10,7 @@ import Mathlib.Order.SupClosed
 import Mathlib.Order.SupIndep
 import Mathlib.Order.Zorn
 import Mathlib.Data.Finset.Order
-import Mathlib.Data.Set.Intervals.OrderIso
+import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Data.Finite.Set
 import Mathlib.Tactic.TFAE
 
@@ -89,18 +89,18 @@ theorem isCompactElement_iff.{u} {α : Type u} [CompleteLattice α] (k : α) :
       obtain ⟨t, ht, ht'⟩ := H (Set.range s) hs
       have : ∀ x : t, ∃ i, s i = x := fun x => ht x.prop
       choose f hf using this
-      refine' ⟨Finset.univ.image f, ht'.trans _⟩
-      · rw [Finset.sup_le_iff]
-        intro b hb
-        rw [← show s (f ⟨b, hb⟩) = id b from hf _]
-        exact Finset.le_sup (Finset.mem_image_of_mem f <| Finset.mem_univ (Subtype.mk b hb))
+      refine ⟨Finset.univ.image f, ht'.trans ?_⟩
+      rw [Finset.sup_le_iff]
+      intro b hb
+      rw [← show s (f ⟨b, hb⟩) = id b from hf _]
+      exact Finset.le_sup (Finset.mem_image_of_mem f <| Finset.mem_univ (Subtype.mk b hb))
     · intro H s hs
       obtain ⟨t, ht⟩ :=
         H s Subtype.val
           (by
             delta iSup
             rwa [Subtype.range_coe])
-      refine' ⟨t.image Subtype.val, by simp, ht.trans _⟩
+      refine ⟨t.image Subtype.val, by simp, ht.trans ?_⟩
       rw [Finset.sup_le_iff]
       exact fun x hx => @Finset.le_sup _ _ _ _ _ id _ (Finset.mem_image_of_mem Subtype.val hx)
 #align complete_lattice.is_compact_element_iff CompleteLattice.isCompactElement_iff
@@ -203,7 +203,7 @@ theorem WellFounded.isSupFiniteCompact (h : WellFounded ((· > ·) : α → α �
     IsSupFiniteCompact α := fun s => by
   let S := { x | ∃ t : Finset α, ↑t ⊆ s ∧ t.sup id = x }
   obtain ⟨m, ⟨t, ⟨ht₁, rfl⟩⟩, hm⟩ := h.has_min S ⟨⊥, ∅, by simp⟩
-  refine' ⟨t, ht₁, (sSup_le _ _ fun y hy => _).antisymm _⟩
+  refine ⟨t, ht₁, (sSup_le _ _ fun y hy => ?_).antisymm ?_⟩
   · classical
     rw [eq_of_le_of_not_lt (Finset.sup_mono (t.subset_insert y))
         (hm _ ⟨insert y t, by simp [Set.insert_subset_iff, hy, ht₁]⟩)]
@@ -226,7 +226,7 @@ theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
 
 theorem IsSupClosedCompact.wellFounded (h : IsSupClosedCompact α) :
     WellFounded ((· > ·) : α → α → Prop) := by
-  refine' RelEmbedding.wellFounded_iff_no_descending_seq.mpr ⟨fun a => _⟩
+  refine RelEmbedding.wellFounded_iff_no_descending_seq.mpr ⟨fun a => ?_⟩
   suffices sSup (Set.range a) ∈ Set.range a by
     obtain ⟨n, hn⟩ := Set.mem_range.mp this
     have h' : sSup (Set.range a) < a (n + 1) := by
@@ -247,7 +247,7 @@ theorem IsSupClosedCompact.wellFounded (h : IsSupClosedCompact α) :
 
 theorem isSupFiniteCompact_iff_all_elements_compact :
     IsSupFiniteCompact α ↔ ∀ k : α, IsCompactElement k := by
-  refine' ⟨fun h k s hs => _, fun h s => _⟩
+  refine ⟨fun h k s hs => ?_, fun h s => ?_⟩
   · obtain ⟨t, ⟨hts, htsup⟩⟩ := h s
     use t, hts
     rwa [← htsup]
@@ -303,7 +303,7 @@ variable {α}
 theorem WellFounded.finite_of_setIndependent (h : WellFounded ((· > ·) : α → α → Prop)) {s : Set α}
     (hs : SetIndependent s) : s.Finite := by
   classical
-    refine' Set.not_infinite.mp fun contra => _
+    refine Set.not_infinite.mp fun contra => ?_
     obtain ⟨t, ht₁, ht₂⟩ := WellFounded.isSupFiniteCompact α h s
     replace contra : ∃ x : α, x ∈ s ∧ x ≠ ⊥ ∧ x ∉ t := by
       have : (s \ (insert ⊥ t : Finset α)).Infinite := contra.diff (Finset.finite_toSet _)
@@ -352,7 +352,7 @@ theorem sSup_compact_le_eq (b) :
 
 @[simp]
 theorem sSup_compact_eq_top : sSup { a : α | CompleteLattice.IsCompactElement a } = ⊤ := by
-  refine' Eq.trans (congr rfl (Set.ext fun x => _)) (sSup_compact_le_eq ⊤)
+  refine Eq.trans (congr rfl (Set.ext fun x => ?_)) (sSup_compact_le_eq ⊤)
   exact (and_iff_left le_top).symm
 #align Sup_compact_eq_top sSup_compact_eq_top
 
@@ -373,7 +373,7 @@ theorem DirectedOn.inf_sSup_eq (h : DirectedOn (· ≤ ·) s) : a ⊓ sSup s = �
         rw [le_inf_iff] at hcinf
         rw [CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le] at hc
         rcases hc s hs h hcinf.2 with ⟨d, ds, cd⟩
-        refine' (le_inf hcinf.1 cd).trans (le_trans _ (le_iSup₂ d ds))
+        refine (le_inf hcinf.1 cd).trans (le_trans ?_ (le_iSup₂ d ds))
         rfl
       · rw [Set.not_nonempty_iff_eq_empty] at hs
         simp [hs])
@@ -425,7 +425,7 @@ theorem inf_sSup_eq_iSup_inf_sup_finset :
       intro c hc hcinf
       rw [le_inf_iff] at hcinf
       rcases hc s hcinf.2 with ⟨t, ht1, ht2⟩
-      refine' (le_inf hcinf.1 ht2).trans (le_trans _ (le_iSup₂ t ht1))
+      refine (le_inf hcinf.1 ht2).trans (le_trans ?_ (le_iSup₂ t ht1))
       rfl)
     (iSup_le fun t =>
       iSup_le fun h => inf_le_inf_left _ ((Finset.sup_id_eq_sSup t).symm ▸ sSup_le_sSup h))
@@ -512,12 +512,12 @@ theorem Iic_coatomic_of_compact_element {k : α} (h : IsCompactElement k) :
   · left; ext; simp only [Set.Iic.coe_top, Subtype.coe_mk]
   right
   have ⟨a, a₀, ba, h⟩ := zorn_nonempty_partialOrder₀ (Set.Iio k) ?_ b (lt_of_le_of_ne hbk H)
-  · refine' ⟨⟨a, le_of_lt a₀⟩, ⟨ne_of_lt a₀, fun c hck => by_contradiction fun c₀ => _⟩, ba⟩
+  · refine ⟨⟨a, le_of_lt a₀⟩, ⟨ne_of_lt a₀, fun c hck => by_contradiction fun c₀ => ?_⟩, ba⟩
     cases h c.1 (lt_of_le_of_ne c.2 fun con => c₀ (Subtype.ext con)) hck.le
     exact lt_irrefl _ hck
   · intro S SC cC I _
     by_cases hS : S.Nonempty
-    · refine' ⟨sSup S, h.directed_sSup_lt_of_lt hS cC.directedOn SC, _⟩
+    · refine ⟨sSup S, h.directed_sSup_lt_of_lt hS cC.directedOn SC, ?_⟩
       intro; apply le_sSup
     exact
       ⟨b, lt_of_le_of_ne hbk H, by
@@ -593,20 +593,20 @@ theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a }
         ⟨CompleteLattice.independent_sUnion_of_directed hc2.directedOn fun s hs => (hc1 hs).1, ?_,
           fun a ⟨s, sc, as⟩ => (hc1 sc).2.2 a as⟩,
         fun _ => Set.subset_sUnion_of_mem⟩
-  obtain ⟨s, ⟨s_ind, b_inf_Sup_s, s_atoms⟩, s_max⟩ := this
   swap
   · rw [sSup_sUnion, ← sSup_image, DirectedOn.disjoint_sSup_right]
     · rintro _ ⟨s, hs, rfl⟩
       exact (hc1 hs).2.1
     · rw [directedOn_image]
       exact hc2.directedOn.mono @fun s t => sSup_le_sSup
-  refine' ⟨s, s_ind, ⟨b_inf_Sup_s, _⟩, s_atoms⟩
+  obtain ⟨s, ⟨s_ind, b_inf_Sup_s, s_atoms⟩, s_max⟩ := this
+  refine ⟨s, s_ind, ⟨b_inf_Sup_s, ?_⟩, s_atoms⟩
   rw [codisjoint_iff_le_sup, ← h, sSup_le_iff]
   intro a ha
   rw [← inf_eq_left]
-  refine' (ha.le_iff.mp inf_le_left).resolve_left fun con => ha.1 _
+  refine (ha.le_iff.mp inf_le_left).resolve_left fun con => ha.1 ?_
   rw [← con, eq_comm, inf_eq_left]
-  refine' (le_sSup _).trans le_sup_right
+  refine (le_sSup ?_).trans le_sup_right
   rw [← disjoint_iff] at con
   have a_dis_Sup_s : Disjoint a (sSup s) := con.mono_right le_sup_right
   -- Porting note: The two following `fun x hx => _` are no-op

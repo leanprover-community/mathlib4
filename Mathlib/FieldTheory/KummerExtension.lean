@@ -84,12 +84,25 @@ theorem X_pow_sub_C_splits_of_isPrimitiveRoot
 
 open BigOperators
 
-theorem X_pow_sub_C_eq_prod
+-- make this private, as we only use it to prove a strictly more general version
+private
+theorem X_pow_sub_C_eq_prod'
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (hn : 0 < n) (e : α ^ n = a) :
-    (X ^ n - C a) = ∏ i in Finset.range n, (X - C (ζ ^ i * α)) := by
+    (X ^ n - C a) = ∏ i ∈ Finset.range n, (X - C (ζ ^ i * α)) := by
   rw [eq_prod_roots_of_monic_of_splits_id (monic_X_pow_sub_C _ (Nat.pos_iff_ne_zero.mp hn))
     (X_pow_sub_C_splits_of_isPrimitiveRoot hζ e), ← nthRoots, hζ.nthRoots_eq e, Multiset.map_map]
   rfl
+
+lemma X_pow_sub_C_eq_prod {R : Type*} [CommRing R] [IsDomain R]
+    {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) {α a : R} (hn : 0 < n) (e : α ^ n = a) :
+    (X ^ n - C a) = ∏ i ∈ Finset.range n, (X - C (ζ ^ i * α)) := by
+  let K := FractionRing R
+  let i := algebraMap R K
+  have h := NoZeroSMulDivisors.algebraMap_injective R K
+  apply_fun Polynomial.map i using map_injective i h
+  simpa only [Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, map_mul, map_pow,
+    Polynomial.map_prod, Polynomial.map_mul]
+    using X_pow_sub_C_eq_prod' (hζ.map_of_injective h) hn <| map_pow i α n ▸ congrArg i e
 
 end Splits
 
@@ -258,7 +271,8 @@ theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separabl
   have ⟨ζ, hζ⟩ := hζ
   rw [mem_primitiveRoots (Nat.pos_of_ne_zero <| ne_zero_of_irreducible_X_pow_sub_C H)] at hζ
   rw [← separable_map (algebraMap K K[n√a]), Polynomial.map_sub, Polynomial.map_pow, map_C, map_X,
-    algebraMap_eq, X_pow_sub_C_eq_prod (hζ.map_of_injective (algebraMap K _).injective) hn
+    AdjoinRoot.algebraMap_eq,
+    X_pow_sub_C_eq_prod (hζ.map_of_injective (algebraMap K _).injective) hn
     (root_X_pow_sub_C_pow n a), separable_prod_X_sub_C_iff']
   exact (hζ.map_of_injective (algebraMap K K[n√a]).injective).injOn_pow_mul
     (root_X_pow_sub_C_ne_zero (lt_of_le_of_ne (show 1 ≤ n from hn) (Ne.symm hn')) _)
@@ -305,7 +319,7 @@ def AdjoinRootXPowSubCEquivToRootsOfUnity (σ : K[n√a] ≃ₐ[K] K[n√a]) :
     split
     · exact one_pow _
     rw [div_pow, ← map_pow]
-    simp only [PNat.mk_coe, root_X_pow_sub_C_pow, ← algebraMap_eq, AlgEquiv.commutes]
+    simp only [PNat.mk_coe, root_X_pow_sub_C_pow, ← AdjoinRoot.algebraMap_eq, AlgEquiv.commutes]
     rw [div_self]
     rwa [Ne, map_eq_zero_iff _ (algebraMap K _).injective]))
 
@@ -323,7 +337,7 @@ def autAdjoinRootXPowSubCEquiv :
     apply (rootsOfUnityEquivOfPrimitiveRoots
       (n := ⟨n, hn⟩) (algebraMap K K[n√a]).injective hζ).injective
     ext
-    simp only [algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+    simp only [AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
       autAdjoinRootXPowSubC_root, Algebra.smul_def, ne_eq, MulEquiv.apply_symm_apply,
       rootsOfUnity.val_mkOfPowEq_coe, val_rootsOfUnityEquivOfPrimitiveRoots_apply_coe,
       AdjoinRootXPowSubCEquivToRootsOfUnity]
@@ -338,14 +352,14 @@ def autAdjoinRootXPowSubCEquiv :
     letI : Algebra K K[n√a] := inferInstance
     apply AlgEquiv.coe_algHom_injective
     apply AdjoinRoot.algHom_ext
-    simp only [algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, AlgHom.coe_coe,
-      autAdjoinRootXPowSubC_root, Algebra.smul_def, PNat.mk_coe,
+    simp only [AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+      AlgHom.coe_coe, autAdjoinRootXPowSubC_root, Algebra.smul_def, PNat.mk_coe,
       AdjoinRootXPowSubCEquivToRootsOfUnity]
     rw [rootsOfUnityEquivOfPrimitiveRoots_symm_apply, rootsOfUnity.val_mkOfPowEq_coe]
     split_ifs with h
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h
       rw [(pow_one _).symm.trans (root_X_pow_sub_C_pow 1 a), one_mul,
-        ← algebraMap_eq, AlgEquiv.commutes]
+        ← AdjoinRoot.algebraMap_eq, AlgEquiv.commutes]
     · refine div_mul_cancel₀ _ (root_X_pow_sub_C_ne_zero' hn h)
 
 lemma autAdjoinRootXPowSubCEquiv_root (η) :
@@ -358,8 +372,9 @@ lemma autAdjoinRootXPowSubCEquiv_symm_smul (σ) :
   have := Fact.mk H
   simp only [autAdjoinRootXPowSubCEquiv, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
     MulEquiv.symm_mk, MulEquiv.coe_mk, Equiv.coe_fn_symm_mk, AdjoinRootXPowSubCEquivToRootsOfUnity,
-    algebraMap_eq, Units.smul_def, Algebra.smul_def, rootsOfUnityEquivOfPrimitiveRoots_symm_apply,
-    rootsOfUnity.mkOfPowEq, PNat.mk_coe, Units.val_ofPowEqOne, ite_mul, one_mul, ne_eq]
+    AdjoinRoot.algebraMap_eq, Units.smul_def, Algebra.smul_def,
+    rootsOfUnityEquivOfPrimitiveRoots_symm_apply, rootsOfUnity.mkOfPowEq, PNat.mk_coe,
+    Units.val_ofPowEqOne, ite_mul, one_mul, ne_eq]
   simp_rw [← root_X_pow_sub_C_eq_zero_iff H]
   split_ifs with h
   · rw [h, mul_zero, map_zero]
@@ -524,7 +539,7 @@ section IsCyclic
 variable {L} [Field L] [Algebra K L] [IsGalois K L] [FiniteDimensional K L] [IsCyclic (L ≃ₐ[K] L)]
 variable (hK : (primitiveRoots (FiniteDimensional.finrank K L) K).Nonempty)
 
-open BigOperators FiniteDimensional
+open FiniteDimensional
 variable (K L)
 
 /-- If `L/K` is a cyclic extension of degree `n`, and `K` contains all `n`-th roots of unity,

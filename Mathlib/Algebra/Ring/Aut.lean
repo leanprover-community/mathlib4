@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Aut
-import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Equiv
 
 #align_import algebra.ring.aut from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
@@ -30,8 +30,7 @@ RingAut
 
 
 /-- The group of ring automorphisms. -/
-@[reducible]
-def RingAut (R : Type*) [Mul R] [Add R] :=
+abbrev RingAut (R : Type*) [Mul R] [Add R] :=
   RingEquiv R R
 #align ring_aut RingAut
 

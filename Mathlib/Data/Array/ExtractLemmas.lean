@@ -3,7 +3,7 @@ Copyright (c) 2024 Jiecheng Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiecheng Zhao
 -/
-import Std.Data.Array.Lemmas
+import Batteries.Data.Array.Lemmas
 /-!
 # Lemmas about `Array.extract`
 
@@ -27,7 +27,7 @@ theorem extract_append_left {a b : Array α} {i j : Nat} (h : j ≤ a.size) :
   · intro h1 h2 h3
     rw [get_extract, get_append_left, get_extract]
 
-theorem extract_append_right {a b : Array α} {i j : Nat} (h : i ≥ a.size):
+theorem extract_append_right {a b : Array α} {i j : Nat} (h : a.size ≤ i) :
     (a ++ b).extract i j = b.extract (i - a.size) (j - a.size) := by
   apply ext
   · rw [size_extract, size_extract, size_append]
@@ -38,9 +38,8 @@ theorem extract_append_right {a b : Array α} {i j : Nat} (h : i ≥ a.size):
     congr
     omega
 
-theorem extract_eq_of_size_le_end {a : Array α} :
-    (a.size ≤ l) → a.extract p l = a.extract p a.size := by
-  intro h
+theorem extract_eq_of_size_le_end {a : Array α} (h : a.size ≤ l) :
+    a.extract p l = a.extract p a.size := by
   simp only [extract, Nat.min_eq_right h, Nat.sub_eq, mkEmpty_eq, Nat.min_self]
 
 theorem extract_extract {a : Array α} (h : s1 + e2 ≤ e1) :

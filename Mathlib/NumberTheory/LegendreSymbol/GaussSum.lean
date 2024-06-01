@@ -50,8 +50,6 @@ additive character, multiplicative character, Gauss sum
 
 universe u v
 
-open scoped BigOperators
-
 open AddChar MulChar
 
 section GaussSumDef
@@ -102,7 +100,7 @@ private theorem gaussSum_mul_aux {χ : MulChar R R'} (hχ : IsNontrivial χ) (ψ
       Finset.sum_const_zero, map_zero_one, mul_one]
     exact (hχ.sum_eq_zero).symm
   · -- case `b ≠ 0`
-    refine' (Fintype.sum_bijective _ (mulLeft_bijective₀ b hb) _ _ fun x => _).symm
+    refine (Fintype.sum_bijective _ (mulLeft_bijective₀ b hb) _ _ fun x => ?_).symm
     rw [mul_assoc, mul_comm x, ← mul_assoc, mul_inv_cancel hb, one_mul, mul_sub, mul_one]
 
 /-- We have `gaussSum χ ψ * gaussSum χ⁻¹ ψ⁻¹ = Fintype.card R`
@@ -217,7 +215,7 @@ theorem Char.card_pow_card {F : Type*} [Field F] [Fintype F] {F' : Type*} [Field
     (χ (-1) * Fintype.card F) ^ (Fintype.card F' / 2) = χ (Fintype.card F') := by
   obtain ⟨n, hp, hc⟩ := FiniteField.card F (ringChar F)
   obtain ⟨n', hp', hc'⟩ := FiniteField.card F' (ringChar F')
-  let ψ := primitiveCharFiniteField F F' hch₁
+  let ψ := FiniteField.primitiveChar F F' hch₁
   -- Porting note: this was a `let` but then Lean would time out at
   -- unification so it is changed to a `set` and `FF'` is replaced by its
   -- definition before unification
@@ -317,7 +315,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
       -- Porting note: original proof
       -- ext; congr; apply pow_one
       ext (x : Fin 8); rw [← map_nsmul_pow ψ₈char]; congr 2;
-      rw [Nat.smul_one_eq_coe, Fin.cast_val_eq_self x]
+      rw [Nat.smul_one_eq_cast, Fin.cast_val_eq_self x]
     have h₂ : (0 + 1 * τ ^ 1 + 0 + -1 * τ ^ 3 + 0 + -1 * τ ^ 5 + 0 + 1 * τ ^ 7) ^ 2 =
         8 + (τ ^ 4 + 1) * (τ ^ 10 - 2 * τ ^ 8 - 2 * τ ^ 6 + 6 * τ ^ 4 + τ ^ 2 - 8) := by ring
     have h₃ : 8 + (τ ^ 4 + 1) * (τ ^ 10 - 2 * τ ^ 8 - 2 * τ ^ 6 + 6 * τ ^ 4 + τ ^ 2 - 8) = ↑8 := by

@@ -79,12 +79,12 @@ theorem isVonNBounded_iff (s : Set E) : IsVonNBounded 𝕜 s ↔ ∀ V ∈ 𝓝 
 
 theorem _root_.Filter.HasBasis.isVonNBounded_iff {q : ι → Prop} {s : ι → Set E} {A : Set E}
     (h : (𝓝 (0 : E)).HasBasis q s) : IsVonNBounded 𝕜 A ↔ ∀ i, q i → Absorbs 𝕜 (s i) A := by
-  refine' ⟨fun hA i hi => hA (h.mem_of_mem hi), fun hA V hV => _⟩
+  refine ⟨fun hA i hi => hA (h.mem_of_mem hi), fun hA V hV => ?_⟩
   rcases h.mem_iff.mp hV with ⟨i, hi, hV⟩
   exact (hA i hi).mono_left hV
 #align filter.has_basis.is_vonN_bounded_basis_iff Filter.HasBasis.isVonNBounded_iff
 
-@[deprecated] -- since 12 January 2024
+@[deprecated] -- since 2024-01-12
 alias _root_.Filter.HasBasis.isVonNBounded_basis_iff := Filter.HasBasis.isVonNBounded_iff
 
 /-- Subsets of bounded sets are bounded. -/
@@ -160,9 +160,9 @@ alias ⟨IsVonNBounded.tendsto_smallSets_nhds, _⟩ := isVonNBounded_iff_tendsto
 lemma isVonNBounded_pi_iff {𝕜 ι : Type*} {E : ι → Type*} [NormedDivisionRing 𝕜]
     [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)]
     {S : Set (∀ i, E i)} : IsVonNBounded 𝕜 S ↔ ∀ i, IsVonNBounded 𝕜 (eval i '' S) := by
-  simp only [isVonNBounded_iff_tendsto_smallSets_nhds, nhds_pi, Filter.pi, smallSets_iInf,
-    smallSets_comap, tendsto_iInf, tendsto_lift', comp_apply, mem_powerset_iff, ← image_subset_iff,
-    ← image_smul, image_image, tendsto_smallSets_iff]; rfl
+  simp_rw [isVonNBounded_iff_tendsto_smallSets_nhds, nhds_pi, Filter.pi, smallSets_iInf,
+    smallSets_comap_eq_comap_image, tendsto_iInf, tendsto_comap_iff, Function.comp,
+    ← image_smul, image_image]; rfl
 
 section Image
 
@@ -205,11 +205,11 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l
     push_neg at hVS
     rcases hVS ‖(ε n)⁻¹‖ with ⟨a, haε, haS⟩
     rcases Set.not_subset.mp haS with ⟨x, hxS, hx⟩
-    refine' ⟨⟨x, hxS⟩, fun hnx => _⟩
+    refine ⟨⟨x, hxS⟩, fun hnx => ?_⟩
     rw [← Set.mem_inv_smul_set_iff₀ hn] at hnx
     exact hx (hVb.smul_mono haε hnx)
   rcases this.choice with ⟨x, hx⟩
-  refine' Filter.frequently_false l (Filter.Eventually.frequently _)
+  refine Filter.frequently_false l (Filter.Eventually.frequently ?_)
   filter_upwards [hx,
     (H (_ ∘ x) fun n => (x n).2).eventually (eventually_mem_set.mpr hV)] using fun n => id
 #align bornology.is_vonN_bounded_of_smul_tendsto_zero Bornology.isVonNBounded_of_smul_tendsto_zero
@@ -311,8 +311,7 @@ variable (𝕜 E)
 
 Note that this is not registered as an instance, in order to avoid diamonds with the
 metric bornology. -/
-@[reducible]
-def vonNBornology : Bornology E :=
+abbrev vonNBornology : Bornology E :=
   Bornology.ofBounded (setOf (IsVonNBounded 𝕜)) (isVonNBounded_empty 𝕜 E)
     (fun _ hs _ ht => hs.subset ht) (fun _ hs _ => hs.union) isVonNBounded_singleton
 #align bornology.vonN_bornology Bornology.vonNBornology

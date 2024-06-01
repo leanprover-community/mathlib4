@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Limits
-import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.Algebra.Category.GroupCat.ForgetCorepresentable
+import Mathlib.Algebra.Category.GroupCat.Preadditive
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
-import Mathlib.GroupTheory.Subgroup.Basic
 
 #align_import algebra.category.Group.limits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -161,7 +161,8 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J GroupCat.{u} where
   has_limit _ := inferInstance
 
 /-- The category of groups has all limits. -/
-@[to_additive "The category of additive groups has all limits."]
+@[to_additive "The category of additive groups has all limits.",
+  to_additive_relevant_arg 2]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} GroupCat.{u} where
   has_limits_of_shape J _ := { }
 set_option linter.uppercaseLean3 false in
@@ -359,7 +360,8 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommGroupCat.{u} wh
   has_limit _ := inferInstance
 
 /-- The category of commutative groups has all limits. -/
-@[to_additive "The category of additive commutative groups has all limits."]
+@[to_additive "The category of additive commutative groups has all limits.",
+  to_additive_relevant_arg 2]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommGroupCat.{u}
   where has_limits_of_shape _ _ := { }
 set_option linter.uppercaseLean3 false in
@@ -520,18 +522,14 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     refine equalizer.hom_ext ?_
     ext x
     dsimp
-    generalize_proofs _ h1 h2
-    erw [DFunLike.congr_fun (kernel.lift_ι f _ h1) ⟨_, h2⟩]
-    rfl
+    apply DFunLike.congr_fun (kernel.lift_ι f _ _)
   inv_hom_id := by
     apply AddCommGroupCat.ext
     simp only [AddMonoidHom.coe_mk, coe_id, coe_comp]
     rintro ⟨x, mem⟩
     refine Subtype.ext ?_
     simp only [ZeroHom.coe_mk, Function.comp_apply, id_eq]
-    generalize_proofs _ h1 h2
-    erw [DFunLike.congr_fun (kernel.lift_ι f _ h1) ⟨_, mem⟩]
-    rfl
+    apply DFunLike.congr_fun (kernel.lift_ι f _ _)
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker AddCommGroupCat.kernelIsoKer
 

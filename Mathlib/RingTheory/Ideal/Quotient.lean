@@ -30,7 +30,6 @@ universe u v w
 namespace Ideal
 
 open Set
-open BigOperators
 
 variable {R : Type u} [CommRing R] (I : Ideal R) {a b : R}
 variable {S : Type v}
@@ -41,11 +40,10 @@ variable {S : Type v}
 /-- The quotient `R/I` of a ring `R` by an ideal `I`.
 
 The ideal quotient of `I` is defined to equal the quotient of `I` as an `R`-submodule of `R`.
-This definition is marked `reducible` so that typeclass instances can be shared between
+This definition uses `abbrev` so that typeclass instances can be shared between
 `Ideal.Quotient I` and `Submodule.Quotient I`.
 -/
-@[reducible]
-instance : HasQuotient R (Ideal R) :=
+@[instance] abbrev instHasQuotient : HasQuotient R (Ideal R) :=
   Submodule.hasQuotient
 
 namespace Quotient
@@ -185,7 +183,7 @@ instance isDomain (I : Ideal R) [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
 #align ideal.quotient.is_domain Ideal.Quotient.isDomain
 
 theorem isDomain_iff_prime (I : Ideal R) : IsDomain (R ⧸ I) ↔ I.IsPrime := by
-  refine' ⟨fun H => ⟨zero_ne_one_iff.1 _, fun {x y} h => _⟩, fun h => inferInstance⟩
+  refine ⟨fun H => ⟨zero_ne_one_iff.1 ?_, fun {x y} h => ?_⟩, fun h => inferInstance⟩
   · haveI : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
     exact zero_ne_one
   · simp only [← eq_zero_iff_mem, (mk I).map_mul] at h ⊢
@@ -198,7 +196,7 @@ theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
   rintro ⟨a⟩ h
   rcases hI.exists_inv (mt eq_zero_iff_mem.2 h) with ⟨b, c, hc, abc⟩
   rw [mul_comm] at abc
-  refine' ⟨mk _ b, Quot.sound _⟩
+  refine ⟨mk _ b, Quot.sound ?_⟩
   simp only [Submodule.quotientRel_r_def]
   rw [← eq_sub_iff_add_eq'] at abc
   rwa [abc, ← neg_mem_iff (G := R) (H := I), neg_sub] at hc
@@ -210,8 +208,7 @@ open scoped Classical
 since users will have computable inverses in some applications.
 
 See note [reducible non-instances]. -/
-@[reducible]
-protected noncomputable def groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
+protected noncomputable abbrev groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
     GroupWithZero (R ⧸ I) :=
   { inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
     mul_inv_cancel := fun a (ha : a ≠ 0) =>
@@ -223,9 +220,11 @@ protected noncomputable def groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
 will have computable inverses (and `qsmul`, `ratCast`) in some applications.
 
 See note [reducible non-instances]. -/
-@[reducible]
-protected noncomputable def field (I : Ideal R) [hI : I.IsMaximal] : Field (R ⧸ I) :=
-  { Quotient.commRing I, Quotient.groupWithZero I with qsmul := qsmulRec _ }
+protected noncomputable abbrev field (I : Ideal R) [hI : I.IsMaximal] : Field (R ⧸ I) where
+  __ := commRing _
+  __ := Quotient.groupWithZero _
+  nnqsmul := _
+  qsmul := _
 #align ideal.quotient.field Ideal.Quotient.field
 
 /-- If the quotient by an ideal is a field, then the ideal is maximal. -/

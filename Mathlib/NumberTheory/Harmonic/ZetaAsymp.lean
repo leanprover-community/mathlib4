@@ -3,7 +3,7 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.ZetaFunction
+import Mathlib.NumberTheory.LSeries.RiemannZeta
 import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 
 /-!
@@ -27,7 +27,7 @@ exists and is equal to `γ`. Finally, using this and the Riemann removable singu
 we obtain the limit along punctured neighbourhoods of 1 in `ℂ`.
 -/
 
-open Real BigOperators Set MeasureTheory Filter Topology
+open Real Set MeasureTheory Filter Topology
 
 namespace ZetaAsymptotics
 -- since the intermediate lemmas are of little interest in themselves we put them in a namespace
@@ -40,7 +40,7 @@ namespace ZetaAsymptotics
 noncomputable def term (n : ℕ) (s : ℝ) : ℝ := ∫ x : ℝ in n..(n + 1), (x - n) / x ^ (s + 1)
 
 /-- Sum of finitely many `term`s. -/
-noncomputable def term_sum (s : ℝ) (N : ℕ) : ℝ := ∑ n : ℕ in Finset.range N, term (n + 1) s
+noncomputable def term_sum (s : ℝ) (N : ℕ) : ℝ := ∑ n ∈ Finset.range N, term (n + 1) s
 
 /-- Topological sum of `term`s. -/
 noncomputable def term_tsum (s : ℝ) : ℝ := ∑' n, term (n + 1) s
@@ -106,7 +106,7 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
 
 lemma term_sum_one (N : ℕ) : term_sum 1 N = log (N + 1) - harmonic (N + 1) + 1 := by
   induction' N with N hN
-  · simp_rw [term_sum, Finset.sum_range_zero, harmonic_succ, harmonic_zero, Nat.zero_eq,
+  · simp_rw [term_sum, Finset.sum_range_zero, harmonic_succ, harmonic_zero,
       Nat.cast_zero, zero_add, Nat.cast_one, inv_one, Rat.cast_one, log_one, sub_add_cancel]
   · unfold term_sum at hN ⊢
     rw [Finset.sum_range_succ, hN, harmonic_succ (N + 1),
@@ -124,7 +124,7 @@ lemma term_tsum_one : HasSum (fun n ↦ term (n + 1) 1) (1 - eulerMascheroniCons
   refine Tendsto.add ?_ tendsto_const_nhds
   have := (tendsto_eulerMascheroniSeq'.comp (tendsto_add_atTop_nat 1)).neg
   refine this.congr' (eventually_of_forall (fun n ↦ ?_))
-  simp_rw [Function.comp_apply, eulerMascheroniSeq', (by positivity : n + 1 ≠ 0), if_false]
+  simp_rw [Function.comp_apply, eulerMascheroniSeq', if_false]
   push_cast
   abel
 
@@ -168,7 +168,7 @@ lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
 
 lemma term_sum_of_lt (N : ℕ) {s : ℝ} (hs : 1 < s) :
     term_sum s N = 1 / (s - 1) * (1 - 1 / (N + 1) ^ (s - 1))
-    - 1 / s * ((∑ n in Finset.range N, 1 / (n + 1 : ℝ) ^ s) - N / (N + 1) ^ s) := by
+    - 1 / s * ((∑ n ∈ Finset.range N, 1 / (n + 1 : ℝ) ^ s) - N / (N + 1) ^ s) := by
   simp only [term_sum]
   conv => enter [1, 2, n]; rw [term_of_lt (by simp) hs]
   rw [Finset.sum_sub_distrib]
@@ -217,7 +217,7 @@ lemma term_tsum_of_lt {s : ℝ} (hs : 1 < s) :
           linarith
         · apply le_of_eq
           rw [rpow_sub_one, ← div_mul, div_one, mul_comm, one_div, inv_rpow, ← div_eq_mul_inv]
-          norm_cast
+          · norm_cast
           all_goals positivity
 
 /-- Reformulation of `ZetaAsymptotics.term_tsum_of_lt` which is useful for some computations
@@ -271,9 +271,9 @@ lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
     · exact (term_welldef n.succ_pos (zero_lt_one.trans_le hs)).1
     · exact (term_welldef n.succ_pos zero_lt_one).1
     · rw [div_le_div_left] -- leave side-goals to end and kill them all together
-      apply rpow_le_rpow_of_exponent_le
-      · exact (lt_of_le_of_lt (by simp) hx.1).le
-      · linarith [mem_Ici.mp hs]
+      · apply rpow_le_rpow_of_exponent_le
+        · exact (lt_of_le_of_lt (by simp) hx.1).le
+        · linarith [mem_Ici.mp hs]
       · linarith [hx.1]
       all_goals apply rpow_pos_of_pos ((Nat.cast_nonneg _).trans_lt hx.1)
   · rw [intervalIntegral.integral_of_le (by linarith)]
@@ -319,7 +319,7 @@ theorem _root_.tendsto_riemannZeta_sub_one_div :
     refine hC.comp (tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_ ?_)
     · exact (Complex.continuous_ofReal.tendsto 1).mono_left (nhdsWithin_le_nhds ..)
     · filter_upwards [self_mem_nhdsWithin] with a ha
-      rw [mem_compl_singleton_iff, ← Complex.ofReal_one, Ne.def, Complex.ofReal_inj]
+      rw [mem_compl_singleton_iff, ← Complex.ofReal_one, Ne, Complex.ofReal_inj]
       exact ne_of_gt ha
   refine ⟨_, Complex.tendsto_limUnder_of_differentiable_on_punctured_nhds_of_isLittleO ?_ ?_⟩
   · filter_upwards [self_mem_nhdsWithin] with s hs
