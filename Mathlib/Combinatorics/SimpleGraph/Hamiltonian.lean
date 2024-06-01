@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer
 -/
 
-import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 
 /-!
@@ -82,8 +82,8 @@ lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective
     intro x
     rcases p with (_ | ⟨y, p⟩)
     · cases hp.ne_nil rfl
-    simp only [support_cons, List.map_cons, List.head_cons, hf.injective.eq_iff,
-      List.count_cons, add_tsub_cancel_right]
+    simp only [support_cons, List.count_cons, List.map_cons, List.head_cons, hf.injective.eq_iff,
+      add_tsub_cancel_right]
     exact hp.isHamiltonian_tail _
 
 lemma IsHamiltonianCycle_def {p : G.Walk a a} :
