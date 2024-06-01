@@ -70,7 +70,7 @@ jobs:
           # github using a different username.
           git config --unset http.https://github.com/.extraheader
 
-      - name: file a PR with the updated nolints.json and style-exceptions.txt
+      - name: file a new PR to update nolints.json and style-exceptions.txt
         run: ./scripts/update_nolints_CI.sh
         env:
           DEPLOY_GITHUB_TOKEN: ${{ secrets.UPDATE_NOLINTS_TOKEN }}
