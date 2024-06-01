@@ -135,7 +135,7 @@ instance isStronglyCartesian_of_isCartesian (p : 𝒳 ⥤ 𝒮) [p.IsFibered] {R
   use τ ≫ ψ
   refine ⟨⟨?_, ?_⟩, ?_⟩
   -- TODO: order of values (+ make type-class instance?)
-  apply comp_lift_id_left p g τ (p.obj a') ψ
+  apply comp_lift_id_left p (p.obj a') τ g ψ
   rw [assoc, inducedMap_comp] -- TODO: comp simp lemma?
   intro π ⟨hπ, hπ_comp⟩
   -- Let `τ'` be the map induced from `π` and the universal property of `ψ`
