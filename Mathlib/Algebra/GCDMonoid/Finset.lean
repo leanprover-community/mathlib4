@@ -111,8 +111,9 @@ theorem lcm_mono (h : s₁ ⊆ s₂) : s₁.lcm f ∣ s₂.lcm f :=
   lcm_dvd fun _ hb ↦ dvd_lcm (h hb)
 #align finset.lcm_mono Finset.lcm_mono
 
-theorem lcm_image [DecidableEq β] {g : γ → β} (s : Finset γ) : (s.image g).lcm f = s.lcm (f ∘ g) :=
-  by classical induction' s using Finset.induction with c s _ ih <;> simp [*]
+theorem lcm_image [DecidableEq β] {g : γ → β} (s : Finset γ) :
+    (s.image g).lcm f = s.lcm (f ∘ g) := by
+  classical induction' s using Finset.induction with c s _ ih <;> simp [*]
 #align finset.lcm_image Finset.lcm_image
 
 theorem lcm_eq_lcm_image [DecidableEq α] : s.lcm f = (s.image f).lcm id :=
@@ -199,8 +200,9 @@ theorem gcd_mono (h : s₁ ⊆ s₂) : s₂.gcd f ∣ s₁.gcd f :=
   dvd_gcd fun _ hb ↦ gcd_dvd (h hb)
 #align finset.gcd_mono Finset.gcd_mono
 
-theorem gcd_image [DecidableEq β] {g : γ → β} (s : Finset γ) : (s.image g).gcd f = s.gcd (f ∘ g) :=
-  by classical induction' s using Finset.induction with c s _ ih <;> simp [*]
+theorem gcd_image [DecidableEq β] {g : γ → β} (s : Finset γ) :
+    (s.image g).gcd f = s.gcd (f ∘ g) := by
+  classical induction' s using Finset.induction with c s _ ih <;> simp [*]
 #align finset.gcd_image Finset.gcd_image
 
 theorem gcd_eq_gcd_image [DecidableEq α] : s.gcd f = (s.image f).gcd id :=

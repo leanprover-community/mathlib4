@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
-import Mathlib.Algebra.Function.Indicator
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Data.Set.Finite
 
@@ -325,8 +325,8 @@ theorem single_eq_of_ne (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := by
 #align finsupp.single_eq_of_ne Finsupp.single_eq_of_ne
 
 theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
-    ⇑(single a b) = Function.update (0 : _) a b :=
-  by classical rw [single_eq_set_indicator, ← Set.piecewise_eq_indicator, Set.piecewise_singleton]
+    ⇑(single a b) = Function.update (0 : _) a b := by
+  classical rw [single_eq_set_indicator, ← Set.piecewise_eq_indicator, Set.piecewise_singleton]
 #align finsupp.single_eq_update Finsupp.single_eq_update
 
 theorem single_eq_pi_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) = Pi.single a b :=
@@ -468,8 +468,9 @@ theorem support_eq_singleton' {f : α →₀ M} {a : α} :
     fun ⟨_b, hb, hf⟩ => hf.symm ▸ support_single_ne_zero _ hb⟩
 #align finsupp.support_eq_singleton' Finsupp.support_eq_singleton'
 
-theorem card_support_eq_one {f : α →₀ M} : card f.support = 1 ↔ ∃ a, f a ≠ 0 ∧ f = single a (f a) :=
-  by simp only [card_eq_one, support_eq_singleton]
+theorem card_support_eq_one {f : α →₀ M} :
+    card f.support = 1 ↔ ∃ a, f a ≠ 0 ∧ f = single a (f a) := by
+  simp only [card_eq_one, support_eq_singleton]
 #align finsupp.card_support_eq_one Finsupp.card_support_eq_one
 
 theorem card_support_eq_one' {f : α →₀ M} :

@@ -78,8 +78,8 @@ theorem source_trans_partialHomeomorph (hU : IsOpen U)
     (h2φ' : ContinuousOn (fun x => (φ' x).symm : B → F →L[𝕜] F) U') :
     (FiberwiseLinear.partialHomeomorph φ hU hφ h2φ ≫ₕ
           FiberwiseLinear.partialHomeomorph φ' hU' hφ' h2φ').source =
-      (U ∩ U') ×ˢ univ :=
-  by dsimp only [FiberwiseLinear.partialHomeomorph]; mfld_set_tac
+      (U ∩ U') ×ˢ univ := by
+  dsimp only [FiberwiseLinear.partialHomeomorph]; mfld_set_tac
 #align fiberwise_linear.source_trans_local_homeomorph FiberwiseLinear.source_trans_partialHomeomorph
 
 /-- Compute the target of the composition of two partial homeomorphisms induced by fiberwise linear
@@ -91,8 +91,8 @@ theorem target_trans_partialHomeomorph (hU : IsOpen U)
     (h2φ' : ContinuousOn (fun x => (φ' x).symm : B → F →L[𝕜] F) U') :
     (FiberwiseLinear.partialHomeomorph φ hU hφ h2φ ≫ₕ
           FiberwiseLinear.partialHomeomorph φ' hU' hφ' h2φ').target =
-      (U ∩ U') ×ˢ univ :=
-  by dsimp only [FiberwiseLinear.partialHomeomorph]; mfld_set_tac
+      (U ∩ U') ×ˢ univ := by
+  dsimp only [FiberwiseLinear.partialHomeomorph]; mfld_set_tac
 #align fiberwise_linear.target_trans_local_homeomorph FiberwiseLinear.target_trans_partialHomeomorph
 
 end FiberwiseLinear
@@ -143,7 +143,7 @@ theorem SmoothFiberwiseLinear.locality_aux₁ (e : PartialHomeomorph (B × F) (B
   refine ⟨Prod.fst '' e.source, he, ?_⟩
   rintro x ⟨p, hp, rfl⟩
   refine ⟨φ ⟨p, hp⟩, u ⟨p, hp⟩, hu ⟨p, hp⟩, ?_, hu' _, hφ ⟨p, hp⟩, h2φ ⟨p, hp⟩, ?_⟩
-  · intro y hy; refine' ⟨(y, 0), heu ⟨p, hp⟩ ⟨_, _⟩ hy, rfl⟩
+  · intro y hy; exact ⟨(y, 0), heu ⟨p, hp⟩ ⟨_, _⟩ hy, rfl⟩
   · rw [← hesu, e.restr_source_inter]; exact heφ ⟨p, hp⟩
 #align smooth_fiberwise_linear.locality_aux₁ SmoothFiberwiseLinear.locality_aux₁
 

@@ -156,10 +156,10 @@ protected theorem div_pos (ha : a ≠ 0) (hb : b ≠ ∞) : 0 < a / b :=
 
 protected theorem mul_inv {a b : ℝ≥0∞} (ha : a ≠ 0 ∨ b ≠ ∞) (hb : a ≠ ∞ ∨ b ≠ 0) :
     (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
-  induction' b using recTopCoe with b
+  induction' b with b
   · replace ha : a ≠ 0 := ha.neg_resolve_right rfl
     simp [ha]
-  induction' a using recTopCoe with a
+  induction' a with a
   · replace hb : b ≠ 0 := coe_ne_zero.1 (hb.neg_resolve_left rfl)
     simp [hb]
   by_cases h'a : a = 0
@@ -198,7 +198,7 @@ protected theorem inv_pos : 0 < a⁻¹ ↔ a ≠ ∞ :=
 theorem inv_strictAnti : StrictAnti (Inv.inv : ℝ≥0∞ → ℝ≥0∞) := by
   intro a b h
   lift a to ℝ≥0 using h.ne_top
-  induction b using recTopCoe; · simp
+  induction b; · simp
   rw [coe_lt_coe] at h
   rcases eq_or_ne a 0 with (rfl | ha); · simp [h]
   rw [← coe_inv h.ne_bot, ← coe_inv ha, coe_lt_coe]
@@ -291,7 +291,7 @@ theorem div_eq_top : a / b = ∞ ↔ a ≠ 0 ∧ b = 0 ∨ a = ∞ ∧ b ≠ ∞
 
 protected theorem le_div_iff_mul_le (h0 : b ≠ 0 ∨ c ≠ 0) (ht : b ≠ ∞ ∨ c ≠ ∞) :
     a ≤ c / b ↔ a * b ≤ c := by
-  induction' b using recTopCoe with b
+  induction' b with b
   · lift c to ℝ≥0 using ht.neg_resolve_left rfl
     rw [div_top, nonpos_iff_eq_zero]
     rcases eq_or_ne a 0 with (rfl | ha) <;> simp [*]

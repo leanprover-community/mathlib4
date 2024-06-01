@@ -380,8 +380,8 @@ theorem smoothWithinAt_iff_target :
 
 theorem contMDiffAt_iff_target {x : M} :
     ContMDiffAt I I' n f x ↔
-      ContinuousAt f x ∧ ContMDiffAt I 𝓘(𝕜, E') n (extChartAt I' (f x) ∘ f) x :=
-  by rw [ContMDiffAt, ContMDiffAt, contMDiffWithinAt_iff_target, continuousWithinAt_univ]
+      ContinuousAt f x ∧ ContMDiffAt I 𝓘(𝕜, E') n (extChartAt I' (f x) ∘ f) x := by
+  rw [ContMDiffAt, ContMDiffAt, contMDiffWithinAt_iff_target, continuousWithinAt_univ]
 #align cont_mdiff_at_iff_target contMDiffAt_iff_target
 
 theorem smoothAt_iff_target {x : M} :
@@ -616,8 +616,8 @@ theorem contMDiff_iff :
         ∀ (x : M) (y : M'),
           ContDiffOn 𝕜 n (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
             ((extChartAt I x).target ∩
-              (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' y).source)) :=
-  by simp [← contMDiffOn_univ, contMDiffOn_iff, continuous_iff_continuousOn_univ]
+              (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' y).source)) := by
+  simp [← contMDiffOn_univ, contMDiffOn_iff, continuous_iff_continuousOn_univ]
 #align cont_mdiff_iff contMDiff_iff
 
 /-- One can reformulate smoothness as continuity and smoothness in any extended chart in the

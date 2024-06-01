@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Sites.Canonical
 import Mathlib.CategoryTheory.Sites.Coherent.Basic
 import Mathlib.CategoryTheory.Sites.Preserves
 /-!
@@ -58,6 +59,19 @@ theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X)
 
 instance {α : Type} [Finite α] (Z : α → C) : (ofArrows Z (fun i ↦ Sigma.ι Z i)).Extensive :=
   ⟨⟨α, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, ⟨coproductIsCoproduct _⟩⟩⟩
+
+/-- Every Yoneda-presheaf is a sheaf for the extensive topology. -/
+theorem extensiveTopology.isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (extensiveTopology C)
+    (yoneda.obj W) := by
+  erw [isSheaf_coverage]
+  intro X R ⟨Y, α, Z, π, hR, hi⟩
+  have : IsIso (Sigma.desc (Cofan.inj (Cofan.mk X π))) := hi
+  have : R.Extensive := ⟨Y, α, Z, π, hR, ⟨Cofan.isColimitOfIsIsoSigmaDesc (Cofan.mk X π)⟩⟩
+  exact isSheafFor_extensive_of_preservesFiniteProducts _ _
+
+/-- The extensive topology on a finitary pre-extensive category is subcanonical. -/
+theorem extensiveTopology.subcanonical : Sheaf.Subcanonical (extensiveTopology C) :=
+  Sheaf.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
 
 /--
 A presheaf of sets on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite
