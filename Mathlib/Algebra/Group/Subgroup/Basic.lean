@@ -3214,6 +3214,17 @@ theorem map_normalizer_eq_of_bijective (H : Subgroup G) {f : G →* N} (hf : Fun
 #align subgroup.map_normalizer_eq_of_bijective Subgroup.map_normalizer_eq_of_bijective
 #align add_subgroup.map_normalizer_eq_of_bijective AddSubgroup.map_normalizer_eq_of_bijective
 
+lemma isCoatom_comap_of_surjective
+    {H : Type*} [Group H] {φ : G →* H} (hφ : Function.Surjective φ)
+    {M : Subgroup H} (hM : IsCoatom M) : IsCoatom (M.comap φ) := by
+  refine And.imp (fun hM ↦ ?_) (fun hM ↦ ?_) hM
+  · rwa [← (comap_injective hφ).ne_iff, comap_top] at hM
+  · intro K hK
+    specialize hM (K.map φ)
+    rw [← comap_lt_comap_of_surjective hφ, ← (comap_injective hφ).eq_iff] at hM
+    rw [comap_map_eq_self ((M.ker_le_comap φ).trans hK.le), comap_top] at hM
+    exact hM hK
+
 end Subgroup
 
 namespace MonoidHom
