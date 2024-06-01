@@ -66,20 +66,20 @@ calc
   _             ≃⋆[𝕜] C(σ 𝕜 (↑a : A⁺¹), 𝕜) := Homeomorph.compStarAlgEquiv'
   _             →⋆ₐ[𝕜] A⁺¹ := cfcHom
 ```
-This range of this map is contained in the range of `(↑) : A → A⁺¹` (see `nucfcAux_mem_range_inr`),
+This range of this map is contained in the range of `(↑) : A → A⁺¹` (see `cfcₙAux_mem_range_inr`),
 and so we may restrict it to `A` to get the necessary homomorphism for the non-unital continuous
 functional calculus.
 -/
-noncomputable def nucfcAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹ :=
+noncomputable def cfcₙAux : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A⁺¹ :=
   (cfcHom (R := 𝕜) (hp₁.mpr ha) : C(σ 𝕜 (a : A⁺¹), 𝕜) →⋆ₙₐ[𝕜] A⁺¹) |>.comp
     (Homeomorph.compStarAlgEquiv' 𝕜 𝕜 <| .setCongr <| (quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm)
     |>.comp ContinuousMapZero.toContinuousMapHom
 
-lemma nucfcAux_id : nucfcAux hp₁ a ha (ContinuousMapZero.id rfl) = a := cfcHom_id (hp₁.mpr ha)
+lemma cfcₙAux_id : cfcₙAux hp₁ a ha (ContinuousMapZero.id rfl) = a := cfcHom_id (hp₁.mpr ha)
 
 open Unitization in
-lemma closedEmbedding_nucfcAux : ClosedEmbedding (nucfcAux hp₁ a ha) := by
-  simp only [nucfcAux, NonUnitalStarAlgHom.coe_comp]
+lemma closedEmbedding_cfcₙAux : ClosedEmbedding (cfcₙAux hp₁ a ha) := by
+  simp only [cfcₙAux, NonUnitalStarAlgHom.coe_comp]
   refine ((cfcHom_closedEmbedding (hp₁.mpr ha)).comp ?_).comp
     ContinuousMapZero.closedEmbedding_toContinuousMap
   let e : C(σₙ 𝕜 a, 𝕜) ≃ₜ C(σ 𝕜 (a : A⁺¹), 𝕜) :=
@@ -89,8 +89,8 @@ lemma closedEmbedding_nucfcAux : ClosedEmbedding (nucfcAux hp₁ a ha) := by
       continuous_invFun := ContinuousMap.continuous_comp_left _ }
   exact e.closedEmbedding
 
-lemma spec_nucfcAux (f : C(σₙ 𝕜 a, 𝕜)₀) : σ 𝕜 (nucfcAux hp₁ a ha f) = Set.range f := by
-  rw [nucfcAux, NonUnitalStarAlgHom.comp_assoc, NonUnitalStarAlgHom.comp_apply]
+lemma spec_cfcₙAux (f : C(σₙ 𝕜 a, 𝕜)₀) : σ 𝕜 (cfcₙAux hp₁ a ha f) = Set.range f := by
+  rw [cfcₙAux, NonUnitalStarAlgHom.comp_assoc, NonUnitalStarAlgHom.comp_apply]
   simp only [NonUnitalStarAlgHom.comp_apply, NonUnitalStarAlgHom.coe_coe]
   rw [cfcHom_map_spectrum (hp₁.mpr ha) (R := 𝕜) _]
   ext x
@@ -99,16 +99,16 @@ lemma spec_nucfcAux (f : C(σₙ 𝕜 a, 𝕜)₀) : σ 𝕜 (nucfcAux hp₁ a h
   · exact ⟨⟨x, (Unitization.quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm ▸ x.property⟩, rfl⟩
   · exact ⟨⟨x, Unitization.quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a ▸ x.property⟩, rfl⟩
 
-lemma nucfcAux_mem_range_inr (f : C(σₙ 𝕜 a, 𝕜)₀) :
-    nucfcAux hp₁ a ha f ∈ NonUnitalStarAlgHom.range (Unitization.inrNonUnitalStarAlgHom 𝕜 A) := by
-  have h₁ := (closedEmbedding_nucfcAux hp₁ a ha).continuous.range_subset_closure_image_dense
+lemma cfcₙAux_mem_range_inr (f : C(σₙ 𝕜 a, 𝕜)₀) :
+    cfcₙAux hp₁ a ha f ∈ NonUnitalStarAlgHom.range (Unitization.inrNonUnitalStarAlgHom 𝕜 A) := by
+  have h₁ := (closedEmbedding_cfcₙAux hp₁ a ha).continuous.range_subset_closure_image_dense
     (ContinuousMapZero.adjoin_id_dense (s := σₙ 𝕜 a) rfl) ⟨f, rfl⟩
   rw [← SetLike.mem_coe]
   refine closure_minimal ?_ ?_ h₁
   · rw [← NonUnitalStarSubalgebra.coe_map, SetLike.coe_subset_coe, NonUnitalStarSubalgebra.map_le]
     apply NonUnitalStarAlgebra.adjoin_le
     apply Set.singleton_subset_iff.mpr
-    rw [SetLike.mem_coe, NonUnitalStarSubalgebra.mem_comap, nucfcAux_id hp₁ a ha]
+    rw [SetLike.mem_coe, NonUnitalStarSubalgebra.mem_comap, cfcₙAux_id hp₁ a ha]
     exact ⟨a, rfl⟩
   · have : Continuous (Unitization.fst (R := 𝕜) (A := A)) :=
       Unitization.uniformEquivProd.continuous.fst
@@ -121,18 +121,18 @@ theorem RCLike.nonUnitalContinuousFunctionalCalculus :
     NonUnitalContinuousFunctionalCalculus 𝕜 (p : A → Prop) where
   exists_cfc_of_predicate a ha := by
     let ψ : C(σₙ 𝕜 a, 𝕜)₀ →⋆ₙₐ[𝕜] A := comp (inrRangeEquiv 𝕜 A).symm <|
-      codRestrict (nucfcAux hp₁ a ha) _ (nucfcAux_mem_range_inr hp₁ a ha)
-    have coe_ψ (f : C(σₙ 𝕜 a, 𝕜)₀) : ψ f = nucfcAux hp₁ a ha f :=
+      codRestrict (cfcₙAux hp₁ a ha) _ (cfcₙAux_mem_range_inr hp₁ a ha)
+    have coe_ψ (f : C(σₙ 𝕜 a, 𝕜)₀) : ψ f = cfcₙAux hp₁ a ha f :=
       congr_arg Subtype.val <| (inrRangeEquiv 𝕜 A).apply_symm_apply
-        ⟨nucfcAux hp₁ a ha f, nucfcAux_mem_range_inr hp₁ a ha f⟩
+        ⟨cfcₙAux hp₁ a ha f, cfcₙAux_mem_range_inr hp₁ a ha f⟩
     refine ⟨ψ, ?closedEmbedding, ?map_id, fun f ↦ ?map_spec, fun f ↦ ?isStarNormal⟩
     case closedEmbedding =>
       apply isometry_inr (𝕜 := 𝕜) (A := A) |>.closedEmbedding |>.of_comp_iff.mp
-      have : inr ∘ ψ = nucfcAux hp₁ a ha := by ext1; rw [Function.comp_apply, coe_ψ]
-      exact this ▸ closedEmbedding_nucfcAux hp₁ a ha
-    case map_id => exact inr_injective (R := 𝕜) <| coe_ψ _ ▸ nucfcAux_id hp₁ a ha
+      have : inr ∘ ψ = cfcₙAux hp₁ a ha := by ext1; rw [Function.comp_apply, coe_ψ]
+      exact this ▸ closedEmbedding_cfcₙAux hp₁ a ha
+    case map_id => exact inr_injective (R := 𝕜) <| coe_ψ _ ▸ cfcₙAux_id hp₁ a ha
     case map_spec =>
-      exact quasispectrum_eq_spectrum_inr' 𝕜 𝕜 (ψ f) ▸ coe_ψ _ ▸ spec_nucfcAux hp₁ a ha f
+      exact quasispectrum_eq_spectrum_inr' 𝕜 𝕜 (ψ f) ▸ coe_ψ _ ▸ spec_cfcₙAux hp₁ a ha f
     case isStarNormal => exact hp₁.mp <| coe_ψ _ ▸ cfcHom_predicate (R := 𝕜) (hp₁.mpr ha) _
 
 end RCLike
@@ -636,7 +636,7 @@ end NNRealEqReal
 section Unitary -- TODO: move to a new file
 
 /-!
-### conditions on unitary elements imposed by the continuous functional calculus
+### Conditions on unitary elements imposed by the continuous functional calculus
 -/
 
 variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℂ A]
