@@ -338,6 +338,9 @@ theorem preimage_inv (s : Finset α) : s.preimage (·⁻¹) (inv_injective.injOn
 @[to_additive (attr := simp)]
 lemma inv_univ [Fintype α] : (univ : Finset α)⁻¹ = univ := by ext; simp
 
+@[to_additive (attr := simp)]
+lemma inv_inter (s t : Finset α) : (s ∩ t)⁻¹ = s⁻¹ ∩ t⁻¹ := coe_injective <| by simp
+
 end InvolutiveInv
 
 /-! ### Finset addition/multiplication -/
@@ -2051,6 +2054,17 @@ theorem card_le_card_mul_right {t : Finset α} (ht : t.Nonempty) : s.card ≤ (s
 #align finset.card_le_card_add_right Finset.card_le_card_add_right
 
 end
+
+section Group
+variable [Group α] [DecidableEq α] {s t : Finset α}
+
+@[to_additive] lemma card_le_card_div_left (hs : s.Nonempty) : t.card ≤ (s / t).card :=
+  card_le_card_image₂_left _ hs fun _ ↦ div_right_injective
+
+@[to_additive] lemma card_le_card_div_right (ht : t.Nonempty) : s.card ≤ (s / t).card :=
+  card_le_card_image₂_right _ ht fun _ ↦ div_left_injective
+
+end Group
 
 open Pointwise
 
