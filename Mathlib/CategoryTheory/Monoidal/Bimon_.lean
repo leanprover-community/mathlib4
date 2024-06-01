@@ -123,7 +123,7 @@ theorem mul_counit (M : Bimon_ C) :
 /-- Compatibility of the monoid and comonoid structures, in terms of morphisms in `C`. -/
 @[reassoc (attr := simp)] theorem compatibility (M : Bimon_ C) :
     (M.comul.hom ⊗ M.comul.hom) ≫
-      (α_ _ _ _).hom ≫ M.X.X ◁ (α_ _ _ _).inv ≫
+      (α_ _ _ (M.X.X ⊗ M.X.X)).hom ≫ M.X.X ◁ (α_ _ _ _).inv ≫
       M.X.X ◁ (β_ M.X.X M.X.X).hom ▷ M.X.X ≫
       M.X.X ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
       (M.X.mul ⊗ M.X.mul) =
