@@ -174,7 +174,7 @@ lemma le_addContent_diff (m : AddContent C) (hC : IsSetRing C) (hs : s ∈ C) (h
   rw [addContent_union hC (hC.inter_mem hs ht) (hC.diff_mem hs ht) disjoint_inf_sdiff, add_comm]
   refine add_tsub_le_assoc.trans_eq ?_
   rw [tsub_eq_zero_of_le
-    (addContent_mono hC.isSetSemiring (hC.inter_mem hs ht) ht (inter_subset_right _ _)), add_zero]
+    (addContent_mono hC.isSetSemiring (hC.inter_mem hs ht) ht inter_subset_right), add_zero]
 
 end IsSetRing
 

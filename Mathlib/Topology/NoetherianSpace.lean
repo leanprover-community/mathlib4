@@ -152,7 +152,7 @@ theorem NoetherianSpace.iUnion {ι : Type*} (f : ι → Set α) [Finite ι]
   simp_rw [noetherianSpace_set_iff] at hf ⊢
   intro t ht
   rw [← Set.inter_eq_left.mpr ht, Set.inter_iUnion]
-  exact isCompact_iUnion fun i => hf i _ (Set.inter_subset_right _ _)
+  exact isCompact_iUnion fun i => hf i _ Set.inter_subset_right
 #align topological_space.noetherian_space.Union TopologicalSpace.NoetherianSpace.iUnion
 
 -- This is not an instance since it makes a loop with `t2_space_discrete`.

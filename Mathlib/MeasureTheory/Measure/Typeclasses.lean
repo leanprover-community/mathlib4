@@ -353,7 +353,7 @@ instance Measure.restrict.instNoAtoms (s : Set α) : NoAtoms (μ.restrict s) := 
   obtain ⟨t, hxt, ht1, ht2⟩ := exists_measurable_superset_of_null (measure_singleton x : μ {x} = 0)
   apply measure_mono_null hxt
   rw [Measure.restrict_apply ht1]
-  apply measure_mono_null (inter_subset_left t s) ht2
+  apply measure_mono_null inter_subset_left ht2
 #align measure_theory.measure.restrict.has_no_atoms MeasureTheory.Measure.restrict.instNoAtoms
 
 theorem _root_.Set.Countable.measure_zero (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
@@ -892,7 +892,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
           μ (t ∩ disjointed w n) ≤ μ (t ∩ w n) := by
             gcongr
             exact disjointed_le w n
-          _ ≤ μ (w n) := measure_mono (inter_subset_right _ _)
+          _ ≤ μ (w n) := measure_mono inter_subset_right
           _ < ∞ := hw n
       _ = ∑' n, μ.restrict (t ∩ u) (disjointed w n) := by
         congr 1
@@ -966,8 +966,8 @@ theorem exists_subset_measure_lt_top [SigmaFinite μ] {r : ℝ≥0∞} (hs : Mea
   rcases h's with ⟨n, hn⟩
   simp only [restrict_apply hs] at hn
   refine
-    ⟨s ∩ spanningSets μ n, hs.inter (measurable_spanningSets _ _), inter_subset_left _ _, hn, ?_⟩
-  exact (measure_mono (inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top _ _)
+    ⟨s ∩ spanningSets μ n, hs.inter (measurable_spanningSets _ _), inter_subset_left, hn, ?_⟩
+  exact (measure_mono inter_subset_right).trans_lt (measure_spanningSets_lt_top _ _)
 #align measure_theory.measure.exists_subset_measure_lt_top MeasureTheory.Measure.exists_subset_measure_lt_top
 
 namespace FiniteSpanningSetsIn
@@ -1032,7 +1032,7 @@ theorem sigmaFinite_of_le (μ : Measure α) [hs : SigmaFinite μ] (h : ν ≤ μ
   rw [ext_iff_of_iUnion_eq_univ (iUnion_spanningSets μ)]
   intro i
   ext s hs
-  rw [← ENNReal.add_right_inj (measure_mono (inter_subset_right s _) |>.trans_lt <|
+  rw [← ENNReal.add_right_inj (measure_mono s.inter_subset_right |>.trans_lt <|
     measure_spanningSets_lt_top μ i).ne]
   simp only [ext_iff', coe_add, Pi.add_apply] at h
   simp [hs, h]
@@ -1074,7 +1074,7 @@ instance Restrict.sigmaFinite (μ : Measure α) [SigmaFinite μ] (s : Set α) :
     SigmaFinite (μ.restrict s) := by
   refine ⟨⟨⟨spanningSets μ, fun _ => trivial, fun i => ?_, iUnion_spanningSets μ⟩⟩⟩
   rw [Measure.restrict_apply (measurable_spanningSets μ i)]
-  exact (measure_mono <| inter_subset_left _ _).trans_lt (measure_spanningSets_lt_top μ i)
+  exact (measure_mono inter_subset_left).trans_lt (measure_spanningSets_lt_top μ i)
 #align measure_theory.restrict.sigma_finite MeasureTheory.Restrict.sigmaFinite
 
 instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, SigmaFinite (μ i)] :
@@ -1187,8 +1187,8 @@ protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
   refine TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds (fun s hs => hs.1) ?_
   intro x s xs hs
   rcases μ.exists_isOpen_measure_lt_top x with ⟨v, xv, hv, μv⟩
-  refine ⟨v ∩ s, ⟨hv.inter hs, lt_of_le_of_lt ?_ μv⟩, ⟨xv, xs⟩, inter_subset_right _ _⟩
-  exact measure_mono (inter_subset_left _ _)
+  refine ⟨v ∩ s, ⟨hv.inter hs, lt_of_le_of_lt ?_ μv⟩, ⟨xv, xs⟩, inter_subset_right⟩
+  exact measure_mono inter_subset_left
 #align measure_theory.measure.is_topological_basis_is_open_lt_top MeasureTheory.Measure.isTopologicalBasis_isOpen_lt_top
 
 /-- A measure `μ` is finite on compacts if any compact set `K` satisfies `μ K < ∞`. -/

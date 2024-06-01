@@ -136,7 +136,7 @@ lemma mem_shadow_iterate_iff_exists_sdiff : t ∈ ∂^[k] 𝒜 ↔ ∃ s ∈ �
   rw [mem_shadow_iterate_iff_exists_card]
   constructor
   · rintro ⟨u, rfl, htu, hsuA⟩
-    exact ⟨_, hsuA, subset_union_left _ _, by rw [union_sdiff_cancel_left htu]⟩
+    exact ⟨_, hsuA, subset_union_left, by rw [union_sdiff_cancel_left htu]⟩
   · rintro ⟨s, hs, hts, rfl⟩
     refine ⟨s \ t, rfl, disjoint_sdiff, ?_⟩
     rwa [union_sdiff_self_eq_union, union_eq_right.2 hts]

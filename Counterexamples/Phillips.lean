@@ -234,7 +234,7 @@ def restrict (f : BoundedAdditiveMeasure α) (t : Set α) : BoundedAdditiveMeasu
   additive' s s' h := by
     dsimp only
     rw [← f.additive (t ∩ s) (t ∩ s'), inter_union_distrib_left]
-    exact h.mono (inter_subset_right _ _) (inter_subset_right _ _)
+    exact h.mono inter_subset_right inter_subset_right
   exists_bound := ⟨f.C, fun s => f.abs_le_bound _⟩
 #align counterexample.phillips_1940.bounded_additive_measure.restrict Counterexample.Phillips1940.BoundedAdditiveMeasure.restrict
 
@@ -317,7 +317,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
       rfl
     · have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
         simpa only [s, Function.iterate_succ', union_diff_self]
-          using (diff_union_of_subset <| subset_union_left _ _).symm
+          using (diff_union_of_subset subset_union_left).symm
       rw [this, f.additive]
       swap; · exact disjoint_sdiff_self_left
       calc
@@ -377,7 +377,7 @@ theorem eq_add_parts (f : BoundedAdditiveMeasure α) (s : Set α) :
   rw [← f.additive, ← union_inter_distrib_right]
   · simp only [union_univ, union_diff_self, univ_inter]
   · have : Disjoint f.discreteSupport (univ \ f.discreteSupport) := disjoint_sdiff_self_right
-    exact this.mono (inter_subset_left _ _) (inter_subset_left _ _)
+    exact this.mono inter_subset_left inter_subset_left
 #align counterexample.phillips_1940.bounded_additive_measure.eq_add_parts Counterexample.Phillips1940.BoundedAdditiveMeasure.eq_add_parts
 
 theorem discretePart_apply (f : BoundedAdditiveMeasure α) (s : Set α) :
@@ -397,8 +397,8 @@ theorem continuousPart_apply_diff (f : BoundedAdditiveMeasure α) (s t : Set α)
     f.continuousPart (t \ s) = f.continuousPart t := by
   conv_rhs => rw [← diff_union_inter t s]
   rw [additive, self_eq_add_right]
-  · exact continuousPart_apply_eq_zero_of_countable _ _ (hs.mono (inter_subset_right _ _))
-  · exact Disjoint.mono_right (inter_subset_right _ _) disjoint_sdiff_self_left
+  · exact continuousPart_apply_eq_zero_of_countable _ _ (hs.mono inter_subset_right)
+  · exact Disjoint.mono_right inter_subset_right disjoint_sdiff_self_left
 #align counterexample.phillips_1940.bounded_additive_measure.continuous_part_apply_diff Counterexample.Phillips1940.BoundedAdditiveMeasure.continuousPart_apply_diff
 
 end BoundedAdditiveMeasure

@@ -132,7 +132,7 @@ theorem integral_diff (ht : MeasurableSet t) (hfs : IntegrableOn f s μ) (hts : 
 theorem integral_inter_add_diff₀ (ht : NullMeasurableSet t μ) (hfs : IntegrableOn f s μ) :
     ∫ x in s ∩ t, f x ∂μ + ∫ x in s \ t, f x ∂μ = ∫ x in s, f x ∂μ := by
   rw [← Measure.restrict_inter_add_diff₀ s ht, integral_add_measure]
-  · exact Integrable.mono_measure hfs (Measure.restrict_mono (inter_subset_left _ _) le_rfl)
+  · exact Integrable.mono_measure hfs (Measure.restrict_mono inter_subset_left le_rfl)
   · exact Integrable.mono_measure hfs (Measure.restrict_mono (diff_subset _ _) le_rfl)
 #align measure_theory.integral_inter_add_diff₀ MeasureTheory.integral_inter_add_diff₀
 
@@ -358,7 +358,7 @@ theorem integral_union_eq_left_of_ae_aux (ht_eq : ∀ᵐ x ∂μ.restrict t, f x
     ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ := by
   let k := f ⁻¹' {0}
   have hk : MeasurableSet k := by borelize E; exact haux.measurable (measurableSet_singleton _)
-  have h's : IntegrableOn f s μ := H.mono (subset_union_left _ _) le_rfl
+  have h's : IntegrableOn f s μ := H.mono subset_union_left le_rfl
   have A : ∀ u : Set X, ∫ x in u ∩ k, f x ∂μ = 0 := fun u =>
     setIntegral_eq_zero_of_forall_eq_zero fun x hx => hx.2
   rw [← integral_inter_add_diff hk h's, ← integral_inter_add_diff hk H, A, A, zero_add, zero_add,
@@ -382,11 +382,11 @@ theorem integral_union_eq_left_of_ae (ht_eq : ∀ᵐ x ∂μ.restrict t, f x = 0
       apply
         integral_union_eq_left_of_ae_aux _ H.1.stronglyMeasurable_mk (H.congr_fun_ae H.1.ae_eq_mk)
       filter_upwards [ht_eq,
-        ae_mono (Measure.restrict_mono (subset_union_right s t) le_rfl) H.1.ae_eq_mk] with x hx h'x
+        ae_mono (Measure.restrict_mono subset_union_right le_rfl) H.1.ae_eq_mk] with x hx h'x
       rw [← h'x, hx]
     _ = ∫ x in s, f x ∂μ :=
       integral_congr_ae
-        (ae_mono (Measure.restrict_mono (subset_union_left s t) le_rfl) H.1.ae_eq_mk.symm)
+        (ae_mono (Measure.restrict_mono subset_union_left le_rfl) H.1.ae_eq_mk.symm)
 #align measure_theory.integral_union_eq_left_of_ae MeasureTheory.integral_union_eq_left_of_ae
 
 theorem integral_union_eq_left_of_forall₀ {f : X → E} (ht : NullMeasurableSet t μ)

@@ -81,7 +81,7 @@ theorem card_roots_le_derivative (p : ℝ[X]) :
       exact (Finset.mem_sdiff.1 hx).1
     _ = Multiset.card (derivative p).roots + 1 := by
       rw [← add_assoc, ← Finset.sum_union Finset.disjoint_sdiff, Finset.union_sdiff_self_eq_union, ←
-        Multiset.toFinset_sum_count_eq, ← Finset.sum_subset (Finset.subset_union_right _ _)]
+        Multiset.toFinset_sum_count_eq, ← Finset.sum_subset Finset.subset_union_right]
       intro x _ hx₂
       simpa only [Multiset.mem_toFinset, Multiset.count_eq_zero] using hx₂
 #align polynomial.card_roots_le_derivative Polynomial.card_roots_le_derivative

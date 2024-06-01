@@ -156,8 +156,8 @@ theorem IsCompactElement.exists_finset_of_le_iSup {k : α} (hk : IsCompactElemen
     have h1 : DirectedOn (· ≤ ·) (Set.range g) := by
       rintro - ⟨s, rfl⟩ - ⟨t, rfl⟩
       exact
-        ⟨g (s ∪ t), ⟨s ∪ t, rfl⟩, iSup_le_iSup_of_subset (Finset.subset_union_left s t),
-          iSup_le_iSup_of_subset (Finset.subset_union_right s t)⟩
+        ⟨g (s ∪ t), ⟨s ∪ t, rfl⟩, iSup_le_iSup_of_subset Finset.subset_union_left,
+          iSup_le_iSup_of_subset Finset.subset_union_right⟩
     have h2 : k ≤ sSup (Set.range g) :=
       h.trans
         (iSup_le fun i =>
@@ -610,7 +610,7 @@ theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a }
   rw [← disjoint_iff] at con
   have a_dis_Sup_s : Disjoint a (sSup s) := con.mono_right le_sup_right
   -- Porting note: The two following `fun x hx => _` are no-op
-  rw [← s_max (s ∪ {a}) ⟨fun x hx => _, _, fun x hx => _⟩ (Set.subset_union_left _ _)]
+  rw [← s_max (s ∪ {a}) ⟨fun x hx => _, _, fun x hx => _⟩ Set.subset_union_left]
   · exact Set.mem_union_right _ (Set.mem_singleton _)
   · intro x hx
     rw [Set.mem_union, Set.mem_singleton_iff] at hx

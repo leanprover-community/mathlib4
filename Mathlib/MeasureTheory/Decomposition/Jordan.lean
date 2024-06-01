@@ -335,11 +335,11 @@ theorem of_inter_eq_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv : Me
         (hu.symmDiff hv) (restrict_le_restrict_union _ _ hu hsu hv hsv) hs
         Set.symmDiff_subset_union ?_
     rw [← Set.inter_symmDiff_distrib_left]
-    exact Set.inter_subset_right _ _
+    exact Set.inter_subset_right
   obtain ⟨huv, hvu⟩ :=
     of_diff_eq_zero_of_symmDiff_eq_zero_positive (hw.inter hu) (hw.inter hv)
-      (restrict_le_restrict_subset _ _ hu hsu (w.inter_subset_right u))
-      (restrict_le_restrict_subset _ _ hv hsv (w.inter_subset_right v)) hwuv
+      (restrict_le_restrict_subset _ _ hu hsu (w.inter_subset_right))
+      (restrict_le_restrict_subset _ _ hv hsv (w.inter_subset_right)) hwuv
   rw [← of_diff_of_diff_eq_zero (hw.inter hu) (hw.inter hv) hvu, huv, zero_add]
 #align measure_theory.signed_measure.of_inter_eq_of_symm_diff_eq_zero_positive MeasureTheory.SignedMeasure.of_inter_eq_of_symmDiff_eq_zero_positive
 
@@ -394,30 +394,30 @@ theorem toSignedMeasure_injective : Injective <| @JordanDecomposition.toSignedMe
   have hμ₁ : (j₁.posPart i).toReal = j₁.toSignedMeasure (i ∩ Sᶜ) := by
     rw [toSignedMeasure, toSignedMeasure_sub_apply (hi.inter hS₁.compl),
       show j₁.negPart (i ∩ Sᶜ) = 0 from
-        nonpos_iff_eq_zero.1 (hS₅ ▸ measure_mono (Set.inter_subset_right _ _)),
+        nonpos_iff_eq_zero.1 (hS₅ ▸ measure_mono Set.inter_subset_right),
       ENNReal.zero_toReal, sub_zero]
     conv_lhs => rw [← Set.inter_union_compl i S]
     rw [measure_union,
       show j₁.posPart (i ∩ S) = 0 from
-        nonpos_iff_eq_zero.1 (hS₄ ▸ measure_mono (Set.inter_subset_right _ _)),
+        nonpos_iff_eq_zero.1 (hS₄ ▸ measure_mono Set.inter_subset_right),
       zero_add]
     · refine
-        Set.disjoint_of_subset_left (Set.inter_subset_right _ _)
-          (Set.disjoint_of_subset_right (Set.inter_subset_right _ _) disjoint_compl_right)
+        Set.disjoint_of_subset_left Set.inter_subset_right
+          (Set.disjoint_of_subset_right Set.inter_subset_right disjoint_compl_right)
     · exact hi.inter hS₁.compl
   have hμ₂ : (j₂.posPart i).toReal = j₂.toSignedMeasure (i ∩ Tᶜ) := by
     rw [toSignedMeasure, toSignedMeasure_sub_apply (hi.inter hT₁.compl),
       show j₂.negPart (i ∩ Tᶜ) = 0 from
-        nonpos_iff_eq_zero.1 (hT₅ ▸ measure_mono (Set.inter_subset_right _ _)),
+        nonpos_iff_eq_zero.1 (hT₅ ▸ measure_mono Set.inter_subset_right),
       ENNReal.zero_toReal, sub_zero]
     conv_lhs => rw [← Set.inter_union_compl i T]
     rw [measure_union,
       show j₂.posPart (i ∩ T) = 0 from
-        nonpos_iff_eq_zero.1 (hT₄ ▸ measure_mono (Set.inter_subset_right _ _)),
+        nonpos_iff_eq_zero.1 (hT₄ ▸ measure_mono Set.inter_subset_right),
       zero_add]
     · exact
-        Set.disjoint_of_subset_left (Set.inter_subset_right _ _)
-          (Set.disjoint_of_subset_right (Set.inter_subset_right _ _) disjoint_compl_right)
+        Set.disjoint_of_subset_left Set.inter_subset_right
+          (Set.disjoint_of_subset_right Set.inter_subset_right disjoint_compl_right)
     · exact hi.inter hT₁.compl
   -- since the two signed measures associated with the Jordan decompositions are the same,
   -- and the symmetric difference of the Hahn decompositions have measure zero, the result follows
@@ -525,8 +525,8 @@ theorem absolutelyContinuous_ennreal_iff (s : SignedMeasure α) (μ : VectorMeas
       toMeasureOfLEZero_apply _ _ _ hS₁]
     rw [← VectorMeasure.AbsolutelyContinuous.ennrealToMeasure] at h
     -- Porting note: added `← NNReal.eq_iff`
-    simp [h (measure_mono_null (i.inter_subset_right S) hS₂),
-      h (measure_mono_null (iᶜ.inter_subset_right S) hS₂), ← NNReal.eq_iff]
+    simp [h (measure_mono_null (i.inter_subset_right) hS₂),
+      h (measure_mono_null (iᶜ.inter_subset_right) hS₂), ← NNReal.eq_iff]
   · refine VectorMeasure.AbsolutelyContinuous.mk fun S hS₁ hS₂ => ?_
     rw [← VectorMeasure.ennrealToMeasure_apply hS₁] at hS₂
     exact null_of_totalVariation_zero s (h hS₂)
@@ -557,12 +557,12 @@ theorem mutuallySingular_iff (s t : SignedMeasure α) :
     · rw [totalVariation, Measure.add_apply, hipos, hineg, toMeasureOfZeroLE_apply _ _ _ hmeas,
         toMeasureOfLEZero_apply _ _ _ hmeas]
       -- Porting note: added `← NNReal.eq_iff`
-      simp [hu₁ _ (Set.inter_subset_right _ _), ← NNReal.eq_iff]
+      simp [hu₁ _ Set.inter_subset_right, ← NNReal.eq_iff]
     · rw [totalVariation, Measure.add_apply, hjpos, hjneg,
         toMeasureOfZeroLE_apply _ _ _ hmeas.compl,
         toMeasureOfLEZero_apply _ _ _ hmeas.compl]
       -- Porting note: added `← NNReal.eq_iff`
-      simp [hu₂ _ (Set.inter_subset_right _ _), ← NNReal.eq_iff]
+      simp [hu₂ _ Set.inter_subset_right, ← NNReal.eq_iff]
   · rintro ⟨u, hmeas, hu₁, hu₂⟩
     exact
       ⟨u, hmeas, fun t htu => null_of_totalVariation_zero _ (measure_mono_null htu hu₁),
@@ -578,7 +578,7 @@ theorem mutuallySingular_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure 
     · rw [totalVariation, Measure.add_apply, hpos, hneg, toMeasureOfZeroLE_apply _ _ _ hmeas,
         toMeasureOfLEZero_apply _ _ _ hmeas]
       -- Porting note: added `← NNReal.eq_iff`
-      simp [hu₁ _ (Set.inter_subset_right _ _), ← NNReal.eq_iff]
+      simp [hu₁ _ Set.inter_subset_right, ← NNReal.eq_iff]
     · rw [VectorMeasure.ennrealToMeasure_apply hmeas.compl]
       exact hu₂ _ (Set.Subset.refl _)
   · rintro ⟨u, hmeas, hu₁, hu₂⟩

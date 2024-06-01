@@ -1436,10 +1436,10 @@ theorem union_subset (hs : s ⊆ u) : t ⊆ u → s ∪ t ⊆ u :=
   sup_le <| le_iff_subset.2 hs
 #align finset.union_subset Finset.union_subset
 
-theorem subset_union_left (s₁ s₂ : Finset α) : s₁ ⊆ s₁ ∪ s₂ := fun _x => mem_union_left _
+theorem subset_union_left {s₁ s₂ : Finset α} : s₁ ⊆ s₁ ∪ s₂ := fun _x => mem_union_left _
 #align finset.subset_union_left Finset.subset_union_left
 
-theorem subset_union_right (s₁ s₂ : Finset α) : s₂ ⊆ s₁ ∪ s₂ := fun _x => mem_union_right _
+theorem subset_union_right {s₁ s₂ : Finset α} : s₂ ⊆ s₁ ∪ s₂ := fun _x => mem_union_right _
 #align finset.subset_union_right Finset.subset_union_right
 
 @[gcongr]
@@ -1478,11 +1478,11 @@ instance : Std.IdempotentOp (α := Finset α) (· ∪ ·) :=
   ⟨union_idempotent⟩
 
 theorem union_subset_left (h : s ∪ t ⊆ u) : s ⊆ u :=
-  (subset_union_left _ _).trans h
+  subset_union_left.trans h
 #align finset.union_subset_left Finset.union_subset_left
 
 theorem union_subset_right {s t u : Finset α} (h : s ∪ t ⊆ u) : t ⊆ u :=
-  Subset.trans (subset_union_right _ _) h
+  Subset.trans subset_union_right h
 #align finset.union_subset_right Finset.union_subset_right
 
 theorem union_left_comm (s t u : Finset α) : s ∪ (t ∪ u) = t ∪ (s ∪ u) :=
@@ -1509,11 +1509,11 @@ theorem empty_union (s : Finset α) : ∅ ∪ s = s :=
 
 @[aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.inl {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :=
-  h.mono <| subset_union_left s t
+  h.mono subset_union_left
 
 @[aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.inr {s t : Finset α} (h : t.Nonempty) : (s ∪ t).Nonempty :=
-  h.mono <| subset_union_right s t
+  h.mono subset_union_right
 
 theorem insert_eq (a : α) (s : Finset α) : insert a s = {a} ∪ s :=
   rfl
@@ -1620,10 +1620,10 @@ theorem mem_inter_of_mem {a : α} {s₁ s₂ : Finset α} : a ∈ s₁ → a ∈
   and_imp.1 mem_inter.2
 #align finset.mem_inter_of_mem Finset.mem_inter_of_mem
 
-theorem inter_subset_left (s₁ s₂ : Finset α) : s₁ ∩ s₂ ⊆ s₁ := fun _a => mem_of_mem_inter_left
+theorem inter_subset_left {s₁ s₂ : Finset α} : s₁ ∩ s₂ ⊆ s₁ := fun _a => mem_of_mem_inter_left
 #align finset.inter_subset_left Finset.inter_subset_left
 
-theorem inter_subset_right (s₁ s₂ : Finset α) : s₁ ∩ s₂ ⊆ s₂ := fun _a => mem_of_mem_inter_right
+theorem inter_subset_right {s₁ s₂ : Finset α} : s₁ ∩ s₂ ⊆ s₂ := fun _a => mem_of_mem_inter_right
 #align finset.inter_subset_right Finset.inter_subset_right
 
 theorem subset_inter {s₁ s₂ u : Finset α} : s₁ ⊆ s₂ → s₁ ⊆ u → s₁ ⊆ s₂ ∩ u := by
@@ -2441,7 +2441,7 @@ theorem disjoint_sdiff : Disjoint s (t \ s) :=
 #align finset.disjoint_sdiff Finset.disjoint_sdiff
 
 theorem disjoint_sdiff_inter (s t : Finset α) : Disjoint (s \ t) (s ∩ t) :=
-  disjoint_of_subset_right (inter_subset_right _ _) sdiff_disjoint
+  disjoint_of_subset_right inter_subset_right sdiff_disjoint
 #align finset.disjoint_sdiff_inter Finset.disjoint_sdiff_inter
 
 theorem sdiff_eq_self_iff_disjoint : s \ t = s ↔ Disjoint s t :=

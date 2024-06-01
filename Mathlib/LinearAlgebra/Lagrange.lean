@@ -297,7 +297,7 @@ theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
 theorem basisDivisor_add_symm {x y : F} (hxy : x ≠ y) :
     basisDivisor x y + basisDivisor y x = 1 := by
   classical rw [
-    ← sum_basis (Set.injOn_of_injective Function.injective_id _) ⟨x, mem_insert_self _ {y}⟩,
+    ← sum_basis (Set.injOn_of_injective Function.injective_id) ⟨x, mem_insert_self _ {y}⟩,
     sum_insert (not_mem_singleton.mpr hxy), sum_singleton, basis_pair_left hxy,
     basis_pair_right hxy, id, id]
 #align lagrange.basis_divisor_add_symm Lagrange.basisDivisor_add_symm
@@ -595,7 +595,7 @@ set_option backward.synthInstance.canonInstances false in -- See https://github.
   nodal (G : Set Rˣ).toFinset ((↑) : Rˣ → R) = X ^ (Fintype.card G) - 1 := by
   have h : degree (1 : R[X]) < degree ((X : R[X]) ^ Fintype.card G) := by simp [Fintype.card_pos]
   apply eq_of_degree_le_of_eval_index_eq (v := ((↑) : Rˣ → R)) (G : Set Rˣ).toFinset
-  · exact Set.injOn_of_injective Units.ext _
+  · exact Set.injOn_of_injective Units.ext
   · simp
   · rw [degree_sub_eq_left_of_degree_lt h, degree_nodal, Set.toFinset_card, degree_pow, degree_X,
       nsmul_eq_mul, mul_one, Nat.cast_inj]

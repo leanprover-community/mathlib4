@@ -433,7 +433,7 @@ theorem Zlattice.FG [hs : IsZlattice K L] : AddSubgroup.FG L := by
     rw [show span ℤ s = span ℤ (Set.range b) by simp [b, Basis.coe_mk, Subtype.range_coe_subtype]]
     have : Fintype s := h_lind.setFinite.fintype
     refine Set.Finite.of_finite_image (f := ((↑) : _ →  E) ∘ Zspan.quotientEquiv b) ?_
-      (Function.Injective.injOn (Subtype.coe_injective.comp (Zspan.quotientEquiv b).injective) _)
+      (Function.Injective.injOn (Subtype.coe_injective.comp (Zspan.quotientEquiv b).injective))
     have : Set.Finite ((Zspan.fundamentalDomain b) ∩ L) :=
       Metric.finite_isBounded_inter_isClosed (Zspan.fundamentalDomain_isBounded b) inferInstance
     refine Set.Finite.subset this ?_

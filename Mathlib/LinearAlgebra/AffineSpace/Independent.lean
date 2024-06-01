@@ -189,12 +189,12 @@ theorem affineIndependent_iff_indicator_eq_of_affineCombination_eq (p : ι → P
       ext i
       by_cases hi : i ∈ s1 ∪ s2
       · rw [← sub_eq_zero]
-        rw [← Finset.sum_indicator_subset _ (Finset.subset_union_left s1 s2)] at hw1
-        rw [← Finset.sum_indicator_subset _ (Finset.subset_union_right s1 s2)] at hw2
+        rw [← Finset.sum_indicator_subset w1 (s1.subset_union_left (s₂:=s2))] at hw1
+        rw [← Finset.sum_indicator_subset w2 (s1.subset_union_right)] at hw2
         have hws : (∑ i ∈ s1 ∪ s2, (Set.indicator (↑s1) w1 - Set.indicator (↑s2) w2) i) = 0 := by
           simp [hw1, hw2]
-        rw [Finset.affineCombination_indicator_subset _ _ (Finset.subset_union_left s1 s2),
-          Finset.affineCombination_indicator_subset _ _ (Finset.subset_union_right s1 s2),
+        rw [Finset.affineCombination_indicator_subset w1 p (s1.subset_union_left (s₂:=s2)),
+          Finset.affineCombination_indicator_subset w2 p s1.subset_union_right,
           ← @vsub_eq_zero_iff_eq V, Finset.affineCombination_vsub] at heq
         exact ha (s1 ∪ s2) (Set.indicator (↑s1) w1 - Set.indicator (↑s2) w2) hws heq i hi
       · rw [← Finset.mem_coe, Finset.coe_union] at hi

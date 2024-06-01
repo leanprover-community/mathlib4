@@ -449,7 +449,7 @@ theorem maxDegree_lt_card_verts [DecidableRel G.Adj] [Nonempty V] :
 theorem card_commonNeighbors_le_degree_left [DecidableRel G.Adj] (v w : V) :
     Fintype.card (G.commonNeighbors v w) ≤ G.degree v := by
   rw [← card_neighborSet_eq_degree]
-  exact Set.card_le_card (Set.inter_subset_left _ _)
+  exact Set.card_le_card Set.inter_subset_left
 #align simple_graph.card_common_neighbors_le_degree_left SimpleGraph.card_commonNeighbors_le_degree_left
 
 theorem card_commonNeighbors_le_degree_right [DecidableRel G.Adj] (v w : V) :

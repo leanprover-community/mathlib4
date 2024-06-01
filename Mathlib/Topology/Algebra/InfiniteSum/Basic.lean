@@ -462,14 +462,14 @@ theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β �
     rw [mulSupport_comp_eq_preimage, Set.image_preimage_eq_iff.2 hf]
   rw [← Function.comp_def]
   by_cases hf_fin : (mulSupport f).Finite
-  · have hfg_fin : (mulSupport (f ∘ g)).Finite := hf_fin.preimage (hg.injOn _)
+  · have hfg_fin : (mulSupport (f ∘ g)).Finite := hf_fin.preimage hg.injOn
     lift g to γ ↪ β using hg
     simp_rw [tprod_eq_prod' hf_fin.coe_toFinset.ge, tprod_eq_prod' hfg_fin.coe_toFinset.ge,
       comp_apply, ← Finset.prod_map]
     refine Finset.prod_congr (Finset.coe_injective ?_) fun _ _ ↦ rfl
     simp [this]
   · have hf_fin' : ¬ Set.Finite (mulSupport (f ∘ g)) := by
-      rwa [this, Set.finite_image_iff (hg.injOn _)] at hf_fin
+      rwa [this, Set.finite_image_iff hg.injOn] at hf_fin
     simp_rw [tprod_def, if_neg hf_fin, if_neg hf_fin', Multipliable,
       hg.hasProd_iff (mulSupport_subset_iff'.1 hf)]
 
@@ -511,7 +511,7 @@ theorem tprod_image {g : γ → β} (f : β → α) {s : Set γ} (hg : Set.InjOn
 @[to_additive]
 theorem tprod_range {g : γ → β} (f : β → α) (hg : Injective g) :
     ∏' x : Set.range g, f x = ∏' x, f (g x) := by
-  rw [← Set.image_univ, tprod_image f (hg.injOn _)]
+  rw [← Set.image_univ, tprod_image f hg.injOn]
   simp_rw [← comp_apply (g := g), tprod_univ (f ∘ g)]
 #align tsum_range tsum_range
 

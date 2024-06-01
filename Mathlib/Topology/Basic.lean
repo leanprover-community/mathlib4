@@ -348,7 +348,7 @@ theorem interior_union_isClosed_of_interior_empty (h₁ : IsClosed s)
       have : u \ s ⊆ interior t := by rwa [(IsOpen.sdiff hu₁ h₁).subset_interior_iff]
       have : u \ s ⊆ ∅ := by rwa [h₂] at this
       this ⟨hx₁, hx₂⟩
-  Subset.antisymm (interior_maximal this isOpen_interior) (interior_mono <| subset_union_left _ _)
+  Subset.antisymm (interior_maximal this isOpen_interior) (interior_mono subset_union_left)
 #align interior_union_is_closed_of_interior_empty interior_union_isClosed_of_interior_empty
 
 theorem isOpen_iff_forall_mem_open : IsOpen s ↔ ∀ x ∈ s, ∃ t, t ⊆ s ∧ IsOpen t ∧ x ∈ t := by
@@ -792,7 +792,7 @@ theorem nhds_basis_opens (x : X) :
   rw [nhds_def]
   exact hasBasis_biInf_principal
     (fun s ⟨has, hs⟩ t ⟨hat, ht⟩ =>
-      ⟨s ∩ t, ⟨⟨has, hat⟩, IsOpen.inter hs ht⟩, ⟨inter_subset_left _ _, inter_subset_right _ _⟩⟩)
+      ⟨s ∩ t, ⟨⟨has, hat⟩, IsOpen.inter hs ht⟩, ⟨inter_subset_left, inter_subset_right⟩⟩)
     ⟨univ, ⟨mem_univ x, isOpen_univ⟩⟩
 #align nhds_basis_opens nhds_basis_opens
 

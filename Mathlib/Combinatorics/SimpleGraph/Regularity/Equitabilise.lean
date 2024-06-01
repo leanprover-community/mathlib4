@@ -115,7 +115,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     refine ⟨?_, fun x hx => (card_le_card ?_).trans <| hR₂ x ?_⟩
     · simp only [filter_insert, if_pos htu, biUnion_insert, mem_erase, id]
       obtain rfl | hut := eq_or_ne u t
-      · rw [sdiff_eq_empty_iff_subset.2 (subset_union_left _ _)]
+      · rw [sdiff_eq_empty_iff_subset.2 subset_union_left]
         exact bot_le
       refine
         (card_le_card fun i => ?_).trans
