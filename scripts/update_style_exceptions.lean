@@ -15,29 +15,26 @@ unless they are making changes to the linting script.
 -/
 
 /-- The entry point to the `lake exe update_style_exceptions` command.
-
 Regenerate the `scripts/style-exceptions.txt` file. -/
 def main : IO UInt32 := do
-  -- Find all files in the mathlib directory.
-  let mut all_files ← getAllFiles false "Mathlib"
-  -- Since we can, also extend this to the Archive and Counterexamples.
+  -- Find all files in the mathlib, archive and counterexamples directories.
+  let mut allFiles ← getAllFiles false "Mathlib"
   let archive ← getAllFiles false "Archive"
   let cex ← getAllFiles false "Counterexamples"
-  all_files := (all_files.append archive).append cex
+  allFiles := (allFiles.append archive).append cex
   -- Run the linter on all of them; gather the resulting exceptions and sort them.
   -- Call xargs, to avoid spawning a new python process for each file.
   -- `IO.Process.output` passes empty standard input, so this actually works.
   -- `-s` specifies the maximum size of the command line (including the initial argument):
   -- since we pass all input files as initial arguments to xargs, this small hack is necessary.
-  -- As of May 2024, 200 000 works, so let's pass 300 000.
+  -- As of May 2024, the limit 200 000 suffices; therefore, we pass 300 000 to be future-proof.
   let args := #["-s", "300000", "./scripts/lint-style.py"].append
-    (all_files.map System.FilePath.toString)
+    (allFiles.map System.FilePath.toString)
   let out ← IO.Process.output { cmd := "xargs", args := args }
   if out.exitCode != 0 then
     println! "error {out.exitCode} on updating style exceptions : {out.stderr}"
     return out.exitCode
   let lines := out.stdout.splitOn "\n"
-  let sorted_output := lines.toArray.qsort (· < ·)
-  let final := "\n".intercalate sorted_output.toList
+  let final := "\n".intercalate (lines.toArray.qsort (· < ·)).toList
   IO.FS.writeFile (System.mkFilePath ["scripts", "style-exceptions.txt"]) final
   return 0

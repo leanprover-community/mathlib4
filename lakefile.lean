@@ -68,7 +68,7 @@ lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
 
-/-- `lake exe update_style_exceptions` update the style exceptions file. -/
+/-- `lake exe update_style_exceptions` updates the style exceptions file. -/
 lean_exe update_style_exceptions where
   srcDir := "scripts"
 
