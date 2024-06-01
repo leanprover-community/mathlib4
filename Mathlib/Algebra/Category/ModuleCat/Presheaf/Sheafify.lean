@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
 import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
@@ -19,11 +20,6 @@ sheaf of modules over `R`: this is `PresheafOfModules.sheafify α φ`.
 In many application, the morphism `α` shall be the identity, but this more
 general construction allows the sheafification of both the presheaf of rings
 and the presheaf of modules.
-
-## TODO
-
-- promote this construction to a functor from presheaves of modules over `R₀`
-  to sheaves of modules over `R`, and construct an adjunction.
 
 -/
 
@@ -316,5 +312,24 @@ noncomputable def sheafify : SheafOfModules.{v} R where
       module := Sheafify.module α φ
       map_smul := fun _ _ _ => by apply Sheafify.map_smul }
   isSheaf := A.cond
+
+/-- The canonical morphism from a presheaf of modules to its associated sheaf. -/
+@[simps]
+def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val where
+  hom := φ
+  map_smul X r₀ m₀ := by
+    simpa using (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
+      r₀ (by aesop) m₀ (by simp)).symm
+
+noncomputable def sheafifyHomEquiv' {F : PresheafOfModules.{v} R.val}
+    (hF : Presheaf.IsSheaf J F.presheaf) :
+    ((sheafify α φ).val ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj F) := by
+  sorry
+
+noncomputable def sheafifyHomEquiv {F : SheafOfModules.{v} R} :
+    (sheafify α φ ⟶ F) ≃
+      (M₀ ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) :=
+  (SheafOfModules.fullyFaithfulForget R).homEquiv.trans
+    (sheafifyHomEquiv' α φ F.isSheaf)
 
 end PresheafOfModules

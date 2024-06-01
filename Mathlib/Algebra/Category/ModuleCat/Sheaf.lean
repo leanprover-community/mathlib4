@@ -69,11 +69,13 @@ def forget : SheafOfModules.{v} R ⥤ PresheafOfModules R.val where
   obj F := F.val
   map φ := φ.val
 
-instance : (forget R).Faithful where
-  map_injective h := by ext1; exact h
+@[simps]
+def fullyFaithfulForget : (forget R).FullyFaithful where
+  preimage φ := ⟨φ⟩
 
-instance : (forget R).Full where
-  map_surjective φ := ⟨⟨φ⟩, rfl⟩
+instance : (forget R).Faithful := (fullyFaithfulForget R).faithful
+
+instance : (forget R).Full := (fullyFaithfulForget R).full
 
 /-- Evaluation on an object `X` gives a functor
 `SheafOfModules R ⥤ ModuleCat (R.val.obj X)`. -/
