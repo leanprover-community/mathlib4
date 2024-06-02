@@ -95,14 +95,12 @@ end leftCoset_cover_const
 section
 
 variable {G : Type*} [Group G]
-    [DecidableEq (Subgroup G)]
-    [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)]
     {ι : Type*} {H : ι → Subgroup G} {g : ι → G} {s : Finset ι}
     (hcovers : ⋃ i ∈ s, (g i) • (H i : Set G) = Set.univ)
 
 -- Inductive inner part of `Subgroup.exists_finiteIndex_of_leftCoset_cover`
 @[to_additive]
-theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
+theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux [DecidableEq (Subgroup G)]
     (j : ι) (hj : j ∈ s) (hcovers' : ⋃ i ∈ s.filter (H · = H j), g i • (H i : Set G) ≠ Set.univ) :
     ∃ i ∈ s, H i ≠ H j ∧ (H i).FiniteIndex := by
   classical
@@ -183,7 +181,8 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover : ∃ k ∈ s, (H k).Fini
 
 -- Auxiliary to `leftCoset_cover_filter_FiniteIndex` and `one_le_sum_inv_index_of_leftCoset_cover`.
 @[to_additive]
-theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux :
+theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux
+    [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)] :
     ⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ ∧
     1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ := by
   classical
@@ -253,15 +252,17 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux :
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 Then the cosets of subgroups of infinite index may be omitted from the covering. -/
 @[to_additive]
-theorem Subgroup.leftCoset_cover_filter_FiniteIndex :
+theorem Subgroup.leftCoset_cover_filter_FiniteIndex
+    [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)] :
     ⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ :=
   (Subgroup.leftCoset_cover_filter_FiniteIndex_aux hcovers).1
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`. Then the
 sum of the inverses of the indexes of the subgroups `H i` is greater than or equal to 1. -/
 @[to_additive one_le_sum_inv_index_of_leftCoset_cover]
-theorem Subgroup.one_le_sum_inv_index_of_leftCoset_cover :
+theorem Subgroup.one_le_sum_inv_index_of_leftCoset_cover [DecidableEq (Subgroup G)] :
     1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ :=
+  have := Classical.decPred (Subgroup.FiniteIndex : Subgroup G → Prop)
   (Subgroup.leftCoset_cover_filter_FiniteIndex_aux hcovers).2
 
 /-- B. H. Neumann Lemma :
@@ -270,6 +271,7 @@ of these subgroups has index not exceeding the number of cosets. -/
 @[to_additive]
 theorem Subgroup.exists_index_le_card_of_leftCoset_cover :
     ∃ i ∈ s, (H i).FiniteIndex ∧ (H i).index ≤ s.card := by
+  classical
   by_contra! h
   apply (one_le_sum_inv_index_of_leftCoset_cover hcovers).not_lt
   by_cases hs : s = ∅
@@ -296,7 +298,6 @@ variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
 theorem Submodule.exists_finiteIndex_of_cover :
     ∃ k ∈ s, (p k).toAddSubgroup.FiniteIndex :=
-  have := Classical.decEq (AddSubgroup M)
   have hcovers' : ⋃ i ∈ s, (0 : M) +ᵥ ((p i).toAddSubgroup : Set M) = Set.univ := by
     simpa only [zero_vadd] using hcovers
   AddSubgroup.exists_finiteIndex_of_leftCoset_cover hcovers'
