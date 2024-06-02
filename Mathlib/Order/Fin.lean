@@ -188,19 +188,27 @@ def castOrderIso (eq : n = m) : Fin n ≃o Fin m where
   map_rel_iff' := cast_le_cast eq
 #align fin.cast Fin.castOrderIso
 
+@[deprecated (since := "2024-05-23")] alias castIso := castOrderIso
+
 @[simp]
 lemma symm_castOrderIso (h : n = m) : (castOrderIso h).symm = castOrderIso h.symm := by subst h; rfl
 #align fin.symm_cast Fin.symm_castOrderIso
 
+@[deprecated (since := "2024-05-23")] alias symm_castIso := symm_castOrderIso
+
 @[simp]
 lemma castOrderIso_refl (h : n = n := rfl) : castOrderIso h = OrderIso.refl (Fin n) := by ext; simp
 #align fin.cast_refl Fin.castOrderIso_refl
+
+@[deprecated (since := "2024-05-23")] alias castIso_refl := castOrderIso_refl
 
 /-- While in many cases `Fin.castOrderIso` is better than `Equiv.cast`/`cast`, sometimes we want to
 apply a generic lemma about `cast`. -/
 lemma castOrderIso_toEquiv (h : n = m) : (castOrderIso h).toEquiv = Equiv.cast (h ▸ rfl) := by
   subst h; rfl
 #align fin.cast_to_equiv Fin.castOrderIso_toEquiv
+
+@[deprecated (since := "2024-05-23")] alias castIso_to_equiv := castOrderIso_toEquiv
 
 /-- `Fin.rev n` as an order-reversing isomorphism. -/
 @[simps! apply toEquiv]
