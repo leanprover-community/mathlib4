@@ -89,6 +89,21 @@ def toSheaf : SheafOfModules.{v} R ⥤ Sheaf J AddCommGroupCat.{v} where
   obj M := ⟨_, M.isSheaf⟩
   map f := { val := f.val.hom }
 
+instance (M N : SheafOfModules.{v} R) : AddCommGroup (M ⟶ N) :=
+  (fullyFaithfulForget R).homEquiv.addCommGroup
+
+@[simp]
+lemma add_val {M N : SheafOfModules.{v} R} (f g : M ⟶ N) :
+    (f + g).val = f.val + g.val := rfl
+
+instance : Preadditive (SheafOfModules.{v} R) where
+  add_comp := by intros; ext1; dsimp; simp only [Preadditive.add_comp]
+  comp_add := by intros; ext1; dsimp; simp only [Preadditive.comp_add]
+
+instance : (forget R).Additive where
+
+instance : (toSheaf R).Additive where
+
 end SheafOfModules
 
 namespace PresheafOfModules

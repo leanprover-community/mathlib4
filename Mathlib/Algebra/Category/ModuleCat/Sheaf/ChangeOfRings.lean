@@ -35,6 +35,8 @@ noncomputable def restrictScalars :
       isSheaf := M'.isSheaf }
   map φ := { val := (PresheafOfModules.restrictScalars α.val).map φ.val }
 
+instance : (restrictScalars.{v} α).Additive where
+
 end SheafOfModules
 
 namespace PresheafOfModules

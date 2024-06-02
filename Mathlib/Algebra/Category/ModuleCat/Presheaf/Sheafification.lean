@@ -124,4 +124,7 @@ noncomputable def sheafificationAdjunction :
         erw [sheafificationHomEquiv_hom, sheafificationHomEquiv_hom]
         simp [restrictScalars] }
 
+instance : (sheafification.{v} α).IsLeftAdjoint :=
+  (sheafificationAdjunction α).isLeftAdjoint
+
 end PresheafOfModules
