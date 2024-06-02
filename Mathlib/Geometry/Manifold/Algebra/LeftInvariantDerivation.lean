@@ -21,7 +21,6 @@ implementing one of the possible definitions of the Lie algebra attached to a Li
 
 -/
 
-
 noncomputable section
 
 open scoped LieGroup Manifold Derivation
@@ -64,6 +63,14 @@ theorem toDerivation_injective :
 instance : FunLike (LeftInvariantDerivation I G) C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   coe f := f.toDerivation
   coe_injective' _ _ h := toDerivation_injective <| DFunLike.ext' h
+
+/-- Short-cut instance to speed up type-class search -/
+@[local instance] def foo : AddMonoidHomClass (Derivation 𝕜 C^⊤⟮I, G; 𝓘(𝕜, 𝕜), 𝕜⟯ C^⊤⟮I, G; 𝓘(𝕜, 𝕜), 𝕜⟯) C^⊤⟮I, G; 𝓘(𝕜, 𝕜), 𝕜⟯
+       C^⊤⟮I, G; 𝓘(𝕜, 𝕜), 𝕜⟯ := Derivation.instAddMonoidHomClass
+
+/-- Short-cut instance to speed up type-class search -/
+@[local instance] def bar : AddHomClass (Derivation 𝕜 C^⊤⟮I, G; 𝓘(𝕜, 𝕜), 𝕜⟯ C^⊤⟮I, G; 𝓘(𝕜, 𝕜), 𝕜⟯) C^⊤⟮I, G; 𝓘(𝕜, 𝕜), 𝕜⟯
+      C^⊤⟮I, G; 𝓘(𝕜, 𝕜), 𝕜⟯  := AddMonoidHomClass.toAddHomClass
 
 instance : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   map_add f := map_add f.1
