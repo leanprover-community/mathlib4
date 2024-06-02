@@ -30,7 +30,8 @@ variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
 
 -- to be moved...
 /-- The sheaf on `J.over X` induced by a sheaf on `J`. -/
-abbrev CategoryTheory.Sheaf.over {A : Type*} [Category A] (F : Sheaf J A) (X : C) : Sheaf (J.over X) A :=
+abbrev CategoryTheory.Sheaf.over {A : Type*} [Category A] (F : Sheaf J A) (X : C) :
+    Sheaf (J.over X) A :=
   ((Over.forget X).sheafPushforwardContinuous A (J.over X) J).obj F
 
 variable {R : Sheaf J RingCat.{u}}
