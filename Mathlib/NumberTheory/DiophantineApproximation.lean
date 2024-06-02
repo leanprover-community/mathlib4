@@ -494,8 +494,8 @@ private theorem aux₃ :
     refine LE.le.trans ?_ h.le
     rw [sub_le_sub_iff_left, div_le_one Hv, add_comm]
     exact mod_cast huv
-  have help₁ : ∀ {a b c : ℝ}, a ≠ 0 → b ≠ 0 → c ≠ 0 → |a⁻¹ - b / c| = |(a - c / b) * (b / c / a)| :=
-    by intros; rw [abs_sub_comm]; congr 1; field_simp; ring
+  have help₁ {a b c : ℝ} : a ≠ 0 → b ≠ 0 → c ≠ 0 → |a⁻¹ - b / c| = |(a - c / b) * (b / c / a)| := by
+    intros; rw [abs_sub_comm]; congr 1; field_simp; ring
   have help₂ :
     ∀ {a b c d : ℝ}, a ≠ 0 → b ≠ 0 → c ≠ 0 → d ≠ 0 → (b * c)⁻¹ * (b / d / a) = (d * c * a)⁻¹ := by
     intros; field_simp; ring
