@@ -263,7 +263,7 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`. Then the
 sum of the inverses of the indexes of the subgroups `H i` is greater than or equal to 1. -/
 @[to_additive one_le_sum_inv_index_of_leftCoset_cover]
-theorem Subgroup.one_le_sum_inv_index_of_leftCoset_cover [DecidableEq (Subgroup G)] :
+theorem Subgroup.one_le_sum_inv_index_of_leftCoset_cover :
     1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ :=
   have := Classical.decPred (Subgroup.FiniteIndex : Subgroup G → Prop)
   (Subgroup.leftCoset_cover_filter_FiniteIndex_aux hcovers).2
@@ -313,7 +313,7 @@ variable {k E ι : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module
     {s : Finset (Subspace k E)}
 
 /- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
-theorem Subspace.biUnion_ne_univ_of_lt_top (hs : ∀ p ∈ s, p ≠ ⊤) :
+theorem Subspace.biUnion_ne_univ_of_ne_top (hs : ∀ p ∈ s, p ≠ ⊤) :
     ⋃ p ∈ s, (p : Set E) ≠ Set.univ := by
   intro hcovers
   have ⟨p, hp, hfi⟩ := Submodule.exists_finiteIndex_of_cover hcovers
@@ -326,6 +326,6 @@ theorem Subspace.biUnion_ne_univ_of_lt_top (hs : ∀ p ∈ s, p ≠ ⊤) :
 theorem Subspace.exists_eq_top_of_biUnion_eq_univ (hcovers : ⋃ p ∈ s, (p : Set E) = Set.univ) :
     ∃ p ∈ s, p = ⊤ := by
   contrapose! hcovers
-  exact Subspace.biUnion_ne_univ_of_lt_top hcovers
+  exact Subspace.biUnion_ne_univ_of_ne_top hcovers
 
 end Subspace
