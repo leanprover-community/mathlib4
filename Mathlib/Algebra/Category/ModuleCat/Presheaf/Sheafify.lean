@@ -362,6 +362,9 @@ variable {M₀' : PresheafOfModules.{v} R₀} {A' : Sheaf J AddCommGroupCat.{v}}
   (τ₀ : M₀ ⟶ M₀') (τ : A ⟶ A')
   (fac : τ₀.hom ≫ φ' = φ ≫ τ.val)
 
+/-- The morphism of sheaves of modules `sheafify α φ ⟶ sheafify α φ'`
+induced by morphisms `τ₀ : M₀ ⟶ M₀'` and `τ : A ⟶ A'`
+which satisfy `τ₀.hom ≫ φ' = φ ≫ τ.val`. -/
 @[simps]
 def sheafifyMap : sheafify α φ ⟶ sheafify α φ' where
   val :=
