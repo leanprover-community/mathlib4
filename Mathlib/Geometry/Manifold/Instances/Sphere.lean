@@ -78,11 +78,30 @@ variable (v : E)
 
 /-! ### Construction of the stereographic projection -/
 
--- Shortcut instance... not sure why so slow
-@[local instance] def instOrthogonalProjection : HasOrthogonalProjection (Submodule.span ℝ {v})ᗮ :=
+-- Shortcut instances to speed up typeclass search.
+
+@[local instance] lemma instFiniteDimensional : FiniteDimensional ℝ (Submodule.span ℝ {v}) :=
+  span_singleton ℝ v
+
+@[local instance] lemma instProperSpace : ProperSpace (Submodule.span ℝ {v}) :=
+  RCLike.properSpace_submodule ℝ (Submodule.span ℝ {v})
+
+@[local instance] lemma instCompleteSpace : CompleteSpace (Submodule.span ℝ {v}) :=
+  complete_of_proper
+
+@[local instance] lemma instFoo : HasOrthogonalProjection (Submodule.span ℝ {v}) :=
+  HasOrthogonalProjection.ofCompleteSpace (Submodule.span ℝ {v})
+
+@[local instance] lemma instOrthogonalProjection : HasOrthogonalProjection (Submodule.span ℝ {v})ᗮ :=
   instHasOrthogonalProjectionOrthogonal (Submodule.span ℝ {v})
 
---set_option trace.Meta.synthInstance true in
+/-- Shortcut instance to speed up typeclass search. -/
+@[local instance] def instAddMonoid : AddMonoid (E →L[ℝ] ℝ) := SubNegMonoid.toAddMonoid
+
+/-- Shortcut instance to speed up typeclass search. -/
+@[local instance] lemma instZeroHomClass : ZeroHomClass (E →L⋆[ℝ] E →L[ℝ] ℝ) E (E →L[ℝ] ℝ) :=
+  AddMonoidHomClass.toZeroHomClass
+
 /-- Stereographic projection, forward direction. This is a map from an inner product space `E` to
 the orthogonal complement of an element `v` of `E`. It is smooth away from the affine hyperplane
 through `v` parallel to the orthogonal complement.  It restricts on the sphere to the stereographic
@@ -147,10 +166,6 @@ theorem stereoInvFunAux_mem (hv : ‖v‖ = 1) {w : E} (hw : w ∈ (ℝ ∙ v)�
       inner_smul_left, map_ofNat, hw, mul_zero, add_zero, Real.norm_eq_abs, hv, mul_one, sq_abs]
   ring
 #align stereo_inv_fun_aux_mem stereoInvFunAux_mem
-
-@[local instance] def instZeroHomClass : ZeroHomClass (E →L⋆[ℝ] E →L[ℝ] ℝ) E (E →L[ℝ] ℝ) :=
-  AddMonoidHomClass.toZeroHomClass
-@[local instance] def instAddMonoid : AddMonoid (E →L[ℝ] ℝ) := SubNegMonoid.toAddMonoid
 
 theorem hasFDerivAt_stereoInvFunAux (v : E) :
     HasFDerivAt (stereoInvFunAux v) (ContinuousLinearMap.id ℝ E) 0 := by
