@@ -32,8 +32,6 @@ basis, bases
 
 open Function Set Submodule
 
-open BigOperators
-
 set_option autoImplicit false
 variable {ι : Type*} {ι' : Type*} {K : Type*} {V : Type*} {V' : Type*}
 
@@ -182,10 +180,10 @@ theorem nonzero_span_atom (v : V) (hv : v ≠ 0) : IsAtom (span K {v} : Submodul
 submodules equal to the span of a nonzero element of the module. -/
 theorem atom_iff_nonzero_span (W : Submodule K V) :
     IsAtom W ↔ ∃ v ≠ 0, W = span K {v} := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · cases' h with hbot h
     rcases (Submodule.ne_bot_iff W).1 hbot with ⟨v, ⟨hW, hv⟩⟩
-    refine' ⟨v, ⟨hv, _⟩⟩
+    refine ⟨v, ⟨hv, ?_⟩⟩
     by_contra heq
     specialize h (span K {v})
     rw [span_singleton_eq_bot, lt_iff_le_and_ne] at h
@@ -218,7 +216,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   have BC := this.subset_extend (subset_univ _)
   let hC := Basis.extend this
   haveI Vinh : Inhabited V := ⟨0⟩
-  refine' ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hB.ext fun b => _⟩
+  refine ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hB.ext fun b => ?_⟩
   rw [image_subset_iff] at BC
   have fb_eq : f b = hC ⟨f b, BC b.2⟩ := by
     change f b = Basis.extend this _
@@ -233,16 +231,16 @@ theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, Is
   ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| LinearMap.ext_iff.1 hf⟩
 #align submodule.exists_is_compl Submodule.exists_isCompl
 
-instance Module.Submodule.complementedLattice : ComplementedLattice (Submodule K V) :=
+instance Submodule.complementedLattice : ComplementedLattice (Submodule K V) :=
   ⟨Submodule.exists_isCompl⟩
-#align module.submodule.complemented_lattice Module.Submodule.complementedLattice
+#align module.submodule.complemented_lattice Submodule.complementedLattice
 
 theorem LinearMap.exists_rightInverse_of_surjective (f : V →ₗ[K] V') (hf_surj : range f = ⊤) :
     ∃ g : V' →ₗ[K] V, f.comp g = LinearMap.id := by
   let C := Basis.ofVectorSpaceIndex K V'
   let hC := Basis.ofVectorSpace K V'
   haveI : Inhabited V := ⟨0⟩
-  refine' ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hC.ext fun c => _⟩
+  refine ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hC.ext fun c => ?_⟩
   rw [LinearMap.comp_apply, hC.constr_basis]
   simp [hC, rightInverse_invFun (LinearMap.range_eq_top.1 hf_surj) c]
 #align linear_map.exists_right_inverse_of_surjective LinearMap.exists_rightInverse_of_surjective
@@ -263,12 +261,12 @@ theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
     ∃ (f : V →ₗ[K] K), f ≠ 0 ∧ p ≤ ker f := by
   rcases SetLike.exists_of_lt hp with ⟨v, -, hpv⟩; clear hp
   rcases (LinearPMap.supSpanSingleton ⟨p, 0⟩ v (1 : K) hpv).toFun.exists_extend with ⟨f, hf⟩
-  refine' ⟨f, _, _⟩
+  refine ⟨f, ?_, ?_⟩
   · rintro rfl
     rw [LinearMap.zero_comp] at hf
     have := LinearPMap.supSpanSingleton_apply_mk ⟨p, 0⟩ v (1 : K) hpv 0 p.zero_mem 1
     simpa using (LinearMap.congr_fun hf _).trans this
-  · refine' fun x hx => mem_ker.2 _
+  · refine fun x hx => mem_ker.2 ?_
     have := LinearPMap.supSpanSingleton_apply_mk ⟨p, 0⟩ v (1 : K) hpv x hx 0
     simpa using (LinearMap.congr_fun hf _).trans this
 #align submodule.exists_le_ker_of_lt_top Submodule.exists_le_ker_of_lt_top

@@ -3,6 +3,7 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Sub.Defs
 
@@ -515,5 +516,17 @@ theorem tsub_add_min : a - b + min a b = a := by
   rw [← tsub_min, @tsub_add_cancel_of_le]
   apply min_le_left
 #align tsub_add_min tsub_add_min
+
+-- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
+lemma Even.tsub [CanonicallyLinearOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
+    [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) :
+    Even (m - n) := by
+  obtain ⟨a, rfl⟩ := hm
+  obtain ⟨b, rfl⟩ := hn
+  refine ⟨a - b, ?_⟩
+  obtain h | h := le_total a b
+  · rw [tsub_eq_zero_of_le h, tsub_eq_zero_of_le (add_le_add h h), add_zero]
+  · exact (tsub_add_tsub_comm h h).symm
+#align even.tsub Even.tsub
 
 end CanonicallyLinearOrderedAddCommMonoid

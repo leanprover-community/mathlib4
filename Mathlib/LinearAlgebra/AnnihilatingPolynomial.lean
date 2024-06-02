@@ -155,7 +155,7 @@ theorem annIdealGenerator_eq_minpoly (a : A) : annIdealGenerator 𝕜 a = minpol
   by_cases h : annIdealGenerator 𝕜 a = 0
   · rw [h, minpoly.eq_zero]
     rintro ⟨p, p_monic, hp : aeval a p = 0⟩
-    refine' p_monic.ne_zero (Ideal.mem_bot.mp _)
+    refine p_monic.ne_zero (Ideal.mem_bot.mp ?_)
     simpa only [annIdealGenerator_eq_zero_iff.mp h] using mem_annIdeal_iff_aeval_eq_zero.mpr hp
   · exact minpoly.unique _ _ (monic_annIdealGenerator _ _ h) (annIdealGenerator_aeval_eq_zero _ _)
       fun q q_monic hq =>

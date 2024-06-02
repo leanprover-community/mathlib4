@@ -198,8 +198,8 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: helps fixing `linearizationTrivialIso` since change in behaviour of ext
 theorem linearization_single (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) (r : k) :
-    ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r :=
-  by rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
+    ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r := by
+  rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
 
 variable {X Y : Action (Type u) (MonCat.of G)} (f : X ⟶ Y)
 
@@ -359,23 +359,16 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
   map_smul' r x := rfl
   invFun x := leftRegularHom A x
   left_inv f := by
-    refine' Action.Hom.ext _ _ (Finsupp.lhom_ext' fun x : G => LinearMap.ext_ring _)
+    refine Action.Hom.ext _ _ (Finsupp.lhom_ext' fun x : G => LinearMap.ext_ring ?_)
     have :
       f.hom ((ofMulAction k G G).ρ x (Finsupp.single (1 : G) (1 : k))) =
         A.ρ x (f.hom (Finsupp.single (1 : G) (1 : k))) :=
       LinearMap.ext_iff.1 (f.comm x) (Finsupp.single 1 1)
-/- Porting note: rest of broken proof was
-    simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, left_regular_hom_hom,
-      Finsupp.lift_apply, Finsupp.sum_single_index, one_smul, ← this, zero_smul, of_ρ_apply,
-      Representation.ofMulAction_single x (1 : G) (1 : k), smul_eq_mul, mul_one] -/
-    simp only [LinearMap.comp_apply, Finsupp.lsingle_apply, leftRegularHom_hom]
-    erw [Finsupp.lift_apply]
-    rw [Finsupp.sum_single_index, ← this, of_ρ_apply]
-    · erw [Representation.ofMulAction_single x (1 : G) (1 : k)]
-      simp only [one_smul, smul_eq_mul, mul_one]
-      -- This goal didn't exist before leanprover/lean4#2644
-      rfl
-    · rw [zero_smul]
+    simp only [leftRegularHom_hom, LinearMap.comp_apply, Finsupp.lsingle_apply, Finsupp.lift_apply,
+      ← this, coe_of, of_ρ, Representation.ofMulAction_single x (1 : G) (1 : k), smul_eq_mul,
+      mul_one, zero_smul, Finsupp.sum_single_index, one_smul]
+    -- Mismatched `Zero k` instances
+    rfl
   right_inv x := leftRegularHom_apply x
 set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom_equiv Rep.leftRegularHomEquiv
@@ -427,7 +420,7 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
   toFun f :=
     { hom := (TensorProduct.curry f.hom).flip
       comm := fun g => by
-        refine' LinearMap.ext fun x => LinearMap.ext fun y => _
+        refine LinearMap.ext fun x => LinearMap.ext fun y => ?_
         change f.hom (_ ⊗ₜ[k] _) = C.ρ g (f.hom (_ ⊗ₜ[k] _))
         rw [← hom_comm_apply]
         change _ = f.hom ((A.ρ g * A.ρ g⁻¹) y ⊗ₜ[k] _)
@@ -666,7 +659,7 @@ set_option linter.uppercaseLean3 false in
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def unitIsoAddEquiv {V : Rep k G} : V ≃+ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V := by
   dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
-  refine' V.ρ.asModuleEquiv.symm.trans _
+  refine V.ρ.asModuleEquiv.symm.trans ?_
   exact (RestrictScalars.addEquiv _ _ _).symm
 set_option linter.uppercaseLean3 false in
 #align Rep.unit_iso_add_equiv Rep.unitIsoAddEquiv

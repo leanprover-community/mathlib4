@@ -5,7 +5,7 @@
   "Lean.Elab.ElabRules",
   "Lean.Elab.Tactic.Config",
   "Lean.Meta.Tactic.Simp.RegisterCommand",
-  "Mathlib.Algebra.Invertible.Defs",
+  "Mathlib.Algebra.Group.Invertible.Defs",
   "Mathlib.AlgebraicGeometry.Restrict",
   "Mathlib.AlgebraicTopology.DoldKan.Notations",
   "Mathlib.CategoryTheory.Category.Init",
@@ -87,6 +87,7 @@
   "Mathlib.Tactic.Linarith.Frontend",
   "Mathlib.Tactic.Linarith.Lemmas",
   "Mathlib.Tactic.LinearCombination",
+  "Mathlib.Tactic.Linter",
   "Mathlib.Tactic.Measurability",
   "Mathlib.Tactic.MkIffOfInductiveProp",
   "Mathlib.Tactic.ModCases",
@@ -181,7 +182,10 @@
   "Batteries.Util.LibraryNote",
   "Batteries.Util.ProofWanted",
   "Batteries.Util.TermUnsafe"],
- "ignoreAll": ["Batteries.Tactic.Basic", "Mathlib.Mathport.Syntax"],
+ "ignoreAll":
+ ["Batteries.Tactic.Basic",
+  "Mathlib.Mathport.Syntax",
+  "Mathlib.Tactic.Linter"],
  "ignore":
  {"Batteries.Tactic.OpenPrivate": ["Lean.Parser.Module"],
   "Batteries.Tactic.Omega.OmegaM": ["Batteries.Tactic.Omega.Int"],
@@ -223,7 +227,8 @@
   ["Mathlib.Algebra.GroupPower.Order",
    "Mathlib.Algebra.Order.Group.PosPart",
    "Mathlib.Data.Int.CharZero",
-   "Mathlib.Data.Nat.Factorial.Basic"],
+   "Mathlib.Data.Nat.Factorial.Basic",
+   "Mathlib.Data.PNat.Defs"],
   "Mathlib.Tactic.NormNum.Ineq":
   ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators": ["Mathlib.Data.List.FinRange"],
@@ -278,6 +283,8 @@
   ["Mathlib.CategoryTheory.Functor.Basic"],
   "Mathlib.Tactic.CategoryTheory.Coherence":
   ["Mathlib.Tactic.CategoryTheory.MonoidalComp"],
+  "Mathlib.Tactic.CC.Addition":
+  ["Mathlib.Logic.Basic", "Mathlib.Tactic.CC.Lemmas"],
   "Mathlib.Tactic.Basic": ["Batteries"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
@@ -319,6 +326,7 @@
   "Mathlib.Data.List.Basic": ["Mathlib.Data.Option.Basic"],
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Data.Finset.Basic": ["Mathlib.Data.Finset.Attr"],
+  "Mathlib.Data.DFinsupp.Notation": ["Mathlib.Data.Finsupp.Notation"],
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
   "Mathlib.Control.Basic": ["Mathlib.Init.Function"],
   "Mathlib.Combinatorics.SimpleGraph.Triangle.Basic":

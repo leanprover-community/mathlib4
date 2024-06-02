@@ -64,6 +64,20 @@ open Function
 namespace Nat
 variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
 
+-- TODO: Move the `LinearOrder ℕ` instance to `Order.Nat` (#13092).
+instance instLinearOrder : LinearOrder ℕ where
+  le := Nat.le
+  le_refl := @Nat.le_refl
+  le_trans := @Nat.le_trans
+  le_antisymm := @Nat.le_antisymm
+  le_total := @Nat.le_total
+  lt := Nat.lt
+  lt_iff_le_not_le := @Nat.lt_iff_le_not_le
+  decidableLT := inferInstance
+  decidableLE := inferInstance
+  decidableEq := inferInstance
+#align nat.linear_order Nat.instLinearOrder
+
 instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
 @[simp] theorem default_eq_zero : default = 0 := rfl
@@ -342,7 +356,8 @@ theorem le_or_le_of_add_eq_add_pred (h : a + c = b + d - 1) : b ≤ a ∨ d ≤ 
 
 /-! ### `sub` -/
 
-attribute [simp] Nat.sub_eq_zero_of_le Nat.sub_le_iff_le_add
+attribute [simp] Nat.sub_eq_zero_of_le Nat.sub_le_iff_le_add Nat.add_sub_cancel_left
+  Nat.add_sub_cancel_right
 
 /-- A version of `Nat.sub_succ` in the form `_ - 1` instead of `Nat.pred _`. -/
 lemma sub_succ' (m n : ℕ) : m - n.succ = m - n - 1 := rfl
@@ -1064,6 +1079,19 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 
 attribute [simp] Nat.dvd_zero
 
+@[simp] lemma mod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
+  cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
+#align nat.mod_two_ne_one Nat.mod_two_ne_one
+
+@[simp] lemma mod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
+  cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
+#align nat.mod_two_ne_zero Nat.mod_two_ne_zero
+
+@[deprecated mod_mul_right_div_self (since := "2024-05-29")]
+lemma div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
+  (mod_mul_right_div_self a b c).symm
+#align nat.div_mod_eq_mod_mul_div Nat.div_mod_eq_mod_mul_div
+
 protected lemma lt_div_iff_mul_lt (hdn : d ∣ n) (a : ℕ) : a < n / d ↔ d * a < n := by
   obtain rfl | hd := d.eq_zero_or_pos
   · simp [Nat.zero_dvd.1 hdn]
@@ -1099,14 +1127,10 @@ protected lemma div_ne_zero_iff (hb : b ≠ 0) : a / b ≠ 0 ↔ b ≤ a := by
 protected lemma div_pos_iff (hb : b ≠ 0) : 0 < a / b ↔ b ≤ a := by
   rw [Nat.pos_iff_ne_zero, Nat.div_ne_zero_iff hb]
 
+@[deprecated div_mul_div_comm (since := "2024-05-29")]
 lemma mul_div_mul_comm_of_dvd_dvd (hba : b ∣ a) (hdc : d ∣ c) :
-    a * c / (b * d) = a / b * (c / d) := by
-  obtain rfl | hb := b.eq_zero_or_pos; · simp
-  obtain rfl | hd := d.eq_zero_or_pos; · simp
-  obtain ⟨_, rfl⟩ := hba
-  obtain ⟨_, rfl⟩ := hdc
-  rw [Nat.mul_mul_mul_comm, Nat.mul_div_cancel_left _ hb, Nat.mul_div_cancel_left _ hd,
-    Nat.mul_div_cancel_left _ (Nat.mul_pos hb hd)]
+    a * c / (b * d) = a / b * (c / d) :=
+  (div_mul_div_comm hba hdc).symm
 #align nat.mul_div_mul_comm_of_dvd_dvd Nat.mul_div_mul_comm_of_dvd_dvd
 
 @[simp] lemma mul_mod_mod (a b c : ℕ) : (a * (b % c)) % c = a * b % c := by

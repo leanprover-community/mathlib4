@@ -123,7 +123,8 @@ theorem norm_zero_iff (f : PadicSeq p) : f.norm = 0 ↔ f ≈ 0 := by
   · intro h
     by_contra hf
     unfold norm at h
-    split_ifs at h; contradiction
+    split_ifs at h
+    · contradiction
     apply hf
     intro ε hε
     exists stationaryPoint hf
@@ -289,7 +290,7 @@ theorem norm_mul (f g : PadicSeq p) : (f * g).norm = f.norm * g.norm :=
     else by
       unfold norm
       split_ifs with hfg
-      exact (mul_not_equiv_zero hf hg hfg).elim
+      · exact (mul_not_equiv_zero hf hg hfg).elim
       -- Porting note: originally `padic_index_simp [hfg, hf, hg]`
       rw [lift_index_left_left hfg, lift_index_left hf, lift_index_right hg]
       apply padicNorm.mul
@@ -354,8 +355,8 @@ private theorem norm_eq_of_equiv {f g : PadicSeq p} (hf : ¬f ≈ 0) (hg : ¬g �
   · exact norm_eq_of_equiv_aux hf hg hfg h hlt
   · apply norm_eq_of_equiv_aux hg hf (Setoid.symm hfg) (Ne.symm h)
     apply lt_of_le_of_ne
-    apply le_of_not_gt hnlt
-    apply h
+    · apply le_of_not_gt hnlt
+    · apply h
 
 theorem norm_equiv {f g : PadicSeq p} (hfg : f ≈ g) : f.norm = g.norm :=
   if hf : f ≈ 0 then by
@@ -410,12 +411,12 @@ theorem norm_eq {f g : PadicSeq p} (h : ∀ k, padicNorm p (f k) = padicNorm p (
     let i := max (stationaryPoint hf) (stationaryPoint hg)
     have hpf : padicNorm p (f (stationaryPoint hf)) = padicNorm p (f i) := by
       apply stationaryPoint_spec
-      apply le_max_left
-      exact le_rfl
+      · apply le_max_left
+      · exact le_rfl
     have hpg : padicNorm p (g (stationaryPoint hg)) = padicNorm p (g i) := by
       apply stationaryPoint_spec
-      apply le_max_right
-      exact le_rfl
+      · apply le_max_right
+      · exact le_rfl
     rw [hpf, hpg, h]
 #align padic_seq.norm_eq PadicSeq.norm_eq
 
@@ -450,8 +451,8 @@ theorem add_eq_max_of_ne {f g : PadicSeq p} (hfgne : f.norm ≠ g.norm) :
       unfold norm at hfgne ⊢; split_ifs at hfgne ⊢
       -- Porting note: originally `padic_index_simp [hfg, hf, hg] at hfgne ⊢`
       rw [lift_index_left hf, lift_index_right hg] at hfgne
-      rw [lift_index_left_left hfg, lift_index_left hf, lift_index_right hg]
-      exact padicNorm.add_eq_max_of_ne hfgne
+      · rw [lift_index_left_left hfg, lift_index_left hf, lift_index_right hg]
+        exact padicNorm.add_eq_max_of_ne hfgne
 #align padic_seq.add_eq_max_of_ne PadicSeq.add_eq_max_of_ne
 
 end Embedding
@@ -582,8 +583,8 @@ def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
     trans
       max ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) q)
         ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) r)
-    exact Quotient.inductionOn₂ q r <| PadicSeq.norm_nonarchimedean
-    refine' max_le_add_of_nonneg (Quotient.inductionOn q <| PadicSeq.norm_nonneg) _
+    · exact Quotient.inductionOn₂ q r <| PadicSeq.norm_nonarchimedean
+    refine max_le_add_of_nonneg (Quotient.inductionOn q <| PadicSeq.norm_nonneg) ?_
     exact Quotient.inductionOn r <| PadicSeq.norm_nonneg
 #align padic_norm_e padicNormE
 
@@ -606,7 +607,8 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
   have hne : ¬f - const (padicNorm p) (f i) ≈ 0 := fun h ↦ by
     rw [PadicSeq.norm, dif_pos h] at hge
     exact not_lt_of_ge hge hε
-  unfold PadicSeq.norm at hge; split_ifs at hge; exact not_le_of_gt hε hge
+  unfold PadicSeq.norm at hge; split_ifs at hge
+  · exact not_le_of_gt hε hge
   apply not_le_of_gt _ hge
   cases' _root_.em (N ≤ stationaryPoint hne) with hgen hngen
   · apply hN _ hgen _ hi
@@ -686,9 +688,9 @@ def limSeq : ℕ → ℚ :=
 
 theorem exi_rat_seq_conv {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (f i - (limSeq f i : ℚ_[p]) : ℚ_[p]) < ε := by
-  refine' (exists_nat_gt (1 / ε)).imp fun N hN i hi ↦ _
+  refine (exists_nat_gt (1 / ε)).imp fun N hN i hi ↦ ?_
   have h := Classical.choose_spec (rat_dense' (f i) (div_nat_pos i))
-  refine' lt_of_lt_of_le h ((div_le_iff' <| mod_cast succ_pos _).mpr _)
+  refine lt_of_lt_of_le h ((div_le_iff' <| mod_cast succ_pos _).mpr ?_)
   rw [right_distrib]
   apply le_add_of_le_of_nonneg
   · exact (div_le_iff hε).mp (le_trans (le_of_lt hN) (mod_cast hi))
@@ -734,9 +736,9 @@ theorem complete' : ∃ q : ℚ_[p], ∀ ε > 0, ∃ N, ∀ i ≥ N, padicNormE 
   ⟨lim f, fun ε hε ↦ by
     obtain ⟨N, hN⟩ := exi_rat_seq_conv f (half_pos hε)
     obtain ⟨N2, hN2⟩ := padicNormE.defn (lim' f) (half_pos hε)
-    refine' ⟨max N N2, fun i hi ↦ _⟩
+    refine ⟨max N N2, fun i hi ↦ ?_⟩
     rw [← sub_add_sub_cancel _ (lim' f i : ℚ_[p]) _]
-    refine' (padicNormE.add_le _ _).trans_lt _
+    refine (padicNormE.add_le _ _).trans_lt ?_
     rw [← add_halves ε]
     apply _root_.add_lt_add
     · apply hN2 _ (le_of_max_le_right hi)
@@ -1009,7 +1011,7 @@ instance : CompleteSpace ℚ_[p] := by
   apply complete_of_cauchySeq_tendsto
   intro u hu
   let c : CauSeq ℚ_[p] norm := ⟨u, Metric.cauchySeq_iff'.mp hu⟩
-  refine' ⟨c.lim, fun s h ↦ _⟩
+  refine ⟨c.lim, fun s h ↦ ?_⟩
   rcases Metric.mem_nhds_iff.1 h with ⟨ε, ε0, hε⟩
   have := c.equiv_lim ε ε0
   simp only [mem_map, mem_atTop_sets, mem_setOf_eq]
@@ -1049,8 +1051,8 @@ theorem norm_eq_pow_val {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.va
   refine Quotient.inductionOn' x fun f hf => ?_
   change (PadicSeq.norm _ : ℝ) = (p : ℝ) ^ (-PadicSeq.valuation _)
   rw [PadicSeq.norm_eq_pow_val]
-  change ↑((p : ℚ) ^ (-PadicSeq.valuation f)) = (p : ℝ) ^ (-PadicSeq.valuation f)
-  · rw [Rat.cast_zpow, Rat.cast_natCast]
+  · change ↑((p : ℚ) ^ (-PadicSeq.valuation f)) = (p : ℝ) ^ (-PadicSeq.valuation f)
+    rw [Rat.cast_zpow, Rat.cast_natCast]
   · apply CauSeq.not_limZero_of_not_congr_zero
     -- Porting note: was `contrapose! hf`
     intro hf'
@@ -1062,7 +1064,7 @@ theorem norm_eq_pow_val {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.va
 @[simp]
 theorem valuation_p : valuation (p : ℚ_[p]) = 1 := by
   have h : (1 : ℝ) < p := mod_cast (Fact.out : p.Prime).one_lt
-  refine' neg_injective ((zpow_strictMono h).injective <| (norm_eq_pow_val _).symm.trans _)
+  refine neg_injective ((zpow_strictMono h).injective <| (norm_eq_pow_val ?_).symm.trans ?_)
   · exact mod_cast (Fact.out : p.Prime).ne_zero
   · simp
 #align padic.valuation_p Padic.valuation_p

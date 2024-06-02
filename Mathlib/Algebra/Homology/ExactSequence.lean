@@ -171,7 +171,7 @@ lemma isComplex₂_iff (S : ComposableArrows C 2) :
   · intro h
     exact h.zero 0 (by omega)
   · intro h
-    refine' IsComplex.mk (fun i hi => _)
+    refine IsComplex.mk (fun i hi => ?_)
     obtain rfl : i = 0 := by omega
     exact h
 
@@ -195,7 +195,7 @@ lemma exact₂_iff (S : ComposableArrows C 2) (hS : S.IsComplex) :
   · intro h
     exact h.exact 0 (by omega)
   · intro h
-    refine' Exact.mk hS (fun i hi => _)
+    refine Exact.mk hS (fun i hi => ?_)
     obtain rfl : i = 0 := by omega
     exact h
 
@@ -225,13 +225,18 @@ lemma exact_iff_δ₀ (S : ComposableArrows C (n + 2)) :
     · exact Exact.mk (IsComplex.mk (fun i hi => h.toIsComplex.zero (i + 1)))
         (fun i hi => h.exact (i + 1))
   · rintro ⟨h, h₀⟩
-    refine' Exact.mk (IsComplex.mk (fun i hi => _)) (fun i hi => _)
+    refine Exact.mk (IsComplex.mk (fun i hi => ?_)) (fun i hi => ?_)
     · obtain _ | i := i
       · exact h.toIsComplex.zero 0
       · exact h₀.toIsComplex.zero i
     · obtain _ | i := i
       · exact h.exact 0
       · exact h₀.exact i
+
+lemma Exact.δ₀ {S : ComposableArrows C (n + 2)} (hS : S.Exact) :
+    S.δ₀.Exact := by
+  rw [exact_iff_δ₀] at hS
+  exact hS.2
 
 /-- If `S : ComposableArrows C (n + 2)` is such that the first two arrows form
 an exact sequence and that the tail `S.δ₀` is exact, then `S` is also exact.
@@ -254,7 +259,7 @@ lemma exact_iff_δlast {n : ℕ} (S : ComposableArrows C (n + 2)) :
         exact h.toIsComplex.zero n
       exact h.exact n (by omega)
   · rintro ⟨h, h'⟩
-    refine' Exact.mk (IsComplex.mk (fun i hi => _)) (fun i hi => _)
+    refine Exact.mk (IsComplex.mk (fun i hi => ?_)) (fun i hi => ?_)
     · simp only [add_le_add_iff_right, ge_iff_le] at hi
       obtain hi | rfl := hi.lt_or_eq
       · exact h.toIsComplex.zero i
@@ -263,6 +268,17 @@ lemma exact_iff_δlast {n : ℕ} (S : ComposableArrows C (n + 2)) :
       obtain hi | rfl := hi.lt_or_eq
       · exact h.exact i
       · exact h'.exact 0
+
+lemma Exact.δlast {S : ComposableArrows C (n + 2)} (hS : S.Exact) :
+    S.δlast.Exact := by
+  rw [exact_iff_δlast] at hS
+  exact hS.1
+
+lemma exact_of_δlast {n : ℕ} (S : ComposableArrows C (n + 2))
+    (h₁ : S.δlast.Exact) (h₂ : (mk₂ (S.map' n (n + 1)) (S.map' (n + 1) (n + 2))).Exact) :
+    S.Exact := by
+  rw [exact_iff_δlast]
+  constructor <;> assumption
 
 end ComposableArrows
 

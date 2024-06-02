@@ -114,7 +114,7 @@ then `X ⟶ X` is 1-dimensional.
 theorem finrank_endomorphism_eq_one {X : C} (isIso_iff_nonzero : ∀ f : X ⟶ X, IsIso f ↔ f ≠ 0)
     [I : FiniteDimensional 𝕜 (X ⟶ X)] : finrank 𝕜 (X ⟶ X) = 1 := by
   have id_nonzero := (isIso_iff_nonzero (𝟙 X)).mp (by infer_instance)
-  refine' finrank_eq_one (𝟙 X) id_nonzero _
+  refine finrank_eq_one (𝟙 X) id_nonzero ?_
   intro f
   have : Nontrivial (End X) := nontrivial_of_ne _ _ id_nonzero
   have : FiniteDimensional 𝕜 (End X) := I
@@ -168,7 +168,7 @@ theorem finrank_hom_simple_simple_le_one (X Y : C) [FiniteDimensional 𝕜 (X �
     exact zero_le_one
   · obtain ⟨f, nz⟩ := (nontrivial_iff_exists_ne 0).mp h
     haveI fi := (isIso_iff_nonzero f).mpr nz
-    refine' finrank_le_one f _
+    refine finrank_le_one f ?_
     intro g
     obtain ⟨c, w⟩ := endomorphism_simple_eq_smul_id 𝕜 (g ≫ inv f)
     exact ⟨c, by simpa using w =≫ f⟩
@@ -194,7 +194,7 @@ theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 
     [FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X] [Simple Y] :
     finrank 𝕜 (X ⟶ Y) = 0 ↔ IsEmpty (X ≅ Y) := by
   rw [← not_nonempty_iff, ← not_congr (finrank_hom_simple_simple_eq_one_iff 𝕜 X Y)]
-  refine' ⟨fun h => by rw [h]; simp, fun h => _⟩
+  refine ⟨fun h => by rw [h]; simp, fun h => ?_⟩
   have := finrank_hom_simple_simple_le_one 𝕜 X Y
   interval_cases finrank 𝕜 (X ⟶ Y)
   · rfl

@@ -131,7 +131,7 @@ theorem lengthParity_comp_simple :
 theorem lengthParity_eq_ofAdd_length (w : W) :
     cs.lengthParity w = Multiplicative.ofAdd (↑(ℓ w)) := by
   rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
-  rw [← hω, wordProd, MonoidHom.map_list_prod, List.map_map, lengthParity_comp_simple, map_const',
+  rw [← hω, wordProd, map_list_prod, List.map_map, lengthParity_comp_simple, map_const',
     prod_replicate, ← ofAdd_nsmul, nsmul_one]
 
 theorem length_mul_mod_two (w₁ w₂ : W) : ℓ (w₁ * w₂) % 2 = (ℓ w₁ + ℓ w₂) % 2 := by
@@ -145,7 +145,7 @@ theorem length_simple (i : B) : ℓ (s i) = 1 := by
   · by_contra! length_lt_one
     have : cs.lengthParity (s i) = Multiplicative.ofAdd 0 := by
       rw [lengthParity_eq_ofAdd_length, Nat.lt_one_iff.mp length_lt_one, Nat.cast_zero]
-    have : Multiplicative.ofAdd 0 = Multiplicative.ofAdd 1 :=
+    have : Multiplicative.ofAdd (0 : ZMod 2) = Multiplicative.ofAdd 1 :=
       this.symm.trans (cs.lengthParity_simple i)
     contradiction
 

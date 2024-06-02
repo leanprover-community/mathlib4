@@ -5,8 +5,6 @@ Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 #align_import algebra.group.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
@@ -28,12 +26,15 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
 
 ## Main declarations
 
-* `mulMulHom`/`mulMonoidHom`/`mulMonoidWithZeroHom`: Multiplication bundled as a
-  multiplicative/monoid/monoid with zero homomorphism.
-* `divMonoidHom`/`divMonoidWithZeroHom`: Division bundled as a monoid/monoid with zero
-  homomorphism.
+* `mulMulHom`/`mulMonoidHom`: Multiplication bundled as a
+  multiplicative/monoid homomorphism.
+* `divMonoidHom`: Division bundled as a monoid homomorphism.
 -/
 
+assert_not_exists MonoidWithZero
+-- TODO:
+-- assert_not_exists AddMonoidWithOne
+assert_not_exists DenselyOrdered
 
 variable {A : Type*} {B : Type*} {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 
@@ -76,15 +77,15 @@ theorem mul_def [Mul M] [Mul N] (p q : M × N) : p * q = (p.1 * q.1, p.2 * q.2) 
 
 @[to_additive]
 theorem one_mk_mul_one_mk [Monoid M] [Mul N] (b₁ b₂ : N) :
-    ((1 : M), b₁) * (1, b₂) = (1, b₁ * b₂) :=
-  by rw [mk_mul_mk, mul_one]
+    ((1 : M), b₁) * (1, b₂) = (1, b₁ * b₂) := by
+  rw [mk_mul_mk, mul_one]
 #align prod.one_mk_mul_one_mk Prod.one_mk_mul_one_mk
 #align prod.zero_mk_add_zero_mk Prod.zero_mk_add_zero_mk
 
 @[to_additive]
 theorem mk_one_mul_mk_one [Mul M] [Monoid N] (a₁ a₂ : M) :
-    (a₁, (1 : N)) * (a₂, 1) = (a₁ * a₂, 1) :=
-  by rw [mk_mul_mk, mul_one]
+    (a₁, (1 : N)) * (a₂, 1) = (a₁ * a₂, 1) := by
+  rw [mk_mul_mk, mul_one]
 #align prod.mk_one_mul_mk_one Prod.mk_one_mul_mk_one
 #align prod.mk_zero_add_mk_zero Prod.mk_zero_add_mk_zero
 
@@ -189,10 +190,6 @@ theorem swap_div [Div G] [Div H] (a b : G × H) : (a / b).swap = a.swap / b.swap
 #align prod.swap_div Prod.swap_div
 #align prod.swap_sub Prod.swap_sub
 
-instance [MulZeroClass M] [MulZeroClass N] : MulZeroClass (M × N) :=
-  { zero_mul := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨zero_mul _, zero_mul _⟩,
-    mul_zero := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨mul_zero _, mul_zero _⟩ }
-
 @[to_additive]
 instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) :=
   { mul_assoc := fun _ _ _ => mk.inj_iff.mpr ⟨mul_assoc _ _ _, mul_assoc _ _ _⟩ }
@@ -200,10 +197,6 @@ instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) :=
 @[to_additive]
 instance instCommSemigroup [CommSemigroup G] [CommSemigroup H] : CommSemigroup (G × H) :=
   { mul_comm := fun _ _ => mk.inj_iff.mpr ⟨mul_comm _ _, mul_comm _ _⟩ }
-
-instance [SemigroupWithZero M] [SemigroupWithZero N] : SemigroupWithZero (M × N) :=
-  { zero_mul := by simp,
-    mul_zero := by simp }
 
 @[to_additive]
 instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) :=
@@ -285,18 +278,6 @@ instance instCommMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) :=
 instance [CancelCommMonoid M] [CancelCommMonoid N] : CancelCommMonoid (M × N) :=
   { mul_comm := fun ⟨m₁, n₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm m₁, mul_comm n₁] }
 
-instance [MulZeroOneClass M] [MulZeroOneClass N] : MulZeroOneClass (M × N) :=
-  { zero_mul := by simp,
-    mul_zero := by simp }
-
-instance [MonoidWithZero M] [MonoidWithZero N] : MonoidWithZero (M × N) :=
-  { zero_mul := by simp,
-    mul_zero := by simp }
-
-instance [CommMonoidWithZero M] [CommMonoidWithZero N] : CommMonoidWithZero (M × N) :=
-  { zero_mul := by simp,
-    mul_zero := by simp }
-
 @[to_additive]
 instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=
   { mul_comm := fun ⟨g₁, h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm g₁, mul_comm h₁] }
@@ -311,6 +292,7 @@ theorem SemiconjBy.prod {x y z : M × N}
     (hm : SemiconjBy x.1 y.1 z.1) (hn : SemiconjBy x.2 y.2 z.2) : SemiconjBy x y z :=
   Prod.ext hm hn
 
+@[to_additive]
 theorem Prod.semiconjBy_iff {x y z : M × N} :
     SemiconjBy x y z ↔ SemiconjBy x.1 y.1 z.1 ∧ SemiconjBy x.2 y.2 z.2 := ext_iff
 
@@ -318,6 +300,7 @@ theorem Prod.semiconjBy_iff {x y z : M × N} :
 theorem Commute.prod {x y : M × N} (hm : Commute x.1 y.1) (hn : Commute x.2 y.2) : Commute x y :=
   .prod hm hn
 
+@[to_additive]
 theorem Prod.commute_iff {x y : M × N} :
     Commute x y ↔ Commute x.1 y.1 ∧ Commute x.2 y.2 := semiconjBy_iff
 
@@ -877,13 +860,6 @@ def mulMonoidHom [CommMonoid α] : α × α →* α :=
 #align mul_monoid_hom_apply mulMonoidHom_apply
 #align add_add_monoid_hom_apply addAddMonoidHom_apply
 
-/-- Multiplication as a multiplicative homomorphism with zero. -/
-@[simps]
-def mulMonoidWithZeroHom [CommMonoidWithZero α] : α × α →*₀ α :=
-  { mulMonoidHom with map_zero' := mul_zero _ }
-#align mul_monoid_with_zero_hom mulMonoidWithZeroHom
-#align mul_monoid_with_zero_hom_apply mulMonoidWithZeroHom_apply
-
 /-- Division as a monoid homomorphism. -/
 @[to_additive (attr := simps) "Subtraction as an additive monoid homomorphism."]
 def divMonoidHom [DivisionCommMonoid α] : α × α →* α where
@@ -894,15 +870,5 @@ def divMonoidHom [DivisionCommMonoid α] : α × α →* α where
 #align sub_add_monoid_hom subAddMonoidHom
 #align div_monoid_hom_apply divMonoidHom_apply
 #align sub_add_monoid_hom_apply subAddMonoidHom_apply
-
-/-- Division as a multiplicative homomorphism with zero. -/
-@[simps]
-def divMonoidWithZeroHom [CommGroupWithZero α] : α × α →*₀ α where
-  toFun a := a.1 / a.2
-  map_zero' := zero_div _
-  map_one' := div_one _
-  map_mul' _ _ := mul_div_mul_comm _ _ _ _
-#align div_monoid_with_zero_hom divMonoidWithZeroHom
-#align div_monoid_with_zero_hom_apply divMonoidWithZeroHom_apply
 
 end BundledMulDiv

@@ -73,8 +73,8 @@ respect which `α` forms a lattice. Suppose that `α` is *solid*, that is to say
 `α`, with absolute values `|a|` and `|b|` respectively, `|a| ≤ |b|` implies `‖a‖ ≤ ‖b‖`. Then `α` is
 said to be a normed lattice ordered group.
 -/
-class NormedLatticeAddCommGroup (α : Type*) extends NormedAddCommGroup α, Lattice α, HasSolidNorm α
-  where
+class NormedLatticeAddCommGroup (α : Type*) extends
+    NormedAddCommGroup α, Lattice α, HasSolidNorm α where
   add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align normed_lattice_add_comm_group NormedLatticeAddCommGroup
 
@@ -118,7 +118,7 @@ theorem norm_abs_eq_norm (a : α) : ‖|a|‖ = ‖a‖ :=
 
 theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ ≤ ‖a - c‖ + ‖b - d‖ := by
   rw [← norm_abs_eq_norm (a - c), ← norm_abs_eq_norm (b - d)]
-  refine' le_trans (solid _) (norm_add_le |a - c| |b - d|)
+  refine le_trans (solid ?_) (norm_add_le |a - c| |b - d|)
   rw [abs_of_nonneg (add_nonneg (abs_nonneg (a - c)) (abs_nonneg (b - d)))]
   calc
     |a ⊓ b - c ⊓ d| = |a ⊓ b - c ⊓ b + (c ⊓ b - c ⊓ d)| := by rw [sub_add_sub_cancel]
@@ -132,7 +132,7 @@ theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ �
 
 theorem norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ ≤ ‖a - c‖ + ‖b - d‖ := by
   rw [← norm_abs_eq_norm (a - c), ← norm_abs_eq_norm (b - d)]
-  refine' le_trans (solid _) (norm_add_le |a - c| |b - d|)
+  refine le_trans (solid ?_) (norm_add_le |a - c| |b - d|)
   rw [abs_of_nonneg (add_nonneg (abs_nonneg (a - c)) (abs_nonneg (b - d)))]
   calc
     |a ⊔ b - c ⊔ d| = |a ⊔ b - c ⊔ b + (c ⊔ b - c ⊔ d)| := by rw [sub_add_sub_cancel]
@@ -158,10 +158,10 @@ theorem norm_sup_le_add (x y : α) : ‖x ⊔ y‖ ≤ ‖x‖ + ‖y‖ := by
 /-- Let `α` be a normed lattice ordered group. Then the infimum is jointly continuous.
 -/
 instance (priority := 100) NormedLatticeAddCommGroup.continuousInf : ContinuousInf α := by
-  refine' ⟨continuous_iff_continuousAt.2 fun q => tendsto_iff_norm_sub_tendsto_zero.2 <| _⟩
+  refine ⟨continuous_iff_continuousAt.2 fun q => tendsto_iff_norm_sub_tendsto_zero.2 <| ?_⟩
   have : ∀ p : α × α, ‖p.1 ⊓ p.2 - q.1 ⊓ q.2‖ ≤ ‖p.1 - q.1‖ + ‖p.2 - q.2‖ := fun _ =>
     norm_inf_sub_inf_le_add_norm _ _ _ _
-  refine' squeeze_zero (fun e => norm_nonneg _) this _
+  refine squeeze_zero (fun e => norm_nonneg _) this ?_
   convert ((continuous_fst.tendsto q).sub <| tendsto_const_nhds).norm.add
     ((continuous_snd.tendsto q).sub <| tendsto_const_nhds).norm
   simp

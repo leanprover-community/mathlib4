@@ -193,13 +193,11 @@ theorem coe_injective : @Function.Injective (A →ₛₙₐ[φ] B) (A → B) (�
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
 #align non_unital_alg_hom.coe_injective NonUnitalAlgHom.coe_injective
-instance : FunLike (A →ₛₙₐ[φ] B) A B
-    where
+instance : FunLike (A →ₛₙₐ[φ] B) A B where
   coe f := f.toFun
   coe_injective' := coe_injective
 
-instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B
-    where
+instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
@@ -425,8 +423,7 @@ variable [DistribMulAction R C]
 
 /-- The prod of two morphisms is a morphism. -/
 @[simps]
-def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C
-    where
+def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C where
   toFun := Pi.prod f g
   map_zero' := by simp only [Pi.prod, Prod.zero_eq_mk, map_zero]
   map_add' x y := by simp only [Pi.prod, Prod.mk_add_mk, map_add]
@@ -456,8 +453,7 @@ theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/
 @[simps]
-def prodEquiv : (A →ₙₐ[R] B) × (A →ₙₐ[R] C) ≃ (A →ₙₐ[R] B × C)
-    where
+def prodEquiv : (A →ₙₐ[R] B) × (A →ₙₐ[R] C) ≃ (A →ₙₐ[R] B × C) where
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
   left_inv _ := rfl

@@ -368,8 +368,9 @@ protected theorem mul {q r : ℚ} (hq : q ≠ 0) (hr : r ≠ 0) :
 #align padic_val_rat.mul padicValRat.mul
 
 /-- A rewrite lemma for `padicValRat p (q^k)` with condition `q ≠ 0`. -/
-protected theorem pow {q : ℚ} (hq : q ≠ 0) {k : ℕ} : padicValRat p (q ^ k) = k * padicValRat p q :=
-  by induction k <;>
+protected theorem pow {q : ℚ} (hq : q ≠ 0) {k : ℕ} :
+    padicValRat p (q ^ k) = k * padicValRat p q := by
+  induction k <;>
     simp [*, padicValRat.mul hq (pow_ne_zero _ hq), _root_.pow_succ', add_mul, add_comm]
 #align padic_val_rat.pow padicValRat.pow
 
@@ -457,7 +458,7 @@ lemma add_eq_min {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
   have h3 := min_le_padicValRat_add (p := p) (ne_of_eq_of_ne (add_neg_cancel_right r q) hr)
   rw [add_neg_cancel_right, padicValRat.neg] at h2 h3
   rw [add_comm] at h3
-  refine' le_antisymm (le_min _ _) h1
+  refine le_antisymm (le_min ?_ ?_) h1
   · contrapose! h2
     rw [min_eq_right h2.le] at h3
     exact lt_min h2 (lt_of_le_of_ne h3 hval)
@@ -480,20 +481,18 @@ lemma self_pow_inv (r : ℕ) : padicValRat p ((p : ℚ) ^ r)⁻¹ = -r := by
   rw [padicValRat.inv, neg_inj, padicValRat.pow (Nat.cast_ne_zero.mpr hp.elim.ne_zero),
       padicValRat.self hp.elim.one_lt, mul_one]
 
-open BigOperators
-
 /-- A finite sum of rationals with positive `p`-adic valuation has positive `p`-adic valuation
 (if the sum is non-zero). -/
 theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < padicValRat p (F i))
-    (hn0 : ∑ i in Finset.range n, F i ≠ 0) : 0 < padicValRat p (∑ i in Finset.range n, F i) := by
+    (hn0 : ∑ i ∈ Finset.range n, F i ≠ 0) : 0 < padicValRat p (∑ i ∈ Finset.range n, F i) := by
   induction' n with d hd
   · exact False.elim (hn0 rfl)
   · rw [Finset.sum_range_succ] at hn0 ⊢
-    by_cases h : ∑ x : ℕ in Finset.range d, F x = 0
+    by_cases h : ∑ x ∈ Finset.range d, F x = 0
     · rw [h, zero_add]
       exact hF d (lt_add_one _)
-    · refine' lt_of_lt_of_le _ (min_le_padicValRat_add hn0)
-      refine' lt_min (hd (fun i hi => _) h) (hF d (lt_add_one _))
+    · refine lt_of_lt_of_le ?_ (min_le_padicValRat_add hn0)
+      refine lt_min (hd (fun i hi => ?_) h) (hF d (lt_add_one _))
       exact hF _ (lt_trans hi (lt_add_one _))
 #align padic_val_rat.sum_pos_of_pos padicValRat.sum_pos_of_pos
 
@@ -501,7 +500,7 @@ theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < pa
 number, then the p-adic valuation of their sum is also greater than the same rational number. -/
 theorem lt_sum_of_lt {p j : ℕ} [hp : Fact (Nat.Prime p)] {F : ℕ → ℚ} {S : Finset ℕ}
     (hS : S.Nonempty) (hF : ∀ i, i ∈ S → padicValRat p (F j) < padicValRat p (F i))
-    (hn1 : ∀ i : ℕ, 0 < F i) : padicValRat p (F j) < padicValRat p (∑ i in S, F i) := by
+    (hn1 : ∀ i : ℕ, 0 < F i) : padicValRat p (F j) < padicValRat p (∑ i ∈ S, F i) := by
   induction' hS using Finset.Nonempty.cons_induction with k s S' Hnot Hne Hind
   · rw [Finset.sum_singleton]
     exact hF k (by simp)
@@ -633,7 +632,7 @@ lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicVa
   rintro ⟨h1, h2⟩
   rw [← lt_add_one_iff, ← mul_one (2 ^ _)] at h1
   rw [← add_one_le_iff, Nat.pow_succ] at h2
-  refine' not_dvd_of_between_consec_multiples h1 (lt_of_le_of_ne' h2 _) pow_padicValNat_dvd
+  refine not_dvd_of_between_consec_multiples h1 (lt_of_le_of_ne' h2 ?_) pow_padicValNat_dvd
   -- TODO(kmill): Why is this `p := 2` necessary?
   exact pow_succ_padicValNat_not_dvd (p := 2) n.succ_ne_zero ∘ dvd_of_eq
 
@@ -646,8 +645,6 @@ lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) :
   replace h := le_antisymm (add_one_le_iff.mpr (lt_pow_of_log_lt one_lt_two h))
     (pow_log_le_self 2 n.succ_ne_zero)
   rw [h, padicValNat.prime_pow, ← h]
-
-open BigOperators
 
 theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :
     (Finset.range (padicValNat p n + 1)).image (p ^ ·) ⊆ n.divisors := by
@@ -666,14 +663,14 @@ theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
   simp only [exists_prop, Finset.mem_image, Finset.mem_range] at ht
   obtain ⟨k, hk, rfl⟩ := ht
   rw [Finset.mem_erase, Nat.mem_divisors]
-  refine' ⟨_, (pow_dvd_pow p <| succ_le_iff.2 hk).trans pow_padicValNat_dvd, hn⟩
+  refine ⟨?_, (pow_dvd_pow p <| succ_le_iff.2 hk).trans pow_padicValNat_dvd, hn⟩
   exact (Nat.one_lt_pow k.succ_ne_zero hp.out.one_lt).ne'
 #align range_pow_padic_val_nat_subset_divisors' range_pow_padicValNat_subset_divisors'
 
 /-- The `p`-adic valuation of `(p * n)!` is `n` more than that of `n!`. -/
 theorem padicValNat_factorial_mul (n : ℕ) [hp : Fact p.Prime] :
     padicValNat p (p * n) ! = padicValNat p n ! + n := by
-  refine' PartENat.natCast_inj.mp _
+  refine PartENat.natCast_inj.mp ?_
   rw [padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos (p * n), Nat.cast_add,
       padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos n]
   exact Prime.multiplicity_factorial_mul hp.out
@@ -707,7 +704,7 @@ largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
 The `p`-adic valuation of `n!` is the sum of the quotients `n / p ^ i`. This sum is expressed
 over the finset `Ico 1 b` where `b` is any bound greater than `log p n`. -/
 theorem padicValNat_factorial {n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < b) :
-    padicValNat p (n !) = ∑ i in Finset.Ico 1 b, n / p ^ i :=
+    padicValNat p (n !) = ∑ i ∈ Finset.Ico 1 b, n / p ^ i :=
   PartENat.natCast_inj.mp ((padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos _) ▸
       Prime.multiplicity_factorial hp.out hnb)
 
@@ -718,7 +715,7 @@ of `n`. -/
 theorem sub_one_mul_padicValNat_factorial [hp : Fact p.Prime] (n : ℕ):
     (p - 1) * padicValNat p (n !) = n - (p.digits n).sum := by
   rw [padicValNat_factorial <| lt_succ_of_lt <| lt.base (log p n)]
-  norm_cast; nth_rw 2 [← zero_add 1]
+  nth_rw 2 [← zero_add 1]
   rw [Nat.succ_eq_add_one, ← Finset.sum_Ico_add' _ 0 _ 1,
     Ico_zero_eq_range, ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits, Nat.succ_eq_add_one]
 
@@ -768,8 +765,8 @@ digits of `k` plus the sum of the digits of `n - k` minus the sum of digits of `
 theorem sub_one_mul_padicValNat_choose_eq_sub_sum_digits {k n : ℕ} [hp : Fact p.Prime]
     (h : k ≤ n) : (p - 1) * padicValNat p (choose n k) =
     (p.digits k).sum + (p.digits (n - k)).sum - (p.digits n).sum := by
-  convert @sub_one_mul_padicValNat_choose_eq_sub_sum_digits' _ _ _ _
-  all_goals exact Nat.eq_add_of_sub_eq h rfl
+  convert @sub_one_mul_padicValNat_choose_eq_sub_sum_digits' _ _ _ ‹_›
+  all_goals omega
 
 end padicValNat
 
@@ -778,8 +775,7 @@ section padicValInt
 variable {p : ℕ} [hp : Fact p.Prime]
 
 theorem padicValInt_dvd_iff (n : ℕ) (a : ℤ) : (p : ℤ) ^ n ∣ a ↔ a = 0 ∨ n ≤ padicValInt p a := by
-  rw [padicValInt, ← Int.natAbs_eq_zero, ← padicValNat_dvd_iff, ← Int.natCast_dvd,
-    Int.coe_nat_pow]
+  rw [padicValInt, ← Int.natAbs_eq_zero, ← padicValNat_dvd_iff, ← Int.natCast_dvd, Int.natCast_pow]
 #align padic_val_int_dvd_iff padicValInt_dvd_iff
 
 theorem padicValInt_dvd (a : ℤ) : (p : ℤ) ^ padicValInt p a ∣ a := by

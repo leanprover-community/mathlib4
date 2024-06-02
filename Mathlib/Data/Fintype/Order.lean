@@ -208,14 +208,14 @@ theorem Set.Finite.exists_ge [IsDirected α (· ≥ ·)] {s : Set α} (hs : s.Fi
 
 theorem Finite.bddAbove_range [IsDirected α (· ≤ ·)] (f : β → α) : BddAbove (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_le f
-  refine' ⟨M, fun a ha => _⟩
+  refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 #align fintype.bdd_above_range Finite.bddAbove_range
 
 theorem Finite.bddBelow_range [IsDirected α (· ≥ ·)] (f : β → α) : BddBelow (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_ge f
-  refine' ⟨M, fun a ha => _⟩
+  refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 

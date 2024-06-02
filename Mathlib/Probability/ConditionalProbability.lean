@@ -59,7 +59,6 @@ conditional, conditioned, bayes
 noncomputable section
 
 open ENNReal MeasureTheory MeasureTheory.Measure MeasurableSpace Set
-open scoped BigOperators
 
 variable {Ω Ω' α : Type*} {m : MeasurableSpace Ω} {m' : MeasurableSpace Ω'} (μ : Measure Ω)
   {s t : Set Ω}
@@ -162,7 +161,7 @@ theorem inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t|s] ≠ 0)
 theorem cond_pos_of_inter_ne_zero [IsFiniteMeasure μ]
     (hms : MeasurableSet s) (hci : μ (s ∩ t) ≠ 0) : 0 < μ[|s] t := by
   rw [cond_apply _ hms]
-  refine' ENNReal.mul_pos _ hci
+  refine ENNReal.mul_pos ?_ hci
   exact ENNReal.inv_ne_zero.mpr (measure_ne_top _ _)
 #align probability_theory.cond_pos_of_inter_ne_zero ProbabilityTheory.cond_pos_of_inter_ne_zero
 
@@ -174,7 +173,7 @@ lemma cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t) (
   · have : μ (s ∩ t ∩ u) = 0 := measure_mono_null (Set.inter_subset_left _ _) hst
     simp [this, ← Set.inter_assoc]
   · have hcs' : μ s ≠ 0 :=
-      (μ.toOuterMeasure.pos_of_subset_ne_zero (Set.inter_subset_left _ _) hst).ne'
+      (measure_pos_of_superset (Set.inter_subset_left _ _) hst).ne'
     simp [*, ← mul_assoc, ← Set.inter_assoc, ENNReal.mul_inv, ENNReal.mul_inv_cancel,
       mul_right_comm _ _ (μ s)⁻¹]
 #align probability_theory.cond_cond_eq_cond_inter' ProbabilityTheory.cond_cond_eq_cond_inter'

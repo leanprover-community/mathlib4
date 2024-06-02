@@ -130,7 +130,7 @@ variable {G}
 
 theorem functorPullback_pushforward_covering [Full G] {X : C}
     (T : K (G.obj X)) : (T.val.functorPullback G).functorPushforward G ∈ K (G.obj X) := by
-  refine' K.superset_covering _ (K.bind_covering T.property
+  refine K.superset_covering ?_ (K.bind_covering T.property
     fun Y f _ => G.is_cover_of_isCoverDense K Y)
   rintro Y _ ⟨Z, _, f, hf, ⟨W, g, f', ⟨rfl⟩⟩, rfl⟩
   use W; use G.preimage (f' ≫ f); use g
@@ -199,7 +199,7 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
   rw [← G.map_preimage (f ≫ g₂ ≫ _)]
   erw [← α.naturality (G.preimage _).op]
   erw [← α.naturality (G.preimage _).op]
-  refine' congr_fun _ x
+  refine congr_fun ?_ x
   simp only [Functor.comp_map, ← Category.assoc, Functor.op_map, Quiver.Hom.unop_op,
     ← ℱ.map_comp, ← op_comp, G.map_preimage]
   congr 3
@@ -219,7 +219,7 @@ theorem pushforwardFamily_apply {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y �
   -- Porting note: congr_fun was more powerful in Lean 3; I had to explicitly supply
   -- the type of the first input here even though it's obvious (there is a unique occurrence
   -- of x on each side of the equality)
-  refine' congr_fun (_ :
+  refine congr_fun (?_ :
     (fun t => ℱ'.val.map ((Nonempty.some (_ : coverByImage G X f)).lift.op)
       (α.app (op (Nonempty.some (_ : coverByImage G X f)).1)
         (ℱ.map ((Nonempty.some (_ : coverByImage G X f)).map.op) t))) =
@@ -474,7 +474,7 @@ if the pullback of `α` along `G` is iso, then `α` is also iso.
 -/
 theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIso (whiskerLeft G.op α.val)) :
     IsIso α := by
-  convert IsIso.of_iso (sheafIso (asIso (whiskerLeft G.op α.val))) using 1
+  convert (sheafIso (asIso (whiskerLeft G.op α.val))).isIso_hom using 1
   ext1
   apply (sheafHom_eq _ _).symm
 #align category_theory.cover_dense.iso_of_restrict_iso CategoryTheory.Functor.IsCoverDense.iso_of_restrict_iso
@@ -531,7 +531,7 @@ variable [G.IsCoverDense K] [G.IsContinuous J K] [G.IsCocontinuous J K]
 instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by
     let α := G.sheafAdjunctionCocontinuous A J K
     haveI : IsIso ((sheafToPresheaf J A).map (α.counit.app Y)) :=
-      IsIso.of_iso ((@asIso _ _ _ _ _ (Ran.reflective A G.op)).app Y.val)
+      ((@asIso _ _ _ _ _ (Ran.reflective A G.op)).app Y.val).isIso_hom
     apply ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
 
 variable (A)

@@ -59,8 +59,8 @@ protected def con : Con G where
     rw [leftRel_eq] at hab hcd ⊢
     dsimp only
     calc
-      (a * c)⁻¹ * (b * d) = c⁻¹ * (a⁻¹ * b) * c⁻¹⁻¹ * (c⁻¹ * d) :=
-        by simp only [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
+      (a * c)⁻¹ * (b * d) = c⁻¹ * (a⁻¹ * b) * c⁻¹⁻¹ * (c⁻¹ * d) := by
+        simp only [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
       _ ∈ N := N.mul_mem (nN.conj_mem _ hab _) hcd
 #align quotient_group.con QuotientGroup.con
 #align quotient_add_group.con QuotientAddGroup.con
@@ -127,7 +127,7 @@ theorem monoidHom_ext ⦃f g : G ⧸ N →* M⦄ (h : f.comp (mk' N) = g.comp (m
 
 @[to_additive (attr := simp)]
 theorem eq_one_iff {N : Subgroup G} [nN : N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x ∈ N := by
-  refine' QuotientGroup.eq.trans _
+  refine QuotientGroup.eq.trans ?_
   rw [mul_one, Subgroup.inv_mem_iff]
 #align quotient_group.eq_one_iff QuotientGroup.eq_one_iff
 #align quotient_add_group.eq_zero_iff QuotientAddGroup.eq_zero_iff
@@ -148,7 +148,7 @@ theorem ker_mk' : MonoidHom.ker (QuotientGroup.mk' N : G →* G ⧸ N) = N :=
 @[to_additive]
 theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
     (x : G ⧸ N) = y ↔ x / y ∈ N := by
-  refine' eq_comm.trans (QuotientGroup.eq.trans _)
+  refine eq_comm.trans (QuotientGroup.eq.trans ?_)
   rw [nN.mem_comm_iff, div_eq_mul_inv]
 #align quotient_group.eq_iff_div_mem QuotientGroup.eq_iff_div_mem
 #align quotient_add_group.eq_iff_sub_mem QuotientAddGroup.eq_iff_sub_mem
@@ -245,9 +245,9 @@ theorem lift_quot_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) :
 @[to_additive
       "An `AddGroup` homomorphism `f : G →+ H` induces a map `G/N →+ H/M` if `N ⊆ f⁻¹(M)`."]
 def map (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) : G ⧸ N →* H ⧸ M := by
-  refine' QuotientGroup.lift N ((mk' M).comp f) _
+  refine QuotientGroup.lift N ((mk' M).comp f) ?_
   intro x hx
-  refine' QuotientGroup.eq.2 _
+  refine QuotientGroup.eq.2 ?_
   rw [mul_one, Subgroup.inv_mem_iff]
   exact h hx
 #align quotient_group.map QuotientGroup.map
@@ -287,7 +287,7 @@ theorem map_map {I : Type*} [Group I] (M : Subgroup H) (O : Subgroup I) [M.Norma
     (hgf : N ≤ Subgroup.comap (g.comp f) O :=
       hf.trans ((Subgroup.comap_mono hg).trans_eq (Subgroup.comap_comap _ _ _)))
     (x : G ⧸ N) : map M O g hg (map N M f hf x) = map N O (g.comp f) hgf x := by
-  refine' induction_on' x fun x => _
+  refine induction_on' x fun x => ?_
   simp only [map_mk, MonoidHom.comp_apply]
 #align quotient_group.map_map QuotientGroup.map_map
 #align quotient_add_group.map_map QuotientAddGroup.map_map
