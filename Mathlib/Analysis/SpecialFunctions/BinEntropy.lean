@@ -411,7 +411,7 @@ lemma aux {a b c : ℝ} (h : 0 < a) (hh : a * b < a * c) : b < c := by
   exact (mul_lt_mul_left h).mp hh
 
 lemma inequality_with_conversion {q : ℕ} (qNot0 : 2 ≤ q) {x : ℝ}
-  (hx : x < 1 - (↑q)⁻¹) :
+    (hx : x < 1 - (↑q)⁻¹) :
     x < (q - 1) * (1 - x) := by
   have : 2 ≤ (q : ℝ) := Nat.ofNat_le_cast.mpr qNot0
   have qnonz : (q : ℝ) ≠ 0 := by linarith
