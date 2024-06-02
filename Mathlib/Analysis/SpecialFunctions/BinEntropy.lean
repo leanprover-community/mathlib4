@@ -69,6 +69,10 @@ lemma binaryEntropy_eq' {p : ℝ} : binaryEntropy p = -p * log p - (1 - p) * log
 @[simp] lemma binaryEntropy_one : binaryEntropy 1 = 0 := by
   simp only [binaryEntropy_eq', log_one, mul_zero, sub_self, log_zero]
 
+@[simp] lemma qaryEntropy_one {q : ℕ} : qaryEntropy q 1 = log (q - 1) := by
+  unfold qaryEntropy
+  simp only [log_one, mul_zero, sub_self, log_zero, one_mul, sub_zero]
+
 @[simp] lemma binaryEntropy_onehalf : binaryEntropy (1/2) = log 2 := by
   simp only [binaryEntropy_eq']
   norm_num
@@ -142,7 +146,7 @@ lemma binaryEntropy_zero_iff_zero_or_one {p : ℝ} (domup : p ≤ 1) (domun : 0 
           repeat assumption
           exact Iff.mp ne_comm pz
         simp_all only [lt_self_iff_false]
-  · unfold binaryEntropy
+  · rw [binaryEntropy_eq']
     cases h <;> simp [*]
 
 lemma zero_lt_log_two : 0 < log 2 := by
@@ -225,7 +229,8 @@ lemma binaryEntropy_continuous : Continuous binaryEntropy := by
   simp_rw [onem]
   simp only [neg_add_rev, neg_neg, differentiableAt_const, deriv_const_add', deriv_neg'']
 
-@[simp] lemma differentiable_const_minus {q : ℝ} (p : ℝ) : DifferentiableAt ℝ (fun p => q - p) p := by
+@[simp] lemma differentiable_const_minus {q : ℝ} (p : ℝ) :
+    DifferentiableAt ℝ (fun p => q - p) p := by
   have (p : ℝ) : q - p = -(p - q) := by ring
   simp_rw [this]
   apply differentiableAt_neg_iff.mpr
