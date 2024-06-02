@@ -78,7 +78,11 @@ variable (v : E)
 
 /-! ### Construction of the stereographic projection -/
 
+-- Shortcut instance... not sure why so slow
+@[local instance] def instOrthogonalProjection : HasOrthogonalProjection (Submodule.span ℝ {v})ᗮ :=
+  instHasOrthogonalProjectionOrthogonal (Submodule.span ℝ {v})
 
+--set_option trace.Meta.synthInstance true in
 /-- Stereographic projection, forward direction. This is a map from an inner product space `E` to
 the orthogonal complement of an element `v` of `E`. It is smooth away from the affine hyperplane
 through `v` parallel to the orthogonal complement.  It restricts on the sphere to the stereographic
@@ -142,22 +146,31 @@ theorem stereoInvFunAux_mem (hv : ‖v‖ = 1) {w : E} (hw : w ∈ (ℝ ∙ v)�
   ring
 #align stereo_inv_fun_aux_mem stereoInvFunAux_mem
 
+@[local instance] def foo : ZeroHomClass (E →L⋆[ℝ] E →L[ℝ] ℝ) E (E →L[ℝ] ℝ) :=
+  AddMonoidHomClass.toZeroHomClass
+--#synth ZeroHomClass (E →L⋆[ℝ] E →L[ℝ] ℝ) E (E →L[ℝ] ℝ)
+--AddMonoidHomClass.toZeroHomClass
+@[local instance] def bar : AddMonoid (E →L[ℝ] ℝ) := SubNegMonoid.toAddMonoid
+
+--set_option trace.Meta.synthInstance true in
+set_option profiler.threshold 50 in
 theorem hasFDerivAt_stereoInvFunAux (v : E) :
     HasFDerivAt (stereoInvFunAux v) (ContinuousLinearMap.id ℝ E) 0 := by
   have h₀ : HasFDerivAt (fun w : E => ‖w‖ ^ 2) (0 : E →L[ℝ] ℝ) 0 := by
     convert (hasStrictFDerivAt_norm_sq (0 : E)).hasFDerivAt
-    simp
+    simp only [map_zero, smul_zero]
   have h₁ : HasFDerivAt (fun w : E => (‖w‖ ^ 2 + 4)⁻¹) (0 : E →L[ℝ] ℝ) 0 := by
+    -- convert takes 320ms
     convert (hasFDerivAt_inv _).comp _ (h₀.add (hasFDerivAt_const 4 0)) <;> simp
   have h₂ : HasFDerivAt (fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v)
       ((4 : ℝ) • ContinuousLinearMap.id ℝ E) 0 := by
     convert ((hasFDerivAt_const (4 : ℝ) 0).smul (hasFDerivAt_id 0)).add
       ((h₀.sub (hasFDerivAt_const (4 : ℝ) 0)).smul (hasFDerivAt_const v 0)) using 1
     ext w
-    simp
+    simp -- 150ms; squeezing uglifies
   convert h₁.smul h₂ using 1
   ext w
-  simp
+  simp -- squeezing uglifies, brings 130->100ms
 #align has_fderiv_at_stereo_inv_fun_aux hasFDerivAt_stereoInvFunAux
 
 theorem hasFDerivAt_stereoInvFunAux_comp_coe (v : E) :
@@ -507,7 +520,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   -- Porting note: this `suffices` was a `change`
   suffices
       LinearMap.range (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0) = (ℝ ∙ (v : E))ᗮ by
-    convert this using 3
+    convert this using 3 -- sloooow, 800ms
     show stereographic' n (-v) v = 0
     dsimp [stereographic']
     simp only [AddEquivClass.map_eq_zero_iff]
@@ -515,11 +528,12 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   have :
     HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
-    convert hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
-    simp
+    simp only [coe_neg_sphere, map_zero]
+    apply hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
+  -- slow, 330ms
   convert congrArg LinearMap.range (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
   symm
-  convert
+  convert -- 150ms
     (U.symm : EuclideanSpace ℝ (Fin n) ≃ₗᵢ[ℝ] (ℝ ∙ (↑(-v) : E))ᗮ).range_comp
       (ℝ ∙ (↑(-v) : E))ᗮ.subtype using 1
   simp only [Submodule.range_subtype, coe_neg_sphere]
@@ -545,19 +559,21 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
   let U := (OrthonormalBasis.fromOrthogonalSpanSingleton
       (𝕜 := ℝ) n (ne_zero_of_mem_unit_sphere (-v))).repr
   suffices Injective (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0) by
-    convert this using 3
-    show stereographic' n (-v) v = 0
-    dsimp [stereographic']
-    simp only [AddEquivClass.map_eq_zero_iff]
-    apply stereographic_neg_apply
+    have h : stereographic' n (-v) v = 0 := by
+      dsimp [stereographic']
+      simp only [AddEquivClass.map_eq_zero_iff]
+      apply stereographic_neg_apply
+    convert this using 3 -- slow, takes 380ms
   have : HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
-    convert hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
-    simp
+    simp only [coe_neg_sphere, map_zero]
+    apply hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
   have := congr_arg DFunLike.coe <| (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
   refine Eq.subst this.symm ?_
   rw [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe]
-  simpa using Subtype.coe_injective
+  simpa only [coe_neg_sphere, Submodule.coe_subtypeL', Submodule.coeSubtype,
+    LinearIsometryEquiv.coe_toContinuousLinearEquiv, EquivLike.injective_comp] using
+    Subtype.coe_injective
 #align mfderiv_coe_sphere_injective mfderiv_coe_sphere_injective
 
 end SmoothManifold
