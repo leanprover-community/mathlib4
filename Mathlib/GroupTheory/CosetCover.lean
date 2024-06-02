@@ -67,9 +67,14 @@ theorem Subgroup.exists_leftTransversal_of_FiniteIndex
 variable {ι : Type*} {s : Finset ι} {H : Subgroup G} {g : ι → G}
 
 @[to_additive]
+theorem Subgroup.mem_leftCoset_iff (g h : G) :
+    g ∈ h • (H : Set G) ↔ (g : G ⧸ H) = (h : G ⧸ H) := by
+  rw [_root_.mem_leftCoset_iff, eq_comm, SetLike.mem_coe, QuotientGroup.eq]
+
+@[to_additive]
 theorem Subgroup.leftCoset_cover_const_iff_surjOn :
     ⋃ i ∈ s, g i • (H : Set G) = Set.univ ↔ Set.SurjOn (g · : ι → G ⧸ H) s Set.univ := by
-  simp [Set.eq_univ_iff_forall, mem_leftCoset_iff, Set.SurjOn,
+  simp [Set.eq_univ_iff_forall, _root_.mem_leftCoset_iff, Set.SurjOn,
     QuotientGroup.forall_mk, QuotientGroup.eq]
 
 variable (hcovers : ⋃ i ∈ s, g i • (H : Set G) = Set.univ)
@@ -90,6 +95,36 @@ theorem Subgroup.index_le_of_leftCoset_cover_const : H.index ≤ s.card := by
     rw [leftCoset_cover_const_iff_surjOn, Set.surjOn_iff_surjective] at hcovers
     exact (Nat.card_le_card_of_surjective _ hcovers).trans_eq (Nat.card_eq_finsetCard _)
 
+@[to_additive]
+theorem Subgroup.pairwiseDisjoint_leftCoset_cover_const_of_index_eq
+    (hind : H.index = s.card) :
+    Set.PairwiseDisjoint s (fun i ↦ g i • (H : Set G)) := by
+  cases H.index.eq_zero_or_pos with
+  | inl h =>
+    exfalso
+    rw [h, eq_comm, Finset.card_eq_zero] at hind
+    simp only [hind, Finset.not_mem_empty, Set.iUnion_of_empty, Set.iUnion_empty] at hcovers
+    exact Set.empty_ne_univ hcovers
+  | inr h =>
+    have : Fintype (G ⧸ H) :=
+      Subgroup.fintypeOfIndexNeZero (Nat.not_eq_zero_of_lt h)
+    suffices Function.Bijective (fun (i : s) ↦ (g i : G ⧸ H)) by
+      intro i hi j hj h
+      have h' : (⟨i, hi⟩ : s) ≠ ⟨j, hj⟩ := by
+        simp only [ne_eq, Subtype.mk.injEq]
+        exact h
+      intro c hi' hj' x hx
+      apply h'
+      replace hi' := hi' hx
+      replace hj' := hj' hx
+      simp only [Subgroup.mem_leftCoset_iff] at hi' hj'
+      apply this.injective
+      simp only [← hi', ← hj']
+    rw [leftCoset_cover_const_iff_surjOn, Set.surjOn_iff_surjective] at hcovers
+    rw [Fintype.bijective_iff_surjective_and_card]
+    constructor
+    · exact hcovers
+    · simp only [Fintype.card_coe, ← hind, Subgroup.index_eq_card]
 end leftCoset_cover_const
 
 section
@@ -110,18 +145,18 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux [DecidableEq (Subgrou
     -- Every left coset of `H j` is contained in a finite union of
     -- left cosets of the other subgroups `H k ≠ H j` of the covering.
     have ⟨x, hx⟩ : ∃ (x : G), ∀ i ∈ s, H i = H j → (g i : G ⧸ H i) ≠ ↑x := by
-      simpa [Set.eq_univ_iff_forall, mem_leftCoset_iff, ← QuotientGroup.eq] using hcovers'
+      simpa [Set.eq_univ_iff_forall, _root_.mem_leftCoset_iff, ← QuotientGroup.eq] using hcovers'
     replace hx : ∀ (y : G), y • (H j : Set G) ⊆
         ⋃ i ∈ s.filter (H · ≠ H j), (y * x⁻¹ * g i) • (H i : Set G) := by
       intro y z hz
       simp_rw [Finset.mem_filter, Set.mem_iUnion]
       have ⟨i, hi, hmem⟩ : ∃ i ∈ s, x * (y⁻¹ * z) ∈ g i • (H i : Set G) :=
         by simpa using Set.eq_univ_iff_forall.mp hcovers (x * (y⁻¹ * z))
-      rw [mem_leftCoset_iff, SetLike.mem_coe, ← QuotientGroup.eq] at hmem
+      rw [_root_.mem_leftCoset_iff, SetLike.mem_coe, ← QuotientGroup.eq] at hmem
       refine ⟨i, ⟨hi, fun hij => hx i hi hij ?_⟩, ?_⟩
       · rwa [hmem, eq_comm, QuotientGroup.eq, hij, inv_mul_cancel_left,
-          ← SetLike.mem_coe, ← mem_leftCoset_iff]
-      · simpa [mem_leftCoset_iff, SetLike.mem_coe, QuotientGroup.eq, mul_assoc] using hmem
+          ← SetLike.mem_coe, ← _root_.mem_leftCoset_iff]
+      · simpa [_root_.mem_leftCoset_iff, SetLike.mem_coe, QuotientGroup.eq, mul_assoc] using hmem
     -- Thus `G` can also be covered by a finite union `U k, f k • K k` of left cosets
     -- of the subgroups `H k ≠ H j`.
     let κ := ↥(s.filter (H · ≠ H j)) × Option ↥(s.filter (H · = H j))
@@ -236,21 +271,90 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux
     by_cases hfi : (H i).FiniteIndex <;>
       simp [Set.smul_set_iUnion, Set.iUnion_subtype, ← leftCoset_assoc,
         f, K, hHD, ← (ht i hi _).2, hi, hfi, hkfi]
-  · rw [← Finset.sum_filter_add_sum_filter_not _ (fun i ↦ (H i).FiniteIndex)]
-    refine le_add_of_le_of_nonneg ?_ (Finset.sum_nonneg (fun i _ ↦ by simp))
-    refine le_of_mul_le_mul_left ?_ (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hD.finiteIndex))
-    rw [mul_one, Finset.mul_sum, Finset.sum_filter, ← Finset.sum_attach]
-    apply (Nat.cast_le.mpr (Subgroup.index_le_of_leftCoset_cover_const hcovers')).trans_eq
-    rw [Finset.card_filter, Nat.cast_sum, ← Finset.univ_sigma_univ, Finset.sum_sigma,
-      Finset.sum_coe_sort_eq_attach]
-    refine Finset.sum_congr rfl fun i _ => ?_
-    split_ifs with hfi
-    · rw [← Subgroup.relindex_mul_index (hD_le i.2 hfi), Nat.cast_mul,
-        mul_inv_cancel_right₀ (Nat.cast_ne_zero.mpr hfi.finiteIndex),
-        Subgroup.relindex, ← Subgroup.card_left_transversal (ht i.1 i.2 hfi).1]
-      simp [K, hfi, hkfi]
-    · simp [K, hfi, hkfi, hHD]
-  sorry
+  have hdensity : ∑ i ∈ s, ((H i).index : ℚ)⁻¹ =
+    (Finset.univ.filter (K · = D)).card • (D.index : ℚ)⁻¹ := by
+    rw [← Finset.sum_filter_add_sum_filter_not _ (fun i ↦ (H i).FiniteIndex)]
+    convert add_zero _
+    · apply Finset.sum_eq_zero
+      intro i hi
+      simp only [Finset.mem_filter] at hi
+      rw [inv_eq_zero, Nat.cast_eq_zero]
+      by_contra h'
+      apply hi.2
+      exact ⟨h'⟩
+    · rw [Finset.sum_filter, ← Finset.sum_attach]
+      rw [Finset.card_filter, nsmul_eq_mul, Nat.cast_sum,
+        Finset.sum_mul,
+        ← Finset.univ_sigma_univ, Finset.sum_sigma,
+        Finset.sum_coe_sort_eq_attach]
+      refine Finset.sum_congr rfl fun i _ => ?_
+      split_ifs with hfi
+      · rw [← Subgroup.relindex_mul_index (hD_le i.2 hfi), Nat.cast_mul,
+          -- mul_inv_cancel_right₀ (Nat.cast_ne_zero.mpr hfi.finiteIndex),
+          Subgroup.relindex, ← Subgroup.card_left_transversal (ht i.1 i.2 hfi).1]
+        simp only [Finset.univ_eq_attach, hfi, ↓reduceIte, Nat.cast_one, Finset.coe_sort_coe,
+          Nat.card_eq_fintype_card, Fintype.card_coe, mul_inv_rev, one_mul, Finset.sum_const,
+          Finset.card_attach, ↓reduceDite, nsmul_eq_mul, K]
+        rw [← mul_assoc, mul_comm, ← mul_assoc,
+          Rat.inv_mul_cancel _ ?_, one_mul]
+        simp only [ne_eq, Nat.cast_eq_zero]
+        have := Subgroup.card_left_transversal (ht i.1 i.2 hfi).1
+        simp only [Finset.coe_sort_coe, Nat.card_eq_fintype_card, Fintype.card_coe] at this
+        rw [this]
+        exact (instFiniteIndex_subgroupOf D (H ↑i)).finiteIndex
+      · simp [K, hfi, hkfi, hHD]
+
+  rw [hdensity]
+  constructor
+  · rw [nsmul_eq_mul]
+    refine le_of_mul_le_mul_right ?_ (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hD.finiteIndex))
+    rw [one_mul, mul_assoc, Rat.inv_mul_cancel _ ?_, mul_one]
+    simp only [Nat.cast_le]
+    exact Subgroup.index_le_of_leftCoset_cover_const hcovers'
+    · simp only [ne_eq, Nat.cast_eq_zero]
+      exact hD.finiteIndex
+  · rw [nsmul_eq_mul, mul_inv_eq_one₀ ?_]
+    simp only [Nat.cast_inj, Finset.coe_filter]
+    · intro h
+      intro i hi j hj hij
+      simp only [Set.mem_setOf_eq] at hi hj
+      have := Subgroup.pairwiseDisjoint_leftCoset_cover_const_of_index_eq
+        hcovers' h.symm
+      intro c hi' hj' x hx
+      simp only [Set.le_eq_subset] at hi' hj'
+      replace hi' := hi' hx
+      replace hj' := hj' hx
+      rw [← (ht i hi.1 hi.2).2] at hi'
+      rw [← (ht j hj.1 hj.2).2] at hj'
+--      have := Subgroup.mem_leftTransversals_iff_existsUnique_inv_mul_mem.mp (ht i hi.1 hi.2).1
+      simp only [Set.mem_iUnion, exists_prop, Subtype.exists, exists_and_right] at hi' hj'
+      obtain ⟨s, ⟨hs, hxs⟩, hx⟩ := hi'
+      obtain ⟨r, ⟨hr, hxr⟩, hx'⟩ := hj'
+      unfold Set.PairwiseDisjoint at this
+      unfold Set.Pairwise at this
+      unfold Disjoint at this
+      let i' : κ := ⟨⟨i, hi.1⟩, ⟨⟨s, hs⟩, ?_⟩⟩
+      let j' : κ := ⟨⟨j, hj.1⟩, ⟨⟨r, hr⟩, ?_⟩⟩
+      replace this := this (x :=i') (y := j') ?_ ?_ ?_
+      replace this := this (x := {x})
+      simp only [Set.le_eq_subset, Set.singleton_subset_iff] at this
+      apply this
+
+
+
+
+
+
+      sorry
+      sorry
+      sorry
+      sorry
+      sorry
+      sorry
+      sorry
+    · simpa only [ne_eq, Nat.cast_eq_zero] using hD.finiteIndex
+
+#exit
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 Then the cosets of subgroups of infinite index may be omitted from the covering. -/
