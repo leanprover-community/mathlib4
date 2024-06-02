@@ -439,8 +439,8 @@ theorem multiplicity_factor_dvd_iso_eq_multiplicity_of_mem_normalizedFactors {m 
       associatesEquivOfUniqueUnits_apply, out_mk, normalize_eq]⟩ : N) =
     ↑(mkFactorOrderIsoOfFactorDvdEquiv hd ⟨associatesEquivOfUniqueUnits.symm p, by
       rw [associatesEquivOfUniqueUnits_symm_apply]
-      exact mk_le_mk_of_dvd (dvd_of_mem_normalizedFactors hp)⟩) :=
-    by rw [mkFactorOrderIsoOfFactorDvdEquiv_apply_coe]
+      exact mk_le_mk_of_dvd (dvd_of_mem_normalizedFactors hp)⟩) := by
+    rw [mkFactorOrderIsoOfFactorDvdEquiv_apply_coe]
   rw [this]
   refine
     multiplicity_prime_eq_multiplicity_image_by_factor_orderIso (mk_ne_zero.mpr hn) ?_
