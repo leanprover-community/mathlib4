@@ -83,7 +83,7 @@ theorem condexpIndL1Fin_ae_eq_condexpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.tr
 
 variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
 
--- Porting note: this lemma fills the hole in `refine (Memℒp.coeFn_toLp ?_) ...`
+-- Porting note: this lemma fills the hole in `refine' (Memℒp.coeFn_toLp _) ...`
 -- which is not automatically filled in Lean 4
 private theorem q {hs : MeasurableSet s} {hμs : μ s ≠ ∞} {x : G} :
     Memℒp (condexpIndSMul hm hs hμs x) 1 μ := by

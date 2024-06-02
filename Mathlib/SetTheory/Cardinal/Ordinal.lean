@@ -1466,7 +1466,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 -- theorem bit1_eq_self_iff {c : Cardinal} : bit1 c = c ↔ ℵ₀ ≤ c := by
 --   by_cases h : ℵ₀ ≤ c
 --   · simp only [bit1, bit0_eq_self h, h, eq_self_iff_true, add_one_of_aleph_0_le]
---   · refine iff_of_false (ne_of_gt ?_) h
+--   · refine' iff_of_false (ne_of_gt _) h
 --     rcases lt_aleph_0.1 (not_le.1 h) with ⟨n, rfl⟩
 --     norm_cast
 --     dsimp [bit1, bit0]
@@ -1489,7 +1489,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 --   rcases le_or_lt ℵ₀ a with ha | ha <;> rcases le_or_lt ℵ₀ b with hb | hb
 --   · rw [bit0_eq_self ha, bit0_eq_self hb]
 --   · rw [bit0_eq_self ha]
---     refine iff_of_false (fun h ↦ ?_) (hb.trans_le ha).not_le
+--     refine' iff_of_false (fun h => _) (hb.trans_le ha).not_le
 --     have A : bit0 b < ℵ₀ := by simpa using hb
 --     exact lt_irrefl _ ((A.trans_le ha).trans_le h)
 --   · rw [bit0_eq_self hb]
@@ -1505,7 +1505,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 --   rcases le_or_lt ℵ₀ a with ha | ha <;> rcases le_or_lt ℵ₀ b with hb | hb
 --   · rw [bit0_eq_self ha, bit1_eq_self_iff.2 hb]
 --   · rw [bit0_eq_self ha]
---     refine iff_of_false (fun h ↦ ?_) (hb.trans_le ha).not_le
+--     refine' iff_of_false (fun h => _) (hb.trans_le ha).not_le
 --     have A : bit1 b < ℵ₀ := by simpa using hb
 --     exact lt_irrefl _ ((A.trans_le ha).trans_le h)
 --   · rw [bit1_eq_self_iff.2 hb]
@@ -1526,12 +1526,12 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 -- theorem bit1_le_bit0 {a b : Cardinal} : bit1 a ≤ bit0 b ↔ a < b ∨ a ≤ b ∧ ℵ₀ ≤ a := by
 --   rcases le_or_lt ℵ₀ a with ha | ha <;> rcases le_or_lt ℵ₀ b with hb | hb
 --   · simp only [bit1_eq_self_iff.mpr ha, bit0_eq_self hb, ha, and_true_iff]
---     refine ⟨fun h ↦ Or.inr h, fun h ↦ ?_⟩
+--     refine' ⟨fun h => Or.inr h, fun h => _⟩
 --     cases h
 --     · exact le_of_lt h
 --     · exact h
 --   · rw [bit1_eq_self_iff.2 ha]
---     refine iff_of_false (fun h ↦ ?_) fun h ↦ ?_
+--     refine' iff_of_false (fun h => _) fun h => _
 --     · have A : bit0 b < ℵ₀ := by simpa using hb
 --       exact lt_irrefl _ ((A.trans_le ha).trans_le h)
 --     · exact not_le_of_lt (hb.trans_le ha) (h.elim le_of_lt And.left)
@@ -1548,7 +1548,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 --   rcases le_or_lt ℵ₀ a with ha | ha <;> rcases le_or_lt ℵ₀ b with hb | hb
 --   · rw [bit0_eq_self ha, bit0_eq_self hb]
 --   · rw [bit0_eq_self ha]
---     refine iff_of_false (fun h ↦ ?_) (hb.le.trans ha).not_lt
+--     refine' iff_of_false (fun h => _) (hb.le.trans ha).not_lt
 --     have A : bit0 b < ℵ₀ := by simpa using hb
 --     exact lt_irrefl _ ((A.trans_le ha).trans h)
 --   · rw [bit0_eq_self hb]
@@ -1564,7 +1564,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 --   rcases le_or_lt ℵ₀ a with ha | ha <;> rcases le_or_lt ℵ₀ b with hb | hb
 --   · rw [bit1_eq_self_iff.2 ha, bit0_eq_self hb]
 --   · rw [bit1_eq_self_iff.2 ha]
---     refine iff_of_false (fun h ↦ ?_) (hb.le.trans ha).not_lt
+--     refine' iff_of_false (fun h => _) (hb.le.trans ha).not_lt
 --     have A : bit0 b < ℵ₀ := by simpa using hb
 --     exact lt_irrefl _ ((A.trans_le ha).trans h)
 --   · rw [bit0_eq_self hb]
@@ -1580,7 +1580,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 --   rcases le_or_lt ℵ₀ a with ha | ha <;> rcases le_or_lt ℵ₀ b with hb | hb
 --   · rw [bit1_eq_self_iff.2 ha, bit1_eq_self_iff.2 hb]
 --   · rw [bit1_eq_self_iff.2 ha]
---     refine iff_of_false (fun h ↦ ?_) (hb.le.trans ha).not_lt
+--     refine' iff_of_false (fun h => _) (hb.le.trans ha).not_lt
 --     have A : bit1 b < ℵ₀ := by simpa using hb
 --     exact lt_irrefl _ ((A.trans_le ha).trans h)
 --   · rw [bit1_eq_self_iff.2 hb]
@@ -1596,7 +1596,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 --   rcases le_or_lt ℵ₀ a with ha | ha <;> rcases le_or_lt ℵ₀ b with hb | hb
 --   · simp [bit0_eq_self ha, bit1_eq_self_iff.2 hb, not_lt.mpr ha]
 --   · rw [bit0_eq_self ha]
---     refine iff_of_false (fun h ↦ ?_) fun h ↦ ?_
+--     refine' iff_of_false (fun h => _) fun h => _
 --     · have A : bit1 b < ℵ₀ := by simpa using hb
 --       exact lt_irrefl _ ((A.trans_le ha).trans h)
 --     · exact (hb.trans_le ha).not_le (h.elim le_of_lt And.left)

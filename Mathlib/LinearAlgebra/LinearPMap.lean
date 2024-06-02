@@ -620,8 +620,8 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
       f x = p.1 y := by
     intro p x y hxy
     rcases hc (P x).1.1 (P x).1.2 p.1 p.2 with ⟨q, _hqc, hxq, hpq⟩
-    -- Porting note: `refine ..; exacts [inclusion hpq.1 y, hxy, rfl]`
-    --             → `refine .. <;> [skip; exact inclusion hpq.1 y; rfl]; exact hxy`
+    -- Porting note: `refine' ..; exacts [inclusion hpq.1 y, hxy, rfl]`
+    --               → `refine' .. <;> [skip; exact inclusion hpq.1 y; rfl]; exact hxy`
     convert (hxq.2 _).trans (hpq.2 _).symm <;> [skip; exact inclusion hpq.1 y; rfl]; exact hxy
   refine ⟨{ toFun := f, map_add' := ?_, map_smul' := ?_ }, ?_⟩
   · intro x y

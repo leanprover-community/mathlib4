@@ -422,7 +422,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         exact Fin.prod_univ_succ _
         -- Porting note: was:
         /-
-        refine Eq.trans _ (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq _))
+        refine' Eq.trans _ (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq _))
         swap
         · convert Fin.prod_univ_succ (Fin.cons x xs : _ → ℕ)
           simp_rw [Fin.cons_succ]

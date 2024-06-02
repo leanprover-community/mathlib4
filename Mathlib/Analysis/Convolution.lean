@@ -1039,7 +1039,7 @@ theorem _root_.HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompact
   let K' := -tsupport (fderiv 𝕜 g) + closedBall x₀ 1
   have hK' : IsCompact K' := (hcg.fderiv 𝕜).neg.add (isCompact_closedBall x₀ 1)
   -- Porting note: was
-  -- `refine hasFDerivAt_integral_of_dominated_of_fderiv_le zero_lt_one h1 _ (h2 x₀) _ _ _`
+  -- `refine' hasFDerivAt_integral_of_dominated_of_fderiv_le zero_lt_one h1 _ (h2 x₀) _ _ _`
   -- but it failed; surprisingly, `apply` works
   apply hasFDerivAt_integral_of_dominated_of_fderiv_le zero_lt_one h1 _ (h2 x₀)
   · filter_upwards with t x hx using

@@ -78,7 +78,7 @@ protected def directSum :
       AlgebraTensorModule.map_tmul, id_coe, id_eq]
   /- was:
 
-    refine
+    refine'
       LinearEquiv.ofLinear
         (lift <|
           DirectSum.toModule R _ _ fun i₁ => LinearMap.flip <| DirectSum.toModule R _ _ fun i₂ =>
@@ -94,7 +94,7 @@ protected def directSum :
   -/
 
 /- alternative with explicit types:
-  refine
+  refine'
       LinearEquiv.ofLinear
         (lift <|
           DirectSum.toModule
