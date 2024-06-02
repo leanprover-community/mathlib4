@@ -62,7 +62,8 @@ set_option linter.uppercaseLean3 false in
 instance sectionsGroup : Group (F ⋙ forget GroupCat.{u}).sections :=
   (sectionsSubgroup F).toGroup
 
-@[to_additive]
+/-- The projection to a factor as a `MonoidHom`. -/
+@[to_additive "The projection to a factor as an `AddMonoidHom`."]
 def sectionsπMonoidHom (j : J) : (F ⋙ forget GroupCat.{u}).sections →* F.obj j where
   toFun x := x.val j
   map_one' := rfl
