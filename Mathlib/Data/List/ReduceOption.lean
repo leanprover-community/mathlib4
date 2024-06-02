@@ -3,14 +3,7 @@ Copyright (c) 2020 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Batteries.Data.List.Lemmas
-import Mathlib.Init.Data.Bool.Lemmas
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Basic
-import Mathlib.Data.Nat.Order.Basic
-import Mathlib.Tactic.Cases
-import Mathlib.Tactic.TypeStar
 
 /-!
 # Properties of `List.reduceOption`
@@ -56,7 +49,7 @@ theorem reduceOption_append (l l' : List (Option α)) :
 theorem reduceOption_length_eq {l : List (Option α)} :
     l.reduceOption.length = (l.filter Option.isSome).length := by
   induction' l with hd tl hl
-  · simp only [reduceOption_nil, filter_nil, length, zero_add]
+  · simp_rw [reduceOption_nil, filter_nil, length]
   · cases hd <;> simp [hl]
 
 theorem length_eq_reduceOption_length_add_filter_none {l : List (Option α)} :
