@@ -64,8 +64,6 @@ lemma binaryEntropy_eq' {p : ℝ} : binaryEntropy p = -p * log p - (1 - p) * log
   unfold qaryEntropy
   simp only [zero_mul, log_zero, mul_zero, sub_self, sub_zero, log_one]
 
-@[simp] lemma binaryEntropy_zero : binaryEntropy 0 = 0 := qaryEntropy_zero
-
 @[simp] lemma binaryEntropy_one : binaryEntropy 1 = 0 := by
   simp only [binaryEntropy_eq', log_one, mul_zero, sub_self, log_zero]
 
