@@ -393,10 +393,6 @@ theorem isOpen_coinduced {t : TopologicalSpace α} {s : Set β} {f : α → β} 
   Iff.rfl
 #align is_open_coinduced isOpen_coinduced
 
-theorem isClosed_coinduced {t : TopologicalSpace α} {s : Set β} {f : α → β} :
-    IsClosed[t.coinduced f] s ↔ IsClosed (f ⁻¹' s) := by
-  simp only [← isOpen_compl_iff, isOpen_coinduced (f := f), preimage_compl]
-
 theorem preimage_nhds_coinduced [TopologicalSpace α] {π : α → β} {s : Set β} {a : α}
     (hs : s ∈ @nhds β (TopologicalSpace.coinduced π ‹_›) (π a)) : π ⁻¹' s ∈ 𝓝 a := by
   letI := TopologicalSpace.coinduced π ‹_›
