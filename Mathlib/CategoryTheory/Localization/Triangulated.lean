@@ -127,7 +127,7 @@ variable (W : MorphismProperty C) [L.IsLocalization W]
 lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
     ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
       Triangle.mk f g h ∈ L.essImageDistTriang := by
-  have := essSurj_mapArrow_of_hasLeftCalculusofFractions L W
+  have := essSurj_mapArrow L W
   obtain ⟨φ, ⟨e⟩⟩ : ∃ (φ : Arrow C), Nonempty (L.mapArrow.obj φ ≅ Arrow.mk f) :=
     ⟨_, ⟨Functor.objObjPreimageIso _ _⟩⟩
   obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle φ.hom
