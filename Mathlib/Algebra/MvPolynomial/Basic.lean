@@ -885,13 +885,12 @@ lemma coeffs_zero : coeffs (0 : MvPolynomial σ R) = ∅ :=
 
 lemma coeffs_one : coeffs (1 : MvPolynomial σ R) ⊆ {1} := by
   classical
-    simp_rw [coeffs, Finset.image_subset_iff]
+    rw [coeffs, Finset.image_subset_iff]
     simp_all [coeff_one]
 
 @[nontriviality]
 lemma coeffs_eq_empty_of_subsingleton [Subsingleton R] (p : MvPolynomial σ R) : p.coeffs = ∅ := by
-  simp only [coeffs, Finset.image_eq_empty, support_eq_empty]
-  exact Subsingleton.eq_zero p
+  simpa [coeffs] using Subsingleton.eq_zero p
 
 @[simp]
 lemma coeffs_one_of_nontrivial [Nontrivial R] : coeffs (1 : MvPolynomial σ R) = {1} := by
