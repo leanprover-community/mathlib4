@@ -211,11 +211,11 @@ theorem stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
       refine (inv_mul_lt_iff' ?_).mpr ?_
       · nlinarith
       linarith
-    simpa [real_inner_comm, inner_add_right, inner_smul_right, real_inner_self_eq_norm_mul_norm, hw,
-      hv] using hw' says
-      simpa only [stereoInvFun_apply, Submodule.coe_norm, smul_add, real_inner_comm, inner_add_right,
-        inner_smul_right, hw, mul_zero, real_inner_self_eq_norm_mul_norm, hv, mul_one, zero_add]
-        using hw'
+    simpa? [real_inner_comm, inner_add_right, inner_smul_right, real_inner_self_eq_norm_mul_norm,
+      hw, hv] using hw' says
+      simpa only [stereoInvFun_apply, Submodule.coe_norm, smul_add, real_inner_comm,
+        inner_add_right, inner_smul_right, hw, mul_zero, real_inner_self_eq_norm_mul_norm, hv,
+        mul_one, zero_add, gt_iff_lt] using hw'
   · simpa using stereoInvFunAux_mem hv w.2
 #align stereo_inv_fun_ne_north_pole stereoInvFun_ne_north_pole
 
@@ -524,6 +524,12 @@ theorem contMDiff_neg_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
   exact contMDiff_coe_sphere
 #align cont_mdiff_neg_sphere contMDiff_neg_sphere
 
+private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
+  stereographic' n (-v) v = 0 := by
+    dsimp [stereographic']
+    simp only [AddEquivClass.map_eq_zero_iff]
+    apply stereographic_neg_apply
+
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `TangentSpace (𝓡 n) v` to `E`.  The range of this map is the orthogonal complement
 of `v` in `E`.
@@ -547,10 +553,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   suffices
       LinearMap.range (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0) = (ℝ ∙ (v : E))ᗮ by
     convert this using 3 -- sloooow, 800ms
-    show stereographic' n (-v) v = 0
-    dsimp [stereographic']
-    simp only [AddEquivClass.map_eq_zero_iff]
-    apply stereographic_neg_apply
+    apply stereographic'_neg
   have :
     HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
@@ -585,11 +588,8 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
   let U := (OrthonormalBasis.fromOrthogonalSpanSingleton
       (𝕜 := ℝ) n (ne_zero_of_mem_unit_sphere (-v))).repr
   suffices Injective (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0) by
-    have h : stereographic' n (-v) v = 0 := by
-      dsimp [stereographic']
-      simp only [AddEquivClass.map_eq_zero_iff]
-      apply stereographic_neg_apply
     convert this using 3 -- slow, takes 380ms
+    apply stereographic'_neg
   have : HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
     simp only [coe_neg_sphere, map_zero]
