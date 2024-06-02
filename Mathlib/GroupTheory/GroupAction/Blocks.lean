@@ -395,20 +395,12 @@ section Stabilizer
  is a block -/
 theorem IsBlock.of_orbit' {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
     IsBlock G (MulAction.orbit H a) := by
-  rw [IsBlock.mk_subset]
-  rintro g b ⟨⟨h, h_mem⟩, rfl⟩ hb'
-  suffices g ∈ H by
-    rw [← Subgroup.coe_mk H g this, ← Submonoid.smul_def]
-    apply smul_orbit_subset
-  simp only [Submonoid.smul_def, Subgroup.coe_toSubmonoid,
-    Set.mem_smul_set_iff_inv_smul_mem, ← mul_smul] at hb'
-  obtain ⟨⟨k, k_mem⟩, hk⟩ := hb'
-  simp only [Submonoid.mk_smul] at hk
-  rw [MulAction.mul_smul, ← smul_eq_iff_eq_inv_smul, ← inv_inv h,
-    ← smul_eq_iff_eq_inv_smul, ← mul_smul, ← mul_smul, ← mem_stabilizer_iff] at hk
-  apply hH at hk
-  rwa [Subgroup.mul_mem_cancel_right H k_mem,
-    Subgroup.mul_mem_cancel_left H (H.inv_mem h_mem)] at hk
+  simp_rw [IsBlock.def_one, or_iff_not_imp_right, Set.not_disjoint_iff]
+  rintro g ⟨-, ⟨-, ⟨h₁, rfl⟩, h⟩, ⟨h₂, rfl⟩⟩
+  simp_rw [← inv_smul_eq_iff, H.smul_def, ← mul_smul] at h
+  specialize hH h
+  rw [mul_mem_cancel_left h₂⁻¹.2, mul_mem_cancel_right h₁.2] at hH
+  rw [← Subgroup.coe_mk H g hH, ← H.smul_def, smul_orbit (⟨g, hH⟩ : H) a]
 
 /-- If B is a block containing a , then the stabilizer of B contains the stabilizer of a -/
 theorem IsBlock.stabilizer_le
