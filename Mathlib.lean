@@ -101,6 +101,7 @@ import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.Limits
+import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
 import Mathlib.Algebra.Category.ModuleCat.Simple
 import Mathlib.Algebra.Category.ModuleCat.Subobject
 import Mathlib.Algebra.Category.ModuleCat.Tannaka
