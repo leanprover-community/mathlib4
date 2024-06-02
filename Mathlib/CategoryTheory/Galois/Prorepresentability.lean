@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.CofilteredSystem
 import Mathlib.CategoryTheory.Galois.Decomposition
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.IndYoneda
+import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Pro-Representability of fiber functors
@@ -176,6 +177,7 @@ open PointedGaloisObject
 
 /-- The diagram sending each pointed Galois object to its automorphism group
 as an object of `C`. -/
+@[simps]
 noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ GroupCat.{u₂} where
   obj := fun A ↦ GroupCat.of <| Aut (A : C)
   map := fun {A B} f ↦ (autMapHom f : Aut (A : C) →* Aut (B : C))
@@ -186,58 +188,46 @@ noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ GroupCat.{u₂} wh
     ext (σ : Aut A.obj)
     simp
 
-/-- `autGaloisSystem` but lifted to a bigger universe. This is needed to compute its limit. -/
-noncomputable def autGaloisSystem' : PointedGaloisObject F ⥤ GroupCat.{max u₁ u₂} :=
-  autGaloisSystem F ⋙ GroupCat.uliftFunctor.{u₂, u₁}
-
-@[simp]
-lemma autGaloisSystem'_map {A B : PointedGaloisObject F} (f : A ⟶ B) (φ : Aut (A : C)) :
-    ((autGaloisSystem' F).map f) ⟨φ⟩ = ⟨autMapHom f.val φ⟩ :=
-  rfl
-
 /-- The limit of `autGaloisSystem` computed in `GroupCat.{max u₁ u₂}`. -/
-noncomputable def autGalois : GroupCat.{max u₁ u₂} := limit (autGaloisSystem' F)
+noncomputable def autGalois : Type (max u₁ u₂) :=
+  (autGaloisSystem F ⋙ forget _).sections
+
+noncomputable instance : Group (autGalois F) :=
+  inferInstanceAs <| Group (autGaloisSystem F ⋙ forget _).sections
 
 /-- The canonical projection from `autGalois F` to the `C`-automorphism group of each
 pointed Galois object. -/
 noncomputable def autGalois.π (A : PointedGaloisObject F) : autGalois F →* Aut (A : C) :=
-  MonoidHom.comp MulEquiv.ulift.toMonoidHom (limit.π (autGaloisSystem' F) A)
+  GroupCat.sectionsπMonoidHom (autGaloisSystem F) A
 
 /- Not a `simp` lemma, because we usually don't want to expose the internals here. -/
 lemma autGalois.π_apply (A : PointedGaloisObject F) (x : autGalois F) :
-    autGalois.π F A x = Equiv.ulift (limit.π (autGaloisSystem' F) A x) :=
+    autGalois.π F A x = x.val A :=
   rfl
 
-lemma autGaloisSystem'_map_surjective ⦃A B : PointedGaloisObject F⦄ (f : A ⟶ B) :
-    Function.Surjective ((autGaloisSystem' F).map f) := by
-  intro ⟨(φ : Aut B.obj)⟩
+lemma autGaloisSystem_map_surjective ⦃A B : PointedGaloisObject F⦄ (f : A ⟶ B) :
+    Function.Surjective ((autGaloisSystem F).map f) := by
+  intro (φ : Aut B.obj)
   obtain ⟨ψ, hψ⟩ := autMap_surjective_of_isGalois f.val φ
-  use ⟨ψ⟩
-  simp only [autGaloisSystem'_map]
-  apply ULift.ext
+  use ψ
+  simp only [autGaloisSystem_map]
   exact hψ
 
 /-- `autGalois.π` is surjective for every pointed Galois object. -/
 theorem autGalois.π_surjective (A : PointedGaloisObject F) :
     Function.Surjective (autGalois.π F A) := fun (σ : Aut A.obj) ↦ by
-  have (i : PointedGaloisObject F) : Finite ((autGaloisSystem' F ⋙ forget _).obj i) :=
-    inferInstanceAs <| Finite (ULift (Aut (i.obj)))
-  obtain ⟨s', hs⟩ := eval_section_surjective_of_surjective
-    (autGaloisSystem' F ⋙ forget _) (autGaloisSystem'_map_surjective F) A ⟨σ⟩
-  simp only [comp_obj] at hs
-  use (preservesLimitIso (forget GroupCat) (autGaloisSystem' F)).inv
-    ((Types.limitEquivSections (autGaloisSystem' F ⋙ forget _)).symm s')
-  dsimp [autGalois.π]
-  change MulEquiv.ulift (((preservesLimitIso _ _).inv
-    ≫ (forget _).map (limit.π (autGaloisSystem' F) A)) _) = σ
-  simp only [preservesLimitsIso_inv_π, comp_obj, Types.limitEquivSections_symm_apply, hs]
-  rfl
+  have (i : PointedGaloisObject F) : Finite ((autGaloisSystem F ⋙ forget _).obj i) :=
+    inferInstanceAs <| Finite (Aut (i.obj))
+  exact eval_section_surjective_of_surjective
+    (autGaloisSystem F ⋙ forget _) (autGaloisSystem_map_surjective F) A σ
 
 /-- Equality of elements of `autGalois F` can be checked on the projections on each pointed
 Galois object. -/
 lemma autGalois_ext {f g : autGalois F}
-    (h : ∀ (A : PointedGaloisObject F), autGalois.π F A f = autGalois.π F A g) : f = g :=
-  Concrete.limit_ext (autGaloisSystem' F) f g (fun A ↦ EquivLike.injective MulEquiv.ulift (h A))
+    (h : ∀ (A : PointedGaloisObject F), autGalois.π F A f = autGalois.π F A g) : f = g := by
+  dsimp only [autGalois]
+  ext A
+  exact h A
 
 section EndAutGaloisIsomorphism
 
@@ -251,7 +241,7 @@ the limit over the automorphism groups of all Galois objects.
 We first establish the isomorphism between `End F` and `autGalois F`, from which we deduce that
 `End F` is a group, hence `End F = Aut F`. The isomorphism is built in multiple steps:
 
-- `endIsoLimitFibers : End F ≅ limit (incl F ⋙ F' ⋙ uliftFunctor.{u₁})`: the endomorphisms of
+- `endEquivLimitFibers : End F ≅ limit (incl F ⋙ F')`: the endomorphisms of
   `F` are isomorphic to the limit over `F.obj A` for all Galois objects `A`.
   This is obtained as the composition (slighty simplified):
 
@@ -260,9 +250,9 @@ We first establish the isomorphism between `End F` and `autGalois F`, from which
   Where the first isomorphism is induced from the pro-representability of `F` and the second one
   from the pro-coyoneda lemma.
 
-- `endIsoAutGalois : End F ≅ autGalois F`: this is the composition of `endIsoLimitFibers` with:
+- `endEquivAutGalois : End F ≅ autGalois F`: this is the composition of `endEquivLimitFibers` with:
 
-  `limit (incl F ⋙ F) ≅ limit (autGaloisSystem' F ⋙ forget GroupCat)`
+  `limit (incl F ⋙ F) ≅ limit (autGaloisSystem F ⋙ forget GroupCat)`
 
   which is induced from the level-wise equivalence `Aut A ≃ F.obj A` for a Galois object `A`.
 
@@ -273,20 +263,26 @@ local notation "F'" => F ⋙ FintypeCat.incl
 
 /-- The endomorphisms of `F` are isomorphic to the limit over the fibers of `F` on all
 Galois objects. -/
-noncomputable def endIsoLimitFibers : End F ≅ limit (incl F ⋙ F' ⋙ uliftFunctor.{u₁}) :=
-  let i1 : End F ≅ End F' :=
-    Equiv.toIso (NatTrans.equivOfCompFullyFaithful FintypeCat.incl)
+noncomputable def endEquivLimitFibers : End F ≃ (incl F ⋙ F').sections :=
+  let i1 : End F ≃ End F' :=
+    NatTrans.equivOfCompFullyFaithful FintypeCat.incl
   let i2 : End F' ≅ (colimit ((incl F).op ⋙ coyoneda) ⟶ F') :=
     (yoneda.obj (F ⋙ FintypeCat.incl)).mapIso (colimit.isoColimitCocone ⟨cocone F, isColimit F⟩).op
-  let i3 : (colimit ((incl F).op ⋙ coyoneda) ⟶ F') ≅ limit (incl F ⋙ F' ⋙ uliftFunctor.{u₁}) :=
+  let i3 : (colimit ((incl F).op ⋙ coyoneda) ⟶ F') ≅ limit ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}) :=
     colimitCoyonedaHomIsoLimit' (incl F) F'
-  i1 ≪≫ i2 ≪≫ i3
+  let i4 : limit (incl F ⋙ F' ⋙ uliftFunctor.{u₁}) ≃ ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}).sections :=
+    Types.limitEquivSections (incl F ⋙ (F ⋙ FintypeCat.incl) ⋙ uliftFunctor.{u₁, u₂})
+  let i5 : ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}).sections ≃ (incl F ⋙ F').sections :=
+    (Types.sectionsEquiv (incl F ⋙ F')).symm
+  i1.trans <| i2.toEquiv.trans <| i3.toEquiv.trans <| i4.trans i5
 
 @[simp]
-lemma endIsoLimitFibers_π (f : End F) (A : PointedGaloisObject F) :
-    limit.π (incl F ⋙ F' ⋙ uliftFunctor.{u₁}) A ((endIsoLimitFibers F).hom f) = ⟨f.app A A.pt⟩ := by
-  apply ULift.ext
-  simp [endIsoLimitFibers]
+lemma endEquivLimitFibers_π (f : End F) (A : PointedGaloisObject F) :
+    (endEquivLimitFibers F f).val A = f.app A A.pt := by
+  dsimp [endEquivLimitFibers, Types.sectionsEquiv]
+  erw [Types.limitEquivSections_apply]
+  simp only [colimitCoyonedaHomIsoLimit'_π_apply, incl_obj, comp_obj, FintypeCat.incl_obj, op_obj,
+    FunctorToTypes.comp]
   change ((NatTrans.equivOfCompFullyFaithful FintypeCat.incl) f).app A
     (((colimit.ι _ _) ≫ (colimit.isoColimitCocone ⟨cocone F, isColimit F⟩).hom).app
       A _) = f.app A A.pt
@@ -294,38 +290,32 @@ lemma endIsoLimitFibers_π (f : End F) (A : PointedGaloisObject F) :
 
 /-- Functorial isomorphism `Aut A ≅ F.obj A` for Galois objects `A`. -/
 noncomputable def autIsoFibers :
-    autGaloisSystem' F ⋙ forget GroupCat.{max u₁ u₂} ≅ incl F ⋙ F' ⋙ uliftFunctor.{u₁} :=
-  NatIso.ofComponents (fun A ↦ ((Equiv.ulift.{u₁, u₂}).trans
-      ((evaluationEquivOfIsGalois F A A.pt).trans Equiv.ulift.{u₁, u₂}.symm)).toIso)
+    autGaloisSystem F ⋙ forget GroupCat ≅ incl F ⋙ F' :=
+  NatIso.ofComponents (fun A ↦ ((evaluationEquivOfIsGalois F A A.pt).toIso))
     (fun {A B} f ↦ by
-      ext ⟨φ : Aut A.obj⟩
-      apply ULift.ext
+      ext (φ : Aut A.obj)
       dsimp
-      erw [Equiv.ulift_symm_down, Equiv.ulift_symm_down, Equiv.apply_symm_apply]
+      erw [evaluationEquivOfIsGalois_apply, evaluationEquivOfIsGalois_apply]
       simp [-Hom.comp, ← f.comp])
 
 lemma autIsoFibers_inv_app (A : PointedGaloisObject F) (b : F.obj A) :
-    (autIsoFibers F).inv.app A ⟨b⟩ = ⟨(evaluationEquivOfIsGalois F A A.pt).symm b⟩ :=
+    (autIsoFibers F).inv.app A b = (evaluationEquivOfIsGalois F A A.pt).symm b :=
   rfl
 
-/-- The isomorphism between endomorphisms of `F` and the limit over the automorphism groups
+/-- The equivalence between endomorphisms of `F` and the limit over the automorphism groups
 of all Galois objects. -/
-noncomputable def endIsoAutGalois : End F ≅ autGalois F := by
-  let i1 := endIsoLimitFibers F
-  let i2 := lim.mapIso (autIsoFibers F).symm
-  let i3 := (preservesLimitIso (forget GroupCat.{max u₁ u₂}) (autGaloisSystem' F)).symm
-  exact i1 ≪≫ i2 ≪≫ i3
-
-/-- `endIsoAutGalois` as an equiv. -/
-noncomputable def endEquivAutGalois : End F ≃ autGalois F := (endIsoAutGalois F).toEquiv
+noncomputable def endEquivAutGalois : End F ≃ autGalois F :=
+  let e1 := endEquivLimitFibers F
+  let e2 := ((Functor.sectionsFunctor _).mapIso (autIsoFibers F).symm).toEquiv
+  e1.trans e2
 
 lemma endEquivAutGalois_π (f : End F) (A : PointedGaloisObject F) :
-    F.map (autGalois.π F A (endEquivAutGalois F f)).hom A.2 = f.app A A.pt := by
-  dsimp [endEquivAutGalois, endIsoAutGalois, autGalois.π_apply]
-  change F.map (Equiv.ulift (((preservesLimitIso (forget GroupCat) (autGaloisSystem' F)).inv
-      ≫ (forget GroupCat).map (limit.π (autGaloisSystem' F) A)) _)).hom A.pt = f.app A.obj A.pt
-  rw [preservesLimitsIso_inv_π, Types.Limit.map_π_apply', endIsoLimitFibers_π, Equiv.ulift_apply,
-    autIsoFibers_inv_app, evaluationEquivOfIsGalois_symm_fiber]
+    F.map (autGalois.π F A (endEquivAutGalois F f)).hom A.pt = f.app A A.pt := by
+  dsimp [endEquivAutGalois, autGalois.π_apply]
+  change F.map ((((sectionsFunctor _).map (autIsoFibers F).inv) _).val A).hom A.pt = _
+  dsimp [autIsoFibers]
+  simp only [endEquivLimitFibers_π]
+  erw [evaluationEquivOfIsGalois_symm_fiber]
 
 @[simp]
 theorem endEquivAutGalois_mul (f g : End F) :

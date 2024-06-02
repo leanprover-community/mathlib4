@@ -62,6 +62,12 @@ set_option linter.uppercaseLean3 false in
 instance sectionsGroup : Group (F ⋙ forget GroupCat.{u}).sections :=
   (sectionsSubgroup F).toGroup
 
+@[to_additive]
+def sectionsπMonoidHom (j : J) : (F ⋙ forget GroupCat.{u}).sections →* F.obj j where
+  toFun x := x.val j
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
 section
 
 variable [Small.{u} (Functor.sections (F ⋙ forget GroupCat))]
