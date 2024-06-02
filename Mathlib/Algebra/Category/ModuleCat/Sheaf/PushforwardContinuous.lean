@@ -24,7 +24,7 @@ open CategoryTheory
 
 namespace SheafOfModules
 
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₁} [Category.{v₂} D]
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {J : GrothendieckTopology C} {K : GrothendieckTopology D} {F : C ⥤ D}
   {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
   [Functor.IsContinuous.{u} F J K] [Functor.IsContinuous.{v} F J K]
