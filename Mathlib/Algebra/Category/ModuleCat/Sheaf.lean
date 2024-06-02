@@ -6,6 +6,7 @@ Authors: Joël Riou
 
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
 import Mathlib.CategoryTheory.Sites.LocallyBijective
+import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # Sheaves of modules over a sheaf of rings
@@ -103,6 +104,23 @@ instance : Preadditive (SheafOfModules.{v} R) where
 instance : (forget R).Additive where
 
 instance : (toSheaf R).Additive where
+/-- The type of sections of a sheaf of modules. -/
+abbrev sections (M : SheafOfModules.{v} R) : Type _ := M.val.sections
+
+variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGroupCat.{u})]
+
+/-- The obvious free sheaf of modules of rank `1`. -/
+@[simps]
+def unit : SheafOfModules R where
+  val := PresheafOfModules.unit R.val
+  isSheaf := ((sheafCompose J (forget₂ RingCat.{u} AddCommGroupCat.{u})).obj R).cond
+
+variable {R}
+
+/-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : SheafOfModules R`. -/
+def unitHomEquiv (M : SheafOfModules R) :
+    (unit R ⟶ M) ≃ M.sections :=
+  (fullyFaithfulForget R).homEquiv.trans M.val.unitHomEquiv
 
 end SheafOfModules
 
