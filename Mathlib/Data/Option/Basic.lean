@@ -444,7 +444,7 @@ lemma bnot_isSome (a : Option α) : (! a.isSome) = a.isNone := by
   cases a <;> simp
 
 @[simp]
-lemma not_comp_isSome : (! ·) ∘ @Option.isSome α = Option.isNone := by
+lemma bnot_comp_isSome : (! ·) ∘ @Option.isSome α = Option.isNone := by
   funext
   simp
 
@@ -454,7 +454,7 @@ lemma bnot_isNone (a : Option α) : (! a.isNone) = a.isSome := by
   cases a <;> simp
 
 @[simp]
-lemma not_comp_isNone : (! ·) ∘ @Option.isNone α = Option.isSome := by
+lemma bnot_comp_isNone : (! ·) ∘ @Option.isNone α = Option.isSome := by
   funext x
   simp
 
