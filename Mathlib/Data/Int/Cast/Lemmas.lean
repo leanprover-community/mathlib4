@@ -250,6 +250,9 @@ theorem eq_intCastAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A 
   ext_int <| by simp [h1]
 #align add_monoid_hom.eq_int_cast_hom AddMonoidHom.eq_intCastAddHom
 
+@[deprecated (since := "2024-04-17")]
+alias eq_int_castAddHom := eq_intCastAddHom
+
 end AddMonoidHom
 
 theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F ℤ α]

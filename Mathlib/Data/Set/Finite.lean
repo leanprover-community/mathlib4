@@ -42,6 +42,9 @@ instances since they do not compute anything.
 finite sets
 -/
 
+assert_not_exists OrderedRing
+assert_not_exists MonoidWithZero
+
 open Set Function
 
 universe u v w x

@@ -568,7 +568,7 @@ def compChangeOfVariables (m M N : ℕ) (i : Σ n, Fin n → ℕ) (hi : i ∈ co
     Σ n, Composition n := by
   rcases i with ⟨n, f⟩
   rw [mem_compPartialSumSource_iff] at hi
-  refine' ⟨∑ j, f j, ofFn fun a => f a, fun hi' => _, by simp [sum_ofFn]⟩
+  refine ⟨∑ j, f j, ofFn fun a => f a, fun hi' => ?_, by simp [sum_ofFn]⟩
   rename_i i
   obtain ⟨j, rfl⟩ : ∃ j : Fin n, f j = i := by rwa [mem_ofFn, Set.mem_range] at hi'
   exact (hi.2 j).1
@@ -627,8 +627,8 @@ def compPartialSumTarget (m M N : ℕ) : Finset (Σ n, Composition n) :=
 @[simp]
 theorem mem_compPartialSumTarget_iff {m M N : ℕ} {a : Σ n, Composition n} :
     a ∈ compPartialSumTarget m M N ↔
-      m ≤ a.2.length ∧ a.2.length < M ∧ ∀ j : Fin a.2.length, a.2.blocksFun j < N :=
-  by simp [compPartialSumTarget, compPartialSumTargetSet]
+      m ≤ a.2.length ∧ a.2.length < M ∧ ∀ j : Fin a.2.length, a.2.blocksFun j < N := by
+  simp [compPartialSumTarget, compPartialSumTargetSet]
 #align formal_multilinear_series.mem_comp_partial_sum_target_iff FormalMultilinearSeries.mem_compPartialSumTarget_iff
 
 /-- `comp_change_of_variables m M N` is a bijection between `comp_partial_sum_source m M N`
@@ -1105,7 +1105,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
       { blocks := ofFn fun j => (i.2 j).length
         blocks_pos := by
           intro k hk
-          refine' ((forall_mem_ofFn_iff (P := fun i => 0 < i)).2 fun j => _) k hk
+          refine ((forall_mem_ofFn_iff (P := fun i => 0 < i)).2 fun j => ?_) k hk
           exact Composition.length_pos_of_pos _ (Composition.blocks_pos' _ _ _)
         blocks_sum := by dsimp only [Composition.length]; simp [sum_ofFn] }⟩
   left_inv := by
@@ -1125,7 +1125,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
         Composition.length_gather _ _
       conv_rhs => rw [← ofFn_get b.blocks]
       congr 1
-      refine' (Fin.heq_fun_iff B).2 fun i => _
+      refine (Fin.heq_fun_iff B).2 fun i => ?_
       rw [sigmaCompositionAux, Composition.length, List.get_map_rev List.length,
         List.get_of_eq (map_length_splitWrtComposition _ _)]
   right_inv := by

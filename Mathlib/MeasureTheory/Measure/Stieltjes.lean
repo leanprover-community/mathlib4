@@ -123,7 +123,7 @@ noncomputable def _root_.Monotone.stieltjesFunction {f : ℝ → ℝ} (hf : Mono
     change ∀ᶠ y in 𝓝[≥] x, rightLim f y ∈ s
     filter_upwards [Ico_mem_nhdsWithin_Ici ⟨le_refl x, xy⟩] with z hz
     apply lus
-    refine' ⟨hlu.1.trans_le (hf.rightLim hz.1), _⟩
+    refine ⟨hlu.1.trans_le (hf.rightLim hz.1), ?_⟩
     obtain ⟨a, za, ay⟩ : ∃ a : ℝ, z < a ∧ a < y := exists_between hz.2
     calc
       rightLim f z ≤ f a := hf.rightLim_le za

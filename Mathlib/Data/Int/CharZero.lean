@@ -48,8 +48,14 @@ lemma support_intCast (hn : n ≠ 0) : support (n : α → β) = univ :=
   support_const <| Int.cast_ne_zero.2 hn
 #align function.support_int_cast Function.support_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias support_int_cast := support_intCast
+
 lemma mulSupport_intCast (hn : n ≠ 1) : mulSupport (n : α → β) = univ :=
   mulSupport_const <| Int.cast_ne_one.2 hn
 #align function.mul_support_int_cast Function.mulSupport_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias mulSupport_int_cast := mulSupport_intCast
 
 end Function

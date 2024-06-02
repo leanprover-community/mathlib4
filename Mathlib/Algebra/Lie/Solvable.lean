@@ -272,7 +272,7 @@ def radical :=
 instance radicalIsSolvable [IsNoetherian R L] : IsSolvable R (radical R L) := by
   have hwf := LieSubmodule.wellFounded_of_noetherian R L L
   rw [← CompleteLattice.isSupClosedCompact_iff_wellFounded] at hwf
-  refine' hwf { I : LieIdeal R L | IsSolvable R I } ⟨⊥, _⟩ fun I hI J hJ => _
+  refine hwf { I : LieIdeal R L | IsSolvable R I } ⟨⊥, ?_⟩ fun I hI J hJ => ?_
   · exact LieAlgebra.isSolvableBot R L
   · rw [Set.mem_setOf_eq] at hI hJ ⊢
     apply LieAlgebra.isSolvableAdd R L

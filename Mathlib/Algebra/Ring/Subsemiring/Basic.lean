@@ -864,7 +864,7 @@ theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}
     (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {a : R} (ha : a ∈ closure s) : p a ha := by
   refine Exists.elim ?_ fun (ha : a ∈ closure s) (hc : p a ha) => hc
-  refine'
+  refine
     closure_induction ha (fun m hm => ⟨subset_closure hm, mem m hm⟩) ⟨zero_mem _, zero⟩
       ⟨one_mem _, one⟩ ?_ ?_
   · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
@@ -1362,7 +1362,7 @@ def closureCommSemiringOfComm {s : Set R'} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a 
     mul_comm := fun x y => by
       ext
       simp only [Subsemiring.coe_mul]
-      refine'
+      refine
         closure_induction₂ x.prop y.prop hcomm (fun x => by simp only [zero_mul, mul_zero])
           (fun x => by simp only [zero_mul, mul_zero]) (fun x => by simp only [one_mul, mul_one])
           (fun x => by simp only [one_mul, mul_one])

@@ -169,8 +169,8 @@ theorem toFinsupp_add (s t : Multiset α) : toFinsupp (s + t) = toFinsupp s + to
 #align multiset.to_finsupp_add Multiset.toFinsupp_add
 
 @[simp]
-theorem toFinsupp_singleton (a : α) : toFinsupp ({a} : Multiset α) = Finsupp.single a 1 :=
-  by ext; rw [toFinsupp_apply, count_singleton, Finsupp.single_eq_pi_single, Pi.single_apply]
+theorem toFinsupp_singleton (a : α) : toFinsupp ({a} : Multiset α) = Finsupp.single a 1 := by
+  ext; rw [toFinsupp_apply, count_singleton, Finsupp.single_eq_pi_single, Pi.single_apply]
 #align multiset.to_finsupp_singleton Multiset.toFinsupp_singleton
 
 @[simp]
@@ -227,8 +227,8 @@ theorem coe_orderIsoMultiset_symm [DecidableEq ι] :
   rfl
 #align finsupp.coe_order_iso_multiset_symm Finsupp.coe_orderIsoMultiset_symm
 
-theorem toMultiset_strictMono : StrictMono (@toMultiset ι) :=
-  by classical exact (@orderIsoMultiset ι _).strictMono
+theorem toMultiset_strictMono : StrictMono (@toMultiset ι) := by
+  classical exact (@orderIsoMultiset ι _).strictMono
 #align finsupp.to_multiset_strict_mono Finsupp.toMultiset_strictMono
 
 theorem sum_id_lt_of_lt (m n : ι →₀ ℕ) (h : m < n) : (m.sum fun _ => id) < n.sum fun _ => id := by

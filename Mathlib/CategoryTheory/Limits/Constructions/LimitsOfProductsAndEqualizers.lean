@@ -74,8 +74,8 @@ its construction are.
 def buildIsLimit (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) (hi : IsLimit i) :
     IsLimit (buildLimit s t hs ht i) where
   lift q := by
-    refine' hi.lift (Fork.ofι _ _)
-    · refine' t₁.lift (Fan.mk _ fun j => _)
+    refine hi.lift (Fork.ofι ?_ ?_)
+    · refine t₁.lift (Fan.mk _ fun j => ?_)
       apply q.π.app j
     · apply t₂.hom_ext
       intro ⟨j⟩
@@ -294,8 +294,8 @@ provided the cocones used in its construction are.
 def buildIsColimit (t₁ : IsColimit c₁) (t₂ : IsColimit c₂) (hi : IsColimit i) :
     IsColimit (buildColimit s t hs ht i) where
   desc q := by
-    refine' hi.desc (Cofork.ofπ _ _)
-    · refine' t₂.desc (Cofan.mk _ fun j => _)
+    refine hi.desc (Cofork.ofπ ?_ ?_)
+    · refine t₂.desc (Cofan.mk _ fun j => ?_)
       apply q.ι.app j
     · apply t₁.hom_ext
       intro j
