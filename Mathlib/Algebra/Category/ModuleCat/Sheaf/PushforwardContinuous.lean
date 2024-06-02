@@ -6,7 +6,6 @@ Authors: Joël Riou
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
 import Mathlib.CategoryTheory.Sites.CoverPreserving
-import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # Pushforward of sheaves of modules
