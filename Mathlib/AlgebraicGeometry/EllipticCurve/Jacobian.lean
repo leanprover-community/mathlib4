@@ -693,13 +693,10 @@ lemma dblXYZ_smul (P : Fin 3 → R) (u : R) : W'.dblXYZ (u • P) = (u ^ 4) • 
   rw [dblXYZ, dblX_smul, dblY_smul, dblZ_smul]
   rfl
 
-lemma dblXYZ_of_Z_eq_zero' {P : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0) :
-    W'.dblXYZ P = ![(P x ^ 2) ^ 2, (P x ^ 2) ^ 3, 0] := by
-  rw [dblXYZ, dblX_of_Z_eq_zero hP hPz, dblY_of_Z_eq_zero hP hPz, dblZ_of_Z_eq_zero hPz]
-
-lemma dblXYZ_of_Z_eq_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z = 0) :
-    W.dblXYZ P = P x ^ 2 • ![1, 1, 0] := by
-  erw [dblXYZ_of_Z_eq_zero' hP.left hPz, smul_fin3, mul_one, mul_one, mul_zero]
+lemma dblXYZ_of_Z_eq_zero {P : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0) :
+    W'.dblXYZ P = P x ^ 2 • ![1, 1, 0] := by
+  erw [dblXYZ, dblX_of_Z_eq_zero hP hPz, dblY_of_Z_eq_zero hP hPz, dblZ_of_Z_eq_zero hPz, smul_fin3,
+    mul_one, mul_one, mul_zero]
 
 lemma dblXYZ_of_Y_eq' [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
@@ -975,22 +972,15 @@ lemma addXYZ_smul (P Q : Fin 3 → R) (u v : R) :
   rw [addXYZ, addX_smul, addY_smul, addZ_smul]
   rfl
 
-lemma addXYZ_of_Z_eq_zero_left' {P Q : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0) :
-    W'.addXYZ P Q = ![(P x * Q z) ^ 2 * Q x, (P x * Q z) ^ 3 * Q y, P x * Q z * Q z] := by
-  rw [addXYZ, addX_of_Z_eq_zero_left hPz, addY_of_Z_eq_zero_left hP hPz, addZ_of_Z_eq_zero_left hPz]
+lemma addXYZ_of_Z_eq_zero_left {P Q : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0) :
+    W'.addXYZ P Q = (P x * Q z) • Q := by
+  rw [addXYZ, addX_of_Z_eq_zero_left hPz, addY_of_Z_eq_zero_left hP hPz, addZ_of_Z_eq_zero_left hPz,
+    smul_fin3]
 
-lemma addXYZ_of_Z_eq_zero_left {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z = 0) :
-    W.addXYZ P Q = (P x * Q z) • Q :=
-  addXYZ_of_Z_eq_zero_left' hP.left hPz
-
-lemma addXYZ_of_Z_eq_zero_right' {P Q : Fin 3 → R} (hQ : W'.Equation Q) (hQz : Q z = 0) :
-    W'.addXYZ P Q = ![(-(Q x * P z)) ^ 2 * P x, (-(Q x * P z)) ^ 3 * P y, -(Q x * P z) * P z] := by
+lemma addXYZ_of_Z_eq_zero_right {P Q : Fin 3 → R} (hQ : W'.Equation Q) (hQz : Q z = 0) :
+    W'.addXYZ P Q = -(Q x * P z) • P := by
   rw [addXYZ, addX_of_Z_eq_zero_right hQz, addY_of_Z_eq_zero_right hQ hQz,
-    addZ_of_Z_eq_zero_right hQz]
-
-lemma addXYZ_of_Z_eq_zero_right {P Q : Fin 3 → F} (hQ : W.Nonsingular Q) (hQz : Q z = 0) :
-    W.addXYZ P Q = -(Q x * P z) • P :=
-  addXYZ_of_Z_eq_zero_right' hQ.left hQz
+    addZ_of_Z_eq_zero_right hQz, smul_fin3]
 
 lemma addXYZ_of_X_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
     (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = Q x * P z ^ 2) :
@@ -1133,25 +1123,15 @@ lemma add_equiv {P P' Q Q' : Fin 3 → R} (hP : P ≈ P') (hQ : Q ≈ Q') :
 
 lemma add_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q)
     (hPz : P z = 0) (hQz : Q z = 0) : W.add P Q = P x ^ 2 • ![1, 1, 0] := by
-  rw [add, if_pos <| equiv_of_Z_eq_zero hP hQ hPz hQz, dblXYZ_of_Z_eq_zero hP hPz]
+  rw [add, if_pos <| equiv_of_Z_eq_zero hP hQ hPz hQz, dblXYZ_of_Z_eq_zero hP.left hPz]
 
-lemma add_of_Z_eq_zero_left' {P Q : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0)
-    (hQz : Q z ≠ 0) :
-    W'.add P Q = ![(P x * Q z) ^ 2 * Q x, (P x * Q z) ^ 3 * Q y, P x * Q z * Q z] := by
-  rw [add, if_neg <| not_equiv_of_Z_eq_zero_left hPz hQz, addXYZ_of_Z_eq_zero_left' hP hPz]
+lemma add_of_Z_eq_zero_left {P Q : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0) (hQz : Q z ≠ 0) :
+    W'.add P Q = (P x * Q z) • Q := by
+  rw [add, if_neg <| not_equiv_of_Z_eq_zero_left hPz hQz, addXYZ_of_Z_eq_zero_left hP hPz]
 
-lemma add_of_Z_eq_zero_left {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z = 0)
-    (hQz : Q z ≠ 0) : W.add P Q = (P x * Q z) • Q :=
-  add_of_Z_eq_zero_left' hP.left hPz hQz
-
-lemma add_of_Z_eq_zero_right' {P Q : Fin 3 → R} (hQ : W'.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z = 0) :
-    W'.add P Q = ![(-(Q x * P z)) ^ 2 * P x, (-(Q x * P z)) ^ 3 * P y, -(Q x * P z) * P z] := by
-  rw [add, if_neg <| not_equiv_of_Z_eq_zero_right hPz hQz, addXYZ_of_Z_eq_zero_right' hQ hQz]
-
-lemma add_of_Z_eq_zero_right {P Q : Fin 3 → F} (hQ : W.Nonsingular Q) (hPz : P z ≠ 0)
-    (hQz : Q z = 0) : W.add P Q = -(Q x * P z) • P :=
-  add_of_Z_eq_zero_right' hQ.left hPz hQz
+lemma add_of_Z_eq_zero_right {P Q : Fin 3 → R} (hQ : W'.Equation Q) (hPz : P z ≠ 0)
+    (hQz : Q z = 0) : W'.add P Q = -(Q x * P z) • P := by
+  rw [add, if_neg <| not_equiv_of_Z_eq_zero_right hPz hQz, addXYZ_of_Z_eq_zero_right hQ hQz]
 
 lemma add_of_Y_eq {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
@@ -1202,10 +1182,10 @@ lemma nonsingular_add {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsing
   · by_cases hQz : Q z = 0
     · simp only [add_of_Z_eq_zero hP hQ hPz hQz,
         nonsingular_smul _ <| (isUnit_X_of_Z_eq_zero hP hPz).pow 2, nonsingular_zero]
-    · simpa only [add_of_Z_eq_zero_left hP hPz hQz,
+    · simpa only [add_of_Z_eq_zero_left hP.left hPz hQz,
         nonsingular_smul _ <| (isUnit_X_of_Z_eq_zero hP hPz).mul <| Ne.isUnit hQz]
   · by_cases hQz : Q z = 0
-    · simpa only [add_of_Z_eq_zero_right hQ hPz hQz,
+    · simpa only [add_of_Z_eq_zero_right hQ.left hPz hQz,
         nonsingular_smul _ ((isUnit_X_of_Z_eq_zero hQ hQz).mul <| Ne.isUnit hPz).neg]
     · by_cases hxy : P x * Q z ^ 2 = Q x * P z ^ 2 → P y * Q z ^ 3 ≠ W.negY Q * P z ^ 3
       · by_cases hx : P x * Q z ^ 2 = Q x * P z ^ 2
@@ -1238,7 +1218,7 @@ lemma addMap_of_Z_eq_zero_left {P : Fin 3 → F} {Q : PointClass F} (hP : W.Nons
   · erw [addMap_eq, add_of_Z_eq_zero hP hQ hPz hQz,
       smul_eq _ <| (isUnit_X_of_Z_eq_zero hP hPz).pow 2, Quotient.eq]
     exact Setoid.symm <| equiv_zero_of_Z_eq_zero hQ hQz
-  · erw [addMap_eq, add_of_Z_eq_zero_left hP hPz hQz,
+  · erw [addMap_eq, add_of_Z_eq_zero_left hP.left hPz hQz,
       smul_eq _ <| (isUnit_X_of_Z_eq_zero hP hPz).mul <| Ne.isUnit hQz]
     rfl
 
@@ -1249,7 +1229,7 @@ lemma addMap_of_Z_eq_zero_right {P : PointClass F} {Q : Fin 3 → F} (hP : W.Non
   · erw [addMap_eq, add_of_Z_eq_zero hP hQ hPz hQz,
       smul_eq _ <| (isUnit_X_of_Z_eq_zero hP hPz).pow 2, Quotient.eq]
     exact Setoid.symm <| equiv_zero_of_Z_eq_zero hP hPz
-  · erw [addMap_eq, add_of_Z_eq_zero_right hQ hPz hQz,
+  · erw [addMap_eq, add_of_Z_eq_zero_right hQ.left hPz hQz,
       smul_eq _ ((isUnit_X_of_Z_eq_zero hQ hQz).mul <| Ne.isUnit hPz).neg]
     rfl
 
