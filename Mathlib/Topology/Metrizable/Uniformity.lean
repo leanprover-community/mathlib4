@@ -62,7 +62,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
       nonpos_iff_eq_zero.1 <| (ciInf_le (OrderBot.bddBelow _) []).trans_eq <| by simp [dist_self]
   dist_comm x y :=
     NNReal.coe_inj.2 <| by
-      refine' reverse_surjective.iInf_congr _ fun l => _
+      refine reverse_surjective.iInf_congr _ fun l ↦ ?_
       rw [← sum_reverse, zipWith_distrib_reverse, reverse_append, reverse_reverse,
         reverse_singleton, singleton_append, reverse_cons, reverse_reverse,
         zipWith_comm_of_comm _ dist_comm]
@@ -71,7 +71,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
     -- Porting note: added `unfold`
     unfold dist
     rw [← NNReal.coe_add, NNReal.coe_le_coe]
-    refine' NNReal.le_iInf_add_iInf fun lxy lyz => _
+    refine NNReal.le_iInf_add_iInf fun lxy lyz ↦ ?_
     calc
       ⨅ l, (zipWith d (x::l) (l ++ [z])).sum ≤
           (zipWith d (x::lxy ++ y::lyz) ((lxy ++ y::lyz) ++ [z])).sum :=

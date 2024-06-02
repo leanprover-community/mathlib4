@@ -360,8 +360,8 @@ theorem Base.exchange (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) (hx : e ∈ B�
   M.base_exchange B₁ B₂ hB₁ hB₂ _ hx
 
 theorem Base.exchange_mem (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) (hxB₁ : e ∈ B₁) (hxB₂ : e ∉ B₂) :
-    ∃ y, (y ∈ B₂ ∧ y ∉ B₁) ∧ M.Base (insert y (B₁ \ {e})) :=
-  by simpa using hB₁.exchange hB₂ ⟨hxB₁, hxB₂⟩
+    ∃ y, (y ∈ B₂ ∧ y ∉ B₁) ∧ M.Base (insert y (B₁ \ {e})) := by
+  simpa using hB₁.exchange hB₂ ⟨hxB₁, hxB₂⟩
 
 theorem Base.eq_of_subset_base (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) (hB₁B₂ : B₁ ⊆ B₂) :
     B₁ = B₂ :=

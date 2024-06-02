@@ -263,8 +263,9 @@ alias pairwise_disjoint_Ioo_add_int_cast := pairwise_disjoint_Ioo_add_intCast
 
 variable (α)
 
-theorem pairwise_disjoint_Ico_intCast : Pairwise (Disjoint on fun n : ℤ => Ico (n : α) (n + 1)) :=
-  by simpa only [zero_add] using pairwise_disjoint_Ico_add_intCast (0 : α)
+theorem pairwise_disjoint_Ico_intCast :
+    Pairwise (Disjoint on fun n : ℤ => Ico (n : α) (n + 1)) := by
+  simpa only [zero_add] using pairwise_disjoint_Ico_add_intCast (0 : α)
 #align set.pairwise_disjoint_Ico_int_cast Set.pairwise_disjoint_Ico_intCast
 
 @[deprecated (since := "2024-04-17")]

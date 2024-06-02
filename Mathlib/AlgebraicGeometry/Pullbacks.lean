@@ -158,20 +158,20 @@ theorem t'_snd_snd (i j k : 𝒰.J) :
 
 theorem cocycle_fst_fst_fst (i j k : 𝒰.J) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.fst ≫ pullback.fst ≫ pullback.fst =
-      pullback.fst ≫ pullback.fst ≫ pullback.fst :=
-  by simp only [t'_fst_fst_fst, t'_fst_snd, t'_snd_snd]
+      pullback.fst ≫ pullback.fst ≫ pullback.fst := by
+  simp only [t'_fst_fst_fst, t'_fst_snd, t'_snd_snd]
 #align algebraic_geometry.Scheme.pullback.cocycle_fst_fst_fst AlgebraicGeometry.Scheme.Pullback.cocycle_fst_fst_fst
 
 theorem cocycle_fst_fst_snd (i j k : 𝒰.J) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.fst ≫ pullback.fst ≫ pullback.snd =
-      pullback.fst ≫ pullback.fst ≫ pullback.snd :=
-  by simp only [t'_fst_fst_snd]
+      pullback.fst ≫ pullback.fst ≫ pullback.snd := by
+  simp only [t'_fst_fst_snd]
 #align algebraic_geometry.Scheme.pullback.cocycle_fst_fst_snd AlgebraicGeometry.Scheme.Pullback.cocycle_fst_fst_snd
 
 theorem cocycle_fst_snd (i j k : 𝒰.J) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.fst ≫ pullback.snd =
-      pullback.fst ≫ pullback.snd :=
-  by simp only [t'_fst_snd, t'_snd_snd, t'_fst_fst_fst]
+      pullback.fst ≫ pullback.snd := by
+  simp only [t'_fst_snd, t'_snd_snd, t'_fst_fst_fst]
 #align algebraic_geometry.Scheme.pullback.cocycle_fst_snd AlgebraicGeometry.Scheme.Pullback.cocycle_fst_snd
 
 theorem cocycle_snd_fst_fst (i j k : 𝒰.J) :
@@ -183,14 +183,14 @@ theorem cocycle_snd_fst_fst (i j k : 𝒰.J) :
 
 theorem cocycle_snd_fst_snd (i j k : 𝒰.J) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.snd ≫ pullback.fst ≫ pullback.snd =
-      pullback.snd ≫ pullback.fst ≫ pullback.snd :=
-  by simp only [pullback.condition_assoc, t'_snd_fst_snd]
+      pullback.snd ≫ pullback.fst ≫ pullback.snd := by
+  simp only [pullback.condition_assoc, t'_snd_fst_snd]
 #align algebraic_geometry.Scheme.pullback.cocycle_snd_fst_snd AlgebraicGeometry.Scheme.Pullback.cocycle_snd_fst_snd
 
 theorem cocycle_snd_snd (i j k : 𝒰.J) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.snd ≫ pullback.snd =
-      pullback.snd ≫ pullback.snd :=
-  by simp only [t'_snd_snd, t'_fst_fst_fst, t'_fst_snd]
+      pullback.snd ≫ pullback.snd := by
+  simp only [t'_snd_snd, t'_fst_fst_fst, t'_fst_snd]
 #align algebraic_geometry.Scheme.pullback.cocycle_snd_snd AlgebraicGeometry.Scheme.Pullback.cocycle_snd_snd
 
 -- `by tidy` should solve it, but it times out.

@@ -170,8 +170,8 @@ instance prod : Denumerable (α × β) :=
 #align denumerable.prod Denumerable.prod
 
 -- Porting note: removed @[simp] - simp can prove it
-theorem prod_ofNat_val (n : ℕ) : ofNat (α × β) n = (ofNat α (unpair n).1, ofNat β (unpair n).2) :=
-  by simp
+theorem prod_ofNat_val (n : ℕ) :
+    ofNat (α × β) n = (ofNat α (unpair n).1, ofNat β (unpair n).2) := by simp
 #align denumerable.prod_of_nat_val Denumerable.prod_ofNat_val
 
 @[simp]
@@ -290,7 +290,7 @@ theorem ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = 
       simpa using hmt.mp (List.maximum_mem hmax)
     cases' hmax : List.maximum t with m
     · refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (⊥ : s) ?_)⟩
-      rwa [← List.maximum_eq_none.1 hmax, hmt]
+      rwa [← List.maximum_eq_bot.1 hmax, hmt]
     cases' ofNat_surjective_aux m.2 with a ha
     refine ⟨a + 1, le_antisymm ?_ ?_⟩ <;> rw [ofNat]
     · refine succ_le_of_lt ?_

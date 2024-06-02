@@ -82,8 +82,8 @@ set_option linter.uppercaseLean3 false in
 @[reassoc (attr := simp)]
 theorem PInftyToNormalizedMooreComplex_naturality {X Y : SimplicialObject A} (f : X ⟶ Y) :
     AlternatingFaceMapComplex.map f ≫ PInftyToNormalizedMooreComplex Y =
-      PInftyToNormalizedMooreComplex X ≫ NormalizedMooreComplex.map f :=
-  by aesop_cat
+      PInftyToNormalizedMooreComplex X ≫ NormalizedMooreComplex.map f := by
+  aesop_cat
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_to_normalized_Moore_complex_naturality AlgebraicTopology.DoldKan.PInftyToNormalizedMooreComplex_naturality
 
