@@ -3,7 +3,6 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.ContinuousFunction.CocompactMap
 import Mathlib.Topology.ContinuousFunction.ZeroAtInfty
 import Mathlib.Topology.Support
@@ -77,7 +76,7 @@ namespace CompactlySupportedContinuousMap
 
 section Basics
 
-variable [TopologicalSpace β] [Zero β] [FunLike F α β] [CompactlySupportedContinuousMapClass F α β]
+variable [TopologicalSpace β] [Zero β]
 
 instance : FunLike C_c(α, β) α β where
   coe f := f.toFun
@@ -91,12 +90,6 @@ protected lemma hasCompactSupport (f : C_c(α, β)) : HasCompactSupport f := f.h
 instance : CompactlySupportedContinuousMapClass C_c(α, β) α β where
   map_continuous f := f.continuous_toFun
   hasCompactSupport f := f.hasCompactSupport'
-
-instance : CoeTC F C_c(α, β) :=
-  ⟨fun f =>
-    { toFun := f
-      continuous_toFun := map_continuous f
-      hasCompactSupport' := hasCompactSupport f }⟩
 
 @[simp]
 theorem coe_toContinuousMap (f : C_c(α, β)) : (f.toContinuousMap : α → β) = f :=
@@ -137,19 +130,10 @@ def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(�
   toFun f :=
     { toFun := f
       continuous_toFun := f.continuous
-      hasCompactSupport' := hasCompactSupport_of_compactSpace f }
+      hasCompactSupport' := HasCompactSupport.of_compactSpace f }
   invFun f := f
   left_inv _ := rfl
   right_inv _ := rfl
-
-/-- A continuous function on a compact space has automatically compact support. This is not an
-instance to avoid type class loops. -/
-lemma _root_.compactlySupportedContinuousMapClass.ofCompact (G : Type*) [FunLike G α β]
-    [ContinuousMapClass G α β] [CompactSpace α] : CompactlySupportedContinuousMapClass G α β where
-  map_continuous := map_continuous
-  hasCompactSupport := by
-    intro f
-    exact hasCompactSupport_of_compactSpace f
 
 end Basics
 
@@ -190,23 +174,6 @@ theorem coe_mul [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : ⇑(f
   rfl
 
 theorem mul_apply [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : (f * g) x = f x * g x :=
-  rfl
-
-/-- the product of `f : F` assuming `ContinuousMapClass F α γ` and `ContinuousSMul γ β` and
-`g : C_c(α, β)` is in `C_c(α, β)` -/
-instance [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
-    {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] : SMul F C_c(α, β) where
-  smul f g :=
-    ⟨⟨fun x ↦ f x • g x, (map_continuous f).smul g.continuous⟩, g.hasCompactSupport'.smul_left⟩
-
-@[simp]
-theorem coe_smulc [MulZeroClass β] [ContinuousMul β] (f : C(α, β)) (g : C_c(α, β)) :
-    ⇑(f • g) = f * g :=
-  rfl
-
-@[simp]
-theorem smulc_apply [MulZeroClass β] [ContinuousMul β] (f : C(α, β)) (g : C_c(α, β)) :
-    (f • g) x = f x * g x :=
   rfl
 
 instance [MulZeroClass β] [ContinuousMul β] : MulZeroClass C_c(α, β) :=
@@ -375,17 +342,6 @@ instance {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
 
 end AlgebraicStructure
 
-section Uniform
-
-variable [UniformSpace β] [UniformSpace γ] [Zero γ]
-variable [FunLike F β γ] [CompactlySupportedContinuousMapClass F β γ]
-
-theorem uniformContinuous (f : F) : UniformContinuous (f : β → γ) :=
-  (map_continuous f).uniformContinuous_of_tendsto_cocompact
-  (HasCompactSupport.is_zero_at_infty (hasCompactSupport f))
-
-end Uniform
-
 section Star
 
 /-! ### Star structure
@@ -538,6 +494,59 @@ def compNonUnitalAlgHom {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring δ]
 
 end CompactlySupportedContinuousMap
 
+namespace CompactlySupportedContinuousMapClass
+
+section Basic
+
+variable [Zero β] [TopologicalSpace β] [FunLike F α β] [CompactlySupportedContinuousMapClass F α β]
+
+instance : CoeTC F (CompactlySupportedContinuousMap α β) :=
+  ⟨fun f =>
+    { toFun := f
+      continuous_toFun := map_continuous f
+      hasCompactSupport' := hasCompactSupport f }⟩
+
+/-- the product of `f : F` assuming `ContinuousMapClass F α γ` and `ContinuousSMul γ β` and
+`g : C_c(α, β)` is in `C_c(α, β)` -/
+instance [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
+    {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] : SMul F C_c(α, β) where
+  smul f g :=
+    ⟨⟨fun x ↦ f x • g x, (map_continuous f).smul g.continuous⟩, g.hasCompactSupport'.smul_left⟩
+
+@[simp]
+theorem coe_smulc [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
+    {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] (f : F) (g : C_c(α, β)) :
+    ⇑(f • g) = fun x => f x • g x :=
+  rfl
+
+@[simp]
+theorem smulc_apply [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
+    {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] (f : F) (g : C_c(α, β)) (x : α):
+    (f • g) x = f x • g x :=
+  rfl
+
+/-- A continuous function on a compact space has automatically compact support. This is not an
+instance to avoid type class loops. -/
+lemma _root_.compactlySupportedContinuousMapClass.ofCompact (G : Type*) [FunLike G α β]
+    [ContinuousMapClass G α β] [CompactSpace α] : CompactlySupportedContinuousMapClass G α β where
+  map_continuous := map_continuous
+  hasCompactSupport := by
+    intro f
+    exact HasCompactSupport.of_compactSpace f
+
+end Basic
+
+section Uniform
+
+variable [UniformSpace β] [UniformSpace γ] [Zero γ] [FunLike F β γ]
+  [CompactlySupportedContinuousMapClass F β γ]
+
+theorem uniformContinuous (f : F) : UniformContinuous (f : β → γ) :=
+  (map_continuous f).uniformContinuous_of_tendsto_cocompact
+  (HasCompactSupport.is_zero_at_infty (hasCompactSupport f))
+
+end Uniform
+
 section ZeroAtInfty
 
 open ZeroAtInfty
@@ -550,3 +559,5 @@ instance : ZeroAtInftyContinuousMapClass C_c(β, γ) β γ where
   zero_at_infty f := HasCompactSupport.is_zero_at_infty f.hasCompactSupport'
 
 end ZeroAtInfty
+
+end CompactlySupportedContinuousMapClass
