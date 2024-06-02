@@ -2300,68 +2300,81 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
     simp only [SeparatedNhds.empty_right]
   rcases h_cov with ⟨ u, c, c_count, c_cov, u_props ⟩
   rcases k_cov with ⟨ v, d, d_count, d_cov, v_props ⟩
-  have : c.Nonempty := by
-    by_contra c_empty
-    apply h_nonempty
-    rw [not_nonempty_iff_eq_empty.mp c_empty] at c_cov
-    simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty] at c_cov
-    exact eq_empty_of_subset_empty c_cov
+  have nonempty_lemma : ∀ c₀ : Set ι, ∀ h₀ : Set X, ∀ u₀ : ι → Set X,
+      ¬h₀ = ∅ → h₀ ⊆ ⋃ i ∈ c₀, u₀ i → c₀.Nonempty := by
+    intro c₀ h₀ u₀ h₀_nonempty c₀_cov
+    by_contra c₀_empty
+    apply h₀_nonempty
+    rw [not_nonempty_iff_eq_empty.mp c₀_empty] at c₀_cov
+    simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty] at c₀_cov
+    exact eq_empty_of_subset_empty c₀_cov
+  have : c.Nonempty := nonempty_lemma c h u h_nonempty c_cov
   rw [Set.countable_iff_exists_surjective this] at c_count
   rcases c_count with ⟨ f, f_surj ⟩
-  have : d.Nonempty := by
-    by_contra d_empty
-    apply k_nonempty
-    rw [not_nonempty_iff_eq_empty.mp d_empty] at d_cov
-    simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty] at d_cov
-    exact eq_empty_of_subset_empty d_cov
+  have : d.Nonempty := nonempty_lemma d k v k_nonempty d_cov
   rw [Set.countable_iff_exists_surjective this] at d_count
   rcases d_count with ⟨ g, g_surj ⟩
-  use ⋃ n : ℕ, (u (f n)) \ (closure (⋃ m ∈ {m | m ≤ n}, v (g m)))
-  use ⋃ n : ℕ, (v (g n)) \ (closure (⋃ m ∈ {m | m ≤ n}, u (f m)))
-  constructor
-  · apply isOpen_iUnion
-    intro n
+  use ⋃ n : ℕ, u (f n) \ (closure (⋃ m ∈ {m | m ≤ n}, v (g m)))
+  use ⋃ n : ℕ, v (g n) \ (closure (⋃ m ∈ {m | m ≤ n}, u (f m)))
+  have open_lemma : ∀ (u₀ a : ℕ → Set X), (∀ n, IsOpen (u₀ n)) →
+      IsOpen (⋃ n, u₀ n \ closure (a n)) := by
+    intro _ _ u₀i_open
+    apply isOpen_iUnion
+    intro i
     apply IsOpen.sdiff
-    · exact (u_props (f n)).1
+    · exact u₀i_open i
     · exact isClosed_closure
   constructor
-  · apply isOpen_iUnion
-    intro n
-    apply IsOpen.sdiff
-    · exact (v_props (g n)).1
-    · exact isClosed_closure
+  · exact open_lemma (fun n ↦ u ↑(f n))
+      (fun n ↦ ⋃ m ∈ {m | m ≤ n}, v ↑(g m)) (fun n ↦ (u_props ↑(f n)).1)
   constructor
-  · intro x xinh
-    rcases c_cov xinh with ⟨ ui , ⟨ i, ui' ⟩ , xinui ⟩
-    rw [← ui'] at xinui
-    simp only [mem_iUnion, exists_prop] at xinui
-    rcases f_surj ⟨ i,xinui.1 ⟩ with ⟨ n, fni ⟩
+  · exact open_lemma (fun n ↦ v ↑(g n))
+      (fun n ↦ ⋃ m ∈ {m | m ≤ n}, u ↑(f m)) (fun n ↦ (v_props ↑(g n)).1)
+  have cover_lemma : ∀ (h₀ : Set X) (u₀ v₀ : ℕ → Set X),
+      (h₀ ⊆ ⋃ n, u₀ n) → (∀ n, Disjoint (closure (v₀ n)) h₀) →
+      (h₀ ⊆ ⋃ n, u₀ n \ closure (⋃ m ∈ {m | m ≤ n}, v₀ m)) := by
+    intro h₀ u₀ v₀ h₀_cov dis
+    intro x xinh
+    rcases h₀_cov xinh with ⟨ un , ⟨ n, un' ⟩ , xinun ⟩
+    rw [← un'] at xinun
+    simp only [mem_iUnion, exists_prop] at xinun
     simp only [mem_iUnion, mem_diff]
     use n
     constructor
-    · rw [fni]
-      exact xinui.2
+    · exact xinun
     · rw [Set.Finite.closure_biUnion]
       · simp only [mem_setOf_eq, mem_iUnion, exists_prop, not_exists, not_and]
         intro m _
-        exact Set.disjoint_right.mp (v_props (g m)).2 xinh
+        exact Set.disjoint_right.mp (dis m) xinh
       · exact finite_le_nat n
-  constructor
-  · intro x xink
-    rcases d_cov xink with ⟨ vi , ⟨ i, vi' ⟩ , xinvi ⟩
-    rw [← vi'] at xinvi
-    simp only [mem_iUnion, exists_prop] at xinvi
-    rcases g_surj ⟨ i,xinvi.1 ⟩ with ⟨ n, gni ⟩
-    simp only [mem_iUnion, mem_diff]
+  have h_cov : h ⊆ ⋃ n, u ↑(f n) := by
+    intro x xinh
+    rcases c_cov xinh with ⟨uc, ⟨i, iuc⟩, xinuc⟩
+    rw [← iuc] at xinuc
+    simp only [mem_iUnion, exists_prop] at xinuc
+    rcases f_surj ⟨ i, xinuc.1 ⟩ with ⟨ n, fni ⟩
+    simp only [mem_iUnion]
     use n
-    constructor
-    · rw [gni]
-      exact xinvi.2
-    · rw [Set.Finite.closure_biUnion]
-      · simp only [mem_setOf_eq, mem_iUnion, exists_prop, not_exists, not_and]
-        intro m _
-        exact Set.disjoint_right.mp (u_props (f m)).2 xink
-      · exact finite_le_nat n
+    rw [fni]
+    simp only
+    exact xinuc.2
+  have k_cov : k ⊆ ⋃ n, v ↑(g n) := by
+    intro x xink
+    rcases d_cov xink with ⟨vd, ⟨i, ivd⟩, xinvd⟩
+    rw [← ivd] at xinvd
+    simp only [mem_iUnion, exists_prop] at xinvd
+    rcases g_surj ⟨ i, xinvd.1 ⟩ with ⟨ n, fni ⟩
+    simp only [mem_iUnion]
+    use n
+    rw [fni]
+    simp only
+    exact xinvd.2
+  constructor
+  · exact cover_lemma h (fun n ↦ u ↑(f n)) (fun n ↦ v ↑(g n)) h_cov
+      (fun n ↦ (v_props ↑(g n)).2)
+  constructor
+  · exact cover_lemma k (fun n ↦ v ↑(g n)) (fun n ↦ u ↑(f n)) k_cov
+      (fun n ↦ (u_props ↑(f n)).2)
   rw [Set.disjoint_left]
   intro x xinunion
   rcases xinunion with ⟨ un, ⟨ n, un' ⟩, xinun ⟩
