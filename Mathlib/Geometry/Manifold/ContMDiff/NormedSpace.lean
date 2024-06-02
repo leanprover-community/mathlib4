@@ -187,6 +187,7 @@ theorem ContMDiff.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁}
     ContMDiff I 𝓘(𝕜, F₂) n fun x => g x (f x) := fun x => (hg x).clm_apply (hf x)
 #align cont_mdiff.clm_apply ContMDiff.clm_apply
 
+/-- Short-cut instance to speed up type-class search -/
 @[local instance] noncomputable def foo : NormedSpace 𝕜 ((F₂ →L[𝕜] F₃) →L[𝕜] F₁ →L[𝕜] F₃) :=
   ContinuousLinearMap.toNormedSpace
 
@@ -222,7 +223,7 @@ theorem ContMDiffWithinAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s : Set
     (g := ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃) (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).contDiff hf
 
 /-- Short-cut local instance -/
-@[local instance] noncomputable def baz : NormedSpace 𝕜 (F₂ →L[𝕜] F₃) :=
+@[local instance] noncomputable def bar : NormedSpace 𝕜 (F₂ →L[𝕜] F₃) :=
   ContinuousLinearMap.toNormedSpace
 
 nonrec theorem ContMDiffAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {x : M}
