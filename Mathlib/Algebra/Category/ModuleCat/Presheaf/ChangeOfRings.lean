@@ -29,13 +29,12 @@ noncomputable def restrictScalarsBundledCore (M' : PresheafOfModules R') (α : R
     BundledCorePresheafOfModules R where
   obj X := (ModuleCat.restrictScalars (α.app X)).obj (M'.obj X)
   map {X Y} f :=
-    { toFun := fun x ↦ M'.map f x
-      map_add' := by intros; simp only [map_add, map_apply]
+    { toFun := M'.map f
+      map_add' := map_add _
       map_smul' := fun r x ↦ by
         have eq := RingHom.congr_fun (α.naturality f) r
-        dsimp at eq
         apply (M'.map_smul f (α.app _ r) x).trans
-        dsimp
+        dsimp at eq ⊢
         rw [← eq]
         rfl }
   map_id X := by
@@ -46,7 +45,7 @@ noncomputable def restrictScalarsBundledCore (M' : PresheafOfModules R') (α : R
     exact LinearMap.congr_fun (M'.map_comp f g) x
 
 /-- The restriction of scalars functor `PresheafOfModules R' ⥤ PresheafOfModules R`
-induced by a morphism of presheaves of rings `R ⟶ R`. -/
+induced by a morphism of presheaves of rings `R ⟶ R'`. -/
 noncomputable def restrictScalars (α : R ⟶ R') :
     PresheafOfModules.{v} R' ⥤ PresheafOfModules.{v} R where
   obj M' := (M'.restrictScalarsBundledCore α).toPresheafOfModules
