@@ -831,6 +831,10 @@ theorem uniformContinuous_eval_of_mem_sUnion {x : α} (hx : x ∈ ⋃₀ 𝔖) :
 
 variable {β} {𝔖}
 
+theorem uniformContinuous_eval (h : ⋃₀ 𝔖 = univ) (x : α) :
+    UniformContinuous ((Function.eval x : (α → β) → β) ∘ toFun 𝔖) :=
+  uniformContinuous_eval_of_mem_sUnion _ _ <| h.symm ▸ mem_univ _
+
 /-- If `u` is a family of uniform structures on `γ`, then
 `𝒱(α, γ, 𝔖, (⨅ i, u i)) = ⨅ i, 𝒱(α, γ, 𝔖, u i)`. -/
 protected theorem iInf_eq {u : ι → UniformSpace γ} :
@@ -960,9 +964,7 @@ that of pointwise convergence. -/
 protected theorem uniformContinuous_toFun (h : ⋃₀ 𝔖 = univ) :
     UniformContinuous (toFun 𝔖 : (α →ᵤ[𝔖] β) → α → β) := by
   rw [uniformContinuous_pi]
-  intro x
-  obtain ⟨s : Set α, hs : s ∈ 𝔖, hxs : x ∈ s⟩ := sUnion_eq_univ_iff.mp h x
-  exact uniformContinuous_eval_of_mem β 𝔖 hxs hs
+  exact uniformContinuous_eval h
 #align uniform_on_fun.uniform_continuous_to_fun UniformOnFun.uniformContinuous_toFun
 
 /-- Convergence in the topology of `𝔖`-convergence means uniform convergence on `S` (in the sense
