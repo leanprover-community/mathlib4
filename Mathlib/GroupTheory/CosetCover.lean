@@ -13,7 +13,7 @@ Let the group $G$ be the union of finitely many, let us say $n$, left cosets
 of subgroups $C₁$, $C₂$, ..., $Cₙ$: $$ G = ⋃_{i = 1}^n C_i g_i. $$
 
 * `Subgroup.exists_finiteIndex_of_leftCoset_cover`
-  at least one subgroup `H i` has finite index in `G`.
+  at least one subgroup $C_i$ has finite index in $G$.
 
 * `Subgroup.leftCoset_cover_filter_FiniteIndex`
   the cosets of subgroups of infinite index may be omitted from the covering.
@@ -27,7 +27,7 @@ of subgroups $C₁$, $C₂$, ..., $Cₙ$: $$ G = ⋃_{i = 1}^n C_i g_i. $$
 A corollary of `Subgroup.exists_finiteIndex_of_leftCoset_cover` is:
 
 * `Subspace.union_ne_univ_of_lt_top` :
-  a vector space over an infinite field cannot be a finite union of proper subspaces
+  a vector space over an infinite field cannot be a finite union of proper subspaces.
 
 This can be used to show that an algebraic extension of fields is determined by the
 set of all minimal polynomials (not proved here).
@@ -257,8 +257,8 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex :
     ⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ :=
   (Subgroup.leftCoset_cover_filter_FiniteIndex_aux hcovers).1
 
-/-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
-Then the sum of the inverses of the indexes of the subgroups `H i` is greater than or equal to 1. -/
+/-- Let the group `G` be the union of finitely many left cosets `g i • H i`. Then the
+sum of the inverses of the indexes of the subgroups `H i` is greater than or equal to 1. -/
 @[to_additive one_le_sum_inv_index_of_leftCoset_cover]
 theorem Subgroup.one_le_sum_inv_index_of_leftCoset_cover :
     1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ :=
@@ -308,6 +308,7 @@ section Subspace
 variable {k E ι : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module k E]
     (s : Finset (Subspace k E))
 
+/- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
 theorem Subspace.biUnion_ne_univ_of_lt_top (hs : ∀ p ∈ s, p ≠ ⊤) :
     ⋃ p ∈ s, (p : Set E) ≠ Set.univ := by
   intro hcovers
@@ -317,6 +318,7 @@ theorem Subspace.biUnion_ne_univ_of_lt_top (hs : ∀ p ∈ s, p ≠ ⊤) :
   have : Infinite (E ⧸ p) := Module.Free.infinite k (E ⧸ p)
   exact not_finite (E ⧸ p)
 
+/- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
 theorem Subspace.exists_eq_top_of_biUnion_eq_univ (hcovers : ⋃ p ∈ s, (p : Set E) = Set.univ) :
     ∃ p ∈ s, p = ⊤ := by
   contrapose! hcovers
