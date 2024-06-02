@@ -47,7 +47,7 @@ deriving instance LargeCategory for TopCat
 instance concreteCategory : ConcreteCategory TopCat :=
   inferInstanceAs <| ConcreteCategory (Bundled TopologicalSpace)
 
-instance : CoeSort TopCat (Type*) where
+instance : CoeSort TopCat Type* where
   coe X := X.α
 
 instance topologicalSpaceUnbundled (X : TopCat) : TopologicalSpace X :=
