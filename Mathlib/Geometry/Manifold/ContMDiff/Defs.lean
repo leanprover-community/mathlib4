@@ -617,7 +617,15 @@ theorem contMDiff_iff :
           ContDiffOn 𝕜 n (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
             ((extChartAt I x).target ∩
               (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' y).source)) := by
-  simp [← contMDiffOn_univ, contMDiffOn_iff, continuous_iff_continuousOn_univ]
+  -- squeezing brings this from 180ms -> 40ms
+  simp? [← contMDiffOn_univ, contMDiffOn_iff, continuous_iff_continuousOn_univ] says
+    simp only [← contMDiffOn_univ, contMDiffOn_iff,
+      extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans,
+      ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
+      PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_coe_symm,
+      ModelWithCorners.toPartialEquiv_coe_symm, PartialEquiv.trans_target,
+      ModelWithCorners.target_eq, PartialEquiv.trans_source, ModelWithCorners.source_eq,
+      preimage_univ, inter_univ, univ_inter, continuous_iff_continuousOn_univ]
 #align cont_mdiff_iff contMDiff_iff
 
 /-- One can reformulate smoothness as continuity and smoothness in any extended chart in the
@@ -627,7 +635,12 @@ theorem contMDiff_iff_target :
       Continuous f ∧ ∀ y : M',
         ContMDiffOn I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) (f ⁻¹' (extChartAt I' y).source) := by
   rw [← contMDiffOn_univ, contMDiffOn_iff_target]
-  simp [continuous_iff_continuousOn_univ]
+  -- squeezing reduces the simp from 80 -> 20ms
+  simp? [continuous_iff_continuousOn_univ] says
+    simp only [extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans,
+    ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe, PartialEquiv.trans_source,
+    ModelWithCorners.source_eq, preimage_univ, inter_univ, univ_inter,
+    continuous_iff_continuousOn_univ]
 #align cont_mdiff_iff_target contMDiff_iff_target
 
 theorem smooth_iff :

@@ -140,7 +140,7 @@ instance : Add (LeftInvariantDerivation I G) where
       simp only [map_add, Derivation.coe_add, left_invariant', Pi.add_apply]⟩
 
 instance : Neg (LeftInvariantDerivation I G) where
-  neg X := ⟨-X, fun g => by simp [left_invariant']⟩
+  neg X := ⟨-X, fun g => by simp only [map_neg, left_invariant']⟩ -- 220 -> 80ms
 
 instance : Sub (LeftInvariantDerivation I G) where
   sub X Y := ⟨X - Y, fun g => by simp only [map_sub, left_invariant']⟩ -- 600 -> 110ms
