@@ -83,6 +83,12 @@ instance : (forget R).Full := (fullyFaithfulForget R).full
 def evaluation (X : Cᵒᵖ) : SheafOfModules.{v} R ⥤ ModuleCat.{v} (R.val.obj X) :=
   forget _ ⋙ PresheafOfModules.evaluation _ X
 
+/-- The forget functor `SheafOfModules R ⥤ Sheaf J AddCommGroupCat`. -/
+@[simps]
+def toSheaf : SheafOfModules.{v} R ⥤ Sheaf J AddCommGroupCat.{v} where
+  obj M := ⟨_, M.isSheaf⟩
+  map f := { val := f.val.hom }
+
 end SheafOfModules
 
 namespace PresheafOfModules
