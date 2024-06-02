@@ -46,7 +46,7 @@ namespace Int.Matrix
 /-- The definition of ‖⬝‖ for integral matrixes -/
 lemma sup_sup_norm_def (m n : ℕ) (A : Matrix (Fin m) (Fin n) ℤ)  :
     ‖A‖ = (sup univ fun b ↦ sup univ fun b' ↦ (A b b').natAbs) := by
-  simp_rw [Matrix.norm_def, Pi.norm_def, Pi.nnnorm_def, ←NNReal.coe_natCast, NNReal.coe_inj,
+  simp_rw [Matrix.norm_def, Pi.norm_def, Pi.nnnorm_def, ← NNReal.coe_natCast, NNReal.coe_inj,
     cast_sup_eq_sup_cast_Nat_NNReal]
   congr; ext; congr; ext
   simp only [coe_nnnorm, Int.norm_eq_abs, Int.cast_abs, NNReal.coe_natCast, cast_natAbs]
