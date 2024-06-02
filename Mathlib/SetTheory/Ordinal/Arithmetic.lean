@@ -375,7 +375,7 @@ theorem type_subrel_lt (o : Ordinal.{u}) :
       = Ordinal.lift.{u + 1} o := by
   refine Quotient.inductionOn o ?_
   rintro ⟨α, r, wo⟩; apply Quotient.sound
-  -- Porting note: `symm; refine [term]` → `refine [term].symm`
+  -- Porting note: `symm; refine' [term]` → `refine' [term].symm`
   constructor; refine ((RelIso.preimage Equiv.ulift r).trans (enumIso r).symm).symm
 #align ordinal.type_subrel_lt Ordinal.type_subrel_lt
 
@@ -441,7 +441,7 @@ theorem IsNormal.self_le {f} (H : IsNormal f) (a) : a ≤ f a :=
 theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempty) (b)
     (H₂ : ∀ o, b ≤ o ↔ ∀ a ∈ p, a ≤ o) : f b ≤ o ↔ ∀ a ∈ p, f a ≤ o :=
   ⟨fun h a pa => (H.le_iff.2 ((H₂ _).1 le_rfl _ pa)).trans h, fun h => by
-    -- Porting note: `refine` didn't work well so `induction` is used
+    -- Porting note: `refine'` didn't work well so `induction` is used
     induction b using limitRecOn with
     | H₁ =>
       cases' p0 with x px

@@ -117,7 +117,7 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
         Action.tensorHom, Equiv.piFinSuccAbove_symm_apply, tensor_apply, types_id_apply,
         tensor_rho, MonoidHom.one_apply, End.one_def, hn fun j : Fin (n + 1) => f j.succ,
         Fin.insertNth_zero']
-      refine Fin.cases (Fin.cons_zero _ _) (fun i => ?_) x
+      refine' Fin.cases (Fin.cons_zero _ _) (fun i => _) x
       · simp only [Fin.cons_succ, mul_left_inj, inv_inj, Fin.castSucc_fin_succ] -/
     dsimp [actionDiagonalSucc]
     erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
@@ -140,7 +140,7 @@ theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f
     simp only [Iso.trans_inv, comp_hom, hn, diagonalSucc_inv_hom, types_comp_apply, tensorIso_inv,
       Iso.refl_inv, Action.tensorHom, id_hom, tensor_apply, types_id_apply,
       leftRegularTensorIso_inv_hom, tensor_rho, leftRegular_ρ_apply, Pi.smul_apply, smul_eq_mul]
-    refine Fin.cases ?_ ?_ x
+    refine' Fin.cases _ _ x
     · simp only [Fin.cons_zero, Fin.partialProd_zero, mul_one]
     · intro i
       simpa only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', mul_assoc] -/
@@ -280,7 +280,7 @@ def ofMulActionBasisAux :
       erw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul]
       congr 1
 /- Porting note (#11039): broken proof was
-      refine x.induction_on ?_ (fun x y => ?_) fun y z hy hz => ?_
+      refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
       · simp only [smul_zero]
       · simp only [TensorProduct.smul_tmul']
         show (r * x) ⊗ₜ y = _

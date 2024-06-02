@@ -339,7 +339,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
       · use 1
         simp only [pow_one]
     · rw [Set.mem_setOf_eq, degree_le_zero_iff] at hy
-      -- Porting note: was `refine hy.symm ▸`
+      -- Porting note: was `refine' hy.symm ▸`
       -- `⟨X - C (algebraMap _ _ ((Quotient.mk P') (p.coeff 0))), monic_X_sub_C _, _⟩`
       rw [hy]
       use X - C (algebraMap (R ⧸ P') Rₘ ((Quotient.mk P') (p.coeff 0)))

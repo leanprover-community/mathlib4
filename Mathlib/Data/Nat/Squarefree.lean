@@ -448,17 +448,17 @@ def SquarefreeHelper (n k : ℕ) : Prop :=
 #align tactic.norm_num.squarefree_helper Tactic.NormNum.SquarefreeHelper
 
 theorem squarefree_bit10 (n : ℕ) (h : SquarefreeHelper n 1) : Squarefree (bit0 (bit1 n)) := by
-  refine @Nat.minSqFacProp_div _ _ Nat.prime_two two_dvd_bit0 _ none _
+  refine' @Nat.minSqFacProp_div _ _ Nat.prime_two two_dvd_bit0 _ none _
   · rw [bit0_eq_two_mul (bit1 n), mul_dvd_mul_iff_left (two_ne_zero' ℕ)]
     exact Nat.not_two_dvd_bit1 _
   · rw [bit0_eq_two_mul, Nat.mul_div_right _ (by decide : 0 < 2)]
-    refine h (by decide) fun p pp dp => Nat.succ_le_of_lt (lt_of_le_of_ne pp.two_le ?_)
+    refine' h (by decide) fun p pp dp => Nat.succ_le_of_lt (lt_of_le_of_ne pp.two_le _)
     rintro rfl
     exact Nat.not_two_dvd_bit1 _ dp
 #align tactic.norm_num.squarefree_bit10 Tactic.NormNum.squarefree_bit10
 
 theorem squarefree_bit1 (n : ℕ) (h : SquarefreeHelper n 1) : Squarefree (bit1 n) := by
-  refine h (by decide) fun p pp dp => Nat.succ_le_of_lt (lt_of_le_of_ne pp.two_le ?_)
+  refine' h (by decide) fun p pp dp => Nat.succ_le_of_lt (lt_of_le_of_ne pp.two_le _)
   rintro rfl; exact Nat.not_two_dvd_bit1 _ dp
 #align tactic.norm_num.squarefree_bit1 Tactic.NormNum.squarefree_bit1
 
@@ -468,7 +468,7 @@ theorem squarefree_helper_0 {k} (k0 : 0 < k) {p : ℕ} (pp : Nat.Prime p) (h : b
   · rw [bit1, bit0_eq_two_mul] at hp
     change 2 * (_ + 1) ≤ _ at hp
     rw [bit1, bit0_eq_two_mul]
-    refine Or.inl (lt_of_le_of_ne hp ?_)
+    refine' Or.inl (lt_of_le_of_ne hp _)
     rintro rfl
     exact Nat.not_prime_mul (by decide) (lt_add_of_pos_left _ k0) pp
   · exact Or.inr hp
@@ -478,15 +478,15 @@ theorem squarefreeHelper_1 (n k k' : ℕ) (e : k + 1 = k')
     (hk : Nat.Prime (bit1 k) → ¬bit1 k ∣ bit1 n) (H : SquarefreeHelper n k') :
     SquarefreeHelper n k := fun k0 ih => by
   subst e
-  refine H (Nat.succ_pos _) fun p pp dp => ?_
-  refine (squarefree_helper_0 k0 pp (ih p pp dp)).resolve_right fun hp => ?_
+  refine' H (Nat.succ_pos _) fun p pp dp => _
+  refine' (squarefree_helper_0 k0 pp (ih p pp dp)).resolve_right fun hp => _
   subst hp; cases hk pp dp
 #align tactic.norm_num.squarefree_helper_1 Tactic.NormNum.squarefreeHelper_1
 
 theorem squarefreeHelper_2 (n k k' c : ℕ) (e : k + 1 = k') (hc : bit1 n % bit1 k = c) (c0 : 0 < c)
     (h : SquarefreeHelper n k') : SquarefreeHelper n k := by
-  refine squarefree_helper_1 _ _ _ e (fun _ => ?_) h
-  refine mt ?_ (ne_of_gt c0); intro e₁
+  refine' squarefree_helper_1 _ _ _ e (fun _ => _) h
+  refine' mt _ (ne_of_gt c0); intro e₁
   rwa [← hc, ← Nat.dvd_iff_mod_eq_zero]
 #align tactic.norm_num.squarefree_helper_2 Tactic.NormNum.squarefreeHelper_2
 
@@ -500,16 +500,16 @@ theorem squarefreeHelper_3 (n n' k k' c : ℕ) (e : k + 1 = k') (hn' : bit1 n' *
   have : bit1 n / bit1 k = bit1 n' := by rw [← hn', Nat.mul_div_cancel _ k0']
   have k2 : 2 ≤ bit1 k := Nat.succ_le_succ (bit0_pos k0)
   have pk : (bit1 k).Prime := by
-    refine Nat.prime_def_minFac.2 ⟨k2, le_antisymm (Nat.minFac_le k0') ?_⟩
+    refine' Nat.prime_def_minFac.2 ⟨k2, le_antisymm (Nat.minFac_le k0') _⟩
     exact ih _ (Nat.minFac_prime (ne_of_gt k2)) (dvd_trans (Nat.minFac_dvd _) dk)
   have dkk' : ¬bit1 k ∣ bit1 n' := by
     rw [Nat.dvd_iff_mod_eq_zero, hc]
     exact ne_of_gt c0
   have dkk : ¬bit1 k * bit1 k ∣ bit1 n := by rwa [← Nat.dvd_div_iff dk, this]
-  refine @Nat.minSqFacProp_div _ _ pk dk dkk none ?_
+  refine' @Nat.minSqFacProp_div _ _ pk dk dkk none _
   rw [this]
-  refine H (Nat.succ_pos _) fun p pp dp => ?_
-  refine (squarefree_helper_0 k0 pp (ih p pp <| dvd_trans dp dn')).resolve_right fun e => ?_
+  refine' H (Nat.succ_pos _) fun p pp dp => _
+  refine' (squarefree_helper_0 k0 pp (ih p pp <| dvd_trans dp dn')).resolve_right fun e => _
   subst e
   contradiction
 #align tactic.norm_num.squarefree_helper_3 Tactic.NormNum.squarefreeHelper_3
@@ -520,7 +520,7 @@ theorem squarefreeHelper_4 (n k k' : ℕ) (e : bit1 k * bit1 k = k') (hd : bit1 
   · subst n
     exact fun _ _ => squarefree_one
   subst e
-  refine fun k0 ih => Irreducible.squarefree (Nat.prime_def_le_sqrt.2 ⟨bit1_lt_bit1.2 h, ?_⟩)
+  refine' fun k0 ih => Irreducible.squarefree (Nat.prime_def_le_sqrt.2 ⟨bit1_lt_bit1.2 h, _⟩)
   intro m m2 hm md
   obtain ⟨p, pp, hp⟩ := Nat.exists_prime_and_dvd (ne_of_gt m2)
   have :=
