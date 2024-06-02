@@ -123,77 +123,141 @@ class ContravariantClass : Prop where
   protected elim : Contravariant M N μ r
 #align contravariant_class ContravariantClass
 
-/-- TODO -/
+/-- Typeclass for monotonicity of multiplication on the left,
+namely `b₁ ≤ b₂ → a * b₁ ≤ a * b₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCommMonoid`. -/
 abbrev MulLeftMono [Mul M] [LE M] : Prop :=
   CovariantClass M M (· * ·) (· ≤ ·)
 
-/-- TODO -/
+/-- Typeclass for monotonicity of multiplication on the right,
+namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCommMonoid`. -/
 abbrev MulRightMono [Mul M] [LE M] : Prop :=
   CovariantClass M M (swap (· * ·)) (· ≤ ·)
 
-/-- TODO -/
+/-- Typeclass for monotonicity of addition on the left,
+namely `b₁ ≤ b₂ → a + b₁ ≤ a + b₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedAddCommMonoid`. -/
 abbrev AddLeftMono [Add M] [LE M] : Prop :=
   CovariantClass M M (· + ·) (· ≤ ·)
 
-/-- TODO -/
+/-- Typeclass for monotonicity of addition on the right,
+namely `a₁ ≤ a₂ → a₁ + b ≤ a₂ + b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedAddCommMonoid`. -/
 abbrev AddRightMono [Add M] [LE M] : Prop :=
   CovariantClass M M (swap (· + ·)) (· ≤ ·)
 
 attribute [to_additive existing] MulLeftMono MulRightMono
 
-/-- TODO -/
+/-- Typeclass for monotonicity of multiplication on the left,
+namely `b₁ < b₂ → a * b₁ < a * b₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCommGroup`. -/
 abbrev MulLeftStrictMono [Mul M] [LT M] : Prop :=
   CovariantClass M M (· * ·) (· < ·)
 
-/-- TODO -/
+/-- Typeclass for monotonicity of multiplication on the right,
+namely `a₁ < a₂ → a₁ * b < a₂ * b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCommGroup`. -/
 abbrev MulRightStrictMono [Mul M] [LT M] : Prop :=
   CovariantClass M M (swap (· * ·)) (· < ·)
 
-/-- TODO -/
+/-- Typeclass for monotonicity of addition on the left,
+namely `b₁ < b₂ → a + b₁ < a + b₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedAddCommGroup`. -/
 abbrev AddLeftStrictMono [Add M] [LT M] : Prop :=
   CovariantClass M M (· + ·) (· < ·)
 
-/-- TODO -/
+/-- Typeclass for monotonicity of addition on the right,
+namely `a₁ < a₂ → a₁ + b < a₂ + b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedAddCommGroup`. -/
 abbrev AddRightStrictMono [Add M] [LT M] : Prop :=
   CovariantClass M M (swap (· + ·)) (· < ·)
 
 attribute [to_additive existing] MulLeftStrictMono MulRightStrictMono
 
-/-- TODO -/
-abbrev MulLeftReflectLE [Mul M] [LE M] : Prop :=
-  ContravariantClass M M (· * ·) (· ≤ ·)
+/-- Typeclass for strict reverse monotonicity of multiplication on the left,
+namely `a * b₁ < a * b₂ → b₁ < b₂`.
 
-/-- TODO -/
-abbrev MulRightReflectLE [Mul M] [LE M] : Prop :=
-  ContravariantClass M M (swap (· * ·)) (· ≤ ·)
-
-/-- TODO -/
-abbrev AddLeftReflectLE [Add M] [LE M] : Prop :=
-  ContravariantClass M M (· + ·) (· ≤ ·)
-
-/-- TODO -/
-abbrev AddRightReflectLE [Add M] [LE M] : Prop :=
-  ContravariantClass M M (swap (· + ·)) (· ≤ ·)
-
-attribute [to_additive existing] MulLeftReflectLE MulRightReflectLE
-
-/-- TODO -/
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCommGroup`. -/
 abbrev MulLeftReflectLT [Mul M] [LT M] : Prop :=
   ContravariantClass M M (· * ·) (· < ·)
 
-/-- TODO -/
+/-- Typeclass for strict reverse monotonicity of multiplication on the right,
+namely `a₁ * b < a₂ * b → a₁ < a₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCommGroup`. -/
 abbrev MulRightReflectLT [Mul M] [LT M] : Prop :=
   ContravariantClass M M (swap (· * ·)) (· < ·)
 
-/-- TODO -/
+/-- Typeclass for strict reverse monotonicity of addition on the left,
+namely `a + b₁ < a + b₂ → b₁ < b₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedAddCommGroup`. -/
 abbrev AddLeftReflectLT [Add M] [LT M] : Prop :=
   ContravariantClass M M (· + ·) (· < ·)
 
-/-- TODO -/
+/-- Typeclass for strict reverse monotonicity of addition on the right,
+namely `a₁ * b < a₂ * b → a₁ < a₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedAddCommGroup`. -/
 abbrev AddRightReflectLT [Add M] [LT M] : Prop :=
   ContravariantClass M M (swap (· + ·)) (· < ·)
 
 attribute [to_additive existing] MulLeftReflectLT MulRightReflectLT
+
+/-- Typeclass for reverse monotonicity of multiplication on the left,
+namely `a * b₁ ≤ a * b₂ → b₁ ≤ b₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCancelCommMonoid`. -/
+abbrev MulLeftReflectLE [Mul M] [LE M] : Prop :=
+  ContravariantClass M M (· * ·) (· ≤ ·)
+
+/-- Typeclass for reverse monotonicity of multiplication on the right,
+namely `a₁ * b ≤ a₂ * b → a₁ ≤ a₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCancelCommMonoid`. -/
+abbrev MulRightReflectLE [Mul M] [LE M] : Prop :=
+  ContravariantClass M M (swap (· * ·)) (· ≤ ·)
+
+/-- Typeclass for reverse monotonicity of addition on the left,
+namely `a + b₁ ≤ a + b₂ → b₁ ≤ b₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCancelAddCommMonoid`. -/
+abbrev AddLeftReflectLE [Add M] [LE M] : Prop :=
+  ContravariantClass M M (· + ·) (· ≤ ·)
+
+/-- Typeclass for reverse monotonicity of addition on the right,
+namely `a₁ + b ≤ a₂ + b → a₁ ≤ a₂`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`OrderedCancelAddCommMonoid`. -/
+abbrev AddRightReflectLE [Add M] [LE M] : Prop :=
+  ContravariantClass M M (swap (· + ·)) (· ≤ ·)
+
+attribute [to_additive existing] MulLeftReflectLE MulRightReflectLE
 
 theorem rel_iff_cov [CovariantClass M N μ r] [ContravariantClass M N μ r] (m : M) {a b : N} :
     r (μ m a) (μ m b) ↔ r a b :=
