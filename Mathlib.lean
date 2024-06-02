@@ -94,6 +94,7 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
 import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
