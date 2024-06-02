@@ -71,12 +71,12 @@ def forget : SheafOfModules.{v} R ⥤ PresheafOfModules R.val where
 
 /-- The forget functor `SheafOfModules R ⥤ PresheafOfModules R.val` is fully faithful. -/
 @[simps]
-def fullyFaithfulForget : (forget R).FullyFaithful where
+def fullyFaithfulForget : (forget.{v} R).FullyFaithful where
   preimage φ := ⟨φ⟩
 
-instance : (forget R).Faithful := (fullyFaithfulForget R).faithful
+instance : (forget.{v} R).Faithful := (fullyFaithfulForget R).faithful
 
-instance : (forget R).Full := (fullyFaithfulForget R).full
+instance : (forget.{v} R).Full := (fullyFaithfulForget R).full
 
 /-- Evaluation on an object `X` gives a functor
 `SheafOfModules R ⥤ ModuleCat (R.val.obj X)`. -/
