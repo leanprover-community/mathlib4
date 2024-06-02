@@ -307,9 +307,7 @@ theorem IsBlock.of_subgroup_of_conjugate {B : Set X} {H : Subgroup G} (hB : IsBl
     apply (hB.smul_eq_or_disjoint ⟨h, hH⟩).imp
     · intro; congr
     · exact Set.disjoint_image_of_injective (MulAction.injective g)
-  suffices (h' : G) • g • B = g • h • B by
-    rw [← this]; rfl
-  rw [← hh, smul_smul (g * h * g⁻¹) g B, smul_smul g h B, inv_mul_cancel_right]
+  rw [Submonoid.smul_def, ← hh, smul_smul (g * h * g⁻¹) g B, smul_smul g h B, inv_mul_cancel_right]
 
 /-- A translate of a block is a block -/
 theorem IsBlock.translate {B : Set X} (g : G) (hB : IsBlock G B) :
@@ -345,7 +343,7 @@ theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
     intro g' ha
     apply (IsBlock.def.mp hB g' g).resolve_right
     rw [Set.not_disjoint_iff]
-    refine ⟨g • b, ha, ⟨b, hb, rfl⟩⟩
+    exact ⟨g • b, ha, ⟨b, hb, rfl⟩⟩
 
 section Normal
 
@@ -361,8 +359,7 @@ lemma smul_orbit_eq_orbit_smul (N : Subgroup G) [nN : N.Normal] (a : X) (g : G) 
     rw [smul_smul, inv_mul_cancel_right, ← smul_smul]
   · rintro ⟨⟨k, hk⟩, rfl⟩
     use ⟨g⁻¹ * k * g, nN.conj_mem' k hk g⟩
-    simp only [Submonoid.mk_smul]
-    simp only [← mul_assoc, ← smul_smul, smul_inv_smul, inv_inv]
+    simp only [Submonoid.mk_smul, ← mul_assoc, ← smul_smul, smul_inv_smul, inv_inv]
 
 /-- An orbit of a normal subgroup is a block -/
 theorem orbit.isBlock_of_normal {N : Subgroup G} [N.Normal] (a : X) :
@@ -443,6 +440,10 @@ theorem stabilizer_orbit_eq {a : X} {H : Subgroup G}
 
 variable (G)
 
+example (B : Set X) (k : G) (hk : k ∈ stabilizer G B) (a : X) (ha : a ∈ B) :
+  k • a ∈ B  :=
+  hk.symm ▸ Set.smul_mem_smul_set ha
+
 /-- Order equivalence between blocks in X containing a point a
  and subgroups of G containing the stabilizer of a (Wielandt, th. 7.5)-/
 def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
@@ -460,19 +461,12 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     constructor
     · rintro hBB' b hb
       obtain ⟨k, rfl⟩ := htGX.exists_smul_eq a b
-      suffices k ∈ stabilizer G B by
-        apply hBB' at this
-        simp only [mem_stabilizer_iff] at this
-        rw [← this, Set.smul_mem_smul_set_iff]
-        exact ha'
-      simp only [mem_stabilizer_iff]
-      exact hB.def_mem ha hb
-    · intro hBB' g
-      intro hgB
+      suffices k ∈ stabilizer G B' by
+        exact this.symm ▸ (Set.smul_mem_smul_set ha')
+      exact hBB' (hB.def_mem ha hb)
+    · intro hBB' g hgB
       apply IsBlock.def_mem hB' ha'
-      apply hBB'
-      rw [← hgB, Set.smul_mem_smul_set_iff]
-      exact ha
+      exact hBB' <| hgB.symm ▸ (Set.smul_mem_smul_set ha)
 
 end Stabilizer
 
