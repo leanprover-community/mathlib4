@@ -416,3 +416,70 @@ lemma restrictionApp_toPresheafOfModules {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     PresheafOfModules.restrictionApp f M.toPresheafOfModules = M.map f := rfl
 
 end BundledCorePresheafOfModules
+
+namespace PresheafOfModules
+
+variable (R)
+
+/-- Auxiliary definition for `unit`. -/
+def unitCore : CorePresheafOfModules R where
+  obj X := R.obj X
+  map {X Y} f := by
+    exact
+      { toFun := (R.map f).toFun
+        map_add' := by simp
+        map_smul' := by simp }
+
+/-- The obvious free presheaf of modules of rank `1`. -/
+abbrev unit : PresheafOfModules R := (unitCore R).toPresheafOfModules
+
+lemma unit_map_one {X Y : Cᵒᵖ} (f : X ⟶ Y) : (unit R).map f (1 : R.obj X) = (1 : R.obj Y) :=
+  (R.map f).map_one
+
+-- must be moved, do we have this already?
+/-- If `M` is a module over `A`, then this is the bijection `(A →ₗ[A] M) ≃ M`. -/
+def _root_.Semiring.toModuleLinearMapAddEquiv
+    (A : Type u) [Semiring A] (M : Type v) [AddCommMonoid M] [Module A M] :
+    (A →ₗ[A] M) ≃+ M where
+  toFun f := f 1
+  invFun m :=
+    { toFun := fun a => a • m
+      map_add' := fun _ _ => add_smul _ _ _
+      map_smul' := fun _ _ => mul_smul _ _ _ }
+  map_add' := by simp
+  left_inv f := by aesop
+  right_inv m := by aesop
+
+variable {R}
+
+/-- The type of sections of a presheaf of modules. -/
+def sections (M : PresheafOfModules.{v} R) : Type _ := (M.presheaf ⋙ forget _).sections
+
+@[ext]
+lemma sections_ext {M : PresheafOfModules.{v} R} (s t : M.sections)
+    (h : ∀ (X : Cᵒᵖ), s.val X = t.val X) : s = t :=
+  Subtype.ext (by ext; apply h)
+
+/-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : PresheafOfModules R`. -/
+def unitHomEquiv (M : PresheafOfModules R) :
+    (unit R ⟶ M) ≃ M.sections where
+  toFun f :=
+    { val := fun X => f.app X (1 : R.obj X)
+      property := fun {X Y} p => by
+        dsimp
+        erw [← NatTrans.naturality_apply, unit_map_one]
+        rfl }
+  invFun s := Hom.mk'
+    (fun X => (Semiring.toModuleLinearMapAddEquiv (R.obj X) (M.obj X)).symm (s.val X)) (by
+      intro X Y p (x : R.obj X)
+      dsimp [Semiring.toModuleLinearMapAddEquiv]
+      rw [M.map_smul, ← s.2 p]
+      rfl)
+  left_inv f := by
+    ext1 X
+    exact (Semiring.toModuleLinearMapAddEquiv (R.obj X) (M.obj X)).symm_apply_apply (f.app X)
+  right_inv s := by
+    ext X
+    exact (Semiring.toModuleLinearMapAddEquiv (R.obj X) (M.obj X)).apply_symm_apply (s.val X)
+
+end PresheafOfModules
