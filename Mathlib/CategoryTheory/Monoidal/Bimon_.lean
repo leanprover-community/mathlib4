@@ -14,8 +14,6 @@ as comonoid objects in the category of monoid objects in `C`.
 We verify that this is equivalent to the monoid objects in the category of comonoid objects.
 
 ## TODO
-* Define Hopf monoids, which in a cartesian monoidal category are exactly group objects,
-  and use this to define group schemes.
 * Construct the category of modules, and show that it is monoidal with a monoidal forgetful functor
   to `C`.
 * Some form of Tannaka reconstruction:
@@ -108,14 +106,29 @@ def equivMon_Comon_ : Bimon_ C ≌ Mon_ (Comon_ C) where
   unitIso := NatIso.ofComponents (fun _ => Comon_.mkIso (Mon_.mkIso (Iso.refl _)))
   counitIso := NatIso.ofComponents (fun _ => Mon_.mkIso (Comon_.mkIso (Iso.refl _)))
 
+/-! # The trivial bimonoid -/
+
+@[simps!]
+def trivial : Bimon_ C := Comon_.trivial (C := Mon_ C)
+
+@[simps]
+def trivial_to (A : Bimon_ C) : trivial C ⟶ A :=
+  { hom := (default : Mon_.trivial C ⟶ A.X), }
+
+@[simps!]
+def to_trivial (A : Bimon_ C) : A ⟶ Comon_.trivial (Mon_ C) :=
+  (default : @Quiver.Hom (Comon_ (Mon_ C)) _ A _)
+
 /-! # Additional lemmas -/
 
 variable {C}
 
+@[reassoc (attr := simp)]
 theorem one_comul (M : Bimon_ C) :
     M.X.one ≫ M.comul.hom = (λ_ _).inv ≫ (M.X.one ⊗ M.X.one) := by
   simp
 
+@[reassoc (attr := simp)]
 theorem mul_counit (M : Bimon_ C) :
     M.X.mul ≫ M.counit.hom = (M.counit.hom ⊗ M.counit.hom) ≫ (λ_ _).hom := by
   simp

@@ -9,6 +9,11 @@ import Mathlib.CategoryTheory.Monoidal.Conv
 /-!
 # The category of Hopf monoids in a braided monoidal category.
 
+
+## TODO
+
+* Show that in a cartesian monoidal category Hopf monoids are exactly group objects.
+* Show that `Hopf_ (ModuleCat R) ≌ HopfAlgebraCat R`.
 -/
 
 noncomputable section
@@ -77,6 +82,24 @@ theorem hom_antipode {A B : Hopf_ C} (f : A ⟶ B) :
       rw [A.antipode_right]
     slice_lhs 2 3 =>
       rw [f.hom.one_hom]
+
+@[reassoc (attr := simp)]
+theorem one_antipode (A : Hopf_ C) : A.X.X.one ≫ A.antipode = A.X.X.one := by
+  have := (rfl : A.X.X.one ≫ A.X.comul.hom ≫ (A.antipode ▷ A.X.X.X) ≫ A.X.X.mul = _)
+  conv at this =>
+    rhs
+    rw [A.antipode_left]
+  rw [A.X.one_comul_assoc, tensorHom_def, Category.assoc, whisker_exchange_assoc] at this
+  simpa [unitors_inv_equal]
+
+@[reassoc (attr := simp)]
+theorem antipode_counit (A : Hopf_ C) : A.antipode ≫ A.X.counit.hom = A.X.counit.hom := by
+  have := (rfl : A.X.comul.hom ≫ (A.antipode ▷ A.X.X.X) ≫ A.X.X.mul ≫ A.X.counit.hom = _)
+  conv at this =>
+    rhs
+    rw [A.antipode_left_assoc]
+  rw [A.X.mul_counit, tensorHom_def', Category.assoc, ← whisker_exchange_assoc] at this
+  simpa [unitors_equal]
 
 /-!
 ## The antipode is an antihomomorphism with respect to both the monoid and comonoid structures.
@@ -417,6 +440,25 @@ theorem mul_antipode (A : Hopf_ C) :
       unop_hom_associator, unop_whiskerRight, unop_hom_braiding, Category.assoc,
       pentagon_hom_inv_inv_inv_inv_assoc]
     exact mul_antipode₂ A
+
+/--
+In a commutative Hopf algebra, the antipode squares to the identity.
+-/
+theorem antipode_antipode (A : Hopf_ C) (comm : (β_ _ _).hom ≫ A.X.X.mul = A.X.X.mul) :
+    A.antipode ≫ A.antipode = 𝟙 A.X.X.X := by
+  -- Again, it is a "left inverse equals right inverse" argument in the convolution monoid.
+  apply left_inv_eq_right_inv
+    (M := Conv ((Bimon_.toComon_ C).obj A.X) A.X.X)
+    (a := A.antipode)
+  · -- Unfold the algebra structure in the convolution monoid,
+    -- then `simp?`.
+    erw [Conv.mul_eq, Conv.one_eq]
+    simp only [Bimon_.toComon__obj_X, Bimon_.toComon__obj_comul, comp_whiskerRight, Category.assoc,
+      Bimon_.toComon__obj_counit]
+    rw [← comm, ← tensorHom_def_assoc, ← mul_antipode]
+    simp
+  · erw [Conv.mul_eq, Conv.one_eq]
+    simp
 
 end Hopf_
 
