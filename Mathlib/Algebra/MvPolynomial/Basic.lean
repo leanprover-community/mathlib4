@@ -888,6 +888,10 @@ lemma coeffs_one : coeffs (1 : MvPolynomial σ R) ⊆ {1} := by
     simp_rw [coeffs, Finset.image_subset_iff]
     simp_all [coeff_one]
 
+lemma coeffs_eq_empty_of_subsingleton [Subsingleton R] (p : MvPolynomial σ R) : p.coeffs = ∅ := by
+  simp only [coeffs, Finset.image_eq_empty, support_eq_empty]
+  exact Subsingleton.eq_zero p
+
 @[simp]
 lemma coeffs_one_of_nontrivial [Nontrivial R] : coeffs (1 : MvPolynomial σ R) = {1} := by
   apply Finset.Subset.antisymm coeffs_one
@@ -902,6 +906,11 @@ lemma coeff_mem_coeffs {p : MvPolynomial σ R} (m : σ →₀ ℕ)
     (h : p.coeff m ≠ 0) : p.coeff m ∈ p.coeffs :=
   letI := Classical.decEq R
   Finset.mem_image_of_mem p.coeff (mem_support_iff.mpr h)
+
+lemma zero_not_mem_coeffs (p : MvPolynomial σ R) : 0 ∉ p.coeffs := by
+  intro hz
+  obtain ⟨n, hnsupp, hn⟩ := mem_coeffs_iff.mp hz
+  exact (mem_support_iff.mp hnsupp) hn.symm
 
 end Coeff
 
