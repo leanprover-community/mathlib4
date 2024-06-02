@@ -183,8 +183,10 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover : ∃ k ∈ s, (H k).Fini
 @[to_additive]
 theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux
     [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)] :
-    ⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ ∧
-    1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ := by
+    (⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ) ∧
+      (1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹) ∧
+      (∑ i ∈ s, ((H i).index : ℚ)⁻¹ = 1 → Set.PairwiseDisjoint
+        (s.filter (fun i => (H i).FiniteIndex)) (fun i ↦ (H i : Set G))) := by
   classical
   let D := ⨅ k ∈ s.filter (fun i => (H i).FiniteIndex), H k
   -- `D`, as the finite intersection of subgroups of finite index, also has finite index.
@@ -248,6 +250,7 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux
         Subgroup.relindex, ← Subgroup.card_left_transversal (ht i.1 i.2 hfi).1]
       simp [K, hfi, hkfi]
     · simp [K, hfi, hkfi, hHD]
+  sorry
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 Then the cosets of subgroups of infinite index may be omitted from the covering. -/
