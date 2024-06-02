@@ -92,7 +92,8 @@ variable (v : E)
 @[local instance] lemma instFoo : HasOrthogonalProjection (Submodule.span ℝ {v}) :=
   HasOrthogonalProjection.ofCompleteSpace (Submodule.span ℝ {v})
 
-@[local instance] lemma instOrthogonalProjection : HasOrthogonalProjection (Submodule.span ℝ {v})ᗮ :=
+@[local instance] lemma instOrthogonalProjection :
+    HasOrthogonalProjection (Submodule.span ℝ {v})ᗮ :=
   instHasOrthogonalProjectionOrthogonal (Submodule.span ℝ {v})
 
 /-- Shortcut instance to speed up typeclass search. -/
@@ -261,32 +262,33 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     linarith
   -- the core of the problem is these two algebraic identities:
   have h₁ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * 4 * (2 / (1 - a)) = 1 := by
-    -- field_simp is slow (0,7s), nlinarith call even more (1,4s)
-    field_simp; simp only [Submodule.coe_norm] at *; nlinarith
+    -- field_simp is slow (0,7s), as is nlinarith (0,5s)
+    field_simp; simp only [Submodule.coe_norm] at *; nlinarith only [pythag]
   have h₂ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 - 4) = a := by
-    field_simp -- slow, 0,7s
+    -- field_simp is slow (0,7s), as is nlinarith (0,5s)
+    field_simp
     transitivity (1 - a) ^ 2 * (a * (2 ^ 2 * ‖y‖ ^ 2 + 4 * (1 - a) ^ 2))
     · congr
       simp only [Submodule.coe_norm] at *
-      nlinarith -- really slow, >2s!
+      nlinarith only [pythag]
     ring!
   convert
     congr_arg₂ Add.add (congr_arg (fun t => t • (y : E)) h₁) (congr_arg (fun t => t • v) h₂) using 1
-  · simp [a, inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
-      mul_pow, Real.norm_eq_abs, sq_abs, norm_smul]
+  · simp only [innerSL_apply, norm_smul, norm_div, RCLike.norm_ofNat, Real.norm_eq_abs,
+    Submodule.coe_norm, mul_pow, div_pow, sq_abs, SetLike.val_smul, mul_smul, a]
     -- Porting note: used to be simp only [split, add_comm] but get maxRec errors
     rw [split, add_comm]
     ac_rfl
   -- Porting note: this branch did not exit in ml3
   · rw [split, add_comm]
-    congr!
+    congr
     dsimp
     rw [one_smul]
 #align stereo_left_inv stereo_left_inv
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
   have : 2 / (1 - (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4)) * (‖(w : E)‖ ^ 2 + 4)⁻¹ * 4 = 1 := by
-    field_simp; ring -- field_simp is slow, 1 second!
+    field_simp; ring -- field_simp is slow, 0,8s
   convert congr_arg (· • w) this
   · have h₁ : orthogonalProjection (ℝ ∙ v)ᗮ v = 0 :=
       orthogonalProjection_orthogonalComplement_singleton_eq_zero v
@@ -567,8 +569,8 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   -- Porting note: this `suffices` was a `change`
   suffices
       LinearMap.range (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0) = (ℝ ∙ (v : E))ᗮ by
-    convert this using 3 -- sloooow, 800ms
-    apply stereographic'_neg
+    convert this using 3 -- slow, 800ms
+    apply stereographic'_neg v
   have :
     HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
