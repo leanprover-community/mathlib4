@@ -437,7 +437,7 @@ lemma unit_map_one {X Y : Cᵒᵖ} (f : X ⟶ Y) : (unit R).map f (1 : R.obj X) 
   (R.map f).map_one
 
 -- must be moved, do we have this already?
-/-- If `M` is a module over `A`, then this is the bijection `(A →ₗ[A] M) ≃ M`. -/
+/-- If `M` is a module over `A`, then this is the additive bijection `(A →ₗ[A] M) ≃+ M`. -/
 def _root_.Semiring.toModuleLinearMapAddEquiv
     (A : Type u) [Semiring A] (M : Type v) [AddCommMonoid M] [Module A M] :
     (A →ₗ[A] M) ≃+ M where
