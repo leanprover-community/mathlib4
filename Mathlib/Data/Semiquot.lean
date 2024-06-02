@@ -84,7 +84,7 @@ def blur' (q : Semiquot α) {s : Set α} (h : q.s ⊆ s) : Semiquot α :=
 
 /-- Replace `s` in a `q : Semiquot α` with a union `s ∪ q.s` -/
 def blur (s : Set α) (q : Semiquot α) : Semiquot α :=
-  blur' q (Set.subset_union_right (s:=s) (t:=q.s))
+  blur' q (s.subset_union_right (t := q.s))
 #align semiquot.blur Semiquot.blur
 
 theorem blur_eq_blur' (q : Semiquot α) (s : Set α) (h : q.s ⊆ s) : blur s q = blur' q h := by

@@ -1218,7 +1218,7 @@ theorem DiscreteTopology.preimage_of_continuous_injective {X Y : Type*} [Topolog
     [TopologicalSpace Y] (s : Set Y) [DiscreteTopology s] {f : X → Y} (hc : Continuous f)
     (hinj : Function.Injective f) : DiscreteTopology (f ⁻¹' s) :=
   DiscreteTopology.of_continuous_injective (β := s) (Continuous.restrict
-    (by exact fun _ x ↦ x) hc) ((MapsTo.restrict_inj _).mpr <| injOn_of_injective hinj)
+    (by exact fun _ x ↦ x) hc) ((MapsTo.restrict_inj _).mpr hinj.injOn)
 
 end Subtype
 

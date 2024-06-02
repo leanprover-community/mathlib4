@@ -296,8 +296,8 @@ theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
 
 theorem basisDivisor_add_symm {x y : F} (hxy : x ≠ y) :
     basisDivisor x y + basisDivisor y x = 1 := by
-  classical rw [
-    ← sum_basis (Set.injOn_of_injective Function.injective_id) ⟨x, mem_insert_self _ {y}⟩,
+  classical
+  rw [ ← sum_basis Function.injective_id.injOn ⟨x, mem_insert_self _ {y}⟩,
     sum_insert (not_mem_singleton.mpr hxy), sum_singleton, basis_pair_left hxy,
     basis_pair_right hxy, id, id]
 #align lagrange.basis_divisor_add_symm Lagrange.basisDivisor_add_symm

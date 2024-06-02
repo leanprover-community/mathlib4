@@ -948,7 +948,7 @@ theorem Base.base_of_basis_superset (hB : M.Base B) (hBX : B ⊆ X) (hIX : M.Bas
 
 theorem Indep.exists_base_subset_union_base (hI : M.Indep I) (hB : M.Base B) :
     ∃ B', M.Base B' ∧ I ⊆ B' ∧ B' ⊆ I ∪ B := by
-  obtain ⟨B', hB', hIB'⟩ := hI.subset_basis_of_subset <| subset_union_left (t:=B)
+  obtain ⟨B', hB', hIB'⟩ := hI.subset_basis_of_subset <| subset_union_left (t := B)
   exact ⟨B', hB.base_of_basis_superset subset_union_right hB', hIB', hB'.subset⟩
 
 theorem Basis.inter_eq_of_subset_indep (hIX : M.Basis I X) (hIJ : I ⊆ J) (hJ : M.Indep J) :

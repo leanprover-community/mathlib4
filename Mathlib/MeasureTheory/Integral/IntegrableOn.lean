@@ -164,7 +164,7 @@ theorem IntegrableOn.restrict (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
 
 theorem IntegrableOn.inter_of_restrict (h : IntegrableOn f s (μ.restrict t)) :
     IntegrableOn f (s ∩ t) μ := by
-  have := h.mono_set (inter_subset_left (t:=t))
+  have := h.mono_set (inter_subset_left (t := t))
   rwa [IntegrableOn, μ.restrict_restrict_of_subset inter_subset_right] at this
 
 lemma Integrable.piecewise [DecidablePred (· ∈ s)]

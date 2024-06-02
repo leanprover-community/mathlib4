@@ -2135,8 +2135,7 @@ theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set 
   refine ⟨fun H s hs ↦ by simpa using (mk_le_mk_of_subset hs).trans H, fun H ↦ ?_⟩
   apply card_le_of (fun s ↦ ?_)
   let u : Finset α := s.image Subtype.val
-  have : u.card = s.card :=
-    Finset.card_image_of_injOn <| injOn_of_injective Subtype.coe_injective
+  have : u.card = s.card := Finset.card_image_of_injOn Subtype.coe_injective.injOn
   rw [← this]
   apply H
   simp only [u, Finset.coe_image, image_subset_iff, Subtype.coe_preimage_self, subset_univ]

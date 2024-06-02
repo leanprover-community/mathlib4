@@ -1448,7 +1448,7 @@ theorem Infinite.exists_ne_map_eq_of_mapsTo {s : Set α} {t : Set β} {f : α �
 
 theorem infinite_range_of_injective [Infinite α] {f : α → β} (hi : Injective f) :
     (range f).Infinite := by
-  rw [← image_univ, infinite_image_iff (injOn_of_injective hi)]
+  rw [← image_univ, infinite_image_iff hi.injOn]
   exact infinite_univ
 #align set.infinite_range_of_injective Set.infinite_range_of_injective
 

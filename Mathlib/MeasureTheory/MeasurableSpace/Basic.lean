@@ -1992,7 +1992,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   rintro x hx ⟨y, hy, rfl⟩
   rw [mem_iInter] at hx
   apply hy
-  rw [(injOn_of_injective hf.injective).image_iInter_eq]
+  rw [hf.injective.injOn.image_iInter_eq]
   rw [mem_iInter]
   intro n
   specialize hx n.succ
