@@ -510,6 +510,18 @@ More specifically, the unit `u` such that `W.add P P = u • ![1, 1, 0]` where `
 noncomputable def dblU (P : Fin 3 → R) : R :=
   eval P W'.polynomialX
 
+lemma dblU_eq (P : Fin 3 → R) : W'.dblU P =
+    W'.a₁ * P y * P z - (3 * P x ^ 2 + 2 * W'.a₂ * P x * P z ^ 2 + W'.a₄ * P z ^ 4) := by
+  rw [dblU, eval_polynomialX]
+
+lemma dblU_smul (P : Fin 3 → R) (u : R) : W'.dblU (u • P) = u ^ 4 * W'.dblU P := by
+  simp only [dblU_eq, smul_fin3_ext]
+  ring1
+
+lemma dblU_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) : W'.dblU P = -3 * P x ^ 2 := by
+  rw [dblU_eq, hPz]
+  ring1
+
 lemma dblU_ne_zero_of_Y_eq {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
     (hy' : P y * Q z ^ 3 = W.negY Q * P z ^ 3) : W.dblU P ≠ 0 := by
@@ -565,40 +577,38 @@ private lemma toAffine_slope_of_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hQ :
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = Q x * P z ^ 2)
     (hy : P y * Q z ^ 3 ≠ W.negY Q * P z ^ 3) :
     W.toAffine.slope (P x / P z ^ 2) (Q x / Q z ^ 2) (P y / P z ^ 3) (Q y / Q z ^ 3) =
-      (3 * P x ^ 2 + 2 * W.a₂ * P x * P z ^ 2 + W.a₄ * P z ^ 4 - W.a₁ * P y * P z) / W.dblZ P := by
+      -W.dblU P / W.dblZ P := by
   have hPy : P y - W.negY P ≠ 0 := sub_ne_zero_of_ne <| Y_ne_negY_of_Y_ne' hP hQ hx hy
   simp only [mul_comm <| P z ^ _, ne_eq, ← div_eq_div_iff (pow_ne_zero _ hPz) (pow_ne_zero _ hQz)]
     at hx hy
-  rw [Affine.slope_of_Yne hx <| negY_of_Z_ne_zero hQz ▸ hy, ← negY_of_Z_ne_zero hPz, dblZ]
+  rw [Affine.slope_of_Yne hx <| negY_of_Z_ne_zero hQz ▸ hy, ← negY_of_Z_ne_zero hPz, dblU_eq, dblZ]
   field_simp [pow_ne_zero 2 hPz]
   ring1
 
 variable (W') in
 /-- The $X$-coordinate of the doubling of a point representative. -/
-def dblX (P : Fin 3 → R) : R :=
-  (3 * P x ^ 2 + 2 * W'.a₂ * P x * P z ^ 2 + W'.a₄ * P z ^ 4 - W'.a₁ * P y * P z) ^ 2
-    + W'.a₁ * (3 * P x ^ 2 + 2 * W'.a₂ * P x * P z ^ 2 + W'.a₄ * P z ^ 4 - W'.a₁ * P y * P z) * P z
-      * (P y - W'.negY P)
+noncomputable def dblX (P : Fin 3 → R) : R :=
+  W'.dblU P ^ 2 - W'.a₁ * W'.dblU P * P z * (P y - W'.negY P)
     - W'.a₂ * P z ^ 2 * (P y - W'.negY P) ^ 2 - 2 * P x * (P y - W'.negY P) ^ 2
 
 lemma dblX_smul (P : Fin 3 → R) (u : R) : W'.dblX (u • P) = (u ^ 4) ^ 2 * W'.dblX P := by
-  simp only [dblX, negY_smul, smul_fin3_ext]
+  simp_rw [dblX, dblU_smul, negY_smul, smul_fin3_ext]
   ring1
 
 lemma dblX_of_Z_eq_zero {P : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0) :
     W'.dblX P = (P x ^ 2) ^ 2 := by
-  linear_combination (norm := (rw [dblX, negY_of_Z_eq_zero hPz, hPz]; ring1))
+  linear_combination (norm := (rw [dblX, dblU_of_Z_eq_zero hPz, negY_of_Z_eq_zero hPz, hPz]; ring1))
     -8 * P x * (equation_of_Z_eq_zero hPz).mp hP
 
 lemma dblX_of_Y_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
     (hy' : P y * Q z ^ 3 = W'.negY Q * P z ^ 3) : W'.dblX P = W'.dblU P ^ 2 := by
-  rw [dblX, dblU, eval_polynomialX, Y_eq_negY_of_Y_eq hQz hx hy hy']
+  rw [dblX, Y_eq_negY_of_Y_eq hQz hx hy hy']
   ring1
 
 private lemma toAffine_addX_of_eq {P : Fin 3 → F} {n d : F} (hPz : P z ≠ 0) (hd : d ≠ 0) :
-    W.toAffine.addX (P x / P z ^ 2) (P x / P z ^ 2) (n / (P z * d)) =
-      (n ^ 2 + W.a₁ * n * P z * d - W.a₂ * P z ^ 2 * d ^ 2 - 2 * P x * d ^ 2) / (P z * d) ^ 2 := by
+    W.toAffine.addX (P x / P z ^ 2) (P x / P z ^ 2) (-n / (P z * d)) =
+      (n ^ 2 - W.a₁ * n * P z * d - W.a₂ * P z ^ 2 * d ^ 2 - 2 * P x * d ^ 2) / (P z * d) ^ 2 := by
   field_simp [mul_ne_zero hPz hd]
   ring1
 
@@ -612,32 +622,31 @@ lemma dblX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
 
 variable (W') in
 /-- The $Y$-coordinate of the negated doubling of a point representative. -/
-def negDblY (P : Fin 3 → R) : R :=
-  (3 * P x ^ 2 + 2 * W'.a₂ * P x * P z ^ 2 + W'.a₄ * P z ^ 4 - W'.a₁ * P y * P z)
-      * (W'.dblX P - P x * (P y - W'.negY P) ^ 2) + P y * (P y - W'.negY P) ^ 3
+noncomputable def negDblY (P : Fin 3 → R) : R :=
+  -W'.dblU P * (W'.dblX P - P x * (P y - W'.negY P) ^ 2) + P y * (P y - W'.negY P) ^ 3
 
 lemma negDblY_smul (P : Fin 3 → R) (u : R) : W'.negDblY (u • P) = (u ^ 4) ^ 3 * W'.negDblY P := by
-  simp only [negDblY, dblX_smul, negY_smul, smul_fin3_ext]
+  simp only [negDblY, dblU_smul, dblX_smul, negY_smul, smul_fin3_ext]
   ring1
 
 lemma negDblY_of_Z_eq_zero {P : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0) :
     W'.negDblY P = -(P x ^ 2) ^ 3 := by
-  linear_combination
-    (norm := (rw [negDblY, dblX_of_Z_eq_zero hP hPz, negY_of_Z_eq_zero hPz, hPz]; ring1))
+  linear_combination (norm :=
+      (rw [negDblY, dblU_of_Z_eq_zero hPz, dblX_of_Z_eq_zero hP hPz, negY_of_Z_eq_zero hPz]; ring1))
     (8 * (equation_of_Z_eq_zero hPz).mp hP - 12 * P x ^ 3) * (equation_of_Z_eq_zero hPz).mp hP
 
 lemma negDblY_of_Y_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
     (hy' : P y * Q z ^ 3 = W'.negY Q * P z ^ 3) : W'.negDblY P = (-W'.dblU P) ^ 3 := by
-  rw [negDblY, dblX_of_Y_eq hQz hx hy hy', dblU, eval_polynomialX, Y_eq_negY_of_Y_eq hQz hx hy hy']
+  rw [negDblY, dblX_of_Y_eq hQz hx hy hy', Y_eq_negY_of_Y_eq hQz hx hy hy']
   ring1
 
 private lemma toAffine_addY'_of_eq {P : Fin 3 → F} {n d : F} (hPz : P z ≠ 0) (hd : d ≠ 0) :
-    W.toAffine.addY' (P x / P z ^ 2) (P x / P z ^ 2) (P y / P z ^ 3) (n / (P z * d)) =
-      (n * (n ^ 2 + W.a₁ * n * P z * d - W.a₂ * P z ^ 2 * d ^ 2 - 2 * P x * d ^ 2 - P x * d ^ 2)
+    W.toAffine.addY' (P x / P z ^ 2) (P x / P z ^ 2) (P y / P z ^ 3) (-n / (P z * d)) =
+      (-n * (n ^ 2 - W.a₁ * n * P z * d - W.a₂ * P z ^ 2 * d ^ 2 - 2 * P x * d ^ 2 - P x * d ^ 2)
         + P y * d ^ 3) / (P z * d) ^ 3 := by
   linear_combination (norm := (rw [Affine.addY', toAffine_addX_of_eq hPz hd]; ring1))
-    n * P x / (P z ^ 3 * d) * div_self (pow_ne_zero 2 hd)
+    -n * P x / (P z ^ 3 * d) * div_self (pow_ne_zero 2 hd)
       - P y / P z ^ 3 * div_self (pow_ne_zero 3 hd)
 
 lemma negDblY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
@@ -651,7 +660,7 @@ lemma negDblY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equat
 
 variable (W') in
 /-- The $Y$-coordinate of the doubling of a point representative. -/
-def dblY (P : Fin 3 → R) : R :=
+noncomputable def dblY (P : Fin 3 → R) : R :=
   W'.negY ![W'.dblX P, W'.negDblY P, W'.dblZ P]
 
 lemma dblY_smul (P : Fin 3 → R) (u : R) : W'.dblY (u • P) = (u ^ 4) ^ 3 * W'.dblY P := by
@@ -721,9 +730,22 @@ section Addition
 
 /-! ### Addition formulae -/
 
-/-- The unit `u` such that `W.add P Q = u • ![1, 1, 0]` where `P ≠ W.neg P`. -/
+/-- The unit associated to the addition of a non-2-torsion point with its negation.
+More specifically, the unit `u` such that `W.add P Q = u • ![1, 1, 0]` where
+`P x / P z ^ 2 = Q x / Q z ^ 2` but `P ≠ W.neg P`. -/
 def addU (P Q : Fin 3 → F) : F :=
   -((P y * Q z ^ 3 - Q y * P z ^ 3) / (P z * Q z))
+
+lemma addU_smul {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) {u v : F} (hu : u ≠ 0)
+    (hv : v ≠ 0) : addU (u • P) (v • Q) = (u * v) ^ 2 * addU P Q := by
+  field_simp [addU, smul_fin3_ext]
+  ring1
+
+lemma addU_of_Z_eq_zero_left {P Q : Fin 3 → F} (hPz : P z = 0) : addU P Q = 0 := by
+  rw [addU, hPz, zero_mul, div_zero, neg_zero]
+
+lemma addU_of_Z_eq_zero_right {P Q : Fin 3 → F} (hQz : Q z = 0) : addU P Q = 0 := by
+  rw [addU, hQz, mul_zero, div_zero, neg_zero]
 
 lemma addU_ne_zero_of_Y_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hy : P y * Q z ^ 3 ≠ Q y * P z ^ 3) : addU P Q ≠ 0 :=
