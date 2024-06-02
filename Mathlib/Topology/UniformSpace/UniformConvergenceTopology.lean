@@ -6,6 +6,7 @@ Authors: Anatole Dedecker
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.Equiv
+import Mathlib.Topology.RestrictGenTopology
 
 #align_import topology.uniform_space.uniform_convergence_topology from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
@@ -1056,15 +1057,21 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((
 
 Then the set of continuous functions is closed
 in the topology of uniform convergence on the sets of `𝔖`. -/
+theorem isClosed_setOf_continuous [TopologicalSpace α] (h : RestrictGenTopology 𝔖) :
+    IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} := by
+  refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ h.continuous_iff.2 fun s hs ↦ ?_
+  rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
+  exact (huf s hs).continuousOn <| hu fun _ ↦ Continuous.continuousOn
+
+/-- Suppose that the topology on `α` is defined by its restrictions to the sets of `𝔖`.
+
+Then the set of continuous functions is closed
+in the topology of uniform convergence on the sets of `𝔖`. -/
+@[deprecated isClosed_setOf_continuous]
 theorem isClosed_setOf_continuous_of_le [t : TopologicalSpace α]
     (h : t ≤ ⨆ s ∈ 𝔖, .coinduced (Subtype.val : s → α) inferInstance) :
-    IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} := by
-  refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ ?_
-  rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
-  have hcont : ∀ s ∈ 𝔖, ContinuousOn f s := fun s hs ↦
-    (huf s hs).continuousOn <| hu fun _ ↦ Continuous.continuousOn
-  refine continuous_le_dom h ?_
-  simpa only [continuous_iSup_dom, continuous_coinduced_dom] using fun s hs ↦ (hcont s hs).restrict
+    IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} :=
+  isClosed_setOf_continuous _ ⟨fun u hu ↦ h _ <| by simpa only [isOpen_iSup_iff, isOpen_coinduced]⟩
 
 end UniformOnFun
 
