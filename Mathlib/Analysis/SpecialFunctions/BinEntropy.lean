@@ -77,11 +77,6 @@ lemma binaryEntropy_eq' {p : ℝ} : binaryEntropy p = -p * log p - (1 - p) * log
   simp only [one_div, log_inv]
   field_simp
 
-@[simp] lemma binaryEntropy_onehalf' : binaryEntropy 2⁻¹ = log 2 := by
-  convert binaryEntropy_onehalf
-  ext
-  exact inv_eq_one_div _
-
 /-- `binaryEntropy` is symmetric about 1/2, i.e.,
 
 `binaryEntropy (1 - p) = binaryEntropy q p` -/
@@ -190,12 +185,12 @@ lemma binaryEntropy_one_iff_eq_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) 
       · have := binaryEntropy_lt_one_of_gt_log2 pgthalf ple1
         linarith
       · linarith
-  · simp [h]
+  · simp only [h, binaryEntropy_onehalf]
 
 lemma binaryEntropy_le_log_2 {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) :
     binaryEntropy p ≤ log 2 := by
   by_cases hh: p = 1/2
-  · simp only [one_div, binaryEntropy_onehalf', le_refl, hh]
+  · simp only [hh, binaryEntropy_onehalf, le_refl]
   · by_cases gg: binaryEntropy p = log 2
     · simp only [le_refl, gg]
     · by_cases hhh: p < 1/2
