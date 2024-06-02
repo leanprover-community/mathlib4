@@ -30,7 +30,7 @@ noncomputable def restrictScalarsBundledCore (M' : PresheafOfModules R') (α : R
   obj X := (ModuleCat.restrictScalars (α.app X)).obj (M'.obj X)
   map {X Y} f :=
     { toFun := M'.map f
-      map_add' := by intros; simp only [map_add, map_apply]
+      map_add' := map_add _
       map_smul' := fun r x ↦ by
         have eq := RingHom.congr_fun (α.naturality f) r
         dsimp at eq
