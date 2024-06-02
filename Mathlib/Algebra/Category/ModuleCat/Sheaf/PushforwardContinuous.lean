@@ -6,19 +6,16 @@ Authors: Joël Riou
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
 import Mathlib.CategoryTheory.Sites.CoverPreserving
+import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # Pushforward of sheaves of modules
 
-Assume that `C` and `D` are categories equipped with Grothendieck topologies.
-Let `F : C ⥤ D` be a continuous functor and `R` a sheaf of rings over `D`.
-In this file, we construct a pushforward functor
-`SheafOfModules.{v} R ⥤ SheafOd`.
-
-If `F : C ⥤ D` is a continuous functor, the precomposition `F.op ⋙ _` induces a functor from presheaves
-over `C` to presheaves over `D`. When `R : Dᵒᵖ ⥤ RingCat`, we define the
-induced functor `PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} (F.op ⋙ R)`
-on presheaves of modules.
+Assume that categories `C` and `D` are equipped with Grothendieck topologies, and
+that `F : C ⥤ D` is a continuous functor.
+Then, if `φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R` is
+a morphism of sheaves of rings, we construct the pushforward functor
+`pushforward φ : SheafOfModules.{v} R ⥤ SheafOfModules.{v} S`.
 
 -/
 
@@ -26,11 +23,21 @@ universe v v₁ v₂ u₁ u₂ u
 
 open CategoryTheory
 
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₁} [Category.{v₂} D]
-
 namespace SheafOfModules
 
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₁} [Category.{v₂} D]
+  {J : GrothendieckTopology C} {K : GrothendieckTopology D} {F : C ⥤ D}
+  {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
+  [Functor.IsContinuous.{u} F J K] [Functor.IsContinuous.{v} F J K]
+  (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
 
-
+/-- The pushforward of sheaves of modules that is induced by a continuous functor `F`
+and a morphism of sheaves of rings `φ : S ⟶ (F.sheafPushforwardContinuous RingCat J K).obj R`. -/
+noncomputable def pushforward : SheafOfModules.{v} R ⥤ SheafOfModules.{v} S where
+  obj M :=
+    { val := (PresheafOfModules.pushforward φ.val).obj M.val
+      isSheaf := ((F.sheafPushforwardContinuous _ J K).obj ⟨_, M.isSheaf⟩).cond }
+  map f :=
+    { val :=(PresheafOfModules.pushforward φ.val).map f.val }
 
 end SheafOfModules

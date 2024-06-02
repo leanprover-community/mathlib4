@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
 
 /-!
 # Pushforward of presheaves of modules
@@ -53,8 +53,9 @@ def pushforward₀CompToPresheaf (R : Dᵒᵖ ⥤ RingCat.{u}) :
 variable {F}
 variable {R : Dᵒᵖ ⥤ RingCat.{u}} {S : Cᵒᵖ ⥤ RingCat.{u}} (φ : S ⟶ F.op ⋙ R)
 
-def pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} S := by
-  refine' pushforward₀ F R ⋙ _
-  sorry
+/-- The pushforward functor `PresheafOfModules R ⥤ PresheafOfModules S` induced by
+a morphism of presheaves of rings `S ⟶ F.op ⋙ R`. -/
+noncomputable def pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} S :=
+  pushforward₀ F R ⋙ restrictScalars φ
 
 end PresheafOfModules
