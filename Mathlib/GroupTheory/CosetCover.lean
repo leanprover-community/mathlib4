@@ -214,6 +214,10 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover : ∃ k ∈ s, (H k).Fini
       Subgroup.exists_finiteIndex_of_leftCoset_cover_aux hcovers j hj hcovers'
     exact ⟨i, hi, hfi⟩
 
+example (α : Type*) (β : α → Type*) (x y : (a : α) × (β a))
+  (h : x = y) : x.1 = y.1 := by
+  exact congrArg Sigma.fst h
+
 -- Auxiliary to `leftCoset_cover_filter_FiniteIndex` and `one_le_sum_inv_index_of_leftCoset_cover`.
 @[to_additive]
 theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux
@@ -221,7 +225,7 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux
     (⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ) ∧
       (1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹) ∧
       (∑ i ∈ s, ((H i).index : ℚ)⁻¹ = 1 → Set.PairwiseDisjoint
-        (s.filter (fun i => (H i).FiniteIndex)) (fun i ↦ (H i : Set G))) := by
+        (s.filter (fun i => (H i).FiniteIndex)) (fun i ↦ g i • (H i : Set G))) := by
   classical
   let D := ⨅ k ∈ s.filter (fun i => (H i).FiniteIndex), H k
   -- `D`, as the finite intersection of subgroups of finite index, also has finite index.
@@ -315,6 +319,13 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux
       exact hD.finiteIndex
   · rw [nsmul_eq_mul, mul_inv_eq_one₀ ?_]
     simp only [Nat.cast_inj, Finset.coe_filter]
+    /- we know the (f k) • (K k) are pairwise disjoint an need to prove
+      that the (g i) • (H i) are pairwise disjoint as well
+      x in (g i) • (H i) and in (g j) • (H j), for i ≠ j
+      x = (g i) * y, y ∈ H i
+      y ∈ r • (K k), k = i
+      is some f k • K k,
+    -/
     · intro h
       intro i hi j hj hij
       simp only [Set.mem_setOf_eq] at hi hj
@@ -324,34 +335,32 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux
       simp only [Set.le_eq_subset] at hi' hj'
       replace hi' := hi' hx
       replace hj' := hj' hx
+      simp only [Set.mem_smul_set_iff_inv_smul_mem] at hi' hj'
       rw [← (ht i hi.1 hi.2).2] at hi'
       rw [← (ht j hj.1 hj.2).2] at hj'
+      simp only [smul_eq_mul, Set.mem_iUnion, exists_prop, Subtype.exists, exists_and_right] at hi' hj'
+      obtain ⟨r, ⟨hir, hr⟩, hrx⟩ := hi'
+      obtain ⟨s, ⟨hjs, hs⟩, hsx⟩ := hj'
+      rw [← smul_eq_mul, ← Set.mem_smul_set_iff_inv_smul_mem, ← mul_smul] at hrx hsx
+
 --      have := Subgroup.mem_leftTransversals_iff_existsUnique_inv_mul_mem.mp (ht i hi.1 hi.2).1
-      simp only [Set.mem_iUnion, exists_prop, Subtype.exists, exists_and_right] at hi' hj'
-      obtain ⟨s, ⟨hs, hxs⟩, hx⟩ := hi'
-      obtain ⟨r, ⟨hr, hxr⟩, hx'⟩ := hj'
       unfold Set.PairwiseDisjoint at this
       unfold Set.Pairwise at this
       unfold Disjoint at this
-      let i' : κ := ⟨⟨i, hi.1⟩, ⟨⟨s, hs⟩, ?_⟩⟩
-      let j' : κ := ⟨⟨j, hj.1⟩, ⟨⟨r, hr⟩, ?_⟩⟩
-      replace this := this (x :=i') (y := j') ?_ ?_ ?_
+      let i' : κ := ⟨⟨i, hi.1⟩, ⟨⟨r, hir⟩, by rw [dif_pos hi.2]; exact hr⟩⟩
+      let j' : κ := ⟨⟨j, hj.1⟩, ⟨⟨s, hjs⟩, by rw [dif_pos hj.2]; exact hs⟩⟩
+      replace this := this (x := i') (y := j') ?_ ?_ ?_
       replace this := this (x := {x})
       simp only [Set.le_eq_subset, Set.singleton_subset_iff] at this
-      apply this
-
-
-
-
-
-
-      sorry
-      sorry
-      sorry
-      sorry
-      sorry
-      sorry
-      sorry
+      exact this hrx hsx
+      · simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq]
+        simp only [K, if_pos hi.2]
+      · simp only [Finset.coe_filter, Finset.mem_univ, true_and, Set.mem_setOf_eq]
+        simp only [K, if_pos hj.2]
+      · simp [ne_eq, i', j']
+        intro H
+        rw [Sigma.mk.inj_iff, Subtype.mk.injEq] at H
+        exact hij H.1
     · simpa only [ne_eq, Nat.cast_eq_zero] using hD.finiteIndex
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
@@ -368,7 +377,18 @@ sum of the inverses of the indexes of the subgroups `H i` is greater than or equ
 theorem Subgroup.one_le_sum_inv_index_of_leftCoset_cover :
     1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ :=
   have := Classical.decPred (Subgroup.FiniteIndex : Subgroup G → Prop)
-  (Subgroup.leftCoset_cover_filter_FiniteIndex_aux hcovers).2
+  (Subgroup.leftCoset_cover_filter_FiniteIndex_aux hcovers).2.1
+
+/-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
+  If the sum of the inverses of the indexes of the subgroups `H i` is equal to 1,
+  then the cosets of the subgroups of finite index are pairwise disjoint -/
+@[to_additive]
+theorem Subgroup.pairwiseDisjoint_leftCoset_cover_of_sum_inv_index_eq_one
+    [DecidablePred (Subgroup.FiniteIndex : Subgroup G → Prop)]
+    (hind : ∑ i ∈ s, ((H i).index : ℚ)⁻¹ = 1) :
+    Set.PairwiseDisjoint (s.filter (fun i => (H i).FiniteIndex))
+      (fun i ↦ g i • (H i : Set G)) :=
+  (leftCoset_cover_filter_FiniteIndex_aux hcovers).2.2 hind
 
 /-- B. H. Neumann Lemma :
 If a finite family of cosets of subgroups covers the group, then at least one
