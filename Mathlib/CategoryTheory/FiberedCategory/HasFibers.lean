@@ -100,35 +100,33 @@ When the user does not wish to supply specific fiber categories, this will be th
 def Fiber.comp_const_nat (p : 𝒳 ⥤ 𝒮) (S : 𝒮) : (FiberInclusion p S) ⋙ p ≅ (const (Fiber p S)).obj S where
   hom := {
     app := fun x => eqToHom x.prop
-    naturality := fun x y φ => by simpa using φ.prop.3.1}
+    naturality := fun x y φ => by simpa using (commSq p (𝟙 S) φ.val).w}
   inv := {
     app := fun x => eqToHom (x.prop).symm
-    naturality := fun x y φ => by
-      -- TODO OPTIMIZE PROOF (could be solved by simp!!). probably need extra api to simplify
-      simp only [const_obj_obj, comp_obj, FiberInclusion_obj, const_obj_map, id_comp, Functor.comp_map, FiberInclusion_map]
-      rw [←eqToHom_comp_iff, comp_eqToHom_iff, φ.2.3.1, comp_id] }
+    naturality := fun x y φ =>  by
+      -- TODO: add this have into API?
+      have := by simpa [comp_eqToHom_iff] using (commSq p (𝟙 S) φ.val).w
+      simp [this] }
 
 lemma Fiber.comp_const (p : 𝒳 ⥤ 𝒮) (S : 𝒮) : (FiberInclusion p S) ⋙ p = (const (Fiber p S)).obj S := by
-  -- TODO OPTIMIZE PROOF
   apply Functor.ext_of_iso (Fiber.comp_const_nat p S)
-  intro x
-  simp only [comp_const_nat]
-  intro x
-  simp only [comp_obj, FiberInclusion_obj, x.2, const_obj_obj]
+  all_goals intro x; simp [comp_const_nat, x.2]
 
 @[default_instance]
 instance HasFibers.canonical (p : 𝒳 ⥤ 𝒮) : HasFibers p where
   Fib := Fiber p
   ι := FiberInclusion p
   comp_const := Fiber.comp_const p
-  equiv := fun S => {
-    inverse :=  𝟭 (Fiber p S)
-    unitIso := {
-      hom := { app := fun x => ⟨𝟙 x.1, IsHomLift.id x.2⟩ }
-      inv := { app := fun x => ⟨𝟙 x.1, IsHomLift.id x.2⟩ } }
-    counitIso := {
-      hom := { app := fun x => ⟨𝟙 x.1, IsHomLift.id x.2⟩}
-      inv := { app := fun x => ⟨𝟙 x.1, IsHomLift.id x.2⟩} } }
+  equiv S := by sorry -- could this be simp + inferinstance??
+
+  -- fun S => {
+  --   inverse :=  𝟭 (Fiber p S)
+  --   unitIso := {
+  --     hom := { app := fun x => ⟨𝟙 x.1, IsHomLift.id x.2⟩ }
+  --     inv := { app := fun x => ⟨𝟙 x.1, IsHomLift.id x.2⟩ } }
+  --   counitIso := {
+  --     hom := { app := fun x => ⟨𝟙 x.1, IsHomLift.id x.2⟩}
+  --     inv := { app := fun x => ⟨𝟙 x.1, IsHomLift.id x.2⟩} } }
 
 /-- A version of fullness of the functor `Fib S ⥤ Fiber p S` that can be used inside the category `𝒳` -/
 lemma HasFibersFull {p : 𝒳 ⥤ 𝒮} [hp : HasFibers p] {S : 𝒮} {a b : hp.Fib S} {φ : (hp.ι S).obj a ⟶ (hp.ι S).obj b}
