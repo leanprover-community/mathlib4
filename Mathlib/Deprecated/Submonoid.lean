@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Deprecated.Group
 
@@ -30,8 +30,6 @@ of `M`. The bundled variant `Submonoid M` should be used in preference to this.
 Submonoid, Submonoids, IsSubmonoid
 -/
 
-
-open BigOperators
 
 variable {M : Type*} [Monoid M] {s : Set M}
 variable {A : Type*} [AddMonoid A] {t : Set A}
@@ -259,7 +257,7 @@ of the submonoid. -/
       "The sum of elements of an `AddSubmonoid` of an `AddCommMonoid` indexed by
       a `Finset` is an element of the `AddSubmonoid`."]
 theorem finset_prod_mem {M A} [CommMonoid M] {s : Set M} (hs : IsSubmonoid s) (f : A → M) :
-    ∀ t : Finset A, (∀ b ∈ t, f b ∈ s) → (∏ b in t, f b) ∈ s
+    ∀ t : Finset A, (∀ b ∈ t, f b ∈ s) → (∏ b ∈ t, f b) ∈ s
   | ⟨m, hm⟩, _ => multiset_prod_mem hs _ (by simpa)
 #align is_submonoid.finset_prod_mem IsSubmonoid.finset_prod_mem
 #align is_add_submonoid.finset_sum_mem IsAddSubmonoid.finset_sum_mem

@@ -421,7 +421,7 @@ private theorem coprime_sq_sub_sq_sum_of_odd_odd {m n : ℤ} (h : Int.gcd m n = 
   have h3 : ((m0 * 2 + 1) ^ 2 - (n0 * 2 + 1) ^ 2) / 2 % 2 = 0 := by
     rw [h2, Int.mul_ediv_cancel_left, Int.mul_emod_right]
     decide
-  refine' ⟨⟨_, h1⟩, ⟨_, h2⟩, h3, _⟩
+  refine ⟨⟨_, h1⟩, ⟨_, h2⟩, h3, ?_⟩
   have h20 : (2 : ℤ) ≠ 0 := by decide
   rw [h1, h2, Int.mul_ediv_cancel_left _ h20, Int.mul_ediv_cancel_left _ h20]
   by_contra h4
@@ -498,15 +498,11 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
     norm_cast
     apply Rat.den_nz q
   have hq2 : q = n / m := (Rat.num_div_den q).symm
-  have hm2n2 : 0 < m ^ 2 + n ^ 2 := by
-    apply lt_add_of_pos_of_le _ (sq_nonneg n)
-    exact lt_of_le_of_ne (sq_nonneg m) (Ne.symm (pow_ne_zero 2 hm0))
-  have hm2n20 : (m : ℚ) ^ 2 + (n : ℚ) ^ 2 ≠ 0 := by
-    norm_cast
-    simpa only [Int.coe_nat_pow] using ne_of_gt hm2n2
+  have hm2n2 : 0 < m ^ 2 + n ^ 2 := by positivity
+  have hm2n20 : (m ^ 2 + n ^ 2 : ℚ) ≠ 0 := by positivity
   have hx1 {j k : ℚ} (h₁ : k ≠ 0) (h₂ : k ^ 2 + j ^ 2 ≠ 0) :
-      (1 - (j / k) ^ 2) / (1 + (j / k) ^ 2) = (k ^ 2 - j ^ 2) / (k ^ 2 + j ^ 2) :=
-    by field_simp
+      (1 - (j / k) ^ 2) / (1 + (j / k) ^ 2) = (k ^ 2 - j ^ 2) / (k ^ 2 + j ^ 2) := by
+    field_simp
   have hw2 : w = ((m : ℚ) ^ 2 - (n : ℚ) ^ 2) / ((m : ℚ) ^ 2 + (n : ℚ) ^ 2) := by
     calc
       w = (1 - q ^ 2) / (1 + q ^ 2) := by apply ht4.2
@@ -610,12 +606,12 @@ theorem coprime_classification :
     obtain ⟨m, n, H⟩ := h.left.isPrimitiveClassified_of_coprime h.right
     use m, n
     rcases H with ⟨⟨rfl, rfl⟩ | ⟨rfl, rfl⟩, co, pp⟩
-    · refine' ⟨Or.inl ⟨rfl, rfl⟩, _, co, pp⟩
+    · refine ⟨Or.inl ⟨rfl, rfl⟩, ?_, co, pp⟩
       have : z ^ 2 = (m ^ 2 + n ^ 2) ^ 2 := by
         rw [sq, ← h.left.eq]
         ring
       simpa using eq_or_eq_neg_of_sq_eq_sq _ _ this
-    · refine' ⟨Or.inr ⟨rfl, rfl⟩, _, co, pp⟩
+    · refine ⟨Or.inr ⟨rfl, rfl⟩, ?_, co, pp⟩
       have : z ^ 2 = (m ^ 2 + n ^ 2) ^ 2 := by
         rw [sq, ← h.left.eq]
         ring
@@ -693,12 +689,12 @@ theorem classification :
     obtain ⟨k, m, n, H⟩ := h.classified
     use k, m, n
     rcases H with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
-    · refine' ⟨Or.inl ⟨rfl, rfl⟩, _⟩
+    · refine ⟨Or.inl ⟨rfl, rfl⟩, ?_⟩
       have : z ^ 2 = (k * (m ^ 2 + n ^ 2)) ^ 2 := by
         rw [sq, ← h.eq]
         ring
       simpa using eq_or_eq_neg_of_sq_eq_sq _ _ this
-    · refine' ⟨Or.inr ⟨rfl, rfl⟩, _⟩
+    · refine ⟨Or.inr ⟨rfl, rfl⟩, ?_⟩
       have : z ^ 2 = (k * (m ^ 2 + n ^ 2)) ^ 2 := by
         rw [sq, ← h.eq]
         ring

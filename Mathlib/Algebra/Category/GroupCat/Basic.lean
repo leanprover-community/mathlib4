@@ -512,7 +512,7 @@ instance GroupCat.forget_reflects_isos : (forget GroupCat.{u}).ReflectsIsomorphi
   reflects {X Y} f _ := by
     let i := asIso ((forget GroupCat).map f)
     let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _ }
-    exact IsIso.of_iso e.toGroupCatIso
+    exact e.toGroupCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align Group.forget_reflects_isos GroupCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
@@ -523,7 +523,7 @@ instance CommGroupCat.forget_reflects_isos : (forget CommGroupCat.{u}).ReflectsI
   reflects {X Y} f _ := by
     let i := asIso ((forget CommGroupCat).map f)
     let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _}
-    exact IsIso.of_iso e.toCommGroupCatIso
+    exact e.toCommGroupCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget_reflects_isos CommGroupCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
@@ -548,3 +548,21 @@ abbrev CommGroupCatMax.{u1, u2} := CommGroupCat.{max u1 u2}
 /-- An alias for `AddCommGroupCat.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]
 abbrev AddCommGroupCatMax.{u1, u2} := AddCommGroupCat.{max u1 u2}
+
+/-!
+`@[simp]` lemmas for `MonoidHom.comp` and categorical identities.
+-/
+
+@[to_additive (attr := simp)] theorem MonoidHom.comp_id_groupCat
+    {G : GroupCat.{u}} {H : Type u} [Group H] (f : G →* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (GroupCat.ofHom f)
+@[to_additive (attr := simp)] theorem MonoidHom.id_groupCat_comp
+    {G : Type u} [Group G] {H : GroupCat.{u}} (f : G →* H) : MonoidHom.comp (𝟙 H) f = f :=
+  Category.comp_id (GroupCat.ofHom f)
+
+@[to_additive (attr := simp)] theorem MonoidHom.comp_id_commGroupCat
+    {G : CommGroupCat.{u}} {H : Type u} [CommGroup H] (f : G →* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (CommGroupCat.ofHom f)
+@[to_additive (attr := simp)] theorem MonoidHom.id_commGroupCat_comp
+    {G : Type u} [CommGroup G] {H : CommGroupCat.{u}} (f : G →* H) : MonoidHom.comp (𝟙 H) f = f :=
+  Category.comp_id (CommGroupCat.ofHom f)

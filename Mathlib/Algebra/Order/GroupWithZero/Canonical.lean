@@ -8,6 +8,7 @@ import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.Group.Units
+import Mathlib.Algebra.Order.GroupWithZero.Synonym
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.TypeTags
@@ -154,8 +155,9 @@ theorem mul_inv_le_iff₀ (hc : c ≠ 0) : a * c⁻¹ ≤ b ↔ a ≤ b * c :=
   ⟨fun h ↦ inv_inv c ▸ le_mul_inv_of_mul_le (inv_ne_zero hc) h, mul_inv_le_of_le_mul⟩
 #align mul_inv_le_iff₀ mul_inv_le_iff₀
 
-theorem div_le_div₀ (a b c d : α) (hb : b ≠ 0) (hd : d ≠ 0) : a * b⁻¹ ≤ c * d⁻¹ ↔ a * d ≤ c * b :=
-  by rw [mul_inv_le_iff₀ hb, mul_right_comm, le_mul_inv_iff₀ hd]
+theorem div_le_div₀ (a b c d : α) (hb : b ≠ 0) (hd : d ≠ 0) :
+    a * b⁻¹ ≤ c * d⁻¹ ↔ a * d ≤ c * b := by
+  rw [mul_inv_le_iff₀ hb, mul_right_comm, le_mul_inv_iff₀ hd]
 #align div_le_div₀ div_le_div₀
 
 @[simp]

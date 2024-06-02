@@ -27,8 +27,6 @@ This file lifts order structures on `α` to `ι →₀ α`.
 
 noncomputable section
 
-open BigOperators
-
 open Finset
 
 variable {ι α β : Type*}

@@ -180,7 +180,7 @@ instance forgetReflectIsos : (forget SemiRingCat).ReflectsIsomorphisms where
     let i := asIso ((forget SemiRingCat).map f)
     let ff : X →+* Y := f
     let e : X ≃+* Y := { ff, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toSemiRingCatIso).1⟩
+    exact e.toSemiRingCatIso.isIso_hom
 
 end SemiRingCat
 
@@ -464,7 +464,7 @@ instance forgetReflectIsos : (forget CommSemiRingCat).ReflectsIsomorphisms where
     let i := asIso ((forget CommSemiRingCat).map f)
     let ff : X →+* Y := f
     let e : X ≃+* Y := { ff, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toSemiRingCatIso).1⟩
+    exact ⟨e.toSemiRingCatIso.isIso_hom.1⟩
 
 end CommSemiRingCat
 
@@ -703,7 +703,7 @@ instance RingCat.forget_reflects_isos : (forget RingCat.{u}).ReflectsIsomorphism
     let i := asIso ((forget RingCat).map f)
     let ff : X →+* Y := f
     let e : X ≃+* Y := { ff, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toRingCatIso).1⟩
+    exact e.toRingCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align Ring.forget_reflects_isos RingCat.forget_reflects_isos
 
@@ -712,7 +712,7 @@ instance CommRingCat.forget_reflects_isos : (forget CommRingCat.{u}).ReflectsIso
     let i := asIso ((forget CommRingCat).map f)
     let ff : X →+* Y := f
     let e : X ≃+* Y := { ff, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toCommRingCatIso).1⟩
+    exact e.toCommRingCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align CommRing.forget_reflects_isos CommRingCat.forget_reflects_isos
 
@@ -735,3 +735,36 @@ set_option linter.uppercaseLean3 false in
 attribute [local instance] reflectsIsomorphisms_forget₂
 
 example : (forget₂ RingCat AddCommGroupCat).ReflectsIsomorphisms := by infer_instance
+
+/-!
+`@[simp]` lemmas for `RingHom.comp` and categorical identities.
+-/
+
+@[simp] theorem RingHom.comp_id_semiringCat
+    {G : SemiRingCat.{u}} {H : Type u} [Semiring H] (f : G →+* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (SemiRingCat.ofHom f)
+@[simp] theorem RingHom.id_semiringCat_comp
+    {G : Type u} [Semiring G] {H : SemiRingCat.{u}} (f : G →+* H) : RingHom.comp (𝟙 H) f = f :=
+  Category.comp_id (SemiRingCat.ofHom f)
+
+@[simp] theorem RingHom.comp_id_commSemiringCat
+    {G : CommSemiRingCat.{u}} {H : Type u} [CommSemiring H] (f : G →+* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (CommSemiRingCat.ofHom f)
+@[simp] theorem RingHom.id_commSemiringCat_comp
+    {G : Type u} [CommSemiring G] {H : CommSemiRingCat.{u}} (f : G →+* H) :
+    RingHom.comp (𝟙 H) f = f :=
+  Category.comp_id (CommSemiRingCat.ofHom f)
+
+@[simp] theorem RingHom.comp_id_ringCat
+    {G : RingCat.{u}} {H : Type u} [Ring H] (f : G →+* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (RingCat.ofHom f)
+@[simp] theorem RingHom.id_ringCat_comp
+    {G : Type u} [Ring G] {H : RingCat.{u}} (f : G →+* H) : RingHom.comp (𝟙 H) f = f :=
+  Category.comp_id (RingCat.ofHom f)
+
+@[simp] theorem RingHom.comp_id_commRingCat
+    {G : CommRingCat.{u}} {H : Type u} [CommRing H] (f : G →+* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (CommRingCat.ofHom f)
+@[simp] theorem RingHom.id_commRingCat_comp
+    {G : Type u} [CommRing G] {H : CommRingCat.{u}} (f : G →+* H) : RingHom.comp (𝟙 H) f = f :=
+  Category.comp_id (CommRingCat.ofHom f)

@@ -132,7 +132,7 @@ variable [∀ i, PartialOrder (α i)]
 
 theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
   intro a b h
-  refine' le_of_lt_or_eq (or_iff_not_imp_right.2 fun hne ↦ _)
+  refine le_of_lt_or_eq (or_iff_not_imp_right.2 fun hne ↦ ?_)
   classical
   exact ⟨Finset.min' _ (nonempty_neLocus_iff.2 hne),
     fun j hj ↦ not_mem_neLocus.1 fun h ↦ (Finset.min'_le _ _ h).not_lt hj,

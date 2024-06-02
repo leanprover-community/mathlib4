@@ -23,7 +23,7 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 -/
 
 
-open BigOperators Finset Matrix
+open Finset Matrix
 
 namespace SimpleGraph
 
@@ -50,7 +50,7 @@ theorem degMatrix_mulVec_apply [NonAssocSemiring R] (v : V) (vec : V → R) :
   rw [degMatrix, mulVec_diagonal]
 
 theorem lapMatrix_mulVec_apply [NonAssocRing R] (v : V) (vec : V → R) :
-    (G.lapMatrix R).mulVec vec v = G.degree v * vec v - ∑ u in G.neighborFinset v, vec u := by
+    (G.lapMatrix R).mulVec vec v = G.degree v * vec v - ∑ u ∈ G.neighborFinset v, vec u := by
   simp_rw [lapMatrix, sub_mulVec, Pi.sub_apply, degMatrix_mulVec_apply, adjMatrix_mulVec_apply]
 
 theorem lapMatrix_mulVec_const_eq_zero [Ring R] : mulVec (G.lapMatrix R) (fun _ ↦ 1) = 0 := by

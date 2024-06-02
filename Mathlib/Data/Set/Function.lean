@@ -1303,8 +1303,8 @@ theorem invFunOn_eq (h : ∃ a ∈ s, f a = b) : f (invFunOn f s b) = b :=
   (invFunOn_pos h).right
 #align function.inv_fun_on_eq Function.invFunOn_eq
 
-theorem invFunOn_neg (h : ¬∃ a ∈ s, f a = b) : invFunOn f s b = Classical.choice ‹Nonempty α› :=
-  by rw [invFunOn, dif_neg h]
+theorem invFunOn_neg (h : ¬∃ a ∈ s, f a = b) : invFunOn f s b = Classical.choice ‹Nonempty α› := by
+  rw [invFunOn, dif_neg h]
 #align function.inv_fun_on_neg Function.invFunOn_neg
 
 @[simp]
@@ -1591,8 +1591,8 @@ theorem apply_piecewise {δ' : α → Sort*} (h : ∀ i, δ i → δ' i) {x : α
 theorem apply_piecewise₂ {δ' δ'' : α → Sort*} (f' g' : ∀ i, δ' i) (h : ∀ i, δ i → δ' i → δ'' i)
     {x : α} :
     h x (s.piecewise f g x) (s.piecewise f' g' x) =
-      s.piecewise (fun x => h x (f x) (f' x)) (fun x => h x (g x) (g' x)) x :=
-  by by_cases hx : x ∈ s <;> simp [hx]
+      s.piecewise (fun x => h x (f x) (f' x)) (fun x => h x (g x) (g' x)) x := by
+  by_cases hx : x ∈ s <;> simp [hx]
 #align set.apply_piecewise₂ Set.apply_piecewise₂
 
 theorem piecewise_op {δ' : α → Sort*} (h : ∀ i, δ i → δ' i) :

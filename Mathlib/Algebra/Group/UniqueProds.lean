@@ -458,8 +458,8 @@ open UniqueMul in
     obtain ⟨ai, hA, bi, hB, hi⟩ := uniqueMul_of_nonempty (hA.image (· i)) (hB.image (· i))
     rw [mem_image, ← filter_nonempty_iff] at hA hB
     let A' := A.filter (· i = ai); let B' := B.filter (· i = bi)
-    obtain ⟨a0, ha0, b0, hb0, hu⟩ : ∃ a0 ∈ A', ∃ b0 ∈ B', UniqueMul A' B' a0 b0
-    · rcases hc with hc | hc; · exact ihA A' (hc.2 ai) hA hB
+    obtain ⟨a0, ha0, b0, hb0, hu⟩ : ∃ a0 ∈ A', ∃ b0 ∈ B', UniqueMul A' B' a0 b0 := by
+      rcases hc with hc | hc; · exact ihA A' (hc.2 ai) hA hB
       by_cases hA' : A' = A
       · rw [hA']
         exact ihB B' (hc.2 bi) hB

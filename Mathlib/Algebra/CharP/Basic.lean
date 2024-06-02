@@ -19,8 +19,6 @@ universe u v
 
 open Finset
 
-open BigOperators
-
 variable {R : Type*}
 
 namespace Commute
@@ -30,22 +28,22 @@ variable [Semiring R] {p : ℕ} {x y : R}
 protected theorem add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ) :
     (x + y) ^ p ^ n =
       x ^ p ^ n + y ^ p ^ n +
-        p * ∑ k in Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) := by
-  trans x ^ p ^ n + y ^ p ^ n + ∑ k in Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * (p ^ n).choose k
+        p * ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) := by
+  trans x ^ p ^ n + y ^ p ^ n + ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * (p ^ n).choose k
   · simp_rw [h.add_pow, ← Nat.Ico_zero_eq_range, Nat.Ico_succ_right, Icc_eq_cons_Ico (zero_le _),
       Finset.sum_cons, Ico_eq_cons_Ioo (pow_pos hp.pos _), Finset.sum_cons, tsub_self, tsub_zero,
       pow_zero, Nat.choose_zero_right, Nat.choose_self, Nat.cast_one, mul_one, one_mul, ← add_assoc]
   · congr 1
     simp_rw [Finset.mul_sum, Nat.cast_comm, mul_assoc _ _ (p : R), ← Nat.cast_mul]
-    refine' Finset.sum_congr rfl fun i hi => _
+    refine Finset.sum_congr rfl fun i hi => ?_
     rw [mem_Ioo] at hi
     rw [Nat.div_mul_cancel (hp.dvd_choose_pow hi.1.ne' hi.2.ne)]
 #align commute.add_pow_prime_pow_eq Commute.add_pow_prime_pow_eq
 
 protected theorem add_pow_prime_eq (hp : p.Prime) (h : Commute x y) :
     (x + y) ^ p =
-      x ^ p + y ^ p + p * ∑ k in Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) :=
-  by simpa using h.add_pow_prime_pow_eq hp 1
+      x ^ p + y ^ p + p * ∑ k ∈ Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) := by
+  simpa using h.add_pow_prime_pow_eq hp 1
 #align commute.add_pow_prime_eq Commute.add_pow_prime_eq
 
 protected theorem exists_add_pow_prime_pow_eq (hp : p.Prime) (h : Commute x y) (n : ℕ) :
@@ -67,13 +65,13 @@ variable [CommSemiring R] {p : ℕ} {x y : R}
 theorem add_pow_prime_pow_eq (hp : p.Prime) (x y : R) (n : ℕ) :
     (x + y) ^ p ^ n =
       x ^ p ^ n + y ^ p ^ n +
-        p * ∑ k in Finset.Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) :=
+        p * ∑ k ∈ Finset.Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) :=
   (Commute.all x y).add_pow_prime_pow_eq hp n
 #align add_pow_prime_pow_eq add_pow_prime_pow_eq
 
 theorem add_pow_prime_eq (hp : p.Prime) (x y : R) :
     (x + y) ^ p =
-      x ^ p + y ^ p + p * ∑ k in Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) :=
+      x ^ p + y ^ p + p * ∑ k ∈ Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) :=
   (Commute.all x y).add_pow_prime_eq hp
 #align add_pow_prime_eq add_pow_prime_eq
 

@@ -713,7 +713,7 @@ theorem bot_pow {n : ℕ} (hn : n ≠ 0) : (⊥ : Filter α) ^ n = ⊥ := by
 
 @[to_additive]
 theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ := by
-  refine' top_le_iff.1 fun s => _
+  refine top_le_iff.1 fun s => ?_
   simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
   rintro ⟨t, ht, hs⟩
   rwa [mul_univ_of_one_mem (mem_one.1 <| hf ht), univ_subset_iff] at hs
@@ -722,7 +722,7 @@ theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ := by
 
 @[to_additive]
 theorem top_mul_of_one_le (hf : 1 ≤ f) : ⊤ * f = ⊤ := by
-  refine' top_le_iff.1 fun s => _
+  refine top_le_iff.1 fun s => ?_
   simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
   rintro ⟨t, ht, hs⟩
   rwa [univ_mul_of_one_mem (mem_one.1 <| hf ht), univ_subset_iff] at hs
@@ -766,12 +766,12 @@ variable [DivisionMonoid α] {f g : Filter α}
 
 @[to_additive]
 protected theorem mul_eq_one_iff : f * g = 1 ↔ ∃ a b, f = pure a ∧ g = pure b ∧ a * b = 1 := by
-  refine' ⟨fun hfg => _, _⟩
+  refine ⟨fun hfg => ?_, ?_⟩
   · obtain ⟨t₁, h₁, t₂, h₂, h⟩ : (1 : Set α) ∈ f * g := hfg.symm.subst one_mem_one
     have hfg : (f * g).NeBot := hfg.symm.subst one_neBot
     rw [(hfg.nonempty_of_mem <| mul_mem_mul h₁ h₂).subset_one_iff, Set.mul_eq_one_iff] at h
     obtain ⟨a, b, rfl, rfl, h⟩ := h
-    refine' ⟨a, b, _, _, h⟩
+    refine ⟨a, b, ?_, ?_, h⟩
     · rwa [← hfg.of_mul_left.le_pure_iff, le_pure_iff]
     · rwa [← hfg.of_mul_right.le_pure_iff, le_pure_iff]
   · rintro ⟨a, b, rfl, rfl, h⟩
@@ -798,7 +798,7 @@ theorem isUnit_iff : IsUnit f ↔ ∃ a, f = pure a ∧ IsUnit a := by
   constructor
   · rintro ⟨u, rfl⟩
     obtain ⟨a, b, ha, hb, h⟩ := Filter.mul_eq_one_iff.1 u.mul_inv
-    refine' ⟨a, ha, ⟨a, b, h, pure_injective _⟩, rfl⟩
+    refine ⟨a, ha, ⟨a, b, h, pure_injective ?_⟩, rfl⟩
     rw [← pure_mul_pure, ← ha, ← hb]
     exact u.inv_mul
   · rintro ⟨a, rfl, ha⟩
@@ -876,7 +876,7 @@ variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α �
 -- Porting note: increase priority to appease `simpNF` so left-hand side doesn't simplify
 @[to_additive (attr := simp 1100)]
 protected theorem one_le_div_iff : 1 ≤ f / g ↔ ¬Disjoint f g := by
-  refine' ⟨fun h hfg => _, _⟩
+  refine ⟨fun h hfg => ?_, ?_⟩
   · obtain ⟨s, hs, t, ht, hst⟩ := hfg.le_bot (mem_bot : ∅ ∈ ⊥)
     exact Set.one_mem_div_iff.1 (h <| div_mem_div hs ht) (disjoint_iff.2 hst.symm)
   · rintro h s ⟨t₁, h₁, t₂, h₂, hs⟩
@@ -1315,7 +1315,7 @@ instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α 
 instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Filter β) (Filter γ) :=
   ⟨fun a f g => by
-    refine' (map_map₂_distrib_left fun _ _ => _).symm
+    refine (map_map₂_distrib_left fun _ _ => ?_).symm
     exact (smul_assoc a _ _).symm⟩
 #align filter.is_scalar_tower' Filter.isScalarTower'
 #align filter.vadd_assoc_class' Filter.vaddAssocClass'
@@ -1397,9 +1397,9 @@ theorem NeBot.zero_smul_nonneg (hg : g.NeBot) : 0 ≤ (0 : Filter α) • g :=
 #align filter.ne_bot.zero_smul_nonneg Filter.NeBot.zero_smul_nonneg
 
 theorem zero_smul_filter_nonpos : (0 : α) • g ≤ 0 := by
-  refine' fun s hs => mem_smul_filter.2 _
+  refine fun s hs => mem_smul_filter.2 ?_
   convert @univ_mem _ g
-  refine' eq_univ_iff_forall.2 fun a => _
+  refine eq_univ_iff_forall.2 fun a => ?_
   rwa [mem_preimage, zero_smul]
 #align filter.zero_smul_filter_nonpos Filter.zero_smul_filter_nonpos
 
