@@ -36,10 +36,10 @@ These actions are available in the `Pointwise` locale.
 
 For an `R`-module `M`, The action of a subset of `R` acting on a submodule of `M` introduced in
 section `set_acting_on_submodules` does not have a counterpart in
-`Mathlib/GroupTheory/Submonoid/Pointwise.lean`.
+`Mathlib/Algebra/Group/Submonoid/Pointwise.lean`.
 
 Other than section `set_acting_on_submodules`, most of the lemmas in this file are direct copies of
-lemmas from `Mathlib/GroupTheory/Submonoid/Pointwise.lean`.
+lemmas from `Mathlib/Algebra/Group/Submonoid/Pointwise.lean`.
 -/
 
 

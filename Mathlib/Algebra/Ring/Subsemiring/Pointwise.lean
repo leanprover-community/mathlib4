@@ -19,7 +19,7 @@ This actions is available in the `Pointwise` locale.
 
 ## Implementation notes
 
-This file is almost identical to `GroupTheory/Submonoid/Pointwise.lean`. Where possible, try to
+This file is almost identical to `Algebra/Group/Submonoid/Pointwise.lean`. Where possible, try to
 keep them in sync.
 -/
 
