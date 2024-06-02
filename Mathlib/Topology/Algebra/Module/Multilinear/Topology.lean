@@ -14,6 +14,7 @@ on `ContinuousMultilinearMap 𝕜 E F`,
 where `E i` is a family of vector spaces over `𝕜` with topologies
 and `F` is a topological vector space.
 -/
+
 open Bornology Function Set
 open scoped Topology UniformConvergence Filter
 
@@ -110,10 +111,10 @@ theorem completeSpace (h : RestrictGenTopology {s : Set (Π i, E i) | IsVonNBoun
       isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ isClosed_eq H (H.add H)
   · exact isClosed_iInter fun m ↦ isClosed_iInter fun i ↦
       isClosed_iInter fun c ↦ isClosed_iInter fun x ↦ isClosed_eq H (H.const_smul _)
-    
-instance instCompleteSpace [∀ i, SequentialSpace (E i)] :
+
+instance instCompleteSpace [∀ i, TopologicalAddGroup (E i)] [SequentialSpace (Π i, E i)] :
     CompleteSpace (ContinuousMultilinearMap 𝕜 E F) :=
-  completeSpace <| .mono (.of_seq _) _
+  completeSpace <| .of_seq fun _u x hux ↦ (hux.isVonNBounded_range 𝕜).insert x
 
 end UniformAddGroup
 
