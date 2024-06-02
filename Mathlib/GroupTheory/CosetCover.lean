@@ -306,7 +306,7 @@ end Submodule
 section Subspace
 
 variable {k E ι : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module k E]
-    (s : Finset (Subspace k E))
+    {s : Finset (Subspace k E)}
 
 /- A vector space over an infinite field cannot be a finite union of proper subspaces. -/
 theorem Subspace.biUnion_ne_univ_of_lt_top (hs : ∀ p ∈ s, p ≠ ⊤) :
@@ -322,6 +322,6 @@ theorem Subspace.biUnion_ne_univ_of_lt_top (hs : ∀ p ∈ s, p ≠ ⊤) :
 theorem Subspace.exists_eq_top_of_biUnion_eq_univ (hcovers : ⋃ p ∈ s, (p : Set E) = Set.univ) :
     ∃ p ∈ s, p = ⊤ := by
   contrapose! hcovers
-  exact Subspace.biUnion_ne_univ_of_lt_top s hcovers
+  exact Subspace.biUnion_ne_univ_of_lt_top hcovers
 
 end Subspace
