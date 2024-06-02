@@ -143,7 +143,7 @@ instance : Neg (LeftInvariantDerivation I G) where
   neg X := ⟨-X, fun g => by simp [left_invariant']⟩
 
 instance : Sub (LeftInvariantDerivation I G) where
-  sub X Y := ⟨X - Y, fun g => by simp [left_invariant']⟩
+  sub X Y := ⟨X - Y, fun g => by simp only [map_sub, left_invariant']⟩ -- 600 -> 110ms
 
 @[simp]
 theorem coe_add : ⇑(X + Y) = X + Y :=
