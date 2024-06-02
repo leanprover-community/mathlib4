@@ -354,8 +354,6 @@ theorem Subgroup.leftCoset_cover_filter_FiniteIndex_aux
       sorry
     · simpa only [ne_eq, Nat.cast_eq_zero] using hD.finiteIndex
 
-#exit
-
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 Then the cosets of subgroups of infinite index may be omitted from the covering. -/
 @[to_additive]
