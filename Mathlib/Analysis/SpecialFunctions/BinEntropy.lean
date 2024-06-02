@@ -71,7 +71,7 @@ lemma binaryEntropy_eq' {p : ℝ} : binaryEntropy p = -p * log p - (1 - p) * log
   unfold qaryEntropy
   simp only [log_one, mul_zero, sub_self, log_zero, one_mul, sub_zero]
 
-@[simp] lemma binaryEntropy_onehalf : binaryEntropy (1/2) = log 2 := by
+@[simp] lemma binaryEntropy_onehalf : binaryEntropy 2⁻¹ = log 2 := by
   simp only [binaryEntropy_eq']
   norm_num
   simp only [one_div, log_inv]
@@ -185,12 +185,12 @@ lemma binaryEntropy_one_iff_eq_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) 
       · have := binaryEntropy_lt_one_of_gt_log2 pgthalf ple1
         linarith
       · linarith
-  · simp only [h, binaryEntropy_onehalf]
+  · simp only [one_div, binaryEntropy_onehalf, h]
 
 lemma binaryEntropy_le_log_2 {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) :
     binaryEntropy p ≤ log 2 := by
   by_cases hh: p = 1/2
-  · simp only [hh, binaryEntropy_onehalf, le_refl]
+  · simp only [one_div, binaryEntropy_onehalf, le_refl, hh]
   · by_cases gg: binaryEntropy p = log 2
     · simp only [le_refl, gg]
     · by_cases hhh: p < 1/2
@@ -403,6 +403,7 @@ open Set
 lemma aux {a b c : ℝ} (h : 0 < a) (hh : a * b < a * c) : b < c := by
   exact (mul_lt_mul_left h).mp hh
 
+-- TODO shorten and remove!
 lemma inequality_with_conversion {q : ℕ} (qNot0 : 2 ≤ q) {x : ℝ}
     (hx : x < 1 - (↑q)⁻¹) :
     x < (q - 1) * (1 - x) := by
@@ -430,9 +431,7 @@ lemma qaryEntropy_strictMono {q : ℕ} (qLe2: 2 ≤ q) :
   · apply qaryEntropy_continuous.continuousOn
   · intro x hx
     have : 2 ≤ (q : ℝ) := Nat.ofNat_le_cast.mpr qLe2
-    have qnonz : (q : ℝ) ≠ 0 := by linarith
     have zero_le_qinv : 0 < (q : ℝ)⁻¹ := by positivity
-    have : (q : ℝ)⁻¹ ≠ 0 := inv_ne_zero qnonz
     have : 1 - x ∈ Ioi 0 := by
       simp [mem_Ioi, sub_pos, hx.2]
       have x_lt_1_minus_qinv : x < 1 - (q : ℝ)⁻¹ := by
@@ -454,12 +453,11 @@ lemma qaryEntropy_strictMono {q : ℕ} (qLe2: 2 ≤ q) :
     exact (ne_of_gt (show x < 1 by exact lt_add_neg_iff_lt.mp this)).symm
 
 /- Binary entropy is strictly increasing in interval [0, 1/2]. -/
-lemma binaryEntropy_strictMono : StrictMonoOn binaryEntropy (Set.Icc 0 (1/2)) := by
+lemma binaryEntropy_strictMono : StrictMonoOn binaryEntropy (Set.Icc 0 2⁻¹) := by
   unfold binaryEntropy
-  have : Icc (0:ℝ) (1 / 2) = Icc 0 (1 - 1/2) := by norm_num
+  have : Icc (0:ℝ) 2⁻¹ = Icc 0 (1 - 1/2) := by norm_num
   rw [this]
   apply qaryEntropy_strictMono (by rfl)
-
 
 /-! ### Strict Concavity of binary entropy -/
 
