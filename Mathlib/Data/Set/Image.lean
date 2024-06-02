@@ -533,8 +533,8 @@ theorem image_inter_nonempty_iff {f : α → β} {s : Set α} {t : Set β} :
   rw [← image_inter_preimage, image_nonempty]
 #align set.image_inter_nonempty_iff Set.image_inter_nonempty_iff
 
-theorem image_diff_preimage {f : α → β} {s : Set α} {t : Set β} : f '' (s \ f ⁻¹' t) = f '' s \ t :=
-  by simp_rw [diff_eq, ← preimage_compl, image_inter_preimage]
+theorem image_diff_preimage {f : α → β} {s : Set α} {t : Set β} :
+    f '' (s \ f ⁻¹' t) = f '' s \ t := by simp_rw [diff_eq, ← preimage_compl, image_inter_preimage]
 #align set.image_diff_preimage Set.image_diff_preimage
 
 theorem compl_image : image (compl : Set α → Set α) = preimage compl :=
@@ -1323,8 +1323,8 @@ theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) :
     simp [hx]
 #align function.injective.compl_image_eq Function.Injective.compl_image_eq
 
-theorem LeftInverse.image_image {g : β → α} (h : LeftInverse g f) (s : Set α) : g '' (f '' s) = s :=
-  by rw [← image_comp, h.comp_eq_id, image_id]
+theorem LeftInverse.image_image {g : β → α} (h : LeftInverse g f) (s : Set α) :
+    g '' (f '' s) = s := by rw [← image_comp, h.comp_eq_id, image_id]
 #align function.left_inverse.image_image Function.LeftInverse.image_image
 
 theorem LeftInverse.preimage_preimage {g : β → α} (h : LeftInverse g f) (s : Set α) :
@@ -1549,12 +1549,12 @@ theorem image_injective : Injective (image f) ↔ Injective f := by
   rw [image_singleton, image_singleton, hx]
 #align set.image_injective Set.image_injective
 
-theorem preimage_eq_iff_eq_image {f : α → β} (hf : Bijective f) {s t} : f ⁻¹' s = t ↔ s = f '' t :=
-  by rw [← image_eq_image hf.1, hf.2.image_preimage]
+theorem preimage_eq_iff_eq_image {f : α → β} (hf : Bijective f) {s t} :
+    f ⁻¹' s = t ↔ s = f '' t := by rw [← image_eq_image hf.1, hf.2.image_preimage]
 #align set.preimage_eq_iff_eq_image Set.preimage_eq_iff_eq_image
 
-theorem eq_preimage_iff_image_eq {f : α → β} (hf : Bijective f) {s t} : s = f ⁻¹' t ↔ f '' s = t :=
-  by rw [← image_eq_image hf.1, hf.2.image_preimage]
+theorem eq_preimage_iff_image_eq {f : α → β} (hf : Bijective f) {s t} :
+    s = f ⁻¹' t ↔ f '' s = t := by rw [← image_eq_image hf.1, hf.2.image_preimage]
 #align set.eq_preimage_iff_image_eq Set.eq_preimage_iff_image_eq
 
 end ImagePreimage
@@ -1615,8 +1615,8 @@ theorem disjoint_preimage_iff (hf : Surjective f) {s t : Set β} :
 #align set.disjoint_preimage_iff Set.disjoint_preimage_iff
 
 theorem preimage_eq_empty {s : Set β} (h : Disjoint s (range f)) :
-    f ⁻¹' s = ∅ :=
-  by simpa using h.preimage f
+    f ⁻¹' s = ∅ := by
+  simpa using h.preimage f
 #align set.preimage_eq_empty Set.preimage_eq_empty
 
 theorem preimage_eq_empty_iff {s : Set β} : f ⁻¹' s = ∅ ↔ Disjoint s (range f) :=

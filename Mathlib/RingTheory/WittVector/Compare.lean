@@ -126,8 +126,8 @@ and the horizontal arrow at the bottom is `TruncatedWittVector.truncate`.
 -/
 theorem commutes_symm {m : ℕ} (hm : n ≤ m) :
     (zmodEquivTrunc p n).symm.toRingHom.comp (truncate hm) =
-      (ZMod.castHom (pow_dvd_pow p hm) _).comp (zmodEquivTrunc p m).symm.toRingHom :=
-  by ext; apply commutes_symm'
+      (ZMod.castHom (pow_dvd_pow p hm) _).comp (zmodEquivTrunc p m).symm.toRingHom := by
+  ext; apply commutes_symm'
 #align truncated_witt_vector.commutes_symm TruncatedWittVector.commutes_symm
 
 end Iso
@@ -167,8 +167,8 @@ def toPadicInt : 𝕎 (ZMod p) →+* ℤ_[p] :=
 theorem zmodEquivTrunc_compat (k₁ k₂ : ℕ) (hk : k₁ ≤ k₂) :
     (TruncatedWittVector.truncate hk).comp
         ((zmodEquivTrunc p k₂).toRingHom.comp (PadicInt.toZModPow k₂)) =
-      (zmodEquivTrunc p k₁).toRingHom.comp (PadicInt.toZModPow k₁) :=
-  by rw [← RingHom.comp_assoc, commutes, RingHom.comp_assoc,
+      (zmodEquivTrunc p k₁).toRingHom.comp (PadicInt.toZModPow k₁) := by
+  rw [← RingHom.comp_assoc, commutes, RingHom.comp_assoc,
     PadicInt.zmod_cast_comp_toZModPow _ _ hk]
 #align witt_vector.zmod_equiv_trunc_compat WittVector.zmodEquivTrunc_compat
 

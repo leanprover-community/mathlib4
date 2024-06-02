@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Preimage
 
@@ -38,6 +37,7 @@ See the documentation of `to_additive.attr` for more information.
 
 -- TODO
 -- assert_not_exists AddCommMonoidWithOne
+assert_not_exists MonoidWithZero
 assert_not_exists MulAction
 
 variable {ι κ α β γ : Type*}
@@ -2201,53 +2201,6 @@ theorem mem_sum {f : α → Multiset β} (s : Finset α) (b : β) :
     simp [sum_insert hi, ih, or_and_right, exists_or]
 #align finset.mem_sum Finset.mem_sum
 
-section ProdEqZero
-
-variable [CommMonoidWithZero β]
-
-theorem prod_eq_zero (ha : a ∈ s) (h : f a = 0) : ∏ x ∈ s, f x = 0 := by
-  haveI := Classical.decEq α
-  rw [← prod_erase_mul _ _ ha, h, mul_zero]
-#align finset.prod_eq_zero Finset.prod_eq_zero
-
-theorem prod_boole {s : Finset α} {p : α → Prop} [DecidablePred p] :
-    (∏ i ∈ s, ite (p i) (1 : β) (0 : β)) = ite (∀ i ∈ s, p i) 1 0 := by
-  split_ifs with h
-  · apply prod_eq_one
-    intro i hi
-    rw [if_pos (h i hi)]
-  · push_neg at h
-    rcases h with ⟨i, hi, hq⟩
-    apply prod_eq_zero hi
-    rw [if_neg hq]
-#align finset.prod_boole Finset.prod_boole
-
-lemma support_prod_subset (s : Finset ι) (f : ι → α → β) :
-    support (fun x ↦ ∏ i ∈ s, f i x) ⊆ ⋂ i ∈ s, support (f i) :=
-  fun _ hx ↦ Set.mem_iInter₂.2 fun _ hi H ↦ hx <| prod_eq_zero hi H
-#align function.support_prod_subset Finset.support_prod_subset
-
-variable [Nontrivial β] [NoZeroDivisors β]
-
-theorem prod_eq_zero_iff : ∏ x ∈ s, f x = 0 ↔ ∃ a ∈ s, f a = 0 := by
-  classical
-    induction' s using Finset.induction_on with a s ha ih
-    · exact ⟨Not.elim one_ne_zero, fun ⟨_, H, _⟩ => by simp at H⟩
-    · rw [prod_insert ha, mul_eq_zero, exists_mem_insert, ih]
-#align finset.prod_eq_zero_iff Finset.prod_eq_zero_iff
-
-theorem prod_ne_zero_iff : ∏ x ∈ s, f x ≠ 0 ↔ ∀ a ∈ s, f a ≠ 0 := by
-  rw [Ne, prod_eq_zero_iff]
-  push_neg; rfl
-#align finset.prod_ne_zero_iff Finset.prod_ne_zero_iff
-
-lemma support_prod (s : Finset ι) (f : ι → α → β) :
-    support (fun x ↦ ∏ i ∈ s, f i x) = ⋂ i ∈ s, support (f i) :=
-  Set.ext fun x ↦ by simp [support, prod_eq_zero_iff]
-#align function.support_prod Finset.support_prod
-
-end ProdEqZero
-
 @[to_additive]
 theorem prod_unique_nonempty {α β : Type*} [CommMonoid β] [Unique α] (s : Finset α) (f : α → β)
     (h : s.Nonempty) : ∏ x ∈ s, f x = f default := by
@@ -2422,11 +2375,6 @@ lemma prod_pi_mulSingle {α : ι → Type*} [∀ i, CommMonoid (α i)] (i : ι) 
 lemma prod_pi_mulSingle' (i : ι) (a : α) : ∏ j, Pi.mulSingle i a j = a := prod_dite_eq' _ _
 
 end CommMonoid
-
-variable [CommMonoidWithZero α] {p : ι → Prop} [DecidablePred p]
-
-lemma prod_boole : ∏ i, ite (p i) (1 : α) 0 = ite (∀ i, p i) 1 0 := by simp [Finset.prod_boole]
-
 end Fintype
 
 namespace Finset
@@ -2563,12 +2511,6 @@ theorem Units.coe_prod {M : Type*} [CommMonoid M] (f : α → Mˣ) (s : Finset �
     (↑(∏ i ∈ s, f i) : M) = ∏ i ∈ s, (f i : M) :=
   map_prod (Units.coeHom M) _ _
 #align units.coe_prod Units.coe_prod
-
-theorem Units.mk0_prod [CommGroupWithZero β] (s : Finset α) (f : α → β) (h) :
-    Units.mk0 (∏ b ∈ s, f b) h =
-      ∏ b ∈ s.attach, Units.mk0 (f b) fun hh => h (Finset.prod_eq_zero b.2 hh) := by
-  classical induction s using Finset.induction_on <;> simp [*]
-#align units.mk0_prod Units.mk0_prod
 
 theorem nat_abs_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by

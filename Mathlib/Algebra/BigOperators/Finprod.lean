@@ -3,6 +3,7 @@ Copyright (c) 2020 Kexing Ying and Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.FiniteSupport
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
@@ -113,7 +114,7 @@ support of `f`, if it's finite, zero otherwise. Taking the sum over multiple arg
 conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
 notation3"∑ᶠ "(...)", "r:67:(scoped f => finsum f) => r
 
-/-- `∏ᶠ x, f x` is notation for `finprod f`. It is the sum of `f x`, where `x` ranges over the
+/-- `∏ᶠ x, f x` is notation for `finprod f`. It is the product of `f x`, where `x` ranges over the
 multiplicative support of `f`, if it's finite, one otherwise. Taking the product over multiple
 arguments or conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
 notation3"∏ᶠ "(...)", "r:67:(scoped f => finprod f) => r
