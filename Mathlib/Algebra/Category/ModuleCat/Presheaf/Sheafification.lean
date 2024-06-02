@@ -68,19 +68,30 @@ noncomputable def sheafificationHomEquiv
       (P ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) := by
   apply sheafifyHomEquiv
 
-noncomputable def sheafificationHomEquiv_hom
+lemma sheafificationHomEquiv_hom
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (f : (sheafification α).obj P ⟶ F) :
     (sheafificationHomEquiv α f).hom =
       CategoryTheory.toSheafify J P.presheaf ≫ f.val.hom := rfl
+
+lemma toSheaf_map_sheafificationHomEquiv_symm
+    {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
+    (g : P ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) :
+    (SheafOfModules.toSheaf _).map ((sheafificationHomEquiv α).symm g) =
+      (((sheafificationAdjunction J AddCommGroupCat).homEquiv
+        P.presheaf ((SheafOfModules.toSheaf R).obj F)).symm g.hom) := by
+  obtain ⟨f, rfl⟩ := (sheafificationHomEquiv α).surjective g
+  apply ((sheafificationAdjunction J AddCommGroupCat).homEquiv _ _).injective
+  rw [Equiv.apply_symm_apply, Adjunction.homEquiv_unit, Equiv.symm_apply_apply]
+  rfl
 
 lemma sheafificationHomEquiv_symm_val_hom
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (g : P ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) :
     ((sheafificationHomEquiv α).symm g).val.hom =
       (((sheafificationAdjunction J AddCommGroupCat).homEquiv
-        P.presheaf ((SheafOfModules.toSheaf R).obj F)).symm g.hom).val := by
-  sorry
+        P.presheaf ((SheafOfModules.toSheaf R).obj F)).symm g.hom).val :=
+  (sheafToPresheaf _ _).congr_map (toSheaf_map_sheafificationHomEquiv_symm α g)
 
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a preasheaf of rings
 and `R` a sheaf of rings, this is the adjunction
@@ -107,6 +118,10 @@ noncomputable def sheafificationAdjunction :
         rw [← Adjunction.homEquiv_naturality_left_symm, adj.homEquiv_counit]
         erw [← NatTrans.naturality_assoc, adj.right_triangle_components, comp_id]
         rfl
-      homEquiv_naturality_right := sorry }
+      homEquiv_naturality_right := fun {P₀ M N} f g ↦ by
+        apply (toPresheaf _).map_injective
+        dsimp [toPresheaf]
+        erw [sheafificationHomEquiv_hom, sheafificationHomEquiv_hom]
+        simp [restrictScalars] }
 
 end PresheafOfModules
