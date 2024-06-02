@@ -338,6 +338,12 @@ noncomputable def sheafifyHomEquiv' {F : PresheafOfModules.{v} R.val}
     (homEquivOfIsLocallyBijective (f := toSheafify α φ)
       (N := (restrictScalars α).obj F) hF)
 
+@[simp]
+lemma comp_sheafifyHomEquiv'_symm_hom {F : PresheafOfModules.{v} R.val}
+    (hF : Presheaf.IsSheaf J F.presheaf) (f : M₀ ⟶ (restrictScalars α).obj F) :
+    φ ≫ ((sheafifyHomEquiv' α φ hF).symm f).hom = f.hom :=
+  congr_arg Hom.hom ((sheafifyHomEquiv' α φ hF).apply_symm_apply f)
+
 /-- The bijection
 `(sheafify α φ ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F))`
 which is part of the universal property of the sheafification of the presheaf of modules `M₀`,
@@ -347,5 +353,25 @@ noncomputable def sheafifyHomEquiv {F : SheafOfModules.{v} R} :
       (M₀ ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) :=
   (SheafOfModules.fullyFaithfulForget R).homEquiv.trans
     (sheafifyHomEquiv' α φ F.isSheaf)
+
+section
+
+variable {M₀' : PresheafOfModules.{v} R₀} {A' : Sheaf J AddCommGroupCat.{v}}
+  (φ' : M₀'.presheaf ⟶ A'.val)
+  [Presheaf.IsLocallyInjective J φ'] [Presheaf.IsLocallySurjective J φ']
+  (τ₀ : M₀ ⟶ M₀') (τ : A ⟶ A')
+  (fac : τ₀.hom ≫ φ' = φ ≫ τ.val)
+
+@[simps]
+def sheafifyMap : sheafify α φ ⟶ sheafify α φ' where
+  val :=
+    { hom := τ.val
+      map_smul := by
+        let f := (sheafifyHomEquiv' α φ (by exact A'.cond)).symm (τ₀ ≫ toSheafify α φ')
+        have eq : τ.val = f.hom := ((J.W_of_isLocallyBijective φ).homEquiv _ A'.cond).injective
+          (by simp [f, ← fac])
+        convert f.map_smul }
+
+end
 
 end PresheafOfModules

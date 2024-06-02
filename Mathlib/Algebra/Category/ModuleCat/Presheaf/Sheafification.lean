@@ -33,11 +33,15 @@ and `R` a sheaf of rings (i.e. `R` identifies to the sheafification of `R₀`), 
 the associated sheaf of modules functor `PresheafOfModules.{v} R₀ ⥤ SheafOfModules.{v} R`. -/
 noncomputable def sheafification : PresheafOfModules.{v} R₀ ⥤ SheafOfModules.{v} R where
   obj M₀ := sheafify α (CategoryTheory.toSheafify J M₀.presheaf)
-  map f :=
-    { val :=
-      { hom := (presheafToSheaf J AddCommGroupCat ⋙ sheafToPresheaf _ _).map f.hom
-        map_smul := by
-          sorry } }
+  map f := sheafifyMap _ _ _ f ((presheafToSheaf J AddCommGroupCat).map f.hom) (by simp)
+  map_id M₀ := by
+    ext1
+    apply (toPresheaf _).map_injective
+    simp [toPresheaf, sheafify]
+  map_comp _ _ := by
+    ext1
+    apply (toPresheaf _).map_injective
+    simp [toPresheaf, sheafify]
 
 /-- The sheafification of presheaves of modules commutes with the functor which
 forgets the module structures. -/
