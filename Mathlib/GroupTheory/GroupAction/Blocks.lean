@@ -434,15 +434,9 @@ theorem stabilizer_orbit_eq {a : X} {H : Subgroup G}
   ext g
   constructor
   · intro hg
-    suffices g • a ∈ orbit H a by
-      rw [mem_orbit_iff] at this
-      obtain ⟨k, hk⟩ := this
-      rw [smul_eq_iff_eq_inv_smul] at hk
-      rw [← Subgroup.mul_mem_cancel_left H (SetLike.coe_mem k⁻¹)]
-      apply hH
-      rw [mem_stabilizer_iff, MulAction.mul_smul, ← Submonoid.smul_def, ← hk]
-    rw [← hg]
-    simp only [Set.smul_mem_smul_set_iff, mem_orbit_self]
+    obtain ⟨-, ⟨b, rfl⟩, h⟩ := hg.symm ▸ mem_orbit_self a
+    simp_rw [H.smul_def, ← mul_smul, ← mem_stabilizer_iff] at h
+    exact (mul_mem_cancel_right b.2).mp (hH h)
   · intro hg
     rw [mem_stabilizer_iff, ← Subgroup.coe_mk H g hg, ← Submonoid.smul_def]
     apply smul_orbit
