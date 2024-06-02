@@ -475,7 +475,7 @@ theorem ext_of_generateFrom_of_cover {S T : Set (Set α)} (h_gen : ‹_› = gen
     rw [Set.inter_comm] at hvt ⊢
     rwa [← measure_inter_add_diff t hv, ← measure_inter_add_diff t hv, ← hvt,
       ENNReal.add_right_inj] at this
-    exact ne_top_of_le_ne_top (htop t ht) (measure_mono <| Set.inter_subset_left)
+    exact ne_top_of_le_ne_top (htop t ht) (measure_mono Set.inter_subset_left)
   · intro f hfd hfm h_eq
     simp only [← restrict_apply (hfm _), ← restrict_apply (MeasurableSet.iUnion hfm)] at h_eq ⊢
     simp only [measure_iUnion hfd hfm, h_eq]

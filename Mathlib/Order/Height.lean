@@ -267,7 +267,7 @@ theorem chainHeight_eq_iSup_Ici : s.chainHeight = ⨆ i ∈ s, (s ∩ Set.Ici i)
       rename_i hi
       cases' chain'_iff_pairwise.mp h.1 with _ _ h'
       exact (h' _ hi).le
-  · exact iSup₂_le fun i _ ↦ chainHeight_mono <| Set.inter_subset_left
+  · exact iSup₂_le fun i _ ↦ chainHeight_mono Set.inter_subset_left
 #align set.chain_height_eq_supr_Ici Set.chainHeight_eq_iSup_Ici
 
 theorem chainHeight_eq_iSup_Iic : s.chainHeight = ⨆ i ∈ s, (s ∩ Set.Iic i).chainHeight := by

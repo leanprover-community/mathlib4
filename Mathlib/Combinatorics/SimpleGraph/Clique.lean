@@ -444,7 +444,7 @@ theorem CliqueFreeOn.of_succ (hs : G.CliqueFreeOn s (n + 1)) (ha : a ∈ s) :
   classical
   refine fun t hts ht => hs ?_ (ht.insert fun b hb => (hts hb).2)
   push_cast
-  exact Set.insert_subset_iff.2 ⟨ha, hts.trans <| Set.inter_subset_left⟩
+  exact Set.insert_subset_iff.2 ⟨ha, hts.trans Set.inter_subset_left⟩
 #align simple_graph.clique_free_on.of_succ SimpleGraph.CliqueFreeOn.of_succ
 
 end CliqueFreeOn

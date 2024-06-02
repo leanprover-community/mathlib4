@@ -100,8 +100,8 @@ protected theorem subset_space (hs : s ∈ K.faces) : (s : Set E) ⊆ K.space :=
 theorem convexHull_inter_convexHull (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
     convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t = convexHull 𝕜 (s ∩ t : Set E) :=
   (K.inter_subset_convexHull hs ht).antisymm <|
-    subset_inter (convexHull_mono <| Set.inter_subset_left) <|
-      convexHull_mono <| Set.inter_subset_right
+    subset_inter (convexHull_mono Set.inter_subset_left) <|
+      convexHull_mono Set.inter_subset_right
 #align geometry.simplicial_complex.convex_hull_inter_convex_hull Geometry.SimplicialComplex.convexHull_inter_convexHull
 
 /-- The conclusion is the usual meaning of "glue nicely" in textbooks. It turns out to be quite

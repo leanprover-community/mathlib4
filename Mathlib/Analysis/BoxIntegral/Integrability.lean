@@ -46,9 +46,9 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
   /- First we choose a closed set `F ⊆ s ∩ I.Icc` and an open set `U ⊇ s` such that
     both `(s ∩ I.Icc) \ F` and `U \ s` have measure less than `ε`. -/
   have A : μ (s ∩ Box.Icc I) ≠ ∞ :=
-    ((measure_mono <| Set.inter_subset_right).trans_lt (I.measure_Icc_lt_top μ)).ne
+    ((measure_mono Set.inter_subset_right).trans_lt (I.measure_Icc_lt_top μ)).ne
   have B : μ (s ∩ I) ≠ ∞ :=
-    ((measure_mono <| Set.inter_subset_right).trans_lt (I.measure_coe_lt_top μ)).ne
+    ((measure_mono Set.inter_subset_right).trans_lt (I.measure_coe_lt_top μ)).ne
   obtain ⟨F, hFs, hFc, hμF⟩ : ∃ F, F ⊆ s ∩ Box.Icc I ∧ IsClosed F ∧ μ ((s ∩ Box.Icc I) \ F) < ε :=
     (hs.inter I.measurableSet_Icc).exists_isClosed_diff_lt A (ENNReal.coe_pos.2 ε0).ne'
   obtain ⟨U, hsU, hUo, hUt, hμU⟩ :
