@@ -71,7 +71,7 @@ instance concreteCategory : ConcreteCategory MonCat :=
   BundledHom.concreteCategory _
 
 @[to_additive]
-instance : CoeSort MonCat (Type*) where
+instance : CoeSort MonCat Type* where
   coe X := X.α
 
 @[to_additive]
@@ -198,7 +198,7 @@ instance concreteCategory : ConcreteCategory CommMonCat := by
   infer_instance
 
 @[to_additive]
-instance : CoeSort CommMonCat (Type*) where
+instance : CoeSort CommMonCat Type* where
   coe X := X.α
 
 @[to_additive]

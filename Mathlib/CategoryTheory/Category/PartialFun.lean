@@ -42,7 +42,7 @@ set_option linter.uppercaseLean3 false
 
 namespace PartialFun
 
-instance : CoeSort PartialFun (Type*) :=
+instance : CoeSort PartialFun Type* :=
   ⟨id⟩
 
 -- Porting note(#5171): removed `@[nolint has_nonempty_instance]`; linter not ported yet

@@ -41,7 +41,7 @@ section
 /-- `CocompactMapClass F α β` states that `F` is a type of cocompact continuous maps.
 
 You should also extend this typeclass when you extend `CocompactMap`. -/
-class CocompactMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
+class CocompactMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
   [TopologicalSpace β] [FunLike F α β] extends ContinuousMapClass F α β : Prop where
   /-- The cocompact filter on `α` tends to the cocompact filter on `β` under the function -/
   cocompact_tendsto (f : F) : Tendsto f (cocompact α) (cocompact β)

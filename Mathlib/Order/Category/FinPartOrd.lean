@@ -36,7 +36,7 @@ structure FinPartOrd where
 
 namespace FinPartOrd
 
-instance : CoeSort FinPartOrd (Type*) :=
+instance : CoeSort FinPartOrd Type* :=
   ⟨fun X => X.toPartOrd⟩
 
 instance (X : FinPartOrd) : PartialOrder X :=

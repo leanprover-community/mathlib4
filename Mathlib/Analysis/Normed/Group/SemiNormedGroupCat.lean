@@ -47,7 +47,7 @@ instance : ConcreteCategory SemiNormedGroupCat := by
   dsimp [SemiNormedGroupCat]
   infer_instance
 
-instance : CoeSort SemiNormedGroupCat (Type*) where
+instance : CoeSort SemiNormedGroupCat Type* where
   coe X := X.α
 
 /-- Construct a bundled `SemiNormedGroupCat` from the underlying type and typeclass. -/
@@ -140,7 +140,7 @@ def SemiNormedGroupCat₁ : Type (u + 1) :=
 
 namespace SemiNormedGroupCat₁
 
-instance : CoeSort SemiNormedGroupCat₁ (Type*) where
+instance : CoeSort SemiNormedGroupCat₁ Type* where
   coe X := X.α
 
 instance : LargeCategory.{u} SemiNormedGroupCat₁ where
