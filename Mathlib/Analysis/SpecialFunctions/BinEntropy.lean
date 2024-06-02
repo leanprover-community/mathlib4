@@ -416,7 +416,6 @@ lemma inequality_with_conversion {q : ℕ} (qNot0 : 2 ≤ q) {x : ℝ}
   have : 2 ≤ (q : ℝ) := Nat.ofNat_le_cast.mpr qNot0
   have qnonz : (q : ℝ) ≠ 0 := by linarith
   have zero_le_qinv : 0 < (q : ℝ)⁻¹ := by positivity
-  have : (q : ℝ)⁻¹ ≠ 0 := inv_ne_zero qnonz
   rw [show ((q:ℝ) - 1) * (1 - x) = q - q*x - 1 + x by ring]
   simp only [lt_add_iff_pos_left, lt_neg_add_iff_add_lt, add_zero]
   apply aux zero_le_qinv
@@ -441,7 +440,6 @@ lemma qaryEntropy_strictMono {q : ℕ} (qLe2: 2 ≤ q) :
     have qnonz : (q : ℝ) ≠ 0 := by linarith
     have zero_le_qinv : 0 < (q : ℝ)⁻¹ := by positivity
     have : (q : ℝ)⁻¹ ≠ 0 := inv_ne_zero qnonz
-    have : 0 < (q : ℝ)⁻¹ := by positivity
     have : 1 - x ∈ Ioi 0 := by
       simp [mem_Ioi, sub_pos, hx.2]
       have x_lt_1_minus_qinv : x < 1 - (q : ℝ)⁻¹ := by
