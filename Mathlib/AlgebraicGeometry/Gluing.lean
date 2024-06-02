@@ -318,14 +318,14 @@ theorem gluedCoverT'_snd_snd (x y z : 𝒰.J) :
 
 theorem glued_cover_cocycle_fst (x y z : 𝒰.J) :
     gluedCoverT' 𝒰 x y z ≫ gluedCoverT' 𝒰 y z x ≫ gluedCoverT' 𝒰 z x y ≫ pullback.fst =
-      pullback.fst :=
-  by apply pullback.hom_ext <;> simp
+      pullback.fst := by
+  apply pullback.hom_ext <;> simp
 #align algebraic_geometry.Scheme.open_cover.glued_cover_cocycle_fst AlgebraicGeometry.Scheme.OpenCover.glued_cover_cocycle_fst
 
 theorem glued_cover_cocycle_snd (x y z : 𝒰.J) :
     gluedCoverT' 𝒰 x y z ≫ gluedCoverT' 𝒰 y z x ≫ gluedCoverT' 𝒰 z x y ≫ pullback.snd =
-      pullback.snd :=
-  by apply pullback.hom_ext <;> simp [pullback.condition]
+      pullback.snd := by
+  apply pullback.hom_ext <;> simp [pullback.condition]
 #align algebraic_geometry.Scheme.open_cover.glued_cover_cocycle_snd AlgebraicGeometry.Scheme.OpenCover.glued_cover_cocycle_snd
 
 theorem glued_cover_cocycle (x y z : 𝒰.J) :

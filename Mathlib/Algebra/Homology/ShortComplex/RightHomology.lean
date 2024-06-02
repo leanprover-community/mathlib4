@@ -390,8 +390,8 @@ instance : Subsingleton (RightHomologyMapData φ h₁ h₂) :=
 
 instance : Inhabited (RightHomologyMapData φ h₁ h₂) := ⟨by
   let φQ : h₁.Q ⟶ h₂.Q := h₁.descQ (φ.τ₂ ≫ h₂.p) (by rw [← φ.comm₁₂_assoc, h₂.wp, comp_zero])
-  have commg' : φQ ≫ h₂.g' = h₁.g' ≫ φ.τ₃ :=
-    by rw [← cancel_epi h₁.p, RightHomologyData.p_descQ_assoc, assoc,
+  have commg' : φQ ≫ h₂.g' = h₁.g' ≫ φ.τ₃ := by
+    rw [← cancel_epi h₁.p, RightHomologyData.p_descQ_assoc, assoc,
       RightHomologyData.p_g', φ.comm₂₃, RightHomologyData.p_g'_assoc]
   let φH : h₁.H ⟶ h₂.H := h₂.liftH (h₁.ι ≫ φQ)
     (by rw [assoc, commg', RightHomologyData.ι_g'_assoc, zero_comp])

@@ -646,8 +646,8 @@ theorem quotientEquivAlgOfEq_symm {I J : Ideal A} (h : I = J) :
 #align ideal.quotient_equiv_alg_of_eq_symm Ideal.quotientEquivAlgOfEq_symm
 
 lemma comap_map_mk {I J : Ideal R} (h : I ≤ J) :
-    Ideal.comap (Ideal.Quotient.mk I) (Ideal.map (Ideal.Quotient.mk I) J) = J :=
-  by ext; rw [← Ideal.mem_quotient_iff_mem h, Ideal.mem_comap]
+    Ideal.comap (Ideal.Quotient.mk I) (Ideal.map (Ideal.Quotient.mk I) J) = J := by
+  ext; rw [← Ideal.mem_quotient_iff_mem h, Ideal.mem_comap]
 
 /-- The **first isomorphism theorem** for commutative algebras (`AlgHom.range` version). -/
 noncomputable def quotientKerEquivRange
