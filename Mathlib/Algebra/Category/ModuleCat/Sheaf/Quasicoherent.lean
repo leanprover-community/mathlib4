@@ -94,7 +94,7 @@ the terminal object, and such that for any `i`, the restriction `M.over (X i)`
 has a global presentation. -/
 structure QuasicoherentData where
   /-- the index type of the covering -/
-  I : Type u
+  I : Type u'
   /-- a covering family of objects over which the sheaf has a global presentation. -/
   X : I → C
   coversTop : J.CoversTop X
