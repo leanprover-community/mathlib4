@@ -104,8 +104,8 @@ theorem toFinset_toMultiset [DecidableEq α] (f : α →₀ ℕ) : f.toMultiset.
 @[simp]
 theorem count_toMultiset [DecidableEq α] (f : α →₀ ℕ) (a : α) : (toMultiset f).count a = f a :=
   calc
-    (toMultiset f).count a = Finsupp.sum f (fun x n => (n • {x} : Multiset α).count a) :=
-      by rw [toMultiset_apply]; exact map_sum (Multiset.countAddMonoidHom a) _ f.support
+    (toMultiset f).count a = Finsupp.sum f (fun x n => (n • {x} : Multiset α).count a) := by
+      rw [toMultiset_apply]; exact map_sum (Multiset.countAddMonoidHom a) _ f.support
     _ = f.sum fun x n => n * ({x} : Multiset α).count a := by simp only [Multiset.count_nsmul]
     _ = f a * ({a} : Multiset α).count a :=
       sum_eq_single _
