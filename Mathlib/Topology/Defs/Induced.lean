@@ -65,7 +65,7 @@ def induced (f : X → Y) (t : TopologicalSpace Y) : TopologicalSpace X where
     exact iUnion₂_congr hfg
 #align topological_space.induced TopologicalSpace.induced
 
-instance instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpace X] :
+instance _root_.instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpace X] :
     TopologicalSpace (Subtype p) :=
   induced (↑) t
 
