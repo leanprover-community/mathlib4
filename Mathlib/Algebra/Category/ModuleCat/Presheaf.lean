@@ -436,20 +436,6 @@ abbrev unit : PresheafOfModules R := (unitCore R).toPresheafOfModules
 lemma unit_map_one {X Y : Cᵒᵖ} (f : X ⟶ Y) : (unit R).map f (1 : R.obj X) = (1 : R.obj Y) :=
   (R.map f).map_one
 
--- must be moved, do we have this already?
-/-- If `M` is a module over `A`, then this is the additive bijection `(A →ₗ[A] M) ≃+ M`. -/
-def _root_.Semiring.toModuleLinearMapAddEquiv
-    (A : Type u) [Semiring A] (M : Type v) [AddCommMonoid M] [Module A M] :
-    (A →ₗ[A] M) ≃+ M where
-  toFun f := f 1
-  invFun m :=
-    { toFun := fun a => a • m
-      map_add' := fun _ _ => add_smul _ _ _
-      map_smul' := fun _ _ => mul_smul _ _ _ }
-  map_add' := by simp
-  left_inv f := by aesop
-  right_inv m := by aesop
-
 variable {R}
 
 /-- The type of sections of a presheaf of modules. -/
@@ -470,16 +456,16 @@ def unitHomEquiv (M : PresheafOfModules R) :
         erw [← NatTrans.naturality_apply, unit_map_one]
         rfl }
   invFun s := Hom.mk'
-    (fun X => (Semiring.toModuleLinearMapAddEquiv (R.obj X) (M.obj X)).symm (s.val X)) (by
+    (fun X => (LinearMap.ringLmapEquivSelf (R.obj X) ℤ (M.obj X)).symm (s.val X)) (by
       intro X Y p (x : R.obj X)
-      dsimp [Semiring.toModuleLinearMapAddEquiv]
+      dsimp
       rw [M.map_smul, ← s.2 p]
       rfl)
   left_inv f := by
     ext1 X
-    exact (Semiring.toModuleLinearMapAddEquiv (R.obj X) (M.obj X)).symm_apply_apply (f.app X)
+    exact (LinearMap.ringLmapEquivSelf (R.obj X) ℤ (M.obj X)).symm_apply_apply (f.app X)
   right_inv s := by
     ext X
-    exact (Semiring.toModuleLinearMapAddEquiv (R.obj X) (M.obj X)).apply_symm_apply (s.val X)
+    exact (LinearMap.ringLmapEquivSelf (R.obj X) ℤ (M.obj X)).apply_symm_apply (s.val X)
 
 end PresheafOfModules
