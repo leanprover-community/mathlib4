@@ -345,39 +345,6 @@ lemma hasDerivAt_binaryEntropy {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
   exact binaryEntropy_eq
   exact (deriv_binaryEntropy' xne0 gne1).symm
 
--- example (x : ℝ) (hx : x ≠ 1) : x - 1 ≠ 0 := by exact sub_ne_zero_of_ne hx
-
--- example (x : ℕ) (hx : x = 1) : (x : ℝ) = 1 := by exact Nat.cast_eq_one.mpr hx
-
--- example (q : ℕ) (hq : q≠1) : (q - (1:ℝ)) ≠ 0 := by
---   by_cases hh : (q : ℝ) = 1
---   · have := (Nat.cast_eq_one.mpr hh)
---   · exact sub_ne_zero_of_ne hh
-
-
--- lemma hasDerivAt_qaryEntropy {q : ℕ} {x : ℝ} (qnot1 : q ≠ 1) (xne0: x ≠ 0) (gne1 : x ≠ 1) :
---     HasDerivAt (qaryEntropy q) (log (q - 1) + log (1 - x) - log x) x := by
---   have diffAt : DifferentiableAt ℝ (fun p => p * log (q - 1) - p * log p - (1 - p) * log (1 - p)) x := by
---     apply DifferentiableAt.sub
---     apply DifferentiableAt.sub
---     apply DifferentiableAt.mul
---     exact differentiableAt_id'
---     apply DifferentiableAt.log
---     simp only [ne_eq, differentiableAt_const]
-
---     apply DifferentiableAt.sub
---     apply differentiableAt_const
---     exact differentiableAt_id'
---     apply DifferentiableAt.log
---     apply DifferentiableAt.sub
---     apply differentiableAt_const
---     exact differentiableAt_id'
---     exact sub_ne_zero.mpr gne1.symm
---   convert hasDerivAt_deriv_iff.mpr diffAt using 1
---   exact binaryEntropy_eq
---   exact (deriv_binaryEntropy' xne0 gne1).symm
-
-
 open Filter Topology
 
 /- Second derivative.
