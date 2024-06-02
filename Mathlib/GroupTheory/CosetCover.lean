@@ -106,8 +106,7 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
     (j : ι) (hj : j ∈ s) (hcovers' : ⋃ i ∈ s.filter (H · = H j), g i • (H i : Set G) ≠ Set.univ) :
     ∃ i ∈ s, H i ≠ H j ∧ (H i).FiniteIndex := by
   classical
-  let t := s.image H
-  have ⟨n, hn⟩ : ∃ n, n = t.card := exists_eq
+  have ⟨n, hn⟩ : ∃ n, n = (s.image H).card := exists_eq
   induction n using Nat.strongRec generalizing ι with
   | ind n ih =>
     -- Every left coset of `H j` is contained in a finite union of
@@ -132,7 +131,7 @@ theorem Subgroup.exists_finiteIndex_of_leftCoset_cover_aux
     | ⟨k₁, some k₂⟩ => g k₂ * x⁻¹ * g k₁
     | ⟨k₁, none⟩  => g k₁
     let K (k : κ) : Subgroup G := H k.1.val
-    have hK' (k : κ) : K k ∈ t.erase (H j) := by
+    have hK' (k : κ) : K k ∈ (s.image H).erase (H j) := by
       have := Finset.mem_filter.mp k.1.property
       exact Finset.mem_erase.mpr ⟨this.2, Finset.mem_image_of_mem H this.1⟩
     have hK (k : κ) : K k ≠ H j := ((Finset.mem_erase.mp (hK' k)).left ·)
@@ -307,16 +306,20 @@ end Submodule
 section Subspace
 
 variable {k E ι : Type*} [DivisionRing k] [Infinite k] [AddCommGroup E] [Module k E]
-    (s : Finset (Subspace k E)) (hs : ∀ p ∈ s, p < ⊤)
+    (s : Finset (Subspace k E))
 
-theorem Subspace.biUnion_ne_univ_of_lt_top :
+theorem Subspace.biUnion_ne_univ_of_lt_top (hs : ∀ p ∈ s, p ≠ ⊤) :
     ⋃ p ∈ s, (p : Set E) ≠ Set.univ := by
   intro hcovers
   have ⟨p, hp, hfi⟩ := Submodule.exists_finiteIndex_of_cover hcovers
-  have hlt : p < ⊤ := hs p hp
   have : Finite (E ⧸ p) := AddSubgroup.finite_quotient_of_finiteIndex _
-  have : Nontrivial (E ⧸ p) := Submodule.Quotient.nontrivial_of_lt_top p hlt
+  have : Nontrivial (E ⧸ p) := Submodule.Quotient.nontrivial_of_lt_top p (hs p hp).lt_top
   have : Infinite (E ⧸ p) := Module.Free.infinite k (E ⧸ p)
   exact not_finite (E ⧸ p)
+
+theorem Subspace.exists_eq_top_of_biUnion_eq_univ (hcovers : ⋃ p ∈ s, (p : Set E) = Set.univ) :
+    ∃ p ∈ s, p = ⊤ := by
+  contrapose! hcovers
+  exact Subspace.biUnion_ne_univ_of_lt_top s hcovers
 
 end Subspace
