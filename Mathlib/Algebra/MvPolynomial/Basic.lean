@@ -888,6 +888,7 @@ lemma coeffs_one : coeffs (1 : MvPolynomial σ R) ⊆ {1} := by
     simp_rw [coeffs, Finset.image_subset_iff]
     simp_all [coeff_one]
 
+@[nontriviality]
 lemma coeffs_eq_empty_of_subsingleton [Subsingleton R] (p : MvPolynomial σ R) : p.coeffs = ∅ := by
   simp only [coeffs, Finset.image_eq_empty, support_eq_empty]
   exact Subsingleton.eq_zero p
