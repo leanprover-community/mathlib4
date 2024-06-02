@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
 import Mathlib.Algebra.Field.Opposite
+import Mathlib.Algebra.Group.Subgroup.ZPowers
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.GroupTheory.Coset
-import Mathlib.GroupTheory.Subgroup.ZPowers
-import Mathlib.GroupTheory.Submonoid.Membership
-import Mathlib.Algebra.GroupPower.NegOnePow
 
 #align_import algebra.periodic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
@@ -35,14 +35,14 @@ period, periodic, periodicity, antiperiodic
 
 variable {α β γ : Type*} {f g : α → β} {c c₁ c₂ x : α}
 
-open Set BigOperators
+open Set
 
 namespace Function
 
 /-! ### Periodicity -/
 
 
-/-- A function `f` is said to be `periodic` with period `c` if for all `x`, `f (x + c) = f x`. -/
+/-- A function `f` is said to be `Periodic` with period `c` if for all `x`, `f (x + c) = f x`. -/
 @[simp]
 def Periodic [Add α] (f : α → β) (c : α) : Prop :=
   ∀ x : α, f (x + c) = f x
@@ -92,7 +92,7 @@ theorem _root_.Multiset.periodic_prod [Add α] [CommMonoid β] (s : Multiset (α
 
 @[to_additive]
 theorem _root_.Finset.periodic_prod [Add α] [CommMonoid β] {ι : Type*} {f : ι → α → β}
-    (s : Finset ι) (hs : ∀ i ∈ s, Periodic (f i) c) : Periodic (∏ i in s, f i) c :=
+    (s : Finset ι) (hs : ∀ i ∈ s, Periodic (f i) c) : Periodic (∏ i ∈ s, f i) c :=
   s.prod_to_list f ▸ (s.toList.map f).periodic_prod (by simpa [-Periodic] )
 #align finset.periodic_prod Finset.periodic_prod
 #align finset.periodic_sum Finset.periodic_sum
@@ -277,7 +277,7 @@ theorem Periodic.int_mul_eq [Ring α] (h : Periodic f c) (n : ℤ) : f (n * c) =
   (h.int_mul n).eq
 #align function.periodic.int_mul_eq Function.Periodic.int_mul_eq
 
-/-- If a function `f` is `periodic` with positive period `c`, then for all `x` there exists some
+/-- If a function `f` is `Periodic` with positive period `c`, then for all `x` there exists some
   `y ∈ Ico 0 c` such that `f x = f y`. -/
 theorem Periodic.exists_mem_Ico₀ [LinearOrderedAddCommGroup α] [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (x) : ∃ y ∈ Ico 0 c, f x = f y :=
@@ -285,7 +285,7 @@ theorem Periodic.exists_mem_Ico₀ [LinearOrderedAddCommGroup α] [Archimedean �
   ⟨x - n • c, H, (h.sub_zsmul_eq n).symm⟩
 #align function.periodic.exists_mem_Ico₀ Function.Periodic.exists_mem_Ico₀
 
-/-- If a function `f` is `periodic` with positive period `c`, then for all `x` there exists some
+/-- If a function `f` is `Periodic` with positive period `c`, then for all `x` there exists some
   `y ∈ Ico a (a + c)` such that `f x = f y`. -/
 theorem Periodic.exists_mem_Ico [LinearOrderedAddCommGroup α] [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (x a) : ∃ y ∈ Ico a (a + c), f x = f y :=
@@ -293,7 +293,7 @@ theorem Periodic.exists_mem_Ico [LinearOrderedAddCommGroup α] [Archimedean α] 
   ⟨x + n • c, H, (h.zsmul n x).symm⟩
 #align function.periodic.exists_mem_Ico Function.Periodic.exists_mem_Ico
 
-/-- If a function `f` is `periodic` with positive period `c`, then for all `x` there exists some
+/-- If a function `f` is `Periodic` with positive period `c`, then for all `x` there exists some
   `y ∈ Ioc a (a + c)` such that `f x = f y`. -/
 theorem Periodic.exists_mem_Ioc [LinearOrderedAddCommGroup α] [Archimedean α] (h : Periodic f c)
     (hc : 0 < c) (x a) : ∃ y ∈ Ioc a (a + c), f x = f y :=
@@ -374,12 +374,12 @@ protected theorem Antiperiodic.funext' [Add α] [InvolutiveNeg β] (h : Antiperi
   neg_eq_iff_eq_neg.mpr h.funext
 #align function.antiperiodic.funext' Function.Antiperiodic.funext'
 
-/-- If a function is `antiperiodic` with antiperiod `c`, then it is also `periodic` with period
+/-- If a function is `antiperiodic` with antiperiod `c`, then it is also `Periodic` with period
 `2 • c`. -/
 protected theorem Antiperiodic.periodic [AddMonoid α] [InvolutiveNeg β]
     (h : Antiperiodic f c) : Periodic f (2 • c) := by simp [two_nsmul, ← add_assoc, h _]
 
-/-- If a function is `antiperiodic` with antiperiod `c`, then it is also `periodic` with period
+/-- If a function is `antiperiodic` with antiperiod `c`, then it is also `Periodic` with period
   `2 * c`. -/
 protected theorem Antiperiodic.periodic_two_mul [Semiring α] [InvolutiveNeg β]
     (h : Antiperiodic f c) : Periodic f (2 * c) := nsmul_eq_mul 2 c ▸ h.periodic
@@ -451,7 +451,7 @@ theorem Antiperiodic.nat_mul_eq_of_eq_zero [Semiring α] [NegZeroClass β] (h : 
 
 theorem Antiperiodic.int_mul_eq_of_eq_zero [Ring α] [SubtractionMonoid β] (h : Antiperiodic f c)
     (hi : f 0 = 0) : ∀ n : ℤ, f (n * c) = 0
-  | (n : ℕ) => by rw [Int.cast_ofNat, h.nat_mul_eq_of_eq_zero hi n]
+  | (n : ℕ) => by rw [Int.cast_natCast, h.nat_mul_eq_of_eq_zero hi n]
   | .negSucc n => by rw [Int.cast_negSucc, neg_mul, ← mul_neg, h.neg.nat_mul_eq_of_eq_zero hi]
 #align function.antiperiodic.int_mul_eq_of_eq_zero Function.Antiperiodic.int_mul_eq_of_eq_zero
 

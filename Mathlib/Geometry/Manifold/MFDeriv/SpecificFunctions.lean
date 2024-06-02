@@ -121,7 +121,7 @@ section id
 
 theorem hasMFDerivAt_id (x : M) :
     HasMFDerivAt I I (@id M) x (ContinuousLinearMap.id 𝕜 (TangentSpace I x)) := by
-  refine' ⟨continuousAt_id, _⟩
+  refine ⟨continuousAt_id, ?_⟩
   have : ∀ᶠ y in 𝓝[range I] (extChartAt I x) x, (extChartAt I x ∘ (extChartAt I x).symm) y = y := by
     apply Filter.mem_of_superset (extChartAt_target_mem_nhdsWithin I x)
     mfld_set_tac
@@ -166,7 +166,7 @@ theorem tangentMap_id : tangentMap I I (id : M → M) = id := by ext1 ⟨x, v⟩
 
 theorem tangentMapWithin_id {p : TangentBundle I M} (hs : UniqueMDiffWithinAt I s p.proj) :
     tangentMapWithin I I (id : M → M) s p = p := by
-  simp only [tangentMapWithin, id.def]
+  simp only [tangentMapWithin, id]
   rw [mfderivWithin_id]
   · rcases p with ⟨⟩; rfl
   · exact hs
@@ -183,7 +183,7 @@ variable {c : M'}
 
 theorem hasMFDerivAt_const (c : M') (x : M) :
     HasMFDerivAt I I' (fun _ : M => c) x (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) := by
-  refine' ⟨continuous_const.continuousAt, _⟩
+  refine ⟨continuous_const.continuousAt, ?_⟩
   simp only [writtenInExtChartAt, (· ∘ ·), hasFDerivWithinAt_const]
 #align has_mfderiv_at_const hasMFDerivAt_const
 
@@ -228,7 +228,7 @@ section Prod
 theorem hasMFDerivAt_fst (x : M × M') :
     HasMFDerivAt (I.prod I') I Prod.fst x
       (ContinuousLinearMap.fst 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2)) := by
-  refine' ⟨continuous_fst.continuousAt, _⟩
+  refine ⟨continuous_fst.continuousAt, ?_⟩
   have :
     ∀ᶠ y in 𝓝[range (I.prod I')] extChartAt (I.prod I') x x,
       (extChartAt I x.1 ∘ Prod.fst ∘ (extChartAt (I.prod I') x).symm) y = y.1 := by
@@ -277,8 +277,8 @@ theorem mfderiv_fst {x : M × M'} :
 theorem mfderivWithin_fst {s : Set (M × M')} {x : M × M'}
     (hxs : UniqueMDiffWithinAt (I.prod I') s x) :
     mfderivWithin (I.prod I') I Prod.fst s x =
-      ContinuousLinearMap.fst 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) :=
-  by rw [MDifferentiable.mfderivWithin (mdifferentiableAt_fst I I') hxs]; exact mfderiv_fst I I'
+      ContinuousLinearMap.fst 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) := by
+  rw [MDifferentiable.mfderivWithin (mdifferentiableAt_fst I I') hxs]; exact mfderiv_fst I I'
 #align mfderiv_within_fst mfderivWithin_fst
 
 @[simp, mfld_simps]
@@ -300,7 +300,7 @@ theorem tangentMapWithin_prod_fst {s : Set (M × M')} {p : TangentBundle (I.prod
 theorem hasMFDerivAt_snd (x : M × M') :
     HasMFDerivAt (I.prod I') I' Prod.snd x
       (ContinuousLinearMap.snd 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2)) := by
-  refine' ⟨continuous_snd.continuousAt, _⟩
+  refine ⟨continuous_snd.continuousAt, ?_⟩
   have :
     ∀ᶠ y in 𝓝[range (I.prod I')] extChartAt (I.prod I') x x,
       (extChartAt I' x.2 ∘ Prod.snd ∘ (extChartAt (I.prod I') x).symm) y = y.2 := by
@@ -349,8 +349,8 @@ theorem mfderiv_snd {x : M × M'} :
 theorem mfderivWithin_snd {s : Set (M × M')} {x : M × M'}
     (hxs : UniqueMDiffWithinAt (I.prod I') s x) :
     mfderivWithin (I.prod I') I' Prod.snd s x =
-      ContinuousLinearMap.snd 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) :=
-  by rw [MDifferentiable.mfderivWithin (mdifferentiableAt_snd I I') hxs]; exact mfderiv_snd I I'
+      ContinuousLinearMap.snd 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) := by
+  rw [MDifferentiable.mfderivWithin (mdifferentiableAt_snd I I') hxs]; exact mfderiv_snd I I'
 #align mfderiv_within_snd mfderivWithin_snd
 
 @[simp, mfld_simps]
@@ -377,7 +377,8 @@ theorem MDifferentiableAt.mfderiv_prod {f : M → M'} {g : M → M''} {x : M}
       (mfderiv I I' f x).prod (mfderiv I I'' g x) := by
   classical
   simp_rw [mfderiv, if_pos (hf.prod_mk hg), if_pos hf, if_pos hg]
-  exact hf.2.fderivWithin_prod hg.2 (I.unique_diff _ (mem_range_self _))
+  exact hf.differentiableWithinAt_writtenInExtChartAt.fderivWithin_prod
+    hg.differentiableWithinAt_writtenInExtChartAt (I.unique_diff _ (mem_range_self _))
 #align mdifferentiable_at.mfderiv_prod MDifferentiableAt.mfderiv_prod
 
 variable (I I' I'')
@@ -385,14 +386,14 @@ variable (I I' I'')
 theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
     mfderiv I (I.prod I') (fun x => (x, y₀)) x₀ =
       ContinuousLinearMap.inl 𝕜 (TangentSpace I x₀) (TangentSpace I' y₀) := by
-  refine' ((mdifferentiableAt_id I).mfderiv_prod (mdifferentiableAt_const I I')).trans _
+  refine ((mdifferentiableAt_id I).mfderiv_prod (mdifferentiableAt_const I I')).trans ?_
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inl]
 #align mfderiv_prod_left mfderiv_prod_left
 
 theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
     mfderiv I' (I.prod I') (fun y => (x₀, y)) y₀ =
       ContinuousLinearMap.inr 𝕜 (TangentSpace I x₀) (TangentSpace I' y₀) := by
-  refine' ((mdifferentiableAt_const I' I).mfderiv_prod (mdifferentiableAt_id I')).trans _
+  refine ((mdifferentiableAt_const I' I).mfderiv_prod (mdifferentiableAt_id I')).trans ?_
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inr]
 #align mfderiv_prod_right mfderiv_prod_right
 
@@ -415,7 +416,7 @@ theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
     mfderiv_snd, mfderiv_const, mfderiv_const]
   symm
   convert ContinuousLinearMap.comp_id <| mfderiv (.prod I I') I'' f (p.1, p.2)
-  · exact ContinuousLinearMap.coprod_inl_inr
+  exact ContinuousLinearMap.coprod_inl_inr
 #align mfderiv_prod_eq_add mfderiv_prod_eq_add
 
 end Prod

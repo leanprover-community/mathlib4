@@ -3,13 +3,14 @@ Copyright (c) 2020 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Logic.IsEmpty
-import Mathlib.Order.Basic
+import Batteries.Data.List.Lemmas
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Tactic.Cases
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Properties of `List.reduceOption`
@@ -24,12 +25,12 @@ variable {α β : Type*}
 @[simp]
 theorem reduceOption_cons_of_some (x : α) (l : List (Option α)) :
     reduceOption (some x :: l) = x :: l.reduceOption := by
-  simp only [reduceOption, filterMap, id.def, eq_self_iff_true, and_self_iff]
+  simp only [reduceOption, filterMap, id, eq_self_iff_true, and_self_iff]
 #align list.reduce_option_cons_of_some List.reduceOption_cons_of_some
 
 @[simp]
 theorem reduceOption_cons_of_none (l : List (Option α)) :
-    reduceOption (none :: l) = l.reduceOption := by simp only [reduceOption, filterMap, id.def]
+    reduceOption (none :: l) = l.reduceOption := by simp only [reduceOption, filterMap, id]
 #align list.reduce_option_cons_of_none List.reduceOption_cons_of_none
 
 @[simp]
@@ -74,7 +75,8 @@ theorem reduceOption_length_eq_iff {l : List (Option α)} :
 
 theorem reduceOption_length_lt_iff {l : List (Option α)} :
     l.reduceOption.length < l.length ↔ none ∈ l := by
-  rw [(reduceOption_length_le l).lt_iff_ne, Ne, reduceOption_length_eq_iff]
+  rw [Nat.lt_iff_le_and_ne, and_iff_right (reduceOption_length_le l), Ne,
+    reduceOption_length_eq_iff]
   induction l <;> simp [*]
   rw [@eq_comm _ none, ← Option.not_isSome_iff_eq_none, Decidable.imp_iff_not_or]
 #align list.reduce_option_length_lt_iff List.reduceOption_length_lt_iff
@@ -96,7 +98,7 @@ theorem reduceOption_concat_of_some (l : List (Option α)) (x : α) :
 #align list.reduce_option_concat_of_some List.reduceOption_concat_of_some
 
 theorem reduceOption_mem_iff {l : List (Option α)} {x : α} : x ∈ l.reduceOption ↔ some x ∈ l := by
-  simp only [reduceOption, id.def, mem_filterMap, exists_eq_right]
+  simp only [reduceOption, id, mem_filterMap, exists_eq_right]
 #align list.reduce_option_mem_iff List.reduceOption_mem_iff
 
 theorem reduceOption_get?_iff {l : List (Option α)} {x : α} :

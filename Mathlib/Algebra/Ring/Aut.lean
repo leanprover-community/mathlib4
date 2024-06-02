@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Aut
-import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Equiv
 
 #align_import algebra.ring.aut from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
@@ -30,8 +30,7 @@ RingAut
 
 
 /-- The group of ring automorphisms. -/
-@[reducible]
-def RingAut (R : Type*) [Mul R] [Add R] :=
+abbrev RingAut (R : Type*) [Mul R] [Add R] :=
   RingEquiv R R
 #align ring_aut RingAut
 
@@ -45,19 +44,14 @@ variable (R : Type*) [Mul R] [Add R]
 `fun g h => RingEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance : Group (RingAut R) :=
-  { mul := fun g h => RingEquiv.trans h g
-    one := RingEquiv.refl R
-    inv := RingEquiv.symm
-    div := _
-    npow := @npowRec _ ⟨RingEquiv.refl R⟩ ⟨fun g h => RingEquiv.trans h g⟩
-    zpow :=
-      @zpowRec _ ⟨RingEquiv.refl R⟩ ⟨fun g h => RingEquiv.trans h g⟩
-        ⟨RingEquiv.symm⟩
-    mul_assoc := by intros; rfl
-    one_mul := by intros; rfl
-    mul_one := by intros; rfl
-    mul_left_inv := by intros; ext; apply Equiv.left_inv }
+instance : Group (RingAut R) where
+  mul g h := RingEquiv.trans h g
+  one := RingEquiv.refl R
+  inv := RingEquiv.symm
+  mul_assoc := by intros; rfl
+  one_mul := by intros; rfl
+  mul_one := by intros; rfl
+  mul_left_inv := RingEquiv.self_trans_symm
 /- Porting note: was by
   refine_struct
     { mul := fun g h => RingEquiv.trans h g
@@ -104,7 +98,7 @@ section Semiring
 
 variable {G R : Type*} [Group G] [Semiring R]
 
-/-- The tautological action by the group of automorphism of a ring `R` on `R`.-/
+/-- The tautological action by the group of automorphism of a ring `R` on `R`. -/
 instance applyMulSemiringAction :
     MulSemiringAction (RingAut R) R where
   smul := (· <| ·)

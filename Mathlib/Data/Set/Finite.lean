@@ -42,6 +42,9 @@ instances since they do not compute anything.
 finite sets
 -/
 
+assert_not_exists OrderedRing
+assert_not_exists MonoidWithZero
+
 open Set Function
 
 universe u v w x
@@ -658,7 +661,7 @@ instance finite_biUnion' {ι : Type*} (s : Set ι) [Finite s] (t : ι → Set α
 #align finite.set.finite_bUnion' Finite.Set.finite_biUnion'
 
 /-- Example: `Finite (⋃ (i < n), f i)` where `f : ℕ → Set α` and `[∀ i, Finite (f i)]`
-(when given instances from `Data.Nat.Interval`).
+(when given instances from `Order.Interval.Finset.Nat`).
 -/
 instance finite_biUnion'' {ι : Type*} (p : ι → Prop) [h : Finite { x | p x }] (t : ι → Set α)
     [∀ i, Finite (t i)] : Finite (⋃ (x) (_ : p x), t x) :=
@@ -815,7 +818,7 @@ union `⋃ i, s i` is a finite set. -/
 theorem Finite.iUnion {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Finite)
     (hs : ∀ i ∈ t, (s i).Finite) (he : ∀ i, i ∉ t → s i = ∅) : (⋃ i, s i).Finite := by
   suffices ⋃ i, s i ⊆ ⋃ i ∈ t, s i by exact (ht.biUnion hs).subset this
-  refine' iUnion_subset fun i x hx => _
+  refine iUnion_subset fun i x hx => ?_
   by_cases hi : i ∈ t
   · exact mem_biUnion hi hx
   · rw [he i hi, mem_empty_iff_false] at hx
@@ -965,8 +968,8 @@ protected theorem Infinite.prod_right (ht : t.Infinite) (hs : s.Nonempty) : (s �
 
 protected theorem infinite_prod :
     (s ×ˢ t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty := by
-  refine' ⟨fun h => _, _⟩
-  · simp_rw [Set.Infinite, @and_comm ¬_, ← not_imp]
+  refine ⟨fun h => ?_, ?_⟩
+  · simp_rw [Set.Infinite, @and_comm ¬_, ← Classical.not_imp]
     by_contra!
     exact h ((this.1 h.nonempty.snd).prod <| this.2 h.nonempty.fst)
   · rintro (h | h)
@@ -1008,6 +1011,9 @@ theorem finite_mem_finset (s : Finset α) : { a | a ∈ s }.Finite :=
 theorem Subsingleton.finite {s : Set α} (h : s.Subsingleton) : s.Finite :=
   h.induction_on finite_empty finite_singleton
 #align set.subsingleton.finite Set.Subsingleton.finite
+
+theorem Infinite.nontrivial {s : Set α} (hs : s.Infinite) : s.Nontrivial :=
+  not_subsingleton_iff.1 <| mt Subsingleton.finite hs
 
 theorem finite_preimage_inl_and_inr {s : Set (Sum α β)} :
     (Sum.inl ⁻¹' s).Finite ∧ (Sum.inr ⁻¹' s).Finite ↔ s.Finite :=
@@ -1146,7 +1152,7 @@ theorem finite_subset_iUnion {s : Set α} (hs : s.Finite) {ι} {t : ι → Set �
     ∃ I : Set ι, I.Finite ∧ s ⊆ ⋃ i ∈ I, t i := by
   have := hs.to_subtype
   choose f hf using show ∀ x : s, ∃ i, x.1 ∈ t i by simpa [subset_def] using h
-  refine' ⟨range f, finite_range f, fun x hx => _⟩
+  refine ⟨range f, finite_range f, fun x hx => ?_⟩
   rw [biUnion_range, mem_iUnion]
   exact ⟨⟨x, hx⟩, hf _⟩
 #align set.finite_subset_Union Set.finite_subset_iUnion
@@ -1183,7 +1189,7 @@ theorem Finite.induction_on {C : Set α → Prop} {s : Set α} (h : s.Finite) (H
 @[elab_as_elim]
 theorem Finite.induction_on' {C : Set α → Prop} {S : Set α} (h : S.Finite) (H0 : C ∅)
     (H1 : ∀ {a s}, a ∈ S → s ⊆ S → a ∉ s → C s → C (insert a s)) : C S := by
-  refine' @Set.Finite.induction_on α (fun s => s ⊆ S → C s) S h (fun _ => H0) _ Subset.rfl
+  refine @Set.Finite.induction_on α (fun s => s ⊆ S → C s) S h (fun _ => H0) ?_ Subset.rfl
   intro a s has _ hCs haS
   rw [insert_subset_iff] at haS
   exact H1 haS.1 haS.2 has (hCs haS.2)
@@ -1231,7 +1237,7 @@ theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
   choose! c hc using h
   set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ := fun n g => c (range fun k : Iio n => g k.1 k.2)
   set u : ℕ → γ := fun n => Nat.strongRecOn' n f
-  refine' ⟨u, fun n => _⟩
+  refine ⟨u, fun n => ?_⟩
   convert hc (u '' Iio n) ((finite_lt_nat _).image _)
   rw [image_eq_range]
   exact Nat.strongRecOn'_beta
@@ -1387,6 +1393,10 @@ theorem infinite_image_iff {s : Set α} {f : α → β} (hi : InjOn f s) :
   not_congr <| finite_image_iff hi
 #align set.infinite_image_iff Set.infinite_image_iff
 
+theorem infinite_range_iff {f : α → β} (hi : Injective f) :
+    (range f).Infinite ↔ Infinite α := by
+  rw [← image_univ, infinite_image_iff (hi.injOn _), infinite_univ_iff]
+
 alias ⟨_, Infinite.image⟩ := infinite_image_iff
 #align set.infinite.image Set.Infinite.image
 
@@ -1409,7 +1419,7 @@ protected theorem Infinite.image2_right (ht : t.Infinite) (ha : a ∈ s) (hf : I
 
 theorem infinite_image2 (hfs : ∀ b ∈ t, InjOn (fun a => f a b) s) (hft : ∀ a ∈ s, InjOn (f a) t) :
     (image2 f s t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty := by
-  refine' ⟨fun h => Set.infinite_prod.1 _, _⟩
+  refine ⟨fun h => Set.infinite_prod.1 ?_, ?_⟩
   · rw [← image_uncurry_prod] at h
     exact h.of_image _
   · rintro (⟨hs, b, hb⟩ | ⟨ht, a, ha⟩)
@@ -1531,7 +1541,7 @@ theorem Finite.iSup_biInf_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonemp
     (hf : ∀ i ∈ s, Monotone (f i)) : ⨆ j, ⨅ i ∈ s, f i j = ⨅ i ∈ s, ⨆ j, f i j := by
   induction' s, hs using Set.Finite.dinduction_on with a s _ _ ihs hf
   · simp [iSup_const]
-  · rw [ball_insert_iff] at hf
+  · rw [forall_mem_insert] at hf
     simp only [iInf_insert, ← ihs hf.2]
     exact iSup_inf_of_monotone hf.1 fun j₁ j₂ hj => iInf₂_mono fun i hi => hf.2 i hi hj
 #align set.finite.supr_binfi_of_monotone Set.Finite.iSup_biInf_of_monotone
@@ -1611,7 +1621,7 @@ theorem iUnion_pi_of_monotone {ι ι' : Type*} [LinearOrder ι'] [Nonempty ι'] 
     ⋃ j : ι', I.pi (fun i => s i j) = I.pi fun i => ⋃ j, s i j := by
   simp only [pi_def, biInter_eq_iInter, preimage_iUnion]
   haveI := hI.fintype.finite
-  refine' iUnion_iInter_of_monotone (ι' := ι') (fun (i : I) j₁ j₂ h => _)
+  refine iUnion_iInter_of_monotone (ι' := ι') (fun (i : I) j₁ j₂ h => ?_)
   exact preimage_mono <| hs i i.2 h
 #align set.Union_pi_of_monotone Set.iUnion_pi_of_monotone
 
@@ -1636,11 +1646,11 @@ theorem Finite.exists_maximal_wrt [PartialOrder β] (f : α → β) (s : Set α)
       simp [h]
     rcases ih h with ⟨b, hb, ih⟩
     by_cases h : f b ≤ f a
-    · refine' ⟨a, Set.mem_insert _ _, fun c hc hac => le_antisymm hac _⟩
+    · refine ⟨a, Set.mem_insert _ _, fun c hc hac => le_antisymm hac ?_⟩
       rcases Set.mem_insert_iff.1 hc with (rfl | hcs)
       · rfl
       · rwa [← ih c hcs (le_trans h hac)]
-    · refine' ⟨b, Set.mem_insert_of_mem _ hb, fun c hc hbc => _⟩
+    · refine ⟨b, Set.mem_insert_of_mem _ hb, fun c hc hbc => ?_⟩
       rcases Set.mem_insert_iff.1 hc with (rfl | hcs)
       · exact (h hbc).elim
       · exact ih c hcs hbc
@@ -1667,16 +1677,16 @@ section
 
 variable [Preorder α] [IsDirected α (· ≤ ·)] [Nonempty α] {s : Set α}
 
-/-- A finite set is bounded above.-/
+/-- A finite set is bounded above. -/
 protected theorem Finite.bddAbove (hs : s.Finite) : BddAbove s :=
   Finite.induction_on hs bddAbove_empty fun _ _ h => h.insert _
 #align set.finite.bdd_above Set.Finite.bddAbove
 
-/-- A finite union of sets which are all bounded above is still bounded above.-/
+/-- A finite union of sets which are all bounded above is still bounded above. -/
 theorem Finite.bddAbove_biUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
     BddAbove (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddAbove (S i) :=
-  Finite.induction_on H (by simp only [biUnion_empty, bddAbove_empty, ball_empty_iff])
-    fun _ _ hs => by simp only [biUnion_insert, ball_insert_iff, bddAbove_union, hs]
+  Finite.induction_on H (by simp only [biUnion_empty, bddAbove_empty, forall_mem_empty])
+    fun _ _ hs => by simp only [biUnion_insert, forall_mem_insert, bddAbove_union, hs]
 #align set.finite.bdd_above_bUnion Set.Finite.bddAbove_biUnion
 
 theorem infinite_of_not_bddAbove : ¬BddAbove s → s.Infinite :=
@@ -1689,12 +1699,12 @@ section
 
 variable [Preorder α] [IsDirected α (· ≥ ·)] [Nonempty α] {s : Set α}
 
-/-- A finite set is bounded below.-/
+/-- A finite set is bounded below. -/
 protected theorem Finite.bddBelow (hs : s.Finite) : BddBelow s :=
   @Finite.bddAbove αᵒᵈ _ _ _ _ hs
 #align set.finite.bdd_below Set.Finite.bddBelow
 
-/-- A finite union of sets which are all bounded below is still bounded below.-/
+/-- A finite union of sets which are all bounded below is still bounded below. -/
 theorem Finite.bddBelow_biUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
     BddBelow (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddBelow (S i) :=
   @Finite.bddAbove_biUnion αᵒᵈ _ _ _ _ _ _ H
@@ -1736,7 +1746,7 @@ is finite. -/
 lemma Finite.of_forall_not_lt_lt (h : ∀ ⦃x y z : α⦄, x < y → y < z → False) : Finite α := by
   nontriviality α
   rcases exists_pair_ne α with ⟨x, y, hne⟩
-  refine' @Finite.of_fintype α ⟨{x, y}, fun z => _⟩
+  refine @Finite.of_fintype α ⟨{x, y}, fun z => ?_⟩
   simpa [hne] using eq_or_eq_or_eq_of_forall_not_lt_lt h z x y
 #align finite.of_forall_not_lt_lt Finite.of_forall_not_lt_lt
 
@@ -1758,17 +1768,13 @@ lemma Set.finite_diff_iUnion_Ioo' (s : Set α) : (s \ ⋃ x : s × s, Ioo x.1 x.
 lemma Directed.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} [Nonempty ι]
     {f : ι → Set α} (h : Directed (· ⊆ ·) f) {s : Finset α} (hs : (s : Set α) ⊆ ⋃ i, f i) :
     ∃ i, (s : Set α) ⊆ f i := by
-  classical
-  revert hs
-  refine s.induction_on ?_ ?_
-  · simp
-  intro b t _hbt htc hbtc
-  obtain ⟨i : ι, hti : (t : Set α) ⊆ f i⟩ := htc (Set.Subset.trans (t.subset_insert b) hbtc)
-  obtain ⟨j, hbj⟩ : ∃ j, b ∈ f j := by simpa [Set.mem_iUnion₂] using hbtc (t.mem_insert_self b)
-  rcases h j i with ⟨k, hk, hk'⟩
-  use k
-  rw [Finset.coe_insert, Set.insert_subset_iff]
-  exact ⟨hk hbj, _root_.trans hti hk'⟩
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons b t hbt iht =>
+    simp only [Finset.coe_cons, Set.insert_subset_iff, Set.mem_iUnion] at hs ⊢
+    rcases hs.imp_right iht with ⟨⟨i, hi⟩, j, hj⟩
+    rcases h i j with ⟨k, hik, hjk⟩
+    exact ⟨k, hik hi, hj.trans hjk⟩
 #align directed.exists_mem_subset_of_finset_subset_bUnion Directed.exists_mem_subset_of_finset_subset_biUnion
 
 theorem DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f : ι → Set α}

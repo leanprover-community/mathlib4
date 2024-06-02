@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Lex
 import Mathlib.Data.Char
+import Mathlib.Tactic.AdaptationNote
 
 #align_import data.string.basic from "leanprover-community/mathlib"@"d13b3a4a392ea7273dfa4727dbd1892e26cfd518"
 
@@ -75,15 +76,15 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) 
 theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList
   | ⟨s₁⟩, ⟨s₂⟩ => show ltb ⟨⟨s₁⟩, 0⟩ ⟨⟨s₂⟩, 0⟩ ↔ s₁ < s₂ by
     induction s₁ generalizing s₂ <;> cases s₂
-    · decide
+    · unfold ltb; decide
     · rename_i c₂ cs₂; apply iff_of_true
       · unfold ltb
-        -- Adaptation note: v4.7.0-rc1 exclude reduceMk from simp
+        #adaptation_note /-- v4.7.0-rc1 exclude reduceMk from simp -/
         simp [-reduceMk, Iterator.hasNext, csize_pos]
       · apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih; apply iff_of_false
       · unfold ltb
-        -- Adaptation note: v4.7.0-rc1 exclude reduceMk from simp
+        #adaptation_note /-- v4.7.0-rc1 exclude reduceMk from simp -/
         simp [-reduceMk, Iterator.hasNext]
       · apply not_lt_of_lt; apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih c₂ cs₂; unfold ltb
@@ -165,7 +166,7 @@ instance : LinearOrder String where
     apply le_total
   decidableLE := String.decidableLE
   compare_eq_compareOfLessAndEq a b := by
-    simp only [compare, compareOfLessAndEq, instLTString, List.instLTList, lt_iff_toList_lt, toList]
+    simp only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt, toList]
     split_ifs <;>
     simp only [List.lt_iff_lex_lt] at * <;>
     contradiction

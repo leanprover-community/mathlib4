@@ -3,7 +3,7 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Antoine Labelle
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.FreeModule.Basic
 
@@ -89,8 +89,8 @@ theorem projective_def :
 #align module.projective_def Module.projective_def
 
 theorem projective_def' :
-    Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.total P P R id ∘ₗ s = .id :=
-  by simp_rw [projective_def, DFunLike.ext_iff, Function.LeftInverse, comp_apply, id_apply]
+    Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.total P P R id ∘ₗ s = .id := by
+  simp_rw [projective_def, DFunLike.ext_iff, Function.LeftInverse, comp_apply, id_apply]
 #align module.projective_def' Module.projective_def'
 
 /-- A projective R-module has the property that maps from it lift along surjections. -/
@@ -157,7 +157,7 @@ theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := 
   -- get it from `ι → (P →₀ R)` coming from `b`.
   use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)
   intro m
-  simp only [b.constr_apply, mul_one, id.def, Finsupp.smul_single', Finsupp.total_single,
+  simp only [b.constr_apply, mul_one, id, Finsupp.smul_single', Finsupp.total_single,
     map_finsupp_sum]
   exact b.total_repr m
 #align module.projective_of_basis Module.Projective.of_basis

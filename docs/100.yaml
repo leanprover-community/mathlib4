@@ -8,7 +8,7 @@
   author : Chris Hughes
 3:
   title  : The Denumerability of the Rational Numbers
-  decl   : Rat.instDenumerableRat
+  decl   : Rat.instDenumerable
   author : Chris Hughes
 4:
   title  : Pythagorean Theorem
@@ -400,6 +400,11 @@
   author : Bolton Bailey, Patrick Stevens
 99:
   title  : Buffon Needle Problem
+  links  :
+  decls  :
+    - BuffonsNeedle.buffon_short
+    - BuffonsNeedle.buffon_long
+  author : Enrico Z. Borba
 100:
   title  : Descartes Rule of Signs
   links  :

@@ -70,14 +70,14 @@ theorem AccPt.nhds_inter {x : α} {U : Set α} (h_acc : AccPt x (𝓟 C)) (hU : 
 
 /-- A set `C` is preperfect if all of its points are accumulation points of itself.
 If `C` is nonempty and `α` is a T1 space, this is equivalent to the closure of `C` being perfect.
-See `preperfect_iff_perfect_closure`.-/
+See `preperfect_iff_perfect_closure`. -/
 def Preperfect (C : Set α) : Prop :=
   ∀ x ∈ C, AccPt x (𝓟 C)
 #align preperfect Preperfect
 
 /-- A set `C` is called perfect if it is closed and all of its
 points are accumulation points of itself.
-Note that we do not require `C` to be nonempty.-/
+Note that we do not require `C` to be nonempty. -/
 @[mk_iff perfect_def]
 structure Perfect (C : Set α) : Prop where
   closed : IsClosed C
@@ -97,7 +97,7 @@ A topological space `X` is said to be perfect if its universe is a perfect set.
 Equivalently, this means that `𝓝[≠] x ≠ ⊥` for every point `x : X`.
 -/
 @[mk_iff perfectSpace_def]
-class PerfectSpace: Prop :=
+class PerfectSpace : Prop :=
   univ_preperfect : Preperfect (Set.univ : Set α)
 
 theorem PerfectSpace.univ_perfect [PerfectSpace α] : Perfect (Set.univ : Set α) :=
@@ -128,7 +128,7 @@ theorem Preperfect.perfect_closure (hC : Preperfect C) : Perfect (closure C) := 
   exact hx
 #align preperfect.perfect_closure Preperfect.perfect_closure
 
-/-- In a T1 space, being preperfect is equivalent to having perfect closure.-/
+/-- In a T1 space, being preperfect is equivalent to having perfect closure. -/
 theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (closure C) := by
   constructor <;> intro h
   · exact h.perfect_closure
@@ -167,11 +167,11 @@ theorem Perfect.splitting [T25Space α] (hC : Perfect C) (hnonempty : C.Nonempty
   obtain ⟨U, xU, Uop, V, yV, Vop, hUV⟩ := exists_open_nhds_disjoint_closure hxy
   use closure (U ∩ C), closure (V ∩ C)
   constructor <;> rw [← and_assoc]
-  · refine' ⟨hC.closure_nhds_inter x xC xU Uop, _⟩
+  · refine ⟨hC.closure_nhds_inter x xC xU Uop, ?_⟩
     rw [hC.closed.closure_subset_iff]
     exact inter_subset_right _ _
   constructor
-  · refine' ⟨hC.closure_nhds_inter y yC yV Vop, _⟩
+  · refine ⟨hC.closure_nhds_inter y yC yV Vop, ?_⟩
     rw [hC.closed.closure_subset_iff]
     exact inter_subset_right _ _
   apply Disjoint.mono _ _ hUV <;> apply closure_mono <;> exact inter_subset_left _ _
@@ -182,7 +182,7 @@ end Preperfect
 section Kernel
 
 /-- The **Cantor-Bendixson Theorem**: Any closed subset of a second countable space
-can be written as the union of a countable set and a perfect set.-/
+can be written as the union of a countable set and a perfect set. -/
 theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
     (hclosed : IsClosed C) : ∃ V D : Set α, V.Countable ∧ Perfect D ∧ C = V ∪ D := by
   obtain ⟨b, bct, _, bbasis⟩ := TopologicalSpace.exists_countable_basis α
@@ -194,8 +194,8 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
     apply Countable.biUnion
     · exact Countable.mono (inter_subset_left _ _) bct
     · exact inter_subset_right _ _
-  refine' ⟨V ∩ C, D, Vct, ⟨_, _⟩, _⟩
-  · refine' hclosed.sdiff (isOpen_biUnion fun _ ↦ _)
+  refine ⟨V ∩ C, D, Vct, ⟨?_, ?_⟩, ?_⟩
+  · refine hclosed.sdiff (isOpen_biUnion fun _ ↦ ?_)
     exact fun ⟨Ub, _⟩ ↦ IsTopologicalBasis.isOpen bbasis Ub
   · rw [preperfect_iff_nhds]
     intro x xD E xE
@@ -218,11 +218,11 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
   · rw [inter_comm, inter_union_diff]
 #align exists_countable_union_perfect_of_is_closed exists_countable_union_perfect_of_isClosed
 
-/-- Any uncountable closed set in a second countable space contains a nonempty perfect subset.-/
+/-- Any uncountable closed set in a second countable space contains a nonempty perfect subset. -/
 theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTopology α]
     (hclosed : IsClosed C) (hunc : ¬C.Countable) : ∃ D : Set α, Perfect D ∧ D.Nonempty ∧ D ⊆ C := by
   rcases exists_countable_union_perfect_of_isClosed hclosed with ⟨V, D, Vct, Dperf, VD⟩
-  refine' ⟨D, ⟨Dperf, _⟩⟩
+  refine ⟨D, ⟨Dperf, ?_⟩⟩
   constructor
   · rw [nonempty_iff_ne_empty]
     by_contra h

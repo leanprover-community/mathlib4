@@ -136,9 +136,9 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
     convert (h.comp' _ (this.of_le le_top)).mono_of_mem _ using 1
     · ext y; simp only [mfld_simps]
-    refine' mem_nhdsWithin.mpr
+    refine mem_nhdsWithin.mpr
       ⟨I.symm ⁻¹' e.target, e.open_target.preimage I.continuous_symm, by
-        simp_rw [mem_preimage, I.left_inv, e.mapsTo hx], _⟩
+        simp_rw [mem_preimage, I.left_inv, e.mapsTo hx], ?_⟩
     mfld_set_tac
   congr_of_forall := by
     intro s x f g h hx hf
@@ -160,8 +160,8 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
 
 theorem contDiffWithinAtProp_mono_of_mem (n : ℕ∞) ⦃s x t⦄ ⦃f : H → H'⦄ (hts : s ∈ 𝓝[t] x)
     (h : ContDiffWithinAtProp I I' n f s x) : ContDiffWithinAtProp I I' n f t x := by
-  refine' h.mono_of_mem _
-  refine' inter_mem _ (mem_of_superset self_mem_nhdsWithin <| inter_subset_right _ _)
+  refine h.mono_of_mem ?_
+  refine inter_mem ?_ (mem_of_superset self_mem_nhdsWithin <| inter_subset_right _ _)
   rwa [← Filter.mem_map, ← I.image_eq, I.symm_map_nhdsWithin_image]
 #align cont_diff_within_at_prop_mono_of_mem contDiffWithinAtProp_mono_of_mem
 
@@ -182,8 +182,7 @@ def ContMDiffWithinAt (n : ℕ∞) (f : M → M') (s : Set M) (x : M) :=
 
 /-- Abbreviation for `ContMDiffWithinAt I I' ⊤ f s x`. See also documentation for `Smooth`.
 -/
-@[reducible]
-def SmoothWithinAt (f : M → M') (s : Set M) (x : M) :=
+abbrev SmoothWithinAt (f : M → M') (s : Set M) (x : M) :=
   ContMDiffWithinAt I I' ⊤ f s x
 #align smooth_within_at SmoothWithinAt
 
@@ -203,8 +202,7 @@ theorem contMDiffAt_iff {n : ℕ∞} {f : M → M'} {x : M} :
 #align cont_mdiff_at_iff contMDiffAt_iff
 
 /-- Abbreviation for `ContMDiffAt I I' ⊤ f x`. See also documentation for `Smooth`. -/
-@[reducible]
-def SmoothAt (f : M → M') (x : M) :=
+abbrev SmoothAt (f : M → M') (x : M) :=
   ContMDiffAt I I' ⊤ f x
 #align smooth_at SmoothAt
 
@@ -216,8 +214,7 @@ def ContMDiffOn (n : ℕ∞) (f : M → M') (s : Set M) :=
 #align cont_mdiff_on ContMDiffOn
 
 /-- Abbreviation for `ContMDiffOn I I' ⊤ f s`. See also documentation for `Smooth`. -/
-@[reducible]
-def SmoothOn (f : M → M') (s : Set M) :=
+abbrev SmoothOn (f : M → M') (s : Set M) :=
   ContMDiffOn I I' ⊤ f s
 #align smooth_on SmoothOn
 
@@ -234,9 +231,8 @@ apply fine to an assumption `SmoothFoo` using dot notation or normal notation.
 If the consequence `bar` of the lemma involves `ContDiff`, it is still better to restate
 the lemma replacing `ContDiff` with `Smooth` both in the assumption and in the conclusion,
 to make it possible to use `Smooth` consistently.
-This also applies to `SmoothAt`, `SmoothOn` and `SmoothWithinAt`.-/
-@[reducible]
-def Smooth (f : M → M') :=
+This also applies to `SmoothAt`, `SmoothOn` and `SmoothWithinAt`. -/
+abbrev Smooth (f : M → M') :=
   ContMDiff I I' ⊤ f
 #align smooth Smooth
 
@@ -245,8 +241,9 @@ variable {I I'}
 /-! ### Deducing smoothness from higher smoothness -/
 
 theorem ContMDiffWithinAt.of_le (hf : ContMDiffWithinAt I I' n f s x) (le : m ≤ n) :
-    ContMDiffWithinAt I I' m f s x :=
-  ⟨hf.1, hf.2.of_le le⟩
+    ContMDiffWithinAt I I' m f s x := by
+  simp only [ContMDiffWithinAt, LiftPropWithinAt] at hf ⊢
+  exact ⟨hf.1, hf.2.of_le le⟩
 #align cont_mdiff_within_at.of_le ContMDiffWithinAt.of_le
 
 theorem ContMDiffAt.of_le (hf : ContMDiffAt I I' n f x) (le : m ≤ n) : ContMDiffAt I I' m f x :=
@@ -327,8 +324,8 @@ theorem contMDiffWithinAt_iff :
     ContMDiffWithinAt I I' n f s x ↔
       ContinuousWithinAt f s x ∧
         ContDiffWithinAt 𝕜 n (extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm)
-          ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) :=
-  Iff.rfl
+          ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
+  simp_rw [ContMDiffWithinAt, liftPropWithinAt_iff']; rfl
 #align cont_mdiff_within_at_iff contMDiffWithinAt_iff
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
@@ -345,8 +342,9 @@ theorem contMDiffWithinAt_iff' :
         ContDiffWithinAt 𝕜 n (extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm)
           ((extChartAt I x).target ∩
             (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source))
-          (extChartAt I x x) :=
-  and_congr_right fun hc => contDiffWithinAt_congr_nhds <|
+          (extChartAt I x x) := by
+  simp only [ContMDiffWithinAt, liftPropWithinAt_iff']
+  exact and_congr_right fun hc => contDiffWithinAt_congr_nhds <|
     hc.nhdsWithin_extChartAt_symm_preimage_inter_range I I'
 #align cont_mdiff_within_at_iff' contMDiffWithinAt_iff'
 
@@ -355,7 +353,7 @@ point, and smoothness in the corresponding extended chart in the target. -/
 theorem contMDiffWithinAt_iff_target :
     ContMDiffWithinAt I I' n f s x ↔
       ContinuousWithinAt f s x ∧ ContMDiffWithinAt I 𝓘(𝕜, E') n (extChartAt I' (f x) ∘ f) s x := by
-  simp_rw [ContMDiffWithinAt, LiftPropWithinAt, ← and_assoc]
+  simp_rw [ContMDiffWithinAt, liftPropWithinAt_iff', ← and_assoc]
   have cont :
     ContinuousWithinAt f s x ∧ ContinuousWithinAt (extChartAt I' (f x) ∘ f) s x ↔
         ContinuousWithinAt f s x :=
@@ -382,8 +380,8 @@ theorem smoothWithinAt_iff_target :
 
 theorem contMDiffAt_iff_target {x : M} :
     ContMDiffAt I I' n f x ↔
-      ContinuousAt f x ∧ ContMDiffAt I 𝓘(𝕜, E') n (extChartAt I' (f x) ∘ f) x :=
-  by rw [ContMDiffAt, ContMDiffAt, contMDiffWithinAt_iff_target, continuousWithinAt_univ]
+      ContinuousAt f x ∧ ContMDiffAt I 𝓘(𝕜, E') n (extChartAt I' (f x) ∘ f) x := by
+  rw [ContMDiffAt, ContMDiffAt, contMDiffWithinAt_iff_target, continuousWithinAt_univ]
 #align cont_mdiff_at_iff_target contMDiffAt_iff_target
 
 theorem smoothAt_iff_target {x : M} :
@@ -409,7 +407,7 @@ theorem contMDiffWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I M)
         ContDiffWithinAt 𝕜 n (e'.extend I' ∘ f ∘ (e.extend I).symm) (e.extend I '' s)
           (e.extend I x) := by
   rw [contMDiffWithinAt_iff_of_mem_maximalAtlas he he' hx hy, and_congr_right_iff]
-  refine' fun _ => contDiffWithinAt_congr_nhds _
+  refine fun _ => contDiffWithinAt_congr_nhds ?_
   simp_rw [nhdsWithin_eq_iff_eventuallyEq, e.extend_symm_preimage_inter_range_eventuallyEq I hs hx]
 #align cont_mdiff_within_at_iff_image contMDiffWithinAt_iff_image
 
@@ -432,12 +430,12 @@ theorem contMDiffWithinAt_iff_of_mem_source' {x' : M} {y : M'} (hx : x' ∈ (cha
         ContDiffWithinAt 𝕜 n (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
           ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' y).source))
           (extChartAt I x x') := by
-  refine' (contMDiffWithinAt_iff_of_mem_source hx hy).trans _
+  refine (contMDiffWithinAt_iff_of_mem_source hx hy).trans ?_
   rw [← extChartAt_source I] at hx
   rw [← extChartAt_source I'] at hy
   rw [and_congr_right_iff]
   set e := extChartAt I x; set e' := extChartAt I' (f x)
-  refine' fun hc => contDiffWithinAt_congr_nhds _
+  refine fun hc => contDiffWithinAt_congr_nhds ?_
   rw [← e.image_source_inter_eq', ← map_extChartAt_nhdsWithin_eq_image' I hx, ←
     map_extChartAt_nhdsWithin' I hx, inter_comm, nhdsWithin_inter_of_mem]
   exact hc (extChartAt_source_mem_nhds' _ hy)
@@ -557,7 +555,7 @@ theorem contMDiffOn_iff :
               (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' y).source)) := by
   constructor
   · intro h
-    refine' ⟨fun x hx => (h x hx).1, fun x y z hz => _⟩
+    refine ⟨fun x hx => (h x hx).1, fun x y z hz => ?_⟩
     simp only [mfld_simps] at hz
     let w := (extChartAt I x).symm z
     have : w ∈ s := by simp only [w, hz, mfld_simps]
@@ -568,8 +566,8 @@ theorem contMDiffOn_iff :
     · simp only [w, hz, mfld_simps]
     · mfld_set_tac
   · rintro ⟨hcont, hdiff⟩ x hx
-    refine' (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_iff.mpr _
-    refine' ⟨hcont x hx, _⟩
+    refine (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_iff.mpr ?_
+    refine ⟨hcont x hx, ?_⟩
     dsimp [ContDiffWithinAtProp]
     convert hdiff x (f x) (extChartAt I x x) (by simp only [hx, mfld_simps]) using 1
     mfld_set_tac
@@ -587,7 +585,7 @@ theorem contMDiffOn_iff_target :
     PartialHomeomorph.extend, Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
   intro h
   constructor
-  · refine' fun h' y => ⟨_, fun x _ => h' x y⟩
+  · refine fun h' y => ⟨?_, fun x _ => h' x y⟩
     have h'' : ContinuousOn _ univ := (ModelWithCorners.continuous I').continuousOn
     convert (h''.comp' (chartAt H' y).continuousOn_toFun).comp' h
     simp
@@ -618,8 +616,8 @@ theorem contMDiff_iff :
         ∀ (x : M) (y : M'),
           ContDiffOn 𝕜 n (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
             ((extChartAt I x).target ∩
-              (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' y).source)) :=
-  by simp [← contMDiffOn_univ, contMDiffOn_iff, continuous_iff_continuousOn_univ]
+              (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' y).source)) := by
+  simp [← contMDiffOn_univ, contMDiffOn_iff, continuous_iff_continuousOn_univ]
 #align cont_mdiff_iff contMDiff_iff
 
 /-- One can reformulate smoothness as continuity and smoothness in any extended chart in the
@@ -711,7 +709,7 @@ theorem contMDiff_top : Smooth I I' f ↔ ∀ n : ℕ, ContMDiff I I' n f :=
 
 theorem contMDiffWithinAt_iff_nat :
     ContMDiffWithinAt I I' n f s x ↔ ∀ m : ℕ, (m : ℕ∞) ≤ n → ContMDiffWithinAt I I' m f s x := by
-  refine' ⟨fun h m hm => h.of_le hm, fun h => _⟩
+  refine ⟨fun h m hm => h.of_le hm, fun h => ?_⟩
   cases' n with n
   · exact contMDiffWithinAt_top.2 fun n => h n le_top
   · exact h n le_rfl
@@ -803,7 +801,7 @@ theorem contMDiffOn_iff_source_of_mem_maximalAtlas (he : e ∈ maximalAtlas I M)
     ContMDiffOn I I' n f s ↔
       ContMDiffOn 𝓘(𝕜, E) I' n (f ∘ (e.extend I).symm) (e.extend I '' s) := by
   simp_rw [ContMDiffOn, Set.forall_mem_image]
-  refine' forall₂_congr fun x hx => _
+  refine forall₂_congr fun x hx => ?_
   rw [contMDiffWithinAt_iff_source_of_mem_maximalAtlas he (hs hx)]
   apply contMDiffWithinAt_congr_nhds
   simp_rw [nhdsWithin_eq_iff_eventuallyEq,
@@ -854,10 +852,10 @@ theorem contMDiffAt_iff_contMDiffOn_nhds {n : ℕ} :
 `C^n` on some neighborhood of `x`, but this neighborhood can depend on `n`. -/
 theorem contMDiffAt_iff_contMDiffAt_nhds {n : ℕ} :
     ContMDiffAt I I' n f x ↔ ∀ᶠ x' in 𝓝 x, ContMDiffAt I I' n f x' := by
-  refine' ⟨_, fun h => h.self_of_nhds⟩
+  refine ⟨?_, fun h => h.self_of_nhds⟩
   rw [contMDiffAt_iff_contMDiffOn_nhds]
   rintro ⟨u, hu, h⟩
-  refine' (eventually_mem_nhds.mpr hu).mono fun x' hx' => _
+  refine (eventually_mem_nhds.mpr hu).mono fun x' hx' => ?_
   exact (h x' <| mem_of_mem_nhds hx').contMDiffAt hx'
 #align cont_mdiff_at_iff_cont_mdiff_at_nhds contMDiffAt_iff_contMDiffAt_nhds
 

@@ -255,7 +255,7 @@ private theorem nat_prop (r : ℕ) : innerProp' E (r : 𝕜) := fun x y => by
 private theorem int_prop (n : ℤ) : innerProp' E (n : 𝕜) := by
   intro x y
   rw [← n.sign_mul_natAbs]
-  simp only [Int.cast_ofNat, map_natCast, map_intCast, Int.cast_mul, map_mul, mul_smul]
+  simp only [Int.cast_natCast, map_natCast, map_intCast, Int.cast_mul, map_mul, mul_smul]
   obtain hn | rfl | hn := lt_trichotomy n 0
   · rw [Int.sign_eq_neg_one_of_neg hn, innerProp_neg_one ((n.natAbs : 𝕜) • x), nat]
     simp only [map_neg, neg_mul, one_mul, mul_eq_mul_left_iff, true_or_iff, Int.natAbs_eq_zero,
@@ -280,7 +280,7 @@ private theorem real_prop (r : ℝ) : innerProp' E (r : 𝕜) := by
   intro x y
   revert r
   rw [← Function.funext_iff]
-  refine' Rat.denseEmbedding_coe_real.dense.equalizer _ _ (funext fun X => _)
+  refine Rat.denseEmbedding_coe_real.dense.equalizer ?_ ?_ (funext fun X => ?_)
   · exact (continuous_ofReal.smul continuous_const).inner_ continuous_const
   · exact (continuous_conj.comp continuous_ofReal).mul continuous_const
   · simp only [Function.comp_apply, RCLike.ofReal_ratCast, rat_prop _ _]

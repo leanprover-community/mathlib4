@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient
-import Mathlib.RingTheory.Ideal.Operations
 
 #align_import algebra.char_p.quotient from "leanprover-community/mathlib"@"85e3c05a94b27c84dc6f234cf88326d5e0096ec3"
 
@@ -38,7 +38,7 @@ theorem quotient' {R : Type*} [CommRing R] (p : ℕ) [CharP R p] (I : Ideal R)
     (h : ∀ x : ℕ, (x : R) ∈ I → (x : R) = 0) : CharP (R ⧸ I) p :=
   ⟨fun x => by
     rw [← cast_eq_zero_iff R p x, ← map_natCast (Ideal.Quotient.mk I)]
-    refine' Ideal.Quotient.eq.trans (_ : ↑x - 0 ∈ I ↔ _)
+    refine Ideal.Quotient.eq.trans (?_ : ↑x - 0 ∈ I ↔ _)
     rw [sub_zero]
     exact ⟨h x, fun h' => h'.symm ▸ I.zero_mem⟩⟩
 #align char_p.quotient' CharP.quotient'
@@ -60,7 +60,8 @@ end CharP
 theorem Ideal.Quotient.index_eq_zero {R : Type*} [CommRing R] (I : Ideal R) :
     (↑I.toAddSubgroup.index : R ⧸ I) = 0 := by
   rw [AddSubgroup.index, Nat.card_eq]
-  split_ifs with hq; swap; simp
+  split_ifs with hq; swap
+  · simp
   letI : Fintype (R ⧸ I) := @Fintype.ofFinite _ hq
   exact CharP.cast_card_eq_zero (R ⧸ I)
 #align ideal.quotient.index_eq_zero Ideal.Quotient.index_eq_zero

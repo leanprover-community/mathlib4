@@ -34,8 +34,8 @@ def IsEquipartition : Prop :=
 theorem isEquipartition_iff_card_parts_eq_average :
     P.IsEquipartition ↔
       ∀ a : Finset α,
-        a ∈ P.parts → a.card = s.card / P.parts.card ∨ a.card = s.card / P.parts.card + 1 :=
-  by simp_rw [IsEquipartition, Finset.equitableOn_iff, P.sum_card_parts]
+        a ∈ P.parts → a.card = s.card / P.parts.card ∨ a.card = s.card / P.parts.card + 1 := by
+  simp_rw [IsEquipartition, Finset.equitableOn_iff, P.sum_card_parts]
 #align finpartition.is_equipartition_iff_card_parts_eq_average Finpartition.isEquipartition_iff_card_parts_eq_average
 
 variable {P}
@@ -44,10 +44,10 @@ lemma not_isEquipartition :
     ¬P.IsEquipartition ↔ ∃ a ∈ P.parts, ∃ b ∈ P.parts, Finset.card b + 1 < Finset.card a :=
   Set.not_equitableOn
 
-theorem Set.Subsingleton.isEquipartition (h : (P.parts : Set (Finset α)).Subsingleton) :
+theorem _root_.Set.Subsingleton.isEquipartition (h : (P.parts : Set (Finset α)).Subsingleton) :
     P.IsEquipartition :=
   Set.Subsingleton.equitableOn h _
-#align finpartition.set.subsingleton.is_equipartition Finpartition.Set.Subsingleton.isEquipartition
+#align finpartition.set.subsingleton.is_equipartition Set.Subsingleton.isEquipartition
 
 theorem IsEquipartition.card_parts_eq_average (hP : P.IsEquipartition) (ht : t ∈ P.parts) :
     t.card = s.card / P.parts.card ∨ t.card = s.card / P.parts.card + 1 :=

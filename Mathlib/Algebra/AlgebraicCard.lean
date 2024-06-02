@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Data.Polynomial.Cardinal
+import Mathlib.Algebra.Polynomial.Cardinal
 import Mathlib.RingTheory.Algebraic
 
 #align_import algebra.algebraic_card from "leanprover-community/mathlib"@"40494fe75ecbd6d2ec61711baa630cf0a7b7d064"
@@ -46,7 +46,7 @@ theorem cardinal_mk_lift_le_mul :
     Cardinal.lift.{u} #{ x : A // IsAlgebraic R x } ≤ Cardinal.lift.{v} #R[X] * ℵ₀ := by
   rw [← mk_uLift, ← mk_uLift]
   choose g hg₁ hg₂ using fun x : { x : A | IsAlgebraic R x } => x.coe_prop
-  refine' lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le g fun f => _
+  refine lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le g fun f => ?_
   rw [lift_le_aleph0, le_aleph0_iff_set_countable]
   suffices MapsTo (↑) (g ⁻¹' {f}) (f.rootSet A) from
     this.countable_of_injOn (Subtype.coe_injective.injOn _) (f.rootSet_finite A).countable

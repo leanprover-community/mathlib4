@@ -40,7 +40,7 @@ open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
 open ENNReal (ofReal)
 
-open scoped BigOperators ENNReal NNReal Topology
+open scoped ENNReal NNReal Topology
 
 /-!
 ### Definition of the Lebesgue measure and lengths of intervals
@@ -60,11 +60,11 @@ theorem volume_eq_stieltjes_id : (volume : Measure ℝ) = StieltjesFunction.id.m
         Real.measure_ext_Ioo_rat fun p q => by
           simp only [Measure.map_apply (measurable_const_add a) measurableSet_Ioo,
             sub_sub_sub_cancel_right, StieltjesFunction.measure_Ioo, StieltjesFunction.id_leftLim,
-            StieltjesFunction.id_apply, id.def, preimage_const_add_Ioo]⟩
+            StieltjesFunction.id_apply, id, preimage_const_add_Ioo]⟩
   have A : StieltjesFunction.id.measure (stdOrthonormalBasis ℝ ℝ).toBasis.parallelepiped = 1 := by
     change StieltjesFunction.id.measure (parallelepiped (stdOrthonormalBasis ℝ ℝ)) = 1
     rcases parallelepiped_orthonormalBasis_one_dim (stdOrthonormalBasis ℝ ℝ) with (H | H) <;>
-      simp only [H, StieltjesFunction.measure_Icc, StieltjesFunction.id_apply, id.def, tsub_zero,
+      simp only [H, StieltjesFunction.measure_Icc, StieltjesFunction.id_apply, id, tsub_zero,
         StieltjesFunction.id_leftLim, sub_neg_eq_add, zero_add, ENNReal.ofReal_one]
   conv_rhs =>
     rw [addHaarMeasure_unique StieltjesFunction.id.measure
@@ -200,7 +200,7 @@ theorem volume_le_diam (s : Set ℝ) : volume s ≤ EMetric.diam s := by
 theorem _root_.Filter.Eventually.volume_pos_of_nhds_real {p : ℝ → Prop} {a : ℝ}
     (h : ∀ᶠ x in 𝓝 a, p x) : (0 : ℝ≥0∞) < volume { x | p x } := by
   rcases h.exists_Ioo_subset with ⟨l, u, hx, hs⟩
-  refine' lt_of_lt_of_le _ (measure_mono hs)
+  refine lt_of_lt_of_le ?_ (measure_mono hs)
   simpa [-mem_Ioo] using hx.1.trans hx.2
 #align filter.eventually.volume_pos_of_nhds_real Filter.Eventually.volume_pos_of_nhds_real
 
@@ -273,7 +273,7 @@ theorem volume_pi_le_prod_diam (s : Set (ι → ℝ)) :
     volume s ≤ volume (pi univ fun i => closure (Function.eval i '' s)) :=
       volume.mono <|
         Subset.trans (subset_pi_eval_image univ s) <| pi_mono fun _ _ => subset_closure
-    _ = ∏ i, volume (closure <| Function.eval i '' s) := (volume_pi_pi _)
+    _ = ∏ i, volume (closure <| Function.eval i '' s) := volume_pi_pi _
     _ ≤ ∏ i : ι, EMetric.diam (Function.eval i '' s) :=
       Finset.prod_le_prod' fun _ _ => (volume_le_diam _).trans_eq (EMetric.diam_closure _)
 #align real.volume_pi_le_prod_diam Real.volume_pi_le_prod_diam
@@ -294,7 +294,7 @@ theorem volume_pi_le_diam_pow (s : Set (ι → ℝ)) : volume s ≤ EMetric.diam
 
 theorem smul_map_volume_mul_left {a : ℝ} (h : a ≠ 0) :
     ENNReal.ofReal |a| • Measure.map (a * ·) volume = volume := by
-  refine' (Real.measure_ext_Ioo_rat fun p q => _).symm
+  refine (Real.measure_ext_Ioo_rat fun p q => ?_).symm
   cases' lt_or_gt_of_ne h with h h
   · simp only [Real.volume_Ioo, Measure.smul_apply, ← ENNReal.ofReal_mul (le_of_lt <| neg_pos.2 h),
       Measure.map_apply (measurable_const_mul a) measurableSet_Ioo, neg_sub_neg, neg_mul,
@@ -353,7 +353,7 @@ uses this particular case). -/
 theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (diagonal D) ≠ 0) :
     ENNReal.ofReal (abs (det (diagonal D))) • Measure.map (toLin' (diagonal D)) volume =
       volume := by
-  refine' (Measure.pi_eq fun s hs => _).symm
+  refine (Measure.pi_eq fun s hs => ?_).symm
   simp only [det_diagonal, Measure.coe_smul, Algebra.id.smul_eq_mul, Pi.smul_apply]
   rw [Measure.map_apply _ (MeasurableSet.univ_pi hs)]
   swap; · exact Continuous.measurable (LinearMap.continuous_on_pi _)
@@ -456,8 +456,8 @@ variable [MeasurableSpace α] {μ : Measure α} {f g : α → ℝ} {s : Set α}
 theorem measurableSet_regionBetween (hf : Measurable f) (hg : Measurable g) (hs : MeasurableSet s) :
     MeasurableSet (regionBetween f g s) := by
   dsimp only [regionBetween, Ioo, mem_setOf_eq, setOf_and]
-  refine'
-    MeasurableSet.inter _
+  refine
+    MeasurableSet.inter ?_
       ((measurableSet_lt (hf.comp measurable_fst) measurable_snd).inter
         (measurableSet_lt measurable_snd (hg.comp measurable_fst)))
   exact measurable_fst hs
@@ -469,8 +469,8 @@ theorem measurableSet_region_between_oc (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Ioc (f p.fst) (g p.fst) } := by
   dsimp only [regionBetween, Ioc, mem_setOf_eq, setOf_and]
-  refine'
-    MeasurableSet.inter _
+  refine
+    MeasurableSet.inter ?_
       ((measurableSet_lt (hf.comp measurable_fst) measurable_snd).inter
         (measurableSet_le measurable_snd (hg.comp measurable_fst)))
   exact measurable_fst hs
@@ -482,8 +482,8 @@ theorem measurableSet_region_between_co (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Ico (f p.fst) (g p.fst) } := by
   dsimp only [regionBetween, Ico, mem_setOf_eq, setOf_and]
-  refine'
-    MeasurableSet.inter _
+  refine
+    MeasurableSet.inter ?_
       ((measurableSet_le (hf.comp measurable_fst) measurable_snd).inter
         (measurableSet_lt measurable_snd (hg.comp measurable_fst)))
   exact measurable_fst hs
@@ -495,16 +495,17 @@ theorem measurableSet_region_between_cc (hf : Measurable f) (hg : Measurable g)
     (hs : MeasurableSet s) :
     MeasurableSet { p : α × ℝ | p.fst ∈ s ∧ p.snd ∈ Icc (f p.fst) (g p.fst) } := by
   dsimp only [regionBetween, Icc, mem_setOf_eq, setOf_and]
-  refine'
-    MeasurableSet.inter _
+  refine
+    MeasurableSet.inter ?_
       ((measurableSet_le (hf.comp measurable_fst) measurable_snd).inter
         (measurableSet_le measurable_snd (hg.comp measurable_fst)))
   exact measurable_fst hs
 #align measurable_set_region_between_cc measurableSet_region_between_cc
 
 /-- The graph of a measurable function is a measurable set. -/
-theorem measurableSet_graph (hf : Measurable f) : MeasurableSet { p : α × ℝ | p.snd = f p.fst } :=
-  by simpa using measurableSet_region_between_cc hf hf MeasurableSet.univ
+theorem measurableSet_graph (hf : Measurable f) :
+    MeasurableSet { p : α × ℝ | p.snd = f p.fst } := by
+  simpa using measurableSet_region_between_cc hf hf MeasurableSet.univ
 #align measurable_set_graph measurableSet_graph
 
 theorem volume_regionBetween_eq_lintegral' (hf : Measurable f) (hg : Measurable g)

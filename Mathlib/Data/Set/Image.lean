@@ -3,7 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.WithBot
 
 #align_import data.set.image from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
@@ -29,8 +29,6 @@ import Mathlib.Order.WithBot
 set, sets, image, preimage, pre-image, range
 
 -/
-
-set_option autoImplicit true
 
 universe u v
 
@@ -207,6 +205,7 @@ variable {f : α → β} {s t : Set α}
 -- Porting note: `Set.image` is already defined in `Init.Set`
 #align set.image Set.image
 
+@[deprecated mem_image] -- 2024-03-23
 theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
     y ∈ f '' s ↔ ∃ (x : _) (_ : x ∈ s), f x = y :=
   bex_def.symm
@@ -377,8 +376,9 @@ theorem image_id (s : Set α) : id '' s = s := by simp
 #align set.image_id Set.image_id
 
 lemma image_iterate_eq {f : α → α} {n : ℕ} : image (f^[n]) = (image f)^[n] := by
-  induction' n with n ih; · simp
-  rw [iterate_succ', iterate_succ',← ih, image_comp_eq]
+  induction n with
+  | zero => simp
+  | succ n ih => rw [iterate_succ', iterate_succ', ← ih, image_comp_eq]
 
 theorem compl_compl_image [BooleanAlgebra α] (S : Set α) :
     HasCompl.compl '' (HasCompl.compl '' S) = S := by
@@ -533,8 +533,8 @@ theorem image_inter_nonempty_iff {f : α → β} {s : Set α} {t : Set β} :
   rw [← image_inter_preimage, image_nonempty]
 #align set.image_inter_nonempty_iff Set.image_inter_nonempty_iff
 
-theorem image_diff_preimage {f : α → β} {s : Set α} {t : Set β} : f '' (s \ f ⁻¹' t) = f '' s \ t :=
-  by simp_rw [diff_eq, ← preimage_compl, image_inter_preimage]
+theorem image_diff_preimage {f : α → β} {s : Set α} {t : Set β} :
+    f '' (s \ f ⁻¹' t) = f '' s \ t := by simp_rw [diff_eq, ← preimage_compl, image_inter_preimage]
 #align set.image_diff_preimage Set.image_diff_preimage
 
 theorem compl_image : image (compl : Set α → Set α) = preimage compl :=
@@ -1056,10 +1056,10 @@ theorem surjective_onto_range : Surjective (rangeFactorization f) := fun ⟨_, �
 theorem image_eq_range (f : α → β) (s : Set α) : f '' s = range fun x : s => f x := by
   ext
   constructor
-  rintro ⟨x, h1, h2⟩
-  exact ⟨⟨x, h1⟩, h2⟩
-  rintro ⟨⟨x, h1⟩, h2⟩
-  exact ⟨x, h1, h2⟩
+  · rintro ⟨x, h1, h2⟩
+    exact ⟨⟨x, h1⟩, h2⟩
+  · rintro ⟨⟨x, h1⟩, h2⟩
+    exact ⟨x, h1, h2⟩
 #align set.image_eq_range Set.image_eq_range
 
 theorem _root_.Sum.range_eq (f : Sum α β → γ) :
@@ -1084,8 +1084,8 @@ theorem range_ite_subset' {p : Prop} [Decidable p] {f g : α → β} :
 theorem range_ite_subset {p : α → Prop} [DecidablePred p] {f g : α → β} :
     (range fun x => if p x then f x else g x) ⊆ range f ∪ range g := by
   rw [range_subset_iff]; intro x; by_cases h : p x
-  simp only [if_pos h, mem_union, mem_range, exists_apply_eq_apply, true_or]
-  simp [if_neg h, mem_union, mem_range_self]
+  · simp only [if_pos h, mem_union, mem_range, exists_apply_eq_apply, true_or]
+  · simp [if_neg h, mem_union, mem_range_self]
 #align set.range_ite_subset Set.range_ite_subset
 
 @[simp]
@@ -1249,7 +1249,7 @@ end Set
 
 namespace Function
 
-variable {ι : Sort*} {f : α → β}
+variable {α β : Type*} {ι : Sort*} {f : α → β}
 
 open Set
 
@@ -1299,7 +1299,7 @@ theorem Surjective.preimage_subset_preimage_iff {s t : Set β} (hf : Surjective 
   apply subset_univ
 #align function.surjective.preimage_subset_preimage_iff Function.Surjective.preimage_subset_preimage_iff
 
-theorem Surjective.range_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
+theorem Surjective.range_comp {ι' : Sort*} {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     range (g ∘ f) = range g :=
   ext fun y => (@Surjective.exists _ _ _ hf fun x => g x = y).symm
 #align function.surjective.range_comp Function.Surjective.range_comp
@@ -1323,8 +1323,8 @@ theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) :
     simp [hx]
 #align function.injective.compl_image_eq Function.Injective.compl_image_eq
 
-theorem LeftInverse.image_image {g : β → α} (h : LeftInverse g f) (s : Set α) : g '' (f '' s) = s :=
-  by rw [← image_comp, h.comp_eq_id, image_id]
+theorem LeftInverse.image_image {g : β → α} (h : LeftInverse g f) (s : Set α) :
+    g '' (f '' s) = s := by rw [← image_comp, h.comp_eq_id, image_id]
 #align function.left_inverse.image_image Function.LeftInverse.image_image
 
 theorem LeftInverse.preimage_preimage {g : β → α} (h : LeftInverse g f) (s : Set α) :
@@ -1338,9 +1338,10 @@ protected theorem Involutive.preimage {f : α → α} (hf : Involutive f) : Invo
 end Function
 
 namespace EquivLike
-variable {E : Type*} [EquivLike E ι ι']
 
-@[simp] lemma range_comp (f : ι' → α) (e : E) : range (f ∘ e) = range f :=
+variable {ι ι' : Sort*} {E : Type*} [EquivLike E ι ι']
+
+@[simp] lemma range_comp {α : Type*} (f : ι' → α) (e : E) : range (f ∘ e) = range f :=
   (EquivLike.surjective _).range_comp _
 #align equiv_like.range_comp EquivLike.range_comp
 
@@ -1548,12 +1549,12 @@ theorem image_injective : Injective (image f) ↔ Injective f := by
   rw [image_singleton, image_singleton, hx]
 #align set.image_injective Set.image_injective
 
-theorem preimage_eq_iff_eq_image {f : α → β} (hf : Bijective f) {s t} : f ⁻¹' s = t ↔ s = f '' t :=
-  by rw [← image_eq_image hf.1, hf.2.image_preimage]
+theorem preimage_eq_iff_eq_image {f : α → β} (hf : Bijective f) {s t} :
+    f ⁻¹' s = t ↔ s = f '' t := by rw [← image_eq_image hf.1, hf.2.image_preimage]
 #align set.preimage_eq_iff_eq_image Set.preimage_eq_iff_eq_image
 
-theorem eq_preimage_iff_image_eq {f : α → β} (hf : Bijective f) {s t} : s = f ⁻¹' t ↔ f '' s = t :=
-  by rw [← image_eq_image hf.1, hf.2.image_preimage]
+theorem eq_preimage_iff_image_eq {f : α → β} (hf : Bijective f) {s t} :
+    s = f ⁻¹' t ↔ f '' s = t := by rw [← image_eq_image hf.1, hf.2.image_preimage]
 #align set.eq_preimage_iff_image_eq Set.eq_preimage_iff_image_eq
 
 end ImagePreimage
@@ -1569,6 +1570,15 @@ theorem Disjoint.preimage (f : α → β) {s t : Set β} (h : Disjoint s t) :
     Disjoint (f ⁻¹' s) (f ⁻¹' t) :=
   disjoint_iff_inf_le.mpr fun _ hx => h.le_bot hx
 #align disjoint.preimage Disjoint.preimage
+
+lemma Codisjoint.preimage (f : α → β) {s t : Set β} (h : Codisjoint s t) :
+    Codisjoint (f ⁻¹' s) (f ⁻¹' t) := by
+  simp only [codisjoint_iff_le_sup, Set.sup_eq_union, top_le_iff, ← Set.preimage_union] at h ⊢
+  rw [h]; rfl
+
+lemma IsCompl.preimage (f : α → β) {s t : Set β} (h : IsCompl s t) :
+    IsCompl (f ⁻¹' s) (f ⁻¹' t) :=
+  ⟨h.1.preimage f, h.2.preimage f⟩
 
 namespace Set
 
@@ -1605,8 +1615,8 @@ theorem disjoint_preimage_iff (hf : Surjective f) {s t : Set β} :
 #align set.disjoint_preimage_iff Set.disjoint_preimage_iff
 
 theorem preimage_eq_empty {s : Set β} (h : Disjoint s (range f)) :
-    f ⁻¹' s = ∅ :=
-  by simpa using h.preimage f
+    f ⁻¹' s = ∅ := by
+  simpa using h.preimage f
 #align set.preimage_eq_empty Set.preimage_eq_empty
 
 theorem preimage_eq_empty_iff {s : Set β} : f ⁻¹' s = ∅ ↔ Disjoint s (range f) :=
