@@ -26,7 +26,7 @@ namespace SheafOfModules
 variable {R R' : Sheaf J RingCat.{u}} (α : R ⟶ R')
 
 /-- The restriction of scalars functor `SheafOfModules R' ⥤ SheafOfModules R`
-induced by a morphism of sheaves of rings `R ⟶ R`. -/
+induced by a morphism of sheaves of rings `R ⟶ R'`. -/
 noncomputable def restrictScalars :
     SheafOfModules.{v} R' ⥤ SheafOfModules.{v} R where
   obj M' :=
