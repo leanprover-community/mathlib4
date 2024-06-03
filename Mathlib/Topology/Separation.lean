@@ -2308,22 +2308,17 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
     rw [not_nonempty_iff_eq_empty.mp c₀_empty] at c₀_cov
     simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty] at c₀_cov
     exact eq_empty_of_subset_empty c₀_cov
-  have : c.Nonempty := nonempty_lemma c h u h_nonempty c_cov
-  rw [Set.countable_iff_exists_surjective this] at c_count
+  rw [Set.countable_iff_exists_surjective
+    (nonempty_lemma c h u h_nonempty c_cov)] at c_count
   rcases c_count with ⟨ f, f_surj ⟩
-  have : d.Nonempty := nonempty_lemma d k v k_nonempty d_cov
-  rw [Set.countable_iff_exists_surjective this] at d_count
+  rw [Set.countable_iff_exists_surjective
+    (nonempty_lemma d k v k_nonempty d_cov)] at d_count
   rcases d_count with ⟨ g, g_surj ⟩
   use ⋃ n : ℕ, u (f n) \ (closure (⋃ m ∈ {m | m ≤ n}, v (g m)))
   use ⋃ n : ℕ, v (g n) \ (closure (⋃ m ∈ {m | m ≤ n}, u (f m)))
   have open_lemma : ∀ (u₀ a : ℕ → Set X), (∀ n, IsOpen (u₀ n)) →
-      IsOpen (⋃ n, u₀ n \ closure (a n)) := by
-    intro _ _ u₀i_open
-    apply isOpen_iUnion
-    intro i
-    apply IsOpen.sdiff
-    · exact u₀i_open i
-    · exact isClosed_closure
+    IsOpen (⋃ n, u₀ n \ closure (a n)) := fun _ _ u₀i_open =>
+    isOpen_iUnion (fun i => IsOpen.sdiff (u₀i_open i) (isClosed_closure))
   constructor
   · exact open_lemma (fun n ↦ u (f n))
       (fun n ↦ ⋃ m ∈ {m | m ≤ n}, v (g m)) (fun n ↦ (u_props (f n)).1)
