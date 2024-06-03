@@ -248,7 +248,7 @@ open scoped Classical
 
 variable {K}
 
-/-- The norm at the place infinite `w` of an element of
+/-- The norm at the infinite place `w` of an element of
 `({w // IsReal w} → ℝ) × ({ w // IsComplex w } → ℂ)`. -/
 def normAtPlace (w : InfinitePlace K) : (E K) →*₀ ℝ where
   toFun x := if hw : IsReal w then ‖x.1 ⟨w, hw⟩‖ else ‖x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩‖
@@ -328,7 +328,7 @@ theorem norm_eq_sup'_normAtPlace (x : E K) :
     ← OrderHom.Subtype.val_coe, map_finset_sup', OrderHom.Subtype.val_coe]
   rfl
 
-/-- The norm of `x` is `∏ w, (normedAtPlace x) ^ mult w`. It is defined such that the norm of
+/-- The norm of `x` is `∏ w, (normAtPlace x) ^ mult w`. It is defined such that the norm of
 `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a` over `ℚ`,
 see `norm_eq_norm`. -/
 protected def norm : (E K) →*₀ ℝ where
@@ -345,7 +345,7 @@ protected theorem norm_nonneg (x : E K) :
 
 protected theorem norm_eq_zero_iff {x : E K} :
     mixedEmbedding.norm x = 0 ↔ ∃ w, normAtPlace w x = 0 := by
-  simp_rw [mixedEmbedding.norm,  MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, prod_eq_zero_iff,
+  simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, prod_eq_zero_iff,
     mem_univ, true_and, pow_eq_zero_iff mult_ne_zero]
 
 protected theorem norm_ne_zero_iff {x : E K} :
