@@ -1095,13 +1095,13 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
           intro x
           obtain ⟨y, hy⟩ := this (Subtype.mem x)
           exact ⟨y, Subtype.ext hy⟩
-        refine' Subfield.closure_le.mpr (Set.union_subset (fun x hx => _) _)
+        refine Subfield.closure_le.mpr (Set.union_subset (fun x hx => ?_) ?_)
         · obtain ⟨y, hy⟩ := hx
           refine ⟨y, ?_⟩
           -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
           erw [RingHom.comp_apply, AdjoinRoot.lift_of (aeval_gen_minpoly F α)]
           exact hy
-        · refine' Set.singleton_subset_iff.mpr ⟨AdjoinRoot.root (minpoly F α), _⟩
+        · refine Set.singleton_subset_iff.mpr ⟨AdjoinRoot.root (minpoly F α), ?_⟩
           -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
           erw [RingHom.comp_apply, AdjoinRoot.lift_root (aeval_gen_minpoly F α)]
           rfl)

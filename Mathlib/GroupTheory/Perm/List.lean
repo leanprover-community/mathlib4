@@ -204,7 +204,7 @@ theorem formPerm_apply_nthLe (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n < x
   cases' xs with x xs
   · simp at hn
   · have : n ≤ xs.length := by
-      refine' Nat.le_of_lt_succ _
+      refine Nat.le_of_lt_succ ?_
       simpa using hn
     rcases this.eq_or_lt with (rfl | hn')
     · simp; simp [nthLe]
@@ -234,7 +234,7 @@ theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α,
     specialize h _ _ _ _ H
     rcases (Nat.succ_le_of_lt hn).eq_or_lt with hn' | hn'
     · simp only [← hn', Nat.mod_self] at h
-      refine' not_exists.mpr h' _
+      refine not_exists.mpr h' ?_
       rw [← length_eq_one]
       simpa [← h, eq_comm] using hn'
     · simp [Nat.mod_eq_of_lt hn'] at h
@@ -314,7 +314,7 @@ set_option linter.deprecated false in
 theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :: l))
     (hd' : Nodup (x' :: y' :: l')) :
     formPerm (x :: y :: l) = formPerm (x' :: y' :: l') ↔ (x :: y :: l) ~r (x' :: y' :: l') := by
-  refine' ⟨fun h => _, fun hr => formPerm_eq_of_isRotated hd hr⟩
+  refine ⟨fun h => ?_, fun hr => formPerm_eq_of_isRotated hd hr⟩
   rw [Equiv.Perm.ext_iff] at h
   have hx : x' ∈ x :: y :: l := by
     have : x' ∈ { z | formPerm (x :: y :: l) z ≠ z } := by
@@ -326,7 +326,7 @@ theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :
   obtain ⟨n, hn, hx'⟩ := nthLe_of_mem hx
   have hl : (x :: y :: l).length = (x' :: y' :: l').length := by
     rw [← dedup_eq_self.mpr hd, ← dedup_eq_self.mpr hd', ← card_toFinset, ← card_toFinset]
-    refine' congr_arg Finset.card _
+    refine congr_arg Finset.card ?_
     rw [← Finset.coe_inj, ← support_formPerm_of_nodup' _ hd (by simp), ←
       support_formPerm_of_nodup' _ hd' (by simp)]
     simp only [h]
@@ -336,7 +336,7 @@ theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :
   · intro k hk hk'
     rw [nthLe_rotate]
     induction' k with k IH
-    · refine' Eq.trans _ hx'
+    · refine Eq.trans ?_ hx'
       congr
       simpa using hn
     · conv => congr <;> · arg 2; rw [← Nat.mod_eq_of_lt hk']

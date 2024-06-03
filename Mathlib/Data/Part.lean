@@ -498,7 +498,7 @@ theorem mem_bind_iff {f : Part α} {g : α → Part β} {b} : b ∈ f.bind g ↔
 protected theorem Dom.bind {o : Part α} (h : o.Dom) (f : α → Part β) : o.bind f = f (o.get h) := by
   ext b
   simp only [Part.mem_bind_iff, exists_prop]
-  refine' ⟨_, fun hb => ⟨o.get h, Part.get_mem _, hb⟩⟩
+  refine ⟨?_, fun hb => ⟨o.get h, Part.get_mem _, hb⟩⟩
   rintro ⟨a, ha, hb⟩
   rwa [Part.get_eq_of_mem ha]
 #align part.dom.bind Part.Dom.bind

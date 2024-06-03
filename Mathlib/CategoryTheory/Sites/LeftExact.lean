@@ -64,7 +64,7 @@ abbrev liftToDiagramLimitObj {X : C} {K : Type max v u} [SmallCategory K] [HasLi
         (limit.lift F _).naturality, ← (limit.lift F _).naturality, ← Category.assoc, ←
         Category.assoc]
       congr 1
-      refine' limit.hom_ext (fun j => _)
+      refine limit.hom_ext (fun j => ?_)
       erw [Category.assoc, Category.assoc, limit.lift_π, limit.lift_π, limit.lift_π_assoc,
         limit.lift_π_assoc, Category.assoc, Category.assoc, Multiequalizer.condition]
       rfl)

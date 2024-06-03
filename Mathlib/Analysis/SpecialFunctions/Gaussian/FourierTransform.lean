@@ -88,8 +88,8 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
       gcongr
     · rwa [sq_le_sq]
   -- now main proof
-  refine' (intervalIntegral.norm_integral_le_of_norm_le_const _).trans _
-  pick_goal 3
+  apply (intervalIntegral.norm_integral_le_of_norm_le_const _).trans
+  pick_goal 1
   · rw [sub_zero]
     conv_lhs => simp only [mul_comm _ |c|]
     conv_rhs =>

@@ -431,17 +431,14 @@ variable {F: TypeVec (n + 1) → Type u} [MvFunctor F] [q : MvQPF F]
 
 theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := by
   let R := fun x y : Cofix F α => abs (repr y) = x
-  refine' Cofix.bisim₂ R _ _ _ rfl
-  clear x;
-  rintro x y h;
+  refine Cofix.bisim₂ R ?_ _ _ rfl
+  clear x
+  rintro x y h
   subst h
   dsimp [Cofix.dest, Cofix.abs]
   induction y using Quot.ind
   simp only [Cofix.repr, M.dest_corec, abs_map, MvQPF.abs_repr, Function.comp]
-  conv =>
-    congr
-    rfl
-    rw [Cofix.dest]
+  conv => congr; rfl; rw [Cofix.dest]
   rw [MvFunctor.map_map, MvFunctor.map_map, ← appendFun_comp_id, ← appendFun_comp_id]
   apply liftR_map_last
   intros

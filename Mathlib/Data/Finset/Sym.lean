@@ -287,7 +287,8 @@ def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σi : Fin (n + 1), s.s
   invFun m := ⟨m.2.1.fill a m.1, sym_fill_mem a m.2.2⟩
   left_inv m := Subtype.ext <| m.1.fill_filterNe a
   right_inv := fun ⟨i, m, hm⟩ ↦ by
-    refine' Function.Injective.sigma_map (Function.injective_id) (fun i ↦ _) _
+    refine Function.Injective.sigma_map (β₂ := ?_) (f₂ := ?_)
+        (Function.injective_id) (fun i ↦ ?_) ?_
     · exact fun i ↦ Sym α (n - i)
     swap
     · exact Subtype.coe_injective

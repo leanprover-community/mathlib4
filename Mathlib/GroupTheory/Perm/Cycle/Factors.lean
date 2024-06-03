@@ -396,10 +396,10 @@ theorem list_cycles_perm_list_cycles {α : Type*} [Finite α] {l₁ l₂ : List 
     (h₁l₂ : ∀ σ : Perm α, σ ∈ l₂ → σ.IsCycle) (h₂l₁ : l₁.Pairwise Disjoint)
     (h₂l₂ : l₂.Pairwise Disjoint) : l₁ ~ l₂ := by
   classical
-    refine'
+    refine
       (List.perm_ext_iff_of_nodup (nodup_of_pairwise_disjoint_cycles h₁l₁ h₂l₁)
             (nodup_of_pairwise_disjoint_cycles h₁l₂ h₂l₂)).mpr
-        fun σ => _
+        fun σ => ?_
     by_cases hσ : σ.IsCycle
     · obtain _ := not_forall.mp (mt ext hσ.ne_one)
       rw [mem_list_cycles_iff h₁l₁ h₂l₁, mem_list_cycles_iff h₁l₂ h₂l₂, h₀]
@@ -448,7 +448,7 @@ theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} 
   · intro h
     have hn' : l'.Nodup := nodup_of_pairwise_disjoint_cycles hc' hd'
     have hperm : l ~ l' := List.perm_of_nodup_nodup_toFinset_eq hn hn' h.symm
-    refine' ⟨_, _, _⟩
+    refine ⟨?_, ?_, ?_⟩
     · exact fun _ h => hc' _ (hperm.subset h)
     · have := List.Perm.pairwise_iff (@Disjoint.symmetric _) hperm
       rwa [this]
@@ -456,8 +456,8 @@ theorem cycleFactorsFinset_eq_list_toFinset {σ : Perm α} {l : List (Perm α)} 
       refine hd'.imp ?_
       exact Disjoint.commute
   · rintro ⟨hc, hd, hp⟩
-    refine' List.toFinset_eq_of_perm _ _ _
-    refine' list_cycles_perm_list_cycles _ hc' hc hd' hd
+    refine List.toFinset_eq_of_perm _ _ ?_
+    refine list_cycles_perm_list_cycles ?_ hc' hc hd' hd
     rw [hp, hp']
 #align equiv.perm.cycle_factors_finset_eq_list_to_finset Equiv.Perm.cycleFactorsFinset_eq_list_toFinset
 

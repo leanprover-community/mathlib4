@@ -466,11 +466,8 @@ theorem Sylow.normalizer_sup_eq_top {p : ℕ} [Fact p.Prime] {N : Subgroup G} [N
   apply mul_mem_sup (N.inv_mem n.2)
   rw [Sylow.smul_def, ← mul_smul, ← MulAut.conjNormal_val, ← MulAut.conjNormal.map_mul,
     Sylow.ext_iff, Sylow.pointwise_smul_def, Subgroup.pointwise_smul_def] at hn
-  refine' fun x =>
-    (mem_map_iff_mem
-            (show Function.Injective (MulAut.conj (↑n * g)).toMonoidHom from
-              (MulAut.conj (↑n * g)).injective)).symm.trans
-      _
+  have : Function.Injective (MulAut.conj (n * g)).toMonoidHom := (MulAut.conj (n * g)).injective
+  refine fun x ↦ (mem_map_iff_mem this).symm.trans ?_
   rw [map_map, ← congr_arg (map N.subtype) hn, map_map]
   rfl
 #align sylow.normalizer_sup_eq_top Sylow.normalizer_sup_eq_top
@@ -619,7 +616,7 @@ theorem exists_subgroup_card_pow_succ [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact
       (preimageMkEquivSubgroupProdSet (H.subgroupOf H.normalizer) (zpowers x)), by
     intro y hy
     simp only [exists_prop, Subgroup.coeSubtype, mk'_apply, Subgroup.mem_map, Subgroup.mem_comap]
-    refine' ⟨⟨y, le_normalizer hy⟩, ⟨0, _⟩, rfl⟩
+    refine ⟨⟨y, le_normalizer hy⟩, ⟨0, ?_⟩, rfl⟩
     dsimp only
     rw [zpow_zero, eq_comm, QuotientGroup.eq_one_iff]
     simpa using hy⟩
@@ -820,7 +817,7 @@ noncomputable def directProductOfNormal [Fintype G]
     have hne' : p₁ ≠ p₂ := by simpa using hne
     apply Subgroup.commute_of_normal_of_disjoint _ _ (hn (P p₁)) (hn (P p₂))
     apply IsPGroup.disjoint_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'
-  refine' MulEquiv.trans (N := ∀ p : ps, P p) _ _
+  refine MulEquiv.trans (N := ∀ p : ps, P p) ?_ ?_
   -- There is only one Sylow subgroup for each p, so the inner product is trivial
   · show (∀ p : ps, ∀ P : Sylow p G, P) ≃* ∀ p : ps, P p
     -- here we need to help the elaborator with an explicit instantiation

@@ -474,7 +474,7 @@ theorem abs_sub_lt_of_nonneg_of_lt {a b n : α} (a_nonneg : 0 ≤ a) (a_lt_n : a
   exact ⟨lt_add_of_lt_of_nonneg a_lt_n b_nonneg, lt_add_of_lt_of_nonneg b_lt_n a_nonneg⟩
 
 theorem abs_eq (hb : 0 ≤ b) : |a| = b ↔ a = b ∨ a = -b := by
-  refine' ⟨eq_or_eq_neg_of_abs_eq, _⟩
+  refine ⟨eq_or_eq_neg_of_abs_eq, ?_⟩
   rintro (rfl | rfl) <;> simp only [abs_neg, abs_of_nonneg hb]
 #align abs_eq abs_eq
 
