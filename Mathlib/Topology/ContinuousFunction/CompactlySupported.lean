@@ -416,30 +416,21 @@ local notation α " →co " β => CocompactMap α β
 
 section
 
-variable [T2Space γ] [Zero δ]
+variable [Zero δ]
 
-/-- Composition of a continuous function with compact support on a `T2Space` with a cocompact map
+/-- Composition of a continuous function with compact support with a cocompact map
 yields another continuous function with compact support. -/
 def comp (f : C_c(γ, δ)) (g : β →co γ) : C_c(β, δ) where
   toContinuousMap := (f : C(γ, δ)).comp g
   hasCompactSupport' := by
-    simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_comp, ContinuousMap.coe_coe]
-    rw [HasCompactSupport]
-    apply IsCompact.of_isClosed_subset
-    exact CocompactMap.isCompact_preimage g (hasCompactSupport_def.mp f.2)
-    exact isClosed_tsupport (f ∘ g)
-    simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap]
+    apply IsCompact.of_isClosed_subset (g.isCompact_preimage_of_isClosed f.2 (isClosed_tsupport _))
+      (isClosed_tsupport (f ∘ g))
     intro x hx
-    simp only [Set.mem_preimage]
-    rw [_root_.mem_closure_iff]
+    rw [tsupport, Set.mem_preimage, _root_.mem_closure_iff]
     intro o ho hgxo
     rw [tsupport, _root_.mem_closure_iff] at hx
     obtain ⟨y, hy⟩ := hx (g ⁻¹' o) (IsOpen.preimage g.1.2 ho) hgxo
-    use g y
-    simp only [Set.mem_inter_iff, Set.mem_preimage, Function.mem_support, Function.comp_apply,
-      ne_eq] at hy
-    simp only [Set.mem_inter_iff, Function.mem_support, ne_eq]
-    exact hy
+    exact ⟨g y, hy⟩
 
 @[simp]
 theorem coe_comp_to_continuous_fun (f : C_c(γ, δ)) (g : β →co γ) : ((f.comp g) : β → δ) = f ∘ g :=
