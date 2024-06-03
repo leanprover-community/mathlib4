@@ -250,7 +250,6 @@ theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid 
   classical
     simp_rw [fg_def] at hsb ⊢
     choose t htf hts using hsb
-    -- Porting note: `refine'` doesn't work here
     refine
       ⟨⋃ i, (LinearMap.single i : _ →ₗ[R] _) '' t i, Set.finite_iUnion fun i => (htf i).image _, ?_⟩
     -- Note: #8386 changed `span_image` into `span_image _`
