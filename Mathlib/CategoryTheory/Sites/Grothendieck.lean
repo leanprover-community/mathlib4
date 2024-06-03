@@ -171,7 +171,12 @@ theorem intersection_covering_iff : R ⊓ S ∈ J X ↔ R ∈ J X ∧ S ∈ J X 
 
 lemma finite_intersection_covering
     (S : Set (Sieve X)) (h : S.Finite) (hS : ∀ T, T ∈ S → T ∈ J X) : sInf S ∈ J X := by
-  sorry
+  refine Set.Finite.induction_on' (h := h) (by simp) ?_
+  intro R T hR _ _ hT
+  refine J.superset_covering  ?_ (J.intersection_covering hT (hS R hR))
+  simp only [sInf_insert, le_inf_iff, inf_le_right, le_sInf_iff, true_and]
+  intro U hU
+  exact inf_le_left.trans (sInf_le hU)
 
 theorem bind_covering {S : Sieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y} (hS : S ∈ J X)
     (hR : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄ (H : S f), R H ∈ J Y) : Sieve.bind S R ∈ J X :=
