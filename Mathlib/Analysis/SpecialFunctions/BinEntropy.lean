@@ -179,7 +179,7 @@ lemma binaryEntropy_one_iff_eq_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) 
       · linarith
   · simp only [one_div, binaryEntropy_onehalf, h]
 
-lemma binaryEntropy_le_log_2 {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) :
+lemma binaryEntropy_le_log2 {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) :
     binaryEntropy p ≤ log 2 := by
   by_cases hh: p = 1/2
   · simp only [one_div, binaryEntropy_onehalf, le_refl, hh]
