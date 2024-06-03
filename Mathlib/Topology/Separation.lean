@@ -2287,49 +2287,22 @@ instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] 
     NormalSpace X where
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
 
-lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
-    (h_cov: ∃ u : ι → Set X, ∃ c : Set ι, c.Countable ∧ h ⊆ ⋃ i ∈ c, u i ∧
-      ∀ i, IsOpen (u i) ∧ Disjoint (closure (u i)) k)
-    (k_cov: ∃ u : ι → Set X, ∃ c : Set ι, c.Countable ∧ k ⊆ ⋃ i ∈ c, u i ∧
-      ∀ i, IsOpen (u i) ∧ Disjoint (closure (u i)) h) : SeparatedNhds h k := by
-  by_cases h_nonempty : h = ∅
-  · rw [h_nonempty]
-    simp only [SeparatedNhds.empty_left]
-  by_cases k_nonempty : k = ∅
-  · rw [k_nonempty]
-    simp only [SeparatedNhds.empty_right]
-  rcases h_cov with ⟨u, c, c_count, c_cov, u_props⟩
-  rcases k_cov with ⟨v, d, d_count, d_cov, v_props⟩
-  have nonempty_lemma : ∀ c₀ : Set ι, ∀ h₀ : Set X, ∀ u₀ : ι → Set X,
-      ¬h₀ = ∅ → h₀ ⊆ ⋃ i ∈ c₀, u₀ i → c₀.Nonempty := by
-    intro c₀ h₀ u₀ h₀_nonempty c₀_cov
-    by_contra c₀_empty
-    apply h₀_nonempty
-    rw [not_nonempty_iff_eq_empty.mp c₀_empty] at c₀_cov
-    simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty] at c₀_cov
-    exact eq_empty_of_subset_empty c₀_cov
-  rw [Set.countable_iff_exists_surjective
-    (nonempty_lemma c h u h_nonempty c_cov)] at c_count
-  rcases c_count with ⟨f, f_surj⟩
-  rw [Set.countable_iff_exists_surjective
-    (nonempty_lemma d k v k_nonempty d_cov)] at d_count
-  rcases d_count with ⟨g, g_surj⟩
-  use ⋃ n : ℕ, u (f n) \ (closure (⋃ m ∈ {m | m ≤ n}, v (g m)))
-  use ⋃ n : ℕ, v (g n) \ (closure (⋃ m ∈ {m | m ≤ n}, u (f m)))
+lemma countable_covers_to_separated_nhds (h k: Set X)
+    (h_cov: ∃ u : ℕ → Set X, h ⊆ ⋃ n, u n ∧
+      ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) k)
+    (k_cov: ∃ u : ℕ → Set X, k ⊆ ⋃ n, u n ∧
+      ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) h) : SeparatedNhds h k := by
+  rcases h_cov with ⟨u, u_cov, u_props⟩
+  rcases k_cov with ⟨v, v_cov, v_props⟩
+  use ⋃ n : ℕ, u n \ (closure (⋃ m ∈ {m | m ≤ n}, v m))
+  use ⋃ n : ℕ, v n \ (closure (⋃ m ∈ {m | m ≤ n}, u m))
   have open_lemma : ∀ (u₀ a : ℕ → Set X), (∀ n, IsOpen (u₀ n)) →
     IsOpen (⋃ n, u₀ n \ closure (a n)) := fun _ _ u₀i_open =>
     isOpen_iUnion (fun i => IsOpen.sdiff (u₀i_open i) (isClosed_closure))
-  constructor
-  · exact open_lemma (fun n ↦ u (f n))
-      (fun n ↦ ⋃ m ∈ {m | m ≤ n}, v (g m)) (fun n ↦ (u_props (f n)).1)
-  constructor
-  · exact open_lemma (fun n ↦ v (g n))
-      (fun n ↦ ⋃ m ∈ {m | m ≤ n}, u (f m)) (fun n ↦ (v_props (g n)).1)
   have cover_lemma : ∀ (h₀ : Set X) (u₀ v₀ : ℕ → Set X),
       (h₀ ⊆ ⋃ n, u₀ n) → (∀ n, Disjoint (closure (v₀ n)) h₀) →
       (h₀ ⊆ ⋃ n, u₀ n \ closure (⋃ m ∈ {m | m ≤ n}, v₀ m)) := by
-    intro h₀ u₀ v₀ h₀_cov dis
-    intro x xinh
+    intro h₀ u₀ v₀ h₀_cov dis x xinh
     rcases h₀_cov xinh with ⟨un , ⟨n, un'⟩ , xinun⟩
     rw [← un'] at xinun
     simp only [mem_iUnion, exists_prop] at xinun
@@ -2339,40 +2312,17 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
     · exact xinun
     · rw [Set.Finite.closure_biUnion]
       · simp only [mem_setOf_eq, mem_iUnion, exists_prop, not_exists, not_and]
-        intro m _
-        exact Set.disjoint_right.mp (dis m) xinh
+        exact fun m _ => Set.disjoint_right.mp (dis m) xinh
       · exact finite_le_nat n
-  have h_cov : h ⊆ ⋃ n, u ↑(f n) := by
-    intro x xinh
-    rcases c_cov xinh with ⟨uc, ⟨i, iuc⟩, xinuc⟩
-    rw [← iuc] at xinuc
-    simp only [mem_iUnion, exists_prop] at xinuc
-    rcases f_surj ⟨i, xinuc.1⟩ with ⟨n, fni⟩
-    simp only [mem_iUnion]
-    use n
-    rw [fni]
-    simp only
-    exact xinuc.2
-  have k_cov : k ⊆ ⋃ n, v ↑(g n) := by
-    intro x xink
-    rcases d_cov xink with ⟨vd, ⟨i, ivd⟩, xinvd⟩
-    rw [← ivd] at xinvd
-    simp only [mem_iUnion, exists_prop] at xinvd
-    rcases g_surj ⟨i, xinvd.1⟩ with ⟨n, fni⟩
-    simp only [mem_iUnion]
-    use n
-    rw [fni]
-    simp only
-    exact xinvd.2
-  constructor
-  · exact cover_lemma h (fun n ↦ u ↑(f n)) (fun n ↦ v ↑(g n)) h_cov
-      (fun n ↦ (v_props ↑(g n)).2)
-  constructor
-  · exact cover_lemma k (fun n ↦ v ↑(g n)) (fun n ↦ u ↑(f n)) k_cov
-      (fun n ↦ (u_props ↑(f n)).2)
+  refine ⟨
+    open_lemma u (fun n ↦ ⋃ m ∈ {m | m ≤ n}, v m) (fun n ↦ (u_props n).1),
+    open_lemma v (fun n ↦ ⋃ m ∈ {m | m ≤ n}, u m) (fun n ↦ (v_props n).1),
+    cover_lemma h u v u_cov (fun n ↦ (v_props n).2),
+    cover_lemma k v u v_cov (fun n ↦ (u_props n).2),
+    ?_
+  ⟩
   rw [Set.disjoint_left]
-  intro x xinunion
-  rcases xinunion with ⟨un, ⟨n, un'⟩, xinun⟩
+  rintro x ⟨un, ⟨n, un'⟩, xinun⟩
   rw [← un'] at xinun
   simp only [mem_iUnion, mem_diff] at xinun
   simp only [mem_iUnion, mem_diff, not_exists, not_and, Decidable.not_not]
@@ -2397,6 +2347,20 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
 instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     [r: RegularSpace X] [LindelofSpace X] : NormalSpace X where
   normal h k hcl kcl hkdis := by
+    by_cases h_nonempty : h = ∅
+    · rw [h_nonempty]
+      simp only [SeparatedNhds.empty_left]
+    by_cases k_nonempty : k = ∅
+    · rw [k_nonempty]
+      simp only [SeparatedNhds.empty_right]
+    have nonempty_lemma : ∀ c₀ : Set X, ∀ h₀ : Set X, ∀ u₀ : X → Set X,
+        ¬h₀ = ∅ → h₀ ⊆ ⋃ i ∈ c₀, u₀ i → c₀.Nonempty := by
+      intro c₀ h₀ u₀ h₀_nonempty c₀_cov
+      by_contra c₀_empty
+      apply h₀_nonempty
+      rw [not_nonempty_iff_eq_empty.mp c₀_empty] at c₀_cov
+      simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty] at c₀_cov
+      exact eq_empty_of_subset_empty c₀_cov
     rw [Set.disjoint_iff] at hkdis
     have h_lind : IsLindelof h :=
       IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ hcl (subset_univ h)
@@ -2426,6 +2390,22 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
       intro a ainh
       simp only [mem_iUnion]; use a; apply u_nhd; exact ainh
     rcases IsLindelof.elim_countable_subcover h_lind u u_open u_cov with ⟨c, c_count, c_cov⟩
+    rw [Set.countable_iff_exists_surjective
+      (nonempty_lemma c h u h_nonempty c_cov)] at c_count
+    rcases c_count with ⟨f, f_surj⟩
+    let u' : ℕ → Set X := fun n ↦ u (f n)
+    have u'_cov : h ⊆ ⋃ n, u' n := by
+      unfold_let u'
+      intro x xinh
+      rcases c_cov xinh with ⟨uy, ⟨y, yuc⟩, xinuy⟩
+      rw [← yuc] at xinuy
+      simp only [mem_iUnion, exists_prop] at xinuy
+      rcases f_surj ⟨y, xinuy.1⟩ with ⟨n, fni⟩
+      simp only [mem_iUnion]
+      use n
+      rw [fni]
+      simp only
+      exact xinuy.2
     have k_lind : IsLindelof k :=
       IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ kcl (subset_univ k)
     have : ∀ a : X, ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) h ∧ (a ∈ k → a ∈ n) := by
@@ -2454,21 +2434,41 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
       intro a aink
       simp only [mem_iUnion]; use a; apply v_nhd; exact aink
     rcases IsLindelof.elim_countable_subcover k_lind v v_open v_cov with ⟨d, d_count, d_cov⟩
+    rw [Set.countable_iff_exists_surjective
+      (nonempty_lemma d k v k_nonempty d_cov)] at d_count
+    rcases d_count with ⟨g, g_surj⟩
+    let v' : ℕ → Set X := fun n ↦ v (g n)
+    have v'_cov : k ⊆ ⋃ n, v' n := by
+      unfold_let v'
+      intro x xink
+      rcases d_cov xink with ⟨uy, ⟨y, yuc⟩, xinuy⟩
+      rw [← yuc] at xinuy
+      simp only [mem_iUnion, exists_prop] at xinuy
+      rcases g_surj ⟨y, xinuy.1⟩ with ⟨n, gni⟩
+      simp only [mem_iUnion]
+      use n
+      rw [gni]
+      simp only
+      exact xinuy.2
     apply countable_covers_to_separated_nhds
-    · use u, c
+    · use u'
       constructor
-      · exact c_count
+      · exact u'_cov
+      intro n
+      unfold_let u'
+      simp only
       constructor
-      · exact c_cov
-      intro a
-      exact ⟨u_open a, u_dis a⟩
-    · use v, d
+      · exact u_open (f n)
+      · exact u_dis (f n)
+    · use v'
       constructor
-      · exact d_count
+      · exact v'_cov
+      intro n
+      unfold_let v'
+      simp only
       constructor
-      · exact d_cov
-      intro a
-      exact ⟨v_open a, v_dis a⟩
+      · exact v_open (g n)
+      · exact v_dis (g n)
 
 
 instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
