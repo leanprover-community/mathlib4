@@ -205,9 +205,9 @@ lemma hasDerivAt_Gammaℂ_one : HasDerivAt Gammaℂ (-(γ + log (2 * π)) / π) 
 lemma hasDerivAt_Gammaℝ_one : HasDerivAt Gammaℝ (-(γ + log (4 * π)) / 2) 1 := by
   let f (s : ℂ) : ℂ := π ^ (-s / 2)
   let g (s : ℂ) : ℂ := Gamma (s / 2)
-  have aux : (π : ℂ) ^ (1 / 2 : ℂ) = ↑√π := by
+  have aux : (π : ℂ) ^ (1 / 2 : ℂ) = ↑(√π) := by
     rw [Real.sqrt_eq_rpow, ofReal_cpow Real.pi_pos.le, ofReal_div, ofReal_one, ofReal_ofNat]
-  have aux2 : (√π : ℂ) ≠ 0 := by rw [ofReal_ne_zero]; positivity
+  have aux2 : (↑(√π) : ℂ) ≠ 0 := by rw [ofReal_ne_zero]; positivity
   have hf : HasDerivAt f (-log π / 2 / √π) 1 := by
     have := ((hasDerivAt_neg (1 : ℂ)).div_const 2).const_cpow (c := π) (Or.inr (by norm_num))
     refine this.congr_deriv ?_

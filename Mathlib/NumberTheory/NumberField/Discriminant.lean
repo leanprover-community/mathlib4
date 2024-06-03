@@ -105,7 +105,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
 theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
       |Algebra.norm ℚ (a:K)| ≤ FractionalIdeal.absNorm I.1 * (4 / π) ^ NrComplexPlaces K *
-        (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
+        (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * √(|discr K| : ℝ) := by
   -- The smallest possible value for `exists_ne_zero_mem_ideal_of_norm_le`
   let B := (minkowskiBound K I * (convexBodySumFactor K)⁻¹).toReal ^ (1 / (finrank ℚ K : ℝ))
   have h_le : (minkowskiBound K I) ≤ volume (convexBodySum K B) := by
@@ -133,19 +133,19 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
       simp_rw [NNReal.coe_inv, NNReal.coe_div, NNReal.coe_mul, NNReal.coe_pow, NNReal.coe_div,
         coe_real_pi, NNReal.coe_ofNat, NNReal.coe_natCast]
     _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (finrank ℚ K - NrComplexPlaces K - NrRealPlaces K +
-          NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) *
+          NrComplexPlaces K : ℤ) * √‖discr K‖ * Nat.factorial (finrank ℚ K) *
             π⁻¹ ^ (NrComplexPlaces K) := by
       simp_rw [inv_div, div_eq_mul_inv, mul_inv, ← zpow_neg_one, ← zpow_natCast, mul_zpow,
         ← zpow_mul, neg_one_mul, mul_neg_one, neg_neg, Real.coe_sqrt, coe_nnnorm, sub_eq_add_neg,
         zpow_add₀ (two_ne_zero : (2 : ℝ) ≠ 0)]
       ring
-    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (2 * NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ *
+    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (2 * NrComplexPlaces K : ℤ) * √‖discr K‖ *
           Nat.factorial (finrank ℚ K) * π⁻¹ ^ (NrComplexPlaces K) := by
       congr
       rw [← card_add_two_mul_card_eq_rank, Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat]
       ring
     _ = FractionalIdeal.absNorm I.1 * (4 / π) ^ NrComplexPlaces K * (finrank ℚ K).factorial *
-          Real.sqrt |discr K| := by
+          √(|discr K| : ℝ) := by
       rw [Int.norm_eq_abs, zpow_mul, show (2 : ℝ) ^ (2 : ℤ) = 4 by norm_cast, div_pow,
         inv_eq_one_div, div_pow, one_pow, zpow_natCast]
       ring
@@ -153,7 +153,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
     ∃ (a : 𝓞 K), a ≠ 0 ∧
       |Algebra.norm ℚ (a : K)| ≤ (4 / π) ^ NrComplexPlaces K *
-        (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
+        (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * √(|discr K| : ℝ) := by
   obtain ⟨_, h_mem, h_nz, h_nm⟩ := exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K ↑1
   obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
   refine ⟨a, ne_zero_of_map h_nz, ?_⟩
@@ -204,10 +204,9 @@ theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
   have h₁ : 1 ≤ 3 * π / 4 := by
     rw [_root_.le_div_iff (by positivity), ← _root_.div_le_iff' (by positivity), one_mul]
     linarith [Real.pi_gt_three]
-  have h₂ : (9 : ℝ) < π ^ 2 := by
-    rw [ ← Real.sqrt_lt (by positivity) (by positivity), show Real.sqrt (9 : ℝ) = 3 from
-    (Real.sqrt_eq_iff_sq_eq (by positivity) (by positivity)).mpr (by norm_num)]
-    exact Real.pi_gt_three
+  have h₂ : (9 : ℝ) < π ^ 2 := calc
+    (9 : ℝ) = 3 ^ 2 := by norm_num1
+    _ < π ^ 2 := by gcongr; exact Real.pi_gt_three
   refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge h)
   rw [← _root_.div_lt_iff' (by positivity), Int.cast_ofNat]
   refine lt_of_lt_of_le ?_ (pow_le_pow_right (n := 2) h₁ h)
