@@ -71,9 +71,7 @@ lemma binaryEntropy_eq' {p : ℝ} : binaryEntropy p = -p * log p - (1 - p) * log
   simp only [this, log_inv]
   field_simp
 
-/-- `binaryEntropy` is symmetric about 1/2, i.e.,
-
-`binaryEntropy (1 - p) = binaryEntropy q p` -/
+/-- `binaryEntropy` is symmetric about 1/2, i.e., `binaryEntropy (1 - p) = binaryEntropy p` -/
 @[simp] lemma binaryEntropy_eq_binaryEntropy_one_minus (p : ℝ) :
     binaryEntropy (1 - p) = binaryEntropy p := by
   simp only [binaryEntropy_eq', neg_sub, sub_sub_cancel, neg_mul]
