@@ -5,6 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.InducedTopology
 import Mathlib.CategoryTheory.Sites.Whiskering
+import Mathlib.CategoryTheory.Sites.LocallyBijective
 /-!
 # Equivalences of sheaf categories
 
@@ -34,7 +35,7 @@ sufficiently small limits in the sheaf category on the essentially small site.
 
 -/
 
-universe u
+universe w v u
 
 namespace CategoryTheory
 
@@ -208,6 +209,59 @@ theorem hasSheafCompose : J.HasSheafCompose F where
     replace hP' : Presheaf.IsSheaf J (e.functor.op ⋙ e.inverse.op ⋙ P ⋙ F) :=
       e.functor.op_comp_isSheaf _ _ ⟨_, hP'⟩
     exact (Presheaf.isSheaf_of_iso_iff ((isoWhiskerRight e.op.unitIso.symm (P ⋙ F)))).mp hP'
+
+variable -- {A : Type u} [Category.{v} A]
+  [ConcreteCategory.{w} A]
+
+variable {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G)
+
+open Presheaf
+
+lemma isLocallyInjective [IsLocallyInjective J f] :
+    IsLocallyInjective K (whiskerLeft e.inverse.op f) where
+  equalizerSieve_mem {X} a b h := by
+    have := IsLocallyInjective.equalizerSieve_mem (φ := f) (J := J) a b h
+    rw [e.eq_inducedTopology_of_transports J K]
+    change _ ∈ J.sieves (e.inverse.op.obj X).unop
+    convert this
+    ext Y g
+    simp only [Sieve.functorPushforward_apply, Presieve.functorPushforward, equalizerSieve_apply,
+      comp_obj, op_obj, Opposite.op_unop, Functor.comp_map, op_map, Quiver.Hom.unop_op,
+      exists_and_left]
+    constructor
+    · intro ⟨Z, g', h, x, w⟩
+      simp [w, h]
+    · intro h
+      refine ⟨_, (e.toAdjunction.homEquiv _ _).symm g, ?_⟩
+      simp only [Adjunction.homEquiv_counit, id_obj, toAdjunction_counit, map_comp, inv_fun_map,
+        comp_obj, Category.assoc, unit_inverse_comp, Category.comp_id, op_comp, comp_apply]
+      simp only [h, true_and]
+      exact ⟨e.unit.app _, by simp⟩
+
+lemma isLocallySurjective [IsLocallySurjective J f] :
+    IsLocallySurjective K (whiskerLeft e.inverse.op f) where
+  imageSieve_mem {X} a := by
+    have := IsLocallySurjective.imageSieve_mem (f := f) (J := J) a
+    rw [e.eq_inducedTopology_of_transports J K]
+    change _ ∈ J.sieves (e.inverse.obj X)
+    convert this
+    ext Y g
+    simp only [imageSieve, comp_obj, op_obj, whiskerLeft_app, Functor.comp_map, op_map,
+      Quiver.Hom.unop_op, Sieve.functorPushforward_apply, Presieve.functorPushforward,
+      exists_and_left]
+    constructor
+    · intro ⟨Z, g', ⟨t, h⟩, x, w⟩
+      refine ⟨(forget A).map (F.map x.op) t, ?_⟩
+      simp only [w, op_comp, map_comp, comp_apply, ← h, ← NatTrans.naturality_apply]
+      rfl
+    · intro ⟨t, h⟩
+      refine ⟨_, (e.toAdjunction.homEquiv _ _).symm g,
+        ⟨(((forget A).map (F.map (e.unitInv.app Y).op)) t), ?_⟩, ?_⟩
+      · simp only [Adjunction.homEquiv_counit, id_obj, toAdjunction_counit, map_comp, inv_fun_map,
+          comp_obj, Category.assoc, unit_inverse_comp, Category.comp_id, op_comp, comp_apply, ← h,
+          ← NatTrans.naturality_apply]
+        rfl
+      · exact ⟨e.unit.app _, by simp⟩
 
 end Equivalence
 
