@@ -195,15 +195,10 @@ lemma binaryEntropy_le_log2 {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) :
 
 /- The q-ary entropy function is continuous everywhere.
 This is due to definition of `Real.log` for negative numbers. -/
-lemma qaryEntropy_continuous {q : ℕ} : Continuous (qaryEntropy q) := by
-  unfold qaryEntropy
-  apply Continuous.add
-  apply Continuous.add
-  exact continuous_mul_right (log (q - 1))
-  · apply Continuous.neg
-    exact continuous_mul_log
-  · apply Continuous.neg
-    exact Continuous.comp continuous_mul_log (continuous_sub_left 1)
+@[fun_prop] lemma qaryEntropy_continuous {q : ℕ} : Continuous (qaryEntropy q) := by
+  refine Continuous.add ?_ (Continuous.neg ?_)
+  · exact Continuous.sub (by fun_prop) continuous_mul_log
+  · exact Continuous.comp continuous_mul_log (continuous_sub_left 1)
 
 /- Binary entropy is continuous everywhere.
 This is due to definition of `Real.log` for negative numbers. -/
