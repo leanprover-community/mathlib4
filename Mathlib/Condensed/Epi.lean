@@ -3,7 +3,9 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
+import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Module
 /-!
@@ -31,7 +33,6 @@ variable (A : Type u') [Category.{v'} A] [ConcreteCategory.{v'} A]
   [Balanced (Sheaf (coherentTopology CompHaus) A)]
   [PreservesFiniteProducts (CategoryTheory.forget A)]
   [∀ (X : CompHausᵒᵖ), HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A]
-
 
 variable {X Y : Condensed.{u} A} (f : X ⟶ Y)
 
