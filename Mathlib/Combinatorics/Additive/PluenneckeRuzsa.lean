@@ -44,14 +44,15 @@ variable {α : Type*} [CommGroup α] [DecidableEq α] {A B C : Finset α}
 theorem card_div_mul_le_card_div_mul_card_div (A B C : Finset α) :
     (A / C).card * B.card ≤ (A / B).card * (B / C).card := by
   rw [← card_product (A / B), ← mul_one ((A / B) ×ˢ (B / C)).card]
-  refine' card_mul_le_card_mul (fun b ac ↦ ac.1 * ac.2 = b) (fun x hx ↦ _)
+  refine card_mul_le_card_mul (fun b ac ↦ ac.1 * ac.2 = b) (fun x hx ↦ ?_)
     fun x _ ↦ card_le_one_iff.2 fun hu hv ↦
-      ((mem_bipartiteBelow _).1 hu).2.symm.trans ((mem_bipartiteBelow _).1 hv).2
+      ((mem_bipartiteBelow _).1 hu).2.symm.trans ?_
   obtain ⟨a, ha, c, hc, rfl⟩ := mem_div.1 hx
   refine card_le_card_of_inj_on (fun b ↦ (a / b, b / c)) (fun b hb ↦ ?_) fun b₁ _ b₂ _ h ↦ ?_
   · rw [mem_bipartiteAbove]
     exact ⟨mk_mem_product (div_mem_div ha hb) (div_mem_div hb hc), div_mul_div_cancel' _ _ _⟩
   · exact div_right_injective (Prod.ext_iff.1 h).1
+  · exact ((mem_bipartiteBelow _).1 hv).2
 #align finset.card_div_mul_le_card_div_mul_card_div Finset.card_div_mul_le_card_div_mul_card_div
 #align finset.card_sub_mul_le_card_sub_mul_card_sub Finset.card_sub_mul_le_card_sub_mul_card_sub
 
@@ -98,19 +99,19 @@ theorem mul_pluennecke_petridis (C : Finset α)
     rw [hA', inter_mul_singleton, (isUnit_singleton x).div_mul_cancel]
   have h₁ : A * B * C' = A * B * C ∪ (A * B * {x}) \ (A' * B * {x}) := by
     rw [hC', insert_eq, union_comm, mul_union]
-    refine' (sup_sdiff_eq_sup _).symm
+    refine (sup_sdiff_eq_sup ?_).symm
     rw [mul_right_comm, mul_right_comm A, h₀]
     exact mul_subset_mul_right (inter_subset_right _ _)
   have h₂ : A' * B * {x} ⊆ A * B * {x} :=
     mul_subset_mul_right (mul_subset_mul_right <| inter_subset_left _ _)
   have h₃ : (A * B * C').card ≤ (A * B * C).card + (A * B).card - (A' * B).card := by
     rw [h₁]
-    refine' (card_union_le _ _).trans_eq _
+    refine (card_union_le _ _).trans_eq ?_
     rw [card_sdiff h₂, ← add_tsub_assoc_of_le (card_le_card h₂), card_mul_singleton,
       card_mul_singleton]
-  refine' (mul_le_mul_right' h₃ _).trans _
+  refine (mul_le_mul_right' h₃ _).trans ?_
   rw [tsub_mul, add_mul]
-  refine' (tsub_le_tsub (add_le_add_right ih _) <| hA _ <| inter_subset_left _ _).trans_eq _
+  refine (tsub_le_tsub (add_le_add_right ih _) <| hA _ <| inter_subset_left _ _).trans_eq ?_
   rw [← mul_add, ← mul_tsub, ← hA', hC', insert_eq, mul_union, ← card_mul_singleton A x, ←
     card_mul_singleton A' x, add_comm (card _), h₀,
     eq_tsub_of_add_eq (card_union_add_card_inter _ _)]
