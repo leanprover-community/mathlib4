@@ -2667,8 +2667,7 @@ import Mathlib.LinearAlgebra.Coevaluation
 import Mathlib.LinearAlgebra.Contraction
 import Mathlib.LinearAlgebra.CrossProduct
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Determinant.Basic
-import Mathlib.LinearAlgebra.Determinant.Misc
+import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Dimension.Basic
 import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
