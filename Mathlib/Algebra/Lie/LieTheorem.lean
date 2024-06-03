@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Lucas Whitfield. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Lucas Whitfield
+Authors: Lucas Whitfield
 -/
 import Mathlib.Algebra.Lie.Solvable
 import Mathlib.Algebra.Lie.Weights.Linear
