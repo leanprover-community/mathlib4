@@ -59,7 +59,6 @@ conditional, conditioned, bayes
 noncomputable section
 
 open ENNReal MeasureTheory MeasureTheory.Measure MeasurableSpace Set
-open scoped BigOperators
 
 variable {Ω Ω' α : Type*} {m : MeasurableSpace Ω} {m' : MeasurableSpace Ω'} (μ : Measure Ω)
   {s t : Set Ω}
@@ -162,7 +161,7 @@ theorem inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t|s] ≠ 0)
 theorem cond_pos_of_inter_ne_zero [IsFiniteMeasure μ]
     (hms : MeasurableSet s) (hci : μ (s ∩ t) ≠ 0) : 0 < μ[|s] t := by
   rw [cond_apply _ hms]
-  refine' ENNReal.mul_pos _ hci
+  refine ENNReal.mul_pos ?_ hci
   exact ENNReal.inv_ne_zero.mpr (measure_ne_top _ _)
 #align probability_theory.cond_pos_of_inter_ne_zero ProbabilityTheory.cond_pos_of_inter_ne_zero
 

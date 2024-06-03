@@ -188,8 +188,8 @@ instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgeb
         (le_of_eq
           (calc
             y ⊓ y \ x = y \ x := inf_of_le_right sdiff_le'
-            _ = x ⊓ y \ x ⊔ z ⊓ y \ x :=
-              by rw [inf_eq_right.2 h, inf_sdiff_self_right, bot_sup_eq]
+            _ = x ⊓ y \ x ⊔ z ⊓ y \ x := by
+              rw [inf_eq_right.2 h, inf_sdiff_self_right, bot_sup_eq]
             _ = (x ⊔ z) ⊓ y \ x := by rw [← inf_sup_right]))
         (calc
           y ⊔ y \ x = y := sup_of_le_left sdiff_le'
@@ -284,8 +284,8 @@ theorem le_iff_eq_sup_sdiff (hz : z ≤ y) (hx : x ≤ y) : x ≤ z ↔ y = z �
 theorem sdiff_sup : y \ (x ⊔ z) = y \ x ⊓ y \ z :=
   sdiff_unique
     (calc
-      y ⊓ (x ⊔ z) ⊔ y \ x ⊓ y \ z = (y ⊓ (x ⊔ z) ⊔ y \ x) ⊓ (y ⊓ (x ⊔ z) ⊔ y \ z) :=
-          by rw [sup_inf_left]
+      y ⊓ (x ⊔ z) ⊔ y \ x ⊓ y \ z = (y ⊓ (x ⊔ z) ⊔ y \ x) ⊓ (y ⊓ (x ⊔ z) ⊔ y \ z) := by
+          rw [sup_inf_left]
       _ = (y ⊓ x ⊔ y ⊓ z ⊔ y \ x) ⊓ (y ⊓ x ⊔ y ⊓ z ⊔ y \ z) := by rw [@inf_sup_left _ _ y]
       _ = (y ⊓ z ⊔ (y ⊓ x ⊔ y \ x)) ⊓ (y ⊓ x ⊔ (y ⊓ z ⊔ y \ z)) := by ac_rfl
       _ = (y ⊓ z ⊔ y) ⊓ (y ⊓ x ⊔ y) := by rw [sup_inf_sdiff, sup_inf_sdiff]
@@ -348,14 +348,14 @@ theorem sdiff_sdiff_right : x \ (y \ z) = x \ y ⊔ x ⊓ y ⊓ z := by
   rw [sup_comm, inf_comm, ← inf_assoc, sup_inf_inf_sdiff]
   apply sdiff_unique
   · calc
-      x ⊓ y \ z ⊔ (z ⊓ x ⊔ x \ y) = (x ⊔ (z ⊓ x ⊔ x \ y)) ⊓ (y \ z ⊔ (z ⊓ x ⊔ x \ y)) :=
-          by rw [sup_inf_right]
+      x ⊓ y \ z ⊔ (z ⊓ x ⊔ x \ y) = (x ⊔ (z ⊓ x ⊔ x \ y)) ⊓ (y \ z ⊔ (z ⊓ x ⊔ x \ y)) := by
+          rw [sup_inf_right]
       _ = (x ⊔ x ⊓ z ⊔ x \ y) ⊓ (y \ z ⊔ (x ⊓ z ⊔ x \ y)) := by ac_rfl
       _ = x ⊓ (y \ z ⊔ x ⊓ z ⊔ x \ y) := by rw [sup_inf_self, sup_sdiff_left, ← sup_assoc]
-      _ = x ⊓ (y \ z ⊓ (z ⊔ y) ⊔ x ⊓ (z ⊔ y) ⊔ x \ y) :=
-          by rw [sup_inf_left, sdiff_sup_self', inf_sup_right, sup_comm y]
-      _ = x ⊓ (y \ z ⊔ (x ⊓ z ⊔ x ⊓ y) ⊔ x \ y) :=
-          by rw [inf_sdiff_sup_right, @inf_sup_left _ _ x z y]
+      _ = x ⊓ (y \ z ⊓ (z ⊔ y) ⊔ x ⊓ (z ⊔ y) ⊔ x \ y) := by
+          rw [sup_inf_left, sdiff_sup_self', inf_sup_right, sup_comm y]
+      _ = x ⊓ (y \ z ⊔ (x ⊓ z ⊔ x ⊓ y) ⊔ x \ y) := by
+          rw [inf_sdiff_sup_right, @inf_sup_left _ _ x z y]
       _ = x ⊓ (y \ z ⊔ (x ⊓ z ⊔ (x ⊓ y ⊔ x \ y))) := by ac_rfl
       _ = x ⊓ (y \ z ⊔ (x ⊔ x ⊓ z)) := by rw [sup_inf_sdiff, sup_comm (x ⊓ z)]
       _ = x := by rw [sup_inf_self, sup_comm, inf_sup_self]
@@ -405,11 +405,11 @@ theorem sdiff_sdiff_left' : (x \ y) \ z = x \ y ⊓ x \ z := by rw [sdiff_sdiff_
 
 theorem sdiff_sdiff_sup_sdiff : z \ (x \ y ⊔ y \ x) = z ⊓ (z \ x ⊔ y) ⊓ (z \ y ⊔ x) :=
   calc
-    z \ (x \ y ⊔ y \ x) = (z \ x ⊔ z ⊓ x ⊓ y) ⊓ (z \ y ⊔ z ⊓ y ⊓ x) :=
-        by rw [sdiff_sup, sdiff_sdiff_right, sdiff_sdiff_right]
+    z \ (x \ y ⊔ y \ x) = (z \ x ⊔ z ⊓ x ⊓ y) ⊓ (z \ y ⊔ z ⊓ y ⊓ x) := by
+        rw [sdiff_sup, sdiff_sdiff_right, sdiff_sdiff_right]
     _ = z ⊓ (z \ x ⊔ y) ⊓ (z \ y ⊔ z ⊓ y ⊓ x) := by rw [sup_inf_left, sup_comm, sup_inf_sdiff]
-    _ = z ⊓ (z \ x ⊔ y) ⊓ (z ⊓ (z \ y ⊔ x)) :=
-        by rw [sup_inf_left, sup_comm (z \ y), sup_inf_sdiff]
+    _ = z ⊓ (z \ x ⊔ y) ⊓ (z ⊓ (z \ y ⊔ x)) := by
+        rw [sup_inf_left, sup_comm (z \ y), sup_inf_sdiff]
     _ = z ⊓ z ⊓ (z \ x ⊔ y) ⊓ (z \ y ⊔ x) := by ac_rfl
     _ = z ⊓ (z \ x ⊔ y) ⊓ (z \ y ⊔ x) := by rw [inf_idem]
 #align sdiff_sdiff_sup_sdiff sdiff_sdiff_sup_sdiff
@@ -436,8 +436,8 @@ theorem inf_sdiff : (x ⊓ y) \ z = x \ z ⊓ y \ z :=
   sdiff_unique
     (calc
       x ⊓ y ⊓ z ⊔ x \ z ⊓ y \ z = (x ⊓ y ⊓ z ⊔ x \ z) ⊓ (x ⊓ y ⊓ z ⊔ y \ z) := by rw [sup_inf_left]
-      _ = (x ⊓ y ⊓ (z ⊔ x) ⊔ x \ z) ⊓ (x ⊓ y ⊓ z ⊔ y \ z) :=
-          by rw [sup_inf_right, sup_sdiff_self_right, inf_sup_right, inf_sdiff_sup_right]
+      _ = (x ⊓ y ⊓ (z ⊔ x) ⊔ x \ z) ⊓ (x ⊓ y ⊓ z ⊔ y \ z) := by
+          rw [sup_inf_right, sup_sdiff_self_right, inf_sup_right, inf_sdiff_sup_right]
       _ = (y ⊓ (x ⊓ (x ⊔ z)) ⊔ x \ z) ⊓ (x ⊓ y ⊓ z ⊔ y \ z) := by ac_rfl
       _ = (y ⊓ x ⊔ x \ z) ⊓ (x ⊓ y ⊔ y \ z) := by rw [inf_sup_self, sup_inf_inf_sdiff]
       _ = x ⊓ y ⊔ x \ z ⊓ y \ z := by rw [inf_comm y, sup_inf_left]
@@ -877,3 +877,23 @@ instance PUnit.instBooleanAlgebra : BooleanAlgebra PUnit := by
   refine'
   { PUnit.instBiheytingAlgebra with
     .. } <;> (intros; trivial)
+
+namespace DistribLattice
+
+variable (α : Type*) [DistribLattice α]
+
+/--
+An alternative constructor for boolean algebras:
+a distributive lattice that is complemented is a boolean algebra.
+
+This is not an instance, because it creates data using choice.
+-/
+noncomputable
+def booleanAlgebraOfComplemented [BoundedOrder α] [ComplementedLattice α] : BooleanAlgebra α where
+  __ := (inferInstanceAs (DistribLattice α))
+  __ := (inferInstanceAs (BoundedOrder α))
+  compl a := Classical.choose <| exists_isCompl a
+  inf_compl_le_bot a := (Classical.choose_spec (exists_isCompl a)).disjoint.le_bot
+  top_le_sup_compl a := (Classical.choose_spec (exists_isCompl a)).codisjoint.top_le
+
+end DistribLattice

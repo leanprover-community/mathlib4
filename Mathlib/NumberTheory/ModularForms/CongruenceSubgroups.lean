@@ -88,6 +88,14 @@ theorem Gamma_zero_bot : Gamma 0 = ⊥ := by
     simp [h]
 #align Gamma_zero_bot Gamma_zero_bot
 
+lemma ModularGroup_T_pow_mem_Gamma (N M : ℤ) (hNM : N ∣ M) :
+    (ModularGroup.T ^ M) ∈ _root_.Gamma (Int.natAbs N) := by
+  simp only [Gamma_mem, Fin.isValue, ModularGroup.coe_T_zpow, of_apply, cons_val', cons_val_zero,
+    empty_val', cons_val_fin_one, Int.cast_one, cons_val_one, head_cons, head_fin_const,
+    Int.cast_zero, and_self, and_true, true_and]
+  refine Iff.mpr (ZMod.intCast_zmod_eq_zero_iff_dvd M (Int.natAbs N)) ?_
+  simp only [Int.natCast_natAbs, abs_dvd, hNM]
+
 /-- The congruence subgroup of `SL(2, ℤ)` of matrices whose lower left-hand entry reduces to zero
 modulo `N`. -/
 def Gamma0 (N : ℕ) : Subgroup SL(2, ℤ) where

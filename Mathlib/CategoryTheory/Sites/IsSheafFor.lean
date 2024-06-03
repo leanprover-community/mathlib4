@@ -456,7 +456,7 @@ the proof of C2.1.4 of [Elephant], and the discussion in [MM92], Chapter III, Se
 def natTransEquivCompatibleFamily {P : Cᵒᵖ ⥤ Type v₁} :
     (S.functor ⟶ P) ≃ { x : FamilyOfElements P (S : Presieve X) // x.Compatible } where
   toFun α := by
-    refine' ⟨fun Y f hf => _, _⟩
+    refine ⟨fun Y f hf => ?_, ?_⟩
     · apply α.app (op Y) ⟨_, hf⟩
     · rw [compatible_iff_sieveCompatible]
       intro Y Z f g hf
@@ -629,7 +629,7 @@ theorem isSheafFor_iff_generate (R : Presieve X) :
 -/
 theorem isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (Presieve.singleton (𝟙 X)) := by
   intro x _
-  refine' ⟨x _ (Presieve.singleton_self _), _, _⟩
+  refine ⟨x _ (Presieve.singleton_self _), ?_, ?_⟩
   · rintro _ _ ⟨rfl, rfl⟩
     simp
   · intro t ht
