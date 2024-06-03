@@ -98,9 +98,8 @@ lemma qaryEntropy_pos {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (ple1 : p < 1) : 0 < qa
     rw [this]
     exact Real.log_intCast_nonneg _
   have rest_is_pos : 0 < -(p * p.log) - (1 - p) * (1 - p).log := by
-    convert binaryEntropy_pos pgt0 ple1 using 1
-    simp only [binaryEntropy_eq']
-    linarith
+  simp only [← neg_mul, ← binaryEntropy_eq']
+  exact binaryEntropy_pos pgt0 ple1
   have (a b c : ℝ) (ha : 0 ≤ a) (hb : 0 < -b - c) : 0 < a - b - c := by linarith
   exact this (p * ((q : ℝ) - 1).log) (p * p.log) ((1 - p) * (1 - p).log) p_q_log_nonneg rest_is_pos
 
