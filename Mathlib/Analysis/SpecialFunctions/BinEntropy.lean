@@ -163,7 +163,7 @@ lemma binaryEntropy_lt_log2_of_gt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p <
     rw [this]
     exact logConcave
 
-lemma binaryEntropy_lt_one_of_gt_log2 {p : ℝ} : 1/2 < p → p ≤ 1 → binaryEntropy p < log 2 := by
+lemma binaryEntropy_lt_log2_of_gt_log2 {p : ℝ} : 1/2 < p → p ≤ 1 → binaryEntropy p < log 2 := by
   intros
   rw [← binaryEntropy_eq_binaryEntropy_one_minus]
   exact binaryEntropy_lt_log2_of_gt_half (by linarith) (by linarith)
