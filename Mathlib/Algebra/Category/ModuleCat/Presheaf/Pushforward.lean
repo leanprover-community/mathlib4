@@ -22,7 +22,7 @@ universe v v₁ v₂ u₁ u₂ u
 
 open CategoryTheory
 
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₁} [Category.{v₂} D]
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace PresheafOfModules
 
