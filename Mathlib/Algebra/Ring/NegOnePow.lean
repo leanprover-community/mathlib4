@@ -71,10 +71,11 @@ lemma negOnePow_eq_neg_one_iff (n : ℤ) : n.negOnePow = -1 ↔ Odd n := by
   · exact negOnePow_odd n
 
 @[simp]
+theorem negOnePow_natAbs (n : ℤ) : ((n.negOnePow : ℤ)).natAbs = 1 := Int.units_natAbs _
+
+@[simp]
 theorem negOnePow_abs (n : ℤ) : |(n.negOnePow : ℤ)| = 1 := by
-  obtain h | h := Int.even_or_odd n
-  · rw [negOnePow_even _ h, Units.val_one, abs_one]
-  · rw [negOnePow_odd _ h, Units.val_neg, Units.val_one, abs_neg, abs_one]
+  rw [abs_eq_natAbs, negOnePow_natAbs, Nat.cast_one]
 
 @[simp]
 lemma negOnePow_neg (n : ℤ) : (-n).negOnePow = n.negOnePow := by
