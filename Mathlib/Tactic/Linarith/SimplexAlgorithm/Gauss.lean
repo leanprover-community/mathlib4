@@ -15,7 +15,7 @@ solution which is done by standard Gaussian Elimination algorithm implemented in
 namespace Linarith.SimplexAlgorithm.Gauss
 
 /-- The monad for the Gaussian Elimination algorithm. -/
-abbrev GaussM (n m : Nat) (matType : Nat → Nat → Type) [IsMatrix matType] := StateM <| matType n m
+abbrev GaussM (n m : Nat) (matType : Nat → Nat → Type) := StateM <| matType n m
 
 variable {n m : Nat} {matType : Nat → Nat → Type} [IsMatrix matType]
 
