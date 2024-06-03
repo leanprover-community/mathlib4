@@ -3,9 +3,11 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Group.Hom.End
-import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Ring.Invertible
+import Mathlib.Algebra.SMulWithZero
+import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.GroupTheory.GroupAction.Units
 
 #align_import algebra.module.basic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
@@ -35,6 +37,10 @@ to use a canonical `Module` typeclass throughout.
 
 semimodule, module, vector space
 -/
+
+assert_not_exists Multiset
+assert_not_exists Set.indicator
+assert_not_exists Pi.single_smul₀
 
 open Function Set
 
@@ -224,7 +230,7 @@ variable {R M}
 theorem Convex.combo_eq_smul_sub_add [Module R M] {x y : M} {a b : R} (h : a + b = 1) :
     a • x + b • y = b • (y - x) + x :=
   calc
-    a • x + b • y = b • y - b • x + (a • x + b • x) := by abel
+    a • x + b • y = b • y - b • x + (a • x + b • x) := by rw [sub_add_add_cancel, add_comm]
     _ = b • (y - x) + x := by rw [smul_sub, Convex.combo_self h]
 #align convex.combo_eq_smul_sub_add Convex.combo_eq_smul_sub_add
 
@@ -532,7 +538,7 @@ variable (R M)
 /-- If `M` is an `R`-module with one and `M` has characteristic zero, then `R` has characteristic
 zero as well. Usually `M` is an `R`-algebra. -/
 theorem CharZero.of_module (M) [AddCommMonoidWithOne M] [CharZero M] [Module R M] : CharZero R := by
-  refine' ⟨fun m n h => @Nat.cast_injective M _ _ _ _ _⟩
+  refine ⟨fun m n h => @Nat.cast_injective M _ _ _ _ ?_⟩
   rw [← nsmul_one, ← nsmul_one, nsmul_eq_smul_cast R m (1 : M), nsmul_eq_smul_cast R n (1 : M), h]
 #align char_zero.of_module CharZero.of_module
 
@@ -640,7 +646,3 @@ theorem Int.smul_one_eq_cast {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = �
 
 @[deprecated (since := "2024-05-03")] alias Nat.smul_one_eq_coe := Nat.smul_one_eq_cast
 @[deprecated (since := "2024-05-03")] alias Int.smul_one_eq_coe := Int.smul_one_eq_cast
-
-assert_not_exists Multiset
-assert_not_exists Set.indicator
-assert_not_exists Pi.single_smul₀

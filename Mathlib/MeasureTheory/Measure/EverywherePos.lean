@@ -45,12 +45,12 @@ variable {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
 /-- A set `s` is *everywhere positive* (also called *self-supporting*) with respect to a
 measure `μ` if it has positive measure around each of its points, i.e., if all neighborhoods `n`
 of points of `s` satisfy `μ (s ∩ n) > 0`. -/
-@[pp_dot] def IsEverywherePos (μ : Measure α) (s : Set α) : Prop :=
+def IsEverywherePos (μ : Measure α) (s : Set α) : Prop :=
   ∀ x ∈ s, ∀ n ∈ 𝓝[s] x, 0 < μ n
 
 /-- * The everywhere positive subset of a set is the subset made of those points all of whose
 neighborhoods have positive measure inside the set. -/
-@[pp_dot] def everywherePosSubset (μ : Measure α) (s : Set α) : Set α :=
+def everywherePosSubset (μ : Measure α) (s : Set α) : Set α :=
   {x | x ∈ s ∧ ∀ n ∈ 𝓝[s] x, 0 < μ n}
 
 lemma everywherePosSubset_subset (μ : Measure α) (s : Set α) : μ.everywherePosSubset s ⊆ s :=
@@ -101,8 +101,8 @@ lemma measure_eq_zero_of_subset_diff_everywherePosSubset
   · exact fun s t hst ht ↦ measure_mono_null hst ht
   · exact fun s t hs ht ↦ measure_union_null hs ht
   · intro x hx
-    obtain ⟨u, ux, hu⟩ : ∃ u ∈ 𝓝[s] x, μ u = 0 :=
-      by simpa [everywherePosSubset, (h'k hx).1] using (h'k hx).2
+    obtain ⟨u, ux, hu⟩ : ∃ u ∈ 𝓝[s] x, μ u = 0 := by
+      simpa [everywherePosSubset, (h'k hx).1] using (h'k hx).2
     exact ⟨u, nhdsWithin_mono x (h'k.trans (diff_subset _ _)) ux, hu⟩
 
 /-- In a space with an inner regular measure, any measurable set coincides almost everywhere with

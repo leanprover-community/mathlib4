@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
-import Mathlib.Algebra.Group.OrderSynonym
+import Mathlib.Logic.Unique
 
 #align_import algebra.group_with_zero.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -35,6 +35,7 @@ and require `0⁻¹ = 0`.
 
 -/
 
+assert_not_exists DenselyOrdered
 
 open scoped Classical
 
@@ -315,17 +316,14 @@ instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ 
     inv_inv := fun a => by
       by_cases h : a = 0
       · simp [h]
-
       · exact left_inv_eq_right_inv (inv_mul_cancel <| inv_ne_zero h) (inv_mul_cancel h)
         ,
     mul_inv_rev := fun a b => by
       by_cases ha : a = 0
       · simp [ha]
-
       by_cases hb : b = 0
       · simp [hb]
-
-      refine' inv_eq_of_mul _
+      apply inv_eq_of_mul
       simp [mul_assoc, ha, hb],
     inv_eq_of_mul := fun _ _ => inv_eq_of_mul }
 #align group_with_zero.to_division_monoid GroupWithZero.toDivisionMonoid
@@ -443,6 +441,56 @@ theorem mul_right_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => g
   ⟨g * a⁻¹, by simp [mul_assoc, inv_mul_cancel h]⟩
 #align mul_right_surjective₀ mul_right_surjective₀
 
+lemma zero_zpow : ∀ n : ℤ, n ≠ 0 → (0 : G₀) ^ n = 0
+  | (n : ℕ), h => by rw [zpow_natCast, zero_pow]; simpa [Int.natCast_eq_zero] using h
+  | .negSucc n, _ => by simp
+#align zero_zpow zero_zpow
+
+lemma zero_zpow_eq (n : ℤ) : (0 : G₀) ^ n = if n = 0 then 1 else 0 := by
+  split_ifs with h
+  · rw [h, zpow_zero]
+  · rw [zero_zpow _ h]
+#align zero_zpow_eq zero_zpow_eq
+
+lemma zpow_add_one₀ (ha : a ≠ 0) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
+  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ]
+  | .negSucc 0 => by erw [zpow_zero, zpow_negSucc, pow_one, inv_mul_cancel ha]
+  | .negSucc (n + 1) => by
+    rw [Int.negSucc_eq, zpow_neg, Int.neg_add, Int.neg_add_cancel_right, zpow_neg, ← Int.ofNat_succ,
+      zpow_natCast, zpow_natCast, pow_succ' _ (n + 1), mul_inv_rev, mul_assoc, inv_mul_cancel ha,
+      mul_one]
+#align zpow_add_one₀ zpow_add_one₀
+
+lemma zpow_sub_one₀ (ha : a ≠ 0) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
+  calc
+    a ^ (n - 1) = a ^ (n - 1) * a * a⁻¹ := by rw [mul_assoc, mul_inv_cancel ha, mul_one]
+    _ = a ^ n * a⁻¹ := by rw [← zpow_add_one₀ ha, Int.sub_add_cancel]
+#align zpow_sub_one₀ zpow_sub_one₀
+
+lemma zpow_add₀ (ha : a ≠ 0) (m n : ℤ) : a ^ (m + n) = a ^ m * a ^ n := by
+  induction' n using Int.induction_on with n ihn n ihn
+  · simp
+  · simp only [← Int.add_assoc, zpow_add_one₀ ha, ihn, mul_assoc]
+  · rw [zpow_sub_one₀ ha, ← mul_assoc, ← ihn, ← zpow_sub_one₀ ha, Int.add_sub_assoc]
+#align zpow_add₀ zpow_add₀
+
+lemma zpow_add' {m n : ℤ} (h : a ≠ 0 ∨ m + n ≠ 0 ∨ m = 0 ∧ n = 0) :
+    a ^ (m + n) = a ^ m * a ^ n := by
+  by_cases hm : m = 0
+  · simp [hm]
+  by_cases hn : n = 0
+  · simp [hn]
+  by_cases ha : a = 0
+  · subst a
+    simp only [false_or_iff, eq_self_iff_true, not_true, Ne, hm, hn, false_and_iff,
+      or_false_iff] at h
+    rw [zero_zpow _ h, zero_zpow _ hm, zero_mul]
+  · exact zpow_add₀ ha m n
+#align zpow_add' zpow_add'
+
+lemma zpow_one_add₀ (h : a ≠ 0) (i : ℤ) : a ^ (1 + i) = a * a ^ i := by rw [zpow_add₀ h, zpow_one]
+#align zpow_one_add₀ zpow_one_add₀
+
 end GroupWithZero
 
 section CommGroupWithZero
@@ -453,52 +501,10 @@ theorem div_mul_eq_mul_div₀ (a b c : G₀) : a / c * b = a * b / c := by
   simp_rw [div_eq_mul_inv, mul_assoc, mul_comm c⁻¹]
 #align div_mul_eq_mul_div₀ div_mul_eq_mul_div₀
 
+lemma div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b := by
+  obtain rfl | ha := eq_or_ne a 0
+  · simp
+  · rw [sq, mul_assoc, mul_div_cancel_left₀ _ ha]
+#align div_sq_cancel div_sq_cancel
+
 end CommGroupWithZero
-
-/-! ### Order dual -/
-
-
-open OrderDual
-
-instance [h : MulZeroClass α] : MulZeroClass αᵒᵈ := h
-
-instance [h : MulZeroOneClass α] : MulZeroOneClass αᵒᵈ := h
-
-instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors αᵒᵈ := h
-
-instance [h : SemigroupWithZero α] : SemigroupWithZero αᵒᵈ := h
-
-instance [h : MonoidWithZero α] : MonoidWithZero αᵒᵈ := h
-
-instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero αᵒᵈ := h
-
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ := h
-
-instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero αᵒᵈ := h
-
-instance [h : GroupWithZero α] : GroupWithZero αᵒᵈ := h
-
-instance [h : CommGroupWithZero α] : CommGroupWithZero αᵒᵈ := h
-
-/-! ### Lexicographic order -/
-
-
-instance [h : MulZeroClass α] : MulZeroClass (Lex α) := h
-
-instance [h : MulZeroOneClass α] : MulZeroOneClass (Lex α) := h
-
-instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors (Lex α) := h
-
-instance [h : SemigroupWithZero α] : SemigroupWithZero (Lex α) := h
-
-instance [h : MonoidWithZero α] : MonoidWithZero (Lex α) := h
-
-instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero (Lex α) := h
-
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero (Lex α) := h
-
-instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero (Lex α) := h
-
-instance [h : GroupWithZero α] : GroupWithZero (Lex α) := h
-
-instance [h : CommGroupWithZero α] : CommGroupWithZero (Lex α) := h

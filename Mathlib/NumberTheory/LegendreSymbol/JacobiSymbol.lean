@@ -113,8 +113,9 @@ theorem one_right (a : ℤ) : J(a | 1) = 1 := by
 
 /-- The Legendre symbol `legendreSym p a` with an integer `a` and a prime number `p`
 is the same as the Jacobi symbol `J(a | p)`. -/
-theorem legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) : legendreSym p a = J(a | p) :=
-  by simp only [jacobiSym, factors_prime fp.1, List.prod_cons, List.prod_nil, mul_one, List.pmap]
+theorem legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) :
+    legendreSym p a = J(a | p) := by
+  simp only [jacobiSym, factors_prime fp.1, List.prod_cons, List.prod_nil, mul_one, List.pmap]
 #align legendre_sym.to_jacobi_sym jacobiSym.legendreSym.to_jacobiSym
 
 /-- The Jacobi symbol is multiplicative in its second argument. -/
@@ -330,7 +331,7 @@ then `J(a | b)` equals `χ b` for all odd natural numbers `b`. -/
 theorem value_at (a : ℤ) {R : Type*} [CommSemiring R] (χ : R →* ℤ)
     (hp : ∀ (p : ℕ) (pp : p.Prime), p ≠ 2 → @legendreSym p ⟨pp⟩ a = χ p) {b : ℕ} (hb : Odd b) :
     J(a | b) = χ b := by
-  conv_rhs => rw [← prod_factors hb.pos.ne', cast_list_prod, χ.map_list_prod]
+  conv_rhs => rw [← prod_factors hb.pos.ne', cast_list_prod, map_list_prod χ]
   rw [jacobiSym, List.map_map, ← List.pmap_eq_map Nat.Prime _ _ fun _ => prime_of_mem_factors]
   congr 1; apply List.pmap_congr
   exact fun p h pp _ => hp p pp (hb.ne_two_of_dvd_nat <| dvd_of_mem_factors h)
@@ -362,11 +363,11 @@ theorem div_four_left {a : ℤ} {b : ℕ} (ha4 : a % 4 = 0) (hb2 : b % 2 = 1) :
     J(a / 4 | b) = J(a | b) := by
   obtain ⟨a, rfl⟩ := Int.dvd_of_emod_eq_zero ha4
   have : Int.gcd (2 : ℕ) b = 1 := by
-    rw [Int.coe_nat_gcd, ← b.mod_add_div 2, hb2, Nat.gcd_add_mul_left_right, Nat.gcd_one_right]
+    rw [Int.gcd_natCast_natCast, ← b.mod_add_div 2, hb2, Nat.gcd_add_mul_left_right,
+      Nat.gcd_one_right]
   rw [Int.mul_ediv_cancel_left _ (by decide), jacobiSym.mul_left,
     (by decide : (4 : ℤ) = (2 : ℕ) ^ 2), jacobiSym.sq_one' this, one_mul]
 
-unseal Nat.modCore in
 theorem even_odd {a : ℤ} {b : ℕ} (ha2 : a % 2 = 0) (hb2 : b % 2 = 1) :
     (if b % 8 = 3 ∨ b % 8 = 5 then -J(a / 2 | b) else J(a / 2 | b)) = J(a | b) := by
   obtain ⟨a, rfl⟩ := Int.dvd_of_emod_eq_zero ha2
@@ -375,7 +376,8 @@ theorem even_odd {a : ℤ} {b : ℕ} (ha2 : a % 2 = 0) (hb2 : b % 2 = 1) :
     if_neg (Nat.mod_two_ne_zero.mpr hb2)]
   have := Nat.mod_lt b (by decide : 0 < 8)
   interval_cases h : b % 8 <;> simp_all <;>
-    exact absurd (hb2 ▸ h ▸ Nat.mod_mod_of_dvd b (by decide : 2 ∣ 8)) zero_ne_one
+  · have := hb2 ▸ h ▸ Nat.mod_mod_of_dvd b (by decide : 2 ∣ 8)
+    simp_all
 
 end jacobiSym
 
@@ -424,11 +426,11 @@ protected theorem symm {m n : ℕ} (hm : Odd m) (hn : Odd n) : qrSign m n = qrSi
 /-- We can move `qrSign m n` from one side of an equality to the other when `m` and `n` are odd. -/
 theorem eq_iff_eq {m n : ℕ} (hm : Odd m) (hn : Odd n) (x y : ℤ) :
     qrSign m n * x = y ↔ x = qrSign m n * y := by
-  refine'
+  refine
       ⟨fun h' =>
         let h := h'.symm
-        _,
-        fun h => _⟩ <;>
+        ?_,
+        fun h => ?_⟩ <;>
     rw [h, ← mul_assoc, ← pow_two, sq_eq_one hm hn, one_mul]
 #align qr_sign.eq_iff_eq qrSign.eq_iff_eq
 
@@ -448,11 +450,11 @@ theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
         -- applied under the binder `fun ↦ ...`
         simp_rw [qrSign.mul_left x y a, Nat.cast_mul, mul_left, mul_mul_mul_comm] }
   have rhs_apply : ∀ a b : ℕ, rhs a b = qrSign b a * J(b | a) := fun a b => rfl
-  refine' value_at a (rhs a) (fun p pp hp => Eq.symm _) hb
+  refine value_at a (rhs a) (fun p pp hp => Eq.symm ?_) hb
   have hpo := pp.eq_two_or_odd'.resolve_left hp
   rw [@legendreSym.to_jacobiSym p ⟨pp⟩, rhs_apply, Nat.cast_id, qrSign.eq_iff_eq hpo ha,
     qrSign.symm hpo ha]
-  refine' value_at p (rhs p) (fun q pq hq => _) ha
+  refine value_at p (rhs p) (fun q pq hq => ?_) ha
   have hqo := pq.eq_two_or_odd'.resolve_left hq
   rw [rhs_apply, Nat.cast_id, ← @legendreSym.to_jacobiSym p ⟨pp⟩, qrSign.symm hqo hpo,
     qrSign.neg_one_pow hpo hqo, @legendreSym.quadratic_reciprocity' p q ⟨pp⟩ ⟨pq⟩ hp hq]
@@ -584,7 +586,7 @@ private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a
   split <;> rename_i hba
   · suffices J(a | b) = 0 by simp [this]
     refine eq_zero_iff.mpr ⟨fun h ↦ absurd (h ▸ hb1) (by decide), ?_⟩
-    rwa [Int.coe_nat_gcd, Nat.gcd_eq_left (Nat.dvd_of_mod_eq_zero hba)]
+    rwa [Int.gcd_natCast_natCast, Nat.gcd_eq_left (Nat.dvd_of_mod_eq_zero hba)]
   rw [IH (b % a) (b.mod_lt ha0) (Nat.mod_two_ne_zero.mp ha2) (lt_of_le_of_ne ha0 (Ne.symm ha1))]
   simp only [Int.natCast_mod, ← mod_left]
   rw [← quadratic_reciprocity_if (Nat.mod_two_ne_zero.mp ha2) hb2]

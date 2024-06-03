@@ -113,10 +113,10 @@ theorem frontier_thickening_subset (E : Set α) {δ : ℝ} :
 
 theorem frontier_thickening_disjoint (A : Set α) :
     Pairwise (Disjoint on fun r : ℝ => frontier (thickening r A)) := by
-  refine' (pairwise_disjoint_on _).2 fun r₁ r₂ hr => _
+  refine (pairwise_disjoint_on _).2 fun r₁ r₂ hr => ?_
   rcases le_total r₁ 0 with h₁ | h₁
   · simp [thickening_of_nonpos h₁]
-  refine' ((disjoint_singleton.2 fun h => hr.ne _).preimage _).mono (frontier_thickening_subset _)
+  refine ((disjoint_singleton.2 fun h => hr.ne ?_).preimage _).mono (frontier_thickening_subset _)
     (frontier_thickening_subset _)
   apply_fun ENNReal.toReal at h
   rwa [ENNReal.toReal_ofReal h₁, ENNReal.toReal_ofReal (h₁.trans hr.le)] at h
@@ -364,7 +364,7 @@ theorem thickening_iUnion (δ : ℝ) (f : ι → Set α) :
 
 theorem ediam_cthickening_le (ε : ℝ≥0) :
     EMetric.diam (cthickening ε s) ≤ EMetric.diam s + 2 * ε := by
-  refine' diam_le fun x hx y hy => ENNReal.le_of_forall_pos_le_add fun δ hδ _ => _
+  refine diam_le fun x hx y hy => ENNReal.le_of_forall_pos_le_add fun δ hδ _ => ?_
   rw [mem_cthickening_iff, ENNReal.ofReal_coe_nnreal] at hx hy
   have hε : (ε : ℝ≥0∞) < ε + δ := ENNReal.coe_lt_coe.2 (lt_add_of_pos_right _ hδ)
   replace hx := hx.trans_lt hε
@@ -417,14 +417,14 @@ theorem _root_.Disjoint.exists_thickenings (hst : Disjoint s t) (hs : IsCompact 
     (ht : IsClosed t) :
     ∃ δ, 0 < δ ∧ Disjoint (thickening δ s) (thickening δ t) := by
   obtain ⟨r, hr, h⟩ := exists_pos_forall_lt_edist hs ht hst
-  refine' ⟨r / 2, half_pos (NNReal.coe_pos.2 hr), _⟩
+  refine ⟨r / 2, half_pos (NNReal.coe_pos.2 hr), ?_⟩
   rw [disjoint_iff_inf_le]
   rintro z ⟨hzs, hzt⟩
   rw [mem_thickening_iff_exists_edist_lt] at hzs hzt
   rw [← NNReal.coe_two, ← NNReal.coe_div, ENNReal.ofReal_coe_nnreal] at hzs hzt
   obtain ⟨x, hx, hzx⟩ := hzs
   obtain ⟨y, hy, hzy⟩ := hzt
-  refine' (h x hx y hy).not_le _
+  refine (h x hx y hy).not_le ?_
   calc
     edist x y ≤ edist z x + edist z y := edist_triangle_left _ _ _
     _ ≤ ↑(r / 2) + ↑(r / 2) := add_le_add hzx.le hzy.le
@@ -435,7 +435,7 @@ theorem _root_.Disjoint.exists_cthickenings (hst : Disjoint s t) (hs : IsCompact
     (ht : IsClosed t) :
     ∃ δ, 0 < δ ∧ Disjoint (cthickening δ s) (cthickening δ t) := by
   obtain ⟨δ, hδ, h⟩ := hst.exists_thickenings hs ht
-  refine' ⟨δ / 2, half_pos hδ, h.mono _ _⟩ <;>
+  refine ⟨δ / 2, half_pos hδ, h.mono ?_ ?_⟩ <;>
     exact cthickening_subset_thickening' hδ (half_lt_self hδ) _
 #align disjoint.exists_cthickenings Disjoint.exists_cthickenings
 
@@ -498,7 +498,7 @@ theorem cthickening_eq_iInter_cthickening {δ : ℝ} (E : Set α) :
 theorem cthickening_eq_iInter_thickening' {δ : ℝ} (δ_nn : 0 ≤ δ) (s : Set ℝ) (hsδ : s ⊆ Ioi δ)
     (hs : ∀ ε, δ < ε → (s ∩ Ioc δ ε).Nonempty) (E : Set α) :
     cthickening δ E = ⋂ ε ∈ s, thickening ε E := by
-  refine' (subset_iInter₂ fun ε hε => _).antisymm _
+  refine (subset_iInter₂ fun ε hε => ?_).antisymm ?_
   · obtain ⟨ε', -, hε'⟩ := hs ε (hsδ hε)
     have ss := cthickening_subset_thickening' (lt_of_le_of_lt δ_nn hε'.1) hε'.1 E
     exact ss.trans (thickening_mono hε'.2 E)
@@ -567,13 +567,13 @@ theorem frontier_cthickening_subset (E : Set α) {δ : ℝ} :
 thickening of `E`. -/
 theorem closedBall_subset_cthickening {α : Type*} [PseudoMetricSpace α] {x : α} {E : Set α}
     (hx : x ∈ E) (δ : ℝ) : closedBall x δ ⊆ cthickening δ E := by
-  refine' (closedBall_subset_cthickening_singleton _ _).trans (cthickening_subset_of_subset _ _)
+  refine (closedBall_subset_cthickening_singleton _ _).trans (cthickening_subset_of_subset _ ?_)
   simpa using hx
 #align metric.closed_ball_subset_cthickening Metric.closedBall_subset_cthickening
 
 theorem cthickening_subset_iUnion_closedBall_of_lt {α : Type*} [PseudoMetricSpace α] (E : Set α)
     {δ δ' : ℝ} (hδ₀ : 0 < δ') (hδδ' : δ < δ') : cthickening δ E ⊆ ⋃ x ∈ E, closedBall x δ' := by
-  refine' (cthickening_subset_thickening' hδ₀ hδδ' E).trans fun x hx => _
+  refine (cthickening_subset_thickening' hδ₀ hδδ' E).trans fun x hx => ?_
   obtain ⟨y, hy₁, hy₂⟩ := mem_thickening_iff.mp hx
   exact mem_iUnion₂.mpr ⟨y, hy₁, hy₂.le⟩
 #align metric.cthickening_subset_Union_closed_ball_of_lt Metric.cthickening_subset_iUnion_closedBall_of_lt
@@ -621,7 +621,7 @@ nonrec theorem _root_.IsClosed.cthickening_eq_biUnion_closedBall {α : Type*} [P
 /-- For the equality, see `infEdist_cthickening`. -/
 theorem infEdist_le_infEdist_cthickening_add :
     infEdist x s ≤ infEdist x (cthickening δ s) + ENNReal.ofReal δ := by
-  refine' le_of_forall_lt' fun r h => _
+  refine le_of_forall_lt' fun r h => ?_
   simp_rw [← lt_tsub_iff_right, infEdist_lt_iff, mem_cthickening_iff] at h
   obtain ⟨y, hy, hxy⟩ := h
   exact infEdist_le_edist_add_infEdist.trans_lt

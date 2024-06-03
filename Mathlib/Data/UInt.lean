@@ -3,37 +3,7 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat
-import Mathlib.Data.Fin.Basic
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Ring.Basic
 import Mathlib.Data.ZMod.Defs
-
-lemma UInt8.val_eq_of_lt {a : Nat} : a < UInt8.size → ((ofNat a).val : Nat) = a :=
-  Nat.mod_eq_of_lt
-
-lemma UInt16.val_eq_of_lt {a : Nat} : a < UInt16.size → ((ofNat a).val : Nat) = a :=
-  Nat.mod_eq_of_lt
-
-lemma UInt32.val_eq_of_lt {a : Nat} : a < UInt32.size → ((ofNat a).val : Nat) = a :=
-  Nat.mod_eq_of_lt
-
-lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size → ((ofNat a).val : Nat) = a :=
-  Nat.mod_eq_of_lt
-
-lemma USize.val_eq_of_lt {a : Nat} : a < USize.size → ((ofNat a).val : Nat) = a :=
-  Nat.mod_eq_of_lt
-
-instance UInt8.neZero : NeZero UInt8.size := ⟨by decide⟩
-
-instance UInt16.neZero : NeZero UInt16.size := ⟨by decide⟩
-
-instance UInt32.neZero : NeZero UInt32.size := ⟨by decide⟩
-
-instance UInt64.neZero : NeZero UInt64.size := ⟨by decide⟩
-
-instance USize.neZero : NeZero USize.size := NeZero.of_pos usize_size_gt_zero
 
 example : (0 : UInt8) = ⟨0⟩ := rfl
 
@@ -42,8 +12,7 @@ run_cmd
   for typeName in [`UInt8, `UInt16, `UInt32, `UInt64, `USize].map Lean.mkIdent do
   Lean.Elab.Command.elabCommand (← `(
     namespace $typeName
-      instance : Inhabited $typeName where
-        default := 0
+      instance neZero : NeZero size := ⟨by decide⟩
 
       instance : Neg $typeName where
         neg a := mk (-a.val)
@@ -63,19 +32,7 @@ run_cmd
       instance : IntCast $typeName where
         intCast z := mk z
 
-      lemma zero_def : (0 : $typeName) = ⟨0⟩ := rfl
-
-      lemma one_def : (1 : $typeName) = ⟨1⟩ := rfl
-
       lemma neg_def (a : $typeName) : -a = ⟨-a.val⟩ := rfl
-
-      lemma sub_def (a b : $typeName) : a - b = ⟨a.val - b.val⟩ := rfl
-
-      lemma mul_def (a b : $typeName) : a * b = ⟨a.val * b.val⟩ := rfl
-
-      lemma mod_def (a b : $typeName) : a % b = ⟨a.val % b.val⟩ := rfl
-
-      lemma add_def (a b : $typeName) : a + b = ⟨a.val + b.val⟩ := rfl
 
       lemma pow_def (a : $typeName) (n : ℕ) : a ^ n = ⟨a.val ^ n⟩ := rfl
 
@@ -87,16 +44,8 @@ run_cmd
 
       lemma intCast_def (z : ℤ) : (z : $typeName) = ⟨z⟩ := rfl
 
-      lemma eq_of_val_eq : ∀ {a b : $typeName}, a.val = b.val -> a = b
-      | ⟨_⟩, ⟨_⟩, h => congrArg mk h
-
+      open $typeName (eq_of_val_eq) in
       lemma val_injective : Function.Injective val := @eq_of_val_eq
-
-      lemma val_eq_of_eq : ∀ {a b : $typeName}, a = b -> a.val = b.val
-      | ⟨_⟩, ⟨_⟩, h => congrArg val h
-
-      @[simp] lemma mk_val_eq : ∀ (a : $typeName), mk a.val = a
-      | ⟨_, _⟩ => rfl
 
       instance : CommRing $typeName :=
         Function.Injective.commRing val val_injective

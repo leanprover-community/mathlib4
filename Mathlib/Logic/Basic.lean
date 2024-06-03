@@ -595,8 +595,8 @@ theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) 
 -- Porting note (#10756): new theorem. More general version of `eqRec_heq`
 theorem eqRec_heq' {α : Sort*} {a' : α} {motive : (a : α) → a' = a → Sort*}
     (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
-    HEq (@Eq.rec α a' motive p a t) p :=
-  by subst t; rfl
+    HEq (@Eq.rec α a' motive p a t) p := by
+  subst t; rfl
 
 set_option autoImplicit true in
 theorem rec_heq_of_heq {C : α → Sort*} {x : C a} {y : β} (e : a = b) (h : HEq x y) :
@@ -934,12 +934,6 @@ theorem exists_prop_congr {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h ↔
     Exists q ↔ ∃ h : p', q' (hp.2 h) :=
   ⟨fun ⟨_, _⟩ ↦ ⟨hp.1 ‹_›, (hq _).1 ‹_›⟩, fun ⟨_, _⟩ ↦ ⟨_, (hq _).2 ‹_›⟩⟩
 #align exists_prop_congr exists_prop_congr
-
-@[congr]
-theorem exists_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h ↔ q' h) (hp : p ↔ p') :
-    Exists q = ∃ h : p', q' (hp.2 h) :=
-  propext (exists_prop_congr hq hp)
-#align exists_prop_congr' exists_prop_congr'
 
 /-- See `IsEmpty.exists_iff` for the `False` version. -/
 @[simp] theorem exists_true_left (p : True → Prop) : (∃ x, p x) ↔ p True.intro :=

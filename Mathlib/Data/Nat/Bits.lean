@@ -122,7 +122,7 @@ lemma bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
   | 0 => rfl
   | succ n => by
     simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
-    refine' Eq.trans _ (congr_arg succ (bodd_add_div2 n))
+    refine Eq.trans ?_ (congr_arg succ (bodd_add_div2 n))
     cases bodd n
     · simp
     · simp; omega
@@ -168,7 +168,7 @@ lemma bit_zero : bit false 0 = 0 :=
   rfl
 #align nat.bit_zero Nat.bit_zero
 
-/--`shiftLeft' b m n` performs a left shift of `m` `n` times
+/-- `shiftLeft' b m n` performs a left shift of `m` `n` times
  and adds the bit `b` as the least significant bit each time.
  Returns the corresponding natural number-/
 def shiftLeft' (b : Bool) (m : ℕ) : ℕ → ℕ
@@ -233,7 +233,7 @@ def bits : ℕ → List Bool :=
 #align nat.land Nat.land
 #align nat.lxor Nat.xor
 
-/--`ldiff a b` performs bitwise set difference. For each corresponding
+/-- `ldiff a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
   boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℕ → ℕ → ℕ :=
@@ -286,24 +286,21 @@ lemma testBit_bit_zero (b n) : testBit (bit b n) 0 = b := by
   rw [testBit, bit]
   cases b
   · simp [bit0, ← Nat.mul_two]
-  · simp only [cond_true, bit1, bit0, shiftRight_zero, and_one_is_mod, bne_iff_ne]
-    simp only [← Nat.mul_two]
-    rw [Nat.add_mod]
-    simp
+  · simp [bit0, bit1, ← Nat.mul_two]
 
 #align nat.test_bit_zero Nat.testBit_zero
 
-lemma bodd_eq_and_one_ne_zero : ∀ n, bodd n = (n &&& 1 != 0)
+lemma bodd_eq_one_and_ne_zero : ∀ n, bodd n = (1 &&& n != 0)
   | 0 => rfl
   | 1 => rfl
-  | n + 2 => by simpa using bodd_eq_and_one_ne_zero n
+  | n + 2 => by simpa using bodd_eq_one_and_ne_zero n
 
 lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
     simp only [shiftRight_eq_div_pow]
     simp [← div2_val, div2_bit]
   rw [← shiftRight_add, Nat.add_comm] at this
-  simp only [bodd_eq_and_one_ne_zero] at this
+  simp only [bodd_eq_one_and_ne_zero] at this
   exact this
 #align nat.test_bit_succ Nat.testBit_succ
 

@@ -5,8 +5,8 @@ Authors: Chris Hughes
 -/
 import Batteries.Data.Int.DivMod
 import Mathlib.Data.Nat.ModEq
+import Mathlib.Tactic.Abel
 import Mathlib.Tactic.GCongr.Core
-import Mathlib.Tactic.Ring
 
 #align_import data.int.modeq from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
@@ -139,9 +139,7 @@ protected theorem mul_right' (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n * 
 
 @[gcongr]
 protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + c ≡ b + d [ZMOD n] :=
-  modEq_iff_dvd.2 <| by
-    convert dvd_add h₁.dvd h₂.dvd using 1
-    ring
+  modEq_iff_dvd.2 <| by convert dvd_add h₁.dvd h₂.dvd using 1; abel
 #align int.modeq.add Int.ModEq.add
 
 @[gcongr] protected theorem add_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c + a ≡ c + b [ZMOD n] :=
@@ -154,7 +152,7 @@ protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + 
 
 protected theorem add_left_cancel (h₁ : a ≡ b [ZMOD n]) (h₂ : a + c ≡ b + d [ZMOD n]) :
     c ≡ d [ZMOD n] :=
-  have : d - c = b + d - (a + c) - (b - a) := by ring
+  have : d - c = b + d - (a + c) - (b - a) := by abel
   modEq_iff_dvd.2 <| by
     rw [this]
     exact dvd_sub h₂.dvd h₁.dvd
@@ -268,7 +266,8 @@ theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℤ} (hmn : m.natAbs.Coprime n.
   ⟨fun h => by
     rw [modEq_iff_dvd, modEq_iff_dvd] at h
     rw [modEq_iff_dvd, ← natAbs_dvd, ← dvd_natAbs, natCast_dvd_natCast, natAbs_mul]
-    refine' hmn.mul_dvd_of_dvd_of_dvd _ _ <;> rw [← natCast_dvd_natCast, natAbs_dvd, dvd_natAbs] <;>
+    refine hmn.mul_dvd_of_dvd_of_dvd ?_ ?_ <;>
+      rw [← natCast_dvd_natCast, natAbs_dvd, dvd_natAbs] <;>
       tauto,
     fun h => ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
 #align int.modeq_and_modeq_iff_modeq_mul Int.modEq_and_modEq_iff_modEq_mul
@@ -286,8 +285,7 @@ theorem modEq_add_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a + n * 
 #align int.modeq_add_fac Int.modEq_add_fac
 
 theorem modEq_sub_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a - n * c ≡ b [ZMOD n] := by
-  convert Int.modEq_add_fac (-c) ha using 1
-  ring
+  convert Int.modEq_add_fac (-c) ha using 1; rw [mul_neg, sub_eq_add_neg]
 
 theorem modEq_add_fac_self {a t n : ℤ} : a + n * t ≡ a [ZMOD n] :=
   modEq_add_fac _ ModEq.rfl

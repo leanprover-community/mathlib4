@@ -47,13 +47,12 @@ def deriveNotPrime (n d : ℕ) (en : Q(ℕ)) : Q(¬ Nat.Prime $en) := Id.run <| 
 def MinFacHelper (n k : ℕ) : Prop :=
   2 < k ∧ k % 2 = 1 ∧ k ≤ minFac n
 
-unseal minFacAux in
 theorem MinFacHelper.one_lt {n k : ℕ} (h : MinFacHelper n k) : 1 < n := by
   have : 2 < minFac n := h.1.trans_le h.2.2
   obtain rfl | h := n.eq_zero_or_pos
   · contradiction
   rcases (succ_le_of_lt h).eq_or_lt with rfl|h
-  · contradiction
+  · simp_all
   exact h
 
 theorem minFacHelper_0 (n : ℕ)

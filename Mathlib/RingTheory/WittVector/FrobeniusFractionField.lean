@@ -199,7 +199,9 @@ variable {k : Type*} [Field k] [CharP k p] [IsAlgClosed k]
 
 /-- Recursively defines the sequence of coefficients for `WittVector.frobeniusRotation`.
 -/
-noncomputable def frobeniusRotationCoeff {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0)
+-- Constructions by well-founded recursion are by default irreducible.
+-- As we rely on definitional properties below, we mark this `@[semireducible]`.
+@[semireducible] noncomputable def frobeniusRotationCoeff {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0)
     (ha₂ : a₂.coeff 0 ≠ 0) : ℕ → k
   | 0 => solution p a₁ a₂
   | n + 1 => succNthVal p n a₁ a₂ (fun i => frobeniusRotationCoeff ha₁ ha₂ i.val) ha₁ ha₂
@@ -212,7 +214,6 @@ def frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ :
   WittVector.mk p (frobeniusRotationCoeff p ha₁ ha₂)
 #align witt_vector.frobenius_rotation WittVector.frobeniusRotation
 
-unseal frobeniusRotationCoeff in
 theorem frobeniusRotation_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) :
     frobeniusRotation p ha₁ ha₂ ≠ 0 := by
   intro h
@@ -220,7 +221,6 @@ theorem frobeniusRotation_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠
   simpa [← h, frobeniusRotation, frobeniusRotationCoeff] using WittVector.zero_coeff p k 0
 #align witt_vector.frobenius_rotation_nonzero WittVector.frobeniusRotation_nonzero
 
-unseal frobeniusRotationCoeff in
 theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) :
     frobenius (frobeniusRotation p ha₁ ha₂) * a₁ = frobeniusRotation p ha₁ ha₂ * a₂ := by
   ext n
@@ -244,7 +244,6 @@ theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 �
 
 local notation "φ" => IsFractionRing.fieldEquivOfRingEquiv (frobeniusEquiv p k)
 
-unseal frobeniusRotationCoeff in
 theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) (hr' : r'.coeff 0 ≠ 0)
     (hq' : q'.coeff 0 ≠ 0) (hq : (p : 𝕎 k) ^ n * q' ∈ nonZeroDivisors (𝕎 k)) :
     let b : 𝕎 k := frobeniusRotation p hr' hq'
@@ -259,7 +258,7 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
     have H := congr_arg (fun x : 𝕎 k => x * (p : 𝕎 k) ^ m * (p : 𝕎 k) ^ n)
       (frobenius_frobeniusRotation p hr' hq')
     dsimp at H
-    refine' (Eq.trans _ H).trans _ <;> ring
+    refine (Eq.trans ?_ H).trans ?_ <;> ring
   have hq'' : algebraMap (𝕎 k) (FractionRing (𝕎 k)) q' ≠ 0 := by
     have hq''' : q' ≠ 0 := fun h => hq' (by simp [h])
     simpa only [Ne, map_zero] using
@@ -277,14 +276,14 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
 theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha : a ≠ 0) :
     ∃ᵉ (b ≠ 0) (m : ℤ), φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
   revert ha
-  refine' Localization.induction_on a _
+  refine Localization.induction_on a ?_
   rintro ⟨r, q, hq⟩ hrq
   have hq0 : q ≠ 0 := mem_nonZeroDivisors_iff_ne_zero.1 hq
   have hr0 : r ≠ 0 := fun h => hrq (by simp [h])
   obtain ⟨m, r', hr', rfl⟩ := exists_eq_pow_p_mul r hr0
   obtain ⟨n, q', hq', rfl⟩ := exists_eq_pow_p_mul q hq0
   let b := frobeniusRotation p hr' hq'
-  refine' ⟨algebraMap (𝕎 k) (FractionRing (𝕎 k)) b, _, m - n, _⟩
+  refine ⟨algebraMap (𝕎 k) (FractionRing (𝕎 k)) b, ?_, m - n, ?_⟩
   · simpa only [map_zero] using
       (IsFractionRing.injective (WittVector p k) (FractionRing (WittVector p k))).ne
         (frobeniusRotation_nonzero p hr' hq')
