@@ -290,7 +290,7 @@ theorem IsBlock.iInter {ι : Type*} {B : ι → Set X} (hB : ∀ i : ι, IsBlock
   by_cases h : ∃ i : ι, Disjoint (g • B i) (B i)
   · right
     obtain ⟨j, hj⟩ := h
-    refine' Disjoint.mono _ _ hj <;> apply Set.iInter_subset
+    refine Disjoint.mono ?_ ?_ hj <;> apply Set.iInter_subset
   · left
     simp only [not_exists] at h
     have : ∀ i : ι, g • B i = B i := fun i => ((hB i).smul_eq_or_disjoint g).resolve_right (h i)

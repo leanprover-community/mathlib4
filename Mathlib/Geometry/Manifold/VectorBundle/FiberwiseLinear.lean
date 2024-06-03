@@ -238,14 +238,6 @@ private theorem mem_aux {e : PartialHomeomorph (B × F) (B × F)} :
             (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) := by
   simp only [mem_iUnion, mem_setOf_eq]
 
--- Adaptation note: 2024-04-23
--- This `maxHeartbeats` was not previously required; increased from about 90k to about 320k.
--- The backwards compatibility flags do not help here:
--- set_option backward.isDefEq.lazyProjDelta false in
--- set_option backward.isDefEq.lazyWhnfCore false in
--- set_option backward.synthInstance.canonInstances false in
--- See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/Mathlib.20status.20updates/near/436257970
-set_option maxHeartbeats 400000 in
 /-- For `B` a manifold and `F` a normed space, the groupoid on `B × F` consisting of local
 homeomorphisms which are bi-smooth and fiberwise linear, and induce the identity on `B`.
 When a (topological) vector bundle is smooth, then the composition of charts associated
@@ -259,8 +251,8 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
   trans' := by
     simp only [mem_aux]
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ ⟨φ', U', hU', hφ', h2φ', heφ'⟩
-    refine' ⟨fun b => (φ b).trans (φ' b), _, hU.inter hU', _, _,
-      Setoid.trans (PartialHomeomorph.EqOnSource.trans' heφ heφ') ⟨_, _⟩⟩
+    refine ⟨fun b => (φ b).trans (φ' b), _, hU.inter hU', ?_, ?_,
+      Setoid.trans (PartialHomeomorph.EqOnSource.trans' heφ heφ') ⟨?_, ?_⟩⟩
     · show
         SmoothOn IB 𝓘(𝕜, F →L[𝕜] F)
           (fun x : B => (φ' x).toContinuousLinearMap ∘L (φ x).toContinuousLinearMap) (U ∩ U')
