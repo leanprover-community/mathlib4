@@ -75,7 +75,6 @@ def eComp (X Y Z : C) : ((X ⟶[V] Y) ⊗ Y ⟶[V] Z) ⟶ X ⟶[V] Z :=
   EnrichedCategory.comp X Y Z
 #align category_theory.e_comp CategoryTheory.eComp
 
--- We don't just use `restate_axiom` here; that would leave `V` as an implicit argument.
 @[reassoc (attr := simp)]
 theorem e_id_comp (X Y : C) :
     (λ_ (X ⟶[V] Y)).inv ≫ eId V X ▷ _ ≫ eComp V X X Y = 𝟙 (X ⟶[V] Y) :=

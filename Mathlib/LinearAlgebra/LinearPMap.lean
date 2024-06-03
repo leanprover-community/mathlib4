@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Yury Kudryashov All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Moritz Doll
 -/
@@ -344,17 +344,17 @@ theorem sup_apply {f g : E →ₗ.[R] F} (H : ∀ (x : f.domain) (y : g.domain),
 
 protected theorem left_le_sup (f g : E →ₗ.[R] F)
     (h : ∀ (x : f.domain) (y : g.domain), (x : E) = y → f x = g y) : f ≤ f.sup g h := by
-  refine' ⟨le_sup_left, fun z₁ z₂ hz => _⟩
+  refine ⟨le_sup_left, fun z₁ z₂ hz => ?_⟩
   rw [← add_zero (f _), ← g.map_zero]
-  refine' (sup_apply h _ _ _ _).symm
+  refine (sup_apply h _ _ _ ?_).symm
   simpa
 #align linear_pmap.left_le_sup LinearPMap.left_le_sup
 
 protected theorem right_le_sup (f g : E →ₗ.[R] F)
     (h : ∀ (x : f.domain) (y : g.domain), (x : E) = y → f x = g y) : g ≤ f.sup g h := by
-  refine' ⟨le_sup_right, fun z₁ z₂ hz => _⟩
+  refine ⟨le_sup_right, fun z₁ z₂ hz => ?_⟩
   rw [← zero_add (g _), ← f.map_zero]
-  refine' (sup_apply h _ _ _ _).symm
+  refine (sup_apply h _ _ _ ?_).symm
   simpa
 #align linear_pmap.right_le_sup LinearPMap.right_le_sup
 
@@ -634,7 +634,7 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     simp only [RingHom.id_apply]
     rw [f_eq (P x).1 (c • x) (c • ⟨x, (P x).2⟩) rfl, ← map_smul]
   · intro p hpc
-    refine' ⟨le_sSup <| Set.mem_image_of_mem domain hpc, fun x y hxy => Eq.symm _⟩
+    refine ⟨le_sSup <| Set.mem_image_of_mem domain hpc, fun x y hxy => Eq.symm ?_⟩
     exact f_eq ⟨p, hpc⟩ _ _ hxy.symm
 
 protected noncomputable def sSup (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) : E →ₗ.[R] F :=
@@ -763,8 +763,8 @@ def graph (f : E →ₗ.[R] F) : Submodule R (E × F) :=
   f.toFun.graph.map (f.domain.subtype.prodMap (LinearMap.id : F →ₗ[R] F))
 #align linear_pmap.graph LinearPMap.graph
 
-theorem mem_graph_iff' (f : E →ₗ.[R] F) {x : E × F} : x ∈ f.graph ↔ ∃ y : f.domain, (↑y, f y) = x :=
-  by simp [graph]
+theorem mem_graph_iff' (f : E →ₗ.[R] F) {x : E × F} :
+    x ∈ f.graph ↔ ∃ y : f.domain, (↑y, f y) = x := by simp [graph]
 #align linear_pmap.mem_graph_iff' LinearPMap.mem_graph_iff'
 
 @[simp]
@@ -925,7 +925,7 @@ theorem le_of_le_graph {f g : E →ₗ.[R] F} (h : f.graph ≤ g.graph) : f ≤ 
     exact h hx
   rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
   rw [image_iff]
-  refine' h _
+  refine h ?_
   simp only [Submodule.coe_mk] at hxy
   rw [hxy] at hx
   rw [← image_iff hx]
@@ -939,7 +939,7 @@ theorem le_graph_of_le {f g : E →ₗ.[R] F} (h : f ≤ g) : f.graph ≤ g.grap
   use ⟨y, h.1 y.2⟩
   simp only [hx, Submodule.coe_mk, eq_self_iff_true, true_and_iff]
   convert hx.2 using 1
-  refine' (h.2 _).symm
+  refine (h.2 ?_).symm
   simp only [hx.1, Submodule.coe_mk]
 #align linear_pmap.le_graph_of_le LinearPMap.le_graph_of_le
 
@@ -965,7 +965,7 @@ section SubmoduleToLinearPMap
 theorem existsUnique_from_graph {g : Submodule R (E × F)}
     (hg : ∀ {x : E × F} (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0) {a : E}
     (ha : a ∈ g.map (LinearMap.fst R E F)) : ∃! b : F, (a, b) ∈ g := by
-  refine' exists_unique_of_exists_of_unique _ _
+  refine exists_unique_of_exists_of_unique ?_ ?_
   · convert ha
     simp
   intro y₁ y₂ hy₁ hy₂
@@ -1054,7 +1054,7 @@ theorem toLinearPMap_graph_eq (g : Submodule R (E × F))
   have hx_fst : x_fst ∈ g.map (LinearMap.fst R E F) := by
     simp only [mem_map, LinearMap.fst_apply, Prod.exists, exists_and_right, exists_eq_right]
     exact ⟨x_snd, hx⟩
-  refine' ⟨⟨x_fst, hx_fst⟩, Subtype.coe_mk x_fst hx_fst, _⟩
+  refine ⟨⟨x_fst, hx_fst⟩, Subtype.coe_mk x_fst hx_fst, ?_⟩
   rw [toLinearPMap_apply_aux hg]
   exact (existsUnique_from_graph @hg hx_fst).unique (valFromGraph_mem hg hx_fst) hx
 #align submodule.to_linear_pmap_graph_eq Submodule.toLinearPMap_graph_eq

@@ -71,7 +71,7 @@ def diagramNatTrans {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (X : C) : J.diagram P X
 theorem diagramNatTrans_id (X : C) (P : Cᵒᵖ ⥤ D) :
     J.diagramNatTrans (𝟙 P) X = 𝟙 (J.diagram P X) := by
   ext : 2
-  refine' Multiequalizer.hom_ext _ _ _ (fun i => _)
+  refine Multiequalizer.hom_ext _ _ _ (fun i => ?_)
   dsimp
   simp only [limit.lift_π, Multifork.ofι_pt, Multifork.ofι_π_app, Category.id_comp]
   erw [Category.comp_id]
@@ -81,7 +81,7 @@ theorem diagramNatTrans_id (X : C) (P : Cᵒᵖ ⥤ D) :
 theorem diagramNatTrans_zero [Preadditive D] (X : C) (P Q : Cᵒᵖ ⥤ D) :
     J.diagramNatTrans (0 : P ⟶ Q) X = 0 := by
   ext : 2
-  refine' Multiequalizer.hom_ext _ _ _ (fun i => _)
+  refine Multiequalizer.hom_ext _ _ _ (fun i => ?_)
   dsimp
   rw [zero_comp, Multiequalizer.lift_ι, comp_zero]
 #align category_theory.grothendieck_topology.diagram_nat_trans_zero CategoryTheory.GrothendieckTopology.diagramNatTrans_zero
@@ -90,7 +90,7 @@ theorem diagramNatTrans_zero [Preadditive D] (X : C) (P Q : Cᵒᵖ ⥤ D) :
 theorem diagramNatTrans_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) (X : C) :
     J.diagramNatTrans (η ≫ γ) X = J.diagramNatTrans η X ≫ J.diagramNatTrans γ X := by
   ext : 2
-  refine' Multiequalizer.hom_ext _ _ _ (fun i => _)
+  refine Multiequalizer.hom_ext _ _ _ (fun i => ?_)
   dsimp
   simp
 #align category_theory.grothendieck_topology.diagram_nat_trans_comp CategoryTheory.GrothendieckTopology.diagramNatTrans_comp
@@ -114,14 +114,14 @@ def plusObj : Cᵒᵖ ⥤ D where
   map f := colimMap (J.diagramPullback P f.unop) ≫ colimit.pre _ _
   map_id := by
     intro X
-    refine' colimit.hom_ext (fun S => _)
+    refine colimit.hom_ext (fun S => ?_)
     dsimp
     simp only [diagramPullback_app, colimit.ι_pre, ι_colimMap_assoc, Category.comp_id]
     let e := S.unop.pullbackId
     dsimp only [Functor.op, pullback_obj]
     erw [← colimit.w _ e.inv.op, ← Category.assoc]
     convert Category.id_comp (colimit.ι (diagram J P (unop X)) S)
-    refine' Multiequalizer.hom_ext _ _ _ (fun I => _)
+    refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
     dsimp
     simp only [Multiequalizer.lift_ι, Category.id_comp, Category.assoc]
     dsimp [Cover.Arrow.map, Cover.Arrow.base]
@@ -130,7 +130,7 @@ def plusObj : Cᵒᵖ ⥤ D where
     simp
   map_comp := by
     intro X Y Z f g
-    refine' colimit.hom_ext (fun S => _)
+    refine colimit.hom_ext (fun S => ?_)
     dsimp
     simp only [diagramPullback_app, colimit.ι_pre_assoc, colimit.ι_pre, ι_colimMap_assoc,
       Category.assoc]
@@ -138,7 +138,7 @@ def plusObj : Cᵒᵖ ⥤ D where
     dsimp only [Functor.op, pullback_obj]
     erw [← colimit.w _ e.inv.op, ← Category.assoc, ← Category.assoc]
     congr 1
-    refine' Multiequalizer.hom_ext _ _ _ (fun I => _)
+    refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
     dsimp
     simp only [Multiequalizer.lift_ι, Category.assoc]
     cases I
@@ -174,15 +174,15 @@ theorem plusMap_id (P : Cᵒᵖ ⥤ D) : J.plusMap (𝟙 P) = 𝟙 _ := by
 @[simp]
 theorem plusMap_zero [Preadditive D] (P Q : Cᵒᵖ ⥤ D) : J.plusMap (0 : P ⟶ Q) = 0 := by
   ext : 2
-  refine' colimit.hom_ext (fun S => _)
+  refine colimit.hom_ext (fun S => ?_)
   erw [comp_zero, colimit.ι_map, J.diagramNatTrans_zero, zero_comp]
 #align category_theory.grothendieck_topology.plus_map_zero CategoryTheory.GrothendieckTopology.plusMap_zero
 
-@[simp]
+@[simp, reassoc]
 theorem plusMap_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) :
     J.plusMap (η ≫ γ) = J.plusMap η ≫ J.plusMap γ := by
   ext : 2
-  refine' colimit.hom_ext (fun S => _)
+  refine colimit.hom_ext (fun S => ?_)
   simp [plusMap, J.diagramNatTrans_comp]
 #align category_theory.grothendieck_topology.plus_map_comp CategoryTheory.GrothendieckTopology.plusMap_comp
 
@@ -210,7 +210,7 @@ def toPlus : P ⟶ J.plusObj P where
     let e : (J.pullback f.unop).obj ⊤ ⟶ ⊤ := homOfLE (OrderTop.le_top _)
     rw [← colimit.w _ e.op, ← Category.assoc, ← Category.assoc, ← Category.assoc]
     congr 1
-    refine' Multiequalizer.hom_ext _ _ _ (fun I => _)
+    refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
     simp only [Multiequalizer.lift_ι, Category.assoc]
     dsimp [Cover.Arrow.base]
     simp
@@ -242,12 +242,12 @@ variable {D}
 @[simp]
 theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
   ext X : 2
-  refine' colimit.hom_ext (fun S => _)
+  refine colimit.hom_ext (fun S => ?_)
   dsimp only [plusMap, toPlus]
   let e : S.unop ⟶ ⊤ := homOfLE (OrderTop.le_top _)
   rw [ι_colimMap, ← colimit.w _ e.op, ← Category.assoc, ← Category.assoc]
   congr 1
-  refine' Multiequalizer.hom_ext _ _ _ (fun I => _)
+  refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
   erw [Multiequalizer.lift_ι]
   simp only [unop_op, op_unop, diagram_map, Category.assoc, limit.lift_π,
     Multifork.ofι_π_app]

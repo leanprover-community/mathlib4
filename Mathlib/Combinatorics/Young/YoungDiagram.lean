@@ -172,7 +172,7 @@ theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
 -- @[simp] -- Porting note (#10618): simp can prove this
 @[norm_cast]
 theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by
-  refine' Set.eq_of_subset_of_subset _ _
+  refine Set.eq_of_subset_of_subset ?_ ?_
   · intros x h
     simp? [mem_mk, Finset.coe_empty, Set.mem_empty_iff_false] at h says
       simp only [cells_bot, Finset.coe_empty, Set.mem_empty_iff_false] at h
@@ -473,7 +473,7 @@ def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram where
     rintro ⟨i2, j2⟩ ⟨i1, j1⟩ ⟨hi : i1 ≤ i2, hj : j1 ≤ j2⟩ hcell
     rw [Finset.mem_coe, YoungDiagram.mem_cellsOfRowLens] at hcell ⊢
     obtain ⟨h1, h2⟩ := hcell
-    refine' ⟨hi.trans_lt h1, _⟩
+    refine ⟨hi.trans_lt h1, ?_⟩
     calc
       j1 ≤ j2 := hj
       _ < w.get ⟨i2, _⟩  := h2

@@ -19,8 +19,6 @@ a sum of squares.
 
 namespace QuadraticForm
 
-open scoped BigOperators
-
 open Finset
 
 variable {ι : Type*} [Fintype ι]
