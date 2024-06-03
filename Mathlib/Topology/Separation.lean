@@ -2378,7 +2378,7 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     have u_cov : h ⊆ ⋃ i, u i := by
       intro a ainh
       simp only [mem_iUnion]; use a; apply u_nhd; exact ainh
-    rcases IsLindelof.produce_countable_subcover h_lind u u_open u_cov with ⟨f, f_cov⟩
+    rcases IsLindelof.indexed_countable_subcover h_lind u u_open u_cov with ⟨f, f_cov⟩
     let u' : ℕ → Set X := fun n ↦ u (f n)
     have k_lind : IsLindelof k :=
       IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ kcl (subset_univ k)
@@ -2407,7 +2407,7 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     have v_cov : k ⊆ ⋃ i, v i := by
       intro a aink
       simp only [mem_iUnion]; use a; apply v_nhd; exact aink
-    rcases IsLindelof.produce_countable_subcover k_lind v v_open v_cov with ⟨g, g_cov⟩
+    rcases IsLindelof.indexed_countable_subcover k_lind v v_open v_cov with ⟨g, g_cov⟩
     let v' : ℕ → Set X := fun n ↦ v (g n)
     apply countable_covers_to_separated_nhds
     · use u'

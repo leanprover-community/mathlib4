@@ -176,9 +176,8 @@ theorem IsLindelof.elim_nhds_subcover (hs : IsLindelof s) (U : X → Set X)
   · have : ⋃ x ∈ t, U ↑x = ⋃ x ∈ Subtype.val '' t, U x := biUnion_image.symm
     rwa [← this]
 
-/-- For every nonempty open cover of a Lindelöf set, there exists a function from ℕ witnessing
-a countable subcover. Uses same arguments as elim_countable_subcover -/
-theorem IsLindelof.produce_countable_subcover {ι : Type v} [Nonempty ι]
+/-- For every nonempty open cover of a Lindelöf set, there exists a subcover indexed by ℕ. -/
+theorem IsLindelof.indexed_countable_subcover {ι : Type v} [Nonempty ι]
     (hs : IsLindelof s) (U : ι → Set X) (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) :
     ∃ f : ℕ → ι, s ⊆ ⋃ n, U (f n) := by
   rcases IsLindelof.elim_countable_subcover hs U hUo hsU with ⟨c, ⟨c_count, c_cov⟩⟩
