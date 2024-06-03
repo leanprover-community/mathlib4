@@ -897,13 +897,11 @@ theorem sup'_induction {p : α → Prop} (hp : ∀ a₁, p a₁ → ∀ a₂, p 
     (hs : ∀ b ∈ s, p (f b)) : p (s.sup' H f) := by
   show @WithBot.recBotCoe α (fun _ => Prop) True p ↑(s.sup' H f)
   rw [coe_sup']
-  refine sup_induction trivial ?_ hs
-  rintro (_ | a₁) h₁ a₂ h₂
-  · rw [WithBot.none_eq_bot, bot_sup_eq]
-    exact h₂
-  · cases a₂ using WithBot.recBotCoe with
-    | bot => exact h₁
-    | coe a₂ => exact hp a₁ h₁ a₂ h₂
+  refine sup_induction trivial (fun a₁ h₁ a₂ h₂ ↦ ?_) hs
+  match a₁, a₂ with
+  | ⊥, _ => rwa [bot_sup_eq]
+  | (a₁ : α), ⊥ => rwa [sup_bot_eq]
+  | (a₁ : α), (a₂ : α) => exact hp a₁ h₁ a₂ h₂
 #align finset.sup'_induction Finset.sup'_induction
 
 theorem sup'_mem (s : Set α) (w : ∀ᵉ (x ∈ s) (y ∈ s), x ⊔ y ∈ s) {ι : Type*}
