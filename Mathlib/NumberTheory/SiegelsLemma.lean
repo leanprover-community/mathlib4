@@ -28,43 +28,7 @@ See [M. Hindry and J. Silverman, Diophantine Geometry: an Introduction][hindrysi
 /- We set ‖⬝‖ to be Matrix.seminormedAddCommGroup  -/
 attribute [local instance] Matrix.seminormedAddCommGroup
 
-open Finset
-
-namespace Int.Matrix
-
-variable {m : Type*}  {n : Type*}
-/-- The definition of ‖⬝‖ for integral matrixes -/
-lemma sup_sup_norm_def [Fintype m] [Fintype n] (A : Matrix m n ℤ) :
-    ‖A‖ = (sup univ fun b ↦ sup univ fun b' ↦ (A b b').natAbs) := by
-  simp_rw [Matrix.norm_def, Pi.norm_def, Pi.nnnorm_def, ← NNReal.coe_natCast, NNReal.coe_inj,]
-  rw [comp_sup_eq_sup_comp_of_is_total Nat.cast Nat.mono_cast
-    (by simp only [bot_eq_zero', CharP.cast_eq_zero])]
-  congr
-  rw [Function.comp_def]
-  ext; congr
-  rw [comp_sup_eq_sup_comp_of_is_total Nat.cast Nat.mono_cast
-    (by simp only [bot_eq_zero', CharP.cast_eq_zero])]
-  congr; ext; congr;
-  rw [Function.comp_apply, NNReal.natCast_natAbs]
-
-/-- The norm of an integral matrix is the cast of a natural number -/
-lemma norm_eq_NatCast [Fintype m] [Fintype n] (A : Matrix m n ℤ) :
-    ∃ (a : ℕ), ‖A‖=↑a := by
-  use sup univ fun b ↦ sup univ fun b' ↦ (A b b').natAbs
-  exact sup_sup_norm_def A
-
-/-- The norm of a non-singular integral matrix is a positive natural number-/
-lemma one_le_norm_of_nonzero [Fintype m] [Fintype n] (A : Matrix m n ℤ) (hA_nezero : A ≠ 0) (a : ℕ)
-    (h_norm_int : ‖A‖ = ↑a) : 1 ≤ a := by
-  convert_to 0 < ( a : ℝ )
-  · simp only [Nat.cast_pos]
-    exact Nat.succ_le
-  rw [← h_norm_int]
-  exact norm_pos_iff'.mpr hA_nezero
-
-end Int.Matrix
-
-open Matrix
+open Finset Matrix
 
 variable (m n a : ℕ) (A : Matrix (Fin m) (Fin n) ℤ) (v : Fin n → ℤ) (hn : m < n)
 (hm : 0 < m)
