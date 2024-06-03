@@ -15,8 +15,6 @@ import Mathlib.RingTheory.Ideal.Basic
 Some results involving `Ideal` and `Basis`.
 -/
 
-open BigOperators
-
 namespace Ideal
 
 variable {ι R S : Type*} [CommSemiring R] [CommRing S] [IsDomain S] [Algebra R S]

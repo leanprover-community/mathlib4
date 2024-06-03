@@ -306,7 +306,7 @@ theorem sublistsLen_sublist_of_sublist {α : Type*} (n) {l₁ l₂ : List α} (h
     sublistsLen n l₁ <+ sublistsLen n l₂ := by
   induction' n with n IHn generalizing l₁ l₂; · simp
   induction' h with l₁ l₂ a _ IH l₁ l₂ a s IH; · rfl
-  · refine' IH.trans _
+  · refine IH.trans ?_
     rw [sublistsLen_succ_cons]
     apply sublist_append_left
   · simpa only [sublistsLen_succ_cons] using IH.append ((IHn s).map _)
@@ -363,7 +363,7 @@ theorem Pairwise.sublists' {R} :
   | _, @Pairwise.cons _ _ a l H₁ H₂ => by
     simp only [sublists'_cons, pairwise_append, pairwise_map, mem_sublists', mem_map, exists_imp,
       and_imp]
-    refine' ⟨H₂.sublists', H₂.sublists'.imp fun l₁ => Lex.cons l₁, _⟩
+    refine ⟨H₂.sublists', H₂.sublists'.imp fun l₁ => Lex.cons l₁, ?_⟩
     rintro l₁ sl₁ x l₂ _ rfl
     cases' l₁ with b l₁; · constructor
     exact Lex.rel (H₁ _ <| sl₁.subset <| mem_cons_self _ _)
@@ -475,10 +475,10 @@ theorem range_bind_sublistsLen_perm {α : Type*} (l : List α) :
   · simp [range_succ]
   · simp_rw [range_succ_eq_map, length, cons_bind, map_bind, sublistsLen_succ_cons, sublists'_cons,
       List.sublistsLen_zero, List.singleton_append]
-    refine' ((bind_append_perm (range (tl.length + 1)) _ _).symm.cons _).trans _
+    refine ((bind_append_perm (range (tl.length + 1)) _ _).symm.cons _).trans ?_
     simp_rw [← List.bind_map, ← cons_append]
     rw [← List.singleton_append, ← List.sublistsLen_zero tl]
-    refine' Perm.append _ (l_ih.map _)
+    refine Perm.append ?_ (l_ih.map _)
     rw [List.range_succ, append_bind, bind_singleton,
       sublistsLen_of_length_lt (Nat.lt_succ_self _), append_nil, ←
       List.map_bind (fun n => sublistsLen n tl) Nat.succ, ←

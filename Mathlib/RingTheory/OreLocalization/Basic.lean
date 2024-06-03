@@ -114,7 +114,7 @@ theorem oreDiv_eq_iff {r₁ r₂ : R} {s₁ s₂ : S} :
 protected theorem expand (r : R) (s : S) (t : R) (hst : (s : R) * t ∈ S) :
     r /ₒ s = r * t /ₒ ⟨s * t, hst⟩ := by
   apply Quotient.sound
-  refine' ⟨s, t * s, _, _⟩ <;> dsimp <;> rw [mul_assoc]
+  refine ⟨s, t * s, ?_, ?_⟩ <;> dsimp <;> rw [mul_assoc]
 #align ore_localization.expand OreLocalization.expand
 
 /-- A fraction is equal to its expansion by a factor from s. -/
@@ -449,8 +449,7 @@ instance : CommMonoid R[S⁻¹] :=
 variable (R S)
 
 /-- The morphism `numeratorHom` is a monoid localization map in the case of commutative `R`. -/
-protected def localizationMap : S.LocalizationMap R[S⁻¹]
-    where
+protected def localizationMap : S.LocalizationMap R[S⁻¹] where
   toFun := numeratorHom
   map_one' := rfl
   map_mul' r₁ r₂ := by simp

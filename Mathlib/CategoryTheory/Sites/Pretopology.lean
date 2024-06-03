@@ -112,14 +112,14 @@ def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
   top_mem' X := ⟨Presieve.singleton (𝟙 _), K.has_isos _, fun _ _ _ => ⟨⟩⟩
   pullback_stable' X Y S g := by
     rintro ⟨R, hR, RS⟩
-    refine' ⟨_, K.pullbacks g _ hR, _⟩
+    refine ⟨_, K.pullbacks g _ hR, ?_⟩
     rw [← Sieve.sets_iff_generate, Sieve.pullbackArrows_comm]
     apply Sieve.pullback_monotone
     rwa [Sieve.giGenerate.gc]
   transitive' := by
     rintro X S ⟨R', hR', RS⟩ R t
     choose t₁ t₂ t₃ using t
-    refine' ⟨_, K.transitive _ _ hR' fun _ f hf => t₂ (RS _ hf), _⟩
+    refine ⟨_, K.transitive _ _ hR' fun _ f hf => t₂ (RS _ hf), ?_⟩
     rintro Y _ ⟨Z, g, f, hg, hf, rfl⟩
     apply t₃ (RS _ hg) _ hf
 #align category_theory.pretopology.to_grothendieck CategoryTheory.Pretopology.toGrothendieck
@@ -175,8 +175,8 @@ def trivial : Pretopology C where
   has_isos X Y f i := ⟨_, _, i, rfl⟩
   pullbacks X Y f S := by
     rintro ⟨Z, g, i, rfl⟩
-    refine' ⟨pullback g f, pullback.snd, _, _⟩
-    · refine' ⟨⟨pullback.lift (f ≫ inv g) (𝟙 _) (by simp), ⟨_, by aesop_cat⟩⟩⟩
+    refine ⟨pullback g f, pullback.snd, ?_, ?_⟩
+    · refine ⟨⟨pullback.lift (f ≫ inv g) (𝟙 _) (by simp), ⟨?_, by aesop_cat⟩⟩⟩
       ext
       · rw [assoc, pullback.lift_fst, ← pullback.condition_assoc]
         simp
@@ -185,7 +185,7 @@ def trivial : Pretopology C where
   transitive := by
     rintro X S Ti ⟨Z, g, i, rfl⟩ hS
     rcases hS g (singleton_self g) with ⟨Y, f, i, hTi⟩
-    refine' ⟨_, f ≫ g, _, _⟩
+    refine ⟨_, f ≫ g, ?_, ?_⟩
     · infer_instance
     -- Porting note: the next four lines were just "ext (W k)"
     apply funext
@@ -198,7 +198,7 @@ def trivial : Pretopology C where
       cases hh
       apply singleton.mk
     · rintro ⟨_⟩
-      refine' bind_comp g singleton.mk _
+      refine bind_comp g singleton.mk ?_
       rw [hTi]
       apply singleton.mk
 #align category_theory.pretopology.trivial CategoryTheory.Pretopology.trivial

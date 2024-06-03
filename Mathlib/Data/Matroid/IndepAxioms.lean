@@ -131,7 +131,7 @@ namespace IndepMatroid
 
     have hfB' : f ∉ B := by (intro hfB; obtain rfl := hf.2 hfB; exact he.2 hf.1)
 
-    refine' ⟨f, ⟨hf.1, hfB'⟩, by_contra (fun hnot ↦ _)⟩
+    refine ⟨f, ⟨hf.1, hfB'⟩, by_contra (fun hnot ↦ ?_)⟩
     obtain ⟨x,hxB, hind⟩ := M.indep_aug hfB hnot ⟨hB, hBmax⟩
     simp only [mem_diff, mem_insert_iff, mem_singleton_iff, not_or, not_and, not_not] at hxB
     obtain rfl := hxB.2.2 hxB.1
@@ -275,9 +275,9 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
     rwa [ncard_def, heq, ENat.toNat_coe]
     -- have := (hP Y hY).2
   obtain ⟨Y, hY, hY'⟩ := Finite.exists_maximal_wrt' ncard _ hfin ⟨I, hI, rfl.subset, hIX⟩
-  refine' ⟨Y, hY, fun J ⟨hJ, hIJ, hJX⟩ (hYJ : Y ⊆ J) ↦ (_ : J ⊆ Y)⟩
+  refine ⟨Y, hY, fun J ⟨hJ, hIJ, hJX⟩ (hYJ : Y ⊆ J) ↦ (?_ : J ⊆ Y)⟩
   have hJfin := finite_of_encard_le_coe (hP J hJ)
-  refine' (eq_of_subset_of_ncard_le hYJ _ hJfin).symm.subset
+  refine (eq_of_subset_of_ncard_le hYJ ?_ hJfin).symm.subset
   rw [hY' J ⟨hJ, hIJ, hJX⟩ (ncard_le_ncard hYJ hJfin)]
 
 /-- If there is an absolute upper bound on the size of an independent set, then the maximality axiom
@@ -472,8 +472,8 @@ namespace Matroid
   (base_exchange := base_exchange)
   (maximality := by
     obtain ⟨B, hB, hfin⟩ := exists_finite_base
-    refine' fun X _ ↦ Matroid.existsMaximalSubsetProperty_of_bdd
-      ⟨B.ncard, fun Y ⟨B', hB', hYB'⟩ ↦ _⟩ X
+    refine fun X _ ↦ Matroid.existsMaximalSubsetProperty_of_bdd
+      ⟨B.ncard, fun Y ⟨B', hB', hYB'⟩ ↦ ?_⟩ X
     rw [hfin.cast_ncard_eq, base_exchange.encard_base_eq hB hB']
     exact encard_mono hYB')
   (subset_ground := subset_ground)
