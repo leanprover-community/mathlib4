@@ -8,8 +8,11 @@ import Mathlib.Algebra.Lie.Weights.Linear
 
 /-!
 # Lie's theorem for Solvable Lie algebras.
+
+This file proves Lie's theorem, the statement that Lie modules of solvable Lie algebras over
+algebraically closed fields of characteristic 0 have a common eigenvector for the action of all
+elements of the Lie algebra. This result is named `LieModule.exists_forall_lie_eq_smul_of_Solvable`.
 -/
-set_option autoImplicit false
 
 open LieAlgebra
 
@@ -47,8 +50,6 @@ lemma map_U_le (n : ℕ) : Submodule.map f (U v f n) ≤ U v f (n + 1) := by
   intro w ⟨z, ⟨m, hm, hz⟩, hw⟩
   use m + 1, Nat.add_lt_add_right hm 1
   rw [← hw, hz, ← LinearMap.mul_apply, ← pow_succ']
-
-
 
 def U_map : ℕ →o Submodule F V where
   toFun := U v f
@@ -166,8 +167,7 @@ theorem T_res_nilpotent (hv : v ∈ altWeightSpace A χ) :
   rw [Submodule.mem_iSup_of_chain] at hx
   rcases hx with ⟨N, hN⟩
   use N
-  rw [LinearMap.pow_restrict]
-  rw [Subtype.ext_iff, LinearMap.restrict_apply, ZeroMemClass.coe_zero]
+  rw [LinearMap.pow_restrict, Subtype.ext_iff, LinearMap.restrict_apply, ZeroMemClass.coe_zero]
   exact T_map_U_nilpotent A χ z w hv N x hN
 
 lemma trace_T_res_zero (hv : v ∈ altWeightSpace A χ) :
@@ -184,8 +184,7 @@ lemma πaz_map_iSupU (a : A) (hv : v ∈ altWeightSpace A χ) :
 lemma trace_πaz (a : A) (hv : v ∈ altWeightSpace A χ):
     LinearMap.trace k (iSupU v (π k V z)) ((π k V ⁅a, z⁆).restrict (πaz_map_iSupU A χ z a hv))
     = χ ⟨⁅a,z⁆, lie_mem_left k L A a z a.prop⟩ • (finrank k (iSupU v (π k V z))) := by
-  rw [← LinearMap.trace_id, ← LinearMap.map_smul, ← sub_eq_zero]
-  rw [← LinearMap.map_sub]
+  rw [← LinearMap.trace_id, ← LinearMap.map_smul, ← sub_eq_zero, ← LinearMap.map_sub]
   apply trace_T_res_zero A χ z ⟨⁅a,z⁆, lie_mem_left k L A a z a.prop⟩ hv
 
 theorem trace_πaz_zero (a : A) (hv : v ∈ altWeightSpace A χ):
@@ -223,8 +222,7 @@ theorem altWeightSpace_lie_stable (hv : v ∈ altWeightSpace A χ):  ⁅z, v⁆ 
   · intro a
     have hzwv : ⁅⁅a.val, z⁆, v⁆ = χ ⟨⁅a,z⁆, lie_mem_left k L A a z a.prop⟩ • v :=
       hv ⟨⁅a,z⁆, lie_mem_left k L A a z a.prop⟩
-    rw [leibniz_lie, hv a, hzwv]
-    rw [chi_az_zero A χ z a hv hv']
+    rw [leibniz_lie, hv a, hzwv, chi_az_zero A χ z a hv hv']
     simp only [zero_smul, lie_smul, zero_add]
 end
 
@@ -247,8 +245,7 @@ lemma derivedSeries_eq_top (n : ℕ) (h : derivedSeries k L 1 = ⊤) : derivedSe
   rw [derivedSeries_def]
   induction' n with n ih
   · simp only [Nat.zero_eq, derivedSeriesOfIdeal_zero]
-  · rw [derivedSeriesOfIdeal_succ]
-    rw [ih]
+  · rw [derivedSeriesOfIdeal_succ, ih]
     assumption
 
 
@@ -370,8 +367,7 @@ noncomputable def pr2 (hcodis : Codisjoint A B) (hdis : Disjoint A B) : V →ₗ
   map_smul' := by
     intro x y
     simp only [RingHom.id_apply, SetLike.mk_smul_mk, Subtype.mk.injEq]
-    rw [← id_sub_pr1', ← id_sub_pr1']
-    rw [← pr1_val, (pr1 hcodis hdis).map_smul]
+    rw [← id_sub_pr1', ← id_sub_pr1', ← pr1_val, (pr1 hcodis hdis).map_smul]
     simp only [SetLike.val_smul]
     rw [pr1_val, smul_sub]
 
