@@ -144,11 +144,10 @@ theorem map_ext {f g : AdicCompletion I M → N}
 
 /-- Equality of linear maps out of an adic completion can be checked on Cauchy sequences. -/
 theorem map_ext' {f g : AdicCompletion I M →ₗ[R] N}
-    (h : ∀ (a : AdicCauchySequence I M),
-      f (AdicCompletion.mk I M a) = g (AdicCompletion.mk I M a)) :
+    (h : f.comp (AdicCompletion.mk I M) = g.comp (AdicCompletion.mk I M)) :
     f = g := by
   ext x
-  apply induction_on I M x (fun a ↦ h a)
+  apply induction_on I M x (fun a ↦ LinearMap.ext_iff.mp h a)
 
 /-- Equality of linear maps out of an adic completion can be checked on Cauchy sequences. -/
 @[ext]
@@ -284,8 +283,8 @@ theorem sumInv_comp_sum : sumInv I M ∘ₗ sum I M = LinearMap.id := by
   ext j x
   apply DirectSum.ext (AdicCompletion I R) (fun i ↦ ?_)
   ext n
-  simp only [LinearMap.coe_comp, Function.comp_apply, sum_lof, map_mk, component_sumInv, mk_apply_coe,
-    AdicCauchySequence.map_apply_coe, Submodule.mkQ_apply, LinearMap.id_comp]
+  simp only [LinearMap.coe_comp, Function.comp_apply, sum_lof, map_mk, component_sumInv,
+    mk_apply_coe, AdicCauchySequence.map_apply_coe, Submodule.mkQ_apply, LinearMap.id_comp]
   rw [DirectSum.component.of, DirectSum.component.of]
   split
   · next h => subst h; simp
@@ -296,8 +295,8 @@ theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq, mk_apply_coe,
     Submodule.mkQ_apply]
   rw [← DirectSum.sum_univ_of _ (((sumInv I M) ((AdicCompletion.mk I (⨁ (j : ι), M j)) f)))]
-  simp only [sumInv_apply, map_mk, map_sum, sum_of, val_sum, mk_apply_coe, AdicCauchySequence.map_apply_coe,
-    Submodule.mkQ_apply]
+  simp only [sumInv_apply, map_mk, map_sum, sum_of, val_sum, mk_apply_coe,
+    AdicCauchySequence.map_apply_coe, Submodule.mkQ_apply]
   simp only [← Submodule.mkQ_apply, ← map_sum]
   erw [DirectSum.sum_univ_of]
 
