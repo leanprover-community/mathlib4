@@ -170,7 +170,7 @@ theorem intersection_covering_iff : R ⊓ S ∈ J X ↔ R ∈ J X ∧ S ∈ J X 
 #align category_theory.grothendieck_topology.intersection_covering_iff CategoryTheory.GrothendieckTopology.intersection_covering_iff
 
 lemma finite_intersection_covering
-     (S : Set (Sieve X)) (h : S.Finite) (hS : ∀ T, T ∈ S → T ∈ J X) : sInf S ∈ J X := by
+    (S : Set (Sieve X)) (h : S.Finite) (hS : ∀ T, T ∈ S → T ∈ J X) : sInf S ∈ J X := by
   sorry
 
 theorem bind_covering {S : Sieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y} (hS : S ∈ J X)
