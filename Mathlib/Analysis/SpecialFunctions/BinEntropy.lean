@@ -149,7 +149,7 @@ lemma binaryEntropy_lt_log2_of_gt_half {p : ℝ} : 1/2 < p → p ≤ 1 → binar
   rw [← binaryEntropy_one_sub]
   exact binaryEntropy_lt_log2_of_lt_half (by linarith) (by linarith)
 
-lemma binaryEntropy_one_iff_eq_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) :
+lemma binaryEntropy_eq_log2_iff_eq_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) :
     binaryEntropy p = log 2 ↔ p = 1/2 := by
   constructor <;> intro h
   · by_cases h' : p < 1/2
