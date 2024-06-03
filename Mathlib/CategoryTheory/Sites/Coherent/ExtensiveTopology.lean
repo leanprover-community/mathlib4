@@ -23,45 +23,6 @@ variable {C : Type*} [Category C] [FinitaryPreExtensive C]
 
 namespace CategoryTheory
 
-lemma Limits.Cofan.isColimit_iff_isIso_sigmaDesc
-    {β : Type*} {f : β → C} [HasCoproduct f] (c : Cofan f) :
-    IsIso (Sigma.desc c.inj) ↔ Nonempty (IsColimit c) := by
-  refine ⟨fun h ↦ ⟨isColimitOfIsIsoSigmaDesc c⟩, fun ⟨hc⟩ ↦ ?_⟩
-  have : IsIso (hc.desc c) := by simp; infer_instance
-  have : IsIso (((coproductIsCoproduct f).coconePointUniqueUpToIso hc).hom ≫ hc.desc c) :=
-    inferInstance
-  convert this
-  ext
-  simp only [colimit.ι_desc, mk_pt, mk_ι_app, IsColimit.coconePointUniqueUpToIso,
-    coproductIsCoproduct, colimit.cocone_x, Functor.mapIso_hom, IsColimit.uniqueUpToIso_hom,
-    Cocones.forget_map, IsColimit.descCoconeMorphism_hom, IsColimit.ofIsoColimit_desc,
-    Cocones.ext_inv_hom, Iso.refl_inv, colimit.isColimit_desc, Category.id_comp,
-    IsColimit.desc_self, Category.comp_id]
-  rfl
-
-def Limits.Cofan.isColimitTrans {α : Type*} {X : α → C} (c : Cofan X) (hc : IsColimit c)
-    {β : α → Type*} {Y : (a : α) → β a → C} (π : (a : α) → (b : β a) → Y a b ⟶ X a)
-      (hs : ∀ a, IsColimit (Cofan.mk (X a) (π a))) :
-        IsColimit (Cofan.mk (f := fun ⟨a,b⟩ => Y a b) c.pt
-          (fun (⟨a, b⟩ : Σ a, _) ↦ π a b ≫ c.inj a)) := by
-  refine mkCofanColimit _ ?_ ?_ ?_
-  · exact fun t ↦ hc.desc (Cofan.mk _ fun a ↦ (hs a).desc (Cofan.mk t.pt (fun b ↦ t.inj ⟨a, b⟩)))
-  · intro t ⟨a, b⟩
-    simp only [mk_pt, cofan_mk_inj, Category.assoc]
-    erw [hc.fac, (hs a).fac]
-    rfl
-  · intro t m h
-    simp only [mk_pt]
-    apply hc.hom_ext
-    intro ⟨a⟩
-    apply (hs a).hom_ext
-    intro ⟨b⟩
-    erw [hc.fac, (hs a).fac]
-    specialize h ⟨a, b⟩
-    simp only [mk_pt, cofan_mk_inj, Category.assoc, Discrete.functor_obj, Functor.const_obj_obj,
-      mk_ι_app] at h ⊢
-    exact h
-
 lemma extensiveTopology.mem_sieves_iff_contains_colimit_cofan {X : C} (S : Sieve X) :
     S ∈ (extensiveTopology C).sieves X ↔
       (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),

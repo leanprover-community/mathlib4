@@ -15,6 +15,7 @@ This file characterises locally surjective morphisms of presheaves for the coher
 and extensive topologies.
 
 ## Main results
+
 * `regularTopology.isLocallySurjective_iff` A morphism of presheaves `f : F ⟶ G` is locally
   surjective for the regular topology iff for every object `X` of `C`, and every `y : G(X)`, there
   is an effective epimorphism `φ : X' ⟶ X` and an `x : F(X)` such that `f_{X'}(x) = G(φ)(y)`.
@@ -68,7 +69,6 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheafOfTypes
   obtain ⟨α, _, Y, π, h, h'⟩ := h
   let y : (a : α) → (F.obj ⟨Y a⟩) := fun a ↦ (h' a).choose
   let _ : Fintype α := Fintype.ofFinite _
-  have := preservesLimitsOfShapeOfEquiv (Discrete.opposite α).symm F
   let ht := (Types.productLimitCone (fun a ↦ F.obj ⟨Y a⟩)).isLimit
   let ht' := (Functor.Initial.isLimitWhiskerEquiv (Discrete.opposite α).inverse
     (Cocone.op (Cofan.mk X π))).symm h.some.op
@@ -76,7 +76,6 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheafOfTypes
     ht.conePointsIsoOfNatIso (isLimitOfPreserves F ht')
       (Discrete.natIso (fun _ ↦ (Iso.refl (F.obj ⟨_⟩))))
   refine ⟨i.hom y, ?_⟩
-  have := preservesLimitsOfShapeOfEquiv (Discrete.opposite α).symm G
   apply Concrete.isLimit_ext _ (isLimitOfPreserves G ht')
   intro ⟨a⟩
   simp only [Functor.comp_obj, Discrete.opposite_inverse_obj, Functor.op_obj, Discrete.functor_obj,
