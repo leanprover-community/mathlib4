@@ -192,8 +192,8 @@ theorem mem_typeOf {φ : L[[α]].Sentence} :
   mem_completeTheory.trans (Formula.realize_equivSentence_symm _ _ _).symm
 #align first_order.language.Theory.complete_type.mem_type_of FirstOrder.Language.Theory.CompleteType.mem_typeOf
 
-theorem formula_mem_typeOf {φ : L.Formula α} : Formula.equivSentence φ ∈ T.typeOf v ↔ φ.Realize v :=
-  by simp
+theorem formula_mem_typeOf {φ : L.Formula α} :
+    Formula.equivSentence φ ∈ T.typeOf v ↔ φ.Realize v := by simp
 #align first_order.language.Theory.complete_type.formula_mem_type_of FirstOrder.Language.Theory.CompleteType.formula_mem_typeOf
 
 end CompleteType

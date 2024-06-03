@@ -1560,7 +1560,7 @@ theorem destruct_join (S : WSeq (WSeq α)) :
     | c, _, Or.inl <| rfl => by cases c.destruct <;> simp
     | _, _, Or.inr ⟨S, rfl, rfl⟩ => by
       induction' S using WSeq.recOn with s S S <;> simp
-      · refine' Or.inr ⟨S, rfl, rfl⟩
+      · refine Or.inr ⟨S, rfl, rfl⟩
 #align stream.wseq.destruct_join Stream'.WSeq.destruct_join
 
 theorem liftRel_append (R : α → β → Prop) {s1 s2 : WSeq α} {t1 t2 : WSeq β} (h1 : LiftRel R s1 t1)

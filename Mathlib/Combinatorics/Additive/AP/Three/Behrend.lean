@@ -46,7 +46,7 @@ integer points on that sphere and map them onto `ℕ` in a way that preserves ar
 
 open Nat hiding log
 open Finset Metric Real
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 /-- The frontier of a closed strictly convex set only contains trivial arithmetic progressions.
 The idea is that an arithmetic progression is contained on a line and the frontier of a strictly

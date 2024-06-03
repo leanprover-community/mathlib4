@@ -48,7 +48,7 @@ def extendFan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Fan fun i : Fin n => f i
     (c₂ : BinaryFan (f 0) c₁.pt) : Fan f :=
   Fan.mk c₂.pt
     (by
-      refine' Fin.cases _ _
+      refine Fin.cases ?_ ?_
       · apply c₂.fst
       · intro i
         apply c₂.snd ≫ c₁.π.app ⟨i⟩)
@@ -185,7 +185,7 @@ def extendCofan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Cofan fun i : Fin n =>
     (c₂ : BinaryCofan (f 0) c₁.pt) : Cofan f :=
   Cofan.mk c₂.pt
     (by
-      refine' Fin.cases _ _
+      refine Fin.cases ?_ ?_
       · apply c₂.inl
       · intro i
         apply c₁.ι.app ⟨i⟩ ≫ c₂.inr)

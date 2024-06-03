@@ -29,8 +29,6 @@ open Ideal
 
 open UniqueFactorizationMonoid
 
-open scoped BigOperators
-
 open scoped nonZeroDivisors
 
 open UniqueFactorizationMonoid
@@ -132,7 +130,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     refine' hxM (Submodule.map₂_le.2 _ hx); exact h
   choose! a ha b hb hm using this
   choose! u hu hum using fun M hM => SetLike.not_le_iff_exists.1 (nle M hM)
-  let v := ∑ M in s, u M • b M
+  let v := ∑ M ∈ s, u M • b M
   have hv : v ∈ I' := Submodule.sum_mem _ fun M hM => Submodule.smul_mem _ _ <| hb M hM
   refine'
     FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top

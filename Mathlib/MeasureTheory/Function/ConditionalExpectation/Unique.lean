@@ -67,9 +67,9 @@ theorem lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero (hm : m ≤ m0) (f : lpM
     exact hf_zero s hs hμs
 #align measure_theory.Lp_meas.ae_eq_zero_of_forall_set_integral_eq_zero MeasureTheory.lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias lpMeas.ae_eq_zero_of_forall_set_integral_eq_zero :=
-  lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero -- deprecated on 2024-04-17
+  lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero
 
 variable (𝕜)
 
@@ -93,9 +93,9 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' 
     exact hf_zero s hs hμs
 #align measure_theory.Lp.ae_eq_zero_of_forall_set_integral_eq_zero' MeasureTheory.Lp.ae_eq_zero_of_forall_setIntegral_eq_zero'
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias Lp.ae_eq_zero_of_forall_set_integral_eq_zero' :=
-  Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' -- deprecated on 2024-04-17
+  Lp.ae_eq_zero_of_forall_setIntegral_eq_zero'
 
 /-- **Uniqueness of the conditional expectation** -/
 theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (hp_ne_zero : p ≠ 0)
@@ -122,9 +122,8 @@ theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (h
       hfg_meas
 #align measure_theory.Lp.ae_eq_of_forall_set_integral_eq' MeasureTheory.Lp.ae_eq_of_forall_setIntegral_eq'
 
-@[deprecated]
-alias Lp.ae_eq_of_forall_set_integral_eq' :=
-  Lp.ae_eq_of_forall_setIntegral_eq' -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias Lp.ae_eq_of_forall_set_integral_eq' := Lp.ae_eq_of_forall_setIntegral_eq'
 
 variable {𝕜}
 
@@ -170,9 +169,9 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFin
   exact ae_eq_of_forall_setIntegral_eq_of_sigmaFinite hf_mk_int_finite hg_mk_int_finite hfg_mk_eq
 #align measure_theory.ae_eq_of_forall_set_integral_eq_of_sigma_finite' MeasureTheory.ae_eq_of_forall_setIntegral_eq_of_sigmaFinite'
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias ae_eq_of_forall_set_integral_eq_of_sigmaFinite' :=
-  ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' -- deprecated on 2024-04-17
+  ae_eq_of_forall_setIntegral_eq_of_sigmaFinite'
 
 end UniquenessOfConditionalExpectation
 

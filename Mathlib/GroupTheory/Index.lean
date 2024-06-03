@@ -3,6 +3,7 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Data.Finite.Card
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
@@ -36,7 +37,7 @@ Several theorems proved in this file are known as Lagrange's theorem.
 
 namespace Subgroup
 
-open BigOperators Cardinal
+open Cardinal
 
 variable {G : Type*} [Group G] (H K L : Subgroup G)
 

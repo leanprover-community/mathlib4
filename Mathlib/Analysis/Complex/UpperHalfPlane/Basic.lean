@@ -31,7 +31,7 @@ noncomputable section
 
 open Matrix Matrix.SpecialLinearGroup
 
-open scoped Classical BigOperators MatrixGroups
+open scoped Classical MatrixGroups
 
 /- Disable these instances as they are not the simp-normal form, and having them disabled ensures
 we state lemmas in this file without spurious `coe_fn` terms. -/

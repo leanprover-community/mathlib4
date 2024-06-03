@@ -30,7 +30,7 @@ The corresponding notation for equivalences is `M ≃SL[σ] M₂`, `M ≃L[R] M�
 -/
 
 open LinearMap (ker range)
-open Topology BigOperators Filter Pointwise
+open Topology Filter Pointwise
 
 universe u v w u'
 
@@ -523,7 +523,7 @@ theorem map_smul_of_tower {R S : Type*} [Semiring S] [SMul R M₁] [Module S M�
 
 @[deprecated _root_.map_sum]
 protected theorem map_sum {ι : Type*} (f : M₁ →SL[σ₁₂] M₂) (s : Finset ι) (g : ι → M₁) :
-    f (∑ i in s, g i) = ∑ i in s, f (g i) :=
+    f (∑ i ∈ s, g i) = ∑ i ∈ s, f (g i) :=
   map_sum ..
 #align continuous_linear_map.map_sum ContinuousLinearMap.map_sum
 
@@ -762,17 +762,17 @@ instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
 
 @[simp, norm_cast]
 theorem coe_sum {ι : Type*} (t : Finset ι) (f : ι → M₁ →SL[σ₁₂] M₂) :
-    ↑(∑ d in t, f d) = (∑ d in t, f d : M₁ →ₛₗ[σ₁₂] M₂) :=
+    ↑(∑ d ∈ t, f d) = (∑ d ∈ t, f d : M₁ →ₛₗ[σ₁₂] M₂) :=
   map_sum (AddMonoidHom.mk ⟨((↑) : (M₁ →SL[σ₁₂] M₂) → M₁ →ₛₗ[σ₁₂] M₂), rfl⟩ fun _ _ => rfl) _ _
 #align continuous_linear_map.coe_sum ContinuousLinearMap.coe_sum
 
 @[simp, norm_cast]
 theorem coe_sum' {ι : Type*} (t : Finset ι) (f : ι → M₁ →SL[σ₁₂] M₂) :
-    ⇑(∑ d in t, f d) = ∑ d in t, ⇑(f d) := by simp only [← coe_coe, coe_sum, LinearMap.coeFn_sum]
+    ⇑(∑ d ∈ t, f d) = ∑ d ∈ t, ⇑(f d) := by simp only [← coe_coe, coe_sum, LinearMap.coeFn_sum]
 #align continuous_linear_map.coe_sum' ContinuousLinearMap.coe_sum'
 
 theorem sum_apply {ι : Type*} (t : Finset ι) (f : ι → M₁ →SL[σ₁₂] M₂) (b : M₁) :
-    (∑ d in t, f d) b = ∑ d in t, f d b := by simp only [coe_sum', Finset.sum_apply]
+    (∑ d ∈ t, f d) b = ∑ d ∈ t, f d b := by simp only [coe_sum', Finset.sum_apply]
 #align continuous_linear_map.sum_apply ContinuousLinearMap.sum_apply
 
 end Add

@@ -27,11 +27,11 @@ worry about it explicitly.
 
 Finsets give a basic foundation for defining finite sums and products over types:
 
-  1. `∑ i in (s : Finset α), f i`;
-  2. `∏ i in (s : Finset α), f i`.
+  1. `∑ i ∈ (s : Finset α), f i`;
+  2. `∏ i ∈ (s : Finset α), f i`.
 
 Lean refers to these operations as big operators.
-More information can be found in `Mathlib.Algebra.BigOperators.Basic`.
+More information can be found in `Mathlib.Algebra.BigOperators.Group.Finset`.
 
 Finsets are directly used to define fintypes in Lean.
 A `Fintype α` instance for a type `α` consists of a universal `Finset α` containing every term of
@@ -761,8 +761,9 @@ theorem eq_singleton_iff_nonempty_unique_mem {s : Finset α} {a : α} :
     exact hne.choose_spec
 #align finset.eq_singleton_iff_nonempty_unique_mem Finset.eq_singleton_iff_nonempty_unique_mem
 
-theorem nonempty_iff_eq_singleton_default [Unique α] {s : Finset α} : s.Nonempty ↔ s = {default} :=
-  by simp [eq_singleton_iff_nonempty_unique_mem, eq_iff_true_of_subsingleton]
+theorem nonempty_iff_eq_singleton_default [Unique α] {s : Finset α} :
+    s.Nonempty ↔ s = {default} := by
+  simp [eq_singleton_iff_nonempty_unique_mem, eq_iff_true_of_subsingleton]
 #align finset.nonempty_iff_eq_singleton_default Finset.nonempty_iff_eq_singleton_default
 
 alias ⟨Nonempty.eq_singleton_default, _⟩ := nonempty_iff_eq_singleton_default
@@ -1248,15 +1249,13 @@ theorem ssubset_insert (h : a ∉ s) : s ⊂ insert a s :=
 
 @[elab_as_elim]
 theorem cons_induction {α : Type*} {p : Finset α → Prop} (empty : p ∅)
-    (cons : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
+    (cons : ∀ (a : α) (s : Finset α) (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
   | ⟨s, nd⟩ => by
     induction s using Multiset.induction with
     | empty => exact empty
-    | @cons a s IH =>
-      cases' nodup_cons.1 nd with m nd'
-      rw [← (eq_of_veq _ : Finset.cons a ⟨s, _⟩ m = ⟨a ::ₘ s, nd⟩)]
-      · exact cons m (IH nd')
-      · rw [cons_val]
+    | cons a s IH =>
+      rw [mk_cons nd]
+      exact cons a _ _ (IH _)
 #align finset.cons_induction Finset.cons_induction
 
 @[elab_as_elim]
@@ -1302,14 +1301,15 @@ singletons and that if it holds for nonempty `t : Finset α`, then it also holds
 obtained by inserting an element in `t`. -/
 @[elab_as_elim]
 theorem Nonempty.cons_induction {α : Type*} {p : ∀ s : Finset α, s.Nonempty → Prop}
-    (h₀ : ∀ a, p {a} (singleton_nonempty _))
-    (h₁ : ∀ ⦃a⦄ (s) (h : a ∉ s) (hs), p s hs → p (Finset.cons a s h) (nonempty_cons h))
+    (singleton : ∀ a, p {a} (singleton_nonempty _))
+    (cons : ∀ a s (h : a ∉ s) (hs), p s hs → p (Finset.cons a s h) (nonempty_cons h))
     {s : Finset α} (hs : s.Nonempty) : p s hs := by
-  induction' s using Finset.cons_induction with a t ha h
-  · exact (not_nonempty_empty hs).elim
-  obtain rfl | ht := t.eq_empty_or_nonempty
-  · exact h₀ a
-  · exact h₁ t ha ht (h ht)
+  induction s using Finset.cons_induction with
+  | empty => exact (not_nonempty_empty hs).elim
+  | cons a t ha h =>
+    obtain rfl | ht := t.eq_empty_or_nonempty
+    · exact singleton a
+    · exact cons a t ha ht (h ht)
 #align finset.nonempty.cons_induction Finset.Nonempty.cons_induction
 
 lemma Nonempty.exists_cons_eq (hs : s.Nonempty) : ∃ t a ha, cons a t ha = s :=
@@ -2344,16 +2344,16 @@ theorem erase_inter_comm (s t : Finset α) (a : α) : s.erase a ∩ t = s ∩ t.
   rw [erase_inter, inter_erase]
 #align finset.erase_inter_comm Finset.erase_inter_comm
 
-theorem erase_union_distrib (s t : Finset α) (a : α) : (s ∪ t).erase a = s.erase a ∪ t.erase a :=
-  by simp_rw [erase_eq, union_sdiff_distrib]
+theorem erase_union_distrib (s t : Finset α) (a : α) : (s ∪ t).erase a = s.erase a ∪ t.erase a := by
+  simp_rw [erase_eq, union_sdiff_distrib]
 #align finset.erase_union_distrib Finset.erase_union_distrib
 
 theorem insert_inter_distrib (s t : Finset α) (a : α) :
     insert a (s ∩ t) = insert a s ∩ insert a t := by simp_rw [insert_eq, union_inter_distrib_left]
 #align finset.insert_inter_distrib Finset.insert_inter_distrib
 
-theorem erase_sdiff_distrib (s t : Finset α) (a : α) : (s \ t).erase a = s.erase a \ t.erase a :=
-  by simp_rw [erase_eq, sdiff_sdiff, sup_sdiff_eq_sup le_rfl, sup_comm]
+theorem erase_sdiff_distrib (s t : Finset α) (a : α) : (s \ t).erase a = s.erase a \ t.erase a := by
+  simp_rw [erase_eq, sdiff_sdiff, sup_sdiff_eq_sup le_rfl, sup_comm]
 #align finset.erase_sdiff_distrib Finset.erase_sdiff_distrib
 
 theorem erase_union_of_mem (ha : a ∈ t) (s : Finset α) : s.erase a ∪ t = s ∪ t := by
@@ -2902,8 +2902,8 @@ theorem filter_ne' [DecidableEq β] (s : Finset β) (b : β) : (s.filter fun a =
 #align finset.filter_ne' Finset.filter_ne'
 
 theorem filter_inter_filter_neg_eq (s t : Finset α) :
-    (s.filter p ∩ t.filter fun a => ¬p a) = ∅ :=
-  by simpa using (disjoint_filter_filter_neg s t p).eq_bot
+    (s.filter p ∩ t.filter fun a => ¬p a) = ∅ := by
+  simpa using (disjoint_filter_filter_neg s t p).eq_bot
 #align finset.filter_inter_filter_neg_eq Finset.filter_inter_filter_neg_eq
 
 theorem filter_union_filter_of_codisjoint (s : Finset α) (h : Codisjoint p q) :

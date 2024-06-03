@@ -20,7 +20,7 @@ We show that the following are analytic:
 noncomputable section
 
 open scoped Classical
-open Topology BigOperators NNReal Filter ENNReal
+open Topology NNReal Filter ENNReal
 
 open Set Filter Asymptotics
 
@@ -304,7 +304,7 @@ theorem AnalyticOn.div {f g : E → 𝕝} {s : Set E}
 /-- Finite sums of analytic functions are analytic -/
 theorem Finset.analyticAt_sum {f : α → E → F} {c : E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
-    AnalyticAt 𝕜 (fun z ↦ ∑ n in N, f n z) c := by
+    AnalyticAt 𝕜 (fun z ↦ ∑ n ∈ N, f n z) c := by
   induction' N using Finset.induction with a B aB hB
   · simp only [Finset.sum_empty]
     exact analyticAt_const
@@ -315,13 +315,13 @@ theorem Finset.analyticAt_sum {f : α → E → F} {c : E}
 /-- Finite sums of analytic functions are analytic -/
 theorem Finset.analyticOn_sum {f : α → E → F} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
-    AnalyticOn 𝕜 (fun z ↦ ∑ n in N, f n z) s :=
+    AnalyticOn 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s :=
   fun z zs ↦ N.analyticAt_sum (fun n m ↦ h n m z zs)
 
 /-- Finite products of analytic functions are analytic -/
 theorem Finset.analyticAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
-    AnalyticAt 𝕜 (fun z ↦ ∏ n in N, f n z) c := by
+    AnalyticAt 𝕜 (fun z ↦ ∏ n ∈ N, f n z) c := by
   induction' N using Finset.induction with a B aB hB
   · simp only [Finset.prod_empty]
     exact analyticAt_const
@@ -332,5 +332,5 @@ theorem Finset.analyticAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra �
 /-- Finite products of analytic functions are analytic -/
 theorem Finset.analyticOn_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
-    AnalyticOn 𝕜 (fun z ↦ ∏ n in N, f n z) s :=
+    AnalyticOn 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s :=
   fun z zs ↦ N.analyticAt_prod (fun n m ↦ h n m z zs)

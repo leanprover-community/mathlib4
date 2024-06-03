@@ -30,7 +30,7 @@ We also give versions of these formulas in finite-dimensional inner product spac
 
 open Real Set MeasureTheory Filter Asymptotics intervalIntegral
 
-open scoped Real Topology FourierTransform RealInnerProductSpace BigOperators
+open scoped Real Topology FourierTransform RealInnerProductSpace
 
 open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
 
@@ -61,8 +61,8 @@ theorem norm_cexp_neg_mul_sq_add_mul_I' (hb : b.re ≠ 0) (c T : ℝ) :
       exp (-(b.re * (T - b.im * c / b.re) ^ 2 - c ^ 2 * (b.im ^ 2 / b.re + b.re))) := by
   have :
     b.re * T ^ 2 - 2 * b.im * c * T - b.re * c ^ 2 =
-      b.re * (T - b.im * c / b.re) ^ 2 - c ^ 2 * (b.im ^ 2 / b.re + b.re) :=
-    by field_simp; ring
+      b.re * (T - b.im * c / b.re) ^ 2 - c ^ 2 * (b.im ^ 2 / b.re + b.re) := by
+    field_simp; ring
   rw [norm_cexp_neg_mul_sq_add_mul_I, this]
 set_option linter.uppercaseLean3 false in
 #align gaussian_fourier.norm_cexp_neg_mul_sq_add_mul_I' GaussianFourier.norm_cexp_neg_mul_sq_add_mul_I'
@@ -261,8 +261,6 @@ section InnerProductSpace
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
   [MeasurableSpace V] [BorelSpace V]
-
-open scoped BigOperators
 
 theorem integrable_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
     (hb : ∀ i, 0 < (b i).re) (c : ι → ℂ) :

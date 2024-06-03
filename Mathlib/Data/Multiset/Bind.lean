@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Group.Multiset
-import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Data.Multiset.Dedup
 
 #align_import data.multiset.bind from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
@@ -23,6 +22,7 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 -/
 
 assert_not_exists MonoidWithZero
+assert_not_exists MulAction
 
 universe v
 
@@ -83,14 +83,14 @@ theorem map_join (f : α → β) (S : Multiset (Multiset α)) :
     map f (join S) = join (map (map f) S) := by
   induction S using Multiset.induction with
   | empty => simp
-  | cons ih => simp [ih]
+  | cons _ _ ih => simp [ih]
 
 @[to_additive (attr := simp)]
 theorem prod_join [CommMonoid α] {S : Multiset (Multiset α)} :
     prod (join S) = prod (map prod S) := by
   induction S using Multiset.induction with
   | empty => simp
-  | cons ih => simp [ih]
+  | cons _ _ ih => simp [ih]
 
 theorem rel_join {r : α → β → Prop} {s t} (h : Rel (Rel r) s t) : Rel r s.join t.join := by
   induction h with

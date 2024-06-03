@@ -86,8 +86,6 @@ commutative ring, field of fractions
 
 open Function
 
-open BigOperators
-
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
@@ -751,8 +749,8 @@ noncomputable def algEquiv : S ≃ₐ[R] Q :=
 end
 
 -- Porting note (#10618): removed `simp`, `simp` can prove it
-theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y :=
-  by simp
+theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y := by
+  simp
 #align is_localization.alg_equiv_mk' IsLocalization.algEquiv_mk'
 
 -- Porting note (#10618): removed `simp`, `simp` can prove it
@@ -928,10 +926,8 @@ protected irreducible_def add (z w : Localization M) : Localization M :=
         cases' h2 with t₆ ht₆
         use t₅ * t₆
         dsimp only
-        calc
-          ↑t₅ * ↑t₆ * (↑b' * ↑d' * ((b : R) * c + d * a)) =
-              t₆ * (d' * c) * (t₅ * (b' * b)) + t₅ * (b' * a) * (t₆ * (d' * d)) :=
-            by ring
+        calc ↑t₅ * ↑t₆ * (↑b' * ↑d' * ((b : R) * c + d * a))
+          _ = t₆ * (d' * c) * (t₅ * (b' * b)) + t₅ * (b' * a) * (t₆ * (d' * d)) := by ring
           _ = t₅ * t₆ * (b * d * (b' * c' + d' * a')) := by rw [ht₆, ht₅]; ring
           )
 #align localization.add Localization.add
@@ -997,12 +993,12 @@ def mkAddMonoidHom (b : M) : R →+ Localization M where
 #align localization.mk_add_monoid_hom Localization.mkAddMonoidHom
 
 theorem mk_sum {ι : Type*} (f : ι → R) (s : Finset ι) (b : M) :
-    mk (∑ i in s, f i) b = ∑ i in s, mk (f i) b :=
+    mk (∑ i ∈ s, f i) b = ∑ i ∈ s, mk (f i) b :=
   map_sum (mkAddMonoidHom b) f s
 #align localization.mk_sum Localization.mk_sum
 
 theorem mk_list_sum (l : List R) (b : M) : mk l.sum b = (l.map fun a => mk a b).sum :=
-  (mkAddMonoidHom b).map_list_sum l
+  map_list_sum (mkAddMonoidHom b) l
 #align localization.mk_list_sum Localization.mk_list_sum
 
 theorem mk_multiset_sum (l : Multiset R) (b : M) : mk l.sum b = (l.map fun a => mk a b).sum :=
@@ -1099,6 +1095,9 @@ theorem mk_algebraMap {A : Type*} [CommSemiring A] [Algebra A R] (m : A) :
 theorem mk_natCast (m : ℕ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℕ) _
 #align localization.mk_nat_cast Localization.mk_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias mk_nat_cast := mk_natCast
 
 variable [IsLocalization M S]
 
@@ -1200,7 +1199,7 @@ instance : CommRing (Localization M) :=
         (by
           intros
           simp only [add_mk, Localization.mk_mul, neg_mk, ← mk_zero 1]
-          refine' mk_eq_mk_iff.mpr (r_of_eq _)
+          refine mk_eq_mk_iff.mpr (r_of_eq ?_)
           simp only [Submonoid.coe_mul]
           ring) }
 
@@ -1216,6 +1215,9 @@ theorem sub_mk (a c) (b d) : (mk a b : Localization M) - mk c d =
 theorem mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℤ) _
 #align localization.mk_int_cast Localization.mk_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias mk_int_cast := mk_intCast
 
 end Localization
 

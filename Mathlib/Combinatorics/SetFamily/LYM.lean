@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
@@ -48,7 +49,7 @@ shadow, lym, slice, sperner, antichain
 
 open Finset Nat
 
-open BigOperators FinsetFamily
+open FinsetFamily
 
 variable {𝕜 α : Type*} [LinearOrderedField 𝕜]
 
@@ -180,7 +181,7 @@ theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
 /-- A bound on any top part of the sum in LYM in terms of the size of `falling k 𝒜`. -/
 theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
-    (∑ r in range (k + 1),
+    (∑ r ∈ range (k + 1),
         ((𝒜 # (Fintype.card α - r)).card : 𝕜) / (Fintype.card α).choose (Fintype.card α - r)) ≤
       (falling (Fintype.card α - k) 𝒜).card / (Fintype.card α).choose (Fintype.card α - k) := by
   induction' k with k ih
@@ -207,7 +208,7 @@ variable {𝒜 : Finset (Finset α)} {s : Finset α} {k : ℕ}
 proportion of elements it takes from each layer is less than `1`. -/
 theorem sum_card_slice_div_choose_le_one [Fintype α]
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
-    (∑ r in range (Fintype.card α + 1), ((𝒜 # r).card : 𝕜) / (Fintype.card α).choose r) ≤ 1 := by
+    (∑ r ∈ range (Fintype.card α + 1), ((𝒜 # r).card : 𝕜) / (Fintype.card α).choose r) ≤ 1 := by
   classical
     rw [← sum_flip]
     refine (le_card_falling_div_choose le_rfl h𝒜).trans ?_
@@ -229,7 +230,7 @@ theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
     𝒜.card ≤ (Fintype.card α).choose (Fintype.card α / 2) := by
   classical
-    suffices (∑ r in Iic (Fintype.card α),
+    suffices (∑ r ∈ Iic (Fintype.card α),
         ((𝒜 # r).card : ℚ) / (Fintype.card α).choose (Fintype.card α / 2)) ≤ 1 by
       rw [← sum_div, ← Nat.cast_sum, div_le_one] at this
       · simp only [cast_le] at this

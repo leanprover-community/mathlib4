@@ -111,7 +111,7 @@ protected theorem IsGδ.iInter [Countable ι'] {s : ι' → Set X} (hs : ∀ i, 
     IsGδ (⋂ i, s i) := by
   choose T hTo hTc hTs using hs
   obtain rfl : s = fun i => ⋂₀ T i := funext hTs
-  refine' ⟨⋃ i, T i, _, countable_iUnion hTc, (sInter_iUnion _).symm⟩
+  refine ⟨⋃ i, T i, ?_, countable_iUnion hTc, (sInter_iUnion _).symm⟩
   simpa [@forall_swap ι'] using hTo
 #align is_Gδ_Inter IsGδ.iInter
 

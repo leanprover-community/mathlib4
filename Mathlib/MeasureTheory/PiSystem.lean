@@ -681,7 +681,7 @@ def restrictOn {s : Set α} (h : d.Has s) : DynkinSystem α where
   has_iUnion_nat {f} hd hf := by
     simp only []
     rw [iUnion_inter]
-    refine' d.has_iUnion_nat _ hf
+    refine d.has_iUnion_nat ?_ hf
     exact hd.mono fun i j => Disjoint.mono (inter_subset_left _ _) (inter_subset_left _ _)
 #align measurable_space.dynkin_system.restrict_on MeasurableSpace.DynkinSystem.restrictOn
 
