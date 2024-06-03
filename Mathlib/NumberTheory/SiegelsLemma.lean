@@ -33,7 +33,7 @@ See [M. Hindry and J. Silverman, Diophantine Geometry: an Introduction] .
 /- We set ‖⬝‖ to be Matrix.seminormedAddCommGroup  -/
 attribute [local instance] Matrix.seminormedAddCommGroup
 
-open  Finset
+open Finset
 
 /-- sup commutes with casting from Nat to NNReal -/
 lemma cast_sup_eq_sup_cast_Nat_NNReal {S : Type*} (f : S → ℕ) (s : Finset S) :
