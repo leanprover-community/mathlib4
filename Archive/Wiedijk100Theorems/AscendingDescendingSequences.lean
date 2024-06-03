@@ -155,15 +155,9 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       constructor <;>
         · apply le_max'
           rw [mem_image]
-          refine ⟨{i}, by solve_by_elim, card_singleton i⟩
-    refine ⟨?_, ?_⟩
+          exact ⟨{i}, by solve_by_elim, card_singleton i⟩
     -- Need to get `a_i ≤ r`, here phrased as: there is some `a < r` with `a+1 = a_i`.
-    · refine ⟨(ab i).1 - 1, ?_, Nat.succ_pred_eq_of_pos z.1⟩
-      rw [tsub_lt_iff_right z.1]
-      apply Nat.lt_succ_of_le q.1
-    · refine ⟨(ab i).2 - 1, ?_, Nat.succ_pred_eq_of_pos z.2⟩
-      rw [tsub_lt_iff_right z.2]
-      apply Nat.lt_succ_of_le q.2
+    exact ⟨⟨(ab i).1 - 1, by omega⟩, (ab i).2 - 1, by omega⟩
   -- To get our contradiction, it suffices to prove `n ≤ r * s`
   apply not_le_of_lt hn
   -- Which follows from considering the cardinalities of the subset above, since `ab` is injective.

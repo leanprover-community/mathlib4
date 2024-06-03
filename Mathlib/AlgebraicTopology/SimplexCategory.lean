@@ -614,7 +614,7 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
 
 instance : (forget SimplexCategory).ReflectsIsomorphisms :=
   ⟨fun f hf =>
-    IsIso.of_iso
+    Iso.isIso_hom
       { hom := f
         inv := Hom.mk
             { toFun := inv ((forget SimplexCategory).map f)

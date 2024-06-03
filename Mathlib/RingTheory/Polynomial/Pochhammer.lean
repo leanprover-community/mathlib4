@@ -62,8 +62,8 @@ theorem ascPochhammer_one : ascPochhammer S 1 = X := by simp [ascPochhammer]
 #align pochhammer_one ascPochhammer_one
 
 theorem ascPochhammer_succ_left (n : ℕ) :
-    ascPochhammer S (n + 1) = X * (ascPochhammer S n).comp (X + 1) :=
-  by rw [ascPochhammer]
+    ascPochhammer S (n + 1) = X * (ascPochhammer S n).comp (X + 1) := by
+  rw [ascPochhammer]
 #align pochhammer_succ_left ascPochhammer_succ_left
 
 theorem monic_ascPochhammer (n : ℕ) [Nontrivial S] [NoZeroDivisors S] :
@@ -256,8 +256,8 @@ theorem descPochhammer_zero : descPochhammer R 0 = 1 :=
 theorem descPochhammer_one : descPochhammer R 1 = X := by simp [descPochhammer]
 
 theorem descPochhammer_succ_left (n : ℕ) :
-    descPochhammer R (n + 1) = X * (descPochhammer R n).comp (X - 1) :=
-  by rw [descPochhammer]
+    descPochhammer R (n + 1) = X * (descPochhammer R n).comp (X - 1) := by
+  rw [descPochhammer]
 
 theorem monic_descPochhammer (n : ℕ) [Nontrivial R] [NoZeroDivisors R] :
     Monic <| descPochhammer R n := by

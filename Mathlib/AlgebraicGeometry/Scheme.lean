@@ -74,7 +74,7 @@ protected abbrev sheaf (X : Scheme) :=
   X.toSheafedSpace.sheaf
 #align algebraic_geometry.Scheme.sheaf AlgebraicGeometry.Scheme.sheaf
 
-instance : CoeSort Scheme (Type*) where
+instance : CoeSort Scheme Type* where
   coe X := X.carrier
 
 /-- The forgetful functor from `Scheme` to `LocallyRingedSpace`. -/
@@ -84,17 +84,17 @@ def forgetToLocallyRingedSpace : Scheme ⥤ LocallyRingedSpace :=
 -- deriving Full, Faithful -- Porting note: no delta derive handler, see https://github.com/leanprover-community/mathlib4/issues/5020
 #align algebraic_geometry.Scheme.forget_to_LocallyRingedSpace AlgebraicGeometry.Scheme.forgetToLocallyRingedSpace
 
+/-- The forget functor `Scheme ⥤ LocallyRingedSpace` is fully faithful. -/
+@[simps!]
+def fullyFaithfulForgetToLocallyRingedSpace :
+    forgetToLocallyRingedSpace.FullyFaithful :=
+  fullyFaithfulInducedFunctor _
+
 instance : forgetToLocallyRingedSpace.Full :=
   InducedCategory.full _
 
 instance : forgetToLocallyRingedSpace.Faithful :=
   InducedCategory.faithful _
-
-@[simp]
-theorem forgetToLocallyRingedSpace_preimage {X Y : Scheme} (f : X ⟶ Y) :
-    Scheme.forgetToLocallyRingedSpace.preimage f = f :=
-  Scheme.forgetToLocallyRingedSpace.map_injective (Functor.map_preimage _ _)
-#align algebraic_geometry.Scheme.forget_to_LocallyRingedSpace_preimage AlgebraicGeometry.Scheme.forgetToLocallyRingedSpace_preimage
 
 /-- The forgetful functor from `Scheme` to `TopCat`. -/
 @[simps!]

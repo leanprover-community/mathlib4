@@ -301,7 +301,9 @@ lemma monotone_image {f : α → β} : Monotone (image f) := fun _ _ => image_su
 theorem image_union (f : α → β) (s t : Set α) : f '' (s ∪ t) = f '' s ∪ f '' t :=
   ext fun x =>
     ⟨by rintro ⟨a, h | h, rfl⟩ <;> [left; right] <;> exact ⟨_, h, rfl⟩, by
-      rintro (⟨a, h, rfl⟩ | ⟨a, h, rfl⟩) <;> refine' ⟨_, _, rfl⟩ <;> [left; right] <;> exact h⟩
+      rintro (⟨a, h, rfl⟩ | ⟨a, h, rfl⟩) <;> refine ⟨_, ?_, rfl⟩
+      · exact mem_union_left t h
+      · exact mem_union_right s h⟩
 #align set.image_union Set.image_union
 
 @[simp]
@@ -533,8 +535,8 @@ theorem image_inter_nonempty_iff {f : α → β} {s : Set α} {t : Set β} :
   rw [← image_inter_preimage, image_nonempty]
 #align set.image_inter_nonempty_iff Set.image_inter_nonempty_iff
 
-theorem image_diff_preimage {f : α → β} {s : Set α} {t : Set β} : f '' (s \ f ⁻¹' t) = f '' s \ t :=
-  by simp_rw [diff_eq, ← preimage_compl, image_inter_preimage]
+theorem image_diff_preimage {f : α → β} {s : Set α} {t : Set β} :
+    f '' (s \ f ⁻¹' t) = f '' s \ t := by simp_rw [diff_eq, ← preimage_compl, image_inter_preimage]
 #align set.image_diff_preimage Set.image_diff_preimage
 
 theorem compl_image : image (compl : Set α → Set α) = preimage compl :=
@@ -576,7 +578,7 @@ theorem subset_image_iff {t : Set β} :
   rwa [image_preimage_inter, inter_eq_left]
 
 theorem image_subset_image_iff {f : α → β} (hf : Injective f) : f '' s ⊆ f '' t ↔ s ⊆ t := by
-  refine' Iff.symm <| (Iff.intro (image_subset f)) fun h => _
+  refine Iff.symm <| (Iff.intro (image_subset f)) fun h => ?_
   rw [← preimage_image_eq s hf, ← preimage_image_eq t hf]
   exact preimage_mono h
 #align set.image_subset_image_iff Set.image_subset_image_iff
@@ -613,10 +615,10 @@ theorem surjective_onto_image {f : α → β} {s : Set α} : Surjective (imageFa
 theorem image_perm {s : Set α} {σ : Equiv.Perm α} (hs : { a : α | σ a ≠ a } ⊆ s) : σ '' s = s := by
   ext i
   obtain hi | hi := eq_or_ne (σ i) i
-  · refine' ⟨_, fun h => ⟨i, h, hi⟩⟩
+  · refine ⟨?_, fun h => ⟨i, h, hi⟩⟩
     rintro ⟨j, hj, h⟩
     rwa [σ.injective (hi.trans h.symm)]
-  · refine' iff_of_true ⟨σ.symm i, hs fun h => hi _, σ.apply_symm_apply _⟩ (hs hi)
+  · refine iff_of_true ⟨σ.symm i, hs fun h => hi ?_, σ.apply_symm_apply _⟩ (hs hi)
     convert congr_arg σ h <;> exact (σ.apply_symm_apply _).symm
 #align set.image_perm Set.image_perm
 
@@ -632,7 +634,7 @@ theorem powerset_insert (s : Set α) (a : α) : 𝒫 insert a s = 𝒫 s ∪ ins
   · intro h
     by_cases hs : a ∈ t
     · right
-      refine' ⟨t \ {a}, _, _⟩
+      refine ⟨t \ {a}, ?_, ?_⟩
       · rw [diff_singleton_subset_iff]
         assumption
       · rw [insert_diff_singleton, insert_eq_of_mem hs]
@@ -1323,8 +1325,8 @@ theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) :
     simp [hx]
 #align function.injective.compl_image_eq Function.Injective.compl_image_eq
 
-theorem LeftInverse.image_image {g : β → α} (h : LeftInverse g f) (s : Set α) : g '' (f '' s) = s :=
-  by rw [← image_comp, h.comp_eq_id, image_id]
+theorem LeftInverse.image_image {g : β → α} (h : LeftInverse g f) (s : Set α) :
+    g '' (f '' s) = s := by rw [← image_comp, h.comp_eq_id, image_id]
 #align function.left_inverse.image_image Function.LeftInverse.image_image
 
 theorem LeftInverse.preimage_preimage {g : β → α} (h : LeftInverse g f) (s : Set α) :
@@ -1485,8 +1487,8 @@ namespace Option
 theorem injective_iff {α β} {f : Option α → β} :
     Injective f ↔ Injective (f ∘ some) ∧ f none ∉ range (f ∘ some) := by
   simp only [mem_range, not_exists, (· ∘ ·)]
-  refine'
-    ⟨fun hf => ⟨hf.comp (Option.some_injective _), fun x => hf.ne <| Option.some_ne_none _⟩, _⟩
+  refine
+    ⟨fun hf => ⟨hf.comp (Option.some_injective _), fun x => hf.ne <| Option.some_ne_none _⟩, ?_⟩
   rintro ⟨h_some, h_none⟩ (_ | a) (_ | b) hab
   exacts [rfl, (h_none _ hab.symm).elim, (h_none _ hab).elim, congr_arg some (h_some hab)]
 #align option.injective_iff Option.injective_iff
@@ -1520,7 +1522,7 @@ variable {α : Type u} {β : Type v} {f : α → β}
 
 @[simp]
 theorem preimage_injective : Injective (preimage f) ↔ Surjective f := by
-  refine' ⟨fun h y => _, Surjective.preimage_injective⟩
+  refine ⟨fun h y => ?_, Surjective.preimage_injective⟩
   obtain ⟨x, hx⟩ : (f ⁻¹' {y}).Nonempty := by
     rw [h.nonempty_apply_iff preimage_empty]
     apply singleton_nonempty
@@ -1529,14 +1531,14 @@ theorem preimage_injective : Injective (preimage f) ↔ Surjective f := by
 
 @[simp]
 theorem preimage_surjective : Surjective (preimage f) ↔ Injective f := by
-  refine' ⟨fun h x x' hx => _, Injective.preimage_surjective⟩
+  refine ⟨fun h x x' hx => ?_, Injective.preimage_surjective⟩
   cases' h {x} with s hs; have := mem_singleton x
   rwa [← hs, mem_preimage, hx, ← mem_preimage, hs, mem_singleton_iff, eq_comm] at this
 #align set.preimage_surjective Set.preimage_surjective
 
 @[simp]
 theorem image_surjective : Surjective (image f) ↔ Surjective f := by
-  refine' ⟨fun h y => _, Surjective.image_surjective⟩
+  refine ⟨fun h y => ?_, Surjective.image_surjective⟩
   cases' h {y} with s hs
   have := mem_singleton y; rw [← hs] at this; rcases this with ⟨x, _, hx⟩
   exact ⟨x, hx⟩
@@ -1544,17 +1546,17 @@ theorem image_surjective : Surjective (image f) ↔ Surjective f := by
 
 @[simp]
 theorem image_injective : Injective (image f) ↔ Injective f := by
-  refine' ⟨fun h x x' hx => _, Injective.image_injective⟩
+  refine ⟨fun h x x' hx => ?_, Injective.image_injective⟩
   rw [← singleton_eq_singleton_iff]; apply h
   rw [image_singleton, image_singleton, hx]
 #align set.image_injective Set.image_injective
 
-theorem preimage_eq_iff_eq_image {f : α → β} (hf : Bijective f) {s t} : f ⁻¹' s = t ↔ s = f '' t :=
-  by rw [← image_eq_image hf.1, hf.2.image_preimage]
+theorem preimage_eq_iff_eq_image {f : α → β} (hf : Bijective f) {s t} :
+    f ⁻¹' s = t ↔ s = f '' t := by rw [← image_eq_image hf.1, hf.2.image_preimage]
 #align set.preimage_eq_iff_eq_image Set.preimage_eq_iff_eq_image
 
-theorem eq_preimage_iff_image_eq {f : α → β} (hf : Bijective f) {s t} : s = f ⁻¹' t ↔ f '' s = t :=
-  by rw [← image_eq_image hf.1, hf.2.image_preimage]
+theorem eq_preimage_iff_image_eq {f : α → β} (hf : Bijective f) {s t} :
+    s = f ⁻¹' t ↔ f '' s = t := by rw [← image_eq_image hf.1, hf.2.image_preimage]
 #align set.eq_preimage_iff_image_eq Set.eq_preimage_iff_image_eq
 
 end ImagePreimage
@@ -1615,8 +1617,8 @@ theorem disjoint_preimage_iff (hf : Surjective f) {s t : Set β} :
 #align set.disjoint_preimage_iff Set.disjoint_preimage_iff
 
 theorem preimage_eq_empty {s : Set β} (h : Disjoint s (range f)) :
-    f ⁻¹' s = ∅ :=
-  by simpa using h.preimage f
+    f ⁻¹' s = ∅ := by
+  simpa using h.preimage f
 #align set.preimage_eq_empty Set.preimage_eq_empty
 
 theorem preimage_eq_empty_iff {s : Set β} : f ⁻¹' s = ∅ ↔ Disjoint s (range f) :=

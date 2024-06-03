@@ -554,6 +554,10 @@ theorem codisjoint_iff_coe_toSubmodule :
   rw [codisjoint_iff, codisjoint_iff, ← coe_toSubmodule_eq_iff, sup_coe_toSubmodule,
     top_coeSubmodule, ← codisjoint_iff]
 
+theorem isCompl_iff_coe_toSubmodule :
+    IsCompl N N' ↔ IsCompl (N : Submodule R M) (N' : Submodule R M) := by
+  simp only [isCompl_iff, disjoint_iff_coe_toSubmodule, codisjoint_iff_coe_toSubmodule]
+
 theorem independent_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
     CompleteLattice.Independent N ↔ CompleteLattice.Independent fun i ↦ (N i : Submodule R M) := by
   simp [CompleteLattice.independent_def, disjoint_iff_coe_toSubmodule]
@@ -620,6 +624,9 @@ theorem wellFounded_of_isArtinian [IsArtinian R M] :
     WellFounded ((· < ·) : LieSubmodule R L M → LieSubmodule R L M → Prop) :=
   RelHomClass.wellFounded (toSubmodule_orderEmbedding R L M).ltEmbedding <|
     IsArtinian.wellFounded_submodule_lt R M
+
+instance [IsArtinian R M] : IsAtomic (LieSubmodule R L M) :=
+  isAtomic_of_orderBot_wellFounded_lt <| wellFounded_of_isArtinian R L M
 
 @[simp]
 theorem subsingleton_iff : Subsingleton (LieSubmodule R L M) ↔ Subsingleton M :=
