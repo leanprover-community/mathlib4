@@ -1163,7 +1163,7 @@ open Metric
 are uniformly bounded away from zero, then the space has discrete topology. -/
 lemma DiscreteTopology.of_forall_le_dist {α} [PseudoMetricSpace α] {r : ℝ} (hpos : 0 < r)
     (hr : Pairwise (r ≤ dist · · : α → α → Prop)) : DiscreteTopology α :=
-  ⟨by rw [Metric.uniformSpace_eq_bot.2 ⟨r, hpos, hr⟩, toTopologicalSpace_bot]⟩
+  ⟨by rw [Metric.uniformSpace_eq_bot.2 ⟨r, hpos, hr⟩, UniformSpace.toTopologicalSpace_bot]⟩
 
 /- Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
 we need to show that the uniform structure coming from the edistance and the
