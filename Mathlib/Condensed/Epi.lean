@@ -15,6 +15,7 @@ import Mathlib.Condensed.Module
 This file characterises epimorphisms of condensed sets and condensed `R`-modules for any ring `R`,
 as those morphisms which are objectwise surjective on `Stonean` (see
 `CondensedSet.epi_iff_surjective_on_stonean` and `CondensedMod.epi_iff_surjective_on_stonean`).
+
 -/
 
 universe v u w u' v'
