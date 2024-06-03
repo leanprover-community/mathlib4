@@ -1369,7 +1369,7 @@ theorem head_ofSeq (s : Seq' α) : head (ofSeq s) = Computation.pure s.head := b
 @[simp]
 theorem tail_ofSeq (s : Seq' α) : tail (ofSeq s) = ofSeq s.tail := by
   simp only [tail, destruct_ofSeq, map_pure', flatten_pure]
-  induction' s using Seq'.recOn with x s <;> simp only [ofSeq, Seq'.tail_nil, Seq'.head_nil,
+  induction' s with x s <;> simp only [ofSeq, Seq'.tail_nil, Seq'.head_nil,
     Option.map_none', Seq'.tail_cons, Seq'.head_cons, Option.map_some']
   · rfl
 #align stream.wseq.tail_of_seq WSeq.tail_ofSeq
