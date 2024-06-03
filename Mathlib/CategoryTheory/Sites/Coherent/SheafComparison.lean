@@ -247,6 +247,23 @@ theorem isSheaf_iff_preservesFiniteProducts_of_projective [Preregular C] [Finita
   rw [isSheaf_coherent_iff_regular_and_extensive, and_iff_left (isSheaf_of_projective F),
     isSheaf_iff_preservesFiniteProducts]
 
+theorem isSheaf_iff_extensiveSheaf_of_projective [Preregular C] [FinitaryExtensive C]
+    [∀ (X : C), Projective X] :
+    IsSheaf (coherentTopology C) F ↔ IsSheaf (extensiveTopology C) F := by
+  rw [isSheaf_iff_preservesFiniteProducts_of_projective, isSheaf_iff_preservesFiniteProducts]
+
+@[simps]
+def coherentExtensiveEquivalence [Preregular C] [FinitaryExtensive C] [∀ (X : C), Projective X] :
+    Sheaf (coherentTopology C) A ≌ Sheaf (extensiveTopology C) A where
+  functor := {
+    obj := fun F ↦ ⟨F.val, (isSheaf_iff_extensiveSheaf_of_projective F.val).mp F.cond⟩
+    map := fun f ↦ ⟨f.val⟩ }
+  inverse := {
+    obj := fun F ↦ ⟨F.val, (isSheaf_iff_extensiveSheaf_of_projective F.val).mpr F.cond⟩
+    map := fun f ↦ ⟨f.val⟩ }
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
 variable {B : Type u₄} [Category.{v₄} B]
 variable (s : A ⥤ B)
 
