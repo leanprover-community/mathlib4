@@ -42,12 +42,11 @@ In this case, the `HasFibers` instance is given by the categories `F(S)` and the
 
 universe u₁ v₁ u₂ v₂ u₃ w
 
--- TODO: fix fibered namespace
-open CategoryTheory Functor Category IsCartesian IsHomLift Fibered
+open CategoryTheory Functor Category IsCartesian IsHomLift Fiber
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
--- TODO: should it be this namespace?
+-- TODO: should it be this namespace?fiber
 
 /-- HasFibers is an exttrinsic notion of fibers on a functor p : 𝒳 ⥤ 𝒮. It is given by a collection
 of categories Fib S for every S in 𝒮 (the fiber categories), equiped with functors ι : Fib S ⥤ 𝒳
