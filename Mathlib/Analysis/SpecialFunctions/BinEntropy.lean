@@ -27,8 +27,6 @@ Most lemmas are also valid using a different-base logarithms.
 entropy, Shannon, binary
 -/
 
-namespace Entropy
-
 open Real
 
 /-- Shannon q-ary Entropy function (measured in Nats, i.e., using natural logs).
@@ -270,7 +268,7 @@ lemma deriv_qaryEntropy' {q : ℕ} {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
     congr! 1
     simp only [differentiableAt_id', differentiableAt_const, deriv_mul, deriv_id'', one_mul,
       deriv_const', mul_zero, add_zero]
-    convert Entropy.deriv_binaryEntropy' h hh using 2
+    convert deriv_binaryEntropy' h hh using 2
     simp only [neg_mul]
   · simp only [differentiableAt_id', differentiableAt_const, DifferentiableAt.mul]
   · apply DifferentiableAt.sub
