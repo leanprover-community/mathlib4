@@ -95,7 +95,7 @@ lemma T_apply_succ (hv : v ∈ altWeightSpace A χ) (n : ℕ) :
     rw [hv', T, LinearMap.sub_apply, LieModule.toEnd_apply_apply,
       LieIdeal.coe_bracket_of_module, LinearMap.smul_apply,
       LinearMap.one_apply, hv w, sub_self] at hx
-    rw [← hx] ; exact Submodule.zero_mem _
+    rw [← hx]; exact Submodule.zero_mem _
   · next n hn =>
     intro w x ⟨v', ⟨m, hm, hv'⟩, hx⟩
     rcases (eq_or_lt_of_le (Nat.le_of_lt_succ hm)) with (rfl | hm')
@@ -123,7 +123,7 @@ lemma T_apply_succ (hv : v ∈ altWeightSpace A χ) (n : ℕ) :
     · exact U_mono v _ (Nat.le_succ n) (hn w ⟨v', ⟨m, hm', hv'⟩, hx⟩)
 
 lemma T_map_iSupU (hv : v ∈ altWeightSpace A χ) :
-  ∀ x ∈ iSupU v (π k V z), (T A χ w) x ∈ iSupU v (π k V z) := by
+    ∀ x ∈ iSupU v (π k V z), (T A χ w) x ∈ iSupU v (π k V z) := by
   intro x hx
   obtain ⟨n, hn⟩ := iSupU_eq_U v (π k V z)
   rw [hn] at hx
@@ -132,7 +132,7 @@ lemma T_map_iSupU (hv : v ∈ altWeightSpace A χ) :
   exact T_apply_succ A χ z w hv n
 
 theorem iSupU_A_stable (hv : v ∈ altWeightSpace A χ) :
-  ∀ x ∈ (iSupU v (π k V z)), (π k V w) x ∈ (iSupU v (π k V z)):= by
+    ∀ x ∈ (iSupU v (π k V z)), (π k V w) x ∈ (iSupU v (π k V z)):= by
   intro x hx
   have hx' : (π k V w) x = (T A χ w) x + χ w • x := by simp
   rw [hx']
@@ -140,7 +140,7 @@ theorem iSupU_A_stable (hv : v ∈ altWeightSpace A χ) :
     (Submodule.smul_mem (iSupU v (π k V z)) _ hx)
 
 lemma T_map_U_nilpotent (hv : v ∈ altWeightSpace A χ) (N: ℕ) :
-  ∀ x ∈ (U_map v (π k V z)) N, (T A χ w ^ N) x = 0 := by
+    ∀ x ∈ (U_map v (π k V z)) N, (T A χ w ^ N) x = 0 := by
   induction' N with N ih
   · simp only [U_map, Nat.zero_eq, OrderHom.coe_mk, U_zero_eq_bot, Submodule.mem_bot,
     pow_zero, LinearMap.one_apply, imp_self, forall_const]
@@ -151,7 +151,7 @@ lemma T_map_U_nilpotent (hv : v ∈ altWeightSpace A χ) (N: ℕ) :
     use x, hx
 
 theorem T_res_nilpotent (hv : v ∈ altWeightSpace A χ) :
-  IsNilpotent ((T A χ w).restrict (T_map_iSupU A χ z w hv)) := by
+    IsNilpotent ((T A χ w).restrict (T_map_iSupU A χ z w hv)) := by
   rw [Module.Finite.Module.End.isNilpotent_iff_of_finite]
   rintro ⟨x, hx⟩
   rw [Submodule.mem_iSup_of_chain] at hx
@@ -162,25 +162,25 @@ theorem T_res_nilpotent (hv : v ∈ altWeightSpace A χ) :
   exact T_map_U_nilpotent A χ z w hv N x hN
 
 lemma trace_T_res_zero (hv : v ∈ altWeightSpace A χ) :
-  LinearMap.trace k (iSupU v (π k V z)) ((T A χ w).restrict (T_map_iSupU A χ z w hv)) = 0 := by
+    LinearMap.trace k (iSupU v (π k V z)) ((T A χ w).restrict (T_map_iSupU A χ z w hv)) = 0 := by
   apply IsNilpotent.eq_zero
   exact LinearMap.isNilpotent_trace_of_isNilpotent (T_res_nilpotent A χ z w hv)
 
 lemma πaz_map_iSupU (a : A) (hv : v ∈ altWeightSpace A χ) :
-  ∀ x ∈ iSupU v (π k V z), π k V ⁅a,z⁆ x ∈ iSupU v (π k V z):= by
+    ∀ x ∈ iSupU v (π k V z), π k V ⁅a,z⁆ x ∈ iSupU v (π k V z):= by
   intro x hx
   apply iSupU_A_stable A χ z ⟨⁅a,z⁆, lie_mem_left k L A a z a.prop⟩ hv
   assumption
 
 lemma trace_πaz (a : A) (hv : v ∈ altWeightSpace A χ):
-  LinearMap.trace k (iSupU v (π k V z)) ((π k V ⁅a, z⁆).restrict (πaz_map_iSupU A χ z a hv))
+    LinearMap.trace k (iSupU v (π k V z)) ((π k V ⁅a, z⁆).restrict (πaz_map_iSupU A χ z a hv))
     = χ ⟨⁅a,z⁆, lie_mem_left k L A a z a.prop⟩ • (finrank k (iSupU v (π k V z))) := by
   rw [← LinearMap.trace_id, ← LinearMap.map_smul, ← sub_eq_zero]
   rw [← LinearMap.map_sub]
   apply trace_T_res_zero A χ z ⟨⁅a,z⁆, lie_mem_left k L A a z a.prop⟩ hv
 
 theorem trace_πaz_zero (a : A) (hv : v ∈ altWeightSpace A χ):
-  LinearMap.trace k (iSupU v (π k V z)) ((π k V ⁅a, z⁆).restrict (πaz_map_iSupU A χ z a hv))
+    LinearMap.trace k (iSupU v (π k V z)) ((π k V ⁅a, z⁆).restrict (πaz_map_iSupU A χ z a hv))
     = 0 := by
   have hzU : ∀ x ∈ iSupU v (π k V z), (π k V z) x ∈ iSupU v (π k V z) :=
     fun _ hx ↦ (map_iSupU_le_iSupU v (π k V z)) (Submodule.mem_map_of_mem hx)
@@ -267,7 +267,7 @@ theorem exists_lieIdeal_of_derivedSeries_le (A : Submodule k L) (h : derivedSeri
     }, rfl⟩
 
 theorem derivedSubalgebra_ne_top [LieAlgebra.IsSolvable k L] [Nontrivial L] :
-  (lieIdealSubalgebra k L (LieAlgebra.derivedSeries k L 1)).toSubmodule ≠ ⊤ := by
+    (lieIdealSubalgebra k L (LieAlgebra.derivedSeries k L 1)).toSubmodule ≠ ⊤ := by
     have h := derivedSeries_ne_top_of_solvable k L
     simp_all only [derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, ne_eq,
       LieIdeal.coe_to_lieSubalgebra_to_submodule, LieSubmodule.coeSubmodule_eq_top_iff,
@@ -377,7 +377,7 @@ noncomputable def kequivB (z : L) (hz : z ≠ 0): k ≃ₗ[k] Submodule.span k {
   invFun := fun ⟨z', hz'⟩ ↦ (Submodule.mem_span_singleton.mp hz').choose
   left_inv := by
     intro c
-    simp
+    simp only
     have h : (Submodule.mem_span_singleton.mp (Submodule.smul_mem _ c (Submodule.mem_span_singleton_self z))).choose • z = c • z :=
       (Submodule.mem_span_singleton.mp (Submodule.smul_mem _ c (Submodule.mem_span_singleton_self z))).choose_spec
     rw [← sub_eq_zero, ← sub_smul] at *
