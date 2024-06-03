@@ -67,8 +67,8 @@ lemma binaryEntropy_eq' {p : ℝ} : binaryEntropy p = -p * log p - (1 - p) * log
 
 @[simp] lemma binaryEntropy_onehalf : binaryEntropy 2⁻¹ = log 2 := by
   simp only [binaryEntropy_eq']
-  norm_num
-  simp only [one_div, log_inv]
+  have : (1 : ℝ) - 2⁻¹ = 2⁻¹ := by norm_num
+  simp only [this, log_inv]
   field_simp
 
 /-- `binaryEntropy` is symmetric about 1/2, i.e.,
