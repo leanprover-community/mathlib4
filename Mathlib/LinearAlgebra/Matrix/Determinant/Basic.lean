@@ -376,6 +376,14 @@ theorem det_zero_of_column_eq (i_ne_j : i ≠ j) (hij : ∀ k, M k i = M k j) : 
   exact funext hij
 #align matrix.det_zero_of_column_eq Matrix.det_zero_of_column_eq
 
+/-- If we repeat a row of a matrix, we get a matrix of determinant zero. -/
+theorem det_updateRow_eq_zero (h : i ≠ j) :
+    (M.updateRow j (M i)).det = 0 := det_zero_of_row_eq h (by simp [h])
+
+/-- If we repeat a column of a matrix, we get a matrix of determinant zero. -/
+theorem det_updateColumn_eq_zero (h : i ≠ j) :
+    (M.updateColumn j (fun k ↦ M k i)).det = 0 := det_zero_of_column_eq h (by simp [h])
+
 end DetZero
 
 theorem det_updateRow_add (M : Matrix n n R) (j : n) (u v : n → R) :
@@ -410,6 +418,32 @@ theorem det_updateColumn_smul' (M : Matrix n n R) (j : n) (s : R) (u : n → R) 
   rw [← det_transpose, ← updateRow_transpose, transpose_smul, det_updateRow_smul']
   simp [updateRow_transpose, det_transpose]
 #align matrix.det_update_column_smul' Matrix.det_updateColumn_smul'
+
+theorem det_updateRow_sum_aux (M : Matrix n n R) {j : n} (s : Finset n) (hj : j ∉ s) (c : n → R)
+    (a : R) :
+    (M.updateRow j (a • M j + ∑ k ∈ s, (c k) • M k)).det = a • M.det := by
+  induction s using Finset.induction_on with
+  | empty => rw [Finset.sum_empty, add_zero, smul_eq_mul, det_updateRow_smul, updateRow_eq_self]
+  | @insert k _ hk h_ind =>
+      have h : k ≠ j := fun h ↦ (h ▸ hj) (Finset.mem_insert_self _ _)
+      rw [Finset.sum_insert hk, add_comm ((c k) • M k), ← add_assoc, det_updateRow_add,
+        det_updateRow_smul, det_updateRow_eq_zero h, mul_zero, add_zero, h_ind]
+      exact fun h ↦ hj (Finset.mem_insert_of_mem h)
+
+/-- If we replace a row of a matrix by a linear combination of its rows, then the determinant is
+multiplied by the coefficient of that row. -/
+theorem det_updateRow_sum (A : Matrix n n R) (j : n) (c : n → R) :
+    (A.updateRow j (∑ k, (c k) • A k)).det = (c j) • A.det := by
+  convert det_updateRow_sum_aux A (Finset.univ.erase j) (Finset.univ.not_mem_erase j) c (c j)
+  rw [← Finset.univ.add_sum_erase _ (Finset.mem_univ j)]
+
+/-- If we replace a column of a matrix by a linear combination of its columns, then the determinant
+is multiplied by the coefficient of that column. -/
+theorem det_updateColumn_sum (A : Matrix n n R) (j : n) (c : n → R) :
+    (A.updateColumn j (fun k ↦ ∑ i, (c i) • A k i)).det = (c j) • A.det := by
+  rw [← det_transpose, ← updateRow_transpose, ← det_transpose A]
+  convert det_updateRow_sum A.transpose j c
+  simp only [smul_eq_mul, Finset.sum_apply, Pi.smul_apply, transpose_apply]
 
 section DetEq
 
