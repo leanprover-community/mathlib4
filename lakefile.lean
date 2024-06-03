@@ -63,6 +63,11 @@ lean_exe mk_all where
   srcDir := "scripts"
   supportInterpreter := true
 
+/-- `lake exe auto_bump` performs automatic bumps. -/
+lean_exe auto_bump where
+  srcDir := "scripts"
+  supportInterpreter := true
+
 /-- `lake exe shake` checks files for unnecessary imports. -/
 lean_exe shake where
   root := `Shake.Main
