@@ -2404,7 +2404,7 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
       intro a
       by_cases hyp: a ∈ h
       · have : kᶜ ∈ 𝓝 a := by
-          apply IsClosed.compl_mem_nhds kcl
+          apply kcl.compl_mem_nhds
           by_contra aink; exact hkdis ⟨hyp, aink⟩
         rcases (((regularSpace_TFAE X).out 0 3).mp r:) a kᶜ this
           with ⟨n, nna, ncl, nsubkc⟩
