@@ -31,8 +31,6 @@ suitable limits and colimits.
 
 ## TODO
 * construct an isomorphism `sheafCompose' J F ≅ sheafCompose J F`
-* show that the free module functor `Type u ⥤ ModuleCat.{u} R`
-preserves sheafification
 
 -/
 
