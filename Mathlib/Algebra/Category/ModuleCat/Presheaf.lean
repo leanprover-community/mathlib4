@@ -64,7 +64,6 @@ def map (P : PresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   { toAddHom := (P.presheaf.map f).toAddHom,
     map_smul' := P.map_smul f, }
 
-@[simp]
 theorem map_apply (P : PresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) (x) :
     P.map f x = (P.presheaf.map f) x :=
   rfl
@@ -80,13 +79,13 @@ instance {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
 theorem map_id (P : PresheafOfModules R) (X : Cᵒᵖ) :
     P.map (𝟙 X) = LinearMap.id' := by
   ext
-  simp
+  simp [map_apply]
 
 @[simp]
 theorem map_comp (P : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     P.map (f ≫ g) = (P.map g).comp (P.map f) := by
   ext
-  simp
+  simp [map_apply]
 
 /-- A morphism of presheaves of modules. -/
 structure Hom (P Q : PresheafOfModules R) where
@@ -186,7 +185,7 @@ end Hom
 
 lemma naturality_apply {P Q : PresheafOfModules R} (f : P ⟶ Q)
     {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : P.obj X) :
-    f.app Y (P.presheaf.map g x) = Q.presheaf.map g (f.app X x) :=
+    f.app Y (P.map g x) = Q.map g (f.app X x) :=
   congr_fun ((forget _).congr_map (f.hom.naturality g)) x
 
 variable (R)
@@ -441,26 +440,29 @@ variable {R}
 /-- The type of sections of a presheaf of modules. -/
 def sections (M : PresheafOfModules.{v} R) : Type _ := (M.presheaf ⋙ forget _).sections
 
+/-- Constructor for sections of a presheaf of modules. -/
+@[simps]
+def sectionsMk {M : PresheafOfModules.{v} R} (s : ∀ X, M.obj X)
+    (hs : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y), M.map f (s X) = s Y) : M.sections where
+  val := s
+  property f := hs f
+
 @[ext]
 lemma sections_ext {M : PresheafOfModules.{v} R} (s t : M.sections)
     (h : ∀ (X : Cᵒᵖ), s.val X = t.val X) : s = t :=
   Subtype.ext (by ext; apply h)
 
 /-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : PresheafOfModules R`. -/
-@[simps apply_coe]
+@[simps! apply_coe]
 def unitHomEquiv (M : PresheafOfModules R) :
     (unit R ⟶ M) ≃ M.sections where
-  toFun f :=
-    { val := fun X => f.app X (1 : R.obj X)
-      property := fun {X Y} p => by
-        dsimp
-        erw [← naturality_apply, unit_map_one]
-        rfl }
+  toFun f := sectionsMk (fun X ↦ Hom.app f X (1 : R.obj X))
+    (by intros; rw [← naturality_apply, unit_map_one])
   invFun s := Hom.mk'
     (fun X => (LinearMap.ringLmapEquivSelf (R.obj X) ℤ (M.obj X)).symm (s.val X)) (by
       intro X Y p (x : R.obj X)
       dsimp
-      rw [M.map_smul, ← s.2 p]
+      rw [map_apply, M.map_smul, ← s.2 p]
       rfl)
   left_inv f := by
     ext1 X
