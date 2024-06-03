@@ -378,7 +378,7 @@ variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ 
 theorem PartialHomeomorph.contDiff_univUnitBall : ContDiff ℝ n (univUnitBall : E → E) := by
   suffices ContDiff ℝ n fun x : E => (√(1 + ‖x‖ ^ 2 : ℝ))⁻¹ from this.smul contDiff_id
   have h : ∀ x : E, (0 : ℝ) < (1 : ℝ) + ‖x‖ ^ 2 := fun x => by positivity
-  refine ContDiff.inv ?_ fun x ↦ Real.sqrt_ne_zero'.mpr (h x)
+  refine ContDiff.inv ?_ fun x => Real.sqrt_ne_zero'.mpr (h x)
   exact (contDiff_const.add <| contDiff_norm_sq ℝ).sqrt fun x => (h x).ne'
 
 theorem PartialHomeomorph.contDiffOn_univUnitBall_symm :

@@ -468,7 +468,7 @@ theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ �
     intro n hn
     simp [v, hn, if_neg (not_lt.mpr hn)]
   apply cauchySeq_sum_of_eventually_eq this
-      (NormedAddCommGroup.cauchy_series_of_le_geometric' hr₁ _)
+    (NormedAddCommGroup.cauchy_series_of_le_geometric' hr₁ _)
   · exact C
   intro n
   simp only [v]

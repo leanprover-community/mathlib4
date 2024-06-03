@@ -62,7 +62,7 @@ noncomputable def sheafificationWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
     (whiskeringLeft _ _ E).obj (J.sheafify P) ≅
     (whiskeringLeft _ _ _).obj P ⋙ J.sheafification E := by
   refine J.plusFunctorWhiskerLeftIso _ ≪≫ ?_ ≪≫ Functor.associator _ _ _
-  apply isoWhiskerRight _ _
+  refine isoWhiskerRight ?_ _
   exact J.plusFunctorWhiskerLeftIso _
 #align category_theory.grothendieck_topology.sheafification_whisker_left_iso CategoryTheory.GrothendieckTopology.sheafificationWhiskerLeftIso
 

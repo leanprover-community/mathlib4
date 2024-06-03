@@ -111,8 +111,8 @@ theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : �
       commuting pairs as `H`. -/
   rw [commProb_def, commProb_def, div_le_iff, mul_assoc, ← mul_pow, ← Nat.cast_mul,
     mul_comm H.index, H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
-  · exact Finite.card_le_of_injective (fun p ↦ ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) <|
-      fun p q h ↦ by simpa only [Subtype.ext_iff, Prod.ext_iff] using h
+  · refine Finite.card_le_of_injective (fun p ↦ ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) ?_
+    exact fun p q h ↦ by simpa only [Subtype.ext_iff, Prod.ext_iff] using h
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr Finite.card_pos.ne')
   · exact pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2
 #align subgroup.comm_prob_subgroup_le Subgroup.commProb_subgroup_le

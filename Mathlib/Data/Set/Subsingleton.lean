@@ -98,7 +98,7 @@ theorem subsingleton_isBot (α : Type*) [PartialOrder α] : Set.Subsingleton { x
 
 theorem exists_eq_singleton_iff_nonempty_subsingleton :
     (∃ a : α, s = {a}) ↔ s.Nonempty ∧ s.Subsingleton := by
-  refine ⟨?_, fun h ↦ ?_⟩
+  refine ⟨?_, fun h => ?_⟩
   · rintro ⟨a, rfl⟩
     exact ⟨singleton_nonempty a, subsingleton_singleton⟩
   · exact h.2.eq_empty_or_singleton.resolve_left h.1.ne_empty

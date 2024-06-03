@@ -55,7 +55,7 @@ namespace CompHaus
 instance : Inhabited CompHaus :=
   ⟨{ toTop := { α := PEmpty } }⟩
 
-instance : CoeSort CompHaus (Type*) :=
+instance : CoeSort CompHaus Type* :=
   ⟨fun X => X.toTop⟩
 
 instance {X : CompHaus} : CompactSpace X :=

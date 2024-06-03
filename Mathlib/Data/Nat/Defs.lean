@@ -1445,9 +1445,11 @@ lemma le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b := b
 
 /-- `n` is not divisible by `a` iff it is between `a * k` and `a * (k + 1)` for some `k`. -/
 lemma not_dvd_iff_between_consec_multiples (n : ℕ) {a : ℕ} (ha : 0 < a) :
-    (∃ k : ℕ, a * k < n ∧ n < a * (k + 1)) ↔ ¬a ∣ n :=
-  ⟨fun ⟨_, hk1, hk2⟩ => not_dvd_of_between_consec_multiples hk1 hk2, fun han =>
-    ⟨n / a, ⟨lt_of_le_of_ne (mul_div_le n a) (mt (⟨n / a, Eq.symm ·⟩) han), lt_mul_div_succ _ ha⟩⟩⟩
+    (∃ k : ℕ, a * k < n ∧ n < a * (k + 1)) ↔ ¬a ∣ n := by
+  refine
+    ⟨fun ⟨k, hk1, hk2⟩ => not_dvd_of_between_consec_multiples hk1 hk2, fun han =>
+      ⟨n / a, ⟨lt_of_le_of_ne (mul_div_le n a) ?_, lt_mul_div_succ _ ha⟩⟩⟩
+  exact mt (⟨n / a, Eq.symm ·⟩) han
 #align nat.not_dvd_iff_between_consec_multiples Nat.not_dvd_iff_between_consec_multiples
 
 /-- Two natural numbers are equal if and only if they have the same multiples. -/

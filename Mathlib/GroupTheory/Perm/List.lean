@@ -314,7 +314,7 @@ set_option linter.deprecated false in
 theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :: l))
     (hd' : Nodup (x' :: y' :: l')) :
     formPerm (x :: y :: l) = formPerm (x' :: y' :: l') ↔ (x :: y :: l) ~r (x' :: y' :: l') := by
-  refine ⟨fun h ↦ ?_, fun hr => formPerm_eq_of_isRotated hd hr⟩
+  refine ⟨fun h => ?_, fun hr => formPerm_eq_of_isRotated hd hr⟩
   rw [Equiv.Perm.ext_iff] at h
   have hx : x' ∈ x :: y :: l := by
     have : x' ∈ { z | formPerm (x :: y :: l) z ≠ z } := by
