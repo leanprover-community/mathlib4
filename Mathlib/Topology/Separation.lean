@@ -2289,7 +2289,7 @@ instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] 
 
 /-- Lemma used to prove a regular topological space with Lindelöf topology is a normal space,
 and a perfectly normal space is a completely normal space. -/
-lemma countable_covers_witness_separated_nhds (h k: Set X)
+lemma countable_covers_witness_separated_nhds {h k : Set X}
     (h_cov: ∃ u : ℕ → Set X, h ⊆ ⋃ n, u n ∧
       ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) k)
     (k_cov: ∃ u : ℕ → Set X, k ⊆ ⋃ n, u n ∧
