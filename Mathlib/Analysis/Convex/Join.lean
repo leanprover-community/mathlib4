@@ -169,8 +169,8 @@ theorem convexJoin_right_comm (s t u : Set E) :
 
 theorem convexJoin_convexJoin_convexJoin_comm (s t u v : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) (convexJoin 𝕜 u v) =
-      convexJoin 𝕜 (convexJoin 𝕜 s u) (convexJoin 𝕜 t v) :=
-  by simp_rw [← convexJoin_assoc, convexJoin_right_comm]
+      convexJoin 𝕜 (convexJoin 𝕜 s u) (convexJoin 𝕜 t v) := by
+  simp_rw [← convexJoin_assoc, convexJoin_right_comm]
 #align convex_join_convex_join_convex_join_comm convexJoin_convexJoin_convexJoin_comm
 
 -- Porting note: moved 3 lemmas from below to golf

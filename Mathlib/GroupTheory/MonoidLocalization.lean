@@ -1531,8 +1531,8 @@ theorem ofMulEquivOfLocalizations_id : f.ofMulEquivOfLocalizations (MulEquiv.ref
 @[to_additive]
 theorem ofMulEquivOfLocalizations_comp {k : N ≃* P} {j : P ≃* Q} :
     (f.ofMulEquivOfLocalizations (k.trans j)).toMap =
-      j.toMonoidHom.comp (f.ofMulEquivOfLocalizations k).toMap :=
-  by ext; rfl
+      j.toMonoidHom.comp (f.ofMulEquivOfLocalizations k).toMap := by
+  ext; rfl
 #align submonoid.localization_map.of_mul_equiv_of_localizations_comp Submonoid.LocalizationMap.ofMulEquivOfLocalizations_comp
 #align add_submonoid.localization_map.of_add_equiv_of_localizations_comp AddSubmonoid.LocalizationMap.ofAddEquivOfLocalizations_comp
 
@@ -1597,8 +1597,8 @@ theorem ofMulEquivOfDom_comp {k : M ≃* P} (H : T.map k.symm.toMonoidHom = S) (
 theorem ofMulEquivOfDom_id :
     f.ofMulEquivOfDom
         (show S.map (MulEquiv.refl M).toMonoidHom = S from
-          Submonoid.ext fun x ↦ ⟨fun ⟨_, hy, h⟩ ↦ h ▸ hy, fun h ↦ ⟨x, h, rfl⟩⟩) = f :=
-  by ext; rfl
+          Submonoid.ext fun x ↦ ⟨fun ⟨_, hy, h⟩ ↦ h ▸ hy, fun h ↦ ⟨x, h, rfl⟩⟩) = f := by
+  ext; rfl
 #align submonoid.localization_map.of_mul_equiv_of_dom_id Submonoid.LocalizationMap.ofMulEquivOfDom_id
 #align add_submonoid.localization_map.of_add_equiv_of_dom_id AddSubmonoid.LocalizationMap.ofAddEquivOfDom_id
 
@@ -1778,8 +1778,8 @@ theorem mulEquivOfQuotient_mk (x y) : mulEquivOfQuotient f (mk x y) = f.mk' x y 
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 @[to_additive]
-theorem mulEquivOfQuotient_monoidOf (x) : mulEquivOfQuotient f ((monoidOf S).toMap x) = f.toMap x :=
-  by simp
+theorem mulEquivOfQuotient_monoidOf (x) :
+    mulEquivOfQuotient f ((monoidOf S).toMap x) = f.toMap x := by simp
 #align localization.mul_equiv_of_quotient_monoid_of Localization.mulEquivOfQuotient_monoidOf
 #align add_localization.add_equiv_of_quotient_add_monoid_of AddLocalization.addEquivOfQuotient_addMonoidOf
 
@@ -2094,7 +2094,7 @@ instance partialOrder : PartialOrder (Localization s) where
   le_trans a b c :=
     Localization.induction_on₃ a b c fun a b c hab hbc => by
       simp only [mk_le_mk] at hab hbc ⊢
-      refine' le_of_mul_le_mul_left' _
+      apply le_of_mul_le_mul_left' _
       · exact ↑b.2
       rw [mul_left_comm]
       refine (mul_le_mul_left' hab _).trans ?_

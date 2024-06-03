@@ -99,6 +99,10 @@ theorem forget_obj_hom {f} : ((forget X).obj f).hom = f.arrow :=
   rfl
 #align category_theory.mono_over.forget_obj_hom CategoryTheory.MonoOver.forget_obj_hom
 
+/-- The forget functor `MonoOver X ⥤ Over X` is fully faithful. -/
+def fullyFaithfulForget (X : C) : (forget X).FullyFaithful :=
+  fullyFaithfulFullSubcategoryInclusion _
+
 instance : (forget X).Full :=
   FullSubcategory.full _
 
@@ -325,8 +329,8 @@ variable [HasPullbacks C]
 
 /-- `map f` is left adjoint to `pullback f` when `f` is a monomorphism -/
 def mapPullbackAdj (f : X ⟶ Y) [Mono f] : map f ⊣ pullback f :=
-  Adjunction.restrictFullyFaithful (forget X) (forget Y) (Over.mapPullbackAdj f) (Iso.refl _)
-    (Iso.refl _)
+  Adjunction.restrictFullyFaithful (fullyFaithfulForget X) (fullyFaithfulForget Y)
+    (Over.mapPullbackAdj f) (Iso.refl _) (Iso.refl _)
 #align category_theory.mono_over.map_pullback_adj CategoryTheory.MonoOver.mapPullbackAdj
 
 /-- `MonoOver.map f` followed by `MonoOver.pullback f` is the identity. -/
@@ -447,8 +451,8 @@ def existsIsoMap (f : X ⟶ Y) [Mono f] : «exists» f ≅ map f :=
 
 /-- `exists` is adjoint to `pullback` when images exist -/
 def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
-  Adjunction.restrictFullyFaithful (forget X) (𝟭 _) ((Over.mapPullbackAdj f).comp imageForgetAdj)
-    (Iso.refl _) (Iso.refl _)
+  Adjunction.restrictFullyFaithful (fullyFaithfulForget X) (Functor.FullyFaithful.id _)
+    ((Over.mapPullbackAdj f).comp imageForgetAdj) (Iso.refl _) (Iso.refl _)
 #align category_theory.mono_over.exists_pullback_adj CategoryTheory.MonoOver.existsPullbackAdj
 
 end Exists

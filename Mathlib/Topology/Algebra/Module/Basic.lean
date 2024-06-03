@@ -261,9 +261,9 @@ notation:25 M " →L⋆[" R "] " M₂ => ContinuousLinearMap (starRingEnd R) M M
 `σ` is the identity map on `R`.  A map `f` between an `R`-module and an `S`-module over a ring
 homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `f (x + y) = f x + f y`
 and `f (c • x) = (σ c) • f x`. -/
-class ContinuousSemilinearMapClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Semiring S]
-    (σ : outParam <| R →+* S) (M : outParam (Type*)) [TopologicalSpace M] [AddCommMonoid M]
-    (M₂ : outParam (Type*)) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
+class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
+    (σ : outParam <| R →+* S) (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M]
+    (M₂ : outParam Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
     [Module S M₂] [FunLike F M M₂]
     extends SemilinearMapClass F σ M M₂, ContinuousMapClass F M M₂ : Prop
 #align continuous_semilinear_map_class ContinuousSemilinearMapClass
@@ -275,8 +275,8 @@ class ContinuousSemilinearMapClass (F : Type*) {R S : outParam (Type*)} [Semirin
 /-- `ContinuousLinearMapClass F R M M₂` asserts `F` is a type of bundled continuous
 `R`-linear maps `M → M₂`.  This is an abbreviation for
 `ContinuousSemilinearMapClass F (RingHom.id R) M M₂`.  -/
-abbrev ContinuousLinearMapClass (F : Type*) (R : outParam (Type*)) [Semiring R]
-    (M : outParam (Type*)) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam (Type*))
+abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
+    (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [FunLike F M M₂] :=
   ContinuousSemilinearMapClass F (RingHom.id R) M M₂
 #align continuous_linear_map_class ContinuousLinearMapClass
@@ -310,10 +310,10 @@ notation:50 M " ≃L⋆[" R "] " M₂ => ContinuousLinearEquiv (starRingEnd R) M
 where `σ` is the identity map on `R`.  A map `f` between an `R`-module and an `S`-module over a ring
 homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `f (x + y) = f x + f y`
 and `f (c • x) = (σ c) • f x`. -/
-class ContinuousSemilinearEquivClass (F : Type*) {R : outParam (Type*)} {S : outParam (Type*)}
+class ContinuousSemilinearEquivClass (F : Type*) {R : outParam Type*} {S : outParam Type*}
     [Semiring R] [Semiring S] (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R}
-    [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : outParam (Type*)) [TopologicalSpace M]
-    [AddCommMonoid M] (M₂ : outParam (Type*)) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
+    [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : outParam Type*) [TopologicalSpace M]
+    [AddCommMonoid M] (M₂ : outParam Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
     [Module S M₂] [EquivLike F M M₂] extends SemilinearEquivClass F σ M M₂ : Prop where
   map_continuous : ∀ f : F, Continuous f := by continuity
   inv_continuous : ∀ f : F, Continuous (EquivLike.inv f) := by continuity
@@ -326,8 +326,8 @@ ContinuousSemilinearEquivClass.inv_continuous
 /-- `ContinuousLinearEquivClass F σ M M₂` asserts `F` is a type of bundled continuous
 `R`-linear equivs `M → M₂`. This is an abbreviation for
 `ContinuousSemilinearEquivClass F (RingHom.id R) M M₂`. -/
-abbrev ContinuousLinearEquivClass (F : Type*) (R : outParam (Type*)) [Semiring R]
-    (M : outParam (Type*)) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam (Type*))
+abbrev ContinuousLinearEquivClass (F : Type*) (R : outParam Type*) [Semiring R]
+    (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [EquivLike F M M₂] :=
   ContinuousSemilinearEquivClass F (RingHom.id R) M M₂
 #align continuous_linear_equiv_class ContinuousLinearEquivClass

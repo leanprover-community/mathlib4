@@ -528,8 +528,8 @@ variable {k G}
 theorem d_of {G : Type u} {n : ℕ} (c : Fin (n + 1) → G) :
     d k G n (Finsupp.single c 1) =
       Finset.univ.sum fun p : Fin (n + 1) =>
-        Finsupp.single (c ∘ p.succAbove) ((-1 : k) ^ (p : ℕ)) :=
-  by simp [d]
+        Finsupp.single (c ∘ p.succAbove) ((-1 : k) ^ (p : ℕ)) := by
+  simp [d]
 #align group_cohomology.resolution.d_of groupCohomology.resolution.d_of
 
 variable (k G)

@@ -79,7 +79,7 @@ instance hasForget₂ : HasForget₂ Profinite TopCat :=
   InducedCategory.hasForget₂ _
 #align Profinite.has_forget₂ Profinite.hasForget₂
 
-instance : CoeSort Profinite (Type*) :=
+instance : CoeSort Profinite Type* :=
   ⟨fun X => X.toCompHaus⟩
 
 -- Porting note (#10688): This lemma was not needed in mathlib3
@@ -341,7 +341,7 @@ instance forget_reflectsIsomorphisms : (forget Profinite).ReflectsIsomorphisms :
 noncomputable
 def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
   @asIso _ _ _ _ ⟨f, f.continuous⟩ (@isIso_of_reflects_iso _ _ _ _ _ _ _ profiniteToCompHaus
-    (IsIso.of_iso (CompHaus.isoOfHomeo f)) _)
+    (CompHaus.isoOfHomeo f).isIso_hom _)
 #align Profinite.iso_of_homeo Profinite.isoOfHomeo
 
 /-- Construct a homeomorphism from an isomorphism. -/
