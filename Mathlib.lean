@@ -360,6 +360,7 @@ import Mathlib.Algebra.Lie.Free
 import Mathlib.Algebra.Lie.IdealOperations
 import Mathlib.Algebra.Lie.InvariantForm
 import Mathlib.Algebra.Lie.Killing
+import Mathlib.Algebra.Lie.LieTheorem
 import Mathlib.Algebra.Lie.Matrix
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
