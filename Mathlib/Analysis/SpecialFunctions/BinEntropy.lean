@@ -48,14 +48,9 @@ is the Shannon entropy of a Bernoulli random variable with success probability `
 noncomputable abbrev binaryEntropy := qaryEntropy 2
 
 lemma binaryEntropy_eq : binaryEntropy = (fun p => -p * log p - (1 - p) * log (1 - p)) := by
-  unfold binaryEntropy qaryEntropy
-  funext p
-  rw [Nat.cast_two]
-  have : (2 - 1 : ℝ).log = 0 := by
-    simp only [log_eq_zero, sub_eq_neg_self, OfNat.ofNat_ne_zero, or_false]
-    right
-    ring
-  rw [this, mul_zero, zero_sub, neg_mul]
+  have : (2 : ℝ) - 1 = 1 := by norm_num
+  ext
+  simp [binaryEntropy, qaryEntropy, this]
 
 lemma binaryEntropy_eq' {p : ℝ} : binaryEntropy p = -p * log p - (1 - p) * log (1 - p) := by
   rw [binaryEntropy_eq]
