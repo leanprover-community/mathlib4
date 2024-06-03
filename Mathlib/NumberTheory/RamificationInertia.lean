@@ -524,12 +524,12 @@ noncomputable def quotientToQuotientRangePowQuotSucc {i : ℕ} {a : S} (a_mem : 
       (P ^ i).map (Ideal.Quotient.mk (P ^ e)) ⧸ LinearMap.range (powQuotSuccInclusion f p P i) where
   toFun := quotientToQuotientRangePowQuotSuccAux f p P a_mem
   map_add' := by
-    intro x y; refine' Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => _
+    intro x y; refine Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => ?_
     simp only [Submodule.Quotient.mk''_eq_mk, ← Submodule.Quotient.mk_add,
       quotientToQuotientRangePowQuotSuccAux_mk, mul_add]
     exact congr_arg Submodule.Quotient.mk rfl
   map_smul' := by
-    intro x y; refine' Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => _
+    intro x y; refine Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => ?_
     simp only [Submodule.Quotient.mk''_eq_mk, RingHom.id_apply,
       quotientToQuotientRangePowQuotSuccAux_mk]
     refine congr_arg Submodule.Quotient.mk ?_
@@ -604,7 +604,7 @@ noncomputable def quotientRangePowQuotSuccInclusionEquiv [IsDedekindDomain S]
   choose a a_mem a_not_mem using
     SetLike.exists_of_lt
       (Ideal.pow_right_strictAnti P hP (Ideal.IsPrime.ne_top inferInstance) (le_refl i.succ))
-  refine' (LinearEquiv.ofBijective _ ⟨_, _⟩).symm
+  refine (LinearEquiv.ofBijective ?_ ⟨?_, ?_⟩).symm
   · exact quotientToQuotientRangePowQuotSucc f p P a_mem
   · exact quotientToQuotientRangePowQuotSucc_injective f p P hi a_mem a_not_mem
   · exact quotientToQuotientRangePowQuotSucc_surjective f p P hP hi a_mem a_not_mem

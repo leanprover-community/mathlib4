@@ -823,7 +823,7 @@ theorem EqOnSource.target_eq {e e' : PartialEquiv α β} (h : e ≈ e') : e.targ
 
 /-- If two partial equivs are equivalent, so are their inverses. -/
 theorem EqOnSource.symm' {e e' : PartialEquiv α β} (h : e ≈ e') : e.symm ≈ e'.symm := by
-  refine' ⟨target_eq h, eqOn_of_leftInvOn_of_rightInvOn e.leftInvOn _ _⟩ <;>
+  refine ⟨target_eq h, eqOn_of_leftInvOn_of_rightInvOn e.leftInvOn ?_ ?_⟩ <;>
     simp only [symm_source, target_eq h, source_eq h, e'.symm_mapsTo]
   exact e'.rightInvOn.congr_right e'.symm_mapsTo (source_eq h ▸ h.eqOn.symm)
 #align local_equiv.eq_on_source.symm' PartialEquiv.EqOnSource.symm'
@@ -866,7 +866,7 @@ theorem EqOnSource.source_inter_preimage_eq {e e' : PartialEquiv α β} (he : e 
 the restriction of the identity to the source. -/
 theorem self_trans_symm : e.trans e.symm ≈ ofSet e.source := by
   have A : (e.trans e.symm).source = e.source := by mfld_set_tac
-  refine' ⟨by rw [A, ofSet_source], fun x hx => _⟩
+  refine ⟨by rw [A, ofSet_source], fun x hx => ?_⟩
   rw [A] at hx
   simp only [hx, mfld_simps]
 #align local_equiv.self_trans_symm PartialEquiv.self_trans_symm

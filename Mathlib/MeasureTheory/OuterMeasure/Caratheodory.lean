@@ -120,12 +120,11 @@ theorem isCaratheodory_iUnion_nat {s : ℕ → Set α} (h : ∀ i, IsCaratheodor
         convert m.iUnion fun i => t ∩ s i using 1
         · simp [inter_iUnion]
         · simp [ENNReal.tsum_eq_iSup_nat, isCaratheodory_sum m h hd]
-      refine' le_trans (add_le_add_right hp _) _
+      refine le_trans (add_le_add_right hp _) ?_
       rw [ENNReal.iSup_add]
-      refine'
-        iSup_le fun n =>
-          le_trans (add_le_add_left _ _) (ge_of_eq (isCaratheodory_iUnion_lt m (fun i _ => h i) _))
-      refine' m.mono (diff_subset_diff_right _)
+      refine iSup_le fun n => le_trans (add_le_add_left ?_ _)
+        (ge_of_eq (isCaratheodory_iUnion_lt m (fun i _ => h i) _))
+      refine m.mono (diff_subset_diff_right ?_)
       exact iUnion₂_subset fun i _ => subset_iUnion _ i
 #align measure_theory.outer_measure.is_caratheodory_Union_nat MeasureTheory.OuterMeasure.isCaratheodory_iUnion_nat
 

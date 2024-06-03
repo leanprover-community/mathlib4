@@ -663,13 +663,9 @@ inverse images of compact sets are compact. -/
 theorem Filter.tendsto_cocompact_mul_left {a b : M} (ha : b * a = 1) :
     Filter.Tendsto (fun x : M => a * x) (Filter.cocompact M) (Filter.cocompact M) := by
   refine Filter.Tendsto.of_tendsto_comp ?_ (Filter.comap_cocompact_le (continuous_mul_left b))
-  simp only [comp_mul_left, ha, one_mul]
-  exact Filter.tendsto_id
-  -- Porting note: changed proof, original proof was:
-  /- refine' Filter.Tendsto.of_tendsto_comp _ (Filter.comap_cocompact_le (continuous_mul_left b))
   convert Filter.tendsto_id
   ext x
-  simp [ha]-/
+  simp [← mul_assoc, ha]
 #align filter.tendsto_cocompact_mul_left Filter.tendsto_cocompact_mul_left
 
 /-- Right-multiplication by a right-invertible element of a topological monoid is proper, i.e.,
