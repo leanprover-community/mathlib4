@@ -454,7 +454,7 @@ def unitHomEquiv (M : PresheafOfModules R) :
     { val := fun X => f.app X (1 : R.obj X)
       property := fun {X Y} p => by
         dsimp
-        erw [← NatTrans.naturality_apply, unit_map_one]
+        erw [← naturality_apply, unit_map_one]
         rfl }
   invFun s := Hom.mk'
     (fun X => (LinearMap.ringLmapEquivSelf (R.obj X) ℤ (M.obj X)).symm (s.val X)) (by
