@@ -241,6 +241,11 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
   exact and_congr (isSheaf_iff_preservesFiniteProducts _)
     (@equalizerCondition_iff_isSheaf _ _ _ _ F _ h).symm
 
+noncomputable instance [Preregular C] [FinitaryExtensive C]
+    (F : Sheaf (coherentTopology C) A) : PreservesFiniteProducts F.val :=
+  ((Presheaf.isSheaf_iff_preservesFiniteProducts F.val).1
+    ((Presheaf.isSheaf_coherent_iff_regular_and_extensive F.val).mp F.cond).1).some
+
 theorem isSheaf_iff_preservesFiniteProducts_of_projective [Preregular C] [FinitaryExtensive C]
     [∀ (X : C), Projective X] :
     IsSheaf (coherentTopology C) F ↔ Nonempty (PreservesFiniteProducts F) := by

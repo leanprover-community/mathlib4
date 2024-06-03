@@ -1,4 +1,21 @@
+/-
+Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 import Mathlib.CategoryTheory.Sites.Coherent.Basic
+/-!
+
+# Description of the covering sieves of the extensive topology
+
+This file characterises the covering sieves of the extensive topology.
+
+## Main result
+
+* `extensiveTopology.mem_sieves_iff_contains_colimit_cofan`: a sieve is a covering sieve for the
+  extensive topology if and only if it contains a finite family of morphisms with fixed target
+  exhibiting the target as a coproduct of the sources.
+-/
 
 open CategoryTheory Limits
 
