@@ -10,7 +10,6 @@ universe w v v' u u'
 
 open MonoidalCategory
 
-/-
 class ChosenCartesianClosed (C : Type u) [Category.{v} C] where
   [chosenFiniteProducts: ChosenFiniteProducts C]
   rightAdj (X : C) : C ⥤ C
@@ -61,7 +60,6 @@ instance (D : Type u') [Category.{v'} D] (F : D ⥤ C) : Closed F where
   }
   adj := sorry
 end
--/
 
 noncomputable section
 
@@ -97,33 +95,49 @@ def aux2 {X Y Z : SSet} (f : X ⊗ Y ⟶ Z) : Y ⟶ ((SSetRightAdj X).obj Z) whe
     dsimp [aux1, standardSimplex, yoneda, SSet.uliftFunctor]
     aesop
 
+def need {X Y Z : SSet} (f : Y ⟶ (SSetRightAdj X).obj Z) (n m : SimplexCategoryᵒᵖ) (g : n ⟶ m)
+    (Xn : X.obj n) (Yn : Y.obj n) :
+    (f.app m (Y.map g Yn)).app m (Equiv.ulift.symm (Hom.mk OrderHom.id), X.map g Xn) = (f.app n Yn).app m (Equiv.ulift.symm g.unop, X.map g Xn) := by
+  sorry
+
+def aux3 {X Y Z : SSet} (f : Y ⟶ (SSetRightAdj X).obj Z) : (tensorLeft X).obj Y ⟶ Z where
+  app := fun n ⟨Xn, Yn⟩ ↦ (f.app n Yn).app n (Equiv.ulift.symm (Hom.mk OrderHom.id), Xn)
+  naturality n m g := by
+    ext ⟨Xn, Yn⟩
+    let id_n : Δ[n.unop.len].obj n := Equiv.ulift.symm (Hom.mk OrderHom.id)
+    let id_m : Δ[m.unop.len].obj m := Equiv.ulift.symm (Hom.mk OrderHom.id)
+    change (f.app m ((Y.map g Yn))).app m (id_m, X.map g Xn) = Z.map g ((f.app n Yn).app n (id_n, Xn))
+    have a := (f.app n Yn).naturality g
+    apply_fun (fun f ↦ f (id_n, Xn)) at a
+    simp only [mk_len, yoneda_obj_obj, types_comp_apply] at a
+    rw [← a]
+    change _ = (f.app n Yn).app m (Δ[n.unop.len].map g (id_n), X.map g Xn)
+    have : (Δ[n.unop.len].map g (id_n)).down.op = g :=
+      Eq.symm (eq_of_comp_right_eq fun {X} ↦ congrFun rfl)
+    rw [← this]
+    simp [mk_len, yoneda_obj_obj, standardSimplex, SSet.uliftFunctor]
+    have hh : g.unop ≫ id_n.down ≫ id_n.down = g.unop := Eq.symm
+      (Hom.ext g.unop (g.unop ≫ id_n.down ≫ id_n.down)
+        (congrArg Hom.toOrderHom (congrArg Quiver.Hom.unop (id (Eq.symm this)))))
+    rw [hh]
+    have h : Y.map id_n.down.op Yn = Yn := sorry
+    have lol : X.map id_n.down.op Xn = Xn := sorry
+    rw [h, lol]
+    exact need f n m g Xn Yn
+
 def SSetAdj (X : SSet) : tensorLeft X ⊣ SSetRightAdj X where
   homEquiv Y Z := {
     toFun := fun f ↦ aux2 f
-    invFun := fun f ↦ {
-      app := by
-        intro n ⟨Xn, Yn⟩
-        refine (f.app n Yn).1 n (Equiv.ulift.symm (Hom.mk OrderHom.id), Xn)
-      naturality := by
-        intro n m g
-        ext ⟨Xn, Yn⟩
-        simp only [tensorLeft_obj, mk_len, yoneda_obj_obj, types_comp_apply]
-        have := (f.app n Yn).naturality g
-        apply_fun (fun f ↦ f (Equiv.ulift.symm (Hom.mk OrderHom.id), Xn)) at this
-        simp only [mk_len, yoneda_obj_obj, types_comp_apply] at this
-        rw [← this]
-        change _ = (f.app n Yn).app m ((standardSimplex.obj n.unop).map g (Equiv.ulift.symm (Hom.mk OrderHom.id)), X.map g Xn)
-        change (f.app m ((Y.map g Yn))).app m (Equiv.ulift.symm (Hom.mk OrderHom.id), X.map g Xn) = _
-
-        sorry
-    }
+    invFun := fun f ↦ aux3 f
     left_inv := fun f ↦ by
       ext n ⟨Xn, Yn⟩
       change f.app n (Xn, Y.map (𝟙 _) Yn) = _
       rw [FunctorToTypes.map_id_apply Y Yn]
     right_inv := fun f ↦ by
       ext n Yn
-      dsimp [aux2, aux1]
+      dsimp [aux2, aux1, aux3]
+      have := (f.app n Yn).app n
+      dsimp [SSetRightAdj, SSetIHom] at this
       sorry
   }
   unit := sorry
