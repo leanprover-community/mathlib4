@@ -1180,7 +1180,7 @@ theorem reduce.not {p : Prop} :
       rcases L2 with (_ | ⟨a, L2⟩)
       · injections; subst_vars
         simp at h
-      · refine' @reduce.not _ L1 L2 L3 x' b' _
+      · refine @reduce.not _ L1 L2 L3 x' b' ?_
         injection H with _ H
         rw [r, H]; rfl
 #align free_group.reduce.not FreeGroup.reduce.not
