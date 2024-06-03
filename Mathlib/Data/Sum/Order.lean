@@ -787,8 +787,7 @@ def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
     · simp only [lex_inr_inl, false_iff]
       exact not_top_le_coe _
     · simp only [Lex.sep, le_top]
-    · simp only [lex_inl_inl, coe_le_coe]
-  ⟩
+    · simp only [lex_inl_inl, coe_le_coe]⟩
 #align with_top.order_iso_sum_lex_punit WithTop.orderIsoSumLexPUnit
 
 @[simp]
