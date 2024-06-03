@@ -374,26 +374,6 @@ open Set
 lemma aux {a b c : ℝ} (h : 0 < a) (hh : a * b < a * c) : b < c := by
   exact (mul_lt_mul_left h).mp hh
 
--- TODO shorten and remove!
-lemma inequality_with_conversion {q : ℕ} (qNot0 : 2 ≤ q) {x : ℝ}
-    (hx : x < 1 - (↑q)⁻¹) :
-    x < (q - 1) * (1 - x) := by
-  have : 2 ≤ (q : ℝ) := Nat.ofNat_le_cast.mpr qNot0
-  have qnonz : (q : ℝ) ≠ 0 := by linarith
-  have zero_le_qinv : 0 < (q : ℝ)⁻¹ := by positivity
-  rw [show ((q:ℝ) - 1) * (1 - x) = q - q*x - 1 + x by ring]
-  simp only [lt_add_iff_pos_left, lt_neg_add_iff_add_lt, add_zero]
-  apply aux zero_le_qinv
-  rw [mul_zero]
-  have : (q:ℝ)⁻¹ * ((q:ℝ) - (q:ℝ) * x - 1) = 1 - x - (q:ℝ)⁻¹ := by
-    calc (q:ℝ)⁻¹ * ((q:ℝ) - (q:ℝ) * x - 1)
-      _ = (q:ℝ)⁻¹ * (q:ℝ) - (q:ℝ)⁻¹ * (q:ℝ) * x - (q:ℝ)⁻¹ := by ring
-      _ = 1 - x - (q:ℝ)⁻¹ := by
-        rw [inv_mul_cancel qnonz]
-        simp only [one_mul]
-  rw [this]
-  linarith
-
 /- Qary entropy is strictly increasing in interval [0, 1 - q⁻¹]. -/
 lemma qaryEntropy_strictMono {q : ℕ} (qLe2: 2 ≤ q) :
     StrictMonoOn (qaryEntropy q) (Set.Icc 0 (1 - 1/q)) := by
@@ -420,7 +400,12 @@ lemma qaryEntropy_strictMono {q : ℕ} (qLe2: 2 ≤ q) :
       · exact mem_Ioi.mpr hx.1
       · have : 0 < (q : ℝ) - 1 := by linarith
         simp_all only [mem_Ioi, mul_pos_iff_of_pos_left]
-      · apply inequality_with_conversion qLe2 hx.2
+      · have qpos : 0 < (q : ℝ) := by positivity
+        have : q * x < q - 1 := by
+          convert (mul_lt_mul_left qpos).2 hx.2 using 1
+          simp only [mul_sub, mul_one, isUnit_iff_ne_zero, ne_eq, ne_of_gt qpos, not_false_eq_true,
+            IsUnit.mul_inv_cancel]
+        linarith
     exact (ne_of_gt (show x < 1 by exact lt_add_neg_iff_lt.mp this)).symm
 
 /- Binary entropy is strictly increasing in interval [0, 1/2]. -/
