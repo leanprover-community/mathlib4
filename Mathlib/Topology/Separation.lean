@@ -2325,11 +2325,11 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
     · exact u₀i_open i
     · exact isClosed_closure
   constructor
-  · exact open_lemma (fun n ↦ u ↑(f n))
-      (fun n ↦ ⋃ m ∈ {m | m ≤ n}, v ↑(g m)) (fun n ↦ (u_props ↑(f n)).1)
+  · exact open_lemma (fun n ↦ u (f n))
+      (fun n ↦ ⋃ m ∈ {m | m ≤ n}, v (g m)) (fun n ↦ (u_props (f n)).1)
   constructor
-  · exact open_lemma (fun n ↦ v ↑(g n))
-      (fun n ↦ ⋃ m ∈ {m | m ≤ n}, u ↑(f m)) (fun n ↦ (v_props ↑(g n)).1)
+  · exact open_lemma (fun n ↦ v (g n))
+      (fun n ↦ ⋃ m ∈ {m | m ≤ n}, u (f m)) (fun n ↦ (v_props (g n)).1)
   have cover_lemma : ∀ (h₀ : Set X) (u₀ v₀ : ℕ → Set X),
       (h₀ ⊆ ⋃ n, u₀ n) → (∀ n, Disjoint (closure (v₀ n)) h₀) →
       (h₀ ⊆ ⋃ n, u₀ n \ closure (⋃ m ∈ {m | m ≤ n}, v₀ m)) := by
