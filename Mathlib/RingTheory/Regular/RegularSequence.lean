@@ -80,6 +80,7 @@ def quotOfListConsSMulTopEquivQuotSMulTopInner {R} [CommRing R] (r : R)
     (quotientQuotientEquivQuotientSup (r • ⊤) (Ideal.ofList rs • ⊤)).symm ≪≫ₗ
       quotEquivOfEq _ _ (by rw [map_smul'', map_top, range_mkQ])
 
+/-- The equivalence between M ⧸ (r₀, r₁, …, rₙ)M and (M ⧸ (r₁, …, rₙ)) ⧸ r₀ (M ⧸ (r₁, …, rₙ)). -/
 def quotOfListConsSMulTopEquivQuotSMulTopOuter {R} [CommRing R] (r : R)
     (rs : List R) (M : Type*) [AddCommGroup M] [Module R M] :
     (M ⧸ (Ideal.ofList (r :: rs) • ⊤ : Submodule R M)) ≃ₗ[R]
