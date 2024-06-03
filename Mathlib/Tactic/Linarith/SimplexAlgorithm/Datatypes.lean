@@ -12,7 +12,31 @@ import Batteries.Data.Rat.Basic
 namespace Linarith.SimplexAlgorithm
 
 /--
-Structure for matrices over ℚ.
+Specification for matrix types over ℚ which can be used in Gauss Elimination and Simplex Algorithm.
+It was introduced to unify `DenseMatrix` and `SparseMatrix`.
+-/
+class IsMatrix (α : Nat → Nat → Type) where
+  /-- Returns `mat[i, j]`. -/
+  getElem {n m : Nat} (mat : α n m) (i j : Nat) : Rat
+  /-- Sets `mat[i, j]`. -/
+  setElem {n m : Nat}  (mat : α n m) (i j : Nat) (v : Rat) : α n m
+  /-- Creates a matrix from the list of elements of the form `(i, j, mat[i, j])`. -/
+  ofValues {n m : Nat} (values : List (Nat × Nat × Rat)) : α n m
+  /-- Swaps two rows. -/
+  swapRows {n m : Nat} (mat : α n m) (i j : Nat) : α n m
+  /-- Subtracts `i`-th row * `coef` from `j`-th row. -/
+  subtractRow {n m : Nat} (mat : α n m) (i j : Nat) (coef : Rat) : α n m
+  /-- Divides `i`-th row by `coef`. -/
+  divideRow {n m : Nat} (mat : α n m) (i : Nat) (coef : Rat) : α n m
+
+export IsMatrix (setElem ofValues swapRows subtractRow divideRow)
+
+instance (n m : Nat) (matType : Nat → Nat → Type) [IsMatrix matType] :
+    GetElem (matType n m) (Nat × Nat) Rat fun _ p => p.1 < n ∧ p.2 < m where
+  getElem mat p _ := IsMatrix.getElem mat p.1 p.2
+
+/--
+Structure for dense matrices over ℚ.
 
 So far it is just a 2d-array carrying dimensions (that are supposed to match with the actual
 dimensions of `data`), but the plan is to add some `Prop`-data and make the structure strict and
@@ -21,43 +45,69 @@ safe.
 Note: we avoid using the `Matrix` from `Mathlib.Data.Matrix` because it is far more efficient to
 store matrix as its entries than as function between `Fin`-s.
 -/
-structure Matrix (n m : Nat) where
+structure DenseMatrix (n m : Nat) where
   /-- The content of the matrix. -/
   data : Array (Array Rat)
-  -- hn_pos : n > 0
-  -- hm_pos : m > 0
-  -- hn : data.size = n
-  -- hm (i : Fin n) : data[i].size = m
 
-instance (n m : Nat) : GetElem (Matrix n m) Nat (Array Rat) fun _ i => i < n where
-  getElem mat i _ := mat.data[i]!
+instance : IsMatrix DenseMatrix where
+  getElem mat i j := mat.data[i]![j]!
+  setElem mat i j v := ⟨mat.data.set! i <| mat.data[i]!.set! j v⟩
+  ofValues {n m : Nat} vals : DenseMatrix _ _ := Id.run do
+    let mut data : Array (Array Rat) := Array.mkArray n <| Array.mkArray m 0
+    for ⟨i, j, v⟩ in vals do
+      data := data.set! i <| data[i]!.set! j v
+    return ⟨data⟩
+  swapRows mat i j := ⟨mat.data.swap! i j⟩
+  subtractRow mat i j coef :=
+    let newData : Array (Array Rat) := mat.data.modify j fun row =>
+      row.zipWith mat.data[i]! fun x y => x - coef * y
+    ⟨newData⟩
+  divideRow mat i coef := ⟨mat.data.modify i (·.map (· / coef))⟩
 
-/-- TODO: write docs -/
+/--
+Structure for sparse matrices over ℚ, implemented as an array of hashmaps, containing only nonzero
+values.
+-/
 structure SparseMatrix (n m : Nat) where
-  /-- TODO: write docs -/
+  /-- The content of the matrix. -/
   data : Array <| Lean.HashMap Nat Rat
 
-instance (n m : Nat) : GetElem (SparseMatrix n m) Nat (Lean.HashMap Nat Rat) fun _ i => i < n where
-  getElem mat i _ := mat.data[i]!
-
--- instance (n m : Nat) : ToString <| SparseMatrix n m where
---   toString mat := Id.run do
---     let mut s := ""
---     for row in mat.data do
---       let arr : List Rat := (List.range m).map fun idx => row.findD idx 0
---       s := s ++ s!"{arr}\n"
---     return s
+instance : IsMatrix SparseMatrix where
+  getElem mat i j := mat.data[i]!.findD j 0
+  setElem mat i j v :=
+    if v == 0 then
+      ⟨mat.data.set! i <| mat.data[i]!.erase j⟩
+    else
+      ⟨mat.data.set! i <| mat.data[i]!.insert j v⟩
+  ofValues {n _ : Nat} vals := Id.run do
+    let mut data : Array (Lean.HashMap Nat Rat) := Array.mkArray n Lean.HashMap.empty
+    for ⟨i, j, v⟩ in vals do
+      if v != 0 then
+        data := data.set! i <| data[i]!.insert j v
+    return ⟨data⟩
+  swapRows mat i j := ⟨mat.data.swap! i j⟩
+  subtractRow mat i j coef :=
+    let newData := mat.data.modify j fun row =>
+      mat.data[i]!.fold (fun cur k val =>
+        let newVal := (cur.findD k 0) - coef * val
+        if newVal != 0 then cur.insert k newVal else cur.erase k
+      ) row
+    ⟨newData⟩
+  divideRow mat i coef :=
+    let newData : Array (Lean.HashMap Nat Rat) := mat.data.modify i fun row =>
+      row.fold (fun cur k v => cur.insert k (v / coef)) row
+    ⟨newData⟩
 
 /--
 `Table` is a structure Simplex Algorithm operates on. The `i`-th row of `mat` expresses the
 variable `basic[i]` as a linear combination of variables from `free`.
 -/
-structure Table where
+structure Table (matType : Nat → Nat → Type) [IsMatrix matType] where
   /-- Array containing the basic variables' indexes -/
   basic : Array Nat
   /-- Array containing the free variables' indexes -/
   free : Array Nat
   /-- Matrix of coefficients the basic variables expressed through the free ones. -/
-  mat : SparseMatrix basic.size free.size
+  mat : matType basic.size free.size
 
 end Linarith.SimplexAlgorithm

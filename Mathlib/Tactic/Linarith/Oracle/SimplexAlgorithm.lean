@@ -15,13 +15,6 @@ open Batteries
 namespace Linarith.SimplexAlgorithm
 
 /-- Preprocess the goal to pass it to `findPositiveVector`. -/
-def preprocess (hyps : List Comp) (maxVar : ℕ) : Matrix (maxVar + 1) (hyps.length) × List Nat :=
-  let mdata : Array (Array ℚ) := Array.ofFn fun i : Fin (maxVar + 1) =>
-    Array.mk <| hyps.map (·.coeffOf i)
-  let strictIndexes : List ℕ := hyps.findIdxs (·.str == Ineq.lt)
-  ⟨⟨mdata⟩, strictIndexes⟩
-
-/-- TODO: write docs -/
 def preprocessSparse (hyps : List Comp) (maxVar : ℕ) :
     SparseMatrix (maxVar + 1) (hyps.length) × List Nat :=
   let mdata : Array (Lean.HashMap ℕ ℚ) := Array.ofFn fun i : Fin (maxVar + 1) =>
@@ -31,7 +24,14 @@ def preprocessSparse (hyps : List Comp) (maxVar : ℕ) :
       else
         .some ⟨idx, h.coeffOf i⟩
 
-  let strictIndexes : List ℕ := hyps.findIdxs (·.str == Ineq.lt)
+  let strictIndexes := hyps.findIdxs (·.str == Ineq.lt)
+  ⟨⟨mdata⟩, strictIndexes⟩
+
+/-- Preprocess the goal to pass it to `findPositiveVector`. -/
+def preprocessDense (hyps : List Comp) (maxVar : ℕ) : DenseMatrix (maxVar + 1) (hyps.length) × List Nat :=
+  let mdata : Array (Array ℚ) := Array.ofFn fun i : Fin (maxVar + 1) =>
+    Array.mk <| hyps.map (·.coeffOf i)
+  let strictIndexes := hyps.findIdxs (·.str == Ineq.lt)
   ⟨⟨mdata⟩, strictIndexes⟩
 
 /-- Extract the certificate from the `vec` found by `findPositiveVector`. -/
@@ -45,19 +45,21 @@ end SimplexAlgorithm
 
 open SimplexAlgorithm
 
--- /-- An oracle that uses the simplex algorithm. -/
--- def CertificateOracle.simplexAlgorithm' : CertificateOracle where
---   produceCertificate hyps maxVar := do
---     let ⟨A, strictIndexes⟩ := preprocess hyps maxVar
---     let vec := findPositiveVector A strictIndexes
---     return postprocess vec
-
-
-/-- TODO: write docs -/
-def CertificateOracle.simplexAlgorithm : CertificateOracle where
+/-- An oracle that uses the simplex algorithm. -/
+def CertificateOracle.simplexAlgorithmSparse : CertificateOracle where
   produceCertificate hyps maxVar := do
     let ⟨A, strictIndexes⟩ := preprocessSparse hyps maxVar
-    let vec := findPositiveVectorSparse A strictIndexes
+    let vec := findPositiveVector A strictIndexes
+    return postprocess vec
+
+/--
+The same oracle as `CertificateOracle.simplexAlgorithmSparse`, but uses dense matrices. Works faster
+on dense states.
+-/
+def CertificateOracle.simplexAlgorithmDense : CertificateOracle where
+  produceCertificate hyps maxVar := do
+    let ⟨A, strictIndexes⟩ := preprocessDense hyps maxVar
+    let vec := findPositiveVector A strictIndexes
     return postprocess vec
 
 end Linarith
