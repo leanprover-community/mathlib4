@@ -77,6 +77,19 @@ lemma binaryEntropy_eq' {p : ℝ} : binaryEntropy p = -p * log p - (1 - p) * log
   simp only [binaryEntropy_eq', neg_sub, sub_sub_cancel, neg_mul]
   ring
 
+lemma binaryEntropy_pos {p : ℝ} (pgt0 : 0 < p) (ple1 : p < 1) : 0 < binaryEntropy p := by
+  simp only [binaryEntropy_eq']
+  have pos_sum_pos_pos (a b : ℝ) (ha : 0 ≤ a) (hb : b < 0) : 0 < a - b := by linarith
+  refine pos_sum_pos_pos (-p * log p) ((1 - p) * log (1 - p)) ?_ ?_
+  · have : -p * log p = p * (-log p) := by ring
+    rw [this]
+    refine LT.lt.le (Real.mul_pos ?_ ?_)
+    linarith
+    linarith [log_neg pgt0 ple1]
+  · have fac1 : 0 < 1 - p := by linarith
+    have fac2 : log (1 - p) < 0 := log_neg fac1 (by linarith)
+    exact mul_neg_of_pos_of_neg fac1 fac2
+
 lemma qaryEntropy_pos {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (ple1 : p < 1) : 0 < qaryEntropy q p := by
   unfold qaryEntropy
   have p_q_log_nonneg : 0 ≤ p * ((q : ℝ) - 1).log := by
@@ -85,21 +98,11 @@ lemma qaryEntropy_pos {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (ple1 : p < 1) : 0 < qa
     rw [this]
     exact Real.log_intCast_nonneg _
   have rest_is_pos : 0 < -(p * p.log) - (1 - p) * (1 - p).log := by
-    have pos_sum_pos_pos (a b : ℝ) (ha : 0 ≤ a) (hb : b < 0) : 0 < a - b := by linarith
-    refine pos_sum_pos_pos (-(p * log p)) ((1 - p) * log (1 - p)) ?_ ?_
-    · have : -(p * log p) = p * (-log p) := by ring
-      rw [this]
-      refine LT.lt.le (Real.mul_pos ?_ ?_)
-      linarith
-      linarith [log_neg pgt0 ple1]
-    · have fac1 : 0 < 1 - p := by linarith
-      have fac2 : log (1 - p) < 0 := log_neg fac1 (by linarith)
-      exact mul_neg_of_pos_of_neg fac1 fac2
+    convert binaryEntropy_pos pgt0 ple1 using 1
+    simp only [binaryEntropy_eq']
+    linarith
   have (a b c : ℝ) (ha : 0 ≤ a) (hb : 0 < -b - c) : 0 < a - b - c := by linarith
   exact this (p * ((q : ℝ) - 1).log) (p * p.log) ((1 - p) * (1 - p).log) p_q_log_nonneg rest_is_pos
-
-lemma binaryEntropy_pos {p : ℝ} (pge0 : 0 < p) (ple1 : p < 1) : 0 < binaryEntropy p := by
-  exact qaryEntropy_pos pge0 ple1
 
 /-- TODO assumptions not needed? -/
 lemma binaryEntropy_zero_iff_zero_or_one {p : ℝ} (domup : p ≤ 1) (domun : 0 ≤ p) :
