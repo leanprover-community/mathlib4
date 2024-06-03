@@ -228,7 +228,7 @@ theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoned
 /-- The unit of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` is indeed iso. -/
 theorem from_toCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
     (toCostructuredArrow F).rightOp ⋙ fromCostructuredArrow F = 𝟭 _ := by
-  refine' Functor.ext _ _
+  refine Functor.ext ?_ ?_
   · intro X
     exact Functor.Elements.ext _ _ rfl (by simp [yonedaEquiv])
   · intro X Y f
@@ -243,7 +243,7 @@ theorem from_toCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
 /-- The counit of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` is indeed iso. -/
 theorem to_fromCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
     (fromCostructuredArrow F).rightOp ⋙ toCostructuredArrow F = 𝟭 _ := by
-  refine' Functor.ext _ _
+  refine Functor.ext ?_ ?_
   · intro X
     cases' X with X_left X_right X_hom
     cases X_right

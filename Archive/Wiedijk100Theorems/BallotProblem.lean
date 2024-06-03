@@ -128,24 +128,24 @@ theorem counted_succ_succ (p q : ℕ) :
     have hlnil := counted_ne_nil_left (Nat.succ_ne_zero p) hl
     obtain ⟨hl₀, hl₁, hl₂⟩ := hl
     obtain hlast | hlast := hl₂ (l.head hlnil) (List.head_mem hlnil)
-    · refine' Or.inl ⟨l.tail, ⟨_, _, _⟩, _⟩
+    · refine Or.inl ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
       · rw [List.count_tail l 1 hlnil, hl₀, hlast, if_pos rfl, Nat.add_sub_cancel]
       · rw [List.count_tail l (-1) hlnil, hl₁, hlast, if_neg (by decide), Nat.sub_zero]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.head_cons_tail]
-    · refine' Or.inr ⟨l.tail, ⟨_, _, _⟩, _⟩
+    · refine Or.inr ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
       · rw [List.count_tail l 1 hlnil, hl₀, hlast, if_neg (by decide), Nat.sub_zero]
       · rw [List.count_tail l (-1) hlnil, hl₁, hlast, if_pos rfl, Nat.add_sub_cancel]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.head_cons_tail]
   · rintro (⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩ | ⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩)
-    · refine' ⟨_, _, _⟩
+    · refine ⟨?_, ?_, ?_⟩
       · rw [List.count_cons, if_pos rfl, ht₀]
       · rw [List.count_cons, if_neg, ht₁]
         norm_num
       · rintro x (_ | _)
         exacts [Or.inl rfl, ht₂ x (by tauto)]
-    · refine' ⟨_, _, _⟩
+    · refine ⟨?_, ?_, ?_⟩
       · rw [List.count_cons, if_neg, ht₀]
         norm_num
       · rw [List.count_cons, if_pos rfl, ht₁]
@@ -266,7 +266,7 @@ theorem ballot_same (p : ℕ) : condCount (countedSequence (p + 1) (p + 1)) stay
   rintro x ⟨hx, t⟩
   apply ne_of_gt (t x _ x.suffix_refl)
   · simpa using sum_of_mem_countedSequence hx
-  · refine' List.ne_nil_of_length_pos _
+  · refine List.ne_nil_of_length_pos ?_
     rw [length_of_mem_countedSequence hx]
     exact Nat.add_pos_left (Nat.succ_pos _) _
 #align ballot.ballot_same Ballot.ballot_same
@@ -374,7 +374,7 @@ theorem ballot_problem' :
       field_simp [h₄, h₅, h₆] at *
       ring
     all_goals
-      refine' (ENNReal.mul_lt_top _ _).ne
+      refine (ENNReal.mul_lt_top ?_ ?_).ne
       · exact (measure_lt_top _ _).ne
       · simp [Ne, ENNReal.div_eq_top]
 #align ballot.ballot_problem' Ballot.ballot_problem'

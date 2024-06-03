@@ -16,7 +16,7 @@ and prove basic properties of this measure.
 set_option autoImplicit true
 
 open Set
-open scoped ENNReal BigOperators Classical
+open scoped ENNReal Classical
 
 variable [MeasurableSpace α] [MeasurableSpace β] {s : Set α}
 
@@ -49,7 +49,7 @@ theorem count_apply_finset' {s : Finset α} (s_mble : MeasurableSet (s : Set α)
     count (↑s : Set α) = s.card :=
   calc
     count (↑s : Set α) = ∑' i : (↑s : Set α), 1 := count_apply s_mble
-    _ = ∑ i in s, 1 := s.tsum_subtype 1
+    _ = ∑ i ∈ s, 1 := s.tsum_subtype 1
     _ = s.card := by simp
 #align measure_theory.measure.count_apply_finset' MeasureTheory.Measure.count_apply_finset'
 
@@ -71,10 +71,10 @@ theorem count_apply_finite [MeasurableSingletonClass α] (s : Set α) (hs : s.Fi
 
 /-- `count` measure evaluates to infinity at infinite sets. -/
 theorem count_apply_infinite (hs : s.Infinite) : count s = ∞ := by
-  refine' top_unique (le_of_tendsto' ENNReal.tendsto_nat_nhds_top fun n => _)
+  refine top_unique (le_of_tendsto' ENNReal.tendsto_nat_nhds_top fun n => ?_)
   rcases hs.exists_subset_card_eq n with ⟨t, ht, rfl⟩
   calc
-    (t.card : ℝ≥0∞) = ∑ i in t, 1 := by simp
+    (t.card : ℝ≥0∞) = ∑ i ∈ t, 1 := by simp
     _ = ∑' i : (t : Set α), 1 := (t.tsum_subtype 1).symm
     _ ≤ count (t : Set α) := le_count_apply
     _ ≤ count s := measure_mono ht

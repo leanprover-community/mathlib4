@@ -33,12 +33,12 @@ def evenOdd (i : ZMod 2) : Submodule R (CliffordAlgebra Q) :=
 #align clifford_algebra.even_odd CliffordAlgebra.evenOdd
 
 theorem one_le_evenOdd_zero : 1 ≤ evenOdd Q 0 := by
-  refine' le_trans _ (le_iSup _ ⟨0, Nat.cast_zero⟩)
+  refine le_trans ?_ (le_iSup _ ⟨0, Nat.cast_zero⟩)
   exact (pow_zero _).ge
 #align clifford_algebra.one_le_even_odd_zero CliffordAlgebra.one_le_evenOdd_zero
 
 theorem range_ι_le_evenOdd_one : LinearMap.range (ι Q) ≤ evenOdd Q 1 := by
-  refine' le_trans _ (le_iSup _ ⟨1, Nat.cast_one⟩)
+  refine le_trans ?_ (le_iSup _ ⟨1, Nat.cast_one⟩)
   exact (pow_one _).ge
 #align clifford_algebra.range_ι_le_even_odd_one CliffordAlgebra.range_ι_le_evenOdd_one
 
@@ -110,7 +110,7 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     | mem_mul m hm i x hx ih =>
       obtain ⟨_, rfl⟩ := hm
       rw [AlgHom.map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply Q, DirectSum.of_mul_of]
-      refine' DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext _ _) <;>
+      refine DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext ?_ ?_) <;>
         dsimp only [GradedMonoid.mk, Subtype.coe_mk]
       · rw [Nat.succ_eq_add_one, add_comm, Nat.cast_add, Nat.cast_one]
       rfl
@@ -143,8 +143,8 @@ theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := 
     -- Porting note: needs extra annotations, no longer unifies against the goal in the face of
     -- ambiguity
     ⨆ (i : ZMod 2) (j : { n : ℕ // ↑n = i }), LinearMap.range (ι Q) ^ (j : ℕ) =
-        ⨆ i : Σ i : ZMod 2, { n : ℕ // ↑n = i }, LinearMap.range (ι Q) ^ (i.2 : ℕ) :=
-      by rw [iSup_sigma]
+        ⨆ i : Σ i : ZMod 2, { n : ℕ // ↑n = i }, LinearMap.range (ι Q) ^ (i.2 : ℕ) := by
+      rw [iSup_sigma]
     _ = ⨆ i : ℕ, LinearMap.range (ι Q) ^ i :=
       Function.Surjective.iSup_congr (fun i => i.2) (fun i => ⟨⟨_, i, rfl⟩, rfl⟩) fun _ => rfl
 #align clifford_algebra.supr_ι_range_eq_top CliffordAlgebra.iSup_ι_range_eq_top
@@ -171,7 +171,7 @@ theorem evenOdd_induction (n : ZMod 2) {motive : ∀ x, x ∈ evenOdd Q n → Pr
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q n) : motive x hx := by
   apply Submodule.iSup_induction' (C := motive) _ (range_ι_pow 0 (Submodule.zero_mem _)) add
   refine Subtype.rec ?_
-  simp_rw [ZMod.nat_coe_zmod_eq_iff, add_comm n.val]
+  simp_rw [ZMod.natCast_eq_iff, add_comm n.val]
   rintro n' ⟨k, rfl⟩ xv
   simp_rw [pow_add, pow_mul]
   intro hxv

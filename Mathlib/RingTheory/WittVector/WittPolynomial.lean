@@ -64,8 +64,6 @@ open Finset hiding map
 
 open Finsupp (single)
 
-open BigOperators
-
 --attribute [-simp] coe_eval₂_hom
 
 variable (p : ℕ)
@@ -77,11 +75,11 @@ It is defined as:
 
 `∑_{i ≤ n} p^i X_i^{p^{n-i}} ∈ R[X_0, X_1, X_2, …]`. -/
 noncomputable def wittPolynomial (n : ℕ) : MvPolynomial ℕ R :=
-  ∑ i in range (n + 1), monomial (single i (p ^ (n - i))) ((p : R) ^ i)
+  ∑ i ∈ range (n + 1), monomial (single i (p ^ (n - i))) ((p : R) ^ i)
 #align witt_polynomial wittPolynomial
 
 theorem wittPolynomial_eq_sum_C_mul_X_pow (n : ℕ) :
-    wittPolynomial p R n = ∑ i in range (n + 1), C ((p : R) ^ i) * X i ^ p ^ (n - i) := by
+    wittPolynomial p R n = ∑ i ∈ range (n + 1), C ((p : R) ^ i) * X i ^ p ^ (n - i) := by
   apply sum_congr rfl
   rintro i -
   rw [monomial_eq, Finsupp.prod_single_index]
@@ -146,7 +144,7 @@ theorem wittPolynomial_one : wittPolynomial p R 1 = C (p : R) * X 1 + X 0 ^ p :=
 #align witt_polynomial_one wittPolynomial_one
 
 theorem aeval_wittPolynomial {A : Type*} [CommRing A] [Algebra R A] (f : ℕ → A) (n : ℕ) :
-    aeval f (W_ R n) = ∑ i in range (n + 1), (p : A) ^ i * f i ^ p ^ (n - i) := by
+    aeval f (W_ R n) = ∑ i ∈ range (n + 1), (p : A) ^ i * f i ^ p ^ (n - i) := by
   simp [wittPolynomial, AlgHom.map_sum, aeval_monomial, Finsupp.prod_single_index]
 #align aeval_witt_polynomial aeval_wittPolynomial
 
@@ -172,7 +170,7 @@ variable [hp : NeZero p]
 theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars = range (n + 1) := by
   have : ∀ i, (monomial (Finsupp.single i (p ^ (n - i))) ((p : R) ^ i)).vars = {i} := by
     intro i
-    refine' vars_monomial_single i (pow_ne_zero _ hp.1) _
+    refine vars_monomial_single i (pow_ne_zero _ hp.1) ?_
     rw [← Nat.cast_pow, Nat.cast_ne_zero]
     exact pow_ne_zero i hp.1
   rw [wittPolynomial, vars_sum_of_disjoint]
@@ -211,10 +209,9 @@ noncomputable def xInTermsOfW [Invertible (p : R)] : ℕ → MvPolynomial ℕ R
 set_option linter.uppercaseLean3 false in
 #align X_in_terms_of_W xInTermsOfW
 
-theorem xInTermsOfW_eq [Invertible (p : R)] {n : ℕ} :
-    xInTermsOfW p R n =
-      (X n - ∑ i in range n, C ((p: R) ^ i) * xInTermsOfW p R i ^ p ^ (n - i)) * C ((⅟p : R) ^ n) :=
-  by rw [xInTermsOfW, ← Fin.sum_univ_eq_sum_range]
+theorem xInTermsOfW_eq [Invertible (p : R)] {n : ℕ} : xInTermsOfW p R n =
+    (X n - ∑ i ∈ range n, C ((p: R) ^ i) * xInTermsOfW p R i ^ p ^ (n - i)) * C ((⅟p : R) ^ n) := by
+  rw [xInTermsOfW, ← Fin.sum_univ_eq_sum_range]
 set_option linter.uppercaseLean3 false in
 #align X_in_terms_of_W_eq xInTermsOfW_eq
 
@@ -228,7 +225,7 @@ theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : 
   -- Porting note: here, we should be able to do `rw [sum_eq_zero]`, but the goal that
   -- is created is not what we expect, and the sum is not replaced by zero...
   -- is it a bug in `rw` tactic?
-  refine' Eq.trans (_ : _ = ((⅟↑p : R) ^ n)* 0) (mul_zero _)
+  refine Eq.trans (?_ : _ = ((⅟↑p : R) ^ n)* 0) (mul_zero _)
   congr 1
   rw [sum_eq_zero]
   intro m H
@@ -288,7 +285,7 @@ end PPrime
 
 theorem xInTermsOfW_aux [Invertible (p : R)] (n : ℕ) :
     xInTermsOfW p R n * C ((p : R) ^ n) =
-      X n - ∑ i in range n, C ((p : R) ^ i) * xInTermsOfW p R i ^ p ^ (n - i) := by
+      X n - ∑ i ∈ range n, C ((p : R) ^ i) * xInTermsOfW p R i ^ p ^ (n - i) := by
   rw [xInTermsOfW_eq, mul_assoc, ← C_mul, ← mul_pow, invOf_mul_self,
     one_pow, C_1, mul_one]
 set_option linter.uppercaseLean3 false in

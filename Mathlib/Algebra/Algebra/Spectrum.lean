@@ -246,7 +246,7 @@ theorem unit_smul_eq_smul (a : A) (r : Rˣ) : σ (r • a) = r • σ a := by
 -- `r ∈ σ(a*b) ↔ r ∈ σ(b*a)` for any `r : Rˣ`
 theorem unit_mem_mul_iff_mem_swap_mul {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) ↔ ↑r ∈ σ (b * a) := by
   have h₁ : ∀ x y : A, IsUnit (1 - x * y) → IsUnit (1 - y * x) := by
-    refine' fun x y h => ⟨⟨1 - y * x, 1 + y * h.unit.inv * x, _, _⟩, rfl⟩
+    refine fun x y h => ⟨⟨1 - y * x, 1 + y * h.unit.inv * x, ?_, ?_⟩, rfl⟩
     · calc
         (1 - y * x) * (1 + y * (IsUnit.unit h).inv * x) =
             1 - y * x + y * ((1 - x * y) * h.unit.inv) * x := by noncomm_ring
@@ -272,7 +272,7 @@ variable [InvolutiveStar R] [StarRing A] [StarModule R A]
 
 theorem star_mem_resolventSet_iff {r : R} {a : A} :
     star r ∈ resolventSet R a ↔ r ∈ resolventSet R (star a) := by
-  refine' ⟨fun h => _, fun h => _⟩ <;>
+  refine ⟨fun h => ?_, fun h => ?_⟩ <;>
     simpa only [mem_resolventSet_iff, Algebra.algebraMap_eq_smul_one, star_sub, star_smul,
       star_star, star_one] using IsUnit.star h
 #align spectrum.star_mem_resolvent_set_iff spectrum.star_mem_resolventSet_iff
@@ -346,7 +346,7 @@ local notation "↑ₐ" => algebraMap 𝕜 A
 /-- Without the assumption `Nontrivial A`, then `0 : A` would be invertible. -/
 @[simp]
 theorem zero_eq [Nontrivial A] : σ (0 : A) = {0} := by
-  refine' Set.Subset.antisymm _ (by simp [Algebra.algebraMap_eq_smul_one, mem_iff])
+  refine Set.Subset.antisymm ?_ (by simp [Algebra.algebraMap_eq_smul_one, mem_iff])
   rw [spectrum, Set.compl_subset_comm]
   intro k hk
   rw [Set.mem_compl_singleton_iff] at hk
@@ -385,7 +385,7 @@ theorem nonzero_mul_eq_swap_mul (a b : A) : σ (a * b) \ {0} = σ (b * a) \ {0} 
 #align spectrum.nonzero_mul_eq_swap_mul spectrum.nonzero_mul_eq_swap_mul
 
 protected theorem map_inv (a : Aˣ) : (σ (a : A))⁻¹ = σ (↑a⁻¹ : A) := by
-  refine' Set.eq_of_subset_of_subset (fun k hk => _) fun k hk => _
+  refine Set.eq_of_subset_of_subset (fun k hk => ?_) fun k hk => ?_
   · rw [Set.mem_inv] at hk
     have : k ≠ 0 := by simpa only [inv_inv] using inv_ne_zero (ne_zero_of_mem_of_unit hk)
     lift k to 𝕜ˣ using isUnit_iff_ne_zero.mpr this

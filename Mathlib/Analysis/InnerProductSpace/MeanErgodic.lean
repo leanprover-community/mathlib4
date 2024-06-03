@@ -13,14 +13,14 @@ In this file we prove the von Neumann Mean Ergodic Theorem for an operator in a 
 It says that for a contracting linear self-map `f : E →ₗ[𝕜] E` of a Hilbert space,
 the Birkhoff averages
 ```
-birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n in Finset.range N, f^[n] x
+birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n ∈ Finset.range N, f^[n] x
 ```
 converge to the orthogonal projection of `x` to the subspace of fixed points of `f`,
 see `ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
 
 open Filter Finset Function Bornology
-open scoped BigOperators Topology
+open scoped Topology
 
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
 
@@ -32,7 +32,7 @@ Let `g : E → S` be a continuous linear projection, `g|_S=id`.
 If the range of `f - id` is dense in the kernel of `g`,
 then for each `x`, the Birkhoff averages
 ```
-birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n in Finset.range N, f^[n] x
+birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n ∈ Finset.range N, f^[n] x
 ```
 converge to `g x` as `N → ∞`.
 
@@ -78,7 +78,7 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 For a contracting continuous linear self-map `f : E →L[𝕜] E` of a Hilbert space, `‖f‖ ≤ 1`,
 the Birkhoff averages
 ```
-birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n in Finset.range N, f^[n] x
+birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n ∈ Finset.range N, f^[n] x
 ```
 converge to the orthogonal projection of `x` to the subspace of fixed points of `f`. -/
 theorem ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection (f : E →L[𝕜] E)

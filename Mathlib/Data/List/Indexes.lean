@@ -14,6 +14,7 @@ import Mathlib.Data.List.Range
 Some specification lemmas for `List.mapIdx`, `List.mapIdxM`, `List.foldlIdx` and `List.foldrIdx`.
 -/
 
+assert_not_exists MonoidWithZero
 
 universe u v
 
@@ -48,7 +49,7 @@ protected theorem oldMapIdxCore_eq (l : List α) (f : ℕ → α → β) (n : �
   induction' l with hd tl hl generalizing f n
   · rfl
   · rw [List.oldMapIdx]
-    simp only [List.oldMapIdxCore, hl, add_left_comm, add_comm, add_zero, zero_add]
+    simp only [List.oldMapIdxCore, hl, Nat.add_left_comm, Nat.add_comm, Nat.add_zero]
 #noalign list.map_with_index_core_eq
 
 -- Porting note: convert new definition to old definition.
@@ -102,7 +103,7 @@ protected theorem oldMapIdx_append : ∀ (f : ℕ → α → β) (l : List α) (
   intros f l e
   unfold List.oldMapIdx
   rw [List.oldMapIdxCore_append f 0 l [e]]
-  simp only [zero_add, append_cancel_left_eq]; rfl
+  simp only [Nat.zero_add]; rfl
 
 -- Porting note (#10756): new theorem.
 theorem mapIdxGo_append : ∀ (f : ℕ → α → β) (l₁ l₂ : List α) (arr : Array β),
@@ -132,7 +133,7 @@ theorem mapIdxGo_length : ∀ (f : ℕ → α → β) (l : List α) (arr : Array
     length (mapIdx.go f l arr) = length l + arr.size := by
   intro f l
   induction' l with head tail ih
-  · intro; simp only [mapIdx.go, Array.toList_eq, length_nil, zero_add]
+  · intro; simp only [mapIdx.go, Array.toList_eq, length_nil, Nat.zero_add]
   · intro; simp only [mapIdx.go]; rw [ih]; simp only [Array.size_push, length_cons];
     simp only [Nat.add_succ, add_zero, Nat.add_comm]
 
@@ -142,8 +143,8 @@ theorem mapIdx_append_one : ∀ (f : ℕ → α → β) (l : List α) (e : α),
   intros f l e
   unfold mapIdx
   rw [mapIdxGo_append f l [e]]
-  simp only [mapIdx.go, Array.size_toArray, mapIdxGo_length, length_nil, add_zero, Array.toList_eq,
-    Array.push_data, Array.data_toArray]
+  simp only [mapIdx.go, Array.size_toArray, mapIdxGo_length, length_nil, Nat.add_zero,
+    Array.toList_eq, Array.push_data, Array.data_toArray]
 
 -- Porting note (#10756): new theorem.
 protected theorem new_def_eq_old_def :
@@ -168,7 +169,8 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
     rw [this]; rfl
   · cases' l with head tail
     · contradiction
-    · simp only [map, uncurry_apply_pair, range_succ_eq_map, zipWith, zero_add, zipWith_map_left]
+    · simp only [map, uncurry_apply_pair, range_succ_eq_map, zipWith, Nat.zero_add,
+        zipWith_map_left]
       rw [ih]
       · suffices (fun i ↦ f (i + (n + 1))) = ((fun i ↦ f (i + n)) ∘ Nat.succ) by
           rw [this]
@@ -197,7 +199,7 @@ theorem mapIdx_append {α} (K L : List α) (f : ℕ → α → β) :
     (K ++ L).mapIdx f = K.mapIdx f ++ L.mapIdx fun i a ↦ f (i + K.length) a := by
   induction' K with a J IH generalizing f
   · rfl
-  · simp [IH fun i ↦ f (i + 1), add_assoc, Nat.succ_eq_add_one]
+  · simp [IH fun i ↦ f (i + 1), Nat.add_assoc, Nat.succ_eq_add_one]
 #align list.map_with_index_append List.mapIdx_append
 
 @[simp]
@@ -327,8 +329,8 @@ theorem lt_findIdx_of_not {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs
 
 theorem findIdx_eq {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length) :
     xs.findIdx p = i ↔ p (xs.get ⟨i, h⟩) ∧ ∀ j (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩) := by
-  refine' ⟨fun f ↦ ⟨f ▸ (@findIdx_get _ p xs (f ▸ h)), fun _ hji ↦ not_of_lt_findIdx (f ▸ hji)⟩,
-    fun ⟨h1, h2⟩ ↦ _⟩
+  refine ⟨fun f ↦ ⟨f ▸ (@findIdx_get _ p xs (f ▸ h)), fun _ hji ↦ not_of_lt_findIdx (f ▸ hji)⟩,
+    fun ⟨h1, h2⟩ ↦ ?_⟩
   apply Nat.le_antisymm _ (le_findIdx_of_not h h2)
   contrapose! h1
   exact not_of_lt_findIdx h1

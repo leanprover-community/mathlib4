@@ -3,9 +3,9 @@ Copyright (c) 2021 Bhavik Mehta, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Data.Nat.Interval
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Order.Antichain
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import data.finset.slice from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -30,8 +30,6 @@ the set family made of its `r`-sets.
 
 
 open Finset Nat
-
-open BigOperators
 
 variable {α : Type*} {ι : Sort*} {κ : ι → Sort*}
 
@@ -70,8 +68,8 @@ theorem sized_iUnion {f : ι → Set (Finset α)} : (⋃ i, f i).Sized r ↔ ∀
 
 -- @[simp] -- Porting note: left hand side is not simp-normal form.
 theorem sized_iUnion₂ {f : ∀ i, κ i → Set (Finset α)} :
-    (⋃ (i) (j), f i j).Sized r ↔ ∀ i j, (f i j).Sized r :=
- by simp only [Set.sized_iUnion]
+    (⋃ (i) (j), f i j).Sized r ↔ ∀ i j, (f i j).Sized r := by
+ simp only [Set.sized_iUnion]
 #align set.sized_Union₂ Set.sized_iUnion₂
 
 protected theorem Sized.isAntichain (hA : A.Sized r) : IsAntichain (· ⊆ ·) A :=
@@ -173,7 +171,7 @@ theorem biUnion_slice [DecidableEq α] : (Iic <| Fintype.card α).biUnion 𝒜.s
 #align finset.bUnion_slice Finset.biUnion_slice
 
 @[simp]
-theorem sum_card_slice : (∑ r in Iic (Fintype.card α), (𝒜 # r).card) = 𝒜.card := by
+theorem sum_card_slice : (∑ r ∈ Iic (Fintype.card α), (𝒜 # r).card) = 𝒜.card := by
   letI := Classical.decEq α
   rw [← card_biUnion, biUnion_slice]
   exact Finset.pairwiseDisjoint_slice.subset (Set.subset_univ _)

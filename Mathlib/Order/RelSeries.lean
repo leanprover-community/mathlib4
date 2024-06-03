@@ -89,31 +89,38 @@ lemma coe_ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
 /-- Every relation series gives a list -/
 def toList (x : RelSeries r) : List α := List.ofFn x
 
+@[simp]
+lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 :=
+  List.length_ofFn _
+
 lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
   rw [List.chain'_iff_get]
   intros i h
   convert x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
 
-lemma toList_ne_empty (x : RelSeries r) : x.toList ≠ [] := fun m =>
+lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
 
 /-- Every nonempty list satisfying the chain condition gives a relation series-/
 @[simps]
-def fromListChain' (x : List α) (x_ne_empty : x ≠ []) (hx : x.Chain' r) : RelSeries r where
+def fromListChain' (x : List α) (x_ne_nil : x ≠ []) (hx : x.Chain' r) : RelSeries r where
   length := x.length.pred
-  toFun := x.get ∘ Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x_ne_empty)
+  toFun := x.get ∘ Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x_ne_nil)
   step i := List.chain'_iff_get.mp hx i i.2
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
 corresponds to each other. -/
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} where
-  toFun x := ⟨_, x.toList_ne_empty, x.toList_chain'⟩
+  toFun x := ⟨_, x.toList_ne_nil, x.toList_chain'⟩
   invFun x := fromListChain' _ x.2.1 x.2.2
   left_inv x := ext (by simp [toList]) <| by ext; apply List.get_ofFn
   right_inv x := by
     refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => List.get_ofFn _ _)
     have := Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1
     simp_all [toList]
+
+lemma toList_injective : Function.Injective (RelSeries.toList (r := r)) :=
+  fun _ _ h ↦ (RelSeries.Equiv).injective <| Subtype.ext h
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
 
@@ -173,7 +180,7 @@ theorem mem_def : x ∈ s ↔ x ∈ Set.range s := Iff.rfl
 theorem subsingleton_of_length_eq_zero (hs : s.length = 0) : {x | x ∈ s}.Subsingleton := by
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩
   congr!
-  exact Fin.castIso (by rw [hs, zero_add]) |>.injective <| Subsingleton.elim (α := Fin 1) _ _
+  exact finCongr (by rw [hs, zero_add]) |>.injective <| Subsingleton.elim (α := Fin 1) _ _
 
 theorem length_ne_zero_of_nontrivial (h : {x | x ∈ s}.Nontrivial) : s.length ≠ 0 :=
   fun hs ↦ h.not_subsingleton $ subsingleton_of_length_eq_zero hs
@@ -204,6 +211,8 @@ def head (x : RelSeries r) : α := x 0
 
 Since a relation series is assumed to be non-empty, this is well defined. -/
 def last (x : RelSeries r) : α := x <| Fin.last _
+
+lemma apply_last (x : RelSeries r) : x (Fin.last <| x.length) = x.last := rfl
 
 lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
 
@@ -404,6 +413,12 @@ def snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) : RelSeries r
 
 @[simp] lemma last_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
     (p.snoc newLast rel).last = newLast := last_append _ _ _
+
+-- This lemma is useful because `last_snoc` is about `Fin.last (p.snoc _ _).length`, but we often
+-- see `Fin.last (p.length + 1)` in practice. They are equal by definition, but sometimes simplifier
+-- does not pick up `last_snoc`
+@[simp] lemma last_snoc' (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
+    p.snoc newLast rel (Fin.last (p.length + 1)) = newLast := last_append _ _ _
 
 @[simp] lemma snoc_castSucc (s : RelSeries r) (a : α) (connect : r s.last a)
     (i : Fin (s.length + 1)) : snoc s a connect (Fin.castSucc i) = s i :=

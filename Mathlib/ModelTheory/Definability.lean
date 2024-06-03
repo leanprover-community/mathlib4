@@ -125,7 +125,7 @@ theorem Definable.union {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.De
 theorem definable_finset_inf {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.inf f) := by
   classical
-    refine' Finset.induction definable_univ (fun i s _ h => _) s
+    refine Finset.induction definable_univ (fun i s _ h => ?_) s
     rw [Finset.inf_insert]
     exact (hf i).inter h
 #align set.definable_finset_inf Set.definable_finset_inf
@@ -133,7 +133,7 @@ theorem definable_finset_inf {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ 
 theorem definable_finset_sup {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.sup f) := by
   classical
-    refine' Finset.induction definable_empty (fun i s _ h => _) s
+    refine Finset.induction definable_empty (fun i s _ h => ?_) s
     rw [Finset.sup_insert]
     exact (hf i).union h
 #align set.definable_finset_sup Set.definable_finset_sup
@@ -174,7 +174,7 @@ theorem Definable.preimage_comp (f : α → β) {s : Set (α → M)} (h : A.Defi
 
 theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f : α ≃ β) :
     A.Definable L ((fun g : β → M => g ∘ f) '' s) := by
-  refine' (congr rfl _).mp (h.preimage_comp f.symm)
+  refine (congr rfl ?_).mp (h.preimage_comp f.symm)
   rw [image_eq_preimage_of_inverse]
   · intro i
     ext b
@@ -231,14 +231,14 @@ theorem Definable.image_comp_embedding {s : Set (β → M)} (h : A.Definable L s
     [Finite β] : A.Definable L ((fun g : β → M => g ∘ f) '' s) := by
   classical
     cases nonempty_fintype β
-    refine'
-      (congr rfl (ext fun x => _)).mp
+    refine
+      (congr rfl (ext fun x => ?_)).mp
         (((h.image_comp_equiv (Equiv.Set.sumCompl (range f))).image_comp_equiv
               (Equiv.sumCongr (Equiv.ofInjective f f.injective)
                 (Fintype.equivFin (↥(range f)ᶜ)).symm)).image_comp_sum_inl_fin
           _)
     simp only [mem_preimage, mem_image, exists_exists_and_eq_and]
-    refine' exists_congr fun y => and_congr_right fun _ => Eq.congr_left (funext fun a => _)
+    refine exists_congr fun y => and_congr_right fun _ => Eq.congr_left (funext fun a => ?_)
     simp
 #align set.definable.image_comp_embedding Set.Definable.image_comp_embedding
 
@@ -260,7 +260,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
         A.Definable L { x : α → M | x a = x (rangeSplitting f (rangeFactorization f a)) } := by
           refine fun a => ⟨(var a).equal (var (rangeSplitting f (rangeFactorization f a))), ext ?_⟩
           simp
-      refine' (congr rfl (ext _)).mp (definable_finset_biInter h' Finset.univ)
+      refine (congr rfl (ext ?_)).mp (definable_finset_biInter h' Finset.univ)
       simp
     refine (congr rfl (ext fun x => ?_)).mp (h.inter h')
     simp only [Equiv.coe_trans, mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and,
@@ -272,7 +272,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
       rw [hx a, ← Function.comp_apply (f := x), ← hy]
       simp
     · rintro ⟨y, ys, rfl⟩
-      refine' ⟨⟨y, ys, _⟩, fun a => _⟩
+      refine ⟨⟨y, ys, ?_⟩, fun a => ?_⟩
       · ext
         simp [Set.apply_rangeSplitting f]
       · rw [Function.comp_apply, Function.comp_apply, apply_rangeSplitting f,
