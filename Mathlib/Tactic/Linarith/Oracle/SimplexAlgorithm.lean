@@ -28,7 +28,8 @@ def preprocessSparse (hyps : List Comp) (maxVar : ℕ) :
   ⟨⟨mdata⟩, strictIndexes⟩
 
 /-- Preprocess the goal to pass it to `findPositiveVector`. -/
-def preprocessDense (hyps : List Comp) (maxVar : ℕ) : DenseMatrix (maxVar + 1) (hyps.length) × List Nat :=
+def preprocessDense (hyps : List Comp) (maxVar : ℕ) :
+    DenseMatrix (maxVar + 1) (hyps.length) × List Nat :=
   let mdata : Array (Array ℚ) := Array.ofFn fun i : Fin (maxVar + 1) =>
     Array.mk <| hyps.map (·.coeffOf i)
   let strictIndexes := hyps.findIdxs (·.str == Ineq.lt)
