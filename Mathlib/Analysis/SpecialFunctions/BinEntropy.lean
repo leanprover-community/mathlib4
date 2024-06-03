@@ -38,14 +38,14 @@ where outcome `1` has probability `(1 - p)` and all other outcomes are equally l
 
 Usual domain of definition is p ∈ [0,1], i.e., input is a probability.
 
-This is a generalization of the binary entropy function `binaryEnrtopy`. -/
+This is a generalization of the binary entropy function `binaryEntropy`. -/
 noncomputable def qaryEntropy (q : ℕ) (p : ℝ) : ℝ :=
     p * log (q - 1) - p * log p - (1 - p) * log (1 - p)
 
 /-- The [binary entropy function](https://en.wikipedia.org/wiki/Binary_entropy_function)
 `binaryEntropy p := - p * log p - (1-p) * log (1 - p)`
 is the Shannon entropy of a Bernoulli random variable with success probability `p`. -/
-noncomputable abbrev binaryEntropy := qaryEntropy 2
+noncomputable def binaryEntropy := qaryEntropy 2
 
 lemma binaryEntropy_eq : binaryEntropy = (fun p => -p * log p - (1 - p) * log (1 - p)) := by
   have : (2 : ℝ) - 1 = 1 := by norm_num
