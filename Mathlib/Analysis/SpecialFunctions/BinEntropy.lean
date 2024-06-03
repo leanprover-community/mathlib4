@@ -406,7 +406,7 @@ lemma qaryEntropy_strictMono {q : ℕ} (qLe2: 2 ≤ q) :
           simp only [mul_sub, mul_one, isUnit_iff_ne_zero, ne_eq, ne_of_gt qpos, not_false_eq_true,
             IsUnit.mul_inv_cancel]
         linarith
-    exact (ne_of_gt (show x < 1 by exact lt_add_neg_iff_lt.mp this)).symm
+    exact (ne_of_gt (lt_add_neg_iff_lt.mp this : x < 1)).symm
 
 /- Binary entropy is strictly increasing in interval [0, 1/2]. -/
 lemma binaryEntropy_strictMono : StrictMonoOn binaryEntropy (Set.Icc 0 2⁻¹) := by
@@ -415,7 +415,7 @@ lemma binaryEntropy_strictMono : StrictMonoOn binaryEntropy (Set.Icc 0 2⁻¹) :
   rw [this]
   apply qaryEntropy_strictMono (by rfl)
 
-/-! ### Strict Concavity of binary entropy -/
+/-! ### Strict Concavity of binary and q-ary entropy functions -/
 
 lemma strictConcave_qaryEntropy {q : ℕ} : StrictConcaveOn ℝ (Icc 0 1) (qaryEntropy q) := by
   apply strictConcaveOn_of_deriv2_neg (convex_Icc 0 1) qaryEntropy_continuous.continuousOn
