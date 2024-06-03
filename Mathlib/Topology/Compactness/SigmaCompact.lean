@@ -85,7 +85,7 @@ lemma IsSigmaCompact.of_isClosed_subset {s t : Set X} (ht : IsSigmaCompact t)
   rw [← inter_iUnion, hcov]
   exact inter_eq_left.mpr h
 
-/-- If `s` is σ-compact and `f` is continuous on `s`, `f(s)` is σ-compact.-/
+/-- If `s` is σ-compact and `f` is continuous on `s`, `f(s)` is σ-compact. -/
 lemma IsSigmaCompact.image_of_continuousOn {f : X → Y} {s : Set X} (hs : IsSigmaCompact s)
     (hf : ContinuousOn f s) : IsSigmaCompact (f '' s) := by
   rcases hs with ⟨K, hcompact, hcov⟩
@@ -183,11 +183,11 @@ instance (priority := 100) sigmaCompactSpace_of_locally_compact_second_countable
     [LocallyCompactSpace X] [SecondCountableTopology X] : SigmaCompactSpace X := by
   choose K hKc hxK using fun x : X => exists_compact_mem_nhds x
   rcases countable_cover_nhds hxK with ⟨s, hsc, hsU⟩
-  refine' SigmaCompactSpace.of_countable _ (hsc.image K) (ball_image_iff.2 fun x _ => hKc x) _
+  refine SigmaCompactSpace.of_countable _ (hsc.image K) (forall_mem_image.2 fun x _ => hKc x) ?_
   rwa [sUnion_image]
 #align sigma_compact_space_of_locally_compact_second_countable sigmaCompactSpace_of_locally_compact_second_countable
 
--- porting note: doesn't work on the same line
+-- Porting note: doesn't work on the same line
 variable (X)
 variable [SigmaCompactSpace X]
 
@@ -226,8 +226,8 @@ instance [SigmaCompactSpace Y] : SigmaCompactSpace (X × Y) :=
 
 instance [Finite ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, SigmaCompactSpace (X i)] :
     SigmaCompactSpace (∀ i, X i) := by
-  refine' ⟨⟨fun n => Set.pi univ fun i => compactCovering (X i) n,
-    fun n => isCompact_univ_pi fun i => isCompact_compactCovering (X i) _, _⟩⟩
+  refine ⟨⟨fun n => Set.pi univ fun i => compactCovering (X i) n,
+    fun n => isCompact_univ_pi fun i => isCompact_compactCovering (X i) _, ?_⟩⟩
   rw [iUnion_univ_pi_of_monotone]
   · simp only [iUnion_compactCovering, pi_univ]
   · exact fun i => compactCovering_subset (X i)
@@ -244,14 +244,13 @@ instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
   cases isEmpty_or_nonempty ι
   · infer_instance
   · rcases exists_surjective_nat ι with ⟨f, hf⟩
-    refine' ⟨⟨fun n => ⋃ k ≤ n, Sigma.mk (f k) '' compactCovering (X (f k)) n, fun n => _, _⟩⟩
-    · refine' (finite_le_nat _).isCompact_biUnion fun k _ => _
+    refine ⟨⟨fun n => ⋃ k ≤ n, Sigma.mk (f k) '' compactCovering (X (f k)) n, fun n => ?_, ?_⟩⟩
+    · refine (finite_le_nat _).isCompact_biUnion fun k _ => ?_
       exact (isCompact_compactCovering _ _).image continuous_sigmaMk
-    · simp only [iUnion_eq_univ_iff, Sigma.forall, mem_iUnion]
-      rw [hf.forall] -- porting note: `simp only` failed to use `hf.forall`
+    · simp only [iUnion_eq_univ_iff, Sigma.forall, mem_iUnion, hf.forall]
       intro k y
       rcases exists_mem_compactCovering y with ⟨n, hn⟩
-      refine' ⟨max k n, k, le_max_left _ _, mem_image_of_mem _ _⟩
+      refine ⟨max k n, k, le_max_left _ _, mem_image_of_mem _ ?_⟩
       exact compactCovering_subset _ (le_max_right _ _) hn
 
 protected theorem ClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : ClosedEmbedding e) :
@@ -261,7 +260,7 @@ protected theorem ClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : ClosedEm
       rw [← preimage_iUnion, iUnion_compactCovering, preimage_univ]⟩⟩
 #align closed_embedding.sigma_compact_space ClosedEmbedding.sigmaCompactSpace
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactSpace s :=
   (closedEmbedding_subtype_val hs).sigmaCompactSpace
 
@@ -294,9 +293,9 @@ theorem countable_cover_nhdsWithin_of_sigma_compact {f : X → Set X} {s : Set X
   simp only [nhdsWithin, mem_inf_principal] at hf
   choose t ht hsub using fun n =>
     ((isCompact_compactCovering X n).inter_right hs).elim_nhds_subcover _ fun x hx => hf x hx.right
-  refine'
+  refine
     ⟨⋃ n, (t n : Set X), iUnion_subset fun n x hx => (ht n x hx).2,
-      countable_iUnion fun n => (t n).countable_toSet, fun x hx => mem_iUnion₂.2 _⟩
+      countable_iUnion fun n => (t n).countable_toSet, fun x hx => mem_iUnion₂.2 ?_⟩
   rcases exists_mem_compactCovering x with ⟨n, hn⟩
   rcases mem_iUnion₂.1 (hsub n ⟨hn, hx⟩) with ⟨y, hyt : y ∈ t n, hyf : x ∈ s → x ∈ f y⟩
   exact ⟨y, mem_iUnion.2 ⟨n, hyt⟩, hyf hx⟩
@@ -337,9 +336,11 @@ structure CompactExhaustion (X : Type*) [TopologicalSpace X] where
 
 namespace CompactExhaustion
 
-instance : @RelHomClass (CompactExhaustion X) ℕ (Set X) LE.le HasSubset.Subset where
+instance : FunLike (CompactExhaustion X) ℕ (Set X) where
   coe := toFun
   coe_injective' | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
+
+instance : RelHomClass (CompactExhaustion X) LE.le HasSubset.Subset where
   map_rel f _ _ h := monotone_nat_of_le_succ
     (fun n ↦ (f.subset_interior_succ' n).trans interior_subset) h
 
@@ -375,6 +376,15 @@ theorem iUnion_eq : ⋃ n, K n = univ :=
 theorem exists_mem (x : X) : ∃ n, x ∈ K n :=
   iUnion_eq_univ_iff.1 K.iUnion_eq x
 #align compact_exhaustion.exists_mem CompactExhaustion.exists_mem
+
+/-- A compact exhaustion eventually covers any compact set. -/
+theorem exists_superset_of_isCompact {s : Set X} (hs : IsCompact s) : ∃ n, s ⊆ K n := by
+  suffices ∃ n, s ⊆ interior (K n) from this.imp fun _ ↦ (Subset.trans · interior_subset)
+  refine hs.elim_directed_cover (interior ∘ K) (fun _ ↦ isOpen_interior) ?_ ?_
+  · intro x _
+    rcases K.exists_mem x with ⟨k, hk⟩
+    exact mem_iUnion.2 ⟨k + 1, K.subset_interior_succ _ hk⟩
+  · exact Monotone.directed_le fun _ _ h ↦ interior_mono <| K.subset h
 
 /-- The minimal `n` such that `x ∈ K n`. -/
 protected noncomputable def find (x : X) : ℕ :=
@@ -417,14 +427,14 @@ noncomputable def choice (X : Type*) [TopologicalSpace X] [WeaklyLocallyCompactS
     Nat.recOn n ⟨∅, isCompact_empty⟩ fun n s =>
       ⟨(exists_compact_superset s.2).choose ∪ compactCovering X n,
         (exists_compact_superset s.2).choose_spec.1.union (isCompact_compactCovering _ _)⟩
-  refine' ⟨⟨fun n => (K n).1, fun n => (K n).2, fun n => _, _⟩⟩
+  refine ⟨⟨fun n ↦ (K n).1, fun n => (K n).2, fun n ↦ ?_, ?_⟩⟩
   · exact Subset.trans (exists_compact_superset (K n).2).choose_spec.2
       (interior_mono <| subset_union_left _ _)
-  · refine' univ_subset_iff.1 (iUnion_compactCovering X ▸ _)
+  · refine univ_subset_iff.1 (iUnion_compactCovering X ▸ ?_)
     exact iUnion_mono' fun n => ⟨n + 1, subset_union_right _ _⟩
 #align compact_exhaustion.choice CompactExhaustion.choice
 
-noncomputable instance [LocallyCompactSpace X] [SigmaCompactSpace X] :
+noncomputable instance [LocallyCompactSpace X] :
     Inhabited (CompactExhaustion X) :=
   ⟨CompactExhaustion.choice X⟩
 

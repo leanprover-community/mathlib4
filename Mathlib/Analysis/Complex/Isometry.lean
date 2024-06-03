@@ -62,14 +62,14 @@ theorem rotation_trans (a b : circle) : (rotation a).trans (rotation b) = rotati
   simp
 #align rotation_trans rotation_trans
 
-theorem rotation_ne_conjLie (a : circle) : rotation a ≠ conjLie := by
+theorem rotation_ne_conjLIE (a : circle) : rotation a ≠ conjLIE := by
   intro h
   have h1 : rotation a 1 = conj 1 := LinearIsometryEquiv.congr_fun h 1
   have hI : rotation a I = conj I := LinearIsometryEquiv.congr_fun h I
   rw [rotation_apply, RingHom.map_one, mul_one] at h1
   rw [rotation_apply, conj_I, ← neg_one_mul, mul_left_inj' I_ne_zero, h1, eq_neg_self_iff] at hI
   exact one_ne_zero hI
-#align rotation_ne_conj_lie rotation_ne_conjLie
+#align rotation_ne_conj_lie rotation_ne_conjLIE
 
 /-- Takes an element of `ℂ ≃ₗᵢ[ℝ] ℂ` and checks if it is a rotation, returns an element of the
 unit circle. -/
@@ -123,7 +123,7 @@ theorem LinearIsometry.re_apply_eq_re {f : ℂ →ₗᵢ[ℝ] ℂ} (h : f 1 = 1)
 #align linear_isometry.re_apply_eq_re LinearIsometry.re_apply_eq_re
 
 theorem linear_isometry_complex_aux {f : ℂ ≃ₗᵢ[ℝ] ℂ} (h : f 1 = 1) :
-    f = LinearIsometryEquiv.refl ℝ ℂ ∨ f = conjLie := by
+    f = LinearIsometryEquiv.refl ℝ ℂ ∨ f = conjLIE := by
   have h0 : f I = I ∨ f I = -I := by
     simp only [ext_iff, ← and_or_left, neg_re, I_re, neg_im, neg_zero]
     constructor
@@ -132,7 +132,7 @@ theorem linear_isometry_complex_aux {f : ℂ ≃ₗᵢ[ℝ] ℂ} (h : f 1 = 1) :
     · apply @LinearIsometry.im_apply_eq_im_or_neg_of_re_apply_eq_re f.toLinearIsometry
       intro z
       rw [@LinearIsometry.re_apply_eq_re f.toLinearIsometry h]
-  refine' h0.imp (fun h' : f I = I => _) fun h' : f I = -I => _ <;>
+  refine h0.imp (fun h' : f I = I => ?_) fun h' : f I = -I => ?_ <;>
     · apply LinearIsometryEquiv.toLinearEquiv_injective
       apply Complex.basisOneI.ext'
       intro i
@@ -140,11 +140,11 @@ theorem linear_isometry_complex_aux {f : ℂ ≃ₗᵢ[ℝ] ℂ} (h : f 1 = 1) :
 #align linear_isometry_complex_aux linear_isometry_complex_aux
 
 theorem linear_isometry_complex (f : ℂ ≃ₗᵢ[ℝ] ℂ) :
-    ∃ a : circle, f = rotation a ∨ f = conjLie.trans (rotation a) := by
+    ∃ a : circle, f = rotation a ∨ f = conjLIE.trans (rotation a) := by
   let a : circle := ⟨f 1, by rw [mem_circle_iff_abs, ← Complex.norm_eq_abs, f.norm_map, norm_one]⟩
   use a
   have : (f.trans (rotation a).symm) 1 = 1 := by simpa using rotation_apply a⁻¹ (f 1)
-  refine' (linear_isometry_complex_aux this).imp (fun h₁ => _) fun h₂ => _
+  refine (linear_isometry_complex_aux this).imp (fun h₁ => ?_) fun h₂ => ?_
   · simpa using eq_mul_of_inv_mul_eq h₁
   · exact eq_mul_of_inv_mul_eq h₂
 #align linear_isometry_complex linear_isometry_complex

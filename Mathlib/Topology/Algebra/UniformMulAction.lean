@@ -36,7 +36,8 @@ class UniformContinuousConstVAdd [VAdd M X] : Prop where
   uniformContinuous_const_vadd : ∀ c : M, UniformContinuous (c +ᵥ · : X → X)
 #align has_uniform_continuous_const_vadd UniformContinuousConstVAdd
 
-/-- A multiplicative action such that for all `c`, the map `λ x, c • x` is uniformly continuous. -/
+/-- A multiplicative action such that for all `c`,
+the map `fun x ↦c • x` is uniformly continuous. -/
 @[to_additive]
 class UniformContinuousConstSMul [SMul M X] : Prop where
   uniformContinuous_const_smul : ∀ c : M, UniformContinuous (c • · : X → X)
@@ -162,7 +163,7 @@ instance instIsScalarTower [SMul N X] [SMul M N] [UniformContinuousConstSMul M X
   ⟨fun m n x => by
     have : _ = (_ : Completion X → Completion X) :=
       map_comp (uniformContinuous_const_smul m) (uniformContinuous_const_smul n)
-    refine' Eq.trans _ (congr_fun this.symm x)
+    refine Eq.trans ?_ (congr_fun this.symm x)
     exact congr_arg (fun f => Completion.map f x) (funext (smul_assoc _ _))⟩
 #align uniform_space.completion.is_scalar_tower UniformSpace.Completion.instIsScalarTower
 #align uniform_space.completion.vadd_assoc_class UniformSpace.Completion.instVAddAssocClass
@@ -174,7 +175,7 @@ instance [SMul N X] [SMulCommClass M N X] [UniformContinuousConstSMul M X]
     have hmn : m • n • x = (Completion.map (SMul.smul m) ∘ Completion.map (SMul.smul n)) x := rfl
     have hnm : n • m • x = (Completion.map (SMul.smul n) ∘ Completion.map (SMul.smul m)) x := rfl
     rw [hmn, hnm, map_comp, map_comp]
-    exact congr_arg (fun f => Completion.map f x) (funext (smul_comm _ _))
+    · exact congr_arg (fun f => Completion.map f x) (funext (smul_comm _ _))
     repeat' exact uniformContinuous_const_smul _⟩
 
 @[to_additive]

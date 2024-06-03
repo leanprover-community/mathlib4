@@ -59,7 +59,8 @@ theorem piFinset_empty [Nonempty α] : piFinset (fun _ => ∅ : ∀ i, Finset (�
   eq_empty_of_forall_not_mem fun _ => by simp
 #align fintype.pi_finset_empty Fintype.piFinset_empty
 
-@[simp] lemma piFinset_nonempty : (piFinset s).Nonempty ↔ ∀ a, (s a).Nonempty := by
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+lemma piFinset_nonempty : (piFinset s).Nonempty ↔ ∀ a, (s a).Nonempty := by
   simp [Finset.Nonempty, Classical.skolem]
 
 @[simp]
@@ -96,9 +97,38 @@ lemma eval_image_piFinset (t : ∀ a, Finset (δ a)) (a : α) [DecidableEq (δ a
   choose f hf using ht
   exact ⟨fun b ↦ if h : a = b then h ▸ x else f _ h, by aesop, by simp⟩
 
-lemma filter_piFinset_of_not_mem [∀ a, DecidableEq (δ a)] (t : ∀ a, Finset (δ a)) (a : α)
-    (x : δ a) (hx : x ∉ t a) : (piFinset t).filter (· a = x) = ∅ := by
+lemma eval_image_piFinset_const {β} [DecidableEq β] (t : Finset β) (a : α) :
+    ((piFinset fun _i : α ↦ t).image fun f ↦ f a) = t := by
+  obtain rfl | ht := t.eq_empty_or_nonempty
+  · haveI : Nonempty α := ⟨a⟩
+    simp
+  · exact eval_image_piFinset (fun _ ↦ t) a fun _ _ ↦ ht
+
+variable [∀ a, DecidableEq (δ a)]
+
+lemma filter_piFinset_of_not_mem (t : ∀ a, Finset (δ a)) (a : α) (x : δ a) (hx : x ∉ t a) :
+    (piFinset t).filter (· a = x) = ∅ := by
   simp only [filter_eq_empty_iff, mem_piFinset]; rintro f hf rfl; exact hx (hf _)
+
+-- TODO: This proof looks like a good example of something that `aesop` can't do but should
+lemma piFinset_update_eq_filter_piFinset_mem (s : ∀ i, Finset (δ i)) (i : α) {t : Finset (δ i)}
+    (hts : t ⊆ s i) : piFinset (Function.update s i t) = (piFinset s).filter (fun f ↦ f i ∈ t) := by
+  ext f
+  simp only [mem_piFinset, mem_filter]
+  refine ⟨fun h ↦ ?_, fun h j ↦ ?_⟩
+  · have := by simpa using h i
+    refine ⟨fun j ↦ ?_, this⟩
+    obtain rfl | hji := eq_or_ne j i
+    · exact hts this
+    · simpa [hji] using h j
+  · obtain rfl | hji := eq_or_ne j i
+    · simpa using h.2
+    · simpa [hji] using h.1 j
+
+lemma piFinset_update_singleton_eq_filter_piFinset_eq (s : ∀ i, Finset (δ i)) (i : α) {a : δ i}
+    (ha : a ∈ s i) :
+    piFinset (Function.update s i {a}) = (piFinset s).filter (fun f ↦ f i = a) := by
+  simp [piFinset_update_eq_filter_piFinset_mem, ha]
 
 end Fintype
 
@@ -118,13 +148,13 @@ theorem Fintype.piFinset_univ {α : Type*} {β : α → Type*} [DecidableEq α] 
   rfl
 #align fintype.pi_finset_univ Fintype.piFinset_univ
 
--- porting note: this instance used to be computable in Lean3 and used `decidable_eq`, but
+-- Porting note: this instance used to be computable in Lean3 and used `decidable_eq`, but
 -- it makes things a lot harder to work with here. in some ways that was because in Lean3
 -- we could make this instance irreducible when needed and in the worst case use `congr/convert`,
 -- but those don't work with subsingletons in lean4 as-is so we cannot do this here.
 noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β] :
-  Fintype (α ↪ β) :=
-  by classical. exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
+  Fintype (α ↪ β) := by
+  classical exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
 #align function.embedding.fintype Function.Embedding.fintype
 
 @[simp]

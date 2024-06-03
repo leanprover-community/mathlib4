@@ -122,4 +122,44 @@ theorem dist_comm {u v : V} : G.dist u v = G.dist v u := by
     simp [h, h', dist_eq_zero_of_not_reachable]
 #align simple_graph.dist_comm SimpleGraph.dist_comm
 
+lemma dist_ne_zero_iff_ne_and_reachable {u v : V} : G.dist u v ≠ 0 ↔ u ≠ v ∧ G.Reachable u v := by
+  rw [ne_eq, dist_eq_zero_iff_eq_or_not_reachable.not]
+  push_neg; rfl
+
+lemma Reachable.of_dist_ne_zero {u v : V} (h : G.dist u v ≠ 0) : G.Reachable u v :=
+  (dist_ne_zero_iff_ne_and_reachable.mp h).2
+
+lemma exists_walk_of_dist_ne_zero {u v : V} (h : G.dist u v ≠ 0) :
+    ∃ p : G.Walk u v, p.length = G.dist u v :=
+  (Reachable.of_dist_ne_zero h).exists_walk_of_dist
+
+/- The distance between vertices is equal to `1` if and only if these vertices are adjacent. -/
+theorem dist_eq_one_iff_adj {u v : V} : G.dist u v = 1 ↔ G.Adj u v := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · let ⟨w, hw⟩ := exists_walk_of_dist_ne_zero <| ne_zero_of_eq_one h
+    exact w.adj_of_length_eq_one <| h ▸ hw
+  · have : h.toWalk.length = 1 := Walk.length_cons _ _
+    exact ge_antisymm (h.reachable.pos_dist_of_ne h.ne) (this ▸ dist_le _)
+
+theorem Walk.isPath_of_length_eq_dist {u v : V} (p : G.Walk u v) (hp : p.length = G.dist u v) :
+    p.IsPath := by
+  classical
+  have : p.bypass = p := by
+    apply Walk.bypass_eq_self_of_length_le
+    calc p.length
+      _ = G.dist u v := hp
+      _ ≤ p.bypass.length := dist_le p.bypass
+  rw [← this]
+  apply Walk.bypass_isPath
+
+lemma Reachable.exists_path_of_dist {u v : V} (hr : G.Reachable u v) :
+    ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
+  obtain ⟨p, h⟩ := hr.exists_walk_of_dist
+  exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
+
+lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
+    ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
+  obtain ⟨p, h⟩ := hconn.exists_walk_of_dist u v
+  exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
+
 end SimpleGraph

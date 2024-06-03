@@ -71,7 +71,7 @@ for the inverse of `e`).
 * `IndepMatroid.ofFinset` constructs an `IndepMatroid α` whose corresponding matroid is `Finitary`
   from an independence predicate on `Finset α`.
 
-* `IndepMatroid.ofExistsMatroid` constructs a 'copy' of a matroid that is known only
+* `Matroid.ofExistsMatroid` constructs a 'copy' of a matroid that is known only
   existentially, but whose independence predicate is known explicitly.
 
 * `Matroid.ofExistsFiniteBase` constructs a matroid from its bases, if it is known that one
@@ -104,55 +104,44 @@ structure IndepMatroid (α : Type*) where
 
 namespace IndepMatroid
 
-attribute [pp_dot] Indep E
-
 /-- An `M : IndepMatroid α` gives a `Matroid α` whose bases are the maximal `M`-independent sets. -/
 @[simps] protected def matroid (M : IndepMatroid α) : Matroid α where
   E := M.E
   Base := (· ∈ maximals (· ⊆ ·) {I | M.Indep I})
+  Indep := M.Indep
+  indep_iff' := by
+    refine fun I ↦ ⟨fun h ↦ ?_, fun ⟨B,⟨h,_⟩,hIB'⟩ ↦ M.indep_subset h hIB'⟩
+    obtain ⟨B, hB⟩ := M.indep_maximal M.E Subset.rfl I h (M.subset_ground I h)
+    simp only [mem_maximals_iff, mem_setOf_eq, and_imp] at hB ⊢
+    exact ⟨B, ⟨hB.1.1,fun J hJ hBJ ↦ hB.2 hJ (hB.1.2.1.trans hBJ) (M.subset_ground J hJ) hBJ⟩,
+      hB.1.2.1⟩
   exists_base := by
     obtain ⟨B, ⟨hB,-,-⟩, hB₁⟩ :=
       M.indep_maximal M.E rfl.subset ∅ M.indep_empty (empty_subset _)
     exact ⟨B, ⟨hB, fun B' hB' h' ↦ hB₁ ⟨hB', empty_subset _,M.subset_ground B' hB'⟩ h'⟩⟩
   base_exchange := by
     rintro B B' ⟨hB, hBmax⟩ ⟨hB',hB'max⟩ e he
-    have hnotmax : B \ {e} ∉ maximals (· ⊆ ·) {I | M.Indep I}
-    { simp only [mem_maximals_setOf_iff, diff_singleton_subset_iff, not_and, not_forall,
+    have hnotmax : B \ {e} ∉ maximals (· ⊆ ·) {I | M.Indep I} := by
+      simp only [mem_maximals_setOf_iff, diff_singleton_subset_iff, not_and, not_forall,
         exists_prop, exists_and_left]
-      exact fun _ ↦ ⟨B, hB, subset_insert _ _, by simpa using he.1⟩ }
+      exact fun _ ↦ ⟨B, hB, subset_insert _ _, by simpa using he.1⟩
 
     obtain ⟨f,hf,hfB⟩ := M.indep_aug (M.indep_subset hB (diff_subset B {e})) hnotmax ⟨hB',hB'max⟩
     simp only [mem_diff, mem_singleton_iff, not_and, not_not] at hf
 
     have hfB' : f ∉ B := by (intro hfB; obtain rfl := hf.2 hfB; exact he.2 hf.1)
 
-    refine' ⟨f, ⟨hf.1, hfB'⟩, by_contra (fun hnot ↦ _)⟩
+    refine ⟨f, ⟨hf.1, hfB'⟩, by_contra (fun hnot ↦ ?_)⟩
     obtain ⟨x,hxB, hind⟩ := M.indep_aug hfB hnot ⟨hB, hBmax⟩
     simp only [mem_diff, mem_insert_iff, mem_singleton_iff, not_or, not_and, not_not] at hxB
     obtain rfl := hxB.2.2 hxB.1
     rw [insert_comm, insert_diff_singleton, insert_eq_of_mem he.1] at hind
     exact not_mem_subset (hBmax hind (subset_insert _ _)) hfB' (mem_insert _ _)
-  maximality := by
-    rintro X hXE I ⟨hB, hB, hIB⟩ hIX
-    obtain ⟨J, ⟨hJ, hIJ, hJX⟩, hJmax⟩ := M.indep_maximal X hXE I (M.indep_subset hB.1 hIB) hIX
-    obtain ⟨BJ, hBJ⟩ := M.indep_maximal M.E rfl.subset J hJ (M.subset_ground J hJ)
-    refine' ⟨J, ⟨⟨BJ,_, hBJ.1.2.1⟩ ,hIJ,hJX⟩, _⟩
-    · exact ⟨hBJ.1.1, fun B' hB' hBJB' ↦ hBJ.2 ⟨hB',hBJ.1.2.1.trans hBJB',
-        M.subset_ground _ hB'⟩ hBJB'⟩
-    simp only [maximals, mem_setOf_eq, and_imp, forall_exists_index]
-    rintro A B' (hBi' : M.Indep _) - hB'' hIA hAX hJA
-    simp only [mem_setOf_eq, and_imp] at hJmax
-    exact hJmax (M.indep_subset hBi' hB'') hIA hAX hJA
+  maximality := M.indep_maximal
   subset_ground B hB := M.subset_ground B hB.1
 
 @[simp] theorem matroid_indep_iff {M : IndepMatroid α} {I : Set α} :
-    M.matroid.Indep I ↔ M.Indep I := by
-  simp only [IndepMatroid.matroid, indep_iff_subset_base]
-  refine ⟨fun ⟨_, ⟨hB,_⟩, hIB⟩ ↦ M.indep_subset hB hIB, fun h ↦ ?_⟩
-  obtain ⟨B, hB⟩ := M.indep_maximal _ rfl.subset I h (M.subset_ground _ h)
-  simp only [mem_maximals_setOf_iff, and_imp] at *
-  exact ⟨B, ⟨hB.1.1, fun J hJ hBJ ↦
-    hB.2 hJ (hB.1.2.1.trans hBJ) (M.subset_ground _ hJ) hBJ⟩, hB.1.2.1⟩
+    M.matroid.Indep I ↔ M.Indep I := Iff.rfl
 
 /-- An independence predicate satisfying the finite matroid axioms determines a matroid,
   provided independence is determined by its behaviour on finite sets.
@@ -195,9 +184,9 @@ attribute [pp_dot] Indep E
     have hB₀ := indep_subset hBmax.1 hB₀B
 
     -- There is a finite subset `I₀` of `I` so that `I₀` doesn't extend into `B₀`
-    have hexI₀ : ∃ I₀, I₀ ⊆ I ∧ I₀.Finite ∧ ∀ x, x ∈ B₀ \ I₀ → ¬Indep (insert x I₀)
-    · have hchoose : ∀ (b : ↑(B₀ \ I)), ∃ Ib, Ib ⊆ I ∧ Ib.Finite ∧ ¬Indep (insert (b : α) Ib)
-      · rintro ⟨b, hb⟩; exact htofin I b hI (hcon b ⟨hB₀B hb.1, hb.2⟩)
+    have hexI₀ : ∃ I₀, I₀ ⊆ I ∧ I₀.Finite ∧ ∀ x, x ∈ B₀ \ I₀ → ¬Indep (insert x I₀) := by
+      have hchoose : ∀ (b : ↑(B₀ \ I)), ∃ Ib, Ib ⊆ I ∧ Ib.Finite ∧ ¬Indep (insert (b : α) Ib) := by
+        rintro ⟨b, hb⟩; exact htofin I b hI (hcon b ⟨hB₀B hb.1, hb.2⟩)
       choose! f hf using hchoose
       have := (hB₀fin.diff I).to_subtype
       refine ⟨iUnion f ∪ (B₀ ∩ I),
@@ -228,8 +217,8 @@ attribute [pp_dot] Indep E
     have hJfin := hE₀fin.subset hJss
 
     -- We have `|I₀ + e| ≤ |J|`, since otherwise we could extend the maximal set `J`
-    have hcard : (insert e I₀).ncard ≤ J.ncard
-    · refine not_lt.1 fun hlt ↦ ?_
+    have hcard : (insert e I₀).ncard ≤ J.ncard := by
+      refine not_lt.1 fun hlt ↦ ?_
       obtain ⟨f, hfI, hfJ, hfi⟩ := indep_aug hJ hJfin heI₀i (hI₀fin.insert e) hlt
       have hfE₀ : f ∈ E₀ := mem_of_mem_of_subset hfI (insert_subset_insert (subset_union_left _ _))
       refine hfJ (insert_eq_self.1 <| Eq.symm (hJmax _
@@ -246,10 +235,9 @@ attribute [pp_dot] Indep E
       · obtain ⟨J, hJ, -, hJmax⟩ := hzorn
         exact ⟨J, hJ, fun K hK hJK ↦ (hJmax K hK hJK).subset⟩
 
-      refine fun Is hIs hchain ⟨K, hK⟩ ↦ ⟨⋃₀ Is, ⟨?_,?_,?_⟩, fun _ ↦ subset_sUnion_of_mem ⟩
+      refine fun Is hIs hchain ⟨K, hK⟩ ↦ ⟨⋃₀ Is, ⟨?_,?_,?_⟩, fun _ ↦ subset_sUnion_of_mem⟩
       · refine indep_compact _ fun J hJ hJfin ↦ ?_
-        have hchoose : ∀ e, e ∈ J → ∃ I, I ∈ Is ∧ (e : α) ∈ I
-        · exact fun _ he ↦ mem_sUnion.1 <| hJ he
+        have hchoose : ∀ e, e ∈ J → ∃ I, I ∈ Is ∧ (e : α) ∈ I := fun _ he ↦ mem_sUnion.1 <| hJ he
         choose! f hf using hchoose
         refine J.eq_empty_or_nonempty.elim (fun hJ ↦ hJ ▸ indep_empty) (fun hne ↦ ?_)
         obtain ⟨x, hxJ, hxmax⟩ := Finite.exists_maximal_wrt f _ hJfin hne
@@ -278,8 +266,8 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
     (hP : ∃ (n : ℕ), ∀ Y, P Y → Y.encard ≤ n) (X : Set α) : ExistsMaximalSubsetProperty P X := by
   obtain ⟨n, hP⟩ := hP
   rintro I hI hIX
-  have hfin : Set.Finite (ncard '' {Y | P Y ∧ I ⊆ Y ∧ Y ⊆ X})
-  · rw [finite_iff_bddAbove, bddAbove_def]
+  have hfin : Set.Finite (ncard '' {Y | P Y ∧ I ⊆ Y ∧ Y ⊆ X}) := by
+    rw [finite_iff_bddAbove, bddAbove_def]
     simp_rw [ENat.le_coe_iff] at hP
     use n
     rintro x ⟨Y, ⟨hY,-,-⟩, rfl⟩
@@ -287,9 +275,9 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
     rwa [ncard_def, heq, ENat.toNat_coe]
     -- have := (hP Y hY).2
   obtain ⟨Y, hY, hY'⟩ := Finite.exists_maximal_wrt' ncard _ hfin ⟨I, hI, rfl.subset, hIX⟩
-  refine' ⟨Y, hY, fun J ⟨hJ, hIJ, hJX⟩ (hYJ : Y ⊆ J) ↦ (_ : J ⊆ Y)⟩
+  refine ⟨Y, hY, fun J ⟨hJ, hIJ, hJX⟩ (hYJ : Y ⊆ J) ↦ (?_ : J ⊆ Y)⟩
   have hJfin := finite_of_encard_le_coe (hP J hJ)
-  refine' (eq_of_subset_of_ncard_le hYJ _ hJfin).symm.subset
+  refine (eq_of_subset_of_ncard_le hYJ ?_ hJfin).symm.subset
   rw [hY' J ⟨hJ, hIJ, hJX⟩ (ncard_le_ncard hYJ hJfin)]
 
 /-- If there is an absolute upper bound on the size of an independent set, then the maximality axiom
@@ -344,8 +332,8 @@ protected def ofBddAugment (E : Set α) (Indep : Set α → Prop)
 
       have hlt : I.encard < J.encard :=
         (finite_of_encard_le_coe (h_bdd J hJ)).encard_lt_encard (hIJ.ssubset_of_ne hne)
-      have hle : J.encard ≤ B.encard
-      · refine le_of_not_lt (fun hlt' ↦ ?_)
+      have hle : J.encard ≤ B.encard := by
+        refine le_of_not_lt (fun hlt' ↦ ?_)
         obtain ⟨e, he⟩ := indep_aug hB hJ hlt'
         rw [hBmax he.2.2 (subset_insert _ _)] at he
         exact he.2.1 (mem_insert _ _)
@@ -438,10 +426,19 @@ theorem ofFinset_indep' [DecidableEq α] (E : Set α) Indep indep_empty indep_su
         ∀ (J : Finset α), (J : Set α) ⊆ I → Indep J := by
   simp only [IndepMatroid.ofFinset, ofFinitary_indep]
 
-/-- Construct an `IndepMatroid` from an independence predicate that agrees with that of some
-  matroid `M`. Computable even when `M` is not known constructively. -/
-@[simps E] protected def ofExistsMatroid (E : Set α) (Indep : Set α → Prop)
-    (hM : ∃ (M : Matroid α), E = M.E ∧ ∀ I, M.Indep I ↔ Indep I) : IndepMatroid α :=
+end IndepMatroid
+
+section Base
+
+namespace Matroid
+
+/-- Construct an `Matroid` from an independence predicate that agrees with that of some matroid `M`.
+  This is computable even if `M` is only known existentially, or when `M` exists for different
+  reasons in different cases. This can also be used to change the independence predicate to a
+  more useful definitional form. -/
+@[simps! E] protected def ofExistsMatroid (E : Set α) (Indep : Set α → Prop)
+    (hM : ∃ (M : Matroid α), E = M.E ∧ ∀ I, M.Indep I ↔ Indep I) : Matroid α :=
+  IndepMatroid.matroid <|
   have hex : ∃ (M : Matroid α), E = M.E ∧ M.Indep = Indep := by
     obtain ⟨M, rfl, h⟩ := hM; refine ⟨_, rfl, funext (by simp [h])⟩
   IndepMatroid.mk (E := E) (Indep := Indep)
@@ -451,28 +448,35 @@ theorem ofFinset_indep' [DecidableEq α] (E : Set α) Indep indep_empty indep_su
   (indep_maximal := by obtain ⟨M, rfl, rfl⟩ := hex; exact M.existsMaximalSubsetProperty_indep)
   (subset_ground := by obtain ⟨M, rfl, rfl⟩ := hex; exact fun I ↦ Indep.subset_ground)
 
-end IndepMatroid
-
-section Base
-
-namespace Matroid
-
-/-- A collection of bases with the exchange property and at least one finite member is a matroid -/
-@[simps E] protected def ofExistsFiniteBase (E : Set α) (Base : Set α → Prop)
-    (exists_finite_base : ∃ B, Base B ∧ B.Finite) (base_exchange : ExchangeProperty Base)
+/-- A matroid defined purely in terms of its bases. -/
+@[simps E] protected def ofBase (E : Set α) (Base : Set α → Prop) (exists_base : ∃ B, Base B)
+    (base_exchange : ExchangeProperty Base)
+    (maximality : ∀ X, X ⊆ E → Matroid.ExistsMaximalSubsetProperty (∃ B, Base B ∧ · ⊆ B) X)
     (subset_ground : ∀ B, Base B → B ⊆ E) : Matroid α where
   E := E
   Base := Base
-  exists_base := by
-    obtain ⟨B,h⟩ := exists_finite_base; exact ⟨B, h.1⟩
+  Indep I := (∃ B, Base B ∧ I ⊆ B)
+  indep_iff' _ := Iff.rfl
+  exists_base := exists_base
   base_exchange := base_exchange
-  maximality := by
-    obtain ⟨B, hB, hfin⟩ := exists_finite_base
-    refine' fun X _ ↦ Matroid.existsMaximalSubsetProperty_of_bdd
-      ⟨B.ncard, fun Y ⟨B', hB', hYB'⟩ ↦ _⟩ X
-    rw [hfin.cast_ncard_eq, base_exchange.encard_base_eq hB hB']
-    exact encard_mono hYB'
+  maximality := maximality
   subset_ground := subset_ground
+
+/-- A collection of bases with the exchange property and at least one finite member is a matroid -/
+@[simps! E] protected def ofExistsFiniteBase (E : Set α) (Base : Set α → Prop)
+    (exists_finite_base : ∃ B, Base B ∧ B.Finite) (base_exchange : ExchangeProperty Base)
+    (subset_ground : ∀ B, Base B → B ⊆ E) : Matroid α := Matroid.ofBase
+  (E := E)
+  (Base := Base)
+  (exists_base := by obtain ⟨B,h⟩ := exists_finite_base; exact ⟨B, h.1⟩)
+  (base_exchange := base_exchange)
+  (maximality := by
+    obtain ⟨B, hB, hfin⟩ := exists_finite_base
+    refine fun X _ ↦ Matroid.existsMaximalSubsetProperty_of_bdd
+      ⟨B.ncard, fun Y ⟨B', hB', hYB'⟩ ↦ ?_⟩ X
+    rw [hfin.cast_ncard_eq, base_exchange.encard_base_eq hB hB']
+    exact encard_mono hYB')
+  (subset_ground := subset_ground)
 
 @[simp] theorem ofExistsFiniteBase_base (E : Set α) Base exists_finite_base
     base_exchange subset_ground : (Matroid.ofExistsFiniteBase

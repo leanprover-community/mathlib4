@@ -3,7 +3,6 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.Data.List.Rotate
 
@@ -67,9 +66,6 @@ walks, trails, paths, circuits, cycles, bridge edges
 
 -/
 
-set_option autoImplicit true
-
-
 open Function
 
 universe u v w
@@ -77,7 +73,6 @@ universe u v w
 namespace SimpleGraph
 
 variable {V : Type u} {V' : Type v} {V'' : Type w}
-
 variable (G : SimpleGraph V) (G' : SimpleGraph V') (G'' : SimpleGraph V'')
 
 /-- A walk is a sequence of adjacent vertices.  For vertices `u v : V`,
@@ -301,7 +296,7 @@ theorem exists_cons_eq_concat {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
   | nil => exact ⟨_, nil, h, rfl⟩
   | cons h' p ih =>
     obtain ⟨y, q, h'', hc⟩ := ih h'
-    refine' ⟨y, cons h q, h'', _⟩
+    refine ⟨y, cons h q, h'', ?_⟩
     rw [concat_cons, hc]
 #align simple_graph.walk.exists_cons_eq_concat SimpleGraph.Walk.exists_cons_eq_concat
 
@@ -411,7 +406,7 @@ protected theorem length_reverseAux {u v w : V} (p : G.Walk u v) (q : G.Walk u w
     (p.reverseAux q).length = p.length + q.length := by
   induction p with
   | nil => simp!
-  | cons _ _ ih => simp [ih, Nat.add_succ, Nat.succ_add]
+  | cons _ _ ih => simp [ih, Nat.succ_add, Nat.add_assoc]
 #align simple_graph.walk.length_reverse_aux SimpleGraph.Walk.length_reverseAux
 
 @[simp]
@@ -421,6 +416,9 @@ theorem length_reverse {u v : V} (p : G.Walk u v) : p.reverse.length = p.length 
 theorem eq_of_length_eq_zero {u v : V} : ∀ {p : G.Walk u v}, p.length = 0 → u = v
   | nil, _ => rfl
 #align simple_graph.walk.eq_of_length_eq_zero SimpleGraph.Walk.eq_of_length_eq_zero
+
+theorem adj_of_length_eq_one {u v : V} : ∀ {p : G.Walk u v}, p.length = 1 → G.Adj u v
+  | cons h nil, _ => h
 
 @[simp]
 theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0) ↔ u = v := by
@@ -434,6 +432,28 @@ theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0)
 @[simp]
 theorem length_eq_zero_iff {u : V} {p : G.Walk u u} : p.length = 0 ↔ p = nil := by cases p <;> simp
 #align simple_graph.walk.length_eq_zero_iff SimpleGraph.Walk.length_eq_zero_iff
+
+theorem getVert_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) (i : ℕ) :
+    (p.append q).getVert i = if i < p.length then p.getVert i else q.getVert (i - p.length) := by
+  induction p generalizing i with
+  | nil => simp
+  | cons h p ih => cases i <;> simp [getVert, ih, Nat.succ_lt_succ_iff]
+
+theorem getVert_reverse {u v : V} (p : G.Walk u v) (i : ℕ) :
+    p.reverse.getVert i = p.getVert (p.length - i) := by
+  induction p with
+  | nil => rfl
+  | cons h p ih =>
+    simp only [reverse_cons, getVert_append, length_reverse, ih, length_cons]
+    split_ifs
+    next hi =>
+      rw [Nat.succ_sub hi.le]
+      simp [getVert]
+    next hi =>
+      obtain rfl | hi' := Nat.eq_or_lt_of_not_lt hi
+      · simp [getVert]
+      · rw [Nat.eq_add_of_sub_eq (Nat.sub_pos_of_lt hi') rfl, Nat.sub_eq_zero_of_le hi']
+        simp [getVert]
 
 section ConcatRec
 
@@ -581,8 +601,8 @@ theorem support_nonempty {u v : V} (p : G.Walk u v) : { w | w ∈ p.support }.No
   ⟨u, by simp⟩
 #align simple_graph.walk.support_nonempty SimpleGraph.Walk.support_nonempty
 
-theorem mem_support_iff {u v w : V} (p : G.Walk u v) : w ∈ p.support ↔ w = u ∨ w ∈ p.support.tail :=
-  by cases p <;> simp
+theorem mem_support_iff {u v w : V} (p : G.Walk u v) :
+    w ∈ p.support ↔ w = u ∨ w ∈ p.support.tail := by cases p <;> simp
 #align simple_graph.walk.mem_support_iff SimpleGraph.Walk.mem_support_iff
 
 theorem mem_support_nil_iff {u v : V} : u ∈ (nil : G.Walk v v).support ↔ u = v := by simp
@@ -622,8 +642,8 @@ theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
   simp (config := { contextual := true }) only [mem_support_append_iff, or_true_iff, imp_true_iff]
 #align simple_graph.walk.subset_support_append_right SimpleGraph.Walk.subset_support_append_right
 
-theorem coe_support {u v : V} (p : G.Walk u v) : (p.support : Multiset V) = {u} + p.support.tail :=
-  by cases p <;> rfl
+theorem coe_support {u v : V} (p : G.Walk u v) :
+    (p.support : Multiset V) = {u} + p.support.tail := by cases p <;> rfl
 #align simple_graph.walk.coe_support SimpleGraph.Walk.coe_support
 
 theorem coe_support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
@@ -654,13 +674,13 @@ theorem chain_dartAdj_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G.Walk v
     List.Chain G.DartAdj d p.darts := by
   induction p generalizing d with
   | nil => exact List.Chain.nil
-  -- porting note: needed to defer `h` and `rfl` to help elaboration
+  -- Porting note: needed to defer `h` and `rfl` to help elaboration
   | cons h' p ih => exact List.Chain.cons (by exact h) (ih (by rfl))
 #align simple_graph.walk.chain_dart_adj_darts SimpleGraph.Walk.chain_dartAdj_darts
 
 theorem chain'_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.DartAdj p.darts
   | nil => trivial
-  -- porting note: needed to defer `rfl` to help elaboration
+  -- Porting note: needed to defer `rfl` to help elaboration
   | cons h p => chain_dartAdj_darts (by rfl) p
 #align simple_graph.walk.chain'_dart_adj_darts SimpleGraph.Walk.chain'_dartAdj_darts
 
@@ -832,14 +852,16 @@ only if `p` has defeq endpoints. -/
 inductive Nil : {v w : V} → G.Walk v w → Prop
   | nil {u : V} : Nil (nil : G.Walk u u)
 
+variable {u v w : V}
+
 @[simp] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
 
-@[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := fun.
+@[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := nofun
 
 instance (p : G.Walk v w) : Decidable p.Nil :=
   match p with
   | nil => isTrue .nil
-  | cons _ _ => isFalse fun.
+  | cons _ _ => isFalse nofun
 
 protected lemma Nil.eq {p : G.Walk v w} : p.Nil → v = w | .nil => rfl
 
@@ -872,7 +894,7 @@ def sndOfNotNil (p : G.Walk v w) (hp : ¬ p.Nil) : V :=
   p.notNilRec (fun h _ => h) hp
 
 /-- The walk obtained by removing the first dart of a non-nil walk. -/
-def tail (p : G.Walk x y) (hp : ¬ p.Nil) : G.Walk (p.sndOfNotNil hp) y :=
+def tail (p : G.Walk u v) (hp : ¬ p.Nil) : G.Walk (p.sndOfNotNil hp) v :=
   p.notNilRec (fun _ q => q) hp
 
 /-- The first dart of a walk. -/
@@ -880,10 +902,12 @@ def tail (p : G.Walk x y) (hp : ¬ p.Nil) : G.Walk (p.sndOfNotNil hp) y :=
 def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
   fst := v
   snd := p.sndOfNotNil hp
-  is_adj := p.adj_sndOfNotNil hp
+  adj := p.adj_sndOfNotNil hp
 
 lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
     (p.firstDart hp).edge = s(v, p.sndOfNotNil hp) := rfl
+
+variable {x y : V} -- TODO: rename to u, v, w instead?
 
 @[simp] lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
     cons (p.adj_sndOfNotNil hp) (p.tail hp) = p :=
@@ -897,7 +921,7 @@ lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
     (p.tail hp).length + 1 = p.length := by
   rw [← length_cons, cons_tail_eq]
 
-@[simp] lemma nil_copy {p : G.Walk x y} (hx : x = x') (hy : y = y') :
+@[simp] lemma nil_copy {x' y' : V} {p : G.Walk x y} (hx : x = x') (hy : y = y') :
     (p.copy hx hy).Nil = p.Nil := by
   subst_vars; rfl
 
@@ -911,13 +935,13 @@ structure IsTrail {u v : V} (p : G.Walk u v) : Prop where
 #align simple_graph.walk.is_trail_def SimpleGraph.Walk.isTrail_def
 
 /-- A *path* is a walk with no repeating vertices.
-Use `simple_graph.walk.is_path.mk'` for a simpler constructor. -/
+Use `SimpleGraph.Walk.IsPath.mk'` for a simpler constructor. -/
 structure IsPath {u v : V} (p : G.Walk u v) extends IsTrail p : Prop where
   support_nodup : p.support.Nodup
 #align simple_graph.walk.is_path SimpleGraph.Walk.IsPath
 
--- porting note: used to use `extends to_trail : is_trail p` in structure
-protected lemma IsPath.isTrail (h : IsPath p) : IsTrail p := h.toIsTrail
+-- Porting note: used to use `extends to_trail : is_trail p` in structure
+protected lemma IsPath.isTrail {p : Walk G u v}(h : IsPath p) : IsTrail p := h.toIsTrail
 #align simple_graph.walk.is_path.to_trail SimpleGraph.Walk.IsPath.isTrail
 
 /-- A *circuit* at `u : V` is a nonempty trail beginning and ending at `u`. -/
@@ -927,8 +951,8 @@ structure IsCircuit {u : V} (p : G.Walk u u) extends IsTrail p : Prop where
 #align simple_graph.walk.is_circuit SimpleGraph.Walk.IsCircuit
 #align simple_graph.walk.is_circuit_def SimpleGraph.Walk.isCircuit_def
 
--- porting note: used to use `extends to_trail : is_trail p` in structure
-protected lemma IsCircuit.isTrail (h : IsCircuit p) : IsTrail p := h.toIsTrail
+-- Porting note: used to use `extends to_trail : is_trail p` in structure
+protected lemma IsCircuit.isTrail {p : Walk G u u} (h : IsCircuit p) : IsTrail p := h.toIsTrail
 #align simple_graph.walk.is_circuit.to_trail SimpleGraph.Walk.IsCircuit.isTrail
 
 /-- A *cycle* at `u : V` is a circuit at `u` whose only repeating vertex
@@ -937,8 +961,8 @@ structure IsCycle {u : V} (p : G.Walk u u) extends IsCircuit p : Prop where
   support_nodup : p.support.tail.Nodup
 #align simple_graph.walk.is_cycle SimpleGraph.Walk.IsCycle
 
--- porting note: used to use `extends to_circuit : is_circuit p` in structure
-protected lemma IsCycle.isCircuit (h : IsCycle p) : IsCircuit p := h.toIsCircuit
+-- Porting note: used to use `extends to_circuit : is_circuit p` in structure
+protected lemma IsCycle.isCircuit {p : Walk G u u} (h : IsCycle p) : IsCircuit p := h.toIsCircuit
 #align simple_graph.walk.is_cycle.to_circuit SimpleGraph.Walk.IsCycle.isCircuit
 
 @[simp]
@@ -1043,7 +1067,7 @@ theorem cons_isPath_iff {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
   constructor <;> simp (config := { contextual := true }) [isPath_def]
 #align simple_graph.walk.cons_is_path_iff SimpleGraph.Walk.cons_isPath_iff
 
-protected lemma IsPath.cons (hp : p.IsPath) (hu : u ∉ p.support) {h : G.Adj u v} :
+protected lemma IsPath.cons {p : Walk G v w} (hp : p.IsPath) (hu : u ∉ p.support) {h : G.Adj u v} :
     (cons h p).IsPath :=
   (cons_isPath_iff _ _).2 ⟨hp, hu⟩
 
@@ -1081,6 +1105,14 @@ theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.
 lemma IsCycle.ne_bot : ∀ {p : G.Walk u u}, p.IsCycle → G ≠ ⊥
   | nil, hp => by cases hp.ne_nil rfl
   | cons h _, hp => by rintro rfl; exact h
+
+lemma IsCycle.three_le_length {v : V} {p : G.Walk v v} (hp : p.IsCycle) : 3 ≤ p.length := by
+  have ⟨⟨hp, hp'⟩, _⟩ := hp
+  match p with
+  | .nil => simp at hp'
+  | .cons h .nil => simp at h
+  | .cons _ (.cons _ .nil) => simp at hp
+  | .cons _ (.cons _ (.cons _ _)) => simp_rw [SimpleGraph.Walk.length_cons]; omega
 
 theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
     (Walk.cons h p).IsCycle ↔ p.IsPath ∧ ¬s(u, v) ∈ p.edges := by
@@ -1121,7 +1153,10 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
     if hx : v = u then
       by subst u; exact Walk.nil
     else
-      cons r (takeUntil p u <| by cases h; exact (hx rfl).elim; assumption)
+      cons r (takeUntil p u <| by
+        cases h
+        · exact (hx rfl).elim
+        · assumption)
 #align simple_graph.walk.take_until SimpleGraph.Walk.takeUntil
 
 /-- Given a vertex in the support of a path, give the path from (and including) that vertex to
@@ -1133,7 +1168,10 @@ def dropUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
     if hx : v = u then by
       subst u
       exact cons r p
-    else dropUntil p u <| by cases h; exact (hx rfl).elim; assumption
+    else dropUntil p u <| by
+      cases h
+      · exact (hx rfl).elim
+      · assumption
 #align simple_graph.walk.drop_until SimpleGraph.Walk.dropUntil
 
 /-- The `takeUntil` and `dropUntil` functions split a walk into two pieces.
@@ -1273,7 +1311,7 @@ protected theorem IsPath.takeUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
   IsPath.of_append_left (by rwa [← take_spec _ h] at hc)
 #align simple_graph.walk.is_path.take_until SimpleGraph.Walk.IsPath.takeUntil
 
--- porting note: p was previously accidentally an explicit argument
+-- Porting note: p was previously accidentally an explicit argument
 protected theorem IsPath.dropUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
     (h : u ∈ p.support) : (p.dropUntil u h).IsPath :=
   IsPath.of_append_right (by rwa [← take_spec _ h] at hc)
@@ -1407,8 +1445,8 @@ theorem loop_eq {v : V} (p : G.Path v v) : p = Path.nil := by
   · simp at h
 #align simple_graph.path.loop_eq SimpleGraph.Path.loop_eq
 
-theorem not_mem_edges_of_loop {v : V} {e : Sym2 V} {p : G.Path v v} : ¬e ∈ (p : G.Walk v v).edges :=
-  by simp [p.loop_eq]
+theorem not_mem_edges_of_loop {v : V} {e : Sym2 V} {p : G.Path v v} :
+    ¬e ∈ (p : G.Walk v v).edges := by simp [p.loop_eq]
 #align simple_graph.path.not_mem_edges_of_loop SimpleGraph.Path.not_mem_edges_of_loop
 
 theorem cons_isCycle {u v : V} (p : G.Path v u) (h : G.Adj u v)
@@ -1462,12 +1500,30 @@ theorem length_bypass_le {u v : V} (p : G.Walk u v) : p.bypass.length ≤ p.leng
     simp only [bypass]
     split_ifs
     · trans
-      apply length_dropUntil_le
+      · apply length_dropUntil_le
       rw [length_cons]
-      exact le_add_right ih
+      omega
     · rw [length_cons, length_cons]
-      exact add_le_add_right ih 1
+      exact Nat.add_le_add_right ih 1
 #align simple_graph.walk.length_bypass_le SimpleGraph.Walk.length_bypass_le
+
+lemma bypass_eq_self_of_length_le {u v : V} (p : G.Walk u v) (h : p.length ≤ p.bypass.length) :
+    p.bypass = p := by
+  induction p with
+  | nil => rfl
+  | cons h p ih =>
+    simp only [Walk.bypass]
+    split_ifs with hb
+    · exfalso
+      simp only [hb, Walk.bypass, Walk.length_cons, dif_pos] at h
+      apply Nat.not_succ_le_self p.length
+      calc p.length + 1
+        _ ≤ (p.bypass.dropUntil _ _).length := h
+        _ ≤ p.bypass.length := Walk.length_dropUntil_le p.bypass hb
+        _ ≤ p.length := Walk.length_bypass_le _
+    · simp only [hb, Walk.bypass, Walk.length_cons, not_false_iff, dif_neg,
+        Nat.add_le_add_iff_right] at h
+      rw [ih h]
 
 /-- Given a walk, produces a path with the same endpoints using `SimpleGraph.Walk.bypass`. -/
 def toPath {u v : V} (p : G.Walk u v) : G.Path u v :=
@@ -1626,7 +1682,7 @@ protected theorem IsPath.of_map {f : G →g G'} (hp : (p.map f).IsPath) : p.IsPa
     rw [map_cons, Walk.cons_isPath_iff, support_map] at hp
     rw [Walk.cons_isPath_iff]
     cases' hp with hp1 hp2
-    refine' ⟨ih hp1, _⟩
+    refine ⟨ih hp1, ?_⟩
     contrapose! hp2
     exact List.mem_map_of_mem f hp2
 #align simple_graph.walk.is_path.of_map SimpleGraph.Walk.IsPath.of_map
@@ -1650,7 +1706,7 @@ alias ⟨_, map_isTrail_of_injective⟩ := map_isTrail_iff_of_injective
 
 theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
     (p.map f).IsCycle ↔ p.IsCycle := by
-  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, Ne.def, map_eq_nil_iff,
+  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, Ne, map_eq_nil_iff,
     support_map, ← List.map_tail, List.nodup_map_iff hinj]
 #align simple_graph.walk.map_is_cycle_iff_of_injective SimpleGraph.Walk.map_isCycle_iff_of_injective
 
@@ -1679,8 +1735,7 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
 #align simple_graph.walk.map_injective_of_injective SimpleGraph.Walk.map_injective_of_injective
 
 /-- The specialization of `SimpleGraph.Walk.map` for mapping walks to supergraphs. -/
-@[reducible]
-def mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v) : G'.Walk u v :=
+abbrev mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v) : G'.Walk u v :=
   p.map (Hom.mapSpanningSubgraphs h)
 #align simple_graph.walk.map_le SimpleGraph.Walk.mapLe
 
@@ -1759,7 +1814,7 @@ protected def transfer {u v : V} (p : G.Walk u v)
     (H : SimpleGraph V) (h : ∀ e, e ∈ p.edges → e ∈ H.edgeSet) : H.Walk u v :=
   match p with
   | nil => nil
-  | cons' u v w a p =>
+  | cons' u v w _ p =>
     cons (h s(u, v) (by simp)) (p.transfer H fun e he => h e (by simp [he]))
 #align simple_graph.walk.transfer SimpleGraph.Walk.transfer
 
@@ -1768,6 +1823,8 @@ variable {u v : V} (p : G.Walk u v)
 theorem transfer_self : p.transfer G p.edges_subset_edgeSet = p := by
   induction p <;> simp [*]
 #align simple_graph.walk.transfer_self SimpleGraph.Walk.transfer_self
+
+variable {H : SimpleGraph V}
 
 theorem transfer_eq_map_of_le (hp) (GH : G ≤ H) :
     p.transfer H hp = p.map (SimpleGraph.Hom.mapSpanningSubgraphs GH) := by
@@ -1812,7 +1869,7 @@ protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :
 
 variable (p)
 
--- porting note: this failed the simpNF linter since it was originally of the form
+-- Porting note: this failed the simpNF linter since it was originally of the form
 -- `(p.transfer H hp).transfer K hp' = p.transfer K hp''` with `hp'` a function of `hp` and `hp'`.
 -- This was a mistake and it's corrected here.
 @[simp]
@@ -1826,7 +1883,7 @@ theorem transfer_transfer (hp) {K : SimpleGraph V} (hp') :
 #align simple_graph.walk.transfer_transfer SimpleGraph.Walk.transfer_transfer
 
 @[simp]
-theorem transfer_append (q : G.Walk v w) (hpq) :
+theorem transfer_append {w : V} (q : G.Walk v w) (hpq) :
     (p.append q).transfer H hpq =
       (p.transfer H fun e he => hpq _ (by simp [he])).append
         (q.transfer H fun e he => hpq _ (by simp [he])) := by
@@ -1855,9 +1912,8 @@ variable {G}
 
 /-- Given a walk that avoids a set of edges, produce a walk in the graph
 with those edges deleted. -/
-@[reducible]
-def toDeleteEdges (s : Set (Sym2 V)) {v w : V} (p : G.Walk v w) (hp : ∀ e, e ∈ p.edges → ¬e ∈ s) :
-    (G.deleteEdges s).Walk v w :=
+abbrev toDeleteEdges (s : Set (Sym2 V)) {v w : V} (p : G.Walk v w)
+    (hp : ∀ e, e ∈ p.edges → ¬e ∈ s) : (G.deleteEdges s).Walk v w :=
   p.transfer _ <| by
     simp only [edgeSet_deleteEdges, Set.mem_diff]
     exact fun e ep => ⟨edges_subset_edgeSet p ep, hp e ep⟩
@@ -1871,10 +1927,12 @@ theorem toDeleteEdges_nil (s : Set (Sym2 V)) {v : V} (hp) :
 @[simp]
 theorem toDeleteEdges_cons (s : Set (Sym2 V)) {u v w : V} (h : G.Adj u v) (p : G.Walk v w) (hp) :
     (Walk.cons h p).toDeleteEdges s hp =
-      Walk.cons ((deleteEdges_adj _ _ _ _).mpr ⟨h, hp _ (List.Mem.head _)⟩)
+      Walk.cons (deleteEdges_adj.mpr ⟨h, hp _ (List.Mem.head _)⟩)
         (p.toDeleteEdges s fun _ he => hp _ <| List.Mem.tail _ he) :=
   rfl
 #align simple_graph.walk.to_delete_edges_cons SimpleGraph.Walk.toDeleteEdges_cons
+
+variable {v w : V}
 
 /-- Given a walk that avoids an edge, create a walk in the subgraph with that edge deleted.
 This is an abbreviation for `SimpleGraph.Walk.toDeleteEdges`. -/
@@ -1887,9 +1945,9 @@ abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
 theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
     Walk.map (Hom.mapSpanningSubgraphs (G.deleteEdges_le s)) (p.toDeleteEdges s hp) = p := by
   rw [← transfer_eq_map_of_le, transfer_transfer, transfer_self]
-  · intros e
-    rw [edges_transfer]
-    apply edges_subset_edgeSet p
+  intros e
+  rw [edges_transfer]
+  apply edges_subset_edgeSet p
 #align simple_graph.walk.map_to_delete_edges_eq SimpleGraph.Walk.map_toDeleteEdges_eq
 
 protected theorem IsPath.toDeleteEdges (s : Set (Sym2 V))
@@ -1903,7 +1961,7 @@ protected theorem IsCycle.toDeleteEdges (s : Set (Sym2 V))
 #align simple_graph.walk.is_cycle.to_delete_edges SimpleGraph.Walk.IsCycle.toDeleteEdges
 
 @[simp]
-theorem toDeleteEdges_copy (s : Set (Sym2 V))
+theorem toDeleteEdges_copy {v u u' v' : V} (s : Set (Sym2 V))
     (p : G.Walk u v) (hu : u = u') (hv : v = v') (h) :
     (p.copy hu hv).toDeleteEdges s h =
       (p.toDeleteEdges s (by subst_vars; exact h)).copy hu hv := by
@@ -1981,14 +2039,15 @@ theorem reachable_iff_reflTransGen (u v : V) :
     | tail _ ha hr => exact Reachable.trans hr ⟨Walk.cons ha Walk.nil⟩
 #align simple_graph.reachable_iff_refl_trans_gen SimpleGraph.reachable_iff_reflTransGen
 
-protected theorem Reachable.map {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G →g G')
+protected theorem Reachable.map {u v : V} {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G →g G')
     (h : G.Reachable u v) : G'.Reachable (f u) (f v) :=
   h.elim fun p => ⟨p.map f⟩
 #align simple_graph.reachable.map SimpleGraph.Reachable.map
 
 @[mono]
-protected lemma Reachable.mono  {G G' : SimpleGraph V} (h : G ≤ G') (Guv : G.Reachable u v) :
-    G'.Reachable u v := Guv.map (SimpleGraph.Hom.mapSpanningSubgraphs h)
+protected lemma Reachable.mono {u v : V} {G G' : SimpleGraph V}
+    (h : G ≤ G') (Guv : G.Reachable u v) : G'.Reachable u v :=
+  Guv.map (SimpleGraph.Hom.mapSpanningSubgraphs h)
 
 theorem Iso.reachable_iff {G : SimpleGraph V} {G' : SimpleGraph V'} {φ : G ≃g G'} {u v : V} :
     G'.Reachable (φ u) (φ v) ↔ G.Reachable u v :=
@@ -2168,14 +2227,14 @@ theorem map_mk (φ : G →g G') (v : V) :
 
 @[simp]
 theorem map_id (C : ConnectedComponent G) : C.map Hom.id = C := by
-  refine' C.ind _
+  refine C.ind ?_
   exact fun _ => rfl
 #align simple_graph.connected_component.map_id SimpleGraph.ConnectedComponent.map_id
 
 @[simp]
 theorem map_comp (C : G.ConnectedComponent) (φ : G →g G') (ψ : G' →g G'') :
     (C.map φ).map ψ = C.map (ψ.comp φ) := by
-  refine' C.ind _
+  refine C.ind ?_
   exact fun _ => rfl
 #align simple_graph.connected_component.map_comp SimpleGraph.ConnectedComponent.map_comp
 
@@ -2184,7 +2243,7 @@ variable {φ : G ≃g G'} {v : V} {v' : V'}
 @[simp]
 theorem iso_image_comp_eq_map_iff_eq_comp {C : G.ConnectedComponent} :
     G'.connectedComponentMk (φ v) = C.map ↑(↑φ : G ↪g G') ↔ G.connectedComponentMk v = C := by
-  refine' C.ind fun u => _
+  refine C.ind fun u => ?_
   simp only [Iso.reachable_iff, ConnectedComponent.map_mk, RelEmbedding.coe_toRelHom,
     RelIso.coe_toRelEmbedding, ConnectedComponent.eq]
 #align simple_graph.connected_component.iso_image_comp_eq_map_iff_eq_comp SimpleGraph.ConnectedComponent.iso_image_comp_eq_map_iff_eq_comp
@@ -2192,7 +2251,7 @@ theorem iso_image_comp_eq_map_iff_eq_comp {C : G.ConnectedComponent} :
 @[simp]
 theorem iso_inv_image_comp_eq_iff_eq_map {C : G.ConnectedComponent} :
     G.connectedComponentMk (φ.symm v') = C ↔ G'.connectedComponentMk v' = C.map φ := by
-  refine' C.ind fun u => _
+  refine C.ind fun u => ?_
   simp only [Iso.symm_apply_reachable, ConnectedComponent.eq, ConnectedComponent.map_mk,
     RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding]
 #align simple_graph.connected_component.iso_inv_image_comp_eq_iff_eq_map SimpleGraph.ConnectedComponent.iso_inv_image_comp_eq_iff_eq_map
@@ -2246,7 +2305,7 @@ def supp (C : G.ConnectedComponent) :=
 @[ext]
 theorem supp_injective :
     Function.Injective (ConnectedComponent.supp : G.ConnectedComponent → Set V) := by
-  refine' ConnectedComponent.ind₂ _
+  refine ConnectedComponent.ind₂ ?_
   intro v w
   simp only [ConnectedComponent.supp, Set.ext_iff, ConnectedComponent.eq, Set.mem_setOf_eq]
   intro h
@@ -2365,8 +2424,8 @@ theorem toSubgraph_rotate [DecidableEq V] (c : G.Walk v v) (h : u ∈ c.support)
 #align simple_graph.walk.to_subgraph_rotate SimpleGraph.Walk.toSubgraph_rotate
 
 @[simp]
-theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) : (p.map f).toSubgraph = p.toSubgraph.map f :=
-  by induction p <;> simp [*, Subgraph.map_sup]
+theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) :
+    (p.map f).toSubgraph = p.toSubgraph.map f := by induction p <;> simp [*, Subgraph.map_sup]
 #align simple_graph.walk.to_subgraph_map SimpleGraph.Walk.toSubgraph_map
 
 @[simp]
@@ -2564,7 +2623,7 @@ theorem reachable_delete_edges_iff_exists_walk {v w : V} :
   constructor
   · rintro ⟨p⟩
     use p.map (Hom.mapSpanningSubgraphs (by simp))
-    simp_rw [Walk.edges_map, List.mem_map, Hom.mapSpanningSubgraphs_apply, Sym2.map_id', id.def]
+    simp_rw [Walk.edges_map, List.mem_map, Hom.mapSpanningSubgraphs_apply, Sym2.map_id', id]
     rintro ⟨e, h, rfl⟩
     simpa using p.edges_subset_edgeSet h
   · rintro ⟨p, h⟩
@@ -2591,7 +2650,7 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
   let puw := (c.takeUntil v hv).takeUntil w hw
   let pwv := (c.takeUntil v hv).dropUntil w hw
   let pvu := c.dropUntil v hv
-  have : c = (puw.append pwv).append pvu := by simp
+  have : c = (puw.append pwv).append pvu := by simp [puw, pwv, pvu]
   -- We have two walks from v to w
   --      pvu     puw
   --   v ----> u ----> w
@@ -2607,7 +2666,7 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
   exact List.disjoint_of_nodup_append hc hbq hpq'
 #align simple_graph.reachable_delete_edges_iff_exists_cycle.aux SimpleGraph.reachable_deleteEdges_iff_exists_cycle.aux
 
--- porting note: the unused variable checker helped eliminate a good amount of this proof (!)
+-- Porting note: the unused variable checker helped eliminate a good amount of this proof (!)
 theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
     G.Adj v w ∧ (G \ fromEdgeSet {s(v, w)}).Reachable v w ↔
       ∃ (u : V) (p : G.Walk u u), p.IsCycle ∧ s(v, w) ∈ p.edges := by

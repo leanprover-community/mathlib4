@@ -35,6 +35,8 @@ The adjunction `Γ ⊣ Spec` is constructed in `Mathlib/AlgebraicGeometry/GammaS
 -/
 
 
+-- Explicit universe annotations were used in this file to improve perfomance #12737
+
 noncomputable section
 
 universe u v
@@ -51,47 +53,49 @@ open Spec (structureSheaf)
 
 /-- The spectrum of a commutative ring, as a topological space.
 -/
-def Spec.topObj (R : CommRingCat) : TopCat :=
+def Spec.topObj (R : CommRingCat.{u}) : TopCat :=
   TopCat.of (PrimeSpectrum R)
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.Top_obj AlgebraicGeometry.Spec.topObj
 
+@[simp] theorem Spec.topObj_forget {R} : (forget TopCat).obj (Spec.topObj R) = PrimeSpectrum R :=
+  rfl
+
 /-- The induced map of a ring homomorphism on the ring spectra, as a morphism of topological spaces.
 -/
-def Spec.topMap {R S : CommRingCat} (f : R ⟶ S) : Spec.topObj S ⟶ Spec.topObj R :=
+def Spec.topMap {R S : CommRingCat.{u}} (f : R ⟶ S) : Spec.topObj S ⟶ Spec.topObj R :=
   PrimeSpectrum.comap f
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.Top_map AlgebraicGeometry.Spec.topMap
 
 @[simp]
-theorem Spec.topMap_id (R : CommRingCat) : Spec.topMap (𝟙 R) = 𝟙 (Spec.topObj R) :=
-  PrimeSpectrum.comap_id
+theorem Spec.topMap_id (R : CommRingCat.{u}) : Spec.topMap (𝟙 R) = 𝟙 (Spec.topObj R) :=
+  rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.Top_map_id AlgebraicGeometry.Spec.topMap_id
 
-theorem Spec.topMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
+@[simp]
+theorem Spec.topMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.topMap (f ≫ g) = Spec.topMap g ≫ Spec.topMap f :=
-  PrimeSpectrum.comap_comp _ _
+  rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.Top_map_comp AlgebraicGeometry.Spec.topMap_comp
 
--- Porting note : `simps!` generate some garbage lemmas, so choose manually,
+-- Porting note: `simps!` generate some garbage lemmas, so choose manually,
 -- if more is needed, add them here
 /-- The spectrum, as a contravariant functor from commutative rings to topological spaces.
 -/
 @[simps! obj map]
-def Spec.toTop : CommRingCatᵒᵖ ⥤ TopCat where
+def Spec.toTop : CommRingCat.{u}ᵒᵖ ⥤ TopCat where
   obj R := Spec.topObj (unop R)
   map {R S} f := Spec.topMap f.unop
-  map_id R := by dsimp; rw [Spec.topMap_id]
-  map_comp {R S T} f g := by dsimp; rw [Spec.topMap_comp]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.to_Top AlgebraicGeometry.Spec.toTop
 
 /-- The spectrum of a commutative ring, as a `SheafedSpace`.
 -/
 @[simps]
-def Spec.sheafedSpaceObj (R : CommRingCat) : SheafedSpace CommRingCat where
+def Spec.sheafedSpaceObj (R : CommRingCat.{u}) : SheafedSpace CommRingCat where
   carrier := Spec.topObj R
   presheaf := (structureSheaf R).1
   IsSheaf := (structureSheaf R).2
@@ -112,22 +116,21 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.SheafedSpace_map AlgebraicGeometry.Spec.sheafedSpaceMap
 
 @[simp]
-theorem Spec.sheafedSpaceMap_id {R : CommRingCat} :
+theorem Spec.sheafedSpaceMap_id {R : CommRingCat.{u}} :
     Spec.sheafedSpaceMap (𝟙 R) = 𝟙 (Spec.sheafedSpaceObj R) :=
   AlgebraicGeometry.PresheafedSpace.Hom.ext _ _ (Spec.topMap_id R) <| by
-    ext U
+    ext
     dsimp
-    erw [PresheafedSpace.id_c_app, comap_id]; swap
-    · rw [Spec.topMap_id, TopologicalSpace.Opens.map_id_obj_unop]
-    simp [eqToHom_map]
+    erw [comap_id (by simp)]
+    simp
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.SheafedSpace_map_id AlgebraicGeometry.Spec.sheafedSpaceMap_id
 
-theorem Spec.sheafedSpaceMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
+theorem Spec.sheafedSpaceMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.sheafedSpaceMap (f ≫ g) = Spec.sheafedSpaceMap g ≫ Spec.sheafedSpaceMap f :=
   AlgebraicGeometry.PresheafedSpace.Hom.ext _ _ (Spec.topMap_comp f g) <| by
     ext
-    -- Porting note : was one liner
+    -- Porting note: was one liner
     -- `dsimp, rw category_theory.functor.map_id, rw category.comp_id, erw comap_comp f g, refl`
     rw [NatTrans.comp_app, sheafedSpaceMap_c_app, whiskerRight_app, eqToHom_refl]
     erw [(sheafedSpaceObj T).presheaf.map_id, Category.comp_id, comap_comp]
@@ -138,42 +141,41 @@ set_option linter.uppercaseLean3 false in
 /-- Spec, as a contravariant functor from commutative rings to sheafed spaces.
 -/
 @[simps]
-def Spec.toSheafedSpace : CommRingCatᵒᵖ ⥤ SheafedSpace CommRingCat where
+def Spec.toSheafedSpace : CommRingCat.{u}ᵒᵖ ⥤ SheafedSpace CommRingCat where
   obj R := Spec.sheafedSpaceObj (unop R)
   map f := Spec.sheafedSpaceMap f.unop
-  map_id R := by dsimp; rw [Spec.sheafedSpaceMap_id]
-  map_comp f g := by dsimp; rw [Spec.sheafedSpaceMap_comp]
+  map_comp f g := by simp [Spec.sheafedSpaceMap_comp]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.to_SheafedSpace AlgebraicGeometry.Spec.toSheafedSpace
 
 /-- Spec, as a contravariant functor from commutative rings to presheafed spaces.
 -/
-def Spec.toPresheafedSpace : CommRingCatᵒᵖ ⥤ PresheafedSpace.{_, _, u} CommRingCat :=
+def Spec.toPresheafedSpace : CommRingCat.{u}ᵒᵖ ⥤ PresheafedSpace CommRingCat :=
   Spec.toSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.to_PresheafedSpace AlgebraicGeometry.Spec.toPresheafedSpace
 
 @[simp]
-theorem Spec.toPresheafedSpace_obj (R : CommRingCatᵒᵖ) :
+theorem Spec.toPresheafedSpace_obj (R : CommRingCat.{u}ᵒᵖ) :
     Spec.toPresheafedSpace.obj R = (Spec.sheafedSpaceObj (unop R)).toPresheafedSpace :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.to_PresheafedSpace_obj AlgebraicGeometry.Spec.toPresheafedSpace_obj
 
-theorem Spec.toPresheafedSpace_obj_op (R : CommRingCat) :
+theorem Spec.toPresheafedSpace_obj_op (R : CommRingCat.{u}) :
     Spec.toPresheafedSpace.obj (op R) = (Spec.sheafedSpaceObj R).toPresheafedSpace :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.to_PresheafedSpace_obj_op AlgebraicGeometry.Spec.toPresheafedSpace_obj_op
 
 @[simp]
-theorem Spec.toPresheafedSpace_map (R S : CommRingCatᵒᵖ) (f : R ⟶ S) :
+theorem Spec.toPresheafedSpace_map (R S : CommRingCat.{u}ᵒᵖ) (f : R ⟶ S) :
     Spec.toPresheafedSpace.map f = Spec.sheafedSpaceMap f.unop :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.to_PresheafedSpace_map AlgebraicGeometry.Spec.toPresheafedSpace_map
 
-theorem Spec.toPresheafedSpace_map_op (R S : CommRingCat) (f : R ⟶ S) :
+theorem Spec.toPresheafedSpace_map_op (R S : CommRingCat.{u}) (f : R ⟶ S) :
     Spec.toPresheafedSpace.map f.op = Spec.sheafedSpaceMap f :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -192,22 +194,16 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
       ((TopCat.Sheaf.pushforward _ β.base).obj X.sheaf).hom_ext _ PrimeSpectrum.isBasis_basic_opens
     intro r
     apply (StructureSheaf.to_basicOpen_epi R r).1
-    -- Porting note : was a one-liner `simpa using h r`
-    specialize h r
-    simp only [sheafedSpaceObj_carrier, Functor.op_obj, unop_op, TopCat.Presheaf.pushforwardObj_obj,
-      sheafedSpaceObj_presheaf, Category.assoc] at h
-    rw [NatTrans.comp_app, ← h]
-    congr
-    simp
+    simpa using h r
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.basic_open_hom_ext AlgebraicGeometry.Spec.basicOpen_hom_ext
 
--- Porting note : `simps!` generate some garbage lemmas, so choose manually,
+-- Porting note: `simps!` generate some garbage lemmas, so choose manually,
 -- if more is needed, add them here
 /-- The spectrum of a commutative ring, as a `LocallyRingedSpace`.
 -/
 @[simps! toSheafedSpace]
-def Spec.locallyRingedSpaceObj (R : CommRingCat) : LocallyRingedSpace :=
+def Spec.locallyRingedSpaceObj (R : CommRingCat.{u}) : LocallyRingedSpace :=
   { Spec.sheafedSpaceObj R with
     localRing := fun x =>
       RingEquiv.localRing (A := Localization.AtPrime x.asIdeal)
@@ -216,7 +212,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.LocallyRingedSpace_obj AlgebraicGeometry.Spec.locallyRingedSpaceObj
 
 @[elementwise]
-theorem stalkMap_toStalk {R S : CommRingCat} (f : R ⟶ S) (p : PrimeSpectrum S) :
+theorem stalkMap_toStalk {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S) :
     toStalk R (PrimeSpectrum.comap f p) ≫ PresheafedSpace.stalkMap (Spec.sheafedSpaceMap f) p =
       f ≫ toStalk S p := by
   erw [← toOpen_germ S ⊤ ⟨p, trivial⟩, ← toOpen_germ R ⊤ ⟨PrimeSpectrum.comap f p, trivial⟩,
@@ -230,7 +226,7 @@ set_option linter.uppercaseLean3 false in
 to the induced local ring homomorphism `Localization.localRingHom`.
 -/
 @[elementwise]
-theorem localRingHom_comp_stalkIso {R S : CommRingCat} (f : R ⟶ S) (p : PrimeSpectrum S) :
+theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S) :
     (stalkIso R (PrimeSpectrum.comap f p)).hom ≫
         @CategoryStruct.comp _ _
           (CommRingCat.of (Localization.AtPrime (PrimeSpectrum.comap f p).asIdeal))
@@ -241,9 +237,10 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat} (f : R ⟶ S) (p : PrimeS
   (stalkIso R (PrimeSpectrum.comap f p)).eq_inv_comp.mp <|
     (stalkIso S p).comp_inv_eq.mpr <|
       Localization.localRingHom_unique _ _ _ _ fun x => by
-        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-        rw [stalkIso_hom, stalkIso_inv]; erw [comp_apply, comp_apply]; rw [localizationToStalk_of]
-        erw [stalkMap_toStalk_apply f p x, stalkToFiberRingHom_toStalk]
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644 and #8386
+        rw [stalkIso_hom, stalkIso_inv]
+        erw [comp_apply, comp_apply, localizationToStalk_of, stalkMap_toStalk_apply f p x,
+            stalkToFiberRingHom_toStalk]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.local_ring_hom_comp_stalk_iso AlgebraicGeometry.localRingHom_comp_stalkIso
 
@@ -251,18 +248,21 @@ set_option linter.uppercaseLean3 false in
 The induced map of a ring homomorphism on the prime spectra, as a morphism of locally ringed spaces.
 -/
 @[simps]
-def Spec.locallyRingedSpaceMap {R S : CommRingCat} (f : R ⟶ S) :
+def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
     Spec.locallyRingedSpaceObj S ⟶ Spec.locallyRingedSpaceObj R :=
   LocallyRingedSpace.Hom.mk (Spec.sheafedSpaceMap f) fun p =>
     IsLocalRingHom.mk fun a ha => by
       -- Here, we are showing that the map on prime spectra induced by `f` is really a morphism of
       -- *locally* ringed spaces, i.e. that the induced map on the stalks is a local ring
       -- homomorphism.
+
+      -- Adaptation note: nightly-2024-04-01
+      -- It's this `erw` that is blowing up. The implicit arguments differ significantly.
       erw [← localRingHom_comp_stalkIso_apply] at ha
       replace ha := (stalkIso S p).hom.isUnit_map ha
       rw [← comp_apply, show localizationToStalk S p = (stalkIso S p).inv from rfl,
         Iso.inv_hom_id, id_apply] at ha
-      -- Porting note : `f` had to be made explicit
+      -- Porting note: `f` had to be made explicit
       replace ha := IsLocalRingHom.map_nonunit
         (f := (Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f _)) _ ha
       convert RingHom.isUnit_map (stalkIso R (PrimeSpectrum.comap f p)).inv ha
@@ -272,14 +272,14 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.LocallyRingedSpace_map AlgebraicGeometry.Spec.locallyRingedSpaceMap
 
 @[simp]
-theorem Spec.locallyRingedSpaceMap_id (R : CommRingCat) :
+theorem Spec.locallyRingedSpaceMap_id (R : CommRingCat.{u}) :
     Spec.locallyRingedSpaceMap (𝟙 R) = 𝟙 (Spec.locallyRingedSpaceObj R) :=
   LocallyRingedSpace.Hom.ext _ _ <| by
     rw [Spec.locallyRingedSpaceMap_val, Spec.sheafedSpaceMap_id]; rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.LocallyRingedSpace_map_id AlgebraicGeometry.Spec.locallyRingedSpaceMap_id
 
-theorem Spec.locallyRingedSpaceMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
+theorem Spec.locallyRingedSpaceMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.locallyRingedSpaceMap (f ≫ g) =
       Spec.locallyRingedSpaceMap g ≫ Spec.locallyRingedSpaceMap f :=
   LocallyRingedSpace.Hom.ext _ _ <| by
@@ -290,7 +290,7 @@ set_option linter.uppercaseLean3 false in
 /-- Spec, as a contravariant functor from commutative rings to locally ringed spaces.
 -/
 @[simps]
-def Spec.toLocallyRingedSpace : CommRingCatᵒᵖ ⥤ LocallyRingedSpace where
+def Spec.toLocallyRingedSpace : CommRingCat.{u}ᵒᵖ ⥤ LocallyRingedSpace where
   obj R := Spec.locallyRingedSpaceObj (unop R)
   map f := Spec.locallyRingedSpaceMap f.unop
   map_id R := by dsimp; rw [Spec.locallyRingedSpaceMap_id]
@@ -302,9 +302,10 @@ section SpecΓ
 
 open AlgebraicGeometry.LocallyRingedSpace
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- The counit morphism `R ⟶ Γ(Spec R)` given by `AlgebraicGeometry.StructureSheaf.toOpen`.  -/
 @[simps!]
-def toSpecΓ (R : CommRingCat) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj (op R))) :=
+def toSpecΓ (R : CommRingCat.{u}) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj (op R))) :=
   StructureSheaf.toOpen R ⊤
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.to_Spec_Γ AlgebraicGeometry.toSpecΓ
@@ -312,25 +313,30 @@ set_option linter.uppercaseLean3 false in
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] AlgebraicGeometry.toSpecΓ_apply_coe
 
-instance isIso_toSpecΓ (R : CommRingCat) : IsIso (toSpecΓ R) := by
+instance isIso_toSpecΓ (R : CommRingCat.{u}) : IsIso (toSpecΓ R) := by
   cases R; apply StructureSheaf.isIso_to_global
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.is_iso_to_Spec_Γ AlgebraicGeometry.isIso_toSpecΓ
 
 @[reassoc]
-theorem Spec_Γ_naturality {R S : CommRingCat} (f : R ⟶ S) :
+theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
     f ≫ toSpecΓ S = toSpecΓ R ≫ Γ.map (Spec.toLocallyRingedSpace.map f.op).op := by
-  -- Porting note : `ext` failed to pick up one of the three lemmas
+  -- Porting note: `ext` failed to pick up one of the three lemmas
   refine RingHom.ext fun x => Subtype.ext <| funext fun x' => ?_; symm;
   apply Localization.localRingHom_to_map
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec_Γ_naturality AlgebraicGeometry.Spec_Γ_naturality
 
+-- Adaptation note: 2024-04-23
+-- This `maxHeartbeats` was not previously required.
+-- Without the backwards compatibility flag even more is needed.
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
+set_option maxHeartbeats 800000 in
 /-- The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` is an isomorphism. -/
 @[simps! hom_app inv_app]
 def SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
-  Iso.symm <| NatIso.ofComponents (fun R =>
-    -- Porting note : In Lean3, this `IsIso` is synthesized automatically
+  Iso.symm <| NatIso.ofComponents.{u,u,u+1,u+1} (fun R =>
+    -- Porting note: In Lean3, this `IsIso` is synthesized automatically
     letI : IsIso (toSpecΓ R) := StructureSheaf.isIso_to_global _
     asIso (toSpecΓ R)) fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f
 set_option linter.uppercaseLean3 false in
@@ -339,7 +345,7 @@ set_option linter.uppercaseLean3 false in
 end SpecΓ
 
 /-- The stalk map of `Spec M⁻¹R ⟶ Spec R` is an iso for each `p : Spec M⁻¹R`. -/
-theorem Spec_map_localization_isIso (R : CommRingCat) (M : Submonoid R)
+theorem Spec_map_localization_isIso (R : CommRingCat.{u}) (M : Submonoid R)
     (x : PrimeSpectrum (Localization M)) :
     IsIso
       (PresheafedSpace.stalkMap
@@ -409,7 +415,7 @@ set_option linter.uppercaseLean3 false in
 theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
     ∃ x : S × p.asIdeal.primeCompl, x.2 • y = toPushforwardStalkAlgHom R S p x.1 := by
   obtain ⟨U, hp, s, e⟩ := TopCat.Presheaf.germ_exist
-    -- Porting note : originally the first variable does not need to be explicit
+    -- Porting note: originally the first variable does not need to be explicit
     (Spec.topMap (algebraMap ↑R ↑S) _* (structureSheaf S).val) _ y
   obtain ⟨_, ⟨r, rfl⟩, hpr : p ∈ PrimeSpectrum.basicOpen r, hrU : PrimeSpectrum.basicOpen r ≤ U⟩ :=
     PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open (show p ∈ U from hp) U.2
@@ -418,20 +424,20 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
     ((Spec.topMap (algebraMap R S) _* (structureSheaf S).1).germ_res_apply (homOfLE hrU)
           ⟨p, hpr⟩ _).trans e
   set s' := (Spec.topMap (algebraMap R S) _* (structureSheaf S).1).map (homOfLE hrU).op s with h
-  replace e : ((Spec.topMap (algebraMap R S) _* (structureSheaf S).val).germ ⟨p, hpr⟩) s' = y
-  · rw [h]; exact e
+  replace e : ((Spec.topMap (algebraMap R S) _* (structureSheaf S).val).germ ⟨p, hpr⟩) s' = y := by
+    rw [h]; exact e
   clear_value s'; clear! U
   obtain ⟨⟨s, ⟨_, n, rfl⟩⟩, hsn⟩ :=
     @IsLocalization.surj _ _ _ _ _ _
       (StructureSheaf.IsLocalization.to_basicOpen S <| algebraMap R S r) s'
-  refine' ⟨⟨s, ⟨r, hpr⟩ ^ n⟩, _⟩
+  refine ⟨⟨s, ⟨r, hpr⟩ ^ n⟩, ?_⟩
   rw [Submonoid.smul_def, Algebra.smul_def, algebraMap_pushforward_stalk, toPushforwardStalk,
     comp_apply, comp_apply]
   iterate 2
     erw [← (Spec.topMap (algebraMap R S) _* (structureSheaf S).1).germ_res_apply (homOfLE le_top)
       ⟨p, hpr⟩]
   rw [← e]
-  -- Porting note : without this `change`, Lean doesn't know how to rewrite `map_mul`
+  -- Porting note: without this `change`, Lean doesn't know how to rewrite `map_mul`
   let f := TopCat.Presheaf.germ (Spec.topMap (algebraMap R S) _* (structureSheaf S).val) ⟨p, hpr⟩
   change f _ * f _ = f _
   rw [← map_mul, mul_comm]
@@ -452,7 +458,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
   · intro x hx
     rw [toPushforwardStalkAlgHom_apply, ← (toPushforwardStalk (algebraMap R S) p).map_zero,
       toPushforwardStalk] at hx
-    -- Porting note : this `change` is manually rewriting `comp_apply`
+    -- Porting note: this `change` is manually rewriting `comp_apply`
     change _ = (TopCat.Presheaf.germ (Spec.topMap (algebraMap ↑R ↑S) _* (structureSheaf ↑S).val)
       (⟨p, trivial⟩ : (⊤ : TopologicalSpace.Opens (PrimeSpectrum R))) (toOpen S ⊤ 0)) at hx
     rw [map_zero] at hx
@@ -466,15 +472,15 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
     simp only [TopCat.Presheaf.pushforwardObj_map, Functor.op_map, map_zero, ← comp_apply,
       toOpen_res] at e
     have : toOpen S (PrimeSpectrum.basicOpen <| algebraMap R S r) x = 0 := by
-      refine' Eq.trans _ e; rfl
+      refine Eq.trans ?_ e; rfl
     have :=
       (@IsLocalization.mk'_one _ _ _ _ _ _
             (StructureSheaf.IsLocalization.to_basicOpen S <| algebraMap R S r) x).trans
         this
     obtain ⟨⟨_, n, rfl⟩, e⟩ := (IsLocalization.mk'_eq_zero_iff _ _).mp this
-    refine' ⟨⟨r, hpr⟩ ^ n, _⟩
+    refine ⟨⟨r, hpr⟩ ^ n, ?_⟩
     rw [Submonoid.smul_def, Algebra.smul_def]
-    -- Porting note : manually rewrite `Submonoid.coe_pow`
+    -- Porting note: manually rewrite `Submonoid.coe_pow`
     change (algebraMap R S) (r ^ n) * x = 0
     rw [map_pow]
     exact e

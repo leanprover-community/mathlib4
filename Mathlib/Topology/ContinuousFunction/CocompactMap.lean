@@ -41,8 +41,8 @@ section
 /-- `CocompactMapClass F α β` states that `F` is a type of cocompact continuous maps.
 
 You should also extend this typeclass when you extend `CocompactMap`. -/
-class CocompactMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
-  [TopologicalSpace β] extends ContinuousMapClass F α β where
+class CocompactMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
+  [TopologicalSpace β] [FunLike F α β] extends ContinuousMapClass F α β : Prop where
   /-- The cocompact filter on `α` tends to the cocompact filter on `β` under the function -/
   cocompact_tendsto (f : F) : Tendsto f (cocompact α) (cocompact β)
 #align cocompact_map_class CocompactMapClass
@@ -51,7 +51,8 @@ end
 
 namespace CocompactMapClass
 
-variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CocompactMapClass F α β]
+variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+variable [FunLike F α β] [CocompactMapClass F α β]
 
 /-- Turn an element of a type `F` satisfying `CocompactMapClass F α β` into an actual
 `CocompactMap`. This is declared as the default coercion from `F` to `CocompactMap α β`. -/
@@ -74,20 +75,16 @@ section Basics
 variable {α β γ δ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ]
 
-instance : CocompactMapClass (CocompactMap α β) α β where
+instance : FunLike (CocompactMap α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
+
+instance : CocompactMapClass (CocompactMap α β) α β where
   map_continuous f := f.continuous_toFun
   cocompact_tendsto f := f.cocompact_tendsto'
-
-/- Porting note: not needed anymore
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
-directly. -/
-instance : CoeFun (CocompactMap α β) fun _ => α → β :=
-  DFunLike.hasCoeToFun-/
 
 @[simp]
 theorem coe_toContinuousMap {f : CocompactMap α β} : (f.toContinuousMap : α → β) = f :=
@@ -209,7 +206,7 @@ def Homeomorph.toCocompactMap {α β : Type*} [TopologicalSpace α] [Topological
   toFun := f
   continuous_toFun := f.continuous
   cocompact_tendsto' := by
-    refine' CocompactMap.tendsto_of_forall_preimage fun K hK => _
+    refine CocompactMap.tendsto_of_forall_preimage fun K hK => ?_
     erw [K.preimage_equiv_eq_image_symm]
     exact hK.image f.symm.continuous
 #align homeomorph.to_cocompact_map Homeomorph.toCocompactMap

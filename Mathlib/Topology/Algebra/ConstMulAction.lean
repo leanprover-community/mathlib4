@@ -8,6 +8,7 @@ import Mathlib.Topology.Homeomorph
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Support
+import Mathlib.Algebra.Module.ULift
 
 #align_import topology.algebra.const_mul_action from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
@@ -78,6 +79,9 @@ section SMul
 variable [TopologicalSpace α] [SMul M α] [ContinuousConstSMul M α]
 
 @[to_additive]
+instance : ContinuousConstSMul (ULift M) α := ⟨fun γ ↦ continuous_const_smul (ULift.down γ)⟩
+
+@[to_additive]
 theorem Filter.Tendsto.const_smul {f : β → α} {l : Filter β} {a : α} (hf : Tendsto f l (𝓝 a))
     (c : M) : Tendsto (fun x => c • f x) l (𝓝 (c • a)) :=
   ((continuous_const_smul _).tendsto _).comp hf
@@ -93,20 +97,20 @@ nonrec theorem ContinuousWithinAt.const_smul (hg : ContinuousWithinAt g s b) (c 
 #align continuous_within_at.const_smul ContinuousWithinAt.const_smul
 #align continuous_within_at.const_vadd ContinuousWithinAt.const_vadd
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 nonrec theorem ContinuousAt.const_smul (hg : ContinuousAt g b) (c : M) :
     ContinuousAt (fun x => c • g x) b :=
   hg.const_smul c
 #align continuous_at.const_smul ContinuousAt.const_smul
 #align continuous_at.const_vadd ContinuousAt.const_vadd
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousOn.const_smul (hg : ContinuousOn g s) (c : M) :
     ContinuousOn (fun x => c • g x) s := fun x hx => (hg x hx).const_smul c
 #align continuous_on.const_smul ContinuousOn.const_smul
 #align continuous_on.const_vadd ContinuousOn.const_vadd
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => c • g x :=
   (continuous_const_smul _).comp hg
 #align continuous.const_smul Continuous.const_smul
@@ -153,12 +157,20 @@ theorem IsCompact.smul {α β} [SMul α β] [TopologicalSpace β] [ContinuousCon
 #align is_compact.smul IsCompact.smul
 #align is_compact.vadd IsCompact.vadd
 
+@[to_additive]
+theorem Specializes.const_smul {x y : α} (h : x ⤳ y) (c : M) : (c • x) ⤳ (c • y) :=
+  h.map (continuous_const_smul c)
+
+@[to_additive]
+theorem Inseparable.const_smul {x y : α} (h : Inseparable x y) (c : M) :
+    Inseparable (c • x) (c • y) :=
+  h.map (continuous_const_smul c)
+
 end SMul
 
 section Monoid
 
 variable [TopologicalSpace α]
-
 variable [Monoid M] [MulAction M α] [ContinuousConstSMul M α]
 
 @[to_additive]
@@ -343,6 +355,10 @@ theorem interior_smul₀ {c : G₀} (hc : c ≠ 0) (s : Set α) : interior (c �
   ((Homeomorph.smulOfNeZero c hc).image_interior s).symm
 #align interior_smul₀ interior_smul₀
 
+theorem closure_smul₀' {c : G₀} (hc : c ≠ 0) (s : Set α) :
+    closure (c • s) = c • closure s :=
+  ((Homeomorph.smulOfNeZero c hc).image_closure s).symm
+
 theorem closure_smul₀ {E} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpace E] [T1Space E]
     [ContinuousConstSMul G₀ E] (c : G₀) (s : Set E) : closure (c • s) = c • closure s := by
   rcases eq_or_ne c 0 with (rfl | hc)
@@ -350,7 +366,7 @@ theorem closure_smul₀ {E} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpac
     · simp
     · rw [zero_smul_set hs, zero_smul_set hs.closure]
       exact closure_singleton
-  · exact ((Homeomorph.smulOfNeZero c hc).image_closure s).symm
+  · exact closure_smul₀' hc s
 #align closure_smul₀ closure_smul₀
 
 /-- `smul` is a closed map in the second argument.
@@ -370,17 +386,16 @@ theorem IsClosed.smul_of_ne_zero {c : G₀} {s : Set α} (hs : IsClosed s) (hc :
 
 The lemma that `smul` is a closed map in the first argument (for a normed space over a complete
 normed field) is `isClosedMap_smul_left` in `Analysis.NormedSpace.FiniteDimension`. -/
-theorem isClosedMap_smul₀ {𝕜 M : Type*} [DivisionRing 𝕜] [AddCommMonoid M] [TopologicalSpace M]
-    [T1Space M] [Module 𝕜 M] [ContinuousConstSMul 𝕜 M] (c : 𝕜) :
-    IsClosedMap fun x : M => c • x := by
+theorem isClosedMap_smul₀ {E : Type*} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpace E]
+    [T1Space E] [ContinuousConstSMul G₀ E] (c : G₀) : IsClosedMap fun x : E => c • x := by
   rcases eq_or_ne c 0 with (rfl | hne)
   · simp only [zero_smul]
     exact isClosedMap_const
   · exact (Homeomorph.smulOfNeZero c hne).isClosedMap
 #align is_closed_map_smul₀ isClosedMap_smul₀
 
-theorem IsClosed.smul₀ {𝕜 M : Type*} [DivisionRing 𝕜] [AddCommMonoid M] [TopologicalSpace M]
-    [T1Space M] [Module 𝕜 M] [ContinuousConstSMul 𝕜 M] (c : 𝕜) {s : Set M} (hs : IsClosed s) :
+theorem IsClosed.smul₀ {E : Type*} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpace E]
+    [T1Space E] [ContinuousConstSMul G₀ E] (c : G₀) {s : Set E} (hs : IsClosed s) :
     IsClosed (c • s) :=
   isClosedMap_smul₀ c s hs
 #align is_closed.smul₀ IsClosed.smul₀
@@ -447,7 +462,7 @@ nonrec theorem isClosedMap_smul (hc : IsUnit c) : IsClosedMap fun x : α => c �
 
 end IsUnit
 
--- porting note: todo: use `Set.Nonempty`
+-- Porting note (#11215): TODO: use `Set.Nonempty`
 /-- Class `ProperlyDiscontinuousSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
 `γ:Γ` move `K` to have nontrivial intersection with `L`.
@@ -524,12 +539,12 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
     exact (continuous_const_smul _).continuousAt (hu γ)
   have V_nhds : f '' V₀ ∈ 𝓝 (f y₀) :=
     f_op.image_mem_nhds (inter_mem ((biInter_mem bad_Γ_finite).mpr fun γ _ => hv γ) L₀_in)
-  refine' ⟨f '' U₀, U_nhds, f '' V₀, V_nhds, MulAction.disjoint_image_image_iff.2 _⟩
+  refine ⟨f '' U₀, U_nhds, f '' V₀, V_nhds, MulAction.disjoint_image_image_iff.2 ?_⟩
   rintro x ⟨x_in_U₀₀, x_in_K₀⟩ γ
   by_cases H : γ ∈ bad_Γ_set
   · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_iInter₂.mp x_in_U₀₀ γ H, mem_iInter₂.mp h.1 γ H⟩
   · rintro ⟨-, h'⟩
-    simp only [image_smul, Classical.not_not, mem_setOf_eq, Ne.def] at H
+    simp only [bad_Γ_set, image_smul, Classical.not_not, mem_setOf_eq, Ne] at H
     exact eq_empty_iff_forall_not_mem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩
 #align t2_space_of_properly_discontinuous_smul_of_t2_space t2Space_of_properlyDiscontinuousSMul_of_t2Space
 #align t2_space_of_properly_discontinuous_vadd_of_t2_space t2Space_of_properlyDiscontinuousVAdd_of_t2Space
@@ -550,7 +565,7 @@ section MulAction
 variable {G₀ : Type*} [GroupWithZero G₀] [MulAction G₀ α] [TopologicalSpace α]
   [ContinuousConstSMul G₀ α]
 
--- porting note: generalize to a group action + `IsUnit`
+-- Porting note: generalize to a group action + `IsUnit`
 /-- Scalar multiplication preserves neighborhoods. -/
 theorem set_smul_mem_nhds_smul {c : G₀} {s : Set α} {x : α} (hs : s ∈ 𝓝 x) (hc : c ≠ 0) :
     c • s ∈ 𝓝 (c • x : α) := by
@@ -561,7 +576,7 @@ theorem set_smul_mem_nhds_smul {c : G₀} {s : Set α} {x : α} (hs : s ∈ 𝓝
 
 theorem set_smul_mem_nhds_smul_iff {c : G₀} {s : Set α} {x : α} (hc : c ≠ 0) :
     c • s ∈ 𝓝 (c • x : α) ↔ s ∈ 𝓝 x := by
-  refine' ⟨fun h => _, fun h => set_smul_mem_nhds_smul h hc⟩
+  refine ⟨fun h => ?_, fun h => set_smul_mem_nhds_smul h hc⟩
   rw [← inv_smul_smul₀ hc x, ← inv_smul_smul₀ hc s]
   exact set_smul_mem_nhds_smul h (inv_ne_zero hc)
 #align set_smul_mem_nhds_smul_iff set_smul_mem_nhds_smul_iff
@@ -575,7 +590,7 @@ variable {G₀ : Type*} [GroupWithZero G₀] [AddMonoid α] [DistribMulAction G�
 
 theorem set_smul_mem_nhds_zero_iff {s : Set α} {c : G₀} (hc : c ≠ 0) :
     c • s ∈ 𝓝 (0 : α) ↔ s ∈ 𝓝 (0 : α) := by
-  refine' Iff.trans _ (set_smul_mem_nhds_smul_iff hc)
+  refine Iff.trans ?_ (set_smul_mem_nhds_smul_iff hc)
   rw [smul_zero]
 #align set_smul_mem_nhds_zero_iff set_smul_mem_nhds_zero_iff
 

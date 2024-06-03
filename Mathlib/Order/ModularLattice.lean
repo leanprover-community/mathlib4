@@ -5,6 +5,7 @@ Authors: Aaron Anderson, Yaël Dillies
 -/
 import Mathlib.Order.Cover
 import Mathlib.Order.LatticeIntervals
+import Mathlib.Order.GaloisConnection
 
 #align_import order.modular_lattice from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -239,7 +240,7 @@ theorem eq_of_le_of_inf_le_of_sup_le (hxy : x ≤ y) (hinf : y ⊓ z ≤ x ⊓ z
     calc
       y ≤ (x ⊔ z) ⊓ y := le_inf h le_rfl
       _ = x ⊔ z ⊓ y := sup_inf_assoc_of_le _ hxy
-      _ ≤ x ⊔ z ⊓ x := sup_le_sup_left (by rw [inf_comm, @inf_comm _ _ z]; exact hinf) _
+      _ ≤ x ⊔ z ⊓ x := sup_le_sup_left (by rw [inf_comm, inf_comm z]; exact hinf) _
       _ ≤ x := sup_le le_rfl inf_le_right
 #align eq_of_le_of_inf_le_of_sup_le eq_of_le_of_inf_le_of_sup_le
 
@@ -299,9 +300,9 @@ def infIccOrderIsoIccSup (a b : α) : Set.Icc (a ⊓ b) a ≃o Set.Icc b (a ⊔ 
   map_rel_iff' := @fun x y => by
     simp only [Subtype.mk_le_mk, Equiv.coe_fn_mk, and_true_iff, le_sup_right]
     rw [← Subtype.coe_le_coe]
-    refine' ⟨fun h => _, fun h => sup_le_sup_right h _⟩
+    refine ⟨fun h => ?_, fun h => sup_le_sup_right h _⟩
     rw [← sup_eq_right.2 x.prop.1, inf_sup_assoc_of_le _ x.prop.2, sup_comm, ←
-      sup_eq_right.2 y.prop.1, inf_sup_assoc_of_le _ y.prop.2, @sup_comm _ _ b]
+      sup_eq_right.2 y.prop.1, inf_sup_assoc_of_le _ y.prop.2, sup_comm b]
     exact inf_le_inf_left _ h
 #align inf_Icc_order_iso_Icc_sup infIccOrderIsoIccSup
 #align inf_Icc_order_iso_Icc_sup_apply_coe infIccOrderIsoIccSup_apply_coe
@@ -346,7 +347,7 @@ def infIooOrderIsoIooSup (a b : α) : Ioo (a ⊓ b) a ≃o Ioo b (a ⊔ b) where
 -- See note [lower instance priority]
 instance (priority := 100) IsModularLattice.to_isLowerModularLattice : IsLowerModularLattice α :=
   ⟨fun {a b} => by
-    simp_rw [covBy_iff_Ioo_eq, @sup_comm _ _ a, @inf_comm _ _ a, ← isEmpty_coe_sort, right_lt_sup,
+    simp_rw [covBy_iff_Ioo_eq, sup_comm a, inf_comm a, ← isEmpty_coe_sort, right_lt_sup,
       inf_lt_left, (infIooOrderIsoIooSup b a).symm.toEquiv.isEmpty_congr]
     exact id⟩
 #align is_modular_lattice.to_is_lower_modular_lattice IsModularLattice.to_isLowerModularLattice
@@ -420,6 +421,14 @@ theorem isCompl_sup_left_of_isCompl_sup_right [Lattice α] [BoundedOrder α] [Is
   ⟨h.disjoint_sup_left_of_disjoint_sup_right hcomp.disjoint, codisjoint_assoc.mpr hcomp.codisjoint⟩
 
 end Disjoint
+
+lemma Set.Iic.isCompl_inf_inf_of_isCompl_of_le [Lattice α] [BoundedOrder α] [IsModularLattice α]
+    {a b c : α} (h₁ : IsCompl b c) (h₂ : b ≤ a) :
+    IsCompl (⟨a ⊓ b, inf_le_left⟩ : Iic a) (⟨a ⊓ c, inf_le_left⟩ : Iic a) := by
+  constructor
+  · simp [disjoint_iff, Subtype.ext_iff, inf_comm a c, inf_assoc a, ← inf_assoc b, h₁.inf_eq_bot]
+  · simp only [Iic.codisjoint_iff, inf_comm a, IsModularLattice.inf_sup_inf_assoc]
+    simp [inf_of_le_left h₂, h₁.sup_eq_top]
 
 namespace IsModularLattice
 

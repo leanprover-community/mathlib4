@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Positivity.Core
 
 /-!
@@ -94,7 +96,7 @@ because:
   anyway. It is easily copied over.
 
 In the future, it would be good to make the corresponding typeclasses in
-`Mathlib.Algebra.Order.Ring.Lemmas` custom typeclasses too.
+`Mathlib.Algebra.Order.GroupWithZero.Unbundled` custom typeclasses too.
 
 ## TODO
 
@@ -620,11 +622,11 @@ variable [LinearOrder α] [LinearOrder β]
 lemma pos_and_pos_or_neg_and_neg_of_smul_pos [PosSMulMono α β] [SMulPosMono α β] (hab : 0 < a • b) :
     0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
   obtain ha | rfl | ha := lt_trichotomy a 0
-  · refine' Or.inr ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ _) hab⟩
+  · refine Or.inr ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ ?_) hab⟩
     exact smul_nonpos_of_nonpos_of_nonneg ha.le hb
   · rw [zero_smul] at hab
     exact hab.false.elim
-  · refine' Or.inl ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ _) hab⟩
+  · refine Or.inl ⟨ha, lt_imp_lt_of_le_imp_le (fun hb ↦ ?_) hab⟩
     exact smul_nonpos_of_nonneg_of_nonpos ha.le hb
 
 lemma neg_of_smul_pos_right [PosSMulMono α β] [SMulPosMono α β] (h : 0 < a • b) (ha : a ≤ 0) :
@@ -1175,8 +1177,8 @@ def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
   let .app (.app (.app (.app (.app (.app
         (.const ``HSMul.hSMul [u1, _, _]) (β : Q(Type u1))) _) _) _)
           (a : Q($β))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"
-  let zM : Q(Zero $β) ← synthInstanceQ (q(Zero $β))
-  let pM : Q(PartialOrder $β) ← synthInstanceQ (q(PartialOrder $β))
+  let zM : Q(Zero $β) ← synthInstanceQ q(Zero $β)
+  let pM : Q(PartialOrder $β) ← synthInstanceQ q(PartialOrder $β)
   -- Using `q()` here would be impractical, as we would have to manually `synthInstanceQ` all the
   -- required typeclasses. Ideally we could tell `q()` to do this automatically.
   match ← core zM pM a, ← core zα pα b with

@@ -27,7 +27,7 @@ def HeytAlg :=
 
 namespace HeytAlg
 
-instance : CoeSort HeytAlg (Type*) :=
+instance : CoeSort HeytAlg Type* :=
   Bundled.coeSort
 
 instance (X : HeytAlg) : HeytingAlgebra X :=
@@ -60,6 +60,10 @@ deriving instance LargeCategory for HeytAlg
 instance : ConcreteCategory HeytAlg := by
   dsimp [HeytAlg]
   infer_instance
+
+-- Porting note: No idea why it does not find this instance...
+instance {X Y : HeytAlg.{u}} : FunLike (X ⟶ Y) ↑X ↑Y :=
+  HeytingHom.instFunLike
 
 -- Porting note: No idea why it does not find this instance...
 instance {X Y : HeytAlg.{u}} : HeytingHomClass (X ⟶ Y) ↑X ↑Y :=

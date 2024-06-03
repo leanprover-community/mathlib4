@@ -1,8 +1,7 @@
 import Mathlib.Tactic.Congr!
-import Std.Tactic.GuardExpr
+import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Subtype
-import Mathlib.Data.List.BigOperators.Basic
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
@@ -310,3 +309,28 @@ example {α} [AddCommMonoid α] [PartialOrder α] {a b c d e f g : α} :
     (a + b) + (c + d) + (e + f) + g ≤ a + d + e + f + c + b + g := by
   ac_change a + d + e + f + c + g + b ≤ a + d + e + f + c + g + b
   rfl
+
+/-!
+Lawful BEq instances are "subsingletons".
+-/
+
+example (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : List α) (x : α) :
+    @List.erase _ inst1 xs x = @List.erase _ inst2 xs x := by
+  congr!
+
+/--
+error: unsolved goals
+case h.e'_2
+α : Type
+inst1 : BEq α
+inst✝¹ : LawfulBEq α
+inst2 : BEq α
+inst✝ : LawfulBEq α
+xs : List α
+x : α
+⊢ inst1 = inst2
+-/
+#guard_msgs in
+example {α : Type} (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : List α) (x : α) :
+    @List.erase _ inst1 xs x = @List.erase _ inst2 xs x := by
+  congr! (config := { beqEq := false })

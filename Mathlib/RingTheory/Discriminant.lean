@@ -25,8 +25,8 @@ Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we 
 * `Algebra.discr_zero_of_not_linearIndependent` : if `b` is not linear independent, then
   `Algebra.discr A b = 0`.
 * `Algebra.discr_of_matrix_vecMul` and `Algebra.discr_of_matrix_mulVec` : formulas relating
-  `Algebra.discr A ι b` with `Algebra.discr A ((P.map (algebraMap A B)).vecMul b)` and
-  `Algebra.discr A ((P.map (algebraMap A B)).mulVec b)`.
+  `Algebra.discr A ι b` with `Algebra.discr A (b ᵥ* P.map (algebraMap A B))` and
+  `Algebra.discr A (P.map (algebraMap A B) *ᵥ b)`.
 * `Algebra.discr_not_zero_of_basis` : over a field, if `b` is a basis, then
   `Algebra.discr K b ≠ 0`.
 * `Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two` : if `L/K` is a field extension and
@@ -50,14 +50,13 @@ then `trace A B = 0` by definition, so `discr A b = 0` for any `b`.
 
 universe u v w z
 
-open scoped Matrix BigOperators
+open scoped Matrix
 
 open Matrix FiniteDimensional Fintype Polynomial Finset IntermediateField
 
 namespace Algebra
 
 variable (A : Type u) {B : Type v} (C : Type z) {ι : Type w} [DecidableEq ι]
-
 variable [CommRing A] [CommRing B] [Algebra A B] [CommRing C] [Algebra A C]
 
 section Discr
@@ -70,10 +69,7 @@ noncomputable def discr (A : Type u) {B : Type v} [CommRing A] [CommRing B] [Alg
     [Fintype ι] (b : ι → B) := (traceMatrix A b).det
 #align algebra.discr Algebra.discr
 
-theorem discr_def [Fintype ι] (b : ι → B) : discr A b = (traceMatrix A b).det := by
--- Porting note: `unfold discr` was not necessary. `rfl` still does not work.
-  unfold discr
-  convert rfl
+theorem discr_def [Fintype ι] (b : ι → B) : discr A b = (traceMatrix A b).det := rfl
 
 variable {A C} in
 /-- Mapping a family of vectors along an `AlgEquiv` preserves the discriminant. -/
@@ -98,7 +94,7 @@ theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
     (hli : ¬LinearIndependent A b) : discr A b = 0 := by
   classical
   obtain ⟨g, hg, i, hi⟩ := Fintype.not_linearIndependent_iff.1 hli
-  have : (traceMatrix A b).mulVec g = 0 := by
+  have : (traceMatrix A b) *ᵥ g = 0 := by
     ext i
     have : ∀ j, (trace A B) (b i * b j) * g j = (trace A B) (g j • b j * b i) := by
       intro j;
@@ -113,17 +109,17 @@ theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
 variable {A}
 
 /-- Relation between `Algebra.discr A ι b` and
-`Algebra.discr A ((P.map (algebraMap A B)).vecMul b)`. -/
+`Algebra.discr A (b ᵥ* P.map (algebraMap A B))`. -/
 theorem discr_of_matrix_vecMul (b : ι → B) (P : Matrix ι ι A) :
-    discr A ((P.map (algebraMap A B)).vecMul b) = P.det ^ 2 * discr A b := by
+    discr A (b ᵥ* P.map (algebraMap A B)) = P.det ^ 2 * discr A b := by
   rw [discr_def, traceMatrix_of_matrix_vecMul, det_mul, det_mul, det_transpose, mul_comm, ←
     mul_assoc, discr_def, pow_two]
 #align algebra.discr_of_matrix_vec_mul Algebra.discr_of_matrix_vecMul
 
 /-- Relation between `Algebra.discr A ι b` and
-`Algebra.discr A ((P.map (algebraMap A B)).mulVec b)`. -/
+`Algebra.discr A ((P.map (algebraMap A B)) *ᵥ b)`. -/
 theorem discr_of_matrix_mulVec (b : ι → B) (P : Matrix ι ι A) :
-    discr A ((P.map (algebraMap A B)).mulVec b) = P.det ^ 2 * discr A b := by
+    discr A (P.map (algebraMap A B) *ᵥ b) = P.det ^ 2 * discr A b := by
   rw [discr_def, traceMatrix_of_matrix_mulVec, det_mul, det_mul, det_transpose, mul_comm, ←
     mul_assoc, discr_def, pow_two]
 #align algebra.discr_of_matrix_mul_vec Algebra.discr_of_matrix_mulVec
@@ -133,27 +129,14 @@ end Basic
 section Field
 
 variable (K : Type u) {L : Type v} (E : Type z) [Field K] [Field L] [Field E]
-
 variable [Algebra K L] [Algebra K E]
-
 variable [Module.Finite K L] [IsAlgClosed E]
 
 /-- If `b` is a basis of a finite separable field extension `L/K`, then `Algebra.discr K b ≠ 0`. -/
 theorem discr_not_zero_of_basis [IsSeparable K L] (b : Basis ι K L) :
     discr K b ≠ 0 := by
-  cases isEmpty_or_nonempty ι
--- Porting note: the following proof was `simp [discr]`. Variations like `exact this` do not work.
-  · have : det (traceMatrix K ↑b) ≠ 0 := by simp
-    unfold discr
-    convert this
-  · have :=
-      span_eq_top_of_linearIndependent_of_card_eq_finrank b.linearIndependent
-        (finrank_eq_card_basis b).symm
-    classical
-    rw [discr_def, traceMatrix]
-    simp_rw [← Basis.mk_apply b.linearIndependent this.ge]
-    rw [← traceMatrix, traceMatrix_of_basis, ← BilinForm.nondegenerate_iff_det_ne_zero]
-    exact traceForm_nondegenerate _ _
+  rw [discr_def, traceMatrix_of_basis, ← LinearMap.BilinForm.nondegenerate_iff_det_ne_zero]
+  exact traceForm_nondegenerate _ _
 #align algebra.discr_not_zero_of_basis Algebra.discr_not_zero_of_basis
 
 /-- If `b` is a basis of a finite separable field extension `L/K`,
@@ -177,7 +160,7 @@ theorem discr_eq_det_embeddingsMatrixReindex_pow_two [IsSeparable K L] (e : ι �
 /-- The discriminant of a power basis. -/
 theorem discr_powerBasis_eq_prod (e : Fin pb.dim ≃ (L →ₐ[K] E)) [IsSeparable K L] :
     algebraMap K E (discr K pb.basis) =
-      ∏ i : Fin pb.dim, ∏ j in Ioi i, (e j pb.gen - e i pb.gen) ^ 2 := by
+      ∏ i : Fin pb.dim, ∏ j ∈ Ioi i, (e j pb.gen - e i pb.gen) ^ 2 := by
   rw [discr_eq_det_embeddingsMatrixReindex_pow_two K E pb.basis e,
     embeddingsMatrixReindex_eq_vandermonde, det_transpose, det_vandermonde, ← prod_pow]
   congr; ext i
@@ -187,7 +170,7 @@ theorem discr_powerBasis_eq_prod (e : Fin pb.dim ≃ (L →ₐ[K] E)) [IsSeparab
 /-- A variation of `Algebra.discr_powerBasis_eq_prod`. -/
 theorem discr_powerBasis_eq_prod' [IsSeparable K L] (e : Fin pb.dim ≃ (L →ₐ[K] E)) :
     algebraMap K E (discr K pb.basis) =
-      ∏ i : Fin pb.dim, ∏ j in Ioi i, -((e j pb.gen - e i pb.gen) * (e i pb.gen - e j pb.gen)) := by
+      ∏ i : Fin pb.dim, ∏ j ∈ Ioi i, -((e j pb.gen - e i pb.gen) * (e i pb.gen - e j pb.gen)) := by
   rw [discr_powerBasis_eq_prod _ _ _ e]
   congr; ext i; congr; ext j
   ring
@@ -199,7 +182,7 @@ local notation "n" => finrank K L
 theorem discr_powerBasis_eq_prod'' [IsSeparable K L] (e : Fin pb.dim ≃ (L →ₐ[K] E)) :
     algebraMap K E (discr K pb.basis) =
       (-1) ^ (n * (n - 1) / 2) *
-        ∏ i : Fin pb.dim, ∏ j in Ioi i, (e j pb.gen - e i pb.gen) * (e i pb.gen - e j pb.gen) := by
+        ∏ i : Fin pb.dim, ∏ j ∈ Ioi i, (e j pb.gen - e i pb.gen) * (e i pb.gen - e j pb.gen) := by
   rw [discr_powerBasis_eq_prod' _ _ _ e]
   simp_rw [fun i j => neg_eq_neg_one_mul ((e j pb.gen - e i pb.gen) * (e i pb.gen - e j pb.gen)),
     prod_mul_distrib]
@@ -214,8 +197,10 @@ theorem discr_powerBasis_eq_prod'' [IsSeparable K L] (e : Fin pb.dim ≃ (L →�
   rw [← Nat.cast_sum, ← @Finset.sum_range ℕ _ pb.dim fun i => i, sum_range_id]
   have hn : n = pb.dim := by
     rw [← AlgHom.card K L E, ← Fintype.card_fin pb.dim]
-    exact card_congr (Equiv.symm e)
-  have h₂ : 2 ∣ pb.dim * (pb.dim - 1) := even_iff_two_dvd.1 (Nat.even_mul_self_pred _)
+    -- FIXME: Without the `Fintype` namespace, why does it complain about `Finset.card_congr` being
+    -- deprecated?
+    exact Fintype.card_congr e.symm
+  have h₂ : 2 ∣ pb.dim * (pb.dim - 1) := pb.dim.even_mul_pred_self.two_dvd
   have hne : ((2 : ℕ) : ℚ) ≠ 0 := by simp
   have hle : 1 ≤ pb.dim := by
     rw [← hn, Nat.one_le_iff_ne_zero, ← zero_lt_iff, FiniteDimensional.finrank_pos_iff]
@@ -234,7 +219,7 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
   let E := AlgebraicClosure L
   letI := fun a b : E => Classical.propDecidable (Eq a b)
   have e : Fin pb.dim ≃ (L →ₐ[K] E) := by
-    refine' equivOfCardEq _
+    refine equivOfCardEq ?_
     rw [Fintype.card_fin, AlgHom.card]
     exact (PowerBasis.finrank pb).symm
   have hnodup : ((minpoly K pb.gen).aroots E).Nodup :=
@@ -260,11 +245,11 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
   refine prod_bij' (fun i _ ↦ ⟨e i.2, e i.1 pb.gen⟩)
     (fun σ hσ ↦ ⟨e.symm (PowerBasis.lift pb σ.2 ?_), e.symm σ.1⟩) ?_ ?_ ?_ ?_ (fun i _ ↦ by simp)
   -- Porting note: `@mem_compl` was not necessary.
-    <;> simp only [mem_sigma, mem_univ, Finset.mem_mk, hnodup.mem_erase_iff, IsRoot.def, mem_roots',
-      minpoly.ne_zero (IsSeparable.isIntegral K pb.gen), not_false_eq_true, mem_singleton, true_and,
-      @mem_compl _ _ _ (_), Sigma.forall, Equiv.apply_symm_apply, PowerBasis.lift_gen, and_imp,
-      implies_true, forall_const, Equiv.symm_apply_apply, Sigma.ext_iff, Equiv.symm_apply_eq,
-      heq_eq_eq, and_true] at *
+    <;> simp only [mem_sigma, mem_univ, Finset.mem_mk, hnodup.mem_erase_iff, IsRoot.def,
+      mem_roots', minpoly.ne_zero (IsSeparable.isIntegral K pb.gen), not_false_eq_true,
+      mem_singleton, true_and, @mem_compl _ _ _ (_), Sigma.forall, Equiv.apply_symm_apply,
+      PowerBasis.lift_gen, and_imp, implies_true, forall_const, Equiv.symm_apply_apply,
+      Sigma.ext_iff, Equiv.symm_apply_eq, heq_eq_eq, and_true] at *
   · simpa only [aeval_def, eval₂_eq_eval_map] using hσ.2.2
   · exact fun a b hba ↦ ⟨fun h ↦ hba <| e.injective <| pb.algHom_ext h.symm, hroots _⟩
   · rintro a b hba ha
@@ -295,29 +280,29 @@ theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
   have hinv : IsUnit (traceMatrix K B.basis).det := by
     simpa [← discr_def] using discr_isUnit_of_basis _ B.basis
   have H :
-    (traceMatrix K B.basis).det • (traceMatrix K B.basis).mulVec (B.basis.equivFun z) =
-      (traceMatrix K B.basis).det • fun i => trace K L (z * B.basis i) :=
-    by congr; exact traceMatrix_of_basis_mulVec _ _
+    (traceMatrix K B.basis).det • (traceMatrix K B.basis) *ᵥ (B.basis.equivFun z) =
+      (traceMatrix K B.basis).det • fun i => trace K L (z * B.basis i) := by
+    congr; exact traceMatrix_of_basis_mulVec _ _
   have cramer := mulVec_cramer (traceMatrix K B.basis) fun i => trace K L (z * B.basis i)
   suffices ∀ i, ((traceMatrix K B.basis).det • B.basis.equivFun z) i ∈ (⊥ : Subalgebra R K) by
     rw [← B.basis.sum_repr z, Finset.smul_sum]
-    refine' Subalgebra.sum_mem _ fun i _ => _
+    refine Subalgebra.sum_mem _ fun i _ => ?_
     replace this := this i
     rw [← discr_def, Pi.smul_apply, mem_bot] at this
     obtain ⟨r, hr⟩ := this
     rw [Basis.equivFun_apply] at hr
     rw [← smul_assoc, ← hr, algebraMap_smul]
-    refine' Subalgebra.smul_mem _ _ _
+    refine Subalgebra.smul_mem _ ?_ _
     rw [B.basis_eq_pow i]
-    refine' Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton _)) _
+    exact Subalgebra.pow_mem _ (subset_adjoin (Set.mem_singleton _)) _
   intro i
   rw [← H, ← mulVec_smul] at cramer
   replace cramer := congr_arg (mulVec (traceMatrix K B.basis)⁻¹) cramer
   rw [mulVec_mulVec, nonsing_inv_mul _ hinv, mulVec_mulVec, nonsing_inv_mul _ hinv, one_mulVec,
     one_mulVec] at cramer
   rw [← congr_fun cramer i, cramer_apply, det_apply]
-  refine'
-    Subalgebra.sum_mem _ fun σ _ => Subalgebra.zsmul_mem _ (Subalgebra.prod_mem _ fun j _ => _) _
+  refine
+    Subalgebra.sum_mem _ fun σ _ => Subalgebra.zsmul_mem _ (Subalgebra.prod_mem _ fun j _ => ?_) _
   by_cases hji : j = i
   · simp only [updateColumn_apply, hji, eq_self_iff_true, PowerBasis.coe_basis]
     exact mem_bot.2 (IsIntegrallyClosed.isIntegral_iff.1 <| isIntegral_trace (hz.mul <| hint.pow _))

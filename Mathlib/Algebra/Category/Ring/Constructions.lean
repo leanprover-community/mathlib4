@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
 
 #align_import algebra.category.Ring.constructions from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -20,6 +20,7 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 * `Z` is the initial object
 * `0` is the strict terminal object
 * cartesian product is the product
+* arbitrary direct product of a family of rings is the product object (Pi object)
 * `RingHom.eqLocus` is the equalizer
 
 -/
@@ -41,13 +42,13 @@ def pushoutCocone : Limits.PushoutCocone f g := by
   letI := RingHom.toAlgebra f
   letI := RingHom.toAlgebra g
   fapply Limits.PushoutCocone.mk
-  show CommRingCat; exact CommRingCat.of (A ⊗[R] B)
-  show A ⟶ _; exact Algebra.TensorProduct.includeLeftRingHom
-  show B ⟶ _; exact Algebra.TensorProduct.includeRight.toRingHom
-  ext r
-  trans algebraMap R (A ⊗[R] B) r
-  · exact Algebra.TensorProduct.includeLeft.commutes (R := R) r
-  · exact (Algebra.TensorProduct.includeRight.commutes (R := R) r).symm
+  · show CommRingCat; exact CommRingCat.of (A ⊗[R] B)
+  · show A ⟶ _; exact Algebra.TensorProduct.includeLeftRingHom
+  · show B ⟶ _; exact Algebra.TensorProduct.includeRight.toRingHom
+  · ext r
+    trans algebraMap R (A ⊗[R] B) r
+    · exact Algebra.TensorProduct.includeLeft.commutes (R := R) r
+    · exact (Algebra.TensorProduct.includeRight.commutes (R := R) r).symm
 set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone CommRingCat.pushoutCocone
 
@@ -98,7 +99,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
           exact
             (s.ι.naturality Limits.WalkingSpan.Hom.snd).trans
               (s.ι.naturality Limits.WalkingSpan.Hom.fst).symm }
-    -- Porting note : Lean has forget why `A ⊗[R] B` makes sense
+    -- Porting note: Lean has forget why `A ⊗[R] B` makes sense
     letI : Algebra R A := f.toAlgebra
     letI : Algebra R B := g.toAlgebra
     letI : Algebra R (pushoutCocone f g).pt := show Algebra R (A ⊗[R] B) by infer_instance
@@ -107,13 +108,13 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
     simp only [pushoutCocone_inl, pushoutCocone_inr]
     constructor
     · ext x
-      -- Porting note : Lean can't see through `forget` functor
+      -- Porting note: Lean can't see through `forget` functor
       letI : Semiring ((forget CommRingCat).obj A) := A.str.toSemiring
       letI : Algebra R ((forget CommRingCat).obj A) := show Algebra R A by infer_instance
       exact Algebra.TensorProduct.productMap_left_apply _ _ x
     constructor
     · ext x
-      -- Porting note : Lean can't see through `forget` functor
+      -- Porting note: Lean can't see through `forget` functor
       letI : Semiring ((forget CommRingCat).obj B) := B.str.toSemiring
       letI : Algebra R ((forget CommRingCat).obj B) := show Algebra R B by infer_instance
       exact Algebra.TensorProduct.productMap_right_apply _ _ x
@@ -131,9 +132,8 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
       rw [this]
     apply Algebra.TensorProduct.ext'
     intro a b
-    simp only [PushoutCocone.ι_app_left, pushoutCocone_pt, coe_of, RingHom.toMonoidHom_eq_coe,
-      AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_coe, ← eq1, AlgHom.toRingHom_eq_coe,
-      PushoutCocone.ι_app_right, ← eq2, Algebra.TensorProduct.productMap_apply_tmul]
+    simp only [f', g', ← eq1, pushoutCocone_pt, ← eq2, AlgHom.toRingHom_eq_coe,
+      Algebra.TensorProduct.productMap_apply_tmul, AlgHom.coe_mk]
     change _ = h (a ⊗ₜ 1) * h (1 ⊗ₜ b)
     rw [← h.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
     rfl
@@ -147,7 +147,7 @@ section Terminal
 /-- The trivial ring is the (strict) terminal object of `CommRingCat`. -/
 def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) := by
   refine IsTerminal.ofUnique (h := fun X => ⟨⟨⟨⟨1, rfl⟩, fun _ _ => rfl⟩, ?_, ?_⟩, ?_⟩)
-  · dsimp
+  · rfl
   · intros; dsimp
   · intros f; ext; rfl
 set_option linter.uppercaseLean3 false in
@@ -215,6 +215,40 @@ set_option linter.uppercaseLean3 false in
 
 end Product
 
+section Pi
+
+variable {ι : Type u} (R : ι → CommRingCat.{u})
+
+/--
+The categorical product of rings is the cartesian product of rings. This is its `Fan`.
+-/
+@[simps! pt]
+def piFan : Fan R :=
+  Fan.mk (CommRingCat.of ((i : ι) → R i)) (Pi.evalRingHom _)
+
+/--
+The categorical product of rings is the cartesian product of rings.
+-/
+def piFanIsLimit : IsLimit (piFan R) where
+  lift s := Pi.ringHom fun i ↦ s.π.1 ⟨i⟩
+  fac s i := by rfl
+  uniq s g h := DFunLike.ext _ _ fun x ↦ funext fun i ↦ DFunLike.congr_fun (h ⟨i⟩) x
+
+/--
+The categorical product and the usual product agrees
+-/
+def piIsoPi : ∏ᶜ R ≅ CommRingCat.of ((i : ι) → R i) :=
+  limit.isoLimitCone ⟨_, piFanIsLimit R⟩
+
+/--
+The categorical product and the usual product agrees
+-/
+def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
+    (∏ᶜ (fun i : ι ↦ CommRingCat.of (R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
+  (piIsoPi (CommRingCat.of <| R ·)).commRingCatIsoToRingEquiv
+
+end Pi
+
 section Equalizer
 
 variable {A B : CommRingCat.{u}} (f g : A ⟶ B)
@@ -231,7 +265,7 @@ set_option linter.uppercaseLean3 false in
 def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
   fapply Fork.IsLimit.mk'
   intro s
-  -- Porting note : Lean can't see through `(parallelPair f g).obj zero`
+  -- Porting note: Lean can't see through `(parallelPair f g).obj zero`
   haveI : SubsemiringClass (Subring A) ((parallelPair f g).obj WalkingParallelPair.zero) :=
     show SubsemiringClass (Subring A) A by infer_instance
   use s.ι.codRestrict _ fun x => (ConcreteCategory.congr_hom s.condition x : _)

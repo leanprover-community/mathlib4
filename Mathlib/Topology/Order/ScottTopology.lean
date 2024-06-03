@@ -129,7 +129,7 @@ variable [Preorder α] {s : Set α}
 
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
 `d` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
-def scottHausdorff : TopologicalSpace α where
+def scottHausdorff (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen u := ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u
   isOpen_univ := fun d ⟨b, hb⟩ _ _ _ _ ↦ ⟨b, hb, (Ici b ∩ d).subset_univ⟩
@@ -149,14 +149,15 @@ variable (α) [TopologicalSpace α]
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
 `d` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
 class IsScottHausdorff : Prop where
-  topology_eq_scottHausdorff : ‹TopologicalSpace α› = scottHausdorff
+  topology_eq_scottHausdorff : ‹TopologicalSpace α› = scottHausdorff α
 
-instance : @IsScottHausdorff α _ scottHausdorff := @IsScottHausdorff.mk _ _ scottHausdorff rfl
+instance : @IsScottHausdorff α _ (scottHausdorff α) :=
+  @IsScottHausdorff.mk _ _ (scottHausdorff α) rfl
 
 namespace IsScottHausdorff
 variable [IsScottHausdorff α] {s : Set α}
 
-lemma topology_eq : ‹_› = scottHausdorff := topology_eq_scottHausdorff
+lemma topology_eq : ‹_› = scottHausdorff α := topology_eq_scottHausdorff
 
 variable {α}
 
@@ -189,11 +190,11 @@ variable [Preorder α]
 /-- The Scott topology.
 
 It is defined as the join of the topology of upper sets and the Scott-Hausdorff topology. -/
-def scott : TopologicalSpace α := upperSet α ⊔ scottHausdorff
+def scott (α : Type*) [Preorder α] : TopologicalSpace α := upperSet α ⊔ scottHausdorff α
 
-lemma upperSet_le_scott : upperSet α ≤ scott := le_sup_left
+lemma upperSet_le_scott : upperSet α ≤ scott α := le_sup_left
 
-lemma scottHausdorff_le_scott : @scottHausdorff α ≤ @scott α := le_sup_right
+lemma scottHausdorff_le_scott : scottHausdorff α ≤ scott α := le_sup_right
 
 variable (α) [TopologicalSpace α]
 
@@ -202,7 +203,7 @@ variable (α) [TopologicalSpace α]
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
 topology. -/
 class IsScott : Prop where
-  topology_eq_scott : ‹TopologicalSpace α› = scott
+  topology_eq_scott : ‹TopologicalSpace α› = scott α
 
 end Preorder
 
@@ -210,17 +211,18 @@ namespace IsScott
 section Preorder
 variable (α) [Preorder α] [TopologicalSpace α] [IsScott α]
 
-lemma topology_eq : ‹_› = scott := topology_eq_scott
+lemma topology_eq : ‹_› = scott α := topology_eq_scott
 
 variable {α} {s : Set α} {a : α}
 
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open :
-    IsOpen s ↔ IsUpperSet s ∧ IsOpen[scottHausdorff] s := by erw [topology_eq α]; rfl
+    IsOpen s ↔ IsUpperSet s ∧ IsOpen[scottHausdorff α] s := by erw [topology_eq α]; rfl
 
 lemma isOpen_iff_isUpperSet_and_dirSupInacc : IsOpen s ↔ IsUpperSet s ∧ DirSupInacc s := by
   rw [isOpen_iff_isUpperSet_and_scottHausdorff_open]
   refine and_congr_right fun h ↦
-    ⟨@IsScottHausdorff.dirSupInacc_of_isOpen _ _ scottHausdorff _ _, fun h' d d₁ d₂ _ d₃ ha ↦ ?_⟩
+    ⟨@IsScottHausdorff.dirSupInacc_of_isOpen _ _ (scottHausdorff α) _ _,
+      fun h' d d₁ d₂ _ d₃ ha ↦ ?_⟩
   obtain ⟨b, hbd, hbu⟩ := h' d₁ d₂ d₃ ha
   exact ⟨b, hbd, Subset.trans (inter_subset_left (Ici b) d) (h.Ici_subset hbu)⟩
 
@@ -236,8 +238,8 @@ lemma isLowerSet_of_isClosed : IsClosed s → IsLowerSet s := fun h ↦
 
 lemma lowerClosure_subset_closure : ↑(lowerClosure s) ⊆ closure s := by
   convert closure.mono (@upperSet_le_scott α _)
-  rw [@IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) ?_ s]
-  · exact instIsUpperSetUpperSet
+  · rw [@IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) ?_ s]
+    infer_instance
   · exact topology_eq α
 
 lemma isClosed_Iic : IsClosed (Iic a) :=
@@ -325,27 +327,34 @@ instance [Inhabited α] : Inhabited (WithScott α) := ‹Inhabited α›
 variable [Preorder α]
 
 instance : Preorder (WithScott α) := ‹Preorder α›
-instance : TopologicalSpace (WithScott α) := scott
+instance : TopologicalSpace (WithScott α) := scott α
 instance : IsScott (WithScott α) := ⟨rfl⟩
 
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :
-    IsOpen (WithScott.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ scottHausdorff.IsOpen u := Iff.rfl
-
-/-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScott α`.
--/
-def withScottHomeomorph [TopologicalSpace α] [IsScott α] : WithScott α ≃ₜ α :=
-  WithScott.ofScott.toHomeomorphOfInducing ⟨by erw [IsScott.topology_eq α, induced_id]; rfl⟩
+    IsOpen (WithScott.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ (scottHausdorff α).IsOpen u := Iff.rfl
 
 end WithScott
 end Scott
 
-variable [Preorder α] [TopologicalSpace α]
+variable [Preorder α]
 
-lemma IsScott.scottHausdorff_le [IsScott α] : scottHausdorff ≤ ‹TopologicalSpace α› := by
+lemma scottHausdorff_le_lower : scottHausdorff α ≤ lower α :=
+  fun s h => @IsScottHausdorff.isOpen_of_isLowerSet  _ _ (scottHausdorff α) _ _
+      <| (@IsLower.isLowerSet_of_isOpen (Topology.WithLower α) _ _  _ s h)
+
+variable [TopologicalSpace α]
+
+/-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScott α`.
+-/
+def IsScott.withScottHomeomorph [IsScott α] : WithScott α ≃ₜ α :=
+  WithScott.ofScott.toHomeomorphOfInducing ⟨by erw [IsScott.topology_eq α, induced_id]; rfl⟩
+
+lemma IsScott.scottHausdorff_le [IsScott α] : scottHausdorff α ≤ ‹TopologicalSpace α› := by
   rw [IsScott.topology_eq α, scott]; exact le_sup_right
 
-lemma IsLower.scottHausdorff_le [IsLower α] : scottHausdorff ≤ ‹TopologicalSpace α› :=
+lemma IsLower.scottHausdorff_le [IsLower α] : scottHausdorff α ≤ ‹TopologicalSpace α› :=
   fun _ h ↦
-    @IsScottHausdorff.isOpen_of_isLowerSet _ _ scottHausdorff _ _ <| IsLower.isLowerSet_of_isOpen h
+    @IsScottHausdorff.isOpen_of_isLowerSet _ _ (scottHausdorff α) _ _
+      <| IsLower.isLowerSet_of_isOpen h
 
 end Topology

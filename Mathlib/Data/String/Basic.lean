@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Lex
 import Mathlib.Data.Char
+import Mathlib.Tactic.AdaptationNote
 
 #align_import data.string.basic from "leanprover-community/mathlib"@"d13b3a4a392ea7273dfa4727dbd1892e26cfd518"
 
@@ -59,38 +60,41 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) 
     ltb ⟨⟨c :: cs₁⟩, i₁ + c⟩ ⟨⟨c :: cs₂⟩, i₂ + c⟩ = ltb ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ := by
   apply ltb.inductionOn ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ (motive := fun ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ ↦
     ltb ⟨⟨c :: cs₁⟩, i₁ + c⟩ ⟨⟨c :: cs₂⟩, i₂ + c⟩ =
-    ltb ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩) <;> simp <;>
+    ltb ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩) <;> simp only <;>
   intro ⟨cs₁⟩ ⟨cs₂⟩ i₁ i₂ <;>
   intros <;>
-  (conv => lhs; rw [ltb]) <;> (conv => rhs; rw [ltb]) <;>
+  (conv => lhs; unfold ltb) <;> (conv => rhs; unfold ltb) <;>
   simp only [Iterator.hasNext_cons_addChar, ite_false, ite_true, *]
   · rename_i h₂ h₁ heq ih
-    simp [Iterator.curr, get_cons_addChar, Iterator.next, next, *] at *
+    simp only [Iterator.next, next, heq, Iterator.curr, get_cons_addChar, ite_true] at ih ⊢
     repeat rw [Pos.addChar_right_comm _ c]
     exact ih
   · rename_i h₂ h₁ hne
-    simp [Iterator.curr, get_cons_addChar, *]
+    simp [Iterator.curr, get_cons_addChar, hne]
 
 @[simp]
 theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList
   | ⟨s₁⟩, ⟨s₂⟩ => show ltb ⟨⟨s₁⟩, 0⟩ ⟨⟨s₂⟩, 0⟩ ↔ s₁ < s₂ by
     induction s₁ generalizing s₂ <;> cases s₂
-    · decide
+    · unfold ltb; decide
     · rename_i c₂ cs₂; apply iff_of_true
-      · rw [ltb]; simp only [Iterator.hasNext, Iterator.curr]
-        simp [endPos, utf8ByteSize, utf8ByteSize.go, csize_pos]
+      · unfold ltb
+        #adaptation_note /-- v4.7.0-rc1 exclude reduceMk from simp -/
+        simp [-reduceMk, Iterator.hasNext, csize_pos]
       · apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih; apply iff_of_false
-      · rw [ltb]; simp [Iterator.hasNext, Iterator.curr]
+      · unfold ltb
+        #adaptation_note /-- v4.7.0-rc1 exclude reduceMk from simp -/
+        simp [-reduceMk, Iterator.hasNext]
       · apply not_lt_of_lt; apply List.nil_lt_cons
-    · rename_i c₁ cs₁ ih c₂ cs₂; rw [ltb]
-      simp [Iterator.hasNext, endPos, utf8ByteSize, utf8ByteSize.go, csize_pos, Iterator.curr, get,
-            utf8GetAux, Iterator.next, next]
+    · rename_i c₁ cs₁ ih c₂ cs₂; unfold ltb
+      simp only [Iterator.hasNext, Pos.byteIdx_zero, endPos, utf8ByteSize, utf8ByteSize.go,
+        add_pos_iff, csize_pos, or_true, decide_eq_true_eq, ↓reduceIte, Iterator.curr, get,
+        utf8GetAux, Iterator.next, next, Bool.ite_eq_true_distrib]
       split_ifs with h
       · subst c₂
-        suffices ltb ⟨⟨c₁ :: cs₁⟩, ⟨csize c₁⟩⟩ ⟨⟨c₁ :: cs₂⟩, ⟨csize c₁⟩⟩ = ltb ⟨⟨cs₁⟩, 0⟩ ⟨⟨cs₂⟩, 0⟩
-          by rw [Pos.zero_addChar_eq, this]; exact (ih cs₂).trans List.Lex.cons_iff.symm
-        rw [← Pos.zero_addChar_eq]
+        suffices ltb ⟨⟨c₁ :: cs₁⟩, (0 : Pos) + c₁⟩ ⟨⟨c₁ :: cs₂⟩, (0 : Pos) + c₁⟩ =
+          ltb ⟨⟨cs₁⟩, 0⟩ ⟨⟨cs₂⟩, 0⟩ by rw [this]; exact (ih cs₂).trans List.Lex.cons_iff.symm
         apply ltb_cons_addChar
       · refine ⟨List.Lex.rel, fun e ↦ ?_⟩
         cases e <;> rename_i h'
@@ -134,10 +138,10 @@ theorem asString_inv_toList (s : String) : s.toList.asString = s :=
 theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.drop 1).toList
   | ⟨s⟩, h => by
     cases s with
-    | nil => simp only [ne_eq, not_true_eq_false] at h
+    | nil => simp at h
     | cons c cs =>
-      simp only [toList, List.cons.injEq]
-      constructor <;> [rfl; simp [drop_eq]]
+      simp only [toList, data_drop, List.drop_succ_cons, List.drop_zero, List.cons.injEq, and_true]
+      rfl
 #align string.to_list_nonempty String.toList_nonempty
 
 @[simp]
@@ -162,8 +166,7 @@ instance : LinearOrder String where
     apply le_total
   decidableLE := String.decidableLE
   compare_eq_compareOfLessAndEq a b := by
-    simp only [compare, compareOfLessAndEq, instLTString, List.instLTList, lt_iff_toList_lt,
-      List.LT', toList]
+    simp only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt, toList]
     split_ifs <;>
     simp only [List.lt_iff_lex_lt] at * <;>
     contradiction

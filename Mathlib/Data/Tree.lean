@@ -3,11 +3,11 @@ Copyright (c) 2019 mathlib community. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
 -/
-import Std.Data.RBMap.Basic
 import Mathlib.Data.Num.Basic
-import Mathlib.Order.Basic
 import Mathlib.Init.Data.Ordering.Basic
+import Mathlib.Init.Order.LinearOrder
 import Mathlib.Util.CompileInductive
+import Batteries.Data.RBMap.Basic
 
 #align_import data.tree from "leanprover-community/mathlib"@"ed989ff568099019c6533a4d94b27d852a5710d8"
 
@@ -21,6 +21,10 @@ to be defined and is better suited for in-kernel computation.
 We also specialize for `Tree Unit`, which is a binary tree without any
 additional data. We provide the notation `a △ b` for making a `Tree Unit` with children
 `a` and `b`.
+
+## TODO
+
+Implement a `Traversable` instance for `Tree`.
 
 ## References
 
@@ -47,7 +51,7 @@ variable {α : Type u}
 instance : Inhabited (Tree α) :=
   ⟨nil⟩
 
-open Std (RBNode)
+open Batteries (RBNode)
 
 /-- Makes a `Tree α` out of a red-black tree. -/
 def ofRBNode : RBNode α → Tree α
@@ -87,7 +91,7 @@ def getOrElse (n : PosNum) (t : Tree α) (v : α) : α :=
 #align tree.get_or_else Tree.getOrElse
 
 /-- Apply a function to each value in the tree.  This is the `map` function for the `Tree` functor.
-TODO: implement `Traversable Tree`. -/
+-/
 def map {β} (f : α → β) : Tree α → Tree β
   | nil => nil
   | node a l r => node (f a) (map f l) (map f r)
@@ -145,10 +149,10 @@ def right : Tree α → Tree α
   | node _ _l r => r
 #align tree.right Tree.right
 
--- Notation for making a node with `Unit` data
+/-- A node with `Unit` data -/
 scoped infixr:65 " △ " => Tree.node ()
 
--- porting note: workaround for leanprover/lean4#2049
+-- Porting note: workaround for leanprover/lean4#2049
 compile_inductive% Tree
 
 @[elab_as_elim]

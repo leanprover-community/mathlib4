@@ -37,19 +37,12 @@ open Filter Set
 section NormedField
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {f f₀ f₁ g : 𝕜 → F}
-
 variable {f' f₀' f₁' g' : F}
-
 variable {x : 𝕜}
-
 variable {s t : Set 𝕜}
-
 variable {L L₁ L₂ : Filter 𝕜}
 
 /-- If the domain has dimension one, then Fréchet derivative is equivalent to the classical
@@ -66,13 +59,13 @@ theorem hasDerivAtFilter_iff_tendsto_slope {x : 𝕜} {L : Filter 𝕜} :
   _ ↔ Tendsto (fun y ↦ slope f x y - f') (L ⊓ 𝓟 {x}ᶜ) (𝓝 0) := tendsto_congr' <| by
         refine (EqOn.eventuallyEq fun y hy ↦ ?_).filter_mono inf_le_right
         rw [inv_smul_smul₀ (sub_ne_zero.2 hy) f']
-  _ ↔ Tendsto (slope f x) (L ⊓ 𝓟 {x}ᶜ) (𝓝 f') :=
-        by rw [← nhds_translation_sub f', tendsto_comap_iff]; rfl
+  _ ↔ Tendsto (slope f x) (L ⊓ 𝓟 {x}ᶜ) (𝓝 f') := by
+        rw [← nhds_translation_sub f', tendsto_comap_iff]; rfl
 #align has_deriv_at_filter_iff_tendsto_slope hasDerivAtFilter_iff_tendsto_slope
 
 theorem hasDerivWithinAt_iff_tendsto_slope :
     HasDerivWithinAt f f' s x ↔ Tendsto (slope f x) (𝓝[s \ {x}] x) (𝓝 f') := by
-  simp only [HasDerivWithinAt, nhdsWithin, diff_eq, inf_assoc.symm, inf_principal.symm]
+  simp only [HasDerivWithinAt, nhdsWithin, diff_eq, ← inf_assoc, inf_principal.symm]
   exact hasDerivAtFilter_iff_tendsto_slope
 #align has_deriv_within_at_iff_tendsto_slope hasDerivWithinAt_iff_tendsto_slope
 
@@ -136,7 +129,7 @@ theorem range_derivWithin_subset_closure_span_image
     suffices A : f x ∈ closure (f '' (s ∩ t)) from
       closure_mono (image_subset _ (inter_subset_right _ _)) A
     apply ContinuousWithinAt.mem_closure_image
-    apply H'.continuousWithinAt.mono (inter_subset_left _ _)
+    · apply H'.continuousWithinAt.mono (inter_subset_left _ _)
     rw [mem_closure_iff_nhdsWithin_neBot]
     exact I.mono (nhdsWithin_mono _ (diff_subset _ _))
 
@@ -152,7 +145,7 @@ theorem range_deriv_subset_closure_span_image
 theorem isSeparable_range_derivWithin [SeparableSpace 𝕜] (f : 𝕜 → F) (s : Set 𝕜) :
     IsSeparable (range (derivWithin f s)) := by
   obtain ⟨t, ts, t_count, ht⟩ : ∃ t, t ⊆ s ∧ Set.Countable t ∧ s ⊆ closure t :=
-    (isSeparable_of_separableSpace s).exists_countable_dense_subset
+    (IsSeparable.of_separableSpace s).exists_countable_dense_subset
   have : s ⊆ closure (s ∩ t) := by rwa [inter_eq_self_of_subset_right ts]
   apply IsSeparable.mono _ (range_derivWithin_subset_closure_span_image f this)
   exact (Countable.image t_count f).isSeparable.span.closure
@@ -223,7 +216,7 @@ theorem HasDerivWithinAt.limsup_slope_norm_le (hf : HasDerivWithinAt f f' s x) (
     ∀ᶠ z in 𝓝[s] x, ‖z - x‖⁻¹ * (‖f z‖ - ‖f x‖) < r := by
   apply (hf.limsup_norm_slope_le hr).mono
   intro z hz
-  refine' lt_of_le_of_lt (mul_le_mul_of_nonneg_left (norm_sub_norm_le _ _) _) hz
+  refine lt_of_le_of_lt (mul_le_mul_of_nonneg_left (norm_sub_norm_le _ _) ?_) hz
   exact inv_nonneg.2 (norm_nonneg _)
 #align has_deriv_within_at.limsup_slope_norm_le HasDerivWithinAt.limsup_slope_norm_le
 

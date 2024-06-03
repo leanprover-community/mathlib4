@@ -23,25 +23,21 @@ open MvFunctor
 namespace MvQPF
 
 variable {n : ℕ}
-
 variable {F : TypeVec.{u} n → Type u}
 
 section repr
 
 variable [MvFunctor F] [q : MvQPF F]
-
 variable {G : TypeVec.{u} n → Type u} [MvFunctor G]
-
 variable {FG_abs : ∀ {α}, F α → G α}
-
 variable {FG_repr : ∀ {α}, G α → F α}
 
 /-- If `F` is a QPF then `G` is a QPF as well. Can be used to
 construct `MvQPF` instances by transporting them across
 surjective functions -/
 def quotientQPF (FG_abs_repr : ∀ {α} (x : G α), FG_abs (FG_repr x) = x)
-    (FG_abs_map : ∀ {α β} (f : α ⟹ β) (x : F α), FG_abs (f <$$> x) = f <$$> FG_abs x) : MvQPF G
-    where
+    (FG_abs_map : ∀ {α β} (f : α ⟹ β) (x : F α), FG_abs (f <$$> x) = f <$$> FG_abs x) :
+    MvQPF G where
   P := q.P
   abs p := FG_abs (abs p)
   repr x := repr (FG_repr x)
@@ -65,7 +61,6 @@ instance Quot1.inhabited {α : TypeVec n} [Inhabited <| F α] : Inhabited (Quot1
 #align mvqpf.quot1.inhabited MvQPF.Quot1.inhabited
 
 variable [MvFunctor F] [q : MvQPF F]
-
 variable (Hfunc : ∀ ⦃α β⦄ (a b : F α) (f : α ⟹ β), R a b → R (f <$$> a) (f <$$> b))
 
 /-- `map` of the `Quot1` functor -/

@@ -3,7 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.ExpChar
 
 #align_import algebra.char_p.two from "leanprover-community/mathlib"@"7f1ba1a333d66eed531ecb4092493cd1b6715450"
 
@@ -91,8 +91,6 @@ theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
   rw [← pow_two, ← pow_two, ← pow_two, add_sq]
 #align char_two.add_mul_self CharTwo.add_mul_self
 
-open BigOperators
-
 theorem list_sum_sq (l : List R) : l.sum ^ 2 = (l.map (· ^ 2)).sum :=
   list_sum_pow_char _ _
 #align char_two.list_sum_sq CharTwo.list_sum_sq
@@ -109,12 +107,12 @@ theorem multiset_sum_mul_self (l : Multiset R) :
     l.sum * l.sum = (Multiset.map (fun x => x * x) l).sum := by simp_rw [← pow_two, multiset_sum_sq]
 #align char_two.multiset_sum_mul_self CharTwo.multiset_sum_mul_self
 
-theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i in s, f i) ^ 2 = ∑ i in s, f i ^ 2 :=
+theorem sum_sq (s : Finset ι) (f : ι → R) : (∑ i ∈ s, f i) ^ 2 = ∑ i ∈ s, f i ^ 2 :=
   sum_pow_char _ _ _
 #align char_two.sum_sq CharTwo.sum_sq
 
 theorem sum_mul_self (s : Finset ι) (f : ι → R) :
-    ((∑ i in s, f i) * ∑ i in s, f i) = ∑ i in s, f i * f i := by simp_rw [← pow_two, sum_sq]
+    ((∑ i ∈ s, f i) * ∑ i ∈ s, f i) = ∑ i ∈ s, f i * f i := by simp_rw [← pow_two, sum_sq]
 #align char_two.sum_mul_self CharTwo.sum_mul_self
 
 end CommSemiring
@@ -126,7 +124,7 @@ section ringChar
 variable [Ring R]
 
 theorem neg_one_eq_one_iff [Nontrivial R] : (-1 : R) = 1 ↔ ringChar R = 2 := by
-  refine' ⟨fun h => _, fun h => @CharTwo.neg_eq _ _ (ringChar.of_eq h) 1⟩
+  refine ⟨fun h => ?_, fun h => @CharTwo.neg_eq _ _ (ringChar.of_eq h) 1⟩
   rw [eq_comm, ← sub_eq_zero, sub_neg_eq_add, ← Nat.cast_one, ← Nat.cast_add] at h
   exact ((Nat.dvd_prime Nat.prime_two).mp (ringChar.dvd h)).resolve_left CharP.ringChar_ne_one
 #align neg_one_eq_one_iff neg_one_eq_one_iff

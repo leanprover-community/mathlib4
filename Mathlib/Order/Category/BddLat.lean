@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.Order.Category.BddOrd
 import Mathlib.Order.Category.Lat
 import Mathlib.Order.Category.Semilat
@@ -27,13 +27,14 @@ open CategoryTheory
 
 /-- The category of bounded lattices with bounded lattice morphisms. -/
 structure BddLat where
+  /-- The underlying lattice of a bounded lattice. -/
   toLat : Lat
   [isBoundedOrder : BoundedOrder toLat]
 #align BddLat BddLat
 
 namespace BddLat
 
-instance : CoeSort BddLat (Type*) :=
+instance : CoeSort BddLat Type* :=
   ⟨fun X => X.toLat⟩
 
 instance (X : BddLat) : Lattice X :=
@@ -43,7 +44,7 @@ attribute [instance] BddLat.isBoundedOrder
 
 /-- Construct a bundled `BddLat` from `Lattice` + `BoundedOrder`. -/
 def of (α : Type*) [Lattice α] [BoundedOrder α] : BddLat :=
-  -- porting note: was `⟨⟨α⟩⟩`, see https://github.com/leanprover-community/mathlib4/issues/4998
+  -- Porting note: was `⟨⟨α⟩⟩`, see https://github.com/leanprover-community/mathlib4/issues/4998
   ⟨{α := α}⟩
 #align BddLat.of BddLat.of
 

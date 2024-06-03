@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2018 Johan Commelin All rights reserved.
+Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
 -/
@@ -21,6 +21,8 @@ also contains unrelated results about `Units` that depend on `MonoidHom`.
   `α` to `βˣ`.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 open Function
 
@@ -33,8 +35,8 @@ equal at `x⁻¹`. -/
 @[to_additive
   "If two homomorphisms from a subtraction monoid to an additive monoid are equal at an
   additive unit `x`, then they are equal at `-x`."]
-theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [MonoidHomClass F G N]
-    {x : G} (hx : IsUnit x) (f g : F) (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
+theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [FunLike F G N]
+    [MonoidHomClass F G N] {x : G} (hx : IsUnit x) (f g : F) (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
   left_inv_eq_right_inv (map_mul_eq_one f hx.inv_mul_cancel)
     (h.symm ▸ map_mul_eq_one g (hx.mul_inv_cancel))
 #align is_unit.eq_on_inv IsUnit.eq_on_inv
@@ -44,7 +46,7 @@ theorem IsUnit.eq_on_inv {F G N} [DivisionMonoid G] [Monoid N] [MonoidHomClass F
 @[to_additive
     "If two homomorphism from an additive group to an additive monoid are equal at `x`,
     then they are equal at `-x`."]
-theorem eq_on_inv {F G M} [Group G] [Monoid M] [MonoidHomClass F G M]
+theorem eq_on_inv {F G M} [Group G] [Monoid M] [FunLike F G M] [MonoidHomClass F G M]
     (f g : F) {x : G} (h : f x = g x) : f x⁻¹ = g x⁻¹ :=
   (Group.isUnit x).eq_on_inv f g h
 #align eq_on_inv eq_on_inv
@@ -118,7 +120,8 @@ theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) =
 #align add_units.coe_zsmul AddUnits.val_zsmul_eq_zsmul_val
 
 @[to_additive (attr := simp)]
-theorem _root_.map_units_inv {F : Type*} [MonoidHomClass F M α] (f : F) (u : Units M) :
+theorem _root_.map_units_inv {F : Type*} [FunLike F M α] [MonoidHomClass F M α]
+    (f : F) (u : Units M) :
     f ↑u⁻¹ = (f u)⁻¹ := ((f : M →* α).comp (Units.coeHom M)).map_inv u
 #align map_units_inv map_units_inv
 #align map_add_units_neg map_addUnits_neg
@@ -145,15 +148,15 @@ theorem coe_liftRight {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x)
 
 @[to_additive (attr := simp)]
 theorem mul_liftRight_inv {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
-    f x * ↑(liftRight f g h x)⁻¹ = 1 :=
-  by rw [Units.mul_inv_eq_iff_eq_mul, one_mul, coe_liftRight]
+    f x * ↑(liftRight f g h x)⁻¹ = 1 := by
+  rw [Units.mul_inv_eq_iff_eq_mul, one_mul, coe_liftRight]
 #align units.mul_lift_right_inv Units.mul_liftRight_inv
 #align add_units.add_lift_right_neg AddUnits.add_liftRight_neg
 
 @[to_additive (attr := simp)]
 theorem liftRight_inv_mul {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
-    ↑(liftRight f g h x)⁻¹ * f x = 1 :=
-  by rw [Units.inv_mul_eq_iff_eq_mul, mul_one, coe_liftRight]
+    ↑(liftRight f g h x)⁻¹ * f x = 1 := by
+  rw [Units.inv_mul_eq_iff_eq_mul, mul_one, coe_liftRight]
 #align units.lift_right_inv_mul Units.liftRight_inv_mul
 #align add_units.lift_right_neg_add AddUnits.liftRight_neg_add
 
@@ -185,7 +188,7 @@ end MonoidHom
 
 namespace IsUnit
 
-variable {F G α M N : Type*}
+variable {F G α M N : Type*} [FunLike F M N] [FunLike G N M]
 
 section Monoid
 
@@ -198,7 +201,7 @@ theorem map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) : IsUnit (f x)
 #align is_add_unit.map IsAddUnit.map
 
 @[to_additive]
-theorem of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M] {f : F} {x : M} (g : G)
+theorem of_leftInverse [MonoidHomClass G N M] {f : F} {x : M} (g : G)
     (hfg : Function.LeftInverse g f) (h : IsUnit (f x)) : IsUnit x := by
   simpa only [hfg x] using h.map g
 #align is_unit.of_left_inverse IsUnit.of_leftInverse

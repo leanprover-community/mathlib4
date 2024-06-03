@@ -29,27 +29,30 @@ namespace ContinuousLinearMap
 variable [NontriviallyNormedField 𝕜] [NonUnitalNormedRing E] [StarRing E] [NormedStarGroup E]
 variable [NormedSpace 𝕜 E] [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E] [RegularNormedAlgebra 𝕜 E]
 
-lemma op_norm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖ = ‖a‖ := by
+lemma opNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖ = ‖a‖ := by
   refine le_antisymm
-    (op_norm_le_bound _ (norm_nonneg _) fun b => by simpa only [mul_comm] using norm_mul_le b a) ?_
+    (opNorm_le_bound _ (norm_nonneg _) fun b => by simpa only [mul_comm] using norm_mul_le b a) ?_
   suffices ‖mul 𝕜 E (star a)‖ ≤ ‖(mul 𝕜 E).flip a‖ by simpa using this
-  refine op_norm_le_bound _ (norm_nonneg _) fun b => ?_
+  refine opNorm_le_bound _ (norm_nonneg _) fun b => ?_
   calc ‖mul 𝕜 E (star a) b‖ = ‖(mul 𝕜 E).flip a (star b)‖ := by simpa using norm_star (star b * a)
-    _ ≤ ‖(mul 𝕜 E).flip a‖ * ‖b‖ := by simpa using le_op_norm ((mul 𝕜 E).flip a) (star b)
+    _ ≤ ‖(mul 𝕜 E).flip a‖ * ‖b‖ := by simpa using le_opNorm ((mul 𝕜 E).flip a) (star b)
 
-lemma op_nnnorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖₊ = ‖a‖₊ :=
-  Subtype.ext (op_norm_mul_flip_apply 𝕜 a)
+@[deprecated] alias op_norm_mul_flip_apply := opNorm_mul_flip_apply -- deprecated on 2024-02-02
+
+lemma opNNNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖₊ = ‖a‖₊ :=
+  Subtype.ext (opNorm_mul_flip_apply 𝕜 a)
+
+@[deprecated] alias op_nnnorm_mul_flip_apply := opNNNorm_mul_flip_apply -- deprecated on 2024-02-02
 
 variable (E)
 
 lemma isometry_mul_flip : Isometry (mul 𝕜 E).flip :=
-  AddMonoidHomClass.isometry_of_norm _ (op_norm_mul_flip_apply 𝕜)
+  AddMonoidHomClass.isometry_of_norm _ (opNorm_mul_flip_apply 𝕜)
 
 end ContinuousLinearMap
 
 variable [DenselyNormedField 𝕜] [NonUnitalNormedRing E] [StarRing E] [CstarRing E]
 variable [NormedSpace 𝕜 E] [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E]
-
 variable (E)
 
 /-- A C⋆-algebra over a densely normed field is a regular normed algebra. -/
@@ -57,17 +60,17 @@ instance CstarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 E) fun a => NNReal.eq_iff.mpr <|
     show ‖mul 𝕜 E a‖₊ = ‖a‖₊ by
     rw [← sSup_closed_unit_ball_eq_nnnorm]
-    refine' csSup_eq_of_forall_le_of_forall_lt_exists_gt _ _ fun r hr => _
+    refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ?_ ?_ fun r hr => ?_
     · exact (Metric.nonempty_closedBall.mpr zero_le_one).image _
     · rintro - ⟨x, hx, rfl⟩
       exact
-        ((mul 𝕜 E a).unit_le_op_norm x <| mem_closedBall_zero_iff.mp hx).trans
-          (op_norm_mul_apply_le 𝕜 E a)
+        ((mul 𝕜 E a).unit_le_opNorm x <| mem_closedBall_zero_iff.mp hx).trans
+          (opNorm_mul_apply_le 𝕜 E a)
     · have ha : 0 < ‖a‖₊ := zero_le'.trans_lt hr
       rw [← inv_inv ‖a‖₊, NNReal.lt_inv_iff_mul_lt (inv_ne_zero ha.ne')] at hr
       obtain ⟨k, hk₁, hk₂⟩ :=
         NormedField.exists_lt_nnnorm_lt 𝕜 (mul_lt_mul_of_pos_right hr <| inv_pos.2 ha)
-      refine' ⟨_, ⟨k • star a, _, rfl⟩, _⟩
+      refine ⟨_, ⟨k • star a, ?_, rfl⟩, ?_⟩
       · simpa only [mem_closedBall_zero_iff, norm_smul, one_mul, norm_star] using
           (NNReal.le_inv_iff_mul_le ha.ne').1 (one_mul ‖a‖₊⁻¹ ▸ hk₂.le : ‖k‖₊ ≤ ‖a‖₊⁻¹)
       · simp only [map_smul, nnnorm_smul, mul_apply', mul_smul_comm, CstarRing.nnnorm_self_mul_star]
@@ -76,7 +79,6 @@ instance CstarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
 section CStarProperty
 
 variable [StarRing 𝕜] [CstarRing 𝕜] [StarModule 𝕜 E]
-
 variable {E}
 
 /-- This is the key lemma used to establish the instance `Unitization.instCstarRing`
@@ -115,7 +117,7 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
       refine (norm_smul _ _).trans_le ?_
       simpa only [mul_one] using
         mul_le_mul_of_nonneg_left (mem_closedBall_zero_iff.1 hy) (norm_nonneg (star x * x).fst)
-    · exact (unit_le_op_norm _ y <| mem_closedBall_zero_iff.1 hy).trans (op_norm_mul_apply_le _ _ _)
+    · exact (unit_le_opNorm _ y <| mem_closedBall_zero_iff.1 hy).trans (opNorm_mul_apply_le _ _ _)
   · simp only [ContinuousLinearMap.add_apply, mul_apply', Unitization.snd_star, Unitization.snd_mul,
       Unitization.fst_mul, Unitization.fst_star, Algebra.algebraMap_eq_smul_one, smul_apply,
       one_apply, smul_add, mul_add, add_mul]
@@ -144,7 +146,7 @@ instance Unitization.instCstarRing : CstarRing (Unitization 𝕜 E) where
             rw [map_mul, Prod.snd_mul]
             exact norm_mul_le _ _
         rw [sq] at this
-        rw [← Ne.def, ← norm_pos_iff] at h
+        rw [← Ne, ← norm_pos_iff] at h
         simp only [add_zero, Unitization.splitMul_apply, Unitization.snd_star,
           Unitization.fst_star, star_star] at this
         exact (mul_le_mul_right h).mp this

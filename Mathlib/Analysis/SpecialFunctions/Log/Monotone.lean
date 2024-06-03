@@ -48,8 +48,8 @@ theorem log_div_self_antitoneOn : AntitoneOn (fun x : ℝ => log x / x) { x | ex
   rw [div_le_iff y_pos, ← sub_le_sub_iff_right (log x)]
   calc
     log y - log x = log (y / x) := by rw [log_div y_pos.ne' x_pos.ne']
-    _ ≤ y / x - 1 := (log_le_sub_one_of_pos (div_pos y_pos x_pos))
-    _ ≤ log x * (y / x - 1) := (le_mul_of_one_le_left hyx hlogx)
+    _ ≤ y / x - 1 := log_le_sub_one_of_pos (div_pos y_pos x_pos)
+    _ ≤ log x * (y / x - 1) := le_mul_of_one_le_left hyx hlogx
     _ = log x / x * y - log x := by ring
 #align real.log_div_self_antitone_on Real.log_div_self_antitoneOn
 
@@ -66,23 +66,23 @@ theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
   rw [← div_self (ne_of_lt ha).symm, div_eq_mul_one_div a a, rpow_mul y_nonneg, rpow_mul x_nonneg,
     log_rpow (rpow_pos_of_pos y_pos a), log_rpow (rpow_pos_of_pos x_pos a), mul_div_assoc,
     mul_div_assoc, mul_le_mul_left (one_div_pos.mpr ha)]
-  · refine' log_div_self_antitoneOn _ _ _
-    · simp only [Set.mem_setOf_eq]
-      convert rpow_le_rpow _ hex (le_of_lt ha) using 1
-      rw [← exp_mul]
+  refine log_div_self_antitoneOn ?_ ?_ ?_
+  · simp only [Set.mem_setOf_eq]
+    convert rpow_le_rpow _ hex (le_of_lt ha) using 1
+    · rw [← exp_mul]
       simp only [Real.exp_eq_exp]
       field_simp [(ne_of_lt ha).symm]
-      exact le_of_lt (exp_pos (1 / a))
-    · simp only [Set.mem_setOf_eq]
-      convert rpow_le_rpow _ (_root_.trans hex hxy) (le_of_lt ha) using 1
-      rw [← exp_mul]
+    exact le_of_lt (exp_pos (1 / a))
+  · simp only [Set.mem_setOf_eq]
+    convert rpow_le_rpow _ (_root_.trans hex hxy) (le_of_lt ha) using 1
+    · rw [← exp_mul]
       simp only [Real.exp_eq_exp]
       field_simp [(ne_of_lt ha).symm]
-      exact le_of_lt (exp_pos (1 / a))
-    gcongr
+    exact le_of_lt (exp_pos (1 / a))
+  gcongr
 #align real.log_div_self_rpow_antitone_on Real.log_div_self_rpow_antitoneOn
 
-theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ => log x / sqrt x) { x | exp 2 ≤ x } := by
+theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ => log x / √x) { x | exp 2 ≤ x } := by
   simp_rw [sqrt_eq_rpow]
   convert @log_div_self_rpow_antitoneOn (1 / 2) (by norm_num)
   norm_num

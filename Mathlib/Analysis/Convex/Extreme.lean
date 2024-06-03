@@ -45,7 +45,8 @@ More not-yet-PRed stuff is available on the mathlib3 branch `sperner_again`.
 
 open Function Set
 
-open Affine Classical
+open scoped Classical
+open Affine
 
 variable {𝕜 E F ι : Type*} {π : ι → Type*}
 
@@ -79,7 +80,7 @@ protected theorem IsExtreme.rfl : IsExtreme 𝕜 A A :=
 @[trans]
 protected theorem IsExtreme.trans (hAB : IsExtreme 𝕜 A B) (hBC : IsExtreme 𝕜 B C) :
     IsExtreme 𝕜 A C := by
-  refine' ⟨Subset.trans hBC.1 hAB.1, fun x₁ hx₁A x₂ hx₂A x hxC hx ↦ _⟩
+  refine ⟨Subset.trans hBC.1 hAB.1, fun x₁ hx₁A x₂ hx₂A x hxC hx ↦ ?_⟩
   obtain ⟨hx₁B, hx₂B⟩ := hAB.2 hx₁A hx₂A (hBC.1 hxC) hx
   exact hBC.2 hx₁B hx₂B hxC hx
 #align is_extreme.trans IsExtreme.trans
@@ -110,7 +111,7 @@ protected theorem IsExtreme.mono (hAC : IsExtreme 𝕜 A C) (hBA : B ⊆ A) (hCB
 theorem isExtreme_iInter {ι : Sort*} [Nonempty ι] {F : ι → Set E}
     (hAF : ∀ i : ι, IsExtreme 𝕜 A (F i)) : IsExtreme 𝕜 A (⋂ i : ι, F i) := by
   obtain i := Classical.arbitrary ι
-  refine' ⟨iInter_subset_of_subset i (hAF i).1, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ _⟩
+  refine ⟨iInter_subset_of_subset i (hAF i).1, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ ?_⟩
   simp_rw [mem_iInter] at hxF ⊢
   have h := fun i ↦ (hAF i).2 hx₁A hx₂A (hxF i) hx
   exact ⟨fun i ↦ (h i).1, fun i ↦ (h i).2⟩
@@ -189,15 +190,15 @@ theorem IsExtreme.convex_diff (hA : Convex 𝕜 A) (hAB : IsExtreme 𝕜 A B) : 
 theorem extremePoints_prod (s : Set E) (t : Set F) :
     (s ×ˢ t).extremePoints 𝕜 = s.extremePoints 𝕜 ×ˢ t.extremePoints 𝕜 := by
   ext
-  refine' (and_congr_right fun hx ↦ ⟨fun h ↦ _, fun h ↦ _⟩).trans and_and_and_comm
+  refine (and_congr_right fun hx ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩).trans and_and_and_comm
   constructor
   · rintro x₁ hx₁ x₂ hx₂ hx_fst
-    refine' (h (mk_mem_prod hx₁ hx.2) (mk_mem_prod hx₂ hx.2) _).imp (congr_arg Prod.fst)
+    refine (h (mk_mem_prod hx₁ hx.2) (mk_mem_prod hx₂ hx.2) ?_).imp (congr_arg Prod.fst)
         (congr_arg Prod.fst)
     rw [← Prod.image_mk_openSegment_left]
     exact ⟨_, hx_fst, rfl⟩
   · rintro x₁ hx₁ x₂ hx₂ hx_snd
-    refine' (h (mk_mem_prod hx.1 hx₁) (mk_mem_prod hx.1 hx₂) _).imp (congr_arg Prod.snd)
+    refine (h (mk_mem_prod hx.1 hx₁) (mk_mem_prod hx.1 hx₂) ?_).imp (congr_arg Prod.snd)
         (congr_arg Prod.snd)
     rw [← Prod.image_mk_openSegment_right]
     exact ⟨_, hx_snd, rfl⟩
@@ -213,9 +214,9 @@ theorem extremePoints_pi (s : ∀ i, Set (π i)) :
     (univ.pi s).extremePoints 𝕜 = univ.pi fun i ↦ (s i).extremePoints 𝕜 := by
   ext x
   simp only [mem_extremePoints, mem_pi, mem_univ, true_imp_iff, @forall_and ι]
-  refine' and_congr_right fun hx ↦ ⟨fun h i ↦ _, fun h ↦ _⟩
+  refine and_congr_right fun hx ↦ ⟨fun h i ↦ ?_, fun h ↦ ?_⟩
   · rintro x₁ hx₁ x₂ hx₂ hi
-    refine' (h (update x i x₁) _ (update x i x₂) _ _).imp (fun h₁ ↦ by rw [← h₁, update_same])
+    refine (h (update x i x₁) ?_ (update x i x₂) ?_ ?_).imp (fun h₁ ↦ by rw [← h₁, update_same])
         fun h₂ ↦ by rw [← h₂, update_same]
     iterate 2
       rintro j
@@ -234,7 +235,7 @@ end OrderedSemiring
 
 section OrderedRing
 variable {L : Type*} [OrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
-  [LinearEquivClass L 𝕜 E F]
+  [EquivLike L E F] [LinearEquivClass L 𝕜 E F]
 
 lemma image_extremePoints (f : L) (s : Set E) :
     f '' extremePoints 𝕜 s = extremePoints 𝕜 (f '' s) := by
@@ -250,14 +251,13 @@ end OrderedRing
 section LinearOrderedRing
 
 variable [LinearOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] {A B : Set E} {x : E}
 
 /-- A useful restatement using `segment`: `x` is an extreme point iff the only (closed) segments
 that contain it are those with `x` as one of their endpoints. -/
 theorem mem_extremePoints_iff_forall_segment : x ∈ A.extremePoints 𝕜 ↔
     x ∈ A ∧ ∀ᵉ (x₁ ∈ A) (x₂ ∈ A), x ∈ segment 𝕜 x₁ x₂ → x₁ = x ∨ x₂ = x := by
-  refine' and_congr_right fun hxA ↦ forall₄_congr fun x₁ h₁ x₂ h₂ ↦ _
+  refine and_congr_right fun hxA ↦ forall₄_congr fun x₁ h₁ x₂ h₂ ↦ ?_
   constructor
   · rw [← insert_endpoints_openSegment]
     rintro H (rfl | rfl | hx)
@@ -271,7 +271,7 @@ theorem Convex.mem_extremePoints_iff_convex_diff (hA : Convex 𝕜 A) :
     x ∈ A.extremePoints 𝕜 ↔ x ∈ A ∧ Convex 𝕜 (A \ {x}) := by
   use fun hx ↦ ⟨hx.1, (isExtreme_singleton.2 hx).convex_diff hA⟩
   rintro ⟨hxA, hAx⟩
-  refine' mem_extremePoints_iff_forall_segment.2 ⟨hxA, fun x₁ hx₁ x₂ hx₂ hx ↦ _⟩
+  refine mem_extremePoints_iff_forall_segment.2 ⟨hxA, fun x₁ hx₁ x₂ hx₂ hx ↦ ?_⟩
   rw [convex_iff_segment_subset] at hAx
   by_contra! h
   exact (hAx ⟨hx₁, fun hx₁ ↦ h.1 (mem_singleton_iff.2 hx₁)⟩

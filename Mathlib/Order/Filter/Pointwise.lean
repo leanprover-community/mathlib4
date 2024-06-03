@@ -167,8 +167,9 @@ theorem pureOneHom_apply (a : α) : pureOneHom a = pure a :=
 
 variable [One β]
 
-@[to_additive] -- porting note: removed `simp` attribute because `simpNF` says it can prove it.
-protected theorem map_one [OneHomClass F α β] (φ : F) : map φ 1 = 1 := by
+@[to_additive]
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
+protected theorem map_one [FunLike F α β] [OneHomClass F α β] (φ : F) : map φ 1 = 1 := by
   rw [Filter.map_one', map_one, pure_one]
 #align filter.map_one Filter.map_one
 #align filter.map_zero Filter.map_zero
@@ -375,7 +376,8 @@ theorem mul_pure : f * pure b = f.map (· * b) :=
 #align filter.mul_pure Filter.mul_pure
 #align filter.add_pure Filter.add_pure
 
-@[to_additive] -- porting note: removed `simp` attribute because `simpNF` says it can prove it.
+@[to_additive]
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 theorem pure_mul_pure : (pure a : Filter α) * pure b = pure (a * b) :=
   map₂_pure
 #align filter.pure_mul_pure Filter.pure_mul_pure
@@ -400,7 +402,8 @@ instance covariant_swap_mul : CovariantClass (Filter α) (Filter α) (swap (· *
 #align filter.covariant_swap_add Filter.covariant_swap_add
 
 @[to_additive]
-protected theorem map_mul [MulHomClass F α β] (m : F) : (f₁ * f₂).map m = f₁.map m * f₂.map m :=
+protected theorem map_mul [FunLike F α β] [MulHomClass F α β] (m : F) :
+    (f₁ * f₂).map m = f₁.map m * f₂.map m :=
   map_map₂_distrib <| map_mul m
 #align filter.map_mul Filter.map_mul
 #align filter.map_add Filter.map_add
@@ -520,7 +523,8 @@ theorem div_pure : f / pure b = f.map (· / b) :=
 #align filter.div_pure Filter.div_pure
 #align filter.sub_pure Filter.sub_pure
 
-@[to_additive] -- porting note: removed `simp` attribute because `simpNF` says it can prove it.
+@[to_additive]
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 theorem pure_div_pure : (pure a : Filter α) / pure b = pure (a / b) :=
   map₂_pure
 #align filter.pure_div_pure Filter.pure_div_pure
@@ -567,7 +571,7 @@ end Div
 open Pointwise
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Filter`. See
-Note [pointwise nat action].-/
+Note [pointwise nat action]. -/
 protected def instNSMul [Zero α] [Add α] : SMul ℕ (Filter α) :=
   ⟨nsmulRec⟩
 #align filter.has_nsmul Filter.instNSMul
@@ -589,13 +593,13 @@ protected def instZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Filter α) :=
 multiplication/division!) of a `Filter`. See Note [pointwise nat action]. -/
 @[to_additive existing]
 protected def instZPow [One α] [Mul α] [Inv α] : Pow (Filter α) ℤ :=
-  ⟨fun s n => zpowRec n s⟩
+  ⟨fun s n => zpowRec npowRec n s⟩
 #align filter.has_zpow Filter.instZPow
 
 scoped[Pointwise] attribute [instance] Filter.instNSMul Filter.instNPow
   Filter.instZSMul Filter.instZPow
 
-/-- `Filter α` is a `Semigroup` under pointwise operations if `α` is.-/
+/-- `Filter α` is a `Semigroup` under pointwise operations if `α` is. -/
 @[to_additive "`Filter α` is an `AddSemigroup` under pointwise operations if `α` is."]
 protected def semigroup [Semigroup α] : Semigroup (Filter α) where
   mul := (· * ·)
@@ -626,6 +630,8 @@ protected def mulOneClass : MulOneClass (Filter α) where
 
 scoped[Pointwise] attribute [instance] Filter.semigroup Filter.addSemigroup
   Filter.commSemigroup Filter.addCommSemigroup Filter.mulOneClass Filter.addZeroClass
+
+variable [FunLike F α β]
 
 /-- If `φ : α →* β` then `mapMonoidHom φ` is the monoid homomorphism
 `Filter α →* Filter β` induced by `map φ`. -/
@@ -695,19 +701,19 @@ theorem pow_mem_pow (hs : s ∈ f) : ∀ n : ℕ, s ^ n ∈ f ^ n
     exact one_mem_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_mem_mul hs (pow_mem_pow hs n)
+    exact mul_mem_mul (pow_mem_pow hs n) hs
 #align filter.pow_mem_pow Filter.pow_mem_pow
 #align filter.nsmul_mem_nsmul Filter.nsmul_mem_nsmul
 
 @[to_additive (attr := simp) nsmul_bot]
 theorem bot_pow {n : ℕ} (hn : n ≠ 0) : (⊥ : Filter α) ^ n = ⊥ := by
-  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ, bot_mul]
+  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ', bot_mul]
 #align filter.bot_pow Filter.bot_pow
 #align filter.nsmul_bot Filter.nsmul_bot
 
 @[to_additive]
 theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ := by
-  refine' top_le_iff.1 fun s => _
+  refine top_le_iff.1 fun s => ?_
   simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
   rintro ⟨t, ht, hs⟩
   rwa [mul_univ_of_one_mem (mem_one.1 <| hf ht), univ_subset_iff] at hs
@@ -716,7 +722,7 @@ theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ := by
 
 @[to_additive]
 theorem top_mul_of_one_le (hf : 1 ≤ f) : ⊤ * f = ⊤ := by
-  refine' top_le_iff.1 fun s => _
+  refine top_le_iff.1 fun s => ?_
   simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
   rintro ⟨t, ht, hs⟩
   rwa [univ_mul_of_one_mem (mem_one.1 <| hf ht), univ_subset_iff] at hs
@@ -760,12 +766,12 @@ variable [DivisionMonoid α] {f g : Filter α}
 
 @[to_additive]
 protected theorem mul_eq_one_iff : f * g = 1 ↔ ∃ a b, f = pure a ∧ g = pure b ∧ a * b = 1 := by
-  refine' ⟨fun hfg => _, _⟩
+  refine ⟨fun hfg => ?_, ?_⟩
   · obtain ⟨t₁, h₁, t₂, h₂, h⟩ : (1 : Set α) ∈ f * g := hfg.symm.subst one_mem_one
     have hfg : (f * g).NeBot := hfg.symm.subst one_neBot
     rw [(hfg.nonempty_of_mem <| mul_mem_mul h₁ h₂).subset_one_iff, Set.mul_eq_one_iff] at h
     obtain ⟨a, b, rfl, rfl, h⟩ := h
-    refine' ⟨a, b, _, _, h⟩
+    refine ⟨a, b, ?_, ?_, h⟩
     · rwa [← hfg.of_mul_left.le_pure_iff, le_pure_iff]
     · rwa [← hfg.of_mul_right.le_pure_iff, le_pure_iff]
   · rintro ⟨a, b, rfl, rfl, h⟩
@@ -776,7 +782,7 @@ protected theorem mul_eq_one_iff : f * g = 1 ↔ ∃ a b, f = pure a ∧ g = pur
 /-- `Filter α` is a division monoid under pointwise operations if `α` is. -/
 @[to_additive subtractionMonoid "`Filter α` is a subtraction monoid under pointwise operations if
  `α` is."]
--- porting note: `to_additive` guessed `divisionAddMonoid`
+-- Porting note: `to_additive` guessed `divisionAddMonoid`
 protected def divisionMonoid : DivisionMonoid (Filter α) :=
   { Filter.monoid, Filter.instInvolutiveInv, Filter.instDiv, Filter.instZPow (α := α) with
     mul_inv_rev := fun s t => map_map₂_antidistrib mul_inv_rev
@@ -792,7 +798,7 @@ theorem isUnit_iff : IsUnit f ↔ ∃ a, f = pure a ∧ IsUnit a := by
   constructor
   · rintro ⟨u, rfl⟩
     obtain ⟨a, b, ha, hb, h⟩ := Filter.mul_eq_one_iff.1 u.mul_inv
-    refine' ⟨a, ha, ⟨a, b, h, pure_injective _⟩, rfl⟩
+    refine ⟨a, ha, ⟨a, b, h, pure_injective ?_⟩, rfl⟩
     rw [← pure_mul_pure, ← ha, ← hb]
     exact u.inv_mul
   · rintro ⟨a, rfl, ha⟩
@@ -862,15 +868,15 @@ end MulZeroClass
 
 section Group
 
-variable [Group α] [DivisionMonoid β] [MonoidHomClass F α β] (m : F) {f g f₁ g₁ : Filter α}
-  {f₂ g₂ : Filter β}
+variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α β]
+  (m : F) {f g f₁ g₁ : Filter α} {f₂ g₂ : Filter β}
 
 /-! Note that `Filter α` is not a group because `f / f ≠ 1` in general -/
 
--- porting note: increase priority to appease `simpNF` so left-hand side doesn't simplify
+-- Porting note: increase priority to appease `simpNF` so left-hand side doesn't simplify
 @[to_additive (attr := simp 1100)]
 protected theorem one_le_div_iff : 1 ≤ f / g ↔ ¬Disjoint f g := by
-  refine' ⟨fun h hfg => _, _⟩
+  refine ⟨fun h hfg => ?_, ?_⟩
   · obtain ⟨s, hs, t, ht, hst⟩ := hfg.le_bot (mem_bot : ∅ ∈ ⊥)
     exact Set.one_mem_div_iff.1 (h <| div_mem_div hs ht) (disjoint_iff.2 hst.symm)
   · rintro h s ⟨t₁, h₁, t₂, h₂, hs⟩
@@ -1048,7 +1054,8 @@ theorem smul_pure : f • pure b = f.map (· • b) :=
 #align filter.smul_pure Filter.smul_pure
 #align filter.vadd_pure Filter.vadd_pure
 
-@[to_additive] -- porting note: removed `simp` attribute because `simpNF` says it can prove it.
+@[to_additive]
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 theorem pure_smul_pure : (pure a : Filter α) • (pure b : Filter β) = pure (a • b) :=
   map₂_pure
 #align filter.pure_smul_pure Filter.pure_smul_pure
@@ -1161,7 +1168,7 @@ theorem vsub_pure : f -ᵥ pure b = f.map (· -ᵥ b) :=
   map₂_pure_right
 #align filter.vsub_pure Filter.vsub_pure
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it.
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 theorem pure_vsub_pure : (pure a : Filter β) -ᵥ pure b = (pure (a -ᵥ b) : Filter α) :=
   map₂_pure
 #align filter.pure_vsub_pure Filter.pure_vsub_pure
@@ -1308,7 +1315,7 @@ instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α 
 instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Filter β) (Filter γ) :=
   ⟨fun a f g => by
-    refine' (map_map₂_distrib_left fun _ _ => _).symm
+    refine (map_map₂_distrib_left fun _ _ => ?_).symm
     exact (smul_assoc a _ _).symm⟩
 #align filter.is_scalar_tower' Filter.isScalarTower'
 #align filter.vadd_assoc_class' Filter.vaddAssocClass'
@@ -1390,9 +1397,9 @@ theorem NeBot.zero_smul_nonneg (hg : g.NeBot) : 0 ≤ (0 : Filter α) • g :=
 #align filter.ne_bot.zero_smul_nonneg Filter.NeBot.zero_smul_nonneg
 
 theorem zero_smul_filter_nonpos : (0 : α) • g ≤ 0 := by
-  refine' fun s hs => mem_smul_filter.2 _
+  refine fun s hs => mem_smul_filter.2 ?_
   convert @univ_mem _ g
-  refine' eq_univ_iff_forall.2 fun a => _
+  refine eq_univ_iff_forall.2 fun a => ?_
   rwa [mem_preimage, zero_smul]
 #align filter.zero_smul_filter_nonpos Filter.zero_smul_filter_nonpos
 

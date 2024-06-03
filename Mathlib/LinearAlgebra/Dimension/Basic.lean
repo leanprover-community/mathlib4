@@ -37,14 +37,13 @@ universe w w' u u' v v'
 
 variable {R : Type u} {R' : Type u'} {M M₁ : Type v} {M' : Type v'}
 
-open BigOperators Cardinal Submodule Function Set
+open Cardinal Submodule Function Set
 
 section Module
 
 section
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
-
 variable (R M)
 
 /-- The rank of a module, defined as a term of type `Cardinal`.
@@ -102,12 +101,14 @@ theorem cardinal_le_rank' {s : Set M}
 
 end LinearIndependent
 
-@[deprecated]
+@[deprecated (since := "2023-12-27")]
 alias cardinal_lift_le_rank_of_linearIndependent := LinearIndependent.cardinal_lift_le_rank
-@[deprecated]
+@[deprecated (since := "2023-12-27")]
 alias cardinal_lift_le_rank_of_linearIndependent' := LinearIndependent.cardinal_lift_le_rank
-@[deprecated] alias cardinal_le_rank_of_linearIndependent := LinearIndependent.cardinal_le_rank
-@[deprecated] alias cardinal_le_rank_of_linearIndependent' := LinearIndependent.cardinal_le_rank'
+@[deprecated (since := "2023-12-27")]
+alias cardinal_le_rank_of_linearIndependent := LinearIndependent.cardinal_le_rank
+@[deprecated (since := "2023-12-27")]
+alias cardinal_le_rank_of_linearIndependent' := LinearIndependent.cardinal_le_rank'
 
 section SurjectiveInjective
 
@@ -179,7 +180,7 @@ variable {R : Type w} {S : Type v} [CommRing R] [Ring S] [Algebra R S]
   {R' : Type w'} {S' : Type v'} [CommRing R'] [Ring S'] [Algebra R' S']
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R' →+* R` and `j : S →+* S'` are injective ring
-homorphisms, such that `R' → R → S → S'` and `R' → S'` commute, then the rank of `S / R` is
+homomorphisms, such that `R' → R → S → S'` and `R' → S'` commute, then the rank of `S / R` is
 smaller than or equal to the rank of `S' / R'`. -/
 theorem lift_rank_le_of_injective_injective
     (i : R' →+* R) (j : S →+* S') (hi : Injective i) (hj : Injective j)
@@ -192,7 +193,7 @@ theorem lift_rank_le_of_injective_injective
   simp_rw [smul_def, AddMonoidHom.coe_coe, map_mul, this]
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R →+* R'` is a surjective ring homomorphism,
-`j : S →+* S'` is an injective ring homorphism, such that `R → R' → S'` and `R → S → S'` commute,
+`j : S →+* S'` is an injective ring homomorphism, such that `R → R' → S'` and `R → S → S'` commute,
 then the rank of `S / R` is smaller than or equal to the rank of `S' / R'`. -/
 theorem lift_rank_le_of_surjective_injective
     (i : R →+* R') (j : S →+* S') (hi : Surjective i) (hj : Injective j)
@@ -264,7 +265,7 @@ theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
   apply le_trans
   swap
   · apply Cardinal.lift_le.mpr
-    refine' le_ciSup (Cardinal.bddAbove_range.{v, v} _) ⟨rangeSplitting f '' s, _⟩
+    refine le_ciSup (Cardinal.bddAbove_range.{v, v} _) ⟨rangeSplitting f '' s, ?_⟩
     apply LinearIndependent.of_comp f.rangeRestrict
     convert li.comp (Equiv.Set.rangeSplittingImageEquiv f s) (Equiv.injective _) using 1
   · exact (Cardinal.lift_mk_eq'.mpr ⟨Equiv.Set.rangeSplittingImageEquiv f s⟩).ge
@@ -333,8 +334,8 @@ theorem rank_top : Module.rank R (⊤ : Submodule R M) = Module.rank R M :=
 variable {R M}
 
 theorem rank_range_of_surjective (f : M →ₗ[R] M') (h : Surjective f) :
-    Module.rank R (LinearMap.range f) = Module.rank R M' :=
-  by rw [LinearMap.range_eq_top.2 h, rank_top]
+    Module.rank R (LinearMap.range f) = Module.rank R M' := by
+  rw [LinearMap.range_eq_top.2 h, rank_top]
 #align rank_range_of_surjective rank_range_of_surjective
 
 theorem rank_submodule_le (s : Submodule R M) : Module.rank R s ≤ Module.rank R M := by
@@ -363,7 +364,7 @@ theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
     rw [Cardinal.mk_le_one_iff_set_subsingleton]
     apply subsingleton_of_subsingleton
   intro w hw
-  refine' ⟨⟨{0}, _⟩, _⟩
+  refine ⟨⟨{0}, ?_⟩, ?_⟩
   · rw [linearIndependent_iff']
     intros
     exact Subsingleton.elim _ _

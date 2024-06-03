@@ -105,7 +105,6 @@ namespace LipschitzWith
 open EMetric
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-
 variable {K : ℝ≥0} {f : α → β} {x y : α} {r : ℝ≥0∞}
 
 protected theorem lipschitzOnWith (h : LipschitzWith K f) (s : Set α) : LipschitzOnWith K f s :=
@@ -217,7 +216,7 @@ protected theorem comp {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} (hf : L
     (hg : LipschitzWith Kg g) : LipschitzWith (Kf * Kg) (f ∘ g) := fun x y =>
   calc
     edist (f (g x)) (f (g y)) ≤ Kf * edist (g x) (g y) := hf _ _
-    _ ≤ Kf * (Kg * edist x y) := (ENNReal.mul_left_mono (hg _ _))
+    _ ≤ Kf * (Kg * edist x y) := ENNReal.mul_left_mono (hg _ _)
     _ = (Kf * Kg : ℝ≥0) * edist x y := by rw [← mul_assoc, ENNReal.coe_mul]
 #align lipschitz_with.comp LipschitzWith.comp
 
@@ -263,7 +262,7 @@ protected theorem uncurry {f : α → β → γ} {Kα Kβ : ℝ≥0} (hα : ∀ 
 /-- Iterates of a Lipschitz function are Lipschitz. -/
 protected theorem iterate {f : α → α} (hf : LipschitzWith K f) : ∀ n, LipschitzWith (K ^ n) f^[n]
   | 0 => by simpa only [pow_zero] using LipschitzWith.id
-  | n + 1 => by rw [pow_succ']; exact (LipschitzWith.iterate hf n).comp hf
+  | n + 1 => by rw [pow_succ]; exact (LipschitzWith.iterate hf n).comp hf
 #align lipschitz_with.iterate LipschitzWith.iterate
 
 theorem edist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f) (x n) :
@@ -292,7 +291,7 @@ protected theorem pow_end {f : Function.End α} {K} (h : LipschitzWith K f) :
   | 0 => by simpa only [pow_zero] using LipschitzWith.id
   | n + 1 => by
     rw [pow_succ, pow_succ]
-    exact h.mul_end (LipschitzWith.pow_end h n)
+    exact (LipschitzWith.pow_end h n).mul_end h
 #align lipschitz_with.pow LipschitzWith.pow_end
 
 end LipschitzWith
@@ -300,7 +299,6 @@ end LipschitzWith
 namespace LipschitzOnWith
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-
 variable {K : ℝ≥0} {s : Set α} {f : α → β}
 
 protected theorem uniformContinuousOn (hf : LipschitzOnWith K f s) : UniformContinuousOn f s :=
@@ -366,7 +364,7 @@ protected lemma const (b : β) : LocallyLipschitz (fun _ : α ↦ b) :=
 /-- A locally Lipschitz function is continuous. (The converse is false: for example,
 $x ↦ \sqrt{x}$ is continuous, but not locally Lipschitz at 0.) -/
 protected theorem continuous {f : α → β} (hf : LocallyLipschitz f) : Continuous f := by
-  apply continuous_iff_continuousAt.mpr
+  rw [continuous_iff_continuousAt]
   intro x
   rcases (hf x) with ⟨K, t, ht, hK⟩
   exact (hK.continuousOn).continuousAt ht
@@ -409,7 +407,7 @@ protected theorem pow_end {f : Function.End α} (h : LocallyLipschitz f) :
   | 0 => by simpa only [pow_zero] using LocallyLipschitz.id
   | n + 1 => by
     rw [pow_succ]
-    exact h.mul_end (h.pow_end n)
+    exact (h.pow_end n).mul_end h
 
 end LocallyLipschitz
 
@@ -426,7 +424,7 @@ theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith [Pseudo
     (ha : ∀ a ∈ s', ContinuousOn (fun y => f (a, y)) t)
     (hb : ∀ b ∈ t, LipschitzOnWith K (fun x => f (x, b)) s) : ContinuousOn f (s ×ˢ t) := by
   rintro ⟨x, y⟩ ⟨hx : x ∈ s, hy : y ∈ t⟩
-  refine' EMetric.nhds_basis_closed_eball.tendsto_right_iff.2 fun ε (ε0 : 0 < ε) => _
+  refine EMetric.nhds_basis_closed_eball.tendsto_right_iff.2 fun ε (ε0 : 0 < ε) => ?_
   replace ε0 : 0 < ε / 2 := ENNReal.half_pos ε0.ne'
   obtain ⟨δ, δpos, hδ⟩ : ∃ δ : ℝ≥0, 0 < δ ∧ (δ : ℝ≥0∞) * ↑(3 * K) < ε / 2 :=
     ENNReal.exists_nnreal_pos_mul_lt ENNReal.coe_ne_top ε0.ne'
@@ -443,7 +441,7 @@ theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith [Pseudo
     _ ≤ K * (δ + δ) + ε / 2 + K * δ := by
       gcongr
       · refine (hb b hbt).edist_le_mul_of_le has (hs' hx') ?_
-        refine (edist_triangle _ _ _).trans (add_le_add (le_of_lt hax) hxx'.le)
+        exact (edist_triangle _ _ _).trans (add_le_add (le_of_lt hax) hxx'.le)
       · exact hby
       · exact (hb y hy).edist_le_mul_of_le (hs' hx') hx ((edist_comm _ _).trans_le hxx'.le)
     _ = δ * ↑(3 * K) + ε / 2 := by push_cast; ring

@@ -3,8 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Dedup
-import Mathlib.Data.List.MinMax
+import Mathlib.Data.Multiset.Bind
 
 #align_import data.multiset.fold from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -22,7 +21,7 @@ variable {α β : Type*}
 
 section Fold
 
-variable (op : α → α → α) [hc : IsCommutative α op] [ha : IsAssociative α op]
+variable (op : α → α → α) [hc : Std.Commutative op] [ha : Std.Associative op]
 
 local notation a " * " b => op a b
 
@@ -100,7 +99,7 @@ theorem fold_distrib {f g : β → α} (u₁ u₂ : α) (s : Multiset β) :
       ha.assoc, hc.comm (g a), ha.assoc])
 #align multiset.fold_distrib Multiset.fold_distrib
 
-theorem fold_hom {op' : β → β → β} [IsCommutative β op'] [IsAssociative β op'] {m : α → β}
+theorem fold_hom {op' : β → β → β} [Std.Commutative op'] [Std.Associative op'] {m : α → β}
     (hm : ∀ x y, m (op x y) = op' (m x) (m y)) (b : α) (s : Multiset α) :
     (s.map m).fold op' (m b) = m (s.fold op b) :=
   Multiset.induction_on s (by simp) (by simp (config := { contextual := true }) [hm])
@@ -112,7 +111,7 @@ theorem fold_union_inter [DecidableEq α] (s₁ s₂ : Multiset α) (b₁ b₂ :
 #align multiset.fold_union_inter Multiset.fold_union_inter
 
 @[simp]
-theorem fold_dedup_idem [DecidableEq α] [hi : IsIdempotent α op] (s : Multiset α) (b : α) :
+theorem fold_dedup_idem [DecidableEq α] [hi : Std.IdempotentOp op] (s : Multiset α) (b : α) :
     (dedup s).fold op b = s.fold op b :=
   Multiset.induction_on s (by simp) fun a s IH => by
     by_cases h : a ∈ s <;> simp [IH, h]
@@ -122,29 +121,15 @@ theorem fold_dedup_idem [DecidableEq α] [hi : IsIdempotent α op] (s : Multiset
 
 end Fold
 
-section Order
-
-theorem max_le_of_forall_le {α : Type*} [CanonicallyLinearOrderedAddCommMonoid α] (l : Multiset α)
-    (n : α) (h : ∀ x ∈ l, x ≤ n) : l.fold max ⊥ ≤ n := by
-  induction l using Quotient.inductionOn
-  simpa using List.max_le_of_forall_le _ _ h
-#align multiset.max_le_of_forall_le Multiset.max_le_of_forall_le
-
-theorem max_nat_le_of_forall_le (l : Multiset ℕ) (n : ℕ) (h : ∀ x ∈ l, x ≤ n) : l.fold max 0 ≤ n :=
-  max_le_of_forall_le l n h
-#align multiset.max_nat_le_of_forall_le Multiset.max_nat_le_of_forall_le
-
-end Order
-
 open Nat
 
 theorem le_smul_dedup [DecidableEq α] (s : Multiset α) : ∃ n : ℕ, s ≤ n • dedup s :=
   ⟨(s.map fun a => count a s).fold max 0,
     le_iff_count.2 fun a => by
       rw [count_nsmul]; by_cases h : a ∈ s
-      · refine' le_trans _ (Nat.mul_le_mul_left _ <| count_pos.2 <| mem_dedup.2 h)
-        have : count a s ≤ fold max 0 (map (fun a => count a s) (a ::ₘ erase s a)) :=
-          by simp [le_max_left]
+      · refine le_trans ?_ (Nat.mul_le_mul_left _ <| count_pos.2 <| mem_dedup.2 h)
+        have : count a s ≤ fold max 0 (map (fun a => count a s) (a ::ₘ erase s a)) := by
+          simp [le_max_left]
         rw [cons_erase h] at this
         simpa [mul_succ] using this
       · simp [count_eq_zero.2 h, Nat.zero_le]⟩

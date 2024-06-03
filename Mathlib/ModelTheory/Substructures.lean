@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
+Authors: Aaron Anderson, Gabin Kolly
 -/
 import Mathlib.Order.Closure
 import Mathlib.ModelTheory.Semantics
@@ -44,7 +44,6 @@ namespace FirstOrder
 namespace Language
 
 variable {L : Language.{u, v}} {M : Type w} {N P : Type*}
-
 variable [L.Structure M] [L.Structure N] [L.Structure P]
 
 open FirstOrder Cardinal
@@ -107,7 +106,7 @@ namespace Substructure
 attribute [coe] Substructure.carrier
 
 instance instSetLike : SetLike (L.Substructure M) M :=
-  ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr ⟩
+  ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr⟩
 #align first_order.language.substructure.set_like FirstOrder.Language.Substructure.instSetLike
 
 /-- See Note [custom simps projection] -/
@@ -220,8 +219,8 @@ theorem mem_sInf {S : Set (L.Substructure M)} {x : M} : x ∈ sInf S ↔ ∀ p �
   Set.mem_iInter₂
 #align first_order.language.substructure.mem_Inf FirstOrder.Language.Substructure.mem_sInf
 
-theorem mem_iInf {ι : Sort*} {S : ι → L.Substructure M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i :=
-  by simp only [iInf, mem_sInf, Set.forall_range_iff]
+theorem mem_iInf {ι : Sort*} {S : ι → L.Substructure M} {x : M} :
+    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 #align first_order.language.substructure.mem_infi FirstOrder.Language.Substructure.mem_iInf
 
 @[simp, norm_cast]
@@ -298,13 +297,13 @@ theorem coe_closure_eq_range_term_realize :
     (closure L s : Set M) = range (@Term.realize L _ _ _ ((↑) : s → M)) := by
   let S : L.Substructure M := ⟨range (Term.realize (L := L) ((↑) : s → M)), fun {n} f x hx => by
     simp only [mem_range] at *
-    refine' ⟨func f fun i => Classical.choose (hx i), _⟩
+    refine ⟨func f fun i => Classical.choose (hx i), ?_⟩
     simp only [Term.realize, fun i => Classical.choose_spec (hx i)]⟩
   change _ = (S : Set M)
   rw [← SetLike.ext'_iff]
-  refine' closure_eq_of_le (fun x hx => ⟨var ⟨x, hx⟩, rfl⟩) (le_sInf fun S' hS' => _)
-  · rintro _ ⟨t, rfl⟩
-    exact t.realize_mem _ fun i => hS' i.2
+  refine closure_eq_of_le (fun x hx => ⟨var ⟨x, hx⟩, rfl⟩) (le_sInf fun S' hS' => ?_)
+  rintro _ ⟨t, rfl⟩
+  exact t.realize_mem _ fun i => hS' i.2
 #align first_order.language.substructure.coe_closure_eq_range_term_realize FirstOrder.Language.Substructure.coe_closure_eq_range_term_realize
 
 instance small_closure [Small.{u} s] : Small.{u} (closure L s) := by
@@ -327,7 +326,7 @@ theorem lift_card_closure_le :
     Cardinal.lift.{u, w} #(closure L s) ≤
       max ℵ₀ (Cardinal.lift.{u, w} #s + Cardinal.lift.{w, u} #(Σi, L.Functions i)) := by
   rw [← lift_umax]
-  refine' lift_card_closure_le_card_term.trans (Term.card_le.trans _)
+  refine lift_card_closure_le_card_term.trans (Term.card_le.trans ?_)
   rw [mk_sum, lift_umax.{w, u}]
 #align first_order.language.substructure.lift_card_closure_le FirstOrder.Language.Substructure.lift_card_closure_le
 
@@ -706,7 +705,7 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure L s → Prop}
     (Hs : ∀ (x) (h : x ∈ s), p x (subset_closure h))
     (Hfun : ∀ {n : ℕ} (f : L.Functions n), ClosedUnder f { x | ∃ hx, p x hx }) {x}
     (hx : x ∈ closure L s) : p x hx := by
-  refine' Exists.elim _ fun (hx : x ∈ closure L s) (hc : p x hx) => hc
+  refine Exists.elim ?_ fun (hx : x ∈ closure L s) (hc : p x hx) => hc
   exact closure_induction hx (fun x hx => ⟨subset_closure hx, Hs x hx⟩) @Hfun
 #align first_order.language.substructure.closure_induction' FirstOrder.Language.Substructure.closure_induction'
 
@@ -789,11 +788,11 @@ theorem subset_closure_withConstants : A ⊆ closure (L[[A]]) s := by
 theorem closure_withConstants_eq :
     closure (L[[A]]) s =
       (closure L (A ∪ s)).withConstants ((A.subset_union_left s).trans subset_closure) := by
-  refine' closure_eq_of_le ((A.subset_union_right s).trans subset_closure) _
+  refine closure_eq_of_le ((A.subset_union_right s).trans subset_closure) ?_
   rw [← (L.lhomWithConstants A).substructureReduct.le_iff_le]
   simp only [subset_closure, reduct_withConstants, closure_le, LHom.coe_substructureReduct,
     Set.union_subset_iff, and_true_iff]
-  · exact subset_closure_withConstants
+  exact subset_closure_withConstants
 #align first_order.language.substructure.closure_with_constants_eq FirstOrder.Language.Substructure.closure_withConstants_eq
 
 end Substructure
@@ -945,6 +944,11 @@ theorem codRestrict_apply (p : L.Substructure N) (f : M ↪[L] N) {h} (x : M) :
 #align first_order.language.embedding.cod_restrict_apply FirstOrder.Language.Embedding.codRestrict_apply
 
 @[simp]
+theorem codRestrict_apply' (p : L.Substructure N) (f : M ↪[L] N) {h} (x : M) :
+    codRestrict p f h x = ⟨f x, h x⟩ :=
+  rfl
+
+@[simp]
 theorem comp_codRestrict (f : M ↪[L] N) (g : N ↪[L] P) (p : L.Substructure P) (h : ∀ b, g b ∈ p) :
     ((codRestrict p g h).comp f : M ↪[L] p) = codRestrict p (g.comp f) fun _ => h _ :=
   ext fun _ => rfl
@@ -979,6 +983,11 @@ theorem substructureEquivMap_apply (f : M ↪[L] N) (p : L.Substructure M) (x : 
   rfl
 #align first_order.language.embedding.substructure_equiv_map_apply FirstOrder.Language.Embedding.substructureEquivMap_apply
 
+@[simp]
+theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
+    (subtype _).comp (f.substructureEquivMap s).toEmbedding = f.comp (subtype _) := by
+  ext; rfl
+
 /-- The equivalence between the domain and the range of an embedding `f`. -/
 noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
   toFun := codRestrict f.toHom.range f f.toHom.mem_range_self
@@ -994,6 +1003,10 @@ noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
 theorem equivRange_apply (f : M ↪[L] N) (x : M) : (f.equivRange x : N) = f x :=
   rfl
 #align first_order.language.embedding.equiv_range_apply FirstOrder.Language.Embedding.equivRange_apply
+
+@[simp]
+theorem subtype_equivRange (f : M ↪[L] N) : (subtype _).comp f.equivRange.toEmbedding = f := by
+  ext; rfl
 
 end Embedding
 
@@ -1015,6 +1028,9 @@ def inclusion {S T : L.Substructure M} (h : S ≤ T) : S ↪[L] T :=
 #align first_order.language.substructure.inclusion FirstOrder.Language.Substructure.inclusion
 
 @[simp]
+theorem inclusion_self (S : L.Substructure M) : inclusion (le_refl S) = Embedding.refl L S := rfl
+
+@[simp]
 theorem coe_inclusion {S T : L.Substructure M} (h : S ≤ T) :
     (inclusion h : S → T) = Set.inclusion h :=
   rfl
@@ -1023,7 +1039,7 @@ theorem coe_inclusion {S T : L.Substructure M} (h : S ≤ T) :
 theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
   ext x
   simp only [Hom.mem_range, Embedding.coe_toHom, coeSubtype]
-  refine' ⟨_, fun h => ⟨⟨x, h⟩, rfl⟩⟩
+  refine ⟨?_, fun h => ⟨⟨x, h⟩, rfl⟩⟩
   rintro ⟨⟨y, hy⟩, rfl⟩
   exact hy
 #align first_order.language.substructure.range_subtype FirstOrder.Language.Substructure.range_subtype

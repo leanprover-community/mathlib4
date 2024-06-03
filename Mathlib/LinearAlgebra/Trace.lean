@@ -27,8 +27,6 @@ universe u v w
 
 namespace LinearMap
 
-open BigOperators
-
 open Matrix
 
 open FiniteDimensional
@@ -38,11 +36,8 @@ open TensorProduct
 section
 
 variable (R : Type u) [CommSemiring R] {M : Type v} [AddCommMonoid M] [Module R M]
-
 variable {ι : Type w} [DecidableEq ι] [Fintype ι]
-
 variable {κ : Type*} [DecidableEq κ] [Fintype κ]
-
 variable (b : Basis ι R M) (c : Basis κ R M)
 
 /-- The trace of an endomorphism given a basis. -/
@@ -73,7 +68,7 @@ theorem traceAux_eq : traceAux R b = traceAux R c :=
       _ = Matrix.trace (LinearMap.toMatrix c c f) := by rw [LinearMap.comp_id, LinearMap.comp_id]
 #align linear_map.trace_aux_eq LinearMap.traceAux_eq
 
-open Classical
+open scoped Classical
 
 variable (M)
 
@@ -123,14 +118,18 @@ theorem trace_conj (g : M →ₗ[R] M) (f : (M →ₗ[R] M)ˣ) :
   simp
 #align linear_map.trace_conj LinearMap.trace_conj
 
+@[simp]
+lemma trace_lie {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (f g : Module.End R M) :
+    trace R M ⁅f, g⁆ = 0 := by
+  rw [Ring.lie_def, map_sub, trace_mul_comm]
+  exact sub_self _
+
 end
 
 section
 
 variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
-
 variable (N P : Type*) [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
-
 variable {ι : Type*}
 
 /-- The trace of a linear map correspond to the contraction pairing under the isomorphism
@@ -158,7 +157,6 @@ theorem trace_eq_contract_of_basis' [Fintype ι] [DecidableEq ι] (b : Basis ι 
 #align linear_map.trace_eq_contract_of_basis' LinearMap.trace_eq_contract_of_basis'
 
 variable (R M)
-
 variable [Module.Free R M] [Module.Finite R M] [Module.Free R N] [Module.Finite R N]
   [Module.Free R P] [Module.Finite R P]
 
@@ -201,8 +199,8 @@ theorem trace_id : trace R M id = (finrank R M : R) := by rw [← one_eq_id, tra
 theorem trace_transpose : trace R (Module.Dual R M) ∘ₗ Module.Dual.transpose = trace R M := by
   let e := dualTensorHomEquiv R M M
   have h : Function.Surjective e.toLinearMap := e.surjective
-  refine' (cancel_right h).1 _
-  ext f m; simp
+  refine (cancel_right h).1 ?_
+  ext f m; simp [e]
 #align linear_map.trace_transpose LinearMap.trace_transpose
 
 theorem trace_prodMap :
@@ -210,13 +208,13 @@ theorem trace_prodMap :
       (coprod id id : R × R →ₗ[R] R) ∘ₗ prodMap (trace R M) (trace R N) := by
   let e := (dualTensorHomEquiv R M M).prod (dualTensorHomEquiv R N N)
   have h : Function.Surjective e.toLinearMap := e.surjective
-  refine' (cancel_right h).1 _
+  refine (cancel_right h).1 ?_
   ext
-  · simp only [dualTensorHomEquiv, LinearEquiv.coe_prod, dualTensorHomEquivOfBasis_toLinearMap,
+  · simp only [e, dualTensorHomEquiv, LinearEquiv.coe_prod, dualTensorHomEquivOfBasis_toLinearMap,
       AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars, coe_comp, coe_inl,
       Function.comp_apply, prodMap_apply, map_zero, prodMapLinear_apply, dualTensorHom_prodMap_zero,
       trace_eq_contract_apply, contractLeft_apply, fst_apply, coprod_apply, id_coe, id_eq, add_zero]
-  · simp only [dualTensorHomEquiv, LinearEquiv.coe_prod, dualTensorHomEquivOfBasis_toLinearMap,
+  · simp only [e, dualTensorHomEquiv, LinearEquiv.coe_prod, dualTensorHomEquivOfBasis_toLinearMap,
       AlgebraTensorModule.curry_apply, curry_apply, coe_restrictScalars, coe_comp, coe_inr,
       Function.comp_apply, prodMap_apply, map_zero, prodMapLinear_apply, zero_prodMap_dualTensorHom,
       trace_eq_contract_apply, contractLeft_apply, snd_apply, coprod_apply, id_coe, id_eq, zero_add]
@@ -227,7 +225,7 @@ variable {R M N P}
 theorem trace_prodMap' (f : M →ₗ[R] M) (g : N →ₗ[R] N) :
     trace R (M × N) (prodMap f g) = trace R M f + trace R N g := by
   have h := ext_iff.1 (trace_prodMap R M N) (f, g)
-  simp only [coe_comp, Function.comp_apply, prodMap_apply, coprod_apply, id_coe, id.def,
+  simp only [coe_comp, Function.comp_apply, prodMap_apply, coprod_apply, id_coe, id,
     prodMapLinear_apply] at h
   exact h
 #align linear_map.trace_prod_map' LinearMap.trace_prodMap'
@@ -254,9 +252,10 @@ theorem trace_comp_comm :
     (compl₁₂_inj (show Surjective (dualTensorHom R N M) from (dualTensorHomEquiv R N M).surjective)
         (show Surjective (dualTensorHom R M N) from (dualTensorHomEquiv R M N).surjective)).1
   ext g m f n
-  simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply, coe_restrictScalars,
-    compl₁₂_apply, compr₂_apply, llcomp_apply', comp_dualTensorHom, map_smulₛₗ, RingHom.id_apply,
-    trace_eq_contract_apply, contractLeft_apply, smul_eq_mul, mul_comm, flip_apply]
+  simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+    coe_restrictScalars, compl₁₂_apply, compr₂_apply, flip_apply, llcomp_apply',
+    comp_dualTensorHom, LinearMapClass.map_smul, trace_eq_contract_apply,
+    contractLeft_apply, smul_eq_mul, mul_comm]
 #align linear_map.trace_comp_comm LinearMap.trace_comp_comm
 
 variable {R M N P}
@@ -301,7 +300,7 @@ theorem trace_conj' (f : M →ₗ[R] M) (e : M ≃ₗ[R] N) : trace R N (e.conj 
     haveI := (Module.free_def R N).mpr ⟨_, ⟨(b.map e).reindex (e.toEquiv.image _)⟩⟩
     rw [e.conj_apply, trace_comp_comm', ← comp_assoc, LinearEquiv.comp_coe,
       LinearEquiv.self_trans_symm, LinearEquiv.refl_toLinearMap, id_comp]
-  · rw [trace, trace, dif_neg hM, dif_neg]; rfl
+  · rw [trace, trace, dif_neg hM, dif_neg ?_, zero_apply, zero_apply]
     rintro ⟨s, ⟨b⟩⟩
     exact hM ⟨s.image e.symm, ⟨(b.map e.symm).reindex
       ((e.symm.toEquiv.image s).trans (Equiv.Set.ofEq Finset.coe_image.symm))⟩⟩
@@ -339,7 +338,7 @@ lemma trace_baseChange [Module.Free R M] [Module.Finite R M]
   let b := Module.Free.chooseBasis R M
   let b' := Algebra.TensorProduct.basis A b
   change _ = (algebraMap R A : R →+ A) _
-  simp [trace_eq_matrix_trace R b, trace_eq_matrix_trace A b', AddMonoidHom.map_trace]
+  simp [b', trace_eq_matrix_trace R b, trace_eq_matrix_trace A b', AddMonoidHom.map_trace]
 
 end
 
