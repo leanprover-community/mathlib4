@@ -2287,7 +2287,9 @@ instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] 
     NormalSpace X where
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
 
-lemma countable_covers_to_separated_nhds (h k: Set X)
+/-- Lemma used to prove a regular topological space with Lindelöf topology is a normal space,
+and a perfectly normal space is a completely normal space. -/
+lemma countable_covers_witness_separated_nhds (h k: Set X)
     (h_cov: ∃ u : ℕ → Set X, h ⊆ ⋃ n, u n ∧
       ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) k)
     (k_cov: ∃ u : ℕ → Set X, k ⊆ ⋃ n, u n ∧
@@ -2409,7 +2411,7 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
       simp only [mem_iUnion]; use a; apply v_nhd; exact aink
     rcases IsLindelof.indexed_countable_subcover k_lind v v_open v_cov with ⟨g, g_cov⟩
     let v' : ℕ → Set X := fun n ↦ v (g n)
-    apply countable_covers_to_separated_nhds
+    apply countable_covers_witness_separated_nhds
     · use u'
       constructor
       · exact f_cov
