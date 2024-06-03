@@ -59,7 +59,8 @@ private lemma card_T_eq : (T).card = (B+1)^n := by
 open Nat Real
 variable  (hA : A ≠ 0 ) (ha : ‖A‖ = ↑a)
 
-private lemma N_le_P_add_one : ∀ j : Fin m, N j ≤ P j + 1 := by   --needed for card_S_eq and also later
+--S is not empty
+private lemma N_le_P_add_one : ∀ j : Fin m, N j ≤ P j + 1 := by
    intro j
    calc N j ≤ 0 := by
          apply Finset.sum_nonpos
@@ -111,7 +112,7 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
             gcongr with j _
             rw [posPart_add_negPart (A i j)]
             have h2 : |A i j| ≤ (a : ℝ) := by
-                     rw [Int.cast_abs, ←Int.norm_eq_abs, ← ha]
+                     rw [Int.cast_abs, ← Int.norm_eq_abs, ← ha]
                      exact norm_entry_le_entrywise_sup_norm A
             exact Int.cast_le.1 h2
          _  ≤ (n * a) ^ m * (B + 1) ^ m := by
