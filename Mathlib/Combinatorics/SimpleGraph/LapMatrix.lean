@@ -70,7 +70,6 @@ theorem dotProduct_mulVec_lapMatrix [Ring R] (x y : V → R) :
     x ⬝ᵥ (G.lapMatrix R *ᵥ y) = ∑ e in G.edgeFinset,
       Sym2.lift ⟨fun v w ↦ (x v - x w) * (y v - y w), fun _ _ ↦ by ring⟩ e := by
 
-
 variable (R)
 
 theorem degree_eq_sum_if_adj [AddCommMonoidWithOne R] (i : V) :
