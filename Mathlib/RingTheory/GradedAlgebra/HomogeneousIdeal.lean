@@ -44,7 +44,7 @@ graded algebra, homogeneous
 
 open SetLike DirectSum Set
 
-open BigOperators Pointwise DirectSum
+open Pointwise DirectSum
 
 variable {ι σ R A : Type*}
 
@@ -175,10 +175,10 @@ theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, Homogeneous 𝒜 x)
   obtain ⟨s, rfl⟩ := hr
   rw [Finsupp.total_apply, Finsupp.sum, decompose_sum, DFinsupp.finset_sum_apply,
     AddSubmonoidClass.coe_finset_sum]
-  refine' Ideal.sum_mem _ _
+  refine Ideal.sum_mem _ ?_
   rintro z hz1
   rw [smul_eq_mul]
-  refine' Ideal.mul_homogeneous_element_mem_of_mem 𝒜 (s z) z _ _ i
+  refine Ideal.mul_homogeneous_element_mem_of_mem 𝒜 (s z) z ?_ ?_ i
   · rcases z with ⟨z, hz2⟩
     apply h _ hz2
   · exact Ideal.subset_span z.2
@@ -510,7 +510,7 @@ theorem Ideal.homogeneousCore_eq_sSup :
 
 theorem Ideal.homogeneousCore'_eq_sSup :
     I.homogeneousCore' 𝒜 = sSup { J : Ideal A | J.IsHomogeneous 𝒜 ∧ J ≤ I } := by
-  refine' (IsLUB.sSup_eq _).symm
+  refine (IsLUB.sSup_eq ?_).symm
   apply IsGreatest.isLUB
   have coe_mono : Monotone (toIdeal : HomogeneousIdeal 𝒜 → Ideal A) := fun x y => id
   convert coe_mono.map_isGreatest (Ideal.homogeneousCore.gc 𝒜).isGreatest_u using 1
@@ -538,7 +538,7 @@ variable (I : Ideal A)
 the smallest homogeneous ideal containing `I`. -/
 def Ideal.homogeneousHull : HomogeneousIdeal 𝒜 :=
   ⟨Ideal.span { r : A | ∃ (i : ι) (x : I), (DirectSum.decompose 𝒜 (x : A) i : A) = r }, by
-    refine' Ideal.homogeneous_span _ _ fun x hx => _
+    refine Ideal.homogeneous_span _ _ fun x hx => ?_
     obtain ⟨i, x, rfl⟩ := hx
     apply SetLike.homogeneous_coe⟩
 #align ideal.homogeneous_hull Ideal.homogeneousHull
@@ -547,7 +547,7 @@ theorem Ideal.le_toIdeal_homogeneousHull : I ≤ (Ideal.homogeneousHull 𝒜 I).
   intro r hr
   classical
   rw [← DirectSum.sum_support_decompose 𝒜 r]
-  refine' Ideal.sum_mem _ _
+  refine Ideal.sum_mem _ ?_
   intro j _
   apply Ideal.subset_span
   use j

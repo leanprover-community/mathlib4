@@ -650,10 +650,10 @@ theorem mem_closure_union_iff {G : Type*} [CommGroup G] {s t : Set G} {x : G} :
   simp only [closure_eq_mclosure, Monoid.mem_closure_union_iff, exists_prop, preimage_union];
   constructor
   · rintro ⟨_, ⟨ys, hys, yt, hyt, rfl⟩, _, ⟨zs, hzs, zt, hzt, rfl⟩, rfl⟩
-    refine' ⟨_, ⟨_, hys, _, hzs, rfl⟩, _, ⟨_, hyt, _, hzt, rfl⟩, _⟩
+    refine ⟨_, ⟨_, hys, _, hzs, rfl⟩, _, ⟨_, hyt, _, hzt, rfl⟩, ?_⟩
     rw [mul_assoc, mul_assoc, mul_left_comm zs]
   · rintro ⟨_, ⟨ys, hys, zs, hzs, rfl⟩, _, ⟨yt, hyt, zt, hzt, rfl⟩, rfl⟩
-    refine' ⟨_, ⟨ys, hys, yt, hyt, rfl⟩, _, ⟨zs, hzs, zt, hzt, rfl⟩, _⟩
+    refine ⟨_, ⟨ys, hys, yt, hyt, rfl⟩, _, ⟨zs, hzs, zt, hzt, rfl⟩, ?_⟩
     rw [mul_assoc, mul_assoc, mul_left_comm yt]
 #align group.mem_closure_union_iff Group.mem_closure_union_iff
 #align add_group.mem_closure_union_iff AddGroup.mem_closure_union_iff
