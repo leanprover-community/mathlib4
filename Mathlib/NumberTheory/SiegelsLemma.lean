@@ -30,22 +30,22 @@ attribute [local instance] Matrix.seminormedAddCommGroup
 
 open Finset
 
-/-- sup commutes with casting from Nat to NNReal -/
-lemma cast_sup_eq_sup_cast_Nat_NNReal {S : Type*} (f : S → ℕ) (s : Finset S) :
-    (sup s f) = sup s fun b ↦ (f b : NNReal) :=
-  comp_sup_eq_sup_comp_of_is_total Nat.cast Nat.mono_cast
-  (by simp only [bot_eq_zero', CharP.cast_eq_zero])
-
 namespace Int.Matrix
 
 variable {m : Type*}  {n : Type*}
 /-- The definition of ‖⬝‖ for integral matrixes -/
 lemma sup_sup_norm_def [Fintype m] [Fintype n] (A : Matrix m n ℤ) :
     ‖A‖ = (sup univ fun b ↦ sup univ fun b' ↦ (A b b').natAbs) := by
-  simp_rw [Matrix.norm_def, Pi.norm_def, Pi.nnnorm_def, ← NNReal.coe_natCast, NNReal.coe_inj,
-    cast_sup_eq_sup_cast_Nat_NNReal]
-  congr; ext; congr; ext
-  simp only [coe_nnnorm, Int.norm_eq_abs, Int.cast_abs, NNReal.coe_natCast, cast_natAbs]
+  simp_rw [Matrix.norm_def, Pi.norm_def, Pi.nnnorm_def, ← NNReal.coe_natCast, NNReal.coe_inj,]
+  rw [comp_sup_eq_sup_comp_of_is_total Nat.cast Nat.mono_cast
+    (by simp only [bot_eq_zero', CharP.cast_eq_zero])]
+  congr
+  rw [Function.comp_def]
+  ext; congr
+  rw [comp_sup_eq_sup_comp_of_is_total Nat.cast Nat.mono_cast
+    (by simp only [bot_eq_zero', CharP.cast_eq_zero])]
+  congr; ext; congr;
+  rw [Function.comp_apply, NNReal.natCast_natAbs]
 
 /-- The norm of an integral matrix is the cast of a natural number -/
 lemma norm_eq_NatCast [Fintype m] [Fintype n] (A : Matrix m n ℤ) :
