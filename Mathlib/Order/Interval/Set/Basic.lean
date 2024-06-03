@@ -780,7 +780,7 @@ instance instIccUnique : Unique (Set.Icc a a) where
 
 @[simp]
 theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
-  refine ⟨fun h ↦ ?_, ?_⟩
+  refine ⟨fun h => ?_, ?_⟩
   · have hab : a ≤ b := nonempty_Icc.1 (h.symm.subst <| singleton_nonempty c)
     exact
       ⟨eq_of_mem_singleton <| h.subst <| left_mem_Icc.2 hab,

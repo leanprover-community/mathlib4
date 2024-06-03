@@ -310,7 +310,7 @@ private theorem sup_aux (f g : E →ₗ.[R] F)
     simp only [AddSubgroupClass.coe_sub, coe_mk, coe_mk, hxy, ← sub_add, ← sub_sub, sub_self,
       zero_sub, ← H]
     apply neg_add_eq_sub
-  refine ⟨{ toFun := fg, map_add' := ?_, map_smul' := ?_ }, fg_eq⟩
+  use { toFun := fg, map_add' := ?_, map_smul' := ?_ }, fg_eq
   · rintro ⟨z₁, hz₁⟩ ⟨z₂, hz₂⟩
     rw [← add_assoc, add_right_comm (f _), ← map_add, add_assoc, ← map_add]
     apply fg_eq
@@ -623,7 +623,7 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     -- Porting note: `refine' ..; exacts [inclusion hpq.1 y, hxy, rfl]`
     --               → `refine' .. <;> [skip; exact inclusion hpq.1 y; rfl]; exact hxy`
     convert (hxq.2 _).trans (hpq.2 _).symm <;> [skip; exact inclusion hpq.1 y; rfl]; exact hxy
-  refine ⟨{ toFun := f, map_add' := ?_, map_smul' := ?_ }, ?_⟩
+  use { toFun := f, map_add' := ?_, map_smul' := ?_ }, ?_
   · intro x y
     rcases hc (P x).1.1 (P x).1.2 (P y).1.1 (P y).1.2 with ⟨p, hpc, hpx, hpy⟩
     set x' := inclusion hpx.1 ⟨x, (P x).2⟩

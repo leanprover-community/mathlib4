@@ -1591,10 +1591,10 @@ lemma bddBelow_range_prod {F : ι → α × β} :
 theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
     IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
   refine
-    ⟨fun H ↦
+    ⟨fun H =>
       ⟨⟨monotone_fst.mem_upperBounds_image H.1, fun a ha => ?_⟩,
         ⟨monotone_snd.mem_upperBounds_image H.1, fun a ha => ?_⟩⟩,
-      fun H ↦ ⟨?_, ?_⟩⟩
+      fun H => ⟨?_, ?_⟩⟩
   · suffices h : (a, p.2) ∈ upperBounds s from (H.2 h).1
     exact fun q hq => ⟨ha <| mem_image_of_mem _ hq, (H.1 hq).2⟩
   · suffices h : (p.1, a) ∈ upperBounds s from (H.2 h).2
@@ -1639,7 +1639,7 @@ theorem isLUB_pi {s : Set (∀ a, π a)} {f : ∀ a, π a} :
     IsLUB s f ↔ ∀ a, IsLUB (Function.eval a '' s) (f a) := by
   classical
     refine
-      ⟨fun H a ↦ ⟨(Function.monotone_eval a).mem_upperBounds_image H.1, fun b hb ↦ ?_⟩, fun H ↦
+      ⟨fun H a => ⟨(Function.monotone_eval a).mem_upperBounds_image H.1, fun b hb => ?_⟩, fun H =>
         ⟨?_, ?_⟩⟩
     · suffices h : Function.update f a b ∈ upperBounds s from Function.update_same a b f ▸ H.2 h a
       exact fun g hg => le_update_iff.2 ⟨hb <| mem_image_of_mem _ hg, fun i _ => H.1 hg i⟩

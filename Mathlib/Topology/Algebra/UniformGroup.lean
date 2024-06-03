@@ -899,7 +899,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
   obtain ⟨u, hu, u_mul⟩ := TopologicalGroup.exists_antitone_basis_nhds_one G
   obtain ⟨hv, v_anti⟩ := hu.map ((↑) : G → G ⧸ N)
   rw [← QuotientGroup.nhds_eq N 1, QuotientGroup.mk_one] at hv
-  refine UniformSpace.complete_of_cauchySeq_tendsto fun x hx ↦ ?_
+  refine UniformSpace.complete_of_cauchySeq_tendsto fun x hx => ?_
   /- Given `n : ℕ`, for sufficiently large `a b : ℕ`, given any lift of `x b`, we can find a lift
     of `x a` such that the quotient of the lifts lies in `u n`. -/
   have key₀ : ∀ i j : ℕ, ∃ M : ℕ, j < M ∧ ∀ a b : ℕ, M ≤ a → M ≤ b →
@@ -910,7 +910,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     simp only [ge_iff_le, mem_setOf_eq, forall_true_left, mem_image] at hx
     intro i j
     rcases hx i with ⟨M, hM⟩
-    refine ⟨max j M + 1, (le_max_left _ _).trans_lt (lt_add_one _), fun a b ha hb g hg ↦ ?_⟩
+    refine ⟨max j M + 1, (le_max_left _ _).trans_lt (lt_add_one _), fun a b ha hb g hg => ?_⟩
     obtain ⟨y, y_mem, hy⟩ :=
       hM a (((le_max_right j _).trans (lt_add_one _).le).trans ha) b
         (((le_max_right j _).trans (lt_add_one _).le).trans hb)
@@ -959,7 +959,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
   refine
     ⟨↑x₀,
       tendsto_nhds_of_cauchySeq_of_subseq hx
-        (strictMono_nat_of_lt_succ fun n ↦ (hφ (n + 1)).1).tendsto_atTop ?_⟩
+        (strictMono_nat_of_lt_succ fun n => (hφ (n + 1)).1).tendsto_atTop ?_⟩
   convert ((continuous_coinduced_rng : Continuous ((↑) : G → G ⧸ N)).tendsto x₀).comp hx₀
   exact funext fun n => (x' n).snd
 #align quotient_group.complete_space' QuotientGroup.completeSpace'

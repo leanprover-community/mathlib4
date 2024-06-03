@@ -136,7 +136,7 @@ theorem kernel.indep_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : 
   · exact limsup_le_iSup.trans (iSup_le h_le)
   · intro a b
     obtain ⟨c, hc⟩ := hns a b
-    refine ⟨c, ?_, ?_⟩ <;> refine iSup_mono fun n ↦ iSup_mono' fun hn ↦ ⟨?_, le_rfl⟩
+    refine ⟨c, ?_, ?_⟩ <;> refine iSup_mono fun n => iSup_mono' fun hn => ⟨?_, le_rfl⟩
     · exact hc.1 hn
     · exact hc.2 hn
 
@@ -161,7 +161,7 @@ theorem kernel.indep_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s 
     rw [← this]
     exact indep_iSup_directed_limsup h_le h_indep hf hns hnsp
   rw [iSup_comm]
-  refine iSup_congr fun n ↦ ?_
+  refine iSup_congr fun n => ?_
   have h : ⨆ (i : α) (_ : n ∈ ns i), s n = ⨆ _ : ∃ i, n ∈ ns i, s n := by rw [iSup_exists]
   haveI : Nonempty (∃ i : α, n ∈ ns i) := ⟨hns_univ n⟩
   rw [h, iSup_const]

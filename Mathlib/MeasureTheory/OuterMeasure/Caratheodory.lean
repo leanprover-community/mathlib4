@@ -122,7 +122,7 @@ theorem isCaratheodory_iUnion_nat {s : ℕ → Set α} (h : ∀ i, IsCaratheodor
         · simp [ENNReal.tsum_eq_iSup_nat, isCaratheodory_sum m h hd]
       refine le_trans (add_le_add_right hp _) ?_
       rw [ENNReal.iSup_add]
-      refine iSup_le fun n ↦ le_trans (add_le_add_left ?_ _)
+      refine iSup_le fun n => le_trans (add_le_add_left ?_ _)
         (ge_of_eq (isCaratheodory_iUnion_lt m (fun i _ => h i) _))
       refine m.mono (diff_subset_diff_right ?_)
       exact iUnion₂_subset fun i _ => subset_iUnion _ i

@@ -1866,7 +1866,7 @@ theorem is_pow_of_dvd_count [DecidableEq (Associates α)] {a : Associates α}
   obtain ⟨u, hu⟩ := Multiset.exists_smul_of_dvd_count _ hk'
   use FactorSet.prod (u : FactorSet α)
   apply eq_of_factors_eq_factors
-  rw [pow_factors, prod_factors, factors_mk a0 hz, ← WithTop.some_eq_coe, hu]
+  rw [pow_factors, prod_factors, factors_mk a0 hz, hu]
   exact WithBot.coe_nsmul u k
 #align associates.is_pow_of_dvd_count Associates.is_pow_of_dvd_count
 
@@ -2008,7 +2008,7 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CancelCommMonoidWithZero M]
     Fintype.ofFinset
       (((normalizedFactors y).powerset.toFinset ×ˢ (Finset.univ : Finset Mˣ)).image fun s =>
         (s.snd : M) * s.fst.prod)
-      fun x ↦ ?_
+      fun x => ?_
   simp only [exists_prop, Finset.mem_image, Finset.mem_product, Finset.mem_univ, and_true_iff,
     Multiset.mem_toFinset, Multiset.mem_powerset, exists_eq_right, Multiset.mem_map]
   constructor

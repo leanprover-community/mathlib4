@@ -199,7 +199,7 @@ if h : IsSFiniteKernel κ ∧ IsSFiniteKernel η then
   property := by
     have : IsSFiniteKernel κ := h.1
     have : IsSFiniteKernel η := h.2
-    refine Measure.measurable_of_measurable_coe _ fun s hs ↦ ?_
+    refine Measure.measurable_of_measurable_coe _ fun s hs => ?_
     have :
       (fun a =>
           Measure.ofMeasurable (fun s _ => compProdFun κ η a s) (compProdFun_empty κ η a)

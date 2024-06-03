@@ -866,7 +866,7 @@ theorem EqOnSource.source_inter_preimage_eq {e e' : PartialEquiv α β} (he : e 
 the restriction of the identity to the source. -/
 theorem self_trans_symm : e.trans e.symm ≈ ofSet e.source := by
   have A : (e.trans e.symm).source = e.source := by mfld_set_tac
-  refine ⟨by rw [A, ofSet_source], fun x hx ↦ ?_⟩
+  refine ⟨by rw [A, ofSet_source], fun x hx => ?_⟩
   rw [A] at hx
   simp only [hx, mfld_simps]
 #align local_equiv.self_trans_symm PartialEquiv.self_trans_symm
