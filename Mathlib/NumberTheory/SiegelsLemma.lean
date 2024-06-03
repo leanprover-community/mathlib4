@@ -15,11 +15,6 @@ tool in diophantine approximation and transcendency and says that there exists a
 non-zero solution of a non-trivial overdetermined system of linear equations with integer
 coefficients.
 
-## Main results
-
-- `siegels_lemma`: Given a non-singular `m × n` matrix `A` with `m < n` the linear system it
-determines has a non-zero integer solution `t` with `‖t‖ ≤ ((n * ‖A‖) ^ ((m : ℝ) / (n - m)))`
-
 ## Notation
 
  - `‖_‖ ` : Matrix.seminormedAddCommGroup is the sup norm, the maximum of the absolute values of
@@ -27,7 +22,7 @@ determines has a non-zero integer solution `t` with `‖t‖ ≤ ((n * ‖A‖) 
 
 ## References
 
-See [M. Hindry and J. Silverman, Diophantine Geometry: an Introduction] .
+See [M. Hindry and J. Silverman, Diophantine Geometry: an Introduction][hindrysilverman00] .
 -/
 
 /- We set ‖⬝‖ to be Matrix.seminormedAddCommGroup  -/
@@ -43,8 +38,9 @@ lemma cast_sup_eq_sup_cast_Nat_NNReal {S : Type*} (f : S → ℕ) (s : Finset S)
 
 namespace Int.Matrix
 
+variable {m : Type*}  {n : Type*}
 /-- The definition of ‖⬝‖ for integral matrixes -/
-lemma sup_sup_norm_def (m n : ℕ) (A : Matrix (Fin m) (Fin n) ℤ)  :
+lemma sup_sup_norm_def [Fintype m] [Fintype n] (A : Matrix m n ℤ) :
     ‖A‖ = (sup univ fun b ↦ sup univ fun b' ↦ (A b b').natAbs) := by
   simp_rw [Matrix.norm_def, Pi.norm_def, Pi.nnnorm_def, ← NNReal.coe_natCast, NNReal.coe_inj,
     cast_sup_eq_sup_cast_Nat_NNReal]
@@ -52,12 +48,13 @@ lemma sup_sup_norm_def (m n : ℕ) (A : Matrix (Fin m) (Fin n) ℤ)  :
   simp only [coe_nnnorm, Int.norm_eq_abs, Int.cast_abs, NNReal.coe_natCast, cast_natAbs]
 
 /-- The norm of an integral matrix is the cast of a natural number -/
-lemma norm_eq_NatCast (m n : ℕ) (A : Matrix (Fin m) (Fin n) ℤ) : ∃ (a : ℕ), ‖A‖=↑a := by
+lemma norm_eq_NatCast [Fintype m] [Fintype n] (A : Matrix m n ℤ) :
+    ∃ (a : ℕ), ‖A‖=↑a := by
   use sup univ fun b ↦ sup univ fun b' ↦ (A b b').natAbs
-  exact sup_sup_norm_def m n A
+  exact sup_sup_norm_def A
 
 /-- The norm of a non-singular integral matrix is a positive natural number-/
-lemma one_le_norm_of_nonzero (m n a : ℕ) (A : Matrix (Fin m) (Fin n) ℤ) (hA_nezero : A ≠ 0)
+lemma one_le_norm_of_nonzero [Fintype m] [Fintype n] (A : Matrix m n ℤ) (hA_nezero : A ≠ 0) (a : ℕ)
     (h_norm_int : ‖A‖ = ↑a) : 1 ≤ a := by
   convert_to 0 < ( a : ℝ )
   · simp only [Nat.cast_pos]
@@ -100,7 +97,7 @@ private lemma image_T_subset_S : ∀ v ∈ T, (A.mulVec v) ∈ S := by
   rw [Matrix.mulVec_def] --unfolds def of MulVec
   refine ⟨fun i ↦ ?_, fun i ↦ ?_⟩ --this gives 2 goals
   all_goals simp only [mul_neg]
-  all_goals gcongr (∑ i_1 : Fin n, ?_) with j _ -- gets rid of sums
+  all_goals gcongr (∑ _ : Fin n, ?_) with j _ -- gets rid of sums
   all_goals rw [← mul_comm (v j)] -- moves A i j to the right of the products
   all_goals by_cases hsign : 0 ≤ A i j   --we have to distinguish cases: we have now 4 goals
   ·  rw [negPart_eq_zero.2 hsign]
