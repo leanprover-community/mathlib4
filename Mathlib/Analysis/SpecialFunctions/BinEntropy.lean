@@ -98,12 +98,12 @@ lemma qaryEntropy_pos {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (ple1 : p < 1) : 0 < qa
     rw [this]
     exact Real.log_intCast_nonneg _
   have rest_is_pos : 0 < -(p * p.log) - (1 - p) * (1 - p).log := by
-  simp only [← neg_mul, ← binaryEntropy_eq']
-  exact binaryEntropy_pos pgt0 ple1
+    simp only [← neg_mul, ← binaryEntropy_eq']
+    exact binaryEntropy_pos pgt0 ple1
   have (a b c : ℝ) (ha : 0 ≤ a) (hb : 0 < -b - c) : 0 < a - b - c := by linarith
   exact this (p * ((q : ℝ) - 1).log) (p * p.log) ((1 - p) * (1 - p).log) p_q_log_nonneg rest_is_pos
 
-/-- TODO assumptions not needed? -/
+-- TODO assumptions not needed?
 lemma binaryEntropy_zero_iff_zero_or_one {p : ℝ} (domup : p ≤ 1) (domun : 0 ≤ p) :
     binaryEntropy p = 0 ↔ p = 0 ∨ p = 1 := by
   constructor <;> intro h
@@ -179,14 +179,14 @@ lemma binaryEntropy_le_log2 {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) :
         have := binaryEntropy_lt_log2_of_gt_half this ple1
         exact LT.lt.le this
 
-/- The q-ary entropy function is continuous everywhere.
+/-- The q-ary entropy function is continuous everywhere.
 This is due to definition of `Real.log` for negative numbers. -/
 @[fun_prop] lemma qaryEntropy_continuous {q : ℕ} : Continuous (qaryEntropy q) := by
   refine Continuous.add ?_ (Continuous.neg ?_)
   · exact Continuous.sub (by fun_prop) continuous_mul_log
   · exact Continuous.comp continuous_mul_log (continuous_sub_left 1)
 
-/- Binary entropy is continuous everywhere.
+/-- Binary entropy is continuous everywhere.
 This is due to definition of `Real.log` for negative numbers. -/
 @[fun_prop] lemma binaryEntropy_continuous : Continuous binaryEntropy := qaryEntropy_continuous
 
@@ -296,7 +296,7 @@ lemma deriv_binaryEntropy {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
   right
   norm_num
 
-/- Binary entropy has derivative `log (1 - p) - log p`. -/
+/-- Binary entropy has derivative `log (1 - p) - log p`. -/
 lemma hasDerivAt_binaryEntropy {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
     HasDerivAt binaryEntropy (log (1 - x) - log x) x := by
   have diffAt : DifferentiableAt ℝ (fun p => -p * log p - (1 - p) * log (1 - p)) x := by
@@ -342,8 +342,8 @@ lemma hasDerivAt_qaryEntropy {q : ℕ} {x : ℝ} (qnot1 : q ≠ 1) (xne0: x ≠ 
 
 open Filter Topology
 
-/- Second derivative.
-TODO Assumptions not needed (use junk value after proving that `¬DifferentiableAt` there) ?!-/
+-- TODO Assumptions not needed (use junk value after proving that ¬DifferentiableAt there)
+/-- Second derivative of q-ary entropy. -/
 lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) :
     deriv^[2] (qaryEntropy q) x = -1 / (x * (1-x)) := by
   simp only [Function.iterate_succ]
@@ -373,7 +373,7 @@ open Set
 lemma aux {a b c : ℝ} (h : 0 < a) (hh : a * b < a * c) : b < c := by
   exact (mul_lt_mul_left h).mp hh
 
-/- Qary entropy is strictly increasing in interval [0, 1 - q⁻¹]. -/
+/-- Qary entropy is strictly increasing in interval [0, 1 - q⁻¹]. -/
 lemma qaryEntropy_strictMono {q : ℕ} (qLe2: 2 ≤ q) :
     StrictMonoOn (qaryEntropy q) (Set.Icc 0 (1 - 1/q)) := by
   intro p1 hp1 p2 hp2 p1le2
@@ -407,7 +407,7 @@ lemma qaryEntropy_strictMono {q : ℕ} (qLe2: 2 ≤ q) :
         linarith
     exact (ne_of_gt (lt_add_neg_iff_lt.mp this : x < 1)).symm
 
-/- Binary entropy is strictly increasing in interval [0, 1/2]. -/
+/-- Binary entropy is strictly increasing in interval [0, 1/2]. -/
 lemma binaryEntropy_strictMono : StrictMonoOn binaryEntropy (Set.Icc 0 2⁻¹) := by
   unfold binaryEntropy
   have : Icc (0:ℝ) 2⁻¹ = Icc 0 (1 - 1/2) := by norm_num
