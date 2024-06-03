@@ -1462,21 +1462,17 @@ instance sub : Sub (M →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 #align continuous_linear_map.has_sub ContinuousLinearMap.sub
 
-instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) := by
-  refine'
-    { ContinuousLinearMap.addCommMonoid with
-      neg := (-·)
-      sub := (· - ·)
-      sub_eq_add_neg := _
-      nsmul := (· • ·)
-      zsmul := (· • ·)
-      zsmul_zero' := fun f => by ext; simp
-      zsmul_succ' := fun n f => by ext; simp [add_smul, add_comm]
-      zsmul_neg' := fun n f => by ext; simp [Nat.succ_eq_add_one, add_smul]
-      .. } <;>
-    { intros
-      ext
-      apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm, sub_eq_add_neg] }
+instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
+  __ := ContinuousLinearMap.addCommMonoid
+  neg := (-·)
+  sub := (· - ·)
+  sub_eq_add_neg _ _ := by ext; apply sub_eq_add_neg
+  nsmul := (· • ·)
+  zsmul := (· • ·)
+  zsmul_zero' f := by ext; simp
+  zsmul_succ' n f := by ext; simp [add_smul, add_comm]
+  zsmul_neg' n f := by ext; simp [Nat.succ_eq_add_one, add_smul]
+  add_left_neg _ := by ext; apply add_left_neg
 #align continuous_linear_map.add_comm_group ContinuousLinearMap.addCommGroup
 
 theorem sub_apply (f g : M →SL[σ₁₂] M₂) (x : M) : (f - g) x = f x - g x :=
