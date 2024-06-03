@@ -447,6 +447,7 @@ lemma sections_ext {M : PresheafOfModules.{v} R} (s t : M.sections)
   Subtype.ext (by ext; apply h)
 
 /-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : PresheafOfModules R`. -/
+@[simps apply_coe]
 def unitHomEquiv (M : PresheafOfModules R) :
     (unit R ⟶ M) ≃ M.sections where
   toFun f :=
