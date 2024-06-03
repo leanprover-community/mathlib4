@@ -132,7 +132,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
     (fun n => factorThru _ (arrow _ ≫ f.app (op (SimplexCategory.mk n))) (by
       cases n <;> dsimp
       · apply top_factors
-      · refine' (finset_inf_factors _).mpr fun i _ => kernelSubobject_factors _ _ _
+      · refine (finset_inf_factors _).mpr fun i _ => kernelSubobject_factors _ _ ?_
         erw [Category.assoc, ← f.naturality,
           ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ i (by simp)),
           Category.assoc, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]))

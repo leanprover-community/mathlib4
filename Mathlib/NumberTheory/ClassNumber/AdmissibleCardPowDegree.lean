@@ -264,3 +264,4 @@ noncomputable def cardPowDegreeIsAdmissible :
 #align polynomial.card_pow_degree_is_admissible Polynomial.cardPowDegreeIsAdmissible
 
 end Polynomial
+

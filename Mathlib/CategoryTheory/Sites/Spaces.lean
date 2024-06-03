@@ -62,7 +62,7 @@ def pretopology : Pretopology (Opens T) where
   has_isos X Y f i x hx := ⟨_, _, Presieve.singleton_self _, (inv f).le hx⟩
   pullbacks X Y f S hS x hx := by
     rcases hS _ (f.le hx) with ⟨U, g, hg, hU⟩
-    refine' ⟨_, _, Presieve.pullbackArrows.mk _ _ hg, _⟩
+    refine ⟨_, _, Presieve.pullbackArrows.mk _ _ hg, ?_⟩
     have : U ⊓ Y ≤ pullback g f :=
       leOfHom (pullback.lift (homOfLE inf_le_left) (homOfLE inf_le_right) rfl)
     apply this ⟨hU, hx⟩

@@ -226,3 +226,4 @@ theorem cyclotomic.isCoprime_rat {n m : ℕ} (h : n ≠ m) :
 end minpoly
 
 end Polynomial
+

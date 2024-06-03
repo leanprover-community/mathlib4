@@ -96,3 +96,4 @@ theorem tendsto_lim (hbdd : BddBelow (range fun n => u n / n)) :
 #align subadditive.tendsto_lim Subadditive.tendsto_lim
 
 end Subadditive
+

@@ -121,7 +121,7 @@ theorem OrderedSMul.mk' (h : ∀ ⦃a b : M⦄ ⦃c : 𝕜⦄, a < b → 0 < c �
     refine fun a b c hab hc => (h hab hc).lt_of_ne ?_
     rw [Ne, hc.ne'.isUnit.smul_left_cancel]
     exact hab.ne
-  refine' { smul_lt_smul_of_pos := fun {a b c} => hlt' a b c..}
+  refine' { smul_lt_smul_of_pos := fun {a b c} => hlt' a b c.. }
   intro a b c hab hc
   obtain ⟨c, rfl⟩ := hc.ne'.isUnit
   rw [← inv_smul_smul c a, ← inv_smul_smul c b]

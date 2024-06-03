@@ -738,3 +738,4 @@ lemma mul_not_mem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
 end Group
 
 end ExponentTwo
+

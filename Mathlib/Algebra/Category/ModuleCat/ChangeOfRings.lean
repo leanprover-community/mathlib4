@@ -762,10 +762,10 @@ def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u�
 def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y := by
   letI m1 : Module R S := Module.compHom S f
   letI m2 : Module R Y := Module.compHom Y f
-  refine'
+  refine
     {toFun := TensorProduct.lift
-      {toFun := fun s : S => {toFun := fun y : Y => s • y, map_add' := smul_add _, map_smul' := _},
-        map_add' := _, map_smul' := _}, map_add' := _, map_smul' := _}
+      {toFun := fun s : S => {toFun := fun y : Y => s • y, map_add' := smul_add _, map_smul' := ?_},
+        map_add' := ?_, map_smul' := ?_}, map_add' := ?_, map_smul' := ?_}
   · intros r y
     dsimp
     change s • f r • y = f r • s • y

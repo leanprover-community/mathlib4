@@ -201,7 +201,7 @@ def preservesCoequalizersOfPreservesPushoutsAndBinaryCoproducts [HasBinaryCoprod
   ⟨fun {K} =>
     preservesColimitOfPreservesColimitCocone (coequalizerCoconeIsColimit K) <|
       { desc := fun c => by
-          refine' (PreservesPushout.iso _ _ _).inv ≫ pushout.desc _ _ _
+          refine (PreservesPushout.iso _ _ _).inv ≫ pushout.desc ?_ ?_ ?_
           · exact c.ι.app WalkingParallelPair.one
           · exact c.ι.app WalkingParallelPair.one
           apply (mapIsColimitOfPreservesOfIsColimit G _ _ (coprodIsCoprod _ _)).hom_ext

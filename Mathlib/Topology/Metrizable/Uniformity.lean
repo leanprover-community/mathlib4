@@ -294,3 +294,4 @@ lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (�
     exact EMetric.ball_subset_closedBall
   obtain ⟨t, _, htc, hts⟩ := EMetric.subset_countable_closure_of_almost_dense_set s h'
   exact ⟨t, htc, hts⟩
+

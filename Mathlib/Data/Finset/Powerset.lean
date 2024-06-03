@@ -349,3 +349,4 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
 end powersetCard
 
 end Finset
+

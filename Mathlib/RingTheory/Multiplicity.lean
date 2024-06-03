@@ -668,3 +668,4 @@ instance decidableInt : DecidableRel fun a b : ℤ => (multiplicity a b).Dom := 
 #align multiplicity.decidable_int multiplicity.decidableInt
 
 end multiplicity
+

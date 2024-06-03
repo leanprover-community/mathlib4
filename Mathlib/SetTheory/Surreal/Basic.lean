@@ -451,3 +451,4 @@ noncomputable def toSurreal : Ordinal ↪o Surreal where
 #align ordinal.to_surreal Ordinal.toSurreal
 
 end Ordinal
+

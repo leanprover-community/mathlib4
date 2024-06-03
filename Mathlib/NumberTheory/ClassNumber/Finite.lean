@@ -396,3 +396,4 @@ end IsAdmissible
 end EuclideanDomain
 
 end ClassGroup
+

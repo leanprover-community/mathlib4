@@ -103,3 +103,4 @@ theorem equiv_punit_iff_unique :
 #align category_theory.equiv_punit_iff_unique CategoryTheory.equiv_punit_iff_unique
 
 end CategoryTheory
+

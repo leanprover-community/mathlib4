@@ -427,3 +427,4 @@ instance transIsThetaIsEquivalent :
   trans := IsTheta.trans_isEquivalent
 
 end Asymptotics
+

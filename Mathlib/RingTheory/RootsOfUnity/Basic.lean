@@ -198,11 +198,11 @@ This is implemented as equivalence of subtypes,
 because `rootsOfUnity` is a subgroup of the group of units,
 whereas `nthRoots` is a multiset. -/
 def rootsOfUnityEquivNthRoots : rootsOfUnity k R ≃ { x // x ∈ nthRoots k (1 : R) } := by
-  refine'
+  refine
     { toFun := fun x => ⟨(x : Rˣ), mem_rootsOfUnity_iff_mem_nthRoots.mp x.2⟩
-      invFun := fun x => ⟨⟨x, ↑x ^ (k - 1 : ℕ), _, _⟩, _⟩
-      left_inv := _
-      right_inv := _ }
+      invFun := fun x => ⟨⟨x, ↑x ^ (k - 1 : ℕ), ?_, ?_⟩, ?_⟩
+      left_inv := ?_
+      right_inv := ?_ }
   pick_goal 4; · rintro ⟨x, hx⟩; ext; rfl
   pick_goal 4; · rintro ⟨x, hx⟩; ext; rfl
   all_goals

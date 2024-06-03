@@ -218,7 +218,7 @@ lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective
     let S := imageSieve (f₁ ≫ f₂) (f₂.app _ x)
     let T : ∀ ⦃Y : C⦄ (f : Y ⟶ X) (_ : S f), Sieve Y := fun Y f hf =>
       equalizerSieve (f₁.app _ (localPreimage (f₁ ≫ f₂) (f₂.app _ x) f hf)) (F₂.map f.op x)
-    refine' J.superset_covering ?_ (J.transitive (imageSieve_mem J (f₁ ≫ f₂) (f₂.app _ x))
+    refine J.superset_covering ?_ (J.transitive (imageSieve_mem J (f₁ ≫ f₂) (f₂.app _ x))
       (Sieve.bind S.1 T) ?_)
     · rintro Y _ ⟨Z, a, g, hg, ha, rfl⟩
       exact ⟨F₁.map a.op (localPreimage (f₁ ≫ f₂) _ _ hg), by simpa using ha⟩

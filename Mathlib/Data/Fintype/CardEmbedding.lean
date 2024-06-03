@@ -58,3 +58,4 @@ theorem card_embedding_eq_of_infinite {α β : Type*} [Infinite α] [Fintype β]
 #align fintype.card_embedding_eq_of_infinite Fintype.card_embedding_eq_of_infinite
 
 end Fintype
+

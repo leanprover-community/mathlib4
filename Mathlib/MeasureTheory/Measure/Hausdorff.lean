@@ -1162,3 +1162,4 @@ theorem hausdorffMeasure_segment {E : Type*} [NormedAddCommGroup E] [NormedSpace
 end Geometric
 
 end MeasureTheory
+

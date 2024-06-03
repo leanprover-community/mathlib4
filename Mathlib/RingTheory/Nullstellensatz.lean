@@ -219,3 +219,4 @@ theorem IsPrime.vanishingIdeal_zeroLocus (P : Ideal (MvPolynomial σ k)) [h : P.
 #align mv_polynomial.is_prime.vanishing_ideal_zero_locus MvPolynomial.IsPrime.vanishingIdeal_zeroLocus
 
 end MvPolynomial
+
