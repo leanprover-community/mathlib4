@@ -18,8 +18,6 @@ This file provides some result on multiplicative and additive subgroups in the f
 subgroup, subgroups
 -/
 
-open BigOperators
-
 variable {G : Type*} [Group G]
 variable {A : Type*} [AddGroup A]
 
@@ -72,7 +70,7 @@ theorem multiset_noncommProd_mem (K : Subgroup G) (g : Multiset G) (comm) :
 @[to_additive "Sum of elements in an `AddSubgroup` of an `AddCommGroup` indexed by a `Finset`
  is in the `AddSubgroup`."]
 protected theorem prod_mem {G : Type*} [CommGroup G] (K : Subgroup G) {ι : Type*} {t : Finset ι}
-    {f : ι → G} (h : ∀ c ∈ t, f c ∈ K) : (∏ c in t, f c) ∈ K :=
+    {f : ι → G} (h : ∀ c ∈ t, f c ∈ K) : (∏ c ∈ t, f c) ∈ K :=
   prod_mem h
 #align subgroup.prod_mem Subgroup.prod_mem
 #align add_subgroup.sum_mem AddSubgroup.sum_mem
@@ -102,7 +100,7 @@ theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
 -- Porting note: increased priority to appease `simpNF`, otherwise `simp` can prove it.
 @[to_additive (attr := simp 1100, norm_cast)]
 theorem val_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
-    ↑(∏ i in s, f i) = (∏ i in s, f i : G) :=
+    ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : G) :=
   SubmonoidClass.coe_finset_prod f s
 #align subgroup.coe_finset_prod Subgroup.val_finset_prod
 #align add_subgroup.coe_finset_sum AddSubgroup.val_finset_sum

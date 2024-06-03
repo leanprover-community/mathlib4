@@ -247,7 +247,7 @@ namespace hermiteTheorem
 
 open Polynomial
 
-open scoped IntermediateField BigOperators
+open scoped IntermediateField
 
 variable (A : Type*) [Field A] [CharZero A]
 

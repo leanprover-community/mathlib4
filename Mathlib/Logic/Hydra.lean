@@ -90,7 +90,7 @@ theorem cutExpand_iff [DecidableEq α] [IsIrrefl α r] {s' s : Multiset α} :
     CutExpand r s' s ↔
       ∃ (t : Multiset α) (a : α), (∀ a' ∈ t, r a' a) ∧ a ∈ s ∧ s' = s.erase a + t := by
   simp_rw [CutExpand, add_singleton_eq_iff]
-  refine' exists₂_congr fun t a ↦ ⟨_, _⟩
+  refine exists₂_congr fun t a ↦ ⟨?_, ?_⟩
   · rintro ⟨ht, ha, rfl⟩
     obtain h | h := mem_add.1 ha
     exacts [⟨ht, h, erase_add_left_pos t h⟩, (@irrefl α r _ a (ht a h)).elim]
@@ -113,10 +113,10 @@ theorem cutExpand_fibration (r : α → α → Prop) :
   obtain ⟨ha, rfl⟩ := add_singleton_eq_iff.1 he
   rw [add_assoc, mem_add] at ha
   obtain h | h := ha
-  · refine' ⟨(s₁.erase a + t, s₂), GameAdd.fst ⟨t, a, hr, _⟩, _⟩
+  · refine ⟨(s₁.erase a + t, s₂), GameAdd.fst ⟨t, a, hr, ?_⟩, ?_⟩
     · rw [add_comm, ← add_assoc, singleton_add, cons_erase h]
     · rw [add_assoc s₁, erase_add_left_pos _ h, add_right_comm, add_assoc]
-  · refine' ⟨(s₁, (s₂ + t).erase a), GameAdd.snd ⟨t, a, hr, _⟩, _⟩
+  · refine ⟨(s₁, (s₂ + t).erase a), GameAdd.snd ⟨t, a, hr, ?_⟩, ?_⟩
     · rw [add_comm, singleton_add, cons_erase h]
     · rw [add_assoc, erase_add_right_pos _ h]
 #align relation.cut_expand_fibration Relation.cutExpand_fibration
@@ -127,7 +127,7 @@ theorem acc_of_singleton [IsIrrefl α r] {s : Multiset α} (hs : ∀ a ∈ s, Ac
     Acc (CutExpand r) s := by
   induction s using Multiset.induction with
   | empty => exact Acc.intro 0 fun s h ↦ (not_cutExpand_zero s h).elim
-  | @cons a s ihs =>
+  | cons a s ihs =>
     rw [← s.singleton_add a]
     rw [forall_mem_cons] at hs
     exact (hs.1.prod_gameAdd <| ihs fun a ha ↦ hs.2 a ha).of_fibration _ (cutExpand_fibration r)
@@ -137,11 +137,11 @@ theorem acc_of_singleton [IsIrrefl α r] {s : Multiset α} (hs : ∀ a ∈ s, Ac
   assuming `r` is irreflexive. -/
 theorem _root_.Acc.cutExpand [IsIrrefl α r] {a : α} (hacc : Acc r a) : Acc (CutExpand r) {a} := by
   induction' hacc with a h ih
-  refine' Acc.intro _ fun s ↦ _
+  refine Acc.intro _ fun s ↦ ?_
   classical
   simp only [cutExpand_iff, mem_singleton]
   rintro ⟨t, a, hr, rfl, rfl⟩
-  refine' acc_of_singleton fun a' ↦ _
+  refine acc_of_singleton fun a' ↦ ?_
   rw [erase_singleton, zero_add]
   exact ih a' ∘ hr a'
 #align acc.cut_expand Acc.cutExpand

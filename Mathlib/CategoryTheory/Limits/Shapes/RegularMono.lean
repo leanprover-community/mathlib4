@@ -139,7 +139,7 @@ instance (priority := 100) strongMono_of_regularMono (f : X ⟶ Y) [RegularMono 
         repeat (rw [← Category.assoc, ← eq_whisker sq.w])
         simp only [Category.assoc, RegularMono.w]
       obtain ⟨t, ht⟩ := RegularMono.lift' _ _ this
-      refine' CommSq.HasLift.mk' ⟨t, (cancel_mono f).1 _, ht⟩
+      refine CommSq.HasLift.mk' ⟨t, (cancel_mono f).1 ?_, ht⟩
       simp only [Arrow.mk_hom, Arrow.homMk'_left, Category.assoc, ht, sq.w])
 #align category_theory.strong_mono_of_regular_mono CategoryTheory.strongMono_of_regularMono
 
