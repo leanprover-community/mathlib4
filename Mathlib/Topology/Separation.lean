@@ -2288,8 +2288,8 @@ instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] 
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
 
 /-- Lemma used to prove a regular topological space with Lindelöf topology is a normal space,
-and a perfectly normal space is a completely normal space. -/
-lemma countable_covers_witness_separated_nhds {h k : Set X}
+and (todo) a perfectly normal space is a completely normal space. -/
+lemma countable_covers_witnessing_separated_nhds {h k : Set X}
     (h_cov: ∃ u : ℕ → Set X, h ⊆ ⋃ n, u n ∧
       ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) k)
     (k_cov: ∃ u : ℕ → Set X, k ⊆ ⋃ n, u n ∧
@@ -2299,50 +2299,35 @@ lemma countable_covers_witness_separated_nhds {h k : Set X}
   use ⋃ n : ℕ, u n \ (closure (⋃ m ∈ {m | m ≤ n}, v m))
   use ⋃ n : ℕ, v n \ (closure (⋃ m ∈ {m | m ≤ n}, u m))
   have open_lemma : ∀ (u₀ a : ℕ → Set X), (∀ n, IsOpen (u₀ n)) →
-    IsOpen (⋃ n, u₀ n \ closure (a n)) := fun _ _ u₀i_open =>
-    isOpen_iUnion (fun i => IsOpen.sdiff (u₀i_open i) (isClosed_closure))
+    IsOpen (⋃ n, u₀ n \ closure (a n)) := fun _ _ u₀i_open ↦
+    isOpen_iUnion (fun i ↦ IsOpen.sdiff (u₀i_open i) (isClosed_closure))
   have cover_lemma : ∀ (h₀ : Set X) (u₀ v₀ : ℕ → Set X),
       (h₀ ⊆ ⋃ n, u₀ n) → (∀ n, Disjoint (closure (v₀ n)) h₀) →
-      (h₀ ⊆ ⋃ n, u₀ n \ closure (⋃ m ∈ {m | m ≤ n}, v₀ m)) := by
-    intro h₀ u₀ v₀ h₀_cov dis x xinh
+      (h₀ ⊆ ⋃ n, u₀ n \ closure (⋃ m ∈ {m | m ≤ n}, v₀ m)) :=
+      fun h₀ u₀ v₀ h₀_cov dis x xinh ↦ by
     rcases h₀_cov xinh with ⟨un , ⟨n, un'⟩ , xinun⟩
     rw [← un'] at xinun
-    simp only [mem_iUnion, exists_prop] at xinun
-    simp only [mem_iUnion, mem_diff]
+    simp only [mem_iUnion]
     use n
-    constructor
-    · exact xinun
-    · rw [Set.Finite.closure_biUnion]
-      · simp only [mem_setOf_eq, mem_iUnion, exists_prop, not_exists, not_and]
-        exact fun m _ => Set.disjoint_right.mp (dis m) xinh
-      · exact finite_le_nat n
+    refine ⟨xinun, ?_⟩
+    rw [Set.Finite.closure_biUnion (finite_le_nat n)]
+    simp only [mem_setOf_eq, mem_iUnion, exists_prop, not_exists, not_and]
+    exact fun m _ ↦ Set.disjoint_right.mp (dis m) xinh
   refine ⟨
     open_lemma u (fun n ↦ ⋃ m ∈ {m | m ≤ n}, v m) (fun n ↦ (u_props n).1),
     open_lemma v (fun n ↦ ⋃ m ∈ {m | m ≤ n}, u m) (fun n ↦ (v_props n).1),
     cover_lemma h u v u_cov (fun n ↦ (v_props n).2),
     cover_lemma k v u v_cov (fun n ↦ (u_props n).2),
-    ?_
-  ⟩
+  ?_⟩
   rw [Set.disjoint_left]
   rintro x ⟨un, ⟨n, un'⟩, xinun⟩
   rw [← un'] at xinun
-  simp only [mem_iUnion, mem_diff] at xinun
   simp only [mem_iUnion, mem_diff, not_exists, not_and, Decidable.not_not]
   intro m xinvgm
-  have : n ≤ m := by
+  have n_le_m : n ≤ m := by
     by_contra m_gt_n
-    apply xinun.2
-    simp only [not_le] at m_gt_n
-    apply subset_closure
-    apply mem_biUnion
-    · simp only [mem_setOf_eq]
-      exact le_of_lt m_gt_n
-    · exact xinvgm
-  apply subset_closure
-  apply mem_biUnion
-  · simp only [mem_setOf_eq]
-    exact this
-  · exact xinun.1
+    exact xinun.2 (subset_closure (mem_biUnion (le_of_lt (not_le.mp m_gt_n)) xinvgm))
+  exact subset_closure (mem_biUnion n_le_m xinun.1)
 
 
 /-- A regular topological space with Lindelöf topology is a normal space. -/
@@ -2355,40 +2340,29 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     have disjoint_cover_lemma : ∀ (h₀ k₀ : Set X), IsClosed k₀ → Disjoint h₀ k₀ →
         ∀ (a : X), ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) k₀ ∧ (a ∈ h₀ → a ∈ n) := by
       intro h₀ k₀ k₀cl h₀k₀dis a
-      by_cases hyp: a ∈ h₀
-      · have : k₀ᶜ ∈ 𝓝 a := by
-          apply k₀cl.compl_mem_nhds
-          by_contra aink₀; exact Set.disjoint_iff.mp h₀k₀dis ⟨hyp, aink₀⟩
-        rcases (((regularSpace_TFAE X).out 0 3).mp r:) a k₀ᶜ this
-          with ⟨n, nna, ncl, nsubkc⟩
-        use interior n
-        constructor
-        · exact isOpen_interior
-        constructor
-        · exact disjoint_left.mpr fun ⦃a⦄ a_1 ↦
-            nsubkc ((IsClosed.closure_subset_iff ncl).mpr interior_subset a_1)
-        · intros; exact mem_interior_iff_mem_nhds.mpr nna
+      wlog ainh₀: a ∈ h₀
       · use ∅
-        constructor
-        · exact isOpen_empty
-        constructor
-        · exact SeparatedNhds.disjoint_closure_left (SeparatedNhds.empty_left k₀)
-        · intro ainh; by_contra; exact hyp ainh
+        refine ⟨isOpen_empty, SeparatedNhds.disjoint_closure_left (SeparatedNhds.empty_left k₀),
+          fun a ↦ ainh₀ a⟩
+      rcases (((regularSpace_TFAE X).out 0 3).mp r:) a k₀ᶜ
+        (k₀cl.compl_mem_nhds (disjoint_left.mp h₀k₀dis ainh₀)) with ⟨n, nna, ncl, nsubkc⟩
+      use interior n
+      exact ⟨isOpen_interior, disjoint_left.mpr fun ⦃a⦄ ain ↦
+        nsubkc ((IsClosed.closure_subset_iff ncl).mpr interior_subset ain),
+        fun _ ↦ mem_interior_iff_mem_nhds.mpr nna⟩
     choose u u_open u_dis u_nhd using disjoint_cover_lemma h k kcl hkdis
-    have u_cov : h ⊆ ⋃ i, u i := by
-      intro a ainh
-      simp only [mem_iUnion]; use a; apply u_nhd; exact ainh
-    have h_lind : IsLindelof h :=
-      IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ hcl (subset_univ h)
-    rcases IsLindelof.indexed_countable_subcover h_lind u u_open u_cov with ⟨f, f_cov⟩
+    have u_cov : h ⊆ ⋃ i, u i := fun a ainh ↦ by
+      simp only [mem_iUnion]; use a; exact u_nhd a ainh
+    rcases IsLindelof.indexed_countable_subcover
+      (IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ hcl (subset_univ h))
+      u u_open u_cov with ⟨f, f_cov⟩
     choose v v_open v_dis v_nhd using disjoint_cover_lemma k h hcl (Disjoint.symm hkdis)
-    have v_cov : k ⊆ ⋃ i, v i := by
-      intro a aink
-      simp only [mem_iUnion]; use a; apply v_nhd; exact aink
-    have k_lind : IsLindelof k :=
-      IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ kcl (subset_univ k)
-    rcases IsLindelof.indexed_countable_subcover k_lind v v_open v_cov with ⟨g, g_cov⟩
-    apply countable_covers_witness_separated_nhds
+    have v_cov : k ⊆ ⋃ i, v i := fun a aink ↦ by
+      simp only [mem_iUnion]; use a; exact v_nhd a aink
+    rcases IsLindelof.indexed_countable_subcover
+      (IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ kcl (subset_univ k))
+      v v_open v_cov with ⟨g, g_cov⟩
+    apply countable_covers_witnessing_separated_nhds
     · use fun n ↦ u (f n)
       exact ⟨f_cov, fun n ↦ ⟨u_open (f n), u_dis (f n)⟩⟩
     · use fun n ↦ v (g n)
