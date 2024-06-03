@@ -2352,16 +2352,14 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     wlog nonempty_space : Nonempty X
     · rw [not_nonempty_iff] at nonempty_space
       exact normal h k hcl kcl hkdis
-    rw [Set.disjoint_iff] at hkdis
-    have h_lind : IsLindelof h :=
-      IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ hcl (subset_univ h)
-    have : ∀ a : X, ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) k ∧ (a ∈ h → a ∈ n) := by
-      intro a
-      by_cases hyp: a ∈ h
-      · have : kᶜ ∈ 𝓝 a := by
-          apply kcl.compl_mem_nhds
-          by_contra aink; exact hkdis ⟨hyp, aink⟩
-        rcases (((regularSpace_TFAE X).out 0 3).mp r:) a kᶜ this
+    have disjoint_cover_lemma : ∀ (h₀ k₀ : Set X), IsClosed k₀ → Disjoint h₀ k₀ →
+        ∀ (a : X), ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) k₀ ∧ (a ∈ h₀ → a ∈ n) := by
+      intro h₀ k₀ k₀cl h₀k₀dis a
+      by_cases hyp: a ∈ h₀
+      · have : k₀ᶜ ∈ 𝓝 a := by
+          apply k₀cl.compl_mem_nhds
+          by_contra aink₀; exact Set.disjoint_iff.mp h₀k₀dis ⟨hyp, aink₀⟩
+        rcases (((regularSpace_TFAE X).out 0 3).mp r:) a k₀ᶜ this
           with ⟨n, nna, ncl, nsubkc⟩
         use interior n
         constructor
@@ -2374,62 +2372,27 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
         constructor
         · exact isOpen_empty
         constructor
-        · exact SeparatedNhds.disjoint_closure_left (SeparatedNhds.empty_left k)
+        · exact SeparatedNhds.disjoint_closure_left (SeparatedNhds.empty_left k₀)
         · intro ainh; by_contra; exact hyp ainh
-    choose u u_open u_dis u_nhd using this
+    choose u u_open u_dis u_nhd using disjoint_cover_lemma h k kcl hkdis
     have u_cov : h ⊆ ⋃ i, u i := by
       intro a ainh
       simp only [mem_iUnion]; use a; apply u_nhd; exact ainh
+    have h_lind : IsLindelof h :=
+      IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ hcl (subset_univ h)
     rcases IsLindelof.indexed_countable_subcover h_lind u u_open u_cov with ⟨f, f_cov⟩
-    let u' : ℕ → Set X := fun n ↦ u (f n)
-    have k_lind : IsLindelof k :=
-      IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ kcl (subset_univ k)
-    have : ∀ a : X, ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) h ∧ (a ∈ k → a ∈ n) := by
-      intro a
-      by_cases hyp: a ∈ k
-      · have : hᶜ ∈ 𝓝 a := by
-          apply IsClosed.compl_mem_nhds hcl
-          by_contra ainh; exact hkdis ⟨ainh, hyp⟩
-        rcases (((regularSpace_TFAE X).out 0 3).mp r:) a hᶜ this
-          with ⟨n, nna, ncl, nsubkc⟩
-        use interior n
-        constructor
-        · exact isOpen_interior
-        constructor
-        · exact disjoint_left.mpr fun ⦃a⦄ a_1 ↦
-            nsubkc ((IsClosed.closure_subset_iff ncl).mpr interior_subset a_1)
-        · intros; exact mem_interior_iff_mem_nhds.mpr nna
-      · use ∅
-        constructor
-        · exact isOpen_empty
-        constructor
-        · exact SeparatedNhds.disjoint_closure_left (SeparatedNhds.empty_left h)
-        · intro aink; by_contra; exact hyp aink
-    choose v v_open v_dis v_nhd using this
+    choose v v_open v_dis v_nhd using disjoint_cover_lemma k h hcl (Disjoint.symm hkdis)
     have v_cov : k ⊆ ⋃ i, v i := by
       intro a aink
       simp only [mem_iUnion]; use a; apply v_nhd; exact aink
+    have k_lind : IsLindelof k :=
+      IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ kcl (subset_univ k)
     rcases IsLindelof.indexed_countable_subcover k_lind v v_open v_cov with ⟨g, g_cov⟩
-    let v' : ℕ → Set X := fun n ↦ v (g n)
     apply countable_covers_witness_separated_nhds
-    · use u'
-      constructor
-      · exact f_cov
-      intro n
-      unfold_let u'
-      simp only
-      constructor
-      · exact u_open (f n)
-      · exact u_dis (f n)
-    · use v'
-      constructor
-      · exact g_cov
-      intro n
-      unfold_let v'
-      simp only
-      constructor
-      · exact v_open (g n)
-      · exact v_dis (g n)
+    · use fun n ↦ u (f n)
+      exact ⟨f_cov, fun n ↦ ⟨u_open (f n), u_dis (f n)⟩⟩
+    · use fun n ↦ v (g n)
+      exact ⟨g_cov, fun n ↦ ⟨v_open (g n), v_dis (g n)⟩⟩
 
 
 instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
