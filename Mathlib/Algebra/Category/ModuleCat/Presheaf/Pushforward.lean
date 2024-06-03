@@ -44,7 +44,7 @@ def pushforward₀ (R : Dᵒᵖ ⥤ RingCat.{u}) :
     { hom := whiskerLeft F.op φ.hom
       map_smul := by intros; apply φ.map_smul }
 
-/-- The pushforward of presheaves of modules commutes with the forget functor
+/-- The pushforward of presheaves of modules commutes with the forgetful functor
 to presheaves of abelian groups. -/
 def pushforward₀CompToPresheaf (R : Dᵒᵖ ⥤ RingCat.{u}) :
     pushforward₀.{v} F R ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (whiskeringLeft _ _ _).obj F.op :=
