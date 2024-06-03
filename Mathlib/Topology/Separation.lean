@@ -2298,8 +2298,8 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
   by_cases k_nonempty : k = ∅
   · rw [k_nonempty]
     simp only [SeparatedNhds.empty_right]
-  rcases h_cov with ⟨ u, c, c_count, c_cov, u_props ⟩
-  rcases k_cov with ⟨ v, d, d_count, d_cov, v_props ⟩
+  rcases h_cov with ⟨u, c, c_count, c_cov, u_props⟩
+  rcases k_cov with ⟨v, d, d_count, d_cov, v_props⟩
   have nonempty_lemma : ∀ c₀ : Set ι, ∀ h₀ : Set X, ∀ u₀ : ι → Set X,
       ¬h₀ = ∅ → h₀ ⊆ ⋃ i ∈ c₀, u₀ i → c₀.Nonempty := by
     intro c₀ h₀ u₀ h₀_nonempty c₀_cov
@@ -2310,10 +2310,10 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
     exact eq_empty_of_subset_empty c₀_cov
   rw [Set.countable_iff_exists_surjective
     (nonempty_lemma c h u h_nonempty c_cov)] at c_count
-  rcases c_count with ⟨ f, f_surj ⟩
+  rcases c_count with ⟨f, f_surj⟩
   rw [Set.countable_iff_exists_surjective
     (nonempty_lemma d k v k_nonempty d_cov)] at d_count
-  rcases d_count with ⟨ g, g_surj ⟩
+  rcases d_count with ⟨g, g_surj⟩
   use ⋃ n : ℕ, u (f n) \ (closure (⋃ m ∈ {m | m ≤ n}, v (g m)))
   use ⋃ n : ℕ, v (g n) \ (closure (⋃ m ∈ {m | m ≤ n}, u (f m)))
   have open_lemma : ∀ (u₀ a : ℕ → Set X), (∀ n, IsOpen (u₀ n)) →
@@ -2330,7 +2330,7 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
       (h₀ ⊆ ⋃ n, u₀ n \ closure (⋃ m ∈ {m | m ≤ n}, v₀ m)) := by
     intro h₀ u₀ v₀ h₀_cov dis
     intro x xinh
-    rcases h₀_cov xinh with ⟨ un , ⟨ n, un' ⟩ , xinun ⟩
+    rcases h₀_cov xinh with ⟨un , ⟨n, un'⟩ , xinun⟩
     rw [← un'] at xinun
     simp only [mem_iUnion, exists_prop] at xinun
     simp only [mem_iUnion, mem_diff]
@@ -2347,7 +2347,7 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
     rcases c_cov xinh with ⟨uc, ⟨i, iuc⟩, xinuc⟩
     rw [← iuc] at xinuc
     simp only [mem_iUnion, exists_prop] at xinuc
-    rcases f_surj ⟨ i, xinuc.1 ⟩ with ⟨ n, fni ⟩
+    rcases f_surj ⟨i, xinuc.1⟩ with ⟨n, fni⟩
     simp only [mem_iUnion]
     use n
     rw [fni]
@@ -2358,7 +2358,7 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
     rcases d_cov xink with ⟨vd, ⟨i, ivd⟩, xinvd⟩
     rw [← ivd] at xinvd
     simp only [mem_iUnion, exists_prop] at xinvd
-    rcases g_surj ⟨ i, xinvd.1 ⟩ with ⟨ n, fni ⟩
+    rcases g_surj ⟨i, xinvd.1⟩ with ⟨n, fni⟩
     simp only [mem_iUnion]
     use n
     rw [fni]
@@ -2372,7 +2372,7 @@ lemma countable_covers_to_separated_nhds (h k: Set X) {ι: Type v}
       (fun n ↦ (u_props ↑(f n)).2)
   rw [Set.disjoint_left]
   intro x xinunion
-  rcases xinunion with ⟨ un, ⟨ n, un' ⟩, xinun ⟩
+  rcases xinunion with ⟨un, ⟨n, un'⟩, xinun⟩
   rw [← un'] at xinun
   simp only [mem_iUnion, mem_diff] at xinun
   simp only [mem_iUnion, mem_diff, not_exists, not_and, Decidable.not_not]
@@ -2461,14 +2461,14 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
       constructor
       · exact c_cov
       intro a
-      exact ⟨ u_open a, u_dis a ⟩
+      exact ⟨u_open a, u_dis a⟩
     · use v, d
       constructor
       · exact d_count
       constructor
       · exact d_cov
       intro a
-      exact ⟨ v_open a, v_dis a ⟩
+      exact ⟨v_open a, v_dis a⟩
 
 
 instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
