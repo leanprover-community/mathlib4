@@ -91,10 +91,6 @@ noncomputable def toLinearEquiv [DecidableEq n] (A : Matrix n n R) (hA : IsUnit 
   right_inv x := by
     simp_rw [← LinearMap.comp_apply, ← Matrix.toLin_mul b b b, Matrix.mul_nonsing_inv _ hA,
       toLin_one, LinearMap.id_apply]
-  right_inv x := by
-    simp_rw [← LinearMap.comp_apply, ← Matrix.toLin_mul b b b, Matrix.mul_nonsing_inv _ hA,
-      toLin_one, LinearMap.id_apply]
-
 #align matrix.to_linear_equiv Matrix.toLinearEquiv
 
 theorem ker_toLin_eq_bot [DecidableEq n] (A : Matrix n n R) (hA : IsUnit A.det) :

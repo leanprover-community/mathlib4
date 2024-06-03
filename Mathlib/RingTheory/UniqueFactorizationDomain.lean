@@ -2019,7 +2019,7 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CancelCommMonoidWithZero M]
     exact Multiset.prod_dvd_prod_of_le hs
   · rintro (h : x ∣ y)
     have hx : x ≠ 0 := by
-      refine mt (fun hx ↦ ?_) hy
+      refine mt (fun hx => ?_) hy
       rwa [hx, zero_dvd_iff] at h
     obtain ⟨u, hu⟩ := normalizedFactors_prod hx
     refine ⟨⟨normalizedFactors x, u⟩, ?_, (mul_comm _ _).trans hu⟩
