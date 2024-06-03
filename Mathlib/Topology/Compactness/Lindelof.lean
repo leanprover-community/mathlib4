@@ -176,6 +176,32 @@ theorem IsLindelof.elim_nhds_subcover (hs : IsLindelof s) (U : X → Set X)
   · have : ⋃ x ∈ t, U ↑x = ⋃ x ∈ Subtype.val '' t, U x := biUnion_image.symm
     rwa [← this]
 
+/-- For every nonempty open cover of a Lindelöf set, there exists a function from ℕ witnessing
+a countable subcover. Uses same arguments as elim_countable_subcover -/
+theorem IsLindelof.produce_countable_subcover {ι : Type v} [Nonempty ι]
+    (hs : IsLindelof s) (U : ι → Set X) (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) :
+    ∃ f : ℕ → ι, s ⊆ ⋃ n, U (f n) := by
+  rcases IsLindelof.elim_countable_subcover hs U hUo hsU with ⟨c, ⟨c_count, c_cov⟩⟩
+  wlog c_nonempty : c.Nonempty
+  · rw [not_nonempty_iff_eq_empty.mp c_nonempty] at c_cov
+    simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty] at c_cov
+    rcases (exists_const ι).mpr trivial with ⟨i⟩
+    use fun _ ↦ i
+    rw [subset_eq_empty c_cov rfl]
+    exact empty_subset (⋃ _, U i)
+  rw [Set.countable_iff_exists_surjective c_nonempty] at c_count
+  rcases c_count with ⟨f, f_surj⟩
+  use fun n ↦ f n
+  intro x xinh
+  rcases c_cov xinh with ⟨uy, ⟨y, yuc⟩, xinuy⟩
+  rw [← yuc] at xinuy
+  simp only [mem_iUnion, exists_prop] at xinuy
+  rcases f_surj ⟨y, xinuy.1⟩ with ⟨n, fny⟩
+  simp only [mem_iUnion]
+  use n
+  rw [fny]
+  exact xinuy.2
+
 /-- The neighborhood filter of a Lindelöf set is disjoint with a filter `l` with the countable
 intersection property if and only if the neighborhood filter of each point of this set
 is disjoint with `l`. -/

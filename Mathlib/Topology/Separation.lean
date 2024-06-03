@@ -2347,20 +2347,9 @@ lemma countable_covers_to_separated_nhds (h k: Set X)
 instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     [r: RegularSpace X] [LindelofSpace X] : NormalSpace X where
   normal h k hcl kcl hkdis := by
-    by_cases h_nonempty : h = ∅
-    · rw [h_nonempty]
-      simp only [SeparatedNhds.empty_left]
-    by_cases k_nonempty : k = ∅
-    · rw [k_nonempty]
-      simp only [SeparatedNhds.empty_right]
-    have nonempty_lemma : ∀ c₀ : Set X, ∀ h₀ : Set X, ∀ u₀ : X → Set X,
-        ¬h₀ = ∅ → h₀ ⊆ ⋃ i ∈ c₀, u₀ i → c₀.Nonempty := by
-      intro c₀ h₀ u₀ h₀_nonempty c₀_cov
-      by_contra c₀_empty
-      apply h₀_nonempty
-      rw [not_nonempty_iff_eq_empty.mp c₀_empty] at c₀_cov
-      simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty] at c₀_cov
-      exact eq_empty_of_subset_empty c₀_cov
+    wlog nonempty_space : Nonempty X
+    · rw [not_nonempty_iff] at nonempty_space
+      exact normal h k hcl kcl hkdis
     rw [Set.disjoint_iff] at hkdis
     have h_lind : IsLindelof h :=
       IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ hcl (subset_univ h)
@@ -2389,23 +2378,8 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     have u_cov : h ⊆ ⋃ i, u i := by
       intro a ainh
       simp only [mem_iUnion]; use a; apply u_nhd; exact ainh
-    rcases IsLindelof.elim_countable_subcover h_lind u u_open u_cov with ⟨c, c_count, c_cov⟩
-    rw [Set.countable_iff_exists_surjective
-      (nonempty_lemma c h u h_nonempty c_cov)] at c_count
-    rcases c_count with ⟨f, f_surj⟩
+    rcases IsLindelof.produce_countable_subcover h_lind u u_open u_cov with ⟨f, f_cov⟩
     let u' : ℕ → Set X := fun n ↦ u (f n)
-    have u'_cov : h ⊆ ⋃ n, u' n := by
-      unfold_let u'
-      intro x xinh
-      rcases c_cov xinh with ⟨uy, ⟨y, yuc⟩, xinuy⟩
-      rw [← yuc] at xinuy
-      simp only [mem_iUnion, exists_prop] at xinuy
-      rcases f_surj ⟨y, xinuy.1⟩ with ⟨n, fni⟩
-      simp only [mem_iUnion]
-      use n
-      rw [fni]
-      simp only
-      exact xinuy.2
     have k_lind : IsLindelof k :=
       IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ kcl (subset_univ k)
     have : ∀ a : X, ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) h ∧ (a ∈ k → a ∈ n) := by
@@ -2433,27 +2407,12 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     have v_cov : k ⊆ ⋃ i, v i := by
       intro a aink
       simp only [mem_iUnion]; use a; apply v_nhd; exact aink
-    rcases IsLindelof.elim_countable_subcover k_lind v v_open v_cov with ⟨d, d_count, d_cov⟩
-    rw [Set.countable_iff_exists_surjective
-      (nonempty_lemma d k v k_nonempty d_cov)] at d_count
-    rcases d_count with ⟨g, g_surj⟩
+    rcases IsLindelof.produce_countable_subcover k_lind v v_open v_cov with ⟨g, g_cov⟩
     let v' : ℕ → Set X := fun n ↦ v (g n)
-    have v'_cov : k ⊆ ⋃ n, v' n := by
-      unfold_let v'
-      intro x xink
-      rcases d_cov xink with ⟨uy, ⟨y, yuc⟩, xinuy⟩
-      rw [← yuc] at xinuy
-      simp only [mem_iUnion, exists_prop] at xinuy
-      rcases g_surj ⟨y, xinuy.1⟩ with ⟨n, gni⟩
-      simp only [mem_iUnion]
-      use n
-      rw [gni]
-      simp only
-      exact xinuy.2
     apply countable_covers_to_separated_nhds
     · use u'
       constructor
-      · exact u'_cov
+      · exact f_cov
       intro n
       unfold_let u'
       simp only
@@ -2462,7 +2421,7 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
       · exact u_dis (f n)
     · use v'
       constructor
-      · exact v'_cov
+      · exact g_cov
       intro n
       unfold_let v'
       simp only
