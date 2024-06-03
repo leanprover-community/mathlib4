@@ -79,7 +79,7 @@ instance hasForget₂ : HasForget₂ Profinite TopCat :=
   InducedCategory.hasForget₂ _
 #align Profinite.has_forget₂ Profinite.hasForget₂
 
-instance : CoeSort Profinite (Type*) :=
+instance : CoeSort Profinite Type* :=
   ⟨fun X => X.toCompHaus⟩
 
 -- Porting note (#10688): This lemma was not needed in mathlib3

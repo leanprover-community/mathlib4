@@ -1081,15 +1081,12 @@ theorem exists_subset_real_measurableEquiv : ∃ s : Set ℝ, MeasurableSet s �
       refine ⟨_, ?_, h_nonempty_equiv⟩
       letI : MeasurableSpace (Fin n) := borel (Fin n)
       haveI : BorelSpace (Fin n) := ⟨rfl⟩
-      refine' MeasurableEmbedding.measurableSet_range _
-      · infer_instance
-      · exact
-          continuous_of_discreteTopology.measurableEmbedding
-            (Nat.cast_injective.comp Fin.val_injective)
+      apply MeasurableEmbedding.measurableSet_range (mα := by infer_instance)
+      exact continuous_of_discreteTopology.measurableEmbedding
+        (Nat.cast_injective.comp Fin.val_injective)
     · refine ⟨_, ?_, measurableEquiv_range_coe_nat_of_infinite_of_countable α⟩
-      refine' MeasurableEmbedding.measurableSet_range _
-      · infer_instance
-      · exact continuous_of_discreteTopology.measurableEmbedding Nat.cast_injective
+      apply MeasurableEmbedding.measurableSet_range (mα := by infer_instance)
+      exact continuous_of_discreteTopology.measurableEmbedding Nat.cast_injective
   · refine
       ⟨univ, MeasurableSet.univ,
         ⟨(PolishSpace.measurableEquivOfNotCountable hα ?_ : α ≃ᵐ (univ : Set ℝ))⟩⟩

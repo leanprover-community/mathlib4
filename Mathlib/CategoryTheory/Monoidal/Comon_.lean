@@ -46,7 +46,7 @@ structure Comon_ where
   comul_counit : comul ≫ (X ◁ counit) = (ρ_ X).inv := by aesop_cat
   comul_assoc : comul ≫ (X ◁ comul) ≫ (α_ X X X).inv = comul ≫ (comul ▷ X) := by aesop_cat
 
-attribute [reassoc] Comon_.counit_comul Comon_.comul_counit
+attribute [reassoc (attr := simp)] Comon_.counit_comul Comon_.comul_counit
 
 attribute [reassoc (attr := simp)] Comon_.comul_assoc
 
@@ -138,12 +138,12 @@ instance : (forget C).ReflectsIsomorphisms where
   reflects f e :=
     ⟨⟨{ hom := inv f.hom }, by aesop_cat⟩⟩
 
-/-- Construct an isomorphism of monoids by giving an isomorphism between the underlying objects
-and checking compatibility with unit and multiplication only in the forward direction.
+/-- Construct an isomorphism of comonoids by giving an isomorphism between the underlying objects
+and checking compatibility with counit and comultiplication only in the forward direction.
 -/
 @[simps]
-def mkIso {M N : Comon_ C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ N.counit = M.counit)
-    (f_comul : f.hom ≫ N.comul = M.comul ≫ (f.hom ⊗ f.hom)) : M ≅ N where
+def mkIso {M N : Comon_ C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ N.counit = M.counit := by aesop_cat)
+    (f_comul : f.hom ≫ N.comul = M.comul ≫ (f.hom ⊗ f.hom) := by aesop_cat) : M ≅ N where
   hom :=
     { hom := f.hom
       hom_counit := f_counit
@@ -275,7 +275,16 @@ theorem tensorObj_comul (A B : Comon_ C) :
   apply Quiver.Hom.unop_inj
   dsimp [op_tensorObj, op_associator]
   rw [Category.assoc, Category.assoc, Category.assoc]
-  rfl
+
+/-- The forgetful functor from `Comon_ C` to `C` is monoidal when `C` is braided monoidal. -/
+def forgetMonoidal : MonoidalFunctor (Comon_ C) C :=
+  { forget C with
+    ε := 𝟙 _
+    μ := fun X Y => 𝟙 _ }
+
+@[simp] theorem forgetMonoidal_toFunctor : (forgetMonoidal C).toFunctor = forget C := rfl
+@[simp] theorem forgetMonoidal_ε : (forgetMonoidal C).ε = 𝟙 (𝟙_ C) := rfl
+@[simp] theorem forgetMonoidal_μ (X Y : Comon_ C) : (forgetMonoidal C).μ X Y = 𝟙 (X.X ⊗ Y.X) := rfl
 
 end Comon_
 
@@ -317,6 +326,5 @@ def mapComon (F : OplaxMonoidalFunctor C D) : Comon_ C ⥤ Comon_ D where
 
 -- TODO We haven't yet set up the category structure on `OplaxMonoidalFunctor C D`
 -- and so can't state `mapComonFunctor : OplaxMonoidalFunctor C D ⥤ Comon_ C ⥤ Comon_ D`.
-
 
 end CategoryTheory.OplaxMonoidalFunctor

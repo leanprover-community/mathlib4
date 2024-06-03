@@ -1061,8 +1061,8 @@ def preservesBinaryBiproductOfMonoBiprodComparison {X Y : C} [HasBinaryBiproduct
     PreservesBinaryBiproduct X Y F := by
   have that :
     prodComparison F X Y =
-      (F.mapIso (biprod.isoProd X Y)).inv ≫ biprodComparison F X Y ≫ (biprod.isoProd _ _).hom :=
-    by ext <;> simp [← Functor.map_comp]
+      (F.mapIso (biprod.isoProd X Y)).inv ≫ biprodComparison F X Y ≫ (biprod.isoProd _ _).hom := by
+    ext <;> simp [← Functor.map_comp]
   haveI : IsIso (biprodComparison F X Y) := isIso_of_mono_of_isSplitEpi _
   haveI : IsIso (prodComparison F X Y) := by
     rw [that]
