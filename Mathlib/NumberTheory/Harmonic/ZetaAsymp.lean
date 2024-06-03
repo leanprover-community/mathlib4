@@ -409,8 +409,9 @@ lemma _root_.completedRiemannZeta₀_one :
 /-- With Mathlib's particular conventions, we have `ζ 1 ≠ 0`. -/
 lemma _root_.riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
   -- This one's for you, Kevin.
-  rw [riemannZeta_one, ← ofReal_ofNat, ← ofReal_mul, ← ofReal_log (by positivity),
-    ← ofReal_sub, ← ofReal_ofNat, ← ofReal_div, ofReal_ne_zero]
+  suffices (γ - (4 * π).log) / 2 ≠ 0 by
+    simpa only [riemannZeta_one, ← ofReal_ne_zero, ofReal_log (by positivity : 0 ≤ 4 * π),
+      push_cast]
   refine div_ne_zero (sub_lt_zero.mpr (lt_trans ?_ ?_ (b := 1))).ne two_ne_zero
   · exact Real.eulerMascheroniConstant_lt_two_thirds.trans (by norm_num)
   · rw [lt_log_iff_exp_lt (by positivity)]
