@@ -244,8 +244,9 @@ theorem FractionalIdeal.coe_mk0 [IsDedekindDomain R] (I : (Ideal R)⁰) :
 
 theorem FractionalIdeal.canonicalEquiv_mk0 [IsDedekindDomain R] (K' : Type*) [Field K']
     [Algebra R K'] [IsFractionRing R K'] (I : (Ideal R)⁰) :
-    FractionalIdeal.canonicalEquiv R⁰ K K' (FractionalIdeal.mk0 K I) = FractionalIdeal.mk0 K' I :=
-  by simp only [FractionalIdeal.coe_mk0, FractionalIdeal.canonicalEquiv_coeIdeal]
+    FractionalIdeal.canonicalEquiv R⁰ K K' (FractionalIdeal.mk0 K I) =
+    FractionalIdeal.mk0 K' I := by
+  simp only [FractionalIdeal.coe_mk0, FractionalIdeal.canonicalEquiv_coeIdeal]
 #align fractional_ideal.canonical_equiv_mk0 FractionalIdeal.canonicalEquiv_mk0
 
 @[simp]

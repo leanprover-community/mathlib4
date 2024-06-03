@@ -88,8 +88,8 @@ theorem succ_nth_stream_eq_some_iff {ifp_succ_n : IntFractPair K} :
     IntFractPair.stream v (n + 1) = some ifp_succ_n ↔
       ∃ ifp_n : IntFractPair K,
         IntFractPair.stream v n = some ifp_n ∧
-          ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n :=
-  by simp [IntFractPair.stream, ite_eq_iff]
+          ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n := by
+  simp [IntFractPair.stream, ite_eq_iff]
 #align generalized_continued_fraction.int_fract_pair.succ_nth_stream_eq_some_iff GeneralizedContinuedFraction.IntFractPair.succ_nth_stream_eq_some_iff
 
 /-- An easier to use version of one direction of

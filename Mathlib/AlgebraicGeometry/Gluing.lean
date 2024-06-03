@@ -133,7 +133,7 @@ def gluedScheme : Scheme := by
   · exact (D.U i).affineCover.map y
   constructor
   · erw [TopCat.coe_comp, Set.range_comp] -- now `erw` after #13170
-    refine' Set.mem_image_of_mem _ _
+    refine Set.mem_image_of_mem _ ?_
     exact (D.U i).affineCover.Covers y
   · infer_instance
 #align algebraic_geometry.Scheme.glue_data.glued_Scheme AlgebraicGeometry.Scheme.GlueData.gluedScheme
@@ -287,7 +287,7 @@ def gluedCoverT' (x y z : 𝒰.J) :
   refine (pullbackRightPullbackFstIso _ _ _).hom ≫ ?_
   refine ?_ ≫ (pullbackSymmetry _ _).hom
   refine ?_ ≫ (pullbackRightPullbackFstIso _ _ _).inv
-  refine' pullback.map _ _ _ _ (pullbackSymmetry _ _).hom (𝟙 _) (𝟙 _) _ _
+  refine pullback.map _ _ _ _ (pullbackSymmetry _ _).hom (𝟙 _) (𝟙 _) ?_ ?_
   · simp [pullback.condition]
   · simp
 #align algebraic_geometry.Scheme.open_cover.glued_cover_t' AlgebraicGeometry.Scheme.OpenCover.gluedCoverT'
@@ -318,14 +318,14 @@ theorem gluedCoverT'_snd_snd (x y z : 𝒰.J) :
 
 theorem glued_cover_cocycle_fst (x y z : 𝒰.J) :
     gluedCoverT' 𝒰 x y z ≫ gluedCoverT' 𝒰 y z x ≫ gluedCoverT' 𝒰 z x y ≫ pullback.fst =
-      pullback.fst :=
-  by apply pullback.hom_ext <;> simp
+      pullback.fst := by
+  apply pullback.hom_ext <;> simp
 #align algebraic_geometry.Scheme.open_cover.glued_cover_cocycle_fst AlgebraicGeometry.Scheme.OpenCover.glued_cover_cocycle_fst
 
 theorem glued_cover_cocycle_snd (x y z : 𝒰.J) :
     gluedCoverT' 𝒰 x y z ≫ gluedCoverT' 𝒰 y z x ≫ gluedCoverT' 𝒰 z x y ≫ pullback.snd =
-      pullback.snd :=
-  by apply pullback.hom_ext <;> simp [pullback.condition]
+      pullback.snd := by
+  apply pullback.hom_ext <;> simp [pullback.condition]
 #align algebraic_geometry.Scheme.open_cover.glued_cover_cocycle_snd AlgebraicGeometry.Scheme.OpenCover.glued_cover_cocycle_snd
 
 theorem glued_cover_cocycle (x y z : 𝒰.J) :

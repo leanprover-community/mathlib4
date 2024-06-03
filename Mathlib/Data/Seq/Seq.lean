@@ -673,9 +673,9 @@ theorem append_assoc (s t u : Seq' α) : append (append s t) u = append s (appen
       | nil =>
         cases u with simp
         | cons _ u =>
-          refine' ⟨nil, nil, u, _, _⟩ <;> simp
+          refine ⟨nil, nil, u, ?_, ?_⟩ <;> simp
       | cons _ t =>
-        refine' ⟨nil, t, u, _, _⟩ <;> simp
+        refine ⟨nil, t, u, ?_, ?_⟩ <;> simp
     | cons _ s =>
       exact ⟨s, t, u, rfl, rfl⟩
   · exact ⟨s, t, u, rfl, rfl⟩
@@ -720,7 +720,7 @@ theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s)
   | nil =>
     cases t with simp
     | cons _ t =>
-      refine' ⟨nil, t, _, _⟩ <;> simp
+      refine ⟨nil, t, ?_, ?_⟩ <;> simp
   | cons _ s =>
     exact ⟨s, t, rfl, rfl⟩
 #align stream.seq.map_append Seq'.map_append
@@ -785,13 +785,13 @@ theorem join_append (S T : Seq' (Seq1 α)) : join (append S T) = append (join S)
         | nil => simp
         | cons s T =>
           cases' s with a s; simp only [join_cons, destruct_cons, true_and]
-          refine' ⟨s, nil, T, _, _⟩ <;> simp
+          refine ⟨s, nil, T, ?_, ?_⟩ <;> simp
       | cons s S =>
         cases' s with a s
         simpa using ⟨s, S, T, rfl, rfl⟩
     | cons _ s =>
       exact ⟨s, S, T, rfl, rfl⟩
-  · refine' ⟨nil, S, T, _, _⟩ <;> simp
+  · refine ⟨nil, S, T, ?_, ?_⟩ <;> simp
 #align stream.seq.join_append Seq'.join_append
 
 @[simp]
@@ -987,7 +987,7 @@ theorem map_join' (f : α → β) (S) : Seq'.map f (Seq'.join S) = Seq'.join (Se
         simpa [map] using ⟨_, _, rfl, rfl⟩
     | cons _ s =>
       exact ⟨s, S, rfl, rfl⟩
-  · refine' ⟨nil, S, _, _⟩ <;> simp
+  · refine ⟨nil, S, ?_, ?_⟩ <;> simp
 #align stream.seq1.map_join' Seq1.map_join'
 
 @[simp]
@@ -1013,10 +1013,10 @@ theorem join_join (SS : Seq' (Seq1 (Seq1 α))) :
         cases s with simp
         | nil => exact ⟨_, _, rfl, rfl⟩
         | cons x s =>
-          refine' ⟨Seq'.cons x (append s (Seq'.join S)), SS, _, _⟩ <;> simp
+          refine ⟨Seq'.cons x (append s (Seq'.join S)), SS, ?_, ?_⟩ <;> simp
     | cons _ s =>
       exact ⟨s, SS, rfl, rfl⟩
-  · refine' ⟨nil, SS, _, _⟩ <;> simp
+  · refine ⟨nil, SS, ?_, ?_⟩ <;> simp
 #align stream.seq1.join_join Seq1.join_join
 
 @[simp]

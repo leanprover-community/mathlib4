@@ -918,13 +918,13 @@ section DistribMulAction
 variable [Monoid R] [Mul α] [AddCommMonoid α] [DistribMulAction R α]
 
 @[simp]
-theorem smul_dotProduct [IsScalarTower R α α] (x : R) (v w : m → α) : x • v ⬝ᵥ w = x • (v ⬝ᵥ w) :=
-  by simp [dotProduct, Finset.smul_sum, smul_mul_assoc]
+theorem smul_dotProduct [IsScalarTower R α α] (x : R) (v w : m → α) :
+    x • v ⬝ᵥ w = x • (v ⬝ᵥ w) := by simp [dotProduct, Finset.smul_sum, smul_mul_assoc]
 #align matrix.smul_dot_product Matrix.smul_dotProduct
 
 @[simp]
-theorem dotProduct_smul [SMulCommClass R α α] (x : R) (v w : m → α) : v ⬝ᵥ x • w = x • (v ⬝ᵥ w) :=
-  by simp [dotProduct, Finset.smul_sum, mul_smul_comm]
+theorem dotProduct_smul [SMulCommClass R α α] (x : R) (v w : m → α) :
+    v ⬝ᵥ x • w = x • (v ⬝ᵥ w) := by simp [dotProduct, Finset.smul_sum, mul_smul_comm]
 #align matrix.dot_product_smul Matrix.dotProduct_smul
 
 end DistribMulAction
@@ -2234,8 +2234,8 @@ theorem conjTranspose_zero [AddMonoid α] [StarAddMonoid α] : (0 : Matrix m n �
 
 @[simp]
 theorem conjTranspose_eq_zero [AddMonoid α] [StarAddMonoid α] {M : Matrix m n α} :
-    Mᴴ = 0 ↔ M = 0 :=
-  by rw [← conjTranspose_inj (A := M), conjTranspose_zero]
+    Mᴴ = 0 ↔ M = 0 := by
+  rw [← conjTranspose_inj (A := M), conjTranspose_zero]
 
 @[simp]
 theorem conjTranspose_one [DecidableEq n] [Semiring α] [StarRing α] : (1 : Matrix n n α)ᴴ = 1 := by

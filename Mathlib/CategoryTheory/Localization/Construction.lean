@@ -142,7 +142,7 @@ set_option linter.uppercaseLean3 false in
 variable (W)
 
 theorem _root_.CategoryTheory.MorphismProperty.Q_inverts : W.IsInvertedBy W.Q := fun _ _ w hw =>
-  IsIso.of_iso (Localization.Construction.wIso w hw)
+  (Localization.Construction.wIso w hw).isIso_hom
 set_option linter.uppercaseLean3 false in
 #align category_theory.morphism_property.Q_inverts CategoryTheory.MorphismProperty.Q_inverts
 

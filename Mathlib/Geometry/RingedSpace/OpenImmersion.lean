@@ -239,8 +239,8 @@ theorem invApp_app (U : Opens X) :
         -- structure
         apply congr_arg (op ·); ext
         dsimp [openFunctor, IsOpenMap.functor]
-        rw [Set.preimage_image_eq _ H.base_open.inj])) :=
-  by rw [invApp, Category.assoc, IsIso.inv_hom_id, Category.comp_id]
+        rw [Set.preimage_image_eq _ H.base_open.inj])) := by
+  rw [invApp, Category.assoc, IsIso.inv_hom_id, Category.comp_id]
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.inv_app_app AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.invApp_app
 
 @[simp, reassoc]
@@ -248,8 +248,8 @@ theorem app_invApp (U : Opens Y) :
     f.c.app (op U) ≫ H.invApp ((Opens.map f.base).obj U) =
       Y.presheaf.map
         ((homOfLE (Set.image_preimage_subset f.base U.1)).op :
-          op U ⟶ op (H.openFunctor.obj ((Opens.map f.base).obj U))) :=
-  by erw [← Category.assoc]; rw [IsIso.comp_inv_eq, f.c.naturality]; congr
+          op U ⟶ op (H.openFunctor.obj ((Opens.map f.base).obj U))) := by
+  erw [← Category.assoc]; rw [IsIso.comp_inv_eq, f.c.naturality]; congr
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.app_inv_app AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.app_invApp
 
 /-- A variant of `app_inv_app` that gives an `eqToHom` instead of `homOfLe`. -/
@@ -263,8 +263,8 @@ theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
               · exact Set.image_preimage_subset f.base U.1
               · rw [← SetLike.coe_subset_coe]
                 refine LE.le.trans_eq ?_ (@Set.image_preimage_eq_inter_range _ _ f.base U.1).symm
-                exact Set.subset_inter_iff.mpr ⟨fun _ h => h, hU⟩)).op :=
-  by erw [← Category.assoc]; rw [IsIso.comp_inv_eq, f.c.naturality]; congr
+                exact Set.subset_inter_iff.mpr ⟨fun _ h => h, hU⟩)).op := by
+  erw [← Category.assoc]; rw [IsIso.comp_inv_eq, f.c.naturality]; congr
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.app_inv_app' AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.app_inv_app'
 
 /-- An isomorphism is an open immersion. -/
@@ -330,7 +330,7 @@ theorem to_iso (f : X ⟶ Y) [h : IsOpenImmersion f] [h' : Epi f.base] : IsIso f
             ⟨x, by rw [Set.range_iff_surjective.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩
           left_inv := fun ⟨_, _⟩ => rfl
           right_inv := fun _ => rfl }
-    convert IsIso.of_iso (TopCat.isoOfHomeo t)
+    convert (TopCat.isoOfHomeo t).isIso_hom
   have : IsIso f.c := by apply NatIso.isIso_of_isIso_app
   apply isIso_of_components
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.to_iso AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.to_iso
@@ -1006,12 +1006,12 @@ instance : LocallyRingedSpace.IsOpenImmersion (pullbackConeOfLeft f g).snd :=
 /-- The constructed `pullbackConeOfLeft` is indeed limiting. -/
 def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
   PullbackCone.isLimitAux' _ fun s => by
-    refine' ⟨LocallyRingedSpace.Hom.mk (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift
-        f.1 g.1 (PullbackCone.mk _ _ (congr_arg LocallyRingedSpace.Hom.val s.condition))) _,
-      LocallyRingedSpace.Hom.ext ?_ _
+    refine ⟨LocallyRingedSpace.Hom.mk (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift
+        f.1 g.1 (PullbackCone.mk _ _ (congr_arg LocallyRingedSpace.Hom.val s.condition))) ?_,
+      LocallyRingedSpace.Hom.ext _ _
         (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_fst f.1 g.1 _),
-      LocallyRingedSpace.Hom.ext ?_ _
-          (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_snd f.1 g.1 _), _⟩
+      LocallyRingedSpace.Hom.ext _ _
+          (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_snd f.1 g.1 _), ?_⟩
     · intro x
       have :=
         PresheafedSpace.stalkMap.congr_hom _ _

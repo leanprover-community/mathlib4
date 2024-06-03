@@ -143,9 +143,9 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     intro x hx hc _
     exact absurd hx hc
   have : s'.card = (s ∪ s'.image fun z => z.1).card - s.card := by
-    simp [disj, card_image_of_injective _ Subtype.coe_injective]
+    simp [disj, card_image_of_injective _ Subtype.coe_injective, Nat.add_sub_cancel_left]
   rw [this, hus]
-  refine (tsub_le_tsub_right (ht _) _).trans ?_
+  refine (Nat.sub_le_sub_right (ht _) _).trans ?_
   rw [← card_sdiff]
   · refine (card_le_card ?_).trans le_rfl
     intro t
