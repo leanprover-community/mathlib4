@@ -361,7 +361,7 @@ lemma tendsto_Gamma_term_aux : Tendsto (fun s ↦ 1 / (s - 1) - 1 / Gammaℝ s /
   have h := hasDerivAt_Gammaℝ_one
   rw [hasDerivAt_iff_tendsto_slope, slope_fun_def_field, Gammaℝ_one] at h
   have := h.div (hasDerivAt_Gammaℝ_one.continuousAt.tendsto.mono_left nhdsWithin_le_nhds)
-    (by rw [Gammaℝ_one]; exact one_ne_zero)
+    (Gammaℝ_one.trans_ne one_ne_zero)
   rw [Gammaℝ_one, div_one] at this
   refine this.congr' ?_
   have : {z | 0 < re z} ∈ 𝓝 (1 : ℂ) := by
@@ -377,7 +377,7 @@ lemma tendsto_riemannZeta_sub_one_div_Gammaℝ :
     (𝓝 ((γ - Complex.log (4 * ↑π)) / 2)) := by
   have := tendsto_riemannZeta_sub_one_div.add tendsto_Gamma_term_aux
   simp_rw [sub_add_sub_cancel] at this
-  convert this using 1
+  convert this using 2
   ring_nf
 
 /-- Formula for `ζ 1`. Note that mathematically `ζ 1` is undefined, but our construction ascribes
@@ -412,7 +412,7 @@ lemma _root_.riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
   rw [riemannZeta_one, ← ofReal_ofNat, ← ofReal_mul, ← ofReal_log (by positivity),
     ← ofReal_sub, ← ofReal_ofNat, ← ofReal_div, ofReal_ne_zero]
   refine div_ne_zero (sub_lt_zero.mpr (lt_trans ?_ ?_ (b := 1))).ne two_ne_zero
-  · apply Real.eulerMascheroniConstant_lt_two_thirds.trans (by norm_num)
+  · exact Real.eulerMascheroniConstant_lt_two_thirds.trans (by norm_num)
   · rw [lt_log_iff_exp_lt (by positivity)]
     exact (lt_trans Real.exp_one_lt_d9 (by norm_num)).trans_le
       <| mul_le_mul_of_nonneg_left two_le_pi (by norm_num)
