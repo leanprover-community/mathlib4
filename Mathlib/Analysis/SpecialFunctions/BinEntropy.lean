@@ -114,8 +114,8 @@ lemma qaryEntropy_pos {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (ple1 : p < 1) : 0 < qa
   have (a b c : ℝ) (ha : 0 ≤ a) (hb : 0 < -b - c) : 0 < a - b - c := by linarith
   exact this (p * ((q : ℝ) - 1).log) (p * p.log) ((1 - p) * (1 - p).log) p_q_log_nonneg rest_is_pos
 
-lemma binaryEntropy_gt_0 {p : ℝ} (pge0 : 0 < p) (ple1 : p < 1) : 0 < binaryEntropy p := by
-  exact qaryEntropy_gt_0 pge0 ple1
+lemma binaryEntropy_pos {p : ℝ} (pge0 : 0 < p) (ple1 : p < 1) : 0 < binaryEntropy p := by
+  exact qaryEntropy_pos pge0 ple1
 
 /-- TODO assumptions not needed? -/
 lemma binaryEntropy_zero_iff_zero_or_one {p : ℝ} (domup : p ≤ 1) (domun : 0 ≤ p) :
@@ -126,7 +126,7 @@ lemma binaryEntropy_zero_iff_zero_or_one {p : ℝ} (domup : p ≤ 1) (domun : 0 
     · by_cases p_is_one : p = 1
       · right; assumption
       · have : 0 < binaryEntropy p := by
-          apply binaryEntropy_gt_0 (Ne.lt_of_le ?_ domun)
+          apply binaryEntropy_pos (Ne.lt_of_le ?_ domun)
           refine Ne.lt_of_le ?_ ?_
           repeat assumption
           exact Iff.mp ne_comm pz
@@ -138,7 +138,7 @@ lemma zero_lt_log_two : 0 < log 2 := by
   exact (log_pos_iff zero_lt_two).mpr one_lt_two
 
 /-- For probability `p < 0.5`, `binaryEntropy p < log 2`. -/
-lemma binaryEntropy_lt_log2_of_gt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p < 1/2) :
+lemma binaryEntropy_lt_log2_of_lt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p < 1/2) :
     binaryEntropy p < log 2 := by
   -- Proof by concavity of log.
   rw [binaryEntropy_eq']
@@ -160,18 +160,18 @@ lemma binaryEntropy_lt_log2_of_gt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p <
     rw [this]
     exact logConcave
 
-lemma binaryEntropy_lt_log2_of_gt_log2 {p : ℝ} : 1/2 < p → p ≤ 1 → binaryEntropy p < log 2 := by
+lemma binaryEntropy_lt_log2_of_gt_half {p : ℝ} : 1/2 < p → p ≤ 1 → binaryEntropy p < log 2 := by
   intros
-  rw [← binaryEntropy_eq_binaryEntropy_one_minus]
-  exact binaryEntropy_lt_log2_of_gt_half (by linarith) (by linarith)
+  rw [← binaryEntropy_one_sub]
+  exact binaryEntropy_lt_log2_of_lt_half (by linarith) (by linarith)
 
 lemma binaryEntropy_one_iff_eq_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) :
     binaryEntropy p = log 2 ↔ p = 1/2 := by
   constructor <;> intro h
   · by_cases h' : p < 1/2
-    · linarith [binaryEntropy_lt_log2_of_gt_half pge0 h']
+    · linarith [binaryEntropy_lt_log2_of_lt_half pge0 h']
     · by_cases pgthalf : 1/2 < p
-      · have := binaryEntropy_lt_one_of_gt_log2 pgthalf ple1
+      · have := binaryEntropy_lt_log2_of_gt_half pgthalf ple1
         linarith
       · linarith
   · simp only [one_div, binaryEntropy_onehalf, h]
@@ -183,14 +183,14 @@ lemma binaryEntropy_le_log2 {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) :
   · by_cases gg: binaryEntropy p = log 2
     · simp only [le_refl, gg]
     · by_cases hhh: p < 1/2
-      · linarith [binaryEntropy_lt_log2_of_gt_half pge0 hhh]
+      · linarith [binaryEntropy_lt_log2_of_lt_half pge0 hhh]
       · have : 1/2 < p := by
           refine Ne.lt_of_le ?_ ?_
           · simp only [not_lt] at hhh
             intro a
             simp_all only [not_true_eq_false]
           · simp_all only [one_div, not_lt]
-        have := binaryEntropy_lt_one_of_gt_log2 this ple1
+        have := binaryEntropy_lt_log2_of_gt_half this ple1
         exact LT.lt.le this
 
 /- The q-ary entropy function is continuous everywhere.
