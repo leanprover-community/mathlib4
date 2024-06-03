@@ -9,7 +9,6 @@ import Mathlib.Algebra.Lie.Weights.Linear
 /-!
 # Lie's theorem for Solvable Lie algebras.
 -/
-set_option autoImplicit false
 
 open LieAlgebra
 
