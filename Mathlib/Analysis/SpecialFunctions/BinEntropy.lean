@@ -210,7 +210,7 @@ lemma qaryEntropy_continuous {q : ℕ} : Continuous (qaryEntropy q) := by
 
 /- Binary entropy is continuous everywhere.
 This is due to definition of `Real.log` for negative numbers. -/
-lemma binaryEntropy_continuous : Continuous binaryEntropy := qaryEntropy_continuous
+@[fun_prop] lemma binaryEntropy_continuous : Continuous binaryEntropy := qaryEntropy_continuous
 
 /-! ### Derivatives of binary entropy function -/
 
