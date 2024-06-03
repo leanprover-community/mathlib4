@@ -81,6 +81,27 @@ lemma eq_bot_of_set_smul_eq_of_subset_jacobson_annihilator {s : Set R}
   eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator hN
     (Eq.trans hsN (span_smul_eq s N).symm) (span_le.mpr hsJac)
 
+lemma top_ne_ideal_smul_of_le_jacobson_annihilator [Nontrivial M]
+    [Module.Finite R M] {I} (h : I ≤ (Module.annihilator R M).jacobson) :
+    (⊤ : Submodule R M) ≠ I • ⊤ := fun H => top_ne_bot <|
+  eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator Module.Finite.out H <|
+    (congrArg (I ≤ Ideal.jacobson ·) annihilator_top).mpr h
+
+open Pointwise in
+lemma top_ne_set_smul_of_subset_jacobson_annihilator [Nontrivial M]
+    [Module.Finite R M] {s : Set R}
+    (h : s ⊆ (Module.annihilator R M).jacobson) :
+    (⊤ : Submodule R M) ≠ s • ⊤ :=
+  ne_of_ne_of_eq (top_ne_ideal_smul_of_le_jacobson_annihilator (span_le.mpr h))
+    (span_smul_eq _ _)
+
+open Pointwise in
+lemma top_ne_pointwise_smul_of_mem_jacobson_annihilator [Nontrivial M]
+    [Module.Finite R M] {r} (h : r ∈ (Module.annihilator R M).jacobson) :
+    (⊤ : Submodule R M) ≠ r • ⊤ :=
+  ne_of_ne_of_eq (top_ne_set_smul_of_subset_jacobson_annihilator <|
+                    Set.singleton_subset_iff.mpr h) (singleton_set_smul ⊤ r)
+
 /-- **Nakayama's Lemma** - Statement (2) in
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
 See also `eq_smul_of_le_smul_of_le_jacobson` for a generalisation
