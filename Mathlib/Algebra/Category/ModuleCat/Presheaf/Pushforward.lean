@@ -58,7 +58,7 @@ a morphism of presheaves of rings `S ⟶ F.op ⋙ R`. -/
 noncomputable def pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} S :=
   pushforward₀ F R ⋙ restrictScalars φ
 
-/-- The pushforward of presheaves of modules commutes with the forget functor
+/-- The pushforward of presheaves of modules commutes with the forgetful functor
 to presheaves of abelian groups. -/
 noncomputable def pushforwardCompToPresheaf :
     pushforward.{v} φ ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (whiskeringLeft _ _ _).obj F.op :=
