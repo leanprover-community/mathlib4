@@ -77,29 +77,13 @@ lemma binaryEntropy_eq' {p : ℝ} : binaryEntropy p = -p * log p - (1 - p) * log
   simp only [binaryEntropy_eq', neg_sub, sub_sub_cancel, neg_mul]
   ring
 
-protected lemma nonneg_reallog_sub_one (n : ℕ) : 0 ≤ Real.log (n - 1) := by
-  have : (n : ℝ) - 1 = -1 ∨ (n : ℝ) - 1 = 0 ∨ 1 ≤ (n : ℝ) - 1 := by
-    by_cases hzero : n = 0
-    · left
-      simp only [hzero, Nat.cast_zero, zero_sub]
-    · by_cases hzero : n = 1
-      · right; left
-        simp only [hzero, Nat.cast_one, sub_self]
-      · right; right
-        have : 2 ≤ (n : ℝ) := Nat.ofNat_le_cast.mpr (show 2 ≤ n by omega)
-        have := add_le_add_right this (-1)
-        convert this using 1
-        norm_num
-  rcases this with n_negone | n_zero | n_big
-  · rw [n_negone]; norm_num
-  · rw [n_zero]; norm_num
-  · exact log_nonneg n_big
-
 lemma qaryEntropy_pos {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (ple1 : p < 1) : 0 < qaryEntropy q p := by
   unfold qaryEntropy
   have p_q_log_nonneg : 0 ≤ p * ((q : ℝ) - 1).log := by
     rw [mul_nonneg_iff_of_pos_left pgt0]
-    exact Entropy.nonneg_reallog_sub_one q
+    have : q - (1 : ℝ) = (q - 1 : ℤ) := by norm_cast
+    rw [this]
+    exact Real.log_intCast_nonneg _
   have rest_is_pos : 0 < -(p * p.log) - (1 - p) * (1 - p).log := by
     have pos_sum_pos_pos (a b : ℝ) (ha : 0 ≤ a) (hb : b < 0) : 0 < a - b := by linarith
     refine pos_sum_pos_pos (-(p * log p)) ((1 - p) * log (1 - p)) ?_ ?_
