@@ -61,9 +61,6 @@ namespace CondensedSet
 
 variable {X Y : CondensedSet.{u}} (f : X ⟶ Y)
 
-lemma isLocallySurjective_iff_epi : IsLocallySurjective f ↔ Epi f :=
-  Sheaf.isLocallySurjective_iff_epi f
-
 lemma epi_iff_locallySurjective_on_compHaus : Epi f ↔
     ∀ (S : CompHaus) (y : Y.val.obj ⟨S⟩),
       (∃ (S' : CompHaus) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
