@@ -1084,10 +1084,11 @@ theorem finset_card_const_le_le_of_tsum_le {ι : Type*} {a : ι → ℝ≥0∞} 
 #align ennreal.finset_card_const_le_le_of_tsum_le ENNReal.finset_card_const_le_le_of_tsum_le
 
 theorem tsum_fiberwise (f : β → ℝ≥0∞) (g : β → γ) :
-    ∑' (x : γ), ∑' (b : (g ⁻¹' {x})), f b = ∑' i : β, f i :=
-  HasSum.tsum_eq <|
-  (((Equiv.sigmaFiberEquiv g).hasSum_iff).mpr (Summable.hasSum ENNReal.summable)).sigma <|
-  (fun _ ↦ ((ENNReal.summable).hasSum_iff).mpr rfl)
+    ∑' (x : γ), ∑' (b : (g ⁻¹' {x})), f b = ∑' i : β, f i := by
+  apply HasSum.tsum_eq
+  let equiv := Equiv.sigmaFiberEquiv g
+  apply ((equiv.hasSum_iff).mpr (Summable.hasSum ENNReal.summable)).sigma
+  apply (fun _ ↦ ((ENNReal.summable).hasSum_iff).mpr rfl)
 
 end tsum
 
