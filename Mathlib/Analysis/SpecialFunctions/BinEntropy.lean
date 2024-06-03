@@ -137,10 +137,7 @@ lemma binaryEntropy_zero_iff_zero_or_one {p : ℝ} (domup : p ≤ 1) (domun : 0 
 lemma zero_lt_log_two : 0 < log 2 := by
   exact (log_pos_iff zero_lt_two).mpr one_lt_two
 
-/-- For probability p < 0.5,
-
- binaryEntropy p < log 2.
--/
+/-- For probability `p < 0.5`, `binaryEntropy p < log 2`. -/
 lemma binaryEntropy_lt_log2_of_gt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p < 1/2) :
     binaryEntropy p < log 2 := by
   -- Proof by concavity of log.
