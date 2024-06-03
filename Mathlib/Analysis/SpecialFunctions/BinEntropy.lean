@@ -95,7 +95,7 @@ protected lemma nonneg_reallog_sub_one (n : ℕ) : 0 ≤ Real.log (n - 1) := by
   · rw [n_zero]; norm_num
   · exact log_nonneg n_big
 
-lemma qaryEntropy_gt_0 {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (ple1 : p < 1) : 0 < qaryEntropy q p := by
+lemma qaryEntropy_pos {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (ple1 : p < 1) : 0 < qaryEntropy q p := by
   unfold qaryEntropy
   have p_q_log_nonneg : 0 ≤ p * ((q : ℝ) - 1).log := by
     rw [mul_nonneg_iff_of_pos_left pgt0]
