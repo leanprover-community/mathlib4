@@ -121,9 +121,8 @@ theorem logMap_unitSMul (u : (𝓞 K)ˣ) {x : E K} (hx : mixedEmbedding.norm x �
 theorem logMap_torsion_unitSMul (x : E K) {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
     logMap (ζ • x) = logMap x := by
   ext
-  simp_rw [logMap, unitSMul_smul, map_mul, norm_eq_norm, show |(Algebra.norm ℚ) (ζ : K)| = 1 by
-    exact isUnit_iff_norm.mp ζ.isUnit, Rat.cast_one, one_mul, normAtPlace_apply,
-    (mem_torsion K).mp hζ, one_mul]
+  simp_rw [logMap, unitSMul_smul, map_mul, norm_eq_norm, Units.norm, Rat.cast_one, one_mul,
+    normAtPlace_apply, (mem_torsion K).mp hζ, one_mul]
 
 theorem logMap_smul {x : E K} (hx : mixedEmbedding.norm x ≠ 0) {c : ℝ} (hc : c ≠ 0) :
     logMap (c • x) = logMap x := by
@@ -134,6 +133,11 @@ theorem logMap_smul {x : E K} (hx : mixedEmbedding.norm x ≠ 0) {c : ℝ} (hc :
       sub_self, zero_mul, Pi.zero_apply]
   · rw [norm_real]
     exact pow_ne_zero _ (abs_ne_zero.mpr hc)
+
+theorem logMap_apply_of_norm_one {x : E K} (hx : mixedEmbedding.norm x = 1) {w : InfinitePlace K}
+    (hw : w ≠ w₀) :
+    logMap x ⟨w, hw⟩ = mult w * Real.log (normAtPlace w x) := by
+  rw [logMap, hx, Real.log_one, zero_mul, sub_zero]
 
 end logMap
 
@@ -156,6 +160,15 @@ namespace fundamentalCone
 
 variable {K}
 
+theorem norm_pos_of_mem {x : E K} (hx : x ∈ fundamentalCone K) :
+    0 < mixedEmbedding.norm x :=
+  lt_iff_le_and_ne.mpr ⟨mixedEmbedding.norm_nonneg _, Ne.symm hx.2⟩
+
+theorem normAtPlace_pos_of_mem {x : E K} (hx : x ∈ fundamentalCone K) (w : InfinitePlace K) :
+    0 < normAtPlace w x :=
+  lt_iff_le_and_ne.mpr ⟨normAtPlace_nonneg _ _,
+    (mixedEmbedding.norm_ne_zero_iff.mp (ne_of_gt (norm_pos_of_mem hx)) w).symm⟩
+
 theorem smul_mem_of_mem {x : E K} (hx : x ∈ fundamentalCone K) {c : ℝ} (hc : c ≠ 0) :
     c • x ∈ fundamentalCone K := by
   refine ⟨?_, ?_⟩
@@ -163,6 +176,12 @@ theorem smul_mem_of_mem {x : E K} (hx : x ∈ fundamentalCone K) {c : ℝ} (hc :
     exact hx.1
   · rw [Set.mem_setOf_eq, mixedEmbedding.norm_smul, mul_eq_zero, not_or]
     exact ⟨pow_ne_zero _ (abs_ne_zero.mpr hc), hx.2⟩
+
+theorem smul_mem_iff_mem {x : E K} {c : ℝ} (hc : c ≠ 0) :
+    c • x ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
+  refine ⟨fun h ↦ ?_, fun h ↦ smul_mem_of_mem h hc⟩
+  convert smul_mem_of_mem h (inv_ne_zero hc)
+  rw [eq_inv_smul_iff₀ hc]
 
 theorem exists_unitSMul_mem {x : E K} (hx : mixedEmbedding.norm x ≠ 0) :
     ∃ u : (𝓞 K)ˣ, u • x ∈ fundamentalCone K := by

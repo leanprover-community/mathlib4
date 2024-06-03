@@ -385,8 +385,7 @@ theorem norm_eq_zero_iff' {x : E K} (hx : x ∈ Set.range (mixedEmbedding K)) :
 
 theorem norm_unit (u : (𝓞 K)ˣ) :
     mixedEmbedding.norm (mixedEmbedding K u) = 1 := by
-  rw [norm_eq_norm, show |Algebra.norm ℚ (u : K)| = 1 by
-    exact isUnit_iff_norm.mp (u.isUnit), Rat.cast_one]
+  rw [norm_eq_norm, Units.norm, Rat.cast_one]
 
 variable (K) in
 protected theorem continuous_norm : Continuous (mixedEmbedding.norm : (E K) → ℝ) := by
