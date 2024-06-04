@@ -1515,7 +1515,7 @@ instance isEmpty_rightMoves_add (x y : PGame.{u}) [IsEmpty x.RightMoves] [IsEmpt
 /-- `x + 0` has exactly the same moves as `x`. -/
 def addZeroRelabelling : ∀ x : PGame.{u}, x + 0 ≡r x
   | ⟨xl, xr, xL, xR⟩ => by
-    refine' ⟨Equiv.sumEmpty xl PEmpty, Equiv.sumEmpty xr PEmpty, _, _⟩ <;> rintro (⟨i⟩ | ⟨⟨⟩⟩) <;>
+    refine ⟨Equiv.sumEmpty xl PEmpty, Equiv.sumEmpty xr PEmpty, ?_, ?_⟩ <;> rintro (⟨i⟩ | ⟨⟨⟩⟩) <;>
       apply addZeroRelabelling
 termination_by x => x
 #align pgame.add_zero_relabelling SetTheory.PGame.addZeroRelabelling
@@ -1654,7 +1654,7 @@ def Relabelling.addCongr : ∀ {w x y z : PGame.{u}}, w ≡r x → y ≡r z → 
     ⟨L₂, R₂, hL₂, hR₂⟩ => by
     let Hwx : ⟨wl, wr, wL, wR⟩ ≡r ⟨xl, xr, xL, xR⟩ := ⟨L₁, R₁, hL₁, hR₁⟩
     let Hyz : ⟨yl, yr, yL, yR⟩ ≡r ⟨zl, zr, zL, zR⟩ := ⟨L₂, R₂, hL₂, hR₂⟩
-    refine' ⟨Equiv.sumCongr L₁ L₂, Equiv.sumCongr R₁ R₂, _, _⟩ <;> rintro (i | j)
+    refine ⟨Equiv.sumCongr L₁ L₂, Equiv.sumCongr R₁ R₂, ?_, ?_⟩ <;> rintro (i | j)
     · exact (hL₁ i).addCongr Hyz
     · exact Hwx.addCongr (hL₂ j)
     · exact (hR₁ i).addCongr Hyz
@@ -1679,7 +1679,7 @@ def Relabelling.subCongr {w x y z : PGame} (h₁ : w ≡r x) (h₂ : y ≡r z) :
 /-- `-(x + y)` has exactly the same moves as `-x + -y`. -/
 def negAddRelabelling : ∀ x y : PGame, -(x + y) ≡r -x + -y
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-    refine' ⟨Equiv.refl _, Equiv.refl _, _, _⟩
+    refine ⟨Equiv.refl _, Equiv.refl _, ?_, ?_⟩
     all_goals
       exact fun j =>
         Sum.casesOn j (fun j => negAddRelabelling _ _) fun j =>
@@ -1694,7 +1694,7 @@ theorem neg_add_le {x y : PGame} : -(x + y) ≤ -x + -y :=
 /-- `x + y` has exactly the same moves as `y + x`. -/
 def addCommRelabelling : ∀ x y : PGame.{u}, x + y ≡r y + x
   | mk xl xr xL xR, mk yl yr yL yR => by
-    refine' ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, _, _⟩ <;> rintro (_ | _) <;>
+    refine ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, ?_, ?_⟩ <;> rintro (_ | _) <;>
       · dsimp
         apply addCommRelabelling
 termination_by x y => (x, y)
@@ -1711,7 +1711,7 @@ theorem add_comm_equiv {x y : PGame} : x + y ≈ y + x :=
 /-- `(x + y) + z` has exactly the same moves as `x + (y + z)`. -/
 def addAssocRelabelling : ∀ x y z : PGame.{u}, x + y + z ≡r x + (y + z)
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩, ⟨zl, zr, zL, zR⟩ => by
-    refine' ⟨Equiv.sumAssoc _ _ _, Equiv.sumAssoc _ _ _, _, _⟩
+    refine ⟨Equiv.sumAssoc _ _ _, Equiv.sumAssoc _ _ _, ?_, ?_⟩
     · rintro (⟨i | i⟩ | i)
       · apply addAssocRelabelling
       · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩ (yL i)

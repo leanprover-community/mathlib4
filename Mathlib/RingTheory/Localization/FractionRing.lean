@@ -180,7 +180,7 @@ set_option backward.synthInstance.canonInstances false in -- See https://github.
 @[simp]
 theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
     mk' K x y = 0 ↔ x = 0 := by
-  refine' ⟨fun hxy => _, fun h => by rw [h, mk'_zero]⟩
+  refine ⟨fun hxy => ?_, fun h => by rw [h, mk'_zero]⟩
   simp_rw [mk'_eq_zero_iff, mul_left_coe_nonZeroDivisors_eq_zero_iff] at hxy
   exact (exists_const _).mp hxy
 #align is_fraction_ring.mk'_eq_zero_iff_eq_zero IsFractionRing.mk'_eq_zero_iff_eq_zero

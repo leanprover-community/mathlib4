@@ -728,7 +728,7 @@ and the restricted version of `f` is surjective, hence by Noetherian case,
 it is also injective, in particular, if `f n = 0`, then `n = 0`.
 
 See also Orzech's original paper: *Onto endomorphisms are isomorphisms* [orzech1971]. -/
-instance (priority := 100) commRing_orzechProperty
+instance (priority := 100) CommRing.orzechProperty
     (R : Type*) [CommRing R] : OrzechProperty R := by
   refine ⟨fun {M} _ _ _ {N} f hf ↦ ?_⟩
   letI := addCommMonoidToAddCommGroup R (M := M)
