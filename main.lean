@@ -66,9 +66,6 @@ theorem kolContent_eq_lmarginal [DecidableEq ι] [∀ (S : Finset ι) i, Decidab
     (I : Finset ι) {S : Set ((i : I) → X i)} (mS : MeasurableSet S) (x : (i : ι) → X i) :
     kolContent (isProjectiveMeasureFamily_pi μ) (cylinder I S) =
     (∫⋯∫⁻_I, (cylinder I S).indicator 1 ∂μ) x := by
-  have : ∀ i, Nonempty (X i) := by
-    have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩;
-    infer_instance
   rw [kolContent_congr (isProjectiveMeasureFamily_pi μ)
       (by rw [mem_cylinders]; exact ⟨I, S, mS, rfl⟩) rfl mS,
     ← lintegral_indicator_one₀ mS.nullMeasurableSet]

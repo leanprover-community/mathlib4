@@ -164,11 +164,11 @@ noncomputable def updateSet {ι : Type*} {α : ι → Type*} (x : (i : ι) → �
   classical
   exact if hi : i ∈ s then y ⟨i, hi⟩ else x i
 
-noncomputable def kerint (k N : ℕ) (f : ((n : ℕ) → X (n + 1)) → ℝ≥0∞) :
-    ((i : ℕ) → X (i + 1)) → ℝ≥0∞ := by
+noncomputable def kerint (k N : ℕ) (f : ((n : ℕ) → X n) → ℝ≥0∞)
+    (x : (i : ℕ) → X i) : ℝ≥0∞ := by
   classical
-  exact fun x ↦ (∫⁻ z : (i : Ioc k N) → X (i + 1),
-    f (updateSet x _ z) ∂((transition κ).ker k N (fun i ↦ x i)))
+  exact ∫⁻ z : (i : Ioc k N) → X i,
+    f (updateSet x _ z) ∂((transition κ).ker k N (fun i ↦ x i))
 
 -- lemma omg (s : Set ι) (x : (i : s) → X i) (i j : s) (h : i = j) (h' : X i = X j) :
 --     cast h' (x i) = x j := by
@@ -320,7 +320,7 @@ the measurable spaces are indexed by $\mathbb{N}$. This implies the $\sigma$-add
 `kolContent` (see `sigma_additive_addContent_of_tendsto_zero`),
 which allows to extend it to the $\sigma$-algebra by Carathéodory's theorem. -/
 theorem firstLemma (A : ℕ → Set ((n : ℕ) → X (n + 1))) (A_mem : ∀ n, A n ∈ cylinders _)
-    (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅) (x : (i : Iic 0) → X i) :
+    (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅) (x₀ : (i : Iic 0) → X i) :
     Tendsto (fun n ↦ kolContent
     (proj_family κ ((transitionGraph.node_equiv X).symm x)) (A n)) atTop (𝓝 0) := by
   -- `Aₙ` is a cylinder, it can be writtent `cylinder sₙ Sₙ`.
@@ -330,6 +330,7 @@ theorem firstLemma (A : ℕ → Set ((n : ℕ) → X (n + 1))) (A_mem : ∀ n, A
   set proj := proj_family κ ((transitionGraph.node_equiv X).symm x)
   -- We write `χₙ` for the indicator function of `Aₙ`.
   let χ n := (A n).indicator (1 : (∀ n, X (n + 1)) → ℝ≥0∞)
+  let ψ n (x : (n : ℕ) → X n) : ℝ≥0∞ := χ n (fun i ↦ x (i + 1))
   -- `χₙ` is measurable.
   have mχ n : Measurable (χ n) := by
     simp_rw [χ, A_eq]
@@ -339,7 +340,7 @@ theorem firstLemma (A : ℕ → Set ((n : ℕ) → X (n + 1))) (A_mem : ∀ n, A
     -- simp_rw [χ, A_eq]
     -- exact dependsOn_cylinder_indicator _ _
   -- Therefore its integral is constant.
-  have lma_const x y n : kerint κ 0 (N n) (χ n) x =
+  have lma_const x y n : kerint κ 0 (N n) (ψ n) x =
       (∫⋯∫⁻_Finset.Icc 0 (N n), χ n ∂μ) y := by
     apply dependsOn_lmarginal (μ := μ) (χ_dep n) (Finset.Icc 0 (N n))
     simp

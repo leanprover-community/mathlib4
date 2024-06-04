@@ -365,6 +365,9 @@ def transitionGraph (α : ι → Type*) [∀ i, MeasurableSpace (α i)] : Measur
   el_assoc := fun i j k hij hjk ↦ el_assoc hij hjk.le
   er_assoc := fun i j k l hij hjk hkl ↦ er_assoc hij hjk hkl.le
 
+theorem el_eq (α : ι → Type*) [∀ i, MeasurableSpace (α i)] {i j : ι} (hij : i < j) :
+  (transitionGraph α).el i j hij = el i j hij.le := rfl
+
 theorem er_eq (α : ι → Type*) [∀ i, MeasurableSpace (α i)] {i j k : ι} (hij : i < j)
     (hjk : j < k) :
   (transitionGraph α).er i j k hij hjk = er i j k hij hjk.le := rfl
@@ -376,6 +379,13 @@ lemma node_eq : (transitionGraph α).node i = ∀ x : Iic i, α x := rfl
 lemma path_eq : (transitionGraph α).path i j = ∀ x : Ioc i j, α x := rfl
 def node_equiv : (transitionGraph α).node i ≃ᵐ ∀ x : Iic i, α x := MeasurableEquiv.refl _
 def path_equiv : (transitionGraph α).path i j ≃ᵐ ∀ x : Ioc i j, α x := MeasurableEquiv.refl _
+
+@[ext]
+theorem ext_node (i : ι) (x y : (transitionGraph α).node i) (h : ∀ j : Iic i, x j = y j) :
+    x = y := by
+  apply (node_equiv α).injective
+  ext j
+  aesop
 
 end transitionGraph
 
