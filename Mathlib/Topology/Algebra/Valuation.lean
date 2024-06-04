@@ -184,3 +184,16 @@ theorem valuationSubring_isOpen (K : Type u) [Field K] [hv : Valued K Γ₀] :
   integer_isOpen K
 
 end Valued
+
+theorem Valuation.valuationSubring_isOpen {K : Type*} [Field K] {Γ : Type*}
+    [LinearOrderedCommGroupWithZero Γ] [hv : Valued K Γ] :
+    IsOpen (hv.v.valuationSubring : Set K) := by
+  rw [isOpen_iff_mem_nhds]
+  intro x hx
+  rw [SetLike.mem_coe, Valuation.mem_valuationSubring_iff] at hx
+  rw [Valued.mem_nhds]
+  use (1 : Units Γ)
+  intro y hy
+  rw [Units.val_one, mem_setOf_eq] at hy
+  rw [SetLike.mem_coe, Valuation.mem_valuationSubring_iff, ← sub_add_cancel y x]
+  exact le_trans (Valuation.map_add _ _ _) (max_le (le_of_lt hy) hx)

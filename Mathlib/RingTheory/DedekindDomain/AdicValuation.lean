@@ -381,6 +381,11 @@ theorem mem_adicCompletionIntegers {x : v.adicCompletion K} :
   Iff.rfl
 #align is_dedekind_domain.height_one_spectrum.mem_adic_completion_integers IsDedekindDomain.HeightOneSpectrum.mem_adicCompletionIntegers
 
+/-- The unit ball `adicCompletionIntegers` is an open subset of `adicCompletion`. -/
+theorem adicCompletionIntegers_isOpen :
+    IsOpen (v.adicCompletionIntegers K : Set (v.adicCompletion K)) := by
+  exact Valuation.valuationSubring_isOpen
+
 section AlgebraInstances
 
 instance (priority := 100) adicValued.has_uniform_continuous_const_smul' :
