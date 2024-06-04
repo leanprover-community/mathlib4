@@ -62,7 +62,7 @@ instance : (epiWithInjectiveKernel : MorphismProperty C).IsMultiplicative where
     rw [epiWithInjectiveKernel_iff] at hg₁ hg₂ ⊢
     obtain ⟨I₁, _, f₁, w₁, ⟨σ₁⟩⟩ := hg₁
     obtain ⟨I₂, _, f₂, w₂, ⟨σ₂⟩⟩ := hg₂
-    refine' ⟨I₁ ⊞ I₂, inferInstance, biprod.fst ≫ f₁ + biprod.snd ≫ f₂ ≫ σ₁.s, _, ⟨_⟩⟩
+    refine ⟨I₁ ⊞ I₂, inferInstance, biprod.fst ≫ f₁ + biprod.snd ≫ f₂ ≫ σ₁.s, ?_, ⟨?_⟩⟩
     · ext
       · simp [reassoc_of% w₁]
       · simp [reassoc_of% σ₁.s_g, w₂]

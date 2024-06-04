@@ -386,7 +386,7 @@ theorem prod_subset_prod_iff : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t 
   rcases (s ×ˢ t).eq_empty_or_nonempty with h | h
   · simp [h, prod_eq_empty_iff.1 h]
   have st : s.Nonempty ∧ t.Nonempty := by rwa [prod_nonempty_iff] at h
-  refine' ⟨fun H => Or.inl ⟨_, _⟩, _⟩
+  refine ⟨fun H => Or.inl ⟨?_, ?_⟩, ?_⟩
   · have := image_subset (Prod.fst : α × β → α) H
     rwa [fst_image_prod _ st.2, fst_image_prod _ (h.mono H).snd] at this
   · have := image_subset (Prod.snd : α × β → β) H
@@ -759,7 +759,7 @@ theorem univ_pi_nonempty_iff : (pi univ t).Nonempty ↔ ∀ i, (t i).Nonempty :=
 theorem pi_eq_empty_iff : s.pi t = ∅ ↔ ∃ i, IsEmpty (α i) ∨ i ∈ s ∧ t i = ∅ := by
   rw [← not_nonempty_iff_eq_empty, pi_nonempty_iff]
   push_neg
-  refine' exists_congr fun i => _
+  refine exists_congr fun i => ?_
   cases isEmpty_or_nonempty (α i) <;> simp [*, forall_and, eq_empty_iff_forall_not_mem]
 #align set.pi_eq_empty_iff Set.pi_eq_empty_iff
 
@@ -839,7 +839,7 @@ theorem pi_if {p : ι → Prop} [h : DecidablePred p] (s : Set ι) (t₁ t₂ : 
     (pi s fun i => if p i then t₁ i else t₂ i) =
       pi ({ i ∈ s | p i }) t₁ ∩ pi ({ i ∈ s | ¬p i }) t₂ := by
   ext f
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · constructor <;>
       · rintro i ⟨his, hpi⟩
         simpa [*] using h i
@@ -914,7 +914,7 @@ theorem eval_image_univ_pi_subset : eval i '' pi univ t ⊆ t i :=
 theorem subset_eval_image_pi (ht : (s.pi t).Nonempty) (i : ι) : t i ⊆ eval i '' s.pi t := by
   classical
   obtain ⟨f, hf⟩ := ht
-  refine' fun y hy => ⟨update f i y, fun j hj => _, update_same _ _ _⟩
+  refine fun y hy => ⟨update f i y, fun j hj => ?_, update_same _ _ _⟩
   obtain rfl | hji := eq_or_ne j i <;> simp [*, hf _ hj]
 #align set.subset_eval_image_pi Set.subset_eval_image_pi
 
@@ -929,8 +929,8 @@ theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :
 #align set.eval_image_univ_pi Set.eval_image_univ_pi
 
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
-  refine'
-    ⟨fun h => or_iff_not_imp_right.2 _, fun h => h.elim pi_mono fun h' => h'.symm ▸ empty_subset _⟩
+  refine
+    ⟨fun h => or_iff_not_imp_right.2 ?_, fun h => h.elim pi_mono fun h' => h'.symm ▸ empty_subset _⟩
   rw [← Ne, ← nonempty_iff_ne_empty]
   intro hne i hi
   simpa only [eval_image_pi hi hne, eval_image_pi hi (hne.mono h)] using
@@ -956,7 +956,7 @@ theorem eval_preimage' [DecidableEq ι] {s : Set (α i)} :
 theorem update_preimage_pi [DecidableEq ι] {f : ∀ i, α i} (hi : i ∈ s)
     (hf : ∀ j ∈ s, j ≠ i → f j ∈ t j) : update f i ⁻¹' s.pi t = t i := by
   ext x
-  refine' ⟨fun h => _, fun hx j hj => _⟩
+  refine ⟨fun h => ?_, fun hx j hj => ?_⟩
   · convert h i hi
     simp
   · obtain rfl | h := eq_or_ne j i
@@ -978,7 +978,7 @@ theorem univ_pi_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α 
     (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by
   ext
   simp_rw [mem_univ_pi]
-  refine' forall_congr' fun i => _
+  refine forall_congr' fun i => ?_
   split_ifs with h <;> simp [h]
 #align set.univ_pi_ite Set.univ_pi_ite
 

@@ -140,7 +140,7 @@ instance isLocallySurjective_comp {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ 
     have : (Sieve.bind (imageSieve f₂ s) fun _ _ h => imageSieve f₁ h.choose) ≤
         imageSieve (f₁ ≫ f₂) s := by
       rintro V i ⟨W, i, j, H, ⟨t', ht'⟩, rfl⟩
-      refine' ⟨t', _⟩
+      refine ⟨t', ?_⟩
       rw [op_comp, F₃.map_comp, NatTrans.comp_app, comp_apply, comp_apply, ht',
         elementwise_of% f₂.naturality, H.choose_spec]
     apply J.superset_covering this
@@ -218,7 +218,7 @@ lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective
     let S := imageSieve (f₁ ≫ f₂) (f₂.app _ x)
     let T : ∀ ⦃Y : C⦄ (f : Y ⟶ X) (_ : S f), Sieve Y := fun Y f hf =>
       equalizerSieve (f₁.app _ (localPreimage (f₁ ≫ f₂) (f₂.app _ x) f hf)) (F₂.map f.op x)
-    refine' J.superset_covering ?_ (J.transitive (imageSieve_mem J (f₁ ≫ f₂) (f₂.app _ x))
+    refine J.superset_covering ?_ (J.transitive (imageSieve_mem J (f₁ ≫ f₂) (f₂.app _ x))
       (Sieve.bind S.1 T) ?_)
     · rintro Y _ ⟨Z, a, g, hg, ha, rfl⟩
       exact ⟨F₁.map a.op (localPreimage (f₁ ≫ f₂) _ _ hg), by simpa using ha⟩
@@ -276,7 +276,7 @@ noncomputable def sheafificationIsoImagePresheaf (F : Cᵒᵖ ⥤ Type max u v) 
     J.sheafify_hom_ext _ _ (J.sheafify_isSheaf _) (by simp [toImagePresheafSheafify])
   inv_hom_id := by
     rw [← cancel_mono (Subpresheaf.ι _), Category.id_comp, Category.assoc]
-    refine' Eq.trans _ (Category.comp_id _)
+    refine Eq.trans ?_ (Category.comp_id _)
     congr 1
     exact J.sheafify_hom_ext _ _ (J.sheafify_isSheaf _) (by simp [toImagePresheafSheafify])
 #align category_theory.sheafification_iso_image_presheaf CategoryTheory.Presheaf.sheafificationIsoImagePresheaf
@@ -289,10 +289,10 @@ instance isLocallySurjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
     IsLocallySurjective J (J.toPlus P) where
   imageSieve_mem x := by
     obtain ⟨S, x, rfl⟩ := exists_rep x
-    refine' J.superset_covering (fun Y f hf => ⟨x.1 ⟨Y, f, hf⟩, _⟩) S.2
+    refine J.superset_covering (fun Y f hf => ⟨x.1 ⟨Y, f, hf⟩, ?_⟩) S.2
     dsimp
     rw [toPlus_eq_mk, res_mk_eq_mk_pullback, eq_mk_iff_exists]
-    refine' ⟨S.pullback f, homOfLE le_top, 𝟙 _, _⟩
+    refine ⟨S.pullback f, homOfLE le_top, 𝟙 _, ?_⟩
     ext ⟨Z, g, hg⟩
     simpa using x.2 (Cover.Relation.mk _ _ _ g (𝟙 Z) f (g ≫ f) hf
       (S.1.downward_closed hf g) (by simp))
