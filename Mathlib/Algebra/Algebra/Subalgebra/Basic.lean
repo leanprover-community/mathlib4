@@ -1284,6 +1284,16 @@ theorem centralizer_univ : centralizer R Set.univ = center R A :=
   SetLike.ext' (Set.centralizer_univ A)
 #align subalgebra.centralizer_univ Subalgebra.centralizer_univ
 
+lemma le_centralizer_centralizer {s : Subalgebra R A} :
+    s ≤ centralizer R (centralizer R (s : Set A)) :=
+  Set.subset_centralizer_centralizer
+
+@[simp]
+lemma centralizer_centralizer_centralizer {s : Set A} :
+    centralizer R s.centralizer.centralizer = centralizer R s := by
+  apply SetLike.coe_injective
+  simp only [coe_centralizer, Set.centralizer_centralizer_centralizer]
+
 end Centralizer
 
 end Subalgebra
