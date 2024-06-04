@@ -873,7 +873,7 @@ section deprecated
 set_option linter.deprecated false -- TODO(Mario): make replacements for theorems in this section
 
 /-- nth element of a list `l` given `n < l.length`. -/
-@[deprecated get] -- 2023-01-05
+@[deprecated get (since := "2023-01-05")]
 def nthLe (l : List α) (n) (h : n < l.length) : α := get l ⟨n, h⟩
 #align list.nth_le List.nthLe
 
@@ -3530,8 +3530,8 @@ theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
 theorem get_attach (L : List α) (i) :
     (L.attach.get i).1 = L.get ⟨i, length_attach L ▸ i.2⟩ :=
   calc
-    (L.attach.get i).1 = (L.attach.map Subtype.val).get ⟨i, by simpa using i.2⟩ :=
-      by rw [get_map]
+    (L.attach.get i).1 = (L.attach.map Subtype.val).get ⟨i, by simpa using i.2⟩ := by
+      rw [get_map]
     _ = L.get { val := i, isLt := _ } := by congr 2 <;> simp
 #align list.nth_le_attach List.get_attach
 

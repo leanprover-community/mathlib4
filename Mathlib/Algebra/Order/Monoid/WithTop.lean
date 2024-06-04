@@ -101,7 +101,7 @@ protected theorem map_one {β} (f : α → β) : (1 : WithTop α).map f = (f 1 :
 #align with_top.map_zero WithTop.map_zero
 
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
-  ⟨some_le_some.2 zero_le_one⟩
+  ⟨coe_le_coe.2 zero_le_one⟩
 
 end One
 
@@ -214,8 +214,8 @@ instance covariantClass_swap_add_le [LE α] [CovariantClass α α (swap (· + ·
 instance contravariantClass_add_lt [LT α] [ContravariantClass α α (· + ·) (· < ·)] :
     ContravariantClass (WithTop α) (WithTop α) (· + ·) (· < ·) :=
   ⟨fun a b c h => by
-    induction a; · exact (not_none_lt _ h).elim
-    induction b; · exact (not_none_lt _ h).elim
+    induction a; · exact (WithTop.not_top_lt _ h).elim
+    induction b; · exact (WithTop.not_top_lt _ h).elim
     induction c
     · exact coe_lt_top _
     · exact coe_lt_coe.2 (lt_of_add_lt_add_left <| coe_lt_coe.1 h)⟩
@@ -224,7 +224,7 @@ instance contravariantClass_add_lt [LT α] [ContravariantClass α α (· + ·) (
 instance contravariantClass_swap_add_lt [LT α] [ContravariantClass α α (swap (· + ·)) (· < ·)] :
     ContravariantClass (WithTop α) (WithTop α) (swap (· + ·)) (· < ·) :=
   ⟨fun a b c h => by
-    cases a <;> cases b <;> try exact (not_none_lt _ h).elim
+    cases a <;> cases b <;> try exact (WithTop.not_top_lt _ h).elim
     cases c
     · exact coe_lt_top _
     · exact coe_lt_coe.2 (lt_of_add_lt_add_right <| coe_lt_coe.1 h)⟩
@@ -340,8 +340,7 @@ instance addMonoid : AddMonoid (WithTop α) where
     | ⊤, 0 => 0
     | ⊤, _n + 1 => ⊤
   nsmul_zero a := by cases a <;> simp [zero_nsmul]
-  nsmul_succ n a := by
-    cases a <;> cases n <;> simp [succ_nsmul, coe_add, some_eq_coe, none_eq_top]
+  nsmul_succ n a := by cases a <;> cases n <;> simp [succ_nsmul, coe_add]
 
 @[simp, norm_cast] lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithTop α) := rfl
 
@@ -530,7 +529,7 @@ protected theorem map_one {β} (f : α → β) : (1 : WithBot α).map f = (f 1 :
 #align with_bot.map_zero WithBot.map_zero
 
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) :=
-  ⟨some_le_some.2 zero_le_one⟩
+  ⟨coe_le_coe.2 zero_le_one⟩
 
 end One
 
