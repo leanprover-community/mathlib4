@@ -49,11 +49,11 @@ scoped[BoundedContinuousFunction] infixr:25 " →ᵇ " => BoundedContinuousFunct
 
 section
 
--- Porting note: Changed type of `α β` from `Type*` to `outParam <| Type*`.
+-- Porting note: Changed type of `α β` from `Type*` to `outParam Type*`.
 /-- `BoundedContinuousMapClass F α β` states that `F` is a type of bounded continuous maps.
 
 You should also extend this typeclass when you extend `BoundedContinuousFunction`. -/
-class BoundedContinuousMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
+class BoundedContinuousMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
     [PseudoMetricSpace β] [FunLike F α β] extends ContinuousMapClass F α β : Prop where
   map_bounded (f : F) : ∃ C, ∀ x y, dist (f x) (f y) ≤ C
 #align bounded_continuous_map_class BoundedContinuousMapClass

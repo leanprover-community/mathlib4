@@ -131,7 +131,7 @@ noncomputable def preservesFinOfPreservesBinaryAndTerminal :
   | n + 1 => by
     haveI := preservesFinOfPreservesBinaryAndTerminal n
     intro f
-    refine'
+    apply
       preservesLimitOfPreservesLimitCone
         (extendFanIsLimit f (limit.isLimit _) (limit.isLimit _)) _
     apply (isLimitMapConeFanMkEquiv _ _ _).symm _
@@ -270,7 +270,7 @@ noncomputable def preservesFinOfPreservesBinaryAndInitial :
   | n + 1 => by
     haveI := preservesFinOfPreservesBinaryAndInitial n
     intro f
-    refine'
+    apply
       preservesColimitOfPreservesColimitCocone
         (extendCofanIsColimit f (colimit.isColimit _) (colimit.isColimit _)) _
     apply (isColimitMapCoconeCofanMkEquiv _ _ _).symm _
