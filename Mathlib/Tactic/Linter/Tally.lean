@@ -35,41 +35,11 @@ register_option linter.generic : Bool := {
 
 namespace generic
 
-/-- is the actual symbol `·`? -/
-def isCDot? : Syntax → Bool
-  | .node _ ``cdotTk #[.node _ `patternIgnore #[.node _ _ #[.atom _ v]]] => v == "·"
-  | .node _ ``Lean.Parser.Term.cdot #[.atom _ v] => v == "·"
-  | _ => false
-
-/--
-`findDot stx` extracts from `stx` the syntax nodes of `kind` `Lean.Parser.Term.cdot` or `cdotTk`. -/
-partial
-def findDot : Syntax → Array Syntax
-  | stx@(.node _ k args) =>
-    let dargs := (args.map findDot).flatten
-    match k with
-      | ``Lean.Parser.Term.cdot => dargs.push stx
-      | ``cdotTk => dargs.push stx
-      | _ =>  dargs
-  |_ => default
-
-/-- the main unwanted syntax: a `cdot` that is not a `·`.
-The function return an array of syntax atoms corresponding to `cdot`s that are not the
-written with the character `·`. -/
-def unwanted.cDot (stx : Syntax) : Array Syntax :=
-  (findDot stx).filter (!isCDot? ·)
-
-/-- Whether a syntax element is adding an `instance` attribute without a `local` modifier. -/
-def is_attribute_instance_in : Syntax → Array Syntax
-  | stx@`(command|attribute [instance] $_decl:ident in $_) => #[stx]
-  | stx@`(command|attribute [instance $_priority] $_decl:ident in $_) => #[stx]
-  | _ => #[]
-
 open Lean
 
 def tal (id : TSyntax `ident) : Command.CommandElabM (Name × Nat) := Command.liftCoreM do
   let env ← getEnv
-  let decl ← Elab.realizeGlobalConstNoOverloadWithInfo id
+  let decl ← Elab.realizeGlobalConstNoOverloadWithInfo id <|> return ``Nat
   let (_, { visited, .. }) := Elab.Command.CollectAxioms.collect decl |>.run (← getEnv) |>.run {}
   let mut truncate := env.header.moduleNames.map fun n => Name.fromComponents <| n.components.take 2
   let mut out := mkRBMap Name Nat Name.cmp
