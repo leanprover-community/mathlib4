@@ -35,7 +35,7 @@ attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFu
 
 namespace CategoryTheory
 
-variable {C : Type*} (D : Type*) [Category C] [Category.{v} D] [ConcreteCategory.{v} D]
+variable {C : Type*} (D : Type*) [Category C] [Category.{v} D] [ConcreteCategory.{w} D]
 
 variable [Preregular C]
 
