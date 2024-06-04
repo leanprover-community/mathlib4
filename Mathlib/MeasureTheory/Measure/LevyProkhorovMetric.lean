@@ -25,7 +25,7 @@ import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
   probability measures is always at least as fine as the topology of convergence in distribution.
 * `levyProkhorov_eq_convergenceInDistribution`: The topology of the Lévy-Prokhorov metric on
   probability measures on a separable space coincides with the topology of convergence in
-  distribution.
+  distribution, and in particular convergence in distribution is then pseudometrizable.
 
 ## Todo
 
