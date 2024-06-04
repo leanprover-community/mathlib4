@@ -25,8 +25,6 @@ subgroup is a free `ℤ`-module of rank `card (InfinitePlace K) - 1`.
 * `NumberField.Units.basisModTorsion`: a `ℤ`-basis of `(𝓞 K)ˣ ⧸ (torsion K)`
 as an additive `ℤ`-module.
 
-* `NumberField.Units.regulator`: the regulator of the number field `K`.
-
 ## Main results
 
 * `NumberField.Units.rank_modTorsion`: the `ℤ`-rank of `(𝓞 K)ˣ ⧸ (torsion K)` is equal to
