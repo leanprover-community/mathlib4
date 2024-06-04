@@ -188,7 +188,7 @@ noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ GroupCat.{u₂} wh
     ext (σ : Aut A.obj)
     simp
 
-/-- The limit of `autGaloisSystem` computed in `GroupCat.{max u₁ u₂}`. -/
+/-- The limit of `autGaloisSystem`.  -/
 noncomputable def autGalois : Type (max u₁ u₂) :=
   (autGaloisSystem F ⋙ forget _).sections
 
@@ -241,18 +241,18 @@ the limit over the automorphism groups of all Galois objects.
 We first establish the isomorphism between `End F` and `autGalois F`, from which we deduce that
 `End F` is a group, hence `End F = Aut F`. The isomorphism is built in multiple steps:
 
-- `endEquivLimitFibers : End F ≅ limit (incl F ⋙ F')`: the endomorphisms of
+- `endEquivSectionsFibers : End F ≅ (incl F ⋙ F').sections`: the endomorphisms of
   `F` are isomorphic to the limit over `F.obj A` for all Galois objects `A`.
   This is obtained as the composition (slighty simplified):
 
-  `End F ≅ (colimit ((incl F).op ⋙ coyoneda) ⟶ F) ≅ limit (incl F ⋙ F)`
+  `End F ≅ (colimit ((incl F).op ⋙ coyoneda) ⟶ F) ≅ (incl F ⋙ F).sections`
 
   Where the first isomorphism is induced from the pro-representability of `F` and the second one
   from the pro-coyoneda lemma.
 
-- `endEquivAutGalois : End F ≅ autGalois F`: this is the composition of `endEquivLimitFibers` with:
+- `endEquivAutGalois : End F ≅ autGalois F`: this is the composition of `endEquivSectionsFibers` with:
 
-  `limit (incl F ⋙ F) ≅ limit (autGaloisSystem F ⋙ forget GroupCat)`
+  `(incl F ⋙ F).sections ≅ (autGaloisSystem F ⋙ forget GroupCat).sections`
 
   which is induced from the level-wise equivalence `Aut A ≃ F.obj A` for a Galois object `A`.
 
@@ -263,7 +263,7 @@ local notation "F'" => F ⋙ FintypeCat.incl
 
 /-- The endomorphisms of `F` are isomorphic to the limit over the fibers of `F` on all
 Galois objects. -/
-noncomputable def endEquivLimitFibers : End F ≃ (incl F ⋙ F').sections :=
+noncomputable def endEquivSectionsFibers : End F ≃ (incl F ⋙ F').sections :=
   let i1 : End F ≃ End F' :=
     NatTrans.equivOfCompFullyFaithful FintypeCat.incl
   let i2 : End F' ≅ (colimit ((incl F).op ⋙ coyoneda) ⟶ F') :=
@@ -277,9 +277,9 @@ noncomputable def endEquivLimitFibers : End F ≃ (incl F ⋙ F').sections :=
   i1.trans <| i2.toEquiv.trans <| i3.toEquiv.trans <| i4.trans i5
 
 @[simp]
-lemma endEquivLimitFibers_π (f : End F) (A : PointedGaloisObject F) :
-    (endEquivLimitFibers F f).val A = f.app A A.pt := by
-  dsimp [endEquivLimitFibers, Types.sectionsEquiv]
+lemma endEquivSectionsFibers_π (f : End F) (A : PointedGaloisObject F) :
+    (endEquivSectionsFibers F f).val A = f.app A A.pt := by
+  dsimp [endEquivSectionsFibers, Types.sectionsEquiv]
   erw [Types.limitEquivSections_apply]
   simp only [colimitCoyonedaHomIsoLimit'_π_apply, incl_obj, comp_obj, FintypeCat.incl_obj, op_obj,
     FunctorToTypes.comp]
@@ -305,7 +305,7 @@ lemma autIsoFibers_inv_app (A : PointedGaloisObject F) (b : F.obj A) :
 /-- The equivalence between endomorphisms of `F` and the limit over the automorphism groups
 of all Galois objects. -/
 noncomputable def endEquivAutGalois : End F ≃ autGalois F :=
-  let e1 := endEquivLimitFibers F
+  let e1 := endEquivSectionsFibers F
   let e2 := ((Functor.sectionsFunctor _).mapIso (autIsoFibers F).symm).toEquiv
   e1.trans e2
 
@@ -314,7 +314,7 @@ lemma endEquivAutGalois_π (f : End F) (A : PointedGaloisObject F) :
   dsimp [endEquivAutGalois, autGalois.π_apply]
   change F.map ((((sectionsFunctor _).map (autIsoFibers F).inv) _).val A).hom A.pt = _
   dsimp [autIsoFibers]
-  simp only [endEquivLimitFibers_π]
+  simp only [endEquivSectionsFibers_π]
   erw [evaluationEquivOfIsGalois_symm_fiber]
 
 @[simp]
