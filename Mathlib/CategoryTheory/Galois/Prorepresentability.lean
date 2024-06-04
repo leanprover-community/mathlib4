@@ -250,7 +250,8 @@ We first establish the isomorphism between `End F` and `autGalois F`, from which
   Where the first isomorphism is induced from the pro-representability of `F` and the second one
   from the pro-coyoneda lemma.
 
-- `endEquivAutGalois : End F ≅ autGalois F`: this is the composition of `endEquivSectionsFibers` with:
+- `endEquivAutGalois : End F ≅ autGalois F`: this is the composition of `endEquivSectionsFibers`
+  with:
 
   `(incl F ⋙ F).sections ≅ (autGaloisSystem F ⋙ forget GroupCat).sections`
 
