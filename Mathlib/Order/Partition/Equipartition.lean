@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Data.Set.Equitable
+import Mathlib.Logic.Equiv.Fin
 import Mathlib.Order.Partition.Finpartition
 
 #align_import order.partition.equipartition from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
@@ -105,8 +106,62 @@ theorem IsEquipartition.card_small_parts_eq_mod (hP : P.IsEquipartition) :
     rw [← filter_card_add_filter_neg_card_eq_card (p := fun p ↦ p.card = s.card / P.parts.card + 1)]
   rw [hP.card_large_parts_eq_mod, add_tsub_cancel_left, hP.filter_neg_average_add_one_eq_average]
 
-/-! ### Discrete and indiscrete finpartition -/
+/-- There exists an enumeration of an equipartition's parts where
+larger parts map to smaller numbers and vice versa. -/
+theorem IsEquipartition.exists_partsEquiv (hP : P.IsEquipartition) :
+    ∃ f : P.parts ≃ Fin P.parts.card,
+      ∀ t, t.1.card = s.card / P.parts.card + 1 ↔ f t < s.card % P.parts.card := by
+  let el := (P.parts.filter fun p ↦ p.card = s.card / P.parts.card + 1).equivFin
+  let es := (P.parts.filter fun p ↦ p.card = s.card / P.parts.card).equivFin
+  simp_rw [mem_filter, hP.card_large_parts_eq_mod] at el
+  simp_rw [mem_filter, hP.card_small_parts_eq_mod] at es
+  let sneg : { x // x ∈ P.parts ∧ ¬x.card = s.card / P.parts.card + 1 } ≃
+      { x // x ∈ P.parts ∧ x.card = s.card / P.parts.card } := by
+    apply Equiv.subtypeEquiv (by rfl)
+    simp only [Equiv.refl_apply, and_congr_right_iff]
+    exact fun _ ha ↦ by rw [hP.card_part_eq_average_iff ha, ne_eq]
+  replace el : { x : P.parts // x.1.card = s.card / P.parts.card + 1 } ≃
+      Fin (s.card % P.parts.card) := (Equiv.Set.sep ..).symm.trans el
+  replace es : { x : P.parts // ¬x.1.card = s.card / P.parts.card + 1 } ≃
+      Fin (P.parts.card - s.card % P.parts.card) := (Equiv.Set.sep ..).symm.trans (sneg.trans es)
+  let f := (Equiv.sumCompl _).symm.trans ((el.sumCongr es).trans finSumFinEquiv)
+  use f.trans (finCongr (Nat.add_sub_of_le P.card_mod_card_parts_le))
+  intro ⟨p, _⟩
+  simp_rw [f, Equiv.trans_apply, Equiv.sumCongr_apply, finCongr_apply, Fin.coe_cast]
+  by_cases hc : p.card = s.card / P.parts.card + 1 <;> simp [hc]
 
+/-- An equipartition of a finset with `n` elements into `k` parts has
+a part-preserving equivalence with the residue classes of `Fin n` modulo `k`. -/
+theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : ∃ f : s ≃ Fin s.card,
+    ∀ a b : s, P.part a = P.part b ↔ f a % P.parts.card = f b % P.parts.card := by
+  obtain ⟨f, hf⟩ := P.exists_enumeration
+  obtain ⟨g, hg⟩ := hP.exists_partsEquiv
+  let z := fun a ↦ P.parts.card * (f a).2 + g (f a).1
+  have gl := fun a ↦ (g (f a).1).2
+  have less : ∀ a, z a < s.card := fun a ↦ by
+    rcases hP.card_parts_eq_average (f a).1.2 with (c | c)
+    · calc
+        _ < P.parts.card * ((f a).2 + 1) := add_lt_add_left (gl a) _
+        _ ≤ P.parts.card * (s.card / P.parts.card) := mul_le_mul_left' (c ▸ (f a).2.2) _
+        _ ≤ P.parts.card * (s.card / P.parts.card) + s.card % P.parts.card := Nat.le_add_right ..
+        _ = _ := Nat.div_add_mod ..
+    · rw [← Nat.div_add_mod s.card P.parts.card]
+      exact add_lt_add_of_le_of_lt (mul_le_mul_left' (by omega) _) ((hg (f a).1).mp c)
+  let z' : s → Fin s.card := fun a ↦ ⟨z a, less a⟩
+  have bij : z'.Bijective := by
+    refine (bijective_iff_injective_and_card z').mpr ⟨fun a b e ↦ ?_, by simp⟩
+    simp_rw [z', z, Fin.mk.injEq, mul_comm P.parts.card] at e
+    haveI : NeZero P.parts.card := ⟨((Nat.zero_le _).trans_lt (gl a)).ne'⟩
+    change P.parts.card.divModEquiv.symm (_, _) = P.parts.card.divModEquiv.symm (_, _) at e
+    simp only [Equiv.apply_eq_iff_eq, Prod.mk.injEq] at e
+    apply_fun f
+    exact Sigma.ext e.2 <| (Fin.heq_ext_iff (by rw [e.2])).mpr e.1
+  use Equiv.ofBijective _ bij
+  intro a b
+  simp_rw [Equiv.ofBijective_apply, z, hf a b, Nat.mul_add_mod,
+    Nat.mod_eq_of_lt (gl a), Nat.mod_eq_of_lt (gl b), Fin.val_eq_val, g.apply_eq_iff_eq]
+
+/-! ### Discrete and indiscrete finpartition -/
 
 variable (s) -- [Decidable (a = ⊥)]
 
