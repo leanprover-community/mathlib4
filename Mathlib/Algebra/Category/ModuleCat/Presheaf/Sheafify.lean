@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
-import Mathlib.CategoryTheory.Sites.LocallySurjective
+import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 /-!
 # The associated sheaf of a presheaf of modules
@@ -316,5 +316,10 @@ noncomputable def sheafify : SheafOfModules.{v} R where
       module := Sheafify.module α φ
       map_smul := fun _ _ _ => by apply Sheafify.map_smul }
   isSheaf := A.cond
+
+-- on objects, the sheafification functor (TODO) shall be defined as follows:
+noncomputable example (M : PresheafOfModules.{v} R.val) [HasWeakSheafify J AddCommGroupCat.{v}]
+    [J.WEqualsLocallyBijective AddCommGroupCat.{v}] : SheafOfModules.{v} R :=
+  sheafify (𝟙 R.val) (toSheafify J M.presheaf)
 
 end PresheafOfModules
