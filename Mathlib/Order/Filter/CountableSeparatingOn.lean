@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Yury Kudryashov All rights reserved.
+Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
@@ -10,7 +10,7 @@ import Mathlib.Order.Filter.CountableInter
 
 In this file we prove some facts about a filter with countable intersections property on a type with
 a countable family of sets that separates points of the space. The main use case is the
-`MeasureTheory.Measure.ae` filter and a space with countably generated σ-algebra but lemmas apply,
+`MeasureTheory.ae` filter and a space with countably generated σ-algebra but lemmas apply,
 e.g., to the `residual` filter and a T₀ topological space with second countable topology.
 
 To avoid repetition of lemmas for different families of separating sets (measurable sets, open sets,

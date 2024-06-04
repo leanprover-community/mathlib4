@@ -39,7 +39,7 @@ coincide with the existing topology and uniformity on matrices.
 -/
 
 
-open scoped BigOperators Matrix
+open scoped Matrix
 variable {𝕜 m n l E : Type*}
 
 section EntrywiseSupNorm

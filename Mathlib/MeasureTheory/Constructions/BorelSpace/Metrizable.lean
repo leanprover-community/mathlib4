@@ -3,7 +3,7 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.IndicatorConstPointwise
 
@@ -63,11 +63,11 @@ theorem aemeasurable_of_tendsto_metrizable_ae {ι} {μ : Measure α} {f : ι →
   have hp : ∀ᵐ x ∂μ, p x fun n => f (v n) x := by
     filter_upwards [h_tendsto] with x hx using hx.comp hv
   set aeSeqLim := fun x => ite (x ∈ aeSeqSet h'f p) (g x) (⟨f (v 0) x⟩ : Nonempty β).some
-  refine'
+  refine
     ⟨aeSeqLim,
       measurable_of_tendsto_metrizable' atTop (aeSeq.measurable h'f p)
-        (tendsto_pi_nhds.mpr fun x => _),
-      _⟩
+        (tendsto_pi_nhds.mpr fun x => ?_),
+      ?_⟩
   · simp_rw [aeSeqLim, aeSeq]
     split_ifs with hx
     · simp_rw [aeSeq.mk_eq_fun_of_mem_aeSeqSet h'f hx]
@@ -125,7 +125,7 @@ theorem measurable_limit_of_tendsto_metrizable_ae {ι} [Countable ι] [Nonempty 
     intro x
     simp only [aeSeq, f_lim]
     split_ifs with h
-    · refine' (hp_mem x h).choose_spec.congr fun n => _
+    · refine (hp_mem x h).choose_spec.congr fun n => ?_
       exact (aeSeq.mk_eq_fun_of_mem_aeSeqSet hf h n).symm
     · exact tendsto_const_nhds
   have h_ae_tendsto_f_lim : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) L (𝓝 (f_lim x)) :=

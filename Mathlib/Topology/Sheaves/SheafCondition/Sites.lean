@@ -58,7 +58,7 @@ to `R` really is _covering_, i.e. the union of all open sets equals `U`.
 theorem iSup_eq_of_mem_grothendieck (hR : Sieve.generate R ∈ Opens.grothendieckTopology X U) :
     iSup (coveringOfPresieve U R) = U := by
   apply le_antisymm
-  · refine' iSup_le _
+  · refine iSup_le ?_
     intro f
     exact f.2.1.le
   intro x hxU
@@ -163,7 +163,7 @@ theorem OpenEmbedding.compatiblePreserving (hf : OpenEmbedding f) :
   haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.inj
   apply compatiblePreservingOfDownwardsClosed
   intro U V i
-  refine' ⟨(Opens.map f).obj V, eqToIso <| Opens.ext <| Set.image_preimage_eq_of_subset fun x h ↦ _⟩
+  refine ⟨(Opens.map f).obj V, eqToIso <| Opens.ext <| Set.image_preimage_eq_of_subset fun x h ↦ ?_⟩
   obtain ⟨_, _, rfl⟩ := i.le h
   exact ⟨_, rfl⟩
 #align open_embedding.compatible_preserving OpenEmbedding.compatiblePreserving

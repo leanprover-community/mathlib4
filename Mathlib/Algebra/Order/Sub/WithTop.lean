@@ -46,7 +46,7 @@ theorem sub_top {a : WithTop α} : a - ⊤ = 0 := by cases a <;> rfl
 #align with_top.sub_top WithTop.sub_top
 
 @[simp] theorem sub_eq_top_iff {a b : WithTop α} : a - b = ⊤ ↔ a = ⊤ ∧ b ≠ ⊤ := by
-  induction a using recTopCoe <;> induction b using recTopCoe <;>
+  induction a <;> induction b <;>
     simp only [← coe_sub, coe_ne_top, sub_top, zero_ne_top, top_sub_coe, false_and, Ne,
       not_true_eq_false, not_false_eq_true, and_false, and_self]
 #align with_top.sub_eq_top_iff WithTop.sub_eq_top_iff
@@ -65,9 +65,9 @@ variable [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
 instance : OrderedSub (WithTop α) := by
   constructor
   rintro x y z
-  induction y using WithTop.recTopCoe; · simp
-  induction x using WithTop.recTopCoe; · simp
-  induction z using WithTop.recTopCoe; · simp
+  induction y; · simp
+  induction x; · simp
+  induction z; · simp
   norm_cast; exact tsub_le_iff_right
 
 end WithTop

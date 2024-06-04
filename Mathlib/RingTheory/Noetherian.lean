@@ -51,7 +51,7 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 -/
 
 
-open Set Filter BigOperators Pointwise
+open Set Filter Pointwise
 
 /-- `IsNoetherian R M` is the proposition that `M` is a Noetherian `R`-module,
 implemented as the predicate that all `R`-submodules of `M` are finitely generated.
@@ -333,7 +333,7 @@ theorem isNoetherian_iff_fg_wellFounded :
     obtain ⟨⟨N₀, h₁⟩, e : N₀ ≤ N, h₂⟩ :=
       WellFounded.has_min H { N' : α | N'.1 ≤ N } ⟨⟨⊥, Submodule.fg_bot⟩, @bot_le _ _ _ N⟩
     convert h₁
-    refine' (e.antisymm _).symm
+    refine (e.antisymm ?_).symm
     by_contra h₃
     obtain ⟨x, hx₁ : x ∈ N, hx₂ : x ∉ N₀⟩ := Set.not_subset.mp h₃
     apply hx₂
@@ -396,8 +396,8 @@ the module is Noetherian. -/
 theorem LinearIndependent.finite_of_isNoetherian [Nontrivial R] {ι} {v : ι → M}
     (hv : LinearIndependent R v) : Finite ι := by
   have hwf := isNoetherian_iff_wellFounded.mp (by infer_instance : IsNoetherian R M)
-  refine' CompleteLattice.WellFounded.finite_of_independent hwf hv.independent_span_singleton
-    fun i contra => _
+  refine CompleteLattice.WellFounded.finite_of_independent hwf hv.independent_span_singleton
+    fun i contra => ?_
   apply hv.ne_zero i
   have : v i ∈ R ∙ v i := Submodule.mem_span_singleton_self (v i)
   rwa [contra, Submodule.mem_bot] at this
@@ -493,8 +493,7 @@ theorem IsNoetherian.disjoint_partialSups_eventually_bot
       (h m).eq_bot_of_ge <| sup_eq_left.1 <| (w (m + 1) <| le_add_right p).symm.trans <| w m p⟩
 #align is_noetherian.disjoint_partial_sups_eventually_bot IsNoetherian.disjoint_partialSups_eventually_bot
 
-/-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial.
--/
+/-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial. -/
 noncomputable def IsNoetherian.equivPUnitOfProdInjective (f : M × N →ₗ[R] M)
     (i : Injective f) : N ≃ₗ[R] PUnit.{w + 1} := by
   apply Nonempty.some
@@ -502,7 +501,6 @@ noncomputable def IsNoetherian.equivPUnitOfProdInjective (f : M × N →ₗ[R] M
     IsNoetherian.disjoint_partialSups_eventually_bot (f.tailing i) (f.tailings_disjoint_tailing i)
   specialize w n (le_refl n)
   apply Nonempty.intro
-  -- Porting note: refine' makes this line time out at elaborator
   refine (LinearMap.tailingLinearEquiv f i n).symm ≪≫ₗ ?_
   rw [w]
   apply Submodule.botEquivPUnit
@@ -566,15 +564,15 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
       R ((↑s : Set M) → R) N _ _ _ (Pi.module _ _ _) _ ?_ ?_ isNoetherian_pi
   · fapply LinearMap.mk
     · fapply AddHom.mk
-      · exact fun f => ⟨∑ i in s.attach, f i • i.1, N.sum_mem fun c _ => N.smul_mem _ <| this _ c.2⟩
+      · exact fun f => ⟨∑ i ∈ s.attach, f i • i.1, N.sum_mem fun c _ => N.smul_mem _ <| this _ c.2⟩
       · intro f g
         apply Subtype.eq
-        change (∑ i in s.attach, (f i + g i) • _) = _
+        change (∑ i ∈ s.attach, (f i + g i) • _) = _
         simp only [add_smul, Finset.sum_add_distrib]
         rfl
     · intro c f
       apply Subtype.eq
-      change (∑ i in s.attach, (c • f i) • _) = _
+      change (∑ i ∈ s.attach, (c • f i) • _) = _
       simp only [smul_eq_mul, mul_smul]
       exact Finset.smul_sum.symm
   · rw [LinearMap.range_eq_top]
@@ -582,11 +580,11 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
     change n ∈ N at hn
     rw [← hs, ← Set.image_id (s : Set M), Finsupp.mem_span_image_iff_total] at hn
     rcases hn with ⟨l, hl1, hl2⟩
-    refine' ⟨fun x => l x, Subtype.ext _⟩
-    change (∑ i in s.attach, l i • (i : M)) = n
+    refine ⟨fun x => l x, Subtype.ext ?_⟩
+    change (∑ i ∈ s.attach, l i • (i : M)) = n
     rw [s.sum_attach fun i ↦ l i • i, ← hl2,
       Finsupp.total_apply, Finsupp.sum, eq_comm]
-    refine' Finset.sum_subset hl1 fun x _ hx => _
+    refine Finset.sum_subset hl1 fun x _ hx => ?_
     rw [Finsupp.not_mem_support_iff.1 hx, zero_smul]
 #align is_noetherian_of_fg_of_noetherian isNoetherian_of_fg_of_noetherian
 

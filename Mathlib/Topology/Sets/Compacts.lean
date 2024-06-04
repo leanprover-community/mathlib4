@@ -34,6 +34,7 @@ namespace TopologicalSpace
 
 /-- The type of compact sets of a topological space. -/
 structure Compacts (α : Type*) [TopologicalSpace α] where
+  /-- the carrier set, i.e. the points in this set -/
   carrier : Set α
   isCompact' : IsCompact carrier
 #align topological_space.compacts TopologicalSpace.Compacts
