@@ -109,6 +109,14 @@ theorem finset_sum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ
   map_sum (lcoeff R n) _ _
 #align polynomial.finset_sum_coeff Polynomial.finset_sum_coeff
 
+lemma coeff_list_sum (l : List R[X]) (n : ℕ) :
+    l.sum.coeff n = (l.map (lcoeff R n)).sum :=
+  map_list_sum (lcoeff R n) _
+
+lemma coeff_list_sum_map {ι : Type*} (l : List ι) (f : ι → R[X]) (n : ℕ) :
+    (l.map f).sum.coeff n = (l.map (fun a => (f a).coeff n)).sum := by
+  simp_rw [coeff_list_sum, List.map_map, Function.comp, lcoeff_apply]
+
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
   rcases p with ⟨⟩
