@@ -545,24 +545,11 @@ theorem geom_series_succ (x : R) (h : ‖x‖ < 1) : ∑' i : ℕ, x ^ (i + 1) =
 
 theorem geom_series_mul_shift (x : R) (h : ‖x‖ < 1) :
     x * ∑' i : ℕ, x ^ i = ∑' i : ℕ, x ^ (i + 1) := by
-  refine' tendsto_nhds_unique
-      ((NormedRing.summable_geometric_of_norm_lt_one x h).hasSum.mul_left x).tendsto_sum_nat _
-  have : Tendsto (fun n : ℕ => ∑ i in Finset.range (n + 1), x ^ i - 1) atTop
-      (𝓝 (∑' i : ℕ, x ^ (i + 1))) := by
-    rw [geom_series_succ x h]
-    apply Tendsto.sub_const
-    simp only [sum_range_succ]
-    have hp : tsum (fun (i : ℕ) => x^i) = tsum (fun (i : ℕ) => x^i) + 0 := (add_zero _).symm
-    rw [hp]
-    apply Tendsto.add ((NormedRing.summable_geometric_of_norm_lt_one x h).hasSum.tendsto_sum_nat)
-      (tendsto_pow_atTop_nhds_zero_of_norm_lt_one h)
-  convert this
-  rw [@geom_sum_succ _ _ x, mul_sum, add_sub_cancel_right]
+  simp_rw [← (NormedRing.summable_geometric_of_norm_lt_one _ h).tsum_mul_left, ← _root_.pow_succ']
 
 theorem geom_series_mul_one_add (x : R) (h : ‖x‖ < 1) :
     (1 + x) * ∑' i : ℕ, x ^ i = 2 * ∑' i : ℕ, x ^ i - 1 := by
-  rw [add_mul, one_mul, geom_series_mul_shift x h, geom_series_succ x h, two_mul]
-  abel
+  rw [add_mul, one_mul, geom_series_mul_shift x h, geom_series_succ x h, two_mul, add_sub_assoc]
 
 end NormedRingGeometric
 
