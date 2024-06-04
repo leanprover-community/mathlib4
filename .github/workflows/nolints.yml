@@ -1,6 +1,7 @@
 name: update nolints
 
 on:
+  push:
   pull_request:
     types:
       - labeled
