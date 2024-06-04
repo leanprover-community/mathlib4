@@ -42,7 +42,7 @@ noncomputable section
 
 /-- An auxiliary definition to be used in defining `CategoryTheory.Sheaf.adjunction` below. -/
 @[simps]
-def composeEquiv (adj : G ⊣ F) [HasSheafCompose J F] (X : Sheaf J E) (Y : Sheaf J D) :
+def composeEquiv [HasSheafCompose J F](adj : G ⊣ F) (X : Sheaf J E) (Y : Sheaf J D) :
     ((composeAndSheafify J G).obj X ⟶ Y) ≃ (X ⟶ (sheafCompose J F).obj Y) :=
   let A := adj.whiskerRight Cᵒᵖ
   { toFun := fun η => ⟨A.homEquiv _ _ (toSheafify J _ ≫ η.val)⟩
@@ -71,7 +71,7 @@ attribute [nolint simpNF] CategoryTheory.Sheaf.composeEquiv_apply_val
 between `Sheaf J D` and `Sheaf J E`, in contexts where one can sheafify `D`-valued presheaves,
 and `F` preserves the correct limits. -/
 @[simps! unit_app_val counit_app_val]
-def adjunction (adj : G ⊣ F) [HasSheafCompose J F] :
+def adjunction [HasSheafCompose J F] (adj : G ⊣ F) :
     composeAndSheafify J G ⊣ sheafCompose J F :=
   Adjunction.mkOfHomEquiv
     { homEquiv := composeEquiv J adj
