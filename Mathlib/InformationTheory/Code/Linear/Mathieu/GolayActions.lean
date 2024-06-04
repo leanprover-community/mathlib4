@@ -44,18 +44,8 @@ lemma mem_vadd_map_dist (f:F_4_6) :
       simp only [F4.two_eq_zero, mul_zero, zero_add]
   }
 
-
-lemma z2_cases (x:ZMod 2): x = 0 ∨ x = 1 := by
-  obtain ⟨i⟩ := x
-  rcases i
-  . simp only [Nat.zero_eq, Fin.zero_eta, zero_ne_one, or_false]
-  rename_i i hi
-  rcases i
-  . simp only [Nat.zero_eq, Nat.reduceSucc, Fin.mk_one, one_ne_zero, or_true]
-  contradiction
-
 -- to_hexaCode' x =    ![0,0,0,0,0,0] = 0
-abbrev gc_b₁ := to_gc !![1,1,1,0,0,0;
+abbrev gc_b₁ := to_gc !![1,1,1,0,0,0;-- bad; weight = 12
                          0,0,0,1,1,1;
                          0,0,0,1,1,1;
                          0,0,0,1,1,1]
@@ -70,6 +60,7 @@ abbrev gc_b₂ := to_gc !![0,1,1,0,0,1;
                          1,0,0,1,0,1;
                          0,0,0,0,0,0;
                          0,0,0,0,1,1]
+
 
 lemma gc_b₂_mem : gc_b₂ ∈ GolayCode := by decide
 
@@ -224,9 +215,9 @@ lemma of_basis_index_eq (m:golay_code_space') ⦃c: Fin 6 × F4⦄ (hc:∃ i, c 
   obtain ⟨i,hi⟩ := hc
   rw [hi]
   simp_rw [of_basis,gc_basis_backwards,gc_basis_fam,Finset.univ,Fintype.elems,List.finRange]
-  simp only [List.pmap, Fin.zero_eta, Fin.mk_one, Finset.sum_mk, Multiset.coe_map, List.map_cons,
+  simp only [List.pmap, Fin.zero_eta, Fin.mk_one, Finset.sum_mk, Multiset.map_coe, List.map_cons,
     Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_succ',
-    List.map_nil, Multiset.coe_sum, List.sum_cons, List.sum_nil, add_zero, AddSubmonoid.coe_add,
+    List.map_nil, Multiset.sum_coe, List.sum_cons, List.sum_nil, add_zero, AddSubmonoid.coe_add,
     Submodule.coe_toAddSubmonoid, SetLike.val_smul]
   simp_rw [gc_b₁,gc_b₂,gc_b₃,gc_b₄,gc_b₅,gc_b₆,gc_b₇,gc_b₈,gc_b₉,gc_b₁₀,gc_b₁₁,gc_b₁₂]
   simp_rw [to_gc_map_smul]
@@ -306,7 +297,7 @@ lemma to_hexacode_binary_inv (m:golay_code_space') (i:Fin 6) {p:ZMod 2}
   simp_rw [to_hexacode'_apply,F4.inv_def,F4.smul_mk_apply,F4.add_def, hp.symm]
   simp only [mul_one, mul_zero, add_zero, zero_add]
   abel_nf
-  simp only [zsmul_eq_mul, Int.int_cast_ofNat]
+  simp only [zsmul_eq_mul, Int.cast_ofNat]
   have foo : (2:ZMod 2) = 0 := rfl
   have bar : (3:ZMod 2) = 1 := rfl
   simp_rw [foo, bar]
@@ -448,9 +439,9 @@ lemma gc_span_is_gc : Submodule.span (ZMod 2) (Set.range gc_basis_fam) = GolayCo
       forall_eq] at hp
     obtain ⟨h12,h11,h10,h9,h8,h7,h6,h5,h4,h3,h2,h1⟩ := hp
     simp_rw [Finset.univ,Fintype.elems,List.finRange,gc_basis_fam]
-    simp only [List.pmap, Fin.zero_eta, Fin.mk_one, Finset.sum_mk, Multiset.coe_map, List.map_cons,
+    simp only [List.pmap, Fin.zero_eta, Fin.mk_one, Finset.sum_mk, Multiset.map_coe, List.map_cons,
       Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_succ',
-      List.map_nil, Multiset.coe_sum, List.sum_cons, List.sum_nil, add_zero]
+      List.map_nil, Multiset.sum_coe, List.sum_cons, List.sum_nil, add_zero]
     repeat' apply p.add_mem
     all_goals apply p.smul_mem
     exact h1; exact h2; exact h3; exact h4; exact h5; exact h6
@@ -478,6 +469,7 @@ lemma vadd_map_to_binary_vert (f:F_4_6) (x:golay_code_space') :
 lemma vadd_zero (f:F_4_6) : f +ᵥ (0:golay_code_space') = 0 := rfl
 
 
+set_option maxHeartbeats 500000
 lemma vadd_mem_GolayCode ⦃f:F_4_6⦄ (hf : f ∈ HexaCode) : ∀ x ∈ GolayCode, f +ᵥ x ∈ GolayCode := by
   refine Submodule.closure_induction hf ?zero ?add ?smul_mem
   . simp only [zero_vadd, imp_self, forall_const]
@@ -599,12 +591,6 @@ def HexaCode.toGolayAut_MulHom :
         rfl
 
 
-#check HexaCode
--- set_option synthInstance.maxHeartbeats 40000
-#synth DistribMulAction (SemilinearCodeAut F4 trivdist hdist HexaCode) F_4_6
-
-
-
 instance : DistribMulAction (SemilinearCodeAut F4 trivdist hdist HexaCode) HexaCode where
   smul := fun φ x => ⟨φ • x, φ.snd.map_code x x.property⟩
   one_smul := fun b => by
@@ -649,10 +635,29 @@ noncomputable abbrev apply_aut :
     (SemilinearCodeAut F4 trivdist hdist HexaCode)
     (Multiplicative HexaCode)
 
-#check (Multiplicative HexaCode ⋊[apply_aut] (SemilinearCodeAut F4 trivdist hdist HexaCode))
+-- #check (Multiplicative HexaCode ⋊[apply_aut] (SemilinearCodeAut F4 trivdist hdist HexaCode))
 
-#print axioms HexaCode.toGolayAut_MulHom
+-- #print axioms HexaCode.toGolayAut_MulHom
+-- #check extract_gives_stuff_strong
 
+lemma lift_hexacode_aut_apply_apply (φ : SemilinearCodeAut F4 trivdist hdist HexaCode) (m: golay_code_space')
+    (i:Fin 6) (x : F4) : (GolayCode.lift_hexacode_aut φ) m (i,x) = m (φ⁻¹ • (i,x)) := by
+  rfl
+
+lemma f4aut_smul_index_def (φ : SemilinearCodeAut F4 trivdist hdist HexaCode) (i:Fin 6) (x:F4) :
+    φ • (i,x) = (extract_perm φ i, φ.fst (extract_diag φ i * x)) := rfl
+
+-- #synth SMul (Multiplicative HexaCode) (Fin 6 × F4)
+
+lemma lift_hexacode_mem_apply_apply (f : HexaCode) (m:golay_code_space') (i:Fin 6) (x : F4) :
+    HexaCode.toGolayAut_MulHom f m (i,x) = m ((i, (f : F_4_6) i + x)) := by rfl
+
+lemma semiaut_fst_map_inv (φ : SemilinearCodeAut F4 trivdist hdist HexaCode) : φ⁻¹.fst = φ.fst⁻¹ := rfl
+
+lemma aut_smul_hexacode (φ : SemilinearCodeAut F4 trivdist hdist HexaCode) (v:HexaCode):
+    φ • (Multiplicative.ofAdd v) = Multiplicative.ofAdd (φ • v) := rfl
+
+-- #synth AddCommGroup F4
 
 noncomputable def apply_hexacode_semi :
     (Multiplicative HexaCode ⋊[apply_aut] (SemilinearCodeAut F4 trivdist hdist HexaCode)) →*
@@ -661,32 +666,245 @@ noncomputable def apply_hexacode_semi :
     intro φ
     simp only [MulDistribMulAction.toMulAut_apply]
     ext v : 1
-    simp only [MonoidHom.coe_comp, MulEquiv.coe_toMonoidHom, Function.comp_apply,
+    rw [← ofAdd_toAdd v]
+    obtain v := Multiplicative.toAdd v
+    simp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe, Multiplicative.toAdd_symm_eq, ofAdd_toAdd,
+      MonoidHom.coe_comp, MulEquiv.coe_toMonoidHom, Function.comp_apply,
       MulDistribMulAction.toMulEquiv_apply, MulAut.conj_apply]
-    simp_rw [toGolayAut_MulHom]
-    simp only [MonoidHom.coe_mk, OneHom.coe_mk]
-    simp_rw [GolayCode.lift_hexacode_mem]
-    simp only [RingEquiv.coe_ringHom_refl, RingEquiv.symm_refl, Equiv.toFun_as_coe,
-      Equiv.invFun_as_coe, MonoidHom.coe_mk, OneHom.coe_mk]
-    ext x : 1
+    ext m : 1
     . rfl
-    ext ⟨i,x'⟩ : 1
-    simp only [RingEquiv.coe_ringHom_refl, RingEquiv.symm_refl, Equiv.toFun_as_coe, id_eq,
-      AddHom.toFun_eq_coe, RingHom.id_apply, LinearMap.coe_toAddHom, Equiv.invFun_as_coe,
-      AddHom.coe_mk, hammingENatdist_eq_cast_hammingDist, LinearEquiv.coe_coe,
-      SemilinearCodeAut.coe_mul, SemilinearCodeEquiv.coe_mk, LinearEquiv.coe_mk,
-      Function.comp_apply, AddAction.toPerm_apply]
-    suffices hsuf : (AddAction.toPerm ((Multiplicative.toAdd (φ • v)) : HexaCode).val) x (i,x') = _ by
-      exact hsuf
-    simp only [AddAction.toPerm_apply]
+    ext ⟨i,x⟩ : 1
+    simp only [SemilinearCodeAut.coe_mul, Function.comp_apply]
+    rw [lift_hexacode_aut_apply_apply]
+    rw [f4aut_smul_index_def]
+    rw [lift_hexacode_mem_apply_apply,lift_hexacode_mem_apply_apply]
+    rw [← map_inv]
+    rw [lift_hexacode_aut_apply_apply]
+    rw [f4aut_smul_index_def]
+    congr
+    . simp only [inv_inv]
+      rw [extract_perm_map_inv]
+      rw [Equiv.Perm.apply_inv_self]
+    -- simp_rw [toGolayAut_MulHom]
+    -- simp only [MonoidHom.coe_mk, OneHom.coe_mk]
+    simp_rw [inv_inv]
+    rw [extract_diag_map_inv']
+    simp only [semiaut_fst_map_inv, map_mul,map_add]
+    have foo : φ.fst⁻¹ = φ.fst.symm := rfl
+    rw [foo]
+    simp only [RingEquiv.apply_symm_apply]
+    rw [aut_smul_hexacode]
+    simp only [smul_inv', Prod.smul_def', Pi.inv_apply, Pi.smul_apply, Units.val_inv_eq_inv_val]
+    have foo2 : (Multiplicative.ofAdd v : HexaCode) = v := rfl
+    rw [foo2]
+    rw [left_distrib]
+    rw [← Units.smul_val_eq_val_smul φ.fst]
+    have foo3 : φ.fst ↑(extract_diag φ ((extract_perm φ⁻¹) i)) * φ.fst ((v : F_4_6) ((extract_perm φ⁻¹) i)) = (φ • v : F_4_6) i := by
+      symm
+      calc
+        (φ • v : F_4_6) i
+          = (φ v) i := rfl
+        _ = (φ.fst • extract_perm φ • (extract_diag φ • (v : F_4_6))) i := by
+            rw [extract_gives_stuff_strong]
+        _ = (φ.fst ∘ (extract_diag φ • (v : F_4_6)) ∘ extract_perm φ⁻¹) i := rfl
+        _ = φ.fst (extract_diag φ (extract_perm φ⁻¹ i) * (v : F_4_6) (extract_perm φ⁻¹ i)) := rfl
+        _ = _ := by
+          rw [map_mul]
+    rw [foo3]
+    suffices x = _ by
+      nth_rw 1 [this]
+      rfl
     symm
-    sorry
-
+    calc
+      φ.fst ↑(extract_diag φ ((extract_perm φ⁻¹) i)) * ((φ.fst • ↑((extract_perm φ • extract_diag φ) i))⁻¹ * x)
+        = (φ.fst ↑(extract_diag φ ((extract_perm φ⁻¹) i)) * (φ.fst • ↑((extract_perm φ • extract_diag φ) i))⁻¹) * x := by
+          rw [mul_assoc]
+      _ = φ.fst (↑(extract_diag φ ((extract_perm φ⁻¹) i)) * (↑((extract_perm φ • extract_diag φ) i))⁻¹) * x := by
+        rw [map_mul,map_inv₀]
+        rfl
+      _ = φ.fst (↑(extract_diag φ ((extract_perm φ⁻¹) i)) * ↑(((extract_perm φ • extract_diag φ) i)⁻¹)) * x := by
+        rw [Units.val_inv_eq_inv_val]
+      _ = φ.fst ↑((extract_diag φ ((extract_perm φ⁻¹) i)) * (((extract_perm φ • extract_diag φ) i)⁻¹ )) * x := by
+        rw [Units.val_mul]
+      _ = φ.fst ↑((extract_diag φ ((extract_perm φ⁻¹) i)) * (((extract_diag φ) (extract_perm φ⁻¹ i))⁻¹)) * x := rfl
+      _ = φ.fst ↑(1 : F4ˣ) * x := by rw [mul_inv_self]
+      _ = x := by rw [Units.val_one,map_one,one_mul]
   )
 
 
--- #synth Module (ZMod 2) golay_code_space'
--- #synth Group (LinearCodeAut F4 trivdist hdist HexaCode)ᵈᵐᵃ
--- -- #synth AddAction (F_4_6ᵈᵃᵃ) (golay_code_space') -- equivalent
--- #synth DistribMulAction ((LinearCodeAut F4 trivdist hdist HexaCode)ᵈᵐᵃ) golay_code_space'
--- #synth _LinearCode ℕ∞ (ZMod 2) trivdist hdist GolayCode
+example : True := trivial
+
+
+
+lemma toGolayAut_MulHom_inj : Function.Injective toGolayAut_MulHom := by
+  rw [← MonoidHom.ker_eq_bot_iff, Subgroup.eq_bot_iff_forall]
+  simp_rw [MonoidHom.mem_ker,DFunLike.ext_iff]
+  intro v
+  rw [← ofAdd_toAdd v]
+  generalize Multiplicative.toAdd v = v' at *
+  simp only [ofAdd_eq_one]
+  simp_rw [Function.funext_iff]
+  simp_rw [DFunLike.coe, EquivLike.coe]
+  simp only [Equiv.toFun_as_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+    SemilinearCodeAut.coe_one, id_eq, Prod.forall]
+  intro hv
+  ext i : 2
+  simp only [ZeroMemClass.coe_zero, Pi.zero_apply]
+  specialize hv (fun (_,x) => if x = 0 then 1 else 0) i 0
+  rw [lift_hexacode_mem_apply_apply] at hv
+  simp only [add_zero, ↓reduceIte, ite_eq_left_iff, zero_ne_one, imp_false, Decidable.not_not] at hv
+  rw [← hv]
+  rfl
+
+lemma GolayCode.lift_hexacode_aut_inj : Function.Injective GolayCode.lift_hexacode_aut := by
+  rw [← MonoidHom.ker_eq_bot_iff,Subgroup.eq_bot_iff_forall]
+  simp_rw [MonoidHom.mem_ker, DFunLike.ext_iff,DFunLike.coe,EquivLike.coe]
+  simp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, SemilinearCodeAut.coe_one, id_eq]
+  intro φ
+  intro hφ v
+  simp_rw [Function.funext_iff] at hφ
+  simp only [Prod.forall] at hφ
+  simp_rw [lift_hexacode_aut_apply_apply,HSMul.hSMul,SMul.smul] at hφ
+  simp_rw [extract_gives_stuff_strong]
+  ext i : 1
+  specialize hφ (fun (j,x) => if i = j ∧ x = v i then 1 else 0) i (v i)
+  simp only [RingAut.smul_def, and_self, ↓reduceIte, ite_eq_left_iff, not_and, zero_ne_one,
+    imp_false, Classical.not_imp, Decidable.not_not] at hφ
+  rw [extract_diag_map_inv'] at hφ
+  obtain ⟨hperm,hval⟩ := hφ
+  simp_rw [HSMul.hSMul,SMul.smul] at hval ⊢
+  simp only [DomMulAct.mk_inv, RingAut.smul_def]
+  simp_rw [HSMul.hSMul,SMul.smul] at hval ⊢
+  simp_rw [HSMul.hSMul,SMul.smul] at hval
+  simp only [DomMulAct.mk_inv, DomMulAct.symm_mk_inv, Equiv.symm_apply_apply, Equiv.Perm.smul_def,
+    Pi.inv_apply, Units.val_inv_eq_inv_val, smul_inv'', Units.smul_val_eq_val_smul, map_mul,
+    map_inv₀, smul_eq_mul] at hval ⊢
+  rw [← Units.smul_val_eq_val_smul] at hval
+  rw [← extract_perm_map_inv,← hperm] at hval ⊢
+  nth_rw 1 [← hval]
+  calc
+    φ.fst ↑(extract_diag φ i) * φ.fst ((φ⁻¹.fst (φ.fst • ↑(extract_diag φ i)))⁻¹ * φ.fst⁻¹ (v i))
+      = φ.fst ↑(extract_diag φ i) * φ.fst ((φ.fst⁻¹ (φ.fst • ↑(extract_diag φ i)))⁻¹ * φ.fst⁻¹ (v i)) := rfl
+    _ = φ.fst ↑(extract_diag φ i) * φ.fst (φ.fst⁻¹ (φ.fst • ↑(extract_diag φ i))⁻¹ * φ.fst⁻¹ (v i)) := by
+        rw [map_inv₀]
+    _ = φ.fst ↑(extract_diag φ i) * φ.fst (φ.fst⁻¹ ((φ.fst • ↑(extract_diag φ i))⁻¹ * (v i))) := by
+        rw [map_mul φ.fst⁻¹]
+    _ = φ.fst ↑(extract_diag φ i) * φ.fst (φ.fst.symm ((φ.fst ↑(extract_diag φ i))⁻¹ * (v i))) := rfl
+    _ = φ.fst ↑(extract_diag φ i) * ((φ.fst ↑(extract_diag φ i))⁻¹ * (v i)) := by
+      rw [RingEquiv.apply_symm_apply]
+    _ = φ.fst ↑(extract_diag φ i) * (φ.fst ↑(extract_diag φ i))⁻¹ * (v i) := by rw [mul_assoc]
+    _ = v i := by simp only [isUnit_iff_ne_zero, ne_eq, AddEquivClass.map_eq_zero_iff,
+      Units.ne_zero, not_false_eq_true, IsUnit.mul_inv_cancel, one_mul]
+
+theorem lift_mem_lift_aut_indep : toGolayAut_MulHom.range ⊓ GolayCode.lift_hexacode_aut.range = ⊥ := by
+  rw [Subgroup.eq_bot_iff_forall]
+  simp only [Subgroup.mem_inf, MonoidHom.mem_range, Multiplicative.exists, Subtype.exists,
+    and_imp, forall_exists_index]
+  intro φ' v hv hv' φ
+  intro hφ
+  obtain rfl := hv'
+  rw [DFunLike.ext_iff] at hφ ⊢
+  intro m
+  simp_rw [DFunLike.coe,EquivLike.coe] at hφ ⊢
+  simp_rw [Function.funext_iff] at hφ
+  simp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, Equiv.toFun_as_coe, Prod.forall,
+    SemilinearCodeAut.coe_one, id_eq] at hφ ⊢
+  ext ⟨i,x⟩
+  simp_rw [lift_hexacode_mem_apply_apply] at hφ ⊢
+  simp_rw [lift_hexacode_aut_apply_apply] at hφ
+  suffices m (i, v i + x) = m (i,x) by
+    exact this
+  suffices v i = 0 by
+    rw [this]
+    simp only [Pi.zero_apply, zero_add]
+  specialize hφ (fun (_,y) => if y = 0 then 1 else 0) i 0
+  simp only [smul_zero, ↓reduceIte, add_zero] at hφ
+  have hφ': (1 : ZMod 2) = if v i = 0 then 1 else 0 := hφ
+  split at hφ'
+  . rename_i h
+    exact h
+  . contradiction
+
+lemma apply_hexacode_semi_inj : Function.Injective apply_hexacode_semi := by
+  dsimp [apply_hexacode_semi]
+  apply SemidirectProduct.lift_inj
+  . exact toGolayAut_MulHom_inj
+  . exact GolayCode.lift_hexacode_aut_inj
+  . exact lift_mem_lift_aut_indep
+
+section
+-- -- todo: figure out a way to do this without something blabla.
+-- abbrev gc := gc_basis_fam
+
+-- abbrev a₁ := gc 0 + gc 6 + gc 9 -- (0,0)
+-- #eval of_gc (a₁)
+-- #eval a₁.to_finset.card
+
+-- abbrev a₂ := gc 1 + gc 6 + gc 9 -- (0,1)
+-- #eval of_gc a₂
+-- #eval a₂.to_finset.card
+
+-- abbrev a₃ := gc 2 + gc 6 + gc 9 -- (0,2)
+-- #eval of_gc a₃
+-- #eval a₃.to_finset.card
+
+-- abbrev a₄ := gc 3 + gc 6 + gc 9 -- (0,3)
+-- #eval of_gc a₄
+-- #eval a₄.to_finset.card
+
+-- abbrev a₅ := gc 6 -- (1,0)
+-- #eval of_gc a₅
+-- #eval a₅.to_finset.card
+
+-- abbrev a₆ := gc 4 + gc 6-- (1,1)
+-- #eval of_gc a₆
+-- #eval a₆.to_finset.card
+
+-- abbrev a₇ := gc 5 + gc 6 -- (1,2)
+-- #eval of_gc a₇
+-- #eval a₇.to_finset.card
+
+-- abbrev a₈ := gc 9 -- (2,0)
+-- #eval of_gc a₈
+-- #eval a₈.to_finset.card
+
+-- abbrev a₉ := gc 7 + gc 9 -- (2,1)
+-- #eval of_gc a₉
+-- #eval a₉.to_finset.card
+
+-- abbrev a₁₀ := gc 8 + gc 9
+-- #eval of_gc a₁₀
+-- #eval a₁₀.to_finset.card
+
+-- abbrev a₁₁ := gc 10
+-- #eval of_gc a₁₁
+-- #eval a₁₁.to_finset.card
+
+-- abbrev a₁₂ := gc 11
+-- #eval of_gc a₁₂
+-- #eval a₁₂.to_finset.card
+
+-- abbrev a : Fin 12 → golay_code_space' := ![a₁,a₂,a₃,a₄,a₅,a₆,a₇,a₈,a₉,a₁₀,a₁₁,a₁₂]
+
+-- #eval of_gc (a 0)
+
+-- abbrev spike (c : Fin 6 × F4) : golay_code_space' := fun x => if x = c then 1 else 0
+-- abbrev left : golay_code_space' := to_gc !![1,1,1,1,1,0;1,1,1,0,0,0;1,1,1,0,0,0;1,0,0,0,0,0]
+-- abbrev right : golay_code_space' := 1 + left
+
+-- abbrev count (x:golay_code_space') : ℕ := x.to_finset.card
+-- #eval  count ∘ (((a₁₂ * a₁ + a₂ * a₁₀) • right • a))
+-- #eval of_gc (a₂ * a₁₀ + a₁ * a₁₂)
+-- /-
+-- a₁ * a₁₂ => (6,1) (5,ω)
+-- a₂ * a₁₀ => (6,ω) (3,ω⁻¹)
+-- a₃ * a₆ => (2,ω⁻¹) (6,ω⁻¹)
+-- a₄ * a₁₁ => (6,0) (4,ω⁻¹)
+-- a₅ * a₉ => (4,1) (5,ω⁻¹)
+-- a₇ * a₈ => (5,1) (4,ω)
+
+
+
+-- -/
+-- #eval of_gc (a₂ * a₁)
+end

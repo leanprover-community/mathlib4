@@ -69,7 +69,23 @@ lemma vadd_sub_distrib (f :F_4_6 ) (x y : golay_code_space') :
   rfl
 
 def to_gc  (M:Matrix (Fin 4) (Fin 6) (ZMod 2)) : golay_code_space' :=
-  (Matrix.reindex (Equiv.refl (Fin 6)) F4.naturalEquiv) M.transpose |>.uncurry
+  Matrix.of.symm ((Matrix.reindex (Equiv.refl (Fin 6)) F4.naturalEquiv) (M.transpose)) |>.uncurry
+
+def of_gc (m : golay_code_space') : Matrix (Fin 4) (Fin 6) (ZMod 2) :=
+  (Matrix.reindex (Equiv.refl (Fin 6)) F4.naturalEquiv).symm (Matrix.of m.curry) |>.transpose
+
+lemma of_gc_to_gc (M:Matrix (Fin 4) (Fin 6) (ZMod 2)) : of_gc (to_gc M) = M := by
+  dsimp only [of_gc,to_gc]
+  simp only [Matrix.reindex_symm, Equiv.refl_symm, Matrix.reindex_apply, Equiv.coe_refl,
+    Function.curry_uncurry, Equiv.apply_symm_apply, Equiv.symm_symm, Matrix.submatrix_submatrix,
+    CompTriple.comp_eq, Equiv.symm_comp_self, Matrix.submatrix_id_id, Matrix.transpose_transpose]
+
+lemma to_gc_of_gc (m : golay_code_space') : to_gc (of_gc m) = m := by
+  dsimp only [of_gc,to_gc]
+  simp only [Matrix.reindex_symm, Equiv.refl_symm, Matrix.reindex_apply, Equiv.coe_refl,
+    Equiv.symm_symm, Matrix.transpose_submatrix, Matrix.transpose_transpose,
+    Matrix.submatrix_submatrix, CompTriple.comp_eq, Equiv.self_comp_symm, Matrix.submatrix_id_id,
+    Equiv.symm_apply_apply, Function.uncurry_curry]
 
 @[simp]
 lemma to_gc_map_smul (M:Matrix (Fin 4) (Fin 6) (ZMod 2)) (a:ZMod 2) :
@@ -79,17 +95,28 @@ lemma to_gc_map_smul (M:Matrix (Fin 4) (Fin 6) (ZMod 2)) (a:ZMod 2) :
 lemma to_gc_map_add (M₁ M₂:Matrix (Fin 4) (Fin 6) (ZMod 2)) :
   to_gc M₁ + to_gc M₂ = to_gc (M₁ + M₂) := rfl
 
+
 instance : One golay_code_space' where
-  one := to_gc !![1,1,1,1,1,1;
-                  1,1,1,1,1,1;
-                  1,1,1,1,1,1;
-                  1,1,1,1,1,1]
+  one := fun _ => 1
 
 namespace golay_code_space'
 
-def to_finset (m:golay_code_space') : Finset (golay_code_index) := Set.toFinset {x | m x = 1}
-
+def to_finset (m:golay_code_space') : Finset (golay_code_index) :=
+  Finset.filter (fun x => m x = 1) Finset.univ
 end golay_code_space'
+
+lemma to_finset_inj : Function.Injective golay_code_space'.to_finset := by
+  intro x y h
+  rw [Finset.ext_iff] at h
+  dsimp [golay_code_space'.to_finset] at h
+  ext i
+  specialize h i
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and] at h
+  revert h
+  generalize x i = a
+  generalize y i = b
+  revert a b
+  decide
 
 instance : SetLike (golay_code_space') golay_code_index where
   coe := fun m => m.to_finset
@@ -97,37 +124,13 @@ instance : SetLike (golay_code_space') golay_code_index where
     ext i
     simp only [golay_code_space'.to_finset, Set.mem_setOf_eq, Finset.coe_inj] at h
     simp_rw [Finset.ext_iff] at h
-    simp only [Set.mem_setOf_eq, Prod.forall] at h
--- the linter doesn't like these variables but i do use them...
-    let y := f i
-    let z := g i
-    obtain ⟨j,x'⟩ := i
-    obtain hz := (h j x')
-    rw [Set.mem_toFinset,Set.mem_toFinset] at hz
-    if h2: y = 1 then
-      dsimp at h2
-      exact h2 ▸ (hz.mp h2).symm
-    else
-      suffices y = z by
-        dsimp at this
-        exact this
-      have h3 : z ≠ 1 := hz.mpr.mt h2
-      have h4 : y = 0 := by
-        obtain ⟨y,hy⟩ := y
-        rcases y
-        . simp only [Nat.zero_eq, Fin.zero_eta]
-        rename_i y
-        rcases y
-        . contradiction
-        contradiction
-      rw [h4]
-      obtain ⟨z,hz⟩ := z
-      rcases z
-      . simp only [Nat.zero_eq, Fin.zero_eta]
-      rename_i z
-      rcases z
-      . contradiction
-      contradiction
+    specialize h i
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at h
+    revert h
+    generalize f i = a
+    generalize g i = b
+    revert a b
+    decide
 
 lemma to_finset_eq_coe (x:golay_code_space') : ∀ y, y ∈ x ↔ y ∈ x.to_finset := fun y => by rfl
 
@@ -197,11 +200,11 @@ def to_binary_hori' : golay_code_space' →ₗ[ZMod 2] ZMod 2 where
 lemma to_binary_hori'_apply (f:golay_code_space') :
     to_binary_hori' f = f (0,0) + f (1,0) + f (2,0) + f (3,0) + f (4,0) + f (5,0) := by
   simp_rw [to_binary_hori',Finset.univ,Fintype.elems,List.finRange]
-  simp only [List.pmap, Fin.zero_eta, Fin.mk_one, Finset.sum_mk, Multiset.coe_map, List.map_cons,
-    List.map_nil, Multiset.coe_sum, List.sum_cons, List.sum_nil, add_zero, LinearMap.coe_mk,
-    AddHom.coe_mk]
+  simp only [List.pmap, Fin.zero_eta, Fin.isValue, Fin.mk_one, Fin.reduceFinMk, Finset.sum_mk,
+    Multiset.map_coe, List.map_cons, List.map_nil, Multiset.sum_coe, List.sum_cons, List.sum_nil,
+    add_zero, LinearMap.coe_mk, AddHom.coe_mk]
   simp_rw [add_assoc]
-  rfl
+
 
 abbrev Property1 : golay_code_space' → Prop := -- taking the sum of F4 by index maps to the hexaCode
   fun f => to_hexacode' f ∈ HexaCode
@@ -236,7 +239,7 @@ def GolayCode : Submodule (ZMod 2) golay_code_space' where
       . exact congrFun rfl
     rename_i i
     rcases i
-    . simp only [Nat.zero_eq, Nat.reduceSucc, Fin.mk_one, one_smul]
+    . simp only [Nat.reduceAdd, zero_add, Fin.mk_one, Fin.isValue, one_smul]
       exact hx
     contradiction
 
@@ -252,12 +255,12 @@ lemma GolayCode.one_mem : 1 ∈ GolayCode := by decide
 
 -- #synth _LinearCode ℕ∞ (ZMod 2) trivdist hdist GolayCode
 
-def golay_code_space'.compl : golay_code_space' → golay_code_space' := (1 - .)
+def golay_code_space'.compl : golay_code_space' → golay_code_space' := (1 + .)
 
 set_option maxHeartbeats 300000
 
 lemma GolayCode.mem_compl : ∀ f ∈ GolayCode, f.compl ∈ GolayCode :=
-  fun _ hf => GolayCode.sub_mem (GolayCode.one_mem) hf
+  fun _ hf => GolayCode.add_mem (GolayCode.one_mem) hf
 
 lemma aut_smul_map_dist (φ: SemilinearCodeAut F4 trivdist hdist HexaCode) :
     ∀ x y : golay_code_space', hdist x y = hdist (DomMulAct.mk φ • x) (DomMulAct.mk φ • y):= fun f g => by

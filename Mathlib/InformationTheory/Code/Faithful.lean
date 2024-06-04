@@ -50,6 +50,12 @@ instance Units.instMulDistribMulAction' [Monoid G] [Monoid M] [MulDistribMulActi
   smul_mul g u₁ u₂ := Units.ext <| smul_mul' _ _ _
   smul_one g := Units.ext <| smul_one _
 
+@[simp]
+lemma Units.smul_val_eq_val_smul [Monoid G] [Monoid M] [MulDistribMulAction G M] (g : G) (u : Mˣ):
+  g • (u : M) = (g • u : Mˣ) := rfl
+
+#check Units.smul_val_eq_val_smul
+
 end
 section
 variable {K : Type*} [Field K] {I:Type*}
@@ -245,4 +251,60 @@ lemma semiprod_mulact_apply (x:(B ⋊[invsmulMulHom] Aᵐᵒᵖ)ᵐᵒᵖ) (c:C)
     x • c = x.unop.right.unop • x.unop.left • c := rfl
 
 
+end
+
+
+section
+variable {N G H : Type*} [Group N] [Group G] [Group H] {φ : G →* MulAut N}
+namespace SemidirectProduct
+protected lemma induction {motive : N ⋊[φ] G → Prop} (x : N ⋊[φ] G)
+    (left : ∀ n, motive (inl n))
+    (right : ∀ g, motive (inr g))
+    (mul : ∀ (n : N) (g : G), motive (inl n) → motive (inr g) → motive (inl n * inr g)) :
+    motive x := by
+  obtain ⟨x₁,x₂⟩ := x
+  simp only [mk_eq_inl_mul_inr]
+  exact mul _ _ (left x₁) (right x₂)
+
+variable {f₁ : N →* H} {f₂ : G →* H}
+  {h:∀ (g : G),
+    f₁.comp (MulEquiv.toMonoidHom (φ g)) = (MulEquiv.toMonoidHom (MulAut.conj (f₂ g))).comp f₁}
+
+lemma lift_inj
+    (hf₁ : Function.Injective f₁) (hf₂ : Function.Injective f₂)
+    (hindep : f₁.range ⊓ f₂.range = ⊥):
+    Function.Injective (lift f₁ f₂ h) := by
+  rw [← MonoidHom.ker_eq_bot_iff] at hf₁ hf₂ ⊢
+  rw [Subgroup.eq_bot_iff_forall] at hf₁ hf₂ ⊢
+  rw [Subgroup.eq_bot_iff_forall] at hindep
+  simp only [MonoidHom.mem_ker] at hf₁ hf₂ ⊢
+  intro x
+  induction x using SemidirectProduct.induction
+  . simp only [lift_inl]
+    intro h
+    specialize hf₁ _ h
+    rw [hf₁]
+    simp only [map_one]
+  . simp only [lift_inr]
+    intro h
+    specialize hf₂ _ h
+    rw [hf₂]
+    simp only [map_one]
+  . rename_i n g hn hg
+    simp only [lift_inl, lift_inr, map_mul] at hn hg ⊢
+    intro hmul_one
+    rw [← eq_inv_iff_mul_eq_one,← map_inv] at hmul_one ⊢
+    have hn_one: f₁ n = 1 := by
+      apply hindep (f₁ n)
+      simp only [Subgroup.mem_inf, MonoidHom.mem_range, exists_apply_eq_apply, true_and]
+      use g⁻¹
+      exact hmul_one.symm
+    have hg_one : f₂ g = 1 := by
+      rw [hn_one,map_inv,← inv_eq_iff_eq_inv,inv_one] at hmul_one
+      exact hmul_one.symm
+    specialize hf₁ n hn_one
+    specialize hf₂ g hg_one
+    rw [hf₁,hf₂,inv_one,map_one,map_one]
+
+end SemidirectProduct
 end

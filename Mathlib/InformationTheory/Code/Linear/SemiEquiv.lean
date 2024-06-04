@@ -58,7 +58,8 @@ class SemilinearCodeEquivClass (T:Type*)
   (gdistₘ₂ : outParam Tₘ₂) (sₘ₂ : outParam (Submodule K M₂)) [FunLike Tₘ₂ M₂ (M₂ → γ)]
   [GPseudoMetricClass Tₘ₂ M₂ γ] [AddGNorm M₂ γ gdistₘ₂] [StrictModuleGNorm K M₂ gdistₖ gdistₘ₂]
   [IsDelone gdistₘ₂ ↑sₘ₂] -- [_LinearCode γ K gdistₖ gdistₘ₂ sₘ₂]
-  extends EquivLike T M M₂, SemilinearEquivClass T σ₁₂ M M₂, CodeEquivClass T gdistₘ sₘ gdistₘ₂ sₘ₂
+  [EquivLike T M M₂]
+  extends SemilinearEquivClass T σ₁₂ M M₂, CodeEquivClass T gdistₘ sₘ gdistₘ₂ sₘ₂
 
 abbrev LinearCodeEquivClass (T:Type*)
   {γ :outParam Type*} [Semiring γ] [CompleteLinearOrder γ] [ContravariantClass γ γ (.+.) (.<.)]
@@ -73,6 +74,7 @@ abbrev LinearCodeEquivClass (T:Type*)
   (gdistₘ₂ : outParam Tₘ₂) (sₘ₂ : outParam (Submodule K M₂)) [FunLike Tₘ₂ M₂ (M₂ → γ)]
   [GPseudoMetricClass Tₘ₂ M₂ γ] [AddGNorm M₂ γ gdistₘ₂] [StrictModuleGNorm K M₂ gdistₖ gdistₘ₂]
   [IsDelone gdistₘ₂ ↑sₘ₂] -- [_LinearCode γ K gdistₖ gdistₘ₂ sₘ₂]
+  [EquivLike T M M₂]
   := SemilinearCodeEquivClass T (RingHom.id K) gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂
 
 instance SemilinearCodeEquivClass.toSemilinearCodeHomClass (T:Type*)
@@ -89,30 +91,30 @@ instance SemilinearCodeEquivClass.toSemilinearCodeHomClass (T:Type*)
     (gdistₘ₂ : outParam Tₘ₂) (sₘ₂ : outParam (Submodule K M₂)) [FunLike Tₘ₂ M₂ (M₂ → γ)]
     [GPseudoMetricClass Tₘ₂ M₂ γ] [AddGNorm M₂ γ gdistₘ₂] [StrictModuleGNorm K M₂ gdistₖ gdistₘ₂]
     [IsDelone gdistₘ₂ ↑sₘ₂] -- [_LinearCode γ K gdistₖ gdistₘ₂ sₘ₂]
+    [EquivLike T M M₂]
     [SemilinearCodeEquivClass T σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂]:
-    SemilinearCodeHomClass T σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂ where
-  map_dist' := GIsometryClass.map_dist'
-  map_code' := CodeHomClass.map_code'
+    SemilinearCodeHomClass T σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂ :=
+  {‹SemilinearCodeEquivClass T σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂› with}
 end
 
 
 namespace SemilinearCodeEquiv
 
+instance : EquivLike (SemilinearCodeEquiv σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂) M M₂ where
+  coe := fun f => f.toFun
+  inv := fun f => f.invFun
+  left_inv := fun f => f.left_inv
+  right_inv := fun f => f.right_inv
+  coe_injective' := fun f g h h₂ => by cases f; cases g; congr; simp_all
+
 instance instSemilinearCodeEquivClass :
   SemilinearCodeEquivClass
-    (SemilinearCodeEquiv σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂) σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂ := {({
-      coe := fun f => f.toFun
-      inv := fun f => f.invFun
-      left_inv := fun f => f.left_inv
-      right_inv := fun f => f.right_inv
-      coe_injective' := fun f g h h₂ => by cases f; cases g; congr; simp_all
-    }:EquivLike (SemilinearCodeEquiv σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂) M M₂) with
+    (SemilinearCodeEquiv σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂) σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂ where
     map_dist' := fun f => f.map_dist
     map_code' := fun f => f.map_code
     invMap_code' := fun f => f.invMap_code
     map_add := fun f => f.map_add'
     map_smulₛₗ := fun f => f.map_smul'
-    }
 
 def toSemilinearCodeHom (φ : SemilinearCodeEquiv σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂) :
     SemilinearCodeHom σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂ := {φ with}
@@ -128,14 +130,14 @@ protected def copy (f : SemilinearCodeEquiv σ₁₂ gdistₖ gdistₘ sₘ gdis
   {f.toCodeEquiv.copy f' f_inv hf hf_inv, f.toLinearEquiv.copy f' hf with}
 end SemilinearCodeEquiv
 
-variable [SemilinearCodeEquivClass T σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂]
+variable [EquivLike T M M₂] [SemilinearCodeEquivClass T σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂]
 
 @[coe]
 def SemilinearCodeEquivClass.toSemilinearCodeEquiv [SemilinearCodeEquivClass T σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂]
   (f:T) : SemilinearCodeEquiv σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂ := {
-    CodeEquivClass.toCodeEquiv f with
-    map_add' := AddHomClass.map_add f
-    map_smul' := SemilinearMapClass.map_smulₛₗ f
+    ‹SemilinearCodeEquivClass T σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂›.toCodeEquiv f with
+    map_add' := ‹SemilinearCodeEquivClass T σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂›.map_add f
+    map_smul' := ‹SemilinearCodeEquivClass T σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂›.map_smulₛₗ f
   }
 
 instance [SemilinearCodeEquivClass T σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂]:

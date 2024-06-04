@@ -41,7 +41,8 @@ class CodeEquivClass {γ :outParam Type*} [CompleteLinearOrder γ] [AddCommMonoi
     (gdist₁:outParam T₁) (s₁: outParam (Set α₁)) [IsDelone gdist₁ s₁] [_Code γ gdist₁ s₁]
     [FunLike T₂ α₂ (α₂ → γ)] [GPseudoMetricClass T₂ α₂ γ]
     (gdist₂:outParam T₂) (s₂: outParam (Set α₂)) [IsDelone gdist₂ s₂] [_Code γ gdist₂ s₂]
-    extends EquivLike T α₁ α₂, CodeHomClass T gdist₁ s₁ gdist₂ s₂ where
+    [EquivLike T α₁ α₂]
+    extends CodeHomClass T gdist₁ s₁ gdist₂ s₂ where
   invMap_code' : ∀ (φ:T), ∀ x, φ x ∈ s₂ → x ∈ s₁
 
 instance CodeEquivClass.toGIsometryEquivClass
@@ -50,29 +51,26 @@ instance CodeEquivClass.toGIsometryEquivClass
     {gdist₁ : outParam T₁} {s₁:outParam (Set α₁)} [FunLike T₁ α₁ (α₁ → γ)]
     [GPseudoMetricClass T₁ α₁ γ] [IsDelone gdist₁ s₁] {α₂: outParam Type*} {T₂: outParam Type*}
     {gdist₂ : outParam T₂} {s₂:outParam (Set α₂)} [FunLike T₂ α₂ (α₂ → γ)]
-    [GPseudoMetricClass T₂ α₂ γ] [IsDelone gdist₂ s₂] [CodeEquivClass T gdist₁ s₁ gdist₂ s₂]:
-    GIsometryEquivClass T gdist₁ gdist₂ := {
-      CodeEquivClass.toEquivLike with
+    [GPseudoMetricClass T₂ α₂ γ] [IsDelone gdist₂ s₂] [EquivLike T α₁ α₂]
+    [CodeEquivClass T gdist₁ s₁ gdist₂ s₂]:
+    GIsometryEquivClass T gdist₁ gdist₂ where
       map_dist' := fun f => GIsometryClass.map_dist' f
-    }
 
 end
 
 -- theorem CodeEquivClass.invMap_code' : ∀ (φ:T), ∀ y∈ s₂, Equiv.invFun
 namespace CodeEquiv
-
-instance instCodeEquivClass: CodeEquivClass (CodeEquiv gdist₁ s₁ gdist₂ s₂) gdist₁ s₁ gdist₂ s₂ := {
-    ({
+instance : EquivLike (CodeEquiv gdist₁ s₁ gdist₂ s₂) α₁ α₂ where
       coe := fun φ => φ.toFun
       inv := fun φ => φ.invFun
       left_inv := fun φ => φ.left_inv
       right_inv := fun φ => φ.right_inv
       coe_injective' := fun φ₁ φ₂ h₁ _ => by cases φ₁; cases φ₂; congr; simp_all
-    }:EquivLike (CodeEquiv gdist₁ s₁ gdist₂ s₂) α₁ α₂) with
+
+instance instCodeEquivClass: CodeEquivClass (CodeEquiv gdist₁ s₁ gdist₂ s₂) gdist₁ s₁ gdist₂ s₂ where
     map_dist' := fun φ => φ.map_dist
     map_code' := fun φ => φ.map_code
     invMap_code' := fun φ => φ.invMap_code
-  }
 
 @[ext]
 lemma ext ⦃φ φ₂:CodeEquiv gdist₁ s₁ gdist₂ s₂⦄ (h:∀ x, φ x = φ₂ x) :
@@ -89,7 +87,7 @@ protected def copy (f : CodeEquiv gdist₁ s₁ gdist₂ s₂) (f' : α₁ → �
 
 end CodeEquiv
 
-variable [CodeEquivClass T gdist₁ s₁ gdist₂ s₂]
+variable [EquivLike T α₁ α₂] [CodeEquivClass T gdist₁ s₁ gdist₂ s₂]
 
 @[coe]
 def CodeEquivClass.toCodeEquiv [CodeEquivClass T gdist₁ s₁ gdist₂ s₂] (f : T) :

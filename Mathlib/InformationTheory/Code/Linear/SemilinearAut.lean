@@ -1,5 +1,4 @@
 import Mathlib.Algebra.Module.Equiv
-import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.QuotientGroup
 
 
@@ -19,7 +18,7 @@ instance : CoeFun (SemilinearAut R M)
   coe := fun f => f.snd
 
 @[ext]
-protected lemma SemilinearAut.ext
+protected lemma ext
   ⦃f g: SemilinearAut R M⦄ (h₁: ∀ r, f.fst r = g.fst r) (h₂: ∀ x, f.snd x= g.snd x): f = g := by
   cases f; cases g;
   rw [← DFunLike.ext_iff] at h₁
@@ -154,7 +153,7 @@ lemma to_ringaut_addaut_map_npow (x : SemilinearAut R M) (n : ℕ) :
     rw [pow_succ,pow_succ,to_ringaut_addaut_map_mul,hind]
 
 instance : Pow (SemilinearAut R M) ℤ where
-  pow := fun a b => zpowRec b a
+  pow := fun a b => zpowRec (npowRec) b a
 
 private lemma npow_eq_zpow (x : SemilinearAut R M) (n : ℕ) : x ^ (n : ℤ) = x ^ n := rfl
 
@@ -165,7 +164,7 @@ lemma to_ringaut_addaut_map_zpow (x : SemilinearAut R M) (n : ℤ) :
     to_ringaut_addaut (x ^ n) = (to_ringaut_addaut x) ^ n := by
   induction n
   . rename_i n
-    simp only [Int.ofNat_eq_coe, zpow_coe_nat]
+    simp only [Int.ofNat_eq_coe, zpow_natCast]
     induction n
     . rfl
     . rename_i n hind

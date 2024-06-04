@@ -226,7 +226,8 @@ lemma SemidirectProd.smul_def (d:(ι → Kˣ)) (φ:RingAut K) (σ :(ι ≃ ι)) 
 instance : SMulCommClass (ι ≃ ι) K (ι → K) where
   smul_comm := fun a b c => by ext i; rfl
 
-lemma map_smul (z : ((ι → Kˣ) ⋊[invsmulMulHom] ((RingAut K) × (ι ≃ ι))ᵐᵒᵖ)ᵐᵒᵖ) (x : K) (v:ι → K) :
+
+lemma map_smul_somethin (z : ((ι → Kˣ) ⋊[invsmulMulHom] ((RingAut K) × (ι ≃ ι))ᵐᵒᵖ)ᵐᵒᵖ) (x : K) (v:ι → K) :
     z • x • v = (z.unop.right.unop.fst x) • z • v := by
   calc
     z • x • v = z.unop.right.unop • z.unop.left • x • v := rfl
@@ -253,7 +254,7 @@ def fooooooooo1 (z:((ι → Kˣ) ⋊[invsmulMulHom] ((RingAut K) × (ι ≃ ι))
       letI := inst.symm;
       { toFun := (z • .)
         map_add' := fun a b => by exact smul_add z a b
-        map_smul' := map_smul z
+        map_smul' := map_smul_somethin z
         invFun := (z⁻¹ • .)
         left_inv := fun x => inv_smul_smul z x
         right_inv := fun x => smul_inv_smul z x}}
@@ -495,10 +496,18 @@ lemma ringaut_map_hdist {x:ι → K} (φ : RingAut K) : addGNorm hdist x = addGN
   congr
   simp only [ne_eq, Pi.smul_apply, RingAut.smul_def, AddEquivClass.map_eq_zero_iff]
 
+
+abbrev typeof {α:Type*} (_:α) := α
+
 lemma map_index_to_stuff (i:ι): ∃! (c:ι × Kˣ), (f (b i)) = f.fst • (c.2 • b c.1) := by
   have hz₂ : addGNorm hdist (f (b i)) = 1 := by
-    rw [GIsometry.map_norm]
-    exact basis_vec_norm_one i
+    letI nempty: Nonempty ι := ⟨i⟩
+    rw [← (@basis_vec_norm_one ι K) i]
+    letI cls : SemilinearCodeEquivClass (typeof f.snd) (f.fst : K →+* K) trivdist hdist s hdist s :=
+      inferInstance
+    letI := cls.toCodeEquivClass.toGIsometryEquivClass
+    exact GIsometry.map_norm _ _
+
   obtain hz := norm_one_basis_mul.mp (((@ringaut_map_hdist ι) f.fst⁻¹) ▸  hz₂)
   refine (exists_unique_congr ?_).mp hz
   simp only [Prod.forall]
@@ -670,6 +679,10 @@ lemma extract_perm_map_mul (g:SemilinearCodeAut K trivdist hdist s) :
   apply extract_gives_unique_perm'
   exact help_proof_1 f g i
 
+-- i didn't realise immediately, but it's nice that this is reflexively true ;)
+lemma extract_perm_map_inv : extract_perm f⁻¹ = (extract_perm f)⁻¹ := by
+  rfl
+
 lemma extract_diag_map_one : extract_diag (1:SemilinearCodeAut K trivdist hdist s) = 1 := by
   ext i
   simp only [Pi.one_apply, Units.val_one, Units.val_eq_one]
@@ -685,6 +698,36 @@ lemma extract_diag_map_mul (g:SemilinearCodeAut K trivdist hdist s):
   symm
   apply extract_gives_unique_diag (f * g) i
   exact help_proof_1 f g i
+
+
+lemma extract_diag_map_inv : extract_diag f⁻¹ = ((invsmulMulHom (MulOpposite.op (f⁻¹.fst, extract_perm f⁻¹))) (extract_diag f))⁻¹:= by
+  symm
+  calc
+    ((invsmulMulHom (MulOpposite.op (f⁻¹.fst, extract_perm f⁻¹))) (extract_diag f))⁻¹
+      = 1 * ((invsmulMulHom (MulOpposite.op (f⁻¹.fst, extract_perm f⁻¹))) (extract_diag f))⁻¹ := by
+        rw [one_mul]
+    _ = extract_diag 1 * ((invsmulMulHom (MulOpposite.op (f⁻¹.fst, extract_perm f⁻¹))) (extract_diag f))⁻¹ := by
+        rw [(@extract_diag_map_one ι K _ _ s)]
+    _ = extract_diag (f * f⁻¹) * ((invsmulMulHom (MulOpposite.op (f⁻¹.fst, extract_perm f⁻¹))) (extract_diag f))⁻¹ := by
+        rw [mul_inv_self f]
+    _ = extract_diag f⁻¹ * (invsmulMulHom (MulOpposite.op (f⁻¹.fst, extract_perm f⁻¹))) (extract_diag f)
+      * ((invsmulMulHom (MulOpposite.op (f⁻¹.fst, extract_perm f⁻¹))) (extract_diag f))⁻¹ := by
+        rw [extract_diag_map_mul]
+    _ = extract_diag f⁻¹ * 1 := by
+        rw [mul_assoc,mul_inv_self]
+    _ = extract_diag f⁻¹ := by rw [mul_one]
+
+lemma extract_diag_map_inv' : extract_diag f⁻¹ = (f.fst,extract_perm f) • (extract_diag f)⁻¹ := calc
+  extract_diag f⁻¹
+    = ((invsmulMulHom (MulOpposite.op (f⁻¹.fst, extract_perm f⁻¹))) (extract_diag f))⁻¹ := by
+      rw [extract_diag_map_inv]
+  _ = ((invsmulMulHom (MulOpposite.op (f⁻¹.fst,extract_perm f⁻¹))) (extract_diag f)⁻¹) := by
+      rw [map_inv]
+  _ = (f⁻¹.fst,extract_perm f⁻¹)⁻¹ • (extract_diag f)⁻¹ := by rfl
+  _ = (f.fst,extract_perm f) • (extract_diag f)⁻¹ := by
+    rw [extract_perm_map_inv]
+    rfl
+
 
 lemma extract_gives_stuff (i:ι) :
     f (b i) = f.fst • (extract_perm f • (extract_diag f • (b i:ι → K))) := by
@@ -759,7 +802,8 @@ lemma toModuleAut_toSemiProd_eq_coe (f:SemilinearCodeAut K trivdist hdist s) :
   . rfl
   simp only [--toModuleAut_apply_eq_smul, semiprod_mulact_apply, Prod.smul_def',
     SemilinearCodeEquiv.coe_toLinearEquiv]
-  suffices hsuf : (toSemilinearAut (toSemidirectProd' f)).snd = f.snd by
+  suffices hsuf :
+      (toSemilinearAut (toSemidirectProd' f)).snd = (f.snd:(ι → K) ≃ₛₗ[(f.fst : K →+* K)] (ι → K)) by
     rw [hsuf,SemilinearCodeEquiv.coe_toLinearEquiv]
   apply b.ext'
   intro i
@@ -777,6 +821,7 @@ lemma coe_toSemidirectProd'
   rw [toModuleAut_toSemiProd_eq_coe]
   rfl
 
+set_option maxHeartbeats 400000
 lemma toSemidirectProd'_inj : Function.Injective (toSemidirectProd': SemilinearCodeAut K trivdist hdist s →
     ((ι → Kˣ) ⋊[invsmulMulHom] ((RingAut K) × (ι ≃ ι))ᵐᵒᵖ)ᵐᵒᵖ) := fun x y heq => by
   rw [toSemidirectProd',toSemidirectProd',MulOpposite.op_inj] at heq
@@ -856,7 +901,9 @@ def lift_toLinearCodeAut
             simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe]
             simp_rw [addGNorm,hdist]
             simp only [hammingENatdist_eq_cast_hammingDist, hammingDist_zero_right, Nat.cast_inj]
-            rw [← (toSemilinearAut c).snd.map_sub]
+            obtain hsub :=(toSemilinearAut c).snd.map_sub x y
+            simp only [LinearEquiv.coe_coe] at hsub
+            rw [← hsub]
             simp_rw [hammingNorm]
             simp only [Pi.sub_apply, Finset.filter_congr_decidable]
             suffices hsuf :

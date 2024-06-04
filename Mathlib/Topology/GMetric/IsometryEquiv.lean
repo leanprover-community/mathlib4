@@ -25,26 +25,26 @@ class GIsometryEquivClass (T:Type*)
   {T₁ T₂:outParam Type*}
   [FunLike T₁ α₁ (α₁ → γ)] [GPseudoMetricClass T₁ α₁ γ]
   [FunLike T₂ α₂ (α₂ → γ)] [GPseudoMetricClass T₂ α₂ γ]
-  (gdist₁: outParam T₁) (gdist₂: outParam T₂)
-  extends EquivLike T α₁ α₂, GIsometryClass T gdist₁ gdist₂
+  (gdist₁: outParam T₁) (gdist₂: outParam T₂) [EquivLike T α₁ α₂]
+  extends GIsometryClass T gdist₁ gdist₂
 
 -- do or don't declare this instance? don't because loops.
 
 namespace GIsometryEquiv
 
 -- doing this without the `{...} with` gives an error
-instance instGIsometryEquivClass :
-  GIsometryEquivClass (GIsometryEquiv gdist₁ gdist₂) gdist₁ gdist₂ := {
-    ({
-      coe := fun f => f.toFun
-      inv := fun f => f.invFun
-      left_inv := fun f => f.left_inv
-      right_inv := fun f => f.right_inv
-      coe_injective' := fun f g h => by cases f; cases g; congr; simp_all
-    } : EquivLike (GIsometryEquiv gdist₁ gdist₂) α₁ α₂) with
-    map_dist' := fun f => f.map_dist
-  }
+-- while porting this from an old version, i couldn't figure out how to do this.
+-- this is my temp solution
+instance instEquivLike : EquivLike (GIsometryEquiv gdist₁ gdist₂) α₁ α₂ where
+  coe := fun f => f.toFun
+  inv := fun f => f.invFun
+  left_inv := fun f => f.left_inv
+  right_inv := fun f => f.right_inv
+  coe_injective' := fun f g h => by cases f; cases g; congr; simp_all
 
+
+instance instGIsometryEquivClass : GIsometryEquivClass (GIsometryEquiv gdist₁ gdist₂) gdist₁ gdist₂ where
+  map_dist' := fun f => f.map_dist
 
 @[ext]
 theorem ext ⦃f g : GIsometryEquiv gdist₁ gdist₂⦄ (h : ∀ x, f x = g x) : f = g :=
@@ -65,7 +65,7 @@ protected def copy (f : GIsometryEquiv gdist₁ gdist₂) (f' : α₁ → α₂)
 end GIsometryEquiv
 
 
-variable {T:Type*} [GIsometryEquivClass T gdist₁ gdist₂]
+variable {T:Type*} [EquivLike T α₁ α₂] [GIsometryEquivClass T gdist₁ gdist₂]
 
 @[coe]
 def GIsometryEquivClass.toGIsometryEquiv (f : T) : GIsometryEquiv gdist₁ gdist₂:={

@@ -100,7 +100,7 @@ lemma toSemilinearAut.inj : Function.Injective
     . simp_rw [SemilinearCodeEquiv.toLinearEquiv_eq_coe,SemilinearCodeEquiv.coe_toLinearEquiv] at h₂
       rw [h₂]
 
-#check SemilinearAut.ext'
+-- #check SemilinearAut.ext'
 
 lemma ringaut_eq_of_faithful [FaithfulSMul K M] ⦃f g : SemilinearCodeAut K gdistₖ gdistₘ s⦄
     (h:∀ x, f.snd x = g.snd x) : f.fst = g.fst := by
@@ -175,7 +175,7 @@ instance instGroup [_LinearCode γ K gdistₖ gdistₘ s] : Group (SemilinearCod
       simp_rw [Inv.inv]
       simp only [SemilinearCodeEquiv.symm_apply_apply, SemilinearCodeEquiv.refl_apply]
 
-#synth Field K
+-- #synth Field K
 
 instance instAddEquivClass [FaithfulSMul K M] [_LinearCode γ K gdistₖ gdistₘ s] :
   AddEquivClass (SemilinearCodeAut K gdistₖ gdistₘ s) M M where

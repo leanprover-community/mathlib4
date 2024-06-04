@@ -20,6 +20,6 @@ variable (γ) (gdist) (s)
 class _Code [GPseudoMetricClass T α γ] [IsDelone gdist s] : Prop
   where
 
-instance Code.inst_Code [GPseudoMetricClass T α γ] [IsDelone gdist s]: _Code γ gdist s where
+instance inst_Code [GPseudoMetricClass T α γ] [IsDelone gdist s]: _Code γ gdist s where
 
 end code

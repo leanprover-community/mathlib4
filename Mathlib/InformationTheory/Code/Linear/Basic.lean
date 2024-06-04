@@ -1,4 +1,5 @@
 import Mathlib.InformationTheory.Code.Basic
+import Mathlib.Algebra.Module.Submodule.Basic
 
 open Code Set
 

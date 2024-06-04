@@ -663,14 +663,14 @@ structure IsDeloneWith (s : Set α) (r R : ℝ≥0∞) : Prop :=
 def IsDelone (s : Set α) : Prop :=
   ∃ r R, IsDeloneWith s r R
 
-lemma uniformly_discrete_of_is_packing_pos (s : Set α) (ε : ℝ≥0∞) (ε_pos : 0 < ε)
-    (h : s.IsPacking ε) : s.IsUniformlyDiscrete := sorry
+-- lemma uniformly_discrete_of_is_packing_pos (s : Set α) (ε : ℝ≥0∞) (ε_pos : 0 < ε)
+--     (h : s.IsPacking ε) : s.IsUniformlyDiscrete := sorry
 
-lemma relatively_dense_of_is_covering_finite (s : Set α) (ε : ℝ≥0∞) (ε_finite : ε < ∞)
-    (h : s.IsCovering ε) : s.IsRelativelyDense := sorry
+-- lemma relatively_dense_of_is_covering_finite (s : Set α) (ε : ℝ≥0∞) (ε_finite : ε < ∞)
+--     (h : s.IsCovering ε) : s.IsRelativelyDense := sorry
 
-lemma delone_of_isNet_pos_finite (s : Set α) (ε : ℝ≥0∞) (ε_pos : 0 < ε) (ε_finite : ε < ∞)
-    (h : s.IsNet ε) : s.IsDelone := sorry
+-- lemma delone_of_isNet_pos_finite (s : Set α) (ε : ℝ≥0∞) (ε_pos : 0 < ε) (ε_finite : ε < ∞)
+--     (h : s.IsNet ε) : s.IsDelone := sorry
 
 open scoped Pointwise
 

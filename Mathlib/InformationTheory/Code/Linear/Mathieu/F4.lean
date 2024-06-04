@@ -49,6 +49,8 @@ private def h2: (2:ZMod 2) = (0:ZMod 2) := rfl
 private def h3: (3:ZMod 2) = (1:ZMod 2) := rfl
 
 instance : AddCommGroup F4 where
+  nsmul := nsmulRec
+  zsmul := zsmulRec
   add_assoc := by simp_rw [add_def,add_assoc,forall_const]
   zero_add := by simp_rw [zero_def',add_def,zero_add,forall_const]
   add_zero := by simp_rw [zero_def',add_def,add_zero,forall_const]
@@ -56,6 +58,7 @@ instance : AddCommGroup F4 where
   add_left_neg := by simp_rw [neg_def,add_def,zero_def']; ring_nf; simp_rw [h2,mul_zero,forall_const]
 
 instance : CommRing F4 where
+  zsmul := zsmulRec
   add_left_neg := by simp_rw [neg_def,add_def,zero_def']; ring_nf; simp_rw [h2,mul_zero,forall_const]
   left_distrib := by simp_rw [mul_def,add_def]; ring_nf; simp only [forall_const]
   right_distrib := by simp_rw [mul_def,add_def]; ring_nf; simp only [forall_const]
@@ -67,6 +70,8 @@ instance : CommRing F4 where
   mul_comm := by simp_rw [mul_def]; ring_nf; simp_rw [forall_const]
 
 instance : Field F4 where
+  qsmul := _
+  nnqsmul := _
   exists_pair_ne := ⟨0,1,
     by simp_rw [ne_eq,F4.ext_iff,zero_def',one_def',and_self];exact Fin.zero_ne_one⟩
   mul_inv_cancel := by
@@ -175,7 +180,7 @@ lemma cases (x:F4) : x = 0 ∨ x = 1 ∨ x = ω ∨ x = ω⁻¹ := by
       rw [zero_def']
     rename_i n2
     rcases n2
-    . simp only [Nat.zero_eq, Nat.reduceSucc, Fin.mk_one]
+    . simp only [Fin.isValue, Nat.reduceAdd, zero_add, Fin.mk_one]
       right
       right
       rw [inv_def]
@@ -185,10 +190,11 @@ lemma cases (x:F4) : x = 0 ∨ x = 1 ∨ x = ω ∨ x = ω⁻¹ := by
   . simp only [Nat.zero_eq, Nat.reduceSucc, Fin.mk_one, mk.injEq, true_and]
     right
     rcases n2
-    . simp only [Nat.zero_eq, Fin.zero_eta, true_or, or_true]
+    . simp only [Nat.reduceAdd, zero_add, Fin.mk_one, Fin.isValue, Fin.zero_eta, and_self, true_or,
+      or_true]
     rename_i n2
     rcases n2
-    . simp only [Nat.zero_eq, Nat.reduceSucc, Fin.mk_one, one_ne_zero, false_or]
+    . simp only [Nat.reduceAdd, zero_add, Fin.mk_one, Fin.isValue, one_ne_zero, and_false, false_or]
       left
       rw [one_def']
     contradiction
