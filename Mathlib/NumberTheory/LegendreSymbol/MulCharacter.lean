@@ -132,9 +132,6 @@ theorem map_nonunit (χ : MulChar R R') {a : R} (ha : ¬IsUnit a) : χ a = 0 :=
   χ.map_nonunit' a ha
 #align mul_char.map_nonunit MulChar.map_nonunit
 
-lemma map_unit (χ : MulChar R R') (a : Rˣ) : IsUnit (χ a) :=
-  IsUnit.map χ <| a.isUnit
-
 /-- Extensionality. Since `MulChar`s always take the value zero on non-units, it is sufficient
 to compare the values on units. -/
 @[ext]
