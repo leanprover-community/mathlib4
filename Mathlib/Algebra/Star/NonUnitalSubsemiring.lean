@@ -24,13 +24,13 @@ universe v w w'
 
 variable {A : Type v} {B : Type w} {C : Type w'}
 
-/-- A sub star magma is a subset of a magma which is closed under the `star`-/
-structure SubStarmagma (M : Type v) [Mul M] [Star M] extends Subsemigroup M : Type v where
+/-- A sub star semigroup is a subset of a magma which is closed under the `star`-/
+structure SubStarSemigroup (M : Type v) [Mul M] [Star M] extends Subsemigroup M : Type v where
   /-- The `carrier` of a `StarSubset` is closed under the `star` operation. -/
   star_mem' : ∀ {a : M} (_ha : a ∈ carrier), star a ∈ carrier
 
-/-- Reinterpret a `SubStarmagma` as a `Subsemigroup`. -/
-add_decl_doc SubStarmagma.toSubsemigroup
+/-- Reinterpret a `SubStarSemigroup` as a `Subsemigroup`. -/
+add_decl_doc SubStarSemigroup.toSubsemigroup
 
 /-- A non-unital star subsemiring is a non-unital subsemiring which also is closed under the
 `star` operation. -/
@@ -165,18 +165,18 @@ end Center
 end StarSubsemiring
 
 end StarSubsemiring
-section SubStarmagma
+section SubStarSemigroup
 
 variable (A) [Mul A] [StarMul A]
 
-namespace SubStarmagma
+namespace SubStarSemigroup
 
 /-- The center of magma `A` is the set of elements that commute and associate
 with everything in `A`, here realized as a `SubStarSemigroup`. -/
-def center : SubStarmagma A :=
+def center : SubStarSemigroup A :=
   { Subsemigroup.center A with
     star_mem' := Set.star_mem_center }
 
-end SubStarmagma
+end SubStarSemigroup
 
-end SubStarmagma
+end SubStarSemigroup
