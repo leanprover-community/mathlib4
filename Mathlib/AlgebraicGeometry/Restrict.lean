@@ -226,7 +226,7 @@ noncomputable abbrev Scheme.restrictMapIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsI
     (Y.ofRestrict _) _
   dsimp [restrict]
   rw [Set.range_comp, Subtype.range_val, Subtype.range_coe]
-  refine' @Set.image_preimage_eq _ _ f.1.base U.1 _
+  refine @Set.image_preimage_eq _ _ f.1.base U.1 ?_
   rw [← TopCat.epi_iff_surjective]
   infer_instance
 #align algebraic_geometry.Scheme.restrict_map_iso AlgebraicGeometry.Scheme.restrictMapIso
@@ -419,7 +419,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Open
         (f ∣_ U ∣_
           (Y ∣_ᵤ U).basicOpen (Y.presheaf.map (eqToHom U.openEmbedding_obj_top).op r)) ≅
       Arrow.mk (f ∣_ Y.basicOpen r) := by
-  refine' morphismRestrictRestrict _ _ _ ≪≫ morphismRestrictEq _ _
+  refine morphismRestrictRestrict _ _ _ ≪≫ morphismRestrictEq _ ?_
   have e := Scheme.preimage_basicOpen (Y.ofRestrict U.openEmbedding) r
   erw [Scheme.ofRestrict_val_c_app, Opens.adjunction_counit_app_self, eqToHom_op] at e
   rw [← (Y.restrict U.openEmbedding).basicOpen_res_eq _ (eqToHom U.inclusion_map_eq_top).op]
