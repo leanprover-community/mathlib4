@@ -228,8 +228,8 @@ noncomputable def botEquiv : (⊥ : IntermediateField F E) ≃ₐ[F] F :=
 variable {F E}
 
 -- Porting note: this was tagged `simp`.
-theorem botEquiv_def (x : F) : botEquiv F E (algebraMap F (⊥ : IntermediateField F E) x) = x :=
-  by simp
+theorem botEquiv_def (x : F) : botEquiv F E (algebraMap F (⊥ : IntermediateField F E) x) = x := by
+  simp
 #align intermediate_field.bot_equiv_def IntermediateField.botEquiv_def
 
 @[simp]
@@ -1006,8 +1006,9 @@ theorem rank_adjoin_eq_one_iff : Module.rank F (adjoin F S) = 1 ↔ S ⊆ (⊥ :
   Iff.trans rank_eq_one_iff adjoin_eq_bot_iff
 #align intermediate_field.rank_adjoin_eq_one_iff IntermediateField.rank_adjoin_eq_one_iff
 
-theorem rank_adjoin_simple_eq_one_iff : Module.rank F F⟮α⟯ = 1 ↔ α ∈ (⊥ : IntermediateField F E) :=
-  by rw [rank_adjoin_eq_one_iff]; exact Set.singleton_subset_iff
+theorem rank_adjoin_simple_eq_one_iff :
+    Module.rank F F⟮α⟯ = 1 ↔ α ∈ (⊥ : IntermediateField F E) := by
+  rw [rank_adjoin_eq_one_iff]; exact Set.singleton_subset_iff
 #align intermediate_field.rank_adjoin_simple_eq_one_iff IntermediateField.rank_adjoin_simple_eq_one_iff
 
 theorem finrank_adjoin_eq_one_iff : finrank F (adjoin F S) = 1 ↔ S ⊆ (⊥ : IntermediateField F E) :=
@@ -1094,13 +1095,13 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
           intro x
           obtain ⟨y, hy⟩ := this (Subtype.mem x)
           exact ⟨y, Subtype.ext hy⟩
-        refine' Subfield.closure_le.mpr (Set.union_subset (fun x hx => _) _)
+        refine Subfield.closure_le.mpr (Set.union_subset (fun x hx => ?_) ?_)
         · obtain ⟨y, hy⟩ := hx
           refine ⟨y, ?_⟩
           -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
           erw [RingHom.comp_apply, AdjoinRoot.lift_of (aeval_gen_minpoly F α)]
           exact hy
-        · refine' Set.singleton_subset_iff.mpr ⟨AdjoinRoot.root (minpoly F α), _⟩
+        · refine Set.singleton_subset_iff.mpr ⟨AdjoinRoot.root (minpoly F α), ?_⟩
           -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
           erw [RingHom.comp_apply, AdjoinRoot.lift_root (aeval_gen_minpoly F α)]
           rfl)

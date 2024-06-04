@@ -259,8 +259,8 @@ theorem tendsto_abs_cocompact_atTop : Tendsto abs (cocompact ℂ) atTop :=
 #align complex.tendsto_abs_cocompact_at_top Complex.tendsto_abs_cocompact_atTop
 
 /-- The `normSq` function on `ℂ` is proper. -/
-theorem tendsto_normSq_cocompact_atTop : Tendsto normSq (cocompact ℂ) atTop :=
-  by simpa [mul_self_abs]
+theorem tendsto_normSq_cocompact_atTop : Tendsto normSq (cocompact ℂ) atTop := by
+  simpa [mul_self_abs]
     using tendsto_abs_cocompact_atTop.atTop_mul_atTop tendsto_abs_cocompact_atTop
 #align complex.tendsto_norm_sq_cocompact_at_top Complex.tendsto_normSq_cocompact_atTop
 

@@ -790,8 +790,8 @@ instance nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) :=
           ⟩⟩
 #align zmod.nontrivial ZMod.nontrivial
 
-instance nontrivial' : Nontrivial (ZMod 0) :=
-  by delta ZMod; infer_instance
+instance nontrivial' : Nontrivial (ZMod 0) := by
+  delta ZMod; infer_instance
 #align zmod.nontrivial' ZMod.nontrivial'
 
 /-- The inversion on `ZMod n`.

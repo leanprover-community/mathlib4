@@ -137,8 +137,8 @@ theorem sub_apply [∀ i j, Sub (α i j)] (M N : DMatrix m n α) (i j) : (M - N)
 
 @[simp]
 theorem map_zero [∀ i j, Zero (α i j)] {β : m → n → Type w} [∀ i j, Zero (β i j)]
-    {f : ∀ ⦃i j⦄, α i j → β i j} (h : ∀ i j, f (0 : α i j) = 0) : (0 : DMatrix m n α).map f = 0 :=
-  by ext; simp [h]
+    {f : ∀ ⦃i j⦄, α i j → β i j} (h : ∀ i j, f (0 : α i j) = 0) :
+    (0 : DMatrix m n α).map f = 0 := by ext; simp [h]
 #align dmatrix.map_zero DMatrix.map_zero
 
 theorem map_add [∀ i j, AddMonoid (α i j)] {β : m → n → Type w} [∀ i j, AddMonoid (β i j)]
