@@ -248,7 +248,7 @@ instance forget_reflectsIsomorphisms : (forget LightProfinite).ReflectsIsomorphi
 noncomputable
 def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
   @asIso _ _ _ _ ⟨f, f.continuous⟩ (@isIso_of_reflects_iso _ _ _ _ _ _ _ lightProfiniteToCompHaus
-    (IsIso.of_iso (CompHaus.isoOfHomeo f)) _)
+    (Iso.isIso_hom (CompHaus.isoOfHomeo f)) _)
 
 /-- Construct a homeomorphism from an isomorphism. -/
 @[simps!]
