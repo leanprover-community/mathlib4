@@ -19,7 +19,7 @@ which makes it the `i`th-iteration of `Φ` for all `i` such that `i ≤ j`.
 Under suitable assumptions on `C`, we shall show that this category
 `Iteration ε j` is equivalent to the punctual category (TODO).
 We shall study morphisms in this category, showing first that
-there is at most one morphism between two morphisms, and secondly,
+there is at most one morphism between two morphisms (done), and secondly,
 that there does always exist a unique morphism between
 two objects (TODO). Then, we shall show the existence of
 an object (TODO). In these proofs, which are all done using
