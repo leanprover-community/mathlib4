@@ -22,38 +22,35 @@ open CategoryTheory
 /-- A bundled finite topological space. -/
 structure FinTopCat where
   /-- carrier of a finite topological space. -/
-  α : Type u
-  [fintype : Fintype α]
-  [topologicalSpace : TopologicalSpace α]
+  toTop : TopCat.{u}
+  [fintype : Fintype toTop]
 
 namespace FinTopCat
 
 instance : Inhabited FinTopCat :=
-  ⟨⟨PUnit⟩⟩
+  ⟨{ toTop := { α := PEmpty } }⟩
 
 instance : CoeSort FinTopCat (Type u) :=
-  ⟨FinTopCat.α⟩
+  ⟨fun X => X.toTop⟩
 
-attribute [instance] fintype topologicalSpace
+attribute [instance] fintype
 
-instance : Category FinTopCat.{u} where
-  Hom X Y := { f : X → Y // Continuous f }
-  id X := ⟨id, by continuity⟩
-  comp f g := ⟨g.val.comp f.val, g.property.comp f.property⟩
+instance : Category FinTopCat :=
+  InducedCategory.category toTop
 
-instance : ConcreteCategory FinTopCat.{u} where
-  forget := { obj := fun X ↦ X.α, map := fun f ↦ f.val }
-  forget_faithful := ⟨fun {_ _ a b} h ↦ Subtype.ext h⟩
+instance : ConcreteCategory FinTopCat :=
+  InducedCategory.concreteCategory _
 
 instance (X : FinTopCat) : TopologicalSpace ((forget FinTopCat).obj X) :=
-  X.topologicalSpace
+  inferInstanceAs <| TopologicalSpace X
 
 instance (X : FinTopCat) : Fintype ((forget FinTopCat).obj X) :=
   X.fintype
 
 /-- Construct a bundled `FinTopCat` from the underlying type and the appropriate typeclasses. -/
-def of (X : Type u) [Fintype X] [TopologicalSpace X] : FinTopCat :=
-  ⟨X⟩
+def of (X : Type u) [Fintype X] [TopologicalSpace X] : FinTopCat where
+  toTop := TopCat.of X
+  fintype := ‹_›
 
 @[simp]
 theorem coe_of (X : Type u) [Fintype X] [TopologicalSpace X] :
@@ -62,14 +59,14 @@ theorem coe_of (X : Type u) [Fintype X] [TopologicalSpace X] :
 
 /-- The forgetful functor to `FintypeCat`. -/
 instance : HasForget₂ FinTopCat FintypeCat :=
-  HasForget₂.mk' (fun X ↦ FintypeCat.of X) (fun _ ↦ rfl) (fun f ↦ f.val) HEq.rfl
+  HasForget₂.mk' (fun X ↦ FintypeCat.of X) (fun _ ↦ rfl) (fun f ↦ f.toFun) HEq.rfl
 
 instance (X : FinTopCat) : TopologicalSpace ((forget₂ FinTopCat FintypeCat).obj X) :=
-  X.topologicalSpace
+  inferInstanceAs <| TopologicalSpace X
 
 /-- The forgetful functor to `TopCat`. -/
 instance : HasForget₂ FinTopCat TopCat :=
-  HasForget₂.mk' (fun R ↦ TopCat.of R) (fun _ ↦ rfl) (fun f ↦ ⟨f.1, f.2⟩) HEq.rfl
+  InducedCategory.hasForget₂ _
 
 instance (X : FinTopCat) : Fintype ((forget₂ FinTopCat TopCat).obj X) :=
   X.fintype
