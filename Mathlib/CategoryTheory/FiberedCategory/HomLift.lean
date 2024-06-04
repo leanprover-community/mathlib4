@@ -96,9 +96,7 @@ lemma eq_of_isHomLift {a b : 𝒳} (f : p.obj a ⟶ p.obj b) (φ : a ⟶ b) [p.I
 
 lemma of_fac {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj a = R) (hb : p.obj b = S)
     (h : f = eqToHom ha.symm ≫ p.map φ ≫ eqToHom hb) : p.IsHomLift f φ := by
-  subst ha hb
-  obtain rfl : f = p.map φ := by simpa using h
-  infer_instance
+  subst ha hb h; simp
 
 lemma of_fac' {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj a = R) (hb : p.obj b = S)
     (h : p.map φ = eqToHom ha ≫ f ≫ eqToHom hb.symm) : p.IsHomLift f φ := by
@@ -153,19 +151,19 @@ lemma id_lift_eqToHom_codomain {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} (hRS : R = S) {b
 
 instance comp_eqToHom_lift {R S : 𝒮} {a' a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : a' = a)
     [p.IsHomLift f φ] : p.IsHomLift f (eqToHom h ≫ φ) := by
-  subst h; aesop
+  subst h; simp_all
 
 instance eqToHom_comp_lift {R S : 𝒮} {a b b' : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : b = b')
     [p.IsHomLift f φ] : p.IsHomLift f (φ ≫ eqToHom h) := by
-  subst h; aesop
+  subst h; simp_all
 
 instance lift_eqToHom_comp {R' R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : R' = R)
     [p.IsHomLift f φ] : p.IsHomLift (eqToHom h ≫ f) φ := by
-  subst h; aesop
+  subst h; simp_all
 
 instance lift_comp_eqToHom {R S S': 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : S = S')
     [p.IsHomLift f φ] : p.IsHomLift (f ≫ eqToHom h) φ := by
-  subst h; aesop
+  subst h; simp_all
 
 @[simp]
 lemma comp_eqToHom_lift_iff {R S : 𝒮} {a' a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : a' = a) :
@@ -231,12 +229,13 @@ inverse of `f` given by `isoOfIsoLift`. -/
 protected instance inv_lift (f : R ⟶ S) (φ : a ≅ b) [p.IsHomLift f φ.hom] :
     p.IsHomLift (isoOfIsoLift p f φ).inv φ.inv := by
   apply of_commSq
-  apply CommSq.horiz_inv (f:=p.mapIso φ) (by simpa using (commSq p f φ.hom))
+  apply CommSq.horiz_inv (f:=p.mapIso φ) (by apply commSq p f φ.hom)
 
 /-- If `φ : a ⟶ b` lifts `f : R ⟶ S` and both are isomorphisms, then `φ⁻¹` lifts `f⁻¹`. -/
 protected instance inv (f : R ⟶ S) (φ : a ⟶ b) [IsIso f] [IsIso φ] [p.IsHomLift f φ] :
     p.IsHomLift (inv f) (inv φ) :=
-  @IsHomLift.inv_lift_inv _ _ _ _ p _ _ _ _ (asIso f) (asIso φ) (by aesop)
+  have : p.IsHomLift (asIso f).hom (asIso φ).hom := by simp_all
+  IsHomLift.inv_lift_inv p (asIso f) (asIso φ)
 
 end
 
