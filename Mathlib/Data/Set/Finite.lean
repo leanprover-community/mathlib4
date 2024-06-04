@@ -778,7 +778,7 @@ protected lemma Infinite.mono {s t : Set α} (h : s ⊆ t) : s.Infinite → t.In
 #align set.infinite.mono Set.Infinite.mono
 
 theorem Finite.diff {s : Set α} (hs : s.Finite) (t : Set α) : (s \ t).Finite :=
-  hs.subset <| diff_subset _ _
+  hs.subset diff_subset
 #align set.finite.diff Set.Finite.diff
 
 theorem Finite.of_diff {s t : Set α} (hd : (s \ t).Finite) (ht : t.Finite) : s.Finite :=

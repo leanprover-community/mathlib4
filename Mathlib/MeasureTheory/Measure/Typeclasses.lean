@@ -384,7 +384,7 @@ theorem _root_.Finset.measure_zero (s : Finset α) (μ : Measure α) [NoAtoms μ
 #align finset.measure_zero Finset.measure_zero
 
 theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐ[μ] s :=
-  union_ae_eq_right.2 <| measure_mono_null (diff_subset _ _) (measure_singleton _)
+  union_ae_eq_right.2 <| measure_mono_null diff_subset (measure_singleton _)
 #align measure_theory.insert_ae_eq_self MeasureTheory.insert_ae_eq_self
 
 section

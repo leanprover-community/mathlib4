@@ -227,7 +227,7 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
 
   let ι : Set (Set α) := irreducibleComponents α \ {Z}
   have hι : ι.Finite := (NoetherianSpace.finite_irreducibleComponents (α := α)).subset
-    (Set.diff_subset _ _)
+    diff_subset
   have hι' : Finite ι := by rwa [Set.finite_coe_iff]
 
   let U := Z \ ⋃ (x : ι), x

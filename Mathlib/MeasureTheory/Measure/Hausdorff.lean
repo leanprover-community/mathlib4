@@ -183,7 +183,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
     `μ` is only an outer measure. -/
   by_cases htop : μ (s \ t) = ∞
   · rw [htop, add_top, ← htop]
-    exact μ.mono (diff_subset _ _)
+    exact μ.mono diff_subset
   suffices μ (⋃ n, S n) ≤ ⨆ n, μ (S n) by calc
     μ (s ∩ t) + μ (s \ t) = μ (s ∩ t) + μ (⋃ n, S n) := by rw [iUnion_S]
     _ ≤ μ (s ∩ t) + ⨆ n, μ (S n) := by gcongr

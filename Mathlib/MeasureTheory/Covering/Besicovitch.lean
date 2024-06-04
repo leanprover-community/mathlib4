@@ -913,7 +913,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SigmaFinit
   -- we have constructed an almost everywhere covering of `s` by disjoint balls. Let `s'` be the
   -- remaining set.
   let s' := s \ ⋃ x ∈ t0, closedBall x (r0 x)
-  have s's : s' ⊆ s := diff_subset _ _
+  have s's : s' ⊆ s := diff_subset
   obtain ⟨N, τ, hτ, H⟩ : ∃ N τ, 1 < τ ∧ IsEmpty (Besicovitch.SatelliteConfig α N τ) :=
     HasBesicovitchCovering.no_satelliteConfig
   obtain ⟨v, s'v, v_open, μv⟩ : ∃ v, v ⊇ s' ∧ IsOpen v ∧ μ v ≤ μ s' + ε / 2 / N :=

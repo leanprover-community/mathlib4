@@ -1181,7 +1181,7 @@ theorem add_left [T2Space N] [ContinuousAdd M] (h₁ : v₁ ⟂ᵥ w) (h₂ : v�
   · rw [Set.compl_inter] at ht
     rw [(_ : t = uᶜ ∩ t ∪ vᶜ \ uᶜ ∩ t),
       of_union _ (hmu.compl.inter hmt) ((hmv.compl.diff hmu.compl).inter hmt), hu₂, hv₂, add_zero]
-    · exact Set.Subset.trans Set.inter_subset_left (Set.diff_subset _ _)
+    · exact Set.Subset.trans Set.inter_subset_left diff_subset
     · exact Set.inter_subset_left
     · exact disjoint_sdiff_self_right.mono Set.inter_subset_left Set.inter_subset_left
     · apply Set.Subset.antisymm <;> intro x hx

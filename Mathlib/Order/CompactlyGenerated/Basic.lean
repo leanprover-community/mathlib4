@@ -444,7 +444,7 @@ theorem CompleteLattice.setIndependent_iff_finite {s : Set α} :
       · rwa [Finset.coe_insert, Set.insert_diff_self_of_not_mem] at h'
         exact fun con => ((Set.mem_diff a).1 (ht con)).2 (Set.mem_singleton a)
       · rw [Finset.coe_insert, Set.insert_subset_iff]
-        exact ⟨ha, Set.Subset.trans ht (Set.diff_subset _ _)⟩⟩
+        exact ⟨ha, Set.Subset.trans ht diff_subset⟩⟩
 #align complete_lattice.set_independent_iff_finite CompleteLattice.setIndependent_iff_finite
 
 lemma CompleteLattice.independent_iff_supIndep_of_injOn {ι : Type*} {f : ι → α}
@@ -616,7 +616,7 @@ theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a }
     rw [Set.mem_union, Set.mem_singleton_iff] at hx
     obtain rfl | xa := eq_or_ne x a
     · simp only [Set.mem_singleton, Set.insert_diff_of_mem, Set.union_singleton]
-      exact con.mono_right ((sSup_le_sSup <| Set.diff_subset _ _).trans le_sup_right)
+      exact con.mono_right ((sSup_le_sSup Set.diff_subset).trans le_sup_right)
     · have h : (s ∪ {a}) \ {x} = s \ {x} ∪ {a} := by
         simp only [Set.union_singleton]
         rw [Set.insert_diff_of_not_mem]

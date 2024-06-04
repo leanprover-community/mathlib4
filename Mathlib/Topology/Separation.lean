@@ -286,7 +286,7 @@ theorem minimal_nonempty_closed_subsingleton [T0Space X] {s : Set X} (hs : IsClo
   wlog h : x ∈ U ∧ y ∉ U
   · refine this hs hmin y hy x hx (Ne.symm hxy) U hUo hU.symm (hU.resolve_left h)
   cases' h with hxU hyU
-  have : s \ U = s := hmin (s \ U) (diff_subset _ _) ⟨y, hy, hyU⟩ (hs.sdiff hUo)
+  have : s \ U = s := hmin (s \ U) diff_subset ⟨y, hy, hyU⟩ (hs.sdiff hUo)
   exact (this.symm.subset hx).2 hxU
 #align minimal_nonempty_closed_subsingleton minimal_nonempty_closed_subsingleton
 
@@ -669,7 +669,7 @@ theorem continuousOn_update_iff [T1Space X] [DecidableEq X] [TopologicalSpace Y]
   refine and_congr ⟨fun H z hz => ?_, fun H z hzx hzs => ?_⟩ (forall_congr' fun _ => ?_)
   · specialize H z hz.2 hz.1
     rw [continuousWithinAt_update_of_ne hz.2] at H
-    exact H.mono (diff_subset _ _)
+    exact H.mono diff_subset
   · rw [continuousWithinAt_update_of_ne hzx]
     refine (H z ⟨hzs, hzx⟩).mono_of_mem (inter_mem_nhdsWithin _ ?_)
     exact isOpen_ne.mem_nhds hzx
@@ -750,7 +750,7 @@ theorem nhdsWithin_insert_of_ne [T1Space X] {x y : X} {s : Set X} (hxy : x ≠ y
   obtain ⟨o, ho, hxo, host⟩ := mem_nhdsWithin.mp ht
   refine mem_nhdsWithin.mpr ⟨o \ {y}, ho.sdiff isClosed_singleton, ⟨hxo, hxy⟩, ?_⟩
   rw [inter_insert_of_not_mem <| not_mem_diff_of_mem (mem_singleton y)]
-  exact (inter_subset_inter (diff_subset _ _) Subset.rfl).trans host
+  exact (inter_subset_inter diff_subset Subset.rfl).trans host
 #align nhds_within_insert_of_ne nhdsWithin_insert_of_ne
 
 /-- If `t` is a subset of `s`, except for one point,
@@ -875,7 +875,7 @@ theorem tendsto_const_nhds_iff [T1Space X] {l : Filter Y} [NeBot l] {c d : X} :
 theorem isOpen_singleton_of_finite_mem_nhds [T1Space X] (x : X)
     {s : Set X} (hs : s ∈ 𝓝 x) (hsf : s.Finite) : IsOpen ({x} : Set X) := by
   have A : {x} ⊆ s := by simp only [singleton_subset_iff, mem_of_mem_nhds hs]
-  have B : IsClosed (s \ {x}) := (hsf.subset (diff_subset _ _)).isClosed
+  have B : IsClosed (s \ {x}) := (hsf.subset diff_subset).isClosed
   have C : (s \ {x})ᶜ ∈ 𝓝 x := B.isOpen_compl.mem_nhds fun h => h.2 rfl
   have D : {x} ∈ 𝓝 x := by simpa only [← diff_eq, diff_diff_cancel_left A] using inter_mem hs C
   rwa [← mem_interior_iff_mem_nhds, ← singleton_subset_iff, subset_interior_iff_isOpen] at D

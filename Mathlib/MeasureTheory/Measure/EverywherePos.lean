@@ -103,7 +103,7 @@ lemma measure_eq_zero_of_subset_diff_everywherePosSubset
   · intro x hx
     obtain ⟨u, ux, hu⟩ : ∃ u ∈ 𝓝[s] x, μ u = 0 := by
       simpa [everywherePosSubset, (h'k hx).1] using (h'k hx).2
-    exact ⟨u, nhdsWithin_mono x (h'k.trans (diff_subset _ _)) ux, hu⟩
+    exact ⟨u, nhdsWithin_mono x (h'k.trans diff_subset) ux, hu⟩
 
 /-- In a space with an inner regular measure, any measurable set coincides almost everywhere with
 its everywhere positive subset. -/
@@ -119,8 +119,7 @@ measure coincides almost everywhere with its everywhere positive subset. -/
 lemma everywherePosSubset_ae_eq_of_measure_ne_top
     [OpensMeasurableSpace α] [InnerRegularCompactLTTop μ] (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
     μ.everywherePosSubset s =ᵐ[μ] s := by
-  have A : μ (s \ μ.everywherePosSubset s) ≠ ∞ :=
-    ((measure_mono (diff_subset _ _ )).trans_lt h's.lt_top).ne
+  have A : μ (s \ μ.everywherePosSubset s) ≠ ∞ := (measure_mono diff_subset).trans_lt h's.lt_top).ne
   simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), measure_empty,
     true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact_of_ne_top A,
     ENNReal.iSup_eq_zero]

@@ -559,7 +559,7 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
       · change _ ∈ AddSubgroup.toIntSubmodule L
         rw [← h_spanL]
         refine sub_mem ?_ ?_
-        · exact zsmul_mem (subset_span (Set.diff_subset _ _ hv)) _
+        · exact zsmul_mem (subset_span (Set.diff_subset hv)) _
         · exact span_mono (by simp [e, ht_inc]) (coe_mem _)
     have h_finite : Set.Finite (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) :=
       Metric.finite_isBounded_inter_isClosed Metric.isBounded_closedBall inferInstance

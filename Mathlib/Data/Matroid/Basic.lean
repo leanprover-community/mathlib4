@@ -319,7 +319,7 @@ private theorem inter_left_subset_ground (hX : X ⊆ M.E) :
 
 @[aesop unsafe 5% (rule_sets := [Matroid])]
 private theorem diff_subset_ground (hX : X ⊆ M.E) : X \ Y ⊆ M.E :=
-  (diff_subset _ _).trans hX
+  diff_subset.trans hX
 
 @[aesop unsafe 10% (rule_sets := [Matroid])]
 private theorem ground_diff_subset_ground : M.E \ X ⊆ M.E :=
@@ -547,7 +547,7 @@ theorem Indep.inter_left (hI : M.Indep I) (X : Set α) : M.Indep (X ∩ I) :=
   hI.subset inter_subset_right
 
 theorem Indep.diff (hI : M.Indep I) (X : Set α) : M.Indep (I \ X) :=
-  hI.subset (diff_subset _ _)
+  hI.subset diff_subset
 
 theorem Base.eq_of_subset_indep (hB : M.Base B) (hI : M.Indep I) (hBI : B ⊆ I) : B = I :=
   let ⟨B', hB', hB'I⟩ := hI.exists_base_superset

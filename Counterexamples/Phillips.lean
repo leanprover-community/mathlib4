@@ -296,7 +296,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   -- We will get a contradiction from the fact that there is a countable set `u` with positive
   -- measure in the complement of `⋃ n, s n`.
   rcases h (⋃ n, ↑(s n)) (countable_iUnion fun n => (s n).2) with ⟨t, t_count, ht⟩
-  let u : A := ⟨t \ ⋃ n, ↑(s n), t_count.mono (diff_subset _ _)⟩
+  let u : A := ⟨t \ ⋃ n, ↑(s n), t_count.mono diff_subset⟩
   set ε := f ↑u with hε
   have ε_pos : 0 < ε := ht
   have I1 : ∀ n, ε / 2 ≤ f (↑(s (n + 1)) \ ↑(s n)) := by
@@ -337,11 +337,11 @@ theorem exists_discrete_support (f : BoundedAdditiveMeasure α) :
   · have : t \ (s₁ ∪ s₂) = (t \ (s₁ ∪ s₂)) \ s₁ := by
       rw [diff_diff, union_comm, union_assoc, union_self]
     rw [this]
-    exact h₁ _ (ht.mono (diff_subset _ _))
+    exact h₁ _ (ht.mono diff_subset)
   · have : t \ (s₁ ∪ s₂) = (t \ (s₁ ∪ s₂)) \ s₂ := by rw [diff_diff, union_assoc, union_self]
     rw [this]
     simp only [neg_nonpos, neg_apply] at h₂
-    exact h₂ _ (ht.mono (diff_subset _ _))
+    exact h₂ _ (ht.mono diff_subset)
 #align counterexample.phillips_1940.bounded_additive_measure.exists_discrete_support Counterexample.Phillips1940.BoundedAdditiveMeasure.exists_discrete_support
 
 /-- A countable set outside of which the measure gives zero mass to countable sets. We are not

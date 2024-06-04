@@ -1978,7 +1978,7 @@ removing that point, if present, from a `Finset`."]
 theorem prod_erase [DecidableEq α] (s : Finset α) {f : α → β} {a : α} (h : f a = 1) :
     ∏ x ∈ s.erase a, f x = ∏ x ∈ s, f x := by
   rw [← sdiff_singleton_eq_erase]
-  refine prod_subset (sdiff_subset _ _) fun x hx hnx => ?_
+  refine prod_subset sdiff_subset fun x hx hnx => ?_
   rw [sdiff_singleton_eq_erase] at hnx
   rwa [eq_of_mem_of_not_mem_erase hx hnx]
 #align finset.prod_erase Finset.prod_erase

@@ -212,7 +212,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     simp only [of_eq_true]
     split_ifs with h
     · exact hsf' ⟨x, h⟩
-    · exact sdiff_subset _ _ (hsf'' ⟨x, h⟩)
+    · exact sdiff_subset (hsf'' ⟨x, h⟩)
 set_option linter.uppercaseLean3 false in
 #align hall_marriage_theorem.hall_hard_inductive_step_B HallMarriageTheorem.hall_hard_inductive_step_B
 

@@ -138,7 +138,7 @@ private theorem someExistsOneDivLT_subset : someExistsOneDivLT s i ⊆ i := by
     exact Set.empty_subset _
 
 private theorem someExistsOneDivLT_subset' : someExistsOneDivLT s (i \ j) ⊆ i :=
-  Set.Subset.trans someExistsOneDivLT_subset (Set.diff_subset _ _)
+  Set.Subset.trans someExistsOneDivLT_subset diff_subset
 
 private theorem someExistsOneDivLT_measurableSet : MeasurableSet (someExistsOneDivLT s i) := by
   by_cases hi : ¬s ≤[i] 0
@@ -230,7 +230,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
   have hk₂ : s ≤[i \ ⋃ l < k, restrictNonposSeq s i l] 0 := Nat.find_spec hn
   have hmeas : MeasurableSet (⋃ (l : ℕ) (_ : l < k), restrictNonposSeq s i l) :=
     MeasurableSet.iUnion fun _ => MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
-  refine ⟨i \ ⋃ l < k, restrictNonposSeq s i l, hi₁.diff hmeas, Set.diff_subset _ _, hk₂, ?_⟩
+  refine ⟨i \ ⋃ l < k, restrictNonposSeq s i l, hi₁.diff hmeas, Set.diff_subset, hk₂, ?_⟩
   rw [of_diff hmeas hi₁, s.of_disjoint_iUnion_nat]
   · have h₁ : ∀ l < k, 0 ≤ s (restrictNonposSeq s i l) := by
       intro l hl
@@ -301,7 +301,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
     convert atTop.tendsto_atTop_add_const_right (-1) h₃; simp
   have A_meas : MeasurableSet A :=
     hi₁.diff (MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _)
-  refine ⟨A, A_meas, Set.diff_subset _ _, ?_, h₂.trans_lt hi⟩
+  refine ⟨A, A_meas, Set.diff_subset, ?_, h₂.trans_lt hi⟩
   by_contra hnn
   rw [restrict_le_restrict_iff _ _ A_meas] at hnn; push_neg at hnn
   obtain ⟨E, hE₁, hE₂, hE₃⟩ := hnn
@@ -357,7 +357,7 @@ theorem bddBelow_measureOfNegatives : BddBelow s.measureOfNegatives := by
       of_union Set.disjoint_sdiff_left _ (hmeas n)]
     · refine add_le_of_nonpos_left ?_
       have : s ≤[A] 0 := restrict_le_restrict_iUnion _ _ hmeas hr
-      refine nonpos_of_restrict_le_zero _ (restrict_le_zero_subset _ ?_ (Set.diff_subset _ _) this)
+      refine nonpos_of_restrict_le_zero _ (restrict_le_zero_subset _ ?_ diff_subset this)
       exact MeasurableSet.iUnion hmeas
     · exact (MeasurableSet.iUnion hmeas).diff (hmeas n)
   rcases exists_nat_gt (-s A) with ⟨n, hn⟩
@@ -387,7 +387,7 @@ theorem exists_compl_positive_negative (s : SignedMeasure α) :
             let ⟨_, h⟩ := (hB m).1
             h
         refine
-          nonpos_of_restrict_le_zero _ (restrict_le_zero_subset _ ?_ (Set.diff_subset _ _) this)
+          nonpos_of_restrict_le_zero _ (restrict_le_zero_subset _ ?_ diff_subset this)
         exact MeasurableSet.iUnion hB₁
       · exact (MeasurableSet.iUnion hB₁).diff (hB₁ n)
     · exact csInf_le bddBelow_measureOfNegatives ⟨A, ⟨hA₁, hA₂⟩, rfl⟩

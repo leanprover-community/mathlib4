@@ -536,7 +536,7 @@ theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s\{x}] x = ⊥) :
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
 theorem hasFDerivWithinAt_of_nmem_closure (h : x ∉ closure s) : HasFDerivWithinAt f f' s x :=
-  .of_nhdsWithin_eq_bot <| eq_bot_mono (nhdsWithin_mono _ (diff_subset _ _)) <| by
+  .of_nhdsWithin_eq_bot <| eq_bot_mono (nhdsWithin_mono _ diff_subset) <| by
     rwa [mem_closure_iff_nhdsWithin_neBot, not_neBot] at h
 #align has_fderiv_within_at_of_not_mem_closure hasFDerivWithinAt_of_nmem_closure
 

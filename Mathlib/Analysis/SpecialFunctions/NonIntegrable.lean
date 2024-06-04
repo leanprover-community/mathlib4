@@ -153,7 +153,7 @@ theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_within_diff
       exact diff_mem_nhdsWithin_diff (Icc_mem_nhdsWithin_Ici ⟨hc.1, hlt⟩) _
   have : l ≤ 𝓝[[[a, b]] \ {c}] c := le_inf hle (le_principal_iff.2 hmem)
   exact not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter l
-    (mem_of_superset hmem (diff_subset _ _)) (h_deriv.filter_mono this) (h_infty.mono_left this)
+    (mem_of_superset hmem diff_subset) (h_deriv.filter_mono this) (h_infty.mono_left this)
     (hg.mono this)
 set_option linter.uppercaseLean3 false in
 #align not_interval_integrable_of_tendsto_norm_at_top_of_deriv_is_O_within_diff_singleton not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_within_diff_singleton

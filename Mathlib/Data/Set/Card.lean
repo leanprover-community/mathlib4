@@ -371,7 +371,7 @@ theorem exists_superset_subset_encard_eq {k : ℕ∞}
     rw [← encard_diff_add_encard_of_subset hst, add_comm] at hkt
     exact WithTop.le_of_add_le_add_right hs hkt
   obtain ⟨r', hr', rfl⟩ := exists_subset_encard_eq hk
-  refine ⟨s ∪ r', subset_union_left, union_subset hst (hr'.trans (diff_subset _ _)), ?_⟩
+  refine ⟨s ∪ r', subset_union_left, union_subset hst (hr'.trans diff_subset), ?_⟩
   rw [encard_union_eq (disjoint_of_subset_right hr' disjoint_sdiff_right)]
 
 section Function
@@ -620,7 +620,7 @@ theorem ncard_diff_singleton_lt_of_mem {a : α} (h : a ∈ s) (hs : s.Finite := 
 
 theorem ncard_diff_singleton_le (s : Set α) (a : α) : (s \ {a}).ncard ≤ s.ncard := by
   obtain hs | hs := s.finite_or_infinite
-  · apply ncard_le_ncard (diff_subset _ _) hs
+  · apply ncard_le_ncard diff_subset hs
   convert @zero_le ℕ _ _
   exact (hs.diff (by simp : Set.Finite {a})).ncard
 #align set.ncard_diff_singleton_le Set.ncard_diff_singleton_le
@@ -981,7 +981,7 @@ theorem Infinite.exists_subset_ncard_eq {s : Set α} (hs : s.Infinite) (k : ℕ)
 theorem Infinite.exists_superset_ncard_eq {s t : Set α} (ht : t.Infinite) (hst : s ⊆ t)
     (hs : s.Finite) {k : ℕ} (hsk : s.ncard ≤ k) : ∃ s', s ⊆ s' ∧ s' ⊆ t ∧ s'.ncard = k := by
   obtain ⟨s₁, hs₁, hs₁fin, hs₁card⟩ := (ht.diff hs).exists_subset_ncard_eq (k - s.ncard)
-  refine ⟨s ∪ s₁, subset_union_left, union_subset hst (hs₁.trans (diff_subset _ _)), ?_⟩
+  refine ⟨s ∪ s₁, subset_union_left, union_subset hst (hs₁.trans diff_subset), ?_⟩
   rwa [ncard_union_eq (disjoint_of_subset_right hs₁ disjoint_sdiff_right) hs hs₁fin, hs₁card,
     add_tsub_cancel_of_le]
 #align set.infinite.exists_supset_ncard_eq Set.Infinite.exists_superset_ncard_eq

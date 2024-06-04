@@ -606,7 +606,7 @@ theorem fundamentalFrontier_subset : fundamentalFrontier G s ⊆ s :=
 
 @[to_additive MeasureTheory.addFundamentalInterior_subset]
 theorem fundamentalInterior_subset : fundamentalInterior G s ⊆ s :=
-  diff_subset _ _
+  diff_subset
 #align measure_theory.fundamental_interior_subset MeasureTheory.fundamentalInterior_subset
 #align measure_theory.add_fundamental_interior_subset MeasureTheory.addFundamentalInterior_subset
 

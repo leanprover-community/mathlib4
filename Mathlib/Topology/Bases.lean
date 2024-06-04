@@ -754,7 +754,7 @@ theorem exists_countable_basis [SecondCountableTopology α] :
     ∃ b : Set (Set α), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b := by
   obtain ⟨b, hb₁, hb₂⟩ := @SecondCountableTopology.is_open_generated_countable α _ _
   refine ⟨_, ?_, not_mem_diff_of_mem ?_, (isTopologicalBasis_of_subbasis hb₂).diff_empty⟩
-  exacts [((countable_setOf_finite_subset hb₁).image _).mono (diff_subset _ _), rfl]
+  exacts [((countable_setOf_finite_subset hb₁).image _).mono diff_subset, rfl]
 #align topological_space.exists_countable_basis TopologicalSpace.exists_countable_basis
 
 /-- A countable topological basis of `α`. -/

@@ -817,7 +817,7 @@ alias ⟨_, ContinuousWithinAt.insert_self⟩ := continuousWithinAt_insert_self
 theorem ContinuousWithinAt.diff_iff {f : α → β} {s t : Set α} {x : α}
     (ht : ContinuousWithinAt f t x) : ContinuousWithinAt f (s \ t) x ↔ ContinuousWithinAt f s x :=
   ⟨fun h => (h.union ht).mono <| by simp only [diff_union_self, subset_union_left], fun h =>
-    h.mono (diff_subset _ _)⟩
+    h.mono diff_subset⟩
 #align continuous_within_at.diff_iff ContinuousWithinAt.diff_iff
 
 @[simp]

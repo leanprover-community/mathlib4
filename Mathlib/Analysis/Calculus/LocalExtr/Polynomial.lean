@@ -51,7 +51,7 @@ one. -/
 theorem card_roots_toFinset_le_derivative (p : ℝ[X]) :
     p.roots.toFinset.card ≤ p.derivative.roots.toFinset.card + 1 :=
   p.card_roots_toFinset_le_card_roots_derivative_diff_roots_succ.trans <|
-    add_le_add_right (Finset.card_mono <| Finset.sdiff_subset _ _) _
+    add_le_add_right (Finset.card_mono Finset.sdiff_subset) _
 #align polynomial.card_roots_to_finset_le_derivative Polynomial.card_roots_toFinset_le_derivative
 
 /-- The number of roots of a real polynomial (counted with multiplicities) is at most the number of

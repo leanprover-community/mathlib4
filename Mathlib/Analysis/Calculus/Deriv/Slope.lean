@@ -131,7 +131,7 @@ theorem range_derivWithin_subset_closure_span_image
     apply ContinuousWithinAt.mem_closure_image
     · apply H'.continuousWithinAt.mono inter_subset_left
     rw [mem_closure_iff_nhdsWithin_neBot]
-    exact I.mono (nhdsWithin_mono _ (diff_subset _ _))
+    exact I.mono (nhdsWithin_mono _ diff_subset)
 
 /-- Given a dense set `t`, then the range of `deriv f` is contained in the closure of the submodule
 spanned by the image of `t`. -/

@@ -265,9 +265,9 @@ lemma mem_upShadow_iterate_iff_exists_sdiff :
   rw [mem_upShadow_iterate_iff_exists_card]
   constructor
   · rintro ⟨u, rfl, hut, htu⟩
-    exact ⟨_, htu, sdiff_subset _ _, by rw [sdiff_sdiff_eq_self hut]⟩
+    exact ⟨_, htu, sdiff_subset, by rw [sdiff_sdiff_eq_self hut]⟩
   · rintro ⟨s, hs, hst, rfl⟩
-    exact ⟨_, rfl, sdiff_subset _ _, by rwa [sdiff_sdiff_eq_self hst]⟩
+    exact ⟨_, rfl, sdiff_subset, by rwa [sdiff_sdiff_eq_self hst]⟩
 
 /-- `t ∈ ∂⁺^k 𝒜` iff `t` is exactly `k` elements less than something in `𝒜`.
 

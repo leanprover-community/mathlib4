@@ -1918,7 +1918,7 @@ theorem subset_diff_union (s t : Set α) : s ⊆ s \ t ∪ t :=
 #align set.subset_diff_union Set.subset_diff_union
 
 theorem diff_union_of_subset {s t : Set α} (h : t ⊆ s) : s \ t ∪ t = s :=
-  Subset.antisymm (union_subset (diff_subset _ _) h) (subset_diff_union _ _)
+  Subset.antisymm (union_subset diff_subset h) (subset_diff_union _ _)
 #align set.diff_union_of_subset Set.diff_union_of_subset
 
 @[simp]
@@ -2286,7 +2286,7 @@ theorem ite_mono (t : Set α) {s₁ s₁' s₂ s₂' : Set α} (h : s₁ ⊆ s�
 #align set.ite_mono Set.ite_mono
 
 theorem ite_subset_union (t s s' : Set α) : t.ite s s' ⊆ s ∪ s' :=
-  union_subset_union inter_subset_left (diff_subset _ _)
+  union_subset_union inter_subset_left diff_subset
 #align set.ite_subset_union Set.ite_subset_union
 
 theorem inter_subset_ite (t s s' : Set α) : s ∩ s' ⊆ t.ite s s' :=
