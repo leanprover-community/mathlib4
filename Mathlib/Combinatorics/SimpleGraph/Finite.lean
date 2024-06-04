@@ -101,8 +101,8 @@ theorem edgeFinset_inf [DecidableEq V] : (G₁ ⊓ G₂).edgeFinset = G₁.edgeF
 #align simple_graph.edge_finset_inf SimpleGraph.edgeFinset_inf
 
 @[simp]
-theorem edgeFinset_sdiff [DecidableEq V] : (G₁ \ G₂).edgeFinset = G₁.edgeFinset \ G₂.edgeFinset :=
-  by simp [edgeFinset]
+theorem edgeFinset_sdiff [DecidableEq V] :
+    (G₁ \ G₂).edgeFinset = G₁.edgeFinset \ G₂.edgeFinset := by simp [edgeFinset]
 #align simple_graph.edge_finset_sdiff SimpleGraph.edgeFinset_sdiff
 
 theorem edgeFinset_card : G.edgeFinset.card = Fintype.card G.edgeSet :=

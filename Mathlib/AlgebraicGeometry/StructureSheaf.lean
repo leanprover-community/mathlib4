@@ -600,10 +600,10 @@ def stalkIso (x : PrimeSpectrum.Top R) :
 #align algebraic_geometry.structure_sheaf.stalk_iso AlgebraicGeometry.StructureSheaf.stalkIso
 
 instance (x : PrimeSpectrum R) : IsIso (stalkToFiberRingHom R x) :=
-  IsIso.of_iso (stalkIso R x)
+  (stalkIso R x).isIso_hom
 
 instance (x : PrimeSpectrum R) : IsIso (localizationToStalk R x) :=
-  IsIso.of_iso (stalkIso R x).symm
+  (stalkIso R x).isIso_inv
 
 @[simp, reassoc]
 theorem stalkToFiberRingHom_localizationToStalk (x : PrimeSpectrum.Top R) :
@@ -998,7 +998,7 @@ theorem to_global_factors :
 instance isIso_to_global : IsIso (toOpen R ⊤) := by
   let hom := CommRingCat.ofHom (algebraMap R (Localization.Away (1 : R)))
   haveI : IsIso hom :=
-    IsIso.of_iso (IsLocalization.atOne R (Localization.Away (1 : R))).toRingEquiv.toCommRingCatIso
+    (IsLocalization.atOne R (Localization.Away (1 : R))).toRingEquiv.toCommRingCatIso.isIso_hom
   rw [to_global_factors R]
   infer_instance
 #align algebraic_geometry.structure_sheaf.is_iso_to_global AlgebraicGeometry.StructureSheaf.isIso_to_global
@@ -1188,8 +1188,8 @@ are not definitionally equal.
 -/
 theorem comap_id {U V : Opens (PrimeSpectrum.Top R)} (hUV : U = V) :
     (comap (RingHom.id R) U V fun p hpV => by rwa [hUV, PrimeSpectrum.comap_id]) =
-      eqToHom (show (structureSheaf R).1.obj (op U) = _ by rw [hUV]) :=
-  by erw [comap_id_eq_map U V (eqToHom hUV.symm), eqToHom_op, eqToHom_map]
+      eqToHom (show (structureSheaf R).1.obj (op U) = _ by rw [hUV]) := by
+  erw [comap_id_eq_map U V (eqToHom hUV.symm), eqToHom_op, eqToHom_map]
 #align algebraic_geometry.structure_sheaf.comap_id AlgebraicGeometry.StructureSheaf.comap_id
 
 @[simp]
@@ -1219,6 +1219,13 @@ theorem toOpen_comp_comap (f : R →+* S) (U : Opens (PrimeSpectrum.Top R)) :
       CommRingCat.ofHom f ≫ toOpen S _ :=
   RingHom.ext fun _ => Subtype.eq <| funext fun _ => Localization.localRingHom_to_map _ _ _ _ _
 #align algebraic_geometry.structure_sheaf.to_open_comp_comap AlgebraicGeometry.StructureSheaf.toOpen_comp_comap
+
+lemma comap_basicOpen (f : R →+* S) (x : R) :
+    comap f (PrimeSpectrum.basicOpen x) (PrimeSpectrum.basicOpen (f x))
+        (PrimeSpectrum.comap_basicOpen f x).le =
+      IsLocalization.map (M := .powers x) (T := .powers (f x)) _ f
+        (Submonoid.powers_le.mpr (Submonoid.mem_powers _)) :=
+  IsLocalization.ringHom_ext (.powers x) <| by simpa using toOpen_comp_comap f _
 
 end Comap
 
