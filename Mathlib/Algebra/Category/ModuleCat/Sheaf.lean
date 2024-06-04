@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
-import Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # Sheaves of modules over a sheaf of rings
@@ -69,15 +69,40 @@ def forget : SheafOfModules.{v} R ⥤ PresheafOfModules R.val where
   obj F := F.val
   map φ := φ.val
 
-instance : (forget R).Faithful where
-  map_injective h := by ext1; exact h
+/-- The forget functor `SheafOfModules R ⥤ PresheafOfModules R.val` is fully faithful. -/
+@[simps]
+def fullyFaithfulForget : (forget.{v} R).FullyFaithful where
+  preimage φ := ⟨φ⟩
 
-instance : (forget R).Full where
-  map_surjective φ := ⟨⟨φ⟩, rfl⟩
+instance : (forget.{v} R).Faithful := (fullyFaithfulForget R).faithful
+
+instance : (forget.{v} R).Full := (fullyFaithfulForget R).full
 
 /-- Evaluation on an object `X` gives a functor
 `SheafOfModules R ⥤ ModuleCat (R.val.obj X)`. -/
 def evaluation (X : Cᵒᵖ) : SheafOfModules.{v} R ⥤ ModuleCat.{v} (R.val.obj X) :=
   forget _ ⋙ PresheafOfModules.evaluation _ X
+
+/-- The type of sections of a sheaf of modules. -/
+abbrev sections (M : SheafOfModules.{v} R) : Type _ := M.val.sections
+
+variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGroupCat.{u})]
+
+/-- The obvious free sheaf of modules of rank `1`. -/
+@[simps]
+def unit : SheafOfModules R where
+  val := PresheafOfModules.unit R.val
+  isSheaf := ((sheafCompose J (forget₂ RingCat.{u} AddCommGroupCat.{u})).obj R).cond
+
+variable {R}
+
+/-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : SheafOfModules R`. -/
+def unitHomEquiv (M : SheafOfModules R) :
+    (unit R ⟶ M) ≃ M.sections :=
+  (fullyFaithfulForget R).homEquiv.trans M.val.unitHomEquiv
+
+@[simp]
+lemma unitHomEquiv_apply_coe (M : SheafOfModules R) (f : unit R ⟶ M) (X : Cᵒᵖ) :
+    (M.unitHomEquiv f).val X = f.val.app X (1 : R.val.obj X) := rfl
 
 end SheafOfModules
