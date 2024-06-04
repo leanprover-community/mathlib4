@@ -429,7 +429,7 @@ mutual
             SizeOf.sizeOf a + SizeOf.sizeOf (Lists'.cons' b l₂) := by
           decreasing_tactic
         mem.decidable a l₂
-      refine' decidable_of_iff' (a ~ ⟨_, b⟩ ∨ a ∈ l₂) _
+      refine decidable_of_iff' (a ~ ⟨_, b⟩ ∨ a ∈ l₂) ?_
       rw [← Lists'.mem_cons]; rfl
   termination_by x y => sizeOf x + sizeOf y
 end
