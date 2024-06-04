@@ -207,7 +207,8 @@ def BasedNatIso {F G : BasedFunctor 𝒳 𝒴} (α : F.toFunctor ≅ G.toFunctor
       apply IsHomLift.lift_id_inv
   }
 
--- /-- The inverse of a based natural transformation whose underlying natural tranformation carries an
+-- /-- The inverse of a based natural transformation whose underlying natural tranformation carries
+-- an
 -- `IsIso` instance. -/
 -- noncomputable def BasedNatIso_of_isIso {F G : BasedFunctor 𝒳 𝒴} (α : F.toFunctor ⟶ G.toFunctor)
 --     [IsIso α] (aboveId' : ∀ a : 𝒳.cat, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.app a)) : F ≅ G where
