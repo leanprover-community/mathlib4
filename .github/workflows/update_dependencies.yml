@@ -28,11 +28,11 @@ jobs:
             pr_branch=$(echo "$pr" | jq -r '.headRefName')
             if [[ "$pr_title" == *"update Mathlib dependencies"* ]] || [[ "$pr_branch" == update-dependencies-* ]]; then
               echo "Existing PR found with title or branch name indicating a dependency update. Stopping."
-              echo "existing_pr=true" >> $GITHUB_ENV
+              echo "existing_pr=true" >> "$GITHUB_ENV"
               exit 0
             fi
           done
-          echo "existing_pr=false" >> $GITHUB_ENV
+          echo "existing_pr=false" >> "$GITHUB_ENV"
 
       - name: Stop if PR exists
         if: env.existing_pr == 'true'
@@ -47,9 +47,9 @@ jobs:
         if: env.existing_pr == 'false'
         run: |
           if git diff-index --quiet HEAD --; then
-            echo "no_changes=true" >> $GITHUB_ENV
+            echo "no_changes=true" >> "$GITHUB_ENV"
           else
-            echo "no_changes=false" >> $GITHUB_ENV
+            echo "no_changes=false" >> "$GITHUB_ENV"
           fi
 
       - name: Stop if no changes
@@ -62,7 +62,7 @@ jobs:
         run: |
           timestamp=$(date -u +"%Y-%m-%d-%H-%M")
           branch_name="update-dependencies-$timestamp"
-          echo "branch_name=$branch_name" >> $GITHUB_ENV
+          echo "branch_name=$branch_name" >> "$GITHUB_ENV"
           git checkout -b "$branch_name"
           git add .
           git commit -m "chore: update Mathlib dependencies $(date -u +\"%Y-%m-%d\")"
