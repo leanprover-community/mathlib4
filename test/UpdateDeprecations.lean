@@ -1,5 +1,14 @@
 import Mathlib.Tactic.UpdateDeprecations
 
+run_cmd
+  let fn := "True.hish"
+  let s1 := ".hish and more text"
+  let s2 := "hish and more text"
+  let _s3 := "ish and more text"
+  if findNamespaceMatch fn s1 != some ".hish" then Lean.logInfo "error"
+  if findNamespaceMatch fn s2 != some "hish"  then Lean.logInfo "error"
+  --if findNamespaceMatch fn _s3 != none         then Lean.logInfo "error"
+
 /-- info: true -/
 #guard_msgs in
 #eval

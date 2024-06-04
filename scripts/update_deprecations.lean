@@ -42,12 +42,10 @@ def updateDeprecationsCLI (args : Parsed) : IO UInt32 := do
   let outp := (← IO.Process.run { cmd := "lake", args := #["env", "lean", tgt] }).trimRight
   IO.FS.removeFile tgt
   let ext := String.toNat! <| outp.takeRightWhile (·.isDigit)
+  IO.println <| outp.dropRightWhile (·.isDigit)
   if ext == 0 then
-    IO.println "No updates necessary!"
     return 0
   else
-    if verbose then IO.println <| outp.dropRightWhile (·.isDigit)
-    IO.println f!"{ext}: number of files where some replacement should have taken place"
     -- the exit code is the total number of changes that should have happened, whether or not they
     -- actually took place modulo `UInt32.size = 4294967296` (returning 1 if the remainder is `0`).
     -- In particular, the exit code is `0` if and only if no replacement was necessary.

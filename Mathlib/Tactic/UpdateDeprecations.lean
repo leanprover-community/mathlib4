@@ -10,6 +10,27 @@ import Lean.Elab.Command
 This file contains the code to perform the auto-replacements of `deprecated` declarations.
 -/
 
+/-- `findNamespaceMatch fullName s st` assumes that
+* `fullName` is a string representing the fully-qualified name of a declaration
+  (e.g. `Nat.succ` instead of `succ` or `.succ`);
+* `s` is a string beginning with a possibly non-fully qualified name
+  (e.g. any of `Nat.succ`, `succ`, `.succ`, possibly continuing with more characters).
+
+If `fullName` and `s` could represent the same declaration, then `findNamespaceMatch` returns
+`some <prefix of s matching namespaced fullName>` else it returns `none`
+-/
+def findNamespaceMatch (fullName s : String) : Option String :=
+  Id.run do
+  let mut comps := fullName.splitOn "."
+  for _ in comps do
+    let noDot := ".".intercalate comps
+    if noDot.isPrefixOf s then return noDot
+    let withDot := "." ++ noDot
+    if withDot.isPrefixOf s then return withDot
+    comps := comps.drop 1
+  dbg_trace "A tail segment of '{fullName}' is not a prefix of '{fullName.isPrefixOf s}'"
+  return none
+
 /-- `String.replaceCheck s check repl st` takes as input
 * a "source" `String` `s`;
 * a `String` `check` representing what should be replaced;
@@ -21,13 +42,12 @@ identified occurrence of `check` replaced by `repl`.
 Otherwise, it returns `none`.
 -/
 def String.replaceCheck (s check repl : String) (st : Nat) : Option String :=
-  let sc := s.toList
-  let fi := st + check.length
-  if (sc.take fi).drop st == check.toList then
-    some ⟨sc.take st ++ repl.toList ++ sc.drop fi⟩
-  else
-    dbg_trace "'{check}' not replaced with '{repl}' in {(st, fi)}"
-    none
+  match findNamespaceMatch check (s.drop st) with
+    | none => none
+    | some check =>
+      let sc := s.toList
+      let fi := st + check.length
+      some ⟨sc.take st ++ repl.toList ++ sc.drop fi⟩
 
 /-- `substitutions lines dat` takes as input the array `lines` of strings and the "instructions"
 `dat : Array ((String × String) × (Nat × Nat))`.
@@ -149,12 +169,16 @@ elab bds:build* tk:"Build completed successfully." : command => do
       IO.FS.writeFile fil newFile
     return summary
   let noFiles := modifiedFiles.size
-  let msg := if noFiles == 0 then m!"No modified files\n" else
-    modifiedFiles.fold (init := "| File | mods | unmods |\n")
-      fun msg fil (modified, unmodified) =>
-        let mods := if modified == 0 then " 0" else s!"+{modified}"
-        let unmods := if unmodified == 0 then " 0" else s!"-{unmodified}"
-        msg ++ s!"| {fil} | {mods} | {unmods} |\n"
+  let msg :=
+    if noFiles == 0 then m!"No modified files\n"
+    else if modifiedFiles.toArray.all (fun (_, _, x) => x == 0) then
+      m!"All modifications were successful"
+    else
+      modifiedFiles.fold (init := "| File | mods | unmods |\n|-|-|\n")
+        fun msg fil (modified, unmodified) =>
+          let mods := if modified == 0 then " 0" else s!"+{modified}"
+          let unmods := if unmodified == 0 then " 0" else s!"-{unmodified}"
+          msg ++ s!"| {fil} | {mods} | {unmods} |\n"
   logInfoAt tk m!"{msg}{noFiles}"
 end elabs
 
