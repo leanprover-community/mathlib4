@@ -283,6 +283,14 @@ jobs:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
+      - name: lint mathlib
+        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
+        id: lint
+        uses: liskin/gh-problem-matcher-wrap@v3
+        with:
+          linters: gcc
+          run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
+
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
       # Instead we run it in a cron job on master: see `lean4checker.yml`.
       # Output is posted to the zulip topic
