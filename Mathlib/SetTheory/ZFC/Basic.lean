@@ -619,7 +619,7 @@ noncomputable def allDefinable : ∀ {n} (F : OfArity ZFSet ZFSet n), Definable 
     @Definable.EqMk 0 ⟨choose p, Equiv.rfl⟩ _ (choose_spec p)
   | n + 1, (F : OfArity ZFSet ZFSet (n + 1)) => by
     have I : (x : ZFSet) → Definable n (F x) := fun x => allDefinable (F x)
-    refine' @Definable.EqMk (n + 1) ⟨fun x : PSet => (@Definable.Resp _ _ (I ⟦x⟧)).1, _⟩ _ _
+    refine @Definable.EqMk (n + 1) ⟨fun x : PSet => (@Definable.Resp _ _ (I ⟦x⟧)).1, ?_⟩ _ ?_
     · dsimp [Arity.Equiv]
       intro x y h
       rw [@Quotient.sound PSet _ _ _ h]
