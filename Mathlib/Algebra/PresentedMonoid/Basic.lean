@@ -97,7 +97,7 @@ closure of the set of generators equals `⊤`. -/
 @[to_additive (attr := simp) "The generators of a presented additive monoid generate the presented
 additive monoid. That is, the submonoid closure of the set of generators equals `⊤`"]
 theorem closure_range_of (rels : FreeMonoid α → FreeMonoid α → Prop) :
-  Submonoid.closure (Set.range (PresentedMonoid.of rels)) = ⊤ := by
+    Submonoid.closure (Set.range (PresentedMonoid.of rels)) = ⊤ := by
   rw [Submonoid.eq_top_iff']
   intro x
   induction' x with a
