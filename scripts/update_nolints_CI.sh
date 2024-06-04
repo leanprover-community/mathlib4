@@ -28,7 +28,7 @@ git commit -m "$pr_title"
 gh_api() {
   local url="$1"
   shift
-  curl -s -H "Authorization: token $DEPLOY_GITHUB_TOKEN" \
+  curl -s -H "Authorization: token $UPDATE_NOLINTS_TOKEN" \
     "https://api.github.com/$url" "$@"
 }
 
