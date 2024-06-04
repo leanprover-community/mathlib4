@@ -323,7 +323,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
     cases' he with he he
     · left
       have : e = e' := by
-        refine' eq_of_eqOnSource_univ (Setoid.symm he'e) _ _ <;>
+        refine eq_of_eqOnSource_univ (Setoid.symm he'e) ?_ ?_ <;>
           rw [Set.mem_singleton_iff.1 he] <;> rfl
       rwa [← this]
     · right
@@ -383,15 +383,15 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
   id_mem' := ⟨PG.id_mem, PG.id_mem⟩
   locality' e he := by
     constructor
-    · refine' PG.locality e.open_source fun x xu ↦ _
+    · refine PG.locality e.open_source fun x xu ↦ ?_
       rcases he x xu with ⟨s, s_open, xs, hs⟩
-      refine' ⟨s, s_open, xs, _⟩
+      refine ⟨s, s_open, xs, ?_⟩
       convert hs.1 using 1
       dsimp [PartialHomeomorph.restr]
       rw [s_open.interior_eq]
-    · refine' PG.locality e.open_target fun x xu ↦ _
+    · refine PG.locality e.open_target fun x xu ↦ ?_
       rcases he (e.symm x) (e.map_target xu) with ⟨s, s_open, xs, hs⟩
-      refine' ⟨e.target ∩ e.symm ⁻¹' s, _, ⟨xu, xs⟩, _⟩
+      refine ⟨e.target ∩ e.symm ⁻¹' s, ?_, ⟨xu, xs⟩, ?_⟩
       · exact ContinuousOn.isOpen_inter_preimage e.continuousOn_invFun e.open_target s_open
       · rw [← inter_assoc, inter_self]
         convert hs.2 using 1
@@ -454,7 +454,7 @@ instance instStructureGroupoidOrderTop : OrderTop (StructureGroupoid H) where
 instance : CompleteLattice (StructureGroupoid H) :=
   { SetLike.instPartialOrder,
     completeLatticeOfInf _ (by
-      refine' fun s =>
+      exact fun s =>
       ⟨fun S Ss F hF => mem_iInter₂.mp hF S Ss,
       fun T Tl F fT => mem_iInter₂.mpr (fun i his => Tl his fT)⟩) with
     le := (· ≤ ·)
@@ -497,7 +497,7 @@ def idRestrGroupoid : StructureGroupoid H where
   id_mem' := ⟨univ, isOpen_univ, by simp only [mfld_simps, refl]⟩
   locality' := by
     intro e h
-    refine' ⟨e.source, e.open_source, by simp only [mfld_simps], _⟩
+    refine ⟨e.source, e.open_source, by simp only [mfld_simps], ?_⟩
     intro x hx
     rcases h x hx with ⟨s, hs, hxs, s', hs', hes'⟩
     have hes : x ∈ (e.restr s).source := by
@@ -1008,7 +1008,7 @@ instance hasGroupoid_model_space (H : Type*) [TopologicalSpace H] (G : Structure
 
 /-- Any charted space structure is compatible with the groupoid of all partial homeomorphisms. -/
 instance hasGroupoid_continuousGroupoid : HasGroupoid M (continuousGroupoid H) := by
-  refine' ⟨fun _ _ ↦ _⟩
+  refine ⟨fun _ _ ↦ ?_⟩
   rw [continuousGroupoid, mem_groupoid_of_pregroupoid]
   simp only [and_self_iff]
 #align has_groupoid_continuous_groupoid hasGroupoid_continuousGroupoid
@@ -1219,7 +1219,7 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
     rw [hc.symm, mem_singleton_iff] at he
     rw [hc'.symm, mem_singleton_iff] at he'
     rw [he, he']
-    refine' G.mem_of_eqOnSource _
+    refine G.mem_of_eqOnSource ?_
       (subtypeRestr_symm_trans_subtypeRestr (s := s) _ (chartAt H x) (chartAt H x'))
     apply closedUnderRestriction'
     · exact G.compatible (chart_mem_atlas _ _) (chart_mem_atlas _ _)
@@ -1331,7 +1331,7 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
           rw [trans_source] at hx
           exact hx.1
         · exact hg₂
-      refine' ⟨s, open_s, this, _⟩
+      refine ⟨s, open_s, this, ?_⟩
       let F₁ := (c.symm ≫ₕ f₁ ≫ₕ g) ≫ₕ g.symm ≫ₕ f₂ ≫ₕ c'
       have A : F₁ ∈ G := G.trans (e.mem_groupoid c g hc hg₁) (e'.mem_groupoid g c' hg₁ hc')
       let F₂ := (c.symm ≫ₕ f ≫ₕ c').restr s
@@ -1341,12 +1341,12 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
         _ ≈ c.symm ≫ₕ f₁ ≫ₕ ofSet g.source g.open_source ≫ₕ f₂ ≫ₕ c' :=
           EqOnSource.trans' (_root_.refl _) (EqOnSource.trans' (_root_.refl _)
             (EqOnSource.trans' (self_trans_symm g) (_root_.refl _)))
-        _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ ofSet g.source g.open_source) ≫ₕ f₂ ≫ₕ c' :=
-          by simp only [trans_assoc, _root_.refl]
+        _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ ofSet g.source g.open_source) ≫ₕ f₂ ≫ₕ c' := by
+          simp only [trans_assoc, _root_.refl]
         _ ≈ (c.symm ≫ₕ f₁).restr s ≫ₕ f₂ ≫ₕ c' := by rw [trans_of_set']
         _ ≈ ((c.symm ≫ₕ f₁) ≫ₕ f₂ ≫ₕ c').restr s := by rw [restr_trans]
-        _ ≈ (c.symm ≫ₕ (f₁ ≫ₕ f₂) ≫ₕ c').restr s :=
-          by simp only [EqOnSource.restr, trans_assoc, _root_.refl]
+        _ ≈ (c.symm ≫ₕ (f₁ ≫ₕ f₂) ≫ₕ c').restr s := by
+          simp only [EqOnSource.restr, trans_assoc, _root_.refl]
         _ ≈ F₂ := by simp only [F₂, feq, _root_.refl]
       have : F₂ ∈ G := G.mem_of_eqOnSource A (Setoid.symm this)
       exact this }

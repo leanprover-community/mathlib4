@@ -511,7 +511,7 @@ theorem AnalyticSet.measurablySeparable [T2Space α] [MeasurableSpace α] [Opens
     MeasurablySeparable s t := by
   rw [AnalyticSet] at hs ht
   rcases hs with (rfl | ⟨f, f_cont, rfl⟩)
-  · refine' ⟨∅, Subset.refl _, by simp, MeasurableSet.empty⟩
+  · refine ⟨∅, Subset.refl _, by simp, MeasurableSet.empty⟩
   rcases ht with (rfl | ⟨g, g_cont, rfl⟩)
   · exact ⟨univ, subset_univ _, by simp, MeasurableSet.univ⟩
   exact measurablySeparable_range_of_disjoint f_cont g_cont h
@@ -1081,15 +1081,12 @@ theorem exists_subset_real_measurableEquiv : ∃ s : Set ℝ, MeasurableSet s �
       refine ⟨_, ?_, h_nonempty_equiv⟩
       letI : MeasurableSpace (Fin n) := borel (Fin n)
       haveI : BorelSpace (Fin n) := ⟨rfl⟩
-      refine' MeasurableEmbedding.measurableSet_range _
-      · infer_instance
-      · exact
-          continuous_of_discreteTopology.measurableEmbedding
-            (Nat.cast_injective.comp Fin.val_injective)
+      apply MeasurableEmbedding.measurableSet_range (mα := by infer_instance)
+      exact continuous_of_discreteTopology.measurableEmbedding
+        (Nat.cast_injective.comp Fin.val_injective)
     · refine ⟨_, ?_, measurableEquiv_range_coe_nat_of_infinite_of_countable α⟩
-      refine' MeasurableEmbedding.measurableSet_range _
-      · infer_instance
-      · exact continuous_of_discreteTopology.measurableEmbedding Nat.cast_injective
+      apply MeasurableEmbedding.measurableSet_range (mα := by infer_instance)
+      exact continuous_of_discreteTopology.measurableEmbedding Nat.cast_injective
   · refine
       ⟨univ, MeasurableSet.univ,
         ⟨(PolishSpace.measurableEquivOfNotCountable hα ?_ : α ≃ᵐ (univ : Set ℝ))⟩⟩

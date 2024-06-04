@@ -78,12 +78,14 @@ theorem Memℒp.inner_const {f : α → E} (hf : Memℒp f p μ) (c : E) : Mem�
 
 variable {f : α → E}
 
-theorem Integrable.const_inner (c : E) (hf : Integrable f μ) : Integrable (fun x => ⟪c, f x⟫) μ :=
-  by rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.const_inner c
+theorem Integrable.const_inner (c : E) (hf : Integrable f μ) :
+    Integrable (fun x => ⟪c, f x⟫) μ := by
+  rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.const_inner c
 #align measure_theory.integrable.const_inner MeasureTheory.Integrable.const_inner
 
-theorem Integrable.inner_const (hf : Integrable f μ) (c : E) : Integrable (fun x => ⟪f x, c⟫) μ :=
-  by rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.inner_const c
+theorem Integrable.inner_const (hf : Integrable f μ) (c : E) :
+    Integrable (fun x => ⟪f x, c⟫) μ := by
+  rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.inner_const c
 #align measure_theory.integrable.inner_const MeasureTheory.Integrable.inner_const
 
 variable [CompleteSpace E] [NormedSpace ℝ E]
@@ -179,8 +181,8 @@ private theorem norm_sq_eq_inner' (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.r
 theorem mem_L1_inner (f g : α →₂[μ] E) :
     AEEqFun.mk (fun x => ⟪f x, g x⟫)
         ((Lp.aestronglyMeasurable f).inner (Lp.aestronglyMeasurable g)) ∈
-      Lp 𝕜 1 μ :=
-  by simp_rw [mem_Lp_iff_snorm_lt_top, snorm_aeeqFun]; exact snorm_inner_lt_top f g
+      Lp 𝕜 1 μ := by
+  simp_rw [mem_Lp_iff_snorm_lt_top, snorm_aeeqFun]; exact snorm_inner_lt_top f g
 #align measure_theory.L2.mem_L1_inner MeasureTheory.L2.mem_L1_inner
 
 theorem integrable_inner (f g : α →₂[μ] E) : Integrable (fun x : α => ⟪f x, g x⟫) μ :=
@@ -253,9 +255,9 @@ theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : Measur
   rw [h_left, h_right, add_zero]
 #align measure_theory.L2.inner_indicator_const_Lp_eq_set_integral_inner MeasureTheory.L2.inner_indicatorConstLp_eq_setIntegral_inner
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias inner_indicatorConstLp_eq_set_integral_inner :=
-  inner_indicatorConstLp_eq_setIntegral_inner -- deprecated on 2024-04-17
+  inner_indicatorConstLp_eq_setIntegral_inner
 
 /-- The inner product in `L2` of the indicator of a set `indicatorConstLp 2 hs hμs c` and `f` is
 equal to the inner product of the constant `c` and the integral of `f` over `s`. -/
@@ -266,9 +268,9 @@ theorem inner_indicatorConstLp_eq_inner_setIntegral [CompleteSpace E] [NormedSpa
     L2.inner_indicatorConstLp_eq_setIntegral_inner]
 #align measure_theory.L2.inner_indicator_const_Lp_eq_inner_set_integral MeasureTheory.L2.inner_indicatorConstLp_eq_inner_setIntegral
 
-@[deprecated]
+@[deprecated (since := "2024-04-17")]
 alias inner_indicatorConstLp_eq_inner_set_integral :=
-  inner_indicatorConstLp_eq_inner_setIntegral -- deprecated on 2024-04-17
+  inner_indicatorConstLp_eq_inner_setIntegral
 
 variable {𝕜}
 

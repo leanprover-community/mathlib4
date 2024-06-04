@@ -94,8 +94,8 @@ variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
 @[to_additive (attr := simp)]
 theorem prod_cons : (a :: l).prod = a * l.prod :=
   calc
-    (a :: l).prod = foldl (· * ·) (a * 1) l :=
-      by simp only [List.prod, foldl_cons, one_mul, mul_one]
+    (a :: l).prod = foldl (· * ·) (a * 1) l := by
+      simp only [List.prod, foldl_cons, one_mul, mul_one]
     _ = _ := foldl_assoc
 #align list.prod_cons List.prod_cons
 #align list.sum_cons List.sum_cons
@@ -690,8 +690,9 @@ theorem map_list_prod {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F)
 
 namespace MonoidHom
 
+-- original lemma deprecated on 2023-01-10; additivised lemma on 2024-05-02
 /-- Deprecated, use `_root_.map_list_prod` instead. -/
-@[to_additive "Deprecated, use `_root_.map_list_sum` instead."]
+@[to_additive (attr := deprecated) "Deprecated, use `_root_.map_list_sum` instead."]
 protected theorem map_list_prod (f : M →* N) (l : List M) : f l.prod = (l.map f).prod :=
   map_list_prod f l
 #align monoid_hom.map_list_prod MonoidHom.map_list_prod

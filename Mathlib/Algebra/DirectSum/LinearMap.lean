@@ -16,7 +16,7 @@ domain and codomain.
 
 -/
 
-open Set BigOperators DirectSum
+open Set DirectSum
 
 namespace LinearMap
 
@@ -72,7 +72,7 @@ lemma trace_eq_sum_trace_restrict [Fintype ι]
 
 lemma trace_eq_sum_trace_restrict' (hN : {i | N i ≠ ⊥}.Finite)
     {f : M →ₗ[R] M} (hf : ∀ i, MapsTo f (N i) (N i)) :
-    trace R M f = ∑ i in hN.toFinset, trace R (N i) (f.restrict (hf i)) := by
+    trace R M f = ∑ i ∈ hN.toFinset, trace R (N i) (f.restrict (hf i)) := by
   let _ : Fintype {i // N i ≠ ⊥} := hN.fintype
   let _ : Fintype {i | N i ≠ ⊥} := hN.fintype
   rw [← Finset.sum_coe_sort, trace_eq_sum_trace_restrict (isInternal_ne_bot_iff.mpr h) _]
@@ -140,7 +140,7 @@ lemma trace_eq_sum_trace_restrict_of_eq_biSup
     {f : Module.End R M} (hf : ∀ i, MapsTo f (N i) (N i))
     (p : Submodule R M) (hp : p = ⨆ i ∈ s, N i)
     (hp' : MapsTo f p p := hp ▸ mapsTo_biSup_of_mapsTo (s : Set ι) hf) :
-    trace R p (f.restrict hp') = ∑ i in s, trace R (N i) (f.restrict (hf i)) := by
+    trace R p (f.restrict hp') = ∑ i ∈ s, trace R (N i) (f.restrict (hf i)) := by
   classical
   let N' : s → Submodule R p := fun i ↦ (N i).comap p.subtype
   replace h : IsInternal N' := hp ▸ isInternal_biSup_submodule_of_independent (s : Set ι) h

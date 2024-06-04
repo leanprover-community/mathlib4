@@ -15,7 +15,7 @@ import Mathlib.RingTheory.Norm
 
 open Ideal Polynomial
 
-open scoped BigOperators Polynomial
+open scoped Polynomial
 
 variable {R S ι : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [CommRing S]
   [IsDomain S] [Algebra R S]

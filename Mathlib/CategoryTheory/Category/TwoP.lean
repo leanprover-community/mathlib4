@@ -38,7 +38,7 @@ structure TwoP : Type (u + 1) where
 
 namespace TwoP
 
-instance : CoeSort TwoP (Type*) :=
+instance : CoeSort TwoP Type* :=
   ⟨TwoP.X⟩
 
 /-- Turns a two-pointing into a two-pointed type. -/
