@@ -119,7 +119,7 @@ lemma exists_IsTuranMaximal : ∃ H : SimpleGraph V, H.IsTuranMaximal r := by
   obtain ⟨S, Sm, Sl⟩ := exists_max_image c.toFinset (·.edgeFinset.card) cn
   use S
   rw [Set.mem_toFinset] at Sm
-  refine' ⟨Sm, _⟩
+  refine ⟨Sm, ?_⟩
   intro I _ cf
   by_cases Im : I ∈ c.toFinset
   · convert Sl I Im
@@ -130,93 +130,61 @@ end Defs
 
 section Forward
 
-variable {s t u : V} (hmax : G.IsTuranMaximal r)
+variable {G} {s t u : V} (h : G.IsTuranMaximal r)
 
-/-- First part of Zykov symmetrisation. If vertex `s` has larger degree than
-a non-adjacent other vertex `t`, `G.replaceVertex s t` has more edges than `G`. -/
-theorem card_lt_card_replaceVertex1 (hn : ¬G.Adj s t) (hd : G.degree t < G.degree s) :
-    G.edgeFinset.card < (G.replaceVertex s t).edgeFinset.card := by
-  rw [G.card_edgeFinset_replaceVertex_of_not_adj hn, add_tsub_assoc_of_le hd.le]
-  exact Nat.lt_add_of_pos_right <| tsub_pos_iff_lt.mpr hd
+/-- In a Turán-maximal graph, non-adjacent vertices have the same degree. -/
+theorem IsTuranMaximal.degree_eq_of_not_adj (hn : ¬G.Adj s t) : G.degree s = G.degree t := by
+  rw [IsTuranMaximal] at h; contrapose! h; intro cf
+  wlog hd : G.degree t < G.degree s generalizing G t s
+  · replace hd : G.degree s < G.degree t := lt_of_le_of_ne (le_of_not_lt hd) h
+    exact this (by rwa [adj_comm] at hn) hd.ne' cf hd
+  use G.replaceVertex s t, inferInstance, cf.replaceVertex s t
+  have := G.card_edgeFinset_replaceVertex_of_not_adj hn
+  omega
 
-/-- Second part of Zykov symmetrisation. A witness to non-transitivity of non-adjacency
-where the involved vertices have the same degree can be used to generate
-(using `replaceVertex` only) a graph with more edges. -/
-theorem card_lt_card_replaceVertex2 (hst : ¬G.Adj s t) (hsu : ¬G.Adj s u) (htu : G.Adj t u)
-    (hdt : G.degree s = G.degree t) (hdu : G.degree s = G.degree u) :
-    G.edgeFinset.card < ((G.replaceVertex s t).replaceVertex s u).edgeFinset.card := by
-  have ntu : t ≠ u := G.ne_of_adj htu
-  have nst : s ≠ t := fun a => by subst a; contradiction
+/-- In a Turán-maximal graph, non-adjacency is transitive. -/
+theorem IsTuranMaximal.not_adj_transitive (hst : ¬G.Adj s t) (hsu : ¬G.Adj s u) : ¬G.Adj t u := by
+  have dst := h.degree_eq_of_not_adj hst
+  have dsu := h.degree_eq_of_not_adj hsu
+  rw [IsTuranMaximal] at h; contrapose! h; intro cf
+  use (G.replaceVertex s t).replaceVertex s u, inferInstance,
+    (cf.replaceVertex s t).replaceVertex s u
+  have nst : s ≠ t := fun a ↦ hsu (a ▸ h)
+  have ntu : t ≠ u := G.ne_of_adj h
   have := (G.adj_replaceVertex_iff_of_ne s nst ntu.symm).not.mpr hsu
   rw [card_edgeFinset_replaceVertex_of_not_adj _ this,
-    card_edgeFinset_replaceVertex_of_not_adj _ hst, hdt, Nat.add_sub_cancel]
-  have de1 : (G.replaceVertex s t).degree s = G.degree s := by
+    card_edgeFinset_replaceVertex_of_not_adj _ hst, dst, Nat.add_sub_cancel]
+  have l1 : (G.replaceVertex s t).degree s = G.degree s := by
     unfold degree; congr 1; ext v
     simp only [mem_neighborFinset, SimpleGraph.irrefl, ite_self]
     by_cases eq : v = t
-    · subst eq
-      simpa only [not_adj_replaceVertex_same, false_iff]
+    · simpa only [eq, not_adj_replaceVertex_same, false_iff]
     · rw [G.adj_replaceVertex_iff_of_ne s nst eq]
-  have de2 : (G.replaceVertex s t).degree u = G.degree u - 1 := by
-    unfold degree
-    rw [← card_singleton t, ← card_sdiff (by simp [htu.symm])]
+  have l2 : (G.replaceVertex s t).degree u = G.degree u - 1 := by
+    rw [degree, degree, ← card_singleton t, ← card_sdiff (by simp [h.symm])]
     congr 1; ext v
     simp only [mem_neighborFinset, mem_sdiff, mem_singleton, replaceVertex]
-    split_ifs with hu hv hv
-    · simp_all
-    · simp_all
-    · simp [adj_comm, hsu, hv]
-    · simp [adj_comm, hsu, hv]
-  have dpos : 0 < G.degree u := by
-    rw [G.degree_pos_iff_exists_adj u]
-    use t
-    exact htu.symm
-  have dmp : G.degree u - 1 + 1 = G.degree u := Nat.succ_pred_eq_of_pos dpos
-  nth_rw 1 [de1, de2, hdu, ← dmp, add_tsub_assoc_of_le (by simp), add_tsub_cancel_left]
+    split_ifs <;> simp_all [adj_comm]
+  have l3 : 0 < G.degree u := by rw [G.degree_pos_iff_exists_adj u]; use t, h.symm
   omega
 
-variable {G}
-
-/-- In a Turán-maximal graph, non-adjacency is transitive. -/
-theorem not_adj_transitive (hst : ¬G.Adj s t) (hsu : ¬G.Adj s u) : ¬G.Adj t u := by
-  by_cases z : G.degree s = G.degree t ∧ G.degree s = G.degree u <;>
-    (contrapose! hmax; unfold IsTuranMaximal; push_neg; intro cf)
-  · use (G.replaceVertex s t).replaceVertex s u, inferInstance
-    exact ⟨(cf.replaceVertex s t).replaceVertex s u,
-      card_lt_card_replaceVertex2 _ hst hsu hmax z.1 z.2⟩
-  · rw [Decidable.not_and_iff_or_not_not] at z
-    cases' z with st su
-    · cases' lt_or_gt_of_ne st with less more
-      · use G.replaceVertex t s, inferInstance
-        rw [adj_comm] at hst
-        exact ⟨cf.replaceVertex t s, G.card_lt_card_replaceVertex1 hst less⟩
-      · use G.replaceVertex s t, inferInstance
-        exact ⟨cf.replaceVertex s t, G.card_lt_card_replaceVertex1 hst more⟩
-    · cases' lt_or_gt_of_ne su with less more
-      · use G.replaceVertex u s, inferInstance
-        rw [adj_comm] at hsu
-        exact ⟨cf.replaceVertex u s, G.card_lt_card_replaceVertex1 hsu less⟩
-      · use G.replaceVertex s u, inferInstance
-        exact ⟨cf.replaceVertex s u, G.card_lt_card_replaceVertex1 hsu more⟩
-
 /-- In a Turán-maximal graph, non-adjacency is an equivalence relation. -/
-theorem notAdj_equivalence : Equivalence fun x y => ¬G.Adj x y where
+theorem not_adj_equivalence : Equivalence fun x y ↦ ¬G.Adj x y where
   refl x := by simp
   symm xy := by simp [xy, adj_comm]
   trans xy yz := by
     rw [adj_comm] at xy
-    exact G.not_adj_transitive hmax xy yz
+    exact h.not_adj_transitive xy yz
 
-/-- The non-adjacency setoid over the vertices of a Turán-maximal graph that exists
-because of `notAdj_equivalence`. Said graph is therefore a complete multipartite graph. -/
-def notAdjSetoid : Setoid V := ⟨_, (notAdj_equivalence hmax)⟩
+/-- The non-adjacency setoid over the vertices of a Turán-maximal graph
+induced by `not_adj_equivalence`. -/
+def notAdjSetoid : Setoid V := ⟨_, not_adj_equivalence h⟩
 
-instance : DecidableRel (notAdjSetoid hmax).r :=
-  inferInstanceAs <| DecidableRel fun v w => ¬G.Adj v w
+instance : DecidableRel (notAdjSetoid h).r :=
+  inferInstanceAs <| DecidableRel fun v w ↦ ¬G.Adj v w
 
 /-- The finpartition derived from `notAdjSetoid`. -/
-def notAdjFinpartition : Finpartition (univ : Finset V) :=
-  Finpartition.ofSetoid (notAdjSetoid hmax)
+def notAdjFinpartition : Finpartition (univ : Finset V) := Finpartition.ofSetoid (notAdjSetoid h)
 
 end Forward
 
