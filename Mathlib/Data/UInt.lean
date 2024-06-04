@@ -9,6 +9,18 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Data.ZMod.Defs
 
+/-!
+# Adds Mathlib specific instances to the `UIntX` data types.
+
+Users are advised not to use the `NatCast` and `IntCast` typeclasses, as their presence
+contradicts assumptions made by the expression tree elaborator.
+These are only available as scoped instances, requiring `open UInt32.Cast` to use.
+
+The `CommRing` instance is similarly scoped, and requires `open UInt32.CommRing` to use.
+(It is problematic for the same reason:
+making it available implicitly also makes the casting instances available.)
+-/
+
 lemma UInt8.val_eq_of_lt {a : Nat} : a < UInt8.size → ((ofNat a).val : Nat) = a :=
   Nat.mod_eq_of_lt
 
@@ -56,12 +68,6 @@ run_cmd
       instance : SMul ℤ $typeName where
         smul z a := mk (z • a.val)
 
-      instance : NatCast $typeName where
-        natCast n := mk n
-
-      instance : IntCast $typeName where
-        intCast z := mk z
-
       lemma zero_def : (0 : $typeName) = ⟨0⟩ := rfl
 
       lemma one_def : (1 : $typeName) = ⟨1⟩ := rfl
@@ -82,10 +88,6 @@ run_cmd
 
       lemma zsmul_def (z : ℤ) (a : $typeName) : z • a = ⟨z • a.val⟩ := rfl
 
-      lemma natCast_def (n : ℕ) : (n : $typeName) = ⟨n⟩ := rfl
-
-      lemma intCast_def (z : ℤ) : (z : $typeName) = ⟨z⟩ := rfl
-
       lemma eq_of_val_eq : ∀ {a b : $typeName}, a.val = b.val -> a = b
       | ⟨_⟩, ⟨_⟩, h => congrArg mk h
 
@@ -97,18 +99,26 @@ run_cmd
       @[simp] lemma mk_val_eq : ∀ (a : $typeName), mk a.val = a
       | ⟨_, _⟩ => rfl
 
-      /--
-      This is not an instance; it is not needed in Mathlib,
-      and moreover results in a `Nat → $typeName` coercion which breaks assumptions made in the
-      expression tree elaborator.
+    namespace Cast
+      scoped instance : NatCast $typeName where
+        natCast n := mk n
 
-      Use with caution, only in downstream projects.
-      -/
-      def instCommRing : CommRing $typeName :=
+      scoped instance : IntCast $typeName where
+        intCast z := mk z
+
+      lemma natCast_def (n : ℕ) : (n : $typeName) = ⟨n⟩ := rfl
+
+      lemma intCast_def (z : ℤ) : (z : $typeName) = ⟨z⟩ := rfl
+
+    end Cast
+
+    namespace CommRing
+      open Cast in
+      scoped instance instCommRing : CommRing $typeName :=
         Function.Injective.commRing val val_injective
           rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
           (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
-
+    end CommRing
     end $typeName
   ))
 
