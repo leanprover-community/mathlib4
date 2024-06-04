@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tian Chen, Mantas Bakšys
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Data.Int.Parity
+import Mathlib.Algebra.Ring.Int
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.RingTheory.Ideal.Quotient
