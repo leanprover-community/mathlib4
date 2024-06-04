@@ -356,8 +356,8 @@ protected theorem _root_.Set.Finite.nullMeasurableSet (hs : s.Finite) : NullMeas
   Finite.measurableSet hs
 #align set.finite.null_measurable_set Set.Finite.nullMeasurableSet
 
-protected theorem _root_.Finset.nullMeasurableSet (s : Finset α) : NullMeasurableSet (↑s) μ :=
-  by apply Finset.measurableSet
+protected theorem _root_.Finset.nullMeasurableSet (s : Finset α) : NullMeasurableSet (↑s) μ := by
+  apply Finset.measurableSet
 #align finset.null_measurable_set Finset.nullMeasurableSet
 
 end MeasurableSingletonClass

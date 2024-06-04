@@ -335,26 +335,21 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     conv_lhs => rw [← hf'.some.fac]
     simp only [← Category.assoc, op_comp, Functor.map_comp]
     congr 1
-    refine' (appHom_restrict (homOver α (unop X)) hf'.some.map.op x).trans _
-    simp
+    exact (appHom_restrict (homOver α (unop X)) hf'.some.map.op x).trans (by simp)
 #align category_theory.cover_dense.sheaf_coyoneda_hom CategoryTheory.Functor.IsCoverDense.sheafCoyonedaHom
 
 /--
 (Implementation). `sheafCoyonedaHom` but the order of the arguments of the functor are swapped.
 -/
 noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
-    ℱ ⋙ yoneda ⟶ ℱ'.val ⋙ yoneda := by
-  let α := sheafCoyonedaHom α
-  refine'
-    { app := _
-      naturality := _ }
-  · intro U
-    refine'
-      { app := fun X => (α.app X).app U
-        naturality := fun X Y f => by simpa using congr_app (α.naturality f) U }
-  · intro U V i
+    ℱ ⋙ yoneda ⟶ ℱ'.val ⋙ yoneda where
+  app U :=
+    let α := (sheafCoyonedaHom α)
+    { app := fun X => (α.app X).app U
+      naturality := fun X Y f => by simpa using congr_app (α.naturality f) U }
+  naturality U V i := by
     ext X x
-    exact congr_fun ((α.app X).naturality i) x
+    exact congr_fun (((sheafCoyonedaHom α).app X).naturality i) x
 #align category_theory.cover_dense.sheaf_yoneda_hom CategoryTheory.Functor.IsCoverDense.sheafYonedaHom
 
 /-- Given a natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of arbitrary category,
@@ -474,7 +469,7 @@ if the pullback of `α` along `G` is iso, then `α` is also iso.
 -/
 theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIso (whiskerLeft G.op α.val)) :
     IsIso α := by
-  convert IsIso.of_iso (sheafIso (asIso (whiskerLeft G.op α.val))) using 1
+  convert (sheafIso (asIso (whiskerLeft G.op α.val))).isIso_hom using 1
   ext1
   apply (sheafHom_eq _ _).symm
 #align category_theory.cover_dense.iso_of_restrict_iso CategoryTheory.Functor.IsCoverDense.iso_of_restrict_iso
@@ -531,7 +526,7 @@ variable [G.IsCoverDense K] [G.IsContinuous J K] [G.IsCocontinuous J K]
 instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by
     let α := G.sheafAdjunctionCocontinuous A J K
     haveI : IsIso ((sheafToPresheaf J A).map (α.counit.app Y)) :=
-      IsIso.of_iso ((@asIso _ _ _ _ _ (Ran.reflective A G.op)).app Y.val)
+      ((@asIso _ _ _ _ _ (Ran.reflective A G.op)).app Y.val).isIso_hom
     apply ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
 
 variable (A)

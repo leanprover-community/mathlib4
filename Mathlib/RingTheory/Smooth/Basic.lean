@@ -211,7 +211,7 @@ theorem of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRi
   constructor
   intro C _ _ I hI i
   let l : P ⧸ (RingHom.ker f.toRingHom) ^ 2 →ₐ[R] C := by
-    refine' Ideal.Quotient.liftₐ _ (FormallySmooth.lift I ⟨2, hI⟩ (i.comp f)) _
+    refine Ideal.Quotient.liftₐ _ (FormallySmooth.lift I ⟨2, hI⟩ (i.comp f)) ?_
     have : RingHom.ker f ≤ I.comap (FormallySmooth.lift I ⟨2, hI⟩ (i.comp f)) := by
       rintro x (hx : f x = 0)
       have : _ = i (f x) := (FormallySmooth.mk_lift I ⟨2, hI⟩ (i.comp f) x : _)
@@ -281,7 +281,7 @@ instance base_change [FormallySmooth R A] : FormallySmooth B (B ⊗[R] A) := by
   intro C _ _ I hI f
   letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
   haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
-  refine' ⟨TensorProduct.productLeftAlgHom (Algebra.ofId B C) _, _⟩
+  refine ⟨TensorProduct.productLeftAlgHom (Algebra.ofId B C) ?_, ?_⟩
   · exact FormallySmooth.lift I ⟨2, hI⟩ ((f.restrictScalars R).comp TensorProduct.includeRight)
   · apply AlgHom.restrictScalars_injective R
     apply TensorProduct.ext'

@@ -219,8 +219,8 @@ theorem mem_sInf {S : Set (L.Substructure M)} {x : M} : x ∈ sInf S ↔ ∀ p �
   Set.mem_iInter₂
 #align first_order.language.substructure.mem_Inf FirstOrder.Language.Substructure.mem_sInf
 
-theorem mem_iInf {ι : Sort*} {S : ι → L.Substructure M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i :=
-  by simp only [iInf, mem_sInf, Set.forall_mem_range]
+theorem mem_iInf {ι : Sort*} {S : ι → L.Substructure M} {x : M} :
+    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 #align first_order.language.substructure.mem_infi FirstOrder.Language.Substructure.mem_iInf
 
 @[simp, norm_cast]

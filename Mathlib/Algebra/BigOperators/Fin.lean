@@ -68,8 +68,7 @@ is the product of `f x`, for some `x : Fin (n + 1)` times the remaining product 
 `f x`, for some `x : Fin (n + 1)` plus the remaining product"]
 theorem prod_univ_succAbove [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) (x : Fin (n + 1)) :
     ∏ i, f i = f x * ∏ i : Fin n, f (x.succAbove i) := by
-  rw [univ_succAbove, prod_cons, Finset.prod_map _ x.succAboveEmb.toEmbedding,
-    RelEmbedding.coe_toEmbedding]
+  rw [univ_succAbove, prod_cons, Finset.prod_map _ x.succAboveEmb]
   rfl
 #align fin.prod_univ_succ_above Fin.prod_univ_succAbove
 #align fin.sum_univ_succ_above Fin.sum_univ_succAbove
@@ -331,7 +330,7 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
       cases m
       · exact isEmptyElim (f <| Fin.last _)
       simp_rw [Fin.sum_univ_castSucc, Fin.coe_castSucc, Fin.val_last]
-      refine' (add_lt_add_of_lt_of_le (ih _) <| mul_le_mul_right' (Fin.is_le _) _).trans_eq _
+      refine (Nat.add_lt_add_of_lt_of_le (ih _) <| Nat.mul_le_mul_right _ (Fin.is_le _)).trans_eq ?_
       rw [← one_add_mul (_ : ℕ), add_comm, pow_succ']⟩)
     (fun a b => ⟨a / m ^ (b : ℕ) % m, by
       cases' n with n
@@ -386,7 +385,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
       intro n nn f fn
       cases nn
       · exact isEmptyElim fn
-      refine' (add_lt_add_of_lt_of_le (ih _) <| mul_le_mul_right' (Fin.is_le _) _).trans_eq _
+      refine (Nat.add_lt_add_of_lt_of_le (ih _) <| Nat.mul_le_mul_right _ (Fin.is_le _)).trans_eq ?_
       rw [← one_add_mul (_ : ℕ), mul_comm, add_comm]⟩)
     (fun a b => ⟨(a / ∏ j : Fin b, n (Fin.castLE b.is_lt.le j)) % n b, by
       cases m
@@ -397,7 +396,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
       exact Nat.mod_lt _ nb.succ_pos⟩)
     (by
       intro a; revert a; dsimp only [Fin.val_mk]
-      refine' Fin.consInduction _ _ n
+      refine Fin.consInduction ?_ ?_ n
       · intro a
         haveI : Subsingleton (Fin (∏ i : Fin 0, i.elim0)) :=
           (finCongr <| prod_empty).subsingleton
