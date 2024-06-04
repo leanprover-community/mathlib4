@@ -196,7 +196,10 @@ variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
 
 /-- The identity non-unital ring homomorphism from a non-unital semiring to itself. -/
 protected def id (α : Type*) [NonUnitalNonAssocSemiring α] : α →ₙ+* α where
-  toFun := id; map_mul' _ _ := rfl; map_zero' := rfl; map_add' _ _ := rfl
+  toFun := id
+  map_mul' _ _ := rfl
+  map_zero' := rfl
+  map_add' _ _ := rfl
 #align non_unital_ring_hom.id NonUnitalRingHom.id
 
 instance : Zero (α →ₙ+* β) :=
@@ -627,7 +630,11 @@ variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
 
 /-- The identity ring homomorphism from a semiring to itself. -/
 def id (α : Type*) [NonAssocSemiring α] : α →+* α where
-  toFun := _root_.id; map_zero' := rfl; map_one' := rfl; map_add' _ _ := rfl; map_mul' _ _ := rfl
+  toFun := _root_.id
+  map_zero' := rfl
+  map_one' := rfl
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
 #align ring_hom.id RingHom.id
 
 instance : Inhabited (α →+* α) :=
