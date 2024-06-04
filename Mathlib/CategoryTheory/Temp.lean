@@ -89,33 +89,15 @@ def aux3 {X Y Z : SSet} (f : Y ⟶ SSetIHom X Z) : X ⊗ Y ⟶ Z where
     change (f.app m ((Y.map g Yn))).app m (_, X.map g Xn) = Z.map g ((f.app n Yn).app n (_, Xn))
     have b := f.naturality g
     apply_fun (fun f ↦ (f Yn).app m (standardSimplex.objMk OrderHom.id, X.map g Xn)) at b
-    dsimp at b
-    rw [b]
     have a := (f.app n Yn).naturality g
     apply_fun (fun f ↦ f (standardSimplex.objMk OrderHom.id, Xn)) at a
-    simp only [mk_len, yoneda_obj_obj, types_comp_apply] at a
-    rw [← a]
-    aesop
+    simp only [mk_len, types_comp_apply] at a b
+    rw [b, ← a]
+    rfl
 
 @[ext]
 lemma ext {X Y : SSet} {n : SimplexCategoryᵒᵖ} {f g : (SSetIHom X Y).obj n} :
     f.app = g.app → f = g := NatTrans.ext _ _
-
-def unit_aux {X Y : SSet} (n : SimplexCategoryᵒᵖ) (Yn : Y.obj n) : Δ[n.unop.len] ⊗ X ⟶ X ⊗ Y where
-  app := fun m ⟨g, Xm⟩ ↦ ⟨Xm, Y.map g.down.op Yn⟩
-  naturality m l h := by
-    ext ⟨g, Xm⟩
-    simp only [tensorLeft_obj, mk_len, Opposite.op_unop, yoneda_obj_obj, types_comp_apply]
-    change (X.map h Xm, Y.map ((standardSimplex.obj n.unop).map h g).down.op Yn) = (X.map h Xm, Y.map h (Y.map g.down.op Yn))
-    dsimp [standardSimplex, SSet.uliftFunctor]
-    aesop
-
-def unit (X Y : SSet) : Y ⟶ SSetIHom X (X ⊗ Y) where
-  app n Yn := unit_aux n Yn
-  naturality n m g := by
-    ext Yn l ⟨h, Xl⟩
-    dsimp
-    sorry
 
 def SSetAdj (X : SSet) : tensorLeft X ⊣ SSetRightAdj X where
   homEquiv Y Z := {
@@ -136,9 +118,20 @@ def SSetAdj (X : SSet) : tensorLeft X ⊣ SSetRightAdj X where
       aesop
   }
   unit := {
-    app := fun Y ↦ unit X Y
-    naturality := sorry
+    app := fun Y ↦ aux2 (𝟙 _)
+    naturality := fun Y Z f ↦ by
+      ext n Yn
+      change (aux1 (𝟙 (X ⊗ Z)) n (f.app n Yn)) = ((SSetRightAdj X).map (X ◁ f)).app n (aux1 (𝟙 (X ⊗ Y)) n Yn)
+      ext m ⟨g, Xm⟩
+      change (Xm, Z.map g.down.op (f.app n Yn)) = (X ◁ f).app m (Xm, Y.map g.down.op Yn)
+      simp only [Opposite.op_unop, mk_len, yoneda_obj_obj, whiskerLeft_app_apply, Prod.mk.injEq,
+        true_and]
+      exact Eq.symm (FunctorToTypes.naturality Y Z f g.down.op Yn)
   }
-  counit := sorry
-  homEquiv_unit := sorry
-  homEquiv_counit := sorry
+  counit := { app := fun Y ↦ aux3 (𝟙 _) }
+
+instance : MonoidalClosed SSet where
+  closed X := {
+    rightAdj := SSetRightAdj X
+    adj := SSetAdj X
+  }
