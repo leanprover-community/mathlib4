@@ -184,7 +184,9 @@ def diagramIsoPair (F : Discrete WalkingPair ⥤ C) :
 
 section
 
-variable {D : Type u} [Category.{v} D]
+universe u' v'
+
+variable {D : Type u'} [Category.{v'} D]
 
 /-- The natural isomorphism between `pair X Y ⋙ F` and `pair (F.obj X) (F.obj Y)`. -/
 def pairComp (X Y : C) (F : C ⥤ D) : pair X Y ⋙ F ≅ pair (F.obj X) (F.obj Y) :=

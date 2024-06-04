@@ -73,3 +73,70 @@ noncomputable def mapGroupObject : GroupObject C ⥤ GroupObject D where
   map f := mapGroupObjectMap F f
   map_id X := by ext; simp
   map_comp f g := by ext; simp
+
+/-- If `F : C ⥤ D` is faithful, then so is the induced functor `F.mapGroupObject` on
+group objects.-/
+lemma mapGroupObject_faitful [Faithful F] : Faithful F.mapGroupObject where
+  map_injective := by
+    intro X Y f g
+    dsimp; intro eq; ext
+    apply_fun (fun h ↦ h.hom) at eq
+    dsimp at eq
+    exact F.map_injective eq
+
+
+/-- If `F : C ⥤ D` is fully faithful, then the induced functor `F.mapGroupObject` on
+group objects is full (it is also faithful by `mapGroupObject_faithful`).-/
+lemma mapGroupObject_full [Faithful F] [Full F] : Full  F.mapGroupObject where
+  map_surjective := by
+    intro X Y h
+    obtain ⟨f, hf⟩ := F.map_surjective h.hom
+    existsi {hom := f, one_hom := ?_, mul_hom := ?_, inv_hom := ?_}
+    · refine F.map_injective (Epi.left_cancellation (f := (PreservesTerminal.iso F).inv) _ _ ?_)
+      simp only [map_comp, hf, mapGroupObject_obj]
+      rw [← Category.assoc]; conv_rhs => rw [← mapGroupObjectObj_one]
+      change _ = (F.mapGroupObject.obj Y).one
+      rw [← h.one_hom]; simp only [mapGroupObject_obj, mapGroupObjectObj_X,
+        PreservesTerminal.iso_inv, Category.assoc, mapGroupObjectObj_one]
+    · refine F.map_injective (Epi.left_cancellation (f := (PreservesLimitPair.iso F _ _).inv)
+        _ _ ?_)
+      simp only [map_comp]
+      conv_lhs => rw [← Category.assoc, ← F.mapGroupObjectObj_mul, hf]
+                  change (F.mapGroupObject.obj X).mul ≫ h.hom
+                  rw [h.mul_hom, ← hf]
+      simp only [mapGroupObject_obj, mapGroupObjectObj_X, mapGroupObjectObj_mul,
+        PreservesLimitPair.iso_inv, IsIso.eq_inv_comp]
+      slice_lhs 1 2 => rw [← prodComparison_natural]
+      simp only [Category.assoc, IsIso.hom_inv_id, Category.comp_id]
+    · refine F.map_injective ?_
+      simp only [map_comp, ← F.mapGroupObjectObj_inv, hf]
+      change (F.mapGroupObject.obj X).inv ≫ _ = _
+      rw [h.inv_hom]; simp only [mapGroupObject_obj, mapGroupObjectObj_X, mapGroupObjectObj_inv]
+    · ext; simp only [mapGroupObject_obj, mapGroupObjectObj_X, mapGroupObject_map,
+      mapGroupObjectMap_hom, hf]
+
+/-- The construction `mapGroupObject`, as a functor from the category of functors `C ⥤ D`
+that respect finite limits to the category of functors `GroupObject C ⥤ GroupObject D`.-/
+noncomputable def mapGroupObjectAsFunctor :
+    FullSubcategory (fun (F : C ⥤ D) ↦ Nonempty (PreservesFiniteProducts F)) ⥤
+    GroupObject C ⥤ GroupObject D where
+  obj F := by
+    set hF := Classical.choice F.2
+    exact @mapGroupObject _ _ _ _ _ _ F.1 hF
+  map := by
+    intro F G α
+    simp only
+    refine { app := ?_, naturality := ?_}
+    · intro X; dsimp
+      refine {hom := α.app X.X, one_hom := ?_, mul_hom := ?_, inv_hom := ?_}
+      · dsimp
+        rw [Category.assoc, α.naturality, ← Category.assoc]
+        congr 1
+        simp only [PreservesTerminal.iso_inv, IsIso.inv_comp_eq, IsIso.eq_comp_inv]
+        exact Subsingleton.elim _ _
+      · simp only [mapGroupObjectObj_X, mapGroupObjectObj_mul, PreservesLimitPair.iso_inv, id_eq,
+        Category.assoc, NatTrans.naturality, IsIso.inv_comp_eq]
+        slice_rhs 1 2 => rw [prodComparison_natTrans]
+        simp only [Category.assoc, IsIso.hom_inv_id, Category.comp_id]
+      · simp only [mapGroupObjectObj_X, mapGroupObjectObj_inv, id_eq, NatTrans.naturality]
+    · aesop_cat

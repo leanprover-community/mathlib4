@@ -1,4 +1,5 @@
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Limits.Fubini
 
 universe u v
 
@@ -198,6 +199,37 @@ instance uniqueHomToTrivial (A : GroupObject C) : Unique (A ⟶ trivial C) where
     simp only [trivial_X]
     exact inferInstance
 
+
+/- Limits of group objects.-/
+
+variable {J : Type*} [Category J] [HasLimitsOfShape J C]
+  [HasLimitsOfShape (Discrete WalkingPair × J) C] [HasLimitsOfShape (J × Discrete WalkingPair) C]
+
+example (F : J ⥤ GroupObject C) : Cone F where
+  pt :=
+  {
+    X := limit (F ⋙ forget C)
+    one := sorry
+    mul := by
+      set e := limitFlipCompLimIsoLimitCompLim (pair (F ⋙ forget C) (F ⋙ forget C))
+      set f := HasLimit.isoOfNatIso (pairComp (F ⋙ forget C) (F ⋙ forget C)
+        (lim : (J ⥤ C) ⥤ C))
+      refine (f.symm.trans e.symm).hom ≫ limMap ?_
+      have g : ∀ (j : J),
+          (pair (F ⋙ forget C) (F ⋙ forget C)).flip.obj j ≅ pair (F.obj j).X (F.obj j).X :=
+        fun _ ↦ mapPairIso (Iso.refl _) (Iso.refl _)
+      exact
+      {
+        app := fun j ↦ (HasLimit.isoOfNatIso (g j)).hom ≫ (F.obj j).mul
+        naturality := by
+          intro j j' f
+          simp only [Functor.comp_obj, lim_obj, forget_obj, Functor.comp_map, lim_map, forget_map,
+            Category.assoc, Hom.mul_hom]
+          sorry 
+      }
+    inv := sorry
+  }
+  π := sorry
 
 
 /- The Yoneda embedding.-/
