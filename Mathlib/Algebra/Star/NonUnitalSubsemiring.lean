@@ -6,7 +6,6 @@ Authors: Christopher Hoskin
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Group.Subsemigroup.Basic
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Algebra.Star.Center
 
 /-!

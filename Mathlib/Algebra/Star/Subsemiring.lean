@@ -4,6 +4,7 @@ Released under Apache 2. license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.Star.NonUnitalSubsemiring
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-!
 # Star subrings
