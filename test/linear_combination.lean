@@ -2,6 +2,7 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linarith
 
 
+private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
 
 -- We deliberately mock R here so that we don't have to import the deps
@@ -117,6 +118,24 @@ example {α} [h : CommRing α] {a b c d e f : α} (h1 : a * d = b * c) (h2 : c *
 
 example (x y z w : ℚ) (hzw : z = w) : x * z + 2 * y * z = x * w + 2 * y * w := by
   linear_combination (x + 2 * y) * hzw
+
+/-! ### Cases using ring homs -/
+
+axiom Complex : Type
+notation "ℂ" => Complex
+@[instance] axiom Complex.field : Field ℂ
+noncomputable def I : ℂ := test_sorry
+noncomputable axiom I_mul_I : I * I = -1
+
+-- simulate the type of MvPolynomial
+def R : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
+noncomputable instance : CommRing (R a b) := test_sorry
+
+noncomputable def C {α} [Ring α] : α →+* R x α := test_sorry
+
+example (X : R Unit ℂ) : X ^ 2 + 1 = (X - C I) * (X - C (-I)) := by
+  have := congr_arg (C : ℂ → R Unit ℂ) I_mul_I
+  linear_combination this
 
 /-! ### Cases that explicitly use a config -/
 
