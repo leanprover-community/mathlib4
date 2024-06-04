@@ -126,7 +126,7 @@ namespace IndepMatroid
         exists_prop, exists_and_left]
       exact fun _ ↦ ⟨B, hB, subset_insert _ _, by simpa using he.1⟩
 
-    obtain ⟨f,hf,hfB⟩ := M.indep_aug (M.indep_subset hB (diff_subset B {e})) hnotmax ⟨hB',hB'max⟩
+    obtain ⟨f,hf,hfB⟩ := M.indep_aug (M.indep_subset hB diff_subset) hnotmax ⟨hB',hB'max⟩
     simp only [mem_diff, mem_singleton_iff, not_and, not_not] at hf
 
     have hfB' : f ∉ B := by (intro hfB; obtain rfl := hf.2 hfB; exact he.2 hf.1)
