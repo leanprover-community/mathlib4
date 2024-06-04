@@ -97,7 +97,14 @@ run_cmd
       @[simp] lemma mk_val_eq : ∀ (a : $typeName), mk a.val = a
       | ⟨_, _⟩ => rfl
 
-      instance : CommRing $typeName :=
+      /--
+      This is not an instance; it is not needed in Mathlib,
+      and moreover results in a `Nat → $typeName` coercion which breaks assumptions made in the
+      expression tree elaborator.
+
+      Use with caution, only in downstream projects.
+      -/
+      def instCommRing : CommRing $typeName :=
         Function.Injective.commRing val val_injective
           rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
           (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
