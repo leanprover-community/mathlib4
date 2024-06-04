@@ -32,13 +32,8 @@ universe u v
 open CategoryTheory Limits
 
 /-- The functor from `LightProfinite.{u}` to `LightCondSet.{u}` given by the Yoneda sheaf. -/
-def lightProfiniteToLightCondSet : LightProfinite.{u} ⥤ LightCondSet.{u} where
-  obj S := {
-    val := yoneda.obj S
-    cond := by
-      rw [isSheaf_iff_isSheaf_of_type]
-      exact coherentTopology.isSheaf_yoneda_obj S }
-  map f := ⟨yoneda.map f⟩
+def lightProfiniteToLightCondSet : LightProfinite.{u} ⥤ LightCondSet.{u} :=
+  (coherentTopology.subcanonical LightProfinite).yoneda
 
 /-- Dot notation for the value of `lightProfiniteToLightCondSet`. -/
 abbrev LightProfinite.toCondensed (S : LightProfinite.{u}) : LightCondSet.{u} :=

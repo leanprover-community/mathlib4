@@ -46,13 +46,8 @@ end Universes
 section Topology
 
 /-- The functor from `CompHaus` to `Condensed.{u} (Type u)` given by the Yoneda sheaf. -/
-def compHausToCondensed' : CompHaus.{u} ⥤ Condensed.{u} (Type u) where
-  obj S := {
-    val := yoneda.obj S
-    cond := by
-      rw [isSheaf_iff_isSheaf_of_type]
-      exact coherentTopology.isSheaf_yoneda_obj S }
-  map f := ⟨yoneda.map f⟩
+def compHausToCondensed' : CompHaus.{u} ⥤ Condensed.{u} (Type u) :=
+  (coherentTopology.subcanonical CompHaus).yoneda
 
 /-- The yoneda presheaf as an actual condensed set. -/
 def compHausToCondensed : CompHaus.{u} ⥤ CondensedSet.{u} :=
