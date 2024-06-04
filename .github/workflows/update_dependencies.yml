@@ -50,6 +50,7 @@ jobs:
             echo "no_changes=true" >> $GITHUB_ENV
           else
             echo "no_changes=false" >> $GITHUB_ENV
+          fi
 
       - name: Stop if no changes
         if: env.no_changes == 'true'
@@ -72,7 +73,7 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.NIGHTLY_TESTING }}
-          commit-message: "chore: update Mathlib dependencies ${{ steps.create_new_branch.outputs.branch_name }}"
+          commit-message: "chore: update Mathlib dependencies $(date -u +\"%Y-%m-%d\")"
           branch: ${{ env.branch_name }}
-          title: "chore: update Mathlib dependencies ${{ steps.create_new_branch.outputs.branch_name }}"
+          title: "chore: update Mathlib dependencies $(date -u +\"%Y-%m-%d\")"
           labels: "auto-merge-after-CI"

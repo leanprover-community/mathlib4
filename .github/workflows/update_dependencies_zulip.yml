@@ -32,9 +32,9 @@ jobs:
       - name: Get CI URL
         id: ci_url
         run: |
-          url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          curl -s "${url}" |
-            awk -v url="${url}" -F'/' '/^ *href/ {gsub(/"/, "", $NF); printf("summary<<EOF\n%s/job/%s\nEOF", url, $NF)}' >> "$GITHUB_OUTPUT"
+          url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s "$url" |
+            awk -v url="$url" -F'/' '/^ *href/ {gsub(/"/, "", $NF); printf("summary<<EOF\n%s/job/%s\nEOF", url, $NF)}' >> "$GITHUB_OUTPUT"
 
       - name: Send Zulip message
         uses: zulip/github-actions-zulip/send-message@v1
@@ -44,6 +44,6 @@ jobs:
           organization-url: 'https://leanprover.zulipchat.com'
           to: 'mathlib reviewers'
           type: 'stream'
-          topic: 'Mathlib lake update failure'
+          topic: 'Mathlib `lake update` failure'
           content: |
-            ❌ lake update [failed](${{ steps.ci_url.outputs.summary }}) on ${{ github.sha }}
+            ❌ `lake update` [failed](${{ steps.ci_url.outputs.summary }}) on ${{ github.sha }}
