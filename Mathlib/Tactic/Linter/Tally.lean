@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Lean.Elab.Print
---import Lean.Elab.Command
---import Lean.Linter.Util
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Lemma
 
