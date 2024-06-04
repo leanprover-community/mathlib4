@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
-import Mathlib.CategoryTheory.Sites.LocallyBijective
+import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
 # The associated sheaf of a presheaf of modules
@@ -316,13 +316,5 @@ noncomputable def sheafify : SheafOfModules.{v} R where
       module := Sheafify.module α φ
       map_smul := fun _ _ _ => by apply Sheafify.map_smul }
   isSheaf := A.cond
-
-/-- Under reasonable universe assumptions, the type-class that are necessary
-to construct the sheafification of a presheaf of modules `M` are found
-automatically. -/
-noncomputable example {C : Type u} [SmallCategory C] (J : GrothendieckTopology C)
-    {R : Sheaf J RingCat.{u}} (M : PresheafOfModules.{u} R.val) :
-    SheafOfModules.{u} R :=
-  sheafify (𝟙 R.val) (toSheafify J M.presheaf)
 
 end PresheafOfModules
