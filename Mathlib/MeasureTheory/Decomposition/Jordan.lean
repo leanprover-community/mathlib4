@@ -306,9 +306,9 @@ theorem of_diff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv 
     (hsu : 0 ≤[u] s) (hsv : 0 ≤[v] s) (hs : s (u ∆ v) = 0) : s (u \ v) = 0 ∧ s (v \ u) = 0 := by
   rw [restrict_le_restrict_iff] at hsu hsv
   on_goal 1 =>
-    have a := hsu (hu.diff hv) (u.diff_subset v)
-    have b := hsv (hv.diff hu) (v.diff_subset u)
-    erw [of_union (Set.disjoint_of_subset_left (u.diff_subset v) disjoint_sdiff_self_right)
+    have a := hsu (hu.diff hv) diff_subset
+    have b := hsv (hv.diff hu) diff_subset
+    erw [of_union (Set.disjoint_of_subset_left diff_subset disjoint_sdiff_self_right)
         (hu.diff hv) (hv.diff hu)] at hs
     rw [zero_apply] at a b
     constructor

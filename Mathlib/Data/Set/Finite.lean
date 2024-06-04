@@ -629,7 +629,7 @@ instance finite_inter_of_left (s t : Set α) [Finite s] : Finite (s ∩ t : Set 
 #align finite.set.finite_inter_of_left Finite.Set.finite_inter_of_left
 
 instance finite_diff (s t : Set α) [Finite s] : Finite (s \ t : Set α) :=
-  Finite.Set.subset s (diff_subset s t)
+  Finite.Set.subset s diff_subset
 #align finite.set.finite_diff Finite.Set.finite_diff
 
 instance finite_range (f : ι → α) [Finite ι] : Finite (range f) := by

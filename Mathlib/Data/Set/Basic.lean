@@ -1800,8 +1800,7 @@ theorem nonempty_diff {s t : Set α} : (s \ t).Nonempty ↔ ¬s ⊆ t :=
   inter_compl_nonempty_iff
 #align set.nonempty_diff Set.nonempty_diff
 
-theorem diff_subset (s t : Set α) : s \ t ⊆ s :=
-  show s \ t ≤ s from sdiff_le
+theorem diff_subset {s t : Set α} : s \ t ⊆ s := show s \ t ≤ s from sdiff_le
 #align set.diff_subset Set.diff_subset
 
 theorem diff_subset_compl (s t : Set α) : s \ t ⊆ tᶜ :=

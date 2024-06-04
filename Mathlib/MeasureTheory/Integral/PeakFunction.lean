@@ -169,7 +169,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
         rw [integral_mul_left]
         apply mul_le_mul_of_nonneg_left (setIntegral_mono_set hmg.norm _ _) δpos.le
         · filter_upwards with x using norm_nonneg _
-        · filter_upwards using diff_subset s u
+        · filter_upwards using diff_subset (s := s) (t := u)
   calc
     ‖∫ x in s, φ i x • g x ∂μ‖ =
       ‖(∫ x in s \ u, φ i x • g x ∂μ) + ∫ x in s ∩ u, φ i x • g x ∂μ‖ := by

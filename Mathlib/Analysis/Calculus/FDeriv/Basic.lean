@@ -220,7 +220,7 @@ theorem fderivWithin_zero_of_nmem_closure (h : x ∉ closure s) : fderivWithin �
   apply fderivWithin_zero_of_isolated
   simp only [mem_closure_iff_nhdsWithin_neBot, neBot_iff, Ne, Classical.not_not] at h
   rw [eq_bot_iff, ← h]
-  exact nhdsWithin_mono _ (diff_subset s {x})
+  exact nhdsWithin_mono _ diff_subset
 
 theorem fderivWithin_zero_of_not_differentiableWithinAt (h : ¬DifferentiableWithinAt 𝕜 f s x) :
     fderivWithin 𝕜 f s x = 0 := by

@@ -97,7 +97,7 @@ theorem IsTopologicalBasis.diff_empty {s : Set (Set α)} (h : IsTopologicalBasis
     obtain ⟨t₃, h₃, hs⟩ := h.exists_subset_inter _ h₁ _ h₂ x hx
     exact ⟨t₃, ⟨h₃, Nonempty.ne_empty ⟨x, hs.1⟩⟩, hs⟩
   · rw [h.eq_generateFrom]
-    refine le_antisymm (generateFrom_anti <| diff_subset s _) (le_generateFrom fun t ht => ?_)
+    refine le_antisymm (generateFrom_anti diff_subset) (le_generateFrom fun t ht => ?_)
     obtain rfl | he := eq_or_ne t ∅
     · exact @isOpen_empty _ (generateFrom _)
     · exact .basic t ⟨ht, he⟩

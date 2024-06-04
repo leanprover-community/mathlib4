@@ -379,7 +379,7 @@ theorem sumDiffSubset_apply_inl {α} {s t : Set α} (h : s ⊆ t) [DecidablePred
 
 @[simp]
 theorem sumDiffSubset_apply_inr {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)]
-    (x : (t \ s : Set α)) : Equiv.Set.sumDiffSubset h (Sum.inr x) = inclusion (diff_subset t s) x :=
+    (x : (t \ s : Set α)) : Equiv.Set.sumDiffSubset h (Sum.inr x) = inclusion diff_subset x :=
   rfl
 #align equiv.set.sum_diff_subset_apply_inr Equiv.Set.sumDiffSubset_apply_inr
 

@@ -457,7 +457,7 @@ theorem base_compl_iff_mem_maximals_disjoint_base (hB : B ⊆ M.E := by aesop_ma
     · exact fun e he ↦ (hIB' he).elim (fun h' ↦ (h' (hI he)).elim) id
     rw [subset_diff, and_iff_right hB'.subset_ground, disjoint_comm]
     exact disjoint_of_subset_left hBI hIB'
-  rw [h (diff_subset M.E B') B' ⟨hB', disjoint_sdiff_left⟩]
+  rw [h diff_subset B' ⟨hB', disjoint_sdiff_left⟩]
   · simpa [hB'.subset_ground]
   simp [subset_diff, hB, hBB']
 

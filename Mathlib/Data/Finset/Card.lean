@@ -656,7 +656,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finse
   rw [h₂, Nat.two_mul] at hXY
   obtain h | h : n < X.card ∨ n < (Y \ X).card := by contrapose! hXY; omega
   · exact ⟨X, h, Or.inl (Finset.Subset.refl X)⟩
-  · exact ⟨Y \ X, h, Or.inr (Finset.sdiff_subset Y X)⟩
+  · exact ⟨Y \ X, h, Or.inr sdiff_subset⟩
 #align finset.exists_subset_or_subset_of_two_mul_lt_card Finset.exists_subset_or_subset_of_two_mul_lt_card
 
 /-! ### Explicit description of a finset from its card -/

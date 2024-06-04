@@ -2270,9 +2270,7 @@ theorem sdiff_insert_of_not_mem {x : α} (h : x ∉ s) (t : Finset α) : s \ ins
   exact ⟨hy.1, fun hxy => h <| hxy ▸ hy.1, hy.2⟩
 #align finset.sdiff_insert_of_not_mem Finset.sdiff_insert_of_not_mem
 
-@[simp]
-theorem sdiff_subset (s t : Finset α) : s \ t ⊆ s :=
-  le_iff_subset.mp sdiff_le
+@[simp] theorem sdiff_subset {s t : Finset α} : s \ t ⊆ s := le_iff_subset.mp sdiff_le
 #align finset.sdiff_subset Finset.sdiff_subset
 
 theorem sdiff_ssubset (h : t ⊆ s) (ht : t.Nonempty) : s \ t ⊂ s :=
