@@ -76,17 +76,29 @@ theorem sum_prod_unif_conv2 (F : ℕ → α → ℂ) (g : α → ℂ) (K : Set �
   intro ε hε
   sorry
 
+lemma tenstoUniformlyOn_const_self {α: Type*} (ι) [Preorder ι] [UniformSpace α] (a : α → α)
+    (K : Set α) : TendstoUniformlyOn (fun _: ι => a) a atTop K:= by
+    refine TendstoUniformlyOnFilter.tendstoUniformlyOn ?_
+    rw [tendstoUniformlyOnFilter_iff_tendsto]
+    exact tendsto_diag_uniformity (fun x ↦ a x.2) (_ ×ˢ 𝓟 K)
 
 theorem tsum_unif2 (F : ℕ → ℂ → ℂ) (K : Set ℂ)
-    (hf :
-      TendstoUniformlyOn (fun n : ℕ => fun a : ℂ => ∑ i in Finset.range n, Complex.abs (F i a))
-        (fun a : ℂ => ∑' n : ℕ, Complex.abs (F n a)) Filter.atTop K)
-    (hs : ∀ x : ℂ, Summable fun n : ℕ => Complex.abs (F n x)) :
-    TendstoUniformlyOn (fun k : ℕ => fun a : ℂ => ∑' n : ℕ, Complex.abs (F (n + k) a)) 0 Filter.atTop K := by
-  rw [Metric.tendstoUniformlyOn_iff] at *
-  simp at *
+    (hf : TendstoUniformlyOn (fun n : ℕ => fun a : ℂ => ∑ i in Finset.range n,  (F i a))
+        (fun a : ℂ => ∑' n : ℕ, (F n a)) Filter.atTop K)
+    (hs : ∀ x : ℂ, x ∈ K →  Summable fun n : ℕ => (F n x)) :
+    TendstoUniformlyOn (fun k : ℕ => fun a : ℂ => ∑' n : ℕ, (F (n + k) a)) 0 Filter.atTop K := by
+  have := (tenstoUniformlyOn_const_self ℕ (fun a : ℂ => ∑' n : ℕ, (F n a)) K).sub hf
+  simp only [sub_self] at this
+  apply this.congr
+  simp only [Pi.sub_apply, eventually_atTop, ge_iff_le]
+  use 1
+  intro b _
+  intro x hx
+  simp only [Pi.sub_apply]
+  rw [← sum_add_tsum_nat_add b]
+  ring
+  exact hs x hx
 
-  sorry
 
 theorem tsum_unif (F : ℕ → ℂ → ℂ) (K : Set ℂ)
     (hf :
