@@ -18,7 +18,7 @@ class `CompactlySupportedContinuousMapClass`, and prove basic properties.
 This file contains various instances such as `Add`, `Mul`, `SMul F C_c(α, β)` when `F` is a class of
 continuous functions.
 When `β` has more structures, `C_c(α, β)` inherits such structures as `AddCommGroup`,
-`NonUnitalRing`, `NormedSpace` and `CstarRing`.
+`NonUnitalRing`  and `StarRing`.
 
 When the domain `α` is compact, `ContinuousMap.liftCompactlySupported` gives the identification
 `C(α, β) ≃ C_c(α, β)`.
@@ -222,12 +222,12 @@ instance [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] :
   ⟨fun r f => ⟨⟨r • ⇑f, Continuous.const_smul f.continuous r⟩, HasCompactSupport.smul_left f.2⟩⟩
 
 @[simp, norm_cast]
-theorem coe_smul [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] (r : R)
+theorem coe_smul [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] (r : R)
     (f : C_c(α, β)) : ⇑(r • f) = r • ⇑f :=
   rfl
 
-theorem smul_apply [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β]
-    (r : R) (f : C_c(α, β)) (x : α) : (r • f) x = r • f x :=
+theorem smul_apply [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] (r : R)
+    (f : C_c(α, β)) (x : α) : (r • f) x = r • f x :=
   rfl
 
 section AddMonoid
