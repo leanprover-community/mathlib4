@@ -154,7 +154,7 @@ theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (
     have hi : normalizedFactors r = Multiset.replicate i (c 1) := by
       apply Multiset.eq_replicate_of_mem
       intro b hb
-      refine'
+      refine
         eq_second_of_chain_of_prime_dvd hn h₁ (@fun r' => h₂) (prime_of_normalized_factor b hb) hr
           (dvd_of_mem_normalizedFactors hb)
     have H : r = c 1 ^ i := by
@@ -439,8 +439,8 @@ theorem multiplicity_factor_dvd_iso_eq_multiplicity_of_mem_normalizedFactors {m 
       associatesEquivOfUniqueUnits_apply, out_mk, normalize_eq]⟩ : N) =
     ↑(mkFactorOrderIsoOfFactorDvdEquiv hd ⟨associatesEquivOfUniqueUnits.symm p, by
       rw [associatesEquivOfUniqueUnits_symm_apply]
-      exact mk_le_mk_of_dvd (dvd_of_mem_normalizedFactors hp)⟩) :=
-    by rw [mkFactorOrderIsoOfFactorDvdEquiv_apply_coe]
+      exact mk_le_mk_of_dvd (dvd_of_mem_normalizedFactors hp)⟩) := by
+    rw [mkFactorOrderIsoOfFactorDvdEquiv_apply_coe]
   rw [this]
   refine
     multiplicity_prime_eq_multiplicity_image_by_factor_orderIso (mk_ne_zero.mpr hn) ?_
