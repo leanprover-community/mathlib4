@@ -41,7 +41,7 @@ private def reduceModIdealAux (f : M →ₗ[R] N) :
       · simp [Submodule.smul_mem_smul hr Submodule.mem_top]
       · simp [Submodule.add_mem _ hx hy])
 
-@[simp]
+@[local simp]
 private theorem reduceModIdealAux_apply (f : M →ₗ[R] N) (x : M) :
     (f.reduceModIdealAux I) (Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) x) =
       Submodule.Quotient.mk (p := (I • ⊤ : Submodule R N)) (f x) :=
@@ -113,7 +113,7 @@ private def adicCompletionAux (f : M →ₗ[R] N) :
     (fun {m n} hmn ↦ by rw [← comp_assoc, AdicCompletion.transitionMap_comp_reduceModIdeal,
         comp_assoc, transitionMap_comp_eval])
 
-@[simp]
+@[local simp]
 private theorem adicCompletionAux_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : AdicCompletion I M) :
     (adicCompletionAux I f x).val n = f.reduceModIdeal (I ^ n) (x.val n) :=
   rfl
@@ -262,8 +262,8 @@ variable [Fintype ι]
 /-- If `ι` is finite, we use the equivalence of sum and product to obtain an inverse for
 `AdicCompletion.sum` from `AdicCompletion.pi`. -/
 def sumInv : AdicCompletion I (⨁ j, M j) →ₗ[AdicCompletion I R] (⨁ j, (AdicCompletion I (M j))) :=
-  let f := map I (linearEquivFunOnFintype R ι M)
-  let g := linearEquivFunOnFintype (AdicCompletion I R) ι (fun j ↦ AdicCompletion I (M j))
+  letI f := map I (linearEquivFunOnFintype R ι M)
+  letI g := linearEquivFunOnFintype (AdicCompletion I R) ι (fun j ↦ AdicCompletion I (M j))
   g.symm.toLinearMap ∘ₗ pi I M ∘ₗ f
 
 @[simp]
@@ -326,8 +326,8 @@ variable [Fintype ι]
 /-- If `ι` is finite, `pi` is a linear equiv. -/
 def piEquivOfFintype :
     AdicCompletion I (∀ j, M j) ≃ₗ[AdicCompletion I R] ∀ j, AdicCompletion I (M j) :=
-  let f := (congr I (linearEquivFunOnFintype R ι M)).symm
-  let g := (linearEquivFunOnFintype (AdicCompletion I R) ι (fun j ↦ AdicCompletion I (M j)))
+  letI f := (congr I (linearEquivFunOnFintype R ι M)).symm
+  letI g := (linearEquivFunOnFintype (AdicCompletion I R) ι (fun j ↦ AdicCompletion I (M j)))
   f.trans ((sumEquivOfFintype I M).symm.trans g)
 
 @[simp]

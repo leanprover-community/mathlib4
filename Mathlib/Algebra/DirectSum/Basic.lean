@@ -151,8 +151,8 @@ theorem sum_support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (x : ⨁ i
 #align direct_sum.sum_support_of DirectSum.sum_support_of
 
 theorem sum_univ_of [Fintype ι] (x : ⨁ i, β i) :
-    ∑ i in Finset.univ, of β i (x i) = x := by
-  change (∑ i in Finset.univ, DFinsupp.single i (x i)) = x
+    ∑ i ∈ Finset.univ, of β i (x i) = x := by
+  change (∑ i ∈ Finset.univ, DFinsupp.single i (x i)) = x
   ext
   simp
 
