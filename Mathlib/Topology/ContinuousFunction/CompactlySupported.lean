@@ -237,12 +237,9 @@ section AddGroup
 variable [AddGroup β] [TopologicalAddGroup β] (f g : C_c(α, β))
 
 instance : Neg C_c(α, β) where
-  neg f := {  toFun := -f.1
-              continuous_toFun := map_continuous (-f.1)
-              hasCompactSupport' := by
-                rw [HasCompactSupport, tsupport]
-                simp only [ContinuousMap.coe_neg, Function.support_neg']
-                exact f.2 }
+  neg f := { toFun := -f.1
+             continuous_toFun := map_continuous (-f.1)
+             hasCompactSupport' := by simpa [HasCompactSupport, tsupport] using f.2 }
 
 @[simp]
 theorem coe_neg : ⇑(-f) = -f :=
