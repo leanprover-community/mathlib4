@@ -10,7 +10,7 @@ import Lean.Elab.Command
 This file contains the code to perform the auto-replacements of `deprecated` declarations.
 -/
 
-/-- `findNamespaceMatch fullName s st` assumes that
+/-- `findNamespaceMatch fullName s` assumes that
 * `fullName` is a string representing the fully-qualified name of a declaration
   (e.g. `Nat.succ` instead of `succ` or `.succ`);
 * `s` is a string beginning with a possibly non-fully qualified name
@@ -28,7 +28,7 @@ def findNamespaceMatch (fullName s : String) : Option String :=
     let withDot := "." ++ noDot
     if withDot.isPrefixOf s then return withDot
     comps := comps.drop 1
-  dbg_trace "A tail segment of '{fullName}' is not a prefix of '{fullName.isPrefixOf s}'"
+  dbg_trace "No tail segment of '{fullName}' is a prefix of '{s}'"
   return none
 
 /-- `String.replaceCheck s check repl st` takes as input
