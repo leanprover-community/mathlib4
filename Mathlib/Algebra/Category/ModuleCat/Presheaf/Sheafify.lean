@@ -317,9 +317,12 @@ noncomputable def sheafify : SheafOfModules.{v} R where
       map_smul := fun _ _ _ => by apply Sheafify.map_smul }
   isSheaf := A.cond
 
--- on objects, the sheafification functor (TODO) shall be defined as follows:
-noncomputable example (M : PresheafOfModules.{v} R.val) [HasWeakSheafify J AddCommGroupCat.{v}]
-    [J.WEqualsLocallyBijective AddCommGroupCat.{v}] : SheafOfModules.{v} R :=
+/-- Under reasonable universe assumptions, the type-class that are necessary
+to construct the sheafification of a presheaf of modules `M` are found
+automatically. -/
+noncomputable example {C : Type u} [SmallCategory.{u}] (J : GrothendieckTopology C)
+    {R : Sheaf J RingCat.{u}} (M : PresheafOfModules.{u} R.val) :
+    SheafOfModules.{u} R :=
   sheafify (𝟙 R.val) (toSheafify J M.presheaf)
 
 end PresheafOfModules
