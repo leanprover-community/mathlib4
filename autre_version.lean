@@ -994,6 +994,58 @@ theorem firstLemma (A : ℕ → Set ((n : ℕ+) → X n)) (A_mem : ∀ n, A n �
     exact mem_of_indicator_ne_zero (ne_of_lt this).symm
   exact (A_inter ▸ mem_iInter.2 incr).elim
 
+theorem kolContent_sigma_subadditive_proj (x₀ : X 0) ⦃f : ℕ → Set ((n : ℕ+) → X n)⦄
+    (hf : ∀ n, f n ∈ cylinders (fun n : ℕ+ ↦ X n))
+    (hf_Union : (⋃ n, f n) ∈ cylinders (fun n : ℕ+ ↦ X n)) :
+    kolContent (proj_family κ (zer x₀)) (⋃ n, f n) ≤
+    ∑' n, kolContent (proj_family κ (zer x₀)) (f n) := by
+  classical
+  refine (kolContent (proj_family κ (zer x₀))).sigma_subadditive_of_sigma_additive
+    setRing_cylinders (fun f hf hf_Union hf' ↦ ?_) f hf hf_Union
+  refine sigma_additive_addContent_of_tendsto_zero setRing_cylinders
+    (kolContent (proj_family κ (zer x₀))) (fun h ↦ ?_) ?_ hf hf_Union hf'
+  · rename_i s
+    obtain ⟨N, S, hN, mS, s_eq⟩ : ∃ N S, 0 < N ∧ MeasurableSet S ∧ s = cylinder (fpioc 0 N) S := by
+      simpa [cylinders_pnat] using h
+    let x_ : (n : ℕ+) → X n := Classical.ofNonempty
+    rw [s_eq, kolContent_eq_kerint κ hN mS x₀ x_]
+    refine ne_of_lt (lt_of_le_of_lt ?_ (by norm_num : (1 : ℝ≥0∞) < ⊤))
+    rw [kerint]
+    simp only [hN, ↓reduceIte]
+    have : IsMarkovKernel ((transition κ).ker 0 N) := by
+      apply markov_kerNat
+      exact hN
+    nth_rw 2 [← mul_one 1, ← measure_univ (μ := (transition κ).ker 0 N (fus x₀ fun i ↦ x_ i.1))]
+    rw [← lintegral_const]
+    apply lintegral_mono
+    apply Set.indicator_le
+    simp
+  · intro s hs anti_s inter_s
+    exact firstLemma κ s hs anti_s inter_s x₀
+
+noncomputable def ionescu_tulcea_fun (x₀ : X 0) : Measure ((n : ℕ+) → X n) := by
+  exact Measure.ofAddContent setSemiringCylinders generateFrom_cylinders
+    (kolContent (proj_family κ (zer x₀)))
+    (kolContent_sigma_subadditive_proj κ x₀)
+
+/-- The product measure is the projective limit of the partial product measures. This ensures
+uniqueness and expresses the value of the product measures applied to cylinders. -/
+theorem isProjectiveLimit_measure_produit (x₀ : X 0) :
+    IsProjectiveLimit (ionescu_tulcea_fun κ x₀) (family κ (zer x₀)) := by
+  intro I
+  ext1 s hs
+  rw [Measure.map_apply _ hs]
+  swap; · apply measurable_proj
+  have h_mem : (fun (x : (n : ℕ+) → X n.1) (i : I) ↦ x i) ⁻¹' s ∈
+      cylinders (fun n : ℕ+ ↦ X n.1) := by
+    rw [mem_cylinders]; exact ⟨I, s, hs, rfl⟩
+  rw [ionescu_tulcea_fun, Measure.ofAddContent_eq,
+    kolContent_congr (proj_family κ (zer x₀))]
+  · exact h_mem
+  · rfl
+  · exact hs
+  · exact h_mem
+
 -- theorem test
 --     (μ : Measure ((transitionGraph X).node 0)) [IsProbabilityMeasure μ] :
 --     ∃ ν : Measure ((k : ℕ) → X k), ∀ k : ℕ, (hk : 0 < k) →

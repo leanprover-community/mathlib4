@@ -608,9 +608,6 @@ theorem kolContent_sigma_subadditive ⦃f : ℕ → Set ((i : ι) → X i)⦄ (h
 extension of the function which gives to cylinders the measure given by the assiocated product
 measure. -/
 noncomputable def measure_produit : Measure ((i : ι) → X i) := by
-  have : ∀ i, Nonempty (X i) := by
-    have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩;
-    infer_instance
   exact Measure.ofAddContent setSemiringCylinders generateFrom_cylinders
     (kolContent (isProjectiveMeasureFamily_pi μ))
     (kolContent_sigma_subadditive μ)
@@ -619,9 +616,6 @@ noncomputable def measure_produit : Measure ((i : ι) → X i) := by
 uniqueness and expresses the value of the product measures applied to cylinders. -/
 theorem isProjectiveLimit_measure_produit :
     IsProjectiveLimit (measure_produit μ) (fun I : Finset ι ↦ (Measure.pi (fun i : I ↦ μ i))) := by
-  have : ∀ i, Nonempty (X i) := by
-    have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩;
-    infer_instance
   intro I
   ext1 s hs
   rw [Measure.map_apply _ hs]
