@@ -18,6 +18,9 @@ difference of `1`.
 ## Main declarations
 
 * `Finpartition.IsEquipartition`: Predicate for a `Finpartition` to be an equipartition.
+* `Finpartition.IsEquipartition.exists_partPreservingEquiv`: part-preserving enumeration of a finset
+  equipped with an equipartition. Indices of elements in the same part are congruent modulo
+  the number of parts.
 -/
 
 
@@ -130,8 +133,8 @@ theorem IsEquipartition.exists_partsEquiv (hP : P.IsEquipartition) :
   simp_rw [f, Equiv.trans_apply, Equiv.sumCongr_apply, finCongr_apply, Fin.coe_cast]
   by_cases hc : p.card = s.card / P.parts.card + 1 <;> simp [hc]
 
-/-- An equipartition of a finset with `n` elements into `k` parts has
-a part-preserving equivalence with the residue classes of `Fin n` modulo `k`. -/
+/-- Given a finset equipartitioned into `k` parts, its elements can be enumerated such that
+elements in the same part have congruent indices modulo `k`. -/
 theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : ∃ f : s ≃ Fin s.card,
     ∀ a b : s, P.part a = P.part b ↔ f a % P.parts.card = f b % P.parts.card := by
   obtain ⟨f, hf⟩ := P.exists_enumeration
