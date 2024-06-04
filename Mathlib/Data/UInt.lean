@@ -108,26 +108,28 @@ run_cmd
 namespace UInt8
 
 /-- Is this an uppercase ASCII letter? -/
+@[deprecated "Use `(Char.ofUInt8 i).isUpper` instead." (since := "2024-06-05")]
 def isUpper (c : UInt8) : Bool :=
   c ≥ 65 && c ≤ 90
 
 /-- Is this a lowercase ASCII letter? -/
+@[deprecated "Use `(Char.ofUInt8 i).isLower` instead." (since := "2024-06-05")]
 def isLower (c : UInt8) : Bool :=
   c ≥ 97 && c ≤ 122
 
 /-- Is this an alphabetic ASCII character? -/
+@[deprecated "Use `(Char.ofUInt8 i).isAlpha` instead." (since := "2024-06-05")]
 def isAlpha (c : UInt8) : Bool :=
   c.isUpper || c.isLower
 
 /-- Is this an ASCII digit character? -/
+@[deprecated "Use `(Char.ofUInt8 i).isDigit` instead." (since := "2024-06-05")]
 def isDigit (c : UInt8) : Bool :=
   c ≥ 48 && c ≤ 57
 
 /-- Is this an alphanumeric ASCII character? -/
+@[deprecated "Use `(Char.ofUInt8 i).isAlphanum` instead." (since := "2024-06-05")]
 def isAlphanum (c : UInt8) : Bool :=
   c.isAlpha || c.isDigit
-
-/-- The numbers from 0 to 256 are all valid UTF-8 characters, so we can embed one in the other. -/
-def toChar (n : UInt8) : Char := ⟨n.toUInt32, .inl (n.1.2.trans (by decide))⟩
 
 end UInt8

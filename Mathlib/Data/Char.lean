@@ -19,6 +19,12 @@ Provides an additional definition to truncate a `Char` to `UInt8` and a theorem 
 /-- Convert a character into a `UInt8`, by truncating (reducing modulo 256) if necessary. -/
 def Char.toUInt8 (n : Char) : UInt8 := n.1.toUInt8
 
+/-- The numbers from 0 to 256 are all valid UTF-8 characters, so we can embed one in the other. -/
+def Char.ofUInt8 (n : UInt8) : Char := ⟨n.toUInt32, .inl (n.1.2.trans (by decide))⟩
+
+@[deprecated Char.ofUInt8 (since := "2024-06-05")]
+alias UInt8.toChar := Char.ofUInt8
+
 theorem Char.utf8Size_pos (c : Char) : 0 < c.utf8Size := by
   simp only [utf8Size]
   repeat (split; decide)
