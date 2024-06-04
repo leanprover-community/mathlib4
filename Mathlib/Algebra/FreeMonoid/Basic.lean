@@ -328,7 +328,7 @@ def lift : (α → M) ≃ (FreeMonoid α →* M) where
   toFun f :=
   { toFun := fun l ↦ prodAux ((toList l).map f)
     map_one' := rfl
-    map_mul' := fun _ _ ↦ by simp only [prodAux_eq, toList_mul, List.map_append, List.prod_append] }
+    map_mul' := fun _ _ ↦ by simp only [prodAux_eq, toList_mul, List.map_append, List.prod_append]}
   invFun f x := f (of x)
   left_inv f := rfl
   right_inv f := hom_eq fun x ↦ rfl
@@ -469,6 +469,17 @@ theorem map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦
 #align free_monoid.map_id FreeMonoid.map_id
 #align free_add_monoid.map_id FreeAddMonoid.map_id
 
+theorem map_surjective (f : α → β) : Function.Surjective f → Function.Surjective (map f) := by
+  intro fs d
+  induction' d using FreeMonoid.inductionOn' with head tail ih
+  · use 1
+    rfl
+  specialize fs head
+  rcases fs with ⟨thingie, rfl⟩
+  rcases ih with ⟨another, rfl⟩
+  use FreeMonoid.of thingie * another
+  rfl
+
 end Map
 
 /-! ### reverse -/
@@ -518,5 +529,22 @@ def congr_iso {α : Type u_1} {β : Type u_2} (e : α ≃ β) : FreeMonoid α �
   all_goals
   intro x
   simp [map_map]
+
+/-- given an isomorphism between α and β, convert a relation predicate to
+have an underlying type of β -/
+@[to_additive "given an isomorphism between α and β, convert a relation predicate to
+have an underlying type of β"]
+def map_rel (e : α ≃ β) (rel : FreeMonoid α → FreeMonoid α → Prop) :
+    FreeMonoid β → FreeMonoid β  → Prop :=
+  fun a b ↦ rel (FreeMonoid.congr_iso e.symm a) (FreeMonoid.congr_iso e.symm b)
+
+/-- given an isomorphism between α and β, pull back a relation predicate with underlying type β to
+one with underlying type α -/
+@[to_additive "given an isomorphism between α and β, pull back a relation predicate with underlying
+type β to one with underlying type α "]
+def comap_rel (e : α ≃ β) (rel : FreeMonoid β → FreeMonoid β → Prop) :
+    FreeMonoid α → FreeMonoid α → Prop :=
+  fun a b ↦ rel (FreeMonoid.congr_iso e a) (FreeMonoid.congr_iso e b)
+
 
 end FreeMonoid
