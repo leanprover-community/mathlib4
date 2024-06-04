@@ -194,18 +194,18 @@ lemma homCategory.ext {F G : BasedFunctor 𝒳 𝒴} (α β : F ⟶ G) (h : α.t
 
 /-- The inverse of a based natural transformation whose underlying natural tranformation is an
 isomorphism -/
-def BasedNatIso {F G : BasedFunctor 𝒳 𝒴} (α : F.toFunctor ≅ G.toFunctor)
-    (aboveId' : ∀ a : 𝒳.cat, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.hom.app a)) : F ≅ G where
-  hom := { toNatTrans := α.hom }
-  inv := {
-    toNatTrans := α.inv
-    aboveId' := by
-      intro a
-      specialize aboveId' a
-      rw [← NatIso.app_inv]
-      rw [← NatIso.app_hom] at aboveId'
-      apply IsHomLift.lift_id_inv
-  }
+-- def BasedNatIso {F G : BasedFunctor 𝒳 𝒴} (α : F.toFunctor ≅ G.toFunctor)
+--     (aboveId' : ∀ a : 𝒳.cat, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.hom.app a)) : F ≅ G where
+--   hom := { toNatTrans := α.hom }
+--   inv := {
+--     toNatTrans := α.inv
+--     aboveId' := by
+--       intro a
+--       specialize aboveId' a
+--       rw [← NatIso.app_inv]
+--       rw [← NatIso.app_hom] at aboveId'
+--       apply IsHomLift.lift_id_inv
+--   }
 
 -- /-- The inverse of a based natural transformation whose underlying natural tranformation carries
 -- an
