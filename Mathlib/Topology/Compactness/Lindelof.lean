@@ -182,23 +182,21 @@ theorem IsLindelof.indexed_countable_subcover {ι : Type v} [Nonempty ι]
     ∃ f : ℕ → ι, s ⊆ ⋃ n, U (f n) := by
   rcases IsLindelof.elim_countable_subcover hs U hUo hsU with ⟨c, ⟨c_count, c_cov⟩⟩
   wlog c_nonempty : c.Nonempty
-  · rw [not_nonempty_iff_eq_empty.mp c_nonempty] at c_cov
-    simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty] at c_cov
+  · simp only [not_nonempty_iff_eq_empty.mp c_nonempty, mem_empty_iff_false, iUnion_of_empty,
+      iUnion_empty] at c_cov
     rcases (exists_const ι).mpr trivial with ⟨i⟩
     use fun _ ↦ i
     rw [subset_eq_empty c_cov rfl]
-    exact empty_subset (⋃ _, U i)
-  rw [Set.countable_iff_exists_surjective c_nonempty] at c_count
-  rcases c_count with ⟨f, f_surj⟩
-  use fun n ↦ f n
-  intro x xinh
+    exact empty_subset _
+  rcases (Set.countable_iff_exists_surjective c_nonempty).mp c_count with ⟨f, f_surj⟩
+  use Subtype.val ∘ f
+  intro _ xinh
   rcases c_cov xinh with ⟨uy, ⟨y, yuc⟩, xinuy⟩
-  rw [← yuc] at xinuy
-  simp only [mem_iUnion, exists_prop] at xinuy
+  rw [← yuc, mem_iUnion, exists_prop] at xinuy
   rcases f_surj ⟨y, xinuy.1⟩ with ⟨n, fny⟩
-  simp only [mem_iUnion]
+  rw [mem_iUnion]
   use n
-  rw [fny]
+  rw [Function.comp_apply, fny]
   exact xinuy.2
 
 /-- The neighborhood filter of a Lindelöf set is disjoint with a filter `l` with the countable
