@@ -24,7 +24,7 @@ derivative, power
 universe u v w
 
 open scoped Classical
-open Topology BigOperators Filter ENNReal
+open Topology Filter ENNReal
 
 open Filter Asymptotics Set
 

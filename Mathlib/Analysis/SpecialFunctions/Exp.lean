@@ -24,7 +24,7 @@ noncomputable section
 
 open Finset Filter Metric Asymptotics Set Function Bornology
 
-open scoped Classical Topology BigOperators Nat
+open scoped Classical Topology Nat
 
 namespace Complex
 

@@ -16,7 +16,7 @@ and prove basic properties of this measure.
 set_option autoImplicit true
 
 open Set
-open scoped ENNReal BigOperators Classical
+open scoped ENNReal Classical
 
 variable [MeasurableSpace α] [MeasurableSpace β] {s : Set α}
 

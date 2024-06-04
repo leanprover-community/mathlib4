@@ -27,8 +27,6 @@ open Nat
 
 open Finset
 
-open BigOperators
-
 variable {R : Type*}
 
 namespace Commute

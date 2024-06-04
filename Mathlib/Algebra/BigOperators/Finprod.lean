@@ -3,6 +3,7 @@ Copyright (c) 2020 Kexing Ying and Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.FiniteSupport
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
@@ -83,8 +84,6 @@ section sort
 
 variable {G M N : Type*} {α β ι : Sort*} [CommMonoid M] [CommMonoid N]
 
-open BigOperators
-
 section
 
 /- Note: we use classical logic only for these definitions, to ensure that we do not write lemmas
@@ -113,12 +112,12 @@ open Batteries.ExtendedBinder
 /-- `∑ᶠ x, f x` is notation for `finsum f`. It is the sum of `f x`, where `x` ranges over the
 support of `f`, if it's finite, zero otherwise. Taking the sum over multiple arguments or
 conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
-scoped[BigOperators] notation3"∑ᶠ "(...)", "r:67:(scoped f => finsum f) => r
+notation3"∑ᶠ "(...)", "r:67:(scoped f => finsum f) => r
 
-/-- `∏ᶠ x, f x` is notation for `finprod f`. It is the sum of `f x`, where `x` ranges over the
+/-- `∏ᶠ x, f x` is notation for `finprod f`. It is the product of `f x`, where `x` ranges over the
 multiplicative support of `f`, if it's finite, one otherwise. Taking the product over multiple
 arguments or conditions is possible, e.g. `∏ᶠ (x) (y), f x y` and `∏ᶠ (x) (h: x ∈ s), f x`-/
-scoped[BigOperators] notation3"∏ᶠ "(...)", "r:67:(scoped f => finprod f) => r
+notation3"∏ᶠ "(...)", "r:67:(scoped f => finprod f) => r
 
 -- Porting note: The following ports the lean3 notation for this file, but is currently very fickle.
 
@@ -357,8 +356,6 @@ end sort
 section type
 
 variable {α β ι G M N : Type*} [CommMonoid M] [CommMonoid N]
-
-open BigOperators
 
 @[to_additive]
 theorem finprod_eq_mulIndicator_apply (s : Set α) (f : α → M) (a : α) :

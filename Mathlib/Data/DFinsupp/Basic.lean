@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Data.Finset.Preimage
@@ -47,8 +47,6 @@ definitions, or introduce two more definitions for the other combinations of dec
 
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
-
-open BigOperators
 
 variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
 variable (β)
@@ -1880,9 +1878,9 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
       dsimp only [Subtype.coe_mk, toFun_eq_coe] at *
       have H1 : sx.toFinset ∩ sy.toFinset ⊆ sx.toFinset := Finset.inter_subset_left _ _
       have H2 : sx.toFinset ∩ sy.toFinset ⊆ sy.toFinset := Finset.inter_subset_right _ _
-      refine'
-        (Finset.sum_subset H1 _).symm.trans
-          ((Finset.sum_congr rfl _).trans (Finset.sum_subset H2 _))
+      refine
+        (Finset.sum_subset H1 ?_).symm.trans
+          ((Finset.sum_congr rfl ?_).trans (Finset.sum_subset H2 ?_))
       · intro i H1 H2
         rw [Finset.mem_inter] at H2
         simp only [Multiset.mem_toFinset] at H1 H2
@@ -1900,14 +1898,14 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
     change (∑ i ∈ _, _) = (∑ i ∈ _, _) + ∑ i ∈ _, _
     simp only [coe_add, coe_mk', Subtype.coe_mk, Pi.add_apply, map_add, Finset.sum_add_distrib]
     congr 1
-    · refine' (Finset.sum_subset _ _).symm
+    · refine (Finset.sum_subset ?_ ?_).symm
       · intro i
         simp only [Multiset.mem_toFinset, Multiset.mem_add]
         exact Or.inl
       · intro i _ H2
         simp only [Multiset.mem_toFinset, Multiset.mem_add] at H2
         rw [(hf i).resolve_left H2, AddMonoidHom.map_zero]
-    · refine' (Finset.sum_subset _ _).symm
+    · refine (Finset.sum_subset ?_ ?_).symm
       · intro i
         simp only [Multiset.mem_toFinset, Multiset.mem_add]
         exact Or.inr

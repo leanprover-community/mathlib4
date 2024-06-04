@@ -66,7 +66,8 @@ instance : Countable (HomAsType α) := Countable.of_equiv α (equivShrink.{0} α
 
 instance {i j : HomAsType α} : Countable (i ⟶ j) :=
   Countable.of_equiv ((ShrinkHoms.equivalence _).inverse.obj i ⟶
-    (ShrinkHoms.equivalence _).inverse.obj j) (equivOfFullyFaithful _).symm
+    (ShrinkHoms.equivalence _).inverse.obj j)
+    (Functor.FullyFaithful.ofFullyFaithful _).homEquiv.symm
 
 instance : CountableCategory (HomAsType α) where
 

@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Deprecated.Group
 
@@ -30,8 +30,6 @@ of `M`. The bundled variant `Submonoid M` should be used in preference to this.
 Submonoid, Submonoids, IsSubmonoid
 -/
 
-
-open BigOperators
 
 variable {M : Type*} [Monoid M] {s : Set M}
 variable {A : Type*} [AddMonoid A] {t : Set A}

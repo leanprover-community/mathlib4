@@ -49,6 +49,24 @@ variable {a b c d m n : ℤ}
 #align int.of_nat_nat_abs_eq_of_nonneg Int.ofNat_natAbs_eq_of_nonnegₓ
 #align int.nat_abs_of_neg_succ_of_nat Int.natAbs_negSucc
 
+section Order
+variable {a b c : ℤ}
+
+protected lemma le_rfl : a ≤ a := a.le_refl
+protected lemma lt_or_lt_of_ne : a ≠ b → a < b ∨ b < a := Int.lt_or_gt_of_ne
+protected lemma lt_or_le (a b : ℤ) : a < b ∨ b ≤ a := by rw [← Int.not_lt]; exact em _
+protected lemma le_or_lt (a b : ℤ) : a ≤ b ∨ b < a := (b.lt_or_le a).symm
+protected lemma lt_asymm : a < b → ¬ b < a := by rw [Int.not_lt]; exact Int.le_of_lt
+protected lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]; exact Int.le_rfl
+protected lemma ge_of_eq (hab : a = b) : b ≤ a := Int.le_of_eq hab.symm
+protected lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
+  ⟨fun h ↦ ⟨Int.le_of_eq h, Int.ge_of_eq h⟩, fun h ↦ Int.le_antisymm h.1 h.2⟩
+protected lemma le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := by
+  rw [Int.le_antisymm_iff, Int.lt_iff_le_not_le, ← and_or_left]; simp [em]
+protected lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := by rw [Int.le_iff_eq_or_lt, or_comm]
+
+end Order
+
 -- TODO: Tag in Lean
 attribute [simp] natAbs_pos
 
@@ -161,6 +179,12 @@ set_option linter.deprecated false
 #align int.coe_nat_bit1 Int.ofNat_bit1
 
 end deprecated
+
+protected lemma mul_le_mul_iff_of_pos_right (ha : 0 < a) : b * a ≤ c * a ↔ b ≤ c :=
+  ⟨(le_of_mul_le_mul_right · ha), (Int.mul_le_mul_of_nonneg_right · (Int.le_of_lt ha))⟩
+
+protected lemma mul_nonneg_iff_of_pos_right (hb : 0 < b) : 0 ≤ a * b ↔ 0 ≤ a := by
+  simpa using (Int.mul_le_mul_iff_of_pos_right hb : 0 * b ≤ a * b ↔ 0 ≤ a)
 
 /-! ### succ and pred -/
 
@@ -699,10 +723,10 @@ lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
   (toNat_lt' hn).2 <| emod_lt_of_pos _ <| by omega
 #align int.nat_mod_lt Int.natMod_lt
 
--- We want to use this lemma earlier than the lemmas simp can prove it with
-@[simp, nolint simpNF] lemma coe_nat_pow (m n : ℕ) : ↑(m ^ n : ℕ) = (m ^ n : ℤ) := by
-  induction n <;> simp [Int.pow_succ, Nat.pow_succ, Int.pow_zero, *]
-#align int.coe_nat_pow Int.coe_nat_pow
+attribute [simp] natCast_pow
+
+@[deprecated (since := "2024-05-25")] alias coe_nat_pow := natCast_pow
+#align int.coe_nat_pow Int.natCast_pow
 
 #align int.le_to_nat Int.self_le_toNat
 #align int.le_to_nat_iff Int.le_toNat

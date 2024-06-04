@@ -15,7 +15,7 @@ We also prove the analogous result in the multiplicative setting.
 
 -/
 
-open Filter Topology BigOperators
+open Filter Topology
 
 namespace NonarchimedeanGroup
 

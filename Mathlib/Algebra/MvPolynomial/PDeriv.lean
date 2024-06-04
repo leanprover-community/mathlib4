@@ -49,8 +49,6 @@ namespace MvPolynomial
 
 open Set Function Finsupp
 
-open scoped BigOperators
-
 variable {R : Type u} {σ : Type v} {a a' a₁ a₂ : R} {s : σ →₀ ℕ}
 
 section PDeriv

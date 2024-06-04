@@ -18,8 +18,6 @@ More lemmas about `adjoin` can be found in `RingTheory.Adjoin`.
 
 universe u u' v w w'
 
-open BigOperators
-
 /-- A subalgebra is a sub(semi)ring that includes the range of `algebraMap`. -/
 structure Subalgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] extends
   Subsemiring A : Type v where
@@ -1285,6 +1283,16 @@ theorem centralizer_eq_top_iff_subset {s : Set A} : centralizer R s = ⊤ ↔ s 
 theorem centralizer_univ : centralizer R Set.univ = center R A :=
   SetLike.ext' (Set.centralizer_univ A)
 #align subalgebra.centralizer_univ Subalgebra.centralizer_univ
+
+lemma le_centralizer_centralizer {s : Subalgebra R A} :
+    s ≤ centralizer R (centralizer R (s : Set A)) :=
+  Set.subset_centralizer_centralizer
+
+@[simp]
+lemma centralizer_centralizer_centralizer {s : Set A} :
+    centralizer R s.centralizer.centralizer = centralizer R s := by
+  apply SetLike.coe_injective
+  simp only [coe_centralizer, Set.centralizer_centralizer_centralizer]
 
 end Centralizer
 

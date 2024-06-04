@@ -18,7 +18,7 @@ noncomputable section
 
 open Filter Finset Function
 
-open scoped BigOperators Topology
+open scoped Topology
 
 variable {α β γ δ : Type*}
 
