@@ -739,6 +739,16 @@ theorem coeff_X_mul (m) (s : σ) (p : MvPolynomial σ R) :
   (coeff_monomial_mul _ _ _ _).trans (one_mul _)
 #align mv_polynomial.coeff_X_mul MvPolynomial.coeff_X_mul
 
+lemma coeff_single_X_pow [DecidableEq σ] (s s' : σ) (n n' : ℕ) :
+    (X (R := R) s ^ n).coeff (Finsupp.single s' n')
+    = if s = s' ∧ n = n' ∨ n = 0 ∧ n' = 0 then 1 else 0 := by
+  simp only [coeff_X_pow, single_eq_single_iff]
+
+@[simp]
+lemma coeff_single_X [DecidableEq σ] (s s' : σ) (n : ℕ) :
+    (X s).coeff (R := R) (Finsupp.single s' n) = if n = 1 ∧ s = s' then 1 else 0 := by
+  simpa [eq_comm, and_comm] using coeff_single_X_pow s s' 1 n
+
 @[simp]
 theorem support_mul_X (s : σ) (p : MvPolynomial σ R) :
     (p * X s).support = p.support.map (addRightEmbedding (Finsupp.single s 1)) :=
