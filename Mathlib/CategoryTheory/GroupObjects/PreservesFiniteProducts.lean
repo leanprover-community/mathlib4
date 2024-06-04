@@ -6,11 +6,14 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 open CategoryTheory Limits
 
 namespace CategoryTheory.Functor
-universe v u v₁ u₁
-variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D]
+universe v u v₁ u₁ u₂ v₂
+variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D] {E : Type u₂}
+  [Category.{v₂, u₂} E]
 
-variable [HasFiniteProducts C] [HasFiniteProducts D]
+variable [HasFiniteProducts C] [HasFiniteProducts D] [HasFiniteProducts E]
 variable (F : C ⥤ D) [PreservesFiniteProducts F]
+variable {G H : D ⥤ E} [PreservesFiniteProducts G] [PreservesFiniteProducts H]
+variable {G' H' : E ⥤ C} [PreservesFiniteProducts G'] [PreservesFiniteProducts H']
 
 /-- Lifting a functor `C ⥤ D` that commutes with finite products to a functor between the
 categories of group objects: the action on objects.-/
@@ -90,6 +93,67 @@ noncomputable def mapGroupObject_comp_forget :
     comp_map, mapGroupObject_map, GroupObject.forget_map, mapGroupObjectMap_hom, Iso.refl_hom,
     Category.comp_id, Category.id_comp])
 
+/-- If `F : C ⥤ C` is the identity functor, then its lift to categories of group objects
+is isomorphic (actually equal) to the identity functor.-/
+
+noncomputable def mapGroupObject_id : (𝟭 C).mapGroupObject ≅ 𝟭 (GroupObject C) := by
+  refine NatIso.ofComponents ?_ ?_
+  · intro X
+    refine GroupObject.isoOfIso (Iso.refl _) ?_ ?_ ?_
+    all_goals (simp only [mapGroupObject, mapGroupObjectObj, id_obj, id_map,
+      PreservesTerminal.iso_inv, PreservesLimitPair.iso_inv])
+    · simp only [id_obj, prod.leftUnitor_hom, prod.rightUnitor_hom, prod.associator_hom,
+      Iso.refl_hom, Category.comp_id, IsIso.inv_comp_eq]
+      rw [Subsingleton.elim (terminalComparison (𝟭 C)) (𝟙 _)]; erw [Category.id_comp]
+    · simp only [id_obj, prod.leftUnitor_hom, prod.rightUnitor_hom, prod.associator_hom,
+      Iso.refl_hom, Category.comp_id, prod.map_id_id, Category.id_comp, IsIso.inv_comp_eq]
+      suffices h : prodComparison (𝟭 C) X.X X.X = 𝟙 _ by
+        · rw [h]; erw [Category.id_comp]
+      ext
+      · rw [prodComparison_fst]; simp only [id_obj, id_map, Category.id_comp]
+      · rw [prodComparison_snd]; simp only [id_obj, id_map, Category.id_comp]
+    · simp only [id_obj, prod.leftUnitor_hom, prod.rightUnitor_hom, prod.associator_hom,
+      Iso.refl_hom, Category.comp_id, Category.id_comp]
+  · intro _ _ _
+    ext
+    simp only [mapGroupObject_obj, mapGroupObjectObj_X, id_obj, mapGroupObject_map,
+      GroupObject.comp_hom', mapGroupObjectMap_hom, id_map, GroupObject.isoOfIso_hom_hom,
+      Iso.refl_hom, Category.comp_id, Category.id_comp]
+
+variable (G)
+
+/-- The construction `mapGroupObject` is compatible with composition of functors.-/
+noncomputable def mapGroupObject_comp : (F ⋙ G).mapGroupObject ≅
+    F.mapGroupObject ⋙ G.mapGroupObject := by
+  refine NatIso.ofComponents ?_ ?_
+  · intro X
+    refine GroupObject.isoOfIso (Iso.refl _) ?_ ?_ ?_
+    · simp only [comp_obj, mapGroupObject_obj, mapGroupObjectObj_X, mapGroupObjectObj_one,
+      PreservesTerminal.iso_inv, comp_map, Iso.refl_hom, Category.comp_id, map_comp, map_inv,
+      IsIso.eq_inv_comp]
+      suffices h : G.map (terminalComparison F) ≫ terminalComparison G ≫
+        CategoryTheory.inv (terminalComparison (F ⋙ G)) = 𝟙 _ by
+        · rw [← Category.assoc (terminalComparison G) _ _, ← Category.assoc, h,
+            Category.id_comp]
+      rw [← Category.assoc, IsIso.comp_inv_eq, Category.id_comp]
+      exact Subsingleton.elim _ _
+    · simp only [mapGroupObject_obj, mapGroupObjectObj_X, comp_obj, mapGroupObjectObj_mul,
+      PreservesLimitPair.iso_inv, comp_map, Iso.refl_hom, Category.comp_id, prod.map_id_id,
+      map_comp, map_inv, Category.id_comp, IsIso.eq_inv_comp]
+      suffices h : G.map (prodComparison F X.X X.X) ≫ prodComparison G (F.obj X.X) (F.obj X.X) ≫
+        CategoryTheory.inv (prodComparison (F ⋙ G) X.X X.X) = 𝟙 _ by
+        · rw [← Category.assoc (prodComparison G (F.obj X.X) (F.obj X.X)) _ _, ← Category.assoc,
+          h, Category.id_comp]
+      rw [← Category.assoc, IsIso.comp_inv_eq, Category.id_comp]
+      ext
+      · simp only [Category.assoc, prodComparison_fst, comp_obj]
+        erw [prodComparison_fst]; rw [← Functor.map_comp, prodComparison_fst, comp_map]
+      · simp only [Category.assoc, prodComparison_snd, comp_obj]
+        erw [prodComparison_snd]; rw [← Functor.map_comp, prodComparison_snd, comp_map]
+    · simp only [mapGroupObject_obj, mapGroupObjectObj_X, comp_obj, mapGroupObjectObj_inv,
+      comp_map, Iso.refl_hom, Category.comp_id, Category.id_comp]
+  · aesop
+
 /-- If `F : C ⥤ D` is faithful, then so is the induced functor `F.mapGroupObject` on
 group objects.-/
 lemma mapGroupObject_faitful [Faithful F] : Faithful F.mapGroupObject where
@@ -130,28 +194,37 @@ lemma mapGroupObject_full [Faithful F] [Full F] : Full  F.mapGroupObject where
     · ext; simp only [mapGroupObject_obj, mapGroupObjectObj_X, mapGroupObject_map,
       mapGroupObjectMap_hom, hf]
 
+noncomputable def mapGroupObject_natTrans (α : G ⟶ H) : G.mapGroupObject ⟶ H.mapGroupObject := by
+  refine { app := ?_, naturality := ?_}
+  · intro X; dsimp
+    refine {hom := α.app X.X, one_hom := ?_, mul_hom := ?_, inv_hom := ?_}
+    · dsimp
+      rw [Category.assoc, α.naturality, ← Category.assoc]
+      congr 1
+      simp only [PreservesTerminal.iso_inv, IsIso.inv_comp_eq, IsIso.eq_comp_inv]
+      exact Subsingleton.elim _ _
+    · simp only [mapGroupObjectObj_X, mapGroupObjectObj_mul, PreservesLimitPair.iso_inv, id_eq,
+        Category.assoc, NatTrans.naturality, IsIso.inv_comp_eq]
+      slice_rhs 1 2 => rw [prodComparison_natTrans]
+      simp only [Category.assoc, IsIso.hom_inv_id, Category.comp_id]
+    · simp only [mapGroupObjectObj_X, mapGroupObjectObj_inv, id_eq, NatTrans.naturality]
+  · aesop_cat
+
+variable (C D)
+
 /-- The construction `mapGroupObject`, as a functor from the category of functors `C ⥤ D`
 that respect finite limits to the category of functors `GroupObject C ⥤ GroupObject D`.-/
 noncomputable def mapGroupObjectAsFunctor :
     FullSubcategory (fun (F : C ⥤ D) ↦ Nonempty (PreservesFiniteProducts F)) ⥤
     GroupObject C ⥤ GroupObject D where
-  obj F := by
-    set hF := Classical.choice F.2
-    exact @mapGroupObject _ _ _ _ _ _ F.1 hF
+  obj F := @mapGroupObject _ _ _ _ _ _ F.1 (Classical.choice F.2)
   map := by
     intro F G α
-    simp only
-    refine { app := ?_, naturality := ?_}
-    · intro X; dsimp
-      refine {hom := α.app X.X, one_hom := ?_, mul_hom := ?_, inv_hom := ?_}
-      · dsimp
-        rw [Category.assoc, α.naturality, ← Category.assoc]
-        congr 1
-        simp only [PreservesTerminal.iso_inv, IsIso.inv_comp_eq, IsIso.eq_comp_inv]
-        exact Subsingleton.elim _ _
-      · simp only [mapGroupObjectObj_X, mapGroupObjectObj_mul, PreservesLimitPair.iso_inv, id_eq,
-        Category.assoc, NatTrans.naturality, IsIso.inv_comp_eq]
-        slice_rhs 1 2 => rw [prodComparison_natTrans]
-        simp only [Category.assoc, IsIso.hom_inv_id, Category.comp_id]
-      · simp only [mapGroupObjectObj_X, mapGroupObjectObj_inv, id_eq, NatTrans.naturality]
-    · aesop_cat
+    exact @mapGroupObject_natTrans _ _ _ _ _ _ F.1 G.1 (Classical.choice F.2)
+      (Classical.choice G.2) α
+
+variable {C D}
+
+/-- The `mapGroupObject` functor is compatible with whiskering on the left.-/
+example (α : G ⟶ H) : mapGroupObject_natTrans (whiskerLeft F α) =
+    whiskerLeft (F.mapGroupObject) (mapGroupObject_natTrans  α) := sorry

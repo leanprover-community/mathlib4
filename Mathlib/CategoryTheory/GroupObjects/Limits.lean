@@ -13,7 +13,6 @@ noncomputable section
 variable {C : Type u} [Category.{v, u} C] [HasFiniteProducts C]
 
 variable {J : Type u'} [Category.{v',u'} J] [HasLimitsOfShape J C]
-  [HasLimitsOfShape (Discrete WalkingPair × J) C] [HasLimitsOfShape (J × Discrete WalkingPair) C]
 
 variable {K : Type u''} [Category.{v'', u''} K] [HasLimitsOfShape K C]
 
@@ -82,12 +81,13 @@ def limPreservesLimitsOfShape : PreservesLimitsOfShape K (lim : (J ⥤ C) ⥤ C)
      uniq := limPreservesLimitsOfShape_uniq F limc
     }
 
-
 /-- If `C` has finite products and limits of shape `J`, then the functor `lim` from `J ⥤ C`
 to `C` preserves finite products.-/
 def limPreservesFiniteProducts : PreservesFiniteProducts (lim : (J ⥤ C) ⥤ C) where
-  preserves J _ := by
-    sorry
+  preserves K _ := limPreservesLimitsOfShape C J (Discrete K)
+
+local instance : PreservesFiniteProducts (lim : (J ⥤ C) ⥤ C) := limPreservesFiniteProducts C J
+
 
 
 
