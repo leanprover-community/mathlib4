@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Topology.Category.LightProfinite.Basic
-import Mathlib.CategoryTheory.Functor.OfSequence
 /-!
 
 # Limits of surjections in `LightProfinite`
