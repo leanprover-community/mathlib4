@@ -18,7 +18,6 @@ convex hull, radon, affine independence
 -/
 
 open Finset Set
-open BigOperators
 
 variable {ι 𝕜 E : Type*} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {f : ι → E}
 

@@ -455,6 +455,17 @@ theorem not_isReal_of_mk_isComplex {φ : K →+* ℂ} (h : IsComplex (mk φ)) :
 define it, see `card_filter_mk_eq`. -/
 noncomputable def mult (w : InfinitePlace K) : ℕ := if (IsReal w) then 1 else 2
 
+theorem mult_pos {w : InfinitePlace K} : 0 < mult w := by
+  rw [mult]
+  split_ifs <;> norm_num
+
+@[simp]
+theorem mult_ne_zero {w : InfinitePlace K} : mult w ≠ 0 := ne_of_gt mult_pos
+
+theorem one_le_mult {w : InfinitePlace K} : (1 : ℝ) ≤ mult w := by
+  rw [← Nat.cast_one, Nat.cast_le]
+  exact mult_pos
+
 theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) :
     (Finset.univ.filter fun φ => mk φ = w).card = mult w := by
   conv_lhs =>
@@ -468,8 +479,6 @@ theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) :
       Finset.card_singleton]
   · refine Finset.card_pair ?_
     rwa [Ne, eq_comm, ← ComplexEmbedding.isReal_iff, ← isReal_iff]
-
-open scoped BigOperators
 
 noncomputable instance NumberField.InfinitePlace.fintype [NumberField K] :
     Fintype (InfinitePlace K) := Set.fintypeRange _
@@ -508,8 +517,6 @@ theorem mkComplex_coe (φ : { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ }
 #align number_field.infinite_place.mk_complex_coe NumberField.InfinitePlace.mkComplex_coe
 
 variable [NumberField K]
-
-open scoped BigOperators
 
 /-- The infinite part of the product formula : for `x ∈ K`, we have `Π_w ‖x‖_w = |norm(x)|` where
 `‖·‖_w` is the normalized absolute value for `w`.  -/
@@ -948,7 +955,7 @@ lemma even_finrank_of_not_isUnramifiedIn
 
 variable (k K)
 
-open Finset BigOperators in
+open Finset in
 lemma card_isUnramified [NumberField k] [IsGalois k K] :
     Finset.card (univ.filter <| IsUnramified k (K := K)) =
       Finset.card (univ.filter <| IsUnramifiedIn K (k := k)) * (finrank k K) := by
@@ -970,7 +977,7 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
       rwa [← isUnramifiedIn_comap]
   · simp [isUnramifiedIn_comap]
 
-open Finset BigOperators in
+open Finset in
 lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
     Finset.card (univ.filter <| IsUnramified k (K := K))ᶜ =
       Finset.card (univ.filter <| IsUnramifiedIn K (k := k))ᶜ * (finrank k K / 2) := by

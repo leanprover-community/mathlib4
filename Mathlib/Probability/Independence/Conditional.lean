@@ -52,7 +52,7 @@ The kernel used is `ProbabilityTheory.condexpKernel`.
 
 open MeasureTheory MeasurableSpace
 
-open scoped BigOperators MeasureTheory ENNReal
+open scoped MeasureTheory ENNReal
 
 namespace ProbabilityTheory
 

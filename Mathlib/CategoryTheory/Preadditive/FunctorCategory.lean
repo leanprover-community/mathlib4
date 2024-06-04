@@ -15,8 +15,6 @@ then `C ⥤ D` is also preadditive.
 
 -/
 
-open BigOperators
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits Preadditive

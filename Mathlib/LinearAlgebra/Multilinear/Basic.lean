@@ -74,7 +74,7 @@ since `_inst` is a free variable and so the equality can just be substituted.
 -/
 
 
-open Function Fin Set BigOperators
+open Function Fin Set
 
 universe uR uS uι v v' v₁ v₂ v₃
 
@@ -1881,7 +1881,7 @@ def map [Nonempty ι] (f : MultilinearMap R M₁ M₂) (p : ∀ i, Submodule R (
   smul_mem' := fun c _ ⟨x, hx, hf⟩ => by
     let ⟨i⟩ := ‹Nonempty ι›
     letI := Classical.decEq ι
-    refine' ⟨update x i (c • x i), fun j => if hij : j = i then _ else _, hf ▸ _⟩
+    refine ⟨update x i (c • x i), fun j => if hij : j = i then ?_ else ?_, hf ▸ ?_⟩
     · rw [hij, update_same]
       exact (p i).smul_mem _ (hx i)
     · rw [update_noteq hij]

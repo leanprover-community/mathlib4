@@ -26,7 +26,7 @@ proving theorems without a `[Finite ι]` assumption saves us some typeclass sear
 -/
 
 open Bornology Filter Set Function
-open scoped Topology BigOperators
+open scoped Topology
 
 namespace Bornology.IsVonNBounded
 

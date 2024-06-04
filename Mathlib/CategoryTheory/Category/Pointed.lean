@@ -36,7 +36,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Pointed
 
-instance : CoeSort Pointed (Type*) :=
+instance : CoeSort Pointed Type* :=
   ⟨X⟩
 
 -- Porting note: protected attribute does not work

@@ -29,8 +29,6 @@ https://www.imo-official.org/problems/IMO2013SL.pdf
 -/
 
 
-open scoped BigOperators
-
 namespace Imo2013Q5
 
 theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)

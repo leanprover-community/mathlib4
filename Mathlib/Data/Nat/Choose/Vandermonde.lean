@@ -21,8 +21,6 @@ https://en.wikipedia.org/wiki/Vandermonde%27s_identity#Algebraic_proof .
 -/
 
 
-open BigOperators
-
 open Polynomial Finset Finset.Nat
 
 /-- Vandermonde's identity -/

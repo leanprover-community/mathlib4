@@ -24,8 +24,6 @@ noncomputable section
 
 open Finset Function
 
-open BigOperators
-
 variable {α ι γ A B C : Type*} [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C]
 variable {t : ι → A → C} (h0 : ∀ i, t i 0 = 0) (h1 : ∀ i x y, t i (x + y) = t i x + t i y)
 variable {s : Finset α} {f : α → ι →₀ A} (i : ι)

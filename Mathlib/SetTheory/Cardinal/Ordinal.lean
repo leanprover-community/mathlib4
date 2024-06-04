@@ -127,7 +127,7 @@ def alephIdx.relIso : @RelIso Cardinal.{u} Ordinal.{u} (· < ·) (· < ·) :=
   @RelIso.ofSurjective Cardinal.{u} Ordinal.{u} (· < ·) (· < ·) alephIdx.initialSeg.{u} <|
     (InitialSeg.eq_or_principal alephIdx.initialSeg.{u}).resolve_right fun ⟨o, e⟩ => by
       have : ∀ c, alephIdx c < o := fun c => (e _).2 ⟨_, rfl⟩
-      refine' Ordinal.inductionOn o _ this; intro α r _ h
+      refine Ordinal.inductionOn o ?_ this; intro α r _ h
       let s := ⨆ a, invFun alephIdx (Ordinal.typein r a)
       apply (lt_succ s).not_le
       have I : Injective.{u+2, u+2} alephIdx := alephIdx.initialSeg.toEmbedding.injective
@@ -1209,8 +1209,8 @@ theorem mk_finsupp_lift_of_infinite (α : Type u) (β : Type v) [Infinite α] [Z
   · calc
       #(α →₀ β) ≤ #(Finset (α × β)) := mk_le_of_injective (Finsupp.graph_injective α β)
       _ = #(α × β) := mk_finset_of_infinite _
-      _ = max (lift.{v} #α) (lift.{u} #β) :=
-        by rw [mk_prod, mul_eq_max_of_aleph0_le_left] <;> simp
+      _ = max (lift.{v} #α) (lift.{u} #β) := by
+        rw [mk_prod, mul_eq_max_of_aleph0_le_left] <;> simp
 
   · apply max_le <;> rw [← lift_id #(α →₀ β), ← lift_umax]
     · cases' exists_ne (0 : β) with b hb

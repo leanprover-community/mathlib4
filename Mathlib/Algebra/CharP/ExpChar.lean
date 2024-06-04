@@ -401,7 +401,8 @@ theorem frobenius_natCast (n : ℕ) : frobenius R p n = n :=
   map_natCast (frobenius R p) n
 #align frobenius_nat_cast frobenius_natCast
 
-open BigOperators
+@[deprecated (since := "2024-04-17")]
+alias frobenius_nat_cast := frobenius_natCast
 
 variable {R}
 

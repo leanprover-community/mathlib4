@@ -6,11 +6,11 @@ Authors: Johannes Hölzl, Julian Kuelshammer
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Set.Pointwise.Basic
-import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Index
+import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Order.Interval.Set.Infinite
 
 #align_import group_theory.order_of_element from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
 
@@ -299,7 +299,7 @@ protected lemma IsOfFinOrder.mem_powers_iff_mem_range_orderOf [DecidableEq G]
 protected lemma IsOfFinOrder.powers_eq_image_range_orderOf [DecidableEq G] (hx : IsOfFinOrder x) :
     (Submonoid.powers x : Set G) = (Finset.range (orderOf x)).image (x ^ ·) :=
   Set.ext fun _ ↦ hx.mem_powers_iff_mem_range_orderOf
-@[deprecated] -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias IsOfFinAddOrder.powers_eq_image_range_orderOf :=
   IsOfFinAddOrder.multiples_eq_image_range_addOrderOf
 
@@ -362,12 +362,19 @@ theorem orderOf_eq_orderOf_iff {H : Type*} [Monoid H] {y : H} :
 #align order_of_eq_order_of_iff orderOf_eq_orderOf_iff
 #align add_order_of_eq_add_order_of_iff addOrderOf_eq_addOrderOf_iff
 
-@[to_additive]
+/-- An injective homomorphism of monoids preserves orders of elements. -/
+@[to_additive "An injective homomorphism of additive monoids preserves orders of elements."]
 theorem orderOf_injective {H : Type*} [Monoid H] (f : G →* H) (hf : Function.Injective f) (x : G) :
     orderOf (f x) = orderOf x := by
   simp_rw [orderOf_eq_orderOf_iff, ← f.map_pow, ← f.map_one, hf.eq_iff, forall_const]
 #align order_of_injective orderOf_injective
 #align add_order_of_injective addOrderOf_injective
+
+/-- A multiplicative equivalence preserves orders of elements. -/
+@[to_additive (attr := simp) "An additive equivalence preserves orders of elements."]
+lemma MulEquiv.orderOf_eq {H : Type*} [Monoid H] (e : G ≃* H) (x : G) :
+    orderOf (e x) = orderOf x :=
+  orderOf_injective e e.injective x
 
 @[to_additive]
 theorem Function.Injective.isOfFinOrder_iff [Monoid H] {f : G →* H} (hf : Injective f) :
@@ -799,8 +806,6 @@ end CommMonoid
 section FiniteMonoid
 
 variable [Monoid G] {x : G} {n : ℕ}
-
-open BigOperators
 
 @[to_additive]
 theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n ≠ 0) :
@@ -1261,21 +1266,23 @@ protected theorem Prod.orderOf (x : α × β) : orderOf x = (orderOf x.1).lcm (o
   minimalPeriod_prod_map _ _ _
 #align prod.order_of Prod.orderOf
 #align prod.add_order_of Prod.addOrderOf
-@[deprecated] alias Prod.add_orderOf := Prod.addOrderOf -- 2024-02-21
+@[deprecated (since := "2024-02-21")] alias Prod.add_orderOf := Prod.addOrderOf
 
 @[to_additive]
 theorem orderOf_fst_dvd_orderOf : orderOf x.1 ∣ orderOf x :=
   minimalPeriod_fst_dvd
 #align order_of_fst_dvd_order_of orderOf_fst_dvd_orderOf
 #align add_order_of_fst_dvd_add_order_of addOrderOf_fst_dvd_addOrderOf
-@[deprecated] alias add_orderOf_fst_dvd_add_orderOf := addOrderOf_fst_dvd_addOrderOf -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
+alias add_orderOf_fst_dvd_add_orderOf := addOrderOf_fst_dvd_addOrderOf
 
 @[to_additive]
 theorem orderOf_snd_dvd_orderOf : orderOf x.2 ∣ orderOf x :=
   minimalPeriod_snd_dvd
 #align order_of_snd_dvd_order_of orderOf_snd_dvd_orderOf
 #align add_order_of_snd_dvd_add_order_of addOrderOf_snd_dvd_addOrderOf
-@[deprecated] alias add_orderOf_snd_dvd_add_orderOf := addOrderOf_snd_dvd_addOrderOf -- 2024-02-21
+@[deprecated (since := "2024-02-21")] alias
+add_orderOf_snd_dvd_add_orderOf := addOrderOf_snd_dvd_addOrderOf
 
 @[to_additive]
 theorem IsOfFinOrder.fst {x : α × β} (hx : IsOfFinOrder x) : IsOfFinOrder x.1 :=

@@ -29,7 +29,7 @@ complete if any absolutely convergent series converges in the space.
 CompleteSpace, CauchySeq
 -/
 
-open scoped BigOperators Topology
+open scoped Topology
 open Filter Finset
 
 section Metric

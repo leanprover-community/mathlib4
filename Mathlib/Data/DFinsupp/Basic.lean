@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Data.Finset.Preimage
@@ -47,8 +47,6 @@ definitions, or introduce two more definitions for the other combinations of dec
 
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
-
-open BigOperators
 
 variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
 variable (β)
@@ -98,14 +96,14 @@ theorem ext {f g : Π₀ i, β i} (h : ∀ i, f i = g i) : f = g :=
   DFunLike.ext _ _ h
 #align dfinsupp.ext DFinsupp.ext
 
-@[deprecated DFunLike.ext_iff]
+@[deprecated DFunLike.ext_iff (since := "2023-01-27")]
 theorem ext_iff {f g : Π₀ i, β i} : f = g ↔ ∀ i, f i = g i :=
   DFunLike.ext_iff
 #align dfinsupp.ext_iff DFinsupp.ext_iff
 
 lemma ne_iff {f g : Π₀ i, β i} : f ≠ g ↔ ∃ i, f i ≠ g i := DFunLike.ne_iff
 
-@[deprecated DFunLike.coe_injective]
+@[deprecated DFunLike.coe_injective (since := "2023-01-27")]
 theorem coeFn_injective : @Function.Injective (Π₀ i, β i) (∀ i, β i) (⇑) :=
   DFunLike.coe_injective
 #align dfinsupp.coe_fn_injective DFinsupp.coeFn_injective
@@ -1886,9 +1884,9 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
       dsimp only [Subtype.coe_mk, toFun_eq_coe] at *
       have H1 : sx.toFinset ∩ sy.toFinset ⊆ sx.toFinset := Finset.inter_subset_left _ _
       have H2 : sx.toFinset ∩ sy.toFinset ⊆ sy.toFinset := Finset.inter_subset_right _ _
-      refine'
-        (Finset.sum_subset H1 _).symm.trans
-          ((Finset.sum_congr rfl _).trans (Finset.sum_subset H2 _))
+      refine
+        (Finset.sum_subset H1 ?_).symm.trans
+          ((Finset.sum_congr rfl ?_).trans (Finset.sum_subset H2 ?_))
       · intro i H1 H2
         rw [Finset.mem_inter] at H2
         simp only [Multiset.mem_toFinset] at H1 H2
@@ -1906,14 +1904,14 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
     change (∑ i ∈ _, _) = (∑ i ∈ _, _) + ∑ i ∈ _, _
     simp only [coe_add, coe_mk', Subtype.coe_mk, Pi.add_apply, map_add, Finset.sum_add_distrib]
     congr 1
-    · refine' (Finset.sum_subset _ _).symm
+    · refine (Finset.sum_subset ?_ ?_).symm
       · intro i
         simp only [Multiset.mem_toFinset, Multiset.mem_add]
         exact Or.inl
       · intro i _ H2
         simp only [Multiset.mem_toFinset, Multiset.mem_add] at H2
         rw [(hf i).resolve_left H2, AddMonoidHom.map_zero]
-    · refine' (Finset.sum_subset _ _).symm
+    · refine (Finset.sum_subset ?_ ?_).symm
       · intro i
         simp only [Multiset.mem_toFinset, Multiset.mem_add]
         exact Or.inr

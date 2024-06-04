@@ -48,8 +48,6 @@ noncomputable section
 
 open Finset Function
 
-open BigOperators
-
 variable {α β γ ι M M' N P G H R S : Type*}
 
 namespace Finsupp
@@ -276,7 +274,7 @@ theorem mapRange.addEquiv_symm (f : M ≃+ N) :
 
 @[simp]
 theorem mapRange.addEquiv_toAddMonoidHom (f : M ≃+ N) :
-    (mapRange.addEquiv f : (α →₀ _) ≃+ _).toAddMonoidHom =
+    ((mapRange.addEquiv f : (α →₀ _) ≃+ _) : _ →+ _) =
       (mapRange.addMonoidHom f.toAddMonoidHom : (α →₀ _) →+ _) :=
   AddMonoidHom.ext fun _ => rfl
 #align finsupp.map_range.add_equiv_to_add_monoid_hom Finsupp.mapRange.addEquiv_toAddMonoidHom
@@ -360,7 +358,7 @@ theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g 
 
 This is the finitely-supported version of `Equiv.piCongrLeft`. -/
 def equivCongrLeft (f : α ≃ β) : (α →₀ M) ≃ (β →₀ M) := by
-  refine' ⟨equivMapDomain f, equivMapDomain f.symm, fun f => _, fun f => _⟩ <;> ext x <;>
+  refine ⟨equivMapDomain f, equivMapDomain f.symm, fun f => ?_, fun f => ?_⟩ <;> ext x <;>
     simp only [equivMapDomain_apply, Equiv.symm_symm, Equiv.symm_apply_apply,
       Equiv.apply_symm_apply]
 #align finsupp.equiv_congr_left Finsupp.equivCongrLeft

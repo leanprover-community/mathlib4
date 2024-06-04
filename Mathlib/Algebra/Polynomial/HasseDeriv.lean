@@ -45,7 +45,7 @@ noncomputable section
 
 namespace Polynomial
 
-open Nat BigOperators Polynomial
+open Nat Polynomial
 
 open Function
 
