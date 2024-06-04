@@ -19,7 +19,7 @@ bounded linear map between Banach spaces has a bounded inverse.
 -/
 
 open scoped Classical
-open Function Metric Set Filter Finset Topology BigOperators NNReal
+open Function Metric Set Filter Finset Topology NNReal
 
 open LinearMap (range ker)
 
@@ -205,13 +205,13 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
       _ = 2 * C * ‖y‖ := by rw [tsum_geometric_two, mul_assoc]
       _ ≤ 2 * C * ‖y‖ + ‖y‖ := le_add_of_nonneg_right (norm_nonneg y)
       _ = (2 * C + 1) * ‖y‖ := by ring
-  have fsumeq : ∀ n : ℕ, f (∑ i in Finset.range n, u i) = y - h^[n] y := by
+  have fsumeq : ∀ n : ℕ, f (∑ i ∈ Finset.range n, u i) = y - h^[n] y := by
     intro n
     induction' n with n IH
     · simp [f.map_zero]
     · rw [sum_range_succ, f.map_add, IH, iterate_succ_apply', sub_add]
-  have : Tendsto (fun n => ∑ i in Finset.range n, u i) atTop (𝓝 x) := su.hasSum.tendsto_sum_nat
-  have L₁ : Tendsto (fun n => f (∑ i in Finset.range n, u i)) atTop (𝓝 (f x)) :=
+  have : Tendsto (fun n => ∑ i ∈ Finset.range n, u i) atTop (𝓝 x) := su.hasSum.tendsto_sum_nat
+  have L₁ : Tendsto (fun n => f (∑ i ∈ Finset.range n, u i)) atTop (𝓝 (f x)) :=
     (f.continuous.tendsto _).comp this
   simp only [fsumeq] at L₁
   have L₂ : Tendsto (fun n => y - h^[n] y) atTop (𝓝 (y - 0)) := by

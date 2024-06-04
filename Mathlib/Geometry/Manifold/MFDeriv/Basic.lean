@@ -190,8 +190,9 @@ theorem HasMFDerivAt.mdifferentiableAt (h : HasMFDerivAt I I' f x f') :
 #align has_mfderiv_at.mdifferentiable_at HasMFDerivAt.mdifferentiableAt
 
 @[simp, mfld_simps]
-theorem hasMFDerivWithinAt_univ : HasMFDerivWithinAt I I' f univ x f' ↔ HasMFDerivAt I I' f x f' :=
-  by simp only [HasMFDerivWithinAt, HasMFDerivAt, continuousWithinAt_univ, mfld_simps]
+theorem hasMFDerivWithinAt_univ :
+    HasMFDerivWithinAt I I' f univ x f' ↔ HasMFDerivAt I I' f x f' := by
+  simp only [HasMFDerivWithinAt, HasMFDerivAt, continuousWithinAt_univ, mfld_simps]
 #align has_mfderiv_within_at_univ hasMFDerivWithinAt_univ
 
 theorem hasMFDerivAt_unique (h₀ : HasMFDerivAt I I' f x f₀') (h₁ : HasMFDerivAt I I' f x f₁') :
@@ -242,8 +243,8 @@ theorem MDifferentiableWithinAt.hasMFDerivWithinAt (h : MDifferentiableWithinAt 
 protected theorem MDifferentiableWithinAt.mfderivWithin (h : MDifferentiableWithinAt I I' f s x) :
     mfderivWithin I I' f s x =
       fderivWithin 𝕜 (writtenInExtChartAt I I' x f : _) ((extChartAt I x).symm ⁻¹' s ∩ range I)
-        ((extChartAt I x) x) :=
-  by simp only [mfderivWithin, h, if_pos]
+        ((extChartAt I x) x) := by
+  simp only [mfderivWithin, h, if_pos]
 #align mdifferentiable_within_at.mfderiv_within MDifferentiableWithinAt.mfderivWithin
 
 theorem MDifferentiableAt.hasMFDerivAt (h : MDifferentiableAt I I' f x) :
@@ -255,8 +256,8 @@ theorem MDifferentiableAt.hasMFDerivAt (h : MDifferentiableAt I I' f x) :
 
 protected theorem MDifferentiableAt.mfderiv (h : MDifferentiableAt I I' f x) :
     mfderiv I I' f x =
-      fderivWithin 𝕜 (writtenInExtChartAt I I' x f : _) (range I) ((extChartAt I x) x) :=
-  by simp only [mfderiv, h, if_pos]
+      fderivWithin 𝕜 (writtenInExtChartAt I I' x f : _) (range I) ((extChartAt I x) x) := by
+  simp only [mfderiv, h, if_pos]
 #align mdifferentiable_at.mfderiv MDifferentiableAt.mfderiv
 
 protected theorem HasMFDerivAt.mfderiv (h : HasMFDerivAt I I' f x f') : mfderiv I I' f x = f' :=

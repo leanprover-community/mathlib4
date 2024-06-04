@@ -39,7 +39,7 @@ The following properties are covered:
 
 -/
 
-open scoped Pointwise Classical BigOperators
+open scoped Pointwise Classical
 
 universe u
 

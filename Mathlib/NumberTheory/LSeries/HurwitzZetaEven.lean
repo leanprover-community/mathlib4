@@ -34,7 +34,7 @@ We also define completed versions of these functions with nicer functional equat
 modified versions with a subscript `0`, which are entire functions differing from the above by
 multiples of `1 / s` and `1 / (1 - s)`.
 
-## Main definitions and theorems
+## Main definitions and theorems
 * `hurwitzZetaEven` and `cosZeta`: the zeta functions
 * `completedHurwitzZetaEven` and `completedCosZeta`: completed variants
 * `differentiableAt_hurwitzZetaEven` and `differentiableAt_cosZeta`:
@@ -47,6 +47,8 @@ multiples of `1 / s` and `1 / (1 - s)`.
 noncomputable section
 
 open Complex Filter Topology Asymptotics Real Set Classical MeasureTheory
+
+namespace HurwitzZeta
 
 section kernel_defs
 /-!
@@ -801,3 +803,5 @@ lemma cosZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1
     hurwitzZetaEven_def_of_ne_or_ne (Or.inr (by simpa using hs 1))]
   generalize Gammaℂ s * cos (π * s / 2) = A -- speeds up ring_nf call
   ring_nf
+
+end HurwitzZeta

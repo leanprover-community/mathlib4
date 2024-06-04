@@ -356,8 +356,8 @@ protected theorem _root_.Set.Finite.nullMeasurableSet (hs : s.Finite) : NullMeas
   Finite.measurableSet hs
 #align set.finite.null_measurable_set Set.Finite.nullMeasurableSet
 
-protected theorem _root_.Finset.nullMeasurableSet (s : Finset α) : NullMeasurableSet (↑s) μ :=
-  by apply Finset.measurableSet
+protected theorem _root_.Finset.nullMeasurableSet (s : Finset α) : NullMeasurableSet (↑s) μ := by
+  apply Finset.measurableSet
 #align finset.null_measurable_set Finset.nullMeasurableSet
 
 end MeasurableSingletonClass
@@ -500,7 +500,7 @@ theorem completion_apply {_ : MeasurableSpace α} (μ : Measure α) (s : Set α)
 #align measure_theory.measure.completion_apply MeasureTheory.Measure.completion_apply
 
 @[simp]
-theorem ae_completion {_ : MeasurableSpace α} (μ : Measure α) : μ.completion.ae = μ.ae := rfl
+theorem ae_completion {_ : MeasurableSpace α} (μ : Measure α) : ae μ.completion = ae μ := rfl
 
 end Measure
 

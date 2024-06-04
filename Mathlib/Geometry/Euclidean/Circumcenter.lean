@@ -32,8 +32,6 @@ the circumcenter.
 
 noncomputable section
 
-open BigOperators
-
 open scoped Classical
 
 open RealInnerProductSpace

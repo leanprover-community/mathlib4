@@ -22,7 +22,7 @@ import Mathlib.RingTheory.Ideal.Basis
 
 namespace Ideal
 
-open scoped BigOperators DirectSum
+open scoped DirectSum
 
 variable {ι R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable [IsDomain R] [IsPrincipalIdealRing R] [IsDomain S] [Finite ι]
@@ -65,16 +65,12 @@ noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I �
     · rintro ⟨y, hy, rfl⟩ i
       exact hy i
     · rintro hdvd
-      refine' ⟨∑ i, x i • b' i, fun i => _, _⟩ <;> rw [b'.repr_sum_self]
+      refine ⟨∑ i, x i • b' i, fun i => ?_, ?_⟩ <;> rw [b'.repr_sum_self]
       · exact hdvd i
-  refine' ((Submodule.Quotient.restrictScalarsEquiv R I).restrictScalars R).symm.trans
-    (σ₁₂ := RingHom.id R) (σ₃₂ := RingHom.id R) _
-  · infer_instance
-  · infer_instance
-  refine' (Submodule.Quotient.equiv (I.restrictScalars R) I' b'.equivFun this).trans
-    (σ₁₂ := RingHom.id R) (σ₃₂ := RingHom.id R) _
-  · infer_instance
-  · infer_instance
+  refine ((Submodule.Quotient.restrictScalarsEquiv R I).restrictScalars R).symm.trans
+    (σ₁₂ := RingHom.id R) (σ₃₂ := RingHom.id R) (re₂₃ := inferInstance) (re₃₂ := inferInstance) ?_
+  refine (Submodule.Quotient.equiv (I.restrictScalars R) I' b'.equivFun this).trans
+    (σ₁₂ := RingHom.id R) (σ₃₂ := RingHom.id R) (re₂₃ := inferInstance) (re₃₂ := inferInstance) ?_
   classical
     let this :=
       Submodule.quotientPi (show _ → Submodule R R from fun i => span ({a i} : Set R))
