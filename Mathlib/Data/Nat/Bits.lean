@@ -267,9 +267,6 @@ lemma shiftLeft'_add (b m n) : ∀ k, shiftLeft' b m (n + k) = shiftLeft' b (shi
   | k + 1 => congr_arg (bit b) (shiftLeft'_add b m n k)
 #align nat.shiftl'_add Nat.shiftLeft'_add
 
-lemma shiftLeft_add (m n : Nat) : ∀ k, m <<< (n + k) = (m <<< n) <<< k := by
-  intro k; simp only [← shiftLeft'_false, shiftLeft'_add]
-
 lemma shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (shiftLeft' b m n) >>> k
   | n, 0, _ => rfl
   | n + 1, k + 1, h => by
