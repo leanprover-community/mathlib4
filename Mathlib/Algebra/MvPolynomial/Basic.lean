@@ -880,6 +880,7 @@ def coeffs (p : MvPolynomial σ R) : Finset R :=
   letI := Classical.decEq R
   Finset.image p.coeff p.support
 
+@[simp]
 lemma coeffs_zero : coeffs (0 : MvPolynomial σ R) = ∅ :=
   rfl
 
