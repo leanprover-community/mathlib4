@@ -63,7 +63,7 @@ lemma essImageDistTriang_mem_of_iso {T₁ T₂ : Triangle D} (e : T₂ ≅ T₁)
 lemma contractible_mem_essImageDistTriang [EssSurj L] [HasZeroObject D]
     [HasZeroMorphisms D] [L.PreservesZeroMorphisms] (X : D) :
     contractibleTriangle X ∈ L.essImageDistTriang := by
-  refine' ⟨contractibleTriangle (L.objPreimage X), _, contractible_distinguished _⟩
+  refine ⟨contractibleTriangle (L.objPreimage X), ?_, contractible_distinguished _⟩
   exact ((contractibleTriangleFunctor D).mapIso (L.objObjPreimageIso X)).symm ≪≫
     Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) L.mapZeroObject.symm (by simp) (by simp) (by simp)
 
