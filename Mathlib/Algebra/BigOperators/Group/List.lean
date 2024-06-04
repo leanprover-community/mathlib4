@@ -577,7 +577,7 @@ lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (
     rw [ih]
     clear ih
     by_cases hx : x = a
-    · simp only [hx, ↓reduceIte, div_pow, pow_add, pow_one, div_eq_mul_inv, mul_assoc, mul_comm,
+    · simp only [hx, ite_true, div_pow, pow_add, pow_one, div_eq_mul_inv, mul_assoc, mul_comm,
         mul_left_comm, mul_inv_cancel_left]
     · simp only [hx, ite_false, ne_comm.mp hx, add_zero, mul_assoc, mul_comm (g x) _]
 
