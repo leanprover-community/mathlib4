@@ -52,7 +52,7 @@ theorem multinomial_spec : (∏ i ∈ s, (f i)!) * multinomial s f = (∑ i ∈ 
   Nat.mul_div_cancel' (prod_factorial_dvd_factorial_sum s f)
 #align nat.multinomial_spec Nat.multinomial_spec
 
-@[simp] lemma multinomial_empty : multinomial ∅ f = 1 := rfl
+@[simp] lemma multinomial_empty : multinomial ∅ f = 1 := by simp [multinomial]
 #align nat.multinomial_nil Nat.multinomial_empty
 
 @[deprecated (since := "2024-06-01")] alias multinomial_nil := multinomial_empty
