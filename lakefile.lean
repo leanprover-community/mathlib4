@@ -63,14 +63,14 @@ lean_exe mk_all where
   srcDir := "scripts"
   supportInterpreter := true
 
-/-- `lake exe update_deprecations` automatically updates deprecations. -/
-lean_exe update_deprecations where
-  srcDir := "scripts"
-  supportInterpreter := true
-
 /-- `lake exe shake` checks files for unnecessary imports. -/
 lean_exe shake where
   root := `Shake.Main
+  supportInterpreter := true
+
+/-- `lake exe update_deprecations` automatically updates deprecations. -/
+lean_exe update_deprecations where
+  srcDir := "scripts"
   supportInterpreter := true
 
 /--

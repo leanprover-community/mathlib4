@@ -170,22 +170,16 @@ elab bds:build* tk:"Build completed successfully." : command => do
     return summary
   let noFiles := modifiedFiles.size
   let msg :=
-    if noFiles == 0 then m!"No modified files\n"
+    if noFiles == 0 then m!"No modifications needed"
     else if modifiedFiles.toArray.all (fun (_, _, x) => x == 0) then
-      m!"All modifications were successful"
+      m!"{(modifiedFiles.fold (fun a _ (x, _) => a + x) 0)} modifications \
+          across {noFiles} files, all successful"
     else
-      modifiedFiles.fold (init := "| File | mods | unmods |\n|-|-|\n")
+      modifiedFiles.fold (init := "| File | mods | unmods |\n|-|-|")
         fun msg fil (modified, unmodified) =>
           let mods := if modified == 0 then " 0" else s!"+{modified}"
           let unmods := if unmodified == 0 then " 0" else s!"-{unmodified}"
-          msg ++ s!"| {fil} | {mods} | {unmods} |\n"
-  logInfoAt tk m!"{msg}{noFiles}"
+          msg ++ s!"\n| {fil} | {mods} | {unmods} |"
+  logInfoAt tk m!"{msg}"
+  logInfoAt tk m!"{noFiles}"
 end elabs
-
-/-- runs `lake build` and stores the output in the input file,
-pre-pending the build information with `import Mathlib.Tactic.UpdateDeprecations`.
--/
-def buildAndWrite (tgt : System.FilePath) : IO Unit := do
-  let build ← getBuild
-  unless build.isEmpty do
-    IO.FS.writeFile tgt ("import Mathlib.Tactic.UpdateDeprecations\n\n" ++ build)

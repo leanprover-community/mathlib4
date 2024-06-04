@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Cli.Basic
+import Lean.Elab.Frontend
 import Mathlib.Tactic.UpdateDeprecations
 
 /-!
@@ -21,35 +22,26 @@ open Lean System.FilePath
 open IO.FS IO.Process Name Cli in
 /-- Implementation of the `update_deprecations` command line program.
 The exit code is the number of files that the command updates/creates. -/
-def updateDeprecationsCLI (args : Parsed) : IO UInt32 := do
-  -- if you are running `lake exe update_deprecations --tgt filePath`, then `tgt` is `filePath`,
-  -- otherwise it is `buildOutput00...0.lean`, where the number of `0` is chosen to avoid clashes
-  let verbose := (args.flag? "verbose").isSome
-  let tgt := ← match args.flag? "tgt" with
-              | some path => return path.as! String
-              | none => do
-                let mut str :="buildOutput"
-                while ← pathExists (addExtension str "lean") do
-                  str := str.push '0'
-                return (addExtension str "lean").toString
-  if verbose then IO.println f!"Using temporary file '{tgt}'\n"
-  if ← pathExists tgt then
-    IO.println f!"Warning: '{tgt}' exists.\n\n\
-    Choose another name by running\n`lake exe update_deprecations <newPath.lean>`"; return 1
-  --let mut updates := 0
-  -- create the `tgt` file with the output of `lake build`
-  buildAndWrite tgt
-  let outp := (← IO.Process.run { cmd := "lake", args := #["env", "lean", tgt] }).trimRight
-  IO.FS.removeFile tgt
-  let ext := String.toNat! <| outp.takeRightWhile (·.isDigit)
-  IO.println <| outp.dropRightWhile (·.isDigit)
-  if ext == 0 then
-    return 0
-  else
-    -- the exit code is the total number of changes that should have happened, whether or not they
-    -- actually took place modulo `UInt32.size = 4294967296` (returning 1 if the remainder is `0`).
-    -- In particular, the exit code is `0` if and only if no replacement was necessary.
-    return ⟨max 1 (ext % UInt32.size), by unfold UInt32.size; omega⟩
+def updateDeprecationsCLI (_args : Parsed) : IO UInt32 := do
+  let buildOutput ← getBuild
+  if buildOutput.isEmpty then return 1
+  Lean.initSearchPath (← Lean.findSysroot)
+  -- create the environment with `import Mathlib.Tactic.UpdateDeprecations`
+  let env : Environment ← importModules #[{module := `Mathlib.Tactic.UpdateDeprecations}] {}
+  -- process the `lake build` output, catching messages
+  let (_, msgLog) ← Lean.Elab.process buildOutput env {}
+  let exitCode := ← match msgLog.msgs.toArray with
+    | #[msg, exCode] => do
+      IO.println f!"{(← msg.toString).trimRight}"
+      return String.toNat! (← exCode.toString).trimRight
+    | msgs => do
+      IO.println f!"{← msgs.mapM (·.toString)}"
+      return 1
+  if exitCode == 0 then return 0
+  -- the exit code is the total number of changes that should have happened, whether or not they
+  -- actually took place modulo `UInt32.size = 4294967296` (returning 1 if the remainder is `0`).
+  -- In particular, the exit code is `0` if and only if no replacement was necessary.
+  else return ⟨max 1 (exitCode % UInt32.size), by unfold UInt32.size; omega⟩
 
 open Cli in
 /-- Setting up command line options and help text for `lake exe update_deprecations`. -/
@@ -58,10 +50,7 @@ def updateDeprecations : Cmd := `[Cli|
   "Perform the substitutions suggested by the output of `lake build`."
 
   FLAGS:
-    tgt : String; "The temporary file storing the output of `lake exe update_deprecations`.\n\
-                  Use as `lake exe update_deprecations --tgt tmpFile.lean`\n\
-                  `tmpFile.lean` is optional -- the command uses `buildOutput.lean` by default."
-    verbose;      "Produce a verbose output."
+    --verbose : String;      "Produce a verbose output."
 ]
 
 /-- The entrypoint to the `lake exe update_deprecations` command. -/
