@@ -44,7 +44,14 @@ namespace IsSMulRegular
 open Submodule
 open scoped Pointwise TensorProduct
 
-variable {R M M' M'' : Type*}
+variable {R : Type*} (S M : Type*) {M' M'' : Type*}
+
+lemma isSMulRegular_algebraMap_iff [CommSemiring R] [Semiring S] [Algebra R S]
+    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M] (r : R) :
+    IsSMulRegular M (algebraMap R S r) ↔ IsSMulRegular M r :=
+  (Equiv.refl M).isSMulRegular_congr (algebraMap_smul S r)
+
+variable {S M}
 
 lemma submodule [Semiring R] [AddCommMonoid M] [Module R M]
     (N : Submodule R M) (r : R) (h : IsSMulRegular M r) : IsSMulRegular N r :=
@@ -121,24 +128,11 @@ lemma biUnion_associatedPrimes_eq_compl_regular [IsNoetherianRing R] :
     simp_rw [Set.compl_setOf, isSMulRegular_iff_smul_eq_zero_imp_eq_zero,
       not_forall, exists_prop, and_comm]
 
-variable {R}
-
-lemma isSMulRegular_iff_isSMulRegular_over_quotient_by_torsion_ideal
-    (hI : Module.IsTorsionBySet R M I) :
-      letI := hI.module
-      IsSMulRegular M r ↔ IsSMulRegular M (Ideal.Quotient.mk I r) :=
-  letI := hI.module; (Equiv.refl M).isSMulRegular_congr fun _ => rfl
-
-variable (I)
+variable {R} (I)
 
 lemma isSMulRegular_iff_ker_lsmul_eq_bot :
     IsSMulRegular M r ↔ LinearMap.ker (LinearMap.lsmul R M r) = ⊥ :=
   isSMulRegular_iff_torsionBy_eq_bot M r
-
-lemma isSMulRegular_on_quotient_ideal_smul_iff_isSMulRegular_over_quotient :
-    IsSMulRegular (M ⧸ (I • ⊤ : Submodule R M)) r ↔
-      IsSMulRegular (M ⧸ (I • ⊤ : Submodule R M)) (Ideal.Quotient.mk I r) :=
-  (Equiv.refl _).isSMulRegular_congr fun _ => rfl
 
 variable {M}
 
