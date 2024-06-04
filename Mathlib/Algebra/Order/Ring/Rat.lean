@@ -5,13 +5,11 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Ring.Rat
-import Mathlib.Data.Nat.Cast.Order
-import Mathlib.Data.Rat.Defs
 
 #align_import data.rat.order from "leanprover-community/mathlib"@"a59dad53320b73ef180174aae867addd707ef00e"
 
 /-!
-# Order for Rational Numbers
+# The rational numbers form a linear ordered field
 
 This file constructs the order on `ℚ` and proves that `ℚ` is a discrete, linearly ordered
 commutative ring.
@@ -24,21 +22,20 @@ here because we need the order on `ℚ` to define `ℚ≥0`, which we itself nee
 rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 -/
 
+assert_not_exists Field
+assert_not_exists Finset
+assert_not_exists Set.Icc
+assert_not_exists GaloisConnection
 
 namespace Rat
 
-variable {a b c : ℚ}
-
-#noalign rat.nonneg
-
-@[simp] lemma num_nonneg : 0 ≤ a.num ↔ 0 ≤ a := by simp [instLE, Rat.blt, le_iff_lt_or_eq]; tauto
-#align rat.num_nonneg_iff_zero_le Rat.num_nonneg
+variable {a b c p q : ℚ}
 
 @[simp] lemma divInt_nonneg_iff_of_pos_right {a b : ℤ} (hb : 0 < b) : 0 ≤ a /. b ↔ 0 ≤ a := by
   cases' hab : a /. b with n d hd hnd
   rw [mk'_eq_divInt, divInt_eq_iff hb.ne' (mod_cast hd)] at hab
   rw [← num_nonneg, ← mul_nonneg_iff_of_pos_right hb, ← hab,
-    mul_nonneg_iff_of_pos_right (mod_cast hd.bot_lt)]
+    mul_nonneg_iff_of_pos_right (mod_cast Nat.pos_of_ne_zero hd)]
 #align rat.mk_nonneg Rat.divInt_nonneg_iff_of_pos_right
 
 @[simp] lemma divInt_nonneg {a b : ℤ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a /. b := by
@@ -48,7 +45,7 @@ variable {a b c : ℚ}
   rwa [divInt_nonneg_iff_of_pos_right hb]
 
 @[simp] lemma mkRat_nonneg {a : ℤ} (ha : 0 ≤ a) (b : ℕ) : 0 ≤ mkRat a b := by
-  simpa using divInt_nonneg ha b.cast_nonneg
+  simpa using divInt_nonneg ha (Int.natCast_nonneg _)
 
 theorem ofScientific_nonneg (m : ℕ) (s : Bool) (e : ℕ) :
     0 ≤ Rat.ofScientific m s e := by
@@ -57,9 +54,9 @@ theorem ofScientific_nonneg (m : ℕ) (s : Bool) (e : ℕ) :
   · rw [if_neg (by decide)]
     refine num_nonneg.mp ?_
     rw [num_natCast]
-    exact Nat.cast_nonneg _
+    exact Int.natCast_nonneg _
   · rw [if_pos rfl, normalize_eq_mkRat]
-    exact Rat.mkRat_nonneg (Nat.cast_nonneg _) _
+    exact Rat.mkRat_nonneg (Int.natCast_nonneg _) _
 
 instance _root_.NNRatCast.toOfScientific {K} [NNRatCast K] : OfScientific K where
   ofScientific (m : ℕ) (b : Bool) (d : ℕ) :=
@@ -73,8 +70,8 @@ theorem _root_.NNRat.cast_ofScientific {K} [NNRatCast K] (m : ℕ) (s : Bool) (e
 
 protected lemma add_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a + b :=
   numDenCasesOn' a fun n₁ d₁ h₁ ↦ numDenCasesOn' b fun n₂ d₂ h₂ ↦ by
-    have d₁0 : 0 < (d₁ : ℤ) := mod_cast h₁.bot_lt
-    have d₂0 : 0 < (d₂ : ℤ) := mod_cast h₂.bot_lt
+    have d₁0 : 0 < (d₁ : ℤ) := mod_cast Nat.pos_of_ne_zero h₁
+    have d₂0 : 0 < (d₂ : ℤ) := mod_cast Nat.pos_of_ne_zero h₂
     simp only [d₁0, d₂0, h₁, h₂, mul_pos, divInt_nonneg_iff_of_pos_right, divInt_add_divInt, Ne,
       Nat.cast_eq_zero, not_false_iff]
     intro n₁0 n₂0
@@ -84,23 +81,13 @@ protected lemma add_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a + b :=
 protected lemma mul_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a * b :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
     numDenCasesOn' b fun n₂ d₂ h₂ => by
-      have d₁0 : 0 < (d₁ : ℤ) := mod_cast h₁.bot_lt
-      have d₂0 : 0 < (d₂ : ℤ) := mod_cast h₂.bot_lt
+      have d₁0 : 0 < (d₁ : ℤ) := mod_cast Nat.pos_of_ne_zero h₁
+      have d₂0 : 0 < (d₂ : ℤ) := mod_cast Nat.pos_of_ne_zero h₂
       simp only [d₁0, d₂0, mul_pos, divInt_nonneg_iff_of_pos_right,
         divInt_mul_divInt _ _ d₁0.ne' d₂0.ne']
       apply mul_nonneg
 #align rat.nonneg_mul Rat.mul_nonneg
 #align rat.mul_nonneg Rat.mul_nonneg
-
-protected lemma nonneg_antisymm : 0 ≤ a → 0 ≤ -a → a = 0 := by
-  simp_rw [← num_eq_zero, le_antisymm_iff, ← num_nonneg, num_neg_eq_neg_num, neg_nonneg]; tauto
-#align rat.nonneg_antisymm Rat.nonneg_antisymm
-
-protected theorem nonneg_total (a : ℚ) : 0 ≤ a ∨ 0 ≤ -a := by
-  simp_rw [← num_nonneg, num_neg_eq_neg_num, neg_nonneg]; exact le_total _ _
-#align rat.nonneg_total Rat.nonneg_total
-
-#align rat.decidable_nonneg Rat.instDecidableLe
 
 -- Porting note (#11215): TODO can this be shortened?
 protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
@@ -118,16 +105,15 @@ protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
         · rw [sub_neg]
           apply lt_of_lt_of_le
           · apply mul_neg_of_neg_of_pos h.1
-            rwa [Nat.cast_pos, pos_iff_ne_zero]
-          · apply mul_nonneg h.2 (Nat.cast_nonneg _)
-        · simp only [Nat.cast_pos]
-          apply Nat.gcd_pos_of_pos_right
-          apply mul_pos <;> rwa [pos_iff_ne_zero]
+            rwa [Int.natCast_pos, Nat.pos_iff_ne_zero]
+          · apply mul_nonneg h.2 (Int.natCast_nonneg _)
+        · simp only [Int.natCast_pos, Nat.pos_iff_ne_zero]
+          exact Nat.gcd_ne_zero_right (Nat.mul_ne_zero hb ha)
       · simp only [divInt_ofNat, ← zero_iff_num_zero, mkRat_eq_zero hb] at h'
         simp [h']
       · simp only [Rat.sub_def, normalize_eq]
         refine ⟨fun H => ?_, fun H _ => ?_⟩
-        · refine Int.ediv_nonneg ?_ (Nat.cast_nonneg _)
+        · refine Int.ediv_nonneg ?_ (Int.natCast_nonneg _)
           rw [sub_nonneg]
           push_neg at h
           obtain hb|hb := Ne.lt_or_lt h'
@@ -135,15 +121,14 @@ protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
             intro H'
             exact (hb.trans H').false.elim
           · obtain ha|ha := le_or_lt na 0
-            · apply le_trans <| mul_nonpos_of_nonpos_of_nonneg ha (Nat.cast_nonneg _)
-              exact mul_nonneg hb.le (Nat.cast_nonneg _)
+            · apply le_trans <| mul_nonpos_of_nonpos_of_nonneg ha (Int.natCast_nonneg _)
+              exact mul_nonneg hb.le (Int.natCast_nonneg _)
             · exact H (fun _ => ha)
         · rw [← sub_nonneg]
           contrapose! H
           apply Int.ediv_neg' H
-          simp only [Nat.cast_pos]
-          apply Nat.gcd_pos_of_pos_right
-          apply mul_pos <;> rwa [pos_iff_ne_zero]
+          simp only [Int.natCast_pos, Nat.pos_iff_ne_zero]
+          exact Nat.gcd_ne_zero_right (Nat.mul_ne_zero hb ha)
 
 protected lemma divInt_le_divInt {a b c d : ℤ} (b0 : 0 < b) (d0 : 0 < d) :
     a /. b ≤ c /. d ↔ a * d ≤ c * b := by
@@ -181,32 +166,30 @@ instance linearOrder : LinearOrder ℚ where
 #align rat.le_antisymm le_antisymm
 #align rat.le_trans le_trans
 
--- Extra instances to short-circuit type class resolution
-instance : LT ℚ := by infer_instance
+/-!
+### Extra instances to short-circuit type class resolution
 
-instance : DistribLattice ℚ := by infer_instance
+These also prevent non-computable instances being used to construct these instances non-computably.
+-/
 
-instance instLattice : Lattice ℚ := by infer_instance
+instance instDistribLattice : DistribLattice ℚ := inferInstance
+instance instLattice        : Lattice ℚ        := inferInstance
+instance instSemilatticeInf : SemilatticeInf ℚ := inferInstance
+instance instSemilatticeSup : SemilatticeSup ℚ := inferInstance
+instance instInf            : Inf ℚ            := inferInstance
+instance instSup            : Sup ℚ            := inferInstance
+instance instPartialOrder   : PartialOrder ℚ   := inferInstance
+instance instPreorder       : Preorder ℚ       := inferInstance
 
-instance : SemilatticeInf ℚ := by infer_instance
+/-! ### Miscellaneous lemmas -/
 
-instance : SemilatticeSup ℚ := by infer_instance
-
-instance : Inf ℚ := by infer_instance
-
-instance : Sup ℚ := by infer_instance
-
-instance : PartialOrder ℚ := by infer_instance
-
-instance : Preorder ℚ := by infer_instance
-
-protected lemma le_def {p q : ℚ} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
+protected lemma le_def : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
   rw [← num_divInt_den q, ← num_divInt_den p]
   conv_rhs => simp only [num_divInt_den]
   exact Rat.divInt_le_divInt (mod_cast p.pos) (mod_cast q.pos)
 #align rat.le_def' Rat.le_def
 
-protected theorem lt_def {p q : ℚ} : p < q ↔ p.num * q.den < q.num * p.den := by
+protected lemma lt_def : p < q ↔ p.num * q.den < q.num * p.den := by
   rw [lt_iff_le_and_ne, Rat.le_def]
   suffices p ≠ q ↔ p.num * q.den ≠ q.num * p.den by
     constructor <;> intro h
@@ -279,11 +262,3 @@ theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
 #align rat.abs_def Rat.abs_def
 
 end Rat
-
--- We make some assertions here about declarations that do not need to be in the import dependencies
--- for this file, but have been in the past.
-assert_not_exists Fintype
-
-assert_not_exists Set.Icc
-
-assert_not_exists GaloisConnection
