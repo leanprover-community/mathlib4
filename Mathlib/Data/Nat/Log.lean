@@ -105,7 +105,7 @@ theorem lt_pow_iff_log_lt {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) : y 
 #align nat.lt_pow_iff_log_lt Nat.lt_pow_iff_log_lt
 
 theorem pow_le_of_le_log {b x y : ℕ} (hy : y ≠ 0) (h : x ≤ log b y) : b ^ x ≤ y := by
-  refine' (le_or_lt b 1).elim (fun hb => _) fun hb => (pow_le_iff_le_log hb hy).2 h
+  refine (le_or_lt b 1).elim (fun hb => ?_) fun hb => (pow_le_iff_le_log hb hy).2 h
   rw [log_of_left_le_one hb, Nat.le_zero] at h
   rwa [h, Nat.pow_zero, one_le_iff_ne_zero]
 #align nat.pow_le_of_le_log Nat.pow_le_of_le_log
@@ -180,7 +180,7 @@ theorem pow_log_le_add_one (b : ℕ) : ∀ x, b ^ log b x ≤ x + 1
 #align nat.pow_log_le_add_one Nat.pow_log_le_add_one
 
 theorem log_monotone {b : ℕ} : Monotone (log b) := by
-  refine' monotone_nat_of_le_succ fun n => _
+  refine monotone_nat_of_le_succ fun n => ?_
   rcases le_or_lt b 1 with hb | hb
   · rw [log_of_left_le_one hb]
     exact zero_le _
@@ -288,7 +288,7 @@ theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ 
   induction' x using Nat.strong_induction_on with x ih generalizing y
   cases y
   · rw [Nat.pow_zero]
-    refine' ⟨fun h => (clog_of_right_le_one h b).le, _⟩
+    refine ⟨fun h => (clog_of_right_le_one h b).le, ?_⟩
     simp_rw [← not_lt]
     contrapose!
     exact clog_pos hb

@@ -95,6 +95,9 @@ theorem natDegree_natCast_le (n : ℕ) : natDegree (n : R[X]) ≤ 0 := (natDegre
 theorem natDegree_zero_le : natDegree (0 : R[X]) ≤ 0 := natDegree_zero.le
 theorem natDegree_one_le : natDegree (1 : R[X]) ≤ 0 := natDegree_one.le
 
+@[deprecated (since := "2024-04-17")]
+alias natDegree_nat_cast_le := natDegree_natCast_le
+
 theorem coeff_add_of_eq {n : ℕ} {a b : R} {f g : R[X]}
     (h_add_left : f.coeff n = a) (h_add_right : g.coeff n = b) :
     (f + g).coeff n = a + b := by subst ‹_› ‹_›; apply coeff_add
@@ -175,11 +178,17 @@ variable [Ring R]
 
 theorem natDegree_intCast_le (n : ℤ) : natDegree (n : R[X]) ≤ 0 := (natDegree_intCast _).le
 
+@[deprecated (since := "2024-04-17")]
+alias natDegree_int_cast_le := natDegree_intCast_le
+
 theorem coeff_sub_of_eq {n : ℕ} {a b : R} {f g : R[X]} (hf : f.coeff n = a) (hg : g.coeff n = b) :
     (f - g).coeff n = a - b := by subst hf hg; apply coeff_sub
 
 theorem coeff_intCast_ite {n : ℕ} {a : ℤ} : (Int.cast a : R[X]).coeff n = ite (n = 0) a 0 := by
   simp only [← C_eq_intCast, coeff_C, Int.cast_ite, Int.cast_zero]
+
+@[deprecated (since := "2024-04-17")]
+alias coeff_int_cast_ite := coeff_intCast_ite
 
 end ring
 

@@ -1226,8 +1226,8 @@ instance iInf.isCountablyGenerated {ι : Sort u} {α : Type v} [Countable ι] (f
     [∀ i, IsCountablyGenerated (f i)] : IsCountablyGenerated (⨅ i, f i) := by
   choose s hs using fun i => exists_antitone_basis (f i)
   rw [← PLift.down_surjective.iInf_comp]
-  refine' HasCountableBasis.isCountablyGenerated ⟨hasBasis_iInf fun n => (hs _).1, _⟩
-  refine' (countable_range <| Sigma.map ((↑) : Finset (PLift ι) → Set (PLift ι)) fun _ => id).mono _
+  refine HasCountableBasis.isCountablyGenerated ⟨hasBasis_iInf fun n => (hs _).1, ?_⟩
+  refine (countable_range <| Sigma.map ((↑) : Finset (PLift ι) → Set (PLift ι)) fun _ => id).mono ?_
   rintro ⟨I, f⟩ ⟨hI, -⟩
   lift I to Finset (PLift ι) using hI
   exact ⟨⟨I, f⟩, rfl⟩

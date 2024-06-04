@@ -353,7 +353,7 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
         have hcoedvd : ∀ t, (gcd n m : ℤ) ∣ t * (b - a) := fun t => h.dvd.mul_left _
         have := gcd_eq_gcd_ab n m
         constructor <;> rw [Int.emod_def, ← sub_add] <;>
-            refine' dvd_add _ (dvd_mul_of_dvd_left _ _) <;>
+            refine dvd_add ?_ (dvd_mul_of_dvd_left ?_ _) <;>
           try norm_cast
         · rw [← sub_eq_iff_eq_add'] at this
           rw [← this, sub_mul, ← add_sub_assoc, add_comm, add_sub_assoc, ← mul_sub,
@@ -441,8 +441,8 @@ theorem add_mod_add_ite (a b c : ℕ) :
     · rw [Nat.mod_eq_of_lt (lt_of_not_ge h), add_zero]
 #align nat.add_mod_add_ite Nat.add_mod_add_ite
 
-theorem add_mod_of_add_mod_lt {a b c : ℕ} (hc : a % c + b % c < c) : (a + b) % c = a % c + b % c :=
-  by rw [← add_mod_add_ite, if_neg (not_le_of_lt hc), add_zero]
+theorem add_mod_of_add_mod_lt {a b c : ℕ} (hc : a % c + b % c < c) :
+    (a + b) % c = a % c + b % c := by rw [← add_mod_add_ite, if_neg (not_le_of_lt hc), add_zero]
 #align nat.add_mod_of_add_mod_lt Nat.add_mod_of_add_mod_lt
 
 theorem add_mod_add_of_le_add_mod {a b c : ℕ} (hc : c ≤ a % c + b % c) :

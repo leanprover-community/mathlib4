@@ -33,8 +33,8 @@ theorem Applicative.map_seq_map (f : α → β → γ) (g : σ → β) (x : F α
   simp [flip, functor_norm]
 #align applicative.map_seq_map Applicative.map_seq_map
 
-theorem Applicative.pure_seq_eq_map' (f : α → β) : ((pure f : F (α → β)) <*> ·) = (f <$> ·) :=
-  by ext; simp [functor_norm]
+theorem Applicative.pure_seq_eq_map' (f : α → β) : ((pure f : F (α → β)) <*> ·) = (f <$> ·) := by
+  ext; simp [functor_norm]
 #align applicative.pure_seq_eq_map' Applicative.pure_seq_eq_map'
 
 theorem Applicative.ext {F} :
@@ -71,7 +71,7 @@ end Lemmas
 -- Porting note: we have a monad instance for `Id` but not `id`, mathport can't tell
 -- which one is intended
 
-instance : CommApplicative Id := by refine' { .. } <;> intros <;> rfl
+instance : CommApplicative Id where commutative_prod _ _ := rfl
 
 namespace Functor
 
@@ -129,16 +129,15 @@ theorem applicative_comp_id {F} [AF : Applicative F] [LawfulApplicative F] :
 open CommApplicative
 
 instance {f : Type u → Type w} {g : Type v → Type u} [Applicative f] [Applicative g]
-    [CommApplicative f] [CommApplicative g] : CommApplicative (Comp f g) := by
-  refine' { @instLawfulApplicativeComp f g _ _ _ _ with .. }
-  intros
-  simp! [map, Seq.seq, functor_norm]
-  rw [commutative_map]
-  simp only [mk, flip, seq_map_assoc, Function.comp, map_map]
-  congr
-  funext x y
-  rw [commutative_map]
-  congr
+    [CommApplicative f] [CommApplicative g] : CommApplicative (Comp f g) where
+  commutative_prod _ _ := by
+    simp! [map, Seq.seq]
+    rw [commutative_map]
+    simp only [mk, flip, seq_map_assoc, Function.comp, map_map]
+    congr
+    funext x y
+    rw [commutative_map]
+    congr
 
 end Comp
 

@@ -180,7 +180,7 @@ instance forgetReflectIsos : (forget SemiRingCat).ReflectsIsomorphisms where
     let i := asIso ((forget SemiRingCat).map f)
     let ff : X →+* Y := f
     let e : X ≃+* Y := { ff, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toSemiRingCatIso).1⟩
+    exact e.toSemiRingCatIso.isIso_hom
 
 end SemiRingCat
 
@@ -331,7 +331,7 @@ instance : ConcreteCategory CommSemiRingCat := by
   dsimp [CommSemiRingCat]
   infer_instance
 
-instance : CoeSort CommSemiRingCat (Type*) where
+instance : CoeSort CommSemiRingCat Type* where
   coe X := X.α
 
 instance (X : CommSemiRingCat) : CommSemiring X := X.str
@@ -464,7 +464,7 @@ instance forgetReflectIsos : (forget CommSemiRingCat).ReflectsIsomorphisms where
     let i := asIso ((forget CommSemiRingCat).map f)
     let ff : X →+* Y := f
     let e : X ≃+* Y := { ff, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toSemiRingCatIso).1⟩
+    exact ⟨e.toSemiRingCatIso.isIso_hom.1⟩
 
 end CommSemiRingCat
 
@@ -487,7 +487,7 @@ instance : ConcreteCategory CommRingCat := by
   dsimp [CommRingCat]
   infer_instance
 
-instance : CoeSort CommRingCat (Type*) where
+instance : CoeSort CommRingCat Type* where
   coe X := X.α
 
 -- Porting note: Hinting to Lean that `forget R` and `R` are the same
@@ -703,7 +703,7 @@ instance RingCat.forget_reflects_isos : (forget RingCat.{u}).ReflectsIsomorphism
     let i := asIso ((forget RingCat).map f)
     let ff : X →+* Y := f
     let e : X ≃+* Y := { ff, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toRingCatIso).1⟩
+    exact e.toRingCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align Ring.forget_reflects_isos RingCat.forget_reflects_isos
 
@@ -712,7 +712,7 @@ instance CommRingCat.forget_reflects_isos : (forget CommRingCat.{u}).ReflectsIso
     let i := asIso ((forget CommRingCat).map f)
     let ff : X →+* Y := f
     let e : X ≃+* Y := { ff, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toCommRingCatIso).1⟩
+    exact e.toCommRingCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align CommRing.forget_reflects_isos CommRingCat.forget_reflects_isos
 
