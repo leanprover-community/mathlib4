@@ -35,7 +35,7 @@ protected def traverse.{u, v}
 #align option.melim Option.elimM
 
 set_option autoImplicit true in
-@[deprecated getDM]
+@[deprecated getDM (since := "2023-03-09")]
 protected def getDM' [Monad m] (x : m (Option α)) (y : m α) : m α := do
   (← x).getDM y
 #align option.mget_or_else Option.getDM'
