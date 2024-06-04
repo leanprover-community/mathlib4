@@ -593,8 +593,9 @@ theorem mem_connectedComponent {x : α} : x ∈ connectedComponent x :=
   mem_sUnion_of_mem (mem_singleton x) ⟨isPreconnected_singleton, mem_singleton x⟩
 #align mem_connected_component mem_connectedComponent
 
-theorem mem_connectedComponentIn {x : α} {F : Set α} (hx : x ∈ F) : x ∈ connectedComponentIn F x :=
-  by simp [connectedComponentIn_eq_image hx, mem_connectedComponent, hx]
+theorem mem_connectedComponentIn {x : α} {F : Set α} (hx : x ∈ F) :
+    x ∈ connectedComponentIn F x := by
+  simp [connectedComponentIn_eq_image hx, mem_connectedComponent, hx]
 #align mem_connected_component_in mem_connectedComponentIn
 
 theorem connectedComponent_nonempty {x : α} : (connectedComponent x).Nonempty :=

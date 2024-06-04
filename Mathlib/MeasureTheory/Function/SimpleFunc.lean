@@ -879,8 +879,9 @@ def ennrealRatEmbed (n : ℕ) : ℝ≥0∞ :=
   ENNReal.ofReal ((Encodable.decode (α := ℚ) n).getD (0 : ℚ))
 #align measure_theory.simple_func.ennreal_rat_embed MeasureTheory.SimpleFunc.ennrealRatEmbed
 
-theorem ennrealRatEmbed_encode (q : ℚ) : ennrealRatEmbed (Encodable.encode q) = Real.toNNReal q :=
-  by rw [ennrealRatEmbed, Encodable.encodek]; rfl
+theorem ennrealRatEmbed_encode (q : ℚ) :
+    ennrealRatEmbed (Encodable.encode q) = Real.toNNReal q := by
+  rw [ennrealRatEmbed, Encodable.encodek]; rfl
 #align measure_theory.simple_func.ennreal_rat_embed_encode MeasureTheory.SimpleFunc.ennrealRatEmbed_encode
 
 /-- Approximate a function `α → ℝ≥0∞` by a sequence of simple functions. -/
@@ -1004,11 +1005,11 @@ theorem map_lintegral (g : β → ℝ≥0∞) (f : α →ₛ β) :
 theorem add_lintegral (f g : α →ₛ ℝ≥0∞) : (f + g).lintegral μ = f.lintegral μ + g.lintegral μ :=
   calc
     (f + g).lintegral μ =
-        ∑ x ∈ (pair f g).range, (x.1 * μ (pair f g ⁻¹' {x}) + x.2 * μ (pair f g ⁻¹' {x})) :=
-      by rw [add_eq_map₂, map_lintegral]; exact Finset.sum_congr rfl fun a _ => add_mul _ _ _
+        ∑ x ∈ (pair f g).range, (x.1 * μ (pair f g ⁻¹' {x}) + x.2 * μ (pair f g ⁻¹' {x})) := by
+      rw [add_eq_map₂, map_lintegral]; exact Finset.sum_congr rfl fun a _ => add_mul _ _ _
     _ = (∑ x ∈ (pair f g).range, x.1 * μ (pair f g ⁻¹' {x})) +
-          ∑ x ∈ (pair f g).range, x.2 * μ (pair f g ⁻¹' {x}) :=
-      by rw [Finset.sum_add_distrib]
+          ∑ x ∈ (pair f g).range, x.2 * μ (pair f g ⁻¹' {x}) := by
+      rw [Finset.sum_add_distrib]
     _ = ((pair f g).map Prod.fst).lintegral μ + ((pair f g).map Prod.snd).lintegral μ := by
       rw [map_lintegral, map_lintegral]
     _ = lintegral f μ + lintegral g μ := rfl
@@ -1106,7 +1107,7 @@ theorem le_sup_lintegral (f g : α →ₛ ℝ≥0∞) : f.lintegral μ ⊔ g.lin
       rfl
     _ ≤ ∑ x ∈ (pair f g).range, (x.1 ⊔ x.2) * μ (pair f g ⁻¹' {x}) := by
       rw [map_lintegral, map_lintegral]
-      refine sup_le ?_ ?_ <;> refine' Finset.sum_le_sum fun a _ => mul_le_mul_right' _ _
+      refine sup_le ?_ ?_ <;> refine Finset.sum_le_sum fun a _ => mul_le_mul_right' ?_ _
       · exact le_sup_left
       · exact le_sup_right
     _ = (f ⊔ g).lintegral μ := by rw [sup_eq_map₂, map_lintegral]

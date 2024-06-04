@@ -23,6 +23,12 @@ essentially small categories.
 
 universe v u
 
+/-
+Previously, this had accidentally been made a global instance,
+and we now turn it on locally when convenient.
+-/
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+
 open CategoryTheory Limits Opposite FintypeCat Topology TopologicalSpace
 
 /-- `LightProfinite` is the category of second countable profinite spaces. -/
@@ -179,7 +185,7 @@ instance {J : Type v} [SmallCategory J] (F : J ⥤ LightProfinite.{max u v}) :
   change TotallyDisconnectedSpace ({ u : ∀ j : J, F.obj j | _ } : Type _)
   exact Subtype.totallyDisconnectedSpace
 
-/-- An explicit limit cone for a functor `F : J ⥤ LightCompHausLike`, for a countable category `J`
+/-- An explicit limit cone for a functor `F : J ⥤ LightProfinite`, for a countable category `J`
   defined in terms of `CompHaus.limitCone`, which is defined in terms of `TopCat.limitCone`. -/
 def limitCone {J : Type v} [SmallCategory J] [CountableCategory J]
     (F : J ⥤ LightProfinite.{max u v}) :
@@ -196,7 +202,7 @@ def limitCone {J : Type v} [SmallCategory J] [CountableCategory J]
       ext ⟨g, p⟩
       exact (p f).symm }
 
-/-- The limit cone `LightCompHausLike.limitCone F` is indeed a limit cone. -/
+/-- The limit cone `LightProfinite.limitCone F` is indeed a limit cone. -/
 def limitConeIsLimit {J : Type v} [SmallCategory J] [CountableCategory J]
     (F : J ⥤ LightProfinite.{max u v}) :
     Limits.IsLimit (limitCone F) where
@@ -242,7 +248,7 @@ instance forget_reflectsIsomorphisms : (forget LightProfinite).ReflectsIsomorphi
 noncomputable
 def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
   @asIso _ _ _ _ ⟨f, f.continuous⟩ (@isIso_of_reflects_iso _ _ _ _ _ _ _ lightProfiniteToCompHaus
-    (IsIso.of_iso (CompHaus.isoOfHomeo f)) _)
+    (Iso.isIso_hom (CompHaus.isoOfHomeo f)) _)
 
 /-- Construct a homeomorphism from an isomorphism. -/
 @[simps!]

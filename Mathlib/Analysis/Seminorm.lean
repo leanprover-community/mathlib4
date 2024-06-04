@@ -55,7 +55,7 @@ attribute [nolint docBlame] Seminorm.toAddGroupSeminorm
 /-- `SeminormClass F 𝕜 E` states that `F` is a type of seminorms on the `𝕜`-module `E`.
 
 You should extend this class when you extend `Seminorm`. -/
-class SeminormClass (F : Type*) (𝕜 E : outParam <| Type*) [SeminormedRing 𝕜] [AddGroup E]
+class SeminormClass (F : Type*) (𝕜 E : outParam Type*) [SeminormedRing 𝕜] [AddGroup E]
   [SMul 𝕜 E] [FunLike F E ℝ] extends AddGroupSeminormClass F E ℝ : Prop where
   /-- The seminorm of a scalar multiplication is the product of the absolute value of the scalar
   and the original seminorm. -/
@@ -87,7 +87,7 @@ def Seminorm.ofSMulLE [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E
     (add_le : ∀ x y, f (x + y) ≤ f x + f y) (smul_le : ∀ (r : 𝕜) (x), f (r • x) ≤ ‖r‖ * f x) :
     Seminorm 𝕜 E :=
   Seminorm.of f add_le fun r x => by
-    refine' le_antisymm (smul_le r x) _
+    refine le_antisymm (smul_le r x) ?_
     by_cases h : r = 0
     · simp [h, map_zero]
     rw [← mul_le_mul_left (inv_pos.mpr (norm_pos_iff.mpr h))]
@@ -482,16 +482,16 @@ noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
         intro a x
         obtain rfl | ha := eq_or_ne a 0
         · rw [norm_zero, zero_mul, zero_smul]
-          refine'
+          refine
             ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
               -- Porting note: the following was previously `fun i => by positivity`
               (fun i => add_nonneg (apply_nonneg _ _) (apply_nonneg _ _))
               fun x hx => ⟨0, by rwa [map_zero, sub_zero, map_zero, add_zero]⟩
         simp_rw [Real.mul_iInf_of_nonneg (norm_nonneg a), mul_add, ← map_smul_eq_mul p, ←
           map_smul_eq_mul q, smul_sub]
-        refine'
+        refine
           Function.Surjective.iInf_congr ((a⁻¹ • ·) : E → E)
-            (fun u => ⟨a • u, inv_smul_smul₀ ha u⟩) fun u => _
+            (fun u => ⟨a • u, inv_smul_smul₀ ha u⟩) fun u => ?_
         rw [smul_inv_smul₀ ha] }
 
 @[simp]

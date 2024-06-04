@@ -350,7 +350,7 @@ example for `Inhabited` instance. -/
 protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
   toFun := Pi.single i 1
   locallyFinite' x := by
-    refine' ⟨univ, univ_mem, (finite_singleton i).subset _⟩
+    refine ⟨univ, univ_mem, (finite_singleton i).subset ?_⟩
     rintro j ⟨x, hx, -⟩
     contrapose! hx
     rw [mem_singleton_iff] at hx
