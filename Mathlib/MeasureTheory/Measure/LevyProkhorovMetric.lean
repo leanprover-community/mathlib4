@@ -494,10 +494,12 @@ lemma SeparableSpace.exists_measurable_partition_diam_le {ε : ℝ} (ε_pos : 0 
 variable {Ω}
 
 lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds (P : ProbabilityMeasure Ω)
-    {G : Set Ω} (G_open : IsOpen G) {ε : ℝ≥0∞} (ε_pos : 0 < ε) (ε_ne_top : ε ≠ ∞) :
+    {G : Set Ω} (G_open : IsOpen G) {ε : ℝ≥0∞} (ε_pos : 0 < ε) :
     ({Q | P.toMeasure G < Q.toMeasure G + ε} ∈ 𝓝 P) := by
   by_cases easy : P.toMeasure G < ε
   · exact eventually_of_forall (fun _ ↦ lt_of_lt_of_le easy le_add_self)
+  by_cases ε_top : ε = ∞
+  · simp [ε_top, measure_lt_top]
   simp only [not_lt] at easy
   have aux : P.toMeasure G - ε < liminf (fun Q ↦ Q.toMeasure G) (𝓝 P) := by
     apply lt_of_lt_of_le (ENNReal.sub_lt_self (measure_lt_top _ _).ne _ _)
@@ -507,57 +509,54 @@ lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds (P : ProbabilityMeasure �
   filter_upwards [gt_mem_sets_of_limsInf_gt (α := ℝ≥0∞) isBounded_ge_of_bot
       (show P.toMeasure G - ε < limsInf ((𝓝 P).map (fun Q ↦ Q.toMeasure G)) from aux)] with Q hQ
   simp only [preimage_setOf_eq, mem_setOf_eq] at hQ
-  convert ENNReal.add_lt_add_right ε_ne_top hQ
+  convert ENNReal.add_lt_add_right ε_top hQ
   exact (tsub_add_cancel_of_le easy).symm
 
 lemma ProbabilityMeasure.continuous_toLevyProkhorov :
     Continuous (ProbabilityMeasure.toLevyProkhorov (Ω := Ω)) := by
-
-  -- We will check continuity of `id : ProbabilityMeasure Ω → LevyProkhorov (ProbabilityMeasure Ω)`
-  -- at each point `P : ProbabilityMeasure Ω`.
+  -- We check continuity of `id : ProbabilityMeasure Ω → LevyProkhorov (ProbabilityMeasure Ω)` at
+  -- each point `P : ProbabilityMeasure Ω`.
   rw [continuous_iff_continuousAt]
   intro P
-
   -- To check continuity, fix `ε > 0`. To leave some wiggle room, be ready to use `ε/3 > 0` instead.
   rw [continuousAt_iff']
   intro ε ε_pos
   have third_ε_pos : 0 < ε / 3 := by linarith
   have third_ε_pos' : 0 < ENNReal.ofReal (ε / 3) := ofReal_pos.mpr third_ε_pos
-
   -- First use separability to choose a countable partition of `Ω` into measurable
   -- subsets `Es n ⊆ Ω` of small diamater, `diam (Es n) < ε/3`.
   obtain ⟨Es, Es_mble, Es_bdd, Es_diam, Es_cover, Es_disjoint⟩ :=
     SeparableSpace.exists_measurable_partition_diam_le Ω third_ε_pos
-
   -- Instead of the whole space `Ω = ⋃ n ∈ ℕ, Es n`, focus on a large but finite
   -- union `⋃ n < N, Es n`, chosen in such a way that the complement has small `P`-mass,
   -- `P (⋃ n < N, Es n)ᶜ < ε/3`.
-  obtain ⟨N, hN⟩ : ∃ N, (P : Measure Ω) (⋃ i ≥ N, Es i) < ENNReal.ofReal (ε / 3) := by
-    have exhaust :=
-      @tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint Ω _ P.toMeasure _ Es Es_mble Es_disjoint
+  obtain ⟨N, hN⟩ : ∃ N, P.toMeasure (⋃ j ∈ Iio N, Es j)ᶜ < ENNReal.ofReal (ε/3) := by
+    have exhaust := @tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint Ω _ P.toMeasure _
+                    Es Es_mble Es_disjoint
     simp only [tendsto_atTop_nhds, Function.comp_apply] at exhaust
     obtain ⟨N, hN⟩ := exhaust (Iio (ENNReal.ofReal (ε / 3))) third_ε_pos' isOpen_Iio
-    exact ⟨N, hN N le_rfl⟩ 
-
+    refine ⟨N, ?_⟩
+    have rewr : ⋃ i, ⋃ (_ : N ≤ i), Es i = (⋃ i, ⋃ (_ : i < N), Es i)ᶜ :=
+      by simpa only [mem_Iio, compl_Iio, mem_Ici]
+        using (biUnion_compl_eq_of_pairwise_disjoint_of_iUnion_eq_univ
+                Es_cover Es_disjoint (Iio N)).symm
+    simpa only [mem_Iio, ← rewr, gt_iff_lt] using hN N le_rfl
   -- With the finite `N` fixed above, consider the finite collection of open sets of the form
   -- `Gs J = thickening (ε/3) (⋃ j ∈ J, Es j)`, where `J ⊆ {0, 1, ..., N-1}`.
   have Js_finite : Set.Finite {J | J ⊆ Iio N} := Finite.finite_subsets <| finite_Iio N
   set Gs := (fun (J : Set ℕ) ↦ thickening (ε/3) (⋃ j ∈ J, Es j)) '' {J | J ⊆ Iio N}
   have Gs_open : ∀ (J : Set ℕ), IsOpen (thickening (ε/3) (⋃ j ∈ J, Es j)) :=
     fun J ↦ isOpen_thickening
-
   -- Any open set `G ⊆ Ω` determines a neighborhood of `P` consisting of those `Q` that
   -- satisfy `P G < Q G + ε/3`.
-  have mem_nhds_P (G : Set Ω) (G_open : IsOpen G) : 
+  have mem_nhds_P (G : Set Ω) (G_open : IsOpen G) :
       {Q | P.toMeasure G < Q.toMeasure G + ENNReal.ofReal (ε/3)} ∈ 𝓝 P :=
-    P.toMeasure_add_pos_gt_mem_nhds G_open third_ε_pos' ofReal_ne_top
-
+    P.toMeasure_add_pos_gt_mem_nhds G_open third_ε_pos'
   -- Assume that `Q` is in the neighborhood of `P` such that for each `J ⊆ {0, 1, ..., N-1}`
   -- we have `P (Gs J) < Q (Gs J) + ε/3`.
   filter_upwards [(Finset.iInter_mem_sets Js_finite.toFinset).mpr <|
                     fun J _ ↦ mem_nhds_P _ (Gs_open J)] with Q hQ
   simp only [Finite.mem_toFinset, mem_setOf_eq, thickening_iUnion, mem_iInter] at hQ
-
   -- Note that in order to show that the Lévy-Prokhorov distance `LPdist P Q` is small (`≤ 2*ε/3`),
   -- it suffices to show that for arbitrary subsets `B ⊆ Ω`, the measure `P B` is bounded above up
   -- to a small error by the `Q`-measure of a small thickening of `B`.
@@ -566,62 +565,50 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
   -- Fix an arbitrary set `B ⊆ Ω`, and an arbitrary `δ > 2*ε/3` to gain some room for error
   -- and for thickening.
   apply levyProkhorovDist_le_of_forall_le _ _ (by linarith) (fun δ B δ_gt _ ↦ ?_)
-
-    -- Let `JB ⊆ {0, 1, ..., N-1}` consist of those indices `j` such that `B` intersects `Es j`.
-    -- Then the open set `Gs JB` approximates `B` rather well:
-    -- except for what happens in the small complement `(⋃ n < N, Es n)ᶜ`, the set `B` is
-    -- contained in `Gs JB`, and conversely `Gs JB` only contains points within `δ` from `B`.
-    set JB := {i | B ∩ Es i ≠ ∅ ∧ i ∈ Iio N}
-    have B_subset : B ⊆ (⋃ i ∈ JB, thickening (ε/3) (Es i)) ∪ (⋃ j ∈ Iio N, Es j)ᶜ := by
-      suffices B ⊆ (⋃ i ∈ JB, thickening (ε/3) (Es i)) ∪ (⋃ j ∈ Ici N, Es j) by
-        refine this.trans <| union_subset_union le_rfl ?_
-        intro ω hω
-        simp only [mem_Ici, mem_iUnion, exists_prop] at hω
-        obtain ⟨i, i_large, ω_in_Esi⟩ := hω
-        by_contra con
-        simp only [mem_Iio, compl_iUnion, mem_iInter, mem_compl_iff, not_forall, not_not,
-                   exists_prop] at con
-        obtain ⟨j, j_small, ω_in_Esj⟩ := con
-        exact disjoint_left.mp (Es_disjoint (show j ≠ i by linarith)) ω_in_Esj ω_in_Esi
-      intro ω ω_in_B
-      obtain ⟨i, hi⟩ := show ∃ n, ω ∈ Es n by simp only [← mem_iUnion, Es_cover, mem_univ]
-      simp only [mem_Ici, mem_union, mem_iUnion, exists_prop]
-      by_cases i_small : i ∈ Iio N
-      · refine Or.inl ⟨i, ?_, self_subset_thickening third_ε_pos _ hi⟩
-        simp only [mem_Iio, mem_setOf_eq, JB]
-        refine ⟨nonempty_iff_ne_empty.mp <| Set.nonempty_of_mem <| mem_inter ω_in_B hi, i_small⟩
-      · exact Or.inr ⟨i, by simpa only [mem_Iio, not_lt] using i_small, hi⟩
-    have subset_thickB : ⋃ i ∈ JB, thickening (ε / 3) (Es i) ⊆ thickening δ B := by
-      intro ω ω_in_U
-      simp only [mem_setOf_eq, mem_iUnion, exists_prop] at ω_in_U
-      obtain ⟨k, ⟨B_intersects, _⟩, ω_in_thEk⟩ := ω_in_U
-      rw [mem_thickening_iff] at ω_in_thEk ⊢
-      obtain ⟨w, w_in_Ek, w_near⟩ := ω_in_thEk
-      obtain ⟨z, ⟨z_in_B, z_in_Ek⟩⟩ := nonempty_iff_ne_empty.mpr B_intersects
-      refine ⟨z, z_in_B, lt_of_le_of_lt (dist_triangle ω w z) ?_⟩
-      apply lt_of_le_of_lt (add_le_add w_near.le <|
-              (dist_le_diam_of_mem (Es_bdd k) w_in_Ek z_in_Ek).trans <| Es_diam k)
-      linarith
-
-    -- We use the resulting upper bound `P B ≤ P (Gs JB) + P (small complement)`.
-    apply (measure_mono B_subset).trans ((measure_union_le _ _).trans ?_)
-
-    -- Recall that the small complement is small, `P (small complement) < ε/3`.
-    have aux : P.toMeasure (⋃ j ∈ Iio N, Es j)ᶜ < ENNReal.ofReal (ε/3) := by
-      have rewr : ⋃ i, ⋃ (_ : N ≤ i), Es i = (⋃ i, ⋃ (_ : i < N), Es i)ᶜ :=
-        by simpa only [mem_Iio, compl_Iio, mem_Ici]
-          using (biUnion_compl_eq_of_pairwise_disjoint_of_iUnion_eq_univ
-                  Es_cover Es_disjoint (Iio N)).symm
-      simpa only [mem_Iio, ← rewr] using hN
-
-    -- From the choice of `Q` in a suitable neighborhood, we have `P (Gs JB) < Q (Gs JB) + ε/3`.
-    specialize hQ _ (show JB ⊆ Iio N from fun _ h ↦ h.2)
-
-    -- Now it remains to add the pieces and use the above estimates.
-    apply (add_le_add hQ.le aux.le).trans
-    rw [add_assoc, ← ENNReal.ofReal_add third_ε_pos.le third_ε_pos.le, ← two_mul]
-    apply add_le_add (measure_mono subset_thickB) (ofReal_le_ofReal _)
-    exact δ_gt.le
+  -- Let `JB ⊆ {0, 1, ..., N-1}` consist of those indices `j` such that `B` intersects `Es j`.
+  -- Then the open set `Gs JB` approximates `B` rather well:
+  -- except for what happens in the small complement `(⋃ n < N, Es n)ᶜ`, the set `B` is
+  -- contained in `Gs JB`, and conversely `Gs JB` only contains points within `δ` from `B`.
+  set JB := {i | B ∩ Es i ≠ ∅ ∧ i ∈ Iio N}
+  have B_subset : B ⊆ (⋃ i ∈ JB, thickening (ε/3) (Es i)) ∪ (⋃ j ∈ Iio N, Es j)ᶜ := by
+    suffices B ⊆ (⋃ i ∈ JB, thickening (ε/3) (Es i)) ∪ (⋃ j ∈ Ici N, Es j) by
+      refine this.trans <| union_subset_union le_rfl ?_
+      intro ω hω
+      simp only [mem_Ici, mem_iUnion, exists_prop] at hω
+      obtain ⟨i, i_large, ω_in_Esi⟩ := hω
+      by_contra con
+      simp only [mem_Iio, compl_iUnion, mem_iInter, mem_compl_iff, not_forall, not_not,
+                  exists_prop] at con
+      obtain ⟨j, j_small, ω_in_Esj⟩ := con
+      exact disjoint_left.mp (Es_disjoint (show j ≠ i by linarith)) ω_in_Esj ω_in_Esi
+    intro ω ω_in_B
+    obtain ⟨i, hi⟩ := show ∃ n, ω ∈ Es n by simp only [← mem_iUnion, Es_cover, mem_univ]
+    simp only [mem_Ici, mem_union, mem_iUnion, exists_prop]
+    by_cases i_small : i ∈ Iio N
+    · refine Or.inl ⟨i, ?_, self_subset_thickening third_ε_pos _ hi⟩
+      simp only [mem_Iio, mem_setOf_eq, JB]
+      refine ⟨nonempty_iff_ne_empty.mp <| Set.nonempty_of_mem <| mem_inter ω_in_B hi, i_small⟩
+    · exact Or.inr ⟨i, by simpa only [mem_Iio, not_lt] using i_small, hi⟩
+  have subset_thickB : ⋃ i ∈ JB, thickening (ε / 3) (Es i) ⊆ thickening δ B := by
+    intro ω ω_in_U
+    simp only [mem_setOf_eq, mem_iUnion, exists_prop] at ω_in_U
+    obtain ⟨k, ⟨B_intersects, _⟩, ω_in_thEk⟩ := ω_in_U
+    rw [mem_thickening_iff] at ω_in_thEk ⊢
+    obtain ⟨w, w_in_Ek, w_near⟩ := ω_in_thEk
+    obtain ⟨z, ⟨z_in_B, z_in_Ek⟩⟩ := nonempty_iff_ne_empty.mpr B_intersects
+    refine ⟨z, z_in_B, lt_of_le_of_lt (dist_triangle ω w z) ?_⟩
+    apply lt_of_le_of_lt (add_le_add w_near.le <|
+            (dist_le_diam_of_mem (Es_bdd k) w_in_Ek z_in_Ek).trans <| Es_diam k)
+    linarith
+  -- We use the resulting upper bound `P B ≤ P (Gs JB) + P (small complement)`.
+  apply (measure_mono B_subset).trans ((measure_union_le _ _).trans ?_)
+  -- From the choice of `Q` in a suitable neighborhood, we have `P (Gs JB) < Q (Gs JB) + ε/3`.
+  specialize hQ _ (show JB ⊆ Iio N from fun _ h ↦ h.2)
+  -- Now it remains to add the pieces and use the above estimates.
+  apply (add_le_add hQ.le hN.le).trans
+  rw [add_assoc, ← ENNReal.ofReal_add third_ε_pos.le third_ε_pos.le, ← two_mul]
+  apply add_le_add (measure_mono subset_thickB) (ofReal_le_ofReal _)
+  exact δ_gt.le
 
 /-- The topology of the Lévy-Prokhorov metric on probability measures on a separable space
 coincides with the topology of convergence in distribution. -/
@@ -643,9 +630,23 @@ def homeomorph_probabilityMeasure_levyProkhorov :
   continuous_invFun := LevyProkhorov.continuous_toProbabilityMeasure
 
 /-- The topology of convergence in distribution on a separable space is pseudo-metrizable. -/
-theorem pseudoMetrizableSpace_probabilityMeasure :
-    PseudoMetrizableSpace (ProbabilityMeasure Ω) :=
-  (homeomorph_probabilityMeasure_levyProkhorov (Ω := Ω)).inducing.pseudoMetrizableSpace
+instance (X : Type*) [TopologicalSpace X] [PseudoMetrizableSpace X] [SeparableSpace X]
+    [MeasurableSpace X] [OpensMeasurableSpace X] :
+    PseudoMetrizableSpace (ProbabilityMeasure X) := by
+  obtain ⟨psmetr, h⟩ := PseudoMetrizableSpace.exists_pseudo_metric (X := X)
+  have opensMble : @OpensMeasurableSpace X psmetr.toUniformSpace.toTopologicalSpace _ := by
+    convert ‹OpensMeasurableSpace X›
+  have sepble : @SeparableSpace X psmetr.toUniformSpace.toTopologicalSpace := by
+    convert ‹SeparableSpace X›
+  let homeo := @homeomorph_probabilityMeasure_levyProkhorov X psmetr sepble _ opensMble
+  have ind := @Homeomorph.inducing (ProbabilityMeasure X) (LevyProkhorov (ProbabilityMeasure X))
+          (@ProbabilityMeasure.instTopologicalSpace X _
+            psmetr.toUniformSpace.toTopologicalSpace opensMble) _ homeo
+  convert @Inducing.pseudoMetrizableSpace (ProbabilityMeasure X)
+          (LevyProkhorov (ProbabilityMeasure X))
+          (@ProbabilityMeasure.instTopologicalSpace X _
+            psmetr.toUniformSpace.toTopologicalSpace opensMble) _ _ _ ind
+  exact h.symm
 
 end Levy_Prokhorov_metrizes_convergence_in_distribution
 
