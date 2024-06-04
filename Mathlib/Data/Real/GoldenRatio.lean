@@ -248,8 +248,8 @@ theorem fib_golden_exp' (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fib n = φ ^ (n +
   | zero => norm_num
   | succ n ih =>
     calc
-      _ = φ * (Nat.fib n) + φ ^ 2 * (Nat.fib (n + 1)) :=
-        by simp only [Nat.fib_add_one (Nat.succ_ne_zero n), Nat.succ_sub_succ_eq_sub, tsub_zero,
+      _ = φ * (Nat.fib n) + φ ^ 2 * (Nat.fib (n + 1)) := by
+        simp only [Nat.fib_add_one (Nat.succ_ne_zero n), Nat.succ_sub_succ_eq_sub, tsub_zero,
           Nat.cast_add, gold_sq]; ring
       _ = φ * ((Nat.fib n) + φ * (Nat.fib (n + 1))) := by ring
       _ = φ ^ (n + 2) := by rw [add_comm, ih]; ring

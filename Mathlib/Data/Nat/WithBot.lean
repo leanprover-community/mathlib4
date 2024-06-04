@@ -34,7 +34,7 @@ theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 := b
 
 theorem add_eq_one_iff {n m : WithBot ℕ} : n + m = 1 ↔ n = 0 ∧ m = 1 ∨ n = 1 ∧ m = 0 := by
   rcases n, m with ⟨_ | _, _ | _⟩
-  repeat refine' ⟨fun h => Option.noConfusion h, fun h => _⟩;
+  repeat refine ⟨fun h => Option.noConfusion h, fun h => ?_⟩;
               aesop (simp_config := { decide := true })
   repeat erw [WithBot.coe_eq_coe]
   exact Nat.add_eq_one_iff
@@ -43,7 +43,7 @@ theorem add_eq_one_iff {n m : WithBot ℕ} : n + m = 1 ↔ n = 0 ∧ m = 1 ∨ n
 theorem add_eq_two_iff {n m : WithBot ℕ} :
     n + m = 2 ↔ n = 0 ∧ m = 2 ∨ n = 1 ∧ m = 1 ∨ n = 2 ∧ m = 0 := by
   rcases n, m with ⟨_ | _, _ | _⟩
-  repeat refine' ⟨fun h => Option.noConfusion h, fun h => _⟩;
+  repeat refine ⟨fun h => Option.noConfusion h, fun h => ?_⟩;
               aesop (simp_config := { decide := true })
   repeat erw [WithBot.coe_eq_coe]
   exact Nat.add_eq_two_iff
@@ -52,7 +52,7 @@ theorem add_eq_two_iff {n m : WithBot ℕ} :
 theorem add_eq_three_iff {n m : WithBot ℕ} :
     n + m = 3 ↔ n = 0 ∧ m = 3 ∨ n = 1 ∧ m = 2 ∨ n = 2 ∧ m = 1 ∨ n = 3 ∧ m = 0 := by
   rcases n, m with ⟨_ | _, _ | _⟩
-  repeat refine' ⟨fun h => Option.noConfusion h, fun h => _⟩;
+  repeat refine ⟨fun h => Option.noConfusion h, fun h => ?_⟩;
               aesop (simp_config := { decide := true })
   repeat erw [WithBot.coe_eq_coe]
   exact Nat.add_eq_three_iff
@@ -82,7 +82,7 @@ theorem add_one_le_of_lt {n m : WithBot ℕ} (h : n < m) : n + 1 ≤ m := by
   cases n
   · exact bot_le
   cases m
-  exacts [(not_lt_bot h).elim, WithBot.some_le_some.2 (WithBot.some_lt_some.1 h)]
+  exacts [(not_lt_bot h).elim, WithBot.coe_le_coe.2 (WithBot.coe_lt_coe.1 h)]
 #align nat.with_bot.add_one_le_of_lt Nat.WithBot.add_one_le_of_lt
 
 end WithBot

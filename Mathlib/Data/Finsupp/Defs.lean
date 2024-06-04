@@ -134,24 +134,24 @@ theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
 #align finsupp.ext Finsupp.ext
 
-@[deprecated DFunLike.ext_iff]
+@[deprecated DFunLike.ext_iff (since := "2023-01-17")]
 theorem ext_iff {f g : α →₀ M} : f = g ↔ ∀ a, f a = g a :=
   DFunLike.ext_iff
 #align finsupp.ext_iff Finsupp.ext_iff
 
 lemma ne_iff {f g : α →₀ M} : f ≠ g ↔ ∃ a, f a ≠ g a := DFunLike.ne_iff
 
-@[deprecated DFunLike.coe_fn_eq]
+@[deprecated DFunLike.coe_fn_eq (since := "2023-01-17")]
 theorem coeFn_inj {f g : α →₀ M} : (f : α → M) = g ↔ f = g :=
   DFunLike.coe_fn_eq
 #align finsupp.coe_fn_inj Finsupp.coeFn_inj
 
-@[deprecated DFunLike.coe_injective]
+@[deprecated DFunLike.coe_injective (since := "2023-01-17")]
 theorem coeFn_injective : @Function.Injective (α →₀ M) (α → M) (⇑) :=
   DFunLike.coe_injective
 #align finsupp.coe_fn_injective Finsupp.coeFn_injective
 
-@[deprecated DFunLike.congr_fun]
+@[deprecated DFunLike.congr_fun (since := "2023-01-17")]
 theorem congr_fun {f g : α →₀ M} (h : f = g) (a : α) : f a = g a :=
   DFunLike.congr_fun h _
 #align finsupp.congr_fun Finsupp.congr_fun
@@ -325,8 +325,8 @@ theorem single_eq_of_ne (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := by
 #align finsupp.single_eq_of_ne Finsupp.single_eq_of_ne
 
 theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
-    ⇑(single a b) = Function.update (0 : _) a b :=
-  by classical rw [single_eq_set_indicator, ← Set.piecewise_eq_indicator, Set.piecewise_singleton]
+    ⇑(single a b) = Function.update (0 : _) a b := by
+  classical rw [single_eq_set_indicator, ← Set.piecewise_eq_indicator, Set.piecewise_singleton]
 #align finsupp.single_eq_update Finsupp.single_eq_update
 
 theorem single_eq_pi_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) = Pi.single a b :=
@@ -468,8 +468,9 @@ theorem support_eq_singleton' {f : α →₀ M} {a : α} :
     fun ⟨_b, hb, hf⟩ => hf.symm ▸ support_single_ne_zero _ hb⟩
 #align finsupp.support_eq_singleton' Finsupp.support_eq_singleton'
 
-theorem card_support_eq_one {f : α →₀ M} : card f.support = 1 ↔ ∃ a, f a ≠ 0 ∧ f = single a (f a) :=
-  by simp only [card_eq_one, support_eq_singleton]
+theorem card_support_eq_one {f : α →₀ M} :
+    card f.support = 1 ↔ ∃ a, f a ≠ 0 ∧ f = single a (f a) := by
+  simp only [card_eq_one, support_eq_singleton]
 #align finsupp.card_support_eq_one Finsupp.card_support_eq_one
 
 theorem card_support_eq_one' {f : α →₀ M} :
