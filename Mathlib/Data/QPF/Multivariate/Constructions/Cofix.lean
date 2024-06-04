@@ -227,8 +227,8 @@ private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
     intro a b r'ab
     have h₀ :
       appendFun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> MvQPF.abs (M.dest q.P a) =
-        appendFun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> MvQPF.abs (M.dest q.P b) :=
-      by rw [appendFun_comp_id, comp_map, comp_map]; exact h _ _ r'ab
+        appendFun id (Quot.mk r ∘ Quot.mk Mcongr) <$$> MvQPF.abs (M.dest q.P b) := by
+      rw [appendFun_comp_id, comp_map, comp_map]; exact h _ _ r'ab
     have h₁ : ∀ u v : q.P.M α, Mcongr u v → Quot.mk r' u = Quot.mk r' v := by
       intro u v cuv
       apply Quot.sound
@@ -431,17 +431,14 @@ variable {F: TypeVec (n + 1) → Type u} [MvFunctor F] [q : MvQPF F]
 
 theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := by
   let R := fun x y : Cofix F α => abs (repr y) = x
-  refine' Cofix.bisim₂ R _ _ _ rfl
-  clear x;
-  rintro x y h;
+  refine Cofix.bisim₂ R ?_ _ _ rfl
+  clear x
+  rintro x y h
   subst h
   dsimp [Cofix.dest, Cofix.abs]
   induction y using Quot.ind
   simp only [Cofix.repr, M.dest_corec, abs_map, MvQPF.abs_repr, Function.comp]
-  conv =>
-    congr
-    rfl
-    rw [Cofix.dest]
+  conv => congr; rfl; rw [Cofix.dest]
   rw [MvFunctor.map_map, MvFunctor.map_map, ← appendFun_comp_id, ← appendFun_comp_id]
   apply liftR_map_last
   intros
@@ -523,7 +520,7 @@ theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F 
   rw [Ha, Hb, Cofix.dest_corec, Cofix.dest_corec, Function.comp_apply, Function.comp_apply]
   rw [MvFunctor.map_map, ← appendFun_comp_id]
   refine liftR_map_last _ _ _ _ ?_
-  intro a; refine' ⟨a, rfl, rfl⟩
+  intro a; refine ⟨a, rfl, rfl⟩
 #align mvqpf.corec_roll MvQPF.corec_roll
 
 theorem Cofix.dest_corec' {α : TypeVec.{u} n} {β : Type u}

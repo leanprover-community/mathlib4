@@ -1576,7 +1576,7 @@ dropped, without changing the result. -/
 theorem iSup_ne_bot_subtype (f : ι → α) : ⨆ i : { i // f i ≠ ⊥ }, f i = ⨆ i, f i := by
   by_cases htriv : ∀ i, f i = ⊥
   · simp only [iSup_bot, (funext htriv : f = _)]
-  refine' (iSup_comp_le f _).antisymm (iSup_mono' fun i => _)
+  refine (iSup_comp_le f _).antisymm (iSup_mono' fun i => ?_)
   by_cases hi : f i = ⊥
   · rw [hi]
     obtain ⟨i₀, hi₀⟩ := not_forall.mp htriv

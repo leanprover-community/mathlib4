@@ -41,8 +41,6 @@ open CategoryTheory.Preadditive CategoryTheory.Category CategoryTheory.Idempoten
 
 open Opposite
 
-open BigOperators
-
 open Simplicial
 
 noncomputable section
@@ -143,7 +141,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
   ChainComplex.ofHom _ _ _ _ _ _ (fun n => f.app (op [n])) fun n => by
     dsimp
     rw [comp_sum, sum_comp]
-    refine' Finset.sum_congr rfl fun _ _ => _
+    refine Finset.sum_congr rfl fun _ _ => ?_
     rw [comp_zsmul, zsmul_comp]
     congr 1
     symm
@@ -226,7 +224,7 @@ def ε [Limits.HasZeroObject C] :
     SimplicialObject.Augmented.drop ⋙ AlgebraicTopology.alternatingFaceMapComplex C ⟶
       SimplicialObject.Augmented.point ⋙ ChainComplex.single₀ C where
   app X := by
-    refine' (ChainComplex.toSingle₀Equiv _ _).symm _
+    refine (ChainComplex.toSingle₀Equiv _ _).symm ?_
     refine ⟨X.hom.app (op [0]), ?_⟩
     dsimp
     rw [alternatingFaceMapComplex_obj_d, objD, Fin.sum_univ_two, Fin.val_zero,
@@ -338,7 +336,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
   CochainComplex.ofHom _ _ _ _ _ _ (fun n => f.app [n]) fun n => by
     dsimp
     rw [comp_sum, sum_comp]
-    refine' Finset.sum_congr rfl fun x _ => _
+    refine Finset.sum_congr rfl fun x _ => ?_
     rw [comp_zsmul, zsmul_comp]
     congr 1
     symm

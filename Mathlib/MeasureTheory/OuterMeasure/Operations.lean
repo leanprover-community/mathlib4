@@ -27,7 +27,7 @@ outer measure
 noncomputable section
 
 open Set Function Filter
-open scoped Classical BigOperators NNReal Topology ENNReal
+open scoped Classical NNReal Topology ENNReal
 
 namespace MeasureTheory
 namespace OuterMeasure

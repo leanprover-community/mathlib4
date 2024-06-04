@@ -90,7 +90,6 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 
 
 open Function Set NNReal
-open scoped BigOperators
 
 variable {α : Type*}
 
@@ -162,6 +161,7 @@ instance : Inhabited ℝ≥0∞ := ⟨0⟩
 instance : Coe ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
 
 /-- A version of `WithTop.recTopCoe` that uses `ENNReal.ofNNReal`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
 def recTopCoe {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) (x : ℝ≥0∞) : C x :=
   WithTop.recTopCoe top coe x
 

@@ -41,8 +41,6 @@ convex hull, caratheodory
 
 open Set Finset
 
-open BigOperators
-
 universe u
 
 variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
@@ -70,11 +68,11 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
   have hi₀ : i₀ ∈ t := filter_subset _ _ mem
   let k : E → 𝕜 := fun z => f z - f i₀ / g i₀ * g z
   have hk : k i₀ = 0 := by field_simp [k, ne_of_gt hg]
-  have ksum : ∑ e in t.erase i₀, k e = 1 := by
+  have ksum : ∑ e ∈ t.erase i₀, k e = 1 := by
     calc
-      ∑ e in t.erase i₀, k e = ∑ e in t, k e := by
+      ∑ e ∈ t.erase i₀, k e = ∑ e ∈ t, k e := by
         conv_rhs => rw [← insert_erase hi₀, sum_insert (not_mem_erase i₀ t), hk, zero_add]
-      _ = ∑ e in t, (f e - f i₀ / g i₀ * g e) := rfl
+      _ = ∑ e ∈ t, (f e - f i₀ / g i₀ * g e) := rfl
       _ = 1 := by rw [sum_sub_distrib, fsum, ← mul_sum, gsum, mul_zero, sub_zero]
   refine ⟨⟨i₀, hi₀⟩, k, ?_, by convert ksum, ?_⟩
   · simp only [k, and_imp, sub_nonneg, mem_erase, Ne, Subtype.coe_mk]
@@ -93,8 +91,8 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
         _ ≤ f e := fpos e het
   · rw [Subtype.coe_mk, centerMass_eq_of_sum_1 _ id ksum]
     calc
-      ∑ e in t.erase i₀, k e • e = ∑ e in t, k e • e := sum_erase _ (by rw [hk, zero_smul])
-      _ = ∑ e in t, (f e - f i₀ / g i₀ * g e) • e := rfl
+      ∑ e ∈ t.erase i₀, k e • e = ∑ e ∈ t, k e • e := sum_erase _ (by rw [hk, zero_smul])
+      _ = ∑ e ∈ t, (f e - f i₀ / g i₀ * g e) • e := rfl
       _ = t.centerMass f id := by
         simp only [sub_smul, mul_smul, sum_sub_distrib, ← smul_sum, gcombo, smul_zero, sub_zero,
           centerMass, fsum, inv_one, one_smul, id]
@@ -181,7 +179,7 @@ theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜
   · exact fun i =>
       (hw₁ _ (Finset.mem_filter.mp i.2).1).lt_of_ne (Finset.mem_filter.mp i.property).2.symm
   · erw [Finset.sum_attach, Finset.sum_filter_ne_zero, hw₂]
-  · change (∑ i : t' in t'.attach, (fun e => w e • e) ↑i) = x
+  · change (∑ i ∈ t'.attach, (fun e => w e • e) ↑i) = x
     erw [Finset.sum_attach (f := fun e => w e • e), Finset.sum_filter_of_ne]
     · rw [t.centerMass_eq_of_sum_1 id hw₂] at hw₃
       exact hw₃

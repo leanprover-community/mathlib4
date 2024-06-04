@@ -46,8 +46,6 @@ variable {α : Type u} {a : α}
 
 section Cyclic
 
-open BigOperators
-
 attribute [local instance] setFintype
 
 open Subgroup
@@ -187,6 +185,10 @@ theorem orderOf_eq_card_of_forall_mem_zpowers [Fintype α] {g : α} (hx : ∀ x,
     simpa using hx
 #align order_of_eq_card_of_forall_mem_zpowers orderOf_eq_card_of_forall_mem_zpowers
 #align add_order_of_eq_card_of_forall_mem_zmultiples addOrderOf_eq_card_of_forall_mem_zmultiples
+
+@[to_additive]
+lemma orderOf_generator_eq_natCard (h : ∀ x, x ∈ Subgroup.zpowers a) : orderOf a = Nat.card α :=
+  Nat.card_zpowers a ▸ (Nat.card_congr <| Equiv.subtypeUnivEquiv h)
 
 @[to_additive]
 theorem exists_pow_ne_one_of_isCyclic {G : Type*} [Group G] [Fintype G] [G_cyclic : IsCyclic G]
@@ -377,7 +379,7 @@ theorem IsCyclic.unique_zpow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
   obtain ⟨n, rfl⟩ := ha x
   refine ⟨n, (?_ : a ^ n = _), fun y (hy : a ^ n = _) ↦ ?_⟩
   · rw [← zpow_natCast, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
-      Int.modEq_comm, Int.modEq_iff_add_fac, ← ZMod.int_coe_zmod_eq_iff]
+      Int.modEq_comm, Int.modEq_iff_add_fac, ← ZMod.intCast_eq_iff]
   · rw [← zpow_natCast, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
       ← ZMod.intCast_eq_intCast_iff] at hy
     simp [hy]
@@ -436,16 +438,16 @@ private theorem card_orderOf_eq_totient_aux₁ :
   rcases card_pos.1 hpos with ⟨a, ha'⟩
   have ha : orderOf a = d := (mem_filter.1 ha').2
   have h1 :
-    (∑ m in d.properDivisors, (univ.filter fun a : α => orderOf a = m).card) =
-      ∑ m in d.properDivisors, φ m := by
+    (∑ m ∈ d.properDivisors, (univ.filter fun a : α => orderOf a = m).card) =
+      ∑ m ∈ d.properDivisors, φ m := by
     refine Finset.sum_congr rfl fun m hm => ?_
     simp only [mem_filter, mem_range, mem_properDivisors] at hm
     refine IH m hm.2 (hm.1.trans hd) (Finset.card_pos.2 ⟨a ^ (d / m), ?_⟩)
     simp only [mem_filter, mem_univ, orderOf_pow a, ha, true_and_iff,
       Nat.gcd_eq_right (div_dvd_of_dvd hm.1), Nat.div_div_self hm.1 hd0]
   have h2 :
-    (∑ m in d.divisors, (univ.filter fun a : α => orderOf a = m).card) =
-      ∑ m in d.divisors, φ m := by
+    (∑ m ∈ d.divisors, (univ.filter fun a : α => orderOf a = m).card) =
+      ∑ m ∈ d.divisors, φ m := by
     rw [← filter_dvd_eq_divisors hd0, sum_card_orderOf_eq_card_pow_eq_one hd0,
       filter_dvd_eq_divisors hd0, sum_totient, ← ha, card_pow_eq_one_eq_orderOf_aux hn a]
   simpa [← cons_self_properDivisors hd0, ← h1] using h2
@@ -462,18 +464,18 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
   simp_rw [not_lt, Nat.le_zero, Finset.card_eq_zero] at h0
   apply lt_irrefl c
   calc
-    c = ∑ m in c.divisors, (univ.filter fun a : α => orderOf a = m).card := by
+    c = ∑ m ∈ c.divisors, (univ.filter fun a : α => orderOf a = m).card := by
       simp only [← filter_dvd_eq_divisors hc0.ne', sum_card_orderOf_eq_card_pow_eq_one hc0.ne']
       apply congr_arg card
       simp [c]
-    _ = ∑ m in c.divisors.erase d, (univ.filter fun a : α => orderOf a = m).card := by
+    _ = ∑ m ∈ c.divisors.erase d, (univ.filter fun a : α => orderOf a = m).card := by
       rw [eq_comm]
       refine sum_subset (erase_subset _ _) fun m hm₁ hm₂ => ?_
       have : m = d := by
         contrapose! hm₂
         exact mem_erase_of_ne_of_mem hm₂ hm₁
       simp [this, h0]
-    _ ≤ ∑ m in c.divisors.erase d, φ m := by
+    _ ≤ ∑ m ∈ c.divisors.erase d, φ m := by
       refine sum_le_sum fun m hm => ?_
       have hmc : m ∣ c := by
         simp only [mem_erase, mem_divisors] at hm
@@ -481,7 +483,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
       rcases (filter (fun a : α => orderOf a = m) univ).card.eq_zero_or_pos with (h1 | h1)
       · simp [h1]
       · simp [card_orderOf_eq_totient_aux₁ hn hmc h1]
-    _ < ∑ m in c.divisors, φ m :=
+    _ < ∑ m ∈ c.divisors, φ m :=
       sum_erase_lt_of_pos (mem_divisors.2 ⟨hd, hc0.ne'⟩) (totient_pos.2 (pos_of_dvd_of_pos hd hc0))
     _ = c := sum_totient _
 #align card_order_of_eq_totient_aux₂ card_orderOf_eq_totient_aux₂
@@ -789,3 +791,103 @@ noncomputable def mulEquivOfPrimeCardEq {p : ℕ} [Fintype G] [Fintype H] [Group
   exact hG.trans hH.symm
 
 end ZMod
+
+section generator
+
+/-!
+### Groups with a given generator
+
+We state some results in terms of an explicitly given generator.
+The generating property is given as in `IsCyclic.exists_generator`.
+
+The main statements are about the existence and uniqueness of homomorphisms and isomorphisms
+specified by the image of the given generator.
+-/
+
+open Subgroup
+
+variable {G G' : Type*} [Group G] [Group G'] {g : G} (hg : ∀ x, x ∈ zpowers g) {g' : G'}
+
+section monoidHom
+
+variable (hg' : orderOf g' ∣ orderOf (g : G))
+
+/-- If `g` generates the group `G` and `g'` is an element of another group `G'` whose order
+divides that of `g`, then there is a homomorphism `G →* G'` mapping `g` to `g'`. -/
+@[to_additive
+   "If `g` generates the additive group `G` and `g'` is an element of another additive group `G'`
+   whose order divides that of `g`, then there is a homomorphism `G →+ G'` mapping `g` to `g'`."]
+noncomputable
+def monoidHomOfForallMemZpowers : G →* G' where
+  toFun x := g' ^ (Classical.choose <| mem_zpowers_iff.mp <| hg x)
+  map_one' := orderOf_dvd_iff_zpow_eq_one.mp <|
+                (Int.natCast_dvd_natCast.mpr hg').trans <| orderOf_dvd_iff_zpow_eq_one.mpr <|
+                Classical.choose_spec <| mem_zpowers_iff.mp <| hg 1
+  map_mul' x y := by
+    simp only [← zpow_add, zpow_eq_zpow_iff_modEq]
+    apply Int.ModEq.of_dvd (Int.natCast_dvd_natCast.mpr hg')
+    rw [← zpow_eq_zpow_iff_modEq, zpow_add]
+    simp only [fun x ↦ Classical.choose_spec <| mem_zpowers_iff.mp <| hg x]
+
+@[to_additive (attr := simp)]
+lemma monoidHomOfForallMemZpowers_apply_gen :
+    monoidHomOfForallMemZpowers hg hg' g = g' := by
+  simp only [monoidHomOfForallMemZpowers, MonoidHom.coe_mk, OneHom.coe_mk]
+  nth_rw 2 [← zpow_one g']
+  rw [zpow_eq_zpow_iff_modEq]
+  apply Int.ModEq.of_dvd (Int.natCast_dvd_natCast.mpr hg')
+  rw [← zpow_eq_zpow_iff_modEq, zpow_one]
+  exact Classical.choose_spec <| mem_zpowers_iff.mp <| hg g
+
+end monoidHom
+
+/-- Two group homomorphisms `G →* G'` are equal if and only if they agree on a generator of `G`. -/
+@[to_additive
+   "Two homomorphisms `G →+ G'` of additive groups are equal if and only if they agree
+   on a generator of `G`."]
+lemma MonoidHom.eq_iff_eq_on_generator (f₁ f₂ : G →* G') : f₁ = f₂ ↔ f₁ g = f₂ g := by
+  rw [DFunLike.ext_iff]
+  refine ⟨fun H ↦ H g, fun H x ↦ ?_⟩
+  obtain ⟨n, hn⟩ := mem_zpowers_iff.mp <| hg x
+  rw [← hn, map_zpow, map_zpow, H]
+
+/-- Two group isomorphisms `G ≃* G'` are equal if and only if they agree on a generator of `G`. -/
+@[to_additive
+   "Two isomorphisms `G ≃+ G'` of additive groups are equal if and only if they agree
+   on a generator of `G`."]
+lemma MulEquiv.eq_iff_eq_on_generator (f₁ f₂ : G ≃* G') : f₁ = f₂ ↔ f₁ g = f₂ g :=
+  (Function.Injective.eq_iff toMonoidHom_injective).symm.trans <|
+    MonoidHom.eq_iff_eq_on_generator hg ..
+
+section mulEquiv
+
+variable (hg' : ∀ x, x ∈ zpowers g') (h : orderOf g = orderOf g')
+
+/-- Given two groups that are generated by elements `g` and `g'` of the same order,
+we obtain an isomorphism sending `g` to `g'`. -/
+@[to_additive
+   "Given two additive groups that are generated by elements `g` and `g'` of the same order,
+   we obtain an isomorphism sending `g` to `g'`."]
+noncomputable
+def mulEquivOfOrderOfEq : G ≃* G' := by
+  refine MonoidHom.toMulEquiv (monoidHomOfForallMemZpowers hg h.symm.dvd)
+    (monoidHomOfForallMemZpowers hg' h.dvd) ?_ ?_ <;>
+  refine (MonoidHom.eq_iff_eq_on_generator (by assumption) _ _).mpr ?_ <;>
+  simp only [MonoidHom.coe_comp, Function.comp_apply, monoidHomOfForallMemZpowers_apply_gen,
+    MonoidHom.id_apply]
+
+@[to_additive (attr := simp)]
+lemma mulEquivOfOrderOfEq_apply_gen : mulEquivOfOrderOfEq hg hg' h g = g' :=
+  monoidHomOfForallMemZpowers_apply_gen hg h.symm.dvd
+
+@[to_additive (attr := simp)]
+lemma mulEquivOfOrderOfEq_symm :
+    (mulEquivOfOrderOfEq hg hg' h).symm = mulEquivOfOrderOfEq hg' hg h.symm := rfl
+
+@[to_additive] -- `simp` can prove this by a combination of the two preceding lemmas
+lemma mulEquivOfOrderOfEq_symm_apply_gen : (mulEquivOfOrderOfEq hg hg' h).symm g' = g :=
+  monoidHomOfForallMemZpowers_apply_gen hg' h.dvd
+
+end mulEquiv
+
+end generator
