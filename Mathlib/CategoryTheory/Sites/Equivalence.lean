@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.InducedTopology
 import Mathlib.CategoryTheory.Sites.Whiskering
-import Mathlib.CategoryTheory.Sites.LocallyBijective
+import Mathlib.CategoryTheory.Sites.EpiMono
 /-!
 # Equivalences of sheaf categories
 
@@ -63,22 +63,44 @@ theorem locallyCoverDense : LocallyCoverDense J e.inverse := by
       exact T.val.downward_closed hf _
     · simp
 
+theorem functorPushforward_eq_pullback {U : C} (S : Sieve U) :
+    Sieve.functorPushforward e.inverse (Sieve.functorPushforward e.functor S) =
+      Sieve.pullback (e.unitInv.app U) S := by
+  ext Z f
+  rw [← Sieve.functorPushforward_comp]
+  simp only [Sieve.functorPushforward_apply, Presieve.functorPushforward, exists_and_left, id_obj,
+    comp_obj, Sieve.pullback_apply]
+  constructor
+  · rintro ⟨W, g, hg, x, rfl⟩
+    rw [Category.assoc]
+    apply S.downward_closed
+    simpa using S.downward_closed hg _
+  · intro hf
+    exact ⟨_, e.unitInv.app Z ≫ f ≫ e.unitInv.app U, S.downward_closed hf _,
+      e.unit.app Z ≫ e.unit.app _, by simp⟩
+
+theorem pullback_functorPushforward_eq {X : C} (S : Sieve X) :
+    Sieve.pullback (e.unit.app X) (Sieve.functorPushforward e.inverse
+      (Sieve.functorPushforward e.functor S)) = S := by
+  ext Z f
+  rw [← Sieve.functorPushforward_comp]
+  simp only [id_obj, comp_obj, Sieve.pullback_apply, Sieve.functorPushforward_apply,
+    Presieve.functorPushforward, Functor.comp_map, inv_fun_map, exists_and_left]
+  constructor
+  · intro ⟨W, g, hg, x, h⟩
+    simp only [← Category.assoc] at h
+    change _ ≫ (e.unitIso.app _).hom = _ ≫ (e.unitIso.app _).hom at h
+    rw [Iso.cancel_iso_hom_right] at h
+    rw [h]
+    exact S.downward_closed hg _
+  · intro hf
+    exact ⟨_, e.unitInv.app Z ≫ f, S.downward_closed hf _, e.unit.app Z ≫ e.unit.app _, by simp⟩
+
 theorem coverPreserving : CoverPreserving J (e.locallyCoverDense J).inducedTopology e.functor where
   cover_preserve {U S} h := by
     change _ ∈ J.sieves (e.inverse.obj (e.functor.obj U))
     convert J.pullback_stable (e.unitInv.app U) h
-    ext Z f
-    rw [← Sieve.functorPushforward_comp]
-    simp only [Sieve.functorPushforward_apply, Presieve.functorPushforward, exists_and_left, id_obj,
-      comp_obj, Sieve.pullback_apply]
-    constructor
-    · rintro ⟨W, g, hg, x, rfl⟩
-      rw [Category.assoc]
-      apply S.downward_closed
-      simpa using S.downward_closed hg _
-    · intro hf
-      exact ⟨_, e.unitInv.app Z ≫ f ≫ e.unitInv.app U, S.downward_closed hf _,
-        e.unit.app Z ≫ e.unit.app _, by simp⟩
+    exact e.functorPushforward_eq_pullback S
 
 instance : IsCoverDense e.functor (e.locallyCoverDense J).inducedTopology where
   is_cover U := by
@@ -112,6 +134,20 @@ variable [e.TransportsGrothendieckTopology J K]
 
 theorem eq_inducedTopology_of_transports : K = (e.locallyCoverDense J).inducedTopology :=
   TransportsGrothendieckTopology.eq_inducedTopology
+
+instance : e.symm.TransportsGrothendieckTopology K J where
+  eq_inducedTopology := by
+    rw [e.eq_inducedTopology_of_transports J K]
+    ext X S
+    change _ ↔ _ ∈ J.sieves _
+    simp only [symm_inverse]
+    constructor
+    · intro h
+      convert J.pullback_stable (e.unitInv.app X) h
+      exact e.functorPushforward_eq_pullback S
+    · intro h
+      convert J.pullback_stable (e.unit.app X) h
+      exact (e.pullback_functorPushforward_eq S).symm
 
 instance : IsContinuous e.functor J K := by
   rw [e.eq_inducedTopology_of_transports J K]
@@ -210,14 +246,12 @@ theorem hasSheafCompose : J.HasSheafCompose F where
       e.functor.op_comp_isSheaf _ _ ⟨_, hP'⟩
     exact (Presheaf.isSheaf_of_iso_iff ((isoWhiskerRight e.op.unitIso.symm (P ⋙ F)))).mp hP'
 
-variable -- {A : Type u} [Category.{v} A]
-  [ConcreteCategory.{w} A]
-
+variable [ConcreteCategory.{w} A]
 variable {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G)
 
 open Presheaf
 
-lemma isLocallyInjective [IsLocallyInjective J f] :
+lemma isLocallyInjective_whisker [IsLocallyInjective J f] :
     IsLocallyInjective K (whiskerLeft e.inverse.op f) where
   equalizerSieve_mem {X} a b h := by
     have := IsLocallyInjective.equalizerSieve_mem (φ := f) (J := J) a b h
@@ -238,7 +272,18 @@ lemma isLocallyInjective [IsLocallyInjective J f] :
       simp only [h, true_and]
       exact ⟨e.unit.app _, by simp⟩
 
-lemma isLocallySurjective [IsLocallySurjective J f] :
+lemma isLocallyInjective_of_whisker [IsLocallyInjective K (whiskerLeft e.inverse.op f)] :
+    IsLocallyInjective J f := by
+  have := e.symm.isLocallyInjective_whisker K J (whiskerLeft e.inverse.op f)
+  simp only [symm_inverse, whiskerLeft_twice] at this
+  have : f = whiskerRight e.op.unit F ≫ whiskerLeft (e.functor.op ⋙ e.inverse.op) f ≫
+      whiskerRight e.op.unitInv G := by
+    ext : 2
+    simp [← Functor.map_comp]
+  rw [this]
+  infer_instance
+
+lemma isLocallySurjective_whisker [IsLocallySurjective J f] :
     IsLocallySurjective K (whiskerLeft e.inverse.op f) where
   imageSieve_mem {X} a := by
     have := IsLocallySurjective.imageSieve_mem (f := f) (J := J) a
@@ -262,6 +307,33 @@ lemma isLocallySurjective [IsLocallySurjective J f] :
           ← NatTrans.naturality_apply]
         rfl
       · exact ⟨e.unit.app _, by simp⟩
+
+lemma isLocallySurjective_of_whisker [IsLocallySurjective K (whiskerLeft e.inverse.op f)] :
+    IsLocallySurjective J f := by
+  have := e.symm.isLocallySurjective_whisker K J (whiskerLeft e.inverse.op f)
+  simp only [symm_inverse, whiskerLeft_twice] at this
+  have : f = whiskerRight e.op.unit F ≫ whiskerLeft (e.functor.op ⋙ e.inverse.op) f ≫
+      whiskerRight e.op.unitInv G := by
+    ext : 2
+    simp [← Functor.map_comp]
+  rw [this]
+  infer_instance
+
+open ConcreteCategory Sheaf
+
+variable [HasFunctorialSurjectiveInjectiveFactorization A] [K.WEqualsLocallyBijective A]
+variable [HasSheafify K A] [K.HasSheafCompose (forget A)] [Balanced (Sheaf K A)]
+variable {F G : Sheaf J A} (f : F ⟶ G)
+
+lemma isLocallySurjective_iff_epi : IsLocallySurjective f ↔ Epi f := by
+  constructor
+  · intro
+    have := e.hasSheafCompose J K (forget A)
+    infer_instance
+  · intro h
+    rw [← (e.sheafCongr J K A).functor.epi_map_iff_epi, ← isLocallySurjective_iff_epi'] at h
+    have : Presheaf.IsLocallySurjective K (whiskerLeft e.inverse.op f.val) := h
+    exact e.isLocallySurjective_of_whisker J K f.val
 
 end Equivalence
 
@@ -300,5 +372,19 @@ instance hasColimitsEssentiallySmallSite
     HasColimitsOfSize <| Sheaf J A :=
   Adjunction.has_colimits_of_equivalence ((equivSmallModel C).sheafCongr J
     ((equivSmallModel C).locallyCoverDense J).inducedTopology A).functor
+
+open ConcreteCategory
+
+variable [ConcreteCategory.{w} A]
+variable [HasFunctorialSurjectiveInjectiveFactorization A]
+  [((equivSmallModel C).locallyCoverDense J).inducedTopology.WEqualsLocallyBijective A]
+variable [((equivSmallModel C).locallyCoverDense J).inducedTopology.HasSheafCompose (forget A)]
+variable [Balanced (Sheaf ((equivSmallModel C).locallyCoverDense J).inducedTopology A)]
+variable {F G : Sheaf J A} (f : F ⟶ G)
+
+lemma Sheaf.isLocallySurjective_iff_epi_of_site_essentiallySmall :
+    IsLocallySurjective f ↔ Epi f :=
+  (equivSmallModel C).isLocallySurjective_iff_epi _
+    ((equivSmallModel C).locallyCoverDense J).inducedTopology f
 
 end CategoryTheory
