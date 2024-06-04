@@ -3,7 +3,6 @@ Copyright (c) 2023 Bhavik Mehta, Rishi Mehta, Linus Sommer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer
 -/
-
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 
@@ -47,7 +46,7 @@ lemma IsHamiltonian.support_toFinset (hp : p.IsHamiltonian) : p.support.toFinset
 /-- The length of a hamiltonian path is one less than the number of vertices of the graph. -/
 lemma IsHamiltonian.length_eq (hp : p.IsHamiltonian) : p.length = Fintype.card α - 1 :=
   eq_tsub_of_add_eq $ by
-    rw [← length_support, ← List.sum_toFinset_count_eq, Finset.sum_congr rfl fun _ _ ↦ hp _,
+    rw [← length_support, ← List.sum_toFinset_count_eq_length, Finset.sum_congr rfl fun _ _ ↦ hp _,
       ← card_eq_sum_ones, hp.support_toFinset, card_univ]
 
 /-- Hamiltonian paths are paths. -/
@@ -86,31 +85,31 @@ lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective
       add_tsub_cancel_right]
     exact hp.isHamiltonian_tail _
 
-lemma IsHamiltonianCycle_def {p : G.Walk a a} :
+lemma IsHamiltonianCycle_def :
     p.IsHamiltonianCycle ↔ ∃ h : p.IsCycle, (p.tail h.not_nil).IsHamiltonian :=
   ⟨fun ⟨h, h'⟩ ↦ ⟨h, h'⟩, fun ⟨h, h'⟩ ↦ ⟨h, h'⟩⟩
 
-lemma IsHamiltonianCycle_iff {p : G.Walk a a} :
+lemma IsHamiltonianCycle_iff :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ ∀ a, (support p).tail.count a = 1 := by
   simp only [IsHamiltonianCycle_def, IsHamiltonian, support_tail, exists_prop]
 
 /-- A hamiltonian cycle visits every vertex. -/
-lemma IsHamiltonianCycle.mem_support (p : G.Walk a a) (hp : p.IsHamiltonianCycle) (b : α) :
+lemma IsHamiltonianCycle.mem_support (hp : p.IsHamiltonianCycle) (b : α) :
     b ∈ p.support := List.mem_of_mem_tail <| support_tail p _ ▸ hp.isHamiltonian_tail.mem_support _
 
 /-- The length of a hamiltonian cycle is the number of vertices. -/
-lemma IsHamiltonianCycle.length_eq {p : G.Walk a a} (hp : p.IsHamiltonianCycle) :
+lemma IsHamiltonianCycle.length_eq (hp : p.IsHamiltonianCycle) :
     p.length = Fintype.card α := by
   rw [← length_tail_add_one hp.not_nil, hp.isHamiltonian_tail.length_eq, Nat.sub_add_cancel]
   rw [Nat.succ_le, Fintype.card_pos_iff]
   exact ⟨a⟩
 
-lemma IsHamiltonianCycle.count_support_self {p : G.Walk a a} (hp : p.IsHamiltonianCycle) :
+lemma IsHamiltonianCycle.count_support_self (hp : p.IsHamiltonianCycle) :
     p.support.count a = 2 := by
   rw [support_eq_cons, List.count_cons_self, ← support_tail, hp.isHamiltonian_tail]
 
-lemma IsHamiltonianCycle.support_count_of_ne {p : G.Walk a a} (hp : p.IsHamiltonianCycle)
-    (h : a ≠ b) : p.support.count b = 1 := by
+lemma IsHamiltonianCycle.support_count_of_ne (hp : p.IsHamiltonianCycle) (h : a ≠ b) :
+    p.support.count b = 1 := by
   rw [← cons_support_tail p, List.count_cons_of_ne h.symm, hp.isHamiltonian_tail]
 
 end Walk
@@ -131,8 +130,8 @@ lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected where
     · rfl
     have : Nontrivial α := ⟨a, b, hab⟩
     obtain ⟨_, p, hp⟩ := hG Fintype.one_lt_card.ne'
-    have a_mem := Walk.IsHamiltonianCycle.mem_support p hp a
-    have b_mem := Walk.IsHamiltonianCycle.mem_support p hp b
+    have a_mem := hp.mem_support a
+    have b_mem := hp.mem_support b
     exact ((p.takeUntil a a_mem).reverse.append $ p.takeUntil b b_mem).reachable
   nonempty := not_isEmpty_iff.1 fun _ ↦ by simpa using hG $ by simp [@Fintype.card_eq_zero]
 
