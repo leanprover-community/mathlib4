@@ -251,7 +251,7 @@ theorem neg_apply : (-f) x = -f x :=
 instance : Sub C_c(α, β) where
   sub f g := { toFun := f.1 - g.1
                continuous_toFun := map_continuous (f.1 - g.1)
-               hasCompactSupport' := by 
+               hasCompactSupport' := by
                  simpa [sub_eq_add_neg] using HasCompactSupport.add f.2 (-g).2 }
 
 @[simp]
