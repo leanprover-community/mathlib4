@@ -29,7 +29,7 @@ left with angle less than `π`.
 
 open Filter Finset
 
-open scoped BigOperators Topology
+open scoped Topology
 
 namespace Complex
 
@@ -56,10 +56,10 @@ theorem stolzSet_empty {M : ℝ} (hM : M ≤ 1) : stolzSet M = ∅ := by
 theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
     (𝓝[<] 1).map ofReal' ≤ 𝓝[stolzSet M] 1 := by
   rw [← tendsto_id']
-  refine' tendsto_map' <| tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within ofReal'
-    (tendsto_nhdsWithin_of_tendsto_nhds <| ofRealCLM.continuous.tendsto' 1 1 rfl) _
+  refine tendsto_map' <| tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within ofReal'
+    (tendsto_nhdsWithin_of_tendsto_nhds <| ofRealCLM.continuous.tendsto' 1 1 rfl) ?_
   simp only [eventually_iff, norm_eq_abs, abs_ofReal, abs_lt, mem_nhdsWithin]
-  refine' ⟨Set.Ioo 0 2, isOpen_Ioo, by norm_num, fun x hx ↦ _⟩
+  refine ⟨Set.Ioo 0 2, isOpen_Ioo, by norm_num, fun x hx ↦ ?_⟩
   simp only [Set.mem_inter_iff, Set.mem_Ioo, Set.mem_Iio] at hx
   simp only [Set.mem_setOf_eq, stolzSet, ← ofReal_one, ← ofReal_sub, norm_eq_abs, abs_ofReal,
     abs_of_pos hx.1.1, abs_of_pos <| sub_pos.mpr hx.2]
@@ -119,19 +119,19 @@ variable {f : ℕ → ℂ} {l : ℂ}
 /-- Auxiliary lemma for Abel's limit theorem. The difference between the sum `l` at 1 and the
 power series's value at a point `z` away from 1 can be rewritten as `1 - z` times a power series
 whose coefficients are tail sums of `l`. -/
-lemma abel_aux (h : Tendsto (fun n ↦ ∑ i in range n, f i) atTop (𝓝 l)) {z : ℂ} (hz : ‖z‖ < 1) :
-    Tendsto (fun n ↦ (1 - z) * ∑ i in range n, (l - ∑ j in range (i + 1), f j) * z ^ i)
+lemma abel_aux (h : Tendsto (fun n ↦ ∑ i ∈ range n, f i) atTop (𝓝 l)) {z : ℂ} (hz : ‖z‖ < 1) :
+    Tendsto (fun n ↦ (1 - z) * ∑ i ∈ range n, (l - ∑ j ∈ range (i + 1), f j) * z ^ i)
       atTop (𝓝 (l - ∑' n, f n * z ^ n)) := by
-  let s := fun n ↦ ∑ i in range n, f i
+  let s := fun n ↦ ∑ i ∈ range n, f i
   have k := h.sub (summable_powerSeries_of_norm_lt_one h.cauchySeq hz).hasSum.tendsto_sum_nat
   simp_rw [← sum_sub_distrib, ← mul_one_sub, ← geom_sum_mul_neg, ← mul_assoc, ← sum_mul,
     mul_comm, mul_sum _ _ (f _), range_eq_Ico, ← sum_Ico_Ico_comm', ← range_eq_Ico,
     ← sum_mul] at k
   conv at k =>
     enter [1, n]
-    rw [sum_congr (g := fun j ↦ (∑ k in range n, f k - ∑ k in range (j + 1), f k) * z ^ j)
+    rw [sum_congr (g := fun j ↦ (∑ k ∈ range n, f k - ∑ k ∈ range (j + 1), f k) * z ^ j)
       rfl (fun j hj ↦ by congr 1; exact sum_Ico_eq_sub _ (mem_range.mp hj))]
-  suffices Tendsto (fun n ↦ (l - s n) * ∑ i in range n, z ^ i) atTop (𝓝 0) by
+  suffices Tendsto (fun n ↦ (l - s n) * ∑ i ∈ range n, z ^ i) atTop (𝓝 0) by
     simp_rw [mul_sum] at this
     replace this := (this.const_mul (1 - z)).add k
     conv at this =>
@@ -153,13 +153,13 @@ lemma abel_aux (h : Tendsto (fun n ↦ ∑ i in range n, f i) atTop (𝓝 l)) {z
 /-- **Abel's limit theorem**. Given a power series converging at 1, the corresponding function
 is continuous at 1 when approaching 1 within a fixed Stolz set. -/
 theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
-    (h : Tendsto (fun n ↦ ∑ i in range n, f i) atTop (𝓝 l)) {M : ℝ} :
+    (h : Tendsto (fun n ↦ ∑ i ∈ range n, f i) atTop (𝓝 l)) {M : ℝ} :
     Tendsto (fun z ↦ ∑' n, f n * z ^ n) (𝓝[stolzSet M] 1) (𝓝 l) := by
   -- If `M ≤ 1` the Stolz set is empty and the statement is trivial
   cases' le_or_lt M 1 with hM hM
   · simp_rw [stolzSet_empty hM, nhdsWithin_empty, tendsto_bot]
   -- Abbreviations
-  let s := fun n ↦ ∑ i in range n, f i
+  let s := fun n ↦ ∑ i ∈ range n, f i
   let g := fun z ↦ ∑' n, f n * z ^ n
   have hm := Metric.tendsto_atTop.mp h
   rw [Metric.tendsto_nhdsWithin_nhds]
@@ -169,7 +169,7 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
   -- First bound, handles the tail
   obtain ⟨B₁, hB₁⟩ := hm (ε / 4 / M) (by positivity)
   -- Second bound, handles the head
-  let F := ∑ i in range B₁, ‖l - s (i + 1)‖
+  let F := ∑ i ∈ range B₁, ‖l - s (i + 1)‖
   use ε / 4 / (F + 1), by positivity
   intro z ⟨zn, zm⟩ zd
   have p := abel_aux h zn
@@ -178,44 +178,44 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
   obtain ⟨B₂, hB₂⟩ := p (ε / 2) (by positivity)
   clear hm p
   replace hB₂ := hB₂ (max B₁ B₂) (by simp)
-  suffices ‖(1 - z) * ∑ i in range (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ < ε / 2 by
+  suffices ‖(1 - z) * ∑ i ∈ range (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ < ε / 2 by
     calc
       _ = ‖l - g z‖ := by rw [norm_sub_rev]
-      _ = ‖l - g z - (1 - z) * ∑ i in range (max B₁ B₂), (l - s (i + 1)) * z ^ i +
-          (1 - z) * ∑ i in range (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ := by rw [sub_add_cancel _]
-      _ ≤ ‖l - g z - (1 - z) * ∑ i in range (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ +
-          ‖(1 - z) * ∑ i in range (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ := norm_add_le _ _
+      _ = ‖l - g z - (1 - z) * ∑ i ∈ range (max B₁ B₂), (l - s (i + 1)) * z ^ i +
+          (1 - z) * ∑ i ∈ range (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ := by rw [sub_add_cancel _]
+      _ ≤ ‖l - g z - (1 - z) * ∑ i ∈ range (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ +
+          ‖(1 - z) * ∑ i ∈ range (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ := norm_add_le _ _
       _ < ε / 2 + ε / 2 := add_lt_add hB₂ this
       _ = _ := add_halves ε
   -- We break the rearranged sum along `B₁`
   calc
-    _ = ‖(1 - z) * ∑ i in range B₁, (l - s (i + 1)) * z ^ i +
-        (1 - z) * ∑ i in Ico B₁ (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ := by
+    _ = ‖(1 - z) * ∑ i ∈ range B₁, (l - s (i + 1)) * z ^ i +
+        (1 - z) * ∑ i ∈ Ico B₁ (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ := by
       rw [← mul_add, sum_range_add_sum_Ico _ (le_max_left B₁ B₂)]
-    _ ≤ ‖(1 - z) * ∑ i in range B₁, (l - s (i + 1)) * z ^ i‖ +
-        ‖(1 - z) * ∑ i in Ico B₁ (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ := norm_add_le _ _
-    _ = ‖1 - z‖ * ‖∑ i in range B₁, (l - s (i + 1)) * z ^ i‖ +
-        ‖1 - z‖ * ‖∑ i in Ico B₁ (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ := by
+    _ ≤ ‖(1 - z) * ∑ i ∈ range B₁, (l - s (i + 1)) * z ^ i‖ +
+        ‖(1 - z) * ∑ i ∈ Ico B₁ (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ := norm_add_le _ _
+    _ = ‖1 - z‖ * ‖∑ i ∈ range B₁, (l - s (i + 1)) * z ^ i‖ +
+        ‖1 - z‖ * ‖∑ i ∈ Ico B₁ (max B₁ B₂), (l - s (i + 1)) * z ^ i‖ := by
       rw [norm_mul, norm_mul]
-    _ ≤ ‖1 - z‖ * ∑ i in range B₁, ‖l - s (i + 1)‖ * ‖z‖ ^ i +
-        ‖1 - z‖ * ∑ i in Ico B₁ (max B₁ B₂), ‖l - s (i + 1)‖ * ‖z‖ ^ i := by
+    _ ≤ ‖1 - z‖ * ∑ i ∈ range B₁, ‖l - s (i + 1)‖ * ‖z‖ ^ i +
+        ‖1 - z‖ * ∑ i ∈ Ico B₁ (max B₁ B₂), ‖l - s (i + 1)‖ * ‖z‖ ^ i := by
       gcongr <;> simp_rw [← norm_pow, ← norm_mul, norm_sum_le]
   -- then prove that the two pieces are each less than `ε / 4`
-  have S₁ : ‖1 - z‖ * ∑ i in range B₁, ‖l - s (i + 1)‖ * ‖z‖ ^ i < ε / 4 :=
+  have S₁ : ‖1 - z‖ * ∑ i ∈ range B₁, ‖l - s (i + 1)‖ * ‖z‖ ^ i < ε / 4 :=
     calc
-      _ ≤ ‖1 - z‖ * ∑ i in range B₁, ‖l - s (i + 1)‖ := by
+      _ ≤ ‖1 - z‖ * ∑ i ∈ range B₁, ‖l - s (i + 1)‖ := by
         gcongr; nth_rw 3 [← mul_one ‖_‖]
         gcongr; exact pow_le_one _ (norm_nonneg _) zn.le
       _ ≤ ‖1 - z‖ * (F + 1) := by gcongr; linarith only
       _ < _ := by rwa [norm_sub_rev, lt_div_iff (by positivity)] at zd
-  have S₂ : ‖1 - z‖ * ∑ i in Ico B₁ (max B₁ B₂), ‖l - s (i + 1)‖ * ‖z‖ ^ i < ε / 4 :=
+  have S₂ : ‖1 - z‖ * ∑ i ∈ Ico B₁ (max B₁ B₂), ‖l - s (i + 1)‖ * ‖z‖ ^ i < ε / 4 :=
     calc
-      _ ≤ ‖1 - z‖ * ∑ i in Ico B₁ (max B₁ B₂), ε / 4 / M * ‖z‖ ^ i := by
+      _ ≤ ‖1 - z‖ * ∑ i ∈ Ico B₁ (max B₁ B₂), ε / 4 / M * ‖z‖ ^ i := by
         gcongr with i hi
         have := hB₁ (i + 1) (by linarith only [(mem_Ico.mp hi).1])
         rw [norm_sub_rev] at this
         exact this.le
-      _ = ‖1 - z‖ * (ε / 4 / M) * ∑ i in Ico B₁ (max B₁ B₂), ‖z‖ ^ i := by
+      _ = ‖1 - z‖ * (ε / 4 / M) * ∑ i ∈ Ico B₁ (max B₁ B₂), ‖z‖ ^ i := by
         rw [← mul_sum, ← mul_assoc]
       _ ≤ ‖1 - z‖ * (ε / 4 / M) * ∑' i, ‖z‖ ^ i := by
         gcongr
@@ -233,13 +233,13 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
 /-- **Abel's limit theorem**. Given a power series converging at 1, the corresponding function
 is continuous at 1 when approaching 1 within any fixed Stolz cone. -/
 theorem tendsto_tsum_powerSeries_nhdsWithin_stolzCone
-    (h : Tendsto (fun n ↦ ∑ i in range n, f i) atTop (𝓝 l)) {s : ℝ} (hs : 0 < s) :
+    (h : Tendsto (fun n ↦ ∑ i ∈ range n, f i) atTop (𝓝 l)) {s : ℝ} (hs : 0 < s) :
     Tendsto (fun z ↦ ∑' n, f n * z ^ n) (𝓝[stolzCone s] 1) (𝓝 l) :=
   (tendsto_tsum_powerSeries_nhdsWithin_stolzSet h).mono_left
     (nhdsWithin_stolzCone_le_nhdsWithin_stolzSet hs).choose_spec
 
 theorem tendsto_tsum_powerSeries_nhdsWithin_lt
-    (h : Tendsto (fun n ↦ ∑ i in range n, f i) atTop (𝓝 l)) :
+    (h : Tendsto (fun n ↦ ∑ i ∈ range n, f i) atTop (𝓝 l)) :
     Tendsto (fun z ↦ ∑' n, f n * z ^ n) ((𝓝[<] 1).map ofReal') (𝓝 l) :=
   (tendsto_tsum_powerSeries_nhdsWithin_stolzSet (M := 2) h).mono_left
     (nhdsWithin_lt_le_nhdsWithin_stolzSet one_lt_two)
@@ -255,7 +255,7 @@ variable {f : ℕ → ℝ} {l : ℝ}
 /-- **Abel's limit theorem**. Given a real power series converging at 1, the corresponding function
 is continuous at 1 when approaching 1 from the left. -/
 theorem tendsto_tsum_powerSeries_nhdsWithin_lt
-    (h : Tendsto (fun n ↦ ∑ i in range n, f i) atTop (𝓝 l)) :
+    (h : Tendsto (fun n ↦ ∑ i ∈ range n, f i) atTop (𝓝 l)) :
     Tendsto (fun x ↦ ∑' n, f n * x ^ n) (𝓝[<] 1) (𝓝 l) := by
   have m : (𝓝 l).map ofReal' ≤ 𝓝 ↑l := ofRealCLM.continuous.tendsto l
   replace h := (tendsto_map.comp h).mono_right m

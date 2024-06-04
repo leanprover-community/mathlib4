@@ -17,7 +17,6 @@ We also prove basic lemmas about this definition.
 
 universe u v
 open Function Set
-open scoped BigOperators
 
 namespace Cardinal
 
@@ -176,7 +175,7 @@ theorem toNat_mul (x y : Cardinal) : toNat (x * y) = toNat x * toNat y := map_mu
 
 @[deprecated map_prod]
 theorem toNat_finset_prod (s : Finset α) (f : α → Cardinal) :
-    toNat (∏ i in s, f i) = ∏ i in s, toNat (f i) :=
+    toNat (∏ i ∈ s, f i) = ∏ i ∈ s, toNat (f i) :=
   map_prod toNat _ _
 #align cardinal.to_nat_finset_prod Cardinal.toNat_finset_prod
 

@@ -321,7 +321,6 @@ lemma densityProcess_mono_set (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (x : γ
     exact meas_countablePartitionSet_le_of_fst_le hκν n a x s
   rw [ENNReal.toReal_le_toReal (h_ne_top s) (h_ne_top s')]
   gcongr
-  simp [prod_subset_prod_iff, subset_rfl, h]
 
 lemma densityProcess_mono_kernel_left {κ' : kernel α (γ × β)} (hκκ' : κ ≤ κ')
     (hκ'ν : fst κ' ≤ ν) (n : ℕ) (a : α) (x : γ) (s : Set β) :

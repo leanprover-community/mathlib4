@@ -40,8 +40,6 @@ their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter
 A few lemmas requiring heavier imports are in `Mathlib/Data/RCLike/Lemmas.lean`.
 -/
 
-open BigOperators
-
 section
 
 local notation "𝓚" => algebraMap ℝ _
@@ -51,7 +49,7 @@ open ComplexConjugate
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
 -/
-class RCLike (K : semiOutParam (Type*)) extends DenselyNormedField K, StarRing K,
+class RCLike (K : semiOutParam Type*) extends DenselyNormedField K, StarRing K,
     NormedAlgebra ℝ K, CompleteSpace K where
   re : K →+ ℝ
   im : K →+ ℝ
@@ -213,7 +211,7 @@ theorem ofReal_sub (r s : ℝ) : ((r - s : ℝ) : K) = r - s :=
 
 @[simp, rclike_simps, norm_cast]
 theorem ofReal_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
-    ((∑ i in s, f i : ℝ) : K) = ∑ i in s, (f i : K) :=
+    ((∑ i ∈ s, f i : ℝ) : K) = ∑ i ∈ s, (f i : K) :=
   map_sum (algebraMap ℝ K) _ _
 #align is_R_or_C.of_real_sum RCLike.ofReal_sum
 
@@ -235,7 +233,7 @@ theorem ofReal_pow (r : ℝ) (n : ℕ) : ((r ^ n : ℝ) : K) = (r : K) ^ n :=
 
 @[simp, rclike_simps, norm_cast]
 theorem ofReal_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
-    ((∏ i in s, f i : ℝ) : K) = ∏ i in s, (f i : K) :=
+    ((∏ i ∈ s, f i : ℝ) : K) = ∏ i ∈ s, (f i : K) :=
   map_prod (algebraMap ℝ K) _ _
 #align is_R_or_C.of_real_prod RCLike.ofReal_prod
 

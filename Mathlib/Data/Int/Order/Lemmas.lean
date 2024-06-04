@@ -12,7 +12,8 @@ import Mathlib.Algebra.Order.Ring.Abs
 
 The distinction between this file and `Data.Int.Order.Basic` is not particularly clear.
 They are separated by now to minimize the porting requirements for tactics during the transition to
-mathlib4. Now that `Data.Rat.Order` has been ported, please feel free to reorganize these two files.
+mathlib4. Now that `Algebra.Order.Ring.Rat` has been ported, please feel free to reorganize these
+two files.
 -/
 
 open Function Nat
@@ -43,9 +44,9 @@ theorem natAbs_le_iff_mul_self_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a * a 
 
 theorem dvd_div_of_mul_dvd {a b c : ℤ} (h : a * b ∣ c) : b ∣ c / a := by
   rcases eq_or_ne a 0 with (rfl | ha)
-  · simp only [Int.ediv_zero, dvd_zero]
+  · simp only [Int.ediv_zero, Int.dvd_zero]
   rcases h with ⟨d, rfl⟩
-  refine' ⟨d, _⟩
+  refine ⟨d, ?_⟩
   rw [mul_assoc, Int.mul_ediv_cancel_left _ ha]
 #align int.dvd_div_of_mul_dvd Int.dvd_div_of_mul_dvd
 
@@ -59,9 +60,8 @@ lemma pow_right_injective (h : 1 < a.natAbs) : Injective ((a ^ ·) : ℕ → ℤ
 
 
 theorem eq_zero_of_abs_lt_dvd {m x : ℤ} (h1 : m ∣ x) (h2 : |x| < m) : x = 0 := by
-  by_cases hm : m = 0
-  · subst m
-    exact zero_dvd_iff.mp h1
+  obtain rfl | hm := eq_or_ne m 0
+  · exact Int.zero_dvd.1 h1
   rcases h1 with ⟨d, rfl⟩
   apply mul_eq_zero_of_right
   rw [← abs_lt_one_iff, ← mul_lt_iff_lt_one_right (abs_pos.mpr hm), ← abs_mul]

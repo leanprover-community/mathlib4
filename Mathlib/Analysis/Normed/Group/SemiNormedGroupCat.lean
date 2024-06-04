@@ -47,7 +47,7 @@ instance : ConcreteCategory SemiNormedGroupCat := by
   dsimp [SemiNormedGroupCat]
   infer_instance
 
-instance : CoeSort SemiNormedGroupCat (Type*) where
+instance : CoeSort SemiNormedGroupCat Type* where
   coe X := X.α
 
 /-- Construct a bundled `SemiNormedGroupCat` from the underlying type and typeclass. -/
@@ -109,7 +109,7 @@ theorem zero_apply {V W : SemiNormedGroupCat} (x : V) : (0 : V ⟶ W) x = 0 :=
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroupCat where
 
 theorem isZero_of_subsingleton (V : SemiNormedGroupCat) [Subsingleton V] : Limits.IsZero V := by
-  refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
+  refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
   · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
   · ext; apply Subsingleton.elim
 #align SemiNormedGroup.is_zero_of_subsingleton SemiNormedGroupCat.isZero_of_subsingleton
@@ -140,7 +140,7 @@ def SemiNormedGroupCat₁ : Type (u + 1) :=
 
 namespace SemiNormedGroupCat₁
 
-instance : CoeSort SemiNormedGroupCat₁ (Type*) where
+instance : CoeSort SemiNormedGroupCat₁ Type* where
   coe X := X.α
 
 instance : LargeCategory.{u} SemiNormedGroupCat₁ where
@@ -246,7 +246,7 @@ theorem zero_apply {V W : SemiNormedGroupCat₁} (x : V) : (0 : V ⟶ W) x = 0 :
 instance : Limits.HasZeroMorphisms.{u, u + 1} SemiNormedGroupCat₁ where
 
 theorem isZero_of_subsingleton (V : SemiNormedGroupCat₁) [Subsingleton V] : Limits.IsZero V := by
-  refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
+  refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
   · ext x; have : x = 0 := Subsingleton.elim _ _; simp only [this, map_zero]
   · ext; apply Subsingleton.elim
 #align SemiNormedGroup₁.is_zero_of_subsingleton SemiNormedGroupCat₁.isZero_of_subsingleton
@@ -257,7 +257,7 @@ instance hasZeroObject : Limits.HasZeroObject SemiNormedGroupCat₁.{u} :=
 
 theorem iso_isometry {V W : SemiNormedGroupCat₁} (i : V ≅ W) : Isometry i.hom := by
   change Isometry (⟨⟨i.hom, map_zero _⟩, fun _ _ => map_add _ _ _⟩ : V →+ W)
-  refine' AddMonoidHomClass.isometry_of_norm _ _
+  refine AddMonoidHomClass.isometry_of_norm _ ?_
   intro v
   apply le_antisymm (i.hom.2 v)
   calc

@@ -77,8 +77,7 @@ protected theorem IsOpen.lowerClosure : IsOpen s → IsOpen (lowerClosure s : Se
   HasUpperLowerClosure.isOpen_lowerClosure _
 #align is_open.lower_closure IsOpen.lowerClosure
 
-instance : HasUpperLowerClosure αᵒᵈ
-    where
+instance : HasUpperLowerClosure αᵒᵈ where
   isUpperSet_closure := @IsLowerSet.closure α _ _ _
   isLowerSet_closure := @IsUpperSet.closure α _ _ _
   isOpen_upperClosure := @IsOpen.lowerClosure α _ _ _

@@ -49,8 +49,6 @@ the norms of elements in `I`.
 -/
 
 
-open scoped BigOperators
-
 open scoped nonZeroDivisors
 
 section abs_norm
@@ -358,8 +356,8 @@ theorem natAbs_det_basis_change {ι : Type*} [Fintype ι] [DecidableEq ι] (b : 
   let e := b.equiv bI (Equiv.refl _)
   calc
     (b.det ((Submodule.subtype I).restrictScalars ℤ ∘ bI)).natAbs =
-        (LinearMap.det ((Submodule.subtype I).restrictScalars ℤ ∘ₗ (e : S →ₗ[ℤ] I))).natAbs :=
-      by rw [Basis.det_comp_basis]
+        (LinearMap.det ((Submodule.subtype I).restrictScalars ℤ ∘ₗ (e : S →ₗ[ℤ] I))).natAbs := by
+      rw [Basis.det_comp_basis]
     _ = _ := natAbs_det_equiv I e
 #align ideal.nat_abs_det_basis_change Ideal.natAbs_det_basis_change
 

@@ -16,7 +16,7 @@ We define `integralNormalization`, which relate arbitrary polynomials to monic o
 -/
 
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 
@@ -36,7 +36,7 @@ a monic polynomial with root `leadingCoeff f * z`.
 Moreover, `integralNormalization 0 = 0`.
 -/
 noncomputable def integralNormalization (f : R[X]) : R[X] :=
-  ∑ i in f.support,
+  ∑ i ∈ f.support,
     monomial i (if f.degree = i then 1 else coeff f i * f.leadingCoeff ^ (f.natDegree - 1 - i))
 #align polynomial.integral_normalization Polynomial.integralNormalization
 
@@ -96,7 +96,7 @@ theorem support_integralNormalization {f : R[X]} :
     (integralNormalization f).support = f.support := by
   by_cases hf : f = 0; · simp [hf]
   ext i
-  refine' ⟨fun h => integralNormalization_support h, _⟩
+  refine ⟨fun h => integralNormalization_support h, ?_⟩
   simp only [integralNormalization_coeff, mem_support_iff]
   intro hfi
   split_ifs with hi <;> simp [hf, hfi, hi]

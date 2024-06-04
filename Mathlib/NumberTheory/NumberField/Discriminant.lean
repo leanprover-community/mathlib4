@@ -130,7 +130,8 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
         volume_fundamentalDomain_latticeBasis, toReal_mul, toReal_pow, toReal_inv, coe_toReal,
         toReal_ofNat, mixedEmbedding.finrank, mul_assoc]
       rw [ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.1))]
-      rfl
+      simp_rw [NNReal.coe_inv, NNReal.coe_div, NNReal.coe_mul, NNReal.coe_pow, NNReal.coe_div,
+        coe_real_pi, NNReal.coe_ofNat, NNReal.coe_natCast]
     _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (finrank ℚ K - NrComplexPlaces K - NrRealPlaces K +
           NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) *
             π⁻¹ ^ (NrComplexPlaces K) := by
@@ -246,7 +247,7 @@ namespace hermiteTheorem
 
 open Polynomial
 
-open scoped IntermediateField BigOperators
+open scoped IntermediateField
 
 variable (A : Type*) [Field A] [CharZero A]
 
@@ -481,7 +482,7 @@ theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
     have : IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b'))).det :=
       IsIntegral.det fun i j => h' _ _
     obtain ⟨r', hr'⟩ := IsIntegrallyClosed.isIntegral_iff.1 this
-    refine' isUnit_iff_exists_inv.2 ⟨r', _⟩
+    refine isUnit_iff_exists_inv.2 ⟨r', ?_⟩
     suffices algebraMap ℤ ℚ (r * r') = 1 by
       rw [← RingHom.map_one (algebraMap ℤ ℚ)] at this
       exact (IsFractionRing.injective ℤ ℚ) this

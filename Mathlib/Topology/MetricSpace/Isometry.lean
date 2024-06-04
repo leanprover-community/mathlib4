@@ -1,7 +1,6 @@
 /-
 Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Isometries of emetric and metric spaces
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.MetricSpace.Antilipschitz
@@ -654,3 +653,10 @@ def Isometry.isometryEquivOnRange [EMetricSpace α] [PseudoEMetricSpace β] {f :
 #align isometry.isometry_equiv_on_range Isometry.isometryEquivOnRange
 #align isometry.isometry_equiv_on_range_to_equiv Isometry.isometryEquivOnRange_toEquiv
 #align isometry.isometry_equiv_on_range_apply Isometry.isometryEquivOnRange_apply
+
+open NNReal in
+/-- Post-composition by an isometry does not change the Lipschitz-property of a function. -/
+lemma Isometry.lipschitzWith_iff {α β γ : Type*} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+    [PseudoEMetricSpace γ] {f : α → β} {g : β → γ} (K : ℝ≥0) (h : Isometry g) :
+    LipschitzWith K (g ∘ f) ↔ LipschitzWith K f := by
+  simp [LipschitzWith, h.edist_eq]
