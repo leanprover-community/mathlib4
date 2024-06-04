@@ -85,7 +85,7 @@ instance [SeminormedRing A] : NormedRing (Completion A) :=
     Completion.instMetricSpace with
     dist_eq := fun x y => by
       refine Completion.induction_on₂ x y ?_ ?_ <;> clear x y
-      · refine' isClosed_eq (Completion.uniformContinuous_extension₂ _).continuous _
+      · refine isClosed_eq (Completion.uniformContinuous_extension₂ _).continuous ?_
         exact Continuous.comp Completion.continuous_extension continuous_sub
       · intro x y
         rw [← Completion.coe_sub, norm_coe, Completion.dist_eq, dist_eq_norm]

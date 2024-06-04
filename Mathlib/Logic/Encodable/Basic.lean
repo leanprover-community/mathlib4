@@ -480,11 +480,11 @@ def ULower (α : Type*) [Encodable α] : Type :=
   Set.range (Encodable.encode : α → ℕ)
 #align ulower ULower
 
-instance {α : Type*} [Encodable α] : DecidableEq (ULower α) :=
-  by delta ULower; exact Encodable.decidableEqOfEncodable _
+instance {α : Type*} [Encodable α] : DecidableEq (ULower α) := by
+  delta ULower; exact Encodable.decidableEqOfEncodable _
 
-instance {α : Type*} [Encodable α] : Encodable (ULower α) :=
-  by delta ULower; infer_instance
+instance {α : Type*} [Encodable α] : Encodable (ULower α) := by
+  delta ULower; infer_instance
 
 end ULower
 

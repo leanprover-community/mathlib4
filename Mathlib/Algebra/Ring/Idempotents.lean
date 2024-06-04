@@ -91,8 +91,8 @@ theorem iff_eq_one {p : G} : IsIdempotentElem p ↔ p = 1 :=
 
 @[simp]
 theorem iff_eq_zero_or_one {p : G₀} : IsIdempotentElem p ↔ p = 0 ∨ p = 1 := by
-  refine'
-    Iff.intro (fun h => or_iff_not_imp_left.mpr fun hp => _) fun h =>
+  refine
+    Iff.intro (fun h => or_iff_not_imp_left.mpr fun hp => ?_) fun h =>
       h.elim (fun hp => hp.symm ▸ zero) fun hp => hp.symm ▸ one
   exact mul_left_cancel₀ hp (h.trans (mul_one p).symm)
 #align is_idempotent_elem.iff_eq_zero_or_one IsIdempotentElem.iff_eq_zero_or_one

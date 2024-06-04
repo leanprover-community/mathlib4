@@ -217,8 +217,8 @@ theorem continuousOn_div : ContinuousOn (fun p : G₀ × G₀ => p.1 / p.2) { p 
 
 @[fun_prop]
 theorem Continuous.div₀ (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g x ≠ 0) :
-    Continuous (fun x => f x / g x) :=
-  by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+    Continuous (fun x => f x / g x) := by
+  simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
 
 @[fun_prop]
 theorem ContinuousAt.div₀ (hf : ContinuousAt f a) (hg : ContinuousAt g a) (h₀ : g a ≠ 0) :
