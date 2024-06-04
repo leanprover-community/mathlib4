@@ -450,7 +450,7 @@ lemma prod_mul_prod_eq_prod_zipWith_of_length_eq (l l' : List M) (h : l.length =
 
 @[to_additive]
 lemma prod_map_ite (p : α → Prop) [DecidablePred p] (f g : α → M) (l : List α) :
-    (l.map fun a ↦ if p a then f a else g a).prod =
+    (l.map fun a => if p a then f a else g a).prod =
       ((l.filter p).map f).prod * ((l.filter fun a ↦ ¬p a).map g).prod := by
   induction l with
   | nil => simp
@@ -467,7 +467,7 @@ lemma prod_map_ite (p : α → Prop) [DecidablePred p] (f g : α → M) (l : Lis
 @[to_additive]
 lemma prod_map_filter_mul_prod_map_filter_not (p : α → Prop) [DecidablePred p] (f : α → M)
     (l : List α) :
-    ((l.filter p).map f).prod * ((l.filter (fun x => ¬p x)).map f).prod = (l.map f).prod := by
+    ((l.filter p).map f).prod * ((l.filter fun x => ¬p x).map f).prod = (l.map f).prod := by
   rw [← prod_map_ite]
   simp only [ite_self]
 
@@ -567,7 +567,7 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
 
 @[to_additive]
 lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (a : A) :
-    (l.map (fun x => ite (x = a) (f x) (g x))).prod
+    (l.map fun x => ite (x = a) (f x) (g x)).prod
       =
     (f a / g a) ^ (l.count a) * (l.map g).prod := by
   induction l with
