@@ -111,9 +111,6 @@ lemma map_exact {f : M →ₗ[R] M'} {g : M' →ₗ[R] M''}
 
 variable (M M')
 
--- TODO: Naturality for `tensorQuotSMulTopEquivQuotSMulTop`
--- and `quotSMulTopTensorEquivQuotSMulTop`
-
 /-- Tensoring on the left and applying `QuotSMulTop · r` commute. -/
 noncomputable def tensorQuotSMulTopEquivQuotSMulTop :
     M ⊗[R] QuotSMulTop r M' ≃ₗ[R] QuotSMulTop r (M ⊗[R] M') :=
