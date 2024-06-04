@@ -296,7 +296,7 @@ def supported (s : Set α) : Submodule R (α →₀ M) where
   carrier := { p | ↑p.support ⊆ s }
   add_mem' {p q} hp hq := by
     classical
-    refine' Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) _) (union_subset hp hq)
+    refine Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) ?_) (union_subset hp hq)
     rw [Finset.coe_union]
   zero_mem' := by
     simp only [subset_def, Finset.mem_coe, Set.mem_setOf_eq, mem_support_iff, zero_apply]
@@ -407,8 +407,9 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
     exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
 #align finsupp.supported_Union Finsupp.supported_iUnion
 
-theorem supported_union (s t : Set α) : supported M R (s ∪ t) = supported M R s ⊔ supported M R t :=
-  by erw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq]; rfl
+theorem supported_union (s t : Set α) :
+    supported M R (s ∪ t) = supported M R s ⊔ supported M R t := by
+  erw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq]; rfl
 #align finsupp.supported_union Finsupp.supported_union
 
 theorem supported_iInter {ι : Type*} (s : ι → Set α) :
@@ -416,8 +417,9 @@ theorem supported_iInter {ι : Type*} (s : ι → Set α) :
   Submodule.ext fun x => by simp [mem_supported, subset_iInter_iff]
 #align finsupp.supported_Inter Finsupp.supported_iInter
 
-theorem supported_inter (s t : Set α) : supported M R (s ∩ t) = supported M R s ⊓ supported M R t :=
-  by rw [Set.inter_eq_iInter, supported_iInter, iInf_bool_eq]; rfl
+theorem supported_inter (s t : Set α) :
+    supported M R (s ∩ t) = supported M R s ⊓ supported M R t := by
+  rw [Set.inter_eq_iInter, supported_iInter, iInf_bool_eq]; rfl
 #align finsupp.supported_inter Finsupp.supported_inter
 
 theorem disjoint_supported_supported {s t : Set α} (h : Disjoint s t) :
@@ -813,8 +815,8 @@ theorem mem_span_image_iff_total {s : Set α} {x : M} :
 
 theorem total_option (v : Option α → M) (f : Option α →₀ R) :
     Finsupp.total (Option α) M R v f =
-      f none • v none + Finsupp.total α M R (v ∘ Option.some) f.some :=
-  by rw [total_apply, sum_option_index_smul, total_apply]; simp
+      f none • v none + Finsupp.total α M R (v ∘ Option.some) f.some := by
+  rw [total_apply, sum_option_index_smul, total_apply]; simp
 #align finsupp.total_option Finsupp.total_option
 
 theorem total_total {α β : Type*} (A : α → M) (B : β → α →₀ R) (f : β →₀ R) :
@@ -864,8 +866,8 @@ theorem total_comp (f : α' → α) :
 
 theorem total_comapDomain (f : α → α') (l : α' →₀ R) (hf : Set.InjOn f (f ⁻¹' ↑l.support)) :
     Finsupp.total α M R v (Finsupp.comapDomain f l hf) =
-      (l.support.preimage f hf).sum fun i => l (f i) • v i :=
-  by rw [Finsupp.total_apply]; rfl
+      (l.support.preimage f hf).sum fun i => l (f i) • v i := by
+  rw [Finsupp.total_apply]; rfl
 #align finsupp.total_comap_domain Finsupp.total_comapDomain
 
 theorem total_onFinset {s : Finset α} {f : α → R} (g : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) :

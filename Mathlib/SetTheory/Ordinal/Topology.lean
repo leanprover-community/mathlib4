@@ -131,8 +131,8 @@ theorem mem_closure_iff_sup :
 
 theorem mem_closed_iff_sup (hs : IsClosed s) :
     a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
-      (∀ i, f i ∈ s) ∧ sup.{u, u} f = a :=
-  by rw [← mem_closure_iff_sup, hs.closure_eq]
+      (∀ i, f i ∈ s) ∧ sup.{u, u} f = a := by
+  rw [← mem_closure_iff_sup, hs.closure_eq]
 #align ordinal.mem_closed_iff_sup Ordinal.mem_closed_iff_sup
 
 theorem mem_closure_iff_bsup :
@@ -145,8 +145,8 @@ theorem mem_closure_iff_bsup :
 theorem mem_closed_iff_bsup (hs : IsClosed s) :
     a ∈ s ↔
       ∃ (o : Ordinal) (_ho : o ≠ 0) (f : ∀ a < o, Ordinal),
-        (∀ i hi, f i hi ∈ s) ∧ bsup.{u, u} o f = a :=
-  by rw [← mem_closure_iff_bsup, hs.closure_eq]
+        (∀ i hi, f i hi ∈ s) ∧ bsup.{u, u} o f = a := by
+  rw [← mem_closure_iff_bsup, hs.closure_eq]
 #align ordinal.mem_closed_iff_bsup Ordinal.mem_closed_iff_bsup
 
 theorem isClosed_iff_sup :

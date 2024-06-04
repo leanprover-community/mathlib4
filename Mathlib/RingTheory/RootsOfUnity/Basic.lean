@@ -197,21 +197,19 @@ variable (k R)
 This is implemented as equivalence of subtypes,
 because `rootsOfUnity` is a subgroup of the group of units,
 whereas `nthRoots` is a multiset. -/
-def rootsOfUnityEquivNthRoots : rootsOfUnity k R ≃ { x // x ∈ nthRoots k (1 : R) } := by
-  refine'
-    { toFun := fun x => ⟨(x : Rˣ), mem_rootsOfUnity_iff_mem_nthRoots.mp x.2⟩
-      invFun := fun x => ⟨⟨x, ↑x ^ (k - 1 : ℕ), _, _⟩, _⟩
-      left_inv := _
-      right_inv := _ }
-  pick_goal 4; · rintro ⟨x, hx⟩; ext; rfl
-  pick_goal 4; · rintro ⟨x, hx⟩; ext; rfl
-  all_goals
-    rcases x with ⟨x, hx⟩; rw [mem_nthRoots k.pos] at hx
-    simp only [Subtype.coe_mk, ← pow_succ, ← pow_succ', hx,
-      tsub_add_cancel_of_le (show 1 ≤ (k : ℕ) from k.one_le)]
-  show (_ : Rˣ) ^ (k : ℕ) = 1
-  simp only [Units.ext_iff, hx, Units.val_mk, Units.val_one, Subtype.coe_mk,
-    Units.val_pow_eq_pow_val]
+def rootsOfUnityEquivNthRoots : rootsOfUnity k R ≃ { x // x ∈ nthRoots k (1 : R) } where
+  toFun x := ⟨(x : Rˣ), mem_rootsOfUnity_iff_mem_nthRoots.mp x.2⟩
+  invFun x := by
+    refine ⟨⟨x, ↑x ^ (k - 1 : ℕ), ?_, ?_⟩, ?_⟩
+    all_goals
+      rcases x with ⟨x, hx⟩; rw [mem_nthRoots k.pos] at hx
+      simp only [Subtype.coe_mk, ← pow_succ, ← pow_succ', hx,
+        tsub_add_cancel_of_le (show 1 ≤ (k : ℕ) from k.one_le)]
+    show (_ : Rˣ) ^ (k : ℕ) = 1
+    simp only [Units.ext_iff, hx, Units.val_mk, Units.val_one, Subtype.coe_mk,
+      Units.val_pow_eq_pow_val]
+  left_inv := by rintro ⟨x, hx⟩; ext; rfl
+  right_inv := by rintro ⟨x, hx⟩; ext; rfl
 #align roots_of_unity_equiv_nth_roots rootsOfUnityEquivNthRoots
 
 variable {k R}
@@ -833,6 +831,16 @@ theorem eq_pow_of_mem_rootsOfUnity {k : ℕ+} {ζ ξ : Rˣ} (h : IsPrimitiveRoot
   · rw [← zpow_natCast, hi₀, ← Int.emod_add_ediv n k, zpow_add, zpow_mul, h.zpow_eq_one, one_zpow,
       mul_one]
 #align is_primitive_root.eq_pow_of_mem_roots_of_unity IsPrimitiveRoot.eq_pow_of_mem_rootsOfUnity
+
+/-- A version of `IsPrimitiveRoot.eq_pow_of_mem_rootsOfUnity` that takes a natural number `k`
+as argument instead of a `PNat` (and `ζ : R` instead of `ζ : Rˣ`). -/
+lemma eq_pow_of_mem_rootsOfUnity' {k : ℕ} (hk : 0 < k) {ζ : R} (hζ : IsPrimitiveRoot ζ k) {ξ : Rˣ}
+    (hξ : ξ ∈ rootsOfUnity (⟨k, hk⟩ : ℕ+) R) :
+    ∃ i < k, ζ ^ i = ξ := by
+  have hζ' : IsPrimitiveRoot (hζ.isUnit hk).unit (⟨k, hk⟩ : ℕ+) := isUnit_unit hk hζ
+  obtain ⟨i, hi₁, hi₂⟩ := hζ'.eq_pow_of_mem_rootsOfUnity hξ
+  simpa only [Units.val_pow_eq_pow_val, IsUnit.unit_spec]
+    using ⟨i, hi₁, congrArg ((↑) : Rˣ → R) hi₂⟩
 
 theorem eq_pow_of_pow_eq_one {k : ℕ} {ζ ξ : R} (h : IsPrimitiveRoot ζ k) (hξ : ξ ^ k = 1)
     (h0 : 0 < k) : ∃ i < k, ζ ^ i = ξ := by

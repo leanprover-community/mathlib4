@@ -188,8 +188,8 @@ theorem Disjoint.mul_apply_eq_iff {σ τ : Perm α} (hστ : Disjoint σ τ) {a 
   · exact ⟨(congr_arg σ hτ).symm.trans h, hτ⟩
 #align equiv.perm.disjoint.mul_apply_eq_iff Equiv.Perm.Disjoint.mul_apply_eq_iff
 
-theorem Disjoint.mul_eq_one_iff {σ τ : Perm α} (hστ : Disjoint σ τ) : σ * τ = 1 ↔ σ = 1 ∧ τ = 1 :=
-  by simp_rw [ext_iff, one_apply, hστ.mul_apply_eq_iff, forall_and]
+theorem Disjoint.mul_eq_one_iff {σ τ : Perm α} (hστ : Disjoint σ τ) :
+    σ * τ = 1 ↔ σ = 1 ∧ τ = 1 := by simp_rw [ext_iff, one_apply, hστ.mul_apply_eq_iff, forall_and]
 #align equiv.perm.disjoint.mul_eq_one_iff Equiv.Perm.Disjoint.mul_eq_one_iff
 
 theorem Disjoint.zpow_disjoint_zpow {σ τ : Perm α} (hστ : Disjoint σ τ) (m n : ℤ) :
@@ -267,8 +267,8 @@ theorem set_support_inv_eq : { x | p⁻¹ x ≠ x } = { x | p x ≠ x } := by
   rw [inv_def, symm_apply_eq, eq_comm]
 #align equiv.perm.set_support_inv_eq Equiv.Perm.set_support_inv_eq
 
-theorem set_support_apply_mem {p : Perm α} {a : α} : p a ∈ { x | p x ≠ x } ↔ a ∈ { x | p x ≠ x } :=
-  by simp
+theorem set_support_apply_mem {p : Perm α} {a : α} :
+    p a ∈ { x | p x ≠ x } ↔ a ∈ { x | p x ≠ x } := by simp
 #align equiv.perm.set_support_apply_mem Equiv.Perm.set_support_apply_mem
 
 theorem set_support_zpow_subset (n : ℤ) : { x | (p ^ n) x ≠ x } ⊆ { x | p x ≠ x } := by

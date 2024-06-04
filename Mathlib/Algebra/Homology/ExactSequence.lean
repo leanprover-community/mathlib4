@@ -233,6 +233,11 @@ lemma exact_iff_δ₀ (S : ComposableArrows C (n + 2)) :
       · exact h.exact 0
       · exact h₀.exact i
 
+lemma Exact.δ₀ {S : ComposableArrows C (n + 2)} (hS : S.Exact) :
+    S.δ₀.Exact := by
+  rw [exact_iff_δ₀] at hS
+  exact hS.2
+
 /-- If `S : ComposableArrows C (n + 2)` is such that the first two arrows form
 an exact sequence and that the tail `S.δ₀` is exact, then `S` is also exact.
 See `ShortComplex.SnakeInput.snake_lemma` in `Algebra.Homology.ShortComplex.SnakeLemma`
@@ -263,6 +268,17 @@ lemma exact_iff_δlast {n : ℕ} (S : ComposableArrows C (n + 2)) :
       obtain hi | rfl := hi.lt_or_eq
       · exact h.exact i
       · exact h'.exact 0
+
+lemma Exact.δlast {S : ComposableArrows C (n + 2)} (hS : S.Exact) :
+    S.δlast.Exact := by
+  rw [exact_iff_δlast] at hS
+  exact hS.1
+
+lemma exact_of_δlast {n : ℕ} (S : ComposableArrows C (n + 2))
+    (h₁ : S.δlast.Exact) (h₂ : (mk₂ (S.map' n (n + 1)) (S.map' (n + 1) (n + 2))).Exact) :
+    S.Exact := by
+  rw [exact_iff_δlast]
+  constructor <;> assumption
 
 end ComposableArrows
 

@@ -68,8 +68,8 @@ something the simplifier can easily do). This means that one can write
 If there are divisions, one needs to supply to the simplifier proofs that the denominators do
 not vanish, as in
 ```lean
-example (x : ℝ) (h : 1 + sin x ≠ 0) : DifferentiableAt ℝ (fun x ↦ exp x / (1 + sin x)) x :=
-by simp [h]
+example (x : ℝ) (h : 1 + sin x ≠ 0) : DifferentiableAt ℝ (fun x ↦ exp x / (1 + sin x)) x := by
+  simp [h]
 ```
 Of course, these examples only work once `exp`, `cos` and `sin` have been shown to be
 differentiable, in `Analysis.SpecialFunctions.Trigonometric`.
@@ -628,8 +628,9 @@ theorem DifferentiableWithinAt.mono_of_mem (h : DifferentiableWithinAt 𝕜 f s 
   (h.hasFDerivWithinAt.mono_of_mem hst).differentiableWithinAt
 #align differentiable_within_at.mono_of_mem DifferentiableWithinAt.mono_of_mem
 
-theorem differentiableWithinAt_univ : DifferentiableWithinAt 𝕜 f univ x ↔ DifferentiableAt 𝕜 f x :=
-  by simp only [DifferentiableWithinAt, hasFDerivWithinAt_univ, DifferentiableAt]
+theorem differentiableWithinAt_univ :
+    DifferentiableWithinAt 𝕜 f univ x ↔ DifferentiableAt 𝕜 f x := by
+  simp only [DifferentiableWithinAt, hasFDerivWithinAt_univ, DifferentiableAt]
 #align differentiable_within_at_univ differentiableWithinAt_univ
 
 theorem differentiableWithinAt_inter (ht : t ∈ 𝓝 x) :
@@ -720,10 +721,9 @@ theorem fderivWithin_eq_fderiv (hs : UniqueDiffWithinAt 𝕜 s x) (h : Different
   exact fderivWithin_subset (subset_univ _) hs h.differentiableWithinAt
 #align fderiv_within_eq_fderiv fderivWithin_eq_fderiv
 
-theorem fderiv_mem_iff {f : E → F} {s : Set (E →L[𝕜] F)} {x : E} :
-    fderiv 𝕜 f x ∈ s ↔
-      DifferentiableAt 𝕜 f x ∧ fderiv 𝕜 f x ∈ s ∨ ¬DifferentiableAt 𝕜 f x ∧ (0 : E →L[𝕜] F) ∈ s :=
-  by by_cases hx : DifferentiableAt 𝕜 f x <;> simp [fderiv_zero_of_not_differentiableAt, *]
+theorem fderiv_mem_iff {f : E → F} {s : Set (E →L[𝕜] F)} {x : E} : fderiv 𝕜 f x ∈ s ↔
+    DifferentiableAt 𝕜 f x ∧ fderiv 𝕜 f x ∈ s ∨ ¬DifferentiableAt 𝕜 f x ∧ (0 : E →L[𝕜] F) ∈ s := by
+  by_cases hx : DifferentiableAt 𝕜 f x <;> simp [fderiv_zero_of_not_differentiableAt, *]
 #align fderiv_mem_iff fderiv_mem_iff
 
 theorem fderivWithin_mem_iff {f : E → F} {t : Set E} {s : Set (E →L[𝕜] F)} {x : E} :
