@@ -143,8 +143,8 @@ theorem coeff_inv (n) (φ : k⟦X⟧) :
       else
         -(constantCoeff k φ)⁻¹ *
           ∑ x ∈ antidiagonal n,
-            if x.2 < n then coeff k x.1 φ * coeff k x.2 φ⁻¹ else 0 :=
-  by rw [inv_eq_inv_aux, coeff_inv_aux n (constantCoeff k φ)⁻¹ φ]
+            if x.2 < n then coeff k x.1 φ * coeff k x.2 φ⁻¹ else 0 := by
+  rw [inv_eq_inv_aux, coeff_inv_aux n (constantCoeff k φ)⁻¹ φ]
 #align power_series.coeff_inv PowerSeries.coeff_inv
 
 @[simp]

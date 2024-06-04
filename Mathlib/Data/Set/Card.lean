@@ -167,9 +167,9 @@ theorem encard_diff_add_encard_inter (s t : Set α) :
     diff_union_inter]
 
 theorem encard_union_add_encard_inter (s t : Set α) :
-    (s ∪ t).encard + (s ∩ t).encard = s.encard + t.encard :=
-by rw [← diff_union_self, encard_union_eq disjoint_sdiff_left, add_right_comm,
-  encard_diff_add_encard_inter]
+    (s ∪ t).encard + (s ∩ t).encard = s.encard + t.encard := by
+  rw [← diff_union_self, encard_union_eq disjoint_sdiff_left, add_right_comm,
+    encard_diff_add_encard_inter]
 
 theorem encard_eq_encard_iff_encard_diff_eq_encard_diff (h : (s ∩ t).Finite) :
     s.encard = t.encard ↔ (s \ t).encard = (t \ s).encard := by
