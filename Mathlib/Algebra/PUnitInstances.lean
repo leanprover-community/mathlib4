@@ -119,7 +119,8 @@ instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid PUn
   le_of_add_le_add_left _ _ _ _ := trivial
   add_le_add_left := by intros; rfl
 
-instance : LinearOrderedAddCommMonoidWithTop PUnit where top_add' _ := rfl
+instance : LinearOrderedAddCommMonoidWithTop PUnit where
+  top_add' _ := rfl
 
 variable {R S : Type*}
 
