@@ -383,6 +383,13 @@ def toFinsuppIso : R[X] ≃+* R[ℕ] where
 #align polynomial.to_finsupp_iso_apply Polynomial.toFinsuppIso_apply
 #align polynomial.to_finsupp_iso_symm_apply Polynomial.toFinsuppIso_symm_apply
 
+/-- The isomorphism between `R[X]` and `R[ℕ]`, as linear equivalence -/
+@[simps apply symm_apply]
+def toFinsuppLinearEquiv : R[X] ≃ₗ[R] R[ℕ] := {
+  toFinsuppIso R  with
+  map_smul' := fun r p => by simp }
+
+
 instance [DecidableEq R] : DecidableEq R[X] :=
   @Equiv.decidableEq R[X] _ (toFinsuppIso R).toEquiv (Finsupp.instDecidableEq)
 
