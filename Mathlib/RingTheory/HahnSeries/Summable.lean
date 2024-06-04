@@ -296,10 +296,8 @@ instance : SMul (HahnSeries Γ R) (SummableFamily Γ R α) where
         simp only [Set.mem_iUnion, exists_imp]
         exact fun a ha => (Set.add_subset_add (Set.Subset.refl _) (Set.subset_iUnion _ a)) ha
       finite_co_support' := fun g => by
-        refine'
-          ((addAntidiagonal x.isPWO_support s.isPWO_iUnion_support g).finite_toSet.biUnion'
-                fun ij _ => _).subset
-            fun a ha => ?_
+        apply ((addAntidiagonal x.isPWO_support s.isPWO_iUnion_support g).finite_toSet.biUnion'
+            fun ij _ => ?_).subset fun a ha => ?_
         · exact fun ij _ => Function.support fun a => (s a).coeff ij.2
         · apply s.finite_co_support
         · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset_add_support ha

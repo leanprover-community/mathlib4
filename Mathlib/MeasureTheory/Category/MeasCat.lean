@@ -46,7 +46,7 @@ def MeasCat : Type (u + 1) :=
 
 namespace MeasCat
 
-instance : CoeSort MeasCat (Type*) :=
+instance : CoeSort MeasCat Type* :=
   Bundled.coeSort
 
 instance (X : MeasCat) : MeasurableSpace X :=

@@ -5,7 +5,7 @@ Authors: Filippo A. E. Nuccio, Eric Wieser
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
