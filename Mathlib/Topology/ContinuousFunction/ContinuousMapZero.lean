@@ -174,6 +174,9 @@ instance instStarModule [StarRing R] {M : Type*} [SMulZeroClass M R] [Continuous
 
 @[simp] lemma coe_star [StarRing R] [ContinuousStar R] (f : C(X, R)₀) : ⇑(star f) = star ⇑f := rfl
 
+instance [StarRing R] [ContinuousStar R] [TrivialStar R] : TrivialStar C(X, R)₀ where
+  star_trivial _ := DFunLike.ext _ _ fun _ ↦ star_trivial _
+
 instance instCanLift : CanLift C(X, R) C(X, R)₀ (↑) (fun f ↦ f 0 = 0) where
   prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
