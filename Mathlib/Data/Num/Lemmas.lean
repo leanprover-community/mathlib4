@@ -423,7 +423,6 @@ instance commSemiring : CommSemiring Num where
   mul_assoc _ _ _ := by simp_rw [← to_nat_inj, mul_to_nat, mul_assoc]
   left_distrib _ _ _ := by simp only [← to_nat_inj, mul_to_nat, add_to_nat, mul_add]
   right_distrib _ _ _ := by simp only [← to_nat_inj, mul_to_nat, add_to_nat, add_mul]
-
 #align num.comm_semiring Num.commSemiring
 
 instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num where
