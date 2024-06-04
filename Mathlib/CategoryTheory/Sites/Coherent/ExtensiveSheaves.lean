@@ -131,4 +131,8 @@ theorem Presheaf.isSheaf_iff_preservesFiniteProducts {D : Type*} [Category D]
     rw [Presieve.isSheaf_iff_preservesFiniteProducts]
     exact ⟨inferInstance⟩
 
+noncomputable instance {D : Type*} [Category D] [FinitaryExtensive C]
+    (F : Sheaf (extensiveTopology C) D) : PreservesFiniteProducts F.val :=
+  ((Presheaf.isSheaf_iff_preservesFiniteProducts F.val).mp F.cond).some
+
 end CategoryTheory

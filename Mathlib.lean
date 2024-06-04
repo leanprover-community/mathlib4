@@ -1581,6 +1581,8 @@ import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 import Mathlib.CategoryTheory.Sites.Coherent.Equivalence
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
+import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
@@ -1764,6 +1766,7 @@ import Mathlib.Computability.TMToPartrec
 import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.Basic
 import Mathlib.Condensed.Discrete
+import Mathlib.Condensed.Epi
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
 import Mathlib.Condensed.Functors
