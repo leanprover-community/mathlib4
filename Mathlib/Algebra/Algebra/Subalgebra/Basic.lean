@@ -1290,7 +1290,7 @@ lemma le_centralizer_centralizer {s : Subalgebra R A} :
 
 @[simp]
 lemma centralizer_centralizer_centralizer {s : Set A} :
-    centralizer R (centralizer R (centralizer R s : Set A)) = centralizer R s := by
+    centralizer R s.centralizer.centralizer = centralizer R s := by
   apply SetLike.coe_injective
   simp only [coe_centralizer, Set.centralizer_centralizer_centralizer]
 
