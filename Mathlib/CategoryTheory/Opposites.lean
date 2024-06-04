@@ -247,7 +247,7 @@ protected def rightOp (F : Cᵒᵖ ⥤ D) : C ⥤ Dᵒᵖ where
 #align category_theory.functor.right_op CategoryTheory.Functor.rightOp
 
 lemma rightOp_map_unop {F : Cᵒᵖ ⥤ D} {X Y} (f : X ⟶ Y) :
-  (F.rightOp.map f).unop = (F.map f.op) := rfl
+    (F.rightOp.map f).unop = (F.map f.op) := rfl
 
 instance {F : C ⥤ D} [Full F] : Full F.op where
   map_surjective f := ⟨(F.preimage f.unop).op, by simp⟩
