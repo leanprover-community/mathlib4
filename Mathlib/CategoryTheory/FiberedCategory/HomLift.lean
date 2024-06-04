@@ -76,7 +76,7 @@ variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f �
 lemma domain_eq : p.obj a = R := by
   subst_hom_lift p f φ; rfl
 
-lemma codomain_eq  : p.obj b = S := by
+lemma codomain_eq : p.obj b = S := by
   subst_hom_lift p f φ; rfl
 
 lemma fac : f = eqToHom (domain_eq p f φ).symm ≫ p.map φ ≫ eqToHom (codomain_eq p f φ) := by
