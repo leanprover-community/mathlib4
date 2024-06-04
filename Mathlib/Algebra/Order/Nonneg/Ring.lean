@@ -323,26 +323,19 @@ def coeRingHom [OrderedSemiring α] : { x : α // 0 ≤ x } →+* α :=
     map_add' := Nonneg.coe_add }
 #align nonneg.coe_ring_hom Nonneg.coeRingHom
 
-instance canonicallyOrderedAddCommMonoid [OrderedRing α] :
-    CanonicallyOrderedAddCommMonoid { x : α // 0 ≤ x } :=
-  { Nonneg.orderedAddCommMonoid, Nonneg.orderBot with
-    le_self_add := fun _ b => le_add_of_nonneg_right b.2
+instance canonicallyOrderedAdd [OrderedRing α] :
+    CanonicallyOrderedAdd { x : α // 0 ≤ x } :=
+  { le_self_add := fun _ b => le_add_of_nonneg_right b.2
     exists_add_of_le := fun {a b} h =>
       ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel _ _).symm⟩ }
 #align nonneg.canonically_ordered_add_monoid Nonneg.canonicallyOrderedAddCommMonoid
 
-instance canonicallyOrderedCommSemiring [OrderedCommRing α] [NoZeroDivisors α] :
-    CanonicallyOrderedCommSemiring { x : α // 0 ≤ x } :=
-  { Nonneg.canonicallyOrderedAddCommMonoid, Nonneg.orderedCommSemiring with
-    eq_zero_or_eq_zero_of_mul_eq_zero := by
+instance noZeroDivisors [OrderedSemiring α] [NoZeroDivisors α] :
+    NoZeroDivisors { x : α // 0 ≤ x } :=
+  { eq_zero_or_eq_zero_of_mul_eq_zero := by
       rintro ⟨a, ha⟩ ⟨b, hb⟩
       simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self]}
-#align nonneg.canonically_ordered_comm_semiring Nonneg.canonicallyOrderedCommSemiring
-
-instance canonicallyLinearOrderedAddCommMonoid [LinearOrderedRing α] :
-    CanonicallyLinearOrderedAddCommMonoid { x : α // 0 ≤ x } :=
-  { Subtype.instLinearOrder _, Nonneg.canonicallyOrderedAddCommMonoid with }
-#align nonneg.canonically_linear_ordered_add_monoid Nonneg.canonicallyLinearOrderedAddCommMonoid
+#align nonneg.canonically_ordered_comm_semiring Nonneg.noZeroDivisors
 
 section LinearOrder
 

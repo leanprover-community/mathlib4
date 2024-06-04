@@ -225,8 +225,8 @@ end OrderedCommGroup
 
 section CanonicallyOrderedCommMonoid
 
-variable [CanonicallyOrderedCommMonoid α] [TopologicalSpace α] [OrderClosedTopology α]
-  {f : ι → α} {a : α}
+variable [OrderedAddCommMonoid α] [CanonicallyOrderedAdd α] [TopologicalSpace α]
+  [OrderClosedTopology α] {f : ι → α} {a : α}
 
 @[to_additive]
 theorem le_hasProd' (hf : HasProd f a) (i : ι) : f i ≤ a :=
@@ -279,7 +279,7 @@ theorem hasProd_of_isLUB_of_one_le [LinearOrderedCommMonoid α] [TopologicalSpac
 #align has_sum_of_is_lub_of_nonneg hasSum_of_isLUB_of_nonneg
 
 @[to_additive]
-theorem hasProd_of_isLUB [CanonicallyLinearOrderedCommMonoid α] [TopologicalSpace α]
+theorem hasProd_of_isLUB [LinearOrderedCommMonoid α] [CanonicallyOrderedAdd α] [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (b : α) (hf : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) b) :
     HasProd f b :=
   tendsto_atTop_isLUB (Finset.prod_mono_set' f) hf

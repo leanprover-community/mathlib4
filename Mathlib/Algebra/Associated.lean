@@ -1211,10 +1211,12 @@ theorem one_or_eq_of_le_of_prime {p m : Associates α} (hp : Prime p) (hle : m �
     using (prime_mk.1 hp).irreducible.dvd_iff.mp (mk_le_mk_iff_dvd.1 hle)
 #align associates.one_or_eq_of_le_of_prime Associates.one_or_eq_of_le_of_prime
 
-instance : CanonicallyOrderedCommMonoid (Associates α) where
-  exists_mul_of_le := fun h => h
-  le_self_mul := fun _ b => ⟨b, rfl⟩
-  bot_le := fun _ => one_le
+instance : CanonicallyOrderedMul (Associates α) where
+  exists_mul_of_le h := h
+  le_self_mul _ b := ⟨b, rfl⟩
+
+instance : OrderBot (Associates α) where
+  bot_le _ := bot_le
 
 theorem dvdNotUnit_iff_lt {a b : Associates α} : DvdNotUnit a b ↔ a < b :=
   dvd_and_not_dvd_iff.symm

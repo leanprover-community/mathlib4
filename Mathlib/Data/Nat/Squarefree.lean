@@ -338,7 +338,7 @@ theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
   simp only [S, Finset.mem_filter, Finset.mem_range] at hs
   obtain ⟨-, ⟨a, hsa⟩, ⟨b, hsb⟩⟩ := hs
   rw [hsa] at hn
-  obtain ⟨hlts, hlta⟩ := CanonicallyOrderedCommSemiring.mul_pos.mp hn
+  obtain ⟨hlts, hlta⟩ := CanonicallyOrderedAdd.mul_pos.mp hn
   rw [hsb] at hsa hn hlts
   refine ⟨a, b, hlta, (pow_pos_iff two_ne_zero).mp hlts, hsa.symm, ?_⟩
   rintro x ⟨y, hy⟩

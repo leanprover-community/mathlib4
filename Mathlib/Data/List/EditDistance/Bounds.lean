@@ -21,7 +21,7 @@ to produce lower bounds on the final result.
 
 set_option autoImplicit true
 
-variable {C : Levenshtein.Cost α β δ} [CanonicallyLinearOrderedAddCommMonoid δ]
+variable {C : Levenshtein.Cost α β δ} [LinearOrderedAddCommMonoid δ] [CanonicallyOrderedAdd δ]
 
 theorem suffixLevenshtein_minimum_le_levenshtein_cons (xs : List α) (y ys) :
     (suffixLevenshtein C xs ys).1.minimum ≤ levenshtein C xs (y :: ys) := by

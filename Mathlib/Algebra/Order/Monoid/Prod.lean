@@ -38,10 +38,10 @@ instance [LE α] [LE β] [Mul α] [Mul β] [ExistsMulOfLE α] [ExistsMulOfLE β]
     ⟨(c, d), ext hc hd⟩⟩
 
 @[to_additive]
-instance [CanonicallyOrderedCommMonoid α] [CanonicallyOrderedCommMonoid β] :
-    CanonicallyOrderedCommMonoid (α × β) :=
-  { (inferInstance : OrderedCommMonoid _), (inferInstance : OrderBot _),
-    (inferInstance : ExistsMulOfLE _) with
+instance [Monoid α] [PartialOrder α] [CanonicallyOrderedMul α]
+    [Monoid β] [PartialOrder β] [CanonicallyOrderedMul β] :
+    CanonicallyOrderedMul (α × β) :=
+  { (inferInstance : ExistsMulOfLE _) with
       le_self_mul := fun _ _ ↦ ⟨le_self_mul, le_self_mul⟩ }
 
 namespace Lex

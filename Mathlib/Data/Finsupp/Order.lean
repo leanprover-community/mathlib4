@@ -181,9 +181,9 @@ instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α (ι
 
 end SMulWithZero
 
-section CanonicallyOrderedAddCommMonoid
+section AddMonoid
 
-variable [CanonicallyOrderedAddCommMonoid α] {f g : ι →₀ α}
+variable [AddMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] {f g : ι →₀ α}
 
 instance orderBot : OrderBot (ι →₀ α) where
   bot := 0
@@ -225,6 +225,17 @@ theorem single_le_iff {i : ι} {x : α} {f : ι →₀ α} : single i x ≤ f �
   (le_iff' _ _ support_single_subset).trans <| by simp
 #align finsupp.single_le_iff Finsupp.single_le_iff
 
+end AddMonoid
+
+section AddCommMonoid
+variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] {f g : ι →₀ α}
+
+@[simp]
+theorem add_eq_zero_iff [CovariantClass α α (· + ·) (· ≤ ·)]
+    (f g : ι →₀ α) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
+  simp [FunLike.ext_iff, forall_and]
+#align finsupp.add_eq_zero_iff Finsupp.add_eq_zero_iff
+
 variable [Sub α] [OrderedSub α] {f g : ι →₀ α} {i : ι} {a b : α}
 
 /-- This is called `tsub` for truncated subtraction, to distinguish it with subtraction in an
@@ -236,11 +247,9 @@ instance tsub : Sub (ι →₀ α) :=
 instance orderedSub : OrderedSub (ι →₀ α) :=
   ⟨fun _n _m _k => forall_congr' fun _x => tsub_le_iff_right⟩
 
-instance : CanonicallyOrderedAddCommMonoid (ι →₀ α) :=
-  { Finsupp.orderBot,
-    Finsupp.orderedAddCommMonoid with
-    exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
-    le_self_add := fun _f _g _x => le_self_add }
+instance [CovariantClass α α (· + ·) (· ≤ ·)] : CanonicallyOrderedAdd (ι →₀ α) where
+  exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
+  le_self_add := fun _f _g _x => le_self_add
 
 @[simp, norm_cast] lemma coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g := rfl
 #align finsupp.coe_tsub Finsupp.coe_tsub
@@ -267,11 +276,11 @@ theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
   simp (config := { contextual := true }) [subset_iff]
 #align finsupp.subset_support_tsub Finsupp.subset_support_tsub
 
-end CanonicallyOrderedAddCommMonoid
+end AddCommMonoid
 
 section CanonicallyLinearOrderedAddCommMonoid
 
-variable [CanonicallyLinearOrderedAddCommMonoid α]
+variable [AddMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
 
 @[simp]
 theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = f.support ∩ g.support := by

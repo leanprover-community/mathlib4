@@ -254,8 +254,11 @@ section CanonicalOrder
 
 open SetLike.GradedMonoid DirectSum
 
+section AddMonoid
+
 variable [Semiring A] [DecidableEq ι]
-variable [CanonicallyOrderedAddCommMonoid ι]
+variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
+  [CovariantClass ι ι (· + ·) (· ≤ ·)] [CovariantClass ι ι (Function.swap (· + ·)) (· ≤ ·)]
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
 
 /-- If `A` is graded by a canonically ordered add monoid, then the projection map `x ↦ x₀` is a ring
@@ -316,6 +319,23 @@ theorem coe_decompose_mul_of_right_mem_of_not_le (b_mem : b ∈ 𝒜 i) (h : ¬i
   rwa [decompose_mul, decompose_coe, coe_mul_of_apply_of_not_le]
 #align direct_sum.coe_decompose_mul_of_right_mem_of_not_le DirectSum.coe_decompose_mul_of_right_mem_of_not_le
 
+end DirectSum
+
+end AddMonoid
+
+section AddCommMonoid
+
+namespace DirectSum
+
+variable [Semiring A] [DecidableEq ι]
+
+variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
+  [CovariantClass ι ι (· + ·) (· ≤ ·)] [CovariantClass ι ι (Function.swap (· + ·)) (· ≤ ·)]
+
+variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
+
+variable {a b : A} {n i : ι}
+
 variable [Sub ι] [OrderedSub ι] [ContravariantClass ι ι (· + ·) (· ≤ ·)]
 
 theorem coe_decompose_mul_of_left_mem_of_le (a_mem : a ∈ 𝒜 i) (h : i ≤ n) :
@@ -343,5 +363,7 @@ theorem coe_decompose_mul_of_right_mem (n) [Decidable (i ≤ n)] (b_mem : b ∈ 
 #align direct_sum.coe_decompose_mul_of_right_mem DirectSum.coe_decompose_mul_of_right_mem
 
 end DirectSum
+
+end AddCommMonoid
 
 end CanonicalOrder

@@ -25,7 +25,7 @@ to avoid needing the entire edit distance calculation in unlikely search paths.
 
 set_option autoImplicit true
 
-variable {α β δ : Type} [CanonicallyLinearOrderedAddCommMonoid δ]
+variable {α β δ : Type} [LinearOrderedAddCommMonoid δ] [CanonicallyOrderedAdd δ]
     (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β)
 
 /--
@@ -133,7 +133,8 @@ instance [∀ a : δ × ℕ, WellFoundedGT { x // x ≤ a }] :
   Estimator.fstInst (Thunk.mk fun _ => _) (Thunk.mk fun _ => _) (estimator' C xs ys)
 
 /-- The initial estimator for Levenshtein distances. -/
-instance (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β) :
+instance [LinearOrderedAddCommMonoid δ] [CanonicallyOrderedAdd δ]
+    (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β) :
     Bot (LevenshteinEstimator C xs ys) where
   bot :=
   { inner :=

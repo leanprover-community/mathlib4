@@ -389,9 +389,9 @@ theorem card_le_card_biUnion_add_one {s : Finset ι} {f : ι → Finset α} (hf 
 
 end DoubleCounting
 
-section CanonicallyOrderedCommMonoid
+section CanonicallyOrderedMul
 
-variable [CanonicallyOrderedCommMonoid M] {f : ι → M} {s t : Finset ι}
+variable [OrderedCommMonoid M] [CanonicallyOrderedMul M] {f : ι → M} {s t : Finset ι}
 
 /-- In a canonically-ordered monoid, a product bounds each of its terms.
 
@@ -436,7 +436,7 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
 #align finset.prod_le_prod_of_ne_one' Finset.prod_le_prod_of_ne_one'
 #align finset.sum_le_sum_of_ne_zero Finset.sum_le_sum_of_ne_zero
 
-end CanonicallyOrderedCommMonoid
+end CanonicallyOrderedMul
 
 section OrderedCancelCommMonoid
 
