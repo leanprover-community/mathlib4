@@ -328,7 +328,7 @@ section Compact
 
 variable [CompactSpace α] [One γ] [TopologicalSpace γ]
 
-/-- In a compact space `α`, any continuous function has compact support. -/
+/-- In a compact space `α`, any function has compact support. -/
 @[to_additive]
 theorem HasCompactMulSupport.of_compactSpace (f : α → γ) :
     HasCompactMulSupport f :=
