@@ -40,7 +40,7 @@ structure SubStarmagma (M : Type v) [Mul M] [Star M] extends Subsemigroup M : Ty
 /-- Reinterpret a `SubStarmagma` as a `Subsemigroup`. -/
 add_decl_doc SubStarmagma.toSubsemigroup
 
-/-- A non-unital star subsemiring is a non-unital non-associative ring which is closed under the
+/-- A non-unital star subsemiring is a non-unital subsemiring which also is closed under the
 `star` operation. -/
 structure NonUnitalStarSubsemiring (R : Type v) [NonUnitalNonAssocSemiring R] [Star R]
     extends NonUnitalSubsemiring R, StarSubset R : Type v
