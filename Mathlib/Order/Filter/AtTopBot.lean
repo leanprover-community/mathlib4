@@ -1246,7 +1246,7 @@ theorem tendsto_mul_const_atBot_iff [NeBot l] :
   simp only [mul_comm _ r, tendsto_const_mul_atBot_iff]
 #align filter.tendsto_mul_const_at_bot_iff Filter.tendsto_mul_const_atBot_iff
 
-/-- The function `fun x ↦ f x * r` tends to negative infinity along a nontrivial filter
+/-- The function `fun x ↦ f x / r` tends to negative infinity along a nontrivial filter
 if and only if `r > 0` and `f` tends to negative infinity or `r < 0` and `f` tends to infinity. -/
 lemma tendsto_div_const_atBot_iff [NeBot l] :
     Tendsto (fun x ↦ f x / r) l atBot ↔ 0 < r ∧ Tendsto f l atBot ∨ r < 0 ∧ Tendsto f l atTop := by
@@ -1327,7 +1327,7 @@ theorem Tendsto.atTop_mul_const_of_neg (hr : r < 0) (hf : Tendsto f l atTop) :
 #align filter.tendsto.at_top_mul_neg_const Filter.Tendsto.atTop_mul_const_of_neg
 
 /-- If a function `f` tends to infinity along a filter,
-then `f` divided by a negative constant (on the right) tends to negative infinity. -/
+then `f` divided by a negative constant tends to negative infinity. -/
 lemma Tendsto.atTop_div_const_of_neg (hr : r < 0) (hf : Tendsto f l atTop) :
     Tendsto (fun x ↦ f x / r) l atBot := (tendsto_div_const_atBot_of_neg hr).2 hf
 
