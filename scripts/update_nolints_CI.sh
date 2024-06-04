@@ -28,11 +28,11 @@ git commit -m "$pr_title"
 gh_api() {
   local url="$1"
   shift
-  curl -s -H "Authorization: token $UPDATE_NOLINTS_TOKEN" \
+  curl -s -H "Authorization: token $DEPLOY_GITHUB_TOKEN" \
     "https://api.github.com/$url" "$@"
 }
 
-git push "${remote_name}" "HEAD:$branch_name"
+git push -v "${remote_name}" "HEAD:$branch_name"
 
 pr_id=$(gh_api "repos/${owner_name}/mathlib/pulls" -X POST -d @- <<EOF | jq -r .number
 {
