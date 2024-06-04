@@ -45,14 +45,13 @@ class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
 attribute [to_additive] OrderedCommGroup
 
 @[to_additive]
-theorem OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGroup α] :
+instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGroup α] :
     CovariantClass α α (· * ·) (· ≤ ·) where
       elim a b c bc := OrderedCommGroup.mul_le_mul_left b c bc a
 #align ordered_comm_group.to_covariant_class_left_le OrderedCommGroup.to_covariantClass_left_le
 #align ordered_add_comm_group.to_covariant_class_left_le OrderedAddCommGroup.to_covariantClass_left_le
 
 -- See note [lower instance priority]
-attribute [local instance] OrderedCommGroup.to_covariantClass_left_le in
 @[to_additive OrderedAddCommGroup.toOrderedCancelAddCommMonoid]
 instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [OrderedCommGroup α] :
     OrderedCancelCommMonoid α :=
@@ -63,14 +62,23 @@ instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [OrderedCo
 example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· + ·)) (· < ·) :=
   IsRightCancelAdd.covariant_swap_add_lt_of_covariant_swap_add_le α
 
-@[to_additive]
+-- Porting note: this instance is not used,
+-- and causes timeouts after lean4#2210.
+-- It was introduced in https://github.com/leanprover-community/mathlib/pull/17564
+-- but without the motivation clearly explained.
+/-- A choice-free shortcut instance. -/
+@[to_additive "A choice-free shortcut instance."]
 theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
     ContravariantClass α α (· * ·) (· ≤ ·) where
       elim a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
 #align ordered_comm_group.to_contravariant_class_left_le OrderedCommGroup.to_contravariantClass_left_le
 #align ordered_add_comm_group.to_contravariant_class_left_le OrderedAddCommGroup.to_contravariantClass_left_le
 
-@[to_additive]
+-- Porting note: this instance is not used,
+-- and causes timeouts after lean4#2210.
+-- See further explanation on `OrderedCommGroup.to_contravariantClass_left_le`.
+/-- A choice-free shortcut instance. -/
+@[to_additive "A choice-free shortcut instance."]
 theorem OrderedCommGroup.to_contravariantClass_right_le (α : Type u) [OrderedCommGroup α] :
     ContravariantClass α α (swap (· * ·)) (· ≤ ·) where
       elim a b c bc := by simpa using mul_le_mul_right' bc a⁻¹

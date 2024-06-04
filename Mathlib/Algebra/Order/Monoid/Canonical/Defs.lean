@@ -95,7 +95,7 @@ end ExistsMulOfLE
   This is satisfied by the natural numbers, for example, but not
   the integers or other nontrivial `OrderedAddCommGroup`s. -/
 -- `[Add α] [LE α]` would be enough, but it would cause a significant slowdown.
-class CanonicallyOrderedAdd (α : Type _) [AddMonoid α] [PartialOrder α] extends
+class CanonicallyOrderedAdd (α : Type*) [Add α] [LE α] extends
   ExistsAddOfLE α : Prop where
   /-- For any `a` and `b`, `a ≤ a + b` -/
   protected le_self_add : ∀ a b : α, a ≤ a + b
@@ -113,7 +113,7 @@ class CanonicallyOrderedAdd (α : Type _) [AddMonoid α] [PartialOrder α] exten
 -/
 -- `[Mul α] [LE α]` would be enough, but it would cause a significant slowdown.
 @[to_additive]
-class CanonicallyOrderedMul (α : Type _) [Monoid α] [PartialOrder α] extends
+class CanonicallyOrderedMul (α : Type*) [Mul α] [LE α] extends
   ExistsMulOfLE α : Prop where
   /-- For any `a` and `b`, `a ≤ a * b` -/
   protected le_self_mul : ∀ a b : α, a ≤ a * b
@@ -121,9 +121,10 @@ class CanonicallyOrderedMul (α : Type _) [Monoid α] [PartialOrder α] extends
 #align canonically_ordered_monoid.has_exists_mul_of_le CanonicallyOrderedMul.toExistsMulOfLE
 
 section Mul
+variable [Mul α]
 
-section Monoid
-variable [Monoid α] [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
+section LE
+variable [LE α] [CanonicallyOrderedMul α] {a b c : α}
 
 @[to_additive]
 theorem le_self_mul : a ≤ a * c :=
@@ -145,6 +146,11 @@ theorem le_iff_exists_mul : a ≤ b ↔ ∃ c, b = a * c :=
 #align le_iff_exists_mul le_iff_exists_mul
 #align le_iff_exists_add le_iff_exists_add
 
+end LE
+
+section Preorder
+variable [Preorder α] [CanonicallyOrderedMul α] {a b c : α}
+
 @[to_additive]
 theorem le_mul_of_le_left : a ≤ b → a ≤ b * c :=
   le_self_mul.trans'
@@ -157,24 +163,15 @@ theorem le_of_mul_le_left : a * b ≤ c → a ≤ c :=
 #align le_of_mul_le_left le_of_mul_le_left
 #align le_of_add_le_left le_of_add_le_left
 
-@[to_additive (attr := simp) zero_le]
-theorem one_le (a : α) : 1 ≤ a :=
-  one_mul a ▸ le_self_mul
-#align one_le one_le
-#align zero_le zero_le
+end Preorder
 
--- see Note [lower instance priority]
-@[to_additive]
-instance (priority := 100) CanonicallyOrderedMul.toOrderBot : OrderBot α where
-  bot := 1
-  bot_le := one_le
-#align canonically_ordered_add_monoid.to_order_bot CanonicallyOrderedAdd.toOrderBot
-#align canonically_ordered_monoid.to_order_bot CanonicallyOrderedMul.toOrderBot
+end Mul
 
-end Monoid
+section CommSemigroup
+variable [CommSemigroup α]
 
-section CommMonoid
-variable [CommMonoid α] [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
+section LE
+variable [LE α] [CanonicallyOrderedMul α] {a b c : α}
 
 @[to_additive]
 theorem le_mul_self : a ≤ b * a := by
@@ -196,6 +193,11 @@ theorem le_iff_exists_mul' {a b : α} :
 #align le_iff_exists_mul' le_iff_exists_mul'
 #align le_iff_exists_add' le_iff_exists_add'
 
+end LE
+
+section Preorder
+variable [Preorder α] [CanonicallyOrderedMul α] {a b c : α}
+
 @[to_additive]
 theorem le_of_mul_le_right : a * b ≤ c → b ≤ c :=
   le_mul_self.trans
@@ -208,10 +210,34 @@ theorem le_mul_of_le_right : a ≤ c → a ≤ b * c :=
 #align le_mul_of_le_right le_mul_of_le_right
 #align le_add_of_le_right le_add_of_le_right
 
-end CommMonoid
+end Preorder
 
-section
-variable [Monoid α] [PartialOrder α] [CanonicallyOrderedMul α]
+end CommSemigroup
+
+section MulOneClass
+variable [MulOneClass α]
+
+section LE
+variable [LE α] [CanonicallyOrderedMul α] {a b c : α}
+
+@[to_additive (attr := simp) zero_le]
+theorem one_le (a : α) : 1 ≤ a :=
+  one_mul a ▸ le_self_mul
+#align one_le one_le
+#align zero_le zero_le
+
+-- see Note [lower instance priority]
+@[to_additive]
+instance (priority := 100) CanonicallyOrderedMul.toOrderBot : OrderBot α where
+  bot := 1
+  bot_le := one_le
+#align canonically_ordered_add_monoid.to_order_bot CanonicallyOrderedAdd.toOrderBot
+#align canonically_ordered_monoid.to_order_bot CanonicallyOrderedMul.toOrderBot
+
+end LE
+
+section Preorder
+variable [Preorder α] [CanonicallyOrderedMul α]
 variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)]
 
 @[to_additive]
@@ -230,10 +256,10 @@ theorem le_mul_right {a b c : α} (h : a ≤ b) : a ≤ b * c :=
 #align le_mul_right le_mul_right
 #align le_add_right le_add_right
 
-end
+end Preorder
 
-section
-variable [Monoid α] [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
+section PartialOrder
+variable [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
 
 @[to_additive]
 theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 :=
@@ -269,7 +295,8 @@ theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_l
 #align eq_zero_or_pos eq_zero_or_pos
 
 @[to_additive (attr := simp) add_pos_iff]
-theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
+theorem one_lt_mul_iff [CovariantClass α α (· * ·) (· ≤ ·)]
+    [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] : 1 < a * b ↔ 1 < a ∨ 1 < b := by
   simp only [one_lt_iff_ne_one, Ne, mul_eq_one_iff, not_and_or]
 #align one_lt_mul_iff one_lt_mul_iff
 #align add_pos_iff add_pos_iff
@@ -300,21 +327,23 @@ theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔
 #align lt_iff_exists_mul lt_iff_exists_mul
 #align lt_iff_exists_add lt_iff_exists_add
 
-theorem pos_of_gt {M : Type _} [AddMonoid M] [PartialOrder M] [CanonicallyOrderedAdd M]
+end PartialOrder
+
+end MulOneClass
+
+theorem pos_of_gt {M : Type*} [AddZeroClass M] [Preorder M] [CanonicallyOrderedAdd M]
     {n m : M} (h : n < m) : 0 < m :=
   lt_of_le_of_lt (zero_le _) h
 #align pos_of_gt pos_of_gt
 
-end
-
 namespace NeZero
+variable {M : Type*} [AddZeroClass M] [PartialOrder M] [CanonicallyOrderedAdd M]
 
-theorem pos {M} [AddMonoid M] [PartialOrder M] [CanonicallyOrderedAdd M] (a : M) [NeZero a] :
-    0 < a :=
+theorem pos (a : M) [NeZero a] : 0 < a :=
   (zero_le a).lt_of_ne <| NeZero.out.symm
 #align ne_zero.pos NeZero.pos
 
-theorem of_gt {M} [AddMonoid M] [PartialOrder M] [CanonicallyOrderedAdd M] {x y : M} (h : x < y) :
+theorem of_gt {x y : M} (h : x < y) :
     NeZero y :=
   of_pos <| pos_of_gt h
 #align ne_zero.of_gt NeZero.of_gt
@@ -322,7 +351,7 @@ theorem of_gt {M} [AddMonoid M] [PartialOrder M] [CanonicallyOrderedAdd M] {x y 
 -- 1 < p is still an often-used `Fact`, due to `Nat.Prime` implying it, and it implying `Nontrivial`
 -- on `ZMod`'s ring structure. We cannot just set this to be any `x < y`, else that becomes a
 -- metavariable and it will hugely slow down typeclass inference.
-instance (priority := 10) of_gt' {M} [AddMonoid M] [PartialOrder M] [CanonicallyOrderedAdd M] [One M] {y : M}
+instance (priority := 10) of_gt' [One M] {y : M}
   -- Porting note: Fact.out has different type signature from mathlib3
   [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
 #align ne_zero.of_gt' NeZero.of_gt'
