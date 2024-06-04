@@ -50,7 +50,7 @@ def doPivotOperation (exitIdx enterIdx : Nat) : SimplexAlgorithmM matType Unit :
     have hb : newBasic.size = s.basic.size := by apply Array.size_setD
     have hf : newFree.size = s.free.size := by apply Array.size_setD
 
-    return (⟨newBasic, newFree, by rw [hb, hf]; exact mat⟩ : Table matType)
+    return (⟨newBasic, newFree, hb ▸ hf ▸ mat⟩ : Table matType)
 
 /--
 Check if the solution is found: the objective function is positive and all basic variables are
