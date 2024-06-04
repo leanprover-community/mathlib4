@@ -521,7 +521,7 @@ theorem mapsTo_image_iff {f : α → β} {g : γ → α} {s : Set γ} {t : Set �
   ⟨fun h c hc => h ⟨c, hc, rfl⟩, fun h _ ⟨_, hc⟩ => hc.2 ▸ h hc.1⟩
 #align set.maps_image_to Set.mapsTo_image_iff
 
-@[deprecated]
+@[deprecated (since := "2023-12-25")]
 lemma maps_image_to (f : α → β) (g : γ → α) (s : Set γ) (t : Set β) :
     MapsTo f (g '' s) t ↔ MapsTo (f ∘ g) s t :=
   mapsTo_image_iff
@@ -538,7 +538,7 @@ lemma MapsTo.comp_right {s : Set β} {t : Set γ} (hg : MapsTo g s t) (f : α �
 lemma mapsTo_univ_iff : MapsTo f univ t ↔ ∀ x, f x ∈ t :=
   ⟨fun h _ => h (mem_univ _), fun h x _ => h x⟩
 
-@[deprecated]
+@[deprecated (since := "2023-12-25")]
 theorem maps_univ_to (f : α → β) (s : Set β) : MapsTo f univ s ↔ ∀ a, f a ∈ s :=
   mapsTo_univ_iff
 #align set.maps_univ_to Set.maps_univ_to
@@ -547,7 +547,7 @@ theorem maps_univ_to (f : α → β) (s : Set β) : MapsTo f univ s ↔ ∀ a, f
 lemma mapsTo_range_iff {g : ι → α} : MapsTo f (range g) t ↔ ∀ i, f (g i) ∈ t :=
   forall_mem_range
 
-@[deprecated mapsTo_range_iff]
+@[deprecated mapsTo_range_iff (since := "2023-12-25")]
 theorem maps_range_to (f : α → β) (g : γ → α) (s : Set β) :
     MapsTo f (range g) s ↔ MapsTo (f ∘ g) univ s := by rw [← image_univ, mapsTo_image_iff]
 #align set.maps_range_to Set.maps_range_to
