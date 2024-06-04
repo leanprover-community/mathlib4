@@ -75,19 +75,29 @@ end GrothendieckTopology
 section
 
 variable [HasWeakSheafify J A] [HasWeakSheafify J B]
+  [J.PreservesSheafification F]
 
 /-- The functor `Sheaf J A ⥤ Sheaf J B` induced by a functor `F : A ⥤ B` which
 preserves sheafification. -/
-noncomputable def sheafCompose' [J.PreservesSheafification F] : Sheaf J A ⥤ Sheaf J B :=
+noncomputable def sheafCompose' : Sheaf J A ⥤ Sheaf J B :=
   Localization.lift _ (J.W_isInvertedBy_whiskeringRight_presheafToSheaf F) (presheafToSheaf J A)
 
 /-- The canonical isomorphism between `presheafToSheaf J A ⋙ sheafCompose' J F`
 and `((whiskeringRight Cᵒᵖ A B).obj F) ⋙ presheafToSheaf J B` when `F : A ⥤ B`
 preserves sheafification. -/
-noncomputable def presheafToSheafCompSheafCompose' [J.PreservesSheafification F] :
+noncomputable def presheafToSheafCompSheafCompose' :
     presheafToSheaf J A ⋙ sheafCompose' J F ≅
       ((whiskeringRight Cᵒᵖ A B).obj F) ⋙ presheafToSheaf J B :=
   Localization.fac _ _ _
+
+/-- The canonical isomorphism between `sheafCompose' J F` and
+`(sheafToPresheaf J A ⋙ (whiskeringRight Cᵒᵖ A B).obj F) ⋙ presheafToSheaf J B`
+when `F : A ⥤ B` preserves sheafification. -/
+noncomputable def sheafCompose'Iso :
+    sheafCompose' J F ≅
+      sheafToPresheaf J A ⋙ ((whiskeringRight Cᵒᵖ A B).obj F) ⋙ presheafToSheaf J B :=
+  (Functor.leftUnitor _).symm ≪≫ isoWhiskerRight (sheafificationNatIso J A) _ ≪≫
+    Functor.associator _ _ _≪≫ isoWhiskerLeft _ (presheafToSheafCompSheafCompose' J F)
 
 end
 
