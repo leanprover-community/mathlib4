@@ -192,8 +192,8 @@ lemma homCategory.ext {F G : BasedFunctor 𝒳 𝒴} (α β : F ⟶ G) (h : α.t
     α = β :=
   BasedNatTrans.ext α β h
 
-/-- The inverse of a based natural transformation whose underlying natural tranformation is an
-isomorphism -/
+-- /-- The inverse of a based natural transformation whose underlying natural tranformation is an
+-- isomorphism -/
 -- def BasedNatIso {F G : BasedFunctor 𝒳 𝒴} (α : F.toFunctor ≅ G.toFunctor)
 --     (aboveId' : ∀ a : 𝒳.cat, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.hom.app a)) : F ≅ G where
 --   hom := { toNatTrans := α.hom }
