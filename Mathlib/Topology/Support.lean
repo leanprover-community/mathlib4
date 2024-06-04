@@ -376,9 +376,8 @@ theorem HasCompactSupport.smul_right (hf : HasCompactSupport f) : HasCompactSupp
   exact hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, zero_smul]
 #align has_compact_support.smul_right HasCompactSupport.smul_right
 
-theorem HasCompactSupport.smul_left' (hf : HasCompactSupport f') : HasCompactSupport (f • f') := by
-  rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
-  exact hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, smul_zero]
+@[deprecated (since := "2024-06-05")]
+alias HasCompactSupport.smul_left' := HasCompactSupport.smul_left
 #align has_compact_support.smul_left' HasCompactSupport.smul_left'
 
 end SMulWithZero
