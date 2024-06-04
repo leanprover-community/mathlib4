@@ -101,6 +101,15 @@ def mapTriangleRotateIso :
       ((F.commShiftIso (1 : ℤ)).symm.app _)
       (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 
+/-- `F.mapTriangle` commutes with the inverse of the rotation of triangles. -/
+@[simps!]
+noncomputable def mapTriangleInvRotateIso [F.Additive] :
+    F.mapTriangle ⋙ Pretriangulated.invRotate D ≅
+      Pretriangulated.invRotate C ⋙ F.mapTriangle :=
+  NatIso.ofComponents
+    (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
+      (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
+
 end Additive
 
 variable [HasZeroObject C] [HasZeroObject D] [Preadditive C] [Preadditive D]

@@ -23,8 +23,6 @@ This file defines bundled homomorphisms of `R`-algebras.
 * `A →ₐ[R] B` : `R`-algebra homomorphism from `A` to `B`.
 -/
 
-open BigOperators
-
 universe u v w u₁ v₁
 
 /-- Defining the homomorphism in the category R-Alg. -/
@@ -263,7 +261,7 @@ protected theorem map_smul (r : R) (x : A) : φ (r • x) = r • φ x :=
 #align alg_hom.map_smul AlgHom.map_smul
 
 protected theorem map_sum {ι : Type*} (f : ι → A) (s : Finset ι) :
-    φ (∑ x in s, f x) = ∑ x in s, φ (f x) :=
+    φ (∑ x ∈ s, f x) = ∑ x ∈ s, φ (f x) :=
   map_sum _ _ _
 #align alg_hom.map_sum AlgHom.map_sum
 
@@ -458,7 +456,7 @@ protected theorem map_multiset_prod (s : Multiset A) : φ s.prod = (s.map φ).pr
 #align alg_hom.map_multiset_prod AlgHom.map_multiset_prod
 
 protected theorem map_prod {ι : Type*} (f : ι → A) (s : Finset ι) :
-    φ (∏ x in s, f x) = ∏ x in s, φ (f x) :=
+    φ (∏ x ∈ s, f x) = ∏ x ∈ s, φ (f x) :=
   map_prod _ _ _
 #align alg_hom.map_prod AlgHom.map_prod
 
@@ -532,8 +530,8 @@ theorem AlgHom.toRingHom_toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra 
 
 /-- The equivalence between `RingHom` and `ℚ`-algebra homomorphisms. -/
 @[simps]
-def RingHom.equivRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] : (R →+* S) ≃ (R →ₐ[ℚ] S)
-    where
+def RingHom.equivRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] :
+    (R →+* S) ≃ (R →ₐ[ℚ] S) where
   toFun := RingHom.toRatAlgHom
   invFun := AlgHom.toRingHom
   left_inv f := RingHom.toRatAlgHom_toRingHom f

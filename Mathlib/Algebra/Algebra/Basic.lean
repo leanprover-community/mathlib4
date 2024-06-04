@@ -9,6 +9,8 @@ import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Data.Int.CharZero
+import Mathlib.Data.Rat.Cast.CharZero
 
 #align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 
@@ -415,7 +417,7 @@ theorem intCast_smul {k V : Type*} [CommRing k] [AddCommGroup V] [Module k V] (r
 theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
     [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M] [NoZeroSMulDivisors R A]
     [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M := by
-  refine' ⟨fun {r m} h => _⟩
+  refine ⟨fun {r m} h => ?_⟩
   rw [algebra_compatible_smul A r m] at h
   cases' smul_eq_zero.1 h with H H
   · have : Function.Injective (algebraMap R A) :=
@@ -518,3 +520,45 @@ lemma IsUnit.algebraMap_of_algebraMap (f : A →ₗ[R] B) (hf : f 1 = 1) {r : R}
   isUnit_of_invertible _
 
 end invertibility
+
+section algebraMap
+
+variable {F E : Type*} [CommSemiring F] [Semiring E] [Algebra F E] (b : F →ₗ[F] E)
+
+/-- If `E` is an `F`-algebra, and there exists an injective `F`-linear map from `F` to `E`,
+then the algebra map from `F` to `E` is also injective. -/
+theorem injective_algebraMap_of_linearMap (hb : Function.Injective b) :
+    Function.Injective (algebraMap F E) := fun x y e ↦ hb <| by
+  rw [← mul_one x, ← mul_one y, ← smul_eq_mul, ← smul_eq_mul,
+    map_smul, map_smul, Algebra.smul_def, Algebra.smul_def, e]
+
+/-- If `E` is an `F`-algebra, and there exists a surjective `F`-linear map from `F` to `E`,
+then the algebra map from `F` to `E` is also surjective. -/
+theorem surjective_algebraMap_of_linearMap (hb : Function.Surjective b) :
+    Function.Surjective (algebraMap F E) := fun x ↦ by
+  obtain ⟨x, rfl⟩ := hb x
+  obtain ⟨y, hy⟩ := hb (b 1 * b 1)
+  refine ⟨x * y, ?_⟩
+  obtain ⟨z, hz⟩ := hb 1
+  apply_fun (x • z • ·) at hy
+  rwa [← map_smul, smul_eq_mul, mul_comm, ← smul_mul_assoc, ← map_smul _ z, smul_eq_mul, mul_one,
+    ← smul_eq_mul, map_smul, hz, one_mul, ← map_smul, smul_eq_mul, mul_one, smul_smul,
+    ← Algebra.algebraMap_eq_smul_one] at hy
+
+/-- If `E` is an `F`-algebra, and there exists a bijective `F`-linear map from `F` to `E`,
+then the algebra map from `F` to `E` is also bijective.
+
+NOTE: The same result can also be obtained if there are two `F`-linear maps from `F` to `E`,
+one is injective, the other one is surjective. In this case, use
+`injective_algebraMap_of_linearMap` and `surjective_algebraMap_of_linearMap` separately. -/
+theorem bijective_algebraMap_of_linearMap (hb : Function.Bijective b) :
+    Function.Bijective (algebraMap F E) :=
+  ⟨injective_algebraMap_of_linearMap b hb.1, surjective_algebraMap_of_linearMap b hb.2⟩
+
+/-- If `E` is an `F`-algebra, there exists an `F`-linear isomorphism from `F` to `E` (namely,
+`E` is a free `F`-module of rank one), then the algebra map from `F` to `E` is bijective. -/
+theorem bijective_algebraMap_of_linearEquiv (b : F ≃ₗ[F] E) :
+    Function.Bijective (algebraMap F E) :=
+  bijective_algebraMap_of_linearMap _ b.bijective
+
+end algebraMap

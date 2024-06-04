@@ -502,8 +502,8 @@ def HomEquiv.fromRestriction {X : ModuleCat R} {Y : ModuleCat S}
 corresponds to `(restrictScalars f).obj Y ⟶ X` by `y ↦ g y 1`
 -/
 @[simps apply]
-def HomEquiv.toRestriction {X Y} (g : Y ⟶ (coextendScalars f).obj X) : (restrictScalars f).obj Y ⟶ X
-    where
+def HomEquiv.toRestriction {X Y} (g : Y ⟶ (coextendScalars f).obj X) :
+    (restrictScalars f).obj Y ⟶ X where
   toFun := fun y : Y => (g y) (1 : S)
   map_add' x y := by dsimp; rw [g.map_add, LinearMap.add_apply]
   map_smul' r (y : Y) := by

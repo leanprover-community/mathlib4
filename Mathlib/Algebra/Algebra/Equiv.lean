@@ -21,8 +21,6 @@ This file defines bundled isomorphisms of `R`-algebras.
 * `A ≃ₐ[R] B` : `R`-algebra equivalence from `A` to `B`.
 -/
 
-open BigOperators
-
 universe u v w u₁ v₁
 
 /-- An equivalence of algebras is an equivalence of rings commuting with the actions of scalars. -/
@@ -42,7 +40,7 @@ notation:50 A " ≃ₐ[" R "] " A' => AlgEquiv R A A'
 
 /-- `AlgEquivClass F R A B` states that `F` is a type of algebra structure preserving
   equivalences. You should extend this class when you extend `AlgEquiv`. -/
-class AlgEquivClass (F : Type*) (R A B : outParam (Type*)) [CommSemiring R] [Semiring A]
+class AlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R] [Semiring A]
     [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B]
     extends RingEquivClass F A B : Prop where
   /-- An equivalence of algebras commutes with the action of scalars. -/
@@ -224,9 +222,9 @@ theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x := by
   simp only [Algebra.smul_def, map_mul, commutes]
 #align alg_equiv.map_smul AlgEquiv.map_smul
 
-@[deprecated map_sum]
+@[deprecated _root_.map_sum (since := "2023-12-26")]
 nonrec theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
-    e (∑ x in s, f x) = ∑ x in s, e (f x) :=
+    e (∑ x ∈ s, f x) = ∑ x ∈ s, e (f x) :=
   map_sum e f s
 #align alg_equiv.map_sum AlgEquiv.map_sum
 
@@ -821,7 +819,7 @@ variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
 -- Porting note: Added nonrec
 nonrec theorem map_prod {ι : Type*} (f : ι → A₁) (s : Finset ι) :
-    e (∏ x in s, f x) = ∏ x in s, e (f x) :=
+    e (∏ x ∈ s, f x) = ∏ x ∈ s, e (f x) :=
   map_prod _ f s
 #align alg_equiv.map_prod AlgEquiv.map_prod
 

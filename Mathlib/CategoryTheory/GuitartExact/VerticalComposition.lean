@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.CatCommSq
-import Mathlib.CategoryTheory.GuitartExact
+import Mathlib.CategoryTheory.GuitartExact.Basic
 
 /-!
 # Vertical composition of Guitart exact squares
@@ -147,7 +147,7 @@ lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
       simp only [assoc, ← eR.inverse.map_comp_assoc]
       erw [Equivalence.counitInv_app_functor, ← NatTrans.naturality_assoc, Iso.hom_inv_id_app,
         comp_id, ← NatTrans.naturality_assoc, Iso.hom_inv_id_app_assoc, ← H₂.map_comp,
-          Iso.hom_inv_id_app, H₂.map_id, comp_id])
+        Iso.hom_inv_id_app, H₂.map_id, comp_id])
     rw [this]
     infer_instance
   · intro

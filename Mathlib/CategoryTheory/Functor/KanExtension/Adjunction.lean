@@ -33,14 +33,12 @@ variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D)
   {H : Type*} [Category H] [∀ (F : C ⥤ H), HasLeftKanExtension L F]
 
 /-- The left Kan extension functor `(C ⥤ H) ⥤ (D ⥤ H)` along a functor `C ⥤ D`. -/
-@[pp_dot]
 noncomputable def lan : (C ⥤ H) ⥤ (D ⥤ H) where
   obj F := leftKanExtension L F
   map {F₁ F₂} φ := descOfIsLeftKanExtension _ (leftKanExtensionUnit L F₁) _
     (φ ≫ leftKanExtensionUnit L F₂)
 
 /-- The natural transformation `F ⟶ L ⋙ (L.lan).obj G`. -/
-@[pp_dot]
 noncomputable def lanUnit : (𝟭 (C ⥤ H)) ⟶ L.lan ⋙ (whiskeringLeft C D H).obj L where
   app F := leftKanExtensionUnit L F
   naturality {F₁ F₂} φ := by ext; simp [lan]
@@ -59,7 +57,6 @@ noncomputable def isPointwiseLeftKanExtensionLanUnit
 variable (H) in
 /-- The left Kan extension functor `L.Lan` is left adjoint to the
 precomposition by `L`. -/
-@[pp_dot]
 noncomputable def lanAdjunction : L.lan ⊣ (whiskeringLeft C D H).obj L :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun F G => homEquivOfIsLeftKanExtension _ (L.lanUnit.app F) G

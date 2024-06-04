@@ -22,6 +22,8 @@ members.
 * `CommGroupWithZero`
 -/
 
+assert_not_exists DenselyOrdered
+
 universe u
 
 -- We have to fix the universe of `G₀` here, since the default argument to
@@ -233,6 +235,14 @@ such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`. -/
 class CommGroupWithZero (G₀ : Type*) extends CommMonoidWithZero G₀, GroupWithZero G₀
 #align comm_group_with_zero CommGroupWithZero
+
+section
+variable [CancelMonoidWithZero M₀] {x : M₀}
+
+lemma eq_zero_or_one_of_sq_eq_self (hx : x ^ 2 = x) : x = 0 ∨ x = 1 :=
+  or_iff_not_imp_left.mpr (mul_left_injective₀ · <| by simpa [sq] using hx)
+
+end
 
 section GroupWithZero
 

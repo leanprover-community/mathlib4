@@ -5,7 +5,8 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Units
-import Mathlib.Algebra.Order.Monoid.Lemmas
+import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Tactic.NthRewrite
 
 #align_import algebra.regular.basic from "leanprover-community/mathlib"@"5cd3c25312f210fec96ba1edb2aebfb2ccf2010f"
@@ -146,7 +147,7 @@ element, then `b` is right-regular. -/
 @[to_additive "If an element `b` becomes add-right-regular after adding to it on the right
 an add-right-regular element, then `b` is add-right-regular."]
 theorem IsRightRegular.of_mul (ab : IsRightRegular (b * a)) : IsRightRegular b := by
-  refine' fun x y xy => ab (_ : x * (b * a) = y * (b * a))
+  refine fun x y xy => ab (?_ : x * (b * a) = y * (b * a))
   rw [← mul_assoc, ← mul_assoc]
   exact congr_arg (· * a) xy
 #align is_right_regular.of_mul IsRightRegular.of_mul
@@ -169,7 +170,7 @@ are regular. -/
 `b + a` are add-regular."]
 theorem isRegular_mul_and_mul_iff :
     IsRegular (a * b) ∧ IsRegular (b * a) ↔ IsRegular a ∧ IsRegular b := by
-  refine' ⟨_, _⟩
+  refine ⟨?_, ?_⟩
   · rintro ⟨ab, ba⟩
     exact
       ⟨⟨IsLeftRegular.of_mul ba.left, IsRightRegular.of_mul ab.right⟩,
@@ -247,7 +248,7 @@ theorem isRegular_iff_subsingleton : IsRegular (0 : R) ↔ Subsingleton R :=
 theorem IsLeftRegular.ne_zero [Nontrivial R] (la : IsLeftRegular a) : a ≠ 0 := by
   rintro rfl
   rcases exists_pair_ne R with ⟨x, y, xy⟩
-  refine' xy (la (_ : 0 * x = 0 * y)) -- Porting note: lean4 seems to need the type signature
+  refine xy (la (?_ : 0 * x = 0 * y)) -- Porting note: lean4 seems to need the type signature
   rw [zero_mul, zero_mul]
 #align is_left_regular.ne_zero IsLeftRegular.ne_zero
 
@@ -255,7 +256,7 @@ theorem IsLeftRegular.ne_zero [Nontrivial R] (la : IsLeftRegular a) : a ≠ 0 :=
 theorem IsRightRegular.ne_zero [Nontrivial R] (ra : IsRightRegular a) : a ≠ 0 := by
   rintro rfl
   rcases exists_pair_ne R with ⟨x, y, xy⟩
-  refine' xy (ra (_ : x * 0 = y * 0))
+  refine xy (ra (?_ : x * 0 = y * 0))
   rw [mul_zero, mul_zero]
 #align is_right_regular.ne_zero IsRightRegular.ne_zero
 
@@ -309,7 +310,7 @@ variable [CommSemigroup R] {a b : R}
 /-- A product is regular if and only if the factors are. -/
 @[to_additive "A sum is add-regular if and only if the summands are."]
 theorem isRegular_mul_iff : IsRegular (a * b) ↔ IsRegular a ∧ IsRegular b := by
-  refine' Iff.trans _ isRegular_mul_and_mul_iff
+  refine Iff.trans ?_ isRegular_mul_and_mul_iff
   exact ⟨fun ab => ⟨ab, by rwa [mul_comm]⟩, fun rab => rab.1⟩
 #align is_regular_mul_iff isRegular_mul_iff
 #align is_add_regular_add_iff isAddRegular_add_iff

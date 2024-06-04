@@ -61,8 +61,16 @@ def comp (Φ : LocalizerMorphism W₁ W₂) (Ψ : LocalizerMorphism W₂ W₃) :
   functor := Φ.functor ⋙ Ψ.functor
   map _ _ _ hf := Ψ.map _ (Φ.map _ hf)
 
-variable (Φ : LocalizerMorphism W₁ W₂) (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁]
-  (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂]
+variable (Φ : LocalizerMorphism W₁ W₂)
+
+/-- The opposite localizer morphism `LocalizerMorphism W₁.op W₂.op` deduced
+from `Φ : LocalizerMorphism W₁ W₂`. -/
+@[simps]
+def op : LocalizerMorphism W₁.op W₂.op where
+  functor := Φ.functor.op
+  map _ _ _ hf := Φ.map _ hf
+
+variable (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁] (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂]
 
 lemma inverts : W₁.IsInvertedBy (Φ.functor ⋙ L₂) :=
   fun _ _ _ hf => Localization.inverts L₂ W₂ _ (Φ.map _ hf)
@@ -156,8 +164,8 @@ other via this equivalence, then `Φ` is a localized equivalence. -/
 lemma IsLocalizedEquivalence.of_equivalence [Φ.functor.IsEquivalence]
     (h : W₂ ≤ W₁.map Φ.functor) : IsLocalizedEquivalence Φ := by
   haveI : Functor.IsLocalization (Φ.functor ⋙ MorphismProperty.Q W₂) W₁ := by
-    refine' Functor.IsLocalization.of_equivalence_source W₂.Q W₂ (Φ.functor ⋙ W₂.Q) W₁
-      (Functor.asEquivalence Φ.functor).symm _ (Φ.inverts W₂.Q)
+    refine Functor.IsLocalization.of_equivalence_source W₂.Q W₂ (Φ.functor ⋙ W₂.Q) W₁
+      (Functor.asEquivalence Φ.functor).symm ?_ (Φ.inverts W₂.Q)
       ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight ((Equivalence.unitIso _).symm) _ ≪≫
         Functor.leftUnitor _)
     erw [W₁.isoClosure.inverseImage_equivalence_functor_eq_map_inverse

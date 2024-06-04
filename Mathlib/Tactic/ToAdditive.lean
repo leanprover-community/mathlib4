@@ -1095,7 +1095,7 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
       return #[]
   aux fun declName ↦ do match (← getEnv).find? declName with
     | some (ConstantInfo.inductInfo {ctors := ctors, ..}) =>
-        return ctors.toArray.map (.mkSimple ·.getString)
+        return ctors.toArray.map (.mkSimple ·.lastComponentAsString)
     | _ => pure #[]
 
 /-- Elaboration of the configuration options for `to_additive`. -/
