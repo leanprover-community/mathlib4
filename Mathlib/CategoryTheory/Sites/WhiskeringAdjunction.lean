@@ -36,6 +36,9 @@ variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B]
 
 namespace Adjunction
 
+/-- Given an adjunction between categories `A` and `B`, this is the
+functor `Sheaf J B ⥤ Sheaf J A` that is induced by the composition
+with the right adjoint functor `B ⥤ A`. -/
 abbrev sheafR : Sheaf J B ⥤ Sheaf J A :=
   letI := adj.isRightAdjoint; sheafCompose J R
 
@@ -54,10 +57,14 @@ lemma preservesSheafification : J.PreservesSheafification L where
 
 variable [HasWeakSheafify J A] [HasWeakSheafify J B]
 
+/-- Given an adjunction between categories `A` and `B`, with `L : A ⥤ B`
+as the left adjoint, this is the functor `sheafCompose' J L : Sheaf J A ⥤ Sheaf J B`. -/
 noncomputable abbrev sheafL : Sheaf J A ⥤ Sheaf J B :=
   letI := adj.preservesSheafification J; sheafCompose' J L
 
 variable {J} in
+/-- Given an adjunction `L ⊣ R` and a Grothendieck topology `J`, this is the
+bijection `((sheafCompose' J L).obj F ⟶ G) ≃ (F ⟶ (sheafCompose J R).obj G)` -/
 noncomputable def sheafHomEquiv {F : Sheaf J A} {G : Sheaf J B} :
     ((adj.sheafL J).obj F ⟶ G) ≃ (F ⟶ (adj.sheafR J).obj G) := by
   letI := adj.preservesSheafification J
@@ -67,6 +74,9 @@ noncomputable def sheafHomEquiv {F : Sheaf J A} {G : Sheaf J B} :
     (((adj.whiskerRight Cᵒᵖ).homEquiv F.val G.val).trans
     (Equiv.symm (fullyFaithfulSheafToPresheaf J A).homEquiv ))))
 
+/-- Given an adjunction between two categories `A` and `B`, and
+a Grothendieck topology `J` on a category `C`, this is the induced
+adjunction between the categories `Sheaf J A` and `Sheaf J B`. -/
 noncomputable def sheaf : adj.sheafL J ⊣ adj.sheafR J :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ ↦ adj.sheafHomEquiv
