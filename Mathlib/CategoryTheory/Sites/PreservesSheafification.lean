@@ -80,7 +80,7 @@ section
 variable [HasWeakSheafify J B]
 
 /-- This is the functor sending a sheaf `X : Sheaf J A` to the sheafification
-of `X ⋙ F`. -/
+of `X.val ⋙ F`. -/
 noncomputable abbrev Sheaf.composeAndSheafify : Sheaf J A ⥤ Sheaf J B :=
   sheafToPresheaf J A ⋙ (whiskeringRight _ _ _).obj F ⋙ presheafToSheaf J B
 set_option linter.uppercaseLean3 false in
