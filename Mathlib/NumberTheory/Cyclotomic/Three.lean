@@ -36,6 +36,8 @@ local notation3 "η" => (IsPrimitiveRoot.isUnit (hζ.toInteger_isPrimitiveRoot) 
 local notation3 "λ" => (η : 𝓞 K) - 1
 
 /-- Let `u` be a unit in `(𝓞 K)ˣ`, then `u ∈ [1, -1, η, -η, η^2, -η^2]`. -/
+-- Here `List` is more convenient than `Finset`, even if further from the informal statement.
+-- For example, `fin_cases` below does not work with a `Finset`.
 theorem Units.mem : u ∈ [1, -1, η, -η, η ^ 2, -η ^ 2] := by
   have hrank : rank K = 0 := by
     dsimp only [rank]
