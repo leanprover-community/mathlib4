@@ -164,7 +164,8 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : ‚à
   simp_rw [Equiv.ofBijective_apply, z, hf a b, Nat.mul_add_mod,
     Nat.mod_eq_of_lt (gl a), Nat.mod_eq_of_lt (gl b), Fin.val_eq_val, g.apply_eq_iff_eq]
 
-/-! ### Discrete and indiscrete finpartition -/
+/-! ### Discrete and indiscrete finpartitions -/
+
 
 variable (s) -- [Decidable (a = ‚ä•)]
 
