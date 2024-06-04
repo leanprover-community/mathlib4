@@ -61,6 +61,10 @@ lemma isSMulRegular_iff_smul_eq_zero_imp_eq_zero :
   Iff.trans (Module.toAddMonoidEnd R M r).ker_eq_bot_iff.symm
     <| AddSubgroup.eq_bot_iff_forall _
 
+lemma isSMulRegular_iff_mem_nonZeroSMulDivisors :
+    IsSMulRegular M r ↔ r ∈ nonZeroSMulDivisors R M :=
+  isSMulRegular_iff_smul_eq_zero_imp_eq_zero M r
+
 variable {M r}
 
 lemma isSMulRegular_of_smul_eq_zero_imp_eq_zero
