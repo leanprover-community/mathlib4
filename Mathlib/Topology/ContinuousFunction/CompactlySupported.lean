@@ -506,7 +506,7 @@ theorem smulc_apply [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [Conti
 
 /-- A continuous function on a compact space has automatically compact support. This is not an
 instance to avoid type class loops. -/
-lemma _root_.compactlySupportedContinuousMapClass.ofCompact (G : Type*) [FunLike G α β]
+lemma of_compactSpace (G : Type*) [FunLike G α β]
     [ContinuousMapClass G α β] [CompactSpace α] : CompactlySupportedContinuousMapClass G α β where
   map_continuous := map_continuous
   hasCompactSupport := by
