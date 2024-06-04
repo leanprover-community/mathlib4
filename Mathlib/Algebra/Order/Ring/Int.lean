@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Algebra.Ring.Int
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Data.Set.Basic
 
 #align_import data.int.order.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -50,6 +51,10 @@ instance instOrderedCommRing : OrderedCommRing ℤ := StrictOrderedCommRing.toOr
 instance instOrderedRing : OrderedRing ℤ := StrictOrderedRing.toOrderedRing'
 
 /-! ### Miscellaneous lemmas -/
+
+lemma isCompl_even_odd : IsCompl { n : ℤ | Even n } { n | Odd n } := by
+  simp [← Set.compl_setOf, isCompl_compl]
+#align int.is_compl_even_odd Int.isCompl_even_odd
 
 lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| := by
   rw [← natCast_natAbs, Int.cast_natCast]

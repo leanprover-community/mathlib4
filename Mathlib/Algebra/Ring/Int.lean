@@ -23,6 +23,7 @@ If this file needs to be split, please create an `Algebra.Ring.Int` folder and m
 be `Algebra.Ring.Int.Basic`.
 -/
 
+assert_not_exists DenselyOrdered
 assert_not_exists Set.Subsingleton
 
 namespace Int
@@ -109,10 +110,6 @@ lemma even_iff_not_odd : Even n ↔ ¬Odd n := by rw [not_odd_iff, even_iff]
 
 @[simp] lemma odd_iff_not_even : Odd n ↔ ¬Even n := by rw [not_even_iff, odd_iff]
 #align int.odd_iff_not_even Int.odd_iff_not_even
-
-lemma isCompl_even_odd : IsCompl { n : ℤ | Even n } { n | Odd n } := by
-  simp [← Set.compl_setOf, isCompl_compl]
-#align int.is_compl_even_odd Int.isCompl_even_odd
 
 lemma even_or_odd (n : ℤ) : Even n ∨ Odd n := Or.imp_right odd_iff_not_even.2 <| em <| Even n
 #align int.even_or_odd Int.even_or_odd
