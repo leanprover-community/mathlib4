@@ -28,12 +28,13 @@ import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Algebra.AlgebraicCard
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.BigOperators.Associated
-import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.BigOperators.Group.Multiset
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
@@ -1476,6 +1477,7 @@ import Mathlib.CategoryTheory.Monad.Monadicity
 import Mathlib.CategoryTheory.Monad.Products
 import Mathlib.CategoryTheory.Monad.Types
 import Mathlib.CategoryTheory.Monoidal.Bimod
+import Mathlib.CategoryTheory.Monoidal.Bimon_
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Comon_
@@ -1567,6 +1569,7 @@ import Mathlib.CategoryTheory.Shift.Predicate
 import Mathlib.CategoryTheory.Shift.Pullback
 import Mathlib.CategoryTheory.Shift.Quotient
 import Mathlib.CategoryTheory.Shift.ShiftSequence
+import Mathlib.CategoryTheory.Shift.SingleFunctors
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Simple
 import Mathlib.CategoryTheory.SingleObj
@@ -1595,6 +1598,7 @@ import Mathlib.CategoryTheory.Sites.Coverage
 import Mathlib.CategoryTheory.Sites.CoversTop
 import Mathlib.CategoryTheory.Sites.DenseSubsite
 import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
+import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 import Mathlib.CategoryTheory.Sites.Equivalence
 import Mathlib.CategoryTheory.Sites.Grothendieck
@@ -1655,6 +1659,7 @@ import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Combinatorics.Additive.AP.Three.Behrend
 import Mathlib.Combinatorics.Additive.AP.Three.Defs
 import Mathlib.Combinatorics.Additive.Corner.Defs
+import Mathlib.Combinatorics.Additive.Corner.Roth
 import Mathlib.Combinatorics.Additive.Dissociation
 import Mathlib.Combinatorics.Additive.ETransform
 import Mathlib.Combinatorics.Additive.Energy
@@ -2720,7 +2725,8 @@ import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
 import Mathlib.LinearAlgebra.Matrix.Circulant
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Matrix.Dual
@@ -4288,6 +4294,7 @@ import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.Delaborators
 import Mathlib.Util.DischargerAsTactic
 import Mathlib.Util.Export
+import Mathlib.Util.GetAllModules
 import Mathlib.Util.IncludeStr
 import Mathlib.Util.LongNames
 import Mathlib.Util.MemoFix
