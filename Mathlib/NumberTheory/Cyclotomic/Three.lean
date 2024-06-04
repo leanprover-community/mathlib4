@@ -66,13 +66,14 @@ theorem Units.mem : u ∈ [1, -1, η, -η, η ^ 2, -η ^ 2] := by
   fin_cases hr <;> rcases hru with (h | h) <;> simp [h]
 
 /-- We have that `λ ^ 2 = -3 * η`. -/
-lemma lambda_sq : λ ^ 2 = -3 * η := by
+private lemma lambda_sq : λ ^ 2 = -3 * η := by
   ext
   calc (λ ^ 2 : K) = η ^ 2 + η + 1 - 3 * η := by ring
   _ = 0 - 3 * η := by simpa using hζ.isRoot_cyclotomic (by decide)
   _ = -3 * η := by ring
 
-lemma eta_sq : (η ^ 2 : 𝓞 K) = - η - 1 := by
+/-- We have that `η ^ 2 = -η - 1`. -/
+private lemma eta_sq : (η ^ 2 : 𝓞 K) = - η - 1 := by
   rw [← neg_add', ← add_eq_zero_iff_eq_neg, ← add_assoc]
   ext; simpa using hζ.isRoot_cyclotomic (by decide)
 
