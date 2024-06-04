@@ -48,6 +48,9 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
   us to conclude that this is equivalent to all subspaces being normal. Such a space is not
   necessarily Hausdorff or regular, even if it is T₀.
 * `T5Space`: A T₅ space is a completely normal T₁ space. T₅ implies T₄.
+* `PerfectlyNormalSpace`: A perfectly normal space is a normal space such that
+  closed sets are Gδ.
+* `T6Space`: A T₆ space is a Perfectly normal T₁ space. T₆ implies T₅.
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
@@ -2454,6 +2457,21 @@ instance [CompletelyNormalSpace X] [R0Space X] : T5Space (SeparationQuotient X) 
     exacts [hd₁.preimage mk, hd₂.preimage mk]
 
 end CompletelyNormal
+
+
+/-- TODO wire this up with GDelta.lean --/
+def IsGδ (s : Set X) : Prop :=
+  ∃ T : Set (Set X), (∀ t ∈ T, IsOpen t) ∧ T.Countable ∧ s = ⋂₀ T
+
+section PerfectlyNormal
+
+/-- A topological space `X` is a *perfectly normal space* provided it is normal and
+closed sets are Gδ. -/
+class PefectlyNormalSpace (X : Type u) [TopologicalSpace X] [NormalSpace X] : Prop where
+  closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ h
+
+end PerfectlyNormal
+
 
 /-- In a compact T₂ space, the connected component of a point equals the intersection of all
 its clopen neighbourhoods. -/
