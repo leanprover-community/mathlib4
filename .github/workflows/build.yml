@@ -283,13 +283,27 @@ jobs:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
-      - name: lint mathlib
-        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
-        id: lint
-        uses: liskin/gh-problem-matcher-wrap@v3
-        with:
-          linters: gcc
-          run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
+      - name: update nolints.json and style-exceptions.txt
+        shell: bash
+        run: |
+          env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
+          ./scripts/update-style-exceptions.sh
+
+      - name: configure git setup
+        run: |
+          git remote add origin-bot "https://leanprover-community-bot:${{ secrets.UPDATE_NOLINTS_TOKEN }}@github.com/leanprover-community/mathlib.git"
+          git config user.email "leanprover.community@gmail.com"
+          git config user.name "leanprover-community-bot"
+
+          # By default, github actions overrides the credentials used to access any
+          # github url so that it uses the github-actions[bot] user.  We want to access
+          # github using a different username.
+          git config --unset http.https://github.com/.extraheader
+
+      - name: file a new PR to update nolints.json and style-exceptions.txt
+        run: ./scripts/update_nolints_CI.sh
+        env:
+          DEPLOY_GITHUB_TOKEN: ${{ secrets.UPDATE_NOLINTS_TOKEN }}
 
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
       # Instead we run it in a cron job on master: see `lean4checker.yml`.
