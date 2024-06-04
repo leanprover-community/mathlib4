@@ -1,8 +1,7 @@
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Rat.Order
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Order.Interval.Finset.Nat
 
 private axiom test_sorry : ∀ {α}, α

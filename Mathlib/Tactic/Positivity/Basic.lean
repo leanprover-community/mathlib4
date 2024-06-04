@@ -5,11 +5,10 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Group.PosPart
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Int.CharZero
-import Mathlib.Data.NNRat.Defs
-import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Rat.Order
+import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.PNat.Defs
 import Mathlib.Tactic.Positivity.Core
 import Qq
