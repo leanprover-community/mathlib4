@@ -885,6 +885,10 @@ theorem isCompact_basicOpen (f : R) : IsCompact (basicOpen f : Set (PrimeSpectru
   exact isCompact_range (map_continuous _)
 #align prime_spectrum.is_compact_basic_open PrimeSpectrum.isCompact_basicOpen
 
+lemma comap_basicOpen (f : R →+* S) (x : R) :
+    TopologicalSpace.Opens.comap (comap f) (basicOpen x) = basicOpen (f x) :=
+  rfl
+
 end BasicOpen
 
 section Order

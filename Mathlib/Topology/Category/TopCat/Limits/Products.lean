@@ -185,7 +185,7 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
   uniq := by
     intro S m h
     -- Porting note: used to be `ext x`
-    refine' ContinuousMap.ext (fun (x : ↥(S.pt)) => Prod.ext _ _)
+    refine ContinuousMap.ext (fun (x : ↥(S.pt)) => Prod.ext ?_ ?_)
     · specialize h ⟨WalkingPair.left⟩
       apply_fun fun e => e x at h
       exact h
@@ -302,8 +302,8 @@ protected def binaryCofan (X Y : TopCat.{u}) : BinaryCofan X Y :=
 
 /-- The constructed binary coproduct cofan in `TopCat` is the coproduct. -/
 def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y) := by
-  refine' Limits.BinaryCofan.isColimitMk (fun s =>
-    {toFun := Sum.elim s.inl s.inr, continuous_toFun := _ }) _ _ _
+  refine Limits.BinaryCofan.isColimitMk (fun s =>
+    {toFun := Sum.elim s.inl s.inr, continuous_toFun := ?_ }) ?_ ?_ ?_
   · apply
       Continuous.sum_elim (BinaryCofan.inl s).continuous_toFun (BinaryCofan.inr s).continuous_toFun
   · intro s
