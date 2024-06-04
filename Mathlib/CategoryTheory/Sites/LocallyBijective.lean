@@ -149,4 +149,25 @@ instance : J.WEqualsLocallyBijective (Type (max u v)) := inferInstance
 
 end GrothendieckTopology
 
+namespace Presheaf
+
+variable {A}
+variable [HasWeakSheafify J A] [J.WEqualsLocallyBijective A] {P Q : Cᵒᵖ ⥤ A} (φ : P ⟶ Q)
+
+lemma isLocallyInjective_presheafToSheaf_map_iff :
+    Sheaf.IsLocallyInjective ((presheafToSheaf J A).map φ) ↔ IsLocallyInjective J φ := by
+  rw [← Sheaf.isLocallyInjective_sheafToPresheaf_map_iff,
+    ← isLocallyInjective_comp_iff J _ (toSheafify J Q),
+    ← comp_isLocallyInjective_iff J (toSheafify J P),
+    toSheafify_naturality, sheafToPresheaf_map]
+
+lemma isLocallySurjective_presheafToSheaf_map_iff :
+    Sheaf.IsLocallySurjective ((presheafToSheaf J A).map φ) ↔ IsLocallySurjective J φ := by
+  rw [← Sheaf.isLocallySurjective_sheafToPresheaf_map_iff,
+    ← isLocallySurjective_comp_iff J _ (toSheafify J Q),
+    ← comp_isLocallySurjective_iff J (toSheafify J P),
+    toSheafify_naturality, sheafToPresheaf_map]
+
+end Presheaf
+
 end CategoryTheory

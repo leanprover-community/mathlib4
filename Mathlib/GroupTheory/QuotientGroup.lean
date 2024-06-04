@@ -59,8 +59,8 @@ protected def con : Con G where
     rw [leftRel_eq] at hab hcd ⊢
     dsimp only
     calc
-      (a * c)⁻¹ * (b * d) = c⁻¹ * (a⁻¹ * b) * c⁻¹⁻¹ * (c⁻¹ * d) :=
-        by simp only [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
+      (a * c)⁻¹ * (b * d) = c⁻¹ * (a⁻¹ * b) * c⁻¹⁻¹ * (c⁻¹ * d) := by
+        simp only [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
       _ ∈ N := N.mul_mem (nN.conj_mem _ hab _) hcd
 #align quotient_group.con QuotientGroup.con
 #align quotient_add_group.con QuotientAddGroup.con
