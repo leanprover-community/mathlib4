@@ -48,8 +48,6 @@ The proof of `catalan_eq_centralBinom_div` follows https://math.stackexchange.co
 -/
 
 
-open BigOperators
-
 open Finset
 
 open Finset.antidiagonal (fst_le snd_le)
@@ -72,7 +70,7 @@ theorem catalan_succ (n : ℕ) : catalan (n + 1) = ∑ i : Fin n.succ, catalan i
 #align catalan_succ catalan_succ
 
 theorem catalan_succ' (n : ℕ) :
-    catalan (n + 1) = ∑ ij in antidiagonal n, catalan ij.1 * catalan ij.2 := by
+    catalan (n + 1) = ∑ ij ∈ antidiagonal n, catalan ij.1 * catalan ij.2 := by
   rw [catalan_succ, Nat.sum_antidiagonal_eq_sum_range_succ (fun x y => catalan x * catalan y) n,
     sum_range]
 #align catalan_succ' catalan_succ'
@@ -131,7 +129,7 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
       rw [hd _ m_le_d, hd _ d_minus_x_le_d]
       norm_cast
     · trans (∑ i : Fin d.succ, (gosperCatalan (d + 1) (i + 1) - gosperCatalan (d + 1) i))
-      · refine' sum_congr rfl fun i _ => _
+      · refine sum_congr rfl fun i _ => ?_
         rw [gosper_trick i.is_le, mul_div]
       · rw [← sum_range fun i => gosperCatalan (d + 1) (i + 1) - gosperCatalan (d + 1) i,
             sum_range_sub, Nat.succ_eq_add_one]

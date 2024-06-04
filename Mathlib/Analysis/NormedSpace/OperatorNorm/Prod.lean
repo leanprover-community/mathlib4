@@ -101,7 +101,7 @@ def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ 
     (fun p : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) => p.1.prodMap p.2) (by
       apply funext
       rintro ⟨φ, ψ⟩
-      refine' ContinuousLinearMap.ext fun ⟨x₁, x₂⟩ => _
+      refine ContinuousLinearMap.ext fun ⟨x₁, x₂⟩ => ?_
       dsimp
       simp)
 #align continuous_linear_map.prod_mapL ContinuousLinearMap.prodMapL

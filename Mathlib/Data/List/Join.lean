@@ -167,7 +167,7 @@ theorem drop_take_succ_join_eq_get' (L : List (List α)) (i : Fin L.length) :
 sublists. -/
 theorem eq_iff_join_eq (L L' : List (List α)) :
     L = L' ↔ L.join = L'.join ∧ map length L = map length L' := by
-  refine' ⟨fun H => by simp [H], _⟩
+  refine ⟨fun H => by simp [H], ?_⟩
   rintro ⟨join_eq, length_eq⟩
   apply ext_get
   · have : length (map length L) = length (map length L') := by rw [length_eq]

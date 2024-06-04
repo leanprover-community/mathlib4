@@ -46,7 +46,7 @@ theorem continuous_barycentric_coord (i : ι) : Continuous (b.coord i) :=
 #align continuous_barycentric_coord continuous_barycentric_coord
 
 theorem smooth_barycentric_coord (b : AffineBasis ι 𝕜 E) (i : ι) : ContDiff 𝕜 ⊤ (b.coord i) :=
-  (⟨b.coord i, continuous_barycentric_coord b i⟩ : E →A[𝕜] 𝕜).contDiff
+  (⟨b.coord i, continuous_barycentric_coord b i⟩ : E →ᴬ[𝕜] 𝕜).contDiff
 #align smooth_barycentric_coord smooth_barycentric_coord
 
 end Barycentric
@@ -93,7 +93,7 @@ theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : 
   obtain ⟨t, ht₁, ht₂, ht₃⟩ := exists_subset_affineIndependent_affineSpan_eq_top h
   let f : P → P := fun y => lineMap q y (ε / dist y q)
   have hf : ∀ y, f y ∈ u := by
-    refine' fun y => hεu _
+    refine fun y => hεu ?_
     simp only [f]
     rw [Metric.mem_closedBall, lineMap_apply, dist_vadd_left, norm_smul, Real.norm_eq_abs,
       dist_eq_norm_vsub V y q, abs_div, abs_of_pos ε0, abs_of_nonneg (norm_nonneg _), div_mul_comm]
@@ -102,7 +102,7 @@ theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : 
     div_ne_zero ε0.ne' (dist_ne_zero.2 (ne_of_mem_of_not_mem hq hy).symm)
   classical
   let w : t → ℝˣ := fun p => if hp : (p : P) ∈ s then 1 else Units.mk0 _ (hεyq (↑p) hp)
-  refine' ⟨Set.range fun p : t => lineMap q p (w p : ℝ), _, _, _, _⟩
+  refine ⟨Set.range fun p : t => lineMap q p (w p : ℝ), ?_, ?_, ?_, ?_⟩
   · intro p hp; use ⟨p, ht₁ hp⟩; simp [w, hp]
   · rintro y ⟨⟨p, hp⟩, rfl⟩
     by_cases hps : p ∈ s <;>
@@ -143,11 +143,11 @@ theorem AffineBasis.centroid_mem_interior_convexHull {ι} [Fintype ι] (b : Affi
 
 theorem interior_convexHull_nonempty_iff_affineSpan_eq_top [FiniteDimensional ℝ V] {s : Set V} :
     (interior (convexHull ℝ s)).Nonempty ↔ affineSpan ℝ s = ⊤ := by
-  refine' ⟨affineSpan_eq_top_of_nonempty_interior, fun h => _⟩
+  refine ⟨affineSpan_eq_top_of_nonempty_interior, fun h => ?_⟩
   obtain ⟨t, hts, b, hb⟩ := AffineBasis.exists_affine_subbasis h
   suffices (interior (convexHull ℝ (range b))).Nonempty by
     rw [hb, Subtype.range_coe_subtype, setOf_mem_eq] at this
-    refine' this.mono _
+    refine this.mono ?_
     mono*
   lift t to Finset V using b.finite_set
   exact ⟨_, b.centroid_mem_interior_convexHull⟩

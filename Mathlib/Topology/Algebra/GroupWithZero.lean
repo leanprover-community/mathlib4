@@ -182,9 +182,9 @@ theorem Filter.Tendsto.div {l : Filter α} {a b : G₀} (hf : Tendsto f l (𝓝 
 theorem Filter.tendsto_mul_iff_of_ne_zero [T1Space G₀] {f g : α → G₀} {l : Filter α} {x y : G₀}
     (hg : Tendsto g l (𝓝 y)) (hy : y ≠ 0) :
     Tendsto (fun n => f n * g n) l (𝓝 <| x * y) ↔ Tendsto f l (𝓝 x) := by
-  refine' ⟨fun hfg => _, fun hf => hf.mul hg⟩
+  refine ⟨fun hfg => ?_, fun hf => hf.mul hg⟩
   rw [← mul_div_cancel_right₀ x hy]
-  refine' Tendsto.congr' _ (hfg.div hg hy)
+  refine Tendsto.congr' ?_ (hfg.div hg hy)
   exact (hg.eventually_ne hy).mono fun n hn => mul_div_cancel_right₀ _ hn
 #align filter.tendsto_mul_iff_of_ne_zero Filter.tendsto_mul_iff_of_ne_zero
 
@@ -217,8 +217,8 @@ theorem continuousOn_div : ContinuousOn (fun p : G₀ × G₀ => p.1 / p.2) { p 
 
 @[fun_prop]
 theorem Continuous.div₀ (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g x ≠ 0) :
-    Continuous (fun x => f x / g x) :=
-  by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+    Continuous (fun x => f x / g x) := by
+  simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
 
 @[fun_prop]
 theorem ContinuousAt.div₀ (hf : ContinuousAt f a) (hg : ContinuousAt g a) (h₀ : g a ≠ 0) :

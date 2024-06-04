@@ -75,7 +75,6 @@ def eComp (X Y Z : C) : ((X ⟶[V] Y) ⊗ Y ⟶[V] Z) ⟶ X ⟶[V] Z :=
   EnrichedCategory.comp X Y Z
 #align category_theory.e_comp CategoryTheory.eComp
 
--- We don't just use `restate_axiom` here; that would leave `V` as an implicit argument.
 @[reassoc (attr := simp)]
 theorem e_id_comp (X Y : C) :
     (λ_ (X ⟶[V] Y)).inv ≫ eId V X ▷ _ ≫ eComp V X X Y = 𝟙 (X ⟶[V] Y) :=
@@ -136,8 +135,8 @@ end
 
 /-- Construct an honest category from a `Type v`-enriched category.
 -/
-def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Type v) C] : Category.{v} C
-    where
+def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Type v) C] :
+    Category.{v} C where
   Hom := 𝒞.Hom
   id X := eId (Type v) X PUnit.unit
   comp f g := eComp (Type v) _ _ _ ⟨f, g⟩
@@ -148,8 +147,8 @@ def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Typ
 
 /-- Construct a `Type v`-enriched category from an honest category.
 -/
-def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] : EnrichedCategory (Type v) C
-    where
+def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
+    EnrichedCategory (Type v) C where
   Hom := 𝒞.Hom
   id X _ := 𝟙 X
   comp X Y Z p := p.1 ≫ p.2
@@ -160,8 +159,8 @@ def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] : Enr
 
 /-- We verify that an enriched category in `Type u` is just the same thing as an honest category.
 -/
-def enrichedCategoryTypeEquivCategory (C : Type u₁) : EnrichedCategory (Type v) C ≃ Category.{v} C
-    where
+def enrichedCategoryTypeEquivCategory (C : Type u₁) :
+    EnrichedCategory (Type v) C ≃ Category.{v} C where
   toFun _ := categoryOfEnrichedCategoryType C
   invFun _ := enrichedCategoryTypeOfCategory C
   left_inv _ := rfl

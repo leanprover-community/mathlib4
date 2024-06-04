@@ -1,5 +1,5 @@
 /-
-Copyright © 2024 Frédéric Marbach. All rights reserved.
+Copyright (c) 2024 Frédéric Marbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
@@ -105,8 +105,7 @@ lemma apply_lie_eq_add (D : LieDerivation R L L) (a b : L) :
 theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
     Set.EqOn D1 D2 (LieSubalgebra.lieSpan R L s) :=
     fun z hz =>
-      have zero : D1 0 = D2 0 :=
-        by simp only [map_zero]
+      have zero : D1 0 = D2 0 := by simp only [map_zero]
       have smul : ∀ (r : R), ∀ {x : L}, D1 x = D2 x → D1 (r • x) = D2 (r • x) :=
         fun _ _ hx => by simp only [map_smul, hx]
       have add : ∀ x y, D1 x = D2 x → D1 y = D2 y → D1 (x + y) = D2 (x + y) :=
@@ -327,7 +326,7 @@ variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 @[simps!]
 def inner : M →ₗ[R] LieDerivation R L M where
   toFun m :=
-    { __ := (LieModule.toEndomorphism R L M : L →ₗ[R] Module.End R M).flip m
+    { __ := (LieModule.toEnd R L M : L →ₗ[R] Module.End R M).flip m
       leibniz' := by simp }
   map_add' m n := by ext; simp
   map_smul' t m := by ext; simp

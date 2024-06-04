@@ -61,7 +61,7 @@ lemma essImageDistTriang_mem_of_iso {T₁ T₂ : Triangle D} (e : T₂ ≅ T₁)
 lemma contractible_mem_essImageDistTriang [EssSurj L] [HasZeroObject D]
     [HasZeroMorphisms D] [L.PreservesZeroMorphisms] (X : D) :
     contractibleTriangle X ∈ L.essImageDistTriang := by
-  refine' ⟨contractibleTriangle (L.objPreimage X), _, contractible_distinguished _⟩
+  refine ⟨contractibleTriangle (L.objPreimage X), ?_, contractible_distinguished _⟩
   exact ((contractibleTriangleFunctor D).mapIso (L.objObjPreimageIso X)).symm ≪≫
     Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) L.mapZeroObject.symm (by simp) (by simp) (by simp)
 
@@ -102,7 +102,7 @@ lemma complete_distinguished_essImageDistTriang_morphism
   have h₃ := φ.comm₃
   dsimp at h₂ h₃
   simp only [assoc] at h₃
-  refine' ⟨e₁.hom.hom₃ ≫ φ.hom₃ ≫ e₂.inv.hom₃, _, _⟩
+  refine ⟨e₁.hom.hom₃ ≫ φ.hom₃ ≫ e₂.inv.hom₃, ?_, ?_⟩
   · rw [reassoc_of% comm₂, reassoc_of% h₂, hφ₂, assoc, assoc,
       Iso.hom_inv_id_triangle_hom₂_assoc, ← reassoc_of% comm₂',
       Iso.hom_inv_id_triangle_hom₃, comp_id]
@@ -125,14 +125,14 @@ variable (W : MorphismProperty C) [L.IsLocalization W]
 lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
     ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
       Triangle.mk f g h ∈ L.essImageDistTriang := by
-  have := essSurj_mapArrow_of_hasLeftCalculusofFractions L W
+  have := essSurj_mapArrow L W
   obtain ⟨φ, ⟨e⟩⟩ : ∃ (φ : Arrow C), Nonempty (L.mapArrow.obj φ ≅ Arrow.mk f) :=
     ⟨_, ⟨Functor.objObjPreimageIso _ _⟩⟩
   obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle φ.hom
-  refine' ⟨L.obj Z, e.inv.right ≫ L.map g,
-    L.map h ≫ (L.commShiftIso (1 : ℤ)).hom.app _ ≫ e.hom.left⟦(1 : ℤ)⟧', _, _, H⟩
-  refine' Triangle.isoMk _ _ (Arrow.leftFunc.mapIso e.symm) (Arrow.rightFunc.mapIso e.symm)
-    (Iso.refl _) e.inv.w.symm (by simp) _
+  refine ⟨L.obj Z, e.inv.right ≫ L.map g,
+    L.map h ≫ (L.commShiftIso (1 : ℤ)).hom.app _ ≫ e.hom.left⟦(1 : ℤ)⟧', _, ?_, H⟩
+  refine Triangle.isoMk _ _ (Arrow.leftFunc.mapIso e.symm) (Arrow.rightFunc.mapIso e.symm)
+    (Iso.refl _) e.inv.w.symm (by simp) ?_
   dsimp
   simp only [assoc, id_comp, ← Functor.map_comp, ← Arrow.comp_left, e.hom_inv_id, Arrow.id_left,
     Functor.mapArrow_obj_left, Functor.map_id, comp_id]
@@ -168,8 +168,8 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     (by dsimp [T₃]; rw [reassoc_of% hβ]) hψ₁ hψ₂
   have : IsIso (L.mapTriangle.map ψ) := Triangle.isIso_of_isIsos _
     (inverts L W α.s α.hs) (inverts L W _ hβγσ) (inverts L W ψ₃ hψ₃)
-  refine' ⟨L.mapTriangle.map (completeDistinguishedTriangleMorphism T₁ T₃ hT₁ hT₃ α.f
-      (γ.f ≫ σ) fac.symm) ≫ inv (L.mapTriangle.map ψ), _, _⟩
+  refine ⟨L.mapTriangle.map (completeDistinguishedTriangleMorphism T₁ T₃ hT₁ hT₃ α.f
+      (γ.f ≫ σ) fac.symm) ≫ inv (L.mapTriangle.map ψ), ?_, ?_⟩
   · rw [← cancel_mono (L.mapTriangle.map ψ).hom₁, ← comp_hom₁, assoc, IsIso.inv_hom_id, comp_id]
     dsimp [ψ]
     rw [hα, MorphismProperty.LeftFraction.map_comp_map_s]
@@ -191,9 +191,6 @@ def pretriangulated : Pretriangulated D where
 lemma isTriangulated_functor :
     letI : Pretriangulated D := pretriangulated L W; L.IsTriangulated :=
     letI : Pretriangulated D := pretriangulated L W; ⟨fun T hT => ⟨T, Iso.refl _, hT⟩⟩
-
-lemma essSurj_mapArrow : L.mapArrow.EssSurj  :=
-  essSurj_mapArrow_of_hasLeftCalculusofFractions L W
 
 lemma isTriangulated [W.HasRightCalculusOfFractions] [Pretriangulated D]
     [L.IsTriangulated] [IsTriangulated C] :
