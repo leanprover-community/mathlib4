@@ -24,8 +24,8 @@ jobs:
         run: |
           prs=$(gh pr list --search "author:leanprover-community-mathlib4-bot state:open" --json title,headRefName)
           for pr in $(echo "$prs" | jq -c '.[]'); do
-            pr_title=$(echo $pr | jq -r '.title')
-            pr_branch=$(echo $pr | jq -r '.headRefName')
+            pr_title=$(echo "$pr" | jq -r '.title')
+            pr_branch=$(echo "$pr" | jq -r '.headRefName')
             if [[ "$pr_title" == *"update Mathlib dependencies"* ]] || [[ "$pr_branch" == update-dependencies-* ]]; then
               echo "Existing PR found with title or branch name indicating a dependency update. Stopping."
               echo "existing_pr=true" >> $GITHUB_ENV
@@ -64,7 +64,7 @@ jobs:
           echo "branch_name=$branch_name" >> $GITHUB_ENV
           git checkout -b "$branch_name"
           git add .
-          git commit -m "chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")"
+          git commit -m "chore: update Mathlib dependencies $(date -u +\"%Y-%m-%d\")"
           git push origin "$branch_name"
 
       - name: Create Pull Request
@@ -72,7 +72,7 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.NIGHTLY_TESTING }}
-          commit-message: "chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")"
+          commit-message: "chore: update Mathlib dependencies ${{ steps.create_new_branch.outputs.branch_name }}"
           branch: ${{ env.branch_name }}
-          title: "chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")"
+          title: "chore: update Mathlib dependencies ${{ steps.create_new_branch.outputs.branch_name }}"
           labels: "auto-merge-after-CI"

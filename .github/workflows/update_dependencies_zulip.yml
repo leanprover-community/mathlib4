@@ -27,7 +27,7 @@ jobs:
       - name: Update PR labels
         if: env.pr_number
         run: |
-          gh pr edit ${{ env.pr_number }} --remove-label "auto-merge-after-CI" --add-label "awaiting-CI,awaiting-review"
+          gh pr edit "${{ env.pr_number }}" --remove-label "auto-merge-after-CI" --add-label "awaiting-CI,awaiting-review"
 
       - name: Get CI URL
         id: ci_url
