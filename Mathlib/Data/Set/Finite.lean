@@ -42,6 +42,9 @@ instances since they do not compute anything.
 finite sets
 -/
 
+assert_not_exists OrderedRing
+assert_not_exists MonoidWithZero
+
 open Set Function
 
 universe u v w x
@@ -1008,6 +1011,9 @@ theorem finite_mem_finset (s : Finset α) : { a | a ∈ s }.Finite :=
 theorem Subsingleton.finite {s : Set α} (h : s.Subsingleton) : s.Finite :=
   h.induction_on finite_empty finite_singleton
 #align set.subsingleton.finite Set.Subsingleton.finite
+
+theorem Infinite.nontrivial {s : Set α} (hs : s.Infinite) : s.Nontrivial :=
+  not_subsingleton_iff.1 <| mt Subsingleton.finite hs
 
 theorem finite_preimage_inl_and_inr {s : Set (Sum α β)} :
     (Sum.inl ⁻¹' s).Finite ∧ (Sum.inr ⁻¹' s).Finite ↔ s.Finite :=

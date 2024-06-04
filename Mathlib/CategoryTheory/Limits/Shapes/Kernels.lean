@@ -343,7 +343,7 @@ def kernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ≅ X') (q 
   inv :=
     kernel.map f' f p.inv q.inv
       (by
-        refine' (cancel_mono q.hom).1 _
+        refine (cancel_mono q.hom).1 ?_
         simp [w])
 #align category_theory.limits.kernel.map_iso CategoryTheory.Limits.kernel.mapIso
 
@@ -845,7 +845,7 @@ def cokernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'] (p : X ≅ X')
     (w : f ≫ q.hom = p.hom ≫ f') : cokernel f ≅ cokernel f' where
   hom := cokernel.map f f' p.hom q.hom w
   inv := cokernel.map f' f p.inv q.inv (by
-          refine' (cancel_mono q.hom).1 _
+          refine (cancel_mono q.hom).1 ?_
           simp [w])
 #align category_theory.limits.cokernel.map_iso CategoryTheory.Limits.cokernel.mapIso
 
