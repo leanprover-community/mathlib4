@@ -1059,8 +1059,8 @@ theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → 
   have S' :
     Summable fun i : ι =>
       (⟨∫ x : X in s i, ‖f x‖₊ ∂μ, setIntegral_nonneg (hs i) fun x _ => NNReal.coe_nonneg _⟩ :
-        NNReal) :=
-    by rw [← NNReal.summable_coe]; exact h
+        NNReal) := by
+    rw [← NNReal.summable_coe]; exact h
   have S'' := ENNReal.tsum_coe_eq S'.hasSum
   simp_rw [ENNReal.coe_nnreal_eq, NNReal.coe_mk, coe_nnnorm] at S''
   convert ENNReal.ofReal_lt_top
@@ -1141,7 +1141,7 @@ set_option linter.uppercaseLean3 false in
 theorem norm_Lp_toLp_restrict_le (s : Set X) (f : Lp E p μ) :
     ‖((Lp.memℒp f).restrict s).toLp f‖ ≤ ‖f‖ := by
   rw [Lp.norm_def, Lp.norm_def, ENNReal.toReal_le_toReal (Lp.snorm_ne_top _) (Lp.snorm_ne_top _)]
-  refine' (le_of_eq _).trans (snorm_mono_measure _ Measure.restrict_le_self)
+  apply (le_of_eq _).trans (snorm_mono_measure _ (Measure.restrict_le_self (s := s)))
   exact snorm_congr_ae (Memℒp.coeFn_toLp _)
 set_option linter.uppercaseLean3 false in
 #align measure_theory.norm_Lp_to_Lp_restrict_le MeasureTheory.norm_Lp_toLp_restrict_le

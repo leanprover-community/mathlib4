@@ -762,7 +762,7 @@ protected lemma _root_.Set.Sized.compls (h𝒜 : (𝒜 : Set (Finset α)).Sized 
 lemma sized_compls (hn : n ≤ Fintype.card α) :
     (𝒜ᶜˢ : Set (Finset α)).Sized n ↔ (𝒜 : Set (Finset α)).Sized (Fintype.card α - n) where
   mp h𝒜 := by simpa using h𝒜.compls
-  mpr h𝒜 := by simpa only [tsub_tsub_cancel_of_le hn] using h𝒜.compls
+  mpr h𝒜 := by simpa only [Nat.sub_sub_self hn] using h𝒜.compls
 
 end Compls
 end Finset

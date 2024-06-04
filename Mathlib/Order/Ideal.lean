@@ -463,7 +463,7 @@ theorem mem_sInf : x ∈ sInf S ↔ ∀ s ∈ S, x ∈ s := by
 instance : CompleteLattice (Ideal P) :=
   { (inferInstance : Lattice (Ideal P)),
     completeLatticeOfInf (Ideal P) fun S ↦ by
-      refine' ⟨fun s hs ↦ _, fun s hs ↦ by rwa [← coe_subset_coe, coe_sInf, subset_iInter₂_iff]⟩
+      refine ⟨fun s hs ↦ ?_, fun s hs ↦ by rwa [← coe_subset_coe, coe_sInf, subset_iInter₂_iff]⟩
       rw [← coe_subset_coe, coe_sInf]
       exact biInter_subset_of_mem hs with }
 
