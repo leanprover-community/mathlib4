@@ -144,8 +144,6 @@ theorem helly_theorem_set {F : Finset (Set E)}
   · exact fun X ↦ h_convex X (by simp)
   · intro G _
     let G' : Finset (Set E) := Finset.image Subtype.val G
-    have : ⋂ i ∈ G, ↑i = ⋂₀ (G' : Set (Set E)) := by
-      simp [G']
     rw [show ⋂ i ∈ G, ↑i = ⋂₀ (G' : Set (Set E)) by simp [G']]
     apply h_inter G'
     · rw [Finset.image_subset_iff]
@@ -166,12 +164,9 @@ theorem helly_theorem_infinite [TopologicalSpace E] [T2Space E] (F : ι → Set 
   /- By the finite version of theorem, every finite subfamily has an intersection. -/
   have h_fin (I : Finset ι) : (⋂ i ∈ I, F i).Nonempty := by
     rw [show ⋂ i ∈ I, F i = ⋂ i : I, F ↑i by simp only [Set.iInter_subtype]]
-    -- have : Finite I := hI_fin -- for instance inferring
     apply Convex.helly_theorem (ι := I) (fun i : I ↦ F i) (𝕜 := 𝕜)
     · simp only [Subtype.forall]; exact fun a _ ↦ h_convex a
     · intro J hJ_card
-      -- rw [show ⋂ i ∈ J, F' i = ⋂ i ∈ Finset.image Subtype.val J, F i by
-      --       simp [Set.iInter_subtype]]
       rw [show ⋂ i ∈ J, F ↑i = ⋂ i ∈ Finset.image Subtype.val J, F i by simp [Set.iInter_subtype]]
       exact h_inter _ (le_trans Finset.card_image_le hJ_card)
 
