@@ -3,7 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Valuation
+import Mathlib.Topology.Algebra.Valued.ValuationTopology
 import Mathlib.Topology.Algebra.WithZeroTopology
 import Mathlib.Topology.Algebra.UniformField
 
@@ -362,3 +362,32 @@ theorem valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
 #align valued.valued_completion_apply Valued.valuedCompletion_apply
 
 end Valued
+
+section Notation
+
+namespace Valued
+
+/-- A `Valued` version of `Valuation.valuationSubring`, enabling the notation `𝒪[K]` for valued field `K` -/
+@[reducible]
+def valuationSubring (K : Type*) [Field K] {Γ : outParam Type*} [LinearOrderedCommGroupWithZero Γ] [Valued K Γ] : ValuationSubring K := (Valued.v).valuationSubring
+
+@[inherit_doc]
+scoped notation "𝒪[" K "]" => Valued.valuationSubring K
+
+/-- An abbrevation for `LocalRing.maximalIdeal 𝒪[K]` of a valued field `K`, enabling the notation `𝓂[K]` -/
+@[reducible]
+def maximalIdeal (K : Type*) [Field K] {Γ : outParam Type*} [LinearOrderedCommGroupWithZero Γ] [Valued K Γ] : Ideal 𝒪[K] := LocalRing.maximalIdeal 𝒪[K]
+
+@[inherit_doc]
+scoped notation "𝓂[" K "]" => maximalIdeal K
+
+/-- An abbrevation for `LocalRing.ResidueField 𝒪[K]` of a `Valued` instance, enabling the notation `𝓀[K]` -/
+@[reducible]
+def ResidueField (K : Type*) [Field K] {Γ : outParam Type*} [LinearOrderedCommGroupWithZero Γ] [Valued K Γ] := LocalRing.ResidueField (𝒪[K])
+
+@[inherit_doc]
+scoped notation:max "𝓀[" K:max "]" => ResidueField K
+
+end Valued
+
+end Notation
