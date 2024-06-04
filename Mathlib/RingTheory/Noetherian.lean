@@ -512,15 +512,13 @@ theorem IsNoetherian.disjoint_partialSups_eventually_bot
       (h m).eq_bot_of_ge <| sup_eq_left.1 <| (w (m + 1) <| le_add_right p).symm.trans <| w m p⟩
 #align is_noetherian.disjoint_partial_sups_eventually_bot IsNoetherian.disjoint_partialSups_eventually_bot
 
-/-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial.
--/
+/-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial. -/
 theorem IsNoetherian.subsingleton_of_prod_injective (f : M × N →ₗ[R] M)
     (i : Injective f) : Subsingleton N := .intro fun x y ↦ by
   have h := IsNoetherian.injective_of_surjective_of_injective f _ i LinearMap.fst_surjective
   simpa using h (show LinearMap.fst R M N (0, x) = LinearMap.fst R M N (0, y) from rfl)
 
-/-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial.
--/
+/-- If `M ⊕ N` embeds into `M`, for `M` noetherian over `R`, then `N` is trivial. -/
 @[simps!]
 def IsNoetherian.equivPUnitOfProdInjective (f : M × N →ₗ[R] M)
     (i : Injective f) : N ≃ₗ[R] PUnit.{w + 1} :=

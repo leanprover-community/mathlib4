@@ -3,7 +3,7 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Commute.Hom
 import Mathlib.Data.Fintype.Card
 
@@ -469,7 +469,7 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
   case a =>
     intro i _ j _ _
     exact Pi.mulSingle_apply_commute x i j
-  refine' (noncommProd_congr (insert_erase (mem_univ i)).symm _ _).trans _
+  convert (noncommProd_congr (insert_erase (mem_univ i)).symm _ _).trans _
   · intro j
     exact Pi.mulSingle j (x j) i
   · intro j _; dsimp

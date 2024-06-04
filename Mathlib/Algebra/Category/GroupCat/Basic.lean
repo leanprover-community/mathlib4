@@ -50,7 +50,7 @@ instance concreteCategory : ConcreteCategory GroupCat := by
   infer_instance
 
 @[to_additive]
-instance : CoeSort GroupCat (Type*) where
+instance : CoeSort GroupCat Type* where
   coe X := X.α
 
 @[to_additive]
@@ -207,7 +207,7 @@ instance concreteCategory : ConcreteCategory CommGroupCat := by
   infer_instance
 
 @[to_additive]
-instance : CoeSort CommGroupCat (Type*) where
+instance : CoeSort CommGroupCat Type* where
   coe X := X.α
 
 @[to_additive]

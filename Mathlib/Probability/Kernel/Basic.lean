@@ -246,7 +246,7 @@ section Sum
 protected noncomputable def sum [Countable ι] (κ : ι → kernel α β) : kernel α β where
   val a := Measure.sum fun n => κ n a
   property := by
-    refine' Measure.measurable_of_measurable_coe _ fun s hs => _
+    refine Measure.measurable_of_measurable_coe _ fun s hs => ?_
     simp_rw [Measure.sum_apply _ hs]
     exact Measurable.ennreal_tsum fun n => kernel.measurable_coe (κ n) hs
 #align probability_theory.kernel.sum ProbabilityTheory.kernel.sum
@@ -378,7 +378,7 @@ section Deterministic
 noncomputable def deterministic (f : α → β) (hf : Measurable f) : kernel α β where
   val a := Measure.dirac (f a)
   property := by
-    refine' Measure.measurable_of_measurable_coe _ fun s hs => _
+    refine Measure.measurable_of_measurable_coe _ fun s hs => ?_
     simp_rw [Measure.dirac_apply' _ hs]
     exact measurable_one.indicator (hf hs)
 #align probability_theory.kernel.deterministic ProbabilityTheory.kernel.deterministic
@@ -547,7 +547,7 @@ variable {s t : Set β}
 protected noncomputable def restrict (κ : kernel α β) (hs : MeasurableSet s) : kernel α β where
   val a := (κ a).restrict s
   property := by
-    refine' Measure.measurable_of_measurable_coe _ fun t ht => _
+    refine Measure.measurable_of_measurable_coe _ fun t ht => ?_
     simp_rw [Measure.restrict_apply ht]
     exact kernel.measurable_coe κ (ht.inter hs)
 #align probability_theory.kernel.restrict ProbabilityTheory.kernel.restrict
@@ -615,7 +615,7 @@ variable {γ : Type*} {mγ : MeasurableSpace γ} {f : γ → β}
 noncomputable def comapRight (κ : kernel α β) (hf : MeasurableEmbedding f) : kernel α γ where
   val a := (κ a).comap f
   property := by
-    refine' Measure.measurable_measure.mpr fun t ht => _
+    refine Measure.measurable_measure.mpr fun t ht => ?_
     have : (fun a => Measure.comap f (κ a) t) = fun a => κ a (f '' t) := by
       ext1 a
       rw [Measure.comap_apply _ hf.injective _ _ ht]
