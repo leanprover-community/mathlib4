@@ -9,7 +9,7 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
 # Pushforward of presheaves of modules
 
 If `F : C ⥤ D`, the precomposition `F.op ⋙ _` induces a functor from presheaves
-over `C` to presheaves over `D`. When `R : Dᵒᵖ ⥤ RingCat`, we define the
+over `D` to presheaves over `C`. When `R : Dᵒᵖ ⥤ RingCat`, we define the
 induced functor `pushforward₀ : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} (F.op ⋙ R)`
 on presheaves of modules.
 
