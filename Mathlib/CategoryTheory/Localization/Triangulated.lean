@@ -104,7 +104,7 @@ lemma complete_distinguished_essImageDistTriang_morphism
   have h₃ := φ.comm₃
   dsimp at h₂ h₃
   simp only [assoc] at h₃
-  refine' ⟨e₁.hom.hom₃ ≫ φ.hom₃ ≫ e₂.inv.hom₃, _, _⟩
+  refine ⟨e₁.hom.hom₃ ≫ φ.hom₃ ≫ e₂.inv.hom₃, ?_, ?_⟩
   · rw [reassoc_of% comm₂, reassoc_of% h₂, hφ₂, assoc, assoc,
       Iso.hom_inv_id_triangle_hom₂_assoc, ← reassoc_of% comm₂',
       Iso.hom_inv_id_triangle_hom₃, comp_id]
