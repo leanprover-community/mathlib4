@@ -410,6 +410,24 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
 
 end Bisim
 
+section All
+
+/-- A test to prove `∀ a ∈ s, p s`. -/
+def AllTest (p : α → Prop) (P : Seq' α → Prop) : Option (Seq1 α) → Prop
+  | some (a, s) => p a ∧ P s
+  | none        => True
+
+theorem all_of_allTest {p : α → Prop} (P : Seq' α → Prop)
+    (allTest : ∀ ⦃s⦄, P s → AllTest p P (destruct s)) {s} (hs : P s) : ∀ a ∈ s, p a := by
+  intro a ha
+  induction ha using mem_rec_on with (specialize allTest hs; rw [destruct_cons] at allTest)
+  | mem_cons s =>
+    exact allTest.1
+  | @mem_cons_of_mem y s _ hs₂ =>
+    exact hs₂ allTest.2
+
+end All
+
 theorem coinduction :
     ∀ {s₁ s₂ : Seq' α},
       head s₁ = head s₂ →
