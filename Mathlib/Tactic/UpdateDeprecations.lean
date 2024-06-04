@@ -146,7 +146,7 @@ elab bds:build* tk:"Build completed successfully." : command => do
     summary := summary.insert fil (m + replaced, n + unreplaced)
     if replacedLines != lines then
       let newFile := ("\n".intercalate replacedLines.toList).trimRight.push '\n'
-      IO.FS.writeFile fil <| newFile
+      IO.FS.writeFile fil newFile
     return summary
   let noFiles := modifiedFiles.size
   let msg := if noFiles == 0 then m!"No modified files\n" else
@@ -159,9 +159,9 @@ elab bds:build* tk:"Build completed successfully." : command => do
 end elabs
 
 /-- runs `lake build` and stores the output in the input file,
-pre-pending the build information with `import Mathlib.Tactic.AutoBump`.
+pre-pending the build information with `import Mathlib.Tactic.UpdateDeprecations`.
 -/
 def buildAndWrite (tgt : System.FilePath) : IO Unit := do
   let build ← getBuild
   unless build.isEmpty do
-    IO.FS.writeFile tgt ("import Mathlib.Tactic.AutoBump\n\n" ++ build)
+    IO.FS.writeFile tgt ("import Mathlib.Tactic.UpdateDeprecations\n\n" ++ build)

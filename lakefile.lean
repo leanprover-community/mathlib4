@@ -63,8 +63,8 @@ lean_exe mk_all where
   srcDir := "scripts"
   supportInterpreter := true
 
-/-- `lake exe auto_bump` performs automatic bumps. -/
-lean_exe auto_bump where
+/-- `lake exe update_deprecations` automatically updates deprecations. -/
+lean_exe update_deprecations where
   srcDir := "scripts"
   supportInterpreter := true
 

@@ -1,4 +1,4 @@
-import Mathlib.Tactic.AutoBump
+import Mathlib.Tactic.UpdateDeprecations
 
 /-- info: true -/
 #guard_msgs in
