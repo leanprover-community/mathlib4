@@ -64,6 +64,20 @@ open Function
 namespace Nat
 variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
 
+-- TODO: Move the `LinearOrder ℕ` instance to `Order.Nat` (#13092).
+instance instLinearOrder : LinearOrder ℕ where
+  le := Nat.le
+  le_refl := @Nat.le_refl
+  le_trans := @Nat.le_trans
+  le_antisymm := @Nat.le_antisymm
+  le_total := @Nat.le_total
+  lt := Nat.lt
+  lt_iff_le_not_le := @Nat.lt_iff_le_not_le
+  decidableLT := inferInstance
+  decidableLE := inferInstance
+  decidableEq := inferInstance
+#align nat.linear_order Nat.instLinearOrder
+
 instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
 @[simp] theorem default_eq_zero : default = 0 := rfl
@@ -342,7 +356,8 @@ theorem le_or_le_of_add_eq_add_pred (h : a + c = b + d - 1) : b ≤ a ∨ d ≤ 
 
 /-! ### `sub` -/
 
-attribute [simp] Nat.sub_eq_zero_of_le Nat.sub_le_iff_le_add
+attribute [simp] Nat.sub_eq_zero_of_le Nat.sub_le_iff_le_add Nat.add_sub_cancel_left
+  Nat.add_sub_cancel_right
 
 /-- A version of `Nat.sub_succ` in the form `_ - 1` instead of `Nat.pred _`. -/
 lemma sub_succ' (m n : ℕ) : m - n.succ = m - n - 1 := rfl
@@ -1008,7 +1023,7 @@ Also works for functions to `Sort*`. Weakens the assumptions of `decreasing_indu
 def decreasingInduction' {P : ℕ → Sort*} (h : ∀ k < n, m ≤ k → P (k + 1) → P k)
     (mn : m ≤ n) (hP : P n) : P m := by
   revert h hP
-  refine' leRecOn' mn _ _
+  refine leRecOn' mn ?_ ?_
   · intro n mn ih h hP
     apply ih
     · exact fun k hk ↦ h k (Nat.lt.step hk)
@@ -1064,6 +1079,19 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 
 attribute [simp] Nat.dvd_zero
 
+@[simp] lemma mod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
+  cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
+#align nat.mod_two_ne_one Nat.mod_two_ne_one
+
+@[simp] lemma mod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
+  cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
+#align nat.mod_two_ne_zero Nat.mod_two_ne_zero
+
+@[deprecated mod_mul_right_div_self (since := "2024-05-29")]
+lemma div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
+  (mod_mul_right_div_self a b c).symm
+#align nat.div_mod_eq_mod_mul_div Nat.div_mod_eq_mod_mul_div
+
 protected lemma lt_div_iff_mul_lt (hdn : d ∣ n) (a : ℕ) : a < n / d ↔ d * a < n := by
   obtain rfl | hd := d.eq_zero_or_pos
   · simp [Nat.zero_dvd.1 hdn]
@@ -1099,14 +1127,10 @@ protected lemma div_ne_zero_iff (hb : b ≠ 0) : a / b ≠ 0 ↔ b ≤ a := by
 protected lemma div_pos_iff (hb : b ≠ 0) : 0 < a / b ↔ b ≤ a := by
   rw [Nat.pos_iff_ne_zero, Nat.div_ne_zero_iff hb]
 
+@[deprecated div_mul_div_comm (since := "2024-05-29")]
 lemma mul_div_mul_comm_of_dvd_dvd (hba : b ∣ a) (hdc : d ∣ c) :
-    a * c / (b * d) = a / b * (c / d) := by
-  obtain rfl | hb := b.eq_zero_or_pos; · simp
-  obtain rfl | hd := d.eq_zero_or_pos; · simp
-  obtain ⟨_, rfl⟩ := hba
-  obtain ⟨_, rfl⟩ := hdc
-  rw [Nat.mul_mul_mul_comm, Nat.mul_div_cancel_left _ hb, Nat.mul_div_cancel_left _ hd,
-    Nat.mul_div_cancel_left _ (Nat.mul_pos hb hd)]
+    a * c / (b * d) = a / b * (c / d) :=
+  (div_mul_div_comm hba hdc).symm
 #align nat.mul_div_mul_comm_of_dvd_dvd Nat.mul_div_mul_comm_of_dvd_dvd
 
 @[simp] lemma mul_mod_mod (a b c : ℕ) : (a * (b % c)) % c = a * b % c := by
@@ -1422,9 +1446,9 @@ lemma le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b := b
 /-- `n` is not divisible by `a` iff it is between `a * k` and `a * (k + 1)` for some `k`. -/
 lemma not_dvd_iff_between_consec_multiples (n : ℕ) {a : ℕ} (ha : 0 < a) :
     (∃ k : ℕ, a * k < n ∧ n < a * (k + 1)) ↔ ¬a ∣ n := by
-  refine'
+  refine
     ⟨fun ⟨k, hk1, hk2⟩ => not_dvd_of_between_consec_multiples hk1 hk2, fun han =>
-      ⟨n / a, ⟨lt_of_le_of_ne (mul_div_le n a) _, lt_mul_div_succ _ ha⟩⟩⟩
+      ⟨n / a, ⟨lt_of_le_of_ne (mul_div_le n a) ?_, lt_mul_div_succ _ ha⟩⟩⟩
   exact mt (⟨n / a, Eq.symm ·⟩) han
 #align nat.not_dvd_iff_between_consec_multiples Nat.not_dvd_iff_between_consec_multiples
 
@@ -1640,7 +1664,7 @@ lemma sqrt_eq' (n : ℕ) : sqrt (n ^ 2) = n := sqrt_add_eq' n (zero_le _)
 lemma sqrt_succ_le_succ_sqrt (n : ℕ) : sqrt n.succ ≤ n.sqrt.succ :=
   le_of_lt_succ <| sqrt_lt.2 <| lt_succ_of_le <|
   succ_le_succ <| le_trans (sqrt_le_add n) <| Nat.add_le_add_right
-    (by refine' add_le_add (Nat.mul_le_mul_right _ _) _ <;> exact Nat.le_add_right _ 2) _
+    (by refine add_le_add (Nat.mul_le_mul_right _ ?_) ?_ <;> exact Nat.le_add_right _ 2) _
 #align nat.sqrt_succ_le_succ_sqrt Nat.sqrt_succ_le_succ_sqrt
 
 lemma exists_mul_self (x : ℕ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :=
@@ -1722,7 +1746,7 @@ lemma find_le {h : ∃ n, p n} (hn : p n) : Nat.find h ≤ n :=
 
 lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬ p 0) :
     Nat.find h₁ = Nat.find h₂ + 1 := by
-  refine' (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn ↦ _⟩
+  refine (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn ↦ ?_⟩
   cases n
   exacts [h0, @Nat.find_min (fun n ↦ p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
 #align nat.find_comp_succ Nat.find_comp_succ

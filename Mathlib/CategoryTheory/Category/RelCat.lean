@@ -150,7 +150,6 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
     exact Eq.comm
   map_comp {X Y Z} f g := by
     unfold Category.opposite
-    congr
     ext x y
     apply exists_congr
     exact fun a => And.comm

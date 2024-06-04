@@ -85,8 +85,7 @@ theorem IsSimpleModule.congr (l : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimple
 
 theorem isSimpleModule_iff_isAtom : IsSimpleModule R m ↔ IsAtom m := by
   rw [← Set.isSimpleOrder_Iic_iff_isAtom]
-  apply OrderIso.isSimpleOrder_iff
-  exact Submodule.MapSubtype.relIso m
+  exact m.mapIic.isSimpleOrder_iff
 #align is_simple_module_iff_is_atom isSimpleModule_iff_isAtom
 
 theorem isSimpleModule_iff_isCoatom : IsSimpleModule R (M ⧸ m) ↔ IsCoatom m := by
@@ -97,12 +96,9 @@ theorem isSimpleModule_iff_isCoatom : IsSimpleModule R (M ⧸ m) ↔ IsCoatom m 
 
 theorem covBy_iff_quot_is_simple {A B : Submodule R M} (hAB : A ≤ B) :
     A ⋖ B ↔ IsSimpleModule R (B ⧸ Submodule.comap B.subtype A) := by
-  set f : Submodule R B ≃o Set.Iic B := Submodule.MapSubtype.relIso B with hf
+  set f : Submodule R B ≃o Set.Iic B := B.mapIic with hf
   rw [covBy_iff_coatom_Iic hAB, isSimpleModule_iff_isCoatom, ← OrderIso.isCoatom_iff f, hf]
-  -- This used to be in the next `simp`, but we need `erw` after leanprover/lean4#2644
-  erw [RelIso.coe_fn_mk]
-  simp [-OrderIso.isCoatom_iff, Submodule.MapSubtype.relIso, Submodule.map_comap_subtype,
-    inf_eq_right.2 hAB]
+  simp [-OrderIso.isCoatom_iff, Submodule.map_comap_subtype, inf_eq_right.2 hAB]
 #align covby_iff_quot_is_simple covBy_iff_quot_is_simple
 
 namespace IsSimpleModule
@@ -205,8 +201,7 @@ theorem annihilator_isRadical {R} [CommRing R] [Module R M] [IsSemisimpleModule 
   exact Ideal.isRadical_iInf _ fun i ↦ (i.2.annihilator_isMaximal).isPrime.isRadical
 
 instance submodule {m : Submodule R M} : IsSemisimpleModule R m :=
-  haveI f : Submodule R m ≃o Set.Iic m := Submodule.MapSubtype.relIso m
-  f.complementedLattice_iff.2 IsModularLattice.complementedLattice_Iic
+  m.mapIic.complementedLattice_iff.2 IsModularLattice.complementedLattice_Iic
 #align is_semisimple_module.is_semisimple_submodule IsSemisimpleModule.submodule
 
 open LinearMap
@@ -255,8 +250,7 @@ lemma isSemisimpleModule_of_isSemisimpleModule_submodule {s : Set ι} {p : ι �
     (hp : ∀ i ∈ s, IsSemisimpleModule R (p i)) (hp' : ⨆ i ∈ s, p i = ⊤) :
     IsSemisimpleModule R M := by
   refine complementedLattice_of_complementedLattice_Iic (fun i hi ↦ ?_) hp'
-  let e : Submodule R (p i) ≃o Set.Iic (p i) := Submodule.MapSubtype.relIso (p i)
-  simpa only [← e.complementedLattice_iff] using hp i hi
+  simpa only [← (p i).mapIic.complementedLattice_iff] using hp i hi
 
 lemma isSemisimpleModule_biSup_of_isSemisimpleModule_submodule {s : Set ι} {p : ι → Submodule R M}
     (hp : ∀ i ∈ s, IsSemisimpleModule R (p i)) :

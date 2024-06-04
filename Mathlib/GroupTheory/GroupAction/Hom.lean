@@ -5,8 +5,8 @@ Authors: Kenny Lau, Antoine Chambert-Loir
 
 -/
 
-import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
 
@@ -89,9 +89,8 @@ notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulA
 
 You should extend this class when you extend `MulActionHom`. -/
 class MulActionSemiHomClass (F : Type*)
-    {M N : outParam (Type*)} (φ : outParam (M → N))
-    (X Y : outParam (Type*)) [SMul M X] [SMul N Y] [FunLike F X Y] : Prop
-   where
+    {M N : outParam Type*} (φ : outParam (M → N))
+    (X Y : outParam Type*) [SMul M X] [SMul N Y] [FunLike F X Y] : Prop where
   /-- The proposition that the function preserves the action. -/
   map_smulₛₗ : ∀ (f : F) (c : M) (x : X), f (c • x) = (φ c) • (f x)
 #align smul_hom_class MulActionSemiHomClass
@@ -101,8 +100,8 @@ export MulActionSemiHomClass (map_smulₛₗ)
 /-- `MulActionHomClass F M X Y` states that `F` is a type of
 morphisms which are equivariant with respect to actions of `M`
 This is an abbreviation of `MulActionSemiHomClass`. -/
-abbrev MulActionHomClass (F : Type*) (M : outParam (Type*))
-    (X Y : outParam (Type*)) [SMul M X] [SMul M Y] [FunLike F X Y] :=
+abbrev MulActionHomClass (F : Type*) (M : outParam Type*)
+    (X Y : outParam Type*) [SMul M X] [SMul M Y] [FunLike F X Y] :=
   MulActionSemiHomClass F (@id M) X Y
 
 instance : FunLike (MulActionHom φ X Y) X Y where
@@ -175,8 +174,7 @@ protected theorem congr_fun {f g : X →ₑ[φ] Y} (h : f = g) (x : X) :
 #align mul_action_hom.congr_fun MulActionHom.congr_fun
 
 /-- Two equal maps on scalars give rise to an equivariant map for identity -/
-def ofEq {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) : X →ₑ[φ'] Y
-    where
+def ofEq {φ' : M → N} (h : φ = φ') (f : X →ₑ[φ] Y) : X →ₑ[φ'] Y where
   toFun := f.toFun
   map_smul' m a := h ▸ f.map_smul' m a
 #align equivariant_map.of_eq MulActionHom.ofEq
@@ -261,8 +259,7 @@ variable {Y₁ : Type*} [SMul M Y₁]
 /-- The inverse of a bijective equivariant map is equivariant. -/
 @[simps]
 def inverse (f : X →[M] Y₁) (g : Y₁ → X)
-    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : Y₁ →[M] X
-    where
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : Y₁ →[M] X where
   toFun := g
   map_smul' m x :=
     calc
@@ -371,8 +368,8 @@ notation:25 (name := «DistribMulActionHomIdLocal≺»)
   preserving the additive monoid structure and equivariant with respect to `φ`.
     You should extend this class when you extend `DistribMulActionSemiHom`. -/
 class DistribMulActionSemiHomClass (F : Type*)
-    {M N : outParam (Type*)} (φ : outParam (M → N))
-    (A B : outParam (Type*))
+    {M N : outParam Type*} (φ : outParam (M → N))
+    (A B : outParam Type*)
     [Monoid M] [Monoid N]
     [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction N B]
     [FunLike F A B]
@@ -383,8 +380,8 @@ class DistribMulActionSemiHomClass (F : Type*)
   the additive monoid structure and equivariant with respect to the action of `M`.
     It is an abbreviation to `DistribMulActionHomClass F (MonoidHom.id M) A B`
 You should extend this class when you extend `DistribMulActionHom`. -/
-abbrev DistribMulActionHomClass (F : Type*) (M : outParam (Type*))
-    (A B : outParam (Type*)) [Monoid M] [AddMonoid A] [AddMonoid B]
+abbrev DistribMulActionHomClass (F : Type*) (M : outParam Type*)
+    (A B : outParam Type*) [Monoid M] [AddMonoid A] [AddMonoid B]
     [DistribMulAction M A] [DistribMulAction M B] [FunLike F A B] :=
     DistribMulActionSemiHomClass F (MonoidHom.id M) A B
 
@@ -413,8 +410,7 @@ instance : FunLike (A →ₑ+[φ] B) A B where
     rcases f with ⟨tF, _, _⟩; rcases g with ⟨tG, _, _⟩
     cases tF; cases tG; congr
 
-instance : DistribMulActionSemiHomClass (A →ₑ+[φ] B) φ A B
-    where
+instance : DistribMulActionSemiHomClass (A →ₑ+[φ] B) φ A B where
   map_smulₛₗ m := m.map_smul'
   map_zero := DistribMulActionHom.map_zero'
   map_add := DistribMulActionHom.map_add'
@@ -662,9 +658,9 @@ the ring structure and equivariant with respect to `φ`.
 
 You should extend this class when you extend `MulSemiringActionHom`. -/
 class MulSemiringActionSemiHomClass (F : Type*)
-    {M N : outParam (Type*)} [Monoid M] [Monoid N]
+    {M N : outParam Type*} [Monoid M] [Monoid N]
     (φ : outParam (M → N))
-    (R S : outParam (Type*)) [Semiring R] [Semiring S]
+    (R S : outParam Type*) [Semiring R] [Semiring S]
     [DistribMulAction M R] [DistribMulAction N S] [FunLike F R S]
     extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S : Prop
 #align mul_semiring_action_hom_class MulSemiringActionSemiHomClass
@@ -674,8 +670,8 @@ the ring structure and equivariant with respect to a `DistribMulAction`of `M` on
  -/
 abbrev MulSemiringActionHomClass
     (F : Type*)
-    {M : outParam (Type*)} [Monoid M]
-    (R S : outParam (Type*)) [Semiring R] [Semiring S]
+    {M : outParam Type*} [Monoid M]
+    (R S : outParam Type*) [Semiring R] [Semiring S]
     [DistribMulAction M R] [DistribMulAction M S] [FunLike F R S] :=
   MulSemiringActionSemiHomClass F (MonoidHom.id M) R S
 

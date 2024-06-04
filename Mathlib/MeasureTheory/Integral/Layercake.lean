@@ -314,7 +314,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
         intro n
         have I : ν {a | f a ≤ M} = 0 := by
           rw [Measure.restrict_apply (measurableSet_le f_mble measurable_const)]
-          convert measure_empty
+          convert measure_empty (μ := μ)
           rw [← disjoint_iff_inter_eq_empty]
           exact disjoint_left.mpr (fun a ha ↦ by simpa using ha)
         have J : μ {a | u n < f a} < ∞ := by
@@ -402,12 +402,12 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul (μ : Measure α) (f_nn : 0 ≤�
       ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
   obtain ⟨G, G_mble, G_nn, g_eq_G⟩ : ∃ G : ℝ → ℝ, Measurable G ∧ 0 ≤ G
       ∧ g =ᵐ[volume.restrict (Ioi 0)] G := by
-    refine' AEMeasurable.exists_measurable_nonneg _ g_nn
+    refine AEMeasurable.exists_measurable_nonneg ?_ g_nn
     exact aemeasurable_Ioi_of_forall_Ioc fun t ht => (g_intble t ht).1.1.aemeasurable
   have g_eq_G_on : ∀ t, g =ᵐ[volume.restrict (Ioc 0 t)] G := fun t =>
     ae_mono (Measure.restrict_mono Ioc_subset_Ioi_self le_rfl) g_eq_G
   have G_intble : ∀ t > 0, IntervalIntegrable G volume 0 t := by
-    refine' fun t t_pos => ⟨(g_intble t t_pos).1.congr_fun_ae (g_eq_G_on t), _⟩
+    refine fun t t_pos => ⟨(g_intble t t_pos).1.congr_fun_ae (g_eq_G_on t), ?_⟩
     rw [Ioc_eq_empty_of_le t_pos.lt.le]
     exact integrableOn_empty
   obtain ⟨F, F_mble, F_nn, f_eq_F⟩ : ∃ F : α → ℝ, Measurable F ∧ 0 ≤ F ∧ f =ᵐ[μ] F := by
@@ -430,7 +430,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul (μ : Measure α) (f_nn : 0 ≤�
     filter_upwards [f_eq_F] with ω fω_nn
     rw [fω_nn]
     congr 1
-    refine' intervalIntegral.integral_congr_ae _
+    refine intervalIntegral.integral_congr_ae ?_
     have fω_nn : 0 ≤ F ω := F_nn ω
     rw [uIoc_of_le fω_nn, ←
       ae_restrict_iff' (measurableSet_Ioc : MeasurableSet (Ioc (0 : ℝ) (F ω)))]

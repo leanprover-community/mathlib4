@@ -29,8 +29,6 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 open Function
 
-open BigOperators
-
 namespace MulAction
 
 variable [Group α]
@@ -344,7 +342,7 @@ theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a : α,
 instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransitive G (G ⧸ H) where
   exists_smul_eq := by
     { rintro ⟨x⟩ ⟨y⟩
-      refine' ⟨y * x⁻¹, QuotientGroup.eq.mpr _⟩
+      refine ⟨y * x⁻¹, QuotientGroup.eq.mpr ?_⟩
       simp only [smul_eq_mul, H.one_mem, mul_left_inv, inv_mul_cancel_right]}
 #align mul_action.is_pretransitive_quotient MulAction.isPretransitive_quotient
 #align add_action.is_pretransitive_quotient AddAction.isPretransitive_quotient
@@ -370,11 +368,11 @@ theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker
   apply le_antisymm
   · intro g hg
     apply Equiv.Perm.ext
-    refine' fun q ↦ QuotientGroup.induction_on q _
-    refine' fun g' => (MulAction.Quotient.smul_mk H g g').trans (QuotientGroup.eq.mpr _)
+    refine fun q ↦ QuotientGroup.induction_on q ?_
+    refine fun g' => (MulAction.Quotient.smul_mk H g g').trans (QuotientGroup.eq.mpr ?_)
     rw [smul_eq_mul, mul_inv_rev, ← inv_inv g', inv_inv]
     exact H.normalCore.inv_mem hg g'⁻¹
-  · refine' (Subgroup.normal_le_normalCore.mpr fun g hg => _)
+  · refine (Subgroup.normal_le_normalCore.mpr fun g hg => ?_)
     rw [← H.inv_mem_iff, ← mul_one g⁻¹, ← QuotientGroup.eq, ← mul_one g]
     exact (MulAction.Quotient.smul_mk H g 1).symm.trans (Equiv.Perm.ext_iff.mp hg (1 : G))
 #align subgroup.normal_core_eq_ker Subgroup.normalCore_eq_ker
