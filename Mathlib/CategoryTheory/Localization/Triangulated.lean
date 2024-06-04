@@ -170,8 +170,8 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     (by dsimp [T₃]; rw [reassoc_of% hβ]) hψ₁ hψ₂
   have : IsIso (L.mapTriangle.map ψ) := Triangle.isIso_of_isIsos _
     (inverts L W α.s α.hs) (inverts L W _ hβγσ) (inverts L W ψ₃ hψ₃)
-  refine' ⟨L.mapTriangle.map (completeDistinguishedTriangleMorphism T₁ T₃ hT₁ hT₃ α.f
-      (γ.f ≫ σ) fac.symm) ≫ inv (L.mapTriangle.map ψ), _, _⟩
+  refine ⟨L.mapTriangle.map (completeDistinguishedTriangleMorphism T₁ T₃ hT₁ hT₃ α.f
+      (γ.f ≫ σ) fac.symm) ≫ inv (L.mapTriangle.map ψ), ?_, ?_⟩
   · rw [← cancel_mono (L.mapTriangle.map ψ).hom₁, ← comp_hom₁, assoc, IsIso.inv_hom_id, comp_id]
     dsimp [ψ]
     rw [hα, MorphismProperty.LeftFraction.map_comp_map_s]
