@@ -239,7 +239,7 @@ protected instance inv {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [I
 lifts `𝟙 S` -/
 instance lift_id_inv (S : 𝒮) {a b : 𝒳} (φ : a ⟶ b) [IsIso φ] [p.IsHomLift (𝟙 S) φ] :
     p.IsHomLift (𝟙 S) (inv φ) :=
-  (IsIso.inv_id (X:=S)) ▸ (IsHomLift.inv p _ φ)
+  (IsIso.inv_id (X := S)) ▸ (IsHomLift.inv p _ φ)
 
 end IsHomLift
 
