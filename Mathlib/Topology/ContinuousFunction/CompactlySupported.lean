@@ -151,10 +151,7 @@ variable [TopologicalSpace β] (x : α)
 instance [Zero β] : Zero C_c(α, β) where
   zero := { toFun := (0 : C(α, β))
             continuous_toFun := (0 : C(α, β)).2
-            hasCompactSupport' := by
-              rw [HasCompactSupport, tsupport]
-              simp only [ContinuousMap.coe_zero, Function.support_zero', closure_empty,
-                isCompact_empty] }
+            hasCompactSupport' := by simp [HasCompactSupport, tsupport] }
 
 instance [Zero β] : Inhabited C_c(α, β) :=
   ⟨0⟩
