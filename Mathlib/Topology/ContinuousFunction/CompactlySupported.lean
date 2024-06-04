@@ -173,6 +173,25 @@ theorem coe_mul [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : ⇑(f
 theorem mul_apply [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : (f * g) x = f x * g x :=
   rfl
 
+/-- the product of `f : F` assuming `ContinuousMapClass F α γ` and `ContinuousSMul γ β` and
+`g : C_c(α, β)` is in `C_c(α, β)` -/
+instance [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
+    {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] : SMul F C_c(α, β) where
+  smul f g :=
+    ⟨⟨fun x ↦ f x • g x, (map_continuous f).smul g.continuous⟩, g.hasCompactSupport'.smul_left⟩
+
+@[simp]
+theorem coe_smulc [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
+    {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] (f : F) (g : C_c(α, β)) :
+    ⇑(f • g) = fun x => f x • g x :=
+  rfl
+
+@[simp]
+theorem smulc_apply [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
+    {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] (f : F) (g : C_c(α, β)) (x : α):
+    (f • g) x = f x • g x :=
+  rfl
+
 instance [MulZeroClass β] [ContinuousMul β] : MulZeroClass C_c(α, β) :=
   DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
 
@@ -485,25 +504,6 @@ instance : CoeTC F (CompactlySupportedContinuousMap α β) :=
       continuous_toFun := map_continuous f
       hasCompactSupport' := hasCompactSupport f }⟩
 
-/-- the product of `f : F` assuming `ContinuousMapClass F α γ` and `ContinuousSMul γ β` and
-`g : C_c(α, β)` is in `C_c(α, β)` -/
-instance [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
-    {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] : SMul F C_c(α, β) where
-  smul f g :=
-    ⟨⟨fun x ↦ f x • g x, (map_continuous f).smul g.continuous⟩, g.hasCompactSupport'.smul_left⟩
-
-@[simp]
-theorem coe_smulc [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
-    {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] (f : F) (g : C_c(α, β)) :
-    ⇑(f • g) = fun x => f x • g x :=
-  rfl
-
-@[simp]
-theorem smulc_apply [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
-    {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] (f : F) (g : C_c(α, β)) (x : α):
-    (f • g) x = f x • g x :=
-  rfl
-
 /-- A continuous function on a compact space has automatically compact support. This is not an
 instance to avoid type class loops. -/
 lemma of_compactSpace (G : Type*) [FunLike G α β]
@@ -531,11 +531,10 @@ section ZeroAtInfty
 open ZeroAtInfty
 
 variable [TopologicalSpace β] [TopologicalSpace γ] [Zero γ]
-variable [FunLike F β γ] [CompactlySupportedContinuousMapClass F β γ]
+  [FunLike F β γ] [CompactlySupportedContinuousMapClass F β γ]
 
-instance : ZeroAtInftyContinuousMapClass C_c(β, γ) β γ where
-  map_continuous f := f.continuous_toFun
-  zero_at_infty f := HasCompactSupport.is_zero_at_infty f.hasCompactSupport'
+instance : ZeroAtInftyContinuousMapClass F β γ where
+  zero_at_infty f := HasCompactSupport.is_zero_at_infty (hasCompactSupport f)
 
 end ZeroAtInfty
 
