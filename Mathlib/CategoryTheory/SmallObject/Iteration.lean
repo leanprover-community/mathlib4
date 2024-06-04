@@ -74,8 +74,7 @@ def coconeOfLE : Cocone (restrictionLT F hi) where
   ι :=
     { app := fun ⟨k, hk⟩ => F.map (homOfLE (by simpa using hk.le))
       naturality := fun ⟨k₁, hk₁⟩ ⟨k₂, hk₂⟩ _ => by
-        dsimp
-        rw [comp_id, ← Functor.map_comp, homOfLE_comp] }
+        simp [comp_id, ← Functor.map_comp, homOfLE_comp] }
 
 end Iteration
 
