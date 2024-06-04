@@ -5,7 +5,6 @@ Authors: Vasily Nesterov
 -/
 import Mathlib.Topology.Separation
 import Mathlib.Analysis.Convex.Combination
-import Mathlib.Data.Set.Card
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
