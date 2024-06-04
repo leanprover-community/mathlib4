@@ -185,7 +185,7 @@ instance {J : Type v} [SmallCategory J] (F : J ⥤ LightProfinite.{max u v}) :
   change TotallyDisconnectedSpace ({ u : ∀ j : J, F.obj j | _ } : Type _)
   exact Subtype.totallyDisconnectedSpace
 
-/-- An explicit limit cone for a functor `F : J ⥤ LightCompHausLike`, for a countable category `J`
+/-- An explicit limit cone for a functor `F : J ⥤ LightProfinite`, for a countable category `J`
   defined in terms of `CompHaus.limitCone`, which is defined in terms of `TopCat.limitCone`. -/
 def limitCone {J : Type v} [SmallCategory J] [CountableCategory J]
     (F : J ⥤ LightProfinite.{max u v}) :
@@ -202,7 +202,7 @@ def limitCone {J : Type v} [SmallCategory J] [CountableCategory J]
       ext ⟨g, p⟩
       exact (p f).symm }
 
-/-- The limit cone `LightCompHausLike.limitCone F` is indeed a limit cone. -/
+/-- The limit cone `LightProfinite.limitCone F` is indeed a limit cone. -/
 def limitConeIsLimit {J : Type v} [SmallCategory J] [CountableCategory J]
     (F : J ⥤ LightProfinite.{max u v}) :
     Limits.IsLimit (limitCone F) where
