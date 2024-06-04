@@ -68,7 +68,7 @@ def lnot : ℤ → ℤ
   | -[m +1] => m
 #align int.lnot Int.lnot
 
-/--`lor` takes two integers and returns their bitwise `or`-/
+/-- `lor` takes two integers and returns their bitwise `or`-/
 def lor : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => m ||| n
   | (m : ℕ), -[n +1] => -[Nat.ldiff n m +1]
@@ -76,7 +76,7 @@ def lor : ℤ → ℤ → ℤ
   | -[m +1], -[n +1] => -[m &&& n +1]
 #align int.lor Int.lor
 
-/--`land` takes two integers and returns their bitwise `and`-/
+/-- `land` takes two integers and returns their bitwise `and`-/
 def land : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => m &&& n
   | (m : ℕ), -[n +1] => Nat.ldiff m n
@@ -85,7 +85,7 @@ def land : ℤ → ℤ → ℤ
 #align int.land Int.land
 
 -- Porting note: I don't know why `Nat.ldiff` got the prime, but I'm matching this change here
-/--`ldiff a b` performs bitwise set difference. For each corresponding
+/-- `ldiff a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
   boolean operation `aᵢ ∧ bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℤ → ℤ → ℤ
@@ -96,7 +96,7 @@ def ldiff : ℤ → ℤ → ℤ
 #align int.ldiff Int.ldiff
 
 -- Porting note: I don't know why `Nat.xor'` got the prime, but I'm matching this change here
-/--`xor` computes the bitwise `xor` of two natural numbers-/
+/-- `xor` computes the bitwise `xor` of two natural numbers-/
 protected def xor : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => (m ^^^ n)
   | (m : ℕ), -[n +1] => -[(m ^^^ n) +1]
@@ -198,7 +198,7 @@ theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
     rw [show (cond (bodd n) 1 0 : ℤ) = (cond (bodd n) 1 0 : ℕ) by cases bodd n <;> rfl]
     exact congr_arg ofNat n.bodd_add_div2
   | -[n+1] => by
-    refine' Eq.trans _ (congr_arg negSucc n.bodd_add_div2)
+    refine Eq.trans ?_ (congr_arg negSucc n.bodd_add_div2)
     dsimp [bodd]; cases Nat.bodd n <;> dsimp [cond, not, div2, Int.mul]
     · change -[2 * Nat.div2 n+1] = _
       rw [zero_add]
@@ -472,8 +472,8 @@ theorem shiftRight_neg (m n : ℤ) : m >>> (-n) = m <<< n := by rw [← shiftLef
 
 -- Porting note: what's the correct new name?
 @[simp]
-theorem shiftLeft_coe_nat (m n : ℕ) : (m : ℤ) <<< (n : ℤ) = ↑(m <<< n) :=
-  by unfold_projs; simp
+theorem shiftLeft_coe_nat (m n : ℕ) : (m : ℤ) <<< (n : ℤ) = ↑(m <<< n) := by
+  unfold_projs; simp
 #align int.shiftl_coe_nat Int.shiftLeft_coe_nat
 
 -- Porting note: what's the correct new name?

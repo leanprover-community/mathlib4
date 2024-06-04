@@ -245,7 +245,7 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
     by convert this using 1 <;> ring
   congr 1
   rw [← map_natCast (algebraMap ℚ A) (n.choose x), ← map_mul, ← map_mul]
-  refine' RingHom.congr_arg _ _
+  refine RingHom.congr_arg _ ?_
   rw [mul_one_div (↑(n.choose x) : ℚ), one_div_mul_one_div]
   symm
   rw [div_eq_iff, div_mul_eq_mul_div, one_mul, choose_eq_factorial_div_factorial]

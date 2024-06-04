@@ -140,7 +140,7 @@ theorem sorted_last_eq_max' {s : Finset α}
 theorem max'_eq_sorted_last {s : Finset α} {h : s.Nonempty} :
     s.max' h =
       (s.sort (· ≤ ·)).get ⟨(s.sort (· ≤ ·)).length - 1,
-        by simpa using Nat.sub_lt (card_pos.mpr h) zero_lt_one⟩ :=
+        by simpa using Nat.sub_lt (card_pos.mpr h) Nat.zero_lt_one⟩ :=
   (sorted_last_eq_max'_aux _ _ _).symm
 #align finset.max'_eq_sorted_last Finset.max'_eq_sorted_last
 
@@ -149,7 +149,7 @@ is the increasing bijection between `Fin k` and `s` as an `OrderIso`. Here, `h` 
 the cardinality of `s` is `k`. We use this instead of an iso `Fin s.card ≃o s` to avoid
 casting issues in further uses of this function. -/
 def orderIsoOfFin (s : Finset α) {k : ℕ} (h : s.card = k) : Fin k ≃o s :=
-  OrderIso.trans (Fin.castIso ((length_sort (α := α) (· ≤ ·)).trans h).symm) <|
+  OrderIso.trans (Fin.castOrderIso ((length_sort (α := α) (· ≤ ·)).trans h).symm) <|
     (s.sort_sorted_lt.getIso _).trans <| OrderIso.setCongr _ _ <| Set.ext fun _ => mem_sort _
 #align finset.order_iso_of_fin Finset.orderIsoOfFin
 
@@ -210,7 +210,8 @@ theorem orderEmbOfFin_last {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < 
 @[simp]
 theorem orderEmbOfFin_singleton (a : α) (i : Fin 1) :
     orderEmbOfFin {a} (card_singleton a) i = a := by
-  rw [Subsingleton.elim i ⟨0, zero_lt_one⟩, orderEmbOfFin_zero _ zero_lt_one, min'_singleton]
+  rw [Subsingleton.elim i ⟨0, Nat.zero_lt_one⟩, orderEmbOfFin_zero _ Nat.zero_lt_one,
+    min'_singleton]
 #align finset.order_emb_of_fin_singleton Finset.orderEmbOfFin_singleton
 
 /-- Any increasing map `f` from `Fin k` to a finset of cardinality `k` has to coincide with
@@ -219,7 +220,7 @@ theorem orderEmbOfFin_unique {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin
     (hfs : ∀ x, f x ∈ s) (hmono : StrictMono f) : f = s.orderEmbOfFin h := by
   apply Fin.strictMono_unique hmono (s.orderEmbOfFin h).strictMono
   rw [range_orderEmbOfFin, ← Set.image_univ, ← coe_univ, ← coe_image, coe_inj]
-  refine' eq_of_subset_of_card_le (fun x hx => _) _
+  refine eq_of_subset_of_card_le (fun x hx => ?_) ?_
   · rcases mem_image.1 hx with ⟨x, _, rfl⟩
     exact hfs x
   · rw [h, card_image_of_injective _ hmono.injective, card_univ, Fintype.card_fin]
@@ -247,7 +248,7 @@ theorem orderEmbOfFin_eq_orderEmbOfFin_iff {k l : ℕ} {s : Finset α} {i : Fin 
 is an order embedding from `Fin k` to `α` whose image is contained in `s`. Specifically, it maps
 `Fin k` to an initial segment of `s`. -/
 def orderEmbOfCardLe (s : Finset α) {k : ℕ} (h : k ≤ s.card) : Fin k ↪o α :=
-  (Fin.castLEEmb h).trans (s.orderEmbOfFin rfl)
+  (Fin.castLEOrderEmb h).trans (s.orderEmbOfFin rfl)
 #align finset.order_emb_of_card_le Finset.orderEmbOfCardLe
 
 theorem orderEmbOfCardLe_mem (s : Finset α) {k : ℕ} (h : k ≤ s.card) (a) :

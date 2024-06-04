@@ -140,7 +140,7 @@ def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :
       ⟨k, jk, ik, h.symm⟩,
       @fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, z⟩ ⟨ij, hiij, hjij, hij⟩ ⟨jk, hjjk, hkjk, hjk⟩ => by
         obtain ⟨ijk, hijijk, hjkijk⟩ := directed_of (· ≤ ·) ij jk
-        refine' ⟨ijk, le_trans hiij hijijk, le_trans hkjk hjkijk, _⟩
+        refine ⟨ijk, le_trans hiij hijijk, le_trans hkjk hjkijk, ?_⟩
         rw [← DirectedSystem.map_map, hij, DirectedSystem.map_map]
         · symm
           rw [← DirectedSystem.map_map, ← hjk, DirectedSystem.map_map] <;> assumption⟩
@@ -238,14 +238,14 @@ noncomputable instance prestructure : L.Prestructure (DirectLimit.setoid G f) wh
   toStructure := sigmaStructure G f
   fun_equiv {n} {F} x y xy := by
     obtain ⟨i, hx, hy, h⟩ := exists_unify_eq G f xy
-    refine'
+    refine
       Setoid.trans (funMap_equiv_unify G f F x i hx)
-        (Setoid.trans _ (Setoid.symm (funMap_equiv_unify G f F y i hy)))
+        (Setoid.trans ?_ (Setoid.symm (funMap_equiv_unify G f F y i hy)))
     rw [h]
   rel_equiv {n} {R} x y xy := by
     obtain ⟨i, hx, hy, h⟩ := exists_unify_eq G f xy
-    refine' _root_.trans (relMap_equiv_unify G f R x i hx)
-      (_root_.trans _ (symm (relMap_equiv_unify G f R y i hy)))
+    refine _root_.trans (relMap_equiv_unify G f R x i hx)
+      (_root_.trans ?_ (symm (relMap_equiv_unify G f R y i hy)))
     rw [h]
 #align first_order.language.direct_limit.prestructure FirstOrder.Language.DirectLimit.prestructure
 
@@ -446,14 +446,14 @@ theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
     (h : ∀ i, Structure.CG L (G i)) [DirectedSystem G fun i j h => f i j h] :
     Structure.CG L (DirectLimit G f) := by
-  refine' ⟨⟨⋃ i, DirectLimit.of L ι G f i '' Classical.choose (h i).out, _, _⟩⟩
+  refine ⟨⟨⋃ i, DirectLimit.of L ι G f i '' Classical.choose (h i).out, ?_, ?_⟩⟩
   · exact Set.countable_iUnion fun i => Set.Countable.image (Classical.choose_spec (h i).out).1 _
   · rw [eq_top_iff, Substructure.closure_unionᵢ]
     simp_rw [← Embedding.coe_toHom, Substructure.closure_image]
     rw [le_iSup_iff]
     intro S hS x _
     let out := Quotient.out (s := DirectLimit.setoid G f)
-    refine' hS (out x).1 ⟨(out x).2, _, _⟩
+    refine hS (out x).1 ⟨(out x).2, ?_, ?_⟩
     · rw [(Classical.choose_spec (h (out x).1).out).2]
       trivial
     · simp only [out, Embedding.coe_toHom, DirectLimit.of_apply, Sigma.eta, Quotient.out_eq]

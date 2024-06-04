@@ -1,16 +1,15 @@
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Rat.Order
+import Mathlib.Order.Interval.Finset.Nat
 
 private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
-set_option autoImplicit true
-set_option pp.mvars false
+set_option autoImplicit false
 
-example [LinearOrderedCommRing α] {a b : α} (h : a < b) (w : b < a) : False := by
+example {α} [LinearOrderedCommRing α] {a b : α} (h : a < b) (w : b < a) : False := by
   linarith
 
 example {α : Type} (_inst : (a : Prop) → Decidable a) [LinearOrderedCommRing α]
@@ -29,7 +28,7 @@ example (e b c a v0 v1 : Rat) (h1 : v0 = 5*a) (h2 : v1 = 3*b) (h3 : v0 + v1 + c 
     v0 + 5 + (v1 - 3) + (c - 2) = 10 := by
   linarith
 
-example [LinearOrderedCommRing α] (e b c a v0 v1 : α) (h1 : v0 = 5*a) (h2 : v1 = 3*b)
+example {α} [LinearOrderedCommRing α] (e b c a v0 v1 : α) (h1 : v0 = 5*a) (h2 : v1 = 3*b)
     (h3 : v0 + v1 + c = 10) : v0 + 5 + (v1 - 3) + (c - 2) = 10 := by
   linarith
 
@@ -45,18 +44,18 @@ example (A B : Rat) (h : 0 < A * B) : 0 < 8*A*B := by
 example (A B : Rat) (h : 0 < A * B) : 0 < A*8*B := by
   linarith
 
-example [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
+example {α} [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
   have h : 0 ≤ x := test_sorry
   linarith
 
-example [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
+example {α} [LinearOrderedCommRing α] (x : α) : 0 ≤ x := by
   have h : 0 ≤ x := test_sorry
   linarith [h]
 
-example [LinearOrderedCommRing α] (u v r s t : α) (h : 0 < u*(t*v + t*r + s)) :
+example {α} [LinearOrderedCommRing α] (u v r s t : α) (h : 0 < u*(t*v + t*r + s)) :
     0 < (t*(r + v) + s)*3*u := by linarith
 
-example [LinearOrderedCommRing α] (A B : α) (h : 0 < A * B) : 0 < 8*A*B := by
+example {α} [LinearOrderedCommRing α] (A B : α) (h : 0 < A * B) : 0 < 8*A*B := by
   linarith
 
 example (s : Set ℕ) (_h : s = ∅) : 0 ≤ 1 := by linarith
@@ -427,9 +426,11 @@ lemma norm_nonpos_right {x y : ℚ} (h1 : x * x + y * y ≤ 0) : y = 0 := by
 lemma norm_nonpos_left (x y : ℚ) (h1 : x * x + y * y ≤ 0) : x = 0 := by
   nlinarith
 
+section
 variable {E : Type _} [AddGroup E]
 example (f : ℤ → E) (h : 0 = f 0) : 1 ≤ 2 := by nlinarith
 example (a : E) (h : a = a) : 1 ≤ 2 := by nlinarith
+end
 
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
     p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) := by
@@ -442,6 +443,7 @@ example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
     p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) := by
   nlinarith (config := { oracle := some .fourierMotzkin })
 
+section
 -- Tests involving a norm, including that squares in a type where `sq_nonneg` does not apply
 -- do not cause an exception
 variable {R : Type _} [Ring R] (abs : R → ℚ)
@@ -456,6 +458,8 @@ example (t : R) (a b : ℚ) (h : a ≤ b) : a ≤ abs (t^2) + b := by
 
 example (t : R) (a b : ℚ) (h : a ≤ b) : abs t * a ≤ abs t * b := by
   nlinarith [abs_nonneg' abs t]
+
+end
 
 axiom T : Type
 
@@ -509,7 +513,7 @@ lemma bar (x y : Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith
 -- -- issue #9822
 -- lemma mytest (j : ℕ) (h : 0 < j) : j-1 < j := by linarith
 
-example [LinearOrderedCommRing α] (h : ∃ x : α, 0 ≤ x) : True := by
+example {α} [LinearOrderedCommRing α] (h : ∃ x : α, 0 ≤ x) : True := by
   cases' h with x h
   have : 0 ≤ x := by linarith
   trivial
@@ -530,9 +534,10 @@ example (n : Nat) (h1 : ¬n = 1) (h2 : n ≥ 1) : n ≥ 2 := by
   suffices n = 1 by exact h1 this
   linarith
 
+universe u v
 -- simulate the type of MvPolynomial
 def P : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
-noncomputable instance : LinearOrderedField (P c d) := test_sorry
+noncomputable instance {c d} : LinearOrderedField (P c d) := test_sorry
 
 example (p : P PUnit.{u+1} PUnit.{v+1}) (h : 0 < p) : 0 < 2 * p := by
   linarith
@@ -567,19 +572,25 @@ example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
 example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
   nlinarith [p _ garbage]
 
--- Commented out for now since `#guard_msgs` prints the metavariable numbers, which are
--- subject to change.
--- /--
--- error: don't know how to synthesize placeholder for argument 'x'
--- ...
--- -/
--- #guard_msgs in
--- example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
---   linarith [p _]
+/--
+error: don't know how to synthesize placeholder for argument 'x'
+context:
+q : Prop
+p : ℤ → 1 = 2
+⊢ ℤ
+---
+error: unsolved goals
+q : Prop
+p : ℤ → 1 = 2
+⊢ 1 = 2
+-/
+#guard_msgs in
+example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
+  linarith [p _]
 
 /--
 error: Argument passed to linarith has metavariables:
-  p ?_
+  p ?a
 -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
@@ -587,16 +598,14 @@ example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
 
 /--
 error: Argument passed to nlinarith has metavariables:
-  p ?_
+  p ?a
 -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
   nlinarith [p ?a]
 
-open BigOperators
-
 example (h : False): True := by
-  have : ∑ k in Finset.empty, k^2 = 0 := by contradiction
+  have : ∑ k ∈ Finset.empty, k^2 = 0 := by contradiction
   have : ∀ k : Nat, 0 ≤ k := by
     intro h
     -- this should not panic:
@@ -618,7 +627,7 @@ example (a b c d e : ℚ)
   linarith
 
 /-- https://github.com/leanprover-community/mathlib4/issues/2717 -/
-example :
+example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     (3 * x4 - x3 - x2 - x1 : ℚ) < 0 →
     x5 - x4 < 0 →
     2 * (x5 - x4) < 0 →
@@ -636,11 +645,6 @@ example :
 /--
 error: linarith failed to find a contradiction
 case h1.h
-E : Type _
-inst✝¹ : AddGroup E
-R : Type _
-inst✝ : Ring R
-abs : R → ℚ
 a b c d e : ℚ
 ha : 2 * a + b + c + d + e = 4
 hb : a + 2 * b + c + d + e = 5
@@ -665,12 +669,7 @@ example (a b c d e : ℚ)
 -- TODO: still broken with Fourier-Motzkin
 /--
 error: linarith failed to find a contradiction
-E : Type _
-inst✝¹ : AddGroup E
-R : Type _
-inst✝ : Ring R
-abs : R → ℚ
-x4 x3 x2 x1 x5 x6 x8 x7 : ℚ
+x1 x2 x3 x4 x5 x6 x7 x8 : ℚ
 a✝⁹ : 3 * x4 - x3 - x2 - x1 < 0
 a✝⁸ : x5 - x4 < 0
 a✝⁷ : 2 * (x5 - x4) < 0
@@ -686,7 +685,7 @@ failed
 -/
 #guard_msgs in
 /-- https://github.com/leanprover-community/mathlib4/issues/2717 -/
-example :
+example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     (3 * x4 - x3 - x2 - x1 : ℚ) < 0 →
     x5 - x4 < 0 →
     2 * (x5 - x4) < 0 →

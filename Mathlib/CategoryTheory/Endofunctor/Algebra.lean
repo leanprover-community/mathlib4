@@ -68,10 +68,6 @@ structure Hom (A₀ A₁ : Algebra F) where
   h : F.map f ≫ A₁.str = A₀.str ≫ f := by aesop_cat
 #align category_theory.endofunctor.algebra.hom CategoryTheory.Endofunctor.Algebra.Hom
 
--- Porting note: No need to restate axiom
--- restate_axiom Hom.h'
-
--- Porting note: Originally `[simp, reassoc.1]`
 attribute [reassoc (attr := simp)] Hom.h
 
 namespace Hom
@@ -291,10 +287,6 @@ structure Hom (V₀ V₁ : Coalgebra F) where
   h : V₀.str ≫ F.map f = f ≫ V₁.str := by aesop_cat
 #align category_theory.endofunctor.coalgebra.hom CategoryTheory.Endofunctor.Coalgebra.Hom
 
--- Porting note: no need for restate_axiom any more
--- restate_axiom hom.h'
-
--- Porting note: Originally `[simp, reassoc.1]`
 attribute [reassoc (attr := simp)] Hom.h
 
 namespace Hom
