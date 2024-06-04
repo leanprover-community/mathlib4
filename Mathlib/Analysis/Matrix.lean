@@ -333,7 +333,6 @@ section NonUnitalSeminormedRing
 
 variable [NonUnitalSeminormedRing α]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (k j) -/
 theorem linfty_opNNNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
   simp_rw [linfty_opNNNorm_def, Matrix.mul_apply]
   calc

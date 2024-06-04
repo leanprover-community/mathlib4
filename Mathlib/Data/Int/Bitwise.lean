@@ -310,7 +310,6 @@ theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit
 #align int.test_bit_succ Int.testBit_bit_succ
 
 -- Porting note (#11215): TODO
--- /- ./././Mathport/Syntax/Translate/Expr.lean:333:4: warning: unsupported (TODO): `[tacs] -/
 -- private unsafe def bitwise_tac : tactic Unit :=
 --   sorry
 -- #align int.bitwise_tac int.bitwise_tac
