@@ -12,7 +12,8 @@ import Mathlib.Topology.Category.Stonean.Basic
 /-!
 # Functors from categories of topological spaces to condensed sets
 
-This file defines the various functors from categories of topological spaces to condensed sets.
+This file defines the embedding of the test objects (compact Hausdorff spaces) into condensed
+sets.
 
 ## Main definitions
 
@@ -20,9 +21,6 @@ This file defines the various functors from categories of topological spaces to 
   functor. We also define `profiniteToCondensed` and `stoneanToCondensed`.
 
 TODO (Dagur):
-
-* Add the functor `TopCat.{u+1} ⥤ CondensedSet.{u}`. This is done in a draft PR which
-  depends on the explicit sheaf condition for condensed sets.
 
 * Define the analogues of `compHausToCondensed` for sheaves on `Profinite` and `Stonean` and provide
   the relevant isomorphisms with `profiniteToCondensed` and `stoneanToCondensed`.
