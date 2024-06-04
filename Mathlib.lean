@@ -3818,6 +3818,7 @@ import Mathlib.Tactic.Linarith.SimplexAlgorithm.PositiveVector
 import Mathlib.Tactic.Linarith.SimplexAlgorithm.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.LintDecidable
 import Mathlib.Tactic.Linter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
