@@ -605,7 +605,7 @@ section Ring
 variable {R R' : Type*} [CommRing R] [CommMonoidWithZero R']
 
 /-- If `χ` is of odd order, then `χ(-1) = 1` -/
-lemma val_neg_one_eq_one_of_odd {χ : MulChar R R'} {n : ℕ} (hn : Odd n) (hχ : χ ^ n = 1) :
+lemma val_neg_one_eq_one_of_odd_order {χ : MulChar R R'} {n : ℕ} (hn : Odd n) (hχ : χ ^ n = 1) :
     χ (-1) = 1 := by
   rw [← hn.neg_one_pow, map_pow, ← χ.pow_apply' (Nat.ne_of_odd_add hn), hχ]
   exact MulChar.one_apply_coe (-1)
