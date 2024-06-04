@@ -223,8 +223,8 @@ variable (A) [Mul A] [StarMul A]
 
 namespace SubStarmagma
 
-/-- The center of `A` is the set of elements that commute and associate
-with everything in `A` -/
+/-- The center of magma `A` is the set of elements that commute and associate
+with everything in `A`, here realized as a `SubStarSemigroup`. -/
 def center : SubStarmagma A :=
   { Subsemigroup.center A with
     star_mem' := Set.star_mem_center }
