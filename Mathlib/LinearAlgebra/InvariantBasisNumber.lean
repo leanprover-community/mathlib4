@@ -38,6 +38,10 @@ It is also useful to consider the following stronger conditions:
 
 ## Instances
 
+- `IsNoetherianRing.orzechProperty` (defined in `Mathlib/RingTheory/Noetherian.lean`) :
+  any left-noetherian ring satisfies the Orzech property.
+  This applies in particular to division rings.
+
 - `strongRankCondition_of_orzechProperty` : the Orzech property implies the strong rank condition
   (for non trivial rings).
 
@@ -50,11 +54,11 @@ It is also useful to consider the following stronger conditions:
   invariant basis number property.
 
 - `invariantBasisNumber_of_nontrivial_of_commRing`: a nontrivial commutative ring satisfies
-  the invariant basis number property
+  the invariant basis number property.
 
-More generally, every commutative ring satisfies the strong rank condition. This is proved in
-`LinearAlgebra/FreeModule/StrongRankCondition`. We keep
-`invariantBasisNumber_of_nontrivial_of_commRing` here since it imports fewer files.
+More generally, every commutative ring satisfies the Orzech property,
+hence the strong rank condition, which is proved in `Mathlib/RingTheory/FiniteType.lean`.
+We keep `invariantBasisNumber_of_nontrivial_of_commRing` here since it imports fewer files.
 
 
 ## Counterexamples to converse results
@@ -263,30 +267,10 @@ section
 
 variable (R : Type u) [Ring R] [Nontrivial R] [IsNoetherianRing R]
 
--- Note this includes fields,
--- and we use this below to show any commutative ring has invariant basis number.
-/-- Any nontrivial noetherian ring satisfies the strong rank condition.
-
-An injective map `((Fin n ⊕ Fin (1 + m)) → R) →ₗ[R] (Fin n → R)` for some left-noetherian `R`
-would force `Fin (1 + m) → R ≃ₗ PUnit` (via `IsNoetherian.equivPUnitOfProdInjective`),
-which is not the case!
--/
-instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCondition R := by
-  constructor
-  intro m n f i
-  by_contra h
-  rw [not_le, ← Nat.add_one_le_iff, le_iff_exists_add] at h
-  obtain ⟨m, rfl⟩ := h
-  let e : Fin (n + 1 + m) ≃ Sum (Fin n) (Fin (1 + m)) :=
-    (finCongr (add_assoc _ _ _)).trans finSumFinEquiv.symm
-  let f' :=
-    f.comp
-      ((LinearEquiv.sumArrowLequivProdArrow _ _ R R).symm.trans
-          (LinearEquiv.funCongrLeft R R e)).toLinearMap
-  have i' : Injective f' := i.comp (LinearEquiv.injective _)
-  apply @zero_ne_one (Fin (1 + m) → R) _ _
-  apply (IsNoetherian.equivPUnitOfProdInjective f' i').injective
-  ext
+/-- Any nontrivial noetherian ring satisfies the strong rank condition,
+    since it satisfies Orzech property. -/
+instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCondition R :=
+  inferInstance
 #align noetherian_ring_strong_rank_condition IsNoetherianRing.strongRankCondition
 
 end
