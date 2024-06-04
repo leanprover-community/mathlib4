@@ -207,9 +207,9 @@ protected theorem HasProd.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasPro
 @[to_additive]
 protected theorem Inducing.hasProd_iff [CommMonoid γ] [TopologicalSpace γ] {G}
     [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : Inducing g) (f : β → α) (a : α) :
-    HasProd f a ↔ HasProd (g ∘ f) (g a) := by
+    HasProd (g ∘ f) (g a) ↔ HasProd f a := by
   simp_rw [HasProd, comp_apply, ← map_prod]
-  exact hg.tendsto_nhds_iff
+  exact hg.tendsto_nhds_iff.symm
 
 @[to_additive]
 protected theorem Multipliable.map [CommMonoid γ] [TopologicalSpace γ] (hf : Multipliable f) {G}
@@ -234,7 +234,7 @@ theorem Multipliable.map_tprod [CommMonoid γ] [TopologicalSpace γ] [T2Space γ
 
 @[to_additive]
 theorem Inducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] [TopologicalSpace γ]
-    [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : Inducing g) (f : β → α):
+    [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : Inducing g) (f : β → α) :
     Multipliable f ↔ Multipliable (g ∘ f) ∧ ∏' i, g (f i) ∈ Set.range g := by
   constructor
   · intro hf
@@ -246,7 +246,7 @@ theorem Inducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] [Topologi
     use a
     have := hgf.hasProd
     simp_rw [comp_apply, ← ha] at this
-    exact (hg.hasProd_iff f a).mpr this
+    exact (hg.hasProd_iff f a).mp this
 
 /-- "A special case of `Multipliable.map_iff_of_leftInverse` for convenience" -/
 @[to_additive "A special case of `Summable.map_iff_of_leftInverse` for convenience"]
@@ -389,7 +389,7 @@ theorem tprod_congr_set_coe (f : β → α) {s t : Set β} (h : s = t) :
 #align tsum_congr_subtype tsum_congr_set_coe
 
 @[to_additive]
-theorem tprod_congr_subtype (f : β → α) {P Q : β → Prop} (h : ∀ x, P x ↔ Q x):
+theorem tprod_congr_subtype (f : β → α) {P Q : β → Prop} (h : ∀ x, P x ↔ Q x) :
     ∏' x : {x // P x}, f x = ∏' x : {x // Q x}, f x :=
   tprod_congr_set_coe f <| Set.ext h
 
