@@ -31,7 +31,7 @@ lemma one_le_elim_iff [One β] (v₁ : α₁ → β) (v₂ : α₂ → β) :
   const_le_elim_iff 1 v₁ v₂
 
 lemma elim_le_const_iff (b : β) (u₁ : α₁ → β) (u₂ : α₂ → β) :
-    Sum.elim u₁ u₂ ≤ (Function.const _ b) ↔ u₁ ≤ (Function.const _ b) ∧ u₂ ≤ (Function.const _ b) :=
+    Sum.elim u₁ u₂ ≤ Function.const _ b ↔ u₁ ≤ Function.const _ b ∧ u₂ ≤ Function.const _ b :=
   elim_const_const b ▸ elim_le_elim_iff ..
 
 @[to_additive]
