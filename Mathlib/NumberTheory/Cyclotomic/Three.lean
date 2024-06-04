@@ -88,7 +88,7 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
   have := Units.mem hζ u
   fin_cases this
   · left; rfl
-  · right; ext; simp
+  · right; rfl
   all_goals exfalso
   · exact hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide) hcong
   · apply hζ.not_exists_int_prime_dvd_sub_of_prime_ne_two' (by decide)
