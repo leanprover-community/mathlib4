@@ -251,7 +251,7 @@ lemma rightOp_map_unop {F : Cᵒᵖ ⥤ D} {X Y} (f : X ⟶ Y) :
 
 instance {F : C ⥤ D} [Full F] : Full F.op where
   map_surjective f := ⟨(F.preimage f.unop).op, by simp⟩
-    (F.rightOp.map f).unop = (F.map f.op) := rfl
+
 instance {F : C ⥤ D} [Faithful F] : Faithful F.op where
   map_injective h := Quiver.Hom.unop_inj <| by simpa using map_injective F (Quiver.Hom.op_inj h)
 
