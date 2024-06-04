@@ -60,8 +60,8 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
     rwa [← (div_eq_iff h₀).mpr (sq (f 1))]
   have h₂ : ∀ x > 0, (f x - x) * (f x - 1 / x) = 0 := by
     intro x hx
-    have h1xss : 1 * x = sqrt x * sqrt x := by rw [one_mul, mul_self_sqrt (le_of_lt hx)]
-    specialize H₂ 1 x (sqrt x) (sqrt x) zero_lt_one hx (sqrt_pos.mpr hx) (sqrt_pos.mpr hx) h1xss
+    have h1xss : 1 * x = √x * √x := by rw [one_mul, mul_self_sqrt (le_of_lt hx)]
+    specialize H₂ 1 x √x √x zero_lt_one hx (sqrt_pos.mpr hx) (sqrt_pos.mpr hx) h1xss
     rw [h₁, one_pow 2, sq_sqrt (le_of_lt hx), ← two_mul (f x), ← two_mul x] at H₂
     have hfx_ne_0 : f x ≠ 0 := by specialize H₁ x hx; exact ne_of_gt H₁
     field_simp at H₂ ⊢
@@ -74,8 +74,8 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
   obtain hfb₂ := Or.resolve_left (h₃ b hb) hfb₁
   -- f(b) ≠ b, f(b) = 1/b
   have hab : a * b > 0 := mul_pos ha hb
-  have habss : a * b = sqrt (a * b) * sqrt (a * b) := (mul_self_sqrt (le_of_lt hab)).symm
-  specialize H₂ a b (sqrt (a * b)) (sqrt (a * b)) ha hb (sqrt_pos.mpr hab) (sqrt_pos.mpr hab) habss
+  have habss : a * b = √(a * b) * √(a * b) := (mul_self_sqrt (le_of_lt hab)).symm
+  specialize H₂ a b (√(a * b)) (√(a * b)) ha hb (sqrt_pos.mpr hab) (sqrt_pos.mpr hab) habss
   rw [sq_sqrt (le_of_lt hab), ← two_mul (f (a * b)), ← two_mul (a * b)] at H₂
   rw [hfa₂, hfb₂] at H₂
   have h2ab_ne_0 : 2 * (a * b) ≠ 0 := by positivity
