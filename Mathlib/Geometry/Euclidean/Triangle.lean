@@ -139,10 +139,14 @@ theorem cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle {x y : V} (hx : x ≠ 0
       Real.mul_self_sqrt (sub_nonneg_of_le (real_inner_mul_inner_self_le x y)),
       real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm,
       real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two]
-    field_simp [hxn, hyn, hxyn]
+    -- was `field_simp [hxn, hyn, hxyn]` before, took 3.2s; now takes 200ms
+    simp (disch := field_simp_discharge) only [sub_div', div_div, mul_div_assoc',
+      div_mul_eq_mul_div, div_sub', neg_div', neg_sub, eq_div_iff, div_eq_iff]
     ring
 #align inner_product_geometry.cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle InnerProductGeometry.cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle
 
+set_option profiler true
+set_option profiler.threshold 40 in
 /-- The sine of the sum of two angles in a possibly degenerate
 triangle (where two given sides are nonzero), vector angle form. -/
 theorem sin_angle_sub_add_angle_sub_rev_eq_sin_angle {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
@@ -180,7 +184,9 @@ theorem sin_angle_sub_add_angle_sub_rev_eq_sin_angle {x y : V} (hx : x ≠ 0) (h
       inner_sub_right, inner_sub_right, inner_sub_right, inner_sub_right, real_inner_comm x y, H3,
       H4, real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm,
       real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two]
-    field_simp [hxn, hyn, hxyn]
+    -- was `field_simp [hxn, hyn, hxyn]` before, taking 2,6s; now takes 150ms
+    simp (disch := field_simp_discharge) only [mul_div_assoc', div_mul_eq_mul_div, div_div,
+      sub_div', Real.sqrt_div', Real.sqrt_mul_self, add_div', div_add', eq_div_iff, div_eq_iff]
     ring
 #align inner_product_geometry.sin_angle_sub_add_angle_sub_rev_eq_sin_angle InnerProductGeometry.sin_angle_sub_add_angle_sub_rev_eq_sin_angle
 
@@ -339,8 +345,14 @@ theorem dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c 
     simp only [m, dist_left_midpoint, dist_right_midpoint, Real.norm_two] at hm
     calc
       dist a b ^ 2 + dist a c ^ 2 = 2 / dist b c * (dist a b ^ 2 *
-        ((2:ℝ)⁻¹ * dist b c) + dist a c ^ 2 * (2⁻¹ * dist b c)) := by field_simp; ring
-      _ = 2 * (dist a (midpoint ℝ b c) ^ 2 + (dist b c / 2) ^ 2) := by rw [hm]; field_simp; ring
+        ((2:ℝ)⁻¹ * dist b c) + dist a c ^ 2 * (2⁻¹ * dist b c)) := by
+        -- was `field_simp` before, taking 600ms; now takes 55ms
+        simp (disch := field_simp_discharge) only [inv_eq_one_div, div_mul_eq_mul_div, one_mul,
+          mul_div_assoc', add_div', div_mul_cancel₀, div_div, eq_div_iff]
+        ring
+      _ = 2 * (dist a (midpoint ℝ b c) ^ 2 + (dist b c / 2) ^ 2) := by
+        -- `field_simp` takes 1s, but is not easily replaced by an equivalent simp call
+        rw [hm]; field_simp; ring
 #align euclidean_geometry.dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq EuclideanGeometry.dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq
 
 theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠ a' b' c' = ∠ a b c)

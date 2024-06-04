@@ -121,7 +121,9 @@ theorem sum_mongePointWeightsWithCircumcenter (n : ℕ) :
     nsmul_eq_mul]
   -- Porting note: replaced
   -- have hn1 : (n + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
-  field_simp [n.cast_add_one_ne_zero]
+  -- was `field_simp [n.cast_add_one_ne_zero]` before; took 220ms; now takes 30
+  simp (disch := field_simp_discharge) only [Nat.cast_add, Nat.cast_ofNat, Nat.cast_one,
+    inv_eq_one_div, mul_div_assoc', mul_one, add_div', div_mul_cancel₀, div_eq_iff, one_mul]
   ring
 #align affine.simplex.sum_monge_point_weights_with_circumcenter Affine.Simplex.sum_mongePointWeightsWithCircumcenter
 
@@ -149,8 +151,12 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
     -- Porting note: replaced
     -- have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
     have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := by norm_cast
+    -- cannot replace by simps, as higher `maxRecDepth` is required
     field_simp [hn1, hn3, mul_comm]
-  · field_simp [hn1]
+  · -- was `field_simp [hn1]` before, took 250ms; now takes 40
+    simp (disch := field_simp_discharge) only
+      [Nat.cast_add, Nat.cast_ofNat, Nat.cast_one, zero_sub, mul_neg, mul_one, neg_div',
+      neg_add_rev, div_add', one_mul, eq_div_iff, div_mul_cancel₀]
     ring
 #align affine.simplex.monge_point_eq_affine_combination_of_points_with_circumcenter Affine.Simplex.mongePoint_eq_affineCombination_of_pointsWithCircumcenter
 
