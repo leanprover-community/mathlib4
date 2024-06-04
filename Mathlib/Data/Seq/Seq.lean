@@ -288,23 +288,28 @@ def recOn {C : Seq' α → Sort v} (s : Seq' α) (nil : C nil) (cons : ∀ x s, 
     apply cons
 #align stream.seq.rec_on Seq'.recOn
 
-theorem mem_rec_on {C : Seq' α → Prop} {a s} (M : a ∈ s)
-    (h1 : ∀ b s', a = b ∨ C s' → C (cons b s')) : C s := by
-  cases' M with k e; unfold Stream'.get at e
-  induction' k with k IH generalizing s
-  · have TH : s = cons a (tail s) := by
-      apply destruct_eq_cons
-      unfold destruct get? Functor.map
-      rw [← e]
-      rfl
-    rw [TH]
-    apply h1 _ _ (Or.inl rfl)
-  cases s with
-  | nil => injection e
-  | cons b s' =>
-    have h_eq : (cons b s').val (Nat.succ k) = s'.val k := rfl
-    rw [h_eq] at e
-    apply h1 _ _ (Or.inr (IH e))
+@[elab_as_elim]
+theorem mem_rec_on {a} {C : (s : Seq' α) → a ∈ s → Prop} {s} (M : a ∈ s)
+    (mem_cons : ∀ s, C (cons a s) (mem_cons a s))
+    (mem_cons_of_mem : ∀ (y) {s} (h : a ∈ s), C s h → C (cons y s) (mem_cons_of_mem y h)) :
+    C s M := by
+  change ∃ n, some a = get? s n at M
+  cases M with
+  | intro k e =>
+    induction k generalizing s with
+    | zero =>
+      induction s with
+      | nil => injection e
+      | cons b s' =>
+        injection e with e'
+        induction e'
+        exact mem_cons s'
+    | succ k IH =>
+      induction s with
+      | nil => injection e
+      | cons b s' =>
+        rw [get?_cons_succ] at e
+        exact mem_cons_of_mem b _ (IH e)
 #align stream.seq.mem_rec_on Seq'.mem_rec_on
 
 /-- Corecursor over pairs of `Option` values-/
@@ -851,29 +856,30 @@ theorem exists_of_mem_map {f} {b : β} : ∀ {s : Seq' α}, b ∈ map f s → �
 #align stream.seq.exists_of_mem_map Seq'.exists_of_mem_map
 
 theorem of_mem_append {s₁ s₂ : Seq' α} {a : α} (h : a ∈ append s₁ s₂) : a ∈ s₁ ∨ a ∈ s₂ := by
-  have := h; revert this
-  generalize e : append s₁ s₂ = ss; intro h; revert s₁
-  apply mem_rec_on h _
-  intro b s' o s₁
-  cases s₁ with
-  | nil =>
-    intro m _
-    apply Or.inr
-    simpa using m
-  | cons c t₁ =>
-    intro m e
-    have this := congr_arg destruct e
-    cases' show a = c ∨ a ∈ append t₁ s₂ by simpa using m with e' m
-    · rw [e']
-      exact Or.inl (mem_cons _ _)
-    · cases' show c = b ∧ append t₁ s₂ = s' by simpa with i1 i2
-      cases' o with e' IH
-      · simp [i1, e']
-      · exact Or.imp_left (mem_cons_of_mem _) (IH m i2)
+  generalize e : append s₁ s₂ = ss at h
+  induction h using mem_rec_on generalizing s₁ with
+  | mem_cons s' =>
+    induction s₁ with
+    | nil =>
+      rw [nil_append] at e; subst e
+      right; exact mem_cons a s'
+    | cons c t₁ =>
+      have : c = a ∧ append t₁ s₂ = s' := by simpa using congr_arg destruct e
+      clear e; rcases this with ⟨rfl, rfl⟩
+      left; exact mem_cons c t₁
+  | @mem_cons_of_mem b s' m o =>
+    induction s₁ with
+    | nil =>
+      rw [nil_append] at e; subst e
+      right; exact mem_cons_of_mem b m
+    | cons c t₁ =>
+      have : c = b ∧ append t₁ s₂ = s' := by simpa using congr_arg destruct e
+      clear e; rcases this with ⟨rfl, rfl⟩
+      exact (o rfl).imp_left (mem_cons_of_mem c)
 #align stream.seq.of_mem_append Seq'.of_mem_append
 
 theorem mem_append_left {s₁ s₂ : Seq' α} {a : α} (h : a ∈ s₁) : a ∈ append s₁ s₂ := by
-  apply mem_rec_on h; intros; simp [*]
+  induction h using mem_rec_on <;> simp [*]
 #align stream.seq.mem_append_left Seq'.mem_append_left
 
 @[simp]

@@ -906,20 +906,6 @@ theorem destruct_terminates_of_get?_terminates {s : WSeq α} {n} (T : Terminates
   (head_terminates_iff _).1 <| head_terminates_of_get?_terminates T
 #align stream.wseq.destruct_terminates_of_nth_terminates WSeq.destruct_terminates_of_get?_terminates
 
-theorem mem_rec_on {C : WSeq α → Prop} {a s} (M : a ∈ s) (h1 : ∀ b s', a = b ∨ C s' → C (cons b s'))
-    (h2 : ∀ s, C s → C (think s)) : C s := by
-  apply Seq'.mem_rec_on M
-  intro o s' h; cases' o with b
-  · apply h2
-    cases h
-    · contradiction
-    · assumption
-  · apply h1
-    apply Or.imp_left _ h
-    intro h
-    injection h
-#align stream.wseq.mem_rec_on WSeq.mem_rec_on
-
 @[simp]
 theorem mem_think (s : WSeq α) (a) : a ∈ think s ↔ a ∈ s := by
   cases' s with f al
@@ -930,6 +916,9 @@ theorem mem_think (s : WSeq α) (a) : a ∈ think s ↔ a ∈ s := by
     injections
   · apply Stream'.mem_cons_of_mem _ h
 #align stream.wseq.mem_think WSeq.mem_think
+
+theorem mem_think_of_mem {s : WSeq α} {a} : a ∈ s → a ∈ think s :=
+  mem_think s a |>.mpr
 
 theorem eq_or_mem_iff_mem {s : WSeq α} {a a' s'} :
     some (a', s') ∈ destruct s → (a ∈ s ↔ a = a' ∨ a ∈ s') := by
@@ -967,6 +956,20 @@ theorem mem_cons (s : WSeq α) (a) : a ∈ cons a s :=
   (mem_cons_iff _ _).2 (Or.inl rfl)
 #align stream.wseq.mem_cons WSeq.mem_cons
 
+@[elab_as_elim]
+theorem mem_rec_on {a} {C : (s : WSeq α) → a ∈ s → Prop} {s} (M : a ∈ s)
+    (mem_cons : ∀ s', C (cons a s') (mem_cons s' a))
+    (mem_cons_of_mem : ∀ (b) {s'} (h : a ∈ s'), C s' h → C (cons b s') (mem_cons_of_mem b h))
+    (mem_think_of_mem : ∀ {s} (h : a ∈ s), C s h → C (think s) (mem_think_of_mem h)) : C s M := by
+  induction M using Seq'.mem_rec_on with
+  | mem_cons s' =>
+    exact mem_cons s'
+  | mem_cons_of_mem o h ih =>
+    cases o with
+    | some b => exact mem_cons_of_mem b h ih
+    | none   => exact mem_think_of_mem h ih
+#align stream.wseq.mem_rec_on WSeq.mem_rec_on
+
 theorem mem_of_mem_tail {s : WSeq α} {a} : a ∈ tail s → a ∈ s := by
   intro h; have := h; cases' h with n e; revert s; simp only [Stream'.get]
   induction' n with n IH <;> intro s <;> induction' s using WSeq.recOn with x s s <;>
@@ -1002,22 +1005,20 @@ theorem get?_mem {s : WSeq α} {a n} : some a ∈ get? s n → a ∈ s := by
 #align stream.wseq.nth_mem WSeq.get?_mem
 
 theorem exists_get?_of_mem {s : WSeq α} {a} (h : a ∈ s) : ∃ n, some a ∈ get? s n := by
-  apply mem_rec_on h
-  · intro a' s' h
-    cases' h with h h
-    · exists 0
-      simp only [get?, drop, head_cons]
-      rw [h]
-      apply ret_mem
-    · cases' h with n h
-      exists n + 1
-      -- porting note (#10745): was `simp [get?]`.
-      simpa [get?]
-  · intro s' h
+  induction h using mem_rec_on with
+  | mem_cons s' =>
+    exists 0
+    simp only [get?, drop, head_cons]
+    exact ret_mem (some a)
+  | mem_cons_of_mem a' _ h =>
+    cases' h with n h
+    exists n + 1
+    -- porting note (#10745): was `simp [get?]`.
+    simpa [get?]
+  | mem_think_of_mem _ h =>
     cases' h with n h
     exists n
-    simp only [get?, dropn_think, head_think]
-    apply think_mem h
+    simpa [get?] using think_mem h
 #align stream.wseq.exists_nth_of_mem WSeq.exists_get?_of_mem
 
 theorem exists_dropn_of_mem {s : WSeq α} {a} (h : a ∈ s) :
@@ -1445,15 +1446,19 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
     ∀ ss : WSeq α,
       a ∈ ss → ∀ s S, append s (join S) = ss → a ∈ append s (join S) → a ∈ s ∨ ∃ s, s ∈ S ∧ a ∈ s
     from fun S h => (this _ h nil S (by simp) (by simp [h])).resolve_left (not_mem_nil _)
-  intro ss h; apply mem_rec_on h <;> [intro b ss o; intro ss IH] <;> intro s S
+  intro ss h; induction' h using mem_rec_on with ss b ss _ IH ss _ IH <;> intro s S
   · induction' s using WSeq.recOn with b' s s <;>
       [induction' S using WSeq.recOn with s S S; skip; skip] <;>
       intro ej m <;> simp at ej <;> have := congr_arg Seq'.destruct ej <;>
       simp at this; cases this
     substs b' ss
-    simp? at m ⊢ says simp only [cons_append, mem_cons_iff] at m ⊢
-    cases' o with e IH
-    · simp [e]
+    simp at m ⊢
+  · induction' s using WSeq.recOn with b' s s <;>
+      [induction' S using WSeq.recOn with s S S; skip; skip] <;>
+      intro ej m <;> simp at ej <;> have := congr_arg Seq'.destruct ej <;>
+      simp at this; cases this
+    substs b' ss
+    simp only [cons_append, mem_cons_iff] at m ⊢
     cases' m with e m
     · simp [e]
     exact Or.imp_left Or.inr (IH _ _ rfl m)
