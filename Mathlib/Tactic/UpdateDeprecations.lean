@@ -77,9 +77,11 @@ def substitutions (lines : Array String) (dat : Array ((String × String) × (Na
   ((replaced, unreplaced), new)
 
 /-- `getBuild` checks if there is an available cache.  If this is the case, then it returns
-the replayed build, otherwise it asks to build/download the cache. -/
-def getBuild : IO String := do
-  let build ← IO.Process.output { cmd := "lake", args := #["build", "--no-build"] }
+the replayed build, otherwise it asks to build/download the cache.
+The optional `mods` argument is an array of module names, limiting the build to the given
+array, if `mods ≠ #[]`. -/
+def getBuild (mods : Array String := #[]) : IO String := do
+  let build ← IO.Process.output { cmd := "lake", args := #["build", "--no-build"] ++ mods }
   if build.exitCode != 0 then
     IO.println "There are out of date oleans. Run `lake build` or `lake exe cache get` first"
     return default

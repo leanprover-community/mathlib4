@@ -22,8 +22,11 @@ open Lean System.FilePath
 open IO.FS IO.Process Name Cli in
 /-- Implementation of the `update_deprecations` command line program.
 The exit code is the number of files that the command updates/creates. -/
-def updateDeprecationsCLI (_args : Parsed) : IO UInt32 := do
-  let buildOutput ← getBuild
+def updateDeprecationsCLI (args : Parsed) : IO UInt32 := do
+  let mods := ← match args.flag? "mods" with
+              | some mod => return mod.as! (Array String)
+              | none => return #[]
+  let buildOutput ← getBuild mods
   if buildOutput.isEmpty then return 1
   Lean.initSearchPath (← Lean.findSysroot)
   -- create the environment with `import Mathlib.Tactic.UpdateDeprecations`
@@ -47,10 +50,15 @@ open Cli in
 /-- Setting up command line options and help text for `lake exe update_deprecations`. -/
 def updateDeprecations : Cmd := `[Cli|
   updateDeprecations VIA updateDeprecationsCLI; ["0.0.1"]
-  "Perform the substitutions suggested by the output of `lake build`."
+  "\nPerform the substitutions suggested by the output of `lake build` on the whole project. \
+  You can run this on some modules only, using the optional `--mods`-flag: running\n\n\
+  lake exe update_deprecations --mods One.Two.Three,Dd.Ee.Ff\n\n\
+  only updates the deprecations in `One.Two.Three` and `Dd.Ee.Ff`. \
+  Note that you should provide a comma-separated list of module names, with no spaces between them."
 
   FLAGS:
-    --verbose : String;      "Produce a verbose output."
+    mods : Array String; "you can pass an array of modules using the `--mods`-flag \
+                          e.g. `--mods One.Two.Three,Dd.Ee.Ff`"
 ]
 
 /-- The entrypoint to the `lake exe update_deprecations` command. -/
