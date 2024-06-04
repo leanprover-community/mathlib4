@@ -37,7 +37,10 @@ assert_not_exists Lattice
 assert_not_exists PNat
 assert_not_exists Nat.dvd_mul
 
+open Function
+
 namespace Rat
+variable {q : ℚ}
 
 -- Porting note: the definition of `ℚ` has changed; in mathlib3 this was a field.
 theorem pos (a : ℚ) : 0 < a.den := Nat.pos_of_ne_zero a.den_nz
@@ -74,6 +77,18 @@ theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
 @[deprecated] alias coe_int_num := num_intCast
 @[deprecated] alias coe_int_den := den_intCast
 
+lemma intCast_injective : Injective (Int.cast : ℤ → ℚ) := fun _ _ ↦ congr_arg num
+lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
+  intCast_injective.comp fun _ _ ↦ Int.natCast_inj.1
+
+-- We want to use these lemmas earlier than the lemmas simp can prove them with
+@[simp, nolint simpNF, norm_cast] lemma natCast_inj {m n : ℕ} : (m : ℚ) = n ↔ m = n :=
+  natCast_injective.eq_iff
+@[simp, nolint simpNF, norm_cast] lemma intCast_eq_zero {n : ℤ} : (n : ℚ) = 0 ↔ n = 0 := intCast_inj
+@[simp, nolint simpNF, norm_cast] lemma natCast_eq_zero {n : ℕ} : (n : ℚ) = 0 ↔ n = 0 := natCast_inj
+@[simp, nolint simpNF, norm_cast] lemma intCast_eq_one {n : ℤ} : (n : ℚ) = 1 ↔ n = 1 := intCast_inj
+@[simp, nolint simpNF, norm_cast] lemma natCast_eq_one {n : ℕ} : (n : ℚ) = 1 ↔ n = 1 := natCast_inj
+
 #noalign rat.mk_pnat
 #noalign rat.mk_pnat_eq
 #noalign rat.zero_mk_pnat
@@ -102,6 +117,12 @@ lemma num_ne_zero {q : ℚ} : q.num ≠ 0 ↔ q ≠ 0 := num_eq_zero.not
 #align rat.num_ne_zero_of_ne_zero Rat.num_ne_zero
 
 @[simp] lemma den_ne_zero (q : ℚ) : q.den ≠ 0 := q.den_pos.ne'
+
+#noalign rat.nonneg
+
+@[simp] lemma num_nonneg : 0 ≤ q.num ↔ 0 ≤ q := by
+  simp [Int.le_iff_lt_or_eq, instLE, Rat.blt, Int.not_lt]; tauto
+#align rat.num_nonneg_iff_zero_le Rat.num_nonneg
 
 @[simp]
 theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
@@ -477,6 +498,17 @@ theorem mk_denom_ne_zero_of_ne_zero {q : ℚ} {n d : ℤ} (hq : q ≠ 0) (hqnd :
 theorem divInt_ne_zero_of_ne_zero {n d : ℤ} (h : n ≠ 0) (hd : d ≠ 0) : n /. d ≠ 0 :=
   (divInt_ne_zero hd).mpr h
 #align rat.mk_ne_zero_of_ne_zero Rat.divInt_ne_zero_of_ne_zero
+
+protected lemma nonneg_antisymm : 0 ≤ q → 0 ≤ -q → q = 0 := by
+  simp_rw [← num_eq_zero, Int.le_antisymm_iff, ← num_nonneg, num_neg_eq_neg_num, Int.neg_nonneg]
+  tauto
+#align rat.nonneg_antisymm Rat.nonneg_antisymm
+
+protected lemma nonneg_total (a : ℚ) : 0 ≤ a ∨ 0 ≤ -a := by
+  simp_rw [← num_nonneg, num_neg_eq_neg_num, Int.neg_nonneg]; exact Int.le_total _ _
+#align rat.nonneg_total Rat.nonneg_total
+
+#align rat.decidable_nonneg Rat.instDecidableLe
 
 section Casts
 
