@@ -532,11 +532,12 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
   -- Instead of the whole space `Ω = ⋃ n ∈ ℕ, Es n`, focus on a large but finite
   -- union `⋃ n < N, Es n`, chosen in such a way that the complement has small `P`-mass,
   -- `P (⋃ n < N, Es n)ᶜ < ε/3`.
-  have exhaust :=
-    @tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint Ω _ P.toMeasure _ Es Es_mble Es_disjoint
-  simp only [tendsto_atTop_nhds, Function.comp_apply] at exhaust
-  obtain ⟨N, hN⟩ := exhaust (Iio (ENNReal.ofReal (ε / 3))) third_ε_pos' isOpen_Iio
-  specialize hN N le_rfl
+  obtain ⟨N, hN⟩ : ∃ N, (P : Measure Ω) (⋃ i ≥ N, Es i) < ENNReal.ofReal (ε / 3) := by
+    have exhaust :=
+      @tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint Ω _ P.toMeasure _ Es Es_mble Es_disjoint
+    simp only [tendsto_atTop_nhds, Function.comp_apply] at exhaust
+    obtain ⟨N, hN⟩ := exhaust (Iio (ENNReal.ofReal (ε / 3))) third_ε_pos' isOpen_Iio
+    exact ⟨N, hN N le_rfl⟩ 
 
   -- With the finite `N` fixed above, consider the finite collection of open sets of the form
   -- `Gs J = thickening (ε/3) (⋃ j ∈ J, Es j)`, where `J ⊆ {0, 1, ..., N-1}`.
@@ -547,9 +548,9 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
 
   -- Any open set `G ⊆ Ω` determines a neighborhood of `P` consisting of those `Q` that
   -- satisfy `P G < Q G + ε/3`.
-  have mem_nhds_P :
-      ∀ G, IsOpen G → ({Q | P.toMeasure G < Q.toMeasure G + ENNReal.ofReal (ε/3)} ∈ 𝓝 P) :=
-    fun G G_open ↦ P.toMeasure_add_pos_gt_mem_nhds G_open third_ε_pos' ofReal_ne_top
+  have mem_nhds_P (G : Set Ω) (G_open : IsOpen G) : 
+      {Q | P.toMeasure G < Q.toMeasure G + ENNReal.ofReal (ε/3)} ∈ 𝓝 P :=
+    P.toMeasure_add_pos_gt_mem_nhds G_open third_ε_pos' ofReal_ne_top
 
   -- Assume that `Q` is in the neighborhood of `P` such that for each `J ⊆ {0, 1, ..., N-1}`
   -- we have `P (Gs J) < Q (Gs J) + ε/3`.
@@ -561,12 +562,10 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
   -- it suffices to show that for arbitrary subsets `B ⊆ Ω`, the measure `P B` is bounded above up
   -- to a small error by the `Q`-measure of a small thickening of `B`.
   apply lt_of_le_of_lt ?_ (show 2*(ε/3) < ε by linarith)
-  rw [LevyProkhorov.dist_def, levyProkhorovDist, levyProkhorovEDist_comm]
-  apply levyProkhorovDist_le_of_forall_le
-  · linarith
-  · -- Fix an arbitrary set `B ⊆ Ω`, and an arbitrary `δ > 2*ε/3` to gain some room for error
-    -- and for thickening.
-    intro δ B δ_gt _
+  rw [dist_comm]
+  -- Fix an arbitrary set `B ⊆ Ω`, and an arbitrary `δ > 2*ε/3` to gain some room for error
+  -- and for thickening.
+  apply levyProkhorovDist_le_of_forall_le _ _ (by linarith) (fun δ B δ_gt _ ↦ ?_)
 
     -- Let `JB ⊆ {0, 1, ..., N-1}` consist of those indices `j` such that `B` intersects `Es j`.
     -- Then the open set `Gs JB` approximates `B` rather well:
@@ -605,8 +604,7 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
       linarith
 
     -- We use the resulting upper bound `P B ≤ P (Gs JB) + P (small complement)`.
-    apply (measure_mono B_subset).trans
-    apply (measure_union_le _ _).trans
+    apply (measure_mono B_subset).trans ((measure_union_le _ _).trans ?_)
 
     -- Recall that the small complement is small, `P (small complement) < ε/3`.
     have aux : P.toMeasure (⋃ j ∈ Iio N, Es j)ᶜ < ENNReal.ofReal (ε/3) := by
