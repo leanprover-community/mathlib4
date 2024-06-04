@@ -567,9 +567,7 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
 
 @[to_additive]
 lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (a : A) :
-    (l.map fun x => ite (x = a) (f x) (g x)).prod
-      =
-    (f a / g a) ^ (l.count a) * (l.map g).prod := by
+    (l.map fun x => ite (x = a) (f x) (g x)).prod = (f a / g a) ^ (l.count a) * (l.map g).prod := by
   induction l with
   | nil => simp
   | cons x xs ih =>
