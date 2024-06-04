@@ -141,12 +141,11 @@ lemma coeff_rTensorAlgHom_tmul
   rw [algebraMap_eq, mul_comm, coeff_C_mul]
   simp [mapAlgHom, coeff_map]
 
-@[simp]
 lemma coeff_rTensorAlgHom_monomial_tmul
     (e : σ →₀ ℕ) (s : S) (n : N) (d : σ →₀ ℕ) :
     coeff d (rTensorAlgHom (monomial e s ⊗ₜ[R] n)) =
       if e = d then s ⊗ₜ[R] n else 0 := by
-  rw [coeff_rTensorAlgHom_tmul, coeff_monomial, ite_tmul]
+  simp [ite_tmul]
 
 lemma rTensorAlgHom_toLinearMap :
     (rTensorAlgHom :
