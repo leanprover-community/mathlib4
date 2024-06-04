@@ -2463,12 +2463,60 @@ end CompletelyNormal
 def IsGδ (s : Set X) : Prop :=
   ∃ T : Set (Set X), (∀ t ∈ T, IsOpen t) ∧ T.Countable ∧ s = ⋂₀ T
 
+/-- TODO use version merged from other PR soon hopefully --/
+lemma countable_covers_witnessing_separated_nhds {h k : Set X}
+  (h_cov: ∃ u : ℕ → Set X, h ⊆ ⋃ n, u n ∧
+    ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) k)
+  (k_cov: ∃ u : ℕ → Set X, k ⊆ ⋃ n, u n ∧
+    ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) h) : SeparatedNhds h k := sorry
+
 section PerfectlyNormal
 
 /-- A topological space `X` is a *perfectly normal space* provided it is normal and
 closed sets are Gδ. -/
-class PefectlyNormalSpace (X : Type u) [TopologicalSpace X] [NormalSpace X] : Prop where
+class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] extends NormalSpace X : Prop where
   closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ h
+
+instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
+    [PerfectlyNormalSpace X] : CompletelyNormalSpace X where
+  completely_normal s t hd₁ hd₂ := by
+    rw [← separatedNhds_iff_disjoint]
+    have : IsGδ (closure s) := closed_gdelta isClosed_closure
+    obtain ⟨S, S_open, S_count, S_int⟩ := this
+    wlog S_nonempty : S.Nonempty
+    · have : closure s = univ := by
+        rw [S_int, not_nonempty_iff_eq_empty.mp S_nonempty]
+        apply sInter_empty
+      have : t = ∅ := by
+        rw [← Set.disjoint_univ]
+        rw [← this]
+        exact Disjoint.symm hd₁
+      rw [this]
+      exact SeparatedNhds.empty_right s
+    have : Nonempty S := by
+      exact Nonempty.to_subtype S_nonempty
+    obtain ⟨f, f_surj⟩ := countable_iff_exists_surjective.mp S_count
+    have : ∀ n, ∃ v : Set X, IsOpen v ∧ t ⊆ v ∧ v ⊆ (f n)ᶜ := by
+      sorry
+    have : IsGδ (closure t) := closed_gdelta isClosed_closure
+    obtain ⟨T, T_open, T_count, T_int⟩ := this
+    wlog T_nonempty : T.Nonempty
+    · have : closure t = univ := by
+        rw [T_int, not_nonempty_iff_eq_empty.mp T_nonempty]
+        apply sInter_empty
+      have : s = ∅ := by
+        rw [← Set.disjoint_univ]
+        rw [← this]
+        exact hd₂
+      rw [this]
+      exact SeparatedNhds.empty_left t
+    have : Nonempty T := by
+      exact Nonempty.to_subtype T_nonempty
+    obtain ⟨g, g_surj⟩ := countable_iff_exists_surjective.mp T_count
+    apply countable_covers_witnessing_separated_nhds
+    · sorry
+    · sorry
+
 
 end PerfectlyNormal
 
