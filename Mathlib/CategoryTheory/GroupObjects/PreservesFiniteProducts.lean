@@ -12,6 +12,8 @@ variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D]
 variable [HasFiniteProducts C] [HasFiniteProducts D]
 variable (F : C ⥤ D) [PreservesFiniteProducts F]
 
+/-- Lifting a functor `C ⥤ D` that commutes with finite products to a functor between the
+categories of group objects: the action on objects.-/
 @[simps]
 noncomputable def mapGroupObjectObj (G : GroupObject C) : GroupObject D where
   X := F.obj G.X
@@ -51,6 +53,8 @@ noncomputable def mapGroupObjectObj (G : GroupObject C) : GroupObject D where
     simp only [Functor.map_comp, PreservesTerminal.iso_inv]
     rw [← Category.assoc, default_comp_inv_terminalComparison]
 
+/-- Lifting a functor `C ⥤ D` that commutes with finite products to a functor between the
+categories of group objects: the action on maps.-/
 @[simps]
 def mapGroupObjectMap {X Y : GroupObject C}
     (f : X ⟶ Y) : F.mapGroupObjectObj X ⟶ F.mapGroupObjectObj Y  where
@@ -67,12 +71,24 @@ def mapGroupObjectMap {X Y : GroupObject C}
     simp only [mapGroupObjectObj_X, mapGroupObjectObj_inv]
     rw [← F.map_comp, f.inv_hom, F.map_comp]
 
+/-- Lifting a functor `C ⥤ D` that commutes with finite products to a functor between the
+categories of group objects.-/
 @[simps]
 noncomputable def mapGroupObject : GroupObject C ⥤ GroupObject D where
   obj X := mapGroupObjectObj F X
   map f := mapGroupObjectMap F f
   map_id X := by ext; simp
   map_comp f g := by ext; simp
+
+/-- Lifting a functor `C ⥤ D` that commutes with finite products to a functor between the
+categories of group objects is compatible with the forgetful functors from the categories of
+groups objects to the original categories.-/
+noncomputable def mapGroupObject_comp_forget :
+    F.mapGroupObject ⋙ GroupObject.forget D ≅ GroupObject.forget C ⋙ F :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  (fun _ ↦ by simp only [comp_obj, mapGroupObject_obj, GroupObject.forget_obj, mapGroupObjectObj_X,
+    comp_map, mapGroupObject_map, GroupObject.forget_map, mapGroupObjectMap_hom, Iso.refl_hom,
+    Category.comp_id, Category.id_comp])
 
 /-- If `F : C ⥤ D` is faithful, then so is the induced functor `F.mapGroupObject` on
 group objects.-/
@@ -83,7 +99,6 @@ lemma mapGroupObject_faitful [Faithful F] : Faithful F.mapGroupObject where
     apply_fun (fun h ↦ h.hom) at eq
     dsimp at eq
     exact F.map_injective eq
-
 
 /-- If `F : C ⥤ D` is fully faithful, then the induced functor `F.mapGroupObject` on
 group objects is full (it is also faithful by `mapGroupObject_faithful`).-/
