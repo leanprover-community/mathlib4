@@ -73,9 +73,6 @@ lemma map_iteratedRange_iSup_le_iSup:
 
 end LinearMap.End
 
-local notation "U" => LinearMap.End.iteratedRange
-local notation "iSupU" => LinearMap.End.iSup_iteratedRange
-
 open LinearMap.End
 
 section
@@ -90,11 +87,10 @@ abbrev T (w : A) : Module.End k V := (π k V w)  - χ w • 1
 
 -- We define a submodule of V which is L-invariant
 def altWeightSpace : Submodule k V where
-  carrier := {v |∀ a : A, ⁅a.val, v⁆ = (χ a) • v}
+  carrier := {v | ∀ a : A, ⁅a.val, v⁆ = (χ a) • v}
   add_mem' := by
     intro _ _ hb hc _
     rw [lie_add, hc, hb, ← smul_add]
-
   zero_mem' := by
     intro a
     rw [lie_zero, smul_zero]
@@ -126,7 +122,7 @@ lemma T_apply_succ (hv : v ∈ altWeightSpace A χ) (n : ℕ) :
       apply Submodule.add_mem
       · let wz : A := ⟨⁅w, z⁆, lie_mem_left k L A w.val z w.prop⟩
         have : ⁅⁅w.val, z⁆, (π k V z ^ n) v⁆ =
-            (T A χ wz) ((π k V z ^ n) v) + χ wz  • ((π k V z ^ n) v) := by
+            (T A χ wz) ((π k V z ^ n) v) + χ wz • ((π k V z ^ n) v) := by
           simp
         rw [this]
         apply Submodule.add_mem
@@ -141,19 +137,17 @@ lemma T_apply_succ (hv : v ∈ altWeightSpace A χ) (n : ℕ) :
           ⟨hn w ⟨(π k V z ^ n) v, ⟨n, Nat.lt_succ_self n, rfl⟩, rfl⟩, rfl⟩⟩
     · exact iteratedRange_mono v _ (Nat.le_succ n) (hn w ⟨v', ⟨m, hm', hv'⟩, hx⟩)
 
-lemma T_map_iSup_iteratedRange (hv : v ∈ altWeightSpace A χ) :
-    ∀ x ∈ iSup_iteratedRange v (π k V z), (T A χ w) x ∈ iSup_iteratedRange v (π k V z) := by
-  intro x hx
+lemma T_map_iSup_iteratedRange (hv : v ∈ altWeightSpace A χ) (x : V)
+    (hx : x ∈ iSup_iteratedRange v (π k V z)) : (T A χ w) x ∈ iSup_iteratedRange v (π k V z) := by
   obtain ⟨n, hn⟩ := iSup_eq_iteratedRange v (π k V z)
   rw [hn] at hx
   suffices h :
-      Submodule.map (T A χ w) (iteratedRange v (π k V z) (n + 1)) ≤ iteratedRange v (π k V z) n from
-      Submodule.mem_iSup_of_mem n (h ⟨x, iteratedRange_mono v _ (Nat.le_succ n) hx, rfl⟩)
+    Submodule.map (T A χ w) (iteratedRange v (π k V z) (n + 1)) ≤ iteratedRange v (π k V z) n from
+    Submodule.mem_iSup_of_mem n (h ⟨x, iteratedRange_mono v _ (Nat.le_succ n) hx, rfl⟩)
   exact T_apply_succ A χ z w hv n
 
-theorem iSup_iteratedRange_A_stable (hv : v ∈ altWeightSpace A χ) :
-    ∀ x ∈ (iSup_iteratedRange v (π k V z)), (π k V w) x ∈ (iSup_iteratedRange v (π k V z)):= by
-  intro x hx
+theorem iSup_iteratedRange_A_stable (hv : v ∈ altWeightSpace A χ) (x : V)
+    (hx : x ∈ iSup_iteratedRange v (π k V z)) : (π k V w) x ∈ (iSup_iteratedRange v (π k V z)):= by
   have hx' : (π k V w) x = (T A χ w) x + χ w • x := by simp
   rw [hx']
   exact Submodule.add_mem _ (T_map_iSup_iteratedRange A χ z w hv x hx)
@@ -186,18 +180,17 @@ lemma trace_T_res_zero (hv : v ∈ altWeightSpace A χ) :
   apply IsNilpotent.eq_zero
   exact LinearMap.isNilpotent_trace_of_isNilpotent (T_res_nilpotent A χ z w hv)
 
-lemma πaz_map_iSup_iteratedRange (a : A) (hv : v ∈ altWeightSpace A χ) :
-    ∀ x ∈ iSup_iteratedRange v (π k V z), π k V ⁅a,z⁆ x ∈ iSup_iteratedRange v (π k V z):= by
-  intro x hx
-  apply iSup_iteratedRange_A_stable A χ z ⟨⁅a,z⁆, lie_mem_left k L A a z a.prop⟩ hv
+lemma πaz_map_iSup_iteratedRange (a : A) (hv : v ∈ altWeightSpace A χ) (x : V)
+    (hx : x ∈ iSup_iteratedRange v (π k V z)) : π k V ⁅a, z⁆ x ∈ iSup_iteratedRange v (π k V z):= by
+  apply iSup_iteratedRange_A_stable A χ z ⟨⁅a, z⁆, lie_mem_left k L A a z a.prop⟩ hv
   assumption
 
 lemma trace_πaz (a : A) (hv : v ∈ altWeightSpace A χ):
     LinearMap.trace k (iSup_iteratedRange v (π k V z))
       ((π k V ⁅a, z⁆).restrict (πaz_map_iSup_iteratedRange A χ z a hv))
-    = χ ⟨⁅a,z⁆, lie_mem_left k L A a z a.prop⟩ • (finrank k (iSup_iteratedRange v (π k V z))) := by
+    = χ ⟨⁅a, z⁆, lie_mem_left k L A a z a.prop⟩ • (finrank k (iSup_iteratedRange v (π k V z))) := by
   rw [← LinearMap.trace_id, ← LinearMap.map_smul, ← sub_eq_zero, ← LinearMap.map_sub]
-  apply trace_T_res_zero A χ z ⟨⁅a,z⁆, lie_mem_left k L A a z a.prop⟩ hv
+  apply trace_T_res_zero A χ z ⟨⁅a, z⁆, lie_mem_left k L A a z a.prop⟩ hv
 
 theorem trace_πaz_zero (a : A) (hv : v ∈ altWeightSpace A χ):
     LinearMap.trace k (iSup_iteratedRange v (π k V z))
@@ -206,14 +199,13 @@ theorem trace_πaz_zero (a : A) (hv : v ∈ altWeightSpace A χ):
   have hzU : ∀ x ∈ iSup_iteratedRange v (π k V z), (π k V z) x ∈ iSup_iteratedRange v (π k V z) :=
     fun _ hx ↦ (map_iteratedRange_iSup_le_iSup v (π k V z)) (Submodule.mem_map_of_mem hx)
   have hres : (π k V ⁅a, z⁆).restrict (πaz_map_iSup_iteratedRange A χ z a hv) =
-    ⁅(π k V a).restrict (iSup_iteratedRange_A_stable A χ z a hv),
-    (π k V z).restrict hzU⁆ := by
+    ⁅(π k V a).restrict (iSup_iteratedRange_A_stable A χ z a hv), (π k V z).restrict hzU⁆ := by
     ext ⟨x, hx⟩
     simp
   rw [hres, LieRing.of_associative_ring_bracket, map_sub, LinearMap.trace_mul_comm, sub_self]
 
 lemma chi_az_zero (a : A) (hv : v ∈ altWeightSpace A χ) (hv' : v ≠ 0):
-    χ ⟨⁅a,z⁆, lie_mem_left k L A a z a.prop⟩ = 0 := by
+    χ ⟨⁅a, z⁆, lie_mem_left k L A a z a.prop⟩ = 0 := by
   have h := trace_πaz A χ z a hv
   rw [trace_πaz_zero A χ z a hv] at h
   suffices h' : finrank k ↥(iSup_iteratedRange v (π k V z)) ≠ 0 by
@@ -223,9 +215,8 @@ lemma chi_az_zero (a : A) (hv : v ∈ altWeightSpace A χ) (hv' : v ≠ 0):
     apply Submodule.subset_span
     use 0, zero_lt_one
     rw [pow_zero, LinearMap.one_apply]
-  have iSup_iteratedRange_nontrivial : Nontrivial (iSup_iteratedRange v (π k V z)) := ⟨⟨v,hvU⟩,0, ?_⟩
-  swap
-  simp only [ne_eq, Submodule.mk_eq_zero, hv', not_false_eq_true]
+  have iSup_iteratedRange_nontrivial : Nontrivial (iSup_iteratedRange v (π k V z)) :=
+    ⟨⟨v,hvU⟩,0, by simp only [ne_eq, Submodule.mk_eq_zero, hv', not_false_eq_true]⟩
   apply Nat.ne_of_lt'
   apply FiniteDimensional.finrank_pos
 
@@ -233,8 +224,8 @@ theorem altWeightSpace_lie_stable (hv : v ∈ altWeightSpace A χ):  ⁅z, v⁆ 
   rcases eq_or_ne v 0 with (rfl | hv')
   · simp only [lie_zero, Submodule.zero_mem]
   · intro a
-    have hzwv : ⁅⁅a.val, z⁆, v⁆ = χ ⟨⁅a,z⁆, lie_mem_left k L A a z a.prop⟩ • v :=
-      hv ⟨⁅a,z⁆, lie_mem_left k L A a z a.prop⟩
+    have hzwv : ⁅⁅a.val, z⁆, v⁆ = χ ⟨⁅a, z⁆, lie_mem_left k L A a z a.prop⟩ • v :=
+      hv ⟨⁅a, z⁆, lie_mem_left k L A a z a.prop⟩
     rw [leibniz_lie, hv a, hzwv, chi_az_zero A χ z a hv hv']
     simp only [zero_smul, lie_smul, zero_add]
 end
@@ -448,7 +439,7 @@ theorem extend_weight (A : LieIdeal k L) (z : L) (hz : z ∉ A)
       LinearEquiv.coe_coe, Function.comp_apply, smul_eq_mul, add_right_inj]
     rcases Submodule.mem_span_singleton.mp (((pr2 hcodis hdis) x).prop) with ⟨d, hd⟩
     rw [← hd, smul_lie]
-    have : ⁅z,v'⁆ = πz_res ⟨v', hv'⟩ := rfl
+    have : ⁅z, v'⁆ = πz_res ⟨v', hv'⟩ := rfl
     rw [this, Module.End.HasEigenvector.apply_eq_smul hv'', mul_comm, mul_smul]
     simp only [SetLike.mk_smul_mk]
     have : (pr2 hcodis hdis) x = d • ⟨z, Submodule.mem_span_singleton_self z⟩ := by
@@ -490,7 +481,7 @@ theorem LieModule.exists_forall_lie_eq_smul_finrank [IsSolvable k L] [FiniteDime
 
     have hAneTop : A ≠ ⊤ := by rintro rfl; linarith
 
-    have hz : ∃(z : L), z ∉ A := by
+    have hz : ∃ (z : L), z ∉ A := by
       by_contra!
       apply hAneTop
       rw [eq_top_iff]
