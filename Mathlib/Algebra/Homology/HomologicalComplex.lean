@@ -516,8 +516,9 @@ set_option linter.uppercaseLean3 false in
 #align homological_complex.X_prev_iso_self_comp_d_to HomologicalComplex.xPrevIsoSelf_comp_dTo
 
 @[reassoc (attr := simp)]
-theorem dFrom_comp_xNextIso {i j : ι} (r : c.Rel i j) : C.dFrom i ≫ (C.xNextIso r).hom = C.d i j :=
-  by simp [C.dFrom_eq r]
+theorem dFrom_comp_xNextIso {i j : ι} (r : c.Rel i j) :
+    C.dFrom i ≫ (C.xNextIso r).hom = C.d i j := by
+  simp [C.dFrom_eq r]
 set_option linter.uppercaseLean3 false in
 #align homological_complex.d_from_comp_X_next_iso HomologicalComplex.dFrom_comp_xNextIso
 
@@ -589,7 +590,7 @@ theorem isoOfComponents_app (f : ∀ i, C₁.X i ≅ C₂.X i)
 #align homological_complex.hom.iso_of_components_app HomologicalComplex.Hom.isoOfComponents_app
 
 theorem isIso_of_components (f : C₁ ⟶ C₂) [∀ n : ι, IsIso (f.f n)] : IsIso f :=
-  IsIso.of_iso (HomologicalComplex.Hom.isoOfComponents fun n => asIso (f.f n))
+  (HomologicalComplex.Hom.isoOfComponents fun n => asIso (f.f n)).isIso_hom
 #align homological_complex.hom.is_iso_of_components HomologicalComplex.Hom.isIso_of_components
 
 /-! Lemmas relating chain maps and `dTo`/`dFrom`. -/

@@ -191,7 +191,7 @@ def applyFinsupp (tf : TotalFunction α β) : α →₀ β where
       have := List.mem_dlookup (List.nodupKeys_dedupKeys A) hval
       rw [(_ : List.dlookup a A = od)]
       · simpa using hod
-      · simpa [List.dlookup_dedupKeys, WithTop.some_eq_coe]
+      · simpa [List.dlookup_dedupKeys]
     · intro h
       use (A.dlookup a).getD (0 : β)
       rw [← List.dlookup_dedupKeys] at h ⊢

@@ -1915,7 +1915,7 @@ instance pseudoMetricSpacePi : PseudoMetricSpace (∀ b, π b) := by
   refine i.replaceBornology fun s => ?_
   simp only [← isBounded_def, isBounded_iff_eventually, ← forall_isBounded_image_eval_iff,
     forall_mem_image, ← Filter.eventually_all, Function.eval_apply, @dist_nndist (π _)]
-  refine' eventually_congr ((eventually_ge_atTop 0).mono fun C hC => _)
+  refine eventually_congr ((eventually_ge_atTop 0).mono fun C hC ↦ ?_)
   lift C to ℝ≥0 using hC
   refine ⟨fun H x hx y hy ↦ NNReal.coe_le_coe.2 <| Finset.sup_le fun b _ ↦ H b hx hy,
     fun H b x hx y hy ↦ NNReal.coe_le_coe.2 ?_⟩
@@ -2068,7 +2068,7 @@ theorem Fin.dist_insertNth_insertNth {n : ℕ} {α : Fin (n + 1) → Type*}
 theorem Real.dist_le_of_mem_pi_Icc {x y x' y' : β → ℝ} (hx : x ∈ Icc x' y') (hy : y ∈ Icc x' y') :
     dist x y ≤ dist x' y' := by
   refine (dist_pi_le_iff dist_nonneg).2 fun b =>
-    (Real.dist_le_of_mem_uIcc ?_ ?_).trans (dist_le_pi_dist x' y' b) <;> refine' Icc_subset_uIcc _
+    (Real.dist_le_of_mem_uIcc ?_ ?_).trans (dist_le_pi_dist x' y' b) <;> refine Icc_subset_uIcc ?_
   exacts [⟨hx.1 _, hx.2 _⟩, ⟨hy.1 _, hy.2 _⟩]
 #align real.dist_le_of_mem_pi_Icc Real.dist_le_of_mem_pi_Icc
 

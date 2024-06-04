@@ -691,10 +691,8 @@ theorem lt_nmul_iff₃ :
       ∃ a' < a, ∃ b' < b, ∃ c' < c,
         d ♯ a' ⨳ b' ⨳ c ♯ a' ⨳ b ⨳ c' ♯ a ⨳ b' ⨳ c' ≤
           a' ⨳ b ⨳ c ♯ a ⨳ b' ⨳ c ♯ a ⨳ b ⨳ c' ♯ a' ⨳ b' ⨳ c' := by
-  -- Porting note: was `refine' ⟨fun h => _, _⟩`, but can't get that to work?
-  constructor
-  · intro h
-    rcases lt_nmul_iff.1 h with ⟨e, he, c', hc, H₁⟩
+  refine ⟨fun h => ?_, ?_⟩
+  · rcases lt_nmul_iff.1 h with ⟨e, he, c', hc, H₁⟩
     rcases lt_nmul_iff.1 he with ⟨a', ha, b', hb, H₂⟩
     refine ⟨a', ha, b', hb, c', hc, ?_⟩
     have := nadd_le_nadd H₁ (nmul_nadd_le H₂ hc.le)

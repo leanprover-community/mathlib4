@@ -6,7 +6,7 @@ Authors: Anne Baanen
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 
 #align_import linear_algebra.vandermonde from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"

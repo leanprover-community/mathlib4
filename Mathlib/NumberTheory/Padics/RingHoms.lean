@@ -459,6 +459,9 @@ theorem denseRange_natCast : DenseRange (Nat.cast : ℕ → ℤ_[p]) := by
   apply appr_spec
 #align padic_int.dense_range_nat_cast PadicInt.denseRange_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias denseRange_nat_cast := denseRange_natCast
+
 theorem denseRange_intCast : DenseRange (Int.cast : ℤ → ℤ_[p]) := by
   intro x
   refine DenseRange.induction_on denseRange_natCast x ?_ ?_
@@ -467,6 +470,9 @@ theorem denseRange_intCast : DenseRange (Int.cast : ℤ → ℤ_[p]) := by
     apply subset_closure
     exact Set.mem_range_self _
 #align padic_int.dense_range_int_cast PadicInt.denseRange_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias denseRange_int_cast := denseRange_intCast
 
 end RingHoms
 

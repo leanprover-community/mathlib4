@@ -44,7 +44,7 @@ def LinearMap.clmOfExistsBoundedImage (f : E →ₗ[𝕜] F)
     (h : ∃ V ∈ 𝓝 (0 : E), Bornology.IsVonNBounded 𝕜 (f '' V)) : E →L[𝕜] F :=
   ⟨f, by
     -- It suffices to show that `f` is continuous at `0`.
-    refine' continuous_of_continuousAt_zero f _
+    refine continuous_of_continuousAt_zero f ?_
     rw [continuousAt_def, f.map_zero]
     intro U hU
     -- Continuity means that `U ∈ 𝓝 0` implies that `f ⁻¹' U ∈ 𝓝 0`.
@@ -64,7 +64,7 @@ def LinearMap.clmOfExistsBoundedImage (f : E →ₗ[𝕜] F)
           simp only [Set.mem_inv_smul_set_iff₀ x_ne, Set.mem_preimage, LinearMap.map_smul]
         _ ⊆ f ⁻¹' U := by rw [inv_smul_smul₀ x_ne _]
     -- Using this inclusion, it suffices to show that `x⁻¹ • V` is in `𝓝 0`, which is trivial.
-    refine' mem_of_superset _ this
+    refine mem_of_superset ?_ this
     convert set_smul_mem_nhds_smul hV (inv_ne_zero x_ne)
     exact (smul_zero _).symm⟩
 #align linear_map.clm_of_exists_bounded_image LinearMap.clmOfExistsBoundedImage

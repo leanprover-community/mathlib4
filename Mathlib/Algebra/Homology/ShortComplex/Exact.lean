@@ -358,7 +358,7 @@ noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
   wπ := comp_zero
   hπ := CokernelCofork.IsColimit.ofEpiOfIsZero _ (by
     have := hS.hasHomology
-    refine' ((MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff _).1
+    refine ((MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff ?_).1
       hS.epi_toCycles
     refine Arrow.isoMk (Iso.refl _)
       (IsLimit.conePointUniqueUpToIso S.cyclesIsKernel hkf) ?_
@@ -380,10 +380,10 @@ noncomputable def Exact.rightHomologyDataOfIsColimitCokernelCofork
   wι := zero_comp
   hι := KernelFork.IsLimit.ofMonoOfIsZero _ (by
     have := hS.hasHomology
-    refine' ((MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff _).2
+    refine ((MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff ?_).2
       hS.mono_fromOpcycles
-    refine' Arrow.isoMk (IsColimit.coconePointUniqueUpToIso hcc S.opcyclesIsCokernel)
-      (Iso.refl _) _
+    refine Arrow.isoMk (IsColimit.coconePointUniqueUpToIso hcc S.opcyclesIsCokernel)
+      (Iso.refl _) ?_
     apply Cofork.IsColimit.hom_ext hcc
     simp [IsColimit.coconePointUniqueUpToIso]) (isZero_zero C)
 
