@@ -146,14 +146,14 @@ variable [Neg R]
 
 /-- Negating a matrix partitioned by rows is equivalent to negating each of the rows. -/
 @[simp]
-theorem fromRows_neg (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
+lemma fromRows_neg (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
     -fromRows A₁ A₂ = fromRows (-A₁) (-A₂) := by
   ext i j
   cases i <;> simp [fromRows]
 
 /-- Negating a matrix partitioned by columns is equivalent to negating each of the columns. -/
 @[simp]
-theorem fromColumns_neg (A₁ : Matrix n m₁ R) (A₂ : Matrix n m₂ R) :
+lemma fromColumns_neg (A₁ : Matrix n m₁ R) (A₂ : Matrix n m₂ R) :
     -fromColumns A₁ A₂ = fromColumns (-A₁) (-A₂) := by
   ext i j
   cases j <;> simp [fromColumns]
