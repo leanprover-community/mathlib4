@@ -14,12 +14,12 @@ This file provides an operation (`Filter.curry`) on filters which provides the e
 `∀ᶠ a in l, ∀ᶠ b in l', p (a, b) ↔ ∀ᶠ c in (l.curry l'), p c` (see `Filter.eventually_curry_iff`).
 
 To understand when this operation might arise, it is helpful to think of `∀ᶠ` as a combination of
-the quantifiers `∃ ∀`. For instance, `∀ᶠ n in at_top, p n ↔ ∃ N, ∀ n ≥ N, p n`. A curried filter
+the quantifiers `∃ ∀`. For instance, `∀ᶠ n in atTop, p n ↔ ∃ N, ∀ n ≥ N, p n`. A curried filter
 yields the quantifier order `∃ ∀ ∃ ∀`. For instance,
-`∀ᶠ n in at_top.curry at_top, p n ↔ ∃ M, ∀ m ≥ M, ∃ N, ∀ n ≥ N, p (m, n)`.
+`∀ᶠ n in atTop.curry atTop, p n ↔ ∃ M, ∀ m ≥ M, ∃ N, ∀ n ≥ N, p (m, n)`.
 
 This is different from a product filter, which instead yields a quantifier order `∃ ∃ ∀ ∀`. For
-instance, `∀ᶠ n in at_top ×ˢ at_top, p n ↔ ∃ M, ∃ N, ∀ m ≥ M, ∀ n ≥ N, p (m, n)`. This makes it
+instance, `∀ᶠ n in atTop ×ˢ atTop, p n ↔ ∃ M, ∃ N, ∀ m ≥ M, ∀ n ≥ N, p (m, n)`. This makes it
 clear that if something eventually occurs on the product filter, it eventually occurs on the curried
 filter (see `Filter.curry_le_prod` and `Filter.Eventually.curry`), but the converse is not true.
 
