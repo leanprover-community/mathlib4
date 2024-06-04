@@ -556,6 +556,8 @@ theorem closure_iUnion_closure (f : ι → α) : l (⋃ i, l (f i)) = l (⋃ i, 
   SetLike.coe_injective <| l.closure_iSup_closure _
 #align lower_adjoint.closure_Union_closure LowerAdjoint.closure_iUnion_closure
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem closure_iUnion₂_closure (f : ∀ i, κ i → α) :
     l (⋃ (i) (j), l (f i j)) = l (⋃ (i) (j), f i j) :=

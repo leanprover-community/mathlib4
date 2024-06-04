@@ -499,6 +499,8 @@ theorem mul_iUnion (s : Set α) (t : ι → Set α) : (s * ⋃ i, t i) = ⋃ i, 
 #align set.mul_Union Set.mul_iUnion
 #align set.add_Union Set.add_iUnion
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
 theorem iUnion₂_mul (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋃ (i) (j), s i j) * t = ⋃ (i) (j), s i j * t :=
@@ -506,6 +508,8 @@ theorem iUnion₂_mul (s : ∀ i, κ i → Set α) (t : Set α) :
 #align set.Union₂_mul Set.iUnion₂_mul
 #align set.Union₂_add Set.iUnion₂_add
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
 theorem mul_iUnion₂ (s : Set α) (t : ∀ i, κ i → Set α) :
     (s * ⋃ (i) (j), t i j) = ⋃ (i) (j), s * t i j :=
@@ -525,6 +529,8 @@ theorem mul_iInter_subset (s : Set α) (t : ι → Set α) : (s * ⋂ i, t i) �
 #align set.mul_Inter_subset Set.mul_iInter_subset
 #align set.add_Inter_subset Set.add_iInter_subset
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
 theorem iInter₂_mul_subset (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋂ (i) (j), s i j) * t ⊆ ⋂ (i) (j), s i j * t :=
@@ -532,6 +538,8 @@ theorem iInter₂_mul_subset (s : ∀ i, κ i → Set α) (t : Set α) :
 #align set.Inter₂_mul_subset Set.iInter₂_mul_subset
 #align set.Inter₂_add_subset Set.iInter₂_add_subset
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
 theorem mul_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
     (s * ⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), s * t i j :=
@@ -757,6 +765,8 @@ theorem div_iUnion (s : Set α) (t : ι → Set α) : (s / ⋃ i, t i) = ⋃ i, 
 #align set.div_Union Set.div_iUnion
 #align set.sub_Union Set.sub_iUnion
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
 theorem iUnion₂_div (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋃ (i) (j), s i j) / t = ⋃ (i) (j), s i j / t :=
@@ -764,6 +774,8 @@ theorem iUnion₂_div (s : ∀ i, κ i → Set α) (t : Set α) :
 #align set.Union₂_div Set.iUnion₂_div
 #align set.Union₂_sub Set.iUnion₂_sub
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
 theorem div_iUnion₂ (s : Set α) (t : ∀ i, κ i → Set α) :
     (s / ⋃ (i) (j), t i j) = ⋃ (i) (j), s / t i j :=
@@ -783,6 +795,8 @@ theorem div_iInter_subset (s : Set α) (t : ι → Set α) : (s / ⋂ i, t i) �
 #align set.div_Inter_subset Set.div_iInter_subset
 #align set.sub_Inter_subset Set.sub_iInter_subset
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
 theorem iInter₂_div_subset (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋂ (i) (j), s i j) / t ⊆ ⋂ (i) (j), s i j / t :=
@@ -790,6 +804,8 @@ theorem iInter₂_div_subset (s : ∀ i, κ i → Set α) (t : Set α) :
 #align set.Inter₂_div_subset Set.iInter₂_div_subset
 #align set.Inter₂_sub_subset Set.iInter₂_sub_subset
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
 theorem div_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
     (s / ⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), s / t i j :=

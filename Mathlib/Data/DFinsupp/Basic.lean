@@ -1520,6 +1520,7 @@ theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
     simp [hi]
 #align dfinsupp.sigma_curry_single DFinsupp.sigmaCurry_single
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- The natural map between `Π₀ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
 def sigmaUncurry [∀ i j, Zero (δ i j)]
@@ -1539,6 +1540,7 @@ def sigmaUncurry [∀ i j, Zero (δ i j)]
         rw [hi, zero_apply]⟩
 #align dfinsupp.sigma_uncurry DFinsupp.sigmaUncurry
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem sigmaUncurry_apply [∀ i j, Zero (δ i j)]
     [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
@@ -1547,6 +1549,7 @@ theorem sigmaUncurry_apply [∀ i j, Zero (δ i j)]
   rfl
 #align dfinsupp.sigma_uncurry_apply DFinsupp.sigmaUncurry_apply
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem sigmaUncurry_zero [∀ i j, Zero (δ i j)]
     [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)] :
@@ -1554,6 +1557,7 @@ theorem sigmaUncurry_zero [∀ i j, Zero (δ i j)]
   rfl
 #align dfinsupp.sigma_uncurry_zero DFinsupp.sigmaUncurry_zero
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem sigmaUncurry_add [∀ i j, AddZeroClass (δ i j)]
     [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
@@ -1562,6 +1566,7 @@ theorem sigmaUncurry_add [∀ i j, AddZeroClass (δ i j)]
   DFunLike.coe_injective rfl
 #align dfinsupp.sigma_uncurry_add DFinsupp.sigmaUncurry_add
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem sigmaUncurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)]
     [∀ i, DecidableEq (α i)] [∀ i j (x : δ i j), Decidable (x ≠ 0)]
@@ -1588,6 +1593,7 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)]
     simp [hi]
 #align dfinsupp.sigma_uncurry_single DFinsupp.sigmaUncurry_single
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- The natural bijection between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.
 
 This is the dfinsupp version of `Equiv.piCurry`. -/
