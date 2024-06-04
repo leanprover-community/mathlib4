@@ -131,10 +131,10 @@ lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
   obtain ⟨φ, ⟨e⟩⟩ : ∃ (φ : Arrow C), Nonempty (L.mapArrow.obj φ ≅ Arrow.mk f) :=
     ⟨_, ⟨Functor.objObjPreimageIso _ _⟩⟩
   obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle φ.hom
-  refine' ⟨L.obj Z, e.inv.right ≫ L.map g,
-    L.map h ≫ (L.commShiftIso (1 : ℤ)).hom.app _ ≫ e.hom.left⟦(1 : ℤ)⟧', _, _, H⟩
-  refine' Triangle.isoMk _ _ (Arrow.leftFunc.mapIso e.symm) (Arrow.rightFunc.mapIso e.symm)
-    (Iso.refl _) e.inv.w.symm (by simp) _
+  refine ⟨L.obj Z, e.inv.right ≫ L.map g,
+    L.map h ≫ (L.commShiftIso (1 : ℤ)).hom.app _ ≫ e.hom.left⟦(1 : ℤ)⟧', _, ?_, H⟩
+  refine Triangle.isoMk _ _ (Arrow.leftFunc.mapIso e.symm) (Arrow.rightFunc.mapIso e.symm)
+    (Iso.refl _) e.inv.w.symm (by simp) ?_
   dsimp
   simp only [assoc, id_comp, ← Functor.map_comp, ← Arrow.comp_left, e.hom_inv_id, Arrow.id_left,
     Functor.mapArrow_obj_left, Functor.map_id, comp_id]
