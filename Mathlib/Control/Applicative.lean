@@ -131,7 +131,7 @@ open CommApplicative
 instance {f : Type u → Type w} {g : Type v → Type u} [Applicative f] [Applicative g]
     [CommApplicative f] [CommApplicative g] : CommApplicative (Comp f g) where
   commutative_prod _ _ := by
-    simp! [map, Seq.seq, functor_norm]
+    simp! [map, Seq.seq]
     rw [commutative_map]
     simp only [mk, flip, seq_map_assoc, Function.comp, map_map]
     congr

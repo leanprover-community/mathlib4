@@ -42,31 +42,15 @@ variable (R : Type*) [Mul R] [Add R]
 
 /-- The group operation on automorphisms of a ring is defined by
 `fun g h => RingEquiv.trans h g`.
-This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
--/
+This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`. -/
 instance : Group (RingAut R) where
   mul g h := RingEquiv.trans h g
   one := RingEquiv.refl R
   inv := RingEquiv.symm
-  mul_assoc := by intros; rfl
-  one_mul := by intros; rfl
-  mul_one := by intros; rfl
+  mul_assoc _ _ _ := rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
   mul_left_inv := RingEquiv.self_trans_symm
-/- Porting note: was by
-  refine_struct
-    { mul := fun g h => RingEquiv.trans h g
-      one := RingEquiv.refl R
-      inv := RingEquiv.symm
-      div := _
-      npow := @npowRec _ ⟨RingEquiv.refl R⟩ ⟨fun g h => RingEquiv.trans h g⟩
-      zpow :=
-        @zpowRec _ ⟨RingEquiv.refl R⟩ ⟨fun g h => RingEquiv.trans h g⟩
-          ⟨RingEquiv.symm⟩ } <;>
-    intros <;>
-    ext <;>
-    try rfl <;>
-    apply Equiv.left_inv
- -/
 
 instance : Inhabited (RingAut R) :=
   ⟨1⟩
