@@ -11,11 +11,11 @@ import Mathlib.CategoryTheory.Functor.Category
 /-!
 # The bicategory of based categories
 
-In this file we define the type `BasedCategory.{v₂, u₂} 𝒮`, and give it the structure of a strict
-bicategory. Given a category `𝒮`, we define the type `BasedCategory.{v₂, u₂} 𝒮` as the type of categories
+In this file we define the type `BasedCategory 𝒮`, and give it the structure of a strict
+bicategory. Given a category `𝒮`, we define the type `BasedCategory 𝒮` as the type of categories
 `𝒳` equiped with a functor `𝒳.p : 𝒳 ⥤ 𝒮`.
 
-We also define functors between based categories `𝒳 𝒴 : BasedCategory.{v₂, u₂} 𝒮`, via the structure
+We also define functors between based categories `𝒳 𝒴 : BasedCategory 𝒮`, via the structure
 `BasedFunctor 𝒳 𝒴`. These are defined as functors between the underlying categories `𝒳.obj` and
 `𝒴.obj` which commute with the projections to `𝒮`.
 
