@@ -424,16 +424,10 @@ def map (f : α → β) : FreeMonoid α →* FreeMonoid β where
 #align free_monoid.map FreeMonoid.map
 #align free_add_monoid.map FreeAddMonoid.map
 
--- @[to_additive (attr := simp)]
--- theorem map_one : map f 1 = 1 := rfl
-
 @[to_additive (attr := simp)]
 theorem map_of (f : α → β) (x : α) : map f (of x) = of (f x) := rfl
 #align free_monoid.map_of FreeMonoid.map_of
 #align free_add_monoid.map_of FreeAddMonoid.map_of
-
--- @[to_additive (attr := simp)]
--- theorem map_mul : map f (a * b) = map f a * map f b := MonoidHom.map_mul (map f) a b
 
 @[to_additive (attr := simp)]
 theorem mem_map {m : β} : m ∈ map f a ↔ ∃ n ∈ a, f n = m := List.mem_map
@@ -545,6 +539,5 @@ type β to one with underlying type α "]
 def comap_rel (e : α ≃ β) (rel : FreeMonoid β → FreeMonoid β → Prop) :
     FreeMonoid α → FreeMonoid α → Prop :=
   fun a b ↦ rel (FreeMonoid.congr_iso e a) (FreeMonoid.congr_iso e b)
-
 
 end FreeMonoid
