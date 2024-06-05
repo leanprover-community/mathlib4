@@ -1,0 +1,57 @@
+name: Compute transitive imports
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        sudo apt-get install -y jq
+        # If you have additional dependencies, install them here
+
+    - name: Compute transitive imports
+      run: |
+        # Compute the counts for the HEAD of the PR
+        python ./scripts/count-trans-deps.py > head.json
+
+        # Checkout the merge base
+        git checkout $(git merge-base refs/remotes/origin/main ${{ github.sha }})
+
+        # Compute the counts for the merge base
+        python ./scripts/count-trans-deps.py > base.json
+
+    - name: Compare results and comment
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        message=$(python ./scripts/compare_counts.py base.json head.json)
+        if [[ -n "$message" ]]; then
+            url="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${{ github.event.pull_request.number }}/comments"
+            headers="Authorization: token ${GITHUB_TOKEN}"
+            comments=$(curl -s -S -H "Content-Type: application/json" -H "$headers" "$url")
+            comment_id=$(echo "$comments" | jq -r '.[] | select(.body | startswith("<details><summary>Dependency changes</summary>")) | .id')
+            if [[ -n "$comment_id" ]]; then
+                url="$url/$comment_id"
+                curl -s -S -H "Content-Type: application/json" -H "$headers" -X PATCH -d "{\"body\": \"$message\"}" "$url"
+            else
+                data="{\"body\": \"$message\"}"
+                curl -s -S -H "Content-Type: application/json" -H "$headers" -X POST -d "$data" "$url"
+            fi
+        fi
