@@ -117,7 +117,7 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α]
       rw [← mul_left_cancel₀ ha₂.ne_zero hprod]
       exact multiset_prod_mem _ _ (fun t ht => subset_closure (hs t ht))
       rw [hc, mul_comm x _, mul_assoc, mul_comm c _] at hprod
-      refine' hind x c _ hs (mul_left_cancel₀ ha₂.ne_zero hprod)
+      refine hind x c ?_ hs (mul_left_cancel₀ ha₂.ne_zero hprod)
       rw [← mul_left_cancel₀ ha₂.ne_zero hprod]
       exact multiset_prod_mem _ _ (fun t ht => subset_closure (hs t ht))
 
