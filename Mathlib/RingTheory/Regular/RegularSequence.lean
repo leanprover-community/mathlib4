@@ -125,6 +125,8 @@ section Definitions
 -- `ℤ[abelianization of α]`.
 variable (M) [CommRing R] [AddCommGroup M] [Module R M]
 
+open Ideal
+
 -- Should we have a default argument `(M := R)`, so that `IsWeaklyRegular rs`
 -- means regular on `R` (like in standard mathematical language)?
 /-- A sequence `[r₁, …, rₙ]` is weakly regular on `M` iff `rᵢ` is regular on
@@ -132,7 +134,12 @@ variable (M) [CommRing R] [AddCommGroup M] [Module R M]
 @[mk_iff]
 structure IsWeaklyRegular (rs : List R) : Prop where
   regular_mod_prev : ∀ i (h : i < rs.length),
-    IsSMulRegular (M ⧸ (Ideal.ofList (rs.take i) • ⊤ : Submodule R M)) rs[i]
+    IsSMulRegular (M ⧸ (ofList (rs.take i) • ⊤ : Submodule R M)) rs[i]
+
+lemma isWeaklyRegular_iff_Fin (rs : List R) :
+    IsWeaklyRegular M rs ↔ ∀ (i : Fin rs.length),
+      IsSMulRegular (M ⧸ (ofList (rs.take i) • ⊤ : Submodule R M)) (rs.get i) :=
+  Iff.trans (isWeaklyRegular_iff M rs) (Iff.symm Fin.forall_iff)
 
 /-- A weakly regular sequence `rs` on `M` is regular if also `M/rsM ≠ 0`. -/
 @[mk_iff]
@@ -202,21 +209,20 @@ namespace IsWeaklyRegular
 variable (M) [CommRing R] [AddCommGroup M] [Module R M]
 
 variable (R) in
+@[simp]
 lemma nil : IsWeaklyRegular M ([] : List R) :=
   .mk (False.elim <| Nat.not_lt_zero · ·)
 
+@[simp]
 lemma isWeaklyRegular_cons_iff (r : R) (rs : List R) :
     IsWeaklyRegular M (r :: rs) ↔
-      IsSMulRegular M r ∧ IsWeaklyRegular (QuotSMulTop r M) rs := by
-  simp_rw [isWeaklyRegular_iff]
-  refine Iff.trans Nat.and_forall_succ.symm ?_
-  simp only [Nat.zero_lt_succ, forall_true_left,
-    Nat.succ_lt_succ_iff, List.length_cons, Nat.zero_lt_succ]
-  refine and_congr ?_ <| forall₂_congr fun i h => ?_ <;>
-    apply LinearEquiv.isSMulRegular_congr
-  · exact quotEquivOfEqBot _ <|
-      Eq.trans (congrArg (· • ⊤) Ideal.ofList_nil) (bot_smul ⊤)
-  · exact quotOfListConsSMulTopEquivQuotSMulTopInner _ _ _
+      IsSMulRegular M r ∧ IsWeaklyRegular (QuotSMulTop r M) rs :=
+  have := Eq.trans (congrArg (· • ⊤) Ideal.ofList_nil) (bot_smul ⊤)
+  let e i := quotOfListConsSMulTopEquivQuotSMulTopInner M r (rs.take i)
+  Iff.trans (isWeaklyRegular_iff_Fin _ _) <| Iff.trans Fin.forall_fin_succ <|
+    and_congr ((quotEquivOfEqBot _ this).isSMulRegular_congr r) <|
+      Iff.trans (forall_congr' fun i => (e i).isSMulRegular_congr (rs.get i))
+        (isWeaklyRegular_iff_Fin _ _).symm
 
 lemma isWeaklyRegular_cons_iff' (r : R) (rs : List R) :
     IsWeaklyRegular M (r :: rs) ↔
@@ -226,13 +232,17 @@ lemma isWeaklyRegular_cons_iff' (r : R) (rs : List R) :
   Iff.trans (isWeaklyRegular_cons_iff M r rs) <| and_congr_right' <|
     Iff.symm <| isWeaklyRegular_map_algebraMap_iff (R ⧸ Ideal.span {r}) _ rs
 
+lemma isWeaklyRegular_singleton_iff (r : R) :
+    IsWeaklyRegular M [r] ↔ IsSMulRegular M r :=
+  Iff.trans (isWeaklyRegular_cons_iff M r []) (and_iff_left (nil R _))
+
 lemma isWeaklyRegular_append_iff (rs₁ rs₂ : List R) :
     IsWeaklyRegular M (rs₁ ++ rs₂) ↔
       IsWeaklyRegular M rs₁ ∧
         IsWeaklyRegular (M ⧸ (Ideal.ofList rs₁ • ⊤ : Submodule R M)) rs₂ := by
   induction rs₁ generalizing M with
   | nil =>
-    refine Iff.symm <| Iff.trans (and_iff_right (IsWeaklyRegular.nil _ _)) ?_
+    refine Iff.symm <| Iff.trans (and_iff_right (nil R M)) ?_
     refine (quotEquivOfEqBot _ ?_).isWeaklyRegular_congr rs₂
     rw [Ideal.ofList_nil, bot_smul]
   | cons r rs₁ ih =>
@@ -352,10 +362,11 @@ lemma nil [Nontrivial M] : IsRegular M ([] : List R) where
     rw [Ideal.ofList_nil, bot_smul, eq_comm, subsingleton_iff_bot_eq_top] at h
     exact not_subsingleton M ((Submodule.subsingleton_iff _).mp h)
 
+@[simp]
 lemma isRegular_cons_iff (r : R) (rs : List R) :
     IsRegular M (r :: rs) ↔
       IsSMulRegular M r ∧ IsRegular (QuotSMulTop r M) rs := by
-  simp_rw [isRegular_iff, IsWeaklyRegular.isWeaklyRegular_cons_iff M r rs,
+  rw [isRegular_iff, isRegular_iff, isWeaklyRegular_cons_iff M r rs,
     ne_eq, top_eq_ofList_cons_smul_iff, and_assoc]
 
 lemma isRegular_cons_iff' (r : R) (rs : List R) :
@@ -547,7 +558,7 @@ open LinearMap in
 private lemma IsWeaklyRegular.swap {a b : R} (h1 : IsWeaklyRegular M [a, b])
     (h2 : torsionBy R M b = a • torsionBy R M b → torsionBy R M b = ⊥) :
     IsWeaklyRegular M [b, a] := by
-  simp_rw [isWeaklyRegular_cons_iff, and_iff_left (nil _ _)] at h1 ⊢
+  rw [isWeaklyRegular_cons_iff, isWeaklyRegular_singleton_iff] at h1 ⊢
   obtain ⟨ha, hb⟩ := h1
   rw [← isSMulRegular_iff_torsionBy_eq_bot] at h2
   specialize h2 (le_antisymm ?_ (smul_le_self_of_tower a (torsionBy R M b)))
