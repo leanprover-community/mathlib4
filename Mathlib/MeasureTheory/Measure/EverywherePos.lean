@@ -119,7 +119,8 @@ measure coincides almost everywhere with its everywhere positive subset. -/
 lemma everywherePosSubset_ae_eq_of_measure_ne_top
     [OpensMeasurableSpace α] [InnerRegularCompactLTTop μ] (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
     μ.everywherePosSubset s =ᵐ[μ] s := by
-  have A : μ (s \ μ.everywherePosSubset s) ≠ ∞ := (measure_mono diff_subset).trans_lt h's.lt_top).ne
+  have A : μ (s \ μ.everywherePosSubset s) ≠ ∞ :=
+    ((measure_mono diff_subset).trans_lt h's.lt_top).ne
   simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), measure_empty,
     true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact_of_ne_top A,
     ENNReal.iSup_eq_zero]

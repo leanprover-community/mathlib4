@@ -138,7 +138,7 @@ private theorem someExistsOneDivLT_subset : someExistsOneDivLT s i ⊆ i := by
     exact Set.empty_subset _
 
 private theorem someExistsOneDivLT_subset' : someExistsOneDivLT s (i \ j) ⊆ i :=
-  Set.Subset.trans someExistsOneDivLT_subset diff_subset
+  someExistsOneDivLT_subset.trans Set.diff_subset
 
 private theorem someExistsOneDivLT_measurableSet : MeasurableSet (someExistsOneDivLT s i) := by
   by_cases hi : ¬s ≤[i] 0
@@ -357,7 +357,7 @@ theorem bddBelow_measureOfNegatives : BddBelow s.measureOfNegatives := by
       of_union Set.disjoint_sdiff_left _ (hmeas n)]
     · refine add_le_of_nonpos_left ?_
       have : s ≤[A] 0 := restrict_le_restrict_iUnion _ _ hmeas hr
-      refine nonpos_of_restrict_le_zero _ (restrict_le_zero_subset _ ?_ diff_subset this)
+      refine nonpos_of_restrict_le_zero _ (restrict_le_zero_subset _ ?_ Set.diff_subset this)
       exact MeasurableSet.iUnion hmeas
     · exact (MeasurableSet.iUnion hmeas).diff (hmeas n)
   rcases exists_nat_gt (-s A) with ⟨n, hn⟩
