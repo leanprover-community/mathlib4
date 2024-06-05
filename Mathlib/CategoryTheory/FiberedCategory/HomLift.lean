@@ -222,14 +222,14 @@ lemma isIso_of_lift_isIso (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ] [IsIso
 instance inv_lift_inv (f : R ≅ S) (φ : a ≅ b) [p.IsHomLift f.hom φ.hom] :
     p.IsHomLift f.inv φ.inv := by
   apply of_commSq
-  apply CommSq.horiz_inv (f:=p.mapIso φ) (commSq p f.hom φ.hom)
+  apply CommSq.horiz_inv (f := p.mapIso φ) (commSq p f.hom φ.hom)
 
 /-- Given `φ : a ≅ b` and `f : R ⟶ S`, such that `φ.hom` lifts `f`, then `φ.inv` lifts the
 inverse of `f` given by `isoOfIsoLift`. -/
 instance inv_lift (f : R ⟶ S) (φ : a ≅ b) [p.IsHomLift f φ.hom] :
     p.IsHomLift (isoOfIsoLift p f φ).inv φ.inv := by
   apply of_commSq
-  apply CommSq.horiz_inv (f:=p.mapIso φ) (by apply commSq p f φ.hom)
+  apply CommSq.horiz_inv (f := p.mapIso φ) (by apply commSq p f φ.hom)
 
 /-- If `φ : a ⟶ b` lifts `f : R ⟶ S` and both are isomorphisms, then `φ⁻¹` lifts `f⁻¹`. -/
 protected instance inv (f : R ⟶ S) (φ : a ⟶ b) [IsIso f] [IsIso φ] [p.IsHomLift f φ] :
