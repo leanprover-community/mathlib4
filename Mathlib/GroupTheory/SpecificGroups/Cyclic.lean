@@ -133,17 +133,18 @@ alias isAddCyclic_of_orderOf_eq_card := isAddCyclic_of_addOrderOf_eq_card
 
 @[to_additive]
 theorem Subgroup.eq_bot_or_eq_top_of_prime_card {G : Type*} [Group G] {_ : Fintype G}
-    (H : Subgroup G) {p : ℕ} [hp : Fact p.Prime] (h : Fintype.card G = p) : H = ⊥ ∨ H = ⊤ := by
+    (H : Subgroup G) [hp : Fact (Fintype.card G).Prime] : H = ⊥ ∨ H = ⊤ := by
   classical
   have := card_subgroup_dvd_card H
-  rwa [h, Nat.dvd_prime hp.1, ← h, ← Nat.card_eq_fintype_card, ← Nat.card_eq_fintype_card,
+  rwa [Nat.dvd_prime hp.1, ← Nat.card_eq_fintype_card, ← Nat.card_eq_fintype_card,
     ← eq_bot_iff_card, card_eq_iff_eq_top] at this
 
 /-- Any non-identity element of a finite group of prime order generates the group. -/
 @[to_additive "Any non-identity element of a finite group of prime order generates the group."]
 theorem zpowers_eq_top_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ}
     [hp : Fact p.Prime] (h : Fintype.card G = p) {g : G} (hg : g ≠ 1) : zpowers g = ⊤ := by
-  have := (zpowers g).eq_bot_or_eq_top_of_prime_card h
+  subst h
+  have := (zpowers g).eq_bot_or_eq_top_of_prime_card
   rwa [zpowers_eq_bot, or_iff_right hg] at this
 
 @[to_additive]
@@ -517,12 +518,12 @@ alias IsAddCyclic.card_orderOf_eq_totient := IsAddCyclic.card_addOrderOf_eq_toti
 /-- A finite group of prime order is simple. -/
 @[to_additive "A finite group of prime order is simple."]
 theorem isSimpleGroup_of_prime_card {α : Type u} [Group α] [Fintype α] {p : ℕ} [hp : Fact p.Prime]
-    (h : Fintype.card α = p) : IsSimpleGroup α :=
+    (h : Fintype.card α = p) : IsSimpleGroup α := by
+  subst h
   have : Nontrivial α := by
-    have h' := Nat.Prime.one_lt (Fact.out (p := p.Prime))
-    rw [← h] at h'
+    have h' := Nat.Prime.one_lt hp.out
     exact Fintype.one_lt_card_iff_nontrivial.1 h'
-  ⟨fun H _ => H.eq_bot_or_eq_top_of_prime_card h⟩
+  exact ⟨fun H _ => H.eq_bot_or_eq_top_of_prime_card⟩
 #align is_simple_group_of_prime_card isSimpleGroup_of_prime_card
 #align is_simple_add_group_of_prime_card isSimpleAddGroup_of_prime_card
 
