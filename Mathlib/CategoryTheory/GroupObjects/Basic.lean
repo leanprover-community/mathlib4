@@ -99,10 +99,12 @@ def comp {G H K : GroupObject C} (f : Hom G H) (g : Hom H K) : Hom G K where
   hom := f.hom ≫ g.hom
   inv_hom := by rw [← Category.assoc, f.inv_hom, Category.assoc, g.inv_hom, Category.assoc]
 
-instance : Category (GroupObject C) where
+instance instGroupObjectCat : Category (GroupObject C) where
   Hom G H := Hom G H
   id := id
   comp f g := comp f g
+
+#check instGroupObjectCat 
 
 -- Porting note: added, as `Hom.ext` does not apply to a morphism.
 @[ext]

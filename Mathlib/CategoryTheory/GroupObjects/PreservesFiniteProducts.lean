@@ -5,10 +5,16 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 open CategoryTheory Limits
 
-namespace CategoryTheory.Functor
+noncomputable section
+
 universe v u v₁ u₁ u₂ v₂
+
 variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D] {E : Type u₂}
   [Category.{v₂, u₂} E]
+
+
+
+namespace CategoryTheory.Functor
 
 variable [HasFiniteProducts C] [HasFiniteProducts D] [HasFiniteProducts E]
 variable (F : C ⥤ D) [PreservesFiniteProducts F]
@@ -93,8 +99,28 @@ noncomputable def mapGroupObject_comp_forget :
     comp_map, mapGroupObject_map, GroupObject.forget_map, mapGroupObjectMap_hom, Iso.refl_hom,
     Category.comp_id, Category.id_comp])
 
+variable (C)
+
 /-- If `F : C ⥤ C` is the identity functor, then its lift to categories of group objects
-is isomorphic (actually equal) to the identity functor.-/
+is isomorphic (actually equal) to the identity functor. Here we construct the map.-/
+noncomputable def mapGroupObject_mapId : (𝟭 C).mapGroupObject ⟶ 𝟭 (GroupObject C) where
+  app X := by
+    refine {hom := 𝟙 X.X, one_hom := ?_, mul_hom := ?_, inv_hom := ?_}
+    · simp only [id_obj, mapGroupObject_obj, mapGroupObjectObj_X, mapGroupObjectObj_one,
+      PreservesTerminal.iso_inv, id_map, Category.comp_id, IsIso.inv_comp_eq]
+      have : X.one = 𝟙 _ ≫ X.one := by simp only [Category.id_comp]
+      rw [this]; congr 1
+      exact Subsingleton.elim _ _
+    · simp only [mapGroupObject_obj, mapGroupObjectObj_X, id_obj, mapGroupObjectObj_mul,
+      PreservesLimitPair.iso_inv, id_map, Category.comp_id, prod.map_id_id, Category.id_comp,
+      IsIso.inv_comp_eq]
+      have : X.mul = 𝟙 _ ≫ X.mul := by simp only [Category.id_comp]
+      rw [this]; congr 1
+      ext
+      · erw [prodComparison_fst]; simp only [Category.id_comp, id_map]
+      · erw [prodComparison_snd]; simp only [Category.id_comp, id_map]
+    · simp only [mapGroupObject_obj, mapGroupObjectObj_X, id_obj, mapGroupObjectObj_inv, id_map,
+      Category.comp_id, Category.id_comp]
 
 noncomputable def mapGroupObject_id : (𝟭 C).mapGroupObject ≅ 𝟭 (GroupObject C) := by
   refine NatIso.ofComponents ?_ ?_
@@ -120,6 +146,7 @@ noncomputable def mapGroupObject_id : (𝟭 C).mapGroupObject ≅ 𝟭 (GroupObj
       GroupObject.comp_hom', mapGroupObjectMap_hom, id_map, GroupObject.isoOfIso_hom_hom,
       Iso.refl_hom, Category.comp_id, Category.id_comp]
 
+variable {C}
 variable (G)
 
 /-- The construction `mapGroupObject` is compatible with composition of functors.-/
@@ -223,6 +250,8 @@ noncomputable def mapGroupObjectAsFunctor :
     exact @mapGroupObject_natTrans _ _ _ _ _ _ F.1 G.1 (Classical.choice F.2)
       (Classical.choice G.2) α
 
+
+#exit
 variable {C D}
 
 /-- The `mapGroupObject` functor is compatible with whiskering on the left.-/
