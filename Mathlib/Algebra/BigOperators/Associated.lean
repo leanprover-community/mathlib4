@@ -84,10 +84,9 @@ theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α}
 open Submonoid in
 /-- Let x, y ∈ α. If x * y can be written as a product of units and prime elements, then x can be
 written as a product of units and prime elements. -/
-theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α] :
-    ∀ x y, x * y ∈ closure { r : α | IsUnit r ∨ Prime r} →
+theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α]
+    (x y : α) (hxy : x * y ∈ closure { r : α | IsUnit r ∨ Prime r}) :
     x ∈ closure { r : α | IsUnit r ∨ Prime r} := by
-  intros a b hab
   obtain ⟨m, hm⟩ := exists_multiset_of_mem_closure hab
   revert a b hm
   refine m.induction (p := fun m ↦ ∀ a b, a * b ∈ closure {r | IsUnit r ∨ Prime r} →
