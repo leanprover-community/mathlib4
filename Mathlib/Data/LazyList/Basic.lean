@@ -83,8 +83,8 @@ instance : LawfulTraversable LazyList := by
     induction' xs using LazyList.rec with _ tl ih _ ih
     · simp only [LazyList.traverse, toList, List.traverse, map_pure, ofList]
     · replace ih : tl.get.traverse f = ofList <$> tl.get.toList.traverse f := ih
-      simp only [traverse.eq_2, ih, Functor.map_map, seq_map_assoc, toList, List.traverse, map_seq]
-      rfl
+      simp [traverse.eq_2, ih, Functor.map_map, seq_map_assoc, toList, List.traverse, map_seq,
+        Function.comp, Thunk.pure, ofList]
     · apply ih
 
 /-- `init xs`, if `xs` non-empty, drops the last element of the list.

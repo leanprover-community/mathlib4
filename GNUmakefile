@@ -9,14 +9,8 @@ all: build test
 build:
 	lake build
 
-testdeps: build
-	# add any extra targets that tests depend on here
-	lake build ProofWidgets
-
-test: $(addsuffix .run, $(TESTS))
-
-test/%.run: testdeps
-	lake env lean test/$* | scripts/check_silent.sh test/$*.log
+test:
+	lake test
 
 lint: build
 	env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib

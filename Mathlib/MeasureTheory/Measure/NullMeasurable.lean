@@ -227,7 +227,7 @@ protected theorem insert [MeasurableSingletonClass (NullMeasurableSpace α μ)]
 theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
     ∃ t ⊇ s, MeasurableSet t ∧ t =ᵐ[μ] s := by
   rcases h with ⟨t, htm, hst⟩
-  refine' ⟨t ∪ toMeasurable μ (s \ t), _, htm.union (measurableSet_toMeasurable _ _), _⟩
+  refine ⟨t ∪ toMeasurable μ (s \ t), ?_, htm.union (measurableSet_toMeasurable _ _), ?_⟩
   · exact diff_subset_iff.1 (subset_toMeasurable _ _)
   · have : toMeasurable μ (s \ t) =ᵐ[μ] (∅ : Set α) := by simp [ae_le_set.1 hst.le]
     simpa only [union_empty] using hst.symm.union this
@@ -299,7 +299,7 @@ theorem measure_union₀_aux (hs : NullMeasurableSet s μ) (ht : NullMeasurableS
 `μ (s ∩ t) + μ (s \ t) = μ s`. -/
 theorem measure_inter_add_diff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
     μ (s ∩ t) + μ (s \ t) = μ s := by
-  refine le_antisymm ?_ (OuterMeasure.le_inter_add_diff _)
+  refine le_antisymm ?_ (measure_le_inter_add_diff _ _ _)
   rcases exists_measurable_superset μ s with ⟨s', hsub, hs'm, hs'⟩
   replace hs'm : NullMeasurableSet s' μ := hs'm.nullMeasurableSet
   calc
@@ -356,8 +356,8 @@ protected theorem _root_.Set.Finite.nullMeasurableSet (hs : s.Finite) : NullMeas
   Finite.measurableSet hs
 #align set.finite.null_measurable_set Set.Finite.nullMeasurableSet
 
-protected theorem _root_.Finset.nullMeasurableSet (s : Finset α) : NullMeasurableSet (↑s) μ :=
-  by apply Finset.measurableSet
+protected theorem _root_.Finset.nullMeasurableSet (s : Finset α) : NullMeasurableSet (↑s) μ := by
+  apply Finset.measurableSet
 #align finset.null_measurable_set Finset.nullMeasurableSet
 
 end MeasurableSingletonClass
@@ -477,7 +477,7 @@ namespace Measure
 
 TODO: generalize to any larger σ-algebra. -/
 def completion {_ : MeasurableSpace α} (μ : Measure α) :
-    @MeasureTheory.Measure (NullMeasurableSpace α μ) _ where
+    MeasureTheory.Measure (NullMeasurableSpace α μ) where
   toOuterMeasure := μ.toOuterMeasure
   m_iUnion s hs hd := measure_iUnion₀ (hd.mono fun i j h => h.aedisjoint) hs
   trim_le := by
@@ -500,7 +500,7 @@ theorem completion_apply {_ : MeasurableSpace α} (μ : Measure α) (s : Set α)
 #align measure_theory.measure.completion_apply MeasureTheory.Measure.completion_apply
 
 @[simp]
-theorem ae_completion {_ : MeasurableSpace α} (μ : Measure α) : μ.completion.ae = μ.ae := rfl
+theorem ae_completion {_ : MeasurableSpace α} (μ : Measure α) : ae μ.completion = ae μ := rfl
 
 end Measure
 

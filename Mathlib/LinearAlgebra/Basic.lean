@@ -9,6 +9,7 @@ import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.Data.Set.Finite
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Tactic.Abel
 
 #align_import linear_algebra.basic from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
@@ -54,7 +55,7 @@ linear algebra, vector space, module
 
 open Function
 
-open BigOperators Pointwise
+open Pointwise
 
 variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} {R₄ : Type*}
 variable {S : Type*}
@@ -445,7 +446,7 @@ protected theorem _root_.LinearEquivClass.range [Module R M] [Module R₂ M₂] 
 #align linear_equiv_class.range LinearEquivClass.range
 
 theorem eq_bot_of_equiv [Module R₂ M₂] (e : p ≃ₛₗ[σ₁₂] (⊥ : Submodule R₂ M₂)) : p = ⊥ := by
-  refine' bot_unique (SetLike.le_def.2 fun b hb => (Submodule.mem_bot R).2 _)
+  refine bot_unique (SetLike.le_def.2 fun b hb => (Submodule.mem_bot R).2 ?_)
   rw [← p.mk_eq_zero hb, ← e.map_eq_zero_iff]
   apply Submodule.eq_zero_of_bot_submodule
 #align linear_equiv.eq_bot_of_equiv LinearEquiv.eq_bot_of_equiv
@@ -721,7 +722,7 @@ def equivSubtypeMap (p : Submodule R M) (q : Submodule R p) : q ≃ₗ[R] q.map 
   { (p.subtype.domRestrict q).codRestrict _ (by rintro ⟨x, hx⟩; exact ⟨x, hx, rfl⟩) with
     invFun := by
       rintro ⟨x, hx⟩
-      refine' ⟨⟨x, _⟩, _⟩ <;> rcases hx with ⟨⟨_, h⟩, _, rfl⟩ <;> assumption
+      refine ⟨⟨x, ?_⟩, ?_⟩ <;> rcases hx with ⟨⟨_, h⟩, _, rfl⟩ <;> assumption
     left_inv := fun ⟨⟨_, _⟩, _⟩ => rfl
     right_inv := fun ⟨x, ⟨_, h⟩, _, rfl⟩ => by ext; rfl }
 #align submodule.equiv_subtype_map Submodule.equivSubtypeMap
@@ -800,7 +801,7 @@ theorem funLeft_surjective_of_injective (f : m → n) (hf : Injective f) :
     Surjective (funLeft R M f) := by
   classical
     intro g
-    refine' ⟨fun x => if h : ∃ y, f y = x then g h.choose else 0, _⟩
+    refine ⟨fun x => if h : ∃ y, f y = x then g h.choose else 0, ?_⟩
     ext
     dsimp only [funLeft_apply]
     split_ifs with w

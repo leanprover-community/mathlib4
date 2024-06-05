@@ -111,8 +111,8 @@ See also `LinearMapClass F R M M₂` for the case where `σ` is the identity map
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
-class SemilinearMapClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Semiring S]
-  (σ : outParam (R →+* S)) (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂]
+class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
+  (σ : outParam (R →+* S)) (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂]
     [Module R M] [Module S M₂] [FunLike F M M₂]
     extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂ : Prop
 #align semilinear_map_class SemilinearMapClass
@@ -130,14 +130,14 @@ end
 
 This is an abbreviation for `SemilinearMapClass F (RingHom.id R) M M₂`.
 -/
-abbrev LinearMapClass (F : Type*) (R : outParam (Type*)) (M M₂ : Type*)
+abbrev LinearMapClass (F : Type*) (R : outParam Type*) (M M₂ : Type*)
     [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
     [FunLike F M M₂] :=
   SemilinearMapClass F (RingHom.id R) M M₂
 #align linear_map_class LinearMapClass
 
 @[simp high]
-protected lemma LinearMapClass.map_smul {R M M₂ : outParam (Type*)} [Semiring R] [AddCommMonoid M]
+protected lemma LinearMapClass.map_smul {R M M₂ : outParam Type*} [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂]
     {F : Type*} [FunLike F M M₂] [LinearMapClass F R M M₂] (f : F) (r : R) (x : M) :
     f (r • x) = r • f x := by rw [_root_.map_smul]
@@ -732,7 +732,7 @@ theorem mk'_apply {f : M → M₂} (H : IsLinearMap R f) (x : M) : mk' f H x = f
 
 theorem isLinearMap_smul {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] (c : R) :
     IsLinearMap R fun z : M ↦ c • z := by
-  refine' IsLinearMap.mk (smul_add c) _
+  refine IsLinearMap.mk (smul_add c) ?_
   intro _ _
   simp only [smul_smul, mul_comm]
 #align is_linear_map.is_linear_map_smul IsLinearMap.isLinearMap_smul

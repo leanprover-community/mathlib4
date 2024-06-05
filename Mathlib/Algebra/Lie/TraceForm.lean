@@ -3,12 +3,12 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.PID
 import Mathlib.Algebra.DirectSum.LinearMap
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
+import Mathlib.Algebra.Lie.InvariantForm
 import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Algebra.Lie.Weights.Linear
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.LinearAlgebra.PID
 
 /-!
 # The trace and Killing forms of a Lie algebra.
@@ -36,10 +36,10 @@ variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
   [Module.Free R M] [Module.Finite R M]
 
-local notation "φ" => LieModule.toEndomorphism R L M
+local notation "φ" => LieModule.toEnd R L M
 
 open LinearMap (trace)
-open Set BigOperators FiniteDimensional
+open Set FiniteDimensional
 
 namespace LieModule
 
@@ -85,6 +85,10 @@ lemma traceForm_apply_lie_apply' (x y z : L) :
       = - traceForm R L M ⁅y, x⁆ z := by rw [← lie_skew x y, map_neg, LinearMap.neg_apply]
     _ = - traceForm R L M y ⁅x, z⁆ := by rw [traceForm_apply_lie_apply]
 
+lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
+  intro x y z
+  rw [← lie_skew, map_neg, LinearMap.neg_apply, LieModule.traceForm_apply_lie_apply R L M]
+
 /-- This lemma justifies the terminology "invariant" for trace forms. -/
 @[simp] lemma lie_traceForm_eq_zero (x : L) : ⁅x, traceForm R L M⁆ = 0 := by
   ext y z
@@ -96,7 +100,7 @@ lemma traceForm_apply_lie_apply' (x y z : L) :
   ext x y
   simp only [traceForm_apply_apply, LinearMap.zero_apply, ← isNilpotent_iff_eq_zero]
   apply LinearMap.isNilpotent_trace_of_isNilpotent
-  exact isNilpotent_toEndomorphism_of_isNilpotent₂ R L M x y
+  exact isNilpotent_toEnd_of_isNilpotent₂ R L M x y
 
 @[simp]
 lemma traceForm_weightSpace_eq [IsDomain R] [IsPrincipalIdealRing R]
@@ -109,11 +113,11 @@ lemma traceForm_weightSpace_eq [IsDomain R] [IsPrincipalIdealRing R]
   have := traceForm_eq_zero_of_isNilpotent R L (shiftedWeightSpace R L M χ)
   replace this := LinearMap.congr_fun (LinearMap.congr_fun this x) y
   rwa [LinearMap.zero_apply, LinearMap.zero_apply, traceForm_apply_apply,
-    shiftedWeightSpace.toEndomorphism_eq, shiftedWeightSpace.toEndomorphism_eq,
+    shiftedWeightSpace.toEnd_eq, shiftedWeightSpace.toEnd_eq,
     ← LinearEquiv.conj_comp, LinearMap.trace_conj', LinearMap.comp_sub, LinearMap.sub_comp,
     LinearMap.sub_comp, map_sub, map_sub, map_sub, LinearMap.comp_smul, LinearMap.smul_comp,
     LinearMap.comp_id, LinearMap.id_comp, LinearMap.map_smul, LinearMap.map_smul,
-    trace_toEndomorphism_weightSpace, trace_toEndomorphism_weightSpace,
+    trace_toEnd_weightSpace, trace_toEnd_weightSpace,
     LinearMap.comp_smul, LinearMap.smul_comp, LinearMap.id_comp, map_smul, map_smul,
     LinearMap.trace_id, ← traceForm_apply_apply, h₁, h₂, sub_zero, sub_eq_zero] at this
 
@@ -177,15 +181,15 @@ lemma eq_zero_of_mem_weightSpace_mem_posFitting [LieAlgebra.IsNilpotent R L]
   obtain ⟨m, rfl⟩ := (mem_posFittingCompOf R x m₁).mp hm₁ k
   simp [hB, hk]
 
-lemma trace_toEndomorphism_eq_zero_of_mem_lcs
+lemma trace_toEnd_eq_zero_of_mem_lcs
     {k : ℕ} {x : L} (hk : 1 ≤ k) (hx : x ∈ lowerCentralSeries R L L k) :
-    trace R _ (toEndomorphism R L M x) = 0 := by
+    trace R _ (toEnd R L M x) = 0 := by
   replace hx : x ∈ lowerCentralSeries R L L 1 := antitone_lowerCentralSeries _ _ _ hk hx
   replace hx : x ∈ Submodule.span R {m | ∃ u v : L, ⁅u, v⁆ = m} := by
     rw [lowerCentralSeries_succ, ← LieSubmodule.mem_coeSubmodule,
       LieSubmodule.lieIdeal_oper_eq_linear_span'] at hx
     simpa using hx
-  refine Submodule.span_induction (p := fun x ↦ trace R _ (toEndomorphism R L M x) = 0) hx
+  refine Submodule.span_induction (p := fun x ↦ trace R _ (toEnd R L M x) = 0) hx
     (fun y ⟨u, v, huv⟩ ↦ ?_) ?_ (fun u v hu hv ↦ ?_) (fun t u hu ↦ ?_)
   · simp [← huv]
   · simp
@@ -208,9 +212,9 @@ variable [LieAlgebra.IsNilpotent R L] [IsDomain R] [IsPrincipalIdealRing R]
 
 lemma traceForm_eq_sum_weightSpaceOf [IsTriangularizable R L M] (z : L) :
     traceForm R L M =
-    ∑ χ in (finite_weightSpaceOf_ne_bot R L M z).toFinset, traceForm R L (weightSpaceOf M χ z) := by
+    ∑ χ ∈ (finite_weightSpaceOf_ne_bot R L M z).toFinset, traceForm R L (weightSpaceOf M χ z) := by
   ext x y
-  have hxy : ∀ χ : R, MapsTo ((toEndomorphism R L M x).comp (toEndomorphism R L M y))
+  have hxy : ∀ χ : R, MapsTo ((toEnd R L M x).comp (toEnd R L M y))
       (weightSpaceOf M χ z) (weightSpaceOf M χ z) :=
     fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
   have hfin : {χ : R | (weightSpaceOf M χ z : Submodule R M) ≠ ⊥}.Finite := by
@@ -236,7 +240,7 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm :
 
   Because `z` belongs to the indicated intersection, it has two key properties:
   (a) the trace of the action of `z` vanishes on any Lie module of `L`
-      (see `LieModule.trace_toEndomorphism_eq_zero_of_mem_lcs`),
+      (see `LieModule.trace_toEnd_eq_zero_of_mem_lcs`),
   (b) `z` commutes with all elements of `L`.
 
   If `φ x` were triangularizable, we could write `M` as a direct sum of generalized eigenspaces of
@@ -256,8 +260,8 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm :
     have _i : NoZeroSMulDivisors R A := NoZeroSMulDivisors.trans R (FractionRing R) A
     rw [← map_zero (algebraMap R A)] at this
     exact NoZeroSMulDivisors.algebraMap_injective R A this
-  rw [← LinearMap.trace_baseChange, LinearMap.baseChange_comp, ← toEndomorphism_baseChange,
-    ← toEndomorphism_baseChange]
+  rw [← LinearMap.trace_baseChange, LinearMap.baseChange_comp, ← toEnd_baseChange,
+    ← toEnd_baseChange]
   replace hz : 1 ⊗ₜ z ∈ lowerCentralSeries A (A ⊗[R] L) (A ⊗[R] L) 1 := by
     simp only [lowerCentralSeries_succ, lowerCentralSeries_zero] at hz ⊢
     rw [← LieSubmodule.baseChange_top, ← LieSubmodule.lie_baseChange]
@@ -268,9 +272,9 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm :
     exact y.induction_on rfl (fun a u ↦ by simp [hzc u]) (fun u v hu hv ↦ by simp [hu, hv])
   apply LinearMap.trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
   · exact IsTriangularizable.iSup_eq_top (1 ⊗ₜ[R] x)
-  · exact fun μ ↦ trace_toEndomorphism_eq_zero_of_mem_lcs A (A ⊗[R] L)
+  · exact fun μ ↦ trace_toEnd_eq_zero_of_mem_lcs A (A ⊗[R] L)
       (weightSpaceOf (A ⊗[R] M) μ (1 ⊗ₜ x)) (le_refl 1) hz
-  · exact commute_toEndomorphism_of_mem_center_right (A ⊗[R] M) hzc (1 ⊗ₜ x)
+  · exact commute_toEnd_of_mem_center_right (A ⊗[R] M) hzc (1 ⊗ₜ x)
 
 /-- A nilpotent Lie algebra with a representation whose trace form is non-singular is Abelian. -/
 lemma isLieAbelian_of_ker_traceForm_eq_bot (h : LinearMap.ker (traceForm R L M) = ⊥) :
@@ -344,15 +348,7 @@ variable (I : LieIdeal R L)
 
 /-- The orthogonal complement of an ideal with respect to the killing form is an ideal. -/
 noncomputable def killingCompl : LieIdeal R L :=
-  { __ := (killingForm R L).orthogonal I.toSubmodule
-    lie_mem := by
-      intro x y hy
-      simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-        Submodule.mem_toAddSubmonoid, LinearMap.BilinForm.mem_orthogonal_iff,
-        LieSubmodule.mem_coeSubmodule, LinearMap.BilinForm.IsOrtho]
-      intro z hz
-      rw [← LieModule.traceForm_apply_lie_apply]
-      exact hy _ <| lie_mem_left _ _ _ _ _ hz }
+  LieAlgebra.InvariantForm.orthogonal (killingForm R L) (LieModule.traceForm_lieInvariant R L L) I
 
 @[simp] lemma toSubmodule_killingCompl :
     LieSubmodule.toSubmodule I.killingCompl = (killingForm R L).orthogonal I.toSubmodule :=
@@ -397,7 +393,7 @@ variable [LieAlgebra.IsNilpotent K L] [LinearWeights K L M] [IsTriangularizable 
 
 lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
     traceForm K L M x y = ∑ χ : Weight K L M, finrank K (weightSpace M χ) • (χ x * χ y) := by
-  have hxy : ∀ χ : Weight K L M, MapsTo (toEndomorphism K L M x ∘ₗ toEndomorphism K L M y)
+  have hxy : ∀ χ : Weight K L M, MapsTo (toEnd K L M x ∘ₗ toEnd K L M y)
       (weightSpace M χ) (weightSpace M χ) :=
     fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
   classical

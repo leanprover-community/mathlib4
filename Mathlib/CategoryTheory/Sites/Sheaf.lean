@@ -99,7 +99,7 @@ def conesEquivSieveCompatibleFamily :
   invFun x :=
     { app := fun f => x.1 f.unop.1.hom f.unop.2
       naturality := fun f f' g => by
-        refine' Eq.trans _ (x.2 f.unop.1.hom g.unop.left f.unop.2)
+        refine Eq.trans ?_ (x.2 f.unop.1.hom g.unop.left f.unop.2)
         dsimp
         rw [id_comp]
         convert rfl
@@ -348,14 +348,6 @@ instance (X : Sheaf J A) : Inhabited (Hom X X) :=
 lemma hom_ext {X Y : Sheaf J A} (x y : X ⟶ Y) (h : x.val = y.val) : x = y :=
   Sheaf.Hom.ext _ _ h
 
-/-- The bijection `(X ⟶ Y) ≃ (X.val ⟶ Y.val)` when `X` and `Y` are sheaves. -/
-@[simps]
-def homEquiv {X Y : Sheaf J A} : (X ⟶ Y) ≃ (X.val ⟶ Y.val) where
-  toFun f := f.val
-  invFun f := ⟨f⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
-
 end Sheaf
 
 /-- The inclusion functor from sheaves to presheaves. -/
@@ -371,9 +363,21 @@ set_option linter.uppercaseLean3 false in
 /-- The sections of a sheaf (i.e. evaluation as a presheaf on `C`). -/
 abbrev sheafSections : Cᵒᵖ ⥤ Sheaf J A ⥤ A := (sheafToPresheaf J A).flip
 
-instance : (sheafToPresheaf J A).Full where map_surjective f := ⟨⟨f⟩, rfl⟩
+/-- The functor `Sheaf J A ⥤ Cᵒᵖ ⥤ A` is fully faithful. -/
+@[simps]
+def fullyFaithfulSheafToPresheaf : (sheafToPresheaf J A).FullyFaithful where
+  preimage f := ⟨f⟩
 
-instance : (sheafToPresheaf J A).Faithful where
+variable {J A} in
+/-- The bijection `(X ⟶ Y) ≃ (X.val ⟶ Y.val)` when `X` and `Y` are sheaves. -/
+abbrev Sheaf.homEquiv {X Y : Sheaf J A} : (X ⟶ Y) ≃ (X.val ⟶ Y.val) :=
+  (fullyFaithfulSheafToPresheaf J A).homEquiv
+
+instance : (sheafToPresheaf J A).Full :=
+  (fullyFaithfulSheafToPresheaf J A).full
+
+instance : (sheafToPresheaf J A).Faithful :=
+  (fullyFaithfulSheafToPresheaf J A).faithful
 
 /-- This is stated as a lemma to prevent class search from forming a loop since a sheaf morphism is
 monic if and only if it is monic as a presheaf morphism (under suitable assumption). -/
@@ -398,10 +402,10 @@ theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
     Presheaf.IsSheaf J P ↔ Presieve.IsSheaf J P := by
   constructor
   · intro hP
-    refine' Presieve.isSheaf_iso J _ (hP PUnit)
+    refine Presieve.isSheaf_iso J ?_ (hP PUnit)
     exact isoWhiskerLeft _ Coyoneda.punitIso ≪≫ P.rightUnitor
   · intro hP X Y S hS z hz
-    refine' ⟨fun x => (hP S hS).amalgamate (fun Z f hf => z f hf x) _, _, _⟩
+    refine ⟨fun x => (hP S hS).amalgamate (fun Z f hf => z f hf x) ?_, ?_, ?_⟩
     · intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ h
       exact congr_fun (hz g₁ g₂ hf₁ hf₂ h) x
     · intro Z f hf
@@ -550,7 +554,7 @@ def isLimitOfIsSheaf {X : C} (S : J.Cover X) (hP : IsSheaf J P) : IsLimit (S.mul
 
 theorem isSheaf_iff_multifork :
     IsSheaf J P ↔ ∀ (X : C) (S : J.Cover X), Nonempty (IsLimit (S.multifork P)) := by
-  refine' ⟨fun hP X S => ⟨isLimitOfIsSheaf _ _ _ hP⟩, _⟩
+  refine ⟨fun hP X S => ⟨isLimitOfIsSheaf _ _ _ hP⟩, ?_⟩
   intro h E X S hS x hx
   let T : J.Cover X := ⟨S, hS⟩
   obtain ⟨hh⟩ := h _ T
@@ -572,13 +576,13 @@ theorem isSheaf_iff_multifork :
 theorem isSheaf_iff_multiequalizer [∀ (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)] :
     IsSheaf J P ↔ ∀ (X : C) (S : J.Cover X), IsIso (S.toMultiequalizer P) := by
   rw [isSheaf_iff_multifork]
-  refine' forall₂_congr fun X S => ⟨_, _⟩
+  refine forall₂_congr fun X S => ⟨?_, ?_⟩
   · rintro ⟨h⟩
     let e : P.obj (op X) ≅ multiequalizer (S.index P) :=
       h.conePointUniqueUpToIso (limit.isLimit _)
     exact (inferInstance : IsIso e.hom)
   · intro h
-    refine' ⟨IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext _ _)⟩
+    refine ⟨IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext ?_ ?_)⟩
     · apply (@asIso _ _ _ _ _ h).symm
     · intro a
       symm
@@ -599,7 +603,7 @@ The middle object of the fork diagram given in Equation (3) of [MM92], as well a
 of <https://stacks.math.columbia.edu/tag/00VM>.
 -/
 def firstObj : A :=
-  ∏ fun f : ΣV, { f : V ⟶ U // R f } => P.obj (op f.1)
+  ∏ᶜ fun f : ΣV, { f : V ⟶ U // R f } => P.obj (op f.1)
 #align category_theory.presheaf.first_obj CategoryTheory.Presheaf.firstObj
 
 /--
@@ -616,7 +620,7 @@ variable [HasPullbacks C]
 contains the data used to check a family of elements for a presieve is compatible.
 -/
 def secondObj : A :=
-  ∏ fun fg : (ΣV, { f : V ⟶ U // R f }) × ΣW, { g : W ⟶ U // R g } =>
+  ∏ᶜ fun fg : (ΣV, { f : V ⟶ U // R f }) × ΣW, { g : W ⟶ U // R g } =>
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 #align category_theory.presheaf.second_obj CategoryTheory.Presheaf.secondObj
 
@@ -660,17 +664,17 @@ def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type max v₁ u₁)
       · apply PreservesProduct.iso s
       · apply PreservesProduct.iso s
     · rintro _ _ (_ | _)
-      · refine' limit.hom_ext (fun j => _)
+      · refine limit.hom_ext (fun j => ?_)
         dsimp [Equalizer.Presieve.firstMap, firstMap]
         simp only [limit.lift_π, map_lift_piComparison, assoc, Fan.mk_π_app, Functor.map_comp]
         rw [piComparison_comp_π_assoc]
-      · refine' limit.hom_ext (fun j => _)
+      · refine limit.hom_ext (fun j => ?_)
         dsimp [Equalizer.Presieve.secondMap, secondMap]
         simp only [limit.lift_π, map_lift_piComparison, assoc, Fan.mk_π_app, Functor.map_comp]
         rw [piComparison_comp_π_assoc]
       · dsimp
         simp
-  · refine' Fork.ext (Iso.refl _) _
+  · refine Fork.ext (Iso.refl _) ?_
     dsimp [Equalizer.forkMap, forkMap]
     simp [Fork.ι]
 #align category_theory.presheaf.is_sheaf_for_is_sheaf_for' CategoryTheory.Presheaf.isSheafForIsSheafFor'
@@ -681,7 +685,7 @@ def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type max v₁ u₁)
 theorem isSheaf_iff_isSheaf' : IsSheaf J P' ↔ IsSheaf' J P' := by
   constructor
   · intro h U R hR
-    refine' ⟨_⟩
+    refine ⟨?_⟩
     apply coyonedaJointlyReflectsLimits
     intro X
     have q : Presieve.IsSheafFor (P' ⋙ coyoneda.obj X) _ := h X.unop _ hR
@@ -691,8 +695,8 @@ theorem isSheaf_iff_isSheaf' : IsSheaf J P' ↔ IsSheaf' J P' := by
     apply (isSheafForIsSheafFor' _ _ _ _).symm q
   · intro h U X S hS
     rw [Equalizer.Presieve.sheaf_condition]
-    refine' ⟨_⟩
-    refine' isSheafForIsSheafFor' _ _ _ _ _
+    refine ⟨?_⟩
+    refine isSheafForIsSheafFor' _ _ _ _ ?_
     letI := preservesSmallestLimitsOfPreservesLimits (coyoneda.obj (op U))
     apply isLimitOfPreserves
     apply Classical.choice (h _ S.arrows _)
