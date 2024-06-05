@@ -688,30 +688,30 @@ theorem id_comp (f : α →+* β) : (id β).comp f = f :=
   ext fun _ => rfl
 #align ring_hom.id_comp RingHom.id_comp
 
-instance : Monoid (α →+* α) where
-  one := id α
-  mul := comp
+instance instOne : One (α →+* α) where one := id _
+instance instMul : Mul (α →+* α) where mul := comp
+
+lemma one_def : (1 : α →+* α) = id α := rfl
+#align ring_hom.one_def RingHom.one_def
+
+lemma mul_def (f g : α →+* α) : f * g = f.comp g := rfl
+#align ring_hom.mul_def RingHom.mul_def
+
+@[simp, norm_cast] lemma coe_one : ⇑(1 : α →+* α) = _root_.id := rfl
+#align ring_hom.coe_one RingHom.coe_one
+
+@[simp, norm_cast] lemma coe_mul (f g : α →+* α) : ⇑(f * g) = f ∘ g := rfl
+#align ring_hom.coe_mul RingHom.coe_mul
+
+instance instMonoid : Monoid (α →+* α) where
   mul_one := comp_id
   one_mul := id_comp
   mul_assoc f g h := comp_assoc _ _ _
+  npow n f := (npowRec n f).copy f^[n] $ by induction' n <;> simp [npowRec, *]
+  npow_succ n f := DFunLike.coe_injective $ Function.iterate_succ _ _
 
-theorem one_def : (1 : α →+* α) = id α :=
-  rfl
-#align ring_hom.one_def RingHom.one_def
-
-theorem mul_def (f g : α →+* α) : f * g = f.comp g :=
-  rfl
-#align ring_hom.mul_def RingHom.mul_def
-
-@[simp]
-theorem coe_one : ⇑(1 : α →+* α) = _root_.id :=
-  rfl
-#align ring_hom.coe_one RingHom.coe_one
-
-@[simp]
-theorem coe_mul (f g : α →+* α) : ⇑(f * g) = f ∘ g :=
-  rfl
-#align ring_hom.coe_mul RingHom.coe_mul
+@[simp, norm_cast] lemma coe_pow (f : α →+* α) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
+#align ring_hom.coe_pow RingHom.coe_pow
 
 @[simp]
 theorem cancel_right {g₁ g₂ : β →+* γ} {f : α →+* β} (hf : Surjective f) :
