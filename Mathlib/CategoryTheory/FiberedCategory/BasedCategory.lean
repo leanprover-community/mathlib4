@@ -30,13 +30,13 @@ open CategoryTheory Functor Category NatTrans IsHomLift
 
 variable {𝒮 : Type u₁} [Category.{v₁} 𝒮]
 
-/-- A based category over `𝒮` is a category `𝒳` together with a functor `p : 𝒳 ⥤ 𝒮` -/
+/-- A based category over `𝒮` is a category `𝒳` together with a functor `p : 𝒳 ⥤ 𝒮`. -/
 structure BasedCategory (𝒮 : Type u₁) [Category.{v₁} 𝒮] where
   /-- The type of objects in a `BasedCategory`-/
   obj : Type u₂
-  /-- The underlying category of a `BasedCategory` -/
+  /-- The underlying category of a `BasedCategory`. -/
   category : Category.{v₂} obj := by infer_instance
-  /-- The functor to the base -/
+  /-- The functor to the base. -/
   p : obj ⥤ 𝒮
 
 instance (𝒳 : BasedCategory.{v₂, u₂} 𝒮) : Category 𝒳.obj := 𝒳.category
@@ -113,7 +113,7 @@ open BasedFunctor
 
 variable {𝒳 𝒴 : BasedCategory.{v₂, u₂} 𝒮} (F : 𝒳 ⟶ 𝒴)
 
-/-- The identity natural transformation is a `BasedNatTrans` -/
+/-- The identity natural transformation is a `BasedNatTrans`. -/
 @[simps!]
 def id : BasedNatTrans F F where
   toNatTrans := CategoryTheory.NatTrans.id F.toFunctor
@@ -144,7 +144,7 @@ lemma ext (β : BasedNatTrans F G) (h : α.toNatTrans = β.toNatTrans) : α = β
 end
 
 /-- Composition of `BasedNatTrans`, given by composition of the underlying natural
-transformations -/
+transformations. -/
 @[simps!]
 def comp {F G H :  𝒳 ⟶ 𝒴} (α : BasedNatTrans F G) (β : BasedNatTrans G H) :
     BasedNatTrans F H where
@@ -180,7 +180,7 @@ lemma homCategory.ext {F G :  𝒳 ⟶ 𝒴} (α β : F ⟶ G) (h : α.toNatTran
   BasedNatTrans.ext α β h
 
 /-- The inverse of a based natural transformation whose underlying natural tranformation is an
-isomorphism -/
+isomorphism. -/
 def BasedNatIso {F G : 𝒳 ⟶ 𝒴} (α : F.toFunctor ≅ G.toFunctor)
     (aboveId' : ∀ a : 𝒳.obj, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.hom.app a)) : F ≅ G where
   hom := { toNatTrans := α.hom }
@@ -200,14 +200,14 @@ noncomputable def BasedNatIso_of_isIso {F G : 𝒳 ⟶ 𝒴} (α : F.toFunctor �
   hom := { toNatTrans := α }
   inv := { toNatTrans := inv α, aboveId' := fun a => by simp [lift_id_inv_isIso] }
 
-/-- The identity natural transformation is a based natural isomorphism -/
+/-- The identity natural transformation is a based natural isomorphism. -/
 @[simps]
 def BasedNatIso.id (F :  𝒳 ⟶ 𝒴) : F ≅ F where
   hom := 𝟙 F
   inv := 𝟙 F
 
 /-- Left-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying functors
-and natural transformations -/
+and natural transformations. -/
 @[simps!]
 def whiskerLeft {𝒵 : BasedCategory.{v₂, u₂} 𝒮} (F :  𝒳 ⟶ 𝒴) {G H : 𝒴 ⟶ 𝒵} (α : G ⟶ H) :
     (F ≫ G) ⟶ F ≫ H where
@@ -215,7 +215,7 @@ def whiskerLeft {𝒵 : BasedCategory.{v₂, u₂} 𝒮} (F :  𝒳 ⟶ 𝒴) {G
   aboveId' := fun a => α.aboveId (F.w_obj a)
 
 /-- Right-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying
-functors and natural transformations -/
+functors and natural transformations. -/
 @[simps!]
 def whiskerRight {𝒵 : BasedCategory.{v₂, u₂} 𝒮} {F G :  𝒳 ⟶ 𝒴} (α : F ⟶ G) (H : 𝒴 ⟶ 𝒵) :
     F ≫ H ⟶ G ≫ H where
@@ -224,7 +224,7 @@ def whiskerRight {𝒵 : BasedCategory.{v₂, u₂} 𝒮} {F G :  𝒳 ⟶ 𝒴}
 
 end
 
-/-- `BasedCategory.{v₂, u₂} 𝒮` forms a bicategory -/
+/-- `BasedCategory.{v₂, u₂} 𝒮` forms a bicategory. -/
 instance bicategory : Bicategory (BasedCategory.{v₂, u₂} 𝒮) where
   Hom 𝒳 𝒴 :=  𝒳 ⟶ 𝒴
   id 𝒳 := 𝟙 𝒳
@@ -236,7 +236,7 @@ instance bicategory : Bicategory (BasedCategory.{v₂, u₂} 𝒮) where
   leftUnitor {𝒳 𝒴} F := BasedNatIso.id F
   rightUnitor {𝒳 𝒴} F := BasedNatIso.id F
 
-/-- The bicategory structure on `BasedCategory.{v₂, u₂} 𝒮` is strict -/
+/-- The bicategory structure on `BasedCategory.{v₂, u₂} 𝒮` is strict. -/
 instance : Bicategory.Strict (BasedCategory.{v₂, u₂} 𝒮) where
 
 end BasedCategory
