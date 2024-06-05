@@ -62,10 +62,8 @@ def DinatTrans.compNatTrans (δ : F ⤞ G) (α : G ⟶ H) : F ⤞ H
     where
   app X := δ.app X ≫ α.app₂ (op X) X
   dinaturality f := by
-    rw [Category.assoc, Category.assoc]
-    rw [←NatTrans.naturality₂]
-    rw [δ.dinaturality_assoc]
-    rw [α.naturality₂]
+    rw [Category.assoc, Category.assoc, ← α.naturality₂,
+      δ.dinaturality_assoc, α.naturality₂]
 
 /-- Pre-composition with a natural transformation.
 -/
@@ -74,10 +72,8 @@ def DinatTrans.precompNatTrans (δ : G ⤞ H) (α : F ⟶ G) : F ⤞ H
     where
   app X := α.app₂ (op X) X ≫ δ.app X
   dinaturality f := by
-    rw [Category.assoc, Category.assoc]
-    rw [α.naturality₂_assoc]
-    rw [δ.dinaturality]
-    rw [←NatTrans.naturality₂_assoc]
+    rw [Category.assoc, Category.assoc, α.naturality₂_assoc,
+      δ.dinaturality, ← α.naturality₂_assoc]
 
 /-- Opposite of a dinatural transformation.
 -/
@@ -85,4 +81,5 @@ def DinatTrans.precompNatTrans (δ : G ⤞ H) (α : F ⟶ G) : F ⤞ H
 def DinatTrans.op (α : F ⤞ G) : G.diop ⤞ F.diop
     where
   app X := (α.app X).op
-  dinaturality f := Quiver.Hom.unop_inj (by simp; exact α.dinaturality f)
+  dinaturality f := Quiver.Hom.unop_inj <| by
+    convert α.dinaturality f using 1 <;> exact Category.assoc _ _ _

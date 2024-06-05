@@ -68,60 +68,90 @@ def biop (F : Cᵒᵖ ⥤ D ⥤ E) : C ⥤ Dᵒᵖ ⥤ Eᵒᵖ := F.rightOp ⋙ 
 
 end CategoryTheory.Functor
 
-/- Utilities to apply functors into functor categories. -/
-namespace CategoryTheory.Functor
+namespace CategoryTheory
 
--- We would like to keep these opaque in order to avoid leaking implementation details.
+variable {C₁ C₂ : C} {D₁ D₂ : D} {E₁ E₂ : E}
 
 /- Action of two-variable functors on objects. -/
-abbrev obj₂ (H : C ⥤ D ⥤ E) (A : C) (B : D) : E := (H.obj A).obj B
+abbrev Functor.obj₂ (H : C ⥤ D ⥤ E) (A : C) (B : D) : E := (H.obj A).obj B
 
 /- Action of three-variable functors on objects. -/
-abbrev obj₃ (H : C ⥤ D ⥤ E ⥤ F) (A : C) (B : D) (C : E) : F := ((H.obj A).obj B).obj C
-
-variable {D₁ D₂ C₁ C₂ E₁ E₂}
+abbrev Functor.obj₃ (H : C ⥤ D ⥤ E ⥤ F) (A : C) (B : D) (C : E) : F :=
+  ((H.obj A).obj B).obj C
 
 /- Action of two-variable functors on morphisms. -/
-abbrev map₂ (H : C ⥤ D ⥤ E) (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) :
+def Functor.map₂ (H : C ⥤ D ⥤ E) (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) :
     (H.obj₂ C₁ D₁ ⟶ H.obj₂ C₂ D₂) :=
-  (H.map f).app _ ≫ (H.obj C₂).map g
+  (H.map f).app D₁ ≫ (H.obj C₂).map g
 
 /- Action of three-variable functors on morphisms. -/
-abbrev map₃ (H : C ⥤ D ⥤ E ⥤ F) (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) (h : E₁ ⟶ E₂) :
+def Functor.map₃ (H : C ⥤ D ⥤ E ⥤ F) (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) (h : E₁ ⟶ E₂) :
     (H.obj₃ C₁ D₁ E₁ ⟶ H.obj₃ C₂ D₂ E₂) :=
-  (H.map₂ f g).app _ ≫ (H.obj₂ C₂ D₂).map h
-
-end CategoryTheory.Functor
-
-/- Natural transformations between functors with many variables. -/
-namespace CategoryTheory.NatTrans
+  (H.map₂ f g).app E₁ ≫ (H.obj₂ C₂ D₂).map h
 
 /- Apply a natural transformation between bifunctors to two objects. -/
-abbrev app₂ {F G : C ⥤ D ⥤ E} (α : NatTrans F G) (X : C) (Y : D) :
+abbrev NatTrans.app₂ {F G : C ⥤ D ⥤ E} (α : NatTrans F G) (X : C) (Y : D) :
     F.obj₂ X Y ⟶ G.obj₂ X Y :=
   (α.app X).app Y
 
 /- Apply a natural transformation between bifunctors in three variables to three objects. -/
-abbrev app₃ {H G : C ⥤ D ⥤ E ⥤ F} (α : NatTrans H G) (X : C) (Y : D) (Z : E) :
+abbrev NatTrans.app₃ {H G : C ⥤ D ⥤ E ⥤ F} (α : NatTrans H G) (X : C) (Y : D) (Z : E) :
     H.obj₃ X Y Z ⟶ G.obj₃ X Y Z :=
   ((α.app X).app Y).app Z
+
+/- Utilities to apply functors into functor categories. -/
+namespace Functor
+
+@[reassoc]
+lemma map₂_eq_app_map_comp_map (H : C ⥤ D ⥤ E) (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) :
+    H.map₂ f g = (H.map f).app D₁ ≫ (H.obj C₂).map g := rfl
+
+@[reassoc]
+lemma map₃_eq_app_map₂_comp_map (H : C ⥤ D ⥤ E ⥤ F)
+    (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) (h : E₁ ⟶ E₂) :
+    H.map₃ f g h = (H.map₂ f g).app E₁ ≫ (H.obj₂ C₂ D₂).map h := rfl
+
+@[reassoc]
+lemma map₃_eq_app₂_map_comp_map₂ (H : C ⥤ D ⥤ E ⥤ F)
+    (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) (h : E₁ ⟶ E₂) :
+    H.map₃ f g h = (H.map f).app₂ D₁ E₁ ≫ (H.obj C₂).map₂ g h :=
+  Category.assoc _ _ _
+
+end Functor
+
+/- Natural transformations between functors with many variables. -/
+namespace NatTrans
+
+lemma app₃_eq_app_app₂ {H G : C ⥤ D ⥤ E ⥤ F} (α : NatTrans H G)
+    (X : C) (Y : D) (Z : E) : α.app₃ X Y Z = (α.app₂ X Y).app Z := rfl
+
+lemma app₃_eq_app₂_app {H G : C ⥤ D ⥤ E ⥤ F} (α : NatTrans H G)
+    (X : C) (Y : D) (Z : E) : α.app₃ X Y Z = (α.app X).app₂ Y Z := rfl
+
+@[reassoc]
+lemma comp_app₂ {H G K : C ⥤ D ⥤ E} (α : H ⟶ G) (β : G ⟶ K) (X : C) (Y : D) :
+    (α ≫ β).app₂ X Y = α.app₂ X Y ≫ β.app₂ X Y := rfl
+
+@[reassoc]
+lemma comp_app₃ {H G K : C ⥤ D ⥤ E ⥤ F} (α : H ⟶ G) (β : G ⟶ K) (X : C) (Y : D)
+    (Z : E) : (α ≫ β).app₃ X Y Z = α.app₃ X Y Z ≫ β.app₃ X Y Z := rfl
 
 /- Naturality for natural transformations in two variables. -/
 @[reassoc (attr := simp)]
 lemma naturality₂ {H G : C ⥤ D ⥤ E} (α : NatTrans H G) {X Y X' Y'} (f : X ⟶ X')
     (g : Y ⟶ Y') : H.map₂ f g ≫ α.app₂ X' Y' = α.app₂ X Y ≫ G.map₂ f g := by
-  rw [Category.assoc, naturality, reassoc_of% naturality_app α]
+  rw [H.map₂_eq_app_map_comp_map, G.map₂_eq_app_map_comp_map,
+    Category.assoc, naturality, naturality_app_assoc]
 
 /- Naturality for natural transformations in three variables. -/
 @[reassoc (attr := simp)]
 lemma naturality₃ {H G : C ⥤ D ⥤ E ⥤ F} (α : H ⟶ G) {X Y Z X' Y' Z'}
     (f : X ⟶ X') (g : Y ⟶ Y') (h : Z ⟶ Z') :
     H.map₃ f g h ≫ α.app₃ X' Y' Z' = α.app₃ X Y Z ≫ G.map₃ f g h := by
-  slice_lhs 1 2 => exact Category.assoc _ _ _
-  slice_rhs 2 3 => exact Category.assoc _ _ _
-  rw [Category.assoc, naturality₂]
-  slice_lhs 1 2 => exact congrArg (app₂ · Y Z) (α.naturality f)
-  rw [← Category.assoc, ← Category.assoc]
-  rfl
+  rw [H.map₃_eq_app₂_map_comp_map₂, G.map₃_eq_app₂_map_comp_map₂,
+    Category.assoc, naturality₂, ← Category.assoc, ← comp_app₂, naturality,
+    comp_app₂, Category.assoc]
 
 end NatTrans
+
+end CategoryTheory
