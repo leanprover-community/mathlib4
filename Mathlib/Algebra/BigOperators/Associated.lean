@@ -87,15 +87,18 @@ written as a product of units and prime elements. -/
 theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α]
     (x y : α) (hxy : x * y ∈ closure { r : α | IsUnit r ∨ Prime r}) :
     x ∈ closure { r : α | IsUnit r ∨ Prime r} := by
-  obtain ⟨m, hm⟩ := exists_multiset_of_mem_closure hab
-  revert a b hm
-  refine m.induction (p := fun m ↦ ∀ a b, a * b ∈ closure {r | IsUnit r ∨ Prime r} →
-    (∃ (_ : ∀ y ∈ m, y ∈ {r | IsUnit r ∨ Prime r}), m.prod = a * b) →
-    a ∈ closure {r | IsUnit r ∨ Prime r}) (fun _ _ _ hprod => subset_closure (Set.mem_def.2 ?_)) ?_
-  · left; exact isUnit_of_mul_eq_one _ _ hprod.2.symm
-  · simp only [exists_prop, and_imp, Multiset.prod_cons, Multiset.mem_cons, forall_eq_or_imp]
-    intros _ s hind x y _ ha hs hprod
-    rcases ha with ha₁ | ha₂
+  obtain ⟨m, hm, hprod⟩ := exists_multiset_of_mem_closure hxy
+  induction m using Multiset.induction generalizing x y with
+  | empty =>
+    apply subset_closure
+    simp only [Set.mem_setOf]
+    simp only [Multiset.prod_zero] at hprod
+    left; exact isUnit_of_mul_eq_one _ _ hprod.symm
+  | @cons c s hind =>
+    simp only [Multiset.mem_cons, forall_eq_or_imp, Set.mem_setOf] at hm
+    simp only [Multiset.prod_cons] at hprod
+    simp only [Set.mem_setOf_eq] at hind
+    obtain ⟨ha₁ | ha₂, hs⟩ := hm
     · rcases ha₁.exists_right_inv with ⟨k, hk⟩
       refine hind x (y*k) ?_ hs ?_
       simp only [← mul_assoc, ← hprod, ← Multiset.prod_cons, mul_comm]
