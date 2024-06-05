@@ -70,8 +70,6 @@ class CompactlySupportedContinuousMapClass (F : Type*) (α β : outParam <| Type
 
 end
 
-export CompactlySupportedContinuousMapClass (hasCompactSupport)
-
 namespace CompactlySupportedContinuousMap
 
 section Basics
