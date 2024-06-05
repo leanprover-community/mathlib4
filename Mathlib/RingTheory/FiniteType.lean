@@ -799,7 +799,7 @@ section Vasconcelos
 
 /-- A theorem by Vasconcelos, given a finite module `M` over a commutative ring, any
 surjective endomorphism of `M` is also injective.
-It is a consequence of the fact `commRing_orzechProperty`
+It is a consequence of the fact `CommRing.orzechProperty`
 that any commutative ring `R` satisfies the `OrzechProperty`;
 please use `OrzechProperty.injective_of_surjective_endomorphism` instead.
 This is similar to `IsNoetherian.injective_of_surjective_endomorphism` but only applies in the

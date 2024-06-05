@@ -21,7 +21,7 @@ module is well defined.
 
 * `commRing_strongRankCondition R` : `R` has the `StrongRankCondition`.
 
-The `commRing_strongRankCondition` comes from `commRing_orzechProperty`, proved in
+The `commRing_strongRankCondition` comes from `CommRing.orzechProperty`, proved in
 `Mathlib/RingTheory/FiniteType.lean`, which states that any commutative ring satisfies
 the `OrzechProperty`, that is, for any finitely generated
 `R`-module `M`, any surjective homomorphism `f : N → M` from a submodule `N` of `M` to `M`
