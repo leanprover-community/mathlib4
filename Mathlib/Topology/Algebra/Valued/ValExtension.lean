@@ -120,9 +120,13 @@ end CoeLemma
 
 section mk'
 
-def ofIntegerComap {R A : Type*} {ΓR ΓA : outParam Type*} [Field R] [Ring A]
+/--
+If the preimage of the valuation integers of `A` equals to the valuation integers of `R`, then
+the valuation on `A` is an extension of valuation on `R`
+-/
+theorem ofIntegerComap {R A : Type*} {ΓR ΓA : outParam Type*} [Field R] [Ring A]
     [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
-    [Algebra R A] [vR : Valued R ΓR] [vA : Valued A ΓA] [IsValExtension R A]
+    [Algebra R A] [vR : Valued R ΓR] [vA : Valued A ΓA]
     (h : vA.v.integer.comap (algebraMap R A) = vR.v.integer) : IsValExtension R A where
   val_isEquiv_comap := by
     rw [Valuation.isEquiv_iff_val_le_one]
@@ -131,7 +135,10 @@ def ofIntegerComap {R A : Type*} {ΓR ΓA : outParam Type*} [Field R] [Ring A]
     rw [← h]
     rfl
 
-def ofValuationSubringComap {R A : Type*} {ΓR ΓA : outParam Type*} [Field R] [Field A]
+/--
+Alias of `IsValExtension.ofIntegerComap` when `R` and `A` are further fields.
+-/
+theorem ofValuationSubringComap {R A : Type*} {ΓR ΓA : outParam Type*} [Field R] [Field A]
     [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
     [Algebra R A] [vR : Valued R ΓR] [vA : Valued A ΓA] [IsValExtension R A]
     (h : 𝒪[A].comap (algebraMap R A) = 𝒪[R]) : IsValExtension R A := by
