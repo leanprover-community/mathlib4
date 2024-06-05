@@ -65,6 +65,7 @@ lemma symm_add : φ.symm.add = φ.add := by
   congr 1
   apply add_comm
 
+@[simp]
 lemma map_add (F : C ⥤ D) (hF : W.IsInvertedBy F) [Preadditive D] [F.Additive] :
     φ.add.map F hF = φ.fst.map F hF + φ.snd.map F hF := by
   have := hF φ.s φ.hs
