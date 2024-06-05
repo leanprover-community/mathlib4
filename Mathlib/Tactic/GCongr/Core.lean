@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
 import Mathlib.Init.Order.Defs
-import Std.Tactic.SolveByElim.Backtrack
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.GCongr.ForwardAttr
+import Batteries.Lean.Except
+import Batteries.Tactic.Exact
 
 /-!
 # The `gcongr` ("generalized congruence") tactic

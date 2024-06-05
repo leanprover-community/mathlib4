@@ -45,8 +45,7 @@ theorem right_adjoint : CommSq (adj.homEquiv _ _ u) i (F.map p) (adj.homEquiv _ 
 
 /-- The liftings of a commutative are in bijection with the liftings of its (right)
 adjoint square. -/
-def rightAdjointLiftStructEquiv : sq.LiftStruct ≃ (sq.right_adjoint adj).LiftStruct
-    where
+def rightAdjointLiftStructEquiv : sq.LiftStruct ≃ (sq.right_adjoint adj).LiftStruct where
   toFun l :=
     { l := adj.homEquiv _ _ l.l
       fac_left := by rw [← adj.homEquiv_naturality_left, l.fac_left]
@@ -91,8 +90,7 @@ theorem left_adjoint : CommSq ((adj.homEquiv _ _).symm u) (G.map i) p ((adj.homE
 
 /-- The liftings of a commutative are in bijection with the liftings of its (left)
 adjoint square. -/
-def leftAdjointLiftStructEquiv : sq.LiftStruct ≃ (sq.left_adjoint adj).LiftStruct
-    where
+def leftAdjointLiftStructEquiv : sq.LiftStruct ≃ (sq.left_adjoint adj).LiftStruct where
   toFun l :=
     { l := (adj.homEquiv _ _).symm l.l
       fac_left := by rw [← adj.homEquiv_naturality_left_symm, l.fac_left]
@@ -137,4 +135,3 @@ theorem hasLiftingProperty_iff (adj : G ⊣ F) {A B : C} {X Y : D} (i : A ⟶ B)
 end Adjunction
 
 end CategoryTheory
-

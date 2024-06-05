@@ -120,9 +120,9 @@ instance : Epi (Abelian.factorThruImage f) :=
   have fh : f ≫ h = 0 :=
     calc
       f ≫ h = (p ≫ i) ≫ h := (Abelian.image.fac f).symm ▸ rfl
-      _ = ((t ≫ kernel.ι g) ≫ i) ≫ h := (ht ▸ rfl)
-      _ = t ≫ u ≫ h := by simp only [Category.assoc]
-      _ = t ≫ 0 := (hu.w ▸ rfl)
+      _ = ((t ≫ kernel.ι g) ≫ i) ≫ h := ht ▸ rfl
+      _ = t ≫ u ≫ h := by simp only [u, Category.assoc]
+      _ = t ≫ 0 := hu.w ▸ rfl
       _ = 0 := HasZeroMorphisms.comp_zero _ _
   -- h factors through the cokernel of f via some l.
   obtain ⟨l, hl⟩ := cokernel.desc' f h fh
@@ -158,8 +158,8 @@ instance : Mono (Abelian.factorThruCoimage f) :=
     have hf : h ≫ f = 0 :=
       calc
         h ≫ f = h ≫ p ≫ i := (Abelian.coimage.fac f).symm ▸ rfl
-        _ = h ≫ p ≫ cokernel.π g ≫ t := (ht ▸ rfl)
-        _ = h ≫ u ≫ t := by simp only [Category.assoc]
+        _ = h ≫ p ≫ cokernel.π g ≫ t := ht ▸ rfl
+        _ = h ≫ u ≫ t := by simp only [u, Category.assoc]
         _ = 0 ≫ t := by rw [← Category.assoc, hu.w]
         _ = 0 := zero_comp
     -- h factors through the kernel of f via some l.
@@ -242,7 +242,7 @@ instance mono_r {A : C} : Mono (r A) := by
 instance epi_r {A : C} : Epi (r A) := by
   have hlp : prod.lift (𝟙 A) (0 : A ⟶ A) ≫ Limits.prod.snd = 0 := prod.lift_snd _ _
   let hp1 : IsLimit (KernelFork.ofι (prod.lift (𝟙 A) (0 : A ⟶ A)) hlp) := by
-    refine' Fork.IsLimit.mk _ (fun s => Fork.ι s ≫ Limits.prod.fst) _ _
+    refine Fork.IsLimit.mk _ (fun s => Fork.ι s ≫ Limits.prod.fst) ?_ ?_
     · intro s
       apply prod.hom_ext <;> simp
     · intro s m h
@@ -280,7 +280,7 @@ abbrev σ {A : C} : A ⨯ A ⟶ A :=
 
 end
 
--- Porting note: simp can prove these
+-- Porting note (#10618): simp can prove these
 @[reassoc]
 theorem diag_σ {X : C} : diag X ≫ σ = 0 := by rw [cokernel.condition_assoc, zero_comp]
 #align category_theory.non_preadditive_abelian.diag_σ CategoryTheory.NonPreadditiveAbelian.diag_σ
@@ -451,7 +451,9 @@ def preadditive : Preadditive C where
       neg := fun f => -f
       add_left_neg := neg_add_self
       sub_eq_add_neg := fun f g => (add_neg f g).symm -- Porting note: autoParam failed
-      add_comm := add_comm }
+      add_comm := add_comm
+      nsmul := nsmulRec
+      zsmul := zsmulRec }
   add_comp := add_comp
   comp_add := comp_add
 #align category_theory.non_preadditive_abelian.preadditive CategoryTheory.NonPreadditiveAbelian.preadditive

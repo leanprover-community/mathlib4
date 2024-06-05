@@ -233,7 +233,6 @@ macro (name := witt_truncateFun_tac) "witt_truncateFun_tac" : tactic =>
 namespace WittVector
 
 variable (p n R)
-
 variable [CommRing R]
 
 theorem truncateFun_surjective : Surjective (@truncateFun p n R) :=
@@ -271,11 +270,11 @@ theorem truncateFun_sub (x y : 𝕎 R) :
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_sub WittVector.truncateFun_sub
 
-theorem truncateFun_nsmul (x : 𝕎 R) (m : ℕ) : truncateFun n (m • x) = m • truncateFun n x := by
+theorem truncateFun_nsmul (m : ℕ) (x : 𝕎 R) : truncateFun n (m • x) = m • truncateFun n x := by
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_nsmul WittVector.truncateFun_nsmul
 
-theorem truncateFun_zsmul (x : 𝕎 R) (m : ℤ) : truncateFun n (m • x) = m • truncateFun n x := by
+theorem truncateFun_zsmul (m : ℤ) (x : 𝕎 R) : truncateFun n (m • x) = m • truncateFun n x := by
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_zsmul WittVector.truncateFun_zsmul
 
@@ -283,11 +282,17 @@ theorem truncateFun_pow (x : 𝕎 R) (m : ℕ) : truncateFun n (x ^ m) = truncat
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_pow WittVector.truncateFun_pow
 
-theorem truncateFun_nat_cast (m : ℕ) : truncateFun n (m : 𝕎 R) = m := rfl
-#align witt_vector.truncate_fun_nat_cast WittVector.truncateFun_nat_cast
+theorem truncateFun_natCast (m : ℕ) : truncateFun n (m : 𝕎 R) = m := rfl
+#align witt_vector.truncate_fun_nat_cast WittVector.truncateFun_natCast
 
-theorem truncateFun_int_cast (m : ℤ) : truncateFun n (m : 𝕎 R) = m := rfl
-#align witt_vector.truncate_fun_int_cast WittVector.truncateFun_int_cast
+@[deprecated (since := "2024-04-17")]
+alias truncateFun_nat_cast := truncateFun_natCast
+
+theorem truncateFun_intCast (m : ℤ) : truncateFun n (m : 𝕎 R) = m := rfl
+#align witt_vector.truncate_fun_int_cast WittVector.truncateFun_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias truncateFun_int_cast := truncateFun_intCast
 
 end WittVector
 
@@ -296,14 +301,13 @@ namespace TruncatedWittVector
 open WittVector
 
 variable (p n R)
-
 variable [CommRing R]
 
 instance instCommRing : CommRing (TruncatedWittVector p n R) :=
   (truncateFun_surjective p n R).commRing _ (truncateFun_zero p n R) (truncateFun_one p n R)
     (truncateFun_add n) (truncateFun_mul n) (truncateFun_neg n) (truncateFun_sub n)
-    (truncateFun_nsmul n) (truncateFun_zsmul n) (truncateFun_pow n) (truncateFun_nat_cast n)
-    (truncateFun_int_cast n)
+    (truncateFun_nsmul n) (truncateFun_zsmul n) (truncateFun_pow n) (truncateFun_natCast n)
+    (truncateFun_intCast n)
 
 end TruncatedWittVector
 
@@ -312,7 +316,6 @@ namespace WittVector
 open TruncatedWittVector
 
 variable (n)
-
 variable [CommRing R]
 
 /-- `truncate n` is a ring homomorphism that truncates `x` to its first `n` entries
@@ -444,11 +447,8 @@ open TruncatedWittVector hiding truncate coeff
 section lift
 
 variable [CommRing R]
-
 variable {S : Type*} [Semiring S]
-
 variable (f : ∀ k : ℕ, S →+* TruncatedWittVector p k R)
-
 variable
   (f_compat : ∀ (k₁ k₂ : ℕ) (hk : k₁ ≤ k₂), (TruncatedWittVector.truncate hk).comp (f k₂) = f k₁)
 
@@ -480,11 +480,11 @@ to a ring hom `S → 𝕎 R`.
 `lift` defines the universal property of `𝕎 R` as the inverse limit of `TruncatedWittVector n`.
 -/
 def lift : S →+* 𝕎 R := by
-  refine' { toFun := liftFun f
-            map_zero' := _
-            map_one' := _
-            map_add' := _
-            map_mul' := _ } <;>
+  refine {  toFun := liftFun f
+            map_zero' := ?_
+            map_one' := ?_
+            map_add' := ?_
+            map_mul' := ?_ } <;>
   ( intros
     dsimp only
     rw [← sub_eq_zero, ← Ideal.mem_bot, ← iInf_ker_truncate, Ideal.mem_iInf]

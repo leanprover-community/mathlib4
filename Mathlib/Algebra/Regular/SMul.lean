@@ -3,8 +3,8 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.GroupTheory.GroupAction.Hom
 
 #align_import algebra.regular.smul from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
@@ -115,19 +115,23 @@ theorem mul_iff_right [Mul R] [IsScalarTower R R M] (ha : IsSMulRegular M a) :
 are `M`-regular. -/
 theorem mul_and_mul_iff [Mul R] [IsScalarTower R R M] :
     IsSMulRegular M (a * b) ∧ IsSMulRegular M (b * a) ↔ IsSMulRegular M a ∧ IsSMulRegular M b := by
-  refine' ⟨_, _⟩
+  refine ⟨?_, ?_⟩
   · rintro ⟨ab, ba⟩
     exact ⟨ba.of_mul, ab.of_mul⟩
   · rintro ⟨ha, hb⟩
     exact ⟨ha.mul hb, hb.mul ha⟩
 #align is_smul_regular.mul_and_mul_iff IsSMulRegular.mul_and_mul_iff
 
+lemma of_injective {N F} [SMul R N] [FunLike F M N] [MulActionHomClass F R M N]
+    (f : F) {r : R} (h1 : Function.Injective f) (h2 : IsSMulRegular N r) :
+    IsSMulRegular M r := fun x y h3 => h1 <| h2 <|
+  (map_smulₛₗ f r x).symm.trans ((congrArg f h3).trans (map_smulₛₗ f r y))
+
 end SMul
 
 section Monoid
 
 variable [Monoid R] [MulAction R M]
-
 variable (M)
 
 /-- One is always `M`-regular. -/
@@ -152,14 +156,14 @@ theorem of_mul_eq_one (h : a * b = 1) : IsSMulRegular M b :=
 theorem pow (n : ℕ) (ra : IsSMulRegular M a) : IsSMulRegular M (a ^ n) := by
   induction' n with n hn
   · rw [pow_zero]; simp only [one]
-  · rw [pow_succ]
+  · rw [pow_succ']
     exact (ra.smul_iff (a ^ n)).mpr hn
 #align is_smul_regular.pow IsSMulRegular.pow
 
 /-- An element `a` is `M`-regular if and only if a positive power of `a` is `M`-regular. -/
 theorem pow_iff {n : ℕ} (n0 : 0 < n) : IsSMulRegular M (a ^ n) ↔ IsSMulRegular M a := by
-  refine' ⟨_, pow n⟩
-  rw [← Nat.succ_pred_eq_of_pos n0, pow_succ', ← smul_eq_mul]
+  refine ⟨?_, pow n⟩
+  rw [← Nat.succ_pred_eq_of_pos n0, pow_succ, ← smul_eq_mul]
   exact of_smul _
 #align is_smul_regular.pow_iff IsSMulRegular.pow_iff
 
@@ -256,3 +260,20 @@ theorem IsUnit.isSMulRegular (ua : IsUnit a) : IsSMulRegular M a := by
 #align is_unit.is_smul_regular IsUnit.isSMulRegular
 
 end Units
+
+section SMulZeroClass
+
+variable {M}
+
+protected
+lemma IsSMulRegular.eq_zero_of_smul_eq_zero [Zero M] [SMulZeroClass R M]
+    {r : R} {x : M} (h1 : IsSMulRegular M r) (h2 : r • x = 0) : x = 0 :=
+  h1 (h2.trans (smul_zero r).symm)
+
+end SMulZeroClass
+
+lemma Equiv.isSMulRegular_congr {R S M M'} [SMul R M] [SMul S M'] {e : M ≃ M'}
+    {r : R} {s : S} (h : ∀ x, e (r • x) = s • e x) :
+    IsSMulRegular M r ↔ IsSMulRegular M' s :=
+  (e.comp_injective _).symm.trans  <|
+    (iff_of_eq <| congrArg _ <| funext h).trans <| e.injective_comp _

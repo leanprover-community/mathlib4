@@ -31,7 +31,6 @@ variable {α β : Type*} {m n : Type*} {A : Matrix n n α}
 
 open scoped Matrix
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner α _ _ x y
 
 section Star
@@ -42,6 +41,9 @@ variable [Star α] [Star β]
 captures symmetric matrices. -/
 def IsHermitian (A : Matrix n n α) : Prop := Aᴴ = A
 #align matrix.is_hermitian Matrix.IsHermitian
+
+instance (A : Matrix n n α) [Decidable (Aᴴ = A)] : Decidable (IsHermitian A) :=
+  inferInstanceAs <| Decidable (_ = _)
 
 theorem IsHermitian.eq {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ = A := h
 #align matrix.is_hermitian.eq Matrix.IsHermitian.eq
@@ -200,8 +202,8 @@ section NonUnitalSemiring
 variable [NonUnitalSemiring α] [StarRing α] [NonUnitalSemiring β] [StarRing β]
 
 /-- Note this is more general than `IsSelfAdjoint.mul_star_self` as `B` can be rectangular. -/
-theorem isHermitian_mul_conjTranspose_self [Fintype n] (A : Matrix m n α) : (A * Aᴴ).IsHermitian :=
-  by rw [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose]
+theorem isHermitian_mul_conjTranspose_self [Fintype n] (A : Matrix m n α) :
+    (A * Aᴴ).IsHermitian := by rw [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose]
 #align matrix.is_hermitian_mul_conj_transpose_self Matrix.isHermitian_mul_conjTranspose_self
 
 /-- Note this is more general than `IsSelfAdjoint.star_mul_self` as `B` can be rectangular. -/
@@ -269,11 +271,11 @@ theorem IsHermitian.zpow [Fintype m] [DecidableEq m] {A : Matrix m m α} (h : A.
 
 end CommRing
 
-section IsROrC
+section RCLike
 
-open IsROrC
+open RCLike
 
-variable [IsROrC α] [IsROrC β]
+variable [RCLike α] [RCLike β]
 
 /-- The diagonal elements of a complex hermitian matrix are real. -/
 theorem IsHermitian.coe_re_apply_self {A : Matrix n n α} (h : A.IsHermitian) (i : n) :
@@ -301,6 +303,6 @@ theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n 
       single_vecMul, star_one, one_mul] using h (Pi.single i 1) (Pi.single j 1)
 #align matrix.is_hermitian_iff_is_symmetric Matrix.isHermitian_iff_isSymmetric
 
-end IsROrC
+end RCLike
 
 end Matrix

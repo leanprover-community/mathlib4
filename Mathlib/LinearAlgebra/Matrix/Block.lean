@@ -36,12 +36,11 @@ matrix, diagonal, det, block triangular
 
 open Finset Function OrderDual
 
-open BigOperators Matrix
+open Matrix
 
 universe v
 
 variable {α β m n o : Type*} {m' n' : α → Type*}
-
 variable {R : Type v} [CommRing R] {M N : Matrix m m R} {b : m → α}
 
 namespace Matrix
@@ -63,7 +62,7 @@ protected theorem BlockTriangular.submatrix {f : n → m} (h : M.BlockTriangular
 
 theorem blockTriangular_reindex_iff {b : n → α} {e : m ≃ n} :
     (reindex e e M).BlockTriangular b ↔ M.BlockTriangular (b ∘ e) := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · convert h.submatrix
     simp only [reindex_apply, submatrix_submatrix, submatrix_id_id, Equiv.symm_comp_self]
   · convert h.submatrix
@@ -212,13 +211,13 @@ theorem twoBlockTriangular_det' (M : Matrix m m R) (p : m → Prop) [DecidablePr
     (h : ∀ i, p i → ∀ j, ¬p j → M i j = 0) :
     M.det = (toSquareBlockProp M p).det * (toSquareBlockProp M fun i => ¬p i).det := by
   rw [M.twoBlockTriangular_det fun i => ¬p i, mul_comm]
-  congr 1
-  exact equiv_block_det _ fun _ => not_not.symm
-  simpa only [Classical.not_not] using h
+  · congr 1
+    exact equiv_block_det _ fun _ => not_not.symm
+  · simpa only [Classical.not_not] using h
 #align matrix.two_block_triangular_det' Matrix.twoBlockTriangular_det'
 
 protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : BlockTriangular M b) :
-    M.det = ∏ a in univ.image b, (M.toSquareBlock b a).det := by
+    M.det = ∏ a ∈ univ.image b, (M.toSquareBlock b a).det := by
   clear N
   induction' hs : univ.image b using Finset.strongInduction with s ih generalizing m
   subst hs
@@ -230,13 +229,13 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
       rw [insert_erase]
       apply max'_mem
     rw [this, prod_insert (not_mem_erase _ _)]
-    refine' congr_arg _ _
+    refine congr_arg _ ?_
     let b' := fun i : { a // b a ≠ k } => b ↑i
     have h' : BlockTriangular (M.toSquareBlockProp fun i => b i ≠ k) b' := hM.submatrix
     have hb' : image b' univ = (image b univ).erase k := by
       convert image_subtype_ne_univ_eq_image_erase k b
     rw [ih _ (erase_ssubset <| max'_mem _ _) h' hb']
-    refine' Finset.prod_congr rfl fun l hl => _
+    refine Finset.prod_congr rfl fun l hl => ?_
     let he : { a // b' a = l } ≃ { a // b a = l } :=
       haveI hc : ∀ i, b i = l → b i ≠ k := fun i hi => ne_of_eq_of_ne hi (ne_of_mem_erase hl)
       Equiv.subtypeSubtypeEquivSubtype @(hc)
@@ -252,7 +251,7 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
 
 theorem BlockTriangular.det_fintype [DecidableEq α] [Fintype α] [LinearOrder α]
     (h : BlockTriangular M b) : M.det = ∏ k : α, (M.toSquareBlock b k).det := by
-  refine' h.det.trans (prod_subset (subset_univ _) fun a _ ha => _)
+  refine h.det.trans (prod_subset (subset_univ _) fun a _ ha => ?_)
   have : IsEmpty { i // b i = a } := ⟨fun i => ha <| mem_image.2 ⟨i, mem_univ _, i.2⟩⟩
   exact det_isEmpty
 #align matrix.block_triangular.det_fintype Matrix.BlockTriangular.det_fintype
@@ -297,8 +296,8 @@ theorem BlockTriangular.toBlock_inverse_mul_toBlock_eq_one [LinearOrder α] [Inv
   have h_sum :
     M⁻¹.toBlock p p * M.toBlock p p +
         (M⁻¹.toBlock p fun i => ¬p i) * M.toBlock (fun i => ¬p i) p =
-      1 :=
-    by rw [← toBlock_mul_eq_add, inv_mul_of_invertible M, toBlock_one_self]
+      1 := by
+    rw [← toBlock_mul_eq_add, inv_mul_of_invertible M, toBlock_one_self]
   have h_zero : M.toBlock (fun i => ¬p i) p = 0 := by
     ext i j
     simpa using hM (lt_of_lt_of_le j.2 (le_of_not_lt i.2))
