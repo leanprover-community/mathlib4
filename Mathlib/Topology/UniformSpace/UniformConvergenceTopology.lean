@@ -964,6 +964,27 @@ protected theorem uniformContinuous_toFun (h : ⋃₀ 𝔖 = univ) :
   exact uniformContinuous_eval_of_mem β 𝔖 hxs hs
 #align uniform_on_fun.uniform_continuous_to_fun UniformOnFun.uniformContinuous_toFun
 
+/-- If `f : α →ᵤ[𝔖] β` is continuous at `x` and `x` admits a neighbourhood `V ∈ 𝔖`,
+then evaluation of `g : α →ᵤ[𝔖] β` at `y : α` is continuous in `(g, y)` at `(f, x)`. -/
+protected theorem continuousAt_eval₂ [TopologicalSpace α] {f : α →ᵤ[𝔖] β} {x : α}
+    (h𝔖 : ∃ V ∈ 𝔖, V ∈ 𝓝 x) (hc : ContinuousAt (toFun 𝔖 f) x) :
+    ContinuousAt (fun fx : (α →ᵤ[𝔖] β) × α ↦ toFun 𝔖 fx.1 fx.2) (f, x) := by
+  rw [ContinuousAt, nhds_eq_comap_uniformity, tendsto_comap_iff, ← lift'_comp_uniformity,
+    tendsto_lift']
+  intro U hU
+  rcases h𝔖 with ⟨V, hV, hVx⟩
+  filter_upwards [prod_mem_nhds (UniformOnFun.gen_mem_nhds _ _ _ hV hU)
+    (inter_mem hVx <| hc <| UniformSpace.ball_mem_nhds _ hU)]
+    with ⟨g, y⟩ ⟨hg, hyV, hy⟩ using ⟨toFun 𝔖 f y, hy, hg y hyV⟩
+
+/-- If each point of `α` admits a neighbourhood `V ∈ 𝔖`,
+then the evaluation of `f : α →ᵤ[𝔖] β` at `x : α` is continuous in `(f, x)`
+on the set of `(f, x)` such that `f` is continuous at `x`. -/
+protected theorem continuousOn_eval₂ [TopologicalSpace α] (h𝔖 : ∀ x, ∃ V ∈ 𝔖, V ∈ 𝓝 x) :
+    ContinuousOn (fun fx : (α →ᵤ[𝔖] β) × α ↦ toFun 𝔖 fx.1 fx.2)
+      {fx | ContinuousAt (toFun 𝔖 fx.1) fx.2} := fun (_f, x) hc ↦
+  (UniformOnFun.continuousAt_eval₂ (h𝔖 x) hc).continuousWithinAt
+
 /-- Convergence in the topology of `𝔖`-convergence means uniform convergence on `S` (in the sense
 of `TendstoUniformlyOn`) for all `S ∈ 𝔖`. -/
 protected theorem tendsto_iff_tendstoUniformlyOn {F : ι → α →ᵤ[𝔖] β} {f : α →ᵤ[𝔖] β} :
