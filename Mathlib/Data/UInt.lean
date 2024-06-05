@@ -19,7 +19,7 @@ tactic will not work on `UIntX` types without `open scoped UIntX.Ring`.
 This is because the presence of these casting operations contradicts assumptions made by the
 expression tree elaborator, namely that coercions do not form a cycle.
 
-This issue also arises for `CommRing (Fin n)`, but Mathlib has come to rely upon this. The UInt
+The UInt
 version also interferes more with software-verification use-cases, which is reason to be more
 cautious here.
 -/
