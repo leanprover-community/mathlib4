@@ -567,20 +567,19 @@ instance ContinuousFunctionalCalculus.toNonUnital : NonUnitalContinuousFunctiona
     case closedEmbedding =>
       refine (cfcHom_closedEmbedding ha).comp <|
         (UniformInducing.uniformEmbedding ⟨?_⟩).toClosedEmbedding
-      let i : C(({0} : Set R), σₙ R a) :=
-        ⟨_, continuous_inclusion <| singleton_subset_iff.mpr <| quasispectrum.zero_mem R a⟩
-      have := uniformSpace_eq_inf_precomp_of_cover (β := R) f i (map_continuous f).isProperMap
-        (map_continuous i).isProperMap <| by
-          simp only [← Subtype.val_injective.image_injective.eq_iff, image_union, image_singleton,
-            ← range_comp, image_univ, f, ContinuousMap.coe_mk, val_comp_inclusion,
-            Subtype.range_coe, quasispectrum.coe_zero, quasispectrum_eq_spectrum_union_zero, i]
+      have := uniformSpace_eq_inf_precomp_of_cover (β := R) f (0 : C(Unit, σₙ R a))
+        (map_continuous f).isProperMap (map_continuous 0).isProperMap <| by
+          simp only [← Subtype.val_injective.image_injective.eq_iff, f, ContinuousMap.coe_mk,
+            ContinuousMap.coe_zero, range_zero, image_union, image_singleton,
+            quasispectrum.coe_zero, ← range_comp, val_comp_inclusion, image_univ, Subtype.range_coe,
+            quasispectrum_eq_spectrum_union_zero]
       simp_rw [ContinuousMapZero.instUniformSpace, this, uniformity_comap,
         @inf_uniformity _ (.comap _ _) (.comap _ _), uniformity_comap, Filter.comap_inf,
         Filter.comap_comap]
       refine .symm <| inf_eq_left.mpr <| le_top.trans <| eq_top_iff.mp ?_
-      have : ∀ U ∈ 𝓤 (C(({0} : Set R), R)), (0, 0) ∈ U := fun U hU ↦ refl_mem_uniformity hU
-      convert Filter.comap_const_of_mem this with ⟨f, g⟩ <;>
-      ext ⟨x, rfl⟩ <;> [exact map_zero f; exact map_zero g]
+      have : ∀ U ∈ 𝓤 (C(Unit, R)), (0, 0) ∈ U := fun U hU ↦ refl_mem_uniformity hU
+      convert Filter.comap_const_of_mem this with ⟨u, v⟩ <;>
+      ext ⟨x, rfl⟩ <;> [exact map_zero u; exact map_zero v]
     case map_id => exact cfcHom_id ha
     case map_spectrum =>
       intro f
