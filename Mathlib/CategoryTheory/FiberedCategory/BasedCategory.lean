@@ -31,6 +31,7 @@ open CategoryTheory Functor Category NatTrans IsHomLift
 variable {𝒮 : Type u₁} [Category.{v₁} 𝒮]
 
 /-- A based category over `𝒮` is a category `𝒳` together with a functor `p : 𝒳 ⥤ 𝒮`. -/
+@[nolint checkUnivs]
 structure BasedCategory (𝒮 : Type u₁) [Category.{v₁} 𝒮] where
   /-- The type of objects in a `BasedCategory`-/
   obj : Type u₂
@@ -41,6 +42,7 @@ structure BasedCategory (𝒮 : Type u₁) [Category.{v₁} 𝒮] where
 
 instance (𝒳 : BasedCategory.{v₂, u₂} 𝒮) : Category 𝒳.obj := 𝒳.category
 
+/-- The based category associated to a functor `p : 𝒳 ⥤ 𝒮`. -/
 def BasedCategory.ofFunctor {𝒳 : Type u₂} [Category.{v₂} 𝒳] (p : 𝒳 ⥤ 𝒮) : BasedCategory 𝒮 where
   obj := 𝒳
   p := p
