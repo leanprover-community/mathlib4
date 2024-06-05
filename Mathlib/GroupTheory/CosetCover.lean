@@ -609,7 +609,9 @@ theorem Subgroup.LeftCosetCover.normalize_density
   simp only [Function.support_inv, Finset.coe_univ, Set.subset_univ]
 
 
-/- One needs to finish
+/- One needs to finish from there.
+  From the next function, one needs to do the disjointness part
+
 -/
 -- Auxiliary to `leftCoset_cover_filter_FiniteIndex` and `one_le_sum_inv_index_of_leftCoset_cover`.
 @[to_additive]
