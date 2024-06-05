@@ -42,7 +42,7 @@ noncomputable section
 
 /-- An auxiliary definition to be used in defining `CategoryTheory.Sheaf.adjunction` below. -/
 @[simps]
-def composeEquiv [HasSheafCompose J F](adj : G ⊣ F) (X : Sheaf J E) (Y : Sheaf J D) :
+def composeEquiv [HasSheafCompose J F] (adj : G ⊣ F) (X : Sheaf J E) (Y : Sheaf J D) :
     ((composeAndSheafify J G).obj X ⟶ Y) ≃ (X ⟶ (sheafCompose J F).obj Y) :=
   let A := adj.whiskerRight Cᵒᵖ
   { toFun := fun η => ⟨A.homEquiv _ _ (toSheafify J _ ≫ η.val)⟩
