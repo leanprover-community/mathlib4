@@ -2287,7 +2287,7 @@ instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] 
     NormalSpace X where
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
 
-/-- Lemma used to prove a regular topological space with Lindelöf topology is a normal space,
+/-- Lemma used to prove that a regular topological space with Lindelöf topology is a normal space,
 and (todo) a perfectly normal space is a completely normal space. -/
 lemma countable_covers_witnessing_separated_nhds {h k : Set X}
     (h_cov: ∃ u : ℕ → Set X, h ⊆ ⋃ n, u n ∧
