@@ -148,8 +148,7 @@ variable [Neg R]
 @[simp]
 lemma fromRows_neg (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
     -fromRows A₁ A₂ = fromRows (-A₁) (-A₂) := by
-  ext i j
-  cases i <;> simp [fromRows]
+  ext (i | i) j <;> simp
 
 /-- Negating a matrix partitioned by columns is equivalent to negating each of the columns. -/
 @[simp]
