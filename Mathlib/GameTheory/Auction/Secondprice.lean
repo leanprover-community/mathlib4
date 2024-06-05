@@ -92,6 +92,9 @@ variable {a : Auction} (b : a.I → ℝ)
 @[simp]
 def maxb : ℝ := Finset.sup' Finset.univ Finset.univ_nonempty b
 
+def Perturbed (i : a.I) (bi : ℝ) (b b' : a.I → ℝ) : Prop :=
+  (b i = bi) →  (∀ j : a.I, j ≠ i → b j = b' j)
+
 /-- There exists a participant `i` whose bid equals the highest bid. -/
 lemma exists_max : ∃ i : a.I, b i = a.maxb b := by
    obtain ⟨i, _, h2⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty b
@@ -103,17 +106,22 @@ noncomputable def winner : a.I := Classical.choose (exists_max b)
 /-- The bid of the winner equals the highest bid. -/
 lemma winner_take_max : b (winner b) = maxb b := Classical.choose_spec (exists_max b)
 
-/-- Removing a participant `i` from all participants still leaves a non-empty set. -/
-lemma delete_i_nonempty (i : a.I) : Finset.Nonempty (Finset.erase Finset.univ i) := by
-  obtain ⟨j, hj⟩ := exists_ne i
-  use j
-  simp only [Finset.mem_univ, not_true, Finset.mem_erase, and_true]
-  rw [ne_comm]
-  exact Ne.symm hj
+lemma Finset.univ_nontrivial_iff {α : Type*} [Fintype α] :
+    (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
+  rw [Finset.Nontrivial, Finset.coe_univ, Set.nontrivial_univ_iff]
+
+lemma Finset.univ_nontrivial {α : Type*} [Fintype α] [h : Nontrivial α] :
+    (Finset.univ : Finset α).Nontrivial :=
+  Finset.univ_nontrivial_iff.mpr h
+
+lemma Finset.Nontrivial.univ {α} [Fintype α] [Nontrivial α] :
+    Finset.Nontrivial (Finset.univ : Finset α) := by
+  let ⟨a, b, h⟩ := exists_pair_ne α
+  exact ⟨a, Finset.mem_univ _, b, Finset.mem_univ _, h⟩
 
 /-- `B i` is the maximal bid of all participants but `i`. -/
 noncomputable def B (i : a.I) : ℝ := Finset.sup' (Finset.erase Finset.univ i)
-(delete_i_nonempty i) b
+(Finset.Nontrivial.erase_nonempty (Finset.univ_nontrivial)) b
 
 /--The second highest bid: the highest bid excluding the winner’s bid.-/
 noncomputable def secondprice : ℝ := B b (winner b)
@@ -135,7 +143,7 @@ lemma utility_loser (i : a.I) (H : i≠ winner b) : utility b i = 0 := by
 /-- A strategy is dominant if bidding `bi` ensures that
 `i`'s utility is maximized relative to any other bids `b'` where `b i = bi`. -/
 def dominant (i : a.I) (bi : ℝ) : Prop := ∀ b b' : a.I → ℝ,
-  (b i = bi) → (∀ j : a.I,j ≠ i→ b j = b' j)
+  (b i = bi) → (∀ j : a.I, j ≠ i→ b j = b' j)
    → utility b' i ≤ utility b i
 
 /-- The bid of the winner is always greater than or equal to the bids of all other participants.-/
@@ -150,13 +158,8 @@ lemma gt_wins (i : a.I) (H : ∀ j , i ≠ j → b j < b i) : i = winner b := by
 
 /-- The bid of the winner is always greater than or equal to the second highest bid. -/
 lemma b_winner : secondprice b ≤ b (winner b) := by
-  have Hmax := winner_take_max b
-  rw [Hmax]
-  apply Finset.sup'_le
-  apply delete_i_nonempty
-  intro j _
-  apply Finset.le_sup'
-  simp only [Finset.mem_erase, Finset.mem_univ]
+  rw [winner_take_max b]
+  exact Finset.sup'_mono b (Finset.subset_univ _) (Finset.Nontrivial.erase_nonempty (Finset.univ_nontrivial))
 
 /-- If `i` is not the winner, then the highest bid excluding `i` is equal to the highest bid. -/
 lemma b_loser_max (H: i ≠ winner b) : B b i = maxb b := by
@@ -190,7 +193,7 @@ lemma utility_nneg (i : a.I) (H : b i = a.v i) : 0 ≤ utility b i := by
   · rw[utility, if_neg H2]
 
 /-- Proves that the strategy of bidding one's valuation is a dominant strategy for `i`. -/
-theorem valuation_is_dominant (i : a.I ) : dominant i (a.v i) := by
+theorem valuation_is_dominant (i : a.I) : dominant i (a.v i) := by
   intro b b' hb hb'
   by_cases H : i = winner b'
   · by_cases H1 : B b' i < a.v i
@@ -211,7 +214,7 @@ theorem valuation_is_dominant (i : a.I ) : dominant i (a.v i) := by
         repeat rw [secondprice]
         rw[← h_winner_b, ← H]
         repeat rw [B]
-        apply Finset.sup'_congr (delete_i_nonempty i) (rfl)
+        apply Finset.sup'_congr (Finset.Nontrivial.erase_nonempty (Finset.univ_nontrivial)) (rfl)
         intro j hj
         rw [Finset.mem_erase] at hj
         exact hb' j hj.1
@@ -227,18 +230,17 @@ theorem valuation_is_dominant (i : a.I ) : dominant i (a.v i) := by
     simp [utility, H]
 
 /-- Computes the utility for a first price auction where the winner pays their bid. -/
-noncomputable def Utility.FirstPrice (i: a.I) : ℝ := if i = winner b then a.v i - b i else 0
+noncomputable def Utility.FirstPrice (i : a.I) : ℝ := if i = winner b then a.v i - b i else 0
 
 /-- If `i` is the winner in a first price auction, utility is their valuation minus their bid. -/
-lemma utility_first_price_winner(i: a.I) (H: i = winner b): Utility.FirstPrice b i = a.v i-b i := by
+lemma utility_first_price_winner (i: a.I) (H: i = winner b) : Utility.FirstPrice b i = a.v i-b i := by
   rw [H]
   simp only [Utility.FirstPrice, if_true]
 
 /-- If `i` is not the winner in a first price auction, their utility is 0. -/
-lemma utility_first_price_loser(i: a.I) (H: i ≠ winner b): Utility.FirstPrice b i = 0 := by
+lemma utility_first_price_loser (i: a.I) (H: i ≠ winner b) : Utility.FirstPrice b i = 0 := by
   rw [Utility.FirstPrice]
   simp only [H, if_false]
-
 
 /-- Defines a dominant strategy in the context of a first price auction. -/
 def Dominant.FirstPrice (i : a.I) (bi : ℝ) : Prop :=
@@ -246,26 +248,27 @@ def Dominant.FirstPrice (i : a.I) (bi : ℝ) : Prop :=
   → Utility.FirstPrice b' i ≤ Utility.FirstPrice b i
 
 /-- Shows that there is no dominant strategy in a first price auction for any `i` and bid `bi`. -/
-theorem first_price_has_no_dominant_strategy (i: a.I) (bi: ℝ) : ¬(Dominant.FirstPrice i bi):= by
+theorem first_price_has_no_dominant_strategy (i: a.I) (bi: ℝ) : ¬ Dominant.FirstPrice i bi := by
   simp only [Dominant.FirstPrice, not_forall]
-  let b := fun j => if j = i then (bi:ℝ) else bi-2
-  let b':= fun j => if j = i then (bi-1:ℝ) else bi-2
+  let b := fun j => if j = i then bi else bi - 2
+  let b' := fun j => if j = i then bi - 1 else bi - 2
   use b, b'
-  simp only [ne_eq, exists_prop, ite_true, exists_const, true_and,b,b']
+  simp only [exists_prop, ite_true, exists_const, true_and, b]
   constructor
-  intro j hj
-  simp only [if_false, hj]
-  have winner_b : i = winner b := by
-    apply gt_wins b i
-    intro j hj
-    simp [Ne.symm hj,b]
-  have winner_b' : i = winner b' := by
-    apply gt_wins b' i
-    intro j hj
-    simp only [b, b', ite_true, Ne.symm hj, ite_false, gt_iff_lt, sub_lt_sub_iff_left]
-    exact one_lt_two
-  have h1 := utility_first_price_winner b i winner_b
-  have h2 := utility_first_price_winner b' i winner_b'
-  simp [h1,h2,b,b']
+  · intro j hj
+    simp only [if_false, hj]
+    exact (if_neg hj).symm
+  · have winner_b : i = winner b := by
+      apply gt_wins b i
+      intro j hj
+      simp [hj.symm, b]
+    have winner_b' : i = winner b' := by
+      apply gt_wins b' i
+      intro j hj
+      simp only [b, b', ite_true, Ne.symm hj, ite_false, gt_iff_lt, sub_lt_sub_iff_left]
+      exact one_lt_two
+    have h1 := utility_first_price_winner b i winner_b
+    have h2 := utility_first_price_winner b' i winner_b'
+    simp [h1,h2,b,b']
 
 end Auction
