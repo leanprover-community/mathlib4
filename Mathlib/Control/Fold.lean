@@ -408,9 +408,9 @@ variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
 theorem foldlm_toList {f : α → β → m α} {x : α} {xs : t β} :
     foldlm f x xs = List.foldlM f x (toList xs) :=
-  calc
-    foldlm f x xs = unop (foldlM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs)) x :=
-    by simp only [foldlm, toList_spec, foldMap_hom_free (foldlM.ofFreeMonoid f),
+  calc foldlm f x xs
+    _ = unop (foldlM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs)) x := by
+      simp only [foldlm, toList_spec, foldMap_hom_free (foldlM.ofFreeMonoid f),
         foldlm.ofFreeMonoid_comp_of, foldlM.get, FreeMonoid.ofList_toList]
     _ = List.foldlM f x (toList xs) := by simp [foldlM.ofFreeMonoid, unop_op, flip]
 #align traversable.mfoldl_to_list Traversable.foldlm_toList

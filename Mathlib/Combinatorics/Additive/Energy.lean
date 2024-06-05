@@ -36,7 +36,7 @@ It's possibly interesting to have
 (whose `card` is `mulEnergy s t`) as a standalone definition.
 -/
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 variable {α : Type*} [DecidableEq α]
 
@@ -93,11 +93,11 @@ lemma mulEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : Eₘ[s₁, t₁
 
 @[to_additive] lemma le_mulEnergy : s.card * t.card ≤ Eₘ[s, t] := by
   rw [← card_product]
-  refine'
+  refine
     card_le_card_of_inj_on (@fun x => ((x.1, x.1), x.2, x.2)) (by
     -- Porting note: changed this from a `simp` proof without `only` because of a timeout
       simp only [← and_imp, mem_product, Prod.forall, mem_filter, and_self, and_true, imp_self,
-        implies_true]) fun a _ b _ => _
+        implies_true]) fun a _ b _ => ?_
   simp only [Prod.mk.inj_iff, and_self_iff, and_imp]
   exact Prod.ext
 #align finset.le_multiplicative_energy Finset.le_mulEnergy
@@ -134,12 +134,11 @@ variable {s t}
 #align finset.additive_energy_eq_zero_iff Finset.addEnergy_eq_zero_iff
 
 @[to_additive] lemma mulEnergy_eq_card_filter (s t : Finset α) :
-    Eₘ[s, t] = (((s ×ˢ t) ×ˢ s ×ˢ t).filter fun ((a, b), c, d) ↦ a * b = c * d).card := by
-  refine Finset.card_congr (fun ((a, b), c, d) _ ↦ ((a, c), b, d)) (by aesop) (by aesop)
-    fun ((a, b), c, d) h ↦ ⟨((a, c), b, d), by simpa [and_and_and_comm] using h⟩
+    Eₘ[s, t] = (((s ×ˢ t) ×ˢ s ×ˢ t).filter fun ((a, b), c, d) ↦ a * b = c * d).card :=
+  card_equiv (.prodProdProdComm _ _ _ _) (by simp [and_and_and_comm])
 
 @[to_additive] lemma mulEnergy_eq_sum_sq' (s t : Finset α) :
-    Eₘ[s, t] = ∑ a in s * t, ((s ×ˢ t).filter fun (x, y) ↦ x * y = a).card ^ 2 := by
+    Eₘ[s, t] = ∑ a ∈ s * t, ((s ×ˢ t).filter fun (x, y) ↦ x * y = a).card ^ 2 := by
   simp_rw [mulEnergy_eq_card_filter, sq, ← card_product]
   rw [← card_disjiUnion]
   -- The `swap`, `ext` and `simp` calls significantly reduce heartbeats
@@ -161,11 +160,11 @@ variable {s t}
 lemma card_sq_le_card_mul_mulEnergy (s t u : Finset α) :
     ((s ×ˢ t).filter fun (a, b) ↦ a * b ∈ u).card ^ 2 ≤ u.card * Eₘ[s, t] := by
   calc
-    _ = (∑ c in u, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card) ^ 2 := by
+    _ = (∑ c ∈ u, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card) ^ 2 := by
         rw [← sum_card_fiberwise_eq_card_filter]
-    _ ≤ u.card * ∑ c in u, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card ^ 2 := by
+    _ ≤ u.card * ∑ c ∈ u, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card ^ 2 := by
         simpa using sum_mul_sq_le_sq_mul_sq (R := ℕ) _ 1 _
-    _ ≤ u.card * ∑ c in s * t, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card ^ 2 := by
+    _ ≤ u.card * ∑ c ∈ s * t, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card ^ 2 := by
         refine mul_le_mul_left' (sum_le_sum_of_ne_zero ?_) _
         aesop (add simp [filter_eq_empty_iff]) (add unsafe mul_mem_mul)
     _ = u.card * Eₘ[s, t] := by rw [mulEnergy_eq_sum_sq']
@@ -210,7 +209,7 @@ lemma mulEnergy_univ_left : Eₘ[univ, t] = Fintype.card α * t.card ^ 2 := by
   congr with a
   simp only [mem_filter, mem_product, mem_univ, true_and_iff, mem_image, exists_prop,
     Prod.exists]
-  refine' ⟨fun h => ⟨a.1.1 * a.2.2⁻¹, _, _, h.1, by simp [f, mul_right_comm, h.2]⟩, _⟩
+  refine ⟨fun h => ⟨a.1.1 * a.2.2⁻¹, _, _, h.1, by simp [f, mul_right_comm, h.2]⟩, ?_⟩
   rintro ⟨b, c, d, hcd, rfl⟩
   simpa [mul_right_comm]
 #align finset.multiplicative_energy_univ_left Finset.mulEnergy_univ_left

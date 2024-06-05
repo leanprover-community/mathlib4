@@ -371,7 +371,7 @@ variable {β : Type*} [OrderedRing β]
 
 theorem one_sub_mem {t : β} (ht : t ∈ Ioo (0 : β) 1) : 1 - t ∈ Ioo (0 : β) 1 := by
   rw [mem_Ioo] at *
-  refine' ⟨sub_pos.2 ht.2, _⟩
+  refine ⟨sub_pos.2 ht.2, ?_⟩
   exact lt_of_le_of_ne ((sub_le_self_iff 1).2 ht.1.le) (mt sub_eq_self.mp ht.1.ne')
 #align set.Ioo.one_sub_mem Set.Ioo.one_sub_mem
 

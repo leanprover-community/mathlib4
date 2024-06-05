@@ -145,7 +145,7 @@ lemma δ_apply (x₃ : D.L₀.X₃) (x₂ : D.L₁.X₂) (x₁ : D.L₂.X₁)
   dsimp [DFunLike.coe] at eq₁ eq₂
   rw [Functor.map_comp, types_comp_apply, FunctorToTypes.map_comp_apply] at eq
   rw [eq₂] at eq
-  refine' eq.trans (congr_arg ((forget C).map D.v₂₃.τ₁) _)
+  refine eq.trans (congr_arg ((forget C).map D.v₂₃.τ₁) ?_)
   apply (Preadditive.mono_iff_injective' D.L₂.f).1 inferInstance
   rw [← FunctorToTypes.map_comp_apply, φ₁_L₂_f]
   dsimp [φ₂]

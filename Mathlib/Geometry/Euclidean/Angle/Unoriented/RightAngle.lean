@@ -29,8 +29,6 @@ triangle unnecessarily.
 
 noncomputable section
 
-open scoped BigOperators
-
 open scoped EuclideanGeometry
 
 open scoped Real
@@ -80,7 +78,7 @@ theorem angle_add_eq_arcsin_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 
     angle x (x + y) = Real.arcsin (‖y‖ / ‖x + y‖) := by
   have hxy : ‖x + y‖ ^ 2 ≠ 0 := by
     rw [pow_two, norm_add_sq_eq_norm_sq_add_norm_sq_real h, ne_comm]
-    refine' ne_of_lt _
+    refine ne_of_lt ?_
     rcases h0 with (h0 | h0)
     · exact
         Left.add_pos_of_pos_of_nonneg (mul_self_pos.2 (norm_ne_zero_iff.2 h0)) (mul_self_nonneg _)
@@ -180,7 +178,7 @@ theorem sin_angle_add_mul_norm_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) :
   rw [not_and_or] at h0
   rw [sin_angle_add_of_inner_eq_zero h h0, div_mul_cancel₀]
   rw [← mul_self_ne_zero, norm_add_sq_eq_norm_sq_add_norm_sq_real h]
-  refine' (ne_of_lt _).symm
+  refine (ne_of_lt ?_).symm
   rcases h0 with (h0 | h0)
   · exact Left.add_pos_of_pos_of_nonneg (mul_self_pos.2 (norm_ne_zero_iff.2 h0)) (mul_self_nonneg _)
   · exact Left.add_pos_of_nonneg_of_pos (mul_self_nonneg _) (mul_self_pos.2 (norm_ne_zero_iff.2 h0))

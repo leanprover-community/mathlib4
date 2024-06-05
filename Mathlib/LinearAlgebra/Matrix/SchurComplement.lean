@@ -249,15 +249,13 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
     (D : Matrix n n α) [Invertible D] [Invertible (A - B * ⅟ D * C)] :
     Invertible (fromBlocks A B C D) := by
   -- factor `fromBlocks` via `fromBlocks_eq_of_invertible₂₂`, and state the inverse we expect
-  refine'
-    Invertible.copy' _ _
-      (fromBlocks (⅟ (A - B * ⅟ D * C)) (-(⅟ (A - B * ⅟ D * C) * B * ⅟ D))
-        (-(⅟ D * C * ⅟ (A - B * ⅟ D * C))) (⅟ D + ⅟ D * C * ⅟ (A - B * ⅟ D * C) * B * ⅟ D))
+  convert Invertible.copy' _ _ (fromBlocks (⅟ (A - B * ⅟ D * C)) (-(⅟ (A - B * ⅟ D * C) * B * ⅟ D))
+    (-(⅟ D * C * ⅟ (A - B * ⅟ D * C))) (⅟ D + ⅟ D * C * ⅟ (A - B * ⅟ D * C) * B * ⅟ D))
       (fromBlocks_eq_of_invertible₂₂ _ _ _ _) _
   · -- the product is invertible because all the factors are
     letI : Invertible (1 : Matrix n n α) := invertibleOne
     letI : Invertible (1 : Matrix m m α) := invertibleOne
-    refine' Invertible.mul _ (fromBlocksZero₁₂Invertible _ _ _)
+    refine Invertible.mul ?_ (fromBlocksZero₁₂Invertible _ _ _)
     exact
       Invertible.mul (fromBlocksZero₂₁Invertible _ _ _)
         (fromBlocksZero₂₁Invertible _ _ _)
@@ -324,7 +322,7 @@ def invertibleOfFromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n �
   letI iBD : Invertible (fromBlocks 1 (B * ⅟ D) 0 1 : Matrix (Sum m n) (Sum m n) α) :=
     fromBlocksZero₂₁Invertible _ _ _
   letI iBDC := Invertible.copy ‹_› _ (fromBlocks_eq_of_invertible₂₂ A B C D).symm
-  refine' (iBD.mulLeft _).symm _
+  refine (iBD.mulLeft _).symm ?_
   exact (iDC.mulRight _).symm iBDC
 #align matrix.invertible_of_from_blocks₂₂_invertible Matrix.invertibleOfFromBlocks₂₂Invertible
 
@@ -516,7 +514,7 @@ theorem IsHermitian.fromBlocks₁₁ [Fintype m] [DecidableEq m] {A : Matrix m m
   · intro h
     apply IsHermitian.sub h.2.2.2 hBAB
   · intro h
-    refine' ⟨hA, rfl, conjTranspose_conjTranspose B, _⟩
+    refine ⟨hA, rfl, conjTranspose_conjTranspose B, ?_⟩
     rw [← sub_add_cancel D]
     apply IsHermitian.add h hBAB
 #align matrix.is_hermitian.from_blocks₁₁ Matrix.IsHermitian.fromBlocks₁₁
@@ -534,12 +532,12 @@ theorem PosSemidef.fromBlocks₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (D - Bᴴ * A⁻¹ * B).PosSemidef := by
   rw [PosSemidef, IsHermitian.fromBlocks₁₁ _ _ hA.1]
   constructor
-  · refine' fun h => ⟨h.1, fun x => _⟩
+  · refine fun h => ⟨h.1, fun x => ?_⟩
     have := h.2 (-((A⁻¹ * B) *ᵥ x) ⊕ᵥ x)
     rw [dotProduct_mulVec, schur_complement_eq₁₁ B D _ _ hA.1, neg_add_self, dotProduct_zero,
       zero_add] at this
     rw [dotProduct_mulVec]; exact this
-  · refine' fun h => ⟨h.1, fun x => _⟩
+  · refine fun h => ⟨h.1, fun x => ?_⟩
     rw [dotProduct_mulVec, ← Sum.elim_comp_inl_inr x, schur_complement_eq₁₁ B D _ _ hA.1]
     apply le_add_of_nonneg_of_le
     · rw [← dotProduct_mulVec]

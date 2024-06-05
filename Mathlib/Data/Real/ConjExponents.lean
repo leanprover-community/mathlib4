@@ -197,8 +197,8 @@ lemma mul_eq_add : p * q = p + q := by
 @[symm]
 protected lemma symm : q.IsConjExponent p where
   one_lt := by
-      rw [h.conj_eq]
-      exact (one_lt_div h.sub_one_pos).mpr (tsub_lt_self h.pos zero_lt_one)
+    rw [h.conj_eq]
+    exact (one_lt_div h.sub_one_pos).mpr (tsub_lt_self h.pos zero_lt_one)
   inv_add_inv_conj := by simpa [add_comm] using h.inv_add_inv_conj
 
 lemma div_conj_eq_sub_one : p / q = p - 1 := by field_simp [h.symm.ne_zero]; rw [h.sub_one_mul_conj]
