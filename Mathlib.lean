@@ -1610,6 +1610,7 @@ import Mathlib.CategoryTheory.Sites.Equivalence
 import Mathlib.CategoryTheory.Sites.Grothendieck
 import Mathlib.CategoryTheory.Sites.InducedTopology
 import Mathlib.CategoryTheory.Sites.IsSheafFor
+import Mathlib.CategoryTheory.Sites.IsSheafOneHypercover
 import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.Limits
 import Mathlib.CategoryTheory.Sites.Localization
