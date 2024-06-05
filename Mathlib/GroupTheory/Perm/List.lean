@@ -218,7 +218,7 @@ theorem formPerm_apply_get (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n < xs.
     formPerm xs (xs.get ⟨n, hn⟩) =
       xs.get ⟨((n + 1) % xs.length), (Nat.mod_lt _ (n.zero_le.trans_lt hn))⟩ :=
   formPerm_apply_nthLe xs h n hn
-attribute [deprecated formPerm_apply_get] formPerm_apply_nthLe -- 2024-04-23
+attribute [deprecated formPerm_apply_get (since := "2024-04-23")] formPerm_apply_nthLe
 
 set_option linter.deprecated false in
 theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
@@ -296,7 +296,7 @@ theorem formPerm_pow_apply_get (l : List α) (h : Nodup l) (n k : ℕ) (hk : k <
   · simp [pow_succ', mul_apply, hn, formPerm_apply_get _ h, Nat.succ_eq_add_one, ← Nat.add_assoc]
 
 set_option linter.deprecated false in
-@[deprecated formPerm_pow_apply_get] -- 2024-04-23
+@[deprecated formPerm_pow_apply_get (since := "2024-04-23")]
 theorem formPerm_pow_apply_nthLe (l : List α) (h : Nodup l) (n k : ℕ) (hk : k < l.length) :
     (formPerm l ^ n) (l.nthLe k hk) =
       l.nthLe ((k + n) % l.length) (Nat.mod_lt _ (k.zero_le.trans_lt hk)) :=
