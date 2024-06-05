@@ -23,7 +23,7 @@ Future extensions:
 See  #11890 for an example of how this may be extended.
 -/
 
-open Lean Elab
+open Lean Elab Command
 
 namespace Mathlib.Linter
 
@@ -35,12 +35,11 @@ register_option linter.generic : Bool := {
 
 namespace generic
 
-open Lean
-
-def tal (id : TSyntax `ident) : Command.CommandElabM (Name × Nat) := Command.liftCoreM do
+/-- counts the total number of declarations implied by the one with identifier `id`. -/
+def tal (id : TSyntax `ident) : CommandElabM (Name × Nat) := liftCoreM do
   let env ← getEnv
-  let decl ← Elab.realizeGlobalConstNoOverloadWithInfo id <|> return ``Nat
-  let (_, { visited, .. }) := Elab.Command.CollectAxioms.collect decl |>.run (← getEnv) |>.run {}
+  let decl ← realizeGlobalConstNoOverloadWithInfo id <|> return ``Nat
+  let (_, { visited, .. }) := CollectAxioms.collect decl |>.run (← getEnv) |>.run {}
   let mut truncate := env.header.moduleNames.map fun n => Name.fromComponents <| n.components.take 2
   let mut out := mkRBMap Name Nat Name.cmp
   for d in visited do
@@ -52,14 +51,12 @@ def tal (id : TSyntax `ident) : Command.CommandElabM (Name × Nat) := Command.li
     total := total + n
   return (decl, total)
 
-def getName {m : Type → Type} [Monad m] [MonadQuotation m] : Syntax → m Syntax
-  | `($_dm:declModifiers def $_did:declId $_ds* : $_t $_dv:declVal) =>
-    return _did
-  | `($_dm:declModifiers theorem $_did:declId $_ds* : $_t $_dv:declVal) =>
-    return _did
-  | `($_dm:declModifiers instance  $_prio $_did:declId $_ds* : $_t $_dv:declVal) =>
-    return _did
-  | s => return s
+/-- extracts the `declId` of a declaration -/
+def getDeclId : Syntax → Option (TSyntax ``Lean.Parser.Command.declId)
+  | `($_dm:declModifiers def $id:declId $_ds* : $_t $_dv:declVal) => id
+  | `($_dm:declModifiers theorem $id:declId $_ds* : $_t $_dv:declVal) => id
+  | `($_dm:declModifiers instance $_prio $id:declId $_ds* : $_t $_dv:declVal) => id
+  | _ => none
 
 end generic
 
@@ -77,8 +74,9 @@ def genericSyntaxLinter : Linter where
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    let nm := (← getName stx)[0]
-    if nm.isOfKind `ident then
-      logInfoAt nm m!"{← tal ⟨nm⟩}"
+    if let some nm := getDeclId stx then
+      let nm := nm.raw[0]
+      if nm.isOfKind `ident then
+        logInfoAt nm m!"{← tal ⟨nm⟩}"
 
 initialize addLinter genericSyntaxLinter
