@@ -184,10 +184,7 @@ theorem IsLindelof.indexed_countable_subcover {ι : Type v} [Nonempty ι]
   wlog c_nonempty : c.Nonempty
   · simp only [not_nonempty_iff_eq_empty.mp c_nonempty, mem_empty_iff_false, iUnion_of_empty,
       iUnion_empty] at c_cov
-    rcases (exists_const ι).mpr trivial with ⟨i⟩
-    use fun _ ↦ i
-    rw [subset_eq_empty c_cov rfl]
-    exact empty_subset _
+    simp only [subset_eq_empty c_cov rfl, empty_subset, exists_const]
   rcases (Set.countable_iff_exists_surjective c_nonempty).mp c_count with ⟨f, f_surj⟩
   use Subtype.val ∘ f
   intro _ xinh
