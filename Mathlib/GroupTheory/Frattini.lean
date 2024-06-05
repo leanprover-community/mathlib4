@@ -52,7 +52,7 @@ theorem frattini_nongenerating [IsCoatomic (Subgroup G)] {K : Subgroup G}
   Order.radical_nongenerating h
 
 -- The Sylow files unnecessarily use `Fintype` (computable) where often `Finite` would suffice,
--- so wwe need this:
+-- so we need this:
 attribute [local instance] Fintype.ofFinite
 
 /-- When `G` is finite, the Frattini subgroup is nilpotent. -/
