@@ -209,7 +209,7 @@ theorem edgeFinset_decompose_card : G.edgeFinset.card = (G.crossEdges K).edgeFin
 
 theorem crossEdges_edgeFinset : (G.crossEdges K).edgeFinset =
     Kᶜ.biUnion fun b ↦ (K.filter (G.Adj · b)).map (Sym2.congrEmb b) := by
-  ext e; refine' e.inductionOn _; intro a b
+  ext e; refine e.inductionOn ?_; intro a b
   simp_rw [crossEdges, mem_biUnion, Set.mem_toFinset, mem_edgeSet, Sym2.congrEmb, mem_map,
     mem_filter, Function.Embedding.coeFn_mk, Sym2.eq_iff, mem_compl]
   constructor
