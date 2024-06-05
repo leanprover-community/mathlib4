@@ -78,7 +78,7 @@ universe u v
 /-- A map `f : X → Y` between two topological spaces is said to be **proper** if it is continuous
 and, for all `ℱ : Filter X`, any cluster point of `map f ℱ` is the image by `f` of a cluster point
 of `ℱ`. -/
-@[mk_iff isProperMap_iff_clusterPt]
+@[mk_iff isProperMap_iff_clusterPt, fun_prop]
 structure IsProperMap (f : X → Y) extends Continuous f : Prop where
   /-- By definition, if `f` is a proper map and `ℱ` is any filter on `X`, then any cluster point of
   `map f ℱ` is the image by `f` of some cluster point of `ℱ`. -/
@@ -90,7 +90,7 @@ for closed maps. -/
 add_decl_doc isProperMap_iff_clusterPt
 
 /-- By definition, a proper map is continuous. -/
-@[continuity, fun_prop]
+@[fun_prop]
 lemma IsProperMap.continuous (h : IsProperMap f) : Continuous f := h.toContinuous
 
 /-- A proper map is closed. -/
