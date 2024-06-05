@@ -6,6 +6,8 @@ Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.RingTheory.LocalProperties
+import Mathlib.AlgebraicGeometry.Morphisms.Basic
+import Mathlib.Topology.LocalAtTarget
 
 /-!
 
@@ -35,11 +37,22 @@ open CategoryTheory
 
 namespace AlgebraicGeometry
 
+/-
+@[mk_iff]
+class IsSurjectiveOnStalks {X Y : Scheme} (f : X ⟶ Y) : Prop where
+  out : MorphismProperty.stalkwise (fun f ↦ Function.Surjective f) f
+
+lemma isSurjectiveOnStalks_eq_stalkwise_surjective :
+    @IsSurjectiveOnStalks = MorphismProperty.stalkwise (fun f ↦ Function.Surjective f) := by
+  ext 
+  exact isSurjectiveOnStalks_iff _
+-/
+
 /-- A morphism of schemes `X ⟶ Y` is a closed immersion if the underlying
 topological map is a closed embedding and the induced stalk maps are surjective. -/
 class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
-  base_closed : ClosedEmbedding f.1.base
-  surj_on_stalks : ∀ x, Function.Surjective (PresheafedSpace.stalkMap f.1 x)
+  base_closed : MorphismProperty.topologically ClosedEmbedding f
+  surj_on_stalks : MorphismProperty.stalkwise (fun f ↦ Function.Surjective f) f
 
 namespace IsClosedImmersion
 
@@ -63,10 +76,32 @@ instance : MorphismProperty.IsMultiplicative @IsClosedImmersion where
     erw [PresheafedSpace.stalkMap.comp]
     exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f.1.1 x))
 
+/-
+instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsSurjectiveOnStalks f where
+  out := fun _ ↦ (ConcreteCategory.bijective_of_isIso _).2
+-/
+
+/-
+instance : MorphismProperty.IsMultiplicative @IsSurjectiveOnStalks where
+  id_mem _ := inferInstance
+  comp_mem {X Y Z} f g hf hg := by
+    constructor
+    intro x
+    erw [PresheafedSpace.stalkMap.comp]
+    exact (hf.out x).comp (hg.out (f.1.1 x))
+-/
+
 /-- Composition of closed immersions is a closed immersion. -/
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion f]
     [IsClosedImmersion g] : IsClosedImmersion (f ≫ g) :=
   MorphismProperty.IsStableUnderComposition.comp_mem f g inferInstance inferInstance
+
+/-
+/-- Composition of closed immersions is a closed immersion. -/
+instance comp' {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsSurjectiveOnStalks f]
+    [IsSurjectiveOnStalks g] : IsSurjectiveOnStalks (f ≫ g) :=
+  MorphismProperty.IsStableUnderComposition.comp_mem f g inferInstance inferInstance
+-/
 
 /-- Composition with an isomorphism preserves closed immersions. -/
 lemma respectsIso : MorphismProperty.RespectsIso @IsClosedImmersion := by
@@ -79,6 +114,7 @@ theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S) (h : Function.Surje
     IsClosedImmersion (Scheme.specMap f) where
   base_closed := PrimeSpectrum.closedEmbedding_comap_of_surjective _ _ h
   surj_on_stalks x := by
+    dsimp
     erw [← localRingHom_comp_stalkIso, CommRingCat.coe_comp, CommRingCat.coe_comp]
     apply Function.Surjective.comp (Function.Surjective.comp _ _) _
     · exact (ConcreteCategory.bijective_of_isIso (StructureSheaf.stalkIso S x).inv).2
@@ -109,6 +145,49 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
     have h := surjective_stalkMap (f ≫ g) x
     erw [Scheme.comp_val, PresheafedSpace.stalkMap.comp] at h
     exact Function.Surjective.of_comp h
+
+open Limits
+
+theorem closedEmbedding_localAtTarget : PropertyIsLocalAtTarget
+    (MorphismProperty.topologically ClosedEmbedding) := by
+  apply topologicallyIsLocalAtTargetOfMorphismRestrict
+  · apply topologicallyRespectsIso
+    · intro X Y _ _ e
+      exact Homeomorph.closedEmbedding e
+    · intro X Y Z _ _ _ f g hf hg
+      exact ClosedEmbedding.comp hg hf
+  · intro X Y _ _ f s hf
+    exact ClosedEmbedding.restrictPreimage s hf
+  · intro X Y _ _ f ι U hU hfcont hf
+    apply (closedEmbedding_iff_closedEmbedding_of_iSup_eq_top hU hfcont).mpr hf
+
+theorem surjective_respectsIso :
+    RingHom.RespectsIso (fun f ↦ Function.Surjective f) := by
+  apply RingHom.StableUnderComposition.respectsIso
+  · intro R S T _ _ _ f g hf hg
+    simp only [RingHom.coe_comp]
+    exact Function.Surjective.comp hg hf
+  · intro R S _ _ e
+    exact EquivLike.surjective e
+
+theorem isSurjectiveOnStalks_localAtTarget : PropertyIsLocalAtTarget
+      (MorphismProperty.stalkwise (fun f ↦ Function.Surjective f)) := by
+  apply stalkwiseIsLocalAtTarget_of_respectsIso
+  exact surjective_respectsIso
+
+/- TODO: can we write a general helper (ideally n-ary) to obtain this? -/
+/-- Closed immersions are local at the target. -/
+theorem closedImmersion_localAtTarget :
+    PropertyIsLocalAtTarget @IsClosedImmersion where
+  RespectsIso := respectsIso
+  restrict f U hf := by
+    constructor
+    · exact closedEmbedding_localAtTarget.restrict f U hf.base_closed
+    . exact isSurjectiveOnStalks_localAtTarget.restrict f U hf.surj_on_stalks
+  of_openCover f 𝒰 hf := by
+    constructor
+    · exact closedEmbedding_localAtTarget.of_openCover f 𝒰 (fun i ↦ (hf i).base_closed)
+    · exact isSurjectiveOnStalks_localAtTarget.of_openCover f 𝒰 (fun i ↦ (hf i).surj_on_stalks)
 
 end IsClosedImmersion
 

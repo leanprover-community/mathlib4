@@ -7,6 +7,7 @@ import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.Data.List.TFAE
+import Mathlib.RingTheory.RingHomProperties
 
 #align_import algebraic_geometry.morphisms.basic from "leanprover-community/mathlib"@"434e2fd21c1900747afc6d13d8be7f4eedba7218"
 
@@ -607,10 +608,157 @@ theorem universallyIsLocalAtTargetOfMorphismRestrict (P : MorphismProperty Schem
     exact h𝒰)
 #align algebraic_geometry.universally_is_local_at_target_of_morphism_restrict AlgebraicGeometry.universallyIsLocalAtTargetOfMorphismRestrict
 
+theorem isLocalAtTargetOfMorphismRestrict (P : MorphismProperty Scheme)
+    (hP₁ : P.RespectsIso)
+    (hP₂ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y.carrier), P f → P (f ∣_ U))
+    (hP₃ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Opens Y.carrier)
+      (_ : iSup U = ⊤), (∀ i, P (f ∣_ U i)) → P f) :
+    PropertyIsLocalAtTarget P where
+  RespectsIso := hP₁
+  restrict := hP₂
+  of_openCover {X Y} f 𝒰 h𝒰 := by
+    apply hP₃ f (fun i : 𝒰.J => Scheme.Hom.opensRange (𝒰.map i)) 𝒰.iSup_opensRange
+    simp_rw [hP₁.arrow_mk_iso_iff (morphismRestrictOpensRange f _)]
+    exact h𝒰
+
 /-- `topologically P` holds for a morphism if the underlying topological map satisfies `P`. -/
 def MorphismProperty.topologically
     (P : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (_ : α → β), Prop) :
     MorphismProperty Scheme.{u} := fun _ _ f => P f.1.base
 #align algebraic_geometry.morphism_property.topologically AlgebraicGeometry.MorphismProperty.topologically
+
+theorem morphismRestrict_base {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier) :
+    ⇑(f ∣_ U).1.base = U.1.restrictPreimage f.1.1 :=
+  funext fun x => Subtype.ext <| morphismRestrict_base_coe f U x
+#align algebraic_geometry.morphism_restrict_base AlgebraicGeometry.morphismRestrict_base
+
+section
+
+variable (P : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (_ : α → β), Prop)
+
+theorem topologicallyRespectsIso
+    (hP₁ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α ≃ₜ β), P f)
+    (hP₂ : ∀ {α β γ : Type u} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+      (f : α → β) (g : β → γ) (_ : P f) (_ : P g), P (g ∘ f)) :
+      (MorphismProperty.topologically P).RespectsIso where
+  left {X Y Z} e f hf := by
+    have he : P e.hom.val.base :=
+      hP₁ (TopCat.homeoOfIso (asIso e.hom.val.base))
+    simp [MorphismProperty.topologically]
+    apply hP₂
+    · exact he
+    · exact hf
+  right {X Y Z} e f hf := by
+    have he : P e.hom.val.base :=
+      hP₁ (TopCat.homeoOfIso (asIso e.hom.val.base))
+    simp [MorphismProperty.topologically]
+    apply hP₂
+    · exact hf
+    · exact he
+
+theorem topologicallyIsLocalAtTargetOfMorphismRestrict
+    (P : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (_ : α → β), Prop)
+    (hP₁ : (MorphismProperty.topologically P).RespectsIso)
+    (hP₂ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) (s : Set β),
+      P f → P (s.restrictPreimage f))
+    (hP₃ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) {ι : Type u}
+      (U : ι → TopologicalSpace.Opens β) (_ : iSup U = ⊤) (_ : Continuous f),
+      (∀ i, P ((U i).carrier.restrictPreimage f)) → P f) :
+    PropertyIsLocalAtTarget (MorphismProperty.topologically P) := by
+  apply isLocalAtTargetOfMorphismRestrict
+  · exact hP₁
+  · intro X Y f U hf
+    simp_rw [MorphismProperty.topologically, morphismRestrict_base]
+    exact hP₂ f.val.base U.carrier hf
+  · intro X Y f ι U hU hf
+    apply hP₃ f.val.base U hU
+    · exact f.val.base.continuous
+    · intro i
+      rw [← morphismRestrict_base]
+      exact hf i
+
+/-
+theorem topologicallyIsLocalAtTargetOfMorphismRestrict
+    (P : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (_ : α → β), Prop)
+    (hP₁ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α ≃ₜ β),
+      P f)
+    (hP₂ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) (s : Set β),
+      P f → P (s.restrictPreimage f))
+    (hP₃ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) {ι : Type u}
+      (U : ι → TopologicalSpace.Opens β) (hU : iSup U = ⊤),
+      (∀ i, P ((U i).carrier.restrictPreimage f)) → P f) :
+    PropertyIsLocalAtTarget (MorphismProperty.topologically P) := by
+  apply isLocalAtTargetOfMorphismRestrict
+  · sorry
+  · intro X Y f U hf
+    simp_rw [MorphismProperty.topologically, morphismRestrict_base]
+    exact hP₂ f.val.base U.carrier hf
+  · intro X Y f ι U hU hf
+    apply hP₃ f.val.base U hU
+    intro i
+    rw [← morphismRestrict_base]
+    exact hf i
+-/
+
+end
+
+/-- `stalkwise P` holds for a morphism if all stalks satisfy `P`. -/
+def MorphismProperty.stalkwise
+    (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) :
+    MorphismProperty Scheme.{u} := fun _ _ f => ∀ x, P (PresheafedSpace.stalkMap f.val x)
+
+variable {P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+
+theorem stalkwise_respectsIso (hP : RingHom.RespectsIso P) :
+    (MorphismProperty.stalkwise P).RespectsIso where
+  left := by
+    intro X Y Z e f hf
+    simp [MorphismProperty.stalkwise]
+    intro x
+    erw [PresheafedSpace.stalkMap.comp]
+    exact (RingHom.RespectsIso.cancel_right_isIso hP _ _).mpr <| hf (e.hom.val.base x)
+  right := by
+    intro X Y Z e f hf
+    simp [MorphismProperty.stalkwise]
+    intro x
+    erw [PresheafedSpace.stalkMap.comp]
+    exact (RingHom.RespectsIso.cancel_left_isIso hP _ _).mpr <| hf x
+
+variable (P) in
+def toMorphismProperty : MorphismProperty CommRingCat := fun _ _ f => P f
+
+theorem toMorphismProperty_respectsIso_iff :
+    RingHom.RespectsIso P ↔ (toMorphismProperty P).RespectsIso := by
+  constructor
+  · intro h
+    constructor
+    · intro X Y Z e f hf
+      apply h.right f e.commRingCatIsoToRingEquiv
+      exact hf
+    · intro X Y Z e f hf
+      apply h.left f e.commRingCatIsoToRingEquiv
+      exact hf
+  · intro h
+    constructor
+    · intro X Y Z _ _ _ f e
+      apply h.right e.toCommRingCatIso (CommRingCat.ofHom f)
+    · intro X Y Z _ _ _ f e
+      apply h.left e.toCommRingCatIso (CommRingCat.ofHom f)
+
+theorem stalkwiseIsLocalAtTarget_of_respectsIso (hP : RingHom.RespectsIso P) :
+    PropertyIsLocalAtTarget (MorphismProperty.stalkwise P) := by
+  have hP' : (toMorphismProperty P).RespectsIso := toMorphismProperty_respectsIso_iff.mp hP
+  apply isLocalAtTargetOfMorphismRestrict
+  · exact stalkwise_respectsIso hP
+  · intro X Y f U hf x
+    let e := morphismRestrictStalkMap f U x
+    apply (hP'.arrow_mk_iso_iff e).mpr <| hf _
+  · intro X Y f ι U hU hf x
+    have hy : f.val.base x ∈ iSup U := by
+      rw [hU]
+      trivial
+    obtain ⟨i, hi⟩ := Opens.mem_iSup.mp hy
+    let e := morphismRestrictStalkMap f (U i) ⟨x, hi⟩
+    exact (hP'.arrow_mk_iso_iff e).mp <| hf i ⟨x, hi⟩
 
 end AlgebraicGeometry
