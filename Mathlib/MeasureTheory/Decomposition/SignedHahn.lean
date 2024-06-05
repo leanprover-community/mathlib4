@@ -387,7 +387,7 @@ theorem exists_compl_positive_negative (s : SignedMeasure α) :
             let ⟨_, h⟩ := (hB m).1
             h
         refine
-          nonpos_of_restrict_le_zero _ (restrict_le_zero_subset _ ?_ diff_subset this)
+          nonpos_of_restrict_le_zero _ (restrict_le_zero_subset _ ?_ Set.diff_subset this)
         exact MeasurableSet.iUnion hB₁
       · exact (MeasurableSet.iUnion hB₁).diff (hB₁ n)
     · exact csInf_le bddBelow_measureOfNegatives ⟨A, ⟨hA₁, hA₂⟩, rfl⟩
