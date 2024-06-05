@@ -1821,8 +1821,6 @@ import Mathlib.Data.Buffer.Basic
 import Mathlib.Data.Buffer.Parser.Basic
 import Mathlib.Data.Buffer.Parser.Numeral
 import Mathlib.Data.Bundle
-import Mathlib.Data.ByteArray
-import Mathlib.Data.Char
 import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Complex.BigOperators
@@ -2278,7 +2276,6 @@ import Mathlib.Data.Sigma.Order
 import Mathlib.Data.Sign
 import Mathlib.Data.Stream.Defs
 import Mathlib.Data.Stream.Init
-import Mathlib.Data.String.Basic
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
@@ -2294,7 +2291,6 @@ import Mathlib.Data.Tree
 import Mathlib.Data.TwoPointing
 import Mathlib.Data.TypeMax
 import Mathlib.Data.TypeVec
-import Mathlib.Data.UInt
 import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
 import Mathlib.Data.Vector.Basic
