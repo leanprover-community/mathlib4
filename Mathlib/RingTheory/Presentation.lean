@@ -406,7 +406,7 @@ def Cotangent.map (f : Hom P P') : P.Cotangent →ₗ[S] P'.Cotangent where
 @[simp]
 lemma Cotangent.map_mk (f : Hom P P') (x) :
     Cotangent.map f (.mk x) =
-      .mk ⟨f.toAlgHom x, by simpa using RingHom.congr_arg (algebraMap S S') x.2⟩ :=
+      .mk ⟨f.toAlgHom x, by simpa [-map_aeval] using RingHom.congr_arg (algebraMap S S') x.2⟩ :=
   rfl
 
 end Cotangent
