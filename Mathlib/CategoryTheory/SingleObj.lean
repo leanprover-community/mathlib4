@@ -54,8 +54,7 @@ namespace SingleObj
 variable (M G : Type u)
 
 /-- One and `flip (*)` become `id` and `comp` for morphisms of the single object category. -/
-instance categoryStruct [One M] [Mul M] : CategoryStruct (SingleObj M)
-    where
+instance categoryStruct [One M] [Mul M] : CategoryStruct (SingleObj M) where
   Hom _ _ := M
   comp x y := y * x
   id _ := 1
@@ -64,8 +63,7 @@ instance categoryStruct [One M] [Mul M] : CategoryStruct (SingleObj M)
 variable [Monoid M] [Group G]
 
 /-- Monoid laws become category laws for the single object category. -/
-instance category : Category (SingleObj M)
-    where
+instance category : Category (SingleObj M) where
   comp_id := one_mul
   id_comp := mul_one
   assoc x y z := (mul_assoc z y x).symm
@@ -80,15 +78,13 @@ theorem comp_as_mul {x y z : SingleObj M} (f : x ⟶ y) (g : y ⟶ z) : f ≫ g 
 #align category_theory.single_obj.comp_as_mul CategoryTheory.SingleObj.comp_as_mul
 
 /-- If `M` is finite and in universe zero, then `SingleObj M` is a `FinCategory`. -/
-instance finCategoryOfFintype (M : Type) [Fintype M] [Monoid M] : FinCategory (SingleObj M)
-  where
+instance finCategoryOfFintype (M : Type) [Fintype M] [Monoid M] : FinCategory (SingleObj M) where
 
 /-- Groupoid structure on `SingleObj M`.
 
 See <https://stacks.math.columbia.edu/tag/0019>.
 -/
-instance groupoid : Groupoid (SingleObj G)
-    where
+instance groupoid : Groupoid (SingleObj G) where
   inv x := x⁻¹
   inv_comp := mul_right_inv
   comp_inv := mul_left_inv
@@ -155,8 +151,7 @@ variable {C : Type v} [Category.{w} C]
 /-- Given a function `f : C → G` from a category to a group, we get a functor
     `C ⥤ G` sending any morphism `x ⟶ y` to `f y * (f x)⁻¹`. -/
 @[simps]
-def differenceFunctor (f : C → G) : C ⥤ SingleObj G
-    where
+def differenceFunctor (f : C → G) : C ⥤ SingleObj G where
   obj _ := ()
   map {x y} _ := f y * (f x)⁻¹
   map_id := by

@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
@@ -243,25 +244,26 @@ lemma FixedPoints.mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m
 end Monoid
 
 section Group
-
+namespace FixedPoints
 variable [Group α] [MulDistribMulAction M α]
 
 /-- The subgroup of elements fixed under the whole action. -/
-def FixedPoints.subgroup : Subgroup α where
+def subgroup : Subgroup α where
   __ := submonoid M α
   inv_mem' ha _ := by rw [smul_inv', ha]
 
 /-- The notation for `FixedPoints.subgroup`, chosen to resemble `αᴹ`. -/
-notation α "^*" M:51 => FixedPoints.subgroup M α
+scoped notation α "^*" M:51 => FixedPoints.subgroup M α
 
 @[simp]
-lemma FixedPoints.mem_subgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
+lemma mem_subgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
 @[simp]
-lemma FixedPoints.subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
+lemma subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
   rfl
 
+end FixedPoints
 end Group
 
 section AddMonoid
@@ -311,7 +313,7 @@ theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAs
     [DistribMulAction M R] (k : M) (h : ∀ x : R, k • x = 0 → x = 0) {a b : R} (h' : k • a = k • b) :
     a = b := by
   rw [← sub_eq_zero]
-  refine' h _ _
+  refine h _ ?_
   rw [smul_sub, h', sub_self]
 #align smul_cancel_of_non_zero_divisor smul_cancel_of_non_zero_divisor
 
@@ -435,7 +437,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     rw [Set.mem_iUnion] at hx
     obtain ⟨g, u, hu₁, hu₂⟩ := hx
     rw [Set.mem_preimage, Set.mem_image]
-    refine' ⟨g⁻¹ • a, _, by simp only [f, Quotient.eq']; use g⁻¹⟩
+    refine ⟨g⁻¹ • a, ?_, by simp only [f, Quotient.eq']; use g⁻¹⟩
     rw [← hu₂]
     convert hu₁
     simp only [inv_smul_smul]
@@ -448,9 +450,9 @@ theorem disjoint_image_image_iff {U V : Set α} :
     Disjoint (Quotient.mk' '' U) (Quotient.mk' '' V) ↔ ∀ x ∈ U, ∀ g : G, g • x ∉ V := by
   letI := orbitRel G α
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
-  refine'
+  refine
     ⟨fun h a a_in_U g g_in_V =>
-      h.le_bot ⟨⟨a, a_in_U, Quotient.sound ⟨g⁻¹, _⟩⟩, ⟨g • a, g_in_V, rfl⟩⟩, _⟩
+      h.le_bot ⟨⟨a, a_in_U, Quotient.sound ⟨g⁻¹, ?_⟩⟩, ⟨g • a, g_in_V, rfl⟩⟩, ?_⟩
   · simp
   · intro h
     rw [Set.disjoint_left]
@@ -609,7 +611,7 @@ lemma le_stabilizer_smul_right [SMul α β] [SMulCommClass G α β] (a : α) (b 
 @[to_additive (attr := simp)]
 lemma stabilizer_smul_eq_left [SMul α β] [IsScalarTower G α β] (a : α) (b : β)
     (h : Injective (· • b : α → β)) : stabilizer G (a • b) = stabilizer G a := by
-  refine' (le_stabilizer_smul_left _ _).antisymm' fun a ha ↦ _
+  refine (le_stabilizer_smul_left _ _).antisymm' fun a ha ↦ ?_
   simpa only [mem_stabilizer_iff, ← smul_assoc, h.eq_iff] using ha
 
 @[to_additive (attr := simp)]
@@ -680,3 +682,50 @@ theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a 
   rw [MulAction.mem_stabilizer_iff, Set.ext_iff, ← swap_inv]
   simp_rw [Set.mem_inv_smul_set_iff, Perm.smul_def, swap_apply_def]
   exact ⟨fun h ↦ by simpa [Iff.comm] using h a, by intros; split_ifs <;> simp [*]⟩
+
+
+namespace MulAction
+
+variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
+
+/-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions.-/
+theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
+    H ≤ stabilizer G s ↔ ∀ g ∈ H, g • s ⊆ s := by
+  constructor
+  · intro hyp g hg
+    apply Eq.subset
+    rw [← mem_stabilizer_iff]
+    exact hyp hg
+  · intro hyp g hg
+    rw [mem_stabilizer_iff]
+    apply subset_antisymm (hyp g hg)
+    intro x hx
+    use g⁻¹ • x
+    constructor
+    · apply hyp g⁻¹ (inv_mem hg)
+      simp only [Set.smul_mem_smul_set_iff, hx]
+    · simp only [smul_inv_smul]
+
+/-- To prove membership to stabilizer of a *finite set*, it is enough to prove one inclusion. -/
+theorem mem_stabilizer_of_finite_iff_smul_le (s : Set α) (hs : s.Finite) (g : G) :
+    g ∈ stabilizer G s ↔ g • s ⊆ s := by
+  haveI : Fintype s := Set.Finite.fintype hs
+  haveI : Fintype (g • s : Set α) := Fintype.ofFinite _
+  rw [mem_stabilizer_iff]
+  constructor
+  exact Eq.subset
+  · rw [← Set.toFinset_inj, ← Set.toFinset_subset_toFinset]
+    intro h
+    apply Finset.eq_of_subset_of_card_le h
+    apply le_of_eq
+    suffices (g • s).toFinset = Finset.map ⟨_, MulAction.injective g⟩ hs.toFinset by
+      rw [this, Finset.card_map, Set.toFinite_toFinset]
+    rw [← Finset.coe_inj]
+    simp only [Set.coe_toFinset, Set.toFinite_toFinset, Finset.coe_map,
+      Function.Embedding.coeFn_mk, Set.image_smul]
+
+/-- To prove membership to stabilizer of a *finite set*, it is enough to prove one inclusion. -/
+theorem mem_stabilizer_of_finite_iff_le_smul (s : Set α) (hs : s.Finite) (g : G) :
+    g ∈ stabilizer G s ↔ s ⊆ g • s := by
+  rw [← @inv_mem_iff, mem_stabilizer_of_finite_iff_smul_le s hs]
+  exact Set.subset_set_smul_iff.symm

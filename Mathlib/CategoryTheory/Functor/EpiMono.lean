@@ -221,8 +221,7 @@ section
 variable (F : C ⥤ D) {X Y : C} (f : X ⟶ Y)
 
 /-- If `F` is a fully faithful functor, split epimorphisms are preserved and reflected by `F`. -/
-noncomputable def splitEpiEquiv [Full F] [Faithful F] : SplitEpi f ≃ SplitEpi (F.map f)
-    where
+noncomputable def splitEpiEquiv [Full F] [Faithful F] : SplitEpi f ≃ SplitEpi (F.map f) where
   toFun f := f.map F
   invFun s := ⟨F.preimage s.section_, by
     apply F.map_injective
@@ -242,8 +241,7 @@ theorem isSplitEpi_iff [Full F] [Faithful F] : IsSplitEpi (F.map f) ↔ IsSplitE
 #align category_theory.functor.is_split_epi_iff CategoryTheory.Functor.isSplitEpi_iff
 
 /-- If `F` is a fully faithful functor, split monomorphisms are preserved and reflected by `F`. -/
-noncomputable def splitMonoEquiv [Full F] [Faithful F] : SplitMono f ≃ SplitMono (F.map f)
-    where
+noncomputable def splitMonoEquiv [Full F] [Faithful F] : SplitMono f ≃ SplitMono (F.map f) where
   toFun f := f.map F
   invFun s := ⟨F.preimage s.retraction, by
     apply F.map_injective

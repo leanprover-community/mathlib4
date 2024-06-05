@@ -75,8 +75,8 @@ structure AddEquiv (A B : Type*) [Add A] [Add B] extends A ≃ B, AddHom A B
 
 /-- `AddEquivClass F A B` states that `F` is a type of addition-preserving morphisms.
 You should extend this class when you extend `AddEquiv`. -/
-class AddEquivClass (F : Type*) (A B : outParam Type*) [Add A] [Add B] [EquivLike F A B] : Prop
-    where
+class AddEquivClass (F : Type*) (A B : outParam Type*) [Add A] [Add B] [EquivLike F A B] :
+    Prop where
   /-- Preserves addition. -/
   map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
 #align add_equiv_class AddEquivClass
@@ -109,8 +109,8 @@ add_decl_doc MulEquiv.toMulHom
 You should extend this class when you extend `MulEquiv`. -/
 -- TODO: make this a synonym for MulHomClass?
 @[to_additive]
-class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLike F A B] : Prop
-    where
+class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLike F A B] :
+    Prop where
   /-- Preserves multiplication. -/
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
 #align mul_equiv_class MulEquivClass
@@ -627,6 +627,10 @@ def toMonoidHom (h : M ≃* N) : M →* N :=
 theorem coe_toMonoidHom (e : M ≃* N) : ⇑e.toMonoidHom = e := rfl
 #align mul_equiv.coe_to_monoid_hom MulEquiv.coe_toMonoidHom
 #align add_equiv.coe_to_add_monoid_hom AddEquiv.coe_toAddMonoidHom
+
+@[to_additive (attr := simp)]
+theorem toMonoidHom_eq_coe (f : M ≃* N) : f.toMonoidHom = (f : M →* N) :=
+  rfl
 
 set_option linter.deprecated false in
 @[to_additive]

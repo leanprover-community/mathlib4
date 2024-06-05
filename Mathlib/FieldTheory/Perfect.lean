@@ -207,7 +207,7 @@ variable [PerfectField K]
 
 /-- A perfect field of characteristic `p` (prime) is a perfect ring. -/
 instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
-  refine' PerfectRing.ofSurjective _ _ fun y ↦ _
+  refine PerfectRing.ofSurjective _ _ fun y ↦ ?_
   let f : K[X] := X ^ p - C y
   let L := f.SplittingField
   let ι := algebraMap K L
@@ -220,7 +220,7 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
   suffices (g.map ι).natDegree = 1 by
     rw [g.natDegree_map, ← degree_eq_iff_natDegree_eq_of_pos Nat.one_pos] at this
     obtain ⟨a' : K, ha' : ι a' = a⟩ := minpoly.mem_range_of_degree_eq_one K a this
-    refine' ⟨a', NoZeroSMulDivisors.algebraMap_injective K L _⟩
+    refine ⟨a', NoZeroSMulDivisors.algebraMap_injective K L ?_⟩
     rw [RingHom.map_frobenius, ha', frobenius_def, ha_pow]
   have hg_dvd : g.map ι ∣ (X - C a) ^ p := by
     convert Polynomial.map_dvd ι (minpoly.dvd K a hfa)
@@ -232,7 +232,7 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
       natDegree_pow, natDegree_X_sub_C, mul_one]
   have hg_sep : (g.map ι).Separable := (separable_of_irreducible <| minpoly.irreducible ha).map
   rw [hg_pow] at hg_sep
-  refine' (Separable.of_pow (not_isUnit_X_sub_C a) _ hg_sep).2
+  refine (Separable.of_pow (not_isUnit_X_sub_C a) ?_ hg_sep).2
   rw [g.natDegree_map ι, ← Nat.pos_iff_ne_zero, natDegree_pos_iff_degree_pos]
   exact minpoly.degree_pos ha
 

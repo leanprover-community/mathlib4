@@ -18,7 +18,7 @@ taking values in the tensor product of the codomains of the original maps.
 
 suppress_compilation
 
-open BigOperators TensorProduct
+open TensorProduct
 
 variable {ιa ιb : Type*} [Fintype ιa] [Fintype ιb]
 variable {R' : Type*} {Mᵢ N₁ N₂ : Type*} [CommSemiring R'] [AddCommGroup N₁] [Module R' N₁]
@@ -181,9 +181,9 @@ def domCoprod' :
     (Mᵢ [⋀^ιa]→ₗ[R'] N₁) ⊗[R'] (Mᵢ [⋀^ιb]→ₗ[R'] N₂) →ₗ[R']
       (Mᵢ [⋀^ιa ⊕ ιb]→ₗ[R'] (N₁ ⊗[R'] N₂)) :=
   TensorProduct.lift <| by
-    refine'
-      LinearMap.mk₂ R' domCoprod (fun m₁ m₂ n => _) (fun c m n => _) (fun m n₁ n₂ => _)
-        fun c m n => _ <;>
+    refine
+      LinearMap.mk₂ R' domCoprod (fun m₁ m₂ n => ?_) (fun c m n => ?_) (fun m n₁ n₂ => ?_)
+        fun c m n => ?_ <;>
     · ext
       simp only [domCoprod_apply, add_apply, smul_apply, ← Finset.sum_add_distrib,
         Finset.smul_sum, MultilinearMap.sum_apply, domCoprod.summand]

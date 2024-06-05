@@ -3,9 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Hom.Defs -- FIXME: This import is bogus
 import Mathlib.Data.Finset.Image
-import Mathlib.Data.Fin.OrderHom
 import Mathlib.Data.List.FinRange
 
 #align_import data.fintype.basic from "leanprover-community/mathlib"@"d78597269638367c3863d40d45108f52207e03cf"
@@ -41,6 +39,8 @@ Types which have a surjection from/an injection to a `Fintype` are themselves fi
 See `Fintype.ofInjective` and `Fintype.ofSurjective`.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists MulAction
 
 open Function
 
@@ -322,8 +322,8 @@ theorem univ_filter_mem_range (f : α → β) [Fintype β] [DecidablePred fun y 
   exact univ_filter_exists f
 #align finset.univ_filter_mem_range Finset.univ_filter_mem_range
 
-theorem coe_filter_univ (p : α → Prop) [DecidablePred p] : (univ.filter p : Set α) = { x | p x } :=
-  by simp
+theorem coe_filter_univ (p : α → Prop) [DecidablePred p] :
+    (univ.filter p : Set α) = { x | p x } := by simp
 #align finset.coe_filter_univ Finset.coe_filter_univ
 
 @[simp] lemma subtype_eq_univ {p : α → Prop} [DecidablePred p] [Fintype {a // p a}] :
@@ -370,37 +370,6 @@ instance decidableEqEquivFintype [DecidableEq β] [Fintype α] : DecidableEq (α
 instance decidableEqEmbeddingFintype [DecidableEq β] [Fintype α] : DecidableEq (α ↪ β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) Function.Embedding.coe_injective.eq_iff
 #align fintype.decidable_eq_embedding_fintype Fintype.decidableEqEmbeddingFintype
-
-@[to_additive]
-instance decidableEqOneHomFintype [DecidableEq β] [Fintype α] [One α] [One β] :
-    DecidableEq (OneHom α β) := fun a b =>
-  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
-#align fintype.decidable_eq_one_hom_fintype Fintype.decidableEqOneHomFintype
-#align fintype.decidable_eq_zero_hom_fintype Fintype.decidableEqZeroHomFintype
-
-@[to_additive]
-instance decidableEqMulHomFintype [DecidableEq β] [Fintype α] [Mul α] [Mul β] :
-    DecidableEq (α →ₙ* β) := fun a b =>
-  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
-#align fintype.decidable_eq_mul_hom_fintype Fintype.decidableEqMulHomFintype
-#align fintype.decidable_eq_add_hom_fintype Fintype.decidableEqAddHomFintype
-
-@[to_additive]
-instance decidableEqMonoidHomFintype [DecidableEq β] [Fintype α] [MulOneClass α] [MulOneClass β] :
-    DecidableEq (α →* β) := fun a b =>
-  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
-#align fintype.decidable_eq_monoid_hom_fintype Fintype.decidableEqMonoidHomFintype
-#align fintype.decidable_eq_add_monoid_hom_fintype Fintype.decidableEqAddMonoidHomFintype
-
-instance decidableEqMonoidWithZeroHomFintype [DecidableEq β] [Fintype α] [MulZeroOneClass α]
-    [MulZeroOneClass β] : DecidableEq (α →*₀ β) := fun a b =>
-  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
-#align fintype.decidable_eq_monoid_with_zero_hom_fintype Fintype.decidableEqMonoidWithZeroHomFintype
-
-instance decidableEqRingHomFintype [DecidableEq β] [Fintype α] [Semiring α] [Semiring β] :
-    DecidableEq (α →+* β) := fun a b =>
-  decidable_of_iff ((a : α → β) = b) (Injective.eq_iff RingHom.coe_inj)
-#align fintype.decidable_eq_ring_hom_fintype Fintype.decidableEqRingHomFintype
 
 end BundledHoms
 
@@ -871,23 +840,22 @@ theorem Fin.image_castSucc (n : ℕ) :
 /-- Embed `Fin n` into `Fin (n + 1)` by prepending zero to the `univ` -/
 theorem Fin.univ_succ (n : ℕ) :
     (univ : Finset (Fin (n + 1))) =
-      Finset.cons 0 (univ.map ⟨Fin.succ, Fin.succ_injective _⟩) (by simp [map_eq_image]) :=
-  by simp [map_eq_image]
+      Finset.cons 0 (univ.map ⟨Fin.succ, Fin.succ_injective _⟩) (by simp [map_eq_image]) := by
+  simp [map_eq_image]
 #align fin.univ_succ Fin.univ_succ
 
 /-- Embed `Fin n` into `Fin (n + 1)` by appending a new `Fin.last n` to the `univ` -/
 theorem Fin.univ_castSuccEmb (n : ℕ) :
     (univ : Finset (Fin (n + 1))) =
-      Finset.cons (Fin.last n) (univ.map Fin.castSuccEmb.toEmbedding) (by simp [map_eq_image]) :=
-  by simp [map_eq_image]
+      Finset.cons (Fin.last n) (univ.map Fin.castSuccEmb) (by simp [map_eq_image]) := by
+  simp [map_eq_image]
 #align fin.univ_cast_succ Fin.univ_castSuccEmb
 
 /-- Embed `Fin n` into `Fin (n + 1)` by inserting
 around a specified pivot `p : Fin (n + 1)` into the `univ` -/
 theorem Fin.univ_succAbove (n : ℕ) (p : Fin (n + 1)) :
-    (univ : Finset (Fin (n + 1))) =
-      Finset.cons p (univ.map <| (Fin.succAboveEmb p).toEmbedding) (by simp) :=
-  by simp [map_eq_image]
+    (univ : Finset (Fin (n + 1))) = Finset.cons p (univ.map <| Fin.succAboveEmb p) (by simp) := by
+  simp [map_eq_image]
 #align fin.univ_succ_above Fin.univ_succAbove
 
 @[simp] theorem Fin.univ_image_get [DecidableEq α] (l : List α) :
@@ -1052,33 +1020,6 @@ instance Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fint
 def setFintype [Fintype α] (s : Set α) [DecidablePred (· ∈ s)] : Fintype s :=
   Subtype.fintype fun x => x ∈ s
 #align set_fintype setFintype
-
-section
-
-variable (α)
-
-/-- The `αˣ` type is equivalent to a subtype of `α × α`. -/
-@[simps]
-def unitsEquivProdSubtype [Monoid α] : αˣ ≃ { p : α × α // p.1 * p.2 = 1 ∧ p.2 * p.1 = 1 }
-    where
-  toFun u := ⟨(u, ↑u⁻¹), u.val_inv, u.inv_val⟩
-  invFun p := Units.mk (p : α × α).1 (p : α × α).2 p.prop.1 p.prop.2
-  left_inv _ := Units.ext rfl
-  right_inv _ := Subtype.ext <| Prod.ext rfl rfl
-#align units_equiv_prod_subtype unitsEquivProdSubtype
-#align units_equiv_prod_subtype_apply_coe unitsEquivProdSubtype_apply_coe
-
-/-- In a `GroupWithZero` `α`, the unit group `αˣ` is equivalent to the subtype of nonzero
-elements. -/
-@[simps]
-def unitsEquivNeZero [GroupWithZero α] : αˣ ≃ { a : α // a ≠ 0 } :=
-  ⟨fun a => ⟨a, a.ne_zero⟩, fun a => Units.mk0 _ a.prop, fun _ => Units.ext rfl, fun _ =>
-    Subtype.ext rfl⟩
-#align units_equiv_ne_zero unitsEquivNeZero
-#align units_equiv_ne_zero_apply_coe unitsEquivNeZero_apply_coe
-#align units_equiv_ne_zero_symm_apply unitsEquivNeZero_symm_apply
-
-end
 
 namespace Fintype
 variable [Fintype α]
@@ -1305,7 +1246,7 @@ theorem exists_seq_of_forall_finset_exists {α : Type*} (P : α → Prop) (r : �
         (Classical.choose_spec
             (h' (Finset.image (fun i : Fin n => f i) (Finset.univ : Finset (Fin n))))
             (by simp [IH'])).1
-    refine' ⟨f, A, fun m n hmn => _⟩
+    refine ⟨f, A, fun m n hmn => ?_⟩
     conv_rhs => rw [hf]
     rw [seqOfForallFinsetExistsAux]
     apply
@@ -1325,7 +1266,7 @@ theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : 
     [IsSymm α r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
     ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise fun m n => r (f m) (f n) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
-  refine' ⟨f, hf, fun m n hmn => _⟩
+  refine ⟨f, hf, fun m n hmn => ?_⟩
   rcases lt_trichotomy m n with (h | rfl | h)
   · exact hf' m n h
   · exact (hmn rfl).elim

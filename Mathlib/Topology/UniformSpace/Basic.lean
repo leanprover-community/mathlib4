@@ -494,7 +494,7 @@ theorem eventually_uniformity_iterate_comp_subset {s : Set (α × α)} (hs : s �
   induction' n with n ihn generalizing s
   · simpa
   rcases comp_mem_uniformity_sets hs with ⟨t, htU, hts⟩
-  refine' (ihn htU).mono fun U hU => _
+  refine (ihn htU).mono fun U hU => ?_
   rw [Function.iterate_succ_apply']
   exact
     ⟨hU.1.trans <| (subset_comp_self <| refl_le_uniformity htU).trans hts,
@@ -512,7 +512,7 @@ theorem eventually_uniformity_comp_subset {s : Set (α × α)} (hs : s ∈ 𝓤 
 theorem Filter.Tendsto.uniformity_trans {l : Filter β} {f₁ f₂ f₃ : β → α}
     (h₁₂ : Tendsto (fun x => (f₁ x, f₂ x)) l (𝓤 α))
     (h₂₃ : Tendsto (fun x => (f₂ x, f₃ x)) l (𝓤 α)) : Tendsto (fun x => (f₁ x, f₃ x)) l (𝓤 α) := by
-  refine' le_trans (le_lift'.2 fun s hs => mem_map.2 _) comp_le_uniformity
+  refine le_trans (le_lift'.2 fun s hs => mem_map.2 ?_) comp_le_uniformity
   filter_upwards [mem_map.1 (h₁₂ hs), mem_map.1 (h₂₃ hs)] with x hx₁₂ hx₂₃ using ⟨_, hx₁₂, hx₂₃⟩
 #align filter.tendsto.uniformity_trans Filter.Tendsto.uniformity_trans
 
@@ -925,10 +925,10 @@ theorem closure_eq_uniformity (s : Set <| α × α) :
 
 theorem uniformity_hasBasis_closed :
     HasBasis (𝓤 α) (fun V : Set (α × α) => V ∈ 𝓤 α ∧ IsClosed V) id := by
-  refine' Filter.hasBasis_self.2 fun t h => _
+  refine Filter.hasBasis_self.2 fun t h => ?_
   rcases comp_comp_symm_mem_uniformity_sets h with ⟨w, w_in, w_symm, r⟩
-  refine' ⟨closure w, mem_of_superset w_in subset_closure, isClosed_closure, _⟩
-  refine' Subset.trans _ r
+  refine ⟨closure w, mem_of_superset w_in subset_closure, isClosed_closure, ?_⟩
+  refine Subset.trans ?_ r
   rw [closure_eq_uniformity]
   apply iInter_subset_of_subset
   apply iInter_subset
@@ -1000,7 +1000,7 @@ theorem isOpen_iff_open_ball_subset {s : Set α} :
 /-- The uniform neighborhoods of all points of a dense set cover the whole space. -/
 theorem Dense.biUnion_uniformity_ball {s : Set α} {U : Set (α × α)} (hs : Dense s) (hU : U ∈ 𝓤 α) :
     ⋃ x ∈ s, ball x U = univ := by
-  refine' iUnion₂_eq_univ_iff.2 fun y => _
+  refine iUnion₂_eq_univ_iff.2 fun y => ?_
   rcases hs.inter_nhds_nonempty (mem_nhds_right y hU) with ⟨x, hxs, hxy : (x, y) ∈ U⟩
   exact ⟨x, hxs, hxy⟩
 #align dense.bUnion_uniformity_ball Dense.biUnion_uniformity_ball
@@ -1027,7 +1027,7 @@ of `𝓤 α`. -/
 theorem uniformity_hasBasis_open_symmetric :
     HasBasis (𝓤 α) (fun V : Set (α × α) => V ∈ 𝓤 α ∧ IsOpen V ∧ SymmetricRel V) id := by
   simp only [← and_assoc]
-  refine' uniformity_hasBasis_open.restrict fun s hs => ⟨symmetrizeRel s, _⟩
+  refine uniformity_hasBasis_open.restrict fun s hs => ⟨symmetrizeRel s, ?_⟩
   exact
     ⟨⟨symmetrize_mem_uniformity hs.1, IsOpen.inter hs.2 (hs.2.preimage continuous_swap)⟩,
       symmetric_symmetrizeRel s, symmetrizeRel_subset_self s⟩
@@ -1301,8 +1301,8 @@ namespace UniformSpace
 
 theorem to_nhds_mono {u₁ u₂ : UniformSpace α} (h : u₁ ≤ u₂) (a : α) :
     @nhds _ (@UniformSpace.toTopologicalSpace _ u₁) a ≤
-      @nhds _ (@UniformSpace.toTopologicalSpace _ u₂) a :=
-  by rw [@nhds_eq_uniformity α u₁ a, @nhds_eq_uniformity α u₂ a]; exact lift'_mono h le_rfl
+      @nhds _ (@UniformSpace.toTopologicalSpace _ u₂) a := by
+  rw [@nhds_eq_uniformity α u₁ a, @nhds_eq_uniformity α u₂ a]; exact lift'_mono h le_rfl
 #align to_nhds_mono UniformSpace.to_nhds_mono
 
 theorem toTopologicalSpace_mono {u₁ u₂ : UniformSpace α} (h : u₁ ≤ u₂) :
@@ -1850,7 +1850,7 @@ theorem Disjoint.exists_uniform_thickening {A B : Set α} (hA : IsCompact A) (hB
   rw [(hA.nhdsSet_basis_uniformity (Filter.basis_sets _)).mem_iff] at this
   rcases this with ⟨U, hU, hUAB⟩
   rcases comp_symm_mem_uniformity_sets hU with ⟨V, hV, hVsymm, hVU⟩
-  refine' ⟨V, hV, Set.disjoint_left.mpr fun x => _⟩
+  refine ⟨V, hV, Set.disjoint_left.mpr fun x => ?_⟩
   simp only [mem_iUnion₂]
   rintro ⟨a, ha, hxa⟩ ⟨b, hb, hxb⟩
   rw [mem_ball_symmetry hVsymm] at hxa hxb

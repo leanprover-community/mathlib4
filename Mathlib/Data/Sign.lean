@@ -356,14 +356,14 @@ theorem sign_neg (ha : a < 0) : sign a = -1 := by rwa [sign_apply, if_neg <| asy
 #align sign_neg sign_neg
 
 theorem sign_eq_one_iff : sign a = 1 ↔ 0 < a := by
-  refine' ⟨fun h => _, fun h => sign_pos h⟩
+  refine ⟨fun h => ?_, fun h => sign_pos h⟩
   by_contra hn
   rw [sign_apply, if_neg hn] at h
   split_ifs at h
 #align sign_eq_one_iff sign_eq_one_iff
 
 theorem sign_eq_neg_one_iff : sign a = -1 ↔ a < 0 := by
-  refine' ⟨fun h => _, fun h => sign_neg h⟩
+  refine ⟨fun h => ?_, fun h => sign_neg h⟩
   rw [sign_apply] at h
   split_ifs at h
   assumption
@@ -383,7 +383,7 @@ lemma StrictMono.sign_comp {β F : Type*} [Zero β] [Preorder β] [DecidableRel 
 
 @[simp]
 theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
-  refine' ⟨fun h => _, fun h => h.symm ▸ sign_zero⟩
+  refine ⟨fun h => ?_, fun h => h.symm ▸ sign_zero⟩
   rw [sign_apply] at h
   split_ifs at h with h_1 h_2
   cases' h
@@ -499,7 +499,6 @@ theorem Right.sign_neg [CovariantClass α α (Function.swap (· + ·)) (· < ·)
 end AddGroup
 
 section LinearOrderedAddCommGroup
-open BigOperators
 
 variable [LinearOrderedAddCommGroup α]
 
@@ -509,7 +508,7 @@ https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Decidable.2
 attribute [local instance] LinearOrderedAddCommGroup.decidableLT
 
 theorem sign_sum {ι : Type*} {s : Finset ι} {f : ι → α} (hs : s.Nonempty) (t : SignType)
-    (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i in s, f i) = t := by
+    (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i ∈ s, f i) = t := by
   cases t
   · simp_rw [zero_eq_zero, sign_eq_zero_iff] at h ⊢
     exact Finset.sum_eq_zero h
@@ -531,18 +530,16 @@ end Int
 
 open Finset Nat
 
-open BigOperators
-
 /- Porting note: For all the following theorems, needed to add {α : Type u_1} to the assumptions
 because lean4 infers α to live in a different universe u_2 otherwise -/
 private theorem exists_signed_sum_aux {α : Type u_1} [DecidableEq α] (s : Finset α) (f : α → ℤ) :
     ∃ (β : Type u_1) (t : Finset β) (sgn : β → SignType) (g : β → α),
       (∀ b, g b ∈ s) ∧
-        (t.card = ∑ a in s, (f a).natAbs) ∧
-          ∀ a ∈ s, (∑ b in t, if g b = a then (sgn b : ℤ) else 0) = f a := by
-  refine'
+        (t.card = ∑ a ∈ s, (f a).natAbs) ∧
+          ∀ a ∈ s, (∑ b ∈ t, if g b = a then (sgn b : ℤ) else 0) = f a := by
+  refine
     ⟨(Σ _ : { x // x ∈ s }, ℕ), Finset.univ.sigma fun a => range (f a).natAbs,
-      fun a => sign (f a.1), fun a => a.1, fun a => a.1.2, _, _⟩
+      fun a => sign (f a.1), fun a => a.1, fun a => a.1.2, ?_, ?_⟩
   · simp [sum_attach (f := fun a => (f a).natAbs)]
   · intro x hx
     simp [sum_sigma, hx, ← Int.sign_eq_sign, Int.sign_mul_abs, mul_comm |f _|,
@@ -552,7 +549,7 @@ private theorem exists_signed_sum_aux {α : Type u_1} [DecidableEq α] (s : Fins
 theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : α → ℤ) :
     ∃ (β : Type u_1) (_ : Fintype β) (sgn : β → SignType) (g : β → α),
       (∀ b, g b ∈ s) ∧
-        (Fintype.card β = ∑ a in s, (f a).natAbs) ∧
+        (Fintype.card β = ∑ a ∈ s, (f a).natAbs) ∧
           ∀ a ∈ s, (∑ b, if g b = a then (sgn b : ℤ) else 0) = f a :=
   let ⟨β, t, sgn, g, hg, ht, hf⟩ := exists_signed_sum_aux s f
   ⟨t, inferInstance, fun b => sgn b, fun b => g b, fun b => hg b, by simp [ht], fun a ha =>
@@ -561,15 +558,15 @@ theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : 
 
 /-- We can decompose a sum of absolute value less than `n` into a sum of at most `n` signs. -/
 theorem exists_signed_sum' {α : Type u_1} [Nonempty α] [DecidableEq α] (s : Finset α) (f : α → ℤ)
-    (n : ℕ) (h : (∑ i in s, (f i).natAbs) ≤ n) :
+    (n : ℕ) (h : (∑ i ∈ s, (f i).natAbs) ≤ n) :
     ∃ (β : Type u_1) (_ : Fintype β) (sgn : β → SignType) (g : β → α),
       (∀ b, g b ∉ s → sgn b = 0) ∧
         Fintype.card β = n ∧ ∀ a ∈ s, (∑ i, if g i = a then (sgn i : ℤ) else 0) = f a := by
   obtain ⟨β, _, sgn, g, hg, hβ, hf⟩ := exists_signed_sum s f
-  refine'
-    ⟨Sum β (Fin (n - ∑ i in s, (f i).natAbs)), inferInstance, Sum.elim sgn 0,
+  refine
+    ⟨Sum β (Fin (n - ∑ i ∈ s, (f i).natAbs)), inferInstance, Sum.elim sgn 0,
       Sum.elim g (Classical.arbitrary (Fin (n - Finset.sum s fun i => Int.natAbs (f i)) → α)),
-        _, by simp [hβ, h], fun a ha => by simp [hf _ ha]⟩
+        ?_, by simp [hβ, h], fun a ha => by simp [hf _ ha]⟩
   rintro (b | b) hb
   · cases hb (hg _)
   · rfl

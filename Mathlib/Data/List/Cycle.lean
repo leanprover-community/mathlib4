@@ -3,9 +3,7 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Data.Fintype.List
-import Mathlib.Data.List.Rotate
 
 #align_import data.list.cycle from "leanprover-community/mathlib"@"7413128c3bcb3b0818e3e18720abc9ea3100fb49"
 
@@ -24,6 +22,7 @@ is different.
 
 -/
 
+assert_not_exists MonoidWithZero
 
 namespace List
 
@@ -201,7 +200,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
     rw [← get?_eq_get, dropLast_eq_take, get?_take, get?, get?_eq_get, Option.some_inj] at hk'
     · rw [hk']
       simp only [getLast_eq_get, length_cons, ge_iff_le, Nat.succ_sub_succ_eq_sub,
-        nonpos_iff_eq_zero, add_eq_zero_iff, and_false, tsub_zero, get_cons_succ]
+        nonpos_iff_eq_zero, add_eq_zero_iff, and_false, Nat.sub_zero, get_cons_succ]
     simpa using hk
 #align list.next_last_cons List.next_getLast_cons
 
@@ -277,7 +276,7 @@ theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
       intro H
       suffices (i + 1 : ℕ) = 0 by simpa
       rw [nodup_iff_injective_get] at hn
-      refine' Fin.val_eq_of_eq (@hn ⟨i + 1, hi⟩ ⟨0, by simp⟩ _)
+      refine Fin.val_eq_of_eq (@hn ⟨i + 1, hi⟩ ⟨0, by simp⟩ ?_)
       simpa using H
     have hi' : i ≤ l.length := Nat.le_of_lt_succ (Nat.succ_lt_succ_iff.1 hi)
     rcases hi'.eq_or_lt with (hi' | hi')
@@ -345,12 +344,12 @@ theorem prev_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
       · intro H
         suffices n.succ.succ = 0 by simpa
         rw [nodup_iff_nthLe_inj] at h
-        refine' h _ _ hn Nat.succ_pos' _
+        refine h _ _ hn Nat.succ_pos' ?_
         simpa using H
       · intro H
         suffices n.succ.succ = 1 by simpa
         rw [nodup_iff_nthLe_inj] at h
-        refine' h _ _ hn (Nat.succ_lt_succ Nat.succ_pos') _
+        refine h _ _ hn (Nat.succ_lt_succ Nat.succ_pos') ?_
         simpa using H
 #align list.prev_nth_le List.prev_nthLe
 
@@ -381,7 +380,7 @@ theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
   · have : (n + 1 + length tl) % (length tl + 1) = n := by
       rw [length_cons, Nat.succ_eq_add_one] at hn
       rw [add_assoc, add_comm 1, Nat.add_mod_right, Nat.mod_eq_of_lt hn]
-    simp only [length_cons, Nat.succ_sub_succ_eq_sub, tsub_zero, Nat.succ_eq_add_one, this]
+    simp only [length_cons, Nat.succ_sub_succ_eq_sub, Nat.sub_zero, Nat.succ_eq_add_one, this]
 #align list.prev_next List.prev_next
 
 set_option linter.deprecated false in
@@ -402,17 +401,16 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
     prev l.reverse x (mem_reverse.mpr hx) = next l x hx := by
   obtain ⟨k, hk, rfl⟩ := nthLe_of_mem hx
   have lpos : 0 < l.length := k.zero_le.trans_lt hk
-  have key : l.length - 1 - k < l.length :=
-    (Nat.sub_le _ _).trans_lt (tsub_lt_self lpos Nat.succ_pos')
+  have key : l.length - 1 - k < l.length := by omega
   rw [← nthLe_pmap l.next (fun _ h => h) (by simpa using hk)]
   simp_rw [← nthLe_reverse l k (key.trans_le (by simp)), pmap_next_eq_rotate_one _ h]
   rw [← nthLe_pmap l.reverse.prev fun _ h => h]
   · simp_rw [pmap_prev_eq_rotate_length_sub_one _ (nodup_reverse.mpr h), rotate_reverse,
-      length_reverse, Nat.mod_eq_of_lt (tsub_lt_self lpos Nat.succ_pos'),
-      tsub_tsub_cancel_of_le (Nat.succ_le_of_lt lpos)]
+      length_reverse, Nat.mod_eq_of_lt (Nat.sub_lt lpos Nat.succ_pos'),
+      Nat.sub_sub_self (Nat.succ_le_of_lt lpos)]
     rw [← nthLe_reverse]
-    · simp [tsub_tsub_cancel_of_le (Nat.le_sub_one_of_lt hk)]
-    · simpa using (Nat.sub_le _ _).trans_lt (tsub_lt_self lpos Nat.succ_pos')
+    · simp [Nat.sub_sub_self (Nat.le_sub_one_of_lt hk)]
+    · simpa using (Nat.sub_le _ _).trans_lt (Nat.sub_lt lpos Nat.succ_pos')
     · simpa
 #align list.prev_reverse_eq_next List.prev_reverse_eq_next
 
@@ -592,8 +590,7 @@ def Subsingleton (s : Cycle α) : Prop :=
   s.length ≤ 1
 #align cycle.subsingleton Cycle.Subsingleton
 
-theorem subsingleton_nil : Subsingleton (@nil α) :=
-  zero_le_one
+theorem subsingleton_nil : Subsingleton (@nil α) := Nat.zero_le _
 #align cycle.subsingleton_nil Cycle.subsingleton_nil
 
 theorem length_subsingleton_iff {s : Cycle α} : Subsingleton s ↔ length s ≤ 1 :=
@@ -626,8 +623,8 @@ theorem nontrivial_coe_nodup_iff {l : List α} (hl : l.Nodup) :
   · simp
   · simp
   · simp only [mem_cons, exists_prop, mem_coe_iff, List.length, Ne, Nat.succ_le_succ_iff,
-      zero_le, iff_true_iff]
-    refine' ⟨hd, hd', _, by simp⟩
+      Nat.zero_le, iff_true_iff]
+    refine ⟨hd, hd', ?_, by simp⟩
     simp only [not_or, mem_cons, nodup_cons] at hl
     exact hl.left.left
 #align cycle.nontrivial_coe_nodup_iff Cycle.nontrivial_coe_nodup_iff
@@ -991,11 +988,11 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
   rw [Cycle.chain_coe_cons]
   apply Pairwise.chain
   rw [pairwise_cons]
-  refine'
-    ⟨fun b hb => _,
+  refine
+    ⟨fun b hb => ?_,
       pairwise_append.2
         ⟨pairwise_of_forall_mem_list fun b hb c hc => hs b (Hl hb) c (Hl hc),
-          pairwise_singleton r a, fun b hb c hc => _⟩⟩
+          pairwise_singleton r a, fun b hb c hc => ?_⟩⟩
   · rw [mem_append] at hb
     cases' hb with hb hb
     · exact hs a Ha b (Hl hb)

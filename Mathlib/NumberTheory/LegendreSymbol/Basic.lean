@@ -67,7 +67,7 @@ theorem euler_criterion {a : ZMod p} (ha : a ≠ 0) : IsSquare (a : ZMod p) ↔ 
     have hy : y ≠ 0 := by
       rintro rfl
       simp [zero_pow, mul_zero, ne_eq, not_true] at ha
-    refine' ⟨Units.mk0 y hy, _⟩; simp
+    refine ⟨Units.mk0 y hy, ?_⟩; simp
 #align zmod.euler_criterion ZMod.euler_criterion
 
 /-- If `a : ZMod p` is nonzero, then `a^(p/2)` is either `1` or `-1`. -/

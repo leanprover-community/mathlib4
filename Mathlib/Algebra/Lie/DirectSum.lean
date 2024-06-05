@@ -45,13 +45,13 @@ variable [∀ i, LieRingModule L (M i)] [∀ i, LieModule R L (M i)]
 instance : LieRingModule L (⨁ i, M i) where
   bracket x m := m.mapRange (fun i m' => ⁅x, m'⁆) fun i => lie_zero x
   add_lie x y m := by
-    refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
+    refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
     simp only [mapRange_apply, add_apply, add_lie]
   lie_add x m n := by
-    refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
+    refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
     simp only [mapRange_apply, add_apply, lie_add]
   leibniz_lie x y m := by
-    refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
+    refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
     simp only [mapRange_apply, lie_lie, add_apply, sub_add_cancel]
 
 @[simp]
@@ -61,10 +61,10 @@ theorem lie_module_bracket_apply (x : L) (m : ⨁ i, M i) (i : ι) : ⁅x, m⁆ 
 
 instance : LieModule R L (⨁ i, M i) where
   smul_lie t x m := by
-    refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext i`
+    refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext i`
     simp only [smul_lie, lie_module_bracket_apply, smul_apply]
   lie_smul t x m := by
-    refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext i`
+    refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext i`
     simp only [lie_smul, lie_module_bracket_apply, smul_apply]
 
 variable (R ι L M)
@@ -73,7 +73,7 @@ variable (R ι L M)
 def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
   { lof R ι M j with
     map_lie' := fun {x m} => by
-      refine' DFinsupp.ext fun i => _ -- Porting note: Originally `ext i`
+      refine DFinsupp.ext fun i => ?_ -- Porting note: Originally `ext i`
       by_cases h : j = i
       · rw [← h]; simp
       · -- This used to be the end of the proof before leanprover/lean4#2644
@@ -103,16 +103,16 @@ instance lieRing : LieRing (⨁ i, L i) :=
   { (inferInstance : AddCommGroup _) with
     bracket := zipWith (fun i => fun x y => ⁅x, y⁆) fun i => lie_zero 0
     add_lie := fun x y z => by
-      refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
+      refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
       simp only [zipWith_apply, add_apply, add_lie]
     lie_add := fun x y z => by
-      refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
+      refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
       simp only [zipWith_apply, add_apply, lie_add]
     lie_self := fun x => by
-      refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
+      refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
       simp only [zipWith_apply, add_apply, lie_self, zero_apply]
     leibniz_lie := fun x y z => by
-      refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
+      refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
       simp only [sub_apply, zipWith_apply, add_apply, zero_apply]
       apply leibniz_lie }
 #align direct_sum.lie_ring DirectSum.lieRing
@@ -147,7 +147,7 @@ theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
 instance lieAlgebra : LieAlgebra R (⨁ i, L i) :=
   { (inferInstance : Module R _) with
     lie_smul := fun c x y => by
-      refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
+      refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
       simp only [zipWith_apply, smul_apply, bracket_apply, lie_smul] }
 #align direct_sum.lie_algebra DirectSum.lieAlgebra
 
@@ -159,7 +159,7 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
   { lof R ι L j with
     toFun := of L j
     map_lie' := fun {x y} => by
-      refine' DFinsupp.ext fun i => _ -- Porting note: Originally `ext i`
+      refine DFinsupp.ext fun i => ?_ -- Porting note: Originally `ext i`
       by_cases h : j = i
       · rw [← h]
         -- This used to be the end of the proof before leanprover/lean4#2644

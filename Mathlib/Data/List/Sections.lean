@@ -21,7 +21,7 @@ namespace List
 variable {α β : Type*}
 
 theorem mem_sections {L : List (List α)} {f} : f ∈ sections L ↔ Forall₂ (· ∈ ·) f L := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · induction L generalizing f
     · cases mem_singleton.1 h
       exact Forall₂.nil
