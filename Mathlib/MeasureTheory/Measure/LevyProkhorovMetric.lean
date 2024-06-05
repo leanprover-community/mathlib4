@@ -632,21 +632,9 @@ def homeomorph_probabilityMeasure_levyProkhorov :
 /-- The topology of convergence in distribution on a separable space is pseudo-metrizable. -/
 instance (X : Type*) [TopologicalSpace X] [PseudoMetrizableSpace X] [SeparableSpace X]
     [MeasurableSpace X] [OpensMeasurableSpace X] :
-    PseudoMetrizableSpace (ProbabilityMeasure X) := by
-  obtain ⟨psmetr, h⟩ := PseudoMetrizableSpace.exists_pseudo_metric (X := X)
-  have opensMble : @OpensMeasurableSpace X psmetr.toUniformSpace.toTopologicalSpace _ := by
-    convert ‹OpensMeasurableSpace X›
-  have sepble : @SeparableSpace X psmetr.toUniformSpace.toTopologicalSpace := by
-    convert ‹SeparableSpace X›
-  let homeo := @homeomorph_probabilityMeasure_levyProkhorov X psmetr sepble _ opensMble
-  have ind := @Homeomorph.inducing (ProbabilityMeasure X) (LevyProkhorov (ProbabilityMeasure X))
-          (@ProbabilityMeasure.instTopologicalSpace X _
-            psmetr.toUniformSpace.toTopologicalSpace opensMble) _ homeo
-  convert @Inducing.pseudoMetrizableSpace (ProbabilityMeasure X)
-          (LevyProkhorov (ProbabilityMeasure X))
-          (@ProbabilityMeasure.instTopologicalSpace X _
-            psmetr.toUniformSpace.toTopologicalSpace opensMble) _ _ _ ind
-  exact h.symm
+    PseudoMetrizableSpace (ProbabilityMeasure X) :=
+  letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
+  (homeomorph_probabilityMeasure_levyProkhorov (Ω := X)).inducing.pseudoMetrizableSpace
 
 end Levy_Prokhorov_metrizes_convergence_in_distribution
 
