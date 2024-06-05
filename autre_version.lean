@@ -12,38 +12,48 @@ open MeasureTheory ProbabilityTheory MeasurableSpaceGraph Set ENNReal Filter Top
 variable {X : ℕ → Type*} [∀ n, Nonempty (X n)] [∀ n, MeasurableSpace (X n)]
 variable (κ : (k : ℕ) → kernel ((transitionGraph X).node k) ((transitionGraph X).path k (k + 1)))
 variable [∀ k, IsMarkovKernel (κ k)]
-variable (x : (transitionGraph X).node 0)
 
-noncomputable def family :
+def zer (x₀ : X 0) : (transitionGraph X).node 0 := by
+  intro i
+  have : 0 = i.1 := by
+    have := i.2
+    simp at this
+    exact this.symm
+  exact this ▸ x₀
+
+theorem measurable_zer : Measurable (zer (X := X)) := by
+  simp (config := { unfoldPartialApp := true }) only [zer]
+  refine measurable_pi_lambda _ (fun i ↦ ?_)
+  simp_rw [eqRec_eq_cast]
+  apply measurable_cast
+  have : 0 = i.1 := by
+    have := i.2
+    simp at this
+    exact this.symm
+  aesop
+
+noncomputable def family (x₀ : X 0) :
   (S : Finset ℕ+) → Measure ((k : S) → X k) := fun S ↦
-  ((MeasurableSpaceGraph.transition κ).ker 0 (S.sup id).1 x).map
-  (fun x (i : S) ↦ x ⟨i.1,
-    mem_Ioc.2 ⟨mem_Ioi.1 i.1.2, Finset.le_sup (f := id) i.2⟩⟩)
+  ((MeasurableSpaceGraph.transition κ).ker 0 (S.sup id).1 (zer x₀)).map
+  (fun x (i : S) ↦ x ⟨i.1, ⟨i.1.2, Finset.le_sup (f := id) i.2⟩⟩)
 
-variable (μ : Measure ((transitionGraph X).node 0)) [IsProbabilityMeasure μ]
-
-theorem map_compProd {X Y Z : Type*} [MeasurableSpace X] [MeasurableSpace Y] [MeasurableSpace Z]
-    (μ : Measure X) (κ : kernel X Y) {f : Y → Z} (mf : Measurable f) :
-    (μ ⊗ₘ κ).map (Prod.map id f) = μ ⊗ₘ (kernel.map κ f mf) := by sorry
-
-theorem markov1 (M : MeasurableSpaceGraph ℕ) {i j : ℕ} (κ : kernel (M.node i) (M.path i j))
-    [IsMarkovKernel κ] (hij : i < j) (hjk : j < k)
-    (η : kernel (M.node j) (M.path j k)) [IsMarkovKernel η] :
+theorem markov1 {M : MeasurableSpaceGraph ℕ} {i j k : ℕ}
+    (κ : kernel (M.node i) (M.path i j)) (η : kernel (M.node j) (M.path j k))
+    [IsMarkovKernel κ] [IsMarkovKernel η] (hij : i < j) (hjk : j < k) :
     IsMarkovKernel (M.compProd κ η) := by
   rw [compProd]
-  simp [hij, hjk, split]
+  simp only [hij, hjk, and_self, ↓reduceDite, split]
   infer_instance
 
-theorem markov2 {M : MeasurableSpaceGraph ℕ} {i j : ℕ}
-    (κ : kernel (M.node i) (M.path i j)) (h : j = k) [IsMarkovKernel κ] :
-    IsMarkovKernel (castPath κ h) := by
+theorem markov2 {M : MeasurableSpaceGraph ℕ} {i j k : ℕ}
+    (κ : kernel (M.node i) (M.path i j)) [IsMarkovKernel κ] (hjk : j = k)  :
+    IsMarkovKernel (castPath κ hjk) := by
   rw [castPath]; infer_instance
 
-theorem markov {M : MeasurableSpaceGraph ℕ} {i j : ℕ}
+theorem markov {M : MeasurableSpaceGraph ℕ} {i j k : ℕ}
     (κ₀ : kernel (M.node i) (M.path i j)) [h₀ : IsMarkovKernel κ₀]
-    (κ : ∀ k, kernel (M.node k) (M.path k (k + 1)))
-    [∀ k, IsMarkovKernel (κ k)]
-    (k : ℕ) (hij : i < j) (hk : j ≤ k) :
+    (κ : ∀ k, kernel (M.node k) (M.path k (k + 1))) [∀ k, IsMarkovKernel (κ k)]
+    (hij : i < j) (hjk : j ≤ k) :
     IsMarkovKernel (kerInterval κ₀ κ k) := by
   induction k with
   | zero => linarith
@@ -51,26 +61,20 @@ theorem markov {M : MeasurableSpaceGraph ℕ} {i j : ℕ}
     rw [kerInterval_succ]
     split_ifs with h
     · apply markov2
-    · have : j ≤ n := Nat.lt_succ.1 <| lt_iff_le_and_ne.2 ⟨hk, h⟩
-      have aux := hn this
-      apply markov1 M
-      · exact lt_of_lt_of_le hij this
-      · simp
+    · have : j ≤ n := Nat.lt_succ.1 <| lt_iff_le_and_ne.2 ⟨hjk, h⟩
+      have _ := hn this
+      exact markov1 _ _ (lt_of_lt_of_le hij this) n.lt_succ_self
 
 theorem markov_kerNat {M : MeasurableSpaceGraph ℕ} {i j : ℕ}
     (κ : ∀ k, kernel (M.node k) (M.path k (k + 1))) [∀ k, IsMarkovKernel (κ k)] (hij : i < j) :
     IsMarkovKernel (kerNat κ i j) := by
-  rw [kerNat]
-  simp [hij]
-  apply markov
-  · simp
-  · linarith
+  simp only [kerNat, hij, ↓reduceIte]
+  exact markov _ _ i.lt_succ_self (Nat.succ_le.2 hij)
 
 theorem test {k l : ℕ} (hk : 0 < k) (hkl : k ≤ l) :
     kernel.map ((transition κ).ker 0 l)
-    (fun (x : ((i : Ioc 0 l) → X i)) (i : Ioc 0 k) ↦
-      x ⟨i.1, Ioc_subset_Ioc_right hkl i.2⟩)
-    (measurable_proj₂ ..) =
+      (fun (x : ((i : Ioc 0 l) → X i)) (i : Ioc 0 k) ↦ x ⟨i.1, Ioc_subset_Ioc_right hkl i.2⟩)
+      (measurable_proj₂ ..) =
     (transition κ).ker 0 k := by
   by_cases h : k = l
   · have : (fun (x : ((i : Ioc 0 l) → X i)) (i : Ioc 0 k) ↦
@@ -80,8 +84,7 @@ theorem test {k l : ℕ} (hk : 0 < k) (hkl : k ≤ l) :
       enter [2]
       rw [this]
     simp only [Equiv.toFun_as_coe, MeasurableEquiv.coe_toEquiv]
-    simp_rw [transition_ker]
-    apply (kerNat_cast _ _ _ _ _).symm
+    exact (kerNat_cast _ _ _ _ _).symm
   · have hkl : k < l := lt_iff_le_and_ne.2 ⟨hkl, h⟩
     ext x s ms
     rw [kernel.map_apply', transition_ker κ 0 l, ← compProd_kerNat κ hk hkl,
@@ -136,7 +139,8 @@ theorem kernel.map_map {X Y Z T : Type*} [MeasurableSpace X] [MeasurableSpace Y]
   · exact hg
   · exact hf
 
-theorem proj_family : IsProjectiveMeasureFamily (α := fun k : ℕ+ ↦ X k) (family κ x) := by
+theorem proj_family (x₀ : X 0) :
+    IsProjectiveMeasureFamily (α := fun k : ℕ+ ↦ X k) (family κ x₀) := by
   intro S T hTS
   have aux1 : T.sup id ≤ S.sup id := Finset.sup_mono hTS
   have aux : Ioc 0 (T.sup id).1 ⊆ Ioc 0 (S.sup id).1 := Ioc_subset_Ioc_right aux1
@@ -220,26 +224,6 @@ noncomputable def kerint (k N : ℕ) (f : ((n : ℕ+) → X n) → ℝ≥0∞) (
   exact if k < N then ∫⁻ z : (i : Ioc k N) → X i,
     f (updateSet x _ (pioc_ioc z)) ∂((transition κ).ker k N (fus x₀ (fun i ↦ x i.1)))
     else f x
-
-def zer (x₀ : X 0) : (transitionGraph X).node 0 := by
-  intro i
-  have : 0 = i.1 := by
-    have := i.2
-    simp at this
-    exact this.symm
-  exact this ▸ x₀
-
-theorem measurable_zer : Measurable (zer (X := X)) := by
-  simp (config := { unfoldPartialApp := true }) only [zer]
-  rw [measurable_pi_iff]
-  intro i
-  simp_rw [eqRec_eq_cast]
-  apply measurable_cast
-  have : 0 = i.1 := by
-    have := i.2
-    simp at this
-    exact this.symm
-  aesop
 
 theorem sup_fpioc {N : ℕ} (hN : 0 < N) : ((fpioc 0 N).sup id).1 = N := by
   simp only [fpioc, zero_add, PNat.mk_ofNat]
@@ -344,7 +328,7 @@ lemma omg {s t : Set ℕ} {u : Set ℕ+} (h : s = t) (h' : ((i : s) → X i) = (
 theorem kolContent_eq_kerint {N : ℕ} (hN : 0 < N) {S : Set ((i : fpioc 0 N) → X i)}
     (mS : MeasurableSet S)
     (x₀ : X 0) (x : (n : ℕ+) → X n) :
-    kolContent (α := fun n : ℕ+ ↦ X n) (proj_family κ (zer x₀)) (cylinder (fpioc 0 N) S) =
+    kolContent (α := fun n : ℕ+ ↦ X n) (proj_family κ x₀) (cylinder (fpioc 0 N) S) =
     kerint κ 0 N ((cylinder _ S).indicator 1) x₀ x := by
   rw [kolContent_congr _
       (by rw [mem_cylinders]; exact ⟨fpioc 0 N, S, mS, rfl⟩) rfl mS, family]
@@ -798,12 +782,12 @@ which allows to extend it to the $\sigma$-algebra by Carathéodory's theorem. -/
 theorem firstLemma (A : ℕ → Set ((n : ℕ+) → X n)) (A_mem : ∀ n, A n ∈ cylinders _)
     (A_anti : Antitone A) (A_inter : ⋂ n, A n = ∅) (x₀ : X 0) :
     Tendsto (fun n ↦ kolContent
-    (proj_family κ (zer x₀)) (A n)) atTop (𝓝 0) := by
+    (proj_family κ x₀) (A n)) atTop (𝓝 0) := by
   -- `Aₙ` is a cylinder, it can be writtent `cylinder sₙ Sₙ`.
   have A_cyl n : ∃ N S, 0 < N ∧ MeasurableSet S ∧ A n = cylinder (fpioc 0 N) S := by
     simpa [cylinders_pnat] using A_mem n
   choose N S hN mS A_eq using A_cyl
-  set proj := proj_family κ (zer x₀)
+  set proj := proj_family κ x₀
   -- We write `χₙ` for the indicator function of `Aₙ`.
   let χ n := (A n).indicator (1 : ((n : ℕ+) → X n) → ℝ≥0∞)
   -- `χₙ` is measurable.
@@ -1009,13 +993,13 @@ theorem firstLemma (A : ℕ → Set ((n : ℕ+) → X n)) (A_mem : ∀ n, A n �
 theorem kolContent_sigma_subadditive_proj (x₀ : X 0) ⦃f : ℕ → Set ((n : ℕ+) → X n)⦄
     (hf : ∀ n, f n ∈ cylinders (fun n : ℕ+ ↦ X n))
     (hf_Union : (⋃ n, f n) ∈ cylinders (fun n : ℕ+ ↦ X n)) :
-    kolContent (proj_family κ (zer x₀)) (⋃ n, f n) ≤
-    ∑' n, kolContent (proj_family κ (zer x₀)) (f n) := by
+    kolContent (proj_family κ x₀) (⋃ n, f n) ≤
+    ∑' n, kolContent (proj_family κ x₀) (f n) := by
   classical
-  refine (kolContent (proj_family κ (zer x₀))).sigma_subadditive_of_sigma_additive
+  refine (kolContent (proj_family κ x₀)).sigma_subadditive_of_sigma_additive
     setRing_cylinders (fun f hf hf_Union hf' ↦ ?_) f hf hf_Union
   refine sigma_additive_addContent_of_tendsto_zero setRing_cylinders
-    (kolContent (proj_family κ (zer x₀))) (fun h ↦ ?_) ?_ hf hf_Union hf'
+    (kolContent (proj_family κ x₀)) (fun h ↦ ?_) ?_ hf hf_Union hf'
   · rename_i s
     obtain ⟨N, S, hN, mS, s_eq⟩ : ∃ N S, 0 < N ∧ MeasurableSet S ∧ s = cylinder (fpioc 0 N) S := by
       simpa [cylinders_pnat] using h
@@ -1037,13 +1021,13 @@ theorem kolContent_sigma_subadditive_proj (x₀ : X 0) ⦃f : ℕ → Set ((n : 
 
 noncomputable def ionescu_tulcea_fun (x₀ : X 0) : Measure ((n : ℕ+) → X n) := by
   exact Measure.ofAddContent setSemiringCylinders generateFrom_cylinders
-    (kolContent (proj_family κ (zer x₀)))
+    (kolContent (proj_family κ x₀))
     (kolContent_sigma_subadditive_proj κ x₀)
 
 theorem proba_ionescu (x₀ : X 0) : IsProbabilityMeasure (ionescu_tulcea_fun κ x₀) := by
   constructor
   rw [← cylinder_univ {1}, ionescu_tulcea_fun, Measure.ofAddContent_eq,
-      fun x₀ ↦ kolContent_congr (proj_family κ (zer x₀)) _ rfl MeasurableSet.univ]
+      fun x₀ ↦ kolContent_congr (proj_family κ x₀) _ rfl MeasurableSet.univ]
   simp only [family]
   rw [← kernel.map_apply]
   have : IsMarkovKernel ((transition κ).ker 0 (Finset.sup ({1} : Finset ℕ+) id).1) := by
@@ -1063,7 +1047,7 @@ theorem proba_ionescu (x₀ : X 0) : IsProbabilityMeasure (ionescu_tulcea_fun κ
 /-- The product measure is the projective limit of the partial product measures. This ensures
 uniqueness and expresses the value of the product measures applied to cylinders. -/
 theorem isProjectiveLimit_ionescu_tulcea_fun (x₀ : X 0) :
-    IsProjectiveLimit (ionescu_tulcea_fun κ x₀) (family κ (zer x₀)) := by
+    IsProjectiveLimit (ionescu_tulcea_fun κ x₀) (family κ x₀) := by
   intro I
   ext1 s hs
   rw [Measure.map_apply _ hs]
@@ -1072,7 +1056,7 @@ theorem isProjectiveLimit_ionescu_tulcea_fun (x₀ : X 0) :
       cylinders (fun n : ℕ+ ↦ X n.1) := by
     rw [mem_cylinders]; exact ⟨I, s, hs, rfl⟩
   rw [ionescu_tulcea_fun, Measure.ofAddContent_eq,
-    kolContent_congr (proj_family κ (zer x₀))]
+    kolContent_congr (proj_family κ x₀)]
   · exact h_mem
   · rfl
   · exact hs
@@ -1091,10 +1075,10 @@ theorem measurable_ionescu : Measurable (ionescu_tulcea_fun κ) := by
     (fun f disf mf hf ↦ ?union)
   · simp_rw [measure_empty]
     exact measurable_const
-  · obtain ⟨N, S, hN, mS, t_eq⟩ : ∃ N S, 0 < N ∧ MeasurableSet S ∧ t = cylinder (fpioc 0 N) S := by
+  · obtain ⟨N, S, -, mS, t_eq⟩ : ∃ N S, 0 < N ∧ MeasurableSet S ∧ t = cylinder (fpioc 0 N) S := by
       simpa [cylinders_pnat] using ht
     simp_rw [ionescu_tulcea_fun, Measure.ofAddContent_eq _ _ _ _ ht,
-      fun x₀ ↦ kolContent_congr (proj_family κ (zer x₀)) ht t_eq mS]
+      fun x₀ ↦ kolContent_congr (proj_family κ x₀) ht t_eq mS]
     simp only [family]
     apply Measure.measurable_measure.1
     apply (Measure.measurable_map _ _).comp
