@@ -219,10 +219,10 @@ theorem nil_le {α} [LinearOrder α] {l : List α} : [] ≤ l :=
   | _ :: _ => le_of_lt <| nil_lt_cons _ _
 
 theorem head_le_of_lt [Preorder α] {a a' : α} {l l' : List α} (h : (a' :: l') < (a :: l)) :
-    a' ≤ a := by
-  cases h with
-  | cons => exact le_rfl
-  | rel h => exact h.le
+    a' ≤ a :=
+  match h with
+  | .cons _ => le_rfl
+  | .rel h => h.le
 
 theorem head!_le_of_lt [Preorder α] [Inhabited α] (l l' : List α) (h : l' < l) (hl' : l' ≠ []) :
     l'.head! ≤ l.head! := by
