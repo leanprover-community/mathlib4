@@ -2161,8 +2161,8 @@ instance Subtype.instSingleton [MeasurableSingletonClass α] :
     ↑({a} : Subtype (MeasurableSet : Set α → Prop)) = ({a} : Set α) :=
   rfl
 
-instance Subtype.instIsLawfulSingleton [MeasurableSingletonClass α] :
-    IsLawfulSingleton α (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instLawfulSingleton [MeasurableSingletonClass α] :
+    LawfulSingleton α (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun _ => Subtype.eq <| insert_emptyc_eq _⟩
 
 instance Subtype.instHasCompl : HasCompl (Subtype (MeasurableSet : Set α → Prop)) :=

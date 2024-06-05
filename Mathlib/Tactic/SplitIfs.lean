@@ -39,11 +39,21 @@ match loc with
    then return (SplitPosition.target, ← getMainTarget) :: candidates.toList
    else return candidates.toList
 
+/-- Return the condition and decidable instance of an `if` expression to case split. -/
+private partial def findIfToSplit? (e : Expr) : Option (Expr × Expr) :=
+  if let some iteApp := e.find? fun e => (e.isIte || e.isDIte) && !(e.getArg! 1 5).hasLooseBVars then
+    let cond := iteApp.getArg! 1 5
+    let dec := iteApp.getArg! 2 5
+    -- Try to find a nested `if` in `cond`
+    findIfToSplit? cond |>.getD (cond, dec)
+  else
+    none
+
 /-- Finds an if condition to split. If successful, returns the position and the condition.
 -/
 private def findIfCondAt (loc : Location) : TacticM (Option (SplitPosition × Expr)) := do
   for (pos, e) in (← getSplitCandidates loc) do
-    if let some cond := SplitIf.findIfToSplit? e
+    if let some (cond, _) := findIfToSplit? e
     then return some (pos, cond)
   return none
 
