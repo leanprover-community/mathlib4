@@ -148,6 +148,45 @@ theorem preimage_cast_uIoc (a b : ℚ) : (↑) ⁻¹' uIoc (a : K) b = uIoc a b 
 end LinearOrderedField
 end Rat
 
+namespace NNRat
+
+variable {K} [LinearOrderedSemifield K]
+
+theorem cast_strictMono : StrictMono ((↑) : ℚ≥0 → K) := fun m n h => by
+  rwa [NNRat.cast_def, NNRat.cast_def, div_lt_div_iff, ← Nat.cast_mul, ← Nat.cast_mul, Nat.cast_lt,
+    ← NNRat.lt_def]
+  -- · norm_num
+  -- · norm_num
+
+/-- Coercion from `ℚ` as an order embedding. -/
+@[simps!]
+def castOrderEmbedding : ℚ≥0 ↪o K :=
+  OrderEmbedding.ofStrictMono (↑) cast_strictMono
+
+@[simp, norm_cast]
+theorem cast_le {m n : ℚ≥0} : (m : K) ≤ n ↔ m ≤ n :=
+  castOrderEmbedding.le_iff_le
+
+@[simp, norm_cast]
+theorem cast_lt {m n : ℚ≥0} : (m : K) < n ↔ m < n :=
+  cast_strictMono.lt_iff_lt
+
+@[simp]
+theorem cast_pos {n : ℚ≥0} : (0 : K) < n ↔ 0 < n := by
+  norm_cast
+
+@[simp, norm_cast]
+theorem cast_min {a b : ℚ} : (↑(min a b) : K) = min (a : K) (b : K) :=
+  (@cast_mono K _).map_min
+#align rat.cast_min Rat.cast_min
+
+@[simp, norm_cast]
+theorem cast_max {a b : ℚ} : (↑(max a b) : K) = max (a : K) (b : K) :=
+  (@cast_mono K _).map_max
+#align rat.cast_max Rat.cast_max
+
+end NNRat
+
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
 
