@@ -45,7 +45,6 @@ def BasedCategory.ofFunctor {𝒳 : Type u₂} [Category.{v₂} 𝒳] (p : 𝒳 
   obj := 𝒳
   p := p
 
-
 /-- A functor between based categories is a functor between the underlying categories that commutes
 with the projections. -/
 structure BasedFunctor (𝒳 𝒴 : BasedCategory.{v₂, u₂} 𝒮) extends
