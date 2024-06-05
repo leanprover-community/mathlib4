@@ -199,13 +199,10 @@ theorem homEquiv_naturality_left_square_iff (f : X' ⟶ X) (g : F.obj X ⟶ Y')
 theorem homEquiv_naturality_right_square_iff (f : X' ⟶ X) (g : X ⟶ G.obj Y')
     (h : X' ⟶ G.obj Y) (k : Y ⟶ Y') :
     (F.map f ≫ (adj.homEquiv X Y').symm g = (adj.homEquiv X' Y).symm h ≫ k) ↔
-      (f ≫ g = h ≫ G.map k) := by
-  constructor
-  · intro w
-    have := homEquiv_naturality_left_square adj _ _ _ _ w
-    simp only [Equiv.apply_symm_apply] at this
-    exact this
-  · exact homEquiv_naturality_right_square adj f g h k
+      (f ≫ g = h ≫ G.map k) :=
+  ⟨fun w ↦ by simpa only [Equiv.apply_symm_apply]
+      using homEquiv_naturality_left_square adj _ _ _ _ w,
+    homEquiv_naturality_right_square adj f g h k⟩
 
 @[simp]
 theorem left_triangle : whiskerRight adj.unit F ≫ whiskerLeft F adj.counit = 𝟙 _ := by
