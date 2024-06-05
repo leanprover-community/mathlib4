@@ -110,7 +110,7 @@ theorem Set.MapsTo.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
     have hfst' : s'.image f ⊆ t := by simpa [s', ← Finset.coe_subset] using hfst
     have hfs' : Set.InjOn f s' := by simpa [s'] using hfs
     obtain ⟨g, hg⟩ := Finset.exists_equiv_extend_of_card_eq hαt hfst' hfs'
-    refine' ⟨g, fun i hi => _⟩
+    refine ⟨g, fun i hi => ?_⟩
     apply hg
     simpa [s'] using hi
 #align set.maps_to.exists_equiv_extend_of_card_eq Set.MapsTo.exists_equiv_extend_of_card_eq
@@ -137,7 +137,7 @@ open scoped Classical
 
 @[simp]
 theorem infinite_sum : Infinite (Sum α β) ↔ Infinite α ∨ Infinite β := by
-  refine' ⟨fun H => _, fun H => H.elim (@Sum.infinite_of_left α β) (@Sum.infinite_of_right α β)⟩
+  refine ⟨fun H => ?_, fun H => H.elim (@Sum.infinite_of_left α β) (@Sum.infinite_of_right α β)⟩
   contrapose! H; haveI := fintypeOfNotInfinite H.1; haveI := fintypeOfNotInfinite H.2
   exact Infinite.false
 #align infinite_sum infinite_sum

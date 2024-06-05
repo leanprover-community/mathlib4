@@ -192,12 +192,15 @@ end Finite
 
 namespace PartENat
 
-theorem card_eq_coe_nat_card (α : Type*) [Finite α] : card α = Nat.card α := by
+theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := by
   unfold PartENat.card
   apply symm
   rw [Cardinal.natCast_eq_toPartENat_iff]
   exact Finite.cast_card_eq_mk
-#align part_enat.card_of_finite PartENat.card_eq_coe_nat_card
+#align part_enat.card_of_finite PartENat.card_eq_coe_natCard
+
+
+@[deprecated (since := "2024-05-25")] alias card_eq_coe_nat_card := card_eq_coe_natCard
 
 end PartENat
 

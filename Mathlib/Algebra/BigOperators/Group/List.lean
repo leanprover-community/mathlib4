@@ -94,8 +94,8 @@ variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
 @[to_additive (attr := simp)]
 theorem prod_cons : (a :: l).prod = a * l.prod :=
   calc
-    (a :: l).prod = foldl (· * ·) (a * 1) l :=
-      by simp only [List.prod, foldl_cons, one_mul, mul_one]
+    (a :: l).prod = foldl (· * ·) (a * 1) l := by
+      simp only [List.prod, foldl_cons, one_mul, mul_one]
     _ = _ := foldl_assoc
 #align list.prod_cons List.prod_cons
 #align list.sum_cons List.sum_cons
@@ -215,7 +215,7 @@ theorem prod_isUnit : ∀ {L : List M}, (∀ m ∈ L, IsUnit m) → IsUnit L.pro
 @[to_additive]
 theorem prod_isUnit_iff {α : Type*} [CommMonoid α] {L : List α} :
     IsUnit L.prod ↔ ∀ m ∈ L, IsUnit m := by
-  refine' ⟨fun h => _, prod_isUnit⟩
+  refine ⟨fun h => ?_, prod_isUnit⟩
   induction' L with m L ih
   · exact fun m' h' => False.elim (not_mem_nil m' h')
   rw [prod_cons, IsUnit.mul_iff] at h
@@ -352,7 +352,7 @@ lemma prod_erase_of_comm [DecidableEq M] (ha : a ∈ l) (comm : ∀ x ∈ l, ∀
     a * (l.erase a).prod = l.prod := by
   induction' l with b l ih
   · simp only [not_mem_nil] at ha
-  obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem ha
+  obtain rfl | ⟨ne, h⟩ := List.eq_or_ne_mem_of_mem ha
   · simp only [erase_cons_head, prod_cons]
   rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons, List.prod_cons, ← mul_assoc,
     comm a ha b (l.mem_cons_self b), mul_assoc,
@@ -409,7 +409,7 @@ lemma prod_erase [DecidableEq M] (ha : a ∈ l) : a * (l.erase a).prod = l.prod 
 lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
     ∀ {l : List α}, a ∈ l → f a * ((l.erase a).map f).prod = (l.map f).prod
   | b :: l, h => by
-    obtain rfl | ⟨ne, h⟩ := Decidable.List.eq_or_ne_mem_of_mem h
+    obtain rfl | ⟨ne, h⟩ := List.eq_or_ne_mem_of_mem h
     · simp only [map, erase_cons_head, prod_cons]
     · simp only [map, erase_cons_tail _ (not_beq_of_ne ne.symm), prod_cons, prod_map_erase _ h,
         mul_left_comm (f a) (f b)]
@@ -652,7 +652,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
   · simp
   · simp_rw [List.countP_cons, List.count_cons, List.sum_map_add]
     congr 1
-    · refine' _root_.trans _ h
+    · refine _root_.trans ?_ h
       by_cases ha : a ∈ as
       · simp [dedup_cons_of_mem ha]
       · simp only [dedup_cons_of_not_mem ha, List.filter]
@@ -660,9 +660,9 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
         | true => simp only [List.map_cons, List.sum_cons, List.count_eq_zero.2 ha, zero_add]
         | false => simp only
     · by_cases hp : p a
-      · refine' _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h]) _
+      · refine _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h]) ?_
         simp [hp, count_dedup]
-      · refine' _root_.trans (List.sum_eq_zero fun n hn => _) (by simp [hp])
+      · refine _root_.trans (List.sum_eq_zero fun n hn => ?_) (by simp [hp])
         obtain ⟨a', ha'⟩ := List.mem_map.1 hn
         split_ifs at ha' with ha
         · simp only [ha, mem_filter, mem_dedup, find?, mem_cons, true_or, hp,
@@ -690,8 +690,9 @@ theorem map_list_prod {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F)
 
 namespace MonoidHom
 
+-- original lemma deprecated on 2023-01-10; additivised lemma on 2024-05-02
 /-- Deprecated, use `_root_.map_list_prod` instead. -/
-@[to_additive "Deprecated, use `_root_.map_list_sum` instead."]
+@[to_additive (attr := deprecated) "Deprecated, use `_root_.map_list_sum` instead."]
 protected theorem map_list_prod (f : M →* N) (l : List M) : f l.prod = (l.map f).prod :=
   map_list_prod f l
 #align monoid_hom.map_list_prod MonoidHom.map_list_prod

@@ -256,10 +256,10 @@ def type? : Expr → Option Level
   it does a syntactic check that the expression does not depend on `yₙ`. -/
 def isConstantApplication (e : Expr) :=
   e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
-  where
-    /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
-      `depth - 1`. -/
-    aux (depth : Nat) : Expr → Nat → Bool
+where
+  /-- `aux depth e n` checks whether the body of the `n`-th lambda of `e` has loose bvar
+    `depth - 1`. -/
+  aux (depth : Nat) : Expr → Nat → Bool
     | .lam _ _ b _, n + 1  => aux depth b n
     | e, 0  => !e.hasLooseBVar (depth - 1)
     | _, _ => false
