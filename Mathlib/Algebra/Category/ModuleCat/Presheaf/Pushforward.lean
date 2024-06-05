@@ -9,7 +9,7 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
 # Pushforward of presheaves of modules
 
 If `F : C ⥤ D`, the precomposition `F.op ⋙ _` induces a functor from presheaves
-over `C` to presheaves over `D`. When `R : Dᵒᵖ ⥤ RingCat`, we define the
+over `D` to presheaves over `C`. When `R : Dᵒᵖ ⥤ RingCat`, we define the
 induced functor `pushforward₀ : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} (F.op ⋙ R)`
 on presheaves of modules.
 
@@ -44,7 +44,7 @@ def pushforward₀ (R : Dᵒᵖ ⥤ RingCat.{u}) :
     { hom := whiskerLeft F.op φ.hom
       map_smul := by intros; apply φ.map_smul }
 
-/-- The pushforward of presheaves of modules commutes with the forget functor
+/-- The pushforward of presheaves of modules commutes with the forgetful functor
 to presheaves of abelian groups. -/
 def pushforward₀CompToPresheaf (R : Dᵒᵖ ⥤ RingCat.{u}) :
     pushforward₀.{v} F R ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (whiskeringLeft _ _ _).obj F.op :=
@@ -58,7 +58,7 @@ a morphism of presheaves of rings `S ⟶ F.op ⋙ R`. -/
 noncomputable def pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} S :=
   pushforward₀ F R ⋙ restrictScalars φ
 
-/-- The pushforward of presheaves of modules commutes with the forget functor
+/-- The pushforward of presheaves of modules commutes with the forgetful functor
 to presheaves of abelian groups. -/
 noncomputable def pushforwardCompToPresheaf :
     pushforward.{v} φ ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (whiskeringLeft _ _ _).obj F.op :=

@@ -46,6 +46,7 @@ noncomputable def restrictScalarsBundledCore (M' : PresheafOfModules R') (α : R
 
 /-- The restriction of scalars functor `PresheafOfModules R' ⥤ PresheafOfModules R`
 induced by a morphism of presheaves of rings `R ⟶ R'`. -/
+@[simps]
 noncomputable def restrictScalars (α : R ⟶ R') :
     PresheafOfModules.{v} R' ⥤ PresheafOfModules.{v} R where
   obj M' := (M'.restrictScalarsBundledCore α).toPresheafOfModules

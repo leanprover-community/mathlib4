@@ -1133,7 +1133,7 @@ theorem insert_subset_insert (h : s ⊆ t) : insert a s ⊆ insert a t := fun _ 
 #align set.insert_subset_insert Set.insert_subset_insert
 
 @[simp] theorem insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
-  refine' ⟨fun h x hx => _, insert_subset_insert⟩
+  refine ⟨fun h x hx => ?_, insert_subset_insert⟩
   rcases h (subset_insert _ _ hx) with (rfl | hxt)
   exacts [(ha hx).elim, hxt]
 #align set.insert_subset_insert_iff Set.insert_subset_insert_iff
@@ -2310,7 +2310,7 @@ theorem ite_inter_of_inter_eq (t : Set α) {s₁ s₂ s : Set α} (h : s₁ ∩ 
 
 theorem subset_ite {t s s' u : Set α} : u ⊆ t.ite s s' ↔ u ∩ t ⊆ s ∧ u \ t ⊆ s' := by
   simp only [subset_def, ← forall_and]
-  refine' forall_congr' fun x => _
+  refine forall_congr' fun x => ?_
   by_cases hx : x ∈ t <;> simp [*, Set.ite]
 #align set.subset_ite Set.subset_ite
 

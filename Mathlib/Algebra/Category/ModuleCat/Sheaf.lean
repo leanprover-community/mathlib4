@@ -122,6 +122,10 @@ def unitHomEquiv (M : SheafOfModules R) :
     (unit R ⟶ M) ≃ M.sections :=
   (fullyFaithfulForget R).homEquiv.trans M.val.unitHomEquiv
 
+@[simp]
+lemma unitHomEquiv_apply_coe (M : SheafOfModules R) (f : unit R ⟶ M) (X : Cᵒᵖ) :
+    (M.unitHomEquiv f).val X = f.val.app X (1 : R.val.obj X) := rfl
+
 end SheafOfModules
 
 namespace PresheafOfModules
