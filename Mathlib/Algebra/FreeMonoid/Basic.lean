@@ -475,9 +475,9 @@ theorem map_surjective (f : α → β) : Function.Surjective f → Function.Surj
   · use 1
     rfl
   specialize fs head
-  rcases fs with ⟨thingie, rfl⟩
-  rcases ih with ⟨another, rfl⟩
-  use FreeMonoid.of thingie * another
+  rcases fs with ⟨a, rfl⟩
+  rcases ih with ⟨b, rfl⟩
+  use FreeMonoid.of a * b
   rfl
 
 end Map
