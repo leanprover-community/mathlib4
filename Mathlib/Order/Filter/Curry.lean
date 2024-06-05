@@ -68,6 +68,9 @@ theorem frequently_curry_iff {α β : Type*} {l : Filter α} {m : Filter β}
     (p : (α × β) → Prop) : (∃ᶠ x in l.curry m, p x) ↔ ∃ᶠ x in l, ∃ᶠ y in m, p (x, y) := by
   simp_rw [Filter.Frequently, not_iff_not, not_not, eventually_curry_iff]
 
+theorem mem_curry_iff {f : Filter α} {g : Filter β} {s : Set (α × β)} :
+    s ∈ f.curry g ↔ ∀ᶠ x : α in f, ∀ᶠ y : β in g, (x, y) ∈ s := Iff.rfl
+
 theorem curry_le_prod {f : Filter α} {g : Filter β} : f.curry g ≤ f.prod g :=
   fun _ => Eventually.curry
 #align filter.curry_le_prod Filter.curry_le_prod
