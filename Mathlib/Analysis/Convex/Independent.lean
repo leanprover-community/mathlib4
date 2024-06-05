@@ -43,7 +43,7 @@ independence, convex position
 
 
 open scoped Classical
-open Affine BigOperators
+open Affine
 
 open Finset Function
 

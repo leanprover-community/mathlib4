@@ -122,7 +122,7 @@ lemma bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
   | 0 => rfl
   | succ n => by
     simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
-    refine' Eq.trans _ (congr_arg succ (bodd_add_div2 n))
+    refine Eq.trans ?_ (congr_arg succ (bodd_add_div2 n))
     cases bodd n
     · simp
     · simp; omega
@@ -168,7 +168,7 @@ lemma bit_zero : bit false 0 = 0 :=
   rfl
 #align nat.bit_zero Nat.bit_zero
 
-/--`shiftLeft' b m n` performs a left shift of `m` `n` times
+/-- `shiftLeft' b m n` performs a left shift of `m` `n` times
  and adds the bit `b` as the least significant bit each time.
  Returns the corresponding natural number-/
 def shiftLeft' (b : Bool) (m : ℕ) : ℕ → ℕ
@@ -233,7 +233,7 @@ def bits : ℕ → List Bool :=
 #align nat.land Nat.land
 #align nat.lxor Nat.xor
 
-/--`ldiff a b` performs bitwise set difference. For each corresponding
+/-- `ldiff a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
   boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℕ → ℕ → ℕ :=
@@ -310,7 +310,7 @@ lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
 lemma binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
     (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
   rw [binaryRec]
-  split <;> rename_i h'
+  split_ifs with h'
   · generalize binaryRec z f (bit b n) = e
     revert e
     have bf := bodd_bit b n
@@ -320,12 +320,11 @@ lemma binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b
     subst bf n0
     rw [binaryRec_zero]
     intros
-    rw [h]
-    rfl
+    rw [h, eq_mpr_eq_cast, cast_eq]
   · simp only; generalize_proofs h
     revert h
     rw [bodd_bit, div2_bit]
-    intros; rfl
+    intros; simp only [eq_mpr_eq_cast, cast_eq]
 #align nat.binary_rec_eq Nat.binaryRec_eq
 #noalign nat.bitwise_bit_aux
 

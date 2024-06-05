@@ -29,7 +29,7 @@ In the following, we write `D k` for the `k`-th Hasse derivative `hasse_deriv k`
 * `Polynomial.factorial_smul_hasseDeriv`: the identity `k! • (D k f) = derivative^[k] f`
 * `Polynomial.hasseDeriv_comp`: the identity `(D k).comp (D l) = (k+l).choose k • D (k+l)`
 * `Polynomial.hasseDeriv_mul`:
-  the "Leibniz rule" `D k (f * g) = ∑ ij in antidiagonal k, D ij.1 f * D ij.2 g`
+  the "Leibniz rule" `D k (f * g) = ∑ ij ∈ antidiagonal k, D ij.1 f * D ij.2 g`
 
 For the identity principle, see `Polynomial.eq_zero_of_hasseDeriv_eq_zero`
 in `Data/Polynomial/Taylor.lean`.
@@ -45,7 +45,7 @@ noncomputable section
 
 namespace Polynomial
 
-open Nat BigOperators Polynomial
+open Nat Polynomial
 
 open Function
 
@@ -230,12 +230,12 @@ open AddMonoidHom Finset.Nat
 open Finset (antidiagonal mem_antidiagonal)
 
 theorem hasseDeriv_mul (f g : R[X]) :
-    hasseDeriv k (f * g) = ∑ ij in antidiagonal k, hasseDeriv ij.1 f * hasseDeriv ij.2 g := by
+    hasseDeriv k (f * g) = ∑ ij ∈ antidiagonal k, hasseDeriv ij.1 f * hasseDeriv ij.2 g := by
   let D k := (@hasseDeriv R _ k).toAddMonoidHom
   let Φ := @AddMonoidHom.mul R[X] _
   show
     (compHom (D k)).comp Φ f g =
-      ∑ ij : ℕ × ℕ in antidiagonal k, ((compHom.comp ((compHom Φ) (D ij.1))).flip (D ij.2) f) g
+      ∑ ij ∈ antidiagonal k, ((compHom.comp ((compHom Φ) (D ij.1))).flip (D ij.2) f) g
   simp only [← finset_sum_apply]
   congr 2
   clear f g

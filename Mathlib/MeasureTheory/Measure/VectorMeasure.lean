@@ -46,7 +46,7 @@ vector measure, signed measure, complex measure
 noncomputable section
 
 open scoped Classical
-open BigOperators NNReal ENNReal MeasureTheory
+open NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
 
@@ -895,7 +895,7 @@ variable (v w : VectorMeasure α M)
 nonrec theorem neg_le_neg {i : Set α} (hi : MeasurableSet i) (h : v ≤[i] w) : -w ≤[i] -v := by
   intro j hj₁
   rw [restrict_apply _ hi hj₁, restrict_apply _ hi hj₁, neg_apply, neg_apply]
-  refine' neg_le_neg _
+  refine neg_le_neg ?_
   rw [← restrict_apply _ hi hj₁, ← restrict_apply _ hi hj₁]
   exact h j hj₁
 #align measure_theory.vector_measure.neg_le_neg MeasureTheory.VectorMeasure.neg_le_neg
@@ -1300,7 +1300,7 @@ def toMeasureOfZeroLE' (s : SignedMeasure α) (i : Set α) (hi : 0 ≤[i] s) (j 
 provides the measure, mapping measurable sets `j` to `s (i ∩ j)`. -/
 def toMeasureOfZeroLE (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet i) (hi₂ : 0 ≤[i] s) :
     Measure α := by
-  refine' Measure.ofMeasurable (s.toMeasureOfZeroLE' i hi₂) _ _
+  refine Measure.ofMeasurable (s.toMeasureOfZeroLE' i hi₂) ?_ ?_
   · simp_rw [toMeasureOfZeroLE', s.restrict_apply hi₁ MeasurableSet.empty, Set.empty_inter i,
       s.empty]
     rfl
@@ -1314,7 +1314,7 @@ def toMeasureOfZeroLE (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet
     have h : ∀ n, 0 ≤ s (i ∩ f n) := fun n =>
       s.nonneg_of_zero_le_restrict (s.zero_le_restrict_subset hi₁ (Set.inter_subset_left _ _) hi₂)
     rw [NNReal.coe_tsum_of_nonneg h, ENNReal.coe_tsum]
-    · refine' tsum_congr fun n => _
+    · refine tsum_congr fun n => ?_
       simp_rw [s.restrict_apply hi₁ (hf₁ n), Set.inter_comm]
     · exact (NNReal.summable_mk h).2 (s.m_iUnion h₁ h₂).summable
 #align measure_theory.signed_measure.to_measure_of_zero_le MeasureTheory.SignedMeasure.toMeasureOfZeroLE

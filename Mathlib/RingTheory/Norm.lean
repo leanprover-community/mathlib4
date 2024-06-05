@@ -55,8 +55,6 @@ open LinearMap
 
 open Matrix Polynomial
 
-open scoped BigOperators
-
 open scoped Matrix
 
 namespace Algebra

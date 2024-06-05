@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
-open scoped BigOperators
+
 open MeasureTheory TopologicalSpace
 
 variable {α β : Type _} [MeasurableSpace α] [MeasurableSpace β]
@@ -35,8 +35,8 @@ example {ι} [Encodable ι] {S₁ S₂ : ι → Set α} (hS₁ : ∀ i, Measurab
 
 -- Tests on sets
 
-example (hs₁ : MeasurableSet s₁) (hs₂ : MeasurableSet s₂) : MeasurableSet (s₁ ∪ s₁) :=
-  by measurability
+example (hs₁ : MeasurableSet s₁) (hs₂ : MeasurableSet s₂) : MeasurableSet (s₁ ∪ s₁) := by
+  measurability
 
 example {ι} [Encodable ι] {S : ι → Set α} (hs : ∀ i, MeasurableSet (S i)) :
     MeasurableSet (⋃ i, S i) := by measurability
@@ -82,17 +82,17 @@ example [Div β] [MeasurableDiv₂ β] (hf : Measurable f) (hg : Measurable g)
     (ht : MeasurableSet t₂) : MeasurableSet ((fun x => f x / g x) ⁻¹' t₂) := by measurability
 
 example [AddCommMonoid β] [MeasurableAdd₂ β] {s : Finset ℕ} {F : ℕ → α → β}
-    (hF : ∀ i, Measurable (F i)) : Measurable (∑ i in s, (fun x => F (i+1) x + F i x)) := by
+    (hF : ∀ i, Measurable (F i)) : Measurable (∑ i ∈ s, (fun x => F (i+1) x + F i x)) := by
   measurability
 
 example [AddCommMonoid β] [MeasurableAdd₂ β] {s : Finset ℕ} {F : ℕ → α → β}
-    (hF : ∀ i, AEMeasurable (F i) μ) : AEMeasurable (∑ i in s, (fun x => F (i+1) x + F i x)) μ := by
+    (hF : ∀ i, AEMeasurable (F i) μ) : AEMeasurable (∑ i ∈ s, (fun x => F (i+1) x + F i x)) μ := by
   measurability
 
 -- even with many assumptions, the tactic is not trapped by a bad lemma
 example [TopologicalSpace α] [BorelSpace α] [NormedAddCommGroup β] [BorelSpace β]
     [MeasurableAdd₂ β] [MeasurableSub₂ β] {s : Finset ℕ} {F : ℕ → α → β}
-    (hF : ∀ i, Measurable (F i)) : AEMeasurable (∑ i in s, (fun x => F (i+1) x - F i x)) μ := by
+    (hF : ∀ i, Measurable (F i)) : AEMeasurable (∑ i ∈ s, (fun x => F (i+1) x - F i x)) μ := by
   measurability
 
 example : Measurable (fun x : ℝ => Real.exp (2 * inner x 3)) := by measurability

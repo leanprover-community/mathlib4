@@ -74,7 +74,6 @@ algebraic geometry which are not globally defined by a cubic equation valid over
 elliptic curve, weierstrass equation, j invariant
 -/
 
--- Porting note: replaced `map_one`, `map_bit0`, and `map_bit1` with `map_ofNat`
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
 
@@ -105,10 +104,10 @@ add_decl_doc a₄
 /-- The `a₆` coefficient of a Weierstrass curve. -/
 add_decl_doc a₆
 
-instance instInhabitedWeierstrassCurve {R : Type u} [Inhabited R] :
+instance instInhabited {R : Type u} [Inhabited R] :
     Inhabited <| WeierstrassCurve R :=
   ⟨⟨default, default, default, default, default⟩⟩
-#align weierstrass_curve.inhabited WeierstrassCurve.instInhabitedWeierstrassCurve
+#align weierstrass_curve.inhabited WeierstrassCurve.instInhabited
 
 variable {R : Type u} [CommRing R] (W : WeierstrassCurve R)
 
@@ -237,7 +236,7 @@ lemma comp_left_inv (C : VariableChange R) : comp (inv C) C = id := by
 lemma comp_assoc (C C' C'' : VariableChange R) : comp (comp C C') C'' = comp C (comp C' C'') := by
   ext <;> simp only [comp, Units.val_mul] <;> ring1
 
-instance instGroupVariableChange : Group (VariableChange R) where
+instance instGroup : Group (VariableChange R) where
   one := id
   inv := inv
   mul := comp
@@ -680,9 +679,7 @@ lemma coe_inv_map_Δ' : (E.map φ).Δ'⁻¹ = φ ↑E.Δ'⁻¹ :=
 
 @[simp]
 lemma map_j : (E.map φ).j = φ E.j := by
-  simp only [j, map, E.map_c₄]
-  map_simp
-  rfl
+  simp [j, map, E.map_c₄]
 #align elliptic_curve.base_change_j EllipticCurve.map_j
 
 lemma map_injective {φ : R →+* A} (hφ : Function.Injective φ) :

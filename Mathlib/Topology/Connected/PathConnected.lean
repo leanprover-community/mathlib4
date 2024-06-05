@@ -195,7 +195,7 @@ theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ := by
   ext x
   simp only [mem_range, Path.symm, DFunLike.coe, unitInterval.symm, SetCoe.exists, comp_apply,
     Subtype.coe_mk]
-  constructor <;> rintro ⟨y, hy, hxy⟩ <;> refine' ⟨1 - y, mem_iff_one_sub_mem.mp hy, _⟩ <;>
+  constructor <;> rintro ⟨y, hy, hxy⟩ <;> refine ⟨1 - y, mem_iff_one_sub_mem.mp hy, ?_⟩ <;>
     convert hxy
   simp
 #align path.symm_range Path.symm_range
@@ -323,8 +323,8 @@ path on `[0, 1/2]` and the second one on `[1/2, 1]`. -/
 def trans (γ : Path x y) (γ' : Path y z) : Path x z where
   toFun := (fun t : ℝ => if t ≤ 1 / 2 then γ.extend (2 * t) else γ'.extend (2 * t - 1)) ∘ (↑)
   continuous_toFun := by
-    refine'
-      (Continuous.if_le _ _ continuous_id continuous_const (by norm_num)).comp
+    refine
+      (Continuous.if_le ?_ ?_ continuous_id continuous_const (by norm_num)).comp
         continuous_subtype_val <;>
     continuity
   source' := by norm_num
@@ -488,7 +488,7 @@ theorem continuous_symm : Continuous (symm : Path x y → Path y x) :=
 theorem continuous_uncurry_extend_of_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b : ι → X} (γ : ∀ t : ι, Path (a t) (b t)) (h : Continuous ↿γ) :
     Continuous ↿fun t => (γ t).extend := by
-  refine' h.comp (continuous_id.prod_map continuous_projIcc)
+  apply h.comp (continuous_id.prod_map continuous_projIcc)
   exact zero_le_one
 #align path.continuous_uncurry_extend_of_continuous_family Path.continuous_uncurry_extend_of_continuous_family
 
