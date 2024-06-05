@@ -27,7 +27,7 @@ universe u v
 
 open scoped Pointwise
 
-variable {R : Type u} {S : Type*} {M : Type v} {M₂ M₃ M₄ N : Type*}
+variable {R S M M₂ M₃ M₄ : Type*}
 
 namespace Ideal
 
@@ -67,13 +67,13 @@ end Ideal
 namespace Submodule
 
 lemma smul_top_le_comap_smul_top [CommSemiring R] [AddCommMonoid M]
-    [Module R M] [AddCommMonoid N] [Module R N] (I : Ideal R) (f : M →ₗ[R] N) :
-    I • ⊤ ≤ comap f (I • ⊤) :=
+    [AddCommMonoid M₂] [Module R M] [Module R M₂] (I : Ideal R)
+    (f : M →ₗ[R] M₂) : I • ⊤ ≤ comap f (I • ⊤) :=
   map_le_iff_le_comap.mp <| le_of_eq_of_le (map_smul'' _ _ _) <|
     smul_mono_right _ le_top
 
-variable (M) [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
-    [Module R N] (r : R) (rs : List R)
+variable (M) [CommRing R] [AddCommGroup M] [AddCommGroup M₂]
+    [Module R M] [Module R M₂] (r : R) (rs : List R)
 
 /-- The equivalence between M ⧸ (r₀, r₁, …, rₙ)M and (M ⧸ r₀M) ⧸ (r₁, …, rₙ) (M ⧸ r₀M). -/
 def quotOfListConsSMulTopEquivQuotSMulTopInner :
@@ -93,8 +93,8 @@ def quotOfListConsSMulTopEquivQuotSMulTopOuter :
 
 variable {M}
 
-lemma quotOfListConsSMulTopEquivQuotSMulTopInner_naturality (f : M →ₗ[R] N) :
-    (quotOfListConsSMulTopEquivQuotSMulTopInner N r rs).toLinearMap ∘ₗ
+lemma quotOfListConsSMulTopEquivQuotSMulTopInner_naturality (f : M →ₗ[R] M₂) :
+    (quotOfListConsSMulTopEquivQuotSMulTopInner M₂ r rs).toLinearMap ∘ₗ
         mapQ _ _ _ (smul_top_le_comap_smul_top (Ideal.ofList (r :: rs)) f) =
       mapQ _ _ _ (smul_top_le_comap_smul_top _ (QuotSMulTop.map r f)) ∘ₗ
         (quotOfListConsSMulTopEquivQuotSMulTopInner M r rs).toLinearMap :=
@@ -113,6 +113,8 @@ namespace RingTheory.Sequence
 open scoped TensorProduct List
 open Function Submodule QuotSMulTop
 
+variable (S M)
+
 section Definitions
 
 /-
@@ -125,7 +127,7 @@ If we add the assumption `[SMulCommClass α α M]` this is essentially the same
 as focusing on the commutative ring case, by passing to the monoid ring
 `ℤ[abelianization of α]`.
 -/
-variable (M) [CommRing R] [AddCommGroup M] [Module R M]
+variable [CommRing R] [AddCommGroup M] [Module R M]
 
 open Ideal
 
@@ -150,41 +152,40 @@ end Definitions
 
 section Congr
 
-variable [CommRing R] [CommRing S] [AddCommGroup M]
-    [AddCommGroup M₂] [Module R M] [Module R M₂] [Module S M₂]
+variable {S M} [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup M₂]
+    [Module R M] [Module R M₂] [Module S M₂]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
 open DistribMulAction AddSubgroup in
+private lemma _root_.AddHom.map_smul_top_toAddSubgroup_of_surjective
+    {f : M →+ M₂} {as : List R} {bs : List S} (hf : Function.Surjective f)
+    (h : List.Forall₂ (fun r s => ∀ x, f (r • x) = s • f x) as bs) :
+    (Ideal.ofList as • ⊤ : Submodule R M).toAddSubgroup.map f =
+      (Ideal.ofList bs • ⊤ : Submodule S M₂).toAddSubgroup := by
+  induction h with
+  | nil =>
+    convert AddSubgroup.map_bot f using 1 <;>
+      rw [Ideal.ofList_nil, bot_smul, bot_toAddSubgroup]
+  | @cons r s _ _ h _ ih =>
+    conv => congr <;> rw [Ideal.ofList_cons, sup_smul, sup_toAddSubgroup,
+      ideal_span_singleton_smul, pointwise_smul_toAddSubgroup,
+      top_toAddSubgroup, pointwise_smul_def]
+    apply DFunLike.ext (f.comp (toAddMonoidEnd R M r))
+      ((toAddMonoidEnd S M₂ s).comp f) at h
+    rw [AddSubgroup.map_sup, ih, map_map, h, ← map_map,
+      map_top_of_surjective f hf]
+
 lemma _root_.AddEquiv.isWeaklyRegular_congr {e : M ≃+ M₂} {as bs}
     (h : List.Forall₂ (fun (r : R) (s : S) => ∀ x, e (r • x) = s • e x) as bs) :
-    IsWeaklyRegular M as ↔ IsWeaklyRegular M₂ bs :=
-  have H₁ i := by
-    replace h := List.forall₂_take i h
-    generalize as.take i = as' at h ⊢; generalize bs.take i = bs' at h ⊢
-    induction h with
-    | nil =>
-      convert AddSubgroup.map_bot (e : M →+ M₂) using 1 <;>
-        rw [Ideal.ofList_nil, bot_smul, bot_toAddSubgroup]
-    | @cons r s _ _ h _ ih =>
-      conv => congr <;> rw [Ideal.ofList_cons, sup_smul, sup_toAddSubgroup,
-        ideal_span_singleton_smul, pointwise_smul_toAddSubgroup,
-        top_toAddSubgroup, pointwise_smul_def]
-      apply DFunLike.ext ((e : M →+ M₂).comp (toAddMonoidEnd R M r))
-        ((toAddMonoidEnd S M₂ s).comp e) at h
-      rw [AddSubgroup.map_sup, ih, map_map, h, ← map_map,
-        map_top_of_surjective e e.surjective]
-  have H₂ i :=
-    let e' :
-       (M ⧸ (Ideal.ofList (as.take i) • ⊤ : Submodule R M)) ≃+
-              M₂ ⧸ (Ideal.ofList (bs.take i) • ⊤ : Submodule S M₂) :=
-      QuotientAddGroup.congr _ _ e (H₁ i)
-    forall_prop_congr
-      (q' := fun h' => have := h.length_eq ▸ h'; IsSMulRegular _ bs[i])
-      (fun _ => e'.isSMulRegular_congr <| (mkQ_surjective _).forall.mpr (by
-        dsimp only [e']; refine congrArg (mkQ _) ?_; exact h.get _ _ ·))
-      (iff_of_eq (congrArg _ h.length_eq))
-  (isWeaklyRegular_iff _ _).trans <|
-    (forall_congr' H₂).trans (isWeaklyRegular_iff _ _).symm
+    IsWeaklyRegular M as ↔ IsWeaklyRegular M₂ bs := by
+  conv => congr <;> rw [isWeaklyRegular_iff_Fin]
+  let e' i : (M ⧸ (Ideal.ofList (as.take i) • ⊤ : Submodule R M)) ≃+
+      M₂ ⧸ (Ideal.ofList (bs.take i) • ⊤ : Submodule S M₂) :=
+    QuotientAddGroup.congr _ _ e <|
+      AddHom.map_smul_top_toAddSubgroup_of_surjective e.surjective <|
+        List.forall₂_take i h
+  refine (finCongr h.length_eq).forall_congr @fun _ => (e' _).isSMulRegular_congr ?_
+  exact (mkQ_surjective _).forall.mpr fun _ => congrArg (mkQ _) (h.get _ _ _)
 
 lemma _root_.LinearEquiv.isWeaklyRegular_congr' (e : M ≃ₛₗ[σ] M₂) (rs : List R) :
     IsWeaklyRegular M rs ↔ IsWeaklyRegular M₂ (rs.map σ) :=
@@ -195,22 +196,35 @@ lemma _root_.LinearEquiv.isWeaklyRegular_congr (e : M ≃ₗ[R] M₂) (rs : List
     IsWeaklyRegular M rs ↔ IsWeaklyRegular M₂ rs :=
   Iff.trans (e.isWeaklyRegular_congr' rs) <| iff_of_eq <| congrArg _ rs.map_id
 
+lemma _root_.AddEquiv.isRegular_congr {e : M ≃+ M₂} {as bs}
+    (h : List.Forall₂ (fun (r : R) (s : S) => ∀ x, e (r • x) = s • e x) as bs) :
+    IsRegular M as ↔ IsRegular M₂ bs := by
+  conv => congr <;> rw [isRegular_iff, ne_eq, eq_comm,
+    ← subsingleton_quotient_iff_eq_top]
+  let e' := QuotientAddGroup.congr _ _ e <|
+    AddHom.map_smul_top_toAddSubgroup_of_surjective e.surjective h
+  exact and_congr (e.isWeaklyRegular_congr h) e'.subsingleton_congr.not
+
+lemma _root_.LinearEquiv.isRegular_congr' (e : M ≃ₛₗ[σ] M₂) (rs : List R) :
+    IsRegular M rs ↔ IsRegular M₂ (rs.map σ) :=
+  e.toAddEquiv.isRegular_congr <| List.forall₂_map_right_iff.mpr <|
+    List.forall₂_same.mpr fun r _ x => e.map_smul' r x
+
+lemma _root_.LinearEquiv.isRegular_congr (e : M ≃ₗ[R] M₂) (rs : List R) :
+    IsRegular M rs ↔ IsRegular M₂ rs :=
+  Iff.trans (e.isRegular_congr' rs) <| iff_of_eq <| congrArg _ rs.map_id
+
 end Congr
 
-lemma isWeaklyRegular_map_algebraMap_iff {R : Type*} (S M : Type*) [CommRing R]
-    [CommRing S] [Algebra R S] [AddCommGroup M] [Module R M] [Module S M]
+lemma isWeaklyRegular_map_algebraMap_iff [CommRing R] [CommRing S]
+    [Algebra R S] [AddCommGroup M] [Module R M] [Module S M]
     [IsScalarTower R S M] (rs : List R) :
     IsWeaklyRegular M (rs.map (algebraMap R S)) ↔ IsWeaklyRegular M rs :=
   (AddEquiv.refl M).isWeaklyRegular_congr <| List.forall₂_map_left_iff.mpr <|
     List.forall₂_same.mpr fun r _ => algebraMap_smul S r
 
-variable (M) [CommRing R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
+variable [CommRing R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
     [AddCommGroup M₄] [Module R M] [Module R M₂] [Module R M₃] [Module R M₄]
-
-variable (R) in
-@[simp]
-lemma IsWeaklyRegular.nil : IsWeaklyRegular M ([] : List R) :=
-  .mk (False.elim <| Nat.not_lt_zero · ·)
 
 @[simp]
 lemma isWeaklyRegular_cons_iff (r : R) (rs : List R) :
@@ -231,35 +245,29 @@ lemma isWeaklyRegular_cons_iff' (r : R) (rs : List R) :
   Iff.trans (isWeaklyRegular_cons_iff M r rs) <| and_congr_right' <|
     Iff.symm <| isWeaklyRegular_map_algebraMap_iff (R ⧸ Ideal.span {r}) _ rs
 
-lemma isWeaklyRegular_singleton_iff (r : R) :
-    IsWeaklyRegular M [r] ↔ IsSMulRegular M r :=
-  Iff.trans (isWeaklyRegular_cons_iff M r []) (and_iff_left (.nil R _))
+@[simp]
+lemma isRegular_cons_iff (r : R) (rs : List R) :
+    IsRegular M (r :: rs) ↔
+      IsSMulRegular M r ∧ IsRegular (QuotSMulTop r M) rs := by
+  rw [isRegular_iff, isRegular_iff, isWeaklyRegular_cons_iff M r rs,
+    ne_eq, top_eq_ofList_cons_smul_iff, and_assoc]
 
-lemma isWeaklyRegular_append_iff (rs₁ rs₂ : List R) :
-    IsWeaklyRegular M (rs₁ ++ rs₂) ↔
-      IsWeaklyRegular M rs₁ ∧
-        IsWeaklyRegular (M ⧸ (Ideal.ofList rs₁ • ⊤ : Submodule R M)) rs₂ := by
-  induction rs₁ generalizing M with
-  | nil =>
-    refine Iff.symm <| Iff.trans (and_iff_right (.nil R M)) ?_
-    refine (quotEquivOfEqBot _ ?_).isWeaklyRegular_congr rs₂
-    rw [Ideal.ofList_nil, bot_smul]
-  | cons r rs₁ ih =>
-    let e := quotOfListConsSMulTopEquivQuotSMulTopInner M r rs₁
-    rw [List.cons_append, isWeaklyRegular_cons_iff, isWeaklyRegular_cons_iff,
-      ih, ← and_assoc, ← e.isWeaklyRegular_congr rs₂]
+lemma isRegular_cons_iff' (r : R) (rs : List R) :
+    IsRegular M (r :: rs) ↔
+      IsSMulRegular M r ∧ IsRegular (QuotSMulTop r M)
+          (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) := by
+  conv => congr <;> rw [isRegular_iff, ne_eq]
+  rw [isWeaklyRegular_cons_iff', ← restrictScalars_inj R (R ⧸ _),
+    ← Ideal.map_ofList, ← Ideal.Quotient.algebraMap_eq, Ideal.smul_restrictScalars,
+    restrictScalars_top, top_eq_ofList_cons_smul_iff, and_assoc]
 
-lemma isWeaklyRegular_append_iff' (rs₁ rs₂ : List R) :
-    IsWeaklyRegular M (rs₁ ++ rs₂) ↔
-      IsWeaklyRegular M rs₁ ∧
-        IsWeaklyRegular (M ⧸ (Ideal.ofList rs₁ • ⊤ : Submodule R M))
-          (rs₂.map (Ideal.Quotient.mk (Ideal.ofList rs₁))) :=
-  Iff.trans (isWeaklyRegular_append_iff M rs₁ rs₂) <| and_congr_right' <|
-    Iff.symm <| isWeaklyRegular_map_algebraMap_iff (R ⧸ Ideal.ofList rs₁) _ rs₂
+variable {M}
 
 namespace IsWeaklyRegular
 
-variable {M}
+variable (R M) in
+@[simp] lemma nil : IsWeaklyRegular M ([] : List R) :=
+  .mk (False.elim <| Nat.not_lt_zero · ·)
 
 lemma cons {r : R} {rs : List R} (h1 : IsSMulRegular M r)
     (h2 : IsWeaklyRegular (QuotSMulTop r M) rs) : IsWeaklyRegular M (r :: rs) :=
@@ -350,32 +358,46 @@ def ndrecWithRing
 
 end IsWeaklyRegular
 
-variable (R) in
-lemma IsRegular.nil [Nontrivial M] : IsRegular M ([] : List R) where
+section
+
+variable (M)
+
+lemma isWeaklyRegular_singleton_iff (r : R) :
+    IsWeaklyRegular M [r] ↔ IsSMulRegular M r :=
+  Iff.trans (isWeaklyRegular_cons_iff M r []) (and_iff_left (.nil R _))
+
+lemma isWeaklyRegular_append_iff (rs₁ rs₂ : List R) :
+    IsWeaklyRegular M (rs₁ ++ rs₂) ↔
+      IsWeaklyRegular M rs₁ ∧
+        IsWeaklyRegular (M ⧸ (Ideal.ofList rs₁ • ⊤ : Submodule R M)) rs₂ := by
+  induction rs₁ generalizing M with
+  | nil =>
+    refine Iff.symm <| Iff.trans (and_iff_right (.nil R M)) ?_
+    refine (quotEquivOfEqBot _ ?_).isWeaklyRegular_congr rs₂
+    rw [Ideal.ofList_nil, bot_smul]
+  | cons r rs₁ ih =>
+    let e := quotOfListConsSMulTopEquivQuotSMulTopInner M r rs₁
+    rw [List.cons_append, isWeaklyRegular_cons_iff, isWeaklyRegular_cons_iff,
+      ih, ← and_assoc, ← e.isWeaklyRegular_congr rs₂]
+
+lemma isWeaklyRegular_append_iff' (rs₁ rs₂ : List R) :
+    IsWeaklyRegular M (rs₁ ++ rs₂) ↔
+      IsWeaklyRegular M rs₁ ∧
+        IsWeaklyRegular (M ⧸ (Ideal.ofList rs₁ • ⊤ : Submodule R M))
+          (rs₂.map (Ideal.Quotient.mk (Ideal.ofList rs₁))) :=
+  Iff.trans (isWeaklyRegular_append_iff M rs₁ rs₂) <| and_congr_right' <|
+    Iff.symm <| isWeaklyRegular_map_algebraMap_iff (R ⧸ Ideal.ofList rs₁) _ rs₂
+
+end
+
+namespace IsRegular
+
+variable (R M) in
+lemma nil [Nontrivial M] : IsRegular M ([] : List R) where
   toIsWeaklyRegular := IsWeaklyRegular.nil R M
   top_ne_smul h := by
     rw [Ideal.ofList_nil, bot_smul, eq_comm, subsingleton_iff_bot_eq_top] at h
     exact not_subsingleton M ((Submodule.subsingleton_iff _).mp h)
-
-@[simp]
-lemma isRegular_cons_iff (r : R) (rs : List R) :
-    IsRegular M (r :: rs) ↔
-      IsSMulRegular M r ∧ IsRegular (QuotSMulTop r M) rs := by
-  rw [isRegular_iff, isRegular_iff, isWeaklyRegular_cons_iff M r rs,
-    ne_eq, top_eq_ofList_cons_smul_iff, and_assoc]
-
-lemma isRegular_cons_iff' (r : R) (rs : List R) :
-    IsRegular M (r :: rs) ↔
-      IsSMulRegular M r ∧ IsRegular (QuotSMulTop r M)
-          (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) := by
-  conv => congr <;> rw [isRegular_iff, ne_eq]
-  rw [isWeaklyRegular_cons_iff', ← restrictScalars_inj R (R ⧸ _),
-    ← Ideal.map_ofList, ← Ideal.Quotient.algebraMap_eq, Ideal.smul_restrictScalars,
-    restrictScalars_top, top_eq_ofList_cons_smul_iff, and_assoc]
-
-namespace IsRegular
-
-variable {M}
 
 lemma cons {r : R} {rs : List R} (h1 : IsSMulRegular M r)
     (h2 : IsRegular (QuotSMulTop r M) rs) : IsRegular M (r :: rs) :=
@@ -480,8 +502,6 @@ lemma nontrivial {rs : List R} (h : IsRegular M rs) : Nontrivial M :=
   (mkQ_surjective (Ideal.ofList rs • ⊤ : Submodule R M)).nontrivial
 
 end IsRegular
-
-variable {M}
 
 lemma isRegular_iff_isWeaklyRegular_of_subset_jacobson_annihilator
     [Nontrivial M] [Module.Finite R M] {rs : List R}
