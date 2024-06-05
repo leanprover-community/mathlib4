@@ -179,6 +179,8 @@ jobs:
         with:
           linters: gcc
           run: |
+            bash -o pipefail -c "lake build"
+            bash -o pipefail -c "lake exe update_deprecations"
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
       - name: upload cache
