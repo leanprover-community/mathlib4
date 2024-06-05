@@ -40,6 +40,7 @@ assert_not_exists Nat.dvd_mul
 open Function
 
 namespace Rat
+variable {q : ℚ}
 
 -- Porting note: the definition of `ℚ` has changed; in mathlib3 this was a field.
 theorem pos (a : ℚ) : 0 < a.den := Nat.pos_of_ne_zero a.den_nz
@@ -72,9 +73,8 @@ theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
 @[simp, norm_cast] lemma den_intCast (n : ℤ) : (n : ℚ).den = 1 := rfl
 #align rat.coe_int_denom Rat.den_intCast
 
--- 2024-04-29
-@[deprecated] alias coe_int_num := num_intCast
-@[deprecated] alias coe_int_den := den_intCast
+@[deprecated (since := "2024-04-29")] alias coe_int_num := num_intCast
+@[deprecated (since := "2024-04-29")] alias coe_int_den := den_intCast
 
 lemma intCast_injective : Injective (Int.cast : ℤ → ℚ) := fun _ _ ↦ congr_arg num
 lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
@@ -116,6 +116,12 @@ lemma num_ne_zero {q : ℚ} : q.num ≠ 0 ↔ q ≠ 0 := num_eq_zero.not
 #align rat.num_ne_zero_of_ne_zero Rat.num_ne_zero
 
 @[simp] lemma den_ne_zero (q : ℚ) : q.den ≠ 0 := q.den_pos.ne'
+
+#noalign rat.nonneg
+
+@[simp] lemma num_nonneg : 0 ≤ q.num ↔ 0 ≤ q := by
+  simp [Int.le_iff_lt_or_eq, instLE, Rat.blt, Int.not_lt]; tauto
+#align rat.num_nonneg_iff_zero_le Rat.num_nonneg
 
 @[simp]
 theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
@@ -198,7 +204,7 @@ theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → 
 
 attribute [simp] divInt_add_divInt
 
-@[deprecated divInt_add_divInt] -- 2024-03-18
+@[deprecated divInt_add_divInt (since := "2024-03-18")]
 theorem add_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
     a /. b + c /. d = (a * d + c * b) /. (b * d) := divInt_add_divInt _ _ b0 d0
 
@@ -213,11 +219,11 @@ lemma neg_def (q : ℚ) : -q = -q.num /. q.den := by rw [← neg_divInt, num_div
 @[simp] lemma divInt_neg (n d : ℤ) : n /. -d = -n /. d := divInt_neg' ..
 #align rat.mk_neg_denom Rat.divInt_neg
 
-@[deprecated] alias divInt_neg_den := divInt_neg -- 2024-03-18
+@[deprecated (since := "2024-03-18")] alias divInt_neg_den := divInt_neg
 
 attribute [simp] divInt_sub_divInt
 
-@[deprecated divInt_sub_divInt] -- 2024-03-18
+@[deprecated divInt_sub_divInt (since := "2024-03-18")]
 lemma sub_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
     a /. b - c /. d = (a * d - c * b) /. (b * d) := divInt_sub_divInt _ _ b0 d0
 #align rat.sub_def Rat.sub_def''
@@ -293,7 +299,7 @@ lemma inv_def' (q : ℚ) : q⁻¹ = q.den /. q.num := by rw [← inv_divInt', nu
 lemma div_def' (q r : ℚ) : q / r = (q.num * r.den) /. (q.den * r.num) := by
   rw [← divInt_div_divInt, num_divInt_den, num_divInt_den]
 
-@[deprecated] alias div_num_den := div_def'
+@[deprecated (since := "2024-04-15")] alias div_num_den := div_def'
 #align rat.div_num_denom Rat.div_def'
 
 variable (a b c : ℚ)
@@ -321,7 +327,8 @@ protected lemma add_left_neg : -a + a = 0 := by
   simp [add_def, normalize_eq_mkRat, Int.neg_mul, Int.add_comm, ← Int.sub_eq_add_neg]
 #align rat.add_left_neg Rat.add_left_neg
 
-@[deprecated zero_divInt] lemma divInt_zero_one : 0 /. 1 = 0 := zero_divInt _ -- 2024-03-18
+@[deprecated zero_divInt (since := "2024-03-18")]
+lemma divInt_zero_one : 0 /. 1 = 0 := zero_divInt _
 #align rat.mk_zero_one Rat.zero_divInt
 
 @[simp] lemma divInt_one (n : ℤ) : n /. 1 = n := by simp [divInt, mkRat, normalize]
@@ -330,7 +337,7 @@ protected lemma add_left_neg : -a + a = 0 := by
 lemma divInt_one_one : 1 /. 1 = 1 := by rw [divInt_one]; rfl
 #align rat.mk_one_one Rat.divInt_one_one
 
-@[deprecated divInt_one] -- 2024-03-18
+@[deprecated divInt_one (since := "2024-03-18")]
 lemma divInt_neg_one_one : -1 /. 1 = -1 := by rw [divInt_one]; rfl
 #align rat.mk_neg_one_one Rat.divInt_neg_one_one
 
@@ -492,6 +499,17 @@ theorem divInt_ne_zero_of_ne_zero {n d : ℤ} (h : n ≠ 0) (hd : d ≠ 0) : n /
   (divInt_ne_zero hd).mpr h
 #align rat.mk_ne_zero_of_ne_zero Rat.divInt_ne_zero_of_ne_zero
 
+protected lemma nonneg_antisymm : 0 ≤ q → 0 ≤ -q → q = 0 := by
+  simp_rw [← num_eq_zero, Int.le_antisymm_iff, ← num_nonneg, num_neg_eq_neg_num, Int.neg_nonneg]
+  tauto
+#align rat.nonneg_antisymm Rat.nonneg_antisymm
+
+protected lemma nonneg_total (a : ℚ) : 0 ≤ a ∨ 0 ≤ -a := by
+  simp_rw [← num_nonneg, num_neg_eq_neg_num, Int.neg_nonneg]; exact Int.le_total _ _
+#align rat.nonneg_total Rat.nonneg_total
+
+#align rat.decidable_nonneg Rat.instDecidableLe
+
 section Casts
 
 protected theorem add_divInt (a b c : ℤ) : (a + b) /. c = a /. c + b /. c :=
@@ -534,9 +552,8 @@ instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
   ⟨fun q hq => ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩
 #align rat.can_lift Rat.canLift
 
--- 2024-04-05
-@[deprecated] alias coe_int_eq_divInt := intCast_eq_divInt
-@[deprecated] alias coe_int_div_eq_divInt := intCast_div_eq_divInt
+@[deprecated (since := "2024-04-05")] alias coe_int_eq_divInt := intCast_eq_divInt
+@[deprecated (since := "2024-04-05")] alias coe_int_div_eq_divInt := intCast_div_eq_divInt
 
 -- Will be subsumed by `Int.coe_inj` after we have defined
 -- `LinearOrderedField ℚ` (which implies characteristic zero).
