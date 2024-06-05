@@ -797,7 +797,7 @@ end Orzech
 
 section Vasconcelos
 
-/-- A theorem/proof by Vasconcelos, given a finite module `M` over a commutative ring, any
+/-- A theorem by Vasconcelos, given a finite module `M` over a commutative ring, any
 surjective endomorphism of `M` is also injective.
 It is a consequence of the fact `commRing_orzechProperty`
 that any commutative ring `R` satisfies the `OrzechProperty`;
