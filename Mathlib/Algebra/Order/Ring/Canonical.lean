@@ -29,7 +29,8 @@ instance (priority := 10) CanonicallyOrderedAdd.toZeroLEOneClass
 -- this holds more generally if we refactor `Odd` to use
 -- either `2 • t` or `t + t` instead of `2 * t`.
 lemma Odd.pos [Semiring α] [PartialOrder α] [CanonicallyOrderedAdd α] [Nontrivial α] {a : α} :
-  Odd a → 0 < a := by rintro ⟨k, rfl⟩; simp
+    Odd a → 0 < a := by
+  rintro ⟨k, rfl⟩; simp
 #align odd.pos Odd.pos
 
 namespace CanonicallyOrderedAdd
