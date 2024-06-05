@@ -488,7 +488,7 @@ private lemma uniformity_eq_seminorm :
       _ ≤ ∏ i, ‖x i‖ := Finset.prod_le_prod (fun _ _ ↦ zero_le_one) fun i _ ↦ by
         simpa only [div_self hc₀.ne'] using hcx i
       _ = 1 * ∏ i, ‖x i‖ := (one_mul _).symm
-  · rcases (NormedSpace.isVonNBounded_iff' _ _ _).1 hs with ⟨ε, hε⟩
+  · rcases (NormedSpace.isVonNBounded_iff' _).1 hs with ⟨ε, hε⟩
     rcases exists_pos_mul_lt hr (ε ^ Fintype.card ι) with ⟨δ, hδ₀, hδ⟩
     refine ⟨δ, hδ₀, fun f hf x hx ↦ ?_⟩
     simp only [Seminorm.mem_ball_zero, mem_closedBall_zero_iff] at hf ⊢
