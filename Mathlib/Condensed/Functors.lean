@@ -41,6 +41,10 @@ section Universes
 def Condensed.ulift : Condensed.{u} (Type u) ⥤ CondensedSet.{u} :=
   sheafCompose (coherentTopology CompHaus) uliftFunctor.{u+1, u}
 
+instance : Condensed.ulift.Full := show (sheafCompose _ _).Full from inferInstance
+
+instance : Condensed.ulift.Faithful := show (sheafCompose _ _).Faithful from inferInstance
+
 end Universes
 
 section Topology
@@ -69,5 +73,15 @@ def stoneanToCondensed : Stonean.{u} ⥤ CondensedSet.{u} :=
 
 /-- Dot notation for the value of `stoneanToCondensed`. -/
 abbrev Stonean.toCondensed (S : Stonean.{u}) : CondensedSet.{u} := stoneanToCondensed.obj S
+
+instance : compHausToCondensed'.Full :=
+  show (Sheaf.Subcanonical.yoneda _).Full from inferInstance
+
+instance : compHausToCondensed'.Faithful :=
+  show (Sheaf.Subcanonical.yoneda _).Faithful from inferInstance
+
+instance : compHausToCondensed.Full := show (_ ⋙ _).Full from inferInstance
+
+instance : compHausToCondensed.Faithful := show (_ ⋙ _).Faithful from inferInstance
 
 end Topology

@@ -38,3 +38,13 @@ def lightProfiniteToLightCondSet : LightProfinite.{u} ⥤ LightCondSet.{u} :=
 /-- Dot notation for the value of `lightProfiniteToLightCondSet`. -/
 abbrev LightProfinite.toCondensed (S : LightProfinite.{u}) : LightCondSet.{u} :=
   lightProfiniteToLightCondSet.obj S
+
+abbrev lightProfiniteToLightCondSetFullyFaithful :
+    lightProfiniteToLightCondSet.FullyFaithful :=
+  Sheaf.Subcanonical.yonedaFullyFaithful _
+
+instance : lightProfiniteToLightCondSet.Full :=
+  show (Sheaf.Subcanonical.yoneda _).Full from inferInstance
+
+instance : lightProfiniteToLightCondSet.Faithful :=
+  show (Sheaf.Subcanonical.yoneda _).Faithful from inferInstance

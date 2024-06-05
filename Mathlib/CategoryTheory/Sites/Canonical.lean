@@ -268,6 +268,14 @@ def yonedaCompSheafToPresheaf :
     hJ.yoneda ⋙ sheafToPresheaf J (Type v) ≅ CategoryTheory.yoneda :=
   Iso.refl _
 
+/-- The yoneda functor into the sheaf category is fully faithful -/
+def yonedaFullyFaithful : hJ.yoneda.FullyFaithful :=
+  Functor.FullyFaithful.ofCompFaithful (G := sheafToPresheaf J (Type v)) Yoneda.fullyFaithful
+
+instance : hJ.yoneda.Full := hJ.yonedaFullyFaithful.full
+
+instance : hJ.yoneda.Faithful := hJ.yonedaFullyFaithful.faithful
+
 end Subcanonical
 
 end Sheaf
