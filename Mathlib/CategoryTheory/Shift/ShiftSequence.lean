@@ -209,6 +209,12 @@ lemma shiftMap_comp' {X Y Z : C} {n : M} (f : X ⟶ Y) (g : Y ⟶ Z⟦n⟧) (a a
     F.shiftMap (f ≫ g) a a' ha' = (F.shift a).map f ≫ F.shiftMap g a a' ha' := by
   simp [shiftMap]
 
+/--
+When `f : X ⟶ Y⟦m⟧`, `m + n = mn`, `n + a = a'` and `ha'' : m + a' = a''`, this lemma
+relates the two morphisms `F.shiftMap f a' a'' ha''` and `(F.shift a).map (f⟦n⟧')`. Indeed,
+via canonical isomorphisms, they both identity to morphisms
+`(F.shift a').obj X ⟶ (F.shift a'').obj Y`.
+-/
 lemma shiftIso_hom_app_comp_shiftMap {X Y : C} {m : M} (f : X ⟶ Y⟦m⟧) (n mn : M) (hnm : m + n = mn)
     (a a' a'' : M) (ha' : n + a = a') (ha'' : m + a' = a'') :
     (F.shiftIso n a a' ha').hom.app X ≫ F.shiftMap f a' a'' ha'' =
@@ -218,6 +224,12 @@ lemma shiftIso_hom_app_comp_shiftMap {X Y : C} {m : M} (f : X ⟶ Y⟦m⟧) (n m
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.map_id,
     id_comp, comp_obj, shiftIso_hom_naturality_assoc, shiftMap]
 
+/--
+If `f : X ⟶ Y⟦m⟧`, `n + m = 0` and `ha' : m + a = a'`, this lemma relates the two
+morphisms `F.shiftMap f a a' ha'` and `(F.shift a').map (f⟦n⟧')`. Indeed,
+via canonical isomorphisms, they both identify to morphisms
+`(F.shift a).obj X ⟶ (F.shift a').obj Y`.
+-/
 lemma shiftIso_hom_app_comp_shiftMap_of_add_eq_zero [F.ShiftSequence G]
     {X Y : C} {m : G} (f : X ⟶ Y⟦m⟧)
     (n : G) (hnm : n + m = 0) (a a' : G) (ha' : m + a = a') :
