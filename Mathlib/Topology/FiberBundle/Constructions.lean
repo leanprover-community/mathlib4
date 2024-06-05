@@ -1,5 +1,5 @@
 /-
-Copyright © 2022 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2022 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Sébastien Gouëzel, Heather Macbeth, Floris van Doorn
 -/
@@ -362,7 +362,7 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
     dsimp only
     simp_rw [(inducing_pullbackTotalSpaceEmbedding F E f).continuousOn_iff, Function.comp,
       pullbackTotalSpaceEmbedding]
-    refine'
+    refine
       continuousOn_fst.prod
         (e.continuousOn_symm.comp ((map_continuous f).prod_map continuous_id).continuousOn
           Subset.rfl)

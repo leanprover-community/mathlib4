@@ -147,11 +147,16 @@ theorem card_insert_eq_ite : card (insert a s) = if a ∈ s then s.card else s.c
 #align finset.card_insert_eq_ite Finset.card_insert_eq_ite
 
 @[simp]
+theorem card_pair_eq_one_or_two : ({a,b} : Finset α).card = 1 ∨ ({a,b} : Finset α).card = 2 := by
+  simp [card_insert_eq_ite]
+  tauto
+
+@[simp]
 theorem card_pair (h : a ≠ b) : ({a, b} : Finset α).card = 2 := by
   rw [card_insert_of_not_mem (not_mem_singleton.2 h), card_singleton]
 #align finset.card_doubleton Finset.card_pair
 
-@[deprecated] alias card_doubleton := Finset.card_pair
+@[deprecated (since := "2024-01-04")] alias card_doubleton := Finset.card_pair
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp]
@@ -355,23 +360,88 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
   exact Subtype.eq <| f_inj i j (mem_range.1 hi) (mem_range.1 hj) eq
 #align finset.card_eq_of_bijective Finset.card_eq_of_bijective
 
-theorem card_congr {t : Finset β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha ∈ t)
-    (h₂ : ∀ a b ha hb, f a ha = f b hb → a = b) (h₃ : ∀ b ∈ t, ∃ a ha, f a ha = b) :
-    s.card = t.card := by
+section bij
+variable {t : Finset β}
+
+/-- Reorder a finset.
+
+The difference with `Finset.card_bij'` is that the bijection is specified as a surjective injection,
+rather than by an inverse function.
+
+The difference with `Finset.card_nbij` is that the bijection is allowed to use membership of the
+domain, rather than being a non-dependent function. -/
+lemma card_bij (i : ∀ a ∈ s, β) (hi : ∀ a ha, i a ha ∈ t)
+    (i_inj : ∀ a₁ ha₁ a₂ ha₂, i a₁ ha₁ = i a₂ ha₂ → a₁ = a₂)
+    (i_surj : ∀ b ∈ t, ∃ a ha, i a ha = b) : s.card = t.card := by
   classical
   calc
     s.card = s.attach.card := card_attach.symm
-    _      = (s.attach.image fun a : { a // a ∈ s } => f a.1 a.2).card := Eq.symm ?_
+    _      = (s.attach.image fun a : { a // a ∈ s } => i a.1 a.2).card := Eq.symm ?_
     _      = t.card := ?_
   · apply card_image_of_injective
     intro ⟨_, _⟩ ⟨_, _⟩ h
-    simpa using h₂ _ _ _ _ h
+    simpa using i_inj _ _ _ _ h
   · congr 1
     ext b
-    constructor
-    · intro h; obtain ⟨_, _, rfl⟩ := mem_image.1 h; apply h₁
-    · intro h; obtain ⟨a, ha, rfl⟩ := h₃ b h; exact mem_image.2 ⟨⟨a, ha⟩, by simp⟩
-#align finset.card_congr Finset.card_congr
+    constructor <;> intro h
+    · obtain ⟨_, _, rfl⟩ := mem_image.1 h; apply hi
+    · obtain ⟨a, ha, rfl⟩ := i_surj b h; exact mem_image.2 ⟨⟨a, ha⟩, by simp⟩
+#align finset.card_bij Finset.card_bij
+
+@[deprecated (since := "2024-05-04")] alias card_congr := card_bij
+
+/-- Reorder a finset.
+
+The difference with `Finset.card_bij` is that the bijection is specified with an inverse, rather
+than as a surjective injection.
+
+The difference with `Finset.card_nbij'` is that the bijection and its inverse are allowed to use
+membership of the domains, rather than being non-dependent functions. -/
+lemma card_bij' (i : ∀ a ∈ s, β) (j : ∀ a ∈ t, α) (hi : ∀ a ha, i a ha ∈ t)
+    (hj : ∀ a ha, j a ha ∈ s) (left_inv : ∀ a ha, j (i a ha) (hi a ha) = a)
+    (right_inv : ∀ a ha, i (j a ha) (hj a ha) = a) : s.card = t.card := by
+  refine card_bij i hi (fun a1 h1 a2 h2 eq ↦ ?_) (fun b hb ↦ ⟨_, hj b hb, right_inv b hb⟩)
+  rw [← left_inv a1 h1, ← left_inv a2 h2]
+  simp only [eq]
+
+/-- Reorder a finset.
+
+The difference with `Finset.card_nbij'` is that the bijection is specified as a surjective
+injection, rather than by an inverse function.
+
+The difference with `Finset.card_bij` is that the bijection is a non-dependent function, rather than
+being allowed to use membership of the domain. -/
+lemma card_nbij (i : α → β) (hi : ∀ a ∈ s, i a ∈ t) (i_inj : (s : Set α).InjOn i)
+    (i_surj : (s : Set α).SurjOn i t) : s.card = t.card :=
+  card_bij (fun a _ ↦ i a) hi i_inj (by simpa using i_surj)
+
+/-- Reorder a finset.
+
+The difference with `Finset.card_nbij` is that the bijection is specified with an inverse, rather
+than as a surjective injection.
+
+The difference with `Finset.card_bij'` is that the bijection and its inverse are non-dependent
+functions, rather than being allowed to use membership of the domains.
+
+The difference with `Finset.card_equiv` is that bijectivity is only required to hold on the domains,
+rather than on the entire types. -/
+lemma card_nbij' (i : α → β) (j : β → α) (hi : ∀ a ∈ s, i a ∈ t) (hj : ∀ a ∈ t, j a ∈ s)
+    (left_inv : ∀ a ∈ s, j (i a) = a) (right_inv : ∀ a ∈ t, i (j a) = a) : s.card = t.card :=
+  card_bij' (fun a _ ↦ i a) (fun b _ ↦ j b) hi hj left_inv right_inv
+
+/-- Specialization of `Finset.card_nbij'` that automatically fills in most arguments.
+
+See `Fintype.card_equiv` for the version where `s` and `t` are `univ`. -/
+lemma card_equiv (e : α ≃ β) (hst : ∀ i, i ∈ s ↔ e i ∈ t) : s.card = t.card := by
+  refine card_nbij' e e.symm ?_ ?_ ?_ ?_ <;> simp [hst]
+
+/-- Specialization of `Finset.card_nbij` that automatically fills in most arguments.
+
+See `Fintype.card_bijective` for the version where `s` and `t` are `univ`. -/
+lemma card_bijective (e : α → β) (he : e.Bijective) (hst : ∀ i, i ∈ s ↔ e i ∈ t) :
+    s.card = t.card := card_equiv (.ofBijective e he) hst
+
+end bij
 
 theorem card_le_card_of_inj_on {t : Finset β} (f : α → β) (hf : ∀ a ∈ s, f a ∈ t)
     (f_inj : ∀ a₁ ∈ s, ∀ a₂ ∈ s, f a₁ = f a₂ → a₁ = a₂) : s.card ≤ t.card := by
@@ -481,9 +551,8 @@ lemma card_union_eq_card_add_card : (s ∪ t).card = s.card + t.card ↔ Disjoin
 #align finset.card_union_eq Finset.card_union_of_disjoint
 #align finset.card_disjoint_union Finset.card_union_of_disjoint
 
--- 2024-02-09
-@[deprecated] alias card_union_eq := card_union_of_disjoint
-@[deprecated] alias card_disjoint_union := card_union_of_disjoint
+@[deprecated (since := "2024-02-09")] alias card_union_eq := card_union_of_disjoint
+@[deprecated (since := "2024-02-09")] alias card_disjoint_union := card_union_of_disjoint
 
 lemma cast_card_inter [AddGroupWithOne R] :
     ((s ∩ t).card : R) = s.card + t.card - (s ∪ t).card := by
@@ -669,7 +738,8 @@ theorem one_lt_card_iff_nontrivial : 1 < s.card ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
     not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
 
-@[deprecated] alias one_lt_card_iff_nontrivial_coe := one_lt_card_iff_nontrivial
+@[deprecated (since := "2024-02-05")]
+alias one_lt_card_iff_nontrivial_coe := one_lt_card_iff_nontrivial
 
 theorem exists_ne_of_one_lt_card (hs : 1 < s.card) (a : α) : ∃ b, b ∈ s ∧ b ≠ a := by
   obtain ⟨x, hx, y, hy, hxy⟩ := Finset.one_lt_card.mp hs
@@ -849,6 +919,6 @@ theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
   Subrelation.wf H <| InvImage.wf _ <| (Nat.lt_wfRel).2
 #align finset.lt_wf Finset.lt_wf
 
-@[deprecated] alias card_le_of_subset := card_le_card -- 2023-12-27
+@[deprecated (since := "2023-12-27")] alias card_le_of_subset := card_le_card
 
 end Finset

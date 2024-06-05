@@ -45,15 +45,6 @@ instance instOrderedSub : OrderedSub ℕ := by
   · simp
   · simp only [sub_succ, pred_le_iff, ih, succ_add, add_succ]
 
-/-!
-### Extra instances to short-circuit type class resolution
-
-These also prevent non-computable instances being used to construct these instances non-computably.
--/
-
-instance instOrderBot : OrderBot ℕ := by infer_instance
-#align nat.order_bot Nat.instOrderBot
-
 /-! ### Miscellaneous lemmas -/
 
 theorem _root_.NeZero.one_le {n : ℕ} [NeZero n] : 1 ≤ n := one_le_iff_ne_zero.mpr (NeZero.ne n)

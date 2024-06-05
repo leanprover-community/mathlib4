@@ -115,7 +115,7 @@ theorem mul_iff_right [Mul R] [IsScalarTower R R M] (ha : IsSMulRegular M a) :
 are `M`-regular. -/
 theorem mul_and_mul_iff [Mul R] [IsScalarTower R R M] :
     IsSMulRegular M (a * b) ∧ IsSMulRegular M (b * a) ↔ IsSMulRegular M a ∧ IsSMulRegular M b := by
-  refine' ⟨_, _⟩
+  refine ⟨?_, ?_⟩
   · rintro ⟨ab, ba⟩
     exact ⟨ba.of_mul, ab.of_mul⟩
   · rintro ⟨ha, hb⟩

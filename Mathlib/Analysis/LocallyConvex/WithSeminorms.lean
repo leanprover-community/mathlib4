@@ -51,7 +51,7 @@ seminorm, locally convex
 
 open NormedField Set Seminorm TopologicalSpace Filter List
 
-open BigOperators NNReal Pointwise Topology Uniformity
+open NNReal Pointwise Topology Uniformity
 
 variable {𝕜 𝕜₂ 𝕝 𝕝₂ E F G ι ι' : Type*}
 
@@ -376,8 +376,9 @@ variable {p : SeminormFamily 𝕜 E ι}
 
 Variant with `Finset.sup`. -/
 theorem WithSeminorms.tendsto_nhds' (hp : WithSeminorms p) (u : F → E) {f : Filter F} (y₀ : E) :
-    Filter.Tendsto u f (𝓝 y₀) ↔ ∀ (s : Finset ι) (ε), 0 < ε → ∀ᶠ x in f, s.sup p (u x - y₀) < ε :=
-  by simp [hp.hasBasis_ball.tendsto_right_iff]
+    Filter.Tendsto u f (𝓝 y₀) ↔
+    ∀ (s : Finset ι) (ε), 0 < ε → ∀ᶠ x in f, s.sup p (u x - y₀) < ε := by
+  simp [hp.hasBasis_ball.tendsto_right_iff]
 #align with_seminorms.tendsto_nhds' WithSeminorms.tendsto_nhds'
 
 /-- Convergence along filters for `WithSeminorms`. -/
@@ -611,11 +612,11 @@ theorem continuous_from_bounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFami
   refine continuous_of_continuous_comp hq _ fun i => ?_
   rcases hf i with ⟨s, C, hC⟩
   rw [← Seminorm.finset_sup_smul] at hC
-  -- Note: we deduce continuouty of `s.sup (C • p)` from that of `∑ i in s, C • p i`.
+  -- Note: we deduce continuouty of `s.sup (C • p)` from that of `∑ i ∈ s, C • p i`.
   -- The reason is that there is no `continuous_finset_sup`, and even if it were we couldn't
   -- really use it since `ℝ` is not an `OrderBot`.
   refine Seminorm.continuous_of_le ?_ (hC.trans <| Seminorm.finset_sup_le_sum _ _)
-  change Continuous (fun x ↦ Seminorm.coeFnAddMonoidHom _ _ (∑ i in s, C • p i) x)
+  change Continuous (fun x ↦ Seminorm.coeFnAddMonoidHom _ _ (∑ i ∈ s, C • p i) x)
   simp_rw [map_sum, Finset.sum_apply]
   exact (continuous_finset_sum _ fun i _ ↦ (hp.continuous_seminorm i).const_smul (C : ℝ))
 #align seminorm.continuous_from_bounded Seminorm.continuous_from_bounded

@@ -48,7 +48,7 @@ set_option linter.uppercaseLean3 false
 
 open Set Function Filter TopologicalSpace ENNReal EMetric Finset
 
-open scoped Classical Topology ENNReal MeasureTheory BigOperators
+open scoped Classical Topology ENNReal MeasureTheory
 
 variable {α β ι E F 𝕜 : Type*}
 
@@ -287,7 +287,7 @@ theorem memℒp_top (f : α →ₛ E) (μ : Measure α) : Memℒp f ∞ μ :=
 #align measure_theory.simple_func.mem_ℒp_top MeasureTheory.SimpleFunc.memℒp_top
 
 protected theorem snorm'_eq {p : ℝ} (f : α →ₛ F) (μ : Measure α) :
-    snorm' f p μ = (∑ y in f.range, (‖y‖₊ : ℝ≥0∞) ^ p * μ (f ⁻¹' {y})) ^ (1 / p) := by
+    snorm' f p μ = (∑ y ∈ f.range, (‖y‖₊ : ℝ≥0∞) ^ p * μ (f ⁻¹' {y})) ^ (1 / p) := by
   have h_map : (fun a => (‖f a‖₊ : ℝ≥0∞) ^ p) = f.map fun a : F => (‖a‖₊ : ℝ≥0∞) ^ p := by
     simp; rfl
   rw [snorm', h_map, lintegral_eq_lintegral, map_lintegral]
