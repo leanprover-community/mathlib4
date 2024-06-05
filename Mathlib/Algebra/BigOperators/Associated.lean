@@ -110,12 +110,12 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α]
       rw [← mul_one s.prod, ← hk, ← mul_assoc, ← mul_assoc, mul_eq_mul_right_iff, mul_comm]
       left; exact hprod
     · rcases ha₂.dvd_mul.1 (Dvd.intro _ hprod) with ⟨c, hc⟩ | ⟨c, hc⟩
-      rw [hc]; rw [hc, mul_assoc] at hprod
-      refine' Submonoid.mul_mem _ (subset_closure (Set.mem_def.2 _))
-        (hind _ _ _ hs (mul_left_cancel₀ ha₂.ne_zero hprod))
-      right; exact ha₂
-      rw [← mul_left_cancel₀ ha₂.ne_zero hprod]
-      exact multiset_prod_mem _ _ (fun t ht => subset_closure (hs t ht))
+      · rw [hc]; rw [hc, mul_assoc] at hprod
+        refine Submonoid.mul_mem _ (subset_closure (Set.mem_def.2 ?_))
+          (hind _ _ ?_ hs (mul_left_cancel₀ ha₂.ne_zero hprod))
+        · right; exact ha₂
+        rw [← mul_left_cancel₀ ha₂.ne_zero hprod]
+        exact multiset_prod_mem _ _ (fun t ht => subset_closure (hs t ht))
       rw [hc, mul_comm x _, mul_assoc, mul_comm c _] at hprod
       refine hind x c ?_ hs (mul_left_cancel₀ ha₂.ne_zero hprod)
       rw [← mul_left_cancel₀ ha₂.ne_zero hprod]
