@@ -229,6 +229,18 @@ def zer (x₀ : X 0) : (transitionGraph X).node 0 := by
     exact this.symm
   exact this ▸ x₀
 
+theorem measurable_zer : Measurable (zer (X := X)) := by
+  simp (config := { unfoldPartialApp := true }) only [zer]
+  rw [measurable_pi_iff]
+  intro i
+  simp_rw [eqRec_eq_cast]
+  apply measurable_cast
+  have : 0 = i.1 := by
+    have := i.2
+    simp at this
+    exact this.symm
+  aesop
+
 theorem sup_fpioc {N : ℕ} (hN : 0 < N) : ((fpioc 0 N).sup id).1 = N := by
   simp only [fpioc, zero_add, PNat.mk_ofNat]
   conv_rhs => change ((↑) : ℕ+ → ℕ) (⟨N, hN⟩ : ℕ+)
@@ -1028,9 +1040,29 @@ noncomputable def ionescu_tulcea_fun (x₀ : X 0) : Measure ((n : ℕ+) → X n)
     (kolContent (proj_family κ (zer x₀)))
     (kolContent_sigma_subadditive_proj κ x₀)
 
+theorem proba_ionescu (x₀ : X 0) : IsProbabilityMeasure (ionescu_tulcea_fun κ x₀) := by
+  constructor
+  rw [← cylinder_univ {1}, ionescu_tulcea_fun, Measure.ofAddContent_eq,
+      fun x₀ ↦ kolContent_congr (proj_family κ (zer x₀)) _ rfl MeasurableSet.univ]
+  simp only [family]
+  rw [← kernel.map_apply]
+  have : IsMarkovKernel ((transition κ).ker 0 (Finset.sup ({1} : Finset ℕ+) id).1) := by
+    apply markov_kerNat
+    simp
+  · simp
+  · apply measurable_pi_lambda
+    intro a
+    apply Measurable.eval
+    apply measurable_id'
+  · simp only [mem_cylinders, exists_prop, forall_const]
+    exact ⟨{1}, univ, MeasurableSet.univ, rfl⟩
+  · simp only [mem_cylinders, exists_prop, forall_const]
+    exact ⟨{1}, univ, MeasurableSet.univ, rfl⟩
+
+
 /-- The product measure is the projective limit of the partial product measures. This ensures
 uniqueness and expresses the value of the product measures applied to cylinders. -/
-theorem isProjectiveLimit_measure_produit (x₀ : X 0) :
+theorem isProjectiveLimit_ionescu_tulcea_fun (x₀ : X 0) :
     IsProjectiveLimit (ionescu_tulcea_fun κ x₀) (family κ (zer x₀)) := by
   intro I
   ext1 s hs
@@ -1045,6 +1077,52 @@ theorem isProjectiveLimit_measure_produit (x₀ : X 0) :
   · rfl
   · exact hs
   · exact h_mem
+
+theorem measurable_ionescu : Measurable (ionescu_tulcea_fun κ) := by
+  apply Measure.measurable_of_measurable_coe
+  refine MeasurableSpace.induction_on_inter
+    (C := fun t ↦ Measurable (fun x₀ ↦ ionescu_tulcea_fun κ x₀ t))
+    (s := cylinders (fun n : ℕ+ ↦ X n))
+    generateFrom_cylinders.symm
+    isPiSystem_cylinders
+    ?empty
+    (fun t ht ↦ ?cylinder)
+    (fun t mt ht ↦ ?compl)
+    (fun f disf mf hf ↦ ?union)
+  · simp_rw [measure_empty]
+    exact measurable_const
+  · obtain ⟨N, S, hN, mS, t_eq⟩ : ∃ N S, 0 < N ∧ MeasurableSet S ∧ t = cylinder (fpioc 0 N) S := by
+      simpa [cylinders_pnat] using ht
+    simp_rw [ionescu_tulcea_fun, Measure.ofAddContent_eq _ _ _ _ ht,
+      fun x₀ ↦ kolContent_congr (proj_family κ (zer x₀)) ht t_eq mS]
+    simp only [family]
+    apply Measure.measurable_measure.1
+    apply (Measure.measurable_map _ _).comp
+    · apply (kernel.measurable _).comp
+      apply measurable_zer
+    · apply measurable_pi_lambda
+      intro a
+      apply Measurable.eval
+      apply measurable_id'
+    · exact mS
+  · have this x₀ : ionescu_tulcea_fun κ x₀ tᶜ = 1 - ionescu_tulcea_fun κ x₀ t := by
+      have := fun x₀ ↦ proba_ionescu κ x₀
+      rw [measure_compl mt]
+      · simp
+      · exact measure_ne_top _ _
+    simp_rw [this]
+    exact Measurable.const_sub ht _
+  · simp_rw [measure_iUnion disf mf]
+    exact Measurable.ennreal_tsum hf
+
+noncomputable def ionescu_tulcea_kernel : kernel (X 0) ((n : ℕ+) → X n) :=
+  { val := ionescu_tulcea_fun κ
+    property := measurable_ionescu κ }
+
+instance : IsMarkovKernel (ionescu_tulcea_kernel κ) := by
+  constructor
+  intro x₀
+  exact proba_ionescu _ _
 
 -- theorem test
 --     (μ : Measure ((transitionGraph X).node 0)) [IsProbabilityMeasure μ] :
