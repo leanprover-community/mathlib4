@@ -3,16 +3,12 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Analysis.Calculus.Deriv.Pi
-import Mathlib.Analysis.Calculus.FDeriv.Measurable
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Data.Finset.Interval
-import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
-import Mathlib.MeasureTheory.Integral.MeanInequalities
-import Mathlib.MeasureTheory.Measure.Haar.Unique
 import Mathlib.Tactic.FunProp.AEMeasurable
-import Mathlib.Tactic.FunProp.Measurable
+import Mathlib.Tactic.FunProp.ContDiff
+import Mathlib.Analysis.Calculus.Deriv.Pi
 
 /-!
 # Gagliardo-Nirenberg-Sobolev inequality
@@ -136,7 +132,6 @@ section ContDiffAbsPow
 open Asymptotics Real
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-
 theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
     HasFDerivAt (fun x : E ↦ ‖x‖ ^ p) ((p * ‖x‖ ^ (p - 2)) • innerSL ℝ x) x := by
   by_cases hx : x = 0
@@ -154,13 +149,17 @@ theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
         convert continuousAt_id.norm.rpow_const (.inr h2p.le) |>.tendsto
         simp [h2p.ne']
       _ =O[𝓝 0] id := by
-        simp_rw [mul_one, isBigO_norm_left (f' := fun x ↦ x), id_def, isBigO_refl]
+        simp_rw [mul_one, isBigO_norm_left (f' := fun x ↦ x), Function.id_def, isBigO_refl]
   · apply HasStrictFDerivAt.hasFDerivAt
     convert (hasStrictFDerivAt_norm_sq x).rpow_const (p := p / 2) (by simp [hx]) using 0
     simp_rw [← Real.rpow_natCast_mul (norm_nonneg _), nsmul_eq_smul_cast ℝ, smul_smul]
     ring_nf -- doesn't close the goal?
     congr! 2
     ring
+
+theorem differentiable_norm_rpow {p : ℝ} (hp : 1 < p) :
+    Differentiable ℝ (fun x : E ↦ ‖x‖ ^ p) :=
+  fun x ↦ hasFDerivAt_norm_rpow x hp |>.differentiableAt
 
 theorem hasDerivAt_norm_rpow (x : ℝ) {p : ℝ} (hp : 1 < p) :
     HasDerivAt (fun x : ℝ ↦ ‖x‖ ^ p) (p * ‖x‖ ^ (p - 2) * x) x := by
@@ -184,21 +183,21 @@ theorem norm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f) {x : 
     {p : ℝ} (hp : 1 < p) :
     ‖fderiv ℝ (fun x ↦ ‖f x‖ ^ p) x‖ ≤ p * ‖f x‖ ^ (p - 1) * ‖fderiv ℝ f x‖ := by
   rw [hf.fderiv_norm_rpow hp, norm_smul, norm_mul]
-  simp [- Real.norm_eq_abs, Real.norm_rpow_of_nonneg]
-  simp [abs_eq_self.mpr <| zero_le_one.trans hp.le, mul_assoc]
+  simp_rw [norm_rpow_of_nonneg (norm_nonneg _), norm_norm, norm_eq_abs,
+    abs_eq_self.mpr <| zero_le_one.trans hp.le, mul_assoc]
   gcongr _ * ?_
   refine mul_le_mul_of_nonneg_left (ContinuousLinearMap.opNorm_comp_le ..) (by positivity)
     |>.trans_eq ?_
   rw [innerSL_apply_norm, ← mul_assoc, ← Real.rpow_add_one' (by positivity) (by linarith)]
   ring_nf
 
-theorem norm_fderiv_norm_id_rpow_le {x : E} {p : ℝ} (hp : 1 < p) :
-    ‖fderiv ℝ (fun x ↦ ‖x‖ ^ p) x‖ ≤ p * ‖x‖ ^ (p - 1) := by
-  refine norm_fderiv_norm_rpow_le differentiable_id' hp |>.trans ?_
-  rw [mul_assoc, fderiv_id']
-  gcongr
-  exact mul_le_mul_of_nonneg_left ContinuousLinearMap.norm_id_le (by positivity)
-    |>.trans_eq (mul_one _)
+theorem norm_fderiv_norm_id_rpow (x : E) {p : ℝ} (hp : 1 < p) :
+    ‖fderiv ℝ (fun x ↦ ‖x‖ ^ p) x‖ = p * ‖x‖ ^ (p - 1) := by
+  rw [fderiv_norm_rpow x hp, norm_smul, norm_mul]
+  simp_rw [norm_rpow_of_nonneg (norm_nonneg _), norm_norm, norm_eq_abs,
+    abs_eq_self.mpr <| zero_le_one.trans hp.le, mul_assoc, innerSL_apply_norm]
+  rw [← Real.rpow_add_one' (by positivity) (by linarith)]
+  ring_nf
 
 theorem nnnorm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f)
     {x : F} {p : ℝ≥0} (hp : 1 < p) :
@@ -207,7 +206,6 @@ theorem nnnorm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f)
 
 attribute [fun_prop] continuousAt_rpow_const Continuous.clm_comp
 
--- todo: generalize 1 to n
 theorem contDiff_norm_rpow {p : ℝ} (hp : 1 < p) : ContDiff ℝ 1 (fun x : E ↦ ‖x‖ ^ p) := by
   rw [contDiff_one_iff_fderiv]
   refine ⟨fun x ↦ hasFDerivAt_norm_rpow x hp |>.differentiableAt, ?_⟩
@@ -217,12 +215,28 @@ theorem contDiff_norm_rpow {p : ℝ} (hp : 1 < p) : ContDiff ℝ 1 (fun x : E �
   · simp [hx, ContinuousAt, fderiv_norm_rpow (E := E) (x := 0) hp]
     rw [tendsto_zero_iff_norm_tendsto_zero]
     refine tendsto_of_tendsto_of_tendsto_of_le_of_le (tendsto_const_nhds) ?_
-      (fun _ ↦ norm_nonneg _) (fun _ ↦ norm_fderiv_norm_id_rpow_le hp)
+      (fun _ ↦ norm_nonneg _) (fun _ ↦ norm_fderiv_norm_id_rpow _ hp |>.le) ?_
     suffices ContinuousAt (fun x : E ↦ p * ‖x‖ ^ (p - 1)) 0  by
       simpa [ContinuousAt, sub_ne_zero_of_ne hp.ne'] using this
     fun_prop (discharger := simp [*])
   · simp_rw [funext fun x ↦ fderiv_norm_rpow (E:=E) (x:=x) hp]
     fun_prop (discharger := simp [*])
+
+
+/-
+-- trying to generalize 1 to n
+set_option trace.Meta.Tactic.fun_prop true in
+theorem contDiff_norm_rpow' {n : ℕ} {p : ℝ} (hp : n < p) : ContDiff ℝ n (fun x : E ↦ ‖x‖ ^ p) := by
+  induction' n with n hn generalizing p
+  · simp_rw [Nat.cast_zero, contDiff_zero] at hp ⊢
+    fun_prop (discharger := assumption)
+  simp only [Nat.cast_add, Nat.cast_one] at hp
+  have h1p : 1 < p := by linarith
+  simp_rw [contDiff_succ_iff_fderiv, differentiable_norm_rpow h1p, true_and, fderiv_norm_rpow _ h1p]
+  specialize hn (p := p - 1) (by linarith)
+  -- fun_prop (discharger := assumption)
+  -- rw [contDiff_iff_contDiffAt]
+-/
 
 theorem ContDiff.norm_rpow {f : F → E} (hf : ContDiff ℝ 1 f) {p : ℝ} (hp : 1 < p) :
     ContDiff ℝ 1 (fun x ↦ ‖f x‖ ^ p) :=
@@ -508,7 +522,6 @@ theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι)
     _ = (∫⋯∫⁻_{i}, f ∂μ) x ^ p *
           ((∫⋯∫⁻_{i}, f ∂μ) x ^ (1 - k * p) * ∏ j in s, (∫⋯∫⁻_{i, j}, f ∂μ) x ^ p) := by
               -- absorb the newly-created integrals into `∫⋯∫`
-              dsimp only
               congr! 2
               · rw [lmarginal_singleton]
               refine prod_congr rfl fun j hj => ?_
@@ -688,7 +701,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv (hE : 2 ≤ finrank ℝ E)
   have hιcard : #ι = finrank ℝ E := Fintype.card_fin (finrank ℝ E)
   have : Nontrivial ι := by rwa [Fin.nontrivial_iff_two_le]
   have : FiniteDimensional ℝ (ι → ℝ) := by infer_instance
-  have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp
+  have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp [hιcard]
   have e : E ≃L[ℝ] ι → ℝ := ContinuousLinearEquiv.ofFinrankEq this
   have : IsAddHaarMeasure ((volume : Measure (ι → ℝ)).map e.symm) :=
     (e.symm : (ι → ℝ) ≃+ E).isAddHaarMeasure_map _ e.symm.continuous e.symm.symm.continuous
@@ -763,8 +776,10 @@ theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E)
     inv_mul_cancel h0p.ne', NNReal.rpow_one]
   exact hC hu h2u
 
-variable (F' : Type*) [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [CompleteSpace F']
+variable (F' : Type*) [NormedAddCommGroup F'] [NormedSpace ℝ F'] [CompleteSpace F']
 set_option linter.unusedVariables false in
+set_option profiler true in
+set_option trace.profiler true in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
 with Haar measure, let `1 < p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
@@ -791,7 +806,7 @@ theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
     convert hC hu h2u
     ext
     rw [← inv_inj, hp']
-    field_simp [NNReal.conjExponent]
+    field_simp [n', NNReal.conjExponent]
   -- the case `p > 1`
   let q := Real.conjExponent p
   have hq : Real.IsConjExponent p q := .conjExponent hp
@@ -806,7 +821,7 @@ theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
   have h2q : 1 / n' - 1 / q = 1 / p' := by
     simp_rw (config := {zeta := false}) [one_div, hp']
     rw [hq.conj_inv_eq, hn.coe.conj_inv_eq, sub_sub_sub_cancel_left]
-    simp
+    simp only [NNReal.coe_natCast, NNReal.coe_inv]
   let γ : ℝ≥0 := ⟨p * (n - 1) / (n - p), by positivity⟩
   have h0γ : (γ : ℝ) = p * (n - 1) / (n - p) := rfl
   have h1γ : 1 < (γ : ℝ) := by
@@ -818,7 +833,7 @@ theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
   have h3γ : (γ - 1) * q = p' := by
     rw [← inv_inj, hp', h0γ, hq.conj_eq]
     have : (p : ℝ) * (n - 1) - (n - p) = n * (p - 1) := by ring
-    field_simp; rw [this]; field_simp; ring
+    field_simp [this]; ring
   have h4γ : (γ : ℝ) ≠ 0 := (zero_lt_one.trans h1γ).ne'
   obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv ℝ μ h0n hn
   refine ⟨C * γ, @fun u hu h2u ↦ ?_⟩
@@ -841,10 +856,8 @@ theorem snorm_le_snorm_fderiv_of_eq {p p' : ℝ≥0} (hp : 1 ≤ p)
   have :=
   calc (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / (n' : ℝ)) = snorm v n' μ := by
         rw [← h2γ, snorm_nnreal_eq_lintegral hn.symm.pos.ne']
-        congr! 3
-        simp [Real.nnnorm_rpow_of_nonneg, ENNReal.rpow_mul]
-        rw [ENNReal.coe_rpow_of_nonneg]
-        positivity
+        simp (discharger := positivity) [v, Real.nnnorm_rpow_of_nonneg, ENNReal.rpow_mul,
+          ENNReal.coe_rpow_of_nonneg]
     _ ≤ C * snorm (fderiv ℝ v) 1 μ := hC hv h2v
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖₊ ∂μ := by rw [snorm_one_eq_lintegral_nnnorm]
     _ ≤ C * γ * ∫⁻ x, ‖u x‖₊ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖₊ ∂μ := by
