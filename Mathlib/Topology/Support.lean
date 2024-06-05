@@ -378,7 +378,7 @@ theorem HasCompactSupport.smul_right (hf : HasCompactSupport f) : HasCompactSupp
 
 @[deprecated (since := "2024-06-05")]
 alias HasCompactSupport.smul_left' := HasCompactSupport.smul_left
-#align has_compact_support.smul_left' HasCompactSupport.smul_left'
+#align has_compact_support.smul_left' HasCompactSupport.smul_left
 
 end SMulWithZero
 
