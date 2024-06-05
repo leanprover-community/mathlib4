@@ -8,7 +8,7 @@ import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Compactness.Lindelof
 
 /-!
-# Second-countability of pseduometrizable Lindelöf spaces
+# Second-countability of pseudometrizable Lindelöf spaces
 
 Factored out from `Mathlib.Topology.Compactness.Lindelof`
 to avoid circular dependencies.
