@@ -378,7 +378,7 @@ variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ 
 theorem PartialHomeomorph.contDiff_univUnitBall : ContDiff ℝ n (univUnitBall : E → E) := by
   suffices ContDiff ℝ n fun x : E => (√(1 + ‖x‖ ^ 2 : ℝ))⁻¹ from this.smul contDiff_id
   have h : ∀ x : E, (0 : ℝ) < (1 : ℝ) + ‖x‖ ^ 2 := fun x => by positivity
-  refine' ContDiff.inv _ fun x => Real.sqrt_ne_zero'.mpr (h x)
+  refine ContDiff.inv ?_ fun x => Real.sqrt_ne_zero'.mpr (h x)
   exact (contDiff_const.add <| contDiff_norm_sq ℝ).sqrt fun x => (h x).ne'
 
 theorem PartialHomeomorph.contDiffOn_univUnitBall_symm :
@@ -387,8 +387,8 @@ theorem PartialHomeomorph.contDiffOn_univUnitBall_symm :
   suffices ContDiffAt ℝ n (fun y : E => (√(1 - ‖y‖ ^ 2 : ℝ))⁻¹) y from this.smul contDiffAt_id
   have h : (0 : ℝ) < (1 : ℝ) - ‖(y : E)‖ ^ 2 := by
     rwa [mem_ball_zero_iff, ← _root_.abs_one, ← abs_norm, ← sq_lt_sq, one_pow, ← sub_pos] at hy
-  refine' ContDiffAt.inv _ (Real.sqrt_ne_zero'.mpr h)
-  refine' (contDiffAt_sqrt h.ne').comp y _
+  refine ContDiffAt.inv ?_ (Real.sqrt_ne_zero'.mpr h)
+  refine (contDiffAt_sqrt h.ne').comp y ?_
   exact contDiffAt_const.sub (contDiff_norm_sq ℝ).contDiffAt
 
 theorem Homeomorph.contDiff_unitBall : ContDiff ℝ n fun x : E => (unitBall x : E) :=
