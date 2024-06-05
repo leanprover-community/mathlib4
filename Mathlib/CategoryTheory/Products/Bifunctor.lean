@@ -82,12 +82,12 @@ abbrev obj₃ (H : C ⥤ D ⥤ E ⥤ F) (A : C) (B : D) (C : E) : F := ((H.obj A
 variable {D₁ D₂ C₁ C₂ E₁ E₂}
 
 /- Action of two-variable functors on morphisms. -/
-def map₂ (H : C ⥤ D ⥤ E) (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) :
+abbrev map₂ (H : C ⥤ D ⥤ E) (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) :
     (H.obj₂ C₁ D₁ ⟶ H.obj₂ C₂ D₂) :=
   (H.map f).app _ ≫ (H.obj C₂).map g
 
 /- Action of three-variable functors on morphisms. -/
-def map₃ (H : C ⥤ D ⥤ E ⥤ F) (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) (h : E₁ ⟶ E₂) :
+abbrev map₃ (H : C ⥤ D ⥤ E ⥤ F) (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) (h : E₁ ⟶ E₂) :
     (H.obj₃ C₁ D₁ E₁ ⟶ H.obj₃ C₂ D₂ E₂) :=
   (H.map₂ f g).app _ ≫ (H.obj₂ C₂ D₂).map h
 
@@ -108,21 +108,20 @@ abbrev app₃ {H G : C ⥤ D ⥤ E ⥤ F} (α : NatTrans H G) (X : C) (Y : D) (Z
 
 /- Naturality for natural transformations in two variables. -/
 @[reassoc (attr := simp)]
-lemma naturality₂ {H G : C ⥤ D ⥤ E} (α : NatTrans H G) {X Y X' Y'} (f : X ⟶ X') (g : Y ⟶ Y') :
-    H.map₂ f g ≫ α.app₂ _ _ = α.app₂ _ _ ≫ G.map₂ f g := by
-  unfold Functor.map₂ NatTrans.app₂
-  rw [Category.assoc, NatTrans.naturality, reassoc_of% NatTrans.naturality_app α]
+lemma naturality₂ {H G : C ⥤ D ⥤ E} (α : NatTrans H G) {X Y X' Y'} (f : X ⟶ X')
+    (g : Y ⟶ Y') : H.map₂ f g ≫ α.app₂ X' Y' = α.app₂ X Y ≫ G.map₂ f g := by
+  rw [Category.assoc, naturality, reassoc_of% naturality_app α]
 
 /- Naturality for natural transformations in three variables. -/
 @[reassoc (attr := simp)]
-lemma naturality₃ {H G : C ⥤ D ⥤ E ⥤ F} (α : NatTrans H G) {X Y Z X' Y' Z'} (f : X ⟶ X') (g : Y ⟶ Y') (h : Z ⟶ Z') :
-    H.map₃ f g h ≫ α.app₃ _ _ _ = α.app₃ _ _ _ ≫ G.map₃ f g h := by
-  unfold Functor.map₃ NatTrans.app₃ Functor.obj₂
-  rw [Category.assoc]
-  rw [NatTrans.naturality]
-  have := congrArg (λ α => α.app Z) (naturality₂ α f g)
-  dsimp at this
-  unfold NatTrans.app₂ at this
-  rw [reassoc_of% this]
+lemma naturality₃ {H G : C ⥤ D ⥤ E ⥤ F} (α : H ⟶ G) {X Y Z X' Y' Z'}
+    (f : X ⟶ X') (g : Y ⟶ Y') (h : Z ⟶ Z') :
+    H.map₃ f g h ≫ α.app₃ X' Y' Z' = α.app₃ X Y Z ≫ G.map₃ f g h := by
+  slice_lhs 1 2 => exact Category.assoc _ _ _
+  slice_rhs 2 3 => exact Category.assoc _ _ _
+  rw [Category.assoc, naturality₂]
+  slice_lhs 1 2 => exact congrArg (app₂ · Y Z) (α.naturality f)
+  rw [← Category.assoc, ← Category.assoc]
+  rfl
 
 end NatTrans
