@@ -256,10 +256,6 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
 
   -- we work in `FF`, the eighth cyclotomic field extension of `F`
   let FF := (Polynomial.cyclotomic 8 F).SplittingField
-  have : Polynomial.IsSplittingField F FF (Polynomial.cyclotomic 8 F) :=
-    Polynomial.IsSplittingField.splittingField _
-  have : FiniteDimensional F FF :=
-    Polynomial.IsSplittingField.finiteDimensional FF (Polynomial.cyclotomic 8 F)
   have hchar := Algebra.ringChar_eq F FF
   have FFp := hchar.subst hp
   have := Fact.mk FFp
