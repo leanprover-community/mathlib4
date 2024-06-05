@@ -22,6 +22,12 @@ Given `RF : D ⥤ H` and `α : F ⟶ L ⋙ RF`, we also introduce a type class
 `F.IsRightDerivedFunctor α W` saying that `α` is a left Kan extension of `F`
 along the localization functor `L`.
 
+## TODO
+
+- refactor `Functor.rightDerived` (and `Functor.leftDerived`) when the necessary
+material enters mathlib: derived categories, injective/projective derivability
+structures, existence of derived functors from derivability structures.
+
 ## References
 
 * https://ncatlab.org/nlab/show/derived+functor
