@@ -81,6 +81,10 @@ the replayed build, otherwise it asks to build/download the cache.
 The optional `mods` argument is an array of module names, limiting the build to the given
 array, if `mods ≠ #[]`. -/
 def getBuild (mods : Array String := #[]) : IO String := do
+  -- for the entries of `mods` that end in `.lean`, remove the ending and replace `/` with `.`
+  let mods := mods.map fun mod =>
+    if mod.takeRight 5 == ".lean" then
+      (mod.dropRight 5).replace ⟨[System.FilePath.pathSeparator]⟩ "." else mod
   let build ← IO.Process.output { cmd := "lake", args := #["build", "--no-build"] ++ mods }
   if build.exitCode != 0 then
     IO.println "There are out of date oleans. Run `lake build` or `lake exe cache get` first"
