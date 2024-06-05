@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Liesinger
 -/
 import Mathlib.Algebra.Group.Defs
-import Std.Data.List.Lemmas
+import Batteries.Data.List.Lemmas
 
 /-!
 # Levenshtein distances

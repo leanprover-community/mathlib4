@@ -71,7 +71,7 @@ instance concreteCategory : ConcreteCategory MonCat :=
   BundledHom.concreteCategory _
 
 @[to_additive]
-instance : CoeSort MonCat (Type*) where
+instance : CoeSort MonCat Type* where
   coe X := X.α
 
 @[to_additive]
@@ -198,7 +198,7 @@ instance concreteCategory : ConcreteCategory CommMonCat := by
   infer_instance
 
 @[to_additive]
-instance : CoeSort CommMonCat (Type*) where
+instance : CoeSort CommMonCat Type* where
   coe X := X.α
 
 @[to_additive]
@@ -366,8 +366,7 @@ add_decl_doc addEquivIsoAddMonCatIso
 in `CommMonCat` -/
 @[to_additive addEquivIsoAddCommMonCatIso]
 def mulEquivIsoCommMonCatIso {X Y : Type u} [CommMonoid X] [CommMonoid Y] :
-    X ≃* Y ≅ CommMonCat.of X ≅ CommMonCat.of Y
-    where
+    X ≃* Y ≅ CommMonCat.of X ≅ CommMonCat.of Y where
   hom e := e.toCommMonCatIso
   inv i := i.commMonCatIsoToMulEquiv
 set_option linter.uppercaseLean3 false in
@@ -386,7 +385,7 @@ instance MonCat.forget_reflects_isos : (forget MonCat.{u}).ReflectsIsomorphisms 
     -- Again a problem that exists already creeps into other things leanprover/lean4#2644
     -- this used to be `by aesop`; see next declaration
     let e : X ≃* Y := MulEquiv.mk i.toEquiv (MonoidHom.map_mul (show MonoidHom X Y from f))
-    exact IsIso.of_iso e.toMonCatIso
+    exact e.toMonCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align Mon.forget_reflects_isos MonCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
@@ -399,7 +398,7 @@ instance CommMonCat.forget_reflects_isos : (forget CommMonCat.{u}).ReflectsIsomo
     let e : X ≃* Y := MulEquiv.mk i.toEquiv
       -- Porting FIXME: this would ideally be `by aesop`, as in `MonCat.forget_reflects_isos`
       (MonoidHom.map_mul (show MonoidHom X Y from f))
-    exact IsIso.of_iso e.toCommMonCatIso
+    exact e.toCommMonCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align CommMon.forget_reflects_isos CommMonCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
@@ -409,6 +408,25 @@ set_option linter.uppercaseLean3 false in
 -- automatically reflects isomorphisms
 -- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
 @[to_additive]
-instance CommMonCat.forget₂Full : (forget₂ CommMonCat MonCat).Full where preimage f := f
+instance CommMonCat.forget₂_full : (forget₂ CommMonCat MonCat).Full where
+  map_surjective f := ⟨f, rfl⟩
 
 example : (forget₂ CommMonCat MonCat).ReflectsIsomorphisms := inferInstance
+
+/-!
+`@[simp]` lemmas for `MonoidHom.comp` and categorical identities.
+-/
+
+@[to_additive (attr := simp)] theorem MonoidHom.comp_id_monCat
+    {G : MonCat.{u}} {H : Type u} [Monoid H] (f : G →* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (MonCat.ofHom f)
+@[to_additive (attr := simp)] theorem MonoidHom.id_monCat_comp
+    {G : Type u} [Monoid G] {H : MonCat.{u}} (f : G →* H) : MonoidHom.comp (𝟙 H) f = f :=
+  Category.comp_id (MonCat.ofHom f)
+
+@[to_additive (attr := simp)] theorem MonoidHom.comp_id_commMonCat
+    {G : CommMonCat.{u}} {H : Type u} [CommMonoid H] (f : G →* H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (CommMonCat.ofHom f)
+@[to_additive (attr := simp)] theorem MonoidHom.id_commMonCat_comp
+    {G : Type u} [CommMonoid G] {H : CommMonCat.{u}} (f : G →* H) : MonoidHom.comp (𝟙 H) f = f :=
+  Category.comp_id (CommMonCat.ofHom f)

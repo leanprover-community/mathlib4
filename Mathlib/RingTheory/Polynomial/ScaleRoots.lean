@@ -6,6 +6,7 @@ Authors: Anne Baanen, Devon Tuma
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.Tactic.AdaptationNote
 
 #align_import ring_theory.polynomial.scale_roots from "leanprover-community/mathlib"@"40ac1b258344e0c2b4568dc37bfad937ec35a727"
 
@@ -21,7 +22,7 @@ variable {R S A K : Type*}
 
 namespace Polynomial
 
-open BigOperators Polynomial
+open Polynomial
 
 section Semiring
 
@@ -29,7 +30,7 @@ variable [Semiring R] [Semiring S]
 
 /-- `scaleRoots p s` is a polynomial with root `r * s` for each root `r` of `p`. -/
 noncomputable def scaleRoots (p : R[X]) (s : R) : R[X] :=
-  ∑ i in p.support, monomial i (p.coeff i * s ^ (p.natDegree - i))
+  ∑ i ∈ p.support, monomial i (p.coeff i * s ^ (p.natDegree - i))
 #align polynomial.scale_roots Polynomial.scaleRoots
 
 @[simp]
@@ -78,7 +79,7 @@ theorem degree_scaleRoots (p : R[X]) {s : R} : degree (scaleRoots p s) = degree 
   haveI := Classical.propDecidable
   by_cases hp : p = 0
   · rw [hp, zero_scaleRoots]
-  refine' le_antisymm (Finset.sup_mono (support_scaleRoots_le p s)) (degree_le_degree _)
+  refine le_antisymm (Finset.sup_mono (support_scaleRoots_le p s)) (degree_le_degree ?_)
   rw [coeff_scaleRoots_natDegree]
   intro h
   have := leadingCoeff_eq_zero.mp h
@@ -135,8 +136,8 @@ theorem scaleRoots_eval₂_mul_of_commute {p : S[X]} (f : S →+* A) (a : A) (s 
     eval₂ f (f s * a) (scaleRoots p s) = f s ^ p.natDegree * eval₂ f a p := by
    calc
     _ = (scaleRoots p s).support.sum fun i =>
-          f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i :=
-      by simp [eval₂_eq_sum, sum_def]
+          f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i := by
+      simp [eval₂_eq_sum, sum_def]
     _ = p.support.sum fun i => f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i :=
       (Finset.sum_subset (support_scaleRoots_le p s) fun i _hi hi' => by
         let this : coeff p i * s ^ (p.natDegree - i) = 0 := by simpa using hi'
@@ -194,7 +195,7 @@ lemma mul_scaleRoots (p q : R[X]) (r : R) :
     r ^ (natDegree p + natDegree q - natDegree (p * q)) • (p * q).scaleRoots r =
       p.scaleRoots r * q.scaleRoots r := by
   ext n; simp only [coeff_scaleRoots, coeff_smul, smul_eq_mul]
-  trans (∑ x in Finset.antidiagonal n, coeff p x.1 * coeff q x.2) *
+  trans (∑ x ∈ Finset.antidiagonal n, coeff p x.1 * coeff q x.2) *
     r ^ (natDegree p + natDegree q - n)
   · rw [← coeff_mul]
     cases lt_or_le (natDegree (p * q)) n with
@@ -230,9 +231,9 @@ lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R) (h : natDegree p = nat
       p.scaleRoots r + q.scaleRoots r := by
   ext n; simp only [coeff_smul, coeff_scaleRoots, coeff_add, smul_eq_mul,
     mul_comm (r ^ _), ← pow_add, ← h, ← add_mul, add_comm (_ - n)]
-  -- Adaptation note: v4.7.0-rc1
-  -- Previously `mul_assoc` was part of the `simp only` above, and this `rw` was not needed.
-  -- but this now causes a max rec depth error.
+  #adaptation_note /-- v4.7.0-rc1
+  Previously `mul_assoc` was part of the `simp only` above, and this `rw` was not needed.
+  but this now causes a max rec depth error. -/
   rw [mul_assoc, ← pow_add]
   cases lt_or_le (natDegree (p + q)) n with
   | inl hn => simp only [← coeff_add, coeff_eq_zero_of_natDegree_lt hn, zero_mul]

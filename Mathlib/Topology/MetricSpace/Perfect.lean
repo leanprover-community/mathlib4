@@ -47,7 +47,7 @@ private theorem Perfect.small_diam_aux (ε_pos : 0 < ε) {x : α} (xC : x ∈ C)
     rw [ENNReal.div_pos_iff]
     exact ⟨ne_of_gt ε_pos, by norm_num⟩
   have := hC.closure_nhds_inter x xC this EMetric.isOpen_ball
-  refine' ⟨this.1, this.2, _, _⟩
+  refine ⟨this.1, this.2, ?_, ?_⟩
   · rw [IsClosed.closure_subset_iff hC.closed]
     apply inter_subset_right
   rw [EMetric.diam_closure]
@@ -67,9 +67,9 @@ theorem Perfect.small_diam_splitting (ε_pos : 0 < ε) :
   cases' non1 with x₁ hx₁
   rcases perf0.small_diam_aux ε_pos hx₀ with ⟨perf0', non0', sub0', diam0⟩
   rcases perf1.small_diam_aux ε_pos hx₁ with ⟨perf1', non1', sub1', diam1⟩
-  refine'
+  refine
     ⟨closure (EMetric.ball x₀ (ε / 2) ∩ D₀), closure (EMetric.ball x₁ (ε / 2) ∩ D₁),
-      ⟨perf0', non0', sub0'.trans sub0, diam0⟩, ⟨perf1', non1', sub1'.trans sub1, diam1⟩, _⟩
+      ⟨perf0', non0', sub0'.trans sub0, diam0⟩, ⟨perf1', non1', sub1'.trans sub1, diam1⟩, ?_⟩
   apply Disjoint.mono _ _ hdisj <;> assumption
 #align perfect.small_diam_splitting Perfect.small_diam_splitting
 
@@ -88,13 +88,13 @@ theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
   let DP : List Bool → P := fun l => by
     induction' l with a l ih; · exact ⟨C, ⟨hC, hnonempty⟩⟩
     cases a
-    · use C0 ih.property.1 ih.property.2 (upos l.length.succ)
+    · use C0 ih.property.1 ih.property.2 (upos (l.length + 1))
       exact ⟨(h0 _ _ _).1, (h0 _ _ _).2.1⟩
-    use C1 ih.property.1 ih.property.2 (upos l.length.succ)
+    use C1 ih.property.1 ih.property.2 (upos (l.length + 1))
     exact ⟨(h1 _ _ _).1, (h1 _ _ _).2.1⟩
   let D : List Bool → Set α := fun l => (DP l).val
   have hanti : ClosureAntitone D := by
-    refine' Antitone.closureAntitone _ fun l => (DP l).property.1.closed
+    refine Antitone.closureAntitone ?_ fun l => (DP l).property.1.closed
     intro l a
     cases a
     · exact (h0 _ _ _).2.2.1
@@ -104,7 +104,7 @@ theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hu
     · simp
     rw [eventually_atTop]
-    refine' ⟨1, fun m (hm : 1 ≤ m) => _⟩
+    refine ⟨1, fun m (hm : 1 ≤ m) => ?_⟩
     rw [Nat.one_le_iff_ne_zero] at hm
     rcases Nat.exists_eq_succ_of_ne_zero hm with ⟨n, rfl⟩
     dsimp
@@ -120,7 +120,7 @@ theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
   have hdom : ∀ {x : ℕ → Bool}, x ∈ (inducedMap D).1 := fun {x} => by
     rw [hanti.map_of_vanishingDiam hdiam fun l => (DP l).property.2]
     apply mem_univ
-  refine' ⟨fun x => (inducedMap D).2 ⟨x, hdom⟩, _, _, _⟩
+  refine ⟨fun x => (inducedMap D).2 ⟨x, hdom⟩, ?_, ?_, ?_⟩
   · rintro y ⟨x, rfl⟩
     exact map_mem ⟨_, hdom⟩ 0
   · apply hdiam.map_continuous.comp

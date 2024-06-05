@@ -166,6 +166,7 @@ syntax (name := slimCheckSyntax) "slim_check" (config)? : tactic
 elab_rules : tactic | `(tactic| slim_check $[$cfg]?) => withMainContext do
   let cfg ← elabConfig (mkOptionalNode cfg)
   let (_, g) ← (← getMainGoal).revert ((← getLocalHyps).map (Expr.fvarId!))
+  g.withContext do
   let tgt ← g.getType
   let tgt' ← addDecorations tgt
   let cfg := { cfg with

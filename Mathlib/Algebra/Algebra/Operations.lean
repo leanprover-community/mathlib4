@@ -49,8 +49,6 @@ universe uι u v
 
 open Algebra Set MulOpposite
 
-open BigOperators
-
 open Pointwise
 
 namespace SubMulAction
@@ -188,7 +186,7 @@ protected theorem mul_induction_on' {C : ∀ r, r ∈ M * N → Prop}
     (mem_mul_mem : ∀ m (hm : m ∈ M) n (hn : n ∈ N), C (m * n) (mul_mem_mul hm hn))
     (add : ∀ x hx y hy, C x hx → C y hy → C (x + y) (add_mem hx hy)) {r : A} (hr : r ∈ M * N) :
     C r hr := by
-  refine' Exists.elim _ fun (hr : r ∈ M * N) (hc : C r hr) => hc
+  refine Exists.elim ?_ fun (hr : r ∈ M * N) (hc : C r hr) => hc
   exact
     Submodule.mul_induction_on hr
       (fun x hx y hy => ⟨_, mem_mul_mem _ hx _ hy⟩)
@@ -265,12 +263,12 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
       ext S
       constructor <;> rintro ⟨y, hy⟩
       · use ⟨f y, mem_map.mpr ⟨y.1, y.2, rfl⟩⟩  -- Porting note: added `⟨⟩`
-        refine' Eq.trans _ hy
+        refine Eq.trans ?_ hy
         ext
         simp
       · obtain ⟨y', hy', fy_eq⟩ := mem_map.mp y.2
         use ⟨y', hy'⟩  -- Porting note: added `⟨⟩`
-        refine' Eq.trans _ hy
+        refine Eq.trans ?_ hy
         rw [f.toLinearMap_apply] at fy_eq
         ext
         simp [fy_eq]
@@ -282,11 +280,11 @@ theorem map_op_mul :
         map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M := by
   apply le_antisymm
   · simp_rw [map_le_iff_le_comap]
-    refine' mul_le.2 fun m hm n hn => _
+    refine mul_le.2 fun m hm n hn => ?_
     rw [mem_comap, map_equiv_eq_comap_symm, map_equiv_eq_comap_symm]
     show op n * op m ∈ _
     exact mul_mem_mul hn hm
-  · refine' mul_le.2 (MulOpposite.rec' fun m hm => MulOpposite.rec' fun n hn => _)
+  · refine mul_le.2 (MulOpposite.rec' fun m hm => MulOpposite.rec' fun n hn => ?_)
     rw [Submodule.mem_map_equiv] at hm hn ⊢
     exact mul_mem_mul hn hm
 #align submodule.map_op_mul Submodule.map_op_mul
@@ -469,6 +467,9 @@ theorem le_pow_toAddSubmonoid {n : ℕ} : M.toAddSubmonoid ^ n ≤ (M ^ n).toAdd
   · exact (pow_toAddSubmonoid M hn).ge
 #align submodule.le_pow_to_add_submonoid Submodule.le_pow_toAddSubmonoid
 
+-- Adaptation note: nightly-2024-04-01
+-- Previously this maxHeartbeats was not required. None of the backwards compatibility flags help.
+set_option maxHeartbeats 400000 in
 /-- Dependent version of `Submodule.pow_induction_on_left`. -/
 @[elab_as_elim]
 protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n → Prop}
@@ -538,8 +539,8 @@ protected theorem pow_induction_on_right {C : A → Prop} (hr : ∀ r : R, C (al
 
 /-- `Submonoid.map` as a `MonoidWithZeroHom`, when applied to `AlgHom`s. -/
 @[simps]
-def mapHom {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') : Submodule R A →*₀ Submodule R A'
-    where
+def mapHom {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
+    Submodule R A →*₀ Submodule R A' where
   toFun := map f.toLinearMap
   map_zero' := Submodule.map_bot _
   map_one' := Submodule.map_one _
@@ -644,16 +645,16 @@ instance : IdemCommSemiring (Submodule R A) :=
   { Submodule.idemSemiring with mul_comm := Submodule.mul_comm }
 
 theorem prod_span {ι : Type*} (s : Finset ι) (M : ι → Set A) :
-    (∏ i in s, Submodule.span R (M i)) = Submodule.span R (∏ i in s, M i) := by
+    (∏ i ∈ s, Submodule.span R (M i)) = Submodule.span R (∏ i ∈ s, M i) := by
   letI := Classical.decEq ι
-  refine' Finset.induction_on s _ _
+  refine Finset.induction_on s ?_ ?_
   · simp [one_eq_span, Set.singleton_one]
   · intro _ _ H ih
     rw [Finset.prod_insert H, Finset.prod_insert H, ih, span_mul_span]
 #align submodule.prod_span Submodule.prod_span
 
 theorem prod_span_singleton {ι : Type*} (s : Finset ι) (x : ι → A) :
-    (∏ i in s, span R ({x i} : Set A)) = span R {∏ i in s, x i} := by
+    (∏ i ∈ s, span R ({x i} : Set A)) = span R {∏ i ∈ s, x i} := by
   rw [prod_span, Set.finset_prod_singleton]
 #align submodule.prod_span_singleton Submodule.prod_span_singleton
 
@@ -766,7 +767,7 @@ protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Subm
   · rintro ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
     exact ⟨x * y, hx _ hy, h.map_mul x y⟩
   · rintro hx
-    refine' ⟨h.symm x, fun z hz => _, h.apply_symm_apply x⟩
+    refine ⟨h.symm x, fun z hz => ?_, h.apply_symm_apply x⟩
     obtain ⟨xz, xz_mem, hxz⟩ := hx (h z) ⟨z, hz, rfl⟩
     convert xz_mem
     apply h.injective

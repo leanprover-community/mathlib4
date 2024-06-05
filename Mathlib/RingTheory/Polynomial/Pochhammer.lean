@@ -62,8 +62,8 @@ theorem ascPochhammer_one : ascPochhammer S 1 = X := by simp [ascPochhammer]
 #align pochhammer_one ascPochhammer_one
 
 theorem ascPochhammer_succ_left (n : ℕ) :
-    ascPochhammer S (n + 1) = X * (ascPochhammer S n).comp (X + 1) :=
-  by rw [ascPochhammer]
+    ascPochhammer S (n + 1) = X * (ascPochhammer S n).comp (X + 1) := by
+  rw [ascPochhammer]
 #align pochhammer_succ_left ascPochhammer_succ_left
 
 theorem monic_ascPochhammer (n : ℕ) [Nontrivial S] [NoZeroDivisors S] :
@@ -158,7 +158,7 @@ theorem ascPochhammer_mul (n m : ℕ) :
   induction' m with m ih
   · simp
   · rw [ascPochhammer_succ_right, Polynomial.mul_X_add_natCast_comp, ← mul_assoc, ih,
-      Nat.succ_eq_add_one, ← add_assoc, ascPochhammer_succ_right, Nat.cast_add, add_assoc]
+      ← add_assoc, ascPochhammer_succ_right, Nat.cast_add, add_assoc]
 #align pochhammer_mul ascPochhammer_mul
 
 theorem ascPochhammer_nat_eq_ascFactorial (n : ℕ) :
@@ -184,7 +184,7 @@ theorem ascPochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S] :
         natDegree_mul _ (ne_zero_of_natDegree_gt <| this.symm ▸ Nat.zero_lt_one), hn, this]
     cases n
     · simp
-    · refine' ne_zero_of_natDegree_gt <| hn.symm ▸ Nat.succ_pos _
+    · refine ne_zero_of_natDegree_gt <| hn.symm ▸ Nat.add_one_pos _
 
 end Semiring
 
@@ -256,8 +256,8 @@ theorem descPochhammer_zero : descPochhammer R 0 = 1 :=
 theorem descPochhammer_one : descPochhammer R 1 = X := by simp [descPochhammer]
 
 theorem descPochhammer_succ_left (n : ℕ) :
-    descPochhammer R (n + 1) = X * (descPochhammer R n).comp (X - 1) :=
-  by rw [descPochhammer]
+    descPochhammer R (n + 1) = X * (descPochhammer R n).comp (X - 1) := by
+  rw [descPochhammer]
 
 theorem monic_descPochhammer (n : ℕ) [Nontrivial R] [NoZeroDivisors R] :
     Monic <| descPochhammer R n := by
@@ -309,8 +309,7 @@ theorem descPochhammer_succ_right (n : ℕ) :
   · conv_lhs =>
       rw [descPochhammer_succ_left, ih, mul_comp, ← mul_assoc, ← descPochhammer_succ_left, sub_comp,
           X_comp, natCast_comp]
-    nth_rw 1 [Nat.succ_eq_add_one]
-    rw [Nat.succ_eq_one_add, Nat.cast_add, Nat.cast_one, sub_add_eq_sub_sub]
+    rw [Nat.cast_add, Nat.cast_one, sub_add_eq_sub_sub_swap]
 
 @[simp]
 theorem descPochhammer_natDegree (n : ℕ) [NoZeroDivisors R] [Nontrivial R] :
@@ -322,7 +321,7 @@ theorem descPochhammer_natDegree (n : ℕ) [NoZeroDivisors R] [Nontrivial R] :
         natDegree_mul _ (ne_zero_of_natDegree_gt <| this.symm ▸ Nat.zero_lt_one), hn, this]
     cases n
     · simp
-    · refine' ne_zero_of_natDegree_gt <| hn.symm ▸ Nat.succ_pos _
+    · refine ne_zero_of_natDegree_gt <| hn.symm ▸ Nat.add_one_pos _
 
 theorem descPochhammer_succ_eval {S : Type*} [Ring S] (n : ℕ) (k : S) :
     (descPochhammer S (n + 1)).eval k = (descPochhammer S n).eval k * (k - n) := by
@@ -339,6 +338,14 @@ theorem descPochhammer_succ_comp_X_sub_one (n : ℕ) :
   rw [← sub_mul, descPochhammer_succ_right ℤ n, mul_comp, mul_comm, sub_comp, X_comp, natCast_comp]
   ring
 
+theorem descPochhammer_eq_ascPochhammer (n : ℕ) :
+    descPochhammer ℤ n = (ascPochhammer ℤ n).comp ((X:ℤ[X])  - n + 1) := by
+  induction n with
+  | zero => rw [descPochhammer_zero, ascPochhammer_zero, one_comp]
+  | succ n ih =>
+    rw [Nat.cast_succ, sub_add, add_sub_cancel_right, descPochhammer_succ_right,
+      ascPochhammer_succ_left, ih, X_mul, mul_X_comp, comp_assoc, add_comp, X_comp, one_comp]
+
 theorem descPochhammer_eval_eq_ascPochhammer (r : R) (n : ℕ) :
     (descPochhammer R n).eval r = (ascPochhammer R n).eval (r - n + 1) := by
   induction n with
@@ -354,7 +361,7 @@ theorem descPochhammer_mul (n m : ℕ) :
   induction' m with m ih
   · simp
   · rw [descPochhammer_succ_right, Polynomial.mul_X_sub_intCast_comp, ← mul_assoc, ih,
-      Nat.succ_eq_add_one, ← add_assoc, descPochhammer_succ_right, Nat.cast_add, sub_add_eq_sub_sub]
+      ← add_assoc, descPochhammer_succ_right, Nat.cast_add, sub_add_eq_sub_sub]
 
 theorem ascPochhammer_eval_neg_eq_descPochhammer (r : R) : ∀ (k : ℕ),
     (ascPochhammer R k).eval (-r) = (-1)^k * (descPochhammer R k).eval r

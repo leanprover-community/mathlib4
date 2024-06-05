@@ -287,7 +287,7 @@ and a function `g : γ → α` tends to `l` along `lc : Filter γ`,
 the germ of the composition `f ∘ g` is also constant. -/
 lemma isConstant_compTendsto {f : Germ l β} {lc : Filter γ} {g : γ → α}
     (hf : f.IsConstant) (hg : Tendsto g lc l) : (f.compTendsto g hg).IsConstant := by
-  rcases Quotient.exists_rep f with ⟨f, rfl⟩
+  induction f using Quotient.inductionOn with | _ f => ?_
   exact isConstant_comp_tendsto hf hg
 
 @[simp, norm_cast]

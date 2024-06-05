@@ -3,10 +3,10 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.Nat.Cast.Order
-import Mathlib.Algebra.GroupPower.CovariantClass
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
+import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.LatticeIntervals
 
@@ -76,8 +76,7 @@ instance instDenselyOrdered [Preorder α] [DenselyOrdered α] {a : α} :
 #align nonneg.densely_ordered Nonneg.instDenselyOrdered
 
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrder`. -/
-@[reducible]
-protected noncomputable def conditionallyCompleteLinearOrder [ConditionallyCompleteLinearOrder α]
+protected noncomputable abbrev conditionallyCompleteLinearOrder [ConditionallyCompleteLinearOrder α]
     {a : α} : ConditionallyCompleteLinearOrder { x : α // a ≤ x } :=
   { @ordConnectedSubsetConditionallyCompleteLinearOrder α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩ _ with }
 #align nonneg.conditionally_complete_linear_order Nonneg.conditionallyCompleteLinearOrder
@@ -87,9 +86,9 @@ protected noncomputable def conditionallyCompleteLinearOrder [ConditionallyCompl
 This instance uses data fields from `Subtype.linearOrder` to help type-class inference.
 The `Set.Ici` data fields are definitionally equal, but that requires unfolding semireducible
 definitions, so type-class inference won't see this. -/
-@[reducible]
-protected noncomputable def conditionallyCompleteLinearOrderBot [ConditionallyCompleteLinearOrder α]
-    (a : α) : ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
+protected noncomputable abbrev conditionallyCompleteLinearOrderBot
+    [ConditionallyCompleteLinearOrder α] (a : α) :
+    ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
   { Nonneg.orderBot, Nonneg.conditionallyCompleteLinearOrder with
     csSup_empty := by
       rw [@subset_sSup_def α (Set.Ici a) _ _ ⟨⟨a, le_rfl⟩⟩]; simp [bot_eq] }
@@ -228,10 +227,16 @@ protected theorem coe_natCast [OrderedSemiring α] (n : ℕ) : ((↑n : { x : α
   rfl
 #align nonneg.coe_nat_cast Nonneg.coe_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias coe_nat_cast := Nonneg.coe_natCast
+
 @[simp]
 theorem mk_natCast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : { x : α // 0 ≤ x }) = n :=
   rfl
 #align nonneg.mk_nat_cast Nonneg.mk_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias mk_nat_cast := mk_natCast
 
 instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ where
   pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩

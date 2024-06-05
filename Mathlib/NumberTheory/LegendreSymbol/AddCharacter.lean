@@ -6,6 +6,8 @@ Authors: Michael Stoll
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 import Mathlib.FieldTheory.Finite.Trace
 import Mathlib.Algebra.Group.AddChar
+import Mathlib.Data.ZMod.Units
+import Mathlib.Analysis.Complex.Polynomial
 
 #align_import number_theory.legendre_symbol.add_character from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
@@ -46,11 +48,28 @@ section Additive
 -- The domain and target of our additive characters. Now we restrict to a ring in the domain.
 variable {R : Type u} [CommRing R] {R' : Type v} [CommMonoid R']
 
+/-- The values of an additive character on a ring of positive characteristic are roots of unity. -/
+lemma val_mem_rootsOfUnity (φ : AddChar R R') (a : R) (h : 0 < ringChar R) :
+    (φ.val_isUnit a).unit ∈ rootsOfUnity (ringChar R).toPNat' R' := by
+  simp only [mem_rootsOfUnity', IsUnit.unit_spec, Nat.toPNat'_coe, h, ↓reduceIte, ← map_nsmul_pow,
+    nsmul_eq_mul, CharP.cast_eq_zero, zero_mul, map_zero_one]
+
 /-- An additive character is *primitive* iff all its multiplicative shifts by nonzero
 elements are nontrivial. -/
 def IsPrimitive (ψ : AddChar R R') : Prop :=
   ∀ a : R, a ≠ 0 → IsNontrivial (mulShift ψ a)
 #align add_char.is_primitive AddChar.IsPrimitive
+
+/-- The composition of a primitive additive character with an injective mooid homomorphism
+is also primitive. -/
+lemma IsPrimitive.compMulHom_of_isPrimitive {R'' : Type*} [CommMonoid R''] {φ : AddChar R R'}
+    {f : R' →* R''} (hφ : φ.IsPrimitive) (hf : Function.Injective f) :
+    (f.compAddChar φ).IsPrimitive := by
+  intro a a_ne_zero
+  obtain ⟨r, ne_one⟩ := hφ a a_ne_zero
+  rw [mulShift_apply] at ne_one
+  simp only [IsNontrivial, mulShift_apply, f.coe_compAddChar, Function.comp_apply]
+  exact ⟨r, fun H ↦ ne_one <| hf <| f.map_one ▸ H⟩
 
 /-- The map associating to `a : R` the multiplicative shift of `ψ` by `a`
 is injective when `ψ` is primitive. -/
@@ -77,38 +96,55 @@ theorem IsNontrivial.isPrimitive {F : Type u} [Field F] {ψ : AddChar F R'} (hψ
   rwa [mulShift_apply, mul_inv_cancel_left₀ ha]
 #align add_char.is_nontrivial.is_primitive AddChar.IsNontrivial.isPrimitive
 
--- Porting note: Using `structure` gives a timeout, see
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/mysterious.20finsupp.20related.20timeout/near/365719262 and
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/mysterious.20finsupp.20related.20timeout
--- In Lean4, `set_option genInjectivity false in` may solve this issue.
--- can't prove that they always exist (referring to providing an `Inhabited` instance)
+/-- If `r` is not a unit, then `e.mulShift r` is not primitive. -/
+lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}
+    (hr : ¬ IsUnit r) : ¬ IsPrimitive (e.mulShift r) := by
+  simp only [IsPrimitive, not_forall]
+  simp only [isUnit_iff_mem_nonZeroDivisors_of_finite, mem_nonZeroDivisors_iff, not_forall] at hr
+  rcases hr with ⟨x, h, h'⟩
+  exact ⟨x, h', by simp only [mulShift_mulShift, mul_comm r, h, mulShift_zero, not_ne_iff,
+    isNontrivial_iff_ne_trivial]⟩
+
 /-- Definition for a primitive additive character on a finite ring `R` into a cyclotomic extension
 of a field `R'`. It records which cyclotomic extension it is, the character, and the
 fact that the character is primitive. -/
 -- Porting note(#5171): this linter isn't ported yet.
+-- can't prove that they always exist (referring to providing an `Inhabited` instance)
 -- @[nolint has_nonempty_instance]
-def PrimitiveAddChar (R : Type u) [CommRing R] (R' : Type v) [Field R'] :=
-  Σ n : ℕ+, Σ' char : AddChar R (CyclotomicField n R'), IsPrimitive char
+structure PrimitiveAddChar (R : Type u) [CommRing R] (R' : Type v) [Field R'] where
+  /-- The first projection from `PrimitiveAddChar`, giving the cyclotomic field. -/
+  n : ℕ+
+  /-- The second projection from `PrimitiveAddChar`, giving the character. -/
+  char : AddChar R (CyclotomicField n R')
+  /-- The third projection from `PrimitiveAddChar`, showing that `χ.char` is primitive. -/
+  prim : IsPrimitive char
 #align add_char.primitive_add_char AddChar.PrimitiveAddChar
-
-/-- The first projection from `PrimitiveAddChar`, giving the cyclotomic field. -/
-noncomputable def PrimitiveAddChar.n {R : Type u} [CommRing R] {R' : Type v} [Field R'] :
-    PrimitiveAddChar R R' → ℕ+ := fun χ => χ.1
 #align add_char.primitive_add_char.n AddChar.PrimitiveAddChar.n
-
-/-- The second projection from `PrimitiveAddChar`, giving the character. -/
-noncomputable def PrimitiveAddChar.char {R : Type u} [CommRing R] {R' : Type v} [Field R'] :
-    ∀ χ : PrimitiveAddChar R R', AddChar R (CyclotomicField χ.n R') := fun χ => χ.2.1
 #align add_char.primitive_add_char.char AddChar.PrimitiveAddChar.char
-
-/-- The third projection from `PrimitiveAddChar`, showing that `χ.char` is primitive. -/
-theorem PrimitiveAddChar.prim {R : Type u} [CommRing R] {R' : Type v} [Field R'] :
-    ∀ χ : PrimitiveAddChar R R', IsPrimitive χ.char := fun χ => χ.2.2
 #align add_char.primitive_add_char.prim AddChar.PrimitiveAddChar.prim
 
 /-!
 ### Additive characters on `ZMod n`
 -/
+
+section ZMod
+
+variable {N : ℕ+} {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
+
+/-- If `e` is not primitive, then `e.mulShift d = 1` for some proper divisor `d` of `N`. -/
+lemma exists_divisor_of_not_isPrimitive (he : ¬e.IsPrimitive) :
+    ∃ d : ℕ, d ∣ N ∧ d < N ∧ e.mulShift d = 1 := by
+  simp_rw [IsPrimitive, not_forall, isNontrivial_iff_ne_trivial, not_ne_iff] at he
+  rcases he with ⟨b, hb_ne, hb⟩
+  -- We have `AddChar.mulShift e b = 1`, but `b ≠ 0`.
+  obtain ⟨d, hd, u, hu, rfl⟩ := b.eq_unit_mul_divisor
+  refine ⟨d, hd, lt_of_le_of_ne (Nat.le_of_dvd N.pos hd) ?_, ?_⟩
+  · exact fun h ↦ by simp only [h, ZMod.natCast_self, mul_zero, ne_eq, not_true_eq_false] at hb_ne
+  · rw [← mulShift_unit_eq_one_iff _ hu, ← hb, mul_comm]
+    ext1 y
+    rw [mulShift_apply, mulShift_apply, mulShift_apply, mul_assoc]
+
+end ZMod
 
 section ZModChar
 
@@ -140,7 +176,7 @@ end ZModCharDef
 /-- An additive character on `ZMod n` is nontrivial iff it takes a value `≠ 1` on `1`. -/
 theorem zmod_char_isNontrivial_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) :
     IsNontrivial ψ ↔ ψ 1 ≠ 1 := by
-  refine' ⟨_, fun h => ⟨1, h⟩⟩
+  refine ⟨?_, fun h => ⟨1, h⟩⟩
   contrapose!
   rintro h₁ ⟨a, ha⟩
   have ha₁ : a = a.val • (1 : ZMod ↑n) := by
@@ -152,7 +188,7 @@ theorem zmod_char_isNontrivial_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) :
 /-- A primitive additive character on `ZMod n` takes the value `1` only at `0`. -/
 theorem IsPrimitive.zmod_char_eq_one_iff (n : ℕ+) {ψ : AddChar (ZMod n) C} (hψ : IsPrimitive ψ)
     (a : ZMod n) : ψ a = 1 ↔ a = 0 := by
-  refine' ⟨fun h => not_imp_comm.mp (hψ a) _, fun ha => by rw [ha, map_zero_one]⟩
+  refine ⟨fun h => not_imp_comm.mp (hψ a) ?_, fun ha => by rw [ha, map_zero_one]⟩
   rw [zmod_char_isNontrivial_iff n (mulShift ψ a), mulShift_apply, mul_one, h, Classical.not_not]
 #align add_char.is_primitive.zmod_char_eq_one_iff AddChar.IsPrimitive.zmod_char_eq_one_iff
 
@@ -160,7 +196,7 @@ theorem IsPrimitive.zmod_char_eq_one_iff (n : ℕ+) {ψ : AddChar (ZMod n) C} (h
 then it is primitive. -/
 theorem zmod_char_primitive_of_eq_one_only_at_zero (n : ℕ) (ψ : AddChar (ZMod n) C)
     (hψ : ∀ a, ψ a = 1 → a = 0) : IsPrimitive ψ := by
-  refine' fun a ha => (isNontrivial_iff_ne_trivial _).mpr fun hf => _
+  refine fun a ha => (isNontrivial_iff_ne_trivial _).mpr fun hf => ?_
   have h : mulShift ψ a 1 = (1 : AddChar (ZMod n) C) (1 : ZMod n) :=
     congr_fun (congr_arg (↑) hf) 1
   rw [mulShift_apply, mul_one] at h; norm_cast at h
@@ -196,9 +232,10 @@ end Additive
 
 /-- There is a primitive additive character on the finite field `F` if the characteristic
 of the target is different from that of `F`.
+
 We obtain it as the composition of the trace from `F` to `ZMod p` with a primitive
 additive character on `ZMod p`, where `p` is the characteristic of `F`. -/
-noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Finite F] [Field F']
+noncomputable def FiniteField.primitiveChar (F F' : Type*) [Field F] [Finite F] [Field F']
     (h : ringChar F' ≠ ringChar F) : PrimitiveAddChar F F' := by
   let p := ringChar F
   haveI hp : Fact p.Prime := ⟨CharP.char_is_prime F _⟩
@@ -216,16 +253,14 @@ noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Finite F] [
     rw [one_mul] at ha
     exact ⟨a, fun hf => ha <| (ψ.prim.zmod_char_eq_one_iff pp <| Algebra.trace (ZMod p) F a).mp hf⟩
   exact ⟨ψ.n, ψ', hψ'.isPrimitive⟩
-#align add_char.primitive_char_finite_field AddChar.primitiveCharFiniteField
+#align add_char.primitive_char_finite_field AddChar.FiniteField.primitiveChar
+@[deprecated (since := "2024-05-30")] alias primitiveCharFiniteField := FiniteField.primitiveChar
 
 /-!
 ### The sum of all character values
 -/
 
-
 section sum
-
-open scoped BigOperators
 
 variable {R : Type*} [AddGroup R] [Fintype R] {R' : Type*} [CommRing R']
 
@@ -247,13 +282,12 @@ theorem sum_eq_card_of_is_trivial {ψ : AddChar R R'} (hψ : ¬IsNontrivial ψ) 
     ∑ a, ψ a = Fintype.card R := by
   simp only [IsNontrivial] at hψ
   push_neg at hψ
-  simp only [hψ, Finset.sum_const, Nat.smul_one_eq_coe]
+  simp only [hψ, Finset.sum_const, Nat.smul_one_eq_cast]
   rfl
 #align add_char.sum_eq_card_of_is_trivial AddChar.sum_eq_card_of_is_trivial
 
 end sum
 
-open scoped BigOperators in
 /-- The sum over the values of `mulShift ψ b` for `ψ` primitive is zero when `b ≠ 0`
 and `#R` otherwise. -/
 theorem sum_mulShift {R : Type*} [CommRing R] [Fintype R] [DecidableEq R]
@@ -261,11 +295,56 @@ theorem sum_mulShift {R : Type*} [CommRing R] [Fintype R] [DecidableEq R]
     (hψ : IsPrimitive ψ) : ∑ x : R, ψ (x * b) = if b = 0 then Fintype.card R else 0 := by
   split_ifs with h
   · -- case `b = 0`
-    simp only [h, mul_zero, map_zero_one, Finset.sum_const, Nat.smul_one_eq_coe]
+    simp only [h, mul_zero, map_zero_one, Finset.sum_const, Nat.smul_one_eq_cast]
     rfl
   · -- case `b ≠ 0`
     simp_rw [mul_comm]
     exact mod_cast sum_eq_zero_of_isNontrivial (hψ b h)
 #align add_char.sum_mul_shift AddChar.sum_mulShift
+
+/-!
+### Complex-valued additive characters
+-/
+
+section Ring
+
+variable {R : Type*} [CommRing R]
+
+/-- Post-composing an additive character to `ℂ` with complex conjugation gives the inverse
+character. -/
+lemma starComp_eq_inv (hR : 0 < ringChar R) {φ : AddChar R ℂ} :
+    (starRingEnd ℂ).compAddChar φ = φ⁻¹ := by
+  ext1 a
+  simp only [RingHom.toMonoidHom_eq_coe, MonoidHom.coe_compAddChar, MonoidHom.coe_coe,
+    Function.comp_apply, inv_apply']
+  have H := Complex.norm_eq_one_of_mem_rootsOfUnity <| φ.val_mem_rootsOfUnity a hR
+  exact (Complex.inv_eq_conj H).symm
+
+lemma starComp_apply (hR : 0 < ringChar R) {φ : AddChar R ℂ} (a : R) :
+    (starRingEnd ℂ) (φ a) = φ⁻¹ a := by
+  rw [← starComp_eq_inv hR]
+  rfl
+
+end Ring
+
+section Field
+
+variable (F : Type*) [Field F] [Finite F] [DecidableEq F]
+
+private lemma ringChar_ne : ringChar ℂ ≠ ringChar F := by
+  simpa only [ringChar.eq_zero] using (CharP.ringChar_ne_zero_of_finite F).symm
+
+/--  A primitive additive character on the finite field `F` with values in `ℂ`. -/
+noncomputable def FiniteField.primitiveChar_to_Complex : AddChar F ℂ := by
+  refine MonoidHom.compAddChar ?_ (primitiveChar F ℂ <| ringChar_ne F).char
+  exact (IsCyclotomicExtension.algEquiv ?n ℂ (CyclotomicField ?n ℂ) ℂ : CyclotomicField ?n ℂ →* ℂ)
+
+lemma FiniteField.primitiveChar_to_Complex_isPrimitive :
+    (primitiveChar_to_Complex F).IsPrimitive := by
+  refine IsPrimitive.compMulHom_of_isPrimitive (PrimitiveAddChar.prim _) ?_
+  let nn := (primitiveChar F ℂ <| ringChar_ne F).n
+  exact (IsCyclotomicExtension.algEquiv nn ℂ (CyclotomicField nn ℂ) ℂ).injective
+
+end Field
 
 end AddChar

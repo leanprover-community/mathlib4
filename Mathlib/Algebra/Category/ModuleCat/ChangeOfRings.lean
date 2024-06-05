@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
+import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.RingTheory.TensorProduct.Basic
 
@@ -242,8 +243,10 @@ abbrev restrictScalarsComp := restrictScalarsComp'.{v} f g _ rfl
 
 end
 
-instance restrictScalarsIsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :
-    (ModuleCat.restrictScalars e.toRingHom).IsEquivalence where
+/-- The equivalence of categories `ModuleCat S ≌ ModuleCat R` induced by `e : R ≃+* S`. -/
+def restrictScalarsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :
+    ModuleCat S ≌ ModuleCat R where
+  functor := ModuleCat.restrictScalars e.toRingHom
   inverse := ModuleCat.restrictScalars e.symm
   unitIso := NatIso.ofComponents (fun M ↦ LinearEquiv.toModuleIso'
     { __ := AddEquiv.refl M
@@ -252,6 +255,10 @@ instance restrictScalarsIsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R 
     { __ := AddEquiv.refl M
       map_smul' := fun r m ↦ congr_arg (· • (_ : M)) (e.left_inv r)}) (by intros; rfl)
   functor_unitIso_comp := by intros; rfl
+
+instance restrictScalars_isEquivalence_of_ringEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :
+    (ModuleCat.restrictScalars e.toRingHom).IsEquivalence :=
+  (restrictScalarsEquivalenceOfRingEquiv e).isEquivalence_functor
 
 open TensorProduct
 
@@ -495,8 +502,8 @@ def HomEquiv.fromRestriction {X : ModuleCat R} {Y : ModuleCat S}
 corresponds to `(restrictScalars f).obj Y ⟶ X` by `y ↦ g y 1`
 -/
 @[simps apply]
-def HomEquiv.toRestriction {X Y} (g : Y ⟶ (coextendScalars f).obj X) : (restrictScalars f).obj Y ⟶ X
-    where
+def HomEquiv.toRestriction {X Y} (g : Y ⟶ (coextendScalars f).obj X) :
+    (restrictScalars f).obj Y ⟶ X where
   toFun := fun y : Y => (g y) (1 : S)
   map_add' x y := by dsimp; rw [g.map_add, LinearMap.add_apply]
   map_smul' r (y : Y) := by
@@ -612,12 +619,12 @@ def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S]
 #align category_theory.Module.restrict_coextend_scalars_adj ModuleCat.restrictCoextendScalarsAdj
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
-    CategoryTheory.IsLeftAdjoint (restrictScalars f) :=
-  ⟨_, restrictCoextendScalarsAdj f⟩
+    (restrictScalars f).IsLeftAdjoint  :=
+  (restrictCoextendScalarsAdj f).isLeftAdjoint
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
-    CategoryTheory.IsRightAdjoint (coextendScalars f) :=
-  ⟨_, restrictCoextendScalarsAdj f⟩
+    (coextendScalars f).IsRightAdjoint  :=
+  (restrictCoextendScalarsAdj f).isRightAdjoint
 
 namespace ExtendRestrictScalarsAdj
 
@@ -851,12 +858,12 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
 #align category_theory.Module.extend_restrict_scalars_adj ModuleCat.extendRestrictScalarsAdj
 
 instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
-    CategoryTheory.IsLeftAdjoint (extendScalars f) :=
-  ⟨_, extendRestrictScalarsAdj f⟩
+    (extendScalars f).IsLeftAdjoint :=
+  (extendRestrictScalarsAdj f).isLeftAdjoint
 
 instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
-    CategoryTheory.IsRightAdjoint (restrictScalars f) :=
-  ⟨_, extendRestrictScalarsAdj f⟩
+    (restrictScalars f).IsRightAdjoint :=
+  (extendRestrictScalarsAdj f).isRightAdjoint
 
 noncomputable instance preservesLimitRestrictScalars
     {R : Type*} {S : Type*} [Ring R] [Ring S] (f : R →+* S) {J : Type*} [Category J]
@@ -866,5 +873,17 @@ noncomputable instance preservesLimitRestrictScalars
     have : Small.{v} ((F ⋙ restrictScalars f) ⋙ forget _).sections := by assumption
     have hc' := isLimitOfPreserves (forget₂ _ AddCommGroupCat) hc
     exact isLimitOfReflects (forget₂ _ AddCommGroupCat) hc'⟩
+
+instance preservesColimitRestrictScalars {R S : Type*} [Ring R] [Ring S]
+    (f : R →+* S) {J : Type*} [Category J] (F : J ⥤ ModuleCat.{v} S)
+    [HasColimit (F ⋙ forget₂ _ AddCommGroupCat)] :
+    PreservesColimit F (ModuleCat.restrictScalars.{v} f) := by
+  have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGroupCat) :=
+    inferInstanceAs (HasColimit (F ⋙ forget₂ _ AddCommGroupCat))
+  apply preservesColimitOfPreservesColimitCocone (HasColimit.isColimitColimitCocone F)
+  apply isColimitOfReflects (forget₂ _ AddCommGroupCat)
+  apply isColimitOfPreserves (forget₂ (ModuleCat.{v} S) AddCommGroupCat.{v})
+  exact HasColimit.isColimitColimitCocone F
+
 
 end ModuleCat

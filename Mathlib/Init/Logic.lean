@@ -3,7 +3,6 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
-import Std.Tactic.Relation.Rfl
 import Mathlib.Tactic.Lemma
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
@@ -25,8 +24,6 @@ theorem cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h�
 attribute [symm] Eq.symm
 
 /- Ne -/
-
-theorem Ne.def {α : Sort u} (a b : α) : (a ≠ b) = ¬ (a = b) := rfl
 
 attribute [symm] Ne.symm
 
@@ -350,7 +347,7 @@ theorem decidableEq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α}
 
 #align inhabited.default Inhabited.default
 #align arbitrary Inhabited.default
-#align nonempty_of_inhabited instNonempty
+#align nonempty_of_inhabited instNonemptyOfInhabited
 
 /- subsingleton -/
 
@@ -671,5 +668,3 @@ end Binary
 #align subsingleton_iff_forall_eq subsingleton_iff_forall_eq
 #align false_ne_true false_ne_true
 #align ne_comm ne_comm
-
-attribute [pp_dot] False.elim Eq.symm Eq.trans

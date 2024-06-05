@@ -189,4 +189,10 @@ theorem lift_inlAlgHom_eps :
   lift.apply_symm_apply <| AlgHom.id R A[ε]
 #align dual_number.lift_eps DualNumber.lift_inlAlgHom_epsₓ
 
+/-- Show DualNumber with values x and y as an "x + y*ε" string -/
+instance instRepr [Repr R] : Repr (DualNumber R) where
+  reprPrec f p :=
+    (if p > 65 then (Std.Format.bracket "(" · ")") else (·)) <|
+      reprPrec f.fst 65 ++ " + " ++ reprPrec f.snd 70 ++ "*ε"
+
 end DualNumber

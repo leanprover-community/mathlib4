@@ -43,7 +43,7 @@ theorem image_sigmaMk_preimage_sigmaMap_subset {β : ι' → Type*} (f : ι → 
 theorem image_sigmaMk_preimage_sigmaMap {β : ι' → Type*} {f : ι → ι'} (hf : Function.Injective f)
     (g : ∀ i, α i → β (f i)) (i : ι) (s : Set (β (f i))) :
     Sigma.mk i '' (g i ⁻¹' s) = Sigma.map f g ⁻¹' (Sigma.mk (f i) '' s) := by
-  refine' (image_sigmaMk_preimage_sigmaMap_subset f g i s).antisymm _
+  refine (image_sigmaMk_preimage_sigmaMap_subset f g i s).antisymm ?_
   rintro ⟨j, x⟩ ⟨y, hys, hxy⟩
   simp only [hf.eq_iff, Sigma.map, Sigma.ext_iff] at hxy
   rcases hxy with ⟨rfl, hxy⟩; rw [heq_iff_eq] at hxy; subst y

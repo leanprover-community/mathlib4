@@ -22,6 +22,8 @@ members.
 * `CommGroupWithZero`
 -/
 
+assert_not_exists DenselyOrdered
+
 universe u
 
 -- We have to fix the universe of `G₀` here, since the default argument to
@@ -174,6 +176,31 @@ instance (priority := 100) CancelCommMonoidWithZero.toCancelMonoidWithZero
     [CancelCommMonoidWithZero M₀] : CancelMonoidWithZero M₀ :=
 { IsLeftCancelMulZero.to_isCancelMulZero (M₀ := M₀) with }
 
+/-- Prop-valued mixin for a monoid with zero to be equipped with a cancelling division.
+
+The obvious use case is groups with zero, but this condition is also satisfied by `ℕ`, `ℤ` and, more
+generally, any euclidean domain. -/
+class MulDivCancelClass (M₀ : Type*) [MonoidWithZero M₀] [Div M₀] : Prop where
+  protected mul_div_cancel (a b : M₀) : b ≠ 0 → a * b / b = a
+
+section MulDivCancelClass
+variable [MonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀] {a b : M₀}
+
+@[simp] lemma mul_div_cancel_right₀ (a : M₀) (hb : b ≠ 0) : a * b / b = a :=
+  MulDivCancelClass.mul_div_cancel _ _ hb
+#align mul_div_cancel mul_div_cancel_right₀
+
+end MulDivCancelClass
+
+section MulDivCancelClass
+variable [CommMonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀] {a b : M₀}
+
+@[simp] lemma mul_div_cancel_left₀ (b : M₀) (ha : a ≠ 0) : a * b / a = b := by
+  rw [mul_comm, mul_div_cancel_right₀ _ ha]
+#align mul_div_cancel_left mul_div_cancel_left₀
+
+end MulDivCancelClass
+
 /-- A type `G₀` is a “group with zero” if it is a monoid with zero element (distinct from `1`)
 such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`.
@@ -184,15 +211,23 @@ class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G�
   /-- The inverse of `0` in a group with zero is `0`. -/
   inv_zero : (0 : G₀)⁻¹ = 0
   /-- Every nonzero element of a group with zero is invertible. -/
-  mul_inv_cancel (a : G₀) : a ≠ 0 → a * a⁻¹ = 1
+  protected mul_inv_cancel (a : G₀) : a ≠ 0 → a * a⁻¹ = 1
 #align group_with_zero GroupWithZero
 
 export GroupWithZero (inv_zero)
 attribute [simp] inv_zero
 
-@[simp] lemma mul_inv_cancel [GroupWithZero G₀] {a : G₀} (h : a ≠ 0) : a * a⁻¹ = 1 :=
-  GroupWithZero.mul_inv_cancel a h
+section GroupWithZero
+variable [GroupWithZero G₀] {a : G₀}
+
+@[simp] lemma mul_inv_cancel (h : a ≠ 0) : a * a⁻¹ = 1 := GroupWithZero.mul_inv_cancel a h
 #align mul_inv_cancel mul_inv_cancel
+
+-- See note [lower instance priority]
+instance (priority := 100) GroupWithZero.toMulDivCancelClass : MulDivCancelClass G₀ where
+  mul_div_cancel a b hb := by rw [div_eq_mul_inv, mul_assoc, mul_inv_cancel hb, mul_one]
+
+end GroupWithZero
 
 /-- A type `G₀` is a commutative “group with zero”
 if it is a commutative monoid with zero element (distinct from `1`)
@@ -200,6 +235,14 @@ such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`. -/
 class CommGroupWithZero (G₀ : Type*) extends CommMonoidWithZero G₀, GroupWithZero G₀
 #align comm_group_with_zero CommGroupWithZero
+
+section
+variable [CancelMonoidWithZero M₀] {x : M₀}
+
+lemma eq_zero_or_one_of_sq_eq_self (hx : x ^ 2 = x) : x = 0 ∨ x = 1 :=
+  or_iff_not_imp_left.mpr (mul_left_injective₀ · <| by simpa [sq] using hx)
+
+end
 
 section GroupWithZero
 

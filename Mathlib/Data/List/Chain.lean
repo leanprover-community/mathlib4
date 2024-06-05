@@ -79,8 +79,8 @@ theorem chain_iff_forall₂ :
     simp [@chain_iff_forall₂ b l, dropLast, *]
 #align list.chain_iff_forall₂ List.chain_iff_forall₂
 
-theorem chain_append_singleton_iff_forall₂ : Chain R a (l ++ [b]) ↔ Forall₂ R (a :: l) (l ++ [b]) :=
-  by simp [chain_iff_forall₂]
+theorem chain_append_singleton_iff_forall₂ :
+    Chain R a (l ++ [b]) ↔ Forall₂ R (a :: l) (l ++ [b]) := by simp [chain_iff_forall₂]
 #align list.chain_append_singleton_iff_forall₂ List.chain_append_singleton_iff_forall₂
 
 theorem chain_map (f : β → α) {b : β} {l : List β} :
@@ -170,8 +170,8 @@ set_option linter.deprecated false in
 theorem chain_iff_nthLe {R} {a : α} {l : List α} : Chain R a l ↔
     (∀ h : 0 < length l, R a (nthLe l 0 h)) ∧
     ∀ (i) (h : i < length l - 1),
-    R (nthLe l i (by omega)) (nthLe l (i + 1) (by omega)) :=
-  by rw [chain_iff_get]; simp [nthLe]
+    R (nthLe l i (by omega)) (nthLe l (i + 1) (by omega)) := by
+  rw [chain_iff_get]; simp [nthLe]
 #align list.chain_iff_nth_le List.chain_iff_nthLe
 
 theorem Chain'.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {l : List α} (p : Chain' R l) :
@@ -399,11 +399,11 @@ The converse of `relationReflTransGen_of_exists_chain`.
 -/
 theorem exists_chain_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
     ∃ l, Chain r a l ∧ getLast (a :: l) (cons_ne_nil _ _) = b := by
-  refine' Relation.ReflTransGen.head_induction_on h _ _
+  refine Relation.ReflTransGen.head_induction_on h ?_ ?_
   · exact ⟨[], Chain.nil, rfl⟩
   · intro c d e _ ih
     obtain ⟨l, hl₁, hl₂⟩ := ih
-    refine' ⟨d :: l, Chain.cons e hl₁, _⟩
+    refine ⟨d :: l, Chain.cons e hl₁, ?_⟩
     rwa [getLast_cons_cons]
 #align list.exists_chain_of_relation_refl_trans_gen List.exists_chain_of_relationReflTransGen
 
@@ -420,8 +420,8 @@ theorem Chain.induction (p : α → Prop) (l : List α) (h : Chain r a l)
   · rw [chain_cons] at h
     simp only [mem_cons]
     rintro _ (rfl | H)
-    apply carries h.1 (l_ih h.2 hb _ (mem_cons.2 (Or.inl rfl)))
-    apply l_ih h.2 hb _ (mem_cons.2 H)
+    · apply carries h.1 (l_ih h.2 hb _ (mem_cons.2 (Or.inl rfl)))
+    · apply l_ih h.2 hb _ (mem_cons.2 H)
 #align list.chain.induction List.Chain.induction
 
 /-- Given a chain from `a` to `b`, and a predicate true at `b`, if `r x y → p y → p x` then

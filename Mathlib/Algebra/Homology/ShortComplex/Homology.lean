@@ -563,8 +563,8 @@ lemma leftRightHomologyComparison'_eq_liftH :
 
 @[reassoc (attr := simp)]
 lemma π_leftRightHomologyComparison'_ι :
-    h₁.π ≫ leftRightHomologyComparison' h₁ h₂ ≫ h₂.ι = h₁.i ≫ h₂.p :=
-  by simp only [leftRightHomologyComparison'_eq_liftH,
+    h₁.π ≫ leftRightHomologyComparison' h₁ h₂ ≫ h₂.ι = h₁.i ≫ h₂.p := by
+  simp only [leftRightHomologyComparison'_eq_liftH,
     RightHomologyData.liftH_ι, LeftHomologyData.π_descH]
 
 lemma leftRightHomologyComparison'_eq_descH :
@@ -1076,7 +1076,7 @@ lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi {φ : S₁ ⟶ S₂}
       IsIso.hom_inv_id_assoc, toCycles_comp_homologyπ, comp_zero]
   have ⟨z, hz⟩ := CokernelCofork.IsColimit.desc' S₂.homologyIsCokernel _ h
   dsimp at hz
-  refine' ⟨⟨z, _, _⟩⟩
+  refine ⟨⟨z, ?_, ?_⟩⟩
   · rw [← cancel_epi S₁.homologyπ, homologyπ_naturality_assoc, hz,
       IsIso.hom_inv_id_assoc, comp_id]
   · rw [← cancel_epi S₂.homologyπ, reassoc_of% hz, homologyπ_naturality,
@@ -1090,7 +1090,7 @@ lemma isIso_homologyMap_of_isIso_opcyclesMap_of_mono {φ : S₁ ⟶ S₂}
       IsIso.inv_hom_id_assoc, homologyι_comp_fromOpcycles]
   have ⟨z, hz⟩ := KernelFork.IsLimit.lift' S₁.homologyIsKernel _ h
   dsimp at hz
-  refine' ⟨⟨z, _, _⟩⟩
+  refine ⟨⟨z, ?_, ?_⟩⟩
   · rw [← cancel_mono S₁.homologyι, id_comp, assoc, hz, homologyι_naturality_assoc,
       IsIso.hom_inv_id, comp_id]
   · rw [← cancel_mono S₂.homologyι, assoc, homologyι_naturality, reassoc_of% hz,

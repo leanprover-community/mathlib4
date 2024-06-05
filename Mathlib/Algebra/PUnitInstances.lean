@@ -3,9 +3,9 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Algebra.GroupRingAction.Basic
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Order.CompleteBooleanAlgebra
 
@@ -76,8 +76,7 @@ instance commRing : CommRing PUnit where
   mul_zero := by intros; rfl
   natCast _ := unit
 
-instance cancelCommMonoidWithZero : CancelCommMonoidWithZero PUnit := by
-  refine' { PUnit.commRing with .. }; intros; exact Subsingleton.elim _ _
+instance cancelCommMonoidWithZero : CancelCommMonoidWithZero PUnit where
 
 instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
   gcd _ _ := unit
@@ -110,22 +109,18 @@ theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 
-instance canonicallyOrderedAddCommMonoid : CanonicallyOrderedAddCommMonoid PUnit := by
-  refine'
-    { PUnit.commRing, PUnit.instCompleteBooleanAlgebra with
-      exists_add_of_le := fun {_ _} _ => ⟨unit, Subsingleton.elim _ _⟩.. } <;>
-    intros <;>
-    trivial
+instance canonicallyOrderedAddCommMonoid : CanonicallyOrderedAddCommMonoid PUnit where
+  exists_add_of_le {_ _} _ := ⟨unit, Subsingleton.elim _ _⟩
+  add_le_add_left _ _ _ _ := trivial
+  le_self_add _ _ := trivial
 
 instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid PUnit where
-  __ := PUnit.canonicallyOrderedAddCommMonoid
   __ := PUnit.instLinearOrder
   le_of_add_le_add_left _ _ _ _ := trivial
   add_le_add_left := by intros; rfl
 
-instance : LinearOrderedAddCommMonoidWithTop PUnit :=
-  { PUnit.instCompleteBooleanAlgebra, PUnit.linearOrderedCancelAddCommMonoid with
-    top_add' := fun _ => rfl }
+instance : LinearOrderedAddCommMonoidWithTop PUnit where
+  top_add' _ := rfl
 
 variable {R S : Type*}
 
@@ -148,7 +143,7 @@ instance : SMulCommClass R S PUnit :=
   ⟨fun _ _ _ => rfl⟩
 
 @[to_additive]
-instance [SMul R S] : IsScalarTower R S PUnit :=
+instance instIsScalarTowerOfSMul [SMul R S] : IsScalarTower R S PUnit :=
   ⟨fun _ _ _ => rfl⟩
 
 instance smulWithZero [Zero R] : SMulWithZero R PUnit := by

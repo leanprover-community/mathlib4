@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Mathport.Rename
-import Std.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Trans
 
 /-!
@@ -56,7 +55,6 @@ set_option autoImplicit true
 -- TODO
 -- attribute [elab_as_elim, subst] Eq.subst
 
-attribute [refl] Eq.refl
 attribute [trans] Eq.trans
 attribute [symm] Eq.symm
 

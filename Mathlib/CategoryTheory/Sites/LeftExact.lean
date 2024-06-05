@@ -21,12 +21,13 @@ open CategoryTheory Limits Opposite
 universe w' w v u
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-variable {D : Type w} [Category.{max v u} D]
-variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
 noncomputable section
 
 namespace CategoryTheory.GrothendieckTopology
+
+variable {D : Type w} [Category.{max v u} D]
+variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
 /-- An auxiliary definition to be used in the proof of the fact that
 `J.diagramFunctor D X` preserves limits. -/
@@ -63,7 +64,7 @@ abbrev liftToDiagramLimitObj {X : C} {K : Type max v u} [SmallCategory K] [HasLi
         (limit.lift F _).naturality, ← (limit.lift F _).naturality, ← Category.assoc, ←
         Category.assoc]
       congr 1
-      refine' limit.hom_ext (fun j => _)
+      refine limit.hom_ext (fun j => ?_)
       erw [Category.assoc, Category.assoc, limit.lift_π, limit.lift_π, limit.lift_π_assoc,
         limit.lift_π_assoc, Category.assoc, Category.assoc, Multiequalizer.condition]
       rfl)
@@ -78,7 +79,7 @@ instance preservesLimit_diagramFunctor
         fac := by
           intro E k
           dsimp [diagramNatTrans]
-          refine' Multiequalizer.hom_ext _ _ _ (fun a => _)
+          refine Multiequalizer.hom_ext _ _ _ (fun a => ?_)
           simp only [Multiequalizer.lift_ι, Multiequalizer.lift_ι_assoc, Category.assoc]
           change (_ ≫ _) ≫ _ = _
           dsimp [evaluateCombinedCones]
@@ -86,7 +87,7 @@ instance preservesLimit_diagramFunctor
           rfl
         uniq := by
           intro E m hm
-          refine' Multiequalizer.hom_ext _ _ _ (fun a => limit_obj_ext (fun j => _))
+          refine Multiequalizer.hom_ext _ _ _ (fun a => limit_obj_ext (fun j => ?_))
           delta liftToDiagramLimitObj
           erw [Multiequalizer.lift_ι, Category.assoc]
           change _ = (_ ≫ _) ≫ _
@@ -131,7 +132,7 @@ def liftToPlusObjLimitObj {K : Type max v u} [SmallCategory K] [FinCategory K]
       (by
         intro i j f
         rw [← Iso.eq_comp_inv, Category.assoc, ← Iso.inv_comp_eq]
-        refine' colimit.hom_ext (fun w => _)
+        refine colimit.hom_ext (fun w => ?_)
         dsimp [plusMap]
         erw [colimit.ι_map_assoc,
           colimitObjIsoColimitCompEvaluation_ι_inv (F ⋙ J.diagramFunctor D X).flip w j,
@@ -155,7 +156,7 @@ theorem liftToPlusObjLimitObj_fac {K : Type max v u} [SmallCategory K] [FinCateg
   congr 1
   dsimp
   rw [Category.assoc, Category.assoc, ← Iso.eq_inv_comp, Iso.inv_comp_eq, Iso.inv_comp_eq]
-  refine' colimit.hom_ext (fun j => _)
+  refine colimit.hom_ext (fun j => ?_)
   dsimp [plusMap]
   simp only [HasColimit.isoOfNatIso_ι_hom_assoc, ι_colimMap]
   dsimp [IsLimit.conePointUniqueUpToIso, HasLimit.isoOfNatIso, IsLimit.map]
@@ -176,16 +177,16 @@ instance preservesLimitsOfShape_plusFunctor
     PreservesLimitsOfShape K (J.plusFunctor D) := by
   constructor; intro F; apply preservesLimitOfEvaluation; intro X
   apply preservesLimitOfPreservesLimitCone (limit.isLimit F)
-  refine' ⟨fun S => liftToPlusObjLimitObj.{w, v, u} F X.unop S, _, _⟩
+  refine ⟨fun S => liftToPlusObjLimitObj.{w, v, u} F X.unop S, ?_, ?_⟩
   · intro S k
     apply liftToPlusObjLimitObj_fac
   · intro S m hm
     dsimp [liftToPlusObjLimitObj]
     simp_rw [← Category.assoc, Iso.eq_comp_inv, ← Iso.comp_inv_eq]
-    refine' limit.hom_ext (fun k => _)
+    refine limit.hom_ext (fun k => ?_)
     simp only [limit.lift_π, Category.assoc, ← hm]
     congr 1
-    refine' colimit.hom_ext (fun k => _)
+    refine colimit.hom_ext (fun k => ?_)
     dsimp [plusMap, plusObj]
     erw [colimit.ι_map, colimit.ι_desc_assoc, limit.lift_π]
     conv_lhs => dsimp
@@ -221,6 +222,10 @@ end CategoryTheory.GrothendieckTopology
 
 namespace CategoryTheory
 
+section
+
+variable {D : Type w} [Category.{max v u} D]
+variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 variable [ConcreteCategory.{max v u} D]
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
@@ -258,8 +263,6 @@ instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
   intros
   infer_instance
 
-instance : HasWeakSheafify J D := ⟨sheafToPresheafIsRightAdjoint J D⟩
-
 variable (J D)
 
 /-- `plusPlusSheaf` is isomorphic to an arbitrary choice of left adjoint. -/
@@ -274,27 +277,39 @@ def plusPlusFunctorIsoSheafification : J.sheafification D ≅ sheafification J D
 def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.sheafify P ≅ sheafify J P :=
   (sheafToPresheaf J D).mapIso  ((plusPlusSheafIsoPresheafToSheaf J D).app P)
 
+@[reassoc (attr := simp)]
+lemma toSheafify_plusPlusIsoSheafify_hom (P : Cᵒᵖ ⥤ D) :
+    J.toSheafify P ≫ (plusPlusIsoSheafify J D P).hom = toSheafify J P := by
+  convert Adjunction.unit_leftAdjointUniq_hom_app
+    (plusPlusAdjunction J D) (sheafificationAdjunction J D) P
+  ext1 P
+  dsimp [GrothendieckTopology.toSheafify, plusPlusAdjunction]
+  rw [Category.comp_id]
+
 instance [HasFiniteLimits D] : HasSheafify J D := HasSheafify.mk' J D (plusPlusAdjunction J D)
 
-variable {J D}
+end
 
-instance [FinitaryExtensive D] [HasFiniteCoproducts D] [HasPullbacks D] :
+variable {D : Type w} [Category.{w'} D]
+
+instance [FinitaryExtensive D] [HasPullbacks D] [HasSheafify J D] :
     FinitaryExtensive (Sheaf J D) :=
-  finitaryExtensive_of_reflective (plusPlusAdjunction _ _)
+  finitaryExtensive_of_reflective (sheafificationAdjunction _ _)
 
-instance [Adhesive D] [HasPullbacks D] [HasPushouts D] : Adhesive (Sheaf J D) :=
-  adhesive_of_reflective (plusPlusAdjunction _ _)
+instance [Adhesive D] [HasPullbacks D] [HasPushouts D] [HasSheafify J D] :
+    Adhesive (Sheaf J D) :=
+  adhesive_of_reflective (sheafificationAdjunction _ _)
 
-instance SheafOfTypes.finitary_extensive {C : Type u} [SmallCategory C]
-    (J : GrothendieckTopology C) : FinitaryExtensive (Sheaf J (Type u)) :=
+instance SheafOfTypes.finitary_extensive [HasSheafify J (Type w)] :
+    FinitaryExtensive (Sheaf J (Type w)) :=
   inferInstance
 
-instance SheafOfTypes.adhesive {C : Type u} [SmallCategory C] (J : GrothendieckTopology C) :
-    Adhesive (Sheaf J (Type u)) :=
+instance SheafOfTypes.adhesive [HasSheafify J (Type w)] :
+    Adhesive (Sheaf J (Type w)) :=
   inferInstance
 
-instance SheafOfTypes.balanced {C : Type u} [SmallCategory C] (J : GrothendieckTopology C) :
-    Balanced (Sheaf J (Type u)) :=
+instance SheafOfTypes.balanced [HasSheafify J (Type w)] :
+    Balanced (Sheaf J (Type w)) :=
   inferInstance
 
 end CategoryTheory

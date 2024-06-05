@@ -31,11 +31,6 @@ theorem IsPrime.isPrimary {I : Ideal R} (hi : IsPrime I) : IsPrimary I :=
   ⟨hi.1, fun {_ _} hxy => (hi.mem_or_mem hxy).imp id fun hyi => le_radical hyi⟩
 #align ideal.is_prime.is_primary Ideal.IsPrime.isPrimary
 
-theorem mem_radical_of_pow_mem {I : Ideal R} {x : R} {m : ℕ} (hx : x ^ m ∈ radical I) :
-    x ∈ radical I :=
-  radical_idem I ▸ ⟨m, hx⟩
-#align ideal.mem_radical_of_pow_mem Ideal.mem_radical_of_pow_mem
-
 theorem isPrime_radical {I : Ideal R} (hi : IsPrimary I) : IsPrime (radical I) :=
   ⟨mt radical_eq_top.1 hi.1,
    fun {x y} ⟨m, hxy⟩ => by
@@ -49,9 +44,10 @@ theorem isPrimary_inf {I J : Ideal R} (hi : IsPrimary I) (hj : IsPrimary J)
   ⟨ne_of_lt <| lt_of_le_of_lt inf_le_left (lt_top_iff_ne_top.2 hi.1),
    fun {x y} ⟨hxyi, hxyj⟩ => by
     rw [radical_inf, hij, inf_idem]
-    cases' hi.2 hxyi with hxi hyi; cases' hj.2 hxyj with hxj hyj
-    · exact Or.inl ⟨hxi, hxj⟩
-    · exact Or.inr hyj
+    cases' hi.2 hxyi with hxi hyi
+    · cases' hj.2 hxyj with hxj hyj
+      · exact Or.inl ⟨hxi, hxj⟩
+      · exact Or.inr hyj
     · rw [hij] at hyi
       exact Or.inr hyi⟩
 #align ideal.is_primary_inf Ideal.isPrimary_inf

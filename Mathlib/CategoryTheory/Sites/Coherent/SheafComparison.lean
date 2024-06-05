@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.Coherent.Comparison
-import Mathlib.CategoryTheory.Sites.InducedTopology
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
+import Mathlib.CategoryTheory.Sites.InducedTopology
+import Mathlib.CategoryTheory.Sites.Whiskering
 /-!
 
 # Categories of coherent sheaves
@@ -25,9 +27,11 @@ We give the corresonding result for the regular topology as well (see
 -/
 
 
+universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
+
 namespace CategoryTheory
 
-open Limits Functor
+open Limits Functor regularTopology
 
 variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
 
@@ -63,16 +67,13 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
     let Z : α → C := fun a ↦ (Functor.EffectivelyEnough.presentation (F := F) (Y a)).some.p
     let g₀ : (a : α) → F.obj (Z a) ⟶ Y a := fun a ↦ F.effectiveEpiOver (Y a)
     have : EffectiveEpiFamily _ (fun a ↦ g₀ a ≫ π a) := inferInstance
-    refine ⟨Z , fun a ↦ Full.preimage (g₀ a ≫ π a), ?_, fun a ↦ (?_ : S.arrows (Full.preimage _))⟩
+    refine ⟨Z , fun a ↦ F.preimage (g₀ a ≫ π a), ?_, fun a ↦ (?_ : S.arrows (F.preimage _))⟩
     · refine F.finite_effectiveEpiFamily_of_map _ _ ?_
       simpa using this
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂ a
       rw [h₂]
-      have : Full.preimage (g₀ a ≫ g₂ ≫ F.map g₁) = (Full.preimage (g₀ a ≫ g₂)) ≫ g₁ := by
-        apply Faithful.map_injective (F := F)
-        simp
-      rw [this]
-      exact S.downward_closed h₁ _
+      convert S.downward_closed h₁ (F.preimage (g₀ a ≫ g₂))
+      exact F.map_injective (by simp)
 
 lemma eq_induced : haveI := F.reflects_precoherent
     coherentTopology C =
@@ -98,9 +99,7 @@ instance isContinuous : haveI := F.reflects_precoherent
 
 section SheafEquiv
 
-universe u
-
-variable {C D : Type (u+1)} [LargeCategory C] [LargeCategory D] (F : C ⥤ D)
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] (F : C ⥤ D)
   [F.PreservesFiniteEffectiveEpiFamilies] [F.ReflectsFiniteEffectiveEpiFamilies]
   [F.Full] [F.Faithful]
   [Precoherent D]
@@ -112,7 +111,8 @@ functor `F : C ⥤ D` to a precoherent category, which preserves and reflects e
 families, and satisfies `F.EffectivelyEnough`.
 -/
 noncomputable
-def equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] : haveI := F.reflects_precoherent
+def equivalence (A : Type u₃) [Category.{v₃} A] [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
+    haveI := F.reflects_precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
   Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting F _ _ _
 
@@ -120,9 +120,7 @@ end SheafEquiv
 
 section RegularExtensive
 
-universe u
-
-variable {C D : Type (u+1)} [LargeCategory C] [LargeCategory D] (F : C ⥤ D)
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] (F : C ⥤ D)
   [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis]
   [F.Full] [F.Faithful]
   [FinitaryExtensive D] [Preregular D]
@@ -136,7 +134,8 @@ functor `F : C ⥤ D` to an extensive preregular category, which preserves and 
 epimorphisms and satisfies `F.EffectivelyEnough`.
 -/
 noncomputable
-def equivalence' (A : Type _) [Category.{u+1} A] [HasLimits A] :
+def equivalence' (A : Type u₃) [Category.{v₃} A]
+    [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
   Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting F _ _ _
@@ -169,17 +168,14 @@ theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
     exact F.map_effectiveEpi _
   · obtain ⟨Y, π, ⟨H₁, H₂⟩⟩ := (mem_sieves_iff_hasEffectiveEpi _).mp hS
     let g₀ := F.effectiveEpiOver Y
-    refine ⟨_, Full.preimage (g₀ ≫ π), ?_, (?_ : S.arrows (Full.preimage _))⟩
+    refine ⟨_, F.preimage (g₀ ≫ π), ?_, (?_ : S.arrows (F.preimage _))⟩
     · refine F.effectiveEpi_of_map _ ?_
-      simp only [Full.witness]
+      simp only [map_preimage]
       infer_instance
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂
       rw [h₂]
-      have : Full.preimage (g₀ ≫ g₂ ≫ F.map g₁) = (Full.preimage (g₀ ≫ g₂)) ≫ g₁ := by
-        apply Faithful.map_injective (F := F)
-        simp
-      rw [this]
-      exact S.downward_closed h₁ _
+      convert S.downward_closed h₁ (F.preimage (g₀ ≫ g₂))
+      exact F.map_injective (by simp)
 
 lemma eq_induced : haveI := F.reflects_preregular
     regularTopology C =
@@ -205,9 +201,7 @@ instance isContinuous : haveI := F.reflects_preregular
 
 section SheafEquiv
 
-universe u
-
-variable {C D : Type (u+1)} [LargeCategory C] [LargeCategory D] (F : C ⥤ D)
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] (F : C ⥤ D)
   [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis]
   [F.Full] [F.Faithful]
   [Preregular D]
@@ -219,10 +213,82 @@ functor `F : C ⥤ D` to a preregular category, which preserves and reflects ef
 epimorphisms and satisfies `F.EffectivelyEnough`.
 -/
 noncomputable
-def equivalence (A : Type _) [Category.{u+1} A] [HasLimits A] : haveI := F.reflects_preregular
+def equivalence (A : Type u₃) [Category.{v₃} A] [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
+    haveI := F.reflects_preregular
     Sheaf (regularTopology C) A ≌ Sheaf (regularTopology D) A :=
   Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting F _ _ _
 
 end SheafEquiv
 
 end regularTopology
+
+namespace Presheaf
+
+variable {A : Type u₃} [Category.{v₃} A] (F : Cᵒᵖ ⥤ A)
+
+theorem isSheaf_coherent_iff_regular_and_extensive [Preregular C] [FinitaryPreExtensive C] :
+    IsSheaf (coherentTopology C) F ↔
+    IsSheaf (extensiveTopology C) F ∧ IsSheaf (regularTopology C) F := by
+  rw [← extensive_regular_generate_coherent]
+  exact isSheaf_sup (extensiveCoverage C) (regularCoverage C) F
+
+theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
+    [Preregular C] [FinitaryExtensive C]
+    [h : ∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f] :
+    IsSheaf (coherentTopology C) F ↔ Nonempty (PreservesFiniteProducts F) ∧
+      EqualizerCondition F := by
+  rw [isSheaf_coherent_iff_regular_and_extensive]
+  exact and_congr (isSheaf_iff_preservesFiniteProducts _)
+    (@equalizerCondition_iff_isSheaf _ _ _ _ F _ h).symm
+
+theorem isSheaf_iff_preservesFiniteProducts_of_projective [Preregular C] [FinitaryExtensive C]
+    [∀ (X : C), Projective X] :
+    IsSheaf (coherentTopology C) F ↔ Nonempty (PreservesFiniteProducts F) := by
+  rw [isSheaf_coherent_iff_regular_and_extensive, and_iff_left (isSheaf_of_projective F),
+    isSheaf_iff_preservesFiniteProducts]
+
+variable {B : Type u₄} [Category.{v₄} B]
+variable (s : A ⥤ B)
+
+lemma isSheaf_coherent_of_hasPullbacks_comp [Preregular C] [FinitaryExtensive C]
+    [h : ∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f] [PreservesFiniteLimits s]
+    (hF : IsSheaf (coherentTopology C) F) : IsSheaf (coherentTopology C) (F ⋙ s) := by
+  rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition (h := h)] at hF ⊢
+  have := hF.1.some
+  refine ⟨⟨inferInstance⟩, fun _ _ π _ c hc ↦ ⟨?_⟩⟩
+  exact isLimitForkMapOfIsLimit s _ (hF.2 π c hc).some
+
+lemma isSheaf_coherent_of_hasPullbacks_of_comp [Preregular C] [FinitaryExtensive C]
+    [h : ∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f]
+    [ReflectsFiniteLimits s]
+    (hF : IsSheaf (coherentTopology C) (F ⋙ s)) : IsSheaf (coherentTopology C) F := by
+  rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition (h := h)] at hF ⊢
+  refine ⟨⟨⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩⟩, fun _ _ π _ c hc ↦ ⟨?_⟩⟩
+  · exact isLimitOfReflects s ((hF.1.some.1 J).1.1 hc)
+  · exact isLimitOfIsLimitForkMap s _ (hF.2 π c hc).some
+
+lemma isSheaf_coherent_of_projective_comp [Preregular C] [FinitaryExtensive C]
+    [∀ (X : C), Projective X] [PreservesFiniteProducts s]
+    (hF : IsSheaf (coherentTopology C) F) : IsSheaf (coherentTopology C) (F ⋙ s) := by
+  rw [isSheaf_iff_preservesFiniteProducts_of_projective] at hF ⊢
+  have := hF.some
+  exact ⟨inferInstance⟩
+
+lemma isSheaf_coherent_of_projective_of_comp [Preregular C] [FinitaryExtensive C]
+    [∀ (X : C), Projective X]
+    [ReflectsFiniteProducts s]
+    (hF : IsSheaf (coherentTopology C) (F ⋙ s)) : IsSheaf (coherentTopology C) F := by
+  rw [isSheaf_iff_preservesFiniteProducts_of_projective] at hF ⊢
+  refine ⟨⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩⟩
+  exact isLimitOfReflects s ((hF.some.1 J).1.1 hc)
+
+instance [Preregular C] [FinitaryExtensive C]
+    [h : ∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f]
+    [PreservesFiniteLimits s] : (coherentTopology C).HasSheafCompose s where
+      isSheaf F hF := isSheaf_coherent_of_hasPullbacks_comp (h := h) F s hF
+
+instance [Preregular C] [FinitaryExtensive C] [∀ (X : C), Projective X]
+    [PreservesFiniteProducts s] : (coherentTopology C).HasSheafCompose s where
+  isSheaf F hF := isSheaf_coherent_of_projective_comp F s hF
+
+end CategoryTheory.Presheaf

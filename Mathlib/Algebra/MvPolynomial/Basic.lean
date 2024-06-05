@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Regular.Pow
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Data.Finsupp.Antidiagonal
@@ -73,7 +73,7 @@ polynomial, multivariate polynomial, multivariable polynomial
 noncomputable section
 
 open Set Function Finsupp AddMonoidAlgebra
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 universe u v w x
 
@@ -168,7 +168,7 @@ theorem single_eq_monomial (s : σ →₀ ℕ) (a : R) : Finsupp.single s a = mo
 #align mv_polynomial.single_eq_monomial MvPolynomial.single_eq_monomial
 
 theorem mul_def : p * q = p.sum fun m a => q.sum fun n b => monomial (m + n) (a * b) :=
-  rfl
+  AddMonoidAlgebra.mul_def
 #align mv_polynomial.mul_def MvPolynomial.mul_def
 
 /-- `C a` is the constant polynomial with value `a` -/
@@ -178,6 +178,7 @@ def C : R →+* MvPolynomial σ R :=
 
 variable (R σ)
 
+@[simp]
 theorem algebraMap_eq : algebraMap R (MvPolynomial σ R) = C :=
   rfl
 #align mv_polynomial.algebra_map_eq MvPolynomial.algebraMap_eq
@@ -241,7 +242,7 @@ theorem C_injective (σ : Type*) (R : Type*) [CommSemiring R] :
 
 theorem C_surjective {R : Type*} [CommSemiring R] (σ : Type*) [IsEmpty σ] :
     Function.Surjective (C : R → MvPolynomial σ R) := by
-  refine' fun p => ⟨p.toFun 0, Finsupp.ext fun a => _⟩
+  refine fun p => ⟨p.toFun 0, Finsupp.ext fun a => ?_⟩
   simp only [C_apply, ← single_eq_monomial, (Finsupp.ext isEmptyElim (α := σ) : a = 0),
     single_eq_same]
   rfl
@@ -371,12 +372,12 @@ theorem sum_C {A : Type*} [AddCommMonoid A] {b : (σ →₀ ℕ) → R → A} (w
 #align mv_polynomial.sum_C MvPolynomial.sum_C
 
 theorem monomial_sum_one {α : Type*} (s : Finset α) (f : α → σ →₀ ℕ) :
-    (monomial (∑ i in s, f i) 1 : MvPolynomial σ R) = ∏ i in s, monomial (f i) 1 :=
+    (monomial (∑ i ∈ s, f i) 1 : MvPolynomial σ R) = ∏ i ∈ s, monomial (f i) 1 :=
   map_prod (monomialOneHom R σ) (fun i => Multiplicative.ofAdd (f i)) s
 #align mv_polynomial.monomial_sum_one MvPolynomial.monomial_sum_one
 
 theorem monomial_sum_index {α : Type*} (s : Finset α) (f : α → σ →₀ ℕ) (a : R) :
-    monomial (∑ i in s, f i) a = C a * ∏ i in s, monomial (f i) 1 := by
+    monomial (∑ i ∈ s, f i) a = C a * ∏ i ∈ s, monomial (f i) 1 := by
   rw [← monomial_sum_one, C_mul', ← (monomial _).map_smul, smul_eq_mul, mul_one]
 #align mv_polynomial.monomial_sum_index MvPolynomial.monomial_sum_index
 
@@ -395,7 +396,7 @@ theorem monomial_eq : monomial s a = C a * (s.prod fun n e => X n ^ e : MvPolyno
 #align mv_polynomial.monomial_eq MvPolynomial.monomial_eq
 
 @[simp]
-lemma prod_X_pow_eq_monomial : ∏ x in s.support, X x ^ s x = monomial s (1 : R) := by
+lemma prod_X_pow_eq_monomial : ∏ x ∈ s.support, X x ^ s x = monomial s (1 : R) := by
   simp only [monomial_eq, map_one, one_mul, Finsupp.prod]
 
 theorem induction_on_monomial {M : MvPolynomial σ R → Prop} (h_C : ∀ a, M (C a))
@@ -511,7 +512,7 @@ theorem algHom_C {τ : Type*} (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R
 @[simp]
 theorem adjoin_range_X : Algebra.adjoin R (range (X : σ → MvPolynomial σ R)) = ⊤ := by
   set S := Algebra.adjoin R (range (X : σ → MvPolynomial σ R))
-  refine' top_unique fun p hp => _; clear hp
+  refine top_unique fun p hp => ?_; clear hp
   induction p using MvPolynomial.induction_on with
   | h_C => exact S.algebraMap_mem _
   | h_add p q hp hq => exact S.add_mem hp hq
@@ -572,7 +573,7 @@ theorem support_smul {S₁ : Type*} [SMulZeroClass S₁ R] {a : S₁} {f : MvPol
 #align mv_polynomial.support_smul MvPolynomial.support_smul
 
 theorem support_sum {α : Type*} [DecidableEq σ] {s : Finset α} {f : α → MvPolynomial σ R} :
-    (∑ x in s, f x).support ⊆ s.biUnion fun x => (f x).support :=
+    (∑ x ∈ s, f x).support ⊆ s.biUnion fun x => (f x).support :=
   Finsupp.support_finset_sum
 #align mv_polynomial.support_sum MvPolynomial.support_sum
 
@@ -597,7 +598,7 @@ theorem not_mem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∉ 
 #align mv_polynomial.not_mem_support_iff MvPolynomial.not_mem_support_iff
 
 theorem sum_def {A} [AddCommMonoid A] {p : MvPolynomial σ R} {b : (σ →₀ ℕ) → R → A} :
-    p.sum b = ∑ m in p.support, b m (p.coeff m) := by simp [support, Finsupp.sum, coeff]
+    p.sum b = ∑ m ∈ p.support, b m (p.coeff m) := by simp [support, Finsupp.sum, coeff]
 #align mv_polynomial.sum_def MvPolynomial.sum_def
 
 theorem support_mul [DecidableEq σ] (p q : MvPolynomial σ R) :
@@ -637,15 +638,14 @@ theorem coeff_zero_X (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
 
 /-- `MvPolynomial.coeff m` but promoted to an `AddMonoidHom`. -/
 @[simps]
-def coeffAddMonoidHom (m : σ →₀ ℕ) : MvPolynomial σ R →+ R
-    where
+def coeffAddMonoidHom (m : σ →₀ ℕ) : MvPolynomial σ R →+ R where
   toFun := coeff m
   map_zero' := coeff_zero m
   map_add' := coeff_add m
 #align mv_polynomial.coeff_add_monoid_hom MvPolynomial.coeffAddMonoidHom
 
 theorem coeff_sum {X : Type*} (s : Finset X) (f : X → MvPolynomial σ R) (m : σ →₀ ℕ) :
-    coeff m (∑ x in s, f x) = ∑ x in s, coeff m (f x) :=
+    coeff m (∑ x ∈ s, f x) = ∑ x ∈ s, coeff m (f x) :=
   map_sum (@coeffAddMonoidHom R σ _ _) _ s
 #align mv_polynomial.coeff_sum MvPolynomial.coeff_sum
 
@@ -711,7 +711,7 @@ theorem coeff_C_mul (m) (a : R) (p : MvPolynomial σ R) : coeff m (C a * p) = a 
 #align mv_polynomial.coeff_C_mul MvPolynomial.coeff_C_mul
 
 theorem coeff_mul [DecidableEq σ] (p q : MvPolynomial σ R) (n : σ →₀ ℕ) :
-    coeff n (p * q) = ∑ x in Finset.antidiagonal n, coeff x.1 p * coeff x.2 q :=
+    coeff n (p * q) = ∑ x ∈ Finset.antidiagonal n, coeff x.1 p * coeff x.2 q :=
   AddMonoidAlgebra.mul_apply_antidiagonal p q _ _ Finset.mem_antidiagonal
 #align mv_polynomial.coeff_mul MvPolynomial.coeff_mul
 
@@ -738,6 +738,16 @@ theorem coeff_X_mul (m) (s : σ) (p : MvPolynomial σ R) :
     coeff (Finsupp.single s 1 + m) (X s * p) = coeff m p :=
   (coeff_monomial_mul _ _ _ _).trans (one_mul _)
 #align mv_polynomial.coeff_X_mul MvPolynomial.coeff_X_mul
+
+lemma coeff_single_X_pow [DecidableEq σ] (s s' : σ) (n n' : ℕ) :
+    (X (R := R) s ^ n).coeff (Finsupp.single s' n')
+    = if s = s' ∧ n = n' ∨ n = 0 ∧ n' = 0 then 1 else 0 := by
+  simp only [coeff_X_pow, single_eq_single_iff]
+
+@[simp]
+lemma coeff_single_X [DecidableEq σ] (s s' : σ) (n : ℕ) :
+    (X s).coeff (R := R) (Finsupp.single s' n) = if n = 1 ∧ s = s' then 1 else 0 := by
+  simpa [eq_comm, and_comm] using coeff_single_X_pow s s' 1 n
 
 @[simp]
 theorem support_mul_X (s : σ) (p : MvPolynomial σ R) :
@@ -798,14 +808,14 @@ theorem coeff_monomial_mul' (m) (s : σ →₀ ℕ) (r : R) (p : MvPolynomial σ
 
 theorem coeff_mul_X' [DecidableEq σ] (m) (s : σ) (p : MvPolynomial σ R) :
     coeff m (p * X s) = if s ∈ m.support then coeff (m - Finsupp.single s 1) p else 0 := by
-  refine' (coeff_mul_monomial' _ _ _ _).trans _
+  refine (coeff_mul_monomial' _ _ _ _).trans ?_
   simp_rw [Finsupp.single_le_iff, Finsupp.mem_support_iff, Nat.succ_le_iff, pos_iff_ne_zero,
     mul_one]
 #align mv_polynomial.coeff_mul_X' MvPolynomial.coeff_mul_X'
 
 theorem coeff_X_mul' [DecidableEq σ] (m) (s : σ) (p : MvPolynomial σ R) :
     coeff m (X s * p) = if s ∈ m.support then coeff (m - Finsupp.single s 1) p else 0 := by
-  refine' (coeff_monomial_mul' _ _ _ _).trans _
+  refine (coeff_monomial_mul' _ _ _ _).trans ?_
   simp_rw [Finsupp.single_le_iff, Finsupp.mem_support_iff, Nat.succ_le_iff, pos_iff_ne_zero,
     one_mul]
 #align mv_polynomial.coeff_X_mul' MvPolynomial.coeff_X_mul'
@@ -850,7 +860,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ �
     choose C hc using h
     classical
       let c' : (σ →₀ ℕ) → R := fun i => if i ∈ φ.support then C i else 0
-      let ψ : MvPolynomial σ R := ∑ i in φ.support, monomial i (c' i)
+      let ψ : MvPolynomial σ R := ∑ i ∈ φ.support, monomial i (c' i)
       use ψ
       apply MvPolynomial.ext
       intro i
@@ -871,7 +881,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ �
 @[simp] lemma isRegular_X_pow (k : ℕ) : IsRegular (X n ^ k : MvPolynomial σ R) := isRegular_X.pow k
 
 @[simp] lemma isRegular_prod_X (s : Finset σ) :
-    IsRegular (∏ n in s, X n : MvPolynomial σ R) :=
+    IsRegular (∏ n ∈ s, X n : MvPolynomial σ R) :=
   IsRegular.prod fun _ _ ↦ isRegular_X
 
 end Coeff
@@ -881,8 +891,7 @@ section ConstantCoeff
 /-- `constantCoeff p` returns the constant term of the polynomial `p`, defined as `coeff 0 p`.
 This is a ring homomorphism.
 -/
-def constantCoeff : MvPolynomial σ R →+* R
-    where
+def constantCoeff : MvPolynomial σ R →+* R where
   toFun := coeff 0
   map_one' := by simp [AddMonoidAlgebra.one_def]
   map_mul' := by classical simp [coeff_mul, Finsupp.support_single_ne_zero]
@@ -931,7 +940,6 @@ theorem constantCoeff_comp_C : constantCoeff.comp (C : R →+* MvPolynomial σ R
   exact constantCoeff_C σ x
 #align mv_polynomial.constant_coeff_comp_C MvPolynomial.constantCoeff_comp_C
 
-@[simp]
 theorem constantCoeff_comp_algebraMap :
     constantCoeff.comp (algebraMap R (MvPolynomial σ R)) = RingHom.id R :=
   constantCoeff_comp_C _ _
@@ -943,11 +951,11 @@ section AsSum
 
 @[simp]
 theorem support_sum_monomial_coeff (p : MvPolynomial σ R) :
-    (∑ v in p.support, monomial v (coeff v p)) = p :=
+    (∑ v ∈ p.support, monomial v (coeff v p)) = p :=
   Finsupp.sum_single p
 #align mv_polynomial.support_sum_monomial_coeff MvPolynomial.support_sum_monomial_coeff
 
-theorem as_sum (p : MvPolynomial σ R) : p = ∑ v in p.support, monomial v (coeff v p) :=
+theorem as_sum (p : MvPolynomial σ R) : p = ∑ v ∈ p.support, monomial v (coeff v p) :=
   (support_sum_monomial_coeff p).symm
 #align mv_polynomial.as_sum MvPolynomial.as_sum
 
@@ -964,12 +972,12 @@ def eval₂ (p : MvPolynomial σ R) : S₁ :=
 #align mv_polynomial.eval₂ MvPolynomial.eval₂
 
 theorem eval₂_eq (g : R →+* S₁) (X : σ → S₁) (f : MvPolynomial σ R) :
-    f.eval₂ g X = ∑ d in f.support, g (f.coeff d) * ∏ i in d.support, X i ^ d i :=
+    f.eval₂ g X = ∑ d ∈ f.support, g (f.coeff d) * ∏ i ∈ d.support, X i ^ d i :=
   rfl
 #align mv_polynomial.eval₂_eq MvPolynomial.eval₂_eq
 
 theorem eval₂_eq' [Fintype σ] (g : R →+* S₁) (X : σ → S₁) (f : MvPolynomial σ R) :
-    f.eval₂ g X = ∑ d in f.support, g (f.coeff d) * ∏ i, X i ^ d i := by
+    f.eval₂ g X = ∑ d ∈ f.support, g (f.coeff d) * ∏ i, X i ^ d i := by
   simp only [eval₂_eq, ← Finsupp.prod_pow]
   rfl
 #align mv_polynomial.eval₂_eq' MvPolynomial.eval₂_eq'
@@ -1016,9 +1024,9 @@ theorem eval₂_mul_monomial :
     simp [add_mul, eval₂_add, ih_p, ih_q]
   · intro p n ih s a
     exact
-      calc
-        (p * X n * monomial s a).eval₂ f g = (p * monomial (Finsupp.single n 1 + s) a).eval₂ f g :=
-          by rw [monomial_single_add, pow_one, mul_assoc]
+      calc (p * X n * monomial s a).eval₂ f g
+        _ = (p * monomial (Finsupp.single n 1 + s) a).eval₂ f g := by
+          rw [monomial_single_add, pow_one, mul_assoc]
         _ = (p * monomial (Finsupp.single n 1) 1).eval₂ f g * f a * s.prod fun n e => g n ^ e := by
           simp [ih, prod_single_index, prod_add_index, pow_one, pow_add, mul_assoc, mul_left_comm,
             f.map_one]
@@ -1045,8 +1053,7 @@ theorem eval₂_pow {p : MvPolynomial σ R} : ∀ {n : ℕ}, (p ^ n).eval₂ f g
 #align mv_polynomial.eval₂_pow MvPolynomial.eval₂_pow
 
 /-- `MvPolynomial.eval₂` as a `RingHom`. -/
-def eval₂Hom (f : R →+* S₁) (g : σ → S₁) : MvPolynomial σ R →+* S₁
-    where
+def eval₂Hom (f : R →+* S₁) (g : σ → S₁) : MvPolynomial σ R →+* S₁ where
   toFun := eval₂ f g
   map_one' := eval₂_one _ _
   map_mul' _ _ := eval₂_mul _ _
@@ -1126,13 +1133,13 @@ theorem eval₂_congr (g₁ g₂ : σ → S₁)
 #align mv_polynomial.eval₂_congr MvPolynomial.eval₂_congr
 
 theorem eval₂_sum (s : Finset S₂) (p : S₂ → MvPolynomial σ R) :
-    eval₂ f g (∑ x in s, p x) = ∑ x in s, eval₂ f g (p x) :=
+    eval₂ f g (∑ x ∈ s, p x) = ∑ x ∈ s, eval₂ f g (p x) :=
   map_sum (eval₂Hom f g) _ s
 #align mv_polynomial.eval₂_sum MvPolynomial.eval₂_sum
 
 @[to_additive existing (attr := simp)]
 theorem eval₂_prod (s : Finset S₂) (p : S₂ → MvPolynomial σ R) :
-    eval₂ f g (∏ x in s, p x) = ∏ x in s, eval₂ f g (p x) :=
+    eval₂ f g (∏ x ∈ s, p x) = ∏ x ∈ s, eval₂ f g (p x) :=
   map_prod (eval₂Hom f g) _ s
 #align mv_polynomial.eval₂_prod MvPolynomial.eval₂_prod
 
@@ -1154,12 +1161,12 @@ def eval (f : σ → R) : MvPolynomial σ R →+* R :=
 #align mv_polynomial.eval MvPolynomial.eval
 
 theorem eval_eq (X : σ → R) (f : MvPolynomial σ R) :
-    eval X f = ∑ d in f.support, f.coeff d * ∏ i in d.support, X i ^ d i :=
+    eval X f = ∑ d ∈ f.support, f.coeff d * ∏ i ∈ d.support, X i ^ d i :=
   rfl
 #align mv_polynomial.eval_eq MvPolynomial.eval_eq
 
 theorem eval_eq' [Fintype σ] (X : σ → R) (f : MvPolynomial σ R) :
-    eval X f = ∑ d in f.support, f.coeff d * ∏ i, X i ^ d i :=
+    eval X f = ∑ d ∈ f.support, f.coeff d * ∏ i, X i ^ d i :=
   eval₂_eq' (RingHom.id R) X f
 #align mv_polynomial.eval_eq' MvPolynomial.eval_eq'
 
@@ -1192,13 +1199,13 @@ theorem eval_pow : ∀ n, eval f (p ^ n) = eval f p ^ n :=
   fun _ => eval₂_pow _ _
 
 theorem eval_sum {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) (g : σ → R) :
-    eval g (∑ i in s, f i) = ∑ i in s, eval g (f i) :=
+    eval g (∑ i ∈ s, f i) = ∑ i ∈ s, eval g (f i) :=
   map_sum (eval g) _ _
 #align mv_polynomial.eval_sum MvPolynomial.eval_sum
 
 @[to_additive existing]
 theorem eval_prod {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) (g : σ → R) :
-    eval g (∏ i in s, f i) = ∏ i in s, eval g (f i) :=
+    eval g (∏ i ∈ s, f i) = ∏ i ∈ s, eval g (f i) :=
   map_prod (eval g) _ _
 #align mv_polynomial.eval_prod MvPolynomial.eval_prod
 
@@ -1459,6 +1466,7 @@ section Aeval
 variable [Algebra R S₁] [CommSemiring S₂]
 variable (f : σ → S₁)
 
+@[simp]
 theorem algebraMap_apply (r : R) : algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) := rfl
 #align mv_polynomial.algebra_map_apply MvPolynomial.algebraMap_apply
 
@@ -1475,6 +1483,10 @@ theorem aeval_def (p : MvPolynomial σ R) : aeval f p = eval₂ (algebraMap R S�
 theorem aeval_eq_eval₂Hom (p : MvPolynomial σ R) : aeval f p = eval₂Hom (algebraMap R S₁) f p :=
   rfl
 #align mv_polynomial.aeval_eq_eval₂_hom MvPolynomial.aeval_eq_eval₂Hom
+
+@[simp]
+lemma coe_aeval_eq_eval : RingHomClass.toRingHom (MvPolynomial.aeval f) = MvPolynomial.eval f :=
+  rfl
 
 @[simp]
 theorem aeval_X (s : σ) : aeval f (X s : MvPolynomial _ R) = f s :=
@@ -1587,13 +1599,13 @@ theorem aeval_eq_zero [Algebra R S₂] (f : σ → S₂) (φ : MvPolynomial σ R
 #align mv_polynomial.aeval_eq_zero MvPolynomial.aeval_eq_zero
 
 theorem aeval_sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) :
-    aeval f (∑ i in s, φ i) = ∑ i in s, aeval f (φ i) :=
+    aeval f (∑ i ∈ s, φ i) = ∑ i ∈ s, aeval f (φ i) :=
   (MvPolynomial.aeval f).map_sum _ _
 #align mv_polynomial.aeval_sum MvPolynomial.aeval_sum
 
 @[to_additive existing]
 theorem aeval_prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) :
-    aeval f (∏ i in s, φ i) = ∏ i in s, aeval f (φ i) :=
+    aeval f (∏ i ∈ s, φ i) = ∏ i ∈ s, aeval f (φ i) :=
   (MvPolynomial.aeval f).map_prod _ _
 #align mv_polynomial.aeval_prod MvPolynomial.aeval_prod
 
@@ -1642,12 +1654,10 @@ theorem aevalTower_comp_C : (aevalTower g y : MvPolynomial σ R →+* A).comp C 
   RingHom.ext <| aevalTower_C _ _
 #align mv_polynomial.aeval_tower_comp_C MvPolynomial.aevalTower_comp_C
 
-@[simp]
 theorem aevalTower_algebraMap (x : R) : aevalTower g y (algebraMap R (MvPolynomial σ R) x) = g x :=
   eval₂_C _ _ _
 #align mv_polynomial.aeval_tower_algebra_map MvPolynomial.aevalTower_algebraMap
 
-@[simp]
 theorem aevalTower_comp_algebraMap :
     (aevalTower g y : MvPolynomial σ R →+* A).comp (algebraMap R (MvPolynomial σ R)) = g :=
   aevalTower_comp_C _ _
@@ -1697,7 +1707,7 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
   induction' p using MvPolynomial.induction_on''' with a a b f ha _ ih
   · simpa using hs 0
   rw [eval₂_add, eval₂_monomial]
-  refine' add_mem (mul_mem _ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => _)
+  refine add_mem (mul_mem ?_ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => ?_)
   · have := hs a -- Porting note: was `simpa only [...]`
     rwa [coeff_add, MvPolynomial.not_mem_support_iff.1 ha, add_zero, coeff_monomial,
       if_pos rfl] at this
