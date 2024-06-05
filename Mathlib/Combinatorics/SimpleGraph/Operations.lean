@@ -225,7 +225,7 @@ theorem crossEdges_edgeFinset : (G.crossEdges K).edgeFinset =
 
 open BigOperators in
 theorem crossEdges_edgeFinset_card : (G.crossEdges K).edgeFinset.card =
-    ∑ b in Kᶜ, (K.filter (G.Adj · b)).card := by
+    ∑ b ∈ Kᶜ, (K.filter (G.Adj · b)).card := by
   rw [crossEdges_edgeFinset, card_biUnion]
   · simp
   · simp_rw [disjoint_iff_ne, mem_map, mem_filter, forall_exists_index, and_imp,
