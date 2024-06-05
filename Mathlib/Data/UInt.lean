@@ -12,13 +12,16 @@ import Mathlib.Data.ZMod.Defs
 /-!
 # Adds Mathlib specific instances to the `UIntX` data types.
 
-Users are advised not to use the `NatCast` and `IntCast` typeclasses, as their presence
-contradicts assumptions made by the expression tree elaborator.
-These are only available as scoped instances, requiring `open UInt32.Cast` to use.
+The `CommRing` instances (and the `NatCast` and `IntCast` instances from which they is built) are
+scoped in the `UIntX.CommRing` namespace, rather than available globally. As a result, the `ring`
+tactic will not work on `UIntX` types without `open scoped UIntX.Ring`.
 
-The `CommRing` instance is similarly scoped, and requires `open UInt32.CommRing` to use.
-(It is problematic for the same reason:
-making it available implicitly also makes the casting instances available.)
+This is because the presence of these casting operations contradicts assumptions made by the
+expression tree elaborator, namely that coercions do not form a cycle.
+
+This issue also arises for `CommRing (Fin n)`, but Mathlib has come to rely upon this. The UInt
+version also interferes more with software-verification use-cases, which is reason to be more
+cautious here.
 -/
 
 lemma UInt8.val_eq_of_lt {a : Nat} : a < UInt8.size → ((ofNat a).val : Nat) = a :=
@@ -50,7 +53,8 @@ example : (0 : UInt8) = ⟨0⟩ := rfl
 
 set_option hygiene false in
 run_cmd
-  for typeName in [`UInt8, `UInt16, `UInt32, `UInt64, `USize].map Lean.mkIdent do
+  for typeName' in [`UInt8, `UInt16, `UInt32, `UInt64, `USize] do
+  let typeName := Lean.mkIdent typeName'
   Lean.Elab.Command.elabCommand (← `(
     namespace $typeName
       instance : Inhabited $typeName where
@@ -99,31 +103,37 @@ run_cmd
       @[simp] lemma mk_val_eq : ∀ (a : $typeName), mk a.val = a
       | ⟨_, _⟩ => rfl
 
-    namespace Cast
       @[nolint docBlame]
-      scoped instance : NatCast $typeName where
+      local instance instNatCast : NatCast $typeName where
         natCast n := mk n
 
       @[nolint docBlame]
-      scoped instance : IntCast $typeName where
+      local instance instIntCast : IntCast $typeName where
         intCast z := mk z
 
       lemma natCast_def (n : ℕ) : (n : $typeName) = ⟨n⟩ := rfl
 
       lemma intCast_def (z : ℤ) : (z : $typeName) = ⟨z⟩ := rfl
 
-    end Cast
-
-    namespace CommRing
-      open Cast in
       @[nolint docBlame]
-      scoped instance instCommRing : CommRing $typeName :=
+      local instance instCommRing : CommRing $typeName :=
         Function.Injective.commRing val val_injective
           rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
           (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
-    end CommRing
+
+      namespace CommRing
+      attribute [scoped instance] instCommRing instNatCast instIntCast
+      end CommRing
+
     end $typeName
   ))
+  -- interpolating docstrings above is more trouble than it's worth
+  let docString :=
+    s!"To use this instance, use `open scoped {typeName'}.CommRing`.\n\n" ++
+    "See the module docstring for an explanation"
+  Lean.addDocString (typeName'.mkStr "instCommRing") docString
+  Lean.addDocString (typeName'.mkStr "instNatCast") docString
+  Lean.addDocString (typeName'.mkStr "instIntCast") docString
 
 namespace UInt8
 
