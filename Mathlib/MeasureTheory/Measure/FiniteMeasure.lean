@@ -501,7 +501,6 @@ theorem tendsto_iff_weak_star_tendsto {γ : Type*} {F : Filter γ} {μs : γ →
   Inducing.tendsto_nhds_iff ⟨rfl⟩
 #align measure_theory.finite_measure.tendsto_iff_weak_star_tendsto MeasureTheory.FiniteMeasure.tendsto_iff_weak_star_tendsto
 
-set_option synthInstance.maxHeartbeats 25000 in
 theorem tendsto_iff_forall_toWeakDualBCNN_tendsto {γ : Type*} {F : Filter γ}
     {μs : γ → FiniteMeasure Ω} {μ : FiniteMeasure Ω} :
     Tendsto μs F (𝓝 μ) ↔

@@ -293,8 +293,6 @@ variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃] [Module �
 -- it seems to be needed below!?
 noncomputable instance smul_nnreal_real : SMul ℝ≥0 ℝ := inferInstance
 
-instance : IsScalarTower ℝ≥0 ℝ≥0 ℝ := IsScalarTower.left _
-
 variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
 /-- Composition of a seminorm with a linear map is a seminorm. -/

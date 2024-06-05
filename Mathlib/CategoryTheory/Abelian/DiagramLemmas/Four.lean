@@ -59,7 +59,6 @@ section Four
 
 variable {R₁ R₂ : ComposableArrows C 3} (φ : R₁ ⟶ R₂)
 
-set_option maxHeartbeats 400000 in
 theorem mono_of_epi_of_mono_of_mono' (hR₁ : R₁.map' 0 2 = 0)
     (hR₁' : (mk₂ (R₁.map' 1 2) (R₁.map' 2 3)).Exact)
     (hR₂ : (mk₂ (R₂.map' 0 1) (R₂.map' 1 2)).Exact)
