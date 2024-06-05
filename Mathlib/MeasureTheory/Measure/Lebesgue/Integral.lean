@@ -46,8 +46,8 @@ open ContinuousMap
 /- The following lemma is a minor variation on `integrable_of_summable_norm_restrict` in
 `Mathlib/MeasureTheory/Integral/SetIntegral.lean`, but it is placed here because it needs to know
 that `Icc a b` has volume `b - a`. -/
-/-- If the sequence with `n`-th term the sup norm of `fun x ↦ f (x + n)` on the interval `Icc 0 1`,
-for `n ∈ ℤ`, is summable, then `f` is integrable on `ℝ`. -/
+/-- If the sequence with as `n`-th term the sup norm of `fun x ↦ f (x + n)` on the interval
+`Icc 0 1`, for `n ∈ ℤ`, is summable, then `f` is integrable on `ℝ`. -/
 theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] {f : C(ℝ, E)}
     (hf : Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)‖) :
     Integrable f := by
