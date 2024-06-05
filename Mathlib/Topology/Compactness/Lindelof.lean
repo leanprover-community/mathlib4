@@ -180,12 +180,12 @@ theorem IsLindelof.elim_nhds_subcover (hs : IsLindelof s) (U : X → Set X)
 theorem IsLindelof.indexed_countable_subcover {ι : Type v} [Nonempty ι]
     (hs : IsLindelof s) (U : ι → Set X) (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) :
     ∃ f : ℕ → ι, s ⊆ ⋃ n, U (f n) := by
-  rcases IsLindelof.elim_countable_subcover hs U hUo hsU with ⟨c, ⟨c_count, c_cov⟩⟩
+  obtain ⟨c, ⟨c_count, c_cov⟩⟩ := IsLindelof.elim_countable_subcover hs U hUo hsU
   wlog c_nonempty : c.Nonempty
   · simp only [not_nonempty_iff_eq_empty.mp c_nonempty, mem_empty_iff_false, iUnion_of_empty,
       iUnion_empty] at c_cov
     simp only [subset_eq_empty c_cov rfl, empty_subset, exists_const]
-  rcases (Set.countable_iff_exists_surjective c_nonempty).mp c_count with ⟨f, f_surj⟩
+  obtain ⟨f, f_surj⟩ := (Set.countable_iff_exists_surjective c_nonempty).mp c_count
   use Subtype.val ∘ f
   intro _ xinh
   rcases c_cov xinh with ⟨uy, ⟨y, yuc⟩, xinuy⟩
