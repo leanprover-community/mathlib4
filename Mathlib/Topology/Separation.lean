@@ -95,6 +95,12 @@ If the space is also compact:
   is equivalent to being a `TotallySeparatedSpace`.
 * `ConnectedComponents.t2`: `ConnectedComponents X` is T₂ for `X` T₂ and compact.
 
+### Regular spaces
+
+If the space is also Lindelöf:
+
+* `NormalSpace.of_regularSpace_lindelofSpace`: every regular Lindelöf space is normal.
+
 ### T₃ spaces
 
 * `disjoint_nested_nhds`: Given two points `x ≠ y`, we can find neighbourhoods `x ∈ V₁ ⊆ U₁` and
