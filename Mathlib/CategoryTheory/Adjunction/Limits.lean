@@ -354,7 +354,7 @@ variable {J C D : Type*} [Category J] [Category C] [Category D]
 noncomputable instance [IsLeftAdjoint F] : PreservesColimitsOfShape J F :=
   (Adjunction.ofIsLeftAdjoint F).leftAdjointPreservesColimits.preservesColimitsOfShape
 
-noncomputable instance [IsLeftAdjoint F] : PreservesColimits.{v, u} F where
+noncomputable instance [IsLeftAdjoint F] : PreservesColimitsOfSize.{v, u} F where
 
 noncomputable instance [IsRightAdjoint F] : PreservesLimitsOfShape J F :=
   (Adjunction.ofIsRightAdjoint F).rightAdjointPreservesLimits.preservesLimitsOfShape
