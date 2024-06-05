@@ -884,7 +884,7 @@ theorem isNilpotent_of_product_of_sylow_group
 /-- A finite group is nilpotent iff the normalizer condition holds, and iff all maximal groups are
 normal and iff all Sylow groups are normal and iff the group is the direct product of its Sylow
 groups. -/
-theorem isNilpotent_of_finite_tFAE :
+theorem isNilpotent_of_finite_tfae :
     List.TFAE
       [IsNilpotent G, NormalizerCondition G, ∀ H : Subgroup G, IsCoatom H → H.Normal,
         ∀ (p : ℕ) (_hp : Fact p.Prime) (P : Sylow p G), (↑P : Subgroup G).Normal,
@@ -901,6 +901,8 @@ theorem isNilpotent_of_finite_tFAE :
   tfae_have 5 → 1
   · rintro ⟨e⟩; exact isNilpotent_of_product_of_sylow_group e
   tfae_finish
-#align is_nilpotent_of_finite_tfae isNilpotent_of_finite_tFAE
+#align is_nilpotent_of_finite_tfae isNilpotent_of_finite_tfae
+
+@[deprecated (since := "2024-06-05")] alias isNilpotent_of_finite_tFAE := isNilpotent_of_finite_tfae
 
 end WithFiniteGroup
