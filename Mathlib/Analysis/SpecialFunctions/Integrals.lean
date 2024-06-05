@@ -639,10 +639,6 @@ end RpowCpow
 /-! ### Integral of `sin x ^ n` -/
 
 
--- the fact that this is a `continuity` and `fun_prop` rule is really bad, because
--- we don't want it to apply all the time.
-attribute [-aesop] IsProperMap.continuous
-
 theorem integral_sin_pow_aux :
     (∫ x in a..b, sin x ^ (n + 2)) =
       (sin a ^ (n + 1) * cos a - sin b ^ (n + 1) * cos b + (↑n + 1) * ∫ x in a..b, sin x ^ n) -
@@ -666,7 +662,7 @@ theorem integral_sin_pow_aux :
       _ = (C + (↑n + 1) * ∫ x in a..b, sin x ^ n) - (↑n + 1) * ∫ x in a..b, sin x ^ (n + 2) := by
         rw [integral_sub, mul_sub, add_sub_assoc] <;>
           apply Continuous.intervalIntegrable <;> continuity
-  all_goals apply Continuous.intervalIntegrable; continuity
+  all_goals apply Continuous.intervalIntegrable; fun_prop
 #align integral_sin_pow_aux integral_sin_pow_aux
 
 /-- The reduction formula for the integral of `sin x ^ n` for any natural `n ≥ 2`. -/
