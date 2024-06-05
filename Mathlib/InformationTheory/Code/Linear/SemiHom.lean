@@ -12,14 +12,14 @@ variable (sₘ : Submodule K M)
 variable--? [_LinearCode γ K gdistₖ gdistₘ sₘ] =>
   [CovariantClass γ γ (fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1] [FunLike Tₖ K (K → γ)]
   [GPseudoMetricClass Tₖ K γ] [AddGNorm K γ gdistₖ] [FunLike Tₘ M (M → γ)]
-  [GPseudoMetricClass Tₘ M γ] [AddGNorm M γ gdistₘ] [IsDelone gdistₘ ↑sₘ] [PosMulMono γ]
+  [GPseudoMetricClass Tₘ M γ] [AddGNorm M γ gdistₘ] [GMetric.IsDelone gdistₘ ↑sₘ] [PosMulMono γ]
   [MulPosMono γ] [ZeroLEOneClass γ] [StrictModuleGNorm K K gdistₖ gdistₖ]
   [StrictModuleGNorm K M gdistₖ gdistₘ]
 variable {M₂ : Type*} {Tₘ₂ : Type*} (gdistₘ₂:Tₘ₂) [AddCommMonoid M₂] [Module K M₂]
 variable (sₘ₂ : Submodule K M₂)
 variable--? [_LinearCode γ K gdistₖ gdistₘ₂ sₘ₂] =>
   [FunLike Tₘ₂ M₂ (M₂ → γ)] [GPseudoMetricClass Tₘ₂ M₂ γ] [AddGNorm M₂ γ gdistₘ₂]
-  [IsDelone gdistₘ₂ ↑sₘ₂] [StrictModuleGNorm K M₂ gdistₖ gdistₘ₂]
+  [GMetric.IsDelone gdistₘ₂ ↑sₘ₂] [StrictModuleGNorm K M₂ gdistₖ gdistₘ₂]
 variable--? [CodeHomClass T gdistₘ sₘ gdistₘ₂ sₘ₂] =>
   [FunLike T M M₂] [CodeHomClass T gdistₘ sₘ gdistₘ₂ sₘ₂]
 
@@ -40,11 +40,11 @@ class SemilinearCodeHomClass (T:Type*) {γ :outParam Type*} [Semiring γ] [Compl
     (gdistₖ:outParam Tₖ) [FunLike Tₖ K (K → γ)] [GPseudoMetricClass Tₖ K γ] [AddGNorm K γ gdistₖ]
     [StrictModuleGNorm K K gdistₖ gdistₖ] {M: outParam Type*} {Tₘ:outParam Type*}
     (gdistₘ: outParam Tₘ) [AddCommMonoid M] [Module K M] (sₘ: outParam (Submodule K M))
-    [FunLike Tₘ M (M → γ)] [GPseudoMetricClass Tₘ M γ] [AddGNorm M γ gdistₘ] [IsDelone gdistₘ sₘ]
+    [FunLike Tₘ M (M → γ)] [GPseudoMetricClass Tₘ M γ] [AddGNorm M γ gdistₘ] [GMetric.IsDelone gdistₘ sₘ]
     [StrictModuleGNorm K M gdistₖ gdistₘ] -- [_LinearCode γ K gdistₖ gdistₘ sₘ]
     {M₂: outParam Type*} {Tₘ₂:outParam Type*} (gdistₘ₂: outParam Tₘ₂) [AddCommMonoid M₂]
     [Module K M₂] (sₘ₂:outParam (Submodule K M₂)) [FunLike Tₘ₂ M₂ (M₂ → γ)]
-    [GPseudoMetricClass Tₘ₂ M₂ γ] [AddGNorm M₂ γ gdistₘ₂] [IsDelone gdistₘ₂ sₘ₂]
+    [GPseudoMetricClass Tₘ₂ M₂ γ] [AddGNorm M₂ γ gdistₘ₂] [GMetric.IsDelone gdistₘ₂ sₘ₂]
     [StrictModuleGNorm K M₂ gdistₖ gdistₘ₂] -- [_LinearCode γ K gdistₖ gdistₘ₂ sₘ₂]
     [FunLike T M M₂]
     extends CodeHomClass T gdistₘ sₘ gdistₘ₂ sₘ₂, SemilinearMapClass T σ₁₂ M M₂ : Prop
@@ -56,11 +56,11 @@ abbrev LinearCodeHomClass (T:Type*) {γ :outParam Type*} [Semiring γ] [Complete
     [FunLike Tₖ K (K → γ)] [GPseudoMetricClass Tₖ K γ] [AddGNorm K γ gdistₖ]
     [StrictModuleGNorm K K gdistₖ gdistₖ] {M: outParam Type*} {Tₘ:outParam Type*}
     (gdistₘ: outParam Tₘ) [AddCommMonoid M] [Module K M] (sₘ: outParam (Submodule K M))
-    [FunLike Tₘ M (M → γ)] [GPseudoMetricClass Tₘ M γ] [AddGNorm M γ gdistₘ] [IsDelone gdistₘ sₘ]
+    [FunLike Tₘ M (M → γ)] [GPseudoMetricClass Tₘ M γ] [AddGNorm M γ gdistₘ] [GMetric.IsDelone gdistₘ sₘ]
     [StrictModuleGNorm K M gdistₖ gdistₘ] -- [_LinearCode γ K gdistₖ gdistₘ sₘ]
     {M₂: outParam Type*} {Tₘ₂:outParam Type*} (gdistₘ₂: outParam Tₘ₂) [AddCommMonoid M₂]
     [Module K M₂] (sₘ₂:outParam (Submodule K M₂)) [FunLike Tₘ₂ M₂ (M₂ → γ)]
-    [GPseudoMetricClass Tₘ₂ M₂ γ] [AddGNorm M₂ γ gdistₘ₂] [IsDelone gdistₘ₂ sₘ₂]
+    [GPseudoMetricClass Tₘ₂ M₂ γ] [AddGNorm M₂ γ gdistₘ₂] [GMetric.IsDelone gdistₘ₂ sₘ₂]
     [StrictModuleGNorm K M₂ gdistₖ gdistₘ₂] -- [_LinearCode γ K gdistₖ gdistₘ₂ sₘ₂]
     [FunLike T M M₂] := SemilinearCodeHomClass T (RingHom.id K) gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂
 
@@ -141,7 +141,7 @@ variable {σ₂₃ : K →+* K} {σ₁₃ : K →+* K} [RingHomCompTriple σ₁�
 variable [Module K M₃] {sₘ₃ : Submodule K M₃}
 variable--? [_LinearCode γ K gdistₖ gdistₘ₃ sₘ₃] =>
   [FunLike Tₘ₃ M₃ (M₃ → γ)] [GPseudoMetricClass Tₘ₃ M₃ γ] [AddGNorm M₃ γ gdistₘ₃]
-  [IsDelone gdistₘ₃ ↑sₘ₃] [StrictModuleGNorm K M₃ gdistₖ gdistₘ₃]
+  [GMetric.IsDelone gdistₘ₃ ↑sₘ₃] [StrictModuleGNorm K M₃ gdistₖ gdistₘ₃]
 
 
 section
@@ -174,7 +174,7 @@ variable {σ₃₄ : K →+* K} {σ₂₄ : K →+* K} {σ₁₄ : K →+* K} [R
   {M₄:Type*} {Tₘ₄:Type*} {gdistₘ₄:Tₘ₄} [AddCommMonoid M₄] [Module K M₄] {sₘ₄:Submodule K M₄}
 variable--? [_LinearCode γ K gdistₖ gdist_m₄ s₄] =>
   [FunLike Tₘ₄ M₄ (M₄ → γ)] [GPseudoMetricClass Tₘ₄ M₄ γ] [AddGNorm M₄ γ gdistₘ₄]
-  [IsDelone gdistₘ₄ ↑sₘ₄] [StrictModuleGNorm K M₄ gdistₖ gdistₘ₄]
+  [GMetric.IsDelone gdistₘ₄ ↑sₘ₄] [StrictModuleGNorm K M₄ gdistₖ gdistₘ₄]
 
 theorem comp_assoc
     (f : SemilinearCodeHom σ₁₂ gdistₖ gdistₘ sₘ gdistₘ₂ sₘ₂)

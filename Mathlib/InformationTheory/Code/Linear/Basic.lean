@@ -1,7 +1,7 @@
 import Mathlib.InformationTheory.Code.Basic
 import Mathlib.Algebra.Module.Submodule.Basic
 
-open Code Set
+open Code Set GMetric
 
 variable (γ :Type*) [CompleteLinearOrder γ] [Semiring γ] [CovariantClass γ γ (. + .) (. ≤ .)]
   [Nontrivial γ] [ContravariantClass γ γ (.+.) (.<.)] [PosMulMono γ] [MulPosMono γ]

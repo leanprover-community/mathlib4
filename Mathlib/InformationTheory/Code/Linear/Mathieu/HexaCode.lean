@@ -250,7 +250,7 @@ lemma mem_hc_iff (x :F_4_6): x ∈ HexaCode ↔
 instance : DecidablePred (. ∈ HexaCode) := fun h => by
   apply decidable_of_iff _ (mem_hc_iff h).symm
 
-#eval b₁ ∈ HexaCode
+-- #eval b₁ ∈ HexaCode
 
 example : b₁ ∈ HexaCode := by decide
 
@@ -441,12 +441,12 @@ lemma four_le_norm_of_nzero {x : F_4_6} (hx : x ∈HexaCode) (hz :x ≠ 0): 4 �
         Polynomial.eval_C, Polynomial.eval_pow, Polynomial.eval_X, square_eq_inv]
       constructor
       . intro ⟨_,h⟩
-        rw [← zero_add c,← h,add_assoc,add_self,add_zero]
+        rw [← zero_add c,← h,add_assoc,F4.add_self,add_zero]
         simp only [mul_inv_rev, inv_inv]
         rw [mul_comm x,← mul_assoc,mul_inv_cancel ha,one_mul]
       . rintro rfl
         simp only [mul_inv_rev, inv_inv]
-        rw [mul_comm c a⁻¹,← mul_assoc,mul_inv_cancel ha,one_mul,add_self]
+        rw [mul_comm c a⁻¹,← mul_assoc,mul_inv_cancel ha,one_mul,F4.add_self]
         simp only [and_true]
         exact fun a _ ↦ ha a
     else

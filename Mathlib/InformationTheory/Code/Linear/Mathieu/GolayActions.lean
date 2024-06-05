@@ -1,4 +1,6 @@
 import Mathlib.InformationTheory.Code.Linear.Mathieu.BGolay
+import Mathlib.Algebra.Ring.BooleanRing
+
 import Mathlib.InformationTheory.Code.Linear.TacticTmp.have_goal
 
 open BigOperators HexaCode
@@ -658,6 +660,9 @@ lemma aut_smul_hexacode (φ : SemilinearCodeAut F4 trivdist hdist HexaCode) (v:H
     φ • (Multiplicative.ofAdd v) = Multiplicative.ofAdd (φ • v) := rfl
 
 -- #synth AddCommGroup F4
+abbrev hexa_gen_aut : Type
+  := Multiplicative HexaCode ⋊[apply_aut] (SemilinearCodeAut F4 trivdist hdist HexaCode)
+
 
 noncomputable def apply_hexacode_semi :
     (Multiplicative HexaCode ⋊[apply_aut] (SemilinearCodeAut F4 trivdist hdist HexaCode)) →*
@@ -908,3 +913,47 @@ section
 -- -/
 -- #eval of_gc (a₂ * a₁)
 end
+
+lemma eq_one_iff_norm (x : golay_code_space') : addGNorm hdist x = 24 ↔ x = 1 := by
+  dsimp [addGNorm]
+  constructor
+  . intro h
+    rw [← @Nat.cast_eq_ofNat ENat ] at h
+    rw [Nat.cast_inj] at h
+    dsimp [hammingNorm] at h
+    have : Fintype.card golay_code_index = 24 := by decide
+    rw [← this] at h
+    have : Finset.filter (fun x_1 => ¬ x x_1 = 0) Finset.univ = Finset.univ := by
+      exact Finset.eq_univ_of_card _ h
+    rw [Finset.eq_univ_iff_forall] at this
+    ext c
+    specialize this c
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at this
+    rw [Pi.one_apply]
+    revert this
+    generalize x c = z
+    revert z
+    decide
+  rintro rfl
+  decide
+
+instance : BooleanRing (ZMod 2) where
+  mul_self := by decide
+
+instance : MulSemiringAction (SemilinearCodeAut (ZMod 2) trivdist hdist GolayCode) golay_code_space' where
+  smul_one := fun g => by
+    rw [← eq_one_iff_norm (g • 1)]
+    dsimp [SMul.smul]
+    have : addGNorm hdist 1 = 24 := by
+      rw [eq_one_iff_norm]
+    rw [← this]
+    exact g.map_addGNorm 1
+  smul_mul := fun g a b => by
+    dsimp [SMul.smul]
+    simp_rw [extract_gives_stuff_strong]
+    ext ⟨i,x⟩
+    simp only [Pi.smul_apply, RingAut.smul_def, Pi.mul_apply]
+    dsimp [HSMul.hSMul,SMul.smul]
+    simp only [Equiv.symm_apply_apply, map_mul]
+    ring_nf
+    rw [pow_two,mul_self]

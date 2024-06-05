@@ -145,7 +145,7 @@ theorem Subsingleton.ginfsep (hs : s.Subsingleton) : s.ginfsep gdist = ⊤ := by
 
 theorem le_ginfsep_image_iff {f : β → α} {s : Set β} : d ≤ ginfsep gdist (f '' s)
     ↔ ∀ x ∈ s, ∀ y ∈ s, f x ≠ f y → d ≤ gdist (f x) (f y) := by
-  simp_rw [le_ginfsep_iff, ball_image_iff]
+  simp_rw [le_ginfsep_iff, forall_mem_image]
 
 theorem le_gdist_of_le_ginfsep {d x} (hx : x ∈ s) {y} (hy : y ∈ s) (hxy : x ≠ y)
     (hd : d ≤ s.ginfsep gdist) : d ≤ gdist x y :=

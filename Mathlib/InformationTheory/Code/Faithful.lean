@@ -1,6 +1,7 @@
 import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 import Mathlib.GroupTheory.SemidirectProduct
+import Mathlib.Algebra.Ring.BooleanRing
 
 
 -- instance {G α β : Type*} [Monoid G] [Monoid β] [MulAction G α] :
@@ -53,8 +54,6 @@ instance Units.instMulDistribMulAction' [Monoid G] [Monoid M] [MulDistribMulActi
 @[simp]
 lemma Units.smul_val_eq_val_smul [Monoid G] [Monoid M] [MulDistribMulAction G M] (g : G) (u : Mˣ):
   g • (u : M) = (g • u : Mˣ) := rfl
-
-#check Units.smul_val_eq_val_smul
 
 end
 section
@@ -306,5 +305,110 @@ lemma lift_inj
     specialize hf₂ g hg_one
     rw [hf₁,hf₂,inv_one,map_one,map_one]
 
+
+lemma eq_closure_of_orbit_closure {sg : Set G} (n : N)
+    (hsg_gen : ⊤ ≤ Subgroup.closure sg)
+    (horbit_gen : ⊤ ≤ Subgroup.closure ((φ . n) '' ⊤)) :
+    (⊤  : Subgroup (N ⋊[φ] G)) ≤ Subgroup.closure ({inl n} ∪ inr '' sg) := by
+  intro i
+  simp only [Subgroup.mem_top, Set.singleton_union, true_implies]
+  have right_subgroup : Subgroup.closure (inr '' sg : Set (N ⋊[φ] G)) ≤ Subgroup.closure ({inl n} ∪ inr '' sg) := by
+    apply Subgroup.closure_mono
+    exact Set.subset_union_right {inl n} (⇑inr '' sg)
+  have right_subgroup_eq : Subgroup.closure (inr '' sg : Set (N ⋊[φ] G)) = inr.range := by
+    apply le_antisymm
+    . intro i hi
+      simp only [MonoidHom.mem_range]
+      refine Subgroup.closure_induction hi ?_ ?_ ?_ ?_
+      . rintro _ ⟨g,_,rfl⟩
+        use g
+      . use 1
+        rw [map_one]
+      . rintro _ _ ⟨g1,rfl⟩ ⟨g2,rfl⟩
+        use g1 * g2
+        rw [map_mul]
+      . rintro _ ⟨g,rfl⟩
+        use g⁻¹
+        rw [map_inv]
+    . rintro _ ⟨g,_,rfl⟩
+      have g_mem_clos : g ∈ Subgroup.closure sg := by exact hsg_gen trivial
+      refine Subgroup.closure_induction g_mem_clos ?_ ?_ ?_ ?_
+      . intro g hg
+        apply Subgroup.subset_closure
+        simp only [Set.mem_image, inr_inj, exists_eq_right]
+        exact hg
+      . rw [map_one]
+        exact Subgroup.one_mem (Subgroup.closure (⇑inr '' sg))
+      . intro x y hx hy
+        rw [map_mul]
+        exact Subgroup.mul_mem _ hx hy
+      . intro x hx
+        rw [map_inv]
+        exact Subgroup.inv_mem _ hx
+  apply SemidirectProduct.induction i
+  . intro n'
+    have hmem_orbit : n' ∈ Subgroup.closure ((φ . n) '' ⊤) := horbit_gen trivial
+    refine Subgroup.closure_induction hmem_orbit ?_ ?_ ?_ ?_
+    . intro x hx
+      simp only [Set.top_eq_univ, Set.image_univ, Set.mem_range] at hx
+      obtain ⟨g,rfl⟩ := hx
+      rw [inl_aut]
+      apply Subgroup.mul_mem _
+      apply Subgroup.mul_mem _
+      . apply right_subgroup
+        rw [right_subgroup_eq]
+        simp only [MonoidHom.mem_range, inr_inj, exists_eq]
+      . apply Subgroup.subset_closure
+        simp only [Set.mem_insert_iff, Set.mem_image, true_or]
+      . apply right_subgroup
+        rw [right_subgroup_eq]
+        simp only [map_inv, inv_mem_iff, MonoidHom.mem_range, inr_inj, exists_eq]
+    . rw [map_one]
+      apply Subgroup.one_mem
+    . intro x y hx hy
+      rw [map_mul]
+      exact Subgroup.mul_mem _ hx hy
+    . intro x hx
+      rw [map_inv]
+      exact Subgroup.inv_mem _ hx
+  . intro g
+    apply right_subgroup
+    rw [right_subgroup_eq]
+    simp only [MonoidHom.mem_range, inr_inj, exists_eq]
+  . intro n g hn hg
+    apply Subgroup.mul_mem _ hn hg
+
+
 end SemidirectProduct
+end
+
+section
+variable {ι : Type*} {R : ι → Type*} [∀ i, BooleanRing (R i)]
+
+instance Pi.booleanRing: BooleanRing ((i : ι) → R i) where
+  mul_self := fun v => by
+    ext i
+    simp only [Pi.mul_apply, mul_self]
+
+end
+
+
+section
+variable {G α: Type*} [Group G] [MulAction G α]
+
+lemma MulAction.isPretransitive_of_top_le_orbit (a : α) (hletop : ⊤ ≤ MulAction.orbit G a):
+    MulAction.IsPretransitive G α where
+  exists_smul_eq := fun x y => by
+    have hx : x ∈ MulAction.orbit G a := by
+      exact hletop trivial
+    have hy : y ∈ MulAction.orbit G a := by
+      exact hletop trivial
+    obtain ⟨gx,hgx⟩ := hx
+    obtain ⟨gy,hgy⟩ := hy
+    use gy * gx⁻¹
+    rw [← hgx]
+    simp only
+    rw [← mul_smul,mul_assoc,inv_mul_self,mul_one]
+    rw [← hgy]
+
 end

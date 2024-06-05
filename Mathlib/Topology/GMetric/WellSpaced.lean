@@ -196,11 +196,11 @@ structure IsNetWith (ε:γ) :Prop :=
   isOpenPacking : IsOpenPackingWith gdist s ε
   isClosedCoveringWith: IsClosedCoveringWith gdist s (2•ε)
 
-structure IsDeloneWith (r R:γ):Prop :=
+structure GMetric.IsDeloneWith (r R:γ):Prop :=
   isOpenPacking : IsOpenPackingWith gdist s r
   isClosedCoveringWith: IsClosedCoveringWith gdist s R
 
-class IsDelone : Prop :=
+class GMetric.IsDelone : Prop :=
   isDeloneWith: ∃ (r R :γ),IsDeloneWith gdist s r R
 
 end net_delone

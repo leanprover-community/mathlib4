@@ -884,7 +884,7 @@ noncomputable def toSemidirectProd :
   map_mul' := toSemidirectProd'_map_mul
 
 
-def lift_toLinearCodeAut
+def lift_toSemiLinearCodeAut
     (c:((ι → Kˣ) ⋊[invsmulMulHom] ((RingAut K) × (ι ≃ ι))ᵐᵒᵖ)ᵐᵒᵖ) (hc: ∀ x, x ∈ s ↔ c • x ∈ s) :
     SemilinearCodeAut K trivdist hdist s :=
     {

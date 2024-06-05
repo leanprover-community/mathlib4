@@ -5,7 +5,7 @@ variable {α γ T :Type*} (gdist:T) (s:Set α)
 variable--? [_Code γ gdist s] =>
   [CompleteLinearOrder γ] [AddCommMonoid γ]
   [CovariantClass γ γ (fun x x_1 ↦ x + x_1) fun x x_1 ↦ x ≤ x_1] [FunLike T α (α → γ)]
-  [GPseudoMetricClass T α γ] [Set.IsDelone gdist s]
+  [GPseudoMetricClass T α γ] [Set.GMetric.IsDelone gdist s]
 
 @[reducible]
 def CodeAut [_Code γ gdist s] :Type _ := CodeEquiv gdist s gdist s
@@ -61,6 +61,5 @@ def toPerm : CodeAut gdist s →* Equiv.Perm α where
   toFun := fun f => EquivLike.toEquiv f
   map_one' := by simp_all only; rfl
   map_mul' := fun x y => by simp_all only; rfl
-
 
 end CodeAut

@@ -3,19 +3,19 @@ import Mathlib.InformationTheory.Code.Linear.Mathieu.GolayActions
 import Mathlib.GroupTheory.Coset
 import Mathlib.Data.Fintype.Basic
 
+def golay_code_space'.weight (x : golay_code_space') : ℕ :=
+  x.to_finset.card
+namespace GolayCode
 open Set
 open scoped Pointwise
 open BigOperators
 
 example : True := trivial
-
 -- #synth SMul (SemilinearCodeAut (ZMod 2) trivdist hdist GolayCode) (golay_code_index)
 -- #synth Fintype golay_code_index
 
-#synth AddCommGroup golay_code_space'
+-- #synth AddCommGroup golay_code_space'
 
-abbrev golay_code_space'.weight (x : golay_code_space') : ℕ :=
-  x.to_finset.card
 
 lemma weight_eq_norm (x : golay_code_space') : addGNorm hdist x = x.weight := by
   dsimp [golay_code_space'.weight,addGNorm,golay_code_space'.to_finset]
@@ -367,7 +367,7 @@ lemma coe_onesub (x : golay_code_space') : (↑(1 - x) : Set golay_code_index) =
   rw [mem_coe_iff (1 - x) v]
   simp only [Pi.sub_apply, Pi.one_apply, CharTwo.sub_eq_add, add_right_eq_self, mem_compl_iff,
     SetLike.mem_coe]
-  rw [x.mem_iff]
+  rw [golay_code_space'.mem_iff]
   generalize x v = z
   revert z
   decide
@@ -523,6 +523,7 @@ lemma col_weight_ne_zero_of_nzero {x : golay_code_space'} {i:Fin 6}
     (hnzero : to_hexacode' x i ≠ 0) : (x * col i).weight ≠ 0 := by
   contrapose! hnzero
   rw [to_hexacode_eq_at_col]
+  dsimp [golay_code_space'.weight] at hnzero
   simp only [Finset.card_eq_zero] at hnzero
   have : x * col i = 0 := by
     ext ⟨j,y⟩
@@ -750,6 +751,7 @@ lemma eight_le_weight_gc_of_even_of_hc_zero {x : golay_code_space'} (hx : x ∈ 
     ext ⟨i,c⟩
     simp only [Pi.zero_apply]
     obtain hz' := mul_col_weight_eq_zero_of_even_of_w_zero_of_hc_zero ?_ (hnzero i) ?_
+    dsimp [golay_code_space'.weight] at hz'
     simp only [Finset.card_eq_zero] at hz'
     rw [Finset.eq_empty_iff_forall_not_mem] at hz'
     dsimp [golay_code_space'.to_finset, col] at hz'
@@ -769,7 +771,7 @@ lemma eight_le_weight_gc_of_even_of_hc_zero {x : golay_code_space'} (hx : x ∈ 
   omega
 
 
-#check to_hexacode_binary_inv
+-- #check to_hexacode_binary_inv
 
 lemma eight_le_weight_of_ne_zero {x:golay_code_space'} (hx : x ∈ GolayCode) (hnzero : x ≠ 0): 8 ≤ x.weight  := by
   have : 4 ∣ x.weight := by exact four_dvd_weight x hx

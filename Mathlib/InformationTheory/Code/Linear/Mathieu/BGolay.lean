@@ -415,7 +415,7 @@ noncomputable def GolayCode.lift_hexacode_aut' (φ: SemilinearCodeAut F4 trivdis
     . exact aut_smul_map_property1 φ (DomMulAct.mk φ⁻¹ • y) hy₁
     . exact aut_smul_map_property2 φ (DomMulAct.mk φ⁻¹ • y) hy₂}⟩
 
-#check LinearCodeAut (ZMod 2) trivdist hdist GolayCode
+-- #check LinearCodeAut (ZMod 2) trivdist hdist GolayCode
 
 -- #synth Add (LinearCodeAut (ZMod 2) trivdist hdist GolayCode)
 

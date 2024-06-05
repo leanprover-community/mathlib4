@@ -33,7 +33,7 @@ lemma dist_eq [Group α] (gdist:T) [GNorm α γ gdist] :
   intro x y
   rw [gnorm]
   nth_rw 2 [← gdist_absorb_mul gdist y]
-  simp only [one_mul, div_mul_cancel']
+  simp only [one_mul, div_mul_cancel]
 
 end group
 end multiplicative

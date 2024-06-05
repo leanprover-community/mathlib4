@@ -2520,7 +2520,7 @@ import Mathlib.GroupTheory.Sylow
 import Mathlib.GroupTheory.Torsion
 import Mathlib.GroupTheory.Transfer
 import Mathlib.InformationTheory.Hamming
-import Mathlib.InformationTheory.Code.Linear.Mathieu.GolayActions
+import Mathlib.InformationTheory.Code.Linear.Mathieu.Hexads_two
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Align
 import Mathlib.Init.Classes.Order

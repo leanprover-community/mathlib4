@@ -24,7 +24,7 @@ variable--? {s : Submodule K M} =>
   [Module K M] {s : Submodule K M}
 
 variable--? [_LinearCode γ K gdistₖ gdistₘ sₘ] =>
-  [Set.IsDelone gdistₘ ↑s] [Nontrivial γ]
+  [Set.GMetric.IsDelone gdistₘ ↑s] [Nontrivial γ]
   [PosMulMono γ] [MulPosMono γ] [ZeroLEOneClass γ] [StrictModuleGNorm K K gdistₖ gdistₖ]
   [StrictModuleGNorm K M gdistₖ gdistₘ]
 
@@ -266,8 +266,33 @@ lemma mk_apply' (σ : RingAut K) (e :
     SemilinearCodeEquiv σ gdistₖ gdistₘ s gdistₘ s) (m:M):
   (⟨σ,e⟩ : SemilinearCodeAut K gdistₖ gdistₘ s).snd m = ⇑e m := rfl
 
-end SemilinearCodeAut
 
+protected lemma map_dist (f : SemilinearCodeAut K gdistₖ gdistₘ s) (a b: M) :
+    gdistₘ (f a) (f b) = gdistₘ a b := by
+  exact (f.snd.map_dist a b).symm
+
+protected lemma map_add (f : SemilinearCodeAut K gdistₖ gdistₘ s) (a b : M) :
+    f (a + b) = f a + f b := (f.snd.map_add a b)
+
+protected lemma map_zero (f : SemilinearCodeAut K gdistₖ gdistₘ s) :
+  f 0 = 0 := f.snd.map_zero
+
+protected lemma map_smulₛₗ (f : SemilinearCodeAut K gdistₖ gdistₘ s) (k:K) (m : M) :
+    f (k • m) = f.fst k • f m := f.snd.map_smul' k m
+
+protected lemma map_addGNorm (f : SemilinearCodeAut K gdistₖ gdistₘ s) (a: M) :
+    addGNorm gdistₘ (f a) = addGNorm gdistₘ a := by
+  dsimp [addGNorm]
+  nth_rw 1 [← map_zero f.snd]
+  exact f.map_dist a 0
+
+protected lemma map_code (f : SemilinearCodeAut K gdistₖ gdistₘ s) {a : M} (ha : a ∈ s):
+  f a ∈ s := f.snd.map_code a ha
+
+protected lemma invMap_code (f : SemilinearCodeAut K gdistₖ gdistₘ s) {a : M} (ha : f a ∈ s) :
+  a ∈ s := f.snd.invMap_code a ha
+
+end SemilinearCodeAut
 namespace LinearCodeAut
 
 

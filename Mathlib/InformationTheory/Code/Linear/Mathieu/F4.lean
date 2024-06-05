@@ -250,7 +250,7 @@ lemma neg_eq_self (x:F4) : -x = x := by
   obtain h|h|h|h := x.cases <;> rw [h] <;> rfl
 
 @[simp]
-lemma add_self (x : F4) : x + x = 0 := by
+protected lemma add_self (x : F4) : x + x = 0 := by
   obtain h|h|h|h := x.cases <;> rw [h] <;> rfl
 
 lemma omega_ne_zero : ω ≠ 0 := by

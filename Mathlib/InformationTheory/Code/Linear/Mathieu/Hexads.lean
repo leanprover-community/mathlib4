@@ -2,6 +2,8 @@ import Mathlib.InformationTheory.Code.Linear.Mathieu.GolayWeight
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Combinatorics.Pigeonhole
 
+
+namespace GolayCode
 open Set
 open scoped Pointwise
 open BigOperators
@@ -52,9 +54,9 @@ lemma weight_le_four_unique_of_weight_le_three {x y: golay_code_space'} (hx : x.
     omega
   have : (x + y).weight = 0 ∨ 8 ≤ (x + y).weight := by exact gc_weight_eq_zero_or_ge_8 hsum
   have hzero : (x + y).weight = 0 := by omega
+  dsimp [golay_code_space'.weight,golay_code_space'.to_finset] at hzero
   simp only [Finset.card_eq_zero] at hzero
   ext c
-  dsimp [golay_code_space'.to_finset] at hzero
   rw [Finset.eq_empty_iff_forall_not_mem] at hzero
   simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hzero
   specialize hzero c
@@ -321,7 +323,7 @@ lemma bar_map_weight (x : golay_code_space')
 
 -- lemma reverse_image_max_six (y : Hexad_space) (hy : minrep_weight y = 4):
 --   Finset.filter (fun x : golay_code_space' => x.weight = 4) Finset.univ
-#eval 6 * 23 * 11 * 7
+-- #eval 6 * 23 * 11 * 7
 
 
 -- set_option diagnostics true
@@ -358,8 +360,8 @@ lemma card_fiber_eq_sum (y:Hexad_space) :
     dsimp [bar] at hs'
     rw [Eq.comm] at hs'
     suffices (x * y').weight = 0 by
+      dsimp only [golay_code_space'.weight,golay_code_space'.to_finset] at this
       simp only [Finset.card_eq_zero] at this
-      dsimp only [golay_code_space'.to_finset] at this
       rw [Finset.eq_empty_iff_forall_not_mem] at this
       simp only [Finset.mem_filter, Finset.mem_univ, true_and, not_and] at this
       ext c
@@ -417,39 +419,3 @@ lemma weight_four_finset_card_eq_sum :
     weight_four_finset.card = ∑ y ∈ minrep_four_finset, (Finset.filter (fun x => bar x = y) weight_four_finset).card := by
   letI := fun a b : Hexad_space => Classical.propDecidable (a = b)
   rw [Finset.card_eq_sum_card_fiberwise bar_map_weight]
-
-lemma card_fiber_eq_six :
-    letI := fun a b : Hexad_space => Classical.propDecidable (a = b)
-    ∀ y ∈ minrep_four_finset, (Finset.filter (fun x => bar x = y) weight_four_finset).card = 6 := by
-  rw [← Finset.sum_eq_sum_iff_of_le]
-  . rw [← weight_four_finset_card_eq_sum]
-    rw [Finset.sum_const]
-    have := card_minrep_four_le
-    -- simp only [smul_eq_mul] -- dit wegcommenten fixt de error
-    sorry
-  . intro i _
-    exact card_fiber_le_6 i
-
-
-
-
-/-
-i have : minrep_four_finset.card ≤ 1771
-
-i have : weight_four_finset.card = 10626 = 6 * 1771.
-i have : fibers of `bar` have weight at most six.
-
-i can prove : the cardinality of weight_four_finset.card is equal to the sum of cardinalities of fibers of `bar`
-
-therefore, i must have that fibers have weight exact: by using `Finset.sum_eq_sum_iff_of_le`
-
-
-
-i would like: 1771 ≤ Minrep_four_finset.card
-to do this: show that  weight_four_finset.card ≤ 6 * minrep_four_finset.card
-for this, it suffices to show that for every fiber of `bar` has at least 6 elements?
-
-use something? weight_four_finset.card
-
--/
--- #check sum_le_sum_fiberwise_of_sum_fiber_nonpos

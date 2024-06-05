@@ -3,7 +3,7 @@ import Mathlib.Topology.GMetric.IsometryEquiv
 import Mathlib.Algebra.Module.Equiv
 
 open GIsometry
-open Set Code
+open Set Code GMetric
 
 variable {T:Type*}
 variable {α₁ γ :Type*} [CompleteLinearOrder γ] [AddCommMonoid γ]
