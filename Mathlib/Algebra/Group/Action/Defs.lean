@@ -230,7 +230,7 @@ lemma Function.Surjective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [SMu
   smul_comm c₁ c₂ := hf.forall.2 fun x ↦ by simp only [← h₁, ← h₂, smul_comm c₁ c₂ x]
 
 @[to_additive]
-instance (priority := high) smulCommClass_self (M α : Type*) [CommMonoid M] [MulAction M α] :
+instance (priority := 2000) smulCommClass_self (M α : Type*) [CommMonoid M] [MulAction M α] :
     SMulCommClass M M α where
   smul_comm a a' b := by rw [← mul_smul, mul_comm, mul_smul]
 #align smul_comm_class_self smulCommClass_self

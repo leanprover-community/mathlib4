@@ -22,7 +22,7 @@ open scoped Int
 variable {α : Type*}
 
 /-- Note that `AddMonoid.nat_smulCommClass` requires stronger assumptions on `α`. -/
-instance (priority := high) NonUnitalNonAssocSemiring.nat_smulCommClass
+instance (priority := 2000) NonUnitalNonAssocSemiring.nat_smulCommClass
     [NonUnitalNonAssocSemiring α] : SMulCommClass ℕ α α where
   smul_comm n x y := by
     induction' n with n ih
@@ -40,7 +40,7 @@ instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring 
 #align non_unital_non_assoc_semiring.nat_is_scalar_tower NonUnitalNonAssocSemiring.nat_isScalarTower
 
 /-- Note that `AddMonoid.int_smulCommClass` requires stronger assumptions on `α`. -/
-instance (priority := high) NonUnitalNonAssocRing.int_smulCommClass
+instance (priority := 2000) NonUnitalNonAssocRing.int_smulCommClass
     [NonUnitalNonAssocRing α] : SMulCommClass ℤ α α where
   smul_comm n x y :=
     match n with
