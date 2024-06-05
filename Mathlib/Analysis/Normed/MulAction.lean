@@ -90,7 +90,7 @@ variable [MulActionWithZero α β] [BoundedSMul α β]
 theorem norm_smul (r : α) (x : β) : ‖r • x‖ = ‖r‖ * ‖x‖ := by
   by_cases h : r = 0
   · simp [h, zero_smul α x]
-  · refine' le_antisymm (norm_smul_le r x) _
+  · refine le_antisymm (norm_smul_le r x) ?_
     calc
       ‖r‖ * ‖x‖ = ‖r‖ * ‖r⁻¹ • r • x‖ := by rw [inv_smul_smul₀ h]
       _ ≤ ‖r‖ * (‖r⁻¹‖ * ‖r • x‖) := by gcongr; apply norm_smul_le

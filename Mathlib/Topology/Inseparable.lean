@@ -68,7 +68,7 @@ theorem specializes_TFAE (x y : X) :
   tfae_have 5 ↔ 7
   · rw [mem_closure_iff_clusterPt, principal_singleton]
   tfae_have 5 → 1
-  · refine' fun h => (nhds_basis_opens _).ge_iff.2 _
+  · refine fun h => (nhds_basis_opens _).ge_iff.2 ?_
     rintro s ⟨hy, ho⟩
     rcases mem_closure_iff.1 h s ho hy with ⟨z, hxs, rfl : z = x⟩
     exact ho.mem_nhds hxs
@@ -416,7 +416,7 @@ instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
 
 theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by
-  refine' Subset.antisymm _ (subset_preimage_image _ _)
+  refine Subset.antisymm ?_ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_open_iff hs).1 hys
 #align separation_quotient.preimage_image_mk_open SeparationQuotient.preimage_image_mk_open
@@ -426,7 +426,7 @@ theorem isOpenMap_mk : IsOpenMap (mk : X → SeparationQuotient X) := fun s hs =
 #align separation_quotient.is_open_map_mk SeparationQuotient.isOpenMap_mk
 
 theorem preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' (mk '' s) = s := by
-  refine' Subset.antisymm _ (subset_preimage_image _ _)
+  refine Subset.antisymm ?_ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_closed_iff hs).1 hys
 #align separation_quotient.preimage_image_mk_closed SeparationQuotient.preimage_image_mk_closed

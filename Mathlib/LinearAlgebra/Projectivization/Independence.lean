@@ -46,7 +46,7 @@ inductive Independent : (ι → ℙ K V) → Prop
 /-- A family of points in a projective space is independent if and only if the representative
 vectors determined by the family are linearly independent. -/
 theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivization.rep ∘ f) := by
-  refine' ⟨_, fun h => _⟩
+  refine ⟨?_, fun h => ?_⟩
   · rintro ⟨ff, hff, hh⟩
     choose a ha using fun i : ι => exists_smul_eq_mk_rep K (ff i) (hff i)
     convert hh.units_smul a
@@ -62,12 +62,12 @@ theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivizatio
 submodules which the points determine is independent in the lattice-theoretic sense. -/
 theorem independent_iff_completeLattice_independent :
     Independent f ↔ CompleteLattice.Independent fun i => (f i).submodule := by
-  refine' ⟨_, fun h => _⟩
+  refine ⟨?_, fun h => ?_⟩
   · rintro ⟨f, hf, hi⟩
     simp only [submodule_mk]
     exact (CompleteLattice.independent_iff_linearIndependent_of_ne_zero (R := K) hf).mpr hi
   · rw [independent_iff]
-    refine' h.linearIndependent (Projectivization.submodule ∘ f) (fun i => _) fun i => _
+    refine h.linearIndependent (Projectivization.submodule ∘ f) (fun i => ?_) fun i => ?_
     · simpa only [Function.comp_apply, submodule_eq] using Submodule.mem_span_singleton_self _
     · exact rep_nonzero (f i)
 #align projectivization.independent_iff_complete_lattice_independent Projectivization.independent_iff_completeLattice_independent
@@ -82,7 +82,7 @@ inductive Dependent : (ι → ℙ K V) → Prop
 /-- A family of points in a projective space is dependent if and only if their
 representatives are linearly dependent. -/
 theorem dependent_iff : Dependent f ↔ ¬LinearIndependent K (Projectivization.rep ∘ f) := by
-  refine' ⟨_, fun h => _⟩
+  refine ⟨?_, fun h => ?_⟩
   · rintro ⟨ff, hff, hh1⟩
     contrapose! hh1
     choose a ha using fun i : ι => exists_smul_eq_mk_rep K (ff i) (hff i)

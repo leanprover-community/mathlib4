@@ -35,11 +35,11 @@ These actions are available in the `Pointwise` locale.
 ## Implementation notes
 
 For an `R`-module `M`, The action of a subset of `R` acting on a submodule of `M` introduced in
-section `set_acting_on_submodules` does not have a counterpart in
-`Mathlib/GroupTheory/Submonoid/Pointwise.lean`.
+section `set_acting_on_submodules` does not have a counterpart in the file
+`Mathlib.Algebra.Group.Submonoid.Pointwise`.
 
 Other than section `set_acting_on_submodules`, most of the lemmas in this file are direct copies of
-lemmas from `Mathlib/GroupTheory/Submonoid/Pointwise.lean`.
+lemmas from the file `Mathlib.Algebra.Group.Submonoid.Pointwise`.
 -/
 
 
@@ -379,8 +379,8 @@ instance : CovariantClass (Set S) (Submodule R M) HSMul.hSMul LE.le :=
   ⟨fun _ _ _ le => set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := hr)
     (mem2 := le hm)⟩
 
--- 2024-03-31
-@[deprecated smul_mono_right] theorem set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
+@[deprecated smul_mono_right (since := "2024-03-31")]
+theorem set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
     s • p ≤ s • q :=
   smul_mono_right s le
 

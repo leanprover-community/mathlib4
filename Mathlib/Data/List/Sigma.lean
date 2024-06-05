@@ -144,7 +144,7 @@ theorem perm_nodupKeys {l₁ l₂ : List (Sigma β)} (h : l₁ ~ l₂) : NodupKe
 theorem nodupKeys_join {L : List (List (Sigma β))} :
     NodupKeys (join L) ↔ (∀ l ∈ L, NodupKeys l) ∧ Pairwise Disjoint (L.map keys) := by
   rw [nodupKeys_iff_pairwise, pairwise_join, pairwise_map]
-  refine' and_congr (forall₂_congr fun l _ => by simp [nodupKeys_iff_pairwise]) _
+  refine and_congr (forall₂_congr fun l _ => by simp [nodupKeys_iff_pairwise]) ?_
   apply iff_of_eq; congr with (l₁ l₂)
   simp [keys, disjoint_iff_ne]
 #align list.nodupkeys_join List.nodupKeys_join
@@ -323,8 +323,8 @@ theorem lookupAll_eq_dlookup (a : α) {l : List (Sigma β)} (h : l.NodupKeys) :
   exact absurd h1 (by simp)
 #align list.lookup_all_eq_lookup List.lookupAll_eq_dlookup
 
-theorem lookupAll_nodup (a : α) {l : List (Sigma β)} (h : l.NodupKeys) : (lookupAll a l).Nodup :=
-  by (rw [lookupAll_eq_dlookup a h]; apply Option.toList_nodup)
+theorem lookupAll_nodup (a : α) {l : List (Sigma β)} (h : l.NodupKeys) : (lookupAll a l).Nodup := by
+  (rw [lookupAll_eq_dlookup a h]; apply Option.toList_nodup)
 #align list.lookup_all_nodup List.lookupAll_nodup
 
 theorem perm_lookupAll (a : α) {l₁ l₂ : List (Sigma β)} (nd₁ : l₁.NodupKeys) (nd₂ : l₂.NodupKeys)
@@ -351,7 +351,7 @@ theorem kreplace_of_forall_not (a : α) (b : β a) {l : List (Sigma β)}
 
 theorem kreplace_self {a : α} {b : β a} {l : List (Sigma β)} (nd : NodupKeys l)
     (h : Sigma.mk a b ∈ l) : kreplace a b l = l := by
-  refine' (lookmap_congr _).trans (lookmap_id' (Option.guard fun (s : Sigma β) => a = s.1) _ _)
+  refine (lookmap_congr ?_).trans (lookmap_id' (Option.guard fun (s : Sigma β) => a = s.1) ?_ _)
   · rintro ⟨a', b'⟩ h'
     dsimp [Option.guard]
     split_ifs
@@ -379,7 +379,7 @@ theorem kreplace_nodupKeys (a : α) (b : β a) {l : List (Sigma β)} :
 theorem Perm.kreplace {a : α} {b : β a} {l₁ l₂ : List (Sigma β)} (nd : l₁.NodupKeys) :
     l₁ ~ l₂ → kreplace a b l₁ ~ kreplace a b l₂ :=
   perm_lookmap _ <| by
-    refine' nd.pairwise_ne.imp _
+    refine nd.pairwise_ne.imp ?_
     intro x y h z h₁ w h₂
     split_ifs at h₁ h₂ with h_2 h_1 <;> cases h₁ <;> cases h₂
     exact (h (h_2.symm.trans h_1)).elim
