@@ -185,7 +185,7 @@ theorem coe_smulc [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [Continu
   rfl
 
 theorem smulc_apply [Zero β] [TopologicalSpace γ] [SMulZeroClass γ β] [ContinuousSMul γ β]
-    {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] (f : F) (g : C_c(α, β)) (x : α):
+    {F : Type*} [FunLike F α γ] [ContinuousMapClass F α γ] (f : F) (g : C_c(α, β)) (x : α) :
     (f • g) x = f x • g x :=
   rfl
 
