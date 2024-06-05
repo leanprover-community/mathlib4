@@ -1723,7 +1723,7 @@ when the function we are summing is monotone.
 -/
 theorem sum_range_tsub [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α]
     [Sub α] [OrderedSub α]
-    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)]
+    [ContravariantClass α α (· + ·) (· ≤ ·)]
     {f : ℕ → α} (h : Monotone f) (n : ℕ) :
     ∑ i ∈ range n, (f (i + 1) - f i) = f n - f 0 := by
   apply sum_range_induction
