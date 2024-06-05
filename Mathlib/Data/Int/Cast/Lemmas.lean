@@ -133,6 +133,9 @@ lemma _root_.zsmul_eq_mul' (a : α) (n : ℤ) : n • a = a * n := by
   rw [zsmul_eq_mul, (n.cast_commute a).eq]
 #align zsmul_eq_mul' zsmul_eq_mul'
 
+lemma _root_.Odd.intCast {n : ℤ} (hn : Odd n) : Odd (n : α) :=
+  hn.map (castRingHom α)
+
 end Ring
 
 theorem cast_dvd_cast [CommRing α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
