@@ -359,7 +359,7 @@ theorem right_comm (x : A) (r : R) (y : A) :
   rw [mul_assoc, commutes, ← mul_assoc]
 #align algebra.right_comm Algebra.right_comm
 
-instance _root_.IsScalarTower.right : IsScalarTower R A A :=
+instance (priority := high) _root_.IsScalarTower.right : IsScalarTower R A A :=
   ⟨fun x y z => by rw [smul_eq_mul, smul_eq_mul, smul_def, smul_def, mul_assoc]⟩
 #align is_scalar_tower.right IsScalarTower.right
 

@@ -299,7 +299,7 @@ instance (priority := 100) instDistribSMul : DistribSMul ℚ≥0 α where
   smul_zero a := by rw [smul_def, mul_zero]
   smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
 
-instance instIsScalarTowerRight : IsScalarTower ℚ≥0 α α where
+instance (priority := high) instIsScalarTowerRight : IsScalarTower ℚ≥0 α α where
   smul_assoc a x y := by simp only [smul_def, smul_eq_mul, mul_assoc]
 
 end NNRat
@@ -312,7 +312,7 @@ instance (priority := 100) instDistribSMul : DistribSMul ℚ α where
   smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
 #align rat.distrib_smul Rat.instDistribSMul
 
-instance instIsScalarTowerRight : IsScalarTower ℚ α α where
+instance (priority := high) instIsScalarTowerRight : IsScalarTower ℚ α α where
   smul_assoc a x y := by simp only [smul_def, smul_eq_mul, mul_assoc]
 #align rat.is_scalar_tower_right Rat.instIsScalarTowerRight
 

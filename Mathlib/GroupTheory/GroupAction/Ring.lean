@@ -31,8 +31,8 @@ instance NonUnitalNonAssocSemiring.nat_smulCommClass [NonUnitalNonAssocSemiring 
 #align non_unital_non_assoc_semiring.nat_smul_comm_class NonUnitalNonAssocSemiring.nat_smulCommClass
 
 /-- Note that `AddCommMonoid.nat_isScalarTower` requires stronger assumptions on `α`. -/
-instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring α] :
-    IsScalarTower ℕ α α where
+instance (priority := high) NonUnitalNonAssocSemiring.nat_isScalarTower
+    [NonUnitalNonAssocSemiring α] : IsScalarTower ℕ α α where
   smul_assoc n x y := by
     induction' n with n ih
     · simp [zero_nsmul]
@@ -49,8 +49,8 @@ instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing α] :
 #align non_unital_non_assoc_ring.int_smul_comm_class NonUnitalNonAssocRing.int_smulCommClass
 
 /-- Note that `AddCommGroup.int_isScalarTower` requires stronger assumptions on `α`. -/
-instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing α] :
-    IsScalarTower ℤ α α where
+instance (priority := high) NonUnitalNonAssocRing.int_isScalarTower
+    [NonUnitalNonAssocRing α] : IsScalarTower ℤ α α where
   smul_assoc n x y :=
     match n with
     | (n : ℕ) => by simp_rw [natCast_zsmul, smul_assoc]
