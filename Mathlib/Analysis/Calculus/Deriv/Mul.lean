@@ -328,6 +328,8 @@ end Mul
 
 section Prod
 
+section HasDeriv
+
 variable {ι : Type*} [DecidableEq ι] {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
   {u : Finset ι} {f : ι → 𝕜 → 𝔸'} {f' : ι → 𝔸'}
 
@@ -355,6 +357,11 @@ theorem derivWithin_finset_prod (hxs : UniqueDiffWithinAt 𝕜 s x)
     derivWithin (∏ i ∈ u, f i ·) s x =
       ∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • derivWithin (f i) s x :=
   (HasDerivWithinAt.finset_prod fun i hi ↦ (hf i hi).hasDerivWithinAt).derivWithin hxs
+
+end HasDeriv
+
+variable {ι : Type*} {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
+  {u : Finset ι} {f : ι → 𝕜 → 𝔸'} {f' : ι → 𝔸'}
 
 theorem DifferentiableAt.finset_prod (hd : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
     DifferentiableAt 𝕜 (∏ i ∈ u, f i ·) x :=
