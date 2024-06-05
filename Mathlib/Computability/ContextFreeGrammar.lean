@@ -393,12 +393,11 @@ lemma LiftedContextFreeGrammar.sink_produces {G : LiftedContextFreeGrammar T}
         List.filterMap (sinkSymbol (T := T) G.sinkNT) [Symbol.nonterminal (G.liftNT r₀.input)] =
           [Symbol.nonterminal r₀.input] := by
         simp [sinkSymbol, G.sinkNT_liftNT]
-      simpa only [Symbol.sinkString, List.filterMap_append, List.filterMap_append,
-        ContextFreeRule.lift, Symbol.liftString, List.filterMap_map, List.filterMap_some,
-        correct_inverse, ← hrr₀, middle] using congr_arg (Symbol.sinkString G.sinkNT) bef
-    · simpa only [Symbol.sinkString, List.filterMap_append, List.filterMap_append,
-        ContextFreeRule.lift, Symbol.liftString, List.filterMap_map, List.filterMap_some,
-        correct_inverse, ← hrr₀] using congr_arg (Symbol.sinkString G.sinkNT) aft
+      simpa only [Symbol.sinkString, List.filterMap_append, ContextFreeRule.lift,
+        ← hrr₀, middle] using congr_arg (Symbol.sinkString G.sinkNT) bef
+    · simpa only [Symbol.sinkString, List.filterMap_append, ContextFreeRule.lift,
+        Symbol.liftString, List.filterMap_map, List.filterMap_some,
+        ← hrr₀, correct_inverse] using congr_arg (Symbol.sinkString G.sinkNT) aft
   · rw [bef] at hw₁
     rw [aft, ← hrr₀]
     simp only [GoodString, List.forall_mem_append] at hw₁ ⊢
