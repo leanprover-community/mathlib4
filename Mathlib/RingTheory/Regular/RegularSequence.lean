@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Ideal.LocalRing
 # Regular sequences and weakly regular sequences
 
 The notion of a regular sequence is fundamental in commutative algebra.
-Properties of regular sequences encode information about a singularities of a
+Properties of regular sequences encode information about singularities of a
 ring and regularity of a sequence can be tested homologically.
 However the notion of a regular sequence is only really sensible for Noetherian local rings.
 
@@ -115,20 +115,20 @@ open Function Submodule QuotSMulTop
 
 section Definitions
 
--- In theory, regularity of `rs : List α` on `M` makes sense as soon as
--- `[Monoid α]`, `[AddCommGroup M]`, and `[DistribMulAction α M]`.
--- Instead of `Ideal.ofList (rs.take i) • (⊤ : Submodule R M)` we use
--- `⨆ (j : Fin i), rs[j] • (⊤ : AddSubgroup M)`.
--- However it's not clear that this is a useful generalization.
--- If we add the assumption `[SMulCommClass α α M]` this is essentially the
--- same as focusing on the commutative ring case, passing to the monoid ring
--- `ℤ[abelianization of α]`.
+/-
+In theory, regularity of `rs : List α` on `M` makes sense as soon as
+`[Monoid α]`, `[AddCommGroup M]`, and `[DistribMulAction α M]`.
+Instead of `Ideal.ofList (rs.take i) • (⊤ : Submodule R M)` we use
+`⨆ (j : Fin i), rs[j] • (⊤ : AddSubgroup M)`.
+However it's not clear that this is a useful generalization.
+If we add the assumption `[SMulCommClass α α M]` this is essentially the same
+as focusing on the commutative ring case, by passing to the monoid ring
+`ℤ[abelianization of α]`.
+-/
 variable (M) [CommRing R] [AddCommGroup M] [Module R M]
 
 open Ideal
 
--- Should we have a default argument `(M := R)`, so that `IsWeaklyRegular rs`
--- means regular on `R` (like in standard mathematical language)?
 /-- A sequence `[r₁, …, rₙ]` is weakly regular on `M` iff `rᵢ` is regular on
 `M⧸(r₁, …, rᵢ₋₁)M` for all `1 ≤ i ≤ n`. -/
 @[mk_iff]
