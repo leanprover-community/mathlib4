@@ -10,8 +10,8 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 
 In this file, we define the typeclass for valuation extensions and prove basic facts about
 extension of valuations. Let `A` be a `R` algebra, both `R` and `A` are equipped with valued
-instance. The extension of valuation means that the pullback of valuation on `A` is equivalent
-to the valuation on `R`.
+instance. Here, extension of valuation means that the pullback of valuation on `A` is equivalent
+to the valuation on `R`. We only require equivalence, not equality of valuations here.
 
 Note that we do not require the ring map from `R` to `A` to be injective. It holds automatically
 when `R` is a division ring and `A` is nontrivial.
@@ -26,7 +26,7 @@ when `R` is a division ring and `A` is nontrivial.
 * <https://en.wikipedia.org/wiki/Valuation_(algebra)#Extension_of_valuations>
 
 ## Tags
-
+Valued, Valuation, Extension of Valuation
 
 -/
 open Valued Valuation
@@ -34,9 +34,11 @@ open Valued Valuation
 namespace Valued
 
 variable {R S : Type*} {ΓR ΓS : outParam Type*} [Ring R] [Ring S]
-  [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓS]
-  [vR : Valued R ΓR] [vS : Valued S ΓS]
-variable {F : Type*} [FunLike F R S] [RingHomClass F R S] {f : F} (hf : vR.v.IsEquiv <| vS.v.comap f)
+    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓS]
+    [vR : Valued R ΓR] [vS : Valued S ΓS]
+
+variable {F : Type*} [FunLike F R S] [RingHomClass F R S] {f : F}
+    (hf : vR.v.IsEquiv <| vS.v.comap f)
 
 theorem val_map_le_iff (x y : R) : v (f x) ≤ v (f y) ↔ v x ≤ v y :=
   (hf x y).symm
@@ -68,7 +70,8 @@ theorem val_map_eq_one_iff (x : R) : v (f x) = 1 ↔ v x = 1 := by
 end Valued
 
 /--
-The class `IsValExtension R A` states that the valuation of `A` is an extension of the valuation on `R`. More precisely, the valuation on `R` is equivlent to the comap of the valuation on `A`.
+The class `IsValExtension R A` states that the valuation of `A` is an extension of the valuation
+on `R`. More precisely, the valuation on `R` is equivlent to the comap of the valuation on `A`.
 -/
 class IsValExtension (R A : Type*) {ΓR ΓA : outParam Type*} [CommRing R] [Ring A]
   [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
@@ -81,8 +84,8 @@ namespace IsValExtension
 section CoeLemma
 
 variable {R A : Type*} {ΓR ΓA : outParam Type*} [CommRing R] [Ring A]
-  [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
-  [Algebra R A] [vR : Valued R ΓR] [vA : Valued A ΓA] [IsValExtension R A]
+    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
+    [Algebra R A] [vR : Valued R ΓR] [vA : Valued A ΓA] [IsValExtension R A]
 
 @[simp]
 theorem val_map_le_iff (x y : R) : v (algebraMap R A x) ≤ v (algebraMap R A y) ↔ v x ≤ v y :=
@@ -118,8 +121,9 @@ end CoeLemma
 section mk'
 
 def ofIntegerComap {R A : Type*} {ΓR ΓA : outParam Type*} [Field R] [Ring A]
-  [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
-  [Algebra R A] [vR : Valued R ΓR] [vA : Valued A ΓA] [IsValExtension R A] (h : vA.v.integer.comap (algebraMap R A) = vR.v.integer) : IsValExtension R A where
+    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
+    [Algebra R A] [vR : Valued R ΓR] [vA : Valued A ΓA] [IsValExtension R A]
+    (h : vA.v.integer.comap (algebraMap R A) = vR.v.integer) : IsValExtension R A where
   val_isEquiv_comap := by
     rw [Valuation.isEquiv_iff_val_le_one]
     intro x
@@ -128,11 +132,12 @@ def ofIntegerComap {R A : Type*} {ΓR ΓA : outParam Type*} [Field R] [Ring A]
     rfl
 
 def ofValuationSubringComap {R A : Type*} {ΓR ΓA : outParam Type*} [Field R] [Field A]
-  [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
-  [Algebra R A] [vR : Valued R ΓR] [vA : Valued A ΓA] [IsValExtension R A] (h : 𝒪[A].comap (algebraMap R A) = 𝒪[R]) : IsValExtension R A := by
-    apply ofIntegerComap
-    rw [show vR.v.integer = 𝒪[R].toSubring by rfl, ← h]
-    rfl
+    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
+    [Algebra R A] [vR : Valued R ΓR] [vA : Valued A ΓA] [IsValExtension R A]
+    (h : 𝒪[A].comap (algebraMap R A) = 𝒪[R]) : IsValExtension R A := by
+  apply ofIntegerComap
+  rw [show vR.v.integer = 𝒪[R].toSubring by rfl, ← h]
+  rfl
 
 end mk'
 
@@ -141,8 +146,8 @@ section lift
 section Integer
 
 variable {R A : Type*} {ΓR ΓA : outParam Type*} [CommRing R] [Ring A]
-  [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
-  [Algebra R A] [vR : Valued R ΓR] [vA : Valued A ΓA] [IsValExtension R A]
+    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
+    [Algebra R A] [vR : Valued R ΓR] [vA : Valued A ΓA] [IsValExtension R A]
 
 instance integerAlgebra : Algebra vR.v.integer vA.v.integer where
     smul r a := {
@@ -183,12 +188,11 @@ instance integerAlgebra : Algebra vR.v.integer vA.v.integer where
       exact Algebra.smul_def _ _
 
 @[simp, norm_cast]
-theorem coe_algebraMap_integer (r : vR.v.integer) : ((algebraMap vR.v.integer vA.v.integer) r : A) = (algebraMap R A) (r : R) := rfl
+theorem coe_algebraMap_integer (r : vR.v.integer) :
+    ((algebraMap vR.v.integer vA.v.integer) r : A) = (algebraMap R A) (r : R) := by
+  rfl
 
-variable (R A) in
-theorem subtype_comp_algebraMap_eq_algebraMap : vA.v.integer.subtype ∘ (algebraMap vR.v.integer vA.v.integer) = algebraMap vR.v.integer A := rfl
-
-instance instIsScalarTowerToValuationSubringToField : IsScalarTower vR.v.integer vA.v.integer A where
+instance instIsScalarTowerInteger : IsScalarTower vR.v.integer vA.v.integer A where
   smul_assoc x y z := by
     simp only [Algebra.smul_def]
     exact mul_assoc _ _ _
@@ -198,11 +202,13 @@ end Integer
 section ValuationSubring
 
 variable {R A : Type*} {ΓR ΓA : outParam Type*} [Field R] [Field A]
-  [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
-  [Algebra R A] [vR : Valued R ΓR] [vA : Valued A ΓA] [IsValExtension R A]
+    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
+    [Algebra R A] [vR : Valued R ΓR] [vA : Valued A ΓA] [IsValExtension R A]
 
 @[simp, norm_cast]
-theorem coe_algebraMap_valuationSubring (r : 𝒪[R]) : ((algebraMap 𝒪[R] 𝒪[A]) r : A) = (algebraMap R A) (r : R) := rfl
+theorem coe_algebraMap_valuationSubring (r : 𝒪[R]) :
+    ((algebraMap 𝒪[R] 𝒪[A]) r : A) = (algebraMap R A) (r : R) := by
+  rfl
 
 instance : IsLocalRingHom (algebraMap 𝒪[R] 𝒪[A]) where
     map_nonunit r hr := by

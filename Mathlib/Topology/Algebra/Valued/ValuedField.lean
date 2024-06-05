@@ -367,23 +367,29 @@ section Notation
 
 namespace Valued
 
-/-- A `Valued` version of `Valuation.valuationSubring`, enabling the notation `𝒪[K]` for valued field `K` -/
+/-- A `Valued` version of `Valuation.valuationSubring`, enabling the notation `𝒪[K]` for the
+valuation subring of a valued field `K`. -/
 @[reducible]
-def valuationSubring (K : Type*) [Field K] {Γ : outParam Type*} [LinearOrderedCommGroupWithZero Γ] [Valued K Γ] : ValuationSubring K := (Valued.v).valuationSubring
+def valuationSubring (K : Type*) [Field K] {Γ : outParam Type*} [LinearOrderedCommGroupWithZero Γ]
+    [Valued K Γ] : ValuationSubring K := (Valued.v).valuationSubring
 
 @[inherit_doc]
 scoped notation "𝒪[" K "]" => Valued.valuationSubring K
 
-/-- An abbrevation for `LocalRing.maximalIdeal 𝒪[K]` of a valued field `K`, enabling the notation `𝓂[K]` -/
+/-- An abbrevation for `LocalRing.maximalIdeal 𝒪[K]` of a valued field `K`, enabling the notation
+`𝓂[K]` for the maximal ideal in `𝒪[K]` of a valued field `K`. -/
 @[reducible]
-def maximalIdeal (K : Type*) [Field K] {Γ : outParam Type*} [LinearOrderedCommGroupWithZero Γ] [Valued K Γ] : Ideal 𝒪[K] := LocalRing.maximalIdeal 𝒪[K]
+def maximalIdeal (K : Type*) [Field K] {Γ : outParam Type*} [LinearOrderedCommGroupWithZero Γ]
+    [Valued K Γ] : Ideal 𝒪[K] := LocalRing.maximalIdeal 𝒪[K]
 
 @[inherit_doc]
 scoped notation "𝓂[" K "]" => maximalIdeal K
 
-/-- An abbrevation for `LocalRing.ResidueField 𝒪[K]` of a `Valued` instance, enabling the notation `𝓀[K]` -/
+/-- An abbrevation for `LocalRing.ResidueField 𝒪[K]` of a `Valued` instance, enabling the notation
+`𝓀[K]` for the residue field of a valued field `K`. -/
 @[reducible]
-def ResidueField (K : Type*) [Field K] {Γ : outParam Type*} [LinearOrderedCommGroupWithZero Γ] [Valued K Γ] := LocalRing.ResidueField (𝒪[K])
+def ResidueField (K : Type*) [Field K] {Γ : outParam Type*}
+    [LinearOrderedCommGroupWithZero Γ] [Valued K Γ] := LocalRing.ResidueField (𝒪[K])
 
 @[inherit_doc]
 scoped notation:max "𝓀[" K:max "]" => ResidueField K
