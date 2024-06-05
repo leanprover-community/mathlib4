@@ -572,8 +572,8 @@ instance ContinuousFunctionalCalculus.toNonUnital : NonUnitalContinuousFunctiona
       have := uniformSpace_eq_inf_precomp_of_cover (β := R) f i (map_continuous f).isProperMap
         (map_continuous i).isProperMap <| by
           simp only [← Subtype.val_injective.image_injective.eq_iff, image_union, image_singleton,
-            ← range_comp, image_univ, f, ContinuousMap.coe_mk, val_comp_inclusion, Subtype.range_coe,
-            quasispectrum.coe_zero, quasispectrum_eq_spectrum_union_zero, i]
+            ← range_comp, image_univ, f, ContinuousMap.coe_mk, val_comp_inclusion,
+            Subtype.range_coe, quasispectrum.coe_zero, quasispectrum_eq_spectrum_union_zero, i]
       simp_rw [ContinuousMapZero.instUniformSpace, this, uniformity_comap,
         @inf_uniformity _ (.comap _ _) (.comap _ _), uniformity_comap, Filter.comap_inf,
         Filter.comap_comap]
