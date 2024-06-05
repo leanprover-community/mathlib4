@@ -88,7 +88,7 @@ theorem refine_apply {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P T)
 def pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (f : Y ⟶ X) :
     Meq P ((J.pullback f).obj S) :=
   ⟨fun I => x ⟨_, I.f ≫ f, I.hf⟩, fun I =>
-    x.condition (GrothendieckTopology.Cover.Relation.mk' (I.r.base))⟩
+    x.condition (GrothendieckTopology.Cover.Relation.mk' I.r.base)⟩
 #align category_theory.meq.pullback CategoryTheory.Meq.pullback
 
 @[simp]
