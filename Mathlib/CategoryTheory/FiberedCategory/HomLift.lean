@@ -241,9 +241,16 @@ end
 
 /-- If `φ : a ⟶ b` is an isomorphism, and lifts `𝟙 S` for some `S : 𝒮`, then `φ⁻¹` also
 lifts `𝟙 S` -/
-instance lift_id_inv (S : 𝒮) {a b : 𝒳} (φ : a ⟶ b) [IsIso φ] [p.IsHomLift (𝟙 S) φ] :
+instance lift_id_inv (S : 𝒮) {a b : 𝒳} (φ : a ≅ b) [p.IsHomLift (𝟙 S) φ.hom] :
+    p.IsHomLift (𝟙 S) φ.inv :=
+  have : p.IsHomLift (asIso (𝟙 S)).hom φ.hom := by simp_all
+  (IsIso.inv_id (X := S)) ▸ (IsHomLift.inv_lift_inv p (asIso (𝟙 S)) φ)
+
+/-- If `φ : a ⟶ b` is an isomorphism, and lifts `𝟙 S` for some `S : 𝒮`, then `φ⁻¹` also
+lifts `𝟙 S` -/
+instance lift_id_inv_isIso (S : 𝒮) {a b : 𝒳} (φ : a ⟶ b) [IsIso φ] [p.IsHomLift (𝟙 S) φ] :
     p.IsHomLift (𝟙 S) (inv φ) :=
-  (IsIso.inv_id (X := S)) ▸ (IsHomLift.inv p _ φ)
+ (IsIso.inv_id (X := S)) ▸ (IsHomLift.inv p _ φ)
 
 end IsHomLift
 
