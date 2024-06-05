@@ -134,6 +134,12 @@ lemma isLeftAdjoint : F.IsLeftAdjoint := ⟨_, ⟨adj⟩⟩
 
 lemma isRightAdjoint : G.IsRightAdjoint := ⟨_, ⟨adj⟩⟩
 
+instance (R : D ⥤ C) [R.IsRightAdjoint] : R.leftAdjoint.IsLeftAdjoint :=
+  (ofIsRightAdjoint R).isLeftAdjoint
+
+instance (L : C ⥤ D) [L.IsLeftAdjoint] : L.rightAdjoint.IsRightAdjoint :=
+  (ofIsLeftAdjoint L).isRightAdjoint
+
 variable {X' X : C} {Y Y' : D}
 
 theorem homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by simp
