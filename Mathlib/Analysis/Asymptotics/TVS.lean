@@ -16,7 +16,7 @@ def IsLittleOTVS (𝕜 : Type*) {α E F : Type*} [NNNorm 𝕜] [TopologicalSpace
   ∀ U ∈ 𝓝 (0 : E), ∃ V ∈ 𝓝 (0 : F), ∀ ε ≠ (0 : ℝ≥0),
     ∀ᶠ x in l, egauge 𝕜 U (f x) ≤ ε * egauge 𝕜 V (g x)
 
-variable {α 𝕜 E F : Type*} [NormedDivisionRing 𝕜]
+variable {α 𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
   [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
 
@@ -31,10 +31,11 @@ theorem Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Type*} {pE : ιE → Prop} {
   · refine fun s t hsub h ε hε ↦ (h ε hε).mono fun x hx ↦ hx.trans ?_
     gcongr
 
-lemma IsLittleOTVS.tendsto_inv_smul {f : α → 𝕜} {g : α → E} {l : Filter α}
+lemma IsLittleOTVS.tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g : α → E} {l : Filter α}
     (h : IsLittleOTVS 𝕜 g f l) : Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
   rw [(basis_sets _).isLittleOTVS_iff nhds_basis_ball] at h
-  rw [(nhds_basis_balanced 𝕜 _).tendsto_right_iff]
+  have := nhds_basis_balanced 𝕜 E
+  rw [(nhds_basis_balanced 𝕜 E).tendsto_right_iff]
   rintro U ⟨hU, hUB⟩
   rcases h U hU with ⟨ε, hε₀, hε⟩
   lift ε to ℝ≥0 using hε₀.le; norm_cast at hε₀
@@ -42,7 +43,7 @@ lemma IsLittleOTVS.tendsto_inv_smul {f : α → 𝕜} {g : α → E} {l : Filter
   filter_upwards [hε (ε / 2 / ‖c‖₊) (ne_of_gt <| div_pos (half_pos hε₀) (one_pos.trans hc))]
     with x hx
   refine mem_of_egauge_lt_one hUB ?_
-  rw [id, egauge_smul_right (fun _ ↦ mem_of_mem_nhds hU), nnnorm_inv]
+  rw [id, egauge_smul_right (fun _ ↦ Filter.nonempty_of_mem hU), nnnorm_inv]
   calc
     ↑‖f x‖₊⁻¹ * egauge 𝕜 U (g x)
       ≤ (↑‖f x‖₊)⁻¹ * (↑(ε / 2 / ‖c‖₊) * egauge 𝕜 (ball 0 ε) (f x)) :=
@@ -56,7 +57,7 @@ lemma IsLittleOTVS.tendsto_inv_smul {f : α → 𝕜} {g : α → E} {l : Filter
     _ ≤ 1 * 1 * 1 * (1 / 2) := by gcongr <;> apply ENNReal.div_self_le_one
     _ < 1 := by norm_num
 
-lemma isLittleOTVS_iff_tendsto_inv_smul {f : α → 𝕜} {g : α → E} {l : Filter α}
+lemma isLittleOTVS_iff_tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g : α → E} {l : Filter α}
     (h₀ : ∀ᶠ x in l, f x = 0 → g x = 0) :
     IsLittleOTVS 𝕜 g f l ↔ Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
   refine ⟨IsLittleOTVS.tendsto_inv_smul, fun h U hU ↦ ?_⟩
@@ -66,7 +67,7 @@ lemma isLittleOTVS_iff_tendsto_inv_smul {f : α → 𝕜} {g : α → E} {l : Fi
   filter_upwards [h₀, h <| (set_smul_mem_nhds_zero_iff hc₀).2 hU]
     with x hx₀ (hx : (f x)⁻¹ • g x ∈ c • U)
   rcases eq_or_ne (f x) 0 with hf₀ | hf₀
-  · simp [hx₀ hf₀, mem_of_mem_nhds hU]
+  · simp [hx₀ hf₀, Filter.nonempty_of_mem hU]
   · rw [mem_smul_set_iff_inv_smul_mem₀ hc₀, smul_smul] at hx
     refine (egauge_le_of_smul_mem_of_ne hx (by simp [*])).trans ?_
     simp_rw [nnnorm_mul, nnnorm_inv, mul_inv, inv_inv, ENNReal.coe_mul]
