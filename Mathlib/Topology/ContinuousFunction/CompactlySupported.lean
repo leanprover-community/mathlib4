@@ -18,7 +18,7 @@ class `CompactlySupportedContinuousMapClass`, and prove basic properties.
 This file contains various instances such as `Add`, `Mul`, `SMul F C_c(α, β)` when `F` is a class of
 continuous functions.
 When `β` has more structures, `C_c(α, β)` inherits such structures as `AddCommGroup`,
-`NonUnitalRing`  and `StarRing`.
+`NonUnitalRing` and `StarRing`.
 
 When the domain `α` is compact, `ContinuousMap.liftCompactlySupported` gives the identification
 `C(α, β) ≃ C_c(α, β)`.
