@@ -347,7 +347,8 @@ variable [LinearOrderedCommGroup α] {a b : α}
   obtain ha | ha := le_or_lt 1 a <;> obtain hb | hb := le_or_lt 1 b
   · simp [ha, hb, mabs_of_one_le, one_le_mul ha hb]
   · exact (lt_irrefl (1 : α) <| ha.trans_lt <| hab.trans_lt hb).elim
-  any_goals simp [ha.le, hb.le, mabs_of_le_one, mul_le_one', mul_comm]
+  swap
+  · simp [ha.le, hb.le, mabs_of_le_one, mul_le_one', mul_comm]
   have : (|a * b|ₘ = a⁻¹ * b ↔ b ≤ 1) ↔
     (|a * b|ₘ = |a|ₘ * |b|ₘ ↔ 1 ≤ a ∧ 1 ≤ b ∨ a ≤ 1 ∧ b ≤ 1) := by
     simp [ha.le, ha.not_le, hb, mabs_of_le_one, mabs_of_one_le]
@@ -474,7 +475,7 @@ theorem abs_sub_lt_of_nonneg_of_lt {a b n : α} (a_nonneg : 0 ≤ a) (a_lt_n : a
   exact ⟨lt_add_of_lt_of_nonneg a_lt_n b_nonneg, lt_add_of_lt_of_nonneg b_lt_n a_nonneg⟩
 
 theorem abs_eq (hb : 0 ≤ b) : |a| = b ↔ a = b ∨ a = -b := by
-  refine' ⟨eq_or_eq_neg_of_abs_eq, _⟩
+  refine ⟨eq_or_eq_neg_of_abs_eq, ?_⟩
   rintro (rfl | rfl) <;> simp only [abs_neg, abs_of_nonneg hb]
 #align abs_eq abs_eq
 

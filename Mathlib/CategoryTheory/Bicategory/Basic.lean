@@ -70,8 +70,8 @@ class Bicategory (B : Type u) extends CategoryStruct.{v} B where
   -- right unitor:
   rightUnitor {a b : B} (f : a ⟶ b) : f ≫ 𝟙 b ≅ f
   -- axioms for left whiskering:
-  whiskerLeft_id : ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), whiskerLeft f (𝟙 g) = 𝟙 (f ≫ g) :=
-    by aesop_cat
+  whiskerLeft_id : ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), whiskerLeft f (𝟙 g) = 𝟙 (f ≫ g) := by
+    aesop_cat
   whiskerLeft_comp :
     ∀ {a b c} (f : a ⟶ b) {g h i : b ⟶ c} (η : g ⟶ h) (θ : h ⟶ i),
       whiskerLeft f (η ≫ θ) = whiskerLeft f η ≫ whiskerLeft f θ := by

@@ -3,9 +3,9 @@ Copyright (c) 2020 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Order.Basic
 import Mathlib.Init.Data.Bool.Lemmas
-import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Tactic.Cases
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Properties of `List.reduceOption`
@@ -67,7 +67,7 @@ theorem reduceOption_length_eq_iff {l : List (Option α)} :
       intro H
       have := reduceOption_length_le tl
       rw [H] at this
-      exact absurd (Nat.lt_succ_self _) (not_lt_of_le this)
+      exact absurd (Nat.lt_succ_self _) (Nat.not_lt_of_le this)
     · simp only [length, mem_cons, forall_eq_or_imp, Option.isSome_some, ← hl, reduceOption,
         true_and]
       omega
@@ -75,7 +75,8 @@ theorem reduceOption_length_eq_iff {l : List (Option α)} :
 
 theorem reduceOption_length_lt_iff {l : List (Option α)} :
     l.reduceOption.length < l.length ↔ none ∈ l := by
-  rw [(reduceOption_length_le l).lt_iff_ne, Ne, reduceOption_length_eq_iff]
+  rw [Nat.lt_iff_le_and_ne, and_iff_right (reduceOption_length_le l), Ne,
+    reduceOption_length_eq_iff]
   induction l <;> simp [*]
   rw [@eq_comm _ none, ← Option.not_isSome_iff_eq_none, Decidable.imp_iff_not_or]
 #align list.reduce_option_length_lt_iff List.reduceOption_length_lt_iff

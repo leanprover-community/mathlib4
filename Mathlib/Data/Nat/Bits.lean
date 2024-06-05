@@ -122,7 +122,7 @@ lemma bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
   | 0 => rfl
   | succ n => by
     simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
-    refine' Eq.trans _ (congr_arg succ (bodd_add_div2 n))
+    refine Eq.trans ?_ (congr_arg succ (bodd_add_div2 n))
     cases bodd n
     · simp
     · simp; omega
@@ -266,9 +266,6 @@ lemma shiftLeft'_add (b m n) : ∀ k, shiftLeft' b m (n + k) = shiftLeft' b (shi
   | 0 => rfl
   | k + 1 => congr_arg (bit b) (shiftLeft'_add b m n k)
 #align nat.shiftl'_add Nat.shiftLeft'_add
-
-lemma shiftLeft_add (m n : Nat) : ∀ k, m <<< (n + k) = (m <<< n) <<< k := by
-  intro k; simp only [← shiftLeft'_false, shiftLeft'_add]
 
 lemma shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (shiftLeft' b m n) >>> k
   | n, 0, _ => rfl

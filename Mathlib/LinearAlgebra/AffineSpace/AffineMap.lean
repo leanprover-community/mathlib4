@@ -844,7 +844,7 @@ note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'`-/
 @[ext]
 theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (LinearMap.single i).toAffineMap =
     g.comp (LinearMap.single i).toAffineMap) : f = g := by
-  refine' pi_ext_nonempty fun i x => _
+  refine pi_ext_nonempty fun i x => ?_
   convert AffineMap.congr_fun (h i) x
 
 end Ext
