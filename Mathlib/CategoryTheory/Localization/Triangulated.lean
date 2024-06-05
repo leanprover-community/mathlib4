@@ -188,7 +188,7 @@ def pretriangulated : Pretriangulated D where
   rotate_distinguished_triangle := L.rotate_essImageDistTriang
   complete_distinguished_triangle_morphism := complete_distinguished_triangle_morphism L W
 
-lemma isTriangulated_functor :
+instance isTriangulated_functor :
     letI : Pretriangulated D := pretriangulated L W; L.IsTriangulated :=
     letI : Pretriangulated D := pretriangulated L W; ⟨fun T hT => ⟨T, Iso.refl _, hT⟩⟩
 
