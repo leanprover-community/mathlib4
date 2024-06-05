@@ -38,11 +38,9 @@ instance (C : Type u) [Category.{v} C] [ChosenCartesianClosed C] : CartesianClos
       adj := adj X }
   }
 
-variable (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] [ChosenCartesianClosed C]
+--variable (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] [ChosenCartesianClosed C]
 
 --instance (c : C) : Closed c := sorry
-
-example (D : Type u') [Category.{v'} D] : ChosenFiniteProducts (D ⥤ C) := inferInstance
 
 end
 
@@ -135,3 +133,30 @@ instance : MonoidalClosed SSet where
     rightAdj := SSetRightAdj X
     adj := SSetAdj X
   }
+
+variable {C : Type u} [Category.{v} C]
+
+def UliftFunctor : (Cᵒᵖ ⥤ Type v) ⥤ Cᵒᵖ ⥤ Type max u v :=
+  (whiskeringRight _ _ _).obj uliftFunctor.{u, v}
+
+def yonedaLift {C : Type u} [Category.{v} C] : C ⥤ Cᵒᵖ ⥤ Type (max u v) :=
+    yoneda ⋙ UliftFunctor.{v, u}
+
+def IHom (F G : Cᵒᵖ ⥤ Type max u v) : Cᵒᵖ ⥤ Type max u v where
+  obj c := (yonedaLift.obj c.unop) ⊗ F ⟶ G
+  map := fun f g ↦ yonedaLift.map f.unop ▷ F ≫ g
+
+def RightAdj (F : Cᵒᵖ ⥤ Type max u v) : (Cᵒᵖ ⥤ Type max u v) ⥤ Cᵒᵖ ⥤ Type max u v where
+  obj G := IHom F G
+  map f := { app := fun _ h ↦ h ≫ f }
+
+def Aux1 {F G H : Cᵒᵖ ⥤ Type max u v} (f : F ⊗ G ⟶ H) (c : Cᵒᵖ) (Gc: G.obj c) :
+    (IHom F H).obj c where
+  app := fun d ⟨g, Fd⟩ ↦ f.app d (Fd, G.map g.down.op Gc)
+  naturality a b h := by
+    ext ⟨g, Fa⟩
+    change f.app b (F.map h Fa, G.map ((yonedaLift.obj c.unop).map h g).down.op Gc) = _
+    have := f.naturality h
+    apply_fun (fun f ↦ f (Fa, G.map g.down.op Gc)) at this
+    dsimp [yonedaLift, UliftFunctor]
+    aesop
