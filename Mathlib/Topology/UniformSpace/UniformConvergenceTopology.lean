@@ -1129,8 +1129,8 @@ theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} (φ : Π i, δ
   have : ∀ S ∈ 𝔖, 𝒰(S, β, _) = ⨅ i, .comap (· ∘ ψ S i) 𝒰(_, β, _) := fun S hS ↦ by
     rcases h_cover S hS with ⟨I, I_finite, I_cover⟩
     refine UniformFun.uniformSpace_eq_iInf_precomp_of_cover β _ ⟨I, I_finite, ?_⟩
-    simpa only [← univ_subset_iff, ψ, range_restrictPreimage, ← preimage_iUnion₂, ← image_subset_iff,
-      image_univ, Subtype.range_val] using I_cover
+    simpa only [← univ_subset_iff, ψ, range_restrictPreimage, ← preimage_iUnion₂,
+      ← image_subset_iff, image_univ, Subtype.range_val] using I_cover
   -- With a better theory of ideals we may be able to simplify the following by replacing `𝔗 i`
   -- by `(φ i ⁻¹' ·) '' 𝔖`.
   refine le_antisymm (le_iInf fun i ↦ ?_) (le_iInf₂ fun S hS ↦ ?_)
