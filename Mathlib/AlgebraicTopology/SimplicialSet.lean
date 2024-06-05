@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.AlgebraicTopology.SimplexCategoryWithInitial
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Fin.VecNotation
@@ -398,5 +399,87 @@ set_option linter.uppercaseLean3 false in
 #align sSet.augmented.standard_simplex SSet.Augmented.standardSimplex
 
 end Augmented
+
+/-- The category of contravariant functors from `WithInitial SimplexCategory` to `Type u`. -/
+abbrev FromWithInitial := (WithInitial SimplexCategory)ᵒᵖ ⥤ Type u
+
+namespace FromWithInitial
+open WithInitial
+open SimplexCategory.WithInitial
+
+/-- The ulift functor `SSet.{u} ⥤ SSet.{max u v}` on simplicial sets. -/
+def uliftFunctor : SSet.FromWithInitial.{u} ⥤ SSet.FromWithInitial.{max u v} :=
+  (whiskeringRight _ _ _).obj CategoryTheory.uliftFunctor.{v, u}
+
+/-- The standard simplex from `WithInitial SimplexCategory`. -/
+def standardSimplex : WithInitial SimplexCategory ⥤ SSet.FromWithInitial.{u} :=
+  yoneda ⋙ uliftFunctor
+
+/-- Simplices of the standard simplex identify to morphisms in `SimplexCategory`. -/
+def standardSimplex.objEquiv (n : WithInitial SimplexCategory)
+    (m : (WithInitial SimplexCategory)ᵒᵖ) :
+    (standardSimplex.{u}.obj n).obj m ≃ (m.unop ⟶ n) :=
+  Equiv.ulift.{u, 0}
+
+/-- Given an object in `SSet` the corresponding object in `SSet.FromWithInitial` where `star`
+is sent to `PUnit`. -/
+@[simps!]
+def liftObj (S : SSet) : SSet.FromWithInitial where
+  obj Z :=
+    match Z with
+    | ⟨star⟩ => PUnit
+    | ⟨of x⟩ => S.obj ⟨x⟩
+  map {X Y} f :=
+    match Y, X, f with
+    | ⟨of _⟩, ⟨of _⟩, f => S.map f
+    | ⟨star⟩, ⟨of _⟩, _ => fun _ => PUnit.unit
+    | ⟨star⟩, ⟨star⟩, _ => 𝟙 _
+  map_id Z := by
+    match Z with
+    | ⟨star⟩ => rfl
+    | ⟨of x⟩ => exact S.map_id ⟨x⟩
+  map_comp {X Y Z} f g := by
+    match Z, Y, X, f, g with
+    | ⟨star⟩, ⟨star⟩, ⟨star⟩, f, g => rfl
+    | ⟨star⟩, ⟨star⟩, ⟨of _⟩, f, g => rfl
+    | ⟨star⟩, ⟨of _⟩, ⟨of _⟩, f, g => rfl
+    | ⟨of _⟩, ⟨of _⟩, ⟨of _⟩, f, g => exact S.map_comp f g
+
+/-- Given a morphism of simplicial sets, the corresponding morphism in `SSet.FromWithInitial`. -/
+@[simps!]
+def liftMap {S T : SSet} (η : S ⟶ T) : liftObj S ⟶ liftObj T where
+  app Z :=
+    match Z with
+    | ⟨star⟩ => 𝟙 _
+    | ⟨of x⟩ => η.app ⟨x⟩
+  naturality {X Y} f := by
+    match Y, X, f with
+    | ⟨star⟩, ⟨star⟩, f => rfl
+    | ⟨star⟩, ⟨of x⟩, f => rfl
+    | ⟨of y⟩, ⟨of x⟩, f => exact η.naturality f
+
+/-- The functor from `SSet` to `SSet.FromWithInitial` lifting objects. -/
+def lift : SSet ⥤ SSet.FromWithInitial where
+  obj := liftObj
+  map := liftMap
+  map_id X := by
+    apply NatTrans.ext
+    funext Z
+    match Z with
+    | ⟨star⟩ => rfl
+    | ⟨of x⟩ => rfl
+  map_comp {S T L} f g:= by
+    apply NatTrans.ext
+    funext Z
+    match Z with
+    | ⟨star⟩ => rfl
+    | ⟨of x⟩ => rfl
+
+/-- The functor from `SSet.FromWithInitial` to `SSet` dropping the value at `star`. -/
+def drop : SSet.FromWithInitial ⥤ SSet :=
+  (whiskeringLeft SimplexCategoryᵒᵖ (WithInitial SimplexCategory)ᵒᵖ  (Type u)).obj
+     (WithInitial.incl.op)
+
+end FromWithInitial
 
 end SSet

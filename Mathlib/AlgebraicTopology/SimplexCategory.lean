@@ -869,6 +869,142 @@ theorem factorThruImage_eq {Δ Δ'' : SimplexCategory} {φ : Δ ⟶ Δ''} {e : �
 
 end EpiMono
 
+namespace Join
+
+/-- The join of two objects in `SimplexCategory`. -/
+@[simp]
+def obj (X Y : SimplexCategory) : SimplexCategory := [X.len+Y.len+1]
+
+lemma incl₁_cond (X Y : SimplexCategory) (a : Fin (X.len+1)): a.val < X.len + Y.len + 1 + 1 := by
+    have h2 : len X + len Y + 1 + 1 = len Y + 1 + (len X +1) := by
+      rw [add_comm (len X) _, add_assoc (len Y) _ _, add_comm (len X) _]
+      rw [add_assoc, add_assoc, add_comm (len X)]
+      repeat rw [add_assoc]
+    simp [h2]
+    exact Nat.lt_add_left (len Y + 1) a.prop
+
+lemma incl₂_cond (X Y : SimplexCategory) (a : Fin (Y.len+1)) :
+    a.val + X.len +1 < X.len + Y.len +1 + 1 := by
+  have h2 : len X + len Y + 1 + 1 = len Y + 1 + (len X +1) := by
+    rw [add_comm (len X) _, add_assoc (len Y) _ _, add_comm (len X) _]
+    rw [add_assoc, add_assoc, add_comm (len X)]
+    repeat rw [add_assoc]
+  simp [h2]
+  exact Nat.add_succ_lt_add a.prop Nat.le.refl
+
+lemma preimage_incl₂_cond (X Y : SimplexCategory) (a : Fin (X.len+Y.len+1+1)) :
+    a.val - (X.len +1) < Y.len +1 := by
+  have h1 := a.prop
+  simp only [obj, len_mk] at h1
+  have h2 : len X + len Y + 1 + 1 = len Y + 1 + (len X +1) := by
+    rw [add_comm (len X) _, add_assoc (len Y) _ _, add_comm (len X) _]
+    rw [add_assoc, add_assoc, add_comm (len X)]
+    repeat rw [add_assoc]
+  simp [h2] at h1
+  by_cases h: a.val < X.len+1
+  rw [Nat.lt_iff_add_one_le]
+  simp_all only [add_le_add_iff_right, tsub_le_iff_right]
+  exact _root_.le_add_left h.le
+  exact (tsub_lt_iff_right (Nat.not_lt.mp h)).mpr h1
+
+/-- The join of two morphisms in `SimplexCategory`. -/
+@[simp]
+def map {X1 Y1 X2 Y2: SimplexCategory} (η : X1 ⟶ X2) (ε : Y1 ⟶ Y2) : obj X1 Y1 ⟶ obj X2 Y2 :=
+  Hom.mk {
+    toFun := fun a =>
+      if h : a.val <  X1.len+1 then
+        ⟨(η.toOrderHom ⟨a.val, h⟩).val, incl₁_cond X2 Y2 (η.toOrderHom ⟨a.val, h⟩)⟩
+      else
+        ⟨ε.toOrderHom ⟨a.val - (X1.len+1), preimage_incl₂_cond X1 Y1 a⟩ + (X2.len + 1),
+         incl₂_cond X2 Y2 (ε.toOrderHom ⟨a.val - (X1.len+1), preimage_incl₂_cond X1 Y1 a⟩)⟩
+    monotone' := by
+      intro a b h
+      simp only [obj, len_mk]
+      split_ifs <;> rename_i ha hb
+      · exact η.toOrderHom.monotone h
+      · exact le_add_left (η.toOrderHom ⟨a.val, ha⟩).prop.le
+      · exact (Nat.not_le.mpr hb ((Nat.not_lt.mp ha).trans h)).elim
+      · rw [Fin.le_def]
+        simp only [add_le_add_iff_right, Fin.val_fin_le]
+        exact ε.toOrderHom.monotone' (Nat.sub_le_sub_right h (len X1 + 1))
+  }
+
+/-- The functor from `SimplexCategory × SimplexCategory` to `SimplexCategory` representing
+the join of objects and morphisms. -/
+def func : SimplexCategory × SimplexCategory ⥤ SimplexCategory where
+  obj X := obj X.1 X.2
+  map η := map η.1 η.2
+  map_id X := by
+    simp
+    apply congrArg
+    apply OrderHom.ext
+    funext a
+    dsimp only [obj, len_mk, OrderHom.coe_mk, prod_id_snd, smallCategory_id, Hom.id,
+      Hom.toOrderHom_mk, OrderHom.id_coe, id_eq]
+    split_ifs with h
+    rfl
+    rw [Fin.eq_iff_veq]
+    simp
+    simp at h
+    exact Nat.sub_add_cancel h
+  map_comp {X Y Z} f g := by
+    simp
+    apply congrArg
+    apply OrderHom.ext
+    funext a
+    dsimp
+    split_ifs with h1 h2
+    rfl
+    simp only [Fin.is_lt, not_true_eq_false] at h2
+    rename_i h2
+    simp only [add_lt_iff_neg_right, not_lt_zero'] at h2
+    simp only [add_tsub_cancel_right, Fin.eta]
+
+/-- The inclusion of `X` into the join of `X` and `Y`. -/
+def incl₁ (X Y : SimplexCategory) : X ⟶ Join.func.obj (X, Y) :=
+   Hom.mk {
+    toFun := fun a => ⟨a.val, incl₁_cond X Y a⟩
+    monotone' := by
+      intro a b h
+      exact h
+   }
+
+/-- The inclusion of `Y` into the join of `X` and `Y`. -/
+def incl₂ (X Y : SimplexCategory) : Y ⟶ Join.func.obj (X, Y) :=
+   Hom.mk {
+    toFun := fun a => ⟨a.val + X.len + 1, incl₂_cond X Y a ⟩
+    monotone' := by
+      intro a b h
+      simp only [Fin.mk_le_mk, add_le_add_iff_right, Fin.val_fin_le]
+      exact h
+   }
+
+lemma incl₁_map {X Y : SimplexCategory × SimplexCategory} ( η : X⟶ Y) :
+    incl₁ X.1 X.2 ≫ Join.func.map η =  η.1 ≫ incl₁ Y.1 Y.2 := by
+  simp [incl₁]
+  apply congrArg
+  apply OrderHom.ext
+  funext a
+  simp [func, Fin.eq_iff_veq]
+  rfl
+
+lemma incl₂_map {X Y : SimplexCategory × SimplexCategory} ( η : X⟶ Y) :
+    incl₂ X.1 X.2 ≫ Join.func.map η =  η.2 ≫ incl₂ Y.1 Y.2 := by
+  simp [incl₂]
+  apply congrArg
+  apply OrderHom.ext
+  funext a
+  simp [func, Fin.eq_iff_veq]
+  change _ = ((Hom.toOrderHom η.2) a).val +len Y.1 +1
+  refine add_right_cancel_iff.mpr ?_
+  apply congrArg
+  apply congrArg
+  rw [Fin.eq_iff_veq]
+  change a.val + len X.1 +1 - (len X.1 +1) = _
+  exact Nat.sub_eq_of_eq_add rfl
+
+end Join
+
 /-- This functor `SimplexCategory ⥤ Cat` sends `[n]` (for `n : ℕ`)
 to the category attached to the ordered set `{0, 1, ..., n}` -/
 @[simps! obj map]
