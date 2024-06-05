@@ -33,7 +33,7 @@ lemma essSurj_mapComposableArrows_two : (L.mapComposableArrows 2).EssSurj  where
       ((L.objObjPreimageIso Y₀).hom ≫ f ≫ (L.objObjPreimageIso Y₁).inv)
     obtain ⟨g', hg'⟩ := exists_leftFraction L W
       ((L.objObjPreimageIso Y₁).hom ≫ g ≫ (L.objObjPreimageIso Y₂).inv)
-    refine' ⟨ComposableArrows.mk₂ f'.f g'.f,
+    refine ⟨ComposableArrows.mk₂ f'.f g'.f,
       ⟨ComposableArrows.isoMk₂
         (Localization.isoOfHom L W f'.s f'.hs ≪≫ L.objObjPreimageIso Y₀)
         (L.objObjPreimageIso Y₁)

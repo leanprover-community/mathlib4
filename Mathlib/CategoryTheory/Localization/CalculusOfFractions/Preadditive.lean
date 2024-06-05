@@ -324,7 +324,7 @@ lemma functor_additive_iff {E : Type*} [Category E] [Preadditive E] [Preadditive
     infer_instance
   · intro h
     suffices ∀ ⦃X Y : C⦄ (f g : L.obj X ⟶ L.obj Y), G.map (f + g) = G.map f + G.map g by
-      refine' ⟨fun {X Y f g} => _⟩
+      refine ⟨fun {X Y f g} => ?_⟩
       have hL := essSurj L W
       have eq := this ((L.objObjPreimageIso X).hom ≫ f ≫ (L.objObjPreimageIso Y).inv)
         ((L.objObjPreimageIso X).hom ≫ g ≫ (L.objObjPreimageIso Y).inv)
