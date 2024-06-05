@@ -24,7 +24,7 @@ In the special case that `A = M →ₗ[R] M` and `φ : M →ₗ[R] M`, the modul
 abbreviated `Module.AEval' φ`. In this module we have `X • m = ↑φ m`.
 -/
 universe u v
-open Set Function Polynomial BigOperators
+open Set Function Polynomial
 
 namespace Module
 /--
@@ -354,7 +354,7 @@ theorem smul_single_apply (i : ℕ) (f : R[X]) (m : M) (n : ℕ) :
 #align polynomial_module.smul_single_apply PolynomialModule.smul_single_apply
 
 theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
-    (f • g) n = ∑ x in Finset.antidiagonal n, f.coeff x.1 • g x.2 := by
+    (f • g) n = ∑ x ∈ Finset.antidiagonal n, f.coeff x.1 • g x.2 := by
   induction' f using Polynomial.induction_on' with p q hp hq f_n f_a
   · rw [add_smul, Finsupp.add_apply, hp, hq, ← Finset.sum_add_distrib]
     congr
@@ -445,7 +445,7 @@ def eval (r : R) : PolynomialModule R M →ₗ[R] M where
   toFun p := p.sum fun i m => r ^ i • m
   map_add' x y := Finsupp.sum_add_index' (fun _ => smul_zero _) fun _ _ _ => smul_add _ _ _
   map_smul' s m := by
-    refine' (Finsupp.sum_smul_index' _).trans _
+    refine (Finsupp.sum_smul_index' ?_).trans ?_
     · exact fun i => smul_zero _
     · simp_rw [RingHom.id_apply, Finsupp.smul_sum]
       congr

@@ -1813,7 +1813,7 @@ lemma withTopWithBot_apply (f : LatticeHom α β) (a : WithTop <| WithBot α) :
 @[simp]
 theorem withTopWithBot_id : (LatticeHom.id α).withTopWithBot = BoundedLatticeHom.id _ :=
   DFunLike.coe_injective <| by
-    refine' (congr_arg Option.map _).trans Option.map_id
+    refine (congr_arg Option.map ?_).trans Option.map_id
     rw [withBot_id]
     rfl
 #align lattice_hom.with_top_with_bot_id LatticeHom.withTopWithBot_id

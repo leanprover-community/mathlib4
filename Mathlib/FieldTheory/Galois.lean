@@ -382,7 +382,7 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
   rw [← @IntermediateField.card_algHom_adjoin_integral K _ E _ _ x E _ (RingHom.toAlgebra f) h]
   · congr!
   · exact Polynomial.Separable.of_dvd ((Polynomial.separable_map (algebraMap F K)).mpr hp) h2
-  · refine' Polynomial.splits_of_splits_of_dvd _ (Polynomial.map_ne_zero h1) _ h2
+  · refine Polynomial.splits_of_splits_of_dvd _ (Polynomial.map_ne_zero h1) ?_ h2
     -- Porting note: use unification instead of synthesis for one argument of `algebraMap_eq`
     rw [Polynomial.splits_map_iff, ← @IsScalarTower.algebraMap_eq _ _ _ _ _ _ _ (_) _ _]
     exact sp.splits
@@ -421,7 +421,7 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
   letI := K⟮x⟯.isScalarTower (R := F)
   rw [of_separable_splitting_field_aux hp K (Multiset.mem_toFinset.mp hx), hK, finrank_mul_finrank]
   symm
-  refine' LinearEquiv.finrank_eq _
+  refine LinearEquiv.finrank_eq ?_
   rfl
 #align is_galois.of_separable_splitting_field IsGalois.of_separable_splitting_field
 

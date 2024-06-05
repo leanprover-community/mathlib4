@@ -137,10 +137,10 @@ lemma HasEigenvalue.isNilpotent_of_isNilpotent [NoZeroSMulDivisors R M] {f : End
 
 theorem HasEigenvalue.mem_spectrum {f : End R M} {μ : R} (hμ : HasEigenvalue f μ) :
     μ ∈ spectrum R f := by
-  refine' spectrum.mem_iff.mpr fun h_unit => _
+  refine spectrum.mem_iff.mpr fun h_unit => ?_
   set f' := LinearMap.GeneralLinearGroup.toLinearEquiv h_unit.unit
   rcases hμ.exists_hasEigenvector with ⟨v, hv⟩
-  refine' hv.2 ((LinearMap.ker_eq_bot'.mp f'.ker) v (_ : μ • v - f v = 0))
+  refine hv.2 ((LinearMap.ker_eq_bot'.mp f'.ker) v (?_ : μ • v - f v = 0))
   rw [hv.apply_eq_smul, sub_self]
 #align module.End.mem_spectrum_of_has_eigenvalue Module.End.HasEigenvalue.mem_spectrum
 
