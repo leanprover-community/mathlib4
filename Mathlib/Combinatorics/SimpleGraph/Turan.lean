@@ -26,7 +26,7 @@ show that the graph is isomorphic to the Turán graph for the given parameters.
 * `SimpleGraph.turanGraph n r`: The canonical `r + 1`-cliquefree Turán graph on `n` vertices.
 * `SimpleGraph.IsTuranMaximal.finpartition`: The result of Zykov symmetrisation, a finpartition of
   the vertices such that two vertices are in the same part iff they are non-adjacent.
-* `SimpleGraph.IsTuranMaximal.nonempty_iso_TuranGraph`: the forward direction, an isomorphism
+* `SimpleGraph.IsTuranMaximal.nonempty_iso_TuranGraph`: The forward direction, an isomorphism
   between `G` satisfying `G.IsTuranMaximal r` and `turanGraph n r`.
 
 ## References
