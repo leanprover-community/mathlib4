@@ -164,11 +164,6 @@ lemma isVonNBounded_pi_iff {𝕜 ι : Type*} {E : ι → Type*} [NormedDivisionR
     smallSets_comap_eq_comap_image, tendsto_iInf, tendsto_comap_iff, Function.comp,
     ← image_smul, image_image]; rfl
 
-protected lemma IsVonNBounded.pi {𝕜 ι : Type*} {E : ι → Type*} [NormedDivisionRing 𝕜]
-    [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)]
-    {s : (i : ι) → Set (E i)} (h : ∀ i, IsVonNBounded 𝕜 (s i)) : IsVonNBounded 𝕜 (pi univ s) :=
-  isVonNBounded_pi_iff.2 fun i ↦ (h i).subset eval_image_univ_pi_subset
-
 section Image
 
 variable {𝕜₁ 𝕜₂ : Type*} [NormedDivisionRing 𝕜₁] [NormedDivisionRing 𝕜₂] [AddCommGroup E]
