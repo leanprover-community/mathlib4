@@ -38,11 +38,25 @@ universe w v u
 
 namespace CategoryTheory
 
-open Functor Limits GrothendieckTopology
+open Functor Limits GrothendieckTopology Presheaf
 
 variable {C : Type*} [Category C] (J : GrothendieckTopology C)
 variable {D : Type*} [Category D] (K : GrothendieckTopology D) (e : C ≌ D)
 variable (A : Type*) [Category A]
+
+namespace Functor
+
+variable (H : C ⥤ D) [H.IsCocontinuous J K] [ConcreteCategory A] {F G : Dᵒᵖ ⥤ A} (f : F ⟶ G)
+
+lemma isLocallySurjective_whisker [IsLocallySurjective K f] :
+    IsLocallySurjective J (whiskerLeft H.op f) where
+  imageSieve_mem a := H.cover_lift J K (imageSieve_mem K f a)
+
+lemma isLocallyInjective_whisker [IsLocallyInjective K f] :
+    IsLocallyInjective J (whiskerLeft H.op f) where
+  equalizerSieve_mem x y h := H.cover_lift J K (equalizerSieve_mem K f x y h)
+
+end Functor
 
 namespace Equivalence
 
@@ -61,6 +75,7 @@ theorem locallyCoverDense : LocallyCoverDense J e.inverse := by
         Category.comp_id]
       exact T.val.downward_closed hf _
     · simp
+
 
 theorem functorPushforward_eq_pullback {U : C} (S : Sieve U) :
     Sieve.functorPushforward e.inverse (Sieve.functorPushforward e.functor S) =
@@ -152,9 +167,17 @@ instance : IsContinuous e.functor J K := by
   rw [e.eq_inducedTopology_of_transports J K]
   exact IsCoverDense.isContinuous _ _ _ (e.coverPreserving J)
 
+instance : IsCocontinuous e.functor J K := by
+  rw [e.symm.eq_inducedTopology_of_transports K J]
+  exact (e.symm.locallyCoverDense _).inducedTopology_isCocontinuous
+
 instance : IsContinuous e.inverse K J := by
   rw [eq_inducedTopology_of_transports J K e]
   exact IsCoverDense.isContinuous _ _ _ (e.locallyCoverDense J).inducedTopology_coverPreserving
+
+instance : IsCocontinuous e.inverse K J := by
+  rw [e.eq_inducedTopology_of_transports J K]
+  exact (e.locallyCoverDense _).inducedTopology_isCocontinuous
 
 /-- The functor in the equivalence of sheaf categories. -/
 @[simps!]
@@ -251,25 +274,8 @@ variable {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G)
 open Presheaf
 
 lemma isLocallyInjective_whisker [IsLocallyInjective J f] :
-    IsLocallyInjective K (whiskerLeft e.inverse.op f) where
-  equalizerSieve_mem {X} a b h := by
-    have := IsLocallyInjective.equalizerSieve_mem (φ := f) (J := J) a b h
-    rw [e.eq_inducedTopology_of_transports J K]
-    change _ ∈ J.sieves (e.inverse.op.obj X).unop
-    convert this
-    ext Y g
-    simp only [Sieve.functorPushforward_apply, Presieve.functorPushforward, equalizerSieve_apply,
-      comp_obj, op_obj, Opposite.op_unop, Functor.comp_map, op_map, Quiver.Hom.unop_op,
-      exists_and_left]
-    constructor
-    · intro ⟨Z, g', h, x, w⟩
-      simp [w, h]
-    · intro h
-      refine ⟨_, (e.toAdjunction.homEquiv _ _).symm g, ?_⟩
-      simp only [Adjunction.homEquiv_counit, id_obj, toAdjunction_counit, map_comp, inv_fun_map,
-        comp_obj, Category.assoc, unit_inverse_comp, Category.comp_id, op_comp, comp_apply]
-      simp only [h, true_and]
-      exact ⟨e.unit.app _, by simp⟩
+    IsLocallyInjective K (whiskerLeft e.inverse.op f) :=
+  e.inverse.isLocallyInjective_whisker K J A f
 
 lemma isLocallyInjective_of_whisker [IsLocallyInjective K (whiskerLeft e.inverse.op f)] :
     IsLocallyInjective J f := by
@@ -283,29 +289,8 @@ lemma isLocallyInjective_of_whisker [IsLocallyInjective K (whiskerLeft e.inverse
   infer_instance
 
 lemma isLocallySurjective_whisker [IsLocallySurjective J f] :
-    IsLocallySurjective K (whiskerLeft e.inverse.op f) where
-  imageSieve_mem {X} a := by
-    have := IsLocallySurjective.imageSieve_mem (f := f) (J := J) a
-    rw [e.eq_inducedTopology_of_transports J K]
-    change _ ∈ J.sieves (e.inverse.obj X)
-    convert this
-    ext Y g
-    simp only [imageSieve, comp_obj, op_obj, whiskerLeft_app, Functor.comp_map, op_map,
-      Quiver.Hom.unop_op, Sieve.functorPushforward_apply, Presieve.functorPushforward,
-      exists_and_left]
-    constructor
-    · intro ⟨Z, g', ⟨t, h⟩, x, w⟩
-      refine ⟨(forget A).map (F.map x.op) t, ?_⟩
-      simp only [w, op_comp, map_comp, comp_apply, ← h, ← NatTrans.naturality_apply]
-      rfl
-    · intro ⟨t, h⟩
-      refine ⟨_, (e.toAdjunction.homEquiv _ _).symm g,
-        ⟨(((forget A).map (F.map (e.unitInv.app Y).op)) t), ?_⟩, ?_⟩
-      · simp only [Adjunction.homEquiv_counit, id_obj, toAdjunction_counit, map_comp, inv_fun_map,
-          comp_obj, Category.assoc, unit_inverse_comp, Category.comp_id, op_comp, comp_apply, ← h,
-          ← NatTrans.naturality_apply]
-        rfl
-      · exact ⟨e.unit.app _, by simp⟩
+    IsLocallySurjective K (whiskerLeft e.inverse.op f) :=
+  e.inverse.isLocallySurjective_whisker K J A f
 
 lemma isLocallySurjective_of_whisker [IsLocallySurjective K (whiskerLeft e.inverse.op f)] :
     IsLocallySurjective J f := by
