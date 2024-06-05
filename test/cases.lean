@@ -50,15 +50,15 @@ example (x : Bar 0) : True := by
 
 example (n : Nat) : n = n := by
   induction' n with n ih
-  · guard_target = Nat.zero = Nat.zero; rfl
+  · guard_target =ₛ 0 = 0; rfl
   · guard_hyp n : Nat; guard_hyp ih : n = n
-    guard_target = Nat.succ n = Nat.succ n; exact congr_arg _ ih
+    guard_target =ₛ n + 1 = n + 1; exact congr_arg (· + 1) ih
 
 example (n : Nat) (h : n < 5) : n = n := by
   induction' n with n ih
-  · guard_target = Nat.zero = Nat.zero; rfl
-  · guard_hyp n : Nat; guard_hyp ih : n < 5 → n = n; guard_hyp h : Nat.succ n < 5
-    guard_target = Nat.succ n = Nat.succ n; rfl
+  · guard_target =ₛ 0 = 0; rfl
+  · guard_hyp n : Nat; guard_hyp ih : n < 5 → n = n; guard_hyp h :ₛ n + 1 < 5
+    guard_target =ₛ n + 1 = n + 1; rfl
 
 example (n : Nat) {m} (h : m < 5) : n = n := by
   induction' n with n ih
@@ -115,7 +115,7 @@ example (a b : ℕ) (h : a + b = a) : b = 0 := by
     fail_if_success (guard_hyp h : a + b = a)
     intro h
     -- Sample proof
-    rw [Nat.zero_eq, Nat.zero_add] at h
+    rw [Nat.zero_add] at h
     assumption
   · -- Test the generalized vars have been removed
     revert h

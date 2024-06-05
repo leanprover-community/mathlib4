@@ -1,15 +1,16 @@
 import Mathlib.Data.Finsupp.Notation
+import Mathlib.Data.DFinsupp.Notation -- to ensure it does not interfere
 import Mathlib.Data.Nat.Factorization.Basic
 
-example : (fun₀ | 1 => 3) 1 = 3 :=
-by simp
+example : (fun₀ | 1 => 3) 1 = 3 := by
+  simp
 
-example : (fun₀ | 1 | 2 | 3 => 3 | 3 => 4) 1 = 3 :=
-by simp
-example : (fun₀ | 1 | 2 | 3 => 3 | 3 => 4) 2 = 3 :=
-by simp
-example : (fun₀ | 1 | 2 | 3 => 3 | 3 => 4) 3 = 4 :=
-by simp
+example : (fun₀ | 1 | 2 | 3 => 3 | 3 => 4) 1 = 3 := by
+  simp
+example : (fun₀ | 1 | 2 | 3 => 3 | 3 => 4) 2 = 3 := by
+  simp
+example : (fun₀ | 1 | 2 | 3 => 3 | 3 => 4) 3 = 4 := by
+  simp
 
 /--
 info:

@@ -416,9 +416,13 @@ theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a :=
   ⟨fun h => h <| left_mem_Ici, fun h _ hx => h.trans hx⟩
 #align set.Ici_subset_Ici Set.Ici_subset_Ici
 
+@[gcongr] alias ⟨_, _root_.GCongr.Ici_subset_Ici_of_le⟩ := Ici_subset_Ici
+
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b :=
   @Ici_subset_Ici αᵒᵈ _ _ _
 #align set.Iic_subset_Iic Set.Iic_subset_Iic
+
+@[gcongr] alias ⟨_, _root_.GCongr.Iic_subset_Iic_of_le⟩ := Iic_subset_Iic
 
 theorem Ici_subset_Ioi : Ici a ⊆ Ioi b ↔ b < a :=
   ⟨fun h => h left_mem_Ici, fun h _ hx => h.trans_le hx⟩
@@ -428,38 +432,47 @@ theorem Iic_subset_Iio : Iic a ⊆ Iio b ↔ a < b :=
   ⟨fun h => h right_mem_Iic, fun h _ hx => lt_of_le_of_lt hx h⟩
 #align set.Iic_subset_Iio Set.Iic_subset_Iio
 
+@[gcongr]
 theorem Ioo_subset_Ioo (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Ioo a₁ b₁ ⊆ Ioo a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
   ⟨h₁.trans_lt hx₁, hx₂.trans_le h₂⟩
 #align set.Ioo_subset_Ioo Set.Ioo_subset_Ioo
 
+@[gcongr]
 theorem Ioo_subset_Ioo_left (h : a₁ ≤ a₂) : Ioo a₂ b ⊆ Ioo a₁ b :=
   Ioo_subset_Ioo h le_rfl
 #align set.Ioo_subset_Ioo_left Set.Ioo_subset_Ioo_left
 
+@[gcongr]
 theorem Ioo_subset_Ioo_right (h : b₁ ≤ b₂) : Ioo a b₁ ⊆ Ioo a b₂ :=
   Ioo_subset_Ioo le_rfl h
 #align set.Ioo_subset_Ioo_right Set.Ioo_subset_Ioo_right
 
+@[gcongr]
 theorem Ico_subset_Ico (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Ico a₁ b₁ ⊆ Ico a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
   ⟨h₁.trans hx₁, hx₂.trans_le h₂⟩
 #align set.Ico_subset_Ico Set.Ico_subset_Ico
 
+@[gcongr]
 theorem Ico_subset_Ico_left (h : a₁ ≤ a₂) : Ico a₂ b ⊆ Ico a₁ b :=
   Ico_subset_Ico h le_rfl
 #align set.Ico_subset_Ico_left Set.Ico_subset_Ico_left
 
+@[gcongr]
 theorem Ico_subset_Ico_right (h : b₁ ≤ b₂) : Ico a b₁ ⊆ Ico a b₂ :=
   Ico_subset_Ico le_rfl h
 #align set.Ico_subset_Ico_right Set.Ico_subset_Ico_right
 
+@[gcongr]
 theorem Icc_subset_Icc (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Icc a₁ b₁ ⊆ Icc a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
   ⟨h₁.trans hx₁, le_trans hx₂ h₂⟩
 #align set.Icc_subset_Icc Set.Icc_subset_Icc
 
+@[gcongr]
 theorem Icc_subset_Icc_left (h : a₁ ≤ a₂) : Icc a₂ b ⊆ Icc a₁ b :=
   Icc_subset_Icc h le_rfl
 #align set.Icc_subset_Icc_left Set.Icc_subset_Icc_left
 
+@[gcongr]
 theorem Icc_subset_Icc_right (h : b₁ ≤ b₂) : Icc a b₁ ⊆ Icc a b₂ :=
   Icc_subset_Icc le_rfl h
 #align set.Icc_subset_Icc_right Set.Icc_subset_Icc_right
@@ -477,14 +490,17 @@ theorem Icc_subset_Iic_self : Icc a b ⊆ Iic b := fun _ => And.right
 theorem Ioc_subset_Iic_self : Ioc a b ⊆ Iic b := fun _ => And.right
 #align set.Ioc_subset_Iic_self Set.Ioc_subset_Iic_self
 
+@[gcongr]
 theorem Ioc_subset_Ioc (h₁ : a₂ ≤ a₁) (h₂ : b₁ ≤ b₂) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ := fun _ ⟨hx₁, hx₂⟩ =>
   ⟨h₁.trans_lt hx₁, hx₂.trans h₂⟩
 #align set.Ioc_subset_Ioc Set.Ioc_subset_Ioc
 
+@[gcongr]
 theorem Ioc_subset_Ioc_left (h : a₁ ≤ a₂) : Ioc a₂ b ⊆ Ioc a₁ b :=
   Ioc_subset_Ioc h le_rfl
 #align set.Ioc_subset_Ioc_left Set.Ioc_subset_Ioc_left
 
+@[gcongr]
 theorem Ioc_subset_Ioc_right (h : b₁ ≤ b₂) : Ioc a b₁ ⊆ Ioc a b₂ :=
   Ioc_subset_Ioc le_rfl h
 #align set.Ioc_subset_Ioc_right Set.Ioc_subset_Ioc_right
@@ -595,6 +611,7 @@ theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b�
 
 /-- If `a ≤ b`, then `(b, +∞) ⊆ (a, +∞)`. In preorders, this is just an implication. If you need
 the equivalence in linear orders, use `Ioi_subset_Ioi_iff`. -/
+@[gcongr]
 theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := fun _ hx => h.trans_lt hx
 #align set.Ioi_subset_Ioi Set.Ioi_subset_Ioi
 
@@ -606,6 +623,7 @@ theorem Ioi_subset_Ici (h : a ≤ b) : Ioi b ⊆ Ici a :=
 
 /-- If `a ≤ b`, then `(-∞, a) ⊆ (-∞, b)`. In preorders, this is just an implication. If you need
 the equivalence in linear orders, use `Iio_subset_Iio_iff`. -/
+@[gcongr]
 theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := fun _ hx => lt_of_lt_of_le hx h
 #align set.Iio_subset_Iio Set.Iio_subset_Iio
 
@@ -762,7 +780,7 @@ instance instIccUnique : Unique (Set.Icc a a) where
 
 @[simp]
 theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · have hab : a ≤ b := nonempty_Icc.1 (h.symm.subst <| singleton_nonempty c)
     exact
       ⟨eq_of_mem_singleton <| h.subst <| left_mem_Icc.2 hab,
@@ -778,7 +796,7 @@ lemma subsingleton_Icc_of_ge (hba : b ≤ a) : Set.Subsingleton (Icc a b) :=
 
 @[simp] lemma subsingleton_Icc_iff {α : Type*} [LinearOrder α] {a b : α} :
     Set.Subsingleton (Icc a b) ↔ b ≤ a := by
-  refine' ⟨fun h ↦ _, subsingleton_Icc_of_ge⟩
+  refine ⟨fun h ↦ ?_, subsingleton_Icc_of_ge⟩
   contrapose! h
   simp only [ge_iff_le, gt_iff_lt, not_subsingleton_iff]
   exact ⟨a, ⟨le_refl _, h.le⟩, b, ⟨h.le, le_refl _⟩, h.ne⟩
@@ -938,18 +956,18 @@ theorem mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset {s : Set α} (ho : Ioo a b ⊆ s
     s ∈ ({Icc a b, Ico a b, Ioc a b, Ioo a b} : Set (Set α)) := by
   classical
     by_cases ha : a ∈ s <;> by_cases hb : b ∈ s
-    · refine' Or.inl (Subset.antisymm hc _)
+    · refine Or.inl (Subset.antisymm hc ?_)
       rwa [← Ico_diff_left, diff_singleton_subset_iff, insert_eq_of_mem ha, ← Icc_diff_right,
         diff_singleton_subset_iff, insert_eq_of_mem hb] at ho
-    · refine' Or.inr <| Or.inl <| Subset.antisymm _ _
+    · refine Or.inr <| Or.inl <| Subset.antisymm ?_ ?_
       · rw [← Icc_diff_right]
         exact subset_diff_singleton hc hb
       · rwa [← Ico_diff_left, diff_singleton_subset_iff, insert_eq_of_mem ha] at ho
-    · refine' Or.inr <| Or.inr <| Or.inl <| Subset.antisymm _ _
+    · refine Or.inr <| Or.inr <| Or.inl <| Subset.antisymm ?_ ?_
       · rw [← Icc_diff_left]
         exact subset_diff_singleton hc ha
       · rwa [← Ioc_diff_right, diff_singleton_subset_iff, insert_eq_of_mem hb] at ho
-    · refine' Or.inr <| Or.inr <| Or.inr <| Subset.antisymm _ ho
+    · refine Or.inr <| Or.inr <| Or.inr <| Subset.antisymm ?_ ho
       rw [← Ico_diff_left, ← Icc_diff_right]
       apply_rules [subset_diff_singleton]
 #align set.mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset Set.mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset
@@ -1161,7 +1179,7 @@ theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
     Ioo a₁ b₁ ⊆ Ioo a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ :=
   ⟨fun h => by
     rcases exists_between h₁ with ⟨x, xa, xb⟩
-    constructor <;> refine' le_of_not_lt fun h' => _
+    constructor <;> refine le_of_not_lt fun h' => ?_
     · have ab := (h ⟨xa, xb⟩).1.trans xb
       exact lt_irrefl _ (h ⟨h', ab⟩).1
     · have ab := xa.trans (h ⟨xa, xb⟩).2
@@ -1193,14 +1211,14 @@ open scoped Classical
 
 @[simp]
 theorem Ioi_subset_Ioi_iff : Ioi b ⊆ Ioi a ↔ a ≤ b := by
-  refine' ⟨fun h => _, fun h => Ioi_subset_Ioi h⟩
+  refine ⟨fun h => ?_, fun h => Ioi_subset_Ioi h⟩
   by_contra ba
   exact lt_irrefl _ (h (not_le.mp ba))
 #align set.Ioi_subset_Ioi_iff Set.Ioi_subset_Ioi_iff
 
 @[simp]
 theorem Ioi_subset_Ici_iff [DenselyOrdered α] : Ioi b ⊆ Ici a ↔ a ≤ b := by
-  refine' ⟨fun h => _, fun h => Ioi_subset_Ici h⟩
+  refine ⟨fun h => ?_, fun h => Ioi_subset_Ici h⟩
   by_contra ba
   obtain ⟨c, bc, ca⟩ : ∃ c, b < c ∧ c < a := exists_between (not_le.mp ba)
   exact lt_irrefl _ (ca.trans_le (h bc))
@@ -1208,7 +1226,7 @@ theorem Ioi_subset_Ici_iff [DenselyOrdered α] : Ioi b ⊆ Ici a ↔ a ≤ b := 
 
 @[simp]
 theorem Iio_subset_Iio_iff : Iio a ⊆ Iio b ↔ a ≤ b := by
-  refine' ⟨fun h => _, fun h => Iio_subset_Iio h⟩
+  refine ⟨fun h => ?_, fun h => Iio_subset_Iio h⟩
   by_contra ab
   exact lt_irrefl _ (h (not_le.mp ab))
 #align set.Iio_subset_Iio_iff Set.Iio_subset_Iio_iff
@@ -1461,7 +1479,7 @@ theorem Iio_union_Ioo' (h₁ : c < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
   cases' lt_or_le x b with hba hba
   · simp [hba, h₁]
   · simp only [mem_Iio, mem_union, mem_Ioo, lt_max_iff]
-    refine' or_congr Iff.rfl ⟨And.right, _⟩
+    refine or_congr Iff.rfl ⟨And.right, ?_⟩
     exact fun h₂ => ⟨h₁.trans_le hba, h₂⟩
 #align set.Iio_union_Ioo' Set.Iio_union_Ioo'
 

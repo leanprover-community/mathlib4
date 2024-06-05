@@ -173,7 +173,7 @@ open Classical in
 /-- This is the *continuous functional calculus* of an element `a : A` in a non-unital algebra
 applied to bare functions.  When either `a` does not satisfy the predicate `p` (i.e., `a` is not
 `IsStarNormal`, `IsSelfAdjoint`, or `0 ≤ a` when `R` is `ℂ`, `ℝ`, or `ℝ≥0`, respectively), or when
-`f : R → R` is not continuous on the quasispectrum of `a` or `f 0 ≠ 0`, then `cfc f a` returns the
+`f : R → R` is not continuous on the quasispectrum of `a` or `f 0 ≠ 0`, then `cfcₙ f a` returns the
 junk value `0`.
 
 This is the primary declaration intended for widespread use of the continuous functional calculus
@@ -247,7 +247,7 @@ variable (R) in
 lemma cfcₙ_id' : cfcₙ (fun x : R ↦ x) a = a := cfcₙ_id R a
 
 /-- The **spectral mapping theorem** for the non-unital continuous functional calculus. -/
-lemma cfc_map_quasispectrum : σₙ R (cfcₙ f a) = f '' σₙ R a := by
+lemma cfcₙ_map_quasispectrum : σₙ R (cfcₙ f a) = f '' σₙ R a := by
   simp [cfcₙ_apply f a, cfcₙHom_map_quasispectrum (p := p)]
 
 lemma cfcₙ_predicate : p (cfcₙ f a) :=

@@ -250,8 +250,7 @@ variable (R R' : Type*) {E F : Type*} [Ring R] [Invertible (2 : R)] [AddCommGrou
 
 /-- A map `f : E → F` sending zero to zero and midpoints to midpoints is an `AddMonoidHom`. -/
 def ofMapMidpoint (f : E → F) (h0 : f 0 = 0)
-    (hm : ∀ x y, f (midpoint R x y) = midpoint R' (f x) (f y)) : E →+ F
-    where
+    (hm : ∀ x y, f (midpoint R x y) = midpoint R' (f x) (f y)) : E →+ F where
   toFun := f
   map_zero' := h0
   map_add' x y :=

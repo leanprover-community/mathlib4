@@ -31,19 +31,8 @@ section getD
 
 variable (d : α)
 
-@[simp]
-theorem getD_nil : getD [] n d = d :=
-  rfl
 #align list.nthd_nil List.getD_nilₓ -- argument order
-
-@[simp]
-theorem getD_cons_zero : getD (x :: xs) 0 d = x :=
-  rfl
 #align list.nthd_cons_zero List.getD_cons_zeroₓ -- argument order
-
-@[simp]
-theorem getD_cons_succ : getD (x :: xs) (n + 1) d = getD xs n d :=
-  rfl
 #align list.nthd_cons_succ List.getD_cons_succₓ -- argument order
 
 theorem getD_eq_get {n : ℕ} (hn : n < l.length) : l.getD n d = l.get ⟨n, hn⟩ := by
@@ -51,7 +40,7 @@ theorem getD_eq_get {n : ℕ} (hn : n < l.length) : l.getD n d = l.get ⟨n, hn�
   | nil => simp at hn
   | cons head tail ih =>
     cases n
-    · exact getD_cons_zero _ _ _
+    · exact getD_cons_zero
     · exact ih _
 
 @[simp]
@@ -67,7 +56,7 @@ theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD 
 
 theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
   induction l generalizing n with
-  | nil => exact getD_nil _ _
+  | nil => exact getD_nil
   | cons head tail ih =>
     cases n
     · simp at hn
@@ -77,7 +66,7 @@ theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
 /-- An empty list can always be decidably checked for the presence of an element.
 Not an instance because it would clash with `DecidableEq α`. -/
 def decidableGetDNilNe {α} (a : α) : DecidablePred fun i : ℕ => getD ([] : List α) i a ≠ a :=
-  fun _ => isFalse fun H => H (getD_nil _ _)
+  fun _ => isFalse fun H => H getD_nil
 #align list.decidable_nthd_nil_ne List.decidableGetDNilNeₓ -- argument order
 
 @[simp]

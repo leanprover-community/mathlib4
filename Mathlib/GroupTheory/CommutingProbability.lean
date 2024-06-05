@@ -30,8 +30,6 @@ noncomputable section
 
 open scoped Classical
 
-open BigOperators
-
 open Fintype
 
 variable (M : Type*) [Mul M]
@@ -78,7 +76,7 @@ theorem commProb_pos [h : Nonempty M] : 0 < commProb M :=
 #align comm_prob_pos commProb_pos
 
 theorem commProb_le_one : commProb M ≤ 1 := by
-  refine' div_le_one_of_le _ (sq_nonneg (Nat.card M : ℚ))
+  refine div_le_one_of_le ?_ (sq_nonneg (Nat.card M : ℚ))
   rw [← Nat.cast_pow, Nat.cast_le, sq, ← Nat.card_prod]
   apply Finite.card_subtype_le
 #align comm_prob_le_one commProb_le_one
@@ -107,12 +105,13 @@ theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
 variable {G}
 variable [Finite G] (H : Subgroup G)
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : ℚ) ^ 2 := by
   /- After rewriting with `commProb_def`, we reduce to showing that `G` has at least as many
       commuting pairs as `H`. -/
   rw [commProb_def, commProb_def, div_le_iff, mul_assoc, ← mul_pow, ← Nat.cast_mul,
     mul_comm H.index, H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
-  · refine' Finite.card_le_of_injective (fun p ↦ ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) _
+  · refine Finite.card_le_of_injective (fun p ↦ ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) ?_
     exact fun p q h ↦ by simpa only [Subtype.ext_iff, Prod.ext_iff] using h
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr Finite.card_pos.ne')
   · exact pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2
@@ -132,6 +131,7 @@ theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commPr
 
 variable (G)
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ ≤ commProb G :=
   (inv_pos_le_iff_one_le_mul (Nat.cast_pos.mpr Finite.card_pos)).mpr
     (le_trans (ge_of_eq (commProb_eq_one_iff.mpr (Abelianization.commGroup G).mul_comm))
@@ -164,9 +164,11 @@ def reciprocalFactors (n : ℕ) : List ℕ :=
   else
     n % 4 * n :: reciprocalFactors (n / 4 + 1)
 
-@[simp] lemma reciprocalFactors_zero : reciprocalFactors 0 = [0] := rfl
+@[simp] lemma reciprocalFactors_zero : reciprocalFactors 0 = [0] := by
+  unfold reciprocalFactors; rfl
 
-@[simp] lemma reciprocalFactors_one : reciprocalFactors 1 = [] := rfl
+@[simp] lemma reciprocalFactors_one : reciprocalFactors 1 = [] := by
+  unfold reciprocalFactors; rfl
 
 lemma reciprocalFactors_even {n : ℕ} (h0 : n ≠ 0) (h2 : Even n) :
     reciprocalFactors n = 3 :: reciprocalFactors (n / 2) := by

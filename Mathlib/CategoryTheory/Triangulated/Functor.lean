@@ -101,6 +101,15 @@ def mapTriangleRotateIso :
       ((F.commShiftIso (1 : ℤ)).symm.app _)
       (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 
+/-- `F.mapTriangle` commutes with the inverse of the rotation of triangles. -/
+@[simps!]
+noncomputable def mapTriangleInvRotateIso [F.Additive] :
+    F.mapTriangle ⋙ Pretriangulated.invRotate D ≅
+      Pretriangulated.invRotate C ⋙ F.mapTriangle :=
+  NatIso.ofComponents
+    (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
+      (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
+
 end Additive
 
 variable [HasZeroObject C] [HasZeroObject D] [Preadditive C] [Preadditive D]
@@ -115,6 +124,25 @@ class IsTriangulated : Prop where
 lemma map_distinguished [F.IsTriangulated] (T : Triangle C) (hT : T ∈ distTriang C) :
     F.mapTriangle.obj T ∈ distTriang D :=
   IsTriangulated.map_distinguished _ hT
+
+namespace IsTriangulated
+
+open ZeroObject
+
+variable [F.IsTriangulated]
+
+instance (priority := 100) : PreservesZeroMorphisms F where
+  map_zero X Y := by
+    have h₁ : (0 : X ⟶ Y) = 0 ≫ 𝟙 0 ≫ 0 := by simp
+    have h₂ : 𝟙 (F.obj 0) = 0 := by
+      rw [← IsZero.iff_id_eq_zero]
+      apply Triangle.isZero₃_of_isIso₁ _
+        (F.map_distinguished _ (contractible_distinguished (0 : C)))
+      dsimp
+      infer_instance
+    rw [h₁, F.map_comp, F.map_comp, F.map_id, h₂, zero_comp, comp_zero]
+
+end IsTriangulated
 
 end Functor
 

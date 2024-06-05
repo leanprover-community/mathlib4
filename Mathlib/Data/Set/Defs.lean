@@ -307,8 +307,7 @@ def LeftInvOn (f' : β → α) (f : α → β) (s : Set α) : Prop := ∀ ⦃x�
 #align set.left_inv_on Set.LeftInvOn
 
 /-- `g` is a right inverse to `f` on `b` if `f (g x) = x` for all `x ∈ b`. -/
-@[reducible]
-def RightInvOn (f' : β → α) (f : α → β) (t : Set β) : Prop := LeftInvOn f f' t
+abbrev RightInvOn (f' : β → α) (f : α → β) (t : Set β) : Prop := LeftInvOn f f' t
 #align set.right_inv_on Set.RightInvOn
 
 /-- `g` is an inverse to `f` viewed as a map from `a` to `b` -/

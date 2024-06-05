@@ -65,7 +65,7 @@ def unit : Γ₀ˣ :=
 
 /-- A proof that `RankOne.unit v ≠ 1`. -/
 theorem unit_ne_one : unit v ≠ 1 := by
-  rw [Ne.def, ← Units.eq_iff, Units.val_one]
+  rw [Ne, ← Units.eq_iff, Units.val_one]
   exact ((nontrivial v).choose_spec ).2
 
 end RankOne
