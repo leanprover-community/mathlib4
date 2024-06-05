@@ -105,8 +105,8 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α]
       refine multiset_prod_mem _ _ (Multiset.forall_mem_cons.2 ⟨subset_closure (Set.mem_def.2 ?_),
         Multiset.forall_mem_cons.2 ⟨subset_closure (Set.mem_def.2 ?_), (fun t ht =>
         subset_closure (hs t ht))⟩⟩)
-      left; exact isUnit_of_mul_eq_one_right _ _ hk
-      left; exact ha₁
+      · left; exact isUnit_of_mul_eq_one_right _ _ hk
+      · left; exact ha₁
       rw [← mul_one s.prod, ← hk, ← mul_assoc, ← mul_assoc, mul_eq_mul_right_iff, mul_comm]
       left; exact hprod
     · rcases ha₂.dvd_mul.1 (Dvd.intro _ hprod) with ⟨c, hc⟩ | ⟨c, hc⟩
