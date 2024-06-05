@@ -186,15 +186,11 @@ theorem IsLindelof.indexed_countable_subcover {ι : Type v} [Nonempty ι]
       iUnion_empty] at c_cov
     simp only [subset_eq_empty c_cov rfl, empty_subset, exists_const]
   obtain ⟨f, f_surj⟩ := (Set.countable_iff_exists_surjective c_nonempty).mp c_count
-  use Subtype.val ∘ f
-  intro _ xinh
-  rcases c_cov xinh with ⟨uy, ⟨y, yuc⟩, xinuy⟩
-  rw [← yuc, mem_iUnion, exists_prop] at xinuy
-  rcases f_surj ⟨y, xinuy.1⟩ with ⟨n, fny⟩
-  rw [mem_iUnion]
-  use n
-  rw [Function.comp_apply, fny]
-  exact xinuy.2
+  refine ⟨Subtype.val ∘ f, Subset.trans c_cov ?_⟩
+  simp only [Function.comp_apply, iUnion_subset_iff]
+  intro x hx
+  obtain ⟨n, hn⟩ := f_surj ⟨x, hx⟩
+  exact subset_iUnion_of_subset n <| subset_of_eq (by rw [hn])
 
 /-- The neighborhood filter of a Lindelöf set is disjoint with a filter `l` with the countable
 intersection property if and only if the neighborhood filter of each point of this set
