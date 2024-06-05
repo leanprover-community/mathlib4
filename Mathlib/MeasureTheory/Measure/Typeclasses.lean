@@ -184,6 +184,26 @@ theorem ae_mem_iff_measure_eq [IsFiniteMeasure μ] {s : Set α} (hs : NullMeasur
   ae_iff_measure_eq hs
 #align measure_theory.ae_mem_iff_measure_eq MeasureTheory.ae_mem_iff_measure_eq
 
+lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
+    {X : Type*} [MeasurableSpace X] {μ : Measure X} [IsFiniteMeasure μ]
+    {Es : ℕ → Set X} (Es_mble : ∀ i, MeasurableSet (Es i))
+    (Es_disj : Pairwise fun n m ↦ Disjoint (Es n) (Es m)) :
+    Tendsto (μ ∘ fun n ↦ ⋃ i ≥ n, Es i) atTop (𝓝 0) := by
+  have decr : Antitone fun n ↦ ⋃ i ≥ n, Es i :=
+    fun n m hnm ↦ biUnion_mono (fun _ hi ↦ le_trans hnm hi) (fun _ _ ↦ subset_rfl)
+  have nothing : ⋂ n, ⋃ i ≥ n, Es i = ∅ := by
+    apply subset_antisymm _ (empty_subset _)
+    intro x hx
+    simp only [ge_iff_le, mem_iInter, mem_iUnion, exists_prop] at hx
+    obtain ⟨j, _, x_in_Es_j⟩ := hx 0
+    obtain ⟨k, k_gt_j, x_in_Es_k⟩ := hx (j+1)
+    have oops := (Es_disj (Nat.ne_of_lt k_gt_j)).ne_of_mem x_in_Es_j x_in_Es_k
+    contradiction
+  have key :=
+    tendsto_measure_iInter (μ := μ) (fun n ↦ by measurability) decr ⟨0, measure_ne_top _ _⟩
+  simp only [ge_iff_le, nothing, measure_empty] at key
+  convert key
+
 open scoped symmDiff
 
 theorem abs_toReal_measure_sub_le_measure_symmDiff'
@@ -276,6 +296,17 @@ better-behaved subtraction of `ℝ`. -/
 theorem prob_compl_eq_one_sub (hs : MeasurableSet s) : μ sᶜ = 1 - μ s :=
   prob_compl_eq_one_sub₀ hs.nullMeasurableSet
 #align measure_theory.prob_compl_eq_one_sub MeasureTheory.prob_compl_eq_one_sub
+
+lemma prob_compl_lt_one_sub_of_lt_prob {p : ℝ≥0∞} (hμs : p < μ s) (s_mble : MeasurableSet s) :
+    μ sᶜ < 1 - p := by
+  rw [prob_compl_eq_one_sub s_mble]
+  apply ENNReal.sub_lt_of_sub_lt prob_le_one (Or.inl one_ne_top)
+  convert hμs
+  exact ENNReal.sub_sub_cancel one_ne_top (lt_of_lt_of_le hμs prob_le_one).le
+
+lemma prob_compl_le_one_sub_of_le_prob {p : ℝ≥0∞} (hμs : p ≤ μ s) (s_mble : MeasurableSet s) :
+    μ sᶜ ≤ 1 - p := by
+  simpa [prob_compl_eq_one_sub s_mble] using tsub_le_tsub_left hμs 1
 
 @[simp] lemma prob_compl_eq_zero_iff₀ (hs : NullMeasurableSet s μ) : μ sᶜ = 0 ↔ μ s = 1 := by
   rw [prob_compl_eq_one_sub₀ hs, tsub_eq_zero_iff_le, one_le_prob_iff]
