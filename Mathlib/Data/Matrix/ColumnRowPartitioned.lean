@@ -154,8 +154,7 @@ lemma fromRows_neg (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
 @[simp]
 lemma fromColumns_neg (A₁ : Matrix n m₁ R) (A₂ : Matrix n m₂ R) :
     -fromColumns A₁ A₂ = fromColumns (-A₁) (-A₂) := by
-  ext i j
-  cases j <;> simp [fromColumns]
+  ext i (j | j) <;> simp
 
 end Neg
 
