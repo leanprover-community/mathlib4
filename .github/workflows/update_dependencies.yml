@@ -1,5 +1,8 @@
 name: Update Mathlib Dependencies
 
+# This action currently uses the NIGHTLY_TESTING secret, but could be moved to a separate secret.
+# Despite this, this action is acting on the `master` branch, not the `nightly-testing` branch.
+
 on:
   schedule:
     - cron: '0 * * * *'  # This will run every hour

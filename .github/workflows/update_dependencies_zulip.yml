@@ -1,5 +1,7 @@
 name: Monitor Dependency Update Failures
 
+# This action currently uses the NIGHTLY_TESTING secret, but could be moved to a separate secret.
+
 on:
   workflow_run:
     workflows: ["Update Mathlib Dependencies"]
