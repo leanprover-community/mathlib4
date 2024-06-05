@@ -595,8 +595,8 @@ theorem comap_upperCentralSeries_quotient_center (n : ℕ) :
   · let Hn := upperCentralSeries (G ⧸ center G) n
     calc
       comap (mk' (center G)) (upperCentralSeriesStep Hn) =
-          comap (mk' (center G)) (comap (mk' Hn) (center ((G ⧸ center G) ⧸ Hn))) :=
-        by rw [upperCentralSeriesStep_eq_comap_center]
+          comap (mk' (center G)) (comap (mk' Hn) (center ((G ⧸ center G) ⧸ Hn))) := by
+        rw [upperCentralSeriesStep_eq_comap_center]
       _ = comap (mk' (comap (mk' (center G)) Hn)) (center (G ⧸ comap (mk' (center G)) Hn)) :=
         QuotientGroup.comap_comap_center
       _ = comap (mk' (upperCentralSeries G n.succ)) (center (G ⧸ upperCentralSeries G n.succ)) :=
@@ -708,8 +708,8 @@ theorem lowerCentralSeries_prod (n : ℕ) :
   · calc
       lowerCentralSeries (G₁ × G₂) n.succ = ⁅lowerCentralSeries (G₁ × G₂) n, ⊤⁆ := rfl
       _ = ⁅(lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n), ⊤⁆ := by rw [ih]
-      _ = ⁅(lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n), (⊤ : Subgroup G₁).prod ⊤⁆ :=
-        by simp
+      _ = ⁅(lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n), (⊤ : Subgroup G₁).prod ⊤⁆ := by
+        simp
       _ = ⁅lowerCentralSeries G₁ n, (⊤ : Subgroup G₁)⁆.prod ⁅lowerCentralSeries G₂ n, ⊤⁆ :=
         (commutator_prod_prod _ _ _ _)
       _ = (lowerCentralSeries G₁ n.succ).prod (lowerCentralSeries G₂ n.succ) := rfl
@@ -884,7 +884,7 @@ theorem isNilpotent_of_product_of_sylow_group
 /-- A finite group is nilpotent iff the normalizer condition holds, and iff all maximal groups are
 normal and iff all Sylow groups are normal and iff the group is the direct product of its Sylow
 groups. -/
-theorem isNilpotent_of_finite_tFAE :
+theorem isNilpotent_of_finite_tfae :
     List.TFAE
       [IsNilpotent G, NormalizerCondition G, ∀ H : Subgroup G, IsCoatom H → H.Normal,
         ∀ (p : ℕ) (_hp : Fact p.Prime) (P : Sylow p G), (↑P : Subgroup G).Normal,
@@ -901,6 +901,8 @@ theorem isNilpotent_of_finite_tFAE :
   tfae_have 5 → 1
   · rintro ⟨e⟩; exact isNilpotent_of_product_of_sylow_group e
   tfae_finish
-#align is_nilpotent_of_finite_tfae isNilpotent_of_finite_tFAE
+#align is_nilpotent_of_finite_tfae isNilpotent_of_finite_tfae
+
+@[deprecated (since := "2024-06-05")] alias isNilpotent_of_finite_tFAE := isNilpotent_of_finite_tfae
 
 end WithFiniteGroup

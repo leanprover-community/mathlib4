@@ -368,7 +368,7 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
     fun f g => by
     rcases p.dichotomy with (rfl | h)
     · rw [prod_edist_eq_sup, prod_dist_eq_sup]
-      refine' le_antisymm (sup_le _ _) _
+      refine le_antisymm (sup_le ?_ ?_) ?_
       · rw [← ENNReal.ofReal_le_iff_le_toReal (prod_sup_edist_ne_top_aux f g),
           ← PseudoMetricSpace.edist_dist]
         exact le_sup_left
@@ -434,8 +434,8 @@ theorem prod_aux_uniformity_eq [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     (prod_antilipschitzWith_equiv_aux p α β).uniformInducing
       (prod_lipschitzWith_equiv_aux p α β).uniformContinuous
   have : (fun x : WithLp p (α × β) × WithLp p (α × β) =>
-    ((WithLp.equiv p (α × β)) x.fst, (WithLp.equiv p (α × β)) x.snd)) = id :=
-    by ext i <;> rfl
+    ((WithLp.equiv p (α × β)) x.fst, (WithLp.equiv p (α × β)) x.snd)) = id := by
+    ext i <;> rfl
   rw [← A.comap_uniformity, this, comap_id]
 
 theorem prod_aux_cobounded_eq [PseudoMetricSpace α] [PseudoMetricSpace β] :

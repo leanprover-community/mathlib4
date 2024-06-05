@@ -1012,6 +1012,9 @@ theorem Subsingleton.finite {s : Set α} (h : s.Subsingleton) : s.Finite :=
   h.induction_on finite_empty finite_singleton
 #align set.subsingleton.finite Set.Subsingleton.finite
 
+theorem Infinite.nontrivial {s : Set α} (hs : s.Infinite) : s.Nontrivial :=
+  not_subsingleton_iff.1 <| mt Subsingleton.finite hs
+
 theorem finite_preimage_inl_and_inr {s : Set (Sum α β)} :
     (Sum.inl ⁻¹' s).Finite ∧ (Sum.inr ⁻¹' s).Finite ↔ s.Finite :=
   ⟨fun h => image_preimage_inl_union_image_preimage_inr s ▸ (h.1.image _).union (h.2.image _),
