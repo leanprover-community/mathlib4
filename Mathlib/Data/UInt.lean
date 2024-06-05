@@ -103,11 +103,9 @@ run_cmd
       @[simp] lemma mk_val_eq : ∀ (a : $typeName), mk a.val = a
       | ⟨_, _⟩ => rfl
 
-      @[nolint docBlame]
       local instance instNatCast : NatCast $typeName where
         natCast n := mk n
 
-      @[nolint docBlame]
       local instance instIntCast : IntCast $typeName where
         intCast z := mk z
 
@@ -115,7 +113,6 @@ run_cmd
 
       lemma intCast_def (z : ℤ) : (z : $typeName) = ⟨z⟩ := rfl
 
-      @[nolint docBlame]
       local instance instCommRing : CommRing $typeName :=
         Function.Injective.commRing val val_injective
           rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
