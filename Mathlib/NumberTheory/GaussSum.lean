@@ -260,7 +260,6 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
     Polynomial.IsSplittingField.splittingField _
   have : FiniteDimensional F FF :=
     Polynomial.IsSplittingField.finiteDimensional FF (Polynomial.cyclotomic 8 F)
-  have : Fintype FF := FiniteDimensional.fintypeOfFintype F FF
   have hchar := Algebra.ringChar_eq F FF
   have FFp := hchar.subst hp
   have := Fact.mk FFp
