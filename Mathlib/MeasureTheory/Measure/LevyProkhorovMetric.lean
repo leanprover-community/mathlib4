@@ -495,7 +495,7 @@ variable {Ω}
 
 lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds (P : ProbabilityMeasure Ω)
     {G : Set Ω} (G_open : IsOpen G) {ε : ℝ≥0∞} (ε_pos : 0 < ε) :
-    ({Q | P.toMeasure G < Q.toMeasure G + ε} ∈ 𝓝 P) := by
+    {Q | P.toMeasure G < Q.toMeasure G + ε} ∈ 𝓝 P := by
   by_cases easy : P.toMeasure G < ε
   · exact eventually_of_forall (fun _ ↦ lt_of_lt_of_le easy le_add_self)
   by_cases ε_top : ε = ∞
