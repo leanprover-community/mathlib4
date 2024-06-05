@@ -140,7 +140,7 @@ Alias of `IsValExtension.ofIntegerComap` when `R` and `A` are further fields.
 -/
 theorem ofValuationSubringComap {R A : Type*} {ΓR ΓA : outParam Type*} [Field R] [Field A]
     [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
-    [Algebra R A] [vR : Valued R ΓR] [vA : Valued A ΓA] [IsValExtension R A]
+    [Algebra R A] [vR : Valued R ΓR] [vA : Valued A ΓA]
     (h : 𝒪[A].comap (algebraMap R A) = 𝒪[R]) : IsValExtension R A := by
   apply ofIntegerComap
   rw [show vR.v.integer = 𝒪[R].toSubring by rfl, ← h]
