@@ -639,7 +639,7 @@ lemma tendsto_integral_density_of_monotone (hκν : fst κ ≤ ν) [IsFiniteKern
   simp_rw [integral_density hκν a (hseq_meas _)]
   have h_cont := ENNReal.continuousOn_toReal.continuousAt (x := κ a univ) ?_
   swap
-  · rw [mem_nhds_iff]
+  · rw [_root_.mem_nhds_iff]
     refine ⟨Iio (κ a univ + 1), fun x hx ↦ ne_top_of_lt (?_ : x < κ a univ + 1), isOpen_Iio, ?_⟩
     · simpa using hx
     · simp only [mem_Iio]
@@ -660,7 +660,7 @@ lemma tendsto_integral_density_of_antitone (hκν : fst κ ≤ ν) [IsFiniteKern
   rw [← ENNReal.zero_toReal]
   have h_cont := ENNReal.continuousOn_toReal.continuousAt (x := 0) ?_
   swap
-  · rw [mem_nhds_iff]
+  · rw [_root_.mem_nhds_iff]
     refine ⟨Iio 1, fun x hx ↦ ne_top_of_lt (?_ : x < 1), isOpen_Iio, ?_⟩
     · simpa using hx
     · simp

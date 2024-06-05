@@ -639,6 +639,10 @@ end RpowCpow
 /-! ### Integral of `sin x ^ n` -/
 
 
+-- the fact that this is a `continuity` and `fun_prop` rule is really bad, because
+-- we don't want it to apply all the time.
+attribute [-aesop] IsProperMap.continuous
+
 theorem integral_sin_pow_aux :
     (∫ x in a..b, sin x ^ (n + 2)) =
       (sin a ^ (n + 1) * cos a - sin b ^ (n + 1) * cos b + (↑n + 1) * ∫ x in a..b, sin x ^ n) -
