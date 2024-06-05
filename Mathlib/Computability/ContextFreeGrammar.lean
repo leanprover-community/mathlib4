@@ -290,14 +290,24 @@ def ContextFreeRule.lift {N₀ N : Type*} (r : ContextFreeRule T N₀) (liftN : 
 
 /-- Lifting `ContextFreeGrammar` to a larger nonterminal type. -/
 structure LiftedContextFreeGrammar (T : Type uT) where
-  g₀: ContextFreeGrammar T
-  g : ContextFreeGrammar T
+  /-- The smaller grammar. -/
+  g₀: ContextFreeGrammar.{uT} T
+  /-- The bigger grammar. -/
+  g : ContextFreeGrammar.{uT} T
+  /-- Mapping nonterminals from the smaller type to the bigger type. -/
   liftNT : g₀.NT → g.NT
+  /-- Mapping nonterminals from the bigger type to the smaller type. -/
   sinkNT : g.NT → Option g₀.NT
+  /-- The former map is injective. -/
   lift_inj : Function.Injective liftNT
+  /-- The latter map is injective where defined. -/
   sink_inj : ∀ x y, sinkNT x = sinkNT y → x = y ∨ sinkNT x = none
+  /-- The two mappings are essentially inverses. -/
   sinkNT_liftNT : ∀ n₀ : g₀.NT, sinkNT (liftNT n₀) = some n₀
+  /-- Each rule of the smaller grammar has a corresponding rule in the bigger grammar. -/
   corresponding_rules : ∀ r : ContextFreeRule T g₀.NT, r ∈ g₀.rules → r.lift liftNT ∈ g.rules
+  /-- Each rule of the bigger grammar whose input nonterminal the smaller grammar recognizes
+      has a corresponding rule in the smaller grammar. -/
   preimage_of_rules :
     ∀ r : ContextFreeRule T g.NT,
       (r ∈ g.rules ∧ ∃ n₀ : g₀.NT, liftNT n₀ = r.input) →
