@@ -310,7 +310,7 @@ lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
 lemma binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
     (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
   rw [binaryRec]
-  split <;> rename_i h'
+  split_ifs with h'
   · generalize binaryRec z f (bit b n) = e
     revert e
     have bf := bodd_bit b n
@@ -320,12 +320,11 @@ lemma binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b
     subst bf n0
     rw [binaryRec_zero]
     intros
-    rw [h]
-    rfl
+    rw [h, eq_mpr_eq_cast, cast_eq]
   · simp only; generalize_proofs h
     revert h
     rw [bodd_bit, div2_bit]
-    intros; rfl
+    intros; simp only [eq_mpr_eq_cast, cast_eq]
 #align nat.binary_rec_eq Nat.binaryRec_eq
 #noalign nat.bitwise_bit_aux
 
