@@ -625,6 +625,62 @@ theorem isProjectiveLimit_measure_produit :
   rw [measure_produit, Measure.ofAddContent_eq _ _ _ _ h_mem,
     kolContent_congr (isProjectiveMeasureFamily_pi μ) h_mem rfl hs]
 
+instance : IsProbabilityMeasure (measure_produit μ) := by
+  constructor
+  rw [← cylinder_univ ∅, cylinder, ← Measure.map_apply, isProjectiveLimit_measure_produit μ]
+  · simp
+  · exact measurable_proj _
+  · exact MeasurableSet.univ
+
+theorem measure_boxes {s : Finset ι} {t : (i : ι) → Set (X i)}
+    (mt : ∀ i ∈ s, MeasurableSet (t i)) :
+    measure_produit μ (pi s t) = ∏ i ∈ s, (μ i) (t i) := by
+  classical
+  have : pi s t = cylinder s ((@Set.univ s).pi (fun i : s ↦ t i)) := by
+    ext x
+    simp
+  rw [this, cylinder, ← Measure.map_apply, isProjectiveLimit_measure_produit μ,
+    Measure.pi_pi]
+  · rw [univ_eq_attach, Finset.prod_attach _ (fun i ↦ (μ i) (t i))]
+  · exact measurable_proj _
+  · apply MeasurableSet.pi countable_univ fun i _ ↦ mt i.1 i.2
+
+theorem measure_cylinder {s : Finset ι} {S : Set ((i : s) → X i)} (mS : MeasurableSet S) :
+    measure_produit μ (cylinder s S) = Measure.pi (fun i : s ↦ μ i) S := by
+  rw [cylinder, ← Measure.map_apply _ mS, isProjectiveLimit_measure_produit μ]
+  exact measurable_proj _
+
+theorem integral_dep {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {s : Finset ι} {f : ((i : s) → X i) → E} (hf : StronglyMeasurable f) :
+    ∫ y, f ((fun x (i : s) ↦ x i) y) ∂measure_produit μ =
+    ∫ y, f y∂Measure.pi (fun i : s ↦ μ i) := by
+  rw [← integral_map, isProjectiveLimit_measure_produit μ]
+  · exact (measurable_proj _).aemeasurable
+  · exact hf.aestronglyMeasurable
+
+theorem lintegral_dep {s : Finset ι} {f : ((i : s) → X i) → ℝ≥0∞} (hf : Measurable f) :
+    ∫⁻ y, f ((fun x (i : s) ↦ x i) y) ∂measure_produit μ =
+    ∫⁻ y, f y∂Measure.pi (fun i : s ↦ μ i) := by
+  rw [← lintegral_map hf, isProjectiveLimit_measure_produit μ]
+  exact (measurable_proj _)
+
+theorem lintegral_dependsOn [DecidableEq ι]
+    {f : ((i : ι) → X i) → ℝ≥0∞} (mf : Measurable f) {s : Finset ι} (hf : DependsOn f s)
+    (x : (i : ι) → X i) : ∫⁻ y, f y ∂measure_produit μ = (∫⋯∫⁻_s, f ∂μ) x := by
+  have : ∀ i, Nonempty (X i) := by
+    have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩
+    infer_instance
+  let g : ((i : s) → X i) → ℝ≥0∞ := fun y ↦ f (Function.updateFinset x _ y)
+  have this y : g ((fun z (i : s) ↦ z i) y) = f y := by
+    apply hf
+    intro i hi
+    simp only [Function.updateFinset, dite_eq_ite, ite_eq_left_iff]
+    exact fun h ↦ (h hi).elim
+  simp_rw [← this]
+  rw [lintegral_dep]
+  · rfl
+  · exact mf.comp measurable_updateFinset
+
 /- TODO: Add lemmas that show that the product measure behaves in the way we expect with respect
 to measure of boxes and integral of functions depending on finitely many indices. -/
 

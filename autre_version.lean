@@ -1119,21 +1119,4 @@ noncomputable def ionescu_tulcea_kernel : kernel (X 0) ((n : ℕ+) → X n) :=
   { val := ionescu_tulcea_fun κ
     property := measurable_ionescu κ }
 
-instance : IsMarkovKernel (ionescu_tulcea_kernel κ) := by
-  constructor
-  intro x₀
-  exact proba_ionescu _ _
-
--- theorem test
---     (μ : Measure ((transitionGraph X).node 0)) [IsProbabilityMeasure μ] :
---     ∃ ν : Measure ((k : ℕ) → X k), ∀ k : ℕ, (hk : 0 < k) →
---     ν.map (fun x (i : Iic k) ↦ x i) =
---     (μ ⊗ₘ (MeasurableSpaceGraph.transition κ).ker 0 k).map ((transitionGraph X).el 0 k hk) := by sorry
-
--- theorem test' :
---     ∃ ν : kernel ((transitionGraph X).node 0) ((k : Ioi 0) → X k), ∀ k : ℕ, (hk : 0 < k) →
---     kernel.map ν
---       (fun x (i : Ioc 0 k) ↦ x ⟨i.1, Ioc_subset_Ioi_self i.2⟩
---         : ((k : Ioi 0) → X k) → (transitionGraph X).path 0 k)
---       (measurable_proj₂ _ _ Ioc_subset_Ioi_self) =
---     (MeasurableSpaceGraph.transition κ).ker 0 k := by sorry
+instance : IsMarkovKernel (ionescu_tulcea_kernel κ) := IsMarkovKernel.mk fun _ ↦ proba_ionescu _ _
