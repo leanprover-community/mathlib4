@@ -53,6 +53,12 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
 
+### TODOs
+
+* Add perfectly normal and T6 spaces.
+* Use `countable_covers_witnessing_separated_nhds` to prove that perfectly normal spaces
+  are completely normal.
+
 ## Main results
 
 ### T₀ spaces
