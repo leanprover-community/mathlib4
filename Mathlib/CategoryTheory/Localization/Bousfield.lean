@@ -50,6 +50,14 @@ a bijection `(Y ⟶ Z) ≃ (X ⟶ Z)`. -/
 def W : MorphismProperty C := fun _ _ f =>
   ∀ Z, P Z → Function.Bijective (fun (g : _ ⟶ Z) => f ≫ g)
 
+variable {P} in
+/-- The bijection `(Y ⟶ Z) ≃ (X ⟶ Z)` induced by `f : X ⟶ Y` when `LeftBousfield.W P f`
+and `P Z`. -/
+@[simps! apply]
+noncomputable def W.homEquiv {X Y : C} {f : X ⟶ Y} (hf : W P f) (Z : C) (hZ : P Z) :
+    (Y ⟶ Z) ≃ (X ⟶ Z) :=
+  Equiv.ofBijective _ (hf Z hZ)
+
 lemma W_isoClosure : W (isoClosure P) = W P := by
   ext X Y f
   constructor

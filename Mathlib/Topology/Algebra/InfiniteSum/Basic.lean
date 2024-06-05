@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
+Authors: Johannes Hölzl, Mitchell Lee
 -/
 import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.Data.Fintype.BigOperators
@@ -205,6 +205,13 @@ protected theorem HasProd.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasPro
 #align has_sum.map HasSum.map
 
 @[to_additive]
+protected theorem Inducing.hasProd_iff [CommMonoid γ] [TopologicalSpace γ] {G}
+    [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : Inducing g) (f : β → α) (a : α) :
+    HasProd (g ∘ f) (g a) ↔ HasProd f a := by
+  simp_rw [HasProd, comp_apply, ← map_prod]
+  exact hg.tendsto_nhds_iff.symm
+
+@[to_additive]
 protected theorem Multipliable.map [CommMonoid γ] [TopologicalSpace γ] (hf : Multipliable f) {G}
     [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) : Multipliable (g ∘ f) :=
   (hf.hasProd.map g hg).multipliable
@@ -219,6 +226,27 @@ protected theorem Multipliable.map_iff_of_leftInverse [CommMonoid γ] [Topologic
     have := h.map _ hg'
     rwa [← Function.comp.assoc, hinv.id] at this, fun h ↦ h.map _ hg⟩
 #align summable.map_iff_of_left_inverse Summable.map_iff_of_leftInverse
+
+@[to_additive]
+theorem Multipliable.map_tprod [CommMonoid γ] [TopologicalSpace γ] [T2Space γ] (hf : Multipliable f)
+    {G} [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) :
+    g (∏' i, f i) = ∏' i, g (f i) := (HasProd.tprod_eq (HasProd.map hf.hasProd g hg)).symm
+
+@[to_additive]
+theorem Inducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] [TopologicalSpace γ]
+    [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : Inducing g) (f : β → α) :
+    Multipliable f ↔ Multipliable (g ∘ f) ∧ ∏' i, g (f i) ∈ Set.range g := by
+  constructor
+  · intro hf
+    constructor
+    · exact hf.map g hg.continuous
+    · use ∏' i, f i
+      exact hf.map_tprod g hg.continuous
+  · rintro ⟨hgf, a, ha⟩
+    use a
+    have := hgf.hasProd
+    simp_rw [comp_apply, ← ha] at this
+    exact (hg.hasProd_iff f a).mp this
 
 /-- "A special case of `Multipliable.map_iff_of_leftInverse` for convenience" -/
 @[to_additive "A special case of `Summable.map_iff_of_leftInverse` for convenience"]
@@ -361,7 +389,7 @@ theorem tprod_congr_set_coe (f : β → α) {s t : Set β} (h : s = t) :
 #align tsum_congr_subtype tsum_congr_set_coe
 
 @[to_additive]
-theorem tprod_congr_subtype (f : β → α) {P Q : β → Prop} (h : ∀ x, P x ↔ Q x):
+theorem tprod_congr_subtype (f : β → α) {P Q : β → Prop} (h : ∀ x, P x ↔ Q x) :
     ∏' x : {x // P x}, f x = ∏' x : {x // Q x}, f x :=
   tprod_congr_set_coe f <| Set.ext h
 
