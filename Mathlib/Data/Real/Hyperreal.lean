@@ -13,7 +13,8 @@ import Mathlib.Analysis.SpecificLimits.Basic
 -/
 
 
-open Filter Germ Topology Classical
+open scoped Classical
+open Filter Germ Topology
 
 /-- Hyperreal numbers on the ultrafilter extending the cofinite filter -/
 def Hyperreal : Type :=
@@ -89,8 +90,11 @@ theorem coe_add (x y : ℝ) : ↑(x + y) = (x + y : ℝ*) :=
 #noalign hyperreal.coe_bit0
 #noalign hyperreal.coe_bit1
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
-theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ) : ℝ*) = OfNat.ofNat n := rfl
+theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index (OfNat.ofNat n : ℝ)) : ℝ*) = OfNat.ofNat n :=
+  rfl
 
 @[simp, norm_cast]
 theorem coe_mul (x y : ℝ) : ↑(x * y) = (x * y : ℝ*) :=
@@ -146,7 +150,7 @@ theorem coe_min (x y : ℝ) : ((min x y : ℝ) : ℝ*) = min ↑x ↑y :=
 def ofSeq (f : ℕ → ℝ) : ℝ* := (↑f : Germ (hyperfilter ℕ : Filter ℕ) ℝ)
 #align hyperreal.of_seq Hyperreal.ofSeq
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem ofSeq_surjective : Function.Surjective ofSeq := Quot.exists_rep
 
 theorem ofSeq_lt_ofSeq {f g : ℕ → ℝ} : ofSeq f < ofSeq g ↔ ∀ᶠ n in hyperfilter ℕ, f n < g n :=
@@ -212,7 +216,7 @@ theorem gt_of_tendsto_zero_of_neg {f : ℕ → ℝ} (hf : Tendsto f atTop (𝓝 
 #align hyperreal.gt_of_tendsto_zero_of_neg Hyperreal.gt_of_tendsto_zero_of_neg
 
 theorem epsilon_lt_pos (x : ℝ) : 0 < x → ε < x :=
-  lt_of_tendsto_zero_of_pos tendsto_inverse_atTop_nhds_0_nat
+  lt_of_tendsto_zero_of_pos tendsto_inverse_atTop_nhds_zero_nat
 #align hyperreal.epsilon_lt_pos Hyperreal.epsilon_lt_pos
 
 /-- Standard part predicate -/
@@ -261,7 +265,7 @@ theorem isSt_of_tendsto {f : ℕ → ℝ} {r : ℝ} (hf : Tendsto f atTop (𝓝 
   isSt_ofSeq_iff_tendsto.2 <| hf.mono_left Nat.hyperfilter_le_atTop
 #align hyperreal.is_st_of_tendsto Hyperreal.isSt_of_tendsto
 
--- porting note: moved up, renamed
+-- Porting note: moved up, renamed
 protected theorem IsSt.lt {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) (hrs : r < s) :
     x < y := by
   rcases ofSeq_surjective x with ⟨f, rfl⟩
@@ -291,7 +295,7 @@ theorem not_infinite_of_exists_st {x : ℝ*} : (∃ r : ℝ, IsSt x r) → ¬Inf
 #align hyperreal.not_infinite_of_exists_st Hyperreal.not_infinite_of_exists_st
 
 theorem Infinite.st_eq {x : ℝ*} (hi : Infinite x) : st x = 0 :=
-  dif_neg <| fun ⟨_r, hr⟩ ↦ hr.not_infinite hi
+  dif_neg fun ⟨_r, hr⟩ ↦ hr.not_infinite hi
 #align hyperreal.st_infinite Hyperreal.Infinite.st_eq
 
 theorem isSt_sSup {x : ℝ*} (hni : ¬Infinite x) : IsSt x (sSup { y : ℝ | (y : ℝ*) < x }) :=
@@ -410,7 +414,7 @@ theorem IsSt.sub {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) : Is
 #align hyperreal.is_st_sub Hyperreal.IsSt.sub
 
 theorem IsSt.le {x y : ℝ*} {r s : ℝ} (hrx : IsSt x r) (hsy : IsSt y s) (hxy : x ≤ y) : r ≤ s :=
-  not_lt.1 <| fun h ↦ hxy.not_lt <| hsy.lt hrx h
+  not_lt.1 fun h ↦ hxy.not_lt <| hsy.lt hrx h
 #align hyperreal.is_st_le_of_le Hyperreal.IsSt.le
 
 theorem st_le_of_le {x y : ℝ*} (hix : ¬Infinite x) (hiy : ¬Infinite y) : x ≤ y → st x ≤ st y :=
@@ -460,17 +464,17 @@ theorem InfiniteNeg.neg {x : ℝ*} : InfiniteNeg x → InfinitePos (-x) := fun h
   lt_neg.mp (hp (-r))
 #align hyperreal.infinite_pos_neg_of_infinite_neg Hyperreal.InfiniteNeg.neg
 
--- porting note: swapped LHS with RHS; added @[simp]
+-- Porting note: swapped LHS with RHS; added @[simp]
 @[simp] theorem infiniteNeg_neg {x : ℝ*} : InfiniteNeg (-x) ↔ InfinitePos x :=
   ⟨fun hin => neg_neg x ▸ hin.neg, InfinitePos.neg⟩
 #align hyperreal.infinite_pos_iff_infinite_neg_neg Hyperreal.infiniteNeg_negₓ
 
--- porting note: swapped LHS with RHS; added @[simp]
+-- Porting note: swapped LHS with RHS; added @[simp]
 @[simp] theorem infinitePos_neg {x : ℝ*} : InfinitePos (-x) ↔ InfiniteNeg x :=
   ⟨fun hin => neg_neg x ▸ hin.neg, InfiniteNeg.neg⟩
 #align hyperreal.infinite_neg_iff_infinite_pos_neg Hyperreal.infinitePos_negₓ
 
--- porting note: swapped LHS with RHS; added @[simp]
+-- Porting note: swapped LHS with RHS; added @[simp]
 @[simp] theorem infinite_neg {x : ℝ*} : Infinite (-x) ↔ Infinite x :=
   or_comm.trans <| infiniteNeg_neg.or infinitePos_neg
 #align hyperreal.infinite_iff_infinite_neg Hyperreal.infinite_negₓ
@@ -517,12 +521,13 @@ theorem infinitePos_abs_iff_infinite_abs {x : ℝ*} : InfinitePos |x| ↔ Infini
   infinitePos_iff_infinite_of_nonneg (abs_nonneg _)
 #align hyperreal.infinite_pos_abs_iff_infinite_abs Hyperreal.infinitePos_abs_iff_infinite_abs
 
--- porting note: swapped LHS with RHS; added @[simp]
+-- Porting note: swapped LHS with RHS; added @[simp]
 @[simp] theorem infinite_abs_iff {x : ℝ*} : Infinite |x| ↔ Infinite x := by
   cases le_total 0 x <;> simp [*, abs_of_nonneg, abs_of_nonpos, infinite_neg]
 #align hyperreal.infinite_iff_infinite_abs Hyperreal.infinite_abs_iffₓ
 
--- porting note: swapped LHS with RHS; todo: make it a `simp` lemma
+-- Porting note: swapped LHS with RHS;
+-- Porting note (#11215): TODO: make it a `simp` lemma
 @[simp] theorem infinitePos_abs_iff_infinite {x : ℝ*} : InfinitePos |x| ↔ Infinite x :=
   infinitePos_abs_iff_infinite_abs.trans infinite_abs_iff
 #align hyperreal.infinite_iff_infinite_pos_abs Hyperreal.infinitePos_abs_iff_infiniteₓ
@@ -685,7 +690,7 @@ theorem infinitesimal_zero : Infinitesimal 0 := isSt_refl_real 0
 theorem Infinitesimal.eq_zero {r : ℝ} : Infinitesimal r → r = 0 := eq_of_isSt_real
 #align hyperreal.zero_of_infinitesimal_real Hyperreal.Infinitesimal.eq_zero
 
--- porting note: swapped LHS with RHS; added `@[simp]`
+-- Porting note: swapped LHS with RHS; added `@[simp]`
 @[simp] theorem infinitesimal_real_iff {r : ℝ} : Infinitesimal r ↔ r = 0 :=
   isSt_real_iff_eq
 #align hyperreal.zero_iff_infinitesimal_real Hyperreal.infinitesimal_real_iff
@@ -698,7 +703,7 @@ nonrec theorem Infinitesimal.neg {x : ℝ*} (hx : Infinitesimal x) : Infinitesim
   simpa only [neg_zero] using hx.neg
 #align hyperreal.infinitesimal_neg Hyperreal.Infinitesimal.neg
 
--- porting note: swapped LHS and RHS, added `@[simp]`
+-- Porting note: swapped LHS and RHS, added `@[simp]`
 @[simp] theorem infinitesimal_neg {x : ℝ*} : Infinitesimal (-x) ↔ Infinitesimal x :=
   ⟨fun h => neg_neg x ▸ h.neg, Infinitesimal.neg⟩
 #align hyperreal.infinitesimal_neg_iff Hyperreal.infinitesimal_negₓ
@@ -713,7 +718,7 @@ theorem infinitesimal_of_tendsto_zero {f : ℕ → ℝ} (h : Tendsto f atTop (�
 #align hyperreal.infinitesimal_of_tendsto_zero Hyperreal.infinitesimal_of_tendsto_zero
 
 theorem infinitesimal_epsilon : Infinitesimal ε :=
-  infinitesimal_of_tendsto_zero tendsto_inverse_atTop_nhds_0_nat
+  infinitesimal_of_tendsto_zero tendsto_inverse_atTop_nhds_zero_nat
 #align hyperreal.infinitesimal_epsilon Hyperreal.infinitesimal_epsilon
 
 theorem not_real_of_infinitesimal_ne_zero (x : ℝ*) : Infinitesimal x → x ≠ 0 → ∀ r : ℝ, x ≠ r :=
@@ -788,11 +793,11 @@ theorem IsSt.inv {x : ℝ*} {r : ℝ} (hi : ¬Infinitesimal x) (hr : IsSt x r) :
 
 theorem st_inv (x : ℝ*) : st x⁻¹ = (st x)⁻¹ := by
   by_cases h0 : x = 0
-  rw [h0, inv_zero, ← coe_zero, st_id_real, inv_zero]
+  · rw [h0, inv_zero, ← coe_zero, st_id_real, inv_zero]
   by_cases h1 : Infinitesimal x
-  rw [((infinitesimal_iff_infinite_inv h0).mp h1).st_eq, h1.st_eq, inv_zero]
+  · rw [((infinitesimal_iff_infinite_inv h0).mp h1).st_eq, h1.st_eq, inv_zero]
   by_cases h2 : Infinite x
-  rw [(infinitesimal_inv_of_infinite h2).st_eq, h2.st_eq, inv_zero]
+  · rw [(infinitesimal_inv_of_infinite h2).st_eq, h2.st_eq, inv_zero]
   exact ((isSt_st' h2).inv h1).st_eq
 #align hyperreal.st_inv Hyperreal.st_inv
 
@@ -813,8 +818,8 @@ theorem infinitePos_mul_of_infinitePos_not_infinitesimal_pos {x y : ℝ*} :
   have hy₁' := not_forall.mp (mt infinitesimal_def.2 hy₁)
   let ⟨r₁, hy₁''⟩ := hy₁'
   have hyr : 0 < r₁ ∧ ↑r₁ ≤ y := by
-    rwa [not_imp, ← abs_lt, not_lt, abs_of_pos hy₂] at hy₁''
-  rw [← div_mul_cancel r (ne_of_gt hyr.1), coe_mul]
+    rwa [Classical.not_imp, ← abs_lt, not_lt, abs_of_pos hy₂] at hy₁''
+  rw [← div_mul_cancel₀ r (ne_of_gt hyr.1), coe_mul]
   exact mul_lt_mul (hx (r / r₁)) hyr.2 (coe_lt_coe.2 hyr.1) (le_of_lt (hx 0))
 #align hyperreal.infinite_pos_mul_of_infinite_pos_not_infinitesimal_pos Hyperreal.infinitePos_mul_of_infinitePos_not_infinitesimal_pos
 
@@ -900,7 +905,7 @@ theorem Infinite.mul {x y : ℝ*} : Infinite x → Infinite y → Infinite (x * 
 end Hyperreal
 
 /-
-Porting note: todo: restore `positivity` plugin
+Porting note (#11215): TODO: restore `positivity` plugin
 
 namespace Tactic
 

@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
@@ -256,7 +256,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
 @[to_additive]
 theorem smooth_pow : ∀ n : ℕ, Smooth I I fun a : G => a ^ n
   | 0 => by simp only [pow_zero]; exact smooth_const
-  | k + 1 => by simpa [pow_succ] using smooth_id.mul (smooth_pow _)
+  | k + 1 => by simpa [pow_succ] using (smooth_pow _).mul smooth_id
 #align smooth_pow smooth_pow
 
 /-- Morphism of additive smooth monoids. -/
@@ -285,11 +285,13 @@ instance : One (SmoothMonoidMorphism I I' G G') :=
 instance : Inhabited (SmoothMonoidMorphism I I' G G') :=
   ⟨1⟩
 
--- porting note: replaced `CoeFun` with `MonoidHomClass` and `ContinuousMapClass` instances
+@[to_additive]
+instance : FunLike (SmoothMonoidMorphism I I' G G') G G' where
+  coe a := a.toFun
+  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
+
 @[to_additive]
 instance : MonoidHomClass (SmoothMonoidMorphism I I' G G') G G' where
-  coe a := a.toFun
-  coe_injective' f g h := by cases f; cases g; congr; exact FunLike.ext' h
   map_one f := f.map_one
   map_mul f := f.map_mul
 
@@ -299,137 +301,123 @@ instance : ContinuousMapClass (SmoothMonoidMorphism I I' G G') G G' where
 
 end Monoid
 
+/-! ### Differentiability of finite point-wise sums and products
+
+  Finite point-wise products (resp. sums) of differentiable/smooth functions `M → G` (at `x`/on `s`)
+  into a commutative monoid `G` are differentiable/smooth at `x`/on `s`. -/
 section CommMonoid
 
-open scoped BigOperators
+open Function
 
-variable {ι 𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*} [CommMonoid G]
-  [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G] {E' : Type*} [NormedAddCommGroup E']
-  [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H' M] {s : Set M} {x : M} {t : Finset ι}
-  {f : ι → M → G} {n : ℕ∞} {p : ι → Prop}
+variable {ι 𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
+  {G : Type*} [CommMonoid G] [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
+  {s : Set M} {x x₀ : M} {t : Finset ι} {f : ι → M → G} {n : ℕ∞} {p : ι → Prop}
+
+@[to_additive]
+theorem ContMDiffWithinAt.prod (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x₀) :
+    ContMDiffWithinAt I' I n (fun x ↦ ∏ i ∈ t, f i x) s x₀ := by
+  classical
+  induction' t using Finset.induction_on with i K iK IH
+  · simp [contMDiffWithinAt_const]
+  · simp only [iK, Finset.prod_insert, not_false_iff]
+    exact (h _ (Finset.mem_insert_self i K)).mul (IH fun j hj ↦ h _ <| Finset.mem_insert_of_mem hj)
+
+@[to_additive]
+theorem contMDiffWithinAt_finprod (lf : LocallyFinite fun i ↦ mulSupport <| f i) {x₀ : M}
+    (h : ∀ i, ContMDiffWithinAt I' I n (f i) s x₀) :
+    ContMDiffWithinAt I' I n (fun x ↦ ∏ᶠ i, f i x) s x₀ :=
+  let ⟨_I, hI⟩ := finprod_eventually_eq_prod lf x₀
+  (ContMDiffWithinAt.prod fun i _hi ↦ h i).congr_of_eventuallyEq
+    (eventually_nhdsWithin_of_eventually_nhds hI) hI.self_of_nhds
 
 @[to_additive]
 theorem contMDiffWithinAt_finset_prod' (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
-    ContMDiffWithinAt I' I n (∏ i in t, f i) s x :=
+    ContMDiffWithinAt I' I n (∏ i ∈ t, f i) s x :=
   Finset.prod_induction f (fun f => ContMDiffWithinAt I' I n f s x) (fun _ _ hf hg => hf.mul hg)
-    contMDiffWithinAt_const h
+    (contMDiffWithinAt_const (c := 1)) h
 #align cont_mdiff_within_at_finset_prod' contMDiffWithinAt_finset_prod'
 #align cont_mdiff_within_at_finset_sum' contMDiffWithinAt_finset_sum'
 
 @[to_additive]
-theorem contMDiffAt_finset_prod' (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x) :
-    ContMDiffAt I' I n (∏ i in t, f i) x :=
-  contMDiffWithinAt_finset_prod' h
-#align cont_mdiff_at_finset_prod' contMDiffAt_finset_prod'
-#align cont_mdiff_at_finset_sum' contMDiffAt_finset_sum'
-
-@[to_additive]
-theorem contMDiffOn_finset_prod' (h : ∀ i ∈ t, ContMDiffOn I' I n (f i) s) :
-    ContMDiffOn I' I n (∏ i in t, f i) s := fun x hx =>
-  contMDiffWithinAt_finset_prod' fun i hi => h i hi x hx
-#align cont_mdiff_on_finset_prod' contMDiffOn_finset_prod'
-#align cont_mdiff_on_finset_sum' contMDiffOn_finset_sum'
-
-@[to_additive]
-theorem contMDiff_finset_prod' (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
-    ContMDiff I' I n (∏ i in t, f i) := fun x => contMDiffAt_finset_prod' fun i hi => h i hi x
-#align cont_mdiff_finset_prod' contMDiff_finset_prod'
-#align cont_mdiff_finset_sum' contMDiff_finset_sum'
-
-@[to_additive]
 theorem contMDiffWithinAt_finset_prod (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
-    ContMDiffWithinAt I' I n (fun x => ∏ i in t, f i x) s x := by
+    ContMDiffWithinAt I' I n (fun x => ∏ i ∈ t, f i x) s x := by
   simp only [← Finset.prod_apply]
   exact contMDiffWithinAt_finset_prod' h
 #align cont_mdiff_within_at_finset_prod contMDiffWithinAt_finset_prod
 #align cont_mdiff_within_at_finset_sum contMDiffWithinAt_finset_sum
 
 @[to_additive]
+theorem ContMDiffAt.prod (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x₀) :
+    ContMDiffAt I' I n (fun x ↦ ∏ i ∈ t, f i x) x₀ := by
+  simp only [← contMDiffWithinAt_univ] at *
+  exact ContMDiffWithinAt.prod h
+
+@[to_additive]
+theorem contMDiffAt_finprod
+    (lf : LocallyFinite fun i ↦ mulSupport <| f i) (h : ∀ i, ContMDiffAt I' I n (f i) x₀) :
+    ContMDiffAt I' I n (fun x ↦ ∏ᶠ i, f i x) x₀ :=
+  contMDiffWithinAt_finprod lf h
+
+@[to_additive]
+theorem contMDiffAt_finset_prod' (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x) :
+    ContMDiffAt I' I n (∏ i ∈ t, f i) x :=
+  contMDiffWithinAt_finset_prod' h
+#align cont_mdiff_at_finset_prod' contMDiffAt_finset_prod'
+#align cont_mdiff_at_finset_sum' contMDiffAt_finset_sum'
+
+@[to_additive]
 theorem contMDiffAt_finset_prod (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x) :
-    ContMDiffAt I' I n (fun x => ∏ i in t, f i x) x :=
+    ContMDiffAt I' I n (fun x => ∏ i ∈ t, f i x) x :=
   contMDiffWithinAt_finset_prod h
 #align cont_mdiff_at_finset_prod contMDiffAt_finset_prod
 #align cont_mdiff_at_finset_sum contMDiffAt_finset_sum
 
 @[to_additive]
+theorem contMDiffOn_finprod
+    (lf : LocallyFinite fun i ↦ Function.mulSupport <| f i) (h : ∀ i, ContMDiffOn I' I n (f i) s) :
+    ContMDiffOn I' I n (fun x ↦ ∏ᶠ i, f i x) s := fun x hx ↦
+  contMDiffWithinAt_finprod lf fun i ↦ h i x hx
+
+@[to_additive]
+theorem contMDiffOn_finset_prod' (h : ∀ i ∈ t, ContMDiffOn I' I n (f i) s) :
+    ContMDiffOn I' I n (∏ i ∈ t, f i) s := fun x hx =>
+  contMDiffWithinAt_finset_prod' fun i hi => h i hi x hx
+#align cont_mdiff_on_finset_prod' contMDiffOn_finset_prod'
+#align cont_mdiff_on_finset_sum' contMDiffOn_finset_sum'
+
+@[to_additive]
 theorem contMDiffOn_finset_prod (h : ∀ i ∈ t, ContMDiffOn I' I n (f i) s) :
-    ContMDiffOn I' I n (fun x => ∏ i in t, f i x) s := fun x hx =>
+    ContMDiffOn I' I n (fun x => ∏ i ∈ t, f i x) s := fun x hx =>
   contMDiffWithinAt_finset_prod fun i hi => h i hi x hx
 #align cont_mdiff_on_finset_prod contMDiffOn_finset_prod
 #align cont_mdiff_on_finset_sum contMDiffOn_finset_sum
 
 @[to_additive]
+theorem ContMDiff.prod (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
+    ContMDiff I' I n fun x ↦ ∏ i ∈ t, f i x :=
+  fun x ↦ ContMDiffAt.prod fun j hj ↦ h j hj x
+
+@[to_additive]
+theorem contMDiff_finset_prod' (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
+    ContMDiff I' I n (∏ i ∈ t, f i) := fun x => contMDiffAt_finset_prod' fun i hi => h i hi x
+#align cont_mdiff_finset_prod' contMDiff_finset_prod'
+#align cont_mdiff_finset_sum' contMDiff_finset_sum'
+
+@[to_additive]
 theorem contMDiff_finset_prod (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
-    ContMDiff I' I n fun x => ∏ i in t, f i x := fun x =>
+    ContMDiff I' I n fun x => ∏ i ∈ t, f i x := fun x =>
   contMDiffAt_finset_prod fun i hi => h i hi x
 #align cont_mdiff_finset_prod contMDiff_finset_prod
 #align cont_mdiff_finset_sum contMDiff_finset_sum
 
 @[to_additive]
-theorem smoothWithinAt_finset_prod' (h : ∀ i ∈ t, SmoothWithinAt I' I (f i) s x) :
-    SmoothWithinAt I' I (∏ i in t, f i) s x :=
-  contMDiffWithinAt_finset_prod' h
-#align smooth_within_at_finset_prod' smoothWithinAt_finset_prod'
-#align smooth_within_at_finset_sum' smoothWithinAt_finset_sum'
-
-@[to_additive]
-theorem smoothAt_finset_prod' (h : ∀ i ∈ t, SmoothAt I' I (f i) x) :
-    SmoothAt I' I (∏ i in t, f i) x :=
-  contMDiffAt_finset_prod' h
-#align smooth_at_finset_prod' smoothAt_finset_prod'
-#align smooth_at_finset_sum' smoothAt_finset_sum'
-
-@[to_additive]
-theorem smoothOn_finset_prod' (h : ∀ i ∈ t, SmoothOn I' I (f i) s) :
-    SmoothOn I' I (∏ i in t, f i) s :=
-  contMDiffOn_finset_prod' h
-#align smooth_on_finset_prod' smoothOn_finset_prod'
-#align smooth_on_finset_sum' smoothOn_finset_sum'
-
-@[to_additive]
-theorem smooth_finset_prod' (h : ∀ i ∈ t, Smooth I' I (f i)) : Smooth I' I (∏ i in t, f i) :=
-  contMDiff_finset_prod' h
-#align smooth_finset_prod' smooth_finset_prod'
-#align smooth_finset_sum' smooth_finset_sum'
-
-@[to_additive]
-theorem smoothWithinAt_finset_prod (h : ∀ i ∈ t, SmoothWithinAt I' I (f i) s x) :
-    SmoothWithinAt I' I (fun x => ∏ i in t, f i x) s x :=
-  contMDiffWithinAt_finset_prod h
-#align smooth_within_at_finset_prod smoothWithinAt_finset_prod
-#align smooth_within_at_finset_sum smoothWithinAt_finset_sum
-
-@[to_additive]
-theorem smoothAt_finset_prod (h : ∀ i ∈ t, SmoothAt I' I (f i) x) :
-    SmoothAt I' I (fun x => ∏ i in t, f i x) x :=
-  contMDiffAt_finset_prod h
-#align smooth_at_finset_prod smoothAt_finset_prod
-#align smooth_at_finset_sum smoothAt_finset_sum
-
-@[to_additive]
-theorem smoothOn_finset_prod (h : ∀ i ∈ t, SmoothOn I' I (f i) s) :
-    SmoothOn I' I (fun x => ∏ i in t, f i x) s :=
-  contMDiffOn_finset_prod h
-#align smooth_on_finset_prod smoothOn_finset_prod
-#align smooth_on_finset_sum smoothOn_finset_sum
-
-@[to_additive]
-theorem smooth_finset_prod (h : ∀ i ∈ t, Smooth I' I (f i)) :
-    Smooth I' I fun x => ∏ i in t, f i x :=
-  contMDiff_finset_prod h
-#align smooth_finset_prod smooth_finset_prod
-#align smooth_finset_sum smooth_finset_sum
-
-open Function Filter
-
-@[to_additive]
 theorem contMDiff_finprod (h : ∀ i, ContMDiff I' I n (f i))
-    (hfin : LocallyFinite fun i => mulSupport (f i)) : ContMDiff I' I n fun x => ∏ᶠ i, f i x := by
-  intro x
-  rcases finprod_eventually_eq_prod hfin x with ⟨s, hs⟩
-  exact (contMDiff_finset_prod (fun i _ => h i) x).congr_of_eventuallyEq hs
+    (hfin : LocallyFinite fun i => mulSupport (f i)) : ContMDiff I' I n fun x => ∏ᶠ i, f i x :=
+  fun x ↦ contMDiffAt_finprod hfin fun i ↦ h i x
 #align cont_mdiff_finprod contMDiff_finprod
 #align cont_mdiff_finsum contMDiff_finsum
 
@@ -441,6 +429,67 @@ theorem contMDiff_finprod_cond (hc : ∀ i, p i → ContMDiff I' I n (f i))
   exact contMDiff_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
 #align cont_mdiff_finprod_cond contMDiff_finprod_cond
 #align cont_mdiff_finsum_cond contMDiff_finsum_cond
+
+@[to_additive]
+theorem smoothAt_finprod
+    (lf : LocallyFinite fun i ↦ mulSupport <| f i) (h : ∀ i, SmoothAt I' I (f i) x₀) :
+    SmoothAt I' I (fun x ↦ ∏ᶠ i, f i x) x₀ :=
+  contMDiffWithinAt_finprod lf h
+
+@[to_additive]
+theorem smoothWithinAt_finset_prod' (h : ∀ i ∈ t, SmoothWithinAt I' I (f i) s x) :
+    SmoothWithinAt I' I (∏ i ∈ t, f i) s x :=
+  contMDiffWithinAt_finset_prod' h
+#align smooth_within_at_finset_prod' smoothWithinAt_finset_prod'
+#align smooth_within_at_finset_sum' smoothWithinAt_finset_sum'
+
+@[to_additive]
+theorem smoothWithinAt_finset_prod (h : ∀ i ∈ t, SmoothWithinAt I' I (f i) s x) :
+    SmoothWithinAt I' I (fun x => ∏ i ∈ t, f i x) s x :=
+  contMDiffWithinAt_finset_prod h
+#align smooth_within_at_finset_prod smoothWithinAt_finset_prod
+#align smooth_within_at_finset_sum smoothWithinAt_finset_sum
+
+@[to_additive]
+theorem smoothAt_finset_prod' (h : ∀ i ∈ t, SmoothAt I' I (f i) x) :
+    SmoothAt I' I (∏ i ∈ t, f i) x :=
+  contMDiffAt_finset_prod' h
+#align smooth_at_finset_prod' smoothAt_finset_prod'
+#align smooth_at_finset_sum' smoothAt_finset_sum'
+
+@[to_additive]
+theorem smoothAt_finset_prod (h : ∀ i ∈ t, SmoothAt I' I (f i) x) :
+    SmoothAt I' I (fun x => ∏ i ∈ t, f i x) x :=
+  contMDiffAt_finset_prod h
+#align smooth_at_finset_prod smoothAt_finset_prod
+#align smooth_at_finset_sum smoothAt_finset_sum
+
+@[to_additive]
+theorem smoothOn_finset_prod' (h : ∀ i ∈ t, SmoothOn I' I (f i) s) :
+    SmoothOn I' I (∏ i ∈ t, f i) s :=
+  contMDiffOn_finset_prod' h
+#align smooth_on_finset_prod' smoothOn_finset_prod'
+#align smooth_on_finset_sum' smoothOn_finset_sum'
+
+@[to_additive]
+theorem smoothOn_finset_prod (h : ∀ i ∈ t, SmoothOn I' I (f i) s) :
+    SmoothOn I' I (fun x => ∏ i ∈ t, f i x) s :=
+  contMDiffOn_finset_prod h
+#align smooth_on_finset_prod smoothOn_finset_prod
+#align smooth_on_finset_sum smoothOn_finset_sum
+
+@[to_additive]
+theorem smooth_finset_prod' (h : ∀ i ∈ t, Smooth I' I (f i)) : Smooth I' I (∏ i ∈ t, f i) :=
+  contMDiff_finset_prod' h
+#align smooth_finset_prod' smooth_finset_prod'
+#align smooth_finset_sum' smooth_finset_sum'
+
+@[to_additive]
+theorem smooth_finset_prod (h : ∀ i ∈ t, Smooth I' I (f i)) :
+    Smooth I' I fun x => ∏ i ∈ t, f i x :=
+  contMDiff_finset_prod h
+#align smooth_finset_prod smooth_finset_prod
+#align smooth_finset_sum smooth_finset_sum
 
 @[to_additive]
 theorem smooth_finprod (h : ∀ i, Smooth I' I (f i))
@@ -464,8 +513,10 @@ section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E]
 
-instance hasSmoothAddSelf : SmoothAdd 𝓘(𝕜, E) E :=
-  ⟨by rw [← modelWithCornersSelf_prod]; exact contDiff_add.contMDiff⟩
+instance hasSmoothAddSelf : SmoothAdd 𝓘(𝕜, E) E := by
+  constructor
+  rw [← modelWithCornersSelf_prod, chartedSpaceSelf_prod]
+  exact contDiff_add.contMDiff
 #align has_smooth_add_self hasSmoothAddSelf
 
 end

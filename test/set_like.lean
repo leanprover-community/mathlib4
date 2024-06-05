@@ -1,9 +1,23 @@
+import Mathlib.Algebra.Field.Subfield
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
-import Mathlib.FieldTheory.Subfield
 
 set_option autoImplicit true
+
+section Delab
+variable {M : Type u} [Monoid M] (S S' : Submonoid M)
+
+/-- info: ↥S → ↥S' : Type u -/
+#guard_msgs in #check S → S'
+
+/-- info: ↥S : Type u -/
+#guard_msgs in #check {x // x ∈ S}
+
+/-- info: { x // 1 * x ∈ S } : Type u -/
+#guard_msgs in #check {x // 1 * x ∈ S}
+
+end Delab
 
 example [Ring R] (S : Subring R) (hx : x ∈ S) (hy : y ∈ S) (hz : z ∈ S) (n m : ℕ) :
     n • x ^ 3 - 2 • y + z ^ m ∈ S := by
@@ -15,7 +29,7 @@ example [Ring R] (S : Set R) (hx : x ∈ S) (hy : y ∈ S) (hz : z ∈ S) (n m :
 
 example [CommRing R] [Ring A] [Algebra R A] [StarRing R] [StarRing A] [StarModule R A]
     (r : R) (a b c : A) (n : ℕ) :
-    -b + star (algebraMap R A r) + a ^ n * c ∈ StarSubalgebra.adjoin R {a, b, c} := by
+    -b + star (algebraMap R A r) + a ^ n * c ∈ StarAlgebra.adjoin R {a, b, c} := by
   aesop
 
 example [Monoid M] (x : M) (n : ℕ) : x ^ n ∈ Submonoid.closure {x} := by

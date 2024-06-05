@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.UniformSpace.CompleteSeparated
+import Mathlib.Topology.EMetricSpace.Lipschitz
+import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.Bounded
 
-#align_import topology.metric_space.antilipschitz from "leanprover-community/mathlib"@"97f079b7e89566de3a1143f887713667328c38ba"
+#align_import topology.metric_space.antilipschitz from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 
 /-!
 # Antilipschitz functions
@@ -78,7 +80,7 @@ theorem mul_le_nndist (hf : AntilipschitzWith K f) (x y : α) :
 #align antilipschitz_with.mul_le_nndist AntilipschitzWith.mul_le_nndist
 
 theorem mul_le_dist (hf : AntilipschitzWith K f) (x y : α) :
-    (K⁻¹ * dist x y : ℝ) ≤ dist (f x) (f y) := by exact_mod_cast hf.mul_le_nndist x y
+    (K⁻¹ * dist x y : ℝ) ≤ dist (f x) (f y) := mod_cast hf.mul_le_nndist x y
 #align antilipschitz_with.mul_le_dist AntilipschitzWith.mul_le_dist
 
 end AntilipschitzWith
@@ -88,7 +90,6 @@ end Metric
 namespace AntilipschitzWith
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-
 variable {K : ℝ≥0} {f : α → β}
 
 open EMetric
@@ -129,7 +130,7 @@ theorem comp {Kg : ℝ≥0} {g : β → γ} (hg : AntilipschitzWith Kg g) {Kf : 
     (hf : AntilipschitzWith Kf f) : AntilipschitzWith (Kf * Kg) (g ∘ f) := fun x y =>
   calc
     edist x y ≤ Kf * edist (f x) (f y) := hf x y
-    _ ≤ Kf * (Kg * edist (g (f x)) (g (f y))) := (ENNReal.mul_left_mono (hg _ _))
+    _ ≤ Kf * (Kg * edist (g (f x)) (g (f y))) := ENNReal.mul_left_mono (hg _ _)
     _ = _ := by rw [ENNReal.coe_mul, mul_assoc]; rfl
 #align antilipschitz_with.comp AntilipschitzWith.comp
 
@@ -163,7 +164,7 @@ theorem to_rightInverse (hf : AntilipschitzWith K f) {g : β → α} (hg : Funct
 theorem comap_uniformity_le (hf : AntilipschitzWith K f) : (𝓤 β).comap (Prod.map f f) ≤ 𝓤 α := by
   refine ((uniformity_basis_edist.comap _).le_basis_iff uniformity_basis_edist).2 fun ε h₀ => ?_
   refine ⟨(↑K)⁻¹ * ε, ENNReal.mul_pos (ENNReal.inv_ne_zero.2 ENNReal.coe_ne_top) h₀.ne', ?_⟩
-  refine' fun x hx => (hf x.1 x.2).trans_lt _
+  refine fun x hx => (hf x.1 x.2).trans_lt ?_
   rw [mul_comm, ← div_eq_mul_inv] at hx
   rw [mul_comm]
   exact ENNReal.mul_lt_of_lt_div hx
@@ -194,14 +195,14 @@ theorem isClosed_range {α β : Type*} [PseudoEMetricSpace α] [EMetricSpace β]
 theorem closedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSpace β] {K : ℝ≥0}
     {f : α → β} [CompleteSpace α] (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
     ClosedEmbedding f :=
-  { (hf.uniformEmbedding hfc).embedding with closed_range := hf.isClosed_range hfc }
+  { (hf.uniformEmbedding hfc).embedding with isClosed_range := hf.isClosed_range hfc }
 #align antilipschitz_with.closed_embedding AntilipschitzWith.closedEmbedding
 
 theorem subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
   AntilipschitzWith.id.restrict s
 #align antilipschitz_with.subtype_coe AntilipschitzWith.subtype_coe
 
-@[nontriviality] -- porting note: added `nontriviality`
+@[nontriviality] -- Porting note: added `nontriviality`
 theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y => by
   simp only [Subsingleton.elim x y, edist_self, zero_le]
 #align antilipschitz_with.of_subsingleton AntilipschitzWith.of_subsingleton
@@ -218,7 +219,8 @@ namespace AntilipschitzWith
 
 open Metric
 
-variable [PseudoMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0} {f : α → β}
+variable [PseudoMetricSpace α] [PseudoMetricSpace β] [PseudoMetricSpace γ]
+variable {K : ℝ≥0} {f : α → β}
 
 theorem isBounded_preimage (hf : AntilipschitzWith K f) {s : Set β} (hs : IsBounded s) :
     IsBounded (f ⁻¹' s) :=
@@ -242,6 +244,25 @@ protected theorem properSpace {α : Type*} [MetricSpace α] {K : ℝ≥0} {f : �
   convert this.image f_cont
   exact (hf.image_preimage _).symm
 #align antilipschitz_with.proper_space AntilipschitzWith.properSpace
+
+theorem isBounded_of_image2_left (f : α → β → γ) {K₁ : ℝ≥0}
+    (hf : ∀ b, AntilipschitzWith K₁ fun a => f a b) {s : Set α} {t : Set β}
+    (hst : IsBounded (Set.image2 f s t)) : IsBounded s ∨ IsBounded t := by
+  contrapose! hst
+  obtain ⟨b, hb⟩ : t.Nonempty := nonempty_of_not_isBounded hst.2
+  have : ¬IsBounded (Set.image2 f s {b}) := by
+    intro h
+    apply hst.1
+    rw [Set.image2_singleton_right] at h
+    replace h := (hf b).isBounded_preimage h
+    exact h.subset (subset_preimage_image _ _)
+  exact mt (IsBounded.subset · (image2_subset subset_rfl (singleton_subset_iff.mpr hb))) this
+#align antilipschitz_with.bounded_of_image2_left AntilipschitzWith.isBounded_of_image2_left
+
+theorem isBounded_of_image2_right {f : α → β → γ} {K₂ : ℝ≥0} (hf : ∀ a, AntilipschitzWith K₂ (f a))
+    {s : Set α} {t : Set β} (hst : IsBounded (Set.image2 f s t)) : IsBounded s ∨ IsBounded t :=
+  Or.symm <| isBounded_of_image2_left (flip f) hf <| image2_swap f s t ▸ hst
+#align antilipschitz_with.bounded_of_image2_right AntilipschitzWith.isBounded_of_image2_right
 
 end AntilipschitzWith
 

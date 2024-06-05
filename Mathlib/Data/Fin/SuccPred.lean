@@ -3,7 +3,8 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Data.Fin.Basic
+import Mathlib.Algebra.Group.Fin
+import Mathlib.Order.Fin
 import Mathlib.Order.SuccPred.Basic
 
 #align_import data.fin.succ_pred from "leanprover-community/mathlib"@"7c523cb78f4153682c2929e3006c863bfef463d0"
@@ -21,7 +22,7 @@ to a specific `Fin` instance.
 namespace Fin
 
 instance : ∀ {n : ℕ}, SuccOrder (Fin n)
-  | 0 => by constructor <;> first | assumption | intro a; exact elim0 a
+  | 0 => by constructor <;> intro a <;> exact elim0 a
   | n + 1 =>
     SuccOrder.ofCore (fun i => if i < Fin.last n then i + 1 else i)
       (by
@@ -47,7 +48,7 @@ theorem succ_apply {n : ℕ} (a) : SuccOrder.succ a = if a < Fin.last n then a +
 #align fin.succ_apply Fin.succ_apply
 
 instance : ∀ {n : ℕ}, PredOrder (Fin n)
-  | 0 => by constructor <;> first | assumption | intro a; exact elim0 a
+  | 0 => by constructor <;> first | intro a; exact elim0 a
   | n + 1 =>
     PredOrder.ofCore (fun x => if x = 0 then 0 else x - 1)
       (by
@@ -55,8 +56,7 @@ instance : ∀ {n : ℕ}, PredOrder (Fin n)
         rw [isMin_iff_eq_bot, eq_bot_iff, not_le, bot_eq_zero] at ha
         dsimp
         rw [if_neg ha.ne', lt_iff_val_lt_val, le_iff_val_le_val, coe_sub_one, if_neg ha.ne',
-          le_tsub_iff_right, Iff.comm]
-        exact Nat.lt_iff_add_one_le
+          Nat.lt_iff_add_one_le, Nat.le_sub_iff_add_le]
         exact ha)
       (by
         intro a ha

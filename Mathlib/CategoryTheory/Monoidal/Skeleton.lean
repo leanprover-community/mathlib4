@@ -3,7 +3,7 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Skeletal
 
@@ -32,8 +32,7 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
 /-- If `C` is monoidal and skeletal, it is a monoid.
 See note [reducible non-instances]. -/
-@[reducible]
-def monoidOfSkeletalMonoidal (hC : Skeletal C) : Monoid C where
+abbrev monoidOfSkeletalMonoidal (hC : Skeletal C) : Monoid C where
   mul X Y := (X ⊗ Y : C)
   one := (𝟙_ C : C)
   one_mul X := hC ⟨λ_ X⟩
@@ -58,7 +57,7 @@ The skeleton of a monoidal category can be viewed as a monoid, where the multipl
 the tensor product, and satisfies the monoid axioms since it is a skeleton.
 -/
 noncomputable instance instMonoid : Monoid (Skeleton C) :=
-  monoidOfSkeletalMonoidal (skeletonIsSkeleton _).skel
+  monoidOfSkeletalMonoidal (skeleton_isSkeleton _).skel
 
 /-- The skeleton of a braided monoidal category has a braided monoidal structure itself, induced by
 the equivalence. -/
@@ -67,12 +66,12 @@ noncomputable instance instBraidedCategory [BraidedCategory C] : BraidedCategory
   braidedCategoryOfFullyFaithful (Monoidal.fromTransported (skeletonEquivalence C).symm)
 
 /--
-The skeleton of a braided monoidal category can be viewed as a commutative  monoid, where the
+The skeleton of a braided monoidal category can be viewed as a commutative monoid, where the
 multiplication is given by the tensor product, and satisfies the monoid axioms since it is a
 skeleton.
 -/
 noncomputable instance instCommMonoid [BraidedCategory C] : CommMonoid (Skeleton C) :=
-  commMonoidOfSkeletalBraided (skeletonIsSkeleton _).skel
+  commMonoidOfSkeletalBraided (skeleton_isSkeleton _).skel
 
 end Skeleton
 

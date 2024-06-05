@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Kleene
-import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Data.Set.Pointwise.Basic
 
 #align_import data.set.semiring from "leanprover-community/mathlib"@"62e8311c791f02c47451bf14aa2501048e7c2f33"
 
@@ -51,53 +51,56 @@ protected def down : SetSemiring α ≃ Set α :=
   Equiv.refl _
 #align set_semiring.down SetSemiring.down
 
---Porting note: new, since dot notation doesn't work
+-- Porting note: new, since dot notation doesn't work
 open SetSemiring (down)
 open Set (up)
 
---Porting note: dot notation no longer works
+-- Porting note (#11036): dot notation no longer works
 @[simp]
 protected theorem down_up (s : Set α) : SetSemiring.down (Set.up s) = s :=
   rfl
 #align set_semiring.down_up SetSemiring.down_up
 
---Porting note: dot notation no longer works
+-- Porting note (#11036): dot notation no longer works
 @[simp]
 protected theorem up_down (s : SetSemiring α) : Set.up (SetSemiring.down s) = s :=
   rfl
 #align set_semiring.up_down SetSemiring.up_down
 
 -- TODO: These lemmas are not tagged `simp` because `Set.le_eq_subset` simplifies the LHS
---Porting note: dot notation no longer works
+-- Porting note (#11036): dot notation no longer works
 theorem up_le_up {s t : Set α} : Set.up s ≤ Set.up t ↔ s ⊆ t :=
   Iff.rfl
 #align set_semiring.up_le_up SetSemiring.up_le_up
 
---Porting note: dot notation no longer works
+-- Porting note (#11036): dot notation no longer works
 theorem up_lt_up {s t : Set α} : Set.up s < Set.up t ↔ s ⊂ t :=
   Iff.rfl
 #align set_semiring.up_lt_up SetSemiring.up_lt_up
 
---Porting note: dot notation no longer works
+-- Porting note (#11036): dot notation no longer works
 @[simp]
 theorem down_subset_down {s t : SetSemiring α} : SetSemiring.down s ⊆ SetSemiring.down t ↔ s ≤ t :=
   Iff.rfl
 #align set_semiring.down_subset_down SetSemiring.down_subset_down
 
---Porting note: dot notation no longer works
+-- Porting note (#11036): dot notation no longer works
 @[simp]
 theorem down_ssubset_down {s t : SetSemiring α} : SetSemiring.down s ⊂ SetSemiring.down t ↔ s < t :=
   Iff.rfl
 #align set_semiring.down_ssubset_down SetSemiring.down_ssubset_down
 
---Porting note: dot notation no longer works
+instance : Zero (SetSemiring α) where zero := Set.up (∅ : Set α)
+
+instance : Add (SetSemiring α) where add s t := Set.up (SetSemiring.down s ∪ SetSemiring.down t)
+
+-- Porting note (#11036): dot notation no longer works
 instance : AddCommMonoid (SetSemiring α) where
-  add s t := Set.up (SetSemiring.down s ∪ SetSemiring.down t)
-  zero := Set.up (∅ : Set α)
   add_assoc := union_assoc
   zero_add := empty_union
   add_zero := union_empty
   add_comm := union_comm
+  nsmul := nsmulRec
 
 theorem zero_def : (0 : SetSemiring α) = Set.up ∅ :=
   rfl
@@ -137,7 +140,7 @@ section Mul
 
 variable [Mul α]
 
---Porting note: dot notation no longer works
+-- Porting note (#11036): dot notation no longer works
 instance : NonUnitalNonAssocSemiring (SetSemiring α) :=
   { (inferInstance : AddCommMonoid (SetSemiring α)) with
     mul := fun s t => Set.up (image2 (· * ·) (SetSemiring.down s) (SetSemiring.down t))
@@ -234,12 +237,11 @@ instance [CommMonoid α] : CanonicallyOrderedCommSemiring (SetSemiring α) :=
 
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
 with respect to the pointwise operations on sets. -/
-def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) : SetSemiring α →+* SetSemiring β
-    where
+def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) : SetSemiring α →+* SetSemiring β where
   toFun s := up (image f (down s))
   map_zero' := image_empty _
   map_one' := by
-    dsimp only  -- porting note: structures do not do this automatically any more
+    dsimp only  -- Porting note: structures do not do this automatically any more
     rw [down_one, image_one, map_one, singleton_one, up_one]
   map_add' := image_union _
   map_mul' _ _ := image_mul f

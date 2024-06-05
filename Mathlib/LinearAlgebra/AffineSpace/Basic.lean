@@ -40,4 +40,4 @@ Some key definitions are not yet present.
  -/
 
 
-scoped[Affine] notation "AffineSpace" => AddTorsor
+@[inherit_doc] scoped[Affine] notation "AffineSpace" => AddTorsor

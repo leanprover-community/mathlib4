@@ -3,7 +3,8 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Block
+import Mathlib.Data.Matrix.RowCol
 
 #align_import linear_algebra.matrix.trace from "leanprover-community/mathlib"@"32b08ef840dd25ca2e47e035c5da03ce16d2dc3c"
 
@@ -22,12 +23,11 @@ matrix, trace, diagonal
 -/
 
 
-open BigOperators Matrix
+open Matrix
 
 namespace Matrix
 
 variable {ι m n p : Type*} {α R S : Type*}
-
 variable [Fintype m] [Fintype n] [Fintype p]
 
 section AddCommMonoid
@@ -111,13 +111,22 @@ theorem trace_multiset_sum (s : Multiset (Matrix n n R)) : trace s.sum = (s.map 
 
 @[simp]
 theorem trace_sum (s : Finset ι) (f : ι → Matrix n n R) :
-    trace (∑ i in s, f i) = ∑ i in s, trace (f i) :=
+    trace (∑ i ∈ s, f i) = ∑ i ∈ s, trace (f i) :=
   map_sum (traceAddMonoidHom n R) f s
 #align matrix.trace_sum Matrix.trace_sum
 
 theorem _root_.AddMonoidHom.map_trace [AddCommMonoid S] (f : R →+ S) (A : Matrix n n R) :
     f (trace A)  = trace (f.mapMatrix A) :=
   map_sum f (fun i => diag A i) Finset.univ
+
+lemma trace_blockDiagonal [DecidableEq p] (M : p → Matrix n n R) :
+    trace (blockDiagonal M) = ∑ i, trace (M i) := by
+  simp [blockDiagonal, trace, Finset.sum_comm (γ := n)]
+
+lemma trace_blockDiagonal' [DecidableEq p] {m : p → Type*} [∀ i, Fintype (m i)]
+    (M : ∀ i, Matrix (m i) (m i) R) :
+    trace (blockDiagonal' M) = ∑ i, trace (M i) := by
+  simp [blockDiagonal', trace, Finset.sum_sigma']
 
 end AddCommMonoid
 
@@ -179,6 +188,13 @@ theorem trace_col_mul_row [NonUnitalNonAssocSemiring R] (a b : n → R) :
 
 end Mul
 
+lemma trace_submatrix_succ {n : ℕ} [NonUnitalNonAssocSemiring R]
+    (M : Matrix (Fin n.succ) (Fin n.succ) R) :
+    M 0 0 + trace (submatrix M Fin.succ Fin.succ) = trace M := by
+  delta trace
+  rw [← (finSuccEquiv n).symm.sum_comp]
+  simp
+
 section Fin
 
 variable [AddCommMonoid R]
@@ -199,7 +215,7 @@ theorem trace_fin_one (A : Matrix (Fin 1) (Fin 1) R) : trace A = A 0 0 :=
 #align matrix.trace_fin_one Matrix.trace_fin_one
 
 theorem trace_fin_two (A : Matrix (Fin 2) (Fin 2) R) : trace A = A 0 0 + A 1 1 :=
-  congr_arg ((· + ·) _) (add_zero (A 1 1))
+  congr_arg (_ + ·) (add_zero (A 1 1))
 #align matrix.trace_fin_two Matrix.trace_fin_two
 
 theorem trace_fin_three (A : Matrix (Fin 3) (Fin 3) R) : trace A = A 0 0 + A 1 1 + A 2 2 := by

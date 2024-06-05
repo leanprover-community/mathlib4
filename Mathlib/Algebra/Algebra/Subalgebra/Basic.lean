@@ -3,10 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Data.Set.UnionLift
-import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.Algebra.Algebra.Operations
 
 #align_import algebra.algebra.subalgebra.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
 
@@ -20,8 +17,6 @@ More lemmas about `adjoin` can be found in `RingTheory.Adjoin`.
 
 
 universe u u' v w w'
-
-open BigOperators
 
 /-- A subalgebra is a sub(semi)ring that includes the range of `algebraMap`. -/
 structure Subalgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] extends
@@ -38,9 +33,7 @@ add_decl_doc Subalgebra.toSubsemiring
 namespace Subalgebra
 
 variable {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
-
 variable [CommSemiring R]
-
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
 
 instance : SetLike (Subalgebra R A) A where
@@ -58,7 +51,7 @@ theorem mem_toSubsemiring {S : Subalgebra R A} {x} : x ∈ S.toSubsemiring ↔ x
   Iff.rfl
 #align subalgebra.mem_to_subsemiring Subalgebra.mem_toSubsemiring
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem mem_carrier {s : Subalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subalgebra.mem_carrier Subalgebra.mem_carrier
@@ -104,7 +97,7 @@ variable (S : Subalgebra R A)
 instance instSMulMemClass : SMulMemClass (Subalgebra R A) R A where
   smul_mem {S} r x hx := (Algebra.smul_def r x).symm ▸ mul_mem (S.algebraMap_mem' r) hx
 
-@[aesop safe apply (rule_sets [SetLike])]
+@[aesop safe apply (rule_sets := [SetLike])]
 theorem _root_.algebraMap_mem {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [SetLike S A] [OneMemClass S A] [SMulMemClass S R A] (s : S) (r : R) :
     algebraMap R A r ∈ s :=
@@ -153,9 +146,9 @@ protected theorem nsmul_mem {x : A} (hx : x ∈ S) (n : ℕ) : n • x ∈ S :=
   nsmul_mem hx n
 #align subalgebra.nsmul_mem Subalgebra.nsmul_mem
 
-protected theorem coe_nat_mem (n : ℕ) : (n : A) ∈ S :=
-  coe_nat_mem S n
-#align subalgebra.coe_nat_mem Subalgebra.coe_nat_mem
+protected theorem natCast_mem (n : ℕ) : (n : A) ∈ S :=
+  natCast_mem S n
+#align subalgebra.coe_nat_mem Subalgebra.natCast_mem
 
 protected theorem list_prod_mem {L : List A} (h : ∀ x ∈ L, x ∈ S) : L.prod ∈ S :=
   list_prod_mem h
@@ -170,7 +163,7 @@ protected theorem multiset_sum_mem {m : Multiset A} (h : ∀ x ∈ m, x ∈ S) :
 #align subalgebra.multiset_sum_mem Subalgebra.multiset_sum_mem
 
 protected theorem sum_mem {ι : Type w} {t : Finset ι} {f : ι → A} (h : ∀ x ∈ t, f x ∈ S) :
-    (∑ x in t, f x) ∈ S :=
+    (∑ x ∈ t, f x) ∈ S :=
   sum_mem h
 #align subalgebra.sum_mem Subalgebra.sum_mem
 
@@ -181,7 +174,7 @@ protected theorem multiset_prod_mem {R : Type u} {A : Type v} [CommSemiring R] [
 
 protected theorem prod_mem {R : Type u} {A : Type v} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S : Subalgebra R A) {ι : Type w} {t : Finset ι} {f : ι → A} (h : ∀ x ∈ t, f x ∈ S) :
-    (∏ x in t, f x) ∈ S :=
+    (∏ x ∈ t, f x) ∈ S :=
   prod_mem h
 #align subalgebra.prod_mem Subalgebra.prod_mem
 
@@ -204,10 +197,14 @@ protected theorem zsmul_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Alg
   zsmul_mem hx n
 #align subalgebra.zsmul_mem Subalgebra.zsmul_mem
 
-protected theorem coe_int_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+protected theorem intCast_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     (S : Subalgebra R A) (n : ℤ) : (n : A) ∈ S :=
-  coe_int_mem S n
-#align subalgebra.coe_int_mem Subalgebra.coe_int_mem
+  intCast_mem S n
+#align subalgebra.coe_int_mem Subalgebra.intCast_mem
+
+-- 2024-04-05
+@[deprecated natCast_mem] alias coe_nat_mem := Subalgebra.natCast_mem
+@[deprecated intCast_mem] alias coe_int_mem := Subalgebra.intCast_mem
 
 /-- The projection from a subalgebra of `A` to an additive submonoid of `A`. -/
 def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
@@ -278,56 +275,6 @@ instance toCommRing {R A} [CommRing R] [CommRing A] [Algebra R A] (S : Subalgebr
   S.toSubring.toCommRing
 #align subalgebra.to_comm_ring Subalgebra.toCommRing
 
-instance toOrderedSemiring {R A} [CommSemiring R] [OrderedSemiring A] [Algebra R A]
-    (S : Subalgebra R A) : OrderedSemiring S :=
-  S.toSubsemiring.toOrderedSemiring
-#align subalgebra.to_ordered_semiring Subalgebra.toOrderedSemiring
-
-instance toStrictOrderedSemiring {R A} [CommSemiring R] [StrictOrderedSemiring A] [Algebra R A]
-    (S : Subalgebra R A) : StrictOrderedSemiring S :=
-  S.toSubsemiring.toStrictOrderedSemiring
-#align subalgebra.to_strict_ordered_semiring Subalgebra.toStrictOrderedSemiring
-
-instance toOrderedCommSemiring {R A} [CommSemiring R] [OrderedCommSemiring A] [Algebra R A]
-    (S : Subalgebra R A) : OrderedCommSemiring S :=
-  S.toSubsemiring.toOrderedCommSemiring
-#align subalgebra.to_ordered_comm_semiring Subalgebra.toOrderedCommSemiring
-
-instance toStrictOrderedCommSemiring {R A} [CommSemiring R] [StrictOrderedCommSemiring A]
-    [Algebra R A] (S : Subalgebra R A) : StrictOrderedCommSemiring S :=
-  S.toSubsemiring.toStrictOrderedCommSemiring
-#align subalgebra.to_strict_ordered_comm_semiring Subalgebra.toStrictOrderedCommSemiring
-
-instance toOrderedRing {R A} [CommRing R] [OrderedRing A] [Algebra R A] (S : Subalgebra R A) :
-    OrderedRing S :=
-  S.toSubring.toOrderedRing
-#align subalgebra.to_ordered_ring Subalgebra.toOrderedRing
-
-instance toOrderedCommRing {R A} [CommRing R] [OrderedCommRing A] [Algebra R A]
-    (S : Subalgebra R A) : OrderedCommRing S :=
-  S.toSubring.toOrderedCommRing
-#align subalgebra.to_ordered_comm_ring Subalgebra.toOrderedCommRing
-
-instance toLinearOrderedSemiring {R A} [CommSemiring R] [LinearOrderedSemiring A] [Algebra R A]
-    (S : Subalgebra R A) : LinearOrderedSemiring S :=
-  S.toSubsemiring.toLinearOrderedSemiring
-#align subalgebra.to_linear_ordered_semiring Subalgebra.toLinearOrderedSemiring
-
-instance toLinearOrderedCommSemiring {R A} [CommSemiring R] [LinearOrderedCommSemiring A]
-    [Algebra R A] (S : Subalgebra R A) : LinearOrderedCommSemiring S :=
-  S.toSubsemiring.toLinearOrderedCommSemiring
-#align subalgebra.to_linear_ordered_comm_semiring Subalgebra.toLinearOrderedCommSemiring
-
-instance toLinearOrderedRing {R A} [CommRing R] [LinearOrderedRing A] [Algebra R A]
-    (S : Subalgebra R A) : LinearOrderedRing S :=
-  S.toSubring.toLinearOrderedRing
-#align subalgebra.to_linear_ordered_ring Subalgebra.toLinearOrderedRing
-
-instance toLinearOrderedCommRing {R A} [CommRing R] [LinearOrderedCommRing A] [Algebra R A]
-    (S : Subalgebra R A) : LinearOrderedCommRing S :=
-  S.toSubring.toLinearOrderedCommRing
-#align subalgebra.to_linear_ordered_comm_ring Subalgebra.toLinearOrderedCommRing
-
 end
 
 /-- The forgetful map from `Subalgebra` to `Submodule` as an `OrderEmbedding` -/
@@ -338,7 +285,7 @@ def toSubmodule : Subalgebra R A ↪o Submodule R A where
           carrier := S
           smul_mem' := fun c {x} hx ↦
             (Algebra.smul_def c x).symm ▸ mul_mem (S.range_le ⟨c, rfl⟩) hx }
-      inj' := fun _ _ h ↦ ext <| fun x ↦ SetLike.ext_iff.mp h x }
+      inj' := fun _ _ h ↦ ext fun x ↦ SetLike.ext_iff.mp h x }
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 #align subalgebra.to_submodule Subalgebra.toSubmodule
 
@@ -352,12 +299,16 @@ theorem mem_toSubmodule {x} : x ∈ (toSubmodule S) ↔ x ∈ S := Iff.rfl
 theorem coe_toSubmodule (S : Subalgebra R A) : (toSubmodule S : Set A) = S := rfl
 #align subalgebra.coe_to_submodule Subalgebra.coe_toSubmodule
 
+theorem toSubmodule_injective : Function.Injective (toSubmodule : Subalgebra R A → Submodule R A) :=
+  fun _S₁ _S₂ h => SetLike.ext (SetLike.ext_iff.mp h :)
+
 section
 
 /-! `Subalgebra`s inherit structure from their `Submodule` coercions. -/
 
 
-instance module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : Module R' S :=
+instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] :
+    Module R' S :=
   S.toSubmodule.module'
 #align subalgebra.module' Subalgebra.module'
 
@@ -367,7 +318,14 @@ instance : Module R S :=
 instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
   inferInstanceAs (IsScalarTower R' R (toSubmodule S))
 
-instance algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A] [IsScalarTower R' R A] :
+/- More general form of `Subalgebra.algebra`.
+
+This instance should have low priority since it is slow to fail:
+before failing, it will cause a search through all `SMul R' R` instances,
+which can quickly get expensive.
+-/
+instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
+    [IsScalarTower R' R A] :
     Algebra R' S :=
   { (algebraMap R' A).codRestrict S fun x => by
       rw [Algebra.algebraMap_eq_smul_one, ← smul_one_smul R x (1 : A), ←
@@ -496,7 +454,7 @@ theorem mem_map {S : Subalgebra R A} {f : A →ₐ[R] B} {y : B} : y ∈ map f S
 #align subalgebra.mem_map Subalgebra.mem_map
 
 theorem map_toSubmodule {S : Subalgebra R A} {f : A →ₐ[R] B} :
-    (toSubmodule $ S.map f) = S.toSubmodule.map f.toLinearMap :=
+    (toSubmodule <| S.map f) = S.toSubmodule.map f.toLinearMap :=
   SetLike.coe_injective rfl
 #align subalgebra.map_to_submodule Subalgebra.map_toSubmodule
 
@@ -546,10 +504,38 @@ instance isDomain {R A : Type*} [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
 
 end Subalgebra
 
+namespace SubalgebraClass
+
+variable {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable [SetLike S A] [SubsemiringClass S A] [hSR : SMulMemClass S R A] (s : S)
+
+instance (priority := 75) toAlgebra : Algebra R s where
+  toFun r := ⟨algebraMap R A r, algebraMap_mem s r⟩
+  map_one' := Subtype.ext <| by simp
+  map_mul' _ _ := Subtype.ext <| by simp
+  map_zero' := Subtype.ext <| by simp
+  map_add' _ _ := Subtype.ext <| by simp
+  commutes' r x := Subtype.ext <| Algebra.commutes r (x : A)
+  smul_def' r x := Subtype.ext <| (algebraMap_smul A r (x : A)).symm
+
+@[simp, norm_cast]
+lemma coe_algebraMap (r : R) : (algebraMap R s r : A) = algebraMap R A r := rfl
+
+/-- Embedding of a subalgebra into the algebra, as an algebra homomorphism. -/
+def val (s : S) : s →ₐ[R] A :=
+  { SubsemiringClass.subtype s, SMulMemClass.subtype s with
+    toFun := (↑)
+    commutes' := fun _ ↦ rfl }
+
+@[simp]
+theorem coe_val : (val s : s → A) = ((↑) : s → A) :=
+  rfl
+
+end SubalgebraClass
+
 namespace Submodule
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-
 variable (p : Submodule R A)
 
 /-- A submodule containing `1` and closed under multiplication is a subalgebra. -/
@@ -599,11 +585,8 @@ end Submodule
 namespace AlgHom
 
 variable {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
-
 variable [CommSemiring R]
-
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
-
 variable (φ : A →ₐ[R] B)
 
 /-- Range of an `AlgHom` as a subalgebra. -/
@@ -660,10 +643,14 @@ theorem injective_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀
 /-- Restrict the codomain of an `AlgHom` `f` to `f.range`.
 
 This is the bundled version of `Set.rangeFactorization`. -/
-@[reducible]
-def rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
+abbrev rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
 #align alg_hom.range_restrict AlgHom.rangeRestrict
+
+theorem rangeRestrict_surjective (f : A →ₐ[R] B) : Function.Surjective (f.rangeRestrict) :=
+  fun ⟨_y, hy⟩ =>
+    let ⟨x, hx⟩ := hy
+    ⟨x, SetCoe.ext hx⟩
 
 /-- The equalizer of two R-algebra homomorphisms -/
 def equalizer (ϕ ψ : A →ₐ[R] B) : Subalgebra R A where
@@ -694,7 +681,6 @@ end AlgHom
 namespace AlgEquiv
 
 variable {R : Type u} {A : Type v} {B : Type w}
-
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 /-- Restrict an algebra homomorphism with a left inverse to an algebra isomorphism to its range.
@@ -741,24 +727,20 @@ noncomputable def ofInjectiveField {E F : Type*} [DivisionRing E] [Semiring F] [
 #align alg_equiv.of_injective_field AlgEquiv.ofInjectiveField
 
 /-- Given an equivalence `e : A ≃ₐ[R] B` of `R`-algebras and a subalgebra `S` of `A`,
-`subalgebra_map` is the induced equivalence between `S` and `S.map e` -/
+`subalgebraMap` is the induced equivalence between `S` and `S.map e` -/
 @[simps!]
-def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map e.toAlgHom :=
+def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map (e : A →ₐ[R] B) :=
   { e.toRingEquiv.subsemiringMap S.toSubsemiring with
     commutes' := fun r => by
       ext; dsimp only; erw [RingEquiv.subsemiringMap_apply_coe]
       exact e.commutes _ }
 #align alg_equiv.subalgebra_map AlgEquiv.subalgebraMap
 
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] AlgEquiv.subalgebraMap_apply_coe AlgEquiv.subalgebraMap_symm_apply_coe
-
 end AlgEquiv
 
 namespace Algebra
 
 variable (R : Type u) {A : Type v} {B : Type w}
-
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- The minimal subalgebra that includes `s`. -/
@@ -783,8 +765,10 @@ protected def gi : GaloisInsertion (adjoin R : Set A → Subalgebra R A) (↑) w
   choice_eq _ _ := Subalgebra.copy_eq _ _ _
 #align algebra.gi Algebra.gi
 
-instance : CompleteLattice (Subalgebra R A) :=
-  GaloisInsertion.liftCompleteLattice Algebra.gi
+instance : CompleteLattice (Subalgebra R A) where
+  __ := GaloisInsertion.liftCompleteLattice Algebra.gi
+  bot := (Algebra.ofId R A).range
+  bot_le _S := fun _a ⟨_r, hr⟩ => hr ▸ algebraMap_mem _ _
 
 @[simp]
 theorem coe_top : (↑(⊤ : Subalgebra R A) : Set A) = Set.univ := rfl
@@ -886,7 +870,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subalgebra R A} : (↑(⨅ i, S i) : S
 #align algebra.coe_infi Algebra.coe_iInf
 
 theorem mem_iInf {ι : Sort*} {S : ι → Subalgebra R A} {x : A} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
-  simp only [iInf, mem_sInf, Set.forall_range_iff]
+  simp only [iInf, mem_sInf, Set.forall_mem_range]
 #align algebra.mem_infi Algebra.mem_iInf
 
 open Subalgebra in
@@ -898,21 +882,14 @@ theorem iInf_toSubmodule {ι : Sort*} (S : ι → Subalgebra R A) :
 
 instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
 
-theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (algebraMap R A) :=
-  suffices (ofId R A).range = (⊥ : Subalgebra R A) by
-    rw [← this, ← SetLike.mem_coe, AlgHom.coe_range]
-    rfl
-  le_bot_iff.mp fun x hx => Subalgebra.range_le _ ((ofId R A).coe_range ▸ hx)
+theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (algebraMap R A) := Iff.rfl
 #align algebra.mem_bot Algebra.mem_bot
 
-theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = R ∙ 1 := by
-  ext x
-  simp [mem_bot, Submodule.mem_span_singleton, Algebra.smul_def]
+theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 := rfl
 #align algebra.to_submodule_bot Algebra.toSubmodule_bot
 
 @[simp]
-theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := by
-  simp [Set.ext_iff, Algebra.mem_bot]
+theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
 #align algebra.coe_bot Algebra.coe_bot
 
 theorem eq_top_iff {S : Subalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
@@ -937,8 +914,7 @@ theorem map_top (f : A →ₐ[R] B) : (⊤ : Subalgebra R A).map f = f.range :=
 
 @[simp]
 theorem map_bot (f : A →ₐ[R] B) : (⊥ : Subalgebra R A).map f = ⊥ :=
-  SetLike.coe_injective <| by
-    simp only [← Set.range_comp, (· ∘ ·), Algebra.coe_bot, Subalgebra.coe_map, f.commutes]
+  Subalgebra.toSubmodule_injective <| Submodule.map_one _
 #align algebra.map_bot Algebra.map_bot
 
 @[simp]
@@ -971,9 +947,7 @@ noncomputable def botEquivOfInjective (h : Function.Injective (algebraMap R A)) 
     (⊥ : Subalgebra R A) ≃ₐ[R] R :=
   AlgEquiv.symm <|
     AlgEquiv.ofBijective (Algebra.ofId R _)
-      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy : _), fun ⟨_y, hy⟩ =>
-        let ⟨x, hx⟩ := Algebra.mem_bot.1 hy
-        ⟨x, Subtype.eq hx⟩⟩
+      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy : _), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.eq hx⟩⟩
 #align algebra.bot_equiv_of_injective Algebra.botEquivOfInjective
 
 /-- The bottom subalgebra is isomorphic to the field. -/
@@ -990,9 +964,7 @@ namespace Subalgebra
 open Algebra
 
 variable {R : Type u} {A : Type v} {B : Type w}
-
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-
 variable (S : Subalgebra R A)
 
 /-- The top subalgebra is isomorphic to the algebra.
@@ -1033,15 +1005,14 @@ instance : Unique (Subalgebra R R) :=
   { inferInstanceAs (Inhabited (Subalgebra R R)) with
     uniq := by
       intro S
-      refine' le_antisymm ?_ bot_le
+      refine le_antisymm ?_ bot_le
       intro _ _
       simp only [Set.mem_range, mem_bot, id.map_eq_self, exists_apply_eq_apply, default] }
 
 /-- The map `S → T` when `S` is a subalgebra contained in the subalgebra `T`.
 
-This is the subalgebra version of `Submodule.ofLe`, or `Subring.inclusion`  -/
-def inclusion {S T : Subalgebra R A} (h : S ≤ T) : S →ₐ[R] T
-    where
+This is the subalgebra version of `Submodule.inclusion`, or `Subring.inclusion`  -/
+def inclusion {S T : Subalgebra R A} (h : S ≤ T) : S →ₐ[R] T where
   toFun := Set.inclusion h
   map_one' := rfl
   map_add' _ _ := rfl
@@ -1085,12 +1056,12 @@ theorem coe_inclusion {S T : Subalgebra R A} (h : S ≤ T) (s : S) : (inclusion 
 
 This is the `Subalgebra` version of `LinearEquiv.ofEq` and `Equiv.Set.ofEq`. -/
 @[simps apply]
-def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T :=
-  { LinearEquiv.ofEq _ _ (congr_arg toSubmodule h) with
-    toFun := fun x => ⟨x, h ▸ x.2⟩
-    invFun := fun x => ⟨x, h.symm ▸ x.2⟩
-    map_mul' := fun _ _ => rfl
-    commutes' := fun _ => rfl }
+def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T where
+  __ := LinearEquiv.ofEq _ _ (congr_arg toSubmodule h)
+  toFun x := ⟨x, h ▸ x.2⟩
+  invFun x := ⟨x, h.symm ▸ x.2⟩
+  map_mul' _ _ := rfl
+  commutes' _ := rfl
 #align subalgebra.equiv_of_eq Subalgebra.equivOfEq
 
 @[simp]
@@ -1107,140 +1078,24 @@ theorem equivOfEq_trans (S T U : Subalgebra R A) (hST : S = T) (hTU : T = U) :
     (equivOfEq S T hST).trans (equivOfEq T U hTU) = equivOfEq S U (hST.trans hTU) := rfl
 #align subalgebra.equiv_of_eq_trans Subalgebra.equivOfEq_trans
 
-section Prod
+section equivMapOfInjective
 
-variable (S₁ : Subalgebra R B)
+variable (f : A →ₐ[R] B)
 
-/-- The product of two subalgebras is a subalgebra. -/
-def prod : Subalgebra R (A × B) :=
-  { S.toSubsemiring.prod S₁.toSubsemiring with
-    carrier := S ×ˢ S₁
-    algebraMap_mem' := fun _ => ⟨algebraMap_mem _ _, algebraMap_mem _ _⟩ }
-#align subalgebra.prod Subalgebra.prod
+theorem range_comp_val : (f.comp S.val).range = S.map f := by
+  rw [AlgHom.range_comp, range_val]
 
-@[simp]
-theorem coe_prod : (prod S S₁ : Set (A × B)) = (S : Set A) ×ˢ (S₁ : Set B) :=
-  rfl
-#align subalgebra.coe_prod Subalgebra.coe_prod
+variable (hf : Function.Injective f)
 
-open Subalgebra in
-theorem prod_toSubmodule : toSubmodule (S.prod S₁) = (toSubmodule S).prod (toSubmodule S₁) := rfl
-#align subalgebra.prod_to_submodule Subalgebra.prod_toSubmodule
+/-- A subalgebra is isomorphic to its image under an injective `AlgHom` -/
+noncomputable def equivMapOfInjective : S ≃ₐ[R] S.map f :=
+  (AlgEquiv.ofInjective (f.comp S.val) (hf.comp Subtype.val_injective)).trans
+    (equivOfEq _ _ (range_comp_val S f))
 
 @[simp]
-theorem mem_prod {S : Subalgebra R A} {S₁ : Subalgebra R B} {x : A × B} :
-    x ∈ prod S S₁ ↔ x.1 ∈ S ∧ x.2 ∈ S₁ := Set.mem_prod
-#align subalgebra.mem_prod Subalgebra.mem_prod
+theorem coe_equivMapOfInjective_apply (x : S) : ↑(equivMapOfInjective S f hf x) = f x := rfl
 
-@[simp]
-theorem prod_top : (prod ⊤ ⊤ : Subalgebra R (A × B)) = ⊤ := by ext; simp
-#align subalgebra.prod_top Subalgebra.prod_top
-
-theorem prod_mono {S T : Subalgebra R A} {S₁ T₁ : Subalgebra R B} :
-    S ≤ T → S₁ ≤ T₁ → prod S S₁ ≤ prod T T₁ :=
-  Set.prod_mono
-#align subalgebra.prod_mono Subalgebra.prod_mono
-
-@[simp]
-theorem prod_inf_prod {S T : Subalgebra R A} {S₁ T₁ : Subalgebra R B} :
-    S.prod S₁ ⊓ T.prod T₁ = (S ⊓ T).prod (S₁ ⊓ T₁) :=
-  SetLike.coe_injective Set.prod_inter_prod
-#align subalgebra.prod_inf_prod Subalgebra.prod_inf_prod
-
-end Prod
-
-section SuprLift
-
-variable {ι : Type*}
-
-theorem coe_iSup_of_directed [Nonempty ι] {S : ι → Subalgebra R A} (dir : Directed (· ≤ ·) S) :
-    ↑(iSup S) = ⋃ i, (S i : Set A) :=
-  -- Porting note: moved up the `let i` to use it in `zero_mem'` and `one_mem'`
-  let i := @Nonempty.some ι inferInstance
-  let K : Subalgebra R A :=
-    { carrier := ⋃ i, S i
-      -- Porting note: auto_params failing, need to provide these explicitly
-      zero_mem' := by simp only [Set.mem_iUnion, SetLike.mem_coe]; exact ⟨i, zero_mem _⟩
-      one_mem' := by simp only [Set.mem_iUnion, SetLike.mem_coe]; exact ⟨i, one_mem _⟩
-      mul_mem' := fun hx hy =>
-        let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
-        let ⟨j, hj⟩ := Set.mem_iUnion.1 hy
-        let ⟨k, hik, hjk⟩ := dir i j
-        Set.mem_iUnion.2 ⟨k, Subalgebra.mul_mem (S k) (hik hi) (hjk hj)⟩
-      add_mem' := fun hx hy =>
-        let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
-        let ⟨j, hj⟩ := Set.mem_iUnion.1 hy
-        let ⟨k, hik, hjk⟩ := dir i j
-        Set.mem_iUnion.2 ⟨k, Subalgebra.add_mem (S k) (hik hi) (hjk hj)⟩
-      algebraMap_mem' := fun _ ↦
-        Set.mem_iUnion.2 ⟨i, Subalgebra.algebraMap_mem _ _⟩ }
-  have : iSup S = K :=
-    le_antisymm (iSup_le fun i => Set.subset_iUnion (fun i => (↑(S i) : Set A)) i)
-      (SetLike.coe_subset_coe.1 (Set.iUnion_subset fun i => SetLike.coe_subset_coe.2 (le_iSup _ _)))
-  this.symm ▸ rfl
-#align subalgebra.coe_supr_of_directed Subalgebra.coe_iSup_of_directed
-
--- Porting note: TODO: turn `hT` into an assumption `T ≤ iSup K`. That's what `Set.iUnionLift` needs
--- Porting note: the proofs of `map_{zero,one,add,mul}` got a bit uglier, probably unification trbls
-/-- Define an algebra homomorphism on a directed supremum of subalgebras by defining
-it on each subalgebra, and proving that it agrees on the intersection of subalgebras. -/
-noncomputable def iSupLift [Nonempty ι] (K : ι → Subalgebra R A) (dir : Directed (· ≤ ·) K)
-    (f : ∀ i, K i →ₐ[R] B) (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
-    (T : Subalgebra R A) (hT : T = iSup K) : ↥T →ₐ[R] B :=
-  { toFun := Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x)
-        (fun i j x hxi hxj => by
-          let ⟨k, hik, hjk⟩ := dir i j
-          dsimp
-          rw [hf i k hik, hf j k hjk]
-          rfl)
-        T (by rw [hT, coe_iSup_of_directed dir])
-    map_one' := by apply Set.iUnionLift_const _ (fun _ => 1) <;> simp
-    map_zero' := by dsimp; apply Set.iUnionLift_const _ (fun _ => 0) <;> simp
-    map_mul' := by
-      subst hT; dsimp
-      apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· * ·))
-      on_goal 3 => rw [coe_iSup_of_directed dir]
-      all_goals simp
-    map_add' := by
-      subst hT; dsimp
-      apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· + ·))
-      on_goal 3 => rw [coe_iSup_of_directed dir]
-      all_goals simp
-    commutes' := fun r => by
-      dsimp
-      apply Set.iUnionLift_const _ (fun _ => algebraMap R _ r) <;> simp }
-#align subalgebra.supr_lift Subalgebra.iSupLift
-
-variable [Nonempty ι] {K : ι → Subalgebra R A} {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
-  {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)} {T : Subalgebra R A}
-  {hT : T = iSup K}
-
-@[simp]
-theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
-    iSupLift K dir f hf T hT (inclusion h x) = f i x := by
-  dsimp [iSupLift, inclusion]
-  rw [Set.iUnionLift_inclusion]
-#align subalgebra.supr_lift_inclusion Subalgebra.iSupLift_inclusion
-
-@[simp]
-theorem iSupLift_comp_inclusion {i : ι} (h : K i ≤ T) :
-    (iSupLift K dir f hf T hT).comp (inclusion h) = f i := by ext; simp
-#align subalgebra.supr_lift_comp_inclusion Subalgebra.iSupLift_comp_inclusion
-
-@[simp]
-theorem iSupLift_mk {i : ι} (x : K i) (hx : (x : A) ∈ T) :
-    iSupLift K dir f hf T hT ⟨x, hx⟩ = f i x := by
-  dsimp [iSupLift, inclusion]
-  rw [Set.iUnionLift_mk]
-#align subalgebra.supr_lift_mk Subalgebra.iSupLift_mk
-
-theorem iSupLift_of_mem {i : ι} (x : T) (hx : (x : A) ∈ K i) :
-    iSupLift K dir f hf T hT x = f i ⟨x, hx⟩ := by
-  dsimp [iSupLift, inclusion]
-  rw [Set.iUnionLift_of_mem]
-#align subalgebra.supr_lift_of_mem Subalgebra.iSupLift_of_mem
-
-end SuprLift
+end equivMapOfInjective
 
 /-! ## Actions by `Subalgebra`s
 
@@ -1342,7 +1197,7 @@ end Actions
 section Center
 
 theorem _root_.Set.algebraMap_mem_center (r : R) : algebraMap R A r ∈ Set.center A := by
-  simp [Algebra.commutes, Set.mem_center_iff]
+  simp only [Semigroup.mem_center_iff, commutes, forall_const]
 #align set.algebra_map_mem_center Set.algebraMap_mem_center
 
 variable (R A)
@@ -1382,7 +1237,7 @@ instance {A : Type*} [Ring A] [Algebra R A] : CommRing (center R A) :=
   inferInstanceAs (CommRing (Subring.center A))
 
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
-  Iff.rfl
+  Subsemigroup.mem_center_iff
 #align subalgebra.mem_center_iff Subalgebra.mem_center_iff
 
 end Center
@@ -1429,48 +1284,17 @@ theorem centralizer_univ : centralizer R Set.univ = center R A :=
   SetLike.ext' (Set.centralizer_univ A)
 #align subalgebra.centralizer_univ Subalgebra.centralizer_univ
 
+lemma le_centralizer_centralizer {s : Subalgebra R A} :
+    s ≤ centralizer R (centralizer R (s : Set A)) :=
+  Set.subset_centralizer_centralizer
+
+@[simp]
+lemma centralizer_centralizer_centralizer {s : Set A} :
+    centralizer R s.centralizer.centralizer = centralizer R s := by
+  apply SetLike.coe_injective
+  simp only [coe_centralizer, Set.centralizer_centralizer_centralizer]
+
 end Centralizer
-
-/-- Suppose we are given `∑ i, lᵢ * sᵢ = 1` in `S`, and `S'` a subalgebra of `S` that contains
-`lᵢ` and `sᵢ`. To check that an `x : S` falls in `S'`, we only need to show that
-`sᵢ ^ n • x ∈ S'` for some `n` for each `sᵢ`. -/
-theorem mem_of_finset_sum_eq_one_of_pow_smul_mem {S : Type*} [CommRing S] [Algebra R S]
-    (S' : Subalgebra R S) {ι : Type*} (ι' : Finset ι) (s : ι → S) (l : ι → S)
-    (e : ∑ i in ι', l i * s i = 1) (hs : ∀ i, s i ∈ S') (hl : ∀ i, l i ∈ S') (x : S)
-    (H : ∀ i, ∃ n : ℕ, (s i ^ n : S) • x ∈ S') : x ∈ S' := by
-  -- Porting note: needed to add this instance
-  let _i : Algebra { x // x ∈ S' } { x // x ∈ S' } := Algebra.id _
-  suffices x ∈ Subalgebra.toSubmodule (Algebra.ofId S' S).range by
-    obtain ⟨x, rfl⟩ := this
-    exact x.2
-  choose n hn using H
-  let s' : ι → S' := fun x => ⟨s x, hs x⟩
-  let l' : ι → S' := fun x => ⟨l x, hl x⟩
-  have e' : ∑ i in ι', l' i * s' i = 1 := by
-    ext
-    show S'.subtype (∑ i in ι', l' i * s' i) = 1
-    simpa only [map_sum, map_mul] using e
-  have : Ideal.span (s' '' ι') = ⊤ := by
-    rw [Ideal.eq_top_iff_one, ← e']
-    apply sum_mem
-    intros i hi
-    exact Ideal.mul_mem_left _ _ <| Ideal.subset_span <| Set.mem_image_of_mem s' hi
-  let N := ι'.sup n
-  have hN := Ideal.span_pow_eq_top _ this N
-  apply (Algebra.ofId S' S).range.toSubmodule.mem_of_span_top_of_smul_mem _ hN
-  rintro ⟨_, _, ⟨i, hi, rfl⟩, rfl⟩
-  change s' i ^ N • x ∈ _
-  rw [← tsub_add_cancel_of_le (show n i ≤ N from Finset.le_sup hi), pow_add, mul_smul]
-  refine' Submodule.smul_mem _ (⟨_, pow_mem (hs i) _⟩ : S') _
-  exact ⟨⟨_, hn i⟩, rfl⟩
-#align subalgebra.mem_of_finset_sum_eq_one_of_pow_smul_mem Subalgebra.mem_of_finset_sum_eq_one_of_pow_smul_mem
-
-theorem mem_of_span_eq_top_of_smul_pow_mem {S : Type*} [CommRing S] [Algebra R S]
-    (S' : Subalgebra R S) (s : Set S) (l : s →₀ S) (hs : Finsupp.total s S S (↑) l = 1)
-    (hs' : s ⊆ S') (hl : ∀ i, l i ∈ S') (x : S) (H : ∀ r : s, ∃ n : ℕ, (r : S) ^ n • x ∈ S') :
-    x ∈ S' :=
-  mem_of_finset_sum_eq_one_of_pow_smul_mem S' l.support (↑) l hs (fun x => hs' x.2) hl x H
-#align subalgebra.mem_of_span_eq_top_of_smul_pow_mem Subalgebra.mem_of_span_eq_top_of_smul_pow_mem
 
 end Subalgebra
 
@@ -1480,7 +1304,7 @@ variable {R : Type*} [Semiring R]
 
 /-- A subsemiring is an `ℕ`-subalgebra. -/
 def subalgebraOfSubsemiring (S : Subsemiring R) : Subalgebra ℕ R :=
-  { S with algebraMap_mem' := fun i => coe_nat_mem S i }
+  { S with algebraMap_mem' := fun i => natCast_mem S i }
 #align subalgebra_of_subsemiring subalgebraOfSubsemiring
 
 @[simp]

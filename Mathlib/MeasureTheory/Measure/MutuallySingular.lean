@@ -3,7 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.Restrict
 
 #align_import measure_theory.measure.mutually_singular from "leanprover-community/mathlib"@"70a4f2197832bceab57d7f41379b2592d1110570"
 
@@ -40,7 +40,6 @@ def MutuallySingular {_ : MeasurableSpace α} (μ ν : Measure α) : Prop :=
   ∃ s : Set α, MeasurableSet s ∧ μ s = 0 ∧ ν sᶜ = 0
 #align measure_theory.measure.mutually_singular MeasureTheory.Measure.MutuallySingular
 
--- mathport name: measure.mutually_singular
 @[inherit_doc MeasureTheory.Measure.MutuallySingular]
 scoped[MeasureTheory] infixl:60 " ⟂ₘ " => MeasureTheory.Measure.MutuallySingular
 
@@ -49,9 +48,30 @@ namespace MutuallySingular
 theorem mk {s t : Set α} (hs : μ s = 0) (ht : ν t = 0) (hst : univ ⊆ s ∪ t) :
     MutuallySingular μ ν := by
   use toMeasurable μ s, measurableSet_toMeasurable _ _, (measure_toMeasurable _).trans hs
-  refine' measure_mono_null (fun x hx => (hst trivial).resolve_left fun hxs => hx _) ht
+  refine measure_mono_null (fun x hx => (hst trivial).resolve_left fun hxs => hx ?_) ht
   exact subset_toMeasurable _ _ hxs
 #align measure_theory.measure.mutually_singular.mk MeasureTheory.Measure.MutuallySingular.mk
+
+/-- A set such that `μ h.nullSet = 0` and `ν h.nullSetᶜ = 0`. -/
+def nullSet (h : μ ⟂ₘ ν) : Set α := h.choose
+
+lemma measurableSet_nullSet (h : μ ⟂ₘ ν) : MeasurableSet h.nullSet := h.choose_spec.1
+
+@[simp]
+lemma measure_nullSet (h : μ ⟂ₘ ν) : μ h.nullSet = 0 := h.choose_spec.2.1
+
+@[simp]
+lemma measure_compl_nullSet (h : μ ⟂ₘ ν) : ν h.nullSetᶜ = 0 := h.choose_spec.2.2
+
+-- TODO: this is proved by simp, but is not simplified in other contexts without the @[simp]
+-- attribute. Also, the linter does not complain about that attribute.
+@[simp]
+lemma restrict_nullSet (h : μ ⟂ₘ ν) : μ.restrict h.nullSet = 0 := by simp
+
+-- TODO: this is proved by simp, but is not simplified in other contexts without the @[simp]
+-- attribute. Also, the linter does not complain about that attribute.
+@[simp]
+lemma restrict_compl_nullSet (h : μ ⟂ₘ ν) : ν.restrict h.nullSetᶜ = 0 := by simp
 
 @[simp]
 theorem zero_right : μ ⟂ₘ 0 :=
@@ -83,10 +103,18 @@ theorem mono (h : μ₁ ⟂ₘ ν₁) (hμ : μ₂ ≤ μ₁) (hν : ν₂ ≤ �
 #align measure_theory.measure.mutually_singular.mono MeasureTheory.Measure.MutuallySingular.mono
 
 @[simp]
+lemma self_iff (μ : Measure α) : μ ⟂ₘ μ ↔ μ = 0 := by
+  refine ⟨?_, fun h ↦ by (rw [h]; exact zero_left)⟩
+  rintro ⟨s, hs, hμs, hμs_compl⟩
+  suffices μ Set.univ = 0 by rwa [measure_univ_eq_zero] at this
+  rw [← Set.union_compl_self s, measure_union disjoint_compl_right hs.compl, hμs, hμs_compl,
+    add_zero]
+
+@[simp]
 theorem sum_left {ι : Type*} [Countable ι] {μ : ι → Measure α} : sum μ ⟂ₘ ν ↔ ∀ i, μ i ⟂ₘ ν := by
-  refine' ⟨fun h i => h.mono (le_sum _ _) le_rfl, fun H => _⟩
+  refine ⟨fun h i => h.mono (le_sum _ _) le_rfl, fun H => ?_⟩
   choose s hsm hsμ hsν using H
-  refine' ⟨⋂ i, s i, MeasurableSet.iInter hsm, _, _⟩
+  refine ⟨⋂ i, s i, MeasurableSet.iInter hsm, ?_, ?_⟩
   · rw [sum_apply _ (MeasurableSet.iInter hsm), ENNReal.tsum_eq_zero]
     exact fun i => measure_mono_null (iInter_subset _ _) (hsμ i)
   · rwa [compl_iInter, measure_iUnion_null_iff]
@@ -123,7 +151,18 @@ theorem smul_nnreal (r : ℝ≥0) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
   h.smul r
 #align measure_theory.measure.mutually_singular.smul_nnreal MeasureTheory.Measure.MutuallySingular.smul_nnreal
 
+lemma restrict (h : μ ⟂ₘ ν) (s : Set α) : μ.restrict s ⟂ₘ ν := by
+  refine ⟨h.nullSet, h.measurableSet_nullSet, ?_, h.measure_compl_nullSet⟩
+  rw [Measure.restrict_apply h.measurableSet_nullSet]
+  exact measure_mono_null (Set.inter_subset_left _ _) h.measure_nullSet
+
 end MutuallySingular
+
+lemma eq_zero_of_absolutelyContinuous_of_mutuallySingular {μ ν : Measure α}
+    (h_ac : μ ≪ ν) (h_ms : μ ⟂ₘ ν) :
+    μ = 0 := by
+  rw [← Measure.MutuallySingular.self_iff]
+  exact h_ms.mono_ac Measure.AbsolutelyContinuous.rfl h_ac
 
 end Measure
 

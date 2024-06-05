@@ -34,7 +34,6 @@ universe v₁ v₂ u₁ u₂
 
 -- morphism levels before object levels. See note [category_theory universes].
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-
 variable {L : C ⥤ D} {R : D ⥤ C}
 
 namespace Adjunction
@@ -124,13 +123,13 @@ theorem Monad.left_comparison (h : L ⊣ R) : L ⋙ Monad.comparison h = h.toMon
   rfl
 #align category_theory.monad.left_comparison CategoryTheory.Monad.left_comparison
 
-instance [Faithful R] (h : L ⊣ R) : Faithful (Monad.comparison h) where
+instance [R.Faithful] (h : L ⊣ R) : (Monad.comparison h).Faithful where
   map_injective {_ _} _ _ w := R.map_injective (congr_arg Monad.Algebra.Hom.f w : _)
 
-instance (T : Monad C) : Full (Monad.comparison T.adj) where
-  preimage {_ _} f := ⟨f.f, by simpa using f.h⟩
+instance (T : Monad C) : (Monad.comparison T.adj).Full where
+  map_surjective {_ _} f := ⟨⟨f.f, by simpa using f.h⟩, rfl⟩
 
-instance (T : Monad C) : EssSurj (Monad.comparison T.adj) where
+instance (T : Monad C) : (Monad.comparison T.adj).EssSurj where
   mem_essImage X :=
     ⟨{  A := X.A
         a := X.a
@@ -172,15 +171,15 @@ theorem Comonad.left_comparison (h : L ⊣ R) : R ⋙ Comonad.comparison h = h.t
   rfl
 #align category_theory.comonad.left_comparison CategoryTheory.Comonad.left_comparison
 
-instance Comonad.comparison_faithful_of_faithful [Faithful L] (h : L ⊣ R) :
-    Faithful (Comonad.comparison h) where
+instance Comonad.comparison_faithful_of_faithful [L.Faithful] (h : L ⊣ R) :
+    (Comonad.comparison h).Faithful where
   map_injective {_ _} _ _ w := L.map_injective (congr_arg Comonad.Coalgebra.Hom.f w : _)
 #align category_theory.comonad.comparison_faithful_of_faithful CategoryTheory.Comonad.comparison_faithful_of_faithful
 
-instance (G : Comonad C) : Full (Comonad.comparison G.adj) where
-  preimage f := ⟨f.f, by simpa using f.h⟩
+instance (G : Comonad C) : (Comonad.comparison G.adj).Full where
+  map_surjective f := ⟨⟨f.f, by simpa using f.h⟩, rfl⟩
 
-instance (G : Comonad C) : EssSurj (Comonad.comparison G.adj) where
+instance (G : Comonad C) : (Comonad.comparison G.adj).EssSurj where
   mem_essImage X :=
     ⟨{  A := X.A
         a := X.a
@@ -191,26 +190,68 @@ instance (G : Comonad C) : EssSurj (Comonad.comparison G.adj) where
 /-- A right adjoint functor `R : D ⥤ C` is *monadic* if the comparison functor `Monad.comparison R`
 from `D` to the category of Eilenberg-Moore algebras for the adjunction is an equivalence.
 -/
-class MonadicRightAdjoint (R : D ⥤ C) extends IsRightAdjoint R where
-  eqv : IsEquivalence (Monad.comparison (Adjunction.ofRightAdjoint R))
+class MonadicRightAdjoint (R : D ⥤ C) where
+  /-- a choice of left adjoint for `R` -/
+  L : C ⥤ D
+  /-- `R` is a right adjoint -/
+  adj : L ⊣ R
+  eqv : (Monad.comparison adj).IsEquivalence
 #align category_theory.monadic_right_adjoint CategoryTheory.MonadicRightAdjoint
+
+/-- The left adjoint functor to `R` given by `[MonadicRightAdjoint R]`. -/
+def monadicLeftAdjoint (R : D ⥤ C) [MonadicRightAdjoint R] : C ⥤ D :=
+  MonadicRightAdjoint.L (R := R)
+
+/-- The adjunction `monadicLeftAdjoint R ⊣ R` given by `[MonadicRightAdjoint R]`. -/
+def monadicAdjunction (R : D ⥤ C) [MonadicRightAdjoint R] :
+    monadicLeftAdjoint R ⊣ R :=
+  MonadicRightAdjoint.adj
+
+instance (R : D ⥤ C) [MonadicRightAdjoint R] :
+    (Monad.comparison (monadicAdjunction R)).IsEquivalence :=
+  MonadicRightAdjoint.eqv
+
+instance (R : D ⥤ C) [MonadicRightAdjoint R] : R.IsRightAdjoint :=
+  (monadicAdjunction R).isRightAdjoint
+
+noncomputable instance (T : Monad C) : MonadicRightAdjoint T.forget where
+  adj := T.adj
+  eqv := { }
 
 /--
 A left adjoint functor `L : C ⥤ D` is *comonadic* if the comparison functor `Comonad.comparison L`
 from `C` to the category of Eilenberg-Moore algebras for the adjunction is an equivalence.
 -/
-class ComonadicLeftAdjoint (L : C ⥤ D) extends IsLeftAdjoint L where
-  eqv : IsEquivalence (Comonad.comparison (Adjunction.ofLeftAdjoint L))
+class ComonadicLeftAdjoint (L : C ⥤ D) where
+  /-- a choice of right adjoint for `L` -/
+  R : D ⥤ C
+  /-- `L` is a right adjoint -/
+  adj : L ⊣ R
+  eqv : (Comonad.comparison adj).IsEquivalence
 #align category_theory.comonadic_left_adjoint CategoryTheory.ComonadicLeftAdjoint
 
-noncomputable instance (T : Monad C) : MonadicRightAdjoint T.forget :=
-  ⟨(Equivalence.ofFullyFaithfullyEssSurj _ : IsEquivalence (Monad.comparison T.adj))⟩
+/-- The right adjoint functor to `L` given by `[ComonadicLeftAdjoint L]`. -/
+def comonadicRightAdjoint (L : C ⥤ D) [ComonadicLeftAdjoint L] : D ⥤ C :=
+  ComonadicLeftAdjoint.R (L := L)
 
-noncomputable instance (G : Comonad C) : ComonadicLeftAdjoint G.forget :=
-  ⟨(Equivalence.ofFullyFaithfullyEssSurj _ : IsEquivalence (Comonad.comparison G.adj))⟩
+/-- The adjunction `L ⊣ comonadicRightAdjoint L` given by `[ComonadicLeftAdjoint L]`. -/
+def comonadicAdjunction (L : C ⥤ D) [ComonadicLeftAdjoint L] :
+    L ⊣ comonadicRightAdjoint L :=
+  ComonadicLeftAdjoint.adj
+
+instance (L : C ⥤ D) [ComonadicLeftAdjoint L] :
+    (Comonad.comparison (comonadicAdjunction L)).IsEquivalence :=
+  ComonadicLeftAdjoint.eqv
+
+instance (L : C ⥤ D) [ComonadicLeftAdjoint L] : L.IsLeftAdjoint :=
+  (comonadicAdjunction L).isLeftAdjoint
+
+noncomputable instance (G : Comonad C) : ComonadicLeftAdjoint G.forget where
+  adj := G.adj
+  eqv := { }
 
 -- TODO: This holds more generally for idempotent adjunctions, not just reflective adjunctions.
-instance μ_iso_of_reflective [Reflective R] : IsIso (Adjunction.ofRightAdjoint R).toMonad.μ := by
+instance μ_iso_of_reflective [Reflective R] : IsIso (reflectorAdjunction R).toMonad.μ := by
   dsimp
   infer_instance
 #align category_theory.μ_iso_of_reflective CategoryTheory.μ_iso_of_reflective
@@ -220,36 +261,36 @@ attribute [instance] ComonadicLeftAdjoint.eqv
 
 namespace Reflective
 
-instance [Reflective R] (X : (Adjunction.ofRightAdjoint R).toMonad.Algebra) :
-    IsIso ((Adjunction.ofRightAdjoint R).unit.app X.A) :=
+instance [Reflective R] (X : (reflectorAdjunction R).toMonad.Algebra) :
+    IsIso ((reflectorAdjunction R).unit.app X.A) :=
   ⟨⟨X.a,
       ⟨X.unit, by
         dsimp only [Functor.id_obj]
-        rw [← (Adjunction.ofRightAdjoint R).unit_naturality]
+        rw [← (reflectorAdjunction R).unit_naturality]
         dsimp only [Functor.comp_obj, Adjunction.toMonad_coe]
         rw [unit_obj_eq_map_unit, ← Functor.map_comp, ← Functor.map_comp]
         erw [X.unit]
         simp⟩⟩⟩
 
 instance comparison_essSurj [Reflective R] :
-    EssSurj (Monad.comparison (Adjunction.ofRightAdjoint R)) := by
-  refine' ⟨fun X => ⟨(leftAdjoint R).obj X.A, ⟨_⟩⟩⟩
+    (Monad.comparison (reflectorAdjunction R)).EssSurj := by
+  refine ⟨fun X => ⟨(reflector R).obj X.A, ⟨?_⟩⟩⟩
   symm
-  refine' Monad.Algebra.isoMk _ _
-  · exact asIso ((Adjunction.ofRightAdjoint R).unit.app X.A)
+  refine Monad.Algebra.isoMk ?_ ?_
+  · exact asIso ((reflectorAdjunction R).unit.app X.A)
   dsimp only [Functor.comp_map, Monad.comparison_obj_a, asIso_hom, Functor.comp_obj,
     Monad.comparison_obj_A, Adjunction.toMonad_coe]
-  rw [← cancel_epi ((Adjunction.ofRightAdjoint R).unit.app X.A)]
+  rw [← cancel_epi ((reflectorAdjunction R).unit.app X.A)]
   dsimp only [Functor.id_obj, Functor.comp_obj]
   rw [Adjunction.unit_naturality_assoc,
     Adjunction.right_triangle_components, comp_id]
   apply (X.unit_assoc _).symm
 #align category_theory.reflective.comparison_ess_surj CategoryTheory.Reflective.comparison_essSurj
 
-instance comparisonFull [Full R] [IsRightAdjoint R] :
-    Full (Monad.comparison (Adjunction.ofRightAdjoint R)) where
-  preimage f := R.preimage f.f
-#align category_theory.reflective.comparison_full CategoryTheory.Reflective.comparisonFull
+lemma comparison_full [R.Full] {L : C ⥤ D} (adj : L ⊣ R):
+    (Monad.comparison adj).Full where
+  map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
+#align category_theory.reflective.comparison_full CategoryTheory.Reflective.comparison_full
 
 end Reflective
 
@@ -258,9 +299,10 @@ end Reflective
 -- see Note [lower instance priority]
 /-- Any reflective inclusion has a monadic right adjoint.
     cf Prop 5.3.3 of [Riehl][riehl2017] -/
-noncomputable instance (priority := 100) monadicOfReflective [Reflective R] :
+instance (priority := 100) monadicOfReflective [Reflective R] :
     MonadicRightAdjoint R where
-  eqv := Equivalence.ofFullyFaithfullyEssSurj _
+  adj := reflectorAdjunction R
+  eqv := { full := Reflective.comparison_full _ }
 #align category_theory.monadic_of_reflective CategoryTheory.monadicOfReflective
 
 end CategoryTheory

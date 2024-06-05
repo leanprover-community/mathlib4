@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.Normed.Group.Completion
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Topology.Algebra.UniformRing
 
 #align_import analysis.normed_space.completion from "leanprover-community/mathlib"@"d3af0609f6db8691dffdc3e1fb7feb7da72698f2"
@@ -85,7 +85,7 @@ instance [SeminormedRing A] : NormedRing (Completion A) :=
     Completion.instMetricSpace with
     dist_eq := fun x y => by
       refine Completion.induction_on₂ x y ?_ ?_ <;> clear x y
-      · refine' isClosed_eq (Completion.uniformContinuous_extension₂ _).continuous _
+      · refine isClosed_eq (Completion.uniformContinuous_extension₂ _).continuous ?_
         exact Continuous.comp Completion.continuous_extension continuous_sub
       · intro x y
         rw [← Completion.coe_sub, norm_coe, Completion.dist_eq, dist_eq_norm]

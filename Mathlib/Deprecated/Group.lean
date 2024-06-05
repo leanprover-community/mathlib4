@@ -3,10 +3,10 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.TypeTags
-import Mathlib.Algebra.Hom.Equiv.Basic
-import Mathlib.Algebra.Hom.Ring.Defs
-import Mathlib.Algebra.Hom.Units
+import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Algebra.Ring.Hom.Defs
 
 #align_import deprecated.group from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"
 
@@ -113,8 +113,7 @@ variable {M : Type*} {N : Type*} {mM : MulOneClass M} {mN : MulOneClass N}
 
 /-- Interpret a map `f : M → N` as a homomorphism `M →* N`. -/
 @[to_additive "Interpret a map `f : M → N` as a homomorphism `M →+ N`."]
-def of {f : M → N} (h : IsMonoidHom f) : M →* N
-    where
+def of {f : M → N} (h : IsMonoidHom f) : M →* N where
   toFun := f
   map_one' := h.2
   map_mul' := h.1.1
@@ -412,8 +411,7 @@ namespace Units
 variable {M : Type*} {N : Type*} [Monoid M] [Monoid N]
 
 /-- The group homomorphism on units induced by a multiplicative morphism. -/
-@[reducible]
-def map' {f : M → N} (hf : IsMonoidHom f) : Mˣ →* Nˣ :=
+abbrev map' {f : M → N} (hf : IsMonoidHom f) : Mˣ →* Nˣ :=
   map (MonoidHom.of hf)
 #align units.map' Units.map'
 

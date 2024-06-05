@@ -17,8 +17,6 @@ Since Lean does not have a concept of "simplest form", we just express what is
 in fact the simplest form of the set of solutions, and then prove it equals the set of solutions.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Real
 
 open scoped Real
@@ -81,7 +79,7 @@ theorem solve_cos2_half {x : ℝ} : cos x ^ 2 = 1 / 2 ↔ ∃ k : ℤ, x = (2 * 
 
 theorem solve_cos3x_0 {x : ℝ} : cos (3 * x) = 0 ↔ ∃ k : ℤ, x = (2 * ↑k + 1) * π / 6 := by
   rw [cos_eq_zero_iff]
-  refine' exists_congr fun k => _
+  refine exists_congr fun k => ?_
   constructor <;> intro <;> linarith
 #align imo1962_q4.solve_cos3x_0 Imo1962Q4.solve_cos3x_0
 
@@ -121,7 +119,7 @@ Again, we now can solve for `x` using basic-ish trigonometry.
 -/
 theorem solve_cos2x_0 {x : ℝ} : cos (2 * x) = 0 ↔ ∃ k : ℤ, x = (2 * ↑k + 1) * π / 4 := by
   rw [cos_eq_zero_iff]
-  refine' exists_congr fun k => _
+  refine exists_congr fun k => ?_
   constructor <;> intro <;> linarith
 #align imo1962_q4.solve_cos2x_0 Imo1962Q4.solve_cos2x_0
 
