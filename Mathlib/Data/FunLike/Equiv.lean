@@ -58,7 +58,7 @@ Continuing the example above:
 ```
 /-- `MyIsoClass F A B` states that `F` is a type of `MyClass.op`-preserving morphisms.
 You should extend this class when you extend `MyIso`. -/
-class MyIsoClass (F : Type*) (A B : outParam <| Type*) [MyClass A] [MyClass B]
+class MyIsoClass (F : Type*) (A B : outParam Type*) [MyClass A] [MyClass B]
     [EquivLike F A B]
     extends MyHomClass F A B
 
@@ -82,7 +82,7 @@ Typically, you can just declare a new class analogous to `MyIsoClass`:
 structure CoolerIso (A B : Type*) [CoolClass A] [CoolClass B] extends MyIso A B :=
   (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
-class CoolerIsoClass (F : Type*) (A B : outParam <| Type*) [CoolClass A] [CoolClass B]
+class CoolerIsoClass (F : Type*) (A B : outParam Type*) [CoolClass A] [CoolClass B]
     [EquivLike F A B]
     extends MyIsoClass F A B :=
   (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)

@@ -68,7 +68,7 @@ instance quasiCompactComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiCom
     [QuasiCompact g] : QuasiCompact (f ≫ g) := by
   constructor
   intro U hU hU'
-  rw [Scheme.comp_val_base, coe_comp, Set.preimage_comp]
+  rw [Scheme.comp_val_base, TopCat.coe_comp, Set.preimage_comp]
   apply QuasiCompact.isCompact_preimage
   · exact Continuous.isOpen_preimage (by
     -- Porting note: `continuity` failed
