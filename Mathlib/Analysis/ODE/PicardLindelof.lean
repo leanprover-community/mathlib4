@@ -34,8 +34,6 @@ related theorems in `Mathlib/Analysis/ODE/Gronwall.lean`.
 differential equation
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Filter Function Set Metric TopologicalSpace intervalIntegral MeasureTheory
 open MeasureTheory.MeasureSpace (volume)
 open scoped Filter Topology NNReal ENNReal Nat Interval
@@ -128,7 +126,7 @@ theorem tDist_nonneg : 0 ≤ v.tDist :=
 
 theorem dist_t₀_le (t : Icc v.tMin v.tMax) : dist t v.t₀ ≤ v.tDist := by
   rw [Subtype.dist_eq, Real.dist_eq]
-  cases' le_total t v.t₀ with ht ht
+  rcases le_total t v.t₀ with ht | ht
   · rw [abs_of_nonpos (sub_nonpos.2 <| Subtype.coe_le_coe.2 ht), neg_sub]
     exact (sub_le_sub_left t.2.1 _).trans (le_max_right _ _)
   · rw [abs_of_nonneg (sub_nonneg.2 <| Subtype.coe_le_coe.2 ht)]
@@ -209,8 +207,8 @@ theorem map_t₀ : f v.t₀ = v.x₀ :=
 protected theorem mem_closedBall (t : Icc v.tMin v.tMax) : f t ∈ closedBall v.x₀ v.R :=
   calc
     dist (f t) v.x₀ = dist (f t) (f.toFun v.t₀) := by rw [f.map_t₀']
-    _ ≤ v.C * dist t v.t₀ := (f.lipschitz.dist_le_mul _ _)
-    _ ≤ v.C * v.tDist := (mul_le_mul_of_nonneg_left (v.dist_t₀_le _) v.C.2)
+    _ ≤ v.C * dist t v.t₀ := f.lipschitz.dist_le_mul _ _
+    _ ≤ v.C * v.tDist := mul_le_mul_of_nonneg_left (v.dist_t₀_le _) v.C.2
     _ ≤ v.R := v.isPicardLindelof.C_mul_le_R
 #align picard_lindelof.fun_space.mem_closed_ball PicardLindelof.FunSpace.mem_closedBall
 
@@ -227,7 +225,7 @@ theorem vComp_apply_coe (t : Icc v.tMin v.tMax) : f.vComp t = v t (f t) := by
 
 theorem continuous_vComp : Continuous f.vComp := by
   have := (continuous_subtype_val.prod_mk f.continuous).comp v.continuous_proj
-  refine' ContinuousOn.comp_continuous v.continuousOn this fun x => _
+  refine ContinuousOn.comp_continuous v.continuousOn this fun x => ?_
   exact ⟨(v.proj x).2, f.mem_closedBall _⟩
 #align picard_lindelof.fun_space.continuous_v_comp PicardLindelof.FunSpace.continuous_vComp
 
@@ -247,10 +245,10 @@ theorem dist_le_of_forall {f₁ f₂ : FunSpace v} {d : ℝ} (h : ∀ t, dist (f
 #align picard_lindelof.fun_space.dist_le_of_forall PicardLindelof.FunSpace.dist_le_of_forall
 
 instance [CompleteSpace E] : CompleteSpace v.FunSpace := by
-  refine' (completeSpace_iff_isComplete_range uniformInducing_toContinuousMap).2
-      (IsClosed.isComplete _)
+  refine (completeSpace_iff_isComplete_range uniformInducing_toContinuousMap).2
+      (IsClosed.isComplete ?_)
   rw [range_toContinuousMap, setOf_and]
-  refine' (isClosed_eq (ContinuousMap.continuous_eval_const _) continuous_const).inter _
+  refine (isClosed_eq (ContinuousMap.continuous_eval_const _) continuous_const).inter ?_
   have : IsClosed {f : Icc v.tMin v.tMax → E | LipschitzWith v.C f} :=
     isClosed_setOf_lipschitzWith v.C
   exact this.preimage ContinuousMap.continuous_coe
@@ -282,13 +280,13 @@ theorem hasDerivWithinAt_next (t : Icc v.tMin v.tMax) :
     HasDerivWithinAt (f.next ∘ v.proj) (v t (f t)) (Icc v.tMin v.tMax) t := by
   haveI : Fact ((t : ℝ) ∈ Icc v.tMin v.tMax) := ⟨t.2⟩
   simp only [(· ∘ ·), next_apply]
-  refine' HasDerivWithinAt.const_add _ _
+  refine HasDerivWithinAt.const_add _ ?_
   have : HasDerivWithinAt (∫ τ in v.t₀..·, f.vComp τ) (f.vComp t) (Icc v.tMin v.tMax) t :=
     integral_hasDerivWithinAt_right (f.intervalIntegrable_vComp _ _)
       (f.continuous_vComp.stronglyMeasurableAtFilter _ _)
       f.continuous_vComp.continuousWithinAt
   rw [vComp_apply_coe] at this
-  refine' this.congr_of_eventuallyEq_of_mem _ t.coe_prop
+  refine this.congr_of_eventuallyEq_of_mem ?_ t.coe_prop
   filter_upwards [self_mem_nhdsWithin] with _ ht'
   rw [v.proj_of_mem ht']
 #align picard_lindelof.fun_space.has_deriv_within_at_next PicardLindelof.FunSpace.hasDerivWithinAt_next
@@ -303,26 +301,26 @@ theorem dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
   calc
     ‖∫ τ in Ι (v.t₀ : ℝ) t, f₁.vComp τ - f₂.vComp τ‖ ≤
         ∫ τ in Ι (v.t₀ : ℝ) t, v.L * ((v.L * |τ - v.t₀|) ^ n / n ! * d) := by
-      refine' norm_integral_le_of_norm_le (Continuous.integrableOn_uIoc _) _
-      · -- porting note: was `continuity`
+      refine norm_integral_le_of_norm_le (Continuous.integrableOn_uIoc ?_) ?_
+      · -- Porting note: was `continuity`
         refine .mul continuous_const <| .mul (.div_const ?_ _) continuous_const
         refine .pow (.mul continuous_const <| .abs <| ?_) _
         exact .sub continuous_id continuous_const
-      · refine' (ae_restrict_mem measurableSet_Ioc).mono fun τ hτ => _
-        refine' (v.lipschitzOnWith (v.proj τ).2).norm_sub_le_of_le (f₁.mem_closedBall _)
-            (f₂.mem_closedBall _) ((h _).trans_eq _)
+      · refine (ae_restrict_mem measurableSet_Ioc).mono fun τ hτ => ?_
+        refine (v.lipschitzOnWith (v.proj τ).2).norm_sub_le_of_le (f₁.mem_closedBall _)
+            (f₂.mem_closedBall _) ((h _).trans_eq ?_)
         rw [v.proj_of_mem]
         exact uIcc_subset_Icc v.t₀.2 t.2 <| Ioc_subset_Icc_self hτ
     _ = (v.L * |t.1 - v.t₀|) ^ (n + 1) / (n + 1)! * d := by
       simp_rw [mul_pow, div_eq_mul_inv, mul_assoc, MeasureTheory.integral_mul_left,
         MeasureTheory.integral_mul_right, integral_pow_abs_sub_uIoc, div_eq_mul_inv,
-        pow_succ (v.L : ℝ), Nat.factorial_succ, Nat.cast_mul, Nat.cast_succ, mul_inv, mul_assoc]
+        pow_succ' (v.L : ℝ), Nat.factorial_succ, Nat.cast_mul, Nat.cast_succ, mul_inv, mul_assoc]
 #align picard_lindelof.fun_space.dist_next_apply_le_of_le PicardLindelof.FunSpace.dist_next_apply_le_of_le
 
 theorem dist_iterate_next_apply_le (f₁ f₂ : FunSpace v) (n : ℕ) (t : Icc v.tMin v.tMax) :
     dist (next^[n] f₁ t) (next^[n] f₂ t) ≤ (v.L * |t.1 - v.t₀|) ^ n / n ! * dist f₁ f₂ := by
   induction' n with n ihn generalizing t
-  · rw [Nat.zero_eq, pow_zero, Nat.factorial_zero, Nat.cast_one, div_one, one_mul]
+  · rw [pow_zero, Nat.factorial_zero, Nat.cast_one, div_one, one_mul]
     exact dist_apply_le_dist f₁ f₂ t
   · rw [iterate_succ_apply', iterate_succ_apply']
     exact dist_next_apply_le_of_le ihn _
@@ -330,7 +328,7 @@ theorem dist_iterate_next_apply_le (f₁ f₂ : FunSpace v) (n : ℕ) (t : Icc v
 
 theorem dist_iterate_next_le (f₁ f₂ : FunSpace v) (n : ℕ) :
     dist (next^[n] f₁) (next^[n] f₂) ≤ (v.L * v.tDist) ^ n / n ! * dist f₁ f₂ := by
-  refine' dist_le_of_forall fun t => (dist_iterate_next_apply_le _ _ _ _).trans _
+  refine dist_le_of_forall fun t => (dist_iterate_next_apply_le _ _ _ _).trans ?_
   have : |(t - v.t₀ : ℝ)| ≤ v.tDist := v.dist_t₀_le t
   gcongr
 #align picard_lindelof.fun_space.dist_iterate_next_le PicardLindelof.FunSpace.dist_iterate_next_le
@@ -364,7 +362,7 @@ theorem exists_solution :
     ∃ f : ℝ → E, f v.t₀ = v.x₀ ∧ ∀ t ∈ Icc v.tMin v.tMax,
       HasDerivWithinAt f (v t (f t)) (Icc v.tMin v.tMax) t := by
   rcases v.exists_fixed with ⟨f, hf⟩
-  refine' ⟨f ∘ v.proj, _, fun t ht => _⟩
+  refine ⟨f ∘ v.proj, ?_, fun t ht => ?_⟩
   · simp only [(· ∘ ·), proj_coe, f.map_t₀]
   · simp only [(· ∘ ·), v.proj_of_mem ht]
     lift t to Icc v.tMin v.tMax using ht
@@ -391,79 +389,53 @@ theorem IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq [CompleteSpace E]
     ⟨v, tMin, tMax, t₀, x₀, C, ⟨R, hpl.hR⟩, L, { hpl with ht₀ := t₀.property }⟩
 #align exists_forall_deriv_within_Icc_eq_of_is_picard_lindelof IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq
 
-variable [ProperSpace E] {v : E → E} (t₀ : ℝ) (x₀ : E)
+variable {v : E → E} (t₀ : ℝ) {x₀ : E}
 
-/-- A time-independent, locally continuously differentiable ODE satisfies the hypotheses of the
+/-- A time-independent, continuously differentiable ODE satisfies the hypotheses of the
   Picard-Lindelöf theorem. -/
-theorem exists_isPicardLindelof_const_of_contDiffOn_nhds {s : Set E} (hv : ContDiffOn ℝ 1 v s)
-    (hs : s ∈ 𝓝 x₀) :
+theorem exists_isPicardLindelof_const_of_contDiffAt (hv : ContDiffAt ℝ 1 v x₀) :
     ∃ ε > (0 : ℝ), ∃ L R C, IsPicardLindelof (fun _ => v) (t₀ - ε) t₀ (t₀ + ε) x₀ L R C := by
-  -- extract Lipschitz constant
-  obtain ⟨L, s', hs', hlip⟩ :=
-    ContDiffAt.exists_lipschitzOnWith ((hv.contDiffWithinAt (mem_of_mem_nhds hs)).contDiffAt hs)
-  -- radius of closed ball in which v is bounded
-  obtain ⟨r, hr : 0 < r, hball⟩ := Metric.mem_nhds_iff.mp (inter_sets (𝓝 x₀) hs hs')
-  have hr' := (half_pos hr).le
-  -- uses [ProperSpace E] for `isCompact_closedBall`
-  obtain ⟨C, hC⟩ := (isCompact_closedBall x₀ (r / 2)).bddAbove_image <| hv.continuousOn.norm.mono
-    (subset_inter_iff.mp ((closedBall_subset_ball (half_lt_self hr)).trans hball)).left
-  have hC' : 0 ≤ C := by
-    apply (norm_nonneg (v x₀)).trans
-    apply hC
-    exact ⟨x₀, ⟨mem_closedBall_self hr', rfl⟩⟩
-  set ε := if C = 0 then 1 else r / 2 / C with hε
-  have hε0 : 0 < ε := by
-    rw [hε]
-    split_ifs with h
-    · exact zero_lt_one
-    · exact div_pos (half_pos hr) (lt_of_le_of_ne hC' (Ne.symm h))
-  refine' ⟨ε, hε0, L, r / 2, C, _⟩
+  obtain ⟨L, s, hs, hlip⟩ := hv.exists_lipschitzOnWith
+  obtain ⟨R₁, hR₁ : 0 < R₁, hball⟩ := Metric.mem_nhds_iff.mp hs
+  obtain ⟨R₂, hR₂ : 0 < R₂, hbdd⟩ := Metric.continuousAt_iff.mp hv.continuousAt.norm 1 zero_lt_one
+  have hbdd' : ∀ x ∈ Metric.ball x₀ R₂, ‖v x‖ ≤ 1 + ‖v x₀‖ := fun _ hx =>
+    sub_le_iff_le_add.mp <| le_of_lt <| lt_of_abs_lt <| Real.dist_eq _ _ ▸ hbdd hx
+  set ε := min R₁ R₂ / 2 / (1 + ‖v x₀‖) with hε
+  have hε0 : 0 < ε := hε ▸ div_pos (half_pos <| lt_min hR₁ hR₂)
+    (add_pos_of_pos_of_nonneg zero_lt_one (norm_nonneg _))
+  refine ⟨ε, hε0, L, min R₁ R₂ / 2, 1 + ‖v x₀‖, ?_⟩
   exact
-    { ht₀ := by rw [← Real.closedBall_eq_Icc]; exact mem_closedBall_self hε0.le
-      hR := (half_pos hr).le
-      lipschitz := fun t _ => hlip.mono
-        (subset_inter_iff.mp (Subset.trans (closedBall_subset_ball (half_lt_self hr)) hball)).2
-      cont := fun x _ => continuousOn_const
-      norm_le := fun t _ x hx => hC ⟨x, hx, rfl⟩
+    { ht₀ := Real.closedBall_eq_Icc ▸ mem_closedBall_self hε0.le
+      hR := by positivity
+      lipschitz := fun _ _ => hlip.mono <|
+        (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂).trans <|
+        (Metric.ball_subset_ball <| min_le_left _ _).trans hball
+      cont := fun _ _ => continuousOn_const
+      norm_le := fun _ _ x hx => hbdd' x <| mem_of_mem_of_subset hx <|
+        (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂).trans <|
+        (Metric.ball_subset_ball <| min_le_right _ _).trans (subset_refl _)
       C_mul_le_R := by
-        rw [add_sub_cancel', sub_sub_cancel, max_self, mul_ite, mul_one]
-        split_ifs with h
-        · rwa [← h] at hr'
-        · exact (mul_div_cancel' (r / 2) h).le }
-#align exists_is_picard_lindelof_const_of_cont_diff_on_nhds exists_isPicardLindelof_const_of_contDiffOn_nhds
+        rw [add_sub_cancel_left, sub_sub_cancel, max_self, hε, mul_div_left_comm, div_self, mul_one]
+        exact ne_of_gt <| add_pos_of_pos_of_nonneg zero_lt_one <| norm_nonneg _ }
+#align exists_is_picard_lindelof_const_of_cont_diff_on_nhds exists_isPicardLindelof_const_of_contDiffAt
 
-/-- A time-independent, locally continuously differentiable ODE admits a solution in some open
-interval. -/
-theorem exists_forall_deriv_at_Ioo_eq_of_contDiffOn_nhds {s : Set E} (hv : ContDiffOn ℝ 1 v s)
-    (hs : s ∈ 𝓝 x₀) :
-    ∃ ε > (0 : ℝ),
-      ∃ f : ℝ → E, f t₀ = x₀ ∧ ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), f t ∈ s ∧ HasDerivAt f (v (f t)) t := by
-  obtain ⟨ε, hε, L, R, C, hpl⟩ := exists_isPicardLindelof_const_of_contDiffOn_nhds t₀ x₀ hv hs
+variable [CompleteSpace E]
+
+/-- A time-independent, continuously differentiable ODE admits a solution in some open interval. -/
+theorem exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt (hv : ContDiffAt ℝ 1 v x₀) :
+    ∃ f : ℝ → E, f t₀ = x₀ ∧
+      ∃ ε > (0 : ℝ), ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt f (v (f t)) t := by
+  obtain ⟨ε, hε, _, _, _, hpl⟩ := exists_isPicardLindelof_const_of_contDiffAt t₀ hv
   obtain ⟨f, hf1, hf2⟩ := hpl.exists_forall_hasDerivWithinAt_Icc_eq x₀
-  have hf2' : ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt f (v (f t)) t := fun t ht =>
-    (hf2 t (Ioo_subset_Icc_self ht)).hasDerivAt (Icc_mem_nhds ht.1 ht.2)
-  have h : f ⁻¹' s ∈ 𝓝 t₀ := by
-    have := hf2' t₀ (mem_Ioo.mpr ⟨sub_lt_self _ hε, lt_add_of_pos_right _ hε⟩)
-    apply ContinuousAt.preimage_mem_nhds this.continuousAt
-    rw [hf1]
-    exact hs
-  rw [Metric.mem_nhds_iff] at h
-  obtain ⟨r, hr1, hr2⟩ := h
-  refine ⟨min r ε, lt_min hr1 hε, f, hf1, fun t ht => ⟨?_,
-    hf2' t (mem_of_mem_of_subset ht (Ioo_subset_Ioo (sub_le_sub_left (min_le_right _ _) _)
-      (add_le_add_left (min_le_right _ _) _)))⟩⟩
-  rw [← Set.mem_preimage]
-  apply Set.mem_of_mem_of_subset _ hr2
-  apply Set.mem_of_mem_of_subset ht
-  rw [← Real.ball_eq_Ioo]
-  exact Metric.ball_subset_ball (min_le_left _ _)
-#align exists_forall_deriv_at_Ioo_eq_of_cont_diff_on_nhds exists_forall_deriv_at_Ioo_eq_of_contDiffOn_nhds
+  exact ⟨f, hf1, ε, hε, fun t ht =>
+    (hf2 t (Ioo_subset_Icc_self ht)).hasDerivAt (Icc_mem_nhds ht.1 ht.2)⟩
+#align exists_forall_deriv_at_Ioo_eq_of_cont_diff_on_nhds exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt
 
 /-- A time-independent, continuously differentiable ODE admits a solution in some open interval. -/
 theorem exists_forall_hasDerivAt_Ioo_eq_of_contDiff (hv : ContDiff ℝ 1 v) :
-    ∃ ε > (0 : ℝ), ∃ f : ℝ → E, f t₀ = x₀ ∧ ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt f (v (f t)) t :=
-  let ⟨ε, hε, f, hf1, hf2⟩ :=
-    exists_forall_deriv_at_Ioo_eq_of_contDiffOn_nhds t₀ x₀ hv.contDiffOn
-      (IsOpen.mem_nhds isOpen_univ (mem_univ _))
-  ⟨ε, hε, f, hf1, fun t ht => (hf2 t ht).2⟩
+    ∃ f : ℝ → E, f t₀ = x₀ ∧
+      ∃ ε > (0 : ℝ), ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt f (v (f t)) t :=
+  let ⟨f, hf1, ε, hε, hf2⟩ :=
+    exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀ hv.contDiffAt
+  ⟨f, hf1, ε, hε, fun _ h => hf2 _ h⟩
 #align exists_forall_deriv_at_Ioo_eq_of_cont_diff exists_forall_hasDerivAt_Ioo_eq_of_contDiff

@@ -20,7 +20,7 @@ In this file we prove a few simple facts about rectangular boxes, partitions, an
 For the last statement, we both prove it as a proposition and define a bundled
 `BoxIntegral.BoxAdditiveMap` function.
 
-### Tags
+## Tags
 
 rectangular box, measure
 -/
@@ -30,7 +30,7 @@ open Set
 
 noncomputable section
 
-open scoped ENNReal BigOperators Classical BoxIntegral
+open scoped ENNReal Classical BoxIntegral
 
 variable {ι : Type*}
 
@@ -84,7 +84,7 @@ end Box
 
 theorem Prepartition.measure_iUnion_toReal [Finite ι] {I : Box ι} (π : Prepartition I)
     (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] :
-    (μ π.iUnion).toReal = ∑ J in π.boxes, (μ J).toReal := by
+    (μ π.iUnion).toReal = ∑ J ∈ π.boxes, (μ J).toReal := by
   erw [← ENNReal.toReal_sum, π.iUnion_def, measure_biUnion_finset π.pairwiseDisjoint]
   exacts [fun J _ => J.measurableSet_coe, fun J _ => (J.measure_coe_lt_top μ).ne]
 #align box_integral.prepartition.measure_Union_to_real BoxIntegral.Prepartition.measure_iUnion_toReal
@@ -93,8 +93,6 @@ end BoxIntegral
 
 open BoxIntegral BoxIntegral.Box
 
-variable [Fintype ι]
-
 namespace MeasureTheory
 
 namespace Measure
@@ -102,7 +100,7 @@ namespace Measure
 /-- If `μ` is a locally finite measure on `ℝⁿ`, then `fun J ↦ (μ J).toReal` is a box-additive
 function. -/
 @[simps]
-def toBoxAdditive (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : ι →ᵇᵃ[⊤] ℝ where
+def toBoxAdditive [Finite ι] (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : ι →ᵇᵃ[⊤] ℝ where
   toFun J := (μ J).toReal
   sum_partition_boxes' J _ π hπ := by rw [← π.measure_iUnion_toReal, hπ.iUnion_eq]
 #align measure_theory.measure.to_box_additive MeasureTheory.Measure.toBoxAdditive
@@ -116,6 +114,8 @@ namespace BoxIntegral
 open MeasureTheory
 
 namespace Box
+
+variable [Fintype ι]
 
 -- @[simp] -- Porting note: simp normal form is `volume_apply'`
 theorem volume_apply (I : Box ι) :
@@ -137,6 +137,8 @@ theorem volume_face_mul {n} (i : Fin (n + 1)) (I : Box (Fin (n + 1))) :
 end Box
 
 namespace BoxAdditiveMap
+
+variable [Fintype ι]
 
 /-- Box-additive map sending each box `I` to the continuous linear endomorphism
 `x ↦ (volume I).toReal • x`. -/

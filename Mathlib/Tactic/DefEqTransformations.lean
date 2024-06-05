@@ -17,6 +17,31 @@ namespace Mathlib.Tactic
 
 open Lean Meta Elab Elab.Tactic
 
+/--
+This is `Lean.MVarId.changeLocalDecl` but makes sure to preserve local variable order.
+-/
+def _root_.Lean.MVarId.changeLocalDecl' (mvarId : MVarId) (fvarId : FVarId) (typeNew : Expr)
+    (checkDefEq := true) : MetaM MVarId := do
+  mvarId.checkNotAssigned `changeLocalDecl
+  let lctx := (← mvarId.getDecl).lctx
+  let some decl := lctx.find? fvarId | throwTacticEx `changeLocalDecl mvarId m!"\
+    local variable {Expr.fvar fvarId} is not present in local context{mvarId}"
+  let toRevert := lctx.foldl (init := #[]) fun arr decl' =>
+    if decl.index ≤ decl'.index then arr.push decl'.fvarId else arr
+  let (_, mvarId) ← mvarId.withReverted toRevert fun mvarId fvars => mvarId.withContext do
+    let check (typeOld : Expr) : MetaM Unit := do
+      if checkDefEq then
+        unless ← isDefEq typeNew typeOld do
+          throwTacticEx `changeLocalDecl mvarId
+            m!"given type{indentExpr typeNew}\nis not definitionally equal to{indentExpr typeOld}"
+    let finalize (targetNew : Expr) := do
+      return ((), fvars.map .some, ← mvarId.replaceTargetDefEq targetNew)
+    match ← mvarId.getType with
+    | .forallE n d b bi => do check d; finalize (.forallE n typeNew b bi)
+    | .letE n t v b ndep => do check t; finalize (.letE n typeNew v b ndep)
+    | _ => throwTacticEx `changeLocalDecl mvarId "unexpected auxiliary target"
+  return mvarId
+
 /-- For the main goal, use `m` to transform the types of locations specified by `loc?`.
 If `loc?` is none, then transforms the type of target. `m` is provided with an expression
 with instantiated metavariables.
@@ -31,8 +56,12 @@ def runDefEqTactic (m : Expr → MetaM Expr)
     TacticM Unit := withMainContext do
   withLocation (expandOptLocation (Lean.mkOptionalNode loc?))
     (atLocal := fun h => liftMetaTactic1 fun mvarId => do
-      let ty ← instantiateMVars (← h.getType)
-      mvarId.changeLocalDecl' (checkDefEq := checkDefEq) h (← m ty))
+      let ty ← h.getType
+      let ty' ← m (← instantiateMVars ty)
+      if Expr.equal ty ty' then
+        return mvarId
+      else
+        mvarId.changeLocalDecl' (checkDefEq := checkDefEq) h ty')
     (atTarget := liftMetaTactic1 fun mvarId => do
       let ty ← instantiateMVars (← mvarId.getType)
       mvarId.change (checkDefEq := checkDefEq) (← m ty))

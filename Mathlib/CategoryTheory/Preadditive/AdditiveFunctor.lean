@@ -48,15 +48,15 @@ namespace Functor
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
-  [Functor.Additive F]
+variable {C D E : Type*} [Category C] [Category D] [Category E]
+  [Preadditive C] [Preadditive D] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
 
 @[simp]
 theorem map_add {X Y : C} {f g : X ⟶ Y} : F.map (f + g) = F.map f + F.map g :=
   Functor.Additive.map_add
 #align category_theory.functor.map_add CategoryTheory.Functor.map_add
 
--- porting note: it was originally @[simps (config := { fullyApplied := false })]
+-- Porting note: it was originally @[simps (config := .asFn)]
 /-- `F.mapAddHom` is an additive homomorphism whose underlying function is `F.map`. -/
 @[simps!]
 def mapAddHom {X Y : C} : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y) :=
@@ -95,13 +95,41 @@ theorem map_zsmul {X Y : C} {f : X ⟶ Y} {r : ℤ} : F.map (r • f) = r • F.
   (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_zsmul _ _
 #align category_theory.functor.map_zsmul CategoryTheory.Functor.map_zsmul
 
-open BigOperators
-
 @[simp]
-theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
-    F.map (∑ a in s, f a) = ∑ a in s, F.map (f a) :=
-  (F.mapAddHom : (X ⟶ Y) →+ _).map_sum f s
+nonrec theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
+    F.map (∑ a ∈ s, f a) = ∑ a ∈ s, F.map (f a) :=
+  map_sum F.mapAddHom f s
 #align category_theory.functor.map_sum CategoryTheory.Functor.map_sum
+
+variable {F}
+
+lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) : G.Additive := by
+  constructor
+  intro X Y f g
+  simp only [← NatIso.naturality_1 e (f + g), map_add, Preadditive.add_comp,
+    NatTrans.naturality, Preadditive.comp_add, Iso.inv_hom_id_app_assoc]
+
+variable (F)
+
+lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
+    [(F ⋙ G).Additive] : G.Additive where
+  map_add {X Y f g} := by
+    obtain ⟨f', hf'⟩ := F.map_surjective ((F.objObjPreimageIso X).hom ≫ f ≫
+      (F.objObjPreimageIso Y).inv)
+    obtain ⟨g', hg'⟩ := F.map_surjective ((F.objObjPreimageIso X).hom ≫ g ≫
+      (F.objObjPreimageIso Y).inv)
+    simp only [← cancel_mono (G.map (F.objObjPreimageIso Y).inv),
+      ← cancel_epi (G.map (F.objObjPreimageIso X).hom),
+      Preadditive.add_comp, Preadditive.comp_add, ← Functor.map_comp]
+    erw [← hf', ← hg', ← (F ⋙ G).map_add]
+    dsimp
+    rw [F.map_add]
+
+lemma additive_of_comp_faithful
+    (F : C ⥤ D) (G : D ⥤ E) [G.Additive] [(F ⋙ G).Additive] [Faithful G] :
+    F.Additive where
+  map_add {_ _ f₁ f₂} := G.map_injective (by
+    rw [← Functor.comp_map, G.map_add, (F ⋙ G).map_add, Functor.comp_map, Functor.comp_map])
 
 end
 
@@ -148,6 +176,13 @@ theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [Preserves
       biprod.add_eq_lift_id_desc]
 #align category_theory.functor.additive_of_preserves_binary_biproducts CategoryTheory.Functor.additive_of_preservesBinaryBiproducts
 
+lemma additive_of_preserves_binary_products
+    [HasBinaryProducts C] [PreservesLimitsOfShape (Discrete WalkingPair) F]
+    [F.PreservesZeroMorphisms] : F.Additive := by
+  have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryProducts
+  have := preservesBinaryBiproductsOfPreservesBinaryProducts F
+  exact Functor.additive_of_preservesBinaryBiproducts F
+
 end
 
 end
@@ -168,7 +203,7 @@ section
 
 variable (C D : Type*) [Category C] [Category D] [Preadditive C] [Preadditive D]
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Bundled additive functors. -/
 def AdditiveFunctor :=
   FullSubcategory fun F : C ⥤ D => F.Additive
@@ -190,7 +225,7 @@ def AdditiveFunctor.forget : (C ⥤+ D) ⥤ C ⥤ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.forget CategoryTheory.AdditiveFunctor.forget
 
-instance : Full (AdditiveFunctor.forget C D) :=
+instance : (AdditiveFunctor.forget C D).Full :=
   FullSubcategory.full _
 
 variable {C D}
@@ -238,7 +273,6 @@ section Exact
 open CategoryTheory.Limits
 
 variable (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D] [Preadditive C]
-
 variable [Preadditive D] [HasZeroObject C] [HasZeroObject D] [HasBinaryBiproducts C]
 
 section
@@ -254,8 +288,8 @@ def AdditiveFunctor.ofLeftExact : (C ⥤ₗ D) ⥤ C ⥤+ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.of_left_exact CategoryTheory.AdditiveFunctor.ofLeftExact
 
-instance : Full (AdditiveFunctor.ofLeftExact C D) := FullSubcategory.full_map _
-instance : Faithful (AdditiveFunctor.ofLeftExact C D) := FullSubcategory.faithful_map _
+instance : (AdditiveFunctor.ofLeftExact C D).Full := FullSubcategory.full_map _
+instance : (AdditiveFunctor.ofLeftExact C D).Faithful := FullSubcategory.faithful_map _
 
 /-- Turn a right exact functor into an additive functor. -/
 def AdditiveFunctor.ofRightExact : (C ⥤ᵣ D) ⥤ C ⥤+ D :=
@@ -264,8 +298,8 @@ def AdditiveFunctor.ofRightExact : (C ⥤ᵣ D) ⥤ C ⥤+ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.of_right_exact CategoryTheory.AdditiveFunctor.ofRightExact
 
-instance : Full (AdditiveFunctor.ofRightExact C D) := FullSubcategory.full_map _
-instance : Faithful (AdditiveFunctor.ofRightExact C D) := FullSubcategory.faithful_map _
+instance : (AdditiveFunctor.ofRightExact C D).Full := FullSubcategory.full_map _
+instance : (AdditiveFunctor.ofRightExact C D).Faithful := FullSubcategory.faithful_map _
 
 /-- Turn an exact functor into an additive functor. -/
 def AdditiveFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤+ D :=
@@ -274,8 +308,8 @@ def AdditiveFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤+ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.of_exact CategoryTheory.AdditiveFunctor.ofExact
 
-instance : Full (AdditiveFunctor.ofExact C D) := FullSubcategory.full_map _
-instance : Faithful (AdditiveFunctor.ofExact C D) := FullSubcategory.faithful_map _
+instance : (AdditiveFunctor.ofExact C D).Full := FullSubcategory.full_map _
+instance : (AdditiveFunctor.ofExact C D).Faithful := FullSubcategory.faithful_map _
 
 end
 

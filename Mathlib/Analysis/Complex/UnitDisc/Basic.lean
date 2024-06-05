@@ -16,7 +16,7 @@ introduce some basic operations on this disc.
 -/
 
 
-open Set Function Metric BigOperators
+open Set Function Metric
 
 noncomputable section
 
@@ -29,7 +29,7 @@ def UnitDisc : Type :=
   ball (0 : ℂ) 1 deriving TopologicalSpace
 #align complex.unit_disc Complex.UnitDisc
 
-scoped[UnitDisc] notation "𝔻" => Complex.UnitDisc
+@[inherit_doc] scoped[UnitDisc] notation "𝔻" => Complex.UnitDisc
 open UnitDisc
 
 namespace UnitDisc
@@ -208,7 +208,7 @@ def conj (z : 𝔻) : 𝔻 :=
   mk (conj' ↑z) <| (abs_conj z).symm ▸ z.abs_lt_one
 #align complex.unit_disc.conj Complex.UnitDisc.conj
 
--- porting note: removed `norm_cast` because this is a bad `norm_cast` lemma
+-- Porting note: removed `norm_cast` because this is a bad `norm_cast` lemma
 -- because both sides have a head coe
 @[simp]
 theorem coe_conj (z : 𝔻) : (z.conj : ℂ) = conj' ↑z :=

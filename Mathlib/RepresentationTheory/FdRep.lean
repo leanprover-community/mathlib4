@@ -20,6 +20,10 @@ Also `V.ρ` gives the homomorphism `G →* (V →ₗ[k] V)`.
 Conversely, given a homomorphism `ρ : G →* (V →ₗ[k] V)`,
 you can construct the bundled representation as `Rep.of ρ`.
 
+We prove Schur's Lemma: the dimension of the `Hom`-space between two irreducible representation is
+`0` if they are not isomorphic, and `1` if they are.
+This is the content of `finrank_hom_simple_simple`
+
 We verify that `FdRep k G` is a `k`-linear monoidal category, and rigid when `G` is a group.
 
 `FdRep k G` has all finite limits.
@@ -42,7 +46,7 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-set_option linter.uppercaseLean3 false -- `fdRep`
+set_option linter.uppercaseLean3 false -- `FdRep`
 
 /-- The category of finite dimensional `k`-linear representations of a monoid `G`. -/
 abbrev FdRep (k G : Type u) [Field k] [Monoid G] :=
@@ -125,7 +129,8 @@ open scoped Classical
 -- deterministic timeout.
 instance : HasKernels (FdRep k G) := by infer_instance
 
--- Verify that Schur's lemma applies out of the box.
+/-- Schur's Lemma: the dimension of the `Hom`-space between two irreducible representation is `0` if
+they are not isomorphic, and `1` if they are. -/
 theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FdRep k G) [Simple V] [Simple W] :
     finrank k (V ⟶ W) = if Nonempty (V ≅ W) then 1 else 0 :=
   CategoryTheory.finrank_hom_simple_simple k V W
@@ -133,8 +138,8 @@ theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FdRep k G) [Simple V] [
 
 /-- The forgetful functor to `Rep k G` preserves hom-sets and their vector space structure. -/
 def forget₂HomLinearEquiv (X Y : FdRep k G) :
-    ((forget₂ (FdRep k G) (Rep k G)).obj X ⟶ (forget₂ (FdRep k G) (Rep k G)).obj Y) ≃ₗ[k] X ⟶ Y
-    where
+    ((forget₂ (FdRep k G) (Rep k G)).obj X ⟶
+      (forget₂ (FdRep k G) (Rep k G)).obj Y) ≃ₗ[k] X ⟶ Y where
   toFun f := ⟨f.hom, f.comm⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -159,7 +164,7 @@ namespace FdRep
 
 -- The variables in this section are slightly weird, living half in `Representation` and half in
 -- `FdRep`. When we have a better API for general monoidal closed and rigid categories and these
--- structures on `FdRep`, we should remove the dependancy of statements about `FdRep` on
+-- structures on `FdRep`, we should remove the dependency of statements about `FdRep` on
 -- `Representation.linHom` and `Representation.dual`. The isomorphism `dualTensorIsoLinHom`
 -- below should then just be obtained from general results about rigid categories.
 open Representation

@@ -34,6 +34,7 @@ namespace TopologicalSpace
 
 /-- The type of compact sets of a topological space. -/
 structure Compacts (α : Type*) [TopologicalSpace α] where
+  /-- the carrier set, i.e. the points in this set -/
   carrier : Set α
   isCompact' : IsCompact carrier
 #align topological_space.compacts TopologicalSpace.Compacts
@@ -169,7 +170,7 @@ theorem equiv_refl : Compacts.equiv (Homeomorph.refl α) = Equiv.refl _ :=
 @[simp]
 theorem equiv_trans (f : α ≃ₜ β) (g : β ≃ₜ γ) :
     Compacts.equiv (f.trans g) = (Compacts.equiv f).trans (Compacts.equiv g) :=
-  -- porting note: can no longer write `map_comp _ _ _ _` and unify
+  -- Porting note: can no longer write `map_comp _ _ _ _` and unify
   Equiv.ext <| map_comp g f g.continuous f.continuous
 #align topological_space.compacts.equiv_trans TopologicalSpace.Compacts.equiv_trans
 
@@ -245,12 +246,12 @@ theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 #align topological_space.nonempty_compacts.coe_mk TopologicalSpace.NonemptyCompacts.coe_mk
 
--- porting note: `@[simp]` moved to `coe_toCompacts`
+-- Porting note: `@[simp]` moved to `coe_toCompacts`
 theorem carrier_eq_coe (s : NonemptyCompacts α) : s.carrier = s :=
   rfl
 #align topological_space.nonempty_compacts.carrier_eq_coe TopologicalSpace.NonemptyCompacts.carrier_eq_coe
 
-@[simp] -- porting note: new lemma
+@[simp] -- Porting note (#10756): new lemma
 theorem coe_toCompacts (s : NonemptyCompacts α) : (s.toCompacts : Set α) = s := rfl
 
 instance : Sup (NonemptyCompacts α) :=
@@ -353,7 +354,7 @@ theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 #align topological_space.positive_compacts.coe_mk TopologicalSpace.PositiveCompacts.coe_mk
 
--- porting note: `@[simp]` moved to a new lemma
+-- Porting note: `@[simp]` moved to a new lemma
 theorem carrier_eq_coe (s : PositiveCompacts α) : s.carrier = s :=
   rfl
 #align topological_space.positive_compacts.carrier_eq_coe TopologicalSpace.PositiveCompacts.carrier_eq_coe
@@ -417,6 +418,11 @@ theorem _root_.exists_positiveCompacts_subset [LocallyCompactSpace α] {U : Set 
   let ⟨K, hKc, hxK, hKU⟩ := exists_compact_subset ho hx
   ⟨⟨⟨K, hKc⟩, ⟨x, hxK⟩⟩, hKU⟩
 #align exists_positive_compacts_subset exists_positiveCompacts_subset
+
+theorem _root_.IsOpen.exists_positiveCompacts_closure_subset [R1Space α] [LocallyCompactSpace α]
+    {U : Set α} (ho : IsOpen U) (hn : U.Nonempty) : ∃ K : PositiveCompacts α, closure ↑K ⊆ U :=
+  let ⟨K, hKU⟩ := exists_positiveCompacts_subset ho hn
+  ⟨K, K.isCompact.closure_subset_of_isOpen ho hKU⟩
 
 instance [CompactSpace α] [Nonempty α] : Inhabited (PositiveCompacts α) :=
   ⟨⊤⟩
@@ -484,7 +490,7 @@ def toOpens (s : CompactOpens α) : Opens α := ⟨s, s.isOpen⟩
 /-- Reinterpret a compact open as a clopen. -/
 @[simps]
 def toClopens [T2Space α] (s : CompactOpens α) : Clopens α :=
-  ⟨s, s.isOpen, s.isCompact.isClosed⟩
+  ⟨s, s.isCompact.isClosed, s.isOpen⟩
 #align topological_space.compact_opens.to_clopens TopologicalSpace.CompactOpens.toClopens
 
 @[ext]

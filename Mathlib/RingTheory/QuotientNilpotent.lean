@@ -3,7 +3,7 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Ideal.QuotientOperations
 
 #align_import ring_theory.quotient_nilpotent from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
@@ -24,7 +24,7 @@ variable {R S : Type*} [CommSemiring R] [CommRing S] [Algebra R S] (I : Ideal S)
 /-- Let `P` be a property on ideals. If `P` holds for square-zero ideals, and if
   `P I → P (J ⧸ I) → P J`, then `P` holds for all nilpotent ideals. -/
 theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
-    {P : ∀ ⦃S : Type _⦄ [CommRing S], ∀ _I : Ideal S, Prop}
+    {P : ∀ ⦃S : Type _⦄ [CommRing S], Ideal S → Prop}
     (h₁ : ∀ ⦃S : Type _⦄ [CommRing S], ∀ I : Ideal S, I ^ 2 = ⊥ → P I)
     (h₂ : ∀ ⦃S : Type _⦄ [CommRing S], ∀ I J : Ideal S, I ≤ J → P I →
       P (J.map (Ideal.Quotient.mk I)) → P J) :
@@ -34,8 +34,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
   by_cases hI' : I = ⊥
   · subst hI'
     apply h₁
-    rw [← Ideal.zero_eq_bot, zero_pow]
-    exact zero_lt_two
+    rw [← Ideal.zero_eq_bot, zero_pow two_ne_zero]
   cases' n with n
   · rw [pow_zero, Ideal.one_eq_top] at hI
     haveI := subsingleton_of_bot_eq_top hI.symm
@@ -45,8 +44,8 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
     exact (hI' hI).elim
   apply h₂ (I ^ 2) _ (Ideal.pow_le_self two_ne_zero)
   · apply H n.succ _ (I ^ 2)
-    · rw [← pow_mul, eq_bot_iff, ← hI, Nat.succ_eq_add_one, Nat.succ_eq_add_one]
-      apply Ideal.pow_le_pow (by linarith)
+    · rw [← pow_mul, eq_bot_iff, ← hI, Nat.succ_eq_add_one]
+      apply Ideal.pow_le_pow_right (by omega)
     · exact n.succ.lt_succ_self
   · apply h₁
     rw [← Ideal.map_pow, Ideal.map_quotient_self]
@@ -54,7 +53,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
 
 theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type*} [CommRing R] {I : Ideal R}
     (hI : IsNilpotent I) {x : R} : IsUnit (Ideal.Quotient.mk I x) ↔ IsUnit x := by
-  refine' ⟨_, fun h => h.map <| Ideal.Quotient.mk I⟩
+  refine ⟨?_, fun h => h.map <| Ideal.Quotient.mk I⟩
   revert x
   apply Ideal.IsNilpotent.induction_on (R := R) (S := R) I hI <;> clear hI I
   swap
@@ -66,7 +65,6 @@ theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type*} [CommRing R] {I : Ideal R
         ((DoubleQuot.quotQuotEquivQuotSup I J).trans
               (Ideal.quotEquivOfEq (sup_eq_right.mpr e))).symm.toRingHom
   · introv e H
-    skip
     obtain ⟨y, hy⟩ := Ideal.Quotient.mk_surjective (↑H.unit⁻¹ : S ⧸ I)
     have : Ideal.Quotient.mk I (x * y) = Ideal.Quotient.mk I 1 := by
       rw [map_one, _root_.map_mul, hy, IsUnit.mul_val_inv]

@@ -3,9 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Combinatorics.SetFamily.Compression.Down
 import Mathlib.Order.UpperLower.Basic
-import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.Powerset
 
 #align_import combinatorics.set_family.harris_kleitman from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
@@ -28,8 +29,6 @@ correlate in the uniform measure.
 
 
 open Finset
-
-open BigOperators
 
 variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s : Finset α} {a : α}
 
@@ -59,21 +58,22 @@ theorem IsLowerSet.le_card_inter_finset' (h𝒜 : IsLowerSet (𝒜 : Set (Finset
   induction' s using Finset.induction with a s hs ih generalizing 𝒜 ℬ
   · simp_rw [subset_empty, ← subset_singleton_iff', subset_singleton_iff] at h𝒜s hℬs
     obtain rfl | rfl := h𝒜s
-    · simp only [card_empty, empty_inter, mul_zero, zero_mul]
+    · simp only [card_empty, zero_mul, empty_inter, mul_zero, le_refl]
     obtain rfl | rfl := hℬs
-    · simp only [card_empty, inter_empty, mul_zero, zero_mul]
-    · simp only [card_empty, pow_zero, inter_singleton_of_mem, mem_singleton, card_singleton]
+    · simp only [card_empty, inter_empty, mul_zero, zero_mul, le_refl]
+    · simp only [card_empty, pow_zero, inter_singleton_of_mem, mem_singleton, card_singleton,
+        le_refl]
   rw [card_insert_of_not_mem hs, ← card_memberSubfamily_add_card_nonMemberSubfamily a 𝒜, ←
     card_memberSubfamily_add_card_nonMemberSubfamily a ℬ, add_mul, mul_add, mul_add,
     add_comm (_ * _), add_add_add_comm]
-  refine'
+  refine
     (add_le_add_right
           (mul_add_mul_le_mul_add_mul
-              (card_le_of_subset h𝒜.memberSubfamily_subset_nonMemberSubfamily) <|
-            card_le_of_subset hℬ.memberSubfamily_subset_nonMemberSubfamily)
+              (card_le_card h𝒜.memberSubfamily_subset_nonMemberSubfamily) <|
+            card_le_card hℬ.memberSubfamily_subset_nonMemberSubfamily)
           _).trans
-      _
-  rw [← two_mul, pow_succ, mul_assoc]
+      ?_
+  rw [← two_mul, pow_succ', mul_assoc]
   have h₀ : ∀ 𝒞 : Finset (Finset α), (∀ t ∈ 𝒞, t ⊆ insert a s) →
       ∀ t ∈ 𝒞.nonMemberSubfamily a, t ⊆ s := by
     rintro 𝒞 h𝒞 t ht
@@ -84,9 +84,9 @@ theorem IsLowerSet.le_card_inter_finset' (h𝒜 : IsLowerSet (𝒜 : Set (Finset
     rintro 𝒞 h𝒞 t ht
     rw [mem_memberSubfamily] at ht
     exact (subset_insert_iff_of_not_mem ht.2).1 ((subset_insert _ _).trans <| h𝒞 _ ht.1)
-  refine' mul_le_mul_left' _ _
-  refine' (add_le_add (ih h𝒜.memberSubfamily hℬ.memberSubfamily (h₁ _ h𝒜s) <| h₁ _ hℬs) <|
-    ih h𝒜.nonMemberSubfamily hℬ.nonMemberSubfamily (h₀ _ h𝒜s) <| h₀ _ hℬs).trans_eq _
+  refine mul_le_mul_left' ?_ _
+  refine (add_le_add (ih h𝒜.memberSubfamily hℬ.memberSubfamily (h₁ _ h𝒜s) <| h₁ _ hℬs) <|
+    ih h𝒜.nonMemberSubfamily hℬ.nonMemberSubfamily (h₀ _ h𝒜s) <| h₀ _ hℬs).trans_eq ?_
   rw [← mul_add, ← memberSubfamily_inter, ← nonMemberSubfamily_inter,
     card_memberSubfamily_add_card_nonMemberSubfamily]
 #align is_lower_set.le_card_inter_finset' IsLowerSet.le_card_inter_finset'
@@ -127,7 +127,7 @@ theorem IsUpperSet.le_card_inter_finset (h𝒜 : IsUpperSet (𝒜 : Set (Finset 
   rwa [card_compl, Fintype.card_finset, tsub_mul, le_tsub_iff_le_tsub, ← mul_tsub, ←
     card_sdiff (inter_subset_right _ _), sdiff_inter_self_right, sdiff_compl,
     _root_.inf_comm] at this
-  · exact mul_le_mul_left' (card_le_of_subset <| inter_subset_right _ _) _
+  · exact mul_le_mul_left' (card_le_card <| inter_subset_right _ _) _
   · rw [← Fintype.card_finset]
     exact mul_le_mul_right' (card_le_univ _) _
 #align is_upper_set.le_card_inter_finset IsUpperSet.le_card_inter_finset

@@ -42,7 +42,15 @@ theorem smallSets_eq_generate {f : Filter α} : f.smallSets = generate (powerset
   rfl
 #align filter.small_sets_eq_generate Filter.smallSets_eq_generate
 
-theorem HasBasis.smallSets {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
+-- TODO: get more properties from the adjunction?
+-- TODO: is there a general way to get a lower adjoint for the lift of an upper adjoint?
+theorem bind_smallSets_gc :
+    GaloisConnection (fun L : Filter (Set α) ↦ L.bind principal) smallSets := by
+  intro L l
+  simp_rw [smallSets_eq_generate, le_generate_iff, image_subset_iff]
+  rfl
+
+protected theorem HasBasis.smallSets {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
     HasBasis l.smallSets p fun i => 𝒫 s i :=
   h.lift' monotone_powerset
 #align filter.has_basis.small_sets Filter.HasBasis.smallSets
@@ -58,12 +66,9 @@ theorem tendsto_smallSets_iff {f : α → Set β} :
   (hasBasis_smallSets lb).tendsto_right_iff
 #align filter.tendsto_small_sets_iff Filter.tendsto_smallSets_iff
 
--- porting note: the proof was `eventually_lift'_iff monotone_powerset`
--- but it timeouts in Lean 4
 theorem eventually_smallSets {p : Set α → Prop} :
-    (∀ᶠ s in l.smallSets, p s) ↔ ∃ s ∈ l, ∀ t, t ⊆ s → p t := by
-  rw [smallSets, eventually_lift'_iff]; rfl
-  exact monotone_powerset
+    (∀ᶠ s in l.smallSets, p s) ↔ ∃ s ∈ l, ∀ t, t ⊆ s → p t :=
+  eventually_lift'_iff monotone_powerset
 #align filter.eventually_small_sets Filter.eventually_smallSets
 
 theorem eventually_smallSets' {p : Set α → Prop} (hp : ∀ ⦃s t⦄, s ⊆ t → p t → p s) :
@@ -80,6 +85,16 @@ theorem frequently_smallSets {p : Set α → Prop} :
 theorem frequently_smallSets_mem (l : Filter α) : ∃ᶠ s in l.smallSets, s ∈ l :=
   frequently_smallSets.2 fun t ht => ⟨t, Subset.rfl, ht⟩
 #align filter.frequently_small_sets_mem Filter.frequently_smallSets_mem
+
+@[simp]
+lemma tendsto_image_smallSets {f : α → β} :
+    Tendsto (f '' ·) la.smallSets lb.smallSets ↔ Tendsto f la lb := by
+  rw [tendsto_smallSets_iff]
+  refine forall₂_congr fun u hu ↦ ?_
+  rw [eventually_smallSets' fun s t hst ht ↦ (image_subset _ hst).trans ht]
+  simp only [image_subset_iff, exists_mem_subset_iff, mem_map]
+
+alias ⟨_, Tendsto.image_smallSets⟩ := tendsto_image_smallSets
 
 theorem HasAntitoneBasis.tendsto_smallSets {ι} [Preorder ι] {s : ι → Set α}
     (hl : l.HasAntitoneBasis s) : Tendsto s atTop l.smallSets :=
@@ -107,6 +122,11 @@ theorem smallSets_principal (s : Set α) : (𝓟 s).smallSets = 𝓟 (𝒫 s) :=
   lift'_principal monotone_powerset
 #align filter.small_sets_principal Filter.smallSets_principal
 
+theorem smallSets_comap_eq_comap_image (l : Filter β) (f : α → β) :
+    (comap f l).smallSets = comap (image f) l.smallSets := by
+  refine (gc_map_comap _).u_comm_of_l_comm (gc_map_comap _) bind_smallSets_gc bind_smallSets_gc ?_
+  simp [Function.comp, map_bind, bind_map]
+
 theorem smallSets_comap (l : Filter β) (f : α → β) :
     (comap f l).smallSets = l.lift' (powerset ∘ preimage f) :=
   comap_lift'_eq2 monotone_powerset
@@ -126,7 +146,7 @@ theorem smallSets_inf (l₁ l₂ : Filter α) : (l₁ ⊓ l₂).smallSets = l₁
 #align filter.small_sets_inf Filter.smallSets_inf
 
 instance smallSets_neBot (l : Filter α) : NeBot l.smallSets := by
-  refine' (lift'_neBot_iff _).2 fun _ _ => powerset_nonempty
+  refine (lift'_neBot_iff ?_).2 fun _ _ => powerset_nonempty
   exact monotone_powerset
 #align filter.small_sets_ne_bot Filter.smallSets_neBot
 

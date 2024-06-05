@@ -3,10 +3,10 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Order.Hom.Basic
-import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Order.Sub.Defs
+import Mathlib.Order.Hom.Basic
 
 #align_import algebra.order.sub.basic from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 
@@ -46,7 +46,7 @@ theorem OrderIso.map_tsub {M N : Type*} [Preorder M] [Add M] [Sub M] [OrderedSub
     [PartialOrder N] [Add N] [Sub N] [OrderedSub N] (e : M ≃o N)
     (h_add : ∀ a b, e (a + b) = e a + e b) (a b : M) : e (a - b) = e a - e b := by
   let e_add : M ≃+ N := { e with map_add' := h_add }
-  refine' le_antisymm _ (e_add.toAddHom.le_map_tsub e.monotone a b)
+  refine le_antisymm ?_ (e_add.toAddHom.le_map_tsub e.monotone a b)
   suffices e (e.symm (e a) - e.symm (e b)) ≤ e (e.symm (e a - e b)) by simpa
   exact e.monotone (e_add.symm.toAddHom.le_map_tsub e.symm.monotone _ _)
 #align order_iso.map_tsub OrderIso.map_tsub
@@ -57,7 +57,6 @@ theorem OrderIso.map_tsub {M N : Type*} [Preorder M] [Add M] [Sub M] [OrderedSub
 section Preorder
 
 variable [Preorder α]
-
 variable [AddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 
 theorem AddMonoidHom.le_map_tsub [Preorder β] [AddCommMonoid β] [Sub β] [OrderedSub β] (f : α →+ β)

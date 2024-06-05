@@ -22,7 +22,7 @@ This file provides infrastructure to compute with filters.
 
 open Set Filter
 
--- Porting note: TODO write doc strings
+-- Porting note (#11215): TODO write doc strings
 /-- A `CFilter α σ` is a realization of a filter (base) on `α`,
   represented by a type `σ` together with operations for the top element and
   the binary `inf` operation. -/
@@ -53,7 +53,7 @@ instance : CoeFun (CFilter α σ) fun _ ↦ σ → α :=
   ⟨CFilter.f⟩
 
 /- Porting note: Due to the CoeFun instance, the lhs of this lemma has a variable (f) as its head
-symbol (simpnf linter problem). Replacing it with a FunLike instance would not be mathematically
+symbol (simpnf linter problem). Replacing it with a DFunLike instance would not be mathematically
 meaningful here, since the coercion to f cannot be injective, hence need to remove @[simp]. -/
 -- @[simp]
 theorem coe_mk (f pt inf h₁ h₂ a) : (@CFilter.mk α σ _ f pt inf h₁ h₂) a = f a :=
@@ -94,7 +94,7 @@ theorem mem_toFilter_sets (F : CFilter (Set α) σ) {a : Set α} : a ∈ F.toFil
 
 end CFilter
 
--- Porting note: TODO write doc strings
+-- Porting note (#11215): TODO write doc strings
 /-- A realizer for filter `f` is a cfilter which generates `f`. -/
 structure Filter.Realizer (f : Filter α) where
   σ : Type*
@@ -133,7 +133,7 @@ def ofFilter (f : Filter α) : f.Realizer :=
 /-- Transfer a filter realizer to another realizer on a different base type. -/
 def ofEquiv {f : Filter α} (F : f.Realizer) (E : F.σ ≃ τ) : f.Realizer :=
   ⟨τ, F.F.ofEquiv E, by
-    refine' Eq.trans _ F.eq
+    refine Eq.trans ?_ F.eq
     exact filter_eq (Set.ext fun _ ↦
       ⟨fun ⟨s, h⟩ ↦ ⟨E.symm s, by simpa using h⟩, fun ⟨t, h⟩ ↦ ⟨E t, by simp [h]⟩⟩)⟩
 #align filter.realizer.of_equiv Filter.Realizer.ofEquiv
@@ -268,8 +268,8 @@ protected def inf {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊓ g
       constructor
       · rintro ⟨s, t, h⟩
         apply mem_inf_of_inter _ _ h
-        use s
-        use t
+        · use s
+        · use t
       · rintro ⟨_, ⟨a, ha⟩, _, ⟨b, hb⟩, rfl⟩
         exact ⟨a, b, inter_subset_inter ha hb⟩⟩
 #align filter.realizer.inf Filter.Realizer.inf
