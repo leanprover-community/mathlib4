@@ -284,7 +284,7 @@ theorem subset_positive_null_set (hu : MeasurableSet u) (hv : MeasurableSet v)
   have h₁ := nonneg_of_zero_le_restrict _ (restrict_le_restrict_subset _ _ hu hsu (hwt.trans hw₂))
   have h₂ :=
     nonneg_of_zero_le_restrict _
-      (restrict_le_restrict_subset _ _ hu hsu ((w.diff_subset v).trans hw₂))
+      (restrict_le_restrict_subset _ _ hu hsu (diff_subset.trans hw₂))
   linarith
 #align measure_theory.signed_measure.subset_positive_null_set MeasureTheory.SignedMeasure.subset_positive_null_set
 
