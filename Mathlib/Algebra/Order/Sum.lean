@@ -22,7 +22,7 @@ lemma elim_le_elim_iff (u₁ v₁ : α₁ → β) (u₂ v₂ : α₂ → β) :
   Sum.forall
 
 lemma const_le_elim_iff (b : β) (v₁ : α₁ → β) (v₂ : α₂ → β) :
-    (Function.const _ b) ≤ Sum.elim v₁ v₂ ↔ (Function.const _ b) ≤ v₁ ∧ (Function.const _ b) ≤ v₂ :=
+    Function.const _ b ≤ Sum.elim v₁ v₂ ↔ Function.const _ b ≤ v₁ ∧ Function.const _ b ≤ v₂ :=
   elim_const_const b ▸ elim_le_elim_iff ..
 
 @[to_additive]
