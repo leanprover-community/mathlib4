@@ -542,98 +542,17 @@ end Order
 
 /-! ### Obtain a non-unital continuous functional calculus from a unital one -/
 
-section Prereq
+section UnitalToNonUnital
 
-variable {α : Type*} {s t : Set α} in
-open Set in
-theorem val_comp_inclusion (h : s ⊆ t) : Subtype.val ∘ inclusion h = Subtype.val :=
-  rfl
-
-
-open Set Topology TopologicalSpace Function Uniformity
-section MissingCompactOpen
-
-namespace ContinuousMap
-
-variable {X₁ X₂ Y : Type*} (Z : Type*) {i₁ : X₁ → Y} {i₂ : X₂ → Y}
-    [TopologicalSpace X₁] [TopologicalSpace X₂] [TopologicalSpace Y]
-    [UniformSpace Z]
-
--- TODO:
--- 1) make proof cleaner (do we really need bases ? One inequality should be easy at least)
--- 2) generalize to UniformOnFun
--- 3) can we do a purely topological statement ?
-lemma foo (hi₁ : ClosedEmbedding i₁) (hi₂ : ClosedEmbedding i₂) (hi : range i₁ ∪ range i₂ = univ) :
-    (inferInstance : UniformSpace C(Y, Z)) =
-      (.comap (fun f ↦ f.comp ⟨i₁, hi₁.continuous⟩) inferInstance)
-      ⊓ (.comap (fun f ↦ f.comp ⟨i₂, hi₂.continuous⟩) inferInstance) := by
-  apply ContinuousMap.uniformSpace_eq_inf_precomp_of_cover _ _ ?_ ?_ ?_
-
-  sorry
-      --UniformSpace.ext <| by
-  --rw [@inf_uniformity C(Y, Z) (.comap _ _) (.comap _ _), uniformity_comap, uniformity_comap]
-  --refine hasBasis_compactConvergenceUniformity.ext
-    --(hasBasis_compactConvergenceUniformity.comap _ |>.inf <|
-      --hasBasis_compactConvergenceUniformity.comap _) ?_ ?_
-  --· rintro ⟨K, U⟩ ⟨hK, hU⟩
-    --refine ⟨⟨⟨i₁ ⁻¹' K, U⟩, ⟨i₂ ⁻¹' K, U⟩⟩,
-      --⟨⟨hi₁.isCompact_preimage hK, hU⟩, ⟨hi₂.isCompact_preimage hK, hU⟩⟩,
-      --fun ⟨f, g⟩ ⟨hfg₁, hfg₂⟩ y hy ↦ ?_⟩
-    --have : y ∈ range i₁ ∪ range i₂ := hi.ge trivial
-    --rcases this with ⟨x₁, rfl⟩ | ⟨x₂, rfl⟩
-    --· exact hfg₁ x₁ hy
-    --· exact hfg₂ x₂ hy
-  --· rintro ⟨⟨K₁, U₁⟩, ⟨K₂, U₂⟩⟩ ⟨⟨hK₁, hU₁⟩, ⟨hK₂, hU₂⟩⟩
-    --exact ⟨⟨i₁ '' K₁ ∪ i₂ '' K₂, U₁ ∩ U₂⟩,
-      --⟨hK₁.image hi₁.continuous |>.union <| hK₂.image hi₂.continuous, Filter.inter_mem hU₁ hU₂⟩,
-      --fun ⟨f, g⟩ hfg ↦
-        --⟨fun x₁ hx₁ ↦ inter_subset_left _ U₂ <| hfg (i₁ x₁) <| .inl <| mem_image_of_mem _ hx₁,
-          --fun x₂ hx₂ ↦ inter_subset_right U₁ _ <| hfg (i₂ x₂) <| .inr <| mem_image_of_mem _ hx₂⟩⟩
-
-end ContinuousMap
-
-end MissingCompactOpen
-namespace ContinuousMapZero
-
-section Uniform
-
-variable {X Y R : Type*} [TopologicalSpace X] [Zero X]
-variable [UniformSpace R] [Zero R]
-
--- TODO: clean a bit
--- This is the only thing still needed from this file
-lemma uniformInducing_precomp_toContinuousMap_of_almost_surj [T1Space X] [TopologicalSpace Y]
-    {i : Y → X} (hi₁ : ClosedEmbedding i) (hi₂ : range i ∪ {0} = univ) :
-    UniformInducing (fun f : C(X, R)₀ ↦ f.toContinuousMap.comp ⟨i, hi₁.continuous⟩) where
-  comap_uniformity := by
-    have := ContinuousMap.foo R hi₁ (isClosed_singleton (x := 0)).closedEmbedding_subtype_val
-      (by simpa using hi₂)
-    simp_rw [ContinuousMapZero.instUniformSpace, this, uniformity_comap,
-      @inf_uniformity _ (.comap _ _) (.comap _ _), uniformity_comap, Filter.comap_inf,
-      Filter.comap_comap]
-    refine .symm <| inf_eq_left.mpr <| le_top.trans <| eq_top_iff.mp ?_
-    have : ∀ U ∈ 𝓤 (C(({0} : Set X), R)), (0, 0) ∈ U := fun U hU ↦ refl_mem_uniformity hU
-    convert Filter.comap_const_of_mem this with ⟨f, g⟩ <;>
-    ext ⟨x, rfl⟩ <;>
-    [exact map_zero f; exact map_zero g]
-
-end Uniform
-
-end ContinuousMapZero
-
-end Prereq
-section Generic
-
-open ContinuousMapZero Set
+open ContinuousMapZero Set Uniformity ContinuousMap
 
 variable {R A : Type*} {p : A → Prop} [Field R] [StarRing R] [MetricSpace R] [CompleteSpace R]
 variable [TopologicalRing R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
 variable [Algebra R A] [ContinuousFunctionalCalculus R p]
 variable [h_cpct : ∀ a : A, CompactSpace (spectrum R a)]
 
-lemma ContinuousFunctionalCalculus.toNonUnital : NonUnitalContinuousFunctionalCalculus R p where
+instance ContinuousFunctionalCalculus.toNonUnital : NonUnitalContinuousFunctionalCalculus R p where
   exists_cfc_of_predicate a ha := by
-    -- Should this be a lemma ?
     have h_cpct' : CompactSpace (quasispectrum R a) := by
       specialize h_cpct a
       simp_rw [← isCompact_iff_compactSpace, quasispectrum_eq_spectrum_union_zero] at h_cpct ⊢
@@ -647,13 +566,21 @@ lemma ContinuousFunctionalCalculus.toNonUnital : NonUnitalContinuousFunctionalCa
     refine ⟨ψ', ?closedEmbedding, ?map_id, ?map_spectrum, ?predicate⟩
     case closedEmbedding =>
       refine (cfcHom_closedEmbedding ha).comp <|
-        (UniformInducing.uniformEmbedding ?_).toClosedEmbedding
-      have : ClosedEmbedding f := Continuous.closedEmbedding f.continuous <| inclusion_injective <|
-        spectrum_subset_quasispectrum R a
-      refine uniformInducing_precomp_toContinuousMap_of_almost_surj this ?_
-      simp only [← Subtype.val_injective.image_injective.eq_iff, image_union, image_singleton,
-        ← range_comp, image_univ, f, ContinuousMap.coe_mk, val_comp_inclusion, Subtype.range_coe,
-        quasispectrum.coe_zero, quasispectrum_eq_spectrum_union_zero]
+        (UniformInducing.uniformEmbedding ⟨?_⟩).toClosedEmbedding
+      let i : C(({0} : Set R), σₙ R a) :=
+        ⟨_, continuous_inclusion <| singleton_subset_iff.mpr <| quasispectrum.zero_mem R a⟩
+      have := uniformSpace_eq_inf_precomp_of_cover (β := R) f i (map_continuous f).isProperMap
+        (map_continuous i).isProperMap <| by
+          simp only [← Subtype.val_injective.image_injective.eq_iff, image_union, image_singleton,
+            ← range_comp, image_univ, f, ContinuousMap.coe_mk, val_comp_inclusion, Subtype.range_coe,
+            quasispectrum.coe_zero, quasispectrum_eq_spectrum_union_zero, i]
+      simp_rw [ContinuousMapZero.instUniformSpace, this, uniformity_comap,
+        @inf_uniformity _ (.comap _ _) (.comap _ _), uniformity_comap, Filter.comap_inf,
+        Filter.comap_comap]
+      refine .symm <| inf_eq_left.mpr <| le_top.trans <| eq_top_iff.mp ?_
+      have : ∀ U ∈ 𝓤 (C(({0} : Set R), R)), (0, 0) ∈ U := fun U hU ↦ refl_mem_uniformity hU
+      convert Filter.comap_const_of_mem this with ⟨f, g⟩ <;>
+      ext ⟨x, rfl⟩ <;> [exact map_zero f; exact map_zero g]
     case map_id => exact cfcHom_id ha
     case map_spectrum =>
       intro f
@@ -677,4 +604,4 @@ lemma ContinuousFunctionalCalculus.toNonUnital : NonUnitalContinuousFunctionalCa
           rw [show x = 0 from Subtype.val_injective hx, map_zero]
     case predicate => exact fun f ↦ cfcHom_predicate ha _
 
-end Generic
+end UnitalToNonUnital
