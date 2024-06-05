@@ -17,7 +17,7 @@ which states that the `r + 1`-cliquefree graph on `n` vertices with the most edg
 The forward direction of the proof performs "Zykov symmetrisation", which first shows
 constructively that non-adjacency is an equivalence relation in a maximal graph, so it must be
 complete multipartite with the parts being the equivalence classes. Then basic manipulations
-show that the graph is (isomorphic to) the Turán graph for the given parameters.
+show that the graph is isomorphic to the Turán graph for the given parameters.
 
 ## Main declarations
 
@@ -194,14 +194,14 @@ lemma not_adj_iff_part_eq : ¬G.Adj s t ↔ h.finpartition.part s = h.finpartiti
   rw [← Finpartition.mem_part_ofSetoid_iff_rel]
   let fp := h.finpartition
   change t ∈ fp.part s ↔ fp.part s = fp.part t
-  refine ⟨fun c ↦ ?_, fun c ↦ c ▸ fp.mem_part (mem_univ t)⟩
-  apply fp.eq_of_mem_parts _ _ c _ <;> simp [fp.part_mem, fp.mem_part]
+  refine ⟨fun c ↦ fp.eq_of_mem_parts ?_ ?_ c ?_, fun c ↦ c ▸ fp.mem_part (mem_univ t)⟩ <;>
+    simp [fp.part_mem, fp.mem_part]
 
 lemma degree_eq_card_sub_part_card : G.degree s = Fintype.card V - (h.finpartition.part s).card :=
   calc
-    _ = (univ.filter (fun b ↦ G.Adj s b)).card := by
+    _ = (univ.filter fun b ↦ G.Adj s b).card := by
       simp [← card_neighborFinset_eq_degree, neighborFinset]
-    _ = Fintype.card V - (univ.filter (fun b ↦ ¬G.Adj s b)).card :=
+    _ = Fintype.card V - (univ.filter fun b ↦ ¬G.Adj s b).card :=
       eq_tsub_of_add_eq (filter_card_add_filter_neg_card_eq_card _)
     _ = _ := by
       congr; ext; rw [mem_filter]
@@ -229,10 +229,9 @@ theorem isEquipartition : h.finpartition.IsEquipartition := by
   have : large.card ≤ Fintype.card V := by simpa using card_le_card large.subset_univ
   omega
 
-theorem card_parts_le : h.finpartition.parts.card ≤ r := by
-  let fp := h.finpartition
+lemma card_parts_le : h.finpartition.parts.card ≤ r := by
   by_contra! l
-  obtain ⟨z, -, hz⟩ := fp.exists_subset_part_bijOn
+  obtain ⟨z, -, hz⟩ := h.finpartition.exists_subset_part_bijOn
   have ncf : ¬G.CliqueFree z.card := by
     refine IsNClique.not_cliqueFree ⟨fun v hv w hw hn ↦ ?_, rfl⟩
     contrapose! hn
@@ -241,26 +240,22 @@ theorem card_parts_le : h.finpartition.parts.card ≤ r := by
   exact absurd (h.1.mono (Nat.succ_le_of_lt l)) ncf
 
 /-- There are `min n r` parts in a graph on `n` vertices satisfying `G.IsTuranMaximal r`.
-The `min` is necessary because `r` may be greater than `n`, in which case `G` is complete but
-still `r + 1`-cliquefree for having insufficiently many vertices. -/
+`min` handles the `n < r` case, when `G` is complete but still `r + 1`-cliquefree
+for having insufficiently many vertices. -/
 theorem card_parts : h.finpartition.parts.card = min (Fintype.card V) r := by
   set fp := h.finpartition
   apply le_antisymm (le_min fp.card_parts_le_card h.card_parts_le)
   by_contra! l
   rw [lt_min_iff] at l
   obtain ⟨x, -, y, -, hn, he⟩ :=
-    exists_ne_map_eq_of_card_lt_of_maps_to l.1 (fun a _ ↦ fp.part_mem (mem_univ a))
+    exists_ne_map_eq_of_card_lt_of_maps_to l.1 fun a _ ↦ fp.part_mem (mem_univ a)
   apply absurd h
   rw [IsTuranMaximal]; push_neg; rintro -
   have cf : G.CliqueFree r := by
     simp_rw [← cliqueFinset_eq_empty_iff, cliqueFinset, filter_eq_empty_iff, mem_univ,
-      forall_true_left, isNClique_iff, and_comm, not_and, isClique_iff]
-    intro z zc
-    obtain ⟨x', xm, y', ym, hn', he'⟩ :=
-      exists_ne_map_eq_of_card_lt_of_maps_to (zc.symm ▸ l.2) (fun a _ ↦ fp.part_mem (mem_univ a))
-    unfold Set.Pairwise; push_neg
-    use x', xm, y', ym, hn'
-    rwa [h.not_adj_iff_part_eq]
+      forall_true_left, isNClique_iff, and_comm, not_and, isClique_iff, Set.Pairwise]
+    intro z zc; push_neg; simp_rw [h.not_adj_iff_part_eq]
+    exact exists_ne_map_eq_of_card_lt_of_maps_to (zc.symm ▸ l.2) fun a _ ↦ fp.part_mem (mem_univ a)
   use G ⊔ edge x y, inferInstance, cf.sup_edge x y
   convert Nat.lt.base G.edgeFinset.card
   convert G.card_edgeFinset_sup_edge _ hn
@@ -278,14 +273,9 @@ theorem nonempty_iso_TuranGraph : Nonempty (G ≃g turanGraph (Fintype.card V) r
   rw [← not_iff_not, not_ne_iff, this, card_parts]
   rcases le_or_lt r (Fintype.card V) with c | c
   · rw [min_eq_right c]; rfl
-  · rw [min_eq_left c.le]
-    have lc : ∀ x, zm ⟨x, _⟩ < Fintype.card V := fun x ↦ (zm ⟨x, mem_univ _⟩).2
-    have cn0 : Fintype.card V ≠ 0 := by by_contra h; exact absurd (h ▸ lc a) not_lt_zero'
-    have rn0 : r ≠ 0 := by omega
-    rw [(Nat.mod_eq_iff_lt cn0).mpr (lc a), (Nat.mod_eq_iff_lt cn0).mpr (lc b),
-      ← (Nat.mod_eq_iff_lt rn0).mpr ((lc a).trans c),
-      ← (Nat.mod_eq_iff_lt rn0).mpr ((lc b).trans c)]
-    rfl
+  · have lc : ∀ x, zm ⟨x, _⟩ < Fintype.card V := fun x ↦ (zm ⟨x, mem_univ x⟩).2
+    rw [min_eq_left c.le, Nat.mod_eq_of_lt (lc a), Nat.mod_eq_of_lt (lc b),
+      ← Nat.mod_eq_of_lt ((lc a).trans c), ← Nat.mod_eq_of_lt ((lc b).trans c)]; rfl
 
 end IsTuranMaximal
 
