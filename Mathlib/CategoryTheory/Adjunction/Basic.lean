@@ -190,14 +190,11 @@ theorem homEquiv_naturality_right_square (f : X' ⟶ X) (g : X ⟶ G.obj Y')
 
 theorem homEquiv_naturality_left_square_iff (f : X' ⟶ X) (g : F.obj X ⟶ Y')
     (h : F.obj X' ⟶ Y) (k : Y ⟶ Y') :
-    (F.map f ≫ g = h ≫ k) ↔
-    (f ≫ (adj.homEquiv X Y') g = (adj.homEquiv X' Y) h ≫ G.map k) where
-  mp := homEquiv_naturality_left_square adj f g h k
-  mpr := by
-    intro w
-    have transposedw := homEquiv_naturality_right_square adj _ _ _ _ w
-    simp only [Equiv.symm_apply_apply] at transposedw
-    exact transposedw
+    (f ≫ (adj.homEquiv X Y') g = (adj.homEquiv X' Y) h ≫ G.map k) ↔
+      (F.map f ≫ g = h ≫ k) :=
+  ⟨fun w ↦ by simpa only [Equiv.symm_apply_apply]
+      using homEquiv_naturality_right_square adj _ _ _ _ w,
+    homEquiv_naturality_left_square adj f g h k⟩
 
 theorem homEquiv_naturality_right_square_iff (f : X' ⟶ X) (g : X ⟶ G.obj Y')
     (h : X' ⟶ G.obj Y) (k : Y ⟶ Y') :
