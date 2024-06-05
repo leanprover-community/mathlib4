@@ -143,9 +143,7 @@ theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.bas
   refine (LinearMap.congr_fun (TensorProduct.AlgebraTensorModule.map_comp _ _ _ _).symm _).trans ?_
   rw [reverse, ← AlgEquiv.toLinearMap, ← AlgEquiv.toLinearEquiv_toLinearMap,
     AlgEquiv.toLinearEquiv_toOpposite]
-  dsimp
-  -- `simp` fails here due to a timeout looking for a `Subsingleton` instance!?
-  rw [LinearEquiv.self_trans_symm]
+  simp
   rfl
 
 attribute [ext] TensorProduct.ext
