@@ -39,6 +39,7 @@ def lightProfiniteToLightCondSet : LightProfinite.{u} ⥤ LightCondSet.{u} :=
 abbrev LightProfinite.toCondensed (S : LightProfinite.{u}) : LightCondSet.{u} :=
   lightProfiniteToLightCondSet.obj S
 
+/-- `lightProfiniteToLightCondSet` is fully faithful. -/
 abbrev lightProfiniteToLightCondSetFullyFaithful :
     lightProfiniteToLightCondSet.FullyFaithful :=
   Sheaf.Subcanonical.yonedaFullyFaithful _
