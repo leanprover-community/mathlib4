@@ -61,7 +61,6 @@ jobs:
       - name: update nolints.json and style-exceptions.txt
         shell: bash
         run: |
-          env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
           ./scripts/update-style-exceptions.sh
 
       - name: configure git setup
