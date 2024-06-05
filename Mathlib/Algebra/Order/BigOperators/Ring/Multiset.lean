@@ -32,7 +32,7 @@ end OrderedCommSemiring
 @[simp]
 lemma _root_.CanonicallyOrderedAdd.multiset_prod_pos
     [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R] [NoZeroDivisors R] [Nontrivial R]
-    [Nontrivial R] {m : Multiset R} : 0 < m.prod ↔ ∀ x ∈ m, 0 < x := by
+    {m : Multiset R} : 0 < m.prod ↔ ∀ x ∈ m, 0 < x := by
   rcases m with ⟨l⟩
   rw [Multiset.quot_mk_to_coe'', Multiset.prod_coe]
   exact CanonicallyOrderedAdd.list_prod_pos

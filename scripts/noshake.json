@@ -345,4 +345,7 @@
   "Mathlib.Algebra.Category.Ring.Basic":
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
   "Mathlib.Algebra.Algebra.Subalgebra.Order":
-  ["Mathlib.Algebra.Module.Submodule.Order"]}}
+  ["Mathlib.Algebra.Module.Submodule.Order"],
+  "Mathlib.Algebra.Order.Ring.Nat":
+  ["Mathlib.Algebra.Order.Group.Nat",
+   "Mathlib.Algebra.Order.Ring.Canonical"]}}

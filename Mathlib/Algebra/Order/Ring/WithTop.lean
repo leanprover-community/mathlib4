@@ -224,10 +224,8 @@ instance instOrderedCommSemiring [CommSemiring α] [PartialOrder α] [Canonicall
 @[simps (config := .asFn)]
 protected def _root_.RingHom.withTopMap {R S : Type*}
     [NonAssocSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
-    [CovariantClass R R (· + ·) (· ≤ ·)]
     [DecidableEq R] [Nontrivial R]
     [NonAssocSemiring S] [PartialOrder S] [CanonicallyOrderedAdd S]
-    [CovariantClass S S (· + ·) (· ≤ ·)]
     [DecidableEq S] [Nontrivial S]
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
   {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}
