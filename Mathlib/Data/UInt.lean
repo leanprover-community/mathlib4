@@ -103,6 +103,15 @@ run_cmd
       @[simp] lemma mk_val_eq : ∀ (a : $typeName), mk a.val = a
       | ⟨_, _⟩ => rfl
 
+      instance instCommMonoid : CommMonoid $typeName :=
+        Function.Injective.commMonoid val val_injective
+          rfl (fun _ _ => rfl) (fun _ _ => rfl)
+
+      instance instNonUnitalCommRing : NonUnitalCommRing $typeName :=
+        Function.Injective.nonUnitalCommRing val val_injective
+          rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+          (fun _ _ => rfl) (fun _ _ => rfl)
+
       local instance instNatCast : NatCast $typeName where
         natCast n := mk n
 
