@@ -27,7 +27,7 @@ universe u v
 
 open scoped Pointwise
 
-variable {R : Type u} {S : Type*} {M : Type v} {N M₂ M₃ M₄ : Type*}
+variable {R : Type u} {S : Type*} {M : Type v} {M₂ M₃ M₄ N : Type*}
 
 namespace Ideal
 
