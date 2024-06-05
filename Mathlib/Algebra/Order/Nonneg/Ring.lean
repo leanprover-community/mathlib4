@@ -328,7 +328,7 @@ instance canonicallyOrderedAdd [OrderedRing α] :
   { le_self_add := fun _ b => le_add_of_nonneg_right b.2
     exists_add_of_le := fun {a b} h =>
       ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel _ _).symm⟩ }
-#align nonneg.canonically_ordered_add_monoid Nonneg.canonicallyOrderedAddCommMonoid
+#align nonneg.canonically_ordered_add_monoid Nonneg.canonicallyOrderedAdd
 
 instance noZeroDivisors [OrderedSemiring α] [NoZeroDivisors α] :
     NoZeroDivisors { x : α // 0 ≤ x } :=

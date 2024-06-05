@@ -35,13 +35,14 @@ Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean
 
 open Function
 
-deriving instance CanonicallyOrderedCommSemiring for NNRat
-deriving instance CanonicallyLinearOrderedAddCommMonoid for NNRat
+deriving instance OrderedCommSemiring for NNRat
+deriving instance LinearOrderedAddCommMonoid for NNRat
 deriving instance Sub for NNRat
 deriving instance Inhabited for NNRat
 
 -- TODO: `deriving instance OrderedSub for NNRat` doesn't work yet, so we add the instance manually
 instance NNRat.instOrderedSub : OrderedSub ℚ≥0 := Nonneg.orderedSub
+instance NNRat.instCanonicallyOrderedAdd : CanonicallyOrderedAdd ℚ≥0 := Nonneg.canonicallyOrderedAdd
 
 namespace NNRat
 

@@ -253,10 +253,7 @@ theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι)
       exact fun x _ H => h ((self_le_add_left i x).trans_eq H)
 #align direct_sum.coe_mul_of_apply_of_not_le DirectSum.coe_mul_of_apply_of_not_le
 
-end
-
-variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι] [SetLike.GradedMonoid A]
-  [Sub ι] [OrderedSub ι]
+variable [Sub ι] [OrderedSub ι]
   [CovariantClass ι ι (· + ·) (· ≤ ·)] [ContravariantClass ι ι (· + ·) (· ≤ ·)]
 
 /- The following two lemmas only require the same hypotheses as `eq_tsub_iff_add_eq_of_le`, but we

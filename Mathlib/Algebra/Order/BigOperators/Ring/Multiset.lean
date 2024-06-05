@@ -30,10 +30,11 @@ lemma prod_nonneg (h : ∀ a ∈ s, 0 ≤ a) : 0 ≤ s.prod := by
 end OrderedCommSemiring
 
 @[simp]
-lemma _root_.CanonicallyOrderedCommSemiring.multiset_prod_pos [CanonicallyOrderedCommSemiring R]
+lemma _root_.CanonicallyOrderedAdd.multiset_prod_pos
+    [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R] [NoZeroDivisors R] [Nontrivial R]
     [Nontrivial R] {m : Multiset R} : 0 < m.prod ↔ ∀ x ∈ m, 0 < x := by
   rcases m with ⟨l⟩
   rw [Multiset.quot_mk_to_coe'', Multiset.prod_coe]
-  exact CanonicallyOrderedCommSemiring.list_prod_pos
+  exact CanonicallyOrderedAdd.list_prod_pos
 
 end Multiset

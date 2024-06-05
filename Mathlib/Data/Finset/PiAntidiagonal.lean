@@ -258,9 +258,9 @@ lemma mapRange_piAntidiagonal_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
 
 end
 
-section CanonicallyOrderedAddCommMonoid
+section CanonicallyOrderedAdd
 variable [DecidableEq ι]
-variable [CanonicallyOrderedAddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ]
+variable [OrderedAddCommMonoid μ] [CanonicallyOrderedAdd μ] [HasAntidiagonal μ] [DecidableEq μ]
 
 theorem piAntidiagonal_zero (s : Finset ι) :
     piAntidiagonal s (0 : μ) = {(0 : ι →₀ μ)} := by
@@ -269,6 +269,6 @@ theorem piAntidiagonal_zero (s : Finset ι) :
     mem_support_iff, not_imp_comm, ← forall_and, ← or_imp, DFunLike.ext_iff, zero_apply, or_comm,
     or_not, true_imp_iff]
 
-end CanonicallyOrderedAddCommMonoid
+end CanonicallyOrderedAdd
 
 end Finset

@@ -94,8 +94,7 @@ end ExistsMulOfLE
   which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
   This is satisfied by the natural numbers, for example, but not
   the integers or other nontrivial `OrderedAddCommGroup`s. -/
--- `[Add α] [LE α]` would be enough, but it would cause a significant slowdown.
-class CanonicallyOrderedAdd (α : Type*) [Add α] [LE α] extends
+class CanonicallyOrderedAdd (α : Type*) [AddZeroClass α] [LE α] extends
   ExistsAddOfLE α : Prop where
   /-- For any `a` and `b`, `a ≤ a + b` -/
   protected le_self_add : ∀ a b : α, a ≤ a + b
@@ -111,17 +110,16 @@ class CanonicallyOrderedAdd (α : Type*) [Add α] [LE α] extends
   Dedekind domain satisfy this; collections of all things ≤ 1 seem to
   be more natural that collections of all things ≥ 1).
 -/
--- `[Mul α] [LE α]` would be enough, but it would cause a significant slowdown.
 @[to_additive]
-class CanonicallyOrderedMul (α : Type*) [Mul α] [LE α] extends
+class CanonicallyOrderedMul (α : Type*) [MulOneClass α] [LE α] extends
   ExistsMulOfLE α : Prop where
   /-- For any `a` and `b`, `a ≤ a * b` -/
   protected le_self_mul : ∀ a b : α, a ≤ a * b
 #align canonically_ordered_monoid CanonicallyOrderedMul
 #align canonically_ordered_monoid.has_exists_mul_of_le CanonicallyOrderedMul.toExistsMulOfLE
 
-section Mul
-variable [Mul α]
+section MulOneClass
+variable [MulOneClass α]
 
 section LE
 variable [LE α] [CanonicallyOrderedMul α] {a b c : α}
@@ -146,6 +144,36 @@ theorem le_iff_exists_mul : a ≤ b ↔ ∃ c, b = a * c :=
 #align le_iff_exists_mul le_iff_exists_mul
 #align le_iff_exists_add le_iff_exists_add
 
+@[to_additive (attr := simp) zero_le]
+theorem one_le (a : α) : 1 ≤ a :=
+  one_mul a ▸ le_self_mul
+#align one_le one_le
+#align zero_le zero_le
+
+-- see Note [lower instance priority]
+@[to_additive]
+instance (priority := 10) CanonicallyOrderedMul.toOrderBot : OrderBot α where
+  bot := 1
+  bot_le := one_le
+#align canonically_ordered_add_monoid.to_order_bot CanonicallyOrderedAdd.toOrderBot
+#align canonically_ordered_monoid.to_order_bot CanonicallyOrderedMul.toOrderBot
+
+variable [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)]
+
+@[to_additive]
+theorem le_mul_self : a ≤ b * a := by
+  calc
+    a = 1 * a := by simp
+    _ ≤ b * a := mul_le_mul_right' (one_le _) a
+#align le_mul_self le_mul_self
+#align le_add_self le_add_self
+
+@[to_additive (attr := simp)]
+theorem self_le_mul_left (a b : α) : a ≤ b * a :=
+  le_mul_self
+#align self_le_mul_left self_le_mul_left
+#align self_le_add_left self_le_add_left
+
 end LE
 
 section Preorder
@@ -157,46 +185,15 @@ theorem le_mul_of_le_left : a ≤ b → a ≤ b * c :=
 #align le_mul_of_le_left le_mul_of_le_left
 #align le_add_of_le_left le_add_of_le_left
 
+@[to_additive] alias le_mul_right := le_mul_of_le_left
+
 @[to_additive]
 theorem le_of_mul_le_left : a * b ≤ c → a ≤ c :=
   le_self_mul.trans
 #align le_of_mul_le_left le_of_mul_le_left
 #align le_of_add_le_left le_of_add_le_left
 
-end Preorder
-
-end Mul
-
-section CommSemigroup
-variable [CommSemigroup α]
-
-section LE
-variable [LE α] [CanonicallyOrderedMul α] {a b c : α}
-
-@[to_additive]
-theorem le_mul_self : a ≤ b * a := by
-  rw [mul_comm]
-  exact le_self_mul
-#align le_mul_self le_mul_self
-#align le_add_self le_add_self
-
-@[to_additive (attr := simp)]
-theorem self_le_mul_left (a b : α) : a ≤ b * a :=
-  le_mul_self
-#align self_le_mul_left self_le_mul_left
-#align self_le_add_left self_le_add_left
-
-@[to_additive]
-theorem le_iff_exists_mul' {a b : α} :
-    a ≤ b ↔ ∃ c, b = c * a := by
-  simp only [mul_comm _ a, le_iff_exists_mul]
-#align le_iff_exists_mul' le_iff_exists_mul'
-#align le_iff_exists_add' le_iff_exists_add'
-
-end LE
-
-section Preorder
-variable [Preorder α] [CanonicallyOrderedMul α] {a b c : α}
+variable [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)]
 
 @[to_additive]
 theorem le_of_mul_le_right : a * b ≤ c → b ≤ c :=
@@ -210,51 +207,7 @@ theorem le_mul_of_le_right : a ≤ c → a ≤ b * c :=
 #align le_mul_of_le_right le_mul_of_le_right
 #align le_add_of_le_right le_add_of_le_right
 
-end Preorder
-
-end CommSemigroup
-
-section MulOneClass
-variable [MulOneClass α]
-
-section LE
-variable [LE α] [CanonicallyOrderedMul α] {a b c : α}
-
-@[to_additive (attr := simp) zero_le]
-theorem one_le (a : α) : 1 ≤ a :=
-  one_mul a ▸ le_self_mul
-#align one_le one_le
-#align zero_le zero_le
-
--- see Note [lower instance priority]
-@[to_additive]
-instance (priority := 100) CanonicallyOrderedMul.toOrderBot : OrderBot α where
-  bot := 1
-  bot_le := one_le
-#align canonically_ordered_add_monoid.to_order_bot CanonicallyOrderedAdd.toOrderBot
-#align canonically_ordered_monoid.to_order_bot CanonicallyOrderedMul.toOrderBot
-
-end LE
-
-section Preorder
-variable [Preorder α] [CanonicallyOrderedMul α]
-variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)]
-
-@[to_additive]
-theorem le_mul_left {a b c : α} (h : a ≤ c) : a ≤ b * c :=
-  calc
-    a = 1 * a := by simp
-    _ ≤ b * c := mul_le_mul' (one_le _) h
-#align le_mul_left le_mul_left
-#align le_add_left le_add_left
-
-@[to_additive]
-theorem le_mul_right {a b c : α} (h : a ≤ b) : a ≤ b * c :=
-  calc
-    a = a * 1 := by simp
-    _ ≤ b * c := mul_le_mul' h (one_le _)
-#align le_mul_right le_mul_right
-#align le_add_right le_add_right
+@[to_additive] alias le_mul_left := le_mul_of_le_right
 
 end Preorder
 
@@ -262,20 +215,10 @@ section PartialOrder
 variable [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
 
 @[to_additive]
-theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 :=
+theorem bot_eq_one : (⊥ : α) = 1 :=
   le_antisymm bot_le (one_le ⊥)
 #align bot_eq_one bot_eq_one
 #align bot_eq_zero bot_eq_zero
-
---TODO: This is a special case of `mul_eq_one`. We need the instance
--- `CanonicallyOrderedMul α → Unique αˣ`
-@[to_additive (attr := simp)]
-theorem mul_eq_one_iff [CovariantClass α α (· * ·) (· ≤ ·)]
-    [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] :
-    a * b = 1 ↔ a = 1 ∧ b = 1 :=
-  mul_eq_one_iff' (one_le _) (one_le _)
-#align mul_eq_one_iff mul_eq_one_iff
-#align add_eq_zero_iff add_eq_zero_iff
 
 @[to_additive (attr := simp)]
 theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
@@ -289,47 +232,74 @@ theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
 #align one_lt_iff_ne_one one_lt_iff_ne_one
 #align pos_iff_ne_zero pos_iff_ne_zero
 
-@[to_additive]
-theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
-#align eq_one_or_one_lt eq_one_or_one_lt
-#align eq_zero_or_pos eq_zero_or_pos
+@[to_additive (attr := simp)]
+theorem mul_eq_one_iff :
+    a * b = 1 ↔ a = 1 ∧ b = 1 := by
+  refine ⟨fun h ↦ ?_, by simp (config := { contextual := true })⟩
+  have := self_le_mul_right a b
+  rw [h, le_one_iff_eq_one] at this
+  rw [this, one_mul] at h
+  exact ⟨this, h⟩
+#align mul_eq_one_iff mul_eq_one_iff
+#align add_eq_zero_iff add_eq_zero_iff
 
 @[to_additive (attr := simp) add_pos_iff]
-theorem one_lt_mul_iff [CovariantClass α α (· * ·) (· ≤ ·)]
-    [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] : 1 < a * b ↔ 1 < a ∨ 1 < b := by
+theorem one_lt_mul_iff : 1 < a * b ↔ 1 < a ∨ 1 < b := by
   simp only [one_lt_iff_ne_one, Ne, mul_eq_one_iff, not_and_or]
 #align one_lt_mul_iff one_lt_mul_iff
 #align add_pos_iff add_pos_iff
 
 @[to_additive]
-theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b := by
-  obtain ⟨c, hc⟩ := le_iff_exists_mul.1 h.le
-  refine ⟨c, one_lt_iff_ne_one.2 ?_, hc.symm⟩
+theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
+#align eq_one_or_one_lt eq_one_or_one_lt
+#align eq_zero_or_pos eq_zero_or_pos
+
+@[to_additive]
+theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ c > 1, b = a * c := by
+  obtain ⟨c, rfl⟩ := exists_mul_of_le h.le
+  refine ⟨c, one_lt_iff_ne_one.2 ?_, rfl⟩
   rintro rfl
-  simp [hc, lt_irrefl] at h
+  simp at h
 #align exists_one_lt_mul_of_lt exists_one_lt_mul_of_lt
 #align exists_pos_add_of_lt exists_pos_add_of_lt
 
 @[to_additive]
 theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔ ∃ c > 1, b = a * c := by
-  rw [lt_iff_le_and_ne, le_iff_exists_mul, ← exists_and_right]
-  apply exists_congr
-  intro c
-  rw [and_comm, and_congr_left_iff, gt_iff_lt]
-  rintro rfl
-  constructor
-  · rw [one_lt_iff_ne_one]
-    apply mt
-    rintro rfl
-    rw [mul_one]
-  · rw [← (self_le_mul_right a c).lt_iff_ne]
-    apply lt_mul_of_one_lt_right'
+  refine ⟨exists_one_lt_mul_of_lt, ?_⟩
+  rintro ⟨c, hc, rfl⟩
+  exact lt_mul_of_le_of_one_lt le_rfl hc
 #align lt_iff_exists_mul lt_iff_exists_mul
 #align lt_iff_exists_add lt_iff_exists_add
 
 end PartialOrder
 
 end MulOneClass
+
+section Monoid
+variable [Monoid α] [LE α] [CanonicallyOrderedMul α] {a b c : α}
+
+-- see Note [lower instance priority]
+@[to_additive]
+instance (priority := 10) CanonicallyOrderedMul.toCovariantClass :
+    CovariantClass α α (· * ·) (· ≤ ·) where
+  elim a b c hbc := by
+    obtain ⟨c, hc, rfl⟩ := exists_mul_of_le hbc
+    rw [le_iff_exists_mul]
+    exact ⟨c, (mul_assoc _ _ _).symm⟩
+
+end Monoid
+
+section CommMonoid
+variable [CommMonoid α] [LE α] [CanonicallyOrderedMul α] {a b c : α}
+
+@[to_additive]
+theorem le_iff_exists_mul' {a b : α} :
+    a ≤ b ↔ ∃ c, b = c * a := by
+  simp only [mul_comm _ a, le_iff_exists_mul]
+#align le_iff_exists_mul' le_iff_exists_mul'
+#align le_iff_exists_add' le_iff_exists_add'
+
+end CommMonoid
 
 theorem pos_of_gt {M : Type*} [AddZeroClass M] [Preorder M] [CanonicallyOrderedAdd M]
     {n m : M} (h : n < m) : 0 < m :=
@@ -369,7 +339,7 @@ end NeZero
 
 section LinearOrder
 
-variable [Monoid α] [LinearOrder α] [CanonicallyOrderedMul α]
+variable [MulOneClass α] [LinearOrder α] [CanonicallyOrderedMul α]
 
 -- Porting note (#10618): no longer `@[simp]`, as `simp` can prove this.
 @[to_additive]
@@ -393,7 +363,7 @@ theorem bot_eq_one' : (⊥ : α) = 1 :=
 #align bot_eq_one' bot_eq_one'
 #align bot_eq_zero' bot_eq_zero'
 
-variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)]
+variable [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)]
 
 @[to_additive]
 theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c) := by

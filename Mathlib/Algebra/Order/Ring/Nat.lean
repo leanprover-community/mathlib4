@@ -38,12 +38,6 @@ instance instLinearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero �
   __ : CommMonoidWithZero ℕ := inferInstance
   mul_le_mul_left _ _ h c := Nat.mul_le_mul_left c h
 
-instance instCanonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ where
-  __ := instLinearOrderedCommSemiring
-  exists_add_of_le h := (Nat.le.dest h).imp fun _ => Eq.symm
-  le_self_add := Nat.le_add_right
-  eq_zero_or_eq_zero_of_mul_eq_zero := Nat.eq_zero_of_mul_eq_zero
-
 /-!
 ### Extra instances to short-circuit type class resolution
 

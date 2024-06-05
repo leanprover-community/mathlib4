@@ -181,9 +181,9 @@ instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α (ι
 
 end SMulWithZero
 
-section AddMonoid
+section PartialOrder
 
-variable [AddMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] {f g : ι →₀ α}
+variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] {f g : ι →₀ α}
 
 instance orderBot : OrderBot (ι →₀ α) where
   bot := 0
@@ -225,17 +225,6 @@ theorem single_le_iff {i : ι} {x : α} {f : ι →₀ α} : single i x ≤ f �
   (le_iff' _ _ support_single_subset).trans <| by simp
 #align finsupp.single_le_iff Finsupp.single_le_iff
 
-end AddMonoid
-
-section AddCommMonoid
-variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] {f g : ι →₀ α}
-
-@[simp]
-theorem add_eq_zero_iff [CovariantClass α α (· + ·) (· ≤ ·)]
-    (f g : ι →₀ α) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
-  simp [FunLike.ext_iff, forall_and]
-#align finsupp.add_eq_zero_iff Finsupp.add_eq_zero_iff
-
 variable [Sub α] [OrderedSub α] {f g : ι →₀ α} {i : ι} {a b : α}
 
 /-- This is called `tsub` for truncated subtraction, to distinguish it with subtraction in an
@@ -276,11 +265,11 @@ theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
   simp (config := { contextual := true }) [subset_iff]
 #align finsupp.subset_support_tsub Finsupp.subset_support_tsub
 
-end AddCommMonoid
+end PartialOrder
 
-section CanonicallyLinearOrderedAddCommMonoid
+section LinearOrder
 
-variable [AddMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
+variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
 
 @[simp]
 theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = f.support ∩ g.support := by
@@ -304,7 +293,7 @@ nonrec theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.s
     rfl
 #align finsupp.disjoint_iff Finsupp.disjoint_iff
 
-end CanonicallyLinearOrderedAddCommMonoid
+end LinearOrder
 
 /-! ### Some lemmas about `ℕ` -/
 

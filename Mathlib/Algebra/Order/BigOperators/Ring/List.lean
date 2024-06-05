@@ -26,13 +26,13 @@ lemma prod_pos [StrictOrderedSemiring R] (l : List R) (h : ∀ a ∈ l, (0 : R) 
     exact mul_pos (h _ <| mem_cons_self _ _) (ih fun a ha => h a <| mem_cons_of_mem _ ha)
 #align list.prod_pos List.prod_pos
 
-/-- A variant of `List.prod_pos` for `CanonicallyOrderedCommSemiring`. -/
-@[simp] lemma _root_.CanonicallyOrderedCommSemiring.list_prod_pos
-    {α : Type*} [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
+/-- A variant of `List.prod_pos` for `CanonicallyOrderedAdd`. -/
+@[simp] lemma _root_.CanonicallyOrderedAdd.list_prod_pos {α : Type*}
+    [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α] [NoZeroDivisors α] [Nontrivial α] :
     ∀ {l : List α}, 0 < l.prod ↔ (∀ x ∈ l, (0 : α) < x)
   | [] => by simp
-  | (x :: xs) => by simp_rw [prod_cons, forall_mem_cons, CanonicallyOrderedCommSemiring.mul_pos,
+  | (x :: xs) => by simp_rw [prod_cons, forall_mem_cons, CanonicallyOrderedAdd.mul_pos,
     list_prod_pos]
-#align canonically_ordered_comm_semiring.list_prod_pos CanonicallyOrderedCommSemiring.list_prod_pos
+#align canonically_ordered_comm_semiring.list_prod_pos CanonicallyOrderedAdd.list_prod_pos
 
 end List

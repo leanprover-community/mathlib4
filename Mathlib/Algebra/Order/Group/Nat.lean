@@ -22,11 +22,11 @@ namespace Nat
 
 /-! ### Instances -/
 
-instance instCanonicallyLinearOrderedAddCommMonoid : CanonicallyLinearOrderedAddCommMonoid ℕ where
+instance instLinearOrderedAddCommMonoid : LinearOrderedAddCommMonoid ℕ where
   __ := instLinearOrder
-  bot := 0
-  bot_le := Nat.zero_le
   add_le_add_left := @Nat.add_le_add_left
+
+instance instCanonicallyOrderedAdd : CanonicallyOrderedAdd ℕ where
   le_self_add := Nat.le_add_right
   exists_add_of_le := Nat.exists_eq_add_of_le
 

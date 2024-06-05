@@ -185,13 +185,11 @@ instance instSMulPosReflectLT [∀ i, SMulPosReflectLT α (β i)] : SMulPosRefle
 
 end Module
 
-section CanonicallyOrderedAdd
+section PartialOrder
 
 -- Porting note: Split into 2 lines to satisfy the unusedVariables linter.
 variable (α)
-
-section AddMonoid
-variable [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
+variable [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
 
 instance : OrderBot (Π₀ i, α i) where
   bot := 0
@@ -207,8 +205,6 @@ protected theorem bot_eq_zero : (⊥ : Π₀ i, α i) = 0 :=
 theorem add_eq_zero_iff (f g : Π₀ i, α i) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
   simp [DFunLike.ext_iff, forall_and]
 #align dfinsupp.add_eq_zero_iff DFinsupp.add_eq_zero_iff
-
-section LE
 
 variable [DecidableEq ι]
 
@@ -244,17 +240,6 @@ end
 theorem single_le_iff {f : Π₀ i, α i} {i : ι} {a : α i} : single i a ≤ f ↔ a ≤ f i := by
   classical exact (le_iff' support_single_subset).trans <| by simp
 #align dfinsupp.single_le_iff DFinsupp.single_le_iff
-
-end AddMonoid
-
-section AddCommMonoid
-variable [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
-
-@[simp]
-theorem add_eq_zero_iff [∀ i, CovariantClass (α i) (α i) (· + ·) (· ≤ ·)]
-    (f g : Π₀ i, α i) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
-  simp [FunLike.ext_iff, forall_and]
-#align dfinsupp.add_eq_zero_iff DFinsupp.add_eq_zero_iff
 
 -- Porting note: Split into 2 lines to satisfy the unusedVariables linter.
 variable (α)
@@ -312,10 +297,10 @@ theorem subset_support_tsub : f.support \ g.support ⊆ (f - g).support := by
   simp (config := { contextual := true }) [subset_iff]
 #align dfinsupp.subset_support_tsub DFinsupp.subset_support_tsub
 
-end AddCommMonoid
+end PartialOrder
 
-section CanonicallyLinearOrderedAddCommMonoid
-variable [∀ i, AddMonoid (α i)] [∀ i, LinearOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
+section LinearOrder
+variable [∀ i, AddCommMonoid (α i)] [∀ i, LinearOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
   [DecidableEq ι] {f g : Π₀ i, α i}
 
 @[simp]
@@ -338,6 +323,6 @@ nonrec theorem disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support := b
   rfl
 #align dfinsupp.disjoint_iff DFinsupp.disjoint_iff
 
-end CanonicallyLinearOrderedAddCommMonoid
+end LinearOrder
 
 end DFinsupp

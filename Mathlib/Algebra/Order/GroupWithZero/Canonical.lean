@@ -51,10 +51,10 @@ instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
   { ‹LinearOrderedCommMonoidWithZero α› with }
 #align linear_ordered_comm_monoid_with_zero.to_zero_le_one_class LinearOrderedCommMonoidWithZero.toZeroLeOneClass
 
-instance (priority := 100) canonicallyOrderedAddCommMonoid.toZeroLeOneClass
-    [CanonicallyOrderedAddCommMonoid α] [One α] : ZeroLEOneClass α :=
+instance (priority := 100) CanonicallyOrderedAdd.toZeroLeOneClass
+    [AddZeroClass α] [LE α] [CanonicallyOrderedAdd α] [One α] : ZeroLEOneClass α :=
   ⟨zero_le 1⟩
-#align canonically_ordered_add_monoid.to_zero_le_one_class canonicallyOrderedAddCommMonoid.toZeroLeOneClass
+#align canonically_ordered_add_monoid.to_zero_le_one_class CanonicallyOrderedAdd.toZeroLeOneClass
 
 section LinearOrderedCommMonoidWithZero
 variable [LinearOrderedCommMonoidWithZero α] {a b c d x y z : α} {n : ℕ}
@@ -440,25 +440,17 @@ protected abbrev orderedAddCommMonoid [OrderedAddCommMonoid α] (zero_le : ∀ a
     add_le_add_left := @add_le_add_left _ _ _ (WithZero.covariantClass_add_le zero_le).. }
 #align with_zero.ordered_add_comm_monoid WithZero.orderedAddCommMonoid
 
--- This instance looks absurd: a monoid already has a zero
 /-- Adding a new zero to a canonically ordered additive monoid produces another one. -/
-instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
-    CanonicallyOrderedAddCommMonoid (WithZero α) :=
-  { WithZero.orderBot,
-    WithZero.orderedAddCommMonoid _root_.zero_le,
-    WithZero.existsAddOfLE with
+instance canonicallyOrderedAdd [AddZeroClass α] [Preorder α] [CanonicallyOrderedAdd α] :
+    CanonicallyOrderedAdd (WithZero α) :=
+  { WithZero.existsAddOfLE with
     le_self_add := fun a b => by
       induction a
       · exact bot_le
       induction b
       · exact le_rfl
       · exact WithZero.coe_le_coe.2 le_self_add }
-#align with_zero.canonically_ordered_add_monoid WithZero.canonicallyOrderedAddCommMonoid
-
-instance canonicallyLinearOrderedAddCommMonoid [CanonicallyLinearOrderedAddCommMonoid α] :
-    CanonicallyLinearOrderedAddCommMonoid (WithZero α) :=
-  { WithZero.canonicallyOrderedAddCommMonoid, WithZero.linearOrder with }
-#align with_zero.canonically_linear_ordered_add_monoid WithZero.canonicallyLinearOrderedAddCommMonoid
+#align with_zero.canonically_ordered_add_monoid WithZero.canonicallyOrderedAdd
 
 instance instLinearOrderedCommMonoidWithZero [LinearOrderedCommMonoid α] :
     LinearOrderedCommMonoidWithZero (WithZero α) :=
