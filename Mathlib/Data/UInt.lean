@@ -100,9 +100,11 @@ run_cmd
       | ⟨_, _⟩ => rfl
 
     namespace Cast
+      @[nolint docBlame]
       scoped instance : NatCast $typeName where
         natCast n := mk n
 
+      @[nolint docBlame]
       scoped instance : IntCast $typeName where
         intCast z := mk z
 
@@ -114,6 +116,7 @@ run_cmd
 
     namespace CommRing
       open Cast in
+      @[nolint docBlame]
       scoped instance instCommRing : CommRing $typeName :=
         Function.Injective.commRing val val_injective
           rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
