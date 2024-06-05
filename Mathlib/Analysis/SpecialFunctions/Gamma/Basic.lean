@@ -470,7 +470,7 @@ theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : Differen
   apply (differentiableAt_GammaAux s n hn hs).congr_of_eventuallyEq
   let S := {t : ℂ | 1 - t.re < n}
   have : S ∈ 𝓝 s := by
-    rw [_root_.mem_nhds_iff]; use S
+    rw [mem_nhds_iff]; use S
     refine ⟨Subset.rfl, ?_, hn⟩
     have : S = re ⁻¹' Ioi (1 - n : ℝ) := by
       ext; rw [preimage, Ioi, mem_setOf_eq, mem_setOf_eq, mem_setOf_eq]; exact sub_lt_comm

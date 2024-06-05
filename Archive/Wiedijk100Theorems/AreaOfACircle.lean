@@ -83,8 +83,6 @@ theorem measurableSet_disc : MeasurableSet (disc r) := by
   apply measurableSet_lt <;> apply Continuous.measurable <;> continuity
 #align theorems_100.measurable_set_disc Theorems100.measurableSet_disc
 
-attribute [-aesop] IsProperMap.continuous
-
 /-- **Area of a Circle**: The area of a disc with radius `r` is `π * r ^ 2`. -/
 theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
   let f x := sqrt (r ^ 2 - x ^ 2)
