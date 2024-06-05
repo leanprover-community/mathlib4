@@ -7,14 +7,14 @@ import Mathlib.RingTheory.Ideal.Cotangent
 
 /-!
 
-# Presentations of algebras
+# Generators of algebras
 
 ## Main definition
-- `Algebra.Presentation`: A presentation of a `R`-algebra `S` consists of
+- `Algebra.Generators`: A family of generators of a `R`-algebra `S` consists of
   1. `vars`: The type of variables.
   2. `val : vars → S`: The assignment of each variable to a value.
   3. `σ`: A section of `R[X] → S`.
-- `Algebra.Presentation.Hom`: Given a commuting square
+- `Algebra.Generators.Hom`: Given a commuting square
   ```
   R --→ P = R[X] ---→ S
   |                   |
@@ -22,8 +22,12 @@ import Mathlib.RingTheory.Ideal.Cotangent
   R' -→ P' = R'[X'] → S
   ```
   A hom between `P` and `P'` is an assignment `X → P'` such that the arrows commute.
-- `Algebra.Presentation.Cotangent`: The cotangent spance of a presentation `P = R[X] → S`, I.e. the
+- `Algebra.Generators.Cotangent`: The cotangent space wrt `P = R[X] → S`, i.e. the
   space `I/I²` with `I` being the kernel of the presentation.
+
+## TODO
+* Define `Algebra.Presentation` that extends `Generators` and contains the data of a family of
+  relations that spans the kernel of the presentation.
 
 -/
 
@@ -33,11 +37,11 @@ open TensorProduct MvPolynomial
 
 variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 
-/-- A presentation of a `R`-algebra `S` consists of
+/-- A family of generators of a `R`-algebra `S` consists of
 1. `vars`: The type of variables.
 2. `val : vars → S`: The assignment of each variable to a value in `S`.
 3. `σ`: A section of `R[X] → S`. -/
-structure Algebra.Presentation where
+structure Algebra.Generators where
   /-- The type of variables.  -/
   vars : Type w
   /-- The assignment of each variable to a value in `S`. -/
@@ -46,24 +50,22 @@ structure Algebra.Presentation where
   σ' : S → MvPolynomial vars R
   aeval_val_σ' : ∀ s, aeval val (σ' s) = s
 
-namespace Algebra.Presentation
+namespace Algebra.Generators
 
 variable {R S}
-variable (P : Presentation.{w} R S)
+variable (P : Generators.{w} R S)
 
-/-- The polynomial ring of a given presentation. -/
-@[pp_dot]
+/-- The polynomial ring wrt a family of generators. -/
 protected
 abbrev Ring : Type (max w u) := MvPolynomial P.vars R
 
-/-- The designated section of the presentation. -/
-@[pp_dot]
+/-- The designated section of wrt a family of generators. -/
 def σ : S → P.Ring := P.σ'
 
 /-- See Note [custom simps projection] -/
 def Simps.σ : S → P.Ring := P.σ
 
-initialize_simps_projections Algebra.Presentation (σ' → σ)
+initialize_simps_projections Algebra.Generators (σ' → σ)
 
 @[simp]
 lemma aeval_val_σ (s) : aeval P.val (P.σ s) = s := P.aeval_val_σ' s
@@ -91,34 +93,34 @@ lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) := (⟨_
 
 section Construction
 
-/-- Construct a presentation from an assignment `I → S` such that `R[X] → S` is surjective. -/
+/-- Construct `Generators` from an assignment `I → S` such that `R[X] → S` is surjective. -/
 @[simps vars val]
 noncomputable
 def ofSurjective {vars} (val : vars → S) (h : Function.Surjective (aeval (R := R) val)) :
-    Presentation R S where
+    Generators R S where
   vars := vars
   val := val
   σ' x := (h x).choose
   aeval_val_σ' x := (h x).choose_spec
 
-/-- Construct a presentation from an assignment `I → S` such that `R[X] → S` is surjective. -/
+/-- Construct `Generators` from an assignment `I → S` such that `R[X] → S` is surjective. -/
 noncomputable
 def ofAlgHom {I} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) :
-    Presentation R S :=
+    Generators R S :=
   ofSurjective (f ∘ X) (by rwa [show aeval (f ∘ X) = f by ext; simp])
 
-/-- Construct a presentation from a spanning set of `S`. -/
+/-- Construct `Generators` from a family of generators of `S`. -/
 noncomputable
-def ofSet {s : Set S} (hs : Algebra.adjoin R s = ⊤) : Presentation R S := by
+def ofSet {s : Set S} (hs : Algebra.adjoin R s = ⊤) : Generators R S := by
   refine ofSurjective (Subtype.val : s → S) ?_
   rwa [← Algebra.range_top_iff_surjective, ← Algebra.adjoin_range_eq_range_aeval,
     Subtype.range_coe_subtype, Set.setOf_mem_eq]
 
 variable (R S) in
-/-- The canonical presentation `R[S] → S`. -/
+/-- The `Generators` containing the whole algebra, which induces the canonical map  `R[S] → S`. -/
 @[simps]
 noncomputable
-def self : Presentation R S where
+def self : Generators R S where
   vars := S
   val := _root_.id
   σ' := X
@@ -126,11 +128,11 @@ def self : Presentation R S where
 
 variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
-/-- Given two presentations `S[X] → T` and `R[Y] → S`,
-we may constuct the presentation `R[X, Y] → T`. -/
+/-- Given two families of generators `S[X] → T` and `R[Y] → S`,
+we may constuct the family of generators `R[X, Y] → T`. -/
 @[simps vars val, simps (config := .lemmasOnly) σ]
 noncomputable
-def comp (Q : Presentation S T) (P : Presentation R S) : Presentation R T where
+def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
   vars := Q.vars ⊕ P.vars
   val := Sum.elim Q.val (algebraMap S T ∘ P.val)
   σ' x := (Q.σ x).sum (fun n r ↦ rename Sum.inr (P.σ r) * monomial (n.mapDomain Sum.inl) 1)
@@ -143,11 +145,11 @@ def comp (Q : Presentation S T) (P : Presentation R S) : Presentation R T where
       Sum.elim_inl, one_mul, single_eq_monomial]
 
 variable (S) in
-/-- If `R → S → T` is a tower of algebras,
-a presentation `R[X] → T` gives a presentation `S[X] → T`. -/
+/-- If `R → S → T` is a tower of algebras, a family of generators `R[X] → T`
+gives a family of generators `S[X] → T`. -/
 @[simps vars val]
 noncomputable
-def extendScalars (P : Presentation R T) : Presentation S T where
+def extendScalars (P : Generators R T) : Generators S T where
   vars := P.vars
   val := P.val
   σ' x := map (algebraMap R S) (P.σ x)
@@ -155,10 +157,10 @@ def extendScalars (P : Presentation R T) : Presentation S T where
 
 end Construction
 
-variable {R' S'} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Presentation R' S')
+variable {R' S'} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Generators R' S')
 variable [Algebra R R'] [Algebra S S'] [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
 
-variable {R'' S''} [CommRing R''] [CommRing S''] [Algebra R'' S''] (P'' : Presentation R'' S'')
+variable {R'' S''} [CommRing R''] [CommRing S''] [Algebra R'' S''] (P'' : Generators R'' S'')
 variable [Algebra R R''] [Algebra S S''] [Algebra R S'']
   [IsScalarTower R R'' S''] [IsScalarTower R S S'']
 variable [Algebra R' R''] [Algebra S' S''] [Algebra R' S'']
@@ -173,7 +175,7 @@ R --→ P = R[X] ---→ S
 ↓                   ↓
 R' -→ P' = R'[X'] → S
 A hom between `P` and `P'` is an assignment `I → P'` such that the arrows commute.
-Also see `Algebra.Presentation.Hom.equivAlgHom`.
+Also see `Algebra.Generators.Hom.equivAlgHom`.
 -/
 @[ext]
 structure Hom where
@@ -185,7 +187,8 @@ attribute [simp] Hom.aeval_val
 
 variable {P P'}
 
-/-- A hom between two presentations gives an algebra homomorphism between the polynomial rings. -/
+/-- A hom between two families of generators gives
+an algebra homomorphism between the polynomial rings. -/
 noncomputable
 def Hom.toAlgHom (f : Hom P P') : P.Ring →ₐ[R] P'.Ring := MvPolynomial.aeval f.val
 
@@ -207,7 +210,7 @@ lemma Hom.toAlgHom_X (f : Hom P P') (i) : f.toAlgHom (.X i) = f.val i :=
 lemma Hom.toAlgHom_C (f : Hom P P') (r) : f.toAlgHom (.C r) = .C (algebraMap _ _ r) :=
   MvPolynomial.aeval_C f.val r
 
-/-- Giving a hom between two presentations is equivalent to
+/-- Giving a hom between two families of generators is equivalent to
 giving an algebra homomorphism between the polynomial rings. -/
 @[simps]
 noncomputable
@@ -253,24 +256,26 @@ lemma Hom.id_comp (f : Hom P P') : (Hom.id P').comp f = f := by ext; simp [Hom.i
 
 variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
-/-- Given presentations `Q = S[X] → T` and `P = R[Y] → S`, there is a map `R[Y] → R[X, Y]`. -/
+/-- Given families of generators `X ⊆ T` over `S` and `Y ⊆ S` over `R`,
+there is a map of generators `R[Y] → R[X, Y]`. -/
 @[simps]
 noncomputable
-def toComp (Q : Presentation S T) (P : Presentation R S) : Hom P (Q.comp P) where
+def toComp (Q : Generators S T) (P : Generators R S) : Hom P (Q.comp P) where
   val i := X (.inr i)
   aeval_val i := by simp
 
-/-- Given presentations `Q = S[X] → T` and `P = R[Y] → S`, there is a map `R[X, Y] → S[X]`. -/
+/-- Given families of generators `X ⊆ T` over `S` and `Y ⊆ S` over `R`,
+there is a map of generators `R[X, Y] → S[X]`. -/
 @[simps]
 noncomputable
-def ofComp (Q : Presentation S T) (P : Presentation R S) : Hom (Q.comp P) Q where
+def ofComp (Q : Generators S T) (P : Generators R S) : Hom (Q.comp P) Q where
   val i := i.elim X (C ∘ P.val)
   aeval_val i := by cases i <;> simp
 
-/-- Given presentation `P = R[X] → T`, there is a map `R[X] → S[X]`. -/
+/-- Given families of generators `X ⊆ T`, there is a map `R[X] → S[X]`. -/
 @[simps]
 noncomputable
-def toExtendScalars (P : Presentation R T) : Hom P (P.extendScalars S) where
+def toExtendScalars (P : Generators R T) : Hom P (P.extendScalars S) where
   val := X
   aeval_val i := by simp
 
@@ -380,7 +385,7 @@ lemma Cotangent.mk_surjective : Function.Surjective (mk (P := P)) :=
 
 variable {P'}
 
-/-- A hom between presentations induce a map between cotangent spaces. -/
+/-- A hom between families of generators induce a map between cotangent spaces. -/
 noncomputable
 def Cotangent.map (f : Hom P P') : P.Cotangent →ₗ[S] P'.Cotangent where
   toFun x := .of (Ideal.mapCotangent (R := R) _ _ f.toAlgHom
@@ -406,4 +411,4 @@ lemma Cotangent.map_mk (f : Hom P P') (x) :
 
 end Cotangent
 
-end Algebra.Presentation
+end Algebra.Generators
