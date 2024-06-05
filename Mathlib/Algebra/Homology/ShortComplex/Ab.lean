@@ -3,9 +3,8 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Exact
+import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Category.GroupCat.Abelian
-import Mathlib.Algebra.Category.GroupCat.EpiMono
 
 /-!
 # Homology and exactness of short complexes of abelian groups
@@ -39,7 +38,7 @@ lemma ab_zero_apply (x : S.X₁) : S.g (S.f x) = 0 := by
   erw [← comp_apply, S.zero]
   rfl
 
-/-- The canonical additive morphism for `S.X₁ →+ AddMonoidHom.ker S.g` induced by `S.f`. -/
+/-- The canonical additive morphism `S.X₁ →+ AddMonoidHom.ker S.g` induced by `S.f`. -/
 @[simps!]
 def abToCycles : S.X₁ →+ AddMonoidHom.ker S.g :=
     AddMonoidHom.mk' (fun x => ⟨S.f x, S.ab_zero_apply x⟩) (by aesop)
@@ -72,6 +71,17 @@ the abstract `S.cycles` of the homology API and the more concrete description as
 noncomputable def abCyclesIso : S.cycles ≅ AddCommGroupCat.of (AddMonoidHom.ker S.g) :=
   S.abLeftHomologyData.cyclesIso
 
+-- This was a simp lemma until we made `AddCommGroupCat.coe_of` a simp lemma,
+-- after which the simp normal form linter complains.
+-- It was not used a simp lemma in Mathlib.
+-- Possible solution: higher priority function coercions that remove the `of`?
+-- @[simp]
+lemma abCyclesIso_inv_apply_iCycles (x : AddMonoidHom.ker S.g) :
+    S.iCycles (S.abCyclesIso.inv x) = x := by
+  dsimp only [abCyclesIso]
+  erw [← comp_apply, S.abLeftHomologyData.cyclesIso_inv_comp_iCycles]
+  rfl
+
 /-- Given a short complex `S` of abelian groups, this is the isomorphism between
 the abstract `S.homology` of the homology API and the more explicit
 quotient of `AddMonoidHom.ker S.g` by the image of
@@ -103,12 +113,20 @@ lemma ab_exact_iff_range_eq_ker : S.Exact ↔ S.f.range = S.g.ker := by
   rw [ab_exact_iff_ker_le_range]
   constructor
   · intro h
-    refine' le_antisymm _ h
+    refine le_antisymm ?_ h
     rintro _ ⟨x₁, rfl⟩
     erw [AddMonoidHom.mem_ker, ← comp_apply, S.zero]
     rfl
   · intro h
     rw [h]
+
+lemma ShortExact.ab_injective_f (hS : S.ShortExact) :
+    Function.Injective S.f :=
+  (AddCommGroupCat.mono_iff_injective _).1 hS.mono_f
+
+lemma ShortExact.ab_surjective_g (hS : S.ShortExact) :
+    Function.Surjective S.g :=
+  (AddCommGroupCat.epi_iff_surjective _).1 hS.epi_g
 
 end ShortComplex
 

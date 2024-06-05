@@ -15,7 +15,7 @@ This file defines continuous order homomorphisms, that is maps which are both co
 monotone. They are also called Priestley homomorphisms because they are the morphisms of the
 category of Priestley spaces.
 
-We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `DFunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
@@ -38,18 +38,17 @@ structure ContinuousOrderHom (α β : Type*) [Preorder α] [Preorder β] [Topolo
   continuous_toFun : Continuous toFun
 #align continuous_order_hom ContinuousOrderHom
 
--- mathport name: «expr →Co »
 infixr:25 " →Co " => ContinuousOrderHom
 
 section
 
--- porting note: extending `ContinuousMapClass` instead of `OrderHomClass`
+-- Porting note: extending `ContinuousMapClass` instead of `OrderHomClass`
 /-- `ContinuousOrderHomClass F α β` states that `F` is a type of continuous monotone maps.
 
 You should extend this class when you extend `ContinuousOrderHom`. -/
-class ContinuousOrderHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
-    [TopologicalSpace α] [TopologicalSpace β] extends
-    ContinuousMapClass F α β where
+class ContinuousOrderHomClass (F : Type*) (α β : outParam Type*) [Preorder α] [Preorder β]
+    [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] extends
+    ContinuousMapClass F α β : Prop where
   map_monotone (f : F) : Monotone f
 #align continuous_order_hom_class ContinuousOrderHomClass
 
@@ -57,7 +56,7 @@ class ContinuousOrderHomClass (F : Type*) (α β : outParam <| Type*) [Preorder 
 namespace ContinuousOrderHomClass
 
 variable [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
-  [ContinuousOrderHomClass F α β]
+  [FunLike F α β] [ContinuousOrderHomClass F α β]
 
 -- See note [lower instance priority]
 instance (priority := 100) toOrderHomClass  :
@@ -98,16 +97,18 @@ def toContinuousMap (f : α →Co β) : C(α, β) :=
   { f with }
 #align continuous_order_hom.to_continuous_map ContinuousOrderHom.toContinuousMap
 
-instance : ContinuousOrderHomClass (α →Co β) α β where
+instance instFunLike : FunLike (α →Co β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
+
+instance : ContinuousOrderHomClass (α →Co β) α β where
   map_monotone f := f.monotone'
   map_continuous f := f.continuous_toFun
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 @[simp] theorem coe_toOrderHom (f : α →Co β) : ⇑f.toOrderHom = f := rfl
 
 theorem toFun_eq_coe {f : α →Co β} : f.toFun = (f : α → β) := rfl
@@ -115,7 +116,7 @@ theorem toFun_eq_coe {f : α →Co β} : f.toFun = (f : α → β) := rfl
 
 @[ext]
 theorem ext {f g : α →Co β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align continuous_order_hom.ext ContinuousOrderHom.ext
 
 /-- Copy of a `ContinuousOrderHom` with a new `ContinuousMap` equal to the old one. Useful to fix
@@ -130,7 +131,7 @@ theorem coe_copy (f : α →Co β) (f' : α → β) (h : f' = f) : ⇑(f.copy f'
 #align continuous_order_hom.coe_copy ContinuousOrderHom.coe_copy
 
 theorem copy_eq (f : α →Co β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align continuous_order_hom.copy_eq ContinuousOrderHom.copy_eq
 
 variable (α)
@@ -189,7 +190,7 @@ theorem id_comp (f : α →Co β) : (ContinuousOrderHom.id β).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ : β →Co γ} {f : α →Co β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align continuous_order_hom.cancel_right ContinuousOrderHom.cancel_right
 
 @[simp]
@@ -204,6 +205,6 @@ instance : Preorder (α →Co β) :=
 end Preorder
 
 instance [PartialOrder β] : PartialOrder (α →Co β) :=
-  PartialOrder.lift ((↑) : (α →Co β) → α → β) FunLike.coe_injective
+  PartialOrder.lift ((↑) : (α →Co β) → α → β) DFunLike.coe_injective
 
 end ContinuousOrderHom

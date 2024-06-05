@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.CategoryTheory.Sites.Canonical
-import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 
 #align_import category_theory.sites.types from "leanprover-community/mathlib"@"9f9015c645d85695581237cc761981036be8bd37"
 
@@ -182,16 +181,16 @@ theorem subcanonical_typesGrothendieckTopology : Sheaf.Subcanonical typesGrothen
 
 theorem typesGrothendieckTopology_eq_canonical :
     typesGrothendieckTopology.{u} = Sheaf.canonicalTopology (Type u) := by
-  refine' le_antisymm subcanonical_typesGrothendieckTopology (sInf_le _)
-  refine' ⟨yoneda.obj (ULift Bool), ⟨_, rfl⟩, GrothendieckTopology.ext _⟩
+  refine le_antisymm subcanonical_typesGrothendieckTopology (sInf_le ?_)
+  refine ⟨yoneda.obj (ULift Bool), ⟨_, rfl⟩, GrothendieckTopology.ext ?_⟩
   funext α
   ext S
-  refine' ⟨fun hs x => _, fun hs β f => isSheaf_yoneda' _ fun y => hs _⟩
+  refine ⟨fun hs x => ?_, fun hs β f => isSheaf_yoneda' _ fun y => hs _⟩
   by_contra hsx
   have : (fun _ => ULift.up true) = fun _ => ULift.up false :=
     (hs PUnit fun _ => x).isSeparatedFor.ext
       fun β f hf => funext fun y => hsx.elim <| S.2 hf fun _ => y
-  simp at this
+  simp [Function.funext_iff] at this
 #align category_theory.types_grothendieck_topology_eq_canonical CategoryTheory.typesGrothendieckTopology_eq_canonical
 
 end CategoryTheory

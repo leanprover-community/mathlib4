@@ -75,9 +75,7 @@ open Opposite CategoryTheory Category Limits Sieve
 namespace Presieve
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {P Q U : Cᵒᵖ ⥤ Type w}
-
 variable {X Y : C} {S : Sieve X} {R : Presieve X}
 
 /-- A family of elements for a presheaf `P` given a collection of arrows `R` with fixed codomain `X`
@@ -248,7 +246,7 @@ theorem restrict_inj {x₁ x₂ : FamilyOfElements P (generate R)} (t₁ : x₁.
     (t₂ : x₂.Compatible) : x₁.restrict (le_generate R) = x₂.restrict (le_generate R) → x₁ = x₂ :=
   fun h => by
   rw [← extend_restrict t₁, ← extend_restrict t₂]
-  -- porting note: congr fails to make progress
+  -- Porting note: congr fails to make progress
   apply congr_arg
   exact h
 #align category_theory.presieve.restrict_inj CategoryTheory.Presieve.restrict_inj
@@ -275,7 +273,6 @@ theorem FamilyOfElements.comp_of_compatible (S : Sieve X) {x : FamilyOfElements 
 section FunctorPullback
 
 variable {D : Type u₂} [Category.{v₂} D] (F : D ⥤ C) {Z : D}
-
 variable {T : Presieve (F.obj Z)} {x : FamilyOfElements P T}
 
 /--
@@ -459,7 +456,7 @@ the proof of C2.1.4 of [Elephant], and the discussion in [MM92], Chapter III, Se
 def natTransEquivCompatibleFamily {P : Cᵒᵖ ⥤ Type v₁} :
     (S.functor ⟶ P) ≃ { x : FamilyOfElements P (S : Presieve X) // x.Compatible } where
   toFun α := by
-    refine' ⟨fun Y f hf => _, _⟩
+    refine ⟨fun Y f hf => ?_, ?_⟩
     · apply α.app (op Y) ⟨_, hf⟩
     · rw [compatible_iff_sieveCompatible]
       intro Y Z f g hf
@@ -488,13 +485,14 @@ theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ Type v₁} (x : S.functor �
   · rintro rfl Y f hf
     rw [yonedaEquiv_naturality]
     dsimp
-    simp
+    simp [yonedaEquiv_apply]
   -- See note [dsimp, simp].
   · intro h
     ext Y ⟨f, hf⟩
     convert h f hf
     rw [yonedaEquiv_naturality]
-    simp [yonedaEquiv]
+    dsimp [yonedaEquiv]
+    simp
 #align category_theory.presieve.extension_iff_amalgamation CategoryTheory.Presieve.extension_iff_amalgamation
 
 /-- The yoneda version of the sheaf condition is equivalent to the sheaf condition.
@@ -507,7 +505,7 @@ theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ Type v₁} :
   simp_rw [extension_iff_amalgamation]
   rw [Equiv.forall_congr_left' natTransEquivCompatibleFamily]
   rw [Subtype.forall]
-  apply ball_congr
+  apply forall₂_congr
   intro x hx
   rw [Equiv.exists_unique_congr_left _]
   simp
@@ -571,7 +569,7 @@ theorem isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor :
   · intro z hx
     exact exists_unique_of_exists_of_unique (z.2 hx) z.1
   · intro h
-    refine' ⟨_, ExistsUnique.exists ∘ h⟩
+    refine ⟨?_, ExistsUnique.exists ∘ h⟩
     intro t₁ t₂ ht₁ ht₂
     apply (h _).unique ht₁ ht₂
     exact is_compatible_of_exists_amalgamation x ⟨_, ht₂⟩
@@ -631,7 +629,7 @@ theorem isSheafFor_iff_generate (R : Presieve X) :
 -/
 theorem isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (Presieve.singleton (𝟙 X)) := by
   intro x _
-  refine' ⟨x _ (Presieve.singleton_self _), _, _⟩
+  refine ⟨x _ (Presieve.singleton_self _), ?_, ?_⟩
   · rintro _ _ ⟨rfl, rfl⟩
     simp
   · intro t ht
@@ -659,7 +657,7 @@ theorem isSheafFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') : IsSheafFor P R
   use i.hom.app _ t
   fconstructor
   · convert FamilyOfElements.IsAmalgamation.compPresheafMap i.hom ht1
-    simp
+    simp [x']
   · intro y hy
     rw [show y = (i.inv.app (op X) ≫ i.hom.app (op X)) y by simp]
     simp [ht2 (i.inv.app _ y) (FamilyOfElements.IsAmalgamation.compPresheafMap i.inv hy)]

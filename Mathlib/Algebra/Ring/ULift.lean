@@ -24,8 +24,6 @@ universe u v
 variable {α : Type u}
 namespace ULift
 
--- Porting note: All these instances used `refine_struct` and `pi_instance_derive_field`
-
 instance mulZeroClass [MulZeroClass α] : MulZeroClass (ULift α) :=
   { zero := (0 : ULift α), mul := (· * ·), zero_mul := fun _ => (Equiv.ulift).injective (by simp),
     mul_zero := fun _ => (Equiv.ulift).injective (by simp) }
@@ -67,7 +65,7 @@ instance semiring [Semiring α] : Semiring (ULift α) :=
       npow_succ := fun _ _ => Monoid.npow_succ _ _ }
 #align ulift.semiring ULift.semiring
 
-/-- The ring equivalence between `ULift α` and `α`.-/
+/-- The ring equivalence between `ULift α` and `α`. -/
 def ringEquiv [NonUnitalNonAssocSemiring α] : ULift α ≃+* α where
   toFun := ULift.down
   invFun := ULift.up

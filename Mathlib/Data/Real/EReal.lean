@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Real.ENNReal
+import Mathlib.Data.ENNReal.Real
 import Mathlib.Data.Sign
 
 #align_import data.real.ereal from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
@@ -139,11 +139,8 @@ theorem coe_one : ((1 : ℝ) : EReal) = 1 := rfl
 
 /-- A recursor for `EReal` in terms of the coercion.
 
-A typical invocation looks like `induction x using EReal.rec`. Note that using `induction`
-directly will unfold `EReal` to `Option` which is undesirable.
-
 When working in term mode, note that pattern matching can be used directly. -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator, cases_eliminator]
 protected def rec {C : EReal → Sort*} (h_bot : C ⊥) (h_real : ∀ a : ℝ, C a) (h_top : C ⊤) :
     ∀ a : EReal, C a
   | ⊥ => h_bot
@@ -203,10 +200,11 @@ theorem induction₂ {P : EReal → EReal → Prop} (top_top : P ⊤ ⊤) (top_p
 /-- Induct on two `EReal`s by performing case splits on the sign of one whenever the other is
 infinite. This version eliminates some cases by assuming that the relation is symmetric. -/
 @[elab_as_elim]
-theorem induction₂_symm {P : EReal → EReal → Prop} (symm : Symmetric P) (top_top : P ⊤ ⊤)
-    (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0) (top_neg : ∀ x : ℝ, x < 0 → P ⊤ x)
-    (top_bot : P ⊤ ⊥) (pos_bot : ∀ x : ℝ, 0 < x → P x ⊥) (coe_coe : ∀ x y : ℝ, P x y)
-    (zero_bot : P 0 ⊥) (neg_bot : ∀ x : ℝ, x < 0 → P x ⊥) (bot_bot : P ⊥ ⊥) : ∀ x y, P x y :=
+theorem induction₂_symm {P : EReal → EReal → Prop} (symm : ∀ {x y}, P x y → P y x)
+    (top_top : P ⊤ ⊤) (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0)
+    (top_neg : ∀ x : ℝ, x < 0 → P ⊤ x) (top_bot : P ⊤ ⊥) (pos_bot : ∀ x : ℝ, 0 < x → P x ⊥)
+    (coe_coe : ∀ x y : ℝ, P x y) (zero_bot : P 0 ⊥) (neg_bot : ∀ x : ℝ, x < 0 → P x ⊥)
+    (bot_bot : P ⊥ ⊥) : ∀ x y, P x y :=
   @induction₂ P top_top top_pos top_zero top_neg top_bot (fun _ h => symm <| top_pos _ h)
     pos_bot (symm top_zero) coe_coe zero_bot (fun _ h => symm <| top_neg _ h) neg_bot (symm top_bot)
     (fun _ h => symm <| pos_bot _ h) (symm zero_bot) (fun _ h => symm <| neg_bot _ h) bot_bot
@@ -219,7 +217,7 @@ record more basic properties of multiplication.
 -/
 
 protected theorem mul_comm (x y : EReal) : x * y = y * x := by
-  induction' x using EReal.rec with x <;> induction' y using EReal.rec with y <;>
+  induction' x with x <;> induction' y with y <;>
     try { rfl }
   rw [← coe_mul, ← coe_mul, mul_comm]
 #align ereal.mul_comm EReal.mul_comm
@@ -244,7 +242,7 @@ instance : MulZeroOneClass EReal where
 
 instance canLift : CanLift EReal ℝ (↑) fun r => r ≠ ⊤ ∧ r ≠ ⊥ where
   prf x hx := by
-    induction x using EReal.rec
+    induction x
     · simp at hx
     · simp
     · simp at hx
@@ -344,11 +342,11 @@ theorem top_ne_zero : (⊤ : EReal) ≠ 0 :=
 
 theorem range_coe : range Real.toEReal = {⊥, ⊤}ᶜ := by
   ext x
-  induction x using EReal.rec <;> simp
+  induction x <;> simp
 
 theorem range_coe_eq_Ioo : range Real.toEReal = Ioo ⊥ ⊤ := by
   ext x
-  induction x using EReal.rec <;> simp
+  induction x <;> simp
 
 @[simp, norm_cast]
 theorem coe_add (x y : ℝ) : (↑(x + y) : EReal) = x + y :=
@@ -444,6 +442,144 @@ theorem eq_bot_iff_forall_lt (x : EReal) : x = ⊥ ↔ ∀ y : ℝ, x < (y : ERe
     intro h
     exact ⟨x.toReal, coe_toReal_le h⟩
 #align ereal.eq_bot_iff_forall_lt EReal.eq_bot_iff_forall_lt
+
+/-! ### Intervals and coercion from reals -/
+
+lemma exists_between_coe_real {x z : EReal} (h : x < z) : ∃ y : ℝ, x < y ∧ y < z := by
+  obtain ⟨a, ha₁, ha₂⟩ := exists_between h
+  induction a with
+  | h_bot => exact (not_lt_bot ha₁).elim
+  | h_real a₀ => exact ⟨a₀, ha₁, ha₂⟩
+  | h_top => exact (not_top_lt ha₂).elim
+
+@[simp]
+lemma image_coe_Icc (x y : ℝ) : Real.toEReal '' Icc x y = Icc ↑x ↑y := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Icc, WithBot.image_coe_Icc]
+  rfl
+
+@[simp]
+lemma image_coe_Ico (x y : ℝ) : Real.toEReal '' Ico x y = Ico ↑x ↑y := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Ico, WithBot.image_coe_Ico]
+  rfl
+
+@[simp]
+lemma image_coe_Ici (x : ℝ) : Real.toEReal '' Ici x = Ico ↑x ⊤ := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Ici, WithBot.image_coe_Ico]
+  rfl
+
+@[simp]
+lemma image_coe_Ioc (x y : ℝ) : Real.toEReal '' Ioc x y = Ioc ↑x ↑y := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Ioc, WithBot.image_coe_Ioc]
+  rfl
+
+@[simp]
+lemma image_coe_Ioo (x y : ℝ) : Real.toEReal '' Ioo x y = Ioo ↑x ↑y := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Ioo, WithBot.image_coe_Ioo]
+  rfl
+
+@[simp]
+lemma image_coe_Ioi (x : ℝ) : Real.toEReal '' Ioi x = Ioo ↑x ⊤ := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Ioi, WithBot.image_coe_Ioo]
+  rfl
+
+@[simp]
+lemma image_coe_Iic (x : ℝ) : Real.toEReal '' Iic x = Ioc ⊥ ↑x := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Iic, WithBot.image_coe_Iic]
+  rfl
+
+@[simp]
+lemma image_coe_Iio (x : ℝ) : Real.toEReal '' Iio x = Ioo ⊥ ↑x := by
+  refine (image_comp WithBot.some WithTop.some _).trans ?_
+  rw [WithTop.image_coe_Iio, WithBot.image_coe_Iio]
+  rfl
+
+@[simp]
+lemma preimage_coe_Ici (x : ℝ) : Real.toEReal ⁻¹' Ici x = Ici x := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Ici (WithBot.some (WithTop.some x))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ici, WithTop.preimage_coe_Ici]
+
+@[simp]
+lemma preimage_coe_Ioi (x : ℝ) : Real.toEReal ⁻¹' Ioi x = Ioi x := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Ioi (WithBot.some (WithTop.some x))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ioi, WithTop.preimage_coe_Ioi]
+
+@[simp]
+lemma preimage_coe_Ioi_bot : Real.toEReal ⁻¹' Ioi ⊥ = univ := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Ioi ⊥) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Ioi_bot, preimage_univ]
+
+@[simp]
+lemma preimage_coe_Iic (y : ℝ) : Real.toEReal ⁻¹' Iic y = Iic y := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Iic (WithBot.some (WithTop.some y))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Iic, WithTop.preimage_coe_Iic]
+
+@[simp]
+lemma preimage_coe_Iio (y : ℝ) : Real.toEReal ⁻¹' Iio y = Iio y := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Iio (WithBot.some (WithTop.some y))) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio]
+
+@[simp]
+lemma preimage_coe_Iio_top : Real.toEReal ⁻¹' Iio ⊤ = univ := by
+  change (WithBot.some ∘ WithTop.some) ⁻¹' (Iio (WithBot.some ⊤)) = _
+  refine preimage_comp.trans ?_
+  simp only [WithBot.preimage_coe_Iio, WithTop.preimage_coe_Iio_top]
+
+@[simp]
+lemma preimage_coe_Icc (x y : ℝ) : Real.toEReal ⁻¹' Icc x y = Icc x y := by
+  simp_rw [← Ici_inter_Iic]
+  simp
+
+@[simp]
+lemma preimage_coe_Ico (x y : ℝ) : Real.toEReal ⁻¹' Ico x y = Ico x y := by
+  simp_rw [← Ici_inter_Iio]
+  simp
+
+@[simp]
+lemma preimage_coe_Ioc (x y : ℝ) : Real.toEReal ⁻¹' Ioc x y = Ioc x y := by
+  simp_rw [← Ioi_inter_Iic]
+  simp
+
+@[simp]
+lemma preimage_coe_Ioo (x y : ℝ) : Real.toEReal ⁻¹' Ioo x y = Ioo x y := by
+  simp_rw [← Ioi_inter_Iio]
+  simp
+
+@[simp]
+lemma preimage_coe_Ico_top (x : ℝ) : Real.toEReal ⁻¹' Ico x ⊤ = Ici x := by
+  rw [← Ici_inter_Iio]
+  simp
+
+@[simp]
+lemma preimage_coe_Ioo_top (x : ℝ) : Real.toEReal ⁻¹' Ioo x ⊤ = Ioi x := by
+  rw [← Ioi_inter_Iio]
+  simp
+
+@[simp]
+lemma preimage_coe_Ioc_bot (y : ℝ) : Real.toEReal ⁻¹' Ioc ⊥ y = Iic y := by
+  rw [← Ioi_inter_Iic]
+  simp
+
+@[simp]
+lemma preimage_coe_Ioo_bot (y : ℝ) : Real.toEReal ⁻¹' Ioo ⊥ y = Iio y := by
+  rw [← Ioi_inter_Iio]
+  simp
+
+@[simp]
+lemma preimage_coe_Ioo_bot_top : Real.toEReal ⁻¹' Ioo ⊥ ⊤ = univ := by
+  rw [← Ioi_inter_Iio]
+  simp
 
 /-! ### ennreal coercion -/
 
@@ -684,7 +820,7 @@ theorem addLECancellable_coe (x : ℝ) : AddLECancellable (x : EReal)
   | (y : ℝ), (z : ℝ), h => by
     simpa only [← coe_add, EReal.coe_le_coe_iff, add_le_add_iff_left] using h
 
--- porting note: todo: add `MulLECancellable.strictMono*` etc
+-- Porting note (#11215): TODO: add `MulLECancellable.strictMono*` etc
 theorem add_lt_add_right_coe {x y : EReal} (h : x < y) (z : ℝ) : x + z < y + z :=
   not_le.1 <| mt (addLECancellable_coe z).add_le_add_iff_right.1 h.not_le
 #align ereal.add_lt_add_right_coe EReal.add_lt_add_right_coe
@@ -715,7 +851,7 @@ theorem add_lt_add_of_lt_of_le' {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hb
 assumptions. -/
 theorem add_lt_add_of_lt_of_le {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hz : z ≠ ⊥)
     (ht : t ≠ ⊤) : x + z < y + t :=
-  add_lt_add_of_lt_of_le' h h' (ne_bot_of_le_ne_bot hz h') <| fun ht' => (ht ht').elim
+  add_lt_add_of_lt_of_le' h h' (ne_bot_of_le_ne_bot hz h') fun ht' => (ht ht').elim
 #align ereal.add_lt_add_of_lt_of_le EReal.add_lt_add_of_lt_of_le
 
 theorem add_lt_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y < ⊤ := by
@@ -745,6 +881,7 @@ instance : Neg EReal := ⟨EReal.neg⟩
 
 instance : SubNegZeroMonoid EReal where
   neg_zero := congr_arg Real.toEReal neg_zero
+  zsmul := zsmulRec
 
 @[simp]
 theorem neg_top : -(⊤ : EReal) = ⊥ :=
@@ -805,7 +942,7 @@ theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
 @[simp] theorem neg_le_neg_iff {a b : EReal} : -a ≤ -b ↔ b ≤ a := neg_strictAnti.le_iff_le
 #align ereal.neg_le_neg_iff EReal.neg_le_neg_iff
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 @[simp] theorem neg_lt_neg_iff {a b : EReal} : -a < -b ↔ b < a := neg_strictAnti.lt_iff_lt
 
 /-- `-a ≤ b ↔ -b ≤ a` on `EReal`. -/
@@ -1021,7 +1158,8 @@ infinite. This version eliminates some cases by assuming that `P` is symmetric a
 `P (-x) y` for all `x`, `y`. -/
 @[elab_as_elim]
 theorem induction₂_symm_neg {P : EReal → EReal → Prop}
-    (symm : Symmetric P) (neg_left : ∀ {x y}, P x y → P (-x) y) (top_top : P ⊤ ⊤)
+    (symm : ∀ {x y}, P x y → P y x)
+    (neg_left : ∀ {x y}, P x y → P (-x) y) (top_top : P ⊤ ⊤)
     (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0) (coe_coe : ∀ x y : ℝ, P x y) :
     ∀ x y, P x y :=
   have neg_right : ∀ {x y}, P x y → P x (-y) := fun h => symm <| neg_left <| symm h
@@ -1053,7 +1191,7 @@ instance : HasDistribNeg EReal where
 
 /-! ### Absolute value -/
 
--- porting note: todo: use `Real.nnabs` for the case `(x : ℝ)`
+-- Porting note (#11215): TODO: use `Real.nnabs` for the case `(x : ℝ)`
 /-- The absolute value from `EReal` to `ℝ≥0∞`, mapping `⊥` and `⊤` to `⊤` and
 a real `x` to `|x|`. -/
 protected def abs : EReal → ℝ≥0∞
@@ -1077,7 +1215,7 @@ theorem abs_coe_lt_top (x : ℝ) : (x : EReal).abs < ⊤ :=
 
 @[simp]
 theorem abs_eq_zero_iff {x : EReal} : x.abs = 0 ↔ x = 0 := by
-  induction x using EReal.rec
+  induction x
   · simp only [abs_bot, ENNReal.top_ne_zero, bot_ne_zero]
   · simp only [abs_def, coe_eq_zero, ENNReal.ofReal_eq_zero, abs_nonpos_iff]
   · simp only [abs_top, ENNReal.top_ne_zero, top_ne_zero]
@@ -1107,7 +1245,7 @@ theorem abs_mul (x y : EReal) : (x * y).abs = x.abs * y.abs := by
   | coe_coe => simp only [← coe_mul, abs_def, _root_.abs_mul, ENNReal.ofReal_mul (abs_nonneg _)]
   | top_pos _ h =>
     rw [top_mul_coe_of_pos h, abs_top, ENNReal.top_mul]
-    rw [Ne.def, abs_eq_zero_iff, coe_eq_zero]
+    rw [Ne, abs_eq_zero_iff, coe_eq_zero]
     exact h.ne'
   | neg_left h => rwa [neg_mul, EReal.abs_neg, EReal.abs_neg]
 #align ereal.abs_mul EReal.abs_mul

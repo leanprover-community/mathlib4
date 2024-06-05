@@ -2,17 +2,15 @@
 Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-
-notation, basic datatypes and type classes
 -/
 import Mathlib.Mathport.Rename
-import Std.Classes.SetNotation
-import Std.Classes.Dvd
-import Std.Tactic.Relation.Rfl
-import Std.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
 
-/-! ### alignments from lean 3 `init.core` -/
+/-!
+# Notation, basic datatypes and type classes
+
+This file contains alignments from lean 3 `init.core`.
+-/
 
 set_option autoImplicit true
 
@@ -57,7 +55,6 @@ set_option autoImplicit true
 -- TODO
 -- attribute [elab_as_elim, subst] Eq.subst
 
-attribute [refl] Eq.refl
 attribute [trans] Eq.trans
 attribute [symm] Eq.symm
 
@@ -130,10 +127,7 @@ def PProd.mk.injArrow {α : Type u} {β : Type v} {x₁ : α} {y₁ : β} {x₂ 
 #align has_lt.lt LT.lt
 #align has_append Append
 
-@[deprecated AndThen]
-class AndThen' (α : Type u) (β : Type v) (σ : outParam <| Type w) where
-  andthen : α → β → σ
-#align has_andthen AndThen'
+#align has_andthen AndThen
 
 #align has_union Union
 #align has_equiv HasEquivₓ -- universe levels don't match
@@ -159,15 +153,6 @@ class AndThen' (α : Type u) (β : Type v) (σ : outParam <| Type w) where
 
 attribute [simp] insert_emptyc_eq
 
-@[deprecated] def Std.Priority.default : Nat := 1000
-@[deprecated] def Std.Priority.max : Nat := 4294967295
-set_option linter.deprecated false in
-@[deprecated] protected def Nat.prio := Std.Priority.default + 100
-@[deprecated] def Std.Prec.max : Nat := 1024
-@[deprecated] def Std.Prec.arrow : Nat := 25
-set_option linter.deprecated false in
-@[deprecated] def Std.Prec.maxPlus : Nat := Std.Prec.max + 10
-
 #align has_sizeof SizeOf
 #align has_sizeof.sizeof SizeOf.sizeOf
 #align sizeof SizeOf.sizeOf
@@ -182,13 +167,6 @@ def K (a : α) (_b : β) := a
 def S (x : α → β → γ) (y : α → β) (z : α) := x z (y z)
 
 end Combinator
-
-@[deprecated] inductive BinTree (α : Type u)
-  | Empty : BinTree α
-  | leaf (val : α) : BinTree α
-  | node (left right : BinTree α) : BinTree α
-
-attribute [elab_without_expected_type] BinTree.node BinTree.leaf
 
 #align function.const_apply Function.const_apply
 #align function.comp_apply Function.comp_apply

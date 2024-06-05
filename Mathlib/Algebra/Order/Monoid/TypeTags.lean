@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.TypeTags
-import Mathlib.Algebra.Order.Monoid.Cancel.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 #align_import algebra.order.monoid.type_tags from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
 
 /-! # Ordered monoid structures on `Multiplicative α` and `Additive α`. -/
 
-set_option autoImplicit true
+variable {α : Type*}
 
 instance : ∀ [LE α], LE (Multiplicative α) :=
   fun {inst} => inst

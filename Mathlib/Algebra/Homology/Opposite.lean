@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2022 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Amelia Livingston
+Authors: Johan Commelin, Amelia Livingston, Joël Riou
 -/
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Abelian.Homology
 import Mathlib.Algebra.Homology.Additive
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 #align_import algebra.homology.opposite from "leanprover-community/mathlib"@"8c75ef3517d4106e89fe524e6281d0b0545f47fc"
 
@@ -159,7 +160,7 @@ def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInve
           (Opposite.unop X).op.unopSymm ≅ unop X).op)
     (by
       intro X Y f
-      refine' Quiver.Hom.unop_inj _
+      refine Quiver.Hom.unop_inj ?_
       ext x
       simp only [Quiver.Hom.unop_op, Functor.id_map, Iso.op_hom, Functor.comp_map, unop_comp,
         comp_f, Hom.isoOfComponents_hom_f]
@@ -215,7 +216,7 @@ def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c 
           (Opposite.unop X).op.unopSymm ≅ unop X).op)
     (by
       intro X Y f
-      refine' Quiver.Hom.unop_inj _
+      refine Quiver.Hom.unop_inj ?_
       ext x
       simp only [Quiver.Hom.unop_op, Functor.id_map, Iso.op_hom, Functor.comp_map, unop_comp,
         comp_f, Hom.isoOfComponents_hom_f]
@@ -250,6 +251,26 @@ instance opFunctor_additive : (@opFunctor ι V _ c _).Additive where
 
 instance unopFunctor_additive : (@unopFunctor ι V _ c _).Additive where
 #align homological_complex.unop_functor_additive HomologicalComplex.unopFunctor_additive
+
+instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
+    K.op.HasHomology i :=
+  (inferInstance : (K.sc i).op.HasHomology)
+
+instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
+    K.unop.HasHomology i :=
+  (inferInstance : (K.sc i).unop.HasHomology)
+
+/-- If `K` is a homological complex, then the homology of `K.op` identifies to
+the opposite of the homology of `K`. -/
+def homologyOp (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
+    K.op.homology i ≅ op (K.homology i) :=
+  (K.sc i).homologyOpIso
+
+/-- If `K` is a homological complex in the opposite category,
+then the homology of `K.unop` identifies to the opposite of the homology of `K`. -/
+def homologyUnop (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
+    K.unop.homology i ≅ unop (K.homology i) :=
+  (K.unop.homologyOp i).unop
 
 end
 

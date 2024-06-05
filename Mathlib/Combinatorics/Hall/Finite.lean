@@ -52,7 +52,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
     (s' : Finset { x' : ι | x' ≠ x }) : s'.card ≤ (s'.biUnion fun x' => (t x').erase a).card := by
   haveI := Classical.decEq ι
   specialize ha (s'.image fun z => z.1)
-  rw [Nonempty.image_iff, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
+  rw [image_nonempty, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
   by_cases he : s'.Nonempty
   · have ha' : s'.card < (s'.biUnion fun x => t x).card := by
       convert ha he fun h => by simpa [← h] using mem_univ x using 2
@@ -62,7 +62,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
     rw [← erase_biUnion]
     by_cases hb : a ∈ s'.biUnion fun x => t x
     · rw [card_erase_of_mem hb]
-      exact Nat.le_pred_of_lt ha'
+      exact Nat.le_sub_one_of_lt ha'
     · rw [erase_eq_of_not_mem hb]
       exact Nat.le_of_lt ha'
   · rw [nonempty_iff_ne_empty, not_not] at he
@@ -106,11 +106,11 @@ theorem hall_hard_inductive_step_A {n : ℕ} (hn : Fintype.card ι = n + 1)
 
   rcases ih t' card_ι'.le (hall_cond_of_erase y ha) with ⟨f', hfinj, hfr⟩
   -- Extend the resulting function.
-  refine' ⟨fun z => if h : z = x then y else f' ⟨z, h⟩, _, _⟩
+  refine ⟨fun z => if h : z = x then y else f' ⟨z, h⟩, ?_, ?_⟩
   · rintro z₁ z₂
     have key : ∀ {x}, y ≠ f' x := by
       intro x h
-      simpa [← h] using hfr x
+      simpa [t', ← h] using hfr x
     by_cases h₁ : z₁ = x <;> by_cases h₂ : z₂ = x <;> simp [h₁, h₂, hfinj.eq_iff, key, key.symm]
   · intro z
     simp only [ne_eq, Set.mem_setOf_eq]
@@ -143,11 +143,11 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     intro x hx hc _
     exact absurd hx hc
   have : s'.card = (s ∪ s'.image fun z => z.1).card - s.card := by
-    simp [disj, card_image_of_injective _ Subtype.coe_injective]
+    simp [disj, card_image_of_injective _ Subtype.coe_injective, Nat.add_sub_cancel_left]
   rw [this, hus]
-  refine' (tsub_le_tsub_right (ht _) _).trans _
+  refine (Nat.sub_le_sub_right (ht _) _).trans ?_
   rw [← card_sdiff]
-  · refine' (card_le_of_subset _).trans le_rfl
+  · refine (card_le_card ?_).trans le_rfl
     intro t
     simp only [mem_biUnion, mem_sdiff, not_exists, mem_image, and_imp, mem_union, exists_and_right,
       exists_imp]
@@ -187,7 +187,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
   set ι'' := (s : Set ι)ᶜ
   let t'' : ι'' → Finset α := fun a'' => t a'' \ s.biUnion t
   have card_ι''_le : Fintype.card ι'' ≤ n := by
-    simp_rw [← Nat.lt_succ_iff, ← hn, ← Finset.coe_compl, coe_sort_coe]
+    simp_rw [ι'', ← Nat.lt_succ_iff, ← hn, ← Finset.coe_compl, coe_sort_coe]
     rwa [Fintype.card_coe, card_compl_lt_iff_nonempty]
   rcases ih t'' card_ι''_le (hall_cond_of_compl hus ht) with ⟨f'', hf'', hsf''⟩
   -- Put them together
@@ -206,8 +206,8 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     apply f''_not_mem_biUnion x' hx''
     rw [← h]
     apply f'_mem_biUnion x
-  refine' ⟨fun x => if h : x ∈ s then f' ⟨x, h⟩ else f'' ⟨x, h⟩, _, _⟩
-  · refine' hf'.dite _ hf'' (@fun x x' => im_disj x x' _ _)
+  refine ⟨fun x => if h : x ∈ s then f' ⟨x, h⟩ else f'' ⟨x, h⟩, ?_, ?_⟩
+  · refine hf'.dite _ hf'' (@fun x x' => im_disj x x' _ _)
   · intro x
     simp only [of_eq_true]
     split_ifs with h
@@ -236,7 +236,7 @@ theorem hall_hard_inductive (ht : ∀ s : Finset ι, s.card ≤ (s.biUnion t).ca
       intro ι' _ _ hι' ht'
       exact ih _ (Nat.lt_succ_of_le hι') ht' _ rfl
     by_cases h : ∀ s : Finset ι, s.Nonempty → s ≠ univ → s.card < (s.biUnion t).card
-    · refine' hall_hard_inductive_step_A hn ht (@fun ι' => ih' ι') h
+    · refine hall_hard_inductive_step_A hn ht (@fun ι' => ih' ι') h
     · push_neg at h
       rcases h with ⟨s, sne, snu, sle⟩
       exact hall_hard_inductive_step_B hn ht (@fun ι' => ih' ι')
@@ -261,7 +261,7 @@ theorem Finset.all_card_le_biUnion_card_iff_existsInjective' {ι α : Type*} [Fi
   · exact HallMarriageTheorem.hall_hard_inductive
   · rintro ⟨f, hf₁, hf₂⟩ s
     rw [← card_image_of_injective s hf₁]
-    apply card_le_of_subset
+    apply card_le_card
     intro
     rw [mem_image, mem_biUnion]
     rintro ⟨x, hx, rfl⟩

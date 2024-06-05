@@ -52,6 +52,8 @@ instance : AddCommGroup (S₁ ⟶ S₂) where
   add_left_neg := fun a => by ext <;> apply add_left_neg
   add_comm := fun a b => by ext <;> apply add_comm
   sub_eq_add_neg := fun a b => by ext <;> apply sub_eq_add_neg
+  nsmul := nsmulRec
+  zsmul := zsmulRec
 
 @[simp] lemma add_τ₁ (φ φ' : S₁ ⟶ S₂) : (φ + φ').τ₁ = φ.τ₁ + φ'.τ₁ := rfl
 @[simp] lemma add_τ₂ (φ φ' : S₁ ⟶ S₂) : (φ + φ').τ₂ = φ.τ₂ + φ'.τ₂ := rfl
@@ -140,7 +142,7 @@ section
 variable [S₁.HasLeftHomology] [S₂.HasLeftHomology]
 
 @[simp]
-lemma leftHomologyMap_neg : leftHomologyMap (-φ)  = -leftHomologyMap φ :=
+lemma leftHomologyMap_neg : leftHomologyMap (-φ) = -leftHomologyMap φ :=
   leftHomologyMap'_neg _ _
 
 @[simp]
@@ -148,7 +150,7 @@ lemma cyclesMap_neg : cyclesMap (-φ) = -cyclesMap φ :=
   cyclesMap'_neg _ _
 
 @[simp]
-lemma leftHomologyMap_add : leftHomologyMap (φ + φ')  = leftHomologyMap φ + leftHomologyMap φ' :=
+lemma leftHomologyMap_add : leftHomologyMap (φ + φ') = leftHomologyMap φ + leftHomologyMap φ' :=
   leftHomologyMap'_add _ _
 
 @[simp]
@@ -249,7 +251,7 @@ section
 variable [S₁.HasRightHomology] [S₂.HasRightHomology]
 
 @[simp]
-lemma rightHomologyMap_neg : rightHomologyMap (-φ)  = -rightHomologyMap φ :=
+lemma rightHomologyMap_neg : rightHomologyMap (-φ) = -rightHomologyMap φ :=
   rightHomologyMap'_neg _ _
 
 @[simp]
@@ -258,7 +260,7 @@ lemma opcyclesMap_neg : opcyclesMap (-φ) = -opcyclesMap φ :=
 
 @[simp]
 lemma rightHomologyMap_add :
-    rightHomologyMap (φ + φ')  = rightHomologyMap φ + rightHomologyMap φ' :=
+    rightHomologyMap (φ + φ') = rightHomologyMap φ + rightHomologyMap φ' :=
   rightHomologyMap'_add _ _
 
 @[simp]
@@ -332,11 +334,11 @@ section
 variable [S₁.HasHomology] [S₂.HasHomology]
 
 @[simp]
-lemma homologyMap_neg : homologyMap (-φ)  = -homologyMap φ :=
+lemma homologyMap_neg : homologyMap (-φ) = -homologyMap φ :=
   homologyMap'_neg _ _
 
 @[simp]
-lemma homologyMap_add : homologyMap (φ + φ')  = homologyMap φ + homologyMap φ' :=
+lemma homologyMap_add : homologyMap (φ + φ') = homologyMap φ + homologyMap φ' :=
   homologyMap'_add _ _
 
 @[simp]
@@ -438,7 +440,7 @@ def trans (h₁₂ : Homotopy φ₁ φ₂) (h₂₃ : Homotopy φ₂ φ₃) : Ho
   comm₂ := by rw [h₁₂.comm₂, h₂₃.comm₂, comp_add, add_comp]; abel
   comm₃ := by rw [h₁₂.comm₃, h₂₃.comm₃, add_comp]; abel
 
-/-- Homotopy between morphisms of short complexes is compatible withe addition. -/
+/-- Homotopy between morphisms of short complexes is compatible with addition. -/
 @[simps]
 def add (h : Homotopy φ₁ φ₂) (h' : Homotopy φ₃ φ₄) : Homotopy (φ₁ + φ₃) (φ₂ + φ₄) where
   h₀ := h.h₀ + h'.h₀
@@ -449,7 +451,7 @@ def add (h : Homotopy φ₁ φ₂) (h' : Homotopy φ₃ φ₄) : Homotopy (φ₁
   comm₂ := by rw [add_τ₂, add_τ₂, h.comm₂, h'.comm₂, comp_add, add_comp]; abel
   comm₃ := by rw [add_τ₃, add_τ₃, h.comm₃, h'.comm₃, add_comp]; abel
 
-/-- Homotopy between morphisms of short complexes is compatible withe substraction. -/
+/-- Homotopy between morphisms of short complexes is compatible with substraction. -/
 @[simps]
 def sub (h : Homotopy φ₁ φ₂) (h' : Homotopy φ₃ φ₄) : Homotopy (φ₁ - φ₃) (φ₂ - φ₄) where
   h₀ := h.h₀ - h'.h₀
@@ -557,6 +559,168 @@ def ofNullHomotopic (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f =
   comm₃ := by rw [nullHomotopic_τ₃, zero_τ₃, add_zero]; abel
 
 end Homotopy
+
+variable {S₁ S₂}
+
+/-- The left homology map data expressing that null homotopic maps induce the zero
+morphism in left homology. -/
+def LeftHomologyMapData.ofNullHomotopic
+    (H₁ : S₁.LeftHomologyData) (H₂ : S₂.LeftHomologyData)
+    (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
+    (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
+    LeftHomologyMapData (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) H₁ H₂ where
+  φK := H₂.liftK (H₁.i ≫ h₁ ≫ S₂.f) (by simp)
+  φH := 0
+  commf' := by
+    rw [← cancel_mono H₂.i, assoc, LeftHomologyData.liftK_i, LeftHomologyData.f'_i_assoc,
+      nullHomotopic_τ₁, add_comp, add_comp, assoc, assoc, assoc, LeftHomologyData.f'_i,
+      self_eq_add_left, h₀_f]
+  commπ := by
+    rw [H₂.liftK_π_eq_zero_of_boundary (H₁.i ≫ h₁ ≫ S₂.f) (H₁.i ≫ h₁) (by rw [assoc]), comp_zero]
+
+/-- The right homology map data expressing that null homotopic maps induce the zero
+morphism in right homology. -/
+def RightHomologyMapData.ofNullHomotopic
+    (H₁ : S₁.RightHomologyData) (H₂ : S₂.RightHomologyData)
+    (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
+    (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
+    RightHomologyMapData (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) H₁ H₂ where
+  φQ := H₁.descQ (S₁.g ≫ h₂ ≫ H₂.p) (by simp)
+  φH := 0
+  commg' := by
+    rw [← cancel_epi H₁.p, RightHomologyData.p_descQ_assoc, RightHomologyData.p_g'_assoc,
+      nullHomotopic_τ₃, comp_add, assoc, assoc, RightHomologyData.p_g', g_h₃, add_zero]
+  commι := by
+    rw [H₁.ι_descQ_eq_zero_of_boundary (S₁.g ≫ h₂ ≫ H₂.p) (h₂ ≫ H₂.p) rfl, zero_comp]
+
+@[simp]
+lemma leftHomologyMap'_nullHomotopic
+    (H₁ : S₁.LeftHomologyData) (H₂ : S₂.LeftHomologyData)
+    (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
+    (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
+    leftHomologyMap' (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) H₁ H₂ = 0 :=
+  (LeftHomologyMapData.ofNullHomotopic H₁ H₂ h₀ h₀_f h₁ h₂ h₃ g_h₃).leftHomologyMap'_eq
+
+@[simp]
+lemma rightHomologyMap'_nullHomotopic
+    (H₁ : S₁.RightHomologyData) (H₂ : S₂.RightHomologyData)
+    (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
+    (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
+    rightHomologyMap' (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) H₁ H₂ = 0 :=
+  (RightHomologyMapData.ofNullHomotopic H₁ H₂ h₀ h₀_f h₁ h₂ h₃ g_h₃).rightHomologyMap'_eq
+
+@[simp]
+lemma homologyMap'_nullHomotopic
+    (H₁ : S₁.HomologyData) (H₂ : S₂.HomologyData)
+    (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
+    (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
+    homologyMap' (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) H₁ H₂ = 0 := by
+  apply leftHomologyMap'_nullHomotopic
+
+variable (S₁ S₂)
+
+@[simp]
+lemma leftHomologyMap_nullHomotopic [S₁.HasLeftHomology] [S₂.HasLeftHomology]
+    (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
+    (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
+    leftHomologyMap (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) = 0 := by
+  apply leftHomologyMap'_nullHomotopic
+
+@[simp]
+lemma rightHomologyMap_nullHomotopic [S₁.HasRightHomology] [S₂.HasRightHomology]
+    (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
+    (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
+    rightHomologyMap (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) = 0 := by
+  apply rightHomologyMap'_nullHomotopic
+
+@[simp]
+lemma homologyMap_nullHomotopic [S₁.HasHomology] [S₂.HasHomology]
+    (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
+    (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
+    homologyMap (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) = 0 := by
+  apply homologyMap'_nullHomotopic
+
+namespace Homotopy
+
+variable {φ₁ φ₂ S₁ S₂}
+
+lemma leftHomologyMap'_congr (h : Homotopy φ₁ φ₂) (h₁ : S₁.LeftHomologyData)
+    (h₂ : S₂.LeftHomologyData) : leftHomologyMap' φ₁ h₁ h₂ = leftHomologyMap' φ₂ h₁ h₂ := by
+  rw [h.eq_add_nullHomotopic, leftHomologyMap'_add, leftHomologyMap'_nullHomotopic, add_zero]
+
+lemma rightHomologyMap'_congr (h : Homotopy φ₁ φ₂) (h₁ : S₁.RightHomologyData)
+    (h₂ : S₂.RightHomologyData) : rightHomologyMap' φ₁ h₁ h₂ = rightHomologyMap' φ₂ h₁ h₂ := by
+  rw [h.eq_add_nullHomotopic, rightHomologyMap'_add, rightHomologyMap'_nullHomotopic, add_zero]
+
+lemma homologyMap'_congr (h : Homotopy φ₁ φ₂) (h₁ : S₁.HomologyData)
+    (h₂ : S₂.HomologyData) : homologyMap' φ₁ h₁ h₂ = homologyMap' φ₂ h₁ h₂ := by
+  rw [h.eq_add_nullHomotopic, homologyMap'_add, homologyMap'_nullHomotopic, add_zero]
+
+lemma leftHomologyMap_congr (h : Homotopy φ₁ φ₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    leftHomologyMap φ₁ = leftHomologyMap φ₂ :=
+  h.leftHomologyMap'_congr _ _
+
+lemma rightHomologyMap_congr (h : Homotopy φ₁ φ₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    rightHomologyMap φ₁ = rightHomologyMap φ₂ :=
+  h.rightHomologyMap'_congr _ _
+
+lemma homologyMap_congr (h : Homotopy φ₁ φ₂) [S₁.HasHomology] [S₂.HasHomology] :
+    homologyMap φ₁ = homologyMap φ₂ :=
+  h.homologyMap'_congr _ _
+
+end Homotopy
+
+/-- An homotopy equivalence between two short complexes `S₁` and `S₂` consists
+of morphisms `hom : S₁ ⟶ S₂` and `inv : S₂ ⟶ S₁` such that both compositions
+`hom ≫ inv` and `inv ≫ hom` are homotopic to the identity. -/
+@[ext]
+structure HomotopyEquiv where
+  /-- the forward direction of a homotopy equivalence. -/
+  hom : S₁ ⟶ S₂
+  /-- the backwards direction of a homotopy equivalence. -/
+  inv : S₂ ⟶ S₁
+  /-- the composition of the two directions of a homotopy equivalence is
+  homotopic to the identity of the source -/
+  homotopyHomInvId : Homotopy (hom ≫ inv) (𝟙 S₁)
+  /-- the composition of the two directions of a homotopy equivalence is
+  homotopic to the identity of the target -/
+  homotopyInvHomId : Homotopy (inv ≫ hom) (𝟙 S₂)
+
+namespace HomotopyEquiv
+
+variable {S₁ S₂}
+
+/-- The homotopy equivalence from a short complex to itself that is induced
+by the identity. -/
+@[simps]
+def refl (S : ShortComplex C) : HomotopyEquiv S S where
+  hom := 𝟙 S
+  inv := 𝟙 S
+  homotopyHomInvId := Homotopy.ofEq (by simp)
+  homotopyInvHomId := Homotopy.ofEq (by simp)
+
+/-- The inverse of a homotopy equivalence. -/
+@[simps]
+def symm (e : HomotopyEquiv S₁ S₂) : HomotopyEquiv S₂ S₁ where
+  hom := e.inv
+  inv := e.hom
+  homotopyHomInvId := e.homotopyInvHomId
+  homotopyInvHomId := e.homotopyHomInvId
+
+/-- The composition of homotopy equivalences. -/
+@[simps]
+def trans (e : HomotopyEquiv S₁ S₂) (e' : HomotopyEquiv S₂ S₃) :
+    HomotopyEquiv S₁ S₃ where
+  hom := e.hom ≫ e'.hom
+  inv := e'.inv ≫ e.inv
+  homotopyHomInvId := (Homotopy.ofEq (by simp)).trans
+    (((e'.homotopyHomInvId.compRight e.inv).compLeft e.hom).trans
+      ((Homotopy.ofEq (by simp)).trans e.homotopyHomInvId))
+  homotopyInvHomId := (Homotopy.ofEq (by simp)).trans
+    (((e.homotopyInvHomId.compRight e'.hom).compLeft e'.inv).trans
+      ((Homotopy.ofEq (by simp)).trans e'.homotopyInvHomId))
+
+end HomotopyEquiv
 
 end Homotopy
 

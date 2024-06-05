@@ -125,7 +125,7 @@ The preferred way of setting this up is
 -/
 instance RestrictScalars.opModule [Module Sᵐᵒᵖ M] : Module Rᵐᵒᵖ (RestrictScalars R S M) :=
   letI : Module Sᵐᵒᵖ (RestrictScalars R S M) := ‹Module Sᵐᵒᵖ M›
-  Module.compHom M (RingHom.op $ algebraMap R S)
+  Module.compHom M (RingHom.op <| algebraMap R S)
 #align restrict_scalars.op_module RestrictScalars.opModule
 
 instance RestrictScalars.isCentralScalar [Module S M] [Module Sᵐᵒᵖ M] [IsCentralScalar S M] :
@@ -217,8 +217,8 @@ theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
 instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) :=
   { (algebraMap S A).comp (algebraMap R S) with
     smul := (· • ·)
-    commutes' := fun _ _ ↦ Algebra.commutes' _ _
-    smul_def' := fun _ _ ↦ Algebra.smul_def' _ _ }
+    commutes' := fun _ _ ↦ Algebra.commutes' (A := A) _ _
+    smul_def' := fun _ _ ↦ Algebra.smul_def' (A := A) _ _ }
 
 @[simp]
 theorem RestrictScalars.ringEquiv_algebraMap (r : R) :

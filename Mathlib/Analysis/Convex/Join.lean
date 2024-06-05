@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Combination
+import Mathlib.Analysis.Convex.Hull
 
 #align_import analysis.convex.join from "leanprover-community/mathlib"@"951bf1d9e98a2042979ced62c0620bcfb3587cf8"
 
@@ -17,8 +17,6 @@ convex hulls of finite sets.
 
 
 open Set
-
-open BigOperators
 
 variable {ι : Sort*} {𝕜 E : Type*}
 
@@ -73,7 +71,7 @@ theorem convexJoin_singleton_right (s : Set E) (y : E) :
     convexJoin 𝕜 s {y} = ⋃ x ∈ s, segment 𝕜 x y := by simp [convexJoin]
 #align convex_join_singleton_right convexJoin_singleton_right
 
--- porting note: simp can prove it
+-- Porting note (#10618): simp can prove it
 theorem convexJoin_singletons (x : E) : convexJoin 𝕜 {x} {y} = segment 𝕜 x y := by simp
 #align convex_join_singletons convexJoin_singletons
 
@@ -136,24 +134,25 @@ theorem convexJoin_assoc_aux (s t u : Set E) :
   simp_rw [subset_def, mem_convexJoin]
   rintro _ ⟨z, ⟨x, hx, y, hy, a₁, b₁, ha₁, hb₁, hab₁, rfl⟩, z, hz, a₂, b₂, ha₂, hb₂, hab₂, rfl⟩
   obtain rfl | hb₂ := hb₂.eq_or_lt
-  · refine' ⟨x, hx, y, ⟨y, hy, z, hz, left_mem_segment 𝕜 _ _⟩, a₁, b₁, ha₁, hb₁, hab₁, _⟩
+  · refine ⟨x, hx, y, ⟨y, hy, z, hz, left_mem_segment 𝕜 _ _⟩, a₁, b₁, ha₁, hb₁, hab₁, ?_⟩
     rw [add_zero] at hab₂
     rw [hab₂, one_smul, zero_smul, add_zero]
   have ha₂b₁ : 0 ≤ a₂ * b₁ := mul_nonneg ha₂ hb₁
   have hab : 0 < a₂ * b₁ + b₂ := add_pos_of_nonneg_of_pos ha₂b₁ hb₂
-  refine'
+  refine
     ⟨x, hx, (a₂ * b₁ / (a₂ * b₁ + b₂)) • y + (b₂ / (a₂ * b₁ + b₂)) • z,
-      ⟨y, hy, z, hz, _, _, _, _, _, rfl⟩, a₂ * a₁, a₂ * b₁ + b₂, mul_nonneg ha₂ ha₁, hab.le, _, _⟩
+      ⟨y, hy, z, hz, _, _, ?_, ?_, ?_, rfl⟩,
+      a₂ * a₁, a₂ * b₁ + b₂, mul_nonneg ha₂ ha₁, hab.le, ?_, ?_⟩
   · exact div_nonneg ha₂b₁ hab.le
   · exact div_nonneg hb₂.le hab.le
   · rw [← add_div, div_self hab.ne']
   · rw [← add_assoc, ← mul_add, hab₁, mul_one, hab₂]
-  · simp_rw [smul_add, ← mul_smul, mul_div_cancel' _ hab.ne', add_assoc]
+  · simp_rw [smul_add, ← mul_smul, mul_div_cancel₀ _ hab.ne', add_assoc]
 #align convex_join_assoc_aux convexJoin_assoc_aux
 
 theorem convexJoin_assoc (s t u : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) u = convexJoin 𝕜 s (convexJoin 𝕜 t u) := by
-  refine' (convexJoin_assoc_aux _ _ _).antisymm _
+  refine (convexJoin_assoc_aux _ _ _).antisymm ?_
   simp_rw [convexJoin_comm s, convexJoin_comm _ u]
   exact convexJoin_assoc_aux _ _ _
 #align convex_join_assoc convexJoin_assoc
@@ -170,11 +169,11 @@ theorem convexJoin_right_comm (s t u : Set E) :
 
 theorem convexJoin_convexJoin_convexJoin_comm (s t u v : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) (convexJoin 𝕜 u v) =
-      convexJoin 𝕜 (convexJoin 𝕜 s u) (convexJoin 𝕜 t v) :=
-  by simp_rw [← convexJoin_assoc, convexJoin_right_comm]
+      convexJoin 𝕜 (convexJoin 𝕜 s u) (convexJoin 𝕜 t v) := by
+  simp_rw [← convexJoin_assoc, convexJoin_right_comm]
 #align convex_join_convex_join_convex_join_comm convexJoin_convexJoin_convexJoin_comm
 
--- porting note: moved 3 lemmas from below to golf
+-- Porting note: moved 3 lemmas from below to golf
 protected theorem Convex.convexJoin (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) :
     Convex 𝕜 (convexJoin 𝕜 s t) := by
   simp only [Convex, StarConvex, convexJoin, mem_iUnion]
@@ -223,6 +222,6 @@ theorem convexJoin_singleton_segment (a b c : E) :
   rw [← segment_same 𝕜, convexJoin_segments, insert_idem]
 #align convex_join_singleton_segment convexJoin_singleton_segment
 
--- porting note: moved 3 lemmas up to golf
+-- Porting note: moved 3 lemmas up to golf
 
 end LinearOrderedField

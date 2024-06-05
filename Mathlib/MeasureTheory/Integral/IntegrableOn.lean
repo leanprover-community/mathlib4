@@ -15,7 +15,7 @@ We define `IntegrableOn f s μ := Integrable f (μ.restrict s)` and prove theore
 
 Next we define a predicate `IntegrableAtFilter (f : α → E) (l : Filter α) (μ : Measure α)`
 saying that `f` is integrable at some set `s ∈ l` and prove that a measurable function is integrable
-at `l` with respect to `μ` provided that `f` is bounded above at `l ⊓ μ.ae` and `μ` is finite
+at `l` with respect to `μ` provided that `f` is bounded above at `l ⊓ ae μ` and `μ` is finite
 at `l`.
 
 -/
@@ -25,7 +25,7 @@ noncomputable section
 
 open Set Filter TopologicalSpace MeasureTheory Function
 
-open scoped Classical Topology Interval BigOperators Filter ENNReal MeasureTheory
+open scoped Classical Topology Interval Filter ENNReal MeasureTheory
 
 variable {α β E F : Type*} [MeasurableSpace α]
 
@@ -90,13 +90,6 @@ and if the integral of its pointwise norm over `s` is less than infinity. -/
 def IntegrableOn (f : α → E) (s : Set α) (μ : Measure α := by volume_tac) : Prop :=
   Integrable f (μ.restrict s)
 #align measure_theory.integrable_on MeasureTheory.IntegrableOn
-
--- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
-theorem integrableOn_def (f : α → E) (s : Set α) (μ : Measure α) :
-    IntegrableOn f s μ ↔ Integrable f (μ.restrict s) :=
-  Iff.rfl
-
-attribute [eqns integrableOn_def] IntegrableOn
 
 theorem IntegrableOn.integrable (h : IntegrableOn f s μ) : Integrable f (μ.restrict s) :=
   h
@@ -169,6 +162,18 @@ theorem IntegrableOn.restrict (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
   rw [IntegrableOn, Measure.restrict_restrict hs]; exact h.mono_set (inter_subset_left _ _)
 #align measure_theory.integrable_on.restrict MeasureTheory.IntegrableOn.restrict
 
+theorem IntegrableOn.inter_of_restrict (h : IntegrableOn f s (μ.restrict t)) :
+    IntegrableOn f (s ∩ t) μ := by
+  have := h.mono_set (inter_subset_left s t)
+  rwa [IntegrableOn, μ.restrict_restrict_of_subset (inter_subset_right s t)] at this
+
+lemma Integrable.piecewise [DecidablePred (· ∈ s)]
+    (hs : MeasurableSet s) (hf : IntegrableOn f s μ) (hg : IntegrableOn g sᶜ μ) :
+    Integrable (s.piecewise f g) μ := by
+  rw [IntegrableOn] at hf hg
+  rw [← memℒp_one_iff_integrable] at hf hg ⊢
+  exact Memℒp.piecewise hs hf hg
+
 theorem IntegrableOn.left_of_union (h : IntegrableOn f (s ∪ t) μ) : IntegrableOn f s μ :=
   h.mono_set <| subset_union_left _ _
 #align measure_theory.integrable_on.left_of_union MeasureTheory.IntegrableOn.left_of_union
@@ -233,12 +238,18 @@ theorem integrableOn_add_measure :
 
 theorem _root_.MeasurableEmbedding.integrableOn_map_iff [MeasurableSpace β] {e : α → β}
     (he : MeasurableEmbedding e) {f : β → E} {μ : Measure α} {s : Set β} :
-    IntegrableOn f s (Measure.map e μ) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by
-  simp only [IntegrableOn, he.restrict_map, he.integrable_map_iff]
+    IntegrableOn f s (μ.map e) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by
+  simp_rw [IntegrableOn, he.restrict_map, he.integrable_map_iff]
 #align measurable_embedding.integrable_on_map_iff MeasurableEmbedding.integrableOn_map_iff
 
+theorem _root_.MeasurableEmbedding.integrableOn_iff_comap [MeasurableSpace β] {e : α → β}
+    (he : MeasurableEmbedding e) {f : β → E} {μ : Measure β} {s : Set β} (hs : s ⊆ range e) :
+    IntegrableOn f s μ ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) (μ.comap e) := by
+  simp_rw [← he.integrableOn_map_iff, he.map_comap, IntegrableOn,
+    Measure.restrict_restrict_of_subset hs]
+
 theorem integrableOn_map_equiv [MeasurableSpace β] (e : α ≃ᵐ β) {f : β → E} {μ : Measure α}
-    {s : Set β} : IntegrableOn f s (Measure.map e μ) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by
+    {s : Set β} : IntegrableOn f s (μ.map e) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by
   simp only [IntegrableOn, e.restrict_map, integrable_map_equiv e]
 #align measure_theory.integrable_on_map_equiv MeasureTheory.integrableOn_map_equiv
 
@@ -299,10 +310,9 @@ theorem IntegrableOn.restrict_toMeasurable (hf : IntegrableOn f s μ) (h's : ∀
     exact (hf.measure_norm_ge_lt_top (u_pos n)).ne
   apply Measure.restrict_toMeasurable_of_cover _ A
   intro x hx
-  have : 0 < ‖f x‖ := by simp only [h's x hx, norm_pos_iff, Ne.def, not_false_iff]
-  obtain ⟨n, hn⟩ : ∃ n, u n < ‖f x‖; exact ((tendsto_order.1 u_lim).2 _ this).exists
-  refine' mem_iUnion.2 ⟨n, _⟩
-  exact subset_toMeasurable _ _ hn.le
+  have : 0 < ‖f x‖ := by simp only [h's x hx, norm_pos_iff, Ne, not_false_iff]
+  obtain ⟨n, hn⟩ : ∃ n, u n < ‖f x‖ := ((tendsto_order.1 u_lim).2 _ this).exists
+  exact mem_iUnion.2 ⟨n, subset_toMeasurable _ _ hn.le⟩
 #align measure_theory.integrable_on.restrict_to_measurable MeasureTheory.IntegrableOn.restrict_toMeasurable
 
 /-- If a function is integrable on a set `s`, and vanishes on `t \ s`, then it is integrable on `t`
@@ -354,7 +364,7 @@ theorem IntegrableOn.integrable_of_forall_not_mem_eq_zero (hf : IntegrableOn f s
 
 theorem integrableOn_iff_integrable_of_support_subset (h1s : support f ⊆ s) :
     IntegrableOn f s μ ↔ Integrable f μ := by
-  refine' ⟨fun h => _, fun h => h.integrableOn⟩
+  refine ⟨fun h => ?_, fun h => h.integrableOn⟩
   refine h.integrable_of_forall_not_mem_eq_zero fun x hx => ?_
   contrapose! hx
   exact h1s (mem_support.2 hx)
@@ -362,7 +372,7 @@ theorem integrableOn_iff_integrable_of_support_subset (h1s : support f ⊆ s) :
 
 theorem integrableOn_Lp_of_measure_ne_top {E} [NormedAddCommGroup E] {p : ℝ≥0∞} {s : Set α}
     (f : Lp E p μ) (hp : 1 ≤ p) (hμs : μ s ≠ ∞) : IntegrableOn f s μ := by
-  refine' memℒp_one_iff_integrable.mp _
+  refine memℒp_one_iff_integrable.mp ?_
   have hμ_restrict_univ : (μ.restrict s) Set.univ < ∞ := by
     simpa only [Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply, lt_top_iff_ne_top]
   haveI hμ_finite : IsFiniteMeasure (μ.restrict s) := ⟨hμ_restrict_univ⟩
@@ -389,6 +399,22 @@ def IntegrableAtFilter (f : α → E) (l : Filter α) (μ : Measure α := by vol
 #align measure_theory.integrable_at_filter MeasureTheory.IntegrableAtFilter
 
 variable {l l' : Filter α}
+
+theorem _root_.MeasurableEmbedding.integrableAtFilter_map_iff [MeasurableSpace β] {e : α → β}
+    (he : MeasurableEmbedding e) {f : β → E} :
+    IntegrableAtFilter f (l.map e) (μ.map e) ↔ IntegrableAtFilter (f ∘ e) l μ := by
+  simp_rw [IntegrableAtFilter, he.integrableOn_map_iff]
+  constructor <;> rintro ⟨s, hs⟩
+  · exact ⟨_, hs⟩
+  · exact ⟨e '' s, by rwa [mem_map, he.injective.preimage_image]⟩
+
+theorem _root_.MeasurableEmbedding.integrableAtFilter_iff_comap [MeasurableSpace β] {e : α → β}
+    (he : MeasurableEmbedding e) {f : β → E} {μ : Measure β} :
+    IntegrableAtFilter f (l.map e) μ ↔ IntegrableAtFilter (f ∘ e) l (μ.comap e) := by
+  simp_rw [← he.integrableAtFilter_map_iff, IntegrableAtFilter, he.map_comap]
+  constructor <;> rintro ⟨s, hs, int⟩
+  · exact ⟨s, hs, int.mono_measure <| μ.restrict_le_self⟩
+  · exact ⟨_, inter_mem hs range_mem_map, int.inter_of_restrict⟩
 
 theorem Integrable.integrableAtFilter (h : Integrable f μ) (l : Filter α) :
     IntegrableAtFilter f l μ :=
@@ -423,7 +449,11 @@ protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormedAddCommGroup �
     [BoundedSMul 𝕜 E] {f : α → E} (hf : IntegrableAtFilter f l μ) (c : 𝕜) :
     IntegrableAtFilter (c • f) l μ := by
   rcases hf with ⟨s, sl, hs⟩
-  refine ⟨s, sl, hs.smul c⟩
+  exact ⟨s, sl, hs.smul c⟩
+
+protected theorem IntegrableAtFilter.norm (hf : IntegrableAtFilter f l μ) :
+    IntegrableAtFilter (fun x => ‖f x‖) l μ :=
+  Exists.casesOn hf fun s hs ↦ ⟨s, hs.1, hs.2.norm⟩
 
 theorem IntegrableAtFilter.filter_mono (hl : l ≤ l') (hl' : IntegrableAtFilter f l' μ) :
     IntegrableAtFilter f l μ :=
@@ -443,18 +473,27 @@ theorem IntegrableAtFilter.inf_of_right (hl : IntegrableAtFilter f l μ) :
 
 @[simp]
 theorem IntegrableAtFilter.inf_ae_iff {l : Filter α} :
-    IntegrableAtFilter f (l ⊓ μ.ae) μ ↔ IntegrableAtFilter f l μ := by
-  refine' ⟨_, fun h => h.filter_mono inf_le_left⟩
+    IntegrableAtFilter f (l ⊓ ae μ) μ ↔ IntegrableAtFilter f l μ := by
+  refine ⟨?_, fun h ↦ h.filter_mono inf_le_left⟩
   rintro ⟨s, ⟨t, ht, u, hu, rfl⟩, hf⟩
-  refine' ⟨t, ht, _⟩
-  refine' hf.integrable.mono_measure fun v hv => _
-  simp only [Measure.restrict_apply hv]
-  refine' measure_mono_ae (mem_of_superset hu fun x hx => _)
-  exact fun ⟨hv, ht⟩ => ⟨hv, ⟨ht, hx⟩⟩
+  refine ⟨t, ht, hf.congr_set_ae <| eventuallyEq_set.2 ?_⟩
+  filter_upwards [hu] with x hx using (and_iff_left hx).symm
 #align measure_theory.integrable_at_filter.inf_ae_iff MeasureTheory.IntegrableAtFilter.inf_ae_iff
 
 alias ⟨IntegrableAtFilter.of_inf_ae, _⟩ := IntegrableAtFilter.inf_ae_iff
 #align measure_theory.integrable_at_filter.of_inf_ae MeasureTheory.IntegrableAtFilter.of_inf_ae
+
+@[simp]
+theorem integrableAtFilter_top : IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.integrableAtFilter ⊤⟩
+  obtain ⟨s, hsf, hs⟩ := h
+  exact (integrableOn_iff_integrable_of_support_subset fun _ _ ↦ hsf _).mp hs
+
+theorem IntegrableAtFilter.sup_iff {l l' : Filter α} :
+    IntegrableAtFilter f (l ⊔ l') μ ↔ IntegrableAtFilter f l μ ∧ IntegrableAtFilter f l' μ := by
+  constructor
+  · exact fun h => ⟨h.filter_mono le_sup_left, h.filter_mono le_sup_right⟩
+  · exact fun ⟨⟨s, hsl, hs⟩, ⟨t, htl, ht⟩⟩ ↦ ⟨s ∪ t, union_mem_sup hsl htl, hs.union ht⟩
 
 /-- If `μ` is a measure finite at filter `l` and `f` is a function such that its norm is bounded
 above at `l`, then `f` is integrable at `l`. -/
@@ -465,14 +504,14 @@ theorem Measure.FiniteAtFilter.integrableAtFilter {l : Filter α} [IsMeasurablyG
     hf.imp fun C hC => eventually_smallSets.2 ⟨_, hC, fun t => id⟩
   rcases (hfm.eventually.and (hμ.eventually.and hC)).exists_measurable_mem_of_smallSets with
     ⟨s, hsl, hsm, hfm, hμ, hC⟩
-  refine' ⟨s, hsl, ⟨hfm, hasFiniteIntegral_restrict_of_bounded hμ (C := C) _⟩⟩
+  refine ⟨s, hsl, ⟨hfm, hasFiniteIntegral_restrict_of_bounded hμ (C := C) ?_⟩⟩
   rw [ae_restrict_eq hsm, eventually_inf_principal]
   exact eventually_of_forall hC
 #align measure_theory.measure.finite_at_filter.integrable_at_filter MeasureTheory.Measure.FiniteAtFilter.integrableAtFilter
 
 theorem Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae {l : Filter α}
     [IsMeasurablyGenerated l] (hfm : StronglyMeasurableAtFilter f l μ) (hμ : μ.FiniteAtFilter l) {b}
-    (hf : Tendsto f (l ⊓ μ.ae) (𝓝 b)) : IntegrableAtFilter f l μ :=
+    (hf : Tendsto f (l ⊓ ae μ) (𝓝 b)) : IntegrableAtFilter f l μ :=
   (hμ.inf_of_left.integrableAtFilter (hfm.filter_mono inf_le_left)
       hf.norm.isBoundedUnder_le).of_inf_ae
 #align measure_theory.measure.finite_at_filter.integrable_at_filter_of_tendsto_ae MeasureTheory.Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae
@@ -491,13 +530,34 @@ alias _root_.Filter.Tendsto.integrableAtFilter :=
   Measure.FiniteAtFilter.integrableAtFilter_of_tendsto
 #align filter.tendsto.integrable_at_filter Filter.Tendsto.integrableAtFilter
 
+lemma Measure.integrableOn_of_bounded (s_finite : μ s ≠ ∞) (f_mble : AEStronglyMeasurable f μ)
+    {M : ℝ} (f_bdd : ∀ᵐ a ∂(μ.restrict s), ‖f a‖ ≤ M) :
+    IntegrableOn f s μ :=
+  ⟨f_mble.restrict, hasFiniteIntegral_restrict_of_bounded (C := M) s_finite.lt_top f_bdd⟩
+
 theorem integrable_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     Integrable (f + g) μ ↔ Integrable f μ ∧ Integrable g μ := by
-  refine' ⟨fun hfg => ⟨_, _⟩, fun h => h.1.add h.2⟩
+  refine ⟨fun hfg => ⟨?_, ?_⟩, fun h => h.1.add h.2⟩
   · rw [← indicator_add_eq_left h]; exact hfg.indicator hf.measurableSet_support
   · rw [← indicator_add_eq_right h]; exact hfg.indicator hg.measurableSet_support
 #align measure_theory.integrable_add_of_disjoint MeasureTheory.integrable_add_of_disjoint
+
+/-- If a function converges along a filter to a limit `a`, is integrable along this filter, and
+all elements of the filter have infinite measure, then the limit has to vanish. -/
+lemma IntegrableAtFilter.eq_zero_of_tendsto
+    (h : IntegrableAtFilter f l μ) (h' : ∀ s ∈ l, μ s = ∞) {a : E}
+    (hf : Tendsto f l (𝓝 a)) : a = 0 := by
+  by_contra H
+  obtain ⟨ε, εpos, hε⟩ : ∃ (ε : ℝ), 0 < ε ∧ ε < ‖a‖ := exists_between (norm_pos_iff'.mpr H)
+  rcases h with ⟨u, ul, hu⟩
+  let v := u ∩ {b | ε < ‖f b‖}
+  have hv : IntegrableOn f v μ := hu.mono_set (inter_subset_left _ _)
+  have vl : v ∈ l := inter_mem ul ((tendsto_order.1 hf.norm).1 _ hε)
+  have : μ.restrict v v < ∞ := lt_of_le_of_lt (measure_mono (inter_subset_right _ _))
+    (Integrable.measure_gt_lt_top hv.norm εpos)
+  have : μ v ≠ ∞ := ne_of_lt (by simpa only [Measure.restrict_apply_self])
+  exact this (h' v vl)
 
 end NormedAddCommGroup
 
@@ -514,7 +574,7 @@ theorem ContinuousOn.aemeasurable [TopologicalSpace α] [OpensMeasurableSpace α
     (hf : ContinuousOn f s) (hs : MeasurableSet s) : AEMeasurable f (μ.restrict s) := by
   nontriviality α; inhabit α
   have : (Set.piecewise s f fun _ => f default) =ᵐ[μ.restrict s] f := piecewise_ae_eq_restrict hs
-  refine' ⟨Set.piecewise s f fun _ => f default, _, this.symm⟩
+  refine ⟨Set.piecewise s f fun _ => f default, ?_, this.symm⟩
   apply measurable_of_isOpen
   intro t ht
   obtain ⟨u, u_open, hu⟩ : ∃ u : Set α, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s :=
@@ -533,7 +593,7 @@ theorem ContinuousOn.aestronglyMeasurable_of_isSeparable [TopologicalSpace α]
   letI := pseudoMetrizableSpacePseudoMetric α
   borelize β
   rw [aestronglyMeasurable_iff_aemeasurable_separable]
-  refine' ⟨hf.aemeasurable hs, f '' s, hf.isSeparable_image h's, _⟩
+  refine ⟨hf.aemeasurable hs, f '' s, hf.isSeparable_image h's, ?_⟩
   exact mem_of_superset (self_mem_ae_restrict hs) (subset_preimage_image _ _)
 #align continuous_on.ae_strongly_measurable_of_is_separable ContinuousOn.aestronglyMeasurable_of_isSeparable
 
@@ -544,18 +604,14 @@ theorem ContinuousOn.aestronglyMeasurable [TopologicalSpace α] [TopologicalSpac
     {f : α → β} {s : Set α} {μ : Measure α} (hf : ContinuousOn f s) (hs : MeasurableSet s) :
     AEStronglyMeasurable f (μ.restrict s) := by
   borelize β
-  refine'
+  refine
     aestronglyMeasurable_iff_aemeasurable_separable.2
-      ⟨hf.aemeasurable hs, f '' s, _,
+      ⟨hf.aemeasurable hs, f '' s, ?_,
         mem_of_superset (self_mem_ae_restrict hs) (subset_preimage_image _ _)⟩
   cases h.out
-  · let f' : s → β := s.restrict f
-    have A : Continuous f' := continuousOn_iff_continuous_restrict.1 hf
-    have B : IsSeparable (univ : Set s) := isSeparable_of_separableSpace _
-    convert IsSeparable.image B A using 1
-    ext x
-    simp
-  · exact isSeparable_of_separableSpace _
+  · rw [image_eq_range]
+    exact isSeparable_range <| continuousOn_iff_continuous_restrict.1 hf
+  · exact .of_separableSpace _
 #align continuous_on.ae_strongly_measurable ContinuousOn.aestronglyMeasurable
 
 /-- A function which is continuous on a compact set `s` is almost everywhere strongly measurable
@@ -567,7 +623,7 @@ theorem ContinuousOn.aestronglyMeasurable_of_isCompact [TopologicalSpace α] [Op
   letI := pseudoMetrizableSpacePseudoMetric β
   borelize β
   rw [aestronglyMeasurable_iff_aemeasurable_separable]
-  refine' ⟨hf.aemeasurable h's, f '' s, _, _⟩
+  refine ⟨hf.aemeasurable h's, f '' s, ?_, ?_⟩
   · exact (hs.image_of_continuousOn hf).isSeparable
   · exact mem_of_superset (self_mem_ae_restrict h's) (subset_preimage_image _ _)
 #align continuous_on.ae_strongly_measurable_of_is_compact ContinuousOn.aestronglyMeasurable_of_isCompact

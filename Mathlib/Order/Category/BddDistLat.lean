@@ -25,13 +25,14 @@ open CategoryTheory
 
 /-- The category of bounded distributive lattices with bounded lattice morphisms. -/
 structure BddDistLat where
+  /-- The underlying distrib lattice of a bounded distributive lattice. -/
   toDistLat : DistLat
   [isBoundedOrder : BoundedOrder toDistLat]
 #align BddDistLat BddDistLat
 
 namespace BddDistLat
 
-instance : CoeSort BddDistLat (Type*) :=
+instance : CoeSort BddDistLat Type* :=
   ⟨fun X => X.toDistLat⟩
 
 instance (X : BddDistLat) : DistribLattice X :=

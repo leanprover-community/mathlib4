@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.Group.Action.Defs
 
 #align_import group_theory.group_action.option from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"
 
@@ -35,7 +35,7 @@ instance : SMul M (Option α) :=
   ⟨fun a => Option.map <| (a • ·)⟩
 
 @[to_additive]
-theorem smul_def : a • x = x.map ((· • ·) a) :=
+theorem smul_def : a • x = x.map (a • ·) :=
   rfl
 #align option.smul_def Option.smul_def
 #align option.vadd_def Option.vadd_def
@@ -53,7 +53,7 @@ theorem smul_some : a • some b = some (a • b) :=
 #align option.vadd_some Option.vadd_some
 
 @[to_additive]
-instance [SMul M N] [IsScalarTower M N α] : IsScalarTower M N (Option α) :=
+instance instIsScalarTowerOfSMul [SMul M N] [IsScalarTower M N α] : IsScalarTower M N (Option α) :=
   ⟨fun a b x => by
     cases x
     exacts [rfl, congr_arg some (smul_assoc _ _ _)]⟩

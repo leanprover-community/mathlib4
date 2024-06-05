@@ -34,7 +34,7 @@ def withSimpRWRulesSeq (token : Syntax) (rwRulesSeqStx : Syntax)
 /--
 `simp_rw` functions as a mix of `simp` and `rw`. Like `rw`, it applies each
 rewrite rule in the given order, but like `simp` it repeatedly applies these
-rules and also under binders like `∀ x, ...`, `∃ x, ...` and `λ x, ...`.
+rules and also under binders like `∀ x, ...`, `∃ x, ...` and `fun x ↦...`.
 Usage:
 
 - `simp_rw [lemma_1, ..., lemma_n]` will rewrite the goal by applying the
@@ -47,18 +47,26 @@ For example, neither `simp` nor `rw` can solve the following, but `simp_rw` can:
 
 ```lean
 example {a : ℕ}
-  (h1 : ∀ a b : ℕ, a - 1 ≤ b ↔ a ≤ b + 1)
-  (h2 : ∀ a b : ℕ, a ≤ b ↔ ∀ c, c < a → c < b) :
-  (∀ b, a - 1 ≤ b) = ∀ b c : ℕ, c < a → c < b + 1 :=
-by simp_rw [h1, h2]
+    (h1 : ∀ a b : ℕ, a - 1 ≤ b ↔ a ≤ b + 1)
+    (h2 : ∀ a b : ℕ, a ≤ b ↔ ∀ c, c < a → c < b) :
+    (∀ b, a - 1 ≤ b) = ∀ b c : ℕ, c < a → c < b + 1 := by
+  simp_rw [h1, h2]
 ```
 -/
-elab s:"simp_rw " rws:rwRuleSeq g:(location)? : tactic => do
-  evalTactic (← `(tactic| simp%$s (config := { failIfUnchanged := false }) only $g ?))
+elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => focus do
+  let cfg' : TSyntax `Lean.Parser.Tactic.config ← do
+    match cfg with
+    | Option.none =>
+      `(config| (config := ({ failIfUnchanged := false } : Lean.Meta.Simp.Config)))
+    | Option.some c => match c with
+      | `(config| (config := $cfg)) =>
+        `(config| (config := ({ ($cfg : Lean.Meta.Simp.Config) with failIfUnchanged := false })))
+      | _ => throwError "malformed cfg"
+  evalTactic (← `(tactic| simp%$s $cfg' only $g ?))
   withSimpRWRulesSeq s rws fun symm term => do
     evalTactic (← match term with
     | `(term| $e:term) =>
       if symm then
-        `(tactic| simp%$e only [←$e:term] $g ?)
+        `(tactic| simp%$e $[$cfg]? only [← $e:term] $g ?)
       else
-        `(tactic| simp%$e only [$e:term] $g ?))
+        `(tactic| simp%$e $[$cfg]? only [$e:term] $g ?))

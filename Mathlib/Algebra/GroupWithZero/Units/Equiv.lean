@@ -12,6 +12,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 # Multiplication by a nonzero element in a `GroupWithZero` is a permutation.
 -/
 
+assert_not_exists DenselyOrdered
 
 variable {G : Type*}
 
@@ -23,20 +24,20 @@ variable [GroupWithZero G]
 
 /-- Left multiplication by a nonzero element in a `GroupWithZero` is a permutation of the
 underlying type. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 protected def mulLeft₀ (a : G) (ha : a ≠ 0) : Perm G :=
   (Units.mk0 a ha).mulLeft
 #align equiv.mul_left₀ Equiv.mulLeft₀
 #align equiv.mul_left₀_symm_apply Equiv.mulLeft₀_symm_apply
 #align equiv.mul_left₀_apply Equiv.mulLeft₀_apply
 
-theorem _root_.mulLeft_bijective₀ (a : G) (ha : a ≠ 0) : Function.Bijective ((· * ·) a : G → G) :=
+theorem _root_.mulLeft_bijective₀ (a : G) (ha : a ≠ 0) : Function.Bijective (a * · : G → G) :=
   (Equiv.mulLeft₀ a ha).bijective
 #align mul_left_bijective₀ mulLeft_bijective₀
 
 /-- Right multiplication by a nonzero element in a `GroupWithZero` is a permutation of the
 underlying type. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 protected def mulRight₀ (a : G) (ha : a ≠ 0) : Perm G :=
   (Units.mk0 a ha).mulRight
 #align equiv.mul_right₀ Equiv.mulRight₀

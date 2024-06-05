@@ -20,7 +20,8 @@ universe u v
 
 open Set Filter
 
-open Topology Classical
+open scoped Classical
+open Topology
 
 variable {β : Type v}
 
@@ -55,7 +56,7 @@ theorem CauchySeq.isCauSeq {f : ℕ → β} (hf : CauchySeq f) : IsCauSeq norm f
   cases' cauchy_iff.1 hf with hf1 hf2
   intro ε hε
   rcases hf2 { x | dist x.1 x.2 < ε } (dist_mem_uniformity hε) with ⟨t, ⟨ht, htsub⟩⟩
-  simp at ht; cases' ht with N hN
+  simp only [mem_map, mem_atTop_sets, ge_iff_le, mem_preimage] at ht; cases' ht with N hN
   exists N
   intro j hj
   rw [← dist_eq_norm]
@@ -64,7 +65,7 @@ theorem CauchySeq.isCauSeq {f : ℕ → β} (hf : CauchySeq f) : IsCauSeq norm f
 #align cauchy_seq.is_cau_seq CauchySeq.isCauSeq
 
 theorem CauSeq.cauchySeq (f : CauSeq β norm) : CauchySeq f := by
-  refine' cauchy_iff.2 ⟨by infer_instance, fun s hs => _⟩
+  refine cauchy_iff.2 ⟨by infer_instance, fun s hs => ?_⟩
   rcases mem_uniformity_dist.1 hs with ⟨ε, ⟨hε, hεs⟩⟩
   cases' CauSeq.cauchy₂ f hε with N hN
   exists { n | n ≥ N }.image f

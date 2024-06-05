@@ -30,9 +30,7 @@ namespace Monad
 open Limits
 
 variable {C : Type u₁}
-
 variable [Category.{v₁} C]
-
 variable {T : Monad C} (X : Algebra T)
 
 /-!
@@ -68,7 +66,7 @@ theorem FreeCoequalizer.condition :
 
 instance : IsReflexivePair (FreeCoequalizer.topMap X) (FreeCoequalizer.bottomMap X) := by
   apply IsReflexivePair.mk' _ _ _
-  apply (free T).map (T.η.app X.A)
+  · apply (free T).map (T.η.app X.A)
   · ext
     dsimp
     rw [← Functor.map_comp, X.unit, Functor.map_id]
@@ -91,7 +89,7 @@ def beckAlgebraCoequalizer : IsColimit (beckAlgebraCofork X) :=
     have h₁ : (T : C ⥤ C).map X.a ≫ s.π.f = T.μ.app X.A ≫ s.π.f :=
       congr_arg Monad.Algebra.Hom.f s.condition
     have h₂ : (T : C ⥤ C).map s.π.f ≫ s.pt.a = T.μ.app X.A ≫ s.π.f := s.π.h
-    refine' ⟨⟨T.η.app _ ≫ s.π.f, _⟩, _, _⟩
+    refine ⟨⟨T.η.app _ ≫ s.π.f, ?_⟩, ?_, ?_⟩
     · dsimp
       rw [Functor.map_comp, Category.assoc, h₂, Monad.right_unit_assoc,
         show X.a ≫ _ ≫ _ = _ from T.η.naturality_assoc _ _, h₁, Monad.left_unit_assoc]

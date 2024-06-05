@@ -29,8 +29,6 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 open Function
 
-open BigOperators
-
 namespace MulAction
 
 variable [Group α]
@@ -83,7 +81,7 @@ instance right_quotientAction' [hH : H.Normal] : QuotientAction αᵐᵒᵖ H :=
 @[to_additive]
 instance quotient [QuotientAction β H] : MulAction β (α ⧸ H) where
   smul b :=
-    Quotient.map' ((· • ·) b) fun _ _ h =>
+    Quotient.map' (b • ·) fun _ _ h =>
       leftRel_apply.mpr <| QuotientAction.inv_mul_mem b <| leftRel_apply.mp h
   one_smul q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (one_smul β a)
   mul_smul b b' q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (mul_smul b b' a)
@@ -101,7 +99,7 @@ theorem Quotient.smul_mk [QuotientAction β H] (b : β) (a : α) :
 
 @[to_additive (attr := simp)]
 theorem Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) :
-    b • (a : α ⧸ H) = (b • a : α ⧸ H) :=
+    b • (a : α ⧸ H) = (↑(b • a) : α ⧸ H) :=
   rfl
 #align mul_action.quotient.smul_coe MulAction.Quotient.smul_coe
 #align add_action.quotient.vadd_coe AddAction.Quotient.vadd_coe
@@ -120,7 +118,7 @@ theorem Quotient.coe_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) : �
 #align add_action.quotient.coe_vadd_out' AddAction.Quotient.coe_vadd_out'
 
 theorem _root_.QuotientGroup.out'_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸ H) :
-    q.out'⁻¹ * a ^ Function.minimalPeriod ((· • ·) a) q * q.out' ∈ H := by
+    q.out'⁻¹ * a ^ Function.minimalPeriod (a • ·) q * q.out' ∈ H := by
   rw [mul_assoc, ← QuotientGroup.eq', QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out',
     eq_comm, pow_smul_eq_iff_minimalPeriod_dvd]
 #align quotient_group.out'_conj_pow_minimal_period_mem QuotientGroup.out'_conj_pow_minimalPeriod_mem
@@ -189,7 +187,7 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
 #align mul_action.injective_of_quotient_stabilizer MulAction.injective_ofQuotientStabilizer
 #align add_action.injective_of_quotient_stabilizer AddAction.injective_ofQuotientStabilizer
 
-/-- Orbit-stabilizer theorem. -/
+/-- **Orbit-stabilizer theorem**. -/
 @[to_additive "Orbit-stabilizer theorem."]
 noncomputable def orbitEquivQuotientStabilizer (b : β) : orbit α b ≃ α ⧸ stabilizer α b :=
   Equiv.symm <|
@@ -233,7 +231,6 @@ theorem stabilizer_quotient {G} [Group G] (H : Subgroup G) :
 
 variable (β)
 
--- mathport name: exprΩ
 local notation "Ω" => Quotient <| orbitRel α β
 
 /-- **Class formula** : given `G` a group acting on `X` and `φ` a function mapping each orbit of `X`
@@ -259,6 +256,7 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
 #align mul_action.self_equiv_sigma_orbits_quotient_stabilizer' MulAction.selfEquivSigmaOrbitsQuotientStabilizer'
 #align add_action.self_equiv_sigma_orbits_quotient_stabilizer' AddAction.selfEquivSigmaOrbitsQuotientStabilizer'
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- **Class formula** for a finite group acting on a finite type. See
 `MulAction.card_eq_sum_card_group_div_card_stabilizer` for a specialized version using
 `Quotient.out'`. -/
@@ -344,22 +342,23 @@ theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a : α,
 instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransitive G (G ⧸ H) where
   exists_smul_eq := by
     { rintro ⟨x⟩ ⟨y⟩
-      refine' ⟨y * x⁻¹, QuotientGroup.eq.mpr _⟩
+      refine ⟨y * x⁻¹, QuotientGroup.eq.mpr ?_⟩
       simp only [smul_eq_mul, H.one_mem, mul_left_inv, inv_mul_cancel_right]}
 #align mul_action.is_pretransitive_quotient MulAction.isPretransitive_quotient
 #align add_action.is_pretransitive_quotient AddAction.isPretransitive_quotient
 
 end MulAction
 
-set_option autoImplicit true in
-theorem ConjClasses.card_carrier [Group G] [Fintype G] (g : G) [Fintype (ConjClasses.mk g).carrier]
-    [Fintype <| MulAction.stabilizer (ConjAct G) g] : Fintype.card (ConjClasses.mk g).carrier =
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
+theorem ConjClasses.card_carrier {G : Type*} [Group G] [Fintype G] (g : G)
+    [Fintype (ConjClasses.mk g).carrier] [Fintype <| MulAction.stabilizer (ConjAct G) g] :
+    Fintype.card (ConjClasses.mk g).carrier =
       Fintype.card G / Fintype.card (MulAction.stabilizer (ConjAct G) g) := by
   classical
   rw [Fintype.card_congr <| ConjAct.toConjAct (G := G) |>.toEquiv]
-  rw [←MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct G) g, Nat.mul_div_cancel]
-  simp_rw [ConjAct.orbit_eq_carrier_conjClasses]
-  exact Fintype.card_pos_iff.mpr inferInstance
+  rw [← MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct G) g, Nat.mul_div_cancel]
+  · simp_rw [ConjAct.orbit_eq_carrier_conjClasses]
+  · exact Fintype.card_pos_iff.mpr inferInstance
 
 namespace Subgroup
 
@@ -369,11 +368,11 @@ theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker
   apply le_antisymm
   · intro g hg
     apply Equiv.Perm.ext
-    refine' fun q ↦ QuotientGroup.induction_on q _
-    refine' fun g' => (MulAction.Quotient.smul_mk H g g').trans (QuotientGroup.eq.mpr _)
+    refine fun q ↦ QuotientGroup.induction_on q ?_
+    refine fun g' => (MulAction.Quotient.smul_mk H g g').trans (QuotientGroup.eq.mpr ?_)
     rw [smul_eq_mul, mul_inv_rev, ← inv_inv g', inv_inv]
     exact H.normalCore.inv_mem hg g'⁻¹
-  · refine' (Subgroup.normal_le_normalCore.mpr fun g hg => _)
+  · refine (Subgroup.normal_le_normalCore.mpr fun g hg => ?_)
     rw [← H.inv_mem_iff, ← mul_one g⁻¹, ← QuotientGroup.eq, ← mul_one g]
     exact (MulAction.Quotient.smul_mk H g 1).symm.trans (Equiv.Perm.ext_iff.mp hg (1 : G))
 #align subgroup.normal_core_eq_ker Subgroup.normalCore_eq_ker
@@ -427,7 +426,7 @@ theorem card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :
   rw [card_congr (Equiv.subtypeProdEquivSigmaSubtype Commute), card_sigma,
     sum_equiv ConjAct.toConjAct.toEquiv (fun a ↦ card { b // Commute a b })
       (fun g ↦ card (MulAction.fixedBy G g))
-      fun g ↦ card_congr' <| congr_arg _ <| funext fun h ↦ mul_inv_eq_iff_eq_mul.symm.to_eq,
+      fun g ↦ card_congr' <| congr_arg _ <| funext fun h ↦ mul_inv_eq_iff_eq_mul.symm.eq,
     MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group]
   congr 1; apply card_congr'; congr; ext;
   exact (Setoid.comm' _).trans isConj_iff.symm
