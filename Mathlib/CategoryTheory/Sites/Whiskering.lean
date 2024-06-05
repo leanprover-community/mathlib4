@@ -65,6 +65,13 @@ instance [F.Faithful] : (sheafCompose J F).Faithful :=
 instance [F.Full] [F.Faithful] : (sheafCompose J F).Full :=
   Functor.Full.of_comp_faithful (sheafCompose J F) (sheafToPresheaf _ _)
 
+instance [F.ReflectsIsomorphisms] : (sheafCompose J F).ReflectsIsomorphisms where
+  reflects {G₁ G₂} f _ := by
+    rw [← isIso_iff_of_reflects_iso _ (sheafToPresheaf _ _),
+      ← isIso_iff_of_reflects_iso _ ((whiskeringRight Cᵒᵖ A B).obj F)]
+    change IsIso ((sheafToPresheaf _ _).map ((sheafCompose J F).map f))
+    infer_instance
+
 variable {F G}
 
 /--

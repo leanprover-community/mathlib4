@@ -3,7 +3,6 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Kalle Kytölä
 -/
-import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.Topology.Algebra.Module.WeakDual

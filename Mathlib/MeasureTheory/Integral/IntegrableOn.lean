@@ -15,7 +15,7 @@ We define `IntegrableOn f s μ := Integrable f (μ.restrict s)` and prove theore
 
 Next we define a predicate `IntegrableAtFilter (f : α → E) (l : Filter α) (μ : Measure α)`
 saying that `f` is integrable at some set `s ∈ l` and prove that a measurable function is integrable
-at `l` with respect to `μ` provided that `f` is bounded above at `l ⊓ μ.ae` and `μ` is finite
+at `l` with respect to `μ` provided that `f` is bounded above at `l ⊓ ae μ` and `μ` is finite
 at `l`.
 
 -/
@@ -25,7 +25,7 @@ noncomputable section
 
 open Set Filter TopologicalSpace MeasureTheory Function
 
-open scoped Classical Topology Interval BigOperators Filter ENNReal MeasureTheory
+open scoped Classical Topology Interval Filter ENNReal MeasureTheory
 
 variable {α β E F : Type*} [MeasurableSpace α]
 
@@ -473,7 +473,7 @@ theorem IntegrableAtFilter.inf_of_right (hl : IntegrableAtFilter f l μ) :
 
 @[simp]
 theorem IntegrableAtFilter.inf_ae_iff {l : Filter α} :
-    IntegrableAtFilter f (l ⊓ μ.ae) μ ↔ IntegrableAtFilter f l μ := by
+    IntegrableAtFilter f (l ⊓ ae μ) μ ↔ IntegrableAtFilter f l μ := by
   refine ⟨?_, fun h ↦ h.filter_mono inf_le_left⟩
   rintro ⟨s, ⟨t, ht, u, hu, rfl⟩, hf⟩
   refine ⟨t, ht, hf.congr_set_ae <| eventuallyEq_set.2 ?_⟩
@@ -511,7 +511,7 @@ theorem Measure.FiniteAtFilter.integrableAtFilter {l : Filter α} [IsMeasurablyG
 
 theorem Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae {l : Filter α}
     [IsMeasurablyGenerated l] (hfm : StronglyMeasurableAtFilter f l μ) (hμ : μ.FiniteAtFilter l) {b}
-    (hf : Tendsto f (l ⊓ μ.ae) (𝓝 b)) : IntegrableAtFilter f l μ :=
+    (hf : Tendsto f (l ⊓ ae μ) (𝓝 b)) : IntegrableAtFilter f l μ :=
   (hμ.inf_of_left.integrableAtFilter (hfm.filter_mono inf_le_left)
       hf.norm.isBoundedUnder_le).of_inf_ae
 #align measure_theory.measure.finite_at_filter.integrable_at_filter_of_tendsto_ae MeasureTheory.Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae

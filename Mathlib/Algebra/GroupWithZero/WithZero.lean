@@ -22,6 +22,8 @@ This file proves that one can adjoin a new zero element to a group and get a gro
   a monoid homomorphism `f : α →* β`.
 -/
 
+assert_not_exists DenselyOrdered
+
 namespace WithZero
 variable {α β γ : Type*}
 

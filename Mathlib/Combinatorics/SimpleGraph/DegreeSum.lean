@@ -3,7 +3,7 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Combinatorics.SimpleGraph.Dart
 import Mathlib.Combinatorics.SimpleGraph.Finite
@@ -41,7 +41,6 @@ simple graphs, sums, degree-sum formula, handshaking lemma
 
 
 open Finset
-open scoped BigOperators
 
 namespace SimpleGraph
 
@@ -118,8 +117,8 @@ theorem sum_degrees_eq_twice_card_edges : ∑ v, G.degree v = 2 * G.edgeFinset.c
 lemma two_mul_card_edgeFinset :
     2 * G.edgeFinset.card = (univ.filter fun (x, y) ↦ G.Adj x y).card := by
   rw [← dart_card_eq_twice_card_edges, ← card_univ]
-  refine card_congr (fun d _ ↦ (d.fst, d.snd)) (by simp) (by simp [Dart.ext_iff, ← and_imp]) ?_
-  exact fun xy h ↦ ⟨⟨xy, (mem_filter.1 h).2⟩, mem_univ _, Prod.mk.eta⟩
+  refine card_bij' (fun d _ ↦ (d.fst, d.snd)) (fun xy h ↦ ⟨xy, (mem_filter.1 h).2⟩) ?_ ?_ ?_ ?_
+    <;> simp
 
 end DegreeSum
 

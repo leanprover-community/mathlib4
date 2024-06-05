@@ -42,6 +42,9 @@ instances since they do not compute anything.
 finite sets
 -/
 
+assert_not_exists OrderedRing
+assert_not_exists MonoidWithZero
+
 open Set Function
 
 universe u v w x
@@ -658,7 +661,7 @@ instance finite_biUnion' {ι : Type*} (s : Set ι) [Finite s] (t : ι → Set α
 #align finite.set.finite_bUnion' Finite.Set.finite_biUnion'
 
 /-- Example: `Finite (⋃ (i < n), f i)` where `f : ℕ → Set α` and `[∀ i, Finite (f i)]`
-(when given instances from `Data.Nat.Interval`).
+(when given instances from `Order.Interval.Finset.Nat`).
 -/
 instance finite_biUnion'' {ι : Type*} (p : ι → Prop) [h : Finite { x | p x }] (t : ι → Set α)
     [∀ i, Finite (t i)] : Finite (⋃ (x) (_ : p x), t x) :=
@@ -1008,6 +1011,9 @@ theorem finite_mem_finset (s : Finset α) : { a | a ∈ s }.Finite :=
 theorem Subsingleton.finite {s : Set α} (h : s.Subsingleton) : s.Finite :=
   h.induction_on finite_empty finite_singleton
 #align set.subsingleton.finite Set.Subsingleton.finite
+
+theorem Infinite.nontrivial {s : Set α} (hs : s.Infinite) : s.Nontrivial :=
+  not_subsingleton_iff.1 <| mt Subsingleton.finite hs
 
 theorem finite_preimage_inl_and_inr {s : Set (Sum α β)} :
     (Sum.inl ⁻¹' s).Finite ∧ (Sum.inr ⁻¹' s).Finite ↔ s.Finite :=
@@ -1764,7 +1770,7 @@ lemma Directed.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} [Nonem
     ∃ i, (s : Set α) ⊆ f i := by
   induction s using Finset.cons_induction with
   | empty => simp
-  | cons hbt iht =>
+  | cons b t hbt iht =>
     simp only [Finset.coe_cons, Set.insert_subset_iff, Set.mem_iUnion] at hs ⊢
     rcases hs.imp_right iht with ⟨⟨i, hi⟩, j, hj⟩
     rcases h i j with ⟨k, hik, hjk⟩

@@ -27,8 +27,6 @@ universe u v w
 
 namespace LinearMap
 
-open BigOperators
-
 open Matrix
 
 open FiniteDimensional

@@ -138,12 +138,6 @@ inductive ofArrows {ι : Type*} (Y : ι → C) (f : ∀ i, Y i ⟶ X) : Presieve
   | mk (i : ι) : ofArrows _ _ (f i)
 #align category_theory.presieve.of_arrows CategoryTheory.Presieve.ofArrows
 
-lemma ofArrows.exists {ι : Type*} (Y : ι → C) {f : ∀ i, Y i ⟶ X}
-    {Z : C} {g : Z ⟶ X} (hf : ofArrows Y f g) :
-    ∃ (i : ι) (hZ : Z = Y i), g = eqToHom hZ ≫ f i := by
-  obtain ⟨i⟩ := hf
-  exact ⟨i, rfl, by simp⟩
-
 theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
   funext Y
   ext g
@@ -801,7 +795,7 @@ def essSurjFullFunctorGaloisInsertion [F.EssSurj] [F.Full] (X : C) :
       (Sieve.functorPullback F) := by
   apply (functor_galoisConnection F X).toGaloisInsertion
   intro S Y f hf
-  refine' ⟨_, F.preimage ((F.objObjPreimageIso Y).hom ≫ f), (F.objObjPreimageIso Y).inv, _⟩
+  refine ⟨_, F.preimage ((F.objObjPreimageIso Y).hom ≫ f), (F.objObjPreimageIso Y).inv, ?_⟩
   simpa using S.downward_closed hf _
 #align category_theory.sieve.ess_surj_full_functor_galois_insertion CategoryTheory.Sieve.essSurjFullFunctorGaloisInsertion
 

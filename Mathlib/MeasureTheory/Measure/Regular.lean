@@ -191,7 +191,7 @@ proofs or statements do not apply directly.
 [Bogachev, Measure Theory, volume 2, Theorem 7.11.1][bogachev2007]
 -/
 
-open Set Filter ENNReal Topology NNReal BigOperators TopologicalSpace
+open Set Filter ENNReal Topology NNReal TopologicalSpace
 
 namespace MeasureTheory
 
@@ -495,15 +495,15 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
   have hfin : ∀ {s}, μ s ≠ ∞ := @(measure_ne_top μ)
   suffices ∀ s, MeasurableSet s → ∀ ε, ε ≠ 0 → ∃ F, F ⊆ s ∧ ∃ U, U ⊇ s ∧
       IsClosed F ∧ IsOpen U ∧ μ s ≤ μ F + ε ∧ μ U ≤ μ s + ε by
-    refine'
-      { outerRegular := fun s hs r hr => _
+    refine
+      { outerRegular := fun s hs r hr => ?_
         innerRegular := H }
     rcases exists_between hr with ⟨r', hsr', hr'r⟩
     rcases this s hs _ (tsub_pos_iff_lt.2 hsr').ne' with ⟨-, -, U, hsU, -, hUo, -, H⟩
     refine ⟨U, hsU, hUo, ?_⟩
     rw [add_tsub_cancel_of_le hsr'.le] at H
     exact H.trans_lt hr'r
-  refine' MeasurableSet.induction_on_open _ _ _
+  apply MeasurableSet.induction_on_open
   /- The proof is by measurable induction: we should check that the property is true for the empty
     set, for open sets, and is stable by taking the complement and by taking countable disjoint
     unions. The point of the property we are proving is that it is stable by taking complements
@@ -515,9 +515,9 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
   -- check for complements
   · rintro s hs H ε hε
     rcases H ε hε with ⟨F, hFs, U, hsU, hFc, hUo, hF, hU⟩
-    refine'
+    refine
       ⟨Uᶜ, compl_subset_compl.2 hsU, Fᶜ, compl_subset_compl.2 hFs, hUo.isClosed_compl,
-        hFc.isOpen_compl, _⟩
+        hFc.isOpen_compl, ?_⟩
     simp only [measure_compl_le_add_iff, *, hUo.measurableSet, hFc.measurableSet, true_and_iff]
   -- check for disjoint unions
   · intro s hsd hsm H ε ε0
@@ -527,21 +527,21 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
     -- the approximating closed set is constructed by considering finitely many sets `s i`, which
     -- cover all the measure up to `ε/2`, approximating each of these by a closed set `F i`, and
     -- taking the union of these (finitely many) `F i`.
-    have : Tendsto (fun t => (∑ k in t, μ (s k)) + ε / 2) atTop (𝓝 <| μ (⋃ n, s n) + ε / 2) := by
+    have : Tendsto (fun t => (∑ k ∈ t, μ (s k)) + ε / 2) atTop (𝓝 <| μ (⋃ n, s n) + ε / 2) := by
       rw [measure_iUnion hsd hsm]
       exact Tendsto.add ENNReal.summable.hasSum tendsto_const_nhds
     rcases (this.eventually <| lt_mem_nhds <| ENNReal.lt_add_right hfin ε0').exists with ⟨t, ht⟩
     -- the approximating open set is constructed by taking for each `s n` an approximating open set
     -- `U n` with measure at most `μ (s n) + δ n` for a summable `δ`, and taking the union of these.
-    refine'
+    refine
       ⟨⋃ k ∈ t, F k, iUnion_mono fun k => iUnion_subset fun _ => hFs _, ⋃ n, U n, iUnion_mono hsU,
-        isClosed_biUnion_finset fun k _ => hFc k, isOpen_iUnion hUo, ht.le.trans _, _⟩
+        isClosed_biUnion_finset fun k _ => hFc k, isOpen_iUnion hUo, ht.le.trans ?_, ?_⟩
     · calc
-        (∑ k in t, μ (s k)) + ε / 2 ≤ ((∑ k in t, μ (F k)) + ∑ k in t, δ k) + ε / 2 := by
+        (∑ k ∈ t, μ (s k)) + ε / 2 ≤ ((∑ k ∈ t, μ (F k)) + ∑ k ∈ t, δ k) + ε / 2 := by
           rw [← sum_add_distrib]
           gcongr
           apply hF
-        _ ≤ (∑ k in t, μ (F k)) + ε / 2 + ε / 2 := by
+        _ ≤ (∑ k ∈ t, μ (F k)) + ε / 2 + ε / 2 := by
           gcongr
           exact (ENNReal.sum_le_tsum _).trans hδε.le
         _ = μ (⋃ k ∈ t, F k) + ε := by
@@ -797,7 +797,7 @@ protected lemma _root_.IsCompact.measure_eq_iInf_isOpen [InnerRegularCompactLTTo
   · apply le_of_forall_lt'
     simpa only [iInf_lt_iff, exists_prop, exists_and_left] using hK.exists_isOpen_lt_of_lt
 
-@[deprecated] -- Since 28 Jan 2024
+@[deprecated (since := "2024-01-28")]
 alias _root_.IsCompact.measure_eq_infi_isOpen := IsCompact.measure_eq_iInf_isOpen
 
 protected theorem _root_.IsCompact.exists_isOpen_lt_add [InnerRegularCompactLTTop μ]

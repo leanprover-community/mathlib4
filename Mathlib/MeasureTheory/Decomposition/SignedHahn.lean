@@ -39,7 +39,7 @@ Hahn decomposition theorem
 
 noncomputable section
 
-open scoped Classical BigOperators NNReal ENNReal MeasureTheory
+open scoped Classical NNReal ENNReal MeasureTheory
 
 variable {α β : Type*} [MeasurableSpace α]
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [OrderedAddCommMonoid M]

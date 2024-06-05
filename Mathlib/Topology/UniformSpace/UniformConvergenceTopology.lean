@@ -263,8 +263,8 @@ protected theorem gc : GaloisConnection lowerAdjoint fun 𝓕 => UniformFun.filt
   intro 𝓐 𝓕
   symm
   calc
-    𝓐 ≤ UniformFun.filter α β 𝓕 ↔ (UniformFun.basis α β 𝓕).sets ⊆ 𝓐.sets :=
-      by rw [UniformFun.filter, ← FilterBasis.generate, le_generate_iff]
+    𝓐 ≤ UniformFun.filter α β 𝓕 ↔ (UniformFun.basis α β 𝓕).sets ⊆ 𝓐.sets := by
+      rw [UniformFun.filter, ← FilterBasis.generate, le_generate_iff]
     _ ↔ ∀ U ∈ 𝓕, UniformFun.gen α β U ∈ 𝓐 := image_subset_iff
     _ ↔ ∀ U ∈ 𝓕,
           { uv | ∀ x, (uv, x) ∈ { t : ((α →ᵤ β) × (α →ᵤ β)) × α | (t.1.1 t.2, t.1.2 t.2) ∈ U } } ∈
@@ -530,7 +530,7 @@ protected def uniformEquivPiComm : UniformEquiv (α →ᵤ ∀ i, δ i) (∀ i, 
       unfold Pi.uniformSpace
       rw [UniformSpace.ofCoreEq_toCore, UniformSpace.ofCoreEq_toCore,
         UniformSpace.comap_iInf, UniformFun.iInf_eq]
-      refine' iInf_congr fun i => _
+      refine iInf_congr fun i => ?_
       rw [← UniformSpace.comap_comap, UniformFun.comap_eq]
       rfl
 #align uniform_fun.uniform_equiv_Pi_comm UniformFun.uniformEquivPiComm
@@ -1045,7 +1045,7 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((
     congr
     rw [Pi.uniformSpace, UniformSpace.ofCoreEq_toCore, Pi.uniformSpace,
       UniformSpace.ofCoreEq_toCore, UniformSpace.comap_iInf, UniformOnFun.iInf_eq]
-    refine' iInf_congr fun i => _
+    refine iInf_congr fun i => ?_
     rw [← UniformSpace.comap_comap, UniformOnFun.comap_eq]
     rfl
 #align uniform_on_fun.uniform_equiv_Pi_comm UniformOnFun.uniformEquivPiComm
