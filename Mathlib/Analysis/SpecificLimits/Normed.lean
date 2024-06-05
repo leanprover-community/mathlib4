@@ -538,6 +538,18 @@ theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : ((1 - x) * ∑' i : ℕ,
   rw [← mul_neg_geom_sum, Finset.mul_sum]
 #align mul_neg_geom_series mul_neg_geom_series
 
+theorem geom_series_succ (x : R) (h : ‖x‖ < 1) : ∑' i : ℕ, x ^ (i + 1) = ∑' i : ℕ, x ^ i - 1 := by
+  rw [eq_sub_iff_add_eq, tsum_eq_zero_add (NormedRing.summable_geometric_of_norm_lt_one x h),
+    pow_zero, add_comm]
+
+theorem geom_series_mul_shift (x : R) (h : ‖x‖ < 1) :
+    x * ∑' i : ℕ, x ^ i = ∑' i : ℕ, x ^ (i + 1) := by
+  simp_rw [← (NormedRing.summable_geometric_of_norm_lt_one _ h).tsum_mul_left, ← _root_.pow_succ']
+
+theorem geom_series_mul_one_add (x : R) (h : ‖x‖ < 1) :
+    (1 + x) * ∑' i : ℕ, x ^ i = 2 * ∑' i : ℕ, x ^ i - 1 := by
+  rw [add_mul, one_mul, geom_series_mul_shift x h, geom_series_succ x h, two_mul, add_sub_assoc]
+
 end NormedRingGeometric
 
 /-! ### Summability tests based on comparison with geometric series -/
