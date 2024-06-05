@@ -25,7 +25,7 @@ show that the graph is isomorphic to the Turán graph for the given parameters.
 * `SimpleGraph.turanGraph n r`: The canonical `r + 1`-cliquefree Turán graph on `n` vertices.
 * `SimpleGraph.IsTuranMaximal.finpartition`: The result of Zykov symmetrisation, a finpartition of
   the vertices such that two vertices are in the same part iff they are non-adjacent.
-* `SimpleGraph.IsTuranMaximal.nonempty_iso_TuranGraph`: The forward direction, an isomorphism
+* `SimpleGraph.IsTuranMaximal.nonempty_iso_turanGraph`: The forward direction, an isomorphism
   between `G` satisfying `G.IsTuranMaximal r` and `turanGraph n r`.
 
 ## References
@@ -262,7 +262,7 @@ theorem card_parts : h.finpartition.parts.card = min (Fintype.card V) r := by
 
 /-- **Turán's theorem**, forward direction.
 Any `r + 1`-cliquefree Turán-maximal graph on `n` vertices is isomorphic to `turanGraph n r`. -/
-theorem nonempty_iso_TuranGraph : Nonempty (G ≃g turanGraph (Fintype.card V) r) := by
+theorem nonempty_iso_turanGraph : Nonempty (G ≃g turanGraph (Fintype.card V) r) := by
   obtain ⟨zm, zp⟩ := h.isEquipartition.exists_partPreservingEquiv
   use (Equiv.subtypeUnivEquiv mem_univ).symm.trans zm
   intro a b
