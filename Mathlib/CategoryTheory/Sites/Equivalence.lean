@@ -303,6 +303,27 @@ lemma isLocallySurjective_of_whisker [IsLocallySurjective K (whiskerLeft e.inver
   rw [this]
   infer_instance
 
+lemma isLocallySurjective_of_whisker' (H : D ⥤ C) [H.IsCoverDense J] [H.Full] [H.Faithful]
+    [IsLocallySurjective (H.inducedTopologyOfIsCoverDense J) (whiskerLeft H.op f)] :
+      IsLocallySurjective J f where
+  imageSieve_mem {X} a := by
+    have := Functor.IsCoverDense.is_cover (G := H) (K := J) X
+    apply J.transitive this
+    intro Y g ⟨⟨Z, lift, map, fac⟩⟩
+    rw [← fac, Sieve.pullback_comp]
+    apply J.pullback_stable
+
+    let b := (forget A).map (G.map map.op) a
+    have hh := IsLocallySurjective.imageSieve_mem (f := (whiskerLeft H.op f))
+      (J := H.inducedTopologyOfIsCoverDense J) b
+    change _ ∈ J.sieves _ at hh
+    refine GrothendieckTopology.superset_covering _ (Sieve.functorPullback_pushforward_le H _) ?_
+    refine GrothendieckTopology.superset_covering _ (Sieve.functorPushforward_monotone H _ ?_) hh
+    intro W q ⟨x, h⟩
+    simp only [Sieve.functorPullback_apply, Presieve.functorPullback_mem, Sieve.pullback_apply]
+    refine ⟨x, ?_⟩
+    simpa using h
+
 open ConcreteCategory Sheaf
 
 variable [HasFunctorialSurjectiveInjectiveFactorization A] [K.WEqualsLocallyBijective A]
