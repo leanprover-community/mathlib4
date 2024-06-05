@@ -6,7 +6,7 @@ Authors: Damiano Testa
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Order.Monoid.Lemmas
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Tactic.NthRewrite
 
 #align_import algebra.regular.basic from "leanprover-community/mathlib"@"5cd3c25312f210fec96ba1edb2aebfb2ccf2010f"
@@ -170,7 +170,7 @@ are regular. -/
 `b + a` are add-regular."]
 theorem isRegular_mul_and_mul_iff :
     IsRegular (a * b) ∧ IsRegular (b * a) ↔ IsRegular a ∧ IsRegular b := by
-  refine' ⟨_, _⟩
+  refine ⟨?_, ?_⟩
   · rintro ⟨ab, ba⟩
     exact
       ⟨⟨IsLeftRegular.of_mul ba.left, IsRightRegular.of_mul ab.right⟩,
@@ -310,7 +310,7 @@ variable [CommSemigroup R] {a b : R}
 /-- A product is regular if and only if the factors are. -/
 @[to_additive "A sum is add-regular if and only if the summands are."]
 theorem isRegular_mul_iff : IsRegular (a * b) ↔ IsRegular a ∧ IsRegular b := by
-  refine' Iff.trans _ isRegular_mul_and_mul_iff
+  refine Iff.trans ?_ isRegular_mul_and_mul_iff
   exact ⟨fun ab => ⟨ab, by rwa [mul_comm]⟩, fun rab => rab.1⟩
 #align is_regular_mul_iff isRegular_mul_iff
 #align is_add_regular_add_iff isAddRegular_add_iff

@@ -266,7 +266,8 @@ theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℤ} (hmn : m.natAbs.Coprime n.
   ⟨fun h => by
     rw [modEq_iff_dvd, modEq_iff_dvd] at h
     rw [modEq_iff_dvd, ← natAbs_dvd, ← dvd_natAbs, natCast_dvd_natCast, natAbs_mul]
-    refine' hmn.mul_dvd_of_dvd_of_dvd _ _ <;> rw [← natCast_dvd_natCast, natAbs_dvd, dvd_natAbs] <;>
+    refine hmn.mul_dvd_of_dvd_of_dvd ?_ ?_ <;>
+      rw [← natCast_dvd_natCast, natAbs_dvd, dvd_natAbs] <;>
       tauto,
     fun h => ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
 #align int.modeq_and_modeq_iff_modeq_mul Int.modEq_and_modEq_iff_modEq_mul

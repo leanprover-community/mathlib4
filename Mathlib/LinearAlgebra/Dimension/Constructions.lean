@@ -37,7 +37,7 @@ universe u v v' u₁' w w'
 variable {R S : Type u} {M : Type v} {M' : Type v'} {M₁ : Type v}
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
-open BigOperators Cardinal Basis Submodule Function Set FiniteDimensional DirectSum
+open Cardinal Basis Submodule Function Set FiniteDimensional DirectSum
 
 variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
 variable [Module R M] [Module R M'] [Module R M₁]
@@ -158,7 +158,7 @@ section Finsupp
 variable (R M M')
 variable [StrongRankCondition R] [Module.Free R M] [Module.Free R M']
 
-open Module.Free BigOperators
+open Module.Free
 
 @[simp]
 theorem rank_finsupp (ι : Type w) :
@@ -304,8 +304,8 @@ theorem rank_fun {M η : Type u} [Fintype η] [AddCommGroup M] [Module R M] [Mod
 #align rank_fun rank_fun
 
 theorem rank_fun_eq_lift_mul : Module.rank R (η → M) =
-    (Fintype.card η : Cardinal.{max u₁' v}) * Cardinal.lift.{u₁'} (Module.rank R M) :=
-  by rw [rank_pi, Cardinal.sum_const, Cardinal.mk_fintype, Cardinal.lift_natCast]
+    (Fintype.card η : Cardinal.{max u₁' v}) * Cardinal.lift.{u₁'} (Module.rank R M) := by
+  rw [rank_pi, Cardinal.sum_const, Cardinal.mk_fintype, Cardinal.lift_natCast]
 #align rank_fun_eq_lift_mul rank_fun_eq_lift_mul
 
 theorem rank_fun' : Module.rank R (η → R) = Fintype.card η := by

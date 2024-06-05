@@ -196,7 +196,7 @@ instance : TopologicalSpace (OnePoint X) where
     suffices IsOpen ((↑) ⁻¹' ⋃₀ S : Set X) by
       refine ⟨?_, this⟩
       rintro ⟨s, hsS : s ∈ S, hs : ∞ ∈ s⟩
-      refine' IsCompact.of_isClosed_subset ((ho s hsS).1 hs) this.isClosed_compl _
+      refine IsCompact.of_isClosed_subset ((ho s hsS).1 hs) this.isClosed_compl ?_
       exact compl_subset_compl.mpr (preimage_mono <| subset_sUnion_of_mem hsS)
     rw [preimage_sUnion]
     exact isOpen_biUnion fun s hs => (ho s hs).2
@@ -306,12 +306,12 @@ instance nhdsWithin_compl_coe_neBot (x : X) [h : NeBot (𝓝[≠] x)] :
 #align alexandroff.nhds_within_compl_coe_ne_bot OnePoint.nhdsWithin_compl_coe_neBot
 
 theorem nhdsWithin_compl_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (coclosedCompact X) := by
-  refine' (nhdsWithin_basis_open ∞ _).ext (hasBasis_coclosedCompact.map _) _ _
+  refine (nhdsWithin_basis_open ∞ _).ext (hasBasis_coclosedCompact.map _) ?_ ?_
   · rintro s ⟨hs, hso⟩
-    refine' ⟨_, (isOpen_iff_of_mem hs).mp hso, _⟩
+    refine ⟨_, (isOpen_iff_of_mem hs).mp hso, ?_⟩
     simp [Subset.rfl]
   · rintro s ⟨h₁, h₂⟩
-    refine' ⟨_, ⟨mem_compl infty_not_mem_image_coe, isOpen_compl_image_coe.2 ⟨h₁, h₂⟩⟩, _⟩
+    refine ⟨_, ⟨mem_compl infty_not_mem_image_coe, isOpen_compl_image_coe.2 ⟨h₁, h₂⟩⟩, ?_⟩
     simp [compl_image_coe, ← diff_eq, subset_preimage_image]
 #align alexandroff.nhds_within_compl_infty_eq OnePoint.nhdsWithin_compl_infty_eq
 

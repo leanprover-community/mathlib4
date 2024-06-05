@@ -152,7 +152,14 @@ protected theorem smul_mem {x : A} (hx : x ∈ S) (r : R) : r • x ∈ S :=
 #align star_subalgebra.smul_mem StarSubalgebra.smul_mem
 
 /-- Embedding of a subalgebra into the algebra. -/
-def subtype : S →⋆ₐ[R] A := by refine' { toFun := ((↑) : S → A), .. } <;> intros <;> rfl
+def subtype : S →⋆ₐ[R] A where
+  toFun := ((↑) : S → A)
+  map_one' := rfl
+  map_mul' _ _ := rfl
+  map_zero' := rfl
+  map_add' _ _ := rfl
+  commutes' _ := rfl
+  map_star' _ := rfl
 #align star_subalgebra.subtype StarSubalgebra.subtype
 
 @[simp]
@@ -520,8 +527,8 @@ theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a
     (Hmul_right : ∀ x y₁ y₂ : A, p x y₁ → p x y₂ → p x (y₁ * y₂))
     (Hstar : ∀ x y : A, p x y → p (star x) (star y)) (Hstar_left : ∀ x y : A, p x y → p (star x) y)
     (Hstar_right : ∀ x y : A, p x y → p x (star y)) : p a b := by
-  refine'
-    Algebra.adjoin_induction₂ ha hb (fun x hx y hy => _) Halg (fun r x hx => _) (fun r x hx => _)
+  refine
+    Algebra.adjoin_induction₂ ha hb (fun x hx y hy => ?_) Halg (fun r x hx => ?_) (fun r x hx => ?_)
       Hadd_left Hadd_right Hmul_left Hmul_right
   · cases' hx with hx hx <;> cases' hy with hy hy
     · exact Hs x hx y hy
@@ -770,9 +777,9 @@ theorem map_adjoin (f : A →⋆ₐ[R] B) (s : Set A) :
 theorem ext_adjoin {s : Set A} [FunLike F (adjoin R s) B]
     [AlgHomClass F R (adjoin R s) B] [StarAlgHomClass F R (adjoin R s) B] {f g : F}
     (h : ∀ x : adjoin R s, (x : A) ∈ s → f x = g x) : f = g := by
-  refine' DFunLike.ext f g fun a =>
-    adjoin_induction' (p := fun y => f y = g y) a (fun x hx => _) (fun r => _)
-    (fun x y hx hy => _) (fun x y hx hy => _) fun x hx => _
+  refine DFunLike.ext f g fun a =>
+    adjoin_induction' (p := fun y => f y = g y) a (fun x hx => ?_) (fun r => ?_)
+    (fun x y hx hy => ?_) (fun x y hx hy => ?_) fun x hx => ?_
   · exact h ⟨x, subset_adjoin R s hx⟩ hx
   · simp only [AlgHomClass.commutes]
   · simp only [map_add, map_add, hx, hy]

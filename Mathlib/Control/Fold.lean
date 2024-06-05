@@ -335,10 +335,10 @@ theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMon
   Eq.symm <|
     calc
       FreeMonoid.toList (foldMap FreeMonoid.of xs) =
-          FreeMonoid.toList (foldMap FreeMonoid.of xs).reverse.reverse :=
-          by simp only [List.reverse_reverse]
-      _ = FreeMonoid.toList (List.foldr cons [] (foldMap FreeMonoid.of xs).reverse).reverse :=
-          by simp only [List.foldr_eta]
+          FreeMonoid.toList (foldMap FreeMonoid.of xs).reverse.reverse := by
+          simp only [List.reverse_reverse]
+      _ = FreeMonoid.toList (List.foldr cons [] (foldMap FreeMonoid.of xs).reverse).reverse := by
+          simp only [List.foldr_eta]
       _ = (unop (Foldl.ofFreeMonoid (flip cons) (foldMap FreeMonoid.of xs)) []).reverse := by
             #adaptation_note /-- nightly-2024-03-16: simp was
             simp [flip, List.foldr_reverse, Foldl.ofFreeMonoid, unop_op] -/
@@ -408,9 +408,9 @@ variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
 theorem foldlm_toList {f : α → β → m α} {x : α} {xs : t β} :
     foldlm f x xs = List.foldlM f x (toList xs) :=
-  calc
-    foldlm f x xs = unop (foldlM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs)) x :=
-    by simp only [foldlm, toList_spec, foldMap_hom_free (foldlM.ofFreeMonoid f),
+  calc foldlm f x xs
+    _ = unop (foldlM.ofFreeMonoid f (FreeMonoid.ofList <| toList xs)) x := by
+      simp only [foldlm, toList_spec, foldMap_hom_free (foldlM.ofFreeMonoid f),
         foldlm.ofFreeMonoid_comp_of, foldlM.get, FreeMonoid.ofList_toList]
     _ = List.foldlM f x (toList xs) := by simp [foldlM.ofFreeMonoid, unop_op, flip]
 #align traversable.mfoldl_to_list Traversable.foldlm_toList
