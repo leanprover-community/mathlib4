@@ -318,9 +318,9 @@ lemma LiftedContextFreeGrammar.sinkNT_inverse_liftNT (G : LiftedContextFreeGramm
   intro x ⟨n₀, hx⟩
   rw [hx, Option.map_some']
   apply congr_arg
-  by_contra x_neq
+  by_contra hnx
   cases (G.sinkNT_liftNT n₀ ▸ G.sink_inj x (G.liftNT n₀)) hx with
-  | inl case_valu => exact x_neq case_valu.symm
+  | inl case_valu => exact hnx case_valu.symm
   | inr case_none => exact Option.noConfusion (hx ▸ case_none)
 
 lemma LiftedContextFreeGrammar.lift_produces {G : LiftedContextFreeGrammar T}
@@ -335,6 +335,7 @@ lemma LiftedContextFreeGrammar.lift_produces {G : LiftedContextFreeGrammar T}
   · simpa only [Symbol.liftString, List.map_append] using congr_arg (Symbol.liftString G.liftNT) bef
   · simpa only [Symbol.liftString, List.map_append] using congr_arg (Symbol.liftString G.liftNT) aft
 
+/-- Derivation by `G.g₀` can be mirrored by `G.g` derivation. -/
 lemma LiftedContextFreeGrammar.lift_derives {G : LiftedContextFreeGrammar T}
     {w₁ w₂ : List (Symbol T G.g₀.NT)} (hG : G.g₀.Derives w₁ w₂) :
     G.g.Derives (Symbol.liftString G.liftNT w₁) (Symbol.liftString G.liftNT w₂) := by
@@ -363,66 +364,55 @@ lemma LiftedContextFreeGrammar.sink_produces {G : LiftedContextFreeGrammar T}
       constructor
       · exact rin
       rw [bef] at hw₁
-      have good_matched_nonterminal : GoodLetter (Symbol.nonterminal r.input) := by
+      obtain ⟨n₀, hn₀⟩ : GoodLetter (Symbol.nonterminal r.input) := by
         apply hw₁ (Symbol.nonterminal r.input)
         apply List.mem_append_left
         apply List.mem_append_right
         rw [List.mem_singleton]
-      rcases good_matched_nonterminal with ⟨n₀, hn₀⟩
       use n₀
-      have almost := congr_arg (Option.map G.liftNT) hn₀
-      rw [G.sinkNT_inverse_liftNT r.input ⟨n₀, hn₀⟩, Option.map_some'] at almost
-      apply Option.some_injective
-      exact almost.symm
-    )
-    with ⟨r₀, pre_in, preimage⟩
-  constructor; swap
+      simpa [G.sinkNT_inverse_liftNT r.input ⟨n₀, hn₀⟩, Option.map_some'] using
+        congr_arg (Option.map G.liftNT) hn₀.symm)
+    with ⟨r₀, hr₀, hrr₀⟩
+  constructor
+  · use r₀
+    constructor
+    · exact hr₀
+    rw [ContextFreeRule.rewrites_iff]
+    use Symbol.sinkString G.sinkNT u, Symbol.sinkString G.sinkNT v
+    have correct_inverse : sinkSymbol G.sinkNT ∘ liftSymbol G.liftNT = Option.some := by
+      ext1 x
+      cases x
+      · rfl
+      rw [Function.comp_apply]
+      simp only [sinkSymbol, liftSymbol, Option.map_eq_some', Symbol.nonterminal.injEq]
+      rw [exists_eq_right]
+      apply G.sinkNT_liftNT
+      exact T
+    constructor
+    · have middle :
+        List.filterMap (sinkSymbol (T := T) G.sinkNT) [Symbol.nonterminal (G.liftNT r₀.input)] =
+          [Symbol.nonterminal r₀.input] := by
+        simp [sinkSymbol, G.sinkNT_liftNT]
+      simpa only [Symbol.sinkString, List.filterMap_append, List.filterMap_append,
+        ContextFreeRule.lift, Symbol.liftString, List.filterMap_map, List.filterMap_some,
+        correct_inverse, ← hrr₀, middle] using congr_arg (Symbol.sinkString G.sinkNT) bef
+    · simpa only [Symbol.sinkString, List.filterMap_append, List.filterMap_append,
+        ContextFreeRule.lift, Symbol.liftString, List.filterMap_map, List.filterMap_some,
+        correct_inverse, ← hrr₀] using congr_arg (Symbol.sinkString G.sinkNT) aft
   · rw [bef] at hw₁
-    rw [aft, ← preimage]
+    rw [aft, ← hrr₀]
     simp only [GoodString, List.forall_mem_append] at hw₁ ⊢
     refine ⟨⟨hw₁.left.left, ?_⟩, hw₁.right⟩
-    intro a a_in_ros
+    intro a ha
     cases a
     · simp [GoodLetter]
-    dsimp only [ContextFreeRule.lift, Symbol.liftString] at a_in_ros
-    rw [List.mem_map] at a_in_ros
-    rcases a_in_ros with ⟨s, -, a_from_s⟩
-    rw [← a_from_s]
+    dsimp only [ContextFreeRule.lift, Symbol.liftString] at ha
+    rw [List.mem_map] at ha
+    rcases ha with ⟨s, -, hs⟩
+    rw [← hs]
     cases s with
-    | terminal _ => exact False.elim (Symbol.noConfusion a_from_s)
+    | terminal _ => exact False.elim (Symbol.noConfusion hs)
     | nonterminal s' => exact ⟨s', G.sinkNT_liftNT s'⟩
-  use r₀
-  constructor
-  · exact pre_in
-  rw [ContextFreeRule.rewrites_iff]
-  use Symbol.sinkString G.sinkNT u, Symbol.sinkString G.sinkNT v
-  have correct_inverse : sinkSymbol G.sinkNT ∘ liftSymbol G.liftNT = Option.some := by
-    ext1 x
-    cases x
-    · rfl
-    rw [Function.comp_apply]
-    simp only [sinkSymbol, liftSymbol, Option.map_eq_some', Symbol.nonterminal.injEq]
-    rw [exists_eq_right]
-    apply G.sinkNT_liftNT
-    exact T
-  constructor
-  · have sink_bef := congr_arg (Symbol.sinkString G.sinkNT) bef
-    simp only [Symbol.sinkString, List.filterMap_append] at sink_bef
-    convert sink_bef
-    rw [← preimage]
-    show
-      [Symbol.nonterminal r₀.input] =
-      List.filterMap
-        (sinkSymbol G.sinkNT)
-        (List.map (liftSymbol G.liftNT) [Symbol.nonterminal r₀.input])
-    rw [List.filterMap_map, correct_inverse, List.filterMap_some]
-  · have sink_aft := congr_arg (Symbol.sinkString G.sinkNT) aft
-    unfold Symbol.sinkString at *
-    rw [List.filterMap_append, List.filterMap_append] at sink_aft
-    convert sink_aft
-    rw [← preimage]
-    dsimp only [ContextFreeRule.lift, Symbol.liftString]
-    rw [List.filterMap_map, correct_inverse, List.filterMap_some]
 
 lemma LiftedContextFreeGrammar.sink_derives_aux {G : LiftedContextFreeGrammar T}
     {w₁ w₂ : List (Symbol T G.g.NT)} (hG : G.g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
@@ -434,6 +424,8 @@ lemma LiftedContextFreeGrammar.sink_derives_aux {G : LiftedContextFreeGrammar T}
     have both := sink_produces orig ih.right
     exact ⟨ContextFreeGrammar.Derives.trans_produces ih.left both.left, both.right⟩
 
+/-- Derivation by `G.g` can be mirrored by `G.g₀` derivation if that the starting word does not
+contain any nonterminals that `G.g₀` lacks. -/
 lemma LiftedContextFreeGrammar.sink_derives (G : LiftedContextFreeGrammar T)
     {w₁ w₂ : List (Symbol T G.g.NT)} (hG : G.g.Derives w₁ w₂) (hw₁ : GoodString w₁) :
     G.g₀.Derives (Symbol.sinkString G.sinkNT w₁) (Symbol.sinkString G.sinkNT w₂) :=
