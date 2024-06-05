@@ -43,7 +43,7 @@ variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 open scoped Classical
-open Topology BigOperators NNReal Filter ENNReal
+open Topology NNReal Filter ENNReal
 
 open Set Filter Asymptotics
 
@@ -60,7 +60,7 @@ structure HasFiniteFPowerSeriesOnBall (f : E → F) (p : FormalMultilinearSeries
 
 theorem HasFiniteFPowerSeriesOnBall.mk' {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {x : E}
     {n : ℕ} {r : ℝ≥0∞} (finite : ∀ (m : ℕ), n ≤ m → p m = 0) (pos : 0 < r)
-    (sum_eq : ∀ y ∈ EMetric.ball 0 r, (∑ i in Finset.range n, p i fun _ ↦ y) = f (x + y)) :
+    (sum_eq : ∀ y ∈ EMetric.ball 0 r, (∑ i ∈ Finset.range n, p i fun _ ↦ y) = f (x + y)) :
     HasFiniteFPowerSeriesOnBall f p x n r where
   r_le := p.radius_eq_top_of_eventually_eq_zero (Filter.eventually_atTop.mpr ⟨n, finite⟩) ▸ le_top
   r_pos := pos

@@ -51,7 +51,7 @@ variable {𝓕 𝕜 α ι κ E F G : Type*}
 
 open Filter Function Metric Bornology
 
-open BigOperators ENNReal Filter NNReal Uniformity Pointwise Topology
+open ENNReal Filter NNReal Uniformity Pointwise Topology
 
 /-- Auxiliary class, endowing a type `E` with a function `norm : E → ℝ` with notation `‖x‖`. This
 class is designed to be extended in more interesting classes specifying the properties of the norm.
@@ -1397,8 +1397,9 @@ theorem eventually_ne_of_tendsto_norm_atTop' {l : Filter α} {f : α → E}
 #align eventually_ne_of_tendsto_norm_at_top eventually_ne_of_tendsto_norm_atTop
 
 @[to_additive]
-theorem SeminormedCommGroup.mem_closure_iff : a ∈ closure s ↔ ∀ ε, 0 < ε → ∃ b ∈ s, ‖a / b‖ < ε :=
-  by simp [Metric.mem_closure_iff, dist_eq_norm_div]
+theorem SeminormedCommGroup.mem_closure_iff :
+    a ∈ closure s ↔ ∀ ε, 0 < ε → ∃ b ∈ s, ‖a / b‖ < ε := by
+  simp [Metric.mem_closure_iff, dist_eq_norm_div]
 #align seminormed_comm_group.mem_closure_iff SeminormedCommGroup.mem_closure_iff
 #align seminormed_add_comm_group.mem_closure_iff SeminormedAddCommGroup.mem_closure_iff
 
@@ -1614,12 +1615,12 @@ theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x =
 -- Porting note: had to add `ι` here because otherwise the universe order gets switched compared to
 -- `norm_prod_le` below
 theorem norm_sum_le {ι E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E) :
-    ‖∑ i in s, f i‖ ≤ ∑ i in s, ‖f i‖ :=
+    ‖∑ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ :=
   s.le_sum_of_subadditive norm norm_zero norm_add_le f
 #align norm_sum_le norm_sum_le
 
 @[to_additive existing]
-theorem norm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ i in s, f i‖ ≤ ∑ i in s, ‖f i‖ := by
+theorem norm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ := by
   rw [← Multiplicative.ofAdd_le, ofAdd_sum]
   refine Finset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ norm) ?_ (fun x y => ?_) _ _
   · simp only [comp_apply, norm_one', ofAdd_zero]
@@ -1628,7 +1629,7 @@ theorem norm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ i in s, f i‖ ≤ 
 
 @[to_additive]
 theorem norm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ} (h : ∀ b ∈ s, ‖f b‖ ≤ n b) :
-    ‖∏ b in s, f b‖ ≤ ∑ b in s, n b :=
+    ‖∏ b ∈ s, f b‖ ≤ ∑ b ∈ s, n b :=
   (norm_prod_le s f).trans <| Finset.sum_le_sum h
 #align norm_prod_le_of_le norm_prod_le_of_le
 #align norm_sum_le_of_le norm_sum_le_of_le
@@ -1636,7 +1637,7 @@ theorem norm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ} (h : 
 @[to_additive]
 theorem dist_prod_prod_le_of_le (s : Finset ι) {f a : ι → E} {d : ι → ℝ}
     (h : ∀ b ∈ s, dist (f b) (a b) ≤ d b) :
-    dist (∏ b in s, f b) (∏ b in s, a b) ≤ ∑ b in s, d b := by
+    dist (∏ b ∈ s, f b) (∏ b ∈ s, a b) ≤ ∑ b ∈ s, d b := by
   simp only [dist_eq_norm_div, ← Finset.prod_div_distrib] at *
   exact norm_prod_le_of_le s h
 #align dist_prod_prod_le_of_le dist_prod_prod_le_of_le
@@ -1644,7 +1645,7 @@ theorem dist_prod_prod_le_of_le (s : Finset ι) {f a : ι → E} {d : ι → ℝ
 
 @[to_additive]
 theorem dist_prod_prod_le (s : Finset ι) (f a : ι → E) :
-    dist (∏ b in s, f b) (∏ b in s, a b) ≤ ∑ b in s, dist (f b) (a b) :=
+    dist (∏ b ∈ s, f b) (∏ b ∈ s, a b) ≤ ∑ b ∈ s, dist (f b) (a b) :=
   dist_prod_prod_le_of_le s fun _ _ => le_rfl
 #align dist_prod_prod_le dist_prod_prod_le
 #align dist_sum_sum_le dist_sum_sum_le
@@ -1753,7 +1754,7 @@ open Finset
 theorem controlled_prod_of_mem_closure {s : Subgroup E} (hg : a ∈ closure (s : Set E)) {b : ℕ → ℝ}
     (b_pos : ∀ n, 0 < b n) :
     ∃ v : ℕ → E,
-      Tendsto (fun n => ∏ i in range (n + 1), v i) atTop (𝓝 a) ∧
+      Tendsto (fun n => ∏ i ∈ range (n + 1), v i) atTop (𝓝 a) ∧
         (∀ n, v n ∈ s) ∧ ‖v 0 / a‖ < b 0 ∧ ∀ n, 0 < n → ‖v n‖ < b n := by
   obtain ⟨u : ℕ → E, u_in : ∀ n, u n ∈ s, lim_u : Tendsto u atTop (𝓝 a)⟩ :=
     mem_closure_iff_seq_limit.mp hg
@@ -1786,7 +1787,7 @@ theorem controlled_prod_of_mem_closure {s : Subgroup E} (hg : a ∈ closure (s :
 theorem controlled_prod_of_mem_closure_range {j : E →* F} {b : F}
     (hb : b ∈ closure (j.range : Set F)) {f : ℕ → ℝ} (b_pos : ∀ n, 0 < f n) :
     ∃ a : ℕ → E,
-      Tendsto (fun n => ∏ i in range (n + 1), j (a i)) atTop (𝓝 b) ∧
+      Tendsto (fun n => ∏ i ∈ range (n + 1), j (a i)) atTop (𝓝 b) ∧
         ‖j (a 0) / b‖ < f 0 ∧ ∀ n, 0 < n → ‖j (a n)‖ < f n := by
   obtain ⟨v, sum_v, v_in, hv₀, hv_pos⟩ := controlled_prod_of_mem_closure hb b_pos
   choose g hg using v_in
@@ -1822,7 +1823,7 @@ theorem nnnorm_multiset_prod_le (m : Multiset E) : ‖m.prod‖₊ ≤ (m.map fu
 #align nnnorm_multiset_sum_le nnnorm_multiset_sum_le
 
 @[to_additive]
-theorem nnnorm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ a in s, f a‖₊ ≤ ∑ a in s, ‖f a‖₊ :=
+theorem nnnorm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ a ∈ s, f a‖₊ ≤ ∑ a ∈ s, ‖f a‖₊ :=
   NNReal.coe_le_coe.1 <| by
     push_cast
     exact norm_prod_le _ _
@@ -1831,7 +1832,7 @@ theorem nnnorm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ a in s, f a‖₊
 
 @[to_additive]
 theorem nnnorm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ≥0} (h : ∀ b ∈ s, ‖f b‖₊ ≤ n b) :
-    ‖∏ b in s, f b‖₊ ≤ ∑ b in s, n b :=
+    ‖∏ b ∈ s, f b‖₊ ≤ ∑ b ∈ s, n b :=
   (norm_prod_le_of_le s h).trans_eq NNReal.coe_sum.symm
 #align nnnorm_prod_le_of_le nnnorm_prod_le_of_le
 #align nnnorm_sum_le_of_le nnnorm_sum_le_of_le
@@ -2093,10 +2094,10 @@ instance (priority := 100) SeminormedCommGroup.toTopologicalGroup : TopologicalG
 
 @[to_additive]
 theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n ≥ N, u n = v n)
-    (hv : CauchySeq fun n => ∏ k in range (n + 1), v k) :
-    CauchySeq fun n => ∏ k in range (n + 1), u k := by
-  let d : ℕ → E := fun n => ∏ k in range (n + 1), u k / v k
-  rw [show (fun n => ∏ k in range (n + 1), u k) = d * fun n => ∏ k in range (n + 1), v k
+    (hv : CauchySeq fun n => ∏ k ∈ range (n + 1), v k) :
+    CauchySeq fun n => ∏ k ∈ range (n + 1), u k := by
+  let d : ℕ → E := fun n => ∏ k ∈ range (n + 1), u k / v k
+  rw [show (fun n => ∏ k ∈ range (n + 1), u k) = d * fun n => ∏ k ∈ range (n + 1), v k
       by ext n; simp [d]]
   suffices ∀ n ≥ N, d n = d N from (tendsto_atTop_of_eventually_const this).cauchySeq.mul hv
   intro n hn

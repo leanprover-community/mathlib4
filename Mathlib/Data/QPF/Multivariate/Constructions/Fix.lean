@@ -139,8 +139,8 @@ set_option linter.uppercaseLean3 false in
 theorem wrepr_wMk {α : TypeVec n} (a : q.P.A) (f' : q.P.drop.B a ⟹ α)
     (f : q.P.last.B a → q.P.W α) :
     wrepr (q.P.wMk a f' f) =
-      q.P.wMk' (repr (abs (appendFun id wrepr <$$> ⟨a, q.P.appendContents f' f⟩))) :=
-  by rw [wrepr, recF_eq', q.P.wDest'_wMk]; rfl
+      q.P.wMk' (repr (abs (appendFun id wrepr <$$> ⟨a, q.P.appendContents f' f⟩))) := by
+  rw [wrepr, recF_eq', q.P.wDest'_wMk]; rfl
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wrepr_W_mk MvQPF.wrepr_wMk
 

@@ -169,9 +169,10 @@ namespace Int
 
 theorem gcd_def (i j : ℤ) : gcd i j = Nat.gcd i.natAbs j.natAbs := rfl
 
-protected theorem coe_nat_gcd (m n : ℕ) : Int.gcd ↑m ↑n = Nat.gcd m n :=
-  rfl
-#align int.coe_nat_gcd Int.coe_nat_gcd
+@[simp, norm_cast] protected lemma gcd_natCast_natCast (m n : ℕ) : gcd ↑m ↑n = m.gcd n := rfl
+#align int.coe_nat_gcd Int.gcd_natCast_natCast
+
+@[deprecated (since := "2024-05-25")] alias coe_nat_gcd := Int.gcd_natCast_natCast
 
 /-- The extended GCD `a` value in the equation `gcd x y = x * a + y * b`. -/
 def gcdA : ℤ → ℤ → ℤ

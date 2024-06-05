@@ -31,7 +31,7 @@ noncomputable section
 
 open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap
 
-open scoped NNReal ENNReal Topology BigOperators MeasureTheory
+open scoped NNReal ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
 
@@ -138,9 +138,8 @@ theorem setIntegral_abs_condexp_le {s : Set α} (hs : MeasurableSet[m] s) (f : �
   simp_rw [← Real.norm_eq_abs, norm_indicator_eq_indicator_norm]
 #align measure_theory.set_integral_abs_condexp_le MeasureTheory.setIntegral_abs_condexp_le
 
-@[deprecated]
-alias set_integral_abs_condexp_le :=
-  setIntegral_abs_condexp_le -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_abs_condexp_le := setIntegral_abs_condexp_le
 
 /-- If the real valued function `f` is bounded almost everywhere by `R`, then so is its conditional
 expectation. -/
@@ -265,7 +264,7 @@ theorem condexp_stronglyMeasurable_mul_of_bound (hm : m ≤ m0) [IsFiniteMeasure
     hf.tendsto_approxBounded_ae hf_bound
   by_cases hμ : μ = 0
   · simp only [hμ, ae_zero]; norm_cast
-  have : μ.ae.NeBot := by simp only [hμ, ae_neBot, Ne, not_false_iff]
+  have : (ae μ).NeBot := ae_neBot.2 hμ
   have hc : 0 ≤ c := by
     rcases hf_bound.exists with ⟨_x, hx⟩
     exact (norm_nonneg _).trans hx

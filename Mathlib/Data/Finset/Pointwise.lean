@@ -58,7 +58,7 @@ pointwise subtraction
 
 open Function MulOpposite
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 variable {F α β γ : Type*}
 
@@ -337,6 +337,9 @@ theorem preimage_inv (s : Finset α) : s.preimage (·⁻¹) (inv_injective.injOn
 
 @[to_additive (attr := simp)]
 lemma inv_univ [Fintype α] : (univ : Finset α)⁻¹ = univ := by ext; simp
+
+@[to_additive (attr := simp)]
+lemma inv_inter (s t : Finset α) : (s ∩ t)⁻¹ = s⁻¹ ∩ t⁻¹ := coe_injective <| by simp
 
 end InvolutiveInv
 
@@ -1091,7 +1094,7 @@ scoped[Pointwise] attribute [instance] Finset.commMonoid Finset.addCommMonoid
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_prod {ι : Type*} (s : Finset ι) (f : ι → Finset α) :
-    ↑(∏ i in s, f i) = ∏ i in s, (f i : Set α) :=
+    ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : Set α) :=
   map_prod ((coeMonoidHom) : Finset α →* Set α) _ _
 #align finset.coe_prod Finset.coe_prod
 #align finset.coe_sum Finset.coe_sum
@@ -1340,8 +1343,8 @@ theorem preimage_mul_right_singleton :
 #align finset.preimage_add_right_singleton Finset.preimage_add_right_singleton
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_left_one : preimage 1 (a * ·) ((mul_right_injective _).injOn _) = {a⁻¹} :=
-  by classical rw [← image_mul_left', image_one, mul_one]
+theorem preimage_mul_left_one : preimage 1 (a * ·) ((mul_right_injective _).injOn _) = {a⁻¹} := by
+  classical rw [← image_mul_left', image_one, mul_one]
 #align finset.preimage_mul_left_one Finset.preimage_mul_left_one
 #align finset.preimage_add_left_zero Finset.preimage_add_left_zero
 
@@ -1352,8 +1355,8 @@ theorem preimage_mul_right_one : preimage 1 (· * b) ((mul_left_injective _).inj
 #align finset.preimage_add_right_zero Finset.preimage_add_right_zero
 
 @[to_additive]
-theorem preimage_mul_left_one' : preimage 1 (a⁻¹ * ·) ((mul_right_injective _).injOn _) = {a} :=
-  by rw [preimage_mul_left_one, inv_inv]
+theorem preimage_mul_left_one' : preimage 1 (a⁻¹ * ·) ((mul_right_injective _).injOn _) = {a} := by
+  rw [preimage_mul_left_one, inv_inv]
 #align finset.preimage_mul_left_one' Finset.preimage_mul_left_one'
 #align finset.preimage_add_left_zero' Finset.preimage_add_left_zero'
 
@@ -2052,6 +2055,17 @@ theorem card_le_card_mul_right {t : Finset α} (ht : t.Nonempty) : s.card ≤ (s
 
 end
 
+section Group
+variable [Group α] [DecidableEq α] {s t : Finset α}
+
+@[to_additive] lemma card_le_card_div_left (hs : s.Nonempty) : t.card ≤ (s / t).card :=
+  card_le_card_image₂_left _ hs fun _ ↦ div_right_injective
+
+@[to_additive] lemma card_le_card_div_right (ht : t.Nonempty) : s.card ≤ (s / t).card :=
+  card_le_card_image₂_right _ ht fun _ ↦ div_left_injective
+
+end Group
+
 open Pointwise
 
 @[to_additive]
@@ -2363,10 +2377,10 @@ section CommMonoid
 variable [CommMonoid α] {ι : Type*} [DecidableEq ι]
 
 @[to_additive (attr := simp)] lemma prod_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∏ i in s⁻¹, f i = ∏ i in s, f i⁻¹ := prod_image <| inv_injective.injOn _
+    ∏ i ∈ s⁻¹, f i = ∏ i ∈ s, f i⁻¹ := prod_image <| inv_injective.injOn _
 
 @[to_additive existing, simp] lemma prod_neg_index [InvolutiveNeg ι] (s : Finset ι) (f : ι → α) :
-    ∏ i in -s, f i = ∏ i in s, f (-i) := prod_image <| neg_injective.injOn _
+    ∏ i ∈ -s, f i = ∏ i ∈ s, f (-i) := prod_image <| neg_injective.injOn _
 
 end CommMonoid
 
@@ -2374,7 +2388,7 @@ section AddCommMonoid
 variable [AddCommMonoid α] {ι : Type*} [DecidableEq ι]
 
 @[to_additive existing, simp] lemma sum_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∑ i in s⁻¹, f i = ∑ i in s, f i⁻¹ := sum_image <| inv_injective.injOn _
+    ∑ i ∈ s⁻¹, f i = ∑ i ∈ s, f i⁻¹ := sum_image <| inv_injective.injOn _
 
 end AddCommMonoid
 end BigOps
