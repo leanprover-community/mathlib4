@@ -412,7 +412,7 @@ theorem of_smul (f : α → β → β) (x : α) (y : β) :
 /-! ### map -/
 
 section Map
-variable {f : α → β} { a b : FreeMonoid α}
+variable {f : α → β} {a b : FreeMonoid α}
 /-- The unique monoid homomorphism `FreeMonoid α →* FreeMonoid β` that sends
 each `of x` to `of (f x)`. -/
 @[to_additive "The unique additive monoid homomorphism `FreeAddMonoid α →+ FreeAddMonoid β`
