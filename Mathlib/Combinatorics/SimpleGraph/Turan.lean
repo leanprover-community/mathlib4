@@ -145,7 +145,7 @@ lemma degree_eq_of_not_adj (hn : ¬G.Adj s t) : G.degree s = G.degree t := by
   omega
 
 /-- In a Turán-maximal graph, non-adjacency is transitive. -/
-lemma not_adj_transitive (hst : ¬G.Adj s t) (hsu : ¬G.Adj s u) : ¬G.Adj t u := by
+lemma transitive_of_not_adj (hst : ¬G.Adj s t) (hsu : ¬G.Adj s u) : ¬G.Adj t u := by
   have dst := h.degree_eq_of_not_adj hst
   have dsu := h.degree_eq_of_not_adj hsu
   rw [IsTuranMaximal] at h; contrapose! h; intro cf
@@ -171,16 +171,16 @@ lemma not_adj_transitive (hst : ¬G.Adj s t) (hsu : ¬G.Adj s u) : ¬G.Adj t u :
   omega
 
 /-- In a Turán-maximal graph, non-adjacency is an equivalence relation. -/
-theorem not_adj_equivalence : Equivalence fun x y ↦ ¬G.Adj x y where
+theorem equivalence_of_not_adj : Equivalence fun x y ↦ ¬G.Adj x y where
   refl x := by simp
   symm xy := by simp [xy, adj_comm]
   trans xy yz := by
     rw [adj_comm] at xy
-    exact h.not_adj_transitive xy yz
+    exact h.transitive_of_not_adj xy yz
 
 /-- The non-adjacency setoid over the vertices of a Turán-maximal graph
-induced by `not_adj_equivalence`. -/
-def setoid : Setoid V := ⟨_, h.not_adj_equivalence⟩
+induced by `equivalence_of_not_adj`. -/
+def setoid : Setoid V := ⟨_, h.equivalence_of_not_adj⟩
 
 instance : DecidableRel h.setoid.r :=
   inferInstanceAs <| DecidableRel fun v w ↦ ¬G.Adj v w
