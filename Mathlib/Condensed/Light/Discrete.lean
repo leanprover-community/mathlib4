@@ -12,11 +12,12 @@ import Mathlib.Condensed.Light.Basic
 
 # Discrete-underlying adjunction
 
-Given a well-behaved concrete category `C`, we define a functor `C ⥤ Condensed C` which associates
-to an object of `C` the corresponding "discrete" condensed object (see `Condensed.discrete`).
+Given a well-behaved concrete category `C`, we define a functor `C ⥤ LightCondensed C` which
+associates to an object of `C` the corresponding "discrete" condensed object
+(see `LightCondensed.discrete`).
 
-In `Condensed.discreteUnderlyingAdj` we prove that this functor is left adjoint to the forgetful
-functor from `Condensed C` to `C`.
+In `LightCondensed.discreteUnderlyingAdj` we prove that this functor is left adjoint to the
+forgetful functor from `Condensed C` to `C`.
 -/
 
 universe u v w
@@ -54,4 +55,4 @@ noncomputable abbrev LightCondSet.underlying := LightCondensed.underlying (Type 
 
 /-- A version of `LightCondensed.discrete_underlying_adj` in the `LightCondSet` namespace -/
 noncomputable abbrev LightCondSet.discreteUnderlyingAdj : discrete ⊣ underlying :=
-  LightCondensed.discrete_underlying_adj _
+  LightCondensed.discreteUnderlyingAdj _
