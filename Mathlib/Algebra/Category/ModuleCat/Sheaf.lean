@@ -104,6 +104,7 @@ instance : Preadditive (SheafOfModules.{v} R) where
 instance : (forget R).Additive where
 
 instance : (toSheaf R).Additive where
+
 /-- The type of sections of a sheaf of modules. -/
 abbrev sections (M : SheafOfModules.{v} R) : Type _ := M.val.sections
 

@@ -338,7 +338,6 @@ noncomputable def sheafifyHomEquiv' {F : PresheafOfModules.{v} R.val}
     (homEquivOfIsLocallyBijective (f := toSheafify α φ)
       (N := (restrictScalars α).obj F) hF)
 
-@[simp]
 lemma comp_sheafifyHomEquiv'_symm_hom {F : PresheafOfModules.{v} R.val}
     (hF : Presheaf.IsSheaf J F.presheaf) (f : M₀ ⟶ (restrictScalars α).obj F) :
     φ ≫ ((sheafifyHomEquiv' α φ hF).symm f).hom = f.hom :=
@@ -372,7 +371,10 @@ def sheafifyMap : sheafify α φ ⟶ sheafify α φ' where
       map_smul := by
         let f := (sheafifyHomEquiv' α φ (by exact A'.cond)).symm (τ₀ ≫ toSheafify α φ')
         have eq : τ.val = f.hom := ((J.W_of_isLocallyBijective φ).homEquiv _ A'.cond).injective
-          (by simp [f, ← fac])
+          (by
+            dsimp [f]
+            erw [comp_sheafifyHomEquiv'_symm_hom]
+            simp only [← fac, toSheafify_hom, Hom.comp_hom])
         convert f.map_smul }
 
 end
