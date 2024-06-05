@@ -192,8 +192,8 @@ theorem Projective.iff_split : Module.Projective R P ↔
 /-- A quotient of a projective module is projective iff it is a direct summand. -/
 theorem Projective.iff_split_of_projective [Module.Projective R M] (s : M →ₗ[R] P)
     (hs : Function.Surjective s) :
-    Module.Projective R P ↔ ∃ i, s ∘ₗ i = LinearMap.id := by
-  refine ⟨fun h ↦ projective_lifting_property _ _ hs, fun ⟨i, H⟩ ↦ Projective.of_split i s H⟩
+    Module.Projective R P ↔ ∃ i, s ∘ₗ i = LinearMap.id :=
+  ⟨fun h ↦ projective_lifting_property _ _ hs, fun ⟨i, H⟩ ↦ Projective.of_split i s H⟩
 
 open TensorProduct in
 instance Projective.tensorProduct [hM : Module.Projective R M] [hN : Module.Projective R₀ N] :
