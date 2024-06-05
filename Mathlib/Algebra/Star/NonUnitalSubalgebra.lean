@@ -251,7 +251,7 @@ instance instSMulCommClass' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTow
     [SMulCommClass R' R A] : SMulCommClass R' R S where
   smul_comm r' r s := Subtype.ext <| smul_comm r' r (s : A)
 
-instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S where
+instance instSMulCommClass (priority := 2200) [SMulCommClass R A A] : SMulCommClass R S S where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : A) (y : A)
 
 end

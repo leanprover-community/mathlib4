@@ -286,7 +286,7 @@ instance module' [Semiring R₁] [Module R₁ R] [SMulCommClass R₁ R R] : Modu
 instance : Module R (⨂[R] i, s i) :=
   PiTensorProduct.module'
 
-instance : SMulCommClass R R (⨂[R] i, s i) :=
+instance (priority := 2200) : SMulCommClass R R (⨂[R] i, s i) :=
   PiTensorProduct.smulCommClass'
 
 instance : IsScalarTower R R (⨂[R] i, s i) :=

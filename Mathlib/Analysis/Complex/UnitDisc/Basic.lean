@@ -126,11 +126,11 @@ instance isScalarTower_circle : IsScalarTower circle 𝔻 𝔻 :=
   isScalarTower_sphere_ball_ball
 #align complex.unit_disc.is_scalar_tower_circle Complex.UnitDisc.isScalarTower_circle
 
-instance instSMulCommClass_circle : SMulCommClass circle 𝔻 𝔻 :=
+instance (priority := 2200) instSMulCommClass_circle : SMulCommClass circle 𝔻 𝔻 :=
   instSMulCommClass_sphere_ball_ball
 #align complex.unit_disc.smul_comm_class_circle Complex.UnitDisc.instSMulCommClass_circle
 
-instance instSMulCommClass_circle' : SMulCommClass 𝔻 circle 𝔻 :=
+instance (priority := 2200) instSMulCommClass_circle' : SMulCommClass 𝔻 circle 𝔻 :=
   SMulCommClass.symm _ _ _
 #align complex.unit_disc.smul_comm_class_circle' Complex.UnitDisc.instSMulCommClass_circle'
 
@@ -152,11 +152,13 @@ instance isScalarTower_closedBall : IsScalarTower (closedBall (0 : ℂ) 1) 𝔻 
   isScalarTower_closedBall_ball_ball
 #align complex.unit_disc.is_scalar_tower_closed_ball Complex.UnitDisc.isScalarTower_closedBall
 
-instance instSMulCommClass_closedBall : SMulCommClass (closedBall (0 : ℂ) 1) 𝔻 𝔻 :=
+instance (priority := 2200) instSMulCommClass_closedBall :
+    SMulCommClass (closedBall (0 : ℂ) 1) 𝔻 𝔻 :=
   ⟨fun _ _ _ => Subtype.ext <| mul_left_comm _ _ _⟩
 #align complex.unit_disc.smul_comm_class_closed_ball Complex.UnitDisc.instSMulCommClass_closedBall
 
-instance instSMulCommClass_closedBall' : SMulCommClass 𝔻 (closedBall (0 : ℂ) 1) 𝔻 :=
+instance (priority := 2200) instSMulCommClass_closedBall' :
+    SMulCommClass 𝔻 (closedBall (0 : ℂ) 1) 𝔻 :=
   SMulCommClass.symm _ _ _
 #align complex.unit_disc.smul_comm_class_closed_ball' Complex.UnitDisc.instSMulCommClass_closedBall'
 

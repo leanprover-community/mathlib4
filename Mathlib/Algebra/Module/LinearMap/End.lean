@@ -121,12 +121,12 @@ instance _root_.Module.End.isScalarTower :
   ⟨smul_comp⟩
 #align module.End.is_scalar_tower Module.End.isScalarTower
 
-instance _root_.Module.End.smulCommClass [SMul S R] [IsScalarTower S R M] :
+instance (priority := 2200) _root_.Module.End.smulCommClass [SMul S R] [IsScalarTower S R M] :
     SMulCommClass S (Module.End R M) (Module.End R M) :=
   ⟨fun s _ _ ↦ (comp_smul _ s _).symm⟩
 #align module.End.smul_comm_class Module.End.smulCommClass
 
-instance _root_.Module.End.smulCommClass' [SMul S R] [IsScalarTower S R M] :
+instance (priority := 2200) _root_.Module.End.smulCommClass' [SMul S R] [IsScalarTower S R M] :
     SMulCommClass (Module.End R M) S (Module.End R M) :=
   SMulCommClass.symm _ _ _
 #align module.End.smul_comm_class' Module.End.smulCommClass'

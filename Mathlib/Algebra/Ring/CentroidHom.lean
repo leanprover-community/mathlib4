@@ -464,10 +464,10 @@ instance applyModule : Module (CentroidHom α) α where
 @[simp]
 lemma smul_def (T : CentroidHom α) (a : α) : T • a = T a := rfl
 
-instance : SMulCommClass (CentroidHom α) α α where
+instance (priority := 2200) : SMulCommClass (CentroidHom α) α α where
   smul_comm _ _ _ := map_mul_left _ _ _
 
-instance : SMulCommClass α (CentroidHom α) α := SMulCommClass.symm _ _ _
+instance (priority := 2200) : SMulCommClass α (CentroidHom α) α := SMulCommClass.symm _ _ _
 
 instance : IsScalarTower (CentroidHom α) α α where
   smul_assoc _ _ _ := (map_mul_right _ _ _).symm

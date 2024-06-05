@@ -1113,7 +1113,7 @@ instance Semiring.isScalarTower [Fintype n] [Monoid R] [DistribMulAction R α]
 #align matrix.semiring.is_scalar_tower Matrix.Semiring.isScalarTower
 
 /-- This instance enables use with `mul_smul_comm`. -/
-instance Semiring.smulCommClass [Fintype n] [Monoid R] [DistribMulAction R α]
+instance (priority := 2200) Semiring.smulCommClass [Fintype n] [Monoid R] [DistribMulAction R α]
     [SMulCommClass R α α] : SMulCommClass R (Matrix n n α) (Matrix n n α) :=
   ⟨fun r m n => (Matrix.mul_smul m r n).symm⟩
 #align matrix.semiring.smul_comm_class Matrix.Semiring.smulCommClass
