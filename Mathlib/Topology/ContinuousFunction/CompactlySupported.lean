@@ -25,8 +25,6 @@ When the domain `α` is compact, `ContinuousMap.liftCompactlySupported` gives th
 
 ## TODO
 
-* Create more intances of algebraic structures (e.g., `NonUnitalSemiring`) once the necessary
-  type classes (e.g., `TopologicalRing`) are sufficiently generalized.
 -/
 
 variable {F α β γ : Type*} [TopologicalSpace α]
@@ -319,11 +317,11 @@ instance [NonUnitalNonAssocRing β] [TopologicalRing β] :
   DFunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
 
-instance instNonUnitalRing [NonUnitalRing β] [TopologicalRing β] : NonUnitalRing C_c(α, β) :=
+instance [NonUnitalRing β] [TopologicalRing β] : NonUnitalRing C_c(α, β) :=
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ => rfl)
     fun _ _ => rfl
 
-instance instNonUnitalCommRing [NonUnitalCommRing β] [TopologicalRing β] :
+instance [NonUnitalCommRing β] [TopologicalRing β] :
     NonUnitalCommRing C_c(α, β) :=
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
@@ -380,7 +378,10 @@ theorem coe_star (f : C_c(α, β)) : ⇑(star f) = star (⇑f) :=
 theorem star_apply (f : C_c(α, β)) (x : α) : (star f) x = star (f x) :=
   rfl
 
-instance instStarAddMonoid [ContinuousAdd β] : StarAddMonoid C_c(α, β) where
+instance [TrivialStar β] : TrivialStar C_c(α, β) where
+    star_trivial f := ext fun x => star_trivial (f x)
+
+instance [ContinuousAdd β] : StarAddMonoid C_c(α, β) where
   star_involutive f := ext fun x => star_star (f x)
   star_add f g := ext fun x => star_add (f x) (g x)
 
