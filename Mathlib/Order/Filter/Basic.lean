@@ -2716,7 +2716,7 @@ theorem map_iInf_eq {f : ι → Filter α} {m : α → β} (hf : Directed (· �
   map_iInf_le.antisymm fun s (hs : m ⁻¹' s ∈ iInf f) =>
     let ⟨i, hi⟩ := (mem_iInf_of_directed hf _).1 hs
     have : ⨅ i, map m (f i) ≤ 𝓟 s :=
-      iInf_le_of_le i <| by simp only [le_principal_iff, mem_map, hi]
+      iInf_le_of_le i <| by simpa only [le_principal_iff, mem_map]
     Filter.le_principal_iff.1 this
 #align filter.map_infi_eq Filter.map_iInf_eq
 
