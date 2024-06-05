@@ -122,7 +122,7 @@ theorem copy_eq (f : C_c(α, β)) (f' : α → β) (h : f' = f) : f.copy f' h = 
 theorem eq_of_empty [IsEmpty α] (f g : C_c(α, β)) : f = g :=
   ext <| IsEmpty.elim ‹_›
 
-/-- A continuous function on a compact space has automatically compact support. -/
+/-- A continuous function on a compact space automatically has compact support. -/
 @[simps]
 def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(α, β) where
   toFun f :=
