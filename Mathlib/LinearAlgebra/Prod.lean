@@ -886,6 +886,11 @@ namespace LinearMap
 /-!
 ## Tunnels and tailings
 
+NOTE: The proof of strong rank condition for noetherian rings is changed.
+`LinearMap.tunnel` and `LinearMap.tailing` are not used in mathlib anymore.
+These are marked as deprecated with no replacements.
+If you use them in external projects, please consider using other arguments instead.
+
 Some preliminary work for establishing the strong rank condition for noetherian rings.
 
 Given a morphism `f : M × N →ₗ[R] M` which is `i : Injective f`,
