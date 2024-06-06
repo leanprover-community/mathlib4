@@ -168,19 +168,16 @@ carries over as well. -/
 protected theorem isLawfulTraversable' [Traversable t']
     (h₀ : ∀ {α β} (f : α → β), map f = Equiv.map eqv f)
     (h₁ : ∀ {α β} (f : β), mapConst f = (Equiv.map eqv ∘ Function.const α) f)
-    (h₂ :
-      ∀ {F : Type u → Type u} [Applicative F],
-        ∀ [LawfulApplicative F] {α β} (f : α → F β), traverse f = Equiv.traverse eqv f) :
-    LawfulTraversable t' := by
+    (h₂ : ∀ {F : Type u → Type u} [Applicative F],
+      ∀ [LawfulApplicative F] {α β} (f : α → F β), traverse f = Equiv.traverse eqv f) :
+    LawfulTraversable t' where
   -- we can't use the same approach as for `lawful_functor'` because
   -- h₂ needs a `LawfulApplicative` assumption
-  refine' { toLawfulFunctor := Equiv.lawfulFunctor' eqv @h₀ @h₁.. } <;> intros
-  · rw [h₂, Equiv.id_traverse]
-  · rw [h₂, Equiv.comp_traverse, h₂]
-    congr
-    rw [h₂]
-  · rw [h₂, Equiv.traverse_eq_map_id, h₀]; rfl
-  · rw [h₂, Equiv.naturality, h₂]
+  toLawfulFunctor := Equiv.lawfulFunctor' eqv @h₀ @h₁
+  id_traverse _ := by rw [h₂, Equiv.id_traverse]
+  comp_traverse _ _ _ := by rw [h₂, Equiv.comp_traverse, h₂]; congr; rw [h₂]
+  traverse_eq_map_id _ _ := by rw [h₂, Equiv.traverse_eq_map_id, h₀]; rfl
+  naturality _ _ _ _ _ := by rw [h₂, Equiv.naturality, h₂]
 #align equiv.is_lawful_traversable' Equiv.isLawfulTraversable'
 
 end Equiv
