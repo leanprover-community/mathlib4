@@ -164,6 +164,7 @@ theorem Monotone.functor_obj {f : X → Y} (h : Monotone f) : h.functor.obj = f 
 instance (f : X ↪o Y) : f.monotone.functor.Full where
   map_surjective h := ⟨homOfLE (f.map_rel_iff.1 h.le), rfl⟩
 
+/-- The equivalence of categories `X ≌ Y` induced by `e : X ≃o Y`. -/
 @[simps]
 def OrderIso.equivalence (e : X ≃o Y) : X ≌ Y where
   functor := e.monotone.functor
