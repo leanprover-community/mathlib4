@@ -6,6 +6,7 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Field.Defs
 import Mathlib.RingTheory.OreLocalization.OreSet
 
 #align_import ring_theory.ore_localization.basic from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
