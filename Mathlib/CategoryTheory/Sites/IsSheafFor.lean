@@ -101,6 +101,20 @@ def FamilyOfElements.restrict {R₁ R₂ : Presieve X} (h : R₁ ≤ R₂) :
     FamilyOfElements P R₂ → FamilyOfElements P R₁ := fun x _ f hf => x f (h _ hf)
 #align category_theory.presieve.family_of_elements.restrict CategoryTheory.Presieve.FamilyOfElements.restrict
 
+/-- The image of a family of elements by a morphism of presheaves. -/
+def FamilyOfElements.map (p : FamilyOfElements P R) (φ : P ⟶ Q) :
+    FamilyOfElements Q R :=
+  fun _ f hf => φ.app _ (p f hf)
+
+@[simp]
+lemma FamilyOfElements.map_apply
+    (p : FamilyOfElements P R) (φ : P ⟶ Q) {Y : C} (f : Y ⟶ X) (hf : R f) :
+    p.map φ f hf = φ.app _ (p f hf) := rfl
+
+lemma FamilyOfElements.restrict_map
+    (p : FamilyOfElements P R) (φ : P ⟶ Q) {R' : Presieve X} (h : R' ≤ R) :
+    (p.restrict h).map φ = (p.map φ).restrict h := rfl
+
 /-- A family of elements for the arrow set `R` is *compatible* if for any `f₁ : Y₁ ⟶ X` and
 `f₂ : Y₂ ⟶ X` in `R`, and any `g₁ : Z ⟶ Y₁` and `g₂ : Z ⟶ Y₂`, if the square `g₁ ≫ f₁ = g₂ ≫ f₂`
 commutes then the elements of `P Z` obtained by restricting the element of `P Y₁` along `g₁` and
