@@ -102,8 +102,6 @@ and right absorbing. -/
 class SemigroupWithZero (S₀ : Type u) extends MulZeroClass S₀, Semigroup S₀
 #align semigroup_with_zero SemigroupWithZero
 
--- attribute [instance 0] SemigroupWithZero.toMulZeroClass.toZero
-
 /-- A typeclass for non-associative monoids with zero elements. -/
 class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M₀
 #align mul_zero_one_class MulZeroOneClass

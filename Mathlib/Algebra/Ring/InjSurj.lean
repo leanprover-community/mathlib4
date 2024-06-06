@@ -84,8 +84,8 @@ protected abbrev semiring [Semiring α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) : Semiring β where
-  toNonUnitalSemiring := hf.nonUnitalSemiring f zero add mul nsmul
-  __ := hf.nonAssocSemiring f zero one add mul nsmul natCast
+  toNonAssocSemiring := hf.nonAssocSemiring f zero one add mul nsmul natCast
+  __ := hf.nonUnitalSemiring f zero add mul nsmul
   __ := hf.monoidWithZero f zero one mul npow
 #align function.injective.semiring Function.Injective.semiring
 
@@ -272,8 +272,8 @@ protected abbrev semiring [Semiring α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (natCast : ∀ n : ℕ, f n = n) : Semiring β where
-  toNonUnitalSemiring := hf.nonUnitalSemiring f zero add mul nsmul
-  __ := hf.nonAssocSemiring f zero one add mul nsmul natCast
+  toNonAssocSemiring := hf.nonAssocSemiring f zero one add mul nsmul natCast
+  __ := hf.nonUnitalSemiring f zero add mul nsmul
   __ := hf.monoidWithZero f zero one mul npow
 #align function.surjective.semiring Function.Surjective.semiring
 

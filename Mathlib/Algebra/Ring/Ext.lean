@@ -271,7 +271,6 @@ TODO consider relocating these lemmas. -/
     AddCommGroup.ext h_add
   have : inst₁.toAddGroupWithOne = inst₂.toAddGroupWithOne :=
     AddGroupWithOne.ext h_add h_one
-  injection this with _ h_addMonoidWithOne; injection h_addMonoidWithOne
   cases inst₁; cases inst₂
   congr
 
@@ -288,8 +287,9 @@ namespace NonAssocRing
   -- Mathematically non-trivial fact: `intCast` is determined by the rest.
   have h₃ : inst₁.toAddCommGroupWithOne = inst₂.toAddCommGroupWithOne :=
     AddCommGroupWithOne.ext h_add (congrArg (·.toOne.one) h₂)
+  injection h₃ with h₃
   cases inst₁; cases inst₂
-  congr <;> solve| injection h₁ | injection h₂ | injection h₃
+  congr <;> solve| injection h₂ | injection h₃
 
 theorem toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
@@ -319,15 +319,13 @@ namespace Semiring
     (h_mul : local_hMul[R, inst₁] = local_hMul[R, inst₂]) :
     inst₁ = inst₂ := by
   -- Show that enough substructures are equal.
-  have h₁ : inst₁.toNonUnitalSemiring = inst₂.toNonUnitalSemiring := by
+  have h₁ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
     ext : 1 <;> assumption
-  have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
-    ext : 1 <;> assumption
-  have h₃ : (inst₁.toMonoidWithZero).toMonoid = (inst₂.toMonoidWithZero).toMonoid := by
+  have h₂ : (inst₁.toMonoidWithZero).toMonoid = (inst₂.toMonoidWithZero).toMonoid := by
     ext : 1; exact h_mul
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
-  congr <;> solve| injection h₁ | injection h₂ | injection h₃
+  congr; injection h₂
 
 theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by

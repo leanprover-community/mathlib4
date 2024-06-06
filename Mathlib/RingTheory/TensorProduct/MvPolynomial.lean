@@ -134,7 +134,7 @@ noncomputable def rTensorAlgHom :
 @[simp]
 lemma coeff_rTensorAlgHom_tmul
     (p : MvPolynomial σ S) (n : N) (d : σ →₀ ℕ) :
-    coeff d (rTensorAlgHom (p ⊗ₜ[R] n)) = (coeff d p) ⊗ₜ[R] n := by
+    coeff d (rTensorAlgHom (S := S) (p ⊗ₜ[R] n)) = (coeff d p) ⊗ₜ[R] n := by
   rw [rTensorAlgHom, Algebra.TensorProduct.lift_tmul]
   rw [AlgHom.coe_comp, IsScalarTower.coe_toAlgHom', Function.comp_apply,
     Algebra.TensorProduct.includeRight_apply]
@@ -143,7 +143,7 @@ lemma coeff_rTensorAlgHom_tmul
 
 lemma coeff_rTensorAlgHom_monomial_tmul
     (e : σ →₀ ℕ) (s : S) (n : N) (d : σ →₀ ℕ) :
-    coeff d (rTensorAlgHom (monomial e s ⊗ₜ[R] n)) =
+    coeff d (rTensorAlgHom (S := S) (monomial e s ⊗ₜ[R] n)) =
       if e = d then s ⊗ₜ[R] n else 0 := by
   simp [ite_tmul]
 
