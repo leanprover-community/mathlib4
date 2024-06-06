@@ -22,8 +22,6 @@ It also contains proofs of some corollaries of this lemma about existence of fix
 -/
 
 
-open BigOperators
-
 open Fintype MulAction
 
 variable (p : ℕ) (G : Type*) [Group G]
@@ -50,12 +48,12 @@ theorem of_card [Fintype G] {n : ℕ} (hG : card G = p ^ n) : IsPGroup p G := fu
 #align is_p_group.of_card IsPGroup.of_card
 
 theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
-  of_card (Subgroup.card_bot.trans (pow_zero p).symm)
+  of_card (by rw [← Nat.card_eq_fintype_card, Subgroup.card_bot, pow_zero])
 #align is_p_group.of_bot IsPGroup.of_bot
 
 theorem iff_card [Fact p.Prime] [Fintype G] : IsPGroup p G ↔ ∃ n : ℕ, card G = p ^ n := by
   have hG : card G ≠ 0 := card_ne_zero
-  refine' ⟨fun h => _, fun ⟨n, hn⟩ => of_card hn⟩
+  refine ⟨fun h => ?_, fun ⟨n, hn⟩ => of_card hn⟩
   suffices ∀ q ∈ Nat.factors (card G), q = p by
     use (card G).factors.length
     rw [← List.prod_replicate, ← List.eq_replicate_of_mem this, Nat.prod_factors hG]
@@ -85,7 +83,7 @@ theorem to_subgroup (H : Subgroup G) : IsPGroup p H :=
 
 theorem of_surjective {H : Type*} [Group H] (ϕ : G →* H) (hϕ : Function.Surjective ϕ) :
     IsPGroup p H := by
-  refine' fun h => Exists.elim (hϕ h) fun g hg => Exists.imp (fun k hk => _) (hG g)
+  refine fun h => Exists.elim (hϕ h) fun g hg => Exists.imp (fun k hk => ?_) (hG g)
   rw [← hg, ← ϕ.map_pow, hk, ϕ.map_one]
 #align is_p_group.of_surjective IsPGroup.of_surjective
 
@@ -195,12 +193,12 @@ theorem card_modEq_card_fixedPoints [Fintype (fixedPoints G α)] :
         card { y // (Quotient.mk'' y : Quotient (orbitRel G α)) = Quotient.mk'' x } =
           card (orbit G x) :=
       fun x => by simp only [Quotient.eq'']; congr
-    refine'
+    refine
       Eq.symm
         (Finset.sum_bij_ne_zero (fun a _ _ => Quotient.mk'' a.1) (fun _ _ _ => Finset.mem_univ _)
           (fun a₁ _ _ a₂ _ _ h =>
             Subtype.eq (mem_fixedPoints'.mp a₂.2 a₁.1 (Quotient.exact' h)))
-          (fun b => Quotient.inductionOn' b fun b _ hb => _) fun a ha _ => by
+          (fun b => Quotient.inductionOn' b fun b _ hb => ?_) fun a ha _ => by
           rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.2])
     obtain ⟨k, hk⟩ := hG.card_orbit b
     have : k = 0 :=
@@ -257,9 +255,8 @@ theorem center_nontrivial [Nontrivial G] [Finite G] : Nontrivial (Subgroup.cente
 
 theorem bot_lt_center [Nontrivial G] [Finite G] : ⊥ < Subgroup.center G := by
   haveI := center_nontrivial hG
-  cases nonempty_fintype G
   classical exact
-      bot_lt_iff_ne_bot.mpr ((Subgroup.center G).one_lt_card_iff_ne_bot.mp Fintype.one_lt_card)
+      bot_lt_iff_ne_bot.mpr ((Subgroup.center G).one_lt_card_iff_ne_bot.mp Finite.one_lt_card)
 #align is_p_group.bot_lt_center IsPGroup.bot_lt_center
 
 end GIsPGroup

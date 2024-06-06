@@ -78,8 +78,8 @@ theorem source_trans_partialHomeomorph (hU : IsOpen U)
     (h2φ' : ContinuousOn (fun x => (φ' x).symm : B → F →L[𝕜] F) U') :
     (FiberwiseLinear.partialHomeomorph φ hU hφ h2φ ≫ₕ
           FiberwiseLinear.partialHomeomorph φ' hU' hφ' h2φ').source =
-      (U ∩ U') ×ˢ univ :=
-  by dsimp only [FiberwiseLinear.partialHomeomorph]; mfld_set_tac
+      (U ∩ U') ×ˢ univ := by
+  dsimp only [FiberwiseLinear.partialHomeomorph]; mfld_set_tac
 #align fiberwise_linear.source_trans_local_homeomorph FiberwiseLinear.source_trans_partialHomeomorph
 
 /-- Compute the target of the composition of two partial homeomorphisms induced by fiberwise linear
@@ -91,8 +91,8 @@ theorem target_trans_partialHomeomorph (hU : IsOpen U)
     (h2φ' : ContinuousOn (fun x => (φ' x).symm : B → F →L[𝕜] F) U') :
     (FiberwiseLinear.partialHomeomorph φ hU hφ h2φ ≫ₕ
           FiberwiseLinear.partialHomeomorph φ' hU' hφ' h2φ').target =
-      (U ∩ U') ×ˢ univ :=
-  by dsimp only [FiberwiseLinear.partialHomeomorph]; mfld_set_tac
+      (U ∩ U') ×ˢ univ := by
+  dsimp only [FiberwiseLinear.partialHomeomorph]; mfld_set_tac
 #align fiberwise_linear.target_trans_local_homeomorph FiberwiseLinear.target_trans_partialHomeomorph
 
 end FiberwiseLinear
@@ -140,10 +140,10 @@ theorem SmoothFiberwiseLinear.locality_aux₁ (e : PartialHomeomorph (B × F) (B
       exact ⟨⟨p, hp, rfl⟩, trivial⟩
     · rintro ⟨x, v⟩ ⟨⟨p, hp, rfl : p.fst = x⟩, -⟩
       exact heu ⟨p, hp⟩ (p.fst, v) (hu' ⟨p, hp⟩)
-  refine' ⟨Prod.fst '' e.source, he, _⟩
+  refine ⟨Prod.fst '' e.source, he, ?_⟩
   rintro x ⟨p, hp, rfl⟩
-  refine' ⟨φ ⟨p, hp⟩, u ⟨p, hp⟩, hu ⟨p, hp⟩, _, hu' _, hφ ⟨p, hp⟩, h2φ ⟨p, hp⟩, _⟩
-  · intro y hy; refine' ⟨(y, 0), heu ⟨p, hp⟩ ⟨_, _⟩ hy, rfl⟩
+  refine ⟨φ ⟨p, hp⟩, u ⟨p, hp⟩, hu ⟨p, hp⟩, ?_, hu' _, hφ ⟨p, hp⟩, h2φ ⟨p, hp⟩, ?_⟩
+  · intro y hy; exact ⟨(y, 0), heu ⟨p, hp⟩ ⟨_, _⟩ hy, rfl⟩
   · rw [← hesu, e.restr_source_inter]; exact heφ ⟨p, hp⟩
 #align smooth_fiberwise_linear.locality_aux₁ SmoothFiberwiseLinear.locality_aux₁
 
@@ -174,7 +174,7 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
   rw [SetCoe.forall'] at h
   choose! φ u hu hUu hux hφ h2φ heφ using h
   have heuφ : ∀ x : U, EqOn e (fun q => (q.1, φ x q.1 q.2)) (u x ×ˢ univ) := fun x p hp ↦ by
-    refine' (heφ x).2 _
+    refine (heφ x).2 ?_
     rw [(heφ x).1]
     exact hp
   have huφ : ∀ (x x' : U) (y : B), y ∈ u x → y ∈ u x' → φ x y = φ x' y := fun p p' y hyp hyp' ↦ by
@@ -185,7 +185,7 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
   have hUu' : U = ⋃ i, u i := by
     ext x
     rw [mem_iUnion]
-    refine' ⟨fun h => ⟨⟨x, h⟩, hux _⟩, _⟩
+    refine ⟨fun h => ⟨⟨x, h⟩, hux _⟩, ?_⟩
     rintro ⟨x, hx⟩
     exact hUu x hx
   have hU' : IsOpen U := by
@@ -197,23 +197,23 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
   have hΦ : ∀ (y) (hy : y ∈ U), Φ y = Φ₀ ⟨y, hy⟩ := fun y hy => dif_pos hy
   have hΦφ : ∀ x : U, ∀ y ∈ u x, Φ y = φ x y := by
     intro x y hyu
-    refine' (hΦ y (hUu x hyu)).trans _
+    refine (hΦ y (hUu x hyu)).trans ?_
     exact iUnionLift_mk ⟨y, hyu⟩ _
   have hΦ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun y => (Φ y : F →L[𝕜] F)) U := by
     apply contMDiffOn_of_locally_contMDiffOn
     intro x hx
-    refine' ⟨u ⟨x, hx⟩, hu ⟨x, hx⟩, hux _, _⟩
-    refine' (ContMDiffOn.congr (hφ ⟨x, hx⟩) _).mono (inter_subset_right _ _)
+    refine ⟨u ⟨x, hx⟩, hu ⟨x, hx⟩, hux _, ?_⟩
+    refine (ContMDiffOn.congr (hφ ⟨x, hx⟩) ?_).mono inter_subset_right
     intro y hy
     rw [hΦφ ⟨x, hx⟩ y hy]
   have h2Φ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun y => ((Φ y).symm : F →L[𝕜] F)) U := by
     apply contMDiffOn_of_locally_contMDiffOn
     intro x hx
-    refine' ⟨u ⟨x, hx⟩, hu ⟨x, hx⟩, hux _, _⟩
-    refine' (ContMDiffOn.congr (h2φ ⟨x, hx⟩) _).mono (inter_subset_right _ _)
+    refine ⟨u ⟨x, hx⟩, hu ⟨x, hx⟩, hux _, ?_⟩
+    refine (ContMDiffOn.congr (h2φ ⟨x, hx⟩) ?_).mono inter_subset_right
     intro y hy
     rw [hΦφ ⟨x, hx⟩ y hy]
-  refine' ⟨Φ, U, hU', hΦ, h2Φ, hU, fun p hp => _⟩
+  refine ⟨Φ, U, hU', hΦ, h2Φ, hU, fun p hp => ?_⟩
   rw [hU] at hp
   rw [heuφ ⟨p.fst, hp.1⟩ ⟨hux _, hp.2⟩]
   congrm (_, ?_)
@@ -223,14 +223,6 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
 
 variable (F B IB)
 
--- Adaptation note: 2024-04-23
--- This `maxHeartbeats` was not previously required; increased from about 90k to about 320k.
--- The backwards compatibility flags do not help here:
--- set_option backward.isDefEq.lazyProjDelta false in
--- set_option backward.isDefEq.lazyWhnfCore false in
--- set_option backward.synthInstance.canonInstances false in
--- See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/Mathlib.20status.20updates/near/436257970
-set_option maxHeartbeats 400000 in
 /-- For `B` a manifold and `F` a normed space, the groupoid on `B × F` consisting of local
 homeomorphisms which are bi-smooth and fiberwise linear, and induce the identity on `B`.
 When a (topological) vector bundle is smooth, then the composition of charts associated
@@ -244,24 +236,24 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
   trans' := by
     simp only [mem_iUnion]
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ ⟨φ', U', hU', hφ', h2φ', heφ'⟩
-    refine' ⟨fun b => (φ b).trans (φ' b), _, hU.inter hU', _, _,
-      Setoid.trans (PartialHomeomorph.EqOnSource.trans' heφ heφ') ⟨_, _⟩⟩
+    refine ⟨fun b => (φ b).trans (φ' b), _, hU.inter hU', ?_, ?_,
+      Setoid.trans (PartialHomeomorph.EqOnSource.trans' heφ heφ') ⟨?_, ?_⟩⟩
     · show
         SmoothOn IB 𝓘(𝕜, F →L[𝕜] F)
           (fun x : B => (φ' x).toContinuousLinearMap ∘L (φ x).toContinuousLinearMap) (U ∩ U')
-      exact (hφ'.mono <| inter_subset_right _ _).clm_comp (hφ.mono <| inter_subset_left _ _)
+      exact (hφ'.mono inter_subset_right).clm_comp (hφ.mono inter_subset_left)
     · show
         SmoothOn IB 𝓘(𝕜, F →L[𝕜] F)
           (fun x : B => (φ x).symm.toContinuousLinearMap ∘L (φ' x).symm.toContinuousLinearMap)
           (U ∩ U')
-      exact (h2φ.mono <| inter_subset_left _ _).clm_comp (h2φ'.mono <| inter_subset_right _ _)
+      exact (h2φ.mono inter_subset_left).clm_comp (h2φ'.mono inter_subset_right)
     · apply FiberwiseLinear.source_trans_partialHomeomorph
     · rintro ⟨b, v⟩ -; apply FiberwiseLinear.trans_partialHomeomorph_apply
   -- Porting note: without introducing `e` first, the first `simp only` fails
   symm' := fun e ↦ by
     simp only [mem_iUnion]
     rintro ⟨φ, U, hU, hφ, h2φ, heφ⟩
-    refine' ⟨fun b => (φ b).symm, U, hU, h2φ, _, PartialHomeomorph.EqOnSource.symm' heφ⟩
+    refine ⟨fun b => (φ b).symm, U, hU, h2φ, ?_, PartialHomeomorph.EqOnSource.symm' heφ⟩
     simp_rw [ContinuousLinearEquiv.symm_symm]
     exact hφ
   id_mem' := by

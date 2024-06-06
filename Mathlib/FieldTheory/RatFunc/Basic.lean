@@ -386,7 +386,7 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
       rotate_left
       · exact hφ hq
       · exact hφ hq'
-      refine' Localization.r_of_eq _
+      refine Localization.r_of_eq ?_
       simpa only [map_mul] using congr_arg φ h
   map_one' := by
     beta_reduce -- Porting note(#12129): force the function to be applied
@@ -660,8 +660,8 @@ theorem liftMonoidWithZeroHom_apply_div {L : Type*} [CommGroupWithZero L]
 theorem liftMonoidWithZeroHom_apply_div' {L : Type*} [CommGroupWithZero L]
     (φ : MonoidWithZeroHom K[X] L) (hφ : K[X]⁰ ≤ L⁰.comap φ) (p q : K[X]) :
     liftMonoidWithZeroHom φ hφ (algebraMap _ _ p) / liftMonoidWithZeroHom φ hφ (algebraMap _ _ q) =
-      φ p / φ q :=
-  by rw [← map_div₀, liftMonoidWithZeroHom_apply_div]
+      φ p / φ q := by
+  rw [← map_div₀, liftMonoidWithZeroHom_apply_div]
 
 theorem liftRingHom_apply_div {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
     (p q : K[X]) : liftRingHom φ hφ (algebraMap _ _ p / algebraMap _ _ q) = φ p / φ q :=
@@ -1007,7 +1007,7 @@ theorem num_div_denom (x : RatFunc K) : algebraMap _ _ (num x) / algebraMap _ _ 
   · apply gcd_dvd_left
   · exact algebraMap_ne_zero q_div_ne_zero
   · exact algebraMap_ne_zero hq
-  · refine' algebraMap_ne_zero (mt Polynomial.C_eq_zero.mp _)
+  · refine algebraMap_ne_zero (mt Polynomial.C_eq_zero.mp ?_)
     exact inv_ne_zero (Polynomial.leadingCoeff_ne_zero.mpr q_div_ne_zero)
 #align ratfunc.num_div_denom RatFunc.num_div_denom
 
@@ -1089,19 +1089,19 @@ theorem num_mul_dvd (x y : RatFunc K) : num (x * y) ∣ num x * num y := by
   by_cases hy : y = 0
   · simp [hy]
   rw [num_dvd (mul_ne_zero (num_ne_zero hx) (num_ne_zero hy))]
-  refine' ⟨x.denom * y.denom, mul_ne_zero (denom_ne_zero x) (denom_ne_zero y), _⟩
+  refine ⟨x.denom * y.denom, mul_ne_zero (denom_ne_zero x) (denom_ne_zero y), ?_⟩
   rw [RingHom.map_mul, RingHom.map_mul, ← div_mul_div_comm, num_div_denom, num_div_denom]
 #align ratfunc.num_mul_dvd RatFunc.num_mul_dvd
 
 theorem denom_mul_dvd (x y : RatFunc K) : denom (x * y) ∣ denom x * denom y := by
   rw [denom_dvd (mul_ne_zero (denom_ne_zero x) (denom_ne_zero y))]
-  refine' ⟨x.num * y.num, _⟩
+  refine ⟨x.num * y.num, ?_⟩
   rw [RingHom.map_mul, RingHom.map_mul, ← div_mul_div_comm, num_div_denom, num_div_denom]
 #align ratfunc.denom_mul_dvd RatFunc.denom_mul_dvd
 
 theorem denom_add_dvd (x y : RatFunc K) : denom (x + y) ∣ denom x * denom y := by
   rw [denom_dvd (mul_ne_zero (denom_ne_zero x) (denom_ne_zero y))]
-  refine' ⟨x.num * y.denom + x.denom * y.num, _⟩
+  refine ⟨x.num * y.denom + x.denom * y.num, ?_⟩
   rw [RingHom.map_mul, RingHom.map_add, RingHom.map_mul, RingHom.map_mul, ← div_add_div,
     num_div_denom, num_div_denom]
   · exact algebraMap_ne_zero (denom_ne_zero x)
@@ -1123,8 +1123,8 @@ theorem map_apply {R F : Type*} [CommRing R] [IsDomain R]
 
 theorem liftMonoidWithZeroHom_apply {L : Type*} [CommGroupWithZero L] (φ : K[X] →*₀ L)
     (hφ : K[X]⁰ ≤ L⁰.comap φ) (f : RatFunc K) :
-    liftMonoidWithZeroHom φ hφ f = φ f.num / φ f.denom :=
-  by rw [← num_div_denom f, liftMonoidWithZeroHom_apply_div, num_div_denom]
+    liftMonoidWithZeroHom φ hφ f = φ f.num / φ f.denom := by
+  rw [← num_div_denom f, liftMonoidWithZeroHom_apply_div, num_div_denom]
 #align ratfunc.lift_monoid_with_zero_hom_apply RatFunc.liftMonoidWithZeroHom_apply
 
 theorem liftRingHom_apply {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)

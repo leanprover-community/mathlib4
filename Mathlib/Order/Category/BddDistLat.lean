@@ -32,7 +32,7 @@ structure BddDistLat where
 
 namespace BddDistLat
 
-instance : CoeSort BddDistLat (Type*) :=
+instance : CoeSort BddDistLat Type* :=
   ⟨fun X => X.toDistLat⟩
 
 instance (X : BddDistLat) : DistribLattice X :=

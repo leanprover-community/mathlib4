@@ -54,7 +54,7 @@ theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι 
   classical
   have : (x.neLocus y : Set ι).WellFoundedOn r := (x.neLocus y).finite_toSet.wellFoundedOn
   obtain ⟨i, hi, hl⟩ := this.has_min { i | x i < y i } ⟨⟨j, mem_neLocus.2 hlt.ne⟩, hlt⟩
-  refine' ⟨i, fun k hk ↦ ⟨hle k, _⟩, hi⟩
+  refine ⟨i, fun k hk ↦ ⟨hle k, ?_⟩, hi⟩
   exact of_not_not fun h ↦ hl ⟨k, mem_neLocus.2 (ne_of_not_le h).symm⟩ ((hle k).lt_of_not_le h) hk
 #align dfinsupp.lex_lt_of_lt_of_preorder DFinsupp.lex_lt_of_lt_of_preorder
 
@@ -132,7 +132,7 @@ variable [∀ i, PartialOrder (α i)]
 
 theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
   intro a b h
-  refine' le_of_lt_or_eq (or_iff_not_imp_right.2 fun hne ↦ _)
+  refine le_of_lt_or_eq (or_iff_not_imp_right.2 fun hne ↦ ?_)
   classical
   exact ⟨Finset.min' _ (nonempty_neLocus_iff.2 hne),
     fun j hj ↦ not_mem_neLocus.1 fun h ↦ (Finset.min'_le _ _ h).not_lt hj,

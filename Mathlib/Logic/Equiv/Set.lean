@@ -256,13 +256,13 @@ theorem union_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (
 
 @[simp]
 theorem union_symm_apply_left {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : s ∩ t ⊆ ∅)
-    (a : s) : (Equiv.Set.union H).symm (Sum.inl a) = ⟨a, subset_union_left _ _ a.2⟩ :=
+    (a : s) : (Equiv.Set.union H).symm (Sum.inl a) = ⟨a, by simp⟩ :=
   rfl
 #align equiv.set.union_symm_apply_left Equiv.Set.union_symm_apply_left
 
 @[simp]
 theorem union_symm_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : s ∩ t ⊆ ∅)
-    (a : t) : (Equiv.Set.union H).symm (Sum.inr a) = ⟨a, subset_union_right _ _ a.2⟩ :=
+    (a : t) : (Equiv.Set.union H).symm (Sum.inr a) = ⟨a, by simp⟩ :=
   rfl
 #align equiv.set.union_symm_apply_right Equiv.Set.union_symm_apply_right
 
@@ -379,7 +379,7 @@ theorem sumDiffSubset_apply_inl {α} {s t : Set α} (h : s ⊆ t) [DecidablePred
 
 @[simp]
 theorem sumDiffSubset_apply_inr {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)]
-    (x : (t \ s : Set α)) : Equiv.Set.sumDiffSubset h (Sum.inr x) = inclusion (diff_subset t s) x :=
+    (x : (t \ s : Set α)) : Equiv.Set.sumDiffSubset h (Sum.inr x) = inclusion diff_subset x :=
   rfl
 #align equiv.set.sum_diff_subset_apply_inr Equiv.Set.sumDiffSubset_apply_inr
 
@@ -410,7 +410,7 @@ protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ 
     _ ≃ Sum s (t \ s ∪ s ∩ t : Set α) :=
       sumCongr (Equiv.refl _)
         (by
-          refine' (Set.union' (· ∉ s) _ _).symm
+          refine (Set.union' (· ∉ s) ?_ ?_).symm
           exacts [fun x hx => hx.2, fun x hx => not_not_intro hx.1])
     _ ≃ Sum s t := by
       { rw [(_ : t \ s ∪ s ∩ t = t)]
@@ -490,7 +490,7 @@ protected noncomputable def imageOfInjOn {α β} (f : α → β) (s : Set α) (H
 /-- If `f` is an injective function, then `s` is equivalent to `f '' s`. -/
 @[simps! apply]
 protected noncomputable def image {α β} (f : α → β) (s : Set α) (H : Injective f) : s ≃ f '' s :=
-  Equiv.Set.imageOfInjOn f s (H.injOn s)
+  Equiv.Set.imageOfInjOn f s H.injOn
 #align equiv.set.image Equiv.Set.image
 #align equiv.set.image_apply Equiv.Set.image_apply
 
@@ -665,7 +665,7 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type*} {β : α → Type*} (
       (pi univ fun i : { i // p i } => s i) ×ˢ pi univ fun i : { i // ¬p i } => s i := by
   ext ⟨f, g⟩
   simp only [mem_preimage, mem_univ_pi, prod_mk_mem_set_prod_eq, Subtype.forall, ← forall_and]
-  refine' forall_congr' fun i => _
+  refine forall_congr' fun i => ?_
   dsimp only [Subtype.coe_mk]
   by_cases hi : p i <;> simp [hi]
 #align equiv.preimage_pi_equiv_pi_subtype_prod_symm_pi Equiv.preimage_piEquivPiSubtypeProd_symm_pi
@@ -733,7 +733,7 @@ section Swap
 variable {α : Type*} [DecidableEq α] {a b : α} {s : Set α}
 
 theorem Equiv.swap_bijOn_self (hs : a ∈ s ↔ b ∈ s) : BijOn (Equiv.swap a b) s s := by
-  refine ⟨fun x hx ↦ ?_, (Equiv.injective _).injOn _, fun x hx ↦ ?_⟩
+  refine ⟨fun x hx ↦ ?_, (Equiv.injective _).injOn, fun x hx ↦ ?_⟩
   · obtain (rfl | hxa) := eq_or_ne x a; rwa [swap_apply_left, ← hs]
     obtain (rfl | hxb) := eq_or_ne x b; rwa [swap_apply_right, hs]
     rwa [swap_apply_of_ne_of_ne hxa hxb]
@@ -743,7 +743,7 @@ theorem Equiv.swap_bijOn_self (hs : a ∈ s ↔ b ∈ s) : BijOn (Equiv.swap a b
 
 theorem Equiv.swap_bijOn_exchange (ha : a ∈ s) (hb : b ∉ s) :
     BijOn (Equiv.swap a b) s (insert b (s \ {a})) := by
-  refine ⟨fun x hx ↦ ?_, (Equiv.injective _).injOn _, fun x hx ↦ ?_⟩
+  refine ⟨fun x hx ↦ ?_, (Equiv.injective _).injOn, fun x hx ↦ ?_⟩
   · obtain (rfl | hxa) := eq_or_ne x a; simp [swap_apply_left]
     rw [swap_apply_of_ne_of_ne hxa (by rintro rfl; contradiction)]
     exact .inr ⟨hx, hxa⟩
