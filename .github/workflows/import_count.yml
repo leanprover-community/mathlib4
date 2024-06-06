@@ -27,13 +27,14 @@ jobs:
     - name: Compute transitive imports
       run: |
         # Compute the counts for the HEAD of the PR
-        python ./scripts/count-trans-deps.py > head.json
+        python ./scripts/count-trans-deps.py Mathlib/Logic/Function
+        python ./scripts/count-trans-deps.py Mathlib/Logic/Function > head.json
 
         # Checkout the merge base
         git checkout "$(git merge-base refs/remotes/origin/main ${{ github.sha }})"
 
         # Compute the counts for the merge base
-        python ./scripts/count-trans-deps.py > base.json
+        python ./scripts/count-trans-deps.py Mathlib/Logic/Function > base.json
 
     - name: Compare results and comment
       env:
