@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Scott Morrison, Eric Ro
 -/
 import Mathlib.Data.Nat.Count
 import Mathlib.Data.Nat.SuccPred
-import Mathlib.Data.Set.Intervals.Monotone
+import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Order.OrderIsoNat
 
 #align_import data.nat.nth from "leanprover-community/mathlib"@"7fdd4f3746cb059edfdb5d52cba98f66fce418c0"
@@ -59,8 +59,8 @@ variable {p}
 -/
 
 
-theorem nth_of_card_le (hf : (setOf p).Finite) {n : ℕ} (hn : hf.toFinset.card ≤ n) : nth p n = 0 :=
-  by rw [nth, dif_pos hf, List.getD_eq_default]; rwa [Finset.length_sort]
+theorem nth_of_card_le (hf : (setOf p).Finite) {n : ℕ} (hn : hf.toFinset.card ≤ n) :
+    nth p n = 0 := by rw [nth, dif_pos hf, List.getD_eq_default]; rwa [Finset.length_sort]
 #align nat.nth_of_card_le Nat.nth_of_card_le
 
 theorem nth_eq_getD_sort (h : (setOf p).Finite) (n : ℕ) :
@@ -70,7 +70,7 @@ theorem nth_eq_getD_sort (h : (setOf p).Finite) (n : ℕ) :
 
 theorem nth_eq_orderEmbOfFin (hf : (setOf p).Finite) {n : ℕ} (hn : n < hf.toFinset.card) :
     nth p n = hf.toFinset.orderEmbOfFin rfl ⟨n, hn⟩ := by
-  rw [nth_eq_getD_sort hf, Finset.orderEmbOfFin_apply, List.getD_eq_get]; rfl
+  rw [nth_eq_getD_sort hf, Finset.orderEmbOfFin_apply, List.getD_eq_get]
 #align nat.nth_eq_order_emb_of_fin Nat.nth_eq_orderEmbOfFin
 
 theorem nth_strictMonoOn (hf : (setOf p).Finite) :
@@ -182,7 +182,7 @@ theorem nth_mem_of_infinite (hf : (setOf p).Infinite) (n : ℕ) : p (nth p n) :=
 
 theorem exists_lt_card_nth_eq {x} (h : p x) :
     ∃ n, (∀ hf : (setOf p).Finite, n < hf.toFinset.card) ∧ nth p n = x := by
-  refine' (setOf p).finite_or_infinite.elim (fun hf => _) fun hf => _
+  refine (setOf p).finite_or_infinite.elim (fun hf => ?_) fun hf => ?_
   · rcases exists_lt_card_finite_nth_eq hf h with ⟨n, hn, hx⟩
     exact ⟨n, fun _ => hn, hx⟩
   · rw [← @Set.mem_setOf_eq _ _ p, ← range_nth_of_infinite hf] at h
@@ -250,7 +250,7 @@ theorem nth_eq_sInf (p : ℕ → Prop) (n : ℕ) : nth p n = sInf {x | p x ∧ �
   · push_neg at hn
     rcases hn with ⟨hf, hn⟩
     rw [nth_of_card_le _ hn]
-    refine' ((congr_arg sInf <| Set.eq_empty_of_forall_not_mem fun k hk => _).trans sInf_empty).symm
+    refine ((congr_arg sInf <| Set.eq_empty_of_forall_not_mem fun k hk => ?_).trans sInf_empty).symm
     rcases exists_lt_card_nth_eq hk.1 with ⟨k, hlt, rfl⟩
     exact (hk.2 _ ((hlt hf).trans_le hn)).false
 #align nat.nth_eq_Inf Nat.nth_eq_sInf
@@ -268,7 +268,7 @@ theorem nth_zero_of_exists [DecidablePred p] (h : ∃ n, p n) : nth p 0 = Nat.fi
 
 theorem nth_eq_zero {n} :
     nth p n = 0 ↔ p 0 ∧ n = 0 ∨ ∃ hf : (setOf p).Finite, hf.toFinset.card ≤ n := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · simp only [or_iff_not_imp_right, not_exists, not_le]
     exact fun hn => ⟨h ▸ nth_mem _ hn, nonpos_iff_eq_zero.1 <| h ▸ le_nth hn⟩
   · rintro (⟨h₀, rfl⟩ | ⟨hf, hle⟩)
@@ -314,7 +314,7 @@ variable {p}
 theorem filter_range_nth_eq_insert {k : ℕ}
     (hlt : ∀ hf : (setOf p).Finite, k + 1 < hf.toFinset.card) :
     (range (nth p (k + 1))).filter p = insert (nth p k) ((range (nth p k)).filter p) := by
-  refine' (filter_range_nth_subset_insert p k).antisymm fun a ha => _
+  refine (filter_range_nth_subset_insert p k).antisymm fun a ha => ?_
   simp only [mem_insert, mem_filter, mem_range] at ha ⊢
   have : nth p k < nth p (k + 1) := nth_lt_nth' k.lt_succ_self hlt
   rcases ha with (rfl | ⟨hlt, hpa⟩)
@@ -362,7 +362,7 @@ theorem nth_count {n : ℕ} (hpn : p n) : nth p (count p n) = n :=
 #align nat.nth_count Nat.nth_count
 
 theorem nth_lt_of_lt_count {n k : ℕ} (h : k < count p n) : nth p k < n := by
-  refine' (count_monotone p).reflect_lt _
+  refine (count_monotone p).reflect_lt ?_
   rwa [count_nth]
   exact fun hf => h.trans_le (count_le_card hf n)
 #align nat.nth_lt_of_lt_count Nat.nth_lt_of_lt_count
@@ -374,9 +374,9 @@ theorem le_nth_of_count_le {n k : ℕ} (h : n ≤ nth p k) : count p n ≤ k :=
 variable (p)
 
 theorem nth_count_eq_sInf (n : ℕ) : nth p (count p n) = sInf {i : ℕ | p i ∧ n ≤ i} := by
-  refine' (nth_eq_sInf _ _).trans (congr_arg sInf _)
-  refine' Set.ext fun a => and_congr_right fun hpa => _
-  refine' ⟨fun h => not_lt.1 fun ha => _, fun hn k hk => lt_of_lt_of_le (nth_lt_of_lt_count hk) hn⟩
+  refine (nth_eq_sInf _ _).trans (congr_arg sInf ?_)
+  refine Set.ext fun a => and_congr_right fun hpa => ?_
+  refine ⟨fun h => not_lt.1 fun ha => ?_, fun hn k hk => lt_of_lt_of_le (nth_lt_of_lt_count hk) hn⟩
   have hn : nth p (count p a) < a := h _ (count_strict_mono hpa ha)
   rwa [nth_count hpa, lt_self_iff_false] at hn
 #align nat.nth_count_eq_Inf Nat.nth_count_eq_sInf

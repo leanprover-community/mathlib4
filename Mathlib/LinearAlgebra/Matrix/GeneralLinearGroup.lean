@@ -6,7 +6,7 @@ Authors: Chris Birkbeck
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
-import Mathlib.RingTheory.Subring.Units
+import Mathlib.Algebra.Ring.Subring.Units
 
 #align_import linear_algebra.matrix.general_linear_group from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 

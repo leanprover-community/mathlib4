@@ -12,7 +12,7 @@ import Mathlib.Algebra.Order.Group.Defs
 
 In this file we provide structures `PositiveCone` and `TotalPositiveCone`
 that encode axioms of `OrderedAddCommGroup` and `LinearOrderedAddCommGroup`
-in terms of the the `(0 ≤ ·)` predicate.
+in terms of the `(0 ≤ ·)` predicate.
 
 We also provide two constructors,
 `OrderedAddCommGroup.mkOfPositiveCone` and `LinearOrderedAddCommGroup.mkOfPositiveCone`,
@@ -24,7 +24,7 @@ namespace AddCommGroup
 /-- A collection of elements in an `AddCommGroup` designated as "non-negative".
 This is useful for constructing an `OrderedAddCommGroup`
 by choosing a positive cone in an existing `AddCommGroup`. -/
--- Porting note: @[nolint has_nonempty_instance]
+-- Porting note(#5171): @[nolint has_nonempty_instance]
 structure PositiveCone (α : Type*) [AddCommGroup α] where
   /-- The characteristic predicate of a positive cone. `nonneg a` means that `0 ≤ a` according to
   the cone. -/
@@ -40,7 +40,7 @@ structure PositiveCone (α : Type*) [AddCommGroup α] where
 
 /-- A positive cone in an `AddCommGroup` induces a linear order if
 for every `a`, either `a` or `-a` is non-negative. -/
--- Porting note: @[nolint has_nonempty_instance]
+-- Porting note(#5171): @[nolint has_nonempty_instance]
 structure TotalPositiveCone (α : Type*) [AddCommGroup α] extends PositiveCone α where
   /-- For any `a` the proposition `nonneg a` is decidable -/
   nonnegDecidable : DecidablePred nonneg

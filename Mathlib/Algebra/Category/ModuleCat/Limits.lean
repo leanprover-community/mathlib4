@@ -86,8 +86,7 @@ instance limitModule :
 /-- `limit.π (F ⋙ forget (ModuleCat.{w} R)) j` as an `R`-linear map. -/
 def limitπLinearMap (j) :
     (Types.Small.limitCone (F ⋙ forget (ModuleCat.{w} R))).pt →ₗ[R]
-      (F ⋙ forget (ModuleCat R)).obj j
-    where
+      (F ⋙ forget (ModuleCat R)).obj j where
   toFun := (Types.Small.limitCone (F ⋙ forget (ModuleCat R))).π.app j
   map_smul' _ _ := by
     simp only [Types.Small.limitCone_π_app,
@@ -119,9 +118,9 @@ def limitCone : Cone F where
 (Internal use only; use the limits API.)
 -/
 def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
-  refine' IsLimit.ofFaithful (forget (ModuleCat R)) (Types.Small.limitConeIsLimit.{v, w} _)
+  refine IsLimit.ofFaithful (forget (ModuleCat R)) (Types.Small.limitConeIsLimit.{v, w} _)
     (fun s => ⟨⟨(Types.Small.limitConeIsLimit.{v, w} _).lift
-                ((forget (ModuleCat R)).mapCone s), _⟩, _⟩)
+                ((forget (ModuleCat R)).mapCone s), ?_⟩, ?_⟩)
     (fun s => rfl)
   · intro x y
     simp only [Types.Small.limitConeIsLimit_lift, Functor.mapCone_π_app, forget_map, map_add]
@@ -138,14 +137,13 @@ end HasLimits
 open HasLimits
 
 /-- If `(F ⋙ forget (ModuleCat R)).sections` is `u`-small, `F` has a limit. -/
-lemma hasLimit : HasLimit F := HasLimit.mk {
+instance hasLimit : HasLimit F := HasLimit.mk {
     cone := limitCone F
     isLimit := limitConeIsLimit F
   }
 
 /-- If `J` is `u`-small, the category of `R`-modules has limits of shape `J`. -/
 lemma hasLimitsOfShape [Small.{w} J] : HasLimitsOfShape J (ModuleCat.{w} R) where
-  has_limit F := hasLimit F
 
 -- Porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
 -- is a `Prop`, declaring this as `irreducible` should presumably have no effect
@@ -171,14 +169,22 @@ def forget₂AddCommGroupPreservesLimitsAux :
     (F ⋙ forget₂ (ModuleCat.{w} R) _ : J ⥤ AddCommGroupCat.{w})
 #align Module.forget₂_AddCommGroup_preserves_limits_aux ModuleCat.forget₂AddCommGroupPreservesLimitsAux
 
+/-- The forgetful functor from R-modules to abelian groups preserves all limits. -/
+instance forget₂AddCommGroupPreservesLimit :
+    PreservesLimit F (forget₂ (ModuleCat R) AddCommGroupCat) :=
+  preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
+    (forget₂AddCommGroupPreservesLimitsAux F)
+
+instance forget₂AddCommGroupReflectsLimit :
+    ReflectsLimit F (forget₂ (ModuleCat R) AddCommGroupCat) :=
+  reflectsLimitOfReflectsIsomorphisms _ _
+
 /-- The forgetful functor from R-modules to abelian groups preserves all limits.
 -/
 instance forget₂AddCommGroupPreservesLimitsOfSize [UnivLE.{v, w}] :
     PreservesLimitsOfSize.{t, v}
       (forget₂ (ModuleCat.{w} R) AddCommGroupCat.{w}) where
-  preservesLimitsOfShape :=
-    { preservesLimit := fun {K} ↦ preservesLimitOfPreservesLimitCone (limitConeIsLimit K)
-          (forget₂AddCommGroupPreservesLimitsAux K) }
+  preservesLimitsOfShape := { preservesLimit := inferInstance }
 #align Module.forget₂_AddCommGroup_preserves_limits_of_size ModuleCat.forget₂AddCommGroupPreservesLimitsOfSize
 
 instance forget₂AddCommGroupPreservesLimits :
@@ -246,8 +252,7 @@ def directLimitCocone : Cocone (directLimitDiagram G f) where
 /-- The unbundled `directLimit` of modules is a colimit
 in the sense of `CategoryTheory`. -/
 @[simps]
-def directLimitIsColimit [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCocone G f)
-    where
+def directLimitIsColimit [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCocone G f) where
   desc s :=
     DirectLimit.lift R ι G f s.ι.app fun i j h x => by
       rw [← s.w (homOfLE h)]

@@ -11,6 +11,7 @@ import Mathlib.Data.Int.Associated
 import Mathlib.LinearAlgebra.FreeModule.Determinant
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.RingTheory.DedekindDomain.PID
+import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.RingTheory.LocalProperties
 import Mathlib.RingTheory.Localization.NormTrace
 
@@ -47,8 +48,6 @@ the norms of elements in `I`.
  * `map_mul Ideal.relNorm`: multiplicativity of the relative ideal norm
 -/
 
-
-open scoped BigOperators
 
 open scoped nonZeroDivisors
 
@@ -331,7 +330,7 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [EquivLike E S I] [AddEquivCl
       rw [LinearMap.det_toMatrix]
     _ = Int.natAbs (Matrix.diagonal a).det := ?_
     _ = Int.natAbs (∏ i, a i) := by rw [Matrix.det_diagonal]
-    _ = ∏ i, Int.natAbs (a i) := (map_prod Int.natAbsHom a Finset.univ)
+    _ = ∏ i, Int.natAbs (a i) := map_prod Int.natAbsHom a Finset.univ
     _ = Fintype.card (S ⧸ I) := ?_
     _ = absNorm I := (Submodule.cardQuot_apply _).symm
   -- since `LinearMap.toMatrix b' b' f` is the diagonal matrix with `a` along the diagonal.
@@ -357,8 +356,8 @@ theorem natAbs_det_basis_change {ι : Type*} [Fintype ι] [DecidableEq ι] (b : 
   let e := b.equiv bI (Equiv.refl _)
   calc
     (b.det ((Submodule.subtype I).restrictScalars ℤ ∘ bI)).natAbs =
-        (LinearMap.det ((Submodule.subtype I).restrictScalars ℤ ∘ₗ (e : S →ₗ[ℤ] I))).natAbs :=
-      by rw [Basis.det_comp_basis]
+        (LinearMap.det ((Submodule.subtype I).restrictScalars ℤ ∘ₗ (e : S →ₗ[ℤ] I))).natAbs := by
+      rw [Basis.det_comp_basis]
     _ = _ := natAbs_det_equiv I e
 #align ideal.nat_abs_det_basis_change Ideal.natAbs_det_basis_change
 
@@ -461,7 +460,7 @@ theorem finite_setOf_absNorm_eq [CharZero S] {n : ℕ} (hn : 0 < n) :
   refine @Set.Finite.of_finite_image _ _ _ f ?_ ?_
   · suffices Finite (S ⧸ @Ideal.span S _ {↑n}) by
       let g := ((↑) : Ideal (S ⧸ @Ideal.span S _ {↑n}) → Set (S ⧸ @Ideal.span S _ {↑n}))
-      refine @Set.Finite.of_finite_image _ _ _ g ?_ (SetLike.coe_injective.injOn _)
+      refine @Set.Finite.of_finite_image _ _ _ g ?_ SetLike.coe_injective.injOn
       exact Set.Finite.subset (@Set.finite_univ _ (@Set.finite' _ this)) (Set.subset_univ _)
     rw [← absNorm_ne_zero_iff, absNorm_span_singleton]
     simpa only [Ne, Int.natAbs_eq_zero, Algebra.norm_eq_zero_iff, Nat.cast_eq_zero] using

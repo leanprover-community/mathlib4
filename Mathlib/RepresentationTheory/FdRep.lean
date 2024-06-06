@@ -46,7 +46,7 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-set_option linter.uppercaseLean3 false -- `fdRep`
+set_option linter.uppercaseLean3 false -- `FdRep`
 
 /-- The category of finite dimensional `k`-linear representations of a monoid `G`. -/
 abbrev FdRep (k G : Type u) [Field k] [Monoid G] :=
@@ -138,8 +138,8 @@ theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FdRep k G) [Simple V] [
 
 /-- The forgetful functor to `Rep k G` preserves hom-sets and their vector space structure. -/
 def forget₂HomLinearEquiv (X Y : FdRep k G) :
-    ((forget₂ (FdRep k G) (Rep k G)).obj X ⟶ (forget₂ (FdRep k G) (Rep k G)).obj Y) ≃ₗ[k] X ⟶ Y
-    where
+    ((forget₂ (FdRep k G) (Rep k G)).obj X ⟶
+      (forget₂ (FdRep k G) (Rep k G)).obj Y) ≃ₗ[k] X ⟶ Y where
   toFun f := ⟨f.hom, f.comm⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl

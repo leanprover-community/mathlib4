@@ -63,29 +63,29 @@ theorem cast_zero : ((0 : ℤ) : R) = 0 :=
 
 -- This lemma competes with `Int.ofNat_eq_natCast` to come later
 @[simp high, nolint simpNF, norm_cast]
-theorem cast_ofNat (n : ℕ) : ((n : ℤ) : R) = n :=
+theorem cast_natCast (n : ℕ) : ((n : ℤ) : R) = n :=
   AddGroupWithOne.intCast_ofNat _
-#align int.cast_coe_nat Int.cast_ofNatₓ
+#align int.cast_coe_nat Int.cast_natCastₓ
 -- expected `n` to be implicit, and `HasLiftT`
-#align int.cast_of_nat Int.cast_ofNatₓ
+#align int.cast_of_nat Int.cast_natCastₓ
 
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
-theorem int_cast_ofNat (n : ℕ) [n.AtLeastTwo] :
+theorem cast_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((no_index (OfNat.ofNat n) : ℤ) : R) = OfNat.ofNat n := by
   simpa only [OfNat.ofNat] using AddGroupWithOne.intCast_ofNat (R := R) n
 
 @[simp, norm_cast]
 theorem cast_one : ((1 : ℤ) : R) = 1 := by
-  erw [cast_ofNat, Nat.cast_one]
+  erw [cast_natCast, Nat.cast_one]
 #align int.cast_one Int.cast_oneₓ
 -- type had `HasLiftT`
 
 @[simp, norm_cast]
 theorem cast_neg : ∀ n, ((-n : ℤ) : R) = -n
   | (0 : ℕ) => by erw [cast_zero, neg_zero]
-  | (n + 1 : ℕ) => by erw [cast_ofNat, cast_negSucc]
-  | -[n+1] => by erw [cast_ofNat, cast_negSucc, neg_neg]
+  | (n + 1 : ℕ) => by erw [cast_natCast, cast_negSucc]
+  | -[n+1] => by erw [cast_natCast, cast_negSucc, neg_neg]
 #align int.cast_neg Int.cast_negₓ
 -- type had `HasLiftT`
 
@@ -95,8 +95,7 @@ theorem cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
   cases e : n - m
   · simp only [ofNat_eq_coe]
     simp [e, Nat.le_of_sub_eq_zero e]
-  · rw [cast_negSucc, Nat.add_one, ← e, Nat.cast_sub <| _root_.le_of_lt <| Nat.lt_of_sub_eq_succ e,
-      neg_sub]
+  · rw [cast_negSucc, ← e, Nat.cast_sub <| _root_.le_of_lt <| Nat.lt_of_sub_eq_succ e, neg_sub]
 #align int.cast_sub_nat_nat Int.cast_subNatNatₓ
 -- type had `HasLiftT`
 
@@ -109,9 +108,9 @@ theorem cast_negOfNat (n : ℕ) : ((negOfNat n : ℤ) : R) = -n := by simp [Int.
 @[simp, norm_cast]
 theorem cast_add : ∀ m n, ((m + n : ℤ) : R) = m + n
   | (m : ℕ), (n : ℕ) => by simp [-Int.natCast_add, ← Int.ofNat_add]
-  | (m : ℕ), -[n+1] => by erw [cast_subNatNat, cast_ofNat, cast_negSucc, sub_eq_add_neg]
+  | (m : ℕ), -[n+1] => by erw [cast_subNatNat, cast_natCast, cast_negSucc, sub_eq_add_neg]
   | -[m+1], (n : ℕ) => by
-    erw [cast_subNatNat, cast_ofNat, cast_negSucc, sub_eq_iff_eq_add, add_assoc,
+    erw [cast_subNatNat, cast_natCast, cast_negSucc, sub_eq_iff_eq_add, add_assoc,
       eq_neg_add_iff_add_eq, ← Nat.cast_add, ← Nat.cast_add, Nat.add_comm]
   | -[m+1], -[n+1] =>
     show (-[m + n + 1+1] : R) = _ by
@@ -135,22 +134,19 @@ theorem cast_bit0 (n : ℤ) : ((bit0 n : ℤ) : R) = bit0 (n : R) :=
 #align int.cast_bit0 Int.cast_bit0
 
 @[norm_cast, deprecated]
-theorem cast_bit1 (n : ℤ) : ((bit1 n : ℤ) : R) = bit1 (n : R) :=
-  by rw [bit1, Int.cast_add, Int.cast_one, cast_bit0]; rfl
+theorem cast_bit1 (n : ℤ) : ((bit1 n : ℤ) : R) = bit1 (n : R) := by
+  rw [bit1, Int.cast_add, Int.cast_one, cast_bit0]; rfl
 #align int.cast_bit1 Int.cast_bit1
 
 end deprecated
 
-theorem cast_two : ((2 : ℤ) : R) = 2 :=
-  show (((2 : ℕ) : ℤ) : R) = ((2 : ℕ) : R) by rw [cast_ofNat]
+theorem cast_two : ((2 : ℤ) : R) = 2 := cast_ofNat _
 #align int.cast_two Int.cast_two
 
-theorem cast_three : ((3 : ℤ) : R) = 3 :=
-  show (((3 : ℕ) : ℤ) : R) = ((3 : ℕ) : R) by rw [cast_ofNat]
+theorem cast_three : ((3 : ℤ) : R) = 3 := cast_ofNat _
 #align int.cast_three Int.cast_three
 
-theorem cast_four : ((4 : ℤ) : R) = 4 :=
-  show (((4 : ℕ) : ℤ) : R) = ((4 : ℕ) : R) by rw [cast_ofNat]
+theorem cast_four : ((4 : ℤ) : R) = 4 := cast_ofNat _
 #align int.cast_four Int.cast_four
 
 end Int

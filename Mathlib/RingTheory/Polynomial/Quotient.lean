@@ -3,7 +3,7 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, David Kurniadi Angdinata, Devon Tuma, Riccardo Brasca
 -/
-import Mathlib.Data.Polynomial.Div
+import Mathlib.Algebra.Polynomial.Div
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.QuotientOperations
 
@@ -93,10 +93,10 @@ theorem eval₂_C_mk_eq_zero {I : Ideal R} :
   rw [← sum_monomial_eq a]
   dsimp
   rw [eval₂_sum]
-  refine' Finset.sum_eq_zero fun n _ => _
+  refine Finset.sum_eq_zero fun n _ => ?_
   dsimp
   rw [eval₂_monomial (C.comp (Quotient.mk I)) X]
-  refine' mul_eq_zero_of_left (Polynomial.ext fun m => _) (X ^ n)
+  refine mul_eq_zero_of_left (Polynomial.ext fun m => ?_) (X ^ n)
   erw [coeff_C]
   by_cases h : m = 0
   · simpa [h] using Quotient.eq_zero_iff_mem.2 ((mem_map_C_iff.1 ha) n)
@@ -172,7 +172,7 @@ theorem eq_zero_of_polynomial_mem_map_range (I : Ideal R[X]) (x : ((Quotient.mk 
     (hx : C x ∈ I.map (Polynomial.mapRingHom ((Quotient.mk I).comp C).rangeRestrict)) : x = 0 := by
   let i := ((Quotient.mk I).comp C).rangeRestrict
   have hi' : RingHom.ker (Polynomial.mapRingHom i) ≤ I := by
-    refine' fun f hf => polynomial_mem_ideal_of_coeff_mem_ideal I f fun n => _
+    refine fun f hf => polynomial_mem_ideal_of_coeff_mem_ideal I f fun n => ?_
     rw [mem_comap, ← Quotient.eq_zero_iff_mem, ← RingHom.comp_apply]
     rw [RingHom.mem_ker, coe_mapRingHom] at hf
     replace hf := congr_arg (fun f : Polynomial _ => f.coeff n) hf
@@ -180,12 +180,12 @@ theorem eq_zero_of_polynomial_mem_map_range (I : Ideal R[X]) (x : ((Quotient.mk 
     rwa [Subtype.ext_iff, RingHom.coe_rangeRestrict] at hf
   obtain ⟨x, hx'⟩ := x
   obtain ⟨y, rfl⟩ := RingHom.mem_range.1 hx'
-  refine' Subtype.eq _
+  refine Subtype.eq ?_
   simp only [RingHom.comp_apply, Quotient.eq_zero_iff_mem, ZeroMemClass.coe_zero]
   suffices C (i y) ∈ I.map (Polynomial.mapRingHom i) by
     obtain ⟨f, hf⟩ := mem_image_of_mem_map_of_surjective (Polynomial.mapRingHom i)
       (Polynomial.map_surjective _ (RingHom.rangeRestrict_surjective ((Quotient.mk I).comp C))) this
-    refine' sub_add_cancel (C y) f ▸ I.add_mem (hi' _ : C y - f ∈ I) hf.1
+    refine sub_add_cancel (C y) f ▸ I.add_mem (hi' ?_ : C y - f ∈ I) hf.1
     rw [RingHom.mem_ker, RingHom.map_sub, hf.2, sub_eq_zero, coe_mapRingHom, map_C]
   exact hx
 #align ideal.eq_zero_of_polynomial_mem_map_range Ideal.eq_zero_of_polynomial_mem_map_range
@@ -210,9 +210,9 @@ theorem eval₂_C_mk_eq_zero {I : Ideal R} {a : MvPolynomial σ R}
     eval₂Hom (C.comp (Ideal.Quotient.mk I)) X a = 0 := by
   rw [as_sum a]
   rw [coe_eval₂Hom, eval₂_sum]
-  refine' Finset.sum_eq_zero fun n _ => _
+  refine Finset.sum_eq_zero fun n _ => ?_
   simp only [eval₂_monomial, Function.comp_apply, RingHom.coe_comp]
-  refine' mul_eq_zero_of_left _ _
+  refine mul_eq_zero_of_left ?_ _
   suffices coeff n a ∈ I by
     rw [← @Ideal.mk_ker R _ I, RingHom.mem_ker] at this
     simp only [this, C_0]

@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
 -/
-import Mathlib.Data.Set.Intervals.OrdConnected
+import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Antisymmetrization
 
 #align_import order.cover from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
@@ -120,7 +120,7 @@ theorem WCovBy.of_image (f : α ↪o β) (h : f a ⩿ f b) : a ⩿ b :=
 #align wcovby.of_image WCovBy.of_image
 
 theorem WCovBy.image (f : α ↪o β) (hab : a ⩿ b) (h : (range f).OrdConnected) : f a ⩿ f b := by
-  refine' ⟨f.monotone hab.le, fun c ha hb => _⟩
+  refine ⟨f.monotone hab.le, fun c ha hb => ?_⟩
   obtain ⟨c, rfl⟩ := h.out (mem_range_self _) (mem_range_self _) ⟨ha.le, hb.le⟩
   rw [f.lt_iff_lt] at ha hb
   exact hab.2 ha hb
@@ -171,7 +171,7 @@ theorem wcovBy_iff_le_and_eq_or_eq : a ⩿ b ↔ a ≤ b ∧ ∀ c, a ≤ c → 
 #align wcovby_iff_le_and_eq_or_eq wcovBy_iff_le_and_eq_or_eq
 
 theorem WCovBy.le_and_le_iff (h : a ⩿ b) : a ≤ c ∧ c ≤ b ↔ c = a ∨ c = b := by
-  refine' ⟨fun h2 => h.eq_or_eq h2.1 h2.2, _⟩; rintro (rfl | rfl);
+  refine ⟨fun h2 => h.eq_or_eq h2.1 h2.2, ?_⟩; rintro (rfl | rfl);
   exacts [⟨le_rfl, h.le⟩, ⟨h.le, le_rfl⟩]
 #align wcovby.le_and_le_iff WCovBy.le_and_le_iff
 
@@ -484,10 +484,10 @@ namespace Set
 variable {s t : Set α} {a : α}
 
 @[simp] lemma wcovBy_insert (x : α) (s : Set α) : s ⩿ insert x s := by
-  refine' wcovBy_of_eq_or_eq (subset_insert x s) fun t hst h2t => _
+  refine wcovBy_of_eq_or_eq (subset_insert x s) fun t hst h2t => ?_
   by_cases h : x ∈ t
   · exact Or.inr (subset_antisymm h2t <| insert_subset_iff.mpr ⟨h, hst⟩)
-  · refine' Or.inl (subset_antisymm _ hst)
+  · refine Or.inl (subset_antisymm ?_ hst)
     rwa [← diff_singleton_eq_self h, diff_singleton_subset_iff]
 #align set.wcovby_insert Set.wcovBy_insert
 
@@ -554,7 +554,7 @@ theorem swap_covBy_swap : x.swap ⋖ y.swap ↔ x ⋖ y :=
 #align prod.swap_covby_swap Prod.swap_covBy_swap
 
 theorem fst_eq_or_snd_eq_of_wcovBy : x ⩿ y → x.1 = y.1 ∨ x.2 = y.2 := by
-  refine' fun h => of_not_not fun hab => _
+  refine fun h => of_not_not fun hab => ?_
   push_neg at hab
   exact
     h.2 (mk_lt_mk.2 <| Or.inl ⟨hab.1.lt_of_le h.1.1, le_rfl⟩)
@@ -570,7 +570,7 @@ theorem _root_.WCovBy.snd (h : x ⩿ y) : x.2 ⩿ y.2 :=
 #align wcovby.snd WCovBy.snd
 
 theorem mk_wcovBy_mk_iff_left : (a₁, b) ⩿ (a₂, b) ↔ a₁ ⩿ a₂ := by
-  refine' ⟨WCovBy.fst, (And.imp mk_le_mk_iff_left.2) fun h c h₁ h₂ => _⟩
+  refine ⟨WCovBy.fst, (And.imp mk_le_mk_iff_left.2) fun h c h₁ h₂ => ?_⟩
   have : c.2 = b := h₂.le.2.antisymm h₁.le.2
   rw [← @Prod.mk.eta _ _ c, this, mk_lt_mk_iff_left] at h₁ h₂
   exact h h₁ h₂
@@ -589,7 +589,7 @@ theorem mk_covBy_mk_iff_right : (a, b₁) ⋖ (a, b₂) ↔ b₁ ⋖ b₂ := by
 #align prod.mk_covby_mk_iff_right Prod.mk_covBy_mk_iff_right
 
 theorem mk_wcovBy_mk_iff : (a₁, b₁) ⩿ (a₂, b₂) ↔ a₁ ⩿ a₂ ∧ b₁ = b₂ ∨ b₁ ⩿ b₂ ∧ a₁ = a₂ := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · obtain rfl | rfl : a₁ = a₂ ∨ b₁ = b₂ := fst_eq_or_snd_eq_of_wcovBy h
     · exact Or.inr ⟨mk_wcovBy_mk_iff_right.1 h, rfl⟩
     · exact Or.inl ⟨mk_wcovBy_mk_iff_left.1 h, rfl⟩
@@ -599,7 +599,7 @@ theorem mk_wcovBy_mk_iff : (a₁, b₁) ⩿ (a₂, b₂) ↔ a₁ ⩿ a₂ ∧ b
 #align prod.mk_wcovby_mk_iff Prod.mk_wcovBy_mk_iff
 
 theorem mk_covBy_mk_iff : (a₁, b₁) ⋖ (a₂, b₂) ↔ a₁ ⋖ a₂ ∧ b₁ = b₂ ∨ b₁ ⋖ b₂ ∧ a₁ = a₂ := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · obtain rfl | rfl : a₁ = a₂ ∨ b₁ = b₂ := fst_eq_or_snd_eq_of_wcovBy h.wcovBy
     · exact Or.inr ⟨mk_covBy_mk_iff_right.1 h, rfl⟩
     · exact Or.inl ⟨mk_covBy_mk_iff_left.1 h, rfl⟩

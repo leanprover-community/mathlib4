@@ -5,7 +5,6 @@ open Lake DSL
 package mathlib where
   leanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
-    ⟨`pp.proofs.withType, false⟩,
     ⟨`autoImplicit, false⟩,
     ⟨`relaxedAutoImplicit, false⟩
   ]
@@ -13,11 +12,7 @@ package mathlib where
   -- so they can be enabled in CI and disabled locally or vice versa.
   -- Warning: Do not put any options here that actually change the olean files,
   -- or inconsistent behavior may result
-  weakLeanArgs :=
-    if get_config? CI |>.isSome then
-      #["-DwarningAsError=true"]
-    else
-      #[]
+  -- weakLeanArgs := #[]
 
 /-!
 ## Mathlib dependencies on upstream projects.
@@ -26,10 +21,10 @@ package mathlib where
 meta if get_config? doc = some "on" then -- do not download and build doc-gen4 by default
 require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 
-require std from git "https://github.com/leanprover/std4" @ "main"
+require batteries from git "https://github.com/leanprover-community/batteries" @ "main"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
-require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.30"
+require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.36"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
 require importGraph from git "https://github.com/leanprover-community/import-graph.git" @ "main"
 
@@ -40,8 +35,10 @@ require importGraph from git "https://github.com/leanprover-community/import-gra
 @[default_target]
 lean_lib Mathlib
 
+-- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
+-- `Mathlib/Util/GetAllModules.lean`.
 lean_lib Cache
-lean_lib MathlibExtras
+lean_lib LongestPole
 lean_lib Archive
 lean_lib Counterexamples
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
@@ -61,10 +58,34 @@ lean_exe checkYaml where
   srcDir := "scripts"
   supportInterpreter := true
 
+/-- `lake exe mk_all` constructs the files containing all imports for a project. -/
+lean_exe mk_all where
+  srcDir := "scripts"
+  supportInterpreter := true
+
 /-- `lake exe shake` checks files for unnecessary imports. -/
 lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
+
+/--
+`lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
+and then calculates the longest pole
+(i.e. the sequence of files you would be waiting for during a infinite parallelism build).
+-/
+lean_exe pole where
+  root := `LongestPole.Main
+  supportInterpreter := true
+
+/--
+`lake exe test` is a thin wrapper around `lake exe batteries/test`, until
+https://github.com/leanprover/lean4/issues/4121 is resolved.
+
+You can also use it as e.g. `lake exe test conv eval_elab` to only run the named tests.
+-/
+@[test_runner]
+lean_exe test where
+  srcDir := "scripts"
 
 /-!
 ## Other configuration
