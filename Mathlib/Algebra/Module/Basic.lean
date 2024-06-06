@@ -3,8 +3,9 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Function.Indicator
+import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Pi
 
@@ -20,6 +21,9 @@ open Function Set
 universe u v
 
 variable {α R M M₂ : Type*}
+
+@[deprecated (since := "2024-04-17")]
+alias map_nat_cast_smul := map_natCast_smul
 
 theorem map_inv_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*)
@@ -39,6 +43,9 @@ theorem map_inv_natCast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} 
   · rw [← inv_smul_smul₀ hS (f _), ← map_natCast_smul f R S, smul_inv_smul₀ hR]
 #align map_inv_nat_cast_smul map_inv_natCast_smul
 
+@[deprecated (since := "2024-04-17")]
+alias map_inv_nat_cast_smul := map_inv_natCast_smul
+
 theorem map_inv_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M]
     [Module S M₂] (z : ℤ) (x : M) : f ((z⁻¹ : R) • x) = (z⁻¹ : S) • f x := by
@@ -48,6 +55,9 @@ theorem map_inv_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [F
       map_inv_natCast_smul _ R S]
 #align map_inv_int_cast_smul map_inv_intCast_smul
 
+@[deprecated (since := "2024-04-17")]
+alias map_inv_int_cast_smul := map_inv_intCast_smul
+
 theorem map_ratCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M]
     [Module S M₂] (c : ℚ) (x : M) :
@@ -55,6 +65,9 @@ theorem map_ratCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLi
   rw [Rat.cast_def, Rat.cast_def, div_eq_mul_inv, div_eq_mul_inv, mul_smul, mul_smul,
     map_intCast_smul f R S, map_inv_natCast_smul f R S]
 #align map_rat_cast_smul map_ratCast_smul
+
+@[deprecated (since := "2024-04-17")]
+alias map_rat_cast_smul := map_ratCast_smul
 
 theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂]
     [_instM : Module ℚ M] [_instM₂ : Module ℚ M₂]
@@ -77,12 +90,18 @@ theorem inv_natCast_smul_eq {E : Type*} (R S : Type*) [AddCommMonoid E] [Divisio
   map_inv_natCast_smul (AddMonoidHom.id E) R S n x
 #align inv_nat_cast_smul_eq inv_natCast_smul_eq
 
+@[deprecated (since := "2024-04-17")]
+alias inv_nat_cast_smul_eq := inv_natCast_smul_eq
+
 /-- If `E` is a vector space over two division rings `R` and `S`, then scalar multiplications
 agree on inverses of integer numbers in `R` and `S`. -/
 theorem inv_intCast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [DivisionRing R]
     [DivisionRing S] [Module R E] [Module S E] (n : ℤ) (x : E) : (n⁻¹ : R) • x = (n⁻¹ : S) • x :=
   map_inv_intCast_smul (AddMonoidHom.id E) R S n x
 #align inv_int_cast_smul_eq inv_intCast_smul_eq
+
+@[deprecated (since := "2024-04-17")]
+alias inv_int_cast_smul_eq := inv_intCast_smul_eq
 
 /-- If `E` is a vector space over a division semiring `R` and has a monoid action by `α`, then that
 action commutes by scalar multiplication of inverses of natural numbers in `R`. -/
@@ -92,6 +111,9 @@ theorem inv_natCast_smul_comm {α E : Type*} (R : Type*) [AddCommMonoid E] [Divi
   (map_inv_natCast_smul (DistribMulAction.toAddMonoidHom E s) R R n x).symm
 #align inv_nat_cast_smul_comm inv_natCast_smul_comm
 
+@[deprecated (since := "2024-04-17")]
+alias inv_nat_cast_smul_comm := inv_natCast_smul_comm
+
 /-- If `E` is a vector space over a division ring `R` and has a monoid action by `α`, then that
 action commutes by scalar multiplication of inverses of integers in `R` -/
 theorem inv_intCast_smul_comm {α E : Type*} (R : Type*) [AddCommGroup E] [DivisionRing R]
@@ -100,12 +122,18 @@ theorem inv_intCast_smul_comm {α E : Type*} (R : Type*) [AddCommGroup E] [Divis
   (map_inv_intCast_smul (DistribMulAction.toAddMonoidHom E s) R R n x).symm
 #align inv_int_cast_smul_comm inv_intCast_smul_comm
 
+@[deprecated (since := "2024-04-17")]
+alias inv_int_cast_smul_comm := inv_intCast_smul_comm
+
 /-- If `E` is a vector space over two division rings `R` and `S`, then scalar multiplications
 agree on rational numbers in `R` and `S`. -/
 theorem ratCast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [DivisionRing R]
     [DivisionRing S] [Module R E] [Module S E] (r : ℚ) (x : E) : (r : R) • x = (r : S) • x :=
   map_ratCast_smul (AddMonoidHom.id E) R S r x
 #align rat_cast_smul_eq ratCast_smul_eq
+
+@[deprecated (since := "2024-04-17")]
+alias rat_cast_smul_eq := ratCast_smul_eq
 
 instance IsScalarTower.rat {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
     [Module ℚ R] [Module ℚ M] : IsScalarTower ℚ R M where

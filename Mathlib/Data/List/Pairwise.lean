@@ -128,7 +128,7 @@ theorem pairwise_pmap {p : β → Prop} {f : ∀ b, p b → α} {l : List β} (h
   · simp
   obtain ⟨_, hl⟩ : p a ∧ ∀ b, b ∈ l → p b := by simpa using h
   simp only [ihl hl, pairwise_cons, exists₂_imp, pmap, and_congr_left_iff, mem_pmap]
-  refine' fun _ => ⟨fun H b hb _ hpb => H _ _ hb rfl, _⟩
+  refine fun _ => ⟨fun H b hb _ hpb => H _ _ hb rfl, ?_⟩
   rintro H _ b hb rfl
   exact H b hb _ _
 #align list.pairwise_pmap List.pairwise_pmap
@@ -137,7 +137,7 @@ theorem Pairwise.pmap {l : List α} (hl : Pairwise R l) {p : α → Prop} {f : �
     (h : ∀ x ∈ l, p x) {S : β → β → Prop}
     (hS : ∀ ⦃x⦄ (hx : p x) ⦃y⦄ (hy : p y), R x y → S (f x hx) (f y hy)) :
     Pairwise S (l.pmap f h) := by
-  refine' (pairwise_pmap h).2 (Pairwise.imp_of_mem _ hl)
+  refine (pairwise_pmap h).2 (Pairwise.imp_of_mem ?_ hl)
   intros; apply hS; assumption
 #align list.pairwise.pmap List.Pairwise.pmap
 

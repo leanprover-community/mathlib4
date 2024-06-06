@@ -502,8 +502,8 @@ theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
   refine (ENNReal.toReal_le_add' (EMetric.diam_union xs yt) ?_ ?_).trans
     (add_le_add_right ENNReal.toReal_add_le _)
   · simp only [ENNReal.add_eq_top, edist_ne_top, or_false]
-    exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono (subset_union_left _ _)
-  · exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono (subset_union_right _ _)
+    exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_left
+  · exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_right
 #align metric.diam_union Metric.diam_union
 
 /-- If two sets intersect, the diameter of the union is bounded by the sum of the diameters. -/
@@ -550,7 +550,7 @@ theorem _root_.IsComplete.nonempty_iInter_of_nonempty_biInter {s : ℕ → Set �
     exact dist_le_diam_of_mem (h's N) (I _ _ hm) (I _ _ hn)
   obtain ⟨x, -, xlim⟩ : ∃ x ∈ s 0, Tendsto (fun n : ℕ => u n) atTop (𝓝 x) :=
     cauchySeq_tendsto_of_isComplete h0 (fun n => I 0 n (zero_le _)) this
-  refine' ⟨x, mem_iInter.2 fun n => _⟩
+  refine ⟨x, mem_iInter.2 fun n => ?_⟩
   apply (hs n).mem_of_tendsto xlim
   filter_upwards [Ici_mem_atTop n] with p hp
   exact I n p hp
@@ -614,4 +614,4 @@ theorem Metric.finite_isBounded_inter_isClosed [ProperSpace α] {K s : Set α} [
     (hK : IsBounded K) (hs : IsClosed s) : Set.Finite (K ∩ s) := by
   refine Set.Finite.subset (IsCompact.finite ?_ ?_) (Set.inter_subset_inter_left s subset_closure)
   · exact hK.isCompact_closure.inter_right hs
-  · exact DiscreteTopology.of_subset inferInstance (Set.inter_subset_right _ s)
+  · exact DiscreteTopology.of_subset inferInstance Set.inter_subset_right
