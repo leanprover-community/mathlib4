@@ -444,7 +444,7 @@ instance (priority := 110) IsScalarTower.to_smulCommClass' : SMulCommClass A R M
   SMulCommClass.symm _ _ _
 #align is_scalar_tower.to_smul_comm_class' IsScalarTower.to_smulCommClass'
 
-instance (priority := 900) Algebra.to_smulCommClass {R A} [CommSemiring R] [Semiring A]
+instance (priority := 2000) Algebra.to_smulCommClass {R A} [CommSemiring R] [Semiring A]
     [Algebra R A] : SMulCommClass R A A :=
   IsScalarTower.to_smulCommClass
 #align algebra.to_smul_comm_class Algebra.to_smulCommClass
