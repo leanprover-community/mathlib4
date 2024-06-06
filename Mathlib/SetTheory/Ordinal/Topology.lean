@@ -101,7 +101,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
     · refine ⟨hne, (isLUB_of_mem_closure ?_ h).csSup_eq hne⟩
       exact fun x hx => hx.2
   tfae_have 3 → 4
-  · exact fun h => ⟨_, inter_subset_left _ _, h.1, bddAbove_Iic.mono (inter_subset_right _ _), h.2⟩
+  · exact fun h => ⟨_, inter_subset_left, h.1, bddAbove_Iic.mono inter_subset_right, h.2⟩
   tfae_have 4 → 5
   · rintro ⟨t, hts, hne, hbdd, rfl⟩
     have hlub : IsLUB t (sSup t) := isLUB_csSup hne hbdd
