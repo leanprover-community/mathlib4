@@ -2,8 +2,6 @@ name: Compute transitive imports
 
 on:
   pull_request:
-    branches:
-      - main
 
 jobs:
   build:
@@ -11,12 +9,12 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: 3.8
 
@@ -28,20 +26,27 @@ jobs:
 
     - name: Compute transitive imports
       run: |
+        # the checkout dance, to avoid a detached head
+        git checkout master
+        git checkout -
+
         # Compute the counts for the HEAD of the PR
-        python ./scripts/count-trans-deps.py > head.json
+        python ./scripts/count-trans-deps.py Mathlib/Logic/Function > head.json
 
         # Checkout the merge base
-        git checkout $(git merge-base refs/remotes/origin/main ${{ github.sha }})
+        git checkout master # let's start easy! "$(git merge-base refs/remotes/origin/main ${{ github.sha }})"
+        # get the files that we need from the current PR
+        # this will have to switch to `master` probably, when merging or right after
+        git checkout origin/adomani/import-count scripts/count-trans-deps.py scripts/import-graph-report.py
 
         # Compute the counts for the merge base
-        python ./scripts/count-trans-deps.py > base.json
+        python ./scripts/count-trans-deps.py Mathlib/Logic/Function > base.json
 
     - name: Compare results and comment
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        message=$(python ./scripts/compare_counts.py base.json head.json)
+        message=$(python ./scripts/import-graph-report.py base.json head.json)
         if [[ -n "$message" ]]; then
             url="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${{ github.event.pull_request.number }}/comments"
             headers="Authorization: token ${GITHUB_TOKEN}"
