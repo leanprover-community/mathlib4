@@ -324,8 +324,8 @@ instance : Preadditive (ModuleCat.{v} R) where
     erw [map_add]
     rfl
 
-instance forget₂_addCommGroupCat_additive : (forget₂ (ModuleCat.{v} R) AddCommGroupCat).Additive
-    where
+instance forget₂_addCommGroupCat_additive :
+    (forget₂ (ModuleCat.{v} R) AddCommGroupCat).Additive where
 #align Module.forget₂_AddCommGroup_additive ModuleCat.forget₂_addCommGroupCat_additive
 
 section
@@ -464,3 +464,16 @@ instance : (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}).ReflectsIsomorphism
     apply isIso_of_reflects_iso _ (forget _)
 
 end ModuleCat
+
+/-!
+`@[simp]` lemmas for `LinearMap.comp` and categorical identities.
+-/
+
+@[simp] theorem LinearMap.comp_id_moduleCat
+    {R} [Ring R] {G : ModuleCat.{u} R} {H : Type u} [AddCommGroup H] [Module R H] (f : G →ₗ[R] H) :
+    f.comp (𝟙 G) = f :=
+  Category.id_comp (ModuleCat.ofHom f)
+@[simp] theorem LinearMap.id_moduleCat_comp
+    {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : ModuleCat.{u} R} (f : G →ₗ[R] H) :
+    LinearMap.comp (𝟙 H) f = f :=
+  Category.comp_id (ModuleCat.ofHom f)

@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Int.Parity
+import Mathlib.Algebra.Ring.Int
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Ring
@@ -123,7 +123,7 @@ theorem A_fibre_over_contestant (c : C) :
   ext p
   simp only [A, Finset.mem_univ, Finset.mem_filter, Finset.mem_image, true_and_iff, exists_prop]
   constructor
-  · rintro ⟨h₁, h₂⟩; refine' ⟨(c, p), _⟩; tauto
+  · rintro ⟨h₁, h₂⟩; refine ⟨(c, p), ?_⟩; tauto
   · intro h; aesop
 #align imo1998_q2.A_fibre_over_contestant Imo1998Q2.A_fibre_over_contestant
 
@@ -140,7 +140,7 @@ theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
     agreedContestants r p = ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).image
     AgreedTriple.contestant := by
   dsimp only [A, agreedContestants]; ext c; constructor <;> intro h
-  · rw [Finset.mem_image]; refine' ⟨⟨c, p⟩, _⟩; aesop
+  · rw [Finset.mem_image]; refine ⟨⟨c, p⟩, ?_⟩; aesop
   -- Porting note: this used to be `finish`
   · simp only [Finset.mem_filter, Finset.mem_image, Prod.exists] at h
     rcases h with ⟨_, ⟨_, ⟨_, ⟨h, _⟩⟩⟩⟩

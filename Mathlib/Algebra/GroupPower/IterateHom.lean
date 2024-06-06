@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Int
-import Mathlib.Algebra.Group.Nat
 import Mathlib.GroupTheory.GroupAction.Opposite
+import Mathlib.Logic.Function.Iterate
 
 #align_import algebra.hom.iterate from "leanprover-community/mathlib"@"792a2a264169d64986541c6f8f7e3bbb6acb6295"
 
@@ -26,6 +26,8 @@ We also prove formulas for iterates of add/mul left/right.
 homomorphism, iterate
 -/
 
+assert_not_exists DenselyOrdered
+assert_not_exists Ring
 
 open Function
 
@@ -75,24 +77,6 @@ theorem iterate_map_zpow {M F : Type*} [Group M] [FunLike F M M] [MonoidHomClass
     (f : F) (n : ℕ) (x : M) (k : ℤ) :
     f^[n] (x ^ k) = f^[n] x ^ k :=
   Commute.iterate_left (map_zpow f · k) n x
-
-namespace MonoidHom
-
-variable [Monoid M] [Monoid N] [Group G] [Group H]
-
-theorem coe_pow {M} [CommMonoid M] (f : Monoid.End M) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) _ _
-#align monoid_hom.coe_pow MonoidHom.coe_pow
-
-end MonoidHom
-
-theorem Monoid.End.coe_pow {M} [Monoid M] (f : Monoid.End M) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) _ _
-#align monoid.End.coe_pow Monoid.End.coe_pow
-
-theorem AddMonoid.End.coe_pow {A} [AddMonoid A] (f : AddMonoid.End A) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) _ _
-#align add_monoid.End.coe_pow AddMonoid.End.coe_pow
 
 --what should be the namespace for this section?
 section Monoid
@@ -191,5 +175,3 @@ theorem Commute.function_commute_mul_right (h : Commute a b) :
 #align add_commute.function_commute_add_right AddCommute.function_commute_add_right
 
 end Semigroup
-
-assert_not_exists Ring

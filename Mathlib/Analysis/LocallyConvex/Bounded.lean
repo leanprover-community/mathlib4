@@ -79,7 +79,7 @@ theorem isVonNBounded_iff (s : Set E) : IsVonNBounded 𝕜 s ↔ ∀ V ∈ 𝓝 
 
 theorem _root_.Filter.HasBasis.isVonNBounded_iff {q : ι → Prop} {s : ι → Set E} {A : Set E}
     (h : (𝓝 (0 : E)).HasBasis q s) : IsVonNBounded 𝕜 A ↔ ∀ i, q i → Absorbs 𝕜 (s i) A := by
-  refine' ⟨fun hA i hi => hA (h.mem_of_mem hi), fun hA V hV => _⟩
+  refine ⟨fun hA i hi => hA (h.mem_of_mem hi), fun hA V hV => ?_⟩
   rcases h.mem_iff.mp hV with ⟨i, hi, hV⟩
   exact (hA i hi).mono_left hV
 #align filter.has_basis.is_vonN_bounded_basis_iff Filter.HasBasis.isVonNBounded_iff
@@ -160,9 +160,9 @@ alias ⟨IsVonNBounded.tendsto_smallSets_nhds, _⟩ := isVonNBounded_iff_tendsto
 lemma isVonNBounded_pi_iff {𝕜 ι : Type*} {E : ι → Type*} [NormedDivisionRing 𝕜]
     [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)]
     {S : Set (∀ i, E i)} : IsVonNBounded 𝕜 S ↔ ∀ i, IsVonNBounded 𝕜 (eval i '' S) := by
-  simp only [isVonNBounded_iff_tendsto_smallSets_nhds, nhds_pi, Filter.pi, smallSets_iInf,
-    smallSets_comap, tendsto_iInf, tendsto_lift', comp_apply, mem_powerset_iff, ← image_subset_iff,
-    ← image_smul, image_image, tendsto_smallSets_iff]; rfl
+  simp_rw [isVonNBounded_iff_tendsto_smallSets_nhds, nhds_pi, Filter.pi, smallSets_iInf,
+    smallSets_comap_eq_comap_image, tendsto_iInf, tendsto_comap_iff, Function.comp,
+    ← image_smul, image_image]; rfl
 
 section Image
 
@@ -205,11 +205,11 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l
     push_neg at hVS
     rcases hVS ‖(ε n)⁻¹‖ with ⟨a, haε, haS⟩
     rcases Set.not_subset.mp haS with ⟨x, hxS, hx⟩
-    refine' ⟨⟨x, hxS⟩, fun hnx => _⟩
+    refine ⟨⟨x, hxS⟩, fun hnx => ?_⟩
     rw [← Set.mem_inv_smul_set_iff₀ hn] at hnx
     exact hx (hVb.smul_mono haε hnx)
   rcases this.choice with ⟨x, hx⟩
-  refine' Filter.frequently_false l (Filter.Eventually.frequently _)
+  refine Filter.frequently_false l (Filter.Eventually.frequently ?_)
   filter_upwards [hx,
     (H (_ ∘ x) fun n => (x n).2).eventually (eventually_mem_set.mpr hV)] using fun n => id
 #align bornology.is_vonN_bounded_of_smul_tendsto_zero Bornology.isVonNBounded_of_smul_tendsto_zero
@@ -357,39 +357,52 @@ end UniformAddGroup
 
 section VonNBornologyEqMetric
 
-variable (𝕜 E) [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 namespace NormedSpace
 
-theorem isVonNBounded_ball (r : ℝ) : Bornology.IsVonNBounded 𝕜 (Metric.ball (0 : E) r) := by
-  rw [Metric.nhds_basis_ball.isVonNBounded_iff, ← ball_normSeminorm 𝕜 E]
-  exact fun ε hε => (normSeminorm 𝕜 E).ball_zero_absorbs_ball_zero hε
+section NormedField
+
+variable (𝕜)
+variable [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+theorem isVonNBounded_of_isBounded {s : Set E} (h : Bornology.IsBounded s) :
+    Bornology.IsVonNBounded 𝕜 s := by
+  rcases h.subset_ball 0 with ⟨r, hr⟩
+  rw [Metric.nhds_basis_ball.isVonNBounded_iff]
+  rw [← ball_normSeminorm 𝕜 E] at hr ⊢
+  exact fun ε hε ↦ ((normSeminorm 𝕜 E).ball_zero_absorbs_ball_zero hε).mono_right hr
+
+variable (E)
+
+theorem isVonNBounded_ball (r : ℝ) : Bornology.IsVonNBounded 𝕜 (Metric.ball (0 : E) r) :=
+  isVonNBounded_of_isBounded _ Metric.isBounded_ball
 #align normed_space.is_vonN_bounded_ball NormedSpace.isVonNBounded_ball
 
 theorem isVonNBounded_closedBall (r : ℝ) :
     Bornology.IsVonNBounded 𝕜 (Metric.closedBall (0 : E) r) :=
-  (isVonNBounded_ball 𝕜 E (r + 1)).subset (Metric.closedBall_subset_ball <| by linarith)
+  isVonNBounded_of_isBounded _ Metric.isBounded_closedBall
 #align normed_space.is_vonN_bounded_closed_ball NormedSpace.isVonNBounded_closedBall
 
-theorem isVonNBounded_iff (s : Set E) : Bornology.IsVonNBounded 𝕜 s ↔ Bornology.IsBounded s := by
-  rw [Metric.isBounded_iff_subset_closedBall (0 : E)]
-  constructor
-  · intro h
-    rcases (h (Metric.ball_mem_nhds 0 zero_lt_one)).exists_pos with ⟨ρ, hρ, hρball⟩
-    rcases NormedField.exists_lt_norm 𝕜 ρ with ⟨a, ha⟩
-    specialize hρball a ha.le
-    rw [← ball_normSeminorm 𝕜 E, Seminorm.smul_ball_zero (norm_pos_iff.1 <| hρ.trans ha),
-      ball_normSeminorm, mul_one] at hρball
-    exact ⟨‖a‖, hρball.trans Metric.ball_subset_closedBall⟩
-  · exact fun ⟨C, hC⟩ => (isVonNBounded_closedBall 𝕜 E C).subset hC
+end NormedField
+
+variable (𝕜)
+variable [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+theorem isVonNBounded_iff {s : Set E} : Bornology.IsVonNBounded 𝕜 s ↔ Bornology.IsBounded s := by
+  refine ⟨fun h ↦ ?_, isVonNBounded_of_isBounded _⟩
+  rcases (h (Metric.ball_mem_nhds 0 zero_lt_one)).exists_pos with ⟨ρ, hρ, hρball⟩
+  rcases NormedField.exists_lt_norm 𝕜 ρ with ⟨a, ha⟩
+  specialize hρball a ha.le
+  rw [← ball_normSeminorm 𝕜 E, Seminorm.smul_ball_zero (norm_pos_iff.1 <| hρ.trans ha),
+    ball_normSeminorm] at hρball
+  exact Metric.isBounded_ball.subset hρball
 #align normed_space.is_vonN_bounded_iff NormedSpace.isVonNBounded_iff
 
-theorem isVonNBounded_iff' (s : Set E) :
+theorem isVonNBounded_iff' {s : Set E} :
     Bornology.IsVonNBounded 𝕜 s ↔ ∃ r : ℝ, ∀ x ∈ s, ‖x‖ ≤ r := by
   rw [NormedSpace.isVonNBounded_iff, isBounded_iff_forall_norm_le]
 #align normed_space.is_vonN_bounded_iff' NormedSpace.isVonNBounded_iff'
 
-theorem image_isVonNBounded_iff (f : E' → E) (s : Set E') :
+theorem image_isVonNBounded_iff {α : Type*} {f : α → E} {s : Set α} :
     Bornology.IsVonNBounded 𝕜 (f '' s) ↔ ∃ r : ℝ, ∀ x ∈ s, ‖f x‖ ≤ r := by
   simp_rw [isVonNBounded_iff', Set.forall_mem_image]
 #align normed_space.image_is_vonN_bounded_iff NormedSpace.image_isVonNBounded_iff
@@ -400,7 +413,7 @@ theorem vonNBornology_eq : Bornology.vonNBornology 𝕜 E = PseudoMetricSpace.to
   rw [Bornology.ext_iff_isBounded]
   intro s
   rw [Bornology.isBounded_iff_isVonNBounded]
-  exact isVonNBounded_iff 𝕜 E s
+  exact isVonNBounded_iff _
 #align normed_space.vonN_bornology_eq NormedSpace.vonNBornology_eq
 
 theorem isBounded_iff_subset_smul_ball {s : Set E} :

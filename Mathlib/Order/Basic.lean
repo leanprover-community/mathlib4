@@ -54,6 +54,7 @@ provide many aliases to dot notation-less lemmas. For example, `le_trans` is ali
 
 - expand module docs
 - automatic construction of dual definitions / theorems
+- remove duplicate declaration of type arguments from respective declarations
 
 ## Tags
 
@@ -912,6 +913,25 @@ instance Pi.partialOrder [∀ i, PartialOrder (π i)] : PartialOrder (∀ i, π 
   le_antisymm := fun _ _ h1 h2 ↦ funext fun b ↦ (h1 b).antisymm (h2 b)
 #align pi.partial_order Pi.partialOrder
 
+namespace Sum
+
+variable {α₁ α₂ : Type*} [LE β]
+
+@[simp]
+lemma elim_le_elim_iff {u₁ v₁ : α₁ → β} {u₂ v₂ : α₂ → β} :
+    Sum.elim u₁ u₂ ≤ Sum.elim v₁ v₂ ↔ u₁ ≤ v₁ ∧ u₂ ≤ v₂ :=
+  Sum.forall
+
+lemma const_le_elim_iff {b : β} {v₁ : α₁ → β} {v₂ : α₂ → β} :
+    Function.const _ b ≤ Sum.elim v₁ v₂ ↔ Function.const _ b ≤ v₁ ∧ Function.const _ b ≤ v₂ :=
+  elim_const_const b ▸ elim_le_elim_iff ..
+
+lemma elim_le_const_iff {b : β} {u₁ : α₁ → β} {u₂ : α₂ → β} :
+    Sum.elim u₁ u₂ ≤ Function.const _ b ↔ u₁ ≤ Function.const _ b ∧ u₂ ≤ Function.const _ b :=
+  elim_const_const b ▸ elim_le_elim_iff ..
+
+end Sum
+
 section Pi
 
 /-- A function `a` is strongly less than a function `b` if `a i < b i` for all `i`. -/
@@ -1306,7 +1326,7 @@ theorem mk_lt_mk_iff_right : (a, b₁) < (a, b₂) ↔ b₁ < b₂ :=
 #align prod.mk_lt_mk_iff_right Prod.mk_lt_mk_iff_right
 
 theorem lt_iff : x < y ↔ x.1 < y.1 ∧ x.2 ≤ y.2 ∨ x.1 ≤ y.1 ∧ x.2 < y.2 := by
-  refine' ⟨fun h ↦ _, _⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · by_cases h₁ : y.1 ≤ x.1
     · exact Or.inr ⟨h.1.1, LE.le.lt_of_not_le h.1.2 fun h₂ ↦ h.2 ⟨h₁, h₂⟩⟩
     · exact Or.inl ⟨LE.le.lt_of_not_le h.1.1 h₁, h.1.2⟩
