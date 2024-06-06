@@ -596,17 +596,17 @@ instance (x : orbitRel.Quotient G α) : IsPretransitive G x.orbit where
     ext
     simp [mul_smul]
 
-@[to_additive]
+@[to_additive (attr := norm_cast, simp)]
 lemma orbitRel.Quotient.mem_subgroup_orbit_iff {H : Subgroup G} {x : orbitRel.Quotient G α}
-    {a b : x.orbit} : a ∈ MulAction.orbit H b ↔ (a : α) ∈ MulAction.orbit H (b : α) := by
+    {a b : x.orbit} : (a : α) ∈ MulAction.orbit H (b : α) ↔ a ∈ MulAction.orbit H b := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rcases h with ⟨g, rfl⟩
-    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, orbit.coe_smul, ← Submonoid.smul_def]
-    exact MulAction.mem_orbit _ g
   · rcases h with ⟨g, h⟩
     simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, ← orbit.coe_smul,
       ← Submonoid.smul_def, ← Subtype.ext_iff] at h
     subst h
+    exact MulAction.mem_orbit _ g
+  · rcases h with ⟨g, rfl⟩
+    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, orbit.coe_smul, ← Submonoid.smul_def]
     exact MulAction.mem_orbit _ g
 
 @[to_additive]
@@ -614,7 +614,7 @@ lemma orbitRel.Quotient.subgroup_quotient_eq_iff {H : Subgroup G} {x : orbitRel.
     {a b : x.orbit} : (⟦a⟧ : orbitRel.Quotient H x.orbit) = ⟦b⟧ ↔
       (⟦↑a⟧ : orbitRel.Quotient H α) = ⟦↑b⟧ := by
   simp_rw [← @Quotient.mk''_eq_mk, Quotient.eq'']
-  exact orbitRel.Quotient.mem_subgroup_orbit_iff
+  exact orbitRel.Quotient.mem_subgroup_orbit_iff.symm
 
 @[to_additive]
 lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Quotient G α}
@@ -626,7 +626,7 @@ lemma orbitRel.Quotient.mem_subgroup_orbit_iff' {H : Subgroup G} {x : orbitRel.Q
   suffices hb : ↑b ∈ orbitRel.Quotient.orbit (⟦a⟧ : orbitRel.Quotient H x.orbit) by
     rw [orbitRel.Quotient.orbit_eq_orbit_out (⟦a⟧ : orbitRel.Quotient H x.orbit) Quotient.out_eq']
        at hb
-    rw [← orbitRel.Quotient.mem_subgroup_orbit_iff]
+    rw [orbitRel.Quotient.mem_subgroup_orbit_iff]
     convert hb using 1
     rw [orbit_eq_iff, ← orbitRel_r_apply, ← Quotient.eq'', Quotient.out_eq', @Quotient.mk''_eq_mk]
   rw [orbitRel.Quotient.mem_orbit, h, @Quotient.mk''_eq_mk]
