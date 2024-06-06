@@ -92,11 +92,11 @@ def String.toAsciiByteArray (s : String) : ByteArray :=
 every byte will become a unicode character with codepoint < 256. -/
 def ByteSlice.toString (bs : ByteSlice) : String := Id.run do
   let mut s := ""
-  for c in bs do s := s.push c.toChar
+  for c in bs do s := s.push (Char.ofUInt8 c)
   s
 
 instance : ToString ByteSlice where
   toString bs := Id.run do
     let mut s := ""
-    for c in bs do s := s.push c.toChar
+    for c in bs do s := s.push (Char.ofUInt8 c)
     s
