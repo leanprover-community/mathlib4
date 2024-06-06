@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.FieldTheory.Tower
+import Mathlib.RingTheory.Algebraic
+import Mathlib.FieldTheory.Minpoly.Basic
 
 #align_import field_theory.intermediate_field from "leanprover-community/mathlib"@"c596622fccd6e0321979d94931c964054dea2d26"
 
