@@ -354,7 +354,56 @@ def Pseudofunctor.mapAdjunction (F : Pseudofunctor B C) (adj : Bicategory.Adjunc
     rw [this]
     simp only [Pseudofunctor.map₂_right_unitor, IsIso.inv_comp, IsIso.Iso.inv_hom, inv_whiskerLeft,
       assoc, Iso.inv_hom_id_assoc, whiskerLeft_inv_hom, comp_id]
-  right_triangle := sorry
+  right_triangle := by
+    simp only [rightZigzag, whiskerLeft_comp, comp_whiskerRight]
+    have := F.map₂_whisker_left g adj.unit
+    apply_fun (fun x ↦ (F.mapComp g (𝟙 a)).inv ≫ x ≫ (F.mapComp g (f ≫ g)).hom) at this
+    simp only [assoc, Iso.inv_hom_id, comp_id, Iso.inv_hom_id_assoc] at this
+    rw [← this]
+    have := F.map₂_whisker_right adj.counit g
+    apply_fun (fun x ↦ (F.mapComp (g ≫ f) g).inv ≫ x ≫ (F.mapComp (𝟙 b) g).hom) at this
+    simp only [assoc, Iso.inv_hom_id, comp_id, Iso.inv_hom_id_assoc] at this
+    rw [← this]
+    simp only [bicategoricalComp, assoc, Iso.inv_hom_id, comp_id,
+      Iso.inv_hom_id_assoc, Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', whiskerRight_comp,
+      id_whiskerRight, id_comp]
+    have := F.toOplax.map₂_associator g f g
+    rw [← IsIso.eq_inv_comp] at this
+    simp only [Pseudofunctor.to_oplax_obj, Pseudofunctor.to_oplax_mapComp] at this
+    conv_rhs at this => congr; change inv (F.toOplax.map₂Iso (α_ g f g)).hom; rw [IsIso.Iso.inv_hom]
+    conv_rhs at this =>
+      rw [← Category.assoc, ← Category.assoc]
+    rw [← IsIso.comp_inv_eq, IsIso.Iso.inv_hom] at this
+    repeat (rw [← Category.assoc] at this)
+    rw [← Category.assoc (F.map g ◁ (F.mapId a).inv) _ _]
+    rw [← Category.assoc _ (F.map₂ (g ◁ adj.unit)) _]
+    rw [← Category.assoc (F.mapComp g (f ≫ g)).hom _ _]
+    rw [← Category.assoc _ (α_ (F.map g) (F.map f) (F.map g)).inv _]
+    erw [this]
+    simp only [assoc, Iso.inv_hom_id_assoc, Pseudofunctor.to_oplax_obj, OplaxFunctor.map₂Iso_inv]
+    slice_lhs 6 7 => erw [← comp_whiskerRight]; rw [Iso.hom_inv_id, id_whiskerRight]
+    rw [Category.id_comp]
+    slice_lhs 5 6 => rw [Iso.hom_inv_id]
+    rw [Category.id_comp]
+    slice_lhs 3 4 => erw [← F.map₂_comp]
+    slice_lhs 3 4 => rw [← F.map₂_comp]
+    have := adj.right_triangle
+    simp only [rightZigzag, bicategoricalComp,
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', whiskerRight_comp,
+      id_whiskerRight, id_comp, Iso.inv_hom_id] at this
+    rw [← Category.assoc] at this
+    rw [this]
+    simp only [Pseudofunctor.map₂_comp, Pseudofunctor.map₂_right_unitor, assoc,
+      Iso.inv_hom_id_assoc, whiskerLeft_inv_hom_assoc, Iso.cancel_iso_hom_left]
+    have : IsIso (F.map₂ (λ_ g).hom) := OplaxFunctor.map₂_isIso F.toOplax _
+    have : F.map₂ (λ_ g).inv = inv (F.map₂ (λ_ g).hom) := by
+      rw [← IsIso.Iso.inv_hom]
+      exact F.toOplax.map₂_inv (λ_ g).hom
+    rw [this]
+    simp only [Pseudofunctor.map₂_left_unitor, IsIso.inv_comp, IsIso.Iso.inv_hom, inv_whiskerRight,
+      assoc, Iso.inv_hom_id_assoc, inv_hom_whiskerRight, comp_id]
 
 end
 

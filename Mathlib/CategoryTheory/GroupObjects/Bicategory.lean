@@ -30,6 +30,7 @@ example : (⟨X, hX⟩ : FullSubcategory P) ≅ ⟨Y, hY⟩ := by
   exact f.hom_inv_id
   exact f.inv_hom_id
 
+/-
 instance CatBicat : Bicategory Cat.{v,u} where
   whiskerLeft := whiskerLeft
   whiskerRight := whiskerRight
@@ -65,6 +66,7 @@ instance CatBicat : Bicategory Cat.{v,u} where
       whiskerRight_app, whiskerLeft_app F' β]
     simp only [Functor.comp_obj, Cat.comp_obj, NatTrans.naturality]
   pentagon := Functor.pentagon
+  -/
 
   instance CatFiniteProducts : Bicategory {C : Cat.{v,u} // HasFiniteProducts C} where
   Hom C D := FullSubcategory (fun (F : C ⥤ D) ↦ Nonempty (PreservesFiniteProducts F))

@@ -3,6 +3,9 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.GroupObjects.FunctorCategory
 import Mathlib.CategoryTheory.GroupObjects.PreservesFiniteProducts
+import Mathlib.CategoryTheory.GroupObjects.Bicategory
+import Mathlib.CategoryTheory.Bicategory.Adjunction
+import Mathlib.CategoryTheory.Adjunction.Limits
 
 universe u v u' v' u'' v''
 
@@ -15,6 +18,8 @@ variable {C : Type u} [Category.{v, u} C] [HasFiniteProducts C]
 variable {J : Type u'} [Category.{v',u'} J] [HasLimitsOfShape J C]
 
 variable {K : Type u''} [Category.{v'', u''} K] [HasLimitsOfShape K C]
+
+namespace CategoryTheory.Limits
 
 @[simp]
 def limPreservesLimitsOfShape_lift (F : K ⥤ (J ⥤ C)) {c : Cone F} (limc : IsLimit c)
@@ -86,7 +91,46 @@ to `C` preserves finite products.-/
 def limPreservesFiniteProducts : PreservesFiniteProducts (lim : (J ⥤ C) ⥤ C) where
   preserves K _ := limPreservesLimitsOfShape C J (Discrete K)
 
-local instance : PreservesFiniteProducts (lim : (J ⥤ C) ⥤ C) := limPreservesFiniteProducts C J
+end CategoryTheory.Limits
+
+namespace Bicategory
+
+variable {J' : Type} [SmallCategory J'] [HasLimitsOfShape J' C]
+
+local instance : PreservesFiniteProducts (lim : (J' ⥤ C) ⥤ C) := limPreservesFiniteProducts C J'
+
+variable (C J')
+
+@[simp]
+abbrev FunctorsAsObj : {C : Cat // HasFiniteProducts C} := ⟨Cat.of (J' ⥤ C), sorry⟩
+
+@[simp]
+abbrev CatAsObj : {C : Cat // HasFiniteProducts C} := ⟨Cat.of (ULift.{max u v} C), sorry⟩
+
+abbrev LimAs1Map : FunctorsAsObj C J' ⟶ CatAsObj C := by
+  have : PreservesFiniteProducts (lim : (J' ⥤ C) ⥤ C) := inferInstance
+  exact ⟨lim (J := J') (C := C) ⋙ ULift.equivalence.functor, Nonempty.intro
+  (Limits.compPreservesFiniteProducts _ _)⟩
+
+@[simp]
+abbrev ConstAs1Map : CatAsObj C ⟶ FunctorsAsObj C J' := by
+  have : PreservesFiniteProducts (Functor.const J' (C := C)) := inferInstance
+  refine ⟨ULift.equivalence.inverse ⋙ Functor.const J', Nonempty.intro
+  (Limits.compPreservesFiniteProducts _ _)⟩
+
+@[simp]
+def constLimAdj : Bicategory.Adjunction (B := {C : Cat // HasFiniteProducts C})
+    (ConstAs1Map C J') (LimAs1Map C J') where
+  unit := by
+    simp only [CatAsObj, FunctorsAsObj, ConstAs1Map, ULift.equivalence_inverse]
+    refine ?_ ≫ (Limits.constLimAdj (J := J') (C := C)).unit
+  counit := sorry
+  left_triangle := sorry
+  right_triangle := sorry
+
+
+
+end
 
 
 
