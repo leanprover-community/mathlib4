@@ -88,7 +88,8 @@ lemma isHamiltonianCycle_isCycle_and_isHamiltonian_tail  :
 
 lemma isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ ∀ a, (support p).tail.count a = 1 := by
-  simp only [isHamiltonianCycle_isCycle_and_isHamiltonian_tail , IsHamiltonian, support_tail, exists_prop]
+  simp only [isHamiltonianCycle_isCycle_and_isHamiltonian_tail , IsHamiltonian, support_tail,
+   exists_prop]
 
 /-- A hamiltonian cycle visits every vertex. -/
 lemma IsHamiltonianCycle.mem_support (hp : p.IsHamiltonianCycle) (b : α) :
