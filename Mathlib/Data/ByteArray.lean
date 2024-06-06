@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Nat
-import Mathlib.Data.Char
 import Mathlib.Data.UInt
 
 set_option autoImplicit true
