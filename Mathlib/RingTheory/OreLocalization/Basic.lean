@@ -3,8 +3,8 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
-import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.OreLocalization.OreSet
+import Mathlib.Algebra.Group.Submonoid.Operations
 
 #align_import ring_theory.ore_localization.basic from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
 
@@ -13,8 +13,7 @@ import Mathlib.RingTheory.OreLocalization.OreSet
 # Localization over left Ore sets.
 
 This file defines the localization of a monoid over a left Ore set and proves its universal
-mapping property. We show that in the case of a commutative monoid this definition coincides with the
-common monoid localization.
+mapping property.
 
 ## Notations
 
@@ -529,34 +528,9 @@ instance : CommMonoid R[S⁻¹] :=
       induction' y using OreLocalization.ind with r₂ s₂
       rw [oreDiv_mul_oreDiv_comm, oreDiv_mul_oreDiv_comm, mul_comm r₁, mul_comm s₁] }
 
-variable (R S)
-
-/-- The morphism `numeratorHom` is a monoid localization map in the case of commutative `R`. -/
-protected def localizationMap : S.LocalizationMap R[S⁻¹] where
-  toFun := numeratorHom
-  map_one' := rfl
-  map_mul' r₁ r₂ := by simp
-  map_units' := numerator_isUnit
-  surj' z := by
-    induction' z using OreLocalization.ind with r s
-    use (r, s); dsimp
-    rw [numeratorHom_apply, numeratorHom_apply, OreLocalization.expand' r 1 s]
-    simp only [mul_div_one, mul_one, Submonoid.smul_def, smul_eq_mul, mul_comm r]
-  exists_of_eq r₁ r₂ := by
-    dsimp
-    intro h
-    rw [numeratorHom_apply, numeratorHom_apply, oreDiv_eq_iff] at h
-    rcases h with ⟨u, v, h₁, h₂⟩
-    dsimp at h₂
-    rw [mul_one, mul_one] at h₂
-    subst h₂
-    exact ⟨u, h₁.symm⟩
-#align ore_localization.localization_map OreLocalization.localizationMap
-
-/-- If `R` is commutative, Ore localization and monoid localization are isomorphic. -/
-protected noncomputable def equivMonoidLocalization : Localization S ≃* R[S⁻¹] :=
-  Localization.mulEquivOfQuotient (OreLocalization.localizationMap R S)
-#align ore_localization.equiv_monoid_localization OreLocalization.equivMonoidLocalization
+-- The comparison with `Localization` is removed as we(@erdOne) plan to replace that.
+#noalign ore_localization.localization_map
+#noalign ore_localization.equiv_monoid_localization
 
 end CommMonoid
 
