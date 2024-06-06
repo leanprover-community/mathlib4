@@ -3,28 +3,27 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Algebra.Group.Hom.Defs
 
 #align_import data.matrix.dmatrix from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
-# Matrices
+# Dependent-typed matrices
 -/
 
 
 universe u u' v w z
 
 /-- `DMatrix m n` is the type of dependently typed matrices
-whose rows are indexed by the fintype `m` and
-whose columns are indexed by the fintype `n`. -/
-@[nolint unusedArguments]
-def DMatrix (m : Type u) (n : Type u') [Fintype m] [Fintype n] (α : m → n → Type v) :
-    Type max u u' v :=
+whose rows are indexed by the type `m` and
+whose columns are indexed by the type `n`.
+
+In most applications `m` and `n` are finite types. -/
+def DMatrix (m : Type u) (n : Type u') (α : m → n → Type v) : Type max u u' v :=
   ∀ i j, α i j
 #align dmatrix DMatrix
 
-variable {l m n o : Type*} [Fintype l] [Fintype m] [Fintype n] [Fintype o]
-
+variable {l m n o : Type*}
 variable {α : m → n → Type v}
 
 namespace DMatrix
@@ -115,9 +114,8 @@ instance [∀ i j, AddCommGroup (α i j)] : AddCommGroup (DMatrix m n α) :=
 instance [∀ i j, Unique (α i j)] : Unique (DMatrix m n α) :=
   Pi.unique
 
--- Porting note: old proof is Pi.Subsingleton
 instance [∀ i j, Subsingleton (α i j)] : Subsingleton (DMatrix m n α) :=
-  by constructor; simp only [DMatrix, eq_iff_true_of_subsingleton, implies_true]
+  inferInstanceAs <| Subsingleton <| ∀ i j, α i j
 
 @[simp]
 theorem zero_apply [∀ i j, Zero (α i j)] (i j) : (0 : DMatrix m n α) i j = 0 := rfl
@@ -139,8 +137,8 @@ theorem sub_apply [∀ i j, Sub (α i j)] (M N : DMatrix m n α) (i j) : (M - N)
 
 @[simp]
 theorem map_zero [∀ i j, Zero (α i j)] {β : m → n → Type w} [∀ i j, Zero (β i j)]
-    {f : ∀ ⦃i j⦄, α i j → β i j} (h : ∀ i j, f (0 : α i j) = 0) : (0 : DMatrix m n α).map f = 0 :=
-  by ext; simp [h]
+    {f : ∀ ⦃i j⦄, α i j → β i j} (h : ∀ i j, f (0 : α i j) = 0) :
+    (0 : DMatrix m n α).map f = 0 := by ext; simp [h]
 #align dmatrix.map_zero DMatrix.map_zero
 
 theorem map_add [∀ i j, AddMonoid (α i j)] {β : m → n → Type w} [∀ i j, AddMonoid (β i j)]
@@ -170,8 +168,7 @@ end DMatrix
 /-- The `AddMonoidHom` between spaces of dependently typed matrices
 induced by an `AddMonoidHom` between their coefficients. -/
 def AddMonoidHom.mapDMatrix [∀ i j, AddMonoid (α i j)] {β : m → n → Type w}
-    [∀ i j, AddMonoid (β i j)] (f : ∀ ⦃i j⦄, α i j →+ β i j) : DMatrix m n α →+ DMatrix m n β
-    where
+    [∀ i j, AddMonoid (β i j)] (f : ∀ ⦃i j⦄, α i j →+ β i j) : DMatrix m n α →+ DMatrix m n β where
   toFun M := M.map fun i j => @f i j
   map_zero' := by simp
   map_add' := DMatrix.map_add f

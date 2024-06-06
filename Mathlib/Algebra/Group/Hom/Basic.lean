@@ -5,8 +5,7 @@ Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hu
   Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Group.Hom.Defs
 
 #align_import algebra.hom.group from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -15,6 +14,9 @@ import Mathlib.Algebra.NeZero
 
 -/
 
+-- `NeZero` cannot be additivised, hence its theory should be developed outside of the
+-- `Algebra.Group` folder.
+assert_not_exists NeZero
 
 variable {α β M N P : Type*}
 
@@ -24,26 +26,40 @@ variable {G : Type*} {H : Type*}
 -- groups
 variable {F : Type*}
 
-namespace NeZero
+section CommMonoid
+variable [CommMonoid α]
 
-theorem of_map {R M} [Zero R] [Zero M] [FunLike F R M] [ZeroHomClass F R M]
-    (f : F) {r : R} [neZero : NeZero (f r)] : NeZero r :=
-  ⟨fun h => ne (f r) <| by rw [h]; exact ZeroHomClass.map_zero f⟩
-#align ne_zero.of_map NeZero.of_map
+/-- The `n`th power map on a commutative monoid for a natural `n`, considered as a morphism of
+monoids. -/
+@[to_additive (attr := simps) "Multiplication by a natural `n` on a commutative additive monoid,
+considered as a morphism of additive monoids."]
+def powMonoidHom (n : ℕ) : α →* α where
+  toFun := (· ^ n)
+  map_one' := one_pow _
+  map_mul' a b := mul_pow a b n
+#align pow_monoid_hom powMonoidHom
+#align nsmul_add_monoid_hom nsmulAddMonoidHom
+#align pow_monoid_hom_apply powMonoidHom_apply
+#align nsmul_add_monoid_hom_apply nsmulAddMonoidHom_apply
 
-theorem of_injective {R M} [Zero R] {r : R} [NeZero r] [Zero M] [FunLike F R M]
-    [ZeroHomClass F R M] {f : F}
-    (hf : Function.Injective f) : NeZero (f r) :=
-  ⟨by
-    rw [← ZeroHomClass.map_zero f]
-    exact hf.ne NeZero.out⟩
-#align ne_zero.of_injective NeZero.of_injective
-
-end NeZero
+end CommMonoid
 
 section DivisionCommMonoid
 
 variable [DivisionCommMonoid α]
+
+/-- The `n`-th power map (for an integer `n`) on a commutative group, considered as a group
+homomorphism. -/
+@[to_additive (attr := simps) "Multiplication by an integer `n` on a commutative additive group,
+considered as an additive group homomorphism."]
+def zpowGroupHom (n : ℤ) : α →* α where
+  toFun := (· ^ n)
+  map_one' := one_zpow n
+  map_mul' a b := mul_zpow a b n
+#align zpow_group_hom zpowGroupHom
+#align zsmul_add_group_hom zsmulAddGroupHom
+#align zpow_group_hom_apply zpowGroupHom_apply
+#align zsmul_add_group_hom_apply zsmulAddGroupHom_apply
 
 /-- Inversion on a commutative group, considered as a monoid homomorphism. -/
 @[to_additive "Negation on a commutative additive group, considered as an additive monoid
@@ -75,7 +91,6 @@ instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
       map_mul' := fun x y => by
-        intros
         show f (x * y) * g (x * y) = f x * g x * (f y * g y)
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
@@ -188,7 +203,6 @@ instance mul : Mul (M →* N) :=
     { toFun := fun m => f m * g m,
       map_one' := show f 1 * g 1 = 1 by simp,
       map_mul' := fun x y => by
-        intros
         show f (x * y) * g (x * y) = f x * g x * (f y * g y)
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
@@ -207,7 +221,7 @@ lemma mul_comp [MulOneClass P] (g₁ g₂ : M →* N) (f : P →* M) :
 #align add_monoid_hom.add_comp AddMonoidHom.add_comp
 
 @[to_additive]
-lemma comp_mul [CommMonoid N] [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
+lemma comp_mul [CommMonoid P] (g : N →* P) (f₁ f₂ : M →* N) :
     g.comp (f₁ * f₂) = g.comp f₁ * g.comp f₂ := by
   ext; simp only [mul_apply, Function.comp_apply, map_mul, coe_comp]
 #align monoid_hom.comp_mul MonoidHom.comp_mul
@@ -262,10 +276,4 @@ lemma comp_div (f : G →* H) (g h : M →* G) : f.comp (g / h) = f.comp g / f.c
 
 end InvDiv
 
-/-- Given two monoid with zero morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid
-with zero morphism sending `x` to `f x * g x`. -/
-instance [MulZeroOneClass M] [CommMonoidWithZero N] : Mul (M →*₀ N) :=
-  ⟨fun f g => { (f * g : M →* N) with
-    toFun := fun a => f a * g a,
-    map_zero' := by dsimp only []; rw [map_zero, zero_mul] }⟩
-    -- Porting note: why do we need `dsimp` here?
+end MonoidHom

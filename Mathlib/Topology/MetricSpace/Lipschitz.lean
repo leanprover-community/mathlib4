@@ -3,7 +3,7 @@ Copyright (c) 2018 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Intervals.ProjIcc
+import Mathlib.Order.Interval.Set.ProjIcc
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.EMetricSpace.Lipschitz
@@ -132,7 +132,7 @@ theorem mapsTo_ball (hf : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r : ℝ) :
 def toLocallyBoundedMap (f : α → β) (hf : LipschitzWith K f) : LocallyBoundedMap α β :=
   LocallyBoundedMap.ofMapBounded f fun _s hs =>
     let ⟨C, hC⟩ := Metric.isBounded_iff.1 hs
-    Metric.isBounded_iff.2 ⟨K * C, ball_image_iff.2 fun _x hx => ball_image_iff.2 fun _y hy =>
+    Metric.isBounded_iff.2 ⟨K * C, forall_mem_image.2 fun _x hx => forall_mem_image.2 fun _y hy =>
       hf.dist_le_mul_of_le (hC hx hy)⟩
 #align lipschitz_with.to_locally_bounded_map LipschitzWith.toLocallyBoundedMap
 
@@ -155,8 +155,8 @@ theorem isBounded_image (hf : LipschitzWith K f) {s : Set α} (hs : IsBounded s)
 theorem diam_image_le (hf : LipschitzWith K f) (s : Set α) (hs : IsBounded s) :
     Metric.diam (f '' s) ≤ K * Metric.diam s :=
   Metric.diam_le_of_forall_dist_le (mul_nonneg K.coe_nonneg Metric.diam_nonneg) <|
-    ball_image_iff.2 fun _x hx =>
-      ball_image_iff.2 fun _y hy => hf.dist_le_mul_of_le <| Metric.dist_le_diam_of_mem hs hx hy
+    forall_mem_image.2 fun _x hx =>
+      forall_mem_image.2 fun _y hy => hf.dist_le_mul_of_le <| Metric.dist_le_diam_of_mem hs hx hy
 #align lipschitz_with.diam_image_le LipschitzWith.diam_image_le
 
 protected theorem dist_left (y : α) : LipschitzWith 1 (dist · y) :=
@@ -192,6 +192,15 @@ lemma _root_.Real.lipschitzWith_toNNReal : LipschitzWith 1 Real.toNNReal := by
   refine lipschitzWith_iff_dist_le_mul.mpr (fun x y ↦ ?_)
   simpa only [ge_iff_le, NNReal.coe_one, dist_prod_same_right, one_mul, Real.dist_eq] using
     lipschitzWith_iff_dist_le_mul.mp lipschitzWith_max (x, 0) (y, 0)
+
+lemma cauchySeq_comp (hf : LipschitzWith K f) {u : ℕ → α} (hu : CauchySeq u) :
+    CauchySeq (f ∘ u) := by
+  rcases cauchySeq_iff_le_tendsto_0.1 hu with ⟨b, b_nonneg, hb, blim⟩
+  refine cauchySeq_iff_le_tendsto_0.2 ⟨fun n ↦ K * b n, ?_, ?_, ?_⟩
+  · exact fun n ↦ mul_nonneg (by positivity) (b_nonneg n)
+  · exact fun n m N hn hm ↦ hf.dist_le_mul_of_le (hb n m N hn hm)
+  · rw [← mul_zero (K : ℝ)]
+    exact blim.const_mul _
 
 end Metric
 
@@ -249,7 +258,6 @@ namespace LipschitzOnWith
 section Metric
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] [PseudoMetricSpace γ]
-
 variable {K : ℝ≥0} {s : Set α} {f : α → β}
 
 protected theorem of_dist_le' {K : ℝ} (h : ∀ x ∈ s, ∀ y ∈ s, dist (f x) (f y) ≤ K * dist x y) :
@@ -306,6 +314,19 @@ theorem isBounded_image2 (f : α → β → γ) {K₁ K₂ : ℝ≥0} {s : Set �
           ENNReal.mul_ne_top ENNReal.coe_ne_top ht.ediam_ne_top⟩)
       (ediam_image2_le _ _ _ hf₁ hf₂)
 #align lipschitz_on_with.bounded_image2 LipschitzOnWith.isBounded_image2
+
+lemma cauchySeq_comp (hf : LipschitzOnWith K f s)
+    {u : ℕ → α} (hu : CauchySeq u) (h'u : range u ⊆ s) :
+    CauchySeq (f ∘ u) := by
+  rcases cauchySeq_iff_le_tendsto_0.1 hu with ⟨b, b_nonneg, hb, blim⟩
+  refine cauchySeq_iff_le_tendsto_0.2 ⟨fun n ↦ K * b n, ?_, ?_, ?_⟩
+  · exact fun n ↦ mul_nonneg (by positivity) (b_nonneg n)
+  · intro n m N hn hm
+    have A n : u n ∈ s := h'u (mem_range_self _)
+    apply (hf.dist_le_mul _ (A n) _ (A m)).trans
+    exact mul_le_mul_of_nonneg_left (hb n m N hn hm) K.2
+  · rw [← mul_zero (K : ℝ)]
+    exact blim.const_mul _
 
 end Metric
 
@@ -371,7 +392,7 @@ theorem LipschitzOnWith.extend_real {f : α → ℝ} {s : Set α} {K : ℝ≥0} 
   let g := fun y : α => iInf fun x : s => f x + K * dist y x
   have B : ∀ y : α, BddBelow (range fun x : s => f x + K * dist y x) := fun y => by
     rcases hs with ⟨z, hz⟩
-    refine' ⟨f z - K * dist y z, _⟩
+    refine ⟨f z - K * dist y z, ?_⟩
     rintro w ⟨t, rfl⟩
     dsimp
     rw [sub_le_iff_le_add, add_assoc, ← mul_add, add_comm (dist y t)]
@@ -379,11 +400,11 @@ theorem LipschitzOnWith.extend_real {f : α → ℝ} {s : Set α} {K : ℝ≥0} 
       f z ≤ f t + K * dist z t := hf.le_add_mul hz t.2
       _ ≤ f t + K * (dist y z + dist y t) := by gcongr; apply dist_triangle_left
   have E : EqOn f g s := fun x hx => by
-    refine' le_antisymm (le_ciInf fun y => hf.le_add_mul hx y.2) _
+    refine le_antisymm (le_ciInf fun y => hf.le_add_mul hx y.2) ?_
     simpa only [add_zero, Subtype.coe_mk, mul_zero, dist_self] using ciInf_le (B x) ⟨x, hx⟩
-  refine' ⟨g, LipschitzWith.of_le_add_mul K fun x y => _, E⟩
+  refine ⟨g, LipschitzWith.of_le_add_mul K fun x y => ?_, E⟩
   rw [← sub_le_iff_le_add]
-  refine' le_ciInf fun z => _
+  refine le_ciInf fun z => ?_
   rw [sub_le_iff_le_add]
   calc
     g x ≤ f z + K * dist x z := ciInf_le (B x) _
@@ -395,7 +416,7 @@ theorem LipschitzOnWith.extend_real {f : α → ℝ} {s : Set α} {K : ℝ≥0} 
 
 /-- A function `f : α → (ι → ℝ)` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz
 extension to the whole space. The same result for the space `ℓ^∞ (ι, ℝ)` over a possibly infinite
-type `ι` is implemented in `LipschitzOnWith.extend_lp_infty`.-/
+type `ι` is implemented in `LipschitzOnWith.extend_lp_infty`. -/
 theorem LipschitzOnWith.extend_pi [Fintype ι] {f : α → ι → ℝ} {s : Set α}
     {K : ℝ≥0} (hf : LipschitzOnWith K f s) : ∃ g : α → ι → ℝ, LipschitzWith K g ∧ EqOn f g s := by
   have : ∀ i, ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x => f x i) g s := fun i => by

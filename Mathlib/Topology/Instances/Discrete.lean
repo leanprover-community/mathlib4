@@ -33,24 +33,25 @@ instance (priority := 100) DiscreteTopology.firstCountableTopology [DiscreteTopo
   nhds_generated_countable := by rw [nhds_discrete]; exact isCountablyGenerated_pure
 #align discrete_topology.first_countable_topology DiscreteTopology.firstCountableTopology
 
-instance (priority := 100) DiscreteTopology.secondCountableTopology_of_encodable
-    [hd : DiscreteTopology α] [Encodable α] : SecondCountableTopology α :=
+instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable
+    [hd : DiscreteTopology α] [Countable α] : SecondCountableTopology α :=
   haveI : ∀ i : α, SecondCountableTopology (↥({i} : Set α)) := fun i =>
     { is_open_generated_countable :=
         ⟨{univ}, countable_singleton _, by simp only [eq_iff_true_of_subsingleton]⟩ }
   secondCountableTopology_of_countable_cover (singletons_open_iff_discrete.mpr hd)
     (iUnion_of_singleton α)
-#align discrete_topology.second_countable_topology_of_encodable DiscreteTopology.secondCountableTopology_of_encodable
+#align discrete_topology.second_countable_topology_of_encodable DiscreteTopology.secondCountableTopology_of_countable
 
-instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable {α : Type*}
+@[deprecated DiscreteTopology.secondCountableTopology_of_countable] -- 2024-03-11
+theorem DiscreteTopology.secondCountableTopology_of_encodable {α : Type*}
     [TopologicalSpace α] [DiscreteTopology α] [Countable α] : SecondCountableTopology α :=
-  @DiscreteTopology.secondCountableTopology_of_encodable _ _ _ (Encodable.ofCountable _)
+  DiscreteTopology.secondCountableTopology_of_countable
 #align discrete_topology.second_countable_topology_of_countable DiscreteTopology.secondCountableTopology_of_countable
 
 theorem bot_topologicalSpace_eq_generateFrom_of_pred_succOrder [PartialOrder α] [PredOrder α]
     [SuccOrder α] [NoMinOrder α] [NoMaxOrder α] :
     (⊥ : TopologicalSpace α) = generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a } := by
-  refine' (eq_bot_of_singletons_open fun a => _).symm
+  refine (eq_bot_of_singletons_open fun a => ?_).symm
   have h_singleton_eq_inter : {a} = Iio (succ a) ∩ Ioi (pred a) := by
     suffices h_singleton_eq_inter' : {a} = Iic a ∩ Ici a by
       rw [h_singleton_eq_inter', ← Ioi_pred, ← Iio_succ]
@@ -64,7 +65,7 @@ theorem bot_topologicalSpace_eq_generateFrom_of_pred_succOrder [PartialOrder α]
 
 theorem discreteTopology_iff_orderTopology_of_pred_succ' [PartialOrder α] [PredOrder α]
     [SuccOrder α] [NoMinOrder α] [NoMaxOrder α] : DiscreteTopology α ↔ OrderTopology α := by
-  refine' ⟨fun h => ⟨_⟩, fun h => ⟨_⟩⟩
+  refine ⟨fun h => ⟨?_⟩, fun h => ⟨?_⟩⟩
   · rw [h.eq_bot]
     exact bot_topologicalSpace_eq_generateFrom_of_pred_succOrder
   · rw [h.topology_eq_generate_intervals]
@@ -78,7 +79,7 @@ instance (priority := 100) DiscreteTopology.orderTopology_of_pred_succ' [h : Dis
 
 theorem LinearOrder.bot_topologicalSpace_eq_generateFrom [LinearOrder α] [PredOrder α]
     [SuccOrder α] : (⊥ : TopologicalSpace α) = generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a } := by
-  refine' (eq_bot_of_singletons_open fun a => _).symm
+  refine (eq_bot_of_singletons_open fun a => ?_).symm
   have h_singleton_eq_inter : {a} = Iic a ∩ Ici a := by rw [inter_comm, Ici_inter_Iic, Icc_self a]
   by_cases ha_top : IsTop a
   · rw [ha_top.Iic_eq, inter_comm, inter_univ] at h_singleton_eq_inter
@@ -109,7 +110,7 @@ theorem LinearOrder.bot_topologicalSpace_eq_generateFrom [LinearOrder α] [PredO
 
 theorem discreteTopology_iff_orderTopology_of_pred_succ [LinearOrder α] [PredOrder α]
     [SuccOrder α] : DiscreteTopology α ↔ OrderTopology α := by
-  refine' ⟨fun h => ⟨_⟩, fun h => ⟨_⟩⟩
+  refine ⟨fun h => ⟨?_⟩, fun h => ⟨?_⟩⟩
   · rw [h.eq_bot]
     exact LinearOrder.bot_topologicalSpace_eq_generateFrom
   · rw [h.topology_eq_generate_intervals]

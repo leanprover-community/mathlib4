@@ -3,8 +3,10 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Heather Macbeth
 -/
-import Mathlib.Data.IsROrC.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Unitization
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.StarSubalgebra
+import Mathlib.Topology.ContinuousFunction.ContinuousMapZero
 import Mathlib.Topology.ContinuousFunction.Weierstrass
 
 #align_import topology.continuous_function.stone_weierstrass from "leanprover-community/mathlib"@"16e59248c0ebafabd5d071b1cd41743eb8698ffb"
@@ -100,10 +102,10 @@ theorem comp_attachBound_mem_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A)
   -- we show there are elements of `A` arbitrarily close.
   apply mem_closure_iff_frequently.mpr
   -- To show that, we pull back the polynomials close to `p`,
-  refine'
+  refine
     ((compRightContinuousMap ℝ (attachBound (f : C(X, ℝ)))).continuousAt
             p).tendsto.frequently_map
-      _ _ frequently_mem_polynomials
+      _ ?_ frequently_mem_polynomials
   -- but need to show that those pullbacks are actually in `A`.
   rintro _ ⟨g, ⟨-, rfl⟩⟩
   simp only [SetLike.mem_coe, AlgHom.coe_toRingHom, compRightContinuousMap_apply,
@@ -122,12 +124,12 @@ theorem abs_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A) :
 theorem inf_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
     (f : C(X, ℝ)) ⊓ (g : C(X, ℝ)) ∈ A.topologicalClosure := by
   rw [inf_eq_half_smul_add_sub_abs_sub' ℝ]
-  refine'
+  refine
     A.topologicalClosure.smul_mem
       (A.topologicalClosure.sub_mem
         (A.topologicalClosure.add_mem (A.le_topologicalClosure f.property)
           (A.le_topologicalClosure g.property))
-        _)
+        ?_)
       _
   exact mod_cast abs_mem_subalgebra_closure A _
 #align continuous_map.inf_mem_subalgebra_closure ContinuousMap.inf_mem_subalgebra_closure
@@ -144,12 +146,12 @@ theorem inf_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (
 theorem sup_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
     (f : C(X, ℝ)) ⊔ (g : C(X, ℝ)) ∈ A.topologicalClosure := by
   rw [sup_eq_half_smul_add_add_abs_sub' ℝ]
-  refine'
+  refine
     A.topologicalClosure.smul_mem
       (A.topologicalClosure.add_mem
         (A.topologicalClosure.add_mem (A.le_topologicalClosure f.property)
           (A.le_topologicalClosure g.property))
-        _)
+        ?_)
       _
   exact mod_cast abs_mem_subalgebra_closure A _
 #align continuous_map.sup_mem_subalgebra_closure ContinuousMap.sup_mem_subalgebra_closure
@@ -171,17 +173,17 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     (sup_mem : ∀ᵉ (f ∈ L) (g ∈ L), f ⊔ g ∈ L) (sep : L.SeparatesPointsStrongly) :
     closure L = ⊤ := by
   -- We start by boiling down to a statement about close approximation.
-  apply eq_top_iff.mpr
+  rw [eq_top_iff]
   rintro f -
-  refine'
+  refine
     Filter.Frequently.mem_closure
-      ((Filter.HasBasis.frequently_iff Metric.nhds_basis_ball).mpr fun ε pos => _)
+      ((Filter.HasBasis.frequently_iff Metric.nhds_basis_ball).mpr fun ε pos => ?_)
   simp only [exists_prop, Metric.mem_ball]
   -- It will be helpful to assume `X` is nonempty later,
   -- so we get that out of the way here.
   by_cases nX : Nonempty X
   swap
-  exact ⟨nA.some, (dist_lt_iff pos).mpr fun x => False.elim (nX ⟨x⟩), nA.choose_spec⟩
+  · exact ⟨nA.some, (dist_lt_iff pos).mpr fun x => False.elim (nX ⟨x⟩), nA.choose_spec⟩
   /-
     The strategy now is to pick a family of continuous functions `g x y` in `A`
     with the property that `g x y x = f x` and `g x y y = f y`
@@ -197,7 +199,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   let U : X → X → Set X := fun x y => {z | f z - ε < g x y z}
   have U_nhd_y : ∀ x y, U x y ∈ 𝓝 y := by
     intro x y
-    refine' IsOpen.mem_nhds _ _
+    refine IsOpen.mem_nhds ?_ ?_
     · apply isOpen_lt <;> continuity
     · rw [Set.mem_setOf_eq, w₂]
       exact sub_lt_self _ pos
@@ -231,7 +233,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- This is still a neighbourhood of `x`.
   have W_nhd : ∀ x, W x ∈ 𝓝 x := by
     intro x
-    refine' IsOpen.mem_nhds _ _
+    refine IsOpen.mem_nhds ?_ ?_
     · -- Porting note: mathlib3 `continuity` found `continuous_set_coe`
       apply isOpen_lt (continuous_set_coe _ _)
       continuity
@@ -248,7 +250,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   let k : (L : Type _) :=
     ⟨xs.inf' xs_nonempty fun x => (h x : C(X, ℝ)),
       Finset.inf'_mem _ inf_mem _ _ _ fun x _ => (h x).2⟩
-  refine' ⟨k.1, _, k.2⟩
+  refine ⟨k.1, ?_, k.2⟩
   -- We just need to verify the bound, which we do pointwise.
   rw [dist_lt_iff pos]
   intro z
@@ -284,7 +286,7 @@ theorem subalgebra_topologicalClosure_eq_top_of_separatesPoints (A : Subalgebra 
       (fun f fm g gm => sup_mem_closed_subalgebra L A.isClosed_topologicalClosure ⟨f, fm⟩ ⟨g, gm⟩)
       (Subalgebra.SeparatesPoints.strongly
         (Subalgebra.separatesPoints_monotone A.le_topologicalClosure w))
-  · simp [L]
+  simp [L]
 #align continuous_map.subalgebra_topological_closure_eq_top_of_separates_points ContinuousMap.subalgebra_topologicalClosure_eq_top_of_separatesPoints
 
 /-- An alternative statement of the Stone-Weierstrass theorem.
@@ -331,12 +333,12 @@ theorem exists_mem_subalgebra_near_continuous_of_separatesPoints (A : Subalgebra
 
 end ContinuousMap
 
-section IsROrC
+section RCLike
 
-open IsROrC
+open RCLike
 
 -- Redefine `X`, since for the next lemma it need not be compact
-variable {𝕜 : Type*} {X : Type*} [IsROrC 𝕜] [TopologicalSpace X]
+variable {𝕜 : Type*} {X : Type*} [RCLike 𝕜] [TopologicalSpace X]
 
 open ContinuousMap
 
@@ -350,7 +352,7 @@ which didn't exist at the time Stone-Weierstrass was written. -/
 
 /-- If a star subalgebra of `C(X, 𝕜)` separates points, then the real subalgebra
 of its purely real-valued elements also separates points. -/
-theorem Subalgebra.SeparatesPoints.isROrC_to_real {A : StarSubalgebra 𝕜 C(X, 𝕜)}
+theorem Subalgebra.SeparatesPoints.rclike_to_real {A : StarSubalgebra 𝕜 C(X, 𝕜)}
     (hA : A.SeparatesPoints) :
       ((A.restrictScalars ℝ).comap
         (ofRealAm.compLeftContinuous ℝ continuous_ofReal)).SeparatesPoints := by
@@ -360,25 +362,25 @@ theorem Subalgebra.SeparatesPoints.isROrC_to_real {A : StarSubalgebra 𝕜 C(X, 
   let F : C(X, 𝕜) := f - const _ (f x₂)
   -- Subtract the constant `f x₂` from `f`; this is still an element of the subalgebra
   have hFA : F ∈ A := by
-    refine' A.sub_mem hfA (@Eq.subst _ (· ∈ A) _ _ _ <| A.smul_mem A.one_mem <| f x₂)
+    refine A.sub_mem hfA (@Eq.subst _ (· ∈ A) _ _ ?_ <| A.smul_mem A.one_mem <| f x₂)
     ext1
     simp only [coe_smul, coe_one, smul_apply, one_apply, Algebra.id.smul_eq_mul, mul_one,
       const_apply]
   -- Consider now the function `fun x ↦ |f x - f x₂| ^ 2`
-  refine' ⟨_, ⟨⟨(‖F ·‖ ^ 2), by continuity⟩, _, rfl⟩, _⟩
+  refine ⟨_, ⟨⟨(‖F ·‖ ^ 2), by continuity⟩, ?_, rfl⟩, ?_⟩
   · -- This is also an element of the subalgebra, and takes only real values
     rw [SetLike.mem_coe, Subalgebra.mem_comap]
     convert (A.restrictScalars ℝ).mul_mem hFA (star_mem hFA : star F ∈ A)
     ext1
-    simp [← IsROrC.mul_conj]
+    simp [← RCLike.mul_conj]
   · -- And it also separates the points `x₁`, `x₂`
     simpa [F] using sub_ne_zero.mpr hf
-#align subalgebra.separates_points.is_R_or_C_to_real Subalgebra.SeparatesPoints.isROrC_to_real
+#align subalgebra.separates_points.is_R_or_C_to_real Subalgebra.SeparatesPoints.rclike_to_real
 
 variable [CompactSpace X]
 
-/-- The Stone-Weierstrass approximation theorem, `IsROrC` version, that a star subalgebra `A` of
-`C(X, 𝕜)`, where `X` is a compact topological space and `IsROrC 𝕜`, is dense if it separates
+/-- The Stone-Weierstrass approximation theorem, `RCLike` version, that a star subalgebra `A` of
+`C(X, 𝕜)`, where `X` is a compact topological space and `RCLike 𝕜`, is dense if it separates
 points. -/
 theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints
     (A : StarSubalgebra 𝕜 C(X, 𝕜)) (hA : A.SeparatesPoints) : A.topologicalClosure = ⊤ := by
@@ -391,10 +393,10 @@ theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoint
     -- Let `A₀` be the subalgebra of `C(X, ℝ)` consisting of `A`'s purely real elements; it is the
     -- preimage of `A` under `I`.  In this argument we only need its submodule structure.
     let A₀ : Submodule ℝ C(X, ℝ) := (A.toSubmodule.restrictScalars ℝ).comap I
-    -- By `Subalgebra.SeparatesPoints.isROrC_to_real`, this subalgebra also separates points, so
+    -- By `Subalgebra.SeparatesPoints.rclike_to_real`, this subalgebra also separates points, so
     -- we may apply the real Stone-Weierstrass result to it.
     have SW : A₀.topologicalClosure = ⊤ :=
-      haveI := subalgebra_topologicalClosure_eq_top_of_separatesPoints _ hA.isROrC_to_real
+      haveI := subalgebra_topologicalClosure_eq_top_of_separatesPoints _ hA.rclike_to_real
       congr_arg Subalgebra.toSubmodule this
     rw [← Submodule.map_top, ← SW]
     -- So it suffices to prove that the image under `I` of the closure of `A₀` is contained in the
@@ -405,21 +407,21 @@ theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoint
   -- In particular, for a function `f` in `C(X, 𝕜)`, the real and imaginary parts of `f` are in the
   -- closure of `A`
   intro f
-  let f_re : C(X, ℝ) := (⟨IsROrC.re, IsROrC.reCLM.continuous⟩ : C(𝕜, ℝ)).comp f
-  let f_im : C(X, ℝ) := (⟨IsROrC.im, IsROrC.imCLM.continuous⟩ : C(𝕜, ℝ)).comp f
+  let f_re : C(X, ℝ) := (⟨RCLike.re, RCLike.reCLM.continuous⟩ : C(𝕜, ℝ)).comp f
+  let f_im : C(X, ℝ) := (⟨RCLike.im, RCLike.imCLM.continuous⟩ : C(𝕜, ℝ)).comp f
   have h_f_re : I f_re ∈ A.topologicalClosure := key ⟨f_re, rfl⟩
   have h_f_im : I f_im ∈ A.topologicalClosure := key ⟨f_im, rfl⟩
   -- So `f_re + I • f_im` is in the closure of `A`
-  have := A.topologicalClosure.add_mem h_f_re (A.topologicalClosure.smul_mem h_f_im IsROrC.I)
+  have := A.topologicalClosure.add_mem h_f_re (A.topologicalClosure.smul_mem h_f_im RCLike.I)
   rw [StarSubalgebra.mem_toSubalgebra] at this
   convert this
   -- And this, of course, is just `f`
   ext
   apply Eq.symm
-  simp [I, f_re, f_im, mul_comm IsROrC.I _]
+  simp [I, f_re, f_im, mul_comm RCLike.I _]
 #align continuous_map.subalgebra_is_R_or_C_topological_closure_eq_top_of_separates_points ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPointsₓ
 
-end IsROrC
+end RCLike
 
 section PolynomialFunctions
 
@@ -438,7 +440,7 @@ theorem polynomialFunctions.topologicalClosure (s : Set ℝ)
 
 /-- The star subalgebra generated by polynomials functions is dense in `C(s, 𝕜)` when `s` is
 compact and `𝕜` is either `ℝ` or `ℂ`. -/
-theorem polynomialFunctions.starClosure_topologicalClosure {𝕜 : Type*} [IsROrC 𝕜] (s : Set 𝕜)
+theorem polynomialFunctions.starClosure_topologicalClosure {𝕜 : Type*} [RCLike 𝕜] (s : Set 𝕜)
     [CompactSpace s] : (polynomialFunctions s).starClosure.topologicalClosure = ⊤ :=
   ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoints _
     (Subalgebra.separatesPoints_monotone le_sup_left (polynomialFunctions_separatesPoints s))
@@ -459,7 +461,7 @@ theorem ContinuousMap.algHom_ext_map_X {A : Type*} [Ring A]
 /-- Continuous star algebra homomorphisms from `C(s, 𝕜)` into a star `𝕜`-algebra `A` which agree
 at `X : 𝕜[X]` (interpreted as a continuous map) are, in fact, equal. -/
 @[ext]
-theorem ContinuousMap.starAlgHom_ext_map_X {𝕜 A : Type*} [IsROrC 𝕜] [Ring A] [StarRing A]
+theorem ContinuousMap.starAlgHom_ext_map_X {𝕜 A : Type*} [RCLike 𝕜] [Ring A] [StarRing A]
     [Algebra 𝕜 A] [TopologicalSpace A] [T2Space A] {s : Set 𝕜} [CompactSpace s]
     {φ ψ : C(s, 𝕜) →⋆ₐ[𝕜] A} (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) : φ = ψ := by
@@ -470,3 +472,120 @@ theorem ContinuousMap.starAlgHom_ext_map_X {𝕜 A : Type*} [IsROrC 𝕜] [Ring 
     (polynomialFunctions.starClosure_le_equalizer s φ ψ h) (isClosed_eq hφ hψ)
 
 end PolynomialFunctions
+
+/-! ### Continuous maps sending zero to zero -/
+
+section ContinuousMapZero
+
+variable {X : Type*} [TopologicalSpace X] {𝕜 : Type*} [RCLike 𝕜]
+open NonUnitalStarAlgebra Submodule
+
+namespace ContinuousMap
+
+lemma adjoin_id_eq_span_one_union (s : Set 𝕜) :
+    ((StarAlgebra.adjoin 𝕜 {(restrict s (.id 𝕜) : C(s, 𝕜))}) : Set C(s, 𝕜)) =
+      span 𝕜 ({(1 : C(s, 𝕜))} ∪ (adjoin 𝕜 {(restrict s (.id 𝕜) : C(s, 𝕜))})) := by
+  ext x
+  rw [SetLike.mem_coe, SetLike.mem_coe, ← StarAlgebra.adjoin_nonUnitalStarSubalgebra,
+    ← StarSubalgebra.mem_toSubalgebra, ← Subalgebra.mem_toSubmodule,
+    StarAlgebra.adjoin_nonUnitalStarSubalgebra_eq_span, span_union, span_eq_toSubmodule]
+
+open Pointwise in
+lemma adjoin_id_eq_span_one_add (s : Set 𝕜) :
+    ((StarAlgebra.adjoin 𝕜 {(restrict s (.id 𝕜) : C(s, 𝕜))}) : Set C(s, 𝕜)) =
+      (span 𝕜 {(1 : C(s, 𝕜))} : Set C(s, 𝕜)) + (adjoin 𝕜 {(restrict s (.id 𝕜) : C(s, 𝕜))}) := by
+  ext x
+  rw [SetLike.mem_coe, ← StarAlgebra.adjoin_nonUnitalStarSubalgebra,
+    ← StarSubalgebra.mem_toSubalgebra, ← Subalgebra.mem_toSubmodule,
+    StarAlgebra.adjoin_nonUnitalStarSubalgebra_eq_span, mem_sup]
+  simp [Set.mem_add]
+
+-- annoyingly, things break below without these shortcut instances.
+instance : IsScalarTower 𝕜 C(X, 𝕜) C(X, 𝕜) := @IsScalarTower.right _ C(X, 𝕜) _ _ _
+instance : SMulCommClass 𝕜 C(X, 𝕜) C(X, 𝕜) := @Algebra.to_smulCommClass _ C(X, 𝕜) _ _ _
+
+lemma nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom {s : Set 𝕜} (h0 : 0 ∈ s) :
+    (adjoin 𝕜 {restrict s (.id 𝕜)} : Set C(s, 𝕜)) ⊆
+      RingHom.ker (evalStarAlgHom 𝕜 𝕜 (⟨0, h0⟩ : s)) := by
+  intro f hf
+  induction hf using adjoin_induction' with
+  | mem f hf =>
+    obtain rfl := Set.mem_singleton_iff.mp hf
+    rfl
+  | add f _ g _ hf hg => exact add_mem hf hg
+  | zero => exact zero_mem _
+  | mul f _ g _ _ hg => exact Ideal.mul_mem_left _ f hg
+  | smul r f _ hf =>
+    rw [SetLike.mem_coe, RingHom.mem_ker] at hf ⊢
+    rw [map_smul, hf, smul_zero]
+  | star f _ hf =>
+    rw [SetLike.mem_coe, RingHom.mem_ker] at hf ⊢
+    rw [map_star, hf, star_zero]
+
+lemma ker_evalStarAlgHom_inter_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) :
+    (StarAlgebra.adjoin 𝕜 {restrict s (.id 𝕜)} : Set C(s, 𝕜)) ∩
+      RingHom.ker (evalStarAlgHom 𝕜 𝕜 (⟨0, h0⟩ : s)) = adjoin 𝕜 {restrict s (.id 𝕜)} := by
+  ext f
+  constructor
+  · rintro ⟨hf₁, hf₂⟩
+    rw [SetLike.mem_coe] at hf₂ ⊢
+    simp_rw [adjoin_id_eq_span_one_add, Set.mem_add, SetLike.mem_coe, mem_span_singleton] at hf₁
+    obtain ⟨-, ⟨r, rfl⟩, f, hf, rfl⟩ := hf₁
+    have := nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom h0 hf
+    simp only [SetLike.mem_coe, RingHom.mem_ker, evalStarAlgHom_apply] at hf₂ this
+    rw [add_apply, this, add_zero, smul_apply, one_apply, smul_eq_mul, mul_one] at hf₂
+    rwa [hf₂, zero_smul, zero_add]
+  · simp only [Set.mem_inter_iff, SetLike.mem_coe]
+    refine fun hf ↦ ⟨?_, nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom h0 hf⟩
+    exact adjoin_le_starAlgebra_adjoin _ _ hf
+
+-- the statement should be in terms of non unital subalgebras, but we lack API
+open RingHom Filter Topology in
+theorem AlgHom.closure_ker_inter {F S K A : Type*} [CommRing K] [Ring A] [Algebra K A]
+    [TopologicalSpace K] [T1Space K] [TopologicalSpace A] [ContinuousSub A] [ContinuousSMul K A]
+    [FunLike F A K] [AlgHomClass F K A K] [SetLike S A] [OneMemClass S A] [AddSubgroupClass S A]
+    [SMulMemClass S K A] (φ : F) (hφ : Continuous φ) (s : S) :
+    closure (s ∩ RingHom.ker φ) = closure s ∩ (ker φ : Set A) := by
+  refine subset_antisymm ?_ ?_
+  · simpa only [ker_eq, (isClosed_singleton.preimage hφ).closure_eq]
+      using closure_inter_subset_inter_closure s (ker φ : Set A)
+  · intro x ⟨hxs, (hxφ : φ x = 0)⟩
+    rw [mem_closure_iff_clusterPt, ClusterPt] at hxs
+    have : Tendsto (fun y ↦ y - φ y • 1) (𝓝 x ⊓ 𝓟 s) (𝓝 x) := by
+      conv => congr; rfl; rfl; rw [← sub_zero x, ← zero_smul K 1, ← hxφ]
+      exact Filter.tendsto_inf_left (Continuous.tendsto (by fun_prop) x)
+    refine mem_closure_of_tendsto this <| eventually_inf_principal.mpr ?_
+    filter_upwards [] with g hg using
+      ⟨sub_mem hg (SMulMemClass.smul_mem _ <| one_mem _), by simp [RingHom.mem_ker]⟩
+
+lemma ker_evalStarAlgHom_eq_closure_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) [CompactSpace s] :
+    (RingHom.ker (evalStarAlgHom 𝕜 𝕜 (⟨0, h0⟩ : s)) : Set C(s, 𝕜)) =
+      closure (adjoin 𝕜 {(restrict s (.id 𝕜))}) := by
+  rw [← ker_evalStarAlgHom_inter_adjoin_id s h0,
+    AlgHom.closure_ker_inter (φ := evalStarAlgHom 𝕜 𝕜 (X := s) ⟨0, h0⟩) (continuous_eval_const _) _]
+  convert (Set.univ_inter _).symm
+  rw [← Polynomial.toContinuousMapOn_X_eq_restrict_id, ← Polynomial.toContinuousMapOnAlgHom_apply,
+    ← polynomialFunctions.starClosure_eq_adjoin_X s]
+  congrm(($(polynomialFunctions.starClosure_topologicalClosure s) : Set C(s, 𝕜)))
+
+end ContinuousMap
+
+open ContinuousMapZero in
+/-- If `s : Set 𝕜` with `RCLike 𝕜` is compact and contains `0`, then the non-unital star subalgebra
+generated by the identity function in `C(s, 𝕜)₀` is dense. This can be seen as a version of the
+Weierstrass approximation theorem. -/
+lemma ContinuousMapZero.adjoin_id_dense {s : Set 𝕜} [Zero s] (h0 : ((0 : s) : 𝕜) = 0)
+    [CompactSpace s] : Dense (adjoin 𝕜 {(.id h0 : C(s, 𝕜)₀)} : Set C(s, 𝕜)₀) := by
+  have h0' : 0 ∈ s := h0 ▸ (0 : s).property
+  rw [dense_iff_closure_eq,
+    ← closedEmbedding_toContinuousMap.injective.preimage_image (closure _),
+    ← closedEmbedding_toContinuousMap.closure_image_eq, ← coe_toContinuousMapHom,
+    ← NonUnitalStarSubalgebra.coe_map, NonUnitalStarAlgHom.map_adjoin_singleton,
+    toContinuousMapHom_apply, toContinuousMap_id h0,
+    ← ContinuousMap.ker_evalStarAlgHom_eq_closure_adjoin_id s h0']
+  apply Set.eq_univ_of_forall fun f ↦ ?_
+  simp only [Set.mem_preimage, toContinuousMapHom_apply, SetLike.mem_coe, RingHom.mem_ker,
+    ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_coe]
+  rw [show ⟨0, h0'⟩ = (0 : s) by ext; exact h0.symm, _root_.map_zero f]
+
+end ContinuousMapZero

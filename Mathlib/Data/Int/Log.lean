@@ -99,9 +99,9 @@ theorem log_of_right_le_zero (b : ℕ) {r : R} (hr : r ≤ 0) : log b r = 0 := b
 theorem zpow_log_le_self {b : ℕ} {r : R} (hb : 1 < b) (hr : 0 < r) : (b : R) ^ log b r ≤ r := by
   rcases le_total 1 r with hr1 | hr1
   · rw [log_of_one_le_right _ hr1]
-    rw [zpow_coe_nat, ← Nat.cast_pow, ← Nat.le_floor_iff hr.le]
+    rw [zpow_natCast, ← Nat.cast_pow, ← Nat.le_floor_iff hr.le]
     exact Nat.pow_log_le_self b (Nat.floor_pos.mpr hr1).ne'
-  · rw [log_of_right_le_one _ hr1, zpow_neg, zpow_coe_nat, ← Nat.cast_pow]
+  · rw [log_of_right_le_one _ hr1, zpow_neg, zpow_natCast, ← Nat.cast_pow]
     exact inv_le_of_inv_le hr (Nat.ceil_le.1 <| Nat.le_pow_clog hb _)
 #align int.zpow_log_le_self Int.zpow_log_le_self
 
@@ -111,16 +111,16 @@ theorem lt_zpow_succ_log_self {b : ℕ} (hb : 1 < b) (r : R) : r < (b : R) ^ (lo
     exact hr.trans_lt (zero_lt_one.trans_le <| mod_cast hb.le)
   rcases le_or_lt 1 r with hr1 | hr1
   · rw [log_of_one_le_right _ hr1]
-    rw [Int.ofNat_add_one_out, zpow_coe_nat, ← Nat.cast_pow]
+    rw [Int.ofNat_add_one_out, zpow_natCast, ← Nat.cast_pow]
     apply Nat.lt_of_floor_lt
     exact Nat.lt_pow_succ_log_self hb _
   · rw [log_of_right_le_one _ hr1.le]
     have hcri : 1 < r⁻¹ := one_lt_inv hr hr1
     have : 1 ≤ Nat.clog b ⌈r⁻¹⌉₊ :=
       Nat.succ_le_of_lt (Nat.clog_pos hb <| Nat.one_lt_cast.1 <| hcri.trans_le (Nat.le_ceil _))
-    rw [neg_add_eq_sub, ← neg_sub, ← Int.ofNat_one, ← Int.ofNat_sub this, zpow_neg, zpow_coe_nat,
+    rw [neg_add_eq_sub, ← neg_sub, ← Int.ofNat_one, ← Int.ofNat_sub this, zpow_neg, zpow_natCast,
       lt_inv hr (pow_pos (Nat.cast_pos.mpr <| zero_lt_one.trans hb) _), ← Nat.cast_pow]
-    refine' Nat.lt_ceil.1 _
+    refine Nat.lt_ceil.1 ?_
     exact Nat.pow_pred_clog_lt_self hb <| Nat.one_lt_cast.1 <| hcri.trans_le <| Nat.le_ceil _
 #align int.lt_zpow_succ_log_self Int.lt_zpow_succ_log_self
 
@@ -137,11 +137,11 @@ theorem log_one_right (b : ℕ) : log b (1 : R) = 0 := by
 -- Porting note: needed to replace b ^ z with (b : R) ^ z in the below
 theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b ((b : R) ^ z : R) = z := by
   obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg z
-  · rw [log_of_one_le_right _ (one_le_zpow_of_nonneg _ <| Int.coe_nat_nonneg _), zpow_coe_nat, ←
+  · rw [log_of_one_le_right _ (one_le_zpow_of_nonneg _ <| Int.natCast_nonneg _), zpow_natCast, ←
       Nat.cast_pow, Nat.floor_coe, Nat.log_pow hb]
     exact mod_cast hb.le
-  · rw [log_of_right_le_one _ (zpow_le_one_of_nonpos _ <| neg_nonpos.mpr (Int.coe_nat_nonneg _)),
-      zpow_neg, inv_inv, zpow_coe_nat, ← Nat.cast_pow, Nat.ceil_natCast, Nat.clog_pow _ _ hb]
+  · rw [log_of_right_le_one _ (zpow_le_one_of_nonpos _ <| neg_nonpos.mpr (Int.natCast_nonneg _)),
+      zpow_neg, inv_inv, zpow_natCast, ← Nat.cast_pow, Nat.ceil_natCast, Nat.clog_pow _ _ hb]
     exact mod_cast hb.le
 #align int.log_zpow Int.log_zpow
 
@@ -151,7 +151,7 @@ theorem log_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤
   · rw [log_of_right_le_one _ h₁, log_of_right_le_one _ h₂, neg_le_neg_iff, Int.ofNat_le]
     exact Nat.clog_mono_right _ (Nat.ceil_mono <| inv_le_inv_of_le h₀ h)
   · rw [log_of_right_le_one _ h₁, log_of_one_le_right _ h₂]
-    exact (neg_nonpos.mpr (Int.coe_nat_nonneg _)).trans (Int.coe_nat_nonneg _)
+    exact (neg_nonpos.mpr (Int.natCast_nonneg _)).trans (Int.natCast_nonneg _)
   · obtain rfl := le_antisymm h (h₂.trans h₁)
     rfl
   · rw [log_of_one_le_right _ h₁, log_of_one_le_right _ h₂, Int.ofNat_le]
@@ -202,11 +202,11 @@ theorem clog_of_right_le_one (b : ℕ) {r : R} (hr : r ≤ 1) : clog b r = -Nat.
 #align int.clog_of_right_le_one Int.clog_of_right_le_one
 
 theorem clog_of_right_le_zero (b : ℕ) {r : R} (hr : r ≤ 0) : clog b r = 0 := by
-  rw [clog, if_neg (hr.trans_lt zero_lt_one).not_le, neg_eq_zero, Int.coe_nat_eq_zero,
+  rw [clog, if_neg (hr.trans_lt zero_lt_one).not_le, neg_eq_zero, Int.natCast_eq_zero,
     Nat.log_eq_zero_iff]
   rcases le_or_lt b 1 with hb | hb
   · exact Or.inr hb
-  · refine' Or.inl (lt_of_le_of_lt _ hb)
+  · refine Or.inl (lt_of_le_of_lt ?_ hb)
     exact Nat.floor_le_one_of_le_one ((inv_nonpos.2 hr).trans zero_le_one)
 #align int.clog_of_right_le_zero Int.clog_of_right_le_zero
 

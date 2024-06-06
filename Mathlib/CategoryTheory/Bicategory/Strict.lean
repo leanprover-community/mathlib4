@@ -53,7 +53,7 @@ class Bicategory.Strict : Prop where
     aesop_cat
 #align category_theory.bicategory.strict CategoryTheory.Bicategory.Strict
 
--- porting note: not adding simp to:
+-- Porting note: not adding simp to:
 -- Bicategory.Strict.id_comp
 -- Bicategory.Strict.comp_id
 -- Bicategory.Strict.assoc
@@ -64,8 +64,7 @@ attribute [simp]
 
 -- see Note [lower instance priority]
 /-- Category structure on a strict bicategory -/
-instance (priority := 100) StrictBicategory.category [Bicategory.Strict B] : Category B
-    where
+instance (priority := 100) StrictBicategory.category [Bicategory.Strict B] : Category B where
   id_comp := Bicategory.Strict.id_comp
   comp_id := Bicategory.Strict.comp_id
   assoc := Bicategory.Strict.assoc

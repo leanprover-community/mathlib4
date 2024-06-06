@@ -25,16 +25,13 @@ noncomputable section
 
 universe u v v' w
 
-open BigOperators Cardinal Basis Submodule Function Set DirectSum FiniteDimensional
+open Cardinal Basis Submodule Function Set DirectSum FiniteDimensional
 
 section Tower
 
 variable (F : Type u) (K : Type v) (A : Type w)
-
 variable [Ring F] [Ring K] [AddCommGroup A]
-
 variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
-
 variable [StrongRankCondition F] [StrongRankCondition K] [Module.Free F K] [Module.Free K A]
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
@@ -73,13 +70,9 @@ theorem FiniteDimensional.finrank_mul_finrank : finrank F K * finrank K A = finr
 end Tower
 
 variable {R : Type u} {M M₁ : Type v} {M' : Type v'}
-
 variable [Ring R] [StrongRankCondition R]
-
 variable [AddCommGroup M] [Module R M] [Module.Free R M]
-
 variable [AddCommGroup M'] [Module R M'] [Module.Free R M']
-
 variable [AddCommGroup M₁] [Module R M₁] [Module.Free R M₁]
 
 namespace Module.Free
@@ -118,9 +111,9 @@ open Cardinal
 theorem nonempty_linearEquiv_of_lift_rank_eq
     (cnd : Cardinal.lift.{v'} (Module.rank R M) = Cardinal.lift.{v} (Module.rank R M')) :
     Nonempty (M ≃ₗ[R] M') := by
-  obtain ⟨⟨_, B⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
-  obtain ⟨⟨_, B'⟩⟩ := Module.Free.exists_basis (R := R) (M := M')
-  have : Cardinal.lift.{v', v} #_ = Cardinal.lift.{v, v'} #_ := by
+  obtain ⟨⟨α, B⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
+  obtain ⟨⟨β, B'⟩⟩ := Module.Free.exists_basis (R := R) (M := M')
+  have : Cardinal.lift.{v', v} #α = Cardinal.lift.{v, v'} #β := by
     rw [B.mk_eq_rank'', cnd, B'.mk_eq_rank'']
   exact (Cardinal.lift_mk_eq.{v, v', 0}.1 this).map (B.equiv B')
 #align nonempty_linear_equiv_of_lift_rank_eq nonempty_linearEquiv_of_lift_rank_eq
@@ -223,10 +216,8 @@ noncomputable def finBasis [Module.Finite R M] :
 #align finite_dimensional.fin_basis FiniteDimensional.finBasis
 
 /-- A rank `n` free module has a basis indexed by `Fin n`. -/
-noncomputable def finBasisOfFinrankEq [Module.Finite R M]
-    {n : ℕ} (hn : finrank R M = n) :
-    Basis (Fin n) R M :=
-  (finBasis R M).reindex (Fin.castIso hn).toEquiv
+noncomputable def finBasisOfFinrankEq [Module.Finite R M] {n : ℕ} (hn : finrank R M = n) :
+    Basis (Fin n) R M := (finBasis R M).reindex (finCongr hn)
 #align finite_dimensional.fin_basis_of_finrank_eq FiniteDimensional.finBasisOfFinrankEq
 
 variable {R M}

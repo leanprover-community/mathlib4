@@ -41,8 +41,6 @@ open CategoryTheory.Preadditive CategoryTheory.Category CategoryTheory.Idempoten
 
 open Opposite
 
-open BigOperators
-
 open Simplicial
 
 noncomputable section
@@ -57,9 +55,7 @@ namespace AlternatingFaceMapComplex
 
 
 variable {C : Type*} [Category C] [Preadditive C]
-
 variable (X : SimplicialObject C)
-
 variable (Y : SimplicialObject C)
 
 /-- The differential on the alternating face map complex is the alternate
@@ -99,7 +95,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
     rintro ⟨i', j'⟩ hij'
     simp only [S, Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.compl_filter,
       not_le, Finset.mem_filter, true_and] at hij'
-    refine' ⟨(j'.pred <| _, Fin.castSucc i'), _, _⟩
+    refine ⟨(j'.pred <| ?_, Fin.castSucc i'), ?_, ?_⟩
     · rintro rfl
       simp only [Fin.val_zero, not_lt_zero'] at hij'
     · simpa only [S, Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.mem_filter,
@@ -145,7 +141,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
   ChainComplex.ofHom _ _ _ _ _ _ (fun n => f.app (op [n])) fun n => by
     dsimp
     rw [comp_sum, sum_comp]
-    refine' Finset.sum_congr rfl fun _ _ => _
+    refine Finset.sum_congr rfl fun _ _ => ?_
     rw [comp_zsmul, zsmul_comp]
     congr 1
     symm
@@ -228,8 +224,8 @@ def ε [Limits.HasZeroObject C] :
     SimplicialObject.Augmented.drop ⋙ AlgebraicTopology.alternatingFaceMapComplex C ⟶
       SimplicialObject.Augmented.point ⋙ ChainComplex.single₀ C where
   app X := by
-    refine' (ChainComplex.toSingle₀Equiv _ _).symm _
-    refine' ⟨X.hom.app (op [0]), _⟩
+    refine (ChainComplex.toSingle₀Equiv _ _).symm ?_
+    refine ⟨X.hom.app (op [0]), ?_⟩
     dsimp
     rw [alternatingFaceMapComplex_obj_d, objD, Fin.sum_univ_two, Fin.val_zero,
       pow_zero, one_smul, Fin.val_one, pow_one, neg_smul, one_smul, add_comp,
@@ -340,7 +336,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
   CochainComplex.ofHom _ _ _ _ _ _ (fun n => f.app [n]) fun n => by
     dsimp
     rw [comp_sum, sum_comp]
-    refine' Finset.sum_congr rfl fun x _ => _
+    refine Finset.sum_congr rfl fun x _ => ?_
     rw [comp_zsmul, zsmul_comp]
     congr 1
     symm

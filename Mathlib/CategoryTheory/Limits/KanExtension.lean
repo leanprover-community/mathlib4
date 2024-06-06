@@ -40,9 +40,7 @@ open Limits
 universe v v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {S : Type u₁} {L : Type u₂} {D : Type u₃}
-
 variable [Category.{v₁} S] [Category.{v₂} L] [Category.{v₃} D]
-
 variable (ι : S ⥤ L)
 
 namespace Ran
@@ -59,8 +57,7 @@ variable {ι}
 
 /-- A cone over `Ran.diagram ι F x` used to define `Ran`. -/
 @[simp]
-def cone {F : S ⥤ D} {G : L ⥤ D} (x : L) (f : ι ⋙ G ⟶ F) : Cone (diagram ι F x)
-    where
+def cone {F : S ⥤ D} {G : L ⥤ D} (x : L) (f : ι ⋙ G ⟶ F) : Cone (diagram ι F x) where
   pt := G.obj x
   π :=
     { app := fun i => G.map i.hom ≫ f.app i.right
@@ -79,8 +76,7 @@ variable (ι)
 
 /-- An auxiliary definition used to define `Ran`. -/
 @[simps]
-def loc (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] : L ⥤ D
-    where
+def loc (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] : L ⥤ D where
   obj x := limit (diagram ι F x)
   map {X Y} f :=
     haveI : HasLimit <| StructuredArrow.map f ⋙ diagram ι F X := h Y
@@ -97,13 +93,6 @@ def loc (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] : L ⥤ D
     intro x y z f g
     apply limit.hom_ext
     intro j
-    -- Porting note: The fact that we need to add these instances all over the place
-    -- is certainly not ideal.
-    haveI : HasLimit (StructuredArrow.map f ⋙ diagram ι F _) := h _
-    haveI : HasLimit (StructuredArrow.map g ⋙ diagram ι F _) := h _
-    haveI : HasLimit (StructuredArrow.map (f ≫ g) ⋙ diagram ι F _) := h _
-    haveI : HasLimit (StructuredArrow.map g ⋙ StructuredArrow.map f ⋙ diagram ι F _) := h _
-    haveI : HasLimit ((StructuredArrow.map g ⋙ StructuredArrow.map f) ⋙ diagram ι F _) := h _
     erw [limit.pre_pre, limit.pre_π, limit.pre_π]
     congr 1
     aesop_cat
@@ -113,8 +102,7 @@ set_option linter.uppercaseLean3 false in
 /-- An auxiliary definition used to define `Ran` and `Ran.adjunction`. -/
 @[simps]
 def equiv (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] (G : L ⥤ D) :
-    (G ⟶ loc ι F) ≃ (((whiskeringLeft _ _ _).obj ι).obj G ⟶ F)
-    where
+    (G ⟶ loc ι F) ≃ (((whiskeringLeft _ _ _).obj ι).obj G ⟶ F) where
   toFun f :=
     { app := fun x => f.app _ ≫ limit.π (diagram ι F (ι.obj x)) (StructuredArrow.mk (𝟙 _))
       naturality := by
@@ -127,8 +115,8 @@ def equiv (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] (G : L ⥤ D) :
         let t : StructuredArrow.mk (𝟙 (ι.obj x)) ⟶
           (StructuredArrow.map (ι.map ff)).obj (StructuredArrow.mk (𝟙 (ι.obj y))) :=
           StructuredArrow.homMk ff ?_
-        convert (limit.w (diagram ι F (ι.obj x)) t).symm using 1
-        simp }
+        · convert (limit.w (diagram ι F (ι.obj x)) t).symm using 1
+        · simp }
   invFun f :=
     { app := fun x => limit.lift (diagram ι F x) (cone _ f)
       naturality := by
@@ -182,20 +170,14 @@ def adjunction [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran.adjunction CategoryTheory.Ran.adjunction
 
-theorem reflective [Full ι] [Faithful ι] [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
+theorem reflective [ι.Full] [ι.Faithful] [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
     IsIso (adjunction D ι).counit := by
-  suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).counit X) by
-    apply NatIso.isIso_of_isIso_app
-  intro F
-  suffices ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).counit F) X) by
-    apply NatIso.isIso_of_isIso_app
-  intro X
+  simp only [NatTrans.isIso_iff_isIso_app]
+  intro F X
   dsimp [adjunction, equiv]
   simp only [Category.id_comp]
-  exact
-    IsIso.of_iso
-      ((limit.isLimit _).conePointUniqueUpToIso
-        (limitOfDiagramInitial StructuredArrow.mkIdInitial _))
+  exact ((limit.isLimit _).conePointUniqueUpToIso
+    (limitOfDiagramInitial StructuredArrow.mkIdInitial _)).isIso_hom
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran.reflective CategoryTheory.Ran.reflective
 
@@ -215,8 +197,7 @@ variable {ι}
 
 /-- A cocone over `Lan.diagram ι F x` used to define `Lan`. -/
 @[simp]
-def cocone {F : S ⥤ D} {G : L ⥤ D} (x : L) (f : F ⟶ ι ⋙ G) : Cocone (diagram ι F x)
-    where
+def cocone {F : S ⥤ D} {G : L ⥤ D} (x : L) (f : F ⟶ ι ⋙ G) : Cocone (diagram ι F x) where
   pt := G.obj x
   ι :=
     { app := fun i => f.app i.left ≫ G.map i.hom
@@ -233,8 +214,7 @@ variable (ι)
 
 /-- An auxiliary definition used to define `Lan`. -/
 @[simps]
-def loc (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] : L ⥤ D
-    where
+def loc (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] : L ⥤ D where
   obj x := colimit (diagram ι F x)
   map {x y} f :=
     haveI : HasColimit (CostructuredArrow.map f ⋙ diagram ι F y) := I _
@@ -257,6 +237,8 @@ def loc (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] : L ⥤ D
     let dd := diagram ι F z
     -- Porting note: It seems that even Lean3 had some trouble with instances in this case.
     -- I don't know why lean can't deduce the following three instances...
+    -- The corresponding `haveI` statements could be removed from `Ran.loc` and it just worked,
+    -- here it doesn't...
     haveI : HasColimit (ff ⋙ gg ⋙ dd) := I _
     haveI : HasColimit ((ff ⋙ gg) ⋙ dd) := I _
     haveI : HasColimit (gg ⋙ dd) := I _
@@ -270,8 +252,7 @@ set_option linter.uppercaseLean3 false in
 /-- An auxiliary definition used to define `Lan` and `Lan.adjunction`. -/
 @[simps]
 def equiv (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] (G : L ⥤ D) :
-    (loc ι F ⟶ G) ≃ (F ⟶ ((whiskeringLeft _ _ _).obj ι).obj G)
-    where
+    (loc ι F ⟶ G) ≃ (F ⟶ ((whiskeringLeft _ _ _).obj ι).obj G) where
   toFun f :=
     { app := fun x => colimit.ι (diagram ι F (ι.obj x)) (CostructuredArrow.mk (𝟙 _)) ≫ f.app _
       naturality := by
@@ -356,7 +337,7 @@ def adjunction [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.adjunction CategoryTheory.Lan.adjunction
 
-theorem coreflective [Full ι] [Faithful ι] [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] :
+theorem coreflective [ι.Full] [ι.Faithful] [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] :
     IsIso (adjunction D ι).unit := by
   suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).unit X) by
     apply NatIso.isIso_of_isIso_app
@@ -367,7 +348,7 @@ theorem coreflective [Full ι] [Faithful ι] [∀ F : S ⥤ D, ∀ x, HasColimit
   dsimp [adjunction, equiv]
   simp only [Category.comp_id]
   exact
-    IsIso.of_iso
+    Iso.isIso_hom
       ((colimit.isColimit _).coconePointUniqueUpToIso
           (colimitOfDiagramTerminal CostructuredArrow.mkIdTerminal _)).symm
 set_option linter.uppercaseLean3 false in

@@ -1,6 +1,10 @@
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Fin.Basic
-import Mathlib.Algebra.Group.Defs
+/-
+Copyright (c) 2021 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
+import Mathlib.Algebra.Group.Fin
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Data.ZMod.Defs
@@ -123,12 +127,7 @@ def isDigit (c : UInt8) : Bool :=
 def isAlphanum (c : UInt8) : Bool :=
   c.isAlpha || c.isDigit
 
-theorem toChar_aux (n : Nat) (h : n < size) : Nat.isValidChar (UInt32.ofNat n).1 := by
-  rw [UInt32.val_eq_of_lt]
-  exact Or.inl <| Nat.lt_trans h <| by decide
-  exact Nat.lt_trans h <| by decide
-
 /-- The numbers from 0 to 256 are all valid UTF-8 characters, so we can embed one in the other. -/
-def toChar (n : UInt8) : Char := ⟨n.toUInt32, toChar_aux n.1 n.1.2⟩
+def toChar (n : UInt8) : Char := ⟨n.toUInt32, .inl (n.1.2.trans (by decide))⟩
 
 end UInt8

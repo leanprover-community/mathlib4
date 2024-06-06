@@ -34,7 +34,6 @@ namespace Language
 open Structure
 
 variable (L : Language) (M : Type*) (N : Type*) {P : Type*} {Q : Type*}
-
 variable [L.Structure M] [L.Structure N] [L.Structure P] [L.Structure Q]
 
 /-- An elementary embedding of first-order structures is an embedding that commutes with the
@@ -53,7 +52,6 @@ structure ElementaryEmbedding where
 #align first_order.language.elementary_embedding.to_fun FirstOrder.Language.ElementaryEmbedding.toFun
 #align first_order.language.elementary_embedding.map_formula' FirstOrder.Language.ElementaryEmbedding.map_formula'
 
--- mathport name: elementary_embedding
 @[inherit_doc FirstOrder.Language.ElementaryEmbedding]
 scoped[FirstOrder] notation:25 A " ↪ₑ[" L "] " B => FirstOrder.Language.ElementaryEmbedding L A B
 
@@ -89,7 +87,7 @@ theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.Bo
       Function.comp.assoc _ (Fintype.equivFin _).symm (Fintype.equivFin _),
       _root_.Equiv.symm_comp_self, Function.comp_id, Function.comp.assoc, Sum.elim_comp_inl,
       Function.comp.assoc _ _ Sum.inr, Sum.elim_comp_inr, ← Function.comp.assoc] at h
-    refine' h.trans _
+    refine h.trans ?_
     erw [Function.comp.assoc _ _ (Fintype.equivFin _), _root_.Equiv.symm_comp_self,
       Function.comp_id, Sum.elim_comp_inl, Sum.elim_comp_inr (v ∘ Subtype.val) xs,
       ← Set.inclusion_eq_id (s := (BoundedFormula.freeVarFinset φ : Set α)) Set.Subset.rfl,
@@ -252,12 +250,12 @@ abbrev elementaryDiagram : L[[M]].Theory :=
 def ElementaryEmbedding.ofModelsElementaryDiagram (N : Type*) [L.Structure N] [L[[M]].Structure N]
     [(lhomWithConstants L M).IsExpansionOn N] [N ⊨ L.elementaryDiagram M] : M ↪ₑ[L] N :=
   ⟨((↑) : L[[M]].Constants → N) ∘ Sum.inr, fun n φ x => by
-    refine'
-      _root_.trans _
+    refine
+      _root_.trans ?_
         ((realize_iff_of_model_completeTheory M N
               (((L.lhomWithConstants M).onBoundedFormula φ).subst
                   (Constants.term ∘ Sum.inr ∘ x)).alls).trans
-          _)
+          ?_)
     · simp_rw [Sentence.Realize, BoundedFormula.realize_alls, BoundedFormula.realize_subst,
         LHom.realize_onBoundedFormula, Formula.Realize, Unique.forall_iff, Function.comp,
         Term.realize_constants]
@@ -281,7 +279,7 @@ theorem isElementary_of_exists (f : M ↪[L] N)
       φ.Realize (f ∘ default) (f ∘ xs) ↔ φ.Realize default xs by
     intro n φ x
     exact φ.realize_relabel_sum_inr.symm.trans (_root_.trans (h n _ _) φ.realize_relabel_sum_inr)
-  refine' fun n φ => φ.recOn _ _ _ _ _
+  refine fun n φ => φ.recOn ?_ ?_ ?_ ?_ ?_
   · exact fun {_} _ => Iff.rfl
   · intros
     simp [BoundedFormula.Realize, ← Sum.comp_elim, Embedding.realize_term]
@@ -292,7 +290,7 @@ theorem isElementary_of_exists (f : M ↪[L] N)
     simp [ih1, ih2]
   · intro n φ ih xs
     simp only [BoundedFormula.realize_all]
-    refine' ⟨fun h a => _, _⟩
+    refine ⟨fun h a => ?_, ?_⟩
     · rw [← ih, Fin.comp_snoc]
       exact h (f a)
     · contrapose!
@@ -300,8 +298,8 @@ theorem isElementary_of_exists (f : M ↪[L] N)
       obtain ⟨b, hb⟩ := htv n φ.not xs a (by
           rw [BoundedFormula.realize_not, ← Unique.eq_default (f ∘ default)]
           exact ha)
-      · refine' ⟨b, fun h => hb (Eq.mp _ ((ih _).2 h))⟩
-        rw [Unique.eq_default (f ∘ default), Fin.comp_snoc]
+      refine ⟨b, fun h => hb (Eq.mp ?_ ((ih _).2 h))⟩
+      rw [Unique.eq_default (f ∘ default), Fin.comp_snoc]
 #align first_order.language.embedding.is_elementary_of_exists FirstOrder.Language.Embedding.isElementary_of_exists
 
 /-- Bundles an embedding satisfying the Tarski-Vaught test as an elementary embedding. -/

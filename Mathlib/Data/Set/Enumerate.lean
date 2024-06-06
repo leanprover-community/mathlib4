@@ -3,7 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Common
 
@@ -53,8 +54,7 @@ theorem enumerate_eq_none :
       | zero => contradiction
       | succ m' =>
         simp? [hs, enumerate] at h ⊢ says
-          simp only [enumerate, hs, Nat.add_eq, add_zero, Option.bind_eq_bind,
-            Option.some_bind] at h ⊢
+          simp only [enumerate, hs, Option.bind_eq_bind, Option.some_bind] at h ⊢
         have hm : n ≤ m' := Nat.le_of_succ_le_succ hm
         exact enumerate_eq_none h hm
 #align set.enumerate_eq_none Set.enumerate_eq_none
@@ -97,7 +97,7 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
         simp_all only [add_comm, self_eq_add_left, Nat.add_succ, enumerate_eq_none_of_sel _ h]
       | some =>
         simp_all only [add_comm, self_eq_add_left, enumerate, Option.some.injEq,
-                       Nat.add_succ, enumerate._eq_2, Nat.succ.injEq]
+                       Nat.add_succ, Nat.succ.injEq]
         exact ih h₁ h₂
 #align set.enumerate_inj Set.enumerate_inj
 

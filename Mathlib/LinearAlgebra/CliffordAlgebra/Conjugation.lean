@@ -34,9 +34,7 @@ https://en.wikipedia.org/wiki/Clifford_algebra#Antiautomorphisms
 
 
 variable {R : Type*} [CommRing R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M]
-
 variable {Q : QuadraticForm R M}
 
 namespace CliffordAlgebra
@@ -157,10 +155,10 @@ theorem reverse_comp_involute :
   ext x
   simp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply]
   induction x using CliffordAlgebra.induction with
-  | h_grade0 => simp
-  | h_grade1 => simp
-  | h_mul a b ha hb => simp only [ha, hb, reverse.map_mul, AlgHom.map_mul]
-  | h_add a b ha hb => simp only [ha, hb, reverse.map_add, AlgHom.map_add]
+  | algebraMap => simp
+  | ι => simp
+  | mul a b ha hb => simp only [ha, hb, reverse.map_mul, AlgHom.map_mul]
+  | add a b ha hb => simp only [ha, hb, reverse.map_add, AlgHom.map_add]
 #align clifford_algebra.reverse_comp_involute CliffordAlgebra.reverse_comp_involute
 
 /-- `CliffordAlgebra.reverse` and `CliffordAlgebra.involute` commute. Note that the composition
@@ -228,22 +226,22 @@ theorem ι_range_map_involute :
 @[simp]
 theorem ι_range_comap_involute :
     (ι Q).range.comap (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
-      LinearMap.range (ι Q) :=
-  by rw [← submodule_map_involute_eq_comap, ι_range_map_involute]
+      LinearMap.range (ι Q) := by
+  rw [← submodule_map_involute_eq_comap, ι_range_map_involute]
 #align clifford_algebra.ι_range_comap_involute CliffordAlgebra.ι_range_comap_involute
 
 @[simp]
 theorem evenOdd_map_involute (n : ZMod 2) :
     (evenOdd Q n).map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
-      evenOdd Q n :=
-  by simp_rw [evenOdd, Submodule.map_iSup, Submodule.map_pow, ι_range_map_involute]
+      evenOdd Q n := by
+  simp_rw [evenOdd, Submodule.map_iSup, Submodule.map_pow, ι_range_map_involute]
 #align clifford_algebra.even_odd_map_involute CliffordAlgebra.evenOdd_map_involute
 
 @[simp]
 theorem evenOdd_comap_involute (n : ZMod 2) :
     (evenOdd Q n).comap (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
-      evenOdd Q n :=
-  by rw [← submodule_map_involute_eq_comap, evenOdd_map_involute]
+      evenOdd Q n := by
+  rw [← submodule_map_involute_eq_comap, evenOdd_map_involute]
 #align clifford_algebra.even_odd_comap_involute CliffordAlgebra.evenOdd_comap_involute
 
 end Involute
@@ -283,8 +281,8 @@ theorem submodule_map_mul_reverse (p q : Submodule R (CliffordAlgebra Q)) :
 theorem submodule_comap_mul_reverse (p q : Submodule R (CliffordAlgebra Q)) :
     (p * q).comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) =
       q.comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) *
-        p.comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) :=
-  by simp_rw [← submodule_map_reverse_eq_comap, submodule_map_mul_reverse]
+        p.comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) := by
+  simp_rw [← submodule_map_reverse_eq_comap, submodule_map_mul_reverse]
 #align clifford_algebra.submodule_comap_mul_reverse CliffordAlgebra.submodule_comap_mul_reverse
 
 /-- Like `Submodule.map_pow` -/
@@ -296,8 +294,8 @@ theorem submodule_map_pow_reverse (p : Submodule R (CliffordAlgebra Q)) (n : ℕ
 
 theorem submodule_comap_pow_reverse (p : Submodule R (CliffordAlgebra Q)) (n : ℕ) :
     (p ^ n).comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) =
-      p.comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) ^ n :=
-  by simp_rw [← submodule_map_reverse_eq_comap, submodule_map_pow_reverse]
+      p.comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q) ^ n := by
+  simp_rw [← submodule_map_reverse_eq_comap, submodule_map_pow_reverse]
 #align clifford_algebra.submodule_comap_pow_reverse CliffordAlgebra.submodule_comap_pow_reverse
 
 @[simp]
@@ -336,18 +334,20 @@ TODO: show that these are `iff`s when `Invertible (2 : R)`.
 
 
 theorem involute_eq_of_mem_even {x : CliffordAlgebra Q} (h : x ∈ evenOdd Q 0) : involute x = x := by
-  refine' even_induction Q (AlgHom.commutes _) _ _ x h
-  · rintro x y _hx _hy ihx ihy
+  induction x, h using even_induction with
+  | algebraMap r => exact AlgHom.commutes _ _
+  | add x y _hx _hy ihx ihy =>
     rw [map_add, ihx, ihy]
-  · intro m₁ m₂ x _hx ihx
+  | ι_mul_ι_mul m₁ m₂ x _hx ihx =>
     rw [map_mul, map_mul, involute_ι, involute_ι, ihx, neg_mul_neg]
 #align clifford_algebra.involute_eq_of_mem_even CliffordAlgebra.involute_eq_of_mem_even
 
 theorem involute_eq_of_mem_odd {x : CliffordAlgebra Q} (h : x ∈ evenOdd Q 1) : involute x = -x := by
-  refine' odd_induction Q involute_ι _ _ x h
-  · rintro x y _hx _hy ihx ihy
+  induction x, h using odd_induction with
+  | ι m => exact involute_ι _
+  | add x y _hx _hy ihx ihy =>
     rw [map_add, ihx, ihy, neg_add]
-  · intro m₁ m₂ x _hx ihx
+  | ι_mul_ι_mul m₁ m₂ x _hx ihx =>
     rw [map_mul, map_mul, involute_ι, involute_ι, ihx, neg_mul_neg, mul_neg]
 #align clifford_algebra.involute_eq_of_mem_odd CliffordAlgebra.involute_eq_of_mem_odd
 

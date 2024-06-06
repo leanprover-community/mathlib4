@@ -3,7 +3,8 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Baire
+import Mathlib.Topology.Baire.Lemmas
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-! # Open mapping theorem for morphisms of topological groups
 
@@ -71,7 +72,7 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
   have I : (interior ((g • V) • {x})).Nonempty := by
     apply hi.mono
     apply interior_mono
-    exact smul_subset_smul_right (inter_subset_right _ _)
+    exact smul_subset_smul_right inter_subset_right
   obtain ⟨y, hy⟩ : (interior (V • ({x} : Set X))).Nonempty := by
     rw [smul_assoc, interior_smul] at I
     exact smul_set_nonempty.1 I
