@@ -19,7 +19,7 @@ sense of `Icc`/`Ico`/`Ioc`/`Ioo` as lists, multisets, or finsets.
 Further, if the order is bounded above (resp. below), then we can also make sense of the
 "unbounded" intervals `Ici`/`Ioi` (resp. `Iic`/`Iio`).
 
-Many theorems about these intervals can be found in `Order.Interval.Finset.Basic`.
+Many theorems about these intervals can be found in `Mathlib.Order.Interval.Finset.Basic`.
 
 ## Examples
 
@@ -677,10 +677,10 @@ instance : Subsingleton (LocallyFiniteOrderBot α) :=
 /-- Given an order embedding `α ↪o β`, pulls back the `LocallyFiniteOrder` on `β` to `α`. -/
 protected noncomputable def OrderEmbedding.locallyFiniteOrder [LocallyFiniteOrder β] (f : α ↪o β) :
     LocallyFiniteOrder α where
-  finsetIcc a b := (Icc (f a) (f b)).preimage f (f.toEmbedding.injective.injOn _)
-  finsetIco a b := (Ico (f a) (f b)).preimage f (f.toEmbedding.injective.injOn _)
-  finsetIoc a b := (Ioc (f a) (f b)).preimage f (f.toEmbedding.injective.injOn _)
-  finsetIoo a b := (Ioo (f a) (f b)).preimage f (f.toEmbedding.injective.injOn _)
+  finsetIcc a b := (Icc (f a) (f b)).preimage f f.toEmbedding.injective.injOn
+  finsetIco a b := (Ico (f a) (f b)).preimage f f.toEmbedding.injective.injOn
+  finsetIoc a b := (Ioc (f a) (f b)).preimage f f.toEmbedding.injective.injOn
+  finsetIoo a b := (Ioo (f a) (f b)).preimage f f.toEmbedding.injective.injOn
   finset_mem_Icc a b x := by rw [mem_preimage, mem_Icc, f.le_iff_le, f.le_iff_le]
   finset_mem_Ico a b x := by rw [mem_preimage, mem_Ico, f.le_iff_le, f.lt_iff_lt]
   finset_mem_Ioc a b x := by rw [mem_preimage, mem_Ioc, f.lt_iff_lt, f.le_iff_le]
@@ -891,12 +891,7 @@ attribute [local simp] Option.mem_iff
 
 private lemma aux (x : α) (p : α → Prop) :
     (∃ a : α, p a ∧ Option.some a = Option.some x) ↔ p x := by
-  -- Porting note: `simp [Option.some_inj]` has no effect
-  constructor
-  · rintro ⟨x', hx, hx'⟩
-    obtain rfl := Option.some_inj.mp hx'
-    exact hx
-  · exact fun h => ⟨x, h, rfl⟩
+  simp [Option.some_inj]
 
 instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
   finsetIcc a b :=
