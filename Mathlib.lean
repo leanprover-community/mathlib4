@@ -1462,7 +1462,7 @@ import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.CategoryTheory.Localization.Adjunction
 import Mathlib.CategoryTheory.Localization.Bousfield
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrowsTwo
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
 import Mathlib.CategoryTheory.Localization.Composition
@@ -1782,6 +1782,7 @@ import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
 import Mathlib.Condensed.Functors
 import Mathlib.Condensed.Light.Basic
+import Mathlib.Condensed.Light.Module
 import Mathlib.Condensed.Limits
 import Mathlib.Condensed.Module
 import Mathlib.Condensed.Solid
@@ -3638,6 +3639,7 @@ import Mathlib.RingTheory.QuotientNilpotent
 import Mathlib.RingTheory.QuotientNoetherian
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Regular.IsSMulRegular
+import Mathlib.RingTheory.Regular.RegularSequence
 import Mathlib.RingTheory.RingHom.Finite
 import Mathlib.RingTheory.RingHom.FiniteType
 import Mathlib.RingTheory.RingHom.Integral
