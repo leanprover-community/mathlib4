@@ -5,7 +5,6 @@ Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudrya
 -/
 import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Functor.EpiMono
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 #align_import category_theory.concrete_category.basic from "leanprover-community/mathlib"@"311ef8c4b4ae2804ea76b8a611bc5ea1d9c16872"
 
