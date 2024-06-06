@@ -365,15 +365,13 @@ total mass. -/
 def normalize : ProbabilityMeasure Ω :=
   if zero : μ.mass = 0 then ⟨Measure.dirac ‹Nonempty Ω›.some, Measure.dirac.isProbabilityMeasure⟩
   else
-    { val := ↑(μ.mass⁻¹ • μ)
+    { val := μ.mass⁻¹ • (μ : Measure Ω)
       property := by
         refine ⟨?_⟩
-        -- Porting note: paying the price that this isn't `simp` lemma now.
-        rw [FiniteMeasure.toMeasure_smul]
-        simp only [Measure.coe_smul, Pi.smul_apply, Measure.nnreal_smul_coe_apply, ne_eq,
-          mass_zero_iff, ENNReal.coe_inv zero, ennreal_mass]
-        rw [← Ne, ← ENNReal.coe_ne_zero, ennreal_mass] at zero
-        exact ENNReal.inv_mul_cancel zero μ.prop.measure_univ_lt_top.ne }
+        simp only [mass, Measure.coe_nnreal_smul_apply,
+                    ← ennreal_coeFn_eq_coeFn_toMeasure μ univ]
+        norm_cast
+        exact inv_mul_cancel zero }
 #align measure_theory.finite_measure.normalize MeasureTheory.FiniteMeasure.normalize
 
 @[simp]

@@ -167,14 +167,14 @@ theorem cond_pos_of_inter_ne_zero [IsFiniteMeasure μ]
 lemma cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t) (hcs : μ s ≠ ∞) :
     μ[|s][|t] = μ[|s ∩ t] := by
   ext u
-  rw [cond_apply _ hmt, cond_apply _ hms, cond_apply _ hms, cond_apply _ (hms.inter hmt)]
   obtain hst | hst := eq_or_ne (μ (s ∩ t)) 0
   · have : μ (s ∩ t ∩ u) = 0 := measure_mono_null (Set.inter_subset_left _ _) hst
-    simp [this, ← Set.inter_assoc]
-  · have hcs' : μ s ≠ 0 :=
-      (measure_pos_of_superset (Set.inter_subset_left _ _) hst).ne'
-    simp [*, ← mul_assoc, ← Set.inter_assoc, ENNReal.mul_inv, ENNReal.mul_inv_cancel,
-      mul_right_comm _ _ (μ s)⁻¹]
+    simp [cond_apply, *, ← Set.inter_assoc]
+  · have hs : μ s ≠ 0 :=
+      (μ.toOuterMeasure.pos_of_subset_ne_zero (Set.inter_subset_left _ _) hst).ne'
+    simp [*, hms.inter hmt, cond_apply, ← Set.inter_assoc, ENNReal.mul_inv, ← mul_assoc,
+      mul_comm _ (μ s)⁻¹, ENNReal.inv_mul_cancel]
+
 #align probability_theory.cond_cond_eq_cond_inter' ProbabilityTheory.cond_cond_eq_cond_inter'
 
 /-- Conditioning first on `s` and then on `t` results in the same measure as conditioning

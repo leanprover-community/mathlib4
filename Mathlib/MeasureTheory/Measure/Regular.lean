@@ -813,7 +813,6 @@ instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularC
   by_cases h'c : c = ∞
   · constructor
     intro s hs r hr
-    simp only [h'c, smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, smul_eq_mul] at hr
     by_cases h's : μ s = 0
     · simp [h's] at hr
     · simp [h'c, ENNReal.mul_eq_top, h's] at hs
