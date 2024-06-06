@@ -283,7 +283,7 @@ open Opposite
 
 -- Porting note: simp wasn't firing but rw was, annoying
 instance : MonoidalPreadditive (ModuleCat.{u} R) := by
-  refine' ⟨_, _, _, _⟩
+  refine ⟨?_, ?_, ?_, ?_⟩
   · dsimp only [autoParam]; intros
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
@@ -317,7 +317,7 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
 
 -- Porting note: simp wasn't firing but rw was, annoying
 instance : MonoidalLinear R (ModuleCat.{u} R) := by
-  refine' ⟨_, _⟩
+  refine ⟨?_, ?_⟩
   · dsimp only [autoParam]; intros
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]

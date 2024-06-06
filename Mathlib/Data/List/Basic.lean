@@ -873,7 +873,7 @@ section deprecated
 set_option linter.deprecated false -- TODO(Mario): make replacements for theorems in this section
 
 /-- nth element of a list `l` given `n < l.length`. -/
-@[deprecated get] -- 2023-01-05
+@[deprecated get (since := "2023-01-05")]
 def nthLe (l : List α) (n) (h : n < l.length) : α := get l ⟨n, h⟩
 #align list.nth_le List.nthLe
 
@@ -991,8 +991,8 @@ theorem bidirectionalRec_nil {motive : List α → Sort*}
 theorem bidirectionalRec_singleton {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
     (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) (a : α):
-    bidirectionalRec nil singleton cons_append [a] = singleton a :=
-  by simp [bidirectionalRec]
+    bidirectionalRec nil singleton cons_append [a] = singleton a := by
+  simp [bidirectionalRec]
 
 @[simp]
 theorem bidirectionalRec_cons_append {motive : List α → Sort*}
@@ -1558,6 +1558,10 @@ theorem bind_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = 
   (congr_arg List.join <| map_congr h : _)
 #align list.bind_congr List.bind_congr
 
+theorem infix_bind_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → List α) :
+    f a <:+: as.bind f :=
+  List.infix_of_mem_join (List.mem_map_of_mem f h)
+
 @[simp]
 theorem map_eq_map {α β} (f : α → β) (l : List α) : f <$> l = map f l :=
   rfl
@@ -1831,8 +1835,8 @@ theorem takeD_eq_take : ∀ {n} {l : List α} a, n ≤ length l → takeD n l a 
 theorem takeD_left (l₁ l₂ : List α) (a : α) : takeD (length l₁) (l₁ ++ l₂) a = l₁ :=
   (takeD_eq_take a (by simp only [length_append, Nat.le_add_right])).trans (take_left _ _)
 
-theorem takeD_left' {l₁ l₂ : List α} {n} {a} (h : length l₁ = n) : takeD n (l₁ ++ l₂) a = l₁ :=
-  by rw [← h]; apply takeD_left
+theorem takeD_left' {l₁ l₂ : List α} {n} {a} (h : length l₁ = n) : takeD n (l₁ ++ l₂) a = l₁ := by
+  rw [← h]; apply takeD_left
 
 end TakeD
 
@@ -1913,8 +1917,8 @@ theorem foldr_join (f : α → β → β) :
 
 -- Porting note (#10618): simp can prove this
 -- @[simp]
-theorem foldr_eta : ∀ l : List α, foldr cons [] l = l :=
-  by simp only [foldr_self_append, append_nil, forall_const]
+theorem foldr_eta : ∀ l : List α, foldr cons [] l = l := by
+  simp only [foldr_self_append, append_nil, forall_const]
 #align list.foldr_eta List.foldr_eta
 
 @[simp]
@@ -1980,7 +1984,7 @@ def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β)
   induction l with
   | nil => exact hb
   | cons hd tl IH =>
-    refine' hl _ _ hd (mem_cons_self hd tl)
+    refine hl _ ?_ hd (mem_cons_self hd tl)
     refine IH ?_
     intro y hy x hx
     exact hl y hy x (mem_cons_of_mem hd hx)
@@ -1995,7 +1999,7 @@ def foldlRecOn {C : β → Sort*} (l : List α) (op : β → α → β) (b : β)
   induction l generalizing b with
   | nil => exact hb
   | cons hd tl IH =>
-    refine' IH _ _ _
+    refine IH _ ?_ ?_
     · exact hl b hb hd (mem_cons_self hd tl)
     · intro y hy x hx
       exact hl y hy x (mem_cons_of_mem hd hx)
@@ -2823,6 +2827,34 @@ theorem Sublist.map (f : α → β) {l₁ l₂ : List α} (s : l₁ <+ l₂) : m
   filterMap_eq_map f ▸ s.filterMap _
 #align list.sublist.map List.Sublist.map
 
+theorem filterMap_eq_bind_toList (f : α → Option β) (l : List α) :
+    l.filterMap f = l.bind fun a ↦ (f a).toList := by
+  induction' l with a l ih <;> simp
+  rcases f a <;> simp [ih]
+
+theorem filterMap_congr {f g : α → Option β} {l : List α}
+    (h : ∀ x ∈ l, f x = g x) : l.filterMap f = l.filterMap g := by
+  induction' l with a l ih <;> simp
+  simp [ih (fun x hx ↦ h x (List.mem_cons_of_mem a hx))]
+  cases' hfa : f a with b
+  · have : g a = none := Eq.symm (by simpa [hfa] using h a (by simp))
+    simp [this]
+  · have : g a = some b := Eq.symm (by simpa [hfa] using h a (by simp))
+    simp [this]
+
+theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → β} {l : List α} :
+    l.filterMap f = l.map g ↔ ∀ x ∈ l, f x = some (g x) where
+  mp := by
+    induction' l with a l ih
+    · simp
+    cases' ha : f a with b <;> simp [ha]
+    · intro h
+      simpa [show (filterMap f l).length = l.length + 1 from by simp[h], Nat.add_one_le_iff]
+        using List.length_filterMap_le f l
+    · rintro rfl h
+      exact ⟨rfl, ih h⟩
+  mpr h := Eq.trans (filterMap_congr <| by simpa) (congr_fun (List.filterMap_eq_map _) _)
+
 /-! ### filter -/
 
 section Filter
@@ -3530,8 +3562,8 @@ theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
 theorem get_attach (L : List α) (i) :
     (L.attach.get i).1 = L.get ⟨i, length_attach L ▸ i.2⟩ :=
   calc
-    (L.attach.get i).1 = (L.attach.map Subtype.val).get ⟨i, by simpa using i.2⟩ :=
-      by rw [get_map]
+    (L.attach.get i).1 = (L.attach.map Subtype.val).get ⟨i, by simpa using i.2⟩ := by
+      rw [get_map]
     _ = L.get { val := i, isLt := _ } := by congr 2 <;> simp
 #align list.nth_le_attach List.get_attach
 
@@ -3588,6 +3620,21 @@ theorem disjoint_map {f : α → β} {s t : List α} (hf : Function.Injective f)
   exact disjoint_pmap _ _ (fun _ _ _ _ h' ↦ hf h') h
 
 end Disjoint
+
+section lookup
+
+variable {α β : Type*} [BEq α] [LawfulBEq α]
+
+lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
+    lookup a (as.map fun x => (x, f x)) = some (f a) := by
+  induction' as with a' as ih
+  · exact (List.not_mem_nil _ h).elim
+  · by_cases ha : a = a'
+    · simp [ha, lookup_cons]
+    · simp [lookup_cons, beq_false_of_ne ha]
+      exact ih (List.mem_of_ne_of_mem ha h)
+
+end lookup
 
 end List
 
