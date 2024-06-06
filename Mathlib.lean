@@ -4078,6 +4078,7 @@ import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Topology.Compactness.LocallyCompact
 import Mathlib.Topology.Compactness.Paracompact
+import Mathlib.Topology.Compactness.PseudometrizableLindelof
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.CompletelyRegular
 import Mathlib.Topology.Connected.Basic
