@@ -45,8 +45,7 @@ open Zsqrtd Complex
 open scoped ComplexConjugate
 
 /-- The Gaussian integers, defined as `ℤ√(-1)`. -/
-@[reducible]
-def GaussianInt : Type :=
+abbrev GaussianInt : Type :=
   Zsqrtd (-1)
 #align gaussian_int GaussianInt
 
@@ -143,20 +142,29 @@ theorem toComplex_inj {x y : ℤ[i]} : (x : ℂ) = y ↔ x = y := by
   cases x; cases y; simp [toComplex_def₂]
 #align gaussian_int.to_complex_inj GaussianInt.toComplex_inj
 
+lemma toComplex_injective : Function.Injective GaussianInt.toComplex :=
+  fun ⦃_ _⦄ ↦ toComplex_inj.mp
+
 @[simp]
 theorem toComplex_eq_zero {x : ℤ[i]} : (x : ℂ) = 0 ↔ x = 0 := by
   rw [← toComplex_zero, toComplex_inj]
 #align gaussian_int.to_complex_eq_zero GaussianInt.toComplex_eq_zero
 
 @[simp]
-theorem int_cast_real_norm (x : ℤ[i]) : (x.norm : ℝ) = Complex.normSq (x : ℂ) := by
+theorem intCast_real_norm (x : ℤ[i]) : (x.norm : ℝ) = Complex.normSq (x : ℂ) := by
   rw [Zsqrtd.norm, normSq]; simp
-#align gaussian_int.nat_cast_real_norm GaussianInt.int_cast_real_norm
+#align gaussian_int.nat_cast_real_norm GaussianInt.intCast_real_norm
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_real_norm := intCast_real_norm
 
 @[simp]
-theorem int_cast_complex_norm (x : ℤ[i]) : (x.norm : ℂ) = Complex.normSq (x : ℂ) := by
+theorem intCast_complex_norm (x : ℤ[i]) : (x.norm : ℂ) = Complex.normSq (x : ℂ) := by
   cases x; rw [Zsqrtd.norm, normSq]; simp
-#align gaussian_int.nat_cast_complex_norm GaussianInt.int_cast_complex_norm
+#align gaussian_int.nat_cast_complex_norm GaussianInt.intCast_complex_norm
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_complex_norm := intCast_complex_norm
 
 theorem norm_nonneg (x : ℤ[i]) : 0 ≤ norm x :=
   Zsqrtd.norm_nonneg (by norm_num) _
@@ -178,9 +186,12 @@ theorem abs_natCast_norm (x : ℤ[i]) : (x.norm.natAbs : ℤ) = x.norm :=
 @[deprecated] alias abs_coe_nat_norm := abs_natCast_norm
 
 @[simp]
-theorem nat_cast_natAbs_norm {α : Type*} [Ring α] (x : ℤ[i]) : (x.norm.natAbs : α) = x.norm := by
+theorem natCast_natAbs_norm {α : Type*} [Ring α] (x : ℤ[i]) : (x.norm.natAbs : α) = x.norm := by
   rw [← Int.cast_natCast, abs_natCast_norm]
-#align gaussian_int.nat_cast_nat_abs_norm GaussianInt.nat_cast_natAbs_norm
+#align gaussian_int.nat_cast_nat_abs_norm GaussianInt.natCast_natAbs_norm
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_natAbs_norm := natCast_natAbs_norm
 
 theorem natAbs_norm_eq (x : ℤ[i]) :
     x.norm.natAbs = x.re.natAbs * x.re.natAbs + x.im.natAbs * x.im.natAbs :=
@@ -287,7 +298,7 @@ theorem sq_add_sq_of_nat_prime_of_not_irreducible (p : ℕ) [hp : Fact p.Prime]
     (hpi : ¬Irreducible (p : ℤ[i])) : ∃ a b, a ^ 2 + b ^ 2 = p :=
   have hpu : ¬IsUnit (p : ℤ[i]) :=
     mt norm_eq_one_iff.2 <| by
-      rw [norm_nat_cast, Int.natAbs_mul, mul_eq_one]
+      rw [norm_natCast, Int.natAbs_mul, mul_eq_one]
       exact fun h => (ne_of_lt hp.1.one_lt).symm h.1
   have hab : ∃ a b, (p : ℤ[i]) = a * b ∧ ¬IsUnit a ∧ ¬IsUnit b := by
     -- Porting note: was
@@ -297,7 +308,7 @@ theorem sq_add_sq_of_nat_prime_of_not_irreducible (p : ℕ) [hp : Fact p.Prime]
   let ⟨a, b, hpab, hau, hbu⟩ := hab
   have hnap : (norm a).natAbs = p :=
     ((hp.1.mul_eq_prime_sq_iff (mt norm_eq_one_iff.1 hau) (mt norm_eq_one_iff.1 hbu)).1 <| by
-        rw [← Int.natCast_inj, Int.coe_nat_pow, sq, ← @norm_nat_cast (-1), hpab]; simp).1
+        rw [← Int.natCast_inj, Int.natCast_pow, sq, ← @norm_natCast (-1), hpab]; simp).1
   ⟨a.re.natAbs, a.im.natAbs, by simpa [natAbs_norm_eq, sq] using hnap⟩
 #align gaussian_int.sq_add_sq_of_nat_prime_of_not_irreducible GaussianInt.sq_add_sq_of_nat_prime_of_not_irreducible
 

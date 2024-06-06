@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Data.Set.NAry
 import Mathlib.Order.Directed
 
@@ -173,16 +173,14 @@ theorem IsGLB.dual (h : IsGLB s a) : IsLUB (ofDual ⁻¹' s) (toDual a) :=
 #align is_glb.dual IsGLB.dual
 
 /-- If `a` is the least element of a set `s`, then subtype `s` is an order with bottom element. -/
-@[reducible]
-def IsLeast.orderBot (h : IsLeast s a) :
+abbrev IsLeast.orderBot (h : IsLeast s a) :
     OrderBot s where
   bot := ⟨a, h.1⟩
   bot_le := Subtype.forall.2 h.2
 #align is_least.order_bot IsLeast.orderBot
 
 /-- If `a` is the greatest element of a set `s`, then subtype `s` is an order with top element. -/
-@[reducible]
-def IsGreatest.orderTop (h : IsGreatest s a) :
+abbrev IsGreatest.orderTop (h : IsGreatest s a) :
     OrderTop s where
   top := ⟨a, h.1⟩
   le_top := Subtype.forall.2 h.2

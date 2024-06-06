@@ -45,12 +45,12 @@ variable {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
 /-- A set `s` is *everywhere positive* (also called *self-supporting*) with respect to a
 measure `μ` if it has positive measure around each of its points, i.e., if all neighborhoods `n`
 of points of `s` satisfy `μ (s ∩ n) > 0`. -/
-@[pp_dot] def IsEverywherePos (μ : Measure α) (s : Set α) : Prop :=
+def IsEverywherePos (μ : Measure α) (s : Set α) : Prop :=
   ∀ x ∈ s, ∀ n ∈ 𝓝[s] x, 0 < μ n
 
 /-- * The everywhere positive subset of a set is the subset made of those points all of whose
 neighborhoods have positive measure inside the set. -/
-@[pp_dot] def everywherePosSubset (μ : Measure α) (s : Set α) : Set α :=
+def everywherePosSubset (μ : Measure α) (s : Set α) : Set α :=
   {x | x ∈ s ∧ ∀ n ∈ 𝓝[s] x, 0 < μ n}
 
 lemma everywherePosSubset_subset (μ : Measure α) (s : Set α) : μ.everywherePosSubset s ⊆ s :=
@@ -109,7 +109,7 @@ lemma measure_eq_zero_of_subset_diff_everywherePosSubset
 its everywhere positive subset. -/
 lemma everywherePosSubset_ae_eq [OpensMeasurableSpace α] [InnerRegular μ] (hs : MeasurableSet s) :
     μ.everywherePosSubset s =ᵐ[μ] s := by
-  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), OuterMeasure.empty',
+  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), measure_empty,
     true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact, ENNReal.iSup_eq_zero]
   intro k hk h'k
   exact measure_eq_zero_of_subset_diff_everywherePosSubset h'k hk
@@ -121,7 +121,7 @@ lemma everywherePosSubset_ae_eq_of_measure_ne_top
     μ.everywherePosSubset s =ᵐ[μ] s := by
   have A : μ (s \ μ.everywherePosSubset s) ≠ ∞ :=
     ((measure_mono (diff_subset _ _ )).trans_lt h's.lt_top).ne
-  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), OuterMeasure.empty',
+  simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), measure_empty,
     true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact_of_ne_top A,
     ENNReal.iSup_eq_zero]
   intro k hk h'k

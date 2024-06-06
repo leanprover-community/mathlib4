@@ -50,6 +50,13 @@ abbrev Exponentiable {C : Type u} [Category.{v} C] [HasFiniteProducts C] (X : C)
   Closed X
 #align category_theory.exponentiable CategoryTheory.Exponentiable
 
+/-- Constructor for `Exponentiable X` which takes as an input an adjunction
+`MonoidalCategory.tensorLeft X ⊣ exp` for some functor `exp : C ⥤ C`. -/
+abbrev Exponentiable.mk {C : Type u} [Category.{v} C] [HasFiniteProducts C] (X : C)
+    (exp : C ⥤ C) (adj : MonoidalCategory.tensorLeft X ⊣ exp) :
+    Exponentiable X where
+  adj := adj
+
 /-- If `X` and `Y` are exponentiable then `X ⨯ Y` is.
 This isn't an instance because it's not usually how we want to construct exponentials, we'll usually
 prove all objects are exponential uniformly.
@@ -78,10 +85,9 @@ abbrev CartesianClosed (C : Type u) [Category.{v} C] [HasFiniteProducts C] :=
 -- Porting note: added to ease the port of `CategoryTheory.Closed.Types`
 /-- Constructor for `CartesianClosed C`. -/
 def CartesianClosed.mk (C : Type u) [Category.{v} C] [HasFiniteProducts C]
-    (h : ∀ X, IsLeftAdjoint (@MonoidalCategory.tensorLeft _ _
-      (monoidalOfHasFiniteProducts C) X)) :
-    CartesianClosed C :=
-  ⟨fun X => ⟨h X⟩⟩
+    (exp : ∀ (X : C), Exponentiable X) :
+    CartesianClosed C where
+  closed X := exp X
 
 variable {C : Type u} [Category.{v} C] (A B : C) {X X' Y Y' Z : C}
 variable [HasFiniteProducts C] [Exponentiable A]
@@ -203,12 +209,12 @@ theorem uncurry_natural_left (f : X ⟶ X') (g : X' ⟶ A ⟹ Y) :
 
 @[simp]
 theorem uncurry_curry (f : A ⨯ X ⟶ Y) : uncurry (curry f) = f :=
-  (Closed.isAdj.adj.homEquiv _ _).left_inv f
+  (Closed.adj.homEquiv _ _).left_inv f
 #align category_theory.cartesian_closed.uncurry_curry CategoryTheory.CartesianClosed.uncurry_curry
 
 @[simp]
 theorem curry_uncurry (f : X ⟶ A ⟹ Y) : curry (uncurry f) = f :=
-  (Closed.isAdj.adj.homEquiv _ _).right_inv f
+  (Closed.adj.homEquiv _ _).right_inv f
 #align category_theory.cartesian_closed.curry_uncurry CategoryTheory.CartesianClosed.curry_uncurry
 
 -- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
@@ -239,11 +245,11 @@ theorem curry_id_eq_coev (A X : C) [Exponentiable A] : curry (𝟙 _) = (exp.coe
 #align category_theory.cartesian_closed.curry_id_eq_coev CategoryTheory.CartesianClosed.curry_id_eq_coev
 
 theorem curry_injective : Function.Injective (curry : (A ⨯ Y ⟶ X) → (Y ⟶ A ⟹ X)) :=
-  (Closed.isAdj.adj.homEquiv _ _).injective
+  (Closed.adj.homEquiv _ _).injective
 #align category_theory.cartesian_closed.curry_injective CategoryTheory.CartesianClosed.curry_injective
 
 theorem uncurry_injective : Function.Injective (uncurry : (Y ⟶ A ⟹ X) → (A ⨯ Y ⟶ X)) :=
-  (Closed.isAdj.adj.homEquiv _ _).symm.injective
+  (Closed.adj.homEquiv _ _).symm.injective
 #align category_theory.cartesian_closed.uncurry_injective CategoryTheory.CartesianClosed.uncurry_injective
 
 end CartesianClosed
@@ -355,13 +361,13 @@ def prodCoprodDistrib [HasBinaryCoproducts C] [CartesianClosed C] (X Y Z : C) :
       (coprod.desc (CartesianClosed.curry coprod.inl) (CartesianClosed.curry coprod.inr))
   hom_inv_id := by
     ext
-    rw [coprod.inl_desc_assoc, comp_id, ← uncurry_natural_left, coprod.inl_desc, uncurry_curry]
+    · rw [coprod.inl_desc_assoc, comp_id, ← uncurry_natural_left, coprod.inl_desc, uncurry_curry]
     rw [coprod.inr_desc_assoc, comp_id, ← uncurry_natural_left, coprod.inr_desc, uncurry_curry]
   inv_hom_id := by
     rw [← uncurry_natural_right, ← eq_curry_iff]
     ext
-    rw [coprod.inl_desc_assoc, ← curry_natural_right, coprod.inl_desc, ← curry_natural_left,
-      comp_id]
+    · rw [coprod.inl_desc_assoc, ← curry_natural_right, coprod.inl_desc, ← curry_natural_left,
+        comp_id]
     rw [coprod.inr_desc_assoc, ← curry_natural_right, coprod.inr_desc, ← curry_natural_left,
       comp_id]
 #align category_theory.prod_coprod_distrib CategoryTheory.prodCoprodDistrib
@@ -405,33 +411,8 @@ variable [HasFiniteProducts D]
 Note we didn't require any coherence between the choice of finite products here, since we transport
 along the `prodComparison` isomorphism.
 -/
-def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClosed D where
-  closed X :=
-    { isAdj := by
-        haveI q : Exponentiable (e.inverse.obj X) := inferInstance
-        have : IsLeftAdjoint (prod.functor.obj (e.inverse.obj X)) := q.isAdj
-        have : e.functor ⋙ prod.functor.obj X ⋙ e.inverse ≅
-            prod.functor.obj (e.inverse.obj X) := by
-          apply NatIso.ofComponents _ _
-          · intro Y
-            apply asIso (prodComparison e.inverse X (e.functor.obj Y)) ≪≫ _
-            apply prod.mapIso (Iso.refl _) (e.unitIso.app Y).symm
-          · intro Y Z g
-            dsimp
-            simp [prodComparison, prod.comp_lift, ← e.inverse.map_comp, ← e.inverse.map_comp_assoc]
-            -- I wonder if it would be a good idea to
-            -- make `map_comp` a simp lemma the other way round
-        · have : IsLeftAdjoint (e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
-            Adjunction.leftAdjointOfNatIso this.symm
-          have : IsLeftAdjoint (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
-            Adjunction.leftAdjointOfComp e.inverse _
-          have :
-            (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) ⋙ e.functor ≅
-              prod.functor.obj X := by
-            apply isoWhiskerRight e.counitIso (prod.functor.obj X ⋙ e.inverse ⋙ e.functor) ≪≫ _
-            change prod.functor.obj X ⋙ e.inverse ⋙ e.functor ≅ prod.functor.obj X
-            apply isoWhiskerLeft (prod.functor.obj X) e.counitIso
-          apply Adjunction.leftAdjointOfNatIso this }
+def cartesianClosedOfEquiv (e : C ≌ D) [CartesianClosed C] : CartesianClosed D :=
+  MonoidalClosed.ofEquiv (e.inverse.toMonoidalFunctorOfHasFiniteProducts) e.symm.toAdjunction
 #align category_theory.cartesian_closed_of_equiv CategoryTheory.cartesianClosedOfEquiv
 
 end Functor

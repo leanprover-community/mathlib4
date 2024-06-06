@@ -3,15 +3,15 @@ Copyright (c) 2020 Bhavik Mehta, Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Aaron Anderson
 -/
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Combinatorics.Enumerative.Partition
+import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.Data.Finset.PiAntidiagonal
+import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Order
-import Mathlib.Combinatorics.Enumerative.Partition
-import Mathlib.Data.Nat.Parity
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Data.Fin.Tuple.NatAntidiagonal
-import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Data.Finset.PiAntidiagonal
+import Mathlib.Tactic.IntervalCases
 
 #align_import wiedijk_100_theorems.partition from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
@@ -66,8 +66,6 @@ variable {α : Type*}
 
 open Finset
 
-open scoped BigOperators
-
 open scoped Classical
 
 /-- The partial product for the generating function for odd partitions.
@@ -78,7 +76,7 @@ natural number `i`: proved in `oddGF_prop`.
 It is stated for an arbitrary field `α`, though it usually suffices to use `ℚ` or `ℝ`.
 -/
 def partialOddGF (m : ℕ) [Field α] :=
-  ∏ i in range m, (1 - (X : PowerSeries α) ^ (2 * i + 1))⁻¹
+  ∏ i ∈ range m, (1 - (X : PowerSeries α) ^ (2 * i + 1))⁻¹
 #align theorems_100.partial_odd_gf Theorems100.partialOddGF
 
 /-- The partial product for the generating function for distinct partitions.
@@ -90,7 +88,7 @@ It is stated for an arbitrary commutative semiring `α`, though it usually suffi
 or `ℝ`.
 -/
 def partialDistinctGF (m : ℕ) [CommSemiring α] :=
-  ∏ i in range m, (1 + (X : PowerSeries α) ^ (i + 1))
+  ∏ i ∈ range m, (1 + (X : PowerSeries α) ^ (i + 1))
 #align theorems_100.partial_distinct_gf Theorems100.partialDistinctGF
 
 open Finset.HasAntidiagonal Finset
@@ -147,24 +145,24 @@ theorem num_series' [Field α] (i : ℕ) :
       symm
       split_ifs with h
       · suffices
-          ((antidiagonal n.succ).filter fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1).card =
+          ((antidiagonal (n+1)).filter fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1).card =
             1 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_one]
         cases' h with p hp
-        refine' ⟨((i + 1) * (p - 1), i + 1), _⟩
+        refine ⟨((i + 1) * (p - 1), i + 1), ?_⟩
         ext ⟨a₁, a₂⟩
         simp only [mem_filter, Prod.mk.inj_iff, mem_antidiagonal, mem_singleton]
         constructor
         · rintro ⟨a_left, ⟨a, rfl⟩, rfl⟩
-          refine' ⟨_, rfl⟩
+          refine ⟨?_, rfl⟩
           rw [Nat.mul_sub_left_distrib, ← hp, ← a_left, mul_one, Nat.add_sub_cancel]
         · rintro ⟨rfl, rfl⟩
           match p with
           | 0 => rw [mul_zero] at hp; cases hp
           | p + 1 => rw [hp]; simp [mul_add]
       · suffices
-          (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (antidiagonal n.succ)).card =
+          (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (antidiagonal (n+1))).card =
             0 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_zero]
@@ -187,7 +185,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
           ((univ : Finset (Nat.Partition n)).filter fun p =>
             (∀ j, p.parts.count j ∈ c j) ∧ ∀ j ∈ p.parts, j ∈ s) :
         α) =
-      (coeff α n) (∏ i in s, indicatorSeries α ((· * i) '' c i)) := by
+      (coeff α n) (∏ i ∈ s, indicatorSeries α ((· * i) '' c i)) := by
   simp_rw [coeff_prod, coeff_indicator, prod_boole, sum_boole]
   apply congr_arg
   simp only [mem_univ, forall_true_left, not_and, not_forall, exists_prop,
@@ -201,8 +199,8 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         simp only [smul_eq_mul, ne_eq, mul_eq_zero, Multiset.count_eq_zero]
         rw [not_or, not_not]
         simp only [Multiset.mem_toFinset, not_not, mem_filter] }
-  refine' Finset.card_congr φ _ _ _
-  · intro a  ha
+  refine Finset.card_bij φ ?_ ?_ ?_
+  · intro a ha
     simp only [φ, not_forall, not_exists, not_and, exists_prop, mem_filter]
     rw [mem_piAntidiagonal']
     dsimp only [ne_eq, smul_eq_mul, id_eq, eq_mpr_eq_cast, le_eq_subset, Finsupp.coe_mk]
@@ -215,13 +213,13 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       exact fun hi _ => ha.2 i hi
     · conv_rhs => simp [← a.parts_sum]
       rw [sum_multiset_count_of_subset _ s]
-      simp only [smul_eq_mul]
+      · simp only [smul_eq_mul]
       · intro i
         simp only [Multiset.mem_toFinset, not_not, mem_filter]
         apply ha.2
     · exact fun i _ => ⟨Multiset.count i a.parts, ha.1 i, rfl⟩
   · dsimp only
-    intro p₁ p₂ hp₁ hp₂ h
+    intro p₁ hp₁ p₂ hp₂ h
     apply Nat.Partition.ext
     simp only [true_and_iff, mem_univ, mem_filter] at hp₁ hp₂
     ext i
@@ -229,8 +227,8 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     by_cases hi : i = 0
     · rw [hi]
       rw [Multiset.count_eq_zero_of_not_mem]
-      rw [Multiset.count_eq_zero_of_not_mem]
-      intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₂.2 0 a))
+      · rw [Multiset.count_eq_zero_of_not_mem]
+        intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₂.2 0 a))
       intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₁.2 0 a))
     · rw [← mul_left_inj' hi]
       rw [Function.funext_iff] at h
@@ -239,7 +237,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     rintro f ⟨hf, hf₃, hf₄⟩
     have hf' : f ∈ piAntidiagonal s n := mem_piAntidiagonal.mpr ⟨hf, hf₃⟩
     simp only [mem_piAntidiagonal'] at hf'
-    refine ⟨⟨∑ i in s, Multiset.replicate (f i / i) i, ?_, ?_⟩, ?_, ?_, ?_⟩
+    refine ⟨⟨∑ i ∈ s, Multiset.replicate (f i / i) i, ?_, ?_⟩, ?_, ?_, ?_⟩
     · intro i hi
       simp only [exists_prop, mem_sum, mem_map, Function.Embedding.coeFn_mk] at hi
       rcases hi with ⟨t, ht, z⟩
@@ -247,7 +245,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       rwa [Multiset.eq_of_mem_replicate z]
     · simp_rw [Multiset.sum_sum, Multiset.sum_replicate, Nat.nsmul_eq_mul]
       rw [← hf'.2]
-      refine' sum_congr rfl fun i hi => Nat.div_mul_cancel _
+      refine sum_congr rfl fun i hi => Nat.div_mul_cancel ?_
       rcases hf₄ i hi with ⟨w, _, hw₂⟩
       rw [← hw₂]
       exact dvd_mul_left _ _
@@ -291,7 +289,7 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
     ext k
     constructor
     · rintro ⟨p, rfl⟩
-      refine' ⟨p, ⟨⟩, _⟩
+      refine ⟨p, ⟨⟩, ?_⟩
       apply mul_comm
     rintro ⟨a_w, -, rfl⟩
     apply Dvd.intro_left a_w rfl
@@ -316,7 +314,7 @@ theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
     have := Nat.mod_add_div i 2
     rw [Nat.not_even_iff] at hi₂
     rw [hi₂, add_comm] at this
-    refine' ⟨i / 2, _, this⟩
+    refine ⟨i / 2, ?_, this⟩
     rw [Nat.div_lt_iff_lt_mul zero_lt_two]
     exact lt_of_le_of_lt hin h
   · rintro ⟨a, -, rfl⟩
@@ -358,7 +356,7 @@ theorem distinctGF_prop [CommSemiring α] (n m : ℕ) (h : n < m + 1) :
   have : i ≤ n := by
     simpa [p.parts_sum] using Multiset.single_le_sum (fun _ _ => Nat.zero_le _) _ hi
   simp only [mkOdd, exists_prop, mem_range, Function.Embedding.coeFn_mk, mem_map]
-  refine' ⟨i - 1, _, Nat.succ_pred_eq_of_pos (p.parts_pos hi)⟩
+  refine ⟨i - 1, ?_, Nat.succ_pred_eq_of_pos (p.parts_pos hi)⟩
   rw [tsub_lt_iff_right (Nat.one_le_iff_ne_zero.mpr (p.parts_pos hi).ne')]
   exact lt_of_le_of_lt this h
 #align theorems_100.distinct_gf_prop Theorems100.distinctGF_prop
@@ -373,26 +371,25 @@ theorem same_gf [Field α] (m : ℕ) :
   rw [partialOddGF, partialDistinctGF]
   induction' m with m ih
   · simp
-  rw [Nat.succ_eq_add_one]
-  set! π₀ : PowerSeries α := ∏ i in range m, (1 - X ^ (m + 1 + i + 1)) with hπ₀
-  set! π₁ : PowerSeries α := ∏ i in range m, (1 - X ^ (2 * i + 1))⁻¹ with hπ₁
-  set! π₂ : PowerSeries α := ∏ i in range m, (1 - X ^ (m + i + 1)) with hπ₂
-  set! π₃ : PowerSeries α := ∏ i in range m, (1 + X ^ (i + 1)) with hπ₃
+  set! π₀ : PowerSeries α := ∏ i ∈ range m, (1 - X ^ (m + 1 + i + 1)) with hπ₀
+  set! π₁ : PowerSeries α := ∏ i ∈ range m, (1 - X ^ (2 * i + 1))⁻¹ with hπ₁
+  set! π₂ : PowerSeries α := ∏ i ∈ range m, (1 - X ^ (m + i + 1)) with hπ₂
+  set! π₃ : PowerSeries α := ∏ i ∈ range m, (1 + X ^ (i + 1)) with hπ₃
   rw [← hπ₃] at ih
   have h : constantCoeff α (1 - X ^ (2 * m + 1)) ≠ 0 := by
     rw [RingHom.map_sub, RingHom.map_pow, constantCoeff_one, constantCoeff_X,
       zero_pow (2 * m).succ_ne_zero, sub_zero]
     exact one_ne_zero
   calc
-    (∏ i in range (m + 1), (1 - X ^ (2 * i + 1))⁻¹) *
-          ∏ i in range (m + 1), (1 - X ^ (m + 1 + i + 1)) =
+    (∏ i ∈ range (m + 1), (1 - X ^ (2 * i + 1))⁻¹) *
+          ∏ i ∈ range (m + 1), (1 - X ^ (m + 1 + i + 1)) =
         π₁ * (1 - X ^ (2 * m + 1))⁻¹ * (π₀ * (1 - X ^ (m + 1 + m + 1))) := by
       rw [prod_range_succ _ m, ← hπ₁, prod_range_succ _ m, ← hπ₀]
     _ = π₁ * (1 - X ^ (2 * m + 1))⁻¹ * (π₀ * ((1 + X ^ (m + 1)) * (1 - X ^ (m + 1)))) := by
       rw [← sq_sub_sq, one_pow, add_assoc _ m 1, ← two_mul (m + 1), pow_mul']
     _ = π₀ * (1 - X ^ (m + 1)) * (1 - X ^ (2 * m + 1))⁻¹ * (π₁ * (1 + X ^ (m + 1))) := by ring
     _ =
-        (∏ i in range (m + 1), (1 - X ^ (m + 1 + i))) * (1 - X ^ (2 * m + 1))⁻¹ *
+        (∏ i ∈ range (m + 1), (1 - X ^ (m + 1 + i))) * (1 - X ^ (2 * m + 1))⁻¹ *
           (π₁ * (1 + X ^ (m + 1))) := by
       rw [prod_range_succ', add_zero, hπ₀]; simp_rw [← add_assoc]
     _ = π₂ * (1 - X ^ (m + 1 + m)) * (1 - X ^ (2 * m + 1))⁻¹ * (π₁ * (1 + X ^ (m + 1))) := by

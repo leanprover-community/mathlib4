@@ -134,8 +134,7 @@ instance (F : LaxMonoidalFunctor.{v₁, v₂} C D) : LaxMonoidal.{v₁, v₂} F.
 
 section
 
-instance laxMonoidalId : LaxMonoidal.{v₁, v₁} (id : C → C)
-    where
+instance laxMonoidalId : LaxMonoidal.{v₁, v₁} (id : C → C) where
   ε := 𝟙 _
   μ X Y := 𝟙 _
 #align category_theory.lax_monoidal_id CategoryTheory.laxMonoidalId

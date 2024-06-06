@@ -3,8 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Field.Rat
+import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Data.Rat.Field
+import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Rat.Lemmas
 
 #align_import data.rat.cast from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
@@ -28,6 +31,81 @@ rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, 
 -/
 
 variable {F ι α β : Type*}
+
+namespace NNRat
+variable [DivisionSemiring α] {q r : ℚ≥0}
+
+@[simp, norm_cast] lemma cast_natCast (n : ℕ) : ((n : ℚ≥0) : α) = n := by simp [cast_def]
+
+-- See note [no_index around OfNat.ofNat]
+@[simp, norm_cast] lemma cast_ofNat (n : ℕ) [n.AtLeastTwo] :
+    no_index (OfNat.ofNat n : ℚ≥0) = (OfNat.ofNat n : α) := cast_natCast _
+
+@[simp, norm_cast] lemma cast_zero : ((0 : ℚ≥0) : α) = 0 := (cast_natCast _).trans Nat.cast_zero
+@[simp, norm_cast] lemma cast_one : ((1 : ℚ≥0) : α) = 1 := (cast_natCast _).trans Nat.cast_one
+
+lemma cast_commute (q : ℚ≥0) (a : α) : Commute (↑q) a := by
+  simpa only [cast_def] using (q.num.cast_commute a).div_left (q.den.cast_commute a)
+
+lemma commute_cast (a : α) (q : ℚ≥0) : Commute a q := (cast_commute ..).symm
+
+lemma cast_comm (q : ℚ≥0) (a : α) : q * a = a * q := cast_commute _ _
+
+@[norm_cast] lemma cast_divNat_of_ne_zero (a : ℕ) {b : ℕ} (hb : (b : α) ≠ 0) :
+    divNat a b = (a / b : α) := by
+  rcases e : divNat a b with ⟨⟨n, d, h, c⟩, hn⟩
+  rw [← Rat.num_nonneg] at hn
+  lift n to ℕ using hn
+  have hd : (d : α) ≠ 0 := by
+    refine fun hd ↦ hb ?_
+    have : Rat.divInt a b = _ := congr_arg NNRat.cast e
+    obtain ⟨k, rfl⟩ : d ∣ b := by simpa [Int.natCast_dvd_natCast, this] using Rat.den_dvd a b
+    simp [*]
+  have hb' : b ≠ 0 := by rintro rfl; exact hb Nat.cast_zero
+  have hd' : d ≠ 0 := by rintro rfl; exact hd Nat.cast_zero
+  simp_rw [Rat.mk'_eq_divInt, mk_divInt, divNat_inj hb' hd'] at e
+  rw [cast_def]
+  dsimp
+  rw [Commute.div_eq_div_iff _ hd hb]
+  · norm_cast
+    rw [e]
+  exact b.commute_cast _
+
+@[norm_cast]
+lemma cast_add_of_ne_zero (hq : (q.den : α) ≠ 0) (hr : (r.den : α) ≠ 0) :
+    ↑(q + r) = (q + r : α) := by
+  rw [add_def, cast_divNat_of_ne_zero, cast_def, cast_def, mul_comm _ q.den,
+    (Nat.commute_cast _ _).div_add_div (Nat.commute_cast _ _) hq hr]
+  · push_cast
+    rfl
+  · push_cast
+    exact mul_ne_zero hq hr
+
+@[norm_cast]
+lemma cast_mul_of_ne_zero (hq : (q.den : α) ≠ 0) (hr : (r.den : α) ≠ 0) :
+    ↑(q * r) = (q * r : α) := by
+  rw [mul_def, cast_divNat_of_ne_zero, cast_def, cast_def,
+    (Nat.commute_cast _ _).div_mul_div_comm (Nat.commute_cast _ _)]
+  · push_cast
+    rfl
+  · push_cast
+    exact mul_ne_zero hq hr
+
+@[norm_cast]
+lemma cast_inv_of_ne_zero (hq : (q.num : α) ≠ 0) : (q⁻¹ : ℚ≥0) = (q⁻¹ : α) := by
+  rw [inv_def, cast_divNat_of_ne_zero _ hq, cast_def, inv_div]
+
+@[norm_cast]
+lemma cast_div_of_ne_zero (hq : (q.den : α) ≠ 0) (hr : (r.num : α) ≠ 0) :
+    ↑(q / r) = (q / r : α) := by
+  rw [div_def, cast_divNat_of_ne_zero, cast_def, cast_def, div_eq_mul_inv (_ / _),
+    inv_div, (Nat.commute_cast _ _).div_mul_div_comm (Nat.commute_cast _ _)]
+  · push_cast
+    rfl
+  · push_cast
+    exact mul_ne_zero hq hr
+
+end NNRat
 
 namespace Rat
 
@@ -77,7 +155,7 @@ theorem commute_cast (a : α) (r : ℚ) : Commute a r :=
 @[norm_cast]
 lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b : α) = a / b := by
   have b0' : b ≠ 0 := by
-    refine' mt _ b0
+    refine mt ?_ b0
     simp (config := { contextual := true })
   cases' e : a /. b with n d h c
   have d0 : (d : α) ≠ 0 := by
@@ -97,15 +175,15 @@ lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b
 
 @[norm_cast]
 lemma cast_mkRat_of_ne_zero (a : ℤ) {b : ℕ} (hb : (b : α) ≠ 0) : (mkRat a b : α) = a / b := by
-  rw [Rat.mkRat_eq, cast_divInt_of_ne_zero, Int.cast_natCast]; rwa [Int.cast_natCast]
+  rw [Rat.mkRat_eq_divInt, cast_divInt_of_ne_zero, Int.cast_natCast]; rwa [Int.cast_natCast]
 
 @[norm_cast]
 lemma cast_add_of_ne_zero {q r : ℚ} (hq : (q.den : α) ≠ 0) (hr : (r.den : α) ≠ 0) :
     (q + r : ℚ) = (q + r : α) := by
   rw [add_def', cast_mkRat_of_ne_zero, cast_def, cast_def, mul_comm r.num,
     (Nat.cast_commute _ _).div_add_div (Nat.commute_cast _ _) hq hr]
-  push_cast
-  rfl
+  · push_cast
+    rfl
   · push_cast
     exact mul_ne_zero hq hr
 #align rat.cast_add_of_ne_zero Rat.cast_add_of_ne_zero
@@ -119,10 +197,10 @@ lemma cast_add_of_ne_zero {q r : ℚ} (hq : (q.den : α) ≠ 0) (hr : (r.den : �
 
 @[norm_cast] lemma cast_mul_of_ne_zero (hp : (p.den : α) ≠ 0) (hq : (q.den : α) ≠ 0) :
     ↑(p * q) = (p * q : α) := by
-  rw [mul_def', cast_mkRat_of_ne_zero, cast_def, cast_def,
+  rw [mul_eq_mkRat, cast_mkRat_of_ne_zero, cast_def, cast_def,
     (Nat.commute_cast _ _).div_mul_div_comm (Int.commute_cast _ _)]
-  push_cast
-  rfl
+  · push_cast
+    rfl
   · push_cast
     exact mul_ne_zero hp hq
 #align rat.cast_mul_of_ne_zero Rat.cast_mul_of_ne_zero
@@ -136,8 +214,8 @@ lemma cast_inv_of_ne_zero (hq : (q.num : α) ≠ 0) : ↑(q⁻¹) = (q⁻¹ : α
     ↑(p / q) = (p / q : α) := by
   rw [div_def', cast_divInt_of_ne_zero, cast_def, cast_def, div_eq_mul_inv (_ / _), inv_div,
     (Int.commute_cast _ _).div_mul_div_comm (Nat.commute_cast _ _)]
-  push_cast
-  rfl
+  · push_cast
+    rfl
   · push_cast
     exact mul_ne_zero hp hq
 #align rat.cast_div_of_ne_zero Rat.cast_div_of_ne_zero
@@ -147,6 +225,13 @@ end Rat
 open Rat
 
 variable [FunLike F α β]
+
+@[simp] lemma map_nnratCast [DivisionSemiring α] [DivisionSemiring β] [RingHomClass F α β] (f : F)
+    (q : ℚ≥0) : f q = q := by simp_rw [NNRat.cast_def, map_div₀, map_natCast]
+
+@[simp]
+lemma eq_nnratCast [DivisionSemiring α] [FunLike F ℚ≥0 α] [RingHomClass F ℚ≥0 α] (f : F) (q : ℚ≥0) :
+    f q = q := by rw [← map_nnratCast f, NNRat.cast_id]
 
 @[simp]
 theorem map_ratCast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (f : F) (q : ℚ) :
@@ -207,11 +292,22 @@ instance Rat.subsingleton_ringHom {R : Type*} [Semiring R] : Subsingleton (ℚ �
 
 /-! ### Scalar multiplication -/
 
+namespace NNRat
+variable [DivisionSemiring α]
+
+instance (priority := 100) instDistribSMul : DistribSMul ℚ≥0 α where
+  smul_zero a := by rw [smul_def, mul_zero]
+  smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
+
+instance instIsScalarTowerRight : IsScalarTower ℚ≥0 α α where
+  smul_assoc a x y := by simp only [smul_def, smul_eq_mul, mul_assoc]
+
+end NNRat
+
 namespace Rat
 variable [DivisionRing α]
 
 instance (priority := 100) instDistribSMul : DistribSMul ℚ α where
-  smul := (· • ·)
   smul_zero a := by rw [smul_def, mul_zero]
   smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
 #align rat.distrib_smul Rat.instDistribSMul

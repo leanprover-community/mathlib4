@@ -35,8 +35,7 @@ theorem nnnorm_natCast (n : ℕ) : ‖(n : ℤ)‖₊ = n :=
   Real.nnnorm_natCast _
 #align int.nnnorm_coe_nat Int.nnnorm_natCast
 
--- 2024-04-05
-@[deprecated] alias nnnorm_coe_nat := nnnorm_natCast
+@[deprecated] alias nnnorm_coe_nat := nnnorm_natCast -- 2024-04-05
 
 @[simp]
 theorem toNat_add_toNat_neg_eq_nnnorm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = ‖n‖₊ := by
@@ -45,7 +44,7 @@ theorem toNat_add_toNat_neg_eq_nnnorm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = �
 
 @[simp]
 theorem toNat_add_toNat_neg_eq_norm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = ‖n‖ := by
-  simpa only [NNReal.coe_nat_cast, NNReal.coe_add] using
+  simpa only [NNReal.coe_natCast, NNReal.coe_add] using
     congrArg NNReal.toReal (toNat_add_toNat_neg_eq_nnnorm n)
 #align int.to_nat_add_to_nat_neg_eq_norm Int.toNat_add_toNat_neg_eq_norm
 

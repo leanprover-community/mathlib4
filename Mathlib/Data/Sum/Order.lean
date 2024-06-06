@@ -688,8 +688,9 @@ theorem sumLexAssoc_symm_apply_inr_inr : (sumLexAssoc α β γ).symm (inr (inr c
 def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ :=
   { Equiv.sumComm α β with
     map_rel_iff' := @fun a b => by
-      rcases a with (a | a) <;> rcases b with (b | b); simp
-      · change
+      rcases a with (a | a) <;> rcases b with (b | b);
+      · simp
+        change
           toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
             toDual (toLex <| inl a) ≤ toDual (toLex <| inl b)
         simp [toDual_le_toDual, Lex.inl_le_inl_iff, Lex.inr_le_inr_iff]
@@ -740,11 +741,11 @@ def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
       Equiv.sumComm_apply, swap, Lex.toLex_le_toLex, le_refl]
     rcases a with (a | _) <;> rcases b with (b | _)
-    · simp only [elim_inr, lex_inl_inl, none_le]
-    · simp only [elim_inr, elim_inl, Lex.sep, none_le]
+    · simp only [elim_inr, lex_inl_inl, bot_le, none_eq_bot]
+    · simp only [elim_inr, elim_inl, Lex.sep, bot_le, none_eq_bot]
     · simp only [elim_inl, elim_inr, lex_inr_inl, false_iff]
       exact not_coe_le_bot _
-    · simp only [elim_inl, lex_inr_inr, some_le_some]
+    · simp only [elim_inl, lex_inr_inr, coe_le_coe, WithBot.some_eq_coe]
   ⟩
 #align with_bot.order_iso_punit_sum_lex WithBot.orderIsoPUnitSumLex
 
@@ -780,13 +781,13 @@ namespace WithTop
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
   ⟨(Equiv.optionEquivSumPUnit α).trans toLex, @fun a b => by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
-      ge_iff_le, Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_none]
+      ge_iff_le, Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_top]
     rcases a with (a | _) <;> rcases b with (b | _)
-    · simp only [lex_inr_inr, le_none]
+    · simp only [lex_inr_inr, le_top, WithTop.none_eq_top]
     · simp only [lex_inr_inl, false_iff]
       exact not_top_le_coe _
-    · simp only [Lex.sep, le_none]
-    · simp only [lex_inl_inl, some_le_some]
+    · simp only [Lex.sep, le_top, WithTop.none_eq_top]
+    · simp only [lex_inl_inl, coe_le_coe, WithTop.some_eq_coe]
 
   ⟩
 #align with_top.order_iso_sum_lex_punit WithTop.orderIsoSumLexPUnit

@@ -252,7 +252,7 @@ theorem eventually_homothety_mem_of_mem_interior (x : Q) {s : Set Q} {y : Q} (hy
   have hxy : 0 < ‖y -ᵥ x‖ := by rwa [norm_pos_iff, vsub_ne_zero]
   obtain ⟨u, hu₁, hu₂, hu₃⟩ := mem_interior.mp hy
   obtain ⟨ε, hε, hyε⟩ := Metric.isOpen_iff.mp hu₂ y hu₃
-  refine' ⟨ε / ‖y -ᵥ x‖, div_pos hε hxy, fun δ (hδ : ‖δ - 1‖ < ε / ‖y -ᵥ x‖) => hu₁ (hyε _)⟩
+  refine ⟨ε / ‖y -ᵥ x‖, div_pos hε hxy, fun δ (hδ : ‖δ - 1‖ < ε / ‖y -ᵥ x‖) => hu₁ (hyε ?_)⟩
   rw [lt_div_iff hxy, ← norm_smul, sub_smul, one_smul] at hδ
   rwa [homothety_apply, Metric.mem_ball, dist_eq_norm_vsub W, vadd_vsub_eq_sub_vsub]
 #align eventually_homothety_mem_of_mem_interior eventually_homothety_mem_of_mem_interior
@@ -272,9 +272,7 @@ variable [NormedSpace ℝ V] [NormedSpace ℝ W]
 
 theorem dist_midpoint_midpoint_le (p₁ p₂ p₃ p₄ : V) :
     dist (midpoint ℝ p₁ p₂) (midpoint ℝ p₃ p₄) ≤ (dist p₁ p₃ + dist p₂ p₄) / 2 := by
-  -- Porting note: was `simpa using dist_midpoint_midpoint_le' p₁ p₂ p₃ p₄`
-  have := dist_midpoint_midpoint_le' (𝕜 := ℝ) p₁ p₂ p₃ p₄
-  simpa using this
+  simpa using dist_midpoint_midpoint_le' (𝕜 := ℝ) p₁ p₂ p₃ p₄
 #align dist_midpoint_midpoint_le dist_midpoint_midpoint_le
 
 theorem nndist_midpoint_midpoint_le (p₁ p₂ p₃ p₄ : V) :

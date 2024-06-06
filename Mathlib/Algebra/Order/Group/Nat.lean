@@ -22,21 +22,20 @@ namespace Nat
 
 /-! ### Instances -/
 
-instance canonicallyLinearOrderedAddCommMonoid : CanonicallyLinearOrderedAddCommMonoid ℕ where
-  __ := linearOrder
+instance instCanonicallyLinearOrderedAddCommMonoid : CanonicallyLinearOrderedAddCommMonoid ℕ where
+  __ := instLinearOrder
   bot := 0
   bot_le := Nat.zero_le
   add_le_add_left := @Nat.add_le_add_left
   le_self_add := Nat.le_add_right
   exists_add_of_le := Nat.exists_eq_add_of_le
 
-instance linearOrderedCommMonoid : LinearOrderedCommMonoid ℕ where
-  __ := linearOrder
-  __ := commMonoid
+instance instLinearOrderedCommMonoid : LinearOrderedCommMonoid ℕ where
+  __ := instLinearOrder
   mul_le_mul_left _ _ h _ := mul_le_mul_left _ h
 
-instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid ℕ where
-  __ := linearOrder
+instance instLinearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid ℕ where
+  __ := instLinearOrder
   add_le_add_left := @Nat.add_le_add_left
   le_of_add_le_add_left := @Nat.le_of_add_le_add_left
 
@@ -45,15 +44,6 @@ instance instOrderedSub : OrderedSub ℕ := by
   induction' n with n ih generalizing k
   · simp
   · simp only [sub_succ, pred_le_iff, ih, succ_add, add_succ]
-
-/-!
-### Extra instances to short-circuit type class resolution
-
-These also prevent non-computable instances being used to construct these instances non-computably.
--/
-
-instance orderBot : OrderBot ℕ := by infer_instance
-#align nat.order_bot Nat.orderBot
 
 /-! ### Miscellaneous lemmas -/
 

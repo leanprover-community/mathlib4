@@ -99,7 +99,7 @@ instance : Fintype (IndexSet Δ) :=
         ext1
         simpa only [Fin.mk_eq_mk] using h₁.1
       subst h₂
-      refine' ext _ _ rfl _
+      refine ext _ _ rfl ?_
       ext : 2
       exact eq_of_heq h₁.2)
 
@@ -134,10 +134,10 @@ theorem eqId_iff_eq : A.EqId ↔ A.1 = Δ := by
     rcases A with ⟨_, ⟨f, hf⟩⟩
     simp only at h
     subst h
-    refine' ext _ _ rfl _
-    · haveI := hf
-      simp only [eqToHom_refl, comp_id]
-      exact eq_id_of_epi f
+    refine ext _ _ rfl ?_
+    haveI := hf
+    simp only [eqToHom_refl, comp_id]
+    exact eq_id_of_epi f
 #align simplicial_object.splitting.index_set.eq_id_iff_eq SimplicialObject.Splitting.IndexSet.eqId_iff_eq
 
 theorem eqId_iff_len_eq : A.EqId ↔ A.1.unop.len = Δ.unop.len := by

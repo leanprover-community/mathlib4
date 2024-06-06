@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Bhavik Mehta, Eric Wieser
 -/
 
-import Mathlib.Data.Finset.Basic
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Order.LocallyFinite
+import Mathlib.Data.Finset.Basic
+import Mathlib.Order.Interval.Finset.Defs
 
 /-! # Antidiagonal with values in general types
 
@@ -75,7 +75,7 @@ instance [AddMonoid A] : Subsingleton (HasAntidiagonal A) :=
 -- when the decidability instances obsucate Lean
 lemma hasAntidiagonal_congr (A : Type*) [AddMonoid A]
     [H1 : HasAntidiagonal A] [H2 : HasAntidiagonal A] :
-    H1.antidiagonal = H2.antidiagonal := by congr!
+    H1.antidiagonal = H2.antidiagonal := by congr!; apply Subsingleton.elim
 
 theorem swap_mem_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} {xy : A × A}:
     xy.swap ∈ antidiagonal n ↔ xy ∈ antidiagonal n := by
@@ -99,7 +99,7 @@ variable [AddCancelMonoid A] [HasAntidiagonal A] {p q : A × A} {n : A}
 See also `Finset.antidiagonal_congr'`. -/
 theorem antidiagonal_congr (hp : p ∈ antidiagonal n) (hq : q ∈ antidiagonal n) :
     p = q ↔ p.1 = q.1 := by
-  refine' ⟨congr_arg Prod.fst, fun h ↦ Prod.ext h ((add_right_inj q.fst).mp _)⟩
+  refine ⟨congr_arg Prod.fst, fun h ↦ Prod.ext h ((add_right_inj q.fst).mp ?_)⟩
   rw [mem_antidiagonal] at hp hq
   rw [hq, ← h, hp]
 #align finset.nat.antidiagonal_congr Finset.antidiagonal_congr

@@ -40,8 +40,6 @@ their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter
 A few lemmas requiring heavier imports are in `Mathlib/Data/RCLike/Lemmas.lean`.
 -/
 
-open BigOperators
-
 section
 
 local notation "𝓚" => algebraMap ℝ _
@@ -213,7 +211,7 @@ theorem ofReal_sub (r s : ℝ) : ((r - s : ℝ) : K) = r - s :=
 
 @[simp, rclike_simps, norm_cast]
 theorem ofReal_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
-    ((∑ i in s, f i : ℝ) : K) = ∑ i in s, (f i : K) :=
+    ((∑ i ∈ s, f i : ℝ) : K) = ∑ i ∈ s, (f i : K) :=
   map_sum (algebraMap ℝ K) _ _
 #align is_R_or_C.of_real_sum RCLike.ofReal_sum
 
@@ -235,7 +233,7 @@ theorem ofReal_pow (r : ℝ) (n : ℕ) : ((r ^ n : ℝ) : K) = (r : K) ^ n :=
 
 @[simp, rclike_simps, norm_cast]
 theorem ofReal_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
-    ((∏ i in s, f i : ℝ) : K) = ∏ i in s, (f i : K) :=
+    ((∏ i ∈ s, f i : ℝ) : K) = ∏ i ∈ s, (f i : K) :=
   map_prod (algebraMap ℝ K) _ _
 #align is_R_or_C.of_real_prod RCLike.ofReal_prod
 
@@ -398,8 +396,10 @@ theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(r
   tfae_have 4 → 3
   · intro h
     conv_rhs => rw [← re_add_im z, h, ofReal_zero, zero_mul, add_zero]
-  tfae_have 3 → 2; exact fun h => ⟨_, h⟩
-  tfae_have 2 → 1; exact fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
+  tfae_have 3 → 2
+  · exact fun h => ⟨_, h⟩
+  tfae_have 2 → 1
+  · exact fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
   tfae_finish
 #align is_R_or_C.is_real_tfae RCLike.is_real_TFAE
 
@@ -876,6 +876,19 @@ lemma nonpos_iff_exists_ofReal : z ≤ 0 ↔ ∃ x ≤ (0 : ℝ), x = z := by
 lemma neg_iff_exists_ofReal : z < 0 ↔ ∃ x < (0 : ℝ), x = z := by
   simp_rw [neg_iff (K := K), ext_iff (K := K)]; aesop
 
+@[simp]
+lemma ofReal_le_ofReal {x y : ℝ} : (x : K) ≤ (y : K) ↔ x ≤ y := by
+  rw [le_iff_re_im]
+  simp
+
+@[simp]
+lemma ofReal_nonneg {x : ℝ} : 0 ≤ (x : K) ↔ 0 ≤ x := by
+  rw [← ofReal_zero, ofReal_le_ofReal]
+
+@[simp]
+lemma ofReal_nonpos {x : ℝ} : (x : K) ≤ 0 ↔ x ≤ 0 := by
+  rw [← ofReal_zero, ofReal_le_ofReal]
+
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
 
@@ -987,7 +1000,7 @@ theorem reCLM_apply : ((reCLM : K →L[ℝ] ℝ) : K → ℝ) = re :=
   rfl
 #align is_R_or_C.re_clm_apply RCLike.reCLM_apply
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_re : Continuous (re : K → ℝ) :=
   reCLM.continuous
 #align is_R_or_C.continuous_re RCLike.continuous_re
@@ -1019,7 +1032,7 @@ theorem imCLM_apply : ((imCLM : K →L[ℝ] ℝ) : K → ℝ) = im :=
   rfl
 #align is_R_or_C.im_clm_apply RCLike.imCLM_apply
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_im : Continuous (im : K → ℝ) :=
   imCLM.continuous
 #align is_R_or_C.continuous_im RCLike.continuous_im

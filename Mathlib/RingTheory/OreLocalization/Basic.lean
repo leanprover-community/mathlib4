@@ -114,7 +114,7 @@ theorem oreDiv_eq_iff {r₁ r₂ : R} {s₁ s₂ : S} :
 protected theorem expand (r : R) (s : S) (t : R) (hst : (s : R) * t ∈ S) :
     r /ₒ s = r * t /ₒ ⟨s * t, hst⟩ := by
   apply Quotient.sound
-  refine' ⟨s, t * s, _, _⟩ <;> dsimp <;> rw [mul_assoc]
+  refine ⟨s, t * s, ?_, ?_⟩ <;> dsimp <;> rw [mul_assoc]
 #align ore_localization.expand OreLocalization.expand
 
 /-- A fraction is equal to its expansion by a factor from s. -/
@@ -449,8 +449,7 @@ instance : CommMonoid R[S⁻¹] :=
 variable (R S)
 
 /-- The morphism `numeratorHom` is a monoid localization map in the case of commutative `R`. -/
-protected def localizationMap : S.LocalizationMap R[S⁻¹]
-    where
+protected def localizationMap : S.LocalizationMap R[S⁻¹] where
   toFun := numeratorHom
   map_one' := rfl
   map_mul' r₁ r₂ := by simp
@@ -636,11 +635,11 @@ protected theorem add_assoc (x y z : R[S⁻¹]) : x + y + z = x + (y + z) := by
       ← OreLocalization.expand', Subtype.coe_eq_of_eq_mk ha, ← OreLocalization.expand]
     apply OreLocalization.expand'
   · rcases oreCondition (sd : R) (sa * sc) with ⟨re, _, _⟩
-    · simp_rw [← Submonoid.coe_mul] at hb hc hd
-      rw [← mul_assoc, Subtype.coe_eq_of_eq_mk hc]
-      rw [← OreLocalization.expand, Subtype.coe_eq_of_eq_mk hd, ← mul_assoc, ←
-        OreLocalization.expand, Subtype.coe_eq_of_eq_mk hb]
-      apply OreLocalization.expand
+    simp_rw [← Submonoid.coe_mul] at hb hc hd
+    rw [← mul_assoc, Subtype.coe_eq_of_eq_mk hc]
+    rw [← OreLocalization.expand, Subtype.coe_eq_of_eq_mk hd, ← mul_assoc, ←
+      OreLocalization.expand, Subtype.coe_eq_of_eq_mk hb]
+    apply OreLocalization.expand
 #align ore_localization.add_assoc OreLocalization.add_assoc
 
 private def zero : R[S⁻¹] :=
@@ -922,13 +921,14 @@ protected theorem inv_zero : (0 : R[R⁰⁻¹])⁻¹ = 0 := by
   simp
 #align ore_localization.inv_zero OreLocalization.inv_zero
 
-instance divisionRing : DivisionRing R[R⁰⁻¹] :=
-  { OreLocalization.nontrivial,
-    OreLocalization.inv',
-    OreLocalization.ring with
-    mul_inv_cancel := OreLocalization.mul_inv_cancel
-    inv_zero := OreLocalization.inv_zero
-    qsmul := qsmulRec _ }
+instance divisionRing : DivisionRing R[R⁰⁻¹] where
+  __ := ring
+  __ := nontrivial
+  __ := inv'
+  mul_inv_cancel := OreLocalization.mul_inv_cancel
+  inv_zero := OreLocalization.inv_zero
+  nnqsmul := _
+  qsmul := _
 
 end DivisionRing
 
