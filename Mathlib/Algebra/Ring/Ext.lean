@@ -170,8 +170,10 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
 
 theorem toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
-  intro _ _ _
-  ext <;> congr
+  intro _ _ h
+  ext x y
+  · exact congrArg (·.toAdd.add x y) h
+  · exact congrArg (·.toMul.mul x y) h
 
 theorem ext_iff {inst₁ inst₂ : NonAssocSemiring R} :
     inst₁ = inst₂ ↔
@@ -230,8 +232,11 @@ theorem toNonUnitalSemiring_injective :
 
 theorem toNonUnitalNonAssocring_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
-  intro _ _ _
-  ext <;> congr
+  intro _ _ h
+
+  ext x y
+  · exact congrArg (·.toAdd.add x y) h
+  · exact congrArg (·.toMul.mul x y) h
 
 theorem ext_iff {inst₁ inst₂ : NonUnitalRing R} :
     inst₁ = inst₂ ↔
@@ -250,17 +255,16 @@ TODO consider relocating these lemmas. -/
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
     (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one)) :
     inst₁ = inst₂ := by
-  have : inst₁.toAddMonoidWithOne = inst₂.toAddMonoidWithOne :=
+  have h : inst₁.toAddMonoidWithOne = inst₂.toAddMonoidWithOne :=
     AddMonoidWithOne.ext h_add h_one
-  have : inst₁.toNatCast = inst₂.toNatCast := congrArg (·.toNatCast) this
+  injection h
   have h_group : inst₁.toAddGroup = inst₂.toAddGroup := by ext : 1; exact h_add
-  -- Extract equality of necessary substructures from h_group
-  injection h_group with h_group; injection h_group
   have : inst₁.toIntCast.intCast = inst₂.toIntCast.intCast := by
     funext n; cases n with
     | ofNat n   => rewrite [Int.ofNat_eq_coe, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
     | negSucc n => rewrite [inst₁.intCast_negSucc, inst₂.intCast_negSucc]; congr
-  rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
+  rcases inst₁ with @⟨_, _, _, _, _, ⟨⟩⟩
+  rcases inst₂ with @⟨_, _, _, _, _, ⟨⟩⟩
   congr
 
 @[ext] theorem AddCommGroupWithOne.ext ⦃inst₁ inst₂ : AddCommGroupWithOne R⦄
@@ -300,8 +304,10 @@ theorem toNonAssocSemiring_injective :
 
 theorem toNonUnitalNonAssocring_injective :
     Function.Injective (@toNonUnitalNonAssocRing R) := by
-  intro _ _ _
-  ext <;> congr
+  intro _ _ h
+  ext x y
+  · exact congrArg (·.toAdd.add x y) h
+  · exact congrArg (·.toMul.mul x y) h
 
 theorem ext_iff {inst₁ inst₂ : NonAssocRing R} :
     inst₁ = inst₂ ↔
@@ -379,8 +385,10 @@ theorem toNonUnitalRing_injective :
 
 theorem toNonAssocRing_injective :
     Function.Injective (@toNonAssocRing R) := by
-  intro _ _ _
-  ext <;> congr
+  intro _ _ h
+  ext x y
+  · exact congrArg (·.toAdd.add x y) h
+  · exact congrArg (·.toMul.mul x y) h
 
 theorem toSemiring_injective :
     Function.Injective (@toSemiring R) := by

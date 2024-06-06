@@ -76,9 +76,9 @@ instance instAddCommGroup [AddCommGroup α] : AddCommGroup αᵐᵒᵖ :=
     (fun _ _ => rfl) fun _ _ => rfl
 
 instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne αᵐᵒᵖ where
-  toAddMonoidWithOne := instAddMonoidWithOne
+  toAddGroup := instAddGroup
+  __ := instAddMonoidWithOne
   toIntCast := instIntCast
-  __ := instAddGroup
   intCast_ofNat n := show op ((n : ℤ) : α) = op (n : α) by rw [Int.cast_natCast]
   intCast_negSucc n := show op _ = op (-unop (op ((n + 1 : ℕ) : α))) by simp
 
