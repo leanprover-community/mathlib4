@@ -56,6 +56,7 @@ theorem map₂_le {f : M →ₗ[R] N →ₗ[R] P} {p : Submodule R M} {q : Submo
 #align submodule.map₂_le Submodule.map₂_le
 
 variable (R)
+set_option linter.multiGoal false in
 theorem map₂_span_span (f : M →ₗ[R] N →ₗ[R] P) (s : Set M) (t : Set N) :
     map₂ f (span R s) (span R t) = span R (Set.image2 (fun m n => f m n) s t) := by
   apply le_antisymm
