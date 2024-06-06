@@ -6,6 +6,7 @@ import Mathlib.CategoryTheory.GroupObjects.PreservesFiniteProducts
 import Mathlib.CategoryTheory.GroupObjects.Bicategory
 import Mathlib.CategoryTheory.Bicategory.Adjunction
 import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 
 universe u v u' v' u'' v''
 
@@ -102,10 +103,13 @@ local instance : PreservesFiniteProducts (lim : (J' ⥤ C) ⥤ C) := limPreserve
 variable (C J')
 
 @[simp]
-abbrev FunctorsAsObj : {C : Cat // HasFiniteProducts C} := ⟨Cat.of (J' ⥤ C), sorry⟩
+abbrev FunctorsAsObj : {C : Cat // HasFiniteProducts C} :=
+  ⟨Cat.of (J' ⥤ C), functorCategoryHasFiniteProducts⟩
 
 @[simp]
-abbrev CatAsObj : {C : Cat // HasFiniteProducts C} := ⟨Cat.of (ULift.{max u v} C), sorry⟩
+abbrev CatAsObj : {C : Cat // HasFiniteProducts C} :=
+  ⟨Cat.of (ULift.{max u v} C),
+  { out := fun _ ↦ Adjunction.hasLimitsOfShape_of_equivalence ULift.equivalence.inverse}⟩
 
 abbrev LimAs1Map : FunctorsAsObj C J' ⟶ CatAsObj C := by
   have : PreservesFiniteProducts (lim : (J' ⥤ C) ⥤ C) := inferInstance
@@ -118,19 +122,51 @@ abbrev ConstAs1Map : CatAsObj C ⟶ FunctorsAsObj C J' := by
   refine ⟨ULift.equivalence.inverse ⋙ Functor.const J', Nonempty.intro
   (Limits.compPreservesFiniteProducts _ _)⟩
 
-@[simp]
 def constLimAdj : Bicategory.Adjunction (B := {C : Cat // HasFiniteProducts C})
+    (a := ⟨Cat.of (ULift.{max u v} C),
+    {out := fun _ ↦ Adjunction.hasLimitsOfShape_of_equivalence ULift.equivalence.inverse}⟩)
+    (b := ⟨Cat.of (J' ⥤ C), functorCategoryHasFiniteProducts⟩)
     (ConstAs1Map C J') (LimAs1Map C J') where
-  unit := by
-    simp only [CatAsObj, FunctorsAsObj, ConstAs1Map, ULift.equivalence_inverse]
-    refine ?_ ≫ (Limits.constLimAdj (J := J') (C := C)).unit
-  counit := sorry
-  left_triangle := sorry
-  right_triangle := sorry
+  unit := (Adjunction.comp ULift.equivalence.symm.toAdjunction Limits.constLimAdj).unit
+  counit := (Adjunction.comp ULift.equivalence.symm.toAdjunction Limits.constLimAdj).counit
+  left_triangle := by
+    simp only [CatAsObj, FunctorsAsObj, ConstAs1Map,
+      Bicategory.leftZigzag, Equivalence.symm_functor, Equivalence.symm_inverse]
+    simp only [Mathlib.Tactic.BicategoryCoherence.bicategoricalComp,
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', Bicategory.whiskerRight_comp,
+      Bicategory.id_whiskerRight, Category.id_comp, Iso.inv_hom_id, Category.comp_id]
+    simp only [Bicategory.whiskerRight, Bicategory.associator, FullSubcategory.isoOfAmbientIso,
+      FunctorsAsObj, CatAsObj, Bicategory.whiskerLeft,
+      Bicategory.leftUnitor, Bicategory.rightUnitor]
+    simp only [Functor.associator, Functor.comp_obj, Functor.leftUnitor, Functor.rightUnitor]
+    erw [Category.id_comp]
+    erw [Adjunction.left_triangle (Adjunction.comp ULift.equivalence.symm.toAdjunction
+      Limits.constLimAdj)]
+    change (_ : NatTrans _ _) = _
+    ext
+    erw [NatTrans.comp_app, Category.id_comp]; rfl
+  right_triangle := by
+    simp only [CatAsObj, FunctorsAsObj, ConstAs1Map,
+      Bicategory.rightZigzag, Equivalence.symm_functor, Equivalence.symm_inverse]
+    simp only [Mathlib.Tactic.BicategoryCoherence.bicategoricalComp,
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', Bicategory.whiskerRight_comp,
+      Bicategory.id_whiskerRight, Category.id_comp, Iso.inv_hom_id, Category.comp_id]
+    simp only [Bicategory.whiskerRight, Bicategory.associator, FullSubcategory.isoOfAmbientIso,
+      FunctorsAsObj, CatAsObj, Bicategory.whiskerLeft,
+      Bicategory.leftUnitor, Bicategory.rightUnitor]
+    simp only [Functor.associator, Functor.comp_obj, Functor.leftUnitor, Functor.rightUnitor]
+    erw [Category.id_comp]
+    erw [Adjunction.right_triangle (Adjunction.comp ULift.equivalence.symm.toAdjunction
+      Limits.constLimAdj)]
+    change (_ : NatTrans _ _) = _
+    ext
+    erw [NatTrans.comp_app, Category.id_comp]; rfl
 
 
 
-end
+end Bicategory
 
 
 
