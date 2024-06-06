@@ -109,7 +109,7 @@ def pendingActionableSynthMVar (binder : TSyntax ``bracketedBinder) :
   for mvarId in pendingMVars.reverse do
     let some decl ← Term.getSyntheticMVarDecl? mvarId | continue
     match decl.kind with
-    | .typeClass =>
+    | .typeClass _ =>
       let ty ← instantiateMVars (← mvarId.getType)
       if !ty.hasExprMVar then
         return mvarId
