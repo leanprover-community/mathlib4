@@ -17,12 +17,12 @@ def compare_counts(base_file, head_file, changed_files_txt):
     with open(base_file, 'r') as f:
         base_counts = json.load(f)
 
-    # Load the changed files, filter for `.lean` files
+    # Load the changed files
     with open(changed_files_txt, 'r') as f:
-        changed_files = [line.strip() for line in f if line.endswith('.lean')]
+        changed_files = [line.strip() for line in f]
 
-    # Replace / with . in the path, and drop the .lean extension
-    changed_files = [file.replace('/', '.').replace('.lean', '') for file in changed_files]
+    # Filter for .lean files, replace / with . in the path, and drop the .lean extension
+    changed_files = [file.replace('/', '.').replace('.lean', '') for file in changed_files if file.endswith('.lean')]
 
     # Compute the number of new files
     new_files = len(set(head_counts.keys()) - set(base_counts.keys()))
@@ -31,13 +31,14 @@ def compare_counts(base_file, head_file, changed_files_txt):
     changes = []
     for file in changed_files:
         base_count = base_counts.get(file, 0)
-        if base_count > 0 and head_count < base_count:  # Dependencies went down
-            diff = base_count - head_count
-            percent = (diff / base_count) * 100
+        head_count = head_counts.get(file, 0)
+        if base_count == 0: # New file
+            continue
+        diff = head_count - base_count
+        percent = (diff / base_count) * 100
+        if diff < 0:  # Dependencies went down
             changes.append((file, base_count, head_count, diff, percent))
-        elif head_count > base_count + new_files:  # Dependencies went up by more than the number of new files
-            diff = head_count - base_count
-            percent = (diff / base_count) * 100 if base_count > 0 else 100
+        elif diff > new_files:  # Dependencies went up by more than the number of new files
             changes.append((file, base_count, head_count, diff, percent))
 
     # Sort the changes by the absolute value of the percentage change
@@ -64,6 +65,6 @@ def compare_counts(base_file, head_file, changed_files_txt):
 if __name__ == '__main__':
     base_file = sys.argv[1]
     head_file = sys.argv[2]
-    changed_files = sys.argv[3]
-    message = compare_counts(base_file, head_file, changed_files)
+    changed_files_txt = sys.argv[3]
+    message = compare_counts(base_file, head_file, changed_files_txt)
     print(message)

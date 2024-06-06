@@ -25,10 +25,10 @@ jobs:
         # If you have additional dependencies, install them here
 
     - name: Get changed files
-      id: get-changed-files
       run: |
         git fetch origin ${{ github.base_ref }}  # fetch the base branch
-        git diff --name-only origin/${{ github.base_ref }} > changed_files.txt  # get the list of changed files
+        git diff --name-only origin/${{ github.base_ref }}... > changed_files.txt  # get the list of changed files
+        cat changed_files.txt
 
     - name: Compute transitive imports
       run: |
