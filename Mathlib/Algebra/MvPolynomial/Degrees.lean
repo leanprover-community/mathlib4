@@ -55,8 +55,6 @@ noncomputable section
 
 open Set Function Finsupp AddMonoidAlgebra
 
-open BigOperators
-
 universe u v w
 
 variable {R : Type u} {S : Type v}
@@ -174,7 +172,7 @@ theorem le_degrees_add {p q : MvPolynomial σ R} (h : p.degrees.Disjoint q.degre
     contrapose! h
     rw [mem_support_iff] at hd
     refine ⟨j, ?_, j, ?_, rfl⟩
-    all_goals rw [mem_degrees]; refine' ⟨d, _, hj⟩; assumption
+    all_goals rw [mem_degrees]; refine ⟨d, ?_, hj⟩; assumption
 #align mv_polynomial.le_degrees_add MvPolynomial.le_degrees_add
 
 theorem degrees_add_of_disjoint [DecidableEq σ] {p q : MvPolynomial σ R}

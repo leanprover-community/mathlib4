@@ -305,6 +305,41 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
         assoc] }
 #align category_theory.oplax_functor.comp CategoryTheory.OplaxFunctor.comp
 
+@[simps]
+def map₂Iso {a b : B} {f g : a ⟶ b} (i : f ≅ g) : F.map f ≅ F.map g where
+  hom := F.map₂ i.hom
+  inv := F.map₂ i.inv
+  hom_inv_id := by rw [← map₂_comp, Iso.hom_inv_id, ← map₂_id]
+  inv_hom_id := by rw [← map₂_comp, Iso.inv_hom_id, ← map₂_id]
+
+@[simp]
+theorem map₂Iso_symm {a b : B} {f g : a ⟶ b} (i : f ≅ g) : F.map₂Iso i.symm = (F.map₂Iso i).symm :=
+  rfl
+
+@[simp]
+theorem map₂Iso_trans {a b : B} {f g h : a ⟶ b} (i : f ≅ g) (j : g ≅ h) :
+    F.map₂Iso (i ≪≫ j) = F.map₂Iso i ≪≫ F.map₂Iso j := by
+  ext; apply F.map₂_comp
+
+@[simp]
+theorem map₂Iso_refl {a b : B} (f : a ⟶ b) : F.map₂Iso (Iso.refl f) = Iso.refl (F.map f) :=
+  Iso.ext <| F.map₂_id f
+
+instance map₂_isIso {a b : B} {f g : a ⟶ b} (u : f ⟶ g) [IsIso u] : IsIso (F.map₂ u) :=
+  (F.map₂Iso (asIso u)).isIso_hom
+
+@[simp]
+theorem map₂_inv {a b : B} {f g : a ⟶ b} (u : f ⟶ g) [IsIso u] :
+    F.map₂ (inv u) = inv (F.map₂ u) := by
+  apply IsIso.eq_inv_of_hom_inv_id
+  rw [← F.map₂_comp]; simp only [IsIso.hom_inv_id, map₂_id]
+
+theorem map₂_hom_inv {a b : B} {f g : a ⟶ b} (u : f ⟶ g) [IsIso u] :
+    F.map₂ u ≫ F.map₂ (inv u) = 𝟙 (F.map f) := by simp
+
+theorem map₂_inv_hom {a b : B} {f g : a ⟶ b} (u : f ⟶ g) [IsIso u] :
+    F.map₂ (inv u) ≫ F.map₂ u = 𝟙 (F.map g) := by simp
+
 /-- A structure on an oplax functor that promotes an oplax functor to a pseudofunctor.
 See `Pseudofunctor.mkOfOplax`.
 -/

@@ -61,7 +61,7 @@ The proof concludes because characteristic polynomials are independent of the ch
 
 -/
 
-open scoped BigOperators Matrix
+open scoped Matrix
 
 namespace Matrix
 

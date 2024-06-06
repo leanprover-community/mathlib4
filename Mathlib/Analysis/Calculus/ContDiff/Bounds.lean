@@ -20,7 +20,7 @@ import Mathlib.Data.Nat.Choose.Multinomial
 
 noncomputable section
 
-open scoped Classical BigOperators NNReal Nat
+open scoped Classical NNReal Nat
 
 universe u uD uE uF uG
 

@@ -68,7 +68,7 @@ ones for lower semicontinuous functions using `OrderDual`.
 -/
 
 
-open Topology BigOperators ENNReal
+open Topology ENNReal
 
 open Set Function Filter
 

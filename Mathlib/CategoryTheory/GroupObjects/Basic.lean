@@ -1,4 +1,6 @@
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Limits.Fubini
+import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 universe u v
 
@@ -35,8 +37,7 @@ attribute [reassoc (attr := simp)] GroupObject.mul_assoc
 
 namespace GroupObject
 
-/-- The trivial group object. We later show this is initial in `GroupObject C`.
--/
+/-- The trivial group object. We later show this is a zero object in `GroupObject C`.-/
 @[simps]
 def trivial : GroupObject C where
   X := ⊤_ C
@@ -47,7 +48,7 @@ def trivial : GroupObject C where
 instance : Inhabited (GroupObject C) :=
   ⟨trivial C⟩
 
-instance : IsTerminal (trivial C).X := sorry
+instance : IsTerminal (trivial C).X := terminalIsTerminal
 
 variable {C}
 variable {G : GroupObject C}
@@ -74,12 +75,6 @@ theorem assoc_flip : prod.map (𝟙 _) G.mul ≫ G.mul =
   simp only [prod.associator_inv, mul_assoc, prod.associator_hom, prod.lift_map_assoc,
   Category.comp_id]
 
-/-
-theorem inv_unique (G : GroupObject C) {f : G.X ⟶ G.X}
-  (fleft : prod.lift f (𝟙 _) ≫ G.mul = 𝟙 _)
-  (fright : prod.lift (𝟙 _) f ≫ G.mul = 𝟙 _) : f = G.inv := sorry
--/
-
 /-- A morphism of group objects. -/
 @[ext]
 structure Hom (G H : GroupObject C) where
@@ -104,10 +99,12 @@ def comp {G H K : GroupObject C} (f : Hom G H) (g : Hom H K) : Hom G K where
   hom := f.hom ≫ g.hom
   inv_hom := by rw [← Category.assoc, f.inv_hom, Category.assoc, g.inv_hom, Category.assoc]
 
-instance : Category (GroupObject C) where
+instance instGroupObjectCat : Category (GroupObject C) where
   Hom G H := Hom G H
   id := id
   comp f g := comp f g
+
+#check instGroupObjectCat 
 
 -- Porting note: added, as `Hom.ext` does not apply to a morphism.
 @[ext]
@@ -181,13 +178,21 @@ instance uniqueHomFromTrivial (A : GroupObject C) : Unique (trivial C ⟶ A) whe
       mul_hom := by dsimp; simp [A.one_mul]; rw [Subsingleton.elim prod.snd]
       inv_hom := by
         dsimp; rw [Category.id_comp]
-        sorry
+        have : A.one ≫ A.inv = prod.lift (A.one ≫ A.inv) (CategoryStruct.id _ ) ≫
+          (prod.rightUnitor _).hom := by simp only [prod.rightUnitor_hom, limit.lift_π,
+            BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst]
+        rw [this, ← mul_one]
+        have : (prod.lift (A.one ≫ A.inv) (𝟙 (⊤_ C)) ≫ prod.map (𝟙 A.X) A.one) =
+          A.one ≫ prod.lift A.inv (CategoryStruct.id A.X) := by simp only [prod.lift_map,
+          Category.comp_id, Category.id_comp, prod.comp_lift]
+        rw [← Category.assoc, this, Category.assoc, mul_left_inv, ← Category.assoc,
+          Subsingleton.elim (A.one ≫ default) (CategoryStruct.id _), Category.id_comp]
+
     }
   uniq f := by
     ext; simp
     rw [← Category.id_comp f.hom]
     erw [f.one_hom]
--- Might have to put this one later, it needs G.one = G.one ≫ G.inv.
 
 instance uniqueHomToTrivial (A : GroupObject C) : Unique (A ⟶ trivial C) where
   default :=
@@ -198,7 +203,9 @@ instance uniqueHomToTrivial (A : GroupObject C) : Unique (A ⟶ trivial C) where
     simp only [trivial_X]
     exact inferInstance
 
-
+instance trivialIsZero : IsZero (trivial C) where
+  unique_to := fun _ ↦ Nonempty.intro inferInstance
+  unique_from := fun _ ↦ Nonempty.intro inferInstance
 
 /- The Yoneda embedding.-/
 

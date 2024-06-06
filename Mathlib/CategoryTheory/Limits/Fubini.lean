@@ -37,13 +37,14 @@ All statements have their counterpart for colimits.
 -/
 
 
-universe v u
+universe v u w₁ w₂
 
 open CategoryTheory
 
 namespace CategoryTheory.Limits
 
-variable {J K : Type v} [SmallCategory J] [SmallCategory K]
+variable {J : Type w₁} {K : Type w₂} [SmallCategory J] [SmallCategory K]
+--variable {J K : Type v} [SmallCategory J] [SmallCategory K]
 variable {C : Type u} [Category.{v} C]
 variable (F : J ⥤ K ⥤ C)
 
@@ -194,9 +195,9 @@ def coneOfConeUncurryIsLimit {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j
     intro k
     simp
   uniq s m w := by
-    refine' P.uniq
+    refine P.uniq
       { pt := s.pt
-        π := _ } m _
+        π := _ } m ?_
     rintro ⟨j, k⟩
     dsimp
     rw [← w j]
@@ -233,9 +234,9 @@ def coconeOfCoconeUncurryIsColimit {D : DiagramOfCocones F} (Q : ∀ j, IsColimi
     intro k
     simp
   uniq s m w := by
-    refine' P.uniq
+    refine P.uniq
       { pt := s.pt
-        ι := _ } m _
+        ι := _ } m ?_
     rintro ⟨j, k⟩
     dsimp
     rw [← w j]
@@ -504,7 +505,10 @@ end
 
 section
 
-variable [HasLimits C]
+
+variable [HasLimitsOfShape J C] [HasLimitsOfShape K C] [HasLimit (Prod.swap K J ⋙ G)]
+  [HasLimit G]
+
 
 -- Certainly one could weaken the hypotheses here.
 open CategoryTheory.prod
@@ -556,7 +560,8 @@ end
 
 section
 
-variable [HasColimits C]
+variable [HasColimitsOfShape J C] [HasColimitsOfShape K C] [HasColimit (Prod.swap K J ⋙ G)]
+  [HasColimit G]
 
 open CategoryTheory.prod
 

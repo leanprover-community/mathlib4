@@ -101,8 +101,6 @@ variable {p : ℕ} {R : Type*} {idx : Type*} [CommRing R]
 
 open scoped Witt
 
-open scoped BigOperators
-
 section PPrime
 
 variable (p) [hp : Fact p.Prime]

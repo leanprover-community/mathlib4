@@ -5,7 +5,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import ProofWidgets.Component.Panel.SelectionPanel
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.Algebra.Category.Ring.Basic
-
+import Mathlib.CategoryTheory.Limits.Fubini
 
 universe u v u' v' u'' v''
 
@@ -149,6 +149,29 @@ lemma inv_prodComparison_natTrans [IsIso (prodComparison F X Y)] [IsIso (prodCom
     prod.map (α.app X) (α.app Y) ≫ inv (prodComparison G X Y) := by
   rw [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq, prodComparison_natTrans]
 
+
+#exit
+
+variable {J : Type*} [CategoryTheory.SmallCategory J] [HasBinaryProducts C]
+
+example (F G : J ⥤ C) : Discrete WalkingPair ⥤ J ⥤ C := pair F G
+
+example (F G : J ⥤ C) [HasLimit F] [HasLimit G] [HasLimitsOfShape J C]
+    [HasLimitsOfShape (Discrete WalkingPair × J) C]
+    [HasLimit (pair F G ⋙ lim)] [HasLimit (uncurry.obj (pair F G))]
+    [HasLimitsOfShape (J × Discrete WalkingPair) C]
+    : HasLimit (pair F G) := by
+  have e₁ := limitFlipCompLimIsoLimitCompLim (pair F G)
+  have e₂ := limitUncurryIsoLimitCompLim (pair F G)
+  have f := HasLimit.isoOfEquivalence (G := uncurry.obj (pair F G))
+    (F := (Prod.braiding _ _).functor ⋙ uncurry.obj (pair F G)) _ (Iso.refl _)
+  have K := curry.obj ((Prod.braiding _ _).functor ⋙ uncurry.obj (pair F G))
+  have g := limitIsoLimitCurryCompLim ((Prod.braiding _ _).functor ⋙ uncurry.obj (pair F G))
+  have e₃ := limitUncurryIsoLimitCompLim (pair F G).flip
+
+
+
+
 end Limits
 
 end CategoryTheory
@@ -157,7 +180,7 @@ open CategoryTheory CategoryTheory.Limits TensorProduct
 
 namespace CommRingCat
 
-#exit 
+#exit
 
 section Coproduct
 

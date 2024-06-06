@@ -62,7 +62,7 @@ section dual
     obtain ⟨e, ⟨(heB'' : e ∉ _), heE⟩, heI⟩ := exists_of_ssubset hssu
     use e
     simp_rw [mem_diff, insert_subset_iff, and_iff_left heI, and_iff_right heE, and_iff_right hIE]
-    refine' ⟨by_contra (fun heX ↦ heB'' (hB''₁ ⟨_, heI⟩)), ⟨B'', hB'', _⟩⟩
+    refine ⟨by_contra (fun heX ↦ heB'' (hB''₁ ⟨?_, heI⟩)), ⟨B'', hB'', ?_⟩⟩
     · rw [hX]; exact ⟨heE, heX⟩
     rw [← union_singleton, disjoint_union_left, disjoint_singleton_left, and_iff_left heB'']
     exact disjoint_of_subset_left hB''₂.2 disjoint_compl_left
@@ -75,7 +75,7 @@ section dual
     · simp only [inter_subset_right, true_and]
       exact ⟨B', hB', disjoint_of_subset_left (inter_subset_left _ _) disjoint_sdiff_left⟩
     · rw [and_iff_right hI'X]
-      refine' disjoint_of_subset_right hB'IB _
+      refine disjoint_of_subset_right hB'IB ?_
       rw [disjoint_union_right, and_iff_left hI'B]
       exact disjoint_of_subset hI'X hI.subset disjoint_sdiff_right
     simp only [mem_setOf_eq, subset_inter_iff, and_imp, forall_exists_index]
@@ -105,7 +105,7 @@ section dual
 
     subst this
 
-    refine' subset_diff.mpr ⟨hJX, by_contra (fun hne ↦ _)⟩
+    refine subset_diff.mpr ⟨hJX, by_contra (fun hne ↦ ?_)⟩
     obtain ⟨e, heJ, heB'⟩ := not_disjoint_iff.mp hne
     obtain (heB'' | ⟨-,heX⟩ ) := hB₁I heB'
     · exact hdj.ne_of_mem heJ heB'' rfl

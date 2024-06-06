@@ -340,8 +340,6 @@ section Sum
 /-! ### Derivative of a finite sum of functions -/
 
 
-open BigOperators
-
 variable {ι : Type*} {u : Finset ι} {A : ι → E → F} {A' : ι → E →L[𝕜] F}
 
 @[fun_prop]

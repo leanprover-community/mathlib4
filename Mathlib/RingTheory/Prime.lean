@@ -22,8 +22,6 @@ variable {R : Type*} [CancelCommMonoidWithZero R]
 
 open Finset
 
-open BigOperators
-
 /-- If `x * y = a * ∏ i ∈ s, p i` where `p i` is always prime, then
   `x` and `y` can both be written as a divisor of `a` multiplied by
   a product over a subset of `s`  -/

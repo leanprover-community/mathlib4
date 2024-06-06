@@ -50,7 +50,7 @@ integrable, function space, l1
 noncomputable section
 
 open scoped Classical
-open Topology BigOperators ENNReal MeasureTheory NNReal
+open Topology ENNReal MeasureTheory NNReal
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
 

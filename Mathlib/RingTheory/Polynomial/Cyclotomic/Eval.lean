@@ -25,8 +25,6 @@ namespace Polynomial
 
 open Finset Nat
 
-open scoped BigOperators
-
 @[simp]
 theorem eval_one_cyclotomic_prime {R : Type*} [CommRing R] {p : ℕ} [hn : Fact p.Prime] :
     eval 1 (cyclotomic p R) = p := by

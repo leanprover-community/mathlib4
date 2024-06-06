@@ -32,8 +32,6 @@ This entire file is internal to the proof of Szemerédi Regularity Lemma.
 
 open Finset Fintype Function Real
 
-open BigOperators
-
 namespace SzemerediRegularity
 
 /-- Auxiliary function for Szemerédi's regularity lemma. Blowing up a partition of size `n` during

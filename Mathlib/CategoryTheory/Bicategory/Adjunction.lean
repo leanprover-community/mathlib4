@@ -5,6 +5,8 @@ Authors: Yuma Mizuno
 -/
 import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.CategoryTheory.Bicategory.Coherence
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.CategoryTheory.Coherence
 
 /-!
 # Adjunctions in bicategories
@@ -291,6 +293,72 @@ def mkOfAdjointifyCounit (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) : a
 end Equivalence
 
 end
+
+section Pseudofunctor
+
+noncomputable section
+
+universe w' v' u'
+
+variable {C : Type u'} [Bicategory.{w', v'} C]
+
+variable (f g)
+
+def Pseudofunctor.mapAdjunction (F : Pseudofunctor B C) (adj : Bicategory.Adjunction f g) :
+    Bicategory.Adjunction (F.map f) (F.map g) where
+  unit := (F.mapId a).inv ≫ (F.map₂ adj.unit) ≫ (F.mapComp f g).hom
+  counit := (F.mapComp g f).inv ≫ (F.map₂ adj.counit) ≫ (F.mapId b).hom
+  left_triangle := by
+    simp only [leftZigzag, comp_whiskerRight, whiskerLeft_comp]
+    have := F.map₂_whisker_right adj.unit f
+    apply_fun (fun x ↦ (F.mapComp (𝟙 a) f).inv ≫ x ≫ (F.mapComp (f ≫ g) f).hom) at this
+    simp only [assoc, Iso.inv_hom_id, comp_id, Iso.inv_hom_id_assoc] at this
+    rw [← this]
+    have := F.map₂_whisker_left f adj.counit
+    apply_fun (fun x ↦ (F.mapComp f (g ≫ f)).inv ≫ x ≫ (F.mapComp f (𝟙 b)).hom) at this
+    simp only [assoc, Iso.inv_hom_id, comp_id, Iso.inv_hom_id_assoc] at this
+    rw [← this]
+    simp only [bicategoricalComp, assoc, Iso.inv_hom_id, comp_id,
+      Iso.inv_hom_id_assoc, Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', whiskerRight_comp,
+      id_whiskerRight, id_comp]
+    have := F.map₂_associator f g f
+    repeat (rw [← Category.assoc] at this)
+    rw [← Category.assoc ((F.mapId a).inv ▷ F.map f) _ _]
+    rw [← Category.assoc _ (F.map₂ (adj.unit ▷ f)) _]
+    rw [← Category.assoc (F.mapComp (f ≫ g) f).hom _ _]
+    rw [← Category.assoc _ ((α_ (F.map f) (F.map g) (F.map f)).hom) _]
+    rw [← Category.assoc _ (F.map f ◁ (F.mapComp g f).inv) _]
+    rw [← Category.assoc _ ((F.mapComp f (g ≫ f)).inv) _]
+    rw [← this]
+    simp only [Category.assoc]
+    rw [← Category.assoc ((F.mapId a).inv ▷ F.map f) _ _]
+    rw [← Category.assoc (F.map₂ (adj.unit ▷ f)) _ _]
+    rw [← Category.assoc _ (F.map₂ (f ◁ adj.counit)) _]
+    rw [← F.map₂_comp, ← F.map₂_comp]
+    have := adj.left_triangle
+    simp only [leftZigzag, bicategoricalComp,
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
+      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom', whiskerRight_comp,
+      id_whiskerRight, id_comp, Iso.inv_hom_id, comp_id] at this
+    rw [← Category.assoc] at this
+    rw [this]
+    simp only [Pseudofunctor.map₂_comp, assoc, Iso.inv_hom_id_assoc,
+      inv_hom_whiskerRight_assoc]
+    simp only [Pseudofunctor.map₂_left_unitor, assoc, Iso.inv_hom_id_assoc,
+      inv_hom_whiskerRight_assoc, Iso.cancel_iso_hom_left]
+    have : IsIso (F.map₂ (ρ_ f).hom) := OplaxFunctor.map₂_isIso F.toOplax _
+    have : F.map₂ (ρ_ f).inv = inv (F.map₂ (ρ_ f).hom) := by
+      rw [← IsIso.Iso.inv_hom]
+      exact F.toOplax.map₂_inv (ρ_ f).hom
+    rw [this]
+    simp only [Pseudofunctor.map₂_right_unitor, IsIso.inv_comp, IsIso.Iso.inv_hom, inv_whiskerLeft,
+      assoc, Iso.inv_hom_id_assoc, whiskerLeft_inv_hom, comp_id]
+  right_triangle := sorry
+
+end
+
+end Pseudofunctor
 
 end Bicategory
 

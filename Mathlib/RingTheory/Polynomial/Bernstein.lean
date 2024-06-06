@@ -40,7 +40,7 @@ open Nat (choose)
 
 open Polynomial (X)
 
-open scoped BigOperators Polynomial
+open scoped Polynomial
 
 variable (R : Type*) [CommRing R]
 
