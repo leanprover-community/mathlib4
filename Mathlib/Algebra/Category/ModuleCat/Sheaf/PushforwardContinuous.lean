@@ -32,6 +32,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 /-- The pushforward of sheaves of modules that is induced by a continuous functor `F`
 and a morphism of sheaves of rings `φ : S ⟶ (F.sheafPushforwardContinuous RingCat J K).obj R`. -/
+@[simps]
 noncomputable def pushforward : SheafOfModules.{v} R ⥤ SheafOfModules.{v} S where
   obj M :=
     { val := (PresheafOfModules.pushforward φ.val).obj M.val
