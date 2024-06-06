@@ -355,7 +355,7 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
 
 /-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)`. -/
 theorem determinant (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
-    (of v).nums n * (of v).dens (n + 1) -  (of v).dens n * (of v).nums (n + 1) = (-1) ^ (n + 1) :=
+    (of v).nums n * (of v).dens (n + 1) - (of v).dens n * (of v).nums (n + 1) = (-1) ^ (n + 1) :=
   determinant_aux <| Or.inr <| not_terminatedAt_n
 #align generalized_continued_fraction.determinant GCF.determinant
 
