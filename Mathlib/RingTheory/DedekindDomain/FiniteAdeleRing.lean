@@ -336,6 +336,102 @@ instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
 lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : (a₁ : K_hat R K) = a₂) : a₁ = a₂ :=
   Subtype.ext h
 
+instance : Algebra (FiniteAdeleRing R K) (K_hat R K) := Algebra.ofSubsemiring _
+
+instance : Algebra R (FiniteAdeleRing R K) :=
+  RingHom.toAlgebra ((algebraMap K (FiniteAdeleRing R K)).comp (algebraMap R K))
+
+@[simp]
+lemma mem_FiniteAdeleRing (x : K_hat R K) : x ∈ (
+    { carrier := {x : K_hat R K | x.IsFiniteAdele}
+      mul_mem' := mul
+      one_mem' := one
+      add_mem' := add
+      zero_mem' := zero
+      algebraMap_mem' := algebraMap'
+    } : Subalgebra K (K_hat R K)) ↔ {v | x v ∉ adicCompletionIntegers K v}.Finite := Iff.rfl
+
+instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
+  smul rhat fadele := ⟨fun v ↦ rhat v * fadele.1 v, by
+    have this := fadele.2
+    rw [mem_FiniteAdeleRing] at this ⊢
+    apply Finite.subset this (fun v hv ↦ ?_)
+    rw [mem_setOf_eq, mem_adicCompletionIntegers] at hv ⊢
+    contrapose! hv
+    rw [map_mul]
+    exact mul_le_one₀ (rhat v).2 hv
+    ⟩
+  toFun r := ⟨r, by
+    have : ∀ v, (r : K_hat R K) v = (r v : adicCompletion K v) := fun v ↦ rfl
+    have : ∀ v, (r v : adicCompletion K v) ∈ adicCompletionIntegers K v := fun v ↦ (r v).2
+    simp_all
+  ⟩
+  map_one' := by ext; rfl
+  map_mul' _ _ := by ext; rfl
+  map_zero' := by ext; rfl
+  map_add' _ _ := by ext; rfl
+  commutes' _ _ := mul_comm _ _
+  smul_def' r x := rfl
+
+section Topology
+
+open Classical
+
+open nonZeroDivisors
+
+open scoped algebraMap -- coercion from R to FiniteAdeleRing R K
+
+lemma bar (a : FiniteAdeleRing R K) : ∃ (b : R⁰) (c : R_hat R K), a * (b : R) = c := by
+  sorry
+
+#check Submodule.pointwiseMulActionWithZero
+
+open scoped Pointwise
+
+theorem submodulesRingBasis : SubmodulesRingBasis
+    (fun (r : R⁰) ↦ Submodule.span (R_hat R K) {((r : R) : FiniteAdeleRing R K)}) where
+  inter i j := ⟨i * j, by
+    push_cast
+    simp only [le_inf_iff, Submodule.span_singleton_le_iff_mem, Submodule.mem_span_singleton]
+    refine ⟨⟨((j : R) : R_hat R K), ?_⟩, ⟨((i : R) : R_hat R K), rfl⟩⟩
+    rw [mul_comm]
+    rfl
+    ⟩
+  leftMul a r := by
+    rcases bar R K a with ⟨b, c, h⟩
+    use r * b
+    rintro x ⟨m, hm, rfl⟩
+    simp only [Submonoid.coe_mul, SetLike.mem_coe] at hm
+    rw [Submodule.mem_span_singleton] at hm ⊢
+    rcases hm with ⟨n, rfl⟩
+    simp only [LinearMapClass.map_smul, DistribMulAction.toLinearMap_apply, smul_eq_mul]
+    use n * c
+    push_cast
+    rw [mul_left_comm, h, mul_comm _ (c : FiniteAdeleRing R K),
+      Algebra.smul_def', Algebra.smul_def', ← mul_assoc]
+    rfl
+  mul r := ⟨r, by
+    intro x hx
+    rw [mem_mul] at hx
+    rcases hx with ⟨a, ha, b, hb, rfl⟩
+    simp only [SetLike.mem_coe, Submodule.mem_span_singleton] at ha hb ⊢
+    rcases ha with ⟨m, rfl⟩
+    rcases hb with ⟨n, rfl⟩
+    use m * n * (r : R)
+    simp only [Algebra.smul_def', map_mul]
+    rw [mul_mul_mul_comm, mul_assoc]
+    rfl
+  ⟩
+
+instance : Nonempty (R⁰) := ⟨1, Submonoid.one_mem R⁰⟩
+
+instance : TopologicalSpace (FiniteAdeleRing R K) :=
+  SubmodulesRingBasis.topology (submodulesRingBasis R K)
+
+#synth TopologicalRing (FiniteAdeleRing R K) -- works
+
+end Topology
+
 end FiniteAdeleRing
 
 end DedekindDomain
