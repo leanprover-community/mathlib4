@@ -138,7 +138,6 @@ lemma ceilRoot_ne_zero : ceilRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   split_ifs with h
   · obtain rfl | rfl := h <;> simp
   refine prod_pow_factorization_eq_self fun p hp ↦ ?_
-  #adaptation_note /--  nightly-2024-06-05: needed to specify `p ∣ a ∧ ¬a = 0` -/
   have : p.Prime ∧ p ∣ a ∧ ¬a = 0 := by simpa using support_ceilDiv_subset hp
   exact this.1
 
