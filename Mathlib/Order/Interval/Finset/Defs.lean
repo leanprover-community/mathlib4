@@ -19,7 +19,7 @@ sense of `Icc`/`Ico`/`Ioc`/`Ioo` as lists, multisets, or finsets.
 Further, if the order is bounded above (resp. below), then we can also make sense of the
 "unbounded" intervals `Ici`/`Ioi` (resp. `Iic`/`Iio`).
 
-Many theorems about these intervals can be found in `Order.Interval.Finset.Basic`.
+Many theorems about these intervals can be found in `Mathlib.Order.Interval.Finset.Basic`.
 
 ## Examples
 
@@ -891,12 +891,7 @@ attribute [local simp] Option.mem_iff
 
 private lemma aux (x : α) (p : α → Prop) :
     (∃ a : α, p a ∧ Option.some a = Option.some x) ↔ p x := by
-  -- Porting note: `simp [Option.some_inj]` has no effect
-  constructor
-  · rintro ⟨x', hx, hx'⟩
-    obtain rfl := Option.some_inj.mp hx'
-    exact hx
-  · exact fun h => ⟨x, h, rfl⟩
+  simp [Option.some_inj]
 
 instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
   finsetIcc a b :=
