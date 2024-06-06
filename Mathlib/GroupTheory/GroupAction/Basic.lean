@@ -412,7 +412,7 @@ theorem orbitRel_apply {a b : α} : (orbitRel G α).Rel a b ↔ a ∈ orbit G b 
 #align add_action.orbit_rel_apply AddAction.orbitRel_apply
 
 @[to_additive]
-lemma orbitRel_r_apply {a b : α} : @Setoid.r _ (orbitRel G _) a b ↔ a ∈ orbit G b :=
+lemma orbitRel_r_apply {a b : α} : (orbitRel G _).r a b ↔ a ∈ orbit G b :=
   Iff.rfl
 
 @[to_additive]
