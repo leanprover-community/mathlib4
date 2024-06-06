@@ -36,8 +36,6 @@ especially when defining iterated derivatives.
 
 open Function Fin Set
 
-open BigOperators
-
 universe u v w w₁ w₁' w₂ w₃ w₄
 
 variable {R : Type u} {ι : Type v} {n : ℕ} {M : Fin n.succ → Type w} {M₁ : ι → Type w₁}
@@ -80,8 +78,8 @@ instance funLike : FunLike (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i
   coe f := f.toFun
   coe_injective' _ _ h := toMultilinearMap_injective <| MultilinearMap.coe_injective h
 
-instance continuousMapClass : ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂
-    where
+instance continuousMapClass :
+    ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   map_continuous := ContinuousMultilinearMap.cont
 #align continuous_multilinear_map.continuous_map_class ContinuousMultilinearMap.continuousMapClass
 
@@ -221,7 +219,7 @@ def applyAddHom (m : ∀ i, M₁ i) : ContinuousMultilinearMap R M₁ M₂ →+ 
 
 @[simp]
 theorem sum_apply {α : Type*} (f : α → ContinuousMultilinearMap R M₁ M₂) (m : ∀ i, M₁ i)
-    {s : Finset α} : (∑ a in s, f a) m = ∑ a in s, f a m :=
+    {s : Finset α} : (∑ a ∈ s, f a) m = ∑ a ∈ s, f a m :=
   map_sum (applyAddHom m) f s
 #align continuous_multilinear_map.sum_apply ContinuousMultilinearMap.sum_apply
 
@@ -382,7 +380,7 @@ def domDomCongrEquiv {ι' : Type*} (e : ι ≃ ι') :
 #align continuous_multilinear_map.dom_dom_congr_equiv_symm_apply ContinuousMultilinearMap.domDomCongrEquiv_symm_apply
 
 section linearDeriv
-open scoped BigOperators
+
 variable [ContinuousAdd M₂] [DecidableEq ι] [Fintype ι] (x y : ∀ i, M₁ i)
 
 /-- The derivative of a continuous multilinear map, as a continuous linear map
@@ -415,7 +413,7 @@ theorem cons_smul (f : ContinuousMultilinearMap R M M₂) (m : ∀ i : Fin n, M 
 #align continuous_multilinear_map.cons_smul ContinuousMultilinearMap.cons_smul
 
 theorem map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι) :
-    f (t.piecewise (m + m') m') = ∑ s in t.powerset, f (s.piecewise m m') :=
+    f (t.piecewise (m + m') m') = ∑ s ∈ t.powerset, f (s.piecewise m m') :=
   f.toMultilinearMap.map_piecewise_add _ _ _
 #align continuous_multilinear_map.map_piecewise_add ContinuousMultilinearMap.map_piecewise_add
 
@@ -437,7 +435,7 @@ sum of `f (g₁ (r 1), ..., gₙ (r n))` where `r` ranges over all functions wit
 `r n ∈ Aₙ`. This follows from multilinearity by expanding successively with respect to each
 coordinate. -/
 theorem map_sum_finset [DecidableEq ι] :
-    (f fun i => ∑ j in A i, g i j) = ∑ r in piFinset A, f fun i => g i (r i) :=
+    (f fun i => ∑ j ∈ A i, g i j) = ∑ r ∈ piFinset A, f fun i => g i (r i) :=
   f.toMultilinearMap.map_sum_finset _ _
 #align continuous_multilinear_map.map_sum_finset ContinuousMultilinearMap.map_sum_finset
 
@@ -519,7 +517,7 @@ variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M₂] [
   (f : ContinuousMultilinearMap R M₁ M₂)
 
 theorem map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ∀ i, M₁ i) (s : Finset ι) :
-    f (s.piecewise (fun i => c i • m i) m) = (∏ i in s, c i) • f m :=
+    f (s.piecewise (fun i => c i • m i) m) = (∏ i ∈ s, c i) • f m :=
   f.toMultilinearMap.map_piecewise_smul _ _ _
 #align continuous_multilinear_map.map_piecewise_smul ContinuousMultilinearMap.map_piecewise_smul
 

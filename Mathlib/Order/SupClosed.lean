@@ -123,7 +123,7 @@ lemma infClosed_iInter (hf : ∀ i, InfClosed (f i)) : InfClosed (⋂ i, f i) :=
 lemma InfClosed.codirectedOn (hs : InfClosed s) : DirectedOn (· ≥ ·) s :=
   fun _a ha _b hb ↦ ⟨_, hs ha hb, inf_le_left, inf_le_right⟩
 
-lemma IsLowerSet.infClosed (hs : IsLowerSet s) :  InfClosed s := fun _a _ _b ↦ hs inf_le_right
+lemma IsLowerSet.infClosed (hs : IsLowerSet s) : InfClosed s := fun _a _ _b ↦ hs inf_le_right
 
 lemma InfClosed.preimage [FunLike F β α] [InfHomClass F β α] (hs : InfClosed s) (f : F) :
     InfClosed (f ⁻¹' s) :=
@@ -266,7 +266,7 @@ def supClosure : ClosureOperator (Set α) := .ofPred
   (by
     classical
     rintro s _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
-    refine' ⟨_, ht.mono <| subset_union_left _ _, _, sup'_union ht hu _⟩
+    refine ⟨_, ht.mono <| subset_union_left _ _, ?_, sup'_union ht hu _⟩
     rw [coe_union]
     exact Set.union_subset hts hus)
   (by rintro s₁ s₂ hs h₂ _ ⟨t, ht, hts, rfl⟩; exact h₂.finsetSup'_mem ht fun i hi ↦ hs <| hts hi)
@@ -282,16 +282,16 @@ lemma supClosure_mono : Monotone (supClosure : Set α → Set α) := supClosure.
 alias ⟨_, SupClosed.supClosure_eq⟩ := supClosure_eq_self
 
 lemma supClosure_idem (s : Set α) : supClosure (supClosure s) = supClosure s :=
-supClosure.idempotent _
+  supClosure.idempotent _
 
 @[simp] lemma supClosure_empty : supClosure (∅ : Set α) = ∅ := by simp
 @[simp] lemma supClosure_singleton : supClosure {a} = {a} := by simp
 @[simp] lemma supClosure_univ : supClosure (Set.univ : Set α) = Set.univ := by simp
 
 @[simp] lemma upperBounds_supClosure (s : Set α) : upperBounds (supClosure s) = upperBounds s :=
-(upperBounds_mono_set subset_supClosure).antisymm <| by
-  rintro a ha _ ⟨t, ht, hts, rfl⟩
-  exact sup'_le _ _ fun b hb ↦ ha <| hts hb
+  (upperBounds_mono_set subset_supClosure).antisymm <| by
+    rintro a ha _ ⟨t, ht, hts, rfl⟩
+    exact sup'_le _ _ fun b hb ↦ ha <| hts hb
 
 @[simp] lemma isLUB_supClosure : IsLUB (supClosure s) a ↔ IsLUB s a := by simp [IsLUB]
 
@@ -308,8 +308,8 @@ lemma supClosure_min : s ⊆ t → SupClosed t → supClosure s ⊆ t := supClos
 protected lemma Set.Finite.supClosure (hs : s.Finite) : (supClosure s).Finite := by
   lift s to Finset α using hs
   classical
-  refine' ((s.powerset.filter Finset.Nonempty).attach.image
-    fun t ↦ t.1.sup' (mem_filter.1 t.2).2 id).finite_toSet.subset _
+  refine ((s.powerset.filter Finset.Nonempty).attach.image
+    fun t ↦ t.1.sup' (mem_filter.1 t.2).2 id).finite_toSet.subset ?_
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
     Finset.mem_powerset, Finset.not_nonempty_iff_eq_empty, mem_filter]
@@ -329,7 +329,7 @@ def infClosure : ClosureOperator (Set α) := ClosureOperator.ofPred
   (by
     classical
     rintro s _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
-    refine' ⟨_, ht.mono <| subset_union_left _ _, _, inf'_union ht hu _⟩
+    refine ⟨_, ht.mono <| subset_union_left _ _, ?_, inf'_union ht hu _⟩
     rw [coe_union]
     exact Set.union_subset hts hus)
   (by rintro s₁ s₂ hs h₂ _ ⟨t, ht, hts, rfl⟩; exact h₂.finsetInf'_mem ht fun i hi ↦ hs <| hts hi)
@@ -345,19 +345,18 @@ lemma infClosure_mono : Monotone (infClosure : Set α → Set α) := infClosure.
 alias ⟨_, InfClosed.infClosure_eq⟩ := infClosure_eq_self
 
 lemma infClosure_idem (s : Set α) : infClosure (infClosure s) = infClosure s :=
-infClosure.idempotent _
+  infClosure.idempotent _
 
 @[simp] lemma infClosure_empty : infClosure (∅ : Set α) = ∅ := by simp
 @[simp] lemma infClosure_singleton : infClosure {a} = {a} := by simp
 @[simp] lemma infClosure_univ : infClosure (Set.univ : Set α) = Set.univ := by simp
 
 @[simp] lemma lowerBounds_infClosure (s : Set α) : lowerBounds (infClosure s) = lowerBounds s :=
-(lowerBounds_mono_set subset_infClosure).antisymm <| by
-  rintro a ha _ ⟨t, ht, hts, rfl⟩
-  exact le_inf' _ _ fun b hb ↦ ha <| hts hb
+  (lowerBounds_mono_set subset_infClosure).antisymm <| by
+    rintro a ha _ ⟨t, ht, hts, rfl⟩
+    exact le_inf' _ _ fun b hb ↦ ha <| hts hb
 
 @[simp] lemma isGLB_infClosure : IsGLB (infClosure s) a ↔ IsGLB s a := by simp [IsGLB]
-open Finset
 
 lemma inf_mem_infClosure (ha : a ∈ s) (hb : b ∈ s) : a ⊓ b ∈ infClosure s :=
   infClosed_infClosure (subset_infClosure ha) (subset_infClosure hb)
@@ -372,8 +371,8 @@ lemma infClosure_min : s ⊆ t → InfClosed t → infClosure s ⊆ t := infClos
 protected lemma Set.Finite.infClosure (hs : s.Finite) : (infClosure s).Finite := by
   lift s to Finset α using hs
   classical
-  refine' ((s.powerset.filter Finset.Nonempty).attach.image
-    fun t ↦ t.1.inf' (mem_filter.1 t.2).2 id).finite_toSet.subset _
+  refine ((s.powerset.filter Finset.Nonempty).attach.image
+    fun t ↦ t.1.inf' (mem_filter.1 t.2).2 id).finite_toSet.subset ?_
   rintro _ ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
     Finset.mem_powerset, Finset.not_nonempty_iff_eq_empty, mem_filter]

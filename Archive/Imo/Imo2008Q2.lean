@@ -3,7 +3,6 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
-import Mathlib.Algebra.Parity
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Tactic.FieldSimp
@@ -103,9 +102,9 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
         set z : ℚ := -t * (t + 1) with hz_def
         simp only [t, W, K, g, Set.mem_image, Prod.exists]
         use x, y, z; constructor
-        simp only [Set.mem_setOf_eq]
-        · use x, y, z; constructor
-          rfl
+        · simp only [Set.mem_setOf_eq]
+          use x, y, z; constructor
+          · rfl
           · use t; constructor
             · simp only [t, gt_iff_lt, lt_max_iff]; right; trivial
             exact ⟨rfl, rfl, rfl⟩
@@ -114,7 +113,7 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
       have h₂ : q < t * (t + 1) := by
         calc
           q < q + 1 := by linarith
-          _ ≤ t := (le_max_left (q + 1) 1)
+          _ ≤ t := le_max_left (q + 1) 1
           _ ≤ t + t ^ 2 := by linarith [sq_nonneg t]
           _ = t * (t + 1) := by ring
       exact ⟨h₁, h₂⟩

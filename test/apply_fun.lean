@@ -262,7 +262,9 @@ def funFamily (_i : ℕ) : Bool → Bool := id
 -- `apply_fun` should not silence errors in `assumption`
 set_option linter.unreachableTactic false in
 /--
-error: maximum recursion depth has been reached (use `set_option maxRecDepth <num>` to increase limit)
+error: maximum recursion depth has been reached
+use `set_option maxRecDepth <num>` to increase limit
+use `set_option diagnostics true` to get diagnostic information
 -/
 #guard_msgs (error) in
 example (_h₁ : Function.Injective (funFamily ((List.range 128).map (fun _ => 0)).sum)) : true = true := by

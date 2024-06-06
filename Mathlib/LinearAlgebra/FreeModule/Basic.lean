@@ -26,18 +26,18 @@ universe u v w z
 
 variable {ι : Type*} (R : Type u) (M : Type v) (N : Type z)
 
-open TensorProduct DirectSum BigOperators
+open TensorProduct DirectSum
 
 section Basic
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-/-- `Module.Free R M` is the statement that the `R`-module `M` is free.-/
+/-- `Module.Free R M` is the statement that the `R`-module `M` is free. -/
 class Module.Free : Prop where
   exists_basis : Nonempty <| (I : Type v) × Basis I R M
 #align module.free Module.Free
 
-/- If `M` fits in universe `w`, then freeness is equivalent to existence of a basis in that
+/-- If `M` fits in universe `w`, then freeness is equivalent to existence of a basis in that
 universe.
 
 Note that if `M` does not fit in `w`, the reverse direction of this implication is still true as
@@ -190,11 +190,12 @@ end Semiring
 
 section CommSemiring
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
+variable {S} [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Module R M]
+  [Module S M] [IsScalarTower R S M] [Module.Free S M]
   [AddCommMonoid N] [Module R N] [Module.Free R N]
 
-instance tensor : Module.Free R (M ⊗[R] N) :=
-  let ⟨bM⟩ := exists_basis (R := R) (M := M)
+instance tensor : Module.Free S (M ⊗[R] N) :=
+  let ⟨bM⟩ := exists_basis (R := S) (M := M)
   let ⟨bN⟩ := exists_basis (R := R) (M := N)
   of_basis (bM.2.tensorProduct bN.2)
 #align module.free.tensor Module.Free.tensor

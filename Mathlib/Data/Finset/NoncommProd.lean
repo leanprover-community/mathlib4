@@ -3,7 +3,7 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Commute.Hom
 import Mathlib.Data.Fintype.Card
 
@@ -51,9 +51,9 @@ def noncommFoldr (s : Multiset α)
 @[simp]
 theorem noncommFoldr_coe (l : List α) (comm) (b : β) :
     noncommFoldr f (l : Multiset α) comm b = l.foldr f b := by
-  simp only [noncommFoldr, coe_foldr, coe_attach, List.attach, Function.comp]
+  simp only [noncommFoldr, coe_foldr, coe_attach, List.attach, List.attachWith, Function.comp]
   rw [← List.foldr_map]
-  simp [List.map_pmap, List.pmap_eq_map]
+  simp [List.map_pmap]
 #align multiset.noncomm_foldr_coe Multiset.noncommFoldr_coe
 
 @[simp]
@@ -235,7 +235,8 @@ theorem mul_noncommProd_erase [DecidableEq α] (s : Multiset α) {a : α} (h : a
   simp only [quot_mk_to_coe, mem_coe, coe_erase, noncommProd_coe] at comm h ⊢
   suffices ∀ x ∈ l, ∀ y ∈ l, x * y = y * x by rw [List.prod_erase_of_comm h this]
   intro x hx y hy
-  rcases eq_or_ne x y with rfl | hxy; rfl
+  rcases eq_or_ne x y with rfl | hxy
+  · rfl
   exact comm hx hy hxy
 
 theorem noncommProd_erase_mul [DecidableEq α] (s : Multiset α) {a : α} (h : a ∈ s) (comm)
@@ -244,7 +245,8 @@ theorem noncommProd_erase_mul [DecidableEq α] (s : Multiset α) {a : α} (h : a
   suffices ∀ b ∈ erase s a, Commute a b by
     rw [← (noncommProd_commute (s.erase a) comm' a this).eq, mul_noncommProd_erase s h comm comm']
   intro b hb
-  rcases eq_or_ne a b with rfl | hab; rfl
+  rcases eq_or_ne a b with rfl | hab
+  · rfl
   exact comm h (mem_of_mem_erase hb) hab
 
 end Multiset
@@ -290,8 +292,8 @@ theorem noncommProd_congr {s₁ s₂ : Finset α} {f g : α → β} (h₁ : s₁
         dsimp only
         rw [← h₂ _ hx, ← h₂ _ hy]
         subst h₁
-        exact comm hx hy h :=
-  by simp_rw [noncommProd, Multiset.map_congr (congr_arg _ h₁) h₂]
+        exact comm hx hy h := by
+  simp_rw [noncommProd, Multiset.map_congr (congr_arg _ h₁) h₂]
 #align finset.noncomm_prod_congr Finset.noncommProd_congr
 #align finset.noncomm_sum_congr Finset.noncommSum_congr
 
@@ -356,8 +358,8 @@ variable [FunLike F β γ]
 @[to_additive]
 theorem noncommProd_map [MonoidHomClass F β γ] (s : Finset α) (f : α → β) (comm) (g : F) :
     g (s.noncommProd f comm) =
-      s.noncommProd (fun i => g (f i)) fun x hx y hy _ => (comm.of_refl hx hy).map g :=
-  by simp [noncommProd, Multiset.noncommProd_map]
+      s.noncommProd (fun i => g (f i)) fun x hx y hy _ => (comm.of_refl hx hy).map g := by
+  simp [noncommProd, Multiset.noncommProd_map]
 #align finset.noncomm_prod_map Finset.noncommProd_map
 #align finset.noncomm_sum_map Finset.noncommSum_map
 
@@ -365,8 +367,8 @@ theorem noncommProd_map [MonoidHomClass F β γ] (s : Finset α) (f : α → β)
 theorem noncommProd_eq_pow_card (s : Finset α) (f : α → β) (comm) (m : β) (h : ∀ x ∈ s, f x = m) :
     s.noncommProd f comm = m ^ s.card := by
   rw [noncommProd, Multiset.noncommProd_eq_pow_card _ _ m]
-  simp only [Finset.card_def, Multiset.card_map]
-  simpa using h
+  · simp only [Finset.card_def, Multiset.card_map]
+  · simpa using h
 #align finset.noncomm_prod_eq_pow_card Finset.noncommProd_eq_pow_card
 #align finset.noncomm_sum_eq_card_nsmul Finset.noncommSum_eq_card_nsmul
 
@@ -462,20 +464,21 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
     (univ.noncommProd (fun i => Pi.mulSingle i (x i)) fun i _ j _ _ =>
         Pi.mulSingle_apply_commute x i j) = x := by
   ext i
-  apply (univ.noncommProd_map (fun i => MonoidHom.single M i (x i)) ?a (Pi.evalMonoidHom M i)).trans
+  apply (univ.noncommProd_map (fun i ↦ MonoidHom.mulSingle M i (x i)) ?a
+    (Pi.evalMonoidHom M i)).trans
   case a =>
     intro i _ j _ _
     exact Pi.mulSingle_apply_commute x i j
-  refine' (noncommProd_congr (insert_erase (mem_univ i)).symm _ _).trans _
+  convert (noncommProd_congr (insert_erase (mem_univ i)).symm _ _).trans _
   · intro j
     exact Pi.mulSingle j (x j) i
   · intro j _; dsimp
   · rw [noncommProd_insert_of_not_mem _ _ _ _ (not_mem_erase _ _),
       noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
-    simp only [MonoidHom.single_apply, ne_eq, Pi.mulSingle_eq_same]
+    · simp only [MonoidHom.mulSingle_apply, ne_eq, Pi.mulSingle_eq_same]
     · intro j hj
       simp? at hj says simp only [mem_erase, ne_eq, mem_univ, and_true] at hj
-      simp only [MonoidHom.single_apply, Pi.mulSingle, Function.update, Eq.ndrec, Pi.one_apply,
+      simp only [MonoidHom.mulSingle_apply, Pi.mulSingle, Function.update, Eq.ndrec, Pi.one_apply,
         ne_eq, dite_eq_right_iff]
       intro h
       simp [*] at *

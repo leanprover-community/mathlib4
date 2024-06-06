@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mitchell Rowett, Scott Morrison, Johan Commelin, Mario Carneiro,
   Michael Howes
 -/
-import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Deprecated.Submonoid
 
 #align_import deprecated.subgroup from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
@@ -16,7 +16,7 @@ This file is deprecated, and is no longer imported by anything in mathlib other 
 deprecated files, and test files. You should not need to import it.
 
 This file defines unbundled multiplicative and additive subgroups. Instead of using this file,
-please use `Subgroup G` and `AddSubgroup A`, defined in `GroupTheory.Subgroup.Basic`.
+please use `Subgroup G` and `AddSubgroup A`, defined in `Mathlib.Algebra.Group.Subgroup.Basic`.
 
 ## Main definitions
 
@@ -241,8 +241,7 @@ theorem mem_trivial {g : G} : g ∈ trivial G ↔ g = 1 :=
 #align is_add_subgroup.mem_trivial IsAddSubgroup.mem_trivial
 
 @[to_additive]
-theorem trivial_normal : IsNormalSubgroup (trivial G) := by
-  refine' { .. } <;> simp (config := { contextual := true }) [trivial]
+theorem trivial_normal : IsNormalSubgroup (trivial G) := by refine ⟨⟨⟨?_, ?_⟩, ?_⟩, ?_⟩ <;> simp
 #align is_subgroup.trivial_normal IsSubgroup.trivial_normal
 #align is_add_subgroup.trivial_normal IsAddSubgroup.trivial_normal
 
@@ -254,7 +253,7 @@ theorem eq_trivial_iff {s : Set G} (hs : IsSubgroup s) : s = trivial G ↔ ∀ x
 #align is_add_subgroup.eq_trivial_iff IsAddSubgroup.eq_trivial_iff
 
 @[to_additive]
-theorem univ_subgroup : IsNormalSubgroup (@univ G) := by refine' { .. } <;> simp
+theorem univ_subgroup : IsNormalSubgroup (@univ G) := by refine ⟨⟨⟨?_, ?_⟩, ?_⟩, ?_⟩ <;> simp
 #align is_subgroup.univ_subgroup IsSubgroup.univ_subgroup
 #align is_add_subgroup.univ_add_subgroup IsAddSubgroup.univ_addSubgroup
 
@@ -420,10 +419,10 @@ attribute [local simp] IsSubmonoid.one_mem IsSubgroup.inv_mem
 
 @[to_additive]
 theorem preimage {f : G → H} (hf : IsGroupHom f) {s : Set H} (hs : IsSubgroup s) :
-    IsSubgroup (f ⁻¹' s) := by
-  refine' { .. } <;>
-    simp (config := { contextual := true }) [hs.one_mem, hs.mul_mem, hs.inv_mem, hf.map_mul,
-      hf.map_one, hf.map_inv, InvMemClass.inv_mem]
+    IsSubgroup (f ⁻¹' s) where
+  one_mem := by simp [hf.map_one, hs.one_mem]
+  mul_mem := by simp_all [hf.map_mul, hs.mul_mem]
+  inv_mem := by simp_all [hf.map_inv]
 #align is_group_hom.preimage IsGroupHom.preimage
 #align is_add_group_hom.preimage IsAddGroupHom.preimage
 
@@ -650,10 +649,10 @@ theorem mem_closure_union_iff {G : Type*} [CommGroup G] {s t : Set G} {x : G} :
   simp only [closure_eq_mclosure, Monoid.mem_closure_union_iff, exists_prop, preimage_union];
   constructor
   · rintro ⟨_, ⟨ys, hys, yt, hyt, rfl⟩, _, ⟨zs, hzs, zt, hzt, rfl⟩, rfl⟩
-    refine' ⟨_, ⟨_, hys, _, hzs, rfl⟩, _, ⟨_, hyt, _, hzt, rfl⟩, _⟩
+    refine ⟨_, ⟨_, hys, _, hzs, rfl⟩, _, ⟨_, hyt, _, hzt, rfl⟩, ?_⟩
     rw [mul_assoc, mul_assoc, mul_left_comm zs]
   · rintro ⟨_, ⟨ys, hys, zs, hzs, rfl⟩, _, ⟨yt, hyt, zt, hzt, rfl⟩, rfl⟩
-    refine' ⟨_, ⟨ys, hys, yt, hyt, rfl⟩, _, ⟨zs, hzs, zt, hzt, rfl⟩, _⟩
+    refine ⟨_, ⟨ys, hys, yt, hyt, rfl⟩, _, ⟨zs, hzs, zt, hzt, rfl⟩, ?_⟩
     rw [mul_assoc, mul_assoc, mul_left_comm yt]
 #align group.mem_closure_union_iff Group.mem_closure_union_iff
 #align add_group.mem_closure_union_iff AddGroup.mem_closure_union_iff
@@ -673,7 +672,7 @@ theorem trivial_eq_closure : trivial G = Group.closure ∅ :=
 
 end IsSubgroup
 
-/-The normal closure of a set s is the subgroup closure of all the conjugates of
+/- The normal closure of a set s is the subgroup closure of all the conjugates of
 elements of s. It is the smallest normal subgroup containing s. -/
 namespace Group
 
@@ -746,8 +745,7 @@ end Group
 
 /-- Create a bundled subgroup from a set `s` and `[IsSubgroup s]`. -/
 @[to_additive "Create a bundled additive subgroup from a set `s` and `[IsAddSubgroup s]`."]
-def Subgroup.of [Group G] {s : Set G} (h : IsSubgroup s) : Subgroup G
-    where
+def Subgroup.of [Group G] {s : Set G} (h : IsSubgroup s) : Subgroup G where
   carrier := s
   one_mem' := h.1.1
   mul_mem' := h.1.2

@@ -7,8 +7,8 @@ import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Control.Functor
 import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
-import Std.Tactic.Lint.Basic
-import Std.Data.RBMap.Basic
+import Batteries.Tactic.Lint.Basic
+import Batteries.Data.RBMap.Basic
 
 #align_import data.list.defs from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
 
@@ -19,10 +19,8 @@ This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
 -/
 
-set_option autoImplicit true
-
 -- Porting note
--- Many of the definitions in `Data.List.Defs` were already defined upstream in `Std4`
+-- Many of the definitions in `Data.List.Defs` were already defined upstream in `Batteries`
 -- These have been annotated with `#align`s
 -- To make this easier for review, the `#align`s have been placed in order of occurrence
 -- in `mathlib`
@@ -152,7 +150,7 @@ end foldIdxM
 section mapIdxM
 
 -- Porting note: This was defined in `mathlib` with an `Applicative`
--- constraint on `m` and have been `#align`ed to the `Std` versions defined
+-- constraint on `m` and have been `#align`ed to the `Batteries` versions defined
 -- with a `Monad` typeclass constraint.
 -- Since all `Monad`s are `Applicative` this won't cause issues
 -- downstream & `Monad`ic code is more performant per Mario C
@@ -314,14 +312,15 @@ instance instSProd : SProd (List α) (List β) (List (α × β)) where
 
 section Chain
 
-instance decidableChain [DecidableRel R] (a : α) (l : List α) :
+instance decidableChain {R : α → α → Prop} [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
   induction l generalizing a with
   | nil => simp only [List.Chain.nil]; infer_instance
   | cons a as ih => haveI := ih; simp only [List.chain_cons]; infer_instance
 #align list.decidable_chain List.decidableChain
 
-instance decidableChain' [DecidableRel R] (l : List α) : Decidable (Chain' R l) := by
+instance decidableChain' {R : α → α → Prop} [DecidableRel R] (l : List α) :
+    Decidable (Chain' R l) := by
   cases l <;> dsimp only [List.Chain'] <;> infer_instance
 #align list.decidable_chain' List.decidableChain'
 
@@ -359,7 +358,7 @@ def destutter (R : α → α → Prop) [DecidableRel R] : List α → List α
 #align list.reduce_option List.reduceOption
 -- Porting note: replace ilast' by getLastD
 #align list.ilast' List.ilast'
--- Porting note: remove last' from Std
+-- Porting note: remove last' from Batteries
 #align list.last' List.getLast?
 #align list.rotate List.rotate
 #align list.rotate' List.rotate'
@@ -549,5 +548,32 @@ def replaceIf : List α → List Bool → List α → List α
 #align list.map_with_prefix_suffix_aux List.mapWithPrefixSuffixAux
 #align list.map_with_prefix_suffix List.mapWithPrefixSuffix
 #align list.map_with_complement List.mapWithComplement
+
+/-- `iterate f a n` is `[a, f a, ..., f^[n - 1] a]`. -/
+@[simp]
+def iterate (f : α → α) (a : α) : (n : ℕ) → List α
+  | 0     => []
+  | n + 1 => a :: iterate f (f a) n
+
+/-- Tail-recursive version of `List.iterate`. -/
+@[inline]
+def iterateTR (f : α → α) (a : α) (n : ℕ) : List α :=
+  loop a n []
+where
+  /-- `iterateTR.loop f a n l := iterate f a n ++ reverse l`. -/
+  @[simp, specialize]
+  loop (a : α) (n : ℕ) (l : List α) : List α :=
+    match n with
+    | 0     => reverse l
+    | n + 1 => loop (f a) n (a :: l)
+
+theorem iterateTR_loop_eq (f : α → α) (a : α) (n : ℕ) (l : List α) :
+    iterateTR.loop f a n l = reverse l ++ iterate f a n := by
+  induction n generalizing a l <;> simp [*]
+
+@[csimp]
+theorem iterate_eq_iterateTR : @iterate = @iterateTR := by
+  funext α f a n
+  exact Eq.symm <| iterateTR_loop_eq f a n []
 
 end List

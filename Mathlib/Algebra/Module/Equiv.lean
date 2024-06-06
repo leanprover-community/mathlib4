@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
+import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.LinearMap.End
 
 #align_import algebra.module.equiv from "leanprover-community/mathlib"@"ea94d7cd54ad9ca6b7710032868abb7c6a104c9c"
@@ -91,9 +92,9 @@ See also `LinearEquivClass F R M M₂` for the case where `σ` is the identity m
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
-class SemilinearEquivClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Semiring S]
+class SemilinearEquivClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
   (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-  (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+  (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
   [EquivLike F M M₂]
   extends AddEquivClass F M M₂ : Prop where
   /-- Applying a semilinear equivalence `f` over `σ` to `r • x` equals `σ r • f x`. -/
@@ -105,7 +106,7 @@ class SemilinearEquivClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Se
 /-- `LinearEquivClass F R M M₂` asserts `F` is a type of bundled `R`-linear equivs `M → M₂`.
 This is an abbreviation for `SemilinearEquivClass F (RingHom.id R) M M₂`.
 -/
-abbrev LinearEquivClass (F : Type*) (R M M₂ : outParam (Type*)) [Semiring R] [AddCommMonoid M]
+abbrev LinearEquivClass (F : Type*) (R M M₂ : outParam Type*) [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂] [EquivLike F M M₂] :=
   SemilinearEquivClass F (RingHom.id R) M M₂
 #align linear_equiv_class LinearEquivClass
@@ -121,6 +122,19 @@ variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   [EquivLike F M M₂] [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
   { s with }
+
+variable {F}
+
+/-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
+@[coe]
+def semilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] (f : F) : M ≃ₛₗ[σ] M₂ :=
+  { (f : M ≃+ M₂), (f : M →ₛₗ[σ] M₂) with }
+
+/-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
+instance instCoeToSemilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] : CoeHead F (M ≃ₛₗ[σ] M₂) where
+  coe f := semilinearEquiv f
 
 end SemilinearEquivClass
 
@@ -315,7 +329,7 @@ variable [RingHomInvPair σ₁₃ σ₃₁] {re₂₁ : RingHomInvPair σ₂₁ 
 variable {re₃₂ : RingHomInvPair σ₃₂ σ₂₃} [RingHomInvPair σ₃₁ σ₁₃]
 variable (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃)
 
--- Porting note: Lean 4 aggressively removes unused variables declared using `variables`, so
+-- Porting note: Lean 4 aggressively removes unused variables declared using `variable`, so
 -- we have to list all the variables explicitly here in order to match the Lean 3 signature.
 set_option linter.unusedVariables false in
 /-- Linear equivalences are transitive. -/
@@ -804,9 +818,7 @@ theorem coe_toLinearEquiv_symm (h : ∀ (c : R) (x), e (c • x) = c • e x) :
 /-- An additive equivalence between commutative additive monoids is a linear equivalence between
 ℕ-modules -/
 def toNatLinearEquiv : M ≃ₗ[ℕ] M₂ :=
-  e.toLinearEquiv fun c a => by
-    erw [e.toAddMonoidHom.map_nsmul]
-    rfl
+  e.toLinearEquiv fun c a => by rw [map_nsmul]
 #align add_equiv.to_nat_linear_equiv AddEquiv.toNatLinearEquiv
 
 @[simp]
@@ -917,3 +929,40 @@ def ringLmapEquivSelf [Module S M] [SMulCommClass R S M] : (R →ₗ[R] M) ≃�
 #align linear_map.ring_lmap_equiv_self LinearMap.ringLmapEquivSelf
 
 end LinearMap
+
+/--
+The `R`-linear equivalence between additive morphisms `A →+ B` and `ℕ`-linear morphisms `A →ₗ[ℕ] B`.
+-/
+@[simps]
+def addMonoidHomLequivNat {A B : Type*} (R : Type*) [Semiring R] [AddCommMonoid A]
+    [AddCommMonoid B] [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℕ] B
+    where
+  toFun := AddMonoidHom.toNatLinearMap
+  invFun := LinearMap.toAddMonoidHom
+  map_add' := by intros; ext; rfl
+  map_smul' := by intros; ext; rfl
+  left_inv := by intro f; ext; rfl
+  right_inv := by intro f; ext; rfl
+#align add_monoid_hom_lequiv_nat addMonoidHomLequivNat
+
+/--
+The `R`-linear equivalence between additive morphisms `A →+ B` and `ℤ`-linear morphisms `A →ₗ[ℤ] B`.
+-/
+@[simps]
+def addMonoidHomLequivInt {A B : Type*} (R : Type*) [Semiring R] [AddCommGroup A] [AddCommGroup B]
+    [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℤ] B
+    where
+  toFun := AddMonoidHom.toIntLinearMap
+  invFun := LinearMap.toAddMonoidHom
+  map_add' := by intros; ext; rfl
+  map_smul' := by intros; ext; rfl
+  left_inv := by intro f; ext; rfl
+  right_inv := by intro f; ext; rfl
+#align add_monoid_hom_lequiv_int addMonoidHomLequivInt
+
+/-- Ring equivalence between additive group endomorphisms of an `AddCommGroup` `A` and
+`ℤ`-module endomorphisms of `A.` -/
+@[simps] def addMonoidEndRingEquivInt (A : Type*) [AddCommGroup A] :
+    AddMonoid.End A ≃+* Module.End ℤ A :=
+  { addMonoidHomLequivInt (B := A) ℤ with
+    map_mul' := fun _ _ => rfl }

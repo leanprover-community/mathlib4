@@ -17,7 +17,7 @@ In this file we define
 * the predicate `IsFixedPt f x := f x = x`;
 * the set `fixedPoints f` of fixed points of a self-map `f`.
 
-We also prove some simple lemmas about `IsFixedPt` and `∘`, `iterate`, and `semiconj`.
+We also prove some simple lemmas about `IsFixedPt` and `∘`, `iterate`, and `Semiconj`.
 
 ## Tags
 
@@ -50,7 +50,7 @@ namespace IsFixedPt
 instance decidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) :=
   h (f x) x
 
-/-- If `x` is a fixed point of `f`, then `f x = x`. This is useful, e.g., for `rw` or `simp`.-/
+/-- If `x` is a fixed point of `f`, then `f x = x`. This is useful, e.g., for `rw` or `simp`. -/
 protected theorem eq (hf : IsFixedPt f x) : f x = x :=
   hf
 #align function.is_fixed_pt.eq Function.IsFixedPt.eq
@@ -112,9 +112,7 @@ protected theorem perm_inv (h : IsFixedPt e x) : IsFixedPt (⇑e⁻¹) x :=
   h.equiv_symm
 #align function.is_fixed_pt.perm_inv Function.IsFixedPt.perm_inv
 
-protected theorem perm_pow (h : IsFixedPt e x) (n : ℕ) : IsFixedPt (⇑(e ^ n)) x := by
-  rw [Equiv.Perm.coe_pow]
-  exact h.iterate _
+protected theorem perm_pow (h : IsFixedPt e x) (n : ℕ) : IsFixedPt (⇑(e ^ n)) x := h.iterate _
 #align function.is_fixed_pt.perm_pow Function.IsFixedPt.perm_pow
 
 protected theorem perm_zpow (h : IsFixedPt e x) : ∀ n : ℤ, IsFixedPt (⇑(e ^ n)) x

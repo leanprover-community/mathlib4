@@ -228,11 +228,6 @@ def toRelHom (f : r ↪r s) : r →r s where
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
--- Porting note: removed
--- see Note [function coercion]
--- instance : CoeFun (r ↪r s) fun _ => α → β :=
---   ⟨fun o => o.toEmbedding⟩
-
 -- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : FunLike (r ↪r s) α β where
   coe := fun x => x.toFun
@@ -426,7 +421,7 @@ def Quotient.mkRelHom [Setoid α] {r : α → α → Prop}
 noncomputable def Quotient.outRelEmbedding [Setoid α] {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : Quotient.lift₂ r H ↪r r :=
   ⟨Embedding.quotientOut α, by
-    refine' @fun x y => Quotient.inductionOn₂ x y fun a b => _
+    refine @fun x y => Quotient.inductionOn₂ x y fun a b => ?_
     apply iff_iff_eq.2 (H _ _ _ _ _ _) <;> apply Quotient.mk_out⟩
 #align quotient.out_rel_embedding Quotient.outRelEmbedding
 #align quotient.out_rel_embedding_apply Quotient.outRelEmbedding_apply
@@ -447,7 +442,7 @@ theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
   · exact RelHomClass.acc (Quotient.mkRelHom H) a
   · intro ac
     induction' ac with _ _ IH
-    refine' ⟨_, fun q h => _⟩
+    refine ⟨_, fun q h => ?_⟩
     obtain ⟨a', rfl⟩ := q.exists_rep
     exact IH a' h
 #align acc_lift₂_iff acc_lift₂_iff
@@ -465,7 +460,7 @@ theorem wellFounded_lift₂_iff [Setoid α] {r : α → α → Prop}
     WellFounded (Quotient.lift₂ r H) ↔ WellFounded r := by
   constructor
   · exact RelHomClass.wellFounded (Quotient.mkRelHom H)
-  · refine' fun wf => ⟨fun q => _⟩
+  · refine fun wf => ⟨fun q => ?_⟩
     obtain ⟨a, rfl⟩ := q.exists_rep
     exact acc_lift₂_iff.2 (wf.apply a)
 #align well_founded_lift₂_iff wellFounded_lift₂_iff
@@ -508,10 +503,10 @@ theorem ofMapRelIff_coe (f : α → β) [IsAntisymm α r] [IsRefl β s]
 def ofMonotone [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H : ∀ a b, r a b → s (f a) (f b)) :
     r ↪r s := by
   haveI := @IsAsymm.isIrrefl β s _
-  refine' ⟨⟨f, fun a b e => _⟩, @fun a b => ⟨fun h => _, H _ _⟩⟩
-  · refine' ((@trichotomous _ r _ a b).resolve_left _).resolve_right _ <;>
+  refine ⟨⟨f, fun a b e => ?_⟩, @fun a b => ⟨fun h => ?_, H _ _⟩⟩
+  · refine ((@trichotomous _ r _ a b).resolve_left ?_).resolve_right ?_ <;>
       exact fun h => @irrefl _ s _ _ (by simpa [e] using H _ _ h)
-  · refine' (@trichotomous _ r _ a b).resolve_right (Or.rec (fun e => _) fun h' => _)
+  · refine (@trichotomous _ r _ a b).resolve_right (Or.rec (fun e => ?_) fun h' => ?_)
     · subst e
       exact irrefl _ h
     · exact asymm (H _ _ h') h
@@ -636,10 +631,6 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
 instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
--- Porting note: moved to after `RelHomClass` instance and redefined as `DFunLike.coe`
--- instance : CoeFun (r ≃r s) fun _ => α → β :=
---   ⟨fun f => f⟩
-
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : FunLike (r ≃r s) α β where
   coe := fun x => x
@@ -655,11 +646,6 @@ instance : EquivLike (r ≃r s) α β where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
   coe_injective' _ _ hf _ := DFunLike.ext' hf
-
--- Porting note: helper instance
--- see Note [function coercion]
-instance : CoeFun (r ≃r s) fun _ => α → β :=
-  ⟨DFunLike.coe⟩
 
 @[simp]
 theorem coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :=
@@ -797,6 +783,14 @@ theorem rel_symm_apply (e : r ≃r s) {x y} : r x (e.symm y) ↔ s (e x) y := by
 theorem symm_apply_rel (e : r ≃r s) {x y} : r (e.symm x) y ↔ s x (e y) := by
   rw [← e.map_rel_iff, e.apply_symm_apply]
 #align rel_iso.symm_apply_rel RelIso.symm_apply_rel
+
+@[simp]
+theorem self_trans_symm (e : r ≃r s) : e.trans e.symm = RelIso.refl r :=
+  ext e.symm_apply_apply
+
+@[simp]
+theorem symm_trans_self (e : r ≃r s) : e.symm.trans e = RelIso.refl s :=
+  ext e.apply_symm_apply
 
 protected theorem bijective (e : r ≃r s) : Bijective e :=
   e.toEquiv.bijective
