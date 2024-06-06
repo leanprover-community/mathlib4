@@ -299,6 +299,8 @@ class AddCommMagma (G : Type u) extends Add G where
   /-- Addition is commutative in an commutative additive magma. -/
   protected add_comm : ∀ a b : G, a + b = b + a
 
+attribute [instance 50] AddCommMagma.toAdd
+
 /-- A commutative multiplicative magma is a type with a multiplication which commutes. -/
 @[ext]
 class CommMagma (G : Type u) extends Mul G where
@@ -618,6 +620,8 @@ class Monoid (M : Type u) extends MulOneClass M, Semigroup M where
 
 #align monoid.npow_zero' Monoid.npow_zero
 #align monoid.npow_succ' Monoid.npow_succ
+
+attribute [instance 150] Monoid.toMulOneClass
 
 -- Bug #660
 attribute [to_additive existing] Monoid.toSemigroup

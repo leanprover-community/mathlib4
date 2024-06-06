@@ -44,6 +44,8 @@ class SeminormedRing (α : Type*) extends Norm α, Ring α, PseudoMetricSpace α
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
 #align semi_normed_ring SeminormedRing
 
+attribute [instance 10] SeminormedRing.toRing
+
 -- see Note [lower instance priority]
 /-- A seminormed ring is a non-unital seminormed ring. -/
 instance (priority := 100) SeminormedRing.toNonUnitalSeminormedRing [β : SeminormedRing α] :
@@ -74,6 +76,9 @@ class NormedRing (α : Type*) extends Norm α, Ring α, MetricSpace α where
   /-- The norm is submultiplicative. -/
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
 #align normed_ring NormedRing
+
+attribute [instance 10] NormedDivisionRing.toDivisionRing
+attribute [instance 0] NormedRing.toRing
 
 /-- A normed division ring is a division ring endowed with a seminorm which satisfies the equality
 `‖x y‖ = ‖x‖ ‖y‖`. -/
@@ -900,6 +905,8 @@ class NormedField (α : Type*) extends Norm α, Field α, MetricSpace α where
   /-- The norm is multiplicative. -/
   norm_mul' : ∀ a b, norm (a * b) = norm a * norm b
 #align normed_field NormedField
+
+attribute [instance 10] NormedField.toField
 
 /-- A nontrivially normed field is a normed field in which there is an element of norm different
 from `0` and `1`. This makes it possible to bring any element arbitrarily close to `0` by

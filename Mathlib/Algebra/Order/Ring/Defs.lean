@@ -153,6 +153,8 @@ class OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
   protected mul_nonneg : ∀ a b : α, 0 ≤ a → 0 ≤ b → 0 ≤ a * b
 #align ordered_ring OrderedRing
 
+attribute [instance 10] OrderedRing.toRing
+
 /-- An `OrderedCommRing` is a commutative ring with a partial order such that addition is monotone
 and multiplication by a nonnegative number is monotone. -/
 class OrderedCommRing (α : Type u) extends OrderedRing α, CommRing α
@@ -183,6 +185,8 @@ class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, N
   /-- The product of two positive elements is positive. -/
   protected mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
 #align strict_ordered_ring StrictOrderedRing
+
+attribute [instance 10] StrictOrderedRing.toRing
 
 /-- A `StrictOrderedCommRing` is a commutative ring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/

@@ -39,6 +39,8 @@ class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
   mul_zero : ∀ a : M₀, a * 0 = 0
 #align mul_zero_class MulZeroClass
 
+attribute [instance 20] MulZeroClass.toMul
+
 /-- A mixin for left cancellative multiplication by nonzero elements. -/
 class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
   /-- Multiplication by a nonzero element is left cancellative. -/
@@ -106,6 +108,8 @@ class SemigroupWithZero (S₀ : Type u) extends MulZeroClass S₀, Semigroup S�
 class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M₀
 #align mul_zero_one_class MulZeroOneClass
 
+attribute [instance 20] MulZeroOneClass.toMulOneClass
+attribute [instance 20] MulZeroOneClass.toMulZeroClass
 attribute [instance 0] MulZeroOneClass.toZero
 
 /-- A type `M₀` is a “monoid with zero” if it is a monoid with zero element, and `0` is left
@@ -113,6 +117,7 @@ and right absorbing. -/
 class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
 #align monoid_with_zero MonoidWithZero
 
+attribute [instance 50] MonoidWithZero.toMonoid
 attribute [instance 0] MonoidWithZero.toZero
 
 /-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left

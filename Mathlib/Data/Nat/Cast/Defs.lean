@@ -97,6 +97,8 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
 #align add_monoid_with_one.nat_cast_zero AddMonoidWithOne.natCast_zero
 #align add_monoid_with_one.nat_cast_succ AddMonoidWithOne.natCast_succ
 
+attribute [instance 50] AddMonoidWithOne.toAddMonoid
+
 /-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`.  -/
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
 #align add_comm_monoid_with_one AddCommMonoidWithOne
