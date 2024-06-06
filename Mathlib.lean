@@ -1461,6 +1461,7 @@ import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.CategoryTheory.Localization.Adjunction
 import Mathlib.CategoryTheory.Localization.Bousfield
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
 import Mathlib.CategoryTheory.Localization.Composition
