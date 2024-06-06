@@ -27,7 +27,7 @@ jobs:
     - name: Compute transitive imports
       run: |
         # the checkout dance, to avoid a detached head
-        git checkout -
+        git checkout master
         git checkout -
 
         # Compute the counts for the HEAD of the PR
