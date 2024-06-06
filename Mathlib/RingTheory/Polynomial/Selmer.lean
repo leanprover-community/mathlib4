@@ -152,7 +152,7 @@ theorem X_pow_sub_X_sub_one_gal :
   change Function.Bijective (Gal.galActionHom f ℂ)
   have : MulAction.IsPretransitive f.Gal (f.rootSet ℂ) := by
     rcases eq_or_ne n 1 with rfl | hn
-    · have : IsEmpty (rootSet f ℂ) := by simp
+    · have : IsEmpty (rootSet f ℂ) := by simp [f]
       infer_instance
     exact Gal.galAction_isPretransitive _ _ (X_pow_sub_X_sub_one_irreducible_rat hn)
   let K := f.SplittingField
@@ -161,12 +161,12 @@ theorem X_pow_sub_X_sub_one_gal :
     (↑(inertiaSubgroup q : Set (f.SplittingField ≃ₐ[ℚ] f.SplittingField)))
   let S : Set f.Gal := S0 \ {1}
   have hS0 : Subgroup.closure S0 = ⊤ := by
-    simp only [Subgroup.closure_iUnion, Subgroup.closure_eq]
+    simp only [S0, Subgroup.closure_iUnion, Subgroup.closure_eq]
     exact keythm
   have hS1 : Subgroup.closure S = ⊤ := by
     have h : Subgroup.closure (S0 ∩ {1}) = ⊥ := by
       rw [eq_bot_iff, ← Subgroup.closure_singleton_one]
-      exact Subgroup.closure_mono (Set.inter_subset_right S0 {1})
+      exact Subgroup.closure_mono Set.inter_subset_right
     rw [← hS0, ← Set.diff_union_inter S0 {1}, Subgroup.closure_union, h, sup_bot_eq]
   have hS2 : ∀ σ ∈ S, Perm.IsSwap (MulAction.toPermHom f.Gal (f.rootSet ℂ) σ) := by
     rintro σ ⟨hσ, hσ1 : σ ≠ 1⟩

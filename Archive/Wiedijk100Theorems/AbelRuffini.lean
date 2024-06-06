@@ -26,9 +26,7 @@ The main ingredients are:
 
 namespace AbelRuffini
 
-set_option linter.uppercaseLean3 false
-
-open Function Ideal IsAlgClosed Polynomial Polynomial.Gal
+open IsAlgClosed Polynomial Polynomial.Gal
 
 attribute [local instance] splits_ℚ_ℂ
 
@@ -36,12 +34,12 @@ attribute [local instance] splits_ℚ_ℂ
 noncomputable def quintic : ℚ[X] := X ^ 5 - X - 1
 
 theorem degree_quintic : quintic.degree = 5 := by
-  rw [quintic]; compute_degree; norm_num
+  rw [quintic]; compute_degree; norm_num; rfl
 
 theorem irreducible_quintic : Irreducible quintic :=
   X_pow_sub_X_sub_one_irreducible_rat (by norm_num)
 
-theorem gal_quintic : Bijective (galActionHom quintic ℂ) :=
+theorem gal_quintic : Function.Bijective (galActionHom quintic ℂ) :=
   X_pow_sub_X_sub_one_gal
 
 theorem not_solvable_by_rad (x : ℂ) (hx : aeval x quintic = 0) : ¬IsSolvableByRad ℚ x := by
