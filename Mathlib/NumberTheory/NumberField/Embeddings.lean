@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Xavier Roblot
 -/
 import Mathlib.Analysis.Complex.Polynomial
+import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Norm
 import Mathlib.Topology.Instances.Complex
 import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.Topology.Algebra.UniformField
 
 #align_import number_theory.number_field.embeddings from "leanprover-community/mathlib"@"caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c"
 
@@ -1004,6 +1006,141 @@ lemma card_eq_card_isUnramifiedIn [NumberField k] [IsGalois k K] :
       Finset.card (Finset.univ.filter <| IsUnramifiedIn K (k := k)) * finrank k K +
       Finset.card (Finset.univ.filter <| IsUnramifiedIn K (k := k))ᶜ * (finrank k K / 2) := by
   rw [← card_isUnramified, ← card_isUnramified_compl, Finset.card_add_card_compl]
+
+variable {K : Type*} [Field K] [NumberField K] (v : InfinitePlace K)
+
+noncomputable instance : Inhabited (InfinitePlace K) :=
+  ⟨Classical.choice (instNonemptyInfinitePlaceOfNumberField K)⟩
+
+/-- The normed field structure of a number field coming from the norm asociated to
+an infinite place. -/
+noncomputable def normedField : NormedField K :=
+  NormedField.induced _ _ v.embedding v.embedding.injective
+
+/-- The normed division ring structure of a number field coming from the norm associated
+to an infinite place. -/
+noncomputable def normedDivisionRing : NormedDivisionRing K :=
+  v.normedField.toNormedDivisionRing
+
+/-- The uniform structure of a number field at an infinite place. -/
+noncomputable def uniformSpace : UniformSpace K :=
+  v.normedField.toUniformSpace
+
+/-- The uniform additive group structure of a number field induced by an infinite place. -/
+noncomputable def uniformAddGroup : @UniformAddGroup K v.uniformSpace _ :=
+  @SeminormedAddCommGroup.to_uniformAddGroup _ (
+    @NormedAddCommGroup.toSeminormedAddCommGroup _ (
+      @NonUnitalNormedRing.toNormedAddCommGroup _ (
+        @NormedRing.toNonUnitalNormedRing _ (
+          @NormedDivisionRing.toNormedRing _ v.normedDivisionRing))))
+
+/-- The topology of a number field infuced by an infinite place. -/
+noncomputable def topologicalSpace : TopologicalSpace K :=
+  v.uniformSpace.toTopologicalSpace
+
+noncomputable def topologicalDivisionRing :
+    @TopologicalDivisionRing K _ v.topologicalSpace :=
+  v.normedDivisionRing.to_topologicalDivisionRing
+
+/-- The topological ring structure of a number field induced by an infinite place. -/
+noncomputable def topologicalRing : @TopologicalRing K v.topologicalSpace _ :=
+  @TopologicalDivisionRing.toTopologicalRing _ _ v.topologicalSpace
+    v.topologicalDivisionRing
+
+/-- The embedding associated to an infinite place is a uniform embedding. -/
+theorem uniformEmbedding : @UniformEmbedding _ _ v.uniformSpace _ v.embedding := by
+  rw [@uniformEmbedding_iff, @uniformInducing_iff_uniformSpace]
+  exact ⟨rfl, v.embedding.injective⟩
+
+/-- The embedding associated to an infinite palce is uniform inducing. -/
+theorem uniformInducing : @UniformInducing _ _ v.uniformSpace _ v.embedding :=
+  @UniformEmbedding.toUniformInducing _ _ v.uniformSpace _ _ v.uniformEmbedding
+
+/-- The embedding associated to an infinite place of a number field is an isometry. -/
+theorem isometry : @Isometry _ _ v.normedField.toPseudoEMetricSpace _ (v.embedding) :=
+  @UniformEmbedding.to_isometry _ _ v.uniformSpace _ _ v.uniformEmbedding
+
+/-- The embedding associated to an infinite place of a number field is uniform continuous. -/
+theorem uniformContinuous : @UniformContinuous _ _ v.uniformSpace _ v.embedding :=
+  @UniformInducing.uniformContinuous _ _ v.uniformSpace _ _ v.uniformInducing
+
+/-- The embedding associated to an infinite place of a number field is continuous. -/
+theorem continuous : @Continuous _ _ v.topologicalSpace _ v.embedding :=
+  @UniformContinuous.continuous _ _ v.uniformSpace _ _ v.uniformContinuous
+
+/-- The uniform structure induced by an infinite place of a number field defines a
+completable topological field. -/
+instance completableTopField : @CompletableTopField K _ v.uniformSpace :=
+  @UniformSpace.comap_completableTopField _ _ _ _ _ _ v.normedField.instT0Space _
+
+/-- The completion of a number field at an infinite place. -/
+def completion := @UniformSpace.Completion K v.normedDivisionRing.toUniformSpace
+
+namespace Completion
+
+noncomputable instance : NormedField v.completion :=
+  @UniformSpace.Completion.instNormedField K v.normedField v.completableTopField
+
+instance : CompleteSpace v.completion :=
+  @UniformSpace.Completion.completeSpace _ v.uniformSpace
+
+noncomputable instance : Inhabited v.completion :=
+  ⟨0⟩
+
+def coeRingHom : K →+* v.completion :=
+  @UniformSpace.Completion.coeRingHom _ _ v.uniformSpace
+    v.topologicalRing v.uniformAddGroup
+
+/-- The embedding associated to an infinite place extended to `v.completion →+* ℂ`. -/
+noncomputable def extensionEmbedding : v.completion →+* ℂ :=
+  @UniformSpace.Completion.extensionHom K _
+    v.uniformSpace v.topologicalRing v.uniformAddGroup
+    _ _ _ _ _ v.embedding v.continuous _ T1Space.t0Space
+
+theorem extensionEmbedding_injective : Function.Injective (extensionEmbedding v) :=
+  (extensionEmbedding v).injective
+
+variable {v}
+
+/-- The embedding `v.completion → ℂ` preserved distances. -/
+theorem extensionEmbedding_dist_eq (x y : v.completion) :
+    dist (extensionEmbedding v x) (extensionEmbedding v y) =
+      dist x y := by
+  set p : v.completion → v.completion → Prop :=
+    fun x y => dist (extensionEmbedding v x) (extensionEmbedding v y) = dist x y
+  refine (@UniformSpace.Completion.induction_on₂ _
+    v.uniformSpace _ v.uniformSpace p x y ?_ (fun x y => ?_))
+  · refine isClosed_eq ?_ continuous_dist
+    · exact (continuous_iff_continuous_dist.1
+        (@UniformSpace.Completion.continuous_extension _ v.uniformSpace _ _ _ _))
+  · simp only [extensionEmbedding, UniformSpace.Completion.extensionHom, RingHom.coe_mk,
+      MonoidHom.coe_mk, OneHom.coe_mk, p]
+    rw [@UniformSpace.Completion.dist_eq _ v.normedField.toPseudoMetricSpace]
+    simp only [@UniformSpace.Completion.extension_coe _ v.uniformSpace _ _ _
+      T1Space.t0Space v.uniformContinuous]
+    rw [@Isometry.dist_eq _ _ v.normedField.toPseudoMetricSpace _ _ (v.isometry) _ _]
+
+variable (v)
+
+/-- The embedding `v.completion → ℂ` is an isometry. -/
+theorem extensionEmbedding_isometry :
+    Isometry (extensionEmbedding v) :=
+  Isometry.of_dist_eq extensionEmbedding_dist_eq
+
+/-- The embedding `v.completion K → ℂ` is uniform inducing. -/
+theorem extensionEmbedding_uniformInducing :
+    UniformInducing (extensionEmbedding v) :=
+  (extensionEmbedding_isometry v).uniformInducing
+
+/-- The embedding `v.completion K → ℂ` is a closed embedding. -/
+theorem closedEmbedding : ClosedEmbedding (extensionEmbedding v) :=
+  (extensionEmbedding_isometry v).closedEmbedding
+
+/-- The completion of a number field at an infinite place is locally compact. -/
+instance locallyCompactSpace : LocallyCompactSpace (v.completion) :=
+  (closedEmbedding v).locallyCompactSpace
+
+end Completion
 
 end NumberField.InfinitePlace
 
