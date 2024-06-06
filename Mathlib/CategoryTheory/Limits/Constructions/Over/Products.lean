@@ -183,3 +183,146 @@ theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
 #align category_theory.over.over_has_terminal CategoryTheory.Over.over_hasTerminal
 
 end CategoryTheory.Over
+
+namespace CategoryTheory.Under
+
+namespace ConstructCoproducts
+
+/-- (Implementation)
+Given a coproduct diagram in `C/B`, construct the corresponding wide pushout diagram
+in `C`.
+-/
+abbrev widePushoutDiagramOfDiagramUnder (B : C) {J : Type w} (F : Discrete J ⥤ Under B) :
+    WidePushoutShape J ⥤ C :=
+  WidePushoutShape.wideSpan B (fun j => (F.obj ⟨j⟩).right) fun j => (F.obj ⟨j⟩).hom
+
+/-- (Impl) A preliminary definition to avoid timeouts. -/
+@[simps]
+def coconesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Under B) (c : Cocone F) :
+    Cocone (widePushoutDiagramOfDiagramUnder B F) where
+  pt := c.pt.right
+  ι :=
+    { app := fun X => Option.casesOn X c.pt.hom fun j : J => (c.ι.app ⟨j⟩).right
+      -- `tidy` can do this using `case_bash`, but let's try to be a good `-T50000` citizen:
+      naturality := fun X Y f => by
+        dsimp; cases X <;> cases Y <;> cases f
+        · rw [Category.id_comp, Category.comp_id]
+        · rw [Under.w, Category.comp_id]
+        · rw [Category.id_comp, Category.comp_id] }
+
+/-- (Impl) A preliminary definition to avoid timeouts. -/
+@[simps]
+def coconesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Under B) :
+    Cocone F ⥤ Cocone (widePushoutDiagramOfDiagramUnder B F) where
+  obj := coconesEquivInverseObj B F
+  map f :=
+    { hom := f.hom.right
+      w := fun j => by
+        cases' j with j
+        · simp
+        · dsimp
+          rw [← f.w ⟨j⟩]
+          rfl }
+
+-- Porting note: this should help with the additional `naturality` proof we now have to give in
+-- `coconesEquivFunctor`, but doesn't.
+-- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Discrete
+
+/-- (Impl) A preliminary definition to avoid timeouts. -/
+@[simps]
+def coconesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Under B) :
+    Cocone (widePushoutDiagramOfDiagramUnder B F) ⥤ Cocone F where
+  obj c :=
+    { pt := Under.mk (c.ι.app none)
+      ι :=
+        { app := fun ⟨j⟩ => Under.homMk (c.ι.app (some j)) (c.w (WidePushoutShape.Hom.init j))
+          -- Porting note (#10888): added proof for `naturality`
+          naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨f⟩⟩ => by dsimp at f ⊢; aesop_cat } }
+  map f := { hom := Under.homMk f.hom }
+
+-- Porting note: unfortunately `aesop` can't cope with a `cases` rule here for the type synonym
+-- `WidePushoutShape`.
+-- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] WidePushoutShape
+-- If this worked we could avoid the `rintro` in `coconesEquivUnitIso`.
+
+/-- (Impl) A preliminary definition to avoid timeouts. -/
+@[simp]
+def coconesEquivUnitIso (B : C) (F : Discrete J ⥤ Under B) :
+    𝟭 (Cocone (widePushoutDiagramOfDiagramUnder B F)) ≅
+      coconesEquivFunctor B F ⋙ coconesEquivInverse B F :=
+  NatIso.ofComponents fun _ => Cocones.ext
+    { hom := 𝟙 _
+      inv := 𝟙 _ }
+    (by rintro (j | j) <;> aesop_cat)
+
+-- TODO: Can we add `:= by aesop` to the second arguments of `NatIso.ofComponents` and
+--       `Cocones.ext`?
+/-- (Impl) A preliminary definition to avoid timeouts. -/
+@[simp]
+def coconesEquivCounitIso (B : C) (F : Discrete J ⥤ Under B) :
+    coconesEquivInverse B F ⋙ coconesEquivFunctor B F ≅ 𝟭 (Cocone F) :=
+  NatIso.ofComponents fun _ => Cocones.ext
+    { hom := Under.homMk (𝟙 _)
+      inv := Under.homMk (𝟙 _) }
+/-- (Impl) Establish an equivalence between the category of cones for `F` and for the "grown" `F`.
+-/
+@[simps]
+def coconesEquiv (B : C) (F : Discrete J ⥤ Under B) :
+    Cocone (widePushoutDiagramOfDiagramUnder B F) ≌ Cocone F where
+  functor := coconesEquivFunctor B F
+  inverse := coconesEquivInverse B F
+  unitIso := coconesEquivUnitIso B F
+  counitIso := coconesEquivCounitIso B F
+
+/-- Use the above equivalence to prove we have a colimit. -/
+theorem has_under_colimit_discrete_of_widePushout_colimit {B : C} (F : Discrete J ⥤ Under B)
+    [HasColimit (widePushoutDiagramOfDiagramUnder B F)] : HasColimit F :=
+  HasColimit.mk
+    { cocone := _
+      isColimit := IsColimit.ofLeftAdjoint (coconesEquiv B F).toAdjunction
+        (colimit.isColimit (widePushoutDiagramOfDiagramUnder B F)) }
+
+/-- Given a wide pushout in `C`, construct a coproduct in `C/B`. -/
+theorem under_coproduct_of_widePushout [HasColimitsOfShape (WidePushoutShape J) C] {B : C} :
+    HasColimitsOfShape (Discrete J) (Under B) :=
+  { has_colimit := fun F => has_under_colimit_discrete_of_widePushout_colimit F }
+
+/-- Given a pushout in `C`, construct a binary coproduct in `C/B`. -/
+theorem under_binaryCoproduct_of_pushout [HasPushouts C] {B : C} : HasBinaryCoproducts (Under B) :=
+  under_coproduct_of_widePushout
+
+/-- Given all wide pushouts in `C`, construct coproducts in `C/B`. -/
+theorem under_coproducts_of_widePushouts [HasWidePushouts.{w} C] {B : C} :
+    HasCoproducts.{w} (Under B) :=
+  fun _ => under_coproduct_of_widePushout
+
+/-- Given all finite wide pushouts in `C`, construct finite coproducts in `C/B`. -/
+theorem under_finiteCoproducts_of_finiteWidePushouts [HasFiniteWidePushouts C] {B : C} :
+    HasFiniteCoproducts (Under B) :=
+  ⟨fun _ => under_coproduct_of_widePushout⟩
+
+end ConstructCoproducts
+
+/-- Construct initial object in the under category. This isn't an instance as it's not typically the
+way we want to define initial objects.
+(For instance, this gives a initial object which is different from the generic one given by
+`under_coproduct_of_widePushout` above.)
+-/
+theorem under_hasInitial (B : C) : HasInitial (Under B) where
+  has_colimit F := HasColimit.mk
+    { cocone :=
+        { pt := Under.mk (𝟙 _)
+          ι :=
+            { app := fun p => p.as.elim } }
+      isColimit :=
+        { desc := fun s => Under.homMk _
+          fac := fun _ j => j.as.elim
+          uniq := fun s m _ => by
+            simp only
+            ext
+            rw [Under.homMk_right _]
+            have := m.w.symm
+            dsimp at this
+            rwa [Category.id_comp, Category.id_comp] at this } }
+
+end CategoryTheory.Under

@@ -17,7 +17,7 @@ any connected limit which `C` has.
 -/
 
 
-universe v u
+universe v v' u u'
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
 noncomputable section
@@ -92,4 +92,79 @@ instance has_connected_limits {B : C} [IsConnected J] [HasLimitsOfShape J C] :
   has_limit F := hasLimit_of_created F (forget B)
 #align category_theory.over.has_connected_limits CategoryTheory.Over.has_connected_limits
 
+instance postPreservesConnectedLimits {D : Type u} [Category.{v} D] {B : C}
+    [IsConnected J] [HasLimitsOfShape J C] (F : C ⥤ D) [PreservesLimitsOfShape J F] :
+    PreservesLimitsOfShape J (Over.post (X := B) F) where
+  preservesLimit {K} := {
+    preserves := fun {c} hc => IsLimit.ofIsoLimit (CreatesConnected.raisedConeIsLimit
+      (c := ((forget B ⋙ F).mapCone c)) (PreservesLimit.preserves hc)) <| by
+      exact Cones.ext (Over.isoMk (Iso.refl _) (by simp [← F.map_comp])) fun j => by ext; simp }
+
 end CategoryTheory.Over
+namespace CategoryTheory.Under
+
+namespace CreatesConnected
+
+/-- (Impl) Given a diagram in the under category, produce a natural transformation from the
+diagram legs to the specific object.
+-/
+def natTransInUnder {B : C} (F : J ⥤ Under B) :
+    (CategoryTheory.Functor.const J).obj B ⟶ F ⋙ forget B where
+  app j := (F.obj j).hom
+
+/-- (Impl) Given a cone in the base category, raise it to a cone in the under category. Note this is
+where the connected assumption is used.
+-/
+@[simps]
+def raiseCocone [IsConnected J] {B : C} {F : J ⥤ Under B} (c : Cocone (F ⋙ forget B)) :
+    Cocone F where
+  pt := Under.mk ((F.obj (Classical.arbitrary J)).hom ≫ c.ι.app (Classical.arbitrary J))
+  ι :=
+    { app := fun j =>
+        Under.homMk (c.ι.app j) (nat_trans_from_is_connected (natTransInUnder F ≫ c.ι) j _)
+      naturality := by
+        intro X Y f
+        apply CommaMorphism.ext
+        · simp
+        · simpa using c.w f }
+
+theorem raised_cocone_lowers_to_original [IsConnected J] {B : C} {F : J ⥤ Under B}
+    (c : Cocone (F ⋙ forget B)) :
+    (forget B).mapCocone (raiseCocone c) = c := by aesop_cat
+
+/-- (Impl) Show that the raised cocone is a colimit. -/
+def raisedCoconeIsColimit [IsConnected J] {B : C} {F : J ⥤ Under B} {c : Cocone (F ⋙ forget B)}
+    (t : IsColimit c) : IsColimit (raiseCocone c) where
+  desc s :=
+    Under.homMk (t.desc ((forget B).mapCocone s))
+  uniq s m K := by
+    ext1
+    apply t.hom_ext
+    intro j
+    simp [← K j]
+
+end CreatesConnected
+
+/-- The forgetful functor from the under category creates any connected colimit. -/
+instance forgetCreatesConnectedColimits [IsConnected J] {B : C} :
+    CreatesColimitsOfShape J (forget B) where
+  CreatesColimit :=
+    createsColimitOfReflectsIso fun c t =>
+      { liftedCocone := CreatesConnected.raiseCocone c
+        validLift := eqToIso (CreatesConnected.raised_cocone_lowers_to_original c)
+        makesColimit := CreatesConnected.raisedCoconeIsColimit t }
+
+/-- The under category has any connected colimit which the original category has. -/
+instance has_connected_colimits {B : C} [IsConnected J] [HasColimitsOfShape J C] :
+    HasColimitsOfShape J (Under B) where
+  has_colimit F := hasColimit_of_created F (forget B)
+
+instance postPreservesConnectedColimits {D : Type u} [Category.{v} D] {B : C}
+    [IsConnected J] [HasColimitsOfShape J C] (F : C ⥤ D) [PreservesColimitsOfShape J F] :
+    PreservesColimitsOfShape J (Under.post (X := B) F) where
+  preservesColimit {K} := {
+    preserves := fun {c} hc => IsColimit.ofIsoColimit (CreatesConnected.raisedCoconeIsColimit
+      (c := ((forget B ⋙ F).mapCocone c)) (PreservesColimit.preserves hc)) <| by
+      exact Cocones.ext (Under.isoMk (Iso.refl _) (by simp [← F.map_comp])) fun j => by ext; simp }
+
+end CategoryTheory.Under

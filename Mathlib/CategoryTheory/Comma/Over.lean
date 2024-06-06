@@ -301,6 +301,13 @@ def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X) where
     (by simp only [Functor.id_obj, mk_left, Functor.const_obj_obj, mk_hom, ← F.map_comp, w])
 #align category_theory.over.post CategoryTheory.Over.post
 
+@[simps]
+def postEquivalence (F : T ≌ D) : Over X ≌ Over (F.functor.obj X) :=
+  { functor := post F.functor
+    inverse := post F.inverse ⋙ Over.map (F.unitIso.inv.app X)
+    unitIso := NatIso.ofComponents fun Y => isoMk (F.unitIso.app Y.left)
+    counitIso := NatIso.ofComponents fun Y => isoMk (F.counitIso.app Y.left) }
+
 end
 
 end Over
@@ -538,6 +545,13 @@ def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
   map f := Under.homMk (F.map f.right)
     (by simp only [Functor.id_obj, Functor.const_obj_obj, mk_right, mk_hom, ← F.map_comp, w])
 #align category_theory.under.post CategoryTheory.Under.post
+
+@[simps]
+def postEquivalence (F : T ≌ D) : Under X ≌ Under (F.functor.obj X) :=
+  { functor := post F.functor
+    inverse := post F.inverse ⋙ map (F.unitIso.hom.app X)
+    unitIso := NatIso.ofComponents fun Y => isoMk (F.unitIso.app Y.right)
+    counitIso := NatIso.ofComponents fun Y => isoMk (F.counitIso.app Y.right) }
 
 end
 

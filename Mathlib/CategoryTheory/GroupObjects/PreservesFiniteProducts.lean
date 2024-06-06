@@ -3,6 +3,7 @@ import Mathlib.CategoryTheory.GroupObjects.StupidLemmas
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Yoneda
 open CategoryTheory Limits
 
 noncomputable section
@@ -88,6 +89,9 @@ noncomputable def mapGroupObject : GroupObject C ⥤ GroupObject D where
   map f := mapGroupObjectMap F f
   map_id X := by ext; simp
   map_comp f g := by ext; simp
+
+noncomputable abbrev groupYoneda : GroupObject C ⥤ GroupObject (Cᵒᵖ ⥤ Type v) :=
+  mapGroupObject (yoneda (C := C))
 
 /-- Lifting a functor `C ⥤ D` that commutes with finite products to a functor between the
 categories of group objects is compatible with the forgetful functors from the categories of
