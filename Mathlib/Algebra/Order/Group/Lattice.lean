@@ -16,8 +16,8 @@ underpinnings of vector lattices, Banach lattices, AL-space, AM-space etc.
 A lattice ordered group is a type `α` satisfying:
 * `Lattice α`
 * `CommGroup α`
-* `CovariantClass α α (· * ·) (· ≤ ·)`
-* `CovariantClass α α (swap (· * ·)) (· ≤ ·)`
+* `MulLeftMono α`
+* `MulRightMono α`
 
 This file establishes basic properties of lattice ordered groups. It is shown that when the group is
 commutative, the lattice is distributive. This also holds in the non-commutative case
@@ -42,8 +42,8 @@ open Function
 variable {α β : Type*}
 
 section Group
-variable [Lattice α] [Group α] [CovariantClass α α (· * ·) (· ≤ ·)]
-  [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [Lattice α] [Group α] [MulLeftMono α]
+  [MulRightMono α]
 
 -- Special case of Bourbaki A.VI.9 (1)
 @[to_additive]
@@ -94,7 +94,7 @@ lemma inf_div (a b c : α) : (a ⊓ b) / c = a / c ⊓ b / c := (OrderIso.divRig
 -- See also `one_le_pow_iff` for the existing version in linear orders
 @[to_additive]
 lemma pow_two_semiclosed
-    [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a : α} (ha : 1 ≤ a ^ 2) : 1 ≤ a := by
+    [MulRightMono α] {a : α} (ha : 1 ≤ a ^ 2) : 1 ≤ a := by
   suffices this : (a ⊓ 1) * (a ⊓ 1) = a ⊓ 1 by
     rwa [← inf_eq_right, ← mul_right_eq_self]
   rw [mul_inf, inf_mul, ← pow_two, mul_one, one_mul, inf_assoc, inf_left_idem, inf_comm,
@@ -107,7 +107,7 @@ variable [Lattice α] [CommGroup α]
 -- Fuchs p67
 -- Bourbaki A.VI.10 Prop 7
 @[to_additive]
-lemma inf_mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : (a ⊓ b) * (a ⊔ b) = a * b :=
+lemma inf_mul_sup [MulLeftMono α] (a b : α) : (a ⊓ b) * (a ⊔ b) = a * b :=
   calc
     (a ⊓ b) * (a ⊔ b) = (a ⊓ b) * (a * b * (b⁻¹ ⊔ a⁻¹)) := by
       rw [mul_sup b⁻¹ a⁻¹ (a * b), mul_inv_cancel_right, mul_inv_cancel_comm]
@@ -120,7 +120,7 @@ lemma inf_mul_sup [CovariantClass α α (· * ·) (· ≤ ·)] (a b : α) : (a �
 -- Non-comm case needs cancellation law https://ncatlab.org/nlab/show/distributive+lattice
 @[to_additive "Every lattice ordered commutative additive group is a distributive lattice"]
 def CommGroup.toDistribLattice (α : Type*) [Lattice α] [CommGroup α]
-    [CovariantClass α α (· * ·) (· ≤ ·)] : DistribLattice α where
+    [MulLeftMono α] : DistribLattice α where
   le_sup_inf x y z := by
     rw [← mul_le_mul_iff_left (x ⊓ (y ⊓ z)), inf_mul_sup x (y ⊓ z), ← inv_mul_le_iff_le_mul,
       le_inf_iff]

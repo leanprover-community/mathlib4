@@ -116,7 +116,7 @@ variable {α : Type u} {β : Type*}
 `zero_le_one` field. -/
 
 
-theorem add_one_le_two_mul [LE α] [Semiring α] [CovariantClass α α (· + ·) (· ≤ ·)] {a : α}
+theorem add_one_le_two_mul [LE α] [Semiring α] [AddLeftMono α] {a : α}
     (a1 : 1 ≤ a) : a + 1 ≤ 2 * a :=
   calc
     a + 1 ≤ a + a := add_le_add_left a1 a
@@ -344,7 +344,7 @@ theorem mul_lt_one_of_nonneg_of_lt_one_right (ha : a ≤ 1) (hb₀ : 0 ≤ b) (h
   (mul_le_of_le_one_left hb₀ ha).trans_lt hb
 #align mul_lt_one_of_nonneg_of_lt_one_right mul_lt_one_of_nonneg_of_lt_one_right
 
-variable [ExistsAddOfLE α] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
+variable [ExistsAddOfLE α] [AddRightReflectLE α]
 
 theorem mul_le_mul_of_nonpos_left (h : b ≤ a) (hc : c ≤ 0) : c * a ≤ c * b := by
   obtain ⟨d, hcd⟩ := exists_add_of_le hc
@@ -462,7 +462,7 @@ theorem Antitone.mul (hf : Antitone f) (hg : Antitone g) (hf₀ : ∀ x, f x ≤
 
 end Monotone
 
-variable [ContravariantClass α α (· + ·) (· ≤ ·)]
+variable [AddLeftReflectLE α]
 
 lemma le_iff_exists_nonneg_add (a b : α) : a ≤ b ↔ ∃ c ≥ 0, b = a + c := by
   refine ⟨fun h ↦ ?_, ?_⟩

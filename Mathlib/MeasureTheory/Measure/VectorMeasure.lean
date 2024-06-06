@@ -1020,10 +1020,10 @@ end
 section
 
 variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
-  [CovariantClass M M (· + ·) (· ≤ ·)] [ContinuousAdd M]
+  [AddLeftMono M] [ContinuousAdd M]
 
 instance covariant_add_le :
-    CovariantClass (VectorMeasure α M) (VectorMeasure α M) (· + ·) (· ≤ ·) :=
+    AddLeftMono (VectorMeasure α M) :=
   ⟨fun _ _ _ h i hi => add_le_add_left (h i hi) _⟩
 #align measure_theory.vector_measure.covariant_add_le MeasureTheory.VectorMeasure.covariant_add_le
 

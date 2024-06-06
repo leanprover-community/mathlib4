@@ -136,17 +136,17 @@ def coeAddHom : AddHom ℕ+ ℕ where
   map_add' := add_coe
 #align pnat.coe_add_hom PNat.coeAddHom
 
-instance covariantClass_add_le : CovariantClass ℕ+ ℕ+ (· + ·) (· ≤ ·) :=
-  Positive.covariantClass_add_le
+instance addLeftMono : AddLeftMono ℕ+ :=
+  Positive.addLeftMono
 
-instance covariantClass_add_lt : CovariantClass ℕ+ ℕ+ (· + ·) (· < ·) :=
-  Positive.covariantClass_add_lt
+instance addLeftStrictMono : AddLeftStrictMono ℕ+ :=
+  Positive.addLeftStrictMono
 
-instance contravariantClass_add_le : ContravariantClass ℕ+ ℕ+ (· + ·) (· ≤ ·) :=
-  Positive.contravariantClass_add_le
+instance addLeftReflectLE : AddLeftReflectLE ℕ+ :=
+  Positive.addLeftReflectLE
 
-instance contravariantClass_add_lt : ContravariantClass ℕ+ ℕ+ (· + ·) (· < ·) :=
-  Positive.contravariantClass_add_lt
+instance addLeftReflectLT : AddLeftReflectLT ℕ+ :=
+  Positive.addLeftReflectLT
 
 /-- An equivalence between `ℕ+` and `ℕ` given by `PNat.natPred` and `Nat.succPNat`. -/
 @[simps (config := .asFn)]

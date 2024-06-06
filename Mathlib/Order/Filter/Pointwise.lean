@@ -390,16 +390,16 @@ theorem le_mul_iff : h ≤ f * g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t⦄, t ∈
 #align filter.le_add_iff Filter.le_add_iff
 
 @[to_additive]
-instance covariant_mul : CovariantClass (Filter α) (Filter α) (· * ·) (· ≤ ·) :=
+instance mulLeftMono : MulLeftMono (Filter α) :=
   ⟨fun _ _ _ => map₂_mono_left⟩
-#align filter.covariant_mul Filter.covariant_mul
-#align filter.covariant_add Filter.covariant_add
+#align filter.covariant_mul Filter.mulLeftMono
+#align filter.covariant_add Filter.addLeftMono
 
 @[to_additive]
-instance covariant_swap_mul : CovariantClass (Filter α) (Filter α) (swap (· * ·)) (· ≤ ·) :=
+instance mulRightMono : MulRightMono (Filter α) :=
   ⟨fun _ _ _ => map₂_mono_right⟩
-#align filter.covariant_swap_mul Filter.covariant_swap_mul
-#align filter.covariant_swap_add Filter.covariant_swap_add
+#align filter.covariant_swap_mul Filter.mulRightMono
+#align filter.covariant_swap_add Filter.addRightMono
 
 @[to_additive]
 protected theorem map_mul [FunLike F α β] [MulHomClass F α β] (m : F) :

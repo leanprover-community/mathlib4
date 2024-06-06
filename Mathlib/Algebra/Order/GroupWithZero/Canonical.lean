@@ -200,8 +200,6 @@ theorem mul_lt_right₀ (c : α) (h : a < b) (hc : c ≠ 0) : a * c < b * c := b
 
 theorem inv_lt_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ < b⁻¹ ↔ b < a :=
   show (Units.mk0 a ha)⁻¹ < (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb < Units.mk0 a ha from
-    have : CovariantClass αˣ αˣ (· * ·) (· < ·) :=
-      IsLeftCancelMul.covariant_mul_lt_of_covariant_mul_le αˣ
     inv_lt_inv_iff
 #align inv_lt_inv₀ inv_lt_inv₀
 
@@ -342,20 +340,20 @@ lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b :=
   WithBot.coe_le_iff
 
-instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ ·)] :
-    CovariantClass (WithZero α) (WithZero α) (· * ·) (· ≤ ·) := by
-  refine ⟨fun a b c hbc => ?_⟩
+instance mulLeftMono [Mul α] [MulLeftMono α] :
+    MulLeftMono (WithZero α) := by
+  refine ⟨fun a b c hbc => ?_⟩; dsimp
   induction a; · exact zero_le _
   induction b; · exact zero_le _
   rcases WithZero.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
   rw [← coe_mul _ c, ← coe_mul, coe_le_coe]
   exact mul_le_mul_left' hbc' _
-#align with_zero.covariant_class_mul_le WithZero.covariantClass_mul_le
+#align with_zero.covariant_class_mul_le WithZero.mulLeftMono
 
--- Porting note: same issue as `covariantClass_mul_le`
-protected lemma covariantClass_add_le [AddZeroClass α] [CovariantClass α α (· + ·) (· ≤ ·)]
-    (h : ∀ a : α, 0 ≤ a) : CovariantClass (WithZero α) (WithZero α) (· + ·) (· ≤ ·) := by
-  refine ⟨fun a b c hbc => ?_⟩
+-- Porting note: same issue as `mulLeftMono`
+protected lemma addLeftMono [AddZeroClass α] [AddLeftMono α]
+    (h : ∀ a : α, 0 ≤ a) : AddLeftMono (WithZero α) := by
+  refine ⟨fun a b c hbc => ?_⟩; dsimp
   induction a
   · rwa [zero_add, zero_add]
   induction b
@@ -368,7 +366,7 @@ protected lemma covariantClass_add_le [AddZeroClass α] [CovariantClass α α (�
     refine le_trans ?_ (le_of_eq <| coe_add _ _)
     rw [← coe_add, coe_le_coe]
     exact add_le_add_left hbc' _
-#align with_zero.covariant_class_add_le WithZero.covariantClass_add_le
+#align with_zero.covariant_class_add_le WithZero.addLeftMono
 
 instance existsAddOfLE [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithZero α) :=
   ⟨fun {a b} => by
@@ -388,8 +386,8 @@ variable [PartialOrder α]
 
 instance partialOrder : PartialOrder (WithZero α) := WithBot.partialOrder
 
-instance contravariantClass_mul_lt [Mul α] [ContravariantClass α α (· * ·) (· < ·)] :
-    ContravariantClass (WithZero α) (WithZero α) (· * ·) (· < ·) := by
+instance mulLeftReflectLT [Mul α] [MulLeftReflectLT α] :
+    MulLeftReflectLT (WithZero α) := by
   refine ⟨fun a b c h => ?_⟩
   have := ((zero_le _).trans_lt h).ne'
   induction a
@@ -398,7 +396,7 @@ instance contravariantClass_mul_lt [Mul α] [ContravariantClass α α (· * ·) 
   · simp at this
   induction b
   exacts [zero_lt_coe _, coe_lt_coe.mpr (lt_of_mul_lt_mul_left' <| coe_lt_coe.mp h)]
-#align with_zero.contravariant_class_mul_lt WithZero.contravariantClass_mul_lt
+#align with_zero.contravariant_class_mul_lt WithZero.mulLeftReflectLT
 
 end PartialOrder
 
@@ -437,7 +435,7 @@ elements are ≤ 1 and then 1 is the top element.
 protected abbrev orderedAddCommMonoid [OrderedAddCommMonoid α] (zero_le : ∀ a : α, 0 ≤ a) :
     OrderedAddCommMonoid (WithZero α) :=
   { WithZero.partialOrder, WithZero.addCommMonoid with
-    add_le_add_left := @add_le_add_left _ _ _ (WithZero.covariantClass_add_le zero_le).. }
+    add_le_add_left := @add_le_add_left _ _ _ (WithZero.addLeftMono zero_le).. }
 #align with_zero.ordered_add_comm_monoid WithZero.orderedAddCommMonoid
 
 -- This instance looks absurd: a monoid already has a zero

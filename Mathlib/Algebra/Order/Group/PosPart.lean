@@ -52,8 +52,8 @@ section Lattice
 variable [Lattice α]
 
 section Group
-variable [Group α] [CovariantClass α α (· * ·) (· ≤ ·)]
-  [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a : α}
+variable [Group α] [MulLeftMono α]
+  [MulRightMono α] {a : α}
 
 #noalign has_pos_part
 #noalign has_neg_part
@@ -222,7 +222,7 @@ lemma leOnePart_eq_inv_inf_one (a : α) : a⁻ᵐ = (a ⊓ 1)⁻¹ := by
 end Group
 
 section CommGroup
-variable [Lattice α] [CommGroup α] [CovariantClass α α (· * ·) (· ≤ ·)]
+variable [Lattice α] [CommGroup α] [MulLeftMono α]
 
 -- Bourbaki A.VI.12 (with a and b swapped)
 @[to_additive] lemma sup_eq_mul_oneLePart_div (a b : α) : a ⊔ b = b * (a / b)⁺ᵐ := by
@@ -264,7 +264,7 @@ end CommGroup
 end Lattice
 
 section LinearOrder
-variable [LinearOrder α] [Group α] [CovariantClass α α (· * ·) (· ≤ ·)] {a : α}
+variable [LinearOrder α] [Group α] [MulLeftMono α] {a : α}
 
 @[to_additive] lemma oneLePart_eq_ite : a⁺ᵐ = if 1 ≤ a then a else 1 := by
   rw [← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]; rfl

@@ -32,7 +32,7 @@ implications if a bi-implication can be proven under the same assumptions.
 Lemmas using this class are named using `tsub` instead of `sub` (short for "truncated subtraction").
 This is to avoid naming conflicts with similar lemmas about ordered groups.
 
-We provide a second version of most results that require `[ContravariantClass α α (+) (≤)]`. In the
+We provide a second version of most results that require `[AddLeftReflectLE α]`. In the
 second version we replace this type-class assumption by explicit `AddLECancellable` assumptions.
 
 TODO: maybe we should make a multiplicative version of this, so that we can replace some identical
@@ -66,7 +66,7 @@ theorem tsub_le_iff_right [LE α] [Add α] [Sub α] [OrderedSub α] {a b c : α}
 
 variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c d : α}
 
-/-- See `add_tsub_cancel_right` for the equality if `ContravariantClass α α (+) (≤)`. -/
+/-- See `add_tsub_cancel_right` for the equality if `AddLeftReflectLE α`. -/
 theorem add_tsub_le_right : a + b - b ≤ a :=
   tsub_le_iff_right.mpr le_rfl
 #align add_tsub_le_right add_tsub_le_right
@@ -98,7 +98,7 @@ theorem le_add_tsub : a ≤ b + (a - b) :=
   tsub_le_iff_left.mp le_rfl
 #align le_add_tsub le_add_tsub
 
-/-- See `add_tsub_cancel_left` for the equality if `ContravariantClass α α (+) (≤)`. -/
+/-- See `add_tsub_cancel_left` for the equality if `AddLeftReflectLE α`. -/
 theorem add_tsub_le_left : a + b - a ≤ b :=
   tsub_le_iff_left.mpr le_rfl
 #align add_tsub_le_left add_tsub_le_left
@@ -117,7 +117,7 @@ theorem tsub_tsub_le : b - (b - a) ≤ a :=
 
 section Cov
 
-variable [CovariantClass α α (· + ·) (· ≤ ·)]
+variable [AddLeftMono α]
 
 @[gcongr] theorem tsub_le_tsub_left (h : a ≤ b) (c : α) : c - b ≤ c - a :=
   tsub_le_iff_left.mpr <| le_add_tsub.trans <| add_le_add_right h _
@@ -221,7 +221,7 @@ end AddLECancellable
 
 section Contra
 
-variable [ContravariantClass α α (· + ·) (· ≤ ·)]
+variable [AddLeftReflectLE α]
 
 theorem le_add_tsub_swap : a ≤ b + a - b :=
   Contravariant.AddLECancellable.le_add_tsub_swap
@@ -338,7 +338,7 @@ end AddLECancellable
 
 section Contra
 
-variable [ContravariantClass α α (· + ·) (· ≤ ·)]
+variable [AddLeftReflectLE α]
 
 theorem tsub_eq_of_eq_add (h : a = c + b) : a - b = c :=
   Contravariant.AddLECancellable.tsub_eq_of_eq_add h
@@ -384,7 +384,7 @@ end Contra
 
 section Both
 
-variable [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)]
+variable [AddLeftMono α] [AddLeftReflectLE α]
 
 theorem add_tsub_add_eq_tsub_right (a c b : α) : a + c - (b + c) = a - b := by
   refine add_tsub_add_le_tsub_right.antisymm (tsub_le_iff_right.2 <| ?_)
@@ -429,7 +429,7 @@ theorem lt_tsub_comm : a < b - c ↔ c < b - a :=
 
 section Cov
 
-variable [CovariantClass α α (· + ·) (· ≤ ·)]
+variable [AddLeftMono α]
 
 /-- See `lt_of_tsub_lt_tsub_left_of_le` for a weaker statement in a partial order. -/
 theorem lt_of_tsub_lt_tsub_left (h : a - b < a - c) : c < b :=
