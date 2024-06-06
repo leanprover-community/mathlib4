@@ -195,8 +195,10 @@ nonrec def SCF.of : SCF K :=
 #align simple_continued_fraction.of SCF.of
 
 theorem SCF.of_isRCF :
-    (SCF.of v).IsRCF := fun _ _ nth_partDen_eq =>
-  lt_of_lt_of_le zero_lt_one (of_one_le_get?_partDen nth_partDen_eq)
+    (SCF.of v).IsRCF := ⟨⟨⌊v⌋, of_h_eq_floor⟩, fun _ _ nth_partDen_eq => by
+  rcases exists_int_eq_of_partDen nth_partDen_eq with ⟨m, rfl⟩
+  lift m to ℕ+ using lt_of_lt_of_le zero_lt_one (mod_cast of_one_le_get?_partDen nth_partDen_eq)
+  use (disch := norm_cast) m⟩
 #align simple_continued_fraction.of_is_continued_fraction SCF.of_isRCF
 
 /-- Creates the continued fraction of a value. -/

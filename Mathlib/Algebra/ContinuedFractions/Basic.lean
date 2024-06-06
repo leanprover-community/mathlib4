@@ -5,6 +5,7 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Data.Seq.Seq
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Data.PNat.Defs
 
 #align_import algebra.continued_fractions.basic from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
@@ -243,21 +244,22 @@ instance : Coe (SCF α) (GCF α) :=
 end SCF
 
 /--
-A simple continued fraction is a *regular continued fraction* (rcf) if all partial denominators
-`bᵢ` are positive, i.e. `0 < bᵢ`.
+A simple continued fraction is a *regular continued fraction* (rcf) if the head term is integer and
+all partial denominators `bᵢ` are positive naturals.
 -/
-def SCF.IsRCF [One α] [Zero α] [LT α]
+def SCF.IsRCF [One α] [NatCast α] [IntCast α]
     (s : SCF α) : Prop :=
-  ∀ (n : ℕ) (bₙ : α),
-    (↑s : GCF α).partDens.get? n = some bₙ → 0 < bₙ
+  (∃ n : ℤ, (↑s : GCF α).h = ↑n) ∧
+    ∀ (n : ℕ) (bₙ : α), (↑s : GCF α).partDens.get? n = some bₙ → ∃ n : ℕ+, bₙ = ↑n
 #align simple_continued_fraction.is_continued_fraction SCF.IsRCF
 
 variable (α)
 
-/-- A *regular continued fraction* (rcf) is a simple continued fraction (scf) whose partial
-denominators are all positive. It is the subtype of scfs that satisfy `SCF.IsRCF`.
+/-- A *regular continued fraction* (rcf) is a simple continued fraction (scf) whose head term is
+integer and all partial denominators are positive naturals. It is the subtype of scfs that satisfy
+`SCF.IsRCF`.
  -/
-def RCF [One α] [Zero α] [LT α] :=
+def RCF [One α] [NatCast α] [IntCast α] :=
   { s : SCF α // s.IsRCF }
 #align continued_fraction RCF
 
@@ -267,11 +269,11 @@ variable {α}
 
 namespace RCF
 
-variable [One α] [Zero α] [LT α]
+variable [One α] [NatCast α] [IntCast α]
 
 /-- Constructs a continued fraction without fractional part. -/
-def ofInteger (a : α) : RCF α :=
-  ⟨SCF.ofInteger a, fun n bₙ h ↦ by cases h⟩
+def ofInteger (n : ℤ) : RCF α :=
+  ⟨SCF.ofInteger (↑n : α), ⟨n, rfl⟩, fun n bₙ h ↦ by cases h⟩
 #align continued_fraction.of_integer RCF.ofInteger
 
 instance : Inhabited (RCF α) :=
