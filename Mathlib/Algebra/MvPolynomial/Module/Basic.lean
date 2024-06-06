@@ -189,9 +189,11 @@ end Submodule
 
 end MvAEval
 
--- TODO: Provide a more complete API for `MvAEval'` mirroring `MvAEval`
 section
 
+/-- A type synonym for `Algebra.adjoin R (range Φ)`. Since the proof that
+the various `Φ i` commute is in the type we can define a `CommSemiring` instance. -/
+@[nolint unusedArguments]
 def MvAEval'.auxRing (Φ : σ → M →ₗ[R] M) (_ : ∀ i j, Φ i ∘ₗ Φ j = Φ j ∘ₗ Φ i) :=
   Algebra.adjoin R (range Φ)
 
@@ -390,17 +392,13 @@ lemma monomial_smul_C (a : σ →₀ ℕ) (r : R) (m : M) :
     MvPolynomial.monomial a r • C R m = r • monomial R a m := by
   simp_rw [C, monomial_smul_monomial, add_zero, map_smul]
 
-theorem monomial_eq {m : M} {a : σ →₀ ℕ} :
-    monomial R a m = (a.prod fun n e => X n ^ e : MvPolynomial σ R) • C R m := by
-  rw [← one_smul R (monomial R a m), ← monomial_smul_C,
-    MvPolynomial.monomial_eq, C_1, one_mul]
-
--- Seems more reasonable to do `a.prod (X · ^ ·)` imo but this
--- is consistent with `prod_X_pow_eq_monomial`
-@[simp]
 lemma prod_X_pow_smul_eq_monomial (a : σ →₀ ℕ) (m : M) :
-    (∏ i in a.support, X i ^ a i : MvPolynomial σ R) • C R m = monomial R a m :=
-  monomial_eq.symm
+    (∏ i in a.support, X i ^ a i : MvPolynomial σ R) • C R m = monomial R a m := by
+  rw [prod_X_pow_eq_monomial, monomial_smul_C, one_smul]
+
+theorem monomial_eq {a : σ →₀ ℕ} {m : M} :
+    monomial R a m = (a.prod fun n e => X n ^ e : MvPolynomial σ R) • C R m :=
+  (prod_X_pow_smul_eq_monomial a m).symm
 
 @[simp]
 theorem support_sum_monomial_coeff (p : MvPolynomialModule σ R M) :
