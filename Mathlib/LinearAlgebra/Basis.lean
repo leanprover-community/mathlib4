@@ -1165,7 +1165,6 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
       rw [← span_image, Submodule.coeSubtype]
       -- Porting note: why doesn't `rw [h₁]` work here?
       exact congr_arg _ h₁
-    #adaptation_note /--  nightly-2024-06-05: needed to specify `this i` -/
     have h₃ : (x : M) ∈ map (Submodule.subtype (span R (range v)))
         (span R (Set.range fun i => Subtype.mk (v i) (this i))) := by
       rw [h₂]
