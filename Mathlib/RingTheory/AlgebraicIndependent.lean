@@ -150,7 +150,7 @@ theorem map {f : A →ₐ[R] A'} (hf_inj : Set.InjOn f (adjoin R (range x))) :
 #align algebraic_independent.map AlgebraicIndependent.map
 
 theorem map' {f : A →ₐ[R] A'} (hf_inj : Injective f) : AlgebraicIndependent R (f ∘ x) :=
-  hx.map (injOn_of_injective hf_inj _)
+  hx.map hf_inj.injOn
 #align algebraic_independent.map' AlgebraicIndependent.map'
 
 theorem of_comp (f : A →ₐ[R] A') (hfv : AlgebraicIndependent R (f ∘ x)) :
@@ -166,7 +166,7 @@ open AlgebraicIndependent
 
 theorem AlgHom.algebraicIndependent_iff (f : A →ₐ[R] A') (hf : Injective f) :
     AlgebraicIndependent R (f ∘ x) ↔ AlgebraicIndependent R x :=
-  ⟨fun h => h.of_comp f, fun h => h.map (injOn_of_injective hf _)⟩
+  ⟨fun h => h.of_comp f, fun h => h.map hf.injOn⟩
 #align alg_hom.algebraic_independent_iff AlgHom.algebraicIndependent_iff
 
 @[nontriviality]

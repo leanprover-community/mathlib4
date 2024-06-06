@@ -460,7 +460,7 @@ theorem finite_setOf_absNorm_eq [CharZero S] {n : ℕ} (hn : 0 < n) :
   refine @Set.Finite.of_finite_image _ _ _ f ?_ ?_
   · suffices Finite (S ⧸ @Ideal.span S _ {↑n}) by
       let g := ((↑) : Ideal (S ⧸ @Ideal.span S _ {↑n}) → Set (S ⧸ @Ideal.span S _ {↑n}))
-      refine @Set.Finite.of_finite_image _ _ _ g ?_ (SetLike.coe_injective.injOn _)
+      refine @Set.Finite.of_finite_image _ _ _ g ?_ SetLike.coe_injective.injOn
       exact Set.Finite.subset (@Set.finite_univ _ (@Set.finite' _ this)) (Set.subset_univ _)
     rw [← absNorm_ne_zero_iff, absNorm_span_singleton]
     simpa only [Ne, Int.natAbs_eq_zero, Algebra.norm_eq_zero_iff, Nat.cast_eq_zero] using

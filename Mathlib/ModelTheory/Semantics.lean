@@ -845,7 +845,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem model_union_iff {T' : L.Theory} : M ⊨ T ∪ T' ↔ M ⊨ T ∧ M ⊨ T' :=
-  ⟨fun h => ⟨h.mono (T.subset_union_left T'), h.mono (T.subset_union_right T')⟩, fun h =>
+  ⟨fun h => ⟨h.mono Set.subset_union_left, h.mono Set.subset_union_right⟩, fun h =>
     h.1.union h.2⟩
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory.model_union_iff FirstOrder.Language.Theory.model_union_iff
