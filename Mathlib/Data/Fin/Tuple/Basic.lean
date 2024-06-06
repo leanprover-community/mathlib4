@@ -46,7 +46,8 @@ ways to move between tuples of length `n` and of length `n + 1` by adding/removi
   `i : Fin n`. This is defined in Core.
 * `Fin.snoc`: Turn a tuple `f : Fin n → α` and an entry `a : α` into a tuple
   `Fin.snoc f a : Fin (n + 1) → α` by adding `a` at the end. In general, tuples can be dependent
-  functions, in which case `f : ∀ i : Fin n, α i.castSucc` and `a : α (last n)`.
+  functions, in which case `f : ∀ i : Fin n, α i.castSucc` and `a : α (last n)`. This is a
+  special case of `Fin.lastCases`.
 * `Fin.init`: Turn a tuple `f : Fin (n + 1) → α` into a tuple `Fin.init f : Fin n → α` by forgetting
   the start. In general, tuples can be dependent functions,
   in which case `Fin.init f : ∀ i : Fin n, α i.castSucc`.
