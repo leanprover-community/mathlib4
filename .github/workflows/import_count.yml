@@ -24,6 +24,12 @@ jobs:
         sudo apt-get install -y jq
         # If you have additional dependencies, install them here
 
+    - name: Get changed files
+      id: get-changed-files
+      run: |
+        git fetch origin ${{ github.base_ref }}  # fetch the base branch
+        git diff --name-only origin/${{ github.base_ref }} > changed_files.txt  # get the list of changed files
+
     - name: Compute transitive imports
       run: |
         # the checkout dance, to avoid a detached head
@@ -46,7 +52,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        message=$(python ./scripts/import-graph-report.py base.json head.json)
+        message=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
         echo "${message}"
         data=$(jq -n --arg msg "$message" '{"body": $msg}')
         method="POST"
