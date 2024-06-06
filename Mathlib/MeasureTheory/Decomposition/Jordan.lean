@@ -282,7 +282,7 @@ theorem subset_positive_null_set (hu : MeasurableSet u) (hv : MeasurableSet v)
     rw [← hw₁, ← of_union Set.disjoint_sdiff_right hv (hw.diff hv), Set.union_diff_self,
       Set.union_eq_self_of_subset_left hwt]
   have h₁ := nonneg_of_zero_le_restrict _ (restrict_le_restrict_subset _ _ hu hsu (hwt.trans hw₂))
-  have h₂ :=
+  have h₂ : 0 ≤ s (w \ v) :=
     nonneg_of_zero_le_restrict _
       (restrict_le_restrict_subset _ _ hu hsu (diff_subset.trans hw₂))
   linarith
