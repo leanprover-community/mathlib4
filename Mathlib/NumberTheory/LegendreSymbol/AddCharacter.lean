@@ -51,8 +51,8 @@ variable {R : Type u} [CommRing R] {R' : Type v} [CommMonoid R']
 /-- The values of an additive character on a ring of positive characteristic are roots of unity. -/
 lemma val_mem_rootsOfUnity (φ : AddChar R R') (a : R) (h : 0 < ringChar R) :
     (φ.val_isUnit a).unit ∈ rootsOfUnity (ringChar R).toPNat' R' := by
-  simp only [mem_rootsOfUnity', IsUnit.unit_spec, Nat.toPNat'_coe, h, ↓reduceIte, ← map_nsmul_eq_pow,
-    nsmul_eq_mul, CharP.cast_eq_zero, zero_mul, map_zero_eq_one]
+  simp only [mem_rootsOfUnity', IsUnit.unit_spec, Nat.toPNat'_coe, h, ↓reduceIte,
+    ← map_nsmul_eq_pow, nsmul_eq_mul, CharP.cast_eq_zero, zero_mul, map_zero_eq_one]
 
 /-- An additive character is *primitive* iff all its multiplicative shifts by nonzero
 elements are nontrivial. -/
