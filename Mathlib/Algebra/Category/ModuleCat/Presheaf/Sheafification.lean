@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 In this file, we construct a functor
 `PresheafOfModules.sheafification α : PresheafOfModules R₀ ⥤ SheafOfModules R`
-for a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a preasheaf of rings
+for a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings.
 
 -/
@@ -28,7 +28,7 @@ variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
 
 namespace PresheafOfModules
 
-/-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a preasheaf of rings
+/-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings (i.e. `R` identifies to the sheafification of `R₀`), this is
 the associated sheaf of modules functor `PresheafOfModules.{v} R₀ ⥤ SheafOfModules.{v} R`. -/
 @[simps map]
@@ -93,7 +93,7 @@ lemma sheafificationHomEquiv_symm_val_hom
         P.presheaf ((SheafOfModules.toSheaf R).obj F)).symm g.hom).val :=
   (sheafToPresheaf _ _).congr_map (toSheaf_map_sheafificationHomEquiv_symm α g)
 
-/-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a preasheaf of rings
+/-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings, this is the adjunction
 `sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α`. -/
 noncomputable def sheafificationAdjunction :
