@@ -57,21 +57,18 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: update Mathlib.lean
+      - name: install elan
         run: |
-          git ls-files 'Mathlib/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      - name: update Mathlib/Tactic.lean
-        run: |
-          git ls-files 'Mathlib/Tactic/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib/Tactic.lean
+      - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
+        run: lake exe mk_all
 
-      - name: update Counterexamples.lean
-        run: |
-          git ls-files 'Counterexamples/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Counterexamples.lean
-
-      - name: update Archive.lean
-        run: |
-          git ls-files 'Archive/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Archive.lean
+      - name: check_imported
+        run: git diff --exit-code
 
       - name: suggester / import list
         uses: reviewdog/action-suggester@v1

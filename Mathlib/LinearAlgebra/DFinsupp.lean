@@ -326,12 +326,12 @@ theorem biSup_eq_range_dfinsupp_lsum (p : ι → Prop) [DecidablePred p] (S : ι
           (DFinsupp.lsum ℕ (M := fun i ↦ ↥(S i)) (fun i => (S i).subtype))
             (DFinsupp.filterLinearMap R _ p)) := by
   apply le_antisymm
-  · refine' iSup₂_le fun i hi y hy => ⟨DFinsupp.single i ⟨y, hy⟩, _⟩
+  · refine iSup₂_le fun i hi y hy => ⟨DFinsupp.single i ⟨y, hy⟩, ?_⟩
     rw [LinearMap.comp_apply, filterLinearMap_apply, filter_single_pos _ _ hi]
     simp only [lsum_apply_apply, sumAddHom_single, LinearMap.toAddMonoidHom_coe, coeSubtype]
   · rintro x ⟨v, rfl⟩
-    refine' dfinsupp_sumAddHom_mem _ _ _ fun i _ => _
-    refine' mem_iSup_of_mem i _
+    refine dfinsupp_sumAddHom_mem _ _ _ fun i _ => ?_
+    refine mem_iSup_of_mem i ?_
     by_cases hp : p i
     · simp [hp]
     · simp [hp]
@@ -376,10 +376,8 @@ lemma mem_iSup_iff_exists_finsupp (p : ι → Submodule R N) (x : N) :
   · ext; simp
   · simp [Finsupp.mem_support_iff.mp hi]
 
-open BigOperators
-
 theorem mem_iSup_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R N) (a : N) :
-    (a ∈ ⨆ i ∈ s, p i) ↔ ∃ μ : ∀ i, p i, (∑ i in s, (μ i : N)) = a := by
+    (a ∈ ⨆ i ∈ s, p i) ↔ ∃ μ : ∀ i, p i, (∑ i ∈ s, (μ i : N)) = a := by
   classical
     rw [Submodule.mem_iSup_iff_exists_dfinsupp']
     constructor <;> rintro ⟨μ, hμ⟩
@@ -399,9 +397,9 @@ theorem mem_iSup_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R N
         rw [mem_support_iff, not_ne_iff] at hx
         rw [hx]
         rfl
-    · refine' ⟨DFinsupp.mk s _, _⟩
+    · refine ⟨DFinsupp.mk s ?_, ?_⟩
       · rintro ⟨i, hi⟩
-        refine' ⟨μ i, _⟩
+        refine ⟨μ i, ?_⟩
         rw [iSup_pos]
         · exact coe_mem _
         · exact hi
@@ -435,7 +433,7 @@ theorem independent_iff_forall_dfinsupp (p : ι → Submodule R N) :
         lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (erase i v) = x → x = 0 := by
   simp_rw [CompleteLattice.independent_def, Submodule.disjoint_def,
     Submodule.mem_biSup_iff_exists_dfinsupp, exists_imp, filter_ne_eq_erase]
-  refine' forall_congr' fun i => Subtype.forall'.trans _
+  refine forall_congr' fun i => Subtype.forall'.trans ?_
   simp_rw [Submodule.coe_eq_zero]
 #align complete_lattice.independent_iff_forall_dfinsupp CompleteLattice.independent_iff_forall_dfinsupp
 
@@ -508,7 +506,7 @@ theorem Independent.dfinsupp_lsum_injective {p : ι → Submodule R N} (h : Inde
   ext i : 1
   -- split `m` into the piece at `i` and the pieces elsewhere, to match `h`
   rw [DFinsupp.zero_apply, ← neg_eq_zero]
-  refine' h i (-m i) m _
+  refine h i (-m i) m ?_
   rwa [← erase_add_single i m, LinearMap.map_add, lsum_single, Submodule.subtype_apply,
     add_eq_zero_iff_eq_neg, ← Submodule.coe_neg] at hm
 #align complete_lattice.independent.dfinsupp_lsum_injective CompleteLattice.Independent.dfinsupp_lsum_injective

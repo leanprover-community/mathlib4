@@ -9,6 +9,7 @@ import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.Data.Set.Finite
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Tactic.Abel
 
 #align_import linear_algebra.basic from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
@@ -54,7 +55,7 @@ linear algebra, vector space, module
 
 open Function
 
-open BigOperators Pointwise
+open Pointwise
 
 variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} {R₄ : Type*}
 variable {S : Type*}
@@ -63,45 +64,6 @@ variable {M : Type*} {M' : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*} {
 variable {N : Type*} {N₂ : Type*}
 variable {ι : Type*}
 variable {V : Type*} {V₂ : Type*}
-
-/-! ### Properties of linear maps -/
-
-/--
-The `R`-linear equivalence between additive morphisms `A →+ B` and `ℕ`-linear morphisms `A →ₗ[ℕ] B`.
--/
-@[simps]
-def addMonoidHomLequivNat {A B : Type*} (R : Type*) [Semiring R] [AddCommMonoid A]
-    [AddCommMonoid B] [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℕ] B
-    where
-  toFun := AddMonoidHom.toNatLinearMap
-  invFun := LinearMap.toAddMonoidHom
-  map_add' := by intros; ext; rfl
-  map_smul' := by intros; ext; rfl
-  left_inv := by intro f; ext; rfl
-  right_inv := by intro f; ext; rfl
-#align add_monoid_hom_lequiv_nat addMonoidHomLequivNat
-
-/--
-The `R`-linear equivalence between additive morphisms `A →+ B` and `ℤ`-linear morphisms `A →ₗ[ℤ] B`.
--/
-@[simps]
-def addMonoidHomLequivInt {A B : Type*} (R : Type*) [Semiring R] [AddCommGroup A] [AddCommGroup B]
-    [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℤ] B
-    where
-  toFun := AddMonoidHom.toIntLinearMap
-  invFun := LinearMap.toAddMonoidHom
-  map_add' := by intros; ext; rfl
-  map_smul' := by intros; ext; rfl
-  left_inv := by intro f; ext; rfl
-  right_inv := by intro f; ext; rfl
-#align add_monoid_hom_lequiv_int addMonoidHomLequivInt
-
-/-- Ring equivalence between additive group endomorphisms of an `AddCommGroup` `A` and
-`ℤ`-module endomorphisms of `A.` -/
-@[simps] def addMonoidEndRingEquivInt (A : Type*) [AddCommGroup A] :
-    AddMonoid.End A ≃+* Module.End ℤ A :=
-  { addMonoidHomLequivInt (B := A) ℤ with
-    map_mul' := fun _ _ => rfl }
 
 /-! ### Properties of linear maps -/
 
@@ -447,7 +409,7 @@ protected theorem _root_.LinearEquivClass.range [Module R M] [Module R₂ M₂] 
 #align linear_equiv_class.range LinearEquivClass.range
 
 theorem eq_bot_of_equiv [Module R₂ M₂] (e : p ≃ₛₗ[σ₁₂] (⊥ : Submodule R₂ M₂)) : p = ⊥ := by
-  refine' bot_unique (SetLike.le_def.2 fun b hb => (Submodule.mem_bot R).2 _)
+  refine bot_unique (SetLike.le_def.2 fun b hb => (Submodule.mem_bot R).2 ?_)
   rw [← p.mk_eq_zero hb, ← e.map_eq_zero_iff]
   apply Submodule.eq_zero_of_bot_submodule
 #align linear_equiv.eq_bot_of_equiv LinearEquiv.eq_bot_of_equiv
@@ -585,8 +547,7 @@ def smulOfUnit (a : Rˣ) : M ≃ₗ[R] M :=
 linear isomorphism between the two function spaces. -/
 def arrowCongr {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
     [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂] [Module R M₂₁]
-    [Module R M₂₂] (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) : (M₁ →ₗ[R] M₂₁) ≃ₗ[R] M₂ →ₗ[R] M₂₂
-    where
+    [Module R M₂₂] (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) : (M₁ →ₗ[R] M₂₁) ≃ₗ[R] M₂ →ₗ[R] M₂₂ where
   toFun := fun f : M₁ →ₗ[R] M₂₁ => (e₂ : M₂₁ →ₗ[R] M₂₂).comp <| f.comp (e₁.symm : M₂ →ₗ[R] M₁)
   invFun f := (e₂.symm : M₂₂ →ₗ[R] M₂₁).comp <| f.comp (e₁ : M₁ →ₗ[R] M₂)
   left_inv f := by
@@ -724,7 +685,7 @@ def equivSubtypeMap (p : Submodule R M) (q : Submodule R p) : q ≃ₗ[R] q.map 
   { (p.subtype.domRestrict q).codRestrict _ (by rintro ⟨x, hx⟩; exact ⟨x, hx, rfl⟩) with
     invFun := by
       rintro ⟨x, hx⟩
-      refine' ⟨⟨x, _⟩, _⟩ <;> rcases hx with ⟨⟨_, h⟩, _, rfl⟩ <;> assumption
+      refine ⟨⟨x, ?_⟩, ?_⟩ <;> rcases hx with ⟨⟨_, h⟩, _, rfl⟩ <;> assumption
     left_inv := fun ⟨⟨_, _⟩, _⟩ => rfl
     right_inv := fun ⟨x, ⟨_, h⟩, _, rfl⟩ => by ext; rfl }
 #align submodule.equiv_subtype_map Submodule.equivSubtypeMap
@@ -803,7 +764,7 @@ theorem funLeft_surjective_of_injective (f : m → n) (hf : Injective f) :
     Surjective (funLeft R M f) := by
   classical
     intro g
-    refine' ⟨fun x => if h : ∃ y, f y = x then g h.choose else 0, _⟩
+    refine ⟨fun x => if h : ∃ y, f y = x then g h.choose else 0, ?_⟩
     ext
     dsimp only [funLeft_apply]
     split_ifs with w

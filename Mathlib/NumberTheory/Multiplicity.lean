@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tian Chen, Mantas Bakšys
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Data.Int.Parity
+import Mathlib.Algebra.Ring.Int
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.RingTheory.Ideal.Quotient
@@ -30,8 +30,6 @@ This file contains results in number theory relating to multiplicity.
 
 open Ideal Ideal.Quotient Finset
 
-open BigOperators
-
 variable {R : Type*} {n : ℕ}
 
 section CommRing
@@ -39,19 +37,19 @@ section CommRing
 variable [CommRing R] {a b x y : R}
 
 theorem dvd_geom_sum₂_iff_of_dvd_sub {x y p : R} (h : p ∣ x - y) :
-    (p ∣ ∑ i in range n, x ^ i * y ^ (n - 1 - i)) ↔ p ∣ n * y ^ (n - 1) := by
+    (p ∣ ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) ↔ p ∣ n * y ^ (n - 1) := by
   rw [← mem_span_singleton, ← Ideal.Quotient.eq] at h
   simp only [← mem_span_singleton, ← eq_zero_iff_mem, RingHom.map_geom_sum₂, h, geom_sum₂_self,
     _root_.map_mul, map_pow, map_natCast]
 #align dvd_geom_sum₂_iff_of_dvd_sub dvd_geom_sum₂_iff_of_dvd_sub
 
 theorem dvd_geom_sum₂_iff_of_dvd_sub' {x y p : R} (h : p ∣ x - y) :
-    (p ∣ ∑ i in range n, x ^ i * y ^ (n - 1 - i)) ↔ p ∣ n * x ^ (n - 1) := by
+    (p ∣ ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) ↔ p ∣ n * x ^ (n - 1) := by
   rw [geom_sum₂_comm, dvd_geom_sum₂_iff_of_dvd_sub]; simpa using h.neg_right
 #align dvd_geom_sum₂_iff_of_dvd_sub' dvd_geom_sum₂_iff_of_dvd_sub'
 
 theorem dvd_geom_sum₂_self {x y : R} (h : ↑n ∣ x - y) :
-    ↑n ∣ ∑ i in range n, x ^ i * y ^ (n - 1 - i) :=
+    ↑n ∣ ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) :=
   (dvd_geom_sum₂_iff_of_dvd_sub h).mpr (dvd_mul_right _ _)
 #align dvd_geom_sum₂_self dvd_geom_sum₂_self
 
@@ -62,7 +60,7 @@ theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
   · simp only [Nat.succ_sub_succ_eq_sub, tsub_zero, Nat.cast_succ, add_pow, Finset.sum_range_succ,
       Nat.choose_self, Nat.succ_sub _, tsub_self, pow_one, Nat.choose_succ_self_right, pow_zero,
       mul_one, Nat.cast_zero, zero_add, Nat.succ_eq_add_one, add_tsub_cancel_left]
-    suffices p ^ 2 ∣ ∑ i : ℕ in range n, x ^ i * p ^ (n + 1 - i) * ↑((n + 1).choose i) by
+    suffices p ^ 2 ∣ ∑ i ∈ range n, x ^ i * p ^ (n + 1 - i) * ↑((n + 1).choose i) by
       convert this; abel
     apply Finset.dvd_sum
     intro y hy
@@ -74,7 +72,7 @@ theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
 #align sq_dvd_add_pow_sub_sub sq_dvd_add_pow_sub_sub
 
 theorem not_dvd_geom_sum₂ {p : R} (hp : Prime p) (hxy : p ∣ x - y) (hx : ¬p ∣ x) (hn : ¬p ∣ n) :
-    ¬p ∣ ∑ i in range n, x ^ i * y ^ (n - 1 - i) := fun h =>
+    ¬p ∣ ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) := fun h =>
   hx <|
     hp.dvd_of_dvd_pow <| (hp.dvd_or_dvd <| (dvd_geom_sum₂_iff_of_dvd_sub' hxy).mp h).resolve_left hn
 #align not_dvd_geom_sum₂ not_dvd_geom_sum₂
@@ -82,7 +80,7 @@ theorem not_dvd_geom_sum₂ {p : R} (hp : Prime p) (hxy : p ∣ x - y) (hx : ¬p
 variable {p : ℕ} (a b)
 
 theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
-    (p : R) ^ 2 ∣ (∑ i in range p, (a + p * b) ^ i * a ^ (p - 1 - i)) - p * a ^ (p - 1) := by
+    (p : R) ^ 2 ∣ (∑ i ∈ range p, (a + p * b) ^ i * a ^ (p - 1 - i)) - p * a ^ (p - 1) := by
   have h1 : ∀ (i : ℕ),
       (p : R) ^ 2 ∣ (a + ↑p * b) ^ i - (a ^ (i - 1) * (↑p * b) * i + a ^ i) := by
     intro i
@@ -93,22 +91,22 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
   simp_rw [← mem_span_singleton, ← Ideal.Quotient.eq] at *
   let s : R := (p : R)^2
   calc
-    (Ideal.Quotient.mk (span {s})) (∑ i in range p, (a + (p : R) * b) ^ i * a ^ (p - 1 - i)) =
-        ∑ i : ℕ in Finset.range p,
-        mk (span {s}) ((a ^ (i - 1) * (↑p * b) * ↑i + a ^ i) * a ^ (p - 1 - i)) :=
-      by simp_rw [RingHom.map_geom_sum₂, ← map_pow, h1, ← _root_.map_mul]
+    (Ideal.Quotient.mk (span {s})) (∑ i ∈ range p, (a + (p : R) * b) ^ i * a ^ (p - 1 - i)) =
+        ∑ i ∈ Finset.range p,
+        mk (span {s}) ((a ^ (i - 1) * (↑p * b) * ↑i + a ^ i) * a ^ (p - 1 - i)) := by
+      simp_rw [RingHom.map_geom_sum₂, ← map_pow, h1, ← _root_.map_mul]
     _ =
         mk (span {s})
-            (∑ x : ℕ in Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
-          mk (span {s}) (∑ x : ℕ in Finset.range p, a ^ (x + (p - 1 - x))) := by
+            (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
+          mk (span {s}) (∑ x ∈ Finset.range p, a ^ (x + (p - 1 - x))) := by
       ring_nf
       simp only [← pow_add, map_add, Finset.sum_add_distrib, ← map_sum]
       congr
       simp [pow_add a, mul_assoc]
     _ =
         mk (span {s})
-            (∑ x : ℕ in Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
-          mk (span {s}) (∑ _x : ℕ in Finset.range p, a ^ (p - 1)) := by
+            (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
+          mk (span {s}) (∑ _x ∈ Finset.range p, a ^ (p - 1)) := by
       rw [add_right_inj]
       have : ∀ (x : ℕ), (hx : x ∈ range p) → a ^ (x + (p - 1 - x)) = a ^ (p - 1) := by
         intro x hx
@@ -117,11 +115,11 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       rw [Finset.sum_congr rfl this]
     _ =
         mk (span {s})
-            (∑ x : ℕ in Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
-          mk (span {s}) (↑p * a ^ (p - 1)) :=
-      by simp only [add_right_inj, Finset.sum_const, Finset.card_range, nsmul_eq_mul]
+            (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
+          mk (span {s}) (↑p * a ^ (p - 1)) := by
+      simp only [add_right_inj, Finset.sum_const, Finset.card_range, nsmul_eq_mul]
     _ =
-        mk (span {s}) (↑p * b * ∑ x : ℕ in Finset.range p, a ^ (p - 2) * x) +
+        mk (span {s}) (↑p * b * ∑ x ∈ Finset.range p, a ^ (p - 2) * x) +
           mk (span {s}) (↑p * a ^ (p - 1)) := by
       simp only [Finset.mul_sum, ← mul_assoc, ← pow_add]
       rw [Finset.sum_congr rfl]
@@ -143,8 +141,8 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
           Nat.mul_div_assoc p (even_iff_two_dvd.mp (Nat.Odd.sub_odd hp odd_one))]
       ring_nf
       rw [mul_assoc, mul_assoc]
-      refine' mul_eq_zero_of_left _ _
-      refine' Ideal.Quotient.eq_zero_iff_mem.mpr _
+      refine mul_eq_zero_of_left ?_ _
+      refine Ideal.Quotient.eq_zero_iff_mem.mpr ?_
       simp [mem_span_singleton]
 #align odd_sq_dvd_geom_sum₂_sub odd_sq_dvd_geom_sum₂_sub
 
@@ -162,15 +160,15 @@ theorem pow_sub_pow_of_prime {p : R} (hp : Prime p) {x y : R} (hxy : p ∣ x - y
 
 variable (hp : Prime (p : R)) (hp1 : Odd p) (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x)
 
-theorem geom_sum₂_eq_one : multiplicity (↑p) (∑ i in range p, x ^ i * y ^ (p - 1 - i)) = 1 := by
+theorem geom_sum₂_eq_one : multiplicity (↑p) (∑ i ∈ range p, x ^ i * y ^ (p - 1 - i)) = 1 := by
   rw [← Nat.cast_one]
-  refine' multiplicity.eq_coe_iff.2 ⟨_, _⟩
+  refine multiplicity.eq_coe_iff.2 ⟨?_, ?_⟩
   · rw [pow_one]
     exact dvd_geom_sum₂_self hxy
   rw [dvd_iff_dvd_of_dvd_sub hxy] at hx
   cases' hxy with k hk
   rw [one_add_one_eq_two, eq_add_of_sub_eq' hk]
-  refine' mt (dvd_iff_dvd_of_dvd_sub (@odd_sq_dvd_geom_sum₂_sub _ _ y k _ hp1)).mp _
+  refine mt (dvd_iff_dvd_of_dvd_sub (@odd_sq_dvd_geom_sum₂_sub _ _ y k _ hp1)).mp ?_
   rw [pow_two, mul_dvd_mul_iff_left hp.ne_zero]
   exact mt hp.dvd_of_dvd_pow hx
 #align multiplicity.geom_sum₂_eq_one multiplicity.geom_sum₂_eq_one
@@ -213,7 +211,7 @@ theorem Int.pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (
   · exact fun h => hx (hp.dvd_of_dvd_pow h)
   · rw [Int.natCast_dvd_natCast]
     rintro ⟨c, rfl⟩
-    refine' hpn ⟨c, _⟩
+    refine hpn ⟨c, ?_⟩
     rwa [pow_succ, mul_assoc]
 #align multiplicity.int.pow_sub_pow multiplicity.Int.pow_sub_pow
 
@@ -253,7 +251,7 @@ end multiplicity
 end CommRing
 
 theorem pow_two_pow_sub_pow_two_pow [CommRing R] {x y : R} (n : ℕ) :
-    x ^ 2 ^ n - y ^ 2 ^ n = (∏ i in Finset.range n, (x ^ 2 ^ i + y ^ 2 ^ i)) * (x - y) := by
+    x ^ 2 ^ n - y ^ 2 ^ n = (∏ i ∈ Finset.range n, (x ^ 2 ^ i + y ^ 2 ^ i)) * (x - y) := by
   induction' n with d hd
   · simp only [pow_zero, pow_one, range_zero, prod_empty, one_mul, Nat.zero_eq]
   · suffices x ^ 2 ^ d.succ - y ^ 2 ^ d.succ = (x ^ 2 ^ d + y ^ 2 ^ d) * (x ^ 2 ^ d - y ^ 2 ^ d) by
@@ -277,7 +275,7 @@ theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hx
   have hx_odd : Odd x := by rwa [Int.odd_iff_not_even, even_iff_two_dvd]
   have hxy_even : Even (x - y) := even_iff_two_dvd.mpr (dvd_trans (by decide) hxy)
   have hy_odd : Odd y := by simpa using hx_odd.sub_even hxy_even
-  refine' multiplicity.eq_coe_iff.mpr ⟨_, _⟩
+  refine multiplicity.eq_coe_iff.mpr ⟨?_, ?_⟩
   · rw [pow_one, ← even_iff_two_dvd]
     exact hx_odd.pow.add_odd hy_odd.pow
   cases' i with i
@@ -364,7 +362,7 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
   obtain hyx | hyx := le_total y x
   · iterate 3 rw [← multiplicity.Int.natCast_multiplicity]
     simp only [Int.ofNat_sub hyx, Int.ofNat_sub (pow_le_pow_left' hyx _), Int.ofNat_add,
-      Int.coe_nat_pow]
+      Int.natCast_pow]
     rw [← Int.natCast_dvd_natCast] at hx
     rw [← Int.natCast_dvd_natCast, Int.ofNat_sub hyx] at hxy
     convert Int.two_pow_sub_pow hxy hx hn using 2

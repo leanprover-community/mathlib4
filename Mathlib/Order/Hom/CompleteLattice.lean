@@ -276,8 +276,7 @@ theorem ext {f g : sSupHom α β} (h : ∀ a, f a = g a) : f = g :=
 
 /-- Copy of a `sSupHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : sSupHom α β) (f' : α → β) (h : f' = f) : sSupHom α β
-    where
+protected def copy (f : sSupHom α β) (f' : α → β) (h : f' = f) : sSupHom α β where
   toFun := f'
   map_sSup' := h.symm ▸ f.map_sSup'
 #align Sup_hom.copy sSupHom.copy
@@ -314,8 +313,7 @@ theorem id_apply (a : α) : sSupHom.id α a = a :=
 #align Sup_hom.id_apply sSupHom.id_apply
 
 /-- Composition of `sSupHom`s as a `sSupHom`. -/
-def comp (f : sSupHom β γ) (g : sSupHom α β) : sSupHom α γ
-    where
+def comp (f : sSupHom β γ) (g : sSupHom α β) : sSupHom α γ where
   toFun := f ∘ g
   map_sSup' s := by rw [comp_apply, map_sSup, map_sSup, Set.image_image]; simp only [Function.comp]
 #align Sup_hom.comp sSupHom.comp
@@ -417,8 +415,7 @@ theorem ext {f g : sInfHom α β} (h : ∀ a, f a = g a) : f = g :=
 
 /-- Copy of a `sInfHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : sInfHom α β) (f' : α → β) (h : f' = f) : sInfHom α β
-    where
+protected def copy (f : sInfHom α β) (f' : α → β) (h : f' = f) : sInfHom α β where
   toFun := f'
   map_sInf' := h.symm ▸ f.map_sInf'
 #align Inf_hom.copy sInfHom.copy
@@ -455,8 +452,7 @@ theorem id_apply (a : α) : sInfHom.id α a = a :=
 #align Inf_hom.id_apply sInfHom.id_apply
 
 /-- Composition of `sInfHom`s as a `sInfHom`. -/
-def comp (f : sInfHom β γ) (g : sInfHom α β) : sInfHom α γ
-    where
+def comp (f : sInfHom β γ) (g : sInfHom α β) : sInfHom α γ where
   toFun := f ∘ g
   map_sInf' s := by rw [comp_apply, map_sInf, map_sInf, Set.image_image]; simp only [Function.comp]
 #align Inf_hom.comp sInfHom.comp
@@ -535,16 +531,14 @@ namespace FrameHom
 
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [CompleteLattice δ]
 
-instance : FunLike (FrameHom α β) α β
-    where
+instance : FunLike (FrameHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
 
-instance : FrameHomClass (FrameHom α β) α β
-    where
+instance : FrameHomClass (FrameHom α β) α β where
   map_sSup f := f.map_sSup'
   map_inf f := f.map_inf'
   map_top f := f.map_top'
@@ -788,8 +782,7 @@ variable [SupSet α] [SupSet β] [SupSet γ]
 
 /-- Reinterpret a `⨆`-homomorphism as an `⨅`-homomorphism between the dual orders. -/
 @[simps]
-protected def dual : sSupHom α β ≃ sInfHom αᵒᵈ βᵒᵈ
-    where
+protected def dual : sSupHom α β ≃ sInfHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨toDual ∘ f ∘ ofDual, f.map_sSup'⟩
   invFun f := ⟨ofDual ∘ f ∘ toDual, f.map_sInf'⟩
   left_inv _ := sSupHom.ext fun _ => rfl
@@ -826,8 +819,7 @@ variable [InfSet α] [InfSet β] [InfSet γ]
 
 /-- Reinterpret an `⨅`-homomorphism as a `⨆`-homomorphism between the dual orders. -/
 @[simps]
-protected def dual : sInfHom α β ≃ sSupHom αᵒᵈ βᵒᵈ
-    where
+protected def dual : sInfHom α β ≃ sSupHom αᵒᵈ βᵒᵈ where
   toFun f :=
     { toFun := toDual ∘ f ∘ ofDual
       map_sSup' := fun _ => congr_arg toDual (map_sInf f _) }
@@ -869,8 +861,7 @@ variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ]
 /-- Reinterpret a complete lattice homomorphism as a complete lattice homomorphism between the dual
 lattices. -/
 @[simps!]
-protected def dual : CompleteLatticeHom α β ≃ CompleteLatticeHom αᵒᵈ βᵒᵈ
-    where
+protected def dual : CompleteLatticeHom α β ≃ CompleteLatticeHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨sSupHom.dual f.tosSupHom, fun s ↦ f.map_sInf' s⟩
   invFun f := ⟨sSupHom.dual f.tosSupHom, fun s ↦ f.map_sInf' s⟩
   left_inv _ := ext fun _ => rfl
@@ -912,8 +903,7 @@ namespace CompleteLatticeHom
 /-- `Set.preimage` as a complete lattice homomorphism.
 
 See also `sSupHom.setImage`. -/
-def setPreimage (f : α → β) : CompleteLatticeHom (Set β) (Set α)
-    where
+def setPreimage (f : α → β) : CompleteLatticeHom (Set β) (Set α) where
   toFun := preimage f
   map_sSup' s := preimage_sUnion.trans <| by simp only [Set.sSup_eq_sUnion, Set.sUnion_image]
   map_sInf' s := preimage_sInter.trans <| by simp only [Set.sInf_eq_sInter, Set.sInter_image]
@@ -951,16 +941,14 @@ subsets.
 
 See also `CompleteLatticeHom.setPreimage`. -/
 @[simps]
-def sSupHom.setImage (f : α → β) : sSupHom (Set α) (Set β)
-    where
+def sSupHom.setImage (f : α → β) : sSupHom (Set α) (Set β) where
   toFun := image f
   map_sSup' := Set.image_sSup
 #align Sup_hom.set_image sSupHom.setImage
 
 /-- An equivalence of types yields an order isomorphism between their lattices of subsets. -/
 @[simps]
-def Equiv.toOrderIsoSet (e : α ≃ β) : Set α ≃o Set β
-    where
+def Equiv.toOrderIsoSet (e : α ≃ β) : Set α ≃o Set β where
   toFun s := e '' s
   invFun s := e.symm '' s
   left_inv s := by simp only [← image_comp, Equiv.symm_comp_self, id, image_id']

@@ -32,7 +32,7 @@ open Topology
 then `y` is a fixed point for `f`. -/
 theorem isFixedPt_of_tendsto_iterate {x y : α} (hy : Tendsto (fun n => f^[n] x) atTop (𝓝 y))
     (hf : ContinuousAt f y) : IsFixedPt f y := by
-  refine' tendsto_nhds_unique ((tendsto_add_atTop_iff_nat 1).1 _) hy
+  refine tendsto_nhds_unique ((tendsto_add_atTop_iff_nat 1).1 ?_) hy
   simp only [iterate_succ' f]
   exact hf.tendsto.comp hy
 #align is_fixed_pt_of_tendsto_iterate isFixedPt_of_tendsto_iterate

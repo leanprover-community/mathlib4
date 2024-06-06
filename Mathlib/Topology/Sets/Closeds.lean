@@ -31,6 +31,7 @@ namespace TopologicalSpace
 
 /-- The type of closed subsets of a topological space. -/
 structure Closeds (α : Type*) [TopologicalSpace α] where
+  /-- the carrier set, i.e. the points in this set -/
   carrier : Set α
   closed' : IsClosed carrier
 #align topological_space.closeds TopologicalSpace.Closeds
@@ -285,6 +286,7 @@ theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
 
 /-- The type of clopen sets of a topological space. -/
 structure Clopens (α : Type*) [TopologicalSpace α] where
+  /-- the carrier set, i.e. the points in this set -/
   carrier : Set α
   isClopen' : IsClopen carrier
 #align topological_space.clopens TopologicalSpace.Clopens

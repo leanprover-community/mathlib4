@@ -5,7 +5,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 -/
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Tactic.Positivity.Core
-import Mathlib.Algebra.GroupPower.NegOnePow
+import Mathlib.Algebra.Ring.NegOnePow
 
 #align_import analysis.special_functions.trigonometric.basic from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
@@ -50,33 +50,35 @@ open Topology Filter Set
 
 namespace Complex
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_sin : Continuous sin := by
   change Continuous fun z => (exp (-z * I) - exp (z * I)) * I / 2
   continuity
 #align complex.continuous_sin Complex.continuous_sin
 
+@[fun_prop]
 theorem continuousOn_sin {s : Set ℂ} : ContinuousOn sin s :=
   continuous_sin.continuousOn
 #align complex.continuous_on_sin Complex.continuousOn_sin
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_cos : Continuous cos := by
   change Continuous fun z => (exp (z * I) + exp (-z * I)) / 2
   continuity
 #align complex.continuous_cos Complex.continuous_cos
 
+@[fun_prop]
 theorem continuousOn_cos {s : Set ℂ} : ContinuousOn cos s :=
   continuous_cos.continuousOn
 #align complex.continuous_on_cos Complex.continuousOn_cos
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_sinh : Continuous sinh := by
   change Continuous fun z => (exp z - exp (-z)) / 2
   continuity
 #align complex.continuous_sinh Complex.continuous_sinh
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_cosh : Continuous cosh := by
   change Continuous fun z => (exp z + exp (-z)) / 2
   continuity
@@ -88,30 +90,32 @@ namespace Real
 
 variable {x y z : ℝ}
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_sin : Continuous sin :=
   Complex.continuous_re.comp (Complex.continuous_sin.comp Complex.continuous_ofReal)
 #align real.continuous_sin Real.continuous_sin
 
+@[fun_prop]
 theorem continuousOn_sin {s} : ContinuousOn sin s :=
   continuous_sin.continuousOn
 #align real.continuous_on_sin Real.continuousOn_sin
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_cos : Continuous cos :=
   Complex.continuous_re.comp (Complex.continuous_cos.comp Complex.continuous_ofReal)
 #align real.continuous_cos Real.continuous_cos
 
+@[fun_prop]
 theorem continuousOn_cos {s} : ContinuousOn cos s :=
   continuous_cos.continuousOn
 #align real.continuous_on_cos Real.continuousOn_cos
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_sinh : Continuous sinh :=
   Complex.continuous_re.comp (Complex.continuous_sinh.comp Complex.continuous_ofReal)
 #align real.continuous_sinh Real.continuous_sinh
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_cosh : Continuous cosh :=
   Complex.continuous_re.comp (Complex.continuous_cosh.comp Complex.continuous_ofReal)
 #align real.continuous_cosh Real.continuous_cosh
@@ -751,9 +755,9 @@ theorem sqrtTwoAddSeries_nonneg {x : ℝ} (h : 0 ≤ x) : ∀ n : ℕ, 0 ≤ sqr
 theorem sqrtTwoAddSeries_lt_two : ∀ n : ℕ, sqrtTwoAddSeries 0 n < 2
   | 0 => by norm_num
   | n + 1 => by
-    refine' lt_of_lt_of_le _ (sqrt_sq zero_lt_two.le).le
+    refine lt_of_lt_of_le ?_ (sqrt_sq zero_lt_two.le).le
     rw [sqrtTwoAddSeries, sqrt_lt_sqrt_iff, ← lt_sub_iff_add_lt']
-    · refine' (sqrtTwoAddSeries_lt_two n).trans_le _
+    · refine (sqrtTwoAddSeries_lt_two n).trans_le ?_
       norm_num
     · exact add_nonneg zero_le_two (sqrtTwoAddSeries_zero_nonneg n)
 #align real.sqrt_two_add_series_lt_two Real.sqrtTwoAddSeries_lt_two
@@ -887,7 +891,7 @@ theorem cos_pi_div_three : cos (π / 3) = 1 / 2 := by
   cases' mul_eq_zero.mp h₁ with h h
   · linarith [pow_eq_zero h]
   · have : cos π < cos (π / 3) := by
-      refine' cos_lt_cos_of_nonneg_of_le_pi _ le_rfl _ <;> linarith [pi_pos]
+      refine cos_lt_cos_of_nonneg_of_le_pi ?_ le_rfl ?_ <;> linarith [pi_pos]
     linarith [cos_pi]
 #align real.cos_pi_div_three Real.cos_pi_div_three
 
@@ -1424,11 +1428,11 @@ theorem abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) {
     add_mul, mul_assoc, mul_comm (Real.cos b), neg_re, ← Real.cos_abs z.im]
   have : Real.exp |z.re| ≤ Real.exp z.re + Real.exp (-z.re) :=
     apply_abs_le_add_of_nonneg (fun x => (Real.exp_pos x).le) z.re
-  refine' mul_le_mul_of_nonpos_left (mul_le_mul this _ _ ((Real.exp_pos _).le.trans this)) ha
+  refine mul_le_mul_of_nonpos_left (mul_le_mul this ?_ ?_ ((Real.exp_pos _).le.trans this)) ha
   · exact
       Real.cos_le_cos_of_nonneg_of_le_pi (_root_.abs_nonneg _)
         (hb.trans <| half_le_self <| Real.pi_pos.le) hz
-  · refine' Real.cos_nonneg_of_mem_Icc ⟨_, hb⟩
+  · refine Real.cos_nonneg_of_mem_Icc ⟨?_, hb⟩
     exact (neg_nonpos.2 <| Real.pi_div_two_pos.le).trans ((_root_.abs_nonneg _).trans hz)
 #align complex.abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le Complex.abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le
 

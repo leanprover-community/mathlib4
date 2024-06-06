@@ -95,9 +95,9 @@ abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
 instance concreteCategory : ConcreteCategory.{v} (BialgebraCat.{v} R) where
   forget :=
     { obj := fun M => M
-      map := @fun M N f => f.toBialgHom }
+      map := fun f => f.toBialgHom }
   forget_faithful :=
-    { map_injective := @fun M N => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
+    { map_injective := fun {M N} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
 
 instance hasForgetToAlgebra : HasForget₂ (BialgebraCat R) (AlgebraCat R) where
   forget₂ :=

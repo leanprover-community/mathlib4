@@ -66,7 +66,7 @@ variable (x y : L)
 
 open LieModule LinearMap
 
-local notation "φ" => LieModule.toEndomorphism R L M
+local notation "φ" => LieModule.toEnd R L M
 
 /-- Let `x` and `y` be elements of a Lie `R`-algebra `L`, and `M` a Lie module over `M`.
 Then the characteristic polynomials of the family of endomorphisms `⁅r • y + x, _⁆` of `M`
@@ -174,7 +174,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     simp_rw [Polynomial.map_pow, map_X, χ, lieCharpoly_map_eval, one_smul, u, sub_add_cancel,
       -- and therefore the endomorphism `⁅y, _⁆` acts nilpotently on `E`.
       r, LinearMap.charpoly_eq_X_pow_iff,
-      Subtype.ext_iff, coe_toEndomorphism_pow, ZeroMemClass.coe_zero] at this
+      Subtype.ext_iff, coe_toEnd_pow _ _ _ E, ZeroMemClass.coe_zero] at this
     -- We ultimately want to show `engel K x ≤ engel K y`
     intro z hz
     -- which holds by definition of Engel subalgebra and the nilpotency that we just established.
@@ -235,7 +235,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
       apply_fun (evalRingHom 0) at H
       rw [constantCoeff_apply, ← coeff_map, lieCharpoly_map_eval,
         ← constantCoeff_apply, map_zero, LinearMap.charpoly_constantCoeff_eq_zero_iff] at H
-      simpa only [coe_bracket_of_module, ne_eq, zero_smul, zero_add, toEndomorphism_apply_apply]
+      simpa only [coe_bracket_of_module, ne_eq, zero_smul, zero_add, toEnd_apply_apply]
         using H
     -- It suffices to show `z = 0` (in `Q`) to obtain a contradiction.
     apply hz0
@@ -301,7 +301,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     replace this : engel K x ≤ engel K (v : L) := (hmin ⟨_, v, v.2, rfl⟩ this).ge
     intro z
     -- And so we are done, by the definition of Engel subalgebra.
-    simpa only [mem_engel_iff, Subtype.ext_iff, coe_toEndomorphism_pow] using this z.2
+    simpa only [mem_engel_iff, Subtype.ext_iff, coe_toEnd_pow _ _ _ E] using this z.2
   -- Now we are in good shape.
   -- Fix an element `z` in the Engel subalgebra of `y`.
   intro z hz
@@ -311,7 +311,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   -- We denote the image of `z` in `Q` by `z'`.
   set z' : Q := LieSubmodule.Quotient.mk' E z
   -- First we observe that `z'` is killed by a power of `⁅v, _⁆`.
-  have hz' : ∃ n : ℕ, (toEndomorphism K U Q v ^ n) z' = 0 := by
+  have hz' : ∃ n : ℕ, (toEnd K U Q v ^ n) z' = 0 := by
     rw [mem_engel_iff] at hz
     obtain ⟨n, hn⟩ := hz
     use n
@@ -325,7 +325,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   classical
   -- Now let `n` be the smallest power such that `⁅v, _⁆ ^ n` kills `z'`.
   set n := Nat.find hz' with _hn
-  have hn : (toEndomorphism K U Q v ^ n) z' = 0 := Nat.find_spec hz'
+  have hn : (toEnd K U Q v ^ n) z' = 0 := Nat.find_spec hz'
   -- If `n = 0`, then we are done.
   obtain hn₀|⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
   · simpa only [hn₀, pow_zero, LinearMap.one_apply] using hn
@@ -338,7 +338,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   -- We deduce from this that `z' = 0`, arguing by contraposition.
   contrapose! hsψ
   -- Indeed `⁅v, _⁆` kills `⁅v, _⁆ ^ k` applied to `z'`.
-  use (toEndomorphism K U Q v ^ k) z'
+  use (toEnd K U Q v ^ k) z'
   refine ⟨?_, ?_⟩
   · -- And `⁅v, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
     apply Nat.find_min hz'; omega
