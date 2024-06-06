@@ -117,34 +117,38 @@ def Float.toStringDecimals (r : Float) (digits : Nat) : String :=
   | [a, b] => a ++ "." ++ b.take digits
   | _ => r.toString
 
-open IO.FS IO.Process Name in
 /-- Implementation of the longest pole command line program. -/
 def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
-  let to := match args.flag? "to" with
-  | some to => to.as! ModuleName
-  | none => `Mathlib -- autodetect the main module from the `lakefile.lean`?
-  let sha := headSha
+  let to ← match args.flag? "to" with
+  | some to => pure <| to.as! ModuleName
+  | none => ImportGraph.getCurrentModule -- autodetect the main module from the `lakefile.lean`
+
   searchPathRef.set compile_time_search_path%
   let _ ← unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
     let graph := env.importGraph
-    IO.eprintln s!"Analyzing {to} at {<- sha}"
-    let instructions ← SpeedCenterAPI.instructions (← sha)
+    let sha ← headSha
+    IO.eprintln s!"Analyzing {to} at {sha}"
+    let instructions ← SpeedCenterAPI.instructions (sha)
     let cumulative := cumulativeInstructions instructions graph
     let total := totalInstructions instructions graph
     let slowest := slowestParents cumulative graph
     let mut table := #[]
     let mut n := some to
-    while n != none do
-      let i := instructions.find! n.get!
-      let c := cumulative.find! n.get!
-      let t := total.find! n.get!
+    while hn : n.isSome do
+      let n' := n.get hn
+      let i := instructions.findD n' 0
+      let c := cumulative.find! n'
+      let t := total.find! n'
       let r := (t / c).toString
       let r := match r.split (· = '.') with
       | [a, b] => a ++ "." ++ b.take 2
       | _ => r
       table := table.push #[n.get!.toString, toString (i/10^6 |>.toUInt64), toString (c/10^6 |>.toUInt64), r]
-      n := slowest.find? n.get!
-    IO.println (formatTable #["file", "instructions", "cumulative", "parallelism"] table #[Alignment.left, Alignment.right, Alignment.right, Alignment.center])
+      n := slowest.find? n'
+    IO.println (formatTable
+                  #["file", "instructions", "cumulative", "parallelism"]
+                  table
+                  #[Alignment.left, Alignment.right, Alignment.right, Alignment.center])
   return 0
 
 /-- Setting up command line options and help text for `lake exe pole`. -/
