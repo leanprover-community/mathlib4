@@ -59,6 +59,7 @@ namespace Gal
 
 instance instGroup : Group (Gal p) :=
   inferInstanceAs (Group (p.SplittingField ≃ₐ[F] p.SplittingField))
+
 instance instFintype : Fintype (Gal p) :=
   inferInstanceAs (Fintype (p.SplittingField ≃ₐ[F] p.SplittingField))
 
