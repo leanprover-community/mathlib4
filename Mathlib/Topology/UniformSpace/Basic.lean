@@ -364,7 +364,7 @@ theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
 #align uniform_space.to_core_to_topological_space UniformSpace.toCore_toTopologicalSpace
 
 /-- Build a `UniformSpace` from a `UniformSpace.Core` and a compatible topology.
-Use `UnifiormSpace.mk` instead to avoid proving
+Use `UniformSpace.mk` instead to avoid proving
 the unnecessary assumption `UniformSpace.Core.refl`.
 
 The main constructor used to use a different compatibility assumption.
@@ -1166,10 +1166,8 @@ protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : Uniform
     (h : ∀ t' ∈ tt, t ≤ t') : t ≤ sInf tt :=
   show 𝓤[t] ≤ ⨅ u ∈ tt, 𝓤[u] from le_iInf₂ h
 
--- TODO: Replace `.ofNhdsEqComap` with `.mk`.
-set_option linter.deprecated false in
 instance : Top (UniformSpace α) :=
-  ⟨.ofNhdsEqComap ⟨⊤, le_top, le_top, le_top⟩ ⊤ fun x ↦ by simp only [nhds_top, comap_top]⟩
+  ⟨@UniformSpace.mk α ⊤ ⊤ le_top le_top fun x ↦ by simp only [nhds_top, comap_top]⟩
 
 instance : Bot (UniformSpace α) :=
   ⟨{  toTopologicalSpace := ⊥
