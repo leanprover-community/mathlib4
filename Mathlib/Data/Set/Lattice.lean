@@ -1555,7 +1555,7 @@ theorem image_iInter {f : α → β} (hf : Bijective f) (s : ι → Set α) :
     (f '' ⋂ i, s i) = ⋂ i, f '' s i := by
   cases isEmpty_or_nonempty ι
   · simp_rw [iInter_of_empty, image_univ_of_surjective hf.surjective]
-  · exact (hf.injective.injOn _).image_iInter_eq
+  · exact hf.injective.injOn.image_iInter_eq
 #align set.image_Inter Set.image_iInter
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/

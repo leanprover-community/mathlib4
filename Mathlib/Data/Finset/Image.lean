@@ -524,8 +524,8 @@ theorem image_union [DecidableEq α] {f : α → β} (s₁ s₂ : Finset α) :
 
 theorem image_inter_subset [DecidableEq α] (f : α → β) (s t : Finset α) :
     (s ∩ t).image f ⊆ s.image f ∩ t.image f :=
-  subset_inter (image_subset_image <| inter_subset_left _ _) <|
-    image_subset_image <| inter_subset_right _ _
+  subset_inter (image_subset_image inter_subset_left) <|
+    image_subset_image inter_subset_right
 #align finset.image_inter_subset Finset.image_inter_subset
 
 theorem image_inter_of_injOn [DecidableEq α] {f : α → β} (s t : Finset α)
@@ -537,7 +537,7 @@ theorem image_inter_of_injOn [DecidableEq α] {f : α → β} (s t : Finset α)
 
 theorem image_inter [DecidableEq α] (s₁ s₂ : Finset α) (hf : Injective f) :
     (s₁ ∩ s₂).image f = s₁.image f ∩ s₂.image f :=
-  image_inter_of_injOn _ _ <| hf.injOn _
+  image_inter_of_injOn _ _ hf.injOn
 #align finset.image_inter Finset.image_inter
 
 @[simp]
