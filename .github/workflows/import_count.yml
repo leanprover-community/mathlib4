@@ -35,7 +35,7 @@ jobs:
         # the checkout dance, to avoid a detached head
         git checkout -
         git checkout -
-        git checkout adomani/import-count scripts/count-trans-deps.py
+        git checkout origin/adomani/import-count scripts/count-trans-deps.py
 
         # Compute the counts for the merge base
         python ./scripts/count-trans-deps.py Mathlib/Logic/Function > base.json
