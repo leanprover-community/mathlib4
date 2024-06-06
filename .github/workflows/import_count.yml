@@ -39,6 +39,7 @@ jobs:
 
         # Compute the counts for the merge base
         python ./scripts/count-trans-deps.py Mathlib/Logic/Function > base.json
+        git checkout -
 
     - name: Compare results and comment
       env:
