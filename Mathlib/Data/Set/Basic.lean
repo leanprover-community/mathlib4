@@ -2449,6 +2449,9 @@ theorem coe_inclusion (h : s ⊆ t) (x : s) : (inclusion h x : α) = (x : α) :=
   rfl
 #align set.coe_inclusion Set.coe_inclusion
 
+theorem val_comp_inclusion (h : s ⊆ t) : Subtype.val ∘ inclusion h = Subtype.val :=
+  rfl
+
 theorem inclusion_injective (h : s ⊆ t) : Injective (inclusion h)
   | ⟨_, _⟩, ⟨_, _⟩ => Subtype.ext_iff_val.2 ∘ Subtype.ext_iff_val.1
 #align set.inclusion_injective Set.inclusion_injective
