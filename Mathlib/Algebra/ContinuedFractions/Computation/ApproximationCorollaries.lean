@@ -16,17 +16,12 @@ import Mathlib.Topology.Order.LeftRightNhds
 
 ## Summary
 
-We show that the generalized_continued_fraction given by `GCF.of` in fact is a regular continued
-fraction. Using the equivalence of the convergents computations (`GCF.convs` and `GCF.convs'`) for
+Using the equivalence of the convergents computations (`GCF.convs` and `GCF.convs'`) for
 continued fractions (see `Algebra.ContinuedFractions.ConvergentsEquiv`), it follows that the
 convergents computations for `GCF.of` are equivalent.
 
 Moreover, we show the convergence of the continued fractions computations, that is
 `(GCF.of v).convs` indeed computes `v` in the limit.
-
-## Main Definitions
-
-- `RCF.of` returns the regular continued fraction of a value.
 
 ## Main Theorems
 
@@ -44,26 +39,6 @@ variable {K : Type*} (v : K) [LinearOrderedField K] [FloorRing K]
 open GCF (of)
 open GCF
 open scoped Topology
-
-theorem GCF.of_isSCF :
-    (of v).IsSCF := fun _ _ nth_partNum_eq =>
-  of_partNum_eq_one nth_partNum_eq
-#align generalized_continued_fraction.of_is_simple_continued_fraction GCF.of_isSCF
-
-/-- Creates the simple continued fraction of a value. -/
-nonrec def SCF.of : SCF K :=
-  ⟨of v, GCF.of_isSCF v⟩
-#align simple_continued_fraction.of SCF.of
-
-theorem SCF.of_isRCF :
-    (SCF.of v).IsRCF := fun _ _ nth_partDen_eq =>
-  lt_of_lt_of_le zero_lt_one (of_one_le_get?_partDen nth_partDen_eq)
-#align simple_continued_fraction.of_is_continued_fraction SCF.of_isRCF
-
-/-- Creates the continued fraction of a value. -/
-def RCF.of : RCF K :=
-  ⟨SCF.of v, SCF.of_isRCF v⟩
-#align continued_fraction.of RCF.of
 
 namespace GCF
 
