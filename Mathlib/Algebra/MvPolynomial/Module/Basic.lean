@@ -386,10 +386,9 @@ theorem monomial_single_add {e : ℕ} {i : σ} {a : σ →₀ ℕ} {m : M} :
     monomial R (Finsupp.single i e + a) m =
       (X i ^ e : MvPolynomial σ R) • monomial R a m := by
   induction' e with e ih
-  · rw [Nat.zero_eq, pow_zero, one_smul, Finsupp.single_zero, zero_add]
-  · rw [pow_succ', mul_smul, Nat.succ_eq_one_add, Finsupp.single_add, add_assoc, ← ih]
+  · rw [pow_zero, one_smul, Finsupp.single_zero, zero_add]
+  · rw [pow_succ', mul_smul, Nat.add_comm, Finsupp.single_add, add_assoc, ← ih]
     generalize Finsupp.single i e + a = b; clear ih e a
-    unfold polynomialModule
     refine Eq.trans ?_ (Module.MvAEval'.X_smul_of i _).symm
     change Finsupp.single _ _ = Finsupp.mapDomain _ (Finsupp.single _ _)
     simp_rw [Finsupp.mapDomain_single, Finsupp.update_eq_erase_add_single,
