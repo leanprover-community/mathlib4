@@ -132,7 +132,7 @@ theorem eq_zero_iff_dvd (x y : R) : Ideal.Quotient.mk (Ideal.span ({x} : Set R))
   rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]
 
 @[simp]
-lemma quotient_singleton_eq (x : R) : mk (Ideal.span {x}) x = 0 := by
+lemma mk_singleton_self (x : R) : mk (Ideal.span {x}) x = 0 := by
   rw [eq_zero_iff_dvd]
 
 -- Porting note (#10756): new theorem
