@@ -6,7 +6,7 @@ Authors: Joël Riou, Andrew Yang
 import Mathlib.CategoryTheory.ComposableArrows
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 
-/-! # Essential surjectivity of the functor induced on tuples of composable arrows
+/-! # Essential surjectivity of the functor induced on composable arrows
 
 Assuming that `L : C ⥤ D` is a localization functor for a class of morphisms `W`
 that has a calculus of left *or* right fractions, we show in this file
@@ -16,24 +16,6 @@ is essentially surjective for any `n : ℕ`.
 -/
 
 namespace CategoryTheory
-
-open Category
-
-open ComposableArrows
-section
-
-variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D) (n : ℕ)
-
-variable (C) in
-def ComposableArrows.opEquivalence : (ComposableArrows C n)ᵒᵖ ≌ ComposableArrows Cᵒᵖ n := by
-  sorry
-
-def Functor.mapComposableArrowsOpIso :
-    F.mapComposableArrows n ⋙ (opEquivalence D n).functor.rightOp ≅
-      (opEquivalence C n).functor.rightOp ⋙ (F.op.mapComposableArrows n).op := by
-  sorry
-
-end
 
 namespace Localization
 
@@ -60,14 +42,11 @@ lemma essSurj_mapComposableArrows_of_hasRightCalculusOfFractions
       dsimp at hf' ⊢
       simp [← cancel_mono (e.inv.app 0), hf']
 
-lemma essSurj_mapComposableArrows
-    [W.HasLeftCalculusOfFractions] (n : ℕ) :
+lemma essSurj_mapComposableArrows [W.HasLeftCalculusOfFractions] (n : ℕ) :
     (L.mapComposableArrows n).EssSurj := by
   have := essSurj_mapComposableArrows_of_hasRightCalculusOfFractions L.op W.op n
-  have : (opEquivalence C n).functor.rightOp.EssSurj := sorry
-  have : (L.op.mapComposableArrows n).op.EssSurj := sorry
   have := Functor.essSurj_of_iso (L.mapComposableArrowsOpIso n).symm
-  sorry
+  exact Functor.essSurj_of_comp_fully_faithful _ (opEquivalence D n).functor.rightOp
 
 end Localization
 
