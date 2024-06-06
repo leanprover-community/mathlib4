@@ -122,9 +122,8 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
   let to ← match args.flag? "to" with
   | some to => pure <| to.as! ModuleName
   | none => ImportGraph.getCurrentModule -- autodetect the main module from the `lakefile.lean`
-
   searchPathRef.set compile_time_search_path%
-  let _ ← unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
+  unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
     let graph := env.importGraph
     let sha ← headSha
     IO.eprintln s!"Analyzing {to} at {sha}"
@@ -139,10 +138,7 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
       let i := instructions.findD n' 0
       let c := cumulative.find! n'
       let t := total.find! n'
-      let r := (t / c).toString
-      let r := match r.split (· = '.') with
-      | [a, b] => a ++ "." ++ b.take 2
-      | _ => r
+      let r := (t / c).toStringDecimals 2
       table := table.push #[n.get!.toString, toString (i/10^6 |>.toUInt64), toString (c/10^6 |>.toUInt64), r]
       n := slowest.find? n'
     IO.println (formatTable
