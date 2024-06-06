@@ -28,6 +28,5 @@ instance SecondCountableTopology.ofPseudoMetrizableSpaceLindelofSpace [PseudoMet
     refine ⟨t, hct, fun z ↦ ?_⟩
     obtain ⟨y, ht, hzy⟩ : ∃ y ∈ t, z ∈ U y :=
       exists_set_mem_of_union_eq_top t (fun i ↦ U i) huniv z
-    simp only [Metric.mem_ball, U] at hzy
-    exact ⟨y, ht, hzy.le⟩
+    exact ⟨y, ht, (Metric.mem_ball.mp hzy).le⟩
   exact Metric.secondCountable_of_almost_dense_set h_dense
