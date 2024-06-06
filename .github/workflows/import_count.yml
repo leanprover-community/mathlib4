@@ -32,6 +32,9 @@ jobs:
 
         # Checkout the merge base
         git checkout master # let's start easy! "$(git merge-base refs/remotes/origin/main ${{ github.sha }})"
+        # the checkout dance, to avoid a detached head
+        git checkout -
+        git checkout -
         git checkout adomani/import-count scripts/count-trans-deps.py
 
         # Compute the counts for the merge base
