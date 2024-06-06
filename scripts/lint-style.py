@@ -203,7 +203,7 @@ def four_spaces_in_second_line(lines, path):
         newlines.append((next_line_nr, new_next_line))
     return errors, newlines
 
-flexible_tactics = ["rfl", "ring", "aesop", "norm_num", "positivity", "abel", "omega"]
+flexible_tactics = ["rfl", "ring", "aesop", "norm_num", "positivity", "abel", "omega", "linarith", "nlinarith"]
 
 def nonterminal_simp_check(lines, path):
     errors = []
