@@ -1146,6 +1146,8 @@ section Constructions
 instance : PartialOrder (UniformSpace α) :=
   PartialOrder.lift (fun u => 𝓤[u]) fun _ _ => UniformSpace.ext
 
+protected theorem UniformSpace.le_def {u₁ u₂ : UniformSpace α} : u₁ ≤ u₂ ↔ 𝓤[u₁] ≤ 𝓤[u₂] := Iff.rfl
+
 instance : InfSet (UniformSpace α) :=
   ⟨fun s =>
     UniformSpace.ofCore
@@ -1164,8 +1166,6 @@ protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : Uniform
     (h : ∀ t' ∈ tt, t ≤ t') : t ≤ sInf tt :=
   show 𝓤[t] ≤ ⨅ u ∈ tt, 𝓤[u] from le_iInf₂ h
 
-set_option linter.deprecated false in
--- TODO update this code to avoid the deprecation
 instance : Top (UniformSpace α) :=
   ⟨.ofNhdsEqComap ⟨⊤, le_top, le_top, le_top⟩ ⊤ fun x ↦ by simp only [nhds_top, comap_top]⟩
 
