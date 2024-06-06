@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.FintypeCat
+import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.RepresentationTheory.Action.Basic
 
 /-!
@@ -94,9 +95,10 @@ end FintypeCat
 
 section ToMulAction
 
-variable {V : Type (u + 1)} [LargeCategory V] {G : MonCat.{u}} [ConcreteCategory V]
+variable {V : Type (u + 1)} [LargeCategory V] [ConcreteCategory V]
 
-instance (X : Action V G) : MulAction G ((CategoryTheory.forget _).obj X) where
+instance instMulAction {G : MonCat.{u}} (X : Action V G) :
+    MulAction G ((CategoryTheory.forget _).obj X) where
   smul g x := ((CategoryTheory.forget _).map (X.ρ g)) x
   one_smul x := by
     show ((CategoryTheory.forget _).map (X.ρ 1)) x = x
@@ -106,6 +108,11 @@ instance (X : Action V G) : MulAction G ((CategoryTheory.forget _).obj X) where
       ((CategoryTheory.forget V).map (X.ρ h) ≫ (CategoryTheory.forget V).map (X.ρ g)) x
     rw [← Functor.map_comp, map_mul]
     rfl
+
+/- Specialize `instMulAction` to assist typeclass inference. -/
+instance {G : MonCat.{u}} (X : Action FintypeCat G) : MulAction G X.V := Action.instMulAction X
+instance {G : Type u} [Group G] (X : Action FintypeCat (MonCat.of G)) : MulAction G X.V :=
+  Action.instMulAction X
 
 end ToMulAction
 

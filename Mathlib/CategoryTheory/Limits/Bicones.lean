@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Cones
-import Mathlib.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.FinCategory.Basic
 
 #align_import category_theory.limits.bicones from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -29,7 +29,7 @@ noncomputable section
 
 open CategoryTheory.Limits
 
-open Classical
+open scoped Classical
 
 namespace CategoryTheory
 
@@ -48,8 +48,7 @@ variable (J : Type u₁)
 instance : Inhabited (Bicone J) :=
   ⟨Bicone.left⟩
 
-instance finBicone [Fintype J] : Fintype (Bicone J)
-    where
+instance finBicone [Fintype J] : Fintype (Bicone J) where
   elems := [Bicone.left, Bicone.right].toFinset ∪ Finset.image Bicone.diagram Fintype.elems
   complete j := by
     cases j <;> simp
@@ -75,8 +74,7 @@ instance BiconeHom.decidableEq {j k : Bicone J} : DecidableEq (BiconeHom J j k) 
 #align category_theory.bicone_hom.decidable_eq CategoryTheory.BiconeHom.decidableEq
 
 @[simps]
-instance biconeCategoryStruct : CategoryStruct (Bicone J)
-    where
+instance biconeCategoryStruct : CategoryStruct (Bicone J) where
   Hom := BiconeHom J
   id j := Bicone.casesOn j BiconeHom.left_id BiconeHom.right_id fun k => BiconeHom.diagram (𝟙 k)
   comp f g := by
@@ -91,8 +89,7 @@ instance biconeCategoryStruct : CategoryStruct (Bicone J)
       exact BiconeHom.diagram (f ≫ g)
 #align category_theory.bicone_category_struct CategoryTheory.biconeCategoryStruct
 
-instance biconeCategory : Category (Bicone J)
-    where
+instance biconeCategory : Category (Bicone J) where
   id_comp f := by cases f <;> simp
   comp_id f := by cases f <;> simp
   assoc f g h := by cases f <;> cases g <;> cases h <;> simp
@@ -107,8 +104,7 @@ variable (J : Type v₁) [SmallCategory J]
 /-- Given a diagram `F : J ⥤ C` and two `Cone F`s, we can join them into a diagram `Bicone J ⥤ C`.
 -/
 @[simps]
-def biconeMk {C : Type u₁} [Category.{v₁} C] {F : J ⥤ C} (c₁ c₂ : Cone F) : Bicone J ⥤ C
-    where
+def biconeMk {C : Type u₁} [Category.{v₁} C] {F : J ⥤ C} (c₁ c₂ : Cone F) : Bicone J ⥤ C where
   obj X := Bicone.casesOn X c₁.pt c₂.pt fun j => F.obj j
   map f := by
     rcases f with (_|_|_|_|f)

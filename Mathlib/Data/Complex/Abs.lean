@@ -102,7 +102,7 @@ theorem sq_abs (z : ℂ) : Complex.abs z ^ 2 = normSq z :=
 
 @[simp]
 theorem sq_abs_sub_sq_re (z : ℂ) : Complex.abs z ^ 2 - z.re ^ 2 = z.im ^ 2 := by
-  rw [sq_abs, normSq_apply, ← sq, ← sq, add_sub_cancel']
+  rw [sq_abs, normSq_apply, ← sq, ← sq, add_sub_cancel_left]
 #align complex.sq_abs_sub_sq_re Complex.sq_abs_sub_sq_re
 
 @[simp]
@@ -112,6 +112,9 @@ theorem sq_abs_sub_sq_im (z : ℂ) : Complex.abs z ^ 2 - z.im ^ 2 = z.re ^ 2 := 
 
 lemma abs_add_mul_I (x y : ℝ) : abs (x + y * I) = (x ^ 2 + y ^ 2).sqrt := by
   rw [← normSq_add_mul_I]; rfl
+
+lemma abs_eq_sqrt_sq_add_sq (z : ℂ) : abs z = (z.re ^ 2 + z.im ^ 2).sqrt := by
+  rw [abs_apply, normSq_apply, sq, sq]
 
 @[simp]
 theorem abs_I : Complex.abs I = 1 := by simp [Complex.abs]
@@ -124,7 +127,7 @@ theorem abs_two : Complex.abs 2 = 2 := abs_ofNat 2
 @[simp]
 theorem range_abs : range Complex.abs = Ici 0 :=
   Subset.antisymm
-    (by simp only [range_subset_iff, Ici, mem_setOf_eq, map_nonneg, forall_const])
+    (by simp only [range_subset_iff, Ici, mem_setOf_eq, apply_nonneg, forall_const])
     (fun x hx => ⟨x, Complex.abs_of_nonneg hx⟩)
 #align complex.range_abs Complex.range_abs
 
@@ -133,21 +136,21 @@ theorem abs_conj (z : ℂ) : Complex.abs (conj z) = Complex.abs z :=
   AbsTheory.abs_conj z
 #align complex.abs_conj Complex.abs_conj
 
--- Porting note: @[simp] can prove it now
+-- Porting note (#10618): @[simp] can prove it now
 theorem abs_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
     Complex.abs (s.prod f) = s.prod fun I => Complex.abs (f I) :=
   map_prod Complex.abs _ _
 #align complex.abs_prod Complex.abs_prod
 
 -- @[simp]
-/- Porting note: `simp` attribute removed as linter reports this can be proved
+/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_pow]` -/
 theorem abs_pow (z : ℂ) (n : ℕ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
   map_pow Complex.abs z n
 #align complex.abs_pow Complex.abs_pow
 
 -- @[simp]
-/- Porting note: `simp` attribute removed as linter reports this can be proved
+/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_zpow₀]` -/
 theorem abs_zpow (z : ℂ) (n : ℤ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
   map_zpow₀ Complex.abs z n
@@ -237,10 +240,11 @@ theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
     div_le_iff (AbsoluteValue.pos Complex.abs hz), one_mul, abs_im_le_abs]
 #align complex.abs_im_div_abs_le_one Complex.abs_im_div_abs_le_one
 
-@[simp, norm_cast]
-theorem int_cast_abs (n : ℤ) : |↑n| = Complex.abs n := by
-  rw [← ofReal_int_cast, abs_ofReal]
-#align complex.int_cast_abs Complex.int_cast_abs
+@[simp, norm_cast] lemma abs_intCast (n : ℤ) : abs n = |↑n| := by rw [← ofReal_intCast, abs_ofReal]
+#align complex.int_cast_abs Complex.abs_intCast
+
+@[deprecated (since := "2024-02-14")]
+lemma int_cast_abs (n : ℤ) : |↑n| = Complex.abs n := (abs_intCast _).symm
 
 theorem normSq_eq_abs (x : ℂ) : normSq x = (Complex.abs x) ^ 2 := by
   simp [abs, sq, abs_def, Real.mul_self_sqrt (normSq_nonneg _)]

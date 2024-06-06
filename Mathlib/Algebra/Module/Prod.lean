@@ -3,7 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.GroupTheory.GroupAction.Prod
 
 #align_import algebra.module.prod from "leanprover-community/mathlib"@"a437a2499163d85d670479f69f625f461cc5fef9"

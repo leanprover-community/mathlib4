@@ -24,16 +24,14 @@ variable {V : Type u} (G : SimpleGraph V) (K L L' M : Set V)
 namespace SimpleGraph
 
 /-- The components outside a given set of vertices `K` -/
-@[reducible]
-def ComponentCompl :=
+abbrev ComponentCompl :=
   (G.induce Kᶜ).ConnectedComponent
 #align simple_graph.component_compl SimpleGraph.ComponentCompl
 
 variable {G} {K L M}
 
 /-- The connected component of `v` in `G.induce Kᶜ`. -/
-@[reducible]
-def componentComplMk (G : SimpleGraph V) {v : V} (vK : v ∉ K) : G.ComponentCompl K :=
+abbrev componentComplMk (G : SimpleGraph V) {v : V} (vK : v ∉ K) : G.ComponentCompl K :=
   connectedComponentMk (G.induce Kᶜ) ⟨v, vK⟩
 #align simple_graph.component_compl_mk SimpleGraph.componentComplMk
 
@@ -45,7 +43,7 @@ def ComponentCompl.supp (C : G.ComponentCompl K) : Set V :=
 @[ext]
 theorem ComponentCompl.supp_injective :
     Function.Injective (ComponentCompl.supp : G.ComponentCompl K → Set V) := by
-  refine' ConnectedComponent.ind₂ _
+  refine ConnectedComponent.ind₂ ?_
   rintro ⟨v, hv⟩ ⟨w, hw⟩ h
   simp only [Set.ext_iff, ConnectedComponent.eq, Set.mem_setOf_eq, ComponentCompl.supp] at h ⊢
   exact ((h v).mp ⟨hv, Reachable.refl _⟩).choose_spec
@@ -106,8 +104,7 @@ protected theorem ind {β : G.ComponentCompl K → Prop}
 #align simple_graph.component_compl.ind SimpleGraph.ComponentCompl.ind
 
 /-- The induced graph on the vertices `C`. -/
-@[reducible]
-protected def coeGraph (C : ComponentCompl G K) : SimpleGraph C :=
+protected abbrev coeGraph (C : ComponentCompl G K) : SimpleGraph C :=
   G.induce (C : Set V)
 #align simple_graph.component_compl.coe_graph SimpleGraph.ComponentCompl.coeGraph
 
@@ -156,7 +153,7 @@ there exists a vertex `k ∈ K` adjacent to a vertex `v ∈ C`.
 -/
 theorem exists_adj_boundary_pair (Gc : G.Preconnected) (hK : K.Nonempty) :
     ∀ C : G.ComponentCompl K, ∃ ck : V × V, ck.1 ∈ C ∧ ck.2 ∈ K ∧ G.Adj ck.1 ck.2 := by
-  refine' ComponentCompl.ind fun v vnK => _
+  refine ComponentCompl.ind fun v vnK => ?_
   let C : G.ComponentCompl K := G.componentComplMk vnK
   let dis := Set.disjoint_iff.mp C.disjoint_right
   by_contra! h
@@ -174,8 +171,7 @@ theorem exists_adj_boundary_pair (Gc : G.Preconnected) (hK : K.Nonempty) :
 /--
 If `K ⊆ L`, the components outside of `L` are all contained in a single component outside of `K`.
 -/
-@[reducible]
-def hom (h : K ⊆ L) (C : G.ComponentCompl L) : G.ComponentCompl K :=
+abbrev hom (h : K ⊆ L) (C : G.ComponentCompl L) : G.ComponentCompl K :=
   C.map <| induceHom Hom.id <| Set.compl_subset_compl.2 h
 #align simple_graph.component_compl.hom SimpleGraph.ComponentCompl.hom
 
@@ -248,7 +244,7 @@ theorem infinite_iff_in_all_ranges {K : Finset V} (C : G.ComponentCompl K) :
 
 end ComponentCompl
 
-/- For a locally finite preconnected graph, the number of components outside of any finite set
+/-- For a locally finite preconnected graph, the number of components outside of any finite set
 is finite. -/
 instance componentCompl_finite [LocallyFinite G] [Gpc : Fact G.Preconnected] (K : Finset V) :
     Finite (G.ComponentCompl K) := by

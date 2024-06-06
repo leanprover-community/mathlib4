@@ -5,7 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Data.Real.Irrational
 import Mathlib.Data.Rat.Encodable
-import Mathlib.Topology.MetricSpace.Baire
+import Mathlib.Topology.GDelta
 
 #align_import topology.instances.irrational from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -14,7 +14,7 @@ import Mathlib.Topology.MetricSpace.Baire
 
 In this file we prove the following theorems:
 
-* `isGδ_irrational`, `dense_irrational`, `eventually_residual_irrational`: irrational numbers
+* `IsGδ.setOf_irrational`, `dense_irrational`, `eventually_residual_irrational`: irrational numbers
   form a dense Gδ set;
 
 * `Irrational.eventually_forall_le_dist_cast_div`,
@@ -35,13 +35,15 @@ open Set Filter Metric
 
 open Filter Topology
 
-theorem isGδ_irrational : IsGδ { x | Irrational x } :=
+protected theorem IsGδ.setOf_irrational : IsGδ { x | Irrational x } :=
   (countable_range _).isGδ_compl
 set_option linter.uppercaseLean3 false in
-#align is_Gδ_irrational isGδ_irrational
+#align is_Gδ_irrational IsGδ.setOf_irrational
+
+@[deprecated] alias isGδ_irrational := IsGδ.setOf_irrational
 
 theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
-  refine' Real.isTopologicalBasis_Ioo_rat.dense_iff.2 _
+  refine Real.isTopologicalBasis_Ioo_rat.dense_iff.2 ?_
   simp only [gt_iff_lt, Rat.cast_lt, not_lt, ge_iff_le, Rat.cast_le, mem_iUnion, mem_singleton_iff,
     exists_prop, forall_exists_index, and_imp]
   rintro _ a b hlt rfl _
@@ -50,7 +52,7 @@ theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
 #align dense_irrational dense_irrational
 
 theorem eventually_residual_irrational : ∀ᶠ x in residual ℝ, Irrational x :=
-  eventually_residual.2 ⟨_, isGδ_irrational, dense_irrational, fun _ => id⟩
+  residual_of_dense_Gδ .setOf_irrational dense_irrational
 #align eventually_residual_irrational eventually_residual_irrational
 
 namespace Irrational
@@ -76,14 +78,14 @@ instance : DenselyOrdered { x // Irrational x } :=
 theorem eventually_forall_le_dist_cast_div (hx : Irrational x) (n : ℕ) :
     ∀ᶠ ε : ℝ in 𝓝 0, ∀ m : ℤ, ε ≤ dist x (m / n) := by
   have A : IsClosed (range (fun m => (n : ℝ)⁻¹ * m : ℤ → ℝ)) :=
-    ((isClosedMap_smul₀ (n⁻¹ : ℝ)).comp Int.closedEmbedding_coe_real.isClosedMap).closed_range
+    ((isClosedMap_smul₀ (n⁻¹ : ℝ)).comp Int.closedEmbedding_coe_real.isClosedMap).isClosed_range
   have B : x ∉ range (fun m => (n : ℝ)⁻¹ * m : ℤ → ℝ) := by
     rintro ⟨m, rfl⟩
     simp at hx
   rcases Metric.mem_nhds_iff.1 (A.isOpen_compl.mem_nhds B) with ⟨ε, ε0, hε⟩
-  refine' (ge_mem_nhds ε0).mono fun δ hδ m => not_lt.1 fun hlt => _
+  refine (ge_mem_nhds ε0).mono fun δ hδ m => not_lt.1 fun hlt => ?_
   rw [dist_comm] at hlt
-  refine' hε (ball_subset_ball hδ hlt) ⟨m, _⟩
+  refine hε (ball_subset_ball hδ hlt) ⟨m, ?_⟩
   simp [div_eq_inv_mul]
 #align irrational.eventually_forall_le_dist_cast_div Irrational.eventually_forall_le_dist_cast_div
 

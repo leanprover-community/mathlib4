@@ -3,9 +3,8 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Data.Fin.Basic
-import Mathlib.Data.List.Sort
 import Mathlib.Data.List.Duplicate
+import Mathlib.Data.List.Sort
 
 #align_import data.list.nodup_equiv_fin from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -19,8 +18,8 @@ Given a list `l`,
   sending `⟨x, hx⟩` to `⟨indexOf x l, _⟩`;
 
 * if `l` has no duplicates and contains every element of a type `α`, then
-  `List.Nodup.getEquivOfForallMemList` defines an equivalence between
-  `Fin (length l)` and `α`;  if `α` does not have decidable equality, then
+  `List.Nodup.getEquivOfForallMemList` defines an equivalence between `Fin (length l)` and `α`;
+  if `α` does not have decidable equality, then
   there is a bijection `List.Nodup.getBijectionOfForallMemList`;
 
 * if `l` is sorted w.r.t. `(<)`, then `List.Sorted.getIso` is the same bijection reinterpreted
@@ -41,7 +40,7 @@ for a version giving an equivalence when there is decidable equality. -/
 @[simps]
 def getBijectionOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
     { f : Fin l.length → α // Function.Bijective f } :=
-  ⟨fun i => l.get i, fun _ _ h => Fin.ext <| (nd.nthLe_inj_iff _ _).1 h,
+  ⟨fun i => l.get i, fun _ _ h => nd.get_inj_iff.1 h,
    fun x =>
     let ⟨i, hl⟩ := List.mem_iff_get.1 (h x)
     ⟨i, hl⟩⟩
@@ -65,8 +64,8 @@ an equivalence between `Fin l.length` and `α`.
 See `List.Nodup.getBijectionOfForallMemList` for a version without
 decidable equality. -/
 @[simps]
-def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) : Fin l.length ≃ α
-    where
+def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
+    Fin l.length ≃ α where
   toFun i := l.get i
   invFun a := ⟨_, indexOf_lt_length.2 (h a)⟩
   left_inv i := by simp [List.get_indexOf, nd]
@@ -124,12 +123,12 @@ theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
   let f' : ℕ ↪o ℕ :=
     OrderEmbedding.ofMapLEIff (fun i => f (i + 1) - (f 0 + 1)) fun a b => by
       dsimp only
-      rw [tsub_le_tsub_iff_right, OrderEmbedding.le_iff_le, Nat.succ_le_succ_iff]
+      rw [Nat.sub_le_sub_iff_right, OrderEmbedding.le_iff_le, Nat.succ_le_succ_iff]
       rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
       exact b.succ_pos
   have : ∀ ix, tl.get? ix = (l'.drop (f 0 + 1)).get? (f' ix) := by
     intro ix
-    rw [List.get?_drop, OrderEmbedding.coe_ofMapLEIff, add_tsub_cancel_of_le, ← hf, List.get?]
+    rw [List.get?_drop, OrderEmbedding.coe_ofMapLEIff, Nat.add_sub_cancel', ← hf, List.get?]
     rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
     exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]
@@ -149,11 +148,11 @@ theorem sublist_iff_exists_orderEmbedding_get?_eq {l l' : List α} :
     induction' H with xs ys y _H IH xs ys x _H IH
     · simp
     · obtain ⟨f, hf⟩ := IH
-      refine' ⟨f.trans (OrderEmbedding.ofStrictMono (· + 1) fun _ => by simp), _⟩
+      refine ⟨f.trans (OrderEmbedding.ofStrictMono (· + 1) fun _ => by simp), ?_⟩
       simpa using hf
     · obtain ⟨f, hf⟩ := IH
-      refine'
-        ⟨OrderEmbedding.ofMapLEIff (fun ix : ℕ => if ix = 0 then 0 else (f ix.pred).succ) _, _⟩
+      refine
+        ⟨OrderEmbedding.ofMapLEIff (fun ix : ℕ => if ix = 0 then 0 else (f ix.pred).succ) ?_, ?_⟩
       · rintro ⟨_ | a⟩ ⟨_ | b⟩ <;> simp [Nat.succ_le_succ_iff]
       · rintro ⟨_ | i⟩
         · simp
@@ -179,22 +178,22 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       rw [get?_eq_get hi, eq_comm, get?_eq_some] at hf
       obtain ⟨h, -⟩ := hf
       exact h
-    refine' ⟨OrderEmbedding.ofMapLEIff (fun ix => ⟨f ix, h ix.is_lt⟩) _, _⟩
+    refine ⟨OrderEmbedding.ofMapLEIff (fun ix => ⟨f ix, h ix.is_lt⟩) ?_, ?_⟩
     · simp
     · intro i
       apply Option.some_injective
       simpa [get?_eq_get i.2, get?_eq_get (h i.2)] using hf i
   · rintro ⟨f, hf⟩
-    refine'
+    refine
       ⟨OrderEmbedding.ofStrictMono (fun i => if hi : i < l.length then f ⟨i, hi⟩ else i + l'.length)
-          _,
-        _⟩
+          ?_,
+        ?_⟩
     · intro i j h
       dsimp only
       split_ifs with hi hj hj
       · rwa [Fin.val_fin_lt, f.lt_iff_lt]
-      · rw [add_comm]
-        exact lt_add_of_lt_of_pos (Fin.is_lt _) (i.zero_le.trans_lt h)
+      · have := (f ⟨i, hi⟩).is_lt
+        omega
       · exact absurd (h.trans hj) hi
       · simpa using h
     · intro i
@@ -218,26 +217,25 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
       sublist_iff_exists_fin_orderEmbedding_get_eq]
     constructor
     · rintro ⟨f, hf⟩
-      refine' ⟨f ⟨0, by simp⟩, f ⟨1, by simp⟩,
-        f.lt_iff_lt.2 (show (0 : ℕ) < 1 from zero_lt_one), _⟩
-      · rw [← hf, ← hf]; simp
+      refine ⟨f ⟨0, by simp⟩, f ⟨1, by simp⟩, f.lt_iff_lt.2 (Nat.zero_lt_one), ?_⟩
+      rw [← hf, ← hf]; simp
     · rintro ⟨n, m, hnm, h, h'⟩
-      refine' ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then n else m) _, _⟩
+      refine ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then n else m) ?_, ?_⟩
       · rintro ⟨⟨_ | i⟩, hi⟩ ⟨⟨_ | j⟩, hj⟩
         · simp
         · simp [hnm]
         · simp
-        · simp only [Nat.lt_succ_iff, Nat.succ_le_succ_iff, replicate, length,
-            nonpos_iff_eq_zero] at hi hj
+        · simp only [Nat.lt_succ_iff, Nat.succ_le_succ_iff, replicate, length, Nat.le_zero] at hi hj
           simp [hi, hj]
       · rintro ⟨⟨_ | i⟩, hi⟩
         · simpa using h
         · simpa using h'
 
+set_option linter.deprecated false in
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.
 -/
-@[deprecated duplicate_iff_exists_distinct_get]
+@[deprecated duplicate_iff_exists_distinct_get] -- 2023-01-19
 theorem duplicate_iff_exists_distinct_nthLe {l : List α} {x : α} :
     l.Duplicate x ↔
       ∃ (n : ℕ) (hn : n < l.length) (m : ℕ) (hm : m < l.length) (_ : n < m),

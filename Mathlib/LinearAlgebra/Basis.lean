@@ -66,8 +66,6 @@ universe u
 
 open Function Set Submodule
 
-open BigOperators
-
 variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
 variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
 
@@ -234,7 +232,7 @@ theorem coe_sumCoords_eq_finsum : (b.sumCoords : M → R) = fun m => ∑ᶠ i, b
   ext m
   simp only [Basis.sumCoords, Basis.coord, Finsupp.lapply_apply, LinearMap.id_coe,
     LinearEquiv.coe_coe, Function.comp_apply, Finsupp.coe_lsum, LinearMap.coe_comp,
-    finsum_eq_sum _ (b.repr m).finite_support, Finsupp.sum, Finset.finite_toSet_toFinset, id.def,
+    finsum_eq_sum _ (b.repr m).finite_support, Finsupp.sum, Finset.finite_toSet_toFinset, id,
     Finsupp.fun_support_eq]
 #align basis.coe_sum_coords_eq_finsum Basis.coe_sumCoords_eq_finsum
 
@@ -244,13 +242,13 @@ theorem coe_sumCoords_of_fintype [Fintype ι] : (b.sumCoords : M → R) = ∑ i,
   -- Porting note: - `eq_self_iff_true`
   --               + `comp_apply` `LinearMap.coeFn_sum`
   simp only [sumCoords, Finsupp.sum_fintype, LinearMap.id_coe, LinearEquiv.coe_coe, coord_apply,
-    id.def, Fintype.sum_apply, imp_true_iff, Finsupp.coe_lsum, LinearMap.coe_comp, comp_apply,
+    id, Fintype.sum_apply, imp_true_iff, Finsupp.coe_lsum, LinearMap.coe_comp, comp_apply,
     LinearMap.coeFn_sum]
 #align basis.coe_sum_coords_of_fintype Basis.coe_sumCoords_of_fintype
 
 @[simp]
 theorem sumCoords_self_apply : b.sumCoords (b i) = 1 := by
-  simp only [Basis.sumCoords, LinearMap.id_coe, LinearEquiv.coe_coe, id.def, Basis.repr_self,
+  simp only [Basis.sumCoords, LinearMap.id_coe, LinearEquiv.coe_coe, id, Basis.repr_self,
     Function.comp_apply, Finsupp.coe_lsum, LinearMap.coe_comp, Finsupp.sum_single_index]
 #align basis.sum_coords_self_apply Basis.sumCoords_self_apply
 
@@ -313,11 +311,11 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
     (x : M) (i : ι) : b.repr x i = f x i := by
   let f_i : M →ₗ[R] R :=
     { toFun := fun x => f x i
-      -- Porting note: `dsimp only []` is required for beta reduction.
-      map_add' := fun _ _ => by dsimp only []; rw [hadd, Pi.add_apply]
+      -- Porting note(#12129): additional beta reduction needed
+      map_add' := fun _ _ => by beta_reduce; rw [hadd, Pi.add_apply]
       map_smul' := fun _ _ => by simp [hsmul, Pi.smul_apply] }
   have : Finsupp.lapply i ∘ₗ ↑b.repr = f_i := by
-    refine' b.ext fun j => _
+    refine b.ext fun j => ?_
     show b.repr (b j) i = f (b j) i
     rw [b.repr_self, f_eq]
   calc
@@ -409,7 +407,6 @@ end MapCoeffs
 section Reindex
 
 variable (b' : Basis ι' R M')
-
 variable (e : ι ≃ ι')
 
 /-- `b.reindex (e : ι ≃ ι')` is a basis indexed by `ι'` -/
@@ -593,7 +590,6 @@ theorem mem_submodule_iff {P : Submodule R M} (b : Basis ι R P) {x : M} :
 section Constr
 
 variable (S : Type*) [Semiring S] [Module S M']
-
 variable [SMulCommClass R S M']
 
 /-- Construct a linear map given the value at the basis, called `Basis.constr b S f` where `b` is
@@ -613,13 +609,13 @@ def constr : (ι → M') ≃ₗ[S] M →ₗ[R] M' where
     ext
     simp
   right_inv f := by
-    refine' b.ext fun i => _
+    refine b.ext fun i => ?_
     simp
   map_add' f g := by
-    refine' b.ext fun i => _
+    refine b.ext fun i => ?_
     simp
   map_smul' c f := by
-    refine' b.ext fun i => _
+    refine b.ext fun i => ?_
     simp
 #align basis.constr Basis.constr
 
@@ -666,7 +662,6 @@ end Constr
 section Equiv
 
 variable (b' : Basis ι' R M') (e : ι ≃ ι')
-
 variable [AddCommMonoid M''] [Module R M'']
 
 /-- If `b` is a basis for `M` and `b'` a basis for `M'`, and the index types are equivalent,
@@ -797,7 +792,7 @@ theorem eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : Submod
   rw [Submodule.eq_bot_iff]
   intro x hx
   contrapose! rank_eq with x_ne
-  refine' ⟨1, fun _ => ⟨x, hx⟩, _, one_ne_zero⟩
+  refine ⟨1, fun _ => ⟨x, hx⟩, ?_, one_ne_zero⟩
   rw [Fintype.linearIndependent_iff]
   rintro g sum_eq i
   cases' i with _ hi
@@ -836,7 +831,7 @@ theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup 
     Nonempty (Basis ι R M) ↔ ∃ x ≠ 0, ∀ y : M, ∃ r : R, r • x = y := by
   constructor
   · rintro ⟨b⟩
-    refine' ⟨b default, b.linearIndependent.ne_zero _, _⟩
+    refine ⟨b default, b.linearIndependent.ne_zero _, ?_⟩
     simpa [span_singleton_eq_top_iff, Set.range_unique] using b.span_eq
   · rintro ⟨x, nz, w⟩
     refine ⟨ofRepr <| LinearEquiv.symm
@@ -848,8 +843,8 @@ theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup 
         map_smul' := fun c y => ?_ }⟩
     · simp [Finsupp.add_apply, add_smul]
     · simp only [Finsupp.coe_smul, Pi.smul_apply, RingHom.id_apply]
-      rw [← smul_assoc, smul_eq_mul]
-    · refine' smul_left_injective _ nz _
+      rw [← smul_assoc]
+    · refine smul_left_injective _ nz ?_
       simp only [Finsupp.single_eq_same]
       exact (w (f default • x)).choose_spec
     · simp only [Finsupp.single_eq_same]
@@ -980,7 +975,6 @@ theorem Basis.equivFun_ofEquivFun [Finite ι] (e : M ≃ₗ[R] ι → R) :
 #align basis.equiv_fun_of_equiv_fun Basis.equivFun_ofEquivFun
 
 variable (S : Type*) [Semiring S] [Module S M']
-
 variable [SMulCommClass R S M']
 
 @[simp]
@@ -1012,9 +1006,7 @@ section CommSemiring
 namespace Basis
 
 variable [CommSemiring R]
-
 variable [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
-
 variable (b : Basis ι R M) (b' : Basis ι' R M')
 
 /-- If `b` is a basis for `M` and `b'` a basis for `M'`,
@@ -1057,7 +1049,7 @@ theorem sum_repr_mul_repr {ι'} [Fintype ι'] (b' : Basis ι' R M) (x : M) (i : 
     (∑ j : ι', b.repr (b' j) i * b'.repr x j) = b.repr x i := by
   conv_rhs => rw [← b'.sum_repr x]
   simp_rw [map_sum, map_smul, Finset.sum_apply']
-  refine' Finset.sum_congr rfl fun j _ => _
+  refine Finset.sum_congr rfl fun j _ => ?_
   rw [Finsupp.smul_apply, smul_eq_mul, mul_comm]
 #align basis.sum_repr_mul_repr Basis.sum_repr_mul_repr
 
@@ -1070,13 +1062,9 @@ section Module
 open LinearMap
 
 variable {v : ι → M}
-
 variable [Ring R] [CommRing R₂] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M'']
-
 variable [Module R M] [Module R₂ M] [Module R M'] [Module R M'']
-
 variable {c d : R} {x y : M}
-
 variable (b : Basis ι R M)
 
 namespace Basis
@@ -1100,10 +1088,10 @@ theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal 
   change ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) = ((⟨x, p⟩ : w) : M) at e
   rw [← Finsupp.sum_embDomain (f := u) (g := fun x r ↦ r • (x : M)), ← Finsupp.total_apply] at e
   -- Now we can contradict the linear independence of `hi`
-  refine' hi.total_ne_of_not_mem_support _ _ e
+  refine hi.total_ne_of_not_mem_support _ ?_ e
   simp only [Finset.mem_map, Finsupp.support_embDomain]
   rintro ⟨j, -, W⟩
-  simp only [Embedding.coeFn_mk, Subtype.mk_eq_mk] at W
+  simp only [u, Embedding.coeFn_mk, Subtype.mk_eq_mk] at W
   apply q ⟨j, W⟩
 #align basis.maximal Basis.maximal
 
@@ -1178,7 +1166,7 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
       -- Porting note: why doesn't `rw [h₁]` work here?
       exact congr_arg _ h₁
     have h₃ : (x : M) ∈ map (Submodule.subtype (span R (range v)))
-        (span R (Set.range fun i => Subtype.mk (v i) _)) := by
+        (span R (Set.range fun i => Subtype.mk (v i) (this i))) := by
       rw [h₂]
       apply Subtype.mem x
     rcases mem_map.1 h₃ with ⟨y, hy₁, hy₂⟩
@@ -1201,7 +1189,7 @@ theorem groupSMul_span_eq_top {G : Type*} [Group G] [DistribMulAction G R] [Dist
   intro j hj
   rw [← hv] at hj
   rw [Submodule.mem_span] at hj ⊢
-  refine' fun p hp => hj p fun u hu => _
+  refine fun p hp => hj p fun u hu => ?_
   obtain ⟨i, rfl⟩ := hu
   have : ((w i)⁻¹ • (1 : R)) • w i • v i ∈ p := p.smul_mem ((w i)⁻¹ • (1 : R)) (hp ⟨i, rfl⟩)
   rwa [smul_one_smul, inv_smul_smul] at this
@@ -1293,7 +1281,7 @@ noncomputable def mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fi
 theorem coe_mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fin n) R N)
     (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0) (hsp : ∀ z : M, ∃ c : R, z + c • y ∈ N) :
     (mkFinCons y b hli hsp : Fin (n + 1) → M) = Fin.cons y ((↑) ∘ b) := by
-  -- porting note: without `unfold`, Lean can't reuse the proofs included in the definition
+  -- Porting note: without `unfold`, Lean can't reuse the proofs included in the definition
   -- `mkFinCons`
   unfold mkFinCons
   exact coe_mk (v := Fin.cons y (N.subtype ∘ b)) _ _
@@ -1368,17 +1356,17 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
     simpa [x_mem] using x_ortho 1 0 N.zero_mem
   induction' n with n rank_ih generalizing N
   · suffices N = ⊥ by rwa [this]
-    apply Basis.eq_bot_of_rank_eq_zero b _ fun m hv => le_zero_iff.mp (rank_le _ hv)
+    apply Basis.eq_bot_of_rank_eq_zero b _ fun m hv => Nat.le_zero.mp (rank_le _ hv)
   apply ih
   intro N' N'_le x x_mem x_ortho
   apply rank_ih
   intro m v hli
-  refine' Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) _)
+  refine Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) ?_)
   convert hli.fin_cons' x _ ?_
   · ext i
-    refine' Fin.cases _ _ i <;> simp
+    refine Fin.cases ?_ ?_ i <;> simp
   · intro c y hcy
-    refine' x_ortho c y (Submodule.span_le.mpr _ y.2) hcy
+    refine x_ortho c y (Submodule.span_le.mpr ?_ y.2) hcy
     rintro _ ⟨z, rfl⟩
     exact (v z).2
 #align submodule.induction_on_rank_aux Submodule.inductionOnRankAux
@@ -1434,11 +1422,8 @@ lemma Basis.mem_center_iff {A}
 section RestrictScalars
 
 variable {S : Type*} [CommRing R] [Ring S] [Nontrivial S] [AddCommGroup M]
-
 variable [Algebra R S] [Module S M] [Module R M]
-
 variable [IsScalarTower R S M] [NoZeroSMulDivisors R S] (b : Basis ι S M)
-
 variable (R)
 
 open Submodule
@@ -1491,9 +1476,7 @@ open Basis Cardinal
 universe v v' v'' u₁' w w'
 
 variable {R : Type u} {M M₁ : Type v} {M' : Type v'} {ι : Type w}
-
 variable [Ring R] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁] [Nontrivial R]
-
 variable [Module R M] [Module R M'] [Module R M₁]
 
 -- One might hope that a finite spanning set implies that any linearly independent set is finite.
@@ -1528,9 +1511,8 @@ lemma basis_finite_of_finite_spans (w : Set M) (hw : w.Finite) (s : span R w = �
     rw [← b.total_repr x, Finsupp.span_image_eq_map_total, Submodule.mem_map]
     use b.repr x
     simp only [and_true_iff, eq_self_iff_true, Finsupp.mem_supported]
-    change (b.repr x).support ≤ S
-    convert Finset.le_sup (α := Finset ι) (by simp : (⟨x, m⟩ : w) ∈ Finset.univ)
-    rfl
+    rw [Finset.coe_subset, ← Finset.le_iff_subset]
+    exact Finset.le_sup (f := fun x : w ↦ (b.repr ↑x).support) (Finset.mem_univ (⟨x, m⟩ : w))
   -- Thus this finite subset of the basis elements spans the entire module.
   have k : span R bS = ⊤ := eq_top_iff.2 (le_trans s.ge (span_le.2 h))
   -- Now there is some `x : ι` not in `S`, since `ι` is infinite.
@@ -1553,7 +1535,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     ⋃ k, ((b.repr (v k)).support : Set ι) = Set.univ := by
   -- If that's not the case,
   by_contra h
-  simp only [← Ne.def, ne_univ_iff_exists_not_mem, mem_iUnion, not_exists_not,
+  simp only [← Ne.eq_def, ne_univ_iff_exists_not_mem, mem_iUnion, not_exists_not,
     Finsupp.mem_support_iff, Finset.mem_coe] at h
   -- We have some basis element `b b'` which is not in the support of any of the `v i`.
   obtain ⟨b', w⟩ := h
@@ -1563,7 +1545,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
   have r : range v ⊆ range v' := by
     rintro - ⟨k, rfl⟩
     use some k
-    rfl
+    simp only [v', Option.elim_some]
   have r' : b b' ∉ range v := by
     rintro ⟨k, p⟩
     simpa [w] using congr_arg (fun m => (b.repr m) b') p
@@ -1571,7 +1553,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     intro e
     have p : b b' ∈ range v' := by
       use none
-      rfl
+      simp only [v', Option.elim_none]
     rw [← e] at p
     exact r' p
   -- The key step in the proof is checking that this strictly larger family is linearly independent.
@@ -1580,7 +1562,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     rw [linearIndependent_iff]
     intro l z
     rw [Finsupp.total_option] at z
-    simp only [Option.elim'] at z
+    simp only [v', Option.elim'] at z
     change _ + Finsupp.total κ M R v l.some = 0 at z
     -- We have some linear combination of `b b'` and the `v i`, which we want to show is trivial.
     -- We'll first show the coefficient of `b b'` is zero,
@@ -1589,8 +1571,8 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
       rw [← eq_neg_iff_add_eq_zero] at z
       replace z := neg_eq_iff_eq_neg.mpr z
       apply_fun fun x => b.repr x b' at z
-      simp only [repr_self, LinearEquiv.map_smul, mul_one, Finsupp.single_eq_same, Pi.neg_apply,
-        Finsupp.smul_single', LinearEquiv.map_neg, Finsupp.coe_neg] at z
+      simp only [repr_self, map_smul, mul_one, Finsupp.single_eq_same, Pi.neg_apply,
+        Finsupp.smul_single', map_neg, Finsupp.coe_neg] at z
       erw [DFunLike.congr_fun (Finsupp.apply_total R (b.repr : M →ₗ[R] ι →₀ R) v l.some) b'] at z
       simpa [Finsupp.total_apply, w] using z
     -- Then all the other coefficients are zero, because `v` is linear independent.

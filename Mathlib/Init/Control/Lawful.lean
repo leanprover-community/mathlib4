@@ -53,9 +53,7 @@ namespace StateT
 section
 
 variable {σ : Type u}
-
 variable {m : Type u → Type v}
-
 variable {α : Type u}
 
 /-
@@ -141,9 +139,7 @@ namespace ReaderT
 section
 
 variable {ρ : Type u}
-
 variable {m : Type u → Type v}
-
 variable {α : Type u}
 
 /-
@@ -256,7 +252,8 @@ As discussed in https://github.com/leanprover/std4/pull/416,
 it should be possible for core to expose the lawfulness of `IO` as part of the opaque interface,
 which would remove the need for these proofs anyway.
 
-These are not in Std because Std does not want to deal with the churn from such a core refactor.
+These are not in Batteries because Batteries does not want to deal with the churn from such a core
+refactor.
 -/
 
 instance : LawfulMonad (EIO ε) := inferInstanceAs <| LawfulMonad (EStateM _ _)

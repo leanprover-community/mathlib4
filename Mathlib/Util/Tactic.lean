@@ -33,7 +33,7 @@ If `mvarId` does not refer to a declared metavariable, nothing happens.
 -/
 def modifyMetavarDecl [MonadMCtx m] (mvarId : MVarId)
     (f : MetavarDecl → MetavarDecl) : m Unit := do
-  modifyMCtx λ mctx =>
+  modifyMCtx fun mctx ↦
     match mctx.decls.find? mvarId with
     | none => mctx
     | some mdecl => { mctx with decls := mctx.decls.insert mvarId (f mdecl) }

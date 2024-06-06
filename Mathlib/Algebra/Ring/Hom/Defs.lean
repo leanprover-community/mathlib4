@@ -3,9 +3,10 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 -/
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Data.Pi.Algebra
 
 #align_import algebra.hom.ring from "leanprover-community/mathlib"@"cf9386b56953fb40904843af98b7a80757bbe7f9"
 
@@ -194,8 +195,11 @@ end
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
 
 /-- The identity non-unital ring homomorphism from a non-unital semiring to itself. -/
-protected def id (α : Type*) [NonUnitalNonAssocSemiring α] : α →ₙ+* α := by
-  refine' { toFun := id.. } <;> intros <;> rfl
+protected def id (α : Type*) [NonUnitalNonAssocSemiring α] : α →ₙ+* α where
+  toFun := id
+  map_mul' _ _ := rfl
+  map_zero' := rfl
+  map_add' _ _ := rfl
 #align non_unital_ring_hom.id NonUnitalRingHom.id
 
 instance : Zero (α →ₙ+* β) :=
@@ -625,8 +629,12 @@ def mk' [NonAssocSemiring α] [NonAssocRing β] (f : α →* β)
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
 
 /-- The identity ring homomorphism from a semiring to itself. -/
-def id (α : Type*) [NonAssocSemiring α] : α →+* α := by
-  refine' { toFun := _root_.id.. } <;> intros <;> rfl
+def id (α : Type*) [NonAssocSemiring α] : α →+* α where
+  toFun := _root_.id
+  map_zero' := rfl
+  map_one' := rfl
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
 #align ring_hom.id RingHom.id
 
 instance : Inhabited (α →+* α) :=
@@ -680,30 +688,30 @@ theorem id_comp (f : α →+* β) : (id β).comp f = f :=
   ext fun _ => rfl
 #align ring_hom.id_comp RingHom.id_comp
 
-instance : Monoid (α →+* α) where
-  one := id α
-  mul := comp
+instance instOne : One (α →+* α) where one := id _
+instance instMul : Mul (α →+* α) where mul := comp
+
+lemma one_def : (1 : α →+* α) = id α := rfl
+#align ring_hom.one_def RingHom.one_def
+
+lemma mul_def (f g : α →+* α) : f * g = f.comp g := rfl
+#align ring_hom.mul_def RingHom.mul_def
+
+@[simp, norm_cast] lemma coe_one : ⇑(1 : α →+* α) = _root_.id := rfl
+#align ring_hom.coe_one RingHom.coe_one
+
+@[simp, norm_cast] lemma coe_mul (f g : α →+* α) : ⇑(f * g) = f ∘ g := rfl
+#align ring_hom.coe_mul RingHom.coe_mul
+
+instance instMonoid : Monoid (α →+* α) where
   mul_one := comp_id
   one_mul := id_comp
   mul_assoc f g h := comp_assoc _ _ _
+  npow n f := (npowRec n f).copy f^[n] $ by induction' n <;> simp [npowRec, *]
+  npow_succ n f := DFunLike.coe_injective $ Function.iterate_succ _ _
 
-theorem one_def : (1 : α →+* α) = id α :=
-  rfl
-#align ring_hom.one_def RingHom.one_def
-
-theorem mul_def (f g : α →+* α) : f * g = f.comp g :=
-  rfl
-#align ring_hom.mul_def RingHom.mul_def
-
-@[simp]
-theorem coe_one : ⇑(1 : α →+* α) = _root_.id :=
-  rfl
-#align ring_hom.coe_one RingHom.coe_one
-
-@[simp]
-theorem coe_mul (f g : α →+* α) : ⇑(f * g) = f ∘ g :=
-  rfl
-#align ring_hom.coe_mul RingHom.coe_mul
+@[simp, norm_cast] lemma coe_pow (f : α →+* α) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
+#align ring_hom.coe_pow RingHom.coe_pow
 
 @[simp]
 theorem cancel_right {g₁ g₂ : β →+* γ} {f : α →+* β} (hf : Surjective f) :
@@ -718,6 +726,14 @@ theorem cancel_left {g : β →+* γ} {f₁ f₂ : α →+* β} (hg : Injective 
 #align ring_hom.cancel_left RingHom.cancel_left
 
 end RingHom
+
+section Semiring
+variable [Semiring α] [Semiring β]
+
+protected lemma RingHom.map_pow (f : α →+* β) (a) : ∀ n : ℕ, f (a ^ n) = f a ^ n := map_pow f a
+#align ring_hom.map_pow RingHom.map_pow
+
+end Semiring
 
 namespace AddMonoidHom
 
@@ -738,7 +754,7 @@ def mkRingHomOfMulSelfOfTwoNeZero (h : ∀ x, f (x * x) = f x * f x) (h_two : (2
       rw [mul_add, add_mul, add_mul, f.map_add, f.map_add, f.map_add, f.map_add, h x, h y, add_mul,
         mul_add, mul_add, ← sub_eq_zero, add_comm (f x * f x + f (y * x)), ← sub_sub, ← sub_sub,
         ← sub_sub, mul_comm y x, mul_comm (f y) (f x)] at hxy
-      simp only [add_assoc, add_sub_assoc, add_sub_cancel'_right] at hxy
+      simp only [add_assoc, add_sub_assoc, add_sub_cancel] at hxy
       rw [sub_sub, ← two_mul, ← add_sub_assoc, ← two_mul, ← mul_sub, mul_eq_zero (M₀ := α),
         sub_eq_zero, or_iff_not_imp_left] at hxy
       exact hxy h_two }
@@ -750,7 +766,7 @@ theorem coe_fn_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
   rfl
 #align add_monoid_hom.coe_fn_mk_ring_hom_of_mul_self_of_two_ne_zero AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 -- @[simp]
 theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β →+ α) = f := by

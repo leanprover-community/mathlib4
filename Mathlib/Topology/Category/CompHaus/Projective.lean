@@ -19,7 +19,7 @@ In this file we show that `CompHaus` has enough projectives.
 Let `X` be a compact Hausdorff space.
 
 * `CompHaus.projective_ultrafilter`: the space `Ultrafilter X` is a projective object
-* `CompHaus.projective_presentation`: the natural map `Ultrafilter X → X`
+* `CompHaus.projectivePresentation`: the natural map `Ultrafilter X → X`
   is a projective presentation
 
 ## Reference
@@ -37,8 +37,7 @@ namespace CompHaus
 
 attribute [local instance] ConcreteCategory.instFunLike
 
-instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X)
-    where
+instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X) where
   factors {Y Z} f g hg := by
     rw [epi_iff_surjective] at hg
     obtain ⟨g', hg'⟩ := hg.hasRightInverse
@@ -46,7 +45,7 @@ instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X)
     let h : Ultrafilter X → Y := Ultrafilter.extend t
     have hh : Continuous h := continuous_ultrafilter_extend _
     use ⟨h, hh⟩
-    apply Faithful.map_injective (F := forget CompHaus)
+    apply (forget CompHaus).map_injective
     simp only [Functor.map_comp, ContinuousMap.coe_mk, coe_comp]
     convert denseRange_pure.equalizer (g.continuous.comp hh) f.continuous _
     -- Porting note: We need to get the coercions to functions under control.

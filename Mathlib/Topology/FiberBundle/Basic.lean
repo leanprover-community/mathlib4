@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.Topology.FiberBundle.Trivialization
+import Mathlib.Topology.Order.LeftRightNhds
 
 #align_import topology.fiber_bundle.basic from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
@@ -282,7 +283,7 @@ theorem mem_trivializationAt_proj_source {x : TotalSpace F E} :
   (Trivialization.mem_source _).mpr <| mem_baseSet_trivializationAt F E x.proj
 #align fiber_bundle.mem_trivialization_at_proj_source FiberBundle.mem_trivializationAt_proj_source
 
--- porting note: removed `@[simp, mfld_simps]` because `simp` could already prove this
+-- Porting note: removed `@[simp, mfld_simps]` because `simp` could already prove this
 theorem trivializationAt_proj_fst {x : TotalSpace F E} :
     ((trivializationAt F E x.proj) x).1 = x.proj :=
   Trivialization.coe_fst' _ <| mem_baseSet_trivializationAt F E x.proj
@@ -346,8 +347,8 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
     /- Since `c' < c = Sup s`, there exists `d ∈ s ∩ (c', c]`. Let `ead` be a trivialization of
       `proj` over `[a, d]`. Then we can glue `ead` and `ec` into a trivialization over `[a, c]`. -/
     obtain ⟨d, ⟨hdab, ead, had⟩, hd⟩ : ∃ d ∈ s, d ∈ Ioc c' c := hsc.exists_between hc'.2
-    refine' ⟨ead.piecewiseLe ec d (had ⟨hdab.1, le_rfl⟩) (hc'e hd), subset_ite.2 _⟩
-    refine' ⟨fun x hx => had ⟨hx.1.1, hx.2⟩, fun x hx => hc'e ⟨hd.1.trans (not_le.1 hx.2), hx.1.2⟩⟩
+    refine ⟨ead.piecewiseLe ec d (had ⟨hdab.1, le_rfl⟩) (hc'e hd), subset_ite.2 ?_⟩
+    exact ⟨fun x hx => had ⟨hx.1.1, hx.2⟩, fun x hx => hc'e ⟨hd.1.trans (not_le.1 hx.2), hx.1.2⟩⟩
   /- So, `c ∈ s`. Let `ec` be a trivialization of `proj` over `[a, c]`.  If `c = b`, then we are
     done. Otherwise we show that `proj` can be trivialized over a larger interval `[a, d]`,
     `d ∈ (c, b]`, hence `c` is not an upper bound of `s`. -/
@@ -367,9 +368,9 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
       a trivialization over `[a, d]`. -/
     obtain ⟨ed, hed⟩ : ∃ ed : Trivialization F (π F E), d ∈ ed.baseSet :=
       ⟨trivializationAt F E d, mem_baseSet_trivializationAt F E d⟩
-    refine' ⟨d, hdcb,
+    refine ⟨d, hdcb,
       (ec.restrOpen (Iio d) isOpen_Iio).disjointUnion (ed.restrOpen (Ioi c) isOpen_Ioi)
-        (he.mono (inter_subset_right _ _) (inter_subset_right _ _)), fun x hx => _⟩
+        (he.mono (inter_subset_right _ _) (inter_subset_right _ _)), fun x hx => ?_⟩
     rcases hx.2.eq_or_lt with (rfl | hxd)
     exacts [Or.inr ⟨hed, hdcb.1⟩, Or.inl ⟨had ⟨hx.1, hxd⟩, hxd⟩]
   · /- If `(c, d)` is nonempty, then take `d' ∈ (c, d)`. Since the base set of `ec` includes
@@ -392,7 +393,7 @@ Trivialization changes from `i` to `j` are given by continuous maps `coordChange
 `baseSet i ∩ baseSet j` to the set of homeomorphisms of `F`, but we express them as maps
 `B → F → F` and require continuity on `(baseSet i ∩ baseSet j) × F` to avoid the topology on the
 space of continuous maps on `F`. -/
--- porting note: was @[nolint has_nonempty_instance]
+-- Porting note(#5171): was @[nolint has_nonempty_instance]
 structure FiberBundleCore (ι : Type*) (B : Type*) [TopologicalSpace B] (F : Type*)
     [TopologicalSpace F] where
   baseSet : ι → Set B
@@ -412,7 +413,7 @@ namespace FiberBundleCore
 variable [TopologicalSpace B] [TopologicalSpace F] (Z : FiberBundleCore ι B F)
 
 /-- The index set of a fiber bundle core, as a convenience function for dot notation -/
-@[nolint unusedArguments] -- porting note: was has_nonempty_instance
+@[nolint unusedArguments] -- Porting note(#5171): was has_nonempty_instance
 def Index (_Z : FiberBundleCore ι B F) := ι
 #align fiber_bundle_core.index FiberBundleCore.Index
 
@@ -423,7 +424,7 @@ def Base (_Z : FiberBundleCore ι B F) := B
 
 /-- The fiber of a fiber bundle core, as a convenience function for dot notation and
 typeclass inference -/
-@[nolint unusedArguments] -- porting note: was has_nonempty_instance
+@[nolint unusedArguments] -- Porting note(#5171): was has_nonempty_instance
 def Fiber (_ : FiberBundleCore ι B F) (_x : B) := F
 #align fiber_bundle_core.fiber FiberBundleCore.Fiber
 
@@ -432,8 +433,7 @@ instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := ‹_›
 
 /-- The total space of the fiber bundle, as a convenience function for dot notation.
 It is by definition equal to `Bundle.TotalSpace F Z.Fiber`. -/
-@[reducible]
-def TotalSpace := Bundle.TotalSpace F Z.Fiber
+abbrev TotalSpace := Bundle.TotalSpace F Z.Fiber
 #align fiber_bundle_core.total_space FiberBundleCore.TotalSpace
 
 /-- The projection from the total space of a fiber bundle core, on its base. -/
@@ -591,7 +591,7 @@ def localTriv (i : ι) : Trivialization F Z.proj where
       exact (continuousOn_open_iff (Z.trivChange i j).open_source).1
         (Z.trivChange i j).continuousOn _ s_open
     convert this using 1
-    dsimp [PartialEquiv.trans_source]
+    dsimp [f, PartialEquiv.trans_source]
     rw [← preimage_comp, inter_assoc]
   toPartialEquiv := Z.localTrivAsPartialEquiv i
 #align fiber_bundle_core.local_triv FiberBundleCore.localTriv
@@ -711,7 +711,7 @@ theorem mem_localTrivAt_baseSet (b : B) : b ∈ (Z.localTrivAt b).baseSet := by
   exact Z.mem_baseSet_at b
 #align fiber_bundle_core.mem_local_triv_at_base_set FiberBundleCore.mem_localTrivAt_baseSet
 
--- porting note: was @[simp, mfld_simps], now `simp` can prove it
+-- Porting note (#10618): was @[simp, mfld_simps], now `simp` can prove it
 theorem mk_mem_localTrivAt_source : (⟨b, a⟩ : Z.TotalSpace) ∈ (Z.localTrivAt b).source := by
   simp only [mfld_simps]
 #align fiber_bundle_core.mem_source_at FiberBundleCore.mem_localTrivAt_source
@@ -761,7 +761,7 @@ variable (F) (E : B → Type*) [TopologicalSpace B] [TopologicalSpace F]
 equivalences but there is not yet a topology on the total space. The total space is hence given a
 topology in such a way that there is a fiber bundle structure for which the partial equivalences
 are also partial homeomorphisms and hence local trivializations. -/
--- porting note: todo: was @[nolint has_nonempty_instance]
+-- Porting note (#5171): was @[nolint has_nonempty_instance]
 structure FiberPrebundle where
   pretrivializationAtlas : Set (Pretrivialization F (π F E))
   pretrivializationAt : B → Pretrivialization F (π F E)
@@ -785,14 +785,14 @@ def totalSpaceTopology (a : FiberPrebundle F E) : TopologicalSpace (TotalSpace F
 
 theorem continuous_symm_of_mem_pretrivializationAtlas (he : e ∈ a.pretrivializationAtlas) :
     @ContinuousOn _ _ _ a.totalSpaceTopology e.toPartialEquiv.symm e.target := by
-  refine' fun z H U h => preimage_nhdsWithin_coinduced' H (le_def.1 (nhds_mono _) U h)
+  refine fun z H U h => preimage_nhdsWithin_coinduced' H (le_def.1 (nhds_mono ?_) U h)
   exact le_iSup₂ (α := TopologicalSpace (TotalSpace F E)) e he
 #align fiber_prebundle.continuous_symm_of_mem_pretrivialization_atlas FiberPrebundle.continuous_symm_of_mem_pretrivializationAtlas
 
 theorem isOpen_source (e : Pretrivialization F (π F E)) :
     IsOpen[a.totalSpaceTopology] e.source := by
   refine isOpen_iSup_iff.mpr fun e' => isOpen_iSup_iff.mpr fun _ => ?_
-  refine' isOpen_coinduced.mpr (isOpen_induced_iff.mpr ⟨e.target, e.open_target, _⟩)
+  refine isOpen_coinduced.mpr (isOpen_induced_iff.mpr ⟨e.target, e.open_target, ?_⟩)
   ext ⟨x, hx⟩
   simp only [mem_preimage, Pretrivialization.setSymm, restrict, e.mem_target, e.mem_source,
     e'.proj_symm_apply hx]
@@ -905,11 +905,11 @@ theorem continuousOn_of_comp_right {X : Type*} [TopologicalSpace X] {f : TotalSp
   intro z hz
   let e : Trivialization F (π F E) :=
     a.trivializationOfMemPretrivializationAtlas (a.pretrivialization_mem_atlas z.proj)
-  refine' (e.continuousAt_of_comp_right _
-    ((hf z.proj hz).continuousAt (IsOpen.mem_nhds _ _))).continuousWithinAt
+  refine (e.continuousAt_of_comp_right ?_
+    ((hf z.proj hz).continuousAt (IsOpen.mem_nhds ?_ ?_))).continuousWithinAt
   · exact a.mem_base_pretrivializationAt z.proj
   · exact (hs.inter (a.pretrivializationAt z.proj).open_baseSet).prod isOpen_univ
-  refine' ⟨_, mem_univ _⟩
+  refine ⟨?_, mem_univ _⟩
   rw [e.coe_fst]
   · exact ⟨hz, a.mem_base_pretrivializationAt z.proj⟩
   · rw [e.mem_source]

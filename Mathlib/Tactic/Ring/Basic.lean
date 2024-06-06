@@ -3,10 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Util.AtomM
-import Mathlib.Data.Rat.Order
 
 /-!
 # `ring` tactic
@@ -328,8 +328,8 @@ theorem add_pf_add_gt (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ +
 
 /-- Adds two polynomials `va, vb` together to get a normalized result polynomial.
 
-* `0 + b = 0`
-* `a + 0 = 0`
+* `0 + b = b`
+* `a + 0 = a`
 * `a * x + a * y = a * (x + y)` (for `x`, `y` coefficients; uses `evalAddOverlap`)
 * `(a₁ + a₂) + (b₁ + b₂) = a₁ + (a₂ + (b₁ + b₂))` (if `a₁.lt b₁`)
 * `(a₁ + a₂) + (b₁ + b₂) = b₁ + ((a₁ + a₂) + b₂)` (if not `a₁.lt b₁`)

@@ -3,12 +3,11 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli, Junyan Xu
 -/
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Set.Lattice
-import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Order.GaloisConnection
 
 #align_import category_theory.groupoid.subgroupoid from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -94,7 +93,7 @@ theorem mul_mem_cancel_left {c d e : C} {f : c ⟶ d} {g : d ⟶ e} (hf : f ∈ 
   · rintro h
     suffices Groupoid.inv f ≫ f ≫ g ∈ S.arrows d e by
       simpa only [inv_eq_inv, IsIso.inv_hom_id_assoc] using this
-    · apply S.mul (S.inv hf) h
+    apply S.mul (S.inv hf) h
   · apply S.mul hf
 #align category_theory.subgroupoid.mul_mem_cancel_left CategoryTheory.Subgroupoid.mul_mem_cancel_left
 
@@ -104,7 +103,7 @@ theorem mul_mem_cancel_right {c d e : C} {f : c ⟶ d} {g : d ⟶ e} (hg : g ∈
   · rintro h
     suffices (f ≫ g) ≫ Groupoid.inv g ∈ S.arrows c d by
       simpa only [inv_eq_inv, IsIso.hom_inv_id, Category.comp_id, Category.assoc] using this
-    · apply S.mul h (S.inv hg)
+    apply S.mul h (S.inv hg)
   · exact fun hf => S.mul hf hg
 #align category_theory.subgroupoid.mul_mem_cancel_right CategoryTheory.Subgroupoid.mul_mem_cancel_right
 
@@ -232,7 +231,7 @@ instance : InfSet (Subgroupoid C) :=
         rw [mem_iInter₂] at hp hq ⊢;
         exact fun S hS => S.mul (hp S hS) (hq S hS) }⟩
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem mem_sInf_arrows {s : Set (Subgroupoid C)} {c d : C} {p : c ⟶ d} :
     p ∈ (sInf s).arrows c d ↔ ∀ S ∈ s, p ∈ S.arrows c d :=
   mem_iInter₂
@@ -243,7 +242,7 @@ theorem mem_sInf {s : Set (Subgroupoid C)} {p : Σ c d : C, c ⟶ d} :
 
 instance : CompleteLattice (Subgroupoid C) :=
   { completeLatticeOfInf (Subgroupoid C) (by
-      refine' fun s => ⟨fun S Ss F => _, fun T Tl F fT => _⟩ <;> simp only [mem_sInf]
+      refine fun s => ⟨fun S Ss F => ?_, fun T Tl F fT => ?_⟩ <;> simp only [mem_sInf]
       exacts [fun hp => hp S Ss, fun S Ss => Tl Ss fT]) with
     bot := ⊥
     bot_le := fun S => empty_subset _
@@ -273,7 +272,7 @@ theorem inclusion_inj_on_objects {S T : Subgroupoid C} (h : S ≤ T) :
 
 theorem inclusion_faithful {S T : Subgroupoid C} (h : S ≤ T) (s t : S.objs) :
     Function.Injective fun f : s ⟶ t => (inclusion h).map f := fun ⟨f, hf⟩ ⟨g, hg⟩ => by
-  -- porting note: was `...; simpa only [Subtype.mk_eq_mk] using id`
+  -- Porting note: was `...; simpa only [Subtype.mk_eq_mk] using id`
   dsimp only [inclusion]; rw [Subtype.mk_eq_mk, Subtype.mk_eq_mk]; exact id
 #align category_theory.subgroupoid.inclusion_faithful CategoryTheory.Subgroupoid.inclusion_faithful
 
@@ -318,7 +317,7 @@ theorem isWide_iff_objs_eq_univ : S.IsWide ↔ S.objs = Set.univ := by
     ext x; constructor <;> simp only [top_eq_univ, mem_univ, imp_true_iff, forall_true_left]
     apply mem_objs_of_src S (h.wide x)
   · rintro h
-    refine' ⟨fun c => _⟩
+    refine ⟨fun c => ?_⟩
     obtain ⟨γ, γS⟩ := (le_of_eq h.symm : ⊤ ⊆ S.objs) (Set.mem_univ c)
     exact id_mem_of_src S γS
 #align category_theory.subgroupoid.is_wide_iff_objs_eq_univ CategoryTheory.Subgroupoid.isWide_iff_objs_eq_univ
@@ -343,8 +342,8 @@ theorem IsNormal.conj' {S : Subgroupoid C} (Sn : IsNormal S) :
 
 theorem IsNormal.conjugation_bij (Sn : IsNormal S) {c d} (p : c ⟶ d) :
     Set.BijOn (fun γ : c ⟶ c => Groupoid.inv p ≫ γ ≫ p) (S.arrows c c) (S.arrows d d) := by
-  refine' ⟨fun γ γS => Sn.conj p γS, fun γ₁ _ γ₂ _ h => _, fun δ δS =>
-    ⟨p ≫ δ ≫ Groupoid.inv p, Sn.conj' p δS, _⟩⟩
+  refine ⟨fun γ γS => Sn.conj p γS, fun γ₁ _ γ₂ _ h => ?_, fun δ δS =>
+    ⟨p ≫ δ ≫ Groupoid.inv p, Sn.conj' p δS, ?_⟩⟩
   · simpa only [inv_eq_inv, Category.assoc, IsIso.hom_inv_id, Category.comp_id,
       IsIso.hom_inv_id_assoc] using p ≫= h =≫ inv p
   · simp only [inv_eq_inv, Category.assoc, IsIso.inv_hom_id, Category.comp_id,
@@ -555,8 +554,8 @@ def im (hφ : Function.Injective φ.obj) :=
 theorem mem_im_iff (hφ : Function.Injective φ.obj) {c d : D} (f : c ⟶ d) :
     f ∈ (im φ hφ).arrows c d ↔
       ∃ (a b : C) (g : a ⟶ b) (ha : φ.obj a = c) (hb : φ.obj b = d),
-        f = eqToHom ha.symm ≫ φ.map g ≫ eqToHom hb :=
-  by convert Map.arrows_iff φ hφ ⊤ f; simp only [Top.top, mem_univ, exists_true_left]
+        f = eqToHom ha.symm ≫ φ.map g ≫ eqToHom hb := by
+  convert Map.arrows_iff φ hφ ⊤ f; simp only [Top.top, mem_univ, exists_true_left]
 #align category_theory.subgroupoid.mem_im_iff CategoryTheory.Subgroupoid.mem_im_iff
 
 theorem mem_im_objs_iff (hφ : Function.Injective φ.obj) (d : D) :
@@ -585,12 +584,12 @@ theorem isNormal_map (hφ : Function.Injective φ.obj) (hφ' : im φ hφ = ⊤) 
       obtain ⟨c', rfl⟩ := this
       have : g ∈ (im φ hφ).arrows (φ.obj c) (φ.obj c') := by rw [hφ']; trivial
       rw [mem_im_iff] at this
-      obtain ⟨b, b', f, hb, hb', _, hf⟩ := this; subst_vars; cases hφ hb; cases hφ hb'
+      obtain ⟨b, b', f, hb, hb', _, hf⟩ := this; cases hφ hb; cases hφ hb'
       change Map.Arrows φ hφ S (φ.obj c') (φ.obj c') _
       simp only [eqToHom_refl, Category.comp_id, Category.id_comp, inv_eq_inv]
       suffices Map.Arrows φ hφ S (φ.obj c') (φ.obj c') (φ.map <| Groupoid.inv f ≫ γ ≫ f) by
         simp only [inv_eq_inv, Functor.map_comp, Functor.map_inv] at this; exact this
-      · constructor; apply Sn.conj f γS }
+      constructor; apply Sn.conj f γS }
 #align category_theory.subgroupoid.is_normal_map CategoryTheory.Subgroupoid.isNormal_map
 
 end Hom
@@ -698,7 +697,7 @@ theorem full_mono {D E : Set C} (h : D ≤ E) : full D ≤ full E := by
   exact fun ⟨hc, hd⟩ => ⟨h hc, h hd⟩
 #align category_theory.subgroupoid.full_mono CategoryTheory.Subgroupoid.full_mono
 
--- porting note: using `.1` instead of `↑`
+-- Porting note: using `.1` instead of `↑`
 theorem full_arrow_eq_iff {c d : (full D).objs} {f g : c ⟶ d} :
     f = g ↔ (f.1 : c.val ⟶ d.val) = g.1 :=
   Subtype.ext_iff

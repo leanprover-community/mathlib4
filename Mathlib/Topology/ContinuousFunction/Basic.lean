@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
@@ -19,6 +19,7 @@ be satisfied by itself and all stricter types.
 
 
 open Function
+open scoped Topology
 
 /-- The type of continuous maps from `α` to `β`.
 
@@ -51,7 +52,7 @@ end
 
 export ContinuousMapClass (map_continuous)
 
-attribute [continuity] map_continuous
+attribute [continuity, fun_prop] map_continuous
 
 section ContinuousMapClass
 
@@ -440,7 +441,7 @@ section Gluing
 
 variable {ι : Type*} (S : ι → Set α) (φ : ∀ i : ι, C(S i, β))
   (hφ : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), φ i ⟨x, hxi⟩ = φ j ⟨x, hxj⟩)
-  (hS : ∀ x : α, ∃ i, S i ∈ nhds x)
+  (hS : ∀ x : α, ∃ i, S i ∈ 𝓝 x)
 
 /-- A family `φ i` of continuous maps `C(S i, β)`, where the domains `S i` contain a neighbourhood
 of each point in `α` and the functions `φ i` agree pairwise on intersections, can be glued to
@@ -470,7 +471,7 @@ theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = �
 variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
   (hF : ∀ (s) (hs : s ∈ A) (t) (ht : t ∈ A) (x : α) (hxi : x ∈ s) (hxj : x ∈ t),
     F s hs ⟨x, hxi⟩ = F t ht ⟨x, hxj⟩)
-  (hA : ∀ x : α, ∃ i ∈ A, i ∈ nhds x)
+  (hA : ∀ x : α, ∃ i ∈ A, i ∈ 𝓝 x)
 
 /-- A family `F s` of continuous maps `C(s, β)`, where (1) the domains `s` are taken from a set `A`
 of sets in `α` which contain a neighbourhood of each point in `α` and (2) the functions `F s` agree
@@ -478,7 +479,7 @@ pairwise on intersections, can be glued to construct a continuous map in `C(α, 
 noncomputable def liftCover' : C(α, β) := by
   let S : A → Set α := (↑)
   let F : ∀ i : A, C(i, β) := fun i => F i i.prop
-  refine' liftCover S F (fun i j => hF i i.prop j j.prop) _
+  refine liftCover S F (fun i j => hF i i.prop j j.prop) ?_
   intro x
   obtain ⟨s, hs, hsx⟩ := hA x
   exact ⟨⟨s, hs⟩, hsx⟩
@@ -486,7 +487,7 @@ noncomputable def liftCover' : C(α, β) := by
 
 variable {A F hF hA}
 
--- porting note: did not need `by delta liftCover'; exact` in mathlib3; goal was
+-- Porting note: did not need `by delta liftCover'; exact` in mathlib3; goal was
 -- closed by `liftCover_coe x'`
 -- Might be something to do with the `let`s in the definition of `liftCover'`?
 @[simp]
@@ -495,7 +496,7 @@ theorem liftCover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF h
   by delta liftCover'; exact liftCover_coe x'
 #align continuous_map.lift_cover_coe' ContinuousMap.liftCover_coe'
 
--- porting note: porting program suggested `ext <| liftCover_coe'`
+-- Porting note: porting program suggested `ext <| liftCover_coe'`
 @[simp]
 theorem liftCover_restrict' {s : Set α} {hs : s ∈ A} :
     (liftCover' A F hF hA).restrict s = F s hs := ext <| liftCover_coe' (hF := hF) (hA := hA)
@@ -579,7 +580,6 @@ end Lift
 namespace Homeomorph
 
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
-
 variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 
 /-- The forward direction of a homeomorphism, as a bundled continuous map. -/
@@ -594,7 +594,7 @@ instance : Coe (α ≃ₜ β) C(α, β) :=
   ⟨Homeomorph.toContinuousMap⟩
 
 -- Porting note: Syntactic tautology
-/-theorem toContinuousMap_as_coe : f.toContinuousMap = f :=
+/- theorem toContinuousMap_as_coe : f.toContinuousMap = f :=
   rfl
 -/
 #noalign homeomorph.to_continuous_map_as_coe

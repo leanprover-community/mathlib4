@@ -22,9 +22,12 @@ See the sixth proof for the infinity of primes in Chapter 1 of [aigner1999proofs
 The proof is due to Erdős.
 -/
 
+open Set Nat
+open scoped Topology
+
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by `N` times the sum
 of `1/p` over the primes `k ≤ p ≤ N`. -/
--- This needs `Mathlib.Data.IsROrC.Basic`, so we put it here
+-- This needs `Mathlib.Analysis.RCLike.Basic`, so we put it here
 -- instead of in `Mathlib.NumberTheory.SmoothNumbers`.
 lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
     (roughNumbersUpTo N k).card ≤
@@ -33,21 +36,19 @@ lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
   exact (Nat.cast_le.mpr <| roughNumbersUpTo_card_le N k).trans <|
     (cast_sum (β := ℝ) ..) ▸ Finset.sum_le_sum fun n _ ↦ cast_div_le
 
-open Set Nat BigOperators
-
 /-- The sum over primes `k ≤ p ≤ 4^(π(k-1)+1)` over `1/p` (as a real number) is at least `1/2`. -/
 lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
-    1 / 2 ≤ ∑ p in (4 ^ (k.primesBelow.card + 1)).succ.primesBelow \ k.primesBelow,
+    1 / 2 ≤ ∑ p ∈ (4 ^ (k.primesBelow.card + 1)).succ.primesBelow \ k.primesBelow,
       (1 / p : ℝ) := by
   set m : ℕ := 2 ^ k.primesBelow.card
   set N₀ : ℕ := 2 * m ^ 2 with hN₀
   let S : ℝ := ((2 * N₀).succ.primesBelow \ k.primesBelow).sum (fun p ↦ (1 / p : ℝ))
-  suffices : 1 / 2 ≤ S
-  · convert this using 5
+  suffices 1 / 2 ≤ S by
+    convert this using 5
     rw [show 4 = 2 ^ 2 by norm_num, pow_right_comm]
     ring
-  suffices : 2 * N₀ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S
-  · rwa [hN₀, ← mul_assoc, ← pow_two 2, ← mul_pow, sqrt_eq', ← sub_le_iff_le_add',
+  suffices 2 * N₀ ≤ m * (2 * N₀).sqrt + 2 * N₀ * S by
+    rwa [hN₀, ← mul_assoc, ← pow_two 2, ← mul_pow, sqrt_eq', ← sub_le_iff_le_add',
       cast_mul, cast_mul, cast_pow, cast_two,
       show (2 * (2 * m ^ 2) - m * (2 * m) : ℝ) = 2 * (2 * m ^ 2) * (1 / 2) by ring,
       _root_.mul_le_mul_left <| by positivity] at this
@@ -63,11 +64,11 @@ lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
 theorem not_summable_one_div_on_primes :
     ¬ Summable (indicator {p | p.Prime} (fun n : ℕ ↦ (1 : ℝ) / n)) := by
   intro h
-  obtain ⟨k, hk⟩ := h.nat_tsum_vanishing (Iio_mem_nhds one_half_pos : Iio (1 / 2 : ℝ) ∈ nhds 0)
+  obtain ⟨k, hk⟩ := h.nat_tsum_vanishing (Iio_mem_nhds one_half_pos : Iio (1 / 2 : ℝ) ∈ 𝓝 0)
   specialize hk ({p | Nat.Prime p} ∩ {p | k ≤ p}) <| inter_subset_right ..
   rw [tsum_subtype, indicator_indicator, inter_eq_left.mpr fun n hn ↦ hn.1, mem_Iio] at hk
-  have h' : Summable (indicator ({p | Nat.Prime p} ∩ {p | k ≤ p}) fun n ↦ (1 : ℝ) / n)
-  · convert h.indicator {n : ℕ | k ≤ n} using 1
+  have h' : Summable (indicator ({p | Nat.Prime p} ∩ {p | k ≤ p}) fun n ↦ (1 : ℝ) / n) := by
+    convert h.indicator {n : ℕ | k ≤ n} using 1
     simp only [indicator_indicator, inter_comm]
   refine ((one_half_le_sum_primes_ge_one_div k).trans_lt <| LE.le.trans_lt ?_ hk).false
   convert sum_le_tsum (primesBelow ((4 ^ (k.primesBelow.card + 1)).succ) \ primesBelow k)

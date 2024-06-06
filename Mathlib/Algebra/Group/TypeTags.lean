@@ -32,6 +32,9 @@ This file is similar to `Order.Synonym`.
 
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 universe u v
 
 variable {α : Type u} {β : Type v}
@@ -67,6 +70,12 @@ theorem toMul_symm_eq : (@toMul α).symm = ofMul :=
   rfl
 #align additive.to_mul_symm_eq Additive.toMul_symm_eq
 
+@[simp]
+protected lemma «forall» {p : Additive α → Prop} : (∀ a, p a) ↔ ∀ a, p (ofMul a) := Iff.rfl
+
+@[simp]
+protected lemma «exists» {p : Additive α → Prop} : (∃ a, p a) ↔ ∃ a, p (ofMul a) := Iff.rfl
+
 end Additive
 
 namespace Multiplicative
@@ -89,6 +98,12 @@ theorem ofAdd_symm_eq : (@ofAdd α).symm = toAdd :=
 theorem toAdd_symm_eq : (@toAdd α).symm = ofAdd :=
   rfl
 #align multiplicative.to_add_symm_eq Multiplicative.toAdd_symm_eq
+
+@[simp]
+protected lemma «forall» {p : Multiplicative α → Prop} : (∀ a, p a) ↔ ∀ a, p (ofAdd a) := Iff.rfl
+
+@[simp]
+protected lemma «exists» {p : Multiplicative α → Prop} : (∃ a, p a) ↔ ∃ a, p (ofAdd a) := Iff.rfl
 
 end Multiplicative
 
@@ -458,6 +473,10 @@ def AddMonoidHom.toMultiplicative [AddZeroClass α] [AddZeroClass β] :
 #align add_monoid_hom.to_multiplicative_symm_apply_apply AddMonoidHom.toMultiplicative_symm_apply_apply
 #align add_monoid_hom.to_multiplicative_apply_apply AddMonoidHom.toMultiplicative_apply_apply
 
+@[simp, norm_cast]
+lemma AddMonoidHom.coe_toMultiplicative [AddZeroClass α] [AddZeroClass β] (f : α →+ β) :
+    ⇑(toMultiplicative f) = ofAdd ∘ f ∘ toAdd := rfl
+
 /-- Reinterpret `α →* β` as `Additive α →+ Additive β`. -/
 @[simps]
 def MonoidHom.toAdditive [MulOneClass α] [MulOneClass β] :
@@ -477,6 +496,10 @@ def MonoidHom.toAdditive [MulOneClass α] [MulOneClass β] :
 #align monoid_hom.to_additive MonoidHom.toAdditive
 #align monoid_hom.to_additive_symm_apply_apply MonoidHom.toAdditive_symm_apply_apply
 #align monoid_hom.to_additive_apply_apply MonoidHom.toAdditive_apply_apply
+
+@[simp, norm_cast]
+lemma MonoidHom.coe_toMultiplicative [MulOneClass α] [MulOneClass β] (f : α →* β) :
+    ⇑(toAdditive f) = ofMul ∘ f ∘ toMul := rfl
 
 /-- Reinterpret `Additive α →+ β` as `α →* Multiplicative β`. -/
 @[simps]
@@ -498,6 +521,10 @@ def AddMonoidHom.toMultiplicative' [MulOneClass α] [AddZeroClass β] :
 #align add_monoid_hom.to_multiplicative'_apply_apply AddMonoidHom.toMultiplicative'_apply_apply
 #align add_monoid_hom.to_multiplicative'_symm_apply_apply AddMonoidHom.toMultiplicative'_symm_apply_apply
 
+@[simp, norm_cast]
+lemma AddMonoidHom.coe_toMultiplicative' [MulOneClass α] [AddZeroClass β] (f : Additive α →+ β) :
+    ⇑(toMultiplicative' f) = ofAdd ∘ f ∘ ofMul := rfl
+
 /-- Reinterpret `α →* Multiplicative β` as `Additive α →+ β`. -/
 @[simps!]
 def MonoidHom.toAdditive' [MulOneClass α] [AddZeroClass β] :
@@ -506,6 +533,10 @@ def MonoidHom.toAdditive' [MulOneClass α] [AddZeroClass β] :
 #align monoid_hom.to_additive' MonoidHom.toAdditive'
 #align monoid_hom.to_additive'_symm_apply_apply MonoidHom.toAdditive'_symm_apply_apply
 #align monoid_hom.to_additive'_apply_apply MonoidHom.toAdditive'_apply_apply
+
+@[simp, norm_cast]
+lemma MonoidHom.coe_toAdditive' [MulOneClass α] [AddZeroClass β] (f : α →* Multiplicative β) :
+    ⇑(toAdditive' f) = toAdd ∘ f ∘ toMul := rfl
 
 /-- Reinterpret `α →+ Additive β` as `Multiplicative α →* β`. -/
 @[simps]
@@ -527,6 +558,10 @@ def AddMonoidHom.toMultiplicative'' [AddZeroClass α] [MulOneClass β] :
 #align add_monoid_hom.to_multiplicative''_symm_apply_apply AddMonoidHom.toMultiplicative''_symm_apply_apply
 #align add_monoid_hom.to_multiplicative''_apply_apply AddMonoidHom.toMultiplicative''_apply_apply
 
+@[simp, norm_cast]
+lemma AddMonoidHom.coe_toMultiplicative'' [AddZeroClass α] [MulOneClass β] (f : α →+ Additive β) :
+    ⇑(toMultiplicative'' f) = toMul ∘ f ∘ toAdd := rfl
+
 /-- Reinterpret `Multiplicative α →* β` as `α →+ Additive β`. -/
 @[simps!]
 def MonoidHom.toAdditive'' [AddZeroClass α] [MulOneClass β] :
@@ -535,6 +570,10 @@ def MonoidHom.toAdditive'' [AddZeroClass α] [MulOneClass β] :
 #align monoid_hom.to_additive'' MonoidHom.toAdditive''
 #align monoid_hom.to_additive''_symm_apply_apply MonoidHom.toAdditive''_symm_apply_apply
 #align monoid_hom.to_additive''_apply_apply MonoidHom.toAdditive''_apply_apply
+
+@[simp, norm_cast]
+lemma MonoidHom.coe_toAdditive'' [AddZeroClass α] [MulOneClass β] (f : Multiplicative α →* β) :
+    ⇑(toAdditive'' f) = ofMul ∘ f ∘ ofAdd := rfl
 
 /-- If `α` has some multiplicative structure and coerces to a function,
 then `Additive α` should also coerce to the same function.

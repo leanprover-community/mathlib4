@@ -343,11 +343,11 @@ theorem image_source_eq_target : e '' e.source = e.target :=
 #align local_equiv.image_source_eq_target PartialEquiv.image_source_eq_target
 
 theorem forall_mem_target {p : β → Prop} : (∀ y ∈ e.target, p y) ↔ ∀ x ∈ e.source, p (e x) := by
-  rw [← image_source_eq_target, ball_image_iff]
+  rw [← image_source_eq_target, forall_mem_image]
 #align local_equiv.forall_mem_target PartialEquiv.forall_mem_target
 
 theorem exists_mem_target {p : β → Prop} : (∃ y ∈ e.target, p y) ↔ ∃ x ∈ e.source, p (e x) := by
-  rw [← image_source_eq_target, bex_image_iff]
+  rw [← image_source_eq_target, exists_mem_image]
 #align local_equiv.exists_mem_target PartialEquiv.exists_mem_target
 
 /-- We say that `t : Set β` is an image of `s : Set α` under a partial equivalence if
@@ -566,8 +566,7 @@ protected theorem ext {e e' : PartialEquiv α β} (h : ∀ x, e x = e' x)
   have I' : e' '' e'.source = e'.target := e'.image_source_eq_target
   rw [A, hs, I'] at I
   cases e; cases e'
-  simp [*] at *
-  simp [*]
+  simp_all
 #align local_equiv.ext PartialEquiv.ext
 
 /-- Restricting a partial equivalence to `e.source ∩ s` -/
@@ -815,7 +814,7 @@ theorem EqOnSource.eqOn {e e' : PartialEquiv α β} (h : e ≈ e') : e.source.Eq
   h.2
 #align local_equiv.eq_on_source.eq_on PartialEquiv.EqOnSource.eqOn
 
---Porting note: A lot of dot notation failures here. Maybe we should not use `≈`
+-- Porting note: A lot of dot notation failures here. Maybe we should not use `≈`
 
 /-- Two equivalent partial equivs have the same target. -/
 theorem EqOnSource.target_eq {e e' : PartialEquiv α β} (h : e ≈ e') : e.target = e'.target := by
@@ -824,7 +823,7 @@ theorem EqOnSource.target_eq {e e' : PartialEquiv α β} (h : e ≈ e') : e.targ
 
 /-- If two partial equivs are equivalent, so are their inverses. -/
 theorem EqOnSource.symm' {e e' : PartialEquiv α β} (h : e ≈ e') : e.symm ≈ e'.symm := by
-  refine' ⟨target_eq h, eqOn_of_leftInvOn_of_rightInvOn e.leftInvOn _ _⟩ <;>
+  refine ⟨target_eq h, eqOn_of_leftInvOn_of_rightInvOn e.leftInvOn ?_ ?_⟩ <;>
     simp only [symm_source, target_eq h, source_eq h, e'.symm_mapsTo]
   exact e'.rightInvOn.congr_right e'.symm_mapsTo (source_eq h ▸ h.eqOn.symm)
 #align local_equiv.eq_on_source.symm' PartialEquiv.EqOnSource.symm'
@@ -867,7 +866,7 @@ theorem EqOnSource.source_inter_preimage_eq {e e' : PartialEquiv α β} (he : e 
 the restriction of the identity to the source. -/
 theorem self_trans_symm : e.trans e.symm ≈ ofSet e.source := by
   have A : (e.trans e.symm).source = e.source := by mfld_set_tac
-  refine' ⟨by rw [A, ofSet_source], fun x hx => _⟩
+  refine ⟨by rw [A, ofSet_source], fun x hx => ?_⟩
   rw [A] at hx
   simp only [hx, mfld_simps]
 #align local_equiv.self_trans_symm PartialEquiv.self_trans_symm
@@ -898,18 +897,10 @@ def prod (e : PartialEquiv α β) (e' : PartialEquiv γ δ) : PartialEquiv (α �
   target := e.target ×ˢ e'.target
   toFun p := (e p.1, e' p.2)
   invFun p := (e.symm p.1, e'.symm p.2)
-  map_source' p hp := by
-    simp at hp
-    simp [hp]
-  map_target' p hp := by
-    simp at hp
-    simp [map_target, hp]
-  left_inv' p hp := by
-    simp at hp
-    simp [hp]
-  right_inv' p hp := by
-    simp at hp
-    simp [hp]
+  map_source' p hp := by simp_all
+  map_target' p hp := by simp_all
+  left_inv' p hp   := by simp_all
+  right_inv' p hp  := by simp_all
 #align local_equiv.prod PartialEquiv.prod
 
 @[simp, mfld_simps]

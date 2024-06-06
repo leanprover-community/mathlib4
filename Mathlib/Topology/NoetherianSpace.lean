@@ -70,7 +70,7 @@ protected theorem NoetherianSpace.isCompact [NoetherianSpace α] (s : Set α) : 
   exact ⟨t, hs.trans ht⟩
 #align topological_space.noetherian_space.is_compact TopologicalSpace.NoetherianSpace.isCompact
 
--- porting note: fixed NS
+-- Porting note: fixed NS
 protected theorem _root_.Inducing.noetherianSpace [NoetherianSpace α] {i : β → α}
     (hi : Inducing i) : NoetherianSpace β :=
   (noetherianSpace_iff_opens _).2 fun _ => hi.isCompact_iff.2 (NoetherianSpace.isCompact _)
@@ -90,7 +90,7 @@ theorem noetherianSpace_TFAE :
       ∀ s : Set α, IsCompact s,
       ∀ s : Opens α, IsCompact (s : Set α)] := by
   tfae_have 1 ↔ 2
-  · refine' (noetherianSpace_iff α).trans (Opens.compl_bijective.2.wellFounded_iff _)
+  · refine (noetherianSpace_iff α).trans (Opens.compl_bijective.2.wellFounded_iff ?_)
     exact (@OrderIso.compl (Set α)).lt_iff_lt.symm
   tfae_have 1 ↔ 4
   · exact noetherianSpace_iff_opens α
@@ -196,7 +196,8 @@ theorem NoetherianSpace.exists_finite_set_isClosed_irreducible [NoetherianSpace 
       (∀ t ∈ S, IsClosed t) ∧ (∀ t ∈ S, IsIrreducible t) ∧ s = ⋃₀ S := by
   lift s to Closeds α using hs
   rcases NoetherianSpace.exists_finite_set_closeds_irreducible s with ⟨S, hSf, hS, rfl⟩
-  refine ⟨(↑) '' S, hSf.image _, Set.ball_image_iff.2 fun S _ => S.2, Set.ball_image_iff.2 hS, ?_⟩
+  refine ⟨(↑) '' S, hSf.image _, Set.forall_mem_image.2 fun S _ ↦ S.2, Set.forall_mem_image.2 hS,
+    ?_⟩
   lift S to Finset (Closeds α) using hSf
   simp [← Finset.sup_id_eq_sSup, Closeds.coe_finset_sup]
 
@@ -230,9 +231,9 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
   have hι' : Finite ι := by rwa [Set.finite_coe_iff]
 
   let U := Z \ ⋃ (x : ι), x
-  have hU0 : U ≠ ∅ := λ r ↦ by
+  have hU0 : U ≠ ∅ := fun r ↦ by
     obtain ⟨Z', hZ'⟩ := isIrreducible_iff_sUnion_closed.mp H.1 hι.toFinset
-      (λ z hz ↦ by
+      (fun z hz ↦ by
         simp only [Set.Finite.mem_toFinset, Set.mem_diff, Set.mem_singleton_iff] at hz
         exact isClosed_of_mem_irreducibleComponents _ hz.1)
       (by
@@ -242,8 +243,8 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
     simp only [Set.Finite.mem_toFinset, Set.mem_diff, Set.mem_singleton_iff] at hZ'
     exact hZ'.1.2 <| le_antisymm (H.2 hZ'.1.1.1 hZ'.2) hZ'.2
 
-  have hU1 : U = (⋃ (x : ι), x.1) ᶜ
-  · rw [Set.compl_eq_univ_diff]
+  have hU1 : U = (⋃ (x : ι), x.1) ᶜ := by
+    rw [Set.compl_eq_univ_diff]
     refine le_antisymm (Set.diff_subset_diff le_top <| subset_refl _) ?_
     rw [← Set.compl_eq_univ_diff]
     refine Set.compl_subset_iff_union.mpr (le_antisymm le_top ?_)
@@ -251,16 +252,16 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
     rintro a -
     by_cases h : a ∈ U
     · exact ⟨U, Set.mem_insert _ _, h⟩
-    · rw [Set.mem_diff, Decidable.not_and, not_not, Set.mem_iUnion] at h
+    · rw [Set.mem_diff, Decidable.not_and_iff_or_not_not, not_not, Set.mem_iUnion] at h
       rcases h with (h|⟨i, hi⟩)
       · refine ⟨irreducibleComponent a, Or.inr ?_, mem_irreducibleComponent⟩
-        simp only [Set.mem_diff, Set.mem_singleton_iff]
+        simp only [ι, Set.mem_diff, Set.mem_singleton_iff]
         refine ⟨irreducibleComponent_mem_irreducibleComponents _, ?_⟩
         rintro rfl
-        refine h mem_irreducibleComponent
+        exact h mem_irreducibleComponent
       · exact ⟨i, Or.inr i.2, hi⟩
 
   refine ⟨U, hU1 ▸ isOpen_compl_iff.mpr ?_, hU0, sdiff_le⟩
-  exact isClosed_iUnion_of_finite λ i ↦ isClosed_of_mem_irreducibleComponents i.1 i.2.1
+  exact isClosed_iUnion_of_finite fun i ↦ isClosed_of_mem_irreducibleComponents i.1 i.2.1
 
 end TopologicalSpace
