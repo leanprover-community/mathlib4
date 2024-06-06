@@ -937,7 +937,7 @@ theorem ciInf_eq_of_forall_ge_of_forall_gt_exists_lt [Nonempty ι] {f : ι → �
 `f n ≤ g n` for all `n`, then `⨆ n, f n` belongs to all the intervals `[f n, g n]`. -/
 theorem Monotone.ciSup_mem_iInter_Icc_of_antitone [SemilatticeSup β] {f g : β → α} (hf : Monotone f)
     (hg : Antitone g) (h : f ≤ g) : (⨆ n, f n) ∈ ⋂ n, Icc (f n) (g n) := by
-  refine' mem_iInter.2 fun n => _
+  refine mem_iInter.2 fun n => ?_
   haveI : Nonempty β := ⟨n⟩
   have : ∀ m, f m ≤ g n := fun m => hf.forall_le_of_antitone hg h m n
   exact ⟨le_ciSup ⟨g <| n, forall_mem_range.2 this⟩ _, ciSup_le this⟩
@@ -1286,7 +1286,7 @@ theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
       exact le_top
     · rintro (⟨⟩ | a) ha
       · contradiction
-      apply some_le_some.2
+      apply coe_le_coe.2
       exact le_csSup h₂ ha
     · intro _ _
       exact le_top
@@ -1297,19 +1297,19 @@ theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
       · exact False.elim (not_top_le_coe a (ha h₁))
     · rintro (⟨⟩ | b) hb
       · exact le_top
-      refine' some_le_some.2 (csSup_le _ _)
+      refine coe_le_coe.2 (csSup_le ?_ ?_)
       · rcases hs with ⟨⟨⟩ | b, hb⟩
         · exact absurd hb h₁
         · exact ⟨b, hb⟩
       · intro a ha
-        exact some_le_some.1 (hb ha)
+        exact coe_le_coe.1 (hb ha)
     · rintro (⟨⟩ | b) hb
       · exact le_rfl
       · exfalso
         apply h₂
         use b
         intro a ha
-        exact some_le_some.1 (hb ha)
+        exact coe_le_coe.1 (hb ha)
 #align with_top.is_lub_Sup' WithTop.isLUB_sSup'
 
 -- Porting note: in mathlib3 `dsimp only [sSup]` was not needed, we used `show IsLUB ∅ (ite _ _ _)`
@@ -1340,7 +1340,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
       exact top_le_iff.2 (Set.mem_singleton_iff.1 (h ha))
     · rintro (⟨⟩ | a) ha
       · exact le_top
-      refine' some_le_some.2 (csInf_le _ ha)
+      refine coe_le_coe.2 (csInf_le ?_ ha)
       rcases hs with ⟨⟨⟩ | b, hb⟩
       · exfalso
         apply h
@@ -1349,7 +1349,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
         exact hb hc
       use b
       intro c hc
-      exact some_le_some.1 (hb hc)
+      exact coe_le_coe.1 (hb hc)
   · show ite _ _ _ ∈ _
     split_ifs with h
     · intro _ _
@@ -1359,14 +1359,14 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
         apply h
         intro b hb
         exact Set.mem_singleton_iff.2 (top_le_iff.1 (ha hb))
-      · refine' some_le_some.2 (le_csInf _ _)
+      · refine coe_le_coe.2 (le_csInf ?_ ?_)
         · classical
             contrapose! h
             rintro (⟨⟩ | a) ha
             · exact mem_singleton ⊤
             · exact (not_nonempty_iff_eq_empty.2 h ⟨a, ha⟩).elim
         · intro b hb
-          rw [← some_le_some]
+          rw [← coe_le_coe]
           exact ha hb
 #align with_top.is_glb_Inf' WithTop.isGLB_sInf'
 
@@ -1550,7 +1550,7 @@ variable {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α
 theorem csSup_image2_eq_csSup_csSup (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) (hs₀ : s.Nonempty) (hs₁ : BddAbove s)
     (ht₀ : t.Nonempty) (ht₁ : BddAbove t) : sSup (image2 l s t) = l (sSup s) (sSup t) := by
-  refine' eq_of_forall_ge_iff fun c => _
+  refine eq_of_forall_ge_iff fun c => ?_
   rw [csSup_le_iff (hs₁.image2 (fun _ => (h₁ _).monotone_l) (fun _ => (h₂ _).monotone_l) ht₁)
       (hs₀.image2 ht₀),
     forall_image2_iff, forall₂_swap, (h₂ _).le_iff_le, csSup_le_iff ht₁ ht₀]
@@ -1664,7 +1664,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
           use ⊥
           rw [h]
           rintro b ⟨⟩
-      · refine' (WithTop.isLUB_sSup' h).2 ha
+      · exact (WithTop.isLUB_sSup' h).2 ha
     sInf_le := fun S a haS =>
       show ite _ _ _ ≤ a by
         split_ifs with h₁
@@ -1673,8 +1673,8 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
           cases h₁ haS
         · cases a
           · exact le_top
-          · apply WithTop.some_le_some.2
-            refine' csInf_le _ haS
+          · apply WithTop.coe_le_coe.2
+            refine csInf_le ?_ haS
             use ⊥
             intro b _
             exact bot_le
@@ -1705,7 +1705,7 @@ variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α}
 
 lemma iSup_coe_eq_top : ⨆ x, (f x : WithTop α) = ⊤ ↔ ¬BddAbove (range f) := by
   rw [iSup_eq_top, not_bddAbove_iff]
-  refine' ⟨fun hf r => _, fun hf a ha => _⟩
+  refine ⟨fun hf r => ?_, fun hf a ha => ?_⟩
   · rcases hf r (WithTop.coe_lt_top r) with ⟨i, hi⟩
     exact ⟨f i, ⟨i, rfl⟩, WithTop.coe_lt_coe.mp hi⟩
   · rcases hf (a.untop ha.ne) with ⟨-, ⟨i, rfl⟩, hi⟩

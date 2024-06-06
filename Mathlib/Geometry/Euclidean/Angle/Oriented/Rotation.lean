@@ -484,7 +484,7 @@ the second is a multiple of a `π / 2` rotation of that vector. -/
 theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
     ⟪x, y⟫ = 0 ↔ x = 0 ∨ ∃ r : ℝ, r • o.rotation (π / 2 : ℝ) x = y := by
   rw [← o.eq_zero_or_oangle_eq_iff_inner_eq_zero]
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with (rfl | rfl | h | h)
     · exact Or.inl rfl
     · exact Or.inr ⟨0, zero_smul _ _⟩
@@ -502,11 +502,11 @@ theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
     · exact Or.inl rfl
     · by_cases hx : x = 0; · exact Or.inl hx
       rcases lt_trichotomy r 0 with (hr | rfl | hr)
-      · refine' Or.inr (Or.inr (Or.inr _))
+      · refine Or.inr (Or.inr (Or.inr ?_))
         rw [o.oangle_smul_right_of_neg _ _ hr, o.neg_rotation_pi_div_two,
           o.oangle_rotation_self_right hx]
       · exact Or.inr (Or.inl (zero_smul _ _))
-      · refine' Or.inr (Or.inr (Or.inl _))
+      · refine Or.inr (Or.inr (Or.inl ?_))
         rw [o.oangle_smul_right_of_pos _ _ hr, o.oangle_rotation_self_right hx]
 #align orientation.inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two Orientation.inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two
 

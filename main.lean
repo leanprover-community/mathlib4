@@ -653,10 +653,25 @@ theorem measure_cylinder {s : Finset ι} {S : Set ((i : s) → X i)} (mS : Measu
 theorem integral_dep {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {s : Finset ι} {f : ((i : s) → X i) → E} (hf : StronglyMeasurable f) :
     ∫ y, f ((fun x (i : s) ↦ x i) y) ∂measure_produit μ =
-    ∫ y, f y∂Measure.pi (fun i : s ↦ μ i) := by
+    ∫ y, f y ∂Measure.pi (fun i : s ↦ μ i) := by
   rw [← integral_map, isProjectiveLimit_measure_produit μ]
   · exact (measurable_proj _).aemeasurable
   · exact hf.aestronglyMeasurable
+
+theorem integral_dependsOn [DecidableEq ι] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {s : Finset ι} {f : ((i : ι) → X i) → E} (mf : StronglyMeasurable f) (hf : DependsOn f s)
+    (x : (i : ι) → X i) :
+    ∫ y, f y ∂measure_produit μ =
+    ∫ y, f (Function.updateFinset x s y) ∂Measure.pi (fun i : s ↦ μ i) := by
+  let g : ((i : s) → X i) → E := fun y ↦ f (Function.updateFinset x _ y)
+  have this y : g ((fun z (i : s) ↦ z i) y) = f y := by
+    apply hf
+    intro i hi
+    simp only [Function.updateFinset, dite_eq_ite, ite_eq_left_iff]
+    exact fun h ↦ (h hi).elim
+  rw [← integral_congr_ae <| eventually_of_forall this]
+  rw [integral_dep]
+  · sorry
 
 theorem lintegral_dep {s : Finset ι} {f : ((i : s) → X i) → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ y, f ((fun x (i : s) ↦ x i) y) ∂measure_produit μ =
@@ -667,9 +682,6 @@ theorem lintegral_dep {s : Finset ι} {f : ((i : s) → X i) → ℝ≥0∞} (hf
 theorem lintegral_dependsOn [DecidableEq ι]
     {f : ((i : ι) → X i) → ℝ≥0∞} (mf : Measurable f) {s : Finset ι} (hf : DependsOn f s)
     (x : (i : ι) → X i) : ∫⁻ y, f y ∂measure_produit μ = (∫⋯∫⁻_s, f ∂μ) x := by
-  have : ∀ i, Nonempty (X i) := by
-    have := fun i ↦ ProbabilityMeasure.nonempty ⟨μ i, hμ i⟩
-    infer_instance
   let g : ((i : s) → X i) → ℝ≥0∞ := fun y ↦ f (Function.updateFinset x _ y)
   have this y : g ((fun z (i : s) ↦ z i) y) = f y := by
     apply hf

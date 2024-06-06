@@ -84,7 +84,7 @@ theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image (
   · rintro ⟨hs, ht⟩
     exact ⟨u \ s, sdiff_le_sdiff_right ht, sup_sdiff_cancel_right hs⟩
   · rintro ⟨v, hv, rfl⟩
-    exact ⟨le_sup_left, union_subset h <| hv.trans <| sdiff_subset _ _⟩
+    exact ⟨le_sup_left, union_subset h <| hv.trans sdiff_subset⟩
 #align finset.Icc_eq_image_powerset Finset.Icc_eq_image_powerset
 
 theorem Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image (s ∪ ·) := by
