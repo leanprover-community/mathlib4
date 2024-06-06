@@ -69,7 +69,7 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
-          git checkout v4.8.0-rc1
+          git checkout v4.8.0
           # Now that the git hash is embedded in each olean,
           # we need to compile lean4checker on the same toolchain
           cp ../lean-toolchain .
