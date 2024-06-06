@@ -48,9 +48,10 @@ def compare_counts(base_file, head_file):
         message += '| File | Base Count | Head Count | Change |\n'
         message += '| --- | --- | --- | --- |\n'
         message += '\n'.join(messages)
-        message += '\n</details>'
     else:
-        message += 'None</details>'
+        message += 'None'
+    message += '\n</details>'
+    print(message)
     return message
 
 if __name__ == '__main__':
