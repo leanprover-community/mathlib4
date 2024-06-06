@@ -2487,15 +2487,13 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
     [PerfectlyNormalSpace X] : CompletelyNormalSpace X where
   completely_normal s t hd₁ hd₂ := by
     rw [← separatedNhds_iff_disjoint]
-    have : IsGδ (closure s) := closed_gdelta isClosed_closure
-    obtain ⟨S, S_open, S_count, S_int⟩ := this
+    obtain ⟨S, S_open, S_count, S_int⟩ := closed_gdelta (h := closure s) isClosed_closure
     wlog S_nonempty : S.Nonempty
     · have : closure s = univ := by
         rw [S_int, not_nonempty_iff_eq_empty.mp S_nonempty]
-        apply sInter_empty
+        exact sInter_empty
       have : t = ∅ := by
-        rw [← Set.disjoint_univ]
-        rw [← this]
+        rw [← Set.disjoint_univ, ← this]
         exact Disjoint.symm hd₁
       rw [this]
       exact SeparatedNhds.empty_right s
