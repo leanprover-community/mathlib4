@@ -8,7 +8,10 @@ import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.RingTheory.Bialgebra.Equiv
 
 /-!
-# The category of bialgebras
+# The category of bialgebras over a commutative ring
+
+We introduce the bundled category `BialgebraCat` of bialgebras over a fixed commutative ring `R`
+along with the forgetful functors to `CoalgebraCat` and `AlgebraCat`.
 
 This file mimics `Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat`.
 
@@ -22,7 +25,7 @@ variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-bialgebras. -/
 structure BialgebraCat extends Bundled Ring.{v} where
-  isBialgebra : Bialgebra R α
+  [isBialgebra : Bialgebra R α]
 
 attribute [instance] BialgebraCat.isBialgebra
 
@@ -34,14 +37,6 @@ open Bialgebra
 
 instance : CoeSort (BialgebraCat.{v} R) (Type v) :=
   ⟨(·.α)⟩
-
--- I guess I'm only making this because I wanted to extend `RingCat` but can't.
-/-- The object in `RingCat` underlying an object in `BialgebraCat R`. -/
-def toRingCat (X : BialgebraCat.{v} R) : RingCat := toBundled X
-
-@[simp] theorem ringCat_of_toRingCat (X : BialgebraCat.{v} R) :
-    RingCat.of X.toRingCat = X.toRingCat :=
-  rfl
 
 variable (R)
 
@@ -76,9 +71,6 @@ instance category : Category (BialgebraCat.{v} R) where
   Hom X Y := Hom X Y
   id X := ⟨BialgHom.id R X⟩
   comp f g := ⟨BialgHom.comp g.toBialgHom f.toBialgHom⟩
-  id_comp g := Hom.ext _ _ <| BialgHom.id_comp g.toBialgHom
-  comp_id f := Hom.ext _ _ <| BialgHom.comp_id f.toBialgHom
-  assoc f g h := Hom.ext _ _ <| BialgHom.comp_assoc h.toBialgHom g.toBialgHom f.toBialgHom
 
 -- TODO: if `Quiver.Hom` and the instance above were `reducible`, this wouldn't be needed.
 @[ext]
@@ -198,3 +190,10 @@ def toBialgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
   rfl
 
 end CategoryTheory.Iso
+
+instance BialgebraCat.forget_reflects_isos :
+    (forget (BialgebraCat.{v} R)).ReflectsIsomorphisms where
+  reflects {X Y} f _ := by
+    let i := asIso ((forget (BialgebraCat.{v} R)).map f)
+    let e : X ≃ₐc[R] Y := { f.toBialgHom, i.toEquiv with }
+    exact ⟨(IsIso.of_iso e.toIso).1⟩
