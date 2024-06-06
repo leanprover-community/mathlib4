@@ -21,11 +21,11 @@ theorem small_subset {s t : Set α} (hts : t ⊆ s) [Small.{u} s] : Small.{u} t 
 instance small_powerset (s : Set α) [Small.{u} s] : Small.{u} (𝒫 s) :=
   small_map (Equiv.Set.powerset s)
 
-instance small_sprod (s : Set α) (t : Set β) [Small.{u} s] [Small.{u} t] :
+instance small_setProd (s : Set α) (t : Set β) [Small.{u} s] [Small.{u} t] :
     Small.{u} (s ×ˢ t : Set (α × β)) :=
   small_of_injective (Equiv.Set.prod s t).injective
 
-instance small_set_pi {β : α → Type u2} (s : (a : α) → Set (β a))
+instance small_setPi {β : α → Type u2} (s : (a : α) → Set (β a))
     [Small.{u} α] [∀ a, Small.{u} (s a)] : Small.{u} (Set.pi Set.univ s) :=
   small_of_injective (Equiv.Set.univPi s).injective
 
