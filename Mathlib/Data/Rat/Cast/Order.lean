@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Tactic.Positivity.Core
+import Mathlib.Algebra.Order.Field.Basic
 
 #align_import data.rat.cast from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -153,10 +154,14 @@ namespace NNRat
 variable {K} [LinearOrderedSemifield K]
 
 theorem cast_strictMono : StrictMono ((↑) : ℚ≥0 → K) := fun m n h => by
-  rwa [NNRat.cast_def, NNRat.cast_def, div_lt_div_iff, ← Nat.cast_mul, ← Nat.cast_mul, Nat.cast_lt,
-    ← NNRat.lt_def]
-  -- · norm_num
-  -- · norm_num
+  rwa [NNRat.cast_def, NNRat.cast_def, div_lt_div_iff, ← Nat.cast_mul, ← Nat.cast_mul,
+    Nat.cast_lt (α := K), ← NNRat.lt_def]
+  · simp
+  · simp
+
+@[mono]
+theorem cast_mono : Monotone ((↑) : ℚ≥0 → K) :=
+  cast_strictMono.monotone
 
 /-- Coercion from `ℚ` as an order embedding. -/
 @[simps!]
@@ -171,19 +176,68 @@ theorem cast_le {m n : ℚ≥0} : (m : K) ≤ n ↔ m ≤ n :=
 theorem cast_lt {m n : ℚ≥0} : (m : K) < n ↔ m < n :=
   cast_strictMono.lt_iff_lt
 
+
+@[simp]
+theorem cast_nonpos {n : ℚ≥0} : (n : K) ≤ 0 ↔ n ≤ 0 := by
+  norm_cast
+
 @[simp]
 theorem cast_pos {n : ℚ≥0} : (0 : K) < n ↔ 0 < n := by
   norm_cast
 
-@[simp, norm_cast]
-theorem cast_min {a b : ℚ} : (↑(min a b) : K) = min (a : K) (b : K) :=
-  (@cast_mono K _).map_min
-#align rat.cast_min Rat.cast_min
+@[simp]
+theorem cast_lt_zero {n : ℚ≥0} : (n : K) < 0 ↔ n < 0 := by
+  norm_cast
 
 @[simp, norm_cast]
-theorem cast_max {a b : ℚ} : (↑(max a b) : K) = max (a : K) (b : K) :=
+theorem cast_min {a b : ℚ≥0} : (↑(min a b) : K) = min (a : K) (b : K) :=
+  (@cast_mono K _).map_min
+
+@[simp, norm_cast]
+theorem cast_max {a b : ℚ≥0} : (↑(max a b) : K) = max (a : K) (b : K) :=
   (@cast_mono K _).map_max
-#align rat.cast_max Rat.cast_max
+
+open Set
+
+@[simp]
+theorem preimage_cast_Icc (a b : ℚ≥0) : (↑) ⁻¹' Icc (a : K) b = Icc a b :=
+  castOrderEmbedding.preimage_Icc ..
+
+@[simp]
+theorem preimage_cast_Ico (a b : ℚ≥0) : (↑) ⁻¹' Ico (a : K) b = Ico a b :=
+  castOrderEmbedding.preimage_Ico ..
+
+@[simp]
+theorem preimage_cast_Ioc (a b : ℚ≥0) : (↑) ⁻¹' Ioc (a : K) b = Ioc a b :=
+  castOrderEmbedding.preimage_Ioc a b
+
+@[simp]
+theorem preimage_cast_Ioo (a b : ℚ≥0) : (↑) ⁻¹' Ioo (a : K) b = Ioo a b :=
+  castOrderEmbedding.preimage_Ioo a b
+
+@[simp]
+theorem preimage_cast_Ici (a : ℚ≥0) : (↑) ⁻¹' Ici (a : K) = Ici a :=
+  castOrderEmbedding.preimage_Ici a
+
+@[simp]
+theorem preimage_cast_Iic (a : ℚ≥0) : (↑) ⁻¹' Iic (a : K) = Iic a :=
+  castOrderEmbedding.preimage_Iic a
+
+@[simp]
+theorem preimage_cast_Ioi (a : ℚ≥0) : (↑) ⁻¹' Ioi (a : K) = Ioi a :=
+  castOrderEmbedding.preimage_Ioi a
+
+@[simp]
+theorem preimage_cast_Iio (a : ℚ≥0) : (↑) ⁻¹' Iio (a : K) = Iio a :=
+  castOrderEmbedding.preimage_Iio a
+
+@[simp]
+theorem preimage_cast_uIcc (a b : ℚ≥0) : (↑) ⁻¹' uIcc (a : K) b = uIcc a b :=
+  (castOrderEmbedding (K := K)).preimage_uIcc a b
+
+@[simp]
+theorem preimage_cast_uIoc (a b : ℚ≥0) : (↑) ⁻¹' uIoc (a : K) b = uIoc a b :=
+  (castOrderEmbedding (K := K)).preimage_uIoc a b
 
 end NNRat
 
@@ -209,5 +263,19 @@ def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
     assumeInstancesCommute
     return .nonzero q((Rat.cast_ne_zero (α := $α)).mpr $pa)
   | .none => pure .none
+
+/-- Extension for NNRat.cast. -/
+@[positivity NNRat.cast _]
+def evalNNRatCast : PositivityExt where eval {u α} _zα _pα e := do
+  let ~q(@NNRat.cast _ (_) ($a : ℚ≥0)) := e | throwError "not NNRat.cast"
+  match ← core q(inferInstance) q(inferInstance) a with
+  | .positive pa =>
+    let _oα ← synthInstanceQ q(LinearOrderedSemifield $α)
+    assumeInstancesCommute
+    return .positive q((NNRat.cast_pos (K := $α)).mpr $pa)
+  | _ =>
+    let _oα ← synthInstanceQ q(LinearOrderedSemifield $α)
+    assumeInstancesCommute
+    return .nonnegative q(NNRat.cast_nonneg _)
 
 end Mathlib.Meta.Positivity
