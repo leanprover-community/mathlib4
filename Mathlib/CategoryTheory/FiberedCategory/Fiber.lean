@@ -125,9 +125,28 @@ def FiberInducedFunctorNat : F ≅ (FiberInducedFunctor hF) ⋙ (FiberInclusion 
     inv := { app := fun a ↦ 𝟙 ((FiberInducedFunctor hF ⋙ FiberInclusion p S).obj a) }
 
 -- TODO: simp lemma? If so should switch sides in the equality
-lemma FiberInducedFunctorComp : F = (FiberInducedFunctor hF) ⋙ (FiberInclusion p S) :=
+lemma fiberInducedFunctor_comp : F = (FiberInducedFunctor hF) ⋙ (FiberInclusion p S) :=
   Functor.ext_of_iso (FiberInducedFunctorNat hF) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 end
+
+-- TODO: move earlier in this file?
+
+/-- Now we define the standard/canonical fiber associated to a fibered category.
+When the user does not wish to supply specific fiber categories, this will be the default choice. -/
+def CompConstNat (p : 𝒳 ⥤ 𝒮) (S : 𝒮) : (FiberInclusion p S) ⋙ p ≅ (const (Fiber p S)).obj S where
+  hom := {
+    app := fun x => eqToHom x.prop
+    naturality := fun x y φ => by simpa using (commSq p (𝟙 S) φ.val).w}
+  inv := {
+    app := fun x => eqToHom (x.prop).symm
+    naturality := fun x y φ =>  by
+      -- TODO: add this have into API?
+      have := by simpa [comp_eqToHom_iff] using (commSq p (𝟙 S) φ.val).w
+      simp [this] }
+
+lemma comp_const (p : 𝒳 ⥤ 𝒮) (S : 𝒮) : (FiberInclusion p S) ⋙ p = (const (Fiber p S)).obj S := by
+  apply Functor.ext_of_iso (CompConstNat p S)
+  all_goals intro x; simp [CompConstNat, x.2]
 
 end Fiber
