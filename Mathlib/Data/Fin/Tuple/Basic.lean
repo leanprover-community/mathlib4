@@ -41,7 +41,9 @@ ways to move between tuples of length `n` and of length `n + 1` by adding/removi
 ### Adding at the end
 
 * `Fin.castSucc`: Send `i : Fin n` to `i : Fin (n + 1)`. This is defined in Core.
-* **There is currently no equivalent of `Fin.cases`/`Fin.succAboveCases` for adding at the end.**
+* `Fin.lastCases`: Induction/recursion principle for `Fin`: To prove a property/define a function
+  for all `Fin (n + 1)`, it is enough to prove/define it for `last n` and for `i.castSucc` for all
+  `i : Fin n`. This is defined in Core.
 * `Fin.snoc`: Turn a tuple `f : Fin n → α` and an entry `a : α` into a tuple
   `Fin.snoc f a : Fin (n + 1) → α` by adding `a` at the end. In general, tuples can be dependent
   functions, in which case `f : ∀ i : Fin n, α i.castSucc` and `a : α (last n)`.
