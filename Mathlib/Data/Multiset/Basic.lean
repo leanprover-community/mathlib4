@@ -2627,8 +2627,6 @@ theorem count_map {α β : Type*} (f : α → β) (s : Multiset α) [DecidableEq
   simp [Bool.beq_eq_decide_eq, eq_comm, count, countP_map]
 #align multiset.count_map Multiset.count_map
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning:
-  expanding binder collection (x «expr ∈ » s) -/
 /-- `Multiset.map f` preserves `count` if `f` is injective on the set of elements contained in
 the multiset -/
 theorem count_map_eq_count [DecidableEq β] (f : α → β) (s : Multiset α)
@@ -2645,7 +2643,7 @@ theorem count_map_eq_count [DecidableEq β] (f : α → β) (s : Multiset α)
 theorem count_map_eq_count' [DecidableEq β] (f : α → β) (s : Multiset α) (hf : Function.Injective f)
     (x : α) : (s.map f).count (f x) = s.count x := by
   by_cases H : x ∈ s
-  · exact count_map_eq_count f _ (Set.injOn_of_injective hf _) _ H
+  · exact count_map_eq_count f _ hf.injOn _ H
   · rw [count_eq_zero_of_not_mem H, count_eq_zero, mem_map]
     rintro ⟨k, hks, hkx⟩
     rw [hf hkx] at hks
@@ -3051,8 +3049,8 @@ theorem disjoint_singleton {l : Multiset α} {a : α} : Disjoint l {a} ↔ a ∉
 #align multiset.disjoint_singleton Multiset.disjoint_singleton
 
 @[simp]
-theorem disjoint_add_left {s t u : Multiset α} : Disjoint (s + t) u ↔ Disjoint s u ∧ Disjoint t u :=
-  by simp [Disjoint, or_imp, forall_and]
+theorem disjoint_add_left {s t u : Multiset α} :
+    Disjoint (s + t) u ↔ Disjoint s u ∧ Disjoint t u := by simp [Disjoint, or_imp, forall_and]
 #align multiset.disjoint_add_left Multiset.disjoint_add_left
 
 @[simp]
@@ -3073,8 +3071,8 @@ theorem disjoint_cons_right {a : α} {s t : Multiset α} :
   rw [disjoint_comm, disjoint_cons_left]; tauto
 #align multiset.disjoint_cons_right Multiset.disjoint_cons_right
 
-theorem inter_eq_zero_iff_disjoint [DecidableEq α] {s t : Multiset α} : s ∩ t = 0 ↔ Disjoint s t :=
-  by rw [← subset_zero]; simp [subset_iff, Disjoint]
+theorem inter_eq_zero_iff_disjoint [DecidableEq α] {s t : Multiset α} :
+    s ∩ t = 0 ↔ Disjoint s t := by rw [← subset_zero]; simp [subset_iff, Disjoint]
 #align multiset.inter_eq_zero_iff_disjoint Multiset.inter_eq_zero_iff_disjoint
 
 @[simp]

@@ -5,13 +5,14 @@ Authors: David Loeffler
 -/
 
 import Mathlib.NumberTheory.ZetaValues
-import Mathlib.NumberTheory.LSeries.HurwitzZeta
+import Mathlib.NumberTheory.LSeries.RiemannZeta
 
 /-!
-# Special values of Hurwitz zeta functions
+# Special values of Hurwitz and Riemann zeta functions
 
-This file gives the formulae for values of Hurwitz zeta functions at negative integers in terms
-of Bernoulli polynomials.
+This file gives the formula for `ζ (2 * k)`, for `k` a non-zero integer, in terms of Bernoulli
+numbers. More generally, we give formulae for any Hurwitz zeta functions at any (strictly) negative
+integer in terms of Bernoulli polynomials.
 
 (Note that most of the actual work for these formulae is done elsewhere, in
 `Mathlib.NumberTheory.ZetaValues`. This file has only those results which really need the
@@ -22,12 +23,13 @@ sums in the convergence range.)
 
 - `hurwitzZeta_neg_nat`: for `k : ℕ` with `k ≠ 0`, and any `x ∈ ℝ / ℤ`, the special value
   `hurwitzZeta x (-k)` is equal to `-(Polynomial.bernoulli (k + 1) x) / (k + 1)`.
+- `riemannZeta_neg_nat_eq_bernoulli` : for any `k ∈ ℕ` we have the formula
+  `riemannZeta (-k) = (-1) ^ k * bernoulli (k + 1) / (k + 1)`
+- `riemannZeta_two_mul_nat`: formula for `ζ(2 * k)` for `k ∈ ℕ, k ≠ 0` in terms of Bernoulli
+  numbers
 
 ## TODO
 
-* Derive the special case of the Riemann zeta function from these results (rather than proving it
-  separately). This will come in a future PR which will re-implement Riemann zeta as a special
-  case of Hurwitz zeta.
 * Extend to cover Dirichlet L-functions.
 * The formulae are correct for `s = 0` as well, but we do not prove this case, since this requires
   Fourier series which are only conditionally convergent, which is difficult to approach using the
@@ -103,9 +105,9 @@ theorem cosZeta_two_mul_nat' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
   have : (2 * k)! = (2 * k) * Complex.Gamma (2 * k) := by
     rw [(by { norm_cast; omega } : 2 * (k : ℂ) = ↑(2 * k - 1) + 1), Complex.Gamma_nat_eq_factorial,
       ← Nat.cast_add_one, ← Nat.cast_mul, ← Nat.factorial_succ, Nat.sub_add_cancel (by omega)]
-  simp_rw [this, Gammaℂ, cpow_neg, ← div_div, div_inv_eq_mul, div_mul_eq_mul_div, div_div]
+  simp_rw [this, Gammaℂ, cpow_neg, ← div_div, div_inv_eq_mul, div_mul_eq_mul_div, div_div,
+    mul_right_comm (2 : ℂ) (k : ℂ)]
   norm_cast
-  ring_nf
 
 /-- Reformulation of `sinZeta_two_mul_nat_add_one` using `Gammaℂ`. -/
 theorem sinZeta_two_mul_nat_add_one' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
@@ -197,3 +199,54 @@ theorem hurwitzZeta_neg_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
   · exact_mod_cast hurwitzZeta_one_sub_two_mul_nat (by omega : n + 1 ≠ 0) hx
 
 end HurwitzZeta
+
+open HurwitzZeta
+
+/-- Explicit formula for `ζ (2 * k)`, for `k ∈ ℕ` with `k ≠ 0`, in terms of the Bernoulli number
+`bernoulli (2 * k)`.
+
+Compare `hasSum_zeta_nat` for a version formulated in terms of a sum over `1 / n ^ (2 * k)`, and
+`riemannZeta_neg_nat_eq_bernoulli` for values at negative integers (equivalent to the above via
+the functional equation). -/
+theorem riemannZeta_two_mul_nat {k : ℕ} (hk : k ≠ 0) :
+    riemannZeta (2 * k) = (-1) ^ (k + 1) * (2 : ℂ) ^ (2 * k - 1)
+      * (π : ℂ) ^ (2 * k) * bernoulli (2 * k) / (2 * k)! := by
+  convert congr_arg ((↑) : ℝ → ℂ) (hasSum_zeta_nat hk).tsum_eq
+  · rw [← Nat.cast_two, ← Nat.cast_mul, zeta_nat_eq_tsum_of_gt_one (by omega)]
+    simp only [push_cast]
+  · norm_cast
+#align riemann_zeta_two_mul_nat riemannZeta_two_mul_nat
+
+theorem riemannZeta_two : riemannZeta 2 = (π : ℂ) ^ 2 / 6 := by
+  convert congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_two.tsum_eq
+  · rw [← Nat.cast_two, zeta_nat_eq_tsum_of_gt_one one_lt_two]
+    simp only [push_cast]
+  · norm_cast
+#align riemann_zeta_two riemannZeta_two
+
+theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
+  convert congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_four.tsum_eq
+  · rw [← Nat.cast_one, show (4 : ℂ) = (4 : ℕ) by norm_num,
+      zeta_nat_eq_tsum_of_gt_one (by norm_num : 1 < 4)]
+    simp only [push_cast]
+  · norm_cast
+#align riemann_zeta_four riemannZeta_four
+
+/-- Value of Riemann zeta at `-ℕ` in terms of `bernoulli'`. -/
+theorem riemannZeta_neg_nat_eq_bernoulli' (k : ℕ) :
+    riemannZeta (-k) = -bernoulli' (k + 1) / (k + 1) := by
+  rcases eq_or_ne k 0 with rfl | hk
+  · rw [Nat.cast_zero, neg_zero, riemannZeta_zero, zero_add, zero_add, div_one,
+      bernoulli'_one, Rat.cast_div, Rat.cast_one, Rat.cast_ofNat, neg_div]
+  · rw [← hurwitzZeta_zero, ← QuotientAddGroup.mk_zero, hurwitzZeta_neg_nat hk
+      (left_mem_Icc.mpr zero_le_one), ofReal_zero, Polynomial.eval_zero_map,
+      Polynomial.bernoulli_eval_zero, Algebra.algebraMap_eq_smul_one, Rat.smul_one_eq_cast,
+      div_mul_eq_mul_div, neg_one_mul, bernoulli_eq_bernoulli'_of_ne_one (by simp [hk])]
+
+/-- Value of Riemann zeta at `-ℕ` in terms of `bernoulli`. -/
+theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
+    riemannZeta (-k) = (-1 : ℂ) ^ k * bernoulli (k + 1) / (k + 1) := by
+  rw [riemannZeta_neg_nat_eq_bernoulli', bernoulli, Rat.cast_mul, Rat.cast_pow, Rat.cast_neg,
+    Rat.cast_one, ← neg_one_mul, ← mul_assoc, pow_succ, ← mul_assoc, ← mul_pow, neg_one_mul (-1),
+    neg_neg, one_pow, one_mul]
+#align riemann_zeta_neg_nat_eq_bernoulli riemannZeta_neg_nat_eq_bernoulli
