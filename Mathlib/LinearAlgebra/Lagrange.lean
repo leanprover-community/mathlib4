@@ -296,8 +296,8 @@ theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
 
 theorem basisDivisor_add_symm {x y : F} (hxy : x ≠ y) :
     basisDivisor x y + basisDivisor y x = 1 := by
-  classical rw [
-    ← sum_basis (Set.injOn_of_injective Function.injective_id _) ⟨x, mem_insert_self _ {y}⟩,
+  classical
+  rw [ ← sum_basis Function.injective_id.injOn ⟨x, mem_insert_self _ {y}⟩,
     sum_insert (not_mem_singleton.mpr hxy), sum_singleton, basis_pair_left hxy,
     basis_pair_right hxy, id, id]
 #align lagrange.basis_divisor_add_symm Lagrange.basisDivisor_add_symm
@@ -455,13 +455,13 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
     rw [degree_basis (Set.InjOn.mono hst hvt) hi, H, WithBot.coe_add, Nat.cast_withBot,
       WithBot.add_lt_add_iff_right (@WithBot.coe_ne_bot _ (s.card - 1))]
     convert degree_interpolate_lt _
-        (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hst hi, sdiff_subset _ _⟩)))
+        (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hst hi, sdiff_subset⟩)))
     rw [card_insert_of_not_mem (not_mem_sdiff_of_mem_right hi), card_sdiff hst, add_comm]
   · simp_rw [eval_finset_sum, eval_mul]
     by_cases hi' : i ∈ s
     · rw [← add_sum_erase _ _ hi', eval_basis_self (hvt.mono hst) hi',
         eval_interpolate_at_node _
-          (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hi, sdiff_subset _ _⟩)))
+          (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hi, sdiff_subset⟩)))
           (mem_insert_self _ _),
         mul_one, add_right_eq_self]
       refine sum_eq_zero fun j hj => ?_
@@ -473,7 +473,7 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
       refine sum_congr rfl fun j hj => ?_
       congr
       exact
-        eval_interpolate_at_node _ (hvt.mono (insert_subset_iff.mpr ⟨hst hj, sdiff_subset _ _⟩))
+        eval_interpolate_at_node _ (hvt.mono (insert_subset_iff.mpr ⟨hst hj, sdiff_subset⟩))
           (mem_insert.mpr (Or.inr (mem_sdiff.mpr ⟨hi, hi'⟩)))
 #align lagrange.interpolate_eq_sum_interpolate_insert_sdiff Lagrange.interpolate_eq_sum_interpolate_insert_sdiff
 
@@ -595,7 +595,7 @@ set_option backward.synthInstance.canonInstances false in -- See https://github.
   nodal (G : Set Rˣ).toFinset ((↑) : Rˣ → R) = X ^ (Fintype.card G) - 1 := by
   have h : degree (1 : R[X]) < degree ((X : R[X]) ^ Fintype.card G) := by simp [Fintype.card_pos]
   apply eq_of_degree_le_of_eval_index_eq (v := ((↑) : Rˣ → R)) (G : Set Rˣ).toFinset
-  · exact Set.injOn_of_injective Units.ext _
+  · exact Set.injOn_of_injective Units.ext
   · simp
   · rw [degree_sub_eq_left_of_degree_lt h, degree_nodal, Set.toFinset_card, degree_pow, degree_X,
       nsmul_eq_mul, mul_one, Nat.cast_inj]

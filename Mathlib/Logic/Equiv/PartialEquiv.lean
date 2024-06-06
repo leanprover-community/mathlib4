@@ -399,8 +399,8 @@ def restr (h : e.IsImage s t) : PartialEquiv α β where
   target := e.target ∩ t
   map_source' := h.mapsTo
   map_target' := h.symm_mapsTo
-  left_inv' := e.leftInvOn.mono (inter_subset_left _ _)
-  right_inv' := e.rightInvOn.mono (inter_subset_left _ _)
+  left_inv' := e.leftInvOn.mono inter_subset_left
+  right_inv' := e.rightInvOn.mono inter_subset_left
 #align local_equiv.is_image.restr PartialEquiv.IsImage.restr
 #align local_equiv.is_image.restr_apply PartialEquiv.IsImage.restr_apply
 #align local_equiv.is_image.restr_source PartialEquiv.IsImage.restr_source
@@ -841,7 +841,7 @@ theorem EqOnSource.trans' {e e' : PartialEquiv α β} {f f' : PartialEquiv β γ
     (hf : f ≈ f') : e.trans f ≈ e'.trans f' := by
   constructor
   · rw [trans_source'', trans_source'', ← target_eq he, ← hf.1]
-    exact (he.symm'.eqOn.mono <| inter_subset_left _ _).image_eq
+    exact (he.symm'.eqOn.mono inter_subset_left).image_eq
   · intro x hx
     rw [trans_source] at hx
     simp [Function.comp_apply, PartialEquiv.coe_trans, (he.2 hx.1).symm, hf.2 hx.2]

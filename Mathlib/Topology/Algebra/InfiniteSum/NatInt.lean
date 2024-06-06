@@ -331,13 +331,13 @@ lemma HasProd.nat_mul_neg_add_one {f : ℤ → M} (hf : HasProd f m) :
   change HasProd (fun n : ℕ ↦ f n * f (Int.negSucc n)) m
   have : Injective Int.negSucc := @Int.negSucc.inj
   refine hf.hasProd_of_prod_eq fun u ↦ ?_
-  refine ⟨u.preimage _ (Nat.cast_injective.injOn _) ∪ u.preimage _ (this.injOn _),
+  refine ⟨u.preimage _ Nat.cast_injective.injOn ∪ u.preimage _ this.injOn,
       fun v' hv' ↦ ⟨v'.image Nat.cast ∪ v'.image Int.negSucc, fun x hx ↦ ?_, ?_⟩⟩
   · simp only [mem_union, mem_image]
     cases x
     · exact Or.inl ⟨_, hv' (by simpa using Or.inl hx), rfl⟩
     · exact Or.inr ⟨_, hv' (by simpa using Or.inr hx), rfl⟩
-  · rw [prod_union, prod_image (Nat.cast_injective.injOn _), prod_image (this.injOn _),
+  · rw [prod_union, prod_image Nat.cast_injective.injOn, prod_image this.injOn,
       prod_mul_distrib]
     simp only [disjoint_iff_ne, mem_image, ne_eq, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂, not_false_eq_true, implies_true, forall_const]

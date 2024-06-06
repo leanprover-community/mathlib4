@@ -373,7 +373,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     intro S hS U hU hSU f x
     -- We know that such `y₁, n₁` exists on `S` by the induction hypothesis.
     obtain ⟨n₁, y₁, hy₁⟩ :=
-      hU (hSU.of_subset <| Set.subset_union_left _ _) (X.presheaf.map (homOfLE le_sup_left).op f)
+      hU (hSU.of_subset Set.subset_union_left) (X.presheaf.map (homOfLE le_sup_left).op f)
         (X.presheaf.map (homOfLE _).op x)
     -- · rw [X.basicOpen_res]; exact inf_le_right
     -- We know that such `y₂, n₂` exists on `U` since `U` is affine.
@@ -385,7 +385,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     -- Since `S ∪ U` is quasi-separated, `S ∩ U` can be covered by finite affine opens.
     obtain ⟨s, hs', hs⟩ :=
       (isCompact_open_iff_eq_finset_affine_union _).mp
-        ⟨hSU _ _ (Set.subset_union_left _ _) S.2 hS (Set.subset_union_right _ _) U.1.2
+        ⟨hSU _ _ Set.subset_union_left S.2 hS Set.subset_union_right U.1.2
             U.2.isCompact,
           (S ⊓ U.1).2⟩
     haveI := hs'.to_subtype

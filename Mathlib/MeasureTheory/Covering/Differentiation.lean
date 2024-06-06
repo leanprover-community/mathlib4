@@ -222,7 +222,7 @@ theorem null_of_frequently_le_of_frequently_ge {c d : ℝ≥0} (hcd : c < d) (s 
     ρ s' ≤ c * μ s' := v.measure_le_of_frequently_le (c • μ) hρ s' fun x hx => hc x hx.1
     _ < d * μ s' := by
       apply (ENNReal.mul_lt_mul_right h _).2 (ENNReal.coe_lt_coe.2 hcd)
-      exact (lt_of_le_of_lt (measure_mono (inter_subset_right _ _)) μo).ne
+      exact (lt_of_le_of_lt (measure_mono inter_subset_right) μo).ne
     _ ≤ ρ s' :=
       v.measure_le_of_frequently_le ρ ((Measure.AbsolutelyContinuous.refl μ).smul d) s' fun x hx =>
         hd x hx.1
@@ -330,9 +330,9 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
       simp only [inter_union_distrib_left, union_inter_distrib_right, true_and_iff,
         subset_union_left, union_subset_iff, inter_self]
       refine ⟨?_, ?_, ?_⟩
-      · exact (inter_subset_right _ _).trans (subset_union_left _ _)
-      · exact (inter_subset_left _ _).trans (subset_union_left _ _)
-      · simp_rw [iUnion_inter, inter_iUnion]; exact subset_union_right _ _
+      · exact inter_subset_right.trans subset_union_left
+      · exact inter_subset_left.trans subset_union_left
+      · simp_rw [iUnion_inter, inter_iUnion]; exact subset_union_right
     refine le_antisymm ((measure_mono A).trans ?_) bot_le
     calc
       μ (toMeasurable μ sᶜ ∪
@@ -352,10 +352,10 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
   intro m n
   have I : (ρ + μ) (u m) ≠ ∞ := by
     apply (lt_of_le_of_lt (measure_mono _) (measure_spanningSets_lt_top (ρ + μ) m)).ne
-    exact inter_subset_right _ _
+    exact inter_subset_right
   have J : (ρ + μ) (w n) ≠ ∞ := by
     apply (lt_of_le_of_lt (measure_mono _) (measure_spanningSets_lt_top (ρ + μ) n)).ne
-    exact inter_subset_right _ _
+    exact inter_subset_right
   have A :
     ρ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) ≤
       p * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) :=
@@ -409,10 +409,10 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
       suffices H : (ρ + μ) (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) ≠ ∞ by
         simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne, coe_add] at H
         exact H.2
-      apply (lt_of_le_of_lt (measure_mono (inter_subset_left _ _)) _).ne
+      apply (lt_of_le_of_lt (measure_mono inter_subset_left) _).ne
       rw [measure_toMeasurable]
       apply lt_of_le_of_lt (measure_mono _) (measure_spanningSets_lt_top (ρ + μ) m)
-      exact inter_subset_right _ _
+      exact inter_subset_right
     _ ≤ ρ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) := B
 #align vitali_family.exists_measurable_supersets_lim_ratio VitaliFamily.exists_measurable_supersets_limRatio
 
@@ -487,7 +487,7 @@ theorem measure_limRatioMeas_top : μ {x | v.limRatioMeas hρ x = ∞} = 0 := by
     Measure.exists_isOpen_measure_lt_top ρ x
   let s := {x : α | v.limRatioMeas hρ x = ∞} ∩ o
   refine ⟨s, inter_mem_nhdsWithin _ (o_open.mem_nhds xo), le_antisymm ?_ bot_le⟩
-  have ρs : ρ s ≠ ∞ := ((measure_mono (inter_subset_right _ _)).trans_lt μo).ne
+  have ρs : ρ s ≠ ∞ := ((measure_mono inter_subset_right).trans_lt μo).ne
   have A : ∀ q : ℝ≥0, 1 ≤ q → μ s ≤ (q : ℝ≥0∞)⁻¹ * ρ s := by
     intro q hq
     rw [mul_comm, ← div_eq_mul_inv, ENNReal.le_div_iff_mul_le _ (Or.inr ρs), mul_comm]
@@ -512,7 +512,7 @@ theorem measure_limRatioMeas_zero : ρ {x | v.limRatioMeas hρ x = 0} = 0 := by
     Measure.exists_isOpen_measure_lt_top μ x
   let s := {x : α | v.limRatioMeas hρ x = 0} ∩ o
   refine ⟨s, inter_mem_nhdsWithin _ (o_open.mem_nhds xo), le_antisymm ?_ bot_le⟩
-  have μs : μ s ≠ ∞ := ((measure_mono (inter_subset_right _ _)).trans_lt μo).ne
+  have μs : μ s ≠ ∞ := ((measure_mono inter_subset_right).trans_lt μo).ne
   have A : ∀ q : ℝ≥0, 0 < q → ρ s ≤ q * μ s := by
     intro q hq
     apply v.measure_le_mul_of_subset_limRatioMeas_lt hρ
@@ -556,7 +556,7 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
     apply le_trans (le_of_eq _) (zero_le _)
     apply withDensity_absolutelyContinuous μ _
     rw [← nonpos_iff_eq_zero]
-    exact (measure_mono (inter_subset_right _ _)).trans (v.measure_limRatioMeas_top hρ).le
+    exact (measure_mono inter_subset_right).trans (v.measure_limRatioMeas_top hρ).le
   have C :
     ∀ n : ℤ,
       ν (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) ≤
@@ -614,13 +614,13 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
   let f := v.limRatioMeas hρ
   have f_meas : Measurable f := v.limRatioMeas_measurable hρ
   have A : ρ (s ∩ f ⁻¹' {0}) ≤ (t • ν) (s ∩ f ⁻¹' {0}) := by
-    refine le_trans (measure_mono (inter_subset_right _ _)) (le_trans (le_of_eq ?_) (zero_le _))
+    refine le_trans (measure_mono inter_subset_right) (le_trans (le_of_eq ?_) (zero_le _))
     exact v.measure_limRatioMeas_zero hρ
   have B : ρ (s ∩ f ⁻¹' {∞}) ≤ (t • ν) (s ∩ f ⁻¹' {∞}) := by
     apply le_trans (le_of_eq _) (zero_le _)
     apply hρ
     rw [← nonpos_iff_eq_zero]
-    exact (measure_mono (inter_subset_right _ _)).trans (v.measure_limRatioMeas_top hρ).le
+    exact (measure_mono inter_subset_right).trans (v.measure_limRatioMeas_top hρ).le
   have C :
     ∀ n : ℤ,
       ρ (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) ≤

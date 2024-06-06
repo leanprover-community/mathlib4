@@ -276,7 +276,7 @@ theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
     refine ⟨q.den, Set.mem_Ioc.mpr ⟨q.pos, hd⟩, ?_⟩
     simp only [prod_singleton, mem_image, mem_Icc, (congr_arg Prod.snd (Eq.symm hq₂)).trans rfl]
     exact ⟨q.num, hn, hq₂⟩
-  refine Finite.of_finite_image (Finite.subset ?_ H) (injOn_of_injective hinj s)
+  refine (Finite.subset ?_ H).of_finite_image hinj.injOn
   exact Finite.biUnion (finite_Ioc _ _) fun x _ => Finite.prod (finite_Icc _ _) (finite_singleton _)
 #align rat.finite_rat_abs_sub_lt_one_div_denom_sq Rat.finite_rat_abs_sub_lt_one_div_den_sq
 

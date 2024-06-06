@@ -58,7 +58,7 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
   borelize E
   rcases hfi.aestronglyMeasurable with ⟨g, hgm, hfg⟩
   haveI : SeparableSpace (range g ∩ s : Set E) :=
-    (hgm.isSeparable_range.mono (inter_subset_left _ _)).separableSpace
+    (hgm.isSeparable_range.mono inter_subset_left).separableSpace
   obtain ⟨y₀, h₀⟩ : (range g ∩ s).Nonempty := by
     rcases (hf.and hfg).exists with ⟨x₀, h₀⟩
     exact ⟨f x₀, by simp only [h₀.2, mem_range_self], h₀.1⟩
@@ -77,7 +77,7 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
     exact fun _ _ => measure_ne_top _ _
   · simp only [SimpleFunc.mem_range, forall_mem_range]
     intro x
-    apply inter_subset_right (range g)
+    apply (range g).inter_subset_right
     exact SimpleFunc.approxOn_mem hgm.measurable h₀ _ _
 #align convex.integral_mem Convex.integral_mem
 

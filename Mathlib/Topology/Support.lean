@@ -397,7 +397,7 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
     let js := hnf.toFinset.filter fun j => x ∉ U j
     refine
       ⟨is, (n ∩ ⋂ j ∈ js, (mulTSupport (f j))ᶜ) ∩ ⋂ i ∈ is, U i, inter_mem (inter_mem hn ?_) ?_,
-        inter_subset_right _ _, fun z hz => ?_⟩
+        inter_subset_right, fun z hz => ?_⟩
     · exact (biInter_finset_mem js).mpr fun j hj => IsClosed.compl_mem_nhds (isClosed_mulTSupport _)
         (Set.not_mem_subset (hso j) (Finset.mem_filter.mp hj).2)
     · exact (biInter_finset_mem is).mpr fun i hi => (ho i).mem_nhds (Finset.mem_filter.mp hi).2

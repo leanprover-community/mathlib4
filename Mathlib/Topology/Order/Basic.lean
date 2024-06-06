@@ -624,7 +624,7 @@ empty (but in fact this can happen only for countably many of them). -/
 theorem Set.PairwiseDisjoint.countable_of_Ioo [SecondCountableTopology α] {y : α → α} {s : Set α}
     (h : PairwiseDisjoint s fun x => Ioo x (y x)) (h' : ∀ x ∈ s, x < y x) : s.Countable :=
   have : (s \ { x | ∃ y, x ⋖ y }).Countable :=
-    (h.subset (diff_subset _ _)).countable_of_isOpen (fun _ _ => isOpen_Ioo)
+    (h.subset diff_subset).countable_of_isOpen (fun _ _ => isOpen_Ioo)
       fun x hx => (h' _ hx.1).exists_lt_lt (mt (Exists.intro (y x)) hx.2)
   this.of_diff countable_setOf_covBy_right
 #align set.pairwise_disjoint.countable_of_Ioo Set.PairwiseDisjoint.countable_of_Ioo

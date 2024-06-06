@@ -84,7 +84,7 @@ def blur' (q : Semiquot α) {s : Set α} (h : q.s ⊆ s) : Semiquot α :=
 
 /-- Replace `s` in a `q : Semiquot α` with a union `s ∪ q.s` -/
 def blur (s : Set α) (q : Semiquot α) : Semiquot α :=
-  blur' q (Set.subset_union_right s q.s)
+  blur' q (s.subset_union_right (t := q.s))
 #align semiquot.blur Semiquot.blur
 
 theorem blur_eq_blur' (q : Semiquot α) (s : Set α) (h : q.s ⊆ s) : blur s q = blur' q h := by
@@ -188,8 +188,8 @@ instance partialOrder : PartialOrder (Semiquot α) where
 instance : SemilatticeSup (Semiquot α) :=
   { Semiquot.partialOrder with
     sup := fun s => blur s.s
-    le_sup_left := fun _ _ => Set.subset_union_left _ _
-    le_sup_right := fun _ _ => Set.subset_union_right _ _
+    le_sup_left := fun _ _ => Set.subset_union_left
+    le_sup_right := fun _ _ => Set.subset_union_right
     sup_le := fun _ _ _ => Set.union_subset }
 
 @[simp]

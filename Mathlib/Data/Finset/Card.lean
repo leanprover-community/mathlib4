@@ -577,8 +577,8 @@ theorem card_sdiff_add_card_eq_card {s t : Finset α} (h : s ⊆ t) : card (t \ 
 theorem le_card_sdiff (s t : Finset α) : t.card - s.card ≤ card (t \ s) :=
   calc
     card t - card s ≤ card t - card (s ∩ t) :=
-      Nat.sub_le_sub_left (card_le_card (inter_subset_left s t)) _
-    _ = card (t \ (s ∩ t)) := (card_sdiff (inter_subset_right s t)).symm
+      Nat.sub_le_sub_left (card_le_card inter_subset_left) _
+    _ = card (t \ (s ∩ t)) := (card_sdiff inter_subset_right).symm
     _ ≤ card (t \ s) := by rw [sdiff_inter_self_right t s]
 #align finset.le_card_sdiff Finset.le_card_sdiff
 
@@ -655,7 +655,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finse
   rw [h₂, Nat.two_mul] at hXY
   obtain h | h : n < X.card ∨ n < (Y \ X).card := by contrapose! hXY; omega
   · exact ⟨X, h, Or.inl (Finset.Subset.refl X)⟩
-  · exact ⟨Y \ X, h, Or.inr (Finset.sdiff_subset Y X)⟩
+  · exact ⟨Y \ X, h, Or.inr sdiff_subset⟩
 #align finset.exists_subset_or_subset_of_two_mul_lt_card Finset.exists_subset_or_subset_of_two_mul_lt_card
 
 /-! ### Explicit description of a finset from its card -/

@@ -97,7 +97,7 @@ theorem IsTopologicalBasis.diff_empty {s : Set (Set α)} (h : IsTopologicalBasis
     obtain ⟨t₃, h₃, hs⟩ := h.exists_subset_inter _ h₁ _ h₂ x hx
     exact ⟨t₃, ⟨h₃, Nonempty.ne_empty ⟨x, hs.1⟩⟩, hs⟩
   · rw [h.eq_generateFrom]
-    refine le_antisymm (generateFrom_anti <| diff_subset s _) (le_generateFrom fun t ht => ?_)
+    refine le_antisymm (generateFrom_anti diff_subset) (le_generateFrom fun t ht => ?_)
     obtain rfl | he := eq_or_ne t ∅
     · exact @isOpen_empty _ (generateFrom _)
     · exact .basic t ⟨ht, he⟩
@@ -147,8 +147,8 @@ theorem IsTopologicalBasis.mem_nhds_iff {a : α} {s : Set α} {b : Set (Set α)}
   · simp [and_assoc, and_left_comm]
   · rintro s ⟨hs₁, hs₂⟩ t ⟨ht₁, ht₂⟩
     let ⟨u, hu₁, hu₂, hu₃⟩ := hb.1 _ hs₂ _ ht₂ _ ⟨hs₁, ht₁⟩
-    exact ⟨u, ⟨hu₂, hu₁⟩, le_principal_iff.2 (hu₃.trans (inter_subset_left _ _)),
-      le_principal_iff.2 (hu₃.trans (inter_subset_right _ _))⟩
+    exact ⟨u, ⟨hu₂, hu₁⟩, le_principal_iff.2 (hu₃.trans inter_subset_left),
+      le_principal_iff.2 (hu₃.trans inter_subset_right)⟩
   · rcases eq_univ_iff_forall.1 hb.sUnion_eq a with ⟨i, h1, h2⟩
     exact ⟨i, h2, h1⟩
 #align topological_space.is_topological_basis.mem_nhds_iff TopologicalSpace.IsTopologicalBasis.mem_nhds_iff
@@ -637,9 +637,9 @@ theorem Dense.exists_countable_dense_subset_bot_top {α : Type*} [TopologicalSpa
       ∀ x, IsTop x → x ∈ s → x ∈ t := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, htd⟩
   refine ⟨(t ∪ ({ x | IsBot x } ∪ { x | IsTop x })) ∩ s, ?_, ?_, ?_, ?_, ?_⟩
-  exacts [inter_subset_right _ _,
-    (htc.union ((countable_isBot α).union (countable_isTop α))).mono (inter_subset_left _ _),
-    htd.mono (subset_inter (subset_union_left _ _) hts), fun x hx hxs => ⟨Or.inr <| Or.inl hx, hxs⟩,
+  exacts [inter_subset_right,
+    (htc.union ((countable_isBot α).union (countable_isTop α))).mono inter_subset_left,
+    htd.mono (subset_inter subset_union_left hts), fun x hx hxs => ⟨Or.inr <| Or.inl hx, hxs⟩,
     fun x hx hxs => ⟨Or.inr <| Or.inr hx, hxs⟩]
 #align dense.exists_countable_dense_subset_bot_top Dense.exists_countable_dense_subset_bot_top
 
@@ -754,7 +754,7 @@ theorem exists_countable_basis [SecondCountableTopology α] :
     ∃ b : Set (Set α), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b := by
   obtain ⟨b, hb₁, hb₂⟩ := @SecondCountableTopology.is_open_generated_countable α _ _
   refine ⟨_, ?_, not_mem_diff_of_mem ?_, (isTopologicalBasis_of_subbasis hb₂).diff_empty⟩
-  exacts [((countable_setOf_finite_subset hb₁).image _).mono (diff_subset _ _), rfl]
+  exacts [((countable_setOf_finite_subset hb₁).image _).mono diff_subset, rfl]
 #align topological_space.exists_countable_basis TopologicalSpace.exists_countable_basis
 
 /-- A countable topological basis of `α`. -/
@@ -803,7 +803,7 @@ instance (priority := 100) SecondCountableTopology.to_firstCountableTopology
     [SecondCountableTopology α] : FirstCountableTopology α :=
   ⟨fun _ => HasCountableBasis.isCountablyGenerated <|
       ⟨(isBasis_countableBasis α).nhds_hasBasis,
-        (countable_countableBasis α).mono <| inter_subset_left _ _⟩⟩
+        (countable_countableBasis α).mono inter_subset_left⟩⟩
 #align topological_space.second_countable_topology.to_first_countable_topology TopologicalSpace.SecondCountableTopology.to_firstCountableTopology
 
 /-- If `β` is a second-countable space, then its induced topology via

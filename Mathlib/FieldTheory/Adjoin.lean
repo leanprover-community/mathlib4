@@ -74,7 +74,7 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
 @[simp]
 theorem adjoin_le_iff {S : Set E} {T : IntermediateField F E} : adjoin F S ≤ T ↔ S ≤ T :=
-  ⟨fun H => le_trans (le_trans (Set.subset_union_right _ _) Subfield.subset_closure) H, fun H =>
+  ⟨fun H => le_trans (le_trans Set.subset_union_right Subfield.subset_closure) H, fun H =>
     (@Subfield.closure_le E _ (Set.range (algebraMap F E) ∪ S) T.toSubfield).mpr
       (Set.union_subset (IntermediateField.set_range_subset T) H)⟩
 #align intermediate_field.adjoin_le_iff IntermediateField.adjoin_le_iff
@@ -414,8 +414,8 @@ theorem adjoin_adjoin_left (T : Set E) :
   rw [SetLike.ext'_iff]
   change (↑(adjoin (adjoin F S) T) : Set E) = _
   apply Set.eq_of_subset_of_subset <;> rw [adjoin_subset_adjoin_iff] <;> constructor
-  · rintro _ ⟨⟨x, hx⟩, rfl⟩; exact adjoin.mono _ _ _ (Set.subset_union_left _ _) hx
-  · exact subset_adjoin_of_subset_right _ _ (Set.subset_union_right _ _)
+  · rintro _ ⟨⟨x, hx⟩, rfl⟩; exact adjoin.mono _ _ _ Set.subset_union_left hx
+  · exact subset_adjoin_of_subset_right _ _ Set.subset_union_right
 -- Porting note: orginal proof times out
   · rintro x ⟨f, rfl⟩
     refine Subfield.subset_closure ?_
@@ -489,7 +489,7 @@ variable {F} in
 theorem extendScalars_adjoin {K : IntermediateField F E} {S : Set E} (h : K ≤ adjoin F S) :
     extendScalars h = adjoin K S := restrictScalars_injective F <| by
   rw [extendScalars_restrictScalars, restrictScalars_adjoin]
-  exact le_antisymm (adjoin.mono F S _ <| Set.subset_union_right _ S) <| adjoin_le_iff.2 <|
+  exact le_antisymm (adjoin.mono F S _ Set.subset_union_right) <| adjoin_le_iff.2 <|
     Set.union_subset h (subset_adjoin F S)
 
 variable {F} in

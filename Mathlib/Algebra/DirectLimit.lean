@@ -767,12 +767,12 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       · exact le_trans (hj z hz) hjk
     refine
       ⟨k, s ∪ t, this,
-        isSupported_add (isSupported_upwards hxs <| Set.subset_union_left s t)
-          (isSupported_upwards hyt <| Set.subset_union_right s t), fun [_] => ?_⟩
+        isSupported_add (isSupported_upwards hxs Set.subset_union_left)
+          (isSupported_upwards hyt Set.subset_union_right), fun [_] => ?_⟩
     -- Porting note: was `(restriction _).map_add`
     classical rw [RingHom.map_add, (FreeCommRing.lift _).map_add, ←
-      of.zero_exact_aux2 G f' hxs hi this hik (Set.subset_union_left s t), ←
-      of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right s t), ihs,
+      of.zero_exact_aux2 G f' hxs hi this hik Set.subset_union_left, ←
+      of.zero_exact_aux2 G f' hyt hj this hjk Set.subset_union_right, ihs,
       (f' i k hik).map_zero, iht, (f' j k hjk).map_zero, zero_add]
   · rintro x y ⟨j, t, hj, hyt, iht⟩
     rw [smul_eq_mul]
@@ -784,11 +784,11 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       exacts [(hi z.1 <| Finset.mem_image.2 ⟨z, hz, rfl⟩).trans hik, (hj z hz).trans hjk]
     refine
       ⟨k, ↑s ∪ t, this,
-        isSupported_mul (isSupported_upwards hxs <| Set.subset_union_left (↑s) t)
-          (isSupported_upwards hyt <| Set.subset_union_right (↑s) t), fun [_] => ?_⟩
+        isSupported_mul (isSupported_upwards hxs Set.subset_union_left)
+          (isSupported_upwards hyt Set.subset_union_right), fun [_] => ?_⟩
     -- Porting note: RingHom.map_mul was `(restriction _).map_mul`
     classical rw [RingHom.map_mul, (FreeCommRing.lift _).map_mul, ←
-      of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right (↑s) t), iht,
+      of.zero_exact_aux2 G f' hyt hj this hjk Set.subset_union_right, iht,
       (f' j k hjk).map_zero, mul_zero]
 #align ring.direct_limit.of.zero_exact_aux Ring.DirectLimit.of.zero_exact_aux
 

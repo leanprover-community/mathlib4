@@ -79,9 +79,9 @@ theorem IsCompact.induction_on (hs : IsCompact s) {p : Set X → Prop} (he : p �
 theorem IsCompact.inter_right (hs : IsCompact s) (ht : IsClosed t) : IsCompact (s ∩ t) := by
   intro f hnf hstf
   obtain ⟨x, hsx, hx⟩ : ∃ x ∈ s, ClusterPt x f :=
-    hs (le_trans hstf (le_principal_iff.2 (inter_subset_left _ _)))
+    hs (le_trans hstf (le_principal_iff.2 inter_subset_left))
   have : x ∈ t := ht.mem_of_nhdsWithin_neBot <|
-    hx.mono <| le_trans hstf (le_principal_iff.2 (inter_subset_right _ _))
+    hx.mono <| le_trans hstf (le_principal_iff.2 inter_subset_right)
   exact ⟨x, ⟨hsx, this⟩, hx⟩
 #align is_compact.inter_right IsCompact.inter_right
 
@@ -601,8 +601,8 @@ namespace Filter
 theorem hasBasis_cocompact : (cocompact X).HasBasis IsCompact compl :=
   hasBasis_biInf_principal'
     (fun s hs t ht =>
-      ⟨s ∪ t, hs.union ht, compl_subset_compl.2 (subset_union_left s t),
-        compl_subset_compl.2 (subset_union_right s t)⟩)
+      ⟨s ∪ t, hs.union ht, compl_subset_compl.2 subset_union_left,
+        compl_subset_compl.2 subset_union_right⟩)
     ⟨∅, isCompact_empty⟩
 #align filter.has_basis_cocompact Filter.hasBasis_cocompact
 
@@ -678,8 +678,8 @@ theorem hasBasis_coclosedCompact :
   simp only [Filter.coclosedCompact, iInf_and']
   refine hasBasis_biInf_principal' ?_ ⟨∅, isClosed_empty, isCompact_empty⟩
   rintro s ⟨hs₁, hs₂⟩ t ⟨ht₁, ht₂⟩
-  exact ⟨s ∪ t, ⟨⟨hs₁.union ht₁, hs₂.union ht₂⟩, compl_subset_compl.2 (subset_union_left _ _),
-    compl_subset_compl.2 (subset_union_right _ _)⟩⟩
+  exact ⟨s ∪ t, ⟨⟨hs₁.union ht₁, hs₂.union ht₂⟩, compl_subset_compl.2 subset_union_left,
+    compl_subset_compl.2 subset_union_right⟩⟩
 #align filter.has_basis_coclosed_compact Filter.hasBasis_coclosedCompact
 
 /-- A set belongs to `coclosedCompact` if and only if the closure of its complement is compact. -/

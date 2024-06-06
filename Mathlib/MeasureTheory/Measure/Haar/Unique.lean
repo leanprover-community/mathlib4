@@ -570,7 +570,7 @@ lemma measure_isMulInvariant_eq_smul_of_isCompact_closure_of_innerRegularCompact
   have st : s ⊆ t := (IsClosed.closure_subset_iff t_closed).mp hf
   have A : ν (t \ s) ≤ μ' (t \ s) := by
     apply smul_measure_isMulInvariant_le_of_isCompact_closure _ _ (t_closed.measurableSet.diff hs)
-    exact t_comp.closure_of_subset (diff_subset t s)
+    exact t_comp.closure_of_subset diff_subset
   have B : μ' t = ν t :=
     measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport _ _ f_cont f_comp
   rwa [measure_diff st hs, measure_diff st hs, ← B, ENNReal.sub_le_sub_iff_left] at A
@@ -624,8 +624,8 @@ theorem measure_isMulInvariant_eq_smul_of_isCompact_closure [LocallyCompactSpace
     _ = ν ((toMeasurable ν s) ∩ (closure s)) := by
       apply measure_isMulInvariant_eq_smul_of_isCompact_closure_of_measurableSet _ _ _ _
       · exact (measurableSet_toMeasurable ν s).inter isClosed_closure.measurableSet
-      · exact h's.closure_of_subset (inter_subset_right _ _)
-    _ ≤ ν (toMeasurable ν s) := measure_mono (inter_subset_left _ _)
+      · exact h's.closure_of_subset inter_subset_right
+    _ ≤ ν (toMeasurable ν s) := measure_mono inter_subset_left
     _ = ν s := measure_toMeasurable s
   · calc
     ν s ≤ ν ((toMeasurable μ' s) ∩ (closure s)) :=
@@ -633,8 +633,8 @@ theorem measure_isMulInvariant_eq_smul_of_isCompact_closure [LocallyCompactSpace
     _ = μ' ((toMeasurable μ' s) ∩ (closure s)) := by
       apply (measure_isMulInvariant_eq_smul_of_isCompact_closure_of_measurableSet _ _ _ _).symm
       · exact (measurableSet_toMeasurable μ' s).inter isClosed_closure.measurableSet
-      · exact h's.closure_of_subset (inter_subset_right _ _)
-    _ ≤ μ' (toMeasurable μ' s) := measure_mono (inter_subset_left _ _)
+      · exact h's.closure_of_subset inter_subset_right
+    _ ≤ μ' (toMeasurable μ' s) := measure_mono inter_subset_left
     _ = μ' s := measure_toMeasurable s
 
 /-- **Uniqueness of Haar measures**:
@@ -727,8 +727,8 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
   have sm : s ⊆ ⋃ x ∈ m, x • (k * k⁻¹) := by
     intro y hy
     by_cases h'y : m ∪ {y} ∈ A
-    · have : m ∪ {y} = m := m_max _ h'y (subset_union_left m {y})
-      have ym : y ∈ m := by simpa using (subset_union_right _ _).trans this.subset
+    · have : m ∪ {y} = m := m_max _ h'y subset_union_left
+      have ym : y ∈ m := by simpa using subset_union_right.trans this.subset
       have : y ∈ y • (k * k⁻¹) := by
         simpa using mem_leftCoset y (Set.mul_mem_mul one_k (Set.inv_mem_inv.mpr one_k))
       exact mem_biUnion ym this
@@ -760,7 +760,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     congr with n
     apply measure_isMulInvariant_eq_smul_of_isCompact_closure
     have : IsCompact (f n • (k * k⁻¹)) := IsCompact.smul (f n) (k_comp.mul k_comp.inv)
-    exact this.closure_of_subset <| (disjointed_subset _ _).trans (inter_subset_right _ _)
+    exact this.closure_of_subset <| (disjointed_subset _ _).trans inter_subset_right
   · have H : ∀ (ρ : Measure G), IsEverywherePos ρ s → ρ s = ∞ := by
       intro ρ hρ
       have M : ∀ (i : ↑m), MeasurableSet (s ∩ (i : G) • k) :=
@@ -769,9 +769,9 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
       have : ∑' (x : m), ρ (s ∩ ((x : G) • k)) < ∞ := by
         apply lt_of_le_of_lt (MeasureTheory.tsum_meas_le_meas_iUnion_of_disjoint _ M _) _
         · have I : PairwiseDisjoint m fun x ↦ s ∩ x • k :=
-            mA.2.mono (fun x ↦ inter_subset_right _ _)
+            mA.2.mono (fun x ↦ inter_subset_right)
           exact I.on_injective Subtype.val_injective (fun x ↦ x.2)
-        · exact lt_of_le_of_lt (measure_mono (by simp [inter_subset_left s])) h'm.lt_top
+        · exact lt_of_le_of_lt (measure_mono (by simp [inter_subset_left])) h'm.lt_top
       have C : Set.Countable (support fun (i : m) ↦ ρ (s ∩ (i : G) • k)) :=
         Summable.countable_support_ennreal this.ne
       have : support (fun (i : m) ↦ ρ (s ∩ (i : G) • k)) = univ := by
@@ -835,11 +835,11 @@ lemma measure_isMulLeftInvariant_eq_smul_of_ne_top [LocallyCompactSpace G]
   have st : s ⊆ t := subset_inter (subset_toMeasurable μ' s) (subset_toMeasurable μ s)
   have mu'_t : μ' t = μ' s := by
     apply le_antisymm
-    · exact (measure_mono (inter_subset_left _ _)).trans (measure_toMeasurable s).le
+    · exact (measure_mono inter_subset_left).trans (measure_toMeasurable s).le
     · exact measure_mono st
   have mu_t : μ t = μ s := by
     apply le_antisymm
-    · exact (measure_mono (inter_subset_right _ _)).trans (measure_toMeasurable s).le
+    · exact (measure_mono inter_subset_right).trans (measure_toMeasurable s).le
     · exact measure_mono st
   simp only [← mu'_t, smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, ← mu_t,
     nnreal_smul_coe_apply]

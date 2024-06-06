@@ -1108,7 +1108,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
               _ ⊆ a i ^ n • X i := smul_set_mono <| hX i
               _ ⊆ a i ^ n • (Y i)ᶜ := smul_set_mono (hXYdisj i i).subset_compl_right
               _ ⊆ X i := hi
-        _ ⊆ X' i := Set.subset_union_left _ _
+        _ ⊆ X' i := Set.subset_union_left
     · have h1n : n ≤ -1 := by
         apply Int.le_of_lt_add_one
         simpa using hgt
@@ -1128,7 +1128,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
               _ ⊆ a i ^ n • Y i := smul_set_mono <| hY i
               _ ⊆ a i ^ n • (X i)ᶜ := smul_set_mono (hXYdisj i i).symm.subset_compl_right
               _ ⊆ Y i := hi
-        _ ⊆ X' i := Set.subset_union_right _ _
+        _ ⊆ X' i := Set.subset_union_right
   show _ ∨ ∃ i, 3 ≤ #(H i)
   inhabit ι
   right

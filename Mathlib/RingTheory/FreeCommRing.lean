@@ -284,12 +284,12 @@ theorem exists_finite_support (x : FreeCommRing α) : ∃ s : Set α, Set.Finite
     (fun p => ⟨{p}, Set.finite_singleton p, isSupported_of.2 <| Set.mem_singleton _⟩)
     (fun _ _ ⟨s, hfs, hxs⟩ ⟨t, hft, hxt⟩ =>
       ⟨s ∪ t, hfs.union hft,
-        isSupported_add (isSupported_upwards hxs <| Set.subset_union_left s t)
-          (isSupported_upwards hxt <| Set.subset_union_right s t)⟩)
+        isSupported_add (isSupported_upwards hxs Set.subset_union_left)
+          (isSupported_upwards hxt Set.subset_union_right)⟩)
     fun _ _ ⟨s, hfs, hxs⟩ ⟨t, hft, hxt⟩ =>
     ⟨s ∪ t, hfs.union hft,
-      isSupported_mul (isSupported_upwards hxs <| Set.subset_union_left s t)
-        (isSupported_upwards hxt <| Set.subset_union_right s t)⟩
+      isSupported_mul (isSupported_upwards hxs Set.subset_union_left)
+        (isSupported_upwards hxt Set.subset_union_right)⟩
 #align free_comm_ring.exists_finite_support FreeCommRing.exists_finite_support
 
 theorem exists_finset_support (x : FreeCommRing α) : ∃ s : Finset α, IsSupported x ↑s :=

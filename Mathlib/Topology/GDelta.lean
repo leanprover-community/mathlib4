@@ -326,7 +326,7 @@ lemma IsMeagre.mono {s t : Set X} (hs : IsMeagre s) (hts: t ⊆ s) : IsMeagre t 
 
 /-- An intersection with a meagre set is meagre. -/
 lemma IsMeagre.inter {s t : Set X} (hs : IsMeagre s) : IsMeagre (s ∩ t) :=
-  hs.mono (inter_subset_left s t)
+  hs.mono inter_subset_left
 
 /-- A countable union of meagre sets is meagre. -/
 lemma isMeagre_iUnion {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagre (⋃ n, s n) := by

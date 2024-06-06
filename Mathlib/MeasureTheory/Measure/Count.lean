@@ -166,7 +166,7 @@ theorem count_injective_image' {f : β → α} (hf : Function.Injective f) {s : 
       s.card_image_of_injective hf]
     simpa only [Finset.coe_image] using fs_mble
   · rw [count_apply_infinite hs]
-    rw [← finite_image_iff <| hf.injOn _] at hs
+    rw [← finite_image_iff hf.injOn] at hs
     rw [count_apply_infinite hs]
 #align measure_theory.measure.count_injective_image' MeasureTheory.Measure.count_injective_image'
 
@@ -175,7 +175,7 @@ theorem count_injective_image [MeasurableSingletonClass α] [MeasurableSingleton
   by_cases hs : s.Finite
   · exact count_injective_image' hf hs.measurableSet (Finite.image f hs).measurableSet
   rw [count_apply_infinite hs]
-  rw [← finite_image_iff <| hf.injOn _] at hs
+  rw [← finite_image_iff hf.injOn] at hs
   rw [count_apply_infinite hs]
 #align measure_theory.measure.count_injective_image MeasureTheory.Measure.count_injective_image
 

@@ -101,9 +101,9 @@ theorem mul_pluennecke_petridis (C : Finset α)
     rw [hC', insert_eq, union_comm, mul_union]
     refine (sup_sdiff_eq_sup ?_).symm
     rw [mul_right_comm, mul_right_comm A, h₀]
-    exact mul_subset_mul_right (inter_subset_right _ _)
+    exact mul_subset_mul_right inter_subset_right
   have h₂ : A' * B * {x} ⊆ A * B * {x} :=
-    mul_subset_mul_right (mul_subset_mul_right <| inter_subset_left _ _)
+    mul_subset_mul_right (mul_subset_mul_right inter_subset_left)
   have h₃ : (A * B * C').card ≤ (A * B * C).card + (A * B).card - (A' * B).card := by
     rw [h₁]
     refine (card_union_le _ _).trans_eq ?_
@@ -111,7 +111,7 @@ theorem mul_pluennecke_petridis (C : Finset α)
       card_mul_singleton]
   refine (mul_le_mul_right' h₃ _).trans ?_
   rw [tsub_mul, add_mul]
-  refine (tsub_le_tsub (add_le_add_right ih _) <| hA _ <| inter_subset_left _ _).trans_eq ?_
+  refine (tsub_le_tsub (add_le_add_right ih _) <| hA _ inter_subset_left).trans_eq ?_
   rw [← mul_add, ← mul_tsub, ← hA', hC', insert_eq, mul_union, ← card_mul_singleton A x, ←
     card_mul_singleton A' x, add_comm (card _), h₀,
     eq_tsub_of_add_eq (card_union_add_card_inter _ _)]
