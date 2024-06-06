@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Paul Lezeau
 -/
 
+-- TODO: fix imports
 import Mathlib.CategoryTheory.FiberedCategory.Fibered
 import Mathlib.CategoryTheory.Functor.Const
 
@@ -90,16 +91,16 @@ variable {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {C : Type u₃} [Category.{v₃} C] {F :
   we get an induced functor C ⥤ Fiber p S -/
 @[simps]
 def FiberInducedFunctor : C ⥤ Fiber p S where
-    obj := fun x ↦ ⟨F.obj x, by simp only [← comp_obj, hF, const_obj_obj]⟩
-    map := fun φ ↦ ⟨F.map φ, by
-      apply IsHomLift.of_commSq
-      -- TODO: of_commsq lemma (which applies constructor automatically?)
-      constructor; simpa using (eqToIso hF).hom.naturality φ ⟩
+  obj := fun x ↦ ⟨F.obj x, by simp only [← comp_obj, hF, const_obj_obj]⟩
+  map := fun φ ↦ ⟨F.map φ, by
+    apply IsHomLift.of_commSq
+    -- TODO: of_commsq lemma (which applies constructor automatically?)
+    constructor; simpa using (eqToIso hF).hom.naturality φ ⟩
 
 /-- The natural transformation between F : C ⥤ 𝒳 and .... -/
 def FiberInducedFunctorNat : F ≅ (FiberInducedFunctor hF) ⋙ (FiberInclusion p S) where
-    hom := { app := fun a ↦ 𝟙 (F.obj a) }
-    inv := { app := fun a ↦ 𝟙 ((FiberInducedFunctor hF ⋙ FiberInclusion p S).obj a) }
+  hom := { app := fun a ↦ 𝟙 (F.obj a) }
+  inv := { app := fun a ↦ 𝟙 ((FiberInducedFunctor hF ⋙ FiberInclusion p S).obj a) }
 
 -- TODO: simp lemma? If so should switch sides in the equality
 lemma fiberInducedFunctor_comp : F = (FiberInducedFunctor hF) ⋙ (FiberInclusion p S) :=

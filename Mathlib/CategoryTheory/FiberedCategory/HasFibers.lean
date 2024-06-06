@@ -5,7 +5,6 @@ Authors: Calle Sönne, Paul Lezeau
 -/
 
 import Mathlib.CategoryTheory.FiberedCategory.Fiber
-import Mathlib.CategoryTheory.Functor.Const
 
 /-!
 
@@ -118,7 +117,7 @@ variable {p : 𝒳 ⥤ 𝒮} [HasFibers p]
 
 @[simp]
 lemma proj_eq {S : 𝒮} (a : Fib p S) : p.obj ((ι S).obj a) = S :=
-  by simp only [←comp_obj, comp_const, const_obj_obj]
+  by simp only [← comp_obj, comp_const, const_obj_obj]
 
 def Proj {R S : 𝒮} {a : Fib p R} {b : Fib p S}
     (φ : (ι R).obj a ⟶ (ι S).obj b) : R ⟶ S :=
@@ -131,7 +130,7 @@ def HasFibersMap {R S : 𝒮} {a : Fib p S} {b : Fib p R} (φ : (ι R).obj b ⟶
 /-- For any homomorphism φ in a fiber Fib S, its image under ι S lies over 𝟙 S -/
 instance homLift {S : 𝒮} {a b : Fib p S} (φ : a ⟶ b) : IsHomLift p (𝟙 S) ((ι S).map φ) := by
   apply of_fac p _ _ (proj_eq a) (proj_eq b)
-  rw [←Functor.comp_map, Functor.congr_hom (comp_const S)]
+  rw [← Functor.comp_map, Functor.congr_hom (comp_const S)]
   simp
 
 -- TODO: better names of these two?
@@ -144,9 +143,10 @@ noncomputable def mapPreimage {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ 
 @[simp]
 lemma mapPreimage_eq {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (ι S).obj b)
     [IsHomLift p (𝟙 S) φ] : (ι S).map (mapPreimage φ) = φ := by
-  rw [←NatIso.naturality_2 (FiberInducedFunctorNat (comp_const S))]
+  rw [← NatIso.naturality_2 (FiberInducedFunctorNat (comp_const S))]
   -- TODO: this should all be simp after appropriate `@[simp]s`?
-  simp
+  simp only [comp_obj, FiberInclusion_obj, FiberInducedFunctor_obj_coe, Functor.comp_map,
+    FiberInclusion_map, FiberInducedFunctor_map_coe, NatTrans.naturality, Iso.hom_inv_id_app_assoc]
   rw [congr_hom (inducedFunctor_comp p S)]
   simp [mapPreimage]
 
@@ -193,7 +193,7 @@ noncomputable def pullbackMap : (ι R).obj (pullbackObj f ha) ⟶ a :=
     (IsPreFibered.pullbackMap ha f)
 
 instance pullbackMap.isStronglyCartesian : IsStronglyCartesian p f (pullbackMap f ha) := by
-  conv => congr; rfl; rw [←id_comp f]
+  conv => congr; rfl; rw [← id_comp f]
   exact IsStronglyCartesian.comp p
 
 end
