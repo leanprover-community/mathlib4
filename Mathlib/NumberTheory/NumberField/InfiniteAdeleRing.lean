@@ -52,6 +52,8 @@ instance topologicalSpace : TopologicalSpace (infiniteAdeleRing K) := Pi.topolog
 
 instance topologicalRing : TopologicalRing (infiniteAdeleRing K) := Pi.instTopologicalRing
 
+/-- The global embedding of a number field into its infinite adele ring,
+sending `x ∈ K` to `(x)ᵥ`. -/
 def globalEmbedding : K →+* infiniteAdeleRing K :=
   Pi.ringHom (fun (v : InfinitePlace K) => InfinitePlace.Completion.coeRingHom v)
 

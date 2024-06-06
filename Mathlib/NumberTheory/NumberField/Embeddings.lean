@@ -1027,7 +1027,7 @@ noncomputable def uniformSpace : UniformSpace K :=
   v.normedField.toUniformSpace
 
 /-- The uniform additive group structure of a number field induced by an infinite place. -/
-noncomputable def uniformAddGroup : @UniformAddGroup K v.uniformSpace _ :=
+theorem uniformAddGroup : @UniformAddGroup K v.uniformSpace _ :=
   @SeminormedAddCommGroup.to_uniformAddGroup _ (
     @NormedAddCommGroup.toSeminormedAddCommGroup _ (
       @NonUnitalNormedRing.toNormedAddCommGroup _ (
@@ -1038,12 +1038,13 @@ noncomputable def uniformAddGroup : @UniformAddGroup K v.uniformSpace _ :=
 noncomputable def topologicalSpace : TopologicalSpace K :=
   v.uniformSpace.toTopologicalSpace
 
-noncomputable def topologicalDivisionRing :
+/-- The topological division ring structure of a number field induced by an infinite place. -/
+theorem topologicalDivisionRing :
     @TopologicalDivisionRing K _ v.topologicalSpace :=
   v.normedDivisionRing.to_topologicalDivisionRing
 
 /-- The topological ring structure of a number field induced by an infinite place. -/
-noncomputable def topologicalRing : @TopologicalRing K v.topologicalSpace _ :=
+theorem topologicalRing : @TopologicalRing K v.topologicalSpace _ :=
   @TopologicalDivisionRing.toTopologicalRing _ _ v.topologicalSpace
     v.topologicalDivisionRing
 
@@ -1070,7 +1071,7 @@ theorem continuous : @Continuous _ _ v.topologicalSpace _ v.embedding :=
 
 /-- The uniform structure induced by an infinite place of a number field defines a
 completable topological field. -/
-def completableTopField : @CompletableTopField K _ v.uniformSpace :=
+theorem completableTopField : @CompletableTopField K _ v.uniformSpace :=
   @UniformSpace.comap_completableTopField _ _ _ _ _ _ v.normedField.instT0Space _
 
 /-- The completion of a number field at an infinite place. -/
@@ -1087,6 +1088,7 @@ instance : CompleteSpace v.completion :=
 noncomputable instance : Inhabited v.completion :=
   ⟨0⟩
 
+/-- The coercion from a number field to its completion at an infinite place. -/
 def coeRingHom : K →+* v.completion :=
   @UniformSpace.Completion.coeRingHom _ _ v.uniformSpace
     v.topologicalRing v.uniformAddGroup
