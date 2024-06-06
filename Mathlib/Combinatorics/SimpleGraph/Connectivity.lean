@@ -1724,8 +1724,8 @@ theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective
     support_map, ← List.map_tail, List.nodup_map_iff hinj]
 #align simple_graph.walk.map_is_cycle_iff_of_injective SimpleGraph.Walk.map_isCycle_iff_of_injective
 
-alias ⟨_, map_isCycle_of_injective⟩ := map_isCycle_iff_of_injective
-#align simple_graph.walk.map_is_cycle_of_injective SimpleGraph.Walk.map_isCycle_of_injective
+alias ⟨_, isCycle.map⟩ := map_isCycle_iff_of_injective
+#align simple_graph.walk.map_is_cycle_of_injective SimpleGraph.Walk.isCycle.map
 
 variable (p f)
 
