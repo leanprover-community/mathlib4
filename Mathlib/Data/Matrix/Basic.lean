@@ -1696,7 +1696,7 @@ def vecMul [Fintype m] (v : m → α) (M : Matrix m n α) : n → α
 scoped infixl:73 " ᵥ* " => Matrix.vecMul
 
 lemma vecMul_def [Fintype m] (v : m → α) (M : Matrix m n α) :
-     v ᵥ* M = fun j => Finset.sum Finset.univ fun (i : m) => v i * M i j  := by rfl
+    v ᵥ* M = fun j => Finset.sum Finset.univ fun (i : m) => v i * M i j  := by rfl
 
 /-- Left multiplication by a matrix, as an `AddMonoidHom` from vectors to vectors. -/
 @[simps]
