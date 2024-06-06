@@ -143,7 +143,7 @@ lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h
   have := insert_subset_insert a htu
   have has := not_mem_mono hsu hu
   have hat := not_mem_mono htu hu
-  have : a ∉ s ∩ t := not_mem_mono ((inter_subset_left _ t).trans hsu) hu
+  have : a ∉ s ∩ t := not_mem_mono (inter_subset_left.trans hsu) hu
   have := not_mem_union.2 ⟨has, hat⟩
   rw [collapse_eq has]
   split_ifs
@@ -185,7 +185,7 @@ lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h
     · rw [mul_zero, zero_add]
       refine (h ‹_› ‹_›).trans <| mul_le_mul ?_ (le_collapse_of_insert_mem ‹_› h₄
         (union_insert _ _ _) <| union_mem_sups ‹_› ‹_›) (h₄ _) <| collapse_nonneg h₃ _
-      exact le_collapse_of_mem (not_mem_mono (inter_subset_left _ _) ‹_›) h₃
+      exact le_collapse_of_mem (not_mem_mono inter_subset_left ‹_›) h₃
         (inter_insert_of_not_mem ‹_›) <| inter_mem_infs ‹_› ‹_›
     · simp_rw [mul_zero, add_zero]
       exact mul_nonneg (collapse_nonneg h₃ _) <| collapse_nonneg h₄ _
@@ -272,14 +272,14 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
   set L : Sublattice α := ⟨latticeClosure (s ∪ t), isSublattice_latticeClosure.1,
     isSublattice_latticeClosure.2⟩
   have : Finite L := (s.finite_toSet.union t.finite_toSet).latticeClosure.to_subtype
-  set s' : Finset L := s.preimage (↑) <| Subtype.coe_injective.injOn _
-  set t' : Finset L := t.preimage (↑) <| Subtype.coe_injective.injOn _
+  set s' : Finset L := s.preimage (↑) Subtype.coe_injective.injOn
+  set t' : Finset L := t.preimage (↑) Subtype.coe_injective.injOn
   have hs' : s'.map ⟨L.subtype, Subtype.coe_injective⟩ = s := by
     simp [s', map_eq_image, image_preimage, filter_eq_self]
-    exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_left _ _ ha
+    exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_left ha
   have ht' : t'.map ⟨L.subtype, Subtype.coe_injective⟩ = t := by
     simp [t', map_eq_image, image_preimage, filter_eq_self]
-    exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_right _ _ ha
+    exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_right ha
   clear_value s' t'
   obtain ⟨β, _, _, g, hg⟩ := exists_birkhoff_representation L
   have := four_functions_theorem_aux (extend g (f₁ ∘ (↑)) 0) (extend g (f₂ ∘ (↑)) 0)

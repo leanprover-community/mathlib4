@@ -1139,14 +1139,14 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
       Or.casesOn h
         (fun h =>
           Set.Subset.trans h <|
-            Set.Subset.trans (Set.subset_union_left _ _) (Set.subset_union_left _ _))
+            Set.Subset.trans Set.subset_union_left Set.subset_union_left)
         fun h =>
         Or.casesOn h
           (fun h =>
             Set.Subset.trans h <|
-              Set.Subset.trans (Set.subset_union_right _ _) (Set.subset_union_left _ _))
+              Set.Subset.trans Set.subset_union_right Set.subset_union_left)
           fun ⟨i, his, hi⟩ => by
-          refine Set.Subset.trans hi <| Set.Subset.trans ?_ <| Set.subset_union_right _ _;
+          refine Set.Subset.trans hi <| Set.Subset.trans ?_ Set.subset_union_right;
             exact Set.subset_biUnion_of_mem (u := fun x ↦ (f x : Set R)) (Finset.mem_coe.2 his)⟩
   generalize hn : s.card = n; intro h
   induction' n with n ih generalizing a b s
