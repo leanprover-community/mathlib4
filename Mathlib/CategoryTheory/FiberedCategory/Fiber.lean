@@ -52,7 +52,8 @@ def mk_obj {a : 𝒳} (ha : p.obj a = S) : Fiber p S := ⟨a, ha⟩
 /-- The object ... -/
 @[simps]
 def mk_map {a b : 𝒳} (φ : a ⟶ b) [IsHomLift p (𝟙 S) φ] :
-  mk_obj (domain_eq p (𝟙 S) φ) ⟶ mk_obj (codomain_eq p (𝟙 S) φ) := ⟨φ, inferInstance⟩
+    mk_obj (domain_eq p (𝟙 S) φ) ⟶ mk_obj (codomain_eq p (𝟙 S) φ) :=
+  ⟨φ, inferInstance⟩
 
 @[simp]
 lemma mk_map_id {a : 𝒳} [IsHomLift p (𝟙 S) (𝟙 a)] :
