@@ -11,7 +11,7 @@ import Mathlib.Algebra.Homology.Localization
 /-! # The derived category of an abelian category
 
 In this file, we construct the derived category `DerivedCategory C` of an
-abelian category `C`. If is equipped with a triangulated structure.
+abelian category `C`. It is equipped with a triangulated structure.
 
 The derived category is defined here as the localization of cochain complexes
 indexed by `ℤ` with respect to quasi-isomorphisms: it is a type synonym of
