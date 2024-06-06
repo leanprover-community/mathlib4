@@ -34,9 +34,7 @@ def get_imports(directory):
                         # Find an import statement
                         match = re.match(r'^import\s+(.*)', line)
                         if match:
-                            # Normalize the import module name
-                            import_module = match.group(1).replace('.', '/')
-                            imports.append(import_module)
+                            imports.append(match.group(1))
 
                 # Add the file and its imports to the dictionary
                 file_imports[module_name] = imports
