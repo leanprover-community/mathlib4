@@ -26,20 +26,21 @@ jobs:
 
     - name: Compute transitive imports
       run: |
+        # the checkout dance, to avoid a detached head
+        git checkout -
+        git checkout -
+
         # Compute the counts for the HEAD of the PR
-        python ./scripts/count-trans-deps.py Mathlib/Logic/Function
         python ./scripts/count-trans-deps.py Mathlib/Logic/Function > head.json
 
         # Checkout the merge base
         git checkout master # let's start easy! "$(git merge-base refs/remotes/origin/main ${{ github.sha }})"
-        # the checkout dance, to avoid a detached head
-        git checkout -
-        git checkout -
-        git checkout origin/adomani/import-count scripts/count-trans-deps.py
+        # get the files that we need from the current PR
+        # this will have to switch to `master` probably, when merging or right after
+        git checkout origin/adomani/import-count scripts/count-trans-deps.py scripts/import-graph-report.py
 
         # Compute the counts for the merge base
         python ./scripts/count-trans-deps.py Mathlib/Logic/Function > base.json
-        git checkout -
 
     - name: Compare results and comment
       env:
