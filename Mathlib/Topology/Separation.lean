@@ -2477,6 +2477,12 @@ closed sets are Gδ. -/
 class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] extends NormalSpace X : Prop where
   closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ h
 
+lemma subset_interior_closure {s : Set X} (s_open : IsOpen s) : s ⊆ interior (closure s) :=
+  (IsOpen.subset_interior_iff s_open).mpr subset_closure
+
+lemma closure_interior_subset {s : Set X} (s_closed : IsClosed s) : closure (interior s) ⊆ s :=
+  (IsClosed.closure_subset_iff s_closed).mpr interior_subset
+
 instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
     [PerfectlyNormalSpace X] : CompletelyNormalSpace X where
   completely_normal s t hd₁ hd₂ := by
@@ -2493,11 +2499,14 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
         exact Disjoint.symm hd₁
       rw [this]
       exact SeparatedNhds.empty_right s
-    have : Nonempty S := by
-      exact Nonempty.to_subtype S_nonempty
+    have := Nonempty.to_subtype S_nonempty
     obtain ⟨f, f_surj⟩ := countable_iff_exists_surjective.mp S_count
-    have : ∀ n, ∃ v : Set X, IsOpen v ∧ t ⊆ v ∧ v ⊆ (f n)ᶜ := by
-      sorry
+    have cls_is_cl : IsClosed (closure s) := isClosed_closure
+    have : ∀ n, ∃ u : Set X, IsOpen u ∧ closure s ⊆ u ∧ closure u ⊆ ↑(f n) := fun n ↦ by
+      apply normal_exists_closure_subset (cls_is_cl) (S_open (f n).1 (f n).2)
+      rw [S_int]
+      exact sInter_subset_of_mem (f n).2
+    choose f' f'_open cls_sub_f' clf'_sub_f using this
     have : IsGδ (closure t) := closed_gdelta isClosed_closure
     obtain ⟨T, T_open, T_count, T_int⟩ := this
     wlog T_nonempty : T.Nonempty
@@ -2510,12 +2519,64 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
         exact hd₂
       rw [this]
       exact SeparatedNhds.empty_left t
-    have : Nonempty T := by
-      exact Nonempty.to_subtype T_nonempty
+    have := Nonempty.to_subtype T_nonempty
     obtain ⟨g, g_surj⟩ := countable_iff_exists_surjective.mp T_count
+    have clt_is_cl : IsClosed (closure t) := isClosed_closure
+    have : ∀ n, ∃ u : Set X, IsOpen u ∧ closure t ⊆ u ∧ closure u ⊆ ↑(g n) := fun n ↦ by
+      apply normal_exists_closure_subset (clt_is_cl) (T_open (g n).1 (g n).2)
+      rw [T_int]
+      exact sInter_subset_of_mem (g n).2
+    choose g' g'_open clt_sub_g' clg'_sub_g using this
     apply countable_covers_witnessing_separated_nhds
     · sorry
-    · sorry
+    · use fun n ↦ (closure (f' n))ᶜ
+      constructor
+      · rw [← compl_iInter, subset_compl_comm]
+        have : ⋂ i, closure (f' i) = closure s := by
+          rw [S_int]
+          rw [sInter_eq_iInter]
+          refine ext ?_
+          intro x
+          constructor
+          · intro xin
+            simp only [iInter_coe_set, mem_iInter]
+            intro i iins
+            obtain ⟨n, fn⟩ := f_surj ⟨i, iins⟩
+            have : i = f n := by
+              rw [fn]
+            rw [this]
+            apply clf'_sub_f
+            apply xin
+            simp only [mem_range, exists_apply_eq_apply]
+          · intro xin
+            simp only [mem_iInter]
+            intro i
+            apply subset_closure
+            apply cls_sub_f'
+            rw [S_int]
+            simp only [mem_sInter]
+            intro t tinS
+            obtain ⟨n, fn⟩ := f_surj ⟨t, tinS⟩
+            have : t = f n := by rw [fn]
+            rw [this]
+            apply clf'_sub_f
+            apply subset_closure
+            apply cls_sub_f'
+            rw [S_int]
+            rw [sInter_eq_iInter]
+            exact xin
+        rw [this]
+        exact Disjoint.subset_compl_left (id (Disjoint.symm hd₁))
+      intro n
+      constructor
+      · simp only [isOpen_compl_iff, isClosed_closure]
+      · simp only [closure_compl]
+        rw [disjoint_compl_left_iff_subset]
+        apply Subset.trans subset_closure
+        apply Subset.trans (cls_sub_f' n)
+        exact subset_interior_closure (f'_open n)
+
+
 
 
 end PerfectlyNormal
