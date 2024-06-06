@@ -1070,7 +1070,7 @@ theorem continuous : @Continuous _ _ v.topologicalSpace _ v.embedding :=
 
 /-- The uniform structure induced by an infinite place of a number field defines a
 completable topological field. -/
-instance completableTopField : @CompletableTopField K _ v.uniformSpace :=
+def completableTopField : @CompletableTopField K _ v.uniformSpace :=
   @UniformSpace.comap_completableTopField _ _ _ _ _ _ v.normedField.instT0Space _
 
 /-- The completion of a number field at an infinite place. -/
@@ -1095,7 +1095,7 @@ def coeRingHom : K →+* v.completion :=
 noncomputable def extensionEmbedding : v.completion →+* ℂ :=
   @UniformSpace.Completion.extensionHom K _
     v.uniformSpace v.topologicalRing v.uniformAddGroup
-    _ _ _ _ _ v.embedding v.continuous _ T1Space.t0Space
+    _ _ _ _ _ v.embedding v.continuous _ _
 
 theorem extensionEmbedding_injective : Function.Injective (extensionEmbedding v) :=
   (extensionEmbedding v).injective
@@ -1117,7 +1117,7 @@ theorem extensionEmbedding_dist_eq (x y : v.completion) :
       MonoidHom.coe_mk, OneHom.coe_mk, p]
     rw [@UniformSpace.Completion.dist_eq _ v.normedField.toPseudoMetricSpace]
     simp only [@UniformSpace.Completion.extension_coe _ v.uniformSpace _ _ _
-      T1Space.t0Space v.uniformContinuous]
+      _ v.uniformContinuous]
     rw [@Isometry.dist_eq _ _ v.normedField.toPseudoMetricSpace _ _ (v.isometry) _ _]
 
 variable (v)
