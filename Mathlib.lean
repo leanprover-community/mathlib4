@@ -286,6 +286,7 @@ import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Homology.ComplexShapeSigns
 import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
+import Mathlib.Algebra.Homology.DerivedCategory.LargeExt
 import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Embedding.Basic
 import Mathlib.Algebra.Homology.Exact
