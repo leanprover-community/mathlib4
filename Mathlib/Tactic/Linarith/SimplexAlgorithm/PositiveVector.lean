@@ -66,11 +66,11 @@ def extractSolution (table : Table matType) : Array Rat := Id.run do
 /--
 Finds a nonnegative vector `v`, such that `A v = 0` and some of its coordinates from
 `strictCoords`
-are positive, in the case such `v` exists. If not, returns zero vector. The latter prevents
+are positive, in the case such `v` exists. If not, throws the error. The latter prevents
 `linarith` from doing useless post-processing.
 -/
 def findPositiveVector {n m : Nat} {matType : Nat → Nat → Type} [IsMatrix matType] (A : matType n m)
-    (strictIndexes : List Nat) : Array Rat :=
+    (strictIndexes : List Nat) : Lean.Meta.MetaM <| Array Rat := do
   /- State the linear programming problem. -/
   let B := stateLP A strictIndexes
 
@@ -79,12 +79,8 @@ def findPositiveVector {n m : Nat} {matType : Nat → Nat → Type} [IsMatrix ma
   let initTable := Gauss.getTable B
 
   /- Run Simplex Algorithm and extract the solution. -/
-  (go.run initTable).fst.toOption.get!
-where
-  /-- Runs Simplex Algorithm and extracts solution if found. Otherwise, returns zero vector. -/
-  go : SimplexAlgorithmM matType <| Array Rat := do
-  try
-    runSimplexAlgorithm
-    return extractSolution (← get)
-  catch
- | .infeasible => return Array.mkArray ((← get).basic.size + (← get).free.size - 3) 0
+  let res := runSimplexAlgorithm.run initTable
+  if res.fst.isOk then
+    return extractSolution res.snd
+  else
+    throwError "Simplex Algorithm failed"
