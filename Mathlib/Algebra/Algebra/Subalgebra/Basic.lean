@@ -752,7 +752,7 @@ def adjoin (s : Set A) : Subalgebra R A :=
 variable {R}
 
 protected theorem gc : GaloisConnection (adjoin R : Set A → Subalgebra R A) (↑) := fun s S =>
-  ⟨fun H => le_trans (le_trans (Set.subset_union_right _ _) Subsemiring.subset_closure) H,
+  ⟨fun H => le_trans (le_trans Set.subset_union_right Subsemiring.subset_closure) H,
    fun H => show Subsemiring.closure (Set.range (algebraMap R A) ∪ s) ≤ S.toSubsemiring from
       Subsemiring.closure_le.2 <| Set.union_subset S.range_subset H⟩
 #align algebra.gc Algebra.gc
