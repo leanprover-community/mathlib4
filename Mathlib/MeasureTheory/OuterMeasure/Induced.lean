@@ -497,7 +497,7 @@ theorem restrict_trim {μ : OuterMeasure α} {s : Set α} (hs : MeasurableSet s)
     refine (measure_mono htt').trans ?_
     rw [trim_eq _ (hs.compl.union ht'), restrict_apply, union_inter_distrib_right, compl_inter_self,
       Set.empty_union]
-    exact measure_mono (inter_subset_left _ _)
+    exact measure_mono inter_subset_left
   · rw [restrict_apply, trim_eq _ (ht.inter hs), restrict_apply]
 #align measure_theory.outer_measure.restrict_trim MeasureTheory.OuterMeasure.restrict_trim
 
