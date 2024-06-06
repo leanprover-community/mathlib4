@@ -6,7 +6,7 @@ Authors: Joël Riou, Andrew Yang
 import Mathlib.CategoryTheory.ComposableArrows
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 
-/-! # Essential surjectivity of the functor induced on tuples of composable arrows
+/-! # Essential surjectivity of the functor induced on composable arrows
 
 Assuming that `L : C ⥤ D` is a localization functor for a class of morphisms `W`
 that has a calculus of left *or* right fractions, we show in this file
