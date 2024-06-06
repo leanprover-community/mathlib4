@@ -53,7 +53,7 @@ jobs:
             headers="Authorization: token ${GITHUB_TOKEN}"
             comments=$(curl -s -S -H "Content-Type: application/json" -H "$headers" "$url")
             comment_id=$(echo "$comments" | jq -r '.[] | select(.body | startswith("### Import summary")) | .id')
-            printf 'comments: %s\ncomment_id: %s' "${comments}" "${comment_id}"
+            printf 'comments: %s\ncomment_id: |||%s|||' "${comments}" "${comment_id}"
             if [[ -n "$comment_id" ]]; then
                 url="$url/$comment_id"
                 curl -s -S -H "Content-Type: application/json" -H "$headers" -X PATCH -d "{\"body\": \"$message\"}" "$url"
