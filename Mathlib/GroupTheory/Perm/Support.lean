@@ -448,7 +448,6 @@ theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y :=
   by_contra!
   rw [← this] at h
   simp only [swap_self, support_refl, pair_eq_singleton] at h
-  #adaptation_note /--  nightly-2024-06-05: needed to add `Finset α` type ascription  -/
   have : x ∈ (∅ : Finset α) := by
     rw [h]
     exact mem_singleton.mpr rfl

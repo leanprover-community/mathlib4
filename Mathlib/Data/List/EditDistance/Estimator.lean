@@ -105,9 +105,6 @@ instance estimator' :
     | [y], split, b_eq, d_eq =>
       simp only [EstimatorData.bound, Prod.lt_iff, List.reverse_nil, List.nil_append]
       right
-      #adaptation_note
-      /-- As of nightly-2024-05-06, we need to specify the `e.distances.property` argument.
-      Previously it was just `_`. -/
       have b_eq :
           e.bound = (List.minimum_of_length_pos e.distances.property, List.length e.suff) := by
         simpa using b_eq
@@ -120,9 +117,6 @@ instance estimator' :
     | y₁ :: y₂ :: t, split, b_eq, d_eq =>
       simp only [EstimatorData.bound, Prod.lt_iff]
       right
-      #adaptation_note
-      /-- As of nightly-2024-05-06, we need to specify the `e.distances.property` argument.
-      Previously it was just `_`. -/
       have b_eq :
           e.bound = (List.minimum_of_length_pos e.distances.property, List.length e.suff) := by
         simpa using b_eq
