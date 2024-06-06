@@ -3,8 +3,8 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.Algebra.BigOperators.Basic
 
 #align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 
@@ -167,19 +167,17 @@ section CommSemiringCommSemiring
 
 variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
-open BigOperators
-
 -- direct to_additive fails because of some mix-up with polynomials
 @[norm_cast]
 theorem coe_prod {ι : Type*} {s : Finset ι} (a : ι → R) :
-    (↑(∏ i : ι in s, a i : R) : A) = ∏ i : ι in s, (↑(a i) : A) :=
+    (↑(∏ i ∈ s, a i : R) : A) = ∏ i ∈ s, (↑(a i) : A) :=
   map_prod (algebraMap R A) a s
 #align algebra_map.coe_prod algebraMap.coe_prod
 
 -- to_additive fails for some reason
 @[norm_cast]
 theorem coe_sum {ι : Type*} {s : Finset ι} (a : ι → R) :
-    ↑(∑ i : ι in s, a i) = ∑ i : ι in s, (↑(a i) : A) :=
+    ↑(∑ i ∈ s, a i) = ∑ i ∈ s, (↑(a i) : A) :=
   map_sum (algebraMap R A) a s
 #align algebra_map.coe_sum algebraMap.coe_sum
 
@@ -424,7 +422,7 @@ theorem coe_linearMap : ⇑(Algebra.linearMap R A) = algebraMap R A :=
 #align algebra.coe_linear_map Algebra.coe_linearMap
 
 /-- The identity map inducing an `Algebra` structure. -/
-instance id : Algebra R R where
+instance (priority := 1100) id : Algebra R R where
   -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
   -- be made so without a significant performance hit.
   -- see library note [reducible non-instances].

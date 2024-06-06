@@ -3,9 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+import Mathlib.CategoryTheory.Adjunction.Over
 
 #align_import category_theory.limits.shapes.diagonal from "leanprover-community/mathlib"@"f6bab67886fb92c3e2f539cc90a83815f69a189d"
 
@@ -219,8 +219,8 @@ def pullbackDiagonalMapIdIso :
     pullback (diagonal i)
         (pullback.map (f ≫ i) (g ≫ i) i i f g (𝟙 _) (Category.comp_id _) (Category.comp_id _)) ≅
       pullback f g := by
-  refine' _ ≪≫
-    pullbackDiagonalMapIso i (𝟙 _) (f ≫ inv pullback.fst) (g ≫ inv pullback.fst) ≪≫ _
+  refine ?_ ≪≫
+    pullbackDiagonalMapIso i (𝟙 _) (f ≫ inv pullback.fst) (g ≫ inv pullback.fst) ≪≫ ?_
   · refine @asIso _ _ _ _ (pullback.map _ _ _ _ (𝟙 T) ((pullback.congrHom ?_ ?_).hom) (𝟙 _) ?_ ?_)
       ?_
     · rw [← Category.comp_id pullback.snd, ← condition, Category.assoc, IsIso.inv_hom_id_assoc]
@@ -385,8 +385,7 @@ def pullbackFstFstIso {X Y S X' Y' S' : C} (f : X ⟶ S) (g : Y ⟶ S) (f' : X' 
     [Mono i₃] :
     pullback (pullback.fst : pullback (pullback.fst : pullback f' g' ⟶ _) i₁ ⟶ _)
         (pullback.fst : pullback (pullback.snd : pullback f' g' ⟶ _) i₂ ⟶ _) ≅
-      pullback f g
-    where
+      pullback f g where
   hom :=
     pullback.lift (pullback.fst ≫ pullback.snd) (pullback.snd ≫ pullback.snd)
       (by

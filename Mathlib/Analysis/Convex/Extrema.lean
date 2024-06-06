@@ -63,7 +63,7 @@ theorem IsMinOn.of_isLocalMinOn_of_convexOn {f : E → β} {a : E} (a_in_s : a �
     rw [← hg0] at h_localmin
     exact h_localmin.comp_continuousOn h_maps hgc.continuousOn (left_mem_Icc.2 zero_le_one)
   have fg_min_on : IsMinOn (f ∘ g) (Icc 0 1 : Set ℝ) 0 := by
-    refine' IsMinOn.of_isLocalMinOn_of_convexOn_Icc one_pos fg_local_min_on _
+    refine IsMinOn.of_isLocalMinOn_of_convexOn_Icc one_pos fg_local_min_on ?_
     exact (h_conv.comp_affineMap g).subset h_maps (convex_Icc 0 1)
   simpa only [hg0, hg1, comp_apply, mem_setOf_eq] using fg_min_on (right_mem_Icc.2 zero_le_one)
 #align is_min_on.of_is_local_min_on_of_convex_on IsMinOn.of_isLocalMinOn_of_convexOn

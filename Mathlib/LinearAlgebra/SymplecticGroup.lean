@@ -57,7 +57,7 @@ set_option linter.uppercaseLean3 false in
 #align matrix.J_squared Matrix.J_squared
 
 theorem J_inv : (J l R)⁻¹ = -J l R := by
-  refine' Matrix.inv_eq_right_inv _
+  refine Matrix.inv_eq_right_inv ?_
   rw [Matrix.mul_neg, J_squared]
   exact neg_neg 1
 set_option linter.uppercaseLean3 false in
@@ -142,7 +142,7 @@ theorem neg_mem (h : A ∈ symplecticGroup l R) : -A ∈ symplecticGroup l R := 
 theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
   rw [isUnit_iff_exists_inv]
   use A.det
-  refine' (isUnit_det_J l R).mul_left_cancel _
+  refine (isUnit_det_J l R).mul_left_cancel ?_
   rw [mul_one]
   rw [mem_iff] at hA
   apply_fun det at hA
@@ -199,7 +199,7 @@ theorem inv_left_mul_aux (hA : A ∈ symplecticGroup l R) : -(J l R * Aᵀ * J l
 #align symplectic_group.inv_left_mul_aux SymplecticGroup.inv_left_mul_aux
 
 theorem coe_inv' (A : symplecticGroup l R) : (↑A⁻¹ : Matrix (Sum l l) (Sum l l) R) = (↑A)⁻¹ := by
-  refine' (coe_inv A).trans (inv_eq_left_inv _).symm
+  refine (coe_inv A).trans (inv_eq_left_inv ?_).symm
   simp [inv_left_mul_aux, coe_inv]
 #align symplectic_group.coe_inv' SymplecticGroup.coe_inv'
 

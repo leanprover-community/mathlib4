@@ -43,7 +43,7 @@ structure FinBoolAlg where
 
 namespace FinBoolAlg
 
-instance : CoeSort FinBoolAlg (Type*) :=
+instance : CoeSort FinBoolAlg Type* :=
   ⟨fun X => X.toBoolAlg⟩
 
 instance (X : FinBoolAlg) : BooleanAlgebra X :=

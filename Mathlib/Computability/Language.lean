@@ -180,7 +180,7 @@ lemma mem_kstar_iff_exists_nonempty {x : List α} :
     x ∈ l∗ ↔ ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] := by
   constructor
   · rintro ⟨S, rfl, h⟩
-    refine' ⟨S.filter fun l ↦ !List.isEmpty l, by simp, fun y hy ↦ _⟩
+    refine ⟨S.filter fun l ↦ !List.isEmpty l, by simp, fun y hy ↦ ?_⟩
     -- Porting note: The previous code was:
     -- rw [mem_filter, empty_iff_eq_nil] at hy
     rw [mem_filter, Bool.not_eq_true', ← Bool.bool_iff_false, isEmpty_iff_eq_nil] at hy
@@ -289,14 +289,14 @@ instance : KleeneAlgebra (Language α) :=
     kstar_mul_le_kstar := fun a ↦ (one_add_kstar_mul_self_eq_kstar a).le.trans' le_sup_right,
     kstar_mul_le_self := fun l m h ↦ by
       rw [kstar_eq_iSup_pow, iSup_mul]
-      refine' iSup_le (fun n ↦ _)
+      refine iSup_le (fun n ↦ ?_)
       induction' n with n ih
       · simp
       rw [pow_succ, mul_assoc (l^n) l m]
       exact le_trans (le_mul_congr le_rfl h) ih,
     mul_kstar_le_self := fun l m h ↦ by
       rw [kstar_eq_iSup_pow, mul_iSup]
-      refine' iSup_le (fun n ↦ _)
+      refine iSup_le (fun n ↦ ?_)
       induction' n with n ih
       · simp
       rw [pow_succ, ← mul_assoc m (l^n) l]

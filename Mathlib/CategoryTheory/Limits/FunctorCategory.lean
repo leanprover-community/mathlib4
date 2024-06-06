@@ -50,8 +50,7 @@ it suffices to show that each evaluation cone is a limit. In other words, to pro
 limiting you can show it's pointwise limiting.
 -/
 def evaluationJointlyReflectsLimits {F : J ⥤ K ⥤ C} (c : Cone F)
-    (t : ∀ k : K, IsLimit (((evaluation K C).obj k).mapCone c)) : IsLimit c
-    where
+    (t : ∀ k : K, IsLimit (((evaluation K C).obj k).mapCone c)) : IsLimit c where
   lift s :=
     { app := fun k => (t k).lift ⟨s.pt.obj k, whiskerRight s.π ((evaluation K C).obj k)⟩
       naturality := fun X Y f =>
@@ -73,8 +72,7 @@ them together to give a cone for the diagram `F`.
 (essentially) made up of the original cones.
 -/
 @[simps]
-def combineCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) : Cone F
-    where
+def combineCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) : Cone F where
   pt :=
     { obj := fun k => (c k).cone.pt
       map := fun {k₁} {k₂} f => (c k₂).isLimit.lift ⟨_, (c k₁).cone.π ≫ F.flip.map f⟩
@@ -106,8 +104,7 @@ it suffices to show that each evaluation cocone is a colimit. In other words, to
 colimiting you can show it's pointwise colimiting.
 -/
 def evaluationJointlyReflectsColimits {F : J ⥤ K ⥤ C} (c : Cocone F)
-    (t : ∀ k : K, IsColimit (((evaluation K C).obj k).mapCocone c)) : IsColimit c
-    where
+    (t : ∀ k : K, IsColimit (((evaluation K C).obj k).mapCocone c)) : IsColimit c where
   desc s :=
     { app := fun k => (t k).desc ⟨s.pt.obj k, whiskerRight s.ι ((evaluation K C).obj k)⟩
       naturality := fun X Y f =>
@@ -132,8 +129,7 @@ them together to give a cocone for the diagram `F`.
 (essentially) made up of the original cocones.
 -/
 @[simps]
-def combineCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) : Cocone F
-    where
+def combineCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) : Cocone F where
   pt :=
     { obj := fun k => (c k).cocone.pt
       map := fun {k₁} {k₂} f => (c k₁).isColimit.desc ⟨_, F.flip.map f ≫ (c k₂).cocone.ι⟩
@@ -169,8 +165,8 @@ instance functorCategoryHasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfSha
         isLimit := combinedIsLimit _ _ }
 #align category_theory.limits.functor_category_has_limits_of_shape CategoryTheory.Limits.functorCategoryHasLimitsOfShape
 
-instance functorCategoryHasColimitsOfShape [HasColimitsOfShape J C] : HasColimitsOfShape J (K ⥤ C)
-    where
+instance functorCategoryHasColimitsOfShape [HasColimitsOfShape J C] :
+    HasColimitsOfShape J (K ⥤ C) where
   has_colimit _ :=
     HasColimit.mk
       { cocone := combineCocones _ fun _ => getColimitCocone _

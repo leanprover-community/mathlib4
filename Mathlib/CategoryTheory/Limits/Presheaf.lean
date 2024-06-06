@@ -377,9 +377,9 @@ noncomputable def natIsoOfNatIsoOnRepresentables (L₁ L₂ : (Cᵒᵖ ⥤ Type 
     [PreservesColimits L₁] [PreservesColimits L₂] (h : yoneda ⋙ L₁ ≅ yoneda ⋙ L₂) : L₁ ≅ L₂ := by
   apply NatIso.ofComponents _ _
   · intro P
-    refine'
+    refine
       (isColimitOfPreserves L₁ (colimitOfRepresentable P)).coconePointsIsoOfNatIso
-        (isColimitOfPreserves L₂ (colimitOfRepresentable P)) _
+        (isColimitOfPreserves L₂ (colimitOfRepresentable P)) ?_
     apply Functor.associator _ _ _ ≪≫ _
     exact isoWhiskerLeft (CategoryOfElements.π P).leftOp h
   · intro P₁ P₂ f
@@ -449,7 +449,7 @@ def tautologicalCocone : Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) whe
     Proposition 2.6.3(i) in [Kashiwara2006] -/
 def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
   desc := fun s => by
-    refine' ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), _⟩
+    refine ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), ?_⟩
     intros X Y f
     ext t
     dsimp

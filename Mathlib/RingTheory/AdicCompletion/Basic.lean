@@ -181,7 +181,7 @@ end Hausdorffification
 namespace IsPrecomplete
 
 instance bot : IsPrecomplete (⊥ : Ideal R) M := by
-  refine' ⟨fun f hf => ⟨f 1, fun n => _⟩⟩
+  refine ⟨fun f hf => ⟨f 1, fun n => ?_⟩⟩
   cases' n with n
   · rw [pow_zero, Ideal.one_eq_top, top_smul]
     exact SModEq.top
@@ -280,7 +280,8 @@ theorem val_add (n : ℕ) (f g : AdicCompletion I M) : (f + g).val n = f.val n +
 theorem val_sub (n : ℕ) (f g : AdicCompletion I M) : (f - g).val n = f.val n - g.val n :=
   rfl
 
-@[simp]
+/- No `simp` attribute, since it causes `simp` unification timeouts when considering
+the `AdicCompletion I R` module instance on `AdicCompletion I M` (see `AdicCompletion/Algebra`). -/
 theorem val_smul (n : ℕ) (r : R) (f : AdicCompletion I M) : (r • f).val n = r • f.val n :=
   rfl
 
@@ -395,6 +396,12 @@ theorem ext {x y : AdicCauchySequence I M} (h : ∀ n, x n = y n) : x = y :=
 theorem ext_iff {x y : AdicCauchySequence I M} : x = y ↔ ∀ n, x n = y n :=
   ⟨fun h ↦ congrFun (congrArg Subtype.val h), ext⟩
 
+/-- The defining property of an adic cauchy sequence unwrapped. -/
+theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
+    Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (f n) =
+      Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (f m) :=
+  (f.property hmn).symm
+
 end AdicCauchySequence
 
 /-- The `I`-adic cauchy condition can be checked on successive `n`.-/
@@ -486,8 +493,6 @@ protected theorem subsingleton (h : IsAdicComplete (⊤ : Ideal R) M) : Subsingl
 instance (priority := 100) of_subsingleton [Subsingleton M] : IsAdicComplete I M where
 #align is_adic_complete.of_subsingleton IsAdicComplete.of_subsingleton
 
-open BigOperators
-
 open Finset
 
 theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson := by
@@ -495,7 +500,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
   rw [← Ideal.neg_mem_iff, Ideal.mem_jacobson_bot]
   intro y
   rw [add_comm]
-  let f : ℕ → R := fun n => ∑ i in range n, (x * y) ^ i
+  let f : ℕ → R := fun n => ∑ i ∈ range n, (x * y) ^ i
   have hf : ∀ m n, m ≤ n → f m ≡ f n [SMOD I ^ m • (⊤ : Submodule R R)] := by
     intro m n h
     simp only [f, Algebra.id.smul_eq_mul, Ideal.mul_top, SModEq.sub_mem]

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
+Authors: Johannes Hölzl, Mitchell Lee
 -/
 import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.Data.Fintype.BigOperators
@@ -21,7 +21,7 @@ noncomputable section
 
 open Filter Finset Function
 
-open scoped BigOperators Topology
+open scoped Topology
 
 variable {α β γ δ : Type*}
 
@@ -67,7 +67,7 @@ lemma HasProd.congr_fun (hf : HasProd f a) (h : ∀ x : β, g x = f x) : HasProd
 @[to_additive]
 theorem HasProd.hasProd_of_prod_eq {g : γ → α}
     (h_eq : ∀ u : Finset γ, ∃ v : Finset β, ∀ v', v ⊆ v' →
-      ∃ u', u ⊆ u' ∧ ∏ x in u', g x = ∏ b in v', f b)
+      ∃ u', u ⊆ u' ∧ ∏ x ∈ u', g x = ∏ b ∈ v', f b)
     (hf : HasProd g a) : HasProd f a :=
   le_trans (map_atTop_finset_prod_le_of_prod_eq h_eq) hf
 #align has_sum.has_sum_of_sum_eq HasSum.hasSum_of_sum_eq
@@ -75,9 +75,9 @@ theorem HasProd.hasProd_of_prod_eq {g : γ → α}
 @[to_additive]
 theorem hasProd_iff_hasProd {g : γ → α}
     (h₁ : ∀ u : Finset γ, ∃ v : Finset β, ∀ v', v ⊆ v' →
-      ∃ u', u ⊆ u' ∧ ∏ x in u', g x = ∏ b in v', f b)
+      ∃ u', u ⊆ u' ∧ ∏ x ∈ u', g x = ∏ b ∈ v', f b)
     (h₂ : ∀ v : Finset β, ∃ u : Finset γ, ∀ u', u ⊆ u' →
-      ∃ v', v ⊆ v' ∧ ∏ b in v', f b = ∏ x in u', g x) :
+      ∃ v', v ⊆ v' ∧ ∏ b ∈ v', f b = ∏ x ∈ u', g x) :
     HasProd f a ↔ HasProd g a :=
   ⟨HasProd.hasProd_of_prod_eq h₂, HasProd.hasProd_of_prod_eq h₁⟩
 #align has_sum_iff_has_sum hasSum_iff_hasSum
@@ -134,7 +134,7 @@ theorem multipliable_of_finite_mulSupport (h : (mulSupport f).Finite) : Multipli
 
 @[to_additive]
 theorem hasProd_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f b' = 1) : HasProd f (f b) :=
-  suffices HasProd f (∏ b' in {b}, f b') by simpa using this
+  suffices HasProd f (∏ b' ∈ {b}, f b') by simpa using this
   hasProd_prod_of_ne_finset_one <| by simpa [hf]
 #align has_sum_single hasSum_single
 
@@ -196,12 +196,20 @@ theorem Equiv.multipliable_iff_of_mulSupport {g : γ → α} (e : mulSupport f �
 @[to_additive]
 protected theorem HasProd.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasProd f a) {G}
     [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) :
-    HasProd (g ∘ f) (g a) :=
-  have : (g ∘ fun s : Finset β ↦ ∏ b in s, f b) = fun s : Finset β ↦ ∏ b in s, g (f b) :=
+    HasProd (g ∘ f) (g a) := by
+  have : (g ∘ fun s : Finset β ↦ ∏ b ∈ s, f b) = fun s : Finset β ↦ ∏ b ∈ s, (g ∘ f) b :=
     funext <| map_prod g _
-  show Tendsto (fun s : Finset β ↦ ∏ b in s, g (f b)) atTop (𝓝 (g a)) from
-    this ▸ (hg.tendsto a).comp hf
+  unfold HasProd
+  rw [← this]
+  exact (hg.tendsto a).comp hf
 #align has_sum.map HasSum.map
+
+@[to_additive]
+protected theorem Inducing.hasProd_iff [CommMonoid γ] [TopologicalSpace γ] {G}
+    [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : Inducing g) (f : β → α) (a : α) :
+    HasProd (g ∘ f) (g a) ↔ HasProd f a := by
+  simp_rw [HasProd, comp_apply, ← map_prod]
+  exact hg.tendsto_nhds_iff.symm
 
 @[to_additive]
 protected theorem Multipliable.map [CommMonoid γ] [TopologicalSpace γ] (hf : Multipliable f) {G}
@@ -218,6 +226,27 @@ protected theorem Multipliable.map_iff_of_leftInverse [CommMonoid γ] [Topologic
     have := h.map _ hg'
     rwa [← Function.comp.assoc, hinv.id] at this, fun h ↦ h.map _ hg⟩
 #align summable.map_iff_of_left_inverse Summable.map_iff_of_leftInverse
+
+@[to_additive]
+theorem Multipliable.map_tprod [CommMonoid γ] [TopologicalSpace γ] [T2Space γ] (hf : Multipliable f)
+    {G} [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) :
+    g (∏' i, f i) = ∏' i, g (f i) := (HasProd.tprod_eq (HasProd.map hf.hasProd g hg)).symm
+
+@[to_additive]
+theorem Inducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] [TopologicalSpace γ]
+    [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : Inducing g) (f : β → α) :
+    Multipliable f ↔ Multipliable (g ∘ f) ∧ ∏' i, g (f i) ∈ Set.range g := by
+  constructor
+  · intro hf
+    constructor
+    · exact hf.map g hg.continuous
+    · use ∏' i, f i
+      exact hf.map_tprod g hg.continuous
+  · rintro ⟨hgf, a, ha⟩
+    use a
+    have := hgf.hasProd
+    simp_rw [comp_apply, ← ha] at this
+    exact (hg.hasProd_iff f a).mp this
 
 /-- "A special case of `Multipliable.map_iff_of_leftInverse` for convenience" -/
 @[to_additive "A special case of `Summable.map_iff_of_leftInverse` for convenience"]
@@ -252,7 +281,7 @@ theorem Multipliable.mul (hf : Multipliable f) (hg : Multipliable g) :
 
 @[to_additive]
 theorem hasProd_prod {f : γ → β → α} {a : γ → α} {s : Finset γ} :
-    (∀ i ∈ s, HasProd (f i) (a i)) → HasProd (fun b ↦ ∏ i in s, f i b) (∏ i in s, a i) := by
+    (∀ i ∈ s, HasProd (f i) (a i)) → HasProd (fun b ↦ ∏ i ∈ s, f i b) (∏ i ∈ s, a i) := by
   classical
   exact Finset.induction_on s (by simp only [hasProd_one, prod_empty, forall_true_iff]) <| by
     -- Porting note: with some help, `simp` used to be able to close the goal
@@ -263,7 +292,7 @@ theorem hasProd_prod {f : γ → β → α} {a : γ → α} {s : Finset γ} :
 
 @[to_additive]
 theorem multipliable_prod {f : γ → β → α} {s : Finset γ} (hf : ∀ i ∈ s, Multipliable (f i)) :
-    Multipliable fun b ↦ ∏ i in s, f i b :=
+    Multipliable fun b ↦ ∏ i ∈ s, f i b :=
   (hasProd_prod fun i hi ↦ (hf i hi).hasProd).multipliable
 #align summable_sum summable_sum
 
@@ -278,7 +307,7 @@ theorem HasProd.mul_disjoint {s t : Set β} (hs : Disjoint s t) (ha : HasProd (f
 @[to_additive]
 theorem hasProd_prod_disjoint {ι} (s : Finset ι) {t : ι → Set β} {a : ι → α}
     (hs : (s : Set ι).Pairwise (Disjoint on t)) (hf : ∀ i ∈ s, HasProd (f ∘ (↑) : t i → α) (a i)) :
-    HasProd (f ∘ (↑) : (⋃ i ∈ s, t i) → α) (∏ i in s, a i) := by
+    HasProd (f ∘ (↑) : (⋃ i ∈ s, t i) → α) (∏ i ∈ s, a i) := by
   simp_rw [hasProd_subtype_iff_mulIndicator] at *
   rw [Finset.mulIndicator_biUnion _ _ hs]
   exact hasProd_prod hf
@@ -343,7 +372,7 @@ it gives a relationship between the sums of `f` and `ite (n = b) 0 (f n)` given 
 theorem eq_mul_of_hasProd_ite {α β : Type*} [TopologicalSpace α] [CommMonoid α] [T2Space α]
     [ContinuousMul α] [DecidableEq β] {f : β → α} {a : α} (hf : HasProd f a) (b : β) (a' : α)
     (hf' : HasProd (fun n ↦ ite (n = b) 1 (f n)) a') : a = a' * f b := by
-  refine' (mul_one a).symm.trans (hf.update' b 1 _)
+  refine (mul_one a).symm.trans (hf.update' b 1 ?_)
   convert hf'
   apply update_apply
 #align eq_add_of_has_sum_ite eq_add_of_hasSum_ite
@@ -360,7 +389,7 @@ theorem tprod_congr_set_coe (f : β → α) {s t : Set β} (h : s = t) :
 #align tsum_congr_subtype tsum_congr_set_coe
 
 @[to_additive]
-theorem tprod_congr_subtype (f : β → α) {P Q : β → Prop} (h : ∀ x, P x ↔ Q x):
+theorem tprod_congr_subtype (f : β → α) {P Q : β → Prop} (h : ∀ x, P x ↔ Q x) :
     ∏' x : {x // P x}, f x = ∏' x : {x // Q x}, f x :=
   tprod_congr_set_coe f <| Set.ext h
 
@@ -370,12 +399,12 @@ theorem tprod_eq_finprod (hf : (mulSupport f).Finite) :
 
 @[to_additive]
 theorem tprod_eq_prod' {s : Finset β} (hf : mulSupport f ⊆ s) :
-    ∏' b, f b = ∏ b in s, f b := by
+    ∏' b, f b = ∏ b ∈ s, f b := by
   rw [tprod_eq_finprod (s.finite_toSet.subset hf), finprod_eq_prod_of_mulSupport_subset _ hf]
 
 @[to_additive]
 theorem tprod_eq_prod {s : Finset β} (hf : ∀ b ∉ s, f b = 1) :
-    ∏' b, f b = ∏ b in s, f b :=
+    ∏' b, f b = ∏ b ∈ s, f b :=
   tprod_eq_prod' <| mulSupport_subset_iff'.2 hf
 #align tsum_eq_sum tsum_eq_sum
 
@@ -402,7 +431,7 @@ theorem tprod_fintype [Fintype β] (f : β → α) : ∏' b, f b = ∏ b, f b :=
 
 @[to_additive]
 theorem prod_eq_tprod_mulIndicator (f : β → α) (s : Finset β) :
-    ∏ x in s, f x = ∏' x, Set.mulIndicator (↑s) f x := by
+    ∏ x ∈ s, f x = ∏' x, Set.mulIndicator (↑s) f x := by
   rw [tprod_eq_prod' (Set.mulSupport_mulIndicator_subset),
       Finset.prod_mulIndicator_subset _ Finset.Subset.rfl]
 #align sum_eq_tsum_indicator sum_eq_tsum_indicator
@@ -438,13 +467,13 @@ theorem tprod_ite_eq (b : β) [DecidablePred (· = b)] (a : α) :
 -- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
 @[to_additive (attr := simp, nolint simpNF)]
 theorem Finset.tprod_subtype (s : Finset β) (f : β → α) :
-    ∏' x : { x // x ∈ s }, f x = ∏ x in s, f x := by
+    ∏' x : { x // x ∈ s }, f x = ∏ x ∈ s, f x := by
   rw [← prod_attach]; exact tprod_fintype _
 #align finset.tsum_subtype Finset.tsum_subtype
 
 @[to_additive]
 theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
-    ∏' x : (s : Set β), f x = ∏ x in s, f x := by simp
+    ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by simp
 #align finset.tsum_subtype' Finset.tsum_subtype'
 
 -- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
@@ -461,14 +490,14 @@ theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β �
     rw [mulSupport_comp_eq_preimage, Set.image_preimage_eq_iff.2 hf]
   rw [← Function.comp_def]
   by_cases hf_fin : (mulSupport f).Finite
-  · have hfg_fin : (mulSupport (f ∘ g)).Finite := hf_fin.preimage (hg.injOn _)
+  · have hfg_fin : (mulSupport (f ∘ g)).Finite := hf_fin.preimage hg.injOn
     lift g to γ ↪ β using hg
     simp_rw [tprod_eq_prod' hf_fin.coe_toFinset.ge, tprod_eq_prod' hfg_fin.coe_toFinset.ge,
       comp_apply, ← Finset.prod_map]
     refine Finset.prod_congr (Finset.coe_injective ?_) fun _ _ ↦ rfl
     simp [this]
   · have hf_fin' : ¬ Set.Finite (mulSupport (f ∘ g)) := by
-      rwa [this, Set.finite_image_iff (hg.injOn _)] at hf_fin
+      rwa [this, Set.finite_image_iff hg.injOn] at hf_fin
     simp_rw [tprod_def, if_neg hf_fin, if_neg hf_fin', Multipliable,
       hg.hasProd_iff (mulSupport_subset_iff'.1 hf)]
 
@@ -510,7 +539,7 @@ theorem tprod_image {g : γ → β} (f : β → α) {s : Set γ} (hg : Set.InjOn
 @[to_additive]
 theorem tprod_range {g : γ → β} (f : β → α) (hg : Injective g) :
     ∏' x : Set.range g, f x = ∏' x, f (g x) := by
-  rw [← Set.image_univ, tprod_image f (hg.injOn _)]
+  rw [← Set.image_univ, tprod_image f hg.injOn]
   simp_rw [← comp_apply (g := g), tprod_univ (f ∘ g)]
 #align tsum_range tsum_range
 
@@ -521,7 +550,7 @@ sum of `f a` with `a ∈ s ∖ t`."]
 lemma tprod_setElem_eq_tprod_setElem_diff {f : β → α} (s t : Set β)
     (hf₀ : ∀ b ∈ t, f b = 1) :
     ∏' a : s, f a = ∏' a : (s \ t : Set β), f a :=
-  .symm <| (Set.inclusion_injective (Set.diff_subset s t)).tprod_eq (f := f ∘ (↑)) <|
+  .symm <| (Set.inclusion_injective (t := s) Set.diff_subset).tprod_eq (f := f ∘ (↑)) <|
     mulSupport_subset_iff'.2 fun b hb ↦ hf₀ b <| by simpa using hb
 
 /-- If `f b = 1`, then the product of `f a` with `a ∈ s` is the same as the product of `f a` for
@@ -593,7 +622,7 @@ theorem tprod_mul (hf : Multipliable f) (hg : Multipliable g) :
 
 @[to_additive tsum_sum]
 theorem tprod_of_prod {f : γ → β → α} {s : Finset γ} (hf : ∀ i ∈ s, Multipliable (f i)) :
-    ∏' b, ∏ i in s, f i b = ∏ i in s, ∏' b, f i b :=
+    ∏' b, ∏ i ∈ s, f i b = ∏ i ∈ s, ∏' b, f i b :=
   (hasProd_prod fun i hi ↦ (hf i hi).hasProd).tprod_eq
 #align tsum_sum tsum_sum
 
@@ -632,7 +661,7 @@ theorem tprod_union_disjoint {s t : Set β} (hd : Disjoint s t) (hs : Multipliab
 @[to_additive]
 theorem tprod_finset_bUnion_disjoint {ι} {s : Finset ι} {t : ι → Set β}
     (hd : (s : Set ι).Pairwise (Disjoint on t)) (hf : ∀ i ∈ s, Multipliable (f ∘ (↑) : t i → α)) :
-    ∏' x : ⋃ i ∈ s, t i, f x = ∏ i in s, ∏' x : t i, f x :=
+    ∏' x : ⋃ i ∈ s, t i, f x = ∏ i ∈ s, ∏' x : t i, f x :=
   (hasProd_prod_disjoint _ hd fun i hi ↦ (hf i hi).hasProd).tprod_eq
 #align tsum_finset_bUnion_disjoint tsum_finset_bUnion_disjoint
 

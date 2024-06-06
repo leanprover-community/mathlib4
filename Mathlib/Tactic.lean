@@ -10,6 +10,7 @@ import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.CC
 import Mathlib.Tactic.CC.Addition
 import Mathlib.Tactic.CC.Datatypes
 import Mathlib.Tactic.CC.Lemmas
@@ -110,7 +111,10 @@ import Mathlib.Tactic.Linarith.SimplexAlgorithm.PositiveVector
 import Mathlib.Tactic.Linarith.SimplexAlgorithm.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Lint
+import Mathlib.Tactic.Linter
+import Mathlib.Tactic.Linter.GlobalAttributeIn
+import Mathlib.Tactic.Linter.HashCommandLinter
+import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Measurability
 import Mathlib.Tactic.Measurability.Init
 import Mathlib.Tactic.MkIffOfInductiveProp
