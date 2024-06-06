@@ -388,15 +388,14 @@ theorem locallyCompactSpace_of_equicontinuousAt (U : Set X) (V : Set Y)
     (hU : IsCompact U) (hV : V ∈ nhds (1 : Y))
     (h : EquicontinuousAt (fun f : {f : X →* Y | Set.MapsTo f U V} ↦ (f : X → Y)) 1) :
     LocallyCompactSpace (ContinuousMonoidHom X Y) := by
+  replace h := equicontinuous_of_equicontinuousAt_one _ h
   obtain ⟨W, hWo, hWV, hWc⟩ := local_compact_nhds hV
   let S1 : Set (X →* Y) := {f | Set.MapsTo f U W}
   let S2 : Set (ContinuousMonoidHom X Y) := {f | Set.MapsTo f U W}
   let S3 : Set C(X, Y) := (↑) '' S2
   let S4 : Set (X → Y) := (↑) '' S3
-  replace h : Equicontinuous ((↑) : S1 → X → Y) := by
-    let g : {f : X →* Y | Set.MapsTo f U W} → {f : X →* Y | Set.MapsTo f U V} :=
-      fun f ↦ ⟨f, fun x hx ↦ hWV (f.2 hx)⟩
-    exact equicontinuous_of_equicontinuousAt_one _ (h.comp g)
+  replace h : Equicontinuous ((↑) : S1 → X → Y) :=
+    h.comp (Subtype.map _root_.id fun f hf ↦ hf.mono_right hWV)
   have hS4 : S4 = (↑) '' S1 := by
     ext
     constructor
@@ -419,7 +418,7 @@ theorem locallyCompactSpace_of_equicontinuousAt (U : Set X) (V : Set Y)
     have h3 : IsOpen T := isOpen_induced (ContinuousMap.isOpen_setOf_mapsTo hU isOpen_interior)
     exact h1.mono (interior_maximal h2 h3)
   exact TopologicalSpace.PositiveCompacts.locallyCompactSpace_of_group
-    ⟨⟨S2, (ContinuousMonoidHom.inducing_toContinuousMap X Y).isCompact_iff.mpr
+    ⟨⟨S2, (inducing_toContinuousMap X Y).isCompact_iff.mpr
       (ArzelaAscoli.isCompact_of_equicontinuous S3 hS4.isCompact h)⟩, hS2⟩
 
 variable [LocallyCompactSpace X]
@@ -438,15 +437,16 @@ theorem locallyCompactSpace_of_hasBasis (V : ℕ → Set Y)
     fun n ↦ (Classical.choose_spec (exists_closed_nhds_one_inv_eq_mul_subset (U_aux n).2)).2.2.2
   have hU3 : ∀ n, U (n + 1) ⊆ U n :=
     fun n x hx ↦ hU2 n (mul_one x ▸ Set.mul_mem_mul hx (mem_of_mem_nhds (hU1 (n + 1))))
+  have hU4 : ∀ f : X →* Y, Set.MapsTo f (U 0) (V 0) → ∀ n, Set.MapsTo f (U n) (V n) := by
+    intro f hf n
+    induction' n with n ih
+    · exact hf
+    · exact fun x hx ↦ hV (ih (hU3 n hx)) (map_mul f x x ▸ ih (hU2 n (Set.mul_mem_mul hx hx)))
   apply locallyCompactSpace_of_equicontinuousAt (U 0) (V 0) hU0c (hVo.mem_of_mem trivial)
   rw [hVo.uniformity_of_nhds_one.equicontinuousAt_iff_right]
   refine' fun n _ ↦ Filter.eventually_iff_exists_mem.mpr ⟨U n, hU1 n, fun x hx ⟨f, hf⟩ ↦ _⟩
   rw [Set.mem_setOf_eq, map_one, div_one]
-  suffices hUV : U n ⊆ f ⁻¹' V n from hUV hx
-  clear x hx
-  induction' n with n ih
-  · exact hf
-  · exact fun x hx ↦ hV (ih (hU3 n hx)) (map_mul f x x ▸ ih (hU2 n (Set.mul_mem_mul hx hx)))
+  exact hU4 f hf n hx
 
 end LocallyCompact
 
