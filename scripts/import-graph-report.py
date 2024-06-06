@@ -43,7 +43,7 @@ def compare_counts(base_file, head_file):
         messages.append(f'| {file} | {base_count} | {head_count} | {sign}{abs(diff)} ({sign}{abs(percent):.2f}%) |')
 
     # Build the message
-    message = '<details><summary>Dependency changes</summary>\n\n'
+    message = '### Import summary\n\n<details><summary>Dependency changes</summary>\n\n'
     if messages:
         message += '| File | Base Count | Head Count | Change |\n'
         message += '| --- | --- | --- | --- |\n'
