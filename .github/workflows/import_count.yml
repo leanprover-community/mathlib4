@@ -31,7 +31,7 @@ jobs:
         python ./scripts/count-trans-deps.py Mathlib/Logic/Function > head.json
 
         # Checkout the merge base
-        git checkout "$(git merge-base refs/remotes/origin/main ${{ github.sha }})"
+        git checkout master # let's start easy! "$(git merge-base refs/remotes/origin/main ${{ github.sha }})"
 
         # Compute the counts for the merge base
         python ./scripts/count-trans-deps.py Mathlib/Logic/Function > base.json
