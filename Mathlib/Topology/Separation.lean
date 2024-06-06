@@ -2498,32 +2498,25 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
       rw [this]
       exact SeparatedNhds.empty_right s
     obtain ⟨f, f_surj⟩ := Countable.exists_surjective S_nonempty S_count
-    have cls_is_cl : IsClosed (closure s) := isClosed_closure
-    have : ∀ n, ∃ u : Set X, IsOpen u ∧ closure s ⊆ u ∧ closure u ⊆ ↑(f n) := fun n ↦ by
-      apply normal_exists_closure_subset (cls_is_cl) (S_open (f n).1 (f n).2)
+    choose f' f'_open cls_sub_f' clf'_sub_f using fun n ↦ by
+      apply normal_exists_closure_subset (isClosed_closure (s := s)) (S_open (f n).1 (f n).2)
       rw [S_int]
       exact sInter_subset_of_mem (f n).2
-    choose f' f'_open cls_sub_f' clf'_sub_f using this
-    have : IsGδ (closure t) := closed_gdelta isClosed_closure
-    obtain ⟨T, T_open, T_count, T_int⟩ := this
+    obtain ⟨T, T_open, T_count, T_int⟩ := closed_gdelta (h := closure t) isClosed_closure
     wlog T_nonempty : T.Nonempty
     · have : closure t = univ := by
         rw [T_int, not_nonempty_iff_eq_empty.mp T_nonempty]
-        apply sInter_empty
+        exact sInter_empty
       have : s = ∅ := by
-        rw [← Set.disjoint_univ]
-        rw [← this]
+        rw [← Set.disjoint_univ, ← this]
         exact hd₂
       rw [this]
       exact SeparatedNhds.empty_left t
-    have := Nonempty.to_subtype T_nonempty
-    obtain ⟨g, g_surj⟩ := countable_iff_exists_surjective.mp T_count
-    have clt_is_cl : IsClosed (closure t) := isClosed_closure
-    have : ∀ n, ∃ u : Set X, IsOpen u ∧ closure t ⊆ u ∧ closure u ⊆ ↑(g n) := fun n ↦ by
-      apply normal_exists_closure_subset (clt_is_cl) (T_open (g n).1 (g n).2)
+    obtain ⟨g, g_surj⟩ := Countable.exists_surjective T_nonempty T_count
+    choose g' g'_open clt_sub_g' clg'_sub_g using fun n ↦ by
+      apply normal_exists_closure_subset (isClosed_closure (s := t)) (T_open (g n).1 (g n).2)
       rw [T_int]
       exact sInter_subset_of_mem (g n).2
-    choose g' g'_open clt_sub_g' clg'_sub_g using this
     apply countable_covers_witnessing_separated_nhds
     · sorry
     · use fun n ↦ (closure (f' n))ᶜ
