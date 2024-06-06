@@ -72,7 +72,7 @@ theorem disjointed_le (f : ℕ → α) : disjointed f ≤ f :=
 #align disjointed_le disjointed_le
 
 theorem disjoint_disjointed (f : ℕ → α) : Pairwise (Disjoint on disjointed f) := by
-  refine' (Symmetric.pairwise_on Disjoint.symm _).2 fun m n h => _
+  refine (Symmetric.pairwise_on Disjoint.symm _).2 fun m n h => ?_
   cases n
   · exact (Nat.not_lt_zero _ h).elim
   exact

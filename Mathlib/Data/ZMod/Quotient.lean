@@ -66,12 +66,12 @@ def quotientSpanEquivZMod (a : ℤ) : ℤ ⧸ Ideal.span ({a} : Set ℤ) ≃+* Z
 end Int
 
 noncomputable section ChineseRemainder
-open BigOperators Ideal
+open Ideal
 
 /-- The **Chinese remainder theorem**, elementary version for `ZMod`. See also
 `Mathlib.Data.ZMod.Basic` for versions involving only two numbers. -/
 def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
-    (coprime : Pairwise fun i j => Nat.Coprime (a i) (a j)) : ZMod (∏ i, a i) ≃+* ∀ i, ZMod (a i) :=
+    (coprime : Pairwise fun i j => Nat.Coprime (a i) (a j)) : ZMod (∏ i, a i) ≃+* Π i, ZMod (a i) :=
   have : Pairwise fun i j => IsCoprime (span {(a i : ℤ)}) (span {(a j : ℤ)}) :=
     fun _i _j h ↦ (isCoprime_span_singleton_iff _ _).mpr ((coprime h).cast (R := ℤ))
   Int.quotientSpanNatEquivZMod _ |>.symm.trans <|
@@ -98,7 +98,7 @@ noncomputable def zmultiplesQuotientStabilizerEquiv :
               exact isPeriodicPt_minimalPeriod (a +ᵥ ·) b))
           ⟨by
             rw [← ker_eq_bot_iff, eq_bot_iff]
-            refine' fun q => induction_on' q fun n hn => _
+            refine fun q => induction_on' q fun n hn => ?_
             rw [mem_bot, eq_zero_iff, Int.mem_zmultiples_iff, ←
               zsmul_vadd_eq_iff_minimalPeriod_dvd]
             exact (eq_zero_iff _).mp hn, fun q =>

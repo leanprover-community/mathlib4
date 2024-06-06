@@ -375,7 +375,7 @@ theorem quot_mk_assoc_left (x y z w : α) :
 @[to_additive]
 instance : Semigroup (AssocQuotient α) where
   mul x y := by
-    refine' Quot.liftOn₂ x y (fun x y ↦ Quot.mk _ (x * y)) _ _
+    refine Quot.liftOn₂ x y (fun x y ↦ Quot.mk _ (x * y)) ?_ ?_
     · rintro a b₁ b₂ (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only
       · exact quot_mk_assoc_left _ _ _ _
       · rw [← quot_mk_assoc, quot_mk_assoc_left, quot_mk_assoc]

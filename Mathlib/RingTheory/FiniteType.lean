@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.FreeAlgebra
-import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.Finiteness
@@ -29,7 +28,7 @@ set_option autoImplicit true
 
 open Function (Surjective)
 
-open BigOperators Polynomial
+open Polynomial
 
 section ModuleAndAlgebra
 
@@ -105,7 +104,7 @@ protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolyno
 theorem of_restrictScalars_finiteType [Algebra S A] [IsScalarTower R S A] [hA : FiniteType R A] :
     FiniteType S A := by
   obtain ⟨s, hS⟩ := hA.out
-  refine' ⟨⟨s, eq_top_iff.2 fun b => _⟩⟩
+  refine ⟨⟨s, eq_top_iff.2 fun b => ?_⟩⟩
   have le : adjoin R (s : Set A) ≤ Subalgebra.restrictScalars R (adjoin S s) := by
     apply (Algebra.adjoin_le _ : adjoin R (s : Set A) ≤ Subalgebra.restrictScalars R (adjoin S ↑s))
     simp only [Subalgebra.coe_restrictScalars]
@@ -382,7 +381,7 @@ theorem mem_adjoin_support (f : R[M]) : f ∈ adjoin R (of' R M '' f.support) :=
 elements of `S` generates `R[M]`. -/
 theorem support_gen_of_gen {S : Set R[M]} (hS : Algebra.adjoin R S = ⊤) :
     Algebra.adjoin R (⋃ f ∈ S, of' R M '' (f.support : Set M)) = ⊤ := by
-  refine' le_antisymm le_top _
+  refine le_antisymm le_top ?_
   rw [← hS, adjoin_le_iff]
   intro f hf
   have hincl :
@@ -425,7 +424,7 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R R[M]] :
 `S : Set M` if and only if `m ∈ S`. -/
 theorem of'_mem_span [Nontrivial R] {m : M} {S : Set M} :
     of' R M m ∈ span R (of' R M '' S) ↔ m ∈ S := by
-  refine' ⟨fun h => _, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
+  refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
   erw [of', ← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
     Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
   simpa using h
@@ -459,7 +458,7 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [AddCommMonoid M] [CommSemir
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine' AddSubmonoid.closure_induction this (fun m hm => _) _ _
+    refine AddSubmonoid.closure_induction this (fun m hm => ?_) ?_ ?_
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
     · exact ⟨1, AlgHom.map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
@@ -485,7 +484,7 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine' AddSubmonoid.closure_induction this (fun m hm => _) _ _
+    refine AddSubmonoid.closure_induction this (fun m hm => ?_) ?_ ?_
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
     · exact ⟨1, AlgHom.map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
@@ -517,9 +516,9 @@ variable {R M}
 finite type. -/
 theorem finiteType_iff_fg [CommRing R] [Nontrivial R] :
     FiniteType R R[M] ↔ AddMonoid.FG M := by
-  refine' ⟨fun h => _, fun h => @AddMonoidAlgebra.finiteType_of_fg _ _ _ _ h⟩
+  refine ⟨fun h => ?_, fun h => @AddMonoidAlgebra.finiteType_of_fg _ _ _ _ h⟩
   obtain ⟨S, hS⟩ := @exists_finset_adjoin_eq_top R M _ _ h
-  refine' AddMonoid.fg_def.2 ⟨S, (eq_top_iff' _).2 fun m => _⟩
+  refine AddMonoid.fg_def.2 ⟨S, (eq_top_iff' _).2 fun m => ?_⟩
   have hm : of' R M m ∈ Subalgebra.toSubmodule (adjoin R (of' R M '' ↑S)) := by
     simp only [hS, top_toSubmodule, Submodule.mem_top]
   rw [adjoin_eq_span] at hm
@@ -563,7 +562,7 @@ theorem mem_adjoin_support (f : MonoidAlgebra R M) : f ∈ adjoin R (of R M '' f
 of `S` generates `MonoidAlgebra R M`. -/
 theorem support_gen_of_gen {S : Set (MonoidAlgebra R M)} (hS : Algebra.adjoin R S = ⊤) :
     Algebra.adjoin R (⋃ f ∈ S, of R M '' (f.support : Set M)) = ⊤ := by
-  refine' le_antisymm le_top _
+  refine le_antisymm le_top ?_
   rw [← hS, adjoin_le_iff]
   intro f hf
   -- Porting note: ⋃ notation did not work here. Was
@@ -609,7 +608,7 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R (MonoidAlgebra R M)] :
 `S : Set M` if and only if `m ∈ S`. -/
 theorem of_mem_span_of_iff [Nontrivial R] {m : M} {S : Set M} :
     of R M m ∈ span R (of R M '' S) ↔ m ∈ S := by
-  refine' ⟨fun h => _, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
+  refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
   erw [of, MonoidHom.coe_mk, ← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
     Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
   simpa using h
@@ -638,7 +637,7 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [CommMonoid M] [CommSemiring
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine' Submonoid.closure_induction this (fun m hm => _) _ _
+    refine Submonoid.closure_induction this (fun m hm => ?_) ?_ ?_
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
     · exact ⟨1, AlgHom.map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
@@ -663,7 +662,7 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
   intro f
   induction' f using induction_on with m f g ihf ihg r f ih
   · have : m ∈ closure S := hS.symm ▸ mem_top _
-    refine' Submonoid.closure_induction this (fun m hm => _) _ _
+    refine Submonoid.closure_induction this (fun m hm => ?_) ?_ ?_
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
     · exact ⟨1, AlgHom.map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
@@ -706,35 +705,110 @@ end MonoidAlgebra
 
 end MonoidAlgebra
 
+section Orzech
+
+open Submodule Module Module.Finite in
+/-- Any commutative ring `R` satisfies the `OrzechProperty`, that is, for any finitely generated
+`R`-module `M`, any surjective homomorphism `f : N →ₗ[R] M` from a submodule `N` of `M` to `M`
+is injective.
+
+This is a consequence of Noetherian case
+(`IsNoetherian.injective_of_surjective_of_injective`), which requires that `M` is a
+Noetherian module, but allows `R` to be non-commutative. The reduction of this result to
+Noetherian case is adapted from <https://math.stackexchange.com/a/1066110>:
+suppose `{ m_j }` is a finite set of generator of `M`, for any `n : N` one can write
+`i n = ∑ j, b_j * m_j` for `{ b_j }` in `R`, here `i : N →ₗ[R] M` is the standard inclusion.
+We can choose `{ n_j }` which are preimages of `{ m_j }` under `f`, and can choose
+`{ c_jl }` in `R` such that `i n_j = ∑ l, c_jl * m_l` for each `j`.
+Now let `A` be the subring of `R` generated by `{ b_j }` and `{ c_jl }`, then it is
+Noetherian. Let `N'` be the `A`-submodule of `N` generated by `n` and `{ n_j }`,
+`M'` be the `A`-submodule of `M` generated by `{ m_j }`,
+then it's easy to see that `i` and `f` restrict to `N' →ₗ[A] M'`,
+and the restricted version of `f` is surjective, hence by Noetherian case,
+it is also injective, in particular, if `f n = 0`, then `n = 0`.
+
+See also Orzech's original paper: *Onto endomorphisms are isomorphisms* [orzech1971]. -/
+instance (priority := 100) CommRing.orzechProperty
+    (R : Type*) [CommRing R] : OrzechProperty R := by
+  refine ⟨fun {M} _ _ _ {N} f hf ↦ ?_⟩
+  letI := addCommMonoidToAddCommGroup R (M := M)
+  letI := addCommMonoidToAddCommGroup R (M := N)
+  let i := N.subtype
+  let hi : Function.Injective i := N.injective_subtype
+  refine LinearMap.ker_eq_bot.1 <| LinearMap.ker_eq_bot'.2 fun n hn ↦ ?_
+  obtain ⟨k, mj, hmj⟩ := exists_fin (R := R) (M := M)
+  rw [← surjective_piEquiv_apply_iff] at hmj
+  obtain ⟨b, hb⟩ := hmj (i n)
+  choose nj hnj using fun j ↦ hf (mj j)
+  choose c hc using fun j ↦ hmj (i (nj j))
+  let A := Subring.closure (Set.range b ∪ Set.range c.uncurry)
+  let N' := span A ({n} ∪ Set.range nj)
+  let M' := span A (Set.range mj)
+  haveI : IsNoetherianRing A := is_noetherian_subring_closure _
+    (.union (Set.finite_range _) (Set.finite_range _))
+  haveI : Module.Finite A M' := span_of_finite A (Set.finite_range _)
+  refine congr($((LinearMap.ker_eq_bot'.1 <| LinearMap.ker_eq_bot.2 <|
+    IsNoetherian.injective_of_surjective_of_injective
+      ((i.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
+      ((f.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
+      (fun _ _ h ↦ injective_subtype _ (hi congr(($h).1)))
+      fun ⟨x, hx⟩ ↦ ?_) ⟨n, (subset_span (by simp))⟩ (Subtype.val_injective hn)).1)
+  · induction hx using span_induction' with
+    | mem x hx =>
+      change i x ∈ M'
+      simp only [Set.singleton_union, Set.mem_insert_iff, Set.mem_range] at hx
+      rcases hx with hx | ⟨j, rfl⟩
+      · rw [hx, ← hb, piEquiv_apply_apply]
+        refine Submodule.sum_mem _ fun j _ ↦ ?_
+        let b' : A := ⟨b j, Subring.subset_closure (by simp)⟩
+        rw [show b j • mj j = b' • mj j from rfl]
+        exact smul_mem _ _ (subset_span (by simp))
+      · rw [← hc, piEquiv_apply_apply]
+        refine Submodule.sum_mem _ fun j' _ ↦ ?_
+        let c' : A := ⟨c j j', Subring.subset_closure
+          (by simp [show ∃ a b, c a b = c j j' from ⟨j, j', rfl⟩])⟩
+        rw [show c j j' • mj j' = c' • mj j' from rfl]
+        exact smul_mem _ _ (subset_span (by simp))
+    | zero => simp
+    | add x _ y _ hx hy => rw [map_add]; exact add_mem hx hy
+    | smul a x _ hx => rw [map_smul]; exact smul_mem _ _ hx
+  · induction hx using span_induction' with
+    | mem x hx =>
+      change f x ∈ M'
+      simp only [Set.singleton_union, Set.mem_insert_iff, Set.mem_range] at hx
+      rcases hx with hx | ⟨j, rfl⟩
+      · rw [hx, hn]; exact zero_mem _
+      · exact subset_span (by simp [hnj])
+    | zero => simp
+    | add x _ y _ hx hy => rw [map_add]; exact add_mem hx hy
+    | smul a x _ hx => rw [map_smul]; exact smul_mem _ _ hx
+  suffices x ∈ LinearMap.range ((f.restrictScalars A).domRestrict N') by
+    obtain ⟨a, ha⟩ := this
+    exact ⟨a, Subtype.val_injective ha⟩
+  induction hx using span_induction' with
+  | mem x hx =>
+    obtain ⟨j, rfl⟩ := hx
+    exact ⟨⟨nj j, subset_span (by simp)⟩, hnj j⟩
+  | zero => exact zero_mem _
+  | add x _ y _ hx hy => exact add_mem hx hy
+  | smul a x _ hx => exact smul_mem _ a hx
+
+end Orzech
+
 section Vasconcelos
 
-/-- A theorem/proof by Vasconcelos, given a finite module `M` over a commutative ring, any
-surjective endomorphism of `M` is also injective. Based on,
-https://math.stackexchange.com/a/239419/31917,
-https://www.ams.org/journals/tran/1969-138-00/S0002-9947-1969-0238839-5/.
+/-- A theorem by Vasconcelos, given a finite module `M` over a commutative ring, any
+surjective endomorphism of `M` is also injective.
+It is a consequence of the fact `CommRing.orzechProperty`
+that any commutative ring `R` satisfies the `OrzechProperty`;
+please use `OrzechProperty.injective_of_surjective_endomorphism` instead.
 This is similar to `IsNoetherian.injective_of_surjective_endomorphism` but only applies in the
 commutative case, but does not use a Noetherian hypothesis. -/
+@[deprecated OrzechProperty.injective_of_surjective_endomorphism (since := "2024-05-30")]
 theorem Module.Finite.injective_of_surjective_endomorphism {R : Type*} [CommRing R] {M : Type*}
     [AddCommGroup M] [Module R M] [Finite R M] (f : M →ₗ[R] M)
-    (f_surj : Function.Surjective f) : Function.Injective f := by
-  have : (⊤ : Submodule R[X] (AEval' f)) ≤ Ideal.span {(X : R[X])} • ⊤ := by
-    intro a _
-    obtain ⟨y, rfl⟩ := f_surj.comp (AEval'.of f).symm.surjective a
-    rw [Function.comp_apply, ← AEval'.of_symm_X_smul]
-    exact Submodule.smul_mem_smul (Ideal.mem_span_singleton.mpr (dvd_refl _)) trivial
-  obtain ⟨F, hFa, hFb⟩ :=
-    Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul _ (⊤ : Submodule R[X] (AEval' f))
-      (finite_def.mp inferInstance) this
-  rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
-  intro m hm
-  rw [← map_eq_zero_iff (AEval'.of f) (AEval'.of f).injective]
-  set m' := Module.AEval'.of f m
-  rw [Ideal.mem_span_singleton'] at hFa
-  obtain ⟨G, hG⟩ := hFa
-  suffices (F - 1) • m' = 0 by
-    have Fmzero := hFb m' (by simp)
-    rwa [← sub_add_cancel F 1, add_smul, one_smul, this, zero_add] at Fmzero
-  rw [← hG, mul_smul, AEval'.X_smul_of, hm, map_zero, smul_zero]
+    (f_surj : Function.Surjective f) : Function.Injective f :=
+  OrzechProperty.injective_of_surjective_endomorphism f f_surj
 #align module.finite.injective_of_surjective_endomorphism Module.Finite.injective_of_surjective_endomorphism
 
 end Vasconcelos

@@ -119,7 +119,7 @@ theorem ext :
   | i :: is, hl, v, w, hvw => by
     apply Prod.ext
     · rw [← elim_self v, hvw, elim_self]
-    refine' ext (nodup_cons.mp hl).2 fun j hj => _
+    refine ext (nodup_cons.mp hl).2 fun j hj => ?_
     rw [← elim_of_mem hl, hvw, elim_of_mem hl]
 #align list.tprod.ext List.TProd.ext
 

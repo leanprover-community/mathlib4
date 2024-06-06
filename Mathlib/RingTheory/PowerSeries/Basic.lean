@@ -48,8 +48,6 @@ Occasionally this leads to proofs that are uglier than expected.
 
 noncomputable section
 
-open BigOperators
-
 open Finset (antidiagonal mem_antidiagonal)
 
 /-- Formal power series over a coefficient type `R` -/
@@ -233,8 +231,8 @@ theorem coeff_zero_eq_constantCoeff : ⇑(coeff R 0) = constantCoeff R := by
   rfl
 #align power_series.coeff_zero_eq_constant_coeff PowerSeries.coeff_zero_eq_constantCoeff
 
-theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = constantCoeff R φ :=
-  by rw [coeff_zero_eq_constantCoeff]
+theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = constantCoeff R φ := by
+  rw [coeff_zero_eq_constantCoeff]
 #align power_series.coeff_zero_eq_constant_coeff_apply PowerSeries.coeff_zero_eq_constantCoeff_apply
 
 @[simp]
@@ -330,7 +328,7 @@ theorem coeff_zero_one : coeff R 0 (1 : R⟦X⟧) = 1 :=
 #align power_series.coeff_zero_one PowerSeries.coeff_zero_one
 
 theorem coeff_mul (n : ℕ) (φ ψ : R⟦X⟧) :
-    coeff R n (φ * ψ) = ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
+    coeff R n (φ * ψ) = ∑ p ∈ antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
   -- `rw` can't see that `PowerSeries = MvPowerSeries Unit`, so use `.trans`
   refine (MvPowerSeries.coeff_mul _ φ ψ).trans ?_
   rw [Finsupp.antidiagonal_single, Finset.sum_map]
@@ -412,6 +410,9 @@ theorem constantCoeff_X : constantCoeff R X = 0 :=
 set_option linter.uppercaseLean3 false in
 #align power_series.constant_coeff_X PowerSeries.constantCoeff_X
 
+@[simp]
+theorem constantCoeff_mk {f : ℕ → R} : constantCoeff R (mk f) = f 0 := rfl
+
 theorem coeff_zero_mul_X (φ : R⟦X⟧) : coeff R 0 (φ * X) = 0 := by simp
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_mul_X PowerSeries.coeff_zero_mul_X
@@ -468,7 +469,7 @@ theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
     coeff R d (p * X ^ n) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
-  · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
     rw [coeff_X_pow, if_neg, mul_zero]
     exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
 set_option linter.uppercaseLean3 false in
@@ -479,7 +480,7 @@ theorem coeff_X_pow_mul' (p : R⟦X⟧) (n d : ℕ) :
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_X_pow_mul]
     simp
-  · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
     rw [coeff_X_pow, if_neg, zero_mul]
     have := mem_antidiagonal.mp hx
     rw [add_comm] at this
@@ -660,7 +661,7 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 
 /-- Coefficients of a product of power series -/
 theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
-    coeff R d (∏ j in s, f j) = ∑ l in piAntidiagonal s d, ∏ i in s, coeff R (l i) (f i) := by
+    coeff R d (∏ j ∈ s, f j) = ∑ l ∈ piAntidiagonal s d, ∏ i ∈ s, coeff R (l i) (f i) := by
   simp only [coeff]
   convert MvPowerSeries.coeff_prod _ _ _
   rw [← AddEquiv.finsuppUnique_symm d, ← mapRange_piAntidiagonal_eq, sum_map, sum_congr rfl]

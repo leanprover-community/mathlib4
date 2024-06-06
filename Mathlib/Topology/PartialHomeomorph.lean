@@ -401,7 +401,7 @@ theorem map_nhdsWithin_eq {x} (hx : x ∈ e.source) (s : Set X) :
     map e (𝓝[s] x) = map e (𝓝[e.source ∩ s] x) :=
       congr_arg (map e) (e.nhdsWithin_source_inter hx _).symm
     _ = 𝓝[e '' (e.source ∩ s)] e x :=
-      (e.leftInvOn.mono <| inter_subset_left _ _).map_nhdsWithin_eq (e.left_inv hx)
+      (e.leftInvOn.mono inter_subset_left).map_nhdsWithin_eq (e.left_inv hx)
         (e.continuousAt_symm (e.map_source hx)).continuousWithinAt
         (e.continuousAt hx).continuousWithinAt
 #align local_homeomorph.map_nhds_within_eq PartialHomeomorph.map_nhdsWithin_eq
@@ -420,13 +420,13 @@ theorem eventually_nhds {x : X} (p : Y → Prop) (hx : x ∈ e.source) :
 theorem eventually_nhds' {x : X} (p : X → Prop) (hx : x ∈ e.source) :
     (∀ᶠ y in 𝓝 (e x), p (e.symm y)) ↔ ∀ᶠ x in 𝓝 x, p x := by
   rw [e.eventually_nhds _ hx]
-  refine' eventually_congr ((e.eventually_left_inverse hx).mono fun y hy => _)
+  refine eventually_congr ((e.eventually_left_inverse hx).mono fun y hy => ?_)
   rw [hy]
 #align local_homeomorph.eventually_nhds' PartialHomeomorph.eventually_nhds'
 
 theorem eventually_nhdsWithin {x : X} (p : Y → Prop) {s : Set X}
     (hx : x ∈ e.source) : (∀ᶠ y in 𝓝[e.symm ⁻¹' s] e x, p y) ↔ ∀ᶠ x in 𝓝[s] x, p (e x) := by
-  refine' Iff.trans _ eventually_map
+  refine Iff.trans ?_ eventually_map
   rw [e.map_nhdsWithin_eq hx, e.image_source_inter_eq', e.nhdsWithin_target_inter (e.mapsTo hx)]
 #align local_homeomorph.eventually_nhds_within PartialHomeomorph.eventually_nhdsWithin
 
@@ -472,7 +472,7 @@ lemma isOpen_image_of_subset_source {s : Set X} (hs : IsOpen s) (hse : s ⊆ e.s
 /-- The image of the restriction of an open set to the source is open. -/
 theorem isOpen_image_source_inter {s : Set X} (hs : IsOpen s) :
     IsOpen (e '' (e.source ∩ s)) :=
-  e.isOpen_image_of_subset_source (e.open_source.inter hs) (inter_subset_left _ _)
+  e.isOpen_image_of_subset_source (e.open_source.inter hs) inter_subset_left
 #align local_homeomorph.image_open_of_open' PartialHomeomorph.isOpen_image_source_inter
 
 /-- The inverse of a partial homeomorphism `e` is an open map on `e.target`. -/
@@ -664,8 +664,8 @@ def restr (h : e.IsImage s t) (hs : IsOpen (e.source ∩ s)) : PartialHomeomorph
   toPartialEquiv := h.toPartialEquiv.restr
   open_source := hs
   open_target := h.isOpen_iff.1 hs
-  continuousOn_toFun := e.continuousOn.mono (inter_subset_left _ _)
-  continuousOn_invFun := e.symm.continuousOn.mono (inter_subset_left _ _)
+  continuousOn_toFun := e.continuousOn.mono inter_subset_left
+  continuousOn_invFun := e.symm.continuousOn.mono inter_subset_left
 #align local_homeomorph.is_image.restr PartialHomeomorph.IsImage.restr
 
 end IsImage
@@ -769,7 +769,7 @@ theorem restr_univ {e : PartialHomeomorph X Y} : e.restr univ = e :=
 #align local_homeomorph.restr_univ PartialHomeomorph.restr_univ
 
 theorem restr_source_inter (s : Set X) : e.restr (e.source ∩ s) = e.restr s := by
-  refine' PartialHomeomorph.ext _ _ (fun x => rfl) (fun x => rfl) _
+  refine PartialHomeomorph.ext _ _ (fun x => rfl) (fun x => rfl) ?_
   simp [e.open_source.interior_eq, ← inter_assoc]
 #align local_homeomorph.restr_source_inter PartialHomeomorph.restr_source_inter
 
@@ -1015,7 +1015,7 @@ theorem Set.EqOn.restr_eqOn_source {e e' : PartialHomeomorph X Y}
     rw [e.restr_source' _ e'.open_source]
     exact Set.inter_comm _ _
   · rw [e.restr_source' _ e'.open_source]
-    refine' (EqOn.trans _ h).trans _ <;> simp only [mfld_simps, eqOn_refl]
+    refine (EqOn.trans ?_ h).trans ?_ <;> simp only [mfld_simps, eqOn_refl]
 #align local_homeomorph.set.eq_on.restr_eq_on_source PartialHomeomorph.Set.EqOn.restr_eqOn_source
 
 /-- Composition of a partial homeomorphism and its inverse is equivalent to the restriction of the
@@ -1190,7 +1190,7 @@ on the right is continuous on the corresponding set. -/
 theorem continuousOn_iff_continuousOn_comp_right {f : Y → Z} {s : Set Y} (h : s ⊆ e.target) :
     ContinuousOn f s ↔ ContinuousOn (f ∘ e) (e.source ∩ e ⁻¹' s) := by
   simp only [← e.symm_image_eq_source_inter_preimage h, ContinuousOn, forall_mem_image]
-  refine' forall₂_congr fun x hx => _
+  refine forall₂_congr fun x hx => ?_
   rw [e.continuousWithinAt_iff_continuousWithinAt_comp_right (h hx),
     e.symm_image_eq_source_inter_preimage h, inter_comm, continuousWithinAt_inter]
   exact IsOpen.mem_nhds e.open_source (e.map_target (h hx))
@@ -1202,7 +1202,7 @@ homeomorphism-/
 theorem continuousWithinAt_iff_continuousWithinAt_comp_left {f : Z → X} {s : Set Z} {x : Z}
     (hx : f x ∈ e.source) (h : f ⁻¹' e.source ∈ 𝓝[s] x) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt (e ∘ f) s x := by
-  refine' ⟨(e.continuousAt hx).comp_continuousWithinAt, fun fe_cont => _⟩
+  refine ⟨(e.continuousAt hx).comp_continuousWithinAt, fun fe_cont => ?_⟩
   rw [← continuousWithinAt_inter' h] at fe_cont ⊢
   have : ContinuousWithinAt (e.symm ∘ e ∘ f) (s ∩ f ⁻¹' e.source) x :=
     haveI : ContinuousWithinAt e.symm univ (e (f x)) :=
@@ -1375,7 +1375,7 @@ variable (f : X → Y) (h : OpenEmbedding f)
 whose source is all of `X`. The converse is also true; see `PartialHomeomorph.to_openEmbedding`. -/
 @[simps! (config := mfld_cfg) apply source target]
 noncomputable def toPartialHomeomorph [Nonempty X] : PartialHomeomorph X Y :=
-  PartialHomeomorph.ofContinuousOpen ((h.toEmbedding.inj.injOn univ).toPartialEquiv _ _)
+  PartialHomeomorph.ofContinuousOpen (h.toEmbedding.inj.injOn.toPartialEquiv f univ)
     h.continuous.continuousOn h.isOpenMap isOpen_univ
 #align open_embedding.to_local_homeomorph OpenEmbedding.toPartialHomeomorph
 
@@ -1489,7 +1489,7 @@ theorem subtypeRestr_source : (e.subtypeRestr hs).source = (↑) ⁻¹' e.source
 
 theorem map_subtype_source {x : s} (hxe : (x : X) ∈ e.source) :
     e x ∈ (e.subtypeRestr hs).target := by
-  refine' ⟨e.map_source hxe, _⟩
+  refine ⟨e.map_source hxe, ?_⟩
   rw [s.partialHomeomorphSubtypeCoe_target, mem_preimage, e.leftInvOn hxe]
   exact x.prop
 #align local_homeomorph.map_subtype_source PartialHomeomorph.map_subtype_source
@@ -1502,15 +1502,15 @@ theorem subtypeRestr_symm_trans_subtypeRestr (f f' : PartialHomeomorph X Y) :
   simp only [subtypeRestr_def, trans_symm_eq_symm_trans_symm]
   have openness₁ : IsOpen (f.target ∩ f.symm ⁻¹' s) := f.isOpen_inter_preimage_symm s.2
   rw [← ofSet_trans _ openness₁, ← trans_assoc, ← trans_assoc]
-  refine' EqOnSource.trans' _ (eqOnSource_refl _)
+  refine EqOnSource.trans' ?_ (eqOnSource_refl _)
   -- f' has been eliminated !!!
   have sets_identity : f.symm.source ∩ (f.target ∩ f.symm ⁻¹' s) = f.symm.source ∩ f.symm ⁻¹' s :=
     by mfld_set_tac
   have openness₂ : IsOpen (s : Set X) := s.2
   rw [ofSet_trans', sets_identity, ← trans_of_set' _ openness₂, trans_assoc]
-  refine' EqOnSource.trans' (eqOnSource_refl _) _
+  refine EqOnSource.trans' (eqOnSource_refl _) ?_
   -- f has been eliminated !!!
-  refine' Setoid.trans (symm_trans_self (s.partialHomeomorphSubtypeCoe hs)) _
+  refine Setoid.trans (symm_trans_self (s.partialHomeomorphSubtypeCoe hs)) ?_
   simp only [mfld_simps, Setoid.refl]
 #align local_homeomorph.subtype_restr_symm_trans_subtype_restr PartialHomeomorph.subtypeRestr_symm_trans_subtypeRestr
 
@@ -1531,7 +1531,7 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Non
   have hyV : e.symm y ∈ (V.partialHomeomorphSubtypeCoe hV).target := by
     rw [Opens.partialHomeomorphSubtypeCoe_target] at hy ⊢
     exact hUV hy.2
-  refine' (V.partialHomeomorphSubtypeCoe hV).injOn _ trivial _
+  refine (V.partialHomeomorphSubtypeCoe hV).injOn ?_ trivial ?_
   · rw [← PartialHomeomorph.symm_target]
     apply PartialHomeomorph.map_source
     rw [PartialHomeomorph.symm_source]
