@@ -39,7 +39,7 @@ jobs:
         python ./scripts/count-trans-deps.py "Mathlib/" > head.json
 
         # Checkout the merge base
-        git checkout master # let's start easy! "$(git merge-base refs/remotes/origin/main ${{ github.sha }})"
+        git checkout master
         # get the files that we need from the current PR
         # this will have to switch to `master` probably, when merging or right after
         git checkout origin/import-count scripts/count-trans-deps.py scripts/import-graph-report.py
