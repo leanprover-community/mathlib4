@@ -106,7 +106,7 @@ open Submodule
 /-- Multiplicity of the ideal norm, for coprime ideals.
 This is essentially just a repackaging of the Chinese Remainder Theorem.
 -/
-theorem cardQuot_mul_of_coprime [IsDedekindDomain S] [Module.Free ℤ S] [Module.Finite ℤ S]
+theorem cardQuot_mul_of_coprime [Module.Free ℤ S] [Module.Finite ℤ S]
     {I J : Ideal S} (coprime : IsCoprime I J) : cardQuot (I * J) = cardQuot I * cardQuot J := by
   let b := Module.Free.chooseBasis ℤ S
   cases isEmpty_or_nonempty (Module.Free.ChooseBasisIndex ℤ S)
