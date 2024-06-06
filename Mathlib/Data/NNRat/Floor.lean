@@ -55,4 +55,5 @@ theorem ceil_cast (x : ℚ≥0) : ⌈(x : K)⌉₊ = ⌈x⌉₊ := by
   rw [Nat.ceil_eq_iff]
   rw [← neg_inj, ← floor_neg, ← floor_neg, ← Rat.cast_neg, Rat.floor_cast]
 #align rat.ceil_cast Rat.ceil_cast
+
 end NNRat
