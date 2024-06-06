@@ -176,7 +176,6 @@ theorem cast_le {m n : ℚ≥0} : (m : K) ≤ n ↔ m ≤ n :=
 theorem cast_lt {m n : ℚ≥0} : (m : K) < n ↔ m < n :=
   cast_strictMono.lt_iff_lt
 
-
 @[simp]
 theorem cast_nonpos {n : ℚ≥0} : (n : K) ≤ 0 ↔ n ≤ 0 := by
   norm_cast
