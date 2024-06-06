@@ -58,7 +58,7 @@ theorem toTypes_isSheaf (T : X → Type u) : (presheafToTypes X T).IsSheaf :=
     choose index index_spec using fun x : ↑(iSup U) => Opens.mem_iSup.mp x.2
     -- Using this data, we can glue our functions together to a single section
     let s : ∀ x : ↑(iSup U), T x := fun x => sf (index x) ⟨x.1, index_spec x⟩
-    refine' ⟨s, _, _⟩
+    refine ⟨s, ?_, ?_⟩
     · intro i
       funext x
       -- Now we need to verify that this lifted function restricts correctly to each set `U i`.

@@ -5,11 +5,11 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Group.PosPart
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Int.CharZero
-import Mathlib.Data.NNRat.Defs
-import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Rat.Order
+import Mathlib.Data.NNRat.Defs
+import Mathlib.Data.PNat.Defs
 import Mathlib.Tactic.Positivity.Core
 import Qq
 
@@ -403,6 +403,15 @@ def evalNatSucc : PositivityExt where eval {u α} _zα _pα e := do
     assertInstancesCommute
     pure (.positive q(Nat.succ_pos $a))
   | _, _, _ => throwError "not Nat.succ"
+
+/-- Extension for `PNat.val`. -/
+@[positivity PNat.val _]
+def evalPNatVal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(PNat.val $a) =>
+    assertInstancesCommute
+    pure (.positive q(PNat.pos $a))
+  | _, _, _ => throwError "not PNat.val"
 
 /-- Extension for `Nat.factorial`. -/
 @[positivity Nat.factorial _]

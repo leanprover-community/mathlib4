@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Logic.Pairwise
@@ -238,11 +240,17 @@ theorem pairwise_disjoint_Ioc_add_intCast :
     pairwise_disjoint_Ioc_add_zsmul a (1 : α)
 #align set.pairwise_disjoint_Ioc_add_int_cast Set.pairwise_disjoint_Ioc_add_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias pairwise_disjoint_Ioc_add_int_cast := pairwise_disjoint_Ioc_add_intCast
+
 theorem pairwise_disjoint_Ico_add_intCast :
     Pairwise (Disjoint on fun n : ℤ => Ico (a + n) (a + n + 1)) := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     pairwise_disjoint_Ico_add_zsmul a (1 : α)
 #align set.pairwise_disjoint_Ico_add_int_cast Set.pairwise_disjoint_Ico_add_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias pairwise_disjoint_Ico_add_int_cast := pairwise_disjoint_Ico_add_intCast
 
 theorem pairwise_disjoint_Ioo_add_intCast :
     Pairwise (Disjoint on fun n : ℤ => Ioo (a + n) (a + n + 1)) := by
@@ -250,19 +258,32 @@ theorem pairwise_disjoint_Ioo_add_intCast :
     pairwise_disjoint_Ioo_add_zsmul a (1 : α)
 #align set.pairwise_disjoint_Ioo_add_int_cast Set.pairwise_disjoint_Ioo_add_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias pairwise_disjoint_Ioo_add_int_cast := pairwise_disjoint_Ioo_add_intCast
+
 variable (α)
 
-theorem pairwise_disjoint_Ico_intCast : Pairwise (Disjoint on fun n : ℤ => Ico (n : α) (n + 1)) :=
-  by simpa only [zero_add] using pairwise_disjoint_Ico_add_intCast (0 : α)
+theorem pairwise_disjoint_Ico_intCast :
+    Pairwise (Disjoint on fun n : ℤ => Ico (n : α) (n + 1)) := by
+  simpa only [zero_add] using pairwise_disjoint_Ico_add_intCast (0 : α)
 #align set.pairwise_disjoint_Ico_int_cast Set.pairwise_disjoint_Ico_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias pairwise_disjoint_Ico_int_cast := pairwise_disjoint_Ico_intCast
 
 theorem pairwise_disjoint_Ioo_intCast : Pairwise (Disjoint on fun n : ℤ => Ioo (n : α) (n + 1)) :=
   by simpa only [zero_add] using pairwise_disjoint_Ioo_add_intCast (0 : α)
 #align set.pairwise_disjoint_Ioo_int_cast Set.pairwise_disjoint_Ioo_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias pairwise_disjoint_Ioo_int_cast := pairwise_disjoint_Ioo_intCast
+
 theorem pairwise_disjoint_Ioc_intCast : Pairwise (Disjoint on fun n : ℤ => Ioc (n : α) (n + 1)) :=
   by simpa only [zero_add] using pairwise_disjoint_Ioc_add_intCast (0 : α)
 #align set.pairwise_disjoint_Ioc_int_cast Set.pairwise_disjoint_Ioc_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias pairwise_disjoint_Ioc_int_cast := pairwise_disjoint_Ioc_intCast
 
 end OrderedRing
 
