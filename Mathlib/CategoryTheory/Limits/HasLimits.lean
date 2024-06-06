@@ -1139,7 +1139,12 @@ theorem colimit.pre_map [HasColimitsOfShape K C] (E : K ⥤ J) :
 
 theorem colimit.pre_map' [HasColimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J} (α : E₁ ⟶ E₂) :
     colimit.pre F E₁ = colim.map (whiskerRight α F) ≫ colimit.pre F E₂ := by
-  ext1; simp [← Category.assoc]
+  ext1
+  #adaptation_note
+  /-- This used to just be `simp [← assoc]`,
+  but that now prevents `simp` also using the forward direction of `assoc`. -/
+  simp_rw [comp_obj, ι_pre, colim_obj, colim_map, ← assoc, ι_colimMap, whiskerRight_app, assoc,
+    comp_obj, ι_pre, w]
 #align category_theory.limits.colimit.pre_map' CategoryTheory.Limits.colimit.pre_map'
 
 theorem colimit.pre_id (F : J ⥤ C) :
