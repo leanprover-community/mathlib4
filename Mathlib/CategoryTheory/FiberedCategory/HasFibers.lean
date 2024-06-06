@@ -105,8 +105,8 @@ instance canonical (p : 𝒳 ⥤ 𝒮) : HasFibers p where
   equiv S := by
     apply isEquivalence_of_iso (F := 𝟭 (Fiber p S))
     exact {
-      hom := { app := fun x => ⟨𝟙 x.1, IsHomLift.id x.2⟩ }
-      inv := { app := fun x => ⟨𝟙 x.1, IsHomLift.id x.2⟩ }
+      hom := { app := fun x ↦ ⟨𝟙 x.1, IsHomLift.id x.2⟩ }
+      inv := { app := fun x ↦ ⟨𝟙 x.1, IsHomLift.id x.2⟩ }
     }
 
 section
@@ -131,22 +131,21 @@ instance homLift {S : 𝒮} {a b : Fib p S} (φ : a ⟶ b) : IsHomLift p (𝟙 S
   rw [←Functor.comp_map, Functor.congr_hom (comp_const S)]
   simp
 
+-- TODO: better names of these two?
 /-- A version of fullness of the functor `Fib S ⥤ Fiber p S` that can be used inside the category
 `𝒳`. -/
--- TODO: split this up into two part "LiftHom" and "LiftHom.eq" or sth
-lemma fullness {S : 𝒮} {a b : Fib p S}
-    (φ : (ι S).obj a ⟶ (ι S).obj b) [IsHomLift p (𝟙 S) φ] :
-    ∃ (ψ : a ⟶ b), (ι S).map ψ = φ := by
+noncomputable def mapPreimage {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (ι S).obj b)
+    [IsHomLift p (𝟙 S) φ] : a ⟶ b :=
+  (InducedFunctor _ S).preimage ⟨φ, inferInstance⟩
 
-  -- let a' : Fiber p S := (InducedFunctor p S).obj a
-  -- let b' : Fiber p S := (InducedFunctor p S).obj b
-  -- let ψ : a' ⟶ b' := ⟨φ, inferInstance⟩
-  use (InducedFunctor _ S).preimage ⟨φ, inferInstance⟩
+@[simp]
+lemma mapPreimage_eq {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (ι S).obj b)
+    [IsHomLift p (𝟙 S) φ] : (ι S).map (mapPreimage φ) = φ := by
   rw [←NatIso.naturality_2 (FiberInducedFunctorNat (comp_const S))]
-  -- TODO: this should all be simp after appropriate `@[simp]s`
+  -- TODO: this should all be simp after appropriate `@[simp]s`?
   simp
   rw [congr_hom (inducedFunctor_comp p S)]
-  simp
+  simp [mapPreimage]
 
 /-- The lift of an isomorphism `Φ : (ι S).obj a ≅ (ι S).obj b` lying over `𝟙 S` to an isomorphism
 in `Fib S`. -/
@@ -160,6 +159,7 @@ noncomputable def LiftIso {S : 𝒮} {a b : Fib p S}
   }
   exact ((InducedFunctor p S).preimageIso Φ')
 
+-- SIMP ON THESE SORTS OF CONSTRUCTIONS?
 /-- An object in `Fib p S` isomorphic in `𝒳` to a given object `a : 𝒳` such that `p(a) = S`. -/
 noncomputable def objPreimage {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) : Fib p S :=
   Functor.objPreimage (InducedFunctor p S) (Fiber.mk_obj ha)
@@ -210,12 +210,10 @@ R ====== R --f--> S
 ```
 Then the induced map τ : b' ⟶ b to lies in the fiber over R -/
 noncomputable def inducedMap : b ⟶ b' :=
-  Classical.choose <| fullness (IsCartesian.inducedMap p f ψ φ)
+  mapPreimage (IsCartesian.inducedMap p f ψ φ)
 
 lemma inducedMap_comp : (ι R).map (inducedMap f ψ φ) ≫ ψ = φ := by
-  rw [inducedMap, Classical.choose_spec <| fullness (IsCartesian.inducedMap p f ψ φ)]
-  simp -- or exact as below.... (maybe this whole proof can be simp? (if fullness gets more api))
-  -- exact (inducedMap_comp p f ψ φ)
+  simp only [inducedMap, mapPreimage_eq, IsCartesian.inducedMap_comp]
 
 -- TODO: isHomLift instance?
 -- uniqueness...
