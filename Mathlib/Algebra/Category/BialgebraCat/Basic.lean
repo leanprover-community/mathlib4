@@ -196,4 +196,4 @@ instance BialgebraCat.forget_reflects_isos :
   reflects {X Y} f _ := by
     let i := asIso ((forget (BialgebraCat.{v} R)).map f)
     let e : X ≃ₐc[R] Y := { f.toBialgHom, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toIso).1⟩
+    exact ⟨e.toIso.isIso_hom.1⟩
