@@ -148,7 +148,8 @@ open Ideal
 -- This section is to construct the forward direction :
 -- So for any `x` in `Proj| (pbo f)`, we need some point in `Spec A⁰_f`, i.e. a prime ideal,
 -- and we need this correspondence to be continuous in their Zariski topology.
-variable {𝒜} {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (x : Proj| (pbo f))
+variable {𝒜}
+variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (x : Proj| (pbo f))
 
 /--
 For any `x` in `Proj| (pbo f)`, the corresponding ideal in `Spec A⁰_f`. This fact that this ideal
@@ -231,7 +232,8 @@ open Finset hiding mk_zero
 -- Porting note: _root_ doesn't work here
 open HomogeneousLocalization
 
-variable {𝒜} {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m)
+variable {𝒜}
+variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m)
 
 open Lean Meta Elab Tactic
 

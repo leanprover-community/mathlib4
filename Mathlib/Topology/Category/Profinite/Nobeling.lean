@@ -196,7 +196,8 @@ lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
     · ext i
       exact dif_pos i.prop
 
-variable {C} (hC : IsCompact C)
+variable {C}
+variable (hC : IsCompact C)
 
 /--
 For a given compact subset `C` of `I → Bool`, `spanFunctor` is the functor from the poset of finsets

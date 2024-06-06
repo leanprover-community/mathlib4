@@ -492,7 +492,8 @@ lemma mk (L : C ⥤ D) [L.IsLocalization W] (h : L.map f = L.map g) :
     AreEqualizedByLocalization W f g :=
   (areEqualizedByLocalization_iff L W f g).2 h
 
-variable {W f g} (h : AreEqualizedByLocalization W f g)
+variable {W f g}
+variable (h : AreEqualizedByLocalization W f g)
 
 lemma map_eq (L : C ⥤ D) [L.IsLocalization W] : L.map f = L.map g :=
   (areEqualizedByLocalization_iff L W f g).1 h

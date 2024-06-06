@@ -125,7 +125,8 @@ def obj : Fin 2 → C
   | ⟨0, _⟩ => X₀
   | ⟨1, _⟩  => X₁
 
-variable {X₀ X₁} (f : X₀ ⟶ X₁)
+variable {X₀ X₁}
+variable (f : X₀ ⟶ X₁)
 
 /-- The obvious map `obj X₀ X₁ i ⟶ obj X₀ X₁ j` whenever `i j : Fin 2` satisfy `i ≤ j`. -/
 @[simp]

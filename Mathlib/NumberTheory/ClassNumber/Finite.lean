@@ -137,7 +137,8 @@ theorem exists_min (I : (Ideal S)⁰) :
 
 section IsAdmissible
 
-variable {abv} (adm : abv.IsAdmissible)
+variable {abv}
+variable (adm : abv.IsAdmissible)
 
 /-- If we have a large enough set of elements in `R^ι`, then there will be a pair
 whose remainders are close together. We'll show that all sets of cardinality

@@ -343,7 +343,7 @@ lemma hasMap (c : ∀ j, CofanMapObjFun X p j) (hc : ∀ j, IsColimit (c j)) :
     X.HasMap p := fun j => ⟨_, hc j⟩
 
 variable {j X p}
-  {c : CofanMapObjFun X p j} (hc : IsColimit c) [X.HasMap p]
+variable {c : CofanMapObjFun X p j} (hc : IsColimit c) [X.HasMap p]
 
 /-- If `c : CofanMapObjFun X p j` is a colimit cofan, this is the induced
 isomorphism `c.pt ≅ X.mapObj p j`. -/
