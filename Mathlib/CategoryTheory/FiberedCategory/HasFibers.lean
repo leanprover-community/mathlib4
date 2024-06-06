@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.FiberedCategory.Fiber
 import Mathlib.CategoryTheory.Functor.Const
 
 /-!
+
 # Fibers of functors
 
 In this file we develop the theory of fibers of functors. Given a functor `p : 𝒳 ⥤ 𝒮`, we define
@@ -38,8 +39,7 @@ In this case, the `HasFibers` instance is given by the categories `F(S)` and the
 `a : F(S)` to `(S, a)` in the fibered category. See `Presheaf.lean` for more details.
 -/
 
--- TODO: port this to use `BasedCategory` later.
--- FiberCat should then be defined in this file, move out any `IsFibered` propoerties to `FiberedCat.lean`
+-- TODO: port this to use `BasedCategory` later?
 
 universe u₁ v₁ u₂ v₂ u₃ w
 
@@ -62,7 +62,6 @@ class HasFibers (p : 𝒳 ⥤ 𝒮) where
   comp_const (S : 𝒮) : (ι S) ⋙ p = (const (Fib S)).obj S
   /-- The induced functor from `Fib S` to the fiber of `𝒳 ⥤ 𝒮` over `S` is an equivalence. -/
   equiv (S : 𝒮) : Functor.IsEquivalence (FiberInducedFunctor (comp_const S))
-
 
 namespace HasFibers
 
@@ -190,7 +189,7 @@ noncomputable def pullbackMap : (ι R).obj (pullbackObj f ha) ⟶ a :=
   (objObjPreimageIso (domain_eq p f (IsPreFibered.pullbackMap ha f))).hom ≫
     (IsPreFibered.pullbackMap ha f)
 
-instance pullbackMap.IsStronglyCartesian : IsStronglyCartesian p f (pullbackMap f ha) := by
+instance pullbackMap.isStronglyCartesian : IsStronglyCartesian p f (pullbackMap f ha) := by
   conv => congr; rfl; rw [←id_comp f]
   exact IsStronglyCartesian.comp p
 
@@ -201,24 +200,19 @@ section
 variable [IsFibered p] {R S : 𝒮} {a : 𝒳} {b b' : Fib p R} (f : R ⟶ S) (ψ : (ι R).obj b' ⟶ a)
     [IsCartesian p f ψ] (φ : (ι R).obj b ⟶ a) [IsHomLift p f φ]
 
-/-- Given a fibered category p, b' b in Fib R, an a pullback ψ : b ⟶ a in 𝒳, i.e.
+/-- Given a fibered category p, b' b in Fib R, and a pullback ψ : b ⟶ a in 𝒳, i.e.
 ```
 b'       b --ψ--> a
 |        |        |
 v        v        v
 R ====== R --f--> S
 ```
-Then the induced map τ : b' ⟶ b to lies in the fiber over R -/
+Then the induced map τ : b' ⟶ b can be lifted to the fiber over R -/
 noncomputable def inducedMap : b ⟶ b' :=
   mapPreimage (IsCartesian.inducedMap p f ψ φ)
 
 lemma inducedMap_comp : (ι R).map (inducedMap f ψ φ) ≫ ψ = φ := by
   simp only [inducedMap, mapPreimage_eq, IsCartesian.inducedMap_comp]
-
--- TODO: isHomLift instance?
--- uniqueness...
--- self_eq_id?
--- NaturalIso?
 
 end
 

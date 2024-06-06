@@ -8,7 +8,9 @@ import Mathlib.CategoryTheory.FiberedCategory.Fibered
 import Mathlib.CategoryTheory.Functor.Const
 
 /-!
+
 # Fibers of functors
+
 In this file we develop the theory of fibers of functors. Given a functor `p : 𝒳 ⥤ 𝒮`, we define
 the fiber categories `Fiber p S` for every `S : 𝒮` as follows:
 - An object in `Fiber p S` is a pair `(a, ha)` where `a : 𝒳` and `ha : p.obj a = S`.
