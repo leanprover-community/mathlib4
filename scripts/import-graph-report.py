@@ -59,7 +59,7 @@ def compare_counts(base_file, head_file, changed_files_txt):
         message += '\n'.join(messages)
         message += '\n</details>'
     else:
-        message += 'None'
+        message += 'No significant changes to the import graph'
     return message
 
 if __name__ == '__main__':

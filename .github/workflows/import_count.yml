@@ -28,7 +28,6 @@ jobs:
       run: |
         git fetch origin ${{ github.base_ref }}  # fetch the base branch
         git diff --name-only origin/${{ github.base_ref }}... > changed_files.txt  # get the list of changed files
-        cat changed_files.txt
 
     - name: Compute transitive imports
       run: |
@@ -53,7 +52,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         message=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
-        echo "${message}"
         data=$(jq -n --arg msg "$message" '{"body": $msg}')
         method="POST"
         if [[ -n "$message" ]]; then
