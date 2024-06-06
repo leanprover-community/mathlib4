@@ -847,12 +847,12 @@ theorem not_mem_commonNeighbors_right (v w : V) : w ∉ G.commonNeighbors v w :=
 
 theorem commonNeighbors_subset_neighborSet_left (v w : V) :
     G.commonNeighbors v w ⊆ G.neighborSet v :=
-  Set.inter_subset_left _ _
+  Set.inter_subset_left
 #align simple_graph.common_neighbors_subset_neighbor_set_left SimpleGraph.commonNeighbors_subset_neighborSet_left
 
 theorem commonNeighbors_subset_neighborSet_right (v w : V) :
     G.commonNeighbors v w ⊆ G.neighborSet w :=
-  Set.inter_subset_right _ _
+  Set.inter_subset_right
 #align simple_graph.common_neighbors_subset_neighbor_set_right SimpleGraph.commonNeighbors_subset_neighborSet_right
 
 instance decidableMemCommonNeighbors [DecidableRel G.Adj] (v w : V) :

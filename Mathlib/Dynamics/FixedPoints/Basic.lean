@@ -112,9 +112,7 @@ protected theorem perm_inv (h : IsFixedPt e x) : IsFixedPt (⇑e⁻¹) x :=
   h.equiv_symm
 #align function.is_fixed_pt.perm_inv Function.IsFixedPt.perm_inv
 
-protected theorem perm_pow (h : IsFixedPt e x) (n : ℕ) : IsFixedPt (⇑(e ^ n)) x := by
-  rw [Equiv.Perm.coe_pow]
-  exact h.iterate _
+protected theorem perm_pow (h : IsFixedPt e x) (n : ℕ) : IsFixedPt (⇑(e ^ n)) x := h.iterate _
 #align function.is_fixed_pt.perm_pow Function.IsFixedPt.perm_pow
 
 protected theorem perm_zpow (h : IsFixedPt e x) : ∀ n : ℤ, IsFixedPt (⇑(e ^ n)) x
