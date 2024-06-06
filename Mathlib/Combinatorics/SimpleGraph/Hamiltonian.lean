@@ -72,7 +72,7 @@ lemma IsHamiltonianCycle.isCycle (hp : p.IsHamiltonianCycle) : p.IsCycle :=
 
 lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective f)
     (hp : p.IsHamiltonianCycle) : (p.map f).IsHamiltonianCycle where
-  toIsCycle := hp.isCycle.map hf.injective 
+  toIsCycle := hp.isCycle.map hf.injective
   isHamiltonian_tail := by
     simp [IsHamiltonian, support_tail, hf.surjective.forall, List.count_tail, hf.injective]
     intro x
