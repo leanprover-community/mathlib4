@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.MorphismProperty.Concrete
 import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 # Epi and mono in concrete categories
@@ -29,6 +30,8 @@ variable (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C]
 open Limits MorphismProperty
 
 namespace ConcreteCategory
+
+section
 
 lemma surjective_le_epimorphisms :
     MorphismProperty.surjective C ≤ epimorphisms C :=
@@ -98,10 +101,15 @@ instance (priority := 100) : HasFunctorialSurjectiveInjectiveFactorization C whe
   nonempty_functorialFactorizationData :=
     ⟨functorialSurjectiveInjectiveFactorizationData C⟩
 
+end
+
+section
+
 open CategoryTheory.Limits
 
 variable {C}
 
+attribute [local instance] ConcreteCategory.hasCoeToSort
 attribute [local instance] ConcreteCategory.instFunLike
 
 theorem injective_of_mono_of_preservesPullback {X Y : C} (f : X ⟶ Y) [Mono f]
@@ -142,6 +150,8 @@ theorem isIso_iff_bijective [(forget C).ReflectsIsomorphisms]
     {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective ((forget C).map f) := by
   rw [← CategoryTheory.isIso_iff_bijective]
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ isIso_of_reflects_iso f (forget C)⟩
+
+end
 
 end ConcreteCategory
 
