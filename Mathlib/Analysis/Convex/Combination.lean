@@ -300,8 +300,8 @@ theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull
   · rintro x ⟨s, w, hw₀, hw₁, rfl⟩ y ⟨s', w', hw₀', hw₁', rfl⟩ a b ha hb hab
     let W : ι → R := fun i => (if i ∈ s then a * w i else 0) + if i ∈ s' then b * w' i else 0
     have hW₁ : (s ∪ s').sum W = 1 := by
-      rw [sum_add_distrib, ← sum_subset (subset_union_left s s'),
-        ← sum_subset (subset_union_right s s'), sum_ite_of_true _ _ fun i hi => hi,
+      rw [sum_add_distrib, ← sum_subset subset_union_left,
+        ← sum_subset subset_union_right, sum_ite_of_true _ _ fun i hi => hi,
         sum_ite_of_true _ _ fun i hi => hi, ← mul_sum, ← mul_sum, hw₁, hw₁', ← add_mul, hab,
         mul_one] <;> intro i _ hi' <;> simp [hi']
     refine ⟨s ∪ s', W, ?_, hW₁, ?_⟩
@@ -311,7 +311,7 @@ theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull
     · simp_rw [affineCombination_eq_linear_combination (s ∪ s') v _ hW₁,
         affineCombination_eq_linear_combination s v w hw₁,
         affineCombination_eq_linear_combination s' v w' hw₁', add_smul, sum_add_distrib]
-      rw [← sum_subset (subset_union_left s s'), ← sum_subset (subset_union_right s s')]
+      rw [← sum_subset subset_union_left, ← sum_subset subset_union_right]
       · simp only [ite_smul, sum_ite_of_true _ _ fun _ hi => hi, mul_smul, ← smul_sum]
       · intro i _ hi'
         simp [hi']
@@ -579,7 +579,7 @@ lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s �
   · simp only [and_imp, Finset.mem_inter]
     exact fun y hy₁ _ ↦ h₁w₁ y hy₁
   all_goals
-  · rwa [sum_subset $ inter_subset_left _ _]
+  · rwa [sum_subset inter_subset_left]
     rintro x
     simp_intro hx₁ hx₂
     simp [ht x hx₁ hx₂]
@@ -589,4 +589,4 @@ lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s �
 Note that `AffineIndependent.convexHull_inter` should be more versatile in most use cases. -/
 lemma AffineIndependent.convexHull_inter' (hs : AffineIndependent R ((↑) : ↑(t₁ ∪ t₂) → E)) :
     convexHull R (t₁ ∩ t₂ : Set E) = convexHull R t₁ ∩ convexHull R t₂ :=
-  hs.convexHull_inter (subset_union_left _ _) (subset_union_right _ _)
+  hs.convexHull_inter subset_union_left subset_union_right
