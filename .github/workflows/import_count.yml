@@ -59,8 +59,8 @@ jobs:
             if [[ -n "$comment_id" ]]; then
                 url="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/comments/${comment_id}"
                 method="PATCH"
-                printf 'message: %s\n' "${message}"
                 # printf 'url: %s\n' "${url}"
             fi
+            printf 'data: %s\n' "${data}"
             curl -s -S -H "Content-Type: application/json" -H "$headers" -X "$method" -d "$data" "$url"
         fi
