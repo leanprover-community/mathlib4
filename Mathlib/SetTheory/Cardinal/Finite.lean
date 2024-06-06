@@ -119,7 +119,7 @@ lemma card_image_of_injOn (hf : s.InjOn f) : Nat.card (f '' s) = Nat.card s := b
     simp [Nat.card_eq_zero_of_infinite]
 
 lemma card_image_of_injective (hf : Injective f) (s : Set α) :
-    Nat.card (f '' s) = Nat.card s := card_image_of_injOn <| hf.injOn _
+    Nat.card (f '' s) = Nat.card s := card_image_of_injOn hf.injOn
 
 lemma card_image_equiv (e : α ≃ β) : Nat.card (e '' s) = Nat.card s :=
     Nat.card_congr (e.image s).symm
@@ -129,7 +129,7 @@ lemma card_preimage_of_injOn {s : Set β} (hf : (f ⁻¹' s).InjOn f) (hsf : s �
   rw [← Nat.card_image_of_injOn hf, image_preimage_eq_iff.2 hsf]
 
 lemma card_preimage_of_injective {s : Set β} (hf : Injective f) (hsf : s ⊆ range f) :
-    Nat.card (f ⁻¹' s) = Nat.card s := card_preimage_of_injOn (hf.injOn _) hsf
+    Nat.card (f ⁻¹' s) = Nat.card s := card_preimage_of_injOn hf.injOn hsf
 
 end Set
 
@@ -251,8 +251,7 @@ theorem card_image_of_injOn {α : Type u} {β : Type v} {f : α → β} {s : Set
 #align part_enat.card_image_of_inj_on PartENat.card_image_of_injOn
 
 theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s : Set α)
-    (h : Function.Injective f) : card (f '' s) = card s :=
-  card_image_of_injOn (Set.injOn_of_injective h s)
+    (h : Function.Injective f) : card (f '' s) = card s := card_image_of_injOn h.injOn
 #align part_enat.card_image_of_injective PartENat.card_image_of_injective
 
 -- Should I keep the 6 following lemmas ?

@@ -410,7 +410,7 @@ theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆
     rw [← zero_add (∑ x ∈ s, x), ← add_assoc, add_zero]
     apply add_lt_add_right
     have hlt :=
-      sum_lt_sum_of_nonempty h fun x hx => pos_of_mem_properDivisors (sdiff_subset _ _ hx)
+      sum_lt_sum_of_nonempty h fun x hx => pos_of_mem_properDivisors (sdiff_subset hx)
     simp only [sum_const_zero] at hlt
     apply hlt
 #align nat.eq_proper_divisors_of_subset_of_sum_eq_sum Nat.eq_properDivisors_of_subset_of_sum_eq_sum
