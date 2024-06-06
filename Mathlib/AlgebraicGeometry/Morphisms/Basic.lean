@@ -132,13 +132,10 @@ theorem targetAffineLocally_respectsIso {P : AffineTargetMorphismProperty}
     (hP : P.toProperty.RespectsIso) : (targetAffineLocally P).RespectsIso := by
   constructor
   · introv H U
-    -- Porting note (#10754): added this instance
-    haveI : IsAffine _ := U.prop
     rw [morphismRestrict_comp, affine_cancel_left_isIso hP]
     exact H U
   · introv H
     rintro ⟨U, hU : IsAffineOpen U⟩; dsimp
-    haveI : IsAffine _ := hU
     haveI : IsAffine _ := hU.map_isIso e.hom
     rw [morphismRestrict_comp, affine_cancel_right_isIso hP]
     exact H ⟨(Opens.map e.hom.val.base).obj U, hU.map_isIso e.hom⟩
@@ -572,9 +569,7 @@ theorem AffineTargetMorphismProperty.IsLocal.diagonal {P : AffineTargetMorphismP
 
 theorem diagonal_targetAffineLocally_eq_targetAffineLocally (P : AffineTargetMorphismProperty)
     (hP : P.IsLocal) : (targetAffineLocally P).diagonal = targetAffineLocally P.diagonal := by
-  -- Porting note: `ext _ _ f` fails at first one
-  -- see https://github.com/leanprover-community/mathlib4/issues/5229
-  refine funext fun _ => funext fun _ => funext fun f => propext ?_
+  ext _ _ f
   exact ((hP.diagonal_affine_openCover_TFAE f).out 0 1).trans
     ((hP.diagonal.affine_openCover_TFAE f).out 1 0)
 #align algebraic_geometry.diagonal_target_affine_locally_eq_target_affine_locally AlgebraicGeometry.diagonal_targetAffineLocally_eq_targetAffineLocally
