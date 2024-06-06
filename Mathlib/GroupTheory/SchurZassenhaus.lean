@@ -174,7 +174,7 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
     exact lt_mul_of_one_lt_left Fintype.card_pos (one_lt_index_of_ne_top h3)
   have h6 : Nat.Coprime (Fintype.card (N.comap K.subtype)) (N.comap K.subtype).index := by
     rw [h4]
-    simp only [← Nat.card_eq_fintype_card] at h1 ⊢
+    rw [← Nat.card_eq_fintype_card] at h1 ⊢
     exact h1.coprime_dvd_left (card_comap_dvd_of_injective N K.subtype Subtype.coe_injective)
   obtain ⟨H, hH⟩ := h2 K h5 h6
   replace hH : Fintype.card (H.map K.subtype) = N.index := by
