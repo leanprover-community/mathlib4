@@ -48,6 +48,8 @@ jobs:
       run: |
         message=$(python ./scripts/import-graph-report.py base.json head.json)
         echo "${message}"
+        data="{\"body\": \"$message\"}"
+        method="POST"
         if [[ -n "$message" ]]; then
             url="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${{ github.event.pull_request.number }}/comments"
             headers="Authorization: token ${GITHUB_TOKEN}"
@@ -56,9 +58,8 @@ jobs:
             printf 'comments: %s\ncomment_id: |||%s|||' "${comments}" "${comment_id}"
             if [[ -n "$comment_id" ]]; then
                 url="$url/$comment_id"
-                curl -s -S -H "Content-Type: application/json" -H "$headers" -X PATCH -d "{\"body\": \"$message\"}" "$url"
-            else
-                data="{\"body\": \"$message\"}"
-                curl -s -S -H "Content-Type: application/json" -H "$headers" -X POST -d "$data" "$url"
+                method="PATCH"
+                printf 'url: %s\n' "${url}"
             fi
+            curl -s -S -H "Content-Type: application/json" -H "$headers" -X "$method" -d "$data" "$url"
         fi
