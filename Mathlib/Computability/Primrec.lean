@@ -1226,7 +1226,7 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
       · symm; simpa [graph] using bindList_eq_nil
       · simp [Nat.succ_eq_add_one, graph_succ, bindList_succ, ih (Nat.le_of_lt hi),
           Nat.succ_sub (Nat.lt_succ.mp hi)]
-        apply List.filterMap_eq_map_of_eq_some
+        apply List.filterMap_eq_map_iff_forall_eq_some.mpr
         intro b' ha'; simp; rw [mapGraph_graph]
         · exact H b'
         · exact (List.infix_bind_of_mem ha' l).subset
