@@ -51,7 +51,6 @@ def compare_counts(base_file, head_file):
     else:
         message += 'None'
     message += '\n</details>'
-    print(message)
     return message
 
 if __name__ == '__main__':
