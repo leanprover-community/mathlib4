@@ -3,6 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
+import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.CategoryTheory.Comma.Presheaf
 import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.Limits.ConeCategory
@@ -376,9 +377,9 @@ noncomputable def natIsoOfNatIsoOnRepresentables (L₁ L₂ : (Cᵒᵖ ⥤ Type 
     [PreservesColimits L₁] [PreservesColimits L₂] (h : yoneda ⋙ L₁ ≅ yoneda ⋙ L₂) : L₁ ≅ L₂ := by
   apply NatIso.ofComponents _ _
   · intro P
-    refine'
+    refine
       (isColimitOfPreserves L₁ (colimitOfRepresentable P)).coconePointsIsoOfNatIso
-        (isColimitOfPreserves L₂ (colimitOfRepresentable P)) _
+        (isColimitOfPreserves L₂ (colimitOfRepresentable P)) ?_
     apply Functor.associator _ _ _ ≪≫ _
     exact isoWhiskerLeft (CategoryOfElements.π P).leftOp h
   · intro P₁ P₂ f
@@ -411,23 +412,20 @@ noncomputable def uniqueExtensionAlongYoneda (L : (Cᵒᵖ ⥤ Type u₁) ⥤ �
   natIsoOfNatIsoOnRepresentables _ _ (hL ≪≫ (isExtensionAlongYoneda _).symm)
 #align category_theory.unique_extension_along_yoneda CategoryTheory.uniqueExtensionAlongYoneda
 
-/-- If `L` preserves colimits and `ℰ` has them, then it is a left adjoint. This is a special case of
-`isLeftAdjointOfPreservesColimits` used to prove that.
--/
-noncomputable def isLeftAdjointOfPreservesColimitsAux (L : (Cᵒᵖ ⥤ Type u₁) ⥤ ℰ)
-    [PreservesColimits L] : IsLeftAdjoint L where
-  right := restrictedYoneda (yoneda ⋙ L)
-  adj := (yonedaAdjunction _).ofNatIsoLeft (uniqueExtensionAlongYoneda _ L (Iso.refl _)).symm
-#align category_theory.is_left_adjoint_of_preserves_colimits_aux CategoryTheory.isLeftAdjointOfPreservesColimitsAux
+/-- Auxiliary definition for `isLeftAdjointOfPreservesColimits`. -/
+noncomputable def adjunctionOfPreservesColimitsAux (L : (Cᵒᵖ ⥤ Type u₁) ⥤ ℰ)
+    [PreservesColimits L] : L ⊣ restrictedYoneda (yoneda ⋙ L) :=
+  (yonedaAdjunction _).ofNatIsoLeft (uniqueExtensionAlongYoneda _ L (Iso.refl _)).symm
+#align category_theory.is_left_adjoint_of_preserves_colimits_aux CategoryTheory.adjunctionOfPreservesColimitsAux
 
 /-- If `L` preserves colimits and `ℰ` has them, then it is a left adjoint. Note this is a (partial)
 converse to `leftAdjointPreservesColimits`.
 -/
-noncomputable def isLeftAdjointOfPreservesColimits (L : (C ⥤ Type u₁) ⥤ ℰ) [PreservesColimits L] :
-    IsLeftAdjoint L :=
-  let e : _ ⥤ Type u₁ ≌ _ ⥤ Type u₁ := (opOpEquivalence C).congrLeft
-  let _ := isLeftAdjointOfPreservesColimitsAux (e.functor ⋙ L : _)
-  Adjunction.leftAdjointOfNatIso (e.invFunIdAssoc _)
+lemma isLeftAdjointOfPreservesColimits (L : (C ⥤ Type u₁) ⥤ ℰ) [PreservesColimits L] :
+    L.IsLeftAdjoint :=
+  ⟨_, ⟨((opOpEquivalence C).congrLeft.symm.toAdjunction.comp
+    (adjunctionOfPreservesColimitsAux ((opOpEquivalence C).congrLeft.functor ⋙ L))).ofNatIsoLeft
+        ((opOpEquivalence C).congrLeft.invFunIdAssoc L)⟩⟩
 #align category_theory.is_left_adjoint_of_preserves_colimits CategoryTheory.isLeftAdjointOfPreservesColimits
 
 end SmallCategory
@@ -451,7 +449,7 @@ def tautologicalCocone : Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) whe
     Proposition 2.6.3(i) in [Kashiwara2006] -/
 def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
   desc := fun s => by
-    refine' ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), _⟩
+    refine ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), ?_⟩
     intros X Y f
     ext t
     dsimp

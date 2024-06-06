@@ -3,12 +3,11 @@ Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Parity
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.GroupWithZero.Power
+import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Ring.Pow
-import Mathlib.Data.Int.Bitwise
+import Mathlib.Algebra.Ring.Int
 
 #align_import algebra.order.field.power from "leanprover-community/mathlib"@"acb3d204d4ee883eb686f45d486a2a6811a01329"
 
@@ -123,90 +122,55 @@ section LinearOrderedField
 
 variable [LinearOrderedField α] {a b c d : α} {n : ℤ}
 
-/-! ### Lemmas about powers to numerals. -/
-
-section bits
-
-set_option linter.deprecated false
-
-theorem zpow_bit0_nonneg (a : α) (n : ℤ) : 0 ≤ a ^ bit0 n :=
-  (mul_self_nonneg _).trans_eq <| (zpow_bit0 _ _).symm
-#align zpow_bit0_nonneg zpow_bit0_nonneg
-
-theorem zpow_two_nonneg (a : α) : 0 ≤ a ^ (2 : ℤ) := by
-  convert zpow_bit0_nonneg a 1
-#align zpow_two_nonneg zpow_two_nonneg
-
-theorem zpow_neg_two_nonneg (a : α) : 0 ≤ a ^ (-2 : ℤ) :=
-  zpow_bit0_nonneg _ (-1)
-#align zpow_neg_two_nonneg zpow_neg_two_nonneg
-
-theorem zpow_bit0_pos (h : a ≠ 0) (n : ℤ) : 0 < a ^ bit0 n :=
-  (zpow_bit0_nonneg a n).lt_of_ne (zpow_ne_zero _ h).symm
-#align zpow_bit0_pos zpow_bit0_pos
-
-theorem zpow_two_pos_of_ne_zero (h : a ≠ 0) : 0 < a ^ (2 : ℤ) := by
-  convert zpow_bit0_pos h 1
-#align zpow_two_pos_of_ne_zero zpow_two_pos_of_ne_zero
-
-@[simp]
-theorem zpow_bit0_pos_iff (hn : n ≠ 0) : 0 < a ^ bit0 n ↔ a ≠ 0 :=
-  ⟨by
-    rintro h rfl
-    refine' (zero_zpow _ _).not_gt h
-    rwa [bit0_ne_zero],
-   fun h => zpow_bit0_pos h _⟩
-#align zpow_bit0_pos_iff zpow_bit0_pos_iff
-
-@[simp]
-theorem zpow_bit1_neg_iff : a ^ bit1 n < 0 ↔ a < 0 :=
-  ⟨fun h => not_le.1 fun h' => not_le.2 h <| zpow_nonneg h' _, fun h => by
-    rw [bit1, zpow_add_one₀ h.ne]; exact mul_neg_of_pos_of_neg (zpow_bit0_pos h.ne _) h⟩
-#align zpow_bit1_neg_iff zpow_bit1_neg_iff
-
-@[simp]
-theorem zpow_bit1_nonneg_iff : 0 ≤ a ^ bit1 n ↔ 0 ≤ a :=
-  le_iff_le_iff_lt_iff_lt.2 zpow_bit1_neg_iff
-#align zpow_bit1_nonneg_iff zpow_bit1_nonneg_iff
-
-@[simp]
-theorem zpow_bit1_nonpos_iff : a ^ bit1 n ≤ 0 ↔ a ≤ 0 := by
-  rw [le_iff_lt_or_eq, le_iff_lt_or_eq, zpow_bit1_neg_iff, zpow_eq_zero_iff (Int.bit1_ne_zero n)]
-#align zpow_bit1_nonpos_iff zpow_bit1_nonpos_iff
-
-@[simp]
-theorem zpow_bit1_pos_iff : 0 < a ^ bit1 n ↔ 0 < a :=
-  lt_iff_lt_of_le_iff_le zpow_bit1_nonpos_iff
-#align zpow_bit1_pos_iff zpow_bit1_pos_iff
-
-end bits
+#noalign zpow_bit0_nonneg
+#noalign zpow_bit0_pos
+#noalign zpow_bit0_pos_iff
+#noalign zpow_bit1_neg_iff
+#noalign zpow_bit1_nonneg_iff
+#noalign zpow_bit1_nonpos_iff
+#noalign zpow_bit1_pos_iff
 
 protected theorem Even.zpow_nonneg (hn : Even n) (a : α) : 0 ≤ a ^ n := by
-  obtain ⟨k, rfl⟩ := hn; exact zpow_bit0_nonneg _ _
+  obtain ⟨k, rfl⟩ := hn; rw [zpow_add' (by simp [em'])]; exact mul_self_nonneg _
 #align even.zpow_nonneg Even.zpow_nonneg
 
+lemma zpow_two_nonneg (a : α) : 0 ≤ a ^ (2 : ℤ) := even_two.zpow_nonneg _
+#align zpow_two_nonneg zpow_two_nonneg
+
+lemma zpow_neg_two_nonneg (a : α) : 0 ≤ a ^ (-2 : ℤ) := even_neg_two.zpow_nonneg _
+#align zpow_neg_two_nonneg zpow_neg_two_nonneg
+
+protected lemma Even.zpow_pos (hn : Even n) (ha : a ≠ 0) : 0 < a ^ n :=
+  (hn.zpow_nonneg _).lt_of_ne' (zpow_ne_zero _ ha)
+#align even.zpow_pos Even.zpow_pos
+
+lemma zpow_two_pos_of_ne_zero (ha : a ≠ 0) : 0 < a ^ (2 : ℤ) := even_two.zpow_pos ha
+#align zpow_two_pos_of_ne_zero zpow_two_pos_of_ne_zero
+
 theorem Even.zpow_pos_iff (hn : Even n) (h : n ≠ 0) : 0 < a ^ n ↔ a ≠ 0 := by
-  obtain ⟨k, rfl⟩ := hn; exact zpow_bit0_pos_iff (by rintro rfl; simp at h)
+  obtain ⟨k, rfl⟩ := hn
+  rw [zpow_add' (by simp [em']), mul_self_pos, zpow_ne_zero_iff (by simpa using h)]
 #align even.zpow_pos_iff Even.zpow_pos_iff
 
 theorem Odd.zpow_neg_iff (hn : Odd n) : a ^ n < 0 ↔ a < 0 := by
-  cases' hn with k hk; simpa only [hk, two_mul] using zpow_bit1_neg_iff
+  refine ⟨lt_imp_lt_of_le_imp_le (zpow_nonneg · _), fun ha ↦ ?_⟩
+  obtain ⟨k, rfl⟩ := hn
+  rw [zpow_add_one₀ ha.ne]
+  exact mul_neg_of_pos_of_neg (Even.zpow_pos (even_two_mul _) ha.ne) ha
 #align odd.zpow_neg_iff Odd.zpow_neg_iff
 
-protected theorem Odd.zpow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a := by
-  cases' hn with k hk; simpa only [hk, two_mul] using zpow_bit1_nonneg_iff
+protected lemma Odd.zpow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a :=
+  le_iff_le_iff_lt_iff_lt.2 hn.zpow_neg_iff
 #align odd.zpow_nonneg_iff Odd.zpow_nonneg_iff
 
 theorem Odd.zpow_nonpos_iff (hn : Odd n) : a ^ n ≤ 0 ↔ a ≤ 0 := by
-  cases' hn with k hk; simpa only [hk, two_mul] using zpow_bit1_nonpos_iff
+  rw [le_iff_lt_or_eq, le_iff_lt_or_eq, hn.zpow_neg_iff, zpow_eq_zero_iff]
+  rintro rfl
+  exact Int.odd_iff_not_even.1 hn even_zero
 #align odd.zpow_nonpos_iff Odd.zpow_nonpos_iff
 
-theorem Odd.zpow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := by
-  cases' hn with k hk; simpa only [hk, two_mul] using zpow_bit1_pos_iff
+lemma Odd.zpow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := lt_iff_lt_of_le_iff_le hn.zpow_nonpos_iff
 #align odd.zpow_pos_iff Odd.zpow_pos_iff
-
-alias ⟨_, Even.zpow_pos⟩ := Even.zpow_pos_iff
-#align even.zpow_pos Even.zpow_pos
 
 alias ⟨_, Odd.zpow_neg⟩ := Odd.zpow_neg_iff
 #align odd.zpow_neg Odd.zpow_neg
@@ -256,18 +220,18 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
     | .app (.app (.app (.const `OfNat.ofNat _) _) (.lit (Literal.natVal n))) _ =>
       guard (n % 2 = 0)
       have m : Q(ℕ) := mkRawNatLit (n / 2)
-      haveI' : $b =Q $m + $m := ⟨⟩ -- b = bit0 m
+      haveI' : $b =Q $m + $m := ⟨⟩
       haveI' : $e =Q $a ^ $b := ⟨⟩
-      pure (.nonnegative q(zpow_bit0_nonneg $a $m))
+      pure (.nonnegative q(Even.zpow_nonneg (even_add_self _) $a))
     | .app (.app (.app (.const `Neg.neg _) _) _) b' =>
       let b' ← whnfR b'
       let .true := b'.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ -n where n is a literal"
       let some n := (b'.getRevArg! 1).rawNatLit? | throwError "not a ^ -n where n is a literal"
       guard (n % 2 = 0)
       have m : Q(ℕ) := mkRawNatLit (n / 2)
-      haveI' : $b =Q (-$m) + (-$m) := ⟨⟩ -- b = bit0 (-m)
+      haveI' : $b =Q (-$m) + (-$m) := ⟨⟩
       haveI' : $e =Q $a ^ $b := ⟨⟩
-      pure (.nonnegative q(zpow_bit0_nonneg $a (-$m)))
+      pure (.nonnegative q(Even.zpow_nonneg (even_add_self _) $a))
     | _ => throwError "not a ^ n where n is a literal or a negated literal"
   orElse result do
     let ra ← core zα pα a

@@ -395,8 +395,8 @@ protected def liftOn₂ {φ} (d₁ d₂ : ManyOneDegree) (f : Set ℕ → Set �
       intro p₁ p₂ hp
       induction d₂ using ManyOneDegree.ind_on
       apply h
-      assumption
-      rfl)
+      · assumption
+      · rfl)
 #align many_one_degree.lift_on₂ ManyOneDegree.liftOn₂
 
 @[simp]

@@ -91,28 +91,36 @@ def ofStateAuxRelabelling :
       Relabelling (ofStateAux n s hn) (ofStateAux m s hm)
   | s, 0, 0, hn, hm => by
     dsimp [PGame.ofStateAux]
-    fconstructor; rfl; rfl
+    fconstructor
+    · rfl
+    · rfl
     · intro i; dsimp at i; exfalso
       exact turnBound_ne_zero_of_left_move i.2 (nonpos_iff_eq_zero.mp hn)
     · intro j; dsimp at j; exfalso
       exact turnBound_ne_zero_of_right_move j.2 (nonpos_iff_eq_zero.mp hm)
   | s, 0, m + 1, hn, hm => by
     dsimp [PGame.ofStateAux]
-    fconstructor; rfl; rfl
+    fconstructor
+    · rfl
+    · rfl
     · intro i; dsimp at i; exfalso
       exact turnBound_ne_zero_of_left_move i.2 (nonpos_iff_eq_zero.mp hn)
     · intro j; dsimp at j; exfalso
       exact turnBound_ne_zero_of_right_move j.2 (nonpos_iff_eq_zero.mp hn)
   | s, n + 1, 0, hn, hm => by
     dsimp [PGame.ofStateAux]
-    fconstructor; rfl; rfl
+    fconstructor
+    · rfl
+    · rfl
     · intro i; dsimp at i; exfalso
       exact turnBound_ne_zero_of_left_move i.2 (nonpos_iff_eq_zero.mp hm)
     · intro j; dsimp at j; exfalso
       exact turnBound_ne_zero_of_right_move j.2 (nonpos_iff_eq_zero.mp hm)
   | s, n + 1, m + 1, hn, hm => by
     dsimp [PGame.ofStateAux]
-    fconstructor; rfl; rfl
+    fconstructor
+    · rfl
+    · rfl
     · intro i
       apply ofStateAuxRelabelling
     · intro j
@@ -168,8 +176,8 @@ has itself been constructed using `of`.
 def relabellingMoveLeft (s : S) (t : LeftMoves (ofState s)) :
     Relabelling (moveLeft (ofState s) t) (ofState ((leftMovesOfState s).toFun t : S)) := by
   trans
-  apply relabellingMoveLeftAux
-  apply ofStateAuxRelabelling
+  · apply relabellingMoveLeftAux
+  · apply ofStateAuxRelabelling
 #align pgame.relabelling_move_left SetTheory.PGame.relabellingMoveLeft
 
 /-- The relabelling showing `moveRight` applied to a game constructed using `ofStateAux`
@@ -193,8 +201,8 @@ has itself been constructed using `of`.
 def relabellingMoveRight (s : S) (t : RightMoves (ofState s)) :
     Relabelling (moveRight (ofState s) t) (ofState ((rightMovesOfState s).toFun t : S)) := by
   trans
-  apply relabellingMoveRightAux
-  apply ofStateAuxRelabelling
+  · apply relabellingMoveRightAux
+  · apply ofStateAuxRelabelling
 #align pgame.relabelling_move_right SetTheory.PGame.relabellingMoveRight
 
 instance fintypeLeftMovesOfStateAux (n : ℕ) (s : S) (h : turnBound s ≤ n) :

@@ -67,7 +67,7 @@ def evalTacticCapturingMessages (tac : TSyntax `tactic) (only : Message → Bool
   try
     evalTactic tac
     let (capture, leave) := (← getThe Core.State).messages.msgs.toList.partition only
-    msgs := ⟨leave.foldl (fun m => m.push) msgs.msgs⟩
+    msgs := leave.foldl (·.add) msgs
     return capture
   catch e =>
     msgs := msgs ++ (← getThe Core.State).messages

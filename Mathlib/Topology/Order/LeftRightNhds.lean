@@ -56,9 +56,7 @@ theorem TFAE_mem_nhdsWithin_Ioi {a b : α} (hab : a < b) (s : Set α) :
   · intro h
     rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 h with ⟨v, va, hv⟩
     rcases exists_Ico_subset_of_mem_nhds' va hab with ⟨u, au, hu⟩
-    refine' ⟨u, au, fun x hx => _⟩
-    refine' hv ⟨hu ⟨le_of_lt hx.1, hx.2⟩, _⟩
-    exact hx.1
+    exact ⟨u, au, fun x hx => hv ⟨hu ⟨le_of_lt hx.1, hx.2⟩, hx.1⟩⟩
   tfae_finish
 #align tfae_mem_nhds_within_Ioi TFAE_mem_nhdsWithin_Ioi
 
@@ -318,7 +316,7 @@ theorem nhds_eq_iInf_abs_sub (a : α) : 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| <
 
 theorem orderTopology_of_nhds_abs {α : Type*} [TopologicalSpace α] [LinearOrderedAddCommGroup α]
     (h_nhds : ∀ a : α, 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r }) : OrderTopology α := by
-  refine' ⟨TopologicalSpace.ext_nhds fun a => _⟩
+  refine ⟨TopologicalSpace.ext_nhds fun a => ?_⟩
   rw [h_nhds]
   letI := Preorder.topology α; letI : OrderTopology α := ⟨rfl⟩
   exact (nhds_eq_iInf_abs_sub a).symm
@@ -340,7 +338,7 @@ theorem Filter.Tendsto.add_atTop {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tend
     Tendsto (fun x => f x + g x) l atTop := by
   nontriviality α
   obtain ⟨C', hC'⟩ : ∃ C', C' < C := exists_lt C
-  refine' tendsto_atTop_add_left_of_le' _ C' _ hg
+  refine tendsto_atTop_add_left_of_le' _ C' ?_ hg
   exact (hf.eventually (lt_mem_nhds hC')).mono fun x => le_of_lt
 #align filter.tendsto.add_at_top Filter.Tendsto.add_atTop
 

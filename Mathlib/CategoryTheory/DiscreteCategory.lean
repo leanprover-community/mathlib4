@@ -225,6 +225,11 @@ def natIso {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.o
     simp
 #align category_theory.discrete.nat_iso CategoryTheory.Discrete.natIso
 
+instance {I : Type*} {F G : Discrete I ⥤ C} (f : ∀ i, F.obj i ⟶ G.obj i) [∀ i, IsIso (f i)] :
+    IsIso (Discrete.natTrans f) := by
+  change IsIso (Discrete.natIso (fun i => asIso (f i))).hom
+  infer_instance
+
 @[simp]
 theorem natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ≅ G.obj i)
     (i : Discrete I) : (Discrete.natIso f).app i = f i := by aesop_cat

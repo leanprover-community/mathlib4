@@ -12,7 +12,7 @@ import Mathlib.Logic.Function.Iterate
 # Flows and invariant sets
 
 This file defines a flow on a topological space `α` by a topological
-monoid `τ` as a continuous monoid-act of `τ` on `α`. Anticipating the
+monoid `τ` as a continuous monoid-action of `τ` on `α`. Anticipating the
 cases where `τ` is one of `ℕ`, `ℤ`, `ℝ⁺`, or `ℝ`, we use additive
 notation for the monoids, though the definition does not require
 commutativity.
@@ -34,8 +34,6 @@ open Set Function Filter
 /-!
 ### Invariant sets
 -/
-
-
 section Invariant
 
 variable {τ : Type*} {α : Type*}
@@ -82,11 +80,11 @@ end Invariant
 ### Flows
 -/
 
-
 /-- A flow on a topological space `α` by an additive topological
     monoid `τ` is a continuous monoid action of `τ` on `α`. -/
 structure Flow (τ : Type*) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] (α : Type*)
   [TopologicalSpace α] where
+  /-- The map `τ → α → α` underlying a flow of `τ` on `α`. -/
   toFun : τ → α → α
   cont' : Continuous (uncurry toFun)
   map_add' : ∀ t₁ t₂ x, toFun (t₁ + t₂) x = toFun t₁ (toFun t₂ x)
@@ -95,8 +93,8 @@ structure Flow (τ : Type*) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd 
 
 namespace Flow
 
-variable {τ : Type*} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ] {α : Type*}
-  [TopologicalSpace α] (ϕ : Flow τ α)
+variable {τ : Type*} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ]
+  {α : Type*} [TopologicalSpace α] (ϕ : Flow τ α)
 
 instance : Inhabited (Flow τ α) :=
   ⟨{  toFun := fun _ x => x
@@ -154,8 +152,8 @@ end Flow
 
 namespace Flow
 
-variable {τ : Type*} [AddCommGroup τ] [TopologicalSpace τ] [TopologicalAddGroup τ] {α : Type*}
-  [TopologicalSpace α] (ϕ : Flow τ α)
+variable {τ : Type*} [AddCommGroup τ] [TopologicalSpace τ] [TopologicalAddGroup τ]
+  {α : Type*} [TopologicalSpace α] (ϕ : Flow τ α)
 
 theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s = s :=
   (isInvariant_iff_image _ _).trans

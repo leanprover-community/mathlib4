@@ -5,7 +5,6 @@ Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hu
   Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.GroupPower.Basic
 
 #align_import algebra.hom.group_instances from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
 
@@ -103,6 +102,14 @@ theorem AddMonoid.End.intCast_apply [AddCommGroup M] (z : ℤ) (m : M) :
     (↑z : AddMonoid.End M) m = z • m :=
   rfl
 #align add_monoid.End.int_cast_apply AddMonoid.End.intCast_apply
+
+@[deprecated (since := "2024-04-17")]
+alias AddMonoid.End.int_cast_apply := AddMonoid.End.intCast_apply
+
+@[to_additive (attr := simp)] lemma MonoidHom.pow_apply {M N : Type*} [MulOneClass M]
+    [CommMonoid N] (f : M →* N) (n : ℕ) (x : M) :
+    (f ^ n) x = (f x) ^ n :=
+  rfl
 
 /-!
 ### Morphisms of morphisms

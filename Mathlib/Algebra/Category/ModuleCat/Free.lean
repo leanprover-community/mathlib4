@@ -44,7 +44,7 @@ variable (hv : LinearIndependent R v) {u : ι ⊕ ι' → S.X₂}
 theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
     (span R (range (u ∘ Sum.inr))) := by
   rw [huv, disjoint_comm]
-  refine' Disjoint.mono_right (span_mono (range_comp_subset_range _ _)) _
+  refine Disjoint.mono_right (span_mono (range_comp_subset_range _ _)) ?_
   rw [← LinearMap.range_coe, span_eq (LinearMap.range S.f), hS.moduleCat_range_eq_ker]
   exact range_ker_disjoint hw
 
@@ -61,7 +61,7 @@ where the top row is an exact sequence of modules and the maps on the bottom are
 independent. -/
 theorem linearIndependent_leftExact : LinearIndependent R u := by
   rw [linearIndependent_sum]
-  refine' ⟨_, LinearIndependent.of_comp S.g hw, disjoint_span_sum hS hw huv⟩
+  refine ⟨?_, LinearIndependent.of_comp S.g hw, disjoint_span_sum hS hw huv⟩
   rw [huv, LinearMap.linearIndependent_iff S.f]; swap
   · rw [LinearMap.ker_eq_bot, ← mono_iff_injective]
     infer_instance
@@ -129,7 +129,7 @@ theorem span_exact {β : Type*} {u : ι ⊕ β → S.X₂} (huv : u ∘ Sum.inl 
 theorem span_rightExact {w : ι' → S.X₃} (hv : ⊤ ≤ span R (range v))
     (hw : ⊤ ≤ span R (range w)) (hE : Epi S.g) :
     ⊤ ≤ span R (range (Sum.elim (S.f ∘ v) (S.g.toFun.invFun ∘ w))) := by
-  refine' span_exact hS _ hv _
+  refine span_exact hS ?_ hv ?_
   · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inl]
   · convert hw
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inr]

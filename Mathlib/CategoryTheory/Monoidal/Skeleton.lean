@@ -57,7 +57,7 @@ The skeleton of a monoidal category can be viewed as a monoid, where the multipl
 the tensor product, and satisfies the monoid axioms since it is a skeleton.
 -/
 noncomputable instance instMonoid : Monoid (Skeleton C) :=
-  monoidOfSkeletalMonoidal (skeletonIsSkeleton _).skel
+  monoidOfSkeletalMonoidal (skeleton_isSkeleton _).skel
 
 /-- The skeleton of a braided monoidal category has a braided monoidal structure itself, induced by
 the equivalence. -/
@@ -71,7 +71,7 @@ multiplication is given by the tensor product, and satisfies the monoid axioms s
 skeleton.
 -/
 noncomputable instance instCommMonoid [BraidedCategory C] : CommMonoid (Skeleton C) :=
-  commMonoidOfSkeletalBraided (skeletonIsSkeleton _).skel
+  commMonoidOfSkeletalBraided (skeleton_isSkeleton _).skel
 
 end Skeleton
 

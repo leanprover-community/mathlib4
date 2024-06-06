@@ -130,7 +130,7 @@ theorem has_over_limit_discrete_of_widePullback_limit {B : C} (F : Discrete J те
     [HasLimit (widePullbackDiagramOfDiagramOver B F)] : HasLimit F :=
   HasLimit.mk
     { cone := _
-      isLimit := IsLimit.ofRightAdjoint (conesEquiv B F).functor
+      isLimit := IsLimit.ofRightAdjoint (conesEquiv B F).symm.toAdjunction
         (limit.isLimit (widePullbackDiagramOfDiagramOver B F)) }
 #align category_theory.over.construct_products.has_over_limit_discrete_of_wide_pullback_limit CategoryTheory.Over.ConstructProducts.has_over_limit_discrete_of_widePullback_limit
 

@@ -162,6 +162,7 @@ theorem Forall₂.get :
   | _, _, Forall₂.cons ha _, 0, _, _ => ha
   | _, _, Forall₂.cons _ hl, succ _, _, _ => hl.get _ _
 
+set_option linter.deprecated false in
 @[deprecated (since := "2024-05-05")] theorem Forall₂.nthLe {x y} (h : Forall₂ R x y) ⦃i : ℕ⦄
     (hx : i < x.length) (hy : i < y.length) : R (x.nthLe i hx) (y.nthLe i hy) := h.get hx hy
 #align list.forall₂.nth_le List.Forall₂.nthLe
@@ -175,6 +176,7 @@ theorem forall₂_of_length_eq_of_get :
       (forall₂_of_length_eq_of_get (succ.inj hl) fun i h₁ h₂ =>
         h i.succ (succ_lt_succ h₁) (succ_lt_succ h₂))
 
+set_option linter.deprecated false in
 @[deprecated (since := "2024-05-05")] theorem forall₂_of_length_eq_of_nthLe {x y}
     (H : x.length = y.length) (H' : ∀ i h₁ h₂, R (x.nthLe i h₁) (y.nthLe i h₂)) :
     Forall₂ R x y := forall₂_of_length_eq_of_get H H'
@@ -184,6 +186,7 @@ theorem forall₂_iff_get {l₁ : List α} {l₂ : List β} :
     Forall₂ R l₁ l₂ ↔ l₁.length = l₂.length ∧ ∀ i h₁ h₂, R (l₁.get ⟨i, h₁⟩) (l₂.get ⟨i, h₂⟩) :=
   ⟨fun h => ⟨h.length_eq, h.get⟩, fun h => forall₂_of_length_eq_of_get h.1 h.2⟩
 
+set_option linter.deprecated false in
 @[deprecated (since := "2024-05-05")] theorem forall₂_iff_nthLe {l₁ : List α} {l₂ : List β} :
     Forall₂ R l₁ l₂ ↔ l₁.length = l₂.length ∧ ∀ i h₁ h₂, R (l₁.nthLe i h₁) (l₂.nthLe i h₂) :=
   forall₂_iff_get
