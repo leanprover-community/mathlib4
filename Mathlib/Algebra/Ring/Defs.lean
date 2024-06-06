@@ -271,6 +271,8 @@ class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemi
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
 #align comm_semiring CommSemiring
 
+attribute [instance 90] CommSemiring.toSemiring
+
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
     NonUnitalCommSemiring α :=

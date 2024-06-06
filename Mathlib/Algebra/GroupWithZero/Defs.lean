@@ -117,7 +117,7 @@ and right absorbing. -/
 class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
 #align monoid_with_zero MonoidWithZero
 
-attribute [instance 50] MonoidWithZero.toMonoid
+attribute [instance 100] MonoidWithZero.toMonoid
 attribute [instance 0] MonoidWithZero.toZero
 
 /-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left

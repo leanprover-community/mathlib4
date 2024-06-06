@@ -106,6 +106,8 @@ class DivisionSemiring (α : Type*) extends Semiring α, GroupWithZero α, NNRat
   protected nnqsmul_def (q : ℚ≥0) (a : α) : nnqsmul q a = NNRat.cast q * a := by intros; rfl
 #align division_semiring DivisionSemiring
 
+attribute [instance 50] CommSemiring.toSemiring
+
 /-- A `DivisionRing` is a `Ring` with multiplicative inverses for nonzero elements.
 
 An instance of `DivisionRing K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`.

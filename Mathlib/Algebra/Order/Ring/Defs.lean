@@ -136,6 +136,8 @@ class OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α
   protected mul_le_mul_of_nonneg_right : ∀ a b c : α, a ≤ b → 0 ≤ c → a * c ≤ b * c
 #align ordered_semiring OrderedSemiring
 
+attribute [instance 10] OrderedSemiring.toSemiring
+
 /-- An `OrderedCommSemiring` is a commutative semiring with a partial order such that addition is
 monotone and multiplication by a nonnegative number is monotone. -/
 class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α where

@@ -744,6 +744,8 @@ class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 #align comm_monoid CommMonoid
 
+attribute [instance 90] CommMonoid.toMonoid
+
 attribute [to_additive existing] CommMonoid.toCommSemigroup
 
 section LeftCancelMonoid
