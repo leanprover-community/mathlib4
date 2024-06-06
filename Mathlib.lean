@@ -568,6 +568,7 @@ import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Algebra.Order.Sub.Prod
 import Mathlib.Algebra.Order.Sub.WithTop
+import Mathlib.Algebra.Order.Sum
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Algebra.Order.ZeroLEOne
@@ -3637,6 +3638,7 @@ import Mathlib.RingTheory.QuotientNilpotent
 import Mathlib.RingTheory.QuotientNoetherian
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Regular.IsSMulRegular
+import Mathlib.RingTheory.Regular.RegularSequence
 import Mathlib.RingTheory.RingHom.Finite
 import Mathlib.RingTheory.RingHom.FiniteType
 import Mathlib.RingTheory.RingHom.Integral
