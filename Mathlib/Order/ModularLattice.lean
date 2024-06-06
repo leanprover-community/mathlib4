@@ -238,7 +238,7 @@ theorem eq_of_le_of_inf_le_of_le_sup (hxy : x ≤ y) (hinf : y ⊓ z ≤ x) (hsu
 
 theorem eq_of_le_of_inf_le_of_sup_le (hxy : x ≤ y) (hinf : y ⊓ z ≤ x ⊓ z) (hsup : y ⊔ z ≤ x ⊔ z) :
     x = y :=
-  eq_of_le_of_inf_le_of_le_sup hxy (by simpa using hinf) (by simpa using hsup)
+  eq_of_le_of_inf_le_of_le_sup hxy (le_inf_iff.1 hinf).1 (sup_le_iff.1 hsup).1
 
 theorem sup_lt_sup_of_lt_of_inf_le_inf (hxy : x < y) (hinf : y ⊓ z ≤ x ⊓ z) : x ⊔ z < y ⊔ z :=
   lt_of_le_of_ne (sup_le_sup_right (le_of_lt hxy) _) fun hsup =>
