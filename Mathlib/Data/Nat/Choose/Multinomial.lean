@@ -52,10 +52,10 @@ theorem multinomial_spec : (∏ i ∈ s, (f i)!) * multinomial s f = (∑ i ∈ 
   Nat.mul_div_cancel' (prod_factorial_dvd_factorial_sum s f)
 #align nat.multinomial_spec Nat.multinomial_spec
 
-@[simp]
-theorem multinomial_nil : multinomial ∅ f = 1 := by
-  dsimp [multinomial]
-#align nat.multinomial_nil Nat.multinomial_nil
+@[simp] lemma multinomial_empty : multinomial ∅ f = 1 := rfl
+#align nat.multinomial_nil Nat.multinomial_empty
+
+@[deprecated (since := "2024-06-01")] alias multinomial_nil := multinomial_empty
 
 variable {s f}
 

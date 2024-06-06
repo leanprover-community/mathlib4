@@ -271,7 +271,7 @@ theorem measurable_toNNReal : Measurable ENNReal.toNNReal :=
 #align ennreal.measurable_to_nnreal ENNReal.measurable_toNNReal
 
 instance instMeasurableMul₂ : MeasurableMul₂ ℝ≥0∞ := by
-  refine' ⟨measurable_of_measurable_nnreal_nnreal _ _ _⟩
+  refine ⟨measurable_of_measurable_nnreal_nnreal ?_ ?_ ?_⟩
   · simp only [← ENNReal.coe_mul, measurable_mul.coe_nnreal_ennreal]
   · simp only [ENNReal.top_mul', ENNReal.coe_eq_zero]
     exact measurable_const.piecewise (measurableSet_singleton _) measurable_const

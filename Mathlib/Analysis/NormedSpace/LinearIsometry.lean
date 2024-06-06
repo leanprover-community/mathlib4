@@ -64,8 +64,8 @@ See also `LinearIsometryClass F R E E₂` for the case where `σ` is the identit
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
-class SemilinearIsometryClass (𝓕 : Type*) {R R₂ : outParam (Type*)} [Semiring R] [Semiring R₂]
-  (σ₁₂ : outParam <| R →+* R₂) (E E₂ : outParam (Type*)) [SeminormedAddCommGroup E]
+class SemilinearIsometryClass (𝓕 : Type*) {R R₂ : outParam Type*} [Semiring R] [Semiring R₂]
+  (σ₁₂ : outParam <| R →+* R₂) (E E₂ : outParam Type*) [SeminormedAddCommGroup E]
   [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [FunLike 𝓕 E E₂] extends
   SemilinearMapClass 𝓕 σ₁₂ E E₂ : Prop where
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
@@ -76,7 +76,7 @@ class SemilinearIsometryClass (𝓕 : Type*) {R R₂ : outParam (Type*)} [Semiri
 
 This is an abbreviation for `SemilinearIsometryClass F (RingHom.id R) E E₂`.
 -/
-abbrev LinearIsometryClass (𝓕 : Type*) (R E E₂ : outParam (Type*)) [Semiring R]
+abbrev LinearIsometryClass (𝓕 : Type*) (R E E₂ : outParam Type*) [Semiring R]
     [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂]
     [FunLike 𝓕 E E₂] :=
   SemilinearIsometryClass 𝓕 (RingHom.id R) E E₂
@@ -509,9 +509,9 @@ See also `LinearIsometryEquivClass F R E E₂` for the case where `σ` is the id
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
-class SemilinearIsometryEquivClass (𝓕 : Type*) {R R₂ : outParam (Type*)} [Semiring R]
+class SemilinearIsometryEquivClass (𝓕 : Type*) {R R₂ : outParam Type*} [Semiring R]
   [Semiring R₂] (σ₁₂ : outParam <| R →+* R₂) {σ₂₁ : outParam <| R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
-  [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : outParam (Type*)) [SeminormedAddCommGroup E]
+  [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : outParam Type*) [SeminormedAddCommGroup E]
   [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [EquivLike 𝓕 E E₂]
   extends SemilinearEquivClass 𝓕 σ₁₂ E E₂ : Prop where
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
@@ -522,7 +522,7 @@ class SemilinearIsometryEquivClass (𝓕 : Type*) {R R₂ : outParam (Type*)} [S
 
 This is an abbreviation for `SemilinearIsometryEquivClass F (RingHom.id R) E E₂`.
 -/
-abbrev LinearIsometryEquivClass (𝓕 : Type*) (R E E₂ : outParam (Type*)) [Semiring R]
+abbrev LinearIsometryEquivClass (𝓕 : Type*) (R E E₂ : outParam Type*) [Semiring R]
     [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂]
     [EquivLike 𝓕 E E₂] :=
   SemilinearIsometryEquivClass 𝓕 (RingHom.id R) E E₂

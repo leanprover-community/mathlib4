@@ -368,8 +368,9 @@ protected theorem mul {q r : ℚ} (hq : q ≠ 0) (hr : r ≠ 0) :
 #align padic_val_rat.mul padicValRat.mul
 
 /-- A rewrite lemma for `padicValRat p (q^k)` with condition `q ≠ 0`. -/
-protected theorem pow {q : ℚ} (hq : q ≠ 0) {k : ℕ} : padicValRat p (q ^ k) = k * padicValRat p q :=
-  by induction k <;>
+protected theorem pow {q : ℚ} (hq : q ≠ 0) {k : ℕ} :
+    padicValRat p (q ^ k) = k * padicValRat p q := by
+  induction k <;>
     simp [*, padicValRat.mul hq (pow_ne_zero _ hq), _root_.pow_succ', add_mul, add_comm]
 #align padic_val_rat.pow padicValRat.pow
 

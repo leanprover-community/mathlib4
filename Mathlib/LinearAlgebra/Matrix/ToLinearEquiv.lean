@@ -81,16 +81,15 @@ See `Matrix.toLinearEquiv'` for this result on `n → R`.
 -/
 @[simps apply]
 noncomputable def toLinearEquiv [DecidableEq n] (A : Matrix n n R) (hA : IsUnit A.det) :
-    M ≃ₗ[R] M := by
-  refine'
-  { toLin b b A with
-    toFun := toLin b b A
-    invFun := toLin b b A⁻¹
-    left_inv := fun x => _
-    right_inv := fun x => _ } <;>
-    simp only <;>
-    rw [← LinearMap.comp_apply] <;>
-    simp only [← Matrix.toLin_mul b b b, Matrix.nonsing_inv_mul _ hA, Matrix.mul_nonsing_inv _ hA,
+    M ≃ₗ[R] M where
+  __ := toLin b b A
+  toFun := toLin b b A
+  invFun := toLin b b A⁻¹
+  left_inv x := by
+    simp_rw [← LinearMap.comp_apply, ← Matrix.toLin_mul b b b, Matrix.nonsing_inv_mul _ hA,
+      toLin_one, LinearMap.id_apply]
+  right_inv x := by
+    simp_rw [← LinearMap.comp_apply, ← Matrix.toLin_mul b b b, Matrix.mul_nonsing_inv _ hA,
       toLin_one, LinearMap.id_apply]
 #align matrix.to_linear_equiv Matrix.toLinearEquiv
 

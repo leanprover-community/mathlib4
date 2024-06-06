@@ -364,7 +364,7 @@ theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
 #align uniform_space.to_core_to_topological_space UniformSpace.toCore_toTopologicalSpace
 
 /-- Build a `UniformSpace` from a `UniformSpace.Core` and a compatible topology.
-Use `UnifiormSpace.mk` instead to avoid proving
+Use `UniformSpace.mk` instead to avoid proving
 the unnecessary assumption `UniformSpace.Core.refl`.
 
 The main constructor used to use a different compatibility assumption.
@@ -1005,6 +1005,13 @@ theorem Dense.biUnion_uniformity_ball {s : Set α} {U : Set (α × α)} (hs : De
   exact ⟨x, hxs, hxy⟩
 #align dense.bUnion_uniformity_ball Dense.biUnion_uniformity_ball
 
+/-- The uniform neighborhoods of all points of a dense indexed collection cover the whole space. -/
+lemma DenseRange.iUnion_uniformity_ball {ι : Type*} {xs : ι → α}
+    (xs_dense : DenseRange xs) {U : Set (α × α)} (hU : U ∈ uniformity α) :
+    ⋃ i, UniformSpace.ball (xs i) U = univ := by
+  rw [← biUnion_range (f := xs) (g := fun x ↦ UniformSpace.ball x U)]
+  exact Dense.biUnion_uniformity_ball xs_dense hU
+
 /-!
 ### Uniformity bases
 -/
@@ -1139,6 +1146,8 @@ section Constructions
 instance : PartialOrder (UniformSpace α) :=
   PartialOrder.lift (fun u => 𝓤[u]) fun _ _ => UniformSpace.ext
 
+protected theorem UniformSpace.le_def {u₁ u₂ : UniformSpace α} : u₁ ≤ u₂ ↔ 𝓤[u₁] ≤ 𝓤[u₂] := Iff.rfl
+
 instance : InfSet (UniformSpace α) :=
   ⟨fun s =>
     UniformSpace.ofCore
@@ -1157,10 +1166,8 @@ protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : Uniform
     (h : ∀ t' ∈ tt, t ≤ t') : t ≤ sInf tt :=
   show 𝓤[t] ≤ ⨅ u ∈ tt, 𝓤[u] from le_iInf₂ h
 
-set_option linter.deprecated false in
--- TODO update this code to avoid the deprecation
 instance : Top (UniformSpace α) :=
-  ⟨.ofNhdsEqComap ⟨⊤, le_top, le_top, le_top⟩ ⊤ fun x ↦ by simp only [nhds_top, comap_top]⟩
+  ⟨@UniformSpace.mk α ⊤ ⊤ le_top le_top fun x ↦ by simp only [nhds_top, comap_top]⟩
 
 instance : Bot (UniformSpace α) :=
   ⟨{  toTopologicalSpace := ⊥
@@ -1301,8 +1308,8 @@ namespace UniformSpace
 
 theorem to_nhds_mono {u₁ u₂ : UniformSpace α} (h : u₁ ≤ u₂) (a : α) :
     @nhds _ (@UniformSpace.toTopologicalSpace _ u₁) a ≤
-      @nhds _ (@UniformSpace.toTopologicalSpace _ u₂) a :=
-  by rw [@nhds_eq_uniformity α u₁ a, @nhds_eq_uniformity α u₂ a]; exact lift'_mono h le_rfl
+      @nhds _ (@UniformSpace.toTopologicalSpace _ u₂) a := by
+  rw [@nhds_eq_uniformity α u₁ a, @nhds_eq_uniformity α u₂ a]; exact lift'_mono h le_rfl
 #align to_nhds_mono UniformSpace.to_nhds_mono
 
 theorem toTopologicalSpace_mono {u₁ u₂ : UniformSpace α} (h : u₁ ≤ u₂) :

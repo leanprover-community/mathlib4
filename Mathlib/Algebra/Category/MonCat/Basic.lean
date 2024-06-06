@@ -71,7 +71,7 @@ instance concreteCategory : ConcreteCategory MonCat :=
   BundledHom.concreteCategory _
 
 @[to_additive]
-instance : CoeSort MonCat (Type*) where
+instance : CoeSort MonCat Type* where
   coe X := X.α
 
 @[to_additive]
@@ -198,7 +198,7 @@ instance concreteCategory : ConcreteCategory CommMonCat := by
   infer_instance
 
 @[to_additive]
-instance : CoeSort CommMonCat (Type*) where
+instance : CoeSort CommMonCat Type* where
   coe X := X.α
 
 @[to_additive]
@@ -385,7 +385,7 @@ instance MonCat.forget_reflects_isos : (forget MonCat.{u}).ReflectsIsomorphisms 
     -- Again a problem that exists already creeps into other things leanprover/lean4#2644
     -- this used to be `by aesop`; see next declaration
     let e : X ≃* Y := MulEquiv.mk i.toEquiv (MonoidHom.map_mul (show MonoidHom X Y from f))
-    exact IsIso.of_iso e.toMonCatIso
+    exact e.toMonCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align Mon.forget_reflects_isos MonCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
@@ -398,7 +398,7 @@ instance CommMonCat.forget_reflects_isos : (forget CommMonCat.{u}).ReflectsIsomo
     let e : X ≃* Y := MulEquiv.mk i.toEquiv
       -- Porting FIXME: this would ideally be `by aesop`, as in `MonCat.forget_reflects_isos`
       (MonoidHom.map_mul (show MonoidHom X Y from f))
-    exact IsIso.of_iso e.toCommMonCatIso
+    exact e.toCommMonCatIso.isIso_hom
 set_option linter.uppercaseLean3 false in
 #align CommMon.forget_reflects_isos CommMonCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
