@@ -2,8 +2,6 @@ name: Compute transitive imports
 
 on:
   pull_request:
-    branches:
-      - main
 
 jobs:
   build:
@@ -11,12 +9,12 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: 3.8
 
@@ -32,7 +30,7 @@ jobs:
         python ./scripts/count-trans-deps.py > head.json
 
         # Checkout the merge base
-        git checkout $(git merge-base refs/remotes/origin/main ${{ github.sha }})
+        git checkout "$(git merge-base refs/remotes/origin/main ${{ github.sha }})"
 
         # Compute the counts for the merge base
         python ./scripts/count-trans-deps.py > base.json
