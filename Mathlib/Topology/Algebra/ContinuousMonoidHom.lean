@@ -444,7 +444,7 @@ theorem locallyCompactSpace_of_hasBasis (V : ℕ → Set Y)
     · exact fun x hx ↦ hV (ih (hU3 n hx)) (map_mul f x x ▸ ih (hU2 n (Set.mul_mem_mul hx hx)))
   apply locallyCompactSpace_of_equicontinuousAt (U 0) (V 0) hU0c (hVo.mem_of_mem trivial)
   rw [hVo.uniformity_of_nhds_one.equicontinuousAt_iff_right]
-  refine' fun n _ ↦ Filter.eventually_iff_exists_mem.mpr ⟨U n, hU1 n, fun x hx ⟨f, hf⟩ ↦ _⟩
+  refine fun n _ ↦ Filter.eventually_iff_exists_mem.mpr ⟨U n, hU1 n, fun x hx ⟨f, hf⟩ ↦ ?_⟩
   rw [Set.mem_setOf_eq, map_one, div_one]
   exact hU4 f hf n hx
 
