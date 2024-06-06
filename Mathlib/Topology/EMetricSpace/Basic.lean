@@ -844,7 +844,7 @@ theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : Is
     SeparableSpace s := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
   lift t to Set s using hts
-  refine ⟨⟨t, countable_of_injective_of_countable_image (Subtype.coe_injective.injOn _) htc, ?_⟩⟩
+  refine ⟨⟨t, countable_of_injective_of_countable_image Subtype.coe_injective.injOn htc, ?_⟩⟩
   rwa [inducing_subtype_val.dense_iff, Subtype.forall]
 #align topological_space.is_separable.separable_space TopologicalSpace.IsSeparable.separableSpace
 

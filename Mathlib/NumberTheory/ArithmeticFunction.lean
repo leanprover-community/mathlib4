@@ -808,7 +808,7 @@ theorem prodPrimeFactors_add_of_squarefree [CommSemiring R] {f g : ArithmeticFun
   rw [t.prod_val, Function.id_def,
     ← prod_primeFactors_sdiff_of_squarefree hn (Finset.mem_powerset.mp ht),
     hf.map_prod_of_subset_primeFactors n t (Finset.mem_powerset.mp ht),
-    ← hg.map_prod_of_subset_primeFactors n (_ \ t) (Finset.sdiff_subset _ t)]
+    ← hg.map_prod_of_subset_primeFactors n (_ \ t) Finset.sdiff_subset]
 
 theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) {x y : ℕ} :
