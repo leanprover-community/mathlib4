@@ -113,7 +113,7 @@ theorem CompleteLattice.Independent.linear_independent' {ι R M : Type*} {v : ι
   refine linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => ?_
   replace hv := CompleteLattice.independent_def.mp hv i
   simp only [iSup_subtype', ← Submodule.span_range_eq_iSup (ι := Subtype _), disjoint_iff] at hv
-  have : r • v i ∈ ⊥ := by
+  have : r • v i ∈ (⊥ : Submodule R M) := by
     rw [← hv, Submodule.mem_inf]
     refine ⟨Submodule.mem_span_singleton.mpr ⟨r, rfl⟩, ?_⟩
     convert hi

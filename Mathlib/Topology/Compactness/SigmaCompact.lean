@@ -429,9 +429,9 @@ noncomputable def choice (X : Type*) [TopologicalSpace X] [WeaklyLocallyCompactS
         (exists_compact_superset s.2).choose_spec.1.union (isCompact_compactCovering _ _)⟩
   refine ⟨⟨fun n ↦ (K n).1, fun n => (K n).2, fun n ↦ ?_, ?_⟩⟩
   · exact Subset.trans (exists_compact_superset (K n).2).choose_spec.2
-      (interior_mono <| subset_union_left _ _)
+      (interior_mono subset_union_left)
   · refine univ_subset_iff.1 (iUnion_compactCovering X ▸ ?_)
-    exact iUnion_mono' fun n => ⟨n + 1, subset_union_right _ _⟩
+    exact iUnion_mono' fun n => ⟨n + 1, subset_union_right⟩
 #align compact_exhaustion.choice CompactExhaustion.choice
 
 noncomputable instance [LocallyCompactSpace X] :
