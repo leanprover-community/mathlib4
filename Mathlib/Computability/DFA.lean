@@ -19,10 +19,9 @@ Note that this definition allows for Automaton with infinite states, a `Fintype`
 supplied for true DFA's.
 -/
 
+universe u v
 
 open Computability
-
-universe u v
 
 -- Porting note: Required as `DFA` is used in mathlib3
 set_option linter.uppercaseLean3 false
@@ -167,3 +166,7 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
 #align DFA.pumping_lemma DFA.pumping_lemma
 
 end DFA
+
+/-- Regular languages are defined by DFAs with finite states. -/
+def Language.IsRegular {T : Type u} (L : Language T) : Prop :=
+  ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L
