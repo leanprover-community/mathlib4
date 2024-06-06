@@ -154,8 +154,7 @@ noncomputable def LiftIso {S : 𝒮} {a b : Fib p S}
   let b' : Fiber p S := (InducedFunctor p S).obj b
   let Φ' : a' ≅ b' := {
     hom := ⟨Φ.hom, hΦ⟩
-    inv := ⟨Φ.inv, sorry⟩ -- This is inferInstance once basedcategory gets merged!
-  }
+    inv := ⟨Φ.inv, inferInstance⟩ }
   exact ((InducedFunctor p S).preimageIso Φ')
 
 -- SIMP ON THESE SORTS OF CONSTRUCTIONS?
