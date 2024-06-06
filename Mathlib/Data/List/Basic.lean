@@ -2843,16 +2843,17 @@ theorem filterMap_congr {f g : α → Option β} {l : List α}
     simp [this]
 
 theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → β} {l : List α} :
-    l.filterMap f = l.map g ↔ ∀ x ∈ l, f x = some (g x) :=
-  ⟨by induction' l with a l ih
-      · simp
-      · cases' ha : f a with b <;> simp [ha]
-        · intro h
-          simpa [show (filterMap f l).length = l.length + 1 from by simp[h], Nat.add_one_le_iff]
-            using List.length_filterMap_le f l
-        · rintro rfl h
-          exact ⟨rfl, ih h⟩,
-    fun h ↦ Eq.trans (filterMap_congr $ by simpa) (congr_fun (List.filterMap_eq_map _) _)⟩
+    l.filterMap f = l.map g ↔ ∀ x ∈ l, f x = some (g x) where
+  mp := by
+    induction' l with a l ih
+    · simp
+    cases' ha : f a with b <;> simp [ha]
+    · intro h
+      simpa [show (filterMap f l).length = l.length + 1 from by simp[h], Nat.add_one_le_iff]
+        using List.length_filterMap_le f l
+    · rintro rfl h
+      exact ⟨rfl, ih h⟩
+  mpr h := Eq.trans (filterMap_congr <| by simpa) (congr_fun (List.filterMap_eq_map _) _)
 
 /-! ### filter -/
 
