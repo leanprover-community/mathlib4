@@ -100,6 +100,8 @@ instance (priority := 100) : HasFunctorialSurjectiveInjectiveFactorization C whe
 
 open CategoryTheory.Limits
 
+variable {C}
+
 attribute [local instance] ConcreteCategory.instFunLike
 
 theorem injective_of_mono_of_preservesPullback {X Y : C} (f : X ⟶ Y) [Mono f]
