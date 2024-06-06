@@ -410,6 +410,9 @@ theorem constantCoeff_X : constantCoeff R X = 0 :=
 set_option linter.uppercaseLean3 false in
 #align power_series.constant_coeff_X PowerSeries.constantCoeff_X
 
+@[simp]
+theorem constantCoeff_mk {f : ℕ → R} : constantCoeff R (mk f) = f 0 := rfl
+
 theorem coeff_zero_mul_X (φ : R⟦X⟧) : coeff R 0 (φ * X) = 0 := by simp
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_mul_X PowerSeries.coeff_zero_mul_X
