@@ -34,7 +34,7 @@ noncomputable section
 open Finsupp
 
 open scoped Classical
-open BigOperators Pointwise
+open Pointwise
 
 variable {ι α : Type*} [Zero α] {s : Finset ι} {f : ι →₀ α}
 
@@ -47,12 +47,12 @@ protected def finsupp (s : Finset ι) (t : ι → Finset α) : Finset (ι →₀
 
 theorem mem_finsupp_iff {t : ι → Finset α} :
     f ∈ s.finsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i := by
-  refine' mem_map.trans ⟨_, _⟩
+  refine mem_map.trans ⟨?_, ?_⟩
   · rintro ⟨f, hf, rfl⟩
-    refine' ⟨support_indicator_subset _ _, fun i hi => _⟩
+    refine ⟨support_indicator_subset _ _, fun i hi => ?_⟩
     convert mem_pi.1 hf i hi
     exact indicator_of_mem hi _
-  · refine' fun h => ⟨fun i _ => f i, mem_pi.2 h.2, _⟩
+  · refine fun h => ⟨fun i _ => f i, mem_pi.2 h.2, ?_⟩
     ext i
     exact ite_eq_left_iff.2 fun hi => (not_mem_support_iff.1 fun H => hi <| h.1 H).symm
 #align finset.mem_finsupp_iff Finset.mem_finsupp_iff
@@ -61,12 +61,12 @@ theorem mem_finsupp_iff {t : ι → Finset α} :
 @[simp]
 theorem mem_finsupp_iff_of_support_subset {t : ι →₀ Finset α} (ht : t.support ⊆ s) :
     f ∈ s.finsupp t ↔ ∀ i, f i ∈ t i := by
-  refine'
+  refine
     mem_finsupp_iff.trans
       (forall_and.symm.trans <|
         forall_congr' fun i =>
-          ⟨fun h => _, fun h =>
-            ⟨fun hi => ht <| mem_support_iff.2 fun H => mem_support_iff.1 hi _, fun _ => h⟩⟩)
+          ⟨fun h => ?_, fun h =>
+            ⟨fun hi => ht <| mem_support_iff.2 fun H => mem_support_iff.1 hi ?_, fun _ => h⟩⟩)
   · by_cases hi : i ∈ s
     · exact h.2 hi
     · rw [not_mem_support_iff.1 (mt h.1 hi), not_mem_support_iff.1 fun H => hi <| ht H]
@@ -76,7 +76,7 @@ theorem mem_finsupp_iff_of_support_subset {t : ι →₀ Finset α} (ht : t.supp
 
 @[simp]
 theorem card_finsupp (s : Finset ι) (t : ι → Finset α) :
-    (s.finsupp t).card = ∏ i in s, (t i).card :=
+    (s.finsupp t).card = ∏ i ∈ s, (t i).card :=
   (card_map _).trans <| card_pi _ _
 #align finset.card_finsupp Finset.card_finsupp
 
@@ -100,7 +100,7 @@ theorem mem_pi {f : ι →₀ Finset α} {g : ι →₀ α} : g ∈ f.pi ↔ ∀
 @[simp]
 theorem card_pi (f : ι →₀ Finset α) : f.pi.card = f.prod fun i => (f i).card := by
   rw [pi, card_finsupp]
-  exact Finset.prod_congr rfl fun i _ => by simp only [Pi.nat_apply, Nat.cast_id]
+  exact Finset.prod_congr rfl fun i _ => by simp only [Pi.natCast_apply, Nat.cast_id]
 #align finsupp.card_pi Finsupp.card_pi
 
 end Finsupp

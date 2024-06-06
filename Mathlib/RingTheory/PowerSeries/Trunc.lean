@@ -3,10 +3,9 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
-
+import Mathlib.Algebra.Polynomial.Coeff
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Data.Polynomial.Coeff
-import Mathlib.Data.Polynomial.Degree.Lemmas
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
@@ -23,7 +22,7 @@ and `0` otherwise.
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 open Finset (antidiagonal mem_antidiagonal)
 
@@ -39,7 +38,7 @@ open Finset Nat
 
 /-- The `n`th truncation of a formal power series to a polynomial -/
 def trunc (n : ℕ) (φ : R⟦X⟧) : R[X] :=
-  ∑ m in Ico 0 n, Polynomial.monomial m (coeff R m φ)
+  ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff R m φ)
 #align power_series.trunc PowerSeries.trunc
 
 theorem coeff_trunc (m) (n) (φ : R⟦X⟧) :
@@ -107,7 +106,7 @@ theorem degree_trunc_lt (f : R⟦X⟧) (n) : (trunc n f).degree < n := by
   · rfl
 
 theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] (s : S) (G : R →+* S) (n) (f : R⟦X⟧) :
-    (trunc n f).eval₂ G s = ∑ i in range n, G (coeff R i f) * s ^ i := by
+    (trunc n f).eval₂ G s = ∑ i ∈ range n, G (coeff R i f) * s ^ i := by
   cases n with
   | zero =>
     rw [trunc_zero', range_zero, sum_empty, eval₂_zero]
@@ -150,7 +149,7 @@ Lemmas in this section involve the coercion `R[X] → R⟦X⟧`, so they may onl
 variable {R : Type*} [CommSemiring R]
 
 open Nat hiding pow_succ pow_zero
-open Polynomial BigOperators Finset Finset.Nat
+open Polynomial Finset Finset.Nat
 
 theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
     trunc n ↑(trunc m f) = trunc n f := by
@@ -188,7 +187,8 @@ theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
   | zero =>
     rw [pow_zero, pow_zero]
   | succ a ih =>
-    rw [pow_succ, pow_succ, trunc_trunc_mul, ← trunc_trunc_mul_trunc, ih, trunc_trunc_mul_trunc]
+    rw [_root_.pow_succ', _root_.pow_succ', trunc_trunc_mul,
+      ← trunc_trunc_mul_trunc, ih, trunc_trunc_mul_trunc]
 
 theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R⟦X⟧) = f := by
   rw [← Polynomial.coe_inj]
@@ -202,13 +202,13 @@ theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R
     exact coeff_eq_zero_of_natDegree_lt <| lt_of_lt_of_le hn h
 
 /-- The function `coeff n : R⟦X⟧ → R` is continuous. I.e. `coeff n f` depends only on a sufficiently
-long truncation of the power series `f`.-/
+long truncation of the power series `f`. -/
 theorem coeff_coe_trunc_of_lt {n m} {f : R⟦X⟧} (h : n < m) :
     coeff R n (trunc m f) = coeff R n f := by
   rwa [coeff_coe, coeff_trunc, if_pos]
 
 /-- The `n`-th coefficient of `f*g` may be calculated
-from the truncations of `f` and `g`.-/
+from the truncations of `f` and `g`. -/
 theorem coeff_mul_eq_coeff_trunc_mul_trunc₂ {n a b} (f g) (ha : n < a) (hb : n < b) :
     coeff R n (f * g) = coeff R n (trunc a f * trunc b g) := by
   symm

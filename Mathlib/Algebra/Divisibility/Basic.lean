@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
 -/
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Tactic.Common
 
 #align_import algebra.divisibility.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -159,7 +160,7 @@ lemma pow_dvd_pow (a : α) (h : m ≤ n) : a ^ m ∣ a ^ n :=
 
 lemma dvd_pow (hab : a ∣ b) : ∀ {n : ℕ} (_ : n ≠ 0), a ∣ b ^ n
   | 0,     hn => (hn rfl).elim
-  | n + 1, _  => by rw [pow_succ]; exact hab.mul_right _
+  | n + 1, _  => by rw [pow_succ']; exact hab.mul_right _
 #align dvd_pow dvd_pow
 
 alias Dvd.dvd.pow := dvd_pow
@@ -242,7 +243,7 @@ theorem pow_dvd_pow_of_dvd (h : a ∣ b) : ∀ n : ℕ, a ^ n ∣ b ^ n
   | 0 => by rw [pow_zero, pow_zero]
   | n + 1 => by
     rw [pow_succ, pow_succ]
-    exact mul_dvd_mul h (pow_dvd_pow_of_dvd h n)
+    exact mul_dvd_mul (pow_dvd_pow_of_dvd h n) h
 #align pow_dvd_pow_of_dvd pow_dvd_pow_of_dvd
 
 end CommMonoid

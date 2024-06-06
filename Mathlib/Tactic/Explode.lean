@@ -7,7 +7,7 @@ import Lean.Elab.Command
 import Lean.PrettyPrinter
 import Mathlib.Tactic.Explode.Datatypes
 import Mathlib.Tactic.Explode.Pretty
-import Std.Lean.Delaborator
+import Batteries.Lean.Delaborator
 
 /-!
 # Explode command
@@ -258,7 +258,7 @@ have global scope anyway so detailed tracking is not necessary.)
 elab "#explode " stx:term : command => withoutModifyingEnv <| Command.runTermElabM fun _ => do
   let (heading, e) ← try
     -- Adapted from `#check` implementation
-    let theoremName : Name ← resolveGlobalConstNoOverloadWithInfo stx
+    let theoremName : Name ← realizeGlobalConstNoOverloadWithInfo stx
     addCompletionInfo <| .id stx theoremName (danglingDot := false) {} none
     let decl ← getConstInfo theoremName
     let c : Expr := .const theoremName (decl.levelParams.map mkLevelParam)

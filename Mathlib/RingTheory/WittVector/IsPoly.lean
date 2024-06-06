@@ -3,9 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
+import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.RingTheory.WittVector.Basic
-import Mathlib.Data.MvPolynomial.Funext
 
 #align_import ring_theory.witt_vector.is_poly from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 /-!
@@ -188,7 +188,6 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
   convert h using 1
   all_goals
-    --  porting note: this proof started with `funext i`
     simp only [hf, hg, MvPolynomial.eval, map_eval₂Hom]
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
     ext1
@@ -235,24 +234,16 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   obtain ⟨χ, hh⟩ := hh
-  refine' ⟨⟨fun n ↦ bind₁ (uncurry <|
+  refine ⟨⟨fun n ↦ bind₁ (uncurry <|
     ![fun k ↦ rename (Prod.mk (0 : Fin 2)) (φ k),
-      fun k ↦ rename (Prod.mk (1 : Fin 2)) (ψ k)]) (χ n), _⟩⟩
+      fun k ↦ rename (Prod.mk (1 : Fin 2)) (ψ k)]) (χ n), ?_⟩⟩
   intros
   funext n
   simp (config := { unfoldPartialApp := true }) only [peval, aeval_bind₁, Function.comp, hh, hf, hg,
     uncurry]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, n⟩
-  fin_cases i <;>
-    simp only [aeval_eq_eval₂Hom, eval₂Hom_rename, Function.comp, Matrix.cons_val_zero,
-      Matrix.head_cons, Matrix.cons_val_one]
-    -- Porting note: added the rest of the proof.
-    <;>
-    open Matrix in
-    simp only [algebraMap_int_eq, coe_eval₂Hom, Fin.mk_zero, Fin.mk_one, cons_val', empty_val',
-      cons_val_fin_one, cons_val_zero, cons_val_one, eval₂Hom_rename, Function.comp, head_fin_const]
-
+  fin_cases i <;> simp [aeval_eq_eval₂Hom, eval₂Hom_rename, Function.comp]
 #align witt_vector.is_poly₂.comp WittVector.IsPoly₂.comp
 
 /-- The composition of a polynomial function with a binary polynomial function is polynomial. -/
@@ -266,21 +257,16 @@ instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
   simp only [peval, aeval_bind₁, Function.comp, hg, hf]
 #align witt_vector.is_poly.comp₂ WittVector.IsPoly.comp₂
 
-/-- The diagonal `fun x ↦f x x` of a polynomial function `f` is polynomial. -/
+/-- The diagonal `fun x ↦ f x x` of a polynomial function `f` is polynomial. -/
 -- Porting note (#10754): made this an instance
 instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun R _Rcr x => f x x := by
   obtain ⟨φ, hf⟩ := hf
-  refine' ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), _⟩⟩
+  refine ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), ?_⟩⟩
   intros; funext n
   simp (config := { unfoldPartialApp := true }) only [hf, peval, uncurry, aeval_bind₁]
   apply eval₂Hom_congr rfl _ rfl
-  ext ⟨i, k⟩;
-  fin_cases i <;>
-    simp only [Matrix.head_cons, aeval_X, Matrix.cons_val_zero, Matrix.cons_val_one] <;>
-    --  porting note: the end of the proof was added in the port.
-    open Matrix in
-    simp only [Fin.mk_zero, Fin.mk_one, cons_val', empty_val', cons_val_fin_one, cons_val_zero,
-      aeval_X, head_fin_const, cons_val_one]
+  ext ⟨i, k⟩
+  fin_cases i <;> simp
 #align witt_vector.is_poly₂.diag WittVector.IsPoly₂.diag
 
 -- Porting note: Lean 4's typeclass inference is sufficiently more powerful that we no longer
@@ -320,17 +306,13 @@ def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 @[simp]
 theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
     bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
-  ext  -- Porting note: `ext` was not in the mathport output.
   rw [wittPolynomial_eq_sum_C_mul_X_pow, AlgHom.map_sum, Finset.sum_eq_single 0]
   · simp only [onePoly, one_pow, one_mul, AlgHom.map_pow, C_1, pow_zero, bind₁_X_right, if_true,
       eq_self_iff_true]
   · intro i _hi hi0
     simp only [onePoly, if_neg hi0, zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero,
       AlgHom.map_pow, bind₁_X_right, AlgHom.map_mul]
-  · rw [Finset.mem_range]
-    -- Porting note: was `decide`
-    intro h
-    simp only [add_pos_iff, zero_lt_one, or_true, not_true_eq_false] at h
+  · simp
 #align witt_vector.bind₁_one_poly_witt_polynomial WittVector.bind₁_onePoly_wittPolynomial
 
 /-- The function that is constantly one on Witt vectors is a polynomial function. -/
@@ -350,15 +332,15 @@ end ZeroOne
 /-- Addition of Witt vectors is a polynomial function. -/
 -- Porting note: replaced `@[is_poly]` with `instance`.
 instance addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· + ·) :=
-  --  porting note: the proof was
-  --  `⟨⟨wittAdd p, by intros; dsimp only [WittVector.hasAdd]; simp [eval]⟩⟩`
+  -- porting note: the proof was
+  -- `⟨⟨wittAdd p, by intros; dsimp only [WittVector.hasAdd]; simp [eval]⟩⟩`
   ⟨⟨wittAdd p, by intros; ext; exact add_coeff _ _ _⟩⟩
 #align witt_vector.add_is_poly₂ WittVector.addIsPoly₂
 
 /-- Multiplication of Witt vectors is a polynomial function. -/
 -- Porting note: replaced `@[is_poly]` with `instance`.
 instance mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) :=
-  --  porting note: the proof was
+  -- porting note: the proof was
   -- `⟨⟨wittMul p, by intros; dsimp only [WittVector.hasMul]; simp [eval]⟩⟩`
   ⟨⟨wittMul p, by intros; ext; exact mul_coeff _ _ _⟩⟩
 #align witt_vector.mul_is_poly₂ WittVector.mulIsPoly₂
@@ -379,7 +361,7 @@ theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : �
 
 namespace IsPoly₂
 
---  porting note: the argument `(fun _ _ => (· + ·))` to `IsPoly₂` was just `_`.
+-- porting note: the argument `(fun _ _ => (· + ·))` to `IsPoly₂` was just `_`.
 instance [Fact p.Prime] : Inhabited (IsPoly₂ p (fun _ _ => (· + ·))) :=
   ⟨addIsPoly₂⟩
 
@@ -408,7 +390,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
   intros
   ext n
   rw [hf, hg, poly_eq_of_wittPolynomial_bind_eq' p φ ψ]
-  --  porting note: `clear x y` does not work, since `x, y` are now hygienic
+  -- porting note: `clear x y` does not work, since `x, y` are now hygienic
   intro k
   apply MvPolynomial.funext
   intro x
@@ -419,7 +401,6 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
   convert h using 1
   all_goals
-    --  porting note: this proof started with `funext i`
     simp only [hf, hg, MvPolynomial.eval, map_eval₂Hom]
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
     ext1
@@ -437,12 +418,8 @@ theorem map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 
   ext n
   simp (config := { unfoldPartialApp := true }) only [map_coeff, hf, map_aeval, peval, uncurry]
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
-  try ext ⟨i, k⟩; fin_cases i
-  all_goals simp only [map_coeff, Matrix.cons_val_zero, Matrix.head_cons, Matrix.cons_val_one]
-  -- Porting note: added the rest of the proof
-  all_goals
-    simp only [Fin.mk_zero, Fin.mk_one, Matrix.cons_val', Matrix.empty_val', Matrix.cons_val_one,
-      Matrix.cons_val_fin_one, Matrix.cons_val_zero, map_coeff, Matrix.head_fin_const]
+  ext ⟨i, k⟩
+  fin_cases i <;> simp
 #align witt_vector.is_poly₂.map WittVector.IsPoly₂.map
 
 end IsPoly₂

@@ -3,7 +3,7 @@ Copyright (c) 2021 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.SetTheory.Game.Birthday
@@ -122,36 +122,37 @@ theorem zero_le_powHalf (n : ℕ) : 0 ≤ powHalf n :=
 
 theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1) ≈ powHalf n := by
   induction' n using Nat.strong_induction_on with n hn
-  · constructor <;> rw [le_iff_forall_lf] <;> constructor
-    · rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> apply lf_of_lt
-      · calc
-          0 + powHalf n.succ ≈ powHalf n.succ := zero_add_equiv _
-          _ < powHalf n := powHalf_succ_lt_powHalf n
-      · calc
-          powHalf n.succ + 0 ≈ powHalf n.succ := add_zero_equiv _
-          _ < powHalf n := powHalf_succ_lt_powHalf n
-    · cases' n with n
-      · rintro ⟨⟩
-      rintro ⟨⟩
-      apply lf_of_moveRight_le
-      swap; exact Sum.inl default
-      calc
-        powHalf n.succ + powHalf (n.succ + 1) ≤ powHalf n.succ + powHalf n.succ :=
-          add_le_add_left (powHalf_succ_le_powHalf _) _
-        _ ≈ powHalf n := hn _ (Nat.lt_succ_self n)
-    · simp only [powHalf_moveLeft, forall_const]
-      apply lf_of_lt
-      calc
-        0 ≈ 0 + 0 := (Equiv.symm (add_zero_equiv 0))
-        _ ≤ powHalf n.succ + 0 := (add_le_add_right (zero_le_powHalf _) _)
-        _ < powHalf n.succ + powHalf n.succ := add_lt_add_left (powHalf_pos _) _
-    · rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> apply lf_of_lt
-      · calc
-          powHalf n ≈ powHalf n + 0 := (Equiv.symm (add_zero_equiv _))
-          _ < powHalf n + powHalf n.succ := add_lt_add_left (powHalf_pos _) _
-      · calc
-          powHalf n ≈ 0 + powHalf n := (Equiv.symm (zero_add_equiv _))
-          _ < powHalf n.succ + powHalf n := add_lt_add_right (powHalf_pos _) _
+  constructor <;> rw [le_iff_forall_lf] <;> constructor
+  · rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> apply lf_of_lt
+    · calc
+        0 + powHalf n.succ ≈ powHalf n.succ := zero_add_equiv _
+        _ < powHalf n := powHalf_succ_lt_powHalf n
+    · calc
+        powHalf n.succ + 0 ≈ powHalf n.succ := add_zero_equiv _
+        _ < powHalf n := powHalf_succ_lt_powHalf n
+  · cases' n with n
+    · rintro ⟨⟩
+    rintro ⟨⟩
+    apply lf_of_moveRight_le
+    swap
+    · exact Sum.inl default
+    calc
+      powHalf n.succ + powHalf (n.succ + 1) ≤ powHalf n.succ + powHalf n.succ :=
+        add_le_add_left (powHalf_succ_le_powHalf _) _
+      _ ≈ powHalf n := hn _ (Nat.lt_succ_self n)
+  · simp only [powHalf_moveLeft, forall_const]
+    apply lf_of_lt
+    calc
+      0 ≈ 0 + 0 := Equiv.symm (add_zero_equiv 0)
+      _ ≤ powHalf n.succ + 0 := add_le_add_right (zero_le_powHalf _) _
+      _ < powHalf n.succ + powHalf n.succ := add_lt_add_left (powHalf_pos _) _
+  · rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> apply lf_of_lt
+    · calc
+        powHalf n ≈ powHalf n + 0 := Equiv.symm (add_zero_equiv _)
+        _ < powHalf n + powHalf n.succ := add_lt_add_left (powHalf_pos _) _
+    · calc
+        powHalf n ≈ 0 + powHalf n := Equiv.symm (zero_add_equiv _)
+        _ < powHalf n.succ + powHalf n := add_lt_add_right (powHalf_pos _) _
 #align pgame.add_pow_half_succ_self_eq_pow_half SetTheory.PGame.add_powHalf_succ_self_eq_powHalf
 
 theorem half_add_half_equiv_one : powHalf 1 + powHalf 1 ≈ 1 :=
@@ -186,7 +187,7 @@ theorem nsmul_pow_two_powHalf (n : ℕ) : 2 ^ n • powHalf n = 1 := by
   induction' n with n hn
   · simp only [Nat.zero_eq, pow_zero, powHalf_zero, one_smul]
   · rw [← hn, ← double_powHalf_succ_eq_powHalf n, smul_smul (2 ^ n) 2 (powHalf n.succ), mul_comm,
-      pow_succ]
+      pow_succ']
 #align surreal.nsmul_pow_two_pow_half Surreal.nsmul_pow_two_powHalf
 
 @[simp]

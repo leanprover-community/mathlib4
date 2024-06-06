@@ -108,7 +108,7 @@ theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableS
       Tendsto (fun r : ℚ ↦ ρ (s ×ˢ Iic ↑(-r))) atTop (𝓝 (ρ (⋂ r : ℚ, s ×ˢ Iic ↑(-r)))) by
     have h_inter_eq : ⋂ r : ℚ, s ×ˢ Iic ↑(-r) = ⋂ r : ℚ, s ×ˢ Iic (r : ℝ) := by
       ext1 x
-      simp only [Rat.cast_eq_id, id.def, mem_iInter, mem_prod, mem_Iic]
+      simp only [Rat.cast_eq_id, id, mem_iInter, mem_prod, mem_Iic]
       refine ⟨fun h i ↦ ⟨(h i).1, ?_⟩, fun h i ↦ ⟨(h i).1, ?_⟩⟩ <;> have h' := h (-i)
       · rw [neg_neg] at h'; exact h'.2
       · exact h'.2
@@ -199,7 +199,7 @@ theorem preCDF_le_one (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
   exact Measure.IicSnd_le_fst ρ r s
 #align probability_theory.pre_cdf_le_one ProbabilityTheory.preCDF_le_one
 
-lemma set_integral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) {s : Set α} (hs : MeasurableSet s)
+lemma setIntegral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) {s : Set α} (hs : MeasurableSet s)
     [IsFiniteMeasure ρ] :
     ∫ x in s, (preCDF ρ r x).toReal ∂ρ.fst = (ρ.IicSnd r s).toReal := by
   rw [integral_toReal]
@@ -209,9 +209,13 @@ lemma set_integral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) {s : Set α} 
     filter_upwards [preCDF_le_one ρ] with a ha
     exact (ha r).trans_lt ENNReal.one_lt_top
 
+@[deprecated]
+alias set_integral_preCDF_fst :=
+  setIntegral_preCDF_fst -- deprecated on 2024-04-17
+
 lemma integral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) [IsFiniteMeasure ρ] :
     ∫ x, (preCDF ρ r x).toReal ∂ρ.fst = (ρ.IicSnd r univ).toReal := by
-  rw [← integral_univ, set_integral_preCDF_fst ρ _ MeasurableSet.univ]
+  rw [← integral_univ, setIntegral_preCDF_fst ρ _ MeasurableSet.univ]
 
 lemma integrable_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℚ) :
     Integrable (fun a ↦ (preCDF ρ x a).toReal) ρ.fst := by
@@ -251,8 +255,8 @@ lemma isRatCondKernelCDFAux_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure �
       ENNReal.continuousAt_toReal (measure_ne_top _ _)
     exact h0.comp (h.comp hs_tendsto)
   integrable _ q := integrable_preCDF ρ q
-  set_integral a s hs q := by rw [kernel.const_apply, kernel.const_apply,
-    set_integral_preCDF_fst _ _ hs, Measure.IicSnd_apply _ _ hs]
+  setIntegral a s hs q := by rw [kernel.const_apply, kernel.const_apply,
+    setIntegral_preCDF_fst _ _ hs, Measure.IicSnd_apply _ _ hs]
 
 lemma isRatCondKernelCDF_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
     IsRatCondKernelCDF (fun p r ↦ (preCDF ρ r p.2).toReal)
@@ -373,10 +377,14 @@ theorem integrable_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : 
   (isCondKernelCDF_condCDF ρ).integrable () x
 #align probability_theory.integrable_cond_cdf ProbabilityTheory.integrable_condCDF
 
-theorem set_integral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) {s : Set α}
+theorem setIntegral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) {s : Set α}
     (hs : MeasurableSet s) : ∫ a in s, condCDF ρ a x ∂ρ.fst = (ρ (s ×ˢ Iic x)).toReal :=
-  (isCondKernelCDF_condCDF ρ).set_integral () hs x
-#align probability_theory.set_integral_cond_cdf ProbabilityTheory.set_integral_condCDF
+  (isCondKernelCDF_condCDF ρ).setIntegral () hs x
+#align probability_theory.set_integral_cond_cdf ProbabilityTheory.setIntegral_condCDF
+
+@[deprecated]
+alias set_integral_condCDF :=
+  setIntegral_condCDF -- deprecated on 2024-04-17
 
 theorem integral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) :
     ∫ a, condCDF ρ a x ∂ρ.fst = (ρ (univ ×ˢ Iic x)).toReal :=
@@ -404,11 +412,11 @@ instance instIsProbabilityMeasureCondCDF (ρ : Measure (α × ℝ)) (a : α) :
 theorem measurable_measure_condCDF (ρ : Measure (α × ℝ)) :
     Measurable fun a => (condCDF ρ a).measure := by
   rw [Measure.measurable_measure]
-  refine' fun s hs => ?_
+  refine fun s hs => ?_
   -- Porting note: supplied `C`
-  refine' MeasurableSpace.induction_on_inter
+  refine MeasurableSpace.induction_on_inter
     (C := fun s => Measurable fun b ↦ StieltjesFunction.measure (condCDF ρ b) s)
-    (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic _ _ _ _ hs
+    (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic ?_ ?_ ?_ ?_ hs
   · simp only [measure_empty, measurable_const]
   · rintro S ⟨u, rfl⟩
     simp_rw [measure_condCDF_Iic ρ _ u]

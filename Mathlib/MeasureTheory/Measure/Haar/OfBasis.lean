@@ -22,7 +22,7 @@ nonempty interior.
 * `Basis.addHaar` is the Lebesgue measure associated to a basis, giving measure `1` to the
 corresponding parallelepiped.
 
-In particular, we declare a `measure_space` instance on any finite-dimensional inner product space,
+In particular, we declare a `MeasureSpace` instance on any finite-dimensional inner product space,
 by using the Lebesgue measure associated to some orthonormal basis (which is in fact independent
 of the basis).
 -/
@@ -30,7 +30,7 @@ of the basis).
 
 open Set TopologicalSpace MeasureTheory MeasureTheory.Measure FiniteDimensional
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 noncomputable section
 
@@ -54,6 +54,16 @@ theorem mem_parallelepiped_iff (v : ι → E) (x : E) :
   simp [parallelepiped, eq_comm]
 #align mem_parallelepiped_iff mem_parallelepiped_iff
 
+theorem parallelepiped_basis_eq (b : Basis ι ℝ E) :
+    parallelepiped b = {x | ∀ i, b.repr x i ∈ Set.Icc 0 1} := by
+  classical
+  ext x
+  simp_rw [mem_parallelepiped_iff, mem_setOf_eq, b.ext_elem_iff, _root_.map_sum,
+    _root_.map_smul, Finset.sum_apply', Basis.repr_self, Finsupp.smul_single, smul_eq_mul,
+    mul_one, Finsupp.single_apply, Finset.sum_ite_eq', Finset.mem_univ, ite_true, mem_Icc,
+    Pi.le_def, Pi.zero_apply, Pi.one_apply, ← forall_and]
+  aesop
+
 theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
     f '' parallelepiped v = parallelepiped (f ∘ v) := by
   simp only [parallelepiped, ← image_comp]
@@ -72,8 +82,8 @@ theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
     ext x
     simp only [K, mem_preimage, mem_Icc, Pi.le_def, Pi.zero_apply, Equiv.piCongrLeft'_apply,
       Pi.one_apply]
-    refine'
-      ⟨fun h => ⟨fun i => _, fun i => _⟩, fun h =>
+    refine
+      ⟨fun h => ⟨fun i => ?_, fun i => ?_⟩, fun h =>
         ⟨fun i => h.1 (e.symm i), fun i => h.2 (e.symm i)⟩⟩
     · simpa only [Equiv.symm_apply_apply] using h.1 (e i)
     · simpa only [Equiv.symm_apply_apply] using h.2 (e i)
@@ -99,7 +109,7 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
   have A : Icc (0 : Fin 1 → ℝ) 1 = F '' Icc (0 : ℝ) 1 := by
     apply Subset.antisymm
     · intro x hx
-      refine' ⟨x 0, ⟨hx.1 0, hx.2 0⟩, _⟩
+      refine ⟨x 0, ⟨hx.1 0, hx.2 0⟩, ?_⟩
       ext j
       simp only [Subsingleton.elim j 0]
     · rintro x ⟨y, hy, rfl⟩
@@ -156,7 +166,7 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
     · rw [sup_eq_right.mpr hai, inf_eq_left.mpr hai]
       exact ⟨mul_nonneg ht.1 hai, mul_le_of_le_one_left hai ht.2⟩
   · intro h
-    refine' ⟨fun i => x i / a i, fun i => _, funext fun i => _⟩
+    refine ⟨fun i => x i / a i, fun i => ?_, funext fun i => ?_⟩
     · specialize h i
       rcases le_total (a i) 0 with hai | hai
       · rw [sup_eq_left.mpr hai, inf_eq_right.mpr hai] at h
@@ -314,7 +324,7 @@ instance Real.measureSpace : MeasureSpace ℝ := by infer_instance
 
 /-! # Miscellaneous instances for `EuclideanSpace`
 
-In combination with `measureSpaceOfInnerProductSpace`, these put a `measure_space` structure
+In combination with `measureSpaceOfInnerProductSpace`, these put a `MeasureSpace` structure
 on `EuclideanSpace`. -/
 
 

@@ -3,6 +3,7 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Data.Finite.Card
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
@@ -36,7 +37,7 @@ Several theorems proved in this file are known as Lagrange's theorem.
 
 namespace Subgroup
 
-open BigOperators Cardinal
+open Cardinal
 
 variable {G : Type*} [Group G] (H K L : Subgroup G)
 
@@ -65,12 +66,12 @@ theorem index_comap_of_surjective {G' : Type*} [Group G'] {f : G' →* G}
   have key : ∀ x y : G', Setoid.r x y ↔ Setoid.r (f x) (f y) := by
     simp only [QuotientGroup.leftRel_apply]
     exact fun x y => iff_of_eq (congr_arg (· ∈ H) (by rw [f.map_mul, f.map_inv]))
-  refine' Cardinal.toNat_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨_, _⟩)
+  refine Cardinal.toNat_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨?_, ?_⟩)
   · simp_rw [← Quotient.eq''] at key
-    refine' Quotient.ind' fun x => _
-    refine' Quotient.ind' fun y => _
+    refine Quotient.ind' fun x => ?_
+    refine Quotient.ind' fun y => ?_
     exact (key x y).mpr
-  · refine' Quotient.ind' fun x => _
+  · refine Quotient.ind' fun x => ?_
     obtain ⟨y, hy⟩ := hf x
     exact ⟨y, (Quotient.map'_mk'' f _ y).trans (congr_arg Quotient.mk'' hy)⟩
 #align subgroup.index_comap_of_surjective Subgroup.index_comap_of_surjective
@@ -180,10 +181,10 @@ of `b * a` and `b` belong to `H`. -/
 for all `b`, exactly one of `b + a` and `b` belong to `H`."]
 theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b ∈ H) := by
   simp only [index, Nat.card_eq_two_iff' ((1 : G) : G ⧸ H), ExistsUnique, inv_mem_iff,
-    QuotientGroup.exists_mk, QuotientGroup.forall_mk, Ne.def, QuotientGroup.eq, mul_one,
+    QuotientGroup.exists_mk, QuotientGroup.forall_mk, Ne, QuotientGroup.eq, mul_one,
     xor_iff_iff_not]
-  refine'
-    exists_congr fun a => ⟨fun ha b => ⟨fun hba hb => _, fun hb => _⟩, fun ha => ⟨_, fun b hb => _⟩⟩
+  refine exists_congr fun a =>
+    ⟨fun ha b => ⟨fun hba hb => ?_, fun hb => ?_⟩, fun ha => ⟨?_, fun b hb => ?_⟩⟩
   · exact ha.1 ((mul_mem_cancel_left hb).1 hba)
   · exact inv_inv b ▸ ha.2 _ (mt (inv_mem_iff (x := b)).1 hb)
   · rw [← inv_mem_iff (x := a), ← ha, inv_mul_self]
@@ -198,7 +199,7 @@ theorem mul_mem_iff_of_index_two (h : H.index = 2) {a b : G} : a * b ∈ H ↔ (
   by_cases hb : b ∈ H; · simp only [hb, iff_true_iff, mul_mem_cancel_right hb]
   simp only [ha, hb, iff_self_iff, iff_true_iff]
   rcases index_eq_two_iff.1 h with ⟨c, hc⟩
-  refine' (hc _).or.resolve_left _
+  refine (hc _).or.resolve_left ?_
   rwa [mul_assoc, mul_mem_cancel_right ((hc _).or.resolve_right hb)]
 #align subgroup.mul_mem_iff_of_index_two Subgroup.mul_mem_iff_of_index_two
 #align add_subgroup.add_mem_iff_of_index_two AddSubgroup.add_mem_iff_of_index_two

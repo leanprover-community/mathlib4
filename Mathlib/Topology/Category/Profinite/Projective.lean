@@ -31,6 +31,9 @@ universe u v w
 
 open CategoryTheory Function
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] ConcreteCategory.instFunLike
+
 namespace Profinite
 
 set_option linter.uppercaseLean3 false
@@ -43,7 +46,7 @@ instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X) 
     let h : Ultrafilter X → Y := Ultrafilter.extend t
     have hh : Continuous h := continuous_ultrafilter_extend _
     use ⟨h, hh⟩
-    apply Faithful.map_injective (F := forget Profinite)
+    apply (forget Profinite).map_injective
     simp only [h, ContinuousMap.coe_mk, coe_comp]
     convert denseRange_pure.equalizer (g.continuous.comp hh) f.continuous _
      -- Porting note: same fix as in `Topology.Category.CompHaus.Projective`

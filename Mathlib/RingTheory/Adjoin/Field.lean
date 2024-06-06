@@ -3,7 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Polynomial.Splits
+import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.AdjoinRoot
 
@@ -24,7 +24,7 @@ the minimal polynomial of each `x ∈ s` splits in `L` then `Algebra.adjoin F s`
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 section Embeddings
 

@@ -86,7 +86,7 @@ theorem one_opow (a : Ordinal) : (1 : Ordinal) ^ a = 1 := by
   | H₂ _ ih =>
     simp only [opow_succ, ih, mul_one]
   | H₃ b l IH =>
-    refine' eq_of_forall_ge_iff fun c => _
+    refine eq_of_forall_ge_iff fun c => ?_
     rw [opow_le_of_limit Ordinal.one_ne_zero l]
     exact ⟨fun H => by simpa only [opow_zero] using H 0 l.pos, fun H b' h => by rwa [IH _ h]⟩
 #align ordinal.one_opow Ordinal.one_opow
@@ -197,9 +197,9 @@ theorem opow_add (a b c : Ordinal) : a ^ (b + c) = a ^ b * a ^ c := by
   | H₂ c IH =>
     rw [add_succ, opow_succ, IH, opow_succ, mul_assoc]
   | H₃ c l IH =>
-    refine'
+    refine
       eq_of_forall_ge_iff fun d =>
-        (((opow_isNormal a1).trans (add_isNormal b)).limit_le l).trans _
+        (((opow_isNormal a1).trans (add_isNormal b)).limit_le l).trans ?_
     dsimp only [Function.comp_def]
     simp (config := { contextual := true }) only [IH]
     exact
@@ -238,11 +238,11 @@ theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
   | H₂ c IH =>
     rw [mul_succ, opow_add, IH, opow_succ]
   | H₃ c l IH =>
-    refine'
+    refine
       eq_of_forall_ge_iff fun d =>
         (((opow_isNormal a1).trans (mul_isNormal (Ordinal.pos_iff_ne_zero.2 b0))).limit_le
               l).trans
-          _
+          ?_
     dsimp only [Function.comp_def]
     simp (config := { contextual := true }) only [IH]
     exact (opow_le_of_limit (opow_ne_zero _ a0) l).symm
@@ -263,8 +263,8 @@ theorem log_nonempty {b x : Ordinal} (h : 1 < b) : { o : Ordinal | x < b ^ o }.N
   ⟨_, succ_le_iff.1 (right_le_opow _ h)⟩
 #align ordinal.log_nonempty Ordinal.log_nonempty
 
-theorem log_def {b : Ordinal} (h : 1 < b) (x : Ordinal) : log b x = pred (sInf { o | x < b ^ o }) :=
-  by simp only [log, dif_pos h]
+theorem log_def {b : Ordinal} (h : 1 < b) (x : Ordinal) :
+    log b x = pred (sInf { o | x < b ^ o }) := by simp only [log, dif_pos h]
 #align ordinal.log_def Ordinal.log_def
 
 theorem log_of_not_one_lt_left {b : Ordinal} (h : ¬1 < b) (x : Ordinal) : log b x = 0 := by
@@ -301,7 +301,7 @@ theorem succ_log_def {b x : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
   let t := sInf { o : Ordinal | x < b ^ o }
   have : x < (b^t) := csInf_mem (log_nonempty hb)
   rcases zero_or_succ_or_limit t with (h | h | h)
-  · refine' ((one_le_iff_ne_zero.2 hx).not_lt _).elim
+  · refine ((one_le_iff_ne_zero.2 hx).not_lt ?_).elim
     simpa only [h, opow_zero] using this
   · rw [show log b x = pred t from log_def hb x, succ_pred_iff_is_succ.2 h]
   · rcases (lt_opow_of_limit (zero_lt_one.trans hb).ne' h).1 this with ⟨a, h₁, h₂⟩
@@ -321,7 +321,7 @@ theorem opow_log_le_self (b : Ordinal) {x : Ordinal} (hx : x ≠ 0) : b ^ log b 
   · rw [zero_opow']
     exact (sub_le_self _ _).trans (one_le_iff_ne_zero.2 hx)
   rcases lt_or_eq_of_le (one_le_iff_ne_zero.2 b0) with (hb | rfl)
-  · refine' le_of_not_lt fun h => (lt_succ (log b x)).not_le _
+  · refine le_of_not_lt fun h => (lt_succ (log b x)).not_le ?_
     have := @csInf_le' _ _ { o | x < b ^ o } _ h
     rwa [← succ_log_def hb hx] at this
   · rwa [one_opow, one_le_iff_ne_zero]
@@ -453,17 +453,20 @@ theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y 
 /-! ### Interaction with `Nat.cast` -/
 
 @[simp, norm_cast]
-theorem nat_cast_opow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^ (n : Ordinal)
+theorem natCast_opow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^ (n : Ordinal)
   | 0 => by simp
   | n + 1 => by
-    rw [pow_succ', nat_cast_mul, nat_cast_opow m n, Nat.cast_succ, add_one_eq_succ, opow_succ]
-#align ordinal.nat_cast_opow Ordinal.nat_cast_opow
+    rw [pow_succ, natCast_mul, natCast_opow m n, Nat.cast_succ, add_one_eq_succ, opow_succ]
+#align ordinal.nat_cast_opow Ordinal.natCast_opow
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_opow := natCast_opow
 
 theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ (n : Ordinal)) = o ^ ω := by
   rcases lt_or_eq_of_le (one_le_iff_pos.2 ho) with (ho₁ | rfl)
   · exact (opow_isNormal ho₁).apply_omega
   · rw [one_opow]
-    refine' le_antisymm (sup_le fun n => by rw [one_opow]) _
+    refine le_antisymm (sup_le fun n => by rw [one_opow]) ?_
     convert le_sup (fun n : ℕ => 1 ^ (n : Ordinal)) 0
     rw [Nat.cast_zero, opow_zero]
 #align ordinal.sup_opow_nat Ordinal.sup_opow_nat

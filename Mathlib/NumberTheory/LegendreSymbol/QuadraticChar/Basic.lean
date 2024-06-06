@@ -73,12 +73,12 @@ theorem quadraticCharFun_eq_zero_iff {a : F} : quadraticCharFun F a = 0 ↔ a = 
 
 @[simp]
 theorem quadraticCharFun_zero : quadraticCharFun F 0 = 0 := by
-  simp only [quadraticCharFun, eq_self_iff_true, if_true, id.def]
+  simp only [quadraticCharFun, eq_self_iff_true, if_true, id]
 #align quadratic_char_fun_zero quadraticCharFun_zero
 
 @[simp]
 theorem quadraticCharFun_one : quadraticCharFun F 1 = 1 := by
-  simp only [quadraticCharFun, one_ne_zero, isSquare_one, if_true, if_false, id.def]
+  simp only [quadraticCharFun, one_ne_zero, isSquare_one, if_true, if_false, id]
 #align quadratic_char_fun_one quadraticCharFun_one
 
 /-- If `ringChar F = 2`, then `quadraticCharFun F` takes the value `1` on nonzero elements. -/
@@ -175,7 +175,7 @@ theorem quadraticChar_dichotomy {a : F} (ha : a ≠ 0) :
 /-- The quadratic character is `1` or `-1` on nonzero arguments. -/
 theorem quadraticChar_eq_neg_one_iff_not_one {a : F} (ha : a ≠ 0) :
     quadraticChar F a = -1 ↔ ¬quadraticChar F a = 1 := by
-  refine' ⟨fun h => _, fun h₂ => (or_iff_right h₂).mp (quadraticChar_dichotomy ha)⟩
+  refine ⟨fun h => ?_, fun h₂ => (or_iff_right h₂).mp (quadraticChar_dichotomy ha)⟩
   rw [h]
   norm_num
 #align quadratic_char_eq_neg_one_iff_not_one quadraticChar_eq_neg_one_iff_not_one
@@ -235,7 +235,7 @@ when the domain has odd characteristic. -/
 theorem quadraticChar_isNontrivial (hF : ringChar F ≠ 2) : (quadraticChar F).IsNontrivial := by
   rcases quadraticChar_exists_neg_one hF with ⟨a, ha⟩
   have hu : IsUnit a := by by_contra hf; rw [MulChar.map_nonunit _ hf] at ha; norm_num at ha
-  refine' ⟨hu.unit, (_ : quadraticChar F a ≠ 1)⟩
+  refine ⟨hu.unit, (?_ : quadraticChar F a ≠ 1)⟩
   rw [ha]
   norm_num
 #align quadratic_char_is_nontrivial quadraticChar_isNontrivial
@@ -266,7 +266,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       rw [h₁, List.toFinset_cons, List.toFinset_cons, List.toFinset_nil]
       exact Finset.card_pair (Ne.symm (mt (Ring.eq_self_iff_eq_zero_of_char_ne_two hF).mp h₀))
     · rw [quadraticChar_neg_one_iff_not_isSquare.mpr h]
-      simp only [Int.coe_nat_eq_zero, Finset.card_eq_zero, Set.toFinset_card, Fintype.card_ofFinset,
+      simp only [Int.natCast_eq_zero, Finset.card_eq_zero, Set.toFinset_card, Fintype.card_ofFinset,
         Set.mem_setOf_eq, add_left_neg]
       ext x
       -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
@@ -276,8 +276,6 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       rw [isSquare_iff_exists_sq] at h
       exact fun h' => h ⟨_, h'.symm⟩
 #align quadratic_char_card_sqrts quadraticChar_card_sqrts
-
-open scoped BigOperators
 
 /-- The sum over the values of the quadratic character is zero when the characteristic is odd. -/
 theorem quadraticChar_sum_zero (hF : ringChar F ≠ 2) : ∑ a : F, quadraticChar F a = 0 :=
@@ -314,14 +312,14 @@ theorem quadraticChar_neg_one [DecidableEq F] (hF : ringChar F ≠ 2) :
 theorem FiniteField.isSquare_neg_one_iff : IsSquare (-1 : F) ↔ Fintype.card F % 4 ≠ 3 := by
   classical -- suggested by the linter (instead of `[DecidableEq F]`)
   by_cases hF : ringChar F = 2
-  · simp only [FiniteField.isSquare_of_char_two hF, Ne.def, true_iff_iff]
+  · simp only [FiniteField.isSquare_of_char_two hF, Ne, true_iff_iff]
     exact fun hf =>
       one_ne_zero <|
         (Nat.odd_of_mod_four_eq_three hf).symm.trans <| FiniteField.even_card_of_char_two hF
   · have h₁ := FiniteField.odd_card_of_char_ne_two hF
     rw [← quadraticChar_one_iff_isSquare (neg_ne_zero.mpr (one_ne_zero' F)),
       quadraticChar_neg_one hF, χ₄_nat_eq_if_mod_four, h₁]
-    simp only [Nat.one_ne_zero, if_false, ite_eq_left_iff, Ne.def, (by decide : (-1 : ℤ) ≠ 1),
+    simp only [Nat.one_ne_zero, if_false, ite_eq_left_iff, Ne, (by decide : (-1 : ℤ) ≠ 1),
       imp_false, Classical.not_not]
     exact
       ⟨fun h => ne_of_eq_of_ne h (by decide : 1 ≠ 3), Or.resolve_right (Nat.odd_mod_four_iff.mp h₁)⟩

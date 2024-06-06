@@ -454,13 +454,13 @@ def functoriality : Cone F ⥤ Cone (F ⋙ G) where
       w := fun j => by simp [-ConeMorphism.w, ← f.w j] }
 #align category_theory.limits.cones.functoriality CategoryTheory.Limits.Cones.functoriality
 
-instance functorialityFull [Full G] [Faithful G] : Full (functoriality F G) where
-  preimage t :=
-    { hom := G.preimage t.hom
-      w := fun j => G.map_injective (by simpa using t.w j) }
-#align category_theory.limits.cones.functoriality_full CategoryTheory.Limits.Cones.functorialityFull
+instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full where
+  map_surjective t :=
+    ⟨{ hom := G.preimage t.hom
+       w := fun j => G.map_injective (by simpa using t.w j) }, by aesop_cat⟩
+#align category_theory.limits.cones.functoriality_full CategoryTheory.Limits.Cones.functoriality_full
 
-instance functoriality_faithful [Faithful G] : Faithful (Cones.functoriality F G) where
+instance functoriality_faithful [G.Faithful] : (Cones.functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
     ConeMorphism.ext f g <| G.map_injective <| congr_arg ConeMorphism.hom h
 #align category_theory.limits.cones.functoriality_faithful CategoryTheory.Limits.Cones.functoriality_faithful
@@ -481,8 +481,8 @@ def functorialityEquivalence (e : C ≌ D) : Cone F ≌ Cone (F ⋙ e.functor) :
 /-- If `F` reflects isomorphisms, then `Cones.functoriality F` reflects isomorphisms
 as well.
 -/
-instance reflects_cone_isomorphism (F : C ⥤ D) [ReflectsIsomorphisms F] (K : J ⥤ C) :
-    ReflectsIsomorphisms (Cones.functoriality K F) := by
+instance reflects_cone_isomorphism (F : C ⥤ D) [F.ReflectsIsomorphisms] (K : J ⥤ C) :
+    (Cones.functoriality K F).ReflectsIsomorphisms := by
   constructor
   intro A B f _
   haveI : IsIso (F.map f.hom) :=
@@ -673,13 +673,13 @@ def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
       w := by intros; rw [← Functor.map_comp, CoconeMorphism.w] }
 #align category_theory.limits.cocones.functoriality CategoryTheory.Limits.Cocones.functoriality
 
-instance functorialityFull [Full G] [Faithful G] : Full (functoriality F G) where
-  preimage t :=
-    { hom := G.preimage t.hom
-      w := fun j => G.map_injective (by simpa using t.w j) }
-#align category_theory.limits.cocones.functoriality_full CategoryTheory.Limits.Cocones.functorialityFull
+instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full where
+  map_surjective t :=
+    ⟨{ hom := G.preimage t.hom
+       w := fun j => G.map_injective (by simpa using t.w j) }, by aesop_cat⟩
+#align category_theory.limits.cocones.functoriality_full CategoryTheory.Limits.Cocones.functoriality_full
 
-instance functoriality_faithful [Faithful G] : Faithful (functoriality F G) where
+instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
     CoconeMorphism.ext f g <| G.map_injective <| congr_arg CoconeMorphism.hom h
 #align category_theory.limits.cocones.functoriality_faithful CategoryTheory.Limits.Cocones.functoriality_faithful
@@ -700,8 +700,8 @@ def functorialityEquivalence (e : C ≌ D) : Cocone F ≌ Cocone (F ⋙ e.functo
 /-- If `F` reflects isomorphisms, then `Cocones.functoriality F` reflects isomorphisms
 as well.
 -/
-instance reflects_cocone_isomorphism (F : C ⥤ D) [ReflectsIsomorphisms F] (K : J ⥤ C) :
-    ReflectsIsomorphisms (Cocones.functoriality K F) := by
+instance reflects_cocone_isomorphism (F : C ⥤ D) [F.ReflectsIsomorphisms] (K : J ⥤ C) :
+    (Cocones.functoriality K F).ReflectsIsomorphisms := by
   constructor
   intro A B f _
   haveI : IsIso (F.map f.hom) :=
@@ -723,13 +723,13 @@ variable (H : C ⥤ D) {F : J ⥤ C} {G : J ⥤ C}
 open CategoryTheory.Limits
 
 /-- The image of a cone in C under a functor G : C ⥤ D is a cone in D. -/
-@[simps!, pp_dot]
+@[simps!]
 def mapCone (c : Cone F) : Cone (F ⋙ H) :=
   (Cones.functoriality F H).obj c
 #align category_theory.functor.map_cone CategoryTheory.Functor.mapCone
 
 /-- The image of a cocone in C under a functor G : C ⥤ D is a cocone in D. -/
-@[simps!, pp_dot]
+@[simps!]
 def mapCocone (c : Cocone F) : Cocone (F ⋙ H) :=
   (Cocones.functoriality F H).obj c
 #align category_theory.functor.map_cocone CategoryTheory.Functor.mapCocone
@@ -746,37 +746,39 @@ def mapCoconeMorphism {c c' : Cocone F} (f : c ⟶ c') : H.mapCocone c ⟶ H.map
 #align category_theory.functor.map_cocone_morphism CategoryTheory.Functor.mapCoconeMorphism
 
 /-- If `H` is an equivalence, we invert `H.mapCone` and get a cone for `F` from a cone
-for `F ⋙ H`.-/
-def mapConeInv [IsEquivalence H] (c : Cone (F ⋙ H)) : Cone F :=
+for `F ⋙ H`. -/
+noncomputable def mapConeInv [IsEquivalence H] (c : Cone (F ⋙ H)) : Cone F :=
   (Limits.Cones.functorialityEquivalence F (asEquivalence H)).inverse.obj c
 #align category_theory.functor.map_cone_inv CategoryTheory.Functor.mapConeInv
 
 /-- `mapCone` is the left inverse to `mapConeInv`. -/
-def mapConeMapConeInv {F : J ⥤ D} (H : D ⥤ C) [IsEquivalence H] (c : Cone (F ⋙ H)) :
+noncomputable def mapConeMapConeInv {F : J ⥤ D} (H : D ⥤ C) [IsEquivalence H]
+    (c : Cone (F ⋙ H)) :
     mapCone H (mapConeInv H c) ≅ c :=
   (Limits.Cones.functorialityEquivalence F (asEquivalence H)).counitIso.app c
 #align category_theory.functor.map_cone_map_cone_inv CategoryTheory.Functor.mapConeMapConeInv
 
 /-- `MapCone` is the right inverse to `mapConeInv`. -/
-def mapConeInvMapCone {F : J ⥤ D} (H : D ⥤ C) [IsEquivalence H] (c : Cone F) :
+noncomputable def mapConeInvMapCone {F : J ⥤ D} (H : D ⥤ C) [IsEquivalence H] (c : Cone F) :
     mapConeInv H (mapCone H c) ≅ c :=
   (Limits.Cones.functorialityEquivalence F (asEquivalence H)).unitIso.symm.app c
 #align category_theory.functor.map_cone_inv_map_cone CategoryTheory.Functor.mapConeInvMapCone
 
 /-- If `H` is an equivalence, we invert `H.mapCone` and get a cone for `F` from a cone
-for `F ⋙ H`.-/
-def mapCoconeInv [IsEquivalence H] (c : Cocone (F ⋙ H)) : Cocone F :=
+for `F ⋙ H`. -/
+noncomputable def mapCoconeInv [IsEquivalence H] (c : Cocone (F ⋙ H)) : Cocone F :=
   (Limits.Cocones.functorialityEquivalence F (asEquivalence H)).inverse.obj c
 #align category_theory.functor.map_cocone_inv CategoryTheory.Functor.mapCoconeInv
 
 /-- `mapCocone` is the left inverse to `mapCoconeInv`. -/
-def mapCoconeMapCoconeInv {F : J ⥤ D} (H : D ⥤ C) [IsEquivalence H] (c : Cocone (F ⋙ H)) :
+noncomputable def mapCoconeMapCoconeInv {F : J ⥤ D} (H : D ⥤ C) [IsEquivalence H]
+    (c : Cocone (F ⋙ H)) :
     mapCocone H (mapCoconeInv H c) ≅ c :=
   (Limits.Cocones.functorialityEquivalence F (asEquivalence H)).counitIso.app c
 #align category_theory.functor.map_cocone_map_cocone_inv CategoryTheory.Functor.mapCoconeMapCoconeInv
 
 /-- `mapCocone` is the right inverse to `mapCoconeInv`. -/
-def mapCoconeInvMapCocone {F : J ⥤ D} (H : D ⥤ C) [IsEquivalence H] (c : Cocone F) :
+noncomputable def mapCoconeInvMapCocone {F : J ⥤ D} (H : D ⥤ C) [IsEquivalence H] (c : Cocone F) :
     mapCoconeInv H (mapCocone H c) ≅ c :=
   (Limits.Cocones.functorialityEquivalence F (asEquivalence H)).unitIso.symm.app c
 #align category_theory.functor.map_cocone_inv_map_cocone CategoryTheory.Functor.mapCoconeInvMapCocone

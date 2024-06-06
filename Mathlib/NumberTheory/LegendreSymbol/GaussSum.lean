@@ -50,8 +50,6 @@ additive character, multiplicative character, Gauss sum
 
 universe u v
 
-open scoped BigOperators
-
 open AddChar MulChar
 
 section GaussSumDef
@@ -102,7 +100,7 @@ private theorem gaussSum_mul_aux {χ : MulChar R R'} (hχ : IsNontrivial χ) (ψ
       Finset.sum_const_zero, map_zero_one, mul_one]
     exact (hχ.sum_eq_zero).symm
   · -- case `b ≠ 0`
-    refine' (Fintype.sum_bijective _ (mulLeft_bijective₀ b hb) _ _ fun x => _).symm
+    refine (Fintype.sum_bijective _ (mulLeft_bijective₀ b hb) _ _ fun x => ?_).symm
     rw [mul_assoc, mul_comm x, ← mul_assoc, mul_inv_cancel hb, one_mul, mul_sub, mul_one]
 
 /-- We have `gaussSum χ ψ * gaussSum χ⁻¹ ψ⁻¹ = Fintype.card R`
@@ -176,8 +174,9 @@ theorem MulChar.IsQuadratic.gaussSum_frob_iter (n : ℕ) (hp : IsUnit (p : R)) {
     gaussSum χ ψ ^ p ^ n = χ ((p : R) ^ n) * gaussSum χ ψ := by
   induction' n with n ih
   · rw [pow_zero, pow_one, pow_zero, MulChar.map_one, one_mul]
-  · rw [pow_succ, mul_comm p, pow_mul, ih, mul_pow, hχ.gaussSum_frob _ hp, ← mul_assoc, pow_succ,
-      mul_comm (p : R), map_mul, ← pow_apply' χ fp.1.ne_zero ((p : R) ^ n), hχ.pow_char p]
+  · rw [pow_succ, pow_mul, ih, mul_pow, hχ.gaussSum_frob _ hp, ← mul_assoc,
+      pow_succ,
+      map_mul, ← pow_apply' χ fp.1.ne_zero ((p : R) ^ n), hχ.pow_char p]
 #align mul_char.is_quadratic.gauss_sum_frob_iter MulChar.IsQuadratic.gaussSum_frob_iter
 
 end gaussSum_frob
@@ -204,7 +203,7 @@ theorem Char.card_pow_char_pow {χ : MulChar R R'} (hχ : IsQuadratic χ) (ψ : 
     exact not_isUnit_prime_of_dvd_card p
         ((CharP.cast_eq_zero_iff R' p _).mp <| hg.resolve_left (isUnit_one.neg.map χ).ne_zero) hp
   rw [← hg]; apply mul_right_cancel₀ this
-  rw [← hχ.gaussSum_frob_iter p n hp ψ, ← pow_mul, mul_comm, ← pow_succ,
+  rw [← hχ.gaussSum_frob_iter p n hp ψ, ← pow_mul, ← pow_succ,
     Nat.two_mul_div_two_add_one_of_odd (fp.1.eq_two_or_odd'.resolve_left hp').pow]
 #align char.card_pow_char_pow Char.card_pow_char_pow
 
@@ -216,9 +215,9 @@ theorem Char.card_pow_card {F : Type*} [Field F] [Fintype F] {F' : Type*} [Field
     (χ (-1) * Fintype.card F) ^ (Fintype.card F' / 2) = χ (Fintype.card F') := by
   obtain ⟨n, hp, hc⟩ := FiniteField.card F (ringChar F)
   obtain ⟨n', hp', hc'⟩ := FiniteField.card F' (ringChar F')
-  let ψ := primitiveCharFiniteField F F' hch₁
+  let ψ := FiniteField.primitiveChar F F' hch₁
   -- Porting note: this was a `let` but then Lean would time out at
-  -- unification so it is changed to as `set` and `FF'` is replaced by its
+  -- unification so it is changed to a `set` and `FF'` is replaced by its
   -- definition before unification
   set FF' := CyclotomicField ψ.n F' with FF'_def
   have hchar := Algebra.ringChar_eq F' FF'
@@ -316,7 +315,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
       -- Porting note: original proof
       -- ext; congr; apply pow_one
       ext (x : Fin 8); rw [← map_nsmul_pow ψ₈char]; congr 2;
-      rw [Nat.smul_one_eq_coe, Fin.cast_val_eq_self x]
+      rw [Nat.smul_one_eq_cast, Fin.cast_val_eq_self x]
     have h₂ : (0 + 1 * τ ^ 1 + 0 + -1 * τ ^ 3 + 0 + -1 * τ ^ 5 + 0 + 1 * τ ^ 7) ^ 2 =
         8 + (τ ^ 4 + 1) * (τ ^ 10 - 2 * τ ^ 8 - 2 * τ ^ 6 + 6 * τ ^ 4 + τ ^ 2 - 8) := by ring
     have h₃ : 8 + (τ ^ 4 + 1) * (τ ^ 10 - 2 * τ ^ 8 - 2 * τ ^ 6 + 6 * τ ^ 4 + τ ^ 2 - 8) = ↑8 := by

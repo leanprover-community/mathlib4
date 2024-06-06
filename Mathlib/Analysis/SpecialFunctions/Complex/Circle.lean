@@ -85,7 +85,7 @@ theorem surjOn_expMapCircle_neg_pi_pi : SurjOn expMapCircle (Ioc (-π) π) univ 
 theorem expMapCircle_eq_expMapCircle {x y : ℝ} :
     expMapCircle x = expMapCircle y ↔ ∃ m : ℤ, x = y + m * (2 * π) := by
   rw [Subtype.ext_iff, expMapCircle_apply, expMapCircle_apply, exp_eq_exp_iff_exists_int]
-  refine' exists_congr fun n => _
+  refine exists_congr fun n => ?_
   rw [← mul_assoc, ← add_mul, mul_left_inj' I_ne_zero]
   norm_cast
 #align exp_map_circle_eq_exp_map_circle expMapCircle_eq_expMapCircle
@@ -94,7 +94,10 @@ theorem periodic_expMapCircle : Periodic expMapCircle (2 * π) := fun z =>
   expMapCircle_eq_expMapCircle.2 ⟨1, by rw [Int.cast_one, one_mul]⟩
 #align periodic_exp_map_circle periodic_expMapCircle
 
-@[simp]
+-- Adaptation note: nightly-2024-04-14
+-- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12229
+@[simp, nolint simpNF]
 theorem expMapCircle_two_pi : expMapCircle (2 * π) = 1 :=
   periodic_expMapCircle.eq.trans expMapCircle_zero
 #align exp_map_circle_two_pi expMapCircle_two_pi
@@ -150,3 +153,85 @@ theorem Real.Angle.arg_expMapCircle (θ : Real.Angle) :
   rw [Real.Angle.expMapCircle_coe, expMapCircle_apply, exp_mul_I, ← ofReal_cos, ← ofReal_sin, ←
     Real.Angle.cos_coe, ← Real.Angle.sin_coe, arg_cos_add_sin_mul_I_coe_angle]
 #align real.angle.arg_exp_map_circle Real.Angle.arg_expMapCircle
+
+namespace AddCircle
+
+variable {T : ℝ}
+
+/-! ### Map from `AddCircle` to `Circle` -/
+
+theorem scaled_exp_map_periodic : Function.Periodic (fun x => expMapCircle (2 * π / T * x)) T := by
+  -- The case T = 0 is not interesting, but it is true, so we prove it to save hypotheses
+  rcases eq_or_ne T 0 with (rfl | hT)
+  · intro x; simp
+  · intro x; simp_rw [mul_add]; rw [div_mul_cancel₀ _ hT, periodic_expMapCircle]
+#align add_circle.scaled_exp_map_periodic AddCircle.scaled_exp_map_periodic
+
+/-- The canonical map `fun x => exp (2 π i x / T)` from `ℝ / ℤ • T` to the unit circle in `ℂ`.
+If `T = 0` we understand this as the constant function 1. -/
+noncomputable def toCircle : AddCircle T → circle :=
+  (@scaled_exp_map_periodic T).lift
+#align add_circle.to_circle AddCircle.toCircle
+
+theorem toCircle_apply_mk (x : ℝ) : @toCircle T x = expMapCircle (2 * π / T * x) :=
+  rfl
+
+theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
+    @toCircle T (x + y) = toCircle x * toCircle y := by
+  induction x using QuotientAddGroup.induction_on'
+  induction y using QuotientAddGroup.induction_on'
+  simp_rw [← coe_add, toCircle_apply_mk, mul_add, expMapCircle_add]
+#align add_circle.to_circle_add AddCircle.toCircle_add
+
+theorem continuous_toCircle : Continuous (@toCircle T) :=
+  continuous_coinduced_dom.mpr (expMapCircle.continuous.comp <| continuous_const.mul continuous_id')
+#align add_circle.continuous_to_circle AddCircle.continuous_toCircle
+
+theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := by
+  intro a b h
+  induction a using QuotientAddGroup.induction_on'
+  induction b using QuotientAddGroup.induction_on'
+  simp_rw [toCircle_apply_mk] at h
+  obtain ⟨m, hm⟩ := expMapCircle_eq_expMapCircle.mp h.symm
+  rw [QuotientAddGroup.eq]; simp_rw [AddSubgroup.mem_zmultiples_iff, zsmul_eq_mul]
+  use m
+  field_simp at hm
+  rw [← mul_right_inj' Real.two_pi_pos.ne']
+  linarith
+#align add_circle.injective_to_circle AddCircle.injective_toCircle
+
+/-- The homeomorphism between `AddCircle (2 * π)` and `circle`. -/
+@[simps] noncomputable def homeomorphCircle' : AddCircle (2 * π) ≃ₜ circle where
+  toFun := Angle.expMapCircle
+  invFun := fun x ↦ arg x
+  left_inv := Angle.arg_expMapCircle
+  right_inv := expMapCircle_arg
+  continuous_toFun := continuous_coinduced_dom.mpr expMapCircle.continuous
+  continuous_invFun := by
+    rw [continuous_iff_continuousAt]
+    intro x
+    apply (continuousAt_arg_coe_angle (ne_zero_of_mem_circle x)).comp
+      continuousAt_subtype_val
+
+theorem homeomorphCircle'_apply_mk (x : ℝ) : homeomorphCircle' x = expMapCircle x :=
+  rfl
+
+/-- The homeomorphism between `AddCircle` and `circle`. -/
+noncomputable def homeomorphCircle (hT : T ≠ 0) : AddCircle T ≃ₜ circle :=
+  (homeomorphAddCircle T (2 * π) hT (by positivity)).trans homeomorphCircle'
+
+theorem homeomorphCircle_apply (hT : T ≠ 0) (x : AddCircle T) :
+    homeomorphCircle hT x = toCircle x := by
+  induction' x using QuotientAddGroup.induction_on' with x
+  rw [homeomorphCircle, Homeomorph.trans_apply,
+    homeomorphAddCircle_apply_mk, homeomorphCircle'_apply_mk, toCircle_apply_mk]
+  ring_nf
+
+end AddCircle
+
+open AddCircle
+
+-- todo: upgrade this to `IsCoveringMap expMapCircle`.
+lemma isLocalHomeomorph_expMapCircle : IsLocalHomeomorph expMapCircle := by
+  have : Fact (0 < 2 * π) := ⟨by positivity⟩
+  exact homeomorphCircle'.isLocalHomeomorph.comp (isLocalHomeomorph_coe (2 * π))
