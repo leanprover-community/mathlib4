@@ -17,7 +17,7 @@ namespace Sum
 variable {α₁ α₂ β : Type*} [LE β] [One β]
 
 @[to_additive]
-lemma one_le_elim_iff (v₁ : α₁ → β) (v₂ : α₂ → β) :
+lemma one_le_elim_iff {v₁ : α₁ → β} {v₂ : α₂ → β} :
     1 ≤ Sum.elim v₁ v₂ ↔ 1 ≤ v₁ ∧ 1 ≤ v₂ :=
   const_le_elim_iff 1 v₁ v₂
 
