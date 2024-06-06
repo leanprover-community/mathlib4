@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrowsTwo
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Shift.Localization
@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Shift.Localization
 /-! # Localization of triangulated categories
 
 If `L : C ⥤ D` is a localization functor for a class of morphisms `W` that is compatible
-with the triangulation on the category `C` and admits left and right calculus of fractions,
+with the triangulation on the category `C` and admits a left calculus of fractions,
 it is shown in this file that `D` can be equipped with a pretriangulated category structure,
 and that it is triangulated.
 
@@ -192,10 +192,9 @@ instance isTriangulated_functor :
     letI : Pretriangulated D := pretriangulated L W; L.IsTriangulated :=
     letI : Pretriangulated D := pretriangulated L W; ⟨fun T hT => ⟨T, Iso.refl _, hT⟩⟩
 
-lemma isTriangulated [W.HasRightCalculusOfFractions] [Pretriangulated D]
-    [L.IsTriangulated] [IsTriangulated C] :
+lemma isTriangulated [Pretriangulated D] [L.IsTriangulated] [IsTriangulated C] :
     IsTriangulated D := by
-  have := essSurj_mapComposableArrows_two L W
+  have := essSurj_mapComposableArrows L W 2
   exact isTriangulated_of_essSurj_mapComposableArrows_two L
 
 instance (n : ℤ) : (shiftFunctor (W.Localization) n).Additive := by
@@ -203,6 +202,8 @@ instance (n : ℤ) : (shiftFunctor (W.Localization) n).Additive := by
   exact Functor.additive_of_iso (W.Q.commShiftIso n)
 
 instance : Pretriangulated W.Localization := pretriangulated W.Q W
+
+instance [IsTriangulated C] : IsTriangulated W.Localization := isTriangulated W.Q W
 
 section
 
@@ -213,6 +214,8 @@ instance (n : ℤ) : (shiftFunctor (W.Localization') n).Additive := by
   exact Functor.additive_of_iso (W.Q'.commShiftIso n)
 
 instance : Pretriangulated W.Localization' := pretriangulated W.Q' W
+
+instance [IsTriangulated C] : IsTriangulated W.Localization' := isTriangulated W.Q' W
 
 end
 
