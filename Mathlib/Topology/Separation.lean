@@ -2499,8 +2499,7 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
         exact Disjoint.symm hd₁
       rw [this]
       exact SeparatedNhds.empty_right s
-    have := Nonempty.to_subtype S_nonempty
-    obtain ⟨f, f_surj⟩ := countable_iff_exists_surjective.mp S_count
+    obtain ⟨f, f_surj⟩ := Countable.exists_surjective S_nonempty S_count
     have cls_is_cl : IsClosed (closure s) := isClosed_closure
     have : ∀ n, ∃ u : Set X, IsOpen u ∧ closure s ⊆ u ∧ closure u ⊆ ↑(f n) := fun n ↦ by
       apply normal_exists_closure_subset (cls_is_cl) (S_open (f n).1 (f n).2)
