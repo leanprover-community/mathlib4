@@ -225,6 +225,16 @@ theorem isRat_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : �
     IsRat (a^b) num den := by
   rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 
+#adaptation_note
+/--
+Prior to https://github.com/leanprover/lean4/pull/4096,
+the repeated
+```
+have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
+h.check
+```
+blocks below were not necessary: we just did it once outside the `match rb with` block.
+-/
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℤ`. -/
 @[norm_num (_ : α) ^ (_ : ℤ)]
@@ -232,33 +242,43 @@ def evalZPow : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → ℤ → $α)) (a : Q($α))) (b : Q(ℤ)) ← whnfR e | failure
   let _c ← synthInstanceQ q(DivisionSemiring $α)
   let rb ← derive (α := q(ℤ)) b
-  have h : $e =Q $a ^ $b := ⟨⟩
-  h.check
   match rb with
   | .isBool .. | .isRat _ .. => failure
   | .isNat sβ nb pb =>
     match ← derive q($a ^ $nb) with
     | .isBool .. => failure
     | .isNat sα' ne' pe' =>
+      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
+      h.check
       assumeInstancesCommute
       return .isNat sα' ne' q(isNat_zpow_pos $pb $pe')
     | .isNegNat sα' ne' pe' =>
+      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
+      h.check
       let _c ← synthInstanceQ q(DivisionRing $α)
       assumeInstancesCommute
       return .isNegNat sα' ne' q(isInt_zpow_pos $pb $pe')
     | .isRat sα' qe' nume' dene' pe' =>
+      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
+      h.check
       assumeInstancesCommute
       return .isRat sα' qe' nume' dene' q(isRat_zpow_pos $pb $pe')
   | .isNegNat sβ nb pb =>
     match ← derive q(($a ^ $nb)⁻¹) with
     | .isBool .. => failure
     | .isNat sα' ne' pe' =>
+      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
+      h.check
       assumeInstancesCommute
       return .isNat sα' ne' q(isNat_zpow_neg $pb $pe')
     | .isNegNat sα' ne' pe' =>
+      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
+      h.check
       let _c ← synthInstanceQ q(DivisionRing $α)
       assumeInstancesCommute
       return .isNegNat sα' ne' q(isInt_zpow_neg $pb $pe')
     | .isRat sα' qe' nume' dene' pe' =>
+      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
+      h.check
       assumeInstancesCommute
       return .isRat sα' qe' nume' dene' q(isRat_zpow_neg $pb $pe')

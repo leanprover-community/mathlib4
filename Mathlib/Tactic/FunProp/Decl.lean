@@ -132,7 +132,7 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
           instantiateMVarDeclMVars mvar.mvarId!
 
           let _ ←
-            withSynthesize (mayPostpone := false) do
+            withSynthesize (postpone := .no) do
               Tactic.run mvar.mvarId! (Tactic.evalTactic tacticCode *> Tactic.pruneSolvedGoals)
 
           let result ← instantiateMVars mvar

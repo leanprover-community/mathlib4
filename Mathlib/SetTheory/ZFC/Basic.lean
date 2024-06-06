@@ -385,7 +385,7 @@ instance : Insert PSet PSet :=
 instance : Singleton PSet PSet :=
   ⟨fun s => insert s ∅⟩
 
-instance : IsLawfulSingleton PSet PSet :=
+instance : LawfulSingleton PSet PSet :=
   ⟨fun _ => rfl⟩
 
 instance (x y : PSet) : Inhabited (insert x y).Type :=
@@ -844,7 +844,7 @@ instance : Insert ZFSet ZFSet :=
 instance : Singleton ZFSet ZFSet :=
   ⟨fun x => insert x ∅⟩
 
-instance : IsLawfulSingleton ZFSet ZFSet :=
+instance : LawfulSingleton ZFSet ZFSet :=
   ⟨fun _ => rfl⟩
 
 @[simp]

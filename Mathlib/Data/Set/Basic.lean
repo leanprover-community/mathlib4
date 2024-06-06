@@ -1218,7 +1218,7 @@ theorem forall_mem_insert {P : α → Prop} {a : α} {s : Set α} :
 /-! ### Lemmas about singletons -/
 
 /- porting note: instance was in core in Lean3 -/
-instance : IsLawfulSingleton α (Set α) :=
+instance : LawfulSingleton α (Set α) :=
   ⟨fun x => Set.ext fun a => by
     simp only [mem_empty_iff_false, mem_insert_iff, or_false]
     exact Iff.rfl⟩

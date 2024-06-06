@@ -902,18 +902,18 @@ def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] Co
 @[simp] lemma smulRightL_apply (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
   smulRightL 𝕜 E G f z = f.smulRight z := rfl
 
-variable (𝕜 E G) in
-/-- An auxiliary instance to be able to just state the fact that the norm of `smulRightL` makes
-sense. This shouldn't be needed. See lean4#3927. -/
-def seminormedAddCommGroup_aux_for_smulRightL :
-    SeminormedAddCommGroup
-      (ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) :=
+#adaptation_note
+/--
+Before https://github.com/leanprover/lean4/pull/4119 we had to create a local instance:
+```
+letI : SeminormedAddCommGroup
+  (ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) :=
   ContinuousLinearMap.toSeminormedAddCommGroup
     (F := G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) (σ₁₂ := RingHom.id 𝕜)
-
-lemma norm_smulRightL_le :
-    letI := seminormedAddCommGroup_aux_for_smulRightL 𝕜 E G
-    ‖smulRightL 𝕜 E G‖ ≤ 1 :=
+```
+-/
+set_option maxSynthPendingDepth 2 in
+lemma norm_smulRightL_le : ‖smulRightL 𝕜 E G‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 
 variable (𝕜 ι G)

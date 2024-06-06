@@ -22,6 +22,7 @@ open Complex Filter Bornology
 /--
 error: failed to synthesize
   AddMonoidHomClass (AddGroupSeminorm ℂ) ℂ ℝ
+use `set_option diagnostics true` to get diagnostic information
 -/
 #guard_msgs in
 set_option synthInstance.maxHeartbeats 3000 in
@@ -53,7 +54,7 @@ section
 -- Initial issue: https://github.com/leanprover-community/mathlib4/issues/12229
 
 open Real in
-set_option synthInstance.maxHeartbeats 8000 in
+set_option synthInstance.maxHeartbeats 10000 in
 example : expMapCircle (2 * π) = 1 := by simp
 
 end

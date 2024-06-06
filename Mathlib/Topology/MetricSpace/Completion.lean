@@ -133,8 +133,8 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
       have : ((a, b), (a, a)) ∈ t1 ×ˢ t2 := ⟨hab, refl_mem_uniformity ht2⟩
       have I := ht this
       simp? [r, Completion.dist_self, Real.dist_eq, Completion.dist_comm] at I says
-        simp only [Real.dist_eq, mem_setOf_eq, preimage_setOf_eq, Completion.dist_self,
-          Completion.dist_comm, zero_sub, abs_neg, r] at I
+        simp only [Real.dist_eq, gt_iff_lt, mem_setOf_eq, preimage_setOf_eq,
+          Completion.dist_self, Completion.dist_comm, zero_sub, abs_neg, r] at I
       exact lt_of_le_of_lt (le_abs_self _) I
     show t1 ⊆ s
     rintro ⟨a, b⟩ hp

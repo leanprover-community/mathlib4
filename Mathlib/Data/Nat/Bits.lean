@@ -267,9 +267,6 @@ lemma shiftLeft'_add (b m n) : ∀ k, shiftLeft' b m (n + k) = shiftLeft' b (shi
   | k + 1 => congr_arg (bit b) (shiftLeft'_add b m n k)
 #align nat.shiftl'_add Nat.shiftLeft'_add
 
-lemma shiftLeft_add (m n : Nat) : ∀ k, m <<< (n + k) = (m <<< n) <<< k := by
-  intro k; simp only [← shiftLeft'_false, shiftLeft'_add]
-
 lemma shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (shiftLeft' b m n) >>> k
   | n, 0, _ => rfl
   | n + 1, k + 1, h => by
@@ -286,24 +283,21 @@ lemma testBit_bit_zero (b n) : testBit (bit b n) 0 = b := by
   rw [testBit, bit]
   cases b
   · simp [bit0, ← Nat.mul_two]
-  · simp only [cond_true, bit1, bit0, shiftRight_zero, and_one_is_mod, bne_iff_ne]
-    simp only [← Nat.mul_two]
-    rw [Nat.add_mod]
-    simp
+  · simp [bit0, bit1, ← Nat.mul_two]
 
 #align nat.test_bit_zero Nat.testBit_zero
 
-lemma bodd_eq_and_one_ne_zero : ∀ n, bodd n = (n &&& 1 != 0)
+lemma bodd_eq_one_and_ne_zero : ∀ n, bodd n = (1 &&& n != 0)
   | 0 => rfl
   | 1 => rfl
-  | n + 2 => by simpa using bodd_eq_and_one_ne_zero n
+  | n + 2 => by simpa using bodd_eq_one_and_ne_zero n
 
 lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
     simp only [shiftRight_eq_div_pow]
     simp [← div2_val, div2_bit]
   rw [← shiftRight_add, Nat.add_comm] at this
-  simp only [bodd_eq_and_one_ne_zero] at this
+  simp only [bodd_eq_one_and_ne_zero] at this
   exact this
 #align nat.test_bit_succ Nat.testBit_succ
 

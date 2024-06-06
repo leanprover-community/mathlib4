@@ -184,6 +184,6 @@ noncomputable def typeToPartialFunIsoPartialFunToPointed :
     fun f =>
     Pointed.Hom.ext _ _ <|
       funext fun a => Option.recOn a rfl fun a => by
-        classical
         convert Part.some_toOption _
+        simpa using (Part.get_eq_iff_mem (by trivial)).mp rfl
 #align Type_to_PartialFun_iso_PartialFun_to_Pointed typeToPartialFunIsoPartialFunToPointed

@@ -1139,7 +1139,8 @@ theorem colimit.pre_map [HasColimitsOfShape K C] (E : K ⥤ J) :
 
 theorem colimit.pre_map' [HasColimitsOfShape K C] (F : J ⥤ C) {E₁ E₂ : K ⥤ J} (α : E₁ ⟶ E₂) :
     colimit.pre F E₁ = colim.map (whiskerRight α F) ≫ colimit.pre F E₂ := by
-  ext1; simp [← Category.assoc]
+  ext1
+  simp [← assoc, assoc]
 #align category_theory.limits.colimit.pre_map' CategoryTheory.Limits.colimit.pre_map'
 
 theorem colimit.pre_id (F : J ⥤ C) :

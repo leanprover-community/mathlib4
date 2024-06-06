@@ -663,10 +663,15 @@ example : (- ((- (((66 - 86) - 36) / 94) - 3) / - - (77 / (56 - - - 79))) + 87) 
 
 example : 2 ^ 13 - 1 = Int.ofNat 8191 := by norm_num1
 
+-- Since https://github.com/leanprover/lean4/pull/4177
+-- `simp` will continue even if given invalid theorem names (but generates an error)
+-- and this felicitously applies to `norm_num` too.
+-- Previous this was a `fail_if_success` test, but now we just check for the error.
+/-- error: unknown identifier 'this_doesnt_exist' -/
+#guard_msgs in
 example : 1 + 1 = 2 := by
-  fail_if_success
-    norm_num [this_doesnt_exist]
-  exact test_sorry
+  norm_num [this_doesnt_exist]
+  done
 
 example : 1 + 100 + a = a + 101 := by
   norm_num [add_comm]

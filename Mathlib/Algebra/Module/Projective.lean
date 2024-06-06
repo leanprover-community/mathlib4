@@ -195,6 +195,7 @@ theorem Projective.iff_split_of_projective [Module.Projective R M] (s : M →ₗ
     Module.Projective R P ↔ ∃ i, s ∘ₗ i = LinearMap.id :=
   ⟨fun _ ↦ projective_lifting_property _ _ hs, fun ⟨i, H⟩ ↦ Projective.of_split i s H⟩
 
+set_option maxSynthPendingDepth 2 in
 open TensorProduct in
 instance Projective.tensorProduct [hM : Module.Projective R M] [hN : Module.Projective R₀ N] :
     Module.Projective R (M ⊗[R₀] N) := by

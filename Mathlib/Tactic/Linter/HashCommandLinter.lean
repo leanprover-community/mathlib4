@@ -70,7 +70,7 @@ logs a warning only for the `#`-commands that do not already emit a message. -/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
   let mod := (← getMainModule).components
   if getLinterHash (← getOptions) &&
-    ((← get).messages.msgs.size == 0 || warningAsError.get (← getOptions)) &&
+    ((← get).messages.toList.isEmpty || warningAsError.get (← getOptions)) &&
     -- we check that the module is either not in `test` or, is `test.HashCommandLinter`
     (mod.getD 0 default != `test || (mod == [`test, `HashCommandLinter]))
     then

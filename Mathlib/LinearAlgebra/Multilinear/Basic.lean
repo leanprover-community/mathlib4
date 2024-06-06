@@ -1829,7 +1829,7 @@ theorem curryFinFinset_symm_apply_piecewise_const_aux {k l n : ℕ} {s : Finset 
     (f : MultilinearMap R (fun _ : Fin k => M') (MultilinearMap R (fun _ : Fin l => M') M₂))
     (x y : M') :
       ((⇑f fun _ => x) (fun i => (Finset.piecewise s (fun _ => x) (fun _ => y)
-          ((⇑(finSumEquivOfFinset hk hl)) (Sum.inr i)))) = f (fun _ => x) fun _ => y) := by
+          ((sᶜ.orderEmbOfFin hl) i))) = f (fun _ => x) fun _ => y) := by
   have := curryFinFinset_symm_apply_piecewise_const hk hl f x y
   simp only [curryFinFinset_symm_apply, finSumEquivOfFinset_inl, Finset.orderEmbOfFin_mem,
   Finset.piecewise_eq_of_mem, finSumEquivOfFinset_inr] at this
