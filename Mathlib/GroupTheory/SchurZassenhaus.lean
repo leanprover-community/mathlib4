@@ -192,7 +192,7 @@ private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K
   have h4 := step1 h1 h2 h3
   contrapose! h4
   have h5 : Fintype.card (G ⧸ K) < Fintype.card G := by
-    rw [← index_eq_card, ← K.index_mul_card]
+    rw [← index_eq_card, ← K.index_mul_card, ← Nat.card_eq_fintype_card]
     refine
       lt_mul_of_one_lt_right (Nat.pos_of_ne_zero index_ne_zero_of_finite)
         (K.one_lt_card_iff_ne_bot.mpr h4.1)
@@ -228,8 +228,9 @@ private theorem step3 (K : Subgroup N) [(K.map N.subtype).Normal] : K = ⊥ ∨ 
   rwa [inj.eq_iff, inj.eq_iff] at key
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-private theorem step4 : (Fintype.card N).minFac.Prime :=
-  Nat.minFac_prime (N.one_lt_card_iff_ne_bot.mpr (step0 h1 h3)).ne'
+private theorem step4 : (Fintype.card N).minFac.Prime := by
+  rw [← Nat.card_eq_fintype_card]
+  exact Nat.minFac_prime (N.one_lt_card_iff_ne_bot.mpr (step0 h1 h3)).ne'
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step5 {P : Sylow (Fintype.card N).minFac N} : P.1 ≠ ⊥ :=
