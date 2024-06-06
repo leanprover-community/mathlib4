@@ -41,28 +41,6 @@ theorem coe_ceil (q : ℚ≥0) : ↑⌈q⌉₊ = ⌈(q : ℚ)⌉ := Int.ofNat_ce
 protected theorem floor_def (q : ℚ≥0) : ⌊q⌋₊ = q.num / q.den := by
   rw [← Int.natCast_inj, NNRat.coe_floor, Rat.floor_def, Int.ofNat_ediv, den_coe, num_coe]
 
-
-variables {K} [LinearOrderedSemifield K] [FloorSemiring K]
-#check Rat.cast_mono
-theorem cast_strictMono : StrictMono ((↑) : ℚ≥0 → K) := fun m n h => by
-  rwa [NNRat.cast_def, NNRat.cast_def, div_lt_div_iff, ← Nat.cast_mul, ← Nat.cast_mul, Nat.cast_lt,
-    ← NNRat.lt_def]
-  · norm_num
-  · norm_num
-
-/-- Coercion from `ℚ` as an order embedding. -/
-@[simps!]
-def castOrderEmbedding : ℚ≥0 ↪o K :=
-  OrderEmbedding.ofStrictMono (↑) cast_strictMono
-
-@[simp, norm_cast]
-theorem cast_le {m n : ℚ≥0} : (m : K) ≤ n ↔ m ≤ n :=
-  castOrderEmbedding.le_iff_le
-
-@[simp, norm_cast]
-theorem cast_lt {m n : ℚ≥0} : (m : K) < n ↔ m < n :=
-  cast_strictMono.lt_iff_lt
-
 @[simp, norm_cast]
 theorem floor_cast (x : ℚ≥0) : ⌊(x : K)⌋₊ = ⌊x⌋₊ := by
   have := (Nat.floor_eq_iff x.cast_nonneg).1 (Eq.refl ⌊x⌋₊)
