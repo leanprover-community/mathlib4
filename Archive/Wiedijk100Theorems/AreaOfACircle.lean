@@ -62,11 +62,11 @@ def disc (r : ℝ) :=
 variable (r : ℝ≥0)
 
 /-- A disc of radius `r` can be represented as the region between the two curves
-  `fun x => - sqrt (r ^ 2 - x ^ 2)` and `fun x => sqrt (r ^ 2 - x ^ 2)`. -/
+  `fun x => - √(r ^ 2 - x ^ 2)` and `fun x => √(r ^ 2 - x ^ 2)`. -/
 theorem disc_eq_regionBetween :
     disc r =
       regionBetween
-        (fun x => -sqrt (r ^ 2 - x ^ 2)) (fun x => sqrt (r ^ 2 - x ^ 2)) (Ioc (-r) r) := by
+        (fun x => -√(r ^ 2 - x ^ 2 : ℝ)) (fun x => √(r ^ 2 - x ^ 2)) (Ioc (-r) r) := by
   ext p
   simp only [disc, regionBetween, mem_setOf_eq, mem_Ioo, mem_Ioc, Pi.neg_apply]
   constructor <;> intro h
@@ -85,8 +85,8 @@ theorem measurableSet_disc : MeasurableSet (disc r) := by
 
 /-- **Area of a Circle**: The area of a disc with radius `r` is `π * r ^ 2`. -/
 theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
-  let f x := sqrt (r ^ 2 - x ^ 2)
-  let F x := (r : ℝ) ^ 2 * arcsin (r⁻¹ * x) + x * sqrt (r ^ 2 - x ^ 2)
+  let f x := √(r ^ 2 - x ^ 2 : ℝ)
+  let F x := (r : ℝ) ^ 2 * arcsin (r⁻¹ * x) + x * √(r ^ 2 - x ^ 2)
   have hf : Continuous f := by continuity
   suffices ∫ x in -r..r, 2 * f x = NNReal.pi * r ^ 2 by
     have h : IntegrableOn f (Ioc (-r) r) := hf.integrableOn_Icc.mono_set Ioc_subset_Icc_self
@@ -110,7 +110,7 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
         ((hasDerivAt_id' x).mul ((((hasDerivAt_id' x).pow 2).const_sub ((r : ℝ) ^ 2)).sqrt _))
       using 1
     · have h₁ : (r:ℝ) ^ 2 - x ^ 2 > 0 := sub_pos_of_lt (sq_lt_sq' hx1 hx2)
-      have h : sqrt ((r:ℝ) ^ 2 - x ^ 2) ^ 3 = ((r:ℝ) ^ 2 - x ^ 2) * sqrt ((r: ℝ) ^ 2 - x ^ 2) := by
+      have h : √((r:ℝ) ^ 2 - x ^ 2) ^ 3 = ((r:ℝ) ^ 2 - x ^ 2) * √((r: ℝ) ^ 2 - x ^ 2) := by
         rw [pow_three, ← mul_assoc, mul_self_sqrt (by positivity)]
       field_simp
       ring_nf

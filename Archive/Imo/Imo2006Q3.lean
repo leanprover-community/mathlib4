@@ -61,7 +61,7 @@ theorem zero_lt_32 : (0 : ℝ) < 32 := by norm_num
 #align imo2006_q3.zero_lt_32 Imo2006Q3.zero_lt_32
 
 theorem subst_wlog {x y z s : ℝ} (hxy : 0 ≤ x * y) (hxyz : x + y + z = 0) :
-    32 * |x * y * z * s| ≤ sqrt 2 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2 := by
+    32 * |x * y * z * s| ≤ √2 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2 := by
   have hz : (x + y) ^ 2 = z ^ 2 := by linear_combination (x + y - z) * hxyz
   have this :=
     calc
@@ -76,15 +76,15 @@ theorem subst_wlog {x y z s : ℝ} (hxy : 0 ≤ x * y) (hxyz : x + y + z = 0) :
     (32 * |x * y * z * s|) ^ 2 = 32 * (2 * s ^ 2 * (16 * x ^ 2 * y ^ 2 * (x + y) ^ 2)) := by
       rw [mul_pow, sq_abs, hz]; ring
     _ ≤ 32 * ((2 * (x ^ 2 + y ^ 2 + (x + y) ^ 2) + 2 * s ^ 2) ^ 4 / 4 ^ 4) := by gcongr
-    _ = (sqrt 2 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2) ^ 2 := by
+    _ = (√2 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2) ^ 2 := by
       field_simp
       rw [mul_pow, sq_sqrt zero_le_two, hz]
       ring
 #align imo2006_q3.subst_wlog Imo2006Q3.subst_wlog
 
-/-- Proof that `M = 9 * sqrt 2 / 32` works with the substitution. -/
+/-- Proof that `M = 9 * √2 / 32` works with the substitution. -/
 theorem subst_proof₁ (x y z s : ℝ) (hxyz : x + y + z = 0) :
-    |x * y * z * s| ≤ sqrt 2 / 32 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2 := by
+    |x * y * z * s| ≤ √2 / 32 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2 := by
   wlog h' : 0 ≤ x * y generalizing x y z; swap
   · rw [div_mul_eq_mul_div, le_div_iff' zero_lt_32]
     exact subst_wlog h' hxyz
@@ -95,7 +95,7 @@ theorem subst_proof₁ (x y z s : ℝ) (hxyz : x + y + z = 0) :
 
 theorem proof₁ {a b c : ℝ} :
     |a * b * (a ^ 2 - b ^ 2) + b * c * (b ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| ≤
-      9 * sqrt 2 / 32 * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2 :=
+      9 * √2 / 32 * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2 :=
   calc
     _ = |(a - b) * (b - c) * (c - a) * -(a + b + c)| := by ring_nf
     _ ≤ _ := subst_proof₁ (a - b) (b - c) (c - a) (-(a + b + c)) (by ring)
@@ -106,8 +106,8 @@ theorem proof₂ (M : ℝ)
     (h : ∀ a b c : ℝ,
       |a * b * (a ^ 2 - b ^ 2) + b * c * (b ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| ≤
         M * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2) :
-    9 * sqrt 2 / 32 ≤ M := by
-  set α := sqrt (2:ℝ)
+    9 * √2 / 32 ≤ M := by
+  set α := √2
   have hα : α ^ 2 = 2 := sq_sqrt (by norm_num)
   let a := 2 - 3 * α
   let c := 2 + 3 * α
@@ -130,6 +130,6 @@ theorem imo2006_q3 (M : ℝ) :
     (∀ a b c : ℝ,
         |a * b * (a ^ 2 - b ^ 2) + b * c * (b ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| ≤
           M * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2) ↔
-      9 * sqrt 2 / 32 ≤ M :=
+      9 * √2 / 32 ≤ M :=
   ⟨proof₂ M, fun h _ _ _ => proof₁.trans (by gcongr)⟩
 #align imo2006_q3 imo2006_q3

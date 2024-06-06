@@ -250,13 +250,13 @@ example {n : ℤ} : 0 ≤ n.natAbs := by positivity
 example {a : ℤ} (ha : 1 < a) : 0 < |(3:ℤ) + a| := by positivity
 
 example : 0 < NNReal.sqrt 5 := by positivity
-example : 0 ≤ Real.sqrt (-5) := by positivity
-example (x : ℝ) : 0 ≤ Real.sqrt x := by positivity
-example : 0 < Real.sqrt 5 := by positivity
+example : 0 ≤ √(-5) := by positivity
+example (x : ℝ) : 0 ≤ √x := by positivity
+example : 0 < √5 := by positivity
 
-example {a : ℝ} (_ha : 0 ≤ a) : 0 ≤ Real.sqrt a := by positivity
+example {a : ℝ} (_ha : 0 ≤ a) : 0 ≤ √a := by positivity
 
-example {a : ℝ} (ha : 0 ≤ a) : 0 < Real.sqrt (a + 3) := by positivity
+example {a : ℝ} (ha : 0 ≤ a) : 0 < √(a + 3) := by positivity
 
 example {a b : ℤ} (ha : 3 < a) : 0 ≤ min a (b ^ 2) := by positivity
 

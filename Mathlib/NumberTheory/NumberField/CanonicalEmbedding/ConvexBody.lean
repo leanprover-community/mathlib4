@@ -562,8 +562,7 @@ theorem exists_primitive_element_lt_of_isReal {w₀ : InfinitePlace K} (hw₀ : 
 
 theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀ : IsComplex w₀)
     {B : ℝ≥0} (hB : minkowskiBound K ↑1 < convexBodyLT'Factor K * B) :
-    ∃ a : 𝓞 K, ℚ⟮(a : K)⟯ = ⊤ ∧
-      ∀ w : InfinitePlace K, w a < Real.sqrt (1 + B ^ 2) := by
+    ∃ a : 𝓞 K, ℚ⟮(a : K)⟯ = ⊤ ∧ ∀ w : InfinitePlace K, w a < √(1 + B ^ 2 : ℝ) := by
   have : minkowskiBound K ↑1 <
       volume (convexBodyLT' K (fun w ↦ if w = w₀ then NNReal.sqrt B else 1) ⟨w₀, hw₀⟩) := by
     rw [convexBodyLT'_volume, ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀)]
