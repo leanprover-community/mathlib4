@@ -26,7 +26,7 @@ universe u v w z
 
 variable {ι : Type*} (R : Type u) (M : Type v) (N : Type z)
 
-open TensorProduct DirectSum BigOperators
+open TensorProduct DirectSum
 
 section Basic
 
@@ -37,7 +37,7 @@ class Module.Free : Prop where
   exists_basis : Nonempty <| (I : Type v) × Basis I R M
 #align module.free Module.Free
 
-/- If `M` fits in universe `w`, then freeness is equivalent to existence of a basis in that
+/-- If `M` fits in universe `w`, then freeness is equivalent to existence of a basis in that
 universe.
 
 Note that if `M` does not fit in `w`, the reverse direction of this implication is still true as

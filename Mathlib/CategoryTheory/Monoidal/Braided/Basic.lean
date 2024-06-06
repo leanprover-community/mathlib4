@@ -196,7 +196,7 @@ Verifying the axioms for a braiding by checking that the candidate braiding is s
 by a faithful monoidal functor.
 -/
 def braidedCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
-    [MonoidalCategory D] (F : MonoidalFunctor C D) [Faithful F.toFunctor] [BraidedCategory D]
+    [MonoidalCategory D] (F : MonoidalFunctor C D) [F.Faithful] [BraidedCategory D]
     (β : ∀ X Y : C, X ⊗ Y ≅ Y ⊗ X)
     (w : ∀ X Y, F.μ _ _ ≫ F.map (β X Y).hom = (β_ _ _).hom ≫ F.μ _ _) : BraidedCategory C where
   braiding := β
@@ -239,8 +239,8 @@ def braidedCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalC
 
 /-- Pull back a braiding along a fully faithful monoidal functor. -/
 noncomputable def braidedCategoryOfFullyFaithful {C D : Type*} [Category C] [Category D]
-    [MonoidalCategory C] [MonoidalCategory D] (F : MonoidalFunctor C D) [Full F.toFunctor]
-    [Faithful F.toFunctor] [BraidedCategory D] : BraidedCategory C :=
+    [MonoidalCategory C] [MonoidalCategory D] (F : MonoidalFunctor C D) [F.Full]
+    [F.Faithful] [BraidedCategory D] : BraidedCategory C :=
   braidedCategoryOfFaithful F
     (fun X Y => F.toFunctor.preimageIso
       ((asIso (F.μ _ _)).symm ≪≫ β_ (F.obj X) (F.obj Y) ≪≫ asIso (F.μ _ _)))
@@ -332,6 +332,12 @@ theorem braiding_rightUnitor (X : C) : (β_ (𝟙_ C) X).hom ≫ (ρ_ X).hom = (
 theorem braiding_tensorUnit_left (X : C) : (β_ (𝟙_ C) X).hom = (λ_ X).hom ≫ (ρ_ X).inv := by
   simp [← braiding_rightUnitor]
 
+@[reassoc, simp]
+theorem braiding_inv_tensorUnit_left (X : C) : (β_ (𝟙_ C) X).inv = (ρ_ X).hom ≫ (λ_ X).inv := by
+  rw [Iso.inv_ext]
+  rw [braiding_tensorUnit_left]
+  coherence
+
 @[reassoc]
 theorem leftUnitor_inv_braiding (X : C) : (λ_ X).inv ≫ (β_ (𝟙_ C) X).hom = (ρ_ X).inv := by
   simp
@@ -346,6 +352,12 @@ theorem rightUnitor_inv_braiding (X : C) : (ρ_ X).inv ≫ (β_ X (𝟙_ C)).hom
 @[reassoc, simp]
 theorem braiding_tensorUnit_right (X : C) : (β_ X (𝟙_ C)).hom = (ρ_ X).hom ≫ (λ_ X).inv := by
   simp [← rightUnitor_inv_braiding]
+
+@[reassoc, simp]
+theorem braiding_inv_tensorUnit_right (X : C) : (β_ X (𝟙_ C)).inv = (λ_ X).hom ≫ (ρ_ X).inv := by
+  rw [Iso.inv_ext]
+  rw [braiding_tensorUnit_right]
+  coherence
 
 end
 
@@ -446,7 +458,7 @@ A braided category with a faithful braided functor to a symmetric category is it
 -/
 def symmetricCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
     [MonoidalCategory D] [BraidedCategory C] [SymmetricCategory D] (F : BraidedFunctor C D)
-    [Faithful F.toFunctor] : SymmetricCategory C where
+    [F.Faithful] : SymmetricCategory C where
   symmetry X Y := F.map_injective (by simp)
 #align category_theory.symmetric_category_of_faithful CategoryTheory.symmetricCategoryOfFaithful
 
@@ -752,7 +764,7 @@ end MonoidalOpposite
 `β_ X Y : X ⊗ Y ≅ Y ⊗ X` with the inverse `(β_ Y X)⁻¹ : X ⊗ Y ≅ Y ⊗ X`.
 This corresponds to the automorphism of the braid group swapping
 over-crossings and under-crossings. -/
-@[reducible] def reverseBraiding : BraidedCategory C where
+abbrev reverseBraiding : BraidedCategory C where
   braiding X Y := (β_ Y X).symm
   braiding_naturality_right X {_ _} f := by simp
   braiding_naturality_left {_ _} f Z := by simp

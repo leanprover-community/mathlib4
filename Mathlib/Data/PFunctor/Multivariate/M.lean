@@ -213,12 +213,11 @@ theorem M.dest_corec' {α : TypeVec.{u} n} {β : Type u} (g₀ : β → P.A)
 theorem M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β)) (x : β) :
     M.dest P (M.corec P g x) = appendFun id (M.corec P g) <$$> g x := by
   trans
-  apply M.dest_corec'
+  · apply M.dest_corec'
   cases' g x with a f; dsimp
   rw [MvPFunctor.map_eq]; congr
-  conv =>
-    rhs
-    rw [← split_dropFun_lastFun f, appendFun_comp_splitFun]
+  conv_rhs => rw [← split_dropFun_lastFun f, appendFun_comp_splitFun]
+  rfl
 #align mvpfunctor.M.dest_corec MvPFunctor.M.dest_corec
 
 theorem M.bisim_lemma {α : TypeVec n} {a₁ : (mp P).A} {f₁ : (mp P).B a₁ ⟹ α} {a' : P.A}
@@ -246,8 +245,8 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
   cases' y with a₂ f₂
   dsimp [mp] at *
   have : a₁ = a₂ := by
-    refine'
-      PFunctor.M.bisim (fun a₁ a₂ => ∃ x y, R x y ∧ x.1 = a₁ ∧ y.1 = a₂) _ _ _
+    refine
+      PFunctor.M.bisim (fun a₁ a₂ => ∃ x y, R x y ∧ x.1 = a₁ ∧ y.1 = a₂) ?_ _ _
         ⟨⟨a₁, f₁⟩, ⟨a₂, f₂⟩, r, rfl, rfl⟩
     rintro _ _ ⟨⟨a₁, f₁⟩, ⟨a₂, f₂⟩, r, rfl, rfl⟩
     rcases h _ _ r with ⟨a', f', f₁', f₂', e₁, e₂, h'⟩
@@ -324,6 +323,7 @@ theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
   conv =>
     rhs
     rw [M.dest, M.dest', map_eq, appendFun_comp_splitFun]
+  rfl
 #align mvpfunctor.M.dest_map MvPFunctor.M.dest_map
 
 theorem M.map_dest {α β : TypeVec n} (g : (α ::: P.M α) ⟹ (β ::: P.M β)) (x : P.M α)

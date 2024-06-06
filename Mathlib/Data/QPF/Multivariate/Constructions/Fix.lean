@@ -97,7 +97,7 @@ theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type u} (u : F (α.append1 β) 
   intro a₁ f'₁ f₁
   intro h
   -- Porting note: induction on h doesn't work.
-  refine' @WEquiv.recOn _ _ _ _ _ (fun a a' _ ↦ recF u a = recF u a') _ _ h _ _ _
+  refine @WEquiv.recOn _ _ _ _ _ (fun a a' _ ↦ recF u a = recF u a') _ _ h ?_ ?_ ?_
   · intros a f' f₀ f₁ _h ih; simp only [recF_eq, Function.comp]
     congr; funext; congr; funext; apply ih
   · intros a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
@@ -139,8 +139,8 @@ set_option linter.uppercaseLean3 false in
 theorem wrepr_wMk {α : TypeVec n} (a : q.P.A) (f' : q.P.drop.B a ⟹ α)
     (f : q.P.last.B a → q.P.W α) :
     wrepr (q.P.wMk a f' f) =
-      q.P.wMk' (repr (abs (appendFun id wrepr <$$> ⟨a, q.P.appendContents f' f⟩))) :=
-  by rw [wrepr, recF_eq', q.P.wDest'_wMk]; rfl
+      q.P.wMk' (repr (abs (appendFun id wrepr <$$> ⟨a, q.P.appendContents f' f⟩))) := by
+  rw [wrepr, recF_eq', q.P.wDest'_wMk]; rfl
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wrepr_W_mk MvQPF.wrepr_wMk
 
@@ -164,7 +164,10 @@ theorem wEquiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
       abs (q.P.objAppend1 a₀ (g ⊚ f'₀) fun x => q.P.wMap g (f₀ x)) =
         abs (q.P.objAppend1 a₁ (g ⊚ f'₁) fun x => q.P.wMap g (f₁ x))
     rw [← q.P.map_objAppend1, ← q.P.map_objAppend1, abs_map, abs_map, h]
-  | trans x y z _ _ ih₁ ih₂ => apply MvQPF.WEquiv.trans; apply ih₁; apply ih₂
+  | trans x y z _ _ ih₁ ih₂ =>
+    apply MvQPF.WEquiv.trans
+    · apply ih₁
+    · apply ih₂
 set_option linter.uppercaseLean3 false in
 #align mvqpf.Wequiv_map MvQPF.wEquiv_map
 
@@ -188,6 +191,7 @@ def Fix {n : ℕ} (F : TypeVec (n + 1) → Type*) [MvFunctor F] [q : MvQPF F] (�
   Quotient (wSetoid α : Setoid (q.P.W α))
 #align mvqpf.fix MvQPF.Fix
 
+-- Porting note(#5171): this linter isn't ported yet.
 --attribute [nolint has_nonempty_instance] Fix
 
 /-- `Fix F` is a functor -/
@@ -315,7 +319,7 @@ theorem Fix.ind {α : TypeVec n} (p : Fix F α → Prop)
   rw [← Fix.ind_aux a f' f]
   apply h
   rw [MvQPF.liftP_iff]
-  refine' ⟨_, _, rfl, _⟩
+  refine ⟨_, _, rfl, ?_⟩
   intro i j
   cases i
   · apply ih
@@ -337,6 +341,7 @@ instance mvqpfFix : MvQPF (Fix F) where
     conv =>
       rhs
       dsimp [MvFunctor.map]
+    rfl
 #align mvqpf.mvqpf_fix MvQPF.mvqpfFix
 
 /-- Dependent recursor for `fix F` -/

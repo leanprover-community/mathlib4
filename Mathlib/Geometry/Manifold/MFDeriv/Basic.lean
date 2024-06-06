@@ -139,7 +139,8 @@ theorem mdifferentiableWithinAt_iff {f : M → M'} {s : Set M} {x : M} :
       ContinuousWithinAt f s x ∧
         DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f)
           ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) ((extChartAt I x) x) := by
-  refine' and_congr Iff.rfl (exists_congr fun f' => _)
+  rw [mdifferentiableWithinAt_iff']
+  refine and_congr Iff.rfl (exists_congr fun f' => ?_)
   rw [inter_comm]
   simp only [HasFDerivWithinAt, nhdsWithin_inter, nhdsWithin_extChartAt_target_eq]
 #align mdifferentiable_within_at_iff mdifferentiableWithinAt_iff
@@ -183,13 +184,15 @@ theorem HasMFDerivWithinAt.mdifferentiableWithinAt (h : HasMFDerivWithinAt I I' 
 #align has_mfderiv_within_at.mdifferentiable_within_at HasMFDerivWithinAt.mdifferentiableWithinAt
 
 theorem HasMFDerivAt.mdifferentiableAt (h : HasMFDerivAt I I' f x f') :
-    MDifferentiableAt I I' f x :=
-  ⟨h.1, ⟨f', h.2⟩⟩
+    MDifferentiableAt I I' f x := by
+  rw [mdifferentiableAt_iff]
+  exact ⟨h.1, ⟨f', h.2⟩⟩
 #align has_mfderiv_at.mdifferentiable_at HasMFDerivAt.mdifferentiableAt
 
 @[simp, mfld_simps]
-theorem hasMFDerivWithinAt_univ : HasMFDerivWithinAt I I' f univ x f' ↔ HasMFDerivAt I I' f x f' :=
-  by simp only [HasMFDerivWithinAt, HasMFDerivAt, continuousWithinAt_univ, mfld_simps]
+theorem hasMFDerivWithinAt_univ :
+    HasMFDerivWithinAt I I' f univ x f' ↔ HasMFDerivAt I I' f x f' := by
+  simp only [HasMFDerivWithinAt, HasMFDerivAt, continuousWithinAt_univ, mfld_simps]
 #align has_mfderiv_within_at_univ hasMFDerivWithinAt_univ
 
 theorem hasMFDerivAt_unique (h₀ : HasMFDerivAt I I' f x f₀') (h₁ : HasMFDerivAt I I' f x f₁') :
@@ -232,7 +235,7 @@ theorem HasMFDerivWithinAt.hasMFDerivAt (h : HasMFDerivWithinAt I I' f s x f') (
 
 theorem MDifferentiableWithinAt.hasMFDerivWithinAt (h : MDifferentiableWithinAt I I' f s x) :
     HasMFDerivWithinAt I I' f s x (mfderivWithin I I' f s x) := by
-  refine' ⟨h.1, _⟩
+  refine ⟨h.1, ?_⟩
   simp only [mfderivWithin, h, if_pos, mfld_simps]
   exact DifferentiableWithinAt.hasFDerivWithinAt h.2
 #align mdifferentiable_within_at.has_mfderiv_within_at MDifferentiableWithinAt.hasMFDerivWithinAt
@@ -240,21 +243,21 @@ theorem MDifferentiableWithinAt.hasMFDerivWithinAt (h : MDifferentiableWithinAt 
 protected theorem MDifferentiableWithinAt.mfderivWithin (h : MDifferentiableWithinAt I I' f s x) :
     mfderivWithin I I' f s x =
       fderivWithin 𝕜 (writtenInExtChartAt I I' x f : _) ((extChartAt I x).symm ⁻¹' s ∩ range I)
-        ((extChartAt I x) x) :=
-  by simp only [mfderivWithin, h, if_pos]
+        ((extChartAt I x) x) := by
+  simp only [mfderivWithin, h, if_pos]
 #align mdifferentiable_within_at.mfderiv_within MDifferentiableWithinAt.mfderivWithin
 
 theorem MDifferentiableAt.hasMFDerivAt (h : MDifferentiableAt I I' f x) :
     HasMFDerivAt I I' f x (mfderiv I I' f x) := by
-  refine' ⟨h.1, _⟩
+  refine ⟨h.continuousAt, ?_⟩
   simp only [mfderiv, h, if_pos, mfld_simps]
-  exact DifferentiableWithinAt.hasFDerivWithinAt h.2
+  exact DifferentiableWithinAt.hasFDerivWithinAt h.differentiableWithinAt_writtenInExtChartAt
 #align mdifferentiable_at.has_mfderiv_at MDifferentiableAt.hasMFDerivAt
 
 protected theorem MDifferentiableAt.mfderiv (h : MDifferentiableAt I I' f x) :
     mfderiv I I' f x =
-      fderivWithin 𝕜 (writtenInExtChartAt I I' x f : _) (range I) ((extChartAt I x) x) :=
-  by simp only [mfderiv, h, if_pos]
+      fderivWithin 𝕜 (writtenInExtChartAt I I' x f : _) (range I) ((extChartAt I x) x) := by
+  simp only [mfderiv, h, if_pos]
 #align mdifferentiable_at.mfderiv MDifferentiableAt.mfderiv
 
 protected theorem HasMFDerivAt.mfderiv (h : HasMFDerivAt I I' f x f') : mfderiv I I' f x = f' :=
@@ -281,27 +284,26 @@ theorem mfderivWithin_subset (st : s ⊆ t) (hs : UniqueMDiffWithinAt I s x)
 
 theorem MDifferentiableWithinAt.mono (hst : s ⊆ t) (h : MDifferentiableWithinAt I I' f t x) :
     MDifferentiableWithinAt I I' f s x :=
-  ⟨ContinuousWithinAt.mono h.1 hst,
-    DifferentiableWithinAt.mono h.2 (inter_subset_inter (preimage_mono hst) (Subset.refl _))⟩
+  ⟨ContinuousWithinAt.mono h.1 hst, DifferentiableWithinAt.mono
+    h.differentiableWithinAt_writtenInExtChartAt
+    (inter_subset_inter_left _ (preimage_mono hst))⟩
 #align mdifferentiable_within_at.mono MDifferentiableWithinAt.mono
 
 theorem mdifferentiableWithinAt_univ :
     MDifferentiableWithinAt I I' f univ x ↔ MDifferentiableAt I I' f x := by
-  simp only [MDifferentiableWithinAt, MDifferentiableAt, continuousWithinAt_univ, mfld_simps]
+  simp_rw [MDifferentiableWithinAt, MDifferentiableAt, ChartedSpace.LiftPropAt]
 #align mdifferentiable_within_at_univ mdifferentiableWithinAt_univ
 
 theorem mdifferentiableWithinAt_inter (ht : t ∈ 𝓝 x) :
     MDifferentiableWithinAt I I' f (s ∩ t) x ↔ MDifferentiableWithinAt I I' f s x := by
-  rw [MDifferentiableWithinAt, MDifferentiableWithinAt, extChartAt_preimage_inter_eq,
-    differentiableWithinAt_inter, continuousWithinAt_inter ht]
-  exact extChartAt_preimage_mem_nhds I ht
+  rw [MDifferentiableWithinAt, MDifferentiableWithinAt,
+    (differentiable_within_at_localInvariantProp I I').liftPropWithinAt_inter ht]
 #align mdifferentiable_within_at_inter mdifferentiableWithinAt_inter
 
 theorem mdifferentiableWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
     MDifferentiableWithinAt I I' f (s ∩ t) x ↔ MDifferentiableWithinAt I I' f s x := by
-  rw [MDifferentiableWithinAt, MDifferentiableWithinAt, extChartAt_preimage_inter_eq,
-    differentiableWithinAt_inter', continuousWithinAt_inter' ht]
-  exact extChartAt_preimage_mem_nhdsWithin I ht
+  rw [MDifferentiableWithinAt, MDifferentiableWithinAt,
+    (differentiable_within_at_localInvariantProp I I').liftPropWithinAt_inter' ht]
 #align mdifferentiable_within_at_inter' mdifferentiableWithinAt_inter'
 
 theorem MDifferentiableAt.mdifferentiableWithinAt (h : MDifferentiableAt I I' f x) :
@@ -440,15 +442,6 @@ theorem HasMFDerivAt.continuousAt (h : HasMFDerivAt I I' f x f') : ContinuousAt 
   h.1
 #align has_mfderiv_at.continuous_at HasMFDerivAt.continuousAt
 
-theorem MDifferentiableWithinAt.continuousWithinAt (h : MDifferentiableWithinAt I I' f s x) :
-    ContinuousWithinAt f s x :=
-  h.1
-#align mdifferentiable_within_at.continuous_within_at MDifferentiableWithinAt.continuousWithinAt
-
-theorem MDifferentiableAt.continuousAt (h : MDifferentiableAt I I' f x) : ContinuousAt f x :=
-  h.1
-#align mdifferentiable_at.continuous_at MDifferentiableAt.continuousAt
-
 theorem MDifferentiableOn.continuousOn (h : MDifferentiableOn I I' f s) : ContinuousOn f s :=
   fun x hx => (h x hx).continuousWithinAt
 #align mdifferentiable_on.continuous_on MDifferentiableOn.continuousOn
@@ -546,7 +539,7 @@ theorem HasMFDerivWithinAt.congr_mfderiv (h : HasMFDerivWithinAt I I' f s x f') 
 
 theorem HasMFDerivWithinAt.congr_of_eventuallyEq (h : HasMFDerivWithinAt I I' f s x f')
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : HasMFDerivWithinAt I I' f₁ s x f' := by
-  refine' ⟨ContinuousWithinAt.congr_of_eventuallyEq h.1 h₁ hx, _⟩
+  refine ⟨ContinuousWithinAt.congr_of_eventuallyEq h.1 h₁ hx, ?_⟩
   apply HasFDerivWithinAt.congr_of_eventuallyEq h.2
   · have :
       (extChartAt I x).symm ⁻¹' {y | f₁ y = f y} ∈
@@ -677,7 +670,7 @@ variable (x)
 theorem HasMFDerivWithinAt.comp (hg : HasMFDerivWithinAt I' I'' g u (f x) g')
     (hf : HasMFDerivWithinAt I I' f s x f') (hst : s ⊆ f ⁻¹' u) :
     HasMFDerivWithinAt I I'' (g ∘ f) s x (g'.comp f') := by
-  refine' ⟨ContinuousWithinAt.comp hg.1 hf.1 hst, _⟩
+  refine ⟨ContinuousWithinAt.comp hg.1 hf.1 hst, ?_⟩
   have A :
     HasFDerivWithinAt (writtenInExtChartAt I' I'' (f x) g ∘ writtenInExtChartAt I I' x f)
       (ContinuousLinearMap.comp g' f' : E →L[𝕜] E'') ((extChartAt I x).symm ⁻¹' s ∩ range I)

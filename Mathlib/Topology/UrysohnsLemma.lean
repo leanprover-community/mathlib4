@@ -179,7 +179,7 @@ theorem approx_nonneg (c : CU P) (n : ℕ) (x : X) : 0 ≤ c.approx n x := by
   induction' n with n ihn generalizing c
   · exact indicator_nonneg (fun _ _ => zero_le_one) _
   · simp only [approx, midpoint_eq_smul_add, invOf_eq_inv]
-    refine' mul_nonneg (inv_nonneg.2 zero_le_two) (add_nonneg _ _) <;> apply ihn
+    refine mul_nonneg (inv_nonneg.2 zero_le_two) (add_nonneg ?_ ?_) <;> apply ihn
 #align urysohns.CU.approx_nonneg Urysohns.CU.approx_nonneg
 
 theorem approx_le_one (c : CU P) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
@@ -213,7 +213,7 @@ theorem approx_mem_Icc_right_left (c : CU P) (n : ℕ) (x : X) :
   · exact ⟨le_rfl, indicator_le_indicator_of_subset (compl_subset_compl.2 c.left_U_subset)
       (fun _ => zero_le_one) _⟩
   · simp only [approx, mem_Icc]
-    refine' ⟨midpoint_le_midpoint _ (ihn _).1, midpoint_le_midpoint (ihn _).2 _⟩ <;>
+    refine ⟨midpoint_le_midpoint ?_ (ihn _).1, midpoint_le_midpoint (ihn _).2 ?_⟩ <;>
       apply approx_le_approx_of_U_sub_C
     exacts [subset_closure, subset_closure]
 #align urysohns.CU.approx_mem_Icc_right_left Urysohns.CU.approx_mem_Icc_right_left
@@ -254,7 +254,7 @@ theorem lim_of_nmem_U (c : CU P) (x : X) (h : x ∉ c.U) : c.lim x = 1 := by
 
 theorem lim_eq_midpoint (c : CU P) (x : X) :
     c.lim x = midpoint ℝ (c.left.lim x) (c.right.lim x) := by
-  refine' tendsto_nhds_unique (c.tendsto_approx_atTop x) ((tendsto_add_atTop_iff_nat 1).1 _)
+  refine tendsto_nhds_unique (c.tendsto_approx_atTop x) ((tendsto_add_atTop_iff_nat 1).1 ?_)
   simp only [approx]
   exact (c.left.tendsto_approx_atTop x).midpoint (c.right.tendsto_approx_atTop x)
 #align urysohns.CU.lim_eq_midpoint Urysohns.CU.lim_eq_midpoint
@@ -278,9 +278,9 @@ theorem lim_mem_Icc (c : CU P) (x : X) : c.lim x ∈ Icc (0 : ℝ) 1 :=
 /-- Continuity of `Urysohns.CU.lim`. See module docstring for a sketch of the proofs. -/
 theorem continuous_lim (c : CU P) : Continuous c.lim := by
   obtain ⟨h0, h1234, h1⟩ : 0 < (2⁻¹ : ℝ) ∧ (2⁻¹ : ℝ) < 3 / 4 ∧ (3 / 4 : ℝ) < 1 := by norm_num
-  refine'
+  refine
     continuous_iff_continuousAt.2 fun x =>
-      (Metric.nhds_basis_closedBall_pow (h0.trans h1234) h1).tendsto_right_iff.2 fun n _ => _
+      (Metric.nhds_basis_closedBall_pow (h0.trans h1234) h1).tendsto_right_iff.2 fun n _ => ?_
   simp only [Metric.mem_closedBall]
   induction' n with n ihn generalizing c
   · filter_upwards with y
@@ -291,7 +291,7 @@ theorem continuous_lim (c : CU P) : Continuous c.lim := by
       rw [pow_succ', c.lim_eq_midpoint, c.lim_eq_midpoint,
         c.right.lim_of_mem_C _ (c.left_U_subset_right_C hyl),
         c.right.lim_of_mem_C _ (c.left_U_subset_right_C hxl)]
-      refine' (dist_midpoint_midpoint_le _ _ _ _).trans _
+      refine (dist_midpoint_midpoint_le _ _ _ _).trans ?_
       rw [dist_self, add_zero, div_eq_inv_mul]
       gcongr
     · replace hxl : x ∈ c.left.right.Cᶜ :=
@@ -304,9 +304,9 @@ theorem continuous_lim (c : CU P) : Continuous c.lim := by
         compl_subset_compl.2 c.left.left_U_subset_right_C hyl
       simp only [pow_succ, c.lim_eq_midpoint, c.left.lim_eq_midpoint,
         c.left.left.lim_of_nmem_U _ hxl, c.left.left.lim_of_nmem_U _ hyl]
-      refine' (dist_midpoint_midpoint_le _ _ _ _).trans _
-      refine' (div_le_div_of_nonneg_right (add_le_add_right (dist_midpoint_midpoint_le _ _ _ _) _)
-        zero_le_two).trans _
+      refine (dist_midpoint_midpoint_le _ _ _ _).trans ?_
+      refine (div_le_div_of_nonneg_right (add_le_add_right (dist_midpoint_midpoint_le _ _ _ _) _)
+        zero_le_two).trans ?_
       rw [dist_self, zero_add]
       set r := (3 / 4 : ℝ) ^ n
       calc _ ≤ (r / 2 + r) / 2 := by gcongr

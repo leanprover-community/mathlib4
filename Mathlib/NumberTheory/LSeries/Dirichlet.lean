@@ -6,9 +6,9 @@ Authors: Michael Stoll
 import Mathlib.NumberTheory.DirichletCharacter.Bounds
 import Mathlib.NumberTheory.LSeries.Convolution
 import Mathlib.NumberTheory.LSeries.Deriv
+import Mathlib.NumberTheory.LSeries.RiemannZeta
 import Mathlib.NumberTheory.SumPrimeReciprocals
 import Mathlib.NumberTheory.VonMangoldt
-import Mathlib.NumberTheory.ZetaFunction
 
 /-!
 # L-series of Dirichlet characters and arithmetic functions
@@ -54,7 +54,7 @@ open LSeries Nat Complex
 lemma not_LSeriesSummable_moebius_at_one : ¬ LSeriesSummable ↗μ 1 := by
   intro h
   refine not_summable_one_div_on_primes <| summable_ofReal.mp <| Summable.of_neg ?_
-  simp only [← Pi.neg_def, Set.indicator_comp_of_zero ofReal_zero, ofReal_inv, ofReal_nat_cast]
+  simp only [← Pi.neg_def, Set.indicator_comp_of_zero ofReal_zero, ofReal_inv, ofReal_natCast]
   refine (h.indicator {n | n.Prime}).congr (fun n ↦ ?_)
   by_cases hn : n ∈ {p | p.Prime}
   · simp only [Pi.neg_apply, Set.indicator_of_mem hn, term_of_ne_zero hn.ne_zero,
@@ -342,7 +342,7 @@ lemma LSeriesSummable_vonMangoldt {s : ℂ} (hs : 1 < s.re) : LSeriesSummable �
   refine Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun n ↦ norm_term_le s ?_) hf
   have hΛ : ‖↗Λ n‖ ≤ ‖Complex.log n‖ := by
     simp only [norm_eq_abs, abs_ofReal, _root_.abs_of_nonneg vonMangoldt_nonneg,
-      ← Complex.natCast_log, _root_.abs_of_nonneg <| Real.log_nat_cast_nonneg n]
+      ← Complex.natCast_log, _root_.abs_of_nonneg <| Real.log_natCast_nonneg n]
     exact ArithmeticFunction.vonMangoldt_le_log
   exact hΛ.trans <| by simp only [norm_eq_abs, norm_mul, Pi.one_apply, norm_one, mul_one, le_refl]
 

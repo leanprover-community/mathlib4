@@ -129,7 +129,7 @@ theorem range_derivWithin_subset_closure_span_image
     suffices A : f x ∈ closure (f '' (s ∩ t)) from
       closure_mono (image_subset _ (inter_subset_right _ _)) A
     apply ContinuousWithinAt.mem_closure_image
-    apply H'.continuousWithinAt.mono (inter_subset_left _ _)
+    · apply H'.continuousWithinAt.mono (inter_subset_left _ _)
     rw [mem_closure_iff_nhdsWithin_neBot]
     exact I.mono (nhdsWithin_mono _ (diff_subset _ _))
 
@@ -216,7 +216,7 @@ theorem HasDerivWithinAt.limsup_slope_norm_le (hf : HasDerivWithinAt f f' s x) (
     ∀ᶠ z in 𝓝[s] x, ‖z - x‖⁻¹ * (‖f z‖ - ‖f x‖) < r := by
   apply (hf.limsup_norm_slope_le hr).mono
   intro z hz
-  refine' lt_of_le_of_lt (mul_le_mul_of_nonneg_left (norm_sub_norm_le _ _) _) hz
+  refine lt_of_le_of_lt (mul_le_mul_of_nonneg_left (norm_sub_norm_le _ _) ?_) hz
   exact inv_nonneg.2 (norm_nonneg _)
 #align has_deriv_within_at.limsup_slope_norm_le HasDerivWithinAt.limsup_slope_norm_le
 

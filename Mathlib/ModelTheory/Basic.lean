@@ -133,7 +133,7 @@ protected def sum (L : Language.{u, v}) (L' : Language.{u', v'}) : Language :=
 variable (L : Language.{u, v})
 
 /-- The type of constants in a given language. -/
--- Porting note: The linter does not exist yet, according to Algebra.Hom.GroupAction.
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 protected def Constants :=
   L.Functions 0
@@ -146,7 +146,7 @@ theorem constants_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
 #align first_order.language.constants_mk₂ FirstOrder.Language.constants_mk₂
 
 /-- The type of symbols in a given language. -/
--- Porting note: The linter does not exist yet, according to Algebra.Hom.GroupAction.
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 def Symbols :=
   Sum (Σl, L.Functions l) (Σl, L.Relations l)
@@ -806,11 +806,11 @@ def symm (f : M ≃[L] N) : N ≃[L] M :=
     map_fun' := fun n f' {x} => by
       simp only [Equiv.toFun_as_coe]
       rw [Equiv.symm_apply_eq]
-      refine' Eq.trans _ (f.map_fun' f' (f.toEquiv.symm ∘ x)).symm
+      refine Eq.trans ?_ (f.map_fun' f' (f.toEquiv.symm ∘ x)).symm
       rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp]
     map_rel' := fun n r {x} => by
       simp only [Equiv.toFun_as_coe]
-      refine' (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans _
+      refine (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans ?_
       rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
 #align first_order.language.equiv.symm FirstOrder.Language.Equiv.symm
 

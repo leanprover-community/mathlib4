@@ -101,7 +101,7 @@ theorem frequently_lt_rpow_neg (h : LiouvilleWith p x) (hlt : q < p) :
   rcases h.exists_pos with ⟨C, _hC₀, hC⟩
   have : ∀ᶠ n : ℕ in atTop, C < n ^ (p - q) := by
     simpa only [(· ∘ ·), neg_sub, one_div] using
-      ((tendsto_rpow_atTop (sub_pos.2 hlt)).comp tendsto_nat_cast_atTop_atTop).eventually
+      ((tendsto_rpow_atTop (sub_pos.2 hlt)).comp tendsto_natCast_atTop_atTop).eventually
         (eventually_gt_atTop C)
   refine (this.and_frequently hC).mono ?_
   rintro n ⟨hnC, hn, m, hne, hlt⟩
@@ -120,7 +120,7 @@ theorem mul_rat (h : LiouvilleWith p x) (hr : r ≠ 0) : LiouvilleWith p (x * r)
   refine ⟨r.num * m, ?_, ?_⟩
   · rw [A]; simp [hne, hr]
   · rw [A, ← sub_mul, abs_mul]
-    simp only [smul_eq_mul, id.def, Nat.cast_mul]
+    simp only [smul_eq_mul, id, Nat.cast_mul]
     calc _ < C / ↑n ^ p * |↑r| := by gcongr
       _ = ↑r.den ^ p * (↑|r| * C) / (↑r.den * ↑n) ^ p := ?_
     rw [mul_rpow, mul_div_mul_left, mul_comm, mul_div_assoc]
@@ -184,7 +184,7 @@ theorem add_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x + r) := b
   refine ⟨r.den ^ p * C, (tendsto_id.nsmul_atTop r.pos).frequently (hC.mono ?_)⟩
   rintro n ⟨hn, m, hne, hlt⟩
   have : (↑(r.den * m + r.num * n : ℤ) / ↑(r.den • id n) : ℝ) = m / n + r := by
-    rw [Algebra.id.smul_eq_mul, id.def]
+    rw [Algebra.id.smul_eq_mul, id]
     nth_rewrite 4 [← Rat.num_div_den r]
     push_cast
     rw [add_div, mul_div_mul_left _ _ (by positivity), mul_div_mul_right _ _ (by positivity)]
@@ -246,9 +246,9 @@ protected theorem neg (h : LiouvilleWith p x) : LiouvilleWith p (-x) := by
   refine ⟨C, hC.mono ?_⟩
   rintro n ⟨m, hne, hlt⟩
   refine ⟨-m, by simp [neg_div, hne], ?_⟩
-  · convert hlt using 1
-    rw [abs_sub_comm]
-    congr! 1; push_cast; ring
+  convert hlt using 1
+  rw [abs_sub_comm]
+  congr! 1; push_cast; ring
 #align liouville_with.neg LiouvilleWith.neg
 
 @[simp]
@@ -358,7 +358,7 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
   rcases hx m with ⟨a, b, hb, hne, hlt⟩
   lift b to ℕ using zero_le_one.trans hb.le; norm_cast at hb; push_cast at hne hlt
   rcases le_or_lt N b with h | h
-  · refine' (hN b h a hne).not_lt (hlt.trans_le _)
+  · refine (hN b h a hne).not_lt (hlt.trans_le ?_)
     gcongr
     exact_mod_cast hb.le
   · exact (hm b h hb _).not_lt hlt
@@ -370,7 +370,7 @@ protected theorem liouvilleWith (hx : Liouville x) (p : ℝ) : LiouvilleWith p x
   refine ⟨1, ((eventually_gt_atTop 1).and_frequently (hx.frequently_exists_num ⌈p⌉₊)).mono ?_⟩
   rintro b ⟨_hb, a, hne, hlt⟩
   refine ⟨a, hne, ?_⟩
-  rwa [rpow_nat_cast]
+  rwa [rpow_natCast]
 #align liouville.liouville_with Liouville.liouvilleWith
 
 end Liouville

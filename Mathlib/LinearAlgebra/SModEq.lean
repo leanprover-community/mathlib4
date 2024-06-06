@@ -18,10 +18,12 @@ open Submodule
 open Polynomial
 
 variable {R : Type*} [Ring R]
+variable {A : Type*} [CommRing A]
 variable {M : Type*} [AddCommGroup M] [Module R M] (U U₁ U₂ : Submodule R M)
 variable {x x₁ x₂ y y₁ y₂ z z₁ z₂ : M}
 variable {N : Type*} [AddCommGroup N] [Module R N] (V V₁ V₂ : Submodule R N)
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- A predicate saying two elements of a module are equivalent modulo a submodule. -/
 def SModEq (x y : M) : Prop :=
   (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y
@@ -31,16 +33,15 @@ notation:50 x " ≡ " y " [SMOD " N "]" => SModEq N x y
 
 variable {U U₁ U₂}
 
--- Adaptation note: 2024-03-15
--- Renamed to avoid the reserved name `SModEq.def`.
-protected theorem SModEq.def' :
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
+protected theorem SModEq.def :
     x ≡ y [SMOD U] ↔ (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y :=
   Iff.rfl
-#align smodeq.def SModEq.def'
+#align smodeq.def SModEq.def
 
 namespace SModEq
 
-theorem sub_mem : x ≡ y [SMOD U] ↔ x - y ∈ U := by rw [SModEq.def', Submodule.Quotient.eq]
+theorem sub_mem : x ≡ y [SMOD U] ↔ x - y ∈ U := by rw [SModEq.def, Submodule.Quotient.eq]
 #align smodeq.sub_mem SModEq.sub_mem
 
 @[simp]
@@ -50,7 +51,7 @@ theorem top : x ≡ y [SMOD (⊤ : Submodule R M)] :=
 
 @[simp]
 theorem bot : x ≡ y [SMOD (⊥ : Submodule R M)] ↔ x = y := by
-  rw [SModEq.def', Submodule.Quotient.eq, mem_bot, sub_eq_zero]
+  rw [SModEq.def, Submodule.Quotient.eq, mem_bot, sub_eq_zero]
 #align smodeq.bot SModEq.bot
 
 @[mono]
@@ -84,16 +85,21 @@ instance instTrans : Trans (SModEq U) (SModEq U) (SModEq U) where
   trans := trans
 
 theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ + x₂ ≡ y₁ + y₂ [SMOD U] := by
-  rw [SModEq.def'] at hxy₁ hxy₂ ⊢
+  rw [SModEq.def] at hxy₁ hxy₂ ⊢
   simp_rw [Quotient.mk_add, hxy₁, hxy₂]
 #align smodeq.add SModEq.add
 
 theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := by
-  rw [SModEq.def'] at hxy ⊢
+  rw [SModEq.def] at hxy ⊢
   simp_rw [Quotient.mk_smul, hxy]
 #align smodeq.smul SModEq.smul
 
-theorem zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [SModEq.def', Submodule.Quotient.eq, sub_zero]
+theorem mul {I : Ideal A} {x₁ x₂ y₁ y₂ : A} (hxy₁ : x₁ ≡ y₁ [SMOD I])
+    (hxy₂ : x₂ ≡ y₂ [SMOD I]) : x₁ * x₂ ≡ y₁ * y₂ [SMOD I] := by
+  simp only [SModEq.def, Ideal.Quotient.mk_eq_mk, map_mul] at hxy₁ hxy₂ ⊢
+  rw [hxy₁, hxy₂]
+
+theorem zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [SModEq.def, Submodule.Quotient.eq, sub_zero]
 #align smodeq.zero SModEq.zero
 
 theorem map (hxy : x ≡ y [SMOD U]) (f : M →ₗ[R] N) : f x ≡ f y [SMOD U.map f] :=
@@ -107,7 +113,7 @@ theorem comap {f : M →ₗ[R] N} (hxy : f x ≡ f y [SMOD V]) : x ≡ y [SMOD V
 
 theorem eval {R : Type*} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD I]) (f : R[X]) :
     f.eval x ≡ f.eval y [SMOD I] := by
-  rw [SModEq.def'] at h ⊢
+  rw [SModEq.def] at h ⊢
   show Ideal.Quotient.mk I (f.eval x) = Ideal.Quotient.mk I (f.eval y)
   replace h : Ideal.Quotient.mk I x = Ideal.Quotient.mk I y := h
   rw [← Polynomial.eval₂_at_apply, ← Polynomial.eval₂_at_apply, h]

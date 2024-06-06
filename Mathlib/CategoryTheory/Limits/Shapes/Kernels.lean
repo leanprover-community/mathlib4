@@ -119,7 +119,7 @@ def ofιCongr {P : C} {ι ι' : P ⟶ X} {w : ι ≫ f = 0} (h : ι = ι') :
 
 /-- If `F` is an equivalence, then applying `F` to a diagram indexing a (co)kernel of `f` yields
     the diagram indexing the (co)kernel of `F.map f`. -/
-def compNatIso {D : Type u'} [Category.{v} D] [HasZeroMorphisms D] (F : C ⥤ D) [IsEquivalence F] :
+def compNatIso {D : Type u'} [Category.{v} D] [HasZeroMorphisms D] (F : C ⥤ D) [F.IsEquivalence] :
     parallelPair f 0 ⋙ F ≅ parallelPair (F.map f) 0 :=
   let app (j :WalkingParallelPair) :
       (parallelPair f 0 ⋙ F).obj j ≅ (parallelPair (F.map f) 0).obj j :=
@@ -343,7 +343,7 @@ def kernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ≅ X') (q 
   inv :=
     kernel.map f' f p.inv q.inv
       (by
-        refine' (cancel_mono q.hom).1 _
+        refine (cancel_mono q.hom).1 ?_
         simp [w])
 #align category_theory.limits.kernel.map_iso CategoryTheory.Limits.kernel.mapIso
 
@@ -452,6 +452,7 @@ instance hasKernel_iso_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [H
         isLimit := isLimitAux _ (fun s => kernel.lift _ (s.ι ≫ f) (by aesop_cat))
             (by aesop_cat) fun s m w => by
           simp_rw [← w]
+          symm -- Adaptation note: nightly-2024-04-01 This `symm` wasn't previously necessary.
           apply equalizer.hom_ext
           simp }⟩
 #align category_theory.limits.has_kernel_iso_comp CategoryTheory.Limits.hasKernel_iso_comp
@@ -844,7 +845,7 @@ def cokernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'] (p : X ≅ X')
     (w : f ≫ q.hom = p.hom ≫ f') : cokernel f ≅ cokernel f' where
   hom := cokernel.map f f' p.hom q.hom w
   inv := cokernel.map f' f p.inv q.inv (by
-          refine' (cancel_mono q.hom).1 _
+          refine (cancel_mono q.hom).1 ?_
           simp [w])
 #align category_theory.limits.cokernel.map_iso CategoryTheory.Limits.cokernel.mapIso
 
@@ -938,6 +939,7 @@ instance hasCokernel_comp_iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasCokern
               cokernel.desc _ (g ≫ s.π) (by rw [← Category.assoc, CokernelCofork.condition]))
             (by aesop_cat) fun s m w => by
             simp_rw [← w]
+            symm -- Adaptation note: nightly-2024-04-01 This `symm` wasn't previously necessary.
             apply coequalizer.hom_ext
             simp }⟩
 #align category_theory.limits.has_cokernel_comp_iso CategoryTheory.Limits.hasCokernel_comp_iso
@@ -979,8 +981,7 @@ variable [HasZeroObject C]
 open ZeroObject
 
 /-- The morphism to the zero object determines a cocone on a cokernel diagram -/
-def cokernel.zeroCokernelCofork : CokernelCofork f
-    where
+def cokernel.zeroCokernelCofork : CokernelCofork f where
   pt := 0
   ι := { app := fun j => 0 }
 #align category_theory.limits.cokernel.zero_cokernel_cofork CategoryTheory.Limits.cokernel.zeroCokernelCofork
@@ -1235,8 +1236,8 @@ attribute [instance 100] HasKernels.has_limit HasCokernels.has_colimit
 instance (priority := 100) hasKernels_of_hasEqualizers [HasEqualizers C] : HasKernels C where
 #align category_theory.limits.has_kernels_of_has_equalizers CategoryTheory.Limits.hasKernels_of_hasEqualizers
 
-instance (priority := 100) hasCokernels_of_hasCoequalizers [HasCoequalizers C] : HasCokernels C
-    where
+instance (priority := 100) hasCokernels_of_hasCoequalizers [HasCoequalizers C] :
+    HasCokernels C where
 #align category_theory.limits.has_cokernels_of_has_coequalizers CategoryTheory.Limits.hasCokernels_of_hasCoequalizers
 
 end CategoryTheory.Limits

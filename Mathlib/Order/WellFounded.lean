@@ -129,13 +129,13 @@ protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {
       rw [WellFounded.succ, dif_pos] at h'
       exact wo.wf.not_lt_min _ h hy h'
     rcases trichotomous_of r x y with (hy | hy | hy)
-    exfalso
-    exact this hy
-    right
-    exact hy.symm
+    · exfalso
+      exact this hy
+    · right
+      exact hy.symm
     left
     exact hy
-  rintro (hy | rfl); exact _root_.trans hy (wo.wf.lt_succ h); exact wo.wf.lt_succ h
+  rintro (hy | rfl); (· exact _root_.trans hy (wo.wf.lt_succ h)); exact wo.wf.lt_succ h
 #align well_founded.lt_succ_iff WellFounded.lt_succ_iff
 
 section LinearOrder

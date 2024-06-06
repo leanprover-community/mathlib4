@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Tactic.Common
 
 #align_import group_theory.perm.basic from "leanprover-community/mathlib"@"b86832321b586c6ac23ef8cdef6a7a27e42b13bd"
 
@@ -203,7 +204,7 @@ theorem sumCongr_one {α β : Type*} : sumCongr (1 : Perm α) (1 : Perm β) = 1 
   sumCongr_refl
 #align equiv.perm.sum_congr_one Equiv.Perm.sumCongr_one
 
-/-- `Equiv.Perm.sumCongr` as a `MonoidHom`, with its two arguments bundled into a single `prod`.
+/-- `Equiv.Perm.sumCongr` as a `MonoidHom`, with its two arguments bundled into a single `Prod`.
 
 This is particularly useful for its `MonoidHom.range` projection, which is the subgroup of
 permutations which do not exchange elements between `α` and `β`. -/

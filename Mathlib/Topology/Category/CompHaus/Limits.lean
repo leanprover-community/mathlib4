@@ -24,7 +24,13 @@ So far, we have the following:
 
 namespace CompHaus
 
-universe u
+/-
+Previously, this had accidentally been made a global instance,
+and we now turn it on locally when convenient.
+-/
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+
+universe u w
 
 open CategoryTheory Limits
 
@@ -138,7 +144,7 @@ end Pullbacks
 
 section FiniteCoproducts
 
-variable {α : Type} [Finite α] (X : α → CompHaus.{u})
+variable {α : Type w} [Finite α] (X : α → CompHaus)
 
 /--
 The coproduct of a finite family of objects in `CompHaus`, constructed as the disjoint
@@ -158,7 +164,7 @@ To construct a morphism from the explicit finite coproduct, it suffices to
 specify a morphism from each of its factors.
 This is essentially the universal property of the coproduct.
 -/
-def finiteCoproduct.desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) :
+def finiteCoproduct.desc {B : CompHaus} (e : (a : α) → (X a ⟶ B)) :
     finiteCoproduct X ⟶ B where
   toFun := fun ⟨a,x⟩ => e a x
   continuous_toFun := by
@@ -166,36 +172,27 @@ def finiteCoproduct.desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) :
     intro a; exact (e a).continuous
 
 @[reassoc (attr := simp)]
-lemma finiteCoproduct.ι_desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
+lemma finiteCoproduct.ι_desc {B : CompHaus} (e : (a : α) → (X a ⟶ B)) (a : α) :
     finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
 
-lemma finiteCoproduct.hom_ext {B : CompHaus.{u}} (f g : finiteCoproduct X ⟶ B)
+lemma finiteCoproduct.hom_ext {B : CompHaus} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
   ext ⟨a,x⟩
   specialize h a
   apply_fun (fun q => q x) at h
   exact h
 
-/--
-The coproduct cocone associated to the explicit finite coproduct.
--/
-@[simps]
-def finiteCoproduct.cocone : Limits.Cocone (Discrete.functor X) where
-  pt := finiteCoproduct X
-  ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.ι X a
+/-- The coproduct cocone associated to the explicit finite coproduct. -/
+abbrev finiteCoproduct.cofan : Limits.Cofan X :=
+  Cofan.mk (finiteCoproduct X) (finiteCoproduct.ι X)
 
-/--
-The explicit finite coproduct cocone is a colimit cocone.
--/
-@[simps]
-def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cocone X) where
-  desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
-  fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
-  uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
-    specialize hm ⟨a⟩
-    ext t
-    apply_fun (fun q => q t) at hm
-    exact hm
+/-- The explicit finite coproduct cocone is a colimit cocone. -/
+def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cofan X) :=
+  mkCofanColimit _
+    (fun s ↦ desc _ fun a ↦ s.inj a)
+    (fun _ _ ↦ ι_desc _ _ _)
+    fun _ _ hm ↦ finiteCoproduct.hom_ext _ _ _ fun a ↦
+      (DFunLike.ext _ _ fun t ↦ congrFun (congrArg DFunLike.coe (hm a)) t)
 
 section Iso
 
@@ -207,9 +204,7 @@ def coproductIsoCoproduct : finiteCoproduct X ≅ ∐ X :=
 
 theorem Sigma.ι_comp_toFiniteCoproduct (a : α) :
     (Limits.Sigma.ι X a) ≫ (coproductIsoCoproduct X).inv = finiteCoproduct.ι X a := by
-  dsimp [coproductIsoCoproduct]
-  simp only [Limits.colimit.comp_coconePointUniqueUpToIso_inv, finiteCoproduct.cocone_pt,
-    finiteCoproduct.cocone_ι, Discrete.natTrans_app]
+  simp [coproductIsoCoproduct]
 
 /-- The homeomorphism from the explicit finite coproducts to the abstract coproduct. -/
 noncomputable
@@ -243,5 +238,19 @@ instance : FinitaryExtensive CompHaus :=
   finitaryExtensive_of_preserves_and_reflects compHausToTop
 
 end FiniteCoproducts
+
+section Terminal
+
+/-- A one-element space is terminal in `CompHaus` -/
+def isTerminalPUnit : IsTerminal (CompHaus.of PUnit.{u + 1}) :=
+  haveI : ∀ X, Unique (X ⟶ CompHaus.of PUnit.{u + 1}) := fun _ ↦
+    ⟨⟨⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun _ ↦ rfl⟩
+  Limits.IsTerminal.ofUnique _
+
+/-- The isomorphism from an arbitrary terminal object of `CompHaus` to a one-element space. -/
+noncomputable def terminalIsoPUnit : ⊤_ CompHaus.{u} ≅ CompHaus.of PUnit :=
+  terminalIsTerminal.uniqueUpToIso CompHaus.isTerminalPUnit
+
+end Terminal
 
 end CompHaus
