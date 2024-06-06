@@ -190,7 +190,8 @@ def pretriangulated : Pretriangulated D where
 
 instance isTriangulated_functor :
     letI : Pretriangulated D := pretriangulated L W; L.IsTriangulated :=
-    letI : Pretriangulated D := pretriangulated L W; ⟨fun T hT => ⟨T, Iso.refl _, hT⟩⟩
+  letI : Pretriangulated D := pretriangulated L W
+  ⟨fun T hT => ⟨T, Iso.refl _, hT⟩⟩
 
 lemma isTriangulated [Pretriangulated D] [L.IsTriangulated] [IsTriangulated C] :
     IsTriangulated D := by
