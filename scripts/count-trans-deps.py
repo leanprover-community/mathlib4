@@ -34,9 +34,7 @@ def get_imports(directory):
                         # Find an import statement
                         match = re.match(r'^import\s+(.*)', line)
                         if match:
-                            # Normalize the import module name
-                            import_module = match.group(1).replace('.', '/')
-                            imports.append(import_module)
+                            imports.append(match.group(1))
 
                 # Add the file and its imports to the dictionary
                 file_imports[module_name] = imports
@@ -46,12 +44,22 @@ def get_imports(directory):
 def get_transitive_imports(file_imports):
     # Initialize a dictionary to store the transitive imports
     transitive_imports = {}
+    # Initialize a set to store the visited files
+    visited = set()
 
     def dfs(file):
-        if file not in transitive_imports:
-            transitive_imports[file] = set(file_imports.get(file, []))
-            for import_module in file_imports.get(file, []):
-                transitive_imports[file].update(dfs(import_module))
+        if file not in visited:
+            visited.add(file)
+            if file in file_imports:
+                transitive_imports[file] = set(file_imports[file])
+                for import_module in file_imports[file]:
+                    if import_module in file_imports:
+                        transitive_imports[file].update(dfs(import_module))
+                    # else:
+                    #     print(f"Warning: {import_module} imported by {file} not found in file_imports")
+            else:
+                transitive_imports[file] = set()
+                # print(f"Warning: {file} not found in file_imports")
         return transitive_imports[file]
 
     # Compute the transitive imports for each file

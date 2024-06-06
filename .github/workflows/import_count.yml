@@ -37,7 +37,7 @@ jobs:
         git checkout master # let's start easy! "$(git merge-base refs/remotes/origin/main ${{ github.sha }})"
         # get the files that we need from the current PR
         # this will have to switch to `master` probably, when merging or right after
-        git checkout origin/adomani/import-count scripts/count-trans-deps.py scripts/import-graph-report.py
+        git checkout origin/import-count scripts/count-trans-deps.py scripts/import-graph-report.py
 
         # Compute the counts for the merge base
         python ./scripts/count-trans-deps.py "Mathlib/" > base.json
@@ -47,16 +47,17 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         message=$(python ./scripts/import-graph-report.py base.json head.json)
+        echo "${message}"
+        data=$(jq -n --arg msg "$message" '{"body": $msg}')
+        method="POST"
         if [[ -n "$message" ]]; then
             url="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${{ github.event.pull_request.number }}/comments"
             headers="Authorization: token ${GITHUB_TOKEN}"
             comments=$(curl -s -S -H "Content-Type: application/json" -H "$headers" "$url")
-            comment_id=$(echo "$comments" | jq -r '.[] | select(.body | startswith("<details><summary>Dependency changes</summary>")) | .id')
+            comment_id=$(echo "$comments" | jq -r '.[] | select(.body | startswith("### Import summary")) | .id')
             if [[ -n "$comment_id" ]]; then
-                url="$url/$comment_id"
-                curl -s -S -H "Content-Type: application/json" -H "$headers" -X PATCH -d "{\"body\": \"$message\"}" "$url"
-            else
-                data="{\"body\": \"$message\"}"
-                curl -s -S -H "Content-Type: application/json" -H "$headers" -X POST -d "$data" "$url"
+                url="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/comments/${comment_id}"
+                method="PATCH"
             fi
+            curl -s -S -H "Content-Type: application/json" -H "$headers" -X "$method" -d "$data" "$url"
         fi
