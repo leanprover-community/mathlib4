@@ -46,7 +46,7 @@ lemma essSurj_mapComposableArrows [W.HasLeftCalculusOfFractions] (n : ℕ) :
     (L.mapComposableArrows n).EssSurj := by
   have := essSurj_mapComposableArrows_of_hasRightCalculusOfFractions L.op W.op n
   have := Functor.essSurj_of_iso (L.mapComposableArrowsOpIso n).symm
-  exact Functor.essSurf_of_comp_fully_faithful _ (opEquivalence D n).functor.rightOp
+  exact Functor.essSurj_of_comp_fully_faithful _ (opEquivalence D n).functor.rightOp
 
 end Localization
 
