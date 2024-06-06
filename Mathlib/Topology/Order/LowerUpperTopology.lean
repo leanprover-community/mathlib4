@@ -417,7 +417,7 @@ instance instIsLowerPi {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)]
     IsLower (Π i, α i) where
   topology_eq_lowerTopology := by
     classical
-    refine' le_antisymm (le_generateFrom _) _
+    refine le_antisymm (le_generateFrom ?_) ?_
     · rintro _ ⟨x, rfl⟩
       simpa using isClosed_set_pi fun i (_ : i ∈ univ) ↦ isClosed_Ici (a := x i)
     simp_rw [← continuous_id_iff_le, @continuous_pi_iff, @IsLower.continuous_iff_Ici]
