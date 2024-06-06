@@ -2554,15 +2554,6 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
             apply subset_closure
             apply cls_sub_f'
             rw [S_int]
-            simp only [mem_sInter]
-            intro t tinS
-            obtain ⟨n, fn⟩ := f_surj ⟨t, tinS⟩
-            have : t = f n := by rw [fn]
-            rw [this]
-            apply clf'_sub_f
-            apply subset_closure
-            apply cls_sub_f'
-            rw [S_int]
             rw [sInter_eq_iInter]
             exact xin
         rw [this]
