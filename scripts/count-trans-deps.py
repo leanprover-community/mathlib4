@@ -55,11 +55,8 @@ def get_transitive_imports(file_imports):
                 for import_module in file_imports[file]:
                     if import_module in file_imports:
                         transitive_imports[file].update(dfs(import_module))
-                    # else:
-                    #     print(f"Warning: {import_module} imported by {file} not found in file_imports")
             else:
                 transitive_imports[file] = set()
-                # print(f"Warning: {file} not found in file_imports")
         return transitive_imports[file]
 
     # Compute the transitive imports for each file
