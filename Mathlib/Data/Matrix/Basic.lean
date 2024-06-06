@@ -1678,7 +1678,7 @@ def mulVec [Fintype n] (M : Matrix m n α) (v : n → α) : m → α
 scoped infixr:73 " *ᵥ " => Matrix.mulVec
 
 lemma mulVec_def [Fintype n] (M : Matrix m n α) (v : n → α) :
-  M *ᵥ v = fun i => Finset.sum Finset.univ fun (j : n) => M i j * v j := by rfl
+    M *ᵥ v = fun i => Finset.sum Finset.univ fun (j : n) => M i j * v j := by rfl
 
 /--
 `v ᵥ* M` (notation for `vecMul v M`) is the vector-matrix product of vector `v` and matrix `M`,
