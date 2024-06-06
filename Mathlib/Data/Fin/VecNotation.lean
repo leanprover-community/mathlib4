@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Range
+import Mathlib.Util.Qq
 
 #align_import data.fin.vec_notation from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 
@@ -147,6 +148,67 @@ theorem cons_val_succ' {i : ℕ} (h : i.succ < m.succ) (x : α) (u : Fin m → �
     vecCons x u ⟨i.succ, h⟩ = u ⟨i, Nat.lt_of_succ_lt_succ h⟩ := by
   simp only [vecCons, Fin.cons, Fin.cases_succ']
 #align matrix.cons_val_succ' Matrix.cons_val_succ'
+
+section simprocs
+open Lean Qq
+
+/-- Given an expression `x : α`, find an `f : Fin n → α` and `i : Fin n` that it is composed of. -/
+def matchVecApp {u : Level} {α : Q(Type u)} (x : Q($α)) :
+    MetaM <| Option (Σ' (n : Q(ℕ)) (f : Q(Fin $n → $α)) (i : Q(Fin $n)), $x =Q $f $i) := do
+  Meta.withNewMCtxDepth do
+    let n : Q(ℕ) ← mkFreshExprMVarQ q(ℕ)
+    let f : Q(Fin $n → $α) ← mkFreshExprMVarQ q(Fin $n → $α)
+    let i : Q(Fin $n) ← mkFreshExprMVarQ q(Fin $n)
+    let .defEq _h ← isDefEqQ q($x) q($f $i) | pure none
+    return some ⟨← instantiateMVars n, ← instantiateMVars f, ← instantiateMVars i, ⟨⟩⟩
+
+-- /-- Evaluate `![...] i` -/
+-- def reduceConsApp {u : Level} {α : Q(Type u)} {n : Q(ℕ)} (f : Q(Fin $n → $α)) (i : Q(Fin $n)) :
+--     MetaM <| Option Q($α) := do
+--   let .some (nv + 1) := n.nat? | pure none
+--   let .some iv := i.int? | pure none
+--   let iv := (iv % (nv + 1)).toNat
+--   let mut x : Option Q($α) := none
+--   let mut xs : Expr := f
+--   for _ in [:iv + 1] do
+--     let_expr Matrix.vecCons _ _ x' xs' := ← Meta.whnfR xs | return none
+--     xs := xs'
+--     x := some x'
+--   return x
+
+/--
+Obtain the elements of `![...]`.
+
+Returns `n`, the size of the vector, and a lazy list of elements.
+This is lazy so that it can be used for `reduceConsApp`, which only needs one entry.
+-/
+def mllistOfVecLit {u : Level} {α : Q(Type u)} {n : Q(ℕ)} (f : Q(Fin $n → $α)) :
+    MetaM (Option (ℕ × MLList MetaM Q($α))) := do
+  let .some nv := (← Meta.whnfR n).nat? | return none
+  return some ⟨nv, go nv f⟩
+  where go : ℕ → Expr → MLList MetaM Q($α)
+    | 0, _ => .nil
+    | nv + 1, xs => do
+      let_expr Matrix.vecCons _ _ x xs := ← Meta.whnfR xs | .nil
+      .cons x (go nv xs)
+
+/-- Evaluate `![...] i` -/
+def reduceConsApp {u : Level} {α : Q(Type u)} {n : Q(ℕ)} (f : Q(Fin $n → $α)) (i : Q(Fin $n)) :
+    MetaM <| Option Q($α) := do
+  let mut .some ⟨nv + 1, elems⟩ ← mllistOfVecLit f | pure none
+  let .some iv := i.int? | pure none
+  let iv := (iv % (nv + 1)).toNat
+  (elems.drop iv).head
+
+
+/-- A simproc that simplifies terms of the form `![a, b, c] n`, where `n` is an integer literal. -/
+dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
+  let ⟨_u, _α, x⟩ ← inferTypeQ' e
+  let .some ⟨_n, f, i, _h⟩ ← matchVecApp x | return .continue
+  let .some e ← reduceConsApp f i | return .continue
+  return .continue (some e)
+
+end simprocs
 
 @[simp]
 theorem head_cons (x : α) (u : Fin m → α) : vecHead (vecCons x u) = x :=
