@@ -52,7 +52,7 @@ jobs:
             url="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${{ github.event.pull_request.number }}/comments"
             headers="Authorization: token ${GITHUB_TOKEN}"
             comments=$(curl -s -S -H "Content-Type: application/json" -H "$headers" "$url")
-            comment_id=$(echo "$comments" | jq -r '.[] | select(.body | startswith("None")) | .id')
+            comment_id=$(echo "$comments" | jq -r '.[] | select(.body | startswith("### Import summary")) | .id')
             printf 'comments: %s\ncomment_id: %s' "${comments}" "${comment_id}"
             if [[ -n "$comment_id" ]]; then
                 url="$url/$comment_id"
