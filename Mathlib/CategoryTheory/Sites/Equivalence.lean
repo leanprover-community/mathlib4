@@ -55,7 +55,7 @@ lemma isLocallyInjective_whisker [H.IsCocontinuous J K] [IsLocallyInjective K f]
 lemma isLocallyInjective_of_whisker (hH : CoverPreserving J K H)
     [H.IsCoverDense K] [IsLocallyInjective J (whiskerLeft H.op f)] : IsLocallyInjective K f where
   equalizerSieve_mem {X} a b h := by
-    apply K.transitive (Functor.IsCoverDense.is_cover (G := H) (K := K) X.unop)
+    apply K.transitive (H.is_cover_of_isCoverDense K X.unop)
     intro Y g ⟨⟨Z, lift, map, fac⟩⟩
     rw [← fac, Sieve.pullback_comp]
     apply K.pullback_stable
@@ -75,7 +75,7 @@ lemma isLocallySurjective_whisker [H.IsCocontinuous J K] [IsLocallySurjective K 
 lemma isLocallySurjective_of_whisker (hH : CoverPreserving J K H)
     [H.IsCoverDense K] [IsLocallySurjective J (whiskerLeft H.op f)] : IsLocallySurjective K f where
   imageSieve_mem {X} a := by
-    apply K.transitive (Functor.IsCoverDense.is_cover (G := H) (K := K) X)
+    apply K.transitive (H.is_cover_of_isCoverDense K X)
     intro Y g ⟨⟨Z, lift, map, fac⟩⟩
     rw [← fac, Sieve.pullback_comp]
     apply K.pullback_stable
