@@ -22,7 +22,7 @@ the first variable (see `ContinuousConstSMul`) and proper in the sense defined h
 ## Main definitions
 
 * `ProperSMul` : a group `G` acts properly on a topological space `X`
-  if the map `(g, x) ↦ (g • x, x)` is proper, in the sense defined in `IsProperMap`.
+  if the map `(g, x) ↦ (g • x, x)` is proper, in the sense of `IsProperMap`.
 
 ## Main statements
 
