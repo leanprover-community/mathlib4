@@ -99,14 +99,8 @@ def FiberInducedFunctor : C ⥤ Fiber p S where
   obj := fun x ↦ ⟨F.obj x, by simp only [← comp_obj, hF, const_obj_obj]⟩
   map := fun φ ↦ ⟨F.map φ, of_commsq _ _ _ _ _ <| by simpa using (eqToIso hF).hom.naturality φ⟩
 
--- /-- The natural transformation between F : C ⥤ 𝒳 and .... -/
--- def FiberInducedFunctorNat : F ≅ (FiberInducedFunctor hF) ⋙ (FiberInclusion p S) where
---   hom := { app := fun a ↦ 𝟙 (F.obj a) }
---   inv := { app := fun a ↦ 𝟙 ((FiberInducedFunctor hF ⋙ FiberInclusion p S).obj a) }
-
 lemma fiberInducedFunctor_comp : (FiberInducedFunctor hF) ⋙ (FiberInclusion p S) = F :=
   Functor.ext (fun x ↦ rfl) (by simp)
-  -- Functor.ext_of_iso (FiberInducedFunctorNat hF) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 end
 
