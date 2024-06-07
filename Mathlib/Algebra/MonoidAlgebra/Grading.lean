@@ -158,7 +158,7 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
   refine Finsupp.induction x ?_ ?_
   · intro hx
     symm
-    exact AddMonoidHom.map_zero _
+    exact (DirectSum.of (fun i ↦ gradeBy R f i) i).map_zero
   · intro m b y hmy hb ih hmby
     have : Disjoint (Finsupp.single m b).support y.support := by
       simpa only [Finsupp.support_single_ne_zero _ hb, Finset.disjoint_singleton_left]
@@ -172,6 +172,8 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
     simp only [AlgHom.map_add, Submodule.coe_mk, decomposeAux_single f m]
     let ih' := ih h2
     dsimp at ih'
+    letI : AddZeroClass (⨁ (i : ι), ↥(gradeBy R (⇑f) i)) :=
+      AddCommMonoid.toAddMonoid.toAddZeroClass
     rw [ih', ← AddMonoidHom.map_add]
     apply DirectSum.of_eq_of_gradedMonoid_eq
     congr 2
