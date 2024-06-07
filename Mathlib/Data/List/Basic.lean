@@ -234,7 +234,7 @@ instance instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩
 instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
 
 -- ADHOC Porting note: instance from Lean3 core
-instance [DecidableEq α] : IsLawfulSingleton α (List α) :=
+instance [DecidableEq α] : LawfulSingleton α (List α) :=
   { insert_emptyc_eq := fun x =>
       show (if x ∈ ([] : List α) then [] else [x]) = [x] from if_neg (not_mem_nil _) }
 
@@ -2775,6 +2775,12 @@ theorem length_lookmap (l : List α) : length (l.lookmap f) = length l := by
 end Lookmap
 
 /-! ### filter -/
+
+theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
+    l.length = (l.filter f).length + (l.filter (! f ·)).length := by
+  simp_rw [← List.countP_eq_length_filter, l.length_eq_countP_add_countP f, Bool.not_eq_true,
+    Bool.decide_eq_false]
+
 /-! ### filterMap -/
 
 #align list.filter_map_nil List.filterMap_nil

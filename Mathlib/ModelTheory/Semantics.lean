@@ -479,8 +479,7 @@ theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L �
       (Equiv.sumEmpty (L.Relations n) ((constantsOn α).Relations n) R) xs]
   rcongr
   cases' R with R R
-  · -- This used to be `simp` before leanprover/lean4#2644
-    simp; erw [Equiv.sumEmpty_apply_inl]
+  · simp
   · exact isEmptyElim R
 #align first_order.language.bounded_formula.realize_constants_vars_equiv FirstOrder.Language.BoundedFormula.realize_constantsVarsEquiv
 
