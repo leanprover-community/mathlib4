@@ -89,7 +89,7 @@ section Fintype
 
 variable [Fintype α] [Fintype ι] [DecidableEq α] [DecidableEq ι]
 
-open BigOperators Nat
+open Nat
 
 variable (f)
 

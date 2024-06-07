@@ -45,11 +45,9 @@ noncomputable section
 
 namespace Polynomial
 
-open Nat BigOperators Polynomial
+open Nat Polynomial
 
 open Function
-
-open Nat hiding nsmul_eq_mul
 
 variable {R : Type*} [Semiring R] (k : ℕ) (f : R[X])
 

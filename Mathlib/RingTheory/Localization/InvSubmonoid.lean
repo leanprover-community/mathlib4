@@ -32,8 +32,6 @@ variable [Algebra R S] {P : Type*} [CommRing P]
 
 open Function
 
-open BigOperators
-
 namespace IsLocalization
 
 section InvSubmonoid

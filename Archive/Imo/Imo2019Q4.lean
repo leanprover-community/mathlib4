@@ -27,7 +27,7 @@ individually.
 -/
 
 
-open scoped Nat BigOperators
+open scoped Nat
 
 open Nat hiding zero_le Prime
 

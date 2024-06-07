@@ -58,7 +58,7 @@ divergence theorem, Bochner integral
 
 open Set Finset TopologicalSpace Function BoxIntegral MeasureTheory Filter
 
-open scoped BigOperators Classical Topology Interval
+open scoped Classical Topology Interval
 
 universe u
 
@@ -122,7 +122,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I : Box (
   have A := (Hi.mono_set Box.coe_subset_Icc).hasBoxIntegral ⊥ rfl
   have B :=
     hasIntegral_GP_divergence_of_forall_hasDerivWithinAt I f f' (s ∩ Box.Icc I)
-      (hs.mono (inter_subset_left _ _)) (fun x hx => Hc _ hx.2) fun x hx =>
+      (hs.mono inter_subset_left) (fun x hx => Hc _ hx.2) fun x hx =>
       Hd _ ⟨hx.1, fun h => hx.2 ⟨h, hx.1⟩⟩
   rw [continuousOn_pi] at Hc
   refine (A.unique B).trans (sum_congr rfl fun i _ => ?_)

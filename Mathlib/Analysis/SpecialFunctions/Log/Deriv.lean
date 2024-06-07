@@ -25,7 +25,7 @@ logarithm, derivative
 
 open Filter Finset Set
 
-open scoped Topology BigOperators
+open scoped Topology
 
 namespace Real
 
@@ -215,8 +215,6 @@ theorem tendsto_mul_log_one_plus_div_atTop (t : ℝ) :
     tendsto_inv_atTop_zero'.mono_right (nhdsWithin_mono _ fun x hx => (Set.mem_Ioi.mp hx).ne')
   simpa only [(· ∘ ·), inv_inv] using h₁.comp h₂
 #align real.tendsto_mul_log_one_plus_div_at_top Real.tendsto_mul_log_one_plus_div_atTop
-
-open scoped BigOperators
 
 /-- A crude lemma estimating the difference between `log (1-x)` and its Taylor series at `0`,
 where the main point of the bound is that it tends to `0`. The goal is to deduce the series

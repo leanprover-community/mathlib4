@@ -28,8 +28,6 @@ These results appear in the [Erdős proof of Bertrand's postulate](aigner1999pro
 -/
 
 
-open BigOperators
-
 namespace Nat
 
 variable {p n k : ℕ}

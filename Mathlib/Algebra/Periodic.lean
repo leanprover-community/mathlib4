@@ -35,7 +35,7 @@ period, periodic, periodicity, antiperiodic
 
 variable {α β γ : Type*} {f g : α → β} {c c₁ c₂ x : α}
 
-open Set BigOperators
+open Set
 
 namespace Function
 

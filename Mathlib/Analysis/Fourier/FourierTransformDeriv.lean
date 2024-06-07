@@ -81,7 +81,7 @@ noncomputable section
 
 open Real Complex MeasureTheory Filter TopologicalSpace
 
-open scoped FourierTransform Topology BigOperators
+open scoped FourierTransform Topology
 
 -- without this local instance, Lean tries first the instance
 -- `secondCountableTopologyEither_of_right` (whose priority is 100) and takes a very long time to
@@ -332,6 +332,7 @@ lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
   _ = (2 * π * ‖L‖) ^ n * ‖v‖ ^ n * ‖f v‖ * ∏ i : Fin n, ‖m i‖ := by
       simp [Finset.prod_mul_distrib, mul_pow]; ring
 
+set_option maxSynthPendingDepth 2 in
 /-- The iterated derivative of a function multiplied by `(L v ⬝) ^ n` can be controlled in terms
 of the iterated derivatives of the initial function. -/
 lemma norm_iteratedFDeriv_fourierPowSMulRight
@@ -709,7 +710,7 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
       ∑ p in Finset.range (k + 1) ×ˢ Finset.range (n + 1),
         ∫ v, ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ := by
   have Z : ‖w‖ ^ n * (‖w‖ ^ n * ‖iteratedFDeriv ℝ k (𝓕 f) w‖) ≤
-      ‖w‖ ^ n * ((2 * (π * ‖innerSL ℝ‖)) ^ k * ((2 * k + 2) ^ n *
+      ‖w‖ ^ n * ((2 * (π * ‖innerSL (E := V) ℝ‖)) ^ k * ((2 * k + 2) ^ n *
           ∑ p ∈ Finset.range (k + 1) ×ˢ Finset.range (n + 1),
             ∫ (v : V), ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖ ∂volume)) := by
     have := VectorFourier.pow_mul_norm_iteratedFDeriv_fourierIntegral_le (innerSL ℝ) hf h'f hk hn

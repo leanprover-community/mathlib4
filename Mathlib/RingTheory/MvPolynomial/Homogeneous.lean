@@ -30,8 +30,6 @@ if all monomials occurring in `φ` have degree `n`.
 -/
 
 
-open BigOperators
-
 namespace MvPolynomial
 
 variable {σ : Type*} {τ : Type*} {R : Type*} {S : Type*}

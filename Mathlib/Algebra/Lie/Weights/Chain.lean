@@ -41,7 +41,7 @@ We provide basic definitions and results to support `α`-chain techniques in thi
 
 -/
 
-open BigOperators FiniteDimensional Function Set
+open FiniteDimensional Function Set
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
@@ -60,7 +60,7 @@ lemma eventually_weightSpace_smul_add_eq_bot :
     ∀ᶠ (k : ℕ) in Filter.atTop, weightSpace M (k • χ₁ + χ₂) = ⊥ := by
   let f : ℕ → L → R := fun k ↦ k • χ₁ + χ₂
   suffices Injective f by
-    rw [← Nat.cofinite_eq_atTop, Filter.eventually_cofinite, ← finite_image_iff (this.injOn _)]
+    rw [← Nat.cofinite_eq_atTop, Filter.eventually_cofinite, ← finite_image_iff this.injOn]
     apply (finite_weightSpace_ne_bot R L M).subset
     simp [f]
   intro k l hkl
