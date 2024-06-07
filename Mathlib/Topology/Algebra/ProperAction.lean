@@ -105,15 +105,13 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto :
       (∀ 𝒰 : Ultrafilter (G × X), ∀ x₁ x₂ : X,
         Tendsto (fun gx : G × X ↦ (gx.1 • gx.2, gx.2)) 𝒰 (𝓝 (x₁, x₂)) →
       ∃ g : G, g • x₂ = x₁ ∧ Tendsto (Prod.fst : G × X → G) 𝒰 (𝓝 g)) := by
-  constructor
-  · refine fun h ↦ ⟨inferInstance, fun 𝒰 x₁ x₂ h' ↦ ?_⟩
-    rw [properSMul_iff, isProperMap_iff_ultrafilter] at h
+  refine ⟨fun h ↦ ⟨inferInstance, fun 𝒰 x₁ x₂ h' ↦ ?_⟩, fun ⟨cont, h⟩ ↦ ?_⟩
+  · rw [properSMul_iff, isProperMap_iff_ultrafilter] at h
     rcases h.2 h' with ⟨gx, hgx1, hgx2⟩
     refine ⟨gx.1, ?_, (continuous_fst.tendsto gx).mono_left hgx2⟩
     simp only [Prod.mk.injEq] at hgx1
     rw [← hgx1.2, hgx1.1]
-  · rintro ⟨cont, h⟩
-    rw [properSMul_iff, isProperMap_iff_ultrafilter]
+  · rw [properSMul_iff, isProperMap_iff_ultrafilter]
     refine ⟨by fun_prop, fun 𝒰 (x₁, x₂) hxx ↦ ?_⟩
     rcases h 𝒰 x₁ x₂ hxx with ⟨g, hg1, hg2⟩
     refine ⟨(g, x₂), by rw [hg1], ?_⟩
