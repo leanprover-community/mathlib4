@@ -848,7 +848,7 @@ theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a := by
 
 theorem sup'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty)
     (f : β → α) :
-    (s₁ ∪ s₂).sup' (h₁.mono <| subset_union_left _ _) f = s₁.sup' h₁ f ⊔ s₂.sup' h₂ f :=
+    (s₁ ∪ s₂).sup' (h₁.mono subset_union_left) f = s₁.sup' h₁ f ⊔ s₂.sup' h₂ f :=
   eq_of_forall_ge_iff fun a => by simp [or_imp, forall_and]
 #align finset.sup'_union Finset.sup'_union
 
@@ -897,13 +897,11 @@ theorem sup'_induction {p : α → Prop} (hp : ∀ a₁, p a₁ → ∀ a₂, p 
     (hs : ∀ b ∈ s, p (f b)) : p (s.sup' H f) := by
   show @WithBot.recBotCoe α (fun _ => Prop) True p ↑(s.sup' H f)
   rw [coe_sup']
-  refine sup_induction trivial ?_ hs
-  rintro (_ | a₁) h₁ a₂ h₂
-  · rw [WithBot.none_eq_bot, bot_sup_eq]
-    exact h₂
-  · cases a₂ using WithBot.recBotCoe with
-    | bot => exact h₁
-    | coe a₂ => exact hp a₁ h₁ a₂ h₂
+  refine sup_induction trivial (fun a₁ h₁ a₂ h₂ ↦ ?_) hs
+  match a₁, a₂ with
+  | ⊥, _ => rwa [bot_sup_eq]
+  | (a₁ : α), ⊥ => rwa [sup_bot_eq]
+  | (a₁ : α), (a₂ : α) => exact hp a₁ h₁ a₂ h₂
 #align finset.sup'_induction Finset.sup'_induction
 
 theorem sup'_mem (s : Set α) (w : ∀ᵉ (x ∈ s) (y ∈ s), x ⊔ y ∈ s) {ι : Type*}
@@ -1043,7 +1041,7 @@ theorem inf'_const (a : α) : (s.inf' H fun _ => a) = a :=
 
 theorem inf'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty)
     (f : β → α) :
-    (s₁ ∪ s₂).inf' (h₁.mono <| subset_union_left _ _) f = s₁.inf' h₁ f ⊓ s₂.inf' h₂ f :=
+    (s₁ ∪ s₂).inf' (h₁.mono subset_union_left) f = s₁.inf' h₁ f ⊓ s₂.inf' h₂ f :=
   @sup'_union αᵒᵈ _ _ _ _ _ h₁ h₂ _
 #align finset.inf'_union Finset.inf'_union
 
