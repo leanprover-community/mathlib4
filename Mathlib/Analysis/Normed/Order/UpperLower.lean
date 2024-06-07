@@ -162,7 +162,8 @@ lemma dist_anti_right_pi : AntitoneOn (dist x) (Iic x) := by
   simpa only [dist_comm] using dist_anti_left_pi (y := x)
 #align dist_anti_right dist_anti_right_pi
 
-lemma dist_le_dist_of_le_pi (ha : a₂ ≤ a₁) (h₁ : a₁ ≤ b₁) (hb : b₁ ≤ b₂) : dist a₁ b₁ ≤ dist a₂ b₂ :=
+lemma dist_le_dist_of_le_pi (ha : a₂ ≤ a₁) (h₁ : a₁ ≤ b₁) (hb : b₁ ≤ b₂) :
+    dist a₁ b₁ ≤ dist a₂ b₂ :=
   (dist_mono_right_pi h₁ (h₁.trans hb) hb).trans $
     dist_anti_left_pi (ha.trans $ h₁.trans hb) (h₁.trans hb) ha
 #align dist_le_dist_of_le dist_le_dist_of_le_pi
