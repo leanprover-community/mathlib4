@@ -363,8 +363,8 @@ noncomputable def autMulEquivAutGalois : Aut F ≃* (AutGalois F)ᵐᵒᵖ where
   map_mul' := by simp
 
 lemma autMulEquivAutGalois_π (f : Aut F) (A : C) [IsGalois A] (a : F.obj A) :
-    F.map (AutGalois.π F { obj := A, pt := a } (autMulEquivAutGalois F f).unop).hom a
-      = f.hom.app A a := by
+    F.map (AutGalois.π F { obj := A, pt := a } (autMulEquivAutGalois F f).unop).hom a =
+      f.hom.app A a := by
   dsimp [autMulEquivAutGalois, endMulEquivAutGalois]
   rw [endEquivAutGalois_π]
   rfl
