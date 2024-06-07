@@ -142,7 +142,7 @@ theorem pullback_functorPushforward_eq {X : C} (S : Sieve X) :
   · intro hf
     exact ⟨_, e.unitInv.app Z ≫ f, S.downward_closed hf _, e.unit.app Z ≫ e.unit.app _, by simp⟩
 
-theorem coverPreserving : CoverPreserving J (e.locallyCoverDense J).inducedTopology e.functor where
+theorem coverPreserving' : CoverPreserving J (e.locallyCoverDense J).inducedTopology e.functor where
   cover_preserve {U S} h := by
     change _ ∈ J.sieves (e.inverse.obj (e.functor.obj U))
     convert J.pullback_stable (e.unitInv.app U) h
@@ -195,25 +195,24 @@ instance : e.symm.TransportsGrothendieckTopology K J where
       convert J.pullback_stable (e.unit.app X) h
       exact (e.pullback_functorPushforward_eq S).symm
 
-theorem coverPreserving' : CoverPreserving J K e.functor := by
+theorem coverPreserving : CoverPreserving J K e.functor := by
   rw [e.eq_inducedTopology_of_transports J K]
-  exact e.coverPreserving J
+  exact e.coverPreserving' J
 
-theorem coverPreserving_symm' : CoverPreserving K J e.inverse := by
+theorem coverPreserving_symm : CoverPreserving K J e.inverse := by
   rw [e.symm.eq_inducedTopology_of_transports K J]
-  exact e.symm.coverPreserving K
+  exact e.symm.coverPreserving' K
 
 instance : IsContinuous e.functor J K := by
-  rw [e.eq_inducedTopology_of_transports J K]
-  exact IsCoverDense.isContinuous _ _ _ (e.coverPreserving J)
+  have : IsCoverDense e.functor K := by rw [e.eq_inducedTopology_of_transports J K]; infer_instance
+  exact IsCoverDense.isContinuous _ _ _ (e.coverPreserving J K)
 
 instance : IsCocontinuous e.functor J K := by
   rw [e.symm.eq_inducedTopology_of_transports K J]
   exact (e.symm.locallyCoverDense _).inducedTopology_isCocontinuous
 
-instance : IsContinuous e.inverse K J := by
-  rw [eq_inducedTopology_of_transports J K e]
-  exact IsCoverDense.isContinuous _ _ _ (e.locallyCoverDense J).inducedTopology_coverPreserving
+instance : IsContinuous e.inverse K J :=
+  IsCoverDense.isContinuous _ _ _ (e.coverPreserving_symm J K)
 
 instance : IsCocontinuous e.inverse K J := by
   rw [e.eq_inducedTopology_of_transports J K]
@@ -318,15 +317,8 @@ lemma isLocallyInjective_whisker [IsLocallyInjective J f] :
   e.inverse.isLocallyInjective_whisker K J A f
 
 lemma isLocallyInjective_of_whisker [IsLocallyInjective K (whiskerLeft e.inverse.op f)] :
-    IsLocallyInjective J f := by
-  have := e.symm.isLocallyInjective_whisker K J (whiskerLeft e.inverse.op f)
-  simp only [symm_inverse, whiskerLeft_twice] at this
-  have : f = whiskerRight e.op.unit F ≫ whiskerLeft (e.functor.op ⋙ e.inverse.op) f ≫
-      whiskerRight e.op.unitInv G := by
-    ext : 2
-    simp [← Functor.map_comp]
-  rw [this]
-  infer_instance
+    IsLocallyInjective J f :=
+  e.inverse.isLocallyInjective_of_whisker K J A f (e.coverPreserving_symm J K)
 
 lemma isLocallySurjective_whisker [IsLocallySurjective J f] :
     IsLocallySurjective K (whiskerLeft e.inverse.op f) :=
@@ -334,7 +326,7 @@ lemma isLocallySurjective_whisker [IsLocallySurjective J f] :
 
 lemma isLocallySurjective_of_whisker [IsLocallySurjective K (whiskerLeft e.inverse.op f)] :
     IsLocallySurjective J f :=
-  e.inverse.isLocallySurjective_of_whisker K J A f (e.coverPreserving_symm' J K)
+  e.inverse.isLocallySurjective_of_whisker K J A f (e.coverPreserving_symm J K)
 
 open ConcreteCategory Sheaf
 
