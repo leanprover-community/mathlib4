@@ -336,7 +336,7 @@ instance instIsScalarTower {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring �
     simp only [smul_eq_mul, coe_mul, coe_smul, Pi.mul_apply, Pi.smul_apply]
     rw [← smul_eq_mul, ← smul_eq_mul, smul_assoc]
 
-instance instSMulCommClass {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
+instance (priority := 2200) instSMulCommClass {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
     [TopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [SMulCommClass R β β] :
     SMulCommClass R C₀(α, β) C₀(α, β) where
   smul_comm r f g := by

@@ -103,7 +103,7 @@ instance instIsScalarTower [Mul M] [MulMemClass S M] [IsScalarTower R M M]
     (s : S) : IsScalarTower R s s where
   smul_assoc r x y := Subtype.ext <| smul_assoc r (x : M) (y : M)
 
-instance instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
+instance (priority := 2200) instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
     (s : S) : SMulCommClass R s s where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : M) (y : M)
 

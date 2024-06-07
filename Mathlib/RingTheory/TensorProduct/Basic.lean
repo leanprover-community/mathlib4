@@ -266,7 +266,7 @@ instance (priority := 100) isScalarTower_right [Monoid S] [DistribMulAction S A]
 #align algebra.tensor_product.is_scalar_tower_right Algebra.TensorProduct.isScalarTower_right
 
 -- we want `Algebra.to_smulCommClass` to take priority since it's better for unification elsewhere
-instance (priority := 100) sMulCommClass_right [Monoid S] [DistribMulAction S A]
+instance (priority := 2200) sMulCommClass_right [Monoid S] [DistribMulAction S A]
     [SMulCommClass S A A] [SMulCommClass R S A] : SMulCommClass S (A ⊗[R] B) (A ⊗[R] B) where
   smul_comm r x y := by
     change r • (x * y) = x * r • y

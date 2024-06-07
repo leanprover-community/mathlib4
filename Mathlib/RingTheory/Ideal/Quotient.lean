@@ -78,13 +78,13 @@ instance (priority := 100) isScalarTower_right {α} [SMul α R] [IsScalarTower �
   (Quotient.ringCon I).isScalarTower_right
 #align ideal.quotient.is_scalar_tower_right Ideal.Quotient.isScalarTower_right
 
-instance smulCommClass {α} [SMul α R] [IsScalarTower α R R] [SMulCommClass α R R] :
-    SMulCommClass α (R ⧸ I) (R ⧸ I) :=
+instance (priority := 2200) smulCommClass {α} [SMul α R] [IsScalarTower α R R]
+    [SMulCommClass α R R] : SMulCommClass α (R ⧸ I) (R ⧸ I) :=
   (Quotient.ringCon I).smulCommClass
 #align ideal.quotient.smul_comm_class Ideal.Quotient.smulCommClass
 
-instance smulCommClass' {α} [SMul α R] [IsScalarTower α R R] [SMulCommClass R α R] :
-    SMulCommClass (R ⧸ I) α (R ⧸ I) :=
+instance (priority := 2200) smulCommClass' {α} [SMul α R] [IsScalarTower α R R]
+    [SMulCommClass R α R] : SMulCommClass (R ⧸ I) α (R ⧸ I) :=
   (Quotient.ringCon I).smulCommClass'
 #align ideal.quotient.smul_comm_class' Ideal.Quotient.smulCommClass'
 

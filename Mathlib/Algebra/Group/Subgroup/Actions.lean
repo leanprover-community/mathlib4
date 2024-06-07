@@ -68,12 +68,12 @@ instance [Monoid α] [MulDistribMulAction G α] (S : Subgroup G) : MulDistribMul
   inferInstanceAs (MulDistribMulAction S.toSubmonoid α)
 
 /-- The center of a group acts commutatively on that group. -/
-instance center.smulCommClass_left : SMulCommClass (center G) G G :=
+instance (priority := 2200) center.smulCommClass_left : SMulCommClass (center G) G G :=
   Submonoid.center.smulCommClass_left
 #align subgroup.center.smul_comm_class_left Subgroup.center.smulCommClass_left
 
 /-- The center of a group acts commutatively on that group. -/
-instance center.smulCommClass_right : SMulCommClass G (center G) G :=
+instance (priority := 2200) center.smulCommClass_right : SMulCommClass G (center G) G :=
   Submonoid.center.smulCommClass_right
 #align subgroup.center.smul_comm_class_right Subgroup.center.smulCommClass_right
 

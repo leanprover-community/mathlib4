@@ -149,7 +149,7 @@ instance instSMulCommClass {M N : Type*} [SMulZeroClass M R] [ContinuousConstSMu
     SMulCommClass M N C(X, R)₀ where
   smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
 
-instance instSMulCommClass' {M : Type*} [SMulZeroClass M R] [SMulCommClass M R R]
+instance (priority := 2200) instSMulCommClass' {M : Type*} [SMulZeroClass M R] [SMulCommClass M R R]
     [ContinuousConstSMul M R] : SMulCommClass M C(X, R)₀ C(X, R)₀ where
   smul_comm m f g := ext fun x ↦ smul_comm m (f x) (g x)
 

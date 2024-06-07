@@ -56,7 +56,7 @@ end
 
 variable [Semiring B] [GAlgebra R A] [Algebra R B]
 
-instance _root_.GradedMonoid.smulCommClass_right :
+instance (priority := 2200) _root_.GradedMonoid.smulCommClass_right :
     SMulCommClass R (GradedMonoid A) (GradedMonoid A) where
   smul_comm s x y := by
     dsimp

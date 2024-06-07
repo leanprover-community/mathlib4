@@ -152,8 +152,8 @@ instance faithfulSMulRight [Nonempty α] [FaithfulSMul M β] : FaithfulSMul M (�
 end
 
 @[to_additive]
-instance smulCommClassBoth [Mul N] [Mul P] [SMul M N] [SMul M P] [SMulCommClass M N N]
-    [SMulCommClass M P P] : SMulCommClass M (N × P) (N × P) :=
+instance (priority := 2200) smulCommClassBoth [Mul N] [Mul P] [SMul M N] [SMul M P]
+    [SMulCommClass M N N] [SMulCommClass M P P] : SMulCommClass M (N × P) (N × P) :=
   ⟨fun c x y => by simp [smul_def, mul_def, mul_smul_comm]⟩
 #align prod.smul_comm_class_both Prod.smulCommClassBoth
 #align prod.vadd_comm_class_both Prod.vaddCommClassBoth

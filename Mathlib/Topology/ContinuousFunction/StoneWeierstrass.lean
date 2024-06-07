@@ -501,8 +501,10 @@ lemma adjoin_id_eq_span_one_add (s : Set 𝕜) :
   simp [Set.mem_add]
 
 -- annoyingly, things break below without these shortcut instances.
-instance : IsScalarTower 𝕜 C(X, 𝕜) C(X, 𝕜) := @IsScalarTower.right _ C(X, 𝕜) _ _ _
-instance : SMulCommClass 𝕜 C(X, 𝕜) C(X, 𝕜) := @Algebra.to_smulCommClass _ C(X, 𝕜) _ _ _
+instance (priority := 2200) : IsScalarTower 𝕜 C(X, 𝕜) C(X, 𝕜) :=
+  @IsScalarTower.right _ C(X, 𝕜) _ _ _
+instance (priority := 2200) : SMulCommClass 𝕜 C(X, 𝕜) C(X, 𝕜) :=
+  @Algebra.to_smulCommClass _ C(X, 𝕜) _ _ _
 
 lemma nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom {s : Set 𝕜} (h0 : 0 ∈ s) :
     (adjoin 𝕜 {restrict s (.id 𝕜)} : Set C(s, 𝕜)) ⊆

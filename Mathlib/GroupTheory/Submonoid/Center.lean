@@ -91,12 +91,12 @@ instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decida
 
 
 /-- The center of a monoid acts commutatively on that monoid. -/
-instance center.smulCommClass_left : SMulCommClass (center M) M M where
+instance (priority := 2200) center.smulCommClass_left : SMulCommClass (center M) M M where
   smul_comm m x y := Commute.left_comm (m.prop.comm x) y
 #align submonoid.center.smul_comm_class_left Submonoid.center.smulCommClass_left
 
 /-- The center of a monoid acts commutatively on that monoid. -/
-instance center.smulCommClass_right : SMulCommClass M (center M) M :=
+instance (priority := 2200) center.smulCommClass_right : SMulCommClass M (center M) M :=
   SMulCommClass.symm _ _ _
 #align submonoid.center.smul_comm_class_right Submonoid.center.smulCommClass_right
 
