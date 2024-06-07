@@ -48,17 +48,6 @@ namespace Presheaf
 
 variable (H : C ⥤ D) {F G : Dᵒᵖ ⥤ A} (f : F ⟶ G)
 
-lemma _root_.CategoryTheory.GrothendieckTopology.W_iff_whisker
-    [HasWeakSheafify J A] [HasWeakSheafify K A]
-    [H.IsContinuous J K] [H.IsCocontinuous J K]
-    [∀ X, HasLimitsOfShape (StructuredArrow X H.op) A]
-    [(H.sheafPushforwardContinuous A J K).ReflectsIsomorphisms] :
-    K.W f ↔ J.W (whiskerLeft H.op f) := by
-  simp only [GrothendieckTopology.W_iff]
-  change _ ↔ IsIso (((whiskeringLeft _ _ _).obj _ ⋙ _).map _)
-  rw [NatIso.isIso_map_iff (H.pushforwardContinuousSheafificationCompatibility A J K) f]
-  exact (isIso_iff_of_reflects_iso _ (H.sheafPushforwardContinuous A J K)).symm
-
 variable [ConcreteCategory A]
 
 lemma isLocallyInjective_whisker [H.IsCocontinuous J K] [IsLocallyInjective K f] :
@@ -109,17 +98,6 @@ lemma isLocallySurjective_iff_whisker (hH : CoverPreserving J K H) [H.IsCocontin
     [H.IsCoverDense K] : IsLocallySurjective K f ↔ IsLocallySurjective J (whiskerLeft H.op f) :=
   ⟨fun _ ↦ isLocallySurjective_whisker J K A H f,
     fun _ ↦ isLocallySurjective_of_whisker J K A H f hH⟩
-
-lemma WEqualsLocallyBijective_transfer
-    (hH : CoverPreserving J K H) [H.IsCocontinuous J K]
-    [H.IsCoverDense K] [H.Full] [H.Faithful] [J.WEqualsLocallyBijective A] [HasWeakSheafify J A]
-    [HasWeakSheafify K A] [∀ X, HasLimitsOfShape (StructuredArrow X H.op) A] :
-    K.WEqualsLocallyBijective A where
-  iff f := by
-    have := IsCoverDense.isContinuous J K H hH
-    rw [W_iff_whisker J K A H f, W_iff_isLocallyBijective,
-      isLocallySurjective_iff_whisker J K A H _ hH,
-      isLocallyInjective_iff_whisker J K A H _ hH]
 
 end Presheaf
 
@@ -339,43 +317,6 @@ theorem hasSheafCompose : J.HasSheafCompose F where
       e.functor.op_comp_isSheaf _ _ ⟨_, hP'⟩
     exact (Presheaf.isSheaf_of_iso_iff ((isoWhiskerRight e.op.unitIso.symm (P ⋙ F)))).mp hP'
 
-variable [ConcreteCategory.{w} A]
-variable {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G)
-
-open Presheaf
-
-lemma isLocallyInjective_whisker [IsLocallyInjective J f] :
-    IsLocallyInjective K (whiskerLeft e.inverse.op f) :=
-  Presheaf.isLocallyInjective_whisker K J A e.inverse f
-
-lemma isLocallyInjective_of_whisker [IsLocallyInjective K (whiskerLeft e.inverse.op f)] :
-    IsLocallyInjective J f :=
-  Presheaf.isLocallyInjective_of_whisker K J A _ f (e.coverPreserving_symm J K)
-
-lemma isLocallySurjective_whisker [IsLocallySurjective J f] :
-    IsLocallySurjective K (whiskerLeft e.inverse.op f) :=
-  Presheaf.isLocallySurjective_whisker K J A e.inverse f
-
-lemma isLocallySurjective_of_whisker [IsLocallySurjective K (whiskerLeft e.inverse.op f)] :
-    IsLocallySurjective J f :=
-  Presheaf.isLocallySurjective_of_whisker K J A _ f (e.coverPreserving_symm J K)
-
-open ConcreteCategory Sheaf
-
-variable [HasFunctorialSurjectiveInjectiveFactorization A] [K.WEqualsLocallyBijective A]
-variable [HasSheafify K A] [K.HasSheafCompose (forget A)] [Balanced (Sheaf K A)]
-variable {F G : Sheaf J A} (f : F ⟶ G)
-
-lemma isLocallySurjective_iff_epi : IsLocallySurjective f ↔ Epi f := by
-  constructor
-  · intro
-    have := e.hasSheafCompose J K (forget A)
-    infer_instance
-  · intro h
-    rw [← (e.sheafCongr J K A).functor.epi_map_iff_epi, ← isLocallySurjective_iff_epi'] at h
-    have : Presheaf.IsLocallySurjective K (whiskerLeft e.inverse.op f.val) := h
-    exact e.isLocallySurjective_of_whisker J K f.val
-
 end Equivalence
 
 variable [EssentiallySmall C]
@@ -413,35 +354,5 @@ instance hasColimitsEssentiallySmallSite
     HasColimitsOfSize <| Sheaf J A :=
   Adjunction.has_colimits_of_equivalence ((equivSmallModel C).sheafCongr J
     ((equivSmallModel C).locallyCoverDense J).inducedTopology A).functor
-
-open ConcreteCategory
-
-variable [ConcreteCategory.{w} A]
-variable [HasFunctorialSurjectiveInjectiveFactorization A]
-  [((equivSmallModel C).locallyCoverDense J).inducedTopology.WEqualsLocallyBijective A]
-variable [((equivSmallModel C).locallyCoverDense J).inducedTopology.HasSheafCompose (forget A)]
-variable [Balanced (Sheaf ((equivSmallModel C).locallyCoverDense J).inducedTopology A)]
-variable {F G : Sheaf J A} (f : F ⟶ G)
-
-instance : Balanced (Sheaf J A) := ((equivSmallModel C).symm.sheafCongr
-  ((equivSmallModel C).locallyCoverDense J).inducedTopology J A)
-  |>.inverse.balanced_of_reflects_and_preserves
-
-instance [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) A] :
-    J.WEqualsLocallyBijective A := by
-  apply WEqualsLocallyBijective_transfer (D := C) (C := SmallModel C)
-      (H := (equivSmallModel C).inverse) (A := A)
-      (J := ((equivSmallModel C).locallyCoverDense J).inducedTopology)
-  exact (equivSmallModel C).symm.coverPreserving
-    ((equivSmallModel C).locallyCoverDense J).inducedTopology J
-
-example [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) A] :
-    Sheaf.IsLocallySurjective f ↔ Epi f := by
-  rw [← Sheaf.isLocallySurjective_iff_epi']
-
-lemma Sheaf.isLocallySurjective_iff_epi_of_site_essentiallySmall :
-    IsLocallySurjective f ↔ Epi f :=
-  (equivSmallModel C).isLocallySurjective_iff_epi _
-    ((equivSmallModel C).locallyCoverDense J).inducedTopology f
 
 end CategoryTheory
