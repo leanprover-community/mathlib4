@@ -38,6 +38,10 @@ It is also useful to consider the following stronger conditions:
 
 ## Instances
 
+- `IsNoetherianRing.orzechProperty` (defined in `Mathlib/RingTheory/Noetherian.lean`) :
+  any left-noetherian ring satisfies the Orzech property.
+  This applies in particular to division rings.
+
 - `strongRankCondition_of_orzechProperty` : the Orzech property implies the strong rank condition
   (for non trivial rings).
 
@@ -50,11 +54,11 @@ It is also useful to consider the following stronger conditions:
   invariant basis number property.
 
 - `invariantBasisNumber_of_nontrivial_of_commRing`: a nontrivial commutative ring satisfies
-  the invariant basis number property
+  the invariant basis number property.
 
-More generally, every commutative ring satisfies the strong rank condition. This is proved in
-`LinearAlgebra/FreeModule/StrongRankCondition`. We keep
-`invariantBasisNumber_of_nontrivial_of_commRing` here since it imports fewer files.
+More generally, every commutative ring satisfies the Orzech property,
+hence the strong rank condition, which is proved in `Mathlib/RingTheory/FiniteType.lean`.
+We keep `invariantBasisNumber_of_nontrivial_of_commRing` here since it imports fewer files.
 
 
 ## Counterexamples to converse results
@@ -263,30 +267,10 @@ section
 
 variable (R : Type u) [Ring R] [Nontrivial R] [IsNoetherianRing R]
 
--- Note this includes fields,
--- and we use this below to show any commutative ring has invariant basis number.
-/-- Any nontrivial noetherian ring satisfies the strong rank condition.
-
-An injective map `((Fin n ⊕ Fin (1 + m)) → R) →ₗ[R] (Fin n → R)` for some left-noetherian `R`
-would force `Fin (1 + m) → R ≃ₗ PUnit` (via `IsNoetherian.equivPUnitOfProdInjective`),
-which is not the case!
--/
-instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCondition R := by
-  constructor
-  intro m n f i
-  by_contra h
-  rw [not_le, ← Nat.add_one_le_iff, le_iff_exists_add] at h
-  obtain ⟨m, rfl⟩ := h
-  let e : Fin (n + 1 + m) ≃ Sum (Fin n) (Fin (1 + m)) :=
-    (finCongr (add_assoc _ _ _)).trans finSumFinEquiv.symm
-  let f' :=
-    f.comp
-      ((LinearEquiv.sumArrowLequivProdArrow _ _ R R).symm.trans
-          (LinearEquiv.funCongrLeft R R e)).toLinearMap
-  have i' : Injective f' := i.comp (LinearEquiv.injective _)
-  apply @zero_ne_one (Fin (1 + m) → R) _ _
-  apply (IsNoetherian.equivPUnitOfProdInjective f' i').injective
-  ext
+/-- Any nontrivial noetherian ring satisfies the strong rank condition,
+    since it satisfies Orzech property. -/
+instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCondition R :=
+  inferInstance
 #align noetherian_ring_strong_rank_condition IsNoetherianRing.strongRankCondition
 
 end
@@ -325,25 +309,31 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
 /-- An isomorphism of `R`-modules `R^n ≃ R^m` induces an isomorphism of `R/I`-modules
     `R^n/I^n ≃ R^m/I^m`. -/
 private def induced_equiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] ι' → R) :
-    ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] (ι' → R) ⧸ I.pi ι' := by
-  refine'
-    { toFun := induced_map I e
-      invFun := induced_map I e.symm.. }
-  all_goals
-    first |rintro ⟨a⟩ ⟨b⟩|rintro ⟨a⟩
-  -- Porting note: the next 4 lines were necessary because Lean couldn't correctly infer `(I.pi ι)`
-  -- and `(I.pi ι')` on its own.
-  pick_goal 3
-  · convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
-    congr
-    simp only [LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
-  all_goals
+    ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] (ι' → R) ⧸ I.pi ι' where
+  -- Porting note: Lean couldn't correctly infer `(I.pi ι)` and `(I.pi ι')` on their own
+  toFun := induced_map I e
+  invFun := induced_map I e.symm
+  map_add' := by
+    rintro ⟨a⟩ ⟨b⟩
     convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
     congr
-    simp only [map_add, LinearEquiv.coe_coe, LinearEquiv.map_smulₛₗ, RingHom.id_apply,
-      LinearEquiv.apply_symm_apply]
-#noalign induced_equiv
--- Porting note: `#noalign` since this is marked `private`
+    simp only [map_add]
+  map_smul' := by
+    rintro ⟨a⟩ ⟨b⟩
+    convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
+    congr
+    simp only [LinearEquiv.coe_coe, LinearEquiv.map_smulₛₗ, RingHom.id_apply]
+  left_inv := by
+    rintro ⟨a⟩
+    convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
+    congr
+    simp only [LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
+  right_inv := by
+    rintro ⟨a⟩
+    convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
+    congr
+    simp only [LinearEquiv.coe_coe,  LinearEquiv.apply_symm_apply]
+#noalign induced_equiv -- Porting note: `#noalign` since this is marked `private`
 
 end
 
