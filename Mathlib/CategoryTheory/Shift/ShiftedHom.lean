@@ -24,9 +24,8 @@ namespace CategoryTheory
 
 open Category
 
-variable {C D : Type*} [Category C] [Category D]
-  {M : Type*} [AddMonoid M] [HasShift C M] [HasShift D M]
-  {R : Type*} [Semiring R]
+variable {C : Type*} [Category C]
+  {M : Type*} [AddMonoid M] [HasShift C M]
 
 /-- In a category `C` equipped with a shift by an additive monoid,
 this is the type of morphisms `X ⟶ (Y⟦n⟧)` for `m : M`.  -/
