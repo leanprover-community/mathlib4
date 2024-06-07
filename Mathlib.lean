@@ -1735,6 +1735,7 @@ import Mathlib.Combinatorics.SimpleGraph.Ends.Properties
 import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Combinatorics.SimpleGraph.Finsubgraph
 import Mathlib.Combinatorics.SimpleGraph.Girth
+import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
 import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Combinatorics.SimpleGraph.IncMatrix
 import Mathlib.Combinatorics.SimpleGraph.Init
@@ -1788,6 +1789,7 @@ import Mathlib.Condensed.Functors
 import Mathlib.Condensed.Light.Basic
 import Mathlib.Condensed.Light.Discrete
 import Mathlib.Condensed.Light.Explicit
+import Mathlib.Condensed.Light.Functors
 import Mathlib.Condensed.Light.Module
 import Mathlib.Condensed.Limits
 import Mathlib.Condensed.Module
