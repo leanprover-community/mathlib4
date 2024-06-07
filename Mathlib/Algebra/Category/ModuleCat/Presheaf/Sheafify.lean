@@ -3,11 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-<<<<<<< HEAD
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
-=======
-import Mathlib.Algebra.Category.ModuleCat.Sheaf
->>>>>>> origin
 import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
@@ -25,6 +21,7 @@ general construction allows the sheafification of both the presheaf of rings
 and the presheaf of modules.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 ## TODO
 
@@ -32,6 +29,8 @@ and the presheaf of modules.
   to sheaves of modules over `R`, and construct an adjunction.
 
 >>>>>>> origin
+=======
+>>>>>>> origin/presheaves-of-modules-sheafification
 -/
 
 universe w v v₁ u₁ u

@@ -105,6 +105,16 @@ instance : (forget R).Additive where
 
 instance : (toSheaf R).Additive where
 
+/-- The canonical isomorphism between
+`SheafOfModules.toSheaf R ⋙ sheafToPresheaf J AddCommGroupCat.{v}`
+and `SheafOfModules.forget R ⋙ PresheafOfModules.toPresheaf R.val`. -/
+def toSheafCompSheafToPresheafIso :
+    toSheaf R ⋙ sheafToPresheaf J AddCommGroupCat.{v} ≅
+      forget R ⋙ PresheafOfModules.toPresheaf R.val := Iso.refl _
+
+instance : (toSheaf.{v} R).Faithful :=
+  Functor.Faithful.of_comp_iso (toSheafCompSheafToPresheafIso.{v} R)
+
 /-- The type of sections of a sheaf of modules. -/
 abbrev sections (M : SheafOfModules.{v} R) : Type _ := M.val.sections
 
