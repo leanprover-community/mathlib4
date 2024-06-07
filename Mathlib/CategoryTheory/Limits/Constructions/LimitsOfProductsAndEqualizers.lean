@@ -177,7 +177,7 @@ noncomputable def preservesLimitOfPreservesEqualizersAndProduct : PreservesLimit
       preservesLimitOfPreservesLimitCone
         (buildIsLimit s t (by simp [s]) (by simp [t]) (limit.isLimit _) (limit.isLimit _)
           (limit.isLimit _))
-    refine' IsLimit.ofIsoLimit (buildIsLimit _ _ _ _ _ _ _) _
+    apply IsLimit.ofIsoLimit (buildIsLimit _ _ _ _ _ _ _) _
     · exact Fan.mk _ fun j => G.map (Pi.π _ j)
     · exact Fan.mk (G.obj Q) fun f => G.map (Pi.π _ f)
     · apply G.map s
@@ -403,7 +403,7 @@ noncomputable def preservesColimitOfPreservesCoequalizersAndCoproduct :
       preservesColimitOfPreservesColimitCocone
         (buildIsColimit s t (by simp [s]) (by simp [t]) (colimit.isColimit _) (colimit.isColimit _)
           (colimit.isColimit _))
-    refine' IsColimit.ofIsoColimit (buildIsColimit _ _ _ _ _ _ _) _
+    apply IsColimit.ofIsoColimit (buildIsColimit _ _ _ _ _ _ _) _
     · refine Cofan.mk (G.obj Q) fun j => G.map ?_
       apply Sigma.ι _ j
     -- fun j => G.map (Sigma.ι _ j)
@@ -426,7 +426,7 @@ noncomputable def preservesColimitOfPreservesCoequalizersAndCoproduct :
     · apply isColimitOfHasCoproductOfPreservesColimit
     · apply isColimitCoforkMapOfIsColimit
       apply coequalizerIsCoequalizer
-    refine' Cocones.ext (Iso.refl _) _
+    refine Cocones.ext (Iso.refl _) ?_
     intro j
     dsimp
     simp
