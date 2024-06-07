@@ -1760,10 +1760,10 @@ theorem map_join (f : α → β) (S) : map f (join S) = join (map (map f) S) := 
         induction' s using WSeq.recOn with a s s <;> simp
         · induction' S using WSeq.recOn with s S S <;> simp
           · exact ⟨map f s, S, rfl, rfl⟩
-          · refine' ⟨nil, S, _, _⟩ <;> simp
+          · refine ⟨nil, S, ?_, ?_⟩ <;> simp
         · exact ⟨_, _, rfl, rfl⟩
         · exact ⟨_, _, rfl, rfl⟩
-  · refine' ⟨nil, S, _, _⟩ <;> simp
+  · refine ⟨nil, S, ?_, ?_⟩ <;> simp
 #align stream.wseq.map_join Stream'.WSeq.map_join
 
 @[simp]

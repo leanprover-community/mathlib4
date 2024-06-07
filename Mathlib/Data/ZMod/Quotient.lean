@@ -98,7 +98,7 @@ noncomputable def zmultiplesQuotientStabilizerEquiv :
               exact isPeriodicPt_minimalPeriod (a +ᵥ ·) b))
           ⟨by
             rw [← ker_eq_bot_iff, eq_bot_iff]
-            refine' fun q => induction_on' q fun n hn => _
+            refine fun q => induction_on' q fun n hn => ?_
             rw [mem_bot, eq_zero_iff, Int.mem_zmultiples_iff, ←
               zsmul_vadd_eq_iff_minimalPeriod_dvd]
             exact (eq_zero_iff _).mp hn, fun q =>
