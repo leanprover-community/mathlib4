@@ -594,7 +594,7 @@ theorem isAdjointPair_toLinearMap₂ :
   rw [isAdjointPair_iff_comp_eq_compl₂]
   have h :
     ∀ B B' : M₁ →ₗ[R] M₂ →ₗ[R] R,
-      B = B' ↔ LinearMap.toMatrix₂ b₁ b₂ B = LinearMap.toMatrix₂ (R := R) b₁ b₂ B' := by
+      B = B' ↔ LinearMap.toMatrix₂ (R := R) b₁ b₂ B = LinearMap.toMatrix₂ (R := R) b₁ b₂ B' := by
     intro B B'
     constructor <;> intro h
     · rw [h]
