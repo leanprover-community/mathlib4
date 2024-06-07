@@ -34,6 +34,7 @@ jobs:
         # the checkout dance, to avoid a detached head
         git checkout master
         git checkout -
+        currentBranch="$(git rev-parse --abbrev-ref HEAD)"
 
         # Compute the counts for the HEAD of the PR
         python ./scripts/count-trans-deps.py "Mathlib/" > head.json
@@ -48,6 +49,8 @@ jobs:
         # Compute the counts for the merge base
         python ./scripts/count-trans-deps.py "Mathlib/" > base.json
 
+        # switch back to the current branch: the `no_lost_declarations` script should be here
+        git checkout "${currentBranch}"
     - name: Compare results and comment
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
