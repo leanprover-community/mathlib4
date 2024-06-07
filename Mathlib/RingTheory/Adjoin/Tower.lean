@@ -62,7 +62,7 @@ end Algebra
 
 section
 
-open Classical
+open scoped Classical
 
 theorem Algebra.fg_trans' {R S A : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
     [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] (hRS : (⊤ : Subalgebra R S).FG)
@@ -83,12 +83,11 @@ variable (C : Type*)
 section Semiring
 
 variable [CommSemiring A] [CommSemiring B] [Semiring C]
-
 variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
 open Finset Submodule
 
-open Classical
+open scoped Classical
 
 theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : Submodule B C).FG) :
     ∃ B₀ : Subalgebra A B, B₀.FG ∧ (⊤ : Submodule B₀ C).FG := by
@@ -127,11 +126,11 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : 
                 Algebra.subset_adjoin <|
                   mem_image₂_of_mem (mem_union_right _ <| mul_mem_mul hyi hyj) hyk⟩
               (subset_span <| Set.mem_insert_of_mem _ hyk : yk ∈ _))
-  refine' ⟨Algebra.adjoin A (↑s : Set B), Subalgebra.fg_adjoin_finset _, insert 1 y, _⟩
-  refine' restrictScalars_injective A (Algebra.adjoin A s) C _
+  refine ⟨Algebra.adjoin A (↑s : Set B), Subalgebra.fg_adjoin_finset _, insert 1 y, ?_⟩
+  convert restrictScalars_injective A (Algebra.adjoin A (s : Set B)) C _
   rw [restrictScalars_top, eq_top_iff, ← Algebra.top_toSubmodule, ← hx, Algebra.adjoin_eq_span,
     span_le]
-  refine' fun r hr =>
+  refine fun r hr =>
     Submonoid.closure_induction hr (fun c hc => hxy c hc) (subset_span <| mem_insert_self _ _)
       fun p q hp hq => hyy <| Submodule.mul_mem_mul hp hq
 #align exists_subalgebra_of_fg exists_subalgebra_of_fg
@@ -141,7 +140,6 @@ end Semiring
 section Ring
 
 variable [CommRing A] [CommRing B] [CommRing C]
-
 variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
 /-- **Artin--Tate lemma**: if A ⊆ B ⊆ C is a chain of subrings of commutative rings, and

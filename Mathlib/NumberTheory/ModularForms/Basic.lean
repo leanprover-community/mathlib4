@@ -261,7 +261,7 @@ def mul {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k_1) (g :
   toSlashInvariantForm := f.1.mul g.1
   holo' := f.holo'.mul g.holo'
   bdd_at_infty' A := by
-    -- porting note: was `by simpa using ...`
+    -- Porting note: was `by simpa using ...`
     -- `mul_slash_SL2` is no longer a `simp` and `simpa only [mul_slash_SL2] using ...` failed
     rw [SlashInvariantForm.coe_mul, mul_slash_SL2]
     exact (f.bdd_at_infty' A).mul (g.bdd_at_infty' A)
@@ -434,8 +434,8 @@ namespace ModularForm
 section GradedRing
 
 /-- Cast for modular forms, which is useful for avoiding `Heq`s. -/
-def mcast {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (h : a = b) (f : ModularForm Γ a) : ModularForm Γ b
-    where
+def mcast {a b : ℤ} {Γ : Subgroup SL(2, ℤ)} (h : a = b) (f : ModularForm Γ a) :
+    ModularForm Γ b where
   toFun := (f : ℍ → ℂ)
   slash_action_eq' A := h ▸ f.slash_action_eq' A
   holo' := f.holo'

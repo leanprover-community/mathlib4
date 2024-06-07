@@ -118,13 +118,13 @@ theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction) :
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' L3 L2
     · filter_upwards [self_mem_nhdsWithin]
       rintro y (hy : y < x)
-      refine' div_le_div_of_nonpos_of_le (by linarith) ((sub_le_sub_iff_right _).2 _)
+      refine div_le_div_of_nonpos_of_le (by linarith) ((sub_le_sub_iff_right _).2 ?_)
       apply f.mono.le_leftLim
       have : ↑0 < (x - y) ^ 2 := sq_pos_of_pos (sub_pos.2 hy)
       norm_num; linarith
     · filter_upwards [self_mem_nhdsWithin]
       rintro y (hy : y < x)
-      refine' div_le_div_of_nonpos_of_le (by linarith) _
+      refine div_le_div_of_nonpos_of_le (by linarith) ?_
       simpa only [sub_le_sub_iff_right] using f.mono.leftLim_le (le_refl y)
   -- prove the result by splitting into left and right limits.
   rw [hasDerivAt_iff_tendsto_slope, slope_fun_def_field, ← nhds_left'_sup_nhds_right', tendsto_sup]
@@ -232,9 +232,9 @@ theorem MonotoneOn.ae_differentiableWithinAt_of_mem {f : ℝ → ℝ} {s : Set �
   apply ae_of_mem_of_ae_of_mem_inter_Ioo
   intro a b as bs _
   obtain ⟨g, hg, gf⟩ : ∃ g : ℝ → ℝ, Monotone g ∧ EqOn f g (s ∩ Icc a b) :=
-    (hf.mono (inter_subset_left s (Icc a b))).exists_monotone_extension
-      (hf.map_bddBelow (inter_subset_left _ _) ⟨a, fun x hx => hx.2.1, as⟩)
-      (hf.map_bddAbove (inter_subset_left _ _) ⟨b, fun x hx => hx.2.2, bs⟩)
+    (hf.mono inter_subset_left).exists_monotone_extension
+      (hf.map_bddBelow inter_subset_left ⟨a, fun x hx => hx.2.1, as⟩)
+      (hf.map_bddAbove inter_subset_left ⟨b, fun x hx => hx.2.2, bs⟩)
   filter_upwards [hg.ae_differentiableAt] with x hx
   intro h'x
   apply hx.differentiableWithinAt.congr_of_eventuallyEq _ (gf ⟨h'x.1, h'x.2.1.le, h'x.2.2.le⟩)

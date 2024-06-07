@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Logic.Nontrivial.Basic
 
 #align_import algebra.group.ulift from "leanprover-community/mathlib"@"564bcc44d2b394a50c0cd6340c14a6b02a50a99a"
@@ -20,6 +19,8 @@ This file defines instances for group, monoid, semigroup and related structures 
 We also provide `MulEquiv.ulift : ULift R ≃* R` (and its additive analogue).
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 universe u v
 
@@ -104,7 +105,7 @@ def _root_.MulEquiv.ulift [Mul α] : ULift α ≃* α :=
   { Equiv.ulift with map_mul' := fun _ _ => rfl }
 #align mul_equiv.ulift MulEquiv.ulift
 
--- porting notes: below failed due to error above, manually added
+-- Porting note: below failed due to error above, manually added
 --@[to_additive]
 instance semigroup [Semigroup α] : Semigroup (ULift α) :=
   (MulEquiv.ulift.injective.semigroup _) fun _ _ => rfl
@@ -127,10 +128,6 @@ instance mulOneClass [MulOneClass α] : MulOneClass (ULift α) :=
 #align ulift.mul_one_class ULift.mulOneClass
 #align ulift.add_zero_class ULift.addZeroClass
 
-instance mulZeroOneClass [MulZeroOneClass α] : MulZeroOneClass (ULift α) :=
-  Equiv.ulift.injective.mulZeroOneClass _ rfl rfl (by intros; rfl)
-#align ulift.mul_zero_one_class ULift.mulZeroOneClass
-
 @[to_additive]
 instance monoid [Monoid α] : Monoid (ULift α) :=
   Equiv.ulift.injective.monoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
@@ -143,15 +140,21 @@ instance commMonoid [CommMonoid α] : CommMonoid (ULift α) :=
 #align ulift.comm_monoid ULift.commMonoid
 #align ulift.add_comm_monoid ULift.addCommMonoid
 
-instance natCast [NatCast α] : NatCast (ULift α) := ⟨λ a ↦ up a⟩
-#align ulift.has_nat_cast ULift.natCast
-instance intCast [IntCast α] : IntCast (ULift α) := ⟨λ a ↦ up a⟩
-#align ulift.has_int_cast ULift.intCast
+instance instNatCast [NatCast α] : NatCast (ULift α) := ⟨(up ·)⟩
+instance instIntCast [IntCast α] : IntCast (ULift α) := ⟨(up ·)⟩
+#align ulift.has_nat_cast ULift.instNatCast
+#align ulift.has_int_cast ULift.instIntCast
 
 @[simp, norm_cast]
 theorem up_natCast [NatCast α] (n : ℕ) : up (n : α) = n :=
   rfl
 #align ulift.up_nat_cast ULift.up_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem up_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+    up (no_index (OfNat.ofNat n : α)) = OfNat.ofNat n :=
+  rfl
 
 @[simp, norm_cast]
 theorem up_intCast [IntCast α] (n : ℤ) : up (n : α) = n :=
@@ -163,6 +166,12 @@ theorem down_natCast [NatCast α] (n : ℕ) : down (n : ULift α) = n :=
   rfl
 #align ulift.down_nat_cast ULift.down_natCast
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem down_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+    down (no_index (OfNat.ofNat n : ULift α)) = OfNat.ofNat n :=
+  rfl
+
 @[simp, norm_cast]
 theorem down_intCast [IntCast α] (n : ℤ) : down (n : ULift α) = n :=
   rfl
@@ -170,7 +179,7 @@ theorem down_intCast [IntCast α] (n : ℤ) : down (n : ULift α) = n :=
 
 instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (ULift α) :=
   { ULift.one, ULift.addMonoid with
-      natCast := fun n => ⟨n⟩
+      natCast := (⟨·⟩)
       natCast_zero := congr_arg ULift.up Nat.cast_zero,
       natCast_succ := fun _ => congr_arg ULift.up (Nat.cast_succ _) }
 #align ulift.add_monoid_with_one ULift.addMonoidWithOne
@@ -178,14 +187,6 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (ULift α) :=
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (ULift α) :=
   { ULift.addMonoidWithOne, ULift.addCommMonoid with }
 #align ulift.add_comm_monoid_with_one ULift.addCommMonoidWithOne
-
-instance monoidWithZero [MonoidWithZero α] : MonoidWithZero (ULift α) :=
-  Equiv.ulift.injective.monoidWithZero _ rfl rfl (fun _ _ => rfl) fun _ _ => rfl
-#align ulift.monoid_with_zero ULift.monoidWithZero
-
-instance commMonoidWithZero [CommMonoidWithZero α] : CommMonoidWithZero (ULift α) :=
-  Equiv.ulift.injective.commMonoidWithZero _ rfl rfl (fun _ _ => rfl) fun _ _ => rfl
-#align ulift.comm_monoid_with_zero ULift.commMonoidWithZero
 
 @[to_additive]
 instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (ULift α) :=
@@ -210,24 +211,14 @@ instance commGroup [CommGroup α] : CommGroup (ULift α) :=
 
 instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (ULift α) :=
   { ULift.addMonoidWithOne, ULift.addGroup with
-      intCast := fun n => ⟨n⟩,
-      intCast_ofNat := fun _ => congr_arg ULift.up (Int.cast_ofNat _),
+      intCast := (⟨·⟩),
+      intCast_ofNat := fun _ => congr_arg ULift.up (Int.cast_natCast _),
       intCast_negSucc := fun _ => congr_arg ULift.up (Int.cast_negSucc _) }
 #align ulift.add_group_with_one ULift.addGroupWithOne
 
 instance addCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne (ULift α) :=
   { ULift.addGroupWithOne, ULift.addCommGroup with }
 #align ulift.add_comm_group_with_one ULift.addCommGroupWithOne
-
-instance groupWithZero [GroupWithZero α] : GroupWithZero (ULift α) :=
-  Equiv.ulift.injective.groupWithZero _ rfl rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-#align ulift.group_with_zero ULift.groupWithZero
-
-instance commGroupWithZero [CommGroupWithZero α] : CommGroupWithZero (ULift α) :=
-  Equiv.ulift.injective.commGroupWithZero _ rfl rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-#align ulift.comm_group_with_zero ULift.commGroupWithZero
 
 @[to_additive]
 instance leftCancelSemigroup [LeftCancelSemigroup α] : LeftCancelSemigroup (ULift α) :=

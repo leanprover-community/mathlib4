@@ -3,8 +3,8 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Subalgebra
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.NoncommRing
 
 #align_import algebra.algebra.spectrum from "leanprover-community/mathlib"@"58a272265b5e05f258161260dd2c5d247213cbd3"
@@ -48,7 +48,6 @@ universe u v
 section Defs
 
 variable (R : Type u) {A : Type v}
-
 variable [CommSemiring R] [Ring A] [Algebra R A]
 
 local notation "↑ₐ" => algebraMap R A
@@ -97,7 +96,6 @@ namespace spectrum
 section ScalarSemiring
 
 variable {R : Type u} {A : Type v}
-
 variable [CommSemiring R] [Ring A] [Algebra R A]
 
 local notation "σ" => spectrum R
@@ -248,15 +246,15 @@ theorem unit_smul_eq_smul (a : A) (r : Rˣ) : σ (r • a) = r • σ a := by
 -- `r ∈ σ(a*b) ↔ r ∈ σ(b*a)` for any `r : Rˣ`
 theorem unit_mem_mul_iff_mem_swap_mul {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) ↔ ↑r ∈ σ (b * a) := by
   have h₁ : ∀ x y : A, IsUnit (1 - x * y) → IsUnit (1 - y * x) := by
-    refine' fun x y h => ⟨⟨1 - y * x, 1 + y * h.unit.inv * x, _, _⟩, rfl⟩
-    calc
-      (1 - y * x) * (1 + y * (IsUnit.unit h).inv * x) =
-          1 - y * x + y * ((1 - x * y) * h.unit.inv) * x := by noncomm_ring
-      _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.mul_val_inv, mul_one, sub_add_cancel]
-    calc
-      (1 + y * (IsUnit.unit h).inv * x) * (1 - y * x) =
-          1 - y * x + y * (h.unit.inv * (1 - x * y)) * x := by noncomm_ring
-      _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.val_inv_mul, mul_one, sub_add_cancel]
+    refine fun x y h => ⟨⟨1 - y * x, 1 + y * h.unit.inv * x, ?_, ?_⟩, rfl⟩
+    · calc
+        (1 - y * x) * (1 + y * (IsUnit.unit h).inv * x) =
+            1 - y * x + y * ((1 - x * y) * h.unit.inv) * x := by noncomm_ring
+        _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.mul_val_inv, mul_one, sub_add_cancel]
+    · calc
+        (1 + y * (IsUnit.unit h).inv * x) * (1 - y * x) =
+            1 - y * x + y * (h.unit.inv * (1 - x * y)) * x := by noncomm_ring
+        _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.val_inv_mul, mul_one, sub_add_cancel]
   have := Iff.intro (h₁ (r⁻¹ • a) b) (h₁ b (r⁻¹ • a))
   rw [mul_smul_comm r⁻¹ b a] at this
   simpa only [mem_iff, not_iff_not, Algebra.algebraMap_eq_smul_one, ← Units.smul_def,
@@ -274,7 +272,7 @@ variable [InvolutiveStar R] [StarRing A] [StarModule R A]
 
 theorem star_mem_resolventSet_iff {r : R} {a : A} :
     star r ∈ resolventSet R a ↔ r ∈ resolventSet R (star a) := by
-  refine' ⟨fun h => _, fun h => _⟩ <;>
+  refine ⟨fun h => ?_, fun h => ?_⟩ <;>
     simpa only [mem_resolventSet_iff, Algebra.algebraMap_eq_smul_one, star_sub, star_smul,
       star_star, star_one] using IsUnit.star h
 #align spectrum.star_mem_resolvent_set_iff spectrum.star_mem_resolventSet_iff
@@ -291,7 +289,6 @@ end ScalarSemiring
 section ScalarRing
 
 variable {R : Type u} {A : Type v}
-
 variable [CommRing R] [Ring A] [Algebra R A]
 
 local notation "σ" => spectrum R
@@ -340,7 +337,6 @@ end ScalarRing
 section ScalarField
 
 variable {𝕜 : Type u} {A : Type v}
-
 variable [Field 𝕜] [Ring A] [Algebra 𝕜 A]
 
 local notation "σ" => spectrum 𝕜
@@ -350,7 +346,7 @@ local notation "↑ₐ" => algebraMap 𝕜 A
 /-- Without the assumption `Nontrivial A`, then `0 : A` would be invertible. -/
 @[simp]
 theorem zero_eq [Nontrivial A] : σ (0 : A) = {0} := by
-  refine' Set.Subset.antisymm _ (by simp [Algebra.algebraMap_eq_smul_one, mem_iff])
+  refine Set.Subset.antisymm ?_ (by simp [Algebra.algebraMap_eq_smul_one, mem_iff])
   rw [spectrum, Set.compl_subset_comm]
   intro k hk
   rw [Set.mem_compl_singleton_iff] at hk
@@ -381,15 +377,15 @@ theorem smul_eq_smul [Nontrivial A] (k : 𝕜) (a : A) (ha : (σ a).Nonempty) :
 #align spectrum.smul_eq_smul spectrum.smul_eq_smul
 
 theorem nonzero_mul_eq_swap_mul (a b : A) : σ (a * b) \ {0} = σ (b * a) \ {0} := by
-  suffices h : ∀ x y : A, σ (x * y) \ {0} ⊆ σ (y * x) \ {0}
-  · exact Set.eq_of_subset_of_subset (h a b) (h b a)
-  · rintro _ _ k ⟨k_mem, k_neq⟩
-    change ((Units.mk0 k k_neq) : 𝕜) ∈ _ at k_mem
-    exact ⟨unit_mem_mul_iff_mem_swap_mul.mp k_mem, k_neq⟩
+  suffices h : ∀ x y : A, σ (x * y) \ {0} ⊆ σ (y * x) \ {0} from
+    Set.eq_of_subset_of_subset (h a b) (h b a)
+  rintro _ _ k ⟨k_mem, k_neq⟩
+  change ((Units.mk0 k k_neq) : 𝕜) ∈ _ at k_mem
+  exact ⟨unit_mem_mul_iff_mem_swap_mul.mp k_mem, k_neq⟩
 #align spectrum.nonzero_mul_eq_swap_mul spectrum.nonzero_mul_eq_swap_mul
 
 protected theorem map_inv (a : Aˣ) : (σ (a : A))⁻¹ = σ (↑a⁻¹ : A) := by
-  refine' Set.eq_of_subset_of_subset (fun k hk => _) fun k hk => _
+  refine Set.eq_of_subset_of_subset (fun k hk => ?_) fun k hk => ?_
   · rw [Set.mem_inv] at hk
     have : k ≠ 0 := by simpa only [inv_inv] using inv_ne_zero (ne_zero_of_mem_of_unit hk)
     lift k to 𝕜ˣ using isUnit_iff_ne_zero.mpr this
@@ -408,7 +404,6 @@ namespace AlgHom
 section CommSemiring
 
 variable {F R A B : Type*} [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
-
 variable [FunLike F A B] [AlgHomClass F R A B]
 
 local notation "σ" => spectrum R
@@ -429,7 +424,6 @@ end CommSemiring
 section CommRing
 
 variable {F R A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
-
 variable [FunLike F A R] [AlgHomClass F R A R]
 
 local notation "σ" => spectrum R

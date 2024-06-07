@@ -41,7 +41,7 @@ theorem tmul_comp_tensorMap
     (Q₂.tmul Q₄).comp (TensorProduct.map f.toLinearMap g.toLinearMap) = Q₁.tmul Q₃ := by
   have h₁ : Q₁ = Q₂.comp f.toLinearMap := QuadraticForm.ext fun x => (f.map_app x).symm
   have h₃ : Q₃ = Q₄.comp g.toLinearMap := QuadraticForm.ext fun x => (g.map_app x).symm
-  refine (QuadraticForm.associated_rightInverse R).injective <| BilinForm.toLin.injective ?_
+  refine (QuadraticForm.associated_rightInverse R).injective ?_
   ext m₁ m₃ m₁' m₃'
   simp [-associated_apply, h₁, h₃, associated_tmul]
 
@@ -79,7 +79,6 @@ section tensorComm
 theorem tmul_comp_tensorComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
     (Q₂.tmul Q₁).comp (TensorProduct.comm R M₁ M₂) = Q₁.tmul Q₂ := by
   refine (QuadraticForm.associated_rightInverse R).injective ?_
-  apply BilinForm.toLin.injective
   ext m₁ m₂ m₁' m₂'
   dsimp [-associated_apply]
   simp only [associated_tmul, QuadraticForm.associated_comp]
@@ -116,7 +115,6 @@ theorem tmul_comp_tensorAssoc
     (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃) :
     (Q₁.tmul (Q₂.tmul Q₃)).comp (TensorProduct.assoc R M₁ M₂ M₃) = (Q₁.tmul Q₂).tmul Q₃ := by
   refine (QuadraticForm.associated_rightInverse R).injective ?_
-  apply BilinForm.toLin.injective
   ext m₁ m₂ m₁' m₂' m₁'' m₂''
   dsimp [-associated_apply]
   simp only [associated_tmul, QuadraticForm.associated_comp]
@@ -155,7 +153,6 @@ section tensorRId
 theorem comp_tensorRId_eq (Q₁ : QuadraticForm R M₁) :
     Q₁.comp (TensorProduct.rid R M₁) = Q₁.tmul (sq (R := R)) := by
   refine (QuadraticForm.associated_rightInverse R).injective ?_
-  apply BilinForm.toLin.injective
   ext m₁ m₁'
   dsimp [-associated_apply]
   simp only [associated_tmul, QuadraticForm.associated_comp]
@@ -189,7 +186,6 @@ section tensorLId
 theorem comp_tensorLId_eq (Q₂ : QuadraticForm R M₂) :
     Q₂.comp (TensorProduct.lid R M₂) = (sq (R := R)).tmul Q₂ := by
   refine (QuadraticForm.associated_rightInverse R).injective ?_
-  apply BilinForm.toLin.injective
   ext m₂ m₂'
   dsimp [-associated_apply]
   simp only [associated_tmul, QuadraticForm.associated_comp]

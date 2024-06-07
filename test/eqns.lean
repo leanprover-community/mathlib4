@@ -1,6 +1,4 @@
 import Mathlib.Tactic.Eqns
-import Std.Tactic.GuardMsgs
-
 def transpose {m n} (A : m → n → Nat) : n → m → Nat
   | i, j => A j i
 

@@ -35,6 +35,12 @@ As a consequence, we obtain instances that `CompHaus` is precoherent and preregu
 
 universe u
 
+/-
+Previously, this had accidentally been made a global instance,
+and we now turn it on locally when convenient.
+-/
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+
 open CategoryTheory Limits
 
 namespace CompHaus
@@ -88,7 +94,8 @@ instance : Preregular CompHaus where
     obtain ⟨z,hz⟩ := hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
-example : Precoherent CompHaus.{u} := inferInstance
+-- Was an `example`, but that made the linter complain about unused imports
+instance : Precoherent CompHaus.{u} := inferInstance
 
 -- TODO: prove this for `Type*`
 open List in
@@ -129,7 +136,7 @@ theorem effectiveEpiFamily_tfae
     rw [Iso.inv_comp_eq]
     apply colimit.hom_ext
     rintro ⟨a⟩
-    simp only [Discrete.functor_obj, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
+    simp only [i, Discrete.functor_obj, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
       colimit.comp_coconePointUniqueUpToIso_hom_assoc]
     ext; rfl
   tfae_finish

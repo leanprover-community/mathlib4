@@ -15,20 +15,25 @@ then `C ⥤ D` is also preadditive.
 
 -/
 
-open BigOperators
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits Preadditive
 
 variable {C D : Type*} [Category C] [Category D] [Preadditive D]
 
-instance functorCategoryPreadditive : Preadditive (C ⥤ D)
-    where
+instance {F G : C ⥤ D} : Zero (F ⟶ G) where
+  zero := { app := fun X => 0 }
+
+instance {F G : C ⥤ D} : Add (F ⟶ G) where
+  add α β := { app := fun X => α.app X + β.app X }
+
+instance {F G : C ⥤ D} : Neg (F ⟶ G) where
+  neg α := { app := fun X => -α.app X }
+
+instance functorCategoryPreadditive : Preadditive (C ⥤ D) where
   homGroup F G :=
-    { add := fun α β => { app := fun X => α.app X + β.app X }
-      zero := { app := fun X => 0 }
-      neg := fun α => { app := fun X => -α.app X }
+    { nsmul := nsmulRec
+      zsmul := zsmulRec
       sub := fun α β => { app := fun X => α.app X - β.app X }
       add_assoc := by
         intros
@@ -78,8 +83,7 @@ variable {F G : C ⥤ D}
 /-- Application of a natural transformation at a fixed object,
 as group homomorphism -/
 @[simps]
-def appHom (X : C) : (F ⟶ G) →+ (F.obj X ⟶ G.obj X)
-    where
+def appHom (X : C) : (F ⟶ G) →+ (F.obj X ⟶ G.obj X) where
   toFun α := α.app X
   map_zero' := rfl
   map_add' _ _ := rfl
@@ -116,8 +120,12 @@ theorem app_zsmul (X : C) (α : F ⟶ G) (n : ℤ) : (n • α).app X = n • α
 #align category_theory.nat_trans.app_zsmul CategoryTheory.NatTrans.app_zsmul
 
 @[simp]
+theorem app_units_zsmul (X : C) (α : F ⟶ G) (n : ℤˣ) : (n • α).app X = n • α.app X := by
+  apply app_zsmul
+
+@[simp]
 theorem app_sum {ι : Type*} (s : Finset ι) (X : C) (α : ι → (F ⟶ G)) :
-    (∑ i in s, α i).app X = ∑ i in s, (α i).app X := by
+    (∑ i ∈ s, α i).app X = ∑ i ∈ s, (α i).app X := by
   simp only [← appHom_apply, map_sum]
 #align category_theory.nat_trans.app_sum CategoryTheory.NatTrans.app_sum
 

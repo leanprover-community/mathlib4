@@ -34,7 +34,8 @@ topological space, group, topological group
 -/
 
 
-open Classical Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
+open scoped Classical
+open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
 universe u v w x
 
@@ -196,6 +197,30 @@ section ContinuousInv
 variable [TopologicalSpace G] [Inv G] [ContinuousInv G]
 
 @[to_additive]
+protected theorem Specializes.inv {x y : G} (h : x ⤳ y) : (x⁻¹) ⤳ (y⁻¹) :=
+  h.map continuous_inv
+
+@[to_additive]
+protected theorem Inseparable.inv {x y : G} (h : Inseparable x y) : Inseparable (x⁻¹) (y⁻¹) :=
+  h.map continuous_inv
+
+@[to_additive]
+protected theorem Specializes.zpow {G : Type*} [DivInvMonoid G] [TopologicalSpace G]
+    [ContinuousMul G] [ContinuousInv G] {x y : G} (h : x ⤳ y) : ∀ m : ℤ, (x ^ m) ⤳ (y ^ m)
+  | .ofNat n => by simpa using h.pow n
+  | .negSucc n => by simpa using (h.pow (n + 1)).inv
+
+@[to_additive]
+protected theorem Inseparable.zpow {G : Type*} [DivInvMonoid G] [TopologicalSpace G]
+    [ContinuousMul G] [ContinuousInv G] {x y : G} (h : Inseparable x y) (m : ℤ) :
+    Inseparable (x ^ m) (y ^ m) :=
+  (h.specializes.zpow m).antisymm (h.specializes'.zpow m)
+
+@[to_additive]
+instance : ContinuousInv (ULift G) :=
+  ⟨continuous_uLift_up.comp (continuous_inv.comp continuous_uLift_down)⟩
+
+@[to_additive]
 theorem continuousOn_inv {s : Set G} : ContinuousOn Inv.inv s :=
   continuous_inv.continuousOn
 #align continuous_on_inv continuousOn_inv
@@ -297,7 +322,7 @@ variable (G₁ G₂ : Type*) [TopologicalSpace G₂] [T2Space G₂]
 theorem isClosed_setOf_map_inv [Inv G₁] [Inv G₂] [ContinuousInv G₂] :
     IsClosed { f : G₁ → G₂ | ∀ x, f x⁻¹ = (f x)⁻¹ } := by
   simp only [setOf_forall]
-  refine' isClosed_iInter fun i => isClosed_eq (continuous_apply _) (continuous_apply _).inv
+  exact isClosed_iInter fun i => isClosed_eq (continuous_apply _) (continuous_apply _).inv
 #align is_closed_set_of_map_inv isClosed_setOf_map_inv
 #align is_closed_set_of_map_neg isClosed_setOf_map_neg
 
@@ -390,7 +415,7 @@ theorem continuousInv_sInf {ts : Set (TopologicalSpace G)}
 theorem continuousInv_iInf {ts' : ι' → TopologicalSpace G}
     (h' : ∀ i, @ContinuousInv G (ts' i) _) : @ContinuousInv G (⨅ i, ts' i) _ := by
   rw [← sInf_range]
-  exact continuousInv_sInf (Set.forall_range_iff.mpr h')
+  exact continuousInv_sInf (Set.forall_mem_range.mpr h')
 #align has_continuous_inv_infi continuousInv_iInf
 #align has_continuous_neg_infi continuousNeg_iInf
 
@@ -398,7 +423,7 @@ theorem continuousInv_iInf {ts' : ι' → TopologicalSpace G}
 theorem continuousInv_inf {t₁ t₂ : TopologicalSpace G} (h₁ : @ContinuousInv G t₁ _)
     (h₂ : @ContinuousInv G t₂ _) : @ContinuousInv G (t₁ ⊓ t₂) _ := by
   rw [inf_eq_iInf]
-  refine' continuousInv_iInf fun b => _
+  refine continuousInv_iInf fun b => ?_
   cases b <;> assumption
 #align has_continuous_inv_inf continuousInv_inf
 #align has_continuous_neg_inf continuousNeg_inf
@@ -423,7 +448,8 @@ continuous. Topological additive groups are defined in the same way. Equivalentl
 that the division operation `x y ↦ x * y⁻¹` (resp., subtraction) is continuous.
 -/
 
--- Porting note: TODO should this docstring be extended to match the multiplicative version?
+-- Porting note (#11215): TODO should this docstring be extended
+-- to match the multiplicative version?
 /-- A topological (additive) group is a group in which the addition and negation operations are
 continuous. -/
 class TopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] extends
@@ -484,6 +510,8 @@ end Conj
 
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace α] {f : α → G}
   {s : Set α} {x : α}
+
+instance : TopologicalGroup (ULift G) where
 
 section ZPow
 
@@ -745,7 +773,7 @@ theorem DenseRange.topologicalClosure_map_subgroup [Group H] [TopologicalSpace H
 #align dense_range.topological_closure_map_subgroup DenseRange.topologicalClosure_map_subgroup
 #align dense_range.topological_closure_map_add_subgroup DenseRange.topologicalClosure_map_addSubgroup
 
-/-- The topological closure of a normal subgroup is normal.-/
+/-- The topological closure of a normal subgroup is normal. -/
 @[to_additive "The topological closure of a normal additive subgroup is normal."]
 theorem Subgroup.is_normal_topologicalClosure {G : Type*} [TopologicalSpace G] [Group G]
     [TopologicalGroup G] (N : Subgroup G) [N.Normal] : (Subgroup.topologicalClosure N).Normal where
@@ -879,7 +907,7 @@ theorem continuous_of_continuousAt_one {M hom : Type*} [MulOneClass M] [Topologi
 #align continuous_of_continuous_at_one continuous_of_continuousAt_one
 #align continuous_of_continuous_at_zero continuous_of_continuousAt_zero
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[to_additive continuous_of_continuousAt_zero₂]
 theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [TopologicalSpace M]
     [ContinuousMul M] [Group H] [TopologicalSpace H] [TopologicalGroup H] (f : G →* H →* M)
@@ -896,7 +924,7 @@ theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [Topologi
 theorem TopologicalGroup.ext {G : Type*} [Group G] {t t' : TopologicalSpace G}
     (tg : @TopologicalGroup G t _) (tg' : @TopologicalGroup G t' _)
     (h : @nhds G t 1 = @nhds G t' 1) : t = t' :=
-  eq_of_nhds_eq_nhds fun x => by
+  TopologicalSpace.ext_nhds fun x ↦ by
     rw [← @nhds_translation_mul_inv G t _ _ x, ← @nhds_translation_mul_inv G t' _ _ x, ← h]
 #align topological_group.ext TopologicalGroup.ext
 #align topological_add_group.ext TopologicalAddGroup.ext
@@ -914,7 +942,7 @@ theorem ContinuousInv.of_nhds_one {G : Type*} [Group G] [TopologicalSpace G]
     (hinv : Tendsto (fun x : G => x⁻¹) (𝓝 1) (𝓝 1))
     (hleft : ∀ x₀ : G, 𝓝 x₀ = map (fun x : G => x₀ * x) (𝓝 1))
     (hconj : ∀ x₀ : G, Tendsto (fun x : G => x₀ * x * x₀⁻¹) (𝓝 1) (𝓝 1)) : ContinuousInv G := by
-  refine' ⟨continuous_iff_continuousAt.2 fun x₀ => _⟩
+  refine ⟨continuous_iff_continuousAt.2 fun x₀ => ?_⟩
   have : Tendsto (fun x => x₀⁻¹ * (x₀ * x⁻¹ * x₀⁻¹)) (𝓝 1) (map (x₀⁻¹ * ·) (𝓝 1)) :=
     (tendsto_map.comp <| hconj x₀).comp hinv
   simpa only [ContinuousAt, hleft x₀, hleft x₀⁻¹, tendsto_map'_iff, (· ∘ ·), mul_assoc, mul_inv_rev,
@@ -945,10 +973,9 @@ theorem TopologicalGroup.of_nhds_one {G : Type u} [Group G] [TopologicalSpace G]
     (hinv : Tendsto (fun x : G => x⁻¹) (𝓝 1) (𝓝 1))
     (hleft : ∀ x₀ : G, 𝓝 x₀ = map (x₀ * ·) (𝓝 1))
     (hconj : ∀ x₀ : G, Tendsto (x₀ * · * x₀⁻¹) (𝓝 1) (𝓝 1)) : TopologicalGroup G := by
-  refine' TopologicalGroup.of_nhds_one' hmul hinv hleft fun x₀ => _
-  replace hconj : ∀ x₀ : G, map (x₀ * · * x₀⁻¹) (𝓝 1) = 𝓝 1
-  · exact fun x₀ =>
-      map_eq_of_inverse (x₀⁻¹ * · * x₀⁻¹⁻¹) (by ext; simp [mul_assoc]) (hconj _) (hconj _)
+  refine TopologicalGroup.of_nhds_one' hmul hinv hleft fun x₀ => ?_
+  replace hconj : ∀ x₀ : G, map (x₀ * · * x₀⁻¹) (𝓝 1) = 𝓝 1 :=
+    fun x₀ => map_eq_of_inverse (x₀⁻¹ * · * x₀⁻¹⁻¹) (by ext; simp [mul_assoc]) (hconj _) (hconj _)
   rw [← hconj x₀]
   simpa [(· ∘ ·)] using hleft _
 #align topological_group.of_nhds_one TopologicalGroup.of_nhds_one
@@ -1035,7 +1062,7 @@ theorem TopologicalGroup.exists_antitone_basis_nhds_one :
   have event_mul : ∀ n : ℕ, ∀ᶠ m in atTop, u m * u m ⊆ u n := by
     intro n
     rcases this n with ⟨j, k, -, h⟩
-    refine' atTop_basis.eventually_iff.mpr ⟨max j k, True.intro, fun m hm => _⟩
+    refine atTop_basis.eventually_iff.mpr ⟨max j k, True.intro, fun m hm => ?_⟩
     rintro - ⟨a, ha, b, hb, rfl⟩
     exact h a b (u_anti ((le_max_left _ _).trans hm) ha) (u_anti ((le_max_right _ _).trans hm) hb)
   obtain ⟨φ, -, hφ, φ_anti_basis⟩ := HasAntitoneBasis.subbasis_with_rel ⟨hu, u_anti⟩ event_mul
@@ -1101,12 +1128,33 @@ theorem Filter.Tendsto.const_div' (b : G) {c : G} {f : α → G} {l : Filter α}
 #align filter.tendsto.const_div' Filter.Tendsto.const_div'
 #align filter.tendsto.const_sub Filter.Tendsto.const_sub
 
+@[to_additive]
+lemma Filter.tendsto_const_div_iff {G : Type*} [CommGroup G] [TopologicalSpace G] [ContinuousDiv G]
+    (b : G) {c : G} {f : α → G} {l : Filter α} :
+    Tendsto (fun k : α ↦ b / f k) l (𝓝 (b / c)) ↔ Tendsto f l (𝓝 c) := by
+  refine ⟨fun h ↦ ?_, Filter.Tendsto.const_div' b⟩
+  convert h.const_div' b with k <;> rw [div_div_cancel]
+
 @[to_additive sub_const]
 theorem Filter.Tendsto.div_const' {c : G} {f : α → G} {l : Filter α} (h : Tendsto f l (𝓝 c))
     (b : G) : Tendsto (f · / b) l (𝓝 (c / b)) :=
   h.div' tendsto_const_nhds
 #align filter.tendsto.div_const' Filter.Tendsto.div_const'
 #align filter.tendsto.sub_const Filter.Tendsto.sub_const
+
+lemma Filter.tendsto_div_const_iff {G : Type*}
+    [CommGroupWithZero G] [TopologicalSpace G] [ContinuousDiv G]
+    {b : G} (hb : b ≠ 0) {c : G} {f : α → G} {l : Filter α} :
+    Tendsto (f · / b) l (𝓝 (c / b)) ↔ Tendsto f l (𝓝 c) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Filter.Tendsto.div_const' h b⟩
+  convert h.div_const' b⁻¹ with k <;> rw [div_div, mul_inv_cancel hb, div_one]
+
+lemma Filter.tendsto_sub_const_iff {G : Type*}
+    [AddCommGroup G] [TopologicalSpace G] [ContinuousSub G]
+    (b : G) {c : G} {f : α → G} {l : Filter α} :
+    Tendsto (f · - b) l (𝓝 (c - b)) ↔ Tendsto f l (𝓝 c) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Filter.Tendsto.sub_const h b⟩
+  convert h.sub_const (-b) with k <;> rw [sub_sub, ← sub_eq_add_neg, sub_self, sub_zero]
 
 variable [TopologicalSpace α] {f g : α → G} {s : Set α} {x : α}
 
@@ -1148,7 +1196,7 @@ theorem ContinuousOn.div' (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
 
 end ContinuousDiv
 
-section DivInTopologicalGroup
+section DivInvTopologicalGroup
 
 variable [Group G] [TopologicalSpace G] [TopologicalGroup G]
 
@@ -1208,7 +1256,7 @@ theorem nhds_translation_div (x : G) : comap (· / x) (𝓝 1) = 𝓝 x := by
 #align nhds_translation_div nhds_translation_div
 #align nhds_translation_sub nhds_translation_sub
 
-end DivInTopologicalGroup
+end DivInvTopologicalGroup
 
 /-!
 ### Topological operations on pointwise sums and products
@@ -1418,7 +1466,7 @@ theorem subset_interior_div : interior s / interior t ⊆ interior (s / t) :=
 
 @[to_additive]
 theorem IsOpen.mul_closure (hs : IsOpen s) (t : Set G) : s * closure t = s * t := by
-  refine' (mul_subset_iff.2 fun a ha b hb => _).antisymm (mul_subset_mul_left subset_closure)
+  refine (mul_subset_iff.2 fun a ha b hb => ?_).antisymm (mul_subset_mul_left subset_closure)
   rw [mem_closure_iff] at hb
   have hbU : b ∈ s⁻¹ * {a * b} := ⟨a⁻¹, Set.inv_mem_inv.2 ha, a * b, rfl, inv_mul_cancel_left _ _⟩
   obtain ⟨_, ⟨c, hc, d, rfl : d = _, rfl⟩, hcs⟩ := hb _ hs.inv.mul_right hbU
@@ -1538,12 +1586,12 @@ variable (G) [TopologicalSpace G] [Group G] [TopologicalGroup G]
 
 @[to_additive]
 instance (priority := 100) TopologicalGroup.regularSpace : RegularSpace G := by
-  refine' RegularSpace.ofExistsMemNhdsIsClosedSubset fun a s hs => _
+  refine .of_exists_mem_nhds_isClosed_subset fun a s hs ↦ ?_
   have : Tendsto (fun p : G × G => p.1 * p.2) (𝓝 (a, 1)) (𝓝 a) :=
     continuous_mul.tendsto' _ _ (mul_one a)
   rcases mem_nhds_prod_iff.mp (this hs) with ⟨U, hU, V, hV, hUV⟩
   rw [← image_subset_iff, image_prod] at hUV
-  refine' ⟨closure U, mem_of_superset hU subset_closure, isClosed_closure, _⟩
+  refine ⟨closure U, mem_of_superset hU subset_closure, isClosed_closure, ?_⟩
   calc
     closure U ⊆ closure U * interior V := subset_mul_left _ (mem_interior_iff_mem_nhds.2 hV)
     _ = U * interior V := isOpen_interior.closure_mul U
@@ -1561,6 +1609,14 @@ instance (priority := 100) TopologicalGroup.regularSpace : RegularSpace G := by
 variable {G}
 
 @[to_additive]
+theorem group_inseparable_iff {x y : G} : Inseparable x y ↔ x / y ∈ closure (1 : Set G) := by
+  rw [← singleton_one, ← specializes_iff_mem_closure, specializes_comm, specializes_iff_inseparable,
+    ← (Homeomorph.mulRight y⁻¹).embedding.inseparable_iff]
+  simp [div_eq_mul_inv]
+#align group_separation_rel group_inseparable_iff
+#align add_group_separation_rel addGroup_inseparable_iff
+
+@[to_additive]
 theorem TopologicalGroup.t2Space_iff_one_closed : T2Space G ↔ IsClosed ({1} : Set G) :=
   ⟨fun _ ↦ isClosed_singleton, fun h ↦
     have := TopologicalGroup.t1Space G h; inferInstance⟩
@@ -1572,7 +1628,7 @@ theorem TopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U �
     T2Space G := by
   suffices T1Space G from inferInstance
   refine t1Space_iff_specializes_imp_eq.2 fun x y hspec ↦ by_contra fun hne ↦ ?_
-  rcases H (x * y⁻¹) (by rwa [Ne.def, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
+  rcases H (x * y⁻¹) (by rwa [Ne, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
   exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_right y⁻¹) (by rwa [mul_inv_self])
 #align topological_group.t2_space_of_one_sep TopologicalGroup.t2Space_of_one_sep
 #align topological_add_group.t2_space_of_zero_sep TopologicalAddGroup.t2Space_of_zero_sep
@@ -1589,7 +1645,7 @@ theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1)
     by simp [inter_comm], ?_⟩
   calc
   W ∩ W⁻¹ * (W ∩ W⁻¹)
-    ⊆ W * W := mul_subset_mul (inter_subset_left _ _) (inter_subset_left _ _)
+    ⊆ W * W := mul_subset_mul inter_subset_left inter_subset_left
   _ ⊆ V * V := mul_subset_mul hW hW
   _ ⊆ U := hV
 
@@ -1679,8 +1735,8 @@ theorem compact_open_separated_mul_right {K U : Set G} (hK : IsCompact K) (hU : 
     use V ∩ W, inter_mem V_in W_in
     rw [union_mul]
     exact
-      union_subset ((mul_subset_mul_left (V.inter_subset_left W)).trans hV')
-        ((mul_subset_mul_left (V.inter_subset_right W)).trans hW')
+      union_subset ((mul_subset_mul_left V.inter_subset_left).trans hV')
+        ((mul_subset_mul_left V.inter_subset_right).trans hW')
   · intro x hx
     have := tendsto_mul (show U ∈ 𝓝 (x * 1) by simpa using hU.mem_nhds (hKU hx))
     rw [nhds_prod_eq, mem_map, mem_prod_iff] at this
@@ -1702,7 +1758,7 @@ theorem compact_open_separated_mul_left {K U : Set G} (hK : IsCompact K) (hU : I
   rcases compact_open_separated_mul_right (hK.image continuous_op) (opHomeomorph.isOpenMap U hU)
       (image_subset op hKU) with
     ⟨V, hV : V ∈ 𝓝 (op (1 : G)), hV' : op '' K * V ⊆ op '' U⟩
-  refine' ⟨op ⁻¹' V, continuous_op.continuousAt hV, _⟩
+  refine ⟨op ⁻¹' V, continuous_op.continuousAt hV, ?_⟩
   rwa [← image_preimage_eq V op_surjective, ← image_op_mul, image_subset_iff,
     preimage_image_eq _ op_injective] at hV'
 #align compact_open_separated_mul_left compact_open_separated_mul_left
@@ -1722,12 +1778,12 @@ variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
     (hV : (interior V).Nonempty) : ∃ t : Finset G, K ⊆ ⋃ g ∈ t, (g * ·) ⁻¹' V := by
   obtain ⟨t, ht⟩ : ∃ t : Finset G, K ⊆ ⋃ x ∈ t, interior ((x * ·) ⁻¹' V) := by
-    refine'
-      hK.elim_finite_subcover (fun x => interior <| (x * ·) ⁻¹' V) (fun x => isOpen_interior) _
+    refine
+      hK.elim_finite_subcover (fun x => interior <| (x * ·) ⁻¹' V) (fun x => isOpen_interior) ?_
     cases' hV with g₀ hg₀
-    refine' fun g _ => mem_iUnion.2 ⟨g₀ * g⁻¹, _⟩
-    refine' preimage_interior_subset_interior_preimage (continuous_const.mul continuous_id) _
-    rwa [mem_preimage, id_def, inv_mul_cancel_right]
+    refine fun g _ => mem_iUnion.2 ⟨g₀ * g⁻¹, ?_⟩
+    refine preimage_interior_subset_interior_preimage (continuous_const.mul continuous_id) ?_
+    rwa [mem_preimage, Function.id_def, inv_mul_cancel_right]
   exact ⟨t, Subset.trans ht <| iUnion₂_mono fun g _ => interior_subset⟩
 #align compact_covered_by_mul_left_translates compact_covered_by_mul_left_translates
 #align compact_covered_by_add_left_translates compact_covered_by_add_left_translates
@@ -1740,10 +1796,10 @@ theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
 instance (priority := 100) SeparableWeaklyLocallyCompactGroup.sigmaCompactSpace [SeparableSpace G]
     [WeaklyLocallyCompactSpace G] : SigmaCompactSpace G := by
   obtain ⟨L, hLc, hL1⟩ := exists_compact_mem_nhds (1 : G)
-  refine' ⟨⟨fun n => (fun x => x * denseSeq G n) ⁻¹' L, _, _⟩⟩
+  refine ⟨⟨fun n => (fun x => x * denseSeq G n) ⁻¹' L, ?_, ?_⟩⟩
   · intro n
     exact (Homeomorph.mulRight _).isCompact_preimage.mpr hLc
-  · refine' iUnion_eq_univ_iff.2 fun x => _
+  · refine iUnion_eq_univ_iff.2 fun x => ?_
     obtain ⟨_, ⟨n, rfl⟩, hn⟩ : (range (denseSeq G) ∩ (fun y => x * y) ⁻¹' L).Nonempty := by
       rw [← (Homeomorph.mulLeft x).apply_symm_apply 1] at hL1
       exact (denseRange_denseSeq G).inter_nhds_nonempty
@@ -1763,10 +1819,10 @@ theorem exists_disjoint_smul_of_isCompact [NoncompactSpace G] {K L : Set G} (hK 
   obtain ⟨g, hg⟩ : ∃ g, g ∉ K * L⁻¹ := by
     contrapose! A
     exact eq_univ_iff_forall.2 A
-  refine' ⟨g, _⟩
+  refine ⟨g, ?_⟩
   refine disjoint_left.2 fun a ha h'a => hg ?_
   rcases h'a with ⟨b, bL, rfl⟩
-  refine' ⟨g * b, ha, b⁻¹, by simpa only [Set.mem_inv, inv_inv] using bL, _⟩
+  refine ⟨g * b, ha, b⁻¹, by simpa only [Set.mem_inv, inv_inv] using bL, ?_⟩
   simp only [smul_eq_mul, mul_inv_cancel_right]
 #align exists_disjoint_smul_of_is_compact exists_disjoint_smul_of_isCompact
 #align exists_disjoint_vadd_of_is_compact exists_disjoint_vadd_of_isCompact
@@ -1992,7 +2048,7 @@ theorem topologicalGroup_sInf {ts : Set (TopologicalSpace G)}
 theorem topologicalGroup_iInf {ts' : ι → TopologicalSpace G}
     (h' : ∀ i, @TopologicalGroup G (ts' i) _) : @TopologicalGroup G (⨅ i, ts' i) _ := by
   rw [← sInf_range]
-  exact topologicalGroup_sInf (Set.forall_range_iff.mpr h')
+  exact topologicalGroup_sInf (Set.forall_mem_range.mpr h')
 #align topological_group_infi topologicalGroup_iInf
 #align topological_add_group_infi topologicalAddGroup_iInf
 
@@ -2000,7 +2056,7 @@ theorem topologicalGroup_iInf {ts' : ι → TopologicalSpace G}
 theorem topologicalGroup_inf {t₁ t₂ : TopologicalSpace G} (h₁ : @TopologicalGroup G t₁ _)
     (h₂ : @TopologicalGroup G t₂ _) : @TopologicalGroup G (t₁ ⊓ t₂) _ := by
   rw [inf_eq_iInf]
-  refine' topologicalGroup_iInf fun b => _
+  refine topologicalGroup_iInf fun b => ?_
   cases b <;> assumption
 #align topological_group_inf topologicalGroup_inf
 #align topological_add_group_inf topologicalAddGroup_inf
@@ -2150,7 +2206,7 @@ local notation "cont" => @Continuous _ _
 @[to_additive "Infimum of a collection of additive group topologies"]
 instance : InfSet (GroupTopology α) where
   sInf S :=
-    ⟨sInf (toTopologicalSpace '' S), topologicalGroup_sInf <| ball_image_iff.2 fun t _ => t.2⟩
+    ⟨sInf (toTopologicalSpace '' S), topologicalGroup_sInf <| forall_mem_image.2 fun t _ => t.2⟩
 
 @[to_additive (attr := simp)]
 theorem toTopologicalSpace_sInf (s : Set (GroupTopology α)) :

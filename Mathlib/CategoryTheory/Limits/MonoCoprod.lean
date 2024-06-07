@@ -95,7 +95,7 @@ theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono 
 
 instance monoCoprodType : MonoCoprod (Type u) :=
   MonoCoprod.mk' fun A B => by
-    refine' ⟨BinaryCofan.mk (Sum.inl : A ⟶ Sum A B) Sum.inr, _, _⟩
+    refine ⟨BinaryCofan.mk (Sum.inl : A ⟶ Sum A B) Sum.inr, ?_, ?_⟩
     · exact BinaryCofan.IsColimit.mk _
         (fun f₁ f₂ x => by
           rcases x with x | x
@@ -176,7 +176,7 @@ lemma mono_of_injective_aux (c₂ : Cofan (fun (k : ((Set.range ι)ᶜ : Set I))
   classical
   let e := ((Equiv.ofInjective ι hι).sumCongr (Equiv.refl _)).trans (Equiv.Set.sumCompl _)
   refine mono_binaryCofanSum_inl' (Cofan.mk c.pt (fun i' => c.inj (e i'))) _ _ ?_
-    hc₁ hc₂ _ (by simp)
+    hc₁ hc₂ _ (by simp [e])
   exact IsColimit.ofIsoColimit ((IsColimit.ofCoconeEquiv (Cocones.equivalenceOfReindexing
     (Discrete.equivalence e) (Iso.refl _))).symm hc) (Cocones.ext (Iso.refl _))
 

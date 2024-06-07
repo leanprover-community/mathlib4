@@ -3,6 +3,7 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 #align_import topology.category.Top.limits.konig from "leanprover-community/mathlib"@"dbdf71cee7bb20367cb7e37279c08b0c218cf967"
@@ -37,7 +38,7 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
--- porting note: changed universe order as `v` is usually passed explicitly
+-- Porting note: changed universe order as `v` is usually passed explicitly
 universe v u w
 
 noncomputable section
@@ -48,7 +49,7 @@ section TopologicalKonig
 
 variable {J : Type u} [SmallCategory J]
 
--- porting note: generalized `F` to land in `v` not `u`
+-- Porting note: generalized `F` to land in `v` not `u`
 variable (F : J ⥤ TopCat.{v})
 
 private abbrev FiniteDiagramArrow {J : Type u} [SmallCategory J] (G : Finset J) :=
@@ -60,7 +61,7 @@ private abbrev FiniteDiagram (J : Type u) [SmallCategory J] :=
 /-- Partial sections of a cofiltered limit are sections when restricted to
 a finite subset of objects and morphisms of `J`.
 -/
--- porting note: generalized `F` to land in `v` not `u`
+-- Porting note: generalized `F` to land in `v` not `u`
 def partialSections {J : Type u} [SmallCategory J] (F : J ⥤ TopCat.{v}) {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : Set (∀ j, F.obj j) :=
   {u | ∀ {f : FiniteDiagramArrow G} (_ : f ∈ H), F.map f.2.2.2.2 (u f.1) = u f.2.1}
@@ -88,18 +89,18 @@ theorem partialSections.directed :
     ⟨f.1, f.2.1, Finset.mem_union_left _ f.2.2.1, Finset.mem_union_left _ f.2.2.2.1, f.2.2.2.2⟩
   let ιB : FiniteDiagramArrow B.1 → FiniteDiagramArrow (A.1 ⊔ B.1) := fun f =>
     ⟨f.1, f.2.1, Finset.mem_union_right _ f.2.2.1, Finset.mem_union_right _ f.2.2.2.1, f.2.2.2.2⟩
-  refine' ⟨⟨A.1 ⊔ B.1, A.2.image ιA ⊔ B.2.image ιB⟩, _, _⟩
+  refine ⟨⟨A.1 ⊔ B.1, A.2.image ιA ⊔ B.2.image ιB⟩, ?_, ?_⟩
   · rintro u hu f hf
     have : ιA f ∈ A.2.image ιA ⊔ B.2.image ιB := by
       apply Finset.mem_union_left
       rw [Finset.mem_image]
-      refine' ⟨f, hf, rfl⟩
+      exact ⟨f, hf, rfl⟩
     exact hu this
   · rintro u hu f hf
     have : ιB f ∈ A.2.image ιA ⊔ B.2.image ιB := by
       apply Finset.mem_union_right
       rw [Finset.mem_image]
-      refine' ⟨f, hf, rfl⟩
+      exact ⟨f, hf, rfl⟩
     exact hu this
 #align Top.partial_sections.directed TopCat.partialSections.directed
 
@@ -125,14 +126,14 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
 
 /-- Cofiltered limits of nonempty compact Hausdorff spaces are nonempty topological spaces.
 -/
--- porting note: generalized from `TopCat.{u}` to `TopCatMax.{u,v}`
-theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCatMax.{u,v})
+-- Porting note: generalized from `TopCat.{u}` to `TopCat.{max v u}`
+theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCat.{max v u})
     [IsCofilteredOrEmpty J]
     [∀ j : J, Nonempty (F.obj j)] [∀ j : J, CompactSpace (F.obj j)] [∀ j : J, T2Space (F.obj j)] :
     Nonempty (TopCat.limitCone F).pt := by
   classical
   obtain ⟨u, hu⟩ :=
-    IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed (fun G => partialSections F _)
+    IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed (fun G => partialSections F _)
       (partialSections.directed F) (fun G => partialSections.nonempty F _)
       (fun G => IsClosed.isCompact (partialSections.closed F _)) fun G =>
       partialSections.closed F _
