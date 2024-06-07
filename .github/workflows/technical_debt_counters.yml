@@ -10,13 +10,12 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Run script
-      id: run-script
+      id: tech_debt
       run: |
-        output=$(./scripts/technical-debt-counters.sh)
-        echo "::set-output name=output::$output"
+        printf $'summary<<EOF\n%s\nEOF' "$(./scripts/technical-debt-counters.sh)" >> "$GITHUB_OUTPUT"
 
     - name: Post output to Zulip
       uses: zulip/github-actions-zulip/send-message@v1
@@ -27,4 +26,4 @@ jobs:
         to: 'mathlib4'
         type: 'stream'
         topic: Technical Debt Counters
-        content: ${{ steps.run-script.outputs.output }}
+        content: ${{ steps.tech_debt.outputs.summary }}
