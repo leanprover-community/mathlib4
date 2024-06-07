@@ -198,6 +198,12 @@ theorem mul_lt_right₀ (c : α) (h : a < b) (hc : c ≠ 0) : a * c < b * c := b
   exact le_of_le_mul_right hc h
 #align mul_lt_right₀ mul_lt_right₀
 
+theorem inv_lt_one₀ (ha : a ≠ 0) : a⁻¹ < 1 ↔ 1 < a :=
+  @inv_lt_one' _ _ _ _ <| Units.mk0 a ha
+
+theorem one_lt_inv₀ (ha : a ≠ 0) : 1 < a⁻¹ ↔ a < 1 :=
+  @one_lt_inv' _ _ _ _ <| Units.mk0 a ha
+
 theorem inv_lt_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ < b⁻¹ ↔ b < a :=
   show (Units.mk0 a ha)⁻¹ < (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb < Units.mk0 a ha from
     have : CovariantClass αˣ αˣ (· * ·) (· < ·) :=
