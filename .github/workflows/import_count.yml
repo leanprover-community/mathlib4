@@ -53,4 +53,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         message=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
-        ./scripts/update_PR_comment.sh "${message}" "### Import summary"
+        ./scripts/update_PR_comment.sh "${message}" "### Import summary" "${{ github.event.pull_request.number }}"
