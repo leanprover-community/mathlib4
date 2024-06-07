@@ -30,13 +30,14 @@ abbrev exclude : HashSet String := HashSet.empty |>.insert "_" |>.insert "«"
 /-- The declarations in the environment that do not appear in the expression of other declarations.
 -/
 def tips (env : Environment) : NameSet :=
-  let decls := env.constants.map₂.foldl (fun (m : NameSet) n _ =>
+  let decls := env.const2ModIdx.fold (fun (m : NameSet) n _ =>
     if n.components.any (exclude.contains <|·.toString.take 1) then m else m.insert n
     ) {}
-  dbg_trace "total decls: {decls.size} {decls.toList}"
+  dbg_trace "{decls.size}"
   decls.fold (init := decls) (fun ns decl =>
     let (_, { visited, .. }) := CollectAxioms.collect decl |>.run env |>.run {}
     eraseMany ns (visited.erase decl))
 
-#eval show CoreM _ from do
-  dbg_trace (Tips.tips (← getEnv)).toList
+--#eval show CoreM _ from do
+--  for d in (Tips.tips (← getEnv)).toList do
+--    dbg_trace d
