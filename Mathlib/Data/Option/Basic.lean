@@ -99,8 +99,8 @@ theorem some_bind' (a : α) (f : α → Option β) : (some a).bind f = f a :=
 #align option.some_bind' Option.some_bind'
 
 theorem bind_eq_some' {x : Option α} {f : α → Option β} {b : β} :
-    x.bind f = some b ↔ ∃ a, x = some a ∧ f a = some b :=
-  by cases x <;> simp
+    x.bind f = some b ↔ ∃ a, x = some a ∧ f a = some b := by
+  cases x <;> simp
 #align option.bind_eq_some' Option.bind_eq_some'
 
 #align option.bind_eq_none' Option.bind_eq_none'
@@ -204,8 +204,8 @@ theorem pmap_map (g : γ → α) (x : Option γ) (H) :
 #align option.pmap_map Option.pmap_map
 
 theorem map_pmap (g : β → γ) (f : ∀ a, p a → β) (x H) :
-    Option.map g (pmap f x H) = pmap (fun a h ↦ g (f a h)) x H :=
-  by cases x <;> simp only [map_none', map_some', pmap]
+    Option.map g (pmap f x H) = pmap (fun a h ↦ g (f a h)) x H := by
+  cases x <;> simp only [map_none', map_some', pmap]
 #align option.map_pmap Option.map_pmap
 
 -- Porting note: Can't simp tag this anymore because `pmap` simplifies
@@ -446,5 +446,29 @@ theorem elim_comp₂ (h : α → β → γ) {f : γ → α} {x : α} {g : γ →
 
 theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : α} :
     i.elim x f y = i.elim (x y) fun j => f j y := by rw [elim_comp fun f : α → β => f y]
+
+@[simp]
+lemma bnot_isSome (a : Option α) : (! a.isSome) = a.isNone := by
+  funext
+  cases a <;> simp
+
+@[simp]
+lemma bnot_comp_isSome : (! ·) ∘ @Option.isSome α = Option.isNone := by
+  funext
+  simp
+
+@[simp]
+lemma bnot_isNone (a : Option α) : (! a.isNone) = a.isSome := by
+  funext
+  cases a <;> simp
+
+@[simp]
+lemma bnot_comp_isNone : (! ·) ∘ @Option.isNone α = Option.isSome := by
+  funext x
+  simp
+
+@[simp]
+lemma isNone_eq_false_iff (a : Option α) : Option.isNone a = false ↔ Option.isSome a := by
+  cases a <;> simp
 
 end Option

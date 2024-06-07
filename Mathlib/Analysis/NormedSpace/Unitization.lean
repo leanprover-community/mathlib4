@@ -91,7 +91,7 @@ theorem splitMul_injective_of_clm_mul_injective
     Function.Injective (splitMul 𝕜 A) := by
   rw [injective_iff_map_eq_zero]
   intro x hx
-  induction x using Unitization.ind
+  induction x
   rw [map_add] at hx
   simp only [splitMul_apply, fst_inl, snd_inl, map_zero, add_zero, fst_inr, snd_inr,
     zero_add, Prod.mk_add_mk, Prod.mk_eq_zero] at hx
@@ -199,6 +199,10 @@ end Aux
 /-- The uniformity on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
 instance instUniformSpace : UniformSpace (Unitization 𝕜 A) :=
   instUniformSpaceProd.comap (addEquiv 𝕜 A)
+
+/-- The natural equivalence between `Unitization 𝕜 A` and `𝕜 × A` as a uniform equivalence. -/
+def uniformEquivProd : (Unitization 𝕜 A) ≃ᵤ (𝕜 × A) :=
+  Equiv.toUniformEquivOfUniformInducing (addEquiv 𝕜 A) ⟨rfl⟩
 
 /-- The bornology on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
 instance instBornology : Bornology (Unitization 𝕜 A) :=

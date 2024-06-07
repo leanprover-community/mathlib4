@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Preimage
 
@@ -38,6 +37,7 @@ See the documentation of `to_additive.attr` for more information.
 
 -- TODO
 -- assert_not_exists AddCommMonoidWithOne
+assert_not_exists MonoidWithZero
 assert_not_exists MulAction
 
 variable {ι κ α β γ : Type*}
@@ -409,7 +409,7 @@ theorem prod_map (s : Finset α) (e : α ↪ γ) (f : γ → β) :
 
 @[to_additive]
 lemma prod_attach (s : Finset α) (f : α → β) : ∏ x ∈ s.attach, f x = ∏ x ∈ s, f x := by
-  classical rw [← prod_image $ Subtype.coe_injective.injOn _, attach_image_val]
+  classical rw [← prod_image Subtype.coe_injective.injOn, attach_image_val]
 #align finset.prod_attach Finset.prod_attach
 #align finset.sum_attach Finset.sum_attach
 
@@ -1005,7 +1005,7 @@ theorem prod_eq_single {s : Finset α} {f : α → β} (a : α) (h₀ : ∀ b �
 lemma prod_union_eq_left [DecidableEq α] (hs : ∀ a ∈ s₂, a ∉ s₁ → f a = 1) :
     ∏ a ∈ s₁ ∪ s₂, f a = ∏ a ∈ s₁, f a :=
   Eq.symm <|
-    prod_subset (subset_union_left _ _) fun _a ha ha' ↦ hs _ ((mem_union.1 ha).resolve_left ha') ha'
+    prod_subset subset_union_left fun _a ha ha' ↦ hs _ ((mem_union.1 ha).resolve_left ha') ha'
 
 @[to_additive]
 lemma prod_union_eq_right [DecidableEq α] (hs : ∀ a ∈ s₁, a ∉ s₂ → f a = 1) :
@@ -1978,7 +1978,7 @@ removing that point, if present, from a `Finset`."]
 theorem prod_erase [DecidableEq α] (s : Finset α) {f : α → β} {a : α} (h : f a = 1) :
     ∏ x ∈ s.erase a, f x = ∏ x ∈ s, f x := by
   rw [← sdiff_singleton_eq_erase]
-  refine prod_subset (sdiff_subset _ _) fun x hx hnx => ?_
+  refine prod_subset sdiff_subset fun x hx hnx => ?_
   rw [sdiff_singleton_eq_erase] at hnx
   rwa [eq_of_mem_of_not_mem_erase hx hnx]
 #align finset.prod_erase Finset.prod_erase
@@ -2201,53 +2201,6 @@ theorem mem_sum {f : α → Multiset β} (s : Finset α) (b : β) :
     simp [sum_insert hi, ih, or_and_right, exists_or]
 #align finset.mem_sum Finset.mem_sum
 
-section ProdEqZero
-
-variable [CommMonoidWithZero β]
-
-theorem prod_eq_zero (ha : a ∈ s) (h : f a = 0) : ∏ x ∈ s, f x = 0 := by
-  haveI := Classical.decEq α
-  rw [← prod_erase_mul _ _ ha, h, mul_zero]
-#align finset.prod_eq_zero Finset.prod_eq_zero
-
-theorem prod_boole {s : Finset α} {p : α → Prop} [DecidablePred p] :
-    (∏ i ∈ s, ite (p i) (1 : β) (0 : β)) = ite (∀ i ∈ s, p i) 1 0 := by
-  split_ifs with h
-  · apply prod_eq_one
-    intro i hi
-    rw [if_pos (h i hi)]
-  · push_neg at h
-    rcases h with ⟨i, hi, hq⟩
-    apply prod_eq_zero hi
-    rw [if_neg hq]
-#align finset.prod_boole Finset.prod_boole
-
-lemma support_prod_subset (s : Finset ι) (f : ι → α → β) :
-    support (fun x ↦ ∏ i ∈ s, f i x) ⊆ ⋂ i ∈ s, support (f i) :=
-  fun _ hx ↦ Set.mem_iInter₂.2 fun _ hi H ↦ hx <| prod_eq_zero hi H
-#align function.support_prod_subset Finset.support_prod_subset
-
-variable [Nontrivial β] [NoZeroDivisors β]
-
-theorem prod_eq_zero_iff : ∏ x ∈ s, f x = 0 ↔ ∃ a ∈ s, f a = 0 := by
-  classical
-    induction' s using Finset.induction_on with a s ha ih
-    · exact ⟨Not.elim one_ne_zero, fun ⟨_, H, _⟩ => by simp at H⟩
-    · rw [prod_insert ha, mul_eq_zero, exists_mem_insert, ih]
-#align finset.prod_eq_zero_iff Finset.prod_eq_zero_iff
-
-theorem prod_ne_zero_iff : ∏ x ∈ s, f x ≠ 0 ↔ ∀ a ∈ s, f a ≠ 0 := by
-  rw [Ne, prod_eq_zero_iff]
-  push_neg; rfl
-#align finset.prod_ne_zero_iff Finset.prod_ne_zero_iff
-
-lemma support_prod (s : Finset ι) (f : ι → α → β) :
-    support (fun x ↦ ∏ i ∈ s, f i x) = ⋂ i ∈ s, support (f i) :=
-  Set.ext fun x ↦ by simp [support, prod_eq_zero_iff]
-#align function.support_prod Finset.support_prod
-
-end ProdEqZero
-
 @[to_additive]
 theorem prod_unique_nonempty {α β : Type*} [CommMonoid β] [Unique α] (s : Finset α) (f : α → β)
     (h : s.Nonempty) : ∏ x ∈ s, f x = f default := by
@@ -2329,7 +2282,7 @@ lemma _root_.Equiv.prod_comp (e : ι ≃ κ) (g : κ → α) : ∏ i, g (e i) = 
 @[to_additive]
 lemma prod_of_injective (e : ι → κ) (he : Injective e) (f : ι → α) (g : κ → α)
     (h' : ∀ i ∉ Set.range e, g i = 1) (h : ∀ i, f i = g (e i)) : ∏ i, f i = ∏ j, g j :=
-  prod_of_injOn e (he.injOn _) (by simp) (by simpa using h') (fun i _ ↦ h i)
+  prod_of_injOn e he.injOn (by simp) (by simpa using h') (fun i _ ↦ h i)
 
 @[to_additive]
 lemma prod_fiberwise [DecidableEq κ] (g : ι → κ) (f : ι → α) :
@@ -2422,11 +2375,6 @@ lemma prod_pi_mulSingle {α : ι → Type*} [∀ i, CommMonoid (α i)] (i : ι) 
 lemma prod_pi_mulSingle' (i : ι) (a : α) : ∏ j, Pi.mulSingle i a j = a := prod_dite_eq' _ _
 
 end CommMonoid
-
-variable [CommMonoidWithZero α] {p : ι → Prop} [DecidablePred p]
-
-lemma prod_boole : ∏ i, ite (p i) (1 : α) 0 = ite (∀ i, p i) 1 0 := by simp [Finset.prod_boole]
-
 end Fintype
 
 namespace Finset
@@ -2458,6 +2406,11 @@ theorem prod_toFinset {M : Type*} [DecidableEq α] [CommMonoid M] (f : α → M)
     simp [Finset.prod_insert (mt List.mem_toFinset.mp not_mem), prod_toFinset _ hl]
 #align list.prod_to_finset List.prod_toFinset
 #align list.sum_to_finset List.sum_toFinset
+
+@[simp]
+theorem sum_toFinset_count_eq_length [DecidableEq α] (l : List α) :
+    ∑ a in l.toFinset, l.count a = l.length :=
+  by simpa using (Finset.sum_list_map_count l fun _ => (1 : ℕ)).symm
 
 end List
 
@@ -2502,11 +2455,8 @@ theorem disjoint_finset_sum_right {β : Type*} {i : Finset β} {f : β → Multi
 variable [DecidableEq α]
 
 @[simp]
-theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a ∈ s.toFinset, s.count a = card s :=
-  calc
-    ∑ a ∈ s.toFinset, s.count a = ∑ a ∈ s.toFinset, s.count a • 1 := by simp
-    _ = (s.map fun _ => 1).sum := (Finset.sum_multiset_map_count _ _).symm
-    _ = card s := by simp
+theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a in s.toFinset, s.count a = card s :=
+  by simpa using (Finset.sum_multiset_map_count s (fun _ => (1 : ℕ))).symm
 #align multiset.to_finset_sum_count_eq Multiset.toFinset_sum_count_eq
 
 @[simp]
@@ -2563,12 +2513,6 @@ theorem Units.coe_prod {M : Type*} [CommMonoid M] (f : α → Mˣ) (s : Finset �
     (↑(∏ i ∈ s, f i) : M) = ∏ i ∈ s, (f i : M) :=
   map_prod (Units.coeHom M) _ _
 #align units.coe_prod Units.coe_prod
-
-theorem Units.mk0_prod [CommGroupWithZero β] (s : Finset α) (f : α → β) (h) :
-    Units.mk0 (∏ b ∈ s, f b) h =
-      ∏ b ∈ s.attach, Units.mk0 (f b) fun hh => h (Finset.prod_eq_zero b.2 hh) := by
-  classical induction s using Finset.induction_on <;> simp [*]
-#align units.mk0_prod Units.mk0_prod
 
 theorem nat_abs_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by

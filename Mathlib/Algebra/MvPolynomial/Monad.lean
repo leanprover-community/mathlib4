@@ -351,9 +351,9 @@ section
 
 theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     (bind₁ f φ).vars ⊆ φ.vars.biUnion fun i => (f i).vars := by
-  calc
-    (bind₁ f φ).vars = (φ.support.sum fun x : σ →₀ ℕ => (bind₁ f) (monomial x (coeff x φ))).vars :=
-      by rw [← AlgHom.map_sum, ← φ.as_sum]
+  calc (bind₁ f φ).vars
+    _ = (φ.support.sum fun x : σ →₀ ℕ => (bind₁ f) (monomial x (coeff x φ))).vars := by
+      rw [← AlgHom.map_sum, ← φ.as_sum]
     _ ≤ φ.support.biUnion fun i : σ →₀ ℕ => ((bind₁ f) (monomial i (coeff i φ))).vars :=
       (vars_sum_subset _ _)
     _ = φ.support.biUnion fun d : σ →₀ ℕ => vars (C (coeff d φ) * ∏ i ∈ d.support, f i ^ d i) := by

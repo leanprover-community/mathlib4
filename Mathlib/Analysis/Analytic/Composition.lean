@@ -627,8 +627,8 @@ def compPartialSumTarget (m M N : ℕ) : Finset (Σ n, Composition n) :=
 @[simp]
 theorem mem_compPartialSumTarget_iff {m M N : ℕ} {a : Σ n, Composition n} :
     a ∈ compPartialSumTarget m M N ↔
-      m ≤ a.2.length ∧ a.2.length < M ∧ ∀ j : Fin a.2.length, a.2.blocksFun j < N :=
-  by simp [compPartialSumTarget, compPartialSumTargetSet]
+      m ≤ a.2.length ∧ a.2.length < M ∧ ∀ j : Fin a.2.length, a.2.blocksFun j < N := by
+  simp [compPartialSumTarget, compPartialSumTargetSet]
 #align formal_multilinear_series.mem_comp_partial_sum_target_iff FormalMultilinearSeries.mem_compPartialSumTarget_iff
 
 /-- `comp_change_of_variables m M N` is a bijection between `comp_partial_sum_source m M N`
@@ -807,8 +807,8 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
   have C :
     Tendsto
       (fun n => ∑ i ∈ compPartialSumTarget 0 n n, q.compAlongComposition p i.2 fun _j => y)
-      atTop (𝓝 (g (f (x + y)))) :=
-    by simpa [comp_partialSum] using B
+      atTop (𝓝 (g (f (x + y)))) := by
+    simpa [comp_partialSum] using B
   -- Fourth step: the sum over all compositions is `g (f (x + y))`. This follows from the
   -- convergence along a subsequence proved in the third step, and the fact that the sum is Cauchy
   -- thanks to the summability properties.
@@ -823,8 +823,8 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
       rintro ⟨n, c⟩
       calc
         ‖(compAlongComposition q p c) fun _j : Fin n => y‖ ≤
-            ‖compAlongComposition q p c‖ * ∏ _j : Fin n, ‖y‖ :=
-          by apply ContinuousMultilinearMap.le_opNorm
+            ‖compAlongComposition q p c‖ * ∏ _j : Fin n, ‖y‖ := by
+          apply ContinuousMultilinearMap.le_opNorm
         _ ≤ ‖compAlongComposition q p c‖ * (r : ℝ) ^ n := by
           apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
           rw [Finset.prod_const, Finset.card_fin]
@@ -954,8 +954,8 @@ theorem sigma_pi_composition_eq_iff
     ext1
     have :
       map List.sum (ofFn fun i : Fin (Composition.length a) => (b i).blocks) =
-        map List.sum (ofFn fun i : Fin (Composition.length a') => (b' i).blocks) :=
-      by rw [H]
+        map List.sum (ofFn fun i : Fin (Composition.length a') => (b' i).blocks) := by
+      rw [H]
     simp only [map_ofFn] at this
     change
       (ofFn fun i : Fin (Composition.length a) => (b i).blocks.sum) =

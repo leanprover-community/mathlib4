@@ -180,7 +180,7 @@ set_option backward.synthInstance.canonInstances false in -- See https://github.
 @[simp]
 theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
     mk' K x y = 0 ↔ x = 0 := by
-  refine' ⟨fun hxy => _, fun h => by rw [h, mk'_zero]⟩
+  refine ⟨fun hxy => ?_, fun h => by rw [h, mk'_zero]⟩
   simp_rw [mk'_eq_zero_iff, mul_left_coe_nonZeroDivisors_eq_zero_iff] at hxy
   exact (exists_const _).mp hxy
 #align is_fraction_ring.mk'_eq_zero_iff_eq_zero IsFractionRing.mk'_eq_zero_iff_eq_zero
@@ -217,8 +217,8 @@ theorem lift_algebraMap (hg : Injective g) (x) : lift hg (algebraMap A K x) = g 
 and an injective ring hom `g : A →+* L` where `L` is a field,
 field hom induced from `K` to `L` maps `f x / f y` to `g x / g y` for all
 `x : A, y ∈ NonZeroDivisors A`. -/
-theorem lift_mk' (hg : Injective g) (x) (y : nonZeroDivisors A) : lift hg (mk' K x y) = g x / g y :=
-  by simp only [mk'_eq_div, map_div₀, lift_algebraMap]
+theorem lift_mk' (hg : Injective g) (x) (y : nonZeroDivisors A) :
+    lift hg (mk' K x y) = g x / g y := by simp only [mk'_eq_div, map_div₀, lift_algebraMap]
 #align is_fraction_ring.lift_mk' IsFractionRing.lift_mk'
 
 /-- Given integral domains `A, B` with fields of fractions `K`, `L`
@@ -308,8 +308,8 @@ noncomputable instance field : Field (FractionRing A) := IsFractionRing.toField 
 @[simp]
 theorem mk_eq_div {r s} :
     (Localization.mk r s : FractionRing A) =
-      (algebraMap _ _ r / algebraMap A _ s : FractionRing A) :=
-  by rw [Localization.mk_eq_mk', IsFractionRing.mk'_eq_div]
+      (algebraMap _ _ r / algebraMap A _ s : FractionRing A) := by
+  rw [Localization.mk_eq_mk', IsFractionRing.mk'_eq_div]
 #align fraction_ring.mk_eq_div FractionRing.mk_eq_div
 
 /-- This is not an instance because it creates a diamond when `K = FractionRing R`.

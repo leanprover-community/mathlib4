@@ -199,13 +199,13 @@ if h : IsSFiniteKernel κ ∧ IsSFiniteKernel η then
   property := by
     have : IsSFiniteKernel κ := h.1
     have : IsSFiniteKernel η := h.2
-    refine' Measure.measurable_of_measurable_coe _ fun s hs => _
+    refine Measure.measurable_of_measurable_coe _ fun s hs => ?_
     have :
       (fun a =>
           Measure.ofMeasurable (fun s _ => compProdFun κ η a s) (compProdFun_empty κ η a)
             (compProdFun_iUnion κ η a) s) =
-        fun a => compProdFun κ η a s :=
-      by ext1 a; rwa [Measure.ofMeasurable_apply]
+        fun a => compProdFun κ η a s := by
+      ext1 a; rwa [Measure.ofMeasurable_apply]
     rw [this]
     exact measurable_compProdFun κ η hs }
 else 0
@@ -401,13 +401,12 @@ theorem lintegral_compProd' (κ : kernel α β) [IsSFiniteKernel κ] (η : kerne
     intro f'
     have :
       (fun b => ∫⁻ c, f' (b, c) ∂η (a, b)) =
-        (fun ab => ∫⁻ c, f' (ab.2, c) ∂η ab) ∘ fun b => (a, b) :=
-      by ext1 ab; rfl
+        (fun ab => ∫⁻ c, f' (ab.2, c) ∂η ab) ∘ fun b => (a, b) := by
+      ext1 ab; rfl
     rw [this]
-    refine' Measurable.comp _ measurable_prod_mk_left
-    exact
-      Measurable.lintegral_kernel_prod_right
-        ((SimpleFunc.measurable _).comp (measurable_fst.snd.prod_mk measurable_snd))
+    apply Measurable.comp _ (measurable_prod_mk_left (m := mα))
+    exact Measurable.lintegral_kernel_prod_right
+      ((SimpleFunc.measurable _).comp (measurable_fst.snd.prod_mk measurable_snd))
   rw [lintegral_iSup]
   rotate_left
   · exact fun n => h_some_meas_integral (F n)
@@ -922,8 +921,8 @@ instance IsFiniteKernel.fst (κ : kernel α (β × γ)) [IsFiniteKernel κ] : Is
   rw [kernel.fst]; infer_instance
 #align probability_theory.kernel.is_finite_kernel.fst ProbabilityTheory.kernel.IsFiniteKernel.fst
 
-instance IsSFiniteKernel.fst (κ : kernel α (β × γ)) [IsSFiniteKernel κ] : IsSFiniteKernel (fst κ) :=
-  by rw [kernel.fst]; infer_instance
+instance IsSFiniteKernel.fst (κ : kernel α (β × γ)) [IsSFiniteKernel κ] :
+    IsSFiniteKernel (fst κ) := by rw [kernel.fst]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.fst ProbabilityTheory.kernel.IsSFiniteKernel.fst
 
 instance (priority := 100) isFiniteKernel_of_isFiniteKernel_fst {κ : kernel α (β × γ)}
@@ -995,8 +994,8 @@ instance IsFiniteKernel.snd (κ : kernel α (β × γ)) [IsFiniteKernel κ] : Is
   rw [kernel.snd]; infer_instance
 #align probability_theory.kernel.is_finite_kernel.snd ProbabilityTheory.kernel.IsFiniteKernel.snd
 
-instance IsSFiniteKernel.snd (κ : kernel α (β × γ)) [IsSFiniteKernel κ] : IsSFiniteKernel (snd κ) :=
-  by rw [kernel.snd]; infer_instance
+instance IsSFiniteKernel.snd (κ : kernel α (β × γ)) [IsSFiniteKernel κ] :
+    IsSFiniteKernel (snd κ) := by rw [kernel.snd]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.snd ProbabilityTheory.kernel.IsSFiniteKernel.snd
 
 instance (priority := 100) isFiniteKernel_of_isFiniteKernel_snd {κ : kernel α (β × γ)}
