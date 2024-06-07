@@ -7,7 +7,10 @@ import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.RingTheory.Coalgebra.Equiv
 
 /-!
-# The category of coalgebras
+# The category of coalgebras over a commutative ring
+
+We introduce the bundled category `CoalgebraCat` of coalgebras over a fixed commutative ring `R`
+along with the forgetful functor to `ModuleCat`.
 
 This file mimics `Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat`.
 
@@ -21,9 +24,11 @@ variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-coalgebras. -/
 structure CoalgebraCat extends ModuleCat.{v} R where
-  isCoalgebra : Coalgebra R carrier
+  [isCoalgebra : Coalgebra R carrier]
 
 attribute [instance] CoalgebraCat.isCoalgebra
+
+initialize_simps_projections CoalgebraCat (-isCoalgebra)
 
 variable {R}
 
@@ -71,9 +76,6 @@ instance category : Category (CoalgebraCat.{v} R) where
   Hom M N := Hom M N
   id M := ⟨CoalgHom.id R M⟩
   comp f g := ⟨CoalgHom.comp g.toCoalgHom f.toCoalgHom⟩
-  id_comp g := Hom.ext _ _ <| CoalgHom.id_comp g.toCoalgHom
-  comp_id f := Hom.ext _ _ <| CoalgHom.comp_id f.toCoalgHom
-  assoc f g h := Hom.ext _ _ <| CoalgHom.comp_assoc h.toCoalgHom g.toCoalgHom f.toCoalgHom
 
 -- TODO: if `Quiver.Hom` and the instance above were `reducible`, this wouldn't be needed.
 @[ext]
@@ -177,3 +179,10 @@ def toCoalgEquiv (i : X ≅ Y) : X ≃ₗc[R] Y :=
   rfl
 
 end CategoryTheory.Iso
+
+instance CoalgebraCat.forget_reflects_isos :
+    (forget (CoalgebraCat.{u} R)).ReflectsIsomorphisms where
+  reflects {X Y} f _ := by
+    let i := asIso ((forget (CoalgebraCat.{u} R)).map f)
+    let e : X ≃ₗc[R] Y := { f.toCoalgHom, i.toEquiv with }
+    exact ⟨(Iso.isIso_hom e.toIso).1⟩
