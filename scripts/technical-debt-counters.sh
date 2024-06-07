@@ -24,5 +24,12 @@ for i in ${!titles[@]}; do
   printf '%s\n%s\n\n' "${titles[$i]}" "$(git grep "${fl}" "${regexes[$i]}" | wc -l)"
 done
 
-printf '%s\n%s\n\n' "Number of \`Init\` files:"        "$(git ls-files '*Init*' | wc -l)"
-printf '%s\n%s\n\n' "Number of LoC in \`Init\` files:" "$(git ls-files '*Init*' | xargs wc -l | grep total)"
+initFiles="$(git ls-files '**/Init/*.lean' | xargs wc -l)"
+
+printf '%s: %s\n\n' "Number of \`Init\` files" "$(printf '%s' "${initFiles}" | wc -l)"
+
+printf '```spoiler %s: %s\n%s\n```\n' "Number of LoC in 'Init' files" "$(
+    printf '%s\n' "${initFiles}" | grep total
+  )" "$(
+    printf '%s\n' "${initFiles}" | awk 'BEGIN{print"|LoC|File|\n|-:|-|"} {printf("|%s|%s|\n", $1, $2)}'
+  )"
