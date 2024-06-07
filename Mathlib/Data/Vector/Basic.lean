@@ -441,8 +441,8 @@ theorem mmap_cons {m} [Monad m] {α β} (f : α → m β) (a) :
 
 /-- Define `C v` by induction on `v : Vector α n`.
 
-This function has two arguments: `h_nil` handles the base case on `C nil`,
-and `h_cons` defines the inductive step using `∀ x : α, C w → C (x ::ᵥ w)`.
+This function has two arguments: `nil` handles the base case on `C nil`,
+and `cons` defines the inductive step using `∀ x : α, C w → C (x ::ᵥ w)`.
 
 This can be used as `induction v using Vector.inductionOn`. -/
 @[elab_as_elim]
