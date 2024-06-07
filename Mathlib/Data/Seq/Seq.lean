@@ -412,19 +412,30 @@ end Bisim
 
 section All
 
-/-- A test to prove `∀ a ∈ s, p s`. -/
-def AllTest (p : α → Prop) (P : Seq' α → Prop) : Option (Seq1 α) → Prop
-  | some (a, s) => p a ∧ P s
-  | none        => True
+/-
+This section enables to handle `∀ a ∈ (s : Seq' α), p s` as a following coinductive proposition:
+```lean
+coinductive All {α : Type u} (p : α → Prop) : Seq' α → Prop
+  | nil : All p nil
+  | cons {a s} : p a → All p s → All p (cons a s)
+```
+-/
 
-theorem all_of_allTest {p : α → Prop} (P : Seq' α → Prop)
-    (allTest : ∀ ⦃s⦄, P s → AllTest p P (destruct s)) {s} (hs : P s) : ∀ a ∈ s, p a := by
+theorem all_nil (p : α → Prop) : ∀ a ∈ (nil : Seq' α), p a :=
+  fun a ha => absurd ha (not_mem_nil a)
+
+theorem all_cons {p : α → Prop} {a : α} {s : Seq' α} :
+    (∀ b ∈ cons a s, p b) ↔ p a ∧ ∀ b ∈ s, p b := by
+  simp only [mem_cons_iff, forall_eq_or_imp]
+
+theorem all_coind {p : α → Prop} (P : Seq' α → Prop)
+    (cons : ∀ ⦃a s⦄, P (cons a s) → p a ∧ P s) {s} (hs : P s) : ∀ a ∈ s, p a := by
   intro a ha
-  induction ha using mem_rec_on with (specialize allTest hs; rw [destruct_cons] at allTest)
+  induction ha using mem_rec_on with specialize cons hs
   | mem_cons s =>
-    exact allTest.1
+    exact cons.1
   | @mem_cons_of_mem y s _ hs₂ =>
-    exact hs₂ allTest.2
+    exact hs₂ cons.2
 
 end All
 
