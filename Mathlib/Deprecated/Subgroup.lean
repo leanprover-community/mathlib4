@@ -636,7 +636,7 @@ theorem closure_eq_mclosure {s : Set G} : closure s = Monoid.Closure (s ∪ Inv.
             ((@inv_one G _).symm ▸ IsSubmonoid.one_mem (Monoid.closure.isSubmonoid _))
             fun {x y} _ _ ihx ihy =>
             (mul_inv_rev x y).symm ▸ IsSubmonoid.mul_mem (Monoid.closure.isSubmonoid _) ihy ihx }
-      (Set.Subset.trans (Set.subset_union_left _ _) Monoid.subset_closure))
+      (Set.Subset.trans Set.subset_union_left Monoid.subset_closure))
     (Monoid.closure_subset (closure.isSubgroup _).toIsSubmonoid <|
       Set.union_subset subset_closure fun x hx =>
         inv_inv x ▸ (IsSubgroup.inv_mem (closure.isSubgroup _) <| subset_closure hx))
