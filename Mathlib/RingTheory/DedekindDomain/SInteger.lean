@@ -65,8 +65,7 @@ def integer : Subalgebra R K :=
   {
     (⨅ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation.valuationSubring.toSubring).copy
         {x : K | ∀ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation x ≤ 1} <|
-      Set.ext fun _ => by simp only [mem_setOf_eq, Subring.coe_iInf, mem_iInter, SetLike.mem_coe,
-        Valuation.mem_integer_iff] with
+      Set.ext fun _ => by simp [SetLike.mem_coe, Subring.mem_iInf] with
     algebraMap_mem' := fun x v _ => v.valuation_le_one x }
 #align set.integer Set.integer
 
@@ -75,7 +74,7 @@ theorem integer_eq :
       ⨅ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation.valuationSubring.toSubring :=
   SetLike.ext' <| by
     -- Porting note: was `simpa only [integer, Subring.copy_eq]`
-    ext; simp [Valuation.mem_integer_iff]
+    ext; simp
 #align set.integer_eq Set.integer_eq
 
 theorem integer_valuation_le_one (x : S.integer K) {v : HeightOneSpectrum R} (hv : v ∉ S) :
