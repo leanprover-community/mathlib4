@@ -121,11 +121,11 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto :
 /-- A group `G` acts properly on a T2 topological space `X` if and only if for all ultrafilters
 `𝒰` on `X × G`, if `𝒰` converges to `(x₁, x₂)` along the map `(g, x) ↦ (g • x, x)`,
 then there exists `g : G` such that `𝒰.fst` converges to `g`. -/
-theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] : ProperSMul G X ↔
-    ContinuousSMul G X ∧
-    (∀ 𝒰 : Ultrafilter (G × X), ∀ x₁ x₂ : X,
-    Tendsto (fun gx ↦ ⟨gx.1 • gx.2, gx.2⟩ : G × X → X × X) 𝒰 (𝓝 (x₁, x₂)) →
-    ∃ g : G, Tendsto Prod.fst (𝒰 : Filter (G × X)) (𝓝 g)) := by
+theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] :
+    ProperSMul G X ↔ ContinuousSMul G X ∧
+      (∀ 𝒰 : Ultrafilter (G × X), ∀ x₁ x₂ : X,
+        Tendsto (fun gx : G × X ↦ (gx.1 • gx.2, gx.2)) 𝒰 (𝓝 (x₁, x₂)) →
+     ∃ g : G, Tendsto (Prod.fst : G × X → G) 𝒰 (𝓝 g)) := by
   rw [properSMul_iff_continuousSMul_ultrafilter_tendsto]
   refine and_congr_right fun hc ↦ ?_
   congrm ∀ 𝒰 x₁ x₂ hxx, ∃ g, ?_
