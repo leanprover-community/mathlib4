@@ -215,7 +215,7 @@ theorem properSMul_of_closedEmbedding {H : Type*} [Group H] [MulAction H X] [Top
 /-- If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`. -/
 @[to_additive "If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`."]
 instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : ProperSMul H X :=
-  properSMul_of_closed_embedding H.subtype H_closed.closedEmbedding_subtype_val fun _ _ ↦ rfl
+  properSMul_of_closedEmbedding H.subtype H_closed.closedEmbedding_subtype_val fun _ _ ↦ rfl
 
 /-- If a discrete group acts on a T2 space `X` such that `X × X` is compactly generated,
 then the action is properly discontinuous if and only if it is continuous in the second variable
