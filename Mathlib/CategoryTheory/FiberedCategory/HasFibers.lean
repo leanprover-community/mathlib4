@@ -16,23 +16,15 @@ In this file we introduce a typeclass `HasFibers` for a functor `p : 𝒳 ⥤ �
 - Functors `ι : Fib S ⥤ 𝒳` such that `ι ⋙ p = const (Fib S) S
 - The induced functor `Fib S ⥤ Fiber p S` is an equivalence.
 
+We also provide a default `HasFibers` instance, which uses the standard fibers `Fiber p S`
+(see Fiber.lean). This makes it so that any result proven about `HasFibers` can be used for the
+standard fibers as well.
+
 The reason for introducing this typeclass is that in practice, when working with (pre)fibered
 categories one often already has a collection of categories `Fib S` for every `S` that are
 equivalent to the fibers `Fiber p S`. One would then like to use these categories `Fib S` directly,
 instead of working through this equivalence of categories. By developing an API for the `HasFibers`
 typeclass, this will be possible.
-
-
-TODO: fix this comment based on new changes
-For example, we develop the following lemmas:
-- `HasFibersEssSurj` any object `a : 𝒳` lying over some `S : 𝒮` is isomorphic to the image of some
-`a' : Fib S`
-- `HasFibersPullback` allows one to take pullbacks such that the codomain lies in one of the fibers
-`Fib S`.
-- `HasFibersFactorization` (TODO: maybe call it `HasFibersInducedMap`, and the next
-`HasFibersFactorization`)
-- `fiber_factorization` any morphism in `𝒳` can be factored as a morphism in some fiber `Fib S`
-followed by a pullback. (TODO: rename this lemma)
 
 Here is an example of when this typeclass is useful. Suppose we have a presheaf of types
 `F : 𝒮ᵒᵖ ⥤ Type _`. The associated fibered category then has objects `(S, a)` where `S : 𝒮` and `a`
@@ -40,6 +32,21 @@ is an element of `F(S)`. The fiber category `Fiber p S` is then equivalent to th
 `Fib S` with objects `a` in `F(S)`. In this case, the `HasFibers` instance is given by the
 categories `F(S)` and the functor `ι` sends `a : F(S)` to `(S, a)` in the fibered category. See
 `Presheaf.lean` for more details.
+
+## Main API
+The following API is developed so that the fibers from a `HasFibers` instance can be used
+analogously to the standard fibers.
+
+- `mapPreimage φ` is a lift of a morphism `φ : (ι S).obj a ⟶ (ι S).obj b` in `𝒳`, which lies over
+`𝟙 S`, to a morphism in the fiber over `S`.
+- `objPreimage` gives an object in the fiber over `S` which is isomorphic to a given `a : 𝒳` that
+satisfies `p(a) = S`. The isomorphism is given by `objObjPreimageIso`.
+- `HasFibers.pullbackObj` is a version of `IsPreFibered.pullbackObj` which ensures that the object
+lies in a given fiber. The corresponding cartesian morphism is given by `HasFibers.pullbackMap`.
+- `HasFibers.inducedMap` is a version of `IsCartesian.inducedMap` which gives the corresponding
+morphism in the fiber category.
+- `fiber_factorization` is the statement that any morphism in `𝒳` can be factored as a morphism in
+some fiber followed by a pullback.
 
 -/
 
