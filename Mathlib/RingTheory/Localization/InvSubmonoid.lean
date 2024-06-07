@@ -28,12 +28,9 @@ commutative ring, field of fractions
 
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
-
 variable [Algebra R S] {P : Type*} [CommRing P]
 
 open Function
-
-open BigOperators
 
 namespace IsLocalization
 
@@ -89,7 +86,7 @@ variable {S}
 -- Porting note: `surj'` was taken, so use `surj''` instead
 theorem surj'' (z : S) : ∃ (r : R) (m : M), z = r • (toInvSubmonoid M S m : S) := by
   rcases IsLocalization.surj M z with ⟨⟨r, m⟩, e : z * _ = algebraMap R S r⟩
-  refine' ⟨r, m, _⟩
+  refine ⟨r, m, ?_⟩
   rw [Algebra.smul_def, ← e, mul_assoc]
   simp
 #align is_localization.surj' IsLocalization.surj''
@@ -119,7 +116,7 @@ theorem finiteType_of_monoid_fg [Monoid.FG M] : Algebra.FiniteType R S := by
   have := Monoid.fg_of_surjective _ (toInvSubmonoid_surjective M S)
   rw [Monoid.fg_iff_submonoid_fg] at this
   rcases this with ⟨s, hs⟩
-  refine' ⟨⟨s, _⟩⟩
+  refine ⟨⟨s, ?_⟩⟩
   rw [eq_top_iff]
   rintro x -
   change x ∈ (Subalgebra.toSubmodule (Algebra.adjoin R _ : Subalgebra R S) : Set S)

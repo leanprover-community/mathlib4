@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2019 Chris Hughes All rights reserved.
+Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu, Yury Kudryashov
 -/
@@ -77,8 +77,8 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
   rw [← Finset.card_image_of_injective _ Subtype.coe_injective, ←
     Finset.card_image_of_injective _ inj]
   let a : Finset ℂ := ?_
-  let b : Finset ℂ := ?_
-  let c : Finset ℂ := ?_
+  on_goal 1 => let b : Finset ℂ := ?_
+  on_goal 1 => let c : Finset ℂ := ?_
   -- Porting note: was
   --   change a.card = b.card + c.card
   suffices a.card = b.card + c.card by exact this
@@ -86,12 +86,15 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     intro z; rw [Set.mem_toFinset, mem_rootSet_of_ne hp]
   have hb : ∀ z : ℂ, z ∈ b ↔ aeval z p = 0 ∧ z.im = 0 := by
     intro z
-    simp_rw [Finset.mem_image, Set.mem_toFinset, mem_rootSet_of_ne hp]
+    simp_rw [b, Finset.mem_image, Set.mem_toFinset, mem_rootSet_of_ne hp]
     constructor
     · rintro ⟨w, hw, rfl⟩
       exact ⟨by rw [aeval_algHom_apply, hw, AlgHom.map_zero], rfl⟩
     · rintro ⟨hz1, hz2⟩
-      have key : IsScalarTower.toAlgHom ℚ ℝ ℂ z.re = z := by ext; rfl; rw [hz2]; rfl
+      have key : IsScalarTower.toAlgHom ℚ ℝ ℂ z.re = z := by
+        ext
+        · rfl
+        · rw [hz2]; rfl
       exact ⟨z.re, inj (by rwa [← aeval_algHom_apply, key, AlgHom.map_zero]), key⟩
   have hc0 :
     ∀ w : p.rootSet ℂ, galActionHom p ℂ (restrict p ℂ (Complex.conjAe.restrictScalars ℚ)) w = w ↔
@@ -101,7 +104,7 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     exact Complex.conj_eq_iff_im
   have hc : ∀ z : ℂ, z ∈ c ↔ aeval z p = 0 ∧ z.im ≠ 0 := by
     intro z
-    simp_rw [Finset.mem_image]
+    simp_rw [c, Finset.mem_image]
     constructor
     · rintro ⟨w, hw, rfl⟩
       exact ⟨(mem_rootSet.mp w.2).2, mt (hc0 w).mpr (Equiv.Perm.mem_support.mp hw)⟩
@@ -129,9 +132,9 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
     · exact IsAlgClosed.splits_codomain p
     · exact nodup_roots ((separable_map (algebraMap ℚ ℂ)).mpr p_irr.separable)
   let conj' := restrict p ℂ (Complex.conjAe.restrictScalars ℚ)
-  refine'
+  refine
     ⟨galActionHom_injective p ℂ, fun x =>
-      (congr_arg (Membership.mem x) (show (galActionHom p ℂ).range = ⊤ from _)).mpr
+      (congr_arg (Membership.mem x) (show (galActionHom p ℂ).range = ⊤ from ?_)).mpr
         (Subgroup.mem_top x)⟩
   apply Equiv.Perm.subgroup_eq_top_of_swap_mem
   · rwa [h1]
@@ -205,7 +208,7 @@ lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤
   cases eq_or_ne z.im 0 with
   | inl hz0 =>
     lift z to ℝ using hz0
-    erw [aeval_ofReal, IsROrC.ofReal_eq_zero] at hz
+    erw [aeval_ofReal, RCLike.ofReal_eq_zero] at hz
     exact (degree_eq_one_of_irreducible_of_root hp hz).trans_le one_le_two
   | inr hz0 =>
     obtain ⟨q, rfl⟩ := p.quadratic_dvd_of_aeval_eq_zero_im_ne_zero hz hz0
@@ -219,5 +222,8 @@ lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤
     rwa [isUnit_iff_degree_eq_zero.1 hq, add_zero]
 
 /-- An irreducible real polynomial has natural degree at most two. -/
-lemma Irreducible.nat_degree_le_two {p : ℝ[X]} (hp : Irreducible p) : natDegree p ≤ 2 :=
+lemma Irreducible.natDegree_le_two {p : ℝ[X]} (hp : Irreducible p) : natDegree p ≤ 2 :=
   natDegree_le_iff_degree_le.2 hp.degree_le_two
+
+@[deprecated] -- 2024-02-18
+alias Irreducible.nat_degree_le_two := Irreducible.natDegree_le_two

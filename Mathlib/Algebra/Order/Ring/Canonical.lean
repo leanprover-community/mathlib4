@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Sub.Canonical
+import Mathlib.Algebra.Ring.Parity
 
 #align_import algebra.order.ring.canonical from "leanprover-community/mathlib"@"824f9ae93a4f5174d2ea948e2d75843dd83447bb"
 
@@ -38,9 +39,15 @@ class CanonicallyOrderedCommSemiring (α : Type*) extends CanonicallyOrderedAddC
   protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : α}, a * b = 0 → a = 0 ∨ b = 0
 #align canonically_ordered_comm_semiring CanonicallyOrderedCommSemiring
 
-namespace CanonicallyOrderedCommSemiring
-
+section CanonicallyOrderedCommSemiring
 variable [CanonicallyOrderedCommSemiring α] {a b c d : α}
+
+-- this holds more generally in a `CanonicallyOrderedAddCommMonoid` if we refactor `Odd` to use
+-- either `2 • t` or `t + t` instead of `2 * t`.
+lemma Odd.pos [Nontrivial α] : Odd a → 0 < a := by rintro ⟨k, rfl⟩; simp [pos_iff_ne_zero]
+#align odd.pos Odd.pos
+
+namespace CanonicallyOrderedCommSemiring
 
 -- see Note [lower instance priority]
 instance (priority := 100) toNoZeroDivisors : NoZeroDivisors α :=
@@ -49,7 +56,7 @@ instance (priority := 100) toNoZeroDivisors : NoZeroDivisors α :=
 
 -- see Note [lower instance priority]
 instance (priority := 100) toCovariantClassMulLE : CovariantClass α α (· * ·) (· ≤ ·) := by
-  refine' ⟨fun a b c h => _⟩
+  refine ⟨fun a b c h => ?_⟩
   rcases exists_add_of_le h with ⟨c, rfl⟩
   rw [mul_add]
   apply self_le_add_right
@@ -83,13 +90,12 @@ protected lemma mul_lt_mul_of_lt_of_lt [PosMulStrictMono α] (hab : a < b) (hcd 
   · exact mul_lt_mul_of_lt_of_lt' hab hcd ((zero_le _).trans_lt hab) hc
 
 end CanonicallyOrderedCommSemiring
+end CanonicallyOrderedCommSemiring
 
 section Sub
 
 variable [CanonicallyOrderedCommSemiring α] {a b c : α}
-
 variable [Sub α] [OrderedSub α]
-
 variable [IsTotal α (· ≤ ·)]
 
 namespace AddLECancellable

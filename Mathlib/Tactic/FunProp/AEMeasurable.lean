@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Tomáš Skřivan All rights reserved.
+Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
@@ -43,8 +43,8 @@ attribute [fun_prop]
 -- product
 attribute [fun_prop]
   AEMeasurable.prod_mk
-  AEMeasurable.fst
-  AEMeasurable.snd
+  -- AEMeasurable.fst
+  -- AEMeasurable.snd
 
 -- algebra
 attribute [fun_prop]

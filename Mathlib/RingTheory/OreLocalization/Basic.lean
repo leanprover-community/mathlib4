@@ -55,7 +55,7 @@ def oreEqv : Setoid (R × S) where
       rcases oreCondition (s : R) s' with ⟨r₂, s₂, h₁⟩
       rcases oreCondition r₂ u with ⟨r₃, s₃, h₂⟩
       have : (s : R) * ((v : R) * r₃) = (s : R) * (s₂ * s₃) := by
-        -- porting note: the proof used `assoc_rw`
+        -- Porting note: the proof used `assoc_rw`
         rw [← mul_assoc _ (s₂ : R), h₁, mul_assoc, h₂, ← mul_assoc, ← hsu, mul_assoc]
       rcases ore_left_cancel (v * r₃) (s₂ * s₃) s this with ⟨w, hw⟩
       refine ⟨s₂ * s₃ * w, u * r₃ * w, ?_, ?_⟩ <;> simp only [Submonoid.coe_mul, ← hw]
@@ -80,7 +80,6 @@ namespace OreLocalization
 section Monoid
 
 variable {R : Type*} [Monoid R] {S : Submonoid R}
-
 variable (R S) [OreSet S]
 
 @[inherit_doc OreLocalization]
@@ -96,7 +95,6 @@ def oreDiv (r : R) (s : S) : R[S⁻¹] :=
   Quotient.mk' (r, s)
 #align ore_localization.ore_div OreLocalization.oreDiv
 
--- mathport name: «expr /ₒ »
 @[inherit_doc]
 infixl:70 " /ₒ " => oreDiv
 
@@ -116,7 +114,7 @@ theorem oreDiv_eq_iff {r₁ r₂ : R} {s₁ s₂ : S} :
 protected theorem expand (r : R) (s : S) (t : R) (hst : (s : R) * t ∈ S) :
     r /ₒ s = r * t /ₒ ⟨s * t, hst⟩ := by
   apply Quotient.sound
-  refine' ⟨s, t * s, _, _⟩ <;> dsimp <;> rw [mul_assoc]
+  refine ⟨s, t * s, ?_, ?_⟩ <;> dsimp <;> rw [mul_assoc]
 #align ore_localization.expand OreLocalization.expand
 
 /-- A fraction is equal to its expansion by a factor from s. -/
@@ -129,7 +127,7 @@ those factors expand to equal elements of `R`. -/
 protected theorem eq_of_num_factor_eq {r r' r₁ r₂ : R} {s t : S} (h : r * t = r' * t) :
     r₁ * r * r₂ /ₒ s = r₁ * r' * r₂ /ₒ s := by
   rcases oreCondition r₂ t with ⟨r₂', t', hr₂⟩
-  -- porting note: todo: use `assoc_rw`?
+  -- Porting note (#11215): TODO: use `assoc_rw`?
   calc
     r₁ * r * r₂ /ₒ s = r₁ * r * r₂ * t' /ₒ (s * t') := OreLocalization.expand (r₁ * r * r₂) s t' _
     _ = r₁ * r * (r₂ * t') /ₒ (s * t') := by simp [← mul_assoc]
@@ -151,8 +149,7 @@ def liftExpand {C : Sort*} (P : R → S → C)
     have s₁vS : (s₁ : R) * v ∈ S := by
       rw [← hs₂, ← S.coe_mul]
       exact SetLike.coe_mem (s₂ * u)
-    replace hs₂ : s₂ * u = ⟨(s₁ : R) * v, s₁vS⟩
-    · ext; simp [hs₂]
+    replace hs₂ : s₂ * u = ⟨(s₁ : R) * v, s₁vS⟩ := by ext; simp [hs₂]
     rw [hP r₁ v s₁ s₁vS, hP r₂ u s₂ (by norm_cast; rwa [hs₂]), hr₂]
     simp only [← hs₂]; rfl
 #align ore_localization.lift_expand OreLocalization.liftExpand
@@ -376,28 +373,27 @@ theorem numerator_isUnit (s : S) : IsUnit (numeratorHom (s : R) : R[S⁻¹]) :=
 section UMP
 
 variable {T : Type*} [Monoid T]
-
 variable (f : R →* T) (fS : S →* Units T)
-
 variable (hf : ∀ s : S, f s = fS s)
 
 /-- The universal lift from a morphism `R →* T`, which maps elements of `S` to units of `T`,
 to a morphism `R[S⁻¹] →* T`. -/
-def universalMulHom : R[S⁻¹] →* T
-    where
-  -- Porting note: `simp only []` required for beta reductions
+def universalMulHom : R[S⁻¹] →* T where
+  -- Porting note(#12129): additional beta reduction needed
   toFun x :=
     x.liftExpand (fun r s => f r * ((fS s)⁻¹ : Units T)) fun r t s ht => by
-      simp only []
+      beta_reduce
       have : (fS ⟨s * t, ht⟩ : T) = fS s * f t := by
         simp only [← hf, MonoidHom.map_mul]
       conv_rhs =>
         rw [MonoidHom.map_mul, ← mul_one (f r), ← Units.val_one, ← mul_left_inv (fS s)]
         rw [Units.val_mul, ← mul_assoc, mul_assoc _ (fS s : T), ← this, mul_assoc]
       simp only [mul_one, Units.mul_inv]
-  map_one' := by simp only []; rw [OreLocalization.one_def, liftExpand_of]; simp
+  map_one' := by beta_reduce; rw [OreLocalization.one_def, liftExpand_of]; simp
   map_mul' x y := by
-    simp only []
+    -- Porting note: `simp only []` required, not just for beta reductions
+    beta_reduce
+    simp only [] -- TODO more!
     induction' x using OreLocalization.ind with r₁ s₁
     induction' y using OreLocalization.ind with r₂ s₂
     rcases oreDivMulChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'
@@ -453,8 +449,7 @@ instance : CommMonoid R[S⁻¹] :=
 variable (R S)
 
 /-- The morphism `numeratorHom` is a monoid localization map in the case of commutative `R`. -/
-protected def localizationMap : S.LocalizationMap R[S⁻¹]
-    where
+protected def localizationMap : S.LocalizationMap R[S⁻¹] where
   toFun := numeratorHom
   map_one' := rfl
   map_mul' r₁ r₂ := by simp
@@ -640,11 +635,11 @@ protected theorem add_assoc (x y z : R[S⁻¹]) : x + y + z = x + (y + z) := by
       ← OreLocalization.expand', Subtype.coe_eq_of_eq_mk ha, ← OreLocalization.expand]
     apply OreLocalization.expand'
   · rcases oreCondition (sd : R) (sa * sc) with ⟨re, _, _⟩
-    · simp_rw [← Submonoid.coe_mul] at hb hc hd
-      rw [← mul_assoc, Subtype.coe_eq_of_eq_mk hc]
-      rw [← OreLocalization.expand, Subtype.coe_eq_of_eq_mk hd, ← mul_assoc, ←
-        OreLocalization.expand, Subtype.coe_eq_of_eq_mk hb]
-      apply OreLocalization.expand
+    simp_rw [← Submonoid.coe_mul] at hb hc hd
+    rw [← mul_assoc, Subtype.coe_eq_of_eq_mk hc]
+    rw [← OreLocalization.expand, Subtype.coe_eq_of_eq_mk hd, ← mul_assoc, ←
+      OreLocalization.expand, Subtype.coe_eq_of_eq_mk hb]
+    apply OreLocalization.expand
 #align ore_localization.add_assoc OreLocalization.add_assoc
 
 private def zero : R[S⁻¹] :=
@@ -680,7 +675,8 @@ instance instAddCommMonoidOreLocalization : AddCommMonoid R[S⁻¹] :=
     add_assoc := OreLocalization.add_assoc
     zero := zero
     zero_add := OreLocalization.zero_add
-    add_zero := fun x => by rw [OreLocalization.add_comm, OreLocalization.zero_add] }
+    add_zero := fun x => by rw [OreLocalization.add_comm, OreLocalization.zero_add]
+    nsmul := nsmulRec }
 
 protected theorem zero_mul (x : R[S⁻¹]) : 0 * x = 0 := by
   induction' x using OreLocalization.ind with r s
@@ -746,9 +742,7 @@ instance instSemiringOreLocalization : Semiring R[S⁻¹] :=
 section UMP
 
 variable {T : Type*} [Semiring T]
-
 variable (f : R →+* T) (fS : S →* Units T)
-
 variable (hf : ∀ s : S, f s = fS s)
 
 /-- The universal lift from a ring homomorphism `f : R →+* T`, which maps elements in `S` to
@@ -828,8 +822,8 @@ variable {R : Type*} [Ring R] {S : Submonoid R} [OreSet S]
 /-- Negation on the Ore localization is defined via negation on the numerator. -/
 protected def neg : R[S⁻¹] → R[S⁻¹] :=
   liftExpand (fun (r : R) (s : S) => -r /ₒ s) fun r t s ht => by
-    -- Porting note: `simp only []` required for beta reductions
-    simp only []
+    -- Porting note(#12129): additional beta reduction needed
+    beta_reduce
     rw [neg_mul_eq_neg_mul, ← OreLocalization.expand]
 #align ore_localization.neg OreLocalization.neg
 
@@ -848,7 +842,8 @@ protected theorem add_left_neg (x : R[S⁻¹]) : -x + x = 0 := by
 instance ring : Ring R[S⁻¹] :=
   { OreLocalization.instSemiringOreLocalization,
     OreLocalization.instNegOreLocalization with
-    add_left_neg := OreLocalization.add_left_neg }
+    add_left_neg := OreLocalization.add_left_neg
+    zsmul := zsmulRec }
 
 open nonZeroDivisors
 
@@ -872,7 +867,7 @@ noncomputable section DivisionRing
 
 open nonZeroDivisors
 
-open Classical
+open scoped Classical
 
 variable {R : Type*} [Ring R] [Nontrivial R] [OreSet R⁰]
 
@@ -926,12 +921,14 @@ protected theorem inv_zero : (0 : R[R⁰⁻¹])⁻¹ = 0 := by
   simp
 #align ore_localization.inv_zero OreLocalization.inv_zero
 
-instance divisionRing : DivisionRing R[R⁰⁻¹] :=
-  { OreLocalization.nontrivial,
-    OreLocalization.inv',
-    OreLocalization.ring with
-    mul_inv_cancel := OreLocalization.mul_inv_cancel
-    inv_zero := OreLocalization.inv_zero }
+instance divisionRing : DivisionRing R[R⁰⁻¹] where
+  __ := ring
+  __ := nontrivial
+  __ := inv'
+  mul_inv_cancel := OreLocalization.mul_inv_cancel
+  inv_zero := OreLocalization.inv_zero
+  nnqsmul := _
+  qsmul := _
 
 end DivisionRing
 

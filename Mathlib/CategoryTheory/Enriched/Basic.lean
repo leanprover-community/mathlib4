@@ -53,10 +53,10 @@ class EnrichedCategory (C : Type u₁) where
   Hom : C → C → V
   id (X : C) : 𝟙_ V ⟶ Hom X X
   comp (X Y Z : C) : Hom X Y ⊗ Hom Y Z ⟶ Hom X Z
-  id_comp (X Y : C) : (λ_ (Hom X Y)).inv ≫ (id X ⊗ 𝟙 _) ≫ comp X X Y = 𝟙 _ := by aesop_cat
-  comp_id (X Y : C) : (ρ_ (Hom X Y)).inv ≫ (𝟙 _ ⊗ id Y) ≫ comp X Y Y = 𝟙 _ := by aesop_cat
-  assoc (W X Y Z : C) : (α_ _ _ _).inv ≫ (comp W X Y ⊗ 𝟙 _) ≫ comp W Y Z =
-    (𝟙 _ ⊗ comp X Y Z) ≫ comp W X Z := by aesop_cat
+  id_comp (X Y : C) : (λ_ (Hom X Y)).inv ≫ id X ▷ _ ≫ comp X X Y = 𝟙 _ := by aesop_cat
+  comp_id (X Y : C) : (ρ_ (Hom X Y)).inv ≫ _ ◁ id Y ≫ comp X Y Y = 𝟙 _ := by aesop_cat
+  assoc (W X Y Z : C) : (α_ _ _ _).inv ≫ comp W X Y ▷ _ ≫ comp W Y Z =
+    _ ◁ comp X Y Z ≫ comp W X Z := by aesop_cat
 #align category_theory.enriched_category CategoryTheory.EnrichedCategory
 
 notation X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
@@ -75,23 +75,22 @@ def eComp (X Y Z : C) : ((X ⟶[V] Y) ⊗ Y ⟶[V] Z) ⟶ X ⟶[V] Z :=
   EnrichedCategory.comp X Y Z
 #align category_theory.e_comp CategoryTheory.eComp
 
--- We don't just use `restate_axiom` here; that would leave `V` as an implicit argument.
 @[reassoc (attr := simp)]
 theorem e_id_comp (X Y : C) :
-    (λ_ (X ⟶[V] Y)).inv ≫ (eId V X ⊗ 𝟙 _) ≫ eComp V X X Y = 𝟙 (X ⟶[V] Y) :=
+    (λ_ (X ⟶[V] Y)).inv ≫ eId V X ▷ _ ≫ eComp V X X Y = 𝟙 (X ⟶[V] Y) :=
   EnrichedCategory.id_comp X Y
 #align category_theory.e_id_comp CategoryTheory.e_id_comp
 
 @[reassoc (attr := simp)]
 theorem e_comp_id (X Y : C) :
-    (ρ_ (X ⟶[V] Y)).inv ≫ (𝟙 _ ⊗ eId V Y) ≫ eComp V X Y Y = 𝟙 (X ⟶[V] Y) :=
+    (ρ_ (X ⟶[V] Y)).inv ≫ _ ◁ eId V Y ≫ eComp V X Y Y = 𝟙 (X ⟶[V] Y) :=
   EnrichedCategory.comp_id X Y
 #align category_theory.e_comp_id CategoryTheory.e_comp_id
 
 @[reassoc (attr := simp)]
 theorem e_assoc (W X Y Z : C) :
-    (α_ _ _ _).inv ≫ (eComp V W X Y ⊗ 𝟙 _) ≫ eComp V W Y Z =
-      (𝟙 _ ⊗ eComp V X Y Z) ≫ eComp V W X Z :=
+    (α_ _ _ _).inv ≫ eComp V W X Y ▷ _ ≫ eComp V W Y Z =
+      _ ◁ eComp V X Y Z ≫ eComp V W X Z :=
   EnrichedCategory.assoc W X Y Z
 #align category_theory.e_assoc CategoryTheory.e_assoc
 
@@ -99,7 +98,7 @@ section
 
 variable {V} {W : Type v} [Category.{w} W] [MonoidalCategory W]
 
--- porting note: removed `@[nolint hasNonemptyInstance]`
+-- Porting note: removed `@[nolint hasNonemptyInstance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
 In a moment we will equip this with the `W`-enriched category structure
 obtained by applying the functor `F : LaxMonoidalFunctor V W` to each hom object.
@@ -114,25 +113,30 @@ instance (F : LaxMonoidalFunctor V W) : EnrichedCategory W (TransportEnrichment 
   id := fun X : C => F.ε ≫ F.map (eId V X)
   comp := fun X Y Z : C => F.μ _ _ ≫ F.map (eComp V X Y Z)
   id_comp X Y := by
-    rw [comp_tensor_id, Category.assoc, ← F.toFunctor.map_id, F.μ_natural_assoc,
-      F.toFunctor.map_id, F.left_unitality_inv_assoc, ← F.toFunctor.map_comp, ←
-      F.toFunctor.map_comp, e_id_comp, F.toFunctor.map_id]
+    simp only [comp_whiskerRight, Category.assoc, LaxMonoidalFunctor.μ_natural_left_assoc,
+      LaxMonoidalFunctor.left_unitality_inv_assoc]
+    simp_rw [← F.map_comp]
+    convert F.map_id _
+    simp
   comp_id X Y := by
-    rw [id_tensor_comp, Category.assoc, ← F.toFunctor.map_id, F.μ_natural_assoc,
-      F.toFunctor.map_id, F.right_unitality_inv_assoc, ← F.toFunctor.map_comp, ←
-      F.toFunctor.map_comp, e_comp_id, F.toFunctor.map_id]
+    simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc,
+      LaxMonoidalFunctor.μ_natural_right_assoc,
+      LaxMonoidalFunctor.right_unitality_inv_assoc]
+    simp_rw [← F.map_comp]
+    convert F.map_id _
+    simp
   assoc P Q R S := by
-    rw [comp_tensor_id, Category.assoc, ← F.toFunctor.map_id, F.μ_natural_assoc,
-      F.toFunctor.map_id, ← F.associativity_inv_assoc, ← F.toFunctor.map_comp, ←
-      F.toFunctor.map_comp, e_assoc, id_tensor_comp, Category.assoc, ← F.toFunctor.map_id,
-      F.μ_natural_assoc, F.toFunctor.map_comp]
+    rw [comp_whiskerRight, Category.assoc, F.μ_natural_left_assoc,
+      ← F.associativity_inv_assoc, ← F.map_comp, ← F.map_comp, e_assoc,
+      F.map_comp, MonoidalCategory.whiskerLeft_comp, Category.assoc,
+      LaxMonoidalFunctor.μ_natural_right_assoc]
 
 end
 
 /-- Construct an honest category from a `Type v`-enriched category.
 -/
-def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Type v) C] : Category.{v} C
-    where
+def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Type v) C] :
+    Category.{v} C where
   Hom := 𝒞.Hom
   id X := eId (Type v) X PUnit.unit
   comp f g := eComp (Type v) _ _ _ ⟨f, g⟩
@@ -143,8 +147,8 @@ def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Typ
 
 /-- Construct a `Type v`-enriched category from an honest category.
 -/
-def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] : EnrichedCategory (Type v) C
-    where
+def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
+    EnrichedCategory (Type v) C where
   Hom := 𝒞.Hom
   id X _ := 𝟙 X
   comp X Y Z p := p.1 ≫ p.2
@@ -155,8 +159,8 @@ def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] : Enr
 
 /-- We verify that an enriched category in `Type u` is just the same thing as an honest category.
 -/
-def enrichedCategoryTypeEquivCategory (C : Type u₁) : EnrichedCategory (Type v) C ≃ Category.{v} C
-    where
+def enrichedCategoryTypeEquivCategory (C : Type u₁) :
+    EnrichedCategory (Type v) C ≃ Category.{v} C where
   toFun _ := categoryOfEnrichedCategoryType C
   invFun _ := enrichedCategoryTypeOfCategory C
   left_inv _ := rfl
@@ -167,7 +171,7 @@ section
 
 variable {W : Type (v + 1)} [Category.{v} W] [MonoidalCategory W] [EnrichedCategory W C]
 
--- porting note: removed `@[nolint has_nonempty_instance]`
+-- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
 In a moment we will equip this with the (honest) category structure
 so that `X ⟶ Y` is `(𝟙_ W) ⟶ (X ⟶[W] Y)`.
@@ -339,7 +343,6 @@ end
 section
 
 variable {V}
-
 variable {D : Type u₂} [EnrichedCategory V D]
 
 /-!
@@ -387,7 +390,7 @@ coming from the ambient braiding on `V`.)
 -/
 
 
--- porting note: removed `@[nolint has_nonempty_instance]`
+-- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
 /-- The type of `A`-graded natural transformations between `V`-functors `F` and `G`.
 This is the type of morphisms in `V` from `A` to the `V`-object of natural transformations.
 -/

@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.NumberTheory.Liouville.Basic
-import Mathlib.Topology.MetricSpace.Baire
+import Mathlib.Topology.Baire.Lemmas
+import Mathlib.Topology.Baire.LocallyCompactRegular
 import Mathlib.Topology.Instances.Irrational
 
 #align_import number_theory.liouville.residual from "leanprover-community/mathlib"@"32b08ef840dd25ca2e47e035c5da03ce16d2dc3c"
@@ -64,11 +65,11 @@ theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x :=
   · rintro _ ⟨r, rfl⟩
     simp only [mem_iInter, mem_iUnion]
     refine fun n => ⟨r.num * 2, r.den * 2, ?_, ?_⟩
-    · have := Int.ofNat_le.2 r.pos; rw [Int.ofNat_one] at this; linarith
+    · have := Int.ofNat_le.2 r.pos; rw [Int.ofNat_one] at this; omega
     · convert @mem_ball_self ℝ _ (r : ℝ) _ _
       · push_cast; norm_cast; simp [Rat.divInt_mul_right (two_ne_zero), Rat.mkRat_self]
-      · refine' one_div_pos.2 (pow_pos (Int.cast_pos.2 _) _)
-        exact mul_pos (Int.coe_nat_pos.2 r.pos) zero_lt_two
+      · refine one_div_pos.2 (pow_pos (Int.cast_pos.2 ?_) _)
+        exact mul_pos (Int.natCast_pos.2 r.pos) zero_lt_two
 #align eventually_residual_liouville eventually_residual_liouville
 
 /-- The set of Liouville numbers in dense. -/

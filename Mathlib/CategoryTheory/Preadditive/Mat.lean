@@ -3,7 +3,7 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Preadditive.Basic
@@ -52,7 +52,7 @@ Ideally this would conveniently interact with both `Mat_` and `Matrix`.
 
 open CategoryTheory CategoryTheory.Preadditive
 
-open scoped BigOperators Classical
+open scoped Classical
 
 noncomputable section
 
@@ -77,7 +77,7 @@ namespace Mat_
 
 variable {C}
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- A morphism in `Mat_ C` is a dependently typed matrix of morphisms. -/
 def Hom (M N : Mat_ C) : Type v₁ :=
   DMatrix M.ι N.ι fun i j => M.X i ⟶ N.X j
@@ -115,7 +115,7 @@ instance : Category.{v₁} (Mat_ C) where
     simp_rw [Hom.comp, sum_comp, comp_sum, Category.assoc]
     rw [Finset.sum_comm]
 
--- porting note: added because `DMatrix.ext` is not triggered automatically
+-- Porting note: added because `DMatrix.ext` is not triggered automatically
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 theorem hom_ext {M N : Mat_ C} (f g : M ⟶ N) (H : ∀ i j, f i j = g i j) : f = g :=
@@ -162,7 +162,7 @@ instance (M N : Mat_ C) : Inhabited (M ⟶ N) :=
 
 end
 
--- porting note: to ease the construction of the preadditive structure, the `AddCommGroup`
+-- Porting note: to ease the construction of the preadditive structure, the `AddCommGroup`
 -- was introduced separately and the lemma `add_apply` was moved upwards
 instance (M N : Mat_ C) : AddCommGroup (M ⟶ N) := by
   change AddCommGroup (DMatrix M.ι N.ι _)
@@ -193,15 +193,15 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
         hasBiproduct_of_total
           { pt := ⟨Σ j, (f j).ι, fun p => (f p.1).X p.2⟩
             π := fun j x y => by
-              refine' if h : x.1 = j then _ else 0
-              refine' if h' : @Eq.ndrec (Fin n) x.1 (fun j => (f j).ι) x.2 _ h = y then _ else 0
+              refine if h : x.1 = j then ?_ else 0
+              refine if h' : @Eq.ndrec (Fin n) x.1 (fun j => (f j).ι) x.2 _ h = y then ?_ else 0
               apply eqToHom
               substs h h'
               rfl
             -- Notice we were careful not to use `subst` until we had a goal in `Prop`.
             ι := fun j x y => by
-              refine' if h : y.1 = j then _ else 0
-              refine' if h' : @Eq.ndrec _ y.1 (fun j => (f j).ι) y.2 _ h = x then _ else 0
+              refine if h : y.1 = j then ?_ else 0
+              refine if h' : @Eq.ndrec _ y.1 (fun j => (f j).ι) y.2 _ h = x then ?_ else 0
               apply eqToHom
               substs h h'
               rfl
@@ -301,7 +301,7 @@ end Functor
 namespace Mat_
 
 /-- The embedding of `C` into `Mat_ C` as one-by-one matrices.
-(We index the summands by `punit`.) -/
+(We index the summands by `PUnit`.) -/
 @[simps]
 def embedding : C ⥤ Mat_ C where
   obj X := ⟨PUnit, fun _ => X⟩
@@ -313,10 +313,10 @@ set_option linter.uppercaseLean3 false in
 
 namespace Embedding
 
-instance : Faithful (embedding C) where
+instance : (embedding C).Faithful where
   map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
 
-instance : Full (embedding C) where preimage f := f PUnit.unit PUnit.unit
+instance : (embedding C).Full where map_surjective f := ⟨f PUnit.unit PUnit.unit, rfl⟩
 
 instance : Functor.Additive (embedding C) where
 
@@ -342,7 +342,7 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
     rw [Finset.sum_apply, Finset.sum_apply, Finset.sum_eq_single i]; rotate_left
     · intro b _ hb
       dsimp
-      simp only [Finset.sum_const, Finset.card_singleton, one_smul]
+      simp only [Finset.sum_singleton]
       rw [dif_neg hb.symm, zero_comp]
     · intro h
       simp at h
@@ -366,12 +366,12 @@ set_option linter.uppercaseLean3 false in
 
 variable {D : Type u₁} [Category.{v₁} D] [Preadditive D]
 
--- porting note: added because it was not found automatically
+-- Porting note: added because it was not found automatically
 instance (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
     HasBiproduct (fun i => F.obj ((embedding C).obj (M.X i))) :=
   F.hasBiproduct_of_preserves _
 
--- porting note: removed the @[simps] attribute as the automatically generated lemmas
+-- Porting note: removed the @[simps] attribute as the automatically generated lemmas
 -- are not very useful; two more useful lemmas have been added just after this
 -- definition in order to ease the proof of `additiveObjIsoBiproduct_naturality`
 /-- Every `M` is a direct sum of objects from `C`, and `F` preserves biproducts. -/
@@ -423,8 +423,8 @@ theorem additiveObjIsoBiproduct_naturality' (F : Mat_ C ⥤ D) [Functor.Additive
     (f : M ⟶ N) :
     (additiveObjIsoBiproduct F M).inv ≫ F.map f =
       biproduct.matrix (fun i j => F.map ((embedding C).map (f i j)) : _) ≫
-        (additiveObjIsoBiproduct F N).inv :=
-  by rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, additiveObjIsoBiproduct_naturality]
+        (additiveObjIsoBiproduct F N).inv := by
+  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, additiveObjIsoBiproduct_naturality]
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.additive_obj_iso_biproduct_naturality' CategoryTheory.Mat_.additiveObjIsoBiproduct_naturality'
 
@@ -484,7 +484,7 @@ def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Ad
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.lift_unique CategoryTheory.Mat_.liftUnique
 
--- porting note: removed @[ext] as the statement is not an equality
+-- Porting note (#11182): removed @[ext] as the statement is not an equality
 -- TODO is there some uniqueness statement for the natural isomorphism in `liftUnique`?
 /-- Two additive functors `Mat_ C ⥤ D` are naturally isomorphic if
 their precompositions with `embedding C` are naturally isomorphic as functors `C ⥤ D`. -/
@@ -569,7 +569,7 @@ section
 
 variable {R : Type u} [Semiring R]
 
--- porting note: added because `Matrix.ext` is not triggered automatically
+-- Porting note: added because `Matrix.ext` is not triggered automatically
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 theorem hom_ext {X Y : Mat R} (f g : X ⟶ Y) (h : ∀ i j, f i j = g i j) : f = g :=
@@ -637,36 +637,37 @@ def equivalenceSingleObjInverse : Mat_ (SingleObj Rᵐᵒᵖ) ⥤ Mat R where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.equivalence_single_obj_inverse CategoryTheory.Mat.equivalenceSingleObjInverse
 
-instance : Faithful (equivalenceSingleObjInverse R) where
+instance : (equivalenceSingleObjInverse R).Faithful where
   map_injective w := by
     ext
     apply_fun MulOpposite.unop using MulOpposite.unop_injective
     exact congr_fun (congr_fun w _) _
 
-instance : Full (equivalenceSingleObjInverse R) where
-  preimage f i j := MulOpposite.op (f i j)
+instance : (equivalenceSingleObjInverse R).Full where
+  map_surjective f := ⟨fun i j => MulOpposite.op (f i j), rfl⟩
 
-instance : EssSurj (equivalenceSingleObjInverse R) where
+instance : (equivalenceSingleObjInverse R).EssSurj where
   mem_essImage X :=
     ⟨{  ι := X
         X := fun _ => PUnit.unit }, ⟨eqToIso (by dsimp; cases X; congr)⟩⟩
 
+instance : (equivalenceSingleObjInverse R).IsEquivalence where
+
 /-- The categorical equivalence between the category of matrices over a ring,
 and the category of matrices over that ring considered as a single-object category. -/
 def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
-  haveI := Equivalence.ofFullyFaithfullyEssSurj (equivalenceSingleObjInverse R)
   (equivalenceSingleObjInverse R).asEquivalence.symm
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.equivalence_single_obj CategoryTheory.Mat.equivalenceSingleObj
 
--- porting note: added as this was not found automatically
+-- Porting note: added as this was not found automatically
 instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) := by
   change AddCommGroup (Matrix X Y R)
   infer_instance
 
 variable {R}
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[simp]
 theorem add_apply {M N : Mat R} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
   rfl

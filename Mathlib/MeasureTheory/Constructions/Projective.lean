@@ -38,8 +38,7 @@ variable {ι : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
 
 /-- A family of measures indexed by finite sets of `ι` is projective if, for finite sets `J ⊆ I`,
 the projection from `∀ i : I, α i` to `∀ i : J, α i` maps `P I` to `P J`. -/
-def IsProjectiveMeasureFamily [∀ i, MeasurableSpace (α i)]
-    (P : ∀ J : Finset ι, Measure (∀ j : J, α j)) : Prop :=
+def IsProjectiveMeasureFamily (P : ∀ J : Finset ι, Measure (∀ j : J, α j)) : Prop :=
   ∀ (I J : Finset ι) (hJI : J ⊆ I),
     P J = (P I).map (fun (x : ∀ i : I, α i) (j : J) ↦ x ⟨j, hJI j.2⟩)
 
@@ -52,8 +51,8 @@ lemma measure_univ_eq_of_subset (hP : IsProjectiveMeasureFamily P) (hJI : J ⊆ 
     P I univ = P J univ := by
   classical
   have : (univ : Set (∀ i : I, α i)) =
-      (fun x : ∀ i : I, α i ↦ fun i : J ↦ x ⟨i, hJI i.2⟩) ⁻¹' (univ : Set (∀ i : J, α i)) :=
-    by rw [preimage_univ]
+      (fun x : ∀ i : I, α i ↦ fun i : J ↦ x ⟨i, hJI i.2⟩) ⁻¹' (univ : Set (∀ i : J, α i)) := by
+    rw [preimage_univ]
   rw [this, ← Measure.map_apply _ MeasurableSet.univ]
   · rw [hP I J hJI]
   · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)

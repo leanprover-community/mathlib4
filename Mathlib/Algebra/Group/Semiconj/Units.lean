@@ -29,6 +29,9 @@ This file provides only basic operations (`mul_left`, `mul_right`, `inv_right` e
 operations (`pow_right`, field inverse etc) are in the files that define corresponding notions.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 open scoped Int
 
 variable {M G : Type*}
@@ -92,7 +95,7 @@ theorem units_val_iff {a x y : Mˣ} : SemiconjBy (a : M) x y ↔ SemiconjBy a x 
 @[to_additive (attr := simp)]
 lemma units_zpow_right {a : M} {x y : Mˣ} (h : SemiconjBy a x y) :
     ∀ m : ℤ, SemiconjBy a ↑(x ^ m) ↑(y ^ m)
-  | (n : ℕ) => by simp only [zpow_ofNat, Units.val_pow_eq_pow_val, h, pow_right]
+  | (n : ℕ) => by simp only [zpow_natCast, Units.val_pow_eq_pow_val, h, pow_right]
   | -[n+1] => by simp only [zpow_negSucc, Units.val_pow_eq_pow_val, units_inv_right, h, pow_right]
 #align semiconj_by.units_zpow_right SemiconjBy.units_zpow_right
 #align add_semiconj_by.add_units_zsmul_right AddSemiconjBy.addUnits_zsmul_right

@@ -57,9 +57,9 @@ theorem contDiffOn_fderiv_coord_change (i j : atlas H M) :
   have h : ((i.1.extend I).symm ≫ j.1.extend I).source ⊆ range I := by
     rw [i.1.extend_coord_change_source]; apply image_subset_range
   intro x hx
-  refine' (ContDiffWithinAt.fderivWithin_right _ I.unique_diff le_top <| h hx).mono h
-  refine' (PartialHomeomorph.contDiffOn_extend_coord_change I (subset_maximalAtlas I j.2)
-    (subset_maximalAtlas I i.2) x hx).mono_of_mem _
+  refine (ContDiffWithinAt.fderivWithin_right ?_ I.unique_diff le_top <| h hx).mono h
+  refine (PartialHomeomorph.contDiffOn_extend_coord_change I (subset_maximalAtlas I j.2)
+    (subset_maximalAtlas I i.2) x hx).mono_of_mem ?_
   exact i.1.extend_coord_change_source_mem_nhdsWithin j.1 I hx
 #align cont_diff_on_fderiv_coord_change contDiffOn_fderiv_coord_change
 
@@ -92,8 +92,8 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
       exact (i.1.extend I).right_inv hy
     · simp_rw [Function.comp_apply, i.1.extend_left_inv I hx]
   continuousOn_coordChange i j := by
-    refine' (contDiffOn_fderiv_coord_change I i j).continuousOn.comp
-      ((i.1.continuousOn_extend I).mono _) _
+    refine (contDiffOn_fderiv_coord_change I i j).continuousOn.comp
+      ((i.1.continuousOn_extend I).mono ?_) ?_
     · rw [i.1.extend_source]; exact inter_subset_left _ _
     simp_rw [← i.1.extend_image_source_inter, mapsTo_image]
   coordChange_comp := by
@@ -112,7 +112,7 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
     · rw [Function.comp_apply, i.1.extend_left_inv I hxi]
 #align tangent_bundle_core tangentBundleCore
 
--- porting note: moved to a separate `simp high` lemma b/c `simp` can simplify the LHS
+-- Porting note: moved to a separate `simp high` lemma b/c `simp` can simplify the LHS
 @[simp high]
 theorem tangentBundleCore_baseSet (i) : (tangentBundleCore I M).baseSet i = i.1.source := rfl
 
@@ -177,7 +177,7 @@ kernel.
 def TangentSpace {𝕜} [NontriviallyNormedField 𝕜] {E} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M} [TopologicalSpace M]
     [ChartedSpace H M] [SmoothManifoldWithCorners I M] (_x : M) : Type* := E
--- porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
+-- Porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
 #align tangent_space TangentSpace
 
 instance {x : M} : TopologicalSpace (TangentSpace I x) := inferInstanceAs (TopologicalSpace E)
@@ -189,8 +189,8 @@ variable (M)
 -- is empty if the base manifold is empty
 /-- The tangent bundle to a smooth manifold, as a Sigma type. Defined in terms of
 `Bundle.TotalSpace` to be able to put a suitable topology on it. -/
-@[reducible] -- porting note: was nolint has_nonempty_instance
-def TangentBundle :=
+-- Porting note(#5171): was nolint has_nonempty_instance
+abbrev TangentBundle :=
   Bundle.TotalSpace E (TangentSpace I : M → Type _)
 #align tangent_bundle TangentBundle
 
@@ -198,7 +198,7 @@ local notation "TM" => TangentBundle I M
 
 section TangentBundleInstances
 
-/- In general, the definition of tangent_space is not reducible, so that type class inference
+/- In general, the definition of `TangentSpace` is not reducible, so that type class inference
 does not pick wrong instances. In this section, we record the right instances for
 them, noting in particular that the tangent bundle is a smooth manifold. -/
 section
@@ -209,7 +209,7 @@ instance : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
 
 instance : Inhabited (TangentSpace I x) := ⟨0⟩
 
--- porting note: removed unneeded ContinuousAdd (TangentSpace I x)
+-- Porting note: removed unneeded ContinuousAdd (TangentSpace I x)
 
 end
 
@@ -321,7 +321,7 @@ theorem trivializationAt_symmL {b₀ b : M}
 set_option linter.uppercaseLean3 false in
 #align tangent_bundle.trivialization_at_symmL TangentBundle.trivializationAt_symmL
 
--- porting note: `simp` simplifies LHS to `.id _ _`
+-- Porting note: `simp` simplifies LHS to `.id _ _`
 @[simp high, mfld_simps]
 theorem coordChange_model_space (b b' x : F) :
     (tangentBundleCore 𝓘(𝕜, F) F).coordChange (achart F b) (achart F b') x = 1 := by
@@ -329,7 +329,7 @@ theorem coordChange_model_space (b b' x : F) :
     fderivWithin_id uniqueDiffWithinAt_univ
 #align tangent_bundle.coord_change_model_space TangentBundle.coordChange_model_space
 
--- porting note: `simp` simplifies LHS to `.id _ _`
+-- Porting note: `simp` simplifies LHS to `.id _ _`
 @[simp high, mfld_simps]
 theorem symmL_model_space (b b' : F) :
     (trivializationAt F (TangentSpace 𝓘(𝕜, F)) b).symmL 𝕜 b' = (1 : F →L[𝕜] F) := by
@@ -338,7 +338,7 @@ theorem symmL_model_space (b b' : F) :
 set_option linter.uppercaseLean3 false in
 #align tangent_bundle.symmL_model_space TangentBundle.symmL_model_space
 
--- porting note: `simp` simplifies LHS to `.id _ _`
+-- Porting note: `simp` simplifies LHS to `.id _ _`
 @[simp high, mfld_simps]
 theorem continuousLinearMapAt_model_space (b b' : F) :
     (trivializationAt F (TangentSpace 𝓘(𝕜, F)) b).continuousLinearMapAt 𝕜 b' = (1 : F →L[𝕜] F) := by
@@ -349,13 +349,13 @@ theorem continuousLinearMapAt_model_space (b b' : F) :
 end TangentBundle
 
 instance tangentBundleCore.isSmooth : (tangentBundleCore I M).IsSmooth I := by
-  refine' ⟨fun i j => _⟩
+  refine ⟨fun i j => ?_⟩
   rw [SmoothOn, contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas I i.2),
     contMDiffOn_iff_contDiffOn]
-  refine' ((contDiffOn_fderiv_coord_change I i j).congr fun x hx => _).mono _
-  · rw [PartialEquiv.trans_source'] at hx
-    simp_rw [Function.comp_apply, tangentBundleCore_coordChange, (i.1.extend I).right_inv hx.1]
-  · exact (i.1.extend_image_source_inter j.1 I).subset
+  · refine ((contDiffOn_fderiv_coord_change I i j).congr fun x hx => ?_).mono ?_
+    · rw [PartialEquiv.trans_source'] at hx
+      simp_rw [Function.comp_apply, tangentBundleCore_coordChange, (i.1.extend I).right_inv hx.1]
+    · exact (i.1.extend_image_source_inter j.1 I).subset
   · apply inter_subset_left
 #align tangent_bundle_core.is_smooth tangentBundleCore.isSmooth
 
@@ -376,8 +376,8 @@ theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
   ext x : 1
   · ext; · rfl
     exact (tangentBundleCore I H).coordChange_self (achart _ x.1) x.1 (mem_achart_source H x.1) x.2
-  · -- porting note: was ext; · rfl; apply hEq_of_eq
-    refine congr_arg (TotalSpace.mk _) ?_
+  · ext; · rfl
+    apply heq_of_eq
     exact (tangentBundleCore I H).coordChange_self (achart _ x.1) x.1 (mem_achart_source H x.1) x.2
   simp_rw [TangentBundle.chartAt, FiberBundleCore.localTriv,
     FiberBundleCore.localTrivAsPartialEquiv, VectorBundleCore.toFiberBundleCore_baseSet,
@@ -400,8 +400,9 @@ theorem tangentBundle_model_space_coe_chartAt_symm (p : TangentBundle I H) :
 #align tangent_bundle_model_space_coe_chart_at_symm tangentBundle_model_space_coe_chartAt_symm
 
 theorem tangentBundleCore_coordChange_model_space (x x' z : H) :
-    (tangentBundleCore I H).coordChange (achart H x) (achart H x') z = ContinuousLinearMap.id 𝕜 E :=
-  by ext v; exact (tangentBundleCore I H).coordChange_self (achart _ z) z (mem_univ _) v
+    (tangentBundleCore I H).coordChange (achart H x) (achart H x') z =
+    ContinuousLinearMap.id 𝕜 E := by
+  ext v; exact (tangentBundleCore I H).coordChange_self (achart _ z) z (mem_univ _) v
 #align tangent_bundle_core_coord_change_model_space tangentBundleCore_coordChange_model_space
 
 variable (H)

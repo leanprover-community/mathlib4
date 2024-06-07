@@ -28,17 +28,13 @@ namespace LinearMap
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- The group of invertible linear maps from `M` to itself -/
-@[reducible]
-def GeneralLinearGroup :=
+abbrev GeneralLinearGroup :=
   (M →ₗ[R] M)ˣ
 #align linear_map.general_linear_group LinearMap.GeneralLinearGroup
 
 namespace GeneralLinearGroup
 
 variable {R M}
-
--- Porting note: This is not necessary anymore
--- instance : CoeFun (GeneralLinearGroup R M) fun _ ↦ M → M := by infer_instance
 
 /-- An invertible linear map `f` determines an equivalence from `M` to itself. -/
 def toLinearEquiv (f : GeneralLinearGroup R M) : M ≃ₗ[R] M :=

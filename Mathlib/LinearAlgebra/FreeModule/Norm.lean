@@ -15,7 +15,7 @@ import Mathlib.RingTheory.Norm
 
 open Ideal Polynomial
 
-open scoped BigOperators Polynomial
+open scoped Polynomial
 
 variable {R S ι : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [CommRing S]
   [IsDomain S] [Algebra R S]
@@ -37,7 +37,7 @@ theorem associated_norm_prod_smith [Fintype ι] (b : Basis ι R S) {f : S} (hf :
     (b'.equiv ((span {f}).selfBasis b hI) <| Equiv.refl _).trans
       ((LinearEquiv.coord S S f hf).restrictScalars R)
   refine (LinearMap.associated_det_of_eq_comp e _ _ ?_).symm
-  dsimp only [LinearEquiv.trans_apply]
+  dsimp only [e, LinearEquiv.trans_apply]
   simp_rw [← LinearEquiv.coe_toLinearMap, ← LinearMap.comp_apply, ← LinearMap.ext_iff]
   refine b'.ext fun i => ?_
   simp_rw [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap, Matrix.toLin_apply, Basis.repr_self,
@@ -65,7 +65,7 @@ instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
   -- operations to the `Quotient.lift` level and then end up comparing huge
   -- terms.  We should probably make most of the quotient operations
   -- irreducible so that they don't expose `Quotient.lift` accidentally.
-  refine PowerBasis.finiteDimensional ?_
+  refine PowerBasis.finite ?_
   refine AdjoinRoot.powerBasis ?_
   exact I.smithCoeffs_ne_zero b hI i
 

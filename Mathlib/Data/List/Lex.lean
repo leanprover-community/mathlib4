@@ -59,7 +59,7 @@ theorem cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
 
 @[simp]
 theorem not_nil_right (r : α → α → Prop) (l : List α) : ¬Lex r l [] :=
-  fun.
+  nofun
 #align list.lex.not_nil_right List.Lex.not_nil_right
 
 theorem nil_left_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ l = [] :=
@@ -129,7 +129,7 @@ instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r]
   | [], b :: l₂ => isTrue Lex.nil
   | a :: l₁, b :: l₂ => by
     haveI := decidableRel r l₁ l₂
-    refine' decidable_of_iff (r a b ∨ a = b ∧ Lex r l₁ l₂) ⟨fun h => _, fun h => _⟩
+    refine decidable_of_iff (r a b ∨ a = b ∧ Lex r l₁ l₂) ⟨fun h => ?_, fun h => ?_⟩
     · rcases h with (h | ⟨rfl, h⟩)
       · exact Lex.rel h
       · exact Lex.cons h
@@ -211,6 +211,12 @@ theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : lt l l' ↔ Lex (· < 
     | @nil a as => apply lt.nil
     | @cons a as bs _ ih => apply lt.tail <;> simp [ih]
     | @rel a as b bs h => apply lt.head; assumption
+
+@[simp]
+theorem nil_le {α} [LinearOrder α] {l : List α} : [] ≤ l :=
+  match l with
+  | [] => le_rfl
+  | _ :: _ => le_of_lt <| nil_lt_cons _ _
 
 theorem head_le_of_lt [LinearOrder α] {a a' : α} {l l' : List α} (h : (a' :: l') < (a :: l)) :
     a' ≤ a := by

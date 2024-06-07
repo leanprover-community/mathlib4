@@ -1,0 +1,127 @@
+# https://chat.openai.com/share/26102e95-ac9c-4d03-a000-73e4f6cee8cd
+name: lean4checker Workflow
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # Runs at 00:00 UTC every day
+
+jobs:
+  check-lean4checker:
+    runs-on: pr
+    steps:
+
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+          # Delete all but the 5 most recent toolchains.
+          # Make sure to delete both the `~/.elan/toolchains/X` directory and the `~/.elan/update-hashes/X` file.
+          # Skip symbolic links (`-type d`), the current directory (`! -name .`), and `nightly` and `stable`.
+          if cd ~/.elan/toolchains && find . -maxdepth 1 -type d ! -name . -print0 | xargs -0 ls -1td | grep -v 'nightly$' | grep -v 'stable$' | tail -n +6 | xargs -I {} sh -c 'echo {} && rm -rf "{}" && rm "../update-hashes/{}"'; then
+              : # Do nothing on success
+          else
+              : # Do nothing on failure, but suppress errors
+          fi
+
+      # The Hoskinson runners may not have jq installed, so do that now.
+      - name: 'Setup jq'
+        uses: dcarbone/install-jq-action@v1.0.1
+
+      - name: install elan
+        run: |
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: Checkout master branch
+        uses: actions/checkout@v4
+        with:
+          ref: 'master'
+
+      - name: If using a lean-pr-release toolchain, uninstall
+        run: |
+          if [[ $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
+            printf 'Uninstalling transient toolchain %s\n' "$(cat lean-toolchain)"
+            elan toolchain uninstall "$(cat lean-toolchain)"
+          fi
+
+      - name: print lean and lake versions
+        run: |
+          lean --version
+          lake --version
+
+      - name: Run lake exe cache get
+        run: |
+          lake exe cache get
+
+      - name: prune ProofWidgets .lake
+        run: |
+          # The ProofWidgets release contains not just the `.js` (which we need in order to build)
+          # but also `.oleans`, which may have been built with the wrong toolchain.
+          # This removes them.
+          # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/nightly-testing/near/411225235
+          rm -rf .lake/packages/proofwidgets/.lake/build/lib
+          rm -rf .lake/packages/proofwidgets/.lake/build/ir
+          lake build ProofWidgets
+
+      - name: Check environments using lean4checker
+        id: lean4checker
+        run: |
+          git clone https://github.com/leanprover/lean4checker
+          cd lean4checker
+          git checkout v4.8.0-rc1
+          # Now that the git hash is embedded in each olean,
+          # we need to compile lean4checker on the same toolchain
+          cp ../lean-toolchain .
+          lake build
+          ./test.sh
+          cd ..
+          lake env lean4checker/.lake/build/bin/lean4checker
+
+      - id: ci_url
+        run: |
+          url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          curl -s "${url}" |
+            # extract the CI run number from the unique line that matches `  href=".../job/[job number]"`
+            awk -v url="${url}" -F'/' '/^ *href/ {gsub(/"/, "", $NF); printf("summary<<EOF\n%s/job/%s\nEOF", url, $NF)}' >> "$GITHUB_OUTPUT"
+
+      - name: Post success message on Zulip
+        if: success()
+        uses: zulip/github-actions-zulip/send-message@v1
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'mathlib reviewers'
+          type: 'stream'
+          topic: 'lean4checker'
+          content: |
+            ✅ lean4checker [succeeded](${{ steps.ci_url.outputs.summary }}) on ${{ github.sha }}
+
+      - name: Post failure message on Zulip
+        if: failure()
+        uses: zulip/github-actions-zulip/send-message@v1
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'mathlib reviewers'
+          type: 'stream'
+          topic: 'lean4checker failure'
+          content: |
+            ❌ lean4checker [failed](${{ steps.ci_url.outputs.summary }}) on ${{ github.sha }}
+        continue-on-error: true
+
+      - name: Post failure message on Zulip main topic
+        if: failure()
+        uses: zulip/github-actions-zulip/send-message@v1
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'mathlib reviewers'
+          type: 'stream'
+          topic: 'lean4checker'
+          content: |
+            ❌ lean4checker failed on ${{ github.sha }}
+        continue-on-error: true

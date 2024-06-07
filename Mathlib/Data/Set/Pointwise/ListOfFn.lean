@@ -3,8 +3,9 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Data.List.OfFn
+import Mathlib.Data.Set.Pointwise.Basic
 
 #align_import data.set.pointwise.list_of_fn from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
@@ -17,7 +18,6 @@ This file proves some lemmas about pointwise algebraic operations with lists of 
 namespace Set
 
 variable {F α β γ : Type*}
-
 variable [Monoid α] {s t : Set α} {a : α} {m n : ℕ}
 
 open Pointwise

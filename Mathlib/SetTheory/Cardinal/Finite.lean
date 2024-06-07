@@ -23,7 +23,6 @@ import Mathlib.SetTheory.Cardinal.PartENat
 set_option autoImplicit true
 
 open Cardinal Function
-open scoped BigOperators
 
 noncomputable section
 
@@ -147,7 +146,7 @@ theorem card_of_subsingleton (a : α) [Subsingleton α] : Nat.card α = 1 := by
   rw [card_eq_fintype_card, Fintype.card_ofSubsingleton a]
 #align nat.card_of_subsingleton Nat.card_of_subsingleton
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem card_unique [Unique α] : Nat.card α = 1 :=
   card_of_subsingleton default
 #align nat.card_unique Nat.card_unique
@@ -256,7 +255,8 @@ theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s :
   card_image_of_injOn (Set.injOn_of_injective h s)
 #align part_enat.card_image_of_injective PartENat.card_image_of_injective
 
--- Should I keeep the 6 following lemmas ?
+-- Should I keep the 6 following lemmas ?
+-- TODO: Add ofNat, zero, and one versions for simp confluence
 @[simp]
 theorem _root_.Cardinal.natCast_le_toPartENat_iff {n : ℕ} {c : Cardinal} :
     ↑n ≤ toPartENat c ↔ ↑n ≤ c := by
@@ -290,8 +290,8 @@ theorem _root_.Cardinal.natCast_lt_toPartENat_iff {n : ℕ} {c : Cardinal} :
 
 @[simp]
 theorem _root_.Cardinal.toPartENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
-    toPartENat c < ↑n ↔ c < ↑n :=
-by simp only [← not_le, Cardinal.natCast_le_toPartENat_iff]
+    toPartENat c < ↑n ↔ c < ↑n := by
+  simp only [← not_le, Cardinal.natCast_le_toPartENat_iff]
 #align lt_coe_nat_iff_lt Cardinal.toPartENat_lt_natCast_iff
 
 theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
