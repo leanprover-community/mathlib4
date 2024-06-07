@@ -83,7 +83,7 @@ When `K` is a field, if the preimage of the valuation integers of `A` equals to 
 integers of `K`, then the valuation on `A` is an extension of valuation on `K`.
 -/
 theorem ofIntegerComap {K A ΓK ΓA : Type*} [Field K] [Ring A]
-  [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓA]
+    [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓA]
   [Algebra K A] (vK : Valuation K ΓK) (vA : Valuation A ΓA)
     (h : vA.integer.comap (algebraMap K A) = vK.integer) : IsValExtension vK vA where
   val_isEquiv_comap := by
