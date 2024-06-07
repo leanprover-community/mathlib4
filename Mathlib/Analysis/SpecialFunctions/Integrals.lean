@@ -662,7 +662,7 @@ theorem integral_sin_pow_aux :
       _ = (C + (↑n + 1) * ∫ x in a..b, sin x ^ n) - (↑n + 1) * ∫ x in a..b, sin x ^ (n + 2) := by
         rw [integral_sub, mul_sub, add_sub_assoc] <;>
           apply Continuous.intervalIntegrable <;> continuity
-  all_goals apply Continuous.intervalIntegrable; continuity
+  all_goals apply Continuous.intervalIntegrable; fun_prop
 #align integral_sin_pow_aux integral_sin_pow_aux
 
 /-- The reduction formula for the integral of `sin x ^ n` for any natural `n ≥ 2`. -/
