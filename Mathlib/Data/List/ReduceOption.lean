@@ -3,9 +3,7 @@ Copyright (c) 2020 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Init.Data.Bool.Lemmas
-import Mathlib.Tactic.Cases
-import Mathlib.Tactic.TypeStar
+import Mathlib.Data.List.Basic
 
 /-!
 # Properties of `List.reduceOption`
@@ -48,29 +46,24 @@ theorem reduceOption_append (l l' : List (Option α)) :
   filterMap_append l l' id
 #align list.reduce_option_append List.reduceOption_append
 
-theorem reduceOption_length_le (l : List (Option α)) : l.reduceOption.length ≤ l.length := by
+theorem reduceOption_length_eq {l : List (Option α)} :
+    l.reduceOption.length = (l.filter Option.isSome).length := by
   induction' l with hd tl hl
-  · simp [reduceOption_nil, length]
-  · cases hd
-    · exact Nat.le_succ_of_le hl
-    · simpa only [length, Nat.add_le_add_iff_right, reduceOption_cons_of_some] using hl
+  · simp_rw [reduceOption_nil, filter_nil, length]
+  · cases hd <;> simp [hl]
+
+theorem length_eq_reduceOption_length_add_filter_none {l : List (Option α)} :
+    l.length = l.reduceOption.length + (l.filter Option.isNone).length := by
+  simp_rw [reduceOption_length_eq, l.length_eq_length_filter_add Option.isSome, Option.bnot_isSome]
+
+theorem reduceOption_length_le (l : List (Option α)) : l.reduceOption.length ≤ l.length := by
+  rw [length_eq_reduceOption_length_add_filter_none]
+  apply Nat.le_add_right
 #align list.reduce_option_length_le List.reduceOption_length_le
 
 theorem reduceOption_length_eq_iff {l : List (Option α)} :
     l.reduceOption.length = l.length ↔ ∀ x ∈ l, Option.isSome x := by
-  induction' l with hd tl hl
-  · simp only [forall_const, reduceOption_nil, not_mem_nil, forall_prop_of_false, eq_self_iff_true,
-      length, not_false_iff]
-  · cases hd
-    · simp only [mem_cons, forall_eq_or_imp, Bool.coe_sort_false, false_and_iff,
-        reduceOption_cons_of_none, length, Option.isSome_none, iff_false_iff]
-      intro H
-      have := reduceOption_length_le tl
-      rw [H] at this
-      exact absurd (Nat.lt_succ_self _) (Nat.not_lt_of_le this)
-    · simp only [length, mem_cons, forall_eq_or_imp, Option.isSome_some, ← hl, reduceOption,
-        true_and]
-      omega
+  rw [reduceOption_length_eq, List.filter_length_eq_length]
 #align list.reduce_option_length_eq_iff List.reduceOption_length_eq_iff
 
 theorem reduceOption_length_lt_iff {l : List (Option α)} :
