@@ -109,10 +109,9 @@ theorem terminates_parallel.aux :
         simp [this]
     induction' h : parallel.aux2 l with a l'
     · exact lem1 _ _ ⟨a, h⟩
-    · have H2 : corec parallel.aux1 (l, S) = think _ := by
-        apply destruct_eq_think
+    · have H2 : corec parallel.aux1 (l, S) = think _ := destruct_eq_think (by
         simp only [parallel.aux1, rmap, corec_eq]
-        rw [h]
+        rw [h])
       rw [H2]
       refine @Computation.think_terminates _ _ ?_
       have := H1 _ h
@@ -141,10 +140,9 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
         simp only [rmap]
       rw [C]
       infer_instance
-    · have C : corec parallel.aux1 (l, S) = _ := by
-        apply destruct_eq_think
-        · simp only [corec_eq, rmap, parallel.aux1.eq_1]
-          rw [h, H]
+    · have C : corec parallel.aux1 (l, S) = _ := destruct_eq_think (by
+        simp only [corec_eq, rmap, parallel.aux1.eq_1]
+        rw [h, H])
       rw [C]
       refine @Computation.think_terminates _ _ ?_
       apply terminates_parallel.aux _ T
@@ -160,10 +158,9 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
         simp only [rmap]
       rw [C]
       infer_instance
-    · have C : corec parallel.aux1 (l, S) = _ := by
-        apply destruct_eq_think
-        · simp only [corec_eq, rmap, parallel.aux1.eq_1]
-          rw [h]
+    · have C : corec parallel.aux1 (l, S) = _ := destruct_eq_think (by
+        simp only [corec_eq, rmap, parallel.aux1.eq_1]
+        rw [h])
       rw [C]
       refine @Computation.think_terminates _ _ ?_
       have TT : ∀ l', Terminates (corec parallel.aux1 (l', S.tail)) := by

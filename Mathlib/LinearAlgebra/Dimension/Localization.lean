@@ -112,18 +112,18 @@ section Ring
 
 variable {R} [Ring R] [IsDomain R] (S : Submonoid R)
 
-/-- A domain that is not (right) Ore is of infinite (right) rank.
+/-- A domain that is not (left) Ore is of infinite rank.
 See [cohn_1995] Proposition 1.3.6 -/
 lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R⁰)) :
-    ℵ₀ ≤ Module.rank Rᵐᵒᵖ R := by
+    ℵ₀ ≤ Module.rank R R := by
   classical
   rw [← not_nonempty_iff, OreLocalization.nonempty_oreSet_iff_of_noZeroDivisors] at hS
   push_neg at hS
   obtain ⟨r, s, h⟩ := hS
   refine Cardinal.aleph0_le.mpr fun n ↦ ?_
-  suffices LinearIndependent Rᵐᵒᵖ (fun (i : Fin n) ↦ s ^ (i : ℕ) * r) by
+  suffices LinearIndependent R (fun (i : Fin n) ↦ r * s ^ (i : ℕ)) by
     simpa using this.cardinal_lift_le_rank
-  suffices ∀ (g : ℕ → Rᵐᵒᵖ) (x), (∑ i ∈ Finset.range n, g i • (s ^ (i + x) * r)) = 0 →
+  suffices ∀ (g : ℕ → R) (x), (∑ i ∈ Finset.range n, g i • (r * s ^ (i + x))) = 0 →
       ∀ i < n, g i = 0 by
     refine Fintype.linearIndependent_iff.mpr fun g hg i ↦ ?_
     simpa only [dif_pos i.prop] using this (fun i ↦ if h : i < n then g ⟨i, h⟩ else 0) 0
@@ -135,20 +135,18 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
     by_cases hg0 : g 0 = 0
     · simp only [hg0, zero_smul, add_zero, add_assoc] at hg
       cases i; exacts [hg0, IH _ _ hg _ (Nat.succ_lt_succ_iff.mp hin)]
-    simp only [MulOpposite.smul_eq_mul_unop, zero_add, ← add_comm x, pow_add _ x,
-      mul_assoc, pow_succ', ← Finset.mul_sum, pow_zero, one_mul] at hg
-    rw [← neg_eq_iff_add_eq_zero, ← neg_mul, neg_mul_comm, ← neg_mul, neg_mul_comm] at hg
-    have := mul_left_cancel₀ (mem_nonZeroDivisors_iff_ne_zero.mp (s ^ x).prop) hg
-    exact (h _ ⟨(g 0).unop, mem_nonZeroDivisors_iff_ne_zero.mpr (by simpa)⟩ this.symm).elim
+    simp only [MulOpposite.smul_eq_mul_unop, zero_add, ← add_comm _ x, pow_add _ _ x,
+      ← mul_assoc, pow_succ, ← Finset.sum_mul, pow_zero, one_mul, smul_eq_mul] at hg
+    rw [← neg_eq_iff_add_eq_zero, ← neg_mul, ← neg_mul] at hg
+    have := mul_right_cancel₀ (mem_nonZeroDivisors_iff_ne_zero.mp (s ^ x).prop) hg
+    exact (h _ ⟨(g 0), mem_nonZeroDivisors_iff_ne_zero.mpr (by simpa)⟩ this.symm).elim
 
 -- TODO: Upgrade this to an iff. See [lam_1999] Exercise 10.21
 lemma nonempty_oreSet_of_strongRankCondition [StrongRankCondition R] :
-    Nonempty (OreLocalization.OreSet Rᵐᵒᵖ⁰) := by
+    Nonempty (OreLocalization.OreSet R⁰) := by
   by_contra h
-  have H : Module.rank R R = Module.rank Rᵐᵒᵖᵐᵒᵖ Rᵐᵒᵖ := rank_eq_of_equiv_equiv (RingEquiv.opOp R)
-    MulOpposite.opAddEquiv (RingEquiv.opOp R).bijective (by simp)
   have := aleph0_le_rank_of_isEmpty_oreSet (not_nonempty_iff.mp h)
-  rw [← H, rank_self] at this
+  rw [rank_self] at this
   exact this.not_lt one_lt_aleph0
 
 end Ring
