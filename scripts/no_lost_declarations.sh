@@ -104,6 +104,8 @@ else
   grep '\(+\|-\)' | sed 's=^ *1 =`=; s=^[^`]=`=; s=$=`='
 fi)"
 
+printf '*Diff of declarations*\n\n'
+
 if [ -n "${report}" ]
 then
   echo "${report}"
@@ -111,7 +113,8 @@ else
   echo "No declarations were harmed in the making of this PR! 🐙"
 fi
 
-printf $'\n---\n\nYou can run this locally as follows
+printf $'<details>
+  <summary>You can run this locally as follows</summary>\n\n
 ```bash
 ## summary with just the declaration names:
 ./scripts/no_lost_declarations.sh short <optional_commit>
@@ -119,10 +122,10 @@ printf $'\n---\n\nYou can run this locally as follows
 ## more verbose report:
 ./scripts/no_lost_declarations.sh <optional_commit>
 ```
-'
+</details>'
  : <<ReferenceTest
 theorem oh hello
-inductive counts even if it is not lean code
+inductive triggers the count even if it is not lean code
 instance [I pretend] {to be a nameless} instance where
 def ohMy im a def
 instance [I also pretend] {to be a nameless} instance :=

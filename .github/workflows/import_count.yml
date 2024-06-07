@@ -34,34 +34,36 @@ jobs:
         # the checkout dance, to avoid a detached head
         git checkout master
         git checkout -
+        currentHash="$(git rev-parse HEAD)"
 
         # Compute the counts for the HEAD of the PR
         python ./scripts/count-trans-deps.py "Mathlib/" > head.json
 
         # Checkout the merge base
         git checkout "$(git merge-base master ${{ github.sha }})"
+        # git checkout origin/master scripts/count-trans-deps.py scripts/import-graph-report.py
         # get the files that we need from the current PR
-        # this will have to switch to `master` probably, when merging or right after
-        git checkout origin/import-count scripts/count-trans-deps.py scripts/import-graph-report.py
+        # ***switch*** to `origin/master`, when merging or right after
+        git checkout origin/adomani/move_decls_autocomment_dev scripts/update_PR_comment.sh
 
         # Compute the counts for the merge base
         python ./scripts/count-trans-deps.py "Mathlib/" > base.json
 
+        # switch back to the current branch: the `no_lost_declarations` script should be here
+        git checkout "${currentHash}"
     - name: Compare results and comment
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        message=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
-        data=$(jq -n --arg msg "$message" '{"body": $msg}')
-        method="POST"
-        if [[ -n "$message" ]]; then
-            url="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${{ github.event.pull_request.number }}/comments"
-            headers="Authorization: token ${GITHUB_TOKEN}"
-            comment_id=$(curl -s -S -H "Content-Type: application/json" -H "$headers" "$url" |
-              jq -r '.[] | select(.body | startswith("### Import summary")) | .id' | head -1)
-            if [[ -n "$comment_id" ]]; then
-                url="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/comments/${comment_id}"
-                method="PATCH"
-            fi
-            curl -s -S -H "Content-Type: application/json" -H "$headers" -X "$method" -d "$data" "$url"
-        fi
+        PR="${{ github.event.pull_request.number }}"
+        title="### PR summary"
+
+        ## Import count comment
+        importCount=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
+
+        ## Declarations' diff comment
+        declDiff=$(./scripts/no_lost_declarations.sh short)
+
+        message="$(printf '%s\n\n%s\n\n---\n\n%s\n' "${title}" "${importCount}" "${declDiff}")"
+
+        ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
