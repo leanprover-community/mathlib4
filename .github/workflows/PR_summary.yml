@@ -60,7 +60,7 @@ jobs:
 
         ## Import count comment
         importCount=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
-        if [ "$(printf %s "${importCount}" | wc -l)" -gt 12 ]
+        if [ "$(printf '%s' "${importCount}" | wc -l)" -gt 12 ]
         then
           importCount="$(printf '<details><summary>%s</summary>\n%s</details>\n' "*Import changes*" "${importCount}")"
         else
@@ -69,7 +69,7 @@ jobs:
 
         ## Declarations' diff comment
         declDiff=$(./scripts/no_lost_declarations.sh short)
-        if [ "$(printf %s "${declDiff}" | wc -l)" -gt 17 ]
+        if [ "$(printf '%s' "${declDiff}" | wc -l)" -gt 15 ]
         then
           declDiff="$(printf '<details><summary>%s</summary>\n%s</details>\n' "*Diff of declarations*" "${declDiff}")"
         else
