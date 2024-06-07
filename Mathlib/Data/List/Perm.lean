@@ -689,7 +689,7 @@ private theorem DecEq_eq {α : Type*} [DecidableEq α] :
   congr_arg BEq.mk <| by
     funext l₁ l₂
     show (l₁ == l₂) = _
-    rw [Bool.eq_iff_eq_true_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
+    rw [Bool.eq_iff_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
 
 theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
     (permutations'Aux a l).bind (permutations'Aux b) ~
