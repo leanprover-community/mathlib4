@@ -75,9 +75,8 @@ def aux2 {X Y Z : SSet} (f : X ⊗ Y ⟶ Z) : Y ⟶ SSetIHom X Z where
     ext Yn
     dsimp [SSetRightAdj, SSetIHom]
     ext l ⟨h, Xl⟩
-    change _ = (aux1 f n Yn).app l ((standardSimplex.map g.unop ▷ X).app l (h, Xl))
-    dsimp [aux1, standardSimplex, yoneda, SSet.uliftFunctor]
-    aesop
+    change f.app l (Xl, Y.map h.down.op (Y.map g Yn)) = f.app l (Xl, Y.map (g ≫ h.down.op) Yn)
+    simp only [FunctorToTypes.map_comp_apply]
 
 def aux3 {X Y Z : SSet} (f : Y ⟶ SSetIHom X Z) : X ⊗ Y ⟶ Z where
   app n x := (f.app n x.2).app n (standardSimplex.objMk OrderHom.id, x.1)
