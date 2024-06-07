@@ -3,7 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+<<<<<<< HEAD
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
+=======
+import Mathlib.Algebra.Category.ModuleCat.Sheaf
+>>>>>>> origin
 import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
@@ -20,6 +24,14 @@ In many application, the morphism `α` shall be the identity, but this more
 general construction allows the sheafification of both the presheaf of rings
 and the presheaf of modules.
 
+<<<<<<< HEAD
+=======
+## TODO
+
+- promote this construction to a functor from presheaves of modules over `R₀`
+  to sheaves of modules over `R`, and construct an adjunction.
+
+>>>>>>> origin
 -/
 
 universe w v v₁ u₁ u
