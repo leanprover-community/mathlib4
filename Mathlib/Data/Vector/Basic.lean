@@ -457,12 +457,14 @@ def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector
     exact cons (ih ⟨v, (add_left_inj 1).mp v_property⟩)
 #align vector.induction_on Vector.inductionOn
 
-@[simp] theorem inductionOn_nil {C : ∀ {n : ℕ}, Vector α n → Sort*}
+@[simp]
+theorem inductionOn_nil {C : ∀ {n : ℕ}, Vector α n → Sort*}
     (nil : C nil) (cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) :
     Vector.nil.inductionOn nil cons = nil :=
   rfl
 
-@[simp] theorem inductionOn_cons {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (x : α) (v : Vector α n)
+@[simp]
+theorem inductionOn_cons {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (x : α) (v : Vector α n)
     (nil : C nil) (cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) :
     (x ::ᵥ v).inductionOn nil cons = cons (v.inductionOn nil cons : C v) :=
   rfl
