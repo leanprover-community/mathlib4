@@ -45,7 +45,6 @@ local notation3  "P" => fun i : Fin m => (∑ j : Fin n, B * posPart (A i j))
 local notation3  "N" => fun i : Fin m =>  (∑ j : Fin n, B * (- negPart (A i j)))
    -- S is the box where the image of T goes
 local notation3  "S" => Finset.Icc N P
-
 section preparation
 
 --In order to apply Pigeohole we need:  (1) ∀ v ∈  T, (A.mulVec v) ∈  S and (2) S.card < T.card
@@ -56,23 +55,25 @@ private lemma image_T_subset_S : ∀ v ∈ T, (A.mulVec v) ∈ S := by
   intro v hv
   rw [Finset.mem_Icc] at hv
   rw [Finset.mem_Icc]
-  rw [Matrix.mulVec_def] --unfolds def of MulVec
+  have mulVec_def : A.mulVec v =
+      fun i => Finset.sum Finset.univ fun (j : (Fin n)) => A i j * v j := by rfl
+  rw [mulVec_def] --unfolds def of MulVec
   refine ⟨fun i ↦ ?_, fun i ↦ ?_⟩ --this gives 2 goals
   all_goals simp only [mul_neg]
   all_goals gcongr (∑ _ : Fin n, ?_) with j _ -- gets rid of sums
   all_goals rw [← mul_comm (v j)] -- moves A i j to the right of the products
   all_goals by_cases hsign : 0 ≤ A i j   --we have to distinguish cases: we have now 4 goals
-  ·  rw [negPart_eq_zero.2 hsign]
-     exact mul_nonneg (hv.1 j) hsign
-  ·  rw [not_le] at hsign
-     rw [negPart_eq_neg.2 (le_of_lt hsign)]
-     simp only [mul_neg, neg_neg]
-     exact mul_le_mul_of_nonpos_right (hv.2 j) (le_of_lt hsign)
-  ·  rw [posPart_eq_self.2  hsign]
-     exact mul_le_mul_of_nonneg_right (hv.2 j) hsign
-  ·  rw [not_le] at hsign
-     rw [posPart_eq_zero.2 (le_of_lt hsign)]
-     exact mul_nonpos_of_nonneg_of_nonpos (hv.1 j) (le_of_lt hsign)
+  · rw [negPart_eq_zero.2 hsign]
+    exact mul_nonneg (hv.1 j) hsign
+  · rw [not_le] at hsign
+    rw [negPart_eq_neg.2 (le_of_lt hsign)]
+    simp only [mul_neg, neg_neg]
+    exact mul_le_mul_of_nonpos_right (hv.2 j) (le_of_lt hsign)
+  · rw [posPart_eq_self.2  hsign]
+    exact mul_le_mul_of_nonneg_right (hv.2 j) hsign
+  · rw [not_le] at hsign
+    rw [posPart_eq_zero.2 (le_of_lt hsign)]
+    exact mul_nonpos_of_nonneg_of_nonpos (hv.1 j) (le_of_lt hsign)
 
 --Preparation for (2)
 
@@ -85,17 +86,17 @@ variable  (hA : A ≠ 0 ) (ha : ‖A‖ = ↑a)
 
 --S is not empty
 private lemma N_le_P_add_one : ∀ j : Fin m, N j ≤ P j + 1 := by
-   intro j
-   calc N j ≤ 0 := by
-         apply Finset.sum_nonpos
-         intro i _
-         simp only [mul_neg, Left.neg_nonpos_iff]
-         exact mul_nonneg (cast_nonneg B) (negPart_nonneg (A j i))
-      _ ≤ P j + 1 := by
-         apply le_trans ?_ (Int.le_add_one (le_refl P j))
-         apply Finset.sum_nonneg
-         intro i _
-         exact mul_nonneg (cast_nonneg B) (posPart_nonneg (A j i))
+  intro j
+  calc N j ≤ 0 := by
+              apply Finset.sum_nonpos
+              intro i _
+              simp only [mul_neg, Left.neg_nonpos_iff]
+              exact mul_nonneg (cast_nonneg B) (negPart_nonneg (A j i))
+        _ ≤ P j + 1 := by
+              apply le_trans ?_ (Int.le_add_one (le_refl P j))
+              apply Finset.sum_nonneg
+              intro i _
+              exact mul_nonneg (cast_nonneg B) (posPart_nonneg (A j i))
 
 private lemma card_S_eq : (Finset.Icc N P).card = (∏ i : Fin m, (P i - N i + 1)):= by
    rw [Pi.card_Icc N P,Nat.cast_prod]
@@ -126,18 +127,18 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
             simp only [mul_neg, sum_neg_distrib, sub_neg_eq_add, cast_succ, cast_mul,
               add_le_add_iff_right]
             rw [(mul_sum Finset.univ (fun i_1 => (A i i_1)⁺) ↑B).symm,
-               (mul_sum Finset.univ (fun i_1 => (A i i_1)⁻) ↑B).symm, ← mul_add,
-               mul_comm ((n : ℤ) * a) (B : ℤ)]
+                (mul_sum Finset.univ (fun i_1 => (A i i_1)⁻) ↑B).symm, ← mul_add,
+                mul_comm ((n : ℤ) * a) (B : ℤ)]
             apply mul_le_mul_of_nonneg_left _ (by simp only [cast_nonneg])
             rw [← Finset.sum_add_distrib]
             have h1 : n * (a : ℤ) = ∑ _ : Fin n, (a : ℤ) := by
-               simp only [sum_const, card_fin, nsmul_eq_mul]
+                simp only [sum_const, card_fin, nsmul_eq_mul]
             rw [h1]
             gcongr with j _
             rw [posPart_add_negPart (A i j)]
             have h2 : |A i j| ≤ (a : ℝ) := by
-                     rw [Int.cast_abs, ← Int.norm_eq_abs, ← ha]
-                     exact norm_entry_le_entrywise_sup_norm A
+                      rw [Int.cast_abs, ← Int.norm_eq_abs, ← ha]
+                      exact norm_entry_le_entrywise_sup_norm A
             exact Int.cast_le.1 h2
          _  ≤ (n * a) ^ m * (B + 1) ^ m := by
             rw [← mul_pow (n * (a : ℤ)) ((B : ℤ) + 1) m]
@@ -148,20 +149,20 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
          _ < (B + 1) ^ (n - m) * (B + 1) ^ m := by
             simp only [gt_iff_lt, Int.succ_ofNat_pos, pow_pos, mul_lt_mul_right]
             have h1 : ((n * a) ^ (m / ((n : ℝ) - m))) ^ ((n : ℝ) - m) <
-                  ((B + 1): ℝ) ^ ((n : ℝ) - m) := by
-               apply Real.rpow_lt_rpow /- this creates 3 goals: 0 ≤ (↑n * ↑a) ^ (↑m / (↑n - ↑m)),
+                ((B + 1): ℝ) ^ ((n : ℝ) - m) := by
+              apply Real.rpow_lt_rpow /- this creates 3 goals: 0 ≤ (↑n * ↑a) ^ (↑m / (↑n - ↑m)),
                                           (↑n * ↑a) ^ (↑m / (↑n - ↑m)) < ↑B + 1 and 0 < ↑n - ↑m -/
-               ·  apply rpow_nonneg
-                  exact_mod_cast Nat.zero_le (n * a)
-               ·  rw [← ha]
-                  exact lt_floor_add_one ((n * ‖A‖) ^ (m / ((n : ℝ ) - ↑m)))
-               ·  rw [sub_pos, cast_lt]
-                  exact hn
-            have h2 : ((n : ℝ) * a) ^ (m : ℝ) =
-                  ((n * a) ^ (m / ((n : ℝ) - m))) ^ ((n : ℝ) - m)  := by
-               rw [← rpow_mul (by exact_mod_cast Nat.zero_le (n * a)) (m / (n - m)) (n - m),
-                  hcompexp m n hn]
-            rw [← h2] at h1
+              · apply rpow_nonneg
+                exact_mod_cast Nat.zero_le (n * a)
+              · rw [← ha]
+                exact lt_floor_add_one ((n * ‖A‖) ^ (m / ((n : ℝ ) - ↑m)))
+              · rw [sub_pos, cast_lt]
+                exact hn
+            have h2 : ((n * a) ^ (m / ((n : ℝ) - m))) ^ ((n : ℝ) - m) =
+                ((n : ℝ) * a) ^ (m : ℝ) := by
+              rw [← rpow_mul (by exact_mod_cast Nat.zero_le (n * a)) (m / (n - m)) (n - m),
+                hcompexp m n hn]
+            rw [h2] at h1
             nth_rw 2 [← Nat.cast_sub (le_of_lt hn)] at h1
             rw [rpow_natCast ((↑B + 1)) (n - m), rpow_natCast ] at h1
             exact_mod_cast h1
