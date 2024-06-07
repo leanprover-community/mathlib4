@@ -34,8 +34,7 @@ namespace Fiber
 /-- `Hom a b` are the morphisms of `Fiber p S`, defined as those lying over `𝟙 S` in the base. -/
 def Hom {p : 𝒳 ⥤ 𝒮} {S : 𝒮} (a b : Fiber p S) := {φ : a.1 ⟶ b.1 // IsHomLift p (𝟙 S) φ}
 
-instance {p : 𝒳 ⥤ 𝒮} {S : 𝒮} (a b : Fiber p S) (φ : Hom a b) : IsHomLift p (𝟙 S) φ.1 :=
-  φ.2
+instance {p : 𝒳 ⥤ 𝒮} {S : 𝒮} (a b : Fiber p S) (φ : Hom a b) : IsHomLift p (𝟙 S) φ.1 := φ.2
 
 /-- `Fiber p S` has the structure of a category with morphisms being those lying over `𝟙 S`. -/
 @[simps]
