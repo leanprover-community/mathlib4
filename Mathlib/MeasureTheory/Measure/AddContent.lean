@@ -153,7 +153,7 @@ lemma addContent_union_le (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) :
     m (s ∪ t) ≤ m s + m t := by
   rw [← union_diff_self, addContent_union hC hs (hC.diff_mem ht hs)]
   · exact add_le_add le_rfl
-      (addContent_mono hC.isSetSemiring (hC.diff_mem ht hs) ht (diff_subset _ _))
+      (addContent_mono hC.isSetSemiring (hC.diff_mem ht hs) ht diff_subset)
   · rw [Set.disjoint_iff_inter_eq_empty, inter_diff_self]
 
 lemma addContent_biUnion_le {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
@@ -174,7 +174,7 @@ lemma le_addContent_diff (m : AddContent C) (hC : IsSetRing C) (hs : s ∈ C) (h
   rw [addContent_union hC (hC.inter_mem hs ht) (hC.diff_mem hs ht) disjoint_inf_sdiff, add_comm]
   refine add_tsub_le_assoc.trans_eq ?_
   rw [tsub_eq_zero_of_le
-    (addContent_mono hC.isSetSemiring (hC.inter_mem hs ht) ht (inter_subset_right _ _)), add_zero]
+    (addContent_mono hC.isSetSemiring (hC.inter_mem hs ht) ht inter_subset_right), add_zero]
 
 end IsSetRing
 
