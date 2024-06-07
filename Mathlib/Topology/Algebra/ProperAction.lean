@@ -100,10 +100,11 @@ then there exists `g : G` such that `g • x₂ = x₁` and `𝒰.fst` converges
 for all ultrafilters `𝒰` on `X`, if `𝒰` converges to `(x₁, x₂)`
 along the map `(g, x) ↦ (g • x, x)`, then there exists `g : G` such that `g • x₂ = x₁`
 and `𝒰.fst` converges to `g`."]
-theorem properSMul_iff_continuousSMul_ultrafilter_tendsto : ProperSMul G X ↔ ContinuousSMul G X ∧
-    (∀ 𝒰 : Ultrafilter (G × X), ∀ x₁ x₂ : X,
-    Tendsto (fun gx ↦ ⟨gx.1 • gx.2, gx.2⟩ : G × X → X × X) 𝒰 (𝓝 (x₁, x₂)) →
-    ∃ g : G, g • x₂ = x₁ ∧ Tendsto Prod.fst (𝒰 : Filter (G × X)) (𝓝 g)) := by
+theorem properSMul_iff_continuousSMul_ultrafilter_tendsto :
+    ProperSMul G X ↔ ContinuousSMul G X ∧
+      (∀ 𝒰 : Ultrafilter (G × X), ∀ x₁ x₂ : X,
+        Tendsto (fun gx : G × X ↦ (gx.1 • gx.2, gx.2)) 𝒰 (𝓝 (x₁, x₂)) →
+      ∃ g : G, g • x₂ = x₁ ∧ Tendsto (Prod.fst : G × X → G) 𝒰 (𝓝 g)) := by
   constructor
   · refine fun h ↦ ⟨inferInstance, fun 𝒰 x₁ x₂ h' ↦ ?_⟩
     rw [properSMul_iff, isProperMap_iff_ultrafilter] at h
