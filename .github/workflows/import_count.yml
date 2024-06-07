@@ -1,0 +1,66 @@
+name: Compute transitive imports
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        sudo apt-get install -y jq
+        # If you have additional dependencies, install them here
+
+    - name: Get changed files
+      run: |
+        git fetch origin ${{ github.base_ref }}  # fetch the base branch
+        git diff --name-only origin/${{ github.base_ref }}... > changed_files.txt  # get the list of changed files
+
+    - name: Compute transitive imports
+      run: |
+        # the checkout dance, to avoid a detached head
+        git checkout master
+        git checkout -
+
+        # Compute the counts for the HEAD of the PR
+        python ./scripts/count-trans-deps.py "Mathlib/" > head.json
+
+        # Checkout the merge base
+        git checkout "$(git merge-base master ${{ github.sha }})"
+        # get the files that we need from the current PR
+        git checkout origin/master scripts/count-trans-deps.py scripts/import-graph-report.py
+
+        # Compute the counts for the merge base
+        python ./scripts/count-trans-deps.py "Mathlib/" > base.json
+
+    - name: Compare results and comment
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        message=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
+        data=$(jq -n --arg msg "$message" '{"body": $msg}')
+        method="POST"
+        if [[ -n "$message" ]]; then
+            url="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${{ github.event.pull_request.number }}/comments"
+            headers="Authorization: token ${GITHUB_TOKEN}"
+            comment_id=$(curl -s -S -H "Content-Type: application/json" -H "$headers" "$url" |
+              jq -r '.[] | select(.body | startswith("### Import summary")) | .id' | head -1)
+            if [[ -n "$comment_id" ]]; then
+                url="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/comments/${comment_id}"
+                method="PATCH"
+            fi
+            curl -s -S -H "Content-Type: application/json" -H "$headers" -X "$method" -d "$data" "$url"
+        fi

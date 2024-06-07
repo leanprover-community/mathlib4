@@ -247,7 +247,7 @@ theorem disjoint_sdiff_iff_le (hz : z ≤ y) (hx : x ≤ y) : Disjoint z (y \ x)
     le_of_inf_le_sup_le (le_trans H.le_bot bot_le)
       (by
         rw [sup_sdiff_cancel_right hx]
-        refine' le_trans (sup_le_sup_left sdiff_le z) _
+        refine le_trans (sup_le_sup_left sdiff_le z) ?_
         rw [sup_eq_right.2 hz]),
     fun H => disjoint_sdiff_self_right.mono_left H⟩
 #align disjoint_sdiff_iff_le disjoint_sdiff_iff_le
@@ -275,7 +275,7 @@ theorem le_iff_eq_sup_sdiff (hz : z ≤ y) (hx : x ≤ y) : x ≤ z ↔ y = z �
       · rw [sup_sdiff_left],
     fun H => by
     conv_lhs at H => rw [← sup_sdiff_cancel_right hx]
-    refine' le_of_inf_le_sup_le _ H.le
+    refine le_of_inf_le_sup_le ?_ H.le
     rw [inf_sdiff_self_right]
     exact bot_le⟩
 #align le_iff_eq_sup_sdiff le_iff_eq_sup_sdiff
@@ -317,7 +317,7 @@ theorem sdiff_eq_self_iff_disjoint' : x \ y = x ↔ Disjoint x y := by
 #align sdiff_eq_self_iff_disjoint' sdiff_eq_self_iff_disjoint'
 
 theorem sdiff_lt (hx : y ≤ x) (hy : y ≠ ⊥) : x \ y < x := by
-  refine' sdiff_le.lt_of_ne fun h => hy _
+  refine sdiff_le.lt_of_ne fun h => hy ?_
   rw [sdiff_eq_self_iff_disjoint', disjoint_iff] at h
   rw [← h, inf_eq_right.mpr hx]
 #align sdiff_lt sdiff_lt
@@ -485,14 +485,14 @@ theorem sup_eq_sdiff_sup_sdiff_sup_inf : x ⊔ y = x \ y ⊔ y \ x ⊔ x ⊓ y :
 
 theorem sup_lt_of_lt_sdiff_left (h : y < z \ x) (hxz : x ≤ z) : x ⊔ y < z := by
   rw [← sup_sdiff_cancel_right hxz]
-  refine' (sup_le_sup_left h.le _).lt_of_not_le fun h' => h.not_le _
+  refine (sup_le_sup_left h.le _).lt_of_not_le fun h' => h.not_le ?_
   rw [← sdiff_idem]
   exact (sdiff_le_sdiff_of_sup_le_sup_left h').trans sdiff_le
 #align sup_lt_of_lt_sdiff_left sup_lt_of_lt_sdiff_left
 
 theorem sup_lt_of_lt_sdiff_right (h : x < z \ y) (hyz : y ≤ z) : x ⊔ y < z := by
   rw [← sdiff_sup_cancel hyz]
-  refine' (sup_le_sup_right h.le _).lt_of_not_le fun h' => h.not_le _
+  refine (sup_le_sup_right h.le _).lt_of_not_le fun h' => h.not_le ?_
   rw [← sdiff_idem]
   exact (sdiff_le_sdiff_of_sup_le_sup_right h').trans sdiff_le
 #align sup_lt_of_lt_sdiff_right sup_lt_of_lt_sdiff_right
@@ -873,10 +873,11 @@ protected abbrev Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [B
 
 end lift
 
-instance PUnit.instBooleanAlgebra : BooleanAlgebra PUnit := by
-  refine'
-  { PUnit.instBiheytingAlgebra with
-    .. } <;> (intros; trivial)
+instance PUnit.instBooleanAlgebra : BooleanAlgebra PUnit where
+  __ := PUnit.instBiheytingAlgebra
+  le_sup_inf := _
+  inf_compl_le_bot _ := trivial
+  top_le_sup_compl _ := trivial
 
 namespace DistribLattice
 
