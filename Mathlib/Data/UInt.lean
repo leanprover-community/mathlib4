@@ -144,24 +144,30 @@ run_cmd
 namespace UInt8
 
 /-- Is this an uppercase ASCII letter? -/
-def isUpper (c : UInt8) : Bool :=
+def isASCIIUpper (c : UInt8) : Bool :=
   c ≥ 65 && c ≤ 90
 
 /-- Is this a lowercase ASCII letter? -/
-def isLower (c : UInt8) : Bool :=
+def isASCIILower (c : UInt8) : Bool :=
   c ≥ 97 && c ≤ 122
 
 /-- Is this an alphabetic ASCII character? -/
-def isAlpha (c : UInt8) : Bool :=
-  c.isUpper || c.isLower
+def isASCIIAlpha (c : UInt8) : Bool :=
+  c.isASCIIUpper || c.isASCIILower
 
 /-- Is this an ASCII digit character? -/
-def isDigit (c : UInt8) : Bool :=
+def isASCIIDigit (c : UInt8) : Bool :=
   c ≥ 48 && c ≤ 57
 
 /-- Is this an alphanumeric ASCII character? -/
-def isAlphanum (c : UInt8) : Bool :=
-  c.isAlpha || c.isDigit
+def isASCIIAlphanum (c : UInt8) : Bool :=
+  c.isASCIIAlpha || c.isASCIIDigit
+
+@[deprecated (since := "2024-06-06")] alias isUpper := isASCIIUpper
+@[deprecated (since := "2024-06-06")] alias isLower := isASCIILower
+@[deprecated (since := "2024-06-06")] alias isAlpha := isASCIIAlpha
+@[deprecated (since := "2024-06-06")] alias isDigit := isASCIIDigit
+@[deprecated (since := "2024-06-06")] alias isAlphanum := isASCIIAlphanum
 
 /-- The numbers from 0 to 256 are all valid UTF-8 characters, so we can embed one in the other. -/
 def toChar (n : UInt8) : Char := ⟨n.toUInt32, .inl (n.1.2.trans (by decide))⟩
