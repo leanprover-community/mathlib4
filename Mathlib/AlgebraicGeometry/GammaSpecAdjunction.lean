@@ -427,7 +427,7 @@ lemma toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app
       (locallyRingedSpaceAdjunction.homEquiv X (op <| CommRingCat.of R) f).1.c.app U =
     f.unop ≫ X.presheaf.map (homOfLE le_top).op := by
   rw [← StructureSheaf.toOpen_res _ _ _ (homOfLE le_top), Category.assoc,
-    locallyRingedSpaceAdjunction_homEquiv_apply_naturality'' f (homOfLE (le_top (a := U.unop))).op,
+    NatTrans.naturality _ (homOfLE (le_top (a := U.unop))).op,
     ← locallyRingedSpaceAdjunction_counit_app']
   simp_rw [← Γ_map_op]
   rw [← Γ.rightOp_map_unop, ← Category.assoc, ← unop_comp, ← Adjunction.homEquiv_counit,
