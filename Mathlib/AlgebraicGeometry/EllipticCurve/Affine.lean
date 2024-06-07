@@ -1044,6 +1044,28 @@ end Point
 
 end BaseChange
 
+@[deprecated (since := "2024-06-03")] alias addY' := negAddY
+@[deprecated (since := "2024-06-03")] alias
+  nonsingular_add_of_eval_derivative_ne_zero := nonsingular_negAdd_of_eval_derivative_ne_zero
+@[deprecated (since := "2024-06-03")] alias slope_of_Yeq := slope_of_Y_eq
+@[deprecated (since := "2024-06-03")] alias slope_of_Yne := slope_of_Y_ne
+@[deprecated (since := "2024-06-03")] alias slope_of_Xne := slope_of_X_ne
+@[deprecated (since := "2024-06-03")] alias slope_of_Yne_eq_eval := slope_of_Y_ne_eq_eval
+@[deprecated (since := "2024-06-03")] alias Yeq_of_Xeq := Y_eq_of_X_eq
+@[deprecated (since := "2024-06-03")] alias Yeq_of_Yne := Y_eq_of_Y_ne
+@[deprecated (since := "2024-06-03")] alias equation_add' := equation_negAdd
+@[deprecated (since := "2024-06-03")] alias nonsingular_add' := nonsingular_negAdd
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yeq := add_of_Y_eq
+@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yeq :=
+@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yeq := add_self_of_Y_eq
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yne := add_of_Y_ne
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yne' := add_of_Y_ne'
+@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yne := add_self_of_Y_ne
+@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yne' := add_self_of_Y_ne'
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Xne := add_of_X_ne
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Xne' := add_of_X_ne'
+@[deprecated (since := "2024-06-03")] alias map_addY' := map_negAddY
+
 end WeierstrassCurve.Affine
 
 /-! ## Elliptic curves -/
