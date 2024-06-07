@@ -83,7 +83,7 @@ theorem is_quotient_mk (m : M) : Quotient.mk'' m = (mk m : M ⧸ N) :=
 /-- Given a Lie module `M` over a Lie algebra `L`, together with a Lie submodule `N ⊆ M`, there
 is a natural linear map from `L` to the endomorphisms of `M` leaving `N` invariant. -/
 def lieSubmoduleInvariant : L →ₗ[R] Submodule.compatibleMaps N.toSubmodule N.toSubmodule :=
-  LinearMap.codRestrict _ (LieModule.toEndomorphism R L M) fun _ _ => N.lie_mem
+  LinearMap.codRestrict _ (LieModule.toEnd R L M) fun _ _ => N.lie_mem
 #align lie_submodule.quotient.lie_submodule_invariant LieSubmodule.Quotient.lieSubmoduleInvariant
 
 variable (N)
@@ -220,8 +220,8 @@ theorem lieModuleHom_ext ⦃f g : M ⧸ N →ₗ⁅R,L⁆ M⦄ (h : f.comp (mk' 
   LieModuleHom.ext fun x => Quotient.inductionOn' x <| LieModuleHom.congr_fun h
 #align lie_submodule.quotient.lie_module_hom_ext LieSubmodule.Quotient.lieModuleHom_ext
 
-lemma toEndomorphism_comp_mk' (x : L) :
-    LieModule.toEndomorphism R L (M ⧸ N) x ∘ₗ mk' N = mk' N ∘ₗ LieModule.toEndomorphism R L M x :=
+lemma toEnd_comp_mk' (x : L) :
+    LieModule.toEnd R L (M ⧸ N) x ∘ₗ mk' N = mk' N ∘ₗ LieModule.toEnd R L M x :=
   rfl
 
 end Quotient

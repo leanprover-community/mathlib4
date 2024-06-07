@@ -184,12 +184,12 @@ theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) 
   have : ∀ J ∈ { J : Ideal R | I ≤ J ∧ J.IsMaximal }, RingHom.ker f ≤ J :=
     fun J hJ => le_trans h hJ.left
   refine Trans.trans (map_sInf hf this) (le_antisymm ?_ ?_)
-  · refine'
+  · refine
       sInf_le_sInf fun J hJ =>
-        ⟨comap f J, ⟨⟨le_comap_of_map_le hJ.1, _⟩, map_comap_of_surjective f hf J⟩⟩
+        ⟨comap f J, ⟨⟨le_comap_of_map_le hJ.1, ?_⟩, map_comap_of_surjective f hf J⟩⟩
     haveI : J.IsMaximal := hJ.right
     exact comap_isMaximal_of_surjective f hf
-  · refine' sInf_le_sInf_of_subset_insert_top fun j hj => hj.recOn fun J hJ => _
+  · refine sInf_le_sInf_of_subset_insert_top fun j hj => hj.recOn fun J hJ => ?_
     rw [← hJ.2]
     cases' map_eq_top_or_isMaximal_of_surjective f hf hJ.left.right with htop hmax
     · exact htop.symm ▸ Set.mem_insert ⊤ _
@@ -210,9 +210,9 @@ theorem comap_jacobson {f : R →+* S} {K : Ideal S} :
 theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) {K : Ideal S} :
     comap f K.jacobson = (comap f K).jacobson := by
   unfold Ideal.jacobson
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · rw [← top_inf_eq (sInf _), ← sInf_insert, comap_sInf', sInf_eq_iInf]
-    refine' iInf_le_iInf_of_subset fun J hJ => _
+    refine iInf_le_iInf_of_subset fun J hJ => ?_
     have : comap f (map f J) = J :=
       Trans.trans (comap_map_of_surjective f hf J)
         (le_antisymm (sup_le_iff.2 ⟨le_of_eq rfl, le_trans (comap_mono bot_le) hJ.left⟩)
@@ -321,15 +321,15 @@ variable [CommRing R]
 
 theorem jacobson_bot_polynomial_le_sInf_map_maximal :
     jacobson (⊥ : Ideal R[X]) ≤ sInf (map (C : R →+* R[X]) '' { J : Ideal R | J.IsMaximal }) := by
-  refine' le_sInf fun J => exists_imp.2 fun j hj => _
+  refine le_sInf fun J => exists_imp.2 fun j hj => ?_
   haveI : j.IsMaximal := hj.1
-  refine' Trans.trans (jacobson_mono bot_le) (le_of_eq _ : J.jacobson ≤ J)
+  refine Trans.trans (jacobson_mono bot_le) (le_of_eq ?_ : J.jacobson ≤ J)
   suffices t : (⊥ : Ideal (Polynomial (R ⧸ j))).jacobson = ⊥ by
     rw [← hj.2, jacobson_eq_iff_jacobson_quotient_eq_bot]
     replace t := congr_arg (map (polynomialQuotientEquivQuotientPolynomial j).toRingHom) t
     rwa [map_jacobson_of_bijective _, map_bot] at t
     exact RingEquiv.bijective (polynomialQuotientEquivQuotientPolynomial j)
-  refine' eq_bot_iff.2 fun f hf => _
+  refine eq_bot_iff.2 fun f hf => ?_
   have r1 : (X : (R ⧸ j)[X]) ≠ 0 := fun hX => by
     replace hX := congr_arg (fun f => coeff f 1) hX
     simp only [coeff_X_one, coeff_zero] at hX
@@ -345,8 +345,8 @@ theorem jacobson_bot_polynomial_le_sInf_map_maximal :
 
 theorem jacobson_bot_polynomial_of_jacobson_bot (h : jacobson (⊥ : Ideal R) = ⊥) :
     jacobson (⊥ : Ideal R[X]) = ⊥ := by
-  refine' eq_bot_iff.2 (le_trans jacobson_bot_polynomial_le_sInf_map_maximal _)
-  refine' fun f hf => (Submodule.mem_bot R[X]).2 <| Polynomial.ext fun n =>
+  refine eq_bot_iff.2 (le_trans jacobson_bot_polynomial_le_sInf_map_maximal ?_)
+  refine fun f hf => (Submodule.mem_bot R[X]).2 <| Polynomial.ext fun n =>
     Trans.trans (?_ : coeff f n = 0) (coeff_zero n).symm
   suffices f.coeff n ∈ Ideal.jacobson ⊥ by rwa [h, Submodule.mem_bot] at this
   exact mem_sInf.2 fun j hj => (mem_map_C_iff.1 ((mem_sInf.1 hf) ⟨j, ⟨hj.2, rfl⟩⟩)) n

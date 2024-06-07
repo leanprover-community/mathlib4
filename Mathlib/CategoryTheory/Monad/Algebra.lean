@@ -56,12 +56,6 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.monad.algebra.unit CategoryTheory.Monad.Algebra.unit
 #align category_theory.monad.algebra.assoc CategoryTheory.Monad.Algebra.assoc
 
--- Porting note: no need to restate axioms in lean4.
-
---restate_axiom algebra.unit'
-
---restate_axiom algebra.assoc'
-
 attribute [reassoc] Algebra.unit Algebra.assoc
 
 namespace Algebra
@@ -199,14 +193,7 @@ def adj : T.free ⊣ T.forget :=
           right_inv := fun f => by
             dsimp only [forget_obj]
             rw [← T.η.naturality_assoc, Y.unit]
-            apply Category.comp_id },
-      -- This used to be automatic before leanprover/lean4#2644
-      homEquiv_naturality_right := by
-        intros
-        -- This doesn't look good:
-        simp? says simp only [forget_obj, free_obj_A, forget_map]
-        dsimp
-        simp }
+            apply Category.comp_id } }
 #align category_theory.monad.adj CategoryTheory.Monad.adj
 
 /-- Given an algebra morphism whose carrier part is an isomorphism, we get an algebra isomorphism.

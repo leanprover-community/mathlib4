@@ -284,21 +284,21 @@ theorem le_dist_coe (z w : ℍ) : w.im * (1 - Real.exp (-dist z w)) ≤ dist (z 
 `TopologicalSpace` is definitionally equal to the subtype topology. -/
 instance : MetricSpace ℍ :=
   metricSpaceAux.replaceTopology <| by
-    refine' le_antisymm (continuous_id_iff_le.1 _) _
-    · refine' (@continuous_iff_continuous_dist ℍ ℍ metricSpaceAux.toPseudoMetricSpace _ _).2 _
+    refine le_antisymm (continuous_id_iff_le.1 ?_) ?_
+    · refine (@continuous_iff_continuous_dist ℍ ℍ metricSpaceAux.toPseudoMetricSpace _ _).2 ?_
       have : ∀ x : ℍ × ℍ, 2 * √(x.1.im * x.2.im) ≠ 0 := fun x => by positivity
       -- `continuity` fails to apply `Continuous.div`
       apply_rules [Continuous.div, Continuous.mul, continuous_const, Continuous.arsinh,
         Continuous.dist, continuous_coe.comp, continuous_fst, continuous_snd,
         Real.continuous_sqrt.comp, continuous_im.comp]
     · letI : MetricSpace ℍ := metricSpaceAux
-      refine' le_of_nhds_le_nhds fun z => _
+      refine le_of_nhds_le_nhds fun z => ?_
       rw [nhds_induced]
-      refine' (nhds_basis_ball.le_basis_iff (nhds_basis_ball.comap _)).2 fun R hR => _
+      refine (nhds_basis_ball.le_basis_iff (nhds_basis_ball.comap _)).2 fun R hR => ?_
       have h₁ : 1 < R / im z + 1 := lt_add_of_pos_left _ (div_pos hR z.im_pos)
       have h₀ : 0 < R / im z + 1 := one_pos.trans h₁
-      refine' ⟨log (R / im z + 1), Real.log_pos h₁, _⟩
-      refine' fun w hw => (dist_coe_le w z).trans_lt _
+      refine ⟨log (R / im z + 1), Real.log_pos h₁, ?_⟩
+      refine fun w hw => (dist_coe_le w z).trans_lt ?_
       rwa [← lt_div_iff' z.im_pos, sub_lt_iff_lt_add, ← Real.lt_log_iff_exp_lt h₀]
 
 theorem im_pos_of_dist_center_le {z : ℍ} {r : ℝ} {w : ℂ}
@@ -341,12 +341,12 @@ theorem image_coe_sphere (z : ℍ) (r : ℝ) :
 #align upper_half_plane.image_coe_sphere UpperHalfPlane.image_coe_sphere
 
 instance : ProperSpace ℍ := by
-  refine' ⟨fun z r => _⟩
+  refine ⟨fun z r => ?_⟩
   rw [inducing_subtype_val.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
   apply isCompact_closedBall
 
 theorem isometry_vertical_line (a : ℝ) : Isometry fun y => mk ⟨a, exp y⟩ (exp_pos y) := by
-  refine' Isometry.of_dist_eq fun y₁ y₂ => _
+  refine Isometry.of_dist_eq fun y₁ y₂ => ?_
   rw [dist_of_re_eq]
   exacts [congr_arg₂ _ (log_exp _) (log_exp _), rfl]
 #align upper_half_plane.isometry_vertical_line UpperHalfPlane.isometry_vertical_line
@@ -356,7 +356,7 @@ theorem isometry_real_vadd (a : ℝ) : Isometry (a +ᵥ · : ℍ → ℍ) :=
 #align upper_half_plane.isometry_real_vadd UpperHalfPlane.isometry_real_vadd
 
 theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ → ℍ) := by
-  refine' Isometry.of_dist_eq fun y₁ y₂ => _
+  refine Isometry.of_dist_eq fun y₁ y₂ => ?_
   simp only [dist_eq, coe_pos_real_smul, pos_real_im]; congr 2
   rw [dist_smul₀, mul_mul_mul_comm, Real.sqrt_mul (mul_self_nonneg _), Real.sqrt_mul_self_eq_abs,
     Real.norm_eq_abs, mul_left_comm]

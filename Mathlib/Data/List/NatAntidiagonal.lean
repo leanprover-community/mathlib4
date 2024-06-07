@@ -41,7 +41,7 @@ theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x
     rw [mem_range, Nat.lt_succ_iff] at hi
     exact Nat.add_sub_cancel' hi
   · rintro rfl
-    refine' ⟨x.fst, _, _⟩
+    refine ⟨x.fst, ?_, ?_⟩
     · rw [mem_range]
       omega
     · exact Prod.ext rfl (by simp only [Nat.add_sub_cancel_left])

@@ -211,7 +211,7 @@ def inclusionHom [Preadditive C] (P Q : Karoubi C) : AddMonoidHom (P ⟶ Q) (P.X
 
 @[simp]
 theorem sum_hom [Preadditive C] {P Q : Karoubi C} {α : Type*} (s : Finset α) (f : α → (P ⟶ Q)) :
-    (∑ x in s, f x).f = ∑ x in s, (f x).f :=
+    (∑ x ∈ s, f x).f = ∑ x ∈ s, (f x).f :=
   map_sum (inclusionHom P Q) f s
 #align category_theory.idempotents.karoubi.sum_hom CategoryTheory.Idempotents.Karoubi.sum_hom
 
@@ -228,7 +228,7 @@ open Karoubi
 variable (C)
 
 instance : IsIdempotentComplete (Karoubi C) := by
-  refine' ⟨_⟩
+  refine ⟨?_⟩
   intro P p hp
   simp only [hom_ext_iff, comp_f] at hp
   use ⟨P.X, p.f, hp⟩
