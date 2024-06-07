@@ -6,8 +6,6 @@ Authors: Amelia Livingston
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Data.Setoid.Basic
-import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.Opposites
 
 #align_import group_theory.congruence from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -166,30 +164,6 @@ theorem rel_mk {s : Setoid M} {h a b} : Con.mk s h a b ↔ r a b :=
   Iff.rfl
 #align con.rel_mk Con.rel_mk
 #align add_con.rel_mk AddCon.rel_mk
-
-/-- If `c` is a multiplicative congruence on `M`, then `(a, b) ↦ c b.unop a.unop` is a
-multiplicative congruence on `Mᵐᵒᵖ`-/
-@[to_additive "If `c` is an additive congruence on `M`, then `(a, b) ↦ c b.unop a.unop` is an
-additive congruence on `Mᵃᵒᵖ`"]
-def op (c : Con M) : Con Mᵐᵒᵖ where
-  r a b := c b.unop a.unop
-  iseqv :=
-  { refl := fun a ↦ c.refl a.unop
-    symm := c.symm
-    trans := fun h1 h2 ↦ c.trans h2 h1 }
-  mul' h1 h2 := c.mul h2 h1
-
-/-- If `c` is a multiplicative congruence on `Mᵐᵒᵖ`, then `(a, b) ↦ c bᵒᵖ aᵒᵖ` is a multiplicative
-congruence on `M`-/
-@[to_additive "If `c` is an additive congruence on `Mᵃᵒᵖ`, then `(a, b) ↦ c bᵒᵖ aᵒᵖ` is an additive
-congruence on `M`"]
-def unop (c : Con Mᵐᵒᵖ) : Con M where
-  r a b := c (.op b) (.op a)
-  iseqv :=
-  { refl := fun a ↦ c.refl (.op a)
-    symm := c.symm
-    trans := fun h1 h2 ↦ c.trans h2 h1 }
-  mul' h1 h2 := c.mul h2 h1
 
 /-- Given a type `M` with a multiplication, a congruence relation `c` on `M`, and elements of `M`
     `x, y`, `(x, y) ∈ M × M` iff `x` is related to `y` by `c`. -/
@@ -441,19 +415,6 @@ theorem le_def {c d : Con M} : c ≤ d ↔ ∀ {x y}, c x y → d x y :=
   Iff.rfl
 #align con.le_def Con.le_def
 #align add_con.le_def AddCon.le_def
-
-/--
-The multiplicative congruences on `M` bijects to the multiplicative congruences on `Mᵐᵒᵖ`
--/
-@[to_additive (attr := simps) "The additive congruences on `M` bijects to the additive congruences
-on `Mᵃᵒᵖ`"]
-def orderIsoOp : Con M ≃o Con Mᵐᵒᵖ where
-  toFun := op
-  invFun := unop
-  left_inv _ := rfl
-  right_inv _ := rfl
-  map_rel_iff' {c d} := by rw [le_def, le_def]; constructor <;> intro h _ _ h' <;> exact h h'
-
 
 /-- The infimum of a set of congruence relations on a given type with a multiplication. -/
 @[to_additive "The infimum of a set of additive congruence relations on a given type with
@@ -1295,18 +1256,6 @@ protected theorem div : ∀ {w x y z}, c w x → c y z → c (w / y) (x / z) := 
   simpa only [div_eq_mul_inv] using c.mul h1 (c.inv h2)
 #align con.div Con.div
 #align add_con.sub AddCon.sub
-
-/-- Multiplicative congruence relations preserve finite product. -/
-@[to_additive "Additive congruence relations preserve finite sum."]
-protected theorem finset_prod {ι M : Type*} [CommMonoid M] (c : Con M) (s : Finset ι)
-    {f g : ι → M} (h : ∀ i ∈ s, c (f i) (g i)) :
-    c (s.prod f) (s.prod g) := by
-  classical
-  induction s using Finset.cons_induction_on with
-  | h₁ => simpa using c.refl 1
-  | @h₂ i s hi ih =>
-    rw [Finset.prod_cons hi, Finset.prod_cons hi]
-    exact c.mul (h _ (by simp)) <| ih fun i hi ↦ h _ (by aesop)
 
 /-- Multiplicative congruence relations preserve integer powers. -/
 @[to_additive "Additive congruence relations preserve integer scaling."]
