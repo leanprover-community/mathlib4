@@ -186,9 +186,13 @@ noncomputable instance : IsTriangulated (DerivedCategory C) :=
   Triangulated.Localization.isTriangulated
     Qh (HomotopyCategory.subcategoryAcyclic C).W
 
+/-- The single functors `C ⥤ DerivedCategory C` for all `n : ℤ` along with
+their compatibilities with shifts. -/
 noncomputable def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
   (HomotopyCategory.singleFunctors C).postcomp Qh
 
+/-- The shift functor `C ⥤ DerivedCategory C` which sends `X : C` to the
+single cochain complex with `X` sitting in degree `n : ℤ`. -/
 noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
 instance (n : ℤ) : (singleFunctor C n).Additive := by
