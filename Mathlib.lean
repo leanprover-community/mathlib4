@@ -2478,8 +2478,8 @@ import Mathlib.GroupTheory.Commensurable
 import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.CommutingProbability
 import Mathlib.GroupTheory.Complement
+import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.Congruence.BigOperators
-import Mathlib.GroupTheory.Congruence.Congruence
 import Mathlib.GroupTheory.Congruence.Opposite
 import Mathlib.GroupTheory.Coprod.Basic
 import Mathlib.GroupTheory.CoprodI
