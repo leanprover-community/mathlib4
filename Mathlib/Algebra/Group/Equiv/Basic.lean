@@ -628,6 +628,10 @@ theorem coe_toMonoidHom (e : M ≃* N) : ⇑e.toMonoidHom = e := rfl
 #align mul_equiv.coe_to_monoid_hom MulEquiv.coe_toMonoidHom
 #align add_equiv.coe_to_add_monoid_hom AddEquiv.coe_toAddMonoidHom
 
+@[to_additive (attr := simp)]
+theorem toMonoidHom_eq_coe (f : M ≃* N) : f.toMonoidHom = (f : M →* N) :=
+  rfl
+
 set_option linter.deprecated false in
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : M ≃* N → M →* N) :=

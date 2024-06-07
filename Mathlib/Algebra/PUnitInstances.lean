@@ -146,17 +146,25 @@ instance : SMulCommClass R S PUnit :=
 instance instIsScalarTowerOfSMul [SMul R S] : IsScalarTower R S PUnit :=
   ⟨fun _ _ _ => rfl⟩
 
-instance smulWithZero [Zero R] : SMulWithZero R PUnit := by
-  refine' { PUnit.smul with .. } <;> intros <;> exact Subsingleton.elim _ _
+instance smulWithZero [Zero R] : SMulWithZero R PUnit where
+  __ := PUnit.smul
+  smul_zero _ := Subsingleton.elim _ _
+  zero_smul _ := Subsingleton.elim _ _
 
-instance mulAction [Monoid R] : MulAction R PUnit := by
-  refine' { PUnit.smul with .. } <;> intros <;> exact Subsingleton.elim _ _
+instance mulAction [Monoid R] : MulAction R PUnit where
+  __ := PUnit.smul
+  one_smul _ := Subsingleton.elim _ _
+  mul_smul _ _ _ := Subsingleton.elim _ _
 
-instance distribMulAction [Monoid R] : DistribMulAction R PUnit := by
-  refine' { PUnit.mulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
+instance distribMulAction [Monoid R] : DistribMulAction R PUnit where
+  __ := PUnit.mulAction
+  smul_zero _ := Subsingleton.elim _ _
+  smul_add _ _ _ := Subsingleton.elim _ _
 
-instance mulDistribMulAction [Monoid R] : MulDistribMulAction R PUnit := by
-  refine' { PUnit.mulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
+instance mulDistribMulAction [Monoid R] : MulDistribMulAction R PUnit where
+  __ := PUnit.mulAction
+  smul_mul _ _ _ := Subsingleton.elim _ _
+  smul_one _ := Subsingleton.elim _ _
 
 instance mulSemiringAction [Semiring R] : MulSemiringAction R PUnit :=
   { PUnit.distribMulAction, PUnit.mulDistribMulAction with }
@@ -164,7 +172,9 @@ instance mulSemiringAction [Semiring R] : MulSemiringAction R PUnit :=
 instance mulActionWithZero [MonoidWithZero R] : MulActionWithZero R PUnit :=
   { PUnit.mulAction, PUnit.smulWithZero with }
 
-instance module [Semiring R] : Module R PUnit := by
-  refine' { PUnit.distribMulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
+instance module [Semiring R] : Module R PUnit where
+  __ := PUnit.distribMulAction
+  add_smul _ _ _ := Subsingleton.elim _ _
+  zero_smul _ := Subsingleton.elim _ _
 
 end PUnit

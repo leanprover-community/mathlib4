@@ -3,8 +3,8 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Nat.Factors
 import Mathlib.Order.Interval.Finset.Nat
 
@@ -410,7 +410,7 @@ theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆
     rw [← zero_add (∑ x ∈ s, x), ← add_assoc, add_zero]
     apply add_lt_add_right
     have hlt :=
-      sum_lt_sum_of_nonempty h fun x hx => pos_of_mem_properDivisors (sdiff_subset _ _ hx)
+      sum_lt_sum_of_nonempty h fun x hx => pos_of_mem_properDivisors (sdiff_subset hx)
     simp only [sum_const_zero] at hlt
     apply hlt
 #align nat.eq_proper_divisors_of_subset_of_sum_eq_sum Nat.eq_properDivisors_of_subset_of_sum_eq_sum
