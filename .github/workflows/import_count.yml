@@ -34,7 +34,7 @@ jobs:
         # the checkout dance, to avoid a detached head
         git checkout master
         git checkout -
-        currentBranch="$(git rev-parse --abbrev-ref HEAD)"
+        currentBranch="$(git rev-parse HEAD)"
 
         # Compute the counts for the HEAD of the PR
         python ./scripts/count-trans-deps.py "Mathlib/" > head.json
