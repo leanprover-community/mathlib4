@@ -46,13 +46,29 @@ variable (A : Type*) [Category A]
 
 namespace Functor
 
-variable (H : C ⥤ D) [H.IsCocontinuous J K] [ConcreteCategory A] {F G : Dᵒᵖ ⥤ A} (f : F ⟶ G)
+variable (H : C ⥤ D) [ConcreteCategory A] {F G : Dᵒᵖ ⥤ A} (f : F ⟶ G)
 
-lemma isLocallySurjective_whisker [IsLocallySurjective K f] :
+lemma isLocallySurjective_whisker [H.IsCocontinuous J K] [IsLocallySurjective K f] :
     IsLocallySurjective J (whiskerLeft H.op f) where
   imageSieve_mem a := H.cover_lift J K (imageSieve_mem K f a)
 
-lemma isLocallyInjective_whisker [IsLocallyInjective K f] :
+lemma isLocallySurjective_of_whisker (hH : CoverPreserving J K H)
+    [H.IsCoverDense K] [IsLocallySurjective J (whiskerLeft H.op f)] : IsLocallySurjective K f where
+  imageSieve_mem {X} a := by
+    apply K.transitive (Functor.IsCoverDense.is_cover (G := H) (K := K) X)
+    intro Y g ⟨⟨Z, lift, map, fac⟩⟩
+    rw [← fac, Sieve.pullback_comp]
+    apply K.pullback_stable
+    have hh := hH.cover_preserve <| IsLocallySurjective.imageSieve_mem (f := (whiskerLeft H.op f))
+      (J := J) ((forget A).map (G.map map.op) a)
+    refine GrothendieckTopology.superset_covering _ (Sieve.functorPullback_pushforward_le H _) ?_
+    refine GrothendieckTopology.superset_covering _ (Sieve.functorPushforward_monotone H _ ?_) hh
+    intro W q ⟨x, h⟩
+    simp only [Sieve.functorPullback_apply, Presieve.functorPullback_mem, Sieve.pullback_apply]
+    refine ⟨x, ?_⟩
+    simpa using h
+
+lemma isLocallyInjective_whisker [H.IsCocontinuous J K] [IsLocallyInjective K f] :
     IsLocallyInjective J (whiskerLeft H.op f) where
   equalizerSieve_mem x y h := H.cover_lift J K (equalizerSieve_mem K f x y h)
 
@@ -162,6 +178,14 @@ instance : e.symm.TransportsGrothendieckTopology K J where
     · intro h
       convert J.pullback_stable (e.unit.app X) h
       exact (e.pullback_functorPushforward_eq S).symm
+
+theorem coverPreserving' : CoverPreserving J K e.functor := by
+  rw [e.eq_inducedTopology_of_transports J K]
+  exact e.coverPreserving J
+
+theorem coverPreserving_symm' : CoverPreserving K J e.inverse := by
+  rw [e.symm.eq_inducedTopology_of_transports K J]
+  exact e.symm.coverPreserving K
 
 instance : IsContinuous e.functor J K := by
   rw [e.eq_inducedTopology_of_transports J K]
@@ -293,36 +317,8 @@ lemma isLocallySurjective_whisker [IsLocallySurjective J f] :
   e.inverse.isLocallySurjective_whisker K J A f
 
 lemma isLocallySurjective_of_whisker [IsLocallySurjective K (whiskerLeft e.inverse.op f)] :
-    IsLocallySurjective J f := by
-  have := e.symm.isLocallySurjective_whisker K J (whiskerLeft e.inverse.op f)
-  simp only [symm_inverse, whiskerLeft_twice] at this
-  have : f = whiskerRight e.op.unit F ≫ whiskerLeft (e.functor.op ⋙ e.inverse.op) f ≫
-      whiskerRight e.op.unitInv G := by
-    ext : 2
-    simp [← Functor.map_comp]
-  rw [this]
-  infer_instance
-
-lemma isLocallySurjective_of_whisker' (H : D ⥤ C) [H.IsCoverDense J] [H.Full] [H.Faithful]
-    [IsLocallySurjective (H.inducedTopologyOfIsCoverDense J) (whiskerLeft H.op f)] :
-      IsLocallySurjective J f where
-  imageSieve_mem {X} a := by
-    have := Functor.IsCoverDense.is_cover (G := H) (K := J) X
-    apply J.transitive this
-    intro Y g ⟨⟨Z, lift, map, fac⟩⟩
-    rw [← fac, Sieve.pullback_comp]
-    apply J.pullback_stable
-
-    let b := (forget A).map (G.map map.op) a
-    have hh := IsLocallySurjective.imageSieve_mem (f := (whiskerLeft H.op f))
-      (J := H.inducedTopologyOfIsCoverDense J) b
-    change _ ∈ J.sieves _ at hh
-    refine GrothendieckTopology.superset_covering _ (Sieve.functorPullback_pushforward_le H _) ?_
-    refine GrothendieckTopology.superset_covering _ (Sieve.functorPushforward_monotone H _ ?_) hh
-    intro W q ⟨x, h⟩
-    simp only [Sieve.functorPullback_apply, Presieve.functorPullback_mem, Sieve.pullback_apply]
-    refine ⟨x, ?_⟩
-    simpa using h
+    IsLocallySurjective J f :=
+  e.inverse.isLocallySurjective_of_whisker K J A f (e.coverPreserving_symm' J K)
 
 open ConcreteCategory Sheaf
 
