@@ -1126,12 +1126,12 @@ theorem extensionEmbedding_isometry :
     Isometry (extensionEmbedding v) :=
   Isometry.of_dist_eq extensionEmbedding_dist_eq
 
-/-- The embedding `v.completion K → ℂ` is uniform inducing. -/
+/-- The embedding `v.completion → ℂ` is uniform inducing. -/
 theorem extensionEmbedding_uniformInducing :
     UniformInducing (extensionEmbedding v) :=
   (extensionEmbedding_isometry v).uniformInducing
 
-/-- The embedding `v.completion K → ℂ` is a closed embedding. -/
+/-- The embedding `v.completion → ℂ` is a closed embedding. -/
 theorem closedEmbedding : ClosedEmbedding (extensionEmbedding v) :=
   (extensionEmbedding_isometry v).closedEmbedding
 
