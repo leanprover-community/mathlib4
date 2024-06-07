@@ -58,6 +58,7 @@ def mkAll : Cmd := `[Cli|
   FLAGS:
     lib : String; "Create a folder importing all Lean files from the specified library/subfolder."
     git;          "Use the folder content information from git."
+    check;        "Only check if the files are up-to-date; print an error if not"
 ]
 
 /-- The entrypoint to the `lake exe mk_all` command. -/

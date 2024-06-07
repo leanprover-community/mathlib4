@@ -138,7 +138,7 @@ jobs:
       # but verify that this didn't change anything in the `check_imported` job.
       - name: update Mathlib.lean
         run: |
-          lake exe mk_all --lib Mathlib
+          lake exe mk_all --lib Mathlib --check
 
       - name: If using a lean-pr-release toolchain, uninstall
         run: |
