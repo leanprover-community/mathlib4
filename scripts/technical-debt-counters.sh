@@ -2,27 +2,27 @@
 
 # This script quantifies some of the technical debt in mathlib4.
 
-titles=( "porting notes"
-         "backwards compatibility flags"
-         "adaptation notes"
-         "disabled simpNF lints"
-         "disabled deprecation lints"
-         "erw")
-
-regexes=( "Porting note"
-          "set_option.*backward"
-          "adaptation_note"
-          "nolint simpNF"
-          "set_option linter.deprecated false"
-          "erw \[")
+titlesAndRegexes=(
+  "porting notes"                  "Porting note"
+  "backwards compatibility flags"  "set_option.*backward"
+  "adaptation notes"               "adaptation_note"
+  "disabled simpNF lints"          "nolint simpNF"
+  "disabled deprecation lints"     "set_option linter.deprecated false"
+  "erw"                            "erw \["
+)
 
 printf '|Number|Type|\n|-:|:-|\n'
-for i in ${!titles[@]}; do
-  if [ "${titles[$i]}" == "Number of porting notes:" ]
-  then fl="-i"  # just for porting notes we ignore the case in the regex
-  else fl="--"
+for i in ${!titlesAndRegexes[@]}; do
+  # loop on the odd-indexed entries and name each entry and the following
+  if (( (i + 1) % 2 )); then
+    title="${titlesAndRegexes[$i]}"
+    regex="${titlesAndRegexes[$(( i + 1 ))]}"
+    if [ "${title}" == "porting notes" ]
+    then fl="-i"  # just for porting notes we ignore the case in the regex
+    else fl="--"
+    fi
+    printf '| %s | %s |\n' "$(git grep "${fl}" "${regex}" | wc -l)" "${title}"
   fi
-  printf '| %s | %s |\n' "$(git grep "${fl}" "${regexes[$i]}" | wc -l)" "${titles[$i]}"
 done
 
 initFiles="$(git ls-files '**/Init/*.lean' | xargs wc -l)"
