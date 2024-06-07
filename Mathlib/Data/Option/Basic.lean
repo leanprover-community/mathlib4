@@ -447,4 +447,28 @@ theorem elim_comp₂ (h : α → β → γ) {f : γ → α} {x : α} {g : γ →
 theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : α} :
     i.elim x f y = i.elim (x y) fun j => f j y := by rw [elim_comp fun f : α → β => f y]
 
+@[simp]
+lemma bnot_isSome (a : Option α) : (! a.isSome) = a.isNone := by
+  funext
+  cases a <;> simp
+
+@[simp]
+lemma bnot_comp_isSome : (! ·) ∘ @Option.isSome α = Option.isNone := by
+  funext
+  simp
+
+@[simp]
+lemma bnot_isNone (a : Option α) : (! a.isNone) = a.isSome := by
+  funext
+  cases a <;> simp
+
+@[simp]
+lemma bnot_comp_isNone : (! ·) ∘ @Option.isNone α = Option.isSome := by
+  funext x
+  simp
+
+@[simp]
+lemma isNone_eq_false_iff (a : Option α) : Option.isNone a = false ↔ Option.isSome a := by
+  cases a <;> simp
+
 end Option

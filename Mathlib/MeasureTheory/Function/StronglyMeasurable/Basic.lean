@@ -307,7 +307,7 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
     · letI : (y : β) → Decidable (y = 0) := fun y => Classical.propDecidable _
       rw [Finset.mem_filter] at hy
       exact hy.2
-    refine (measure_mono (Set.inter_subset_left _ _)).trans_lt ?_
+    refine (measure_mono Set.inter_subset_left).trans_lt ?_
     have h_lt_top := measure_spanningSets_lt_top (μ.restrict t) n
     rwa [Measure.restrict_apply' ht] at h_lt_top
   · by_cases hxt : x ∈ t
@@ -1069,7 +1069,7 @@ theorem exists_set_sigmaFinite [Zero β] [TopologicalSpace β] [T2Space β]
   · refine ⟨⟨⟨fun n => tᶜ ∪ T n, fun _ => trivial, fun n => ?_, ?_⟩⟩⟩
     · rw [Measure.restrict_apply' (MeasurableSet.iUnion hT_meas), Set.union_inter_distrib_right,
         Set.compl_inter_self t, Set.empty_union]
-      exact (measure_mono (Set.inter_subset_left _ _)).trans_lt (hT_lt_top n)
+      exact (measure_mono Set.inter_subset_left).trans_lt (hT_lt_top n)
     · rw [← Set.union_iUnion tᶜ T]
       exact Set.compl_union_self _
 #align measure_theory.fin_strongly_measurable.exists_set_sigma_finite MeasureTheory.FinStronglyMeasurable.exists_set_sigmaFinite

@@ -214,8 +214,8 @@ instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) :=
     left_distrib := fun x y z => by
       ext a
       have hwf := y.isPWO_support.union z.isPWO_support
-      rw [mul_coeff_right' hwf, add_coeff, mul_coeff_right' hwf (Set.subset_union_right _ _),
-        mul_coeff_right' hwf (Set.subset_union_left _ _)]
+      rw [mul_coeff_right' hwf, add_coeff, mul_coeff_right' hwf Set.subset_union_right,
+        mul_coeff_right' hwf Set.subset_union_left]
       · simp only [add_coeff, mul_add, sum_add_distrib]
       · intro b
         simp only [add_coeff, Ne, Set.mem_union, Set.mem_setOf_eq, mem_support]
@@ -225,8 +225,8 @@ instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) :=
     right_distrib := fun x y z => by
       ext a
       have hwf := x.isPWO_support.union y.isPWO_support
-      rw [mul_coeff_left' hwf, add_coeff, mul_coeff_left' hwf (Set.subset_union_right _ _),
-        mul_coeff_left' hwf (Set.subset_union_left _ _)]
+      rw [mul_coeff_left' hwf, add_coeff, mul_coeff_left' hwf Set.subset_union_right,
+        mul_coeff_left' hwf Set.subset_union_left]
       · simp only [add_coeff, add_mul, sum_add_distrib]
       · intro b
         simp only [add_coeff, Ne, Set.mem_union, Set.mem_setOf_eq, mem_support]
