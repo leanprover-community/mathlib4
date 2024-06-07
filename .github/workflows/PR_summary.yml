@@ -1,4 +1,4 @@
-name: Compute PR summary
+name: Post PR summary comment
 
 on:
   pull_request:
@@ -43,7 +43,7 @@ jobs:
         git checkout "$(git merge-base master ${{ github.sha }})"
         # git checkout origin/master scripts/count-trans-deps.py scripts/import-graph-report.py
         # get the files that we need from the current PR
-        # ***switch*** to `origin/master`, when merging or right after
+        # TODO ***change*** to `origin/master` in the line below, when merging or right after
         git checkout origin/adomani/move_decls_autocomment scripts/update_PR_comment.sh
 
         # Compute the counts for the merge base
