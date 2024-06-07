@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.Valuation.Basic
+import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.Localization.FractionRing
 
 #align_import ring_theory.valuation.integers from "leanprover-community/mathlib"@"7b7da89322fe46a16bf03eeb345b0acfc73fe10e"
 
@@ -133,7 +135,67 @@ theorem le_iff_dvd {x y : O} : v (algebraMap O F x) ≤ v (algebraMap O F y) ↔
   ⟨hv.dvd_of_le, hv.le_of_dvd⟩
 #align valuation.integers.le_iff_dvd Valuation.Integers.le_iff_dvd
 
+theorem isUnit_of_one' {x : O} (hvx : v (algebraMap O F x) = 1) :
+    IsUnit x := by
+  apply isUnit_of_one hv _ hvx
+  apply IsUnit.mk0
+  rw [← v.ne_zero_iff]
+  simp only [hvx, ne_eq, one_ne_zero, not_false_eq_true]
+
 end Integers
+
+instance instLocalRingInteger : LocalRing v.integer where
+  exists_pair_ne := by
+    use 0, 1
+    simp only [ne_eq, zero_ne_one, not_false_eq_true]
+  isUnit_or_isUnit_of_add_one {a} {b} h := by
+    suffices v a = 1 ∨ v b = 1 from
+      match this with
+      | .inl ha => Or.inl <| Valuation.Integers.isUnit_of_one' (integer.integers v) ha
+      | .inr hb => Or.inr <| Valuation.Integers.isUnit_of_one' (integer.integers v) hb
+    by_contra! hab
+    have : v 1 < 1 := by
+      calc
+      _ = v (a + b) := by
+        congr
+        simp only [← Subring.coe_add, h]
+        rfl
+      _ ≤ max (v a) (v b) := by
+        exact map_add v a b
+      _ < 1 := by
+        apply max_lt
+        exact lt_of_le_of_ne a.2 hab.1
+        exact lt_of_le_of_ne b.2 hab.2
+    simp only [_root_.map_one, lt_self_iff_false] at this
+
+instance instIsFractionRingInteger: IsFractionRing v.integer F where
+  map_units' x := by
+    field_simp
+    apply ((injective_iff_map_eq_zero _).mp (integer.integers v).hom_inj x).mt
+    exact nonZeroDivisors.coe_ne_zero x
+  surj' z := by
+    by_cases h : v z ≤ 1
+    · use ⟨⟨z, h⟩, 1⟩
+      simp only [OneMemClass.coe_one, _root_.map_one, mul_one]
+      rfl
+    · simp only [not_le] at h
+      have : z ≠ 0 := by
+        by_contra! hz
+        simp only [hz, _root_.map_zero, not_lt_zero'] at h
+      let zinv : nonZeroDivisors v.integer := {
+        val := ⟨z⁻¹, le_of_lt ((v.one_lt_val_iff this).mp h)⟩
+        property := by
+          apply mem_nonZeroDivisors_of_ne_zero
+          apply Subtype.ext_iff.not.mpr
+          simp only [ZeroMemClass.coe_zero, inv_eq_zero, this, not_false_eq_true]
+      }
+      use ⟨1, zinv⟩
+      calc
+      _ = z * z⁻¹ := by rfl
+      _ = 1 := by field_simp
+  exists_of_eq h := by
+    use 1
+    simp only [OneMemClass.coe_one, (integer.integers v).hom_inj h, one_mul]
 
 end Field
 
