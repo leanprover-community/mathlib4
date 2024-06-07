@@ -116,13 +116,11 @@ When the user does not wish to supply specific fiber categories, this will be th
 def CompConstNat (p : 𝒳 ⥤ 𝒮) (S : 𝒮) : (FiberInclusion p S) ⋙ p ≅ (const (Fiber p S)).obj S where
   hom := {
     app := fun x => eqToHom x.prop
-    naturality := fun x y φ => by simpa using (commSq p (𝟙 S) φ.val).w}
+    naturality := fun x y φ => by apply (commSq p (𝟙 S) φ.val).w}
   inv := {
     app := fun x => eqToHom (x.prop).symm
-    naturality := fun x y φ =>  by
-      -- TODO: add this have into API?
-      have := by simpa [comp_eqToHom_iff] using (commSq p (𝟙 S) φ.val).w
-      simp [this] }
+    -- TODO: this should be from "flipped" commsq! (so should also be apply)
+    naturality := fun x y φ => by simp [fac' p (𝟙 S) φ.val] }
 
 lemma comp_const (p : 𝒳 ⥤ 𝒮) (S : 𝒮) : (FiberInclusion p S) ⋙ p = (const (Fiber p S)).obj S := by
   apply Functor.ext_of_iso (CompConstNat p S)
