@@ -56,6 +56,7 @@ first-price and second-price auctions, as well as several fundamental results an
 The structure and functions assume the existence of multiple bidders to allow for meaningful
 auction dynamics. Definitions like `winner` and `maxb` make use of Lean's `Finset` and `Classical`
 logic to handle potential non-constructive cases effectively.
+
 ## References
 
 * [T. Roughgarden, *Twenty lectures on Algorithmic Game Theory*][roughgarden2016]
@@ -93,14 +94,13 @@ def maxb : ℝ := Finset.sup' Finset.univ Finset.univ_nonempty b
 
 /-- A strategy is dominant if bidding `bi` ensures that
 `i`'s utility is maximized relative to any other bids `b'` where `b i = bi`. -/
-def dominant (utility : (a.I → ℝ) → a.I → ℝ) (i : a.I) (bi : ℝ) : Prop := ∀ b b' : a.I → ℝ,
-  (b i = bi) → (∀ j : a.I, j ≠ i → b j = b' j)
-   → utility b' i ≤ utility b i
+def dominant (utility : (a.I → ℝ) → a.I → ℝ) (i : a.I) (bi : ℝ) : Prop :=
+  ∀ b, utility b i ≤ utility (Function.update b i bi) i
 
 /-- `hole` represents a bidding function by setting the bid of participant `i` to `bi`, while other
 bids unchanged. -/
 noncomputable abbrev hole (i : a.I) (bi : ℝ) (b : a.I → ℝ) : a.I → ℝ :=
-  fun j => if j=i then bi else b j
+  Function.update b i bi
 
 /-- There exists a participant `i` whose bid equals the highest bid. -/
 lemma exists_max : ∃ i : a.I, b i = a.maxb b := by
@@ -157,17 +157,12 @@ lemma b_winner : secondPrice b ≤ b (winner b) := by
 
 /-- If `i` is not the winner, then the highest bid excluding `i` is equal to the highest bid. -/
 lemma b_loser_max {i : a.I} (H : i ≠ winner b) : B b i = maxb b := by
-  have H1: B b i ≤ maxb b := by
-    apply Finset.sup'_le
-    intro i _
+  apply le_antisymm
+  · apply Finset.sup'_mono
+    exact Finset.erase_subset i Finset.univ
+  · rw [← winner_take_max b]
     apply Finset.le_sup'
-    simp only [Finset.mem_univ]
-  have H2: maxb b ≤ B b i := by
-    rw [← winner_take_max b]
-    apply Finset.le_sup'
-    simp only [Finset.mem_univ, Finset.mem_erase, and_true]
-    exact (H.symm)
-  exact Real.partialOrder.proof_4 (B b i) (Finset.sup' Finset.univ maxb.proof_1 b) H1 H2
+    exact Finset.mem_erase_of_ne_of_mem H.symm (Finset.mem_univ (winner b))
 
 namespace secondPrice
 
@@ -182,63 +177,32 @@ lemma utility_winner (H: i = winner b) : utility b i = a.v i - secondPrice b:= b
   rw [utility]; simp only [ite_true, H]
 
 /-- If `i` is not the winner, then their utility is 0. -/
-lemma utility_loser (i : a.I) (H : i≠ winner b) : utility b i = 0 := by
+lemma utility_loser (H : i≠ winner b) : utility b i = 0 := by
   rw [utility]; simp only [ite_false, H]
 
 /-- utility is non-negative if the bid equals the valuation. -/
 lemma utility_nneg (i : a.I) (H : b i = a.v i) : 0 ≤ utility b i := by
-  by_cases H2: i = winner b
-  · rw [utility]
-    simp only [H2]
-    rw [← H2, ← H, H2]
-    rw [winner_take_max b]
-    apply sub_nonneg.mpr
-    rw [secondPrice]
-    apply Finset.sup'_le
-    simp only [Finset.mem_univ, Finset.mem_erase, and_true]
-    intro j _
-    rw [maxb]
-    simp only [Finset.le_sup'_iff, Finset.mem_univ, true_and]
-    use j
-  · rw[utility, if_neg H2]
+  rcases eq_or_ne i (winner b) with rfl | H2
+  · rw [utility, if_pos rfl, ← H, winner_take_max b, sub_nonneg, secondPrice]
+    apply Finset.sup'_mono
+    exact Finset.erase_subset (winner b) Finset.univ
+  · rw [utility, if_neg H2]
 
 /-- Proves that the strategy of bidding one's valuation is a dominant strategy for `i`. -/
 theorem valuation_is_dominant (i : a.I) : dominant utility i (a.v i) := by
-  intro b b' hb hb'
-  by_cases H : i = winner b'
-  · by_cases H1 : B b' i < a.v i
-    · have h_winner_b : i = winner b := gt_wins b i (λ j hj => by
-      rw [hb, hb']
-      have HBi: b' j ≤ B b' i := by
-        rw [B]
-        simp only [Finset.mem_univ, not_true, ge_iff_le, Finset.le_sup'_iff,
-                  Finset.mem_erase, ne_eq, and_true]
-        use j
-        simp only [le_refl, and_true]
-        rw [← ne_eq,ne_comm]
-        exact hj
-      exact gt_of_gt_of_ge H1 HBi
-      exact id (hj.symm))
-      rw [utility_winner _ h_winner_b, utility_winner _ H]
-      have h_secondprice_eq : secondPrice b = secondPrice b' := by
-        repeat rw [secondPrice]
-        rw[← h_winner_b, ← H]
-        repeat rw [B]
-        apply Finset.sup'_congr (Finset.Nontrivial.erase_nonempty (Finset.univ_nontrivial)) (rfl)
-        intro j hj
-        rw [Finset.mem_erase] at hj
-        exact hb' j hj.1
-      · rw [h_secondprice_eq]
-    · rw [utility,← H]
-      simp only [ite_true, ge_iff_le, tsub_le_iff_right]
-      simp only [gt_iff_lt, not_lt] at H1
-      rw [secondPrice, ← H]
-      have := utility_nneg b i hb
-      exact le_add_of_nonneg_of_le this H1
-  · have := utility_nneg b i hb
-    convert this
-    simp [utility, H]
-
+  intro b
+  have key : B (Function.update b i (a.v i)) i = B b i :=
+    (Finset.sup'_congr _ rfl fun j hj ↦ dif_neg (Finset.ne_of_mem_erase hj))
+  by_cases h1 : i = winner b
+  · rw [utility_winner b h1, secondPrice, ← h1, ← key]
+    by_cases h2 : i = winner (Function.update b i (a.v i))
+    · rw [utility_winner _ h2, sub_le_sub_iff_left, secondPrice, ← h2]
+    · rw [utility_loser _ h2, sub_nonpos, b_loser_max _ h2]
+      conv_lhs => rw [← Function.update_same i (a.v i) b]
+      exact Finset.le_sup' _ (Finset.mem_univ i)
+  · rw [utility_loser b h1]
+    apply utility_nneg
+    apply Function.update_same
 end secondPrice
 
 namespace firstPrice
@@ -262,7 +226,7 @@ def dominant (i : a.I) (bi : ℝ) : Prop :=
   → utility b' i ≤ utility b i
 
 /-- Shows that there is no dominant strategy in a first price auction for any `i` and bid `bi`. -/
-theorem first_price_has_no_dominant_strategy (i : a.I) (bi : ℝ) : ¬ dominant i bi := by
+theorem firstprice_auction_has_no_dominant_strategy (i : a.I) (bi : ℝ) : ¬ dominant i bi := by
   simp only [dominant, not_forall]
   let b := fun j => if j = i then bi else bi - 2
   let b' := fun j => if j = i then bi - 1 else bi - 2
