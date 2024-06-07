@@ -39,6 +39,8 @@ class CanonicallyOrderedCommSemiring (α : Type*) extends CanonicallyOrderedAddC
   protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : α}, a * b = 0 → a = 0 ∨ b = 0
 #align canonically_ordered_comm_semiring CanonicallyOrderedCommSemiring
 
+-- use `CanonicallyOrderedCommSemiring.toOrderedCommSemiring`
+attribute [instance 0] CanonicallyOrderedCommSemiring.toCommSemiring
 attribute [instance 0] CanonicallyOrderedCommSemiring.toMul
 
 section CanonicallyOrderedCommSemiring

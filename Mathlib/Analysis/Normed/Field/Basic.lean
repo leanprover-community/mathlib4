@@ -35,6 +35,8 @@ class NonUnitalSeminormedRing (α : Type*) extends Norm α, NonUnitalRing α,
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
 #align non_unital_semi_normed_ring NonUnitalSeminormedRing
 
+attribute [instance 10] NonUnitalSeminormedRing.toNonUnitalRing
+
 /-- A seminormed ring is a ring endowed with a seminorm which satisfies the inequality
 `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class SeminormedRing (α : Type*) extends Norm α, Ring α, PseudoMetricSpace α where
@@ -62,6 +64,9 @@ class NonUnitalNormedRing (α : Type*) extends Norm α, NonUnitalRing α, Metric
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
 #align non_unital_normed_ring NonUnitalNormedRing
 
+-- use `NonUnitalNormedRing.toNonUnitalSeminormedRing`
+attribute [instance 0] NonUnitalNormedRing.toNonUnitalRing
+
 -- see Note [lower instance priority]
 /-- A non-unital normed ring is a non-unital seminormed ring. -/
 instance (priority := 100) NonUnitalNormedRing.toNonUnitalSeminormedRing
@@ -77,8 +82,7 @@ class NormedRing (α : Type*) extends Norm α, Ring α, MetricSpace α where
   norm_mul : ∀ a b, norm (a * b) ≤ norm a * norm b
 #align normed_ring NormedRing
 
-attribute [instance 10] NormedDivisionRing.toDivisionRing
-attribute [instance 0] NormedRing.toRing
+attribute [instance 0] NormedRing.toRing -- use `NormedRing.toSeminormedRing`
 
 /-- A normed division ring is a division ring endowed with a seminorm which satisfies the equality
 `‖x y‖ = ‖x‖ ‖y‖`. -/
@@ -88,6 +92,8 @@ class NormedDivisionRing (α : Type*) extends Norm α, DivisionRing α, MetricSp
   /-- The norm is multiplicative. -/
   norm_mul' : ∀ a b, norm (a * b) = norm a * norm b
 #align normed_division_ring NormedDivisionRing
+
+attribute [instance 10] NormedDivisionRing.toDivisionRing
 
 -- see Note [lower instance priority]
 /-- A normed division ring is a normed ring. -/

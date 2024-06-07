@@ -154,6 +154,9 @@ attribute [instance 150] Semiring.toMonoidWithZero
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 #align ring Ring
 
+attribute [instance 0] Ring.toNeg
+attribute [instance 0] Ring.toSub
+
 /-!
 ### Semirings
 -/
@@ -486,7 +489,7 @@ class CommRing (α : Type u) extends Ring α, CommMonoid α
 
 attribute [instance 90] CommRing.toRing
 
-instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
+instance (priority := 150) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
   { s with }
 #align comm_ring.to_comm_semiring CommRing.toCommSemiring
 

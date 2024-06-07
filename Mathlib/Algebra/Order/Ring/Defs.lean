@@ -146,6 +146,8 @@ class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring
     (by simpa only [mul_comm] using mul_le_mul_of_nonneg_left a b c ha hc)
 #align ordered_comm_semiring OrderedCommSemiring
 
+attribute [instance 10] OrderedCommSemiring.toCommSemiring
+
 /-- An `OrderedRing` is a ring with a partial order such that addition is monotone and
 multiplication by a nonnegative number is monotone. -/
 class OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
@@ -161,6 +163,8 @@ attribute [instance 10] OrderedRing.toRing
 and multiplication by a nonnegative number is monotone. -/
 class OrderedCommRing (α : Type u) extends OrderedRing α, CommRing α
 #align ordered_comm_ring OrderedCommRing
+
+attribute [instance 10] OrderedCommRing.toCommRing
 
 /-- A `StrictOrderedSemiring` is a nontrivial semiring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
@@ -181,6 +185,9 @@ addition is strictly monotone and multiplication by a positive number is strictl
 class StrictOrderedCommSemiring (α : Type u) extends StrictOrderedSemiring α, CommSemiring α
 #align strict_ordered_comm_semiring StrictOrderedCommSemiring
 
+-- use `StrictOrderedCommSemiring.toOrderedCommSemiring`
+attribute [instance 0] StrictOrderedCommSemiring.toCommSemiring
+
 /-- A `StrictOrderedRing` is a ring with a partial order such that addition is strictly monotone
 and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, Nontrivial α where
@@ -196,6 +203,8 @@ attribute [instance 0] StrictOrderedRing.toRing
 strictly monotone and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedCommRing (α : Type*) extends StrictOrderedRing α, CommRing α
 #align strict_ordered_comm_ring StrictOrderedCommRing
+
+attribute [instance 0] StrictOrderedCommRing.toCommRing
 
 /- It's not entirely clear we should assume `Nontrivial` at this point; it would be reasonable to
 explore changing this, but be warned that the instances involving `Domain` may cause typeclass

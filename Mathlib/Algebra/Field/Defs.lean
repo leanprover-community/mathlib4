@@ -182,6 +182,7 @@ If the semifield has positive characteristic `p`, our division by zero conventio
 class Semifield (α : Type*) extends CommSemiring α, DivisionSemiring α, CommGroupWithZero α
 #align semifield Semifield
 
+attribute [instance 100] Semifield.toCommSemiring
 attribute [instance 0] Semifield.toInv
 attribute [instance 0] Semifield.toDiv
 

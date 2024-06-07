@@ -73,6 +73,8 @@ addition is idempotent. -/
 class IdemCommSemiring (α : Type u) extends CommSemiring α, IdemSemiring α
 #align idem_comm_semiring IdemCommSemiring
 
+attribute [instance 50] IdemCommSemiring.toCommSemiring
+
 /-- Notation typeclass for the Kleene star `∗`. -/
 class KStar (α : Type*) where
   /-- The Kleene star operator on a Kleene algebra -/

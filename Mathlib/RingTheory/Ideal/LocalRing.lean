@@ -531,7 +531,7 @@ instance (priority := 100) : LocalRing K :=
 end Field
 
 theorem LocalRing.maximalIdeal_eq_bot {R : Type*} [Field R] : LocalRing.maximalIdeal R = ⊥ :=
-  LocalRing.isField_iff_maximalIdeal_eq.mp (Field.toIsField R)
+  LocalRing.isField_iff_maximalIdeal_eq (R := R).mp (Field.toIsField R)
 #align local_ring.maximal_ideal_eq_bot LocalRing.maximalIdeal_eq_bot
 
 namespace RingEquiv
