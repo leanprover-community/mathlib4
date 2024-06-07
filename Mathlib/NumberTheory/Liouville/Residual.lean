@@ -48,7 +48,7 @@ theorem setOf_liouville_eq_irrational_inter_iInter_iUnion :
   refine Subset.antisymm ?_ ?_
   · refine subset_inter (fun x hx => hx.irrational) ?_
     rw [setOf_liouville_eq_iInter_iUnion]
-    exact iInter_mono fun n => iUnion₂_mono fun a b => iUnion_mono fun _hb => diff_subset _ _
+    exact iInter_mono fun n => iUnion₂_mono fun a b => iUnion_mono fun _hb => diff_subset
   · simp only [inter_iInter, inter_iUnion, setOf_liouville_eq_iInter_iUnion]
     refine iInter_mono fun n => iUnion₂_mono fun a b => iUnion_mono fun hb => ?_
     rw [inter_comm]
