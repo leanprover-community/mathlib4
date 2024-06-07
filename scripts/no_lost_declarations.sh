@@ -104,8 +104,6 @@ else
   grep '\(+\|-\)' | sed 's=^ *1 =`=; s=^[^`]=`=; s=$=`='
 fi)"
 
-printf '*Diff of declarations*\n\n'
-
 if [ -n "${report}" ]
 then
   echo "${report}"
@@ -129,4 +127,8 @@ inductive triggers the count even if it is not lean code
 instance [I pretend] {to be a nameless} instance where
 def ohMy im a def
 instance [I also pretend] {to be a nameless} instance :=
+def testingLongDiff1 im a def
+def testingLongDiff2 im a def
+def testingLongDiff3 im a def
+def testingLongDiff4 im a def
 ReferenceTest
