@@ -138,8 +138,8 @@ theorem not_lt_of_mem_argmin : a ∈ l → m ∈ argmin f l → ¬f a < f m :=
 
 theorem argmax_concat (f : α → β) (a : α) (l : List α) :
     argmax f (l ++ [a]) =
-      Option.casesOn (argmax f l) (some a) fun c => if f c < f a then some a else some c :=
-  by rw [argmax, argmax]; simp [argAux]
+      Option.casesOn (argmax f l) (some a) fun c => if f c < f a then some a else some c := by
+  rw [argmax, argmax]; simp [argAux]
 #align list.argmax_concat List.argmax_concat
 
 theorem argmin_concat (f : α → β) (a : α) (l : List α) :
@@ -311,13 +311,19 @@ theorem minimum_mem {l : List α} {m : α} : (minimum l : WithBot α) = m → m 
 #align list.minimum_mem List.minimum_mem
 
 @[simp]
-theorem maximum_eq_none {l : List α} : l.maximum = none ↔ l = [] :=
+theorem maximum_eq_bot {l : List α} : l.maximum = ⊥ ↔ l = [] :=
   argmax_eq_none
+
+@[simp, deprecated maximum_eq_bot "Don't mix Option and WithBot" (since := "2024-05-27")]
+theorem maximum_eq_none {l : List α} : l.maximum = none ↔ l = [] := maximum_eq_bot
 #align list.maximum_eq_none List.maximum_eq_none
 
 @[simp]
-theorem minimum_eq_none {l : List α} : l.minimum = none ↔ l = [] :=
+theorem minimum_eq_top {l : List α} : l.minimum = ⊤ ↔ l = [] :=
   argmin_eq_none
+
+@[simp, deprecated minimum_eq_top "Don't mix Option and WithTop" (since := "2024-05-27")]
+theorem minimum_eq_none {l : List α} : l.minimum = none ↔ l = [] := minimum_eq_top
 #align list.minimum_eq_none List.minimum_eq_none
 
 theorem not_lt_maximum_of_mem : a ∈ l → (maximum l : WithBot α) = m → ¬m < a :=
@@ -331,7 +337,7 @@ theorem minimum_not_lt_of_mem : a ∈ l → (minimum l : WithTop α) = m → ¬a
 theorem not_lt_maximum_of_mem' (ha : a ∈ l) : ¬maximum l < (a : WithBot α) := by
   cases h : l.maximum
   · simp_all
-  · simp [WithBot.some_eq_coe, WithBot.coe_lt_coe, not_lt_maximum_of_mem ha h, not_false_iff]
+  · simp [not_lt_maximum_of_mem ha h, not_false_iff]
 #align list.not_lt_maximum_of_mem' List.not_lt_maximum_of_mem'
 
 theorem not_lt_minimum_of_mem' (ha : a ∈ l) : ¬(a : WithTop α) < minimum l :=

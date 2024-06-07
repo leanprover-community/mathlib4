@@ -3,7 +3,7 @@ Copyright (c) 2022 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell, Eric Wieser, Yaël Dillies, Patrick Massot, Scott Morrison
 -/
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Order.Interval.Set.Basic
 
@@ -371,7 +371,7 @@ variable {β : Type*} [OrderedRing β]
 
 theorem one_sub_mem {t : β} (ht : t ∈ Ioo (0 : β) 1) : 1 - t ∈ Ioo (0 : β) 1 := by
   rw [mem_Ioo] at *
-  refine' ⟨sub_pos.2 ht.2, _⟩
+  refine ⟨sub_pos.2 ht.2, ?_⟩
   exact lt_of_le_of_ne ((sub_le_self_iff 1).2 ht.1.le) (mt sub_eq_self.mp ht.1.ne')
 #align set.Ioo.one_sub_mem Set.Ioo.one_sub_mem
 

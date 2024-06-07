@@ -3,7 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Ring.Divisibility.Basic
@@ -32,6 +32,9 @@ variable [LinearOrderedCommGroup α] {a b : α}
 #align abs_zsmul abs_zsmul
 
 end LinearOrderedAddCommGroup
+
+lemma odd_abs [LinearOrder α] [Ring α] {a : α} : Odd (abs a) ↔ Odd a := by
+  cases' abs_choice a with h h <;> simp only [h, odd_neg]
 
 section LinearOrderedRing
 

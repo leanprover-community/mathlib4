@@ -150,7 +150,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
     SurjOn f (closedBall b ε) (closedBall (f b) (((f'symm.nnnorm : ℝ)⁻¹ - c) * ε)) := by
   intro y hy
   rcases le_or_lt (f'symm.nnnorm : ℝ)⁻¹ c with hc | hc
-  · refine' ⟨b, by simp [ε0], _⟩
+  · refine ⟨b, by simp [ε0], ?_⟩
     have : dist y (f b) ≤ 0 :=
       (mem_closedBall.1 hy).trans (mul_nonpos_of_nonpos_of_nonneg (by linarith) ε0)
     simp only [dist_le_zero] at this
@@ -208,8 +208,8 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
     rw [div_mul_eq_mul_div, div_le_iff]; swap; · linarith
     calc
       (f'symm.nnnorm : ℝ) * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) * dist (f b) y =
-          f'symm.nnnorm * dist (f b) y * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) :=
-        by ring
+          f'symm.nnnorm * dist (f b) y * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) := by
+        ring
       _ ≤ f'symm.nnnorm * dist (f b) y * 1 := by
         gcongr
         rw [sub_le_self_iff]
@@ -243,7 +243,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
         _ = f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
               (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := by
           field_simp [Jcf', pow_succ]; ring
-    refine' ⟨_, Ign⟩
+    refine ⟨?_, Ign⟩
     calc
       dist (f (g (u n))) y ≤ c * f'symm.nnnorm * dist (f (u n)) y :=
         B _ (C n _ IH.2) (C n.succ _ Ign)
@@ -265,7 +265,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
   -- As all the `uₙ` belong to the ball `closedBall b ε`, so does their limit `x`.
   have xmem : x ∈ closedBall b ε :=
     isClosed_ball.mem_of_tendsto hx (eventually_of_forall fun n => C n _ (D n).2)
-  refine' ⟨x, xmem, _⟩
+  refine ⟨x, xmem, ?_⟩
   -- It remains to check that `f x = y`. This follows from continuity of `f` on `closedBall b ε`
   -- and from the fact that `f uₙ` is converging to `y` by construction.
   have hx' : Tendsto u atTop (𝓝[closedBall b ε] x) := by
@@ -275,7 +275,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse (hf : ApproximatesLinearOn f 
     (hf.continuousOn.mono hε x xmem).tendsto.comp hx'
   have T2 : Tendsto (f ∘ u) atTop (𝓝 y) := by
     rw [tendsto_iff_dist_tendsto_zero]
-    refine' squeeze_zero (fun _ => dist_nonneg) (fun n => (D n).1) _
+    refine squeeze_zero (fun _ => dist_nonneg) (fun n => (D n).1) ?_
     simpa using (tendsto_pow_atTop_nhds_zero_of_lt_one (by positivity) Icf').mul tendsto_const_nhds
   exact tendsto_nhds_unique T1 T2
 #align approximates_linear_on.surj_on_closed_ball_of_nonlinear_right_inverse ApproximatesLinearOn.surjOn_closedBall_of_nonlinearRightInverse
@@ -287,7 +287,7 @@ theorem open_image (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRi
   simp only [isOpen_iff_mem_nhds, nhds_basis_closedBall.mem_iff, forall_mem_image] at hs ⊢
   intro x hx
   rcases hs x hx with ⟨ε, ε0, hε⟩
-  refine' ⟨(f'symm.nnnorm⁻¹ - c) * ε, mul_pos (sub_pos.2 hc) ε0, _⟩
+  refine ⟨(f'symm.nnnorm⁻¹ - c) * ε, mul_pos (sub_pos.2 hc) ε0, ?_⟩
   exact (hf.surjOn_closedBall_of_nonlinearRightInverse f'symm (le_of_lt ε0) hε).mono hε Subset.rfl
 #align approximates_linear_on.open_image ApproximatesLinearOn.open_image
 
@@ -300,11 +300,11 @@ theorem image_mem_nhds (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.Nonline
 
 theorem map_nhds_eq (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse) {x : E}
     (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : map f (𝓝 x) = 𝓝 (f x) := by
-  refine'
-    le_antisymm ((hf.continuousOn x (mem_of_mem_nhds hs)).continuousAt hs) (le_map fun t ht => _)
+  refine
+    le_antisymm ((hf.continuousOn x (mem_of_mem_nhds hs)).continuousAt hs) (le_map fun t ht => ?_)
   have : f '' (s ∩ t) ∈ 𝓝 (f x) :=
-    (hf.mono_set (inter_subset_left s t)).image_mem_nhds f'symm (inter_mem hs ht) hc
-  exact mem_of_superset this (image_subset _ (inter_subset_right _ _))
+    (hf.mono_set inter_subset_left).image_mem_nhds f'symm (inter_mem hs ht) hc
+  exact mem_of_superset this (image_subset _ inter_subset_right)
 #align approximates_linear_on.map_nhds_eq ApproximatesLinearOn.map_nhds_eq
 
 end LocallyOnto
@@ -348,10 +348,10 @@ protected theorem surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' 
     let p : ℝ → Prop := fun R => closedBall (f 0) R ⊆ Set.range f
     have hp : ∀ᶠ r : ℝ in atTop, p ((N⁻¹ - c) * r) := by
       have hr : ∀ᶠ r : ℝ in atTop, 0 ≤ r := eventually_ge_atTop 0
-      refine' hr.mono fun r hr => Subset.trans _ (image_subset_range f (closedBall 0 r))
-      refine' hf.surjOn_closedBall_of_nonlinearRightInverse f'.toNonlinearRightInverse hr _
+      refine hr.mono fun r hr => Subset.trans ?_ (image_subset_range f (closedBall 0 r))
+      refine hf.surjOn_closedBall_of_nonlinearRightInverse f'.toNonlinearRightInverse hr ?_
       exact subset_univ _
-    refine' ((tendsto_id.const_mul_atTop hc').frequently hp.frequently).mono _
+    refine ((tendsto_id.const_mul_atTop hc').frequently hp.frequently).mono ?_
     exact fun R h y hy => h hy
 #align approximates_linear_on.surjective ApproximatesLinearOn.surjective
 
@@ -369,7 +369,7 @@ Use properties of `PartialHomeomorph` instead. -/
 theorem inverse_continuousOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : ContinuousOn (hf.toPartialEquiv hc).symm (f '' s) := by
   apply continuousOn_iff_continuous_restrict.2
-  refine' ((hf.antilipschitz hc).to_rightInvOn' _ (hf.toPartialEquiv hc).right_inv').continuous
+  refine ((hf.antilipschitz hc).to_rightInvOn' ?_ (hf.toPartialEquiv hc).right_inv').continuous
   exact fun x hx => (hf.toPartialEquiv hc).map_target hx
 #align approximates_linear_on.inverse_continuous_on ApproximatesLinearOn.inverse_continuousOn
 
@@ -438,7 +438,7 @@ theorem toPartialHomeomorph_target (hf : ApproximatesLinearOn f (f' : E →L[�
 /-- A function `f` that approximates a linear equivalence on the whole space is a homeomorphism. -/
 def toHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
     (hc : Subsingleton E ∨ c < N⁻¹) : E ≃ₜ F := by
-  refine' (hf.toPartialHomeomorph _ _ hc isOpen_univ).toHomeomorphOfSourceEqUnivTargetEqUniv rfl _
+  refine (hf.toPartialHomeomorph _ _ hc isOpen_univ).toHomeomorphOfSourceEqUnivTargetEqUniv rfl ?_
   rw [toPartialHomeomorph_target, image_univ, range_iff_surjective]
   exact hf.surjective hc
 #align approximates_linear_on.to_homeomorph ApproximatesLinearOn.toHomeomorph
