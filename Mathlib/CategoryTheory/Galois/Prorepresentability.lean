@@ -189,20 +189,20 @@ noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ GroupCat.{u₂} wh
     simp
 
 /-- The limit of `autGaloisSystem`.  -/
-noncomputable def autGalois : Type (max u₁ u₂) :=
+noncomputable def AutGalois : Type (max u₁ u₂) :=
   (autGaloisSystem F ⋙ forget _).sections
 
-noncomputable instance : Group (autGalois F) :=
+noncomputable instance : Group (AutGalois F) :=
   inferInstanceAs <| Group (autGaloisSystem F ⋙ forget _).sections
 
-/-- The canonical projection from `autGalois F` to the `C`-automorphism group of each
+/-- The canonical projection from `AutGalois F` to the `C`-automorphism group of each
 pointed Galois object. -/
-noncomputable def autGalois.π (A : PointedGaloisObject F) : autGalois F →* Aut (A : C) :=
+noncomputable def AutGalois.π (A : PointedGaloisObject F) : AutGalois F →* Aut (A : C) :=
   GroupCat.sectionsπMonoidHom (autGaloisSystem F) A
 
 /- Not a `simp` lemma, because we usually don't want to expose the internals here. -/
-lemma autGalois.π_apply (A : PointedGaloisObject F) (x : autGalois F) :
-    autGalois.π F A x = x.val A :=
+lemma AutGalois.π_apply (A : PointedGaloisObject F) (x : AutGalois F) :
+    AutGalois.π F A x = x.val A :=
   rfl
 
 lemma autGaloisSystem_map_surjective ⦃A B : PointedGaloisObject F⦄ (f : A ⟶ B) :
@@ -214,18 +214,18 @@ lemma autGaloisSystem_map_surjective ⦃A B : PointedGaloisObject F⦄ (f : A �
   exact hψ
 
 /-- `autGalois.π` is surjective for every pointed Galois object. -/
-theorem autGalois.π_surjective (A : PointedGaloisObject F) :
-    Function.Surjective (autGalois.π F A) := fun (σ : Aut A.obj) ↦ by
+theorem AutGalois.π_surjective (A : PointedGaloisObject F) :
+    Function.Surjective (AutGalois.π F A) := fun (σ : Aut A.obj) ↦ by
   have (i : PointedGaloisObject F) : Finite ((autGaloisSystem F ⋙ forget _).obj i) :=
     inferInstanceAs <| Finite (Aut (i.obj))
   exact eval_section_surjective_of_surjective
     (autGaloisSystem F ⋙ forget _) (autGaloisSystem_map_surjective F) A σ
 
-/-- Equality of elements of `autGalois F` can be checked on the projections on each pointed
+/-- Equality of elements of `AutGalois F` can be checked on the projections on each pointed
 Galois object. -/
-lemma autGalois_ext {f g : autGalois F}
-    (h : ∀ (A : PointedGaloisObject F), autGalois.π F A f = autGalois.π F A g) : f = g := by
-  dsimp only [autGalois]
+lemma AutGalois.ext {f g : AutGalois F}
+    (h : ∀ (A : PointedGaloisObject F), AutGalois.π F A f = AutGalois.π F A g) : f = g := by
+  dsimp only [AutGalois]
   ext A
   exact h A
 
@@ -233,12 +233,12 @@ section EndAutGaloisIsomorphism
 
 /-!
 
-### Isomorphism between `Aut F` and `autGalois F`
+### Isomorphism between `Aut F` and `AutGalois F`
 
 In this section we establish the isomorphism between the automorphism group of `F` and
 the limit over the automorphism groups of all Galois objects.
 
-We first establish the isomorphism between `End F` and `autGalois F`, from which we deduce that
+We first establish the isomorphism between `End F` and `AutGalois F`, from which we deduce that
 `End F` is a group, hence `End F = Aut F`. The isomorphism is built in multiple steps:
 
 - `endEquivSectionsFibers : End F ≅ (incl F ⋙ F').sections`: the endomorphisms of
@@ -250,7 +250,7 @@ We first establish the isomorphism between `End F` and `autGalois F`, from which
   Where the first isomorphism is induced from the pro-representability of `F` and the second one
   from the pro-coyoneda lemma.
 
-- `endEquivAutGalois : End F ≅ autGalois F`: this is the composition of `endEquivSectionsFibers`
+- `endEquivAutGalois : End F ≅ AutGalois F`: this is the composition of `endEquivSectionsFibers`
   with:
 
   `(incl F ⋙ F).sections ≅ (autGaloisSystem F ⋙ forget GroupCat).sections`
@@ -305,14 +305,14 @@ lemma autIsoFibers_inv_app (A : PointedGaloisObject F) (b : F.obj A) :
 
 /-- The equivalence between endomorphisms of `F` and the limit over the automorphism groups
 of all Galois objects. -/
-noncomputable def endEquivAutGalois : End F ≃ autGalois F :=
+noncomputable def endEquivAutGalois : End F ≃ AutGalois F :=
   let e1 := endEquivSectionsFibers F
   let e2 := ((Functor.sectionsFunctor _).mapIso (autIsoFibers F).symm).toEquiv
   e1.trans e2
 
 lemma endEquivAutGalois_π (f : End F) (A : PointedGaloisObject F) :
-    F.map (autGalois.π F A (endEquivAutGalois F f)).hom A.pt = f.app A A.pt := by
-  dsimp [endEquivAutGalois, autGalois.π_apply]
+    F.map (AutGalois.π F A (endEquivAutGalois F f)).hom A.pt = f.app A A.pt := by
+  dsimp [endEquivAutGalois, AutGalois.π_apply]
   change F.map ((((sectionsFunctor _).map (autIsoFibers F).inv) _).val A).hom A.pt = _
   dsimp [autIsoFibers]
   simp only [endEquivSectionsFibers_π]
@@ -321,20 +321,20 @@ lemma endEquivAutGalois_π (f : End F) (A : PointedGaloisObject F) :
 @[simp]
 theorem endEquivAutGalois_mul (f g : End F) :
     (endEquivAutGalois F) (g ≫ f) = (endEquivAutGalois F g) * (endEquivAutGalois F f) := by
-  refine autGalois_ext F (fun A ↦ evaluation_aut_injective_of_isConnected F A A.pt ?_)
+  refine AutGalois.ext F (fun A ↦ evaluation_aut_injective_of_isConnected F A A.pt ?_)
   simp only [map_mul, endEquivAutGalois_π, Aut.Aut_mul_def, NatTrans.comp_app, Iso.trans_hom]
   simp only [map_comp, FintypeCat.comp_apply, endEquivAutGalois_π]
   change f.app A (g.app A A.pt) =
-    (f.app A ≫ F.map ((autGalois.π F A) ((endEquivAutGalois F) g)).hom) A.pt
+    (f.app A ≫ F.map ((AutGalois.π F A) ((endEquivAutGalois F) g)).hom) A.pt
   rw [← f.naturality, FintypeCat.comp_apply, endEquivAutGalois_π]
 
 /-- The monoid isomorphism between endomorphisms of `F` and the (multiplicative oppososite of the)
 limit of automorphism groups of all Galois objects. -/
-noncomputable def endMulEquivAutGalois : End F ≃* (autGalois F)ᵐᵒᵖ :=
+noncomputable def endMulEquivAutGalois : End F ≃* (AutGalois F)ᵐᵒᵖ :=
   MulEquiv.mk (Equiv.trans (endEquivAutGalois F) MulOpposite.opEquiv) (by simp)
 
 lemma endMulEquivAutGalois_pi (f : End F) (A : PointedGaloisObject F) :
-    F.map (autGalois.π F A (endMulEquivAutGalois F f).unop).hom A.2 = f.app A A.pt :=
+    F.map (AutGalois.π F A (endMulEquivAutGalois F f).unop).hom A.2 = f.app A A.pt :=
   endEquivAutGalois_π F f A
 
 /-- Any endomorphism of a fiber functor is a unit. -/
@@ -350,7 +350,7 @@ instance FibreFunctor.end_isIso (f : End F) : IsIso f := by
 /-- The automorphism group of `F` is multiplicatively isomorphic to
 (the multiplicative opposite of) the limit over the automorphism groups of
 the Galois objects. -/
-noncomputable def autMulEquivAutGalois : Aut F ≃* (autGalois F)ᵐᵒᵖ where
+noncomputable def autMulEquivAutGalois : Aut F ≃* (AutGalois F)ᵐᵒᵖ where
   toFun := MonoidHom.comp (endMulEquivAutGalois F) (Aut.toEnd F)
   invFun t := asIso ((endMulEquivAutGalois F).symm t)
   left_inv t := by
@@ -363,16 +363,16 @@ noncomputable def autMulEquivAutGalois : Aut F ≃* (autGalois F)ᵐᵒᵖ where
   map_mul' := by simp
 
 lemma autMulEquivAutGalois_π (f : Aut F) (A : C) [IsGalois A] (a : F.obj A) :
-    F.map (autGalois.π F { obj := A, pt := a } (autMulEquivAutGalois F f).unop).hom a
+    F.map (AutGalois.π F { obj := A, pt := a } (autMulEquivAutGalois F f).unop).hom a
       = f.hom.app A a := by
   dsimp [autMulEquivAutGalois, endMulEquivAutGalois]
   rw [endEquivAutGalois_π]
   rfl
 
 @[simp]
-lemma autMulEquivAutGalois_symm_app (x : autGalois F) (A : C) [IsGalois A] (a : F.obj A) :
+lemma autMulEquivAutGalois_symm_app (x : AutGalois F) (A : C) [IsGalois A] (a : F.obj A) :
     ((autMulEquivAutGalois F).symm ⟨x⟩).hom.app A a =
-      F.map (autGalois.π F ⟨A, a, inferInstance⟩ x).hom a := by
+      F.map (AutGalois.π F ⟨A, a, inferInstance⟩ x).hom a := by
   rw [← autMulEquivAutGalois_π, MulEquiv.apply_symm_apply]
   rfl
 
@@ -384,7 +384,7 @@ theorem FiberFunctor.isPretransitive_of_isGalois (X : C) [IsGalois X] :
     MulAction.IsPretransitive (Aut F) (F.obj X) := by
   refine ⟨fun x y ↦ ?_⟩
   obtain ⟨(φ : Aut X), h⟩ := MulAction.IsPretransitive.exists_smul_eq (M := Aut X) x y
-  obtain ⟨a, ha⟩ := autGalois.π_surjective F ⟨X, x, inferInstance⟩ φ
+  obtain ⟨a, ha⟩ := AutGalois.π_surjective F ⟨X, x, inferInstance⟩ φ
   use (autMulEquivAutGalois F).symm ⟨a⟩
   simpa [mulAction_def, ha]
 
