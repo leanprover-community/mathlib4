@@ -34,7 +34,7 @@ jobs:
         # the checkout dance, to avoid a detached head
         git checkout master
         git checkout -
-        currentBranch="$(git rev-parse HEAD)"
+        currentHash="$(git rev-parse HEAD)"
 
         # Compute the counts for the HEAD of the PR
         python ./scripts/count-trans-deps.py "Mathlib/" > head.json
@@ -50,17 +50,17 @@ jobs:
         python ./scripts/count-trans-deps.py "Mathlib/" > base.json
 
         # switch back to the current branch: the `no_lost_declarations` script should be here
-        echo "${currentBranch}"
-        git checkout "${currentBranch}"
+        git checkout "${currentHash}"
     - name: Compare results and comment
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        PR="${{ github.event.pull_request.number }}"
+
         ## Import count comment
         message=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
-        ./scripts/update_PR_comment.sh "${message}" '### Import summary' "${{ github.event.pull_request.number }}"
+        ./scripts/update_PR_comment.sh "${message}" '### Import summary' "${PR}"
 
         ## Declarations' diff comment
         message=$(./scripts/no_lost_declarations.sh short)
-        printf $'\'%s\'\n' "${message}"
-        ./scripts/update_PR_comment.sh "${message}" '*Summary of changed declarations*' "${{ github.event.pull_request.number }}"
+        ./scripts/update_PR_comment.sh "${message}" '*Summary of changed declarations*' "${PR}"
