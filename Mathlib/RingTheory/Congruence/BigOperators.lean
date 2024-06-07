@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 
 import Mathlib.RingTheory.Congruence.Basic
+import Mathlib.GroupTheory.Congruence.BigOperators
 
 /-!
 # Interactions between `∑, ∏` and `RingCon`

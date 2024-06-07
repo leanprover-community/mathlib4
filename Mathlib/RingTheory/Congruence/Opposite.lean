@@ -5,9 +5,9 @@ Authors: Eric Wieser
 -/
 
 import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.Algebra.Opposites
+import Mathlib.GroupTheory.Congruence.Opposite
 
-variable (R : Type*) [Add R] [Mul R]
+variable {R : Type*} [Add R] [Mul R]
 
 namespace RingCon
 
