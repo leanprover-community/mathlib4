@@ -217,8 +217,8 @@ theorem smul_add [Zero R] [DistribSMul R V] (x : HahnSeries Γ R) (y z : HahnMod
   have hwf := ((of R).symm y).isPWO_support.union ((of R).symm z).isPWO_support
   rw [smul_coeff_right hwf, of_symm_add]
   · simp_all only [HahnSeries.add_coeff', Pi.add_apply, smul_add, of_symm_add]
-    rw [smul_coeff_right hwf (Set.subset_union_right _ _),
-      smul_coeff_right hwf (Set.subset_union_left _ _)]
+    rw [smul_coeff_right hwf Set.subset_union_right,
+      smul_coeff_right hwf Set.subset_union_left]
     simp_all [sum_add_distrib]
   · intro b
     simp_all only [Set.isPWO_union, HahnSeries.isPWO_support, and_self, of_symm_add,
@@ -238,8 +238,8 @@ theorem add_smul [AddCommMonoid R] [SMulWithZero R V] {x y : HahnSeries Γ R}
   have hwf := x.isPWO_support.union y.isPWO_support
   rw [smul_coeff_left hwf, HahnSeries.add_coeff', of_symm_add]
   simp_all only [Pi.add_apply, HahnSeries.add_coeff']
-  rw [smul_coeff_left hwf (Set.subset_union_right _ _),
-    smul_coeff_left hwf (Set.subset_union_left _ _)]
+  rw [smul_coeff_left hwf Set.subset_union_right,
+    smul_coeff_left hwf Set.subset_union_left]
   · simp only [HahnSeries.add_coeff, h, sum_add_distrib]
   · intro b
     simp_all only [Set.isPWO_union, HahnSeries.isPWO_support, and_self, HahnSeries.mem_support,
