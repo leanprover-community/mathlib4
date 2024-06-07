@@ -742,6 +742,9 @@ protected lemma pow_lt_pow_iff_left (hn : n ≠ 0) : a ^ n < b ^ n ↔ a < b := 
   simp only [← Nat.not_le, Nat.pow_le_pow_iff_left hn]
 #align nat.pow_lt_iff_lt_left Nat.pow_lt_pow_iff_left
 
+@[deprecated (since := "2023-12-23")] alias pow_lt_pow_of_lt_left := Nat.pow_lt_pow_left
+@[deprecated (since := "2023-12-23")] alias pow_le_iff_le_left := Nat.pow_le_pow_iff_left
+
 lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := by
   simp [Injective, le_antisymm_iff, Nat.pow_le_pow_iff_left hn]
 #align nat.pow_left_injective Nat.pow_left_injective

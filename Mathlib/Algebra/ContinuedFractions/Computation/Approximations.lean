@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
+import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Monotonicity
-import Mathlib.Algebra.GroupPower.Order
 
 #align_import algebra.continued_fractions.computation.approximations from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
