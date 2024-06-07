@@ -142,21 +142,21 @@ variable [Bialgebra R X] [Bialgebra R Y] [Bialgebra R Z]
 /-- Build an isomorphism in the category `BialgebraCat R` from a
 `BialgEquiv`. -/
 @[simps]
-def toIso (e : X ≃ₐc[R] Y) : BialgebraCat.of R X ≅ BialgebraCat.of R Y where
+def toBialgebraCatIso (e : X ≃ₐc[R] Y) : BialgebraCat.of R X ≅ BialgebraCat.of R Y where
   hom := BialgebraCat.ofHom e
   inv := BialgebraCat.ofHom e.symm
   hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
 
-@[simp] theorem toIso_refl : toIso (BialgEquiv.refl R X) = .refl _ :=
+@[simp] theorem toBialgebraCatIso_refl : toBialgebraCatIso (BialgEquiv.refl R X) = .refl _ :=
   rfl
 
-@[simp] theorem toIso_symm (e : X ≃ₐc[R] Y) :
-    toIso e.symm = (toIso e).symm :=
+@[simp] theorem toBialgebraCatIso_symm (e : X ≃ₐc[R] Y) :
+    toBialgebraCatIso e.symm = (toBialgebraCatIso e).symm :=
   rfl
 
-@[simp] theorem toIso_trans (e : X ≃ₐc[R] Y) (f : Y ≃ₐc[R] Z) :
-    toIso (e.trans f) = toIso e ≪≫ toIso f :=
+@[simp] theorem toBialgebraCatIso_trans (e : X ≃ₐc[R] Y) (f : Y ≃ₐc[R] Z) :
+    toBialgebraCatIso (e.trans f) = toBialgebraCatIso e ≪≫ toBialgebraCatIso f :=
   rfl
 
 end BialgEquiv
@@ -196,4 +196,4 @@ instance BialgebraCat.forget_reflects_isos :
   reflects {X Y} f _ := by
     let i := asIso ((forget (BialgebraCat.{v} R)).map f)
     let e : X ≃ₐc[R] Y := { f.toBialgHom, i.toEquiv with }
-    exact ⟨e.toIso.isIso_hom.1⟩
+    exact ⟨e.toBialgebraCatIso.isIso_hom.1⟩

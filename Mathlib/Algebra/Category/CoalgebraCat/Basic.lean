@@ -130,20 +130,22 @@ variable [Coalgebra R X] [Coalgebra R Y] [Coalgebra R Z]
 /-- Build an isomorphism in the category `CoalgebraCat R` from a
 `CoalgEquiv`. -/
 @[simps]
-def toIso (e : X ≃ₗc[R] Y) : CoalgebraCat.of R X ≅ CoalgebraCat.of R Y where
+def toCoalgebraCatIso (e : X ≃ₗc[R] Y) : CoalgebraCat.of R X ≅ CoalgebraCat.of R Y where
   hom := CoalgebraCat.ofHom e
   inv := CoalgebraCat.ofHom e.symm
   hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
   inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
 
-@[simp] theorem toIso_refl : toIso (CoalgEquiv.refl R X) = .refl _ :=
+@[simp] theorem toCoalgebraCatIso_refl :
+    toCoalgebraCatIso (CoalgEquiv.refl R X) = .refl _ :=
   rfl
 
-@[simp] theorem toIso_symm (e : X ≃ₗc[R] Y) : toIso e.symm = (toIso e).symm :=
+@[simp] theorem toCoalgebraCatIso_symm (e : X ≃ₗc[R] Y) :
+    toCoalgebraCatIso e.symm = (toCoalgebraCatIso e).symm :=
   rfl
 
-@[simp] theorem toIso_trans (e : X ≃ₗc[R] Y) (f : Y ≃ₗc[R] Z) :
-    toIso (e.trans f) = toIso e ≪≫ toIso f :=
+@[simp] theorem toCoalgebraCatIso_trans (e : X ≃ₗc[R] Y) (f : Y ≃ₗc[R] Z) :
+    toCoalgebraCatIso (e.trans f) = toCoalgebraCatIso e ≪≫ toCoalgebraCatIso f :=
   rfl
 
 end CoalgEquiv
