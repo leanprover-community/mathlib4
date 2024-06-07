@@ -919,7 +919,7 @@ variable {x y : V} -- TODO: rename to u, v, w instead?
     cons (p.adj_sndOfNotNil hp) (p.tail hp) = p :=
   p.notNilRec (fun _ _ => rfl) hp
 
-@[simp] lemma cons_support_tail (p : G.Walk x y) (hp) :
+@[simp] lemma cons_support_tail (p : G.Walk x y) (hp : ¬p.Nil) :
     x :: (p.tail hp).support = p.support := by
   rw [← support_cons, cons_tail_eq]
 
@@ -931,7 +931,7 @@ variable {x y : V} -- TODO: rename to u, v, w instead?
     (p.copy hx hy).Nil = p.Nil := by
   subst_vars; rfl
 
-@[simp] lemma support_tail (p : G.Walk v v) (hp : ¬p.Nil) :
+@[simp] lemma support_tail (p : G.Walk v v) (hp) :
     (p.tail hp).support = p.support.tail := by
   rw [← cons_support_tail p hp, List.tail_cons]
 
