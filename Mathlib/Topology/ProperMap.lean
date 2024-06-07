@@ -52,7 +52,8 @@ the definition of a proper map and the criteria "preimage of compact sets are co
 the notion of compactly generated space is not yet in Mathlib so it is used as an intermediate
 result to prove
 `WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage` and
-`SequentialSpace.isProperMap_iff_isCompact_preimage`.
+`SequentialSpace.isProperMap_iff_isCompact_preimage`. In the future those should be inferred
+by typeclass inference.
 
 Regarding the proofs, we don't really follow Bourbaki and go for more filter-heavy proofs,
 as usual. In particular, their arguments rely heavily on restriction of closed maps (see
@@ -316,10 +317,13 @@ theorem Continuous.isProperMap [CompactSpace X] [T2Space Y] (hf : Continuous f) 
 
 /-- If `Y` is Hausdorff and compactly generated, then proper maps `X → Y` are exactly
 continuous maps such that the preimage of any compact set is compact.
-This result should be the only one needed, but the notion of compactly generated space
+
+This result should be the only one needed to link the definition of a proper map and
+the criteria "preimage of compact sets are compact", but the notion of compactly generated space
 is not yet in Mathlib so we use it as an intermediate result to prove
 `WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage` and
-`SequentialSpace.isProperMap_iff_isCompact_preimage`. -/
+`SequentialSpace.isProperMap_iff_isCompact_preimage`. In the future those should be inferred
+by typeclass inference. -/
 theorem isProperMap_iff_isCompact_preimage [T2Space Y]
     (compactlyGenerated : ∀ s : Set Y, IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K)) :
     IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
@@ -339,6 +343,19 @@ theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocal
   exact mem_of_mem_inter_left <| isClosed_iff_forall_filter.1 (h hK) x ℱ hℱ₁
     (inf_principal ▸ le_inf hℱ₂ (le_trans hℱ₃ <| le_principal_iff.2 K_mem)) hℱ₃
 
+/-- If `Y` is locally compact and Hausdorff, then proper maps `X → Y` are exactly continuous maps
+such that the preimage of any compact set is compact.
+
+This result is a direct consequence of `isProperMap_iff_isCompact_preimage`, because any
+weakly locally compact space is compactly generated. In the future it should be inferred
+by typeclass inference, however compactly generated spaces are not yet in Mathlib, therefore
+we also add this theorem. -/
+theorem WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage [T2Space Y]
+    [WeaklyLocallyCompactSpace Y] :
+    IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
+  _root_.isProperMap_iff_isCompact_preimage
+    (fun _ ↦ compactlyGenerated_of_weaklyLocallyCompactSpace)
+
 /-- A sequential space is compactly generated. -/
 theorem compactlyGenerated_of_sequentialSpace [T2Space X] [SequentialSpace X] {s : Set X} :
     IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
@@ -349,16 +366,13 @@ theorem compactlyGenerated_of_sequentialSpace [T2Space X] [SequentialSpace X] {s
     eventually_atTop, ge_iff_le]
   exact ⟨0, fun n _ ↦ hu n⟩
 
-/-- If `Y` is locally compact and Hausdorff, then proper maps `X → Y` are exactly continuous maps
-such that the preimage of any compact set is compact. -/
-theorem WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage [T2Space Y]
-    [WeaklyLocallyCompactSpace Y] :
-    IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
-  _root_.isProperMap_iff_isCompact_preimage
-    (fun _ ↦ compactlyGenerated_of_weaklyLocallyCompactSpace)
-
 /-- If `Y` is sequential and Hausdorff, then proper maps `X → Y` are exactly continuous maps
-such that the preimage of any compact set is compact. -/
+such that the preimage of any compact set is compact.
+
+This result is a direct consequence of `isProperMap_iff_isCompact_preimage`, because any
+sequential space is compactly generated. In the future it should be inferred
+by typeclass inference, however compactly generated spaces are not yet in Mathlib, therefore
+we also add this theorem. -/
 theorem SequentialSpace.isProperMap_iff_isCompact_preimage [T2Space Y] [SequentialSpace Y] :
     IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
   _root_.isProperMap_iff_isCompact_preimage
