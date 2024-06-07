@@ -302,8 +302,6 @@ universe w' v' u'
 
 variable {C : Type u'} [Bicategory.{w', v'} C]
 
-variable (f g)
-
 def Pseudofunctor.mapAdjunction (F : Pseudofunctor B C) (adj : Bicategory.Adjunction f g) :
     Bicategory.Adjunction (F.map f) (F.map g) where
   unit := (F.mapId a).inv ≫ (F.map₂ adj.unit) ≫ (F.mapComp f g).hom
