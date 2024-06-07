@@ -40,6 +40,7 @@ jobs:
 
         # Checkout the merge base
         git checkout "$(git merge-base master ${{ github.sha }})"
+        # git checkout origin/master scripts/count-trans-deps.py scripts/import-graph-report.py
         # get the files that we need from the current PR
         # ***switch*** to `origin/master`, when merging or right after
         git checkout adomani/move_decls_autocomment_dev scripts/update_PR_comment.sh
