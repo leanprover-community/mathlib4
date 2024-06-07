@@ -447,16 +447,25 @@ and `h_cons` defines the inductive step using `∀ x : α, C w → C (x ::ᵥ w)
 This can be used as `induction v using Vector.inductionOn`. -/
 @[elab_as_elim]
 def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
-    (h_nil : C nil) (h_cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v := by
+    (nil : C nil) (cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v := by
   -- Porting note: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
-    exact h_nil
+    exact nil
   · rcases v with ⟨_ | ⟨a, v⟩, v_property⟩
     cases v_property
-    apply @h_cons n _ ⟨v, (add_left_inj 1).mp v_property⟩
-    apply ih
+    exact cons (ih ⟨v, (add_left_inj 1).mp v_property⟩)
 #align vector.induction_on Vector.inductionOn
+
+theorem inductionOn_nil {C : ∀ {n : ℕ}, Vector α n → Sort*}
+    (nil : C nil) (cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) :
+    Vector.nil.inductionOn nil cons = nil :=
+  rfl
+
+theorem inductionOn_cons {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (x : α) (v : Vector α n)
+    (nil : C nil) (cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) :
+    (x ::ᵥ v).inductionOn nil cons = cons (v.inductionOn nil cons : C v) :=
+  rfl
 
 -- check that the above works with `induction ... using`
 example (v : Vector α n) : True := by induction v using Vector.inductionOn <;> trivial
