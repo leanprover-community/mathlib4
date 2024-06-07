@@ -38,33 +38,48 @@ run_cmd Elab.Command.liftTermElabM do
 /-- info: fun x => ![] x : Fin 0 → ℕ -/
 #guard_msgs in #check fun x : Fin 0 => (![] : Fin 0 → ℕ) x
 
-example {a b c : α} : ![a, b, c] 0 = a := by simp
-example {a b c : α} : ![a, b, c] 1 = b := by simp
-example {a b c : α} : ![a, b, c] 2 = c := by simp
+example {a b c : α} : ![a, b, c] 0 = a := by dsimp
+example {a b c : α} : ![a, b, c] 1 = b := by dsimp
+example {a b c : α} : ![a, b, c] 2 = c := by dsimp
 
-example {a b c d : α} : ![a, b, c, d] 0 = a := by simp
-example {a b c d : α} : ![a, b, c, d] 1 = b := by simp
-example {a b c d : α} : ![a, b, c, d] 2 = c := by simp
-example {a b c d : α} : ![a, b, c, d] 3 = d := by simp
-example {a b c d : α} : ![a, b, c, d] 42 = c := by simp
-example {a b c d : α} : ![a, b, c, d] (-2) = c := by simp
-example {a b c d : α} : ![a, b, c, d] (-0) = a := by simp
+example {a b c d : α} : ![a, b, c, d] 0 = a := by dsimp
+example {a b c d : α} : ![a, b, c, d] 1 = b := by dsimp
+example {a b c d : α} : ![a, b, c, d] 2 = c := by dsimp
+example {a b c d : α} : ![a, b, c, d] 3 = d := by dsimp
+example {a b c d : α} : ![a, b, c, d] 42 = c := by dsimp
+example {a b c d : α} : ![a, b, c, d] (-2) = c := by dsimp
 
-example {a b c d e : α} : ![a, b, c, d, e] 0 = a := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 1 = b := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 2 = c := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 3 = d := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 4 = e := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 5 = a := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 6 = b := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 7 = c := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 8 = d := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 9 = e := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 10 = a := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 123 = d := by simp
-example {a b c d e : α} : ![a, b, c, d, e] 123456789 = e := by simp
+example {a b c d e : α} : ![a, b, c, d, e] 0 = a := by dsimp
+example {a b c d e : α} : ![a, b, c, d, e] 1 = b := by dsimp
+example {a b c d e : α} : ![a, b, c, d, e] 2 = c := by dsimp
+example {a b c d e : α} : ![a, b, c, d, e] 3 = d := by dsimp
+example {a b c d e : α} : ![a, b, c, d, e] 4 = e := by dsimp
+example {a b c d e : α} : ![a, b, c, d, e] 5 = a := by dsimp
+example {a b c d e : α} : ![a, b, c, d, e] 6 = b := by dsimp
+example {a b c d e : α} : ![a, b, c, d, e] 7 = c := by dsimp
+example {a b c d e : α} : ![a, b, c, d, e] 8 = d := by dsimp
+example {a b c d e : α} : ![a, b, c, d, e] 9 = e := by dsimp
+example {a b c d e : α} : ![a, b, c, d, e] 10 = a := by dsimp
+example {a b c d e : α} : ![a, b, c, d, e] 123 = d := by dsimp
+example {a b c d e : α} : ![a, b, c, d, e] 123456789 = e := by dsimp
 
-example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 5 = f := by simp
-example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 7 = h := by simp
-example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 37 = f := by simp
-example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 99 = d := by simp
+example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 5 = f := by dsimp
+example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] (5 : Fin (4 + 4)) = f := by dsimp
+example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 7 = h := by dsimp
+example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 37 = f := by dsimp
+example {a b c d e f g h : α} : ![a, b, c, d, e, f, g, h] 99 = d := by dsimp
+
+open Matrix
+
+example {a b c : α} {f : Fin 3 → α} : vecCons a (vecCons b (vecCons c f)) 0 = a := by dsimp
+example {a b c : α} {f : Fin 3 → α} : vecCons a (vecCons b (vecCons c f)) 2 = c := by dsimp
+example {a b c : α} {f : Fin 3 → α} : vecCons a (vecCons b (vecCons c f)) (-1) = f 2 := by dsimp
+example {a b c : α} {f : Fin 3 → α} : vecCons a (vecCons b (vecCons c f)) 8 = c := by dsimp
+
+example {a b c : α} {n : ℕ} {f : Fin n → α} : vecCons a (vecCons b (vecCons c f)) 0 = a := by dsimp
+example {a b c : α} {n : ℕ} {f : Fin n → α} : vecCons a (vecCons b (vecCons c f)) 2 = c := by dsimp
+
+example {a b c : α} {n : ℕ} {f : Fin n.succ → α} :
+    vecCons a (vecCons b (vecCons c f)) 3 = f 0 := by dsimp
+example {a b c : α} {n : ℕ} {f : Fin (n + 2) → α} :
+    vecCons a (vecCons b (vecCons c f)) 4 = f 1 := by dsimp

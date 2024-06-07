@@ -163,22 +163,44 @@ partial def matchVecConsPrefix (e : Expr) : MetaM <| List Expr × Expr := do
 /-- A simproc that handles terms of the form `Matrix.vecCons a f i` where `i` is a numeric literal.
 
 In practice, this is most effective at handling `![a, b, c] i`-style terms. -/
-dsimproc Matrix.cons_val (Matrix.vecCons _ _ _) := fun e => do
-  let_expr Matrix.vecCons _ _ x xs' n := ← Meta.whnfR e | return .continue
-  let some n' := n.int? | return .continue -- The docstring claims only nat or int, but works fine for Fin
-  let_expr Fin length := (← instantiateMVars (← Meta.inferType n)) | return .continue
-  let Expr.lit (.natVal length) ← Meta.whnfD length | return .continue
+dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
+  let_expr Matrix.vecCons α _ x xs' i := ← Meta.whnfR e | return .continue
+  let some i' := i.int? | return .continue -- The docstring claims only nat or int, but works fine for Fin
+  let (length, variadic) ← do
+    let_expr Fin length := (← instantiateMVars (← Meta.inferType i)) | return .continue
+    let length ← Meta.whnfD length
+    if let Expr.lit (.natVal length) := length then
+      pure (length, false)
+    else
+      let .some (_, offset) ← (Meta.isOffset? length).run | pure (0, true)
+      pure (offset, true)
   let (xs, tail) ← matchVecConsPrefix xs'
   let xs := x :: xs
-  -- wrap around the index
-  let n' := (n' % length).toNat
-  if n' < xs.length then
-    return .continue (xs.get! n')
-  else if 0 < xs.length then
-    let newn := unsafe toExpr (⟨n' - xs.length, lcProof⟩ : Fin (length - xs.length))
-    return .continue (.some <| .app tail <| newn)
+  if variadic then
+    -- can't wrap if we don't know the length
+    unless 0 ≤ i' do return .continue
+    let i' := i'.toNat
+    if i' < xs.length then
+      -- prefix of `vecCons a (vecCons ... f)` where `f` is of unknown length
+      return .continue xs[i']!
+    else if i' < length then
+      let i'' := mkRawNatLit (i' - xs.length)
+      -- TODO: could build this without going through the elaborator
+      let (newn, _) ← Elab.Term.TermElabM.run <| do
+        Elab.Term.elabTerm (← `($(← tail.toSyntax) <| OfNat.ofNat $(← i''.toSyntax))) (some α)
+      return .continue (.some newn)
+    else
+      return .continue
   else
-    return .continue
+    -- wrap around the index
+    let i' := (i' % length).toNat
+    if i' < xs.length then
+      return .continue (xs.get! i')
+    else if 0 < xs.length then
+      let newn := unsafe toExpr (⟨i' - xs.length, lcProof⟩ : Fin (length - xs.length))
+      return .continue (.some <| .app tail <| newn)
+    else
+      return .continue
 
 end simprocs
 
@@ -239,21 +261,15 @@ theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
   The simplifier needs a special lemma for length `≥ 2`, in addition to
   `cons_val_succ`, because `1 : Fin 1 = 0 : Fin 1`.
 -/
-@[simp]
-theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = vecHead u :=
-  rfl
+theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = u 0 := rfl
 #align matrix.cons_val_one Matrix.cons_val_one
 
-@[simp]
-theorem cons_val_two (x : α) (u : Fin m.succ.succ → α) : vecCons x u 2 = vecHead (vecTail u) :=
-  rfl
+theorem cons_val_two (x : α) (u : Fin m.succ.succ → α) : vecCons x u 2 = vecHead (vecTail u) := rfl
 
-@[simp]
 lemma cons_val_three (x : α) (u : Fin m.succ.succ.succ → α) :
     vecCons x u 3 = vecHead (vecTail (vecTail u)) :=
   rfl
 
-@[simp]
 lemma cons_val_four (x : α) (u : Fin m.succ.succ.succ.succ → α) :
     vecCons x u 4 = vecHead (vecTail (vecTail (vecTail u))) :=
   rfl
