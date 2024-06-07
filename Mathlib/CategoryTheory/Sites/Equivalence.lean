@@ -48,11 +48,11 @@ namespace Presheaf
 
 variable (H : C ⥤ D) [ConcreteCategory A] {F G : Dᵒᵖ ⥤ A} (f : F ⟶ G)
 
-lemma isLocallyInjective_whisker_isCocontinuous [H.IsCocontinuous J K] [IsLocallyInjective K f] :
+lemma isLocallyInjective_whisker [H.IsCocontinuous J K] [IsLocallyInjective K f] :
     IsLocallyInjective J (whiskerLeft H.op f) where
   equalizerSieve_mem x y h := H.cover_lift J K (equalizerSieve_mem K f x y h)
 
-lemma isLocallyInjective_of_whisker_coverPreserving_isCoverDense (hH : CoverPreserving J K H)
+lemma isLocallyInjective_of_whisker (hH : CoverPreserving J K H)
     [H.IsCoverDense K] [IsLocallyInjective J (whiskerLeft H.op f)] : IsLocallyInjective K f where
   equalizerSieve_mem {X} a b h := by
     apply K.transitive (Functor.IsCoverDense.is_cover (G := H) (K := K) X.unop)
@@ -85,8 +85,7 @@ lemma isLocallySurjective_of_whisker_coverPreserving_isCoverDense (hH : CoverPre
     refine K.superset_covering (Sieve.functorPushforward_monotone H _ ?_) hh
     intro W q ⟨x, h⟩
     simp only [Sieve.functorPullback_apply, Presieve.functorPullback_mem, Sieve.pullback_apply]
-    refine ⟨x, ?_⟩
-    simpa using h
+    exact ⟨x, by simpa using h⟩
 
 end Presheaf
 
