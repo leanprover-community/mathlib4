@@ -30,8 +30,6 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 
 -/
 
-open scoped BigOperators
-
 variable {R A L M ι ιₘ : Type*}
 variable [CommRing R] [Nontrivial R]
 variable [CommRing A] [Algebra R A]
@@ -194,7 +192,7 @@ open FiniteDimensional LieSubalgebra
 
 lemma finrank_engel (x : L) :
     finrank K (engel K x) = (ad K L x).charpoly.natTrailingDegree :=
-  (ad K L x).finrank_maximalGeneralizedEigenspace
+  (ad K L x).finrank_maxGenEigenspace
 
 lemma rank_le_finrank_engel (x : L) :
     rank K L ≤ finrank K (engel K x) :=

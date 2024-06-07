@@ -43,7 +43,7 @@ independence, convex position
 
 
 open scoped Classical
-open Affine BigOperators
+open Affine
 
 open Finset Function
 
@@ -132,7 +132,7 @@ protected theorem ConvexIndependent.mem_convexHull_iff {p : ι → E} (hc : Conv
 points. See `convexIndependent_set_iff_not_mem_convexHull_diff` for the `Set` version. -/
 theorem convexIndependent_iff_not_mem_convexHull_diff {p : ι → E} :
     ConvexIndependent 𝕜 p ↔ ∀ i s, p i ∉ convexHull 𝕜 (p '' (s \ {i})) := by
-  refine' ⟨fun hc i s h => _, fun h s i hi => _⟩
+  refine ⟨fun hc i s h => ?_, fun h s i hi => ?_⟩
   · rw [hc.mem_convexHull_iff] at h
     exact h.2 (Set.mem_singleton _)
   · by_contra H
@@ -160,7 +160,7 @@ theorem convexIndependent_set_iff_not_mem_convexHull_diff {s : Set E} :
   rw [convexIndependent_set_iff_inter_convexHull_subset]
   constructor
   · rintro hs x hxs hx
-    exact (hs _ (Set.diff_subset _ _) ⟨hxs, hx⟩).2 (Set.mem_singleton _)
+    exact (hs _ Set.diff_subset ⟨hxs, hx⟩).2 (Set.mem_singleton _)
   · rintro hs t ht x ⟨hxs, hxt⟩
     by_contra h
     exact hs _ hxs (convexHull_mono (Set.subset_diff_singleton ht h) hxt)
@@ -176,7 +176,7 @@ variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 theorem convexIndependent_iff_finset {p : ι → E} :
     ConvexIndependent 𝕜 p ↔
       ∀ (s : Finset ι) (x : ι), p x ∈ convexHull 𝕜 (s.image p : Set E) → x ∈ s := by
-  refine' ⟨fun hc s x hx => hc s x _, fun h s x hx => _⟩
+  refine ⟨fun hc s x hx => hc s x ?_, fun h s x hx => ?_⟩
   · rwa [Finset.coe_image] at hx
   have hp : Injective p := by
     rintro a b hab
@@ -189,9 +189,9 @@ theorem convexIndependent_iff_finset {p : ι → E} :
   obtain ⟨t, ht, hx⟩ := hx
   rw [← hp.mem_set_image]
   refine ht ?_
-  suffices x ∈ t.preimage p (hp.injOn _) by rwa [mem_preimage, ← mem_coe] at this
-  refine' h _ x _
-  rwa [t.image_preimage p (hp.injOn _), filter_true_of_mem]
+  suffices x ∈ t.preimage p hp.injOn by rwa [mem_preimage, ← mem_coe] at this
+  refine h _ x ?_
+  rwa [t.image_preimage p hp.injOn, filter_true_of_mem]
   exact fun y hy => s.image_subset_range p (ht <| mem_coe.2 hy)
 #align convex_independent_iff_finset convexIndependent_iff_finset
 
@@ -203,7 +203,7 @@ theorem Convex.convexIndependent_extremePoints (hs : Convex 𝕜 s) :
   convexIndependent_set_iff_not_mem_convexHull_diff.2 fun _ hx h =>
     (extremePoints_convexHull_subset
           (inter_extremePoints_subset_extremePoints_of_subset
-            (convexHull_min ((Set.diff_subset _ _).trans extremePoints_subset) hs) ⟨h, hx⟩)).2
+            (convexHull_min (Set.diff_subset.trans extremePoints_subset) hs) ⟨h, hx⟩)).2
       (Set.mem_singleton _)
 #align convex.convex_independent_extreme_points Convex.convexIndependent_extremePoints
 

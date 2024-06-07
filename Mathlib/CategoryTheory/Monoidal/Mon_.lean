@@ -164,8 +164,8 @@ instance : (forget C).ReflectsIsomorphisms where
 and checking compatibility with unit and multiplication only in the forward direction.
 -/
 @[simps]
-def isoOfIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one)
-    (mul_f : M.mul ≫ f.hom = (f.hom ⊗ f.hom) ≫ N.mul) : M ≅ N where
+def mkIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one := by aesop_cat)
+    (mul_f : M.mul ≫ f.hom = (f.hom ⊗ f.hom) ≫ N.mul := by aesop_cat) : M ≅ N where
   hom :=
     { hom := f.hom
       one_hom := one_f
@@ -177,7 +177,7 @@ def isoOfIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one)
         rw [← cancel_mono f.hom]
         slice_rhs 2 3 => rw [mul_f]
         simp }
-#align Mon_.iso_of_iso Mon_.isoOfIso
+#align Mon_.iso_of_iso Mon_.mkIso
 
 instance uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
   default :=
@@ -213,15 +213,15 @@ def mapMon (F : LaxMonoidalFunctor C D) : Mon_ C ⥤ Mon_ D where
       one := F.ε ≫ F.map A.one
       mul := F.μ _ _ ≫ F.map A.mul
       one_mul := by
-        simp only [comp_whiskerRight, Category.assoc, μ_natural_left_assoc, left_unitality]
+        simp_rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc, left_unitality]
         slice_lhs 3 4 => rw [← F.toFunctor.map_comp, A.one_mul]
       mul_one := by
-        simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right_assoc,
+        simp_rw [MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right_assoc,
           right_unitality]
         slice_lhs 3 4 => rw [← F.toFunctor.map_comp, A.mul_one]
       mul_assoc := by
-        simp only [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
-          MonoidalCategory.whiskerLeft_comp, μ_natural_right_assoc]
+        simp_rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
+          MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right_assoc]
         slice_lhs 3 4 => rw [← F.toFunctor.map_comp, A.mul_assoc]
         simp }
   map f :=
@@ -493,12 +493,25 @@ instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) :=
     whiskerRight := fun f Y => tensorHom f (𝟙 Y)
     whiskerLeft := fun X _ _ g => tensorHom (𝟙 X) g
     tensorUnit := trivial C
-    associator := fun M N P ↦ isoOfIso (α_ M.X N.X P.X) one_associator mul_associator
-    leftUnitor := fun M ↦ isoOfIso (λ_ M.X) one_leftUnitor mul_leftUnitor
-    rightUnitor := fun M ↦ isoOfIso (ρ_ M.X) one_rightUnitor mul_rightUnitor }
+    associator := fun M N P ↦ mkIso (α_ M.X N.X P.X) one_associator mul_associator
+    leftUnitor := fun M ↦ mkIso (λ_ M.X) one_leftUnitor mul_leftUnitor
+    rightUnitor := fun M ↦ mkIso (ρ_ M.X) one_rightUnitor mul_rightUnitor }
 
 @[simp]
 theorem tensorUnit_X : (𝟙_ (Mon_ C)).X = 𝟙_ C := rfl
+
+@[simp]
+theorem tensorUnit_one : (𝟙_ (Mon_ C)).one = 𝟙 (𝟙_ C) := rfl
+
+@[simp]
+theorem tensorUnit_mul : (𝟙_ (Mon_ C)).mul = (λ_ (𝟙_ C)).hom := rfl
+
+@[simp]
+theorem tensorObj_one (X Y : Mon_ C) : (X ⊗ Y).one = (λ_ (𝟙_ C)).inv ≫ (X.one ⊗ Y.one) := rfl
+
+@[simp]
+theorem tensorObj_mul (X Y : Mon_ C) :
+    (X ⊗ Y).mul = tensor_μ C (X.X, Y.X) (X.X, Y.X) ≫ (X.mul ⊗ Y.mul) := rfl
 
 @[simp]
 theorem whiskerLeft_hom {X Y : Mon_ C} (f : X ⟶ Y) (Z : Mon_ C) :
@@ -538,6 +551,20 @@ theorem tensor_mul (M N : Mon_ C) : (M ⊗ N).mul =
 instance monMonoidal : MonoidalCategory (Mon_ C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
 #align Mon_.Mon_monoidal Mon_.monMonoidal
+
+variable (C)
+
+/-- The forgetful functor from `Mon_ C` to `C` is monoidal when `C` is braided monoidal. -/
+def forgetMonoidal : MonoidalFunctor (Mon_ C) C :=
+  { forget C with
+    ε := 𝟙 _
+    μ := fun X Y => 𝟙 _ }
+
+@[simp] theorem forgetMonoidal_toFunctor : (forgetMonoidal C).toFunctor = forget C := rfl
+@[simp] theorem forgetMonoidal_ε : (forgetMonoidal C).ε = 𝟙 (𝟙_ C) := rfl
+@[simp] theorem forgetMonoidal_μ (X Y : Mon_ C) : (forgetMonoidal C).μ X Y = 𝟙 (X.X ⊗ Y.X) := rfl
+
+variable {C}
 
 theorem one_braiding {X Y : Mon_ C} : (X ⊗ Y).one ≫ (β_ X.X Y.X).hom = (Y ⊗ X).one := by
   simp only [monMonoidalStruct_tensorObj_X, tensor_one, Category.assoc,
@@ -584,7 +611,7 @@ theorem mul_braiding {X Y : Mon_ C} :
   simp only [Category.assoc]
 
 instance : SymmetricCategory (Mon_ C) where
-  braiding := fun X Y => isoOfIso (β_ X.X Y.X) one_braiding mul_braiding
+  braiding := fun X Y => mkIso (β_ X.X Y.X) one_braiding mul_braiding
   symmetry := fun X Y => by
     ext
     simp [← SymmetricCategory.braiding_swap_eq_inv_braiding]
@@ -605,7 +632,6 @@ Projects:
   in `Mathlib.CategoryTheory.Monoidal.Internal.Module`.)
 * Can you transport this monoidal structure to `RingCat` or `AlgebraCat R`?
   How does it compare to the "native" one?
-* Show that when `C` is braided, the forgetful functor `Mon_ C ⥤ C` is monoidal.
 * Show that when `F` is a lax braided functor `C ⥤ D`, the functor `map_Mon F : Mon_ C ⥤ Mon_ D`
   is lax monoidal.
 -/

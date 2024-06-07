@@ -3,15 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Set
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
-import Mathlib.Tactic.PPWithUniv
 
 #align_import set_theory.cardinal.basic from "leanprover-community/mathlib"@"3ff3f2d6a3118b8711063de7111a0d77a53219a8"
 
@@ -80,9 +78,11 @@ cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
 Cantor's theorem, König's theorem, Konig's theorem
 -/
 
+assert_not_exists Field
+assert_not_exists Module
 
 open scoped Classical
-open Function Set Order BigOperators
+open Function Set Order
 
 noncomputable section
 
@@ -736,7 +736,7 @@ theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b
 theorem cantor (a : Cardinal.{u}) : a < 2 ^ a := by
   induction' a using Cardinal.inductionOn with α
   rw [← mk_set]
-  refine' ⟨⟨⟨singleton, fun a b => singleton_eq_singleton_iff.1⟩⟩, _⟩
+  refine ⟨⟨⟨singleton, fun a b => singleton_eq_singleton_iff.1⟩⟩, ?_⟩
   rintro ⟨⟨f, hf⟩⟩
   exact cantor_injective f hf
 #align cardinal.cantor Cardinal.cantor
@@ -977,7 +977,7 @@ theorem bddAbove_iff_small {s : Set Cardinal.{u}} : BddAbove s ↔ Small.{u} s :
       rw [← this]
       apply bddAbove_range.{u, u}
     ext x
-    refine' ⟨_, fun hx => ⟨e ⟨x, hx⟩, _⟩⟩
+    refine ⟨?_, fun hx => ⟨e ⟨x, hx⟩, ?_⟩⟩
     · rintro ⟨a, rfl⟩
       exact (e.symm a).2
     · simp_rw [Equiv.symm_apply_apply]⟩
@@ -1018,7 +1018,7 @@ theorem sum_le_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * iS
 
 theorem sum_nat_eq_add_sum_succ (f : ℕ → Cardinal.{u}) :
     Cardinal.sum f = f 0 + Cardinal.sum fun i => f (i + 1) := by
-  refine' (Equiv.sigmaNatSucc fun i => Quotient.out (f i)).cardinal_eq.trans _
+  refine (Equiv.sigmaNatSucc fun i => Quotient.out (f i)).cardinal_eq.trans ?_
   simp only [mk_sum, mk_out, lift_id, mk_sigma]
 #align cardinal.sum_nat_eq_add_sum_succ Cardinal.sum_nat_eq_add_sum_succ
 
@@ -1116,7 +1116,7 @@ theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
 theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{v}) :
     prod f = Cardinal.lift.{u} (∏ i, f i) := by
   revert f
-  refine' Fintype.induction_empty_option _ _ _ α (h_fintype := h)
+  refine Fintype.induction_empty_option ?_ ?_ ?_ α (h_fintype := h)
   · intro α β hβ e h f
     letI := Fintype.ofEquiv β e.symm
     rw [← e.prod_comp f, ← h]
@@ -1697,7 +1697,7 @@ theorem mul_lt_aleph0 {a b : Cardinal} (ha : a < ℵ₀) (hb : b < ℵ₀) : a *
 #align cardinal.mul_lt_aleph_0 Cardinal.mul_lt_aleph0
 
 theorem mul_lt_aleph0_iff {a b : Cardinal} : a * b < ℵ₀ ↔ a = 0 ∨ b = 0 ∨ a < ℵ₀ ∧ b < ℵ₀ := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · by_cases ha : a = 0
     · exact Or.inl ha
     right
@@ -1798,12 +1798,12 @@ theorem aleph0_mul_nat {n : ℕ} (hn : n ≠ 0) : ℵ₀ * n = ℵ₀ := by rw [
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_mul_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) * ℵ₀ = ℵ₀ :=
-  nat_mul_aleph0 (OfNat.ofNat_ne_zero n)
+  nat_mul_aleph0 (NeZero.ne n)
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem aleph0_mul_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ * no_index (OfNat.ofNat n) = ℵ₀ :=
-  aleph0_mul_nat (OfNat.ofNat_ne_zero n)
+  aleph0_mul_nat (NeZero.ne n)
 
 @[simp]
 theorem add_le_aleph0 {c₁ c₂ : Cardinal} : c₁ + c₂ ≤ ℵ₀ ↔ c₁ ≤ ℵ₀ ∧ c₂ ≤ ℵ₀ :=
@@ -1851,7 +1851,7 @@ variable {c : Cardinal}
 theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f < prod g :=
   lt_of_not_ge fun ⟨F⟩ => by
     have : Inhabited (∀ i : ι, (g i).out) := by
-      refine' ⟨fun i => Classical.choice <| mk_ne_zero_iff.1 _⟩
+      refine ⟨fun i => Classical.choice <| mk_ne_zero_iff.1 ?_⟩
       rw [mk_out]
       exact (H i).ne_bot
     let G := invFun F
@@ -1860,7 +1860,7 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
       show ∀ i, ∃ b, ∀ a, G ⟨i, a⟩ i ≠ b by
         intro i
         simp only [not_exists.symm, not_forall.symm]
-        refine' fun h => (H i).not_le _
+        refine fun h => (H i).not_le ?_
         rw [← mk_out (f i), ← mk_out (g i)]
         exact ⟨Embedding.ofSurjective _ h⟩
     let ⟨⟨i, a⟩, h⟩ := sG C
@@ -1991,6 +1991,10 @@ lemma lift_mk_le_lift_mk_of_injective {α : Type u} {β : Type v} {f : α → β
   rw [← Cardinal.mk_range_eq_of_injective hf]
   exact Cardinal.lift_le.2 (Cardinal.mk_set_le _)
 
+lemma lift_mk_le_lift_mk_of_surjective {α : Type u} {β : Type v} {f : α → β} (hf : Surjective f) :
+    Cardinal.lift.{u} (#β) ≤ Cardinal.lift.{v} (#α) :=
+  lift_mk_le_lift_mk_of_injective (injective_surjInv hf)
+
 theorem mk_image_eq_of_injOn {α β : Type u} (f : α → β) (s : Set α) (h : InjOn f s) :
     #(f '' s) = #s :=
   mk_congr (Equiv.Set.imageOfInjOn f s h).symm
@@ -2002,12 +2006,12 @@ theorem mk_image_eq_of_injOn_lift {α : Type u} {β : Type v} (f : α → β) (s
 #align cardinal.mk_image_eq_of_inj_on_lift Cardinal.mk_image_eq_of_injOn_lift
 
 theorem mk_image_eq {α β : Type u} {f : α → β} {s : Set α} (hf : Injective f) : #(f '' s) = #s :=
-  mk_image_eq_of_injOn _ _ <| hf.injOn _
+  mk_image_eq_of_injOn _ _ hf.injOn
 #align cardinal.mk_image_eq Cardinal.mk_image_eq
 
 theorem mk_image_eq_lift {α : Type u} {β : Type v} (f : α → β) (s : Set α) (h : Injective f) :
     lift.{u} #(f '' s) = lift.{v} #s :=
-  mk_image_eq_of_injOn_lift _ _ <| h.injOn _
+  mk_image_eq_of_injOn_lift _ _ h.injOn
 #align cardinal.mk_image_eq_lift Cardinal.mk_image_eq_lift
 
 theorem mk_iUnion_le_sum_mk {α ι : Type u} {f : ι → Set α} : #(⋃ i, f i) ≤ sum fun i => #(f i) :=
@@ -2078,8 +2082,8 @@ theorem mk_set_eq_nat_iff_finset {α} {s : Set α} {n : ℕ} :
 #align cardinal.mk_set_eq_nat_iff_finset Cardinal.mk_set_eq_nat_iff_finset
 
 theorem mk_eq_nat_iff_finset {n : ℕ} :
-    #α = n ↔ ∃ t : Finset α, (t : Set α) = univ ∧ t.card = n :=
-  by rw [← mk_univ, mk_set_eq_nat_iff_finset]
+    #α = n ↔ ∃ t : Finset α, (t : Set α) = univ ∧ t.card = n := by
+  rw [← mk_univ, mk_set_eq_nat_iff_finset]
 #align cardinal.mk_eq_nat_iff_finset Cardinal.mk_eq_nat_iff_finset
 
 theorem mk_eq_nat_iff_fintype {n : ℕ} : #α = n ↔ ∃ h : Fintype α, @Fintype.card α h = n := by
@@ -2131,8 +2135,7 @@ theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set 
   refine ⟨fun H s hs ↦ by simpa using (mk_le_mk_of_subset hs).trans H, fun H ↦ ?_⟩
   apply card_le_of (fun s ↦ ?_)
   let u : Finset α := s.image Subtype.val
-  have : u.card = s.card :=
-    Finset.card_image_of_injOn (injOn_of_injective Subtype.coe_injective _)
+  have : u.card = s.card := Finset.card_image_of_injOn Subtype.coe_injective.injOn
   rw [← this]
   apply H
   simp only [u, Finset.coe_image, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
@@ -2177,7 +2180,7 @@ theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β
 theorem mk_preimage_of_subset_range_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
     (h : s ⊆ range f) : lift.{u} #s ≤ lift.{v} #(f ⁻¹' s) := by
   rw [lift_mk_le.{0}]
-  refine' ⟨⟨_, _⟩⟩
+  refine ⟨⟨?_, ?_⟩⟩
   · rintro ⟨y, hy⟩
     rcases Classical.subtype_of_exists (h hy) with ⟨x, rfl⟩
     exact ⟨x, hy⟩
@@ -2333,16 +2336,6 @@ theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
 #align cardinal.powerlt_zero Cardinal.powerlt_zero
 
 end powerlt
-
-/-- The cardinality of a nontrivial module over a ring is at least the cardinality of the ring if
-there are no zero divisors (for instance if the ring is a field) -/
-theorem mk_le_of_module (R : Type u) (E : Type v)
-    [AddCommGroup E] [Ring R] [Module R E] [Nontrivial E] [NoZeroSMulDivisors R E] :
-    Cardinal.lift.{v} (#R) ≤ Cardinal.lift.{u} (#E) := by
-  obtain ⟨x, hx⟩ : ∃ (x : E), x ≠ 0 := exists_ne 0
-  have : Injective (fun k ↦ k • x) := smul_left_injective R hx
-  exact lift_mk_le_lift_mk_of_injective this
-
 end Cardinal
 
 -- namespace Tactic

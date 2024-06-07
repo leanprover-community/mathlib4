@@ -74,13 +74,17 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   -- set, and if the second is more than `s` somewhere, then we have a decreasing subsequence.
   rsuffices ⟨i, hi⟩ : ∃ i, r < (ab i).1 ∨ s < (ab i).2
   · refine Or.imp ?_ ?_ hi
-    on_goal 1 => have : (ab i).1 ∈ _ := by simp only [← hab]; exact max'_mem _ _
-    on_goal 2 => have : (ab i).2 ∈ _ := by simp only [← hab]; exact max'_mem _ _
+    on_goal 1 =>
+      have : (ab i).1 ∈ image card (inc_sequences_ending_in i) := by
+        simp only [← hab]; exact max'_mem _ _
+    on_goal 2 =>
+      have : (ab i).2 ∈ image card (dec_sequences_ending_in i) := by
+        simp only [← hab]; exact max'_mem _ _
     all_goals
       intro hi
       rw [mem_image] at this
       obtain ⟨t, ht₁, ht₂⟩ := this
-      refine' ⟨t, by rwa [ht₂], _⟩
+      refine ⟨t, by rwa [ht₂], ?_⟩
       rw [mem_filter] at ht₁
       apply ht₁.2.2
   -- Show first that the pair of labels is unique.
@@ -92,8 +96,12 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
     -- We have two cases: `f i < f j` or `f j < f i`.
     -- In the former we'll show `a_i < a_j`, and in the latter we'll show `b_i < b_j`.
     cases lt_or_gt_of_ne fun _ => ne_of_lt ‹i < j› (hf ‹f i = f j›)
-    on_goal 1 => apply ne_of_lt _ q₁; have : (ab' i).1 ∈ _ := by dsimp only; exact max'_mem _ _
-    on_goal 2 => apply ne_of_lt _ q₂; have : (ab' i).2 ∈ _ := by dsimp only; exact max'_mem _ _
+    on_goal 1 =>
+      apply ne_of_lt _ q₁
+      have : (ab' i).1 ∈ image card (inc_sequences_ending_in i) := by dsimp only; exact max'_mem _ _
+    on_goal 2 =>
+      apply ne_of_lt _ q₂
+      have : (ab' i).2 ∈ image card (dec_sequences_ending_in i) := by dsimp only; exact max'_mem _ _
     all_goals
       -- Reduce to showing there is a subsequence of length `a_i + 1` which ends at `j`.
       rw [Nat.lt_iff_add_one_le]
@@ -106,10 +114,10 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       -- Ensure `t` ends at `i`.
       have : t.max = i := by simp only [ht₁.2.1]
       -- Now our new subsequence is given by adding `j` at the end of `t`.
-      refine' ⟨insert j t, _, _⟩
+      refine ⟨insert j t, ?_, ?_⟩
       -- First make sure it's valid, i.e., that this subsequence ends at `j` and is increasing
       · rw [mem_filter]
-        refine' ⟨_, _, _⟩
+        refine ⟨?_, ?_, ?_⟩
         · rw [mem_powerset]; apply subset_univ
         -- It ends at `j` since `i < j`.
         · convert max_insert (a := j) (s := t)
@@ -155,15 +163,9 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       constructor <;>
         · apply le_max'
           rw [mem_image]
-          refine' ⟨{i}, by solve_by_elim, card_singleton i⟩
-    refine' ⟨_, _⟩
+          exact ⟨{i}, by solve_by_elim, card_singleton i⟩
     -- Need to get `a_i ≤ r`, here phrased as: there is some `a < r` with `a+1 = a_i`.
-    · refine' ⟨(ab i).1 - 1, _, Nat.succ_pred_eq_of_pos z.1⟩
-      rw [tsub_lt_iff_right z.1]
-      apply Nat.lt_succ_of_le q.1
-    · refine' ⟨(ab i).2 - 1, _, Nat.succ_pred_eq_of_pos z.2⟩
-      rw [tsub_lt_iff_right z.2]
-      apply Nat.lt_succ_of_le q.2
+    exact ⟨⟨(ab i).1 - 1, by omega⟩, (ab i).2 - 1, by omega⟩
   -- To get our contradiction, it suffices to prove `n ≤ r * s`
   apply not_le_of_lt hn
   -- Which follows from considering the cardinalities of the subset above, since `ab` is injective.

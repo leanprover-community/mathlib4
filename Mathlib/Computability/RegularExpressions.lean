@@ -301,10 +301,6 @@ theorem star_rmatch_iff (P : RegularExpression α) :
     ∀ x : List α, (star P).rmatch x ↔ ∃ S : List (List α), x
           = S.join ∧ ∀ t ∈ S, t ≠ [] ∧ P.rmatch t :=
   fun x => by
-    have A : ∀ m n : ℕ, n < m + n + 1 := by
-      intro m n
-      convert add_lt_add_of_le_of_lt (add_le_add (zero_le m) (le_refl n)) zero_lt_one
-      simp
     have IH := fun t (_h : List.length t < List.length x) => star_rmatch_iff P t
     clear star_rmatch_iff
     constructor
@@ -315,7 +311,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         rintro ⟨t, u, hs, ht, hu⟩
         have hwf : u.length < (List.cons a x).length := by
           rw [hs, List.length_cons, List.length_append]
-          apply A
+          omega
         rw [IH _ hwf] at hu
         rcases hu with ⟨S', hsum, helem⟩
         use (a :: t) :: S'
@@ -337,7 +333,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
             simp only [eq_self_iff_true, not_true, Ne, false_and_iff] at helem
           simp only [List.join, List.cons_append, List.cons_eq_cons] at hsum
-          refine' ⟨t, U.join, hsum.2, _, _⟩
+          refine ⟨t, U.join, hsum.2, ?_, ?_⟩
           · specialize helem (b :: t) (by simp)
             rw [rmatch] at helem
             convert helem.2
@@ -345,7 +341,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
           · have hwf : U.join.length < (List.cons a x).length := by
               rw [hsum.1, hsum.2]
               simp only [List.length_append, List.length_join, List.length]
-              apply A
+              omega
             rw [IH _ hwf]
             refine ⟨U, rfl, fun t h => helem t ?_⟩
             right
