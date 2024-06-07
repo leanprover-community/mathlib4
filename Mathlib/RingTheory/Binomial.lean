@@ -195,7 +195,8 @@ noncomputable instance Real.instBinomialRing : BinomialRing ℝ where
         Polynomial.smeval_one, pow_zero]
     case succ =>
       rw [Polynomial.ascPochhammer_smeval_eq_eval] at ih
-      rw [Polynomial.ascPochhammer_smeval_eq_eval, ascPochhammer_succ_eval, ← ih, multichoose, Nat.factorial]
+      rw [Polynomial.ascPochhammer_smeval_eq_eval, ascPochhammer_succ_eval, ← ih, multichoose,
+        Nat.factorial]
       field_simp; ring_nf
 end Real
 
