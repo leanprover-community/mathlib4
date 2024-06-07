@@ -92,6 +92,9 @@ theorem infEdist_iUnion (f : ι → Set α) (x : α) : infEdist x (⋃ i, f i) =
   iInf_iUnion f _
 #align emetric.inf_edist_Union EMetric.infEdist_iUnion
 
+lemma infEdist_biUnion {ι : Type*} (f : ι → Set α) (I : Set ι) (x : α) :
+    infEdist x (⋃ i ∈ I, f i) = ⨅ i ∈ I, infEdist x (f i) := by simp only [infEdist_iUnion]
+
 /-- The edist to a singleton is the edistance to the single point of this singleton -/
 @[simp]
 theorem infEdist_singleton : infEdist x {y} = edist x y :=
@@ -149,8 +152,8 @@ theorem continuous_infEdist : Continuous fun x => infEdist x s :=
 
 /-- The edist to a set and to its closure coincide -/
 theorem infEdist_closure : infEdist x (closure s) = infEdist x s := by
-  refine' le_antisymm (infEdist_anti subset_closure) _
-  refine' ENNReal.le_of_forall_pos_le_add fun ε εpos h => _
+  refine le_antisymm (infEdist_anti subset_closure) ?_
+  refine ENNReal.le_of_forall_pos_le_add fun ε εpos h => ?_
   have ε0 : 0 < (ε / 2 : ℝ≥0∞) := by simpa [pos_iff_ne_zero] using εpos
   have : infEdist x (closure s) < infEdist x (closure s) + ε / 2 :=
     ENNReal.lt_add_right h.ne ε0.ne'
@@ -229,8 +232,8 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     have : infEdist x Uᶜ ≠ 0 := ((ENNReal.pow_pos a_pos _).trans_le hx).ne'
     exact this (infEdist_zero_of_mem h)
   refine ⟨F, fun n => IsClosed.preimage continuous_infEdist isClosed_Ici, F_subset, ?_, ?_⟩
-  show ⋃ n, F n = U
-  · refine' Subset.antisymm (by simp only [iUnion_subset_iff, F_subset, forall_const]) fun x hx => _
+  · show ⋃ n, F n = U
+    refine Subset.antisymm (by simp only [iUnion_subset_iff, F_subset, forall_const]) fun x hx => ?_
     have : ¬x ∈ Uᶜ := by simpa using hx
     rw [mem_iff_infEdist_zero_of_closed hU.isClosed_compl] at this
     have B : 0 < infEdist x Uᶜ := by simpa [pos_iff_ne_zero] using this
@@ -360,11 +363,11 @@ theorem hausdorffEdist_le_ediam (hs : s.Nonempty) (ht : t.Nonempty) :
     hausdorffEdist s t ≤ diam (s ∪ t) := by
   rcases hs with ⟨x, xs⟩
   rcases ht with ⟨y, yt⟩
-  refine' hausdorffEdist_le_of_mem_edist _ _
+  refine hausdorffEdist_le_of_mem_edist ?_ ?_
   · intro z hz
-    exact ⟨y, yt, edist_le_diam_of_mem (subset_union_left _ _ hz) (subset_union_right _ _ yt)⟩
+    exact ⟨y, yt, edist_le_diam_of_mem (subset_union_left hz) (subset_union_right yt)⟩
   · intro z hz
-    exact ⟨x, xs, edist_le_diam_of_mem (subset_union_right _ _ hz) (subset_union_left _ _ xs)⟩
+    exact ⟨x, xs, edist_le_diam_of_mem (subset_union_right hz) (subset_union_left xs)⟩
 #align emetric.Hausdorff_edist_le_ediam EMetric.hausdorffEdist_le_ediam
 
 /-- The Hausdorff distance satisfies the triangle inequality. -/
@@ -405,7 +408,7 @@ theorem hausdorffEdist_self_closure : hausdorffEdist s (closure s) = 0 := by
 /-- Replacing a set by its closure does not change the Hausdorff edistance. -/
 @[simp]
 theorem hausdorffEdist_closure₁ : hausdorffEdist (closure s) t = hausdorffEdist s t := by
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · calc
       _ ≤ hausdorffEdist (closure s) s + hausdorffEdist s t := hausdorffEdist_triangle
       _ = hausdorffEdist s t := by simp [hausdorffEdist_comm]
@@ -635,8 +638,8 @@ theorem infDist_image (hΦ : Isometry Φ) : infDist (Φ x) (Φ '' t) = infDist x
 theorem infDist_inter_closedBall_of_mem (h : y ∈ s) :
     infDist x (s ∩ closedBall x (dist y x)) = infDist x s := by
   replace h : y ∈ s ∩ closedBall x (dist y x) := ⟨h, mem_closedBall.2 le_rfl⟩
-  refine le_antisymm ?_ (infDist_le_infDist_of_subset (inter_subset_left _ _) ⟨y, h⟩)
-  refine' not_lt.1 fun hlt => _
+  refine le_antisymm ?_ (infDist_le_infDist_of_subset inter_subset_left ⟨y, h⟩)
+  refine not_lt.1 fun hlt => ?_
   rcases (infDist_lt_iff ⟨y, h.1⟩).mp hlt with ⟨z, hzs, hz⟩
   rcases le_or_lt (dist z x) (dist y x) with hle | hlt
   · exact hz.not_le (infDist_le_dist_of_mem ⟨hzs, hle⟩)
@@ -797,10 +800,10 @@ theorem hausdorffDist_le_diam (hs : s.Nonempty) (bs : IsBounded s) (ht : t.Nonem
   rcases hs with ⟨x, xs⟩
   rcases ht with ⟨y, yt⟩
   refine hausdorffDist_le_of_mem_dist diam_nonneg ?_ ?_
-  · exact fun z hz => ⟨y, yt, dist_le_diam_of_mem (bs.union bt) (subset_union_left _ _ hz)
-      (subset_union_right _ _ yt)⟩
-  · exact fun z hz => ⟨x, xs, dist_le_diam_of_mem (bs.union bt) (subset_union_right _ _ hz)
-      (subset_union_left _ _ xs)⟩
+  · exact fun z hz => ⟨y, yt, dist_le_diam_of_mem (bs.union bt) (subset_union_left hz)
+      (subset_union_right yt)⟩
+  · exact fun z hz => ⟨x, xs, dist_le_diam_of_mem (bs.union bt) (subset_union_right hz)
+      (subset_union_left xs)⟩
 #align metric.Hausdorff_dist_le_diam Metric.hausdorffDist_le_diam
 
 /-- The distance to a set is controlled by the Hausdorff distance. -/

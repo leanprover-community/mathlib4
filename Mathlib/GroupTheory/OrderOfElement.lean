@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Set.Pointwise.Basic
-import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Index
+import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Order.Interval.Set.Infinite
 
 #align_import group_theory.order_of_element from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
 
@@ -80,7 +80,7 @@ lemma isOfFinOrder_iff_zpow_eq_one {G} [Group G] {x : G} :
   rw [isOfFinOrder_iff_pow_eq_one]
   refine ⟨fun ⟨n, hn, hn'⟩ ↦ ⟨n, Int.natCast_ne_zero_iff_pos.mpr hn, zpow_natCast x n ▸ hn'⟩,
     fun ⟨n, hn, hn'⟩ ↦ ⟨n.natAbs, Int.natAbs_pos.mpr hn, ?_⟩⟩
-  cases' (Int.natAbs_eq_iff (a := n)).mp rfl with h h;
+  cases' (Int.natAbs_eq_iff (a := n)).mp rfl with h h
   · rwa [h, zpow_natCast] at hn'
   · rwa [h, zpow_neg, inv_eq_one, zpow_natCast] at hn'
 
@@ -299,7 +299,7 @@ protected lemma IsOfFinOrder.mem_powers_iff_mem_range_orderOf [DecidableEq G]
 protected lemma IsOfFinOrder.powers_eq_image_range_orderOf [DecidableEq G] (hx : IsOfFinOrder x) :
     (Submonoid.powers x : Set G) = (Finset.range (orderOf x)).image (x ^ ·) :=
   Set.ext fun _ ↦ hx.mem_powers_iff_mem_range_orderOf
-@[deprecated] -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias IsOfFinAddOrder.powers_eq_image_range_orderOf :=
   IsOfFinAddOrder.multiples_eq_image_range_addOrderOf
 
@@ -346,7 +346,7 @@ theorem orderOf_eq_of_pow_and_pow_div_prime (hn : 0 < n) (hx : x ^ n = 1)
     rw [hb, ← mul_assoc] at ha
     exact Dvd.intro_left (orderOf x * b) ha.symm
   -- Use the minimum prime factor of `a` as `p`.
-  refine' hd a.minFac (Nat.minFac_prime h) a_min_fac_dvd_p_sub_one _
+  refine hd a.minFac (Nat.minFac_prime h) a_min_fac_dvd_p_sub_one ?_
   rw [← orderOf_dvd_iff_pow_eq_one, Nat.dvd_div_iff a_min_fac_dvd_p_sub_one, ha, mul_comm,
     Nat.mul_dvd_mul_iff_left (IsOfFinOrder.orderOf_pos _)]
   · exact Nat.minFac_dvd a
@@ -362,12 +362,19 @@ theorem orderOf_eq_orderOf_iff {H : Type*} [Monoid H] {y : H} :
 #align order_of_eq_order_of_iff orderOf_eq_orderOf_iff
 #align add_order_of_eq_add_order_of_iff addOrderOf_eq_addOrderOf_iff
 
-@[to_additive]
+/-- An injective homomorphism of monoids preserves orders of elements. -/
+@[to_additive "An injective homomorphism of additive monoids preserves orders of elements."]
 theorem orderOf_injective {H : Type*} [Monoid H] (f : G →* H) (hf : Function.Injective f) (x : G) :
     orderOf (f x) = orderOf x := by
   simp_rw [orderOf_eq_orderOf_iff, ← f.map_pow, ← f.map_one, hf.eq_iff, forall_const]
 #align order_of_injective orderOf_injective
 #align add_order_of_injective addOrderOf_injective
+
+/-- A multiplicative equivalence preserves orders of elements. -/
+@[to_additive (attr := simp) "An additive equivalence preserves orders of elements."]
+lemma MulEquiv.orderOf_eq {H : Type*} [Monoid H] (e : G ≃* H) (x : G) :
+    orderOf (e x) = orderOf x :=
+  orderOf_injective e e.injective x
 
 @[to_additive]
 theorem Function.Injective.isOfFinOrder_iff [Monoid H] {f : G →* H} (hf : Injective f) :
@@ -504,9 +511,9 @@ theorem orderOf_mul_eq_right_of_forall_prime_mul_dvd (hy : IsOfFinOrder y)
   have hxy := dvd_of_forall_prime_mul_dvd hdvd
   apply orderOf_eq_of_pow_and_pow_div_prime hoy <;> simp only [Ne, ← orderOf_dvd_iff_pow_eq_one]
   · exact h.orderOf_mul_dvd_lcm.trans (lcm_dvd hxy dvd_rfl)
-  refine' fun p hp hpy hd => hp.ne_one _
+  refine fun p hp hpy hd => hp.ne_one ?_
   rw [← Nat.dvd_one, ← mul_dvd_mul_iff_right hoy.ne', one_mul, ← dvd_div_iff hpy]
-  refine' (orderOf_dvd_lcm_mul h).trans (lcm_dvd ((dvd_div_iff hpy).2 _) hd)
+  refine (orderOf_dvd_lcm_mul h).trans (lcm_dvd ((dvd_div_iff hpy).2 ?_) hd)
   by_cases h : p ∣ orderOf x
   exacts [hdvd p hp h, (hp.coprime_iff_not_dvd.2 h).mul_dvd_of_dvd_of_dvd hpy hxy]
 #align commute.order_of_mul_eq_right_of_forall_prime_mul_dvd Commute.orderOf_mul_eq_right_of_forall_prime_mul_dvd
@@ -558,7 +565,7 @@ theorem pow_eq_pow_iff_modEq : x ^ n = x ^ m ↔ n ≡ m [MOD orderOf x] := by
 
 @[to_additive (attr := simp)]
 lemma injective_pow_iff_not_isOfFinOrder : Injective (fun n : ℕ ↦ x ^ n) ↔ ¬IsOfFinOrder x := by
-  refine' ⟨fun h => not_isOfFinOrder_of_injective_pow h, fun h n m hnm => _⟩
+  refine ⟨fun h => not_isOfFinOrder_of_injective_pow h, fun h n m hnm => ?_⟩
   rwa [pow_eq_pow_iff_modEq, orderOf_eq_zero_iff.mpr h, modEq_zero_iff] at hnm
 #align injective_pow_iff_not_is_of_fin_order injective_pow_iff_not_isOfFinOrder
 #align injective_nsmul_iff_not_is_of_fin_add_order injective_nsmul_iff_not_isOfFinAddOrder
@@ -589,7 +596,7 @@ theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
   have : ¬Injective fun n : ℕ => x ^ n := by
     have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) (Set.not_infinite.mp h)
     contrapose! this
-    exact Set.injOn_of_injective this _
+    exact Set.injOn_of_injective this
   rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this
 #align infinite_not_is_of_fin_order infinite_not_isOfFinOrder
 #align infinite_not_is_of_fin_add_order infinite_not_isOfFinAddOrder
@@ -800,15 +807,13 @@ section FiniteMonoid
 
 variable [Monoid G] {x : G} {n : ℕ}
 
-open BigOperators
-
 @[to_additive]
 theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n ≠ 0) :
-    (∑ m in (Finset.range n.succ).filter (· ∣ n),
+    (∑ m ∈ (Finset.range n.succ).filter (· ∣ n),
         (Finset.univ.filter fun x : G => orderOf x = m).card) =
       (Finset.univ.filter fun x : G => x ^ n = 1).card :=
   calc
-    (∑ m in (Finset.range n.succ).filter (· ∣ n),
+    (∑ m ∈ (Finset.range n.succ).filter (· ∣ n),
           (Finset.univ.filter fun x : G => orderOf x = m).card) = _ :=
       (Finset.card_biUnion
           (by
@@ -883,7 +888,7 @@ theorem mem_powers_iff_mem_range_orderOf [DecidableEq G] :
   mapping `i • a` to `i • b`."]
 noncomputable def powersEquivPowers (h : orderOf x = orderOf y) : powers x ≃ powers y :=
   (finEquivPowers x <| isOfFinOrder_of_finite _).symm.trans <|
-    (Fin.castIso h).toEquiv.trans <| finEquivPowers y <| isOfFinOrder_of_finite _
+    (finCongr h).trans <| finEquivPowers y <| isOfFinOrder_of_finite _
 #align powers_equiv_powers powersEquivPowers
 #align multiples_equiv_multiples multiplesEquivMultiples
 
@@ -920,7 +925,7 @@ variable [Finite G] {x y : G}
 @[to_additive]
 theorem exists_zpow_eq_one (x : G) : ∃ (i : ℤ) (_ : i ≠ 0), x ^ (i : ℤ) = 1 := by
   obtain ⟨w, hw1, hw2⟩ := isOfFinOrder_of_finite x
-  refine' ⟨w, Int.natCast_ne_zero.mpr (_root_.ne_of_gt hw1), _⟩
+  refine ⟨w, Int.natCast_ne_zero.mpr (_root_.ne_of_gt hw1), ?_⟩
   rw [zpow_natCast]
   exact (isPeriodicPt_mul_iff_pow_eq_one _).mp hw2
 #align exists_zpow_eq_one exists_zpow_eq_one
@@ -960,7 +965,7 @@ theorem zpow_eq_zpow_iff_modEq {m n : ℤ} : x ^ m = x ^ n ↔ m ≡ n [ZMOD ord
 
 @[to_additive (attr := simp)]
 theorem injective_zpow_iff_not_isOfFinOrder : (Injective fun n : ℤ => x ^ n) ↔ ¬IsOfFinOrder x := by
-  refine' ⟨_, fun h n m hnm => _⟩
+  refine ⟨?_, fun h n m hnm => ?_⟩
   · simp_rw [isOfFinOrder_iff_pow_eq_one]
     rintro h ⟨n, hn, hx⟩
     exact Nat.cast_ne_zero.2 hn.ne' (h <| by simpa using hx)
@@ -975,7 +980,7 @@ theorem injective_zpow_iff_not_isOfFinOrder : (Injective fun n : ℤ => x ^ n) �
   mapping `i • a` to `i • b`."]
 noncomputable def zpowersEquivZPowers (h : orderOf x = orderOf y) :
     (Subgroup.zpowers x : Set G) ≃ (Subgroup.zpowers y : Set G) :=
-  (finEquivZPowers x <| isOfFinOrder_of_finite _).symm.trans <| (Fin.castIso h).toEquiv.trans <|
+  (finEquivZPowers x <| isOfFinOrder_of_finite _).symm.trans <| (finCongr h).trans <|
     finEquivZPowers y <| isOfFinOrder_of_finite _
 #align zpowers_equiv_zpowers zpowersEquivZPowers
 #align zmultiples_equiv_zmultiples zmultiplesEquivZMultiples
@@ -1104,8 +1109,7 @@ lemma zpow_mod_natCard (a : G) (n : ℤ) : a ^ (n % Nat.card G : ℤ) = a ^ n :=
 
 /-- If `gcd(|G|,n)=1` then the `n`th power map is a bijection -/
 @[to_additive (attr := simps) "If `gcd(|G|,n)=1` then the smul by `n` is a bijection"]
-noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).Coprime n) : G ≃ G
-    where
+noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).Coprime n) : G ≃ G where
   toFun g := g ^ n
   invFun g := g ^ (Nat.card G).gcdB n
   left_inv g := by
@@ -1141,7 +1145,7 @@ lemma Nat.Coprime.pow_left_bijective (hn : (Nat.card G).Coprime n) : Bijective (
 @[to_additive add_inf_eq_bot_of_coprime]
 theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G} [Fintype H] [Fintype K]
     (h : Nat.Coprime (Fintype.card H) (Fintype.card K)) : H ⊓ K = ⊥ := by
-  refine' (H ⊓ K).eq_bot_iff_forall.mpr fun x hx => _
+  refine (H ⊓ K).eq_bot_iff_forall.mpr fun x hx => ?_
   rw [← orderOf_eq_one_iff, ← Nat.dvd_one, ← h.gcd_eq_one, Nat.dvd_gcd_iff]
   exact
     ⟨(congr_arg (· ∣ Fintype.card H) (orderOf_coe ⟨x, hx.1⟩)).mpr orderOf_dvd_card,
@@ -1262,21 +1266,23 @@ protected theorem Prod.orderOf (x : α × β) : orderOf x = (orderOf x.1).lcm (o
   minimalPeriod_prod_map _ _ _
 #align prod.order_of Prod.orderOf
 #align prod.add_order_of Prod.addOrderOf
-@[deprecated] alias Prod.add_orderOf := Prod.addOrderOf -- 2024-02-21
+@[deprecated (since := "2024-02-21")] alias Prod.add_orderOf := Prod.addOrderOf
 
 @[to_additive]
 theorem orderOf_fst_dvd_orderOf : orderOf x.1 ∣ orderOf x :=
   minimalPeriod_fst_dvd
 #align order_of_fst_dvd_order_of orderOf_fst_dvd_orderOf
 #align add_order_of_fst_dvd_add_order_of addOrderOf_fst_dvd_addOrderOf
-@[deprecated] alias add_orderOf_fst_dvd_add_orderOf := addOrderOf_fst_dvd_addOrderOf -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
+alias add_orderOf_fst_dvd_add_orderOf := addOrderOf_fst_dvd_addOrderOf
 
 @[to_additive]
 theorem orderOf_snd_dvd_orderOf : orderOf x.2 ∣ orderOf x :=
   minimalPeriod_snd_dvd
 #align order_of_snd_dvd_order_of orderOf_snd_dvd_orderOf
 #align add_order_of_snd_dvd_add_order_of addOrderOf_snd_dvd_addOrderOf
-@[deprecated] alias add_orderOf_snd_dvd_add_orderOf := addOrderOf_snd_dvd_addOrderOf -- 2024-02-21
+@[deprecated (since := "2024-02-21")] alias
+add_orderOf_snd_dvd_add_orderOf := addOrderOf_snd_dvd_addOrderOf
 
 @[to_additive]
 theorem IsOfFinOrder.fst {x : α × β} (hx : IsOfFinOrder x) : IsOfFinOrder x.1 :=

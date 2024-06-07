@@ -25,7 +25,7 @@ open Dilation (ratio ratio_ne_zero ratio_pos edist_eq)
 
 section Class
 
-variable (F : Type*) (X Y : outParam (Type*)) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
+variable (F : Type*) (X Y : outParam Type*) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
 
 /-- Typeclass saying that `F` is a type of bundled equivalences such that all `e : F` are
 dilations. -/

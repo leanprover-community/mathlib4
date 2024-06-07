@@ -59,8 +59,7 @@ See `mk₂'` and `mk₂` for the linear case. -/
 def mk₂'ₛₗ (f : M → N → P) (H1 : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m₁ n + f m₂ n)
     (H2 : ∀ (c : R) (m n), f (c • m) n = ρ₁₂ c • f m n)
     (H3 : ∀ m n₁ n₂, f m (n₁ + n₂) = f m n₁ + f m n₂)
-    (H4 : ∀ (c : S) (m n), f m (c • n) = σ₁₂ c • f m n) : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P
-    where
+    (H4 : ∀ (c : S) (m n), f m (c • n) = σ₁₂ c • f m n) : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P where
   toFun m :=
     { toFun := f m
       map_add' := H3 m
@@ -133,8 +132,6 @@ theorem flip_flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : f.flip.f
   LinearMap.ext₂ fun _x _y => (f.flip.flip_apply _ _).trans (f.flip_apply _ _)
 #align linear_map.flip_flip LinearMap.flip_flip
 
-open BigOperators
-
 theorem flip_inj {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : flip f = flip g) : f = g :=
   ext₂ fun m n => show flip f n m = flip g n m by rw [H]
 #align linear_map.flip_inj LinearMap.flip_inj
@@ -164,13 +161,12 @@ theorem map_smulₛₗ₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (r
 #align linear_map.map_smulₛₗ₂ LinearMap.map_smulₛₗ₂
 
 theorem map_sum₂ {ι : Type*} (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (t : Finset ι) (x : ι → M) (y) :
-    f (∑ i in t, x i) y = ∑ i in t, f (x i) y :=
+    f (∑ i ∈ t, x i) y = ∑ i ∈ t, f (x i) y :=
   _root_.map_sum (flip f y) _ _
 #align linear_map.map_sum₂ LinearMap.map_sum₂
 
 /-- Restricting a bilinear map in the second entry -/
-def domRestrict₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Submodule S N) : M →ₛₗ[ρ₁₂] q →ₛₗ[σ₁₂] P
-    where
+def domRestrict₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Submodule S N) : M →ₛₗ[ρ₁₂] q →ₛₗ[σ₁₂] P where
   toFun m := (f m).domRestrict q
   map_add' m₁ m₂ := LinearMap.ext fun _ => by simp only [map_add, domRestrict_apply, add_apply]
   map_smul' c m :=
@@ -260,8 +256,7 @@ variable {R}
 
 /-- Given a linear map from `M` to linear maps from `N` to `P`, i.e., a bilinear map `M → N → P`,
 change the order of variables and get a linear map from `N` to linear maps from `M` to `P`. -/
-def lflip : (M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) →ₗ[R₃] N →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P
-    where
+def lflip : (M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) →ₗ[R₃] N →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P where
   toFun := flip
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -390,21 +385,25 @@ theorem compr₂_apply (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R]
 
 variable (R M)
 
+/-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`. -/
+protected abbrev BilinForm : Type _ := M →ₗ[R] M →ₗ[R] R
+
 /-- Scalar multiplication as a bilinear map `R → M → M`. -/
 def lsmul : R →ₗ[R] M →ₗ[R] M :=
   mk₂ R (· • ·) add_smul (fun _ _ _ => mul_smul _ _ _) smul_add fun r s m => by
     simp only [smul_smul, smul_eq_mul, mul_comm]
 #align linear_map.lsmul LinearMap.lsmul
 
-variable {R M}
+variable {R}
+
+lemma lsmul_eq_DistribMulAction_toLinearMap (r : R) :
+    lsmul R M r = DistribMulAction.toLinearMap R M r := rfl
+
+variable {M}
 
 @[simp]
 theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
 #align linear_map.lsmul_apply LinearMap.lsmul_apply
-
-variable (R M) in
-/-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`. -/
-protected abbrev BilinForm : Type _ := M →ₗ[R] M →ₗ[R] R
 
 end CommSemiring
 

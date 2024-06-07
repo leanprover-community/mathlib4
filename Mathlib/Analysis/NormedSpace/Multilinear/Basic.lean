@@ -50,7 +50,7 @@ suppress_compilation
 
 noncomputable section
 
-open scoped BigOperators NNReal Topology Uniformity
+open scoped NNReal Topology Uniformity
 open Finset Metric Function Filter
 
 /-
@@ -138,7 +138,7 @@ positive. -/
 theorem exists_bound_of_continuous (hf : Continuous f) :
     ∃ C : ℝ, 0 < C ∧ ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖ := by
   cases isEmpty_or_nonempty ι
-  · refine' ⟨‖f 0‖ + 1, add_pos_of_nonneg_of_pos (norm_nonneg _) zero_lt_one, fun m => _⟩
+  · refine ⟨‖f 0‖ + 1, add_pos_of_nonneg_of_pos (norm_nonneg _) zero_lt_one, fun m => ?_⟩
     obtain rfl : m = 0 := funext (IsEmpty.elim ‹_›)
     simp [univ_eq_empty, zero_le_one]
   obtain ⟨ε : ℝ, ε0 : 0 < ε, hε : ∀ m : ∀ i, E i, ‖m - 0‖ < ε → ‖f m - f 0‖ < 1⟩ :=
@@ -146,9 +146,9 @@ theorem exists_bound_of_continuous (hf : Continuous f) :
   simp only [sub_zero, f.map_zero] at hε
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   have : 0 < (‖c‖ / ε) ^ Fintype.card ι := pow_pos (div_pos (zero_lt_one.trans hc) ε0) _
-  refine' ⟨_, this, _⟩
-  refine' f.bound_of_shell_of_continuous hf (fun _ => ε0) (fun _ => hc) fun m hcm hm => _
-  refine' (hε m ((pi_norm_lt_iff ε0).2 hm)).le.trans _
+  refine ⟨_, this, ?_⟩
+  refine f.bound_of_shell_of_continuous hf (fun _ => ε0) (fun _ => hc) fun m hcm hm => ?_
+  refine (hε m ((pi_norm_lt_iff ε0).2 hm)).le.trans ?_
   rw [← div_le_iff' this, one_div, ← inv_pow, inv_div, Fintype.card, ← prod_const]
   exact prod_le_prod (fun _ _ => div_nonneg ε0.le (norm_nonneg _)) fun i _ => hcm i
 #align multilinear_map.exists_bound_of_continuous MultilinearMap.exists_bound_of_continuous
@@ -165,7 +165,7 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
   have A :
     ∀ s : Finset ι,
       ‖f m₁ - f (s.piecewise m₂ m₁)‖ ≤
-        C * ∑ i in s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
+        C * ∑ i ∈ s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
     intro s
     induction' s using Finset.induction with i s his Hrec
     · simp
@@ -190,10 +190,10 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
             ‖f (s.piecewise m₂ m₁) - f ((insert i s).piecewise m₂ m₁)‖ := by
         rw [← dist_eq_norm, ← dist_eq_norm, ← dist_eq_norm]
         exact dist_triangle _ _ _
-      _ ≤ (C * ∑ i in s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖) +
+      _ ≤ (C * ∑ i ∈ s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖) +
             C * ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ :=
         (add_le_add Hrec I)
-      _ = C * ∑ i in insert i s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
+      _ = C * ∑ i ∈ insert i s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
         simp [his, add_comm, left_distrib]
   convert A univ
   simp
@@ -243,10 +243,10 @@ theorem continuous_of_bound (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m 
   have D_pos : 0 ≤ D := le_trans zero_le_one (le_max_right _ _)
   replace H (m) : ‖f m‖ ≤ D * ∏ i, ‖m i‖ :=
     (H m).trans (mul_le_mul_of_nonneg_right (le_max_left _ _) <| by positivity)
-  refine' continuous_iff_continuousAt.2 fun m => _
-  refine'
+  refine continuous_iff_continuousAt.2 fun m => ?_
+  refine
     continuousAt_of_locally_lipschitz zero_lt_one
-      (D * Fintype.card ι * (‖m‖ + 1) ^ (Fintype.card ι - 1)) fun m' h' => _
+      (D * Fintype.card ι * (‖m‖ + 1) ^ (Fintype.card ι - 1)) fun m' h' => ?_
   rw [dist_eq_norm, dist_eq_norm]
   have : max ‖m'‖ ‖m‖ ≤ ‖m‖ + 1 := by
     simp [zero_le_one, norm_le_of_mem_closedBall (le_of_lt h')]
@@ -488,7 +488,7 @@ private lemma uniformity_eq_seminorm :
       _ ≤ ∏ i, ‖x i‖ := Finset.prod_le_prod (fun _ _ ↦ zero_le_one) fun i _ ↦ by
         simpa only [div_self hc₀.ne'] using hcx i
       _ = 1 * ∏ i, ‖x i‖ := (one_mul _).symm
-  · rcases (NormedSpace.isVonNBounded_iff' _ _ _).1 hs with ⟨ε, hε⟩
+  · rcases (NormedSpace.isVonNBounded_iff' _).1 hs with ⟨ε, hε⟩
     rcases exists_pos_mul_lt hr (ε ^ Fintype.card ι) with ⟨δ, hδ₀, hδ⟩
     refine ⟨δ, hδ₀, fun f hf x hx ↦ ?_⟩
     simp only [Seminorm.mem_ball_zero, mem_closedBall_zero_iff] at hf ⊢
@@ -620,7 +620,7 @@ variable {G} (E)
 @[simp]
 theorem norm_constOfIsEmpty [IsEmpty ι] (x : G) : ‖constOfIsEmpty 𝕜 E x‖ = ‖x‖ := by
   apply le_antisymm
-  · refine' opNorm_le_bound _ (norm_nonneg _) fun x => _
+  · refine opNorm_le_bound _ (norm_nonneg _) fun x => ?_
     rw [Fintype.prod_empty, mul_one, constOfIsEmpty_apply]
   · simpa using (constOfIsEmpty 𝕜 E x).le_opNorm 0
 #align continuous_multilinear_map.norm_const_of_is_empty ContinuousMultilinearMap.norm_constOfIsEmpty
@@ -812,7 +812,7 @@ theorem norm_mkPiAlgebra_of_empty [IsEmpty ι] :
 theorem norm_mkPiAlgebra [NormOneClass A] : ‖ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A‖ = 1 := by
   cases isEmpty_or_nonempty ι
   · simp [norm_mkPiAlgebra_of_empty]
-  · refine' le_antisymm norm_mkPiAlgebra_le _
+  · refine le_antisymm norm_mkPiAlgebra_le ?_
     convert ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A) fun _ => 1
     simp
 #align continuous_multilinear_map.norm_mk_pi_algebra ContinuousMultilinearMap.norm_mkPiAlgebra
@@ -827,7 +827,7 @@ theorem norm_mkPiAlgebraFin_succ_le : ‖ContinuousMultilinearMap.mkPiAlgebraFin
   refine opNorm_le_bound _ zero_le_one fun m => ?_
   simp only [ContinuousMultilinearMap.mkPiAlgebraFin_apply, one_mul, List.ofFn_eq_map,
     Fin.prod_univ_def, Multiset.map_coe, Multiset.prod_coe]
-  refine' (List.norm_prod_le' _).trans_eq _
+  refine (List.norm_prod_le' ?_).trans_eq ?_
   · rw [Ne, List.map_eq_nil, List.finRange_eq_nil]
     exact Nat.succ_ne_zero _
   rw [List.map_map, Function.comp_def]
@@ -840,7 +840,7 @@ theorem norm_mkPiAlgebraFin_le_of_pos (hn : 0 < n) :
 #align continuous_multilinear_map.norm_mk_pi_algebra_fin_le_of_pos ContinuousMultilinearMap.norm_mkPiAlgebraFin_le_of_pos
 
 theorem norm_mkPiAlgebraFin_zero : ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 0 A‖ = ‖(1 : A)‖ := by
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · refine opNorm_le_bound _ (norm_nonneg (1 : A)) ?_
     simp
   · convert ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 0 A) fun _ => (1 : A)
@@ -853,7 +853,7 @@ theorem norm_mkPiAlgebraFin [NormOneClass A] :
   cases n
   · rw [norm_mkPiAlgebraFin_zero]
     simp
-  · refine' le_antisymm norm_mkPiAlgebraFin_succ_le _
+  · refine le_antisymm norm_mkPiAlgebraFin_succ_le ?_
     refine le_of_eq_of_le ?_ <|
       ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 (Nat.succ _) A) fun _ => 1
     simp
@@ -902,18 +902,18 @@ def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] Co
 @[simp] lemma smulRightL_apply (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
   smulRightL 𝕜 E G f z = f.smulRight z := rfl
 
-variable (𝕜 E G) in
-/-- An auxiliary instance to be able to just state the fact that the norm of `smulRightL` makes
-sense. This shouldn't be needed. See lean4#3927. -/
-def seminormedAddCommGroup_aux_for_smulRightL :
-    SeminormedAddCommGroup
-      (ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) :=
+#adaptation_note
+/--
+Before https://github.com/leanprover/lean4/pull/4119 we had to create a local instance:
+```
+letI : SeminormedAddCommGroup
+  (ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) :=
   ContinuousLinearMap.toSeminormedAddCommGroup
     (F := G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) (σ₁₂ := RingHom.id 𝕜)
-
-lemma norm_smulRightL_le :
-    letI := seminormedAddCommGroup_aux_for_smulRightL 𝕜 E G
-    ‖smulRightL 𝕜 E G‖ ≤ 1 :=
+```
+-/
+set_option maxSynthPendingDepth 2 in
+lemma norm_smulRightL_le : ‖smulRightL 𝕜 E G‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 
 variable (𝕜 ι G)
@@ -1444,7 +1444,7 @@ case from the multilinear case via a currying isomorphism. However, this would m
 and it is more satisfactory to have the simplest case as a standalone proof. -/
 instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearMap 𝕜 E G) := by
   -- We show that every Cauchy sequence converges.
-  refine' Metric.complete_of_cauchySeq_tendsto fun f hf => _
+  refine Metric.complete_of_cauchySeq_tendsto fun f hf => ?_
   -- We now expand out the definition of a Cauchy sequence,
   rcases cauchySeq_iff_le_tendsto_0.1 hf with ⟨b, b0, b_bound, b_lim⟩
   -- and establish that the evaluation at any point `v : Π i, E i` is Cauchy.
@@ -1500,7 +1500,7 @@ instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearM
     intro n
     apply opNorm_le_bound _ (b0 n) fun v => ?_
     have A : ∀ᶠ m in atTop, ‖(f n - f m) v‖ ≤ b n * ∏ i, ‖v i‖ := by
-      refine' eventually_atTop.2 ⟨n, fun m hm => _⟩
+      refine eventually_atTop.2 ⟨n, fun m hm => ?_⟩
       apply le_trans ((f n - f m).le_opNorm _) _
       exact mul_le_mul_of_nonneg_right (b_bound n m n le_rfl hm) <| by positivity
     have B : Tendsto (fun m => ‖(f n - f m) v‖) atTop (𝓝 ‖(f n - Fcont) v‖) :=

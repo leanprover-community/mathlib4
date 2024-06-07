@@ -9,7 +9,7 @@ import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
-import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.Roots
 
 #align_import ring_theory.mv_polynomial.homogeneous from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
@@ -30,8 +30,6 @@ if all monomials occurring in `φ` have degree `n`.
 -/
 
 
-open BigOperators
-
 namespace MvPolynomial
 
 variable {σ : Type*} {τ : Type*} {R : Type*} {S : Type*}
@@ -42,7 +40,7 @@ TODO
 -/
 
 /-- The degree of a monomial. -/
-def degree (d : σ →₀ ℕ) := ∑ i in d.support, d i
+def degree (d : σ →₀ ℕ) := ∑ i ∈ d.support, d i
 
 theorem weightedDegree_one (d : σ →₀ ℕ) :
     weightedDegree 1 d = degree d := by
@@ -178,7 +176,7 @@ theorem add (hφ : IsHomogeneous φ n) (hψ : IsHomogeneous ψ n) : IsHomogeneou
 #align mv_polynomial.is_homogeneous.add MvPolynomial.IsHomogeneous.add
 
 theorem sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : ℕ)
-    (h : ∀ i ∈ s, IsHomogeneous (φ i) n) : IsHomogeneous (∑ i in s, φ i) n :=
+    (h : ∀ i ∈ s, IsHomogeneous (φ i) n) : IsHomogeneous (∑ i ∈ s, φ i) n :=
   (homogeneousSubmodule σ R n).sum_mem h
 #align mv_polynomial.is_homogeneous.sum MvPolynomial.IsHomogeneous.sum
 
@@ -187,10 +185,10 @@ theorem mul (hφ : IsHomogeneous φ m) (hψ : IsHomogeneous ψ n) : IsHomogeneou
 #align mv_polynomial.is_homogeneous.mul MvPolynomial.IsHomogeneous.mul
 
 theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : ι → ℕ)
-    (h : ∀ i ∈ s, IsHomogeneous (φ i) (n i)) : IsHomogeneous (∏ i in s, φ i) (∑ i in s, n i) := by
+    (h : ∀ i ∈ s, IsHomogeneous (φ i) (n i)) : IsHomogeneous (∏ i ∈ s, φ i) (∑ i ∈ s, n i) := by
   classical
   revert h
-  refine' Finset.induction_on s _ _
+  refine Finset.induction_on s ?_ ?_
   · intro
     simp only [isHomogeneous_one, Finset.sum_empty, Finset.prod_empty]
   · intro i s his IH h
@@ -212,8 +210,8 @@ lemma _root_.MvPolynomial.isHomogeneous_C_mul_X (r : R) (i : σ) :
 alias _root_.MvPolynomial.C_mul_X := _root_.MvPolynomial.isHomogeneous_C_mul_X
 
 lemma pow (hφ : φ.IsHomogeneous m) (n : ℕ) : (φ ^ n).IsHomogeneous (m * n) := by
-  rw [show φ ^ n = ∏ _i in Finset.range n, φ by simp]
-  rw [show m * n = ∑ _i in Finset.range n, m by simp [mul_comm]]
+  rw [show φ ^ n = ∏ _i ∈ Finset.range n, φ by simp]
+  rw [show m * n = ∑ _i ∈ Finset.range n, m by simp [mul_comm]]
   apply IsHomogeneous.prod _ _ _ (fun _ _ ↦ hφ)
 
 lemma _root_.MvPolynomial.isHomogeneous_X_pow (i : σ) (n : ℕ) :
@@ -277,7 +275,7 @@ theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ =
   replace hd := Finsupp.mem_support_iff.mpr hd
   simp only [weightedDegree_apply,Pi.one_apply, smul_eq_mul, mul_one, ge_iff_le]
   -- Porting note: Original proof did not define `f`
-  exact Finset.le_sup (f := fun s ↦ ∑ x in s.support, s x) hd
+  exact Finset.le_sup (f := fun s ↦ ∑ x ∈ s.support, s x) hd
 #align mv_polynomial.is_homogeneous.total_degree MvPolynomial.IsHomogeneous.totalDegree
 
 theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n):
@@ -491,7 +489,7 @@ theorem coeff_homogeneousComponent (d : σ →₀ ℕ) :
 
 theorem homogeneousComponent_apply :
     homogeneousComponent n φ =
-      ∑ d in φ.support.filter fun d => degree d = n, monomial d (coeff d φ) := by
+      ∑ d ∈ φ.support.filter fun d => degree d = n, monomial d (coeff d φ) := by
   simp_rw [← weightedDegree_one]
   convert weightedHomogeneousComponent_apply n φ
 #align mv_polynomial.homogeneous_component_apply MvPolynomial.homogeneousComponent_apply
@@ -527,7 +525,7 @@ theorem homogeneousComponent_eq_zero (h : φ.totalDegree < n) : homogeneousCompo
 #align mv_polynomial.homogeneous_component_eq_zero MvPolynomial.homogeneousComponent_eq_zero
 
 theorem sum_homogeneousComponent :
-    (∑ i in range (φ.totalDegree + 1), homogeneousComponent i φ) = φ := by
+    (∑ i ∈ range (φ.totalDegree + 1), homogeneousComponent i φ) = φ := by
   ext1 d
   suffices φ.totalDegree < d.support.sum d → 0 = coeff d φ by
     simpa [coeff_sum, coeff_homogeneousComponent]

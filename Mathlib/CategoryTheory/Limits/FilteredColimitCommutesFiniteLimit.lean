@@ -29,7 +29,6 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 -/
 
 -- Various pieces of algebra that have previously been spuriously imported here:
-assert_not_exists zero_zpow
 assert_not_exists map_ne_zero
 assert_not_exists Field
  -- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
@@ -117,7 +116,7 @@ theorem colimitLimitToLimitColimit_injective :
           (by
             simp only [true_and_iff, Finset.mem_univ, eq_self_iff_true, exists_prop_of_true,
               Finset.mem_image, heq_iff_eq]
-            refine' ⟨j, _⟩
+            refine ⟨j, ?_⟩
             simp only [heq_iff_eq] ))
     have gH :
       ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
@@ -127,7 +126,7 @@ theorem colimitLimitToLimitColimit_injective :
           (by
             simp only [true_and_iff, Finset.mem_univ, eq_self_iff_true, exists_prop_of_true,
               Finset.mem_image, heq_iff_eq]
-            refine' ⟨j, _⟩
+            refine ⟨j, ?_⟩
             simp only [heq_iff_eq]))
     -- Our goal is now an equation between equivalence classes of representatives of a colimit,
     -- and so it suffices to show those representative become equal somewhere, in particular at `S`.
@@ -299,16 +298,16 @@ theorem colimitLimitToLimitColimit_surjective :
         simp only [← FunctorToTypes.map_comp_apply, prod_comp, id_comp, comp_id]
         calc
           F.map ((f, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) : (j, k j) ⟶ (j', k'')) (y j) =
-              F.map ((f, g j ≫ hf f ≫ i f) : (j, k j) ⟶ (j', k'')) (y j) :=
-            by rw [s (𝟙 j) f]
+              F.map ((f, g j ≫ hf f ≫ i f) : (j, k j) ⟶ (j', k'')) (y j) := by
+            rw [s (𝟙 j) f]
           _ =
               F.map ((𝟙 j', i f) : (j', kf f) ⟶ (j', k''))
-                (F.map ((f, g j ≫ hf f) : (j, k j) ⟶ (j', kf f)) (y j)) :=
-            by rw [← FunctorToTypes.map_comp_apply, prod_comp, comp_id, assoc]
+                (F.map ((f, g j ≫ hf f) : (j, k j) ⟶ (j', kf f)) (y j)) := by
+            rw [← FunctorToTypes.map_comp_apply, prod_comp, comp_id, assoc]
           _ =
               F.map ((𝟙 j', i f) : (j', kf f) ⟶ (j', k''))
-                (F.map ((𝟙 j', g j' ≫ gf f) : (j', k j') ⟶ (j', kf f)) (y j')) :=
-            by rw [← wf f]
+                (F.map ((𝟙 j', g j' ≫ gf f) : (j', k j') ⟶ (j', kf f)) (y j')) := by
+            rw [← wf f]
           _ = F.map ((𝟙 j', g j' ≫ gf f ≫ i f) : (j', k j') ⟶ (j', k'')) (y j') := by
             rw [← FunctorToTypes.map_comp_apply, prod_comp, id_comp, assoc]
           _ = F.map ((𝟙 j', g j' ≫ gf (𝟙 j') ≫ i (𝟙 j')) : (j', k j') ⟶ (j', k'')) (y j') := by

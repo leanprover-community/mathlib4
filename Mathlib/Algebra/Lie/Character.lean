@@ -53,7 +53,7 @@ theorem lieCharacter_apply_of_mem_derived (χ : LieCharacter R L) {x : L}
     (h : x ∈ derivedSeries R L 1) : χ x = 0 := by
   rw [derivedSeries_def, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, ←
     LieSubmodule.mem_coeSubmodule, LieSubmodule.lieIdeal_oper_eq_linear_span] at h
-  refine' Submodule.span_induction h _ _ _ _
+  refine Submodule.span_induction h ?_ ?_ ?_ ?_
   · rintro y ⟨⟨z, hz⟩, ⟨⟨w, hw⟩, rfl⟩⟩; apply lieCharacter_apply_lie
   · exact χ.map_zero
   · intro y z hy hz; rw [LieHom.map_add, hy, hz, add_zero]

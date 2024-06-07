@@ -3,7 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finset.Sort
 
@@ -21,7 +21,7 @@ directory.
 * `monomial n a` is the polynomial `a X^n`. Note that `monomial n` is defined as an `R`-linear map.
 * `C a` is the constant polynomial `a`. Note that `C` is defined as a ring homomorphism.
 * `X` is the polynomial `X`, i.e., `monomial 1 1`.
-* `p.sum f` is `∑ n in p.support, f n (p.coeff n)`, i.e., one sums the values of functions applied
+* `p.sum f` is `∑ n ∈ p.support, f n (p.coeff n)`, i.e., one sums the values of functions applied
   to coefficients of the polynomial `p`.
 * `p.erase n` is the polynomial `p` in which one removes the `c X^n` term.
 
@@ -72,7 +72,7 @@ open AddMonoidAlgebra
 open Finsupp hiding single
 open Function hiding Commute
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 
@@ -363,7 +363,7 @@ instance unique [Subsingleton R] : Unique R[X] :=
   { Polynomial.inhabited with
     uniq := by
       rintro ⟨x⟩
-      refine' congr_arg ofFinsupp _
+      apply congr_arg ofFinsupp
       simp [eq_iff_true_of_subsingleton] }
 #align polynomial.unique Polynomial.unique
 
@@ -389,12 +389,12 @@ instance [DecidableEq R] : DecidableEq R[X] :=
 end AddMonoidAlgebra
 
 theorem ofFinsupp_sum {ι : Type*} (s : Finset ι) (f : ι → R[ℕ]) :
-    (⟨∑ i in s, f i⟩ : R[X]) = ∑ i in s, ⟨f i⟩ :=
+    (⟨∑ i ∈ s, f i⟩ : R[X]) = ∑ i ∈ s, ⟨f i⟩ :=
   map_sum (toFinsuppIso R).symm f s
 #align polynomial.of_finsupp_sum Polynomial.ofFinsupp_sum
 
 theorem toFinsupp_sum {ι : Type*} (s : Finset ι) (f : ι → R[X]) :
-    (∑ i in s, f i : R[X]).toFinsupp = ∑ i in s, (f i).toFinsupp :=
+    (∑ i ∈ s, f i : R[X]).toFinsupp = ∑ i ∈ s, (f i).toFinsupp :=
   map_sum (toFinsuppIso R) f s
 #align polynomial.to_finsupp_sum Polynomial.toFinsupp_sum
 
@@ -554,6 +554,9 @@ theorem C_pow : C (a ^ n) = C a ^ n :=
 theorem C_eq_natCast (n : ℕ) : C (n : R) = (n : R[X]) :=
   map_natCast C n
 #align polynomial.C_eq_nat_cast Polynomial.C_eq_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias C_eq_nat_cast := C_eq_natCast
 
 @[simp]
 theorem C_mul_monomial : C a * monomial n b = monomial n (a * b) := by
@@ -757,6 +760,9 @@ lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff
 theorem coeff_natCast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
   simp only [← C_eq_natCast, coeff_C, Nat.cast_ite, Nat.cast_zero]
 
+@[deprecated (since := "2024-04-17")]
+alias coeff_nat_cast_ite := coeff_natCast_ite
+
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] :
@@ -840,7 +846,7 @@ theorem addSubmonoid_closure_setOf_eq_monomial :
   apply top_unique
   rw [← AddSubmonoid.map_equiv_top (toFinsuppIso R).symm.toAddEquiv, ←
     Finsupp.add_closure_setOf_eq_single, AddMonoidHom.map_mclosure]
-  refine' AddSubmonoid.closure_mono (Set.image_subset_iff.2 _)
+  refine AddSubmonoid.closure_mono (Set.image_subset_iff.2 ?_)
   rintro _ ⟨n, a, rfl⟩
   exact ⟨n, a, Polynomial.ofFinsupp_single _ _⟩
 #align polynomial.add_submonoid_closure_set_of_eq_monomial Polynomial.addSubmonoid_closure_setOf_eq_monomial
@@ -967,25 +973,28 @@ theorem natCast_mul (n : ℕ) (p : R[X]) : (n : R[X]) * p = n • p :=
   (nsmul_eq_mul _ _).symm
 #align polynomial.nat_cast_mul Polynomial.natCast_mul
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_mul := natCast_mul
+
 /-- Summing the values of a function applied to the coefficients of a polynomial -/
 def sum {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) : S :=
-  ∑ n in p.support, f n (p.coeff n)
+  ∑ n ∈ p.support, f n (p.coeff n)
 #align polynomial.sum Polynomial.sum
 
 theorem sum_def {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) :
-    p.sum f = ∑ n in p.support, f n (p.coeff n) :=
+    p.sum f = ∑ n ∈ p.support, f n (p.coeff n) :=
   rfl
 #align polynomial.sum_def Polynomial.sum_def
 
 theorem sum_eq_of_subset {S : Type*} [AddCommMonoid S] {p : R[X]} (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) {s : Finset ℕ} (hs : p.support ⊆ s) :
-    p.sum f = ∑ n in s, f n (p.coeff n) :=
+    p.sum f = ∑ n ∈ s, f n (p.coeff n) :=
   Finsupp.sum_of_support_subset _ hs f (fun i _ ↦ hf i)
 #align polynomial.sum_eq_of_subset Polynomial.sum_eq_of_subset
 
 /-- Expressing the product of two polynomials as a double sum. -/
 theorem mul_eq_sum_sum :
-    p * q = ∑ i in p.support, q.sum fun j a => (monomial (i + j)) (p.coeff i * a) := by
+    p * q = ∑ i ∈ p.support, q.sum fun j a => (monomial (i + j)) (p.coeff i * a) := by
   apply toFinsupp_injective
   rcases p with ⟨⟩; rcases q with ⟨⟩
   simp_rw [sum, coeff, toFinsupp_sum, support, toFinsupp_mul, toFinsupp_monomial,
@@ -1224,6 +1233,9 @@ theorem support_neg {p : R[X]} : (-p).support = p.support := by
 theorem C_eq_intCast (n : ℤ) : C (n : R) = n := by simp
 #align polynomial.C_eq_int_cast Polynomial.C_eq_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias C_eq_int_cast := C_eq_intCast
+
 theorem C_neg : C (-a) = -C a :=
   RingHom.map_neg C a
 #align polynomial.C_neg Polynomial.C_neg
@@ -1247,7 +1259,7 @@ variable [Semiring R] [Nontrivial R]
 instance nontrivial : Nontrivial R[X] := by
   have h : Nontrivial R[ℕ] := by infer_instance
   rcases h.exists_pair_ne with ⟨x, y, hxy⟩
-  refine' ⟨⟨⟨x⟩, ⟨y⟩, _⟩⟩
+  refine ⟨⟨⟨x⟩, ⟨y⟩, ?_⟩⟩
   simp [hxy]
 #align polynomial.nontrivial Polynomial.nontrivial
 

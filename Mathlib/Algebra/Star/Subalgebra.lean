@@ -152,7 +152,14 @@ protected theorem smul_mem {x : A} (hx : x ∈ S) (r : R) : r • x ∈ S :=
 #align star_subalgebra.smul_mem StarSubalgebra.smul_mem
 
 /-- Embedding of a subalgebra into the algebra. -/
-def subtype : S →⋆ₐ[R] A := by refine' { toFun := ((↑) : S → A), .. } <;> intros <;> rfl
+def subtype : S →⋆ₐ[R] A where
+  toFun := ((↑) : S → A)
+  map_one' := rfl
+  map_mul' _ _ := rfl
+  map_zero' := rfl
+  map_add' _ _ := rfl
+  commutes' _ := rfl
+  map_star' _ := rfl
 #align star_subalgebra.subtype StarSubalgebra.subtype
 
 @[simp]
@@ -441,11 +448,11 @@ theorem adjoin_toSubalgebra (s : Set A) :
 
 @[aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
-  (Set.subset_union_left s (star s)).trans Algebra.subset_adjoin
+  Set.subset_union_left.trans Algebra.subset_adjoin
 #align star_subalgebra.subset_adjoin StarAlgebra.subset_adjoin
 
 theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
-  (Set.subset_union_right s (star s)).trans Algebra.subset_adjoin
+  Set.subset_union_right.trans Algebra.subset_adjoin
 #align star_subalgebra.star_subset_adjoin StarAlgebra.star_subset_adjoin
 
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
@@ -462,7 +469,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → StarSubalgebra R A
   intro s S
   rw [← toSubalgebra_le_iff, adjoin_toSubalgebra, Algebra.adjoin_le_iff, coe_toSubalgebra]
   exact
-    ⟨fun h => (Set.subset_union_left s _).trans h, fun h =>
+    ⟨fun h => Set.subset_union_left.trans h, fun h =>
       Set.union_subset h fun x hx => star_star x ▸ star_mem (show star x ∈ S from h hx)⟩
 #align star_subalgebra.gc StarAlgebra.gc
 
@@ -481,6 +488,14 @@ theorem adjoin_le {S : StarSubalgebra R A} {s : Set A} (hs : s ⊆ S) : adjoin R
 theorem adjoin_le_iff {S : StarSubalgebra R A} {s : Set A} : adjoin R s ≤ S ↔ s ⊆ S :=
   StarAlgebra.gc _ _
 #align star_subalgebra.adjoin_le_iff StarAlgebra.adjoin_le_iff
+
+lemma adjoin_eq (S : StarSubalgebra R A) : adjoin R (S : Set A) = S :=
+  le_antisymm (adjoin_le le_rfl) (subset_adjoin R (S : Set A))
+
+open Submodule in
+lemma adjoin_eq_span (s : Set A) :
+    Subalgebra.toSubmodule (adjoin R s).toSubalgebra = span R (Submonoid.closure (s ∪ star s)) := by
+  rw [adjoin_toSubalgebra, Algebra.adjoin_eq_span]
 
 theorem _root_.Subalgebra.starClosure_eq_adjoin (S : Subalgebra R A) :
     S.starClosure = adjoin R (S : Set A) :=
@@ -512,8 +527,8 @@ theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a
     (Hmul_right : ∀ x y₁ y₂ : A, p x y₁ → p x y₂ → p x (y₁ * y₂))
     (Hstar : ∀ x y : A, p x y → p (star x) (star y)) (Hstar_left : ∀ x y : A, p x y → p (star x) y)
     (Hstar_right : ∀ x y : A, p x y → p x (star y)) : p a b := by
-  refine'
-    Algebra.adjoin_induction₂ ha hb (fun x hx y hy => _) Halg (fun r x hx => _) (fun r x hx => _)
+  refine
+    Algebra.adjoin_induction₂ ha hb (fun x hx y hy => ?_) Halg (fun r x hx => ?_) (fun r x hx => ?_)
       Hadd_left Hadd_right Hmul_left Hmul_right
   · cases' hx with hx hx <;> cases' hy with hy hy
     · exact Hs x hx y hy
@@ -535,7 +550,7 @@ theorem adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (add : ∀ x y, p x → p y → p (x + y)) (mul : ∀ x y, p x → p y → p (x * y))
     (star : ∀ x, p x → p (star x)) : p a :=
   Subtype.recOn a fun b hb => by
-    refine' Exists.elim _ fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc
+    refine Exists.elim ?_ fun (hb : b ∈ adjoin R s) (hc : p ⟨b, hb⟩) => hc
     refine adjoin_induction hb ?_ ?_ ?_ ?_ ?_
     exacts [fun x hx => ⟨subset_adjoin R s hx, mem x hx⟩, fun r =>
       ⟨StarSubalgebra.algebraMap_mem _ r, algebraMap r⟩, fun x y hx hy =>
@@ -762,9 +777,9 @@ theorem map_adjoin (f : A →⋆ₐ[R] B) (s : Set A) :
 theorem ext_adjoin {s : Set A} [FunLike F (adjoin R s) B]
     [AlgHomClass F R (adjoin R s) B] [StarAlgHomClass F R (adjoin R s) B] {f g : F}
     (h : ∀ x : adjoin R s, (x : A) ∈ s → f x = g x) : f = g := by
-  refine' DFunLike.ext f g fun a =>
-    adjoin_induction' (p := fun y => f y = g y) a (fun x hx => _) (fun r => _)
-    (fun x y hx hy => _) (fun x y hx hy => _) fun x hx => _
+  refine DFunLike.ext f g fun a =>
+    adjoin_induction' (p := fun y => f y = g y) a (fun x hx => ?_) (fun r => ?_)
+    (fun x y hx hy => ?_) (fun x y hx hy => ?_) fun x hx => ?_
   · exact h ⟨x, subset_adjoin R s hx⟩ hx
   · simp only [AlgHomClass.commutes]
   · simp only [map_add, map_add, hx, hy]

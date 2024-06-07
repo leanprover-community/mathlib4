@@ -27,7 +27,7 @@ of even Dirichlet characters, and that of `θ'` will do the same for odd Dirichl
 
 open Complex Real Asymptotics Filter Topology
 
-open scoped BigOperators ComplexConjugate
+open scoped ComplexConjugate
 
 noncomputable section
 
@@ -144,7 +144,7 @@ lemma summable_jacobiTheta₂_term_iff (z τ : ℂ) : Summable (jacobiTheta₂_t
         refine tendsto_exp_atTop.comp ?_
         simp only [tendsto_neg_atTop_iff, mul_assoc]
         apply Filter.Tendsto.const_mul_atBot two_pos
-        exact (tendsto_natCast_atTop_atTop.atTop_mul_neg_const hz).const_mul_atBot pi_pos
+        exact (tendsto_natCast_atTop_atTop.atTop_mul_const_of_neg hz).const_mul_atBot pi_pos
       · revert h
         simpa only [hz, mul_zero, neg_zero, Real.exp_zero, summable_const_iff] using one_ne_zero
       · have : ((-↑·) : ℕ → ℤ).Injective := fun _ _ ↦ by simp only [neg_inj, Nat.cast_inj, imp_self]

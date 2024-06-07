@@ -3,11 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.CharZero
-import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Ring.Hom.Basic
+import Mathlib.Algebra.Ring.Int
+import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Nat.Cast.Order
 
 #align_import data.int.cast.lemmas from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -25,7 +24,9 @@ which were not available in the import dependencies of `Data.Int.Cast.Basic`.
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
 
-open Additive Multiplicative Nat
+assert_not_exists OrderedCommMonoid
+
+open Additive Function Multiplicative Nat
 
 variable {F ι α β : Type*}
 
@@ -35,28 +36,6 @@ namespace Int
 def ofNatHom : ℕ →+* ℤ :=
   Nat.castRingHom ℤ
 #align int.of_nat_hom Int.ofNatHom
-
--- Porting note: no need to be `@[simp]`, as `Nat.cast_pos` handles this.
--- @[simp]
-theorem natCast_pos {n : ℕ} : (0 : ℤ) < n ↔ 0 < n :=
-  Nat.cast_pos
-#align int.coe_nat_pos Int.natCast_pos
-
-theorem natCast_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) :=
-  Int.natCast_pos.2 (succ_pos n)
-#align int.coe_nat_succ_pos Int.natCast_succ_pos
-
--- 2024-04-05
-@[deprecated] alias coe_nat_pos := natCast_pos
-@[deprecated] alias coe_nat_succ_pos := natCast_succ_pos
-
-lemma toNat_lt' {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.toNat < b ↔ a < b := by
-  rw [← toNat_lt_toNat, toNat_natCast]; exact natCast_pos.2 hb.bot_lt
-#align int.to_nat_lt Int.toNat_lt'
-
-lemma natMod_lt {a : ℤ} {b : ℕ} (hb : b ≠ 0) : a.natMod b < b :=
-  (toNat_lt' hb).2 <| emod_lt_of_pos _ <| natCast_pos.2 hb.bot_lt
-#align int.nat_mod_lt Int.natMod_lt
 
 section cast
 
@@ -73,10 +52,43 @@ def castAddHom (α : Type*) [AddGroupWithOne α] : ℤ →+ α where
   map_add' := cast_add
 #align int.cast_add_hom Int.castAddHom
 
-@[simp]
-theorem coe_castAddHom [AddGroupWithOne α] : ⇑(castAddHom α) = fun x : ℤ => (x : α) :=
-  rfl
+section AddGroupWithOne
+variable [AddGroupWithOne α]
+
+@[simp] lemma coe_castAddHom : ⇑(castAddHom α) = fun x : ℤ => (x : α) := rfl
 #align int.coe_cast_add_hom Int.coe_castAddHom
+
+lemma Even.intCast {n : ℤ} (h : Even n) : Even (n : α) := h.map (castAddHom α)
+
+variable [CharZero α] {m n : ℤ}
+
+@[simp] lemma cast_eq_zero : (n : α) = 0 ↔ n = 0 where
+  mp h := by
+    cases n
+    · erw [Int.cast_natCast] at h
+      exact congr_arg _ (Nat.cast_eq_zero.1 h)
+    · rw [cast_negSucc, neg_eq_zero, Nat.cast_eq_zero] at h
+      contradiction
+  mpr h := by rw [h, cast_zero]
+#align int.cast_eq_zero Int.cast_eq_zero
+
+@[simp, norm_cast]
+lemma cast_inj : (m : α) = n ↔ m = n := by rw [← sub_eq_zero, ← cast_sub, cast_eq_zero, sub_eq_zero]
+#align int.cast_inj Int.cast_inj
+
+lemma cast_injective : Injective (Int.cast : ℤ → α) := fun _ _ ↦ cast_inj.1
+#align int.cast_injective Int.cast_injective
+
+lemma cast_ne_zero : (n : α) ≠ 0 ↔ n ≠ 0 := not_congr cast_eq_zero
+#align int.cast_ne_zero Int.cast_ne_zero
+
+@[simp] lemma cast_eq_one : (n : α) = 1 ↔ n = 1 := by rw [← cast_one, cast_inj]
+#align int.cast_eq_one Int.cast_eq_one
+
+lemma cast_ne_one : (n : α) ≠ 1 ↔ n ≠ 1 := cast_eq_one.not
+#align int.cast_ne_one Int.cast_ne_one
+
+end AddGroupWithOne
 
 section NonAssocRing
 variable [NonAssocRing α] {a b : α} {n : ℤ}
@@ -121,117 +133,16 @@ lemma _root_.zsmul_eq_mul' (a : α) (n : ℤ) : n • a = a * n := by
   rw [zsmul_eq_mul, (n.cast_commute a).eq]
 #align zsmul_eq_mul' zsmul_eq_mul'
 
+lemma _root_.Odd.intCast {n : ℤ} (hn : Odd n) : Odd (n : α) :=
+  hn.map (castRingHom α)
+
 end Ring
 
-theorem cast_mono [OrderedRing α] : Monotone (fun x : ℤ => (x : α)) := by
-  intro m n h
-  rw [← sub_nonneg] at h
-  lift n - m to ℕ using h with k hk
-  rw [← sub_nonneg, ← cast_sub, ← hk, cast_natCast]
-  exact k.cast_nonneg
-#align int.cast_mono Int.cast_mono
-
-@[simp]
-theorem cast_nonneg [OrderedRing α] [Nontrivial α] : ∀ {n : ℤ}, (0 : α) ≤ n ↔ 0 ≤ n
-  | (n : ℕ) => by simp
-  | -[n+1] => by
-    have : -(n : α) < 1 := lt_of_le_of_lt (by simp) zero_lt_one
-    simpa [(negSucc_lt_zero n).not_le, ← sub_eq_add_neg, le_neg] using this.not_le
-#align int.cast_nonneg Int.cast_nonneg
-
-@[simp, norm_cast]
-theorem cast_le [OrderedRing α] [Nontrivial α] {m n : ℤ} : (m : α) ≤ n ↔ m ≤ n := by
-  rw [← sub_nonneg, ← cast_sub, cast_nonneg, sub_nonneg]
-#align int.cast_le Int.cast_le
-
-theorem cast_strictMono [OrderedRing α] [Nontrivial α] : StrictMono (fun x : ℤ => (x : α)) :=
-  strictMono_of_le_iff_le fun _ _ => cast_le.symm
-#align int.cast_strict_mono Int.cast_strictMono
-
-@[simp, norm_cast]
-theorem cast_lt [OrderedRing α] [Nontrivial α] {m n : ℤ} : (m : α) < n ↔ m < n :=
-  cast_strictMono.lt_iff_lt
-#align int.cast_lt Int.cast_lt
-
-@[simp]
-theorem cast_nonpos [OrderedRing α] [Nontrivial α] {n : ℤ} : (n : α) ≤ 0 ↔ n ≤ 0 := by
-  rw [← cast_zero, cast_le]
-#align int.cast_nonpos Int.cast_nonpos
-
-@[simp]
-theorem cast_pos [OrderedRing α] [Nontrivial α] {n : ℤ} : (0 : α) < n ↔ 0 < n := by
-  rw [← cast_zero, cast_lt]
-#align int.cast_pos Int.cast_pos
-
-@[simp]
-theorem cast_lt_zero [OrderedRing α] [Nontrivial α] {n : ℤ} : (n : α) < 0 ↔ n < 0 := by
-  rw [← cast_zero, cast_lt]
-#align int.cast_lt_zero Int.cast_lt_zero
-
-section LinearOrderedRing
-
-variable [LinearOrderedRing α] {a b : ℤ} (n : ℤ)
-
-@[simp, norm_cast]
-theorem cast_min : (↑(min a b) : α) = min (a : α) (b : α) :=
-  Monotone.map_min cast_mono
-#align int.cast_min Int.cast_min
-
-@[simp, norm_cast]
-theorem cast_max : (↑(max a b) : α) = max (a : α) (b : α) :=
-  Monotone.map_max cast_mono
-#align int.cast_max Int.cast_max
-
-@[simp, norm_cast]
-theorem cast_abs : ((|a| : ℤ) : α) = |(a : α)| := by simp [abs_eq_max_neg]
-#align int.cast_abs Int.cast_abs
-
-theorem cast_one_le_of_pos (h : 0 < a) : (1 : α) ≤ a := mod_cast Int.add_one_le_of_lt h
-#align int.cast_one_le_of_pos Int.cast_one_le_of_pos
-
-theorem cast_le_neg_one_of_neg (h : a < 0) : (a : α) ≤ -1 := by
-  rw [← Int.cast_one, ← Int.cast_neg, cast_le]
-  exact Int.le_sub_one_of_lt h
-#align int.cast_le_neg_one_of_neg Int.cast_le_neg_one_of_neg
-
-variable (α) {n}
-
-theorem cast_le_neg_one_or_one_le_cast_of_ne_zero (hn : n ≠ 0) : (n : α) ≤ -1 ∨ 1 ≤ (n : α) :=
-  hn.lt_or_lt.imp cast_le_neg_one_of_neg cast_one_le_of_pos
-#align int.cast_le_neg_one_or_one_le_cast_of_ne_zero Int.cast_le_neg_one_or_one_le_cast_of_ne_zero
-
-variable {α} (n)
-
-theorem nneg_mul_add_sq_of_abs_le_one {x : α} (hx : |x| ≤ 1) : (0 : α) ≤ n * x + n * n := by
-  have hnx : 0 < n → 0 ≤ x + n := fun hn => by
-    have := _root_.add_le_add (neg_le_of_abs_le hx) (cast_one_le_of_pos hn)
-    rwa [add_left_neg] at this
-  have hnx' : n < 0 → x + n ≤ 0 := fun hn => by
-    have := _root_.add_le_add (le_of_abs_le hx) (cast_le_neg_one_of_neg hn)
-    rwa [add_right_neg] at this
-  rw [← mul_add, mul_nonneg_iff]
-  rcases lt_trichotomy n 0 with (h | rfl | h)
-  · exact Or.inr ⟨mod_cast h.le, hnx' h⟩
-  · simp [le_total 0 x]
-  · exact Or.inl ⟨mod_cast h.le, hnx h⟩
-#align int.nneg_mul_add_sq_of_abs_le_one Int.nneg_mul_add_sq_of_abs_le_one
-
-theorem cast_natAbs : (n.natAbs : α) = |n| := by
-  cases n
-  · simp
-  · rw [abs_eq_natAbs, natAbs_negSucc, cast_succ, cast_natCast, cast_succ]
-#align int.cast_nat_abs Int.cast_natAbs
-
-end LinearOrderedRing
-
-theorem coe_int_dvd [CommRing α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
+theorem cast_dvd_cast [CommRing α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
   RingHom.map_dvd (Int.castRingHom α) h
-#align int.coe_int_dvd Int.coe_int_dvd
+#align int.cast_dvd Int.cast_dvd_cast
 
--- Porting note: `simp` and `norm_cast` attribute removed. This is a special case of `Nat.cast_pow`
-lemma coe_nat_pow (m n : ℕ) : ↑(m ^ n : ℕ) = (m ^ n : ℤ) := by
-  induction' m with m _ <;> simp
-#align int.coe_nat_pow Int.coe_nat_pow
+@[deprecated (since := "2024-05-25")] alias coe_int_dvd := cast_dvd_cast
 
 end cast
 
@@ -242,17 +153,21 @@ open Int
 namespace SemiconjBy
 variable [Ring α] {a x y : α}
 
-@[simp] lemma cast_int_mul_right (h : SemiconjBy a x y) (n : ℤ) : SemiconjBy a (n * x) (n * y) :=
+@[simp] lemma intCast_mul_right (h : SemiconjBy a x y) (n : ℤ) : SemiconjBy a (n * x) (n * y) :=
   SemiconjBy.mul_right (Int.commute_cast _ _) h
-#align semiconj_by.cast_int_mul_right SemiconjBy.cast_int_mul_right
+#align semiconj_by.cast_int_mul_right SemiconjBy.intCast_mul_right
 
-@[simp] lemma cast_int_mul_left (h : SemiconjBy a x y) (n : ℤ) : SemiconjBy (n * a) x y :=
+@[simp] lemma intCast_mul_left (h : SemiconjBy a x y) (n : ℤ) : SemiconjBy (n * a) x y :=
   SemiconjBy.mul_left (Int.cast_commute _ _) h
-#align semiconj_by.cast_int_mul_left SemiconjBy.cast_int_mul_left
+#align semiconj_by.cast_int_mul_left SemiconjBy.intCast_mul_left
 
-@[simp] lemma cast_int_mul_cast_int_mul (h : SemiconjBy a x y) (m n : ℤ) :
-    SemiconjBy (m * a) (n * x) (n * y) := (h.cast_int_mul_left m).cast_int_mul_right n
-#align semiconj_by.cast_int_mul_cast_int_mul SemiconjBy.cast_int_mul_cast_int_mul
+@[simp] lemma intCast_mul_intCast_mul (h : SemiconjBy a x y) (m n : ℤ) :
+    SemiconjBy (m * a) (n * x) (n * y) := (h.intCast_mul_left m).intCast_mul_right n
+#align semiconj_by.cast_int_mul_cast_int_mul SemiconjBy.intCast_mul_intCast_mul
+
+@[deprecated (since := "2024-05-27")] alias cast_int_mul_right := intCast_mul_right
+@[deprecated (since := "2024-05-27")] alias cast_int_mul_left := intCast_mul_left
+@[deprecated (since := "2024-05-27")] alias cast_int_mul_cast_int_mul := intCast_mul_intCast_mul
 
 end SemiconjBy
 
@@ -260,27 +175,31 @@ namespace Commute
 section NonAssocRing
 variable [NonAssocRing α] {a b : α} {n : ℤ}
 
-@[simp] lemma cast_int_left : Commute (n : α) a := Int.cast_commute _ _
-#align commute.cast_int_left Commute.cast_int_left
+@[simp] lemma intCast_left : Commute (n : α) a := Int.cast_commute _ _
+#align commute.cast_int_left Commute.intCast_left
 
-@[simp] lemma cast_int_right : Commute a n := Int.commute_cast _ _
-#align commute.cast_int_right Commute.cast_int_right
+@[simp] lemma intCast_right : Commute a n := Int.commute_cast _ _
+#align commute.cast_int_right Commute.intCast_right
+
+@[deprecated (since := "2024-05-27")] alias cast_int_right := intCast_right
+@[deprecated (since := "2024-05-27")] alias cast_int_left := intCast_left
+
 end NonAssocRing
 
 section Ring
 variable [Ring α] {a b : α} {n : ℤ}
 
-@[simp] lemma cast_int_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b) :=
-  SemiconjBy.cast_int_mul_right h m
-#align commute.cast_int_mul_right Commute.cast_int_mul_right
+@[simp] lemma intCast_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b) :=
+  SemiconjBy.intCast_mul_right h m
+#align commute.cast_int_mul_right Commute.intCast_mul_right
 
-@[simp] lemma cast_int_mul_left (h : Commute a b) (m : ℤ) : Commute (m  * a) b :=
-  SemiconjBy.cast_int_mul_left h m
-#align commute.cast_int_mul_left Commute.cast_int_mul_left
+@[simp] lemma intCast_mul_left (h : Commute a b) (m : ℤ) : Commute (m  * a) b :=
+  SemiconjBy.intCast_mul_left h m
+#align commute.cast_int_mul_left Commute.intCast_mul_left
 
-lemma cast_int_mul_cast_int_mul (h : Commute a b) (m n : ℤ) : Commute (m * a) (n * b) :=
-  SemiconjBy.cast_int_mul_cast_int_mul h m n
-#align commute.cast_int_mul_cast_int_mul Commute.cast_int_mul_cast_int_mul
+lemma intCast_mul_intCast_mul (h : Commute a b) (m n : ℤ) : Commute (m * a) (n * b) :=
+  SemiconjBy.intCast_mul_intCast_mul h m n
+#align commute.cast_int_mul_cast_int_mul Commute.intCast_mul_intCast_mul
 
 variable (a) (m n : ℤ)
 
@@ -289,20 +208,28 @@ simp can prove this:
   by simp only [Commute.cast_int_right, Commute.refl, Commute.mul_right]
 -/
 -- @[simp]
-lemma self_cast_int_mul : Commute a (n * a : α) := (Commute.refl a).cast_int_mul_right n
-#align commute.self_cast_int_mul Commute.self_cast_int_mul
+lemma self_intCast_mul : Commute a (n * a : α) := (Commute.refl a).intCast_mul_right n
+#align commute.self_cast_int_mul Commute.self_intCast_mul
 
 /- Porting note (#10618): `simp` attribute removed as linter reports:
 simp can prove this:
   by simp only [Commute.cast_int_left, Commute.refl, Commute.mul_left]
 -/
 -- @[simp]
-lemma cast_int_mul_self : Commute ((n : α) * a) a := (Commute.refl a).cast_int_mul_left n
-#align commute.cast_int_mul_self Commute.cast_int_mul_self
+lemma intCast_mul_self : Commute ((n : α) * a) a := (Commute.refl a).intCast_mul_left n
+#align commute.cast_int_mul_self Commute.intCast_mul_self
 
-lemma self_cast_int_mul_cast_int_mul : Commute (m * a : α) (n * a : α) :=
-  (Commute.refl a).cast_int_mul_cast_int_mul m n
-#align commute.self_cast_int_mul_cast_int_mul Commute.self_cast_int_mul_cast_int_mul
+lemma self_intCast_mul_intCast_mul : Commute (m * a : α) (n * a : α) :=
+  (Commute.refl a).intCast_mul_intCast_mul m n
+#align commute.self_cast_int_mul_cast_int_mul Commute.self_intCast_mul_intCast_mul
+
+@[deprecated (since := "2024-05-27")] alias cast_int_mul_right := intCast_mul_right
+@[deprecated (since := "2024-05-27")] alias cast_int_mul_left := intCast_mul_left
+@[deprecated (since := "2024-05-27")] alias cast_int_mul_cast_int_mul := intCast_mul_intCast_mul
+@[deprecated (since := "2024-05-27")] alias self_cast_int_mul := self_intCast_mul
+@[deprecated (since := "2024-05-27")] alias cast_int_mul_self := intCast_mul_self
+@[deprecated (since := "2024-05-27")]
+alias self_cast_int_mul_cast_int_mul := self_intCast_mul_intCast_mul
 
 end Ring
 end Commute
@@ -327,6 +254,9 @@ variable [AddGroupWithOne A]
 theorem eq_intCastAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A :=
   ext_int <| by simp [h1]
 #align add_monoid_hom.eq_int_cast_hom AddMonoidHom.eq_intCastAddHom
+
+@[deprecated (since := "2024-04-17")]
+alias eq_int_castAddHom := eq_intCastAddHom
 
 end AddMonoidHom
 
@@ -539,50 +469,3 @@ theorem Sum.elim_intCast_intCast {α β γ : Type*} [IntCast γ] (n : ℤ) :
     Sum.elim (n : α → γ) (n : β → γ) = n :=
   Sum.elim_lam_const_lam_const (γ := γ) n
 #align sum.elim_int_cast_int_cast Sum.elim_intCast_intCast
-
-
-/-! ### Order dual -/
-
-
-open OrderDual
-
-instance [h : IntCast α] : IntCast αᵒᵈ :=
-  h
-
-instance [h : AddGroupWithOne α] : AddGroupWithOne αᵒᵈ :=
-  h
-
-instance [h : AddCommGroupWithOne α] : AddCommGroupWithOne αᵒᵈ :=
-  h
-
-@[simp]
-theorem toDual_intCast [IntCast α] (n : ℤ) : toDual (n : α) = n :=
-  rfl
-#align to_dual_int_cast toDual_intCast
-
-@[simp]
-theorem ofDual_intCast [IntCast α] (n : ℤ) : (ofDual n : α) = n :=
-  rfl
-#align of_dual_int_cast ofDual_intCast
-
-/-! ### Lexicographic order -/
-
-
-instance [h : IntCast α] : IntCast (Lex α) :=
-  h
-
-instance [h : AddGroupWithOne α] : AddGroupWithOne (Lex α) :=
-  h
-
-instance [h : AddCommGroupWithOne α] : AddCommGroupWithOne (Lex α) :=
-  h
-
-@[simp]
-theorem toLex_intCast [IntCast α] (n : ℤ) : toLex (n : α) = n :=
-  rfl
-#align to_lex_int_cast toLex_intCast
-
-@[simp]
-theorem ofLex_intCast [IntCast α] (n : ℤ) : (ofLex n : α) = n :=
-  rfl
-#align of_lex_int_cast ofLex_intCast

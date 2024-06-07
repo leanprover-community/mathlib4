@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
@@ -357,7 +357,7 @@ def KaehlerDifferential.linearMapEquivDerivation : (Ω[S⁄R] →ₗ[S] M) ≃�
 def KaehlerDifferential.quotientCotangentIdealRingEquiv :
     (S ⊗ S ⧸ KaehlerDifferential.ideal R S ^ 2) ⧸ (KaehlerDifferential.ideal R S).cotangentIdeal ≃+*
       S := by
-  have : Function.RightInverse (TensorProduct.includeLeft (R := R) (A := S) (B := S))
+  have : Function.RightInverse (TensorProduct.includeLeft (R := R) (S := R) (A := S) (B := S))
       (↑(TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S) : S ⊗[R] S →+* S) := by
     intro x; rw [AlgHom.coe_toRingHom, ← AlgHom.comp_apply, TensorProduct.lmul'_comp_includeLeft]
     rfl
@@ -632,10 +632,8 @@ theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A 
       (KaehlerDifferential.kerTotal S B).restrictScalars _ := by
   rw [KaehlerDifferential.kerTotal, Submodule.map_span, KaehlerDifferential.kerTotal,
     Submodule.restrictScalars_span _ _ h]
-  -- Porting note: the proof is diverging from the mathlib3 proof here.
-  -- `map_sub` and `map_add` are not firing so we need to use `LinearMap.map_*` instead
   simp_rw [Set.image_union, Submodule.span_union, ← Set.image_univ, Set.image_image, Set.image_univ,
-    LinearMap.map_sub, LinearMap.map_add]
+    map_sub, map_add]
   simp only [LinearMap.comp_apply, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply,
     map_one, map_add, map_mul]

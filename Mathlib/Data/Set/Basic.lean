@@ -524,7 +524,7 @@ theorem nonempty_of_nonempty_subtype [Nonempty (↥s)] : s.Nonempty :=
 /-! ### Lemmas about the empty set -/
 
 
-theorem empty_def : (↥(∅ : Set α)) = { _x : α | False } :=
+theorem empty_def : (∅ : Set α) = { _x : α | False } :=
   rfl
 #align set.empty_def Set.empty_def
 
@@ -793,11 +793,11 @@ theorem union_eq_self_of_subset_right {s t : Set α} (h : t ⊆ s) : s ∪ t = s
 #align set.union_eq_self_of_subset_right Set.union_eq_self_of_subset_right
 
 @[simp]
-theorem subset_union_left (s t : Set α) : s ⊆ s ∪ t := fun _ => Or.inl
+theorem subset_union_left {s t : Set α} : s ⊆ s ∪ t := fun _ => Or.inl
 #align set.subset_union_left Set.subset_union_left
 
 @[simp]
-theorem subset_union_right (s t : Set α) : t ⊆ s ∪ t := fun _ => Or.inr
+theorem subset_union_right {s t : Set α} : t ⊆ s ∪ t := fun _ => Or.inr
 #align set.subset_union_right Set.subset_union_right
 
 theorem union_subset {s t r : Set α} (sr : s ⊆ r) (tr : t ⊆ r) : s ∪ t ⊆ r := fun _ =>
@@ -825,11 +825,11 @@ theorem union_subset_union_right (s) {t₁ t₂ : Set α} (h : t₁ ⊆ t₂) : 
 #align set.union_subset_union_right Set.union_subset_union_right
 
 theorem subset_union_of_subset_left {s t : Set α} (h : s ⊆ t) (u : Set α) : s ⊆ t ∪ u :=
-  Subset.trans h (subset_union_left t u)
+  h.trans subset_union_left
 #align set.subset_union_of_subset_left Set.subset_union_of_subset_left
 
 theorem subset_union_of_subset_right {s u : Set α} (h : s ⊆ u) (t : Set α) : s ⊆ t ∪ u :=
-  Subset.trans h (subset_union_right t u)
+  h.trans subset_union_right
 #align set.subset_union_of_subset_right Set.subset_union_of_subset_right
 
 -- Porting note: replaced `⊔` in RHS
@@ -927,11 +927,11 @@ theorem inter_right_comm (s₁ s₂ s₃ : Set α) : s₁ ∩ s₂ ∩ s₃ = s�
 #align set.inter_right_comm Set.inter_right_comm
 
 @[simp, mfld_simps]
-theorem inter_subset_left (s t : Set α) : s ∩ t ⊆ s := fun _ => And.left
+theorem inter_subset_left {s t : Set α} : s ∩ t ⊆ s := fun _ => And.left
 #align set.inter_subset_left Set.inter_subset_left
 
 @[simp]
-theorem inter_subset_right (s t : Set α) : s ∩ t ⊆ t := fun _ => And.right
+theorem inter_subset_right {s t : Set α} : s ∩ t ⊆ t := fun _ => And.right
 #align set.inter_subset_right Set.inter_subset_right
 
 theorem subset_inter {s t r : Set α} (rs : r ⊆ s) (rt : r ⊆ t) : r ⊆ s ∩ t := fun _ h =>
@@ -1001,11 +1001,11 @@ theorem inter_subset_inter_right {s t : Set α} (u : Set α) (H : s ⊆ t) : u �
 #align set.inter_subset_inter_right Set.inter_subset_inter_right
 
 theorem union_inter_cancel_left {s t : Set α} : (s ∪ t) ∩ s = s :=
-  inter_eq_self_of_subset_right <| subset_union_left _ _
+  inter_eq_self_of_subset_right subset_union_left
 #align set.union_inter_cancel_left Set.union_inter_cancel_left
 
 theorem union_inter_cancel_right {s t : Set α} : (s ∪ t) ∩ t = t :=
-  inter_eq_self_of_subset_right <| subset_union_right _ _
+  inter_eq_self_of_subset_right subset_union_right
 #align set.union_inter_cancel_right Set.union_inter_cancel_right
 
 theorem inter_setOf_eq_sep (s : Set α) (p : α → Prop) : s ∩ {a | p a} = {a ∈ s | p a} :=
@@ -1133,7 +1133,7 @@ theorem insert_subset_insert (h : s ⊆ t) : insert a s ⊆ insert a t := fun _ 
 #align set.insert_subset_insert Set.insert_subset_insert
 
 @[simp] theorem insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
-  refine' ⟨fun h x hx => _, insert_subset_insert⟩
+  refine ⟨fun h x hx => ?_, insert_subset_insert⟩
   rcases h (subset_insert _ _ hx) with (rfl | hxt)
   exacts [(ha hx).elim, hxt]
 #align set.insert_subset_insert_iff Set.insert_subset_insert_iff
@@ -1218,7 +1218,7 @@ theorem forall_mem_insert {P : α → Prop} {a : α} {s : Set α} :
 /-! ### Lemmas about singletons -/
 
 /- porting note: instance was in core in Lean3 -/
-instance : IsLawfulSingleton α (Set α) :=
+instance : LawfulSingleton α (Set α) :=
   ⟨fun x => Set.ext fun a => by
     simp only [mem_empty_iff_false, mem_insert_iff, or_false]
     exact Iff.rfl⟩
@@ -1576,7 +1576,7 @@ lemma disjoint_sdiff_right : Disjoint s (t \ s) := disjoint_sdiff_self_right
 
 -- TODO: prove this in terms of a lattice lemma
 theorem disjoint_sdiff_inter : Disjoint (s \ t) (s ∩ t) :=
-  disjoint_of_subset_right (inter_subset_right _ _) disjoint_sdiff_left
+  disjoint_of_subset_right inter_subset_right disjoint_sdiff_left
 #align set.disjoint_sdiff_inter Set.disjoint_sdiff_inter
 
 theorem diff_union_diff_cancel (hts : t ⊆ s) (hut : u ⊆ t) : s \ t ∪ t \ u = s \ u :=
@@ -1595,8 +1595,8 @@ lemma disjoint_singleton_right : Disjoint s {a} ↔ a ∉ s :=
   disjoint_comm.trans disjoint_singleton_left
 #align set.disjoint_singleton_right Set.disjoint_singleton_right
 
-lemma disjoint_singleton : Disjoint ({a} : Set α) {b} ↔ a ≠ b :=
-  by simp
+lemma disjoint_singleton : Disjoint ({a} : Set α) {b} ↔ a ≠ b := by
+  simp
 #align set.disjoint_singleton Set.disjoint_singleton
 
 lemma subset_diff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.symm.trans le_sdiff
@@ -1800,9 +1800,11 @@ theorem nonempty_diff {s t : Set α} : (s \ t).Nonempty ↔ ¬s ⊆ t :=
   inter_compl_nonempty_iff
 #align set.nonempty_diff Set.nonempty_diff
 
-theorem diff_subset (s t : Set α) : s \ t ⊆ s :=
-  show s \ t ≤ s from sdiff_le
+theorem diff_subset {s t : Set α} : s \ t ⊆ s := show s \ t ≤ s from sdiff_le
 #align set.diff_subset Set.diff_subset
+
+theorem diff_subset_compl (s t : Set α) : s \ t ⊆ tᶜ :=
+  diff_eq_compl_inter ▸ inter_subset_left
 
 theorem union_diff_cancel' {s t u : Set α} (h₁ : s ⊆ t) (h₂ : t ⊆ u) : t ∪ u \ s = u :=
   sup_sdiff_cancel' h₁ h₂
@@ -1915,7 +1917,7 @@ theorem subset_diff_union (s t : Set α) : s ⊆ s \ t ∪ t :=
 #align set.subset_diff_union Set.subset_diff_union
 
 theorem diff_union_of_subset {s t : Set α} (h : t ⊆ s) : s \ t ∪ t = s :=
-  Subset.antisymm (union_subset (diff_subset _ _) h) (subset_diff_union _ _)
+  Subset.antisymm (union_subset diff_subset h) (subset_diff_union _ _)
 #align set.diff_union_of_subset Set.diff_union_of_subset
 
 @[simp]
@@ -2283,11 +2285,11 @@ theorem ite_mono (t : Set α) {s₁ s₁' s₂ s₂' : Set α} (h : s₁ ⊆ s�
 #align set.ite_mono Set.ite_mono
 
 theorem ite_subset_union (t s s' : Set α) : t.ite s s' ⊆ s ∪ s' :=
-  union_subset_union (inter_subset_left _ _) (diff_subset _ _)
+  union_subset_union inter_subset_left diff_subset
 #align set.ite_subset_union Set.ite_subset_union
 
 theorem inter_subset_ite (t s s' : Set α) : s ∩ s' ⊆ t.ite s s' :=
-  ite_same t (s ∩ s') ▸ ite_mono _ (inter_subset_left _ _) (inter_subset_right _ _)
+  ite_same t (s ∩ s') ▸ ite_mono _ inter_subset_left inter_subset_right
 #align set.inter_subset_ite Set.inter_subset_ite
 
 theorem ite_inter_inter (t s₁ s₂ s₁' s₂' : Set α) :
@@ -2307,7 +2309,7 @@ theorem ite_inter_of_inter_eq (t : Set α) {s₁ s₂ s : Set α} (h : s₁ ∩ 
 
 theorem subset_ite {t s s' u : Set α} : u ⊆ t.ite s s' ↔ u ∩ t ⊆ s ∧ u \ t ⊆ s' := by
   simp only [subset_def, ← forall_and]
-  refine' forall_congr' fun x => _
+  refine forall_congr' fun x => ?_
   by_cases hx : x ∈ t <;> simp [*, Set.ite]
 #align set.subset_ite Set.subset_ite
 
@@ -2446,6 +2448,9 @@ theorem coe_inclusion (h : s ⊆ t) (x : s) : (inclusion h x : α) = (x : α) :=
   rfl
 #align set.coe_inclusion Set.coe_inclusion
 
+theorem val_comp_inclusion (h : s ⊆ t) : Subtype.val ∘ inclusion h = Subtype.val :=
+  rfl
+
 theorem inclusion_injective (h : s ⊆ t) : Injective (inclusion h)
   | ⟨_, _⟩, ⟨_, _⟩ => Subtype.ext_iff_val.2 ∘ Subtype.ext_iff_val.1
 #align set.inclusion_injective Set.inclusion_injective
@@ -2456,7 +2461,7 @@ theorem inclusion_inj (h : s ⊆ t) {x y : s} : inclusion h x = inclusion h y �
 
 theorem eq_of_inclusion_surjective {s t : Set α} {h : s ⊆ t}
     (h_surj : Function.Surjective (inclusion h)) : s = t := by
-  refine' Set.Subset.antisymm h (fun x hx => _)
+  refine Set.Subset.antisymm h (fun x hx => ?_)
   obtain ⟨y, hy⟩ := h_surj ⟨x, hx⟩
   exact mem_of_eq_of_mem (congr_arg Subtype.val hy).symm y.prop
 #align set.eq_of_inclusion_surjective Set.eq_of_inclusion_surjective

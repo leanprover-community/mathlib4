@@ -50,7 +50,7 @@ namespace MvPolynomial
 
 noncomputable section
 
-open scoped BigOperators Classical
+open scoped Classical
 
 open Set LinearMap Submodule
 
@@ -79,11 +79,11 @@ theorem eval_indicator_apply_eq_one (a : σ → K) : eval a (indicator a) = 1 :=
 theorem degrees_indicator (c : σ → K) :
     degrees (indicator c) ≤ ∑ s : σ, (Fintype.card K - 1) • {s} := by
   rw [indicator]
-  refine' le_trans (degrees_prod _ _) (Finset.sum_le_sum fun s _ => _)
-  refine' le_trans (degrees_sub _ _) _
+  refine le_trans (degrees_prod _ _) (Finset.sum_le_sum fun s _ => ?_)
+  refine le_trans (degrees_sub _ _) ?_
   rw [degrees_one, ← bot_eq_zero, bot_sup_eq]
-  refine' le_trans (degrees_pow _ _) (nsmul_le_nsmul_right _ _)
-  refine' le_trans (degrees_sub _ _) _
+  refine le_trans (degrees_pow _ _) (nsmul_le_nsmul_right ?_ _)
+  refine le_trans (degrees_sub _ _) ?_
   rw [degrees_C, ← bot_eq_zero, sup_bot_eq]
   exact degrees_X' _
 #align mv_polynomial.degrees_indicator MvPolynomial.degrees_indicator
@@ -92,11 +92,11 @@ theorem indicator_mem_restrictDegree (c : σ → K) :
     indicator c ∈ restrictDegree σ K (Fintype.card K - 1) := by
   rw [mem_restrictDegree_iff_sup, indicator]
   intro n
-  refine' le_trans (Multiset.count_le_of_le _ <| degrees_indicator _) (le_of_eq _)
+  refine le_trans (Multiset.count_le_of_le _ <| degrees_indicator _) (le_of_eq ?_)
   simp_rw [← Multiset.coe_countAddMonoidHom, map_sum,
     AddMonoidHom.map_nsmul, Multiset.coe_countAddMonoidHom, nsmul_eq_mul, Nat.cast_id]
   trans
-  · refine' Finset.sum_eq_single n _ _
+  · refine Finset.sum_eq_single n ?_ ?_
     · intro b _ ne
       simp [Multiset.count_singleton, ne, if_neg (Ne.symm _)]
     · intro h; exact (h <| Finset.mem_univ _).elim
@@ -111,7 +111,7 @@ theorem eval_indicator_apply_eq_zero (a b : σ → K) (h : a ≠ b) : eval a (in
   obtain ⟨i, hi⟩ : ∃ i, a i ≠ b i := by rwa [Ne, Function.funext_iff, not_forall] at h
   simp only [indicator, map_prod, map_sub, map_one, map_pow, eval_X, eval_C, sub_self,
     Finset.prod_eq_zero_iff]
-  refine' ⟨i, Finset.mem_univ _, _⟩
+  refine ⟨i, Finset.mem_univ _, ?_⟩
   rw [FiniteField.pow_card_sub_one_eq_one, sub_self]
   rwa [Ne, sub_eq_zero]
 #align mv_polynomial.eval_indicator_apply_eq_zero MvPolynomial.eval_indicator_apply_eq_zero
@@ -136,15 +136,15 @@ variable [Field K] [Fintype K] [Finite σ]
 -- `variable (K σ)` (I don't understand why). They are now explicit, as expected.
 theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).map (evalₗ K σ) = ⊤ := by
   cases nonempty_fintype σ
-  refine' top_unique (SetLike.le_def.2 fun e _ => mem_map.2 _)
-  refine' ⟨∑ n : σ → K, e n • indicator n, _, _⟩
+  refine top_unique (SetLike.le_def.2 fun e _ => mem_map.2 ?_)
+  refine ⟨∑ n : σ → K, e n • indicator n, ?_, ?_⟩
   · exact sum_mem fun c _ => smul_mem _ _ (indicator_mem_restrictDegree _)
   · ext n
     simp only [_root_.map_sum, @Finset.sum_apply (σ → K) (fun _ => K) _ _ _ _ _, Pi.smul_apply,
       map_smul]
     simp only [evalₗ_apply]
     trans
-    · refine' Finset.sum_eq_single n (fun b _ h => _) _
+    · refine Finset.sum_eq_single n (fun b _ h => ?_) ?_
       · rw [eval_indicator_apply_eq_zero _ _ h.symm, smul_zero]
       · exact fun h => (h <| Finset.mem_univ n).elim
     · rw [eval_indicator_apply_eq_one, smul_eq_mul, mul_one]
@@ -209,8 +209,8 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
         (Finsupp.supportedEquivFinsupp { s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 })
     _ = #{ s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 } := by rw [rank_finsupp_self']
     _ = #{ s : σ → ℕ | ∀ n : σ, s n < Fintype.card K } := by
-      refine' Quotient.sound ⟨Equiv.subtypeEquiv Finsupp.equivFunOnFinite fun f => _⟩
-      refine' forall_congr' fun n => le_tsub_iff_right _
+      refine Quotient.sound ⟨Equiv.subtypeEquiv Finsupp.equivFunOnFinite fun f => ?_⟩
+      refine forall_congr' fun n => le_tsub_iff_right ?_
       exact Fintype.card_pos_iff.2 ⟨0⟩
     _ = #(σ → { n // n < Fintype.card K }) :=
       (@Equiv.subtypePiEquivPi σ (fun _ => ℕ) fun s n => n < Fintype.card K).cardinal_eq
@@ -242,7 +242,7 @@ theorem range_evalᵢ [Finite σ] : range (evalᵢ σ K) = ⊤ := by
 -- Porting note: was `(evalᵢ σ K).ker`.
 theorem ker_evalₗ [Finite σ] : ker (evalᵢ σ K) = ⊥ := by
   cases nonempty_fintype σ
-  refine' (ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank _).mpr (range_evalᵢ σ K)
+  refine (ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank ?_).mpr (range_evalᵢ σ K)
   rw [FiniteDimensional.finrank_fintype_fun_eq_card, finrank_R]
 #align mv_polynomial.ker_evalₗ MvPolynomial.ker_evalₗ
 

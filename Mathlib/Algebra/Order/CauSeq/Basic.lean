@@ -60,7 +60,7 @@ theorem rat_mul_continuous_lemma {ε K₁ K₂ : α} (ε0 : 0 < ε) :
       abv (a₂ - b₂) < δ → abv (a₁ * a₂ - b₁ * b₂) < ε := by
   have K0 : (0 : α) < max 1 (max K₁ K₂) := lt_of_lt_of_le zero_lt_one (le_max_left _ _)
   have εK := div_pos (half_pos ε0) K0
-  refine' ⟨_, εK, fun {a₁ a₂ b₁ b₂} ha₁ hb₂ h₁ h₂ => _⟩
+  refine ⟨_, εK, fun {a₁ a₂ b₁ b₂} ha₁ hb₂ h₁ h₂ => ?_⟩
   replace ha₁ := lt_of_lt_of_le ha₁ (le_trans (le_max_left _ K₂) (le_max_right 1 _))
   replace hb₂ := lt_of_lt_of_le hb₂ (le_trans (le_max_right K₁ _) (le_max_right 1 _))
   set M := max 1 (max K₁ K₂)
@@ -74,14 +74,14 @@ theorem rat_mul_continuous_lemma {ε K₁ K₂ : α} (ε0 : 0 < ε) :
 theorem rat_inv_continuous_lemma {β : Type*} [DivisionRing β] (abv : β → α) [IsAbsoluteValue abv]
     {ε K : α} (ε0 : 0 < ε) (K0 : 0 < K) :
     ∃ δ > 0, ∀ {a b : β}, K ≤ abv a → K ≤ abv b → abv (a - b) < δ → abv (a⁻¹ - b⁻¹) < ε := by
-  refine' ⟨K * ε * K, mul_pos (mul_pos K0 ε0) K0, fun {a b} ha hb h => _⟩
+  refine ⟨K * ε * K, mul_pos (mul_pos K0 ε0) K0, fun {a b} ha hb h => ?_⟩
   have a0 := K0.trans_le ha
   have b0 := K0.trans_le hb
   rw [inv_sub_inv' ((abv_pos abv).1 a0) ((abv_pos abv).1 b0), abv_mul abv, abv_mul abv, abv_inv abv,
     abv_inv abv, abv_sub abv]
-  refine' lt_of_mul_lt_mul_left (lt_of_mul_lt_mul_right _ b0.le) a0.le
+  refine lt_of_mul_lt_mul_left (lt_of_mul_lt_mul_right ?_ b0.le) a0.le
   rw [mul_assoc, inv_mul_cancel_right₀ b0.ne', ← mul_assoc, mul_inv_cancel a0.ne', one_mul]
-  refine' h.trans_le _
+  refine h.trans_le ?_
   gcongr
 #align rat_inv_continuous_lemma rat_inv_continuous_lemma
 
@@ -101,9 +101,9 @@ variable [LinearOrderedField α] [Ring β] {abv : β → α} [IsAbsoluteValue ab
 --@[nolint ge_or_gt] -- Porting note: restore attribute
 theorem cauchy₂ (hf : IsCauSeq abv f) {ε : α} (ε0 : 0 < ε) :
     ∃ i, ∀ j ≥ i, ∀ k ≥ i, abv (f j - f k) < ε := by
-  refine' (hf _ (half_pos ε0)).imp fun i hi j ij k ik => _
+  refine (hf _ (half_pos ε0)).imp fun i hi j ij k ik => ?_
   rw [← add_halves ε]
-  refine' lt_of_le_of_lt (abv_sub_le abv _ _ _) (add_lt_add (hi _ ij) _)
+  refine lt_of_le_of_lt (abv_sub_le abv _ _ _) (add_lt_add (hi _ ij) ?_)
   rw [abv_sub abv]; exact hi _ ik
 #align is_cau_seq.cauchy₂ IsCauSeq.cauchy₂
 
@@ -117,7 +117,7 @@ lemma bounded (hf : IsCauSeq abv f) : ∃ r, ∀ i, abv (f i) < r := by
   obtain ⟨i, h⟩ := hf _ zero_lt_one
   set R : ℕ → α := @Nat.rec (fun _ => α) (abv (f 0)) fun i c => max c (abv (f i.succ)) with hR
   have : ∀ i, ∀ j ≤ i, abv (f j) ≤ R i := by
-    refine' Nat.rec (by simp [hR]) _
+    refine Nat.rec (by simp [hR]) ?_
     rintro i hi j (rfl | hj)
     · simp [R]
     · exact (hi j hj).trans (le_max_left _ _)
@@ -504,13 +504,13 @@ theorem abv_pos_of_not_limZero {f : CauSeq β abv} (hf : ¬LimZero f) :
     ∃ K > 0, ∃ i, ∀ j ≥ i, K ≤ abv (f j) := by
   haveI := Classical.propDecidable
   by_contra nk
-  refine' hf fun ε ε0 => _
+  refine hf fun ε ε0 => ?_
   simp? [not_forall] at nk says
     simp only [gt_iff_lt, ge_iff_le, not_exists, not_and, not_forall, Classical.not_imp,
       not_le] at nk
   cases' f.cauchy₃ (half_pos ε0) with i hi
   rcases nk _ (half_pos ε0) i with ⟨j, ij, hj⟩
-  refine' ⟨j, fun k jk => _⟩
+  refine ⟨j, fun k jk => ?_⟩
   have := lt_of_le_of_lt (abv_add abv _ _) (add_lt_add (hi j ij k jk) hj)
   rwa [sub_add_cancel, add_halves] at this
 #align cau_seq.abv_pos_of_not_lim_zero CauSeq.abv_pos_of_not_limZero
@@ -710,8 +710,8 @@ theorem trichotomy (f : CauSeq α abs) : Pos f ∨ LimZero f ∨ Pos (-f) := by
   cases' Classical.em (LimZero f) with h h <;> simp [*]
   rcases abv_pos_of_not_limZero h with ⟨K, K0, hK⟩
   rcases exists_forall_ge_and hK (f.cauchy₃ K0) with ⟨i, hi⟩
-  refine' (le_total 0 (f i)).imp _ _ <;>
-    refine' fun h => ⟨K, K0, i, fun j ij => _⟩ <;>
+  refine (le_total 0 (f i)).imp ?_ ?_ <;>
+    refine fun h => ⟨K, K0, i, fun j ij => ?_⟩ <;>
     have := (hi _ ij).1 <;>
     cases' hi _ le_rfl with h₁ h₂
   · rwa [abs_of_nonneg] at this
@@ -892,14 +892,14 @@ theorem inf_equiv_inf {a₁ b₁ a₂ b₂ : CauSeq α abs} (ha : a₁ ≈ a₂)
 
 protected theorem sup_lt {a b c : CauSeq α abs} (ha : a < c) (hb : b < c) : a ⊔ b < c := by
   obtain ⟨⟨εa, εa0, ia, ha⟩, ⟨εb, εb0, ib, hb⟩⟩ := ha, hb
-  refine' ⟨εa ⊓ εb, lt_inf_iff.mpr ⟨εa0, εb0⟩, ia ⊔ ib, fun i hi => _⟩
+  refine ⟨εa ⊓ εb, lt_inf_iff.mpr ⟨εa0, εb0⟩, ia ⊔ ib, fun i hi => ?_⟩
   have := min_le_min (ha _ (sup_le_iff.mp hi).1) (hb _ (sup_le_iff.mp hi).2)
   exact this.trans_eq (min_sub_sub_left _ _ _)
 #align cau_seq.sup_lt CauSeq.sup_lt
 
 protected theorem lt_inf {a b c : CauSeq α abs} (hb : a < b) (hc : a < c) : a < b ⊓ c := by
   obtain ⟨⟨εb, εb0, ib, hb⟩, ⟨εc, εc0, ic, hc⟩⟩ := hb, hc
-  refine' ⟨εb ⊓ εc, lt_inf_iff.mpr ⟨εb0, εc0⟩, ib ⊔ ic, fun i hi => _⟩
+  refine ⟨εb ⊓ εc, lt_inf_iff.mpr ⟨εb0, εc0⟩, ib ⊔ ic, fun i hi => ?_⟩
   have := min_le_min (hb _ (sup_le_iff.mp hi).1) (hc _ (sup_le_iff.mp hi).2)
   exact this.trans_eq (min_sub_sub_right _ _ _)
 #align cau_seq.lt_inf CauSeq.lt_inf
@@ -921,25 +921,25 @@ protected theorem inf_comm (a b : CauSeq α abs) : a ⊓ b = b ⊓ a := Subtype.
 protected theorem sup_eq_right {a b : CauSeq α abs} (h : a ≤ b) : a ⊔ b ≈ b := by
   obtain ⟨ε, ε0 : _ < _, i, h⟩ | h := h
   · intro _ _
-    refine' ⟨i, fun j hj => _⟩
+    refine ⟨i, fun j hj => ?_⟩
     dsimp
     erw [← max_sub_sub_right]
     rwa [sub_self, max_eq_right, abs_zero]
     rw [sub_nonpos, ← sub_nonneg]
     exact ε0.le.trans (h _ hj)
-  · refine' Setoid.trans (sup_equiv_sup h (Setoid.refl _)) _
+  · refine Setoid.trans (sup_equiv_sup h (Setoid.refl _)) ?_
     rw [CauSeq.sup_idem]
 #align cau_seq.sup_eq_right CauSeq.sup_eq_right
 
 protected theorem inf_eq_right {a b : CauSeq α abs} (h : b ≤ a) : a ⊓ b ≈ b := by
   obtain ⟨ε, ε0 : _ < _, i, h⟩ | h := h
   · intro _ _
-    refine' ⟨i, fun j hj => _⟩
+    refine ⟨i, fun j hj => ?_⟩
     dsimp
     erw [← min_sub_sub_right]
     rwa [sub_self, min_eq_right, abs_zero]
     exact ε0.le.trans (h _ hj)
-  · refine' Setoid.trans (inf_equiv_inf (Setoid.symm h) (Setoid.refl _)) _
+  · refine Setoid.trans (inf_equiv_inf (Setoid.symm h) (Setoid.refl _)) ?_
     rw [CauSeq.inf_idem]
 #align cau_seq.inf_eq_right CauSeq.inf_eq_right
 
@@ -972,10 +972,10 @@ protected theorem sup_le {a b c : CauSeq α abs} (ha : a ≤ c) (hb : b ≤ c) :
   · cases' hb with hb hb
     · exact Or.inl (CauSeq.sup_lt ha hb)
     · replace ha := le_of_le_of_eq ha.le (Setoid.symm hb)
-      refine' le_of_le_of_eq (Or.inr _) hb
+      refine le_of_le_of_eq (Or.inr ?_) hb
       exact CauSeq.sup_eq_right ha
   · replace hb := le_of_le_of_eq hb (Setoid.symm ha)
-    refine' le_of_le_of_eq (Or.inr _) ha
+    refine le_of_le_of_eq (Or.inr ?_) ha
     exact CauSeq.sup_eq_left hb
 #align cau_seq.sup_le CauSeq.sup_le
 
@@ -984,10 +984,10 @@ protected theorem le_inf {a b c : CauSeq α abs} (hb : a ≤ b) (hc : a ≤ c) :
   · cases' hc with hc hc
     · exact Or.inl (CauSeq.lt_inf hb hc)
     · replace hb := le_of_eq_of_le (Setoid.symm hc) hb.le
-      refine' le_of_eq_of_le hc (Or.inr _)
+      refine le_of_eq_of_le hc (Or.inr ?_)
       exact Setoid.symm (CauSeq.inf_eq_right hb)
   · replace hc := le_of_eq_of_le (Setoid.symm hb) hc
-    refine' le_of_eq_of_le hb (Or.inr _)
+    refine le_of_eq_of_le hb (Or.inr ?_)
     exact Setoid.symm (CauSeq.inf_eq_left hc)
 #align cau_seq.le_inf CauSeq.le_inf
 

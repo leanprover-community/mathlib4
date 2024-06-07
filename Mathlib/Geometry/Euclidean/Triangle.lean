@@ -38,8 +38,6 @@ unnecessarily.
 
 noncomputable section
 
-open scoped BigOperators
-
 open scoped Classical
 
 open scoped Real
@@ -72,7 +70,7 @@ theorem norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_ang
 /-- **Pons asinorum**, vector angle form. -/
 theorem angle_sub_eq_angle_sub_rev_of_norm_eq {x y : V} (h : ‖x‖ = ‖y‖) :
     angle x (x - y) = angle y (y - x) := by
-  refine' Real.injOn_cos ⟨angle_nonneg _ _, angle_le_pi _ _⟩ ⟨angle_nonneg _ _, angle_le_pi _ _⟩ _
+  refine Real.injOn_cos ⟨angle_nonneg _ _, angle_le_pi _ _⟩ ⟨angle_nonneg _ _, angle_le_pi _ _⟩ ?_
   rw [cos_angle, cos_angle, h, ← neg_sub, norm_neg, neg_sub, inner_sub_right, inner_sub_right,
     real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm, h, real_inner_comm x y]
 #align inner_product_geometry.angle_sub_eq_angle_sub_rev_of_norm_eq InnerProductGeometry.angle_sub_eq_angle_sub_rev_of_norm_eq

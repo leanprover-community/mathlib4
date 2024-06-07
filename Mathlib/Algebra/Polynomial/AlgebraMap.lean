@@ -21,7 +21,7 @@ noncomputable section
 
 open Finset
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 
@@ -35,8 +35,7 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable {p q r : R[X]}
 
 /-- Note that this instance also provides `Algebra R R[X]`. -/
-instance algebraOfAlgebra : Algebra R A[X]
-    where
+instance algebraOfAlgebra : Algebra R A[X] where
   smul_def' r p :=
     toFinsupp_injective <| by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
@@ -112,12 +111,12 @@ variable {R}
 instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
   ⟨⟨⊥, ⊤, by
       rw [Ne, SetLike.ext_iff, not_forall]
-      refine' ⟨X, _⟩
+      refine ⟨X, ?_⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top,
         algebraMap_apply, not_forall]
       intro x
       rw [ext_iff, not_forall]
-      refine' ⟨1, _⟩
+      refine ⟨1, ?_⟩
       simp [coeff_C]⟩⟩
 
 @[simp]
@@ -140,10 +139,13 @@ set_option linter.uppercaseLean3 false in
 
 -- these used to be about `algebraMap ℤ R`, but now the simp-normal form is `Int.castRingHom R`.
 @[simp]
-theorem ringHom_eval₂_cast_int_ringHom {R S : Type*} [Ring R] [Ring S] (p : ℤ[X]) (f : R →+* S)
+theorem ringHom_eval₂_intCastRingHom {R S : Type*} [Ring R] [Ring S] (p : ℤ[X]) (f : R →+* S)
     (r : R) : f (eval₂ (Int.castRingHom R) r p) = eval₂ (Int.castRingHom S) (f r) p :=
   algHom_eval₂_algebraMap p f.toIntAlgHom r
-#align polynomial.ring_hom_eval₂_cast_int_ring_hom Polynomial.ringHom_eval₂_cast_int_ringHom
+#align polynomial.ring_hom_eval₂_cast_int_ring_hom Polynomial.ringHom_eval₂_intCastRingHom
+
+@[deprecated (since := "2024-05-27")]
+alias ringHom_eval₂_cast_int_ringHom := ringHom_eval₂_intCastRingHom
 
 @[simp]
 theorem eval₂_intCastRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] →+* R) :
@@ -151,6 +153,9 @@ theorem eval₂_intCastRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] �
   eval₂_algebraMap_X p f.toIntAlgHom
 set_option linter.uppercaseLean3 false in
 #align polynomial.eval₂_int_cast_ring_hom_X Polynomial.eval₂_intCastRingHom_X
+
+@[deprecated (since := "2024-04-17")]
+alias eval₂_int_castRingHom_X := eval₂_intCastRingHom_X
 
 end CommSemiring
 
@@ -178,7 +183,7 @@ def aeval : R[X] →ₐ[R] A :=
 
 @[simp]
 theorem adjoin_X : Algebra.adjoin R ({X} : Set R[X]) = ⊤ := by
-  refine' top_unique fun p _hp => _
+  refine top_unique fun p _hp => ?_
   set S := Algebra.adjoin R ({X} : Set R[X])
   rw [← sum_monomial_eq p]; simp only [← smul_X_eq_monomial, Sum]
   exact S.sum_mem fun n _hn => S.smul_mem (S.pow_mem (Algebra.subset_adjoin rfl) _) _
@@ -255,15 +260,18 @@ theorem aeval_natCast (n : ℕ) : aeval x (n : R[X]) = n :=
   map_natCast _ _
 #align polynomial.aeval_nat_cast Polynomial.aeval_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias aeval_nat_cast := aeval_natCast
+
 theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
   AlgHom.map_mul _ _ _
 #align polynomial.aeval_mul Polynomial.aeval_mul
 
 theorem comp_eq_aeval : p.comp q = aeval q p := rfl
 
-theorem aeval_comp {A : Type*} [CommSemiring A] [Algebra R A] (x : A) :
+theorem aeval_comp {A : Type*} [Semiring A] [Algebra R A] (x : A) :
     aeval x (p.comp q) = aeval (aeval x q) p :=
-  eval₂_comp (algebraMap R A)
+  eval₂_comp' x p q
 #align polynomial.aeval_comp Polynomial.aeval_comp
 
 /-- Two polynomials `p` and `q` such that `p(q(X))=X` and `q(p(X))=X`
@@ -301,7 +309,7 @@ theorem eval_unique (φ : R[X] →ₐ[R] A) (p) : φ p = eval₂ (algebraMap R A
 theorem aeval_algHom_apply {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
     (f : F) (x : A) (p : R[X]) :
     aeval (f x) p = f (aeval x p) := by
-  refine' Polynomial.induction_on p (by simp [AlgHomClass.commutes]) (fun p q hp hq => _)
+  refine Polynomial.induction_on p (by simp [AlgHomClass.commutes]) (fun p q hp hq => ?_)
     (by simp [AlgHomClass.commutes])
   rw [map_add, hp, hq, ← map_add, ← map_add]
 #align polynomial.aeval_alg_hom_apply Polynomial.aeval_algHom_apply
@@ -396,13 +404,13 @@ section Semiring
 variable [Semiring S] {f : R →+* S}
 
 theorem aeval_eq_sum_range [Algebra R S] {p : R[X]} (x : S) :
-    aeval x p = ∑ i in Finset.range (p.natDegree + 1), p.coeff i • x ^ i := by
+    aeval x p = ∑ i ∈ Finset.range (p.natDegree + 1), p.coeff i • x ^ i := by
   simp_rw [Algebra.smul_def]
   exact eval₂_eq_sum_range (algebraMap R S) x
 #align polynomial.aeval_eq_sum_range Polynomial.aeval_eq_sum_range
 
 theorem aeval_eq_sum_range' [Algebra R S] {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : S) :
-    aeval x p = ∑ i in Finset.range n, p.coeff i • x ^ i := by
+    aeval x p = ∑ i ∈ Finset.range n, p.coeff i • x ^ i := by
   simp_rw [Algebra.smul_def]
   exact eval₂_eq_sum_range' (algebraMap R S) hn x
 #align polynomial.aeval_eq_sum_range' Polynomial.aeval_eq_sum_range'
@@ -496,7 +504,7 @@ theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_ev
   by_cases hi : i ∈ f.support
   · rw [eval, eval₂_eq_sum, sum_def] at dvd_eval
     rw [← Finset.insert_erase hi, Finset.sum_insert (Finset.not_mem_erase _ _)] at dvd_eval
-    refine' (dvd_add_left _).mp dvd_eval
+    refine (dvd_add_left ?_).mp dvd_eval
     apply Finset.dvd_sum
     intro j hj
     exact dvd_terms j (Finset.ne_of_mem_erase hj)
