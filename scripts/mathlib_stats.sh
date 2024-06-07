@@ -29,6 +29,8 @@ Further suggestions of possible statistics are
 * Number of classes
 * Number of linters
 * Number of environment extensions
+* Number of files
+* Number of merged PRs
 
 DOC_MODULE
 
