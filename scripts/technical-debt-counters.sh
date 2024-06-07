@@ -25,6 +25,13 @@ for i in ${!titlesAndRegexes[@]}; do
   fi
 done
 
+printf '|%s | %s |\n' "$(cat scripts/nolints.json | grep -c 'docBlame')" "documentation nolint entries"
+printf '|%s | %s |\n' "$(cat scripts/style-exceptions.txt | grep -c 'ERR_MOD')" "missing module docstrings"
+printf '|%s | %s |\n' "$(cat scripts/style-exceptions.txt | grep -c 'ERR_NUM_LIN')" "large files"
+# We print the number of files, not the number of matches --- hence, the nested grep.
+printf '|%s | %s |\n' "$(git grep -c 'autoImplicit true' | grep -c -v 'test')" "non-test files with autoImplicit true"
+
+
 initFiles="$(git ls-files '**/Init/*.lean' | xargs wc -l)"
 
 printf '|%s | %s |\n\n' "$(printf '%s' "${initFiles}" | wc -l)" "\`Init\` files"
