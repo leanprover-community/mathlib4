@@ -647,7 +647,9 @@ theorem exists_subgroup_card_pow_prime_le [Fintype G] (p : ℕ) :
   the cardinality of `G`, then there is a subgroup of cardinality `p ^ n` -/
 theorem exists_subgroup_card_pow_prime [Fintype G] (p : ℕ) {n : ℕ} [Fact p.Prime]
     (hdvd : p ^ n ∣ card G) : ∃ K : Subgroup G, Fintype.card K = p ^ n :=
-  let ⟨K, hK⟩ := exists_subgroup_card_pow_prime_le p hdvd ⊥ (card_bot.trans (by simp)) n.zero_le
+  let ⟨K, hK⟩ := exists_subgroup_card_pow_prime_le p hdvd ⊥
+    -- The @ is due to a Fintype ⊥ mismatch, but this will be fixed once we convert to Nat.card
+    (by rw [← @Nat.card_eq_fintype_card, card_bot, pow_zero]) n.zero_le
   ⟨K, hK.1⟩
 #align sylow.exists_subgroup_card_pow_prime Sylow.exists_subgroup_card_pow_prime
 
@@ -709,7 +711,8 @@ theorem ne_bot_of_dvd_card [Fintype G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow 
     (hdvd : p ∣ card G) : (P : Subgroup G) ≠ ⊥ := by
   refine fun h => hp.out.not_dvd_one ?_
   have key : p ∣ card (P : Subgroup G) := P.dvd_card_of_dvd_card hdvd
-  rwa [h, card_bot] at key
+  -- The @ is due to a Fintype ⊥ mismatch, but this will be fixed once we convert to Nat.card
+  rwa [h, ← @Nat.card_eq_fintype_card, card_bot] at key
 #align sylow.ne_bot_of_dvd_card Sylow.ne_bot_of_dvd_card
 
 /-- The cardinality of a Sylow subgroup is `p ^ n`

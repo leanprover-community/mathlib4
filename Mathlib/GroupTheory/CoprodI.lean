@@ -354,7 +354,6 @@ def cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
       · exact w.ne_one l hl
     chain_ne := w.chain_ne.cons' (fstIdx_ne_iff.mp hmw) }
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Given a pair `(head, tail)`, we can form a word by prepending `head` to `tail`, except if `head`
 is `1 : M i` then we have to just return `Word` since we need the result to be reduced. -/
 def rcons {i} (p : Pair M i) : Word M :=
@@ -444,7 +443,6 @@ theorem consRecOn_cons {motive : Word M → Sort*} (i) (m : M i) (w : Word M) h1
 
 variable [DecidableEq ι]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 -- This definition is computable but not very nice to look at. Thankfully we don't have to inspect
 -- it, since `rcons` is known to be injective.
 /-- Given `i : ι`, any reduced word can be decomposed into a pair `p` such that `w = rcons p`. -/
@@ -1110,7 +1108,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
               _ ⊆ a i ^ n • X i := smul_set_mono <| hX i
               _ ⊆ a i ^ n • (Y i)ᶜ := smul_set_mono (hXYdisj i i).subset_compl_right
               _ ⊆ X i := hi
-        _ ⊆ X' i := Set.subset_union_left _ _
+        _ ⊆ X' i := Set.subset_union_left
     · have h1n : n ≤ -1 := by
         apply Int.le_of_lt_add_one
         simpa using hgt
@@ -1130,7 +1128,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
               _ ⊆ a i ^ n • Y i := smul_set_mono <| hY i
               _ ⊆ a i ^ n • (X i)ᶜ := smul_set_mono (hXYdisj i i).symm.subset_compl_right
               _ ⊆ Y i := hi
-        _ ⊆ X' i := Set.subset_union_right _ _
+        _ ⊆ X' i := Set.subset_union_right
   show _ ∨ ∃ i, 3 ≤ #(H i)
   inhabit ι
   right

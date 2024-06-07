@@ -20,6 +20,11 @@ In many application, the morphism `α` shall be the identity, but this more
 general construction allows the sheafification of both the presheaf of rings
 and the presheaf of modules.
 
+## TODO
+
+- promote this construction to a functor from presheaves of modules over `R₀`
+  to sheaves of modules over `R`, and construct an adjunction.
+
 -/
 
 universe w v v₁ u₁ u

@@ -156,7 +156,7 @@ theorem card_pair (h : a ≠ b) : ({a, b} : Finset α).card = 2 := by
   rw [card_insert_of_not_mem (not_mem_singleton.2 h), card_singleton]
 #align finset.card_doubleton Finset.card_pair
 
-@[deprecated] alias card_doubleton := Finset.card_pair
+@[deprecated (since := "2024-01-04")] alias card_doubleton := Finset.card_pair
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp]
@@ -551,9 +551,8 @@ lemma card_union_eq_card_add_card : (s ∪ t).card = s.card + t.card ↔ Disjoin
 #align finset.card_union_eq Finset.card_union_of_disjoint
 #align finset.card_disjoint_union Finset.card_union_of_disjoint
 
--- 2024-02-09
-@[deprecated] alias card_union_eq := card_union_of_disjoint
-@[deprecated] alias card_disjoint_union := card_union_of_disjoint
+@[deprecated (since := "2024-02-09")] alias card_union_eq := card_union_of_disjoint
+@[deprecated (since := "2024-02-09")] alias card_disjoint_union := card_union_of_disjoint
 
 lemma cast_card_inter [AddGroupWithOne R] :
     ((s ∩ t).card : R) = s.card + t.card - (s ∪ t).card := by
@@ -578,8 +577,8 @@ theorem card_sdiff_add_card_eq_card {s t : Finset α} (h : s ⊆ t) : card (t \ 
 theorem le_card_sdiff (s t : Finset α) : t.card - s.card ≤ card (t \ s) :=
   calc
     card t - card s ≤ card t - card (s ∩ t) :=
-      Nat.sub_le_sub_left (card_le_card (inter_subset_left s t)) _
-    _ = card (t \ (s ∩ t)) := (card_sdiff (inter_subset_right s t)).symm
+      Nat.sub_le_sub_left (card_le_card inter_subset_left) _
+    _ = card (t \ (s ∩ t)) := (card_sdiff inter_subset_right).symm
     _ ≤ card (t \ s) := by rw [sdiff_inter_self_right t s]
 #align finset.le_card_sdiff Finset.le_card_sdiff
 
@@ -656,7 +655,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finse
   rw [h₂, Nat.two_mul] at hXY
   obtain h | h : n < X.card ∨ n < (Y \ X).card := by contrapose! hXY; omega
   · exact ⟨X, h, Or.inl (Finset.Subset.refl X)⟩
-  · exact ⟨Y \ X, h, Or.inr (Finset.sdiff_subset Y X)⟩
+  · exact ⟨Y \ X, h, Or.inr sdiff_subset⟩
 #align finset.exists_subset_or_subset_of_two_mul_lt_card Finset.exists_subset_or_subset_of_two_mul_lt_card
 
 /-! ### Explicit description of a finset from its card -/
@@ -739,7 +738,8 @@ theorem one_lt_card_iff_nontrivial : 1 < s.card ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
     not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
 
-@[deprecated] alias one_lt_card_iff_nontrivial_coe := one_lt_card_iff_nontrivial
+@[deprecated (since := "2024-02-05")]
+alias one_lt_card_iff_nontrivial_coe := one_lt_card_iff_nontrivial
 
 theorem exists_ne_of_one_lt_card (hs : 1 < s.card) (a : α) : ∃ b, b ∈ s ∧ b ≠ a := by
   obtain ⟨x, hx, y, hy, hxy⟩ := Finset.one_lt_card.mp hs
@@ -919,6 +919,6 @@ theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
   Subrelation.wf H <| InvImage.wf _ <| (Nat.lt_wfRel).2
 #align finset.lt_wf Finset.lt_wf
 
-@[deprecated] alias card_le_of_subset := card_le_card -- 2023-12-27
+@[deprecated (since := "2023-12-27")] alias card_le_of_subset := card_le_card
 
 end Finset
