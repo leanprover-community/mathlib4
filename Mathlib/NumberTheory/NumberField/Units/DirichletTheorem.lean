@@ -87,8 +87,7 @@ theorem logEmbedding_component (x : (𝓞 K)ˣ) (w : {w : InfinitePlace K // w �
 theorem sum_logEmbedding_component (x : (𝓞 K)ˣ) :
     ∑ w, logEmbedding K x w = - mult (w₀ : InfinitePlace K) * Real.log (w₀ (x : K)) := by
   have h := congr_arg Real.log (prod_eq_abs_norm (x : K))
-  rw [show |(Algebra.norm ℚ) (x : K)| = 1 from isUnit_iff_norm.mp x.isUnit, Rat.cast_one,
-    Real.log_one, Real.log_prod] at h
+  rw [Units.norm, Rat.cast_one, Real.log_one, Real.log_prod] at h
   · simp_rw [Real.log_pow] at h
     rw [← insert_erase (mem_univ w₀), sum_insert (not_mem_erase w₀ univ), add_comm,
       add_eq_zero_iff_eq_neg] at h
