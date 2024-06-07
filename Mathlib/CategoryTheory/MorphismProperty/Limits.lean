@@ -104,8 +104,8 @@ theorem StableUnderBaseChange.pullback_map [HasPullbacks C] {P : MorphismPropert
       ((pullbackSymmetry _ _).hom ≫
           ((Over.baseChange _).map (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g')).left) ≫
         (pullbackSymmetry _ _).hom ≫
-          ((Over.baseChange g').map (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f')).left :=
-    by ext <;> dsimp <;> simp
+          ((Over.baseChange g').map (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f')).left := by
+    ext <;> dsimp <;> simp
   rw [this]
   apply P.comp_mem <;> rw [hP.respectsIso.cancel_left_isIso]
   exacts [hP.baseChange_map _ (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g') h₂,
@@ -184,10 +184,10 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*)
   intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
   let φ := fun j => f.app (Discrete.mk j)
   have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
-  refine' (hW₀.arrow_mk_iso_iff _).2 hf'
-  refine' Arrow.isoMk
+  refine (hW₀.arrow_mk_iso_iff ?_).2 hf'
+  refine Arrow.isoMk
     (IsLimit.conePointUniqueUpToIso hc₁ (limit.isLimit X₁) ≪≫ (Pi.isoLimit _).symm)
-    (IsLimit.conePointUniqueUpToIso hc₂ (limit.isLimit X₂) ≪≫ (Pi.isoLimit _).symm) _
+    (IsLimit.conePointUniqueUpToIso hc₂ (limit.isLimit X₂) ≪≫ (Pi.isoLimit _).symm) ?_
   apply limit.hom_ext
   rintro ⟨j⟩
   simp

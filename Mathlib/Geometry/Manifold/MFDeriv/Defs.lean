@@ -154,10 +154,10 @@ theorem differentiable_within_at_localInvariantProp :
       have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
       convert (h.comp' _ (this.differentiableWithinAt le_top)).mono_of_mem _ using 1
       · ext y; simp only [mfld_simps]
-      refine'
+      refine
         mem_nhdsWithin.mpr
           ⟨I.symm ⁻¹' e.target, e.open_target.preimage I.continuous_symm, by
-            simp_rw [Set.mem_preimage, I.left_inv, e.mapsTo hx], _⟩
+            simp_rw [Set.mem_preimage, I.left_inv, e.mapsTo hx], ?_⟩
       mfld_set_tac
     congr_of_forall := by
       intro s x f g h hx hf
@@ -207,7 +207,7 @@ theorem mdifferentiableWithinAt_iff' (f : M → M') (s : Set M) (x : M) :
   rw [MDifferentiableWithinAt, liftPropWithinAt_iff']; rfl
 #align mdifferentiable_within_at_iff_lift_prop_within_at mdifferentiableWithinAt_iff'
 
-@[deprecated] -- 2024-04-30
+@[deprecated (since := "2024-04-30")]
 alias mdifferentiableWithinAt_iff_liftPropWithinAt := mdifferentiableWithinAt_iff'
 
 variable {I I'} in
@@ -246,7 +246,7 @@ theorem mdifferentiableAt_iff (f : M → M') (x : M) :
   rfl
 #align mdifferentiable_at_iff_lift_prop_at mdifferentiableAt_iff
 
-@[deprecated] -- 2024-04-30
+@[deprecated (since := "2024-04-30")]
 alias mdifferentiableAt_iff_liftPropAt := mdifferentiableAt_iff
 
 variable {I I'} in

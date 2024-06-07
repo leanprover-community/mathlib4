@@ -40,7 +40,7 @@ open Nat (choose)
 
 open Polynomial (X)
 
-open scoped BigOperators Polynomial
+open scoped Polynomial
 
 variable (R : Type*) [CommRing R]
 
@@ -114,9 +114,9 @@ theorem derivative_succ_aux (n ν : ℕ) :
       bernsteinPolynomial, map_add, map_natCast, Nat.cast_one]
   conv_rhs => rw [mul_sub]
   -- We'll prove the two terms match up separately.
-  refine' congr (congr_arg Sub.sub _) _
+  refine congr (congr_arg Sub.sub ?_) ?_
   · simp only [← mul_assoc]
-    refine' congr (congr_arg (· * ·) (congr (congr_arg (· * ·) _) rfl)) rfl
+    apply congr (congr_arg (· * ·) (congr (congr_arg (· * ·) _) rfl)) rfl
     -- Now it's just about binomial coefficients
     exact mod_cast congr_arg (fun m : ℕ => (m : R[X])) (Nat.succ_mul_choose_eq n ν).symm
   · rw [← tsub_add_eq_tsub_tsub, ← mul_assoc, ← mul_assoc]; congr 1
@@ -286,9 +286,9 @@ theorem linearIndependent (n : ℕ) :
   linearIndependent_aux n (n + 1) le_rfl
 #align bernstein_polynomial.linear_independent bernsteinPolynomial.linearIndependent
 
-theorem sum (n : ℕ) : (∑ ν in Finset.range (n + 1), bernsteinPolynomial R n ν) = 1 :=
+theorem sum (n : ℕ) : (∑ ν ∈ Finset.range (n + 1), bernsteinPolynomial R n ν) = 1 :=
   calc
-    (∑ ν in Finset.range (n + 1), bernsteinPolynomial R n ν) = (X + (1 - X)) ^ n := by
+    (∑ ν ∈ Finset.range (n + 1), bernsteinPolynomial R n ν) = (X + (1 - X)) ^ n := by
       rw [add_pow]
       simp only [bernsteinPolynomial, mul_comm, mul_assoc, mul_left_comm]
     _ = 1 := by simp
@@ -299,7 +299,7 @@ open Polynomial
 open MvPolynomial hiding X
 
 theorem sum_smul (n : ℕ) :
-    (∑ ν in Finset.range (n + 1), ν • bernsteinPolynomial R n ν) = n • X := by
+    (∑ ν ∈ Finset.range (n + 1), ν • bernsteinPolynomial R n ν) = n • X := by
   -- We calculate the `x`-derivative of `(x+y)^n`, evaluated at `y=(1-x)`,
   -- either directly or by using the binomial theorem.
   -- We'll work in `MvPolynomial Bool R`.
@@ -324,7 +324,7 @@ theorem sum_smul (n : ℕ) :
         ring
     rw [add_pow, map_sum (pderiv true), map_sum (MvPolynomial.aeval e), Finset.sum_mul]
     -- Step inside the sum:
-    refine' Finset.sum_congr rfl fun k _ => (w k).trans _
+    refine Finset.sum_congr rfl fun k _ => (w k).trans ?_
     simp only [x, y, e, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul,
       Bool.cond_true, Bool.cond_false, add_zero, mul_one, mul_zero, smul_zero, MvPolynomial.aeval_X,
       MvPolynomial.pderiv_mul, Derivation.leibniz_pow, Derivation.map_natCast, map_natCast, map_pow,
@@ -336,7 +336,7 @@ theorem sum_smul (n : ℕ) :
 #align bernstein_polynomial.sum_smul bernsteinPolynomial.sum_smul
 
 theorem sum_mul_smul (n : ℕ) :
-    (∑ ν in Finset.range (n + 1), (ν * (ν - 1)) • bernsteinPolynomial R n ν) =
+    (∑ ν ∈ Finset.range (n + 1), (ν * (ν - 1)) • bernsteinPolynomial R n ν) =
       (n * (n - 1)) • X ^ 2 := by
   -- We calculate the second `x`-derivative of `(x+y)^n`, evaluated at `y=(1-x)`,
   -- either directly or by using the binomial theorem.
@@ -364,7 +364,7 @@ theorem sum_mul_smul (n : ℕ) :
     rw [add_pow, map_sum (pderiv true), map_sum (pderiv true), map_sum (MvPolynomial.aeval e),
       Finset.sum_mul]
     -- Step inside the sum:
-    refine' Finset.sum_congr rfl fun k _ => (w k).trans _
+    refine Finset.sum_congr rfl fun k _ => (w k).trans ?_
     simp only [x, y, e, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, nsmul_eq_mul,
       Bool.cond_true, Bool.cond_false, add_zero, zero_add, mul_zero, smul_zero, mul_one,
       MvPolynomial.aeval_X, MvPolynomial.pderiv_X_self, MvPolynomial.pderiv_X_of_ne,
@@ -382,7 +382,7 @@ theorem sum_mul_smul (n : ℕ) :
 which we'll want later.
 -/
 theorem variance (n : ℕ) :
-    (∑ ν in Finset.range (n + 1), (n • Polynomial.X - (ν : R[X])) ^ 2 * bernsteinPolynomial R n ν) =
+    (∑ ν ∈ Finset.range (n + 1), (n • Polynomial.X - (ν : R[X])) ^ 2 * bernsteinPolynomial R n ν) =
       n • Polynomial.X * ((1 : R[X]) - Polynomial.X) := by
   have p : ((((Finset.range (n + 1)).sum fun ν => (ν * (ν - 1)) • bernsteinPolynomial R n ν) +
       (1 - (2 * n) • Polynomial.X) * (Finset.range (n + 1)).sum fun ν =>

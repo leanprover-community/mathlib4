@@ -152,7 +152,7 @@ theorem sSup_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Se
     (h_bdd : BddAbove t) : sSup ((↑) '' t : Set α) ∈ s := by
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ upperBounds t := h_bdd
-  refine' hs.out c.2 B.2 ⟨_, _⟩
+  refine hs.out c.2 B.2 ⟨?_, ?_⟩
   · exact (Subtype.mono_coe s).le_csSup_image hct ⟨B, hB⟩
   · exact (Subtype.mono_coe s).csSup_image_le ⟨c, hct⟩ hB
 #align Sup_within_of_ord_connected sSup_within_of_ordConnected
@@ -163,7 +163,7 @@ theorem sInf_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Se
     (h_bdd : BddBelow t) : sInf ((↑) '' t : Set α) ∈ s := by
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ lowerBounds t := h_bdd
-  refine' hs.out B.2 c.2 ⟨_, _⟩
+  refine hs.out B.2 c.2 ⟨?_, ?_⟩
   · exact (Subtype.mono_coe s).le_csInf_image ⟨c, hct⟩ hB
   · exact (Subtype.mono_coe s).csInf_image_le hct ⟨B, hB⟩
 #align Inf_within_of_ord_connected sInf_within_of_ordConnected
@@ -187,7 +187,7 @@ noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
   __ := Set.Icc.boundedOrder h
   sSup S := if hS : S = ∅ then ⟨a, le_rfl, h⟩ else ⟨sSup ((↑) '' S), by
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
-    refine' ⟨_, csSup_le (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.2)⟩
+    refine ⟨?_, csSup_le (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.2)⟩
     obtain ⟨c, hc⟩ := hS
     exact c.2.1.trans (le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.2⟩ ⟨c, hc, rfl⟩)⟩
   le_sSup S c hc := by
@@ -201,7 +201,7 @@ noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
         (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h)
   sInf S := if hS : S = ∅ then ⟨b, h, le_rfl⟩ else ⟨sInf ((↑) '' S), by
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
-    refine' ⟨le_csInf (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.1), _⟩
+    refine ⟨le_csInf (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.1), ?_⟩
     obtain ⟨c, hc⟩ := hS
     exact le_trans (csInf_le ⟨a, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.1⟩ ⟨c, hc, rfl⟩) c.2.2⟩
   sInf_le S c hc := by

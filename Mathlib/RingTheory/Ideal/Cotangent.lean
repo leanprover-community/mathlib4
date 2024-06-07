@@ -7,7 +7,6 @@ import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Filtration
 import Mathlib.RingTheory.Nakayama
@@ -89,7 +88,7 @@ theorem toCotangent_range : LinearMap.range I.toCotangent = ⊤ := Submodule.ran
 theorem cotangent_subsingleton_iff : Subsingleton I.Cotangent ↔ IsIdempotentElem I := by
   constructor
   · intro H
-    refine' (pow_two I).symm.trans (le_antisymm (Ideal.pow_le_self two_ne_zero) _)
+    refine (pow_two I).symm.trans (le_antisymm (Ideal.pow_le_self two_ne_zero) ?_)
     exact fun x hx => (I.toCotangent_eq_zero ⟨x, hx⟩).mp (Subsingleton.elim _ _)
   · exact fun e =>
       ⟨fun x y =>

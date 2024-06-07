@@ -188,7 +188,7 @@ def toεNFA (M : NFA α σ) : εNFA α σ where
 @[simp]
 theorem toεNFA_εClosure (M : NFA α σ) (S : Set σ) : M.toεNFA.εClosure S = S := by
   ext a
-  refine' ⟨_, εNFA.εClosure.base _⟩
+  refine ⟨?_, εNFA.εClosure.base _⟩
   rintro (⟨_, h⟩ | ⟨_, _, h, _⟩)
   · exact h
   · cases h
