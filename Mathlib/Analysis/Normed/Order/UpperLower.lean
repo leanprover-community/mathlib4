@@ -134,38 +134,38 @@ section Fintype
 variable [Fintype ι] {s t : Set (ι → ℝ)} {a₁ a₂ b₁ b₂ x y : ι → ℝ} {δ : ℝ}
 
 -- TODO: Generalise those lemmas so that they also apply to `ℝ` and `EuclideanSpace ι ℝ`
-lemma dist_inf_sup (x y : ι → ℝ) : dist (x ⊓ y) (x ⊔ y) = dist x y := by
+lemma dist_inf_sup_pi (x y : ι → ℝ) : dist (x ⊓ y) (x ⊔ y) = dist x y := by
   refine' congr_arg NNReal.toReal (Finset.sup_congr rfl fun i _ ↦ _)
   simp only [Real.nndist_eq', sup_eq_max, inf_eq_min, max_sub_min_eq_abs, Pi.inf_apply,
     Pi.sup_apply, Real.nnabs_of_nonneg, abs_nonneg, Real.toNNReal_abs]
-#align dist_inf_sup dist_inf_sup
+#align dist_inf_sup dist_inf_sup_pi
 
-lemma dist_mono_left : MonotoneOn (dist · y) (Ici y) := by
+lemma dist_mono_left_pi : MonotoneOn (dist · y) (Ici y) := by
   refine' fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ _)
   rw [Real.nndist_eq, Real.nnabs_of_nonneg (sub_nonneg_of_le (‹y ≤ _› i : y i ≤ y₁ i)),
     Real.nndist_eq, Real.nnabs_of_nonneg (sub_nonneg_of_le (‹y ≤ _› i : y i ≤ y₂ i))]
   exact Real.toNNReal_mono (sub_le_sub_right (hy _) _)
-#align dist_mono_left dist_mono_left
+#align dist_mono_left dist_mono_left_pi
 
-lemma dist_mono_right : MonotoneOn (dist x) (Ici x) := by
-  simpa only [dist_comm _ x] using dist_mono_left (y := x)
-#align dist_mono_right dist_mono_right
+lemma dist_mono_right_pi : MonotoneOn (dist x) (Ici x) := by
+  simpa only [dist_comm _ x] using dist_mono_left_pi (y := x)
+#align dist_mono_right dist_mono_right_pi
 
-lemma dist_anti_left : AntitoneOn (dist · y) (Iic y) := by
+lemma dist_anti_left_pi : AntitoneOn (dist · y) (Iic y) := by
   refine' fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ _)
   rw [Real.nndist_eq', Real.nnabs_of_nonneg (sub_nonneg_of_le (‹_ ≤ y› i : y₂ i ≤ y i)),
     Real.nndist_eq', Real.nnabs_of_nonneg (sub_nonneg_of_le (‹_ ≤ y› i : y₁ i ≤ y i))]
   exact Real.toNNReal_mono (sub_le_sub_left (hy _) _)
-#align dist_anti_left dist_anti_left
+#align dist_anti_left dist_anti_left_pi
 
-lemma dist_anti_right : AntitoneOn (dist x) (Iic x) := by
-  simpa only [dist_comm] using dist_anti_left (y := x)
-#align dist_anti_right dist_anti_right
+lemma dist_anti_right_pi : AntitoneOn (dist x) (Iic x) := by
+  simpa only [dist_comm] using dist_anti_left_pi (y := x)
+#align dist_anti_right dist_anti_right_pi
 
-lemma dist_le_dist_of_le (ha : a₂ ≤ a₁) (h₁ : a₁ ≤ b₁) (hb : b₁ ≤ b₂) : dist a₁ b₁ ≤ dist a₂ b₂ :=
-  (dist_mono_right h₁ (h₁.trans hb) hb).trans $
-    dist_anti_left (ha.trans $ h₁.trans hb) (h₁.trans hb) ha
-#align dist_le_dist_of_le dist_le_dist_of_le
+lemma dist_le_dist_of_le_pi (ha : a₂ ≤ a₁) (h₁ : a₁ ≤ b₁) (hb : b₁ ≤ b₂) : dist a₁ b₁ ≤ dist a₂ b₂ :=
+  (dist_mono_right_pi h₁ (h₁.trans hb) hb).trans $
+    dist_anti_left_pi (ha.trans $ h₁.trans hb) (h₁.trans hb) ha
+#align dist_le_dist_of_le dist_le_dist_of_le_pi
 
 theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
     ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s := by
