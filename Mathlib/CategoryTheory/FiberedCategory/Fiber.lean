@@ -85,8 +85,15 @@ def FiberInclusion : (Fiber p S) ⥤ 𝒳 where
 instance FiberInclusion.Faithful : Functor.Faithful (FiberInclusion p S) where
   map_injective := Subtype.val_inj.1
 
+@[simps]
+def FiberInclusion.Nat : (FiberInclusion p S) ⋙ p ≅ (const (Fiber p S)).obj S where
+  hom := {  app := fun x => eqToHom x.prop
+            naturality := fun x y φ => by apply (commSq p (𝟙 S) φ.val).w}
+  inv := {  app := fun x => eqToHom (x.prop).symm
+            naturality := fun x y φ =>  by apply (commSq' p (𝟙 S) φ.val).w.symm }
+
 lemma FiberInclusion.comp_const : (FiberInclusion p S) ⋙ p = (const (Fiber p S)).obj S :=
-  Functor.ext (fun x ↦ x.2) (fun x y f ↦ by apply fac' p (𝟙 S) f.1)
+  Functor.ext_of_iso (FiberInclusion.Nat p S) (fun x ↦ x.2) (fun _ ↦ rfl)
 
 end
 
@@ -102,8 +109,12 @@ def InducedFunctor : C ⥤ Fiber p S where
   obj := fun x ↦ ⟨F.obj x, by simp only [← comp_obj, hF, const_obj_obj]⟩
   map := fun φ ↦ ⟨F.map φ, of_commsq _ _ _ _ _ <| by simpa using (eqToIso hF).hom.naturality φ⟩
 
+def InducedFunctor.Nat : F ≅ (InducedFunctor hF) ⋙ (FiberInclusion p S) where
+  hom := { app := fun a ↦ 𝟙 (F.obj a) }
+  inv := { app := fun a ↦ 𝟙 ((InducedFunctor hF ⋙ FiberInclusion p S).obj a) }
+
 lemma inducedFunctor_comp : (InducedFunctor hF) ⋙ (FiberInclusion p S) = F :=
-  Functor.ext (fun x ↦ rfl) (by simp)
+  Functor.ext (fun _ ↦ rfl) (by simp)
 
 end
 
