@@ -12,7 +12,8 @@ import Mathlib.RingTheory.Ideal.LocalRing
 In this file, we define the typeclass for valuation extensions and prove basic facts about
 extension of valuations. Let `A` be an `R` algebra, equipped with valuation `vA` and `vR`
 respectively. Here, extension of valuation means that the pullback of valuation `vA` to `R` is
-equivalent to the valuation `vR` on `R`. We only require equivalence, not equality of valuations here.
+equivalent to the valuation `vR` on `R`. We only require equivalence, not equality of valuations
+here.
 
 Note that we do not require the ring map from `R` to `A` to be injective. It holds automatically
 when `R` is a division ring and `A` is nontrivial.
@@ -151,7 +152,8 @@ instance instIsScalarTowerInteger : IsScalarTower vR.integer vA.integer A where
 
 theorem integerAlgebra_injective {K A ΓK ΓA : Type*} [Field K] [Ring A] [Nontrivial A]
     [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓA]
-    [Algebra K A] (vK : Valuation K ΓK) (vA : Valuation A ΓA) [IsValExtension vK vA] : Function.Injective (algebraMap vK.integer vA.integer) := by
+    [Algebra K A] (vK : Valuation K ΓK) (vA : Valuation A ΓA) [IsValExtension vK vA] :
+    Function.Injective (algebraMap vK.integer vA.integer) := by
   intro x y h
   simp only [Subtype.ext_iff, coe_algebraMap_integer] at h
   ext
