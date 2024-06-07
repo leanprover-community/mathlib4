@@ -50,7 +50,7 @@ some fiber followed by a pullback.
 
 -/
 
-universe v₁ u₁ v₂ u₂
+universe v₁ u₁ v₂ u₂ v₃ u₃
 
 open CategoryTheory Functor Category IsCartesian IsHomLift Fiber
 
@@ -60,11 +60,12 @@ variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.
 collection of categories `Fib S` for every `S : 𝒮` (the fiber categories), each equiped with a
 functors `ι : Fib S ⥤ 𝒳` which map constantly to `S` on the base such that the induced functor
 `Fib S ⥤ Fiber p S` is an equivalence. -/
+@[nolint checkUnivs]
 class HasFibers (p : 𝒳 ⥤ 𝒮) where
   /-- The type of objects of the category `Fib S` for each `S`. -/
-  Fib (S : 𝒮) : Type _
+  Fib (S : 𝒮) : Type u₃
   /-- `Fib S` is a category. -/
-  isCategory (S : 𝒮) : Category (Fib S)
+  isCategory (S : 𝒮) : Category.{v₃} (Fib S)
   /-- The functor `ι : Fib S ⥤ 𝒳`. -/
   ι (S : 𝒮) : (Fib S) ⥤ 𝒳
   /-- The composition with the functor `p` is *equal* to the constant functor mapping to `S`. -/
@@ -134,7 +135,6 @@ instance homLift {S : 𝒮} {a b : Fib p S} (φ : a ⟶ b) : IsHomLift p (𝟙 S
 
 /-- A version of fullness of the functor `Fib S ⥤ Fiber p S` that can be used inside the category
 `𝒳`. -/
-@[simp]
 noncomputable def mapPreimage {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (ι S).obj b)
     [IsHomLift p (𝟙 S) φ] : a ⟶ b :=
   (InducedFunctor _ S).preimage (mk_map p S φ)
@@ -142,7 +142,7 @@ noncomputable def mapPreimage {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ 
 @[simp]
 lemma mapPreimage_eq {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (ι S).obj b)
     [IsHomLift p (𝟙 S) φ] : (ι S).map (mapPreimage φ) = φ := by
-  simp [congr_hom (inducedFunctor_comp p S)]
+  simp [mapPreimage, congr_hom (inducedFunctor_comp p S)]
 
 /-- The lift of an isomorphism `Φ : (ι S).obj a ≅ (ι S).obj b` lying over `𝟙 S` to an isomorphism
 in `Fib S`. -/

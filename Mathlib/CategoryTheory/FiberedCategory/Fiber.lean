@@ -85,6 +85,8 @@ def FiberInclusion : (Fiber p S) ⥤ 𝒳 where
 instance FiberInclusion.Faithful : Functor.Faithful (FiberInclusion p S) where
   map_injective := Subtype.val_inj.1
 
+/-- The natural isomorphism between `FiberInclusion p S ⋙ p` and the constant functor mapping to
+`S`. -/
 @[simps]
 def FiberInclusion.NatIso : (FiberInclusion p S) ⋙ p ≅ (const (Fiber p S)).obj S where
   hom := {  app := fun x => eqToHom x.prop
@@ -109,6 +111,8 @@ def InducedFunctor : C ⥤ Fiber p S where
   obj := fun x ↦ ⟨F.obj x, by simp only [← comp_obj, hF, const_obj_obj]⟩
   map := fun φ ↦ ⟨F.map φ, of_commsq _ _ _ _ _ <| by simpa using (eqToIso hF).hom.naturality φ⟩
 
+/-- The natural isomorphism `F ≅ InducedFunctor F ⋙ FiberInclusion p S` -/
+@[simps]
 def InducedFunctor.NatIso : F ≅ (InducedFunctor hF) ⋙ (FiberInclusion p S) where
   hom := { app := fun a ↦ 𝟙 (F.obj a) }
   inv := { app := fun a ↦ 𝟙 ((InducedFunctor hF ⋙ FiberInclusion p S).obj a) }
