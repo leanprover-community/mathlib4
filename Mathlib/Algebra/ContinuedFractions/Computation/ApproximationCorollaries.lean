@@ -90,10 +90,10 @@ theorem of_convergence_epsilon :
     -- show that `0 < (B * nB)` and then multiply by `B * nB` to get rid of the division
     have nB_ineq : (fib (n + 2) : K) ≤ nB :=
       haveI : ¬g.TerminatedAt (n + 1 - 1) := not_terminatedAt_n
-      succ_nth_fib_le_of_nth_den (Or.inr this)
+      (RCF.of v).succ_nth_fib_le_nth_den (Or.inr this)
     have B_ineq : (fib (n + 1) : K) ≤ B :=
       haveI : ¬g.TerminatedAt (n - 1) := mt (terminated_stable n.pred_le) not_terminatedAt_n
-      succ_nth_fib_le_of_nth_den (Or.inr this)
+      (RCF.of v).succ_nth_fib_le_nth_den (Or.inr this)
     have zero_lt_B : 0 < B := B_ineq.trans_lt' <| mod_cast fib_pos.2 n.succ_pos
     have nB_pos : 0 < nB := nB_ineq.trans_lt' <| mod_cast fib_pos.2 <| succ_pos _
     have zero_lt_mul_conts : 0 < B * nB := by positivity
