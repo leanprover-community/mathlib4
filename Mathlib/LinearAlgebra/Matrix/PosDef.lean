@@ -236,8 +236,8 @@ theorem posSemidef_conjTranspose_mul_self (A : Matrix m n R) : PosSemidef (Aᴴ 
   exact Finset.sum_nonneg fun i _ => star_mul_self_nonneg _
 
 /-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
-theorem posSemidef_self_mul_conjTranspose (A : Matrix m n R) : PosSemidef (A * Aᴴ) :=
-  by simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
+theorem posSemidef_self_mul_conjTranspose (A : Matrix m n R) : PosSemidef (A * Aᴴ) := by
+  simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
 lemma eigenvalues_conjTranspose_mul_self_nonneg (A : Matrix m n 𝕜) [DecidableEq n] (i : n) :
     0 ≤ (isHermitian_transpose_mul_self A).eigenvalues i :=

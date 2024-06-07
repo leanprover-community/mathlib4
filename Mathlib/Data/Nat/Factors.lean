@@ -100,7 +100,7 @@ theorem factors_chain {n : ℕ} :
       let m := minFac (k + 2)
       have : (k + 2) / m < (k + 2) := factors_lemma
       rw [factors]
-      refine' List.Chain.cons ((le_minFac.2 h).resolve_left (by simp)) (factors_chain _)
+      refine List.Chain.cons ((le_minFac.2 h).resolve_left (by simp)) (factors_chain ?_)
       exact fun p pp d => minFac_le_of_dvd pp.two_le (d.trans <| div_dvd_of_dvd <| minFac_dvd _)
 #align nat.factors_chain Nat.factors_chain
 
@@ -173,9 +173,9 @@ theorem le_of_mem_factors {n p : ℕ} (h : p ∈ n.factors) : p ≤ n := by
 /-- **Fundamental theorem of arithmetic**-/
 theorem factors_unique {n : ℕ} {l : List ℕ} (h₁ : prod l = n) (h₂ : ∀ p ∈ l, Prime p) :
     l ~ factors n := by
-  refine' perm_of_prod_eq_prod _ _ _
+  refine perm_of_prod_eq_prod ?_ ?_ ?_
   · rw [h₁]
-    refine' (prod_factors _).symm
+    refine (prod_factors ?_).symm
     rintro rfl
     rw [prod_eq_zero_iff] at h₁
     exact Prime.ne_zero (h₂ 0 h₁) rfl
@@ -204,7 +204,7 @@ theorem eq_prime_pow_of_unique_prime_dvd {n p : ℕ} (hpos : n ≠ 0)
 /-- For positive `a` and `b`, the prime factors of `a * b` are the union of those of `a` and `b` -/
 theorem perm_factors_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     (a * b).factors ~ a.factors ++ b.factors := by
-  refine' (factors_unique _ _).symm
+  refine (factors_unique ?_ ?_).symm
   · rw [List.prod_append, prod_factors ha, prod_factors hb]
   · intro p hp
     rw [List.mem_append] at hp

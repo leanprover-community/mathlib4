@@ -15,8 +15,6 @@ import Mathlib.RingTheory.Ideal.Basic
 Some results involving `Ideal` and `Basis`.
 -/
 
-open BigOperators
-
 namespace Ideal
 
 variable {ι R S : Type*} [CommSemiring R] [CommRing S] [IsDomain S] [Algebra R S]
@@ -39,9 +37,6 @@ theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : 
   simp only [basisSpanSingleton, Basis.map_apply, LinearEquiv.trans_apply,
     Submodule.restrictScalarsEquiv_apply, LinearEquiv.ofInjective_apply, LinearEquiv.coe_ofEq_apply,
     LinearEquiv.restrictScalars_apply, Algebra.coe_lmul_eq_mul, LinearMap.mul_apply']
-  -- This used to be the end of the proof before leanprover/lean4#2644
-  erw [LinearEquiv.coe_ofEq_apply, LinearEquiv.ofInjective_apply, Algebra.coe_lmul_eq_mul,
-    LinearMap.mul_apply']
 #align ideal.basis_span_singleton_apply Ideal.basisSpanSingleton_apply
 
 @[simp]
