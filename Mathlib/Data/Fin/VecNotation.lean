@@ -152,61 +152,33 @@ theorem cons_val_succ' {i : ℕ} (h : i.succ < m.succ) (x : α) (u : Fin m → �
 section simprocs
 open Lean Qq
 
-/-- Given an expression `x : α`, find an `f : Fin n → α` and `i : Fin n` that it is composed of. -/
-def matchVecApp {u : Level} {α : Q(Type u)} (x : Q($α)) :
-    MetaM <| Option (Σ' (n : Q(ℕ)) (f : Q(Fin $n → $α)) (i : Q(Fin $n)), $x =Q $f $i) := do
-  Meta.withNewMCtxDepth do
-    let n : Q(ℕ) ← mkFreshExprMVarQ q(ℕ)
-    let f : Q(Fin $n → $α) ← mkFreshExprMVarQ q(Fin $n → $α)
-    let i : Q(Fin $n) ← mkFreshExprMVarQ q(Fin $n)
-    let .defEq _h ← isDefEqQ q($x) q($f $i) | pure none
-    return some ⟨← instantiateMVars n, ← instantiateMVars f, ← instantiateMVars i, ⟨⟩⟩
+/-- Parses a chain of `Matrix.vecCons` calls into elements and a tail. -/
+partial def matchVecConsPrefix (e : Expr) : MetaM <| List Expr × Expr := do
+  match_expr ← Meta.whnfR e with
+  | Matrix.vecCons _ _ x xs => do
+    let (elems, tail) ← matchVecConsPrefix xs
+    return (x :: elems, tail)
+  | _ => return ([], e)
 
--- /-- Evaluate `![...] i` -/
--- def reduceConsApp {u : Level} {α : Q(Type u)} {n : Q(ℕ)} (f : Q(Fin $n → $α)) (i : Q(Fin $n)) :
---     MetaM <| Option Q($α) := do
---   let .some (nv + 1) := n.nat? | pure none
---   let .some iv := i.int? | pure none
---   let iv := (iv % (nv + 1)).toNat
---   let mut x : Option Q($α) := none
---   let mut xs : Expr := f
---   for _ in [:iv + 1] do
---     let_expr Matrix.vecCons _ _ x' xs' := ← Meta.whnfR xs | return none
---     xs := xs'
---     x := some x'
---   return x
+/-- A simproc that handles terms of the form `Matrix.vecCons a f i` where `i` is a numeric literal.
 
-/--
-Obtain the elements of `![...]`.
-
-Returns `n`, the size of the vector, and a lazy list of elements.
-This is lazy so that it can be used for `reduceConsApp`, which only needs one entry.
--/
-def mllistOfVecLit {u : Level} {α : Q(Type u)} {n : Q(ℕ)} (f : Q(Fin $n → $α)) :
-    MetaM (Option (ℕ × MLList MetaM Q($α))) := do
-  let .some nv := (← Meta.whnfR n).nat? | return none
-  return some ⟨nv, go nv f⟩
-  where go : ℕ → Expr → MLList MetaM Q($α)
-    | 0, _ => .nil
-    | nv + 1, xs => do
-      let_expr Matrix.vecCons _ _ x xs := ← Meta.whnfR xs | .nil
-      .cons x (go nv xs)
-
-/-- Evaluate `![...] i` -/
-def reduceConsApp {u : Level} {α : Q(Type u)} {n : Q(ℕ)} (f : Q(Fin $n → $α)) (i : Q(Fin $n)) :
-    MetaM <| Option Q($α) := do
-  let mut .some ⟨nv + 1, elems⟩ ← mllistOfVecLit f | pure none
-  let .some iv := i.int? | pure none
-  let iv := (iv % (nv + 1)).toNat
-  (elems.drop iv).head
-
-
-/-- A simproc that simplifies terms of the form `![a, b, c] n`, where `n` is an integer literal. -/
-dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
-  let ⟨_u, _α, x⟩ ← inferTypeQ' e
-  let .some ⟨_n, f, i, _h⟩ ← matchVecApp x | return .continue
-  let .some e ← reduceConsApp f i | return .continue
-  return .continue (some e)
+In practice, this is most effective at handling `![a, b, c] i`-style terms. -/
+dsimproc Matrix.cons_val (Matrix.vecCons _ _ _) := fun e => do
+  let_expr Matrix.vecCons _ _ x xs' n := ← Meta.whnfR e | return .continue
+  let some n' := n.int? | return .continue -- The docstring claims only nat or int, but works fine for Fin
+  let_expr Fin length := (← instantiateMVars (← Meta.inferType n)) | return .continue
+  let Expr.lit (.natVal length) ← Meta.whnfD length | return .continue
+  let (xs, tail) ← matchVecConsPrefix xs'
+  let xs := x :: xs
+  -- wrap around the index
+  let n' := (n' % length).toNat
+  if n' < xs.length then
+    return .continue (xs.get! n')
+  else if 0 < xs.length then
+    let newn := unsafe toExpr (⟨n' - xs.length, lcProof⟩ : Fin (length - xs.length))
+    return .continue (.some <| .app tail <| newn)
+  else
+    return .continue
 
 end simprocs
 
@@ -439,13 +411,13 @@ theorem vecHead_vecAlt1 (hm : m + 2 = n + 1 + (n + 1)) (v : Fin (m + 2) → α) 
     vecHead (vecAlt1 hm v) = v 1 := by simp [vecHead, vecAlt1]
 #align matrix.vec_head_vec_alt1 Matrix.vecHead_vecAlt1
 
-@[simp]
+@[simp, deprecated]
 theorem cons_vec_bit0_eq_alt0 (x : α) (u : Fin n → α) (i : Fin (n + 1)) :
     vecCons x u (bit0 i) = vecAlt0 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
   rw [vecAlt0_vecAppend]; rfl
 #align matrix.cons_vec_bit0_eq_alt0 Matrix.cons_vec_bit0_eq_alt0
 
-@[simp]
+@[simp, deprecated]
 theorem cons_vec_bit1_eq_alt1 (x : α) (u : Fin n → α) (i : Fin (n + 1)) :
     vecCons x u (bit1 i) = vecAlt1 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
   rw [vecAlt1_vecAppend]; rfl
@@ -463,8 +435,6 @@ theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
   · simp [vecAlt0, Nat.add_right_comm, ← Nat.add_assoc]
 #align matrix.cons_vec_alt0 Matrix.cons_vecAlt0
 
--- Although proved by simp, extracting element 8 of a five-element
--- vector does not work by simp unless this lemma is present.
 @[simp]
 theorem empty_vecAlt0 (α) {h} : vecAlt0 h (![] : Fin 0 → α) = ![] := by
   simp [eq_iff_true_of_subsingleton]
@@ -480,8 +450,6 @@ theorem cons_vecAlt1 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
   · simp [vecAlt1, Nat.add_right_comm, ← Nat.add_assoc]
 #align matrix.cons_vec_alt1 Matrix.cons_vecAlt1
 
--- Although proved by simp, extracting element 9 of a five-element
--- vector does not work by simp unless this lemma is present.
 @[simp]
 theorem empty_vecAlt1 (α) {h} : vecAlt1 h (![] : Fin 0 → α) = ![] := by
   simp [eq_iff_true_of_subsingleton]
