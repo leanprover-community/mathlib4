@@ -1,8 +1,10 @@
-Mathlib/Algebra/BigOperators/Basic.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2675 lines, try to split it up
+Mathlib/Algebra/BigOperators/Group/Finset.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2675 lines, try to split it up
+Mathlib/Algebra/Group/Subgroup/Basic.lean : line 1 : ERR_NUM_LIN : 4000 file contains 3878 lines, try to split it up
+Mathlib/Algebra/Group/Submonoid/Operations.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1504 lines, try to split it up
 Mathlib/Algebra/Lie/Submodule.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1528 lines, try to split it up
 Mathlib/Algebra/MonoidAlgebra/Basic.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2158 lines, try to split it up
 Mathlib/Algebra/Order/Floor.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1822 lines, try to split it up
-Mathlib/Algebra/Order/Monoid/Lemmas.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1709 lines, try to split it up
+Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1709 lines, try to split it up
 Mathlib/Algebra/Quaternion.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1509 lines, try to split it up
 Mathlib/Analysis/Asymptotics/Asymptotics.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2306 lines, try to split it up
 Mathlib/Analysis/Calculus/ContDiff/Basic.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2111 lines, try to split it up
@@ -10,93 +12,74 @@ Mathlib/Analysis/Calculus/ContDiff/Defs.lean : line 1 : ERR_NUM_LIN : 1900 file 
 Mathlib/Analysis/Convolution.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1545 lines, try to split it up
 Mathlib/Analysis/InnerProductSpace/Basic.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2358 lines, try to split it up
 Mathlib/Analysis/Normed/Group/Basic.lean : line 1 : ERR_NUM_LIN : 3000 file contains 2815 lines, try to split it up
+Mathlib/Analysis/NormedSpace/Multilinear/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1511 lines, try to split it up
 Mathlib/CategoryTheory/Limits/Shapes/Biproducts.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2118 lines, try to split it up
 Mathlib/CategoryTheory/Limits/Shapes/Pullbacks.lean : line 1 : ERR_NUM_LIN : 2900 file contains 2728 lines, try to split it up
 Mathlib/Combinatorics/SimpleGraph/Connectivity.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2653 lines, try to split it up
 Mathlib/Computability/Primrec.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1568 lines, try to split it up
 Mathlib/Computability/TMToPartrec.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2069 lines, try to split it up
 Mathlib/Computability/TuringMachine.lean : line 1 : ERR_NUM_LIN : 3000 file contains 2821 lines, try to split it up
-Mathlib/Data/Array/Basic.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Array/Basic.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Array/Basic.lean : line 3 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/Array/Basic.lean : line 3 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Data/Array/Basic.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/BinaryHeap.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/ByteArray.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/ByteArray.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/ByteArray.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/ByteArray.lean : line 3 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/ByteArray.lean : line 5 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/ByteArray.lean : line 5 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Data/ByteArray.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/Complex/Exponential.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1743 lines, try to split it up
+Mathlib/Data/Nat/Defs.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1874 lines, try to split it up
 Mathlib/Data/DFinsupp/Basic.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2395 lines, try to split it up
-Mathlib/Data/Fin/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1707 lines, try to split it up
-Mathlib/Data/Finset/Basic.lean : line 1 : ERR_NUM_LIN : 4100 file contains 3992 lines, try to split it up
+Mathlib/Data/Fin/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1957 lines, try to split it up
+Mathlib/Data/Finset/Basic.lean : line 1 : ERR_NUM_LIN : 3700 file contains 3574 lines, try to split it up
 Mathlib/Data/Finset/Lattice.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2240 lines, try to split it up
 Mathlib/Data/Finset/Pointwise.lean : line 1 : ERR_NUM_LIN : 2700 file contains 2550 lines, try to split it up
 Mathlib/Data/Finsupp/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1956 lines, try to split it up
-Mathlib/Data/List/Basic.lean : line 1 : ERR_NUM_LIN : 4500 file contains 4309 lines, try to split it up
-Mathlib/Data/List/Card.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/List/Card.lean : line 12 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Data/List/Basic.lean : line 1 : ERR_NUM_LIN : 3900 file contains 3715 lines, try to split it up
 Mathlib/Data/Matrix/Basic.lean : line 1 : ERR_NUM_LIN : 2900 file contains 2715 lines, try to split it up
 Mathlib/Data/Multiset/Basic.lean : line 1 : ERR_NUM_LIN : 3300 file contains 3196 lines, try to split it up
-Mathlib/Data/MvPolynomial/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1705 lines, try to split it up
+Mathlib/Algebra/MvPolynomial/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1705 lines, try to split it up
+Mathlib/Data/Nat/Defs.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1642 lines, try to split it up
 Mathlib/Data/Num/Lemmas.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1771 lines, try to split it up
 Mathlib/Data/Ordmap/Ordset.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1795 lines, try to split it up
-Mathlib/Data/Polynomial/Degree/Definitions.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1689 lines, try to split it up
-Mathlib/Data/Polynomial/RingDivision.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1569 lines, try to split it up
+Mathlib/Algebra/Polynomial/Degree/Definitions.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1689 lines, try to split it up
 Mathlib/Data/QPF/Multivariate/Basic.lean : line 75 : ERR_LIN : Line has more than 100 characters
 Mathlib/Data/Seq/WSeq.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1825 lines, try to split it up
-Mathlib/Data/Set/Basic.lean : line 1 : ERR_NUM_LIN : 3100 file contains 2991 lines, try to split it up
+Mathlib/Data/Set/Basic.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2638 lines, try to split it up
 Mathlib/Data/Set/Finite.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1768 lines, try to split it up
 Mathlib/Data/Set/Function.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1858 lines, try to split it up
 Mathlib/Data/Set/Image.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1613 lines, try to split it up
-Mathlib/Data/Set/Intervals/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1970 lines, try to split it up
+Mathlib/Order/Interval/Set/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1970 lines, try to split it up
 Mathlib/Data/Set/Lattice.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2275 lines, try to split it up
 Mathlib/Data/String/Lemmas.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/UInt.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 3 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 4 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 5 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 6 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 8 : ERR_COP : Malformed or missing copyright header
-Mathlib/Data/UInt.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/UnionFind.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/FieldTheory/RatFunc.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1781 lines, try to split it up
+Mathlib/Data/UInt.lean : line 13 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Data/UnionFind.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Geometry/Manifold/SmoothManifoldWithCorners.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1607 lines, try to split it up
 Mathlib/GroupTheory/MonoidLocalization.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2153 lines, try to split it up
 Mathlib/GroupTheory/Perm/Cycle/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1980 lines, try to split it up
-Mathlib/GroupTheory/Subgroup/Basic.lean : line 1 : ERR_NUM_LIN : 4000 file contains 3878 lines, try to split it up
-Mathlib/GroupTheory/Submonoid/Operations.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1504 lines, try to split it up
 Mathlib/Init/Data/Int/Basic.lean : line 12 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Data/Nat/Basic.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Data/Nat/Lemmas.lean : line 13 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Logic.lean : line 17 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Meta/WellFoundedTactics.lean : line 13 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Init/Logic.lean : line 13 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Init/Meta/WellFoundedTactics.lean : line 12 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/Exception.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Lean/Expr/ReplaceRec.lean : line 11 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Lean/Expr/ReplaceRec.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/LocalContext.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/LinearAlgebra/AffineSpace/AffineSubspace.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1900 lines, try to split it up
+Mathlib/LinearAlgebra/AffineSpace/AffineSubspace.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1891 lines, try to split it up
 Mathlib/LinearAlgebra/Basis.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1646 lines, try to split it up
 Mathlib/LinearAlgebra/Dual.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1847 lines, try to split it up
 Mathlib/LinearAlgebra/LinearIndependent.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1537 lines, try to split it up
 Mathlib/LinearAlgebra/Multilinear/Basic.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1819 lines, try to split it up
+Mathlib/LinearAlgebra/TensorProduct/Basic.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1660 lines, try to split it up
 Mathlib/Logic/Equiv/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2065 lines, try to split it up
 Mathlib/Mathport/Attributes.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Mathport/Rename.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/MeasureTheory/Constructions/BorelSpace/Basic.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2362 lines, try to split it up
 Mathlib/MeasureTheory/Function/L1Space.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1549 lines, try to split it up
 Mathlib/MeasureTheory/Function/LpSpace.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1956 lines, try to split it up
 Mathlib/MeasureTheory/Function/StronglyMeasurable/Basic.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2148 lines, try to split it up
-Mathlib/MeasureTheory/Integral/Bochner.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1999 lines, try to split it up
+Mathlib/MeasureTheory/Integral/Bochner.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2104 lines, try to split it up
 Mathlib/MeasureTheory/Integral/FundThmCalculus.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1550 lines, try to split it up
 Mathlib/MeasureTheory/Integral/Lebesgue.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2041 lines, try to split it up
+Mathlib/MeasureTheory/Integral/SetIntegral.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1778 lines, try to split it up
 Mathlib/MeasureTheory/Integral/SetToL1.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1817 lines, try to split it up
 Mathlib/MeasureTheory/MeasurableSpace/Basic.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2250 lines, try to split it up
 Mathlib/MeasureTheory/Measure/MeasureSpace.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2191 lines, try to split it up
 Mathlib/MeasureTheory/Measure/Typeclasses.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1564 lines, try to split it up
-Mathlib/MeasureTheory/OuterMeasure/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1785 lines, try to split it up
 Mathlib/Order/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1547 lines, try to split it up
 Mathlib/Order/Bounds/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1714 lines, try to split it up
 Mathlib/Order/CompleteLattice.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2015 lines, try to split it up
@@ -110,38 +93,30 @@ Mathlib/Order/LocallyFinite.lean : line 1 : ERR_NUM_LIN : 1700 file contains 153
 Mathlib/Order/SuccPred/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1560 lines, try to split it up
 Mathlib/Order/UpperLower/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2019 lines, try to split it up
 Mathlib/RingTheory/DedekindDomain/Ideal.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1542 lines, try to split it up
-Mathlib/RingTheory/Ideal/Operations.lean : line 1 : ERR_NUM_LIN : 2600 file contains 2414 lines, try to split it up
-Mathlib/RingTheory/Subring/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1546 lines, try to split it up
 Mathlib/RingTheory/UniqueFactorizationDomain.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2066 lines, try to split it up
-Mathlib/SetTheory/Cardinal/Basic.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2238 lines, try to split it up
+Mathlib/SetTheory/Cardinal/Basic.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2367 lines, try to split it up
 Mathlib/SetTheory/Cardinal/Ordinal.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1649 lines, try to split it up
 Mathlib/SetTheory/Game/PGame.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1926 lines, try to split it up
 Mathlib/SetTheory/Ordinal/Arithmetic.lean : line 1 : ERR_NUM_LIN : 2700 file contains 2593 lines, try to split it up
 Mathlib/SetTheory/Ordinal/Basic.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1606 lines, try to split it up
 Mathlib/SetTheory/ZFC/Basic.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1805 lines, try to split it up
-Mathlib/Tactic/ApplyWith.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Tactic/ApplyWith.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Tactic/ApplyWith.lean : line 2 : ERR_COP : Malformed or missing copyright header
-Mathlib/Tactic/ApplyWith.lean : line 3 : ERR_COP : Malformed or missing copyright header
-Mathlib/Tactic/ApplyWith.lean : line 5 : ERR_COP : Malformed or missing copyright header
-Mathlib/Tactic/ApplyWith.lean : line 5 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/ApplyWith.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Basic.lean : line 13 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/ByContra.lean : line 8 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/CC/Addition.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2008 lines, try to split it up
+Mathlib/Tactic/CC/Addition.lean : line 1555 : ERR_LIN : Line has more than 100 characters
 Mathlib/Tactic/ClearExcept.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Coe.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Constructor.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Existsi.lean : line 7 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/PushNeg.lean : line 14 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Recover.lean : line 9 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/Recover.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Rename.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/RenameBVar.lean : line 11 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Set.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/SimpRw.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Substs.lean : line 8 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/TypeCheck.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Tactic/TypeCheck.lean : line 1 : ERR_COP : Malformed or missing copyright header
-Mathlib/Tactic/TypeCheck.lean : line 3 : ERR_COP : Malformed or missing copyright header
-Mathlib/Tactic/TypeCheck.lean : line 3 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/TypeCheck.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Topology/Algebra/Group/Basic.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2231 lines, try to split it up
 Mathlib/Topology/Algebra/Module/Basic.lean : line 1 : ERR_NUM_LIN : 2900 file contains 2768 lines, try to split it up
 Mathlib/Topology/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1956 lines, try to split it up
@@ -150,7 +125,6 @@ Mathlib/Topology/Constructions.lean : line 1 : ERR_NUM_LIN : 1900 file contains 
 Mathlib/Topology/ContinuousFunction/Bounded.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1649 lines, try to split it up
 Mathlib/Topology/Instances/ENNReal.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1713 lines, try to split it up
 Mathlib/Topology/MetricSpace/PseudoMetric.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2098 lines, try to split it up
-Mathlib/Topology/Order/Basic.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2141 lines, try to split it up
 Mathlib/Topology/PartialHomeomorph.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1513 lines, try to split it up
-Mathlib/Topology/Separation.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2306 lines, try to split it up
+Mathlib/Topology/Separation.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2621 lines, try to split it up
 Mathlib/Topology/UniformSpace/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1996 lines, try to split it up

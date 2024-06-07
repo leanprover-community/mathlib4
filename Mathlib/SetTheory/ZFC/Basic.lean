@@ -51,12 +51,12 @@ Then the rest is usual set theory.
 
 ## Notes
 
-To avoid confusion between the Lean `set` and the ZFC `Set`, docstrings in this file refer to them
-respectively as "`set`" and "ZFC set".
+To avoid confusion between the Lean `Set` and the ZFC `Set`, docstrings in this file refer to them
+respectively as "`Set`" and "ZFC set".
 
 ## TODO
 
-Prove `Set.map_definable_aux` computably.
+Prove `ZFSet.mapDefinableAux` computably.
 -/
 
 -- Porting note: Lean 3 uses `Set` for `ZFSet`.
@@ -165,7 +165,7 @@ instance setoid : Setoid PSet :=
 #align pSet.setoid PSet.setoid
 
 /-- A pre-set is a subset of another pre-set if every element of the first family is extensionally
-equivalent to some element of the second family.-/
+equivalent to some element of the second family. -/
 protected def Subset (x y : PSet) : Prop :=
   ∀ a, ∃ b, Equiv (x.Func a) (y.Func b)
 #align pSet.subset PSet.Subset
@@ -295,7 +295,7 @@ theorem mem_irrefl (x : PSet) : x ∉ x :=
   irrefl x
 #align pSet.mem_irrefl PSet.mem_irrefl
 
-/-- Convert a pre-set to a `set` of pre-sets. -/
+/-- Convert a pre-set to a `Set` of pre-sets. -/
 def toSet (u : PSet.{u}) : Set PSet.{u} :=
   { x | x ∈ u }
 #align pSet.to_set PSet.toSet
@@ -618,13 +618,13 @@ noncomputable def allDefinable : ∀ {n} (F : OfArity ZFSet ZFSet n), Definable 
     let p := @Quotient.exists_rep PSet _ F
     @Definable.EqMk 0 ⟨choose p, Equiv.rfl⟩ _ (choose_spec p)
   | n + 1, (F : OfArity ZFSet ZFSet (n + 1)) => by
-    have I : (x : ZFSet) → Definable (Nat.add n 0) (F x) := fun x => allDefinable (F x)
-    refine' @Definable.EqMk (n + 1) ⟨fun x : PSet => (@Definable.Resp _ _ (I ⟦x⟧)).1, _⟩ _ _
+    have I : (x : ZFSet) → Definable n (F x) := fun x => allDefinable (F x)
+    refine @Definable.EqMk (n + 1) ⟨fun x : PSet => (@Definable.Resp _ _ (I ⟦x⟧)).1, ?_⟩ _ ?_
     · dsimp [Arity.Equiv]
       intro x y h
       rw [@Quotient.sound PSet _ _ _ h]
       exact (Definable.Resp (F ⟦y⟧)).2
-    refine' funext fun q => Quotient.inductionOn q fun x => _
+    refine funext fun q => Quotient.inductionOn q fun x => ?_
     simp_rw [Resp.eval_val, Resp.f]
     exact @Definable.eq _ (F ⟦x⟧) (I ⟦x⟧)
 #align classical.all_definable Classical.allDefinable
@@ -682,7 +682,7 @@ theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
   Iff.rfl
 #align Set.mk_mem_iff ZFSet.mk_mem_iff
 
-/-- Convert a ZFC set into a `set` of ZFC sets -/
+/-- Convert a ZFC set into a `Set` of ZFC sets -/
 def toSet (u : ZFSet.{u}) : Set ZFSet.{u} :=
   { x | x ∈ u }
 #align Set.to_set ZFSet.toSet
@@ -804,7 +804,7 @@ theorem not_nonempty_empty : ¬ZFSet.Nonempty ∅ := by simp [ZFSet.Nonempty]
 
 @[simp]
 theorem nonempty_mk_iff {x : PSet} : (mk x).Nonempty ↔ x.Nonempty := by
-  refine' ⟨_, fun ⟨a, h⟩ => ⟨mk a, h⟩⟩
+  refine ⟨?_, fun ⟨a, h⟩ => ⟨mk a, h⟩⟩
   rintro ⟨a, h⟩
   induction a using Quotient.inductionOn
   exact ⟨_, h⟩
@@ -1260,7 +1260,7 @@ def pairSep (p : ZFSet.{u} → ZFSet.{u} → Prop) (x y : ZFSet.{u}) : ZFSet.{u}
 @[simp]
 theorem mem_pairSep {p} {x y z : ZFSet.{u}} :
     z ∈ pairSep p x y ↔ ∃ a ∈ x, ∃ b ∈ y, z = pair a b ∧ p a b := by
-  refine' mem_sep.trans ⟨And.right, fun e => ⟨_, e⟩⟩
+  refine mem_sep.trans ⟨And.right, fun e => ⟨?_, e⟩⟩
   rcases e with ⟨a, ax, b, bY, rfl, pab⟩
   simp only [mem_powerset, subset_def, mem_union, pair, mem_pair]
   rintro u (rfl | rfl) v <;> simp only [mem_singleton, mem_pair]
@@ -1381,17 +1381,15 @@ theorem hereditarily_iff : Hereditarily p x ↔ p x ∧ ∀ y ∈ x, Hereditaril
   rw [← Hereditarily]
 #align Set.hereditarily_iff ZFSet.hereditarily_iff
 
--- Adaptation note: nightly-2024-03-15
--- This has been renamed to avoid the clash with the reserved name `Hereditarily.def`.
-alias ⟨Hereditarily.def', _⟩ := hereditarily_iff
-#align Set.hereditarily.def ZFSet.Hereditarily.def'
+alias ⟨Hereditarily.def, _⟩ := hereditarily_iff
+#align Set.hereditarily.def ZFSet.Hereditarily.def
 
 theorem Hereditarily.self (h : x.Hereditarily p) : p x :=
-  h.def'.1
+  h.def.1
 #align Set.hereditarily.self ZFSet.Hereditarily.self
 
 theorem Hereditarily.mem (h : x.Hereditarily p) (hy : y ∈ x) : y.Hereditarily p :=
-  h.def'.2 _ hy
+  h.def.2 _ hy
 #align Set.hereditarily.mem ZFSet.Hereditarily.mem
 
 theorem Hereditarily.empty : Hereditarily p x → p ∅ := by
@@ -1494,12 +1492,12 @@ theorem eq_univ_of_forall {A : Class.{u}} : (∀ x : ZFSet, A x) → A = univ :=
 theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
   ⟨by
     have H : ∀ x : ZFSet.{u}, @Acc Class.{u} (· ∈ ·) ↑x := by
-      refine' fun a => ZFSet.inductionOn a fun x IH => ⟨_, _⟩
+      refine fun a => ZFSet.inductionOn a fun x IH => ⟨_, ?_⟩
       rintro A ⟨z, rfl, hz⟩
       exact IH z hz
-    · refine' fun A => ⟨A, _⟩
-      rintro B ⟨x, rfl, _⟩
-      exact H x⟩
+    refine fun A => ⟨A, ?_⟩
+    rintro B ⟨x, rfl, _⟩
+    exact H x⟩
 #align Class.mem_wf Class.mem_wf
 
 instance : WellFoundedRelation Class :=
@@ -1661,7 +1659,7 @@ theorem mem_sUnion {x y : Class.{u}} : y ∈ ⋃₀ x ↔ ∃ z, z ∈ x ∧ y �
 #align Class.mem_sUnion Class.mem_sUnion
 
 theorem sInter_apply {x : Class.{u}} {y : ZFSet.{u}} : (⋂₀ x) y ↔ ∀ z : ZFSet.{u}, x z → y ∈ z := by
-  refine' ⟨fun hxy z hxz => hxy _ ⟨z, rfl, hxz⟩, _⟩
+  refine ⟨fun hxy z hxz => hxy _ ⟨z, rfl, hxz⟩, ?_⟩
   rintro H - ⟨z, rfl, hxz⟩
   exact H _ hxz
 #align Class.sInter_apply Class.sInter_apply
@@ -1677,11 +1675,11 @@ theorem mem_of_mem_sInter {x y z : Class} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) :
 #align Class.mem_of_mem_sInter Class.mem_of_mem_sInter
 
 theorem mem_sInter {x y : Class.{u}} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z, z ∈ x → y ∈ z := by
-  refine' ⟨fun hy z => mem_of_mem_sInter hy, fun H => _⟩
+  refine ⟨fun hy z => mem_of_mem_sInter hy, fun H => ?_⟩
   simp_rw [mem_def, sInter_apply]
   obtain ⟨z, hz⟩ := h
   obtain ⟨y, rfl, _⟩ := H z (coe_mem.2 hz)
-  refine' ⟨y, rfl, fun w hxw => _⟩
+  refine ⟨y, rfl, fun w hxw => ?_⟩
   simpa only [coe_mem, coe_apply] using H w (coe_mem.2 hxw)
 #align Class.mem_sInter Class.mem_sInter
 
@@ -1709,7 +1707,6 @@ theorem eq_univ_of_powerset_subset {A : Class} (hA : powerset A ⊆ A) : A = uni
               WellFounded.not_lt_min ZFSet.mem_wf _ hnA hB <| coe_apply.1 hx))
 #align Class.eq_univ_of_powerset_subset Class.eq_univ_of_powerset_subset
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The definite description operator, which is `{x}` if `{y | A y} = {x}` and `∅` otherwise. -/
 def iota (A : Class) : Class :=
   ⋃₀ { x | ∀ y, A y ↔ y = x }
@@ -1773,7 +1770,6 @@ theorem choice_mem_aux (y : ZFSet.{u}) (yx : y ∈ x) :
     by_contradiction fun n => h <| by rwa [← (eq_empty y).2 fun z zx => n ⟨z, zx⟩]
 #align Set.choice_mem_aux ZFSet.choice_mem_aux
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem choice_isFunc : IsFunc x (⋃₀ x) (choice x) :=
   (@map_isFunc _ (Classical.allDefinable _) _ _).2 fun y yx =>
     mem_sUnion.2 ⟨y, yx, choice_mem_aux x h y yx⟩
@@ -1789,7 +1785,7 @@ private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
   (mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out).toSet = s := by
     ext x
     rw [mem_toSet, ← mk_out x, mk_mem_iff, mk_out]
-    refine' ⟨_, fun xs ↦ ⟨equivShrink s (Subtype.mk x xs), _⟩⟩
+    refine ⟨?_, fun xs ↦ ⟨equivShrink s (Subtype.mk x xs), ?_⟩⟩
     · rintro ⟨b, h2⟩
       rw [← ZFSet.eq, ZFSet.mk_out] at h2
       simp [h2]

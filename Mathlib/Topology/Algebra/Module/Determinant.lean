@@ -18,8 +18,7 @@ namespace ContinuousLinearMap
 
 /-- The determinant of a continuous linear map, mainly as a convenience device to be able to
 write `A.det` instead of `(A : M →ₗ[R] M).det`. -/
-@[reducible]
-noncomputable def det {R : Type*} [CommRing R] {M : Type*} [TopologicalSpace M] [AddCommGroup M]
+noncomputable abbrev det {R : Type*} [CommRing R] {M : Type*} [TopologicalSpace M] [AddCommGroup M]
     [Module R M] (A : M →L[R] M) : R :=
   LinearMap.det (A : M →ₗ[R] M)
 #align continuous_linear_map.det ContinuousLinearMap.det

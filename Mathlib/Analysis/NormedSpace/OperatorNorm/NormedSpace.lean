@@ -46,7 +46,7 @@ theorem bound_of_shell [RingHomIsometric σ₁₂] (f : E →ₛₗ[σ₁₂] F)
   exact SemilinearMapClass.bound_of_shell_semi_normed f ε_pos hc hf (norm_ne_zero_iff.2 hx)
 #align linear_map.bound_of_shell LinearMap.bound_of_shell
 
-/-- `LinearMap.bound_of_ball_bound'` is a version of this lemma over a field satisfying `IsROrC`
+/-- `LinearMap.bound_of_ball_bound'` is a version of this lemma over a field satisfying `RCLike`
 that produces a concrete bound.
 -/
 theorem bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] Fₗ)
@@ -54,10 +54,10 @@ theorem bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[�
   cases' @NontriviallyNormedField.non_trivial 𝕜 _ with k hk
   use c * (‖k‖ / r)
   intro z
-  refine' bound_of_shell _ r_pos hk (fun x hko hxo => _) _
+  refine bound_of_shell _ r_pos hk (fun x hko hxo => ?_) _
   calc
     ‖f x‖ ≤ c := h _ (mem_ball_zero_iff.mpr hxo)
-    _ ≤ c * (‖x‖ * ‖k‖ / r) := (le_mul_of_one_le_right ?_ ?_)
+    _ ≤ c * (‖x‖ * ‖k‖ / r) := le_mul_of_one_le_right ?_ ?_
     _ = _ := by ring
   · exact le_trans (norm_nonneg _) (h 0 (by simp [r_pos]))
   · rw [div_le_iff (zero_lt_one.trans hk)] at hko
@@ -70,7 +70,7 @@ theorem antilipschitz_of_comap_nhds_le [h : RingHomIsometric σ₁₂] (f : E �
   simp only [Set.subset_def, Set.mem_preimage, mem_ball_zero_iff] at hε
   lift ε to ℝ≥0 using ε0.le
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  refine' ⟨ε⁻¹ * ‖c‖₊, AddMonoidHomClass.antilipschitz_of_bound f fun x => _⟩
+  refine ⟨ε⁻¹ * ‖c‖₊, AddMonoidHomClass.antilipschitz_of_bound f fun x => ?_⟩
   by_cases hx : f x = 0
   · rw [← hx] at hf
     obtain rfl : x = 0 := Specializes.eq (specializes_iff_pure.2 <|
@@ -107,14 +107,12 @@ theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
       exact opNorm_zero)
 #align continuous_linear_map.op_norm_zero_iff ContinuousLinearMap.opNorm_zero_iff
 
-@[deprecated]
-alias op_norm_zero_iff :=
-  opNorm_zero_iff -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_zero_iff := opNorm_zero_iff -- deprecated on 2024-02-02
 
 /-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
 @[simp]
 theorem norm_id [Nontrivial E] : ‖id 𝕜 E‖ = 1 := by
-  refine' norm_id_of_nontrivial_seminorm _
+  refine norm_id_of_nontrivial_seminorm ?_
   obtain ⟨x, hx⟩ := exists_ne (0 : E)
   exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
 #align continuous_linear_map.norm_id ContinuousLinearMap.norm_id
@@ -151,7 +149,7 @@ theorem homothety_norm [RingHomIsometric σ₁₂] [Nontrivial E] (f : E →SL[�
 variable (f)
 
 /-- If a continuous linear map is a topology embedding, then it is expands the distances
-by a positive factor.-/
+by a positive factor. -/
 theorem antilipschitz_of_embedding (f : E →L[𝕜] Fₗ) (hf : Embedding f) :
     ∃ K, AntilipschitzWith K f :=
   f.toLinearMap.antilipschitz_of_comap_nhds_le <| map_zero f ▸ (hf.nhds_eq_comap 0).ge
@@ -201,7 +199,7 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
   cases subsingleton_or_nontrivial F'
   · haveI := g.symm.toLinearEquiv.toEquiv.subsingleton
     simp
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · convert f.opNorm_comp_le g.toLinearIsometry.toContinuousLinearMap
     simp [g.toLinearIsometry.norm_toContinuousLinearMap]
   · convert (f.comp g.toLinearIsometry.toContinuousLinearMap).opNorm_comp_le
@@ -212,25 +210,24 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
     simp [g.symm.toLinearIsometry.norm_toContinuousLinearMap]
 #align continuous_linear_map.op_norm_comp_linear_isometry_equiv ContinuousLinearMap.opNorm_comp_linearIsometryEquiv
 
-@[deprecated]
-alias op_norm_comp_linearIsometryEquiv :=
-  opNorm_comp_linearIsometryEquiv -- deprecated on 2024-02-02
+@[deprecated] -- deprecated on 2024-02-02
+alias op_norm_comp_linearIsometryEquiv := opNorm_comp_linearIsometryEquiv
 
 /-- The norm of the tensor product of a scalar linear map and of an element of a normed space
 is the product of the norms. -/
 @[simp]
 theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c f‖ = ‖c‖ * ‖f‖ := by
-  refine' le_antisymm _ _
-  · refine' opNorm_le_bound _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun x => _
+  refine le_antisymm ?_ ?_
+  · refine opNorm_le_bound _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun x => ?_
     calc
       ‖c x • f‖ = ‖c x‖ * ‖f‖ := norm_smul _ _
-      _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := (mul_le_mul_of_nonneg_right (le_opNorm _ _) (norm_nonneg _))
+      _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := mul_le_mul_of_nonneg_right (le_opNorm _ _) (norm_nonneg _)
       _ = ‖c‖ * ‖f‖ * ‖x‖ := by ring
   · by_cases h : f = 0
     · simp [h]
     · have : 0 < ‖f‖ := norm_pos_iff.2 h
       rw [← le_div_iff this]
-      refine' opNorm_le_bound _ (div_nonneg (norm_nonneg _) (norm_nonneg f)) fun x => _
+      refine opNorm_le_bound _ (div_nonneg (norm_nonneg _) (norm_nonneg f)) fun x => ?_
       rw [div_mul_eq_mul_div, le_div_iff this]
       calc
         ‖c x‖ * ‖f‖ = ‖c x • f‖ := (norm_smul _ _).symm
@@ -278,7 +275,17 @@ theorem norm_smulRightL (c : E →L[𝕜] 𝕜) [Nontrivial Fₗ] : ‖smulRight
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 #align continuous_linear_map.norm_smul_rightL ContinuousLinearMap.norm_smulRightL
 
-variable (𝕜) (𝕜' : Type*)
+variable (𝕜 E Fₗ) in
+/-- An auxiliary instance to be able to just state the fact that the norm of `smulRightL` makes
+sense. This shouldn't be needed. See lean4#3927. -/
+def seminormedAddCommGroup_aux_for_smulRightL :
+    SeminormedAddCommGroup ((E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ) :=
+  toSeminormedAddCommGroup (F := Fₗ →L[𝕜] E →L[𝕜] Fₗ) (𝕜 := 𝕜) (σ₁₂ := RingHom.id 𝕜)
+
+lemma norm_smulRightL_le :
+    letI := seminormedAddCommGroup_aux_for_smulRightL 𝕜 E Fₗ
+    ‖smulRightL 𝕜 E Fₗ‖ ≤ 1 :=
+  LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 
 end ContinuousLinearMap
 

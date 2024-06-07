@@ -166,16 +166,16 @@ example {B W : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [EffectiveEpiFamily X π] (e : (a : α) → (X a ⟶ W))
     (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _) (a : α) :
-    π a ≫ EffectiveEpiFamily.desc X π e h = e a :=
-  by simp
+    π a ≫ EffectiveEpiFamily.desc X π e h = e a := by
+  simp
 
 example {B W Q : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [EffectiveEpiFamily X π] (e : (a : α) → (X a ⟶ W))
     (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _) (a : α)
     (q : W ⟶ Q) :
-    π a ≫ EffectiveEpiFamily.desc X π e h ≫ q = e a ≫ q :=
-  by simp
+    π a ≫ EffectiveEpiFamily.desc X π e h ≫ q = e a ≫ q := by
+  simp
 
 lemma EffectiveEpiFamily.uniq {B W : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [EffectiveEpiFamily X π] (e : (a : α) → (X a ⟶ W))
@@ -267,3 +267,31 @@ def effectiveEpiStructOfIsIso {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpiSt
 instance {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpi f := ⟨⟨effectiveEpiStructOfIsIso f⟩⟩
 
 example {X : C} : EffectiveEpiFamily (fun _ => X : Unit → C) (fun _ => 𝟙 X) := inferInstance
+
+/--
+Reindex the indexing type of an effective epi family struct.
+-/
+def EffectiveEpiFamilyStruct.reindex
+    {B : C} {α α' : Type*}
+    (X : α → C)
+    (π : (a : α) → (X a ⟶ B))
+    (e : α' ≃ α)
+    (P : EffectiveEpiFamilyStruct (fun a => X (e a)) (fun a => π (e a))) :
+    EffectiveEpiFamilyStruct X π where
+  desc := fun f h => P.desc (fun a => f _) (fun a₁ a₂ => h _ _)
+  fac _ _ a := by
+    obtain ⟨a,rfl⟩ := e.surjective a
+    apply P.fac
+  uniq _ _ m hm := P.uniq _ _ _ fun a => hm _
+
+/--
+Reindex the indexing type of an effective epi family.
+-/
+lemma EffectiveEpiFamily.reindex
+    {B : C} {α α' : Type*}
+    (X : α → C)
+    (π : (a : α) → (X a ⟶ B))
+    (e : α' ≃ α)
+    (h : EffectiveEpiFamily (fun a => X (e a)) (fun a => π (e a))) :
+    EffectiveEpiFamily X π :=
+  .mk <| .intro <| @EffectiveEpiFamily.getStruct _ _ _ _ _ _ h |>.reindex _ _ e

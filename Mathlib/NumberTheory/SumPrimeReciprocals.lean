@@ -23,11 +23,11 @@ The proof is due to Erdős.
 -/
 
 open Set Nat
-open scoped BigOperators Topology
+open scoped Topology
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by `N` times the sum
 of `1/p` over the primes `k ≤ p ≤ N`. -/
--- This needs `Mathlib.Data.IsROrC.Basic`, so we put it here
+-- This needs `Mathlib.Analysis.RCLike.Basic`, so we put it here
 -- instead of in `Mathlib.NumberTheory.SmoothNumbers`.
 lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
     (roughNumbersUpTo N k).card ≤
@@ -38,7 +38,7 @@ lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
 
 /-- The sum over primes `k ≤ p ≤ 4^(π(k-1)+1)` over `1/p` (as a real number) is at least `1/2`. -/
 lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :
-    1 / 2 ≤ ∑ p in (4 ^ (k.primesBelow.card + 1)).succ.primesBelow \ k.primesBelow,
+    1 / 2 ≤ ∑ p ∈ (4 ^ (k.primesBelow.card + 1)).succ.primesBelow \ k.primesBelow,
       (1 / p : ℝ) := by
   set m : ℕ := 2 ^ k.primesBelow.card
   set N₀ : ℕ := 2 * m ^ 2 with hN₀

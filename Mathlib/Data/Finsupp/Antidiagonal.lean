@@ -16,8 +16,6 @@ The antidiagonal of `s : α →₀ ℕ` consists of
 all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + t₂ = s`.
 -/
 
-open BigOperators
-
 namespace Finsupp
 
 open Finset
@@ -54,7 +52,7 @@ theorem antidiagonal_zero : antidiagonal (0 : α →₀ ℕ) = singleton (0, 0) 
 @[to_additive]
 theorem prod_antidiagonal_swap {M : Type*} [CommMonoid M] (n : α →₀ ℕ)
     (f : (α →₀ ℕ) → (α →₀ ℕ) → M) :
-    ∏ p in antidiagonal n, f p.1 p.2 = ∏ p in antidiagonal n, f p.2 p.1 :=
+    ∏ p ∈ antidiagonal n, f p.1 p.2 = ∏ p ∈ antidiagonal n, f p.2 p.1 :=
   prod_equiv (Equiv.prodComm _ _) (by simp [add_comm]) (by simp)
 #align finsupp.prod_antidiagonal_swap Finsupp.prod_antidiagonal_swap
 #align finsupp.sum_antidiagonal_swap Finsupp.sum_antidiagonal_swap

@@ -15,7 +15,7 @@ In this file we compare `MeasureTheory.snorm'` and `MeasureTheory.snorm` for dif
 -/
 
 open Filter
-open scoped ENNReal Topology BigOperators
+open scoped ENNReal Topology
 
 namespace MeasureTheory
 
@@ -36,9 +36,7 @@ theorem snorm'_le_snorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) (hpq
   repeat' rw [snorm']
   rw [h_rw]
   let r := p * q / (q - p)
-  have hpqr : 1 / p = 1 / q + 1 / r := by
-    field_simp [r, (ne_of_lt hp0_lt).symm, (ne_of_lt hq0_lt).symm]
-    ring
+  have hpqr : 1 / p = 1 / q + 1 / r := by field_simp [r, hp0_lt.ne', hq0_lt.ne']
   calc
     (∫⁻ a : α, (↑‖f a‖₊ * g a) ^ p ∂μ) ^ (1 / p) ≤
         (∫⁻ a : α, ↑‖f a‖₊ ^ q ∂μ) ^ (1 / q) * (∫⁻ a : α, g a ^ r ∂μ) ^ (1 / r) :=
@@ -50,7 +48,7 @@ theorem snorm'_le_snorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) (hpq
 theorem snorm'_le_snormEssSup_mul_rpow_measure_univ {q : ℝ} (hq_pos : 0 < q) :
     snorm' f q μ ≤ snormEssSup f μ * μ Set.univ ^ (1 / q) := by
   have h_le : (∫⁻ a : α, (‖f a‖₊ : ℝ≥0∞) ^ q ∂μ) ≤ ∫⁻ _ : α, snormEssSup f μ ^ q ∂μ := by
-    refine' lintegral_mono_ae _
+    refine lintegral_mono_ae ?_
     have h_nnnorm_le_snorm_ess_sup := coe_nnnorm_ae_le_snormEssSup f μ
     exact h_nnnorm_le_snorm_ess_sup.mono fun x hx => by gcongr
   rw [snorm', ← ENNReal.rpow_one (snormEssSup f μ)]
@@ -65,7 +63,7 @@ theorem snorm_le_snorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤ q)
     snorm f p μ ≤ snorm f q μ * μ Set.univ ^ (1 / p.toReal - 1 / q.toReal) := by
   by_cases hp0 : p = 0
   · simp [hp0, zero_le]
-  rw [← Ne.def] at hp0
+  rw [← Ne] at hp0
   have hp0_lt : 0 < p := lt_of_le_of_ne (zero_le _) hp0.symm
   have hq0_lt : 0 < q := lt_of_lt_of_le hp0_lt hpq
   by_cases hq_top : q = ∞
@@ -77,7 +75,7 @@ theorem snorm_le_snorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤ q)
       exact le_rfl
     rw [snorm_eq_snorm' hp0 hp_top]
     have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp0_lt.ne' hp_top
-    refine' (snorm'_le_snormEssSup_mul_rpow_measure_univ hp_pos).trans (le_of_eq _)
+    refine (snorm'_le_snormEssSup_mul_rpow_measure_univ hp_pos).trans (le_of_eq ?_)
     congr
     exact one_div _
   have hp_lt_top : p < ∞ := hpq.trans_lt (lt_top_iff_ne_top.mpr hq_top)
@@ -116,7 +114,7 @@ theorem snorm'_lt_top_of_snorm'_lt_top_of_exponent_le {p q : ℝ} [IsFiniteMeasu
       snorm'_le_snorm'_mul_rpow_measure_univ hp_pos hpq hf
     _ < ∞ := by
       rw [ENNReal.mul_lt_top_iff]
-      refine' Or.inl ⟨hfq_lt_top, ENNReal.rpow_lt_top_of_nonneg _ (measure_ne_top μ Set.univ)⟩
+      refine Or.inl ⟨hfq_lt_top, ENNReal.rpow_lt_top_of_nonneg ?_ (measure_ne_top μ Set.univ)⟩
       rwa [le_sub_comm, sub_zero, one_div, one_div, inv_le_inv hq_pos hp_pos]
 #align measure_theory.snorm'_lt_top_of_snorm'_lt_top_of_exponent_le MeasureTheory.snorm'_lt_top_of_snorm'_lt_top_of_exponent_le
 
@@ -125,8 +123,8 @@ theorem Memℒp.memℒp_of_exponent_le {p q : ℝ≥0∞} [IsFiniteMeasure μ] {
   cases' hfq with hfq_m hfq_lt_top
   by_cases hp0 : p = 0
   · rwa [hp0, memℒp_zero_iff_aestronglyMeasurable]
-  rw [← Ne.def] at hp0
-  refine' ⟨hfq_m, _⟩
+  rw [← Ne] at hp0
+  refine ⟨hfq_m, ?_⟩
   by_cases hp_top : p = ∞
   · have hq_top : q = ∞ := by rwa [hp_top, top_le_iff] at hpq
     rw [hp_top]
@@ -135,8 +133,8 @@ theorem Memℒp.memℒp_of_exponent_le {p q : ℝ≥0∞} [IsFiniteMeasure μ] {
   by_cases hq_top : q = ∞
   · rw [snorm_eq_snorm' hp0 hp_top]
     rw [hq_top, snorm_exponent_top] at hfq_lt_top
-    refine' lt_of_le_of_lt (snorm'_le_snormEssSup_mul_rpow_measure_univ hp_pos) _
-    refine' ENNReal.mul_lt_top hfq_lt_top.ne _
+    refine lt_of_le_of_lt (snorm'_le_snormEssSup_mul_rpow_measure_univ hp_pos) ?_
+    refine ENNReal.mul_lt_top hfq_lt_top.ne ?_
     exact (ENNReal.rpow_lt_top_of_nonneg (by simp [hp_pos.le]) (measure_ne_top μ Set.univ)).ne
   have hq0 : q ≠ 0 := by
     by_contra hq_eq_zero
@@ -163,7 +161,7 @@ theorem snorm_le_snorm_top_mul_snorm (p : ℝ≥0∞) (f : α → E) {g : α →
     snorm (fun x => b (f x) (g x)) p μ ≤ snorm f ∞ μ * snorm g p μ := by
   by_cases hp_top : p = ∞
   · simp_rw [hp_top, snorm_exponent_top]
-    refine' le_trans (essSup_mono_ae <| h.mono fun a ha => _) (ENNReal.essSup_mul_le _ _)
+    refine le_trans (essSup_mono_ae <| h.mono fun a ha => ?_) (ENNReal.essSup_mul_le _ _)
     simp_rw [Pi.mul_apply, ← ENNReal.coe_mul, ENNReal.coe_le_coe]
     exact ha
   by_cases hp_zero : p = 0
@@ -173,16 +171,16 @@ theorem snorm_le_snorm_top_mul_snorm (p : ℝ≥0∞) (f : α → E) {g : α →
     (∫⁻ x, (‖b (f x) (g x)‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^ (1 / p.toReal) ≤
         (∫⁻ x, (‖f x‖₊ : ℝ≥0∞) ^ p.toReal * (‖g x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
       gcongr ?_ ^ _
-      refine' lintegral_mono_ae (h.mono fun a ha => _)
+      refine lintegral_mono_ae (h.mono fun a ha => ?_)
       rw [← ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg]
-      refine' ENNReal.rpow_le_rpow _ ENNReal.toReal_nonneg
+      refine ENNReal.rpow_le_rpow ?_ ENNReal.toReal_nonneg
       rw [← ENNReal.coe_mul, ENNReal.coe_le_coe]
       exact ha
     _ ≤
         (∫⁻ x, essSup (fun x => (‖f x‖₊ : ℝ≥0∞)) μ ^ p.toReal * (‖g x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^
           (1 / p.toReal) := by
       gcongr ?_ ^ _
-      refine' lintegral_mono_ae _
+      refine lintegral_mono_ae ?_
       filter_upwards [@ENNReal.ae_le_essSup _ _ μ fun x => (‖f x‖₊ : ℝ≥0∞)] with x hx
       gcongr
     _ = essSup (fun x => (‖f x‖₊ : ℝ≥0∞)) μ *
@@ -194,7 +192,7 @@ theorem snorm_le_snorm_top_mul_snorm (p : ℝ≥0∞) (f : α → E) {g : α →
       · rw [one_div_nonneg]
         exact ENNReal.toReal_nonneg
       rw [← ENNReal.rpow_mul, one_div, mul_inv_cancel, ENNReal.rpow_one]
-      rw [Ne.def, ENNReal.toReal_eq_zero_iff, not_or]
+      rw [Ne, ENNReal.toReal_eq_zero_iff, not_or]
       exact ⟨hp_zero, hp_top⟩
 #align measure_theory.snorm_le_snorm_top_mul_snorm MeasureTheory.snorm_le_snorm_top_mul_snorm
 
@@ -251,18 +249,18 @@ theorem snorm_le_snorm_mul_snorm_of_nnnorm {p q r : ℝ≥0∞}
   have hpq : p < q := by
     suffices 1 / q < 1 / p by rwa [one_div, one_div, ENNReal.inv_lt_inv] at this
     rw [hpqr]
-    refine' ENNReal.lt_add_right _ _
-    · simp only [hq_ne_zero, one_div, Ne.def, ENNReal.inv_eq_top, not_false_iff]
-    · simp only [hr_top, one_div, Ne.def, ENNReal.inv_eq_zero, not_false_iff]
+    refine ENNReal.lt_add_right ?_ ?_
+    · simp only [hq_ne_zero, one_div, Ne, ENNReal.inv_eq_top, not_false_iff]
+    · simp only [hr_top, one_div, Ne, ENNReal.inv_eq_zero, not_false_iff]
   rw [snorm_eq_snorm' hp_zero (hpq.trans_le le_top).ne, snorm_eq_snorm' hq_ne_zero hq_top,
     snorm_eq_snorm' hr_ne_zero hr_top]
-  refine' snorm'_le_snorm'_mul_snorm' hf hg _ h _ _ _
+  refine snorm'_le_snorm'_mul_snorm' hf hg _ h ?_ ?_ ?_
   · exact ENNReal.toReal_pos hp_zero (hpq.trans_le le_top).ne
   · exact ENNReal.toReal_strict_mono hq_top hpq
   rw [← ENNReal.one_toReal, ← ENNReal.toReal_div, ← ENNReal.toReal_div, ← ENNReal.toReal_div, hpqr,
     ENNReal.toReal_add]
-  · simp only [hq_ne_zero, one_div, Ne.def, ENNReal.inv_eq_top, not_false_iff]
-  · simp only [hr_ne_zero, one_div, Ne.def, ENNReal.inv_eq_top, not_false_iff]
+  · simp only [hq_ne_zero, one_div, Ne, ENNReal.inv_eq_top, not_false_iff]
+  · simp only [hr_ne_zero, one_div, Ne, ENNReal.inv_eq_top, not_false_iff]
 #align measure_theory.snorm_le_snorm_mul_snorm_of_nnnorm MeasureTheory.snorm_le_snorm_mul_snorm_of_nnnorm
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation

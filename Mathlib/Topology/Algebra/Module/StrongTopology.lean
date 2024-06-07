@@ -29,14 +29,15 @@ sets).
 
 ## Main definitions
 
-* `ContinuousLinearMap.strongTopology` is the topology mentioned above for an arbitrary `𝔖`.
+* `UniformConvergenceCLM` is a type synonym for `E →SL[σ] F` equipped with the `𝔖`-topology.
+* `UniformConvergenceCLM.instTopologicalSpace` is the topology mentioned above for an arbitrary `𝔖`.
 * `ContinuousLinearMap.topologicalSpace` is the topology of bounded convergence. This is
   declared as an instance.
 
 ## Main statements
 
-* `ContinuousLinearMap.strongTopology.topologicalAddGroup` and
-  `ContinuousLinearMap.strongTopology.continuousSMul` show that the strong topology
+* `UniformConvergenceCLM.instTopologicalAddGroup` and
+  `UniformConvergenceCLM.instContinuousSMul` show that the strong topology
   makes `E →L[𝕜] F` a topological vector space, with the assumptions on `𝔖` mentioned above.
 * `ContinuousLinearMap.topologicalAddGroup` and
   `ContinuousLinearMap.continuousSMul` register these facts as instances for the special
@@ -48,7 +49,7 @@ sets).
 
 ## TODO
 
-* add a type alias for continuous linear maps with the topology of `𝔖`-convergence?
+* Add convergence on compact subsets
 
 ## Tags
 
@@ -58,138 +59,189 @@ uniform convergence, bounded convergence
 
 open scoped Topology UniformConvergence
 
-namespace ContinuousLinearMap
-
 section General
+
+/-! ### 𝔖-Topologies -/
 
 variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] (σ : 𝕜₁ →+* 𝕜₂) {E E' F F' : Type*}
   [AddCommGroup E] [Module 𝕜₁ E] [AddCommGroup E'] [Module ℝ E'] [AddCommGroup F] [Module 𝕜₂ F]
   [AddCommGroup F'] [Module ℝ F'] [TopologicalSpace E] [TopologicalSpace E'] (F)
 
 /-- Given `E` and `F` two topological vector spaces and `𝔖 : Set (Set E)`, then
-`strongTopology σ F 𝔖` is the "topology of uniform convergence on the elements of `𝔖`" on
-`E →L[𝕜] F`.
+`UniformConvergenceCLM σ F 𝔖` is a type synonym of `E →SL[σ] F` equipped with the "topology of
+uniform convergence on the elements of `𝔖`".
 
-If the continuous linear image of any element of `𝔖` is bounded, this makes `E →L[𝕜] F` a
+If the continuous linear image of any element of `𝔖` is bounded, this makes `E →SL[σ] F` a
 topological vector space. -/
-def strongTopology [TopologicalSpace F] [TopologicalAddGroup F] (𝔖 : Set (Set E)) :
-    TopologicalSpace (E →SL[σ] F) :=
+@[nolint unusedArguments]
+def UniformConvergenceCLM [TopologicalSpace F] [TopologicalAddGroup F] (_ : Set (Set E)) :=
+  E →SL[σ] F
+
+namespace UniformConvergenceCLM
+
+instance instFunLike [TopologicalSpace F] [TopologicalAddGroup F]
+    (𝔖 : Set (Set E)) : FunLike (UniformConvergenceCLM σ F 𝔖) E F :=
+  ContinuousLinearMap.funLike
+
+instance instContinuousSemilinearMapClass [TopologicalSpace F] [TopologicalAddGroup F]
+    (𝔖 : Set (Set E)) : ContinuousSemilinearMapClass (UniformConvergenceCLM σ F 𝔖) σ E F :=
+  ContinuousLinearMap.continuousSemilinearMapClass
+
+instance instTopologicalSpace [TopologicalSpace F] [TopologicalAddGroup F] (𝔖 : Set (Set E)) :
+    TopologicalSpace (UniformConvergenceCLM σ F 𝔖) :=
   (@UniformOnFun.topologicalSpace E F (TopologicalAddGroup.toUniformSpace F) 𝔖).induced
-    (DFunLike.coe : (E →SL[σ] F) → (E →ᵤ[𝔖] F))
-#align continuous_linear_map.strong_topology ContinuousLinearMap.strongTopology
+    (DFunLike.coe : (UniformConvergenceCLM σ F 𝔖) → (E →ᵤ[𝔖] F))
+#align continuous_linear_map.strong_topology UniformConvergenceCLM.instTopologicalSpace
+
+theorem topologicalSpace_eq [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
+    instTopologicalSpace σ F 𝔖 = TopologicalSpace.induced DFunLike.coe
+      (UniformOnFun.topologicalSpace E F 𝔖) := by
+  rw [instTopologicalSpace]
+  congr
+  exact UniformAddGroup.toUniformSpace_eq
 
 /-- The uniform structure associated with `ContinuousLinearMap.strongTopology`. We make sure
 that this has nice definitional properties. -/
-def strongUniformity [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
-    UniformSpace (E →SL[σ] F) :=
-  @UniformSpace.replaceTopology _ (strongTopology σ F 𝔖)
-    ((UniformOnFun.uniformSpace E F 𝔖).comap (DFunLike.coe : (E →SL[σ] F) → (E →ᵤ[𝔖] F)))
-    (by rw [strongTopology, UniformAddGroup.toUniformSpace_eq]; rfl)
-#align continuous_linear_map.strong_uniformity ContinuousLinearMap.strongUniformity
+instance instUniformSpace [UniformSpace F] [UniformAddGroup F]
+    (𝔖 : Set (Set E)) : UniformSpace (UniformConvergenceCLM σ F 𝔖) :=
+  UniformSpace.replaceTopology
+    ((UniformOnFun.uniformSpace E F 𝔖).comap
+      (DFunLike.coe : (UniformConvergenceCLM σ F 𝔖) → (E →ᵤ[𝔖] F)))
+    (by rw [UniformConvergenceCLM.instTopologicalSpace, UniformAddGroup.toUniformSpace_eq]; rfl)
+#align continuous_linear_map.strong_uniformity UniformConvergenceCLM.instUniformSpace
+
+theorem uniformSpace_eq [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
+    instUniformSpace σ F 𝔖 = UniformSpace.comap DFunLike.coe (UniformOnFun.uniformSpace E F 𝔖) := by
+  rw [instUniformSpace, UniformSpace.replaceTopology_eq]
 
 @[simp]
-theorem strongUniformity_topology_eq [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
-    (strongUniformity σ F 𝔖).toTopologicalSpace = strongTopology σ F 𝔖 :=
+theorem uniformity_toTopologicalSpace_eq [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
+    (UniformConvergenceCLM.instUniformSpace σ F 𝔖).toTopologicalSpace =
+      UniformConvergenceCLM.instTopologicalSpace σ F 𝔖 :=
   rfl
-#align continuous_linear_map.strong_uniformity_topology_eq ContinuousLinearMap.strongUniformity_topology_eq
+#align continuous_linear_map.strong_uniformity_topology_eq UniformConvergenceCLM.uniformity_toTopologicalSpace_eq
 
-theorem strongUniformity.uniformEmbedding_coeFn [UniformSpace F] [UniformAddGroup F]
-    (𝔖 : Set (Set E)) :
-    @UniformEmbedding (E →SL[σ] F) (E →ᵤ[𝔖] F) (strongUniformity σ F 𝔖)
-      (UniformOnFun.uniformSpace E F 𝔖) DFunLike.coe :=
-  letI : UniformSpace (E →SL[σ] F) := strongUniformity σ F 𝔖
+theorem uniformEmbedding_coeFn [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
+    UniformEmbedding (α := UniformConvergenceCLM σ F 𝔖) (β := E →ᵤ[𝔖] F) DFunLike.coe :=
   ⟨⟨rfl⟩, DFunLike.coe_injective⟩
-#align continuous_linear_map.strong_uniformity.uniform_embedding_coe_fn ContinuousLinearMap.strongUniformity.uniformEmbedding_coeFn
+#align continuous_linear_map.strong_uniformity.uniform_embedding_coe_fn UniformConvergenceCLM.uniformEmbedding_coeFn
 
-theorem strongTopology.embedding_coeFn [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
-    @Embedding (E →SL[σ] F) (E →ᵤ[𝔖] F) (strongTopology σ F 𝔖)
-    (UniformOnFun.topologicalSpace E F 𝔖) (UniformOnFun.ofFun 𝔖 ∘ DFunLike.coe) :=
-  @UniformEmbedding.embedding _ _ (_root_.id _) _ _ (strongUniformity.uniformEmbedding_coeFn _ _ _)
-#align continuous_linear_map.strong_topology.embedding_coe_fn ContinuousLinearMap.strongTopology.embedding_coeFn
+theorem embedding_coeFn [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
+    Embedding (X := UniformConvergenceCLM σ F 𝔖) (Y := E →ᵤ[𝔖] F)
+      (UniformOnFun.ofFun 𝔖 ∘ DFunLike.coe) :=
+  UniformEmbedding.embedding (uniformEmbedding_coeFn _ _ _)
+#align continuous_linear_map.strong_topology.embedding_coe_fn UniformConvergenceCLM.embedding_coeFn
 
-theorem strongUniformity.uniformAddGroup [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
-    @UniformAddGroup (E →SL[σ] F) (strongUniformity σ F 𝔖) _ := by
-  letI : UniformSpace (E →SL[σ] F) := strongUniformity σ F 𝔖
-  let φ : (E →SL[σ] F) →+ E →ᵤ[𝔖] F :=
-    ⟨⟨(DFunLike.coe : (E →SL[σ] F) → E →ᵤ[𝔖] F), rfl⟩, fun _ _ => rfl⟩
-  exact (strongUniformity.uniformEmbedding_coeFn _ _ _).uniformAddGroup φ
-#align continuous_linear_map.strong_uniformity.uniform_add_group ContinuousLinearMap.strongUniformity.uniformAddGroup
+instance instAddCommGroup [TopologicalSpace F] [TopologicalAddGroup F] (𝔖 : Set (Set E)) :
+    AddCommGroup (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.addCommGroup
 
-theorem strongTopology.topologicalAddGroup [TopologicalSpace F] [TopologicalAddGroup F]
-    (𝔖 : Set (Set E)) : @TopologicalAddGroup (E →SL[σ] F) (strongTopology σ F 𝔖) _ := by
+instance instUniformAddGroup [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
+    UniformAddGroup (UniformConvergenceCLM σ F 𝔖) := by
+  let φ : (UniformConvergenceCLM σ F 𝔖) →+ E →ᵤ[𝔖] F :=
+    ⟨⟨(DFunLike.coe : (UniformConvergenceCLM σ F 𝔖) → E →ᵤ[𝔖] F), rfl⟩, fun _ _ => rfl⟩
+  exact (uniformEmbedding_coeFn _ _ _).uniformAddGroup φ
+#align continuous_linear_map.strong_uniformity.uniform_add_group UniformConvergenceCLM.instUniformAddGroup
+
+instance instTopologicalAddGroup [TopologicalSpace F] [TopologicalAddGroup F]
+    (𝔖 : Set (Set E)) : TopologicalAddGroup (UniformConvergenceCLM σ F 𝔖) := by
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
-  letI : UniformSpace (E →SL[σ] F) := strongUniformity σ F 𝔖
-  haveI : UniformAddGroup (E →SL[σ] F) := strongUniformity.uniformAddGroup σ F 𝔖
   infer_instance
-#align continuous_linear_map.strong_topology.topological_add_group ContinuousLinearMap.strongTopology.topologicalAddGroup
+#align continuous_linear_map.strong_topology.topological_add_group UniformConvergenceCLM.instTopologicalAddGroup
 
-theorem strongTopology.t2Space [TopologicalSpace F] [TopologicalAddGroup F] [T2Space F]
-    (𝔖 : Set (Set E)) (h𝔖 : ⋃₀ 𝔖 = Set.univ) : @T2Space (E →SL[σ] F) (strongTopology σ F 𝔖) := by
+theorem t2Space [TopologicalSpace F] [TopologicalAddGroup F] [T2Space F]
+    (𝔖 : Set (Set E)) (h𝔖 : ⋃₀ 𝔖 = Set.univ) : T2Space (UniformConvergenceCLM σ F 𝔖) := by
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
-  letI : TopologicalSpace (E →SL[σ] F) := strongTopology σ F 𝔖
   haveI : T2Space (E →ᵤ[𝔖] F) := UniformOnFun.t2Space_of_covering h𝔖
-  exact (strongTopology.embedding_coeFn σ F 𝔖).t2Space
-#align continuous_linear_map.strong_topology.t2_space ContinuousLinearMap.strongTopology.t2Space
+  exact (embedding_coeFn σ F 𝔖).t2Space
+#align continuous_linear_map.strong_topology.t2_space UniformConvergenceCLM.t2Space
 
-theorem strongTopology.continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
+instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
+    DistribMulAction M (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.distribMulAction
+
+instance instModule (R : Type*) [Semiring R] [Module R F] [SMulCommClass 𝕜₂ R F]
+    [TopologicalSpace F] [ContinuousConstSMul R F] [TopologicalAddGroup F] (𝔖 : Set (Set E)) :
+    Module R (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.module
+
+theorem continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
     [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] (𝔖 : Set (Set E))
     (h𝔖₃ : ∀ S ∈ 𝔖, Bornology.IsVonNBounded 𝕜₁ S) :
-    @ContinuousSMul 𝕜₂ (E →SL[σ] F) _ _ (strongTopology σ F 𝔖) := by
+    ContinuousSMul 𝕜₂ (UniformConvergenceCLM σ F 𝔖) := by
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
-  letI : TopologicalSpace (E →SL[σ] F) := strongTopology σ F 𝔖
-  let φ : (E →SL[σ] F) →ₗ[𝕜₂] E → F := ⟨⟨DFunLike.coe, fun _ _ => rfl⟩, fun _ _ => rfl⟩
-  exact UniformOnFun.continuousSMul_induced_of_image_bounded 𝕜₂ E F (E →SL[σ] F) φ ⟨rfl⟩
-    fun u s hs => (h𝔖₃ s hs).image u
-#align continuous_linear_map.strong_topology.has_continuous_smul ContinuousLinearMap.strongTopology.continuousSMul
+  let φ : (UniformConvergenceCLM σ F 𝔖) →ₗ[𝕜₂] E → F :=
+    ⟨⟨DFunLike.coe, fun _ _ => rfl⟩, fun _ _ => rfl⟩
+  exact UniformOnFun.continuousSMul_induced_of_image_bounded 𝕜₂ E F (UniformConvergenceCLM σ F 𝔖) φ
+    ⟨rfl⟩ fun u s hs => (h𝔖₃ s hs).image u
+#align continuous_linear_map.strong_topology.has_continuous_smul UniformConvergenceCLM.continuousSMul
 
-theorem strongTopology.hasBasis_nhds_zero_of_basis [TopologicalSpace F] [TopologicalAddGroup F]
+theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [TopologicalAddGroup F]
     {ι : Type*} (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop}
     {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
-    (@nhds (E →SL[σ] F) (strongTopology σ F 𝔖) 0).HasBasis
+    (𝓝 (0 : UniformConvergenceCLM σ F 𝔖)).HasBasis
       (fun Si : Set E × ι => Si.1 ∈ 𝔖 ∧ p Si.2)
       fun Si => { f : E →SL[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } := by
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
-  -- Porting note: replace `nhds_induced` by `Inducing.nhds_eq_comap` (which needs an additional
-  -- `letI`) so that Lean doesn't try to use the product topology
-  letI : TopologicalSpace (E →SL[σ] F) := strongTopology σ F 𝔖
-  rw [(strongTopology.embedding_coeFn σ F 𝔖).toInducing.nhds_eq_comap]
+  rw [(embedding_coeFn σ F 𝔖).toInducing.nhds_eq_comap]
   exact (UniformOnFun.hasBasis_nhds_zero_of_basis 𝔖 h𝔖₁ h𝔖₂ h).comap DFunLike.coe
-#align continuous_linear_map.strong_topology.has_basis_nhds_zero_of_basis ContinuousLinearMap.strongTopology.hasBasis_nhds_zero_of_basis
+#align continuous_linear_map.strong_topology.has_basis_nhds_zero_of_basis UniformConvergenceCLM.hasBasis_nhds_zero_of_basis
 
-theorem strongTopology.hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F]
+theorem hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F]
     (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) :
-    (@nhds (E →SL[σ] F) (strongTopology σ F 𝔖) 0).HasBasis
+    (𝓝 (0 : UniformConvergenceCLM σ F 𝔖)).HasBasis
       (fun SV : Set E × Set F => SV.1 ∈ 𝔖 ∧ SV.2 ∈ (𝓝 0 : Filter F)) fun SV =>
-      { f : E →SL[σ] F | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
-  strongTopology.hasBasis_nhds_zero_of_basis σ F 𝔖 h𝔖₁ h𝔖₂ (𝓝 0).basis_sets
-#align continuous_linear_map.strong_topology.has_basis_nhds_zero ContinuousLinearMap.strongTopology.hasBasis_nhds_zero
+      { f : UniformConvergenceCLM σ F 𝔖 | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
+  hasBasis_nhds_zero_of_basis σ F 𝔖 h𝔖₁ h𝔖₂ (𝓝 0).basis_sets
+#align continuous_linear_map.strong_topology.has_basis_nhds_zero UniformConvergenceCLM.hasBasis_nhds_zero
 
-theorem strongTopology.uniformContinuousConstSMul (M : Type*)
+instance instUniformContinuousConstSMul (M : Type*)
     [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [UniformSpace F] [UniformAddGroup F] [UniformContinuousConstSMul M F] (𝔖 : Set (Set E)) :
-    @UniformContinuousConstSMul M (E →SL[σ] F) (strongUniformity σ F 𝔖) _ :=
-  let _ := strongUniformity σ F 𝔖
-  (strongUniformity.uniformEmbedding_coeFn σ F 𝔖).toUniformInducing.uniformContinuousConstSMul
-    fun _ _ ↦ rfl
+    UniformContinuousConstSMul M (UniformConvergenceCLM σ F 𝔖) :=
+  (uniformEmbedding_coeFn σ F 𝔖).toUniformInducing.uniformContinuousConstSMul fun _ _ ↦ by rfl
 
-theorem strongTopology.continuousConstSMul (M : Type*)
+instance instContinuousConstSMul (M : Type*)
     [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
-    @ContinuousConstSMul M (E →SL[σ] F) (strongTopology σ F 𝔖) _ :=
+    ContinuousConstSMul M (UniformConvergenceCLM σ F 𝔖) :=
   let _ := TopologicalAddGroup.toUniformSpace F
   have _ : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
-  let _ := strongUniformity σ F 𝔖
   have _ := uniformContinuousConstSMul_of_continuousConstSMul M F
-  have _ := strongTopology.uniformContinuousConstSMul σ F M 𝔖
   inferInstance
+
+theorem tendsto_iff_tendstoUniformlyOn {ι : Type*} {p : Filter ι} [UniformSpace F]
+    [UniformAddGroup F] (𝔖 : Set (Set E)) {a : ι → UniformConvergenceCLM σ F 𝔖}
+    {a₀ : UniformConvergenceCLM σ F 𝔖} :
+    Filter.Tendsto a p (𝓝 a₀) ↔ ∀ s ∈ 𝔖, TendstoUniformlyOn (a · ·) a₀ p s := by
+  rw [(embedding_coeFn σ F 𝔖).tendsto_nhds_iff, UniformOnFun.tendsto_iff_tendstoUniformlyOn]
+  rfl
+
+variable {𝔖₁ 𝔖₂ : Set (Set E)}
+
+theorem uniformSpace_mono [UniformSpace F] [UniformAddGroup F] (h : 𝔖₂ ⊆ 𝔖₁) :
+    instUniformSpace σ F 𝔖₁ ≤ instUniformSpace σ F 𝔖₂ := by
+  simp_rw [uniformSpace_eq]
+  exact UniformSpace.comap_mono (UniformOnFun.mono (le_refl _) h)
+
+theorem topologicalSpace_mono [TopologicalSpace F] [TopologicalAddGroup F] (h : 𝔖₂ ⊆ 𝔖₁) :
+    instTopologicalSpace σ F 𝔖₁ ≤ instTopologicalSpace σ F 𝔖₂ := by
+  letI := TopologicalAddGroup.toUniformSpace F
+  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  simp_rw [← uniformity_toTopologicalSpace_eq]
+  exact UniformSpace.toTopologicalSpace_mono (uniformSpace_mono σ F h)
+
+end UniformConvergenceCLM
 
 end General
 
+namespace ContinuousLinearMap
+
 section BoundedSets
+
+/-! ### Topology of bounded convergence  -/
 
 variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
   {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E E' F F' G : Type*} [AddCommGroup E]
@@ -200,25 +252,25 @@ variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField �
 the operator norm when `E` and `F` are normed spaces. -/
 instance topologicalSpace [TopologicalSpace F] [TopologicalAddGroup F] :
     TopologicalSpace (E →SL[σ] F) :=
-  strongTopology σ F { S | Bornology.IsVonNBounded 𝕜₁ S }
+  UniformConvergenceCLM.instTopologicalSpace σ F { S | Bornology.IsVonNBounded 𝕜₁ S }
 
 instance topologicalAddGroup [TopologicalSpace F] [TopologicalAddGroup F] :
     TopologicalAddGroup (E →SL[σ] F) :=
-  strongTopology.topologicalAddGroup σ F _
+  UniformConvergenceCLM.instTopologicalAddGroup σ F _
 
 instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ] [TopologicalSpace F]
     [TopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] : ContinuousSMul 𝕜₂ (E →SL[σ] F) :=
-  strongTopology.continuousSMul σ F { S | Bornology.IsVonNBounded 𝕜₁ S } fun _ hs => hs
+  UniformConvergenceCLM.continuousSMul σ F { S | Bornology.IsVonNBounded 𝕜₁ S } fun _ hs => hs
 
 instance uniformSpace [UniformSpace F] [UniformAddGroup F] : UniformSpace (E →SL[σ] F) :=
-  strongUniformity σ F { S | Bornology.IsVonNBounded 𝕜₁ S }
+  UniformConvergenceCLM.instUniformSpace σ F { S | Bornology.IsVonNBounded 𝕜₁ S }
 
 instance uniformAddGroup [UniformSpace F] [UniformAddGroup F] : UniformAddGroup (E →SL[σ] F) :=
-  strongUniformity.uniformAddGroup σ F _
+  UniformConvergenceCLM.instUniformAddGroup σ F _
 
 instance [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜₁ E] [T2Space F] :
     T2Space (E →SL[σ] F) :=
-  strongTopology.t2Space σ F _
+  UniformConvergenceCLM.t2Space σ F _
     (Set.eq_univ_of_forall fun x =>
       Set.mem_sUnion_of_mem (Set.mem_singleton x) (Bornology.isVonNBounded_singleton x))
 
@@ -226,7 +278,7 @@ protected theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [TopologicalA
     {ι : Type*} {p : ι → Prop} {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
     (𝓝 (0 : E →SL[σ] F)).HasBasis (fun Si : Set E × ι => Bornology.IsVonNBounded 𝕜₁ Si.1 ∧ p Si.2)
       fun Si => { f : E →SL[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } :=
-  strongTopology.hasBasis_nhds_zero_of_basis σ F { S | Bornology.IsVonNBounded 𝕜₁ S }
+  UniformConvergenceCLM.hasBasis_nhds_zero_of_basis σ F { S | Bornology.IsVonNBounded 𝕜₁ S }
     ⟨∅, Bornology.isVonNBounded_empty 𝕜₁ E⟩
     (directedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union) h
 #align continuous_linear_map.has_basis_nhds_zero_of_basis ContinuousLinearMap.hasBasis_nhds_zero_of_basis
@@ -242,12 +294,12 @@ instance uniformContinuousConstSMul
     {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [UniformSpace F] [UniformAddGroup F] [UniformContinuousConstSMul M F] :
     UniformContinuousConstSMul M (E →SL[σ] F) :=
-  strongTopology.uniformContinuousConstSMul σ F _ _
+  UniformConvergenceCLM.instUniformContinuousConstSMul σ F _ _
 
 instance continuousConstSMul {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul M F] :
     ContinuousConstSMul M (E →SL[σ] F) :=
-  strongTopology.continuousConstSMul σ F _ _
+  UniformConvergenceCLM.instContinuousConstSMul σ F _ _
 
 variable (G) [TopologicalSpace F] [TopologicalSpace G]
 
@@ -256,19 +308,18 @@ Note that in non-normed space it is not always true that composition is continuo
 in both variables, so we have to fix one of them. -/
 @[simps]
 def precomp [TopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSurjective σ]
-    [RingHomIsometric σ] (L : E →SL[σ] F) : (F →SL[τ] G) →L[𝕜₃] E →SL[ρ] G
-    where
+    [RingHomIsometric σ] (L : E →SL[σ] F) : (F →SL[τ] G) →L[𝕜₃] E →SL[ρ] G where
   toFun f := f.comp L
   map_add' f g := add_comp f g L
   map_smul' a f := smul_comp a f L
   cont := by
     letI : UniformSpace G := TopologicalAddGroup.toUniformSpace G
     haveI : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
-    rw [(strongTopology.embedding_coeFn _ _ _).continuous_iff]
+    rw [(UniformConvergenceCLM.embedding_coeFn _ _ _).continuous_iff]
     -- Porting note: without this, the following doesn't work
     change Continuous ((fun f ↦ UniformOnFun.ofFun _ (f ∘ L)) ∘ DFunLike.coe)
     exact (UniformOnFun.precomp_uniformContinuous fun S hS => hS.image L).continuous.comp
-        (strongTopology.embedding_coeFn _ _ _).continuous
+        (UniformConvergenceCLM.embedding_coeFn _ _ _).continuous
 #align continuous_linear_map.precomp ContinuousLinearMap.precomp
 
 variable (E) {G}
@@ -278,8 +329,7 @@ Note that in non-normed space it is not always true that composition is continuo
 in both variables, so we have to fix one of them. -/
 @[simps]
 def postcomp [TopologicalAddGroup F] [TopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
-    [ContinuousConstSMul 𝕜₂ F] (L : F →SL[τ] G) : (E →SL[σ] F) →SL[τ] E →SL[ρ] G
-    where
+    [ContinuousConstSMul 𝕜₂ F] (L : F →SL[τ] G) : (E →SL[σ] F) →SL[τ] E →SL[ρ] G where
   toFun f := L.comp f
   map_add' := comp_add L
   map_smul' := comp_smulₛₗ L
@@ -288,10 +338,10 @@ def postcomp [TopologicalAddGroup F] [TopologicalAddGroup G] [ContinuousConstSMu
     haveI : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
     letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
     haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
-    rw [(strongTopology.embedding_coeFn _ _ _).continuous_iff]
+    rw [(UniformConvergenceCLM.embedding_coeFn _ _ _).continuous_iff]
     exact
       (UniformOnFun.postcomp_uniformContinuous L.uniformContinuous).continuous.comp
-        (strongTopology.embedding_coeFn _ _ _).continuous
+        (UniformConvergenceCLM.embedding_coeFn _ _ _).continuous
 #align continuous_linear_map.postcomp ContinuousLinearMap.postcomp
 
 end BoundedSets
@@ -307,6 +357,9 @@ variable {𝕜 : Type*} [NormedField 𝕜] {E F G : Type*}
 /-- Send a continuous bilinear map to an abstract bilinear map (forgetting continuity). -/
 def toLinearMap₂ (L : E →L[𝕜] F →L[𝕜] G) : E →ₗ[𝕜] F →ₗ[𝕜] G := (coeLM 𝕜).comp L.toLinearMap
 
+@[simp] lemma toLinearMap₂_apply (L : E →L[𝕜] F →L[𝕜] G) (v : E) (w : F) :
+    L.toLinearMap₂ v w = L v w := rfl
+
 end BilinearMaps
 
 end ContinuousLinearMap
@@ -314,6 +367,8 @@ end ContinuousLinearMap
 open ContinuousLinearMap
 
 namespace ContinuousLinearEquiv
+
+/-! ### Continuous linear equivalences -/
 
 section Semilinear
 
@@ -386,6 +441,12 @@ the spaces of continuous linear maps. -/
 def arrowCongr (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) : (E →L[𝕜] H) ≃L[𝕜] F →L[𝕜] G :=
   e₁.arrowCongrSL e₂
 #align continuous_linear_equiv.arrow_congr ContinuousLinearEquiv.arrowCongr
+
+@[simp] lemma arrowCongr_apply (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) (f : E →L[𝕜] H) (x : F) :
+    e₁.arrowCongr e₂ f x = e₂ (f (e₁.symm x)) := rfl
+
+@[simp] lemma arrowCongr_symm (e₁ : E ≃L[𝕜] F) (e₂ : H ≃L[𝕜] G) :
+    (e₁.arrowCongr e₂).symm = e₁.symm.arrowCongr e₂.symm := rfl
 
 end Linear
 

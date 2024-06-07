@@ -138,21 +138,27 @@ lemma cpow_mul_ofNat (x y : ℂ) (n : ℕ) [n.AtLeastTwo] :
   cpow_mul_nat x y n
 
 @[simp, norm_cast]
-theorem cpow_nat_cast (x : ℂ) (n : ℕ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_nat_mul x n 1
-#align complex.cpow_nat_cast Complex.cpow_nat_cast
+theorem cpow_natCast (x : ℂ) (n : ℕ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_nat_mul x n 1
+#align complex.cpow_nat_cast Complex.cpow_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias cpow_nat_cast := cpow_natCast
 
 /-- See Note [no_index around OfNat.ofNat] -/
 @[simp]
 lemma cpow_ofNat (x : ℂ) (n : ℕ) [n.AtLeastTwo] :
     x ^ (no_index (OfNat.ofNat n) : ℂ) = x ^ (OfNat.ofNat n : ℕ) :=
-  cpow_nat_cast x n
+  cpow_natCast x n
 
 theorem cpow_two (x : ℂ) : x ^ (2 : ℂ) = x ^ (2 : ℕ) := cpow_ofNat x 2
 #align complex.cpow_two Complex.cpow_two
 
 @[simp, norm_cast]
-theorem cpow_int_cast (x : ℂ) (n : ℤ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_int_mul x n 1
-#align complex.cpow_int_cast Complex.cpow_int_cast
+theorem cpow_intCast (x : ℂ) (n : ℤ) : x ^ (n : ℂ) = x ^ n := by simpa using cpow_int_mul x n 1
+#align complex.cpow_int_cast Complex.cpow_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias cpow_int_cast := cpow_intCast
 
 @[simp]
 theorem cpow_nat_inv_pow (x : ℂ) {n : ℕ} (hn : n ≠ 0) : (x ^ (n⁻¹ : ℂ)) ^ n = x := by
@@ -173,7 +179,7 @@ because the equality fails, e.g., for `x = -I`, `n = 2`, `y = 1/2`. -/
 lemma cpow_int_mul' {x : ℂ} {n : ℤ} (hlt : -π < n * x.arg) (hle : n * x.arg ≤ π) (y : ℂ) :
     x ^ (n * y) = (x ^ n) ^ y := by
   rw [mul_comm] at hlt hle
-  rw [cpow_mul, cpow_int_cast] <;> simpa [log_im]
+  rw [cpow_mul, cpow_intCast] <;> simpa [log_im]
 
 /-- A version of `Complex.cpow_nat_mul` with RHS that matches `Complex.cpow_mul`.
 
@@ -219,7 +225,7 @@ theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : �
 #align complex.mul_cpow_of_real_nonneg Complex.mul_cpow_ofReal_nonneg
 
 lemma natCast_mul_natCast_cpow (m n : ℕ) (s : ℂ) : (m * n : ℂ) ^ s = m ^ s * n ^ s :=
-  ofReal_nat_cast m ▸ ofReal_nat_cast n ▸ mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg s
+  ofReal_natCast m ▸ ofReal_natCast n ▸ mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg s
 
 lemma natCast_cpow_natCast_mul (n m : ℕ) (z : ℂ) : (n : ℂ) ^ (m * z) = ((n : ℂ) ^ m) ^ z := by
   refine cpow_nat_mul' (x := n) (n := m) ?_ ?_ z
@@ -229,7 +235,7 @@ lemma natCast_cpow_natCast_mul (n m : ℕ) (z : ℂ) : (n : ℂ) ^ (m * z) = ((n
 theorem inv_cpow_eq_ite (x : ℂ) (n : ℂ) :
     x⁻¹ ^ n = if x.arg = π then conj (x ^ conj n)⁻¹ else (x ^ n)⁻¹ := by
   simp_rw [Complex.cpow_def, log_inv_eq_ite, inv_eq_zero, map_eq_zero, ite_mul, neg_mul,
-    IsROrC.conj_inv, apply_ite conj, apply_ite exp, apply_ite Inv.inv, map_zero, map_one, exp_neg,
+    RCLike.conj_inv, apply_ite conj, apply_ite exp, apply_ite Inv.inv, map_zero, map_one, exp_neg,
     inv_one, inv_zero, ← exp_conj, map_mul, conj_conj]
   split_ifs with hx hn ha ha <;> rfl
 #align complex.inv_cpow_eq_ite Complex.inv_cpow_eq_ite
@@ -274,11 +280,11 @@ end Complex
 -- namespace NormNum
 
 -- theorem cpow_pos (a b : ℂ) (b' : ℕ) (c : ℂ) (hb : b = b') (h : a ^ b' = c) : a ^ b = c := by
---   rw [← h, hb, Complex.cpow_nat_cast]
+--   rw [← h, hb, Complex.cpow_natCast]
 -- #align norm_num.cpow_pos NormNum.cpow_pos
 
 -- theorem cpow_neg (a b : ℂ) (b' : ℕ) (c c' : ℂ) (hb : b = b') (h : a ^ b' = c) (hc : c⁻¹ = c') :
---     a ^ (-b) = c' := by rw [← hc, ← h, hb, Complex.cpow_neg, Complex.cpow_nat_cast]
+--     a ^ (-b) = c' := by rw [← hc, ← h, hb, Complex.cpow_neg, Complex.cpow_natCast]
 -- #align norm_num.cpow_neg NormNum.cpow_neg
 
 -- open Tactic

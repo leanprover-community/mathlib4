@@ -48,7 +48,7 @@ instance (priority := 100) hasLimitsOfShape_of_hasFiniteLimits (J : Type w) [Sma
   apply HasFiniteLimits.out
 #align category_theory.limits.has_limits_of_shape_of_has_finite_limits CategoryTheory.Limits.hasLimitsOfShape_of_hasFiniteLimits
 
-instance (priority := 100) hasFiniteLimits_of_hasLimitsOfSize [HasLimitsOfSize.{v', u'} C] :
+lemma hasFiniteLimits_of_hasLimitsOfSize [HasLimitsOfSize.{v', u'} C] :
     HasFiniteLimits C where
   out := fun J hJ hJ' =>
     haveI := hasLimitsOfSizeShrink.{0, 0} C
@@ -59,8 +59,12 @@ instance (priority := 100) hasFiniteLimits_of_hasLimitsOfSize [HasLimitsOfSize.{
 
 /-- If `C` has all limits, it has finite limits. -/
 instance (priority := 100) hasFiniteLimits_of_hasLimits [HasLimits C] : HasFiniteLimits C :=
-  inferInstance
+  hasFiniteLimits_of_hasLimitsOfSize C
 #align category_theory.limits.has_finite_limits_of_has_limits CategoryTheory.Limits.hasFiniteLimits_of_hasLimits
+
+instance (priority := 90) hasFiniteLimits_of_hasLimitsOfSize₀ [HasLimitsOfSize.{0, 0} C] :
+    HasFiniteLimits C :=
+  hasFiniteLimits_of_hasLimitsOfSize C
 
 /-- We can always derive `HasFiniteLimits C` by providing limits at an
 arbitrary universe. -/
@@ -98,7 +102,7 @@ instance (priority := 100) hasColimitsOfShape_of_hasFiniteColimits (J : Type w) 
   apply HasFiniteColimits.out
 #align category_theory.limits.has_colimits_of_shape_of_has_finite_colimits CategoryTheory.Limits.hasColimitsOfShape_of_hasFiniteColimits
 
-instance (priority := 100) hasFiniteColimits_of_hasColimitsOfSize [HasColimitsOfSize.{v', u'} C] :
+lemma hasFiniteColimits_of_hasColimitsOfSize [HasColimitsOfSize.{v', u'} C] :
     HasFiniteColimits C where
   out := fun J hJ hJ' =>
     haveI := hasColimitsOfSizeShrink.{0, 0} C
@@ -108,7 +112,11 @@ instance (priority := 100) hasFiniteColimits_of_hasColimitsOfSize [HasColimitsOf
 #align category_theory.limits.has_finite_colimits_of_has_colimits_of_size CategoryTheory.Limits.hasFiniteColimits_of_hasColimitsOfSize
 
 instance (priority := 100) hasFiniteColimits_of_hasColimits [HasColimits C] : HasFiniteColimits C :=
-  inferInstance
+  hasFiniteColimits_of_hasColimitsOfSize C
+
+instance (priority := 90) hasFiniteColimits_of_hasColimitsOfSize₀ [HasColimitsOfSize.{0, 0} C] :
+    HasFiniteColimits C :=
+  hasFiniteColimits_of_hasColimitsOfSize C
 
 /-- We can always derive `HasFiniteColimits C` by providing colimits at an
 arbitrary universe. -/
@@ -146,7 +154,7 @@ instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
       (WalkingParallelPair.recOn j' ∅ [WalkingParallelPairHom.id one].toFinset)
   complete := by
     rintro (_|_) <;> simp
-    · cases j <;> simp
+    cases j <;> simp
 end
 
 instance : FinCategory WalkingParallelPair where
@@ -167,7 +175,7 @@ variable {J : Type v}
 namespace WidePullbackShape
 
 instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) :=
-  instFintypeOption
+  inferInstanceAs <| Fintype (Option _)
 #align category_theory.limits.wide_pullback_shape.fintype_obj CategoryTheory.Limits.WidePullbackShape.fintypeObj
 
 instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j') where

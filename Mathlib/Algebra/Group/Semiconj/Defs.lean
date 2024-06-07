@@ -30,6 +30,9 @@ This file provides only basic operations (`mul_left`, `mul_right`, `inv_right` e
 operations (`pow_right`, field inverse etc) are in the files that define corresponding notions.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 variable {S M G : Type*}
 
 /-- `x` is semiconjugate to `y` by `a`, if `a * x = y * a`. -/
@@ -123,7 +126,7 @@ theorem pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x
   · rw [pow_zero, pow_zero]
     exact SemiconjBy.one_right _
   · rw [pow_succ, pow_succ]
-    exact h.mul_right ih
+    exact ih.mul_right h
 #align semiconj_by.pow_right SemiconjBy.pow_right
 #align add_semiconj_by.nsmul_right AddSemiconjBy.nsmul_right
 

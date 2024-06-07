@@ -3,10 +3,9 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison
 -/
+import Mathlib.Algebra.Order.Interval.Set.Instances
+import Mathlib.Order.Interval.Set.ProjIcc
 import Mathlib.Topology.Instances.Real
-import Mathlib.Topology.Algebra.Field
-import Mathlib.Data.Set.Intervals.ProjIcc
-import Mathlib.Data.Set.Intervals.Instances
 
 #align_import topology.unit_interval from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -248,7 +247,7 @@ lemma abs_sub_addNSMul_le (hδ : 0 ≤ δ) {t : Icc a b} (n : ℕ)
     (|t - addNSMul h δ n| : α) ≤ δ :=
   (abs_eq_self.2 <| sub_nonneg.2 ht.1).trans_le <| (sub_le_sub_right (by exact ht.2) _).trans <|
     (le_abs_self _).trans <| (abs_projIcc_sub_projIcc h).trans <| by
-      rw [add_sub_add_comm, sub_self, zero_add, succ_nsmul, add_sub_cancel]
+      rw [add_sub_add_comm, sub_self, zero_add, succ_nsmul', add_sub_cancel_right]
       exact (abs_eq_self.mpr hδ).le
 
 end Set.Icc
@@ -333,7 +332,7 @@ set_option linter.uppercaseLean3 false in
 -/
 def iccHomeoI (a b : 𝕜) (h : a < b) : Set.Icc a b ≃ₜ Set.Icc (0 : 𝕜) (1 : 𝕜) := by
   let e := Homeomorph.image (affineHomeomorph (b - a) a (sub_pos.mpr h).ne.symm) (Set.Icc 0 1)
-  refine' (e.trans _).symm
+  refine (e.trans ?_).symm
   apply Homeomorph.setCongr
   rw [affineHomeomorph_image_I _ _ (sub_pos.2 h)]
   simp

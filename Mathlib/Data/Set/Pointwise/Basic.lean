@@ -5,10 +5,9 @@ Authors: Johan Commelin, Floris van Doorn
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.GroupPower.Basic
-import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Opposites
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Synonym
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.Common
 
@@ -819,7 +818,7 @@ end Div
 open Pointwise
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Set`. See
-note [pointwise nat action].-/
+note [pointwise nat action]. -/
 protected def NSMul [Zero α] [Add α] : SMul ℕ (Set α) :=
   ⟨nsmulRec⟩
 #align set.has_nsmul Set.NSMul
@@ -841,7 +840,7 @@ protected def ZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Set α) :=
 multiplication/division!) of a `Set`. See note [pointwise nat action]. -/
 @[to_additive existing]
 protected def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
-  ⟨fun s n => zpowRec n s⟩
+  ⟨fun s n => zpowRec npowRec n s⟩
 #align set.has_zpow Set.ZPow
 
 scoped[Pointwise] attribute [instance] Set.NSMul Set.NPow Set.ZSMul Set.ZPow
@@ -949,7 +948,7 @@ theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
     exact one_mem_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_mem_mul ha (pow_mem_pow ha _)
+    exact mul_mem_mul (pow_mem_pow ha _) ha
 #align set.pow_mem_pow Set.pow_mem_pow
 #align set.nsmul_mem_nsmul Set.nsmul_mem_nsmul
 
@@ -960,7 +959,7 @@ theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
     exact Subset.rfl
   | n + 1 => by
     rw [pow_succ]
-    exact mul_subset_mul hst (pow_subset_pow hst _)
+    exact mul_subset_mul (pow_subset_pow hst _) hst
 #align set.pow_subset_pow Set.pow_subset_pow
 #align set.nsmul_subset_nsmul Set.nsmul_subset_nsmul
 
@@ -971,14 +970,14 @@ theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m �
   induction' n, hn using Nat.le_induction with _ _ ih
   · exact Subset.rfl
   · dsimp only
-    rw [pow_succ]
+    rw [pow_succ']
     exact ih.trans (subset_mul_right _ hs)
 #align set.pow_subset_pow_of_one_mem Set.pow_subset_pow_of_one_mem
 #align set.nsmul_subset_nsmul_of_zero_mem Set.nsmul_subset_nsmul_of_zero_mem
 
 @[to_additive (attr := simp)]
 theorem empty_pow {n : ℕ} (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
-  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ, empty_mul]
+  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ', empty_mul]
 #align set.empty_pow Set.empty_pow
 #align set.empty_nsmul Set.empty_nsmul
 
@@ -1040,13 +1039,13 @@ variable [DivisionMonoid α] {s t : Set α}
 
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} ∧ a * b = 1 := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · have hst : (s * t).Nonempty := h.symm.subst one_nonempty
     obtain ⟨a, ha⟩ := hst.of_image2_left
     obtain ⟨b, hb⟩ := hst.of_image2_right
     have H : ∀ {a b}, a ∈ s → b ∈ t → a * b = (1 : α) := fun {a b} ha hb =>
       h.subset <| mem_image2_of_mem ha hb
-    refine' ⟨a, b, _, _, H ha hb⟩ <;> refine' eq_singleton_iff_unique_mem.2 ⟨‹_›, fun x hx => _⟩
+    refine ⟨a, b, ?_, ?_, H ha hb⟩ <;> refine eq_singleton_iff_unique_mem.2 ⟨‹_›, fun x hx => ?_⟩
     · exact (eq_inv_of_mul_eq_one_left <| H hx hb).trans (inv_eq_of_mul_eq_one_left <| H ha hb)
     · exact (eq_inv_of_mul_eq_one_right <| H ha hx).trans (inv_eq_of_mul_eq_one_right <| H ha hb)
   · rintro ⟨b, c, rfl, rfl, h⟩
@@ -1078,7 +1077,7 @@ theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
   constructor
   · rintro ⟨u, rfl⟩
     obtain ⟨a, b, ha, hb, h⟩ := Set.mul_eq_one_iff.1 u.mul_inv
-    refine' ⟨a, ha, ⟨a, b, h, singleton_injective _⟩, rfl⟩
+    refine ⟨a, ha, ⟨a, b, h, singleton_injective ?_⟩, rfl⟩
     rw [← singleton_mul_singleton, ← ha, ← hb]
     exact u.inv_mul
   · rintro ⟨a, rfl, ha⟩
@@ -1389,12 +1388,12 @@ theorem card_pow_eq_card_pow_card_univ_aux {f : ℕ → ℕ} (h1 : Monotone f) {
           lt_of_le_of_lt (ih (n.le_succ.trans h))
             (lt_of_le_of_ne (h1 n.le_succ) (h2 n (Nat.succ_le_succ_iff.mp h))))
         n
-  · obtain ⟨n, hn1, hn2⟩ := key
-    replace key : ∀ k : ℕ, f (n + k) = f (n + k + 1) ∧ f (n + k) = f n := fun k =>
-      Nat.rec ⟨hn2, rfl⟩ (fun k ih => ⟨h3 _ ih.1, ih.1.symm.trans ih.2⟩) k
-    replace key : ∀ k : ℕ, n ≤ k → f k = f n := fun k hk =>
-      (congr_arg f (add_tsub_cancel_of_le hk)).symm.trans (key (k - n)).2
-    exact fun k hk => (key k (hn1.trans hk)).trans (key B hn1).symm
+  obtain ⟨n, hn1, hn2⟩ := key
+  replace key : ∀ k : ℕ, f (n + k) = f (n + k + 1) ∧ f (n + k) = f n := fun k =>
+    Nat.rec ⟨hn2, rfl⟩ (fun k ih => ⟨h3 _ ih.1, ih.1.symm.trans ih.2⟩) k
+  replace key : ∀ k : ℕ, n ≤ k → f k = f n := fun k hk =>
+    (congr_arg f (add_tsub_cancel_of_le hk)).symm.trans (key (k - n)).2
+  exact fun k hk => (key k (hn1.trans hk)).trans (key B hn1).symm
 #align group.card_pow_eq_card_pow_card_univ_aux Group.card_pow_eq_card_pow_card_univ_aux
 #align add_group.card_nsmul_eq_card_nsmul_card_univ_aux AddGroup.card_nsmul_eq_card_nsmul_card_univ_aux
 

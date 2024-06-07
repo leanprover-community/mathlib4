@@ -51,7 +51,7 @@ variable [HasProduct Z]
 /-- The categorical product of a family of objects in `ModuleCat`
 agrees with the usual module-theoretical product.
 -/
-noncomputable def piIsoPi : ∏ Z ≅ ModuleCat.of R (∀ i, Z i) :=
+noncomputable def piIsoPi : ∏ᶜ Z ≅ ModuleCat.of R (∀ i, Z i) :=
   limit.isoLimitCone ⟨_, productConeIsLimit Z⟩
 #align Module.pi_iso_pi ModuleCat.piIsoPi
 

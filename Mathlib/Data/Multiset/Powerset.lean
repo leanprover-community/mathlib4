@@ -4,16 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Sublists
-import Mathlib.Data.Multiset.Nodup
+import Mathlib.Data.Multiset.Bind
 
 #align_import data.multiset.powerset from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # The powerset of a multiset
 -/
-
-set_option autoImplicit true
-
 
 namespace Multiset
 
@@ -115,9 +112,9 @@ theorem mem_powerset {s t : Multiset α} : s ∈ powerset t ↔ s ≤ t :=
 theorem map_single_le_powerset (s : Multiset α) : s.map singleton ≤ powerset s :=
   Quotient.inductionOn s fun l => by
     simp only [powerset_coe, quot_mk_to_coe, coe_le, map_coe]
-    show l.map (((↑) : List α → Multiset α) ∘ List.ret) <+~ (sublists l).map (↑)
+    show l.map (((↑) : List α → Multiset α) ∘ pure) <+~ (sublists l).map (↑)
     rw [← List.map_map]
-    exact ((map_ret_sublist_sublists _).map _).subperm
+    exact ((map_pure_sublist_sublists _).map _).subperm
 #align multiset.map_single_le_powerset Multiset.map_single_le_powerset
 
 @[simp]
@@ -140,8 +137,7 @@ theorem revzip_powersetAux' {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux
   exact Quot.sound (revzip_sublists' _ _ _ h)
 #align multiset.revzip_powerset_aux' Multiset.revzip_powersetAux'
 
--- Porting note: I don't understand why `{α : Type u}` is necessary here
-theorem revzip_powersetAux_lemma {α : Type u} [DecidableEq α] (l : List α) {l' : List (Multiset α)}
+theorem revzip_powersetAux_lemma {α : Type*} [DecidableEq α] (l : List α) {l' : List (Multiset α)}
     (H : ∀ ⦃x : _ × _⦄, x ∈ revzip l' → x.1 + x.2 = ↑l) :
     revzip l' = l'.map fun x => (x, (l : Multiset α) - x) := by
   have :
@@ -298,7 +294,7 @@ theorem powersetCard_eq_empty {α : Type*} (n : ℕ) {s : Multiset α} (h : card
 @[simp]
 theorem powersetCard_card_add (s : Multiset α) {i : ℕ} (hi : 0 < i) :
     s.powersetCard (card s + i) = 0 :=
-  powersetCard_eq_empty _ (lt_add_of_pos_right (card s) hi)
+  powersetCard_eq_empty _ (Nat.lt_add_of_pos_right hi)
 #align multiset.powerset_len_card_add Multiset.powersetCard_card_add
 
 theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α) :
@@ -327,7 +323,7 @@ theorem nodup_powerset {s : Multiset α} : Nodup (powerset s) ↔ Nodup s :=
   ⟨fun h => (nodup_of_le (map_single_le_powerset _) h).of_map _,
     Quotient.inductionOn s fun l h => by
       simp only [quot_mk_to_coe, powerset_coe', coe_nodup]
-      refine' (nodup_sublists'.2 h).map_on _
+      refine (nodup_sublists'.2 h).map_on ?_
       exact fun x sx y sy e =>
         (h.perm_iff_eq_of_sublist (mem_sublists'.1 sx) (mem_sublists'.1 sy)).1 (Quotient.exact e)⟩
 #align multiset.nodup_powerset Multiset.nodup_powerset

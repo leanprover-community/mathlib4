@@ -20,6 +20,7 @@ This file defines finset constructions on the product type `α × β`. Beware no
   `a, b ∈ s` and `a ≠ b`.
 -/
 
+assert_not_exists MonoidWithZero
 
 open Multiset
 
@@ -72,12 +73,12 @@ theorem subset_product_image_snd [DecidableEq β] : (s ×ˢ t).image Prod.snd �
 
 theorem product_image_fst [DecidableEq α] (ht : t.Nonempty) : (s ×ˢ t).image Prod.fst = s := by
   ext i
-  simp [mem_image, ht.bex]
+  simp [mem_image, ht.exists_mem]
 #align finset.product_image_fst Finset.product_image_fst
 
 theorem product_image_snd [DecidableEq β] (ht : s.Nonempty) : (s ×ˢ t).image Prod.snd = t := by
   ext i
-  simp [mem_image, ht.bex]
+  simp [mem_image, ht.exists_mem]
 #align finset.product_image_snd Finset.product_image_snd
 
 theorem subset_product [DecidableEq α] [DecidableEq β] {s : Finset (α × β)} :
@@ -182,10 +183,12 @@ theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Prop) (q
     exact (disjoint_compl_right.inf_left _).inf_right _
 #align finset.filter_product_card Finset.filter_product_card
 
+@[simp]
 theorem empty_product (t : Finset β) : (∅ : Finset α) ×ˢ t = ∅ :=
   rfl
 #align finset.empty_product Finset.empty_product
 
+@[simp]
 theorem product_empty (s : Finset α) : s ×ˢ (∅ : Finset β) = ∅ :=
   eq_empty_of_forall_not_mem fun _ h => not_mem_empty _ (Finset.mem_product.1 h).2
 #align finset.product_empty Finset.product_empty

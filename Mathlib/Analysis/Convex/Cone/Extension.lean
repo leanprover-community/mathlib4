@@ -72,18 +72,18 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     set Sn := f '' { x : f.domain | -(x : E) - y ∈ s }
     suffices (upperBounds Sn ∩ lowerBounds Sp).Nonempty by
       simpa only [Set.Nonempty, upperBounds, lowerBounds, forall_mem_image] using this
-    refine' exists_between_of_forall_le (Nonempty.image f _) (Nonempty.image f (dense y)) _
+    refine exists_between_of_forall_le (Nonempty.image f ?_) (Nonempty.image f (dense y)) ?_
     · rcases dense (-y) with ⟨x, hx⟩
       rw [← neg_neg x, NegMemClass.coe_neg, ← sub_eq_add_neg] at hx
       exact ⟨_, hx⟩
     rintro a ⟨xn, hxn, rfl⟩ b ⟨xp, hxp, rfl⟩
     have := s.add_mem hxp hxn
-    rw [add_assoc, add_sub_cancel'_right, ← sub_eq_add_neg, ← AddSubgroupClass.coe_sub] at this
+    rw [add_assoc, add_sub_cancel, ← sub_eq_add_neg, ← AddSubgroupClass.coe_sub] at this
     replace := nonneg _ this
     rwa [f.map_sub, sub_nonneg] at this
   -- Porting note: removed an unused `have`
-  refine' ⟨f.supSpanSingleton y (-c) hy, _, _⟩
-  · refine' lt_iff_le_not_le.2 ⟨f.left_le_sup _ _, fun H => _⟩
+  refine ⟨f.supSpanSingleton y (-c) hy, ?_, ?_⟩
+  · refine lt_iff_le_not_le.2 ⟨f.left_le_sup _ _, fun H => ?_⟩
     replace H := LinearPMap.domain_mono.monotone H
     rw [LinearPMap.domain_supSpanSingleton, sup_le_iff, span_le, singleton_subset_iff] at H
     exact hy H.2
@@ -121,7 +121,7 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
     clear hp_nonneg hp_dense p
     have cne : c.Nonempty := ⟨y, hy⟩
     have hcd : DirectedOn (· ≤ ·) c := c_chain.directedOn
-    refine' ⟨LinearPMap.sSup c hcd, _, fun _ ↦ LinearPMap.le_sSup hcd⟩
+    refine ⟨LinearPMap.sSup c hcd, ?_, fun _ ↦ LinearPMap.le_sSup hcd⟩
     rintro ⟨x, hx⟩ hxs
     have hdir : DirectedOn (· ≤ ·) (LinearPMap.domain '' c) :=
       directedOn_image.2 (hcd.mono LinearPMap.domain_mono.monotone)
@@ -151,7 +151,7 @@ theorem riesz_extension (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
     ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x ∈ s, 0 ≤ g x := by
   rcases RieszExtension.exists_top s f nonneg dense
     with ⟨⟨g_dom, g⟩, ⟨-, hfg⟩, rfl : g_dom = ⊤, hgs⟩
-  refine' ⟨g.comp (LinearMap.id.codRestrict ⊤ fun _ ↦ trivial), _, _⟩
+  refine ⟨g.comp (LinearMap.id.codRestrict ⊤ fun _ ↦ trivial), ?_, ?_⟩
   · exact fun x => (hfg rfl).symm
   · exact fun x hx => hgs ⟨x, _⟩ hx
 #align riesz_extension riesz_extension
@@ -176,7 +176,7 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
     simpa [f'] using le_trans (hf ⟨x.1.1, x.2.1⟩) hx
   have hf'_dense : ∀ y : E × ℝ, ∃ x : f'.domain, ↑x + y ∈ s := by
     rintro ⟨x, y⟩
-    refine' ⟨⟨(0, N x - y), ⟨f.domain.zero_mem, trivial⟩⟩, _⟩
+    refine ⟨⟨(0, N x - y), ⟨f.domain.zero_mem, trivial⟩⟩, ?_⟩
     simp only [s, ConvexCone.mem_mk, mem_setOf_eq, Prod.fst_add, Prod.snd_add, zero_add,
       sub_add_cancel, le_rfl]
   obtain ⟨g, g_eq, g_nonneg⟩ := riesz_extension s f' hf'_nonneg hf'_dense

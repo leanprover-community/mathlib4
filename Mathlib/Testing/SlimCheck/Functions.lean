@@ -7,11 +7,11 @@ import Mathlib.Data.List.Sigma
 import Mathlib.Data.Int.Range
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.ToDFinsupp
-import Std.Data.LazyList
+import Batteries.Data.LazyList
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
-import Std.Data.LazyList
-import Std.Data.List.Perm
+import Batteries.Data.LazyList
+import Batteries.Data.List.Perm
 
 #align_import testing.slim_check.functions from "leanprover-community/mathlib"@"f9c300047a57aeda7c2fe15a3ac2455eb05ec225"
 
@@ -185,13 +185,13 @@ def applyFinsupp (tf : TotalFunction α β) : α →₀ β where
     intro a
     rcases tf with ⟨A, y⟩
     simp only [apply, zeroDefaultSupp, List.mem_map, List.mem_filter, exists_and_right,
-      List.mem_toFinset, exists_eq_right, Sigma.exists, Ne.def, zeroDefault]
+      List.mem_toFinset, exists_eq_right, Sigma.exists, Ne, zeroDefault]
     constructor
     · rintro ⟨od, hval, hod⟩
       have := List.mem_dlookup (List.nodupKeys_dedupKeys A) hval
       rw [(_ : List.dlookup a A = od)]
       · simpa using hod
-      · simpa [List.dlookup_dedupKeys, WithTop.some_eq_coe]
+      · simpa [List.dlookup_dedupKeys]
     · intro h
       use (A.dlookup a).getD (0 : β)
       rw [← List.dlookup_dedupKeys] at h ⊢
@@ -362,9 +362,9 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
         simp only [Ne.symm h, xs_ih, List.mem_cons, false_or_iff]
         suffices val ∈ ys by tauto
         erw [← Option.mem_def, List.mem_dlookup_iff] at h₃
-        simp only [Prod.toSigma, List.mem_map, heq_iff_eq, Prod.exists] at h₃
-        rcases h₃ with ⟨a, b, h₃, h₄, h₅⟩
-        apply (List.mem_zip h₃).2
+        · simp only [Prod.toSigma, List.mem_map, heq_iff_eq, Prod.exists] at h₃
+          rcases h₃ with ⟨a, b, h₃, h₄, h₅⟩
+          apply (List.mem_zip h₃).2
         simp only [List.NodupKeys, List.keys, comp, Prod.fst_toSigma, List.map_map]
         rwa [List.map_fst_zip _ _ (le_of_eq h₆)]
 #align slim_check.injective_function.apply_id_mem_iff SlimCheck.InjectiveFunction.applyId_mem_iff
@@ -373,7 +373,8 @@ theorem List.applyId_eq_self [DecidableEq α] {xs ys : List α} (x : α) :
     x ∉ xs → List.applyId.{u} (xs.zip ys) x = x := by
   intro h
   dsimp [List.applyId]
-  rw [List.dlookup_eq_none.2]; rfl
+  rw [List.dlookup_eq_none.2]
+  · rfl
   simp only [List.keys, not_exists, Prod.toSigma, exists_and_right, exists_eq_right, List.mem_map,
     Function.comp_apply, List.map_map, Prod.exists]
   intro y hy
@@ -391,7 +392,7 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
     have h₂ := h₁.length_eq
     rw [List.applyId_zip_eq h₀ h₂ _ _ _ hx] at h
     rw [← hx, ← hy]; congr
-    apply List.get?_injective _ (h₁.nodup_iff.1 h₀)
+    apply List.get?_inj _ (h₁.nodup_iff.1 h₀)
     · symm; rw [h]
       rw [← List.applyId_zip_eq] <;> assumption
     · rw [← h₁.length_eq]

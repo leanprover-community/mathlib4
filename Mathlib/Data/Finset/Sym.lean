@@ -168,7 +168,8 @@ section Sym
 variable {n : ℕ}
 
 -- Porting note: instance needed
-instance : DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
+instance : DecidableEq (Sym α n) :=
+  inferInstanceAs <| DecidableEq <| Subtype _
 
 /-- Lifts a finset to `Sym α n`. `s.sym n` is the finset of all unordered tuples of cardinality `n`
 with elements in `s`. -/
@@ -188,10 +189,10 @@ theorem sym_succ : s.sym (n + 1) = s.sup fun a ↦ (s.sym n).image <| Sym.cons a
 @[simp]
 theorem mem_sym_iff {m : Sym α n} : m ∈ s.sym n ↔ ∀ a ∈ m, a ∈ s := by
   induction' n with n ih
-  · refine' mem_singleton.trans ⟨_, fun _ ↦ Sym.eq_nil_of_card_zero _⟩
+  · refine mem_singleton.trans ⟨?_, fun _ ↦ Sym.eq_nil_of_card_zero _⟩
     rintro rfl
     exact fun a ha ↦ (Finset.not_mem_empty _ ha).elim
-  refine' mem_sup.trans ⟨_, fun h ↦ _⟩
+  refine mem_sup.trans ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨a, ha, he⟩ b hb
     rw [mem_image] at he
     obtain ⟨m, he, rfl⟩ := he
@@ -281,15 +282,16 @@ theorem sym_filterNe_mem {m : Sym α n} (a : α) (h : m ∈ s.sym n) :
   in 1-1 correspondence with the disjoint union of the `n - i`th symmetric powers of `s`,
   for `0 ≤ i ≤ n`. -/
 @[simps]
-def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σi : Fin (n + 1), s.sym (n - i)
-    where
+def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σi : Fin (n + 1), s.sym (n - i) where
   toFun m := ⟨_, (m.1.filterNe a).2, by convert sym_filterNe_mem a m.2; rw [erase_insert h]⟩
   invFun m := ⟨m.2.1.fill a m.1, sym_fill_mem a m.2.2⟩
   left_inv m := Subtype.ext <| m.1.fill_filterNe a
   right_inv := fun ⟨i, m, hm⟩ ↦ by
-    refine' Function.Injective.sigma_map (Function.injective_id) (fun i ↦ _) _
-    exact fun i ↦ Sym α (n - i)
-    swap; exact Subtype.coe_injective
+    refine Function.Injective.sigma_map (β₂ := ?_) (f₂ := ?_)
+        (Function.injective_id) (fun i ↦ ?_) ?_
+    · exact fun i ↦ Sym α (n - i)
+    swap
+    · exact Subtype.coe_injective
     refine Eq.trans ?_ (Sym.filter_ne_fill a _ ?_)
     exacts [rfl, h ∘ mem_sym_iff.1 hm a]
 #align finset.sym_insert_equiv Finset.symInsertEquiv

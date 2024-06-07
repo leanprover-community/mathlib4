@@ -46,7 +46,7 @@ theorem HasBasis.mem_lift_iff {ι} {p : ι → Prop} {s : ι → Set α} {f : Fi
     (hf : f.HasBasis p s) {β : ι → Type*} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ}
     {g : Set α → Filter γ} (hg : ∀ i, (g <| s i).HasBasis (pg i) (sg i)) (gm : Monotone g)
     {s : Set γ} : s ∈ f.lift g ↔ ∃ i, p i ∧ ∃ x, pg i x ∧ sg i x ⊆ s := by
-  refine' (mem_biInf_of_directed _ ⟨univ, univ_sets _⟩).trans _
+  refine (mem_biInf_of_directed ?_ ⟨univ, univ_sets _⟩).trans ?_
   · intro t₁ ht₁ t₂ ht₂
     exact ⟨t₁ ∩ t₂, inter_mem ht₁ ht₂, gm <| inter_subset_left _ _, gm <| inter_subset_right _ _⟩
   · simp only [← (hg _).mem_iff]
@@ -66,7 +66,7 @@ theorem HasBasis.lift {ι} {p : ι → Prop} {s : ι → Set α} {f : Filter α}
     {β : ι → Type*} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ} {g : Set α → Filter γ}
     (hg : ∀ i, (g (s i)).HasBasis (pg i) (sg i)) (gm : Monotone g) :
     (f.lift g).HasBasis (fun i : Σi, β i => p i.1 ∧ pg i.1 i.2) fun i : Σi, β i => sg i.1 i.2 := by
-  refine' ⟨fun t => (hf.mem_lift_iff hg gm).trans _⟩
+  refine ⟨fun t => (hf.mem_lift_iff hg gm).trans ?_⟩
   simp [Sigma.exists, and_assoc, exists_and_left]
 #align filter.has_basis.lift Filter.HasBasis.lift
 
@@ -175,7 +175,7 @@ theorem monotone_lift [Preorder γ] {f : γ → Filter α} {g : γ → Set α �
 #align filter.monotone_lift Filter.monotone_lift
 
 theorem lift_neBot_iff (hm : Monotone g) : (NeBot (f.lift g)) ↔ ∀ s ∈ f, NeBot (g s) := by
-  simp only [neBot_iff, Ne.def, ← empty_mem_iff_bot, mem_lift_sets hm, not_exists, not_and]
+  simp only [neBot_iff, Ne, ← empty_mem_iff_bot, mem_lift_sets hm, not_exists, not_and]
 #align filter.lift_ne_bot_iff Filter.lift_neBot_iff
 
 @[simp]
@@ -201,10 +201,10 @@ theorem lift_iInf_le {f : ι → Filter α} {g : Set α → Filter β} :
 
 theorem lift_iInf [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter β}
     (hg : ∀ s t, g (s ∩ t) = g s ⊓ g t) : (iInf f).lift g = ⨅ i, (f i).lift g := by
-  refine' lift_iInf_le.antisymm fun s => _
+  refine lift_iInf_le.antisymm fun s => ?_
   have H : ∀ t ∈ iInf f, ⨅ i, (f i).lift g ≤ g t := by
     intro t ht
-    refine' iInf_sets_induct ht _ fun hs ht => _
+    refine iInf_sets_induct ht ?_ fun hs ht => ?_
     · inhabit ι
       exact iInf₂_le_of_le default univ (iInf_le _ univ_mem)
     · rw [hg]

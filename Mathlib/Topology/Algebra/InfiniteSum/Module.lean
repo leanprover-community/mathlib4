@@ -180,7 +180,7 @@ theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι →
 
 protected theorem ContinuousLinearEquiv.map_tsum [T2Space M] [T2Space M₂] {f : ι → M}
     (e : M ≃SL[σ] M₂) : e (∑' z, f z) = ∑' z, e (f z) := by
-  refine' symm (e.tsum_eq_iff.mpr _)
+  refine symm (e.tsum_eq_iff.mpr ?_)
   rw [e.symm_apply_apply _]
 #align continuous_linear_equiv.map_tsum ContinuousLinearEquiv.map_tsum
 
@@ -211,7 +211,7 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
   congr 1
   simp only [mul_smul]
 
-/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
+/-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
 lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → M)
     (g : Quotient (MulAction.orbitRel α β) → R) :
@@ -230,7 +230,7 @@ lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → 
   simp_rw [H₁]
   exact tsum_const_smul'' _
 
-/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
+/-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
 lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β]  (f : β → M)
     (g : Quotient (AddAction.orbitRel α β) → R) :
@@ -262,7 +262,7 @@ variable {G : Type*} [Group G] {Γ : Subgroup G}
   `g ↦ ∑' (γ : Γ), f(γ • g)`."]
 noncomputable def QuotientGroup.automorphize  (f : G → M) : G ⧸ Γ → M := MulAction.automorphize f
 
-/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
+/-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
 lemma QuotientGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R) :
     (QuotientGroup.automorphize ((g ∘ (@Quotient.mk' _ (_)) : G → R) • f) : G ⧸ Γ → M)
@@ -275,7 +275,7 @@ section
 
 variable {G : Type*} [AddGroup G] {Γ : AddSubgroup G}
 
-/-- Automorphization of a function into an `R`-`module` distributes, that is, commutes with the
+/-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
 lemma QuotientAddGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R) :
     QuotientAddGroup.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
