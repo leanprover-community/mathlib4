@@ -1028,11 +1028,8 @@ noncomputable def uniformSpace : UniformSpace K :=
 
 /-- The uniform additive group structure of a number field induced by an infinite place. -/
 theorem uniformAddGroup : @UniformAddGroup K v.uniformSpace _ :=
-  @SeminormedAddCommGroup.to_uniformAddGroup _ (
-    @NormedAddCommGroup.toSeminormedAddCommGroup _ (
-      @NonUnitalNormedRing.toNormedAddCommGroup _ (
-        @NormedRing.toNonUnitalNormedRing _ (
-          @NormedDivisionRing.toNormedRing _ v.normedDivisionRing))))
+  letI := v.normedField
+  inferInstance
 
 /-- The topology of a number field infuced by an infinite place. -/
 noncomputable def topologicalSpace : TopologicalSpace K :=
