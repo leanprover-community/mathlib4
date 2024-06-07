@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.MinMax
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.Order.Interval.Set.OrderIso
@@ -492,7 +492,7 @@ theorem tendsto_atBot (e : α ≃o β) : Tendsto e atBot atBot :=
 @[simp]
 theorem tendsto_atTop_iff {l : Filter γ} {f : γ → α} (e : α ≃o β) :
     Tendsto (fun x => e (f x)) l atTop ↔ Tendsto f l atTop := by
-  rw [← e.comap_atTop, tendsto_comap_iff]; rfl
+  rw [← e.comap_atTop, tendsto_comap_iff, Function.comp_def]
 #align order_iso.tendsto_at_top_iff OrderIso.tendsto_atTop_iff
 
 @[simp]
@@ -1104,7 +1104,7 @@ lemma tendsto_div_const_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
 
 /-- If `f` tends to infinity along a filter, then `f` multiplied by a positive
 constant (on the left) also tends to infinity. For a version working in `ℕ` or `ℤ`, use
-`filter.tendsto.const_mul_atTop'` instead. -/
+`Filter.Tendsto.const_mul_atTop'` instead. -/
 theorem Tendsto.const_mul_atTop (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atTop :=
   (tendsto_const_mul_atTop_of_pos hr).2 hf
@@ -1112,7 +1112,7 @@ theorem Tendsto.const_mul_atTop (hr : 0 < r) (hf : Tendsto f l atTop) :
 
 /-- If a function `f` tends to infinity along a filter, then `f` multiplied by a positive
 constant (on the right) also tends to infinity. For a version working in `ℕ` or `ℤ`, use
-`filter.tendsto.atTop_mul_const'` instead. -/
+`Filter.Tendsto.atTop_mul_const'` instead. -/
 theorem Tendsto.atTop_mul_const (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atTop :=
   (tendsto_mul_const_atTop_of_pos hr).2 hf
@@ -1392,7 +1392,7 @@ open Filter
 
 theorem tendsto_atTop' [Nonempty α] [SemilatticeSup α] {f : α → β} {l : Filter β} :
     Tendsto f atTop l ↔ ∀ s ∈ l, ∃ a, ∀ b ≥ a, f b ∈ s := by
-  simp only [tendsto_def, mem_atTop_sets]; rfl
+  simp only [tendsto_def, mem_atTop_sets, mem_preimage]
 #align filter.tendsto_at_top' Filter.tendsto_atTop'
 
 theorem tendsto_atBot' [Nonempty α] [SemilatticeInf α] {f : α → β} {l : Filter β} :
@@ -1402,7 +1402,7 @@ theorem tendsto_atBot' [Nonempty α] [SemilatticeInf α] {f : α → β} {l : Fi
 
 theorem tendsto_atTop_principal [Nonempty β] [SemilatticeSup β] {f : β → α} {s : Set α} :
     Tendsto f atTop (𝓟 s) ↔ ∃ N, ∀ n ≥ N, f n ∈ s := by
-  rw [tendsto_iff_comap, comap_principal, le_principal_iff, mem_atTop_sets]; rfl
+  simp_rw [tendsto_iff_comap, comap_principal, le_principal_iff, mem_atTop_sets, mem_preimage]
 #align filter.tendsto_at_top_principal Filter.tendsto_atTop_principal
 
 theorem tendsto_atBot_principal [Nonempty β] [SemilatticeInf β] {f : β → α} {s : Set α} :
@@ -1546,7 +1546,7 @@ theorem tendsto_finset_image_atTop_atTop [DecidableEq β] {i : β → γ} {j : �
 #align filter.tendsto_finset_image_at_top_at_top Filter.tendsto_finset_image_atTop_atTop
 
 theorem tendsto_finset_preimage_atTop_atTop {f : α → β} (hf : Function.Injective f) :
-    Tendsto (fun s : Finset β => s.preimage f (hf.injOn _)) atTop atTop :=
+    Tendsto (fun s : Finset β => s.preimage f (hf.injOn)) atTop atTop :=
   (Finset.monotone_preimage hf).tendsto_atTop_finset fun x =>
     ⟨{f x}, Finset.mem_preimage.2 <| Finset.mem_singleton_self _⟩
 #align filter.tendsto_finset_preimage_at_top_at_top Filter.tendsto_finset_preimage_atTop_atTop
@@ -1751,46 +1751,46 @@ theorem atBot_Iic_eq [SemilatticeInf α] (a : α) : atBot = comap ((↑) : Iic a
 
 theorem tendsto_Ioi_atTop [SemilatticeSup α] {a : α} {f : β → Ioi a} {l : Filter β} :
     Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l atTop := by
-  rw [atTop_Ioi_eq, tendsto_comap_iff]; rfl
+  rw [atTop_Ioi_eq, tendsto_comap_iff, Function.comp_def]
 #align filter.tendsto_Ioi_at_top Filter.tendsto_Ioi_atTop
 
 theorem tendsto_Iio_atBot [SemilatticeInf α] {a : α} {f : β → Iio a} {l : Filter β} :
     Tendsto f l atBot ↔ Tendsto (fun x => (f x : α)) l atBot := by
-  rw [atBot_Iio_eq, tendsto_comap_iff]; rfl
+  rw [atBot_Iio_eq, tendsto_comap_iff, Function.comp_def]
 #align filter.tendsto_Iio_at_bot Filter.tendsto_Iio_atBot
 
 theorem tendsto_Ici_atTop [SemilatticeSup α] {a : α} {f : β → Ici a} {l : Filter β} :
     Tendsto f l atTop ↔ Tendsto (fun x => (f x : α)) l atTop := by
-  rw [atTop_Ici_eq, tendsto_comap_iff]; rfl
+  rw [atTop_Ici_eq, tendsto_comap_iff, Function.comp_def]
 #align filter.tendsto_Ici_at_top Filter.tendsto_Ici_atTop
 
 theorem tendsto_Iic_atBot [SemilatticeInf α] {a : α} {f : β → Iic a} {l : Filter β} :
     Tendsto f l atBot ↔ Tendsto (fun x => (f x : α)) l atBot := by
-  rw [atBot_Iic_eq, tendsto_comap_iff]; rfl
+  rw [atBot_Iic_eq, tendsto_comap_iff, Function.comp_def]
 #align filter.tendsto_Iic_at_bot Filter.tendsto_Iic_atBot
 
 @[simp, nolint simpNF] -- Porting note: linter claims that LHS doesn't simplify. It does.
 theorem tendsto_comp_val_Ioi_atTop [SemilatticeSup α] [NoMaxOrder α] {a : α} {f : α → β}
     {l : Filter β} : Tendsto (fun x : Ioi a => f x) atTop l ↔ Tendsto f atTop l := by
-  rw [← map_val_Ioi_atTop a, tendsto_map'_iff]; rfl
+  rw [← map_val_Ioi_atTop a, tendsto_map'_iff, Function.comp_def]
 #align filter.tendsto_comp_coe_Ioi_at_top Filter.tendsto_comp_val_Ioi_atTop
 
 @[simp, nolint simpNF] -- Porting note: linter claims that LHS doesn't simplify. It does.
 theorem tendsto_comp_val_Ici_atTop [SemilatticeSup α] {a : α} {f : α → β} {l : Filter β} :
     Tendsto (fun x : Ici a => f x) atTop l ↔ Tendsto f atTop l := by
-  rw [← map_val_Ici_atTop a, tendsto_map'_iff]; rfl
+  rw [← map_val_Ici_atTop a, tendsto_map'_iff, Function.comp_def]
 #align filter.tendsto_comp_coe_Ici_at_top Filter.tendsto_comp_val_Ici_atTop
 
 @[simp, nolint simpNF] -- Porting note: linter claims that LHS doesn't simplify. It does.
 theorem tendsto_comp_val_Iio_atBot [SemilatticeInf α] [NoMinOrder α] {a : α} {f : α → β}
     {l : Filter β} : Tendsto (fun x : Iio a => f x) atBot l ↔ Tendsto f atBot l := by
-  rw [← map_val_Iio_atBot a, tendsto_map'_iff]; rfl
+  rw [← map_val_Iio_atBot a, tendsto_map'_iff, Function.comp_def]
 #align filter.tendsto_comp_coe_Iio_at_bot Filter.tendsto_comp_val_Iio_atBot
 
 @[simp, nolint simpNF] -- Porting note: linter claims that LHS doesn't simplify. It does.
 theorem tendsto_comp_val_Iic_atBot [SemilatticeInf α] {a : α} {f : α → β} {l : Filter β} :
     Tendsto (fun x : Iic a => f x) atBot l ↔ Tendsto f atBot l := by
-  rw [← map_val_Iic_atBot a, tendsto_map'_iff]; rfl
+  rw [← map_val_Iic_atBot a, tendsto_map'_iff, Function.comp_def]
 #align filter.tendsto_comp_coe_Iic_at_bot Filter.tendsto_comp_val_Iic_atBot
 
 theorem map_add_atTop_eq_nat (k : ℕ) : map (fun a => a + k) atTop = atTop :=
@@ -2117,16 +2117,16 @@ theorem Function.Injective.map_atTop_finset_prod_eq [CommMonoid α] {g : γ → 
     map (fun s => ∏ i ∈ s, f (g i)) atTop = map (fun s => ∏ i ∈ s, f i) atTop := by
   haveI := Classical.decEq β
   apply le_antisymm <;> refine map_atTop_finset_prod_le_of_prod_eq fun s => ?_
-  · refine ⟨s.preimage g (hg.injOn _), fun t ht => ?_⟩
-    refine ⟨t.image g ∪ s, Finset.subset_union_right _ _, ?_⟩
-    rw [← Finset.prod_image (hg.injOn _)]
-    refine (prod_subset (subset_union_left _ _) ?_).symm
+  · refine ⟨s.preimage g hg.injOn, fun t ht => ?_⟩
+    refine ⟨t.image g ∪ s, Finset.subset_union_right, ?_⟩
+    rw [← Finset.prod_image hg.injOn]
+    refine (prod_subset subset_union_left ?_).symm
     simp only [Finset.mem_union, Finset.mem_image]
     refine fun y hy hyt => hf y (mt ?_ hyt)
     rintro ⟨x, rfl⟩
     exact ⟨x, ht (Finset.mem_preimage.2 <| hy.resolve_left hyt), rfl⟩
   · refine ⟨s.image g, fun t ht => ?_⟩
-    simp only [← prod_preimage _ _ (hg.injOn _) _ fun x _ => hf x]
+    simp only [← prod_preimage _ _ hg.injOn _ fun x _ => hf x]
     exact ⟨_, (image_subset_iff_subset_preimage _).1 ht, rfl⟩
 #align function.injective.map_at_top_finset_prod_eq Function.Injective.map_atTop_finset_prod_eq
 #align function.injective.map_at_top_finset_sum_eq Function.Injective.map_atTop_finset_sum_eq

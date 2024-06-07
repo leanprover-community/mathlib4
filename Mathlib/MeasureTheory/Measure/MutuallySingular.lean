@@ -154,7 +154,7 @@ theorem smul_nnreal (r : ℝ≥0) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
 lemma restrict (h : μ ⟂ₘ ν) (s : Set α) : μ.restrict s ⟂ₘ ν := by
   refine ⟨h.nullSet, h.measurableSet_nullSet, ?_, h.measure_compl_nullSet⟩
   rw [Measure.restrict_apply h.measurableSet_nullSet]
-  exact measure_mono_null (Set.inter_subset_left _ _) h.measure_nullSet
+  exact measure_mono_null Set.inter_subset_left h.measure_nullSet
 
 end MutuallySingular
 

@@ -159,8 +159,8 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
     simp [-coe_smul_finset]
   -- Else, we can transform `s`, `t` to `s'`, `t'` and `s''`, `t''`, such that one of `(s', t')` and
   -- `(s'', t'')` is strictly smaller than `(s, t)` according to `DevosMulRel`.
-  replace hsg : (s ∩ op g • s).card < s.card := card_lt_card ⟨inter_subset_left _ _, fun h ↦
-    hsg <| eq_of_superset_of_card_ge (h.trans <| inter_subset_right _ _) (card_smul_finset _ _).le⟩
+  replace hsg : (s ∩ op g • s).card < s.card := card_lt_card ⟨inter_subset_left, fun h ↦
+    hsg <| eq_of_superset_of_card_ge (h.trans inter_subset_right) (card_smul_finset _ _).le⟩
   replace aux1 := card_mono <| mulETransformLeft.fst_mul_snd_subset g (s, t)
   replace aux2 := card_mono <| mulETransformRight.fst_mul_snd_subset g (s, t)
   -- If the left translate of `t` by `g⁻¹` is disjoint from `t`, then we're easily done.
