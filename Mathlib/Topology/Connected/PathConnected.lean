@@ -1037,8 +1037,8 @@ theorem IsPathConnected.union {U V : Set X} (hU : IsPathConnected U) (hV : IsPat
   rcases hUV with ⟨x, xU, xV⟩
   use x, Or.inl xU
   rintro y (yU | yV)
-  · exact (hU.joinedIn x xU y yU).mono (subset_union_left U V)
-  · exact (hV.joinedIn x xV y yV).mono (subset_union_right U V)
+  · exact (hU.joinedIn x xU y yU).mono subset_union_left
+  · exact (hV.joinedIn x xV y yV).mono subset_union_right
 #align is_path_connected.union IsPathConnected.union
 
 /-- If a set `W` is path-connected, then it is also path-connected when seen as a set in a smaller

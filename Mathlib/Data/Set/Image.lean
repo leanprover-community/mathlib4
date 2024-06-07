@@ -205,7 +205,7 @@ variable {f : α → β} {s t : Set α}
 -- Porting note: `Set.image` is already defined in `Init.Set`
 #align set.image Set.image
 
-@[deprecated mem_image] -- 2024-03-23
+@[deprecated mem_image (since := "2024-03-23")]
 theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
     y ∈ f '' s ↔ ∃ (x : _) (_ : x ∈ s), f x = y :=
   bex_def.symm
@@ -228,19 +228,18 @@ theorem exists_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
     (∃ y ∈ f '' s, p y) ↔ ∃ x ∈ s, p (f x) := by simp
 #align set.bex_image_iff Set.exists_mem_image
 
--- 2024-02-21
-@[deprecated] alias ball_image_iff := forall_mem_image
-@[deprecated] alias bex_image_iff := exists_mem_image
-@[deprecated] alias ⟨_, ball_image_of_ball⟩ := forall_mem_image
+@[deprecated (since := "2024-02-21")] alias ball_image_iff := forall_mem_image
+@[deprecated (since := "2024-02-21")] alias bex_image_iff := exists_mem_image
+@[deprecated (since := "2024-02-21")] alias ⟨_, ball_image_of_ball⟩ := forall_mem_image
 
 #align set.ball_image_of_ball Set.ball_image_of_ball
 
-@[deprecated forall_mem_image] -- 2024-02-21
+@[deprecated forall_mem_image (since := "2024-02-21")]
 theorem mem_image_elim {f : α → β} {s : Set α} {C : β → Prop} (h : ∀ x : α, x ∈ s → C (f x)) :
     ∀ {y : β}, y ∈ f '' s → C y := forall_mem_image.2 h _
 #align set.mem_image_elim Set.mem_image_elim
 
-@[deprecated forall_mem_image] -- 2024-02-21
+@[deprecated forall_mem_image (since := "2024-02-21")]
 theorem mem_image_elim_on {f : α → β} {s : Set α} {C : β → Prop} {y : β} (h_y : y ∈ f '' s)
     (h : ∀ x : α, x ∈ s → C (f x)) : C y := forall_mem_image.2 h _ h_y
 #align set.mem_image_elim_on Set.mem_image_elim_on
@@ -313,7 +312,7 @@ theorem image_empty (f : α → β) : f '' ∅ = ∅ := by
 #align set.image_empty Set.image_empty
 
 theorem image_inter_subset (f : α → β) (s t : Set α) : f '' (s ∩ t) ⊆ f '' s ∩ f '' t :=
-  subset_inter (image_subset _ <| inter_subset_left _ _) (image_subset _ <| inter_subset_right _ _)
+  subset_inter (image_subset _ inter_subset_left) (image_subset _ inter_subset_right)
 #align set.image_inter_subset Set.image_inter_subset
 
 theorem image_inter_on {f : α → β} {s t : Set α} (h : ∀ x ∈ t, ∀ y ∈ s, f x = f y → x = y) :
@@ -432,7 +431,7 @@ theorem image_compl_eq {f : α → β} {s : Set α} (H : Bijective f) : f '' s�
 
 theorem subset_image_diff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f '' (s \ t) := by
   rw [diff_subset_iff, ← image_union, union_diff_self]
-  exact image_subset f (subset_union_right t s)
+  exact image_subset f subset_union_right
 #align set.subset_image_diff Set.subset_image_diff
 
 open scoped symmDiff in
@@ -465,7 +464,7 @@ theorem image_nonempty {f : α → β} {s : Set α} : (f '' s).Nonempty ↔ s.No
   ⟨Nonempty.of_image, fun h => h.image f⟩
 #align set.nonempty_image_iff Set.image_nonempty
 
-@[deprecated] alias nonempty_image_iff := image_nonempty
+@[deprecated (since := "2024-01-06")] alias nonempty_image_iff := image_nonempty
 
 theorem Nonempty.preimage {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : Surjective f) :
     (f ⁻¹' s).Nonempty :=
@@ -573,7 +572,7 @@ theorem image_eq_image {f : α → β} (hf : Injective f) : f '' s = f '' t ↔ 
 
 theorem subset_image_iff {t : Set β} :
     t ⊆ f '' s ↔ ∃ u, u ⊆ s ∧ f '' u = t := by
-  refine ⟨fun h ↦ ⟨f ⁻¹' t ∩ s, inter_subset_right _ _, ?_⟩,
+  refine ⟨fun h ↦ ⟨f ⁻¹' t ∩ s, inter_subset_right, ?_⟩,
     fun ⟨u, hu, hu'⟩ ↦ hu'.symm ▸ image_mono hu⟩
   rwa [image_preimage_inter, inter_eq_left]
 
@@ -655,7 +654,7 @@ variable {f : ι → α} {s t : Set α}
 theorem forall_mem_range {p : α → Prop} : (∀ a ∈ range f, p a) ↔ ∀ i, p (f i) := by simp
 #align set.forall_range_iff Set.forall_mem_range
 
-@[deprecated] alias forall_range_iff := forall_mem_range -- 2024-02-21
+@[deprecated (since := "2024-02-21")] alias forall_range_iff := forall_mem_range
 
 theorem forall_subtype_range_iff {p : range f → Prop} :
     (∀ a : range f, p a) ↔ ∀ i, p ⟨f i, mem_range_self _⟩ :=
@@ -667,7 +666,7 @@ theorem forall_subtype_range_iff {p : range f → Prop} :
 theorem exists_range_iff {p : α → Prop} : (∃ a ∈ range f, p a) ↔ ∃ i, p (f i) := by simp
 #align set.exists_range_iff Set.exists_range_iff
 
-@[deprecated] -- 2024-03-10
+@[deprecated (since := "2024-03-10")]
 alias exists_range_iff' := exists_range_iff
 #align set.exists_range_iff' Set.exists_range_iff'
 
@@ -1078,9 +1077,9 @@ theorem range_ite_subset' {p : Prop} [Decidable p] {f g : α → β} :
     range (if p then f else g) ⊆ range f ∪ range g := by
   by_cases h : p
   · rw [if_pos h]
-    exact subset_union_left _ _
+    exact subset_union_left
   · rw [if_neg h]
-    exact subset_union_right _ _
+    exact subset_union_right
 #align set.range_ite_subset' Set.range_ite_subset'
 
 theorem range_ite_subset {p : α → Prop} [DecidablePred p] {f g : α → β} :

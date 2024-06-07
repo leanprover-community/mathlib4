@@ -116,7 +116,8 @@ theorem MonoidHom.map_cyclic {G : Type*} [Group G] [h : IsCyclic G] (σ : G →*
   rw [MonoidHom.map_zpow, ← hm, ← zpow_mul, ← zpow_mul']
 #align monoid_hom.map_cyclic MonoidHom.map_cyclic
 #align monoid_add_hom.map_add_cyclic AddMonoidHom.map_addCyclic
-@[deprecated] alias MonoidAddHom.map_add_cyclic := AddMonoidHom.map_addCyclic -- 2024-02-21
+@[deprecated (since := "2024-02-21")] alias
+MonoidAddHom.map_add_cyclic := AddMonoidHom.map_addCyclic
 
 @[to_additive]
 theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fintype.card α) :
@@ -128,17 +129,24 @@ theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fint
     exact Set.eq_of_subset_of_card_le (Set.subset_univ _) (ge_of_eq hx)
 #align is_cyclic_of_order_of_eq_card isCyclic_of_orderOf_eq_card
 #align is_add_cyclic_of_order_of_eq_card isAddCyclic_of_addOrderOf_eq_card
-@[deprecated] -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias isAddCyclic_of_orderOf_eq_card := isAddCyclic_of_addOrderOf_eq_card
+
+@[to_additive]
+theorem Subgroup.eq_bot_or_eq_top_of_prime_card {G : Type*} [Group G] {_ : Fintype G}
+    (H : Subgroup G) [hp : Fact (Fintype.card G).Prime] : H = ⊥ ∨ H = ⊤ := by
+  classical
+  have := card_subgroup_dvd_card H
+  rwa [Nat.dvd_prime hp.1, ← Nat.card_eq_fintype_card, ← Nat.card_eq_fintype_card,
+    ← eq_bot_iff_card, card_eq_iff_eq_top] at this
 
 /-- Any non-identity element of a finite group of prime order generates the group. -/
 @[to_additive "Any non-identity element of a finite group of prime order generates the group."]
 theorem zpowers_eq_top_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ}
     [hp : Fact p.Prime] (h : Fintype.card G = p) {g : G} (hg : g ≠ 1) : zpowers g = ⊤ := by
-  have := card_subgroup_dvd_card (zpowers g)
-  simp_rw [h, Nat.dvd_prime hp.1, ← eq_bot_iff_card, zpowers_eq_bot, hg, false_or, ← h,
-    card_eq_iff_eq_top] at this
-  exact this
+  subst h
+  have := (zpowers g).eq_bot_or_eq_top_of_prime_card
+  rwa [zpowers_eq_bot, or_iff_right hg] at this
 
 @[to_additive]
 theorem mem_zpowers_of_prime_card {G : Type*} [Group G] {_ : Fintype G} {p : ℕ} [hp : Fact p.Prime]
@@ -197,7 +205,7 @@ theorem exists_pow_ne_one_of_isCyclic {G : Type*} [Group G] [Fintype G] [G_cycli
   use a
   contrapose! k_lt_card_G
   convert orderOf_le_of_pow_eq_one k_pos.bot_lt k_lt_card_G
-  rw [← Fintype.card_zpowers, eq_comm, Subgroup.card_eq_iff_eq_top, eq_top_iff]
+  rw [← Nat.card_eq_fintype_card, ← Nat.card_zpowers, eq_comm, card_eq_iff_eq_top, eq_top_iff]
   exact fun x _ ↦ ha x
 
 @[to_additive]
@@ -321,7 +329,7 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
       exact le_of_dvd hn0 (Nat.gcd_dvd_left _ _)
 #align is_cyclic.card_pow_eq_one_le IsCyclic.card_pow_eq_one_le
 #align is_add_cyclic.card_pow_eq_one_le IsAddCyclic.card_nsmul_eq_zero_le
-@[deprecated] -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias IsAddCyclic.card_pow_eq_one_le := IsAddCyclic.card_nsmul_eq_zero_le
 
 end Classical
@@ -350,7 +358,7 @@ lemma isCyclic_iff_exists_ofOrder_eq_natCard [Finite α] :
   refine isCyclic_of_orderOf_eq_card g ?_
   simp [hg]
 
-@[to_additive (attr := deprecated)] -- 2024-04-20
+@[to_additive (attr := deprecated (since := "2024-04-20"))]
 protected alias IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype :=
   isCyclic_iff_exists_ofOrder_eq_natCard
 
@@ -498,7 +506,7 @@ theorem isCyclic_of_card_pow_eq_one_le : IsCyclic α :=
   isCyclic_of_orderOf_eq_card x (Finset.mem_filter.1 hx).2
 #align is_cyclic_of_card_pow_eq_one_le isCyclic_of_card_pow_eq_one_le
 
-@[deprecated] -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias isAddCyclic_of_card_pow_eq_one_le := isAddCyclic_of_card_nsmul_eq_zero_le
 
 end Totient
@@ -509,25 +517,18 @@ theorem IsCyclic.card_orderOf_eq_totient [IsCyclic α] [Fintype α] {d : ℕ}
   classical apply card_orderOf_eq_totient_aux₂ (fun n => IsCyclic.card_pow_eq_one_le) hd
 #align is_cyclic.card_order_of_eq_totient IsCyclic.card_orderOf_eq_totient
 
-@[deprecated] -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias IsAddCyclic.card_orderOf_eq_totient := IsAddCyclic.card_addOrderOf_eq_totient
 
 /-- A finite group of prime order is simple. -/
 @[to_additive "A finite group of prime order is simple."]
 theorem isSimpleGroup_of_prime_card {α : Type u} [Group α] [Fintype α] {p : ℕ} [hp : Fact p.Prime]
-    (h : Fintype.card α = p) : IsSimpleGroup α :=
+    (h : Fintype.card α = p) : IsSimpleGroup α := by
+  subst h
   have : Nontrivial α := by
-    have h' := Nat.Prime.one_lt (Fact.out (p := p.Prime))
-    rw [← h] at h'
+    have h' := Nat.Prime.one_lt hp.out
     exact Fintype.one_lt_card_iff_nontrivial.1 h'
-  ⟨fun H _ => by
-    classical
-      have hcard := card_subgroup_dvd_card H
-      rw [h, dvd_prime (Fact.out (p := p.Prime))] at hcard
-      refine hcard.imp (fun h1 => ?_) fun hp => ?_
-      · haveI := Fintype.card_le_one_iff_subsingleton.1 (le_of_eq h1)
-        apply eq_bot_of_subsingleton
-      · exact eq_top_of_card_eq _ (hp.trans h.symm)⟩
+  exact ⟨fun H _ => H.eq_bot_or_eq_top_of_prime_card⟩
 #align is_simple_group_of_prime_card isSimpleGroup_of_prime_card
 #align is_simple_add_group_of_prime_card isSimpleAddGroup_of_prime_card
 
@@ -565,7 +566,7 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic H] (f : G →* H) (hf : 
 #align commutative_of_cyclic_center_quotient commutative_of_cyclic_center_quotient
 #align commutative_of_add_cyclic_center_quotient commutative_of_addCyclic_center_quotient
 
-@[deprecated] -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias commutative_of_add_cyclic_center_quotient := commutative_of_addCyclic_center_quotient
 
 /-- A group is commutative if the quotient by the center is cyclic. -/
