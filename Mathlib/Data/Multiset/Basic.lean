@@ -2627,8 +2627,6 @@ theorem count_map {α β : Type*} (f : α → β) (s : Multiset α) [DecidableEq
   simp [Bool.beq_eq_decide_eq, eq_comm, count, countP_map]
 #align multiset.count_map Multiset.count_map
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning:
-  expanding binder collection (x «expr ∈ » s) -/
 /-- `Multiset.map f` preserves `count` if `f` is injective on the set of elements contained in
 the multiset -/
 theorem count_map_eq_count [DecidableEq β] (f : α → β) (s : Multiset α)

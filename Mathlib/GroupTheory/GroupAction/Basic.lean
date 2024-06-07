@@ -244,25 +244,26 @@ lemma FixedPoints.mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m
 end Monoid
 
 section Group
-
+namespace FixedPoints
 variable [Group α] [MulDistribMulAction M α]
 
 /-- The subgroup of elements fixed under the whole action. -/
-def FixedPoints.subgroup : Subgroup α where
+def subgroup : Subgroup α where
   __ := submonoid M α
   inv_mem' ha _ := by rw [smul_inv', ha]
 
 /-- The notation for `FixedPoints.subgroup`, chosen to resemble `αᴹ`. -/
-notation α "^*" M:51 => FixedPoints.subgroup M α
+scoped notation α "^*" M:51 => FixedPoints.subgroup M α
 
 @[simp]
-lemma FixedPoints.mem_subgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
+lemma mem_subgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
 @[simp]
-lemma FixedPoints.subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
+lemma subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
   rfl
 
+end FixedPoints
 end Group
 
 section AddMonoid
