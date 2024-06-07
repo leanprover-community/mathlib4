@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Paul Lezeau
 -/
 
--- TODO: fix imports
-import Mathlib.CategoryTheory.FiberedCategory.Fibered
+import Mathlib.CategoryTheory.FiberedCategory.HomLift
 import Mathlib.CategoryTheory.Functor.Const
 
 /-!
@@ -21,55 +20,53 @@ In this file we define, for a functor `p : 𝒳 ⥤ 𝒴` the fiber categories `
 
 universe v₁ u₁ v₂ u₂ v₃ u₃
 
-open CategoryTheory Functor Category IsCartesian IsHomLift
+open CategoryTheory Functor Category IsHomLift
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
 /-- Fiber p S is the type of elements of 𝒳 mapping to S via p  -/
-@[simp]
 def Fiber (p : 𝒳 ⥤ 𝒮) (S : 𝒮) := {a : 𝒳 // p.obj a = S}
-
-/-- The object of the fiber over `S` corresponding to a `a : 𝒳` such that `p(a) = S`. -/
-@[simps]
-def Fiber.mk_obj {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) : Fiber p S := ⟨a, ha⟩
 
 namespace Fiber
 
-variable {p : 𝒳 ⥤ 𝒮} {S : 𝒮}
+def Hom {p : 𝒳 ⥤ 𝒮} {S : 𝒮} (a b : Fiber p S) := {φ : a.1 ⟶ b.1 // IsHomLift p (𝟙 S) φ}
 
-def Hom (a b : Fiber p S) := {φ : a.1 ⟶ b.1 // IsHomLift p (𝟙 S) φ}
-
-instance (a b : Fiber p S) (φ : Hom a b) : IsHomLift p (𝟙 S) φ.1 := φ.2
+instance {p : 𝒳 ⥤ 𝒮} {S : 𝒮} (a b : Fiber p S) (φ : Hom a b) : IsHomLift p (𝟙 S) φ.1 := φ.2
 
 /-- `Fiber p S` has the structure of a category with morphisms being those lying over `𝟙 S`. -/
 @[simps]
-instance FiberCategory : Category (Fiber p S) where
+instance FiberCategory {p : 𝒳 ⥤ 𝒮} {S : 𝒮} : Category (Fiber p S) where
   Hom a b := {φ : a.1 ⟶ b.1 // IsHomLift p (𝟙 S) φ}
   id a := ⟨𝟙 a.1, IsHomLift.id a.2⟩
   comp φ ψ := ⟨φ.val ≫ ψ.val, inferInstance⟩
 
+/-- The object of the fiber over `S` corresponding to a `a : 𝒳` such that `p(a) = S`. -/
+@[simps]
+def mk_obj {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) : Fiber p S := ⟨a, ha⟩
+
 @[ext]
-lemma hom_ext {a b : Fiber p S} (φ ψ : a ⟶ b) : φ.1 = ψ.1 → φ = ψ :=
+lemma hom_ext {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {a b : Fiber p S} (φ ψ : a ⟶ b) : φ.1 = ψ.1 → φ = ψ :=
   Subtype.ext
 
 /-- The morphism in the fiber over `S` corresponding to a morphism in `𝒳` lifting `𝟙 S`. -/
 @[simps]
-def mk_map (p : 𝒳 ⥤ 𝒮) {a b : 𝒳} (φ : a ⟶ b) [IsHomLift p (𝟙 S) φ] :
+def mk_map (p : 𝒳 ⥤ 𝒮) (S : 𝒮) {a b : 𝒳} (φ : a ⟶ b) [IsHomLift p (𝟙 S) φ] :
     mk_obj (domain_eq p (𝟙 S) φ) ⟶ mk_obj (codomain_eq p (𝟙 S) φ) :=
   ⟨φ, inferInstance⟩
 
 @[simp]
-lemma mk_map_id (p : 𝒳 ⥤ 𝒮) (a : 𝒳) [IsHomLift p (𝟙 S) (𝟙 a)] :
-    mk_map p (𝟙 a) = 𝟙 (mk_obj (domain_eq p (𝟙 S) (𝟙 a))) :=
+lemma mk_map_id (p : 𝒳 ⥤ 𝒮) (S : 𝒮) (a : 𝒳) [IsHomLift p (𝟙 S) (𝟙 a)] :
+    mk_map p S (𝟙 a) = 𝟙 (mk_obj (domain_eq p (𝟙 S) (𝟙 a))) :=
   rfl
 
 @[simp]
-lemma val_comp {a b c : Fiber p S} (φ : a ⟶ b) (ψ : b ⟶ c) : (φ ≫ ψ).1 = φ.1 ≫ ψ.1 :=
+lemma val_comp {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {a b c : Fiber p S} (φ : a ⟶ b) (ψ : b ⟶ c) :
+    (φ ≫ ψ).1 = φ.1 ≫ ψ.1 :=
   rfl
 
 @[simp]
-lemma mk_map_comp {a b c : 𝒳} (φ : a ⟶ b) (ψ : b ⟶ c) [IsHomLift p (𝟙 S) φ]
-    [IsHomLift p (𝟙 S) ψ] : mk_map p φ ≫ mk_map p ψ = mk_map p (S := S) (φ ≫ ψ) :=
+lemma mk_map_comp {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {a b c : 𝒳} (φ : a ⟶ b) (ψ : b ⟶ c) [IsHomLift p (𝟙 S) φ]
+    [IsHomLift p (𝟙 S) ψ] : mk_map p S φ ≫ mk_map p S ψ = mk_map p S (φ ≫ ψ) :=
   rfl
 
 section
