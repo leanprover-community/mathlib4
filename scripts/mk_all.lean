@@ -37,7 +37,7 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
     let fileContent := ("\n".intercalate (allFiles.map ("import " ++ ·)).toList).push '\n'
     if !(← pathExists fileName) then
       if check then
-        IO.println s!"File {fileName} does not exist"
+        IO.println s!"File '{fileName}' does not exist"
       else
         IO.println s!"Creating '{fileName}'"
         IO.FS.writeFile fileName fileContent
