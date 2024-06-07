@@ -37,7 +37,7 @@ noncomputable section
 variable {α β γ : Type*}
 
 open scoped Classical
-open BigOperators NNReal ENNReal MeasureTheory
+open NNReal ENNReal MeasureTheory
 
 /-- A probability mass function, or discrete probability measures is a function `α → ℝ≥0∞` such
   that the values have (infinite) sum `1`. -/
@@ -171,7 +171,7 @@ theorem toOuterMeasure_caratheodory : p.toOuterMeasure.caratheodory = ⊤ := by
 #align pmf.to_outer_measure_caratheodory PMF.toOuterMeasure_caratheodory
 
 @[simp]
-theorem toOuterMeasure_apply_finset (s : Finset α) : p.toOuterMeasure s = ∑ x in s, p x := by
+theorem toOuterMeasure_apply_finset (s : Finset α) : p.toOuterMeasure s = ∑ x ∈ s, p x := by
   refine (toOuterMeasure_apply p s).trans ((tsum_eq_sum (s := s) ?_).trans ?_)
   · exact fun x hx => Set.indicator_of_not_mem (Finset.mem_coe.not.2 hx) _
   · exact Finset.sum_congr rfl fun x hx => Set.indicator_of_mem (Finset.mem_coe.2 hx) _
@@ -225,8 +225,8 @@ theorem toOuterMeasure_mono {s t : Set α} (h : s ∩ p.support ⊆ t) :
 
 theorem toOuterMeasure_apply_eq_of_inter_support_eq {s t : Set α}
     (h : s ∩ p.support = t ∩ p.support) : p.toOuterMeasure s = p.toOuterMeasure t :=
-  le_antisymm (p.toOuterMeasure_mono (h.symm ▸ Set.inter_subset_left t p.support))
-    (p.toOuterMeasure_mono (h ▸ Set.inter_subset_left s p.support))
+  le_antisymm (p.toOuterMeasure_mono (h.symm ▸ Set.inter_subset_left))
+    (p.toOuterMeasure_mono (h ▸ Set.inter_subset_left))
 #align pmf.to_outer_measure_apply_eq_of_inter_support_eq PMF.toOuterMeasure_apply_eq_of_inter_support_eq
 
 @[simp]
@@ -317,7 +317,7 @@ theorem toMeasure_inj {p q : PMF α} : p.toMeasure = q.toMeasure ↔ p = q :=
 #align pmf.to_measure_inj PMF.toMeasure_inj
 
 @[simp]
-theorem toMeasure_apply_finset (s : Finset α) : p.toMeasure s = ∑ x in s, p x :=
+theorem toMeasure_apply_finset (s : Finset α) : p.toMeasure s = ∑ x ∈ s, p x :=
   (p.toMeasure_apply_eq_toOuterMeasure_apply s s.measurableSet).trans
     (p.toOuterMeasure_apply_finset s)
 #align pmf.to_measure_apply_finset PMF.toMeasure_apply_finset

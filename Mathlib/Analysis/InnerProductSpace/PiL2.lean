@@ -55,7 +55,7 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 
 set_option linter.uppercaseLean3 false
 
-open Real Set Filter RCLike Submodule Function BigOperators Uniformity Topology NNReal ENNReal
+open Real Set Filter RCLike Submodule Function Uniformity Topology NNReal ENNReal
   ComplexConjugate DirectSum
 
 noncomputable section
@@ -249,7 +249,7 @@ section DecEq
 variable [DecidableEq ι]
 
 -- TODO : This should be generalized to `PiLp`.
-/-- The vector given in euclidean space by being `1 : 𝕜` at coordinate `i : ι` and `0 : 𝕜` at
+/-- The vector given in euclidean space by being `a : 𝕜` at coordinate `i : ι` and `0 : 𝕜` at
 all other coordinates. -/
 def EuclideanSpace.single (i : ι) (a : 𝕜) : EuclideanSpace 𝕜 ι :=
   (WithLp.equiv _ _).symm (Pi.single i a)

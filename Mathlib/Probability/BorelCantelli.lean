@@ -27,7 +27,7 @@ in probability spaces), see `MeasureTheory.measure_limsup_eq_zero`.
 -/
 
 
-open scoped MeasureTheory ProbabilityTheory ENNReal BigOperators Topology
+open scoped MeasureTheory ProbabilityTheory ENNReal Topology
 
 open MeasureTheory ProbabilityTheory MeasurableSpace TopologicalSpace
 
@@ -75,9 +75,9 @@ theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (
     (hs' : (∑' n, μ (s n)) = ∞) : μ (limsup s atTop) = 1 := by
   rw [measure_congr (eventuallyEq_set.2 (ae_mem_limsup_atTop_iff μ <|
     measurableSet_filtrationOfSet' hsm) : (limsup s atTop : Set Ω) =ᵐ[μ]
-      {ω | Tendsto (fun n => ∑ k in Finset.range n,
+      {ω | Tendsto (fun n => ∑ k ∈ Finset.range n,
         (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|filtrationOfSet hsm k]) ω) atTop atTop})]
-  suffices {ω | Tendsto (fun n => ∑ k in Finset.range n,
+  suffices {ω | Tendsto (fun n => ∑ k ∈ Finset.range n,
       (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|filtrationOfSet hsm k]) ω) atTop atTop} =ᵐ[μ] Set.univ by
     rw [measure_congr this, measure_univ]
   have : ∀ᵐ ω ∂μ, ∀ n, (μ[(s (n + 1)).indicator (1 : Ω → ℝ)|filtrationOfSet hsm n]) ω = _ :=
@@ -85,7 +85,7 @@ theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (
   filter_upwards [this] with ω hω
   refine eq_true (?_ : Tendsto _ _ _)
   simp_rw [hω]
-  have htends : Tendsto (fun n => ∑ k in Finset.range n, μ (s (k + 1))) atTop (𝓝 ∞) := by
+  have htends : Tendsto (fun n => ∑ k ∈ Finset.range n, μ (s (k + 1))) atTop (𝓝 ∞) := by
     rw [← ENNReal.tsum_add_one_eq_top hs' (measure_ne_top _ _)]
     exact ENNReal.tendsto_nat_tsum _
   rw [ENNReal.tendsto_nhds_top_iff_nnreal] at htends
@@ -96,7 +96,7 @@ theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (
   · rintro ⟨B, hB⟩
     refine not_eventually.2 (frequently_of_forall fun n => ?_) (htends B.toNNReal)
     rw [mem_upperBounds] at hB
-    specialize hB (∑ k : ℕ in Finset.range n, μ (s (k + 1))).toReal _
+    specialize hB (∑ k ∈ Finset.range n, μ (s (k + 1))).toReal _
     · refine ⟨n, ?_⟩
       rw [ENNReal.toReal_sum]
       exact fun _ _ => measure_ne_top _ _

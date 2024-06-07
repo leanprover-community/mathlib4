@@ -22,6 +22,10 @@ We also specialize for `Tree Unit`, which is a binary tree without any
 additional data. We provide the notation `a △ b` for making a `Tree Unit` with children
 `a` and `b`.
 
+## TODO
+
+Implement a `Traversable` instance for `Tree`.
+
 ## References
 
 <https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html>
@@ -87,7 +91,7 @@ def getOrElse (n : PosNum) (t : Tree α) (v : α) : α :=
 #align tree.get_or_else Tree.getOrElse
 
 /-- Apply a function to each value in the tree.  This is the `map` function for the `Tree` functor.
-TODO: implement `Traversable Tree`. -/
+-/
 def map {β} (f : α → β) : Tree α → Tree β
   | nil => nil
   | node a l r => node (f a) (map f l) (map f r)

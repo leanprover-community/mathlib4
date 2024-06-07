@@ -72,7 +72,7 @@ with finite measure. Its value on other sets is ignored.
 
 noncomputable section
 
-open scoped Classical Topology BigOperators NNReal ENNReal MeasureTheory Pointwise
+open scoped Classical Topology NNReal ENNReal MeasureTheory Pointwise
 
 open Set Filter TopologicalSpace ENNReal EMetric
 
@@ -153,7 +153,7 @@ theorem map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
     (h_add : FinMeasAdditive μ T) {ι} (S : ι → Set α) (sι : Finset ι)
     (hS_meas : ∀ i, MeasurableSet (S i)) (hSp : ∀ i ∈ sι, μ (S i) ≠ ∞)
     (h_disj : ∀ᵉ (i ∈ sι) (j ∈ sι), i ≠ j → Disjoint (S i) (S j)) :
-    T (⋃ i ∈ sι, S i) = ∑ i in sι, T (S i) := by
+    T (⋃ i ∈ sι, S i) = ∑ i ∈ sι, T (S i) := by
   revert hSp h_disj
   refine Finset.induction_on sι ?_ ?_
   · simp only [Finset.not_mem_empty, IsEmpty.forall_iff, iUnion_false, iUnion_empty, sum_empty,
@@ -277,7 +277,7 @@ namespace SimpleFunc
 
 /-- Extend `Set α → (F →L[ℝ] F')` to `(α →ₛ F) → F'`. -/
 def setToSimpleFunc {_ : MeasurableSpace α} (T : Set α → F →L[ℝ] F') (f : α →ₛ F) : F' :=
-  ∑ x in f.range, T (f ⁻¹' {x}) x
+  ∑ x ∈ f.range, T (f ⁻¹' {x}) x
 #align measure_theory.simple_func.set_to_simple_func MeasureTheory.SimpleFunc.setToSimpleFunc
 
 @[simp]
@@ -305,7 +305,7 @@ theorem setToSimpleFunc_zero_apply {m : MeasurableSpace α} (T : Set α → F �
 
 theorem setToSimpleFunc_eq_sum_filter {m : MeasurableSpace α} (T : Set α → F →L[ℝ] F')
     (f : α →ₛ F) :
-    setToSimpleFunc T f = ∑ x in f.range.filter fun x => x ≠ 0, (T (f ⁻¹' {x})) x := by
+    setToSimpleFunc T f = ∑ x ∈ f.range.filter fun x => x ≠ 0, (T (f ⁻¹' {x})) x := by
   symm
   refine sum_filter_of_ne fun x _ => mt fun hx0 => ?_
   rw [hx0]
@@ -314,7 +314,7 @@ theorem setToSimpleFunc_eq_sum_filter {m : MeasurableSpace α} (T : Set α → F
 
 theorem map_setToSimpleFunc (T : Set α → F →L[ℝ] F') (h_add : FinMeasAdditive μ T) {f : α →ₛ G}
     (hf : Integrable f μ) {g : G → F} (hg : g 0 = 0) :
-    (f.map g).setToSimpleFunc T = ∑ x in f.range, T (f ⁻¹' {x}) (g x) := by
+    (f.map g).setToSimpleFunc T = ∑ x ∈ f.range, T (f ⁻¹' {x}) (g x) := by
   have T_empty : T ∅ = 0 := h_add.map_empty_eq_zero
   have hfp : ∀ x ∈ f.range, x ≠ 0 → μ (f ⁻¹' {x}) ≠ ∞ := fun x _ hx0 =>
     (measure_preimage_lt_top_of_integrable f hf hx0).ne
@@ -328,13 +328,13 @@ theorem map_setToSimpleFunc (T : Set α → F →L[ℝ] F') (h_add : FinMeasAddi
     rw [hx.2, ContinuousLinearMap.map_zero]
   have h_left_eq :
     T (map g f ⁻¹' {g (f a)}) (g (f a)) =
-      T (f ⁻¹' (f.range.filter fun b => g b = g (f a))) (g (f a)) :=
-    by congr; rw [map_preimage_singleton]
+      T (f ⁻¹' (f.range.filter fun b => g b = g (f a))) (g (f a)) := by
+    congr; rw [map_preimage_singleton]
   rw [h_left_eq]
   have h_left_eq' :
     T (f ⁻¹' (filter (fun b : G => g b = g (f a)) f.range)) (g (f a)) =
-      T (⋃ y ∈ filter (fun b : G => g b = g (f a)) f.range, f ⁻¹' {y}) (g (f a)) :=
-    by congr; rw [← Finset.set_biUnion_preimage_singleton]
+      T (⋃ y ∈ filter (fun b : G => g b = g (f a)) f.range, f ⁻¹' {y}) (g (f a)) := by
+    congr; rw [← Finset.set_biUnion_preimage_singleton]
   rw [h_left_eq']
   rw [h_add.map_iUnion_fin_meas_set_eq_sum T T_empty]
   · simp only [sum_apply, ContinuousLinearMap.coe_sum']
@@ -450,12 +450,12 @@ theorem setToSimpleFunc_add (T : Set α → E →L[ℝ] F) (h_add : FinMeasAddit
     setToSimpleFunc T (f + g) = setToSimpleFunc T f + setToSimpleFunc T g :=
   have hp_pair : Integrable (f.pair g) μ := integrable_pair hf hg
   calc
-    setToSimpleFunc T (f + g) = ∑ x in (pair f g).range, T (pair f g ⁻¹' {x}) (x.fst + x.snd) := by
+    setToSimpleFunc T (f + g) = ∑ x ∈ (pair f g).range, T (pair f g ⁻¹' {x}) (x.fst + x.snd) := by
       rw [add_eq_map₂, map_setToSimpleFunc T h_add hp_pair]; simp
-    _ = ∑ x in (pair f g).range, (T (pair f g ⁻¹' {x}) x.fst + T (pair f g ⁻¹' {x}) x.snd) :=
+    _ = ∑ x ∈ (pair f g).range, (T (pair f g ⁻¹' {x}) x.fst + T (pair f g ⁻¹' {x}) x.snd) :=
       (Finset.sum_congr rfl fun a _ => ContinuousLinearMap.map_add _ _ _)
-    _ = (∑ x in (pair f g).range, T (pair f g ⁻¹' {x}) x.fst) +
-          ∑ x in (pair f g).range, T (pair f g ⁻¹' {x}) x.snd := by
+    _ = (∑ x ∈ (pair f g).range, T (pair f g ⁻¹' {x}) x.fst) +
+          ∑ x ∈ (pair f g).range, T (pair f g ⁻¹' {x}) x.snd := by
       rw [Finset.sum_add_distrib]
     _ = ((pair f g).map Prod.fst).setToSimpleFunc T +
           ((pair f g).map Prod.snd).setToSimpleFunc T := by
@@ -488,9 +488,9 @@ theorem setToSimpleFunc_sub (T : Set α → E →L[ℝ] F) (h_add : FinMeasAddit
 theorem setToSimpleFunc_smul_real (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T) (c : ℝ)
     {f : α →ₛ E} (hf : Integrable f μ) : setToSimpleFunc T (c • f) = c • setToSimpleFunc T f :=
   calc
-    setToSimpleFunc T (c • f) = ∑ x in f.range, T (f ⁻¹' {x}) (c • x) := by
+    setToSimpleFunc T (c • f) = ∑ x ∈ f.range, T (f ⁻¹' {x}) (c • x) := by
       rw [smul_eq_map c f, map_setToSimpleFunc T h_add hf]; dsimp only; rw [smul_zero]
-    _ = ∑ x in f.range, c • T (f ⁻¹' {x}) x :=
+    _ = ∑ x ∈ f.range, c • T (f ⁻¹' {x}) x :=
       (Finset.sum_congr rfl fun b _ => by rw [ContinuousLinearMap.map_smul (T (f ⁻¹' {b})) c b])
     _ = c • setToSimpleFunc T f := by simp only [setToSimpleFunc, smul_sum, smul_smul, mul_comm]
 #align measure_theory.simple_func.set_to_simple_func_smul_real MeasureTheory.SimpleFunc.setToSimpleFunc_smul_real
@@ -500,9 +500,9 @@ theorem setToSimpleFunc_smul {E} [NormedAddCommGroup E] [NormedField 𝕜] [Norm
     (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜) {f : α →ₛ E} (hf : Integrable f μ) :
     setToSimpleFunc T (c • f) = c • setToSimpleFunc T f :=
   calc
-    setToSimpleFunc T (c • f) = ∑ x in f.range, T (f ⁻¹' {x}) (c • x) := by
+    setToSimpleFunc T (c • f) = ∑ x ∈ f.range, T (f ⁻¹' {x}) (c • x) := by
       rw [smul_eq_map c f, map_setToSimpleFunc T h_add hf]; dsimp only; rw [smul_zero]
-    _ = ∑ x in f.range, c • T (f ⁻¹' {x}) x := Finset.sum_congr rfl fun b _ => by rw [h_smul]
+    _ = ∑ x ∈ f.range, c • T (f ⁻¹' {x}) x := Finset.sum_congr rfl fun b _ => by rw [h_smul]
     _ = c • setToSimpleFunc T f := by simp only [setToSimpleFunc, smul_sum, smul_smul, mul_comm]
 #align measure_theory.simple_func.set_to_simple_func_smul MeasureTheory.SimpleFunc.setToSimpleFunc_smul
 
@@ -564,10 +564,10 @@ theorem setToSimpleFunc_mono {T : Set α → G' →L[ℝ] G''} (h_add : FinMeasA
 end Order
 
 theorem norm_setToSimpleFunc_le_sum_opNorm {m : MeasurableSpace α} (T : Set α → F' →L[ℝ] F)
-    (f : α →ₛ F') : ‖f.setToSimpleFunc T‖ ≤ ∑ x in f.range, ‖T (f ⁻¹' {x})‖ * ‖x‖ :=
+    (f : α →ₛ F') : ‖f.setToSimpleFunc T‖ ≤ ∑ x ∈ f.range, ‖T (f ⁻¹' {x})‖ * ‖x‖ :=
   calc
-    ‖∑ x in f.range, T (f ⁻¹' {x}) x‖ ≤ ∑ x in f.range, ‖T (f ⁻¹' {x}) x‖ := norm_sum_le _ _
-    _ ≤ ∑ x in f.range, ‖T (f ⁻¹' {x})‖ * ‖x‖ := by
+    ‖∑ x ∈ f.range, T (f ⁻¹' {x}) x‖ ≤ ∑ x ∈ f.range, ‖T (f ⁻¹' {x}) x‖ := norm_sum_le _ _
+    _ ≤ ∑ x ∈ f.range, ‖T (f ⁻¹' {x})‖ * ‖x‖ := by
       refine Finset.sum_le_sum fun b _ => ?_; simp_rw [ContinuousLinearMap.le_opNorm]
 #align measure_theory.simple_func.norm_set_to_simple_func_le_sum_op_norm MeasureTheory.SimpleFunc.norm_setToSimpleFunc_le_sum_opNorm
 
@@ -577,31 +577,31 @@ alias norm_setToSimpleFunc_le_sum_op_norm :=
 
 theorem norm_setToSimpleFunc_le_sum_mul_norm (T : Set α → F →L[ℝ] F') {C : ℝ}
     (hT_norm : ∀ s, MeasurableSet s → ‖T s‖ ≤ C * (μ s).toReal) (f : α →ₛ F) :
-    ‖f.setToSimpleFunc T‖ ≤ C * ∑ x in f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ :=
+    ‖f.setToSimpleFunc T‖ ≤ C * ∑ x ∈ f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ :=
   calc
-    ‖f.setToSimpleFunc T‖ ≤ ∑ x in f.range, ‖T (f ⁻¹' {x})‖ * ‖x‖ :=
+    ‖f.setToSimpleFunc T‖ ≤ ∑ x ∈ f.range, ‖T (f ⁻¹' {x})‖ * ‖x‖ :=
       norm_setToSimpleFunc_le_sum_opNorm T f
-    _ ≤ ∑ x in f.range, C * (μ (f ⁻¹' {x})).toReal * ‖x‖ := by
+    _ ≤ ∑ x ∈ f.range, C * (μ (f ⁻¹' {x})).toReal * ‖x‖ := by
       gcongr
       exact hT_norm _ <| SimpleFunc.measurableSet_fiber _ _
-    _ ≤ C * ∑ x in f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ := by simp_rw [mul_sum, ← mul_assoc]; rfl
+    _ ≤ C * ∑ x ∈ f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ := by simp_rw [mul_sum, ← mul_assoc]; rfl
 #align measure_theory.simple_func.norm_set_to_simple_func_le_sum_mul_norm MeasureTheory.SimpleFunc.norm_setToSimpleFunc_le_sum_mul_norm
 
 theorem norm_setToSimpleFunc_le_sum_mul_norm_of_integrable (T : Set α → E →L[ℝ] F') {C : ℝ}
     (hT_norm : ∀ s, MeasurableSet s → μ s < ∞ → ‖T s‖ ≤ C * (μ s).toReal) (f : α →ₛ E)
     (hf : Integrable f μ) :
-    ‖f.setToSimpleFunc T‖ ≤ C * ∑ x in f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ :=
+    ‖f.setToSimpleFunc T‖ ≤ C * ∑ x ∈ f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ :=
   calc
-    ‖f.setToSimpleFunc T‖ ≤ ∑ x in f.range, ‖T (f ⁻¹' {x})‖ * ‖x‖ :=
+    ‖f.setToSimpleFunc T‖ ≤ ∑ x ∈ f.range, ‖T (f ⁻¹' {x})‖ * ‖x‖ :=
       norm_setToSimpleFunc_le_sum_opNorm T f
-    _ ≤ ∑ x in f.range, C * (μ (f ⁻¹' {x})).toReal * ‖x‖ := by
+    _ ≤ ∑ x ∈ f.range, C * (μ (f ⁻¹' {x})).toReal * ‖x‖ := by
       refine Finset.sum_le_sum fun b hb => ?_
       obtain rfl | hb := eq_or_ne b 0
       · simp
       gcongr
       exact hT_norm _ (SimpleFunc.measurableSet_fiber _ _) <|
         SimpleFunc.measure_preimage_lt_top_of_integrable _ hf hb
-    _ ≤ C * ∑ x in f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ := by simp_rw [mul_sum, ← mul_assoc]; rfl
+    _ ≤ C * ∑ x ∈ f.range, (μ (f ⁻¹' {x})).toReal * ‖x‖ := by simp_rw [mul_sum, ← mul_assoc]; rfl
 #align measure_theory.simple_func.norm_set_to_simple_func_le_sum_mul_norm_of_integrable MeasureTheory.SimpleFunc.norm_setToSimpleFunc_le_sum_mul_norm_of_integrable
 
 theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T ∅ = 0)
@@ -659,7 +659,7 @@ open AEEqFun Lp.simpleFunc Lp
 namespace SimpleFunc
 
 theorem norm_eq_sum_mul (f : α →₁ₛ[μ] G) :
-    ‖f‖ = ∑ x in (toSimpleFunc f).range, (μ (toSimpleFunc f ⁻¹' {x})).toReal * ‖x‖ := by
+    ‖f‖ = ∑ x ∈ (toSimpleFunc f).range, (μ (toSimpleFunc f ⁻¹' {x})).toReal * ‖x‖ := by
   rw [norm_toSimpleFunc, snorm_one_eq_lintegral_nnnorm]
   have h_eq := SimpleFunc.map_apply (fun x => (‖x‖₊ : ℝ≥0∞)) (toSimpleFunc f)
   simp_rw [← h_eq]
@@ -1361,7 +1361,7 @@ theorem setToFun_add (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f �
 
 theorem setToFun_finset_sum' (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Finset ι)
     {f : ι → α → E} (hf : ∀ i ∈ s, Integrable (f i) μ) :
-    setToFun μ T hT (∑ i in s, f i) = ∑ i in s, setToFun μ T hT (f i) := by
+    setToFun μ T hT (∑ i ∈ s, f i) = ∑ i ∈ s, setToFun μ T hT (f i) := by
   revert hf
   refine Finset.induction_on s ?_ ?_
   · intro _
@@ -1376,7 +1376,7 @@ theorem setToFun_finset_sum' (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Fi
 
 theorem setToFun_finset_sum (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Finset ι) {f : ι → α → E}
     (hf : ∀ i ∈ s, Integrable (f i) μ) :
-    (setToFun μ T hT fun a => ∑ i in s, f i a) = ∑ i in s, setToFun μ T hT (f i) := by
+    (setToFun μ T hT fun a => ∑ i ∈ s, f i a) = ∑ i ∈ s, setToFun μ T hT (f i) := by
   convert setToFun_finset_sum' hT s hf with a; simp
 #align measure_theory.set_to_fun_finset_sum MeasureTheory.setToFun_finset_sum
 

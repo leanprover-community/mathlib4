@@ -591,8 +591,8 @@ variable {G}
 @[to_additive]
 instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
     IsClosed (H : Set G) := by
-  obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1}
-  · exact nhds_inter_eq_singleton_of_mem_discrete H.one_mem
+  obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1} :=
+    nhds_inter_eq_singleton_of_mem_discrete H.one_mem
   have : (fun p : G × G => p.2 / p.1) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
@@ -899,7 +899,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
   obtain ⟨u, hu, u_mul⟩ := TopologicalGroup.exists_antitone_basis_nhds_one G
   obtain ⟨hv, v_anti⟩ := hu.map ((↑) : G → G ⧸ N)
   rw [← QuotientGroup.nhds_eq N 1, QuotientGroup.mk_one] at hv
-  refine' UniformSpace.complete_of_cauchySeq_tendsto fun x hx => _
+  refine UniformSpace.complete_of_cauchySeq_tendsto fun x hx => ?_
   /- Given `n : ℕ`, for sufficiently large `a b : ℕ`, given any lift of `x b`, we can find a lift
     of `x a` such that the quotient of the lifts lies in `u n`. -/
   have key₀ : ∀ i j : ℕ, ∃ M : ℕ, j < M ∧ ∀ a b : ℕ, M ≤ a → M ≤ b →
@@ -910,13 +910,13 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     simp only [ge_iff_le, mem_setOf_eq, forall_true_left, mem_image] at hx
     intro i j
     rcases hx i with ⟨M, hM⟩
-    refine' ⟨max j M + 1, (le_max_left _ _).trans_lt (lt_add_one _), fun a b ha hb g hg => _⟩
+    refine ⟨max j M + 1, (le_max_left _ _).trans_lt (lt_add_one _), fun a b ha hb g hg => ?_⟩
     obtain ⟨y, y_mem, hy⟩ :=
       hM a (((le_max_right j _).trans (lt_add_one _).le).trans ha) b
         (((le_max_right j _).trans (lt_add_one _).le).trans hb)
-    refine'
+    refine
       ⟨y⁻¹ * g, by
-        simpa only [div_eq_mul_inv, mul_inv_rev, inv_inv, mul_inv_cancel_left] using y_mem, _⟩
+        simpa only [div_eq_mul_inv, mul_inv_rev, inv_inv, mul_inv_cancel_left] using y_mem, ?_⟩
     rw [QuotientGroup.mk_mul, QuotientGroup.mk_inv, hy, hg, inv_div, div_mul_cancel]
   /- Inductively construct a subsequence `φ : ℕ → ℕ` using `key₀` so that if `a b : ℕ` exceed
     `φ (n + 1)`, then we may find lifts whose quotients lie within `u n`. -/
@@ -956,10 +956,10 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     the quotient map converges to `↑x₀`. The image of `x'` is a convergent subsequence of `x`, and
     since `x` is Cauchy, this implies it converges. -/
   rcases cauchySeq_tendsto_of_complete x'_cauchy with ⟨x₀, hx₀⟩
-  refine'
+  refine
     ⟨↑x₀,
       tendsto_nhds_of_cauchySeq_of_subseq hx
-        (strictMono_nat_of_lt_succ fun n => (hφ (n + 1)).1).tendsto_atTop _⟩
+        (strictMono_nat_of_lt_succ fun n => (hφ (n + 1)).1).tendsto_atTop ?_⟩
   convert ((continuous_coinduced_rng : Continuous ((↑) : G → G ⧸ N)).tendsto x₀).comp hx₀
   exact funext fun n => (x' n).snd
 #align quotient_group.complete_space' QuotientGroup.completeSpace'

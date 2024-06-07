@@ -41,7 +41,7 @@ protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
   rintro ⟨⟨a, b, bN0, cop⟩, rfl⟩
   -- clear up the mess of constructions of rationals
   rw [Rat.cast_mk'] at h
-  -- Since `a / b` is a Liouville number, there are `p, q ∈ ℤ`, with `q1 : 1 < q`,
+  -- Since `a / b` is a Liouville number, there are `p, q ∈ ℤ`, with `q1 : 1 < q`,∈
   -- `a0 : a / b ≠ p / q` and `a1 : |a / b - p / q| < 1 / q ^ (b + 1)`
   rcases h (b + 1) with ⟨p, q, q1, a0, a1⟩
   -- A few useful inequalities
@@ -63,12 +63,12 @@ protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
   -- least one away from zero.  The gain here is what gets the proof going.
   have ap : 0 < |a * ↑q - ↑b * p| := abs_pos.mpr a0
   -- Actually, the absolute value of an integer is a natural number
+  -- FIXME: This `lift` call duplicates the hypotheses `a1` and `ap`
   lift |a * ↑q - ↑b * p| to ℕ using abs_nonneg (a * ↑q - ↑b * p) with e he
-  -- At a1, revert to natural numbers
-  rw [← Int.ofNat_mul, ← Int.coe_nat_pow, ← Int.ofNat_mul, Int.ofNat_lt] at a1
+  norm_cast at a1 ap q1
   -- Recall this is by contradiction: we obtained the inequality `b * q ≤ x * q ^ (b + 1)`, so
   -- we are done.
-  exact not_le.mpr a1 (Nat.mul_lt_mul_pow_succ (Int.natCast_pos.mp ap) (Int.ofNat_lt.mp q1)).le
+  exact not_le.mpr a1 (Nat.mul_lt_mul_pow_succ ap q1).le
 #align liouville.irrational Liouville.irrational
 
 open Polynomial Metric Set Real RingHom

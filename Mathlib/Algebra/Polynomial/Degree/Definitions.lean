@@ -34,7 +34,7 @@ noncomputable section
 
 open Finsupp Finset
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 
@@ -280,7 +280,13 @@ theorem natDegree_natCast (n : ℕ) : natDegree (n : R[X]) = 0 := by
   simp only [← C_eq_natCast, natDegree_C]
 #align polynomial.nat_degree_nat_cast Polynomial.natDegree_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias natDegree_nat_cast := natDegree_natCast
+
 theorem degree_natCast_le (n : ℕ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
+
+@[deprecated (since := "2024-04-17")]
+alias degree_nat_cast_le := degree_natCast_le
 
 @[simp]
 theorem degree_monomial (n : ℕ) (ha : a ≠ 0) : degree (monomial n a) = n := by
@@ -382,11 +388,11 @@ theorem ite_le_natDegree_coeff (p : R[X]) (n : ℕ) (I : Decidable (n < 1 + natD
   · exact (coeff_eq_zero_of_natDegree_lt (not_le.1 fun w => h (Nat.lt_one_add_iff.2 w))).symm
 #align polynomial.ite_le_nat_degree_coeff Polynomial.ite_le_natDegree_coeff
 
-theorem as_sum_support (p : R[X]) : p = ∑ i in p.support, monomial i (p.coeff i) :=
+theorem as_sum_support (p : R[X]) : p = ∑ i ∈ p.support, monomial i (p.coeff i) :=
   (sum_monomial_eq p).symm
 #align polynomial.as_sum_support Polynomial.as_sum_support
 
-theorem as_sum_support_C_mul_X_pow (p : R[X]) : p = ∑ i in p.support, C (p.coeff i) * X ^ i :=
+theorem as_sum_support_C_mul_X_pow (p : R[X]) : p = ∑ i ∈ p.support, C (p.coeff i) * X ^ i :=
   _root_.trans p.as_sum_support <| by simp only [C_mul_X_pow_eq_monomial]
 #align polynomial.as_sum_support_C_mul_X_pow Polynomial.as_sum_support_C_mul_X_pow
 
@@ -394,7 +400,7 @@ theorem as_sum_support_C_mul_X_pow (p : R[X]) : p = ∑ i in p.support, C (p.coe
 for any `n` satisfying `p.natDegree < n`.
 -/
 theorem sum_over_range' [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : ∀ n, f n 0 = 0) (n : ℕ)
-    (w : p.natDegree < n) : p.sum f = ∑ a : ℕ in range n, f a (coeff p a) := by
+    (w : p.natDegree < n) : p.sum f = ∑ a ∈ range n, f a (coeff p a) := by
   rcases p with ⟨⟩
   have := supp_subset_range w
   simp only [Polynomial.sum, support, coeff, natDegree, degree] at this ⊢
@@ -404,7 +410,7 @@ theorem sum_over_range' [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : 
 /-- We can reexpress a sum over `p.support` as a sum over `range (p.natDegree + 1)`.
 -/
 theorem sum_over_range [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : ∀ n, f n 0 = 0) :
-    p.sum f = ∑ a : ℕ in range (p.natDegree + 1), f a (coeff p a) :=
+    p.sum f = ∑ a ∈ range (p.natDegree + 1), f a (coeff p a) :=
   sum_over_range' p h (p.natDegree + 1) (lt_add_one _)
 #align polynomial.sum_over_range Polynomial.sum_over_range
 
@@ -420,16 +426,16 @@ theorem sum_fin [AddCommMonoid S] (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) 
 #align polynomial.sum_fin Polynomial.sum_fin
 
 theorem as_sum_range' (p : R[X]) (n : ℕ) (w : p.natDegree < n) :
-    p = ∑ i in range n, monomial i (coeff p i) :=
+    p = ∑ i ∈ range n, monomial i (coeff p i) :=
   p.sum_monomial_eq.symm.trans <| p.sum_over_range' monomial_zero_right _ w
 #align polynomial.as_sum_range' Polynomial.as_sum_range'
 
-theorem as_sum_range (p : R[X]) : p = ∑ i in range (p.natDegree + 1), monomial i (coeff p i) :=
+theorem as_sum_range (p : R[X]) : p = ∑ i ∈ range (p.natDegree + 1), monomial i (coeff p i) :=
   p.sum_monomial_eq.symm.trans <| p.sum_over_range <| monomial_zero_right
 #align polynomial.as_sum_range Polynomial.as_sum_range
 
 theorem as_sum_range_C_mul_X_pow (p : R[X]) :
-    p = ∑ i in range (p.natDegree + 1), C (coeff p i) * X ^ i :=
+    p = ∑ i ∈ range (p.natDegree + 1), C (coeff p i) * X ^ i :=
   p.as_sum_range.trans <| by simp only [C_mul_X_pow_eq_monomial]
 #align polynomial.as_sum_range_C_mul_X_pow Polynomial.as_sum_range_C_mul_X_pow
 
@@ -551,7 +557,13 @@ theorem natDegree_intCast (n : ℤ) : natDegree (n : R[X]) = 0 := by
   rw [← C_eq_intCast, natDegree_C]
 #align polynomial.nat_degree_intCast Polynomial.natDegree_intCast
 
+@[deprecated (since := "2024-04-17")]
+alias natDegree_int_cast := natDegree_intCast
+
 theorem degree_intCast_le (n : ℤ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
+
+@[deprecated (since := "2024-04-17")]
+alias degree_int_cast_le := degree_intCast_le
 
 @[simp]
 theorem leadingCoeff_neg (p : R[X]) : (-p).leadingCoeff = -p.leadingCoeff := by
@@ -629,7 +641,7 @@ theorem eq_C_of_degree_le_zero (h : degree p ≤ 0) : p = C (coeff p 0) := by
   ext (_ | n)
   · simp
   rw [coeff_C, if_neg (Nat.succ_ne_zero _), coeff_eq_zero_of_degree_lt]
-  exact h.trans_lt (WithBot.some_lt_some.2 n.succ_pos)
+  exact h.trans_lt (WithBot.coe_lt_coe.2 n.succ_pos)
 #align polynomial.eq_C_of_degree_le_zero Polynomial.eq_C_of_degree_le_zero
 
 theorem eq_C_of_degree_eq_zero (h : degree p = 0) : p = C (coeff p 0) :=
@@ -807,11 +819,11 @@ theorem degree_update_le (p : R[X]) (n : ℕ) (a : R) : degree (p.update n a) �
 #align polynomial.degree_update_le Polynomial.degree_update_le
 
 theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
-    degree (∑ i in s, f i) ≤ s.sup fun b => degree (f b) :=
+    degree (∑ i ∈ s, f i) ≤ s.sup fun b => degree (f b) :=
   Finset.cons_induction_on s (by simp only [sum_empty, sup_empty, degree_zero, le_refl])
     fun a s has ih =>
     calc
-      degree (∑ i in cons a s has, f i) ≤ max (degree (f a)) (degree (∑ i in s, f i)) := by
+      degree (∑ i ∈ cons a s has, f i) ≤ max (degree (f a)) (degree (∑ i ∈ s, f i)) := by
         rw [Finset.sum_cons]; exact degree_add_le _ _
       _ ≤ _ := by rw [sup_cons, sup_eq_max]; exact max_le_max le_rfl ih
 #align polynomial.degree_sum_le Polynomial.degree_sum_le
@@ -949,7 +961,7 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
     coeff (p * q) (natDegree p + natDegree q) = leadingCoeff p * leadingCoeff q :=
   calc
     coeff (p * q) (natDegree p + natDegree q) =
-        ∑ x in antidiagonal (natDegree p + natDegree q), coeff p x.1 * coeff q x.2 :=
+        ∑ x ∈ antidiagonal (natDegree p + natDegree q), coeff p x.1 * coeff q x.2 :=
       coeff_mul _ _ _
     _ = coeff p (natDegree p) * coeff q (natDegree q) := by
       refine Finset.sum_eq_single (natDegree p, natDegree q) ?_ ?_
@@ -1482,7 +1494,7 @@ theorem degree_X_add_C (a : R) : degree (X + C a) = 1 := by
   have : degree (C a) < degree (X : R[X]) :=
     calc
       degree (C a) ≤ 0 := degree_C_le
-      _ < 1 := WithBot.some_lt_some.mpr zero_lt_one
+      _ < 1 := WithBot.coe_lt_coe.mpr zero_lt_one
       _ = degree X := degree_X.symm
   rw [degree_add_eq_left_of_degree_lt this, degree_X]
 #align polynomial.degree_X_add_C Polynomial.degree_X_add_C

@@ -144,8 +144,6 @@ theorem algHom_ext {S' : Type*} [Semiring S'] [Algebra R S'] (pb : PowerBasis R 
 
 section minpoly
 
-open BigOperators
-
 variable [Algebra A S]
 
 /-- `pb.minpolyGen` is the minimal polynomial for `pb.gen`. -/
@@ -209,8 +207,8 @@ theorem isIntegral_gen (pb : PowerBasis A S) : IsIntegral A pb.gen :=
 #align power_basis.is_integral_gen PowerBasis.isIntegral_gen
 
 @[simp]
-theorem degree_minpoly [Nontrivial A] (pb : PowerBasis A S) : degree (minpoly A pb.gen) = pb.dim :=
-  by rw [← minpolyGen_eq, degree_minpolyGen]
+theorem degree_minpoly [Nontrivial A] (pb : PowerBasis A S) :
+    degree (minpoly A pb.gen) = pb.dim := by rw [← minpolyGen_eq, degree_minpolyGen]
 #align power_basis.degree_minpoly PowerBasis.degree_minpoly
 
 @[simp]

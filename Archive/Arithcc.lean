@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xi Wang
 -/
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Data.Nat.Defs
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
 

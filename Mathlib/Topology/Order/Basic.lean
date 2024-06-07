@@ -133,7 +133,7 @@ instance tendstoIccClassNhds (a : α) : TendstoIxxClass Icc (𝓝 a) (𝓝 a) :=
   refine
     ((hasBasis_iInf_principal_finite _).inf (hasBasis_iInf_principal_finite _)).tendstoIxxClass
       fun s _ => ?_
-  refine' ((ordConnected_biInter _).inter (ordConnected_biInter _)).out <;> intro _ _
+  refine ((ordConnected_biInter ?_).inter (ordConnected_biInter ?_)).out <;> intro _ _
   exacts [ordConnected_Ioi, ordConnected_Iio]
 #align tendsto_Icc_class_nhds tendstoIccClassNhds
 
@@ -191,12 +191,11 @@ instance tendstoIccClassNhdsPi {ι : Type*} {α : ι → Type*} [∀ i, Preorder
     TendstoIxxClass Icc (𝓝 f) (𝓝 f) := by
   constructor
   conv in (𝓝 f).smallSets => rw [nhds_pi, Filter.pi]
-  simp only [smallSets_iInf, smallSets_comap, tendsto_iInf, tendsto_lift', (· ∘ ·),
-    mem_powerset_iff]
-  intro i s hs
+  simp only [smallSets_iInf, smallSets_comap_eq_comap_image, tendsto_iInf, tendsto_comap_iff]
+  intro i
   have : Tendsto (fun g : ∀ i, α i => g i) (𝓝 f) (𝓝 (f i)) := (continuous_apply i).tendsto f
-  refine' (tendsto_lift'.1 ((this.comp tendsto_fst).Icc (this.comp tendsto_snd)) s hs).mono _
-  exact fun p hp g hg => hp ⟨hg.1 _, hg.2 _⟩
+  refine (this.comp tendsto_fst).Icc (this.comp tendsto_snd) |>.smallSets_mono ?_
+  filter_upwards [] using fun ⟨f, g⟩ ↦ image_subset_iff.mpr fun p hp ↦ ⟨hp.1 i, hp.2 i⟩
 #align tendsto_Icc_class_nhds_pi tendstoIccClassNhdsPi
 
 -- Porting note (#10756): new lemma
@@ -625,7 +624,7 @@ empty (but in fact this can happen only for countably many of them). -/
 theorem Set.PairwiseDisjoint.countable_of_Ioo [SecondCountableTopology α] {y : α → α} {s : Set α}
     (h : PairwiseDisjoint s fun x => Ioo x (y x)) (h' : ∀ x ∈ s, x < y x) : s.Countable :=
   have : (s \ { x | ∃ y, x ⋖ y }).Countable :=
-    (h.subset (diff_subset _ _)).countable_of_isOpen (fun _ _ => isOpen_Ioo)
+    (h.subset diff_subset).countable_of_isOpen (fun _ _ => isOpen_Ioo)
       fun x hx => (h' _ hx.1).exists_lt_lt (mt (Exists.intro (y x)) hx.2)
   this.of_diff countable_setOf_covBy_right
 #align set.pairwise_disjoint.countable_of_Ioo Set.PairwiseDisjoint.countable_of_Ioo

@@ -5,6 +5,7 @@ Authors: Simon Hudon, David Renshaw
 -/
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.SplitIfs
+import Mathlib.Data.Part
 
 set_option autoImplicit true
 section tauto₀
@@ -96,8 +97,8 @@ example (hp : p) (hq : q) : p ∧ q := by
 example (hp : ¬ p) (hq : ¬ (q ↔ p) := by sorry) : q := by
   tauto
 
-example (P : Nat → Prop) (n : Nat) : P n → n = 7 ∨ n = 0 ∨ ¬ (n = 7 ∨ n = 0) ∧ P n :=
-by tauto
+example (P : Nat → Prop) (n : Nat) : P n → n = 7 ∨ n = 0 ∨ ¬ (n = 7 ∨ n = 0) ∧ P n := by
+  tauto
 
 section implementation_detail_ldecl
 variable (a b c : Nat)
@@ -168,5 +169,17 @@ end closer
 /-  Zulip discussion:
 https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/tauto!.20fails.20on.20ne
 -/
-example {x y : Nat} (h : ¬x ≠ y) : x = y :=
-by tauto
+example {x y : Nat} (h : ¬x ≠ y) : x = y := by
+  tauto
+
+/-
+Test the case where the goal depends on a hypothesis
+https://github.com/leanprover-community/mathlib4/issues/10590
+-/
+section goal_depends_on_hyp
+open Part
+example (p : Prop) (o : Part α) (h : p → o.Dom) (a : α) :
+    a ∈ restrict p o h ↔ p ∧ a ∈ o := by
+  dsimp [restrict, mem_eq]
+  tauto
+end goal_depends_on_hyp

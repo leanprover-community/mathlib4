@@ -71,8 +71,8 @@ theorem contDiffOn_succ_of_fderiv_apply [FiniteDimensional 𝕜 E] {n : ℕ} {f 
 theorem contDiffOn_succ_iff_fderiv_apply [FiniteDimensional 𝕜 E] {n : ℕ} {f : E → F} {s : Set E}
     (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 (n + 1 : ℕ) f s ↔
-      DifferentiableOn 𝕜 f s ∧ ∀ y, ContDiffOn 𝕜 n (fun x => fderivWithin 𝕜 f s x y) s :=
-  by rw [contDiffOn_succ_iff_fderivWithin hs, contDiffOn_clm_apply]
+      DifferentiableOn 𝕜 f s ∧ ∀ y, ContDiffOn 𝕜 n (fun x => fderivWithin 𝕜 f s x y) s := by
+  rw [contDiffOn_succ_iff_fderivWithin hs, contDiffOn_clm_apply]
 #align cont_diff_on_succ_iff_fderiv_apply contDiffOn_succ_iff_fderiv_apply
 
 end FiniteDimensional
