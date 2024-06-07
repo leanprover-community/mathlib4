@@ -13,6 +13,8 @@ In this file, we construct a functor
 `PresheafOfModules.sheafification α : PresheafOfModules R₀ ⥤ SheafOfModules R`
 for a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings.
+In particular, if `α` is the identity of `R.val`, we obtain the
+sheafification functor `PresheafOfModules R.val ⥤ SheafOfModules R`.
 
 -/
 
