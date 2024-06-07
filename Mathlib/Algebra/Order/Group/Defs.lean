@@ -46,6 +46,8 @@ class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
 
 attribute [to_additive] OrderedCommGroup
 
+attribute [instance 10] OrderedCommGroup.toCommGroup
+
 @[to_additive]
 instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGroup α] :
     CovariantClass α α (· * ·) (· ≤ ·) where

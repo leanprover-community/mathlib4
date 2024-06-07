@@ -954,6 +954,8 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   protected zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by intros; rfl
 #align div_inv_monoid DivInvMonoid
 
+attribute [instance 100] DivInvMonoid.toMonoid
+
 /-- In a class equipped with instances of both `AddMonoid` and `Neg`, this definition records what
 the default definition for `Sub` would be: `a + -b`.  This is later provided as the default value
 for the `Sub` instance in `SubNegMonoid`.
@@ -1151,6 +1153,8 @@ class DivisionMonoid (G : Type u) extends DivInvMonoid G, InvolutiveInv G where
 
 attribute [to_additive existing] DivisionMonoid.toInvolutiveInv
 
+attribute [instance 150] DivisionMonoid.toDivInvMonoid
+
 section DivisionMonoid
 
 variable [DivisionMonoid G] {a b : G}
@@ -1194,6 +1198,8 @@ class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
 
 attribute [to_additive existing] DivisionCommMonoid.toCommMonoid
 
+attribute [instance 90] DivisionCommMonoid.toDivisionMonoid
+
 /-- A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
 
 There is also a division operation `/` such that `a / b = a * b⁻¹`,
@@ -1205,6 +1211,8 @@ on a type with the minumum proof obligations.
 class Group (G : Type u) extends DivInvMonoid G where
   protected mul_left_inv : ∀ a : G, a⁻¹ * a = 1
 #align group Group
+
+attribute [instance 0] Group.toDivInvMonoid -- use `Group.toDivisionMonoid`
 
 /-- An `AddGroup` is an `AddMonoid` with a unary `-` satisfying `-a + a = 0`.
 
@@ -1302,6 +1310,9 @@ class CommGroup (G : Type u) extends Group G, CommMonoid G
 #align comm_group CommGroup
 
 attribute [to_additive existing] CommGroup.toCommMonoid
+
+attribute [instance 90] AddCommGroup.toAddGroup
+attribute [instance 90] CommGroup.toGroup
 
 section CommGroup
 

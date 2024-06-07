@@ -106,7 +106,9 @@ class DivisionSemiring (α : Type*) extends Semiring α, GroupWithZero α, NNRat
   protected nnqsmul_def (q : ℚ≥0) (a : α) : nnqsmul q a = NNRat.cast q * a := by intros; rfl
 #align division_semiring DivisionSemiring
 
-attribute [instance 50] CommSemiring.toSemiring
+attribute [instance 50] DivisionSemiring.toSemiring
+attribute [instance 0] DivisionSemiring.toInv
+attribute [instance 0] DivisionSemiring.toDiv
 
 /-- A `DivisionRing` is a `Ring` with multiplicative inverses for nonzero elements.
 
@@ -159,6 +161,10 @@ class DivisionRing (α : Type*)
 #align division_ring DivisionRing
 #align division_ring.rat_cast_mk DivisionRing.ratCast_def
 
+attribute [instance 0] DivisionRing.toDivInvMonoid -- use `DivisionRing.toDivisionSemiring`
+attribute [instance 0] DivisionRing.toInv
+attribute [instance 0] DivisionRing.toDiv
+
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.toDivisionSemiring [DivisionRing α] : DivisionSemiring α :=
   { ‹DivisionRing α› with }
@@ -176,6 +182,9 @@ If the semifield has positive characteristic `p`, our division by zero conventio
 class Semifield (α : Type*) extends CommSemiring α, DivisionSemiring α, CommGroupWithZero α
 #align semifield Semifield
 
+attribute [instance 0] Semifield.toInv
+attribute [instance 0] Semifield.toDiv
+
 /-- A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.
 
 An instance of `Field K` includes maps `ratCast : ℚ → K` and `qsmul : ℚ → K → K`.
@@ -187,6 +196,9 @@ If the field has positive characteristic `p`, our division by zero convention fo
 `ratCast (1 / p) = 1 / 0 = 0`. -/
 class Field (K : Type u) extends CommRing K, DivisionRing K
 #align field Field
+
+attribute [instance 0] Field.toInv
+attribute [instance 0] Field.toDiv
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.toSemifield [Field α] : Semifield α := { ‹Field α› with }

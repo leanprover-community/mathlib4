@@ -174,6 +174,8 @@ class StrictOrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddC
   protected mul_lt_mul_of_pos_right : ∀ a b c : α, a < b → 0 < c → a * c < b * c
 #align strict_ordered_semiring StrictOrderedSemiring
 
+attribute [instance 0] StrictOrderedSemiring.toSemiring
+
 /-- A `StrictOrderedCommSemiring` is a commutative semiring with a partial order such that
 addition is strictly monotone and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedCommSemiring (α : Type u) extends StrictOrderedSemiring α, CommSemiring α
@@ -188,7 +190,7 @@ class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, N
   protected mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
 #align strict_ordered_ring StrictOrderedRing
 
-attribute [instance 10] StrictOrderedRing.toRing
+attribute [instance 0] StrictOrderedRing.toRing
 
 /-- A `StrictOrderedCommRing` is a commutative ring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/

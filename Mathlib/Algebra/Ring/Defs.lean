@@ -148,6 +148,8 @@ addition, and `0` and `1` are additive and multiplicative identities. -/
 class Semiring (α : Type u) extends NonAssocSemiring α, NonUnitalSemiring α, MonoidWithZero α
 #align semiring Semiring
 
+attribute [instance 150] Semiring.toMonoidWithZero
+
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 #align ring Ring
@@ -464,9 +466,13 @@ multiplication. -/
 class NonUnitalNonAssocCommRing (α : Type u)
   extends NonUnitalNonAssocRing α, NonUnitalNonAssocCommSemiring α
 
+attribute [instance 90] NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing
+
 /-- A non-unital commutative ring is a `NonUnitalRing` with commutative multiplication. -/
 class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, NonUnitalNonAssocCommRing α
 #align non_unital_comm_ring NonUnitalCommRing
+
+attribute [instance 90] NonUnitalCommRing.toNonUnitalRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUnitalCommRing α] :
@@ -477,6 +483,8 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
 /-- A commutative ring is a ring with commutative multiplication. -/
 class CommRing (α : Type u) extends Ring α, CommMonoid α
 #align comm_ring CommRing
+
+attribute [instance 90] CommRing.toRing
 
 instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
   { s with }
