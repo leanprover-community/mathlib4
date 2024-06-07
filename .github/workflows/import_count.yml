@@ -61,4 +61,4 @@ jobs:
 
         ## Declarations' diff comment
         message=$(./scripts/no_lost_declarations.sh short)
-        ./scripts/update_PR_comment.sh "${message}" '*Summary of changed declarations*' "${{ github.event.pull_request.number }}"
+        ./scripts/update_PR_comment.sh "${message}" '### Summary of changed declarations' "${{ github.event.pull_request.number }}"
