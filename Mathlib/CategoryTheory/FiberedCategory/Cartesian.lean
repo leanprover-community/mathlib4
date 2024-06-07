@@ -108,6 +108,28 @@ lemma inducedMap_self_eq_id : inducedMap p f φ φ = 𝟙 a := by
   apply inducedMap_unique
   simp only [id_comp]
 
+instance of_iso_comp {a' : 𝒳} (φ' : a' ≅ a) [IsHomLift p (𝟙 R) φ'.hom] :
+    IsCartesian p f (φ'.hom ≫ φ) where
+  universal_property := by
+    intro c ψ hψ
+    use inducedMap p f φ ψ ≫ φ'.inv
+    refine ⟨⟨inferInstance, by simp⟩, ?_⟩
+    rintro τ ⟨hτ₁, hτ₂⟩
+    rw [Iso.eq_comp_inv]
+    apply inducedMap_unique
+    simp only [assoc, hτ₂]
+
+instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom] :
+    IsCartesian p f (φ ≫ φ'.hom) where
+  universal_property := by
+    intro c ψ hψ
+    use inducedMap p f φ (ψ ≫ φ'.inv)
+    refine ⟨⟨inferInstance, by simp [← assoc, inducedMap_comp]⟩, ?_⟩
+    rintro τ ⟨hτ₁, hτ₂⟩
+    apply inducedMap_unique
+    rw [Iso.eq_comp_inv]
+    simp only [assoc, hτ₂]
+
 /-- The canonical isomorphism between the domains of two cartesian arrows
 lying over the same object. -/
 @[simps]
@@ -125,11 +147,6 @@ noncomputable def naturalIso {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] [I
 instance {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] [IsCartesian p f φ'] :
     IsHomLift p (𝟙 R) (naturalIso p f φ φ').hom := by
   simp only [naturalIso_hom]; infer_instance
-
--- TODO: this should be inferInstance only, after I add another IsHomLift inv instance!
-instance {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] [IsCartesian p f φ'] :
-    IsHomLift p (𝟙 R) (naturalIso p f φ φ').inv := by
-  simp only [naturalIso_inv]; infer_instance
 
 end IsCartesian
 
