@@ -91,19 +91,17 @@ instance : Category (Fib p S) := isCategory S
 def InducedFunctor : Fib p S ⥤ Fiber p S :=
   Fiber.InducedFunctor (comp_const S)
 
--- TODO: this should be included again
--- /-- The natural transformation ... -/
--- def InducedFunctorNat : ι S ≅ (InducedFunctor p S) ⋙ (FiberInclusion p S) :=
---   InducedFunctorNat (comp_const S)
+/-- The natural transformation `ι S ≅ (InducedFunctor p S) ⋙ (FiberInclusion p S)` -/
+def InducedFunctor.NatIso : ι S ≅ (InducedFunctor p S) ⋙ (FiberInclusion p S) :=
+  Fiber.InducedFunctor.NatIso (comp_const S)
 
 lemma inducedFunctor_comp : ι S = (InducedFunctor p S) ⋙ (FiberInclusion p S) :=
   Fiber.inducedFunctor_comp (comp_const S)
 
-instance : Functor.IsEquivalence (InducedFunctor p S) :=
-  equiv S
+instance : Functor.IsEquivalence (InducedFunctor p S) := equiv S
 
-instance : Functor.Faithful (ι (p:=p) S) := sorry
-  -- Functor.Faithful.of_iso (InducedFunctorNat p S).symm
+instance : Functor.Faithful (ι (p:=p) S) :=
+  Functor.Faithful.of_iso (InducedFunctor.NatIso p S).symm
 
 end
 
