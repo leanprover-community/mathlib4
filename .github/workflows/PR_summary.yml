@@ -72,7 +72,7 @@ jobs:
         then
           declDiff="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "#### Diff of declarations" "${declDiff}")"
         else
-          declDiff="$(printf '#### Import changes\n\n%s\n' "${declDiff}")"
+          declDiff="$(printf '#### Diff of declarations\n\n%s\n' "${declDiff}")"
         fi
 
         message="$(printf '%s\n\n%s\n\n---\n\n%s\n' "${title}" "${importCount}" "${declDiff}")"
