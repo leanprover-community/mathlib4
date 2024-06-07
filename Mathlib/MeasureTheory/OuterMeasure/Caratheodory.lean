@@ -74,7 +74,7 @@ theorem isCaratheodory_compl_iff : IsCaratheodory m sᶜ ↔ IsCaratheodory m s 
 theorem isCaratheodory_union (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodory m s₂) :
     IsCaratheodory m (s₁ ∪ s₂) := fun t => by
   rw [h₁ t, h₂ (t ∩ s₁), h₂ (t \ s₁), h₁ (t ∩ (s₁ ∪ s₂)), inter_diff_assoc _ _ s₁,
-    Set.inter_assoc _ _ s₁, inter_eq_self_of_subset_right (Set.subset_union_left _ _),
+    Set.inter_assoc _ _ s₁, inter_eq_self_of_subset_right Set.subset_union_left,
     union_diff_left, h₂ (t ∩ s₁)]
   simp [diff_eq, add_assoc]
 #align measure_theory.outer_measure.is_caratheodory_union MeasureTheory.OuterMeasure.isCaratheodory_union
@@ -120,12 +120,11 @@ theorem isCaratheodory_iUnion_nat {s : ℕ → Set α} (h : ∀ i, IsCaratheodor
         convert m.iUnion fun i => t ∩ s i using 1
         · simp [inter_iUnion]
         · simp [ENNReal.tsum_eq_iSup_nat, isCaratheodory_sum m h hd]
-      refine' le_trans (add_le_add_right hp _) _
+      refine le_trans (add_le_add_right hp _) ?_
       rw [ENNReal.iSup_add]
-      refine'
-        iSup_le fun n =>
-          le_trans (add_le_add_left _ _) (ge_of_eq (isCaratheodory_iUnion_lt m (fun i _ => h i) _))
-      refine' m.mono (diff_subset_diff_right _)
+      refine iSup_le fun n => le_trans (add_le_add_left ?_ _)
+        (ge_of_eq (isCaratheodory_iUnion_lt m (fun i _ => h i) _))
+      refine m.mono (diff_subset_diff_right ?_)
       exact iUnion₂_subset fun i _ => subset_iUnion _ i
 #align measure_theory.outer_measure.is_caratheodory_Union_nat MeasureTheory.OuterMeasure.isCaratheodory_iUnion_nat
 

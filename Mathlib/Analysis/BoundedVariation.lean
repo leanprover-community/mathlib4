@@ -143,7 +143,7 @@ theorem _root_.BoundedVariationOn.mono {f : α → E} {s : Set α} (h : BoundedV
 
 theorem _root_.BoundedVariationOn.locallyBoundedVariationOn {f : α → E} {s : Set α}
     (h : BoundedVariationOn f s) : LocallyBoundedVariationOn f s := fun _ _ _ _ =>
-  h.mono (inter_subset_left _ _)
+  h.mono inter_subset_left
 #align has_bounded_variation_on.has_locally_bounded_variation_on BoundedVariationOn.locallyBoundedVariationOn
 
 theorem edist_le (f : α → E) {s : Set α} {x y : α} (hx : x ∈ s) (hy : y ∈ s) :
@@ -501,9 +501,9 @@ theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht :
 theorem Icc_add_Icc (f : α → E) {s : Set α} {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) (hb : b ∈ s) :
     eVariationOn f (s ∩ Icc a b) + eVariationOn f (s ∩ Icc b c) = eVariationOn f (s ∩ Icc a c) := by
   have A : IsGreatest (s ∩ Icc a b) b :=
-    ⟨⟨hb, hab, le_rfl⟩, (inter_subset_right _ _).trans Icc_subset_Iic_self⟩
+    ⟨⟨hb, hab, le_rfl⟩, inter_subset_right.trans Icc_subset_Iic_self⟩
   have B : IsLeast (s ∩ Icc b c) b :=
-    ⟨⟨hb, le_rfl, hbc⟩, (inter_subset_right _ _).trans Icc_subset_Ici_self⟩
+    ⟨⟨hb, le_rfl, hbc⟩, inter_subset_right.trans Icc_subset_Ici_self⟩
   rw [← eVariationOn.union f A B, ← inter_union_distrib_left, Icc_union_Icc_eq_Icc hab hbc]
 #align evariation_on.Icc_add_Icc eVariationOn.Icc_add_Icc
 
@@ -552,7 +552,7 @@ theorem comp_inter_Icc_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β →
     {x y : β} (hx : x ∈ t) (hy : y ∈ t) :
     eVariationOn (f ∘ φ) (t ∩ Icc x y) = eVariationOn f (φ '' t ∩ Icc (φ x) (φ y)) := by
   rcases le_total x y with (h | h)
-  · convert comp_eq_of_monotoneOn f φ (hφ.mono (Set.inter_subset_left t (Icc x y)))
+  · convert comp_eq_of_monotoneOn f φ (hφ.mono Set.inter_subset_left)
     apply le_antisymm
     · rintro _ ⟨⟨u, us, rfl⟩, vφx, vφy⟩
       rcases le_total x u with (xu | ux)
@@ -565,8 +565,8 @@ theorem comp_inter_Icc_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β →
     · rintro _ ⟨u, ⟨⟨hu, xu, uy⟩, rfl⟩⟩
       exact ⟨⟨u, hu, rfl⟩, ⟨hφ hx hu xu, hφ hu hy uy⟩⟩
   · rw [eVariationOn.subsingleton, eVariationOn.subsingleton]
-    exacts [(Set.subsingleton_Icc_of_ge (hφ hy hx h)).anti (Set.inter_subset_right _ _),
-      (Set.subsingleton_Icc_of_ge h).anti (Set.inter_subset_right _ _)]
+    exacts [(Set.subsingleton_Icc_of_ge (hφ hy hx h)).anti Set.inter_subset_right,
+      (Set.subsingleton_Icc_of_ge h).anti Set.inter_subset_right]
 #align evariation_on.comp_inter_Icc_eq_of_monotone_on eVariationOn.comp_inter_Icc_eq_of_monotoneOn
 
 theorem comp_eq_of_antitoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : AntitoneOn φ t) :
@@ -817,7 +817,7 @@ theorem LipschitzOnWith.comp_locallyBoundedVariationOn {f : E → F} {C : ℝ≥
     (hf : LipschitzOnWith C f t) {g : α → E} {s : Set α} (hg : MapsTo g s t)
     (h : LocallyBoundedVariationOn g s) : LocallyBoundedVariationOn (f ∘ g) s :=
   fun x y xs ys =>
-  hf.comp_boundedVariationOn (hg.mono_left (inter_subset_left _ _)) (h x y xs ys)
+  hf.comp_boundedVariationOn (hg.mono_left inter_subset_left) (h x y xs ys)
 #align lipschitz_on_with.comp_has_locally_bounded_variation_on LipschitzOnWith.comp_locallyBoundedVariationOn
 
 theorem LipschitzWith.comp_boundedVariationOn {f : E → F} {C : ℝ≥0} (hf : LipschitzWith C f)
