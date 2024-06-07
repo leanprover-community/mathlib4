@@ -134,7 +134,7 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] :
 
 /-- If `G` acts properly on `X`, then the quotient space is Hausdorff (T2). -/
 @[to_additive "If `G` acts properly on `X`, then the quotient space is Hausdorff (T2)."]
-theorem t2Space_of_ProperSMul (hproper:ProperSMul G X) :
+theorem t2Space_of_ProperSMul [ProperSMul G X] :
     T2Space (Quotient (MulAction.orbitRel G X)) := by
   rw [t2_iff_isClosed_diagonal] -- T2 if the diagonal is closed
   set R := MulAction.orbitRel G X -- the orbit relation
@@ -148,7 +148,7 @@ theorem t2Space_of_ProperSMul (hproper:ProperSMul G X) :
   have pipiopen : IsOpenMap pipi := IsOpenMap.prod hpiopen hpiopen -- π × π open
   have pipisurj : (Function.Surjective (pipi) ) :=  -- π × π surj
     Function.Surjective.Prod_map pisurj pisurj
-  have pipipquotient := -- π × π is q QuotientMap because open, continuous and surj
+  have pipipquotient := -- π × π is a QuotientMap because open, continuous and surj
     IsOpenMap.to_quotientMap pipiopen (Continuous.prod_map picont picont) pipisurj
   rw [<-QuotientMap.isClosed_preimage pipipquotient] -- closed iff preimage closed
   set gr' := pipi ⁻¹' diagonal (Quotient R) -- preimage of the diag
@@ -159,9 +159,9 @@ theorem t2Space_of_ProperSMul (hproper:ProperSMul G X) :
     conv_lhs => -- we work only on the left hand side for now
       rw [mem_preimage]
       rw [mem_diagonal_iff]
-      change (π x = π y)  --↔ (x, y) ∈ gr
+      change (π x = π y)  -- ↔ (x, y) ∈ gr
       rw [Quotient.eq']
-      change ((MulAction.orbitRel G X).Rel x y)-- ↔ (x, y) ∈ gr
+      change ((MulAction.orbitRel G X).Rel x y) -- ↔ (x, y) ∈ gr
       rw [MulAction.orbitRel_apply]
       rw [MulAction.orbit]
       change (∃ g : G, g • y = x)
@@ -170,7 +170,7 @@ theorem t2Space_of_ProperSMul (hproper:ProperSMul G X) :
       simp
     simp [m]
   rw [r_eq_r']
-  exact hproper.isProperMap_smul_pair'.isClosedMap.closed_range
+  exact ProperSMul.isProperMap_smul_pair'.isClosedMap.closed_range
 
 /-- If a T2 group acts properly on a topological space, then this topological space is T2. -/
 @[to_additive "If a T2 group acts properly on a topological space,
