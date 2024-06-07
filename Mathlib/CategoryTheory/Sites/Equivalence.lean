@@ -48,11 +48,6 @@ namespace Presheaf
 
 variable (H : C ⥤ D) {F G : Dᵒᵖ ⥤ A} (f : F ⟶ G)
 
-lemma _root_.CategoryTheory.Equivalence.balanced [Balanced C] : Balanced D where
-  isIso_of_mono_of_epi f := by
-    rw [← isIso_iff_of_reflects_iso (F := e.inverse)]
-    exact isIso_of_mono_of_epi _
-
 lemma _root_.CategoryTheory.GrothendieckTopology.W_iff_whisker
     [HasWeakSheafify J A] [HasWeakSheafify K A]
     [H.IsContinuous J K] [H.IsCocontinuous J K]
@@ -115,7 +110,7 @@ lemma isLocallySurjective_iff_whisker (hH : CoverPreserving J K H) [H.IsCocontin
   ⟨fun _ ↦ isLocallySurjective_whisker J K A H f,
     fun _ ↦ isLocallySurjective_of_whisker J K A H f hH⟩
 
-theorem WEqualsLocallyBijective_transfer
+lemma WEqualsLocallyBijective_transfer
     (hH : CoverPreserving J K H) [H.IsCocontinuous J K]
     [H.IsCoverDense K] [H.Full] [H.Faithful] [J.WEqualsLocallyBijective A] [HasWeakSheafify J A]
     [HasWeakSheafify K A] [∀ X, HasLimitsOfShape (StructuredArrow X H.op) A] :
@@ -429,7 +424,8 @@ variable [Balanced (Sheaf ((equivSmallModel C).locallyCoverDense J).inducedTopol
 variable {F G : Sheaf J A} (f : F ⟶ G)
 
 instance : Balanced (Sheaf J A) := ((equivSmallModel C).symm.sheafCongr
-  ((equivSmallModel C).locallyCoverDense J).inducedTopology J A).balanced
+  ((equivSmallModel C).locallyCoverDense J).inducedTopology J A)
+  |>.inverse.balanced_of_reflects_and_preserves
 
 instance [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) A] :
     J.WEqualsLocallyBijective A := by
