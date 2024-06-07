@@ -295,7 +295,7 @@ protected alias ⟨_, Nonempty.map⟩ := map_nonempty
 
 @[simp]
 theorem map_nontrivial : (s.map f).Nontrivial ↔ s.Nontrivial :=
-  mod_cast Set.nontrivial_image f.injective (s := s)
+  mod_cast Set.image_nontrivial f.injective (s := s)
 
 theorem attach_map_val {s : Finset α} : s.attach.map (Embedding.subtype _) = s :=
   eq_of_veq <| by rw [map_val, attach_val]; exact Multiset.attach_map_val _
