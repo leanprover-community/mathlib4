@@ -31,6 +31,9 @@ universe u v w
 
 open CategoryTheory Function
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] ConcreteCategory.instFunLike
+
 namespace Profinite
 
 set_option linter.uppercaseLean3 false

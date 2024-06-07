@@ -18,7 +18,7 @@ This file contains results about nilpotent elements that involve ring theory.
 
 universe u v
 
-open BigOperators Function Set
+open Function Set
 
 variable {R S : Type*} {x y : R}
 
