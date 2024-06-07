@@ -70,7 +70,7 @@ lemma negOnePow_eq_neg_one_iff (n : ℤ) : n.negOnePow = -1 ↔ Odd n := by
     contradiction
   · exact negOnePow_odd n
 
-theorem negOnePow_natAbs (n : ℤ) : ((n.negOnePow : ℤ)).natAbs = 1 := Int.units_natAbs _
+theorem negOnePow_natAbs (n : ℤ) : (n.negOnePow : ℤ).natAbs = 1 := Int.units_natAbs _
 
 @[simp]
 theorem negOnePow_abs (n : ℤ) : |(n.negOnePow : ℤ)| = 1 := by

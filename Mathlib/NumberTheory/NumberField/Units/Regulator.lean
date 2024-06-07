@@ -53,7 +53,7 @@ theorem regulator_eq_det' (e : {w : InfinitePlace K // w ≠ w₀} ≃ Fin (rank
 /-- Let `u : Fin (rank K) → (𝓞 K)ˣ` be a family of units. Then, for any infinite place `w'`, the
 square matrices with entries `(mult w * log w (u i))_i, {w ≠ w'}` have all the same determinant in
 absolute value. -/
-theorem _root_.NumberField.Units.abs_det_eq_abs_det (u : Fin (rank K) → (𝓞 K)ˣ)
+theorem abs_det_eq_abs_det (u : Fin (rank K) → (𝓞 K)ˣ)
     {w₁ w₂ : InfinitePlace K} (e₁ : {w // w ≠ w₁} ≃ Fin (rank K))
     (e₂ : {w // w ≠ w₂} ≃ Fin (rank K)) :
     |(Matrix.of fun i w : {w // w ≠ w₁} ↦ (mult w.val : ℝ) * (w.val (u (e₁ i) : K)).log).det| =
