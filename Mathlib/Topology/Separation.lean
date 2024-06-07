@@ -2518,7 +2518,27 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
       rw [T_int]
       exact sInter_subset_of_mem (g n).2
     apply countable_covers_witnessing_separated_nhds
-    · sorry
+    · use fun n ↦ (closure (g' n))ᶜ
+      constructor
+      · rw [← compl_iInter, subset_compl_comm]
+        have : ⋂ i, closure (g' i) ⊆ closure t := by
+          rw [T_int]
+          apply subset_sInter
+          intro t tinT
+          obtain ⟨n, gn⟩ := g_surj ⟨t, tinT⟩
+          apply iInter_subset_of_subset n
+          apply Subset.trans (clg'_sub_g n)
+          rw [gn]
+        rw [Subset.antisymm this
+          (subset_iInter fun n ↦ Subset.trans (clt_sub_g' n) subset_closure)]
+        exact Disjoint.subset_compl_left hd₂
+      intro n
+      constructor
+      · simp only [isOpen_compl_iff, isClosed_closure]
+      · simp only [closure_compl, disjoint_compl_left_iff_subset]
+        apply Subset.trans subset_closure
+        apply Subset.trans (clt_sub_g' n)
+        exact subset_interior_closure (g'_open n)
     · use fun n ↦ (closure (f' n))ᶜ
       constructor
       · rw [← compl_iInter, subset_compl_comm]
@@ -2530,8 +2550,9 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
           apply iInter_subset_of_subset n
           apply Subset.trans (clf'_sub_f n)
           rw [fn]
-        rw [Subset.antisymm this (subset_iInter fun n ↦ Subset.trans (cls_sub_f' n) subset_closure)]
-        exact Disjoint.subset_compl_left (id (Disjoint.symm hd₁))
+        rw [Subset.antisymm this
+          (subset_iInter fun n ↦ Subset.trans (cls_sub_f' n) subset_closure)]
+        exact Disjoint.subset_compl_left (Disjoint.symm hd₁)
       intro n
       constructor
       · simp only [isOpen_compl_iff, isClosed_closure]
