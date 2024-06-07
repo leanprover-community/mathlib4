@@ -8,7 +8,8 @@ import Mathlib.LinearAlgebra.RootSystem.Defs
 /-!
 # Systems of simple roots and bases of a root system
 
-This file defines systems of simple roots in a root system.
+This file defines systems of simple roots in a root system.  We work over a linearly ordered
+commutative ring `R`, and consider systems of positive roots and their generators.
 
 ## Main definitions
 
@@ -52,7 +53,8 @@ noncomputable section
 
 namespace RootPairing
 
-/-- An element in the coroot space is thin-slicing if any interval in `R` has finite preimage. -/
+/-- An element in the coroot space is thin-slicing if any interval in `R` has finite preimage in
+the set of roots. -/
 def IsThinSlicing (x : N) : Prop := ∀ (n : R), 0 ≤ n →
   Finite { i | 0 ≤ (P.toLin (P.root i) x) ∧ (P.toLin (P.root i) x) ≤ n}
 
@@ -77,6 +79,17 @@ structure Separation (P : RootPairing ι R M N) where
   pos_iff : ∀ i j, P.root i + P.root j = 0 → (pos i ↔ ¬ pos j)
   /-- A root that is the sum of positive roots is positive. -/
   add_pos : ∀ i j k, pos i → pos j → P.root k = P.root i + P.root j → pos k
+
+theorem pos_iff_neg_not_pos {P : RootPairing ι R M N} (S : Separation P) (i j : ι) :
+    P.root i + P.root j = 0 → (S.pos i ↔ ¬ S.pos j) := S.pos_iff i j
+
+-- instance (S : Separation P) : PartialOrder S.pos where
+
+--theorem isWF (S : Separation P) :
+
+-- define simple system = set of irreducible elements for separation = base cases for WF
+
+--
 
 /-- Produce a separation from a regular element. -/
 def separation_of_regular (x : N) (hx : IsRegularElement P x) :
