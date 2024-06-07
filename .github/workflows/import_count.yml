@@ -52,16 +52,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         message=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
-        data=$(jq -n --arg msg "$message" '{"body": $msg}')
-        method="POST"
-        if [[ -n "$message" ]]; then
-            url="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${{ github.event.pull_request.number }}/comments"
-            headers="Authorization: token ${GITHUB_TOKEN}"
-            comment_id=$(curl -s -S -H "Content-Type: application/json" -H "$headers" "$url" |
-              jq -r '.[] | select(.body | startswith("### Import summary")) | .id' | head -1)
-            if [[ -n "$comment_id" ]]; then
-                url="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/comments/${comment_id}"
-                method="PATCH"
-            fi
-            curl -s -S -H "Content-Type: application/json" -H "$headers" -X "$method" -d "$data" "$url"
-        fi
+        ./scripts/update_PR_comment.sh "${message}" "### Import summary"
