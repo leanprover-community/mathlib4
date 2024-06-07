@@ -13,7 +13,7 @@ Let `C` be a preadditive category with a zero object.
 In this file, we put together all the single functors `C ⥤ CochainComplex C ℤ`
 along with their compatibilities with shifts into the definition
 `CochainComplex.singleFunctors C : SingleFunctors C (CochainComplex C ℤ) ℤ`.
-Similiarly, we define
+Similarly, we define
 `HomotopyCategory.singleFunctors C : SingleFunctors C (HomotopyCategory C (ComplexShape.up ℤ)) ℤ`.
 
 -/
@@ -25,37 +25,22 @@ open CategoryTheory Category Limits
 variable (C : Type u) [Category.{v} C] [Preadditive C] [HasZeroObject C]
 
 namespace CochainComplex
--- this should be moved (and generalized)
-
-instance {ι : Type*} [DecidableEq ι] (c : ComplexShape ι) (n : ι) :
-    (HomologicalComplex.single C c n).Additive where
-  map_add {X Y} f g := by
-    ext
-    simp [HomologicalComplex.single]
 
 open HomologicalComplex
-
-variable {C}
-
-lemma singleFunctor_aux (n a a' : ℤ) (ha' : n + a = a') (X : C) (i : ℤ) :
-    (((single C (ComplexShape.up ℤ) a').obj X)⟦n⟧).X i =
-      ((single C (ComplexShape.up ℤ) a).obj X).X i := by
-  dsimp [CategoryTheory.shiftFunctor, shiftMonoidalFunctor, single]
-  obtain rfl : a' = a + n := by omega
-  by_cases h : i = a
-  · subst h
-    simp only [ite_true]
-  · rw [if_neg h, if_neg (fun h' => h (by omega))]
-
-variable (C)
 
 /-- The collection of all single functors `C ⥤ CochainComplex C ℤ` along with
 their compatibilites with shifts. -/
 noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ where
-  functor n := HomologicalComplex.single _ _ n
+  functor n := single _ _ n
   shiftIso n a a' ha' := NatIso.ofComponents
-    (fun X => HomologicalComplex.Hom.isoOfComponents
-      (fun i => eqToIso (singleFunctor_aux n a a' ha' X i)) (by simp))
+    (fun X => Hom.isoOfComponents
+      (fun i => eqToIso (by
+        obtain rfl : a' = a + n := by omega
+        dsimp [CategoryTheory.shiftFunctor, shiftMonoidalFunctor, single]
+        by_cases h : i = a
+        · subst h
+          simp only [ite_true]
+        · rw [if_neg h, if_neg (fun h' => h (by omega))])) (by simp))
     (fun {X Y} f => by
       obtain rfl : a' = a + n := by omega
       ext
@@ -65,7 +50,7 @@ noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ w
     simp [single, shiftFunctorZero_eq, XIsoOfEq]
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext
-    simp [single, shiftFunctorAdd_eq, XIsoOfEq]
+    simp [shiftFunctorAdd_eq, XIsoOfEq]
 
 instance (n : ℤ) : ((singleFunctors C).functor n).Additive := by
   dsimp only [singleFunctors]
@@ -80,19 +65,21 @@ end CochainComplex
 namespace HomotopyCategory
 
 /-- The collection of all single functors `C ⥤ HomotopyCategory C (ComplexShape.up ℤ))`
-along with their compatibilites with shifts. -/
+for `n : ℤ` along with their compatibilites with shifts. -/
 noncomputable def singleFunctors : SingleFunctors C (HomotopyCategory C (ComplexShape.up ℤ)) ℤ :=
   (CochainComplex.singleFunctors C).postcomp (HomotopyCategory.quotient _ _)
 
 /-- The single functor `C ⥤ HomotopyCategory C (ComplexShape.up ℤ)`
 which sends `X` to the complex consisting of `X` in degree `n : ℤ` and zero otherwise. -/
-noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
+noncomputable abbrev singleFunctor (n : ℤ) :
+    C ⥤ HomotopyCategory C (ComplexShape.up ℤ) :=
+  (singleFunctors C).functor n
 
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp only [singleFunctor, singleFunctors, SingleFunctors.postcomp]
   infer_instance
 
-/-- The isomorphism given by the definition by `singleFunctors C`. -/
+/-- The isomorphism given by the very definition of `singleFunctors C`. -/
 noncomputable def singleFunctorsPostcompQuotientIso :
     singleFunctors C ≅
       (CochainComplex.singleFunctors C).postcomp (HomotopyCategory.quotient _ _) :=
