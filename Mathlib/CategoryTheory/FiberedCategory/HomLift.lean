@@ -126,11 +126,11 @@ instance comp {R S T : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (g : S ⟶ T) (φ : a 
   apply CommSq.horiz_comp (commSq p f φ) (commSq p g ψ)
 
 /-- If `φ : a ⟶ b` and `ψ : b ⟶ c` lift `𝟙 R`, then so does `φ ≫ ψ` -/
-instance lift_id_comp (R : 𝒮) {a b c : 𝒳} (φ : a ⟶ b) (ψ : b ⟶ c)
+instance comp_of_lift_id (R : 𝒮) {a b c : 𝒳} (φ : a ⟶ b) (ψ : b ⟶ c)
     [p.IsHomLift (𝟙 R) φ] [p.IsHomLift (𝟙 R) ψ] : p.IsHomLift (𝟙 R) (φ ≫ ψ) :=
   comp_id (𝟙 R) ▸ comp p (𝟙 R) (𝟙 R) φ ψ
 
-/-- If `φ : a ⟶ b` lifts `f` and `ψ : b ⟶ c` lifts `𝟙 T`, then `φ  ≫ ψ` lifts `f` -/
+/-- If `φ : a ⟶ b` lifts `f` and `ψ : b ⟶ c` lifts `𝟙 T`, then `eqToHomφ  ≫ ψ` lifts `f` -/
 instance comp_lift_id_right' {a b c : 𝒳} {S T : 𝒮} (f : S ⟶ T) (φ : a ⟶ b) [p.IsHomLift f φ]
     (ψ : b ⟶ c) [p.IsHomLift (𝟙 T) ψ] : p.IsHomLift f (φ ≫ ψ) := by
   simpa using inferInstanceAs (p.IsHomLift (f ≫ 𝟙 T) (φ ≫ ψ))
@@ -169,21 +169,36 @@ lemma id_lift_eqToHom_codomain {p : 𝒳 ⥤ 𝒮} {R S : 𝒮} (hRS : R = S) {b
     p.IsHomLift (eqToHom hRS) (𝟙 b) := by
   subst hRS hb; simp
 
-instance comp_eqToHom_lift {R S : 𝒮} {a' a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : a' = a)
-    [p.IsHomLift f φ] : p.IsHomLift f (eqToHom h ≫ φ) := by
+
+section
+
+variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ]
+
+instance comp_id_lift : p.IsHomLift f (𝟙 a ≫ φ) := by
+  simp_all
+
+instance id_comp_lift  : p.IsHomLift f (φ ≫ 𝟙 b) := by
+  simp_all
+
+instance lift_id_comp : p.IsHomLift (𝟙 R ≫ f) φ := by
+  simp_all
+
+instance lift_comp_id : p.IsHomLift (f ≫ 𝟙 S) φ := by
+  simp_all
+
+instance comp_eqToHom_lift {a' : 𝒳} (h : a' = a) : p.IsHomLift f (eqToHom h ≫ φ) := by
   subst h; simp_all
 
-instance eqToHom_comp_lift {R S : 𝒮} {a b b' : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : b = b')
-    [p.IsHomLift f φ] : p.IsHomLift f (φ ≫ eqToHom h) := by
+instance eqToHom_comp_lift {b' : 𝒳} (h : b = b') : p.IsHomLift f (φ ≫ eqToHom h) := by
   subst h; simp_all
 
-instance lift_eqToHom_comp {R' R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : R' = R)
-    [p.IsHomLift f φ] : p.IsHomLift (eqToHom h ≫ f) φ := by
+instance lift_eqToHom_comp {R' : 𝒮} (h : R' = R) : p.IsHomLift (eqToHom h ≫ f) φ := by
   subst h; simp_all
 
-instance lift_comp_eqToHom {R S S': 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : S = S')
-    [p.IsHomLift f φ] : p.IsHomLift (f ≫ eqToHom h) φ := by
+instance lift_comp_eqToHom {S' : 𝒮} (h : S = S') : p.IsHomLift (f ≫ eqToHom h) φ := by
   subst h; simp_all
+
+end
 
 @[simp]
 lemma comp_eqToHom_lift_iff {R S : 𝒮} {a' a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : a' = a) :
