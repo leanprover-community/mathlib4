@@ -1,0 +1,30 @@
+name: Weekly Technical Debt Counters
+
+on:
+  schedule:
+    - cron: '0 4 * * 1'  # Run at 04:00 every Monday
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Run script
+      id: run-script
+      run: |
+        output=$(./scripts/technical-debt-counters.sh)
+        echo "::set-output name=output::$output"
+
+    - name: Post output to Zulip
+      uses: zulip/github-actions-zulip/send-message@v1
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'mathlib4'
+        type: 'stream'
+        topic: Technical Debt Counters
+        content: ${{ steps.run-script.outputs.output }}
