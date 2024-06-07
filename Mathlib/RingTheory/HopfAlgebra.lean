@@ -102,6 +102,8 @@ variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R 
 variable {G : Type w} [Group G]
 
 variable (R A G) in
+/-- The antipode in the `R`-Hopf algebra structure on `MonoidAlgebra A G`, sending
+`single g a` to `single g⁻¹ (antipode a)`. -/
 def antipode :
     MonoidAlgebra A G →ₗ[R] MonoidAlgebra A G :=
   Finsupp.lsum R fun g => Finsupp.lsingle g⁻¹ ∘ₗ HopfAlgebra.antipode
@@ -141,6 +143,8 @@ variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R 
 variable {G : Type w} [AddGroup G]
 
 variable (R A G) in
+/-- The antipode in the `R`-Hopf algebra structure on `A[G]`, sending
+`single g a` to `single -g (antipode a)`. -/
 def antipode : A[G] →ₗ[R] A[G] :=
   Finsupp.lsum R fun g => Finsupp.lsingle (-g) ∘ₗ HopfAlgebra.antipode
 
