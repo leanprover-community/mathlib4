@@ -6,7 +6,6 @@ Authors: Peter Nelson
 import Mathlib.Data.Finset.Sort
 import Mathlib.Order.Extension.Linear
 import Mathlib.Order.OrderIsoNat
--- import Mathlib.Data.Nat.Interval
 import Mathlib.Order.Interval.Set.Infinite
 
 /-!
@@ -138,7 +137,7 @@ theorem exists_rightMonochromatic_trans (c : (Fin (k+1) ↪o ℕ) → κ) (s : F
 
   obtain ⟨c₀, hc₀⟩ := Finite.exists_infinite_fiber (α := {x // ∀ i, s i < x})
     (fun i ↦ c (appendRight s i.1 i.2))
-  replace hc₀ := (infinite_coe_iff.1 hc₀).image (Subtype.val_injective.injOn _)
+  replace hc₀ := (infinite_coe_iff.1 hc₀).image Subtype.val_injective.injOn
   set f := @Nat.orderEmbeddingOfSet _ hc₀.to_subtype _
   set g' := fun (n : ℕ) ↦ if ∀ i, s i < n then f n else n with hg'_def
 
@@ -216,7 +215,7 @@ theorem exists_ub_fn (ss : ℕ ↪ (Fin (k+1) ↪o ℕ)) : ∃ b : ℕ →o ℕ,
     refine (finite_Iic m).finite_subsets.subset ?_
     rintro _ ⟨s, (hs : s ⊤ ≤ m), rfl⟩ _ ⟨i, rfl⟩
     exact (s.monotone le_top).trans hs
-  choose t' ht' using fun m ↦ ((aux m).preimage (ss.injective.injOn _)).bddAbove
+  choose t' ht' using fun m ↦ ((aux m).preimage ss.injective.injOn).bddAbove
   simp only [preimage_setOf_eq, mem_upperBounds, mem_setOf_eq] at ht'
 
   refine ⟨⟨fun i ↦ (Finset.range (i+1)).sup t' +1 , fun m n h ↦ ?_⟩, ?_⟩
@@ -227,11 +226,11 @@ theorem exists_ub_fn (ss : ℕ ↪ (Fin (k+1) ↪o ℕ)) : ∃ b : ℕ →o ℕ,
   exact (ht' _ _ h').not_lt <| (Finset.le_sup (show n ∈ Finset.range (n+1) by simp)).trans_lt h
 
 /-- Choose a function `t` so that for all `i ≥ t n`, the set `ss i` has maximum above `n`. -/
-protected noncomputable def ub_fn (ss : ℕ ↪ (Fin (k+1) ↪o ℕ)) : ℕ →o ℕ :=
+noncomputable def ub_fn (ss : ℕ ↪ (Fin (k+1) ↪o ℕ)) : ℕ →o ℕ :=
     Classical.choose <| exists_ub_fn ss
 
 /-- The subsequence to which the `refs c ss` converge pointwise. -/
-protected noncomputable def lim (c : (Fin (k+2) ↪o ℕ) → κ) {ss : ℕ ↪ (Fin (k+1) ↪o ℕ)}
+noncomputable def lim (c : (Fin (k+2) ↪o ℕ) → κ) {ss : ℕ ↪ (Fin (k+1) ↪o ℕ)}
     (hss : Monotone (ss · ⊤)) : ℕ ↪o ℕ :=
   OrderEmbedding.ofStrictMono (fun n ↦ refs c ss (ub_fn ss n) n)
   (fun i j hij ↦ by
@@ -274,7 +273,7 @@ theorem exists_monochromatic_subsequence_tuple (c : (Fin k ↪o ℕ) → κ) :
     ∃ (c₀ : κ) (g : ℕ ↪o ℕ), ∀ (s : Fin k ↪o ℕ), c (s.trans g) = c₀ := by
 
   induction' k using Nat.recAux with k ih
-  · exact ⟨c <| Fin.valOrderEmbedding 0, RelEmbedding.refl _,
+  · exact ⟨c <| Fin.valOrderEmb 0, RelEmbedding.refl _,
       fun s ↦ congr_arg _ <| RelEmbedding.ext finZeroElim⟩
 
   have hg₁ : ∃ (g₁ : ℕ ↪o ℕ), ∀ s, RightMonochromatic (fun x ↦ c <| RelEmbedding.trans x g₁) s := by

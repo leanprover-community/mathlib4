@@ -103,6 +103,14 @@ theorem not_wellFounded_of_decreasing_seq (f : ((· > ·) : ℕ → ℕ → Prop
 
 end RelEmbedding
 
+/-- This might not be the most natural place for this instance. -/
+instance OrderEmbedding.infinite {α β : Type*} [Preorder α] [Nonempty α] [Nonempty (α ↪o ℕ)]
+    [Nonempty β] [Preorder β] [NoMaxOrder β] : Infinite (α ↪o β) :=
+  let f1 := Classical.arbitrary (α ↪o ℕ)
+  let f2 := Classical.arbitrary (ℕ ↪o β)
+  Infinite.of_injective (fun i ↦ f1.trans <| (OrderEmbedding.addRight i).trans f2) fun _ _ h ↦ by
+    simpa using congrFun (congr_arg (fun f : (α ↪o β) ↦ (f : α → β)) h) (Classical.arbitrary α)
+
 namespace Nat
 
 variable (s : Set ℕ) [Infinite s]

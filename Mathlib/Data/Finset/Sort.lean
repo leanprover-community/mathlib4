@@ -257,6 +257,9 @@ theorem orderEmbOfCardLe_mem (s : Finset α) {k : ℕ} (h : k ≤ s.card) (a) :
     Function.comp_apply]
 #align finset.order_emb_of_card_le_mem Finset.orderEmbOfCardLe_mem
 
+instance {k : ℕ} : Inhabited (Fin k ↪o ℕ) where
+  default := Fin.valOrderEmb k
+
 end SortLinearOrder
 
 unsafe instance [Repr α] : Repr (Finset α) where
@@ -319,7 +322,7 @@ def appendRight (f : Fin t ↪o α) (a : α) (ha : ∀ i, f i < a) : Fin (t+1) �
 
 /-- Restrict a tuple to an initial subsegment. -/
 def truncate (f : Fin t ↪o α) {t' : ℕ} (ht' : t' ≤ t) : Fin t' ↪o α :=
-  (Fin.castLEEmb ht').trans f
+  (Fin.castLEOrderEmb ht').trans f
 
 /-- Remove the last element of a nonempty tuple. -/
 def eraseRight (f : Fin (t+1) ↪o α) : Fin t ↪o α :=

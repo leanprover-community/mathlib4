@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Prod
+import Mathlib.Algebra.Order.Monoid.Basic
 
 #align_import data.fintype.prod from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
@@ -106,12 +107,5 @@ instance Function.infinite_of_left {ι π : Sort _} [Nontrivial π] [Infinite ι
 instance Function.infinite_of_right {ι π : Sort _} [Infinite π] [Nonempty ι] : Infinite (ι → π) :=
   Pi.infinite_of_right
 #align function.infinite_of_right Function.infinite_of_right
-
-instance OrderHom.infinite {α β : Type*} [Preorder α] [Nonempty α] [Nonempty (α ↪o ℕ)]
-    [Nonempty β] [Preorder β] [NoMaxOrder β] : Infinite (α ↪o β) :=
-  let f1 := Classical.arbitrary (α ↪o ℕ)
-  let f2 := Classical.arbitrary (ℕ ↪o β)
-  Infinite.of_injective (fun i ↦ f1.trans <| (OrderEmbedding.addRight i).trans f2) fun _ _ h ↦ by
-    simpa using congrFun (congr_arg (fun f : (α ↪o β) ↦ (f : α → β)) h) (Classical.arbitrary α)
 
 end
