@@ -227,8 +227,7 @@ theorem Multiset.map_univ_coe (m : Multiset α) :
 @[simp]
 theorem Multiset.map_univ {β : Type*} (m : Multiset α) (f : α → β) :
     ((Finset.univ : Finset m).val.map fun (x : m) ↦ f (x : α)) = m.map f := by
-  erw [← Multiset.map_map]
-  rw [Multiset.map_univ_coe]
+  erw [← Multiset.map_map, Multiset.map_univ_coe]
 #align multiset.map_univ Multiset.map_univ
 
 @[simp]
