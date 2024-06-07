@@ -266,6 +266,13 @@ instance leftOp_faithful {F : C ⥤ Dᵒᵖ} [Faithful F] : Faithful F.leftOp wh
   map_injective h := Quiver.Hom.unop_inj (map_injective F (Quiver.Hom.unop_inj h))
 #align category_theory.functor.left_op_faithful CategoryTheory.Functor.leftOp_faithful
 
+instance rightOp_full {F : Cᵒᵖ ⥤ D} [Full F] : Full F.rightOp where
+  map_surjective f := ⟨(F.preimage f.unop).unop, by simp⟩
+
+instance leftOp_full {F : C ⥤ Dᵒᵖ} [Full F] : Full F.leftOp where
+  map_surjective f := ⟨(F.preimage f.op).op, by simp⟩
+
+
 /-- The isomorphism between `F.leftOp.rightOp` and `F`. -/
 @[simps!]
 def leftOpRightOpIso (F : C ⥤ Dᵒᵖ) : F.leftOp.rightOp ≅ F :=
@@ -641,6 +648,21 @@ def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ where
         aesop_cat)
   counitIso := NatIso.ofComponents fun F => F.leftOpRightOpIso
 #align category_theory.functor.left_op_right_op_equiv CategoryTheory.Functor.leftOpRightOpEquiv
+
+instance {F : C ⥤ D} [EssSurj F] : EssSurj F.op where
+  mem_essImage X := ⟨op _, ⟨(F.objObjPreimageIso X.unop).op.symm⟩⟩
+
+instance {F : Cᵒᵖ ⥤ D} [EssSurj F] : EssSurj F.rightOp where
+  mem_essImage X := ⟨_, ⟨(F.objObjPreimageIso X.unop).op.symm⟩⟩
+
+instance {F : C ⥤ Dᵒᵖ} [EssSurj F] : EssSurj F.leftOp where
+  mem_essImage X := ⟨op _, ⟨(F.objObjPreimageIso (op X)).unop.symm⟩⟩
+
+instance {F : C ⥤ D} [IsEquivalence F] : IsEquivalence F.op where
+
+instance {F : Cᵒᵖ ⥤ D} [IsEquivalence F] : IsEquivalence F.rightOp where
+
+instance {F : C ⥤ Dᵒᵖ} [IsEquivalence F] : IsEquivalence F.leftOp where
 
 end Functor
 

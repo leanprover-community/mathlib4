@@ -300,7 +300,7 @@ theorem unbounded_lt_Ici [SemilatticeSup α] (a : α) : Unbounded (· < ·) (Ici
 
 theorem bounded_inter_not (H : ∀ a b, ∃ m, ∀ c, r c a ∨ r c b → r c m) (a : α) :
     Bounded r (s ∩ { b | ¬r b a }) ↔ Bounded r s := by
-  refine ⟨?_, Bounded.mono (Set.inter_subset_left s _)⟩
+  refine ⟨?_, Bounded.mono inter_subset_left⟩
   rintro ⟨b, hb⟩
   cases' H a b with m hm
   exact ⟨m, fun c hc => hm c (or_iff_not_imp_left.2 fun hca => hb c ⟨hc, hca⟩)⟩
@@ -338,7 +338,7 @@ theorem unbounded_le_inter_lt [LinearOrder α] (a : α) :
 
 theorem bounded_le_inter_le [LinearOrder α] (a : α) :
     Bounded (· ≤ ·) (s ∩ { b | a ≤ b }) ↔ Bounded (· ≤ ·) s := by
-  refine ⟨?_, Bounded.mono (Set.inter_subset_left s _)⟩
+  refine ⟨?_, Bounded.mono Set.inter_subset_left⟩
   rw [← @bounded_le_inter_lt _ s _ a]
   exact Bounded.mono fun x ⟨hx, hx'⟩ => ⟨hx, le_of_lt hx'⟩
 #align set.bounded_le_inter_le Set.bounded_le_inter_le

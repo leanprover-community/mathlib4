@@ -452,6 +452,16 @@ theorem unique_single_eq_iff [Unique α] {b' : M} : single a b = single a' b' �
   rw [unique_ext_iff, Unique.eq_default a, Unique.eq_default a', single_eq_same, single_eq_same]
 #align finsupp.unique_single_eq_iff Finsupp.unique_single_eq_iff
 
+lemma apply_single [AddCommMonoid N] [AddCommMonoid P]
+    {F : Type*} [FunLike F N P] [AddMonoidHomClass F N P] (e : F)
+    (a : α) (n : N) (b : α) :
+    e ((single a n) b) = single a (e n) b := by
+  classical
+  simp only [single_apply]
+  split_ifs
+  · rfl
+  · exact map_zero e
+
 theorem support_eq_singleton {f : α →₀ M} {a : α} :
     f.support = {a} ↔ f a ≠ 0 ∧ f = single a (f a) :=
   ⟨fun h =>
