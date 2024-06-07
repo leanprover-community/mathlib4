@@ -80,7 +80,7 @@ end EmptyOn
 section LoopyOn
 
 /-- The `Matroid α` with ground set `E` whose only base is `∅` -/
-def loopyOn (E : Set α) : Matroid α := (emptyOn α ↾ E)
+def loopyOn (E : Set α) : Matroid α := emptyOn α ↾ E
 
 @[simp] theorem loopyOn_ground (E : Set α) : (loopyOn E).E = E := rfl
 
@@ -91,7 +91,7 @@ def loopyOn (E : Set α) : Matroid α := (emptyOn α ↾ E)
   simp only [loopyOn, restrict_indep_iff, emptyOn_indep_iff, and_iff_left_iff_imp]
   rintro rfl; apply empty_subset
 
-theorem eq_loopyOn_iff : (M = loopyOn E) ↔ M.E = E ∧ ∀ X ⊆ M.E, M.Indep X → X = ∅ := by
+theorem eq_loopyOn_iff : M = loopyOn E ↔ M.E = E ∧ ∀ X ⊆ M.E, M.Indep X → X = ∅ := by
   simp only [eq_iff_indep_iff_indep_forall, loopyOn_ground, loopyOn_indep_iff, and_congr_right_iff]
   rintro rfl
   refine ⟨fun h I hI ↦ (h I hI).1, fun h I hIE ↦ ⟨h I hIE, by rintro rfl; simp⟩⟩
@@ -116,9 +116,9 @@ theorem Finite.loopyOn_finite (hE : E.Finite) : Matroid.Finite (loopyOn E) :=
   exact fun _ h _ ↦ h
 
 theorem empty_base_iff : M.Base ∅ ↔ M = loopyOn M.E := by
-  simp only [eq_loopyOn_iff, indep_iff, forall_exists_index, and_imp, true_and]
-  refine ⟨fun h X _ B hB hXB ↦ (h.eq_of_subset_indep (hB.indep.subset hXB) (empty_subset X)).symm,
-    fun h ↦ by obtain ⟨B, hB⟩ := M.exists_base; rwa [← h B hB.subset_ground B hB Subset.rfl] ⟩
+  simp only [base_iff_maximal_indep, empty_indep, empty_subset, eq_comm (a := ∅), true_implies,
+    true_and, eq_iff_indep_iff_indep_forall, loopyOn_ground, loopyOn_indep_iff]
+  exact ⟨fun h I _ ↦ ⟨h I, by rintro rfl; simp⟩, fun h I hI ↦ (h I hI.subset_ground).1 hI⟩
 
 theorem eq_loopyOn_or_rkPos (M : Matroid α) : M = loopyOn M.E ∨ RkPos M := by
   rw [← empty_base_iff, rkPos_iff_empty_not_base]; apply em
@@ -160,7 +160,7 @@ theorem freeOn_indep (hIE : I ⊆ E) : (freeOn E).Indep I :=
 
 @[simp] theorem freeOn_basis'_iff : (freeOn E).Basis' I X ↔ I = X ∩ E := by
   rw [basis'_iff_basis_inter_ground, freeOn_basis_iff, freeOn_ground,
-    and_iff_left (inter_subset_right _ _)]
+    and_iff_left inter_subset_right]
 
 theorem eq_freeOn_iff : M = freeOn E ↔ M.E = E ∧ M.Indep E := by
   refine ⟨?_, fun h ↦ ?_⟩
@@ -187,7 +187,7 @@ section uniqueBaseOn
 
 /-- The matroid on `E` whose unique base is the subset `I` of `E`.
 Intended for use when `I ⊆ E`; if this not not the case, then the base is `I ∩ E`. -/
-def uniqueBaseOn (I E : Set α) : Matroid α := (freeOn I) ↾ E
+def uniqueBaseOn (I E : Set α) : Matroid α := freeOn I ↾ E
 
 @[simp] theorem uniqueBaseOn_ground : (uniqueBaseOn I E).E = E :=
   rfl
@@ -222,11 +222,10 @@ theorem uniqueBaseOn_inter_basis (hI : I ⊆ E) (hX : X ⊆ E) :
     (uniqueBaseOn I E)✶ = uniqueBaseOn (E \ I) E := by
   rw [← uniqueBaseOn_inter_ground_eq]
   refine eq_of_base_iff_base_forall rfl (fun B (hB : B ⊆ E) ↦ ?_)
-  rw [dual_base_iff, uniqueBaseOn_base_iff (inter_subset_right _ _),
-    uniqueBaseOn_base_iff (diff_subset _ _), uniqueBaseOn_ground]
-  refine' ⟨fun h ↦ _, fun h ↦ _⟩
-  · rw [← diff_diff_cancel_left hB, h, diff_inter_self_eq_diff]
-  rw [h, inter_comm I]; simp
+  rw [dual_base_iff, uniqueBaseOn_base_iff inter_subset_right, uniqueBaseOn_base_iff diff_subset,
+    uniqueBaseOn_ground]
+  exact ⟨fun h ↦ by rw [← diff_diff_cancel_left hB, h, diff_inter_self_eq_diff],
+    fun h ↦ by rw [h, inter_comm I]; simp⟩
 
 @[simp] theorem uniqueBaseOn_self (I : Set α) : uniqueBaseOn I I = freeOn I := by
   rw [uniqueBaseOn, freeOn_restrict rfl.subset]
