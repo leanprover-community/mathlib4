@@ -21,9 +21,9 @@ package mathlib where
 meta if get_config? doc = some "on" then -- do not download and build doc-gen4 by default
 require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 
-require batteries from git "https://github.com/leanprover-community/batteries" @ "main"
-require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
-require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
+require batteries from git "https://github.com/leanprover-community/batteries" @ "nightly-testing"
+require Qq from git "https://github.com/leanprover-community/quote4" @ "nightly-testing"
+require aesop from git "https://github.com/leanprover-community/aesop" @ "nightly-testing"
 require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.36"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
 require importGraph from git "https://github.com/leanprover-community/import-graph.git" @ "main"
@@ -83,7 +83,7 @@ https://github.com/leanprover/lean4/issues/4121 is resolved.
 
 You can also use it as e.g. `lake exe test conv eval_elab` to only run the named tests.
 -/
-@[test_runner]
+@[test_driver]
 lean_exe test where
   srcDir := "scripts"
 

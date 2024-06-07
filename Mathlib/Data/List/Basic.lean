@@ -234,7 +234,7 @@ instance instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩
 instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
 
 -- ADHOC Porting note: instance from Lean3 core
-instance [DecidableEq α] : IsLawfulSingleton α (List α) :=
+instance [DecidableEq α] : LawfulSingleton α (List α) :=
   { insert_emptyc_eq := fun x =>
       show (if x ∈ ([] : List α) then [] else [x]) = [x] from if_neg (not_mem_nil _) }
 

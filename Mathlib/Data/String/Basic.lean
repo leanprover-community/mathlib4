@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.List.Lex
 import Mathlib.Data.Char
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.Algebra.Order.Group.Nat
 
 #align_import data.string.basic from "leanprover-community/mathlib"@"d13b3a4a392ea7273dfa4727dbd1892e26cfd518"
 

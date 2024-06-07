@@ -216,11 +216,11 @@ simp can prove this:
   by simp only [Commute.cast_int_left, Commute.refl, Commute.mul_left]
 -/
 -- @[simp]
-lemma intCast_mul_self : Commute ((n : α) * a) a := (Commute.refl a).cast_int_mul_left n
+lemma intCast_mul_self : Commute ((n : α) * a) a := (Commute.refl a).intCast_mul_left n
 #align commute.cast_int_mul_self Commute.intCast_mul_self
 
 lemma self_intCast_mul_intCast_mul : Commute (m * a : α) (n * a : α) :=
-  (Commute.refl a).cast_int_mul_cast_int_mul m n
+  (Commute.refl a).intCast_mul_intCast_mul m n
 #align commute.self_cast_int_mul_cast_int_mul Commute.self_intCast_mul_intCast_mul
 
 @[deprecated (since := "2024-05-27")] alias cast_int_mul_right := intCast_mul_right

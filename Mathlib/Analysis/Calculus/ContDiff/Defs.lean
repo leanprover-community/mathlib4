@@ -334,6 +334,12 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_left {n : ℕ} :
         exact h.2.2
 #align has_ftaylor_series_up_to_on_succ_iff_left hasFTaylorSeriesUpToOn_succ_iff_left
 
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/4119,
+without `set_option maxSynthPendingDepth 2` this proof needs substantial repair.
+-/
+set_option maxSynthPendingDepth 2 in
 -- Porting note: this was split out from `hasFTaylorSeriesUpToOn_succ_iff_right` to avoid a timeout.
 theorem HasFTaylorSeriesUpToOn.shift_of_succ
     {n : ℕ} (H : HasFTaylorSeriesUpToOn (n + 1 : ℕ) f p s) :
@@ -853,7 +859,19 @@ theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 
         rw [fderivWithin_congr A (A x hx)]
       _ = (I ∘ fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) s x :
               E → E[×n + 1]→L[𝕜] F) (m 0) (tail m) := by
-        simp only [LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]; rfl
+        #adaptation_note
+        /--
+        After https://github.com/leanprover/lean4/pull/4119 we need to either use
+        `set_option maxSynthPendingDepth 2 in`
+        or fill in an explicit argument as
+        ```
+        simp only [LinearIsometryEquiv.comp_fderivWithin _
+          (f := iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s) (hs x hx)]
+        ```
+        -/
+        set_option maxSynthPendingDepth 2 in
+          simp only [LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]
+        rfl
       _ = (fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) s x :
               E → E[×n]→L[𝕜] E →L[𝕜] F) (m 0) (init (tail m)) ((tail m) (last n)) := rfl
       _ = iteratedFDerivWithin 𝕜 (Nat.succ n) (fun y => fderivWithin 𝕜 f s y) s x (init m)
