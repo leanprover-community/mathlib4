@@ -6,6 +6,7 @@ Authors: Anne Baanen, Kexing Ying, Eric Wieser
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.Symmetric
+import Mathlib.LinearAlgebra.BilinearMap
 
 #align_import linear_algebra.quadratic_form.basic from "leanprover-community/mathlib"@"d11f435d4e34a6cea0a1797d6b625b0c170be845"
 
@@ -79,6 +80,7 @@ universe u v w
 variable {S T : Type*}
 variable {R : Type*} {M N A : Type*}
 
+open LinearMap (BilinMap)
 open LinearMap (BilinForm)
 
 section Polar
