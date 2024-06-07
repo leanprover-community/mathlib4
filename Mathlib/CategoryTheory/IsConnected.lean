@@ -192,20 +192,20 @@ If any maximal connected component containing some element j₀ of J is all of J
 
 The converse of `induct_on_objects`.
 -/
-theorem IsConnected.of_induct [Nonempty J] {j₀ : J}
+theorem IsConnected.of_induct {j₀ : J}
     (h : ∀ p : Set J, j₀ ∈ p → (∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), j₁ ∈ p ↔ j₂ ∈ p) → ∀ j : J, j ∈ p) :
     IsConnected J :=
+  have := Nonempty.intro j₀
   IsConnected.of_constant_of_preserves_morphisms fun {α} F a => by
     have w := h { j | F j = F j₀ } rfl (fun {j₁} {j₂} f => by
       change F j₁ = F j₀ ↔ F j₂ = F j₀
-      simp [a f];)
+      simp [a f])
     intro j j'
     rw [w j, w j']
 #align category_theory.is_connected.of_induct CategoryTheory.IsConnected.of_induct
 
 /-- Lifting the universe level of morphisms and objects preserves connectedness. -/
 instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) := by
-  have : Nonempty (ULiftHom.{v₂} (ULift.{u₂} J)) := by simp [ULiftHom, hc.is_nonempty]
   apply IsConnected.of_induct
   · rintro p hj₀ h ⟨j⟩
     let p' : Set J := {j : J | p ⟨j⟩}
