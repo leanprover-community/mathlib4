@@ -11,7 +11,8 @@ universe u v u' v' u'' v''
 
 open CategoryTheory Limits ProofWidgets
 
-variable {C : Type u} {D : Type u'} [Category.{v,u} C] [Category.{v', u'} D]
+variable {C : Type u} {D : Type u'} {E : Type u''} [Category.{v, u} C] [Category.{v', u'} D]
+  [Category.{v'', u''} E]
 
 variable {X Y Z X' Y' Z' : C} [HasBinaryProduct X X'] [HasBinaryProduct Y X']
   [HasBinaryProduct Z X'] [HasBinaryProduct X Y'] [HasBinaryProduct Y Y']
@@ -29,6 +30,20 @@ variable [HasBinaryProduct (F.obj X) (F.obj X')] [HasBinaryProduct (F.obj Y) (F.
   [HasBinaryProduct (F.obj Z) (F.obj Z')]
 
 namespace CategoryTheory
+
+namespace Functor
+
+@[simp]
+def precomp (F : E ⥤ C) : (C ⥤ D) ⥤ (E ⥤ D) where
+  obj G := F ⋙ G
+  map f := whiskerLeft F f
+
+@[simp]
+def postcomp (F : D ⥤ E) : (C ⥤ D) ⥤ (C ⥤ E) where
+  obj G := G ⋙ F
+  map f := whiskerRight f F
+
+end Functor
 
 namespace Limits
 

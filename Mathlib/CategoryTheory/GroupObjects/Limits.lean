@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.GroupObjects.Bicategory
 import Mathlib.CategoryTheory.Bicategory.Adjunction
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+import Mathlib.CategoryTheory.Adjunction.Unique
 
 set_option linter.unreachableTactic false
 
@@ -179,38 +180,25 @@ def constIsConst : map (Functor.const J (C := C)) ⋙ GroupObjectFunctorToFuncto
     Functor.const J (C := GroupObject C) := by
   refine NatIso.ofComponents (constIsConst_app C J) (by aesop_cat)
 
-local instance : Functor.IsEquivalence (GroupObjectFunctorToFunctorGroupObject J C) :=
-  GroupObjectFunctorToFunctorGroupObject.isEquivalence
 
 def constAdj : Adjunction (Functor.const J (C := GroupObject C))
-    ((GroupObjectFunctorToFunctorGroupObject J C).asEquivalence.inverse ⋙ map lim) :=
+    ((GroupObjectFunctorEquivalence J C).inverse ⋙ map lim) :=
   Adjunction.ofNatIsoLeft (Adjunction.comp (constAdj' C J)
-  (GroupObjectFunctorToFunctorGroupObject J C).asEquivalence.toAdjunction) (constIsConst C J)
+  (GroupObjectFunctorEquivalence J C).toAdjunction) (constIsConst C J)
 
 instance instHasLimitsOfShape : HasLimitsOfShape J (GroupObject C) where
   has_limit :=
     fun F ↦ Limits.HasLimit.mk {cone := Limits.coneOfAdj (constAdj C J) F,
                                 isLimit := Limits.isLimitConeOfAdj (constAdj C J) F}
 
-@[simp]
-def grrrr : (J ⥤ GroupObject C) ⥤ (J ⥤ C) where
-  obj F := F ⋙ GroupObject.forget C
-  map f := whiskerRight f (GroupObject.forget C)
-
-def lin_comp_forget :
-    Limits.lim (J := J) (C := GroupObject C) ⋙ GroupObject.forget C ≅
-    grrrr C J ⋙ Limits.lim (J := J) (C := C) := by
-  refine NatIso.ofComponents ?_ ?_
-  · intro F
-    simp only [comp_obj, lim_obj, forget_obj, grrrr]
-    set e := (GroupObject.forget C).mapIso (IsLimit.conePointUniqueUpToIso (limit.isLimit F)
-      (Limits.isLimitConeOfAdj (constAdj C J) F))
-    simp only [GroupObject.forget, Limits.limit.cone_x] at e
-    refine e.trans ?_
-    simp only [Limits.coneOfAdj_pt]
-
-
-
-  · sorry
+def forget_comp_lim : (lim : (J ⥤ GroupObject C) ⥤ GroupObject C) ⋙ GroupObject.forget C ≅
+    (GroupObject.forget C).postcomp ⋙ lim := by
+  refine (NatIso.hcomp (Adjunction.rightAdjointUniq (Limits.constLimAdj (J := J)
+    (C := GroupObject C)) (GroupObject.constAdj C J)) (Iso.refl (GroupObject.forget C))).trans ?_
+  refine (Functor.associator _ _ _).trans ?_
+  refine (NatIso.hcomp (Iso.refl ((GroupObjectFunctorEquivalence J C).inverse))
+    (GroupObjectFunctor.map_comp_forget (lim (J := J) (C := C)))).trans ?_
+  exact (Functor.associator _ _ _).symm.trans (NatIso.hcomp
+    (GroupObjectFunctorEquivalence.forget_postcomp J C) (Iso.refl lim))
 
 end GroupObject
