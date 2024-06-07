@@ -20,7 +20,7 @@ In this file we define, for a functor `p : 𝒳 ⥤ 𝒴` the fiber categories `
 -/
 
 -- TODO: u, v should be flipped here?
-universe u₁ v₁ u₂ v₂ u₃ v₃ w
+universe u₁ v₁ u₂ v₂ u₃ v₃
 
 open CategoryTheory Functor Category IsCartesian IsHomLift
 
@@ -111,21 +111,17 @@ end
 
 -- TODO: move earlier in this file?
 
-/-- Now we define the standard/canonical fiber associated to a fibered category.
+/- Now we define the standard/canonical fiber associated to a fibered category.
 When the user does not wish to supply specific fiber categories, this will be the default choice. -/
-def CompConstNat (p : 𝒳 ⥤ 𝒮) (S : 𝒮) : (FiberInclusion p S) ⋙ p ≅ (const (Fiber p S)).obj S where
-  hom := {
-    app := fun x => eqToHom x.prop
-    naturality := fun x y φ => by simpa using (commSq p (𝟙 S) φ.val).w}
-  inv := {
-    app := fun x => eqToHom (x.prop).symm
-    naturality := fun x y φ =>  by
-      -- TODO: add this have into API?
-      have := by simpa [comp_eqToHom_iff] using (commSq p (𝟙 S) φ.val).w
-      simp [this] }
+-- def CompConstNat (p : 𝒳 ⥤ 𝒮) (S : 𝒮) : (FiberInclusion p S) ⋙ p ≅ (const (Fiber p S)).obj S where
+--   hom := {
+--     app := fun x ↦ eqToHom x.prop
+--     naturality := fun x y φ ↦ by apply (commSq p (𝟙 S) φ.val).w}
+--   inv := {
+--     app := fun x ↦ eqToHom (x.prop).symm
+--     naturality := fun x y φ ↦ by apply (commSq' p (𝟙 S) φ.val).w.symm }
 
-lemma comp_const (p : 𝒳 ⥤ 𝒮) (S : 𝒮) : (FiberInclusion p S) ⋙ p = (const (Fiber p S)).obj S := by
-  apply Functor.ext_of_iso (CompConstNat p S)
-  all_goals intro x; simp [CompConstNat, x.2]
+lemma comp_const (p : 𝒳 ⥤ 𝒮) (S : 𝒮) : (FiberInclusion p S) ⋙ p = (const (Fiber p S)).obj S :=
+  Functor.ext (fun x ↦ x.2) (fun x y f ↦ by apply fac' p (𝟙 S) f.1)
 
 end Fiber

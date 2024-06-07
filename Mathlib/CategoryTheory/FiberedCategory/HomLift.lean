@@ -88,6 +88,11 @@ lemma fac' : p.map φ = eqToHom (domain_eq p f φ) ≫ f ≫ eqToHom (codomain_e
 lemma commSq : CommSq (p.map φ) (eqToHom (domain_eq p f φ)) (eqToHom (codomain_eq p f φ)) f where
   w := by simp only [fac p f φ, eqToHom_trans_assoc, eqToHom_refl, id_comp]
 
+-- TODO: this should be deduced by using horiz_inv and commsq API?
+lemma commSq' : CommSq (eqToHom (domain_eq p f φ).symm) f (p.map φ)
+    (eqToHom (codomain_eq p f φ).symm) where
+  w := by simp only [fac p f φ, assoc, eqToHom_trans, eqToHom_refl, comp_id]
+
 end
 
 lemma eq_of_isHomLift {a b : 𝒳} (f : p.obj a ⟶ p.obj b) (φ : a ⟶ b) [p.IsHomLift f φ] :
