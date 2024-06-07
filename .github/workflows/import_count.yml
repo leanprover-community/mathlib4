@@ -41,7 +41,6 @@ jobs:
         # Checkout the merge base
         git checkout "$(git merge-base master ${{ github.sha }})"
         # get the files that we need from the current PR
-        # this will have to switch to `master` probably, when merging or right after
         git checkout origin/master scripts/count-trans-deps.py scripts/import-graph-report.py
 
         # Compute the counts for the merge base
