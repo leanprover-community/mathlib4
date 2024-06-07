@@ -34,11 +34,11 @@ sufficiently small limits in the sheaf category on the essentially small site.
 
 -/
 
-universe w' w v u
+universe u
 
 namespace CategoryTheory
 
-open Functor Limits GrothendieckTopology Presheaf
+open Functor Limits GrothendieckTopology
 
 variable {C : Type*} [Category C] (J : GrothendieckTopology C)
 variable {D : Type*} [Category D] (K : GrothendieckTopology D) (e : C ≌ D)
