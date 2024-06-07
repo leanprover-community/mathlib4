@@ -69,19 +69,23 @@ theorem CompClosure.congruence : Congruence fun a b => EqvGen (@CompClosure C _ 
 
 end Quotient
 
-universe u
 @[pp_with_univ]
-class ReflQuiver (obj : Type u) extends Quiver.{v} obj : Type max u (v + 1) where
+class ReflQuiver (obj : Type u) extends Quiver.{v} obj : Type max u v where
   /-- The identity morphism on an object. -/
   id : ∀ X : obj, Hom X X
 
+/-- Notation for the identity morphism in a category. -/
+scoped notation "𝟙rq" => ReflQuiver.id  -- type as \b1
+
+instance catToReflQuiver {C : Type u} [inst : Category.{v} C] : ReflQuiver.{v+1, u} C :=
+  { inst with }
+
 /-- A morphism of quivers. As we will later have categorical functors extend this structure,
 we call it a `Prefunctor`. -/
-structure ReflPrefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{v₂} W] extends Prefunctor V W where
-  /-- The action of a (pre)functor on vertices/objects. -/
-  obj : V → W
-  /-- The action of a (pre)functor on edges/arrows/morphisms. -/
-  map : ∀ {X Y : V}, (X ⟶ Y) → (obj X ⟶ obj Y)
+structure ReflPrefunctor (V : Type u₁) [ReflQuiver.{v₁} V] (W : Type u₂) [ReflQuiver.{v₂} W]
+    extends Prefunctor V W where
+  /-- A functor preserves identity morphisms. -/
+  map_id : ∀ X : V, map (𝟙rq X) = 𝟙rq (obj X) := by aesop_cat
 
 namespace ReflPrefunctor
 
@@ -107,100 +111,68 @@ theorem ext {V : Type u} [ReflQuiver.{v₁} V] {W : Type u₂} [ReflQuiver.{v₂
   congr
   funext X Y f
   simpa using h_map X Y f
-#align prefunctor.ext Prefunctor.ext
 
 /-- The identity morphism between quivers. -/
-@[simps]
-def id (V : Type*) [Quiver V] : Prefunctor V V where
-  obj := fun X => X
-  map f := f
-#align prefunctor.id Prefunctor.id
-#align prefunctor.id_obj Prefunctor.id_obj
-#align prefunctor.id_map Prefunctor.id_map
+@[simps!]
+def id (V : Type*) [ReflQuiver V] : ReflPrefunctor V V where
+  __ := Prefunctor.id _
+  map_id _ := rfl
 
-instance (V : Type*) [Quiver V] : Inhabited (Prefunctor V V) :=
+instance (V : Type*) [ReflQuiver V] : Inhabited (ReflPrefunctor V V) :=
   ⟨id V⟩
 
 /-- Composition of morphisms between quivers. -/
-@[simps]
-def comp {U : Type*} [Quiver U] {V : Type*} [Quiver V] {W : Type*} [Quiver W]
-    (F : Prefunctor U V) (G : Prefunctor V W) : Prefunctor U W where
-  obj X := G.obj (F.obj X)
-  map f := G.map (F.map f)
-#align prefunctor.comp Prefunctor.comp
-#align prefunctor.comp_obj Prefunctor.comp_obj
-#align prefunctor.comp_map Prefunctor.comp_map
+@[simps!]
+def comp {U : Type*} [ReflQuiver U] {V : Type*} [ReflQuiver V] {W : Type*} [ReflQuiver W]
+    (F : ReflPrefunctor U V) (G : ReflPrefunctor V W) : ReflPrefunctor U W where
+  __ := F.toPrefunctor.comp G.toPrefunctor
+  map_id _ := by simp [F.map_id, G.map_id]
 
 @[simp]
-theorem comp_id {U V : Type*} [Quiver U] [Quiver V] (F : Prefunctor U V) :
+theorem comp_id {U V : Type*} [ReflQuiver U] [ReflQuiver V] (F : ReflPrefunctor U V) :
     F.comp (id _) = F := rfl
-#align prefunctor.comp_id Prefunctor.comp_id
 
 @[simp]
-theorem id_comp {U V : Type*} [Quiver U] [Quiver V] (F : Prefunctor U V) :
+theorem id_comp {U V : Type*} [ReflQuiver U] [ReflQuiver V] (F : ReflPrefunctor U V) :
     (id _).comp F = F := rfl
-#align prefunctor.id_comp Prefunctor.id_comp
 
 @[simp]
-theorem comp_assoc {U V W Z : Type*} [Quiver U] [Quiver V] [Quiver W] [Quiver Z]
-    (F : Prefunctor U V) (G : Prefunctor V W) (H : Prefunctor W Z) :
+theorem comp_assoc {U V W Z : Type*} [ReflQuiver U] [ReflQuiver V] [ReflQuiver W] [ReflQuiver Z]
+    (F : ReflPrefunctor U V) (G : ReflPrefunctor V W) (H : ReflPrefunctor W Z) :
     (F.comp G).comp H = F.comp (G.comp H) :=
   rfl
-#align prefunctor.comp_assoc Prefunctor.comp_assoc
 
 /-- Notation for a prefunctor between quivers. -/
-infixl:50 " ⥤q " => Prefunctor
+infixl:50 " ⥤rq " => ReflPrefunctor
 
 /-- Notation for composition of prefunctors. -/
-infixl:60 " ⋙q " => Prefunctor.comp
+infixl:60 " ⋙rq " => ReflPrefunctor.comp
 
 /-- Notation for the identity prefunctor on a quiver. -/
-notation "𝟭q" => id
+notation "𝟭rq" => id
 
 theorem congr_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} {f g : X ⟶ Y}
     (h : f = g) : F.map f = F.map g := by
   rw [h]
 
-end Prefunctor
+end ReflPrefunctor
 
-namespace Quiver
+def Functor.toReflPrefunctor {C D} [Category C] [Category D] (F : C ⥤ D) : C ⥤rq D := { F with }
+
+namespace ReflQuiver
+open Opposite
 
 /-- `Vᵒᵖ` reverses the direction of all arrows of `V`. -/
-instance opposite {V} [Quiver V] : Quiver Vᵒᵖ :=
-  ⟨fun a b => (unop b ⟶ unop a)ᵒᵖ⟩
-#align quiver.opposite Quiver.opposite
+instance opposite {V} [ReflQuiver V] : ReflQuiver Vᵒᵖ where
+   id X := op (𝟙rq X.unop)
 
-/-- The opposite of an arrow in `V`. -/
-def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := ⟨f⟩
-#align quiver.hom.op Quiver.Hom.op
+instance discreteQuiver (V : Type u) : ReflQuiver.{u+1} (Discrete V) := { discreteCategory V with }
 
-/-- Given an arrow in `Vᵒᵖ`, we can take the "unopposite" back in `V`. -/
-def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := Opposite.unop f
-#align quiver.hom.unop Quiver.Hom.unop
-
-/-- A type synonym for a quiver with no arrows. -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
-def Empty (V : Type u) : Type u := V
-#align quiver.empty Quiver.Empty
-
-instance emptyQuiver (V : Type u) : Quiver.{u} (Empty V) := ⟨fun _ _ => PEmpty⟩
-#align quiver.empty_quiver Quiver.emptyQuiver
-
-@[simp]
-theorem empty_arrow {V : Type u} (a b : Empty V) : (a ⟶ b) = PEmpty := rfl
-#align quiver.empty_arrow Quiver.empty_arrow
-
-/-- A quiver is thin if it has no parallel arrows. -/
-abbrev IsThin (V : Type u) [Quiver V] : Prop := ∀ a b : V, Subsingleton (a ⟶ b)
-#align quiver.is_thin Quiver.IsThin
-
-end Quiver
+end ReflQuiver
 
 @[nolint checkUnivs]
 def ReflQuiv :=
   Bundled ReflQuiver.{v + 1, u}
-
 
 namespace ReflQuiv
 
@@ -208,54 +180,64 @@ instance : CoeSort ReflQuiv (Type u) where coe := Bundled.α
 
 instance str' (C : ReflQuiv.{v, u}) : ReflQuiver.{v + 1, u} C :=
   C.str
-set_option linter.uppercaseLean3 false in
+
+def toQuiv (C : ReflQuiv.{v, u}) : Quiv.{v, u} := Quiv.of C.α
 
 /-- Construct a bundled `ReflQuiv` from the underlying type and the typeclass. -/
 def of (C : Type u) [ReflQuiver.{v + 1} C] : ReflQuiv.{v, u} :=
   Bundled.of C
-set_option linter.uppercaseLean3 false in
 
 instance : Inhabited ReflQuiv :=
-  ⟨ReflQuiv.of (ReflQuiver.Empty PEmpty)⟩
+  ⟨ReflQuiv.of (Discrete default)⟩
 
 /-- Category structure on `ReflQuiv` -/
 instance category : LargeCategory.{max v u} ReflQuiv.{v, u} where
-  Hom C D := Prefunctor C D
-  id C := Prefunctor.id C
-  comp F G := Prefunctor.comp F G
-set_option linter.uppercaseLean3 false in
+  Hom C D := ReflPrefunctor C D
+  id C := ReflPrefunctor.id C
+  comp F G := ReflPrefunctor.comp F G
 
 /-- The forgetful functor from categories to quivers. -/
 @[simps]
 def forget : Cat.{v, u} ⥤ ReflQuiv.{v, u} where
   obj C := ReflQuiv.of C
-  map F := F.toPrefunctor
-set_option linter.uppercaseLean3 false in
+  map F := F.toReflPrefunctor
 
 end ReflQuiv
 
 namespace Cat
 
+inductive FreeReflRel {V} [ReflQuiver V] : (X Y : Paths V) → (f g : X ⟶ Y) → Prop
+  | mk {X : V} : FreeReflRel X X (Quiver.Hom.toPath (𝟙rq X)) .nil
+
 /-- The functor sending each quiver to its path category. -/
-@[simps]
-def free : ReflQuiv.{v, u} ⥤ Cat.{max u v, u} where
-  obj V := Cat.of (Paths V)
-  map F :=
-    { obj := fun X => F.obj X
-      map := fun f => F.mapPath f
-      map_comp := fun f g => F.mapPath_comp f g }
-  map_id V := by
-    change (show Paths V ⥤ _ from _) = _
-    ext; swap
-    · apply eq_conj_eqToHom
-    · rfl
-  map_comp {U _ _} F G := by
-    change (show Paths U ⥤ _ from _) = _
-    ext; swap
-    · apply eq_conj_eqToHom
-    · rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.free CategoryTheory.Cat.free
+@[simps!]
+def freeRefl : ReflQuiv.{v, u} ⥤ Cat.{max u v, u} where
+  obj V := Cat.of (Quotient (C := Cat.free.obj V.toQuiv) (FreeReflRel (V := V)))
+  map f := Quotient.lift _ ((by exact Cat.free.map f.toPrefunctor) ⋙ Quotient.functor _)
+    (fun X Y f g hfg => by
+      apply Quotient.sound
+      cases hfg
+      simp [ReflPrefunctor.map_id]
+      constructor)
+  map_id X := by
+    simp
+    symm
+    apply Quotient.lift_unique
+    refine (Functor.comp_id _).trans ?_
+    refine Eq.trans (Functor.id_comp _).symm ?_
+    congr 1
+    exact (free.map_id X.toQuiv).symm
+  map_comp {X Y Z} f g := by
+    simp
+    symm
+    apply Quotient.lift_unique
+    have : free.map (f ≫ g).toPrefunctor =
+        free.map (X := X.toQuiv) (Y := Y.toQuiv) f.toPrefunctor ⋙
+        free.map (X := Y.toQuiv) (Y := Z.toQuiv) g.toPrefunctor := by
+      done
+    rw [this]; simp [Functor.assoc]
+    show _ ⋙ _ ⋙ _ = _
+    rw [← Functor.assoc, Quotient.lift_spec, Functor.assoc, Quotient.lift_spec]
 
 end Cat
 
@@ -267,8 +249,6 @@ def lift {V : Type u} [Quiver.{v + 1} V] {C : Type*} [Category C] (F : Prefuncto
     Paths V ⥤ C where
   obj X := F.obj X
   map f := composePath (F.mapPath f)
-set_option linter.uppercaseLean3 false in
-#align category_theory.Quiv.lift CategoryTheory.Quiv.lift
 
 -- We might construct `of_lift_iso_self : Paths.of ⋙ lift F ≅ F`
 -- (and then show that `lift F` is initial amongst such functors)
@@ -293,8 +273,6 @@ def adj : Cat.free ⊣ Quiv.forget :=
         ext; swap
         · apply eq_conj_eqToHom
         · rfl }
-set_option linter.uppercaseLean3 false in
-#align category_theory.Quiv.adj CategoryTheory.Quiv.adj
 
 end Quiv
 
