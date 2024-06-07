@@ -201,7 +201,7 @@ then `H` also acts properly on `X`. -/
 @[to_additive "If two groups `H` and `G` act on a topological space `X` such that `G` acts properly
 and there exists a group homomorphims `H → G` which is a closed embedding compatible with the
 actions, then `H` also acts properly on `X`."]
-theorem properSMul_of_closed_embedding {H : Type*} [Group H] [MulAction H X] [TopologicalSpace H]
+theorem properSMul_of_closedEmbedding {H : Type*} [Group H] [MulAction H X] [TopologicalSpace H]
     [ProperSMul G X] (f : H →* G) (f_clemb : ClosedEmbedding f)
     (f_compat : ∀ (h : H) (x : X), f h • x = h • x) : ProperSMul H X where
   isProperMap_smul_pair' := by
