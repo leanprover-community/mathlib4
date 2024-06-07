@@ -470,8 +470,7 @@ theorem IsDiag.mem_range_diag {z : Sym2 α} : IsDiag z → z ∈ Set.range (@dia
   exact ⟨_, rfl⟩
 #align sym2.is_diag.mem_range_diag Sym2.IsDiag.mem_range_diag
 
-theorem
-isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (@diag α) :=
+theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (@diag α) :=
   ⟨IsDiag.mem_range_diag, fun ⟨i, hi⟩ => hi ▸ diag_isDiag i⟩
 #align sym2.is_diag_iff_mem_range_diag Sym2.isDiag_iff_mem_range_diag
 
