@@ -1064,6 +1064,7 @@ end BaseChange
 @[deprecated (since := "2024-06-03")] alias Yeq_of_Yne := Y_eq_of_Y_ne
 @[deprecated (since := "2024-06-03")] alias equation_add' := equation_negAdd
 @[deprecated (since := "2024-06-03")] alias nonsingular_add' := nonsingular_negAdd
+@[deprecated (since := "2024-06-03")] alias baseChange_addY' := baseChange_negAddY
 @[deprecated (since := "2024-06-03")] alias map_addY' := map_negAddY
 
 end WeierstrassCurve.Affine
