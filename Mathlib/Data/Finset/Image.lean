@@ -540,7 +540,7 @@ theorem image_inter_of_injOn [DecidableEq α] {f : α → β} (s t : Finset α)
 
 theorem image_inter [DecidableEq α] (s₁ s₂ : Finset α) (hf : Injective f) :
     (s₁ ∩ s₂).image f = s₁.image f ∩ s₂.image f :=
-  image_inter_of_injOn _ _ <| hf.injOn _
+  image_inter_of_injOn _ _ hf.injOn
 #align finset.image_inter Finset.image_inter
 
 @[simp]

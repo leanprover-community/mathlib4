@@ -157,7 +157,7 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
 theorem contDiffWithinAtProp_mono_of_mem (n : ℕ∞) ⦃s x t⦄ ⦃f : H → H'⦄ (hts : s ∈ 𝓝[t] x)
     (h : ContDiffWithinAtProp I I' n f s x) : ContDiffWithinAtProp I I' n f t x := by
   refine h.mono_of_mem ?_
-  refine inter_mem ?_ (mem_of_superset self_mem_nhdsWithin <| inter_subset_right _ _)
+  refine inter_mem ?_ (mem_of_superset self_mem_nhdsWithin inter_subset_right)
   rwa [← Filter.mem_map, ← I.image_eq, I.symm_map_nhdsWithin_image]
 #align cont_diff_within_at_prop_mono_of_mem contDiffWithinAtProp_mono_of_mem
 
@@ -834,7 +834,7 @@ theorem contMDiffWithinAt_iff_contMDiffOn_nhds {n : ℕ} :
       rintro _ ⟨y, hy, rfl⟩
       exact (hsub hy).2.2
     rwa [contMDiffOn_iff_of_subset_source' hv₁ hv₂, PartialEquiv.image_symm_image_of_subset_target]
-    exact hsub.trans (inter_subset_left _ _)
+    exact hsub.trans inter_subset_left
 #align cont_mdiff_within_at_iff_cont_mdiff_on_nhds contMDiffWithinAt_iff_contMDiffOn_nhds
 
 /-- A function is `C^n` at a point, for `n : ℕ`, if and only if it is `C^n` on

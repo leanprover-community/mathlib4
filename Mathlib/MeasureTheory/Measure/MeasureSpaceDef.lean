@@ -199,10 +199,10 @@ theorem measure_mono_top (h : s₁ ⊆ s₂) (h₁ : μ s₁ = ∞) : μ s₂ = 
 #align measure_theory.measure_mono_top MeasureTheory.measure_mono_top
 
 @[simp, mono]
-theorem measure_le_measure_union_left : μ s ≤ μ (s ∪ t) := μ.mono <| subset_union_left s t
+theorem measure_le_measure_union_left : μ s ≤ μ (s ∪ t) := μ.mono subset_union_left
 
 @[simp, mono]
-theorem measure_le_measure_union_right : μ t ≤ μ (s ∪ t) := μ.mono <| subset_union_right s t
+theorem measure_le_measure_union_right : μ t ≤ μ (s ∪ t) := μ.mono subset_union_right
 
 /-- For every set there exists a measurable superset of the same measure. -/
 theorem exists_measurable_superset (μ : Measure α) (s : Set α) :
@@ -253,8 +253,8 @@ theorem measure_union_lt_top (hs : μ s < ∞) (ht : μ t < ∞) : μ (s ∪ t) 
 @[simp]
 theorem measure_union_lt_top_iff : μ (s ∪ t) < ∞ ↔ μ s < ∞ ∧ μ t < ∞ := by
   refine ⟨fun h => ⟨?_, ?_⟩, fun h => measure_union_lt_top h.1 h.2⟩
-  · exact (measure_mono (Set.subset_union_left s t)).trans_lt h
-  · exact (measure_mono (Set.subset_union_right s t)).trans_lt h
+  · exact (measure_mono Set.subset_union_left).trans_lt h
+  · exact (measure_mono Set.subset_union_right).trans_lt h
 #align measure_theory.measure_union_lt_top_iff MeasureTheory.measure_union_lt_top_iff
 
 theorem measure_union_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∪ t) ≠ ∞ :=
@@ -280,19 +280,19 @@ theorem measure_lt_top_of_subset (hst : t ⊆ s) (hs : μ s ≠ ∞) : μ t < �
   lt_of_le_of_lt (μ.mono hst) hs.lt_top
 
 theorem measure_inter_lt_top_of_left_ne_top (hs_finite : μ s ≠ ∞) : μ (s ∩ t) < ∞ :=
-  measure_lt_top_of_subset (inter_subset_left s t) hs_finite
+  measure_lt_top_of_subset inter_subset_left hs_finite
 #align measure_theory.measure_inter_lt_top_of_left_ne_top MeasureTheory.measure_inter_lt_top_of_left_ne_top
 
 theorem measure_inter_lt_top_of_right_ne_top (ht_finite : μ t ≠ ∞) : μ (s ∩ t) < ∞ :=
-  measure_lt_top_of_subset (inter_subset_right s t) ht_finite
+  measure_lt_top_of_subset inter_subset_right ht_finite
 #align measure_theory.measure_inter_lt_top_of_right_ne_top MeasureTheory.measure_inter_lt_top_of_right_ne_top
 
 theorem measure_inter_null_of_null_right (S : Set α) {T : Set α} (h : μ T = 0) : μ (S ∩ T) = 0 :=
-  measure_mono_null (inter_subset_right S T) h
+  measure_mono_null inter_subset_right h
 #align measure_theory.measure_inter_null_of_null_right MeasureTheory.measure_inter_null_of_null_right
 
 theorem measure_inter_null_of_null_left {S : Set α} (T : Set α) (h : μ S = 0) : μ (S ∩ T) = 0 :=
-  measure_mono_null (inter_subset_left S T) h
+  measure_mono_null inter_subset_left h
 #align measure_theory.measure_inter_null_of_null_left MeasureTheory.measure_inter_null_of_null_left
 
 /-! ### The almost everywhere filter -/
