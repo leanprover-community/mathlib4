@@ -709,16 +709,9 @@ lemma integrable_add_iff_integrable_left {f g : α → β} (hf : Integrable f μ
 lemma integrable_left_of_integrable_add_of_nonneg {f g : α → ℝ}
     (h_meas : AEStronglyMeasurable f μ) (hf : 0 ≤ᵐ[μ] f) (hg : 0 ≤ᵐ[μ] g)
     (h_int : Integrable (f + g) μ) : Integrable f μ := by
-  simp_rw [Integrable, h_meas, true_and]
-  calc
-    (∫⁻ a, ‖f a‖₊ ∂μ) ≤ ∫⁻ a, ‖(f + g) a‖₊ ∂μ := by
-      apply lintegral_mono_ae
-      filter_upwards [hf, hg] with a haf hag
-      have hfg : 0 ≤ f a + g a := Left.add_nonneg haf hag
-      simp only [Pi.add_apply, ENNReal.coe_le_coe]
-      rw [← Real.toNNReal_eq_nnnorm_of_nonneg haf, ← Real.toNNReal_eq_nnnorm_of_nonneg hfg]
-      apply (Real.toNNReal_le_toNNReal_iff hfg).mpr ((le_add_iff_nonneg_right _).mpr hag)
-    _ < ⊤ := h_int.2
+  refine h_int.mono' h_meas ?_
+  filter_upwards [hf, hg] with a haf hag
+  exact (Real.norm_of_nonneg haf).symm ▸ (le_add_iff_nonneg_right _).mpr hag
 
 lemma integrable_right_of_integrable_add_of_nonneg {f g : α → ℝ}
     (h_meas : AEStronglyMeasurable f μ) (hf : 0 ≤ᵐ[μ] f) (hg : 0 ≤ᵐ[μ] g)
