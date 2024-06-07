@@ -382,7 +382,7 @@ theorem ord_compl_mul (a b p : ℕ) : ord_compl[p] (a * b) = ord_compl[p] a * or
   if ha : a = 0 then simp [ha] else
   if hb : b = 0 then simp [hb] else
   simp only [ord_proj_mul p ha hb]
-  rw [mul_div_mul_comm_of_dvd_dvd (ord_proj_dvd a p) (ord_proj_dvd b p)]
+  rw [div_mul_div_comm (ord_proj_dvd a p) (ord_proj_dvd b p)]
 #align nat.ord_compl_mul Nat.ord_compl_mul
 
 /-! ### Factorization and divisibility -/
@@ -872,10 +872,10 @@ def recOnPosPrimePosCoprime {P : ℕ → Sort*} (hp : ∀ p n : ℕ, Prime p →
     by_cases ha1 : a = 1
     · rw [ha1, mul_one]
       exact hp p n hp' hn
-    refine' h (p ^ n) a (hp'.one_lt.trans_le (le_self_pow hn.ne' _)) _ _ (hp _ _ hp' hn) hPa
+    refine h (p ^ n) a (hp'.one_lt.trans_le (le_self_pow hn.ne' _)) ?_ ?_ (hp _ _ hp' hn) hPa
     · contrapose! hpa
       simp [lt_one_iff.1 (lt_of_le_of_ne hpa ha1)]
-    simpa [hn, Prime.coprime_iff_not_dvd hp']
+    · simpa [hn, Prime.coprime_iff_not_dvd hp']
 #align nat.rec_on_pos_prime_pos_coprime Nat.recOnPosPrimePosCoprime
 
 /-- Given `P 0`, `P (p ^ n)` for all prime powers, and a way to extend `P a` and `P b` to

@@ -3,7 +3,7 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Commute.Hom
 import Mathlib.Data.Fintype.Card
 
@@ -292,8 +292,8 @@ theorem noncommProd_congr {s₁ s₂ : Finset α} {f g : α → β} (h₁ : s₁
         dsimp only
         rw [← h₂ _ hx, ← h₂ _ hy]
         subst h₁
-        exact comm hx hy h :=
-  by simp_rw [noncommProd, Multiset.map_congr (congr_arg _ h₁) h₂]
+        exact comm hx hy h := by
+  simp_rw [noncommProd, Multiset.map_congr (congr_arg _ h₁) h₂]
 #align finset.noncomm_prod_congr Finset.noncommProd_congr
 #align finset.noncomm_sum_congr Finset.noncommSum_congr
 
@@ -358,8 +358,8 @@ variable [FunLike F β γ]
 @[to_additive]
 theorem noncommProd_map [MonoidHomClass F β γ] (s : Finset α) (f : α → β) (comm) (g : F) :
     g (s.noncommProd f comm) =
-      s.noncommProd (fun i => g (f i)) fun x hx y hy _ => (comm.of_refl hx hy).map g :=
-  by simp [noncommProd, Multiset.noncommProd_map]
+      s.noncommProd (fun i => g (f i)) fun x hx y hy _ => (comm.of_refl hx hy).map g := by
+  simp [noncommProd, Multiset.noncommProd_map]
 #align finset.noncomm_prod_map Finset.noncommProd_map
 #align finset.noncomm_sum_map Finset.noncommSum_map
 
@@ -411,16 +411,16 @@ theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α
 theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Disjoint s t)
     (f : α → β) (comm : { x | x ∈ s ∪ t }.Pairwise fun a b => Commute (f a) (f b)) :
     noncommProd (s ∪ t) f comm =
-      noncommProd s f (comm.mono <| coe_subset.2 <| subset_union_left _ _) *
-        noncommProd t f (comm.mono <| coe_subset.2 <| subset_union_right _ _) := by
+      noncommProd s f (comm.mono <| coe_subset.2 subset_union_left) *
+        noncommProd t f (comm.mono <| coe_subset.2 subset_union_right) := by
   obtain ⟨sl, sl', rfl⟩ := exists_list_nodup_eq s
   obtain ⟨tl, tl', rfl⟩ := exists_list_nodup_eq t
   rw [List.disjoint_toFinset_iff_disjoint] at h
   calc noncommProd (List.toFinset sl ∪ List.toFinset tl) f comm
      = noncommProd ⟨↑(sl ++ tl), Multiset.coe_nodup.2 (sl'.append tl' h)⟩ f
          (by convert comm; simp [Set.ext_iff]) := noncommProd_congr (by ext; simp) (by simp) _
-   _ = noncommProd (List.toFinset sl) f (comm.mono <| coe_subset.2 <| subset_union_left _ _) *
-         noncommProd (List.toFinset tl) f (comm.mono <| coe_subset.2 <| subset_union_right _ _) :=
+   _ = noncommProd (List.toFinset sl) f (comm.mono <| coe_subset.2 subset_union_left) *
+         noncommProd (List.toFinset tl) f (comm.mono <| coe_subset.2 subset_union_right) :=
     by simp [noncommProd, List.dedup_eq_self.2 sl', List.dedup_eq_self.2 tl', h]
 #align finset.noncomm_prod_union_of_disjoint Finset.noncommProd_union_of_disjoint
 #align finset.noncomm_sum_union_of_disjoint Finset.noncommSum_union_of_disjoint
@@ -469,7 +469,7 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
   case a =>
     intro i _ j _ _
     exact Pi.mulSingle_apply_commute x i j
-  refine' (noncommProd_congr (insert_erase (mem_univ i)).symm _ _).trans _
+  convert (noncommProd_congr (insert_erase (mem_univ i)).symm _ _).trans _
   · intro j
     exact Pi.mulSingle j (x j) i
   · intro j _; dsimp

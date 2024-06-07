@@ -3,8 +3,8 @@ Copyright (c) 2018 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.BigOperators.Basic
 
 #align_import data.holor from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
@@ -105,64 +105,16 @@ instance [Neg α] : Neg (Holor α ds) :=
   ⟨fun a t => -a t⟩
 
 instance [AddSemigroup α] : AddSemigroup (Holor α ds) := Pi.addSemigroup
--- Porting note: Previous code was:
--- by
--- refine_struct { add := (· + ·).. } <;> pi_instance_derive_field
---
--- `refine_struct` has not been ported yet.
 
 instance [AddCommSemigroup α] : AddCommSemigroup (Holor α ds) := Pi.addCommSemigroup
--- Porting note: Previous code was:
--- by
--- refine_struct { add := (· + ·).. } <;> pi_instance_derive_field
---
--- `refine_struct` has not been ported yet.
 
 instance [AddMonoid α] : AddMonoid (Holor α ds) := Pi.addMonoid
--- Porting note: Previous code was:
--- by
--- refine_struct
---     { zero := (0 : Holor α ds)
---       add := (· + ·)
---       nsmul := fun n x i => n • x i } <;>
---   pi_instance_derive_field
---
--- `refine_struct` has not been ported yet.
 
 instance [AddCommMonoid α] : AddCommMonoid (Holor α ds) := Pi.addCommMonoid
--- Porting note: Previous code was:
--- by
--- refine_struct
---     { zero := (0 : Holor α ds)
---       add := (· + ·)
---       nsmul := AddMonoid.nsmul } <;>
---   pi_instance_derive_field
---
--- `refine_struct` has not been ported yet.
 
 instance [AddGroup α] : AddGroup (Holor α ds) := Pi.addGroup
--- Porting note: Previous code was:
--- by
--- refine_struct
---     { zero := (0 : Holor α ds)
---       add := (· + ·)
---       nsmul := AddMonoid.nsmul
---       zsmul := fun n x i => n • x i } <;>
---   pi_instance_derive_field
---
--- `refine_struct` has not been ported yet.
 
 instance [AddCommGroup α] : AddCommGroup (Holor α ds) := Pi.addCommGroup
--- Porting note: Previous code was:
--- by
--- refine_struct
---     { zero := (0 : Holor α ds)
---       add := (· + ·)
---       nsmul := AddMonoid.nsmul
---       zsmul := SubNegMonoid.zsmul } <;>
---   pi_instance_derive_field
---
--- `refine_struct` has not been ported yet.
 
 -- scalar product
 instance [Mul α] : SMul α (Holor α ds) :=
