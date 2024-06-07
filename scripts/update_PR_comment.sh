@@ -16,7 +16,7 @@
       printf 'Base url: %s\n' "${url}"
       headers="Authorization: token ${GITHUB_TOKEN}"
       comment_id=$(curl -s -S -H "Content-Type: application/json" -H "$headers" "$url" |
-        jq --arg cID "${comment_init}" -r '.[] | select(.body | startswith('$cID')) | .id' | head -1)
+        jq --arg cID "${comment_init}" -r '.[] | select(.body | startswith($cID)) | .id' | head -1)
       echo "Comment id: '${comment_id}'"
       if [[ -n "$comment_id" ]]; then
           url="${baseURL}/comments/${comment_id}"
