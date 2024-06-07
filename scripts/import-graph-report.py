@@ -53,11 +53,10 @@ def compare_counts(base_file, head_file, changed_files_txt):
     # Build the message
     message = ''
     if messages:
-        message += '<details><summary>Dependency changes</summary>\n\n'
+        message += 'Dependency changes\n\n'
         message += '| File | Base Count | Head Count | Change |\n'
         message += '| --- | --- | --- | --- |\n'
         message += '\n'.join(messages)
-        message += '\n</details>'
     else:
         message += 'No significant changes to the import graph'
     return message
