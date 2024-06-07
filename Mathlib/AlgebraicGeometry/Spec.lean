@@ -211,24 +211,19 @@ def Spec.locallyRingedSpaceObj (R : CommRingCat.{u}) : LocallyRingedSpace :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.LocallyRingedSpace_obj AlgebraicGeometry.Spec.locallyRingedSpaceObj
 
-@[simp]
 lemma Spec.locallyRingedSpaceObj_sheaf (R : CommRingCat.{u}) :
     (Spec.locallyRingedSpaceObj R).sheaf = structureSheaf R := rfl
 
-@[simp]
 lemma Spec.locallyRingedSpaceObj_sheaf' (R : Type u) [CommRing R] :
     (Spec.locallyRingedSpaceObj <| CommRingCat.of R).sheaf = structureSheaf R := rfl
 
-@[simp]
 lemma Spec.locallyRingedSpaceObj_presheaf_map (R : CommRingCat.{u}) {U V} (i : U ⟶ V) :
     (Spec.locallyRingedSpaceObj R).presheaf.map i =
     (structureSheaf R).1.map i := rfl
 
-@[simp]
 lemma Spec.locallyRingedSpaceObj_presheaf' (R : Type u) [CommRing R] :
     (Spec.locallyRingedSpaceObj <| CommRingCat.of R).presheaf = (structureSheaf R).1 := rfl
 
-@[simp]
 lemma Spec.locallyRingedSpaceObj_presheaf_map' (R : Type u) [CommRing R] {U V} (i : U ⟶ V) :
     (Spec.locallyRingedSpaceObj <| CommRingCat.of R).presheaf.map i =
     (structureSheaf R).1.map i := rfl
