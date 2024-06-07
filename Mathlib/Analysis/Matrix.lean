@@ -79,6 +79,11 @@ attribute [local instance] Matrix.seminormedAddCommGroup
 -- Porting note (#10756): new theorem (along with all the uses of this lemma below)
 theorem norm_def (A : Matrix m n α) : ‖A‖ = ‖fun i j => A i j‖ := rfl
 
+/-- The norm of a matrix is the sup of the sup of the nnnorm of the entries -/
+lemma norm_eq_sup_sup_nnnorm (A : Matrix m n α) :
+    ‖A‖ = Finset.sup Finset.univ fun i ↦ Finset.sup Finset.univ fun j ↦ ‖A i j‖₊ := by
+  simp_rw [Matrix.norm_def, Pi.norm_def, Pi.nnnorm_def]
+
 -- Porting note (#10756): new theorem (along with all the uses of this lemma below)
 theorem nnnorm_def (A : Matrix m n α) : ‖A‖₊ = ‖fun i j => A i j‖₊ := rfl
 
@@ -189,34 +194,27 @@ namespace Int
 
 open Finset
 
-variable {m : Type*}  {n : Type*}
-/-- The definition of ‖⬝‖ for integral matrixes -/
-lemma sup_sup_norm_def [Fintype m] [Fintype n] (A : Matrix m n ℤ) :
-    ‖A‖ = (sup univ fun b ↦ sup univ fun b' ↦ (A b b').natAbs) := by
-  simp_rw [Matrix.norm_def, Pi.norm_def, Pi.nnnorm_def, ← NNReal.coe_natCast, NNReal.coe_inj,]
-  rw [comp_sup_eq_sup_comp_of_is_total Nat.cast Nat.mono_cast
+/-- The norm of an integral matrix is the cast of a natural number -/
+lemma norm_eq_NatCast (A : Matrix m n ℤ) : ∃ (a : ℕ), ‖A‖ = ↑a := by
+  use sup univ fun i ↦ sup univ fun j ↦ (A i j).natAbs
+  rw [norm_eq_sup_sup_nnnorm, ← NNReal.coe_natCast, NNReal.coe_inj,
+    comp_sup_eq_sup_comp_of_is_total Nat.cast Nat.mono_cast
     (by simp only [bot_eq_zero', CharP.cast_eq_zero])]
   congr
   rw [Function.comp_def]
   ext; congr
   rw [comp_sup_eq_sup_comp_of_is_total Nat.cast Nat.mono_cast
-    (by simp only [bot_eq_zero', CharP.cast_eq_zero])]
+     (by simp only [bot_eq_zero', CharP.cast_eq_zero])]
   congr; ext; congr;
   rw [Function.comp_apply, NNReal.natCast_natAbs]
 
-/-- The norm of an integral matrix is the cast of a natural number -/
-lemma norm_eq_NatCast [Fintype m] [Fintype n] (A : Matrix m n ℤ) :
-    ∃ (a : ℕ), ‖A‖=↑a := by
-  use sup univ fun b ↦ sup univ fun b' ↦ (A b b').natAbs
-  exact sup_sup_norm_def A
-
 /-- The norm of a non-singular integral matrix is a positive natural number-/
-lemma one_le_norm_of_nonzero [Fintype m] [Fintype n] (A : Matrix m n ℤ) (hA_nezero : A ≠ 0) (a : ℕ)
-    (h_norm_int : ‖A‖ = ↑a) : 1 ≤ a := by
+lemma one_le_norm_of_nonzero (A : Matrix m n ℤ) (hA_nezero : A ≠ 0) (a : ℕ)
+    (h_norm_nat : ‖A‖ = ↑a) : 1 ≤ a := by
   convert_to 0 < ( a : ℝ )
   · simp only [Nat.cast_pos]
     exact Nat.succ_le
-  rw [← h_norm_int]
+  rw [← h_norm_nat]
   exact norm_pos_iff'.mpr hA_nezero
 
 end Int
