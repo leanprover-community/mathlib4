@@ -105,7 +105,7 @@ else
 fi)"
 
 ## Header message: this is used by the automatic update of the corresponding CI comment
-printf '### Summary of changed declarations\n\n'
+echo '### Summary of changed declarations'
 
 if [ -n "${report}" ]
 then
