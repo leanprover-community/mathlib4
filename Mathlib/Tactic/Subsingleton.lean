@@ -155,7 +155,7 @@ where
       let inst ← withNewMCtxDepth <| Term.withoutModifyingElabMetaStateWithInfo do
         withRef instTerm <| Term.withoutErrToSorry do
           let e ← Term.elabTerm instTerm none
-          Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+          Term.synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
           let e ← instantiateMVars e
           unless (← isClass? (← inferType e)).isSome do
             throwError "Not an instance. Term has type{indentD <| ← inferType e}"

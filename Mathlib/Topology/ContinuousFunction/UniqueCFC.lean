@@ -283,7 +283,8 @@ lemma toNNReal_add_add_neg_add_neg_eq (f g : C(X, ℝ)₀) :
 
 end ContinuousMapZero
 
-variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℝ A] [TopologicalRing A]
+variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [Module ℝ A]
+variable [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [TopologicalRing A]
 
 namespace NonUnitalStarAlgHom
 

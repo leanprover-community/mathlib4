@@ -80,7 +80,7 @@ lemma isOfFinOrder_iff_zpow_eq_one {G} [Group G] {x : G} :
   rw [isOfFinOrder_iff_pow_eq_one]
   refine ⟨fun ⟨n, hn, hn'⟩ ↦ ⟨n, Int.natCast_ne_zero_iff_pos.mpr hn, zpow_natCast x n ▸ hn'⟩,
     fun ⟨n, hn, hn'⟩ ↦ ⟨n.natAbs, Int.natAbs_pos.mpr hn, ?_⟩⟩
-  cases' (Int.natAbs_eq_iff (a := n)).mp rfl with h h;
+  cases' (Int.natAbs_eq_iff (a := n)).mp rfl with h h
   · rwa [h, zpow_natCast] at hn'
   · rwa [h, zpow_neg, inv_eq_one, zpow_natCast] at hn'
 
@@ -299,7 +299,7 @@ protected lemma IsOfFinOrder.mem_powers_iff_mem_range_orderOf [DecidableEq G]
 protected lemma IsOfFinOrder.powers_eq_image_range_orderOf [DecidableEq G] (hx : IsOfFinOrder x) :
     (Submonoid.powers x : Set G) = (Finset.range (orderOf x)).image (x ^ ·) :=
   Set.ext fun _ ↦ hx.mem_powers_iff_mem_range_orderOf
-@[deprecated] -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias IsOfFinAddOrder.powers_eq_image_range_orderOf :=
   IsOfFinAddOrder.multiples_eq_image_range_addOrderOf
 
@@ -596,7 +596,7 @@ theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
   have : ¬Injective fun n : ℕ => x ^ n := by
     have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) (Set.not_infinite.mp h)
     contrapose! this
-    exact Set.injOn_of_injective this _
+    exact Set.injOn_of_injective this
   rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this
 #align infinite_not_is_of_fin_order infinite_not_isOfFinOrder
 #align infinite_not_is_of_fin_add_order infinite_not_isOfFinAddOrder
@@ -1266,21 +1266,23 @@ protected theorem Prod.orderOf (x : α × β) : orderOf x = (orderOf x.1).lcm (o
   minimalPeriod_prod_map _ _ _
 #align prod.order_of Prod.orderOf
 #align prod.add_order_of Prod.addOrderOf
-@[deprecated] alias Prod.add_orderOf := Prod.addOrderOf -- 2024-02-21
+@[deprecated (since := "2024-02-21")] alias Prod.add_orderOf := Prod.addOrderOf
 
 @[to_additive]
 theorem orderOf_fst_dvd_orderOf : orderOf x.1 ∣ orderOf x :=
   minimalPeriod_fst_dvd
 #align order_of_fst_dvd_order_of orderOf_fst_dvd_orderOf
 #align add_order_of_fst_dvd_add_order_of addOrderOf_fst_dvd_addOrderOf
-@[deprecated] alias add_orderOf_fst_dvd_add_orderOf := addOrderOf_fst_dvd_addOrderOf -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
+alias add_orderOf_fst_dvd_add_orderOf := addOrderOf_fst_dvd_addOrderOf
 
 @[to_additive]
 theorem orderOf_snd_dvd_orderOf : orderOf x.2 ∣ orderOf x :=
   minimalPeriod_snd_dvd
 #align order_of_snd_dvd_order_of orderOf_snd_dvd_orderOf
 #align add_order_of_snd_dvd_add_order_of addOrderOf_snd_dvd_addOrderOf
-@[deprecated] alias add_orderOf_snd_dvd_add_orderOf := addOrderOf_snd_dvd_addOrderOf -- 2024-02-21
+@[deprecated (since := "2024-02-21")] alias
+add_orderOf_snd_dvd_add_orderOf := addOrderOf_snd_dvd_addOrderOf
 
 @[to_additive]
 theorem IsOfFinOrder.fst {x : α × β} (hx : IsOfFinOrder x) : IsOfFinOrder x.1 :=
