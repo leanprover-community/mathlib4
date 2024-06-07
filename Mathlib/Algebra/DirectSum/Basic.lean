@@ -24,7 +24,6 @@ This notation is in the `DirectSum` locale, accessible after `open DirectSum`.
 -/
 
 open Function
-open scoped BigOperators
 
 universe u v w u₁
 
@@ -146,7 +145,7 @@ theorem support_of_subset [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] {i : ι
 #align direct_sum.support_of_subset DirectSum.support_of_subset
 
 theorem sum_support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (x : ⨁ i, β i) :
-    (∑ i in x.support, of β i (x i)) = x :=
+    (∑ i ∈ x.support, of β i (x i)) = x :=
   DFinsupp.sum_single
 #align direct_sum.sum_support_of DirectSum.sum_support_of
 

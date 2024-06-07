@@ -55,8 +55,6 @@ of a number field is a Dedekind domain. -/
 
 open Algebra
 
-open scoped BigOperators
-
 variable [Algebra A K] [IsFractionRing A K]
 variable (L : Type*) [Field L] (C : Type*) [CommRing C]
 variable [Algebra K L] [Algebra A L] [IsScalarTower A K L]

@@ -232,7 +232,7 @@ theorem prod_induction (p : α → Prop) (s : Multiset α) (p_mul : ∀ a b, p a
 @[to_additive]
 theorem prod_induction_nonempty (p : α → Prop) (p_mul : ∀ a b, p a → p b → p (a * b)) (hs : s ≠ ∅)
     (p_s : ∀ a ∈ s, p a) : p s.prod := by
-  -- Porting note: used `refine' Multiset.induction _ _`
+  -- Porting note: used to be `refine' Multiset.induction _ _`
   induction' s using Multiset.induction_on with a s hsa
   · simp at hs
   rw [prod_cons]

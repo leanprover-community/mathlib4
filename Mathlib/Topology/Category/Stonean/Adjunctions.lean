@@ -35,7 +35,7 @@ noncomputable def stoneCechEquivalence (X : Type u) (Y : Stonean.{u}) :
     (stoneCechObj X ⟶ Y) ≃ (X ⟶ (forget Stonean).obj Y) := by
   letI : TopologicalSpace X := ⊥
   haveI : DiscreteTopology X := ⟨rfl⟩
-  refine (equivOfFullyFaithful toCompHaus).trans ?_
+  refine fullyFaithfulToCompHaus.homEquiv.trans ?_
   exact (_root_.stoneCechEquivalence (TopCat.of X) (toCompHaus.obj Y)).trans
     (TopCat.adj₁.homEquiv _ _)
 

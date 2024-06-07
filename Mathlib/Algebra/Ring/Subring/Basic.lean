@@ -64,8 +64,6 @@ subring, subrings
 -/
 
 
-open BigOperators
-
 universe u v w
 
 variable {R : Type u} {S : Type v} {T : Type w} [Ring R]
@@ -360,14 +358,14 @@ protected theorem multiset_sum_mem {R} [Ring R] (s : Subring R) (m : Multiset R)
 /-- Product of elements of a subring of a `CommRing` indexed by a `Finset` is in the
     subring. -/
 protected theorem prod_mem {R : Type*} [CommRing R] (s : Subring R) {ι : Type*} {t : Finset ι}
-    {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∏ i in t, f i) ∈ s :=
+    {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∏ i ∈ t, f i) ∈ s :=
   prod_mem h
 #align subring.prod_mem Subring.prod_mem
 
 /-- Sum of elements in a `Subring` of a `Ring` indexed by a `Finset`
 is in the `Subring`. -/
 protected theorem sum_mem {R : Type*} [Ring R] (s : Subring R) {ι : Type*} {t : Finset ι}
-    {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∑ i in t, f i) ∈ s :=
+    {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∑ i ∈ t, f i) ∈ s :=
   sum_mem h
 #align subring.sum_mem Subring.sum_mem
 
@@ -955,7 +953,7 @@ def closureCommRingOfComm {s : Set R} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b =
     mul_comm := fun x y => by
       ext
       simp only [Subring.coe_mul]
-      refine'
+      refine
         closure_induction₂ x.prop y.prop hcomm (fun x => by simp only [mul_zero, zero_mul])
           (fun x => by simp only [mul_zero, zero_mul]) (fun x => by simp only [mul_one, one_mul])
           (fun x => by simp only [mul_one, one_mul])
@@ -1324,8 +1322,6 @@ variable {s : Set R}
 
 -- attribute [local reducible] closure -- Porting note: not available in Lean4
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[elab_as_elim]
 protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s) (h1 : C 1)
     (hneg1 : C (-1)) (hs : ∀ z ∈ s, ∀ n, C n → C (z * n)) (ha : ∀ {x y}, C x → C y → C (x + y)) :

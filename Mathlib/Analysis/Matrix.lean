@@ -51,7 +51,7 @@ The norm induced by the identification of `Matrix m n 𝕜` with
 
 noncomputable section
 
-open scoped BigOperators NNReal Matrix
+open scoped NNReal Matrix
 
 namespace Matrix
 
@@ -333,7 +333,6 @@ section NonUnitalSeminormedRing
 
 variable [NonUnitalSeminormedRing α]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (k j) -/
 theorem linfty_opNNNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
   simp_rw [linfty_opNNNorm_def, Matrix.mul_apply]
   calc
@@ -513,7 +512,7 @@ When the matrix is over the real or complex numbers, this norm is submultiplicat
 
 section frobenius
 
-open scoped Matrix BigOperators
+open scoped Matrix
 
 /-- Seminormed group instance (using frobenius norm) for matrices over a seminormed group. Not
 declared as an instance because there are several natural choices for defining the norm of a
