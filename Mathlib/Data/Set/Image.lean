@@ -1238,6 +1238,10 @@ theorem nontrivial_of_image (f : α → β) (s : Set α) (hs : (f '' s).Nontrivi
   ⟨x, hx, y, hy, mt (congr_arg f) hxy⟩
 #align set.nontrivial_of_image Set.nontrivial_of_image
 
+@[simp]
+theorem image_nontrivial {f : α → β} (hf : f.Injective) : (f '' s).Nontrivial ↔ s.Nontrivial :=
+  ⟨nontrivial_of_image f s, fun h ↦ h.image hf⟩
+
 /-- If the preimage of a set under an injective map is nontrivial, the set is nontrivial. -/
 theorem nontrivial_of_preimage {f : α → β} (hf : Function.Injective f) (s : Set β)
     (hs : (f ⁻¹' s).Nontrivial) : s.Nontrivial :=
