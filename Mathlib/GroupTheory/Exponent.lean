@@ -117,7 +117,7 @@ theorem exponent_ne_zero : exponent G ≠ 0 ↔ ExponentExists G := by
 @[to_additive]
 protected alias ⟨_, ExponentExists.exponent_ne_zero⟩ := exponent_ne_zero
 
-@[to_additive (attr := deprecated)] -- 2024-01-27
+@[to_additive (attr := deprecated (since := "2024-01-27"))]
 theorem exponentExists_iff_ne_zero : ExponentExists G ↔ exponent G ≠ 0 := exponent_ne_zero.symm
 
 @[to_additive]
@@ -244,7 +244,7 @@ theorem exponent_dvd {n : ℕ} : exponent G ∣ n ↔ ∀ g : G, orderOf g ∣ n
 
 variable (G)
 
-@[to_additive (attr := deprecated)] -- 2024-02-17
+@[to_additive (attr := deprecated (since := "2024-01-27"))]
 theorem exponent_dvd_of_forall_orderOf_dvd (n : ℕ) (h : ∀ g : G, orderOf g ∣ n) : exponent G ∣ n :=
   exponent_dvd.mpr h
 
@@ -381,7 +381,7 @@ theorem lcm_orderOf_eq_exponent [Fintype G] : (Finset.univ : Finset G).lcm order
 #align monoid.lcm_order_eq_exponent Monoid.lcm_orderOf_eq_exponent
 #align add_monoid.lcm_add_order_eq_exponent AddMonoid.lcm_addOrderOf_eq_exponent
 
-@[to_additive (attr := deprecated) AddMonoid.lcm_addOrder_eq_exponent] -- 2024-01-26
+@[to_additive (attr := deprecated (since := "2024-01-26")) AddMonoid.lcm_addOrder_eq_exponent]
 alias lcm_order_eq_exponent := lcm_orderOf_eq_exponent
 
 variable {H : Type*} [Monoid H]
@@ -551,7 +551,8 @@ section Group
 
 variable [Group G]
 
-@[to_additive (attr := deprecated Monoid.one_lt_exponent) AddGroup.one_lt_exponent] -- 2024-02-17
+@[to_additive (attr := deprecated Monoid.one_lt_exponent (since := "2024-02-17"))
+  AddGroup.one_lt_exponent]
 lemma Group.one_lt_exponent [Finite G] [Nontrivial G] : 1 < Monoid.exponent G :=
   Monoid.one_lt_exponent
 
@@ -716,9 +717,10 @@ lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
     x⁻¹ = x :=
   inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hx ▸ pow_orderOf_eq_one x
 
--- TODO: Delete; deprecated on 2024-02-17
+-- TODO: delete
 /-- Any group of exponent two is abelian. -/
-@[to_additive (attr := reducible, deprecated) "Any additive group of exponent two is abelian."]
+@[to_additive (attr := reducible, deprecated (since := "2024-02-17"))
+  "Any additive group of exponent two is abelian."]
 def instCommGroupOfExponentTwo (hG : Monoid.exponent G = 2) : CommGroup G where
   mul_comm := mul_comm_of_exponent_two hG
 
