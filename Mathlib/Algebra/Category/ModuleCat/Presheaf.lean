@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Scott Morrison All rights reserved.
+Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
@@ -64,7 +64,6 @@ def map (P : PresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   { toAddHom := (P.presheaf.map f).toAddHom,
     map_smul' := P.map_smul f, }
 
-@[simp]
 theorem map_apply (P : PresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) (x) :
     P.map f x = (P.presheaf.map f) x :=
   rfl
@@ -80,13 +79,13 @@ instance {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
 theorem map_id (P : PresheafOfModules R) (X : Cᵒᵖ) :
     P.map (𝟙 X) = LinearMap.id' := by
   ext
-  simp
+  simp [map_apply]
 
 @[simp]
 theorem map_comp (P : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     P.map (f ≫ g) = (P.map g).comp (P.map f) := by
   ext
-  simp
+  simp [map_apply]
 
 /-- A morphism of presheaves of modules. -/
 structure Hom (P Q : PresheafOfModules R) where
@@ -186,7 +185,7 @@ end Hom
 
 lemma naturality_apply {P Q : PresheafOfModules R} (f : P ⟶ Q)
     {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : P.obj X) :
-    f.app Y (P.presheaf.map g x) = Q.presheaf.map g (f.app X x) :=
+    f.app Y (P.map g x) = Q.map g (f.app X x) :=
   congr_fun ((forget _).congr_map (f.hom.naturality g)) x
 
 variable (R)
@@ -195,7 +194,7 @@ variable (R)
 to presheaves of abelian groups.
 -/
 @[simps obj]
-def toPresheaf : PresheafOfModules R ⥤ (Cᵒᵖ ⥤ AddCommGroupCat) where
+def toPresheaf : PresheafOfModules.{v} R ⥤ (Cᵒᵖ ⥤ AddCommGroupCat.{v}) where
   obj P := P.presheaf
   map f := f.hom
 
@@ -224,6 +223,8 @@ def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) w
   obj M := M.obj X
   map f := f.app X
 
+instance (X : Cᵒᵖ) : (evaluation R X).Additive where
+
 variable {R}
 
 /-- Given a presheaf of modules `M` on a category `C` and `f : X ⟶ Y` in `Cᵒᵖ`, this
@@ -251,13 +252,20 @@ noncomputable def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
 
 variable {R}
 
+@[reassoc (attr := simp)]
+lemma restrictionApp_naturality {X Y : Cᵒᵖ} (f : X ⟶ Y)
+    {M N : PresheafOfModules R} (φ : M ⟶ N) :
+    restrictionApp f M ≫ (ModuleCat.restrictScalars (R.map f)).map (Hom.app φ Y) =
+      ModuleCat.ofHom (Hom.app φ X) ≫ restrictionApp f N :=
+  ((restriction R f).naturality φ).symm
+
 attribute [local simp] restrictionApp_apply
 
-lemma restriction_app_id (M : PresheafOfModules R) (X : Cᵒᵖ) :
+lemma restrictionApp_id (M : PresheafOfModules R) (X : Cᵒᵖ) :
     restrictionApp (𝟙 X) M =
       (ModuleCat.restrictScalarsId' (R.map (𝟙 X)) (R.map_id X)).inv.app (M.obj X) := by aesop
 
-lemma restriction_app_comp (M : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma restrictionApp_comp (M : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     restrictionApp (f ≫ g) M =
       restrictionApp f M ≫
         (ModuleCat.restrictScalars (R.map f)).map (restrictionApp g M) ≫
@@ -407,3 +415,60 @@ lemma restrictionApp_toPresheafOfModules {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     PresheafOfModules.restrictionApp f M.toPresheafOfModules = M.map f := rfl
 
 end BundledCorePresheafOfModules
+
+namespace PresheafOfModules
+
+variable (R)
+
+/-- Auxiliary definition for `unit`. -/
+def unitCore : CorePresheafOfModules R where
+  obj X := R.obj X
+  map {X Y} f := by
+    exact
+      { toFun := (R.map f).toFun
+        map_add' := by simp
+        map_smul' := by simp }
+
+/-- The obvious free presheaf of modules of rank `1`. -/
+abbrev unit : PresheafOfModules R := (unitCore R).toPresheafOfModules
+
+lemma unit_map_one {X Y : Cᵒᵖ} (f : X ⟶ Y) : (unit R).map f (1 : R.obj X) = (1 : R.obj Y) :=
+  (R.map f).map_one
+
+variable {R}
+
+/-- The type of sections of a presheaf of modules. -/
+def sections (M : PresheafOfModules.{v} R) : Type _ := (M.presheaf ⋙ forget _).sections
+
+/-- Constructor for sections of a presheaf of modules. -/
+@[simps]
+def sectionsMk {M : PresheafOfModules.{v} R} (s : ∀ X, M.obj X)
+    (hs : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y), M.map f (s X) = s Y) : M.sections where
+  val := s
+  property f := hs f
+
+@[ext]
+lemma sections_ext {M : PresheafOfModules.{v} R} (s t : M.sections)
+    (h : ∀ (X : Cᵒᵖ), s.val X = t.val X) : s = t :=
+  Subtype.ext (by ext; apply h)
+
+/-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : PresheafOfModules R`. -/
+@[simps! apply_coe]
+def unitHomEquiv (M : PresheafOfModules R) :
+    (unit R ⟶ M) ≃ M.sections where
+  toFun f := sectionsMk (fun X ↦ Hom.app f X (1 : R.obj X))
+    (by intros; rw [← naturality_apply, unit_map_one])
+  invFun s := Hom.mk'
+    (fun X => (LinearMap.ringLmapEquivSelf (R.obj X) ℤ (M.obj X)).symm (s.val X)) (by
+      intro X Y p (x : R.obj X)
+      dsimp
+      rw [map_apply, M.map_smul, ← s.2 p]
+      rfl)
+  left_inv f := by
+    ext1 X
+    exact (LinearMap.ringLmapEquivSelf (R.obj X) ℤ (M.obj X)).symm_apply_apply (f.app X)
+  right_inv s := by
+    ext X
+    exact (LinearMap.ringLmapEquivSelf (R.obj X) ℤ (M.obj X)).apply_symm_apply (s.val X)
+
+end PresheafOfModules

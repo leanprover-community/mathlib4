@@ -29,7 +29,7 @@ set_option autoImplicit true
 
 open Function (Surjective)
 
-open BigOperators Polynomial
+open Polynomial
 
 section ModuleAndAlgebra
 
@@ -68,9 +68,9 @@ variable {R A B}
 /-- An algebra over a Noetherian ring is finitely generated if and only if it is finitely
 presented. -/
 theorem of_finiteType [IsNoetherianRing R] : FiniteType R A ↔ FinitePresentation R A := by
-  refine' ⟨fun h => _, fun hfp => Algebra.FiniteType.of_finitePresentation⟩
+  refine ⟨fun h => ?_, fun hfp => Algebra.FiniteType.of_finitePresentation⟩
   obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.1 h
-  refine' ⟨n, f, hf, _⟩
+  refine ⟨n, f, hf, ?_⟩
   have hnoet : IsNoetherianRing (MvPolynomial (Fin n) R) := by infer_instance
   -- Porting note: rewrote code to help typeclass inference
   rw [isNoetherianRing_iff] at hnoet
@@ -133,9 +133,9 @@ protected theorem quotient {I : Ideal A} (h : I.FG) [FinitePresentation R A] :
     FinitePresentation R (A ⧸ I) where
   out := by
     obtain ⟨n, f, hf⟩ := FinitePresentation.out (R := R) (A := A)
-    refine' ⟨n, (Ideal.Quotient.mkₐ R I).comp f, _, _⟩
+    refine ⟨n, (Ideal.Quotient.mkₐ R I).comp f, ?_, ?_⟩
     · exact (Ideal.Quotient.mkₐ_surjective R I).comp hf.1
-    · refine' Ideal.fg_ker_comp _ _ hf.2 _ hf.1
+    · refine Ideal.fg_ker_comp _ _ hf.2 ?_ hf.1
       simp [h]
 #align algebra.finite_presentation.quotient Algebra.FinitePresentation.quotient
 
@@ -167,9 +167,9 @@ theorem iff_quotient_mvPolynomial' :
   constructor
   · rintro ⟨n, f, hfs, hfk⟩
     set ulift_var := MvPolynomial.renameEquiv R Equiv.ulift
-    refine'
+    refine
       ⟨ULift (Fin n), inferInstance, f.comp ulift_var.toAlgHom, hfs.comp ulift_var.surjective,
-        Ideal.fg_ker_comp _ _ _ hfk ulift_var.surjective⟩
+        Ideal.fg_ker_comp _ _ ?_ hfk ulift_var.surjective⟩
     erw [RingHom.ker_coe_equiv ulift_var.toRingEquiv]
     exact Submodule.fg_bot
     -- Porting note: was
@@ -177,9 +177,8 @@ theorem iff_quotient_mvPolynomial' :
     -- exact RingHom.ker_coe_equiv ulift_var.toRingEquiv
   · rintro ⟨ι, hfintype, f, hf⟩
     have equiv := MvPolynomial.renameEquiv R (Fintype.equivFin ι)
-    refine'
-      ⟨Fintype.card ι, f.comp equiv.symm, hf.1.comp (AlgEquiv.symm equiv).surjective,
-        Ideal.fg_ker_comp _ f _ hf.2 equiv.symm.surjective⟩
+    use Fintype.card ι, f.comp equiv.symm, hf.1.comp (AlgEquiv.symm equiv).surjective
+    refine Ideal.fg_ker_comp (S := MvPolynomial ι R) (A := A) _ f ?_ hf.2 equiv.symm.surjective
     erw [RingHom.ker_coe_equiv equiv.symm.toRingEquiv]
     exact Submodule.fg_bot
     -- Porting note: was
@@ -237,7 +236,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
   obtain ⟨n, f, hf, s, hs⟩ := FinitePresentation.out (R := R) (A := B)
   letI RX := MvPolynomial (Fin n) R
   letI AX := MvPolynomial (Fin n) A
-  refine' ⟨n, MvPolynomial.aeval (f ∘ X), _, _⟩
+  refine ⟨n, MvPolynomial.aeval (f ∘ X), ?_, ?_⟩
   · rw [← Algebra.range_top_iff_surjective, ← Algebra.adjoin_range_eq_range_aeval,
       Set.range_comp f MvPolynomial.X, eq_top_iff, ← @adjoin_adjoin_of_tower R A B,
       adjoin_image, adjoin_range_X, Algebra.map_top, (Algebra.range_top_iff_surjective _).mpr hf]
@@ -254,7 +253,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       rw [← adjoin_restrictScalars, adjoin_range_X, Subalgebra.restrictScalars_top,
         Subalgebra.restrictScalars_top]
     letI g : t → AX := fun x => MvPolynomial.C (x : A) - map (algebraMap R A) (t' x)
-    refine' ⟨s.image (map (algebraMap R A)) ∪ t.attach.image g, _⟩
+    refine ⟨s.image (map (algebraMap R A)) ∪ t.attach.image g, ?_⟩
     rw [Finset.coe_union, Finset.coe_image, Finset.coe_image, Finset.attach_eq_univ,
       Finset.coe_univ, Set.image_univ]
     let s₀ := (MvPolynomial.map (algebraMap R A)) '' s ∪ Set.range g
@@ -281,7 +280,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       rw [← ht''] at this
       refine adjoin_induction this ?_ ?_ ?_ ?_
       · rintro _ (⟨x, hx, rfl⟩ | ⟨i, rfl⟩)
-        · rw [algebraMap_eq, ← sub_add_cancel (MvPolynomial.C x)
+        · rw [MvPolynomial.algebraMap_eq, ← sub_add_cancel (MvPolynomial.C x)
             (map (algebraMap R A) (t' ⟨x, hx⟩)), add_comm]
           apply AddSubmonoid.add_mem_sup
           · exact Set.mem_range_self _
@@ -301,12 +300,12 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
         rw [add_mul, mul_add, add_assoc, ← map_mul]
         apply AddSubmonoid.add_mem_sup
         · exact Set.mem_range_self _
-        · refine' add_mem (Ideal.mul_mem_left _ _ hq₂) (Ideal.mul_mem_right _ _ hq₁)
+        · refine add_mem (Ideal.mul_mem_left _ _ hq₂) (Ideal.mul_mem_right _ _ hq₁)
     obtain ⟨_, ⟨p, rfl⟩, q, hq, rfl⟩ := AddSubmonoid.mem_sup.mp this
     rw [map_add, aeval_map_algebraMap, ← aeval_unique, show MvPolynomial.aeval (f ∘ X) q = 0
       from leI hq, add_zero] at hx
     suffices Ideal.span (s : Set RX) ≤ (Ideal.span s₀).comap (MvPolynomial.map <| algebraMap R A) by
-      refine' add_mem _ hq
+      refine add_mem ?_ hq
       rw [hs] at this
       exact this hx
     rw [Ideal.span_le]
@@ -332,7 +331,7 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
     choose h hh using this
     let aeval_h : RXm →ₐ[R] RXn := aeval h
     let g' : Fin n → RXn := fun i => X i - aeval_h (g i)
-    refine' ⟨Finset.univ.image g' ∪ s.image aeval_h, _⟩
+    refine ⟨Finset.univ.image g' ∪ s.image aeval_h, ?_⟩
     simp only [Finset.coe_image, Finset.coe_union, Finset.coe_univ, Set.image_univ]
     have hh' : ∀ x, f (aeval_h x) = f' x := by
       intro x
@@ -380,7 +379,7 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
         · exact Set.mem_range_self _
         · exact add_mem (Ideal.mul_mem_right _ _ hy₁) (Ideal.mul_mem_left _ _ hy₂)
     obtain ⟨_, ⟨x, rfl⟩, y, hy, rfl⟩ := AddSubmonoid.mem_sup.mp this
-    refine' add_mem _ hy
+    refine add_mem ?_ hy
     simp only [RingHom.mem_ker, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom, map_add,
       show f y = 0 from leI hy, add_zero, hh'] at hx
     suffices Ideal.span (s : Set RXm) ≤ (Ideal.span s').comap aeval_h by

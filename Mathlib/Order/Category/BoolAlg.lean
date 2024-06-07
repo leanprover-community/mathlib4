@@ -28,7 +28,7 @@ def BoolAlg :=
 
 namespace BoolAlg
 
-instance : CoeSort BoolAlg (Type*) :=
+instance : CoeSort BoolAlg Type* :=
   Bundled.coeSort
 
 instance instBooleanAlgebra (X : BoolAlg) : BooleanAlgebra X :=

@@ -49,7 +49,7 @@ partial def evalIntDiv : NormNumExt where eval {u α} e := do
   guard <|← withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := ℤ))
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℤ := ⟨⟩
   haveI' : $e =Q ($a / $b) := ⟨⟩
-  let rℤ : Q(Ring ℤ) := q(Int.instRingInt)
+  let rℤ : Q(Ring ℤ) := q(Int.instRing)
   let ⟨za, na, pa⟩ ← (← derive a).toInt rℤ
   match ← derive (u := .zero) b with
   | .isNat inst nb pb =>
@@ -107,7 +107,7 @@ partial def evalIntMod : NormNumExt where eval {u α} e := do
   guard <|← withNewMCtxDepth <| isDefEq f q(HMod.hMod (α := ℤ))
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℤ := ⟨⟩
   haveI' : $e =Q ($a % $b) := ⟨⟩
-  let rℤ : Q(Ring ℤ) := q(Int.instRingInt)
+  let rℤ : Q(Ring ℤ) := q(Int.instRing)
   let some ⟨za, na, pa⟩ := (← derive a).toInt rℤ | failure
   go a na za pa b (← derive (u := .zero) b)
 where
@@ -118,7 +118,7 @@ where
       assumeInstancesCommute
       if nb.natLit! == 0 then
         have _ : $nb =Q nat_lit 0 := ⟨⟩
-        return .isInt q(Int.instRingInt) na za q(isInt_emod_zero $pa $pb)
+        return .isInt q(Int.instRing) na za q(isInt_emod_zero $pa $pb)
       else
         let ⟨r, p⟩ := core a na za pa b nb pb
         return .isNat q(instAddMonoidWithOne) r p
@@ -160,7 +160,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   haveI' : $e =Q ($a ∣ $b) := ⟨⟩
   -- We assert that the default instance for `Dvd` is `Int.dvd` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(Dvd.dvd (α := ℤ))
-  let rℤ : Q(Ring ℤ) := q(Int.instRingInt)
+  let rℤ : Q(Ring ℤ) := q(Int.instRing)
   let ⟨za, na, pa⟩ ← (← derive a).toInt rℤ
   let ⟨zb, nb, pb⟩ ← (← derive b).toInt rℤ
   if zb % za == 0 then

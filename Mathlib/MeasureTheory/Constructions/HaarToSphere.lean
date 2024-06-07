@@ -73,7 +73,7 @@ instance : IsFiniteMeasure μ.toSphere where
   measure_univ_lt_top := by
     rw [toSphere_apply_univ']
     exact ENNReal.mul_lt_top (ENNReal.natCast_ne_top _) <|
-      ne_top_of_le_ne_top measure_ball_lt_top.ne <| measure_mono (diff_subset _ _)
+      ne_top_of_le_ne_top measure_ball_lt_top.ne <| measure_mono diff_subset
 
 /-- The measure on `(0, +∞)` that has density `(· ^ n)` with respect to the Lebesgue measure. -/
 def volumeIoiPow (n : ℕ) : Measure (Ioi (0 : ℝ)) :=
@@ -145,7 +145,7 @@ lemma integral_fun_norm_addHaar (f : ℝ → F) :
       rw [integral_withDensity_eq_integral_smul, μ.toSphere_apply_univ,
         ENNReal.toReal_mul, ENNReal.toReal_nat, ← nsmul_eq_mul, smul_assoc,
         integral_subtype_comap measurableSet_Ioi fun a ↦ Real.toNNReal (a ^ (dim E - 1)) • f a,
-        set_integral_congr measurableSet_Ioi fun x hx ↦ ?_]
+        setIntegral_congr measurableSet_Ioi fun x hx ↦ ?_]
       · rw [NNReal.smul_def, Real.coe_toNNReal _ (pow_nonneg hx.out.le _)]
       · exact (measurable_subtype_coe.pow_const _).real_toNNReal
 

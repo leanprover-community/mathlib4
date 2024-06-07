@@ -81,7 +81,7 @@ theorem exists_finsupp_right (x : M ⊗[R] N) :
     ∃ S : N →₀ M, x = S.sum fun n m ↦ m ⊗ₜ[R] n := by
   obtain ⟨S, h⟩ := exists_finsupp_left (TensorProduct.comm R M N x)
   refine ⟨S, (TensorProduct.comm R M N).injective ?_⟩
-  simp_rw [h, Finsupp.sum, map_sum]; rfl
+  simp_rw [h, Finsupp.sum, map_sum, comm_tmul]
 
 /-- For any element `x` of `M ⊗[R] N`, there exists a finite subset `{ (m_i, n_i) }`
 of `M × N`, such that `x` is equal to the sum of `m_i ⊗ₜ[R] n_i`. -/
@@ -90,7 +90,7 @@ theorem exists_finset (x : M ⊗[R] N) :
   obtain ⟨S, h⟩ := exists_finsupp_left x
   use S.graph
   rw [h, Finsupp.sum]
-  refine' Finset.sum_nbij' (fun m ↦ ⟨m, S m⟩) Prod.fst .. <;> simp
+  apply Finset.sum_nbij' (fun m ↦ ⟨m, S m⟩) Prod.fst <;> simp
 
 /-- For a finite subset `s` of `M ⊗[R] N`, there are finitely generated
 submodules `M'` and `N'` of `M` and `N`, respectively, such that `s` is contained in the image
@@ -119,8 +119,7 @@ theorem exists_finite_submodule_of_finite (s : Set (M ⊗[R] N)) (hs : s.Finite)
 submodule `M'` of `M`, such that `s` is contained in the image
 of `M' ⊗[R] N` in `M ⊗[R] N`. -/
 theorem exists_finite_submodule_left_of_finite (s : Set (M ⊗[R] N)) (hs : s.Finite) :
-    ∃ (M' : Submodule R M), Module.Finite R M' ∧
-      s ⊆ LinearMap.range (M'.subtype.rTensor N) := by
+    ∃ M' : Submodule R M, Module.Finite R M' ∧ s ⊆ LinearMap.range (M'.subtype.rTensor N) := by
   obtain ⟨M', _, hfin, _, h⟩ := exists_finite_submodule_of_finite s hs
   refine ⟨M', hfin, ?_⟩
   rw [mapIncl, ← LinearMap.rTensor_comp_lTensor] at h
@@ -130,8 +129,7 @@ theorem exists_finite_submodule_left_of_finite (s : Set (M ⊗[R] N)) (hs : s.Fi
 submodule `N'` of `N`, such that `s` is contained in the image
 of `M ⊗[R] N'` in `M ⊗[R] N`. -/
 theorem exists_finite_submodule_right_of_finite (s : Set (M ⊗[R] N)) (hs : s.Finite) :
-    ∃ (N' : Submodule R N), Module.Finite R N' ∧
-      s ⊆ LinearMap.range (N'.subtype.lTensor M) := by
+    ∃ N' : Submodule R N, Module.Finite R N' ∧ s ⊆ LinearMap.range (N'.subtype.lTensor M) := by
   obtain ⟨_, N', _, hfin, h⟩ := exists_finite_submodule_of_finite s hs
   refine ⟨N', hfin, ?_⟩
   rw [mapIncl, ← LinearMap.lTensor_comp_rTensor] at h
@@ -147,8 +145,10 @@ theorem exists_finite_submodule_of_finite' (s : Set (M₁ ⊗[R] N₁)) (hs : s.
   have hM := map_subtype_le M₁ M'
   have hN := map_subtype_le N₁ N'
   refine ⟨_, _, hM, hN, .map _ _, .map _ _, ?_⟩
-  rw [mapIncl, show M'.subtype = inclusion hM ∘ₗ M₁.subtype.submoduleMap M' from rfl,
-    show N'.subtype = inclusion hN ∘ₗ N₁.subtype.submoduleMap N' from rfl, map_comp] at h
+  rw [mapIncl,
+    show M'.subtype = inclusion hM ∘ₗ M₁.subtype.submoduleMap M' by ext; simp,
+    show N'.subtype = inclusion hN ∘ₗ N₁.subtype.submoduleMap N' by ext; simp,
+    map_comp] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)
 
 /-- Variation of `TensorProduct.exists_finite_submodule_left_of_finite` where `M` and `N` are

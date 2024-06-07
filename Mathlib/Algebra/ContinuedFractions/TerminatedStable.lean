@@ -36,9 +36,9 @@ theorem continuantsAux_stable_step_of_terminated (terminated_at_n : g.Terminated
 
 theorem continuantsAux_stable_of_terminated (n_lt_m : n < m) (terminated_at_n : g.TerminatedAt n) :
     g.continuantsAux m = g.continuantsAux (n + 1) := by
-  refine' Nat.le_induction rfl (fun k hnk hk => _) _ n_lt_m
+  refine Nat.le_induction rfl (fun k hnk hk => ?_) _ n_lt_m
   rcases Nat.exists_eq_add_of_lt hnk with ⟨k, rfl⟩
-  refine' (continuantsAux_stable_step_of_terminated _).trans hk
+  refine (continuantsAux_stable_step_of_terminated ?_).trans hk
   exact terminated_stable (Nat.le_add_right _ _) terminated_at_n
 #align generalized_continued_fraction.continuants_aux_stable_of_terminated GeneralizedContinuedFraction.continuantsAux_stable_of_terminated
 
@@ -62,7 +62,7 @@ theorem convergents'Aux_stable_of_terminated {s : Stream'.Seq <| Pair K} (n_le_m
     (terminated_at_n : s.TerminatedAt n) : convergents'Aux s m = convergents'Aux s n := by
   induction' n_le_m with m n_le_m IH
   · rfl
-  · refine' (convergents'Aux_stable_step_of_terminated _).trans IH
+  · refine (convergents'Aux_stable_step_of_terminated ?_).trans IH
     exact s.terminated_stable n_le_m terminated_at_n
 #align generalized_continued_fraction.convergents'_aux_stable_of_terminated GeneralizedContinuedFraction.convergents'Aux_stable_of_terminated
 

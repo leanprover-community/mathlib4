@@ -130,7 +130,7 @@ variable {G}
 
 theorem functorPullback_pushforward_covering [Full G] {X : C}
     (T : K (G.obj X)) : (T.val.functorPullback G).functorPushforward G ∈ K (G.obj X) := by
-  refine' K.superset_covering _ (K.bind_covering T.property
+  refine K.superset_covering ?_ (K.bind_covering T.property
     fun Y f _ => G.is_cover_of_isCoverDense K Y)
   rintro Y _ ⟨Z, _, f, hf, ⟨W, g, f', ⟨rfl⟩⟩, rfl⟩
   use W; use G.preimage (f' ≫ f); use g
@@ -195,13 +195,13 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
   intro Y f
   simp only [pushforwardFamily, ← FunctorToTypes.map_comp_apply, ← op_comp]
   change (ℱ.map _ ≫ α.app (op _) ≫ ℱ'.val.map _) _ = (ℱ.map _ ≫ α.app (op _) ≫ ℱ'.val.map _) _
-  rw [← G.image_preimage (f ≫ g₁ ≫ _)]
-  rw [← G.image_preimage (f ≫ g₂ ≫ _)]
+  rw [← G.map_preimage (f ≫ g₁ ≫ _)]
+  rw [← G.map_preimage (f ≫ g₂ ≫ _)]
   erw [← α.naturality (G.preimage _).op]
   erw [← α.naturality (G.preimage _).op]
-  refine' congr_fun _ x
+  refine congr_fun ?_ x
   simp only [Functor.comp_map, ← Category.assoc, Functor.op_map, Quiver.Hom.unop_op,
-    ← ℱ.map_comp, ← op_comp, G.image_preimage]
+    ← ℱ.map_comp, ← op_comp, G.map_preimage]
   congr 3
   simp [e]
 #align category_theory.cover_dense.types.pushforward_family_compatible CategoryTheory.Functor.IsCoverDense.Types.pushforwardFamily_compatible
@@ -219,15 +219,15 @@ theorem pushforwardFamily_apply {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y �
   -- Porting note: congr_fun was more powerful in Lean 3; I had to explicitly supply
   -- the type of the first input here even though it's obvious (there is a unique occurrence
   -- of x on each side of the equality)
-  refine' congr_fun (_ :
+  refine congr_fun (?_ :
     (fun t => ℱ'.val.map ((Nonempty.some (_ : coverByImage G X f)).lift.op)
       (α.app (op (Nonempty.some (_ : coverByImage G X f)).1)
         (ℱ.map ((Nonempty.some (_ : coverByImage G X f)).map.op) t))) =
     (fun t => α.app (op Y) (ℱ.map (f.op) t))) x
-  rw [← G.image_preimage (Nonempty.some _ : Presieve.CoverByImageStructure _ _).lift]
+  rw [← G.map_preimage (Nonempty.some _ : Presieve.CoverByImageStructure _ _).lift]
   change ℱ.map _ ≫ α.app (op _) ≫ ℱ'.val.map _ = ℱ.map f.op ≫ α.app (op Y)
   erw [← α.naturality (G.preimage _).op]
-  simp only [← Functor.map_comp, ← Category.assoc, Functor.comp_map, G.image_preimage, G.op_map,
+  simp only [← Functor.map_comp, ← Category.assoc, Functor.comp_map, G.map_preimage, G.op_map,
     Quiver.Hom.unop_op, ← op_comp, Presieve.CoverByImageStructure.fac]
 #align category_theory.cover_dense.types.pushforward_family_apply CategoryTheory.Functor.IsCoverDense.Types.pushforwardFamily_apply
 
@@ -324,7 +324,7 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
         f.unop ≫ appHom (homOver α (unop X)) (unop U) x
     symm
     apply sheaf_eq_amalgamation
-    apply G.is_cover_of_isCoverDense
+    · apply G.is_cover_of_isCoverDense
     -- Porting note: the following line closes a goal which didn't exist before reenableeta
     · exact pushforwardFamily_compatible (homOver α Y.unop) (f.unop ≫ x)
     intro Y' f' hf'
@@ -335,26 +335,21 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     conv_lhs => rw [← hf'.some.fac]
     simp only [← Category.assoc, op_comp, Functor.map_comp]
     congr 1
-    refine' (appHom_restrict (homOver α (unop X)) hf'.some.map.op x).trans _
-    simp
+    exact (appHom_restrict (homOver α (unop X)) hf'.some.map.op x).trans (by simp)
 #align category_theory.cover_dense.sheaf_coyoneda_hom CategoryTheory.Functor.IsCoverDense.sheafCoyonedaHom
 
 /--
 (Implementation). `sheafCoyonedaHom` but the order of the arguments of the functor are swapped.
 -/
 noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
-    ℱ ⋙ yoneda ⟶ ℱ'.val ⋙ yoneda := by
-  let α := sheafCoyonedaHom α
-  refine'
-    { app := _
-      naturality := _ }
-  · intro U
-    refine'
-      { app := fun X => (α.app X).app U
-        naturality := fun X Y f => by simpa using congr_app (α.naturality f) U }
-  · intro U V i
+    ℱ ⋙ yoneda ⟶ ℱ'.val ⋙ yoneda where
+  app U :=
+    let α := (sheafCoyonedaHom α)
+    { app := fun X => (α.app X).app U
+      naturality := fun X Y f => by simpa using congr_app (α.naturality f) U }
+  naturality U V i := by
     ext X x
-    exact congr_fun ((α.app X).naturality i) x
+    exact congr_fun (((sheafCoyonedaHom α).app X).naturality i) x
 #align category_theory.cover_dense.sheaf_yoneda_hom CategoryTheory.Functor.IsCoverDense.sheafYonedaHom
 
 /-- Given a natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of arbitrary category,
@@ -383,7 +378,7 @@ noncomputable def presheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.val ≅ G
       apply isIso_of_reflects_iso _ yoneda
     use (sheafYonedaHom i.inv).app X
     constructor <;> ext x : 2 <;>
-      simp only [sheafHom, NatTrans.comp_app, NatTrans.id_app, Functor.image_preimage]
+      simp only [sheafHom, NatTrans.comp_app, NatTrans.id_app, Functor.map_preimage]
     · exact ((Types.presheafIso (isoOver i (unop x))).app X).hom_inv_id
     · exact ((Types.presheafIso (isoOver i (unop x))).app X).inv_hom_id
     -- Porting note: Lean 4 proof is finished, Lean 3 needed `inferInstance`
@@ -414,8 +409,8 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
   ext X
   apply yoneda.map_injective
   ext U
-  -- Porting note: didn't need to provide the input to `image_preimage` in Lean 3
-  erw [yoneda.image_preimage ((sheafYonedaHom α).app (G.op.obj X))]
+  -- Porting note: didn't need to provide the input to `map_preimage` in Lean 3
+  erw [yoneda.map_preimage ((sheafYonedaHom α).app (G.op.obj X))]
   symm
   change (show (ℱ'.val ⋙ coyoneda.obj (op (unop U))).obj (op (G.obj (unop X))) from _) = _
   apply sheaf_eq_amalgamation ℱ' (G.is_cover_of_isCoverDense _ _)
@@ -428,7 +423,7 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
   congr 1
   simp only [Category.assoc]
   congr 1
-  rw [← G.image_preimage hf.some.map]
+  rw [← G.map_preimage hf.some.map]
   symm
   apply α.naturality (G.preimage hf.some.map).op
   -- porting note; Lean 3 needed a random `inferInstance` for cleanup here; not necessary in lean 4
@@ -444,8 +439,8 @@ theorem sheafHom_eq (α : ℱ ⟶ ℱ'.val) : sheafHom (whiskerLeft G.op α) = �
   apply yoneda.map_injective
   -- Porting note: deleted next line as it's not needed in Lean 4
   ext U
-  -- Porting note: Lean 3 didn't need to be told the explicit input to image_preimage
-  erw [yoneda.image_preimage ((sheafYonedaHom (whiskerLeft G.op α)).app X)]
+  -- Porting note: Lean 3 didn't need to be told the explicit input to map_preimage
+  erw [yoneda.map_preimage ((sheafYonedaHom (whiskerLeft G.op α)).app X)]
   symm
   change (show (ℱ'.val ⋙ coyoneda.obj (op (unop U))).obj (op (unop X)) from _) = _
   apply sheaf_eq_amalgamation ℱ' (G.is_cover_of_isCoverDense _ _)
@@ -474,7 +469,7 @@ if the pullback of `α` along `G` is iso, then `α` is also iso.
 -/
 theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIso (whiskerLeft G.op α.val)) :
     IsIso α := by
-  convert IsIso.of_iso (sheafIso (asIso (whiskerLeft G.op α.val))) using 1
+  convert (sheafIso (asIso (whiskerLeft G.op α.val))).isIso_hom using 1
   ext1
   apply (sheafHom_eq _ _).symm
 #align category_theory.cover_dense.iso_of_restrict_iso CategoryTheory.Functor.IsCoverDense.iso_of_restrict_iso
@@ -488,9 +483,9 @@ lemma compatiblePreserving [Faithful G] : CompatiblePreserving K G := by
   apply Functor.IsCoverDense.ext G
   intro W i
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-  rw [← G.image_preimage (i ≫ f₁)]
-  rw [← G.image_preimage (i ≫ f₂)]
-  apply hx
+  rw [← G.map_preimage (i ≫ f₁)]
+  rw [← G.map_preimage (i ≫ f₂)]
+  apply hx (G.preimage (i ≫ f₁)) ((G.preimage (i ≫ f₂))) hg₁ hg₂
   apply G.map_injective
   simp [eq]
 #align category_theory.cover_dense.compatible_preserving CategoryTheory.Functor.IsCoverDense.compatiblePreserving
@@ -498,11 +493,10 @@ lemma compatiblePreserving [Faithful G] : CompatiblePreserving K G := by
 lemma isContinuous [Faithful G] (Hp : CoverPreserving J K G) : G.IsContinuous J K :=
   isContinuous_of_coverPreserving (compatiblePreserving K G) Hp
 
-noncomputable instance fullSheafPushforwardContinuous [G.IsContinuous J K] :
+instance full_sheafPushforwardContinuous [G.IsContinuous J K] :
     Full (G.sheafPushforwardContinuous A J K) where
-  preimage α := ⟨sheafHom α.val⟩
-  witness α := Sheaf.Hom.ext _ _ <| sheafHom_restrict_eq α.val
-#align category_theory.cover_dense.sites.pullback.full CategoryTheory.Functor.IsCoverDense.fullSheafPushforwardContinuous
+  map_surjective α := ⟨⟨sheafHom α.val⟩, Sheaf.Hom.ext _ _ <| sheafHom_restrict_eq α.val⟩
+#align category_theory.cover_dense.sites.pullback.full CategoryTheory.Functor.IsCoverDense.full_sheafPushforwardContinuous
 
 instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
     Faithful (G.sheafPushforwardContinuous A J K) where
@@ -522,16 +516,17 @@ namespace CategoryTheory.Functor.IsCoverDense
 
 open CategoryTheory
 
-variable {C D : Type u} [Category.{v} C] [Category.{v} D]
+universe w'
+variable {C D : Type*} [Category C] [Category D]
 variable (G : C ⥤ D) [Full G] [Faithful G]
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-variable {A : Type w} [Category.{max u v} A] [Limits.HasLimits A]
+variable {A : Type w} [Category.{w'} A] [∀ X, Limits.HasLimitsOfShape (StructuredArrow X G.op) A]
 variable [G.IsCoverDense K] [G.IsContinuous J K] [G.IsCocontinuous J K]
 
 instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by
     let α := G.sheafAdjunctionCocontinuous A J K
     haveI : IsIso ((sheafToPresheaf J A).map (α.counit.app Y)) :=
-      IsIso.of_iso ((@asIso _ _ _ _ _ (Ran.reflective A G.op)).app Y.val)
+      ((@asIso _ _ _ _ _ (Ran.reflective A G.op)).app Y.val).isIso_hom
     apply ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
 
 variable (A)

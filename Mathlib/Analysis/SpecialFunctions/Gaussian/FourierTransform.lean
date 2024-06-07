@@ -30,7 +30,7 @@ We also give versions of these formulas in finite-dimensional inner product spac
 
 open Real Set MeasureTheory Filter Asymptotics intervalIntegral
 
-open scoped Real Topology FourierTransform RealInnerProductSpace BigOperators
+open scoped Real Topology FourierTransform RealInnerProductSpace
 
 open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
 
@@ -61,8 +61,8 @@ theorem norm_cexp_neg_mul_sq_add_mul_I' (hb : b.re ≠ 0) (c T : ℝ) :
       exp (-(b.re * (T - b.im * c / b.re) ^ 2 - c ^ 2 * (b.im ^ 2 / b.re + b.re))) := by
   have :
     b.re * T ^ 2 - 2 * b.im * c * T - b.re * c ^ 2 =
-      b.re * (T - b.im * c / b.re) ^ 2 - c ^ 2 * (b.im ^ 2 / b.re + b.re) :=
-    by field_simp; ring
+      b.re * (T - b.im * c / b.re) ^ 2 - c ^ 2 * (b.im ^ 2 / b.re + b.re) := by
+    field_simp; ring
   rw [norm_cexp_neg_mul_sq_add_mul_I, this]
 set_option linter.uppercaseLean3 false in
 #align gaussian_fourier.norm_cexp_neg_mul_sq_add_mul_I' GaussianFourier.norm_cexp_neg_mul_sq_add_mul_I'
@@ -83,13 +83,13 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
     gcongr exp (- (_ - ?_ * _ - _ * ?_))
     · (conv_lhs => rw [mul_assoc]); (conv_rhs => rw [mul_assoc])
       gcongr _ * ?_
-      refine' (le_abs_self _).trans _
+      refine (le_abs_self _).trans ?_
       rw [abs_mul]
       gcongr
     · rwa [sq_le_sq]
   -- now main proof
-  refine' (intervalIntegral.norm_integral_le_of_norm_le_const _).trans _
-  pick_goal 3
+  apply (intervalIntegral.norm_integral_le_of_norm_le_const _).trans
+  pick_goal 1
   · rw [sub_zero]
     conv_lhs => simp only [mul_comm _ |c|]
     conv_rhs =>
@@ -107,7 +107,7 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
         rw [abs_of_neg h, abs_of_nonpos hy.2, neg_le_neg_iff]
         exact hy.1.le
     rw [norm_mul, Complex.norm_eq_abs, abs_I, one_mul, two_mul]
-    refine' (norm_sub_le _ _).trans (add_le_add (vert_norm_bound hT absy) _)
+    refine (norm_sub_le _ _).trans (add_le_add (vert_norm_bound hT absy) ?_)
     rw [← abs_neg y] at absy
     simpa only [neg_mul, ofReal_neg] using vert_norm_bound hT absy
 #align gaussian_fourier.vertical_integral_norm_le GaussianFourier.verticalIntegral_norm_le
@@ -116,26 +116,26 @@ theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
     Tendsto (verticalIntegral b c) atTop (𝓝 0) := by
   -- complete proof using squeeze theorem:
   rw [tendsto_zero_iff_norm_tendsto_zero]
-  refine'
-    tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds _
+  refine
+    tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds ?_
       (eventually_of_forall fun _ => norm_nonneg _)
       ((eventually_ge_atTop (0 : ℝ)).mp
         (eventually_of_forall fun T hT => verticalIntegral_norm_le hb c hT))
   rw [(by ring : 0 = 2 * |c| * 0)]
-  refine' (tendsto_exp_atBot.comp (tendsto_neg_atTop_atBot.comp _)).const_mul _
+  refine (tendsto_exp_atBot.comp (tendsto_neg_atTop_atBot.comp ?_)).const_mul _
   apply tendsto_atTop_add_const_right
   simp_rw [sq, ← mul_assoc, ← sub_mul]
-  refine' Tendsto.atTop_mul_atTop (tendsto_atTop_add_const_right _ _ _) tendsto_id
+  refine Tendsto.atTop_mul_atTop (tendsto_atTop_add_const_right _ _ ?_) tendsto_id
   exact (tendsto_const_mul_atTop_of_pos hb).mpr tendsto_id
 #align gaussian_fourier.tendsto_vertical_integral GaussianFourier.tendsto_verticalIntegral
 
 theorem integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     Integrable fun x : ℝ => cexp (-b * (x + c * I) ^ 2) := by
-  refine'
+  refine
     ⟨(Complex.continuous_exp.comp
           (continuous_const.mul
             ((continuous_ofReal.add continuous_const).pow 2))).aestronglyMeasurable,
-      _⟩
+      ?_⟩
   rw [← hasFiniteIntegral_norm_iff]
   simp_rw [norm_cexp_neg_mul_sq_add_mul_I' hb.ne', neg_sub _ (c ^ 2 * _),
     sub_eq_add_neg _ (b.re * _), Real.exp_add]
@@ -148,11 +148,11 @@ set_option linter.uppercaseLean3 false in
 
 theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     ∫ x : ℝ, cexp (-b * (x + c * I) ^ 2) = (π / b) ^ (1 / 2 : ℂ) := by
-  refine'
+  refine
     tendsto_nhds_unique
       (intervalIntegral_tendsto_integral (integrable_cexp_neg_mul_sq_add_real_mul_I hb c)
         tendsto_neg_atTop_atBot tendsto_id)
-      _
+      ?_
   set I₁ := fun T => ∫ x : ℝ in -T..T, cexp (-b * (x + c * I) ^ 2) with HI₁
   let I₂ := fun T : ℝ => ∫ x : ℝ in -T..T, cexp (-b * (x : ℂ) ^ 2)
   let I₄ := fun T : ℝ => ∫ y : ℝ in (0 : ℝ)..c, cexp (-b * (T + y * I) ^ 2)
@@ -163,7 +163,7 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
       integral_boundary_rect_eq_zero_of_differentiableOn (fun z => cexp (-b * z ^ 2)) (-T)
         (T + c * I)
         (by
-          refine' Differentiable.differentiableOn (Differentiable.const_mul _ _).cexp
+          refine Differentiable.differentiableOn (Differentiable.const_mul ?_ _).cexp
           exact differentiable_pow 2)
     simpa only [neg_im, ofReal_im, neg_zero, ofReal_zero, zero_mul, add_zero, neg_re,
       ofReal_re, add_re, mul_re, I_re, mul_zero, I_im, tsub_zero, add_im, mul_im,
@@ -181,7 +181,7 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
       abel
     all_goals apply Continuous.intervalIntegrable; continuity
   rw [this, ← add_zero ((π / b : ℂ) ^ (1 / 2 : ℂ)), ← integral_gaussian_complex hb]
-  refine' Tendsto.add _ (tendsto_verticalIntegral hb c)
+  refine Tendsto.add ?_ (tendsto_verticalIntegral hb c)
   exact
     intervalIntegral_tendsto_integral (integrable_cexp_neg_mul_sq hb) tendsto_neg_atTop_atBot
       tendsto_id
@@ -223,8 +223,7 @@ theorem _root_.fourierIntegral_gaussian (hb : 0 < b.re) (t : ℂ) :
     mul_neg, div_neg, neg_neg, mul_pow, I_sq, neg_one_mul, mul_comm]
 #align fourier_transform_gaussian fourierIntegral_gaussian
 
-@[deprecated] alias _root_.fourier_transform_gaussian :=
-  fourierIntegral_gaussian -- deprecated on 2024-02-21
+@[deprecated] alias _root_.fourier_transform_gaussian := fourierIntegral_gaussian -- 2024-02-21
 
 theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     (𝓕 fun x : ℝ => cexp (-π * b * x ^ 2 + 2 * π * c * x)) = fun t : ℝ =>
@@ -246,8 +245,8 @@ theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     simp only [I_sq]
     ring
 
-@[deprecated] alias _root_.fourier_transform_gaussian_pi' :=
-  _root_.fourierIntegral_gaussian_pi' -- deprecated on 2024-02-21
+@[deprecated] -- deprecated on 2024-02-21
+alias _root_.fourier_transform_gaussian_pi' := _root_.fourierIntegral_gaussian_pi'
 
 theorem _root_.fourierIntegral_gaussian_pi (hb : 0 < b.re) :
     (𝓕 fun (x : ℝ) ↦ cexp (-π * b * x ^ 2)) =
@@ -255,15 +254,13 @@ theorem _root_.fourierIntegral_gaussian_pi (hb : 0 < b.re) :
   simpa only [mul_zero, zero_mul, add_zero] using fourierIntegral_gaussian_pi' hb 0
 #align fourier_transform_gaussian_pi fourierIntegral_gaussian_pi
 
-@[deprecated] alias root_.fourier_transform_gaussian_pi :=
-  _root_.fourierIntegral_gaussian_pi   -- deprecated on 2024-02-21
+@[deprecated] -- 2024-02-21
+alias root_.fourier_transform_gaussian_pi := _root_.fourierIntegral_gaussian_pi
 
 section InnerProductSpace
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
   [MeasurableSpace V] [BorelSpace V]
-
-open scoped BigOperators
 
 theorem integrable_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
     (hb : ∀ i, 0 < (b i).re) (c : ι → ℂ) :
