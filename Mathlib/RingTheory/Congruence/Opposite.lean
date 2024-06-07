@@ -7,6 +7,14 @@ Authors: Eric Wieser
 import Mathlib.RingTheory.Congruence.Basic
 import Mathlib.GroupTheory.Congruence.Opposite
 
+/-!
+# Congruences on the opposite ring
+
+This file defines the order isomorphism between the congruences on a ring `R` and the congruences on
+the opposite ring `Rᵐᵒᵖ`.
+
+-/
+
 variable {R : Type*} [Add R] [Mul R]
 
 namespace RingCon
