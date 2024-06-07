@@ -68,11 +68,11 @@ lemma isLocallyInjective_of_whisker (hH : CoverPreserving J K H)
     · simp only [comp_obj, op_obj, whiskerLeft_app, Opposite.op_unop]
       erw [NatTrans.naturality_apply, NatTrans.naturality_apply, h]
 
-lemma isLocallySurjective_whisker_isCocontinuous [H.IsCocontinuous J K] [IsLocallySurjective K f] :
+lemma isLocallySurjective_whisker [H.IsCocontinuous J K] [IsLocallySurjective K f] :
     IsLocallySurjective J (whiskerLeft H.op f) where
   imageSieve_mem a := H.cover_lift J K (imageSieve_mem K f a)
 
-lemma isLocallySurjective_of_whisker_coverPreserving_isCoverDense (hH : CoverPreserving J K H)
+lemma isLocallySurjective_of_whisker (hH : CoverPreserving J K H)
     [H.IsCoverDense K] [IsLocallySurjective J (whiskerLeft H.op f)] : IsLocallySurjective K f where
   imageSieve_mem {X} a := by
     apply K.transitive (Functor.IsCoverDense.is_cover (G := H) (K := K) X)
@@ -313,19 +313,19 @@ open Presheaf
 
 lemma isLocallyInjective_whisker [IsLocallyInjective J f] :
     IsLocallyInjective K (whiskerLeft e.inverse.op f) :=
-  isLocallyInjective_whisker_isCocontinuous K J A e.inverse f
+  Presheaf.isLocallyInjective_whisker K J A e.inverse f
 
 lemma isLocallyInjective_of_whisker [IsLocallyInjective K (whiskerLeft e.inverse.op f)] :
     IsLocallyInjective J f :=
-  isLocallyInjective_of_whisker_coverPreserving_isCoverDense K J A _ f (e.coverPreserving_symm J K)
+  Presheaf.isLocallyInjective_of_whisker K J A _ f (e.coverPreserving_symm J K)
 
 lemma isLocallySurjective_whisker [IsLocallySurjective J f] :
     IsLocallySurjective K (whiskerLeft e.inverse.op f) :=
-  isLocallySurjective_whisker_isCocontinuous K J A e.inverse f
+  Presheaf.isLocallySurjective_whisker K J A e.inverse f
 
 lemma isLocallySurjective_of_whisker [IsLocallySurjective K (whiskerLeft e.inverse.op f)] :
     IsLocallySurjective J f :=
-  isLocallySurjective_of_whisker_coverPreserving_isCoverDense K J A _ f (e.coverPreserving_symm J K)
+  Presheaf.isLocallySurjective_of_whisker K J A _ f (e.coverPreserving_symm J K)
 
 open ConcreteCategory Sheaf
 
