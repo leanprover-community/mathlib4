@@ -43,7 +43,7 @@ jobs:
         # git checkout origin/master scripts/count-trans-deps.py scripts/import-graph-report.py
         # get the files that we need from the current PR
         # ***switch*** to `origin/master`, when merging or right after
-        git checkout adomani/move_decls_autocomment_dev scripts/update_PR_comment.sh
+        git checkout origin/adomani/move_decls_autocomment_dev scripts/update_PR_comment.sh
 
         # Compute the counts for the merge base
         python ./scripts/count-trans-deps.py "Mathlib/" > base.json
