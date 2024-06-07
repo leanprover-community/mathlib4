@@ -10,7 +10,7 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 
 In this file, we define the typeclass for valuation extensions and prove basic facts about
 extension of valuations. Let `A` be an `R` algebra, both `R` and `A` are equipped with valued
-instance. Here, extension of valuation means that the pullback of valuation on `A` is equivalent
+instances. Here, extension of valuation means that the pullback of valuation on `A` is equivalent
 to the valuation on `R`. We only require equivalence, not equality of valuations here.
 
 Note that we do not require the ring map from `R` to `A` to be injective. It holds automatically
