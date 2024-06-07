@@ -21,6 +21,8 @@ The exit code is the number of files that the command updates/creates. -/
 def mkAllCLI (args : Parsed) : IO UInt32 := do
   -- Check whether the `--git` flag was set
   let git := (args.flag? "git").isSome
+  -- Check whether we only verify the files, or update them in-place.
+  let check := (args.flag? "check").isSome
   -- Check whether the `--lib` flag was set. If so, build the file corresponding to the library
   -- passed to `--lib`. Else build all the libraries of the package.
   -- If the package is `mathlib`, then it removes the libraries `Cache` and `LongestPole` and it
@@ -34,13 +36,19 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
     let allFiles ← getAllModules git d
     let fileContent := ("\n".intercalate (allFiles.map ("import " ++ ·)).toList).push '\n'
     if !(← pathExists fileName) then
-      IO.println s!"Creating '{fileName}'"
+      if check then
+        IO.println s!"File {fileName} does not exist"
+      else
+        IO.println s!"Creating '{fileName}'"
+        IO.FS.writeFile fileName fileContent
       updates := updates + 1
-      IO.FS.writeFile fileName fileContent
     else if (← IO.FS.readFile fileName) != fileContent then
-      IO.println s!"Updating '{fileName}'"
+      if check then
+        IO.println s!"The file '{fileName}' is out of date: run `lake exe mk_all` to update it"
+      else
+        IO.println s!"Updating '{fileName}'"
+        IO.FS.writeFile fileName fileContent
       updates := updates + 1
-      IO.FS.writeFile fileName fileContent
   if updates == 0 then
     IO.println "No update necessary"
   return updates
