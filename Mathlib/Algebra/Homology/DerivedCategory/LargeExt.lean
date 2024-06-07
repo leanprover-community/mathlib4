@@ -40,7 +40,7 @@ namespace Abelian
 
 variable (X Y Z T : C) (n : ℕ)
 
-/-- The Ext-groups in an abelian category `C`, define as `Type w` when
+/-- The Ext-groups in an abelian category `C`, defined as `Type w` when
 `[HasDerivedCategory.{w} C]`. -/
 @[ext]
 structure LargeExt : Type w where
