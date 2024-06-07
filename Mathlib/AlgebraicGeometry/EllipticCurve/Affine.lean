@@ -767,6 +767,15 @@ lemma add_of_X_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.point.some_add_some_of_Xne' WeierstrassCurve.Affine.Point.add_of_X_ne'
 
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yeq := add_of_Y_eq
+@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yeq := add_self_of_Y_eq
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yne := add_of_Y_ne
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yne' := add_of_Y_ne'
+@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yne := add_self_of_Y_ne
+@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yne' := add_self_of_Y_ne'
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Xne := add_of_X_ne
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Xne' := add_of_X_ne'
+
 end Point
 
 end Group
@@ -1055,15 +1064,6 @@ end BaseChange
 @[deprecated (since := "2024-06-03")] alias Yeq_of_Yne := Y_eq_of_Y_ne
 @[deprecated (since := "2024-06-03")] alias equation_add' := equation_negAdd
 @[deprecated (since := "2024-06-03")] alias nonsingular_add' := nonsingular_negAdd
-@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yeq := add_of_Y_eq
-@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yeq :=
-@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yeq := add_self_of_Y_eq
-@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yne := add_of_Y_ne
-@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yne' := add_of_Y_ne'
-@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yne := add_self_of_Y_ne
-@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yne' := add_self_of_Y_ne'
-@[deprecated (since := "2024-06-03")] alias some_add_some_of_Xne := add_of_X_ne
-@[deprecated (since := "2024-06-03")] alias some_add_some_of_Xne' := add_of_X_ne'
 @[deprecated (since := "2024-06-03")] alias map_addY' := map_negAddY
 
 end WeierstrassCurve.Affine
