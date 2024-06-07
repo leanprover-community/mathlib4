@@ -52,5 +52,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        ## Import count comment
         message=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
         ./scripts/update_PR_comment.sh "${message}" "### Import summary" "${{ github.event.pull_request.number }}"
+
+        ## Declarations' diff comment
+        message=$(./scripts/no_lost_declarations.sh short)
+        ./scripts/update_PR_comment.sh "${message}" "*Summary of changed declarations*" "${{ github.event.pull_request.number }}"
