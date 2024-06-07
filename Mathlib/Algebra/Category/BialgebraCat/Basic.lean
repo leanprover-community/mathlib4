@@ -25,9 +25,9 @@ variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-bialgebras. -/
 structure BialgebraCat extends Bundled Ring.{v} where
-  [isBialgebra : Bialgebra R α]
+  [instBialgebra : Bialgebra R α]
 
-attribute [instance] BialgebraCat.isBialgebra
+attribute [instance] BialgebraCat.instBialgebra
 
 variable {R}
 
@@ -44,7 +44,7 @@ variable (R)
 @[simps]
 def of (X : Type v) [Ring X] [Bialgebra R X] :
     BialgebraCat R where
-  isBialgebra := (inferInstance : Bialgebra R X)
+  instBialgebra := (inferInstance : Bialgebra R X)
 
 variable {R}
 

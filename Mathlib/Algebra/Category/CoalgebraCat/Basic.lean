@@ -21,9 +21,9 @@ variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-coalgebras. -/
 structure CoalgebraCat extends ModuleCat.{v} R where
-  isCoalgebra : Coalgebra R carrier
+  instCoalgebra : Coalgebra R carrier
 
-attribute [instance] CoalgebraCat.isCoalgebra
+attribute [instance] CoalgebraCat.instCoalgebra
 
 variable {R}
 
@@ -44,7 +44,7 @@ variable (R)
 @[simps]
 def of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] :
     CoalgebraCat R where
-  isCoalgebra := (inferInstance : Coalgebra R X)
+  instCoalgebra := (inferInstance : Coalgebra R X)
 
 variable {R}
 
