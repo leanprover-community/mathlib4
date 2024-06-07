@@ -263,9 +263,10 @@ end CoalgHom
 
 namespace Coalgebra
 
-variable (R : Type u) (A : Type v)
+variable (R : Type u) (A : Type v) (B : Type w)
 
-variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
+variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
+variable [Coalgebra R A] [Coalgebra R B]
 
 /-- The counit of a coalgebra as a `CoalgHom`. -/
 def counitCoalgHom : A →ₗc[R] R :=
@@ -295,5 +296,27 @@ instance subsingleton_to_ring : Subsingleton (A →ₗc[R] R) :=
 
 @[ext high]
 theorem ext_to_ring (f g : A →ₗc[R] R) : f = g := Subsingleton.elim _ _
+
+variable {A B}
+lemma apply_repr {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (φ : F)
+    {a : A} {ι : Type*} {s : Finset ι} {x y : ι → A}
+    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
+    comul (φ a) = ∑ i in s, φ (x i) ⊗ₜ[R] φ (y i) :=
+  congr($((CoalgHomClass.map_comp_comul φ).symm) a).trans <|
+    by simp only [LinearMap.coe_comp, Function.comp_apply, repr, map_sum, map_tmul]; rfl
+
+lemma sum_tmul_counit_apply_eq_tmul_one_apply
+    {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (φ : F)
+    (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
+    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
+    ∑ i in s, counit (R := R) (x i) ⊗ₜ φ (y i) = 1 ⊗ₜ[R] φ a := by
+  simp [← sum_counit_tmul_eq_one_tmul (repr := apply_repr φ repr)]
+
+lemma sum_tmul_apply_counit_eq_tmul_apply_one
+    {F : Type*} [FunLike F A B] [CoalgHomClass F R A B] (φ : F)
+    (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
+    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
+    ∑ i in s, φ (x i) ⊗ₜ counit (R := R) (y i) = φ a ⊗ₜ[R] 1 := by
+  simp [← sum_tmul_counit_eq_tmul_one (repr := apply_repr φ repr)]
 
 end Coalgebra
