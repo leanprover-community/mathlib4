@@ -24,7 +24,9 @@ section fun_prop
 
 attribute [fun_prop] ENNReal.continuous_coe ENNReal.continuous_rpow_const
   Measurable.coe_nnreal_ennreal Measurable.nnnorm
-  measurable_fderiv
+  measurable_fderiv contDiffAt_norm ContDiffAt.rpow Real.contDiffAt_rpow_of_ne
+attribute [fun_prop] Real.continuousAt_rpow_const Continuous.clm_comp
+
 end fun_prop
 
 section RPow
@@ -204,8 +206,6 @@ theorem nnnorm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f)
     ‖fderiv ℝ (fun x ↦ ‖f x‖ ^ (p : ℝ)) x‖₊ ≤ p * ‖f x‖₊ ^ ((p : ℝ) - 1) * ‖fderiv ℝ f x‖₊ :=
   norm_fderiv_norm_rpow_le hf hp
 
-attribute [fun_prop] continuousAt_rpow_const Continuous.clm_comp
-
 theorem contDiff_norm_rpow {p : ℝ} (hp : 1 < p) : ContDiff ℝ 1 (fun x : E ↦ ‖x‖ ^ p) := by
   rw [contDiff_one_iff_fderiv]
   refine ⟨fun x ↦ hasFDerivAt_norm_rpow x hp |>.differentiableAt, ?_⟩
@@ -215,28 +215,12 @@ theorem contDiff_norm_rpow {p : ℝ} (hp : 1 < p) : ContDiff ℝ 1 (fun x : E �
   · simp [hx, ContinuousAt, fderiv_norm_rpow (E := E) (x := 0) hp]
     rw [tendsto_zero_iff_norm_tendsto_zero]
     refine tendsto_of_tendsto_of_tendsto_of_le_of_le (tendsto_const_nhds) ?_
-      (fun _ ↦ norm_nonneg _) (fun _ ↦ norm_fderiv_norm_id_rpow _ hp |>.le) ?_
+      (fun _ ↦ norm_nonneg _) (fun _ ↦ norm_fderiv_norm_id_rpow _ hp |>.le)
     suffices ContinuousAt (fun x : E ↦ p * ‖x‖ ^ (p - 1)) 0  by
       simpa [ContinuousAt, sub_ne_zero_of_ne hp.ne'] using this
     fun_prop (discharger := simp [*])
-  · simp_rw [funext fun x ↦ fderiv_norm_rpow (E:=E) (x:=x) hp]
+  · simp_rw [funext fun x ↦ fderiv_norm_rpow (E := E) (x := x) hp]
     fun_prop (discharger := simp [*])
-
-
-/-
--- trying to generalize 1 to n
-set_option trace.Meta.Tactic.fun_prop true in
-theorem contDiff_norm_rpow' {n : ℕ} {p : ℝ} (hp : n < p) : ContDiff ℝ n (fun x : E ↦ ‖x‖ ^ p) := by
-  induction' n with n hn generalizing p
-  · simp_rw [Nat.cast_zero, contDiff_zero] at hp ⊢
-    fun_prop (discharger := assumption)
-  simp only [Nat.cast_add, Nat.cast_one] at hp
-  have h1p : 1 < p := by linarith
-  simp_rw [contDiff_succ_iff_fderiv, differentiable_norm_rpow h1p, true_and, fderiv_norm_rpow _ h1p]
-  specialize hn (p := p - 1) (by linarith)
-  -- fun_prop (discharger := assumption)
-  -- rw [contDiff_iff_contDiffAt]
--/
 
 theorem ContDiff.norm_rpow {f : F → E} (hf : ContDiff ℝ 1 f) {p : ℝ} (hp : 1 < p) :
     ContDiff ℝ 1 (fun x ↦ ‖f x‖ ^ p) :=
@@ -368,47 +352,6 @@ theorem updateFinset_univ [Fintype ι] {y : ∀ i : Finset.univ, π i} :
 
 lemma Finset.singleton_union {s : Finset ι} {i : ι} : {i} ∪ s = insert i s := by ext; simp
 lemma Finset.union_singleton {s : Finset ι} {i : ι} : s ∪ {i} = insert i s := by ext; simp [or_comm]
-
-namespace Equiv
--- todo: rename `Finset.union_symm_inl`, `Finset.union_symm_inr`
-
-theorem Finset.union_symm_left {s t : Finset ι} (h : Disjoint s t) {i : ι} (hi : i ∈ s)
-    (hi' : i ∈ s ∪ t) : (Equiv.Finset.union s t h).symm ⟨i, hi'⟩ = Sum.inl ⟨i, hi⟩ := by
-  simp [Equiv.symm_apply_eq]
-
-theorem Finset.union_symm_right {s t : Finset ι} (h : Disjoint s t) {i : ι} (hi : i ∈ t)
-    (hi' : i ∈ s ∪ t) : (Equiv.Finset.union s t h).symm ⟨i, hi'⟩ = Sum.inr ⟨i, hi⟩ := by
-  simp [Equiv.symm_apply_eq]
-
-lemma piFinsetUnion_left {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι}
-    (h : Disjoint s t) {f g} {i : ι} (hi : i ∈ s) (hi' : i ∈ s ∪ t) :
-    Equiv.piFinsetUnion α h (f, g) ⟨i, hi'⟩ = f ⟨i, hi⟩ := by
-  simp [Equiv.piFinsetUnion, eqRec_eq_cast]
-  -- painful dependent type manipulations. The library hasn't much to help
-  show cast ?h' ((sumPiEquivProdPi fun b ↦ α ↑((Finset.union s t h) b)).symm (f, g) _) = _
-  generalize ?h' = h'
-  set x := ((Finset.union s t h).symm { val := i, property := hi' })
-  have : x = Sum.inl ⟨i, hi⟩ := Finset.union_symm_left h hi hi'
-  show cast h' ((sumPiEquivProdPi fun b ↦ α ↑((Finset.union s t h) b)).symm (f, g) x) = _
-  clear_value x
-  subst this
-  rfl
-
-lemma piFinsetUnion_right {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι}
-    (h : Disjoint s t) {f g} {i : ι} (hi : i ∈ t) (hi' : i ∈ s ∪ t) :
-    Equiv.piFinsetUnion α h (f, g) ⟨i, hi'⟩ = g ⟨i, hi⟩ := by
-  simp [Equiv.piFinsetUnion, eqRec_eq_cast]
-  -- painful dependent type manipulations. The library hasn't much to help
-  show cast ?h' ((sumPiEquivProdPi fun b ↦ α ↑((Finset.union s t h) b)).symm (f, g) _) = _
-  generalize ?h' = h'
-  set x := ((Finset.union s t h).symm { val := i, property := hi' })
-  have : x = Sum.inr ⟨i, hi⟩ := Finset.union_symm_right h hi hi'
-  show cast h' ((sumPiEquivProdPi fun b ↦ α ↑((Finset.union s t h) b)).symm (f, g) x) = _
-  clear_value x
-  subst this
-  rfl
-
-end Equiv
 
 end updateFinset
 
@@ -776,10 +719,8 @@ theorem snorm_le_snorm_fderiv (hE : 2 ≤ finrank ℝ E)
     inv_mul_cancel h0p.ne', NNReal.rpow_one]
   exact hC hu h2u
 
-variable (F' : Type*) [NormedAddCommGroup F'] [NormedSpace ℝ F'] [CompleteSpace F']
+variable (F' : Type*) [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [CompleteSpace F']
 set_option linter.unusedVariables false in
-set_option profiler true in
-set_option trace.profiler true in
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
 with Haar measure, let `1 < p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
