@@ -87,9 +87,10 @@ variable {G X Y Z : Type*} [Group G] [MulAction G X] [MulAction G Y]
 variable [TopologicalSpace G] [TopologicalSpace X] [TopologicalSpace Y]
 variable [TopologicalSpace Z]
 
-/-- If a group acts properly then in particularl it acts continuously. -/
-@[to_additive "If a group acts properly then in particularl it acts continuously."]
-instance continuousSmul_of_properSMul [ProperSMul G X] : ContinuousSMul G X where
+/-- If a group acts properly then in particular it acts continuously. -/
+@[to_additive "If a group acts properly then in particular it acts continuously."]
+-- See note [lower instance property]
+instance (priority := 100) [ProperSMul G X] : ContinuousSMul G X where
   continuous_smul := (isProperMap_smul_pair G X).continuous.fst
 
 /-- A group `G` acts properly on a topological space `X` if and only if for all ultrafilters
