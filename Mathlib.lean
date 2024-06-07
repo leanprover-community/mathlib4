@@ -2478,7 +2478,9 @@ import Mathlib.GroupTheory.Commensurable
 import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.CommutingProbability
 import Mathlib.GroupTheory.Complement
-import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Congruence.Basic
+import Mathlib.GroupTheory.Congruence.BigOperators
+import Mathlib.GroupTheory.Congruence.Opposite
 import Mathlib.GroupTheory.Coprod.Basic
 import Mathlib.GroupTheory.CoprodI
 import Mathlib.GroupTheory.Coset
@@ -3481,7 +3483,9 @@ import Mathlib.RingTheory.Coalgebra.Basic
 import Mathlib.RingTheory.Coalgebra.Equiv
 import Mathlib.RingTheory.Coalgebra.Hom
 import Mathlib.RingTheory.Complex
-import Mathlib.RingTheory.Congruence
+import Mathlib.RingTheory.Congruence.Basic
+import Mathlib.RingTheory.Congruence.BigOperators
+import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Coprime.Lemmas
