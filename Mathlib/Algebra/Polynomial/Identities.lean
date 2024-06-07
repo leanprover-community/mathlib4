@@ -102,7 +102,7 @@ def powSubPowFactor (x y : R) : ∀ i : ℕ, { z : R // x ^ i - y ^ i = z * (x -
 for some `z` in the ring.
 -/
 def evalSubFactor (f : R[X]) (x y : R) : { z : R // f.eval x - f.eval y = z * (x - y) } := by
-  refine' ⟨f.sum fun i r => r * (powSubPowFactor x y i).val, _⟩
+  refine ⟨f.sum fun i r => r * (powSubPowFactor x y i).val, ?_⟩
   delta eval; rw [eval₂_eq_sum, eval₂_eq_sum];
   simp only [sum, ← Finset.sum_sub_distrib, Finset.sum_mul]
   dsimp

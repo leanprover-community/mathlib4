@@ -198,7 +198,7 @@ lemma UniformEquicontinuous.uniformEquicontinuousOn {F : ι → β → α} (H : 
 
 lemma UniformEquicontinuousOn.mono {F : ι → β → α} {S T : Set β}
     (H : UniformEquicontinuousOn F T) (hST : S ⊆ T) : UniformEquicontinuousOn F S :=
-  fun U hU ↦ (H U hU).filter_mono <| inf_le_inf_left _ <| principal_mono.mpr <| prod_mono hST hST
+  fun U hU ↦ (H U hU).filter_mono <| by gcongr
 
 lemma uniformEquicontinuousOn_univ (F : ι → β → α) :
     UniformEquicontinuousOn F univ ↔ UniformEquicontinuous F := by
@@ -208,6 +208,7 @@ lemma uniformEquicontinuous_restrict_iff (F : ι → β → α) {S : Set β} :
     UniformEquicontinuous (S.restrict ∘ F) ↔ UniformEquicontinuousOn F S := by
   rw [UniformEquicontinuous, UniformEquicontinuousOn]
   conv in _ ⊓ _ => rw [← Subtype.range_val (s := S), ← range_prod_map, ← map_comap]
+  rfl
 
 /-!
 ### Empty index type
@@ -309,7 +310,7 @@ theorem equicontinuousWithinAt_iff_pair {F : ι → X → α} {S : Set X} {x₀ 
       ∀ U ∈ 𝓤 α, ∃ V ∈ 𝓝[S] x₀, ∀ x ∈ V, ∀ y ∈ V, ∀ i, (F i x, F i y) ∈ U := by
   constructor <;> intro H U hU
   · rcases comp_symm_mem_uniformity_sets hU with ⟨V, hV, hVsymm, hVU⟩
-    refine' ⟨_, H V hV, fun x hx y hy i => hVU (prod_mk_mem_compRel _ (hy i))⟩
+    refine ⟨_, H V hV, fun x hx y hy i => hVU (prod_mk_mem_compRel ?_ (hy i))⟩
     exact hVsymm.mk_mem_comm.mp (hx i)
   · rcases H U hU with ⟨V, hV, hVU⟩
     filter_upwards [hV] using fun x hx i => hVU x₀ (mem_of_mem_nhdsWithin hx₀ hV) x hx i

@@ -134,7 +134,7 @@ def succ₂ (t : ℕ × ℕ) : ℕ × ℕ :=
 #align pnat.xgcd_type.succ₂ PNat.XgcdType.succ₂
 
 theorem v_eq_succ_vp : u.v = succ₂ u.vp := by
-  ext <;> dsimp [v, vp, w, z, a, b, succ₂] <;> (repeat' rw [Nat.succ_eq_add_one]; ring_nf)
+  ext <;> dsimp [v, vp, w, z, a, b, succ₂] <;> ring_nf
 #align pnat.xgcd_type.v_eq_succ_vp PNat.XgcdType.v_eq_succ_vp
 
 /-- `IsSpecial` holds if the matrix has determinant one. -/
@@ -261,10 +261,10 @@ theorem start_isSpecial (a b : ℕ+) : (start a b).IsSpecial := by
 
 theorem start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
   dsimp [start, v, XgcdType.a, XgcdType.b, w, z]
-  have : succ 0 = 1 := rfl
-  rw [this, one_mul, one_mul, zero_mul, zero_mul, zero_add, add_zero]
-  rw [← Nat.pred_eq_sub_one, ← Nat.pred_eq_sub_one]
-  rw [Nat.succ_pred_eq_of_pos a.pos, Nat.succ_pred_eq_of_pos b.pos]
+  rw [one_mul, one_mul, zero_mul, zero_mul]
+  have := a.pos
+  have := b.pos
+  congr <;> omega
 #align pnat.xgcd_type.start_v PNat.XgcdType.start_v
 
 /-- `finish` happens when the reducing process ends. -/
@@ -442,12 +442,12 @@ def gcdB' : ℕ+ :=
 
 theorem gcdA'_coe : (gcdA' a b : ℕ) = gcdW a b + gcdX a b := by
   dsimp [gcdA', gcdX, gcdW, XgcdType.w]
-  rw [Nat.succ_eq_add_one, Nat.succ_eq_add_one, add_right_comm]
+  rw [add_right_comm]
 #align pnat.gcd_a'_coe PNat.gcdA'_coe
 
 theorem gcdB'_coe : (gcdB' a b : ℕ) = gcdY a b + gcdZ a b := by
   dsimp [gcdB', gcdY, gcdZ, XgcdType.z]
-  rw [Nat.succ_eq_add_one, Nat.succ_eq_add_one, add_assoc]
+  rw [add_assoc]
 #align pnat.gcd_b'_coe PNat.gcdB'_coe
 
 theorem gcd_props :

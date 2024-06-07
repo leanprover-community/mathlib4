@@ -158,7 +158,9 @@ def suspiciousLean3Name (s : String) : Bool := Id.run do
         addConstInfo id4 c none
       else if align.precheck.get (← getOptions) then
         let note := "(add `set_option align.precheck false` to suppress this message)"
-        let inner := match ← try some <$> resolveGlobalConstWithInfos id4 catch _ => pure none with
+        let inner := match ←
+          try some <$> (liftCoreM <| realizeGlobalConstWithInfos id4)
+          catch _ => pure none with
         | none => m!""
         | some cs => m!" Did you mean:\n\n\
               {("\n":MessageData).joinSep (cs.map fun c' => m!"  #align {id3} {c'}")}\n\n\

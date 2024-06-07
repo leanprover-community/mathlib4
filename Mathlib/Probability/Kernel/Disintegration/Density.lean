@@ -248,7 +248,12 @@ lemma setIntegral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
   simp_rw [sUnion_eq_iUnion]
   have h_disj : Pairwise (Disjoint on fun i : S ↦ (i : Set γ)) := by
     intro u v huv
-    simp only [Finset.coe_sort_coe, Function.onFun]
+    -- Adaptation note: nightly-2024-03-16
+    -- Previously `Function.onFun` unfolded in the following `simp only`,
+    -- but now needs a `rw`.
+    -- This may be a bug: a no import minimization may be required.
+    -- simp only [Finset.coe_sort_coe, Function.onFun]
+    rw [Function.onFun]
     refine disjoint_countablePartition (hS_subset (by simp)) (hS_subset (by simp)) ?_
     rwa [ne_eq, ← Subtype.ext_iff]
   rw [integral_iUnion, iUnion_prod_const, measure_iUnion,
@@ -316,7 +321,6 @@ lemma densityProcess_mono_set (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (x : γ
     exact meas_countablePartitionSet_le_of_fst_le hκν n a x s
   rw [ENNReal.toReal_le_toReal (h_ne_top s) (h_ne_top s')]
   gcongr
-  simp [prod_subset_prod_iff, subset_rfl, h]
 
 lemma densityProcess_mono_kernel_left {κ' : kernel α (γ × β)} (hκκ' : κ ≤ κ')
     (hκ'ν : fst κ' ≤ ν) (n : ℕ) (a : α) (x : γ) (s : Set β) :
@@ -386,8 +390,7 @@ lemma tendsto_densityProcess_atTop_empty_of_antitone (κ : kernel α (γ × β))
       simp only [le_eq_subset, prod_subset_prod_iff, subset_rfl, true_and]
       exact Or.inl <| hseq hmm'
     · exact ⟨0, measure_ne_top _ _⟩
-  · simp only [prod_empty, OuterMeasure.empty', ne_eq, not_true_eq_false, false_or, h0,
-      not_false_iff]
+  · exact .inr h0
 
 lemma tendsto_densityProcess_atTop_of_antitone (κ : kernel α (γ × β)) (ν : kernel α γ)
     [IsFiniteKernel κ] (n : ℕ) (a : α) (x : γ)
@@ -669,7 +672,7 @@ lemma tendsto_integral_density_of_antitone (hκν : fst κ ≤ ν) [IsFiniteKern
   · refine ⟨0, measure_ne_top _ _⟩
   convert h
   rw [← prod_iInter, hseq_iInter]
-  simp only [ne_eq, prod_empty, OuterMeasure.empty', forall_exists_index]
+  simp
 
 lemma tendsto_density_atTop_ae_of_antitone (hκν : fst κ ≤ ν) [IsFiniteKernel ν] (a : α)
     (seq : ℕ → Set β) (hseq : Antitone seq) (hseq_iInter : ⋂ i, seq i = ∅)

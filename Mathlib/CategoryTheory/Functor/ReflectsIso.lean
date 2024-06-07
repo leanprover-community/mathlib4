@@ -42,8 +42,7 @@ class Functor.ReflectsIsomorphisms (F : C ⥤ D) : Prop where
   reflects : ∀ {A B : C} (f : A ⟶ B) [IsIso (F.map f)], IsIso f
 #align category_theory.reflects_isomorphisms CategoryTheory.Functor.ReflectsIsomorphisms
 
--- deprecated on 2024-04-06
-@[deprecated] alias ReflectsIsomorphisms := Functor.ReflectsIsomorphisms
+@[deprecated (since := "2024-04-06")] alias ReflectsIsomorphisms := Functor.ReflectsIsomorphisms
 
 /-- If `F` reflects isos and `F.map f` is an iso, then `f` is an iso. -/
 theorem isIso_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [IsIso (F.map f)]
@@ -51,11 +50,18 @@ theorem isIso_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [IsIso (F.ma
   ReflectsIsomorphisms.reflects F f
 #align category_theory.is_iso_of_reflects_iso CategoryTheory.isIso_of_reflects_iso
 
+lemma isIso_iff_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [F.ReflectsIsomorphisms] :
+    IsIso (F.map f) ↔ IsIso f :=
+  ⟨fun _ => isIso_of_reflects_iso f F, fun _ => inferInstance⟩
+
+lemma Functor.FullyFaithful.reflectsIsomorphisms {F : C ⥤ D} (hF : F.FullyFaithful) :
+    F.ReflectsIsomorphisms where
+  reflects _ _ := hF.isIso_of_isIso_map _
+
 instance (priority := 100) reflectsIsomorphisms_of_full_and_faithful
     (F : C ⥤ D) [F.Full] [F.Faithful] :
-    F.ReflectsIsomorphisms where
-  reflects f i :=
-    ⟨⟨F.preimage (inv (F.map f)), ⟨F.map_injective (by simp), F.map_injective (by simp)⟩⟩⟩
+    F.ReflectsIsomorphisms :=
+  (Functor.FullyFaithful.ofFullyFaithful F).reflectsIsomorphisms
 #align category_theory.of_full_and_faithful CategoryTheory.reflectsIsomorphisms_of_full_and_faithful
 
 instance reflectsIsomorphisms_of_comp (F : C ⥤ D) (G : D ⥤ E)
@@ -73,6 +79,15 @@ instance (priority := 100) reflectsIsomorphisms_of_reflectsMonomorphisms_of_refl
     haveI : Mono f := mono_of_mono_map F inferInstance
     exact isIso_of_mono_of_epi f
 #align category_theory.reflects_isomorphisms_of_reflects_monomorphisms_of_reflects_epimorphisms CategoryTheory.reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms
+
+instance (F : D ⥤ E) [F.ReflectsIsomorphisms] :
+    ((whiskeringRight C D E).obj F).ReflectsIsomorphisms where
+  reflects {X Y} f _ := by
+    rw [NatTrans.isIso_iff_isIso_app]
+    intro Z
+    rw [← isIso_iff_of_reflects_iso _ F]
+    change IsIso ((((whiskeringRight C D E).obj F).map f).app Z)
+    infer_instance
 
 end ReflectsIso
 

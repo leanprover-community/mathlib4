@@ -3,6 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
+import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Pairwise
@@ -17,8 +18,7 @@ imports.
 -/
 
 assert_not_exists AddMonoidWithOne
--- TODO (after #11855)
--- assert_not_exists MulZeroClass
+assert_not_exists MonoidWithZero
 
 universe u v w
 
@@ -30,6 +30,10 @@ variable {f : I → Type v}
 
 -- The family of types already equipped with instances
 variable (x y : ∀ i, f i) (i j : I)
+
+@[to_additive (attr := simp)]
+theorem Set.range_one {α β : Type*} [One β] [Nonempty α] : Set.range (1 : α → β) = {1} :=
+  range_const
 
 @[to_additive]
 theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : β) ∈ s)] :
@@ -366,14 +370,14 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     {k l m n : I} {u v : M} (hu : u ≠ 1) (hv : v ≠ 1) :
     (mulSingle k u : I → M) * mulSingle l v = mulSingle m u * mulSingle n v ↔
       k = m ∧ l = n ∨ u = v ∧ k = n ∧ l = m ∨ u * v = 1 ∧ k = l ∧ m = n := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · have hk := congr_fun h k
     have hl := congr_fun h l
     have hm := (congr_fun h m).symm
     have hn := (congr_fun h n).symm
     simp only [mul_apply, mulSingle_apply, if_pos rfl] at hk hl hm hn
     rcases eq_or_ne k m with (rfl | hkm)
-    · refine' Or.inl ⟨rfl, not_ne_iff.mp fun hln => (hv _).elim⟩
+    · refine Or.inl ⟨rfl, not_ne_iff.mp fun hln => (hv ?_).elim⟩
       rcases eq_or_ne k l with (rfl | hkl)
       · rwa [if_neg hln.symm, if_neg hln.symm, one_mul, one_mul] at hn
       · rwa [if_neg hkl.symm, if_neg hln, one_mul, one_mul] at hl
@@ -505,3 +509,49 @@ theorem mulSingle_strictMono : StrictMono (Pi.mulSingle i : f i → ∀ i, f i) 
 #align pi.single_strict_mono Pi.single_strictMono
 
 end Pi
+
+namespace Sigma
+
+variable {α : Type*} {β : α → Type*} {γ : ∀ a, β a → Type*}
+
+@[to_additive (attr := simp)]
+theorem curry_one [∀ a b, One (γ a b)] : Sigma.curry (1 : (i : Σ a, β a) → γ i.1 i.2) = 1 :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem uncurry_one [∀ a b, One (γ a b)] : Sigma.uncurry (1 : ∀ a b, γ a b) = 1 :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem curry_mul [∀ a b, Mul (γ a b)] (x y : (i : Σ a, β a) → γ i.1 i.2) :
+    Sigma.curry (x * y) = Sigma.curry x * Sigma.curry y :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem uncurry_mul [∀ a b, Mul (γ a b)] (x y : ∀ a b, γ a b) :
+    Sigma.uncurry (x * y) = Sigma.uncurry x * Sigma.uncurry y :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem curry_inv [∀ a b, Inv (γ a b)] (x : (i : Σ a, β a) → γ i.1 i.2) :
+    Sigma.curry (x⁻¹) = (Sigma.curry x)⁻¹ :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem uncurry_inv [∀ a b, Inv (γ a b)] (x : ∀ a b, γ a b) :
+    Sigma.uncurry (x⁻¹) = (Sigma.uncurry x)⁻¹ :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem curry_mulSingle [DecidableEq α] [∀ a, DecidableEq (β a)] [∀ a b, One (γ a b)]
+    (i : Σ a, β a) (x : γ i.1 i.2) :
+    Sigma.curry (Pi.mulSingle i x) = Pi.mulSingle i.1 (Pi.mulSingle i.2 x) := by
+  simp only [Pi.mulSingle, Sigma.curry_update, Sigma.curry_one, Pi.one_apply]
+
+@[to_additive (attr := simp)]
+theorem uncurry_mulSingle_mulSingle [DecidableEq α] [∀ a, DecidableEq (β a)] [∀ a b, One (γ a b)]
+    (a : α) (b : β a) (x : γ a b) :
+    Sigma.uncurry (Pi.mulSingle a (Pi.mulSingle b x)) = Pi.mulSingle (Sigma.mk a b) x := by
+  rw [← curry_mulSingle ⟨a, b⟩, uncurry_curry]
+
+end Sigma

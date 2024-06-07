@@ -55,8 +55,6 @@ open LinearMap
 
 open Matrix Polynomial
 
-open scoped BigOperators
-
 open scoped Matrix
 
 namespace Algebra
@@ -134,7 +132,7 @@ theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
     ← coeff_map,
     prod_roots_eq_coeff_zero_of_monic_of_split (this.map _) ((splits_id_iff_splits _).2 hf),
     this.natDegree_map, map_pow, ← mul_assoc, ← mul_pow]
-  · simp only [map_neg, _root_.map_one, neg_mul, neg_neg, one_pow, one_mul]
+  simp only [map_neg, _root_.map_one, neg_mul, neg_neg, one_pow, one_mul]
 #align algebra.power_basis.norm_gen_eq_prod_roots Algebra.PowerBasis.norm_gen_eq_prod_roots
 
 end EqProdRoots
@@ -306,9 +304,7 @@ theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L
   apply NoZeroSMulDivisors.algebraMap_injective L (AlgebraicClosure L)
   rw [map_prod (algebraMap L (AlgebraicClosure L))]
   rw [← Fintype.prod_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
-  · rw [← norm_eq_prod_embeddings]
-    · simp only [algebraMap_eq_smul_one, smul_one_smul]
-      rfl
+  · rw [← norm_eq_prod_embeddings _ _ x, ← IsScalarTower.algebraMap_apply]
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
       AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, id.map_eq_id, RingHom.id_apply]
@@ -318,7 +314,7 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSep
     [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
   have hx' : IsIntegral K x := hx.tower_top
   rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure L)).injective, norm_eq_prod_roots]
-  · refine' (IsIntegral.multiset_prod fun y hy => _).pow _
+  · refine (IsIntegral.multiset_prod fun y hy => ?_).pow _
     rw [mem_roots_map (minpoly.ne_zero hx')] at hy
     use minpoly R x, minpoly.monic hx
     rw [← aeval_def] at hy ⊢
@@ -385,14 +381,14 @@ theorem norm_norm [Algebra L F] [IsScalarTower K L F] [IsSeparable K F] (x : F) 
         haveI := σ.toRingHom.toAlgebra
         ∏ π : F →ₐ[L] A, π x = σ (norm L x)
       by simp_rw [← Finset.univ_sigma_univ, Finset.prod_sigma, this, norm_eq_prod_embeddings]
-    · intro σ
-      letI : Algebra L A := σ.toRingHom.toAlgebra
-      rw [← norm_eq_prod_embeddings L A (_ : F)]
-      rfl
+    intro σ
+    letI : Algebra L A := σ.toRingHom.toAlgebra
+    rw [← norm_eq_prod_embeddings L A (_ : F)]
+    rfl
   · rw [norm_eq_one_of_not_module_finite hKF]
     by_cases hKL : FiniteDimensional K L
     · have hLF : ¬FiniteDimensional L F := by
-        refine' (mt _) hKF
+        refine (mt ?_) hKF
         intro hKF
         exact FiniteDimensional.trans K L F
       rw [norm_eq_one_of_not_module_finite hLF, _root_.map_one]

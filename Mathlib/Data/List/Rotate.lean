@@ -80,7 +80,8 @@ theorem rotate'_rotate' : ∀ (l : List α) (n m : ℕ), (l.rotate' n).rotate' m
   | a :: l, 0, m => by simp
   | [], n, m => by simp
   | a :: l, n + 1, m => by
-    rw [rotate'_cons_succ, rotate'_rotate' _ n, Nat.add_right_comm, ← rotate'_cons_succ]
+    rw [rotate'_cons_succ, rotate'_rotate' _ n, Nat.add_right_comm, ← rotate'_cons_succ,
+      Nat.succ_eq_add_one]
 #align list.rotate'_rotate' List.rotate'_rotate'
 
 @[simp]
@@ -94,8 +95,8 @@ theorem rotate'_length_mul (l : List α) : ∀ n : ℕ, l.rotate' (l.length * n)
   | n + 1 =>
     calc
       l.rotate' (l.length * (n + 1)) =
-          (l.rotate' (l.length * n)).rotate' (l.rotate' (l.length * n)).length :=
-        by simp [-rotate'_length, Nat.mul_succ, rotate'_rotate']
+          (l.rotate' (l.length * n)).rotate' (l.rotate' (l.length * n)).length := by
+        simp [-rotate'_length, Nat.mul_succ, rotate'_rotate']
       _ = l := by rw [rotate'_length, rotate'_length_mul l n]
 #align list.rotate'_length_mul List.rotate'_length_mul
 
@@ -116,7 +117,7 @@ theorem rotate_eq_rotate' (l : List α) (n : ℕ) : l.rotate n = l.rotate' n :=
 #align list.rotate_eq_rotate' List.rotate_eq_rotate'
 
 theorem rotate_cons_succ (l : List α) (a : α) (n : ℕ) :
-    (a :: l : List α).rotate n.succ = (l ++ [a]).rotate n := by
+    (a :: l : List α).rotate (n + 1) = (l ++ [a]).rotate n := by
   rw [rotate_eq_rotate', rotate_eq_rotate', rotate'_cons_succ]
 #align list.rotate_cons_succ List.rotate_cons_succ
 
@@ -353,7 +354,7 @@ theorem reverse_rotate (l : List α) (n : ℕ) :
   · simp
   · cases' l with hd tl
     · simp
-    · rw [rotate_cons_succ, Nat.succ_eq_add_one, ← rotate_rotate, hn]
+    · rw [rotate_cons_succ, ← rotate_rotate, hn]
       simp
 #align list.reverse_rotate List.reverse_rotate
 
@@ -513,12 +514,12 @@ theorem isRotated_reverse_iff : l.reverse ~r l'.reverse ↔ l ~r l' := by
 #align list.is_rotated_reverse_iff List.isRotated_reverse_iff
 
 theorem isRotated_iff_mod : l ~r l' ↔ ∃ n ≤ l.length, l.rotate n = l' := by
-  refine' ⟨fun h => _, fun ⟨n, _, h⟩ => ⟨n, h⟩⟩
+  refine ⟨fun h => ?_, fun ⟨n, _, h⟩ => ⟨n, h⟩⟩
   obtain ⟨n, rfl⟩ := h
   cases' l with hd tl
   · simp
-  · refine' ⟨n % (hd :: tl).length, _, rotate_mod _ _⟩
-    refine' (Nat.mod_lt _ _).le
+  · refine ⟨n % (hd :: tl).length, ?_, rotate_mod _ _⟩
+    refine (Nat.mod_lt _ ?_).le
     simp
 #align list.is_rotated_iff_mod List.isRotated_iff_mod
 
@@ -626,7 +627,7 @@ theorem cyclicPermutations_rotate (l : List α) (k : ℕ) :
     cases l
     · simp
     · rw [length_cyclicPermutations_of_ne_nil] <;> simp
-  refine' ext_get this fun n hn hn' => _
+  refine ext_get this fun n hn hn' => ?_
   rw [get_rotate, get_cyclicPermutations, rotate_rotate, ← rotate_mod, Nat.add_comm]
   cases l <;> simp
 #align list.cyclic_permutations_rotate List.cyclicPermutations_rotate

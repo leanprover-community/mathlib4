@@ -95,7 +95,7 @@ variable (D : GlueData.{u})
 
 local notation "𝖣" => D.toGlueData
 
-/-- The glue data of locally ringed spaces spaces associated to a family of glue data of schemes. -/
+/-- The glue data of locally ringed spaces associated to a family of glue data of schemes. -/
 abbrev toLocallyRingedSpaceGlueData : LocallyRingedSpace.GlueData :=
   { f_open := D.f_open
     toGlueData := 𝖣.mapGlueData forgetToLocallyRingedSpace }
@@ -128,13 +128,12 @@ def gluedScheme : Scheme := by
     D.toLocallyRingedSpaceGlueData.toGlueData.glued
   intro x
   obtain ⟨i, y, rfl⟩ := D.toLocallyRingedSpaceGlueData.ι_jointly_surjective x
-  refine' ⟨_, _ ≫ D.toLocallyRingedSpaceGlueData.toGlueData.ι i, _⟩
+  refine ⟨?_, ?_ ≫ D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   swap
   · exact (D.U i).affineCover.map y
   constructor
-  · dsimp [-Set.mem_range]
-    rw [coe_comp, Set.range_comp]
-    refine' Set.mem_image_of_mem _ _
+  · erw [TopCat.coe_comp, Set.range_comp] -- now `erw` after #13170
+    refine Set.mem_image_of_mem _ ?_
     exact (D.U i).affineCover.Covers y
   · infer_instance
 #align algebraic_geometry.Scheme.glue_data.glued_Scheme AlgebraicGeometry.Scheme.GlueData.gluedScheme
@@ -143,10 +142,9 @@ instance : CreatesColimit 𝖣.diagram.multispan forgetToLocallyRingedSpace :=
   createsColimitOfFullyFaithfulOfIso D.gluedScheme
     (HasColimit.isoOfNatIso (𝖣.diagramIso forgetToLocallyRingedSpace).symm)
 
--- Porting note: we need to use `CommRingCatMax.{u, u}` instead of just `CommRingCat`.
 instance : PreservesColimit (𝖣.diagram.multispan) forgetToTop :=
   inferInstanceAs (PreservesColimit (𝖣.diagram).multispan (forgetToLocallyRingedSpace ⋙
-      LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget CommRingCatMax.{u, u}))
+      LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget CommRingCat))
 
 instance : HasMulticoequalizer 𝖣.diagram :=
   hasColimit_of_created _ forgetToLocallyRingedSpace
@@ -244,12 +242,14 @@ def Rel (a b : Σ i, ((D.U i).carrier : Type _)) : Prop :=
 
 theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
     (𝖣.ι i).1.base x = (𝖣.ι j).1.base y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
-  refine' Iff.trans _
+  refine Iff.trans ?_
     (TopCat.GlueData.ι_eq_iff_rel
       D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
       i j x y)
   rw [← ((TopCat.mono_iff_injective D.isoCarrier.inv).mp _).eq_iff]
-  · simp_rw [← comp_apply, ← D.ι_isoCarrier_inv]; rfl
+  · erw [← comp_apply] -- now `erw` after #13170
+    simp_rw [← D.ι_isoCarrier_inv]
+    rfl -- `rfl` was not needed before #13170
   · infer_instance
 #align algebraic_geometry.Scheme.glue_data.ι_eq_iff AlgebraicGeometry.Scheme.GlueData.ι_eq_iff
 
@@ -263,6 +263,7 @@ theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι
 #align algebraic_geometry.Scheme.glue_data.is_open_iff AlgebraicGeometry.Scheme.GlueData.isOpen_iff
 
 /-- The open cover of the glued space given by the glue data. -/
+@[simps (config := .lemmasOnly)]
 def openCover (D : Scheme.GlueData) : OpenCover D.glued where
   J := D.J
   obj := D.U
@@ -283,10 +284,10 @@ def gluedCoverT' (x y z : 𝒰.J) :
         (pullback.fst : pullback (𝒰.map x) (𝒰.map z) ⟶ _) ⟶
       pullback (pullback.fst : pullback (𝒰.map y) (𝒰.map z) ⟶ _)
         (pullback.fst : pullback (𝒰.map y) (𝒰.map x) ⟶ _) := by
-  refine' (pullbackRightPullbackFstIso _ _ _).hom ≫ _
-  refine' _ ≫ (pullbackSymmetry _ _).hom
-  refine' _ ≫ (pullbackRightPullbackFstIso _ _ _).inv
-  refine' pullback.map _ _ _ _ (pullbackSymmetry _ _).hom (𝟙 _) (𝟙 _) _ _
+  refine (pullbackRightPullbackFstIso _ _ _).hom ≫ ?_
+  refine ?_ ≫ (pullbackSymmetry _ _).hom
+  refine ?_ ≫ (pullbackRightPullbackFstIso _ _ _).inv
+  refine pullback.map _ _ _ _ (pullbackSymmetry _ _).hom (𝟙 _) (𝟙 _) ?_ ?_
   · simp [pullback.condition]
   · simp
 #align algebraic_geometry.Scheme.open_cover.glued_cover_t' AlgebraicGeometry.Scheme.OpenCover.gluedCoverT'
@@ -317,14 +318,14 @@ theorem gluedCoverT'_snd_snd (x y z : 𝒰.J) :
 
 theorem glued_cover_cocycle_fst (x y z : 𝒰.J) :
     gluedCoverT' 𝒰 x y z ≫ gluedCoverT' 𝒰 y z x ≫ gluedCoverT' 𝒰 z x y ≫ pullback.fst =
-      pullback.fst :=
-  by apply pullback.hom_ext <;> simp
+      pullback.fst := by
+  apply pullback.hom_ext <;> simp
 #align algebraic_geometry.Scheme.open_cover.glued_cover_cocycle_fst AlgebraicGeometry.Scheme.OpenCover.glued_cover_cocycle_fst
 
 theorem glued_cover_cocycle_snd (x y z : 𝒰.J) :
     gluedCoverT' 𝒰 x y z ≫ gluedCoverT' 𝒰 y z x ≫ gluedCoverT' 𝒰 z x y ≫ pullback.snd =
-      pullback.snd :=
-  by apply pullback.hom_ext <;> simp [pullback.condition]
+      pullback.snd := by
+  apply pullback.hom_ext <;> simp [pullback.condition]
 #align algebraic_geometry.Scheme.open_cover.glued_cover_cocycle_snd AlgebraicGeometry.Scheme.OpenCover.glued_cover_cocycle_snd
 
 theorem glued_cover_cocycle (x y z : 𝒰.J) :
@@ -371,7 +372,8 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.1.base := by
   intro x y h
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x
   obtain ⟨j, y, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective y
-  simp_rw [← comp_apply, ← SheafedSpace.comp_base, ← LocallyRingedSpace.comp_val] at h
+  erw [← comp_apply, ← comp_apply] at h -- now `erw` after #13170
+  simp_rw [← SheafedSpace.comp_base, ← LocallyRingedSpace.comp_val] at h
   erw [ι_fromGlued, ι_fromGlued] at h
   let e :=
     (TopCat.pullbackConeIsLimit _ _).conePointUniqueUpToIso
@@ -404,7 +406,7 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.1.base := by
   intro x hx
   rw [𝒰.gluedCover.isOpen_iff] at hU
   use 𝒰.fromGlued.val.base '' U ∩ Set.range (𝒰.map (𝒰.f x)).1.base
-  use Set.inter_subset_left _ _
+  use Set.inter_subset_left
   constructor
   · rw [← Set.image_preimage_eq_inter_range]
     apply (show IsOpenImmersion (𝒰.map (𝒰.f x)) from inferInstance).base_open.isOpenMap
@@ -426,7 +428,7 @@ instance : Epi 𝒰.fromGlued.val.base := by
   intro x
   obtain ⟨y, h⟩ := 𝒰.Covers x
   use (𝒰.gluedCover.ι (𝒰.f x)).1.base y
-  rw [← comp_apply]
+  erw [← comp_apply] -- now `erw` after #13170
   rw [← 𝒰.ι_fromGlued (𝒰.f x)] at h
   exact h
 
@@ -452,7 +454,7 @@ If `X` is exactly (defeq to) the gluing of `U i`, then using `Multicoequalizer.d
 def glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
     (hf : ∀ x y, (pullback.fst : pullback (𝒰.map x) (𝒰.map y) ⟶ _) ≫ f x = pullback.snd ≫ f y) :
     X ⟶ Y := by
-  refine' inv 𝒰.fromGlued ≫ _
+  refine inv 𝒰.fromGlued ≫ ?_
   fapply Multicoequalizer.desc
   · exact f
   rintro ⟨i, j⟩

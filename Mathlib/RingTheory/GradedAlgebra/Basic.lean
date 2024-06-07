@@ -41,7 +41,7 @@ graded algebra, graded ring, graded semiring, decomposition
 -/
 
 
-open DirectSum BigOperators
+open DirectSum
 
 variable {ι R A σ : Type*}
 
@@ -168,8 +168,7 @@ variable (𝒜 : ι → Submodule R A)
 
 /-- A special case of `GradedRing` with `σ = Submodule R A`. This is useful both because it
 can avoid typeclass search, and because it provides a more concise name. -/
-@[reducible]
-def GradedAlgebra :=
+abbrev GradedAlgebra :=
   GradedRing 𝒜
 #align graded_algebra GradedAlgebra
 
@@ -178,8 +177,7 @@ available. This makes the `left_inv` condition easier to prove, and phrases the 
 condition in a way that allows custom `@[ext]` lemmas to apply.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[R] ⨁ i, 𝒜 i)
+abbrev GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[R] ⨁ i, 𝒜 i)
     (right_inv : (DirectSum.coeAlgHom 𝒜).comp decompose = AlgHom.id R A)
     (left_inv : ∀ i (x : 𝒜 i), decompose (x : A) = DirectSum.of (fun i => ↥(𝒜 i)) i x) :
     GradedAlgebra 𝒜 where
@@ -278,22 +276,22 @@ def GradedRing.projZeroRingHom : A →+* A where
     rw [decompose_add]
     rfl
   map_mul' := by
-    refine' DirectSum.Decomposition.inductionOn 𝒜 (fun x => _) _ _
+    refine DirectSum.Decomposition.inductionOn 𝒜 (fun x => ?_) ?_ ?_
     · simp only [zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
     · rintro i ⟨c, hc⟩
-      refine' DirectSum.Decomposition.inductionOn 𝒜 _ _ _
+      refine DirectSum.Decomposition.inductionOn 𝒜 ?_ ?_ ?_
       · simp only [mul_zero, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
       · rintro j ⟨c', hc'⟩
-        · simp only [Subtype.coe_mk]
-          by_cases h : i + j = 0
-          · rw [decompose_of_mem_same 𝒜
-                (show c * c' ∈ 𝒜 0 from h ▸ SetLike.GradedMul.mul_mem hc hc'),
-              decompose_of_mem_same 𝒜 (show c ∈ 𝒜 0 from (add_eq_zero_iff.mp h).1 ▸ hc),
-              decompose_of_mem_same 𝒜 (show c' ∈ 𝒜 0 from (add_eq_zero_iff.mp h).2 ▸ hc')]
-          · rw [decompose_of_mem_ne 𝒜 (SetLike.GradedMul.mul_mem hc hc') h]
-            cases' show i ≠ 0 ∨ j ≠ 0 by rwa [add_eq_zero_iff, not_and_or] at h with h' h'
-            · simp only [decompose_of_mem_ne 𝒜 hc h', zero_mul]
-            · simp only [decompose_of_mem_ne 𝒜 hc' h', mul_zero]
+        simp only [Subtype.coe_mk]
+        by_cases h : i + j = 0
+        · rw [decompose_of_mem_same 𝒜
+              (show c * c' ∈ 𝒜 0 from h ▸ SetLike.GradedMul.mul_mem hc hc'),
+            decompose_of_mem_same 𝒜 (show c ∈ 𝒜 0 from (add_eq_zero_iff.mp h).1 ▸ hc),
+            decompose_of_mem_same 𝒜 (show c' ∈ 𝒜 0 from (add_eq_zero_iff.mp h).2 ▸ hc')]
+        · rw [decompose_of_mem_ne 𝒜 (SetLike.GradedMul.mul_mem hc hc') h]
+          cases' show i ≠ 0 ∨ j ≠ 0 by rwa [add_eq_zero_iff, not_and_or] at h with h' h'
+          · simp only [decompose_of_mem_ne 𝒜 hc h', zero_mul]
+          · simp only [decompose_of_mem_ne 𝒜 hc' h', mul_zero]
       · intro _ _ hd he
         simp only at hd he -- Porting note: added
         simp only [mul_add, decompose_add, add_apply, AddMemClass.coe_add, hd, he]

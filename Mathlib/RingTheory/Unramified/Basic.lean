@@ -124,7 +124,7 @@ theorem of_equiv [FormallyUnramified R A] (e : A ≃ₐ[R] B) :
   intro C _ _ I hI f₁ f₂ e'
   rw [← f₁.comp_id, ← f₂.comp_id, ← e.comp_symm, ← AlgHom.comp_assoc, ← AlgHom.comp_assoc]
   congr 1
-  refine' FormallyUnramified.comp_injective I hI _
+  refine FormallyUnramified.comp_injective I hI ?_
   rw [← AlgHom.comp_assoc, e', AlgHom.comp_assoc]
 #align algebra.formally_unramified.of_equiv Algebra.FormallyUnramified.of_equiv
 
@@ -157,8 +157,8 @@ theorem of_comp [FormallyUnramified R B] : FormallyUnramified A B := by
   intro Q _ _ I e f₁ f₂ e'
   letI := ((algebraMap A Q).comp (algebraMap R A)).toAlgebra
   letI : IsScalarTower R A Q := IsScalarTower.of_algebraMap_eq' rfl
-  refine' AlgHom.restrictScalars_injective R _
-  refine' FormallyUnramified.ext I ⟨2, e⟩ _
+  refine AlgHom.restrictScalars_injective R ?_
+  refine FormallyUnramified.ext I ⟨2, e⟩ ?_
   intro x
   exact AlgHom.congr_fun e' x
 #align algebra.formally_unramified.of_comp Algebra.FormallyUnramified.of_comp
@@ -202,7 +202,7 @@ theorem of_isLocalization : FormallyUnramified R Rₘ := by
   constructor
   intro Q _ _ I _ f₁ f₂ _
   apply AlgHom.coe_ringHom_injective
-  refine' IsLocalization.ringHom_ext M _
+  refine IsLocalization.ringHom_ext M ?_
   ext
   simp
 #align algebra.formally_unramified.of_is_localization Algebra.FormallyUnramified.of_isLocalization

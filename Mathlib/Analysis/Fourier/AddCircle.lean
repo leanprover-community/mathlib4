@@ -210,12 +210,12 @@ linear span of these functions. -/
 theorem fourierSubalgebra_coe :
     Subalgebra.toSubmodule (@fourierSubalgebra T).toSubalgebra = span ℂ (range (@fourier T)) := by
   apply adjoin_eq_span_of_subset
-  refine' Subset.trans _ Submodule.subset_span
+  refine Subset.trans ?_ Submodule.subset_span
   intro x hx
   refine Submonoid.closure_induction hx (fun _ => id) ⟨0, ?_⟩ ?_
   · ext1 z; exact fourier_zero
   · rintro _ _ ⟨m, rfl⟩ ⟨n, rfl⟩
-    refine' ⟨m + n, _⟩
+    refine ⟨m + n, ?_⟩
     ext1 z
     exact fourier_add
 #align fourier_subalgebra_coe fourierSubalgebra_coe
@@ -230,7 +230,7 @@ variable [hT : Fact (0 < T)]
 separates points. -/
 theorem fourierSubalgebra_separatesPoints : (@fourierSubalgebra T).SeparatesPoints := by
   intro x y hxy
-  refine' ⟨_, ⟨fourier 1, subset_adjoin ⟨1, rfl⟩, rfl⟩, _⟩
+  refine ⟨_, ⟨fourier 1, subset_adjoin ⟨1, rfl⟩, rfl⟩, ?_⟩
   dsimp only; rw [fourier_one, fourier_one]
   contrapose! hxy
   rw [Subtype.coe_inj] at hxy
@@ -348,7 +348,7 @@ theorem fourierCoeffOn_eq_integral {a b : ℝ} (f : ℝ → E) (n : ℤ) (hab : 
   rw [fourierCoeffOn, fourierCoeff_eq_intervalIntegral _ _ a, add_sub, add_sub_cancel_left]
   congr 1
   simp_rw [intervalIntegral.integral_of_le hab.le]
-  refine' setIntegral_congr measurableSet_Ioc fun x hx => _
+  refine setIntegral_congr measurableSet_Ioc fun x hx => ?_
   rw [liftIoc_coe_apply]
   rwa [add_sub, add_sub_cancel_left]
 #align fourier_coeff_on_eq_integral fourierCoeffOn_eq_integral
@@ -369,7 +369,7 @@ theorem fourierCoeff_liftIoc_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
     fourierCoeffOn (lt_add_of_pos_right a hT.out) f n := by
   rw [fourierCoeffOn_eq_integral, fourierCoeff_eq_intervalIntegral, add_sub_cancel_left a T]
   · congr 1
-    refine' intervalIntegral.integral_congr_ae (ae_of_all _ fun x hx => _)
+    refine intervalIntegral.integral_congr_ae (ae_of_all _ fun x hx => ?_)
     rw [liftIoc_coe_apply]
     rwa [uIoc_of_le (lt_add_of_pos_right a hT.out).le] at hx
 #align fourier_coeff_lift_Ioc_eq fourierCoeff_liftIoc_eq
@@ -381,7 +381,7 @@ theorem fourierCoeff_liftIco_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
   congr 1
   simp_rw [intervalIntegral.integral_of_le (lt_add_of_pos_right a hT.out).le]
   iterate 2 rw [integral_Ioc_eq_integral_Ioo]
-  refine' setIntegral_congr measurableSet_Ioo fun x hx => _
+  refine setIntegral_congr measurableSet_Ioo fun x hx => ?_
   rw [liftIco_coe_apply (Ioo_subset_Ico_self hx)]
 #align fourier_coeff_lift_Ico_eq fourierCoeff_liftIco_eq
 
@@ -488,9 +488,9 @@ theorem hasDerivAt_fourier (n : ℤ) (x : ℝ) :
     HasDerivAt (fun y : ℝ => fourier n (y : AddCircle T))
       (2 * π * I * n / T * fourier n (x : AddCircle T)) x := by
   simp_rw [fourier_coe_apply]
-  refine' (_ : HasDerivAt (fun y => exp (2 * π * I * n * y / T)) _ _).comp_ofReal
+  refine (?_ : HasDerivAt (fun y => exp (2 * π * I * n * y / T)) _ _).comp_ofReal
   rw [(fun α β => by ring : ∀ α β : ℂ, α * exp β = exp β * α)]
-  refine' (hasDerivAt_exp _).comp ↑x _
+  refine (hasDerivAt_exp _).comp (x : ℂ) ?_
   convert hasDerivAt_mul_const (2 * ↑π * I * ↑n / T) using 1
   ext1 y; ring
 #align has_deriv_at_fourier hasDerivAt_fourier

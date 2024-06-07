@@ -194,17 +194,23 @@ def functorCategoryMonoidalEquivalence : MonoidalFunctor (Action V G) (SingleObj
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence Action.functorCategoryMonoidalEquivalence
 
+/-- Upgrading the functor `(SingleObj G ⥤ V) ⥤ Action V G` to a monoidal functor. -/
+def functorCategoryMonoidalEquivalenceInverse : MonoidalFunctor (SingleObj G ⥤ V) (Action V G) :=
+  Monoidal.toTransported (Action.functorCategoryEquivalence _ _).symm
+
+/-- The adjunction (which is an equivalence) between the categories
+`Action V G` and `(SingleObj G ⥤ V)`. -/
+def functorCategoryMonoidalAdjunction :
+    (functorCategoryMonoidalEquivalence V G).toFunctor ⊣
+      (functorCategoryMonoidalEquivalenceInverse V G).toFunctor :=
+  (Action.functorCategoryEquivalence _ _).toAdjunction
+
 instance : (functorCategoryMonoidalEquivalence V G).IsEquivalence := by
   change (Action.functorCategoryEquivalence _ _).functor.IsEquivalence; infer_instance
 
 @[simp]
 theorem functorCategoryMonoidalEquivalence.μ_app (A B : Action V G) :
-    ((functorCategoryMonoidalEquivalence V G).μ A B).app PUnit.unit = 𝟙 _ := by
-  dsimp only [functorCategoryMonoidalEquivalence]
-  simp only [Monoidal.fromTransported_toLaxMonoidalFunctor_μ, NatTrans.comp_app]
-  -- Porting note: Lean3 was able to see through some defeq, as the mathlib3 proof was
-  --   show (𝟙 A.V ⊗ 𝟙 B.V) ≫ 𝟙 (A.V ⊗ B.V) ≫ (𝟙 A.V ⊗ 𝟙 B.V) = 𝟙 (A.V ⊗ B.V)
-  --   simp only [monoidal_category.tensor_id, category.comp_id]
+    ((functorCategoryMonoidalEquivalence V G).μ A B).app PUnit.unit = 𝟙 _ :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.μ_app Action.functorCategoryMonoidalEquivalence.μ_app
@@ -213,7 +219,7 @@ set_option linter.uppercaseLean3 false in
 theorem functorCategoryMonoidalEquivalence.μIso_inv_app (A B : Action V G) :
     ((functorCategoryMonoidalEquivalence V G).μIso A B).inv.app PUnit.unit = 𝟙 _ := by
   rw [← NatIso.app_inv, ← IsIso.Iso.inv_hom]
-  refine' IsIso.inv_eq_of_hom_inv_id _
+  refine IsIso.inv_eq_of_hom_inv_id ?_
   rw [Category.comp_id, NatIso.app_hom, MonoidalFunctor.μIso_hom,
     functorCategoryMonoidalEquivalence.μ_app]
 set_option linter.uppercaseLean3 false in
@@ -229,32 +235,18 @@ set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.ε_app Action.functorCategoryMonoidalEquivalence.ε_app
 
 @[simp]
-theorem functorCategoryMonoidalEquivalence.inv_counit_app_hom (A : Action V G) :
-    ((functorCategoryMonoidalEquivalence _ _).inv.adjunction.counit.app A).hom = 𝟙 _ :=
+theorem functorCategoryMonoidalAdjunction.unit_app_hom (A : Action V G) :
+    ((functorCategoryMonoidalAdjunction _ _).unit.app A).hom = 𝟙 _ :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Action.functor_category_monoidal_equivalence.inv_counit_app_hom Action.functorCategoryMonoidalEquivalence.inv_counit_app_hom
+#align Action.functor_category_monoidal_equivalence.inv_counit_app_hom Action.functorCategoryMonoidalAdjunction.unit_app_hom
 
 @[simp]
-theorem functorCategoryMonoidalEquivalence.counit_app (A : SingleObj G ⥤ V) :
-    ((functorCategoryMonoidalEquivalence _ _).adjunction.counit.app A).app PUnit.unit = 𝟙 _ :=
+theorem functorCategoryMonoidalAdjunction.counit_app_app (A : SingleObj G ⥤ V) :
+    ((functorCategoryMonoidalAdjunction _ _).counit.app A).app PUnit.unit = 𝟙 _ :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Action.functor_category_monoidal_equivalence.counit_app Action.functorCategoryMonoidalEquivalence.counit_app
-
-@[simp]
-theorem functorCategoryMonoidalEquivalence.inv_unit_app_app (A : SingleObj G ⥤ V) :
-    ((functorCategoryMonoidalEquivalence _ _).inv.adjunction.unit.app A).app PUnit.unit = 𝟙 _ :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align Action.functor_category_monoidal_equivalence.inv_unit_app_app Action.functorCategoryMonoidalEquivalence.inv_unit_app_app
-
-@[simp]
-theorem functorCategoryMonoidalEquivalence.unit_app_hom (A : Action V G) :
-    ((functorCategoryMonoidalEquivalence _ _).adjunction.unit.app A).hom = 𝟙 _ :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align Action.functor_category_monoidal_equivalence.unit_app_hom Action.functorCategoryMonoidalEquivalence.unit_app_hom
+#align Action.functor_category_monoidal_equivalence.inv_unit_app_app Action.functorCategoryMonoidalAdjunction.counit_app_app
 
 @[simp]
 theorem functorCategoryMonoidalEquivalence.functor_map {A B : Action V G} (f : A ⟶ B) :
@@ -265,7 +257,8 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem functorCategoryMonoidalEquivalence.inverse_map {A B : SingleObj G ⥤ V} (f : A ⟶ B) :
-    (functorCategoryMonoidalEquivalence _ _).inv.map f = FunctorCategoryEquivalence.inverse.map f :=
+    (functorCategoryMonoidalEquivalenceInverse _ _).map f =
+      FunctorCategoryEquivalence.inverse.map f :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.inverse_map Action.functorCategoryMonoidalEquivalence.inverse_map
@@ -277,21 +270,21 @@ instance [RightRigidCategory V] : RightRigidCategory (SingleObj (H : MonCat.{u})
 
 /-- If `V` is right rigid, so is `Action V G`. -/
 instance [RightRigidCategory V] : RightRigidCategory (Action V H) :=
-  rightRigidCategoryOfEquivalence (functorCategoryMonoidalEquivalence V _)
+  rightRigidCategoryOfEquivalence (functorCategoryMonoidalAdjunction V _)
 
 instance [LeftRigidCategory V] : LeftRigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := by
   change LeftRigidCategory (SingleObj H ⥤ V); infer_instance
 
 /-- If `V` is left rigid, so is `Action V G`. -/
 instance [LeftRigidCategory V] : LeftRigidCategory (Action V H) :=
-  leftRigidCategoryOfEquivalence (functorCategoryMonoidalEquivalence V _)
+  leftRigidCategoryOfEquivalence (functorCategoryMonoidalAdjunction V _)
 
 instance [RigidCategory V] : RigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := by
   change RigidCategory (SingleObj H ⥤ V); infer_instance
 
 /-- If `V` is rigid, so is `Action V G`. -/
 instance [RigidCategory V] : RigidCategory (Action V H) :=
-  rigidCategoryOfEquivalence (functorCategoryMonoidalEquivalence V _)
+  rigidCategoryOfEquivalence (functorCategoryMonoidalAdjunction V _)
 
 variable {V H}
 variable (X : Action V H)
@@ -339,14 +332,14 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
     { hom := fun g => ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
-        refine' Prod.ext rfl _
+        refine Prod.ext rfl ?_
         change (X.ρ ((g * x₁)⁻¹ : G) * X.ρ g) x₂ = X.ρ _ _
         rw [mul_inv_rev, ← X.ρ.map_mul, inv_mul_cancel_right] }
   inv :=
     { hom := fun g => ⟨g.1, X.ρ g.1 g.2⟩
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
-        refine' Prod.ext rfl _
+        refine Prod.ext rfl ?_
         erw [tensor_rho, tensor_rho]
         dsimp
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -356,13 +349,13 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
   hom_inv_id := by
     apply Hom.ext
     funext x
-    refine' Prod.ext rfl _
+    refine Prod.ext rfl ?_
     change (X.ρ x.1 * X.ρ (x.1⁻¹ : G)) x.2 = x.2
     rw [← X.ρ.map_mul, mul_inv_self, X.ρ.map_one, MonCat.one_of, End.one_def, types_id_apply]
   inv_hom_id := by
     apply Hom.ext
     funext x
-    refine' Prod.ext rfl _
+    refine Prod.ext rfl ?_
     change (X.ρ (x.1⁻¹ : G) * X.ρ x.1) x.2 = x.2
     rw [← X.ρ.map_mul, inv_mul_self, X.ρ.map_one, MonCat.one_of, End.one_def, types_id_apply]
 set_option linter.uppercaseLean3 false in

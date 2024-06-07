@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jireh Loreaux
 -/
 import Mathlib.Algebra.Group.Center
-import Mathlib.GroupTheory.Subsemigroup.Operations
+import Mathlib.Algebra.Group.Subsemigroup.Operations
 
 #align_import group_theory.subsemigroup.center from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
