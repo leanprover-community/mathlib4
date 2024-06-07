@@ -556,6 +556,14 @@ def map (f : α → β) : Seq' α → Seq' β
       · contradiction⟩
 #align stream.seq.map Seq'.map
 
+/-- Partial map. If `f : Π a, P a → β` is a partial function defined on
+  `a : α` satisfying `P`, then `pmap f s h` is essentially the same as `map f s`
+  but is defined only when all members of `l` satisfy `P`, using the proof
+  to apply `f`. -/
+def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Seq' α) (H : ∀ a ∈ s, P a) : Seq' β :=
+  ⟨s.val.pmap (Option.pmap f) (fun o ho a ha => ha.symm.rec (H a) ho), fun {n} => by
+    simpa only [Stream'.pmap, Option.pmap_eq_none_iff] using s.property⟩
+
 /-- Flatten a sequence of sequences. (It is required that the
   sequences be nonempty to ensure productivity; in the case
   of an infinite sequence of `nil`, the first element is never

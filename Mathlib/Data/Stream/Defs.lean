@@ -64,6 +64,13 @@ instance : Membership α (Stream' α) :=
 def map (f : α → β) (s : Stream' α) : Stream' β := fun n => f (get s n)
 #align stream.map Stream'.map
 
+/-- Partial map. If `f : Π a, P a → β` is a partial function defined on
+  `a : α` satisfying `P`, then `pmap f s h` is essentially the same as `map f s`
+  but is defined only when all members of `l` satisfy `P`, using the proof
+  to apply `f`. -/
+def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Stream' α) (H : ∀ a ∈ s, P a) : Stream' β :=
+  fun n => f (get s n) (H (get s n) ⟨n, rfl⟩)
+
 /-- Zip two streams using a binary operation:
 `Stream'.get n (Stream'.zip f s₁ s₂) = f (Stream'.get s₁) (Stream'.get s₂)`. -/
 def zip (f : α → β → δ) (s₁ : Stream' α) (s₂ : Stream' β) : Stream' δ :=
