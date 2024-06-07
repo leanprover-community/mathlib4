@@ -233,13 +233,12 @@ lemma cancel_left {g : β →*₀ γ} {f₁ f₂ : α →*₀ β} (hg : Injectiv
     comp_apply], fun h ↦ h ▸ rfl⟩
 #align monoid_with_zero_hom.cancel_left MonoidWithZeroHom.cancel_left
 
-set_option linter.deprecated false in
 lemma toMonoidHom_injective : Injective (toMonoidHom : (α →*₀ β) → α →* β) :=
-  fun _ _ h ↦ ext $ MonoidHom.ext_iff.mp h
+  Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 #align monoid_with_zero_hom.to_monoid_hom_injective MonoidWithZeroHom.toMonoidHom_injective
 
 lemma toZeroHom_injective : Injective (toZeroHom : (α →*₀ β) → ZeroHom α β) :=
-  fun _ _ h ↦ ext $ (DFunLike.ext_iff (F := ZeroHom α β)).mp h
+  Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 #align monoid_with_zero_hom.to_zero_hom_injective MonoidWithZeroHom.toZeroHom_injective
 
 @[simp] lemma comp_id (f : α →*₀ β) : f.comp (id α) = f := ext fun _ ↦ rfl
