@@ -234,7 +234,7 @@ theorem infinite_iff_in_all_ranges {K : Finset V} (C : G.ComponentCompl K) :
       obtain ⟨v, ⟨vK, rfl⟩, vL⟩ := Set.Infinite.nonempty (Set.Infinite.diff Cinf L.finite_toSet)
       exact ⟨componentComplMk _ vL, rfl⟩
     · rintro h Cfin
-      obtain ⟨D, e⟩ := h (K ∪ Cfin.toFinset) (Finset.subset_union_left K Cfin.toFinset)
+      obtain ⟨D, e⟩ := h (K ∪ Cfin.toFinset) Finset.subset_union_left
       obtain ⟨v, vD⟩ := D.nonempty
       let Ddis := D.disjoint_right
       simp_rw [Finset.coe_union, Set.Finite.coe_toFinset, Set.disjoint_union_left,

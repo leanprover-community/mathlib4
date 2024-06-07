@@ -1292,8 +1292,8 @@ theorem lintegral_tsum [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ i
   · intro s t
     use s ∪ t
     constructor
-    · exact fun a => Finset.sum_le_sum_of_subset (Finset.subset_union_left _ _)
-    · exact fun a => Finset.sum_le_sum_of_subset (Finset.subset_union_right _ _)
+    · exact fun a => Finset.sum_le_sum_of_subset Finset.subset_union_left
+    · exact fun a => Finset.sum_le_sum_of_subset Finset.subset_union_right
 #align measure_theory.lintegral_tsum MeasureTheory.lintegral_tsum
 
 open Measure

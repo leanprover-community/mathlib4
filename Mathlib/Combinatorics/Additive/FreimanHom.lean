@@ -334,7 +334,7 @@ of `ℕ` assuming there is no wrap-around. -/
 lemma isAddFreimanIso_Iic (hm : m ≠ 0) (hkmn : m * k ≤ n) :
     IsAddFreimanIso m (Iic (k : Fin (n + 1))) (Iic k) val where
   bijOn.left := by simp [MapsTo, Fin.le_iff_val_le_val, Nat.mod_eq_of_lt, aux hm hkmn]
-  bijOn.right.left := val_injective.injOn _
+  bijOn.right.left := val_injective.injOn
   bijOn.right.right x (hx : x ≤ _) :=
     ⟨x, by simpa [le_iff_val_le_val, -val_fin_le, Nat.mod_eq_of_lt, aux hm hkmn, hx.trans_lt]⟩
   map_sum_eq_map_sum s t hsA htA hs ht := by
