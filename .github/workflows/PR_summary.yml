@@ -1,4 +1,4 @@
-name: Compute transitive imports
+name: Compute PR summary
 
 on:
   pull_request:
@@ -51,7 +51,7 @@ jobs:
 
         # switch back to the current branch: the `no_lost_declarations` script should be here
         git checkout "${currentHash}"
-    - name: Compare results and comment
+    - name: Post or update the summary comment
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
