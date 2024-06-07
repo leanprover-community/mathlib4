@@ -3,8 +3,8 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Commutativity and associativity of action of integers on rings

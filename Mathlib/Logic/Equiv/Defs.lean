@@ -84,8 +84,7 @@ instance {F} [EquivLike F α β] : CoeTC F (α ≃ β) :=
   ⟨EquivLike.toEquiv⟩
 
 /-- `Perm α` is the type of bijections from `α` to itself. -/
-@[reducible]
-def Equiv.Perm (α : Sort*) :=
+abbrev Equiv.Perm (α : Sort*) :=
   Equiv α α
 #align equiv.perm Equiv.Perm
 
@@ -159,7 +158,7 @@ theorem Perm.ext_iff {σ τ : Equiv.Perm α} : σ = τ ↔ ∀ x, σ x = τ x :=
 instance inhabited' : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
 
 /-- Inverse of an equivalence `e : α ≃ β`. -/
-@[symm, pp_dot]
+@[symm]
 protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_inv, e.left_inv⟩
 #align equiv.symm Equiv.symm
 
@@ -177,7 +176,7 @@ theorem left_inv' (e : α ≃ β) : Function.LeftInverse e.symm e := e.left_inv
 theorem right_inv' (e : α ≃ β) : Function.RightInverse e.symm e := e.right_inv
 
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
-@[trans, pp_dot]
+@[trans]
 protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ e₁, e₁.symm ∘ e₂.symm, e₂.left_inv.comp e₁.left_inv, e₂.right_inv.comp e₁.right_inv⟩
 #align equiv.trans Equiv.trans
@@ -788,7 +787,7 @@ def sigmaULiftPLiftEquivSubtype {α : Type v} (P : α → Prop) :
 namespace Perm
 
 /-- A family of permutations `Π a, Perm (β a)` generates a permutation `Perm (Σ a, β₁ a)`. -/
-@[reducible] def sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm (Σ a, β a) :=
+abbrev sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm (Σ a, β a) :=
   Equiv.sigmaCongrRight F
 #align equiv.perm.sigma_congr_right Equiv.Perm.sigmaCongrRight
 

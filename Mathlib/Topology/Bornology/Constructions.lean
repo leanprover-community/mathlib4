@@ -35,8 +35,7 @@ instance Pi.instBornology : Bornology (∀ i, π i) where
 #align pi.bornology Pi.instBornology
 
 /-- Inverse image of a bornology. -/
-@[reducible]
-def Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornology α where
+abbrev Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornology α where
   cobounded' := comap f (cobounded β)
   le_cofinite' := (comap_mono (Bornology.le_cofinite β)).trans (comap_cofinite_le _)
 #align bornology.induced Bornology.induced
@@ -128,7 +127,7 @@ theorem isBounded_pi : IsBounded (pi univ S) ↔ (∃ i, S i = ∅) ∨ ∀ i, I
   by_cases hne : ∃ i, S i = ∅
   · simp [hne, univ_pi_eq_empty_iff.2 hne]
   · simp only [hne, false_or_iff]
-    simp only [not_exists, ← Ne.def, ← nonempty_iff_ne_empty, ← univ_pi_nonempty_iff] at hne
+    simp only [not_exists, ← Ne.eq_def, ← nonempty_iff_ne_empty, ← univ_pi_nonempty_iff] at hne
     exact isBounded_pi_of_nonempty hne
 #align bornology.is_bounded_pi Bornology.isBounded_pi
 

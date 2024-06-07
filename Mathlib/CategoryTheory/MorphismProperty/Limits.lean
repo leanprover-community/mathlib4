@@ -76,17 +76,17 @@ theorem StableUnderBaseChange.snd {P : MorphismProperty C} (hP : StableUnderBase
 
 theorem StableUnderBaseChange.baseChange_obj [HasPullbacks C] {P : MorphismProperty C}
     (hP : StableUnderBaseChange P) {S S' : C} (f : S' ⟶ S) (X : Over S) (H : P X.hom) :
-    P ((baseChange f).obj X).hom :=
+    P ((Over.baseChange f).obj X).hom :=
   hP.snd X.hom f H
 #align category_theory.morphism_property.stable_under_base_change.base_change_obj CategoryTheory.MorphismProperty.StableUnderBaseChange.baseChange_obj
 
 theorem StableUnderBaseChange.baseChange_map [HasPullbacks C] {P : MorphismProperty C}
     (hP : StableUnderBaseChange P) {S S' : C} (f : S' ⟶ S) {X Y : Over S} (g : X ⟶ Y)
-    (H : P g.left) : P ((baseChange f).map g).left := by
+    (H : P g.left) : P ((Over.baseChange f).map g).left := by
   let e :=
     pullbackRightPullbackFstIso Y.hom f g.left ≪≫
       pullback.congrHom (g.w.trans (Category.comp_id _)) rfl
-  have : e.inv ≫ pullback.snd = ((baseChange f).map g).left := by
+  have : e.inv ≫ pullback.snd = ((Over.baseChange f).map g).left := by
     ext <;> dsimp [e] <;> simp
   rw [← this, hP.respectsIso.cancel_left_isIso]
   exact hP.snd _ _ H
@@ -102,10 +102,10 @@ theorem StableUnderBaseChange.pullback_map [HasPullbacks C] {P : MorphismPropert
     pullback.map f g f' g' i₁ i₂ (𝟙 _) ((Category.comp_id _).trans e₁)
         ((Category.comp_id _).trans e₂) =
       ((pullbackSymmetry _ _).hom ≫
-          ((baseChange _).map (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g')).left) ≫
+          ((Over.baseChange _).map (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g')).left) ≫
         (pullbackSymmetry _ _).hom ≫
-          ((baseChange g').map (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f')).left :=
-    by ext <;> dsimp <;> simp
+          ((Over.baseChange g').map (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f')).left := by
+    ext <;> dsimp <;> simp
   rw [this]
   apply P.comp_mem <;> rw [hP.respectsIso.cancel_left_isIso]
   exacts [hP.baseChange_map _ (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g') h₂,
@@ -184,10 +184,10 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*)
   intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
   let φ := fun j => f.app (Discrete.mk j)
   have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
-  refine' (hW₀.arrow_mk_iso_iff _).2 hf'
-  refine' Arrow.isoMk
+  refine (hW₀.arrow_mk_iso_iff ?_).2 hf'
+  refine Arrow.isoMk
     (IsLimit.conePointUniqueUpToIso hc₁ (limit.isLimit X₁) ≪≫ (Pi.isoLimit _).symm)
-    (IsLimit.conePointUniqueUpToIso hc₂ (limit.isLimit X₂) ≪≫ (Pi.isoLimit _).symm) _
+    (IsLimit.conePointUniqueUpToIso hc₂ (limit.isLimit X₂) ≪≫ (Pi.isoLimit _).symm) ?_
   apply limit.hom_ext
   rintro ⟨j⟩
   simp
@@ -287,13 +287,17 @@ theorem universally_le (P : MorphismProperty C) : P.universally ≤ P := by
   exact hf (𝟙 _) (𝟙 _) _ (IsPullback.of_vert_isIso ⟨by rw [Category.comp_id, Category.id_comp]⟩)
 #align category_theory.morphism_property.universally_le CategoryTheory.MorphismProperty.universally_le
 
+theorem universally_eq_iff {P : MorphismProperty C} :
+    P.universally = P ↔ P.StableUnderBaseChange :=
+  ⟨(· ▸ P.universally_stableUnderBaseChange),
+    fun hP ↦ P.universally_le.antisymm fun _ _ _ hf _ _ _ _ _ H => hP H.flip hf⟩
+
 theorem StableUnderBaseChange.universally_eq {P : MorphismProperty C}
-    (hP : P.StableUnderBaseChange) : P.universally = P :=
-  P.universally_le.antisymm fun _ _ _ hf _ _ _ _ _ H => hP H.flip hf
+    (hP : P.StableUnderBaseChange) : P.universally = P := universally_eq_iff.mpr hP
 #align category_theory.morphism_property.stable_under_base_change.universally_eq CategoryTheory.MorphismProperty.StableUnderBaseChange.universally_eq
 
 theorem universally_mono : Monotone (universally : MorphismProperty C → MorphismProperty C) :=
-  fun _ _ h _ _ _ h₁ _ _ _ _ _ H => h _ _ _ (h₁ _ _ _ H)
+  fun _ _ h _ _ _ h₁ _ _ _ _ _ H => h _ (h₁ _ _ _ H)
 #align category_theory.morphism_property.universally_mono CategoryTheory.MorphismProperty.universally_mono
 
 end Universally

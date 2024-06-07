@@ -248,7 +248,7 @@ set_option linter.uppercaseLean3 false in
 #align Bimod.tensor_Bimod.id_tensor_π_act_left Bimod.TensorBimod.whiskerLeft_π_actLeft
 
 theorem one_act_left' : (R.one ▷ _) ≫ actLeft P Q = (λ_ _).hom := by
-  refine' (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
   dsimp [X]
   -- Porting note: had to replace `rw` by `erw`
   slice_lhs 1 2 => erw [whisker_exchange]
@@ -262,7 +262,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem left_assoc' :
     (R.mul ▷ _) ≫ actLeft P Q = (α_ R.X R.X _).hom ≫ (R.X ◁ actLeft P Q) ≫ actLeft P Q := by
-  refine' (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
   dsimp [X]
   slice_lhs 1 2 => rw [whisker_exchange]
   slice_lhs 2 3 => rw [whiskerLeft_π_actLeft]
@@ -315,7 +315,7 @@ set_option linter.uppercaseLean3 false in
 #align Bimod.tensor_Bimod.π_tensor_id_act_right Bimod.TensorBimod.π_tensor_id_actRight
 
 theorem actRight_one' : (_ ◁ T.one) ≫ actRight P Q = (ρ_ _).hom := by
-  refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   dsimp [X]
   -- Porting note: had to replace `rw` by `erw`
   slice_lhs 1 2 =>erw [← whisker_exchange]
@@ -329,7 +329,7 @@ set_option linter.uppercaseLean3 false in
 theorem right_assoc' :
     (_ ◁ T.mul) ≫ actRight P Q =
       (α_ _ T.X T.X).inv ≫ (actRight P Q ▷ T.X) ≫ actRight P Q := by
-  refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   dsimp [X]
   -- Porting note: had to replace some `rw` by `erw`
   slice_lhs 1 2 => rw [← whisker_exchange]
@@ -355,7 +355,7 @@ variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 theorem middle_assoc' :
     (actLeft P Q ▷ T.X) ≫ actRight P Q =
       (α_ R.X _ T.X).hom ≫ (R.X ◁ actRight P Q) ≫ actLeft P Q := by
-  refine' (cancel_epi ((tensorLeft _ ⋙ tensorRight _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorLeft _ ⋙ tensorRight _).map (coequalizer.π _ _))).1 ?_
   dsimp [X]
   slice_lhs 1 2 => rw [← comp_whiskerRight, whiskerLeft_π_actLeft, comp_whiskerRight,
     comp_whiskerRight]
@@ -409,7 +409,7 @@ noncomputable def whiskerLeft {X Y Z : Mon_ C} (M : Bimod X Y) {N₁ N₂ : Bimo
           slice_lhs 1 2 => rw [← MonoidalCategory.whiskerLeft_comp, Hom.left_act_hom]
           simp))
   left_act_hom := by
-    refine' (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 _
+    refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
     dsimp
     slice_lhs 1 2 => rw [TensorBimod.whiskerLeft_π_actLeft]
     slice_lhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
@@ -420,7 +420,7 @@ noncomputable def whiskerLeft {X Y Z : Mon_ C} (M : Bimod X Y) {N₁ N₂ : Bimo
     slice_rhs 2 3 => rw [whisker_exchange]
     simp
   right_act_hom := by
-    refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
+    refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
     dsimp
     slice_lhs 1 2 => rw [TensorBimod.π_tensor_id_actRight]
     slice_lhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
@@ -442,7 +442,7 @@ noncomputable def whiskerRight {X Y Z : Mon_ C} {M₁ M₂ : Bimod X Y} (f : M�
           slice_lhs 2 3 => rw [whisker_exchange]
           simp))
   left_act_hom := by
-    refine' (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 _
+    refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
     dsimp
     slice_lhs 1 2 => rw [TensorBimod.whiskerLeft_π_actLeft]
     slice_lhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
@@ -453,7 +453,7 @@ noncomputable def whiskerRight {X Y Z : Mon_ C} {M₁ M₂ : Bimod X Y} (f : M�
     slice_rhs 1 2 => rw [associator_inv_naturality_middle]
     simp
   right_act_hom := by
-    refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
+    refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
     dsimp
     slice_lhs 1 2 => rw [TensorBimod.π_tensor_id_actRight]
     slice_lhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
@@ -495,7 +495,7 @@ noncomputable def hom :
   coequalizer.desc (homAux P Q L)
     (by
       dsimp [homAux]
-      refine' (cancel_epi ((tensorRight _ ⋙ tensorRight _).map (coequalizer.π _ _))).1 _
+      refine (cancel_epi ((tensorRight _ ⋙ tensorRight _).map (coequalizer.π _ _))).1 ?_
       dsimp [TensorBimod.X]
       slice_lhs 1 2 => rw [← comp_whiskerRight, TensorBimod.π_tensor_id_actRight,
         comp_whiskerRight, comp_whiskerRight]
@@ -515,13 +515,13 @@ theorem hom_left_act_hom' :
     ((P.tensorBimod Q).tensorBimod L).actLeft ≫ hom P Q L =
       (R.X ◁ hom P Q L) ≫ (P.tensorBimod (Q.tensorBimod L)).actLeft := by
   dsimp; dsimp [hom, homAux]
-  refine' (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
   rw [tensorLeft_map]
   slice_lhs 1 2 => rw [TensorBimod.whiskerLeft_π_actLeft]
   slice_lhs 3 4 => rw [coequalizer.π_desc]
   slice_rhs 1 2 => rw [← MonoidalCategory.whiskerLeft_comp, coequalizer.π_desc,
     MonoidalCategory.whiskerLeft_comp]
-  refine' (cancel_epi ((tensorRight _ ⋙ tensorLeft _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorRight _ ⋙ tensorLeft _).map (coequalizer.π _ _))).1 ?_
   dsimp; dsimp [TensorBimod.X]
   slice_lhs 1 2 => rw [associator_inv_naturality_middle]
   slice_lhs 2 3 =>
@@ -544,12 +544,12 @@ theorem hom_right_act_hom' :
     ((P.tensorBimod Q).tensorBimod L).actRight ≫ hom P Q L =
       (hom P Q L ▷ U.X) ≫ (P.tensorBimod (Q.tensorBimod L)).actRight := by
   dsimp; dsimp [hom, homAux]
-  refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   rw [tensorRight_map]
   slice_lhs 1 2 => rw [TensorBimod.π_tensor_id_actRight]
   slice_lhs 3 4 => rw [coequalizer.π_desc]
   slice_rhs 1 2 => rw [← comp_whiskerRight, coequalizer.π_desc, comp_whiskerRight]
-  refine' (cancel_epi ((tensorRight _ ⋙ tensorRight _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorRight _ ⋙ tensorRight _).map (coequalizer.π _ _))).1 ?_
   dsimp; dsimp [TensorBimod.X]
   slice_lhs 1 2 => rw [associator_naturality_left]
   slice_lhs 2 3 => rw [← whisker_exchange]
@@ -595,7 +595,7 @@ noncomputable def inv :
   coequalizer.desc (invAux P Q L)
     (by
       dsimp [invAux]
-      refine' (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 _
+      refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
       dsimp [TensorBimod.X]
       slice_lhs 1 2 => rw [whisker_exchange]
       slice_lhs 2 4 => rw [id_tensor_π_preserves_coequalizer_inv_desc]
@@ -616,7 +616,7 @@ theorem hom_inv_id : hom P Q L ≫ inv P Q L = 𝟙 _ := by
   dsimp [hom, homAux, inv, invAux]
   apply coequalizer.hom_ext
   slice_lhs 1 2 => rw [coequalizer.π_desc]
-  refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   rw [tensorRight_map]
   slice_lhs 1 3 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
   slice_lhs 3 4 => rw [coequalizer.π_desc]
@@ -624,6 +624,7 @@ theorem hom_inv_id : hom P Q L ≫ inv P Q L = 𝟙 _ := by
   slice_lhs 1 3 => rw [Iso.hom_inv_id_assoc]
   dsimp only [TensorBimod.X]
   slice_rhs 2 3 => rw [Category.comp_id]
+  rfl
 set_option linter.uppercaseLean3 false in
 #align Bimod.associator_Bimod.hom_inv_id Bimod.AssociatorBimod.hom_inv_id
 
@@ -631,7 +632,7 @@ theorem inv_hom_id : inv P Q L ≫ hom P Q L = 𝟙 _ := by
   dsimp [hom, homAux, inv, invAux]
   apply coequalizer.hom_ext
   slice_lhs 1 2 => rw [coequalizer.π_desc]
-  refine' (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
   rw [tensorLeft_map]
   slice_lhs 1 3 => rw [id_tensor_π_preserves_coequalizer_inv_desc]
   slice_lhs 3 4 => rw [coequalizer.π_desc]
@@ -639,6 +640,7 @@ theorem inv_hom_id : inv P Q L ≫ hom P Q L = 𝟙 _ := by
   slice_lhs 1 3 => rw [Iso.inv_hom_id_assoc]
   dsimp only [TensorBimod.X]
   slice_rhs 2 3 => rw [Category.comp_id]
+  rfl
 set_option linter.uppercaseLean3 false in
 #align Bimod.associator_Bimod.inv_hom_id Bimod.AssociatorBimod.inv_hom_id
 
@@ -688,7 +690,7 @@ variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 theorem hom_left_act_hom' :
     ((regular R).tensorBimod P).actLeft ≫ hom P = (R.X ◁ hom P) ≫ P.actLeft := by
   dsimp; dsimp [hom, TensorBimod.actLeft, regular]
-  refine' (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
   dsimp
   slice_lhs 1 4 => rw [id_tensor_π_preserves_coequalizer_inv_colimMap_desc]
   slice_lhs 2 3 => rw [left_assoc]
@@ -700,7 +702,7 @@ set_option linter.uppercaseLean3 false in
 theorem hom_right_act_hom' :
     ((regular R).tensorBimod P).actRight ≫ hom P = (hom P ▷ S.X) ≫ P.actRight := by
   dsimp; dsimp [hom, TensorBimod.actRight, regular]
-  refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   dsimp
   slice_lhs 1 4 => rw [π_tensor_id_preserves_coequalizer_inv_colimMap_desc]
   slice_rhs 1 2 => rw [← comp_whiskerRight, coequalizer.π_desc]
@@ -754,7 +756,7 @@ variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 theorem hom_left_act_hom' :
     (P.tensorBimod (regular S)).actLeft ≫ hom P = (R.X ◁ hom P) ≫ P.actLeft := by
   dsimp; dsimp [hom, TensorBimod.actLeft, regular]
-  refine' (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
   dsimp
   slice_lhs 1 4 => rw [id_tensor_π_preserves_coequalizer_inv_colimMap_desc]
   slice_lhs 2 3 => rw [middle_assoc]
@@ -766,7 +768,7 @@ set_option linter.uppercaseLean3 false in
 theorem hom_right_act_hom' :
     (P.tensorBimod (regular S)).actRight ≫ hom P = (hom P ▷ S.X) ≫ P.actRight := by
   dsimp; dsimp [hom, TensorBimod.actRight, regular]
-  refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   dsimp
   slice_lhs 1 4 => rw [π_tensor_id_preserves_coequalizer_inv_colimMap_desc]
   slice_lhs 2 3 => rw [right_assoc]
@@ -877,7 +879,7 @@ theorem comp_whiskerLeft_bimod {W X Y Z : Mon_ C} (M : Bimod W X) (N : Bimod X Y
   dsimp [TensorBimod.X, AssociatorBimod.hom]
   slice_rhs 1 2 => rw [coequalizer.π_desc]
   dsimp [AssociatorBimod.homAux, AssociatorBimod.inv]
-  refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   rw [tensorRight_map]
   slice_rhs 1 3 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
   slice_rhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
@@ -889,6 +891,7 @@ theorem comp_whiskerLeft_bimod {W X Y Z : Mon_ C} (M : Bimod W X) (N : Bimod X Y
   slice_rhs 2 3 => rw [associator_inv_naturality_right]
   slice_rhs 1 3 => rw [Iso.hom_inv_id_assoc]
   slice_lhs 1 2 => rw [← whisker_exchange]
+  rfl
 set_option linter.uppercaseLean3 false in
 #align Bimod.comp_whisker_left_Bimod Bimod.comp_whiskerLeft_bimod
 
@@ -933,7 +936,7 @@ theorem whiskerRight_comp_bimod {W X Y Z : Mon_ C} {M M' : Bimod W X} (f : M ⟶
   dsimp [TensorBimod.X, AssociatorBimod.inv]
   slice_rhs 1 2 => rw [coequalizer.π_desc]
   dsimp [AssociatorBimod.invAux, AssociatorBimod.hom]
-  refine' (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
   rw [tensorLeft_map]
   slice_rhs 1 3 => rw [id_tensor_π_preserves_coequalizer_inv_desc]
   slice_rhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]
@@ -945,6 +948,7 @@ theorem whiskerRight_comp_bimod {W X Y Z : Mon_ C} {M M' : Bimod W X} (f : M ⟶
   slice_rhs 2 3 => rw [associator_naturality_left]
   slice_rhs 1 3 => rw [Iso.inv_hom_id_assoc]
   slice_lhs 1 2 => rw [whisker_exchange]
+  rfl
 set_option linter.uppercaseLean3 false in
 #align Bimod.whisker_right_comp_Bimod Bimod.whiskerRight_comp_bimod
 
@@ -961,7 +965,7 @@ theorem whisker_assoc_bimod {W X Y Z : Mon_ C} (M : Bimod W X) {N N' : Bimod X Y
   dsimp [AssociatorBimod.hom]
   slice_rhs 1 2 => rw [coequalizer.π_desc]
   dsimp [AssociatorBimod.homAux]
-  refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   rw [tensorRight_map]
   slice_lhs 1 2 => rw [← comp_whiskerRight, ι_colimMap, parallelPairHom_app_one]
   slice_rhs 1 3 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
@@ -1009,12 +1013,12 @@ theorem pentagon_bimod {V W X Y Z : Mon_ C} (M : Bimod V W) (N : Bimod W X) (P :
   slice_lhs 2 3 => rw [coequalizer.π_desc]
   slice_rhs 1 2 => rw [coequalizer.π_desc]
   dsimp [AssociatorBimod.homAux]
-  refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   dsimp
   slice_lhs 1 2 => rw [← comp_whiskerRight, coequalizer.π_desc]
   slice_rhs 1 3 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
   slice_rhs 3 4 => rw [coequalizer.π_desc]
-  refine' (cancel_epi ((tensorRight _ ⋙ tensorRight _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorRight _ ⋙ tensorRight _).map (coequalizer.π _ _))).1 ?_
   dsimp
   slice_lhs 1 2 =>
     rw [← comp_whiskerRight, π_tensor_id_preserves_coequalizer_inv_desc, comp_whiskerRight,
@@ -1048,7 +1052,7 @@ theorem triangle_bimod {X Y Z : Mon_ C} (M : Bimod X Y) (N : Bimod Y Z) :
   dsimp [AssociatorBimod.homAux]
   slice_rhs 1 2 => rw [ι_colimMap, parallelPairHom_app_one]
   dsimp [RightUnitorBimod.hom]
-  refine' (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 _
+  refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   dsimp [regular]
   slice_lhs 1 3 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
   slice_lhs 3 4 => rw [ι_colimMap, parallelPairHom_app_one]

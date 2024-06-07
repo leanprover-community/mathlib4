@@ -65,14 +65,12 @@ namespace CategoryTheory.Linear
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 
-instance preadditiveNatLinear : Linear ℕ C
-    where
+instance preadditiveNatLinear : Linear ℕ C where
   smul_comp X Y Z r f g := by exact (Preadditive.rightComp X g).map_nsmul f r
   comp_smul X Y Z f r g := by exact (Preadditive.leftComp Z f).map_nsmul g r
 #align category_theory.linear.preadditive_nat_linear CategoryTheory.Linear.preadditiveNatLinear
 
-instance preadditiveIntLinear : Linear ℤ C
-    where
+instance preadditiveIntLinear : Linear ℤ C where
   smul_comp X Y Z r f g := by exact (Preadditive.rightComp X g).map_zsmul f r
   comp_smul X Y Z f r g := by exact (Preadditive.leftComp Z f).map_zsmul g r
 #align category_theory.linear.preadditive_int_linear CategoryTheory.Linear.preadditiveIntLinear
@@ -100,8 +98,7 @@ universe u'
 
 variable {D : Type u'} (F : D → C)
 
-instance inducedCategory : Linear.{w, v} R (InducedCategory C F)
-    where
+instance inducedCategory : Linear.{w, v} R (InducedCategory C F) where
   homModule X Y := @Linear.homModule R _ C _ _ _ (F X) (F Y)
   smul_comp _ _ _ _ _ _ := smul_comp _ _ _ _ _ _
   comp_smul _ _ _ _ _ _ := comp_smul _ _ _ _ _ _
@@ -109,8 +106,7 @@ instance inducedCategory : Linear.{w, v} R (InducedCategory C F)
 
 end InducedCategory
 
-instance fullSubcategory (Z : C → Prop) : Linear.{w, v} R (FullSubcategory Z)
-    where
+instance fullSubcategory (Z : C → Prop) : Linear.{w, v} R (FullSubcategory Z) where
   homModule X Y := @Linear.homModule R _ C _ _ _ X.obj Y.obj
   smul_comp _ _ _ _ _ _ := smul_comp _ _ _ _ _ _
   comp_smul _ _ _ _ _ _ := comp_smul _ _ _ _ _ _
@@ -120,8 +116,7 @@ variable (R)
 
 /-- Composition by a fixed left argument as an `R`-linear map. -/
 @[simps]
-def leftComp {X Y : C} (Z : C) (f : X ⟶ Y) : (Y ⟶ Z) →ₗ[R] X ⟶ Z
-    where
+def leftComp {X Y : C} (Z : C) (f : X ⟶ Y) : (Y ⟶ Z) →ₗ[R] X ⟶ Z where
   toFun g := f ≫ g
   map_add' := by simp
   map_smul' := by simp
@@ -129,8 +124,7 @@ def leftComp {X Y : C} (Z : C) (f : X ⟶ Y) : (Y ⟶ Z) →ₗ[R] X ⟶ Z
 
 /-- Composition by a fixed right argument as an `R`-linear map. -/
 @[simps]
-def rightComp (X : C) {Y Z : C} (g : Y ⟶ Z) : (X ⟶ Y) →ₗ[R] X ⟶ Z
-    where
+def rightComp (X : C) {Y Z : C} (g : Y ⟶ Z) : (X ⟶ Y) →ₗ[R] X ⟶ Z where
   toFun f := f ≫ g
   map_add' := by simp
   map_smul' := by simp
@@ -197,8 +191,7 @@ variable {S : Type w} [CommSemiring S] [Linear S C]
 
 /-- Composition as a bilinear map. -/
 @[simps]
-def comp (X Y Z : C) : (X ⟶ Y) →ₗ[S] (Y ⟶ Z) →ₗ[S] X ⟶ Z
-    where
+def comp (X Y Z : C) : (X ⟶ Y) →ₗ[S] (Y ⟶ Z) →ₗ[S] X ⟶ Z where
   toFun f := leftComp S Z f
   map_add' := by
     intros

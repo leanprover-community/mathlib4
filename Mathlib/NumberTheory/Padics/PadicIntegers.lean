@@ -156,9 +156,15 @@ instance instCommRing : CommRing ℤ_[p] := (by infer_instance : CommRing (subri
 theorem coe_natCast (n : ℕ) : ((n : ℤ_[p]) : ℚ_[p]) = n := rfl
 #align padic_int.coe_nat_cast PadicInt.coe_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias coe_nat_cast := coe_natCast
+
 @[simp, norm_cast]
 theorem coe_intCast (z : ℤ) : ((z : ℤ_[p]) : ℚ_[p]) = z := rfl
 #align padic_int.coe_int_cast PadicInt.coe_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias coe_int_cast := coe_intCast
 
 /-- The coercion from `ℤ_[p]` to `ℚ_[p]` as a ring homomorphism. -/
 def Coe.ringHom : ℤ_[p] →+* ℚ_[p] := (subring p).subtype
@@ -299,6 +305,9 @@ theorem padic_norm_e_of_padicInt (z : ℤ_[p]) : ‖(z : ℚ_[p])‖ = ‖z‖ :
 
 theorem norm_intCast_eq_padic_norm (z : ℤ) : ‖(z : ℤ_[p])‖ = ‖(z : ℚ_[p])‖ := by simp [norm_def]
 #align padic_int.norm_int_cast_eq_padic_norm PadicInt.norm_intCast_eq_padic_norm
+
+@[deprecated (since := "2024-04-17")]
+alias norm_int_cast_eq_padic_norm := norm_intCast_eq_padic_norm
 
 @[simp]
 theorem norm_eq_padic_norm {q : ℚ_[p]} (hq : ‖q‖ ≤ 1) : @norm ℤ_[p] _ ⟨q, hq⟩ = ‖q‖ := rfl
@@ -443,7 +452,7 @@ theorem inv_mul {z : ℤ_[p]} (hz : ‖z‖ = 1) : z.inv * z = 1 := by rw [mul_c
 theorem isUnit_iff {z : ℤ_[p]} : IsUnit z ↔ ‖z‖ = 1 :=
   ⟨fun h => by
     rcases isUnit_iff_dvd_one.1 h with ⟨w, eq⟩
-    refine' le_antisymm (norm_le_one _) _
+    refine le_antisymm (norm_le_one _) ?_
     have := mul_le_mul_of_nonneg_left (norm_le_one w) (norm_nonneg z)
     rwa [mul_one, ← norm_mul, ← eq, norm_one] at this, fun h =>
     ⟨⟨z, z.inv, mul_inv h, inv_mul h⟩, rfl⟩⟩

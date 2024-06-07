@@ -6,7 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Lattice
@@ -33,7 +33,7 @@ For the definition of `nilradical`, see `Mathlib.RingTheory.Nilpotent.Lemmas`.
 
 universe u v
 
-open BigOperators Function Set
+open Function Set
 
 variable {R S : Type*} {x y : R}
 
@@ -57,7 +57,7 @@ lemma IsNilpotent.smul [MonoidWithZero R] [MonoidWithZero S] [MulActionWithZero 
 
 theorem IsNilpotent.isUnit_sub_one [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r - 1) := by
   obtain ⟨n, hn⟩ := hnil
-  refine ⟨⟨r - 1, -∑ i in Finset.range n, r ^ i, ?_, ?_⟩, rfl⟩
+  refine ⟨⟨r - 1, -∑ i ∈ Finset.range n, r ^ i, ?_, ?_⟩, rfl⟩
   · simp [mul_geom_sum, hn]
   · simp [geom_sum_mul, hn]
 
@@ -122,7 +122,7 @@ theorem add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero {m n k : ℕ}
   rintro ⟨i, j⟩ hij
   suffices x ^ i * y ^ j = 0 by simp only [this, nsmul_eq_mul, mul_zero]
   by_cases hi : m ≤ i
-  rw [pow_eq_zero_of_le hi hx, zero_mul]
+  · rw [pow_eq_zero_of_le hi hx, zero_mul]
   rw [pow_eq_zero_of_le ?_ hy, mul_zero]
   linarith [Finset.mem_antidiagonal.mp hij]
 
@@ -139,7 +139,7 @@ theorem isNilpotent_add (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent 
 
 protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) (h_comm : ∀ i j, i ∈ s → j ∈ s → Commute (f i) (f j)) :
-    IsNilpotent (∑ i in s, f i) := by
+    IsNilpotent (∑ i ∈ s, f i) := by
   classical
   induction s using Finset.induction with
   | empty => simp
@@ -153,14 +153,14 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
 
 protected lemma isNilpotent_mul_left_iff (hy : y ∈ nonZeroDivisorsLeft R) :
     IsNilpotent (x * y) ↔ IsNilpotent x := by
-  refine' ⟨_, h_comm.isNilpotent_mul_left⟩
+  refine ⟨?_, h_comm.isNilpotent_mul_left⟩
   rintro ⟨k, hk⟩
   rw [mul_pow h_comm] at hk
   exact ⟨k, (nonZeroDivisorsLeft R).pow_mem hy k _ hk⟩
 
 protected lemma isNilpotent_mul_right_iff (hx : x ∈ nonZeroDivisorsRight R) :
     IsNilpotent (x * y) ↔ IsNilpotent y := by
-  refine' ⟨_, h_comm.isNilpotent_mul_right⟩
+  refine ⟨?_, h_comm.isNilpotent_mul_right⟩
   rintro ⟨k, hk⟩
   rw [mul_pow h_comm] at hk
   exact ⟨k, (nonZeroDivisorsRight R).pow_mem hx k _ hk⟩
@@ -188,7 +188,7 @@ variable [CommSemiring R] {x y : R}
 
 lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) :
-    IsNilpotent (∑ i in s, f i) :=
+    IsNilpotent (∑ i ∈ s, f i) :=
   Commute.isNilpotent_sum hnp fun _ _ _ _ ↦ Commute.all _ _
 
 end CommSemiring
@@ -198,7 +198,7 @@ lemma NoZeroSMulDivisors.isReduced (R M : Type*)
     IsReduced R := by
   refine ⟨fun x ⟨k, hk⟩ ↦ ?_⟩
   induction' k with k ih
-  · rw [Nat.zero_eq, pow_zero] at hk
+  · rw [pow_zero] at hk
     exact eq_zero_of_zero_eq_one hk.symm x
   · obtain ⟨m : M, hm : m ≠ 0⟩ := exists_ne (0 : M)
     have : x ^ (k + 1) • m = 0 := by simp only [hk, zero_smul]

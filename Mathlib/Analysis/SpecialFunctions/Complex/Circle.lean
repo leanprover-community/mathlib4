@@ -85,7 +85,7 @@ theorem surjOn_expMapCircle_neg_pi_pi : SurjOn expMapCircle (Ioc (-π) π) univ 
 theorem expMapCircle_eq_expMapCircle {x y : ℝ} :
     expMapCircle x = expMapCircle y ↔ ∃ m : ℤ, x = y + m * (2 * π) := by
   rw [Subtype.ext_iff, expMapCircle_apply, expMapCircle_apply, exp_eq_exp_iff_exists_int]
-  refine' exists_congr fun n => _
+  refine exists_congr fun n => ?_
   rw [← mul_assoc, ← add_mul, mul_left_inj' I_ne_zero]
   norm_cast
 #align exp_map_circle_eq_exp_map_circle expMapCircle_eq_expMapCircle
@@ -94,7 +94,10 @@ theorem periodic_expMapCircle : Periodic expMapCircle (2 * π) := fun z =>
   expMapCircle_eq_expMapCircle.2 ⟨1, by rw [Int.cast_one, one_mul]⟩
 #align periodic_exp_map_circle periodic_expMapCircle
 
-@[simp]
+-- Adaptation note: nightly-2024-04-14
+-- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12229
+@[simp, nolint simpNF]
 theorem expMapCircle_two_pi : expMapCircle (2 * π) = 1 :=
   periodic_expMapCircle.eq.trans expMapCircle_zero
 #align exp_map_circle_two_pi expMapCircle_two_pi

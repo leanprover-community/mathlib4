@@ -228,7 +228,7 @@ instance π_epi : Epi D.π := by
 
 end
 
-theorem types_π_surjective (D : GlueData (Type*)) : Function.Surjective D.π :=
+theorem types_π_surjective (D : GlueData Type*) : Function.Surjective D.π :=
   (epi_iff_surjective _).mp inferInstance
 #align category_theory.glue_data.types_π_surjective CategoryTheory.GlueData.types_π_surjective
 
@@ -243,7 +243,7 @@ theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
         (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom_inv_id x']
   rcases (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom x' with ⟨i, y⟩
   exact ⟨i, y, by
-    simp [← Multicoequalizer.ι_sigmaπ, -Multicoequalizer.ι_sigmaπ]
+    simp [← Multicoequalizer.ι_sigmaπ]
     rfl ⟩
 #align category_theory.glue_data.types_ι_jointly_surjective CategoryTheory.GlueData.types_ι_jointly_surjective
 
@@ -381,7 +381,7 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
   apply hc.ofIsoLimit
   refine Cones.ext (Iso.refl _) ?_
   rintro (_ | _ | _)
-  change _ = _ ≫ (_ ≫ _) ≫ _
+  on_goal 1 => change _ = _ ≫ (_ ≫ _) ≫ _
   all_goals change _ = 𝟙 _ ≫ _ ≫ _; aesop_cat
 set_option linter.uppercaseLean3 false in
 #align category_theory.glue_data.V_pullback_cone_is_limit_of_map CategoryTheory.GlueData.vPullbackConeIsLimitOfMap

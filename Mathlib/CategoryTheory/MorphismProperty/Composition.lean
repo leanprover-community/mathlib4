@@ -96,7 +96,7 @@ theorem StableUnderInverse.unop {P : MorphismProperty Cᵒᵖ} (h : StableUnderI
 #align category_theory.morphism_property.stable_under_inverse.unop CategoryTheory.MorphismProperty.StableUnderInverse.unop
 
 theorem respectsIso_of_isStableUnderComposition {P : MorphismProperty C}
-    [P.IsStableUnderComposition] (hP : isomorphisms C ⊆ P) :
+    [P.IsStableUnderComposition] (hP : isomorphisms C ≤ P) :
     RespectsIso P :=
   ⟨fun _ _ hf => P.comp_mem _ _ (hP _ (isomorphisms.infer_property _)) hf,
     fun _ _ hf => P.comp_mem _ _ hf (hP _ (isomorphisms.infer_property _))⟩
