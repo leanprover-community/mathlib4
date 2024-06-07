@@ -880,17 +880,17 @@ theorem compl_sup_compl_le : aᶜ ⊔ bᶜ ≤ (a ⊓ b)ᶜ :=
 #align compl_sup_compl_le compl_sup_compl_le
 
 theorem compl_compl_inf_distrib (a b : α) : (a ⊓ b)ᶜᶜ = aᶜᶜ ⊓ bᶜᶜ := by
-  refine' ((compl_anti compl_sup_compl_le).trans (compl_sup_distrib _ _).le).antisymm _
+  refine ((compl_anti compl_sup_compl_le).trans (compl_sup_distrib _ _).le).antisymm ?_
   rw [le_compl_iff_disjoint_right, disjoint_assoc, disjoint_compl_compl_left_iff,
     disjoint_left_comm, disjoint_compl_compl_left_iff, ← disjoint_assoc, inf_comm]
   exact disjoint_compl_right
 #align compl_compl_inf_distrib compl_compl_inf_distrib
 
 theorem compl_compl_himp_distrib (a b : α) : (a ⇨ b)ᶜᶜ = aᶜᶜ ⇨ bᶜᶜ := by
-  refine' le_antisymm _ _
+  apply le_antisymm
   · rw [le_himp_iff, ← compl_compl_inf_distrib]
     exact compl_anti (compl_anti himp_inf_le)
-  · refine' le_compl_comm.1 ((compl_anti compl_sup_le_himp).trans _)
+  · refine le_compl_comm.1 ((compl_anti compl_sup_le_himp).trans ?_)
     rw [compl_sup_distrib, le_compl_iff_disjoint_right, disjoint_right_comm, ←
       le_compl_iff_disjoint_right]
     exact inf_himp_le
@@ -1055,15 +1055,15 @@ theorem le_hnot_inf_hnot : ￢(a ⊔ b) ≤ ￢a ⊓ ￢b :=
 #align le_hnot_inf_hnot le_hnot_inf_hnot
 
 theorem hnot_hnot_sup_distrib (a b : α) : ￢￢(a ⊔ b) = ￢￢a ⊔ ￢￢b := by
-  refine' ((hnot_inf_distrib _ _).ge.trans <| hnot_anti le_hnot_inf_hnot).antisymm' _
+  refine ((hnot_inf_distrib _ _).ge.trans <| hnot_anti le_hnot_inf_hnot).antisymm' ?_
   rw [hnot_le_iff_codisjoint_left, codisjoint_assoc, codisjoint_hnot_hnot_left_iff,
     codisjoint_left_comm, codisjoint_hnot_hnot_left_iff, ← codisjoint_assoc, sup_comm]
   exact codisjoint_hnot_right
 #align hnot_hnot_sup_distrib hnot_hnot_sup_distrib
 
 theorem hnot_hnot_sdiff_distrib (a b : α) : ￢￢(a \ b) = ￢￢a \ ￢￢b := by
-  refine' le_antisymm _ _
-  · refine' hnot_le_comm.1 ((hnot_anti sdiff_le_inf_hnot).trans' _)
+  apply le_antisymm
+  · refine hnot_le_comm.1 ((hnot_anti sdiff_le_inf_hnot).trans' ?_)
     rw [hnot_inf_distrib, hnot_le_iff_codisjoint_right, codisjoint_left_comm, ←
       hnot_le_iff_codisjoint_right]
     exact le_sdiff_sup

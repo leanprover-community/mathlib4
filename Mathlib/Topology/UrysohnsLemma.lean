@@ -433,7 +433,7 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
     intro x hx
     have B n : f n x = 0 := by
       have : mᶜ ⊆ (U n ∩ interior m)ᶜ := by
-        simpa using (inter_subset_right _ _).trans interior_subset
+        simpa using inter_subset_right.trans interior_subset
       exact fm n (this hx)
     simp [g, B]
   have I n x : u n * f n x ≤ u n := mul_le_of_le_one_right (u_pos n).le (f_range n x).2

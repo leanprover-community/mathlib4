@@ -362,7 +362,7 @@ private lemma uniformity_eq_seminorm :
     intro f hf
     refine opNorm_le_of_shell (f := f) one_pos (norm_nonneg c) hc fun x hcx hx ↦ ?_
     exact (hf x hx.le).trans ((div_le_iff' <| one_pos.trans hc).1 hcx)
-  · rcases (NormedSpace.isVonNBounded_iff' _ _ _).1 hs with ⟨ε, hε⟩
+  · rcases (NormedSpace.isVonNBounded_iff' _).1 hs with ⟨ε, hε⟩
     rcases exists_pos_mul_lt hr ε with ⟨δ, hδ₀, hδ⟩
     refine ⟨δ, hδ₀, fun f hf x hx ↦ ?_⟩
     simp only [Seminorm.mem_ball_zero, mem_closedBall_zero_iff] at hf ⊢
