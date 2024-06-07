@@ -134,7 +134,7 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] :
 
 /-- If `G` acts properly on `X`, then the quotient space is Hausdorff (T2). -/
 @[to_additive "If `G` acts properly on `X`, then the quotient space is Hausdorff (T2)."]
-theorem t2Space_of_ProperSMul [ProperSMul G X] :
+theorem t2Space_of_properSMul [ProperSMul G X] :
     T2Space (Quotient (MulAction.orbitRel G X)) := by
   rw [t2_iff_isClosed_diagonal] -- T2 if the diagonal is closed
   set R := MulAction.orbitRel G X -- the orbit relation
