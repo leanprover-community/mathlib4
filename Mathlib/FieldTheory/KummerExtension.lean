@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.LinearAlgebra.Charpoly.Basic
 import Mathlib.FieldTheory.Galois
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.RingTheory.Norm

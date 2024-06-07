@@ -489,14 +489,15 @@ theorem shiftLeft_negSucc (m n : ℕ) : -[m+1] <<< (n : ℤ) = -[Nat.shiftLeft' 
 theorem shiftRight_negSucc (m n : ℕ) : -[m+1] >>> (n : ℤ) = -[m >>> n+1] := by cases n <;> rfl
 #align int.shiftr_neg_succ Int.shiftRight_negSucc
 
-theorem shiftRight_add : ∀ (m : ℤ) (n k : ℕ), m >>> (n + k : ℤ) = (m >>> (n : ℤ)) >>> (k : ℤ)
+/-- Compare with `Int.shiftRight_add`, which doesn't have the coercions `ℕ → ℤ`. -/
+theorem shiftRight_add' : ∀ (m : ℤ) (n k : ℕ), m >>> (n + k : ℤ) = (m >>> (n : ℤ)) >>> (k : ℤ)
   | (m : ℕ), n, k => by
     rw [shiftRight_coe_nat, shiftRight_coe_nat, ← Int.ofNat_add, shiftRight_coe_nat,
       Nat.shiftRight_add]
   | -[m+1], n, k => by
     rw [shiftRight_negSucc, shiftRight_negSucc, ← Int.ofNat_add, shiftRight_negSucc,
       Nat.shiftRight_add]
-#align int.shiftr_add Int.shiftRight_add
+#align int.shiftr_add Int.shiftRight_add'
 
 /-! ### bitwise ops -/
 
@@ -514,7 +515,7 @@ theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<
         dsimp
         simp_rw [negSucc_eq, shiftLeft_neg, Nat.shiftLeft'_false, Nat.shiftRight_add,
           ← Nat.shiftLeft_sub _ le_rfl, Nat.sub_self, Nat.shiftLeft_zero, ← shiftRight_coe_nat,
-          ← shiftRight_add, Nat.cast_one]
+          ← shiftRight_add', Nat.cast_one]
   | -[m+1], n, -[k+1] =>
     subNatNat_elim n k.succ
       (fun n k i => -[m+1] <<< i = -[(Nat.shiftLeft' true m n) >>> k+1])
@@ -535,12 +536,6 @@ theorem shiftLeft_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), m <<< (n : ℤ) = m * (2
   | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftLeft'_tt_eq_mul_pow _ _)
 #align int.shiftl_eq_mul_pow Int.shiftLeft_eq_mul_pow
 
-theorem shiftRight_eq_div_pow : ∀ (m : ℤ) (n : ℕ), m >>> (n : ℤ) = m / (2 ^ n : ℕ)
-  | (m : ℕ), n => by rw [shiftRight_coe_nat, Nat.shiftRight_eq_div_pow _ _]; simp
-  | -[m+1], n => by
-    rw [shiftRight_negSucc, negSucc_ediv, Nat.shiftRight_eq_div_pow]
-    · rfl
-    · exact ofNat_lt_ofNat_of_lt (Nat.pow_pos (by decide))
 #align int.shiftr_eq_div_pow Int.shiftRight_eq_div_pow
 
 theorem one_shiftLeft (n : ℕ) : 1 <<< (n : ℤ) = (2 ^ n : ℕ) :=
@@ -553,9 +548,10 @@ theorem zero_shiftLeft : ∀ n : ℤ, 0 <<< n = 0
   | -[_+1] => congr_arg ((↑) : ℕ → ℤ) (by simp)
 #align int.zero_shiftl Int.zero_shiftLeft
 
+/-- Compare with `Int.zero_shiftRight`, which has `n : ℕ`. -/
 @[simp]
-theorem zero_shiftRight (n : ℤ) : 0 >>> n = 0 :=
+theorem zero_shiftRight' (n : ℤ) : 0 >>> n = 0 :=
   zero_shiftLeft _
-#align int.zero_shiftr Int.zero_shiftRight
+#align int.zero_shiftr Int.zero_shiftRight'
 
 end Int
