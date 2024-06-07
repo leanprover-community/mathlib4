@@ -50,6 +50,7 @@ jobs:
         python ./scripts/count-trans-deps.py "Mathlib/" > base.json
 
         # switch back to the current branch: the `no_lost_declarations` script should be here
+        echo "${currentBranch}"
         git checkout "${currentBranch}"
     - name: Compare results and comment
       env:
