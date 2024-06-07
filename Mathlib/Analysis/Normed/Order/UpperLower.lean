@@ -226,7 +226,7 @@ protected lemma IsClosed.upperClosure_pi (hs : IsClosed s) (hs' : BddBelow s) :
   obtain ⟨a, ha⟩ := hx.bddAbove_range
   obtain ⟨b, hb, φ, hφ, hbf⟩ := tendsto_subseq_of_bounded (hs'.isBounded_inter bddAbove_Iic) fun n ↦
     ⟨hg n, (hgf _).trans <| ha <| mem_range_self _⟩
-  exact ⟨b, closure_minimal (inter_subset_left _ _) hs hb,
+  exact ⟨b, closure_minimal inter_subset_left hs hb,
     le_of_tendsto_of_tendsto' hbf (hx.comp hφ.tendsto_atTop) fun _ ↦ hgf _⟩
 #align is_closed.upper_closure IsClosed.upperClosure_pi
 
@@ -239,7 +239,7 @@ protected lemma IsClosed.lowerClosure_pi (hs : IsClosed s) (hs' : BddAbove s) :
   obtain ⟨a, ha⟩ := hx.bddBelow_range
   obtain ⟨b, hb, φ, hφ, hbf⟩ := tendsto_subseq_of_bounded (hs'.isBounded_inter bddBelow_Ici) fun n ↦
     ⟨hg n, (ha $ mem_range_self _).trans $ hfg _⟩
-  exact ⟨b, closure_minimal (inter_subset_left _ _) hs hb,
+  exact ⟨b, closure_minimal inter_subset_left hs hb,
     le_of_tendsto_of_tendsto' (hx.comp hφ.tendsto_atTop) hbf fun _ ↦ hfg _⟩
 #align is_closed.lower_closure IsClosed.lowerClosure_pi
 
