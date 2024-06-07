@@ -110,7 +110,9 @@ theorem uniformContinuous_abs : UniformContinuous (abs : ℚ → ℚ) :=
 
 instance : TopologicalRing ℚ := inferInstance
 
-#align rat.continuous_mul continuous_mul
+@[deprecated continuous_mul]
+protected theorem continuous_mul : Continuous fun p : ℚ × ℚ => p.1 * p.2 := continuous_mul
+#align rat.continuous_mul Rat.continuous_mul
 
 nonrec theorem totallyBounded_Icc (a b : ℚ) : TotallyBounded (Icc a b) := by
   simpa only [preimage_cast_Icc] using

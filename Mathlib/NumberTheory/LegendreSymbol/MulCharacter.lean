@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Data.Fintype.Units
 
 #align_import number_theory.legendre_symbol.mul_character from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
@@ -36,6 +37,8 @@ multiplicative character
 -/
 
 
+section DefinitionAndGroup
+
 /-!
 ### Definitions related to multiplicative characters
 
@@ -51,13 +54,15 @@ have a natural structure as a commutative group.
 -/
 
 
+universe u v
+
 section Defi
 
 -- The domain of our multiplicative characters
-variable (R : Type*) [CommMonoid R]
+variable (R : Type u) [CommMonoid R]
 
 -- The target
-variable (R' : Type*) [CommMonoidWithZero R']
+variable (R' : Type v) [CommMonoidWithZero R']
 
 /-- Define a structure for multiplicative characters.
 A multiplicative character from a commutative monoid `R` to a commutative monoid with zero `R'`
@@ -82,17 +87,20 @@ attribute [simp] MulCharClass.map_nonunit
 
 end Defi
 
-namespace MulChar
-
 section Group
 
+namespace MulChar
+
 -- The domain of our multiplicative characters
-variable {R : Type*} [CommMonoid R]
+variable {R : Type u} [CommMonoid R]
 
 -- The target
-variable {R' : Type*} [CommMonoidWithZero R']
+variable {R' : Type v} [CommMonoidWithZero R']
 
-variable (R R') in
+section trivial
+
+variable (R R')
+
 /-- The trivial multiplicative character. It takes the value `0` on non-units and
 the value `1` on units. -/
 @[simps]
@@ -108,6 +116,8 @@ noncomputable def trivial : MulChar R R' where
       simp only [IsUnit.mul_iff, boole_mul]
       split_ifs <;> tauto
 #align mul_char.trivial MulChar.trivial
+
+end trivial
 
 @[simp]
 theorem coe_mk (f : R →* R') (hf) : (MulChar.mk f hf : R → R') = f :=
@@ -241,7 +251,7 @@ protected theorem map_one (χ : MulChar R R') : χ (1 : R) = 1 :=
 #align mul_char.map_one MulChar.map_one
 
 /-- If the domain has a zero (and is nontrivial), then `χ 0 = 0`. -/
-protected theorem map_zero {R : Type*} [CommMonoidWithZero R] [Nontrivial R] (χ : MulChar R R') :
+protected theorem map_zero {R : Type u} [CommMonoidWithZero R] [Nontrivial R] (χ : MulChar R R') :
     χ (0 : R) = 0 := by rw [map_nonunit χ not_isUnit_zero]
 #align mul_char.map_zero MulChar.map_zero
 
@@ -256,7 +266,7 @@ def toMonoidWithZeroHom {R : Type*} [CommMonoidWithZero R] [Nontrivial R] (χ : 
   map_mul' := χ.map_mul'
 
 /-- If the domain is a ring `R`, then `χ (ringChar R) = 0`. -/
-theorem map_ringChar {R : Type*} [CommRing R] [Nontrivial R] (χ : MulChar R R') :
+theorem map_ringChar {R : Type u} [CommRing R] [Nontrivial R] (χ : MulChar R R') :
     χ (ringChar R) = 0 := by rw [ringChar.Nat.cast_ringChar, χ.map_zero]
 #align mul_char.map_ring_char MulChar.map_ringChar
 
@@ -324,20 +334,23 @@ theorem inv_apply_eq_inv (χ : MulChar R R') (a : R) : χ⁻¹ a = Ring.inverse 
 
 /-- The inverse of a multiplicative character `χ`, applied to `a`, is the inverse of `χ a`.
 Variant when the target is a field -/
-theorem inv_apply_eq_inv' {R' : Type*} [Field R'] (χ : MulChar R R') (a : R) : χ⁻¹ a = (χ a)⁻¹ :=
+theorem inv_apply_eq_inv' {R' : Type v} [Field R'] (χ : MulChar R R') (a : R) : χ⁻¹ a = (χ a)⁻¹ :=
   (inv_apply_eq_inv χ a).trans <| Ring.inverse_eq_inv (χ a)
 #align mul_char.inv_apply_eq_inv' MulChar.inv_apply_eq_inv'
 
 /-- When the domain has a zero, then the inverse of a multiplicative character `χ`,
 applied to `a`, is `χ` applied to the inverse of `a`. -/
-theorem inv_apply {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (a : R) :
+theorem inv_apply {R : Type u} [CommMonoidWithZero R] (χ : MulChar R R') (a : R) :
     χ⁻¹ a = χ (Ring.inverse a) := by
   by_cases ha : IsUnit a
   · rw [inv_apply_eq_inv]
     have h := IsUnit.map χ ha
     apply_fun (χ a * ·) using IsUnit.mul_right_injective h
     dsimp only
-    rw [Ring.mul_inverse_cancel _ h, ← map_mul, Ring.mul_inverse_cancel _ ha, map_one]
+    -- Porting note: was
+    -- rw [Ring.mul_inverse_cancel _ h, ← map_mul, Ring.mul_inverse_cancel _ ha, MulChar.map_one]
+    erw [Ring.mul_inverse_cancel _ h, ← map_mul, Ring.mul_inverse_cancel _ ha]
+    exact (MulChar.map_one χ).symm
   · revert ha
     nontriviality R
     intro ha
@@ -347,7 +360,7 @@ theorem inv_apply {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (a : R)
 
 /-- When the domain has a zero, then the inverse of a multiplicative character `χ`,
 applied to `a`, is `χ` applied to the inverse of `a`. -/
-theorem inv_apply' {R : Type*} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ a = χ a⁻¹ :=
+theorem inv_apply' {R : Type u} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ a = χ a⁻¹ :=
   (inv_apply χ a).trans <| congr_arg _ (Ring.inverse_eq_inv a)
 #align mul_char.inv_apply' MulChar.inv_apply'
 
@@ -356,7 +369,9 @@ theorem inv_apply' {R : Type*} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ a
 theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
   ext x
   rw [coeToFun_mul, Pi.mul_apply, inv_apply_eq_inv]
-  simp only [Ring.inverse_mul_cancel _ (IsUnit.map χ x.isUnit)]
+  -- Porting note: was
+  -- simp only [Ring.inverse_mul_cancel _ (IsUnit.map _ x.isUnit)]
+  erw [Ring.inverse_mul_cancel _ (IsUnit.map χ x.isUnit)]
   rw [one_apply_coe]
 #align mul_char.inv_mul MulChar.inv_mul
 
@@ -392,27 +407,11 @@ theorem pow_apply' (χ : MulChar R R') {n : ℕ} (hn : n ≠ 0) (a : R) : (χ ^ 
   · rw [map_nonunit (χ ^ n) ha, map_nonunit χ ha, zero_pow hn]
 #align mul_char.pow_apply' MulChar.pow_apply'
 
-lemma equivToUnitHom_mul_apply (χ₁ χ₂ : MulChar R R') (a : Rˣ) :
-    equivToUnitHom (χ₁ * χ₂) a = equivToUnitHom χ₁ a * equivToUnitHom χ₂ a := by
-  apply_fun ((↑) : R'ˣ → R') using Units.ext
-  push_cast
-  simp_rw [coe_equivToUnitHom]
-  rfl
-
-/-- The equivalence between multiplicative characters and homomorphisms of unit groups
-as a multiplicative equivalence. -/
-noncomputable
-def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
-  { equivToUnitHom with
-    map_mul' := by
-      intro χ ψ
-      ext
-      simp only [Equiv.toFun_as_coe, coe_equivToUnitHom, coeToFun_mul, Pi.mul_apply,
-        MonoidHom.mul_apply, Units.val_mul]
-  }
+end MulChar
 
 end Group
 
+end DefinitionAndGroup
 
 /-!
 ### Properties of multiplicative characters
@@ -426,9 +425,13 @@ We now (mostly) assume that the target is a commutative ring.
 
 section Properties
 
+namespace MulChar
+
+universe u v w
+
 section nontrivial
 
-variable {R : Type*} [CommMonoid R] {R' : Type*} [CommMonoidWithZero R']
+variable {R : Type u} [CommMonoid R] {R' : Type v} [CommMonoidWithZero R']
 
 /-- A multiplicative character is *nontrivial* if it takes a value `≠ 1` on a unit. -/
 def IsNontrivial (χ : MulChar R R') : Prop :=
@@ -444,7 +447,7 @@ end nontrivial
 
 section quadratic_and_comp
 
-variable {R : Type*} [CommMonoid R] {R' : Type*} [CommRing R'] {R'' : Type*} [CommRing R'']
+variable {R : Type u} [CommMonoid R] {R' : Type v} [CommRing R'] {R'' : Type w} [CommRing R'']
 
 /-- A multiplicative character is *quadratic* if it takes only the values `0`, `1`, `-1`. -/
 def IsQuadratic (χ : MulChar R R') : Prop :=
@@ -529,39 +532,9 @@ theorem IsQuadratic.pow_odd {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ}
 
 end quadratic_and_comp
 
-end Properties
-
-/-!
-### Multiplicative characters with finite domain
--/
-
-section Finite
-
-variable {M : Type*} [CommMonoid M] [Fintype M] [DecidableEq M]
-variable {R : Type*} [CommMonoidWithZero R]
-
-/-- A multiplicative character on a finite commutative monoid has finite (= positive) order. -/
-lemma orderOf_pos (χ : MulChar M R) : 0 < orderOf χ := by
-  let e := MulChar.mulEquivToUnitHom (R := M) (R' := R)
-  rw [← MulEquiv.orderOf_eq e χ]
-  have : orderOf (e χ) ∣ Fintype.card Mˣ := by
-    refine orderOf_dvd_of_pow_eq_one ?_
-    ext1 x
-    simp only [MonoidHom.pow_apply, ← map_pow (e χ), pow_card_eq_one, map_one, MonoidHom.one_apply]
-  exact Nat.pos_of_ne_zero <| ne_zero_of_dvd_ne_zero Fintype.card_ne_zero this
-
-/-- If `χ` is a multiplicative character on a finite commutative monoid `M`, then `χ ^ #Mˣ = 1`. -/
-protected
-lemma pow_card_eq_one (χ : MulChar M R) : χ ^ (Fintype.card Mˣ) = 1 := by
-  ext1
-  rw [pow_apply_coe, ← map_pow, one_apply_coe, ← Units.val_pow_eq_pow_val, pow_card_eq_one,
-    Units.val_eq_one.mpr rfl, map_one]
-
-end Finite
-
 section sum
 
-variable {R : Type*} [CommMonoid R] [Fintype R] {R' : Type*} [CommRing R']
+variable {R : Type u} [CommMonoid R] [Fintype R] {R' : Type v} [CommRing R']
 
 /-- The sum over all values of a nontrivial multiplicative character on a finite ring is zero
 (when the target is a domain). -/
@@ -569,6 +542,7 @@ theorem IsNontrivial.sum_eq_zero [IsDomain R'] {χ : MulChar R R'}
     (hχ : χ.IsNontrivial) : ∑ a, χ a = 0 := by
   rcases hχ with ⟨b, hb⟩
   refine eq_zero_of_mul_eq_self_left hb ?_
+  -- POrting note: `map_mul` isn't applied
   simp only [Finset.mul_sum, ← map_mul]
   exact Fintype.sum_bijective _ (Units.mulLeft_bijective b) _ _ fun x => rfl
 #align mul_char.is_nontrivial.sum_eq_zero MulChar.IsNontrivial.sum_eq_zero
@@ -594,18 +568,6 @@ theorem sum_one_eq_card_units [DecidableEq R] :
 
 end sum
 
-/-!
-### Multiplicative characters on rings
--/
+end MulChar
 
-section Ring
-
-variable {R R' : Type*} [CommRing R] [CommMonoidWithZero R']
-
-/-- If `χ` is of odd order, then `χ(-1) = 1` -/
-lemma val_neg_one_eq_one_of_odd_order {χ : MulChar R R'} {n : ℕ} (hn : Odd n) (hχ : χ ^ n = 1) :
-    χ (-1) = 1 := by
-  rw [← hn.neg_one_pow, map_pow, ← χ.pow_apply' (Nat.ne_of_odd_add hn), hχ]
-  exact MulChar.one_apply_coe (-1)
-
-end Ring
+end Properties

@@ -385,7 +385,7 @@ instance : Insert PSet PSet :=
 instance : Singleton PSet PSet :=
   ⟨fun s => insert s ∅⟩
 
-instance : LawfulSingleton PSet PSet :=
+instance : IsLawfulSingleton PSet PSet :=
   ⟨fun _ => rfl⟩
 
 instance (x y : PSet) : Inhabited (insert x y).Type :=
@@ -844,7 +844,7 @@ instance : Insert ZFSet ZFSet :=
 instance : Singleton ZFSet ZFSet :=
   ⟨fun x => insert x ∅⟩
 
-instance : LawfulSingleton ZFSet ZFSet :=
+instance : IsLawfulSingleton ZFSet ZFSet :=
   ⟨fun _ => rfl⟩
 
 @[simp]
@@ -1707,6 +1707,7 @@ theorem eq_univ_of_powerset_subset {A : Class} (hA : powerset A ⊆ A) : A = uni
               WellFounded.not_lt_min ZFSet.mem_wf _ hnA hB <| coe_apply.1 hx))
 #align Class.eq_univ_of_powerset_subset Class.eq_univ_of_powerset_subset
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- The definite description operator, which is `{x}` if `{y | A y} = {x}` and `∅` otherwise. -/
 def iota (A : Class) : Class :=
   ⋃₀ { x | ∀ y, A y ↔ y = x }
@@ -1770,6 +1771,7 @@ theorem choice_mem_aux (y : ZFSet.{u}) (yx : y ∈ x) :
     by_contradiction fun n => h <| by rwa [← (eq_empty y).2 fun z zx => n ⟨z, zx⟩]
 #align Set.choice_mem_aux ZFSet.choice_mem_aux
 
+/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem choice_isFunc : IsFunc x (⋃₀ x) (choice x) :=
   (@map_isFunc _ (Classical.allDefinable _) _ _).2 fun y yx =>
     mem_sUnion.2 ⟨y, yx, choice_mem_aux x h y yx⟩

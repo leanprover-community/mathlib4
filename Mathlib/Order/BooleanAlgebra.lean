@@ -873,11 +873,10 @@ protected abbrev Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [B
 
 end lift
 
-instance PUnit.instBooleanAlgebra : BooleanAlgebra PUnit where
-  __ := PUnit.instBiheytingAlgebra
-  le_sup_inf := _
-  inf_compl_le_bot _ := trivial
-  top_le_sup_compl _ := trivial
+instance PUnit.instBooleanAlgebra : BooleanAlgebra PUnit := by
+  refine'
+  { PUnit.instBiheytingAlgebra with
+    .. } <;> (intros; trivial)
 
 namespace DistribLattice
 

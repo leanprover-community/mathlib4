@@ -169,8 +169,6 @@ theorem map_subset_map {s₁ s₂ : Finset α} : s₁.map f ⊆ s₂.map f ↔ s
    fun h => by simp [subset_def, Multiset.map_subset_map h]⟩
 #align finset.map_subset_map Finset.map_subset_map
 
-@[gcongr] alias ⟨_, _root_.GCongr.finsetMap_subset⟩ := map_subset_map
-
 /-- The `Finset` version of `Equiv.subset_symm_image`. -/
 theorem subset_map_symm {t : Finset β} {f : α ≃ β} : s ⊆ t.map f.symm ↔ s.map f ⊆ t := by
   constructor <;> intro h x hx
@@ -197,11 +195,6 @@ theorem map_inj {s₁ s₂ : Finset α} : s₁.map f = s₂.map f ↔ s₁ = s�
 theorem map_injective (f : α ↪ β) : Injective (map f) :=
   (mapEmbedding f).injective
 #align finset.map_injective Finset.map_injective
-
-@[simp]
-theorem map_ssubset_map {s t : Finset α} : s.map f ⊂ t.map f ↔ s ⊂ t := (mapEmbedding f).lt_iff_lt
-
-@[gcongr] alias ⟨_, _root_.GCongr.finsetMap_ssubset⟩ := map_ssubset_map
 
 @[simp]
 theorem mapEmbedding_apply : mapEmbedding f s = map f s :=
@@ -239,8 +232,11 @@ theorem map_filter {f : α ≃ β} {p : α → Prop} [DecidablePred p] :
 
 @[simp]
 theorem disjoint_map {s t : Finset α} (f : α ↪ β) :
-    Disjoint (s.map f) (t.map f) ↔ Disjoint s t :=
-  mod_cast Set.disjoint_image_iff f.injective (s := s) (t := t)
+    Disjoint (s.map f) (t.map f) ↔ Disjoint s t := by
+  simp only [disjoint_iff_ne, mem_map, exists_prop, exists_imp, and_imp]
+  refine ⟨fun h a ha b hb hab => h _ _ ha rfl _ _ hb rfl <| congr_arg _ hab, ?_⟩
+  rintro h _ a ha rfl _ b hb rfl
+  exact f.injective.ne (h _ ha _ hb)
 #align finset.disjoint_map Finset.disjoint_map
 
 theorem map_disjUnion {f : α ↪ β} (s₁ s₂ : Finset α) (h) (h' := (disjoint_map _).mpr h) :
@@ -256,12 +252,12 @@ theorem map_disjUnion' {f : α ↪ β} (s₁ s₂ : Finset α) (h') (h := (disjo
 
 theorem map_union [DecidableEq α] [DecidableEq β] {f : α ↪ β} (s₁ s₂ : Finset α) :
     (s₁ ∪ s₂).map f = s₁.map f ∪ s₂.map f :=
-  mod_cast Set.image_union f s₁ s₂
+  coe_injective <| by simp only [coe_map, coe_union, Set.image_union]
 #align finset.map_union Finset.map_union
 
 theorem map_inter [DecidableEq α] [DecidableEq β] {f : α ↪ β} (s₁ s₂ : Finset α) :
     (s₁ ∩ s₂).map f = s₁.map f ∩ s₂.map f :=
-  mod_cast Set.image_inter f.injective (s := s₁) (t := s₂)
+  coe_injective <| by simp only [coe_map, coe_inter, Set.image_inter f.injective]
 #align finset.map_inter Finset.map_inter
 
 @[simp]
@@ -282,20 +278,18 @@ theorem map_cons (f : α ↪ β) (a : α) (s : Finset α) (ha : a ∉ s) :
 #align finset.map_cons Finset.map_cons
 
 @[simp]
-theorem map_eq_empty : s.map f = ∅ ↔ s = ∅ := (map_injective f).eq_iff' (map_empty f)
+theorem map_eq_empty : s.map f = ∅ ↔ s = ∅ :=
+  ⟨fun h => eq_empty_of_forall_not_mem fun _ m => ne_empty_of_mem (mem_map_of_mem _ m) h, fun e =>
+    e.symm ▸ rfl⟩
 #align finset.map_eq_empty Finset.map_eq_empty
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
-theorem map_nonempty : (s.map f).Nonempty ↔ s.Nonempty :=
-  mod_cast Set.image_nonempty (f := f) (s := s)
+theorem map_nonempty : (s.map f).Nonempty ↔ s.Nonempty := by
+  rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne, map_eq_empty]
 #align finset.map_nonempty Finset.map_nonempty
 
-protected alias ⟨_, Nonempty.map⟩ := map_nonempty
+alias ⟨_, Nonempty.map⟩ := map_nonempty
 #align finset.nonempty.map Finset.Nonempty.map
-
-@[simp]
-theorem map_nontrivial : (s.map f).Nontrivial ↔ s.Nontrivial :=
-  mod_cast Set.image_nontrivial f.injective (s := s)
 
 theorem attach_map_val {s : Finset α} : s.attach.map (Embedding.subtype _) = s :=
   eq_of_veq <| by rw [map_val, attach_val]; exact Multiset.attach_map_val _
@@ -318,7 +312,12 @@ theorem map_disjiUnion {f : α ↪ β} {s : Finset α} {t : β → Finset γ} {h
 
 theorem disjiUnion_map {s : Finset α} {t : α → Finset β} {f : β ↪ γ} {h} :
     (s.disjiUnion t h).map f =
-      s.disjiUnion (fun a => (t a).map f) (h.mono' fun _ _ ↦ (disjoint_map _).2) :=
+      s.disjiUnion (fun a => (t a).map f) fun a ha b hb hab =>
+        disjoint_left.mpr fun x hxa hxb => by
+          obtain ⟨xa, hfa, rfl⟩ := mem_map.mp hxa
+          obtain ⟨xb, hfb, hfab⟩ := mem_map.mp hxb
+          obtain rfl := f.injective hfab
+          exact disjoint_left.mp (h ha hb hab) hfa hfb :=
   eq_of_veq <| Multiset.map_bind _ _ _
 #align finset.disj_Union_map Finset.disjiUnion_map
 
@@ -421,8 +420,8 @@ theorem coe_image : ↑(s.image f) = f '' ↑s :=
 #align finset.coe_image Finset.coe_image
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
-lemma image_nonempty : (s.image f).Nonempty ↔ s.Nonempty :=
-  mod_cast Set.image_nonempty (f := f) (s := (s : Set α))
+lemma image_nonempty : (s.image f).Nonempty ↔ s.Nonempty := by
+  exact_mod_cast Set.image_nonempty (f := f) (s := (s : Set α))
 #align finset.nonempty.image_iff Finset.image_nonempty
 
 protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).Nonempty :=
@@ -493,8 +492,10 @@ lemma image_inj {t : Finset α} (hf : Injective f) : s.image f = t.image f ↔ s
   (image_injective hf).eq_iff
 
 theorem image_subset_image_iff {t : Finset α} (hf : Injective f) :
-    s.image f ⊆ t.image f ↔ s ⊆ t :=
-  mod_cast Set.image_subset_image_iff hf (s := s) (t := t)
+    s.image f ⊆ t.image f ↔ s ⊆ t := by
+  simp_rw [← coe_subset]
+  push_cast
+  exact Set.image_subset_image_iff hf
 #align finset.image_subset_image_iff Finset.image_subset_image_iff
 
 lemma image_ssubset_image {t : Finset α} (hf : Injective f) : s.image f ⊂ t.image f ↔ s ⊂ t := by
@@ -518,12 +519,13 @@ theorem filter_image {p : β → Prop} [DecidablePred p] :
 
 theorem image_union [DecidableEq α] {f : α → β} (s₁ s₂ : Finset α) :
     (s₁ ∪ s₂).image f = s₁.image f ∪ s₂.image f :=
-  mod_cast Set.image_union f s₁ s₂
+  ext fun _ => by simp only [mem_image, mem_union, exists_prop, or_and_right, exists_or]
 #align finset.image_union Finset.image_union
 
 theorem image_inter_subset [DecidableEq α] (f : α → β) (s t : Finset α) :
     (s ∩ t).image f ⊆ s.image f ∩ t.image f :=
-  (image_mono f).map_inf_le s t
+  subset_inter (image_subset_image <| inter_subset_left _ _) <|
+    image_subset_image <| inter_subset_right _ _
 #align finset.image_inter_subset Finset.image_inter_subset
 
 theorem image_inter_of_injOn [DecidableEq α] {f : α → β} (s t : Finset α)
@@ -535,7 +537,7 @@ theorem image_inter_of_injOn [DecidableEq α] {f : α → β} (s t : Finset α)
 
 theorem image_inter [DecidableEq α] (s₁ s₂ : Finset α) (hf : Injective f) :
     (s₁ ∩ s₂).image f = s₁.image f ∩ s₂.image f :=
-  image_inter_of_injOn _ _ hf.injOn
+  image_inter_of_injOn _ _ <| hf.injOn _
 #align finset.image_inter Finset.image_inter
 
 @[simp]
@@ -558,23 +560,32 @@ theorem erase_image_subset_image_erase [DecidableEq α] (f : α → β) (s : Fin
 
 @[simp]
 theorem image_erase [DecidableEq α] {f : α → β} (hf : Injective f) (s : Finset α) (a : α) :
-    (s.erase a).image f = (s.image f).erase (f a) :=
-  coe_injective <| by push_cast [Set.image_diff hf, Set.image_singleton]; rfl
+    (s.erase a).image f = (s.image f).erase (f a) := by
+  refine (erase_image_subset_image_erase _ _ _).antisymm' fun b => ?_
+  simp only [mem_image, exists_prop, mem_erase]
+  rintro ⟨a', ⟨haa', ha'⟩, rfl⟩
+  exact ⟨hf.ne haa', a', ha', rfl⟩
 #align finset.image_erase Finset.image_erase
 
 @[simp]
-theorem image_eq_empty : s.image f = ∅ ↔ s = ∅ := mod_cast Set.image_eq_empty (f := f) (s := s)
+theorem image_eq_empty : s.image f = ∅ ↔ s = ∅ :=
+  ⟨fun h => eq_empty_of_forall_not_mem fun _ m => ne_empty_of_mem (mem_image_of_mem _ m) h,
+   fun e => e.symm ▸ rfl⟩
 #align finset.image_eq_empty Finset.image_eq_empty
 
 theorem image_sdiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Injective f) :
     (s \ t).image f = s.image f \ t.image f :=
-  mod_cast Set.image_diff hf s t
+  coe_injective <| by
+    push_cast
+    exact Set.image_diff hf _ _
 #align finset.image_sdiff Finset.image_sdiff
 
 open scoped symmDiff in
 theorem image_symmDiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Injective f) :
     (s ∆ t).image f = s.image f ∆ t.image f :=
-  mod_cast Set.image_symmDiff hf s t
+  coe_injective <| by
+    push_cast
+    exact Set.image_symmDiff hf _ _
 #align finset.image_symm_diff Finset.image_symmDiff
 
 @[simp]
@@ -636,12 +647,15 @@ theorem attach_insert [DecidableEq α] {a : α} {s : Finset α} :
 
 @[simp]
 theorem disjoint_image {s t : Finset α} {f : α → β} (hf : Injective f) :
-    Disjoint (s.image f) (t.image f) ↔ Disjoint s t :=
-  mod_cast Set.disjoint_image_iff hf (s := s) (t := t)
+    Disjoint (s.image f) (t.image f) ↔ Disjoint s t := by
+  convert disjoint_map ⟨_, hf⟩ using 1
+  simp [map_eq_image]
 #align finset.disjoint_image Finset.disjoint_image
 
 theorem image_const {s : Finset α} (h : s.Nonempty) (b : β) : (s.image fun _ => b) = singleton b :=
-  mod_cast Set.Nonempty.image_const (coe_nonempty.2 h) b
+  ext fun b' => by
+    simp only [mem_image, exists_prop, exists_and_right, h.exists_mem, true_and_iff, mem_singleton,
+      eq_comm]
 #align finset.image_const Finset.image_const
 
 @[simp]

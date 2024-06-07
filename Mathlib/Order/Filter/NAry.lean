@@ -264,8 +264,8 @@ theorem map₂_distrib_le_left {m : α → δ → ε} {n : β → γ → δ} {m�
   rintro s ⟨t₁, ⟨u₁, hu₁, v, hv, ht₁⟩, t₂, ⟨u₂, hu₂, w, hw, ht₂⟩, hs⟩
   refine ⟨u₁ ∩ u₂, inter_mem hu₁ hu₂, _, image2_mem_map₂ hv hw, ?_⟩
   refine (image2_distrib_subset_left h_distrib).trans ((image2_subset ?_ ?_).trans hs)
-  · exact (image2_subset_right inter_subset_left).trans ht₁
-  · exact (image2_subset_right inter_subset_right).trans ht₂
+  · exact (image2_subset_right <| inter_subset_left _ _).trans ht₁
+  · exact (image2_subset_right <| inter_subset_right _ _).trans ht₂
 #align filter.map₂_distrib_le_left Filter.map₂_distrib_le_left
 
 /-- The other direction does not hold because of the `h`-`h` cross terms on the RHS. -/
@@ -275,8 +275,8 @@ theorem map₂_distrib_le_right {m : δ → γ → ε} {n : α → β → δ} {m
   rintro s ⟨t₁, ⟨u, hu, w₁, hw₁, ht₁⟩, t₂, ⟨v, hv, w₂, hw₂, ht₂⟩, hs⟩
   refine ⟨_, image2_mem_map₂ hu hv, w₁ ∩ w₂, inter_mem hw₁ hw₂, ?_⟩
   refine (image2_distrib_subset_right h_distrib).trans ((image2_subset ?_ ?_).trans hs)
-  · exact (image2_subset_left inter_subset_left).trans ht₁
-  · exact (image2_subset_left inter_subset_right).trans ht₂
+  · exact (image2_subset_left <| inter_subset_left _ _).trans ht₁
+  · exact (image2_subset_left <| inter_subset_right _ _).trans ht₂
 #align filter.map₂_distrib_le_right Filter.map₂_distrib_le_right
 
 theorem map_map₂_antidistrib {n : γ → δ} {m' : β' → α' → δ} {n₁ : β → β'} {n₂ : α → α'}

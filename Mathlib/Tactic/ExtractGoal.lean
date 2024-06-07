@@ -163,7 +163,10 @@ elab_rules : tactic
           levelParams := levels
           isUnsafe := false
           type := ty }
-      let sig ← addMessageContext <| MessageData.signature name
+      let sig ← addMessageContext <| MessageData.ofPPFormat { pp := fun
+                  | some ctx => ctx.runMetaM <| PrettyPrinter.ppSignature name
+                  | none     => unreachable!
+                }
       let cmd := if ← Meta.isProp ty then "theorem" else "def"
       pure m!"{cmd} {sig} := sorry"
     logInfo msg

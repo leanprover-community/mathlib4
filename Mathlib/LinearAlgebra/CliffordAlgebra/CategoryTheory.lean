@@ -7,7 +7,7 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat
 import Mathlib.Algebra.Category.AlgebraCat.Basic
 
-/-! # Category-theoretic interpretations of `CliffordAlgebra`
+/-! # Category-theoretic interpretations of `clifford_algebra`
 
 ## Main definitions
 

@@ -185,7 +185,11 @@ lemma map_equiv_traceDual [NoZeroSMulDivisors A B] (I : Submodule B (FractionRin
     rw [IsScalarTower.algebraMap_apply A B (FractionRing B), AlgEquiv.commutes,
       ← IsScalarTower.algebraMap_apply]
   simp only [AlgEquiv.toRingEquiv_eq_coe, _root_.map_mul, AlgEquiv.coe_ringEquiv,
-    AlgEquiv.apply_symm_apply, ← AlgEquiv.symm_toRingEquiv, mem_one, AlgEquiv.algebraMap_eq_apply]
+    AlgEquiv.apply_symm_apply]
+  show (FractionRing.algEquiv A K).symm _ ∈ (algebraMap A (FractionRing A)).range ↔ _
+  rw [← (FractionRing.algEquiv A K).symm.toAlgHom.comp_algebraMap, ← RingHom.map_range,
+    AlgEquiv.toAlgHom_eq_coe, AlgEquiv.coe_ringHom_commutes, Subring.mem_map_equiv]
+  simp
 
 open scoped Classical
 
@@ -213,7 +217,7 @@ def dual (I : FractionalIdeal B⁰ L) :
 variable [IsDedekindDomain B] {I J : FractionalIdeal B⁰ L} (hI : I ≠ 0) (hJ : J ≠ 0)
 
 lemma coe_dual :
-    (dual A K I : Submodule B L) = Iᵛ := by rw [dual, dif_neg hI, coe_mk]
+    (dual A K I : Submodule B L) = Iᵛ := by rw [dual, dif_neg hI]; rfl
 
 variable (B L)
 
