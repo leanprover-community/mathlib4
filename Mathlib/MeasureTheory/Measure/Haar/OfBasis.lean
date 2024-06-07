@@ -22,7 +22,7 @@ nonempty interior.
 * `Basis.addHaar` is the Lebesgue measure associated to a basis, giving measure `1` to the
 corresponding parallelepiped.
 
-In particular, we declare a `measure_space` instance on any finite-dimensional inner product space,
+In particular, we declare a `MeasureSpace` instance on any finite-dimensional inner product space,
 by using the Lebesgue measure associated to some orthonormal basis (which is in fact independent
 of the basis).
 -/
@@ -30,7 +30,7 @@ of the basis).
 
 open Set TopologicalSpace MeasureTheory MeasureTheory.Measure FiniteDimensional
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 noncomputable section
 
@@ -82,8 +82,8 @@ theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
     ext x
     simp only [K, mem_preimage, mem_Icc, Pi.le_def, Pi.zero_apply, Equiv.piCongrLeft'_apply,
       Pi.one_apply]
-    refine'
-      ⟨fun h => ⟨fun i => _, fun i => _⟩, fun h =>
+    refine
+      ⟨fun h => ⟨fun i => ?_, fun i => ?_⟩, fun h =>
         ⟨fun i => h.1 (e.symm i), fun i => h.2 (e.symm i)⟩⟩
     · simpa only [Equiv.symm_apply_apply] using h.1 (e i)
     · simpa only [Equiv.symm_apply_apply] using h.2 (e i)
@@ -109,7 +109,7 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
   have A : Icc (0 : Fin 1 → ℝ) 1 = F '' Icc (0 : ℝ) 1 := by
     apply Subset.antisymm
     · intro x hx
-      refine' ⟨x 0, ⟨hx.1 0, hx.2 0⟩, _⟩
+      refine ⟨x 0, ⟨hx.1 0, hx.2 0⟩, ?_⟩
       ext j
       simp only [Subsingleton.elim j 0]
     · rintro x ⟨y, hy, rfl⟩
@@ -166,7 +166,7 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
     · rw [sup_eq_right.mpr hai, inf_eq_left.mpr hai]
       exact ⟨mul_nonneg ht.1 hai, mul_le_of_le_one_left hai ht.2⟩
   · intro h
-    refine' ⟨fun i => x i / a i, fun i => _, funext fun i => _⟩
+    refine ⟨fun i => x i / a i, fun i => ?_, funext fun i => ?_⟩
     · specialize h i
       rcases le_total (a i) 0 with hai | hai
       · rw [sup_eq_left.mpr hai, inf_eq_right.mpr hai] at h
@@ -324,7 +324,7 @@ instance Real.measureSpace : MeasureSpace ℝ := by infer_instance
 
 /-! # Miscellaneous instances for `EuclideanSpace`
 
-In combination with `measureSpaceOfInnerProductSpace`, these put a `measure_space` structure
+In combination with `measureSpaceOfInnerProductSpace`, these put a `MeasureSpace` structure
 on `EuclideanSpace`. -/
 
 

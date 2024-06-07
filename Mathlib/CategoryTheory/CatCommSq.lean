@@ -95,10 +95,6 @@ def hInvEquiv : CatCommSq T.functor L R B.functor ≃ CatCommSq T.inverse R L B.
 
 end
 
-instance hInv' [h : CatCommSq T L R B] [IsEquivalence T] [IsEquivalence B] :
-    CatCommSq T.inv R L B.inv :=
-  hInv T.asEquivalence L R B.asEquivalence h
-
 end CatCommSq
 
 end CategoryTheory

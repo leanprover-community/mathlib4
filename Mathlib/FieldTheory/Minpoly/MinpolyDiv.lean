@@ -20,7 +20,7 @@ See `traceForm_dualBasis_powerBasis_eq`.
 - `span_coeff_minpolyDiv`: The coefficients of `minpolyDiv` spans `R<x>`.
 -/
 
-open Polynomial BigOperators FiniteDimensional
+open Polynomial FiniteDimensional
 
 variable (R K) {L S} [CommRing R] [Field K] [Field L] [CommRing S] [Algebra R S] [Algebra K L]
 variable (x : S)
@@ -143,8 +143,7 @@ lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R 
     · apply Submodule.smul_mem
       apply Submodule.subset_span
       exact ⟨0, Nat.zero_lt_succ _, pow_zero _⟩
-    · rw [Nat.succ_eq_add_one, ← tsub_tsub, tsub_add_cancel_of_le
-        (le_tsub_of_add_le_left (b := 1) hi)]
+    · rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left (b := 1) hi)]
       apply SetLike.le_def.mp ?_
         (Submodule.mul_mem_mul (IH ((Nat.le_succ _).trans hi))
           (Submodule.mem_span_singleton_self x))
@@ -208,7 +207,7 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
       refine ⟨finrank_pos, ?_⟩
       intro σ
       exact ((Polynomial.natDegree_smul_le _ _).trans (natDegree_map_le _ _)).trans_lt
-        ((natDegree_minpolyDiv_lt (Algebra.IsIntegral.of_finite _ _ x)).trans_le
+        ((natDegree_minpolyDiv_lt (Algebra.IsIntegral.isIntegral x)).trans_le
           (minpoly.natDegree_le _))
     · rwa [natDegree_pow, natDegree_X, mul_one, AlgHom.card]
 

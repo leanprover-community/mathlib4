@@ -30,7 +30,7 @@ variable [SeminormedGroup E] {ε δ : ℝ} {s t : Set E} {x y : E}
 theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s * t) := by
   obtain ⟨Rs, hRs⟩ : ∃ R, ∀ x ∈ s, ‖x‖ ≤ R := hs.exists_norm_le'
   obtain ⟨Rt, hRt⟩ : ∃ R, ∀ x ∈ t, ‖x‖ ≤ R := ht.exists_norm_le'
-  refine' isBounded_iff_forall_norm_le'.2 ⟨Rs + Rt, _⟩
+  refine isBounded_iff_forall_norm_le'.2 ⟨Rs + Rt, ?_⟩
   rintro z ⟨x, hx, y, hy, rfl⟩
   exact norm_mul_le_of_le (hRs x hx) (hRt y hy)
 #align metric.bounded.mul Bornology.IsBounded.mul
@@ -221,7 +221,7 @@ theorem smul_closedBall_one : x • closedBall (1 : E) δ = closedBall x δ := b
 theorem mul_ball_one : s * ball 1 δ = thickening δ s := by
   rw [thickening_eq_biUnion_ball]
   convert iUnion₂_mul (fun x (_ : x ∈ s) => {x}) (ball (1 : E) δ)
-  exact s.biUnion_of_singleton.symm
+  · exact s.biUnion_of_singleton.symm
   ext x
   simp_rw [singleton_mul_ball, mul_one]
 #align mul_ball_one mul_ball_one

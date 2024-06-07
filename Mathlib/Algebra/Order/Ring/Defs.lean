@@ -7,10 +7,10 @@ import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Monoid.MinMax
 import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.Tauto
 
@@ -517,8 +517,7 @@ instance (priority := 200) StrictOrderedSemiring.toMulPosStrictMono : MulPosStri
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedSemiring.toOrderedSemiring` to avoid using choice in
 basic `Nat` lemmas. -/
-@[reducible]
-def StrictOrderedSemiring.toOrderedSemiring' [@DecidableRel α (· ≤ ·)] : OrderedSemiring α :=
+abbrev StrictOrderedSemiring.toOrderedSemiring' [@DecidableRel α (· ≤ ·)] : OrderedSemiring α :=
   { ‹StrictOrderedSemiring α› with
     mul_le_mul_of_nonneg_left := fun a b c hab hc => by
       obtain rfl | hab := Decidable.eq_or_lt_of_le hab
@@ -561,7 +560,7 @@ theorem pow_pos (H : 0 < a) : ∀ n : ℕ, 0 < a ^ n
     exact zero_lt_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_pos  (pow_pos H _) H
+    exact mul_pos (pow_pos H _) H
 #align pow_pos pow_pos
 
 theorem mul_self_lt_mul_self (h1 : 0 ≤ a) (h2 : a < b) : a * a < b * b :=
@@ -769,8 +768,7 @@ variable [StrictOrderedCommSemiring α]
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedCommSemiring.toOrderedCommSemiring'` to avoid using
 choice in basic `Nat` lemmas. -/
-@[reducible]
-def StrictOrderedCommSemiring.toOrderedCommSemiring' [@DecidableRel α (· ≤ ·)] :
+abbrev StrictOrderedCommSemiring.toOrderedCommSemiring' [@DecidableRel α (· ≤ ·)] :
     OrderedCommSemiring α :=
   { ‹StrictOrderedCommSemiring α›, StrictOrderedSemiring.toOrderedSemiring' with }
 #align strict_ordered_comm_semiring.to_ordered_comm_semiring' StrictOrderedCommSemiring.toOrderedCommSemiring'
@@ -799,8 +797,7 @@ instance (priority := 100) StrictOrderedRing.toStrictOrderedSemiring : StrictOrd
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedRing.toOrderedRing` to avoid using choice in basic
 `Int` lemmas. -/
-@[reducible]
-def StrictOrderedRing.toOrderedRing' [@DecidableRel α (· ≤ ·)] : OrderedRing α :=
+abbrev StrictOrderedRing.toOrderedRing' [@DecidableRel α (· ≤ ·)] : OrderedRing α :=
   { ‹StrictOrderedRing α›, (Ring.toSemiring : Semiring α) with
     mul_nonneg := fun a b ha hb => by
       obtain ha | ha := Decidable.eq_or_lt_of_le ha
@@ -825,8 +822,7 @@ variable [StrictOrderedCommRing α]
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedCommRing.toOrderedCommRing` to avoid using
 choice in basic `Int` lemmas. -/
-@[reducible]
-def StrictOrderedCommRing.toOrderedCommRing' [@DecidableRel α (· ≤ ·)] : OrderedCommRing α :=
+abbrev StrictOrderedCommRing.toOrderedCommRing' [@DecidableRel α (· ≤ ·)] : OrderedCommRing α :=
   { ‹StrictOrderedCommRing α›, StrictOrderedRing.toOrderedRing' with }
 #align strict_ordered_comm_ring.to_ordered_comm_ring' StrictOrderedCommRing.toOrderedCommRing'
 
@@ -861,7 +857,7 @@ attribute [local instance] LinearOrderedSemiring.decidableLE LinearOrderedSemiri
 
 theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg (hab : 0 ≤ a * b) :
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
-  refine' Decidable.or_iff_not_and_not.2 _
+  refine Decidable.or_iff_not_and_not.2 ?_
   simp only [not_and, not_le]; intro ab nab; apply not_lt_of_le hab _
   rcases lt_trichotomy 0 a with (ha | rfl | ha)
   · exact mul_neg_of_pos_of_neg ha (ab ha.le)
@@ -1325,12 +1321,7 @@ instance (priority := 100) LinearOrderedCommRing.toLinearOrderedCommSemiring
   { d, LinearOrderedRing.toLinearOrderedSemiring with }
 #align linear_ordered_comm_ring.to_linear_ordered_comm_semiring LinearOrderedCommRing.toLinearOrderedCommSemiring
 
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on 2023/12/23
--/
-
+-- 2023-12-23
 @[deprecated] alias zero_le_mul_left := mul_nonneg_iff_of_pos_left
 @[deprecated] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
 @[deprecated] alias zero_lt_mul_left := mul_pos_iff_of_pos_left

@@ -23,14 +23,15 @@ More specifically, we introduce
 
 ## Notations
 
-In the locale `manifold`, we introduce the notations
+In the locale `Manifold`, we introduce the notations
 * `𝓡 n` for the identity model with corners on `EuclideanSpace ℝ (Fin n)`
 * `𝓡∂ n` for `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)`.
 
 For instance, if a manifold `M` is boundaryless, smooth and modelled on `EuclideanSpace ℝ (Fin m)`,
 and `N` is smooth with boundary modelled on `EuclideanHalfSpace n`, and `f : M → N` is a smooth
 map, then the derivative of `f` can be written simply as `mfderiv (𝓡 m) (𝓡∂ n) f` (as to why the
-model with corners can not be implicit, see the discussion in `smooth_manifold_with_corners.lean`).
+model with corners can not be implicit, see the discussion in
+`Geometry.Manifold.SmoothManifoldWithCorners`).
 
 ## Implementation notes
 
@@ -92,19 +93,19 @@ theorem range_euclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
     (range fun x : EuclideanHalfSpace n => x.val) = { y | 0 ≤ y 0 } :=
   Subtype.range_val
 #align range_half_space range_euclideanHalfSpace
-@[deprecated] alias range_half_space := range_euclideanHalfSpace -- 2024-04-05
+@[deprecated (since := "2024-04-05")] alias range_half_space := range_euclideanHalfSpace
 
 theorem range_euclideanQuadrant (n : ℕ) :
     (range fun x : EuclideanQuadrant n => x.val) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
 #align range_quadrant range_euclideanQuadrant
-@[deprecated] alias range_quadrant := range_euclideanQuadrant -- 2024-04-05
+@[deprecated (since := "2024-04-05")] alias range_quadrant := range_euclideanQuadrant
 
 end
 
 /--
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanHalfSpace n)`, used as
-a model for manifolds with boundary. In the locale `manifold`, use the shortcut `𝓡∂ n`.
+a model for manifolds with boundary. In the locale `Manifold`, use the shortcut `𝓡∂ n`.
 -/
 def modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n) where
@@ -323,8 +324,6 @@ instance Icc_smooth_manifold (x y : ℝ) [Fact (x < y)] :
 
 
 section
-
-attribute [local instance] Real.fact_zero_lt_one
 
 instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
 

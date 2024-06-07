@@ -28,7 +28,7 @@ the underlying space is metrizable and separable.
 
 open MeasureTheory Topology Metric Filter Set ENNReal NNReal
 
-open scoped Topology ENNReal NNReal BoundedContinuousFunction BigOperators
+open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 namespace MeasureTheory
 
@@ -48,16 +48,16 @@ variable (μ : FiniteMeasure α) (ν : FiniteMeasure β)
 
 lemma prod_apply (s : Set (α × β)) (s_mble : MeasurableSet s) :
     μ.prod ν s = ENNReal.toNNReal (∫⁻ x, ν.toMeasure (Prod.mk x ⁻¹' s) ∂μ) := by
-  simp [Measure.prod_apply s_mble]
+  simp [coeFn_def, Measure.prod_apply s_mble]
 
 lemma prod_apply_symm (s : Set (α × β)) (s_mble : MeasurableSet s) :
     μ.prod ν s = ENNReal.toNNReal (∫⁻ y, μ.toMeasure ((fun x ↦ ⟨x, y⟩) ⁻¹' s) ∂ν) := by
-  simp [Measure.prod_apply_symm s_mble]
+  simp [coeFn_def, Measure.prod_apply_symm s_mble]
 
-lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by simp
+lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by simp [coeFn_def]
 
 @[simp] lemma mass_prod : (μ.prod ν).mass = μ.mass * ν.mass := by
-  simp only [mass, univ_prod_univ.symm, toMeasure_prod]
+  simp only [coeFn_def, mass, univ_prod_univ.symm, toMeasure_prod]
   rw [← ENNReal.toNNReal_mul]
   exact congr_arg ENNReal.toNNReal (Measure.prod_prod univ univ)
 
@@ -67,22 +67,8 @@ lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t 
 @[simp] lemma prod_zero : μ.prod (0 : FiniteMeasure β) = 0 := by
   rw [← mass_zero_iff, mass_prod, zero_mass, mul_zero]
 
-@[simp] lemma map_fst_prod : (μ.prod ν).map Prod.fst = ν univ • μ := by
-  apply Subtype.ext
-  simp only [val_eq_toMeasure, toMeasure_map, toMeasure_prod, Measure.map_fst_prod]
-  ext s _
-  simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, smul_eq_mul]
-  have aux := coeFn_smul_apply (ν univ) μ s
-  simpa using congr_arg ENNReal.ofNNReal aux.symm
-
-@[simp] lemma map_snd_prod : (μ.prod ν).map Prod.snd = μ univ • ν := by
-  apply Subtype.ext
-  simp only [val_eq_toMeasure, toMeasure_map, toMeasure_prod, Measure.map_fst_prod]
-  ext s _
-  simp only [Measure.map_snd_prod, Measure.smul_toOuterMeasure, OuterMeasure.coe_smul,
-    Pi.smul_apply, smul_eq_mul]
-  have aux := coeFn_smul_apply (μ univ) ν s
-  simpa using congr_arg ENNReal.ofNNReal aux.symm
+@[simp] lemma map_fst_prod : (μ.prod ν).map Prod.fst = ν univ • μ := by ext; simp
+@[simp] lemma map_snd_prod : (μ.prod ν).map Prod.snd = μ univ • ν := by ext; simp
 
 lemma map_prod_map {α' : Type*} [MeasurableSpace α'] {β' : Type*} [MeasurableSpace β']
     {f : α → α'} {g : β → β'}  (f_mble : Measurable f) (g_mble : Measurable g):
@@ -116,13 +102,13 @@ variable (μ : ProbabilityMeasure α) (ν : ProbabilityMeasure β)
 
 lemma prod_apply (s : Set (α × β)) (s_mble : MeasurableSet s) :
     μ.prod ν s = ENNReal.toNNReal (∫⁻ x, ν.toMeasure (Prod.mk x ⁻¹' s) ∂μ) := by
-  simp [Measure.prod_apply s_mble]
+  simp [coeFn_def, Measure.prod_apply s_mble]
 
 lemma prod_apply_symm (s : Set (α × β)) (s_mble : MeasurableSet s) :
     μ.prod ν s = ENNReal.toNNReal (∫⁻ y, μ.toMeasure ((fun x ↦ ⟨x, y⟩) ⁻¹' s) ∂ν) := by
-  simp [Measure.prod_apply_symm s_mble]
+  simp [coeFn_def, Measure.prod_apply_symm s_mble]
 
-lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by simp
+lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by simp [coeFn_def]
 
 /-- The first marginal of a product probability measure is the first probability measure. -/
 @[simp] lemma map_fst_prod : (μ.prod ν).map measurable_fst.aemeasurable = μ := by

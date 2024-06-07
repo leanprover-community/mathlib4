@@ -125,7 +125,7 @@ instance [DecidableEq R] : One (RingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
       mul_le' := fun x y => by
         by_cases h : x * y = 0
-        · refine' (if_pos h).trans_le (mul_nonneg _ _) <;>
+        · refine (if_pos h).trans_le (mul_nonneg ?_ ?_) <;>
             · change _ ≤ ite _ _ _
               split_ifs
               exacts [le_rfl, zero_le_one]
@@ -145,7 +145,7 @@ section Ring
 variable [Ring R] (p : RingSeminorm R)
 
 theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 := by
-  refine'
+  refine
     ⟨fun h =>
       ne_zero_iff.mpr
         ⟨1, by
@@ -156,7 +156,7 @@ theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :
   · exfalso
     refine h (ext fun x => (apply_nonneg _ _).antisymm' ?_)
     simpa only [hp0, mul_one, mul_zero] using map_mul_le_mul p x 1
-  · refine' hp.antisymm ((le_mul_iff_one_le_left hp0).1 _)
+  · refine hp.antisymm ((le_mul_iff_one_le_left hp0).1 ?_)
     simpa only [one_mul] using map_mul_le_mul p (1 : R) _
 #align ring_seminorm.seminorm_one_eq_one_iff_ne_zero RingSeminorm.seminorm_one_eq_one_iff_ne_zero
 
@@ -329,14 +329,11 @@ variable {R : Type*} [Ring R]
 def equiv (f : MulRingNorm R) (g : MulRingNorm R) :=
   ∃ c : ℝ, 0 < c ∧ (fun x => (f x) ^ c) = g
 
-/- Equivalence of multiplicative ring norms is an equivalence relation
-
-  1. is reflexive-/
+/-- Equivalence of multiplicative ring norms is reflexive. -/
 lemma equiv_refl (f : MulRingNorm R) : equiv f f := by
     exact ⟨1, Real.zero_lt_one, by simp only [Real.rpow_one]⟩
-/- Equivalence of multiplicative ring norms is an equivalence relation
 
- 2. is symmetric-/
+/-- Equivalence of multiplicative ring norms is symmetric. -/
 lemma equiv_symm {f g : MulRingNorm R} (hfg : equiv f g) : equiv g f := by
   rcases hfg with ⟨c, hcpos, h⟩
   use 1/c
@@ -345,9 +342,7 @@ lemma equiv_symm {f g : MulRingNorm R} (hfg : equiv f g) : equiv g f := by
   ext x
   simpa [← congr_fun h x] using Real.rpow_rpow_inv (apply_nonneg f x) (ne_of_lt hcpos).symm
 
-/- Equivalence of multiplicative ring norms is an equivalence relation
-
- 3. is transitive-/
+/-- Equivalence of multiplicative ring norms is transitive. -/
 lemma equiv_trans {f g k : MulRingNorm R} (hfg : equiv f g) (hgk : equiv g k) :
     equiv f k := by
   rcases hfg with ⟨c, hcPos, hfg⟩
@@ -355,7 +350,6 @@ lemma equiv_trans {f g k : MulRingNorm R} (hfg : equiv f g) (hgk : equiv g k) :
   refine ⟨c*d, (mul_pos_iff_of_pos_left hcPos).mpr hdPos, ?_⟩
   ext x
   rw [Real.rpow_mul (apply_nonneg f x), congr_fun hfg x, congr_fun hgk x]
-
 
 end MulRingNorm
 
@@ -384,7 +378,7 @@ def normRingNorm (R : Type*) [NonUnitalNormedRing R] : RingNorm R :=
 #align norm_ring_norm normRingNorm
 
 
-/-A multiplicative ring norm satisfies `f n ≤ n` for every `n : ℕ`-/
+/-- A multiplicative ring norm satisfies `f n ≤ n` for every `n : ℕ`. -/
 lemma MulRingNorm_nat_le_nat {R : Type*} [Ring R] (n : ℕ) (f : MulRingNorm R) : f n ≤ n := by
   induction n with
   | zero => simp only [Nat.cast_zero, map_zero, le_refl]

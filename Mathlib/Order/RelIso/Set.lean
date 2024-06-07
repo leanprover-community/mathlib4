@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Logic.Embedding.Set
+import Mathlib.Logic.Equiv.Set
 
 #align_import order.rel_iso.set from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"
 
@@ -99,3 +100,15 @@ theorem RelEmbedding.codRestrict_apply (p) (f : r ↪r s) (H a) :
     RelEmbedding.codRestrict p f H a = ⟨f a, H a⟩ :=
   rfl
 #align rel_embedding.cod_restrict_apply RelEmbedding.codRestrict_apply
+
+section image
+
+variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
+
+theorem RelIso.image_eq_preimage_symm (e : r ≃r s) (t : Set α) : e '' t = e.symm ⁻¹' t :=
+  e.toEquiv.image_eq_preimage t
+
+theorem RelIso.preimage_eq_image_symm (e : r ≃r s) (t : Set β) : e ⁻¹' t = e.symm '' t := by
+  rw [e.symm.image_eq_preimage_symm]; rfl
+
+end image

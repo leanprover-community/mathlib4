@@ -349,7 +349,7 @@ noncomputable def homology'FunctorIso (i : ι) :
       intro X Y f
       dsimp
       rw [← Iso.inv_comp_eq, ← Category.assoc, ← Iso.eq_comp_inv]
-      refine' coequalizer.hom_ext _
+      refine coequalizer.hom_ext ?_
       dsimp [homology'Iso]
       simp only [PreservesCokernel.iso_inv]
       dsimp [homology'.map]
@@ -361,10 +361,10 @@ noncomputable def homology'FunctorIso (i : ι) :
         F.mapHomologicalComplex_map_f, F.map_comp]
       dsimp [HomologicalComplex.dFrom, HomologicalComplex.Hom.next]
       rw [kernel_map_comp_preserves_kernel_iso_inv_assoc]
-      conv_lhs => erw [← F.map_comp_assoc]
-      rotate_right; simp
-      rw [← kernel_map_comp_kernelSubobjectIso_inv]
-      any_goals simp)
+      · conv_lhs => erw [← F.map_comp_assoc]
+        rw [← kernel_map_comp_kernelSubobjectIso_inv]
+        · simp
+        · simp)
 #align category_theory.functor.homology_functor_iso CategoryTheory.Functor.homology'FunctorIso
 
 end CategoryTheory.Functor

@@ -287,7 +287,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     use Fin.last (n+3)
     simp only [hₙ.ne, not_false_eq_true, Fin.zero_eta, zero_add, true_and]
     intro j
-    fin_cases j <;> simp [Fin.ext_iff] <;> omega
+    fin_cases j <;> simp [Fin.ext_iff]
   · use 0
     simp only [h₀.ne', not_false_eq_true, true_and]
     intro j

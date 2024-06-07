@@ -82,8 +82,6 @@ variable {F : Type uF} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 open scoped TensorProduct
 
-open BigOperators
-
 namespace PiTensorProduct
 
 section seminorm
@@ -388,7 +386,7 @@ theorem mapL_mul (f₁ f₂ : Π i, E i →L[𝕜] E i) :
     mapL (fun i ↦ f₁ i * f₂ i) = mapL f₁ * mapL f₂ :=
   mapL_comp f₁ f₂
 
-/-- Upgrading `PiTensorProduct.mapL` to a `MonoidHom` when `E = E'`.-/
+/-- Upgrading `PiTensorProduct.mapL` to a `MonoidHom` when `E = E'`. -/
 @[simps]
 noncomputable def mapLMonoidHom : (Π i, E i →L[𝕜] E i) →* ((⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E i) where
   toFun := mapL

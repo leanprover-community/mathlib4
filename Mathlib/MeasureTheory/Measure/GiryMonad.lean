@@ -33,7 +33,7 @@ giry monad
 noncomputable section
 
 open scoped Classical
-open BigOperators ENNReal
+open ENNReal
 
 open scoped Classical
 open Set Filter
@@ -63,9 +63,9 @@ theorem measurable_of_measurable_coe (f : β → Measure α)
 #align measure_theory.measure.measurable_of_measurable_coe MeasureTheory.Measure.measurable_of_measurable_coe
 
 instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : MeasurableAdd₂ (Measure α) := by
-  refine' ⟨Measure.measurable_of_measurable_coe _ fun s hs => _⟩
+  refine ⟨Measure.measurable_of_measurable_coe _ fun s hs => ?_⟩
   simp_rw [Measure.coe_add, Pi.add_apply]
-  refine' Measurable.add _ _
+  refine Measurable.add ?_ ?_
   · exact (Measure.measurable_coe hs).comp measurable_fst
   · exact (Measure.measurable_coe hs).comp measurable_snd
 #align measure_theory.measure.has_measurable_add₂ MeasureTheory.Measure.instMeasurableAdd₂
@@ -77,13 +77,13 @@ theorem measurable_measure {μ : α → Measure β} :
 
 theorem measurable_map (f : α → β) (hf : Measurable f) :
     Measurable fun μ : Measure α => map f μ := by
-  refine' measurable_of_measurable_coe _ fun s hs => _
+  refine measurable_of_measurable_coe _ fun s hs => ?_
   simp_rw [map_apply hf hs]
   exact measurable_coe (hf hs)
 #align measure_theory.measure.measurable_map MeasureTheory.Measure.measurable_map
 
 theorem measurable_dirac : Measurable (Measure.dirac : α → Measure α) := by
-  refine' measurable_of_measurable_coe _ fun s hs => _
+  refine measurable_of_measurable_coe _ fun s hs => ?_
   simp_rw [dirac_apply' _ hs]
   exact measurable_one.indicator hs
 #align measure_theory.measure.measurable_dirac MeasureTheory.Measure.measurable_dirac
@@ -91,8 +91,8 @@ theorem measurable_dirac : Measurable (Measure.dirac : α → Measure α) := by
 theorem measurable_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun μ : Measure α => ∫⁻ x, f x ∂μ := by
   simp only [lintegral_eq_iSup_eapprox_lintegral, hf, SimpleFunc.lintegral]
-  refine' measurable_iSup fun n => Finset.measurable_sum _ fun i _ => _
-  refine' Measurable.const_mul _ _
+  refine measurable_iSup fun n => Finset.measurable_sum _ fun i _ => ?_
+  refine Measurable.const_mul ?_ _
   exact measurable_coe ((SimpleFunc.eapprox f n).measurableSet_preimage _)
 #align measure_theory.measure.measurable_lintegral MeasureTheory.Measure.measurable_lintegral
 
@@ -131,11 +131,11 @@ theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : 
     join_apply (SimpleFunc.measurableSet_preimage _ _)]
   suffices
     ∀ (s : ℕ → Finset ℝ≥0∞) (f : ℕ → ℝ≥0∞ → Measure α → ℝ≥0∞), (∀ n r, Measurable (f n r)) →
-      Monotone (fun n μ => ∑ r in s n, r * f n r μ) →
-      ⨆ n, ∑ r in s n, r * ∫⁻ μ, f n r μ ∂m = ∫⁻ μ, ⨆ n, ∑ r in s n, r * f n r μ ∂m by
-    refine'
+      Monotone (fun n μ => ∑ r ∈ s n, r * f n r μ) →
+      ⨆ n, ∑ r ∈ s n, r * ∫⁻ μ, f n r μ ∂m = ∫⁻ μ, ⨆ n, ∑ r ∈ s n, r * f n r μ ∂m by
+    refine
       this (fun n => SimpleFunc.range (SimpleFunc.eapprox f n))
-        (fun n r μ => μ (SimpleFunc.eapprox f n ⁻¹' {r})) _ _
+        (fun n r μ => μ (SimpleFunc.eapprox f n ⁻¹' {r})) ?_ ?_
     · exact fun n r => measurable_coe (SimpleFunc.measurableSet_preimage _ _)
     · exact fun n m h μ => SimpleFunc.lintegral_mono (SimpleFunc.monotone_eapprox _ h) le_rfl
   intro s f hf hm
@@ -193,6 +193,7 @@ theorem bind_bind {γ} [MeasurableSpace γ] {m : Measure α} {f : α → Measure
   erw [bind_apply hs hg, bind_apply hs ((measurable_bind' hg).comp hf),
     lintegral_bind hf ((measurable_coe hs).comp hg)]
   conv_rhs => enter [2, a]; erw [bind_apply hs hg]
+  rfl
 #align measure_theory.measure.bind_bind MeasureTheory.Measure.bind_bind
 
 theorem bind_dirac {f : α → Measure β} (hf : Measurable f) (a : α) : bind (dirac a) f = f a := by

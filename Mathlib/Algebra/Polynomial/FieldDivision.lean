@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.RingTheory.EuclideanDomain
 
 #align_import data.polynomial.field_division from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
@@ -19,7 +19,7 @@ This file starts looking like the ring theory of $R[X]$
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 
@@ -69,7 +69,7 @@ theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
   conv_lhs => rw [← p.pow_mul_divByMonic_rootMultiplicity_eq t, ← hm]
   rw [iterate_derivative_mul, eval_finset_sum, sum_eq_single_of_mem _ (mem_range.mpr m.succ_pos)]
   · rw [m.choose_zero_right, one_smul, eval_mul, m.sub_zero, iterate_derivative_X_sub_pow_self,
-      eval_nat_cast, nsmul_eq_mul]; rfl
+      eval_natCast, nsmul_eq_mul]; rfl
   · intro b hb hb0
     rw [iterate_derivative_X_sub_pow, eval_smul, eval_mul, eval_smul, eval_pow,
       Nat.sub_sub_self (mem_range_succ_iff.mp hb), eval_sub, eval_X, eval_C, sub_self,
@@ -283,7 +283,7 @@ theorem isUnit_iff_degree_eq_zero : IsUnit p ↔ degree p = 0 :=
         rw [← C_mul, _root_.mul_inv_cancel hc, C_1]⟩⟩
 #align polynomial.is_unit_iff_degree_eq_zero Polynomial.isUnit_iff_degree_eq_zero
 
-/-- Division of polynomials. See `Polynomial.divByMonic` for more details.-/
+/-- Division of polynomials. See `Polynomial.divByMonic` for more details. -/
 def div (p q : R[X]) :=
   C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff q)⁻¹))
 #align polynomial.div Polynomial.div
@@ -320,12 +320,12 @@ theorem mod_def : p % q = p %ₘ (q * C (leadingCoeff q)⁻¹) := rfl
 
 theorem modByMonic_eq_mod (p : R[X]) (hq : Monic q) : p %ₘ q = p % q :=
   show p %ₘ q = p %ₘ (q * C (leadingCoeff q)⁻¹) by
-    simp only [Monic.def'.1 hq, inv_one, mul_one, C_1]
+    simp only [Monic.def.1 hq, inv_one, mul_one, C_1]
 #align polynomial.mod_by_monic_eq_mod Polynomial.modByMonic_eq_mod
 
 theorem divByMonic_eq_div (p : R[X]) (hq : Monic q) : p /ₘ q = p / q :=
   show p /ₘ q = C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff q)⁻¹)) by
-    simp only [Monic.def'.1 hq, inv_one, C_1, one_mul, mul_one]
+    simp only [Monic.def.1 hq, inv_one, C_1, one_mul, mul_one]
 #align polynomial.div_by_monic_eq_div Polynomial.divByMonic_eq_div
 
 theorem mod_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p % (X - C a) = C (p.eval a) :=
@@ -337,7 +337,7 @@ theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :
   divByMonic_eq_div p (monic_X_sub_C a) ▸ mul_divByMonic_eq_iff_isRoot
 #align polynomial.mul_div_eq_iff_is_root Polynomial.mul_div_eq_iff_isRoot
 
-instance : EuclideanDomain R[X] :=
+instance instEuclideanDomain : EuclideanDomain R[X] :=
   { Polynomial.commRing,
     Polynomial.nontrivial with
     quotient := (· / ·)
@@ -661,7 +661,7 @@ theorem irreducible_iff_degree_lt (p : R[X]) (hp0 : p ≠ 0) (hpu : ¬ IsUnit p)
     Irreducible p ↔ ∀ q, q.degree ≤ ↑(natDegree p / 2) → q ∣ p → IsUnit q := by
   rw [← irreducible_mul_leadingCoeff_inv,
       (monic_mul_leadingCoeff_inv hp0).irreducible_iff_degree_lt]
-  simp [hp0, natDegree_mul_leadingCoeff_inv]
+  · simp [hp0, natDegree_mul_leadingCoeff_inv]
   · contrapose! hpu
     exact isUnit_of_mul_eq_one _ _ hpu
 

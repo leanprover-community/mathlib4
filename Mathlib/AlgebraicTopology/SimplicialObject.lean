@@ -33,7 +33,7 @@ namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The category of simplicial objects valued in a category `C`.
 This is the category of contravariant functors from `SimplexCategory` to `C`. -/
 def SimplicialObject :=
@@ -224,7 +224,7 @@ def whiskering (D : Type*) [Category D] : (C ⥤ D) ⥤ SimplicialObject C ⥤ S
   whiskeringRight _ _ _
 #align category_theory.simplicial_object.whiskering CategoryTheory.SimplicialObject.whiskering
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Truncated simplicial objects. -/
 def Truncated (n : ℕ) :=
   (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
@@ -282,7 +282,7 @@ abbrev const : C ⥤ SimplicialObject C :=
   CategoryTheory.Functor.const _
 #align category_theory.simplicial_object.const CategoryTheory.SimplicialObject.const
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The category of augmented simplicial objects, defined as a comma category. -/
 def Augmented :=
   Comma (𝟭 (SimplicialObject C)) (const C)
@@ -336,8 +336,8 @@ def toArrow : Augmented C ⥤ Arrow C where
 @[reassoc]
 theorem w₀ {X Y : Augmented C} (f : X ⟶ Y) :
     (Augmented.drop.map f).app (op (SimplexCategory.mk 0)) ≫ Y.hom.app (op (SimplexCategory.mk 0)) =
-      X.hom.app (op (SimplexCategory.mk 0)) ≫ Augmented.point.map f :=
-  by convert congr_app f.w (op (SimplexCategory.mk 0))
+      X.hom.app (op (SimplexCategory.mk 0)) ≫ Augmented.point.map f := by
+  convert congr_app f.w (op (SimplexCategory.mk 0))
 #align category_theory.simplicial_object.augmented.w₀ CategoryTheory.SimplicialObject.Augmented.w₀
 
 variable (C)
@@ -403,7 +403,7 @@ theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X�
 
 end SimplicialObject
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Cosimplicial objects. -/
 def CosimplicialObject :=
   SimplexCategory ⥤ C
@@ -593,7 +593,7 @@ def whiskering (D : Type*) [Category D] : (C ⥤ D) ⥤ CosimplicialObject C ⥤
   whiskeringRight _ _ _
 #align category_theory.cosimplicial_object.whiskering CategoryTheory.CosimplicialObject.whiskering
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Truncated cosimplicial objects. -/
 def Truncated (n : ℕ) :=
   SimplexCategory.Truncated n ⥤ C
@@ -651,7 +651,7 @@ abbrev const : C ⥤ CosimplicialObject C :=
   CategoryTheory.Functor.const _
 #align category_theory.cosimplicial_object.const CategoryTheory.CosimplicialObject.const
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Augmented cosimplicial objects. -/
 def Augmented :=
   Comma (const C) (𝟭 (CosimplicialObject C))

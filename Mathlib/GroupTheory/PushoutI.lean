@@ -296,7 +296,6 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
   have hhead : ((d.compl i).equiv (Word.equivPair i w).head).2 =
       (Word.equivPair i w).head := by
     rw [Word.equivPair_head]
-    dsimp only
     split_ifs with h
     · rcases h with ⟨_, rfl⟩
       exact hw _ _ (List.head_mem _)
@@ -596,7 +595,7 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
   let _ := Classical.decEq ι
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
-    (f := ((. • .) : PushoutI φ → NormalWord d → NormalWord d)) ?_
+    (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [Function.funext_iff, of_smul_eq_smul])
@@ -607,7 +606,7 @@ theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
   let _ := Classical.decEq ι
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
-    (f := ((. • .) : PushoutI φ → NormalWord d → NormalWord d)) ?_
+    (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [Function.funext_iff, base_smul_eq_smul])

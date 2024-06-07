@@ -154,10 +154,10 @@ theorem differentiable_within_at_localInvariantProp :
       have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
       convert (h.comp' _ (this.differentiableWithinAt le_top)).mono_of_mem _ using 1
       · ext y; simp only [mfld_simps]
-      refine'
+      refine
         mem_nhdsWithin.mpr
           ⟨I.symm ⁻¹' e.target, e.open_target.preimage I.continuous_symm, by
-            simp_rw [Set.mem_preimage, I.left_inv, e.mapsTo hx], _⟩
+            simp_rw [Set.mem_preimage, I.left_inv, e.mapsTo hx], ?_⟩
       mfld_set_tac
     congr_of_forall := by
       intro s x f g h hx hf
@@ -197,15 +197,32 @@ We require continuity in the definition, as otherwise points close to `x` in `s`
 and in particular by coincidence `writtenInExtChartAt I I' x f` could be differentiable, while
 this would not mean anything relevant. -/
 def MDifferentiableWithinAt (f : M → M') (s : Set M) (x : M) :=
-  ContinuousWithinAt f s x ∧
-    DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f) ((extChartAt I x).symm ⁻¹' s ∩ range I)
-      ((extChartAt I x) x)
+  LiftPropWithinAt (DifferentiableWithinAtProp I I') f s x
 #align mdifferentiable_within_at MDifferentiableWithinAt
 
-theorem mdifferentiableWithinAt_iff_liftPropWithinAt (f : M → M') (s : Set M) (x : M) :
-    MDifferentiableWithinAt I I' f s x ↔ LiftPropWithinAt (DifferentiableWithinAtProp I I') f s x :=
-  by rfl
-#align mdifferentiable_within_at_iff_lift_prop_within_at mdifferentiableWithinAt_iff_liftPropWithinAt
+theorem mdifferentiableWithinAt_iff' (f : M → M') (s : Set M) (x : M) :
+    MDifferentiableWithinAt I I' f s x ↔ ContinuousWithinAt f s x ∧
+    DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f)
+      ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x) := by
+  rw [MDifferentiableWithinAt, liftPropWithinAt_iff']; rfl
+#align mdifferentiable_within_at_iff_lift_prop_within_at mdifferentiableWithinAt_iff'
+
+@[deprecated (since := "2024-04-30")]
+alias mdifferentiableWithinAt_iff_liftPropWithinAt := mdifferentiableWithinAt_iff'
+
+variable {I I'} in
+theorem MDifferentiableWithinAt.continuousWithinAt {f : M → M'} {s : Set M} {x : M}
+    (hf : MDifferentiableWithinAt I I' f s x) :
+    ContinuousWithinAt f s x :=
+  mdifferentiableWithinAt_iff' .. |>.1 hf |>.1
+#align mdifferentiable_within_at.continuous_within_at MDifferentiableWithinAt.continuousWithinAt
+
+variable {I I'} in
+theorem MDifferentiableWithinAt.differentiableWithinAt_writtenInExtChartAt
+    {f : M → M'} {s : Set M} {x : M} (hf : MDifferentiableWithinAt I I' f s x) :
+    DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f)
+      ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x) :=
+  mdifferentiableWithinAt_iff' .. |>.1 hf |>.2
 
 /-- `MDifferentiableAt I I' f x` indicates that the function `f` between manifolds
 has a derivative at the point `x`.
@@ -216,17 +233,33 @@ We require continuity in the definition, as otherwise points close to `x` could 
 and in particular by coincidence `writtenInExtChartAt I I' x f` could be differentiable, while
 this would not mean anything relevant. -/
 def MDifferentiableAt (f : M → M') (x : M) :=
-  ContinuousAt f x ∧
-    DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f) (range I) ((extChartAt I x) x)
+  LiftPropAt (DifferentiableWithinAtProp I I') f x
 #align mdifferentiable_at MDifferentiableAt
 
-theorem mdifferentiableAt_iff_liftPropAt (f : M → M') (x : M) :
-    MDifferentiableAt I I' f x ↔ LiftPropAt (DifferentiableWithinAtProp I I') f x := by
-  congrm ?_ ∧ ?_
-  · rw [continuousWithinAt_univ]
-  · -- Porting note: `rfl` wasn't needed
-    simp [DifferentiableWithinAtProp, Set.univ_inter]; rfl
-#align mdifferentiable_at_iff_lift_prop_at mdifferentiableAt_iff_liftPropAt
+theorem mdifferentiableAt_iff (f : M → M') (x : M) :
+    MDifferentiableAt I I' f x ↔ ContinuousAt f x ∧
+    DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f) (range I) ((extChartAt I x) x) := by
+  rw [MDifferentiableAt, liftPropAt_iff]
+  congrm _ ∧ ?_
+  simp [DifferentiableWithinAtProp, Set.univ_inter]
+  -- Porting note: `rfl` wasn't needed
+  rfl
+#align mdifferentiable_at_iff_lift_prop_at mdifferentiableAt_iff
+
+@[deprecated (since := "2024-04-30")]
+alias mdifferentiableAt_iff_liftPropAt := mdifferentiableAt_iff
+
+variable {I I'} in
+theorem MDifferentiableAt.continuousAt {f : M → M'} {x : M} (hf : MDifferentiableAt I I' f x) :
+    ContinuousAt f x :=
+  mdifferentiableAt_iff .. |>.1 hf |>.1
+#align mdifferentiable_at.continuous_at MDifferentiableAt.continuousAt
+
+variable {I I'} in
+theorem MDifferentiableAt.differentiableWithinAt_writtenInExtChartAt {f : M → M'} {x : M}
+    (hf : MDifferentiableAt I I' f x) :
+    DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f) (range I) ((extChartAt I x) x) :=
+  mdifferentiableAt_iff .. |>.1 hf |>.2
 
 /-- `MDifferentiableOn I I' f s` indicates that the function `f` between manifolds
 has a derivative within `s` at all points of `s`.

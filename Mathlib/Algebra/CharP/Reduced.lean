@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
 import Mathlib.Algebra.CharP.ExpChar
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Defs
 
 #align_import algebra.char_p.basic from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
@@ -50,4 +50,5 @@ theorem ExpChar.pow_prime_pow_mul_eq_one_iff (p k m : ℕ) [ExpChar R p] (x : R)
   apply map_one
 #align char_p.pow_prime_pow_mul_eq_one_iff ExpChar.pow_prime_pow_mul_eq_one_iff
 
-@[deprecated] alias CharP.pow_prime_pow_mul_eq_one_iff := ExpChar.pow_prime_pow_mul_eq_one_iff
+@[deprecated (since := "2024-02-02")]
+alias CharP.pow_prime_pow_mul_eq_one_iff := ExpChar.pow_prime_pow_mul_eq_one_iff

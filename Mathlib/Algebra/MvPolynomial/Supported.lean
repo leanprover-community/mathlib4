@@ -48,7 +48,8 @@ theorem supported_eq_range_rename (s : Set σ) : supported R s = (rename ((↑) 
   congr
 #align mv_polynomial.supported_eq_range_rename MvPolynomial.supported_eq_range_rename
 
-/-- The isomorphism between the subalgebra of polynomials supported by `s` and `MvPolynomial s R`.-/
+/-- The isomorphism between the subalgebra of polynomials supported by `s` and
+`MvPolynomial s R`. -/
 noncomputable def supportedEquivMvPolynomial (s : Set σ) : supported R s ≃ₐ[R] MvPolynomial s R :=
   (Subalgebra.equivOfEq _ _ (supported_eq_range_rename s)).trans
     (AlgEquiv.ofInjective (rename ((↑) : s → σ)) (rename_injective _ Subtype.val_injective)).symm
@@ -76,7 +77,7 @@ theorem mem_supported : p ∈ supported R s ↔ ↑p.vars ⊆ s := by
   rw [supported_eq_range_rename, AlgHom.mem_range]
   constructor
   · rintro ⟨p, rfl⟩
-    refine' _root_.trans (Finset.coe_subset.2 (vars_rename _ _)) _
+    refine _root_.trans (Finset.coe_subset.2 (vars_rename _ _)) ?_
     simp
   · intro hs
     exact exists_rename_eq_of_vars_subset_range p ((↑) : s → σ) Subtype.val_injective (by simpa)
