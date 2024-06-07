@@ -32,6 +32,7 @@ namespace LightCondensed
 The light condensed object associated to a presheaf on `LightProfinite` which preserves finite
 products and satisfies the equalizer condition.
 -/
+@[simps]
 noncomputable def ofSheafLightProfinite (F : LightProfinite.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts F]
     (hF : EqualizerCondition F) : LightCondensed A where
     val := F
@@ -43,6 +44,7 @@ noncomputable def ofSheafLightProfinite (F : LightProfinite.{u}ᵒᵖ ⥤ A) [Pr
 The light condensed object associated to a presheaf on `LightProfinite` whose postcomposition with
 the forgetful functor preserves finite products and satisfies the equalizer condition.
 -/
+@[simps]
 noncomputable def ofSheafForgetLightProfinite
     [ConcreteCategory A] [ReflectsFiniteLimits (CategoryTheory.forget A)]
     (F : LightProfinite.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts (F ⋙ CategoryTheory.forget A)]
