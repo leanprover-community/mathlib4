@@ -28,34 +28,20 @@ protected theorem list_prod {ι M : Type*} [CommMonoid M] (c : Con M) {l : List 
     simpa only [List.map_nil, List.prod_nil] using c.refl 1
   | cons x xs ih =>
     rw [List.map_cons, List.map_cons, List.prod_cons, List.prod_cons]
-    refine c.mul (h _ (by simp)) <| ih fun k hk => h _ ?_
-    simp only [List.mem_cons]
-    tauto
+    exact c.mul (h _ <| .head _) <| ih fun k hk ↦ h _ (.tail _ hk)
 
 /-- Multiplicative congruence relations preserve product indexed by a multiset. -/
 @[to_additive "Additive congruence relations preserve sum indexed by a multiset."]
 protected theorem multiset_prod {ι M : Type*} [CommMonoid M] (c : Con M) {s : Multiset ι}
     {f g : ι → M} (h : ∀ x ∈ s, c (f x) (g x)) :
     c (s.map f).prod (s.map g).prod := by
-  induction s using Multiset.induction_on with
-  | empty =>
-    simpa only [Multiset.map_zero, Multiset.prod_zero] using c.refl 1
-  | cons x xs ih =>
-    rw [Multiset.map_cons, Multiset.map_cons, Multiset.prod_cons, Multiset.prod_cons]
-    refine c.mul (h _ (by simp)) <| ih fun k hk => h _ ?_
-    simp only [Multiset.mem_cons]
-    tauto
+  rcases s; simpa using c.list_prod h
 
 /-- Multiplicative congruence relations preserve finite product. -/
 @[to_additive "Additive congruence relations preserve finite sum."]
 protected theorem finset_prod {ι M : Type*} [CommMonoid M] (c : Con M) (s : Finset ι)
     {f g : ι → M} (h : ∀ i ∈ s, c (f i) (g i)) :
-    c (s.prod f) (s.prod g) := by
-  classical
-  induction s using Finset.cons_induction_on with
-  | h₁ => simpa using c.refl 1
-  | @h₂ i s hi ih =>
-    rw [Finset.prod_cons hi, Finset.prod_cons hi]
-    exact c.mul (h _ (by simp)) <| ih fun i hi ↦ h _ (by aesop)
+    c (s.prod f) (s.prod g) :=
+  c.multiset_prod h
 
 end Con
