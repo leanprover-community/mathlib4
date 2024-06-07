@@ -206,7 +206,6 @@ theorem IsConnected.of_induct {j₀ : J}
 
 /-- Lifting the universe level of morphisms and objects preserves connectedness. -/
 instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) := by
-  have : Nonempty (ULiftHom.{v₂} (ULift.{u₂} J)) := by simp [ULiftHom, hc.is_nonempty]
   apply IsConnected.of_induct
   · rintro p hj₀ h ⟨j⟩
     let p' : Set J := {j : J | p ⟨j⟩}
