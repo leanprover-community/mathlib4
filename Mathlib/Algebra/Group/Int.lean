@@ -266,12 +266,6 @@ example (m n : ℤ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
 
 example : ¬Even (25394535 : ℤ) := by decide
 
-lemma pos_iff_two_le_of_even {m : ℤ} (even : Even m) : 0 < m ↔ 2 ≤ m :=
-  add_one_le_iff.symm.trans <| Ne.le_iff_lt <| by rintro rfl; exact not_even_one even
-
-lemma lt_iff_add_two_le_of_even_sub {m n : ℤ} (even : Even (n - m)) : m < n ↔ m + 2 ≤ n := by
-  rw [add_comm, ← le_sub_iff_add_le, ← sub_pos, pos_iff_two_le_of_even even]
-
 end Int
 
 -- TODO: Do we really need this lemma? This is just `smul_eq_mul`
