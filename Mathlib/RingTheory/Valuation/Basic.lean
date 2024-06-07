@@ -397,9 +397,25 @@ theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
     (v₁.comap f).IsEquiv (v₂.comap f) := fun r s => h (f r) (f s)
 #align valuation.is_equiv.comap Valuation.IsEquiv.comap
 
+/-- Restate the definition of `Valuation.IsEquiv` into a theorem. -/
+theorem val_le (h : v₁.IsEquiv v₂) {r s : R} : v₁ r ≤ v₁ s ↔ v₂ r ≤ v₂ s :=
+  h r s
+
+theorem val_lt (h : v₁.IsEquiv v₂) {r s : R} : v₁ r < v₁ s ↔ v₂ r < v₂ s := by
+  simpa only [not_le] using (h s r).not
+
 theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
   simpa only [le_antisymm_iff] using and_congr (h r s) (h s r)
 #align valuation.is_equiv.val_eq Valuation.IsEquiv.val_eq
+
+theorem val_le_one (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≤ 1 ↔ v₂ r ≤ 1 := by
+  simpa only [_root_.map_one] using h r 1
+
+theorem val_lt_one (h : v₁.IsEquiv v₂) {r : R} : v₁ r < 1 ↔ v₂ r < 1 := by
+  simpa only [_root_.map_one, not_le] using (h 1 r).not
+
+theorem val_eq_one (h : v₁.IsEquiv v₂) {r : R} : v₁ r = 1 ↔ v₂ r = 1 := by
+  simpa only [le_antisymm_iff, _root_.map_one] using and_congr (h r 1) (h 1 r)
 
 theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 := by
   have : v₁ r ≠ v₁ 0 ↔ v₂ r ≠ v₂ 0 := not_congr h.val_eq

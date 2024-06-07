@@ -367,7 +367,7 @@ section Notation
 
 namespace Valued
 
-/-- A `Valued` version of `Valuation.valuationSubring`, enabling the notation `𝒪[K]` for the
+/-- A `Valued` version of `Valuation.integer`, enabling the notation `𝒪[K]` for the
 valuation subring of a valued field `K`. -/
 @[reducible]
 def valuationSubring (K : Type*) [Field K] {Γ : outParam Type*} [LinearOrderedCommGroupWithZero Γ]
