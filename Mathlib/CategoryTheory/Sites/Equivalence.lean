@@ -44,35 +44,15 @@ variable {C : Type*} [Category C] (J : GrothendieckTopology C)
 variable {D : Type*} [Category D] (K : GrothendieckTopology D) (e : C ≌ D)
 variable (A : Type*) [Category A]
 
-namespace Functor
+namespace Presheaf
 
 variable (H : C ⥤ D) [ConcreteCategory A] {F G : Dᵒᵖ ⥤ A} (f : F ⟶ G)
 
-lemma isLocallySurjective_whisker [H.IsCocontinuous J K] [IsLocallySurjective K f] :
-    IsLocallySurjective J (whiskerLeft H.op f) where
-  imageSieve_mem a := H.cover_lift J K (imageSieve_mem K f a)
-
-lemma isLocallySurjective_of_whisker (hH : CoverPreserving J K H)
-    [H.IsCoverDense K] [IsLocallySurjective J (whiskerLeft H.op f)] : IsLocallySurjective K f where
-  imageSieve_mem {X} a := by
-    apply K.transitive (Functor.IsCoverDense.is_cover (G := H) (K := K) X)
-    intro Y g ⟨⟨Z, lift, map, fac⟩⟩
-    rw [← fac, Sieve.pullback_comp]
-    apply K.pullback_stable
-    have hh := hH.cover_preserve <|
-      imageSieve_mem J (whiskerLeft H.op f) ((forget A).map (G.map map.op) a)
-    refine K.superset_covering (Sieve.functorPullback_pushforward_le H _) ?_
-    refine K.superset_covering (Sieve.functorPushforward_monotone H _ ?_) hh
-    intro W q ⟨x, h⟩
-    simp only [Sieve.functorPullback_apply, Presieve.functorPullback_mem, Sieve.pullback_apply]
-    refine ⟨x, ?_⟩
-    simpa using h
-
-lemma isLocallyInjective_whisker [H.IsCocontinuous J K] [IsLocallyInjective K f] :
+lemma isLocallyInjective_whisker_isCocontinuous [H.IsCocontinuous J K] [IsLocallyInjective K f] :
     IsLocallyInjective J (whiskerLeft H.op f) where
   equalizerSieve_mem x y h := H.cover_lift J K (equalizerSieve_mem K f x y h)
 
-lemma isLocallyInjective_of_whisker (hH : CoverPreserving J K H)
+lemma isLocallyInjective_of_whisker_coverPreserving_isCoverDense (hH : CoverPreserving J K H)
     [H.IsCoverDense K] [IsLocallyInjective J (whiskerLeft H.op f)] : IsLocallyInjective K f where
   equalizerSieve_mem {X} a b h := by
     apply K.transitive (Functor.IsCoverDense.is_cover (G := H) (K := K) X.unop)
@@ -88,7 +68,27 @@ lemma isLocallyInjective_of_whisker (hH : CoverPreserving J K H)
     · simp only [comp_obj, op_obj, whiskerLeft_app, Opposite.op_unop]
       erw [NatTrans.naturality_apply, NatTrans.naturality_apply, h]
 
-end Functor
+lemma isLocallySurjective_whisker_isCocontinuous [H.IsCocontinuous J K] [IsLocallySurjective K f] :
+    IsLocallySurjective J (whiskerLeft H.op f) where
+  imageSieve_mem a := H.cover_lift J K (imageSieve_mem K f a)
+
+lemma isLocallySurjective_of_whisker_coverPreserving_isCoverDense (hH : CoverPreserving J K H)
+    [H.IsCoverDense K] [IsLocallySurjective J (whiskerLeft H.op f)] : IsLocallySurjective K f where
+  imageSieve_mem {X} a := by
+    apply K.transitive (Functor.IsCoverDense.is_cover (G := H) (K := K) X)
+    intro Y g ⟨⟨Z, lift, map, fac⟩⟩
+    rw [← fac, Sieve.pullback_comp]
+    apply K.pullback_stable
+    have hh := hH.cover_preserve <|
+      imageSieve_mem J (whiskerLeft H.op f) ((forget A).map (G.map map.op) a)
+    refine K.superset_covering (Sieve.functorPullback_pushforward_le H _) ?_
+    refine K.superset_covering (Sieve.functorPushforward_monotone H _ ?_) hh
+    intro W q ⟨x, h⟩
+    simp only [Sieve.functorPullback_apply, Presieve.functorPullback_mem, Sieve.pullback_apply]
+    refine ⟨x, ?_⟩
+    simpa using h
+
+end Presheaf
 
 namespace Equivalence
 
@@ -314,19 +314,19 @@ open Presheaf
 
 lemma isLocallyInjective_whisker [IsLocallyInjective J f] :
     IsLocallyInjective K (whiskerLeft e.inverse.op f) :=
-  e.inverse.isLocallyInjective_whisker K J A f
+  isLocallyInjective_whisker_isCocontinuous K J A e.inverse f
 
 lemma isLocallyInjective_of_whisker [IsLocallyInjective K (whiskerLeft e.inverse.op f)] :
     IsLocallyInjective J f :=
-  e.inverse.isLocallyInjective_of_whisker K J A f (e.coverPreserving_symm J K)
+  isLocallyInjective_of_whisker_coverPreserving_isCoverDense K J A _ f (e.coverPreserving_symm J K)
 
 lemma isLocallySurjective_whisker [IsLocallySurjective J f] :
     IsLocallySurjective K (whiskerLeft e.inverse.op f) :=
-  e.inverse.isLocallySurjective_whisker K J A f
+  isLocallySurjective_whisker_isCocontinuous K J A e.inverse f
 
 lemma isLocallySurjective_of_whisker [IsLocallySurjective K (whiskerLeft e.inverse.op f)] :
     IsLocallySurjective J f :=
-  e.inverse.isLocallySurjective_of_whisker K J A f (e.coverPreserving_symm J K)
+  isLocallySurjective_of_whisker_coverPreserving_isCoverDense K J A _ f (e.coverPreserving_symm J K)
 
 open ConcreteCategory Sheaf
 
