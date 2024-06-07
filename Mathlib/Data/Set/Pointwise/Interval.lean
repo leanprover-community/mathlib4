@@ -496,11 +496,11 @@ theorem image_sub_const_Ioo : (fun x => x - a) '' Ioo b c = Ioo (b - a) (c - a) 
 
 
 theorem Iic_add_bij : BijOn (· + a) (Iic b) (Iic (b + a)) :=
-  image_add_const_Iic a b ▸ ((add_left_injective _).injOn _).bijOn_image
+  image_add_const_Iic a b ▸ (add_left_injective _).injOn.bijOn_image
 #align set.Iic_add_bij Set.Iic_add_bij
 
 theorem Iio_add_bij : BijOn (· + a) (Iio b) (Iio (b + a)) :=
-  image_add_const_Iio a b ▸ ((add_left_injective _).injOn _).bijOn_image
+  image_add_const_Iio a b ▸ (add_left_injective _).injOn.bijOn_image
 #align set.Iio_add_bij Set.Iio_add_bij
 
 end OrderedAddCommGroup

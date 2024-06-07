@@ -455,7 +455,7 @@ theorem sInf_le_sInf_of_subset_insert_top (h : s ⊆ insert ⊤ t) : sInf t ≤ 
 
 @[simp]
 theorem sSup_diff_singleton_bot (s : Set α) : sSup (s \ {⊥}) = sSup s :=
-  (sSup_le_sSup (diff_subset _ _)).antisymm <|
+  (sSup_le_sSup diff_subset).antisymm <|
     sSup_le_sSup_of_subset_insert_bot <| subset_insert_diff_singleton _ _
 #align Sup_diff_singleton_bot sSup_diff_singleton_bot
 
