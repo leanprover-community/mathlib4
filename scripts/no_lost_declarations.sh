@@ -104,8 +104,7 @@ else
   grep '\(+\|-\)' | sed 's=^ *1 =`=; s=^[^`]=`=; s=$=`='
 fi)"
 
-## Header message: this is used by the automatic update of the corresponding CI comment
-printf '*Summary of changed declarations*\n\n'
+printf '*Diff of declarations*\n\n'
 
 if [ -n "${report}" ]
 then
