@@ -223,8 +223,7 @@ def freeRefl : ReflQuiv.{v, u} ⥤ Cat.{max u v, u} where
     simp
     symm
     apply Quotient.lift_unique
-    refine (Functor.comp_id _).trans ?_
-    refine Eq.trans (Functor.id_comp _).symm ?_
+    refine (Functor.comp_id _).trans <| (Functor.id_comp _).symm.trans ?_
     congr 1
     exact (free.map_id X.toQuiv).symm
   map_comp {X Y Z} f g := by
@@ -234,21 +233,15 @@ def freeRefl : ReflQuiv.{v, u} ⥤ Cat.{max u v, u} where
     have : free.map (f ≫ g).toPrefunctor =
         free.map (X := X.toQuiv) (Y := Y.toQuiv) f.toPrefunctor ⋙
         free.map (X := Y.toQuiv) (Y := Z.toQuiv) g.toPrefunctor := by
-      done
+      show _ = _ ≫ _
+      rw [← Functor.map_comp]; rfl
     rw [this]; simp [Functor.assoc]
     show _ ⋙ _ ⋙ _ = _
     rw [← Functor.assoc, Quotient.lift_spec, Functor.assoc, Quotient.lift_spec]
 
 end Cat
 
-namespace Quiv
-
-/-- Any prefunctor into a category lifts to a functor from the path category. -/
-@[simps]
-def lift {V : Type u} [Quiver.{v + 1} V] {C : Type*} [Category C] (F : Prefunctor V C) :
-    Paths V ⥤ C where
-  obj X := F.obj X
-  map f := composePath (F.mapPath f)
+namespace ReflQuiv
 
 -- We might construct `of_lift_iso_self : Paths.of ⋙ lift F ≅ F`
 -- (and then show that `lift F` is initial amongst such functors)
@@ -256,27 +249,51 @@ def lift {V : Type u} [Quiver.{v + 1} V] {C : Type*} [Category C] (F : Prefuncto
 /--
 The adjunction between forming the free category on a quiver, and forgetting a category to a quiver.
 -/
-def adj : Cat.free ⊣ Quiv.forget :=
+def adj : Cat.freeRefl ⊣ ReflQuiv.forget :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun V C =>
-        { toFun := fun F => Paths.of.comp F.toPrefunctor
-          invFun := fun F => @lift V _ C _ F
-          left_inv := fun F => Paths.ext_functor rfl (by simp)
-          right_inv := by
-            rintro ⟨obj, map⟩
-            dsimp only [Prefunctor.comp]
-            congr
-            funext X Y f
-            exact Category.id_comp _ }
-      homEquiv_naturality_left_symm := fun {V _ _} f g => by
-        change (show Paths V ⥤ _ from _) = _
-        ext; swap
-        · apply eq_conj_eqToHom
-        · rfl }
+    { homEquiv := sorry
+      homEquiv_naturality_left_symm := sorry }
 
-end Quiv
+end ReflQuiv
 
-end CategoryTheory
+open Opposite Simplicial
+
+def OneTruncation (S : SSet) := S _[0]
+
+instance (S : SSet) : ReflQuiver (OneTruncation S) where
+  Hom X Y := {p : S _[1] //
+    S.map (op (SimplexCategory.const [0] [1] 0)) p = X ∧
+    S.map (op (SimplexCategory.const [0] [1] 1)) p = Y}
+  id X := by
+    refine ⟨S.map (op (SimplexCategory.const [1] [0] 0)) X, ?_, ?_⟩ <;>
+    · change (S.map _ ≫ S.map _) X = X
+      rw [← map_comp]
+      rw [(_ : _ ≫ _ = 𝟙 _)]; simp
+      show ({..} : Opposite _) = _; congr; ext i
+      let 0 := i
+      rfl
+
+def SSet.oneTruncation : SSet.{u} ⥤ ReflQuiv.{u,u} where
+  obj S := ReflQuiv.of (OneTruncation S)
+  map {S T} F := {
+    obj := F.app (op [0])
+    map := fun f => by
+      refine ⟨F.app (op [1]) f.1, ?_, ?_⟩
+      · change (F.app _ ≫ _) _ = _
+        rw [← F.naturality]
+        exact congrArg (F.app _) f.2.1
+      · change (F.app _ ≫ _) _ = _
+        rw [← F.naturality]
+        exact congrArg (F.app _) f.2.2
+    map_id := fun X => by
+      change ({..} : Subtype _) = {..}
+      congr
+      change _ = (F.app _ ≫ _) _
+      rw [← F.naturality]
+      rfl
+  }
+  map_id X := by simp; rfl
+  map_comp f g := by simp; rfl
 
 -- -- nerve E c = (F c → E)
 -- def Functor.nerve : E ⥤ Cᵒᵖ ⥤ Type v :=

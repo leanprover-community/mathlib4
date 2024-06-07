@@ -418,7 +418,7 @@ namespace CosimplicialObject
 
 set_option quotPrecheck false in
 /-- `X _[n]` denotes the `n`th-term of the cosimplicial object X -/
-scoped[Simplicial]
+scoped[Cosimplicial]
   notation:1000 X " _[" n "]" =>
     (X : CategoryTheory.CosimplicialObject _).obj (SimplexCategory.mk n)
 
@@ -448,7 +448,7 @@ lemma hom_ext {X Y : CosimplicialObject C} (f g : X ⟶ Y)
 
 variable (X : CosimplicialObject C)
 
-open Simplicial
+open Cosimplicial
 
 /-- Coface maps for a cosimplicial object. -/
 def δ {n} (i : Fin (n + 2)) : X _[n] ⟶ X _[n + 1] :=
