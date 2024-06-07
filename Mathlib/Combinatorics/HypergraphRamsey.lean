@@ -6,7 +6,7 @@ Authors: Peter Nelson
 import Mathlib.Data.Finset.Sort
 import Mathlib.Order.Extension.Linear
 import Mathlib.Order.OrderIsoNat
-import Mathlib.Data.Nat.Interval
+-- import Mathlib.Data.Nat.Interval
 import Mathlib.Order.Interval.Set.Infinite
 
 /-!
@@ -227,11 +227,11 @@ theorem exists_ub_fn (ss : ℕ ↪ (Fin (k+1) ↪o ℕ)) : ∃ b : ℕ →o ℕ,
   exact (ht' _ _ h').not_lt <| (Finset.le_sup (show n ∈ Finset.range (n+1) by simp)).trans_lt h
 
 /-- Choose a function `t` so that for all `i ≥ t n`, the set `ss i` has maximum above `n`. -/
-noncomputable def ub_fn (ss : ℕ ↪ (Fin (k+1) ↪o ℕ)) : ℕ →o ℕ :=
+protected noncomputable def ub_fn (ss : ℕ ↪ (Fin (k+1) ↪o ℕ)) : ℕ →o ℕ :=
     Classical.choose <| exists_ub_fn ss
 
 /-- The subsequence to which the `refs c ss` converge pointwise. -/
-noncomputable def lim (c : (Fin (k+2) ↪o ℕ) → κ) {ss : ℕ ↪ (Fin (k+1) ↪o ℕ)}
+protected noncomputable def lim (c : (Fin (k+2) ↪o ℕ) → κ) {ss : ℕ ↪ (Fin (k+1) ↪o ℕ)}
     (hss : Monotone (ss · ⊤)) : ℕ ↪o ℕ :=
   OrderEmbedding.ofStrictMono (fun n ↦ refs c ss (ub_fn ss n) n)
   (fun i j hij ↦ by
