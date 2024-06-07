@@ -294,7 +294,7 @@ theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G
 /-- If a discrete group acts on a T2 and locally compact space `X`,
 then the action is properly discontinuous if and only if it is continuous in the second variable
 and proper. -/
-theorem WeaklyLocallyCompactSpace.ProperlyDiscontinuousSMul_iff_ProperSMul [T2Space X]
+theorem WeaklyLocallyCompactSpace.properlyDiscontinuousSMul_iff_properSMul [T2Space X]
     [WeaklyLocallyCompactSpace X] [DiscreteTopology G] [ContinuousConstSMul G X] :
     ProperlyDiscontinuousSMul G X ↔ ProperSMul G X :=
   _root_.properlyDiscontinuousSMul_iff_properSMul
@@ -303,7 +303,7 @@ theorem WeaklyLocallyCompactSpace.ProperlyDiscontinuousSMul_iff_ProperSMul [T2Sp
 /-- If a discrete group acts on a T2 and first-countable space `X`,
 then the action is properly discontinuous if and only if it is continuous in the second variable
 and proper. -/
-theorem FirstCountableTopology.ProperlyDiscontinuousSMul_iff_ProperSMul [T2Space X]
+theorem FirstCountableTopology.properlyDiscontinuousSMul_iff_properSMul [T2Space X]
     [FirstCountableTopology X] [DiscreteTopology G] [ContinuousConstSMul G X] :
     ProperlyDiscontinuousSMul G X ↔ ProperSMul G X :=
   _root_.properlyDiscontinuousSMul_iff_properSMul (fun _ ↦ compactlyGenerated_of_sequentialSpace)
