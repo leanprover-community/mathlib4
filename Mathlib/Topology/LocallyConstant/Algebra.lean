@@ -343,20 +343,13 @@ section Comap
 
 variable [TopologicalSpace Y] {Z : Type*}
 
-/-- `LocallyConstant.comap` as a `MulHom`. -/
-@[to_additive (attr := simps) "`LocallyConstant.comap` as an `AddHom`."]
-def comapMulHom [Mul Z]  (f : C(X, Y)) :
-    LocallyConstant Y Z →ₙ* LocallyConstant X Z where
-  toFun := comap f
-  map_mul' _ _ := rfl
-
 /-- `LocallyConstant.comap` as a `MonoidHom`. -/
 @[to_additive (attr := simps) "`LocallyConstant.comap` as an `AddMonoidHom`."]
 def comapMonoidHom [MulOneClass Z]  (f : C(X, Y)) :
     LocallyConstant Y Z →* LocallyConstant X Z where
   toFun := comap f
   map_one' := rfl
-  map_mul' := map_mul (comapMulHom f)
+  map_mul' _ _ := rfl
 
 /-- `LocallyConstant.comap` as a linear map. -/
 @[simps!]
@@ -385,13 +378,6 @@ lemma ker_comapₗ [Semiring R] [AddCommMonoid Z] [Module R Z] (f : C(X, Y))
     LinearMap.ker (comapₗ R f : LocallyConstant Y Z →ₗ[R] LocallyConstant X Z) = ⊥ :=
   LinearMap.ker_eq_bot_of_injective <| comap_injective _ hfs
 
-/-- `LocallyConstant.congrLeft` as a `MulEquiv`. -/
-@[to_additive (attr := simps!) "`LocallyConstant.congrLeft` as an `AddEquiv`."]
-def congrLeftMulEquiv [Mul Z] (e : X ≃ₜ Y) :
-    LocallyConstant X Z ≃* LocallyConstant Y Z where
-  toEquiv := congrLeft e
-  map_mul' := map_mul (comapMulHom ⟨_, e.symm.continuous⟩)
-
 /-- `LocallyConstant.congrLeft` as a linear equivalence. -/
 @[simps!]
 def congrLeftₗ (R : Type*) [Semiring R] [AddCommMonoid Z] [Module R Z] (e : X ≃ₜ Y) :
@@ -419,13 +405,6 @@ end Comap
 section Map
 
 variable {Z : Type*}
-
-/-- `LocallyConstant.map` as a `MulHom`. -/
-@[to_additive (attr := simps) "`LocallyConstant.map` as an `AddHom`."]
-def mapMulHom [Mul Y] [Mul Z] (f : Y →ₙ* Z) :
-    LocallyConstant X Y →ₙ* LocallyConstant X Z where
-  toFun := map f
-  map_mul' := by aesop
 
 /-- `LocallyConstant.map` as a `MonoidHom`. -/
 @[to_additive (attr := simps) "`LocallyConstant.map` as an `AddMonoidHom`."]
@@ -458,13 +437,6 @@ def mapₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] [Semiring Z] 
   toRingHom := mapRingHom f
   commutes' _ := by aesop
 
-/-- `LocallyConstant.congrRight` as a `MulEquiv`. -/
-@[to_additive (attr := simps!) "`LocallyConstant.congrRight` as an `AddEquiv`."]
-def congrRightMulEquiv [Mul Y] [Mul Z] (e : Y ≃* Z) :
-    LocallyConstant X Y ≃* LocallyConstant X Z where
-  toEquiv := congrRight e
-  map_mul' := map_mul (mapMulHom e.toMulHom)
-
 /-- `LocallyConstant.congrRight` as a linear equivalence. -/
 @[simps!]
 def congrRightₗ (R : Type*) [Semiring R] [AddCommMonoid Y] [Module R Y]
@@ -491,13 +463,6 @@ def congrRightₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] [Semir
 end Map
 
 section Const
-
-/-- `LocallyConstant.const` as a `MulHom`. -/
-@[to_additive (attr := simps) "`LocallyConstant.const` as an `AddHom`."]
-def constMulHom [Mul Y] :
-    Y →ₙ* LocallyConstant X Y where
-  toFun := const X
-  map_mul' _ _ := rfl
 
 /-- `LocallyConstant.const` as a linear map. -/
 @[simps!]
