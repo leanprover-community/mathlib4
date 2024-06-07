@@ -50,24 +50,6 @@ jobs:
         run: |
           ./scripts/lint-bib.sh
 
-  check_imported:
-    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
-    name: Check all files importedJOB_NAME
-    runs-on: ubuntu-latest
-    steps:
-      - name: cleanup
-        run: |
-          find . -name . -o -prune -exec rm -rf -- {} +
-
-      - uses: actions/checkout@v4
-
-      - name: update import-only files in {Mathlib Mathlib/Tactic Counterexamples Archive}.lean
-        run: |
-          ./scripts/mk_all.sh
-
-      - name: check that all files are imported
-        run: git diff --exit-code
-
   check_workflows:
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
     name: check workflowsJOB_NAME
@@ -138,7 +120,7 @@ jobs:
       # but verify that this didn't change anything in the `check_imported` job.
       - name: update Mathlib.lean
         run: |
-          ./scripts/mk_all.sh Mathlib
+          lake exe mk_all --lib Mathlib
 
       - name: If using a lean-pr-release toolchain, uninstall
         run: |
@@ -151,6 +133,12 @@ jobs:
         run: |
           lean --version
           lake --version
+
+      - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
+        run: lake exe mk_all
+
+      - name: check_imported
+        run: git diff --exit-code
 
       - name: build cache
         run: |
@@ -305,7 +293,7 @@ jobs:
   final:
     name: Post-CI jobJOB_NAME
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
-    needs: [style_lint, build, check_imported]
+    needs: [style_lint, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

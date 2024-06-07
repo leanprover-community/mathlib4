@@ -708,7 +708,7 @@ theorem cast_zmod_eq_zero_iff_of_le {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ZM
   exact Injective.eq_iff' (cast_injective_of_le h) rfl
 
 -- Porting note: commented
--- attribute [local semireducible] Int.NonNeg
+-- unseal Int.NonNeg
 
 @[simp]
 theorem natCast_toNat (p : ℕ) : ∀ {z : ℤ} (_h : 0 ≤ z), (z.toNat : ZMod p) = z
@@ -790,8 +790,8 @@ instance nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) :=
           ⟩⟩
 #align zmod.nontrivial ZMod.nontrivial
 
-instance nontrivial' : Nontrivial (ZMod 0) :=
-  by delta ZMod; infer_instance
+instance nontrivial' : Nontrivial (ZMod 0) := by
+  delta ZMod; infer_instance
 #align zmod.nontrivial' ZMod.nontrivial'
 
 /-- The inversion on `ZMod n`.
