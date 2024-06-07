@@ -41,8 +41,6 @@ jobs:
 
         # Checkout the merge base
         git checkout "$(git merge-base master ${{ github.sha }})"
-        # get the files that we need from master
-        git checkout origin/master scripts/update_PR_comment.sh scripts/count-trans-deps.py scripts/import-graph-report.py
 
         # Compute the counts for the merge base
         python ./scripts/count-trans-deps.py "Mathlib/" > base.json
