@@ -2420,7 +2420,7 @@ instance ULift.instCompletelyNormalSpace [CompletelyNormalSpace X] :
     CompletelyNormalSpace (ULift X) :=
   embedding_uLift_down.completelyNormalSpace
 
-/-- A T₅ space is a normal T₁ space. -/
+/-- A T₅ space is a completely normal T₁ space. -/
 class T5Space (X : Type u) [TopologicalSpace X] extends T1Space X, CompletelyNormalSpace X : Prop
 #align t5_space T5Space
 
@@ -2475,13 +2475,13 @@ section PerfectlyNormal
 /-- A topological space `X` is a *perfectly normal space* provided it is normal and
 closed sets are Gδ. -/
 class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] extends NormalSpace X : Prop where
-  closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ h
+    closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ h
 
 lemma subset_interior_closure {s : Set X} (s_open : IsOpen s) : s ⊆ interior (closure s) :=
-  (IsOpen.subset_interior_iff s_open).mpr subset_closure
+    (IsOpen.subset_interior_iff s_open).mpr subset_closure
 
 lemma closure_interior_subset {s : Set X} (s_closed : IsClosed s) : closure (interior s) ⊆ s :=
-  (IsClosed.closure_subset_iff s_closed).mpr interior_subset
+    (IsClosed.closure_subset_iff s_closed).mpr interior_subset
 
 instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
     [PerfectlyNormalSpace X] : CompletelyNormalSpace X where
@@ -2561,8 +2561,13 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
         apply Subset.trans (cls_sub_f' n)
         exact subset_interior_closure (f'_open n)
 
+/-- A T₆ space is a perfectly normal T₁ space. -/
+class T6Space (X : Type u) [TopologicalSpace X] extends T1Space X, PerfectlyNormalSpace X : Prop
 
-
+-- see Note [lower instance priority]
+/-- A `T₆` space is a `T₅` space. -/
+instance (priority := 100) T6Space.toT5Space [T6Space X] : T5Space X where
+  -- follows from type-class inference
 
 end PerfectlyNormal
 
