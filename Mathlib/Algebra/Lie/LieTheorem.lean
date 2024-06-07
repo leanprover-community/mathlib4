@@ -453,87 +453,47 @@ theorem LieIdeal.incl_injective (I : LieIdeal k L) : Function.Injective I.incl :
   rw [Submodule.coeSubtype]
   exact Subtype.val_injective
 
-theorem LieModule.exists_forall_lie_eq_smul_finrank [IsSolvable k L] [FiniteDimensional k L]
-    {n : ℕ} (hdim : finrank k L = n) :
-  ∃ χ : Module.Dual k L, ∃ v : V, v ≠ 0 ∧ ∀ x : L, ⁅x, v⁆ = χ x • v := by
-  revert L
-  induction n
-  · intro L _ _ _ _ _ _ hdim
-    use 0
-    rcases (exists_ne (0 : V)) with ⟨v, hv⟩
-    use v, hv
+theorem LieModule.exists_forall_lie_eq_smul_finrank :
+    ∀ (L : Type*) [LieRing L] [LieAlgebra k L] [FiniteDimensional k L] [IsSolvable k L]
+      [LieRingModule L V] [LieModule k L V],
+      ∃ χ : Module.Dual k L, ∃ v : V, v ≠ 0 ∧ ∀ x : L, ⁅x, v⁆ = χ x • v := by
+  intro L _ _ _ _ _ _
+  obtain _inst|_inst := subsingleton_or_nontrivial L
+  · rcases (exists_ne (0 : V)) with ⟨v, hv⟩
+    use 0, v, hv
     intro x
-    rw [LinearMap.zero_apply, zero_smul]
-    rw [finrank_zero_iff_forall_zero.mp hdim x, zero_lie]
-  · next n ih =>
-    intro L _ _ _ _ _ _ hdim
-    have : Nontrivial L := nontrivial_of_finrank_eq_succ hdim
-
-    obtain ⟨A, hAL', hdimA, hcoatomA⟩ := exists_coatom n hdim (derivedSeries k L 1)
-      derivedSubalgebra_ne_top
-
-    have hdim' := (finrank_top k L).symm ▸ hdim
-
-    have hAneTop : A ≠ ⊤ := by rintro rfl; linarith
-
-    have hz : ∃ (z : L), z ∉ A := by
-      by_contra!
-      apply hAneTop
-      rw [eq_top_iff]
-      exact fun ⦃x⦄ _ => this x
-    rcases hz with ⟨z, hz⟩
-    set B := Submodule.span k {z} with hBdef
-
-    have hB : ¬(B ≤ A) := by
-      intro h
-      apply hz
-      apply h
-      apply Submodule.mem_span_singleton_self
-
-    have htopdecomp : A ⊔ B = ⊤ := by
-      rw [IsCoatom] at hcoatomA
-      apply hcoatomA.right
-      rw [hdimA] at *
-      simp_all only [derivedSeriesOfIdeal_succ,
-        derivedSeriesOfIdeal_zero,
-        LieIdeal.coe_to_lieSubalgebra_to_submodule,
-        ne_eq,
-        LieSubmodule.coeSubmodule_eq_top_iff,
-        not_false_eq_true,
-        true_and,
-        finrank_top,
-        left_lt_sup]
-
-    have hAinterB : A ⊓ B = ⊥ := by
-      rw [hBdef]
-      rw [← le_bot_iff]
-      rintro x ⟨(ha : x ∈ A), (hb : x ∈ Submodule.span k _)⟩
-      rw [Submodule.mem_span_singleton] at hb
-      rcases hb with ⟨c, rfl⟩
-      rcases eq_or_ne c 0 with (rfl | hc)
-      · simp only [zero_smul, Submodule.mem_bot]
-      · exfalso
-        apply hz
-        apply A.smul_mem c⁻¹ at ha
-        simp_all only [ne_eq,
-          not_false_eq_true,
-          inv_smul_smul₀]
-
-    have hAideal : ∃ A' : LieIdeal k L, A = A'.toSubmodule := by
-      apply exists_lieIdeal_of_derivedSeries_le
-      exact hAL'
-    rcases hAideal with ⟨A', hA'⟩
-    have hdimA' : finrank k A' = n := by
-      rw [hA'] at hdimA
-      exact hdimA
-    have hA'solv: LieAlgebra.IsSolvable k A' := by
-      apply Function.Injective.lieAlgebra_isSolvable (f := LieIdeal.incl A')
-      apply LieIdeal.incl_injective
-    specialize ih hdimA'
-
-    have hz' : z ∉ A' := fun h ↦ hz (hA' ▸ h)
-    obtain ⟨χ', v, hv, hvA'⟩ := ih
-    apply extend_weight A' z hz' (hA' ▸ hBdef ▸ htopdecomp) (hA' ▸ hBdef ▸ hAinterB) χ' v hv hvA'
+    simp only [Subsingleton.elim x 0, zero_lie, map_zero, zero_smul]
+  obtain H|⟨A, hcoatomA, hAL⟩ := eq_top_or_exists_le_coatom (derivedSeries k L 1 : Submodule k L)
+  · exact (derivedSubalgebra_ne_top H).elim
+  obtain ⟨z, hz⟩ : ∃ (z : L), z ∉ A := by
+    by_contra! h
+    apply hcoatomA.1
+    rw [eq_top_iff]
+    exact fun ⦃x⦄ _ => h x
+  set B := Submodule.span k {z} with hBdef
+  have htopdecomp : A ⊔ B = ⊤ := by
+    apply hcoatomA.2
+    rw [left_lt_sup]
+    contrapose! hz with h
+    exact h <| Submodule.mem_span_singleton_self z
+  have hAinterB : A ⊓ B = ⊥ := by
+    rw [hBdef, ← le_bot_iff]
+    rintro x ⟨(ha : x ∈ A), (hb : x ∈ Submodule.span k _)⟩
+    obtain ⟨c, rfl⟩ : ∃ c, c • z = x := by rwa [Submodule.mem_span_singleton] at hb
+    apply A.smul_mem c⁻¹ at ha
+    rcases eq_or_ne c 0 with (rfl | hc) <;> simp_all
+  obtain ⟨A, rfl⟩ : ∃ A' : LieIdeal k L, A = A'.toSubmodule :=
+    exists_lieIdeal_of_derivedSeries_le _ hAL
+  have hAsolv : LieAlgebra.IsSolvable k A := A.incl_injective.lieAlgebra_isSolvable
+  obtain ⟨χ', v, hv, hvA⟩ := LieModule.exists_forall_lie_eq_smul_finrank A
+  apply extend_weight A z hz htopdecomp hAinterB χ' v hv hvA
+termination_by L _ _ _ => finrank k L
+decreasing_by
+  simp_wf
+  rw [← finrank_top k L]
+  apply Submodule.finrank_lt_finrank_of_lt
+  rw [← covBy_top_iff] at hcoatomA
+  exact hcoatomA.1
 
 -- If `L` is solvable, we can find a non-zero eigenvector
 theorem LieModule.exists_forall_lie_eq_smul_of_Solvable [IsSolvable k L] :
@@ -548,6 +508,5 @@ theorem LieModule.exists_forall_lie_eq_smul_of_Solvable [IsSolvable k L] :
     intro x
     have : ⁅x, v⁆ = ⁅toEndo x, v⁆ := rfl
     rw [LinearMap.comp_apply, this, hχ' (toEndo x)]
-
   have hsolv : IsSolvable k imL := LieHom.isSolvable_range (LieModule.toEnd k L V)
-  apply LieModule.exists_forall_lie_eq_smul_finrank (L := imL) rfl
+  apply LieModule.exists_forall_lie_eq_smul_finrank (L := imL)
