@@ -88,6 +88,11 @@ lemma fac' : p.map φ = eqToHom (domain_eq p f φ) ≫ f ≫ eqToHom (codomain_e
 lemma commSq : CommSq (p.map φ) (eqToHom (domain_eq p f φ)) (eqToHom (codomain_eq p f φ)) f where
   w := by simp only [fac p f φ, eqToHom_trans_assoc, eqToHom_refl, id_comp]
 
+-- TODO: this should be deduced by using horiz_inv and commsq API?
+lemma commSq' : CommSq (eqToHom (domain_eq p f φ).symm) f (p.map φ)
+    (eqToHom (codomain_eq p f φ).symm) where
+  w := by simp only [fac p f φ, assoc, eqToHom_trans, eqToHom_refl, comp_id]
+
 end
 
 lemma eq_of_isHomLift {a b : 𝒳} (f : p.obj a ⟶ p.obj b) (φ : a ⟶ b) [p.IsHomLift f φ] :
@@ -104,11 +109,15 @@ lemma of_fac' {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj
   obtain rfl : f = p.map φ := by simpa using h.symm
   infer_instance
 
-lemma of_commSq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj a = R) (hb : p.obj b = S)
-    (h : CommSq (p.map φ) (eqToHom ha) (eqToHom hb) f) : p.IsHomLift f φ := by
+lemma of_commsq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj a = R) (hb : p.obj b = S)
+    (h : p.map φ ≫ eqToHom hb = (eqToHom ha) ≫ f) : p.IsHomLift f φ := by
   subst ha hb
-  obtain rfl : f = p.map φ := by simpa using h.1.symm
+  obtain rfl : f = p.map φ := by simpa using h.symm
   infer_instance
+
+lemma of_commSq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj a = R) (hb : p.obj b = S)
+    (h : CommSq (p.map φ) (eqToHom ha) (eqToHom hb) f) : p.IsHomLift f φ :=
+  of_commsq p f φ ha hb h.1
 
 instance comp {R S T : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (g : S ⟶ T) (φ : a ⟶ b)
     (ψ : b ⟶ c) [p.IsHomLift f φ] [p.IsHomLift g ψ] : p.IsHomLift (f ≫ g) (φ ≫ ψ) := by
