@@ -487,7 +487,7 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
 class CommRing (α : Type u) extends Ring α, CommMonoid α
 #align comm_ring CommRing
 
-attribute [instance 90] CommRing.toRing
+attribute [instance 150] CommRing.toRing
 
 instance (priority := 150) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
   { s with }

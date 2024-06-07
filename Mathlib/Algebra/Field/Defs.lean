@@ -161,6 +161,7 @@ class DivisionRing (α : Type*)
 #align division_ring DivisionRing
 #align division_ring.rat_cast_mk DivisionRing.ratCast_def
 
+attribute [instance 100] DivisionRing.toRing
 attribute [instance 0] DivisionRing.toDivInvMonoid -- use `DivisionRing.toDivisionSemiring`
 attribute [instance 0] DivisionRing.toInv
 attribute [instance 0] DivisionRing.toDiv

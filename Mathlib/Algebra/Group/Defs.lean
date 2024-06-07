@@ -270,6 +270,8 @@ class Semigroup (G : Type u) extends Mul G where
 #align semigroup.ext Semigroup.ext
 #align semigroup.ext_iff Semigroup.ext_iff
 
+attribute [instance 50] Semigroup.toMul
+
 /-- An additive semigroup is a type with an associative `(+)`. -/
 @[ext]
 class AddSemigroup (G : Type u) extends Add G where
@@ -278,6 +280,8 @@ class AddSemigroup (G : Type u) extends Add G where
 #align add_semigroup AddSemigroup
 #align add_semigroup.ext AddSemigroup.ext
 #align add_semigroup.ext_iff AddSemigroup.ext_iff
+
+attribute [instance 50] AddSemigroup.toAdd
 
 attribute [to_additive] Semigroup
 
@@ -306,6 +310,8 @@ attribute [instance 50] AddCommMagma.toAdd
 class CommMagma (G : Type u) extends Mul G where
   /-- Multiplication is commutative in a commutative multiplicative magma. -/
   protected mul_comm : ∀ a b : G, a * b = b * a
+
+attribute [instance 50] CommMagma.toMul
 
 attribute [to_additive] CommMagma
 
@@ -450,6 +456,8 @@ class MulOneClass (M : Type u) extends One M, Mul M where
   protected mul_one : ∀ a : M, a * 1 = a
 #align mul_one_class MulOneClass
 
+attribute [instance 150] MulOneClass.toMul
+
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
 `0 + a = a` and `a + 0 = a` for all `a : M`. -/
 class AddZeroClass (M : Type u) extends Zero M, Add M where
@@ -458,6 +466,8 @@ class AddZeroClass (M : Type u) extends Zero M, Add M where
   /-- Zero is a right neutral element for addition -/
   protected add_zero : ∀ a : M, a + 0 = a
 #align add_zero_class AddZeroClass
+
+attribute [instance 150] AddZeroClass.toAdd
 
 attribute [to_additive] MulOneClass
 
@@ -601,9 +611,6 @@ class AddMonoid (M : Type u) extends AddZeroClass M, AddSemigroup M where
   protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = nsmul n x + x := by intros; rfl
 #align add_monoid AddMonoid
 
-attribute [instance 150] AddZeroClass.toAdd
-attribute [instance 50] AddSemigroup.toAdd
-
 #align add_monoid.nsmul_zero' AddMonoid.nsmul_zero
 #align add_monoid.nsmul_succ' AddMonoid.nsmul_succ
 
@@ -739,6 +746,8 @@ end Monoid
 class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 #align add_comm_monoid AddCommMonoid
 
+attribute [instance 90] AddCommMonoid.toAddMonoid
+
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
@@ -784,9 +793,9 @@ attribute [instance 75] AddRightCancelMonoid.toAddMonoid -- See note [lower canc
 class RightCancelMonoid (M : Type u) extends Monoid M, RightCancelSemigroup M
 #align right_cancel_monoid RightCancelMonoid
 
-attribute [instance 75] RightCancelMonoid.toMonoid -- See note [lower cancel priority]
-
 attribute [to_additive existing] RightCancelMonoid.toRightCancelSemigroup
+
+attribute [instance 75] RightCancelMonoid.toMonoid -- See note [lower cancel priority]
 
 end RightCancelMonoid
 
@@ -1139,6 +1148,8 @@ class SubtractionMonoid (G : Type u) extends SubNegMonoid G, InvolutiveNeg G whe
   protected neg_eq_of_add (a b : G) : a + b = 0 → -a = b
 #align subtraction_monoid SubtractionMonoid
 
+attribute [instance 150] SubtractionMonoid.toSubNegMonoid
+
 /-- A `DivisionMonoid` is a `DivInvMonoid` with involutive inversion and such that
 `(a * b)⁻¹ = b⁻¹ * a⁻¹` and `a * b = 1 → a⁻¹ = b`.
 
@@ -1151,9 +1162,9 @@ class DivisionMonoid (G : Type u) extends DivInvMonoid G, InvolutiveInv G where
   protected inv_eq_of_mul (a b : G) : a * b = 1 → a⁻¹ = b
 #align division_monoid DivisionMonoid
 
-attribute [to_additive existing] DivisionMonoid.toInvolutiveInv
-
 attribute [instance 150] DivisionMonoid.toDivInvMonoid
+
+attribute [to_additive existing] DivisionMonoid.toInvolutiveInv
 
 section DivisionMonoid
 
@@ -1189,6 +1200,8 @@ end DivisionMonoid
 class SubtractionCommMonoid (G : Type u) extends SubtractionMonoid G, AddCommMonoid G
 #align subtraction_comm_monoid SubtractionCommMonoid
 
+attribute [instance 90] SubtractionCommMonoid.toSubtractionMonoid
+
 /-- Commutative `DivisionMonoid`.
 
 This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`. -/
@@ -1196,9 +1209,9 @@ This is the immediate common ancestor of `CommGroup` and `CommGroupWithZero`. -/
 class DivisionCommMonoid (G : Type u) extends DivisionMonoid G, CommMonoid G
 #align division_comm_monoid DivisionCommMonoid
 
-attribute [to_additive existing] DivisionCommMonoid.toCommMonoid
-
 attribute [instance 90] DivisionCommMonoid.toDivisionMonoid
+
+attribute [to_additive existing] DivisionCommMonoid.toCommMonoid
 
 /-- A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
 
@@ -1225,6 +1238,8 @@ additive group structure on a type with the minumum proof obligations.
 class AddGroup (A : Type u) extends SubNegMonoid A where
   protected add_left_neg : ∀ a : A, -a + a = 0
 #align add_group AddGroup
+
+attribute [instance 0] AddGroup.toSubNegMonoid -- use `AddGroup.toSubtractionMonoid`
 
 attribute [to_additive] Group
 
@@ -1304,15 +1319,16 @@ end Group
 class AddCommGroup (G : Type u) extends AddGroup G, AddCommMonoid G
 #align add_comm_group AddCommGroup
 
+attribute [instance 90] AddCommGroup.toAddGroup
+
 /-- A commutative group is a group with commutative `(*)`. -/
 @[to_additive]
 class CommGroup (G : Type u) extends Group G, CommMonoid G
 #align comm_group CommGroup
 
-attribute [to_additive existing] CommGroup.toCommMonoid
-
-attribute [instance 90] AddCommGroup.toAddGroup
 attribute [instance 90] CommGroup.toGroup
+
+attribute [to_additive existing] CommGroup.toCommMonoid
 
 section CommGroup
 
