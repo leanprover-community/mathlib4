@@ -63,4 +63,6 @@ jobs:
         ## Declarations' diff comment
         declDiff=$(./scripts/no_lost_declarations.sh short)
 
-        ./scripts/update_PR_comment.sh "${title}\n\n${importCount}\n\n${declDiff}" "${title}" "${PR}"
+        message="$(printf '%s\n\n%s\n\n%s\n' "${title}" "${importCount}" "${declDiff}")"
+
+        ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
