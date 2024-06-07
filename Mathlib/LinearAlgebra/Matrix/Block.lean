@@ -177,7 +177,8 @@ theorem equiv_block_det (M : Matrix m m R) {p q : m → Prop} [DecidablePred p] 
   convert Matrix.det_reindex_self (Equiv.subtypeEquivRight e) (toSquareBlockProp M q)
 #align matrix.equiv_block_det Matrix.equiv_block_det
 
-@[simp]
+-- Removed `@[simp]` attribute,
+-- as the LHS simplifies already to `M.toSquareBlock id i ⟨i, ⋯⟩ ⟨i, ⋯⟩`
 theorem det_toSquareBlock_id (M : Matrix m m R) (i : m) : (M.toSquareBlock id i).det = M i i :=
   letI : Unique { a // id a = i } := ⟨⟨⟨i, rfl⟩⟩, fun j => Subtype.ext j.property⟩
   (det_unique _).trans rfl
