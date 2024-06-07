@@ -107,9 +107,9 @@ theorem basisSets_intersect (U V : Set E) (hU : U ∈ p.basisSets) (hV : V ∈ p
     exact
       Set.subset_inter
         (Set.iInter₂_mono' fun i hi =>
-          ⟨i, Finset.subset_union_left _ _ hi, ball_mono <| min_le_left _ _⟩)
+          ⟨i, Finset.subset_union_left hi, ball_mono <| min_le_left _ _⟩)
         (Set.iInter₂_mono' fun i hi =>
-          ⟨i, Finset.subset_union_right _ _ hi, ball_mono <| min_le_right _ _⟩)
+          ⟨i, Finset.subset_union_right hi, ball_mono <| min_le_right _ _⟩)
 #align seminorm_family.basis_sets_intersect SeminormFamily.basisSets_intersect
 
 theorem basisSets_zero (U) (hU : U ∈ p.basisSets) : (0 : E) ∈ U := by

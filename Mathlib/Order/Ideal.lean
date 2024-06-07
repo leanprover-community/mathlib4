@@ -400,8 +400,8 @@ instance : Lattice (Ideal P) :=
     sup_le := fun _ _ K hIK hJK _ ⟨_, hi, _, hj, ha⟩ ↦
       K.lower ha <| sup_mem (mem_of_mem_of_le hi hIK) (mem_of_mem_of_le hj hJK)
     inf := (· ⊓ ·)
-    inf_le_left := fun I J ↦ inter_subset_left I.carrier J.carrier
-    inf_le_right := fun I J ↦ inter_subset_right I.carrier J.carrier
+    inf_le_left := fun _ _ ↦ inter_subset_left
+    inf_le_right := fun _ _ ↦ inter_subset_right
     le_inf := fun _ _ _ ↦ subset_inter }
 
 @[simp]
