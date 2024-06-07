@@ -11,11 +11,13 @@ import Mathlib.CategoryTheory.Functor.Const
 
 # Fibers of a functors
 
-In this file we define, for a functor `p : 𝒳 ⥤ 𝒴` the fiber categories `Fiber p S` for every
-`S : 𝒮` as follows:
+In this file we define, for a functor `p : 𝒳 ⥤ 𝒴`, the fiber categories `Fiber p S` for every
+`S : 𝒮` as follows
 - An object in `Fiber p S` is a pair `(a, ha)` where `a : 𝒳` and `ha : p.obj a = S`.
 - A morphism in `Fiber p S` is a morphism `φ : a ⟶ b` in 𝒳 such that `p.map φ = 𝟙 S`.
 
+For any category `C` equipped with a functor `F : C ⥤ 𝒳` such that `F ⋙ p` is constant at `S`,
+we define a functor `InducedFunctor : C ⥤ Fiber p S` that `F` factors through.
 -/
 
 universe v₁ u₁ v₂ u₂ v₃ u₃
@@ -24,11 +26,12 @@ open CategoryTheory Functor Category IsHomLift
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
-/-- Fiber p S is the type of elements of 𝒳 mapping to S via p  -/
+/-- `Fiber p S` is the type of elements of `𝒳` mapping to `S` via `p`.  -/
 def Fiber (p : 𝒳 ⥤ 𝒮) (S : 𝒮) := {a : 𝒳 // p.obj a = S}
 
 namespace Fiber
 
+/-- `Hom a b` are the morphisms of `Fiber p S`, defined as those lying over `𝟙 S` in the base. -/
 def Hom {p : 𝒳 ⥤ 𝒮} {S : 𝒮} (a b : Fiber p S) := {φ : a.1 ⟶ b.1 // IsHomLift p (𝟙 S) φ}
 
 instance {p : 𝒳 ⥤ 𝒮} {S : 𝒮} (a b : Fiber p S) (φ : Hom a b) : IsHomLift p (𝟙 S) φ.1 := φ.2
@@ -73,7 +76,7 @@ section
 
 variable (p : 𝒳 ⥤ 𝒮) (S : 𝒮)
 
-/-- The functor including `Fiber p S` into `𝒳` -/
+/-- The functor including `Fiber p S` into `𝒳`. -/
 @[simps]
 def FiberInclusion : (Fiber p S) ⥤ 𝒳 where
   obj a := a.1
@@ -92,14 +95,14 @@ section
 variable {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {C : Type u₃} [Category.{v₃} C] {F : C ⥤ 𝒳}
   (hF : F ⋙ p = (const C).obj S)
 
-/-- Given a functor F : C ⥤ 𝒳 mapping constantly to some S in the base,
-  we get an induced functor C ⥤ Fiber p S -/
+/-- Given a functor `F : C ⥤ 𝒳` such that `F ⋙ p` is constant at some `S : 𝒮`, then
+we get an induced functor `C ⥤ Fiber p S` that `F` factors through. -/
 @[simps]
-def FiberInducedFunctor : C ⥤ Fiber p S where
+def InducedFunctor : C ⥤ Fiber p S where
   obj := fun x ↦ ⟨F.obj x, by simp only [← comp_obj, hF, const_obj_obj]⟩
   map := fun φ ↦ ⟨F.map φ, of_commsq _ _ _ _ _ <| by simpa using (eqToIso hF).hom.naturality φ⟩
 
-lemma fiberInducedFunctor_comp : (FiberInducedFunctor hF) ⋙ (FiberInclusion p S) = F :=
+lemma inducedFunctor_comp : (InducedFunctor hF) ⋙ (FiberInclusion p S) = F :=
   Functor.ext (fun x ↦ rfl) (by simp)
 
 end
