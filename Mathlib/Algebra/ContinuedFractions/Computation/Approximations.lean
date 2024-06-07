@@ -514,8 +514,8 @@ theorem abs_sub_convergents_le' {b : K}
   have not_terminatedAt_n : ¬(of v).TerminatedAt n := by
     simp [terminatedAt_iff_partDen_none, nth_partDen_eq]
   refine (abs_sub_convs_le not_terminatedAt_n).trans ?_
-  -- One can show that `0 < (GCF.of v).denoms n` but it's easier
-  -- to consider the case `(GCF.of v).denoms n = 0`.
+  -- One can show that `0 < (GCF.of v).dens n` but it's easier
+  -- to consider the case `(GCF.of v).dens n = 0`.
   rcases (zero_le_of_den (K := K)).eq_or_gt with
     ((hB : (GCF.of v).dens n = 0) | hB)
   · simp only [hB, mul_zero, zero_mul, div_zero, le_refl]
