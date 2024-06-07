@@ -6,6 +6,7 @@ Authors: Scott Carnahan
 import Mathlib.Algebra.Polynomial.Smeval
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Polynomial.Pochhammer
+import Mathlib.Data.Real.Basic
 
 /-!
 # Binomial rings
@@ -175,6 +176,28 @@ instance Int.instBinomialRing : BinomialRing ℤ where
         ← Int.neg_ofNat_succ, ascPochhammer_smeval_neg_eq_descPochhammer]
 
 end Nat_Int
+
+section Real
+/-- Inductive definition of the multichoose function. -/
+noncomputable def Real.multichoose: ℝ → ℕ → ℝ
+  | _, 0 => 1
+  | r, k+1 => (r+k)/(k+1)*(Real.multichoose r k)
+
+noncomputable instance Real.instBinomialRing : BinomialRing ℝ where
+  nsmul_right_injective n hn r s hrs := by
+    simp only [nsmul_eq_mul, mul_eq_mul_left_iff, Nat.cast_eq_zero, hn, or_false] at hrs
+    exact hrs
+  multichoose := Real.multichoose
+  factorial_nsmul_multichoose r n := by
+    induction' n with n ih
+    case zero =>
+      simp only [Nat.factorial_zero, multichoose, one_smul, ascPochhammer_zero,
+        Polynomial.smeval_one, pow_zero]
+    case succ =>
+      rw [Polynomial.ascPochhammer_smeval_eq_eval] at ih
+      rw [Polynomial.ascPochhammer_smeval_eq_eval, ascPochhammer_succ_eval, ← ih, multichoose, Nat.factorial]
+      field_simp; ring_nf
+end Real
 
 section Choose
 
