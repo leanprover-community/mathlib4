@@ -178,8 +178,8 @@ class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1
   /-- Identity morphisms are right identities for composition. -/
   comp_id : ∀ {X Y : obj} (f : X ⟶ Y), f ≫ 𝟙 Y = f := by aesop_cat
   /-- Composition in a category is associative. -/
-  assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h :=
-    by aesop_cat
+  assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h := by
+    aesop_cat
 #align category_theory.category CategoryTheory.Category
 #align category_theory.category.assoc CategoryTheory.Category.assoc
 #align category_theory.category.comp_id CategoryTheory.Category.comp_id

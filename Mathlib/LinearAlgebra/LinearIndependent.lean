@@ -774,8 +774,8 @@ theorem linearIndependent_sum {v : Sum ι ι' → M} :
   rw [linearIndependent_iff'] at *
   intro s g hg i hi
   have :
-    ((∑ i ∈ s.preimage Sum.inl (Sum.inl_injective.injOn _), (fun x => g x • v x) (Sum.inl i)) +
-        ∑ i ∈ s.preimage Sum.inr (Sum.inr_injective.injOn _), (fun x => g x • v x) (Sum.inr i)) =
+    ((∑ i ∈ s.preimage Sum.inl Sum.inl_injective.injOn, (fun x => g x • v x) (Sum.inl i)) +
+        ∑ i ∈ s.preimage Sum.inr Sum.inr_injective.injOn, (fun x => g x • v x) (Sum.inr i)) =
       0 := by
     -- Porting note: `g` must be specified.
     rw [Finset.sum_preimage' (g := fun x => g x • v x),
@@ -1156,12 +1156,12 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
                   Finset.sum_sub_distrib
                 _ =
                     (g a * a x * a y + ∑ i ∈ s, g i * i x * i y) -
-                      (g a * a x * a y + ∑ i ∈ s, g i * a x * i y) :=
-                  by rw [add_sub_add_left_eq_sub]
+                      (g a * a x * a y + ∑ i ∈ s, g i * a x * i y) := by
+                  rw [add_sub_add_left_eq_sub]
                 _ =
                     (∑ i ∈ insert a s, g i * i x * i y) -
-                      ∑ i ∈ insert a s, g i * a x * i y :=
-                  by rw [Finset.sum_insert has, Finset.sum_insert has]
+                      ∑ i ∈ insert a s, g i * a x * i y := by
+                  rw [Finset.sum_insert has, Finset.sum_insert has]
                 _ =
                     (∑ i ∈ insert a s, g i * i (x * y)) -
                       ∑ i ∈ insert a s, a x * (g i * i y) :=
@@ -1171,8 +1171,8 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
                     (Finset.sum_congr rfl fun _ _ => by rw [mul_assoc, mul_left_comm])
                 _ =
                     (∑ i ∈ insert a s, (g i • (i : G → L))) (x * y) -
-                      a x * (∑ i ∈ insert a s, (g i • (i : G → L))) y :=
-                  by rw [Finset.sum_apply, Finset.sum_apply, Finset.mul_sum]; rfl
+                      a x * (∑ i ∈ insert a s, (g i • (i : G → L))) y := by
+                  rw [Finset.sum_apply, Finset.sum_apply, Finset.mul_sum]; rfl
                 _ = 0 - a x * 0 := by rw [hg]; rfl
                 _ = 0 := by rw [mul_zero, sub_zero]
                 )
@@ -1230,7 +1230,7 @@ theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndependen
     (hsu : s ⊆ u) (htu : t ⊆ u) (hst : span R s ≤ span R t) : s ⊆ t := by
   have :=
     eq_of_linearIndependent_of_span_subtype (hl.mono (Set.union_subset hsu htu))
-      (Set.subset_union_right _ _) (Set.union_subset (Set.Subset.trans subset_span hst) subset_span)
+      Set.subset_union_right (Set.union_subset (Set.Subset.trans subset_span hst) subset_span)
   rw [← this]; apply Set.subset_union_left
 #align le_of_span_le_span le_of_span_le_span
 
