@@ -115,7 +115,7 @@ theorem corners_theorem_nat (hε : 0 < ε) (hn : cornersTheoremBound (ε / 9) �
     omega
   rw [this] at hA
   have := Fin.isAddFreimanIso_Iio two_ne_zero (le_refl (2 * n))
-  have := hA.of_image this.isAddFreimanHom (Fin.val_injective.injOn _) $ by
+  have := hA.of_image this.isAddFreimanHom Fin.val_injective.injOn $ by
     refine Set.image_subset_iff.2 $ hAn.trans fun x hx ↦ ?_
     simp only [coe_range, Set.mem_prod, Set.mem_Iio] at hx
     exact ⟨Fin.natCast_strictMono (by omega) hx.1, Fin.natCast_strictMono (by omega) hx.2⟩
@@ -173,7 +173,7 @@ theorem roth_3ap_theorem_nat (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound
     omega
   rw [this] at hA
   have := Fin.isAddFreimanIso_Iio two_ne_zero (le_refl (2 * n))
-  have := hA.of_image this.isAddFreimanHom (Fin.val_injective.injOn _) $ Set.image_subset_iff.2 $
+  have := hA.of_image this.isAddFreimanHom Fin.val_injective.injOn $ Set.image_subset_iff.2 $
       hAn.trans fun x hx ↦ Fin.natCast_strictMono (by omega) $ by
         simpa only [coe_range, Set.mem_Iio] using hx
   rw [← coe_image] at this

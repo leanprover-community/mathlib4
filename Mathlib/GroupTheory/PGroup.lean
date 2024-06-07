@@ -48,7 +48,7 @@ theorem of_card [Fintype G] {n : ℕ} (hG : card G = p ^ n) : IsPGroup p G := fu
 #align is_p_group.of_card IsPGroup.of_card
 
 theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
-  of_card (Subgroup.card_bot.trans (pow_zero p).symm)
+  of_card (by rw [← Nat.card_eq_fintype_card, Subgroup.card_bot, pow_zero])
 #align is_p_group.of_bot IsPGroup.of_bot
 
 theorem iff_card [Fact p.Prime] [Fintype G] : IsPGroup p G ↔ ∃ n : ℕ, card G = p ^ n := by
@@ -255,9 +255,8 @@ theorem center_nontrivial [Nontrivial G] [Finite G] : Nontrivial (Subgroup.cente
 
 theorem bot_lt_center [Nontrivial G] [Finite G] : ⊥ < Subgroup.center G := by
   haveI := center_nontrivial hG
-  cases nonempty_fintype G
   classical exact
-      bot_lt_iff_ne_bot.mpr ((Subgroup.center G).one_lt_card_iff_ne_bot.mp Fintype.one_lt_card)
+      bot_lt_iff_ne_bot.mpr ((Subgroup.center G).one_lt_card_iff_ne_bot.mp Finite.one_lt_card)
 #align is_p_group.bot_lt_center IsPGroup.bot_lt_center
 
 end GIsPGroup

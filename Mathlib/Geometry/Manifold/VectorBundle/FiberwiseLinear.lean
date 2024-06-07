@@ -203,14 +203,14 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
     apply contMDiffOn_of_locally_contMDiffOn
     intro x hx
     refine ⟨u ⟨x, hx⟩, hu ⟨x, hx⟩, hux _, ?_⟩
-    refine (ContMDiffOn.congr (hφ ⟨x, hx⟩) ?_).mono (inter_subset_right _ _)
+    refine (ContMDiffOn.congr (hφ ⟨x, hx⟩) ?_).mono inter_subset_right
     intro y hy
     rw [hΦφ ⟨x, hx⟩ y hy]
   have h2Φ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun y => ((Φ y).symm : F →L[𝕜] F)) U := by
     apply contMDiffOn_of_locally_contMDiffOn
     intro x hx
     refine ⟨u ⟨x, hx⟩, hu ⟨x, hx⟩, hux _, ?_⟩
-    refine (ContMDiffOn.congr (h2φ ⟨x, hx⟩) ?_).mono (inter_subset_right _ _)
+    refine (ContMDiffOn.congr (h2φ ⟨x, hx⟩) ?_).mono inter_subset_right
     intro y hy
     rw [hΦφ ⟨x, hx⟩ y hy]
   refine ⟨Φ, U, hU', hΦ, h2Φ, hU, fun p hp => ?_⟩
@@ -241,12 +241,12 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
     · show
         SmoothOn IB 𝓘(𝕜, F →L[𝕜] F)
           (fun x : B => (φ' x).toContinuousLinearMap ∘L (φ x).toContinuousLinearMap) (U ∩ U')
-      exact (hφ'.mono <| inter_subset_right _ _).clm_comp (hφ.mono <| inter_subset_left _ _)
+      exact (hφ'.mono inter_subset_right).clm_comp (hφ.mono inter_subset_left)
     · show
         SmoothOn IB 𝓘(𝕜, F →L[𝕜] F)
           (fun x : B => (φ x).symm.toContinuousLinearMap ∘L (φ' x).symm.toContinuousLinearMap)
           (U ∩ U')
-      exact (h2φ.mono <| inter_subset_left _ _).clm_comp (h2φ'.mono <| inter_subset_right _ _)
+      exact (h2φ.mono inter_subset_left).clm_comp (h2φ'.mono inter_subset_right)
     · apply FiberwiseLinear.source_trans_partialHomeomorph
     · rintro ⟨b, v⟩ -; apply FiberwiseLinear.trans_partialHomeomorph_apply
   -- Porting note: without introducing `e` first, the first `simp only` fails
