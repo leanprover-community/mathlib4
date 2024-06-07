@@ -259,7 +259,7 @@ theorem HasFiniteFPowerSeriesOnBall.eq_partialSum
     f (x + y) = p.partialSum m y :=
   fun y hy m hm ↦ (hf.hasSum hy).unique (hasSum_sum_of_ne_finset_zero
     (f := fun m => p m (fun _ => y)) (s := Finset.range m)
-    (fun N hN => by simp only [Finset.mem_range, not_lt] at hN
+    (fun N hN => by simp only; simp only [Finset.mem_range, not_lt] at hN
                     rw [hf.finite _ (le_trans hm hN), ContinuousMultilinearMap.zero_apply]))
 
 /-- Variant of the previous result with the variable expressed as `y` instead of `x + y`. -/

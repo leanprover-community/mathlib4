@@ -350,8 +350,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   have : 𝓝 (0 : G) = 𝓝 (0 + 0 + 0) := by simp only [add_zero]
   rw [this]
   refine Tendsto.add (Tendsto.add ?_ ?_) ?_
-  · simp only
-    have := difference_quotients_converge_uniformly hf' hf hfg
+  · have := difference_quotients_converge_uniformly hf' hf hfg
     rw [Metric.tendstoUniformlyOnFilter_iff] at this
     rw [Metric.tendsto_nhds]
     intro ε hε
