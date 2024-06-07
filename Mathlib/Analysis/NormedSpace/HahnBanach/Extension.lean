@@ -149,6 +149,16 @@ open ContinuousLinearEquiv Submodule
 open scoped Classical
 
 theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
+  #adaptation_note
+  /--
+  `set_option maxSynthPendingDepth 2` required after https://github.com/leanprover/lean4/pull/4119
+  Alternatively, we can add:
+  ```
+  let X : SeminormedAddCommGroup (↥(span 𝕜 {x}) →L[𝕜] 𝕜) := inferInstance
+  have : BoundedSMul 𝕜 (↥(span 𝕜 {x}) →L[𝕜] 𝕜) := @NormedSpace.boundedSMul 𝕜 _ _ X _
+  ```
+  -/
+  set_option maxSynthPendingDepth 2 in
   rw [norm_smul (α := 𝕜) (x := coord 𝕜 x h), RCLike.norm_coe_norm, coord_norm,
     mul_inv_cancel (mt norm_eq_zero.mp h)]
 #align coord_norm' coord_norm'
