@@ -1789,6 +1789,7 @@ import Mathlib.Condensed.Functors
 import Mathlib.Condensed.Light.Basic
 import Mathlib.Condensed.Light.Discrete
 import Mathlib.Condensed.Light.Explicit
+import Mathlib.Condensed.Light.Functors
 import Mathlib.Condensed.Light.Module
 import Mathlib.Condensed.Limits
 import Mathlib.Condensed.Module
