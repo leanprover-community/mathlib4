@@ -328,7 +328,7 @@ theorem endEquivAutGalois_mul (f g : End F) :
     (f.app A ≫ F.map ((AutGalois.π F A) ((endEquivAutGalois F) g)).hom) A.pt
   rw [← f.naturality, FintypeCat.comp_apply, endEquivAutGalois_π]
 
-/-- The monoid isomorphism between endomorphisms of `F` and the (multiplicative oppososite of the)
+/-- The monoid isomorphism between endomorphisms of `F` and the (multiplicative opposite of the)
 limit of automorphism groups of all Galois objects. -/
 noncomputable def endMulEquivAutGalois : End F ≃* (AutGalois F)ᵐᵒᵖ :=
   MulEquiv.mk (Equiv.trans (endEquivAutGalois F) MulOpposite.opEquiv) (by simp)
