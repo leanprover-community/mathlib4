@@ -1,5 +1,6 @@
 import Mathlib
 
+/-
 theorem a : True := .intro
 --#print IsCyclotomicExtension.Rat.five_pid
 
@@ -12,6 +13,7 @@ theorem IsCyclotomicExtension.Rat.five_pid'' (K : Type*) [Field K] [NumberField 
   [IsCyclotomicExtension {5} ℚ K] :
     IsPrincipalIdealRing (NumberField.RingOfIntegers K) :=
   IsCyclotomicExtension.Rat.five_pid' K
+-/
 
 open Lean
 #eval show CoreM _ from do
