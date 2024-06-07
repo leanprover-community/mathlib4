@@ -1022,6 +1022,30 @@ theorem domCongr_toAlgHom (e : G ≃* H) : (domCongr k A e).toAlgHom = mapDomain
 
 end lift
 
+section Linear
+
+variable {A : Type*} [Semiring k] [Semiring A] [Module k A]
+
+variable (k A) in
+/-- Interpret `single i` as a linear map (but with `MonoidAlgebra` in the type, rather than
+`Finsupp`). -/
+def lsingle (i : G) : A →ₗ[k] MonoidAlgebra A G :=
+  Finsupp.lsingle i
+
+lemma lsingle_def (i : G) :
+    lsingle k A i = Finsupp.lsingle i := rfl
+
+lemma lsingle_apply (i : G) (a : A) :
+    lsingle k A i a = single i a := rfl
+
+@[ext]
+theorem lhom_ext {B : Type*} [AddCommMonoid B] [Module k B]
+    {f g : MonoidAlgebra A G →ₗ[k] B}
+    (h : ∀ a b, f (single a b) = g (single a b)) : f = g :=
+  Finsupp.lhom_ext h
+
+end Linear
+
 section
 
 -- attribute [local reducible] MonoidAlgebra -- Porting note: `reducible` cannot be `local`.
@@ -2080,6 +2104,30 @@ theorem algHom_ext_iff {φ₁ φ₂ : k[G] →ₐ[k] A} :
 #align add_monoid_algebra.alg_hom_ext_iff AddMonoidAlgebra.algHom_ext_iff
 
 end lift
+
+section Linear
+
+variable {A : Type*} [Semiring k] [Semiring A] [Module k A]
+
+variable (k A) in
+/-- Interpret `single i` as a linear map (but with `AddMonoidAlgebra` in the type, rather than
+`Finsupp`). -/
+def lsingle (i : G) : A →ₗ[k] A[G] :=
+  Finsupp.lsingle i
+
+lemma lsingle_def (i : G) :
+    lsingle k A i = Finsupp.lsingle i := rfl
+
+lemma lsingle_apply (i : G) (a : A) :
+    lsingle k A i a = single i a := rfl
+
+@[ext]
+theorem lhom_ext {B : Type*} [AddCommMonoid B] [Module k B]
+    {f g : A[G] →ₗ[k] B}
+    (h : ∀ a b, f (single a b) = g (single a b)) : f = g :=
+  Finsupp.lhom_ext h
+
+end Linear
 
 section
 
