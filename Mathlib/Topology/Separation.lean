@@ -2522,37 +2522,20 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
     · use fun n ↦ (closure (f' n))ᶜ
       constructor
       · rw [← compl_iInter, subset_compl_comm]
-        have : ⋂ i, closure (f' i) = closure s := by
+        have : ⋂ i, closure (f' i) ⊆ closure s := by
           rw [S_int]
-          rw [sInter_eq_iInter]
-          refine ext ?_
-          intro x
-          constructor
-          · intro xin
-            simp only [iInter_coe_set, mem_iInter]
-            intro i iins
-            obtain ⟨n, fn⟩ := f_surj ⟨i, iins⟩
-            have : i = f n := by
-              rw [fn]
-            rw [this]
-            apply clf'_sub_f
-            apply xin
-            simp only [mem_range, exists_apply_eq_apply]
-          · intro xin
-            simp only [mem_iInter]
-            intro i
-            apply subset_closure
-            apply cls_sub_f'
-            rw [S_int]
-            rw [sInter_eq_iInter]
-            exact xin
-        rw [this]
+          apply subset_sInter
+          intro t tinS
+          obtain ⟨n, fn⟩ := f_surj ⟨t, tinS⟩
+          apply iInter_subset_of_subset n
+          apply Subset.trans (clf'_sub_f n)
+          rw [fn]
+        rw [Subset.antisymm this (subset_iInter fun n ↦ Subset.trans (cls_sub_f' n) subset_closure)]
         exact Disjoint.subset_compl_left (id (Disjoint.symm hd₁))
       intro n
       constructor
       · simp only [isOpen_compl_iff, isClosed_closure]
-      · simp only [closure_compl]
-        rw [disjoint_compl_left_iff_subset]
+      · simp only [closure_compl, disjoint_compl_left_iff_subset]
         apply Subset.trans subset_closure
         apply Subset.trans (cls_sub_f' n)
         exact subset_interior_closure (f'_open n)
