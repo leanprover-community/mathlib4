@@ -202,7 +202,7 @@ set_option linter.uppercaseLean3 false in
 -- if more is needed, add them here
 /-- The spectrum of a commutative ring, as a `LocallyRingedSpace`.
 -/
-@[simps!? toSheafedSpace presheaf]
+@[simps! toSheafedSpace presheaf]
 def Spec.locallyRingedSpaceObj (R : CommRingCat.{u}) : LocallyRingedSpace :=
   { Spec.sheafedSpaceObj R with
     localRing := fun x =>
