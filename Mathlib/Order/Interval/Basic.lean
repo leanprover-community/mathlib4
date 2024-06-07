@@ -446,7 +446,7 @@ def coeHom : Interval α ↪o Set α :=
     | ⊥, _ => iff_of_true bot_le bot_le
     | some s, ⊥ =>
       iff_of_false (fun h => s.coe_nonempty.ne_empty <| le_bot_iff.1 h) (WithBot.not_coe_le_bot _)
-    | some _, some _ => (@NonemptyInterval.coeHom α _).le_iff_le.trans WithBot.some_le_some.symm
+    | some _, some _ => (@NonemptyInterval.coeHom α _).le_iff_le.trans WithBot.coe_le_coe.symm
 #align interval.coe_hom Interval.coeHom
 
 instance setLike : SetLike (Interval α) α where
@@ -536,7 +536,7 @@ instance lattice : Lattice (Interval α) :=
       | some s, some t => by
         change dite _ _ _ ≤ _
         split_ifs
-        · exact WithBot.some_le_some.2 ⟨le_sup_left, inf_le_left⟩
+        · exact WithBot.coe_le_coe.2 ⟨le_sup_left, inf_le_left⟩
         · exact bot_le
     inf_le_right := fun s t =>
       match s, t with
@@ -546,7 +546,7 @@ instance lattice : Lattice (Interval α) :=
       | some s, some t => by
         change dite _ _ _ ≤ _
         split_ifs
-        · exact WithBot.some_le_some.2 ⟨le_sup_right, inf_le_right⟩
+        · exact WithBot.coe_le_coe.2 ⟨le_sup_right, inf_le_right⟩
         · exact bot_le
     le_inf := fun s t c =>
       match s, t, c with
@@ -582,7 +582,7 @@ theorem coe_inf (s t : Interval α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
       rw [WithBot.none_eq_bot, inf_bot_eq]
       exact (inter_empty _).symm
     | some t =>
-      refine' (_ : setLike.coe (dite
+      refine (?_ : setLike.coe (dite
         -- Porting note: Needed to fill this first `_` explicitly.
         (s.toProd.fst ≤ t.toProd.snd ∧ t.toProd.fst ≤ s.toProd.snd)
         _ _) = _).trans Icc_inter_Icc.symm
@@ -672,7 +672,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
           · -- Porting note: This case was
             -- `exact WithBot.some_le_some.2 ⟨iInf₂_le _ ha, le_iSup₂_of_le _ ha le_rfl⟩`
             -- but there seems to be a defEq-problem at `iInf₂_le` that lean cannot resolve yet.
-            apply WithBot.some_le_some.2
+            apply WithBot.coe_le_coe.2
             constructor
             · apply iInf₂_le
               exact ha
@@ -713,7 +713,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
           | some s =>
             dsimp -- Porting note (#11227): added a `dsimp`
             split_ifs with h
-            · exact WithBot.some_le_some.2
+            · exact WithBot.coe_le_coe.2
                 ⟨iSup₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,
                   le_iInf₂ fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).2⟩
             · rw [not_and_or, not_not] at h
@@ -745,9 +745,9 @@ theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
     simp [WithBot.some_eq_coe, Interval.forall, h.1, ← forall_and, ← NonemptyInterval.mem_def]
   simp_rw [not_and_or, Classical.not_not] at h
   rcases h with h | h
-  · refine' (eq_empty_of_subset_empty _).symm
+  · refine (eq_empty_of_subset_empty ?_).symm
     exact iInter₂_subset_of_subset _ h Subset.rfl
-  · refine' (not_nonempty_iff_eq_empty.1 _).symm
+  · refine (not_nonempty_iff_eq_empty.1 ?_).symm
     rintro ⟨x, hx⟩
     rw [mem_iInter₂] at hx
     exact h fun s ha t hb => (hx _ ha).1.trans (hx _ hb).2

@@ -109,7 +109,7 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
     (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
   induction' n with n hn
   · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
-  · refine' Prod.ext rfl (funext fun x => _)
+  · refine Prod.ext rfl (funext fun x => ?_)
 /- Porting note (#11039): broken proof was
     · dsimp only [actionDiagonalSucc]
       simp only [Iso.trans_hom, comp_hom, types_comp_apply, diagonalSucc_hom_hom,
@@ -147,7 +147,7 @@ theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f
     funext x
     dsimp [actionDiagonalSucc]
     erw [hn, Equiv.piFinSuccAbove_symm_apply]
-    refine' Fin.cases _ (fun i => _) x
+    refine Fin.cases ?_ (fun i => ?_) x
     · simp only [Fin.insertNth_zero, Fin.cons_zero, Fin.partialProd_zero, mul_one]
     · simp only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', ← mul_assoc]
       rfl
@@ -288,7 +288,7 @@ def ofMulActionBasisAux :
       · rw [smul_add, hz, hy, smul_add] -/
       show _ = Representation.asAlgebraHom (tensorObj (Rep.leftRegular k G)
         (Rep.trivial k G ((Fin n → G) →₀ k))).ρ r _
-      refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
+      refine x.induction_on ?_ (fun x y => ?_) fun y z hy hz => ?_
       · rw [smul_zero, map_zero]
       · rw [TensorProduct.smul_tmul', smul_eq_mul, ← ofMulAction_self_smul_eq_mul]
         exact (smul_tprod_one_asModule (Representation.ofMulAction k G G) r x y).symm
@@ -413,8 +413,8 @@ end Rep
 variable (G)
 
 /-- The simplicial `G`-set sending `[n]` to `Gⁿ⁺¹` equipped with the diagonal action of `G`. -/
-def classifyingSpaceUniversalCover [Monoid G] : SimplicialObject (Action (Type u) <| MonCat.of G)
-    where
+def classifyingSpaceUniversalCover [Monoid G] :
+    SimplicialObject (Action (Type u) <| MonCat.of G) where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
   map f :=
     { hom := fun x => x ∘ f.unop.toOrderHom
@@ -434,7 +434,7 @@ isomorphic to `EG`, the universal cover of the classifying space of `G` as a sim
 def cechNerveTerminalFromIso :
     cechNerveTerminalFrom (Action.ofMulAction G G) ≅ classifyingSpaceUniversalCover G :=
   NatIso.ofComponents (fun n => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
-    refine' IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => _
+    refine IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => ?_
     dsimp only [cechNerveTerminalFrom, Pi.lift]
     rw [Category.assoc, limit.isoLimitCone_hom_π, limit.lift_π, Category.assoc]
     exact (limit.isoLimitCone_hom_π _ _).symm
@@ -471,8 +471,8 @@ def extraDegeneracyAugmentedCechNerve :
 /-- The universal cover of the classifying space of `G` as a simplicial set, augmented by the map
 from `Fin 1 → G` to the terminal object in `Type u`, has an extra degeneracy. -/
 def extraDegeneracyCompForgetAugmented : ExtraDegeneracy (compForgetAugmented G) := by
-  refine'
-    ExtraDegeneracy.ofIso (_ : (Arrow.mk <| terminal.from G).augmentedCechNerve ≅ _)
+  refine
+    ExtraDegeneracy.ofIso (?_ : (Arrow.mk <| terminal.from G).augmentedCechNerve ≅ _)
       (extraDegeneracyAugmentedCechNerve G)
   exact
     Comma.isoMk (CechNerveTerminalFrom.iso G ≪≫ cechNerveTerminalFromIsoCompForget G)
@@ -528,8 +528,8 @@ variable {k G}
 theorem d_of {G : Type u} {n : ℕ} (c : Fin (n + 1) → G) :
     d k G n (Finsupp.single c 1) =
       Finset.univ.sum fun p : Fin (n + 1) =>
-        Finsupp.single (c ∘ p.succAbove) ((-1 : k) ^ (p : ℕ)) :=
-  by simp [d]
+        Finsupp.single (c ∘ p.succAbove) ((-1 : k) ^ (p : ℕ)) := by
+  simp [d]
 #align group_cohomology.resolution.d_of groupCohomology.resolution.d_of
 
 variable (k G)
@@ -553,7 +553,7 @@ set_option linter.uppercaseLean3 false in
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
 theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom = d k G (n + 1) := by
-  refine' Finsupp.lhom_ext' fun x => LinearMap.ext_ring _
+  refine Finsupp.lhom_ext' fun x => LinearMap.ext_ring ?_
   dsimp [groupCohomology.resolution]
 /- Porting note (#11039): broken proof was
   simpa [← @intCast_smul k, simplicial_object.δ] -/
@@ -564,7 +564,7 @@ theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom = d 
   erw [d_of (k := k) x]
 /- Porting note: want to rewrite `LinearMap.smul_apply` but simp/simp_rw won't do it; I need erw,
 so using Finset.sum_congr to get rid of the binder -/
-  refine' Finset.sum_congr rfl fun _ _ => _
+  refine Finset.sum_congr rfl fun _ _ => ?_
   erw [LinearMap.smul_apply]
   rw [Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, Finsupp.smul_single', mul_one]
   rfl
@@ -650,7 +650,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem d_comp_ε : (groupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
   ext : 1
-  refine' LinearMap.ext fun x => _
+  refine LinearMap.ext fun x => ?_
   have : (forget₂ToModuleCat k G).d 1 0
       ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
     rw [← forget₂ToModuleCatHomotopyEquiv_f_0_eq,

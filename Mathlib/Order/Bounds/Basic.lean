@@ -373,8 +373,8 @@ theorem lowerBounds_union : lowerBounds (s ∪ t) = lowerBounds s ∩ lowerBound
 
 theorem union_upperBounds_subset_upperBounds_inter :
     upperBounds s ∪ upperBounds t ⊆ upperBounds (s ∩ t) :=
-  union_subset (upperBounds_mono_set <| inter_subset_left _ _)
-    (upperBounds_mono_set <| inter_subset_right _ _)
+  union_subset (upperBounds_mono_set inter_subset_left)
+    (upperBounds_mono_set inter_subset_right)
 #align union_upper_bounds_subset_upper_bounds_inter union_upperBounds_subset_upperBounds_inter
 
 theorem union_lowerBounds_subset_lowerBounds_inter :
@@ -395,22 +395,22 @@ theorem isGreatest_union_iff :
 
 /-- If `s` is bounded, then so is `s ∩ t` -/
 theorem BddAbove.inter_of_left (h : BddAbove s) : BddAbove (s ∩ t) :=
-  h.mono <| inter_subset_left s t
+  h.mono inter_subset_left
 #align bdd_above.inter_of_left BddAbove.inter_of_left
 
 /-- If `t` is bounded, then so is `s ∩ t` -/
 theorem BddAbove.inter_of_right (h : BddAbove t) : BddAbove (s ∩ t) :=
-  h.mono <| inter_subset_right s t
+  h.mono inter_subset_right
 #align bdd_above.inter_of_right BddAbove.inter_of_right
 
 /-- If `s` is bounded, then so is `s ∩ t` -/
 theorem BddBelow.inter_of_left (h : BddBelow s) : BddBelow (s ∩ t) :=
-  h.mono <| inter_subset_left s t
+  h.mono inter_subset_left
 #align bdd_below.inter_of_left BddBelow.inter_of_left
 
 /-- If `t` is bounded, then so is `s ∩ t` -/
 theorem BddBelow.inter_of_right (h : BddBelow t) : BddBelow (s ∩ t) :=
-  h.mono <| inter_subset_right s t
+  h.mono inter_subset_right
 #align bdd_below.inter_of_right BddBelow.inter_of_right
 
 /-- In a directed order, the union of bounded above sets is bounded above. -/
@@ -425,7 +425,7 @@ theorem BddAbove.union [IsDirected α (· ≤ ·)] {s t : Set α} :
 /-- In a directed order, the union of two sets is bounded above if and only if both sets are. -/
 theorem bddAbove_union [IsDirected α (· ≤ ·)] {s t : Set α} :
     BddAbove (s ∪ t) ↔ BddAbove s ∧ BddAbove t :=
-  ⟨fun h => ⟨h.mono <| subset_union_left s t, h.mono <| subset_union_right s t⟩, fun h =>
+  ⟨fun h => ⟨h.mono subset_union_left, h.mono subset_union_right⟩, fun h =>
     h.1.union h.2⟩
 #align bdd_above_union bddAbove_union
 
@@ -580,10 +580,10 @@ theorem exists_lub_Iio (i : γ) : ∃ j, IsLUB (Iio i) j := by
   by_cases h_exists_lt : ∃ j, j ∈ upperBounds (Iio i) ∧ j < i
   · obtain ⟨j, hj_ub, hj_lt_i⟩ := h_exists_lt
     exact ⟨j, hj_ub, fun k hk_ub => hk_ub hj_lt_i⟩
-  · refine' ⟨i, fun j hj => le_of_lt hj, _⟩
+  · refine ⟨i, fun j hj => le_of_lt hj, ?_⟩
     rw [mem_lowerBounds]
     by_contra h
-    refine' h_exists_lt _
+    refine h_exists_lt ?_
     push_neg at h
     exact h
 #align exists_lub_Iio exists_lub_Iio
@@ -1590,11 +1590,11 @@ lemma bddBelow_range_prod {F : ι → α × β} :
 
 theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
     IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
-  refine'
+  refine
     ⟨fun H =>
-      ⟨⟨monotone_fst.mem_upperBounds_image H.1, fun a ha => _⟩,
-        ⟨monotone_snd.mem_upperBounds_image H.1, fun a ha => _⟩⟩,
-      fun H => ⟨_, _⟩⟩
+      ⟨⟨monotone_fst.mem_upperBounds_image H.1, fun a ha => ?_⟩,
+        ⟨monotone_snd.mem_upperBounds_image H.1, fun a ha => ?_⟩⟩,
+      fun H => ⟨?_, ?_⟩⟩
   · suffices h : (a, p.2) ∈ upperBounds s from (H.2 h).1
     exact fun q hq => ⟨ha <| mem_image_of_mem _ hq, (H.1 hq).2⟩
   · suffices h : (p.1, a) ∈ upperBounds s from (H.2 h).2
@@ -1638,9 +1638,9 @@ lemma bddBelow_range_pi {F : ι → ∀ a, π a} :
 theorem isLUB_pi {s : Set (∀ a, π a)} {f : ∀ a, π a} :
     IsLUB s f ↔ ∀ a, IsLUB (Function.eval a '' s) (f a) := by
   classical
-    refine'
-      ⟨fun H a => ⟨(Function.monotone_eval a).mem_upperBounds_image H.1, fun b hb => _⟩, fun H =>
-        ⟨_, _⟩⟩
+    refine
+      ⟨fun H a => ⟨(Function.monotone_eval a).mem_upperBounds_image H.1, fun b hb => ?_⟩, fun H =>
+        ⟨?_, ?_⟩⟩
     · suffices h : Function.update f a b ∈ upperBounds s from Function.update_same a b f ▸ H.2 h a
       exact fun g hg => le_update_iff.2 ⟨hb <| mem_image_of_mem _ hg, fun i _ => H.1 hg i⟩
     · exact fun g hg a => (H a).1 (mem_image_of_mem _ hg)
@@ -1707,8 +1707,8 @@ def ScottContinuous (f : α → β) : Prop :=
 #align scott_continuous ScottContinuous
 
 protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f := by
-  refine' fun a b hab =>
-    (h (insert_nonempty _ _) (directedOn_pair le_refl hab) _).1
+  refine fun a b hab =>
+    (h (insert_nonempty _ _) (directedOn_pair le_refl hab) ?_).1
       (mem_image_of_mem _ <| mem_insert _ _)
   rw [IsLUB, upperBounds_insert, upperBounds_singleton,
     inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]

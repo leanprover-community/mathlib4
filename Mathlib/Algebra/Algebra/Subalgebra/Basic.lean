@@ -18,8 +18,6 @@ More lemmas about `adjoin` can be found in `RingTheory.Adjoin`.
 
 universe u u' v w w'
 
-open BigOperators
-
 /-- A subalgebra is a sub(semi)ring that includes the range of `algebraMap`. -/
 structure Subalgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] extends
   Subsemiring A : Type v where
@@ -165,7 +163,7 @@ protected theorem multiset_sum_mem {m : Multiset A} (h : ∀ x ∈ m, x ∈ S) :
 #align subalgebra.multiset_sum_mem Subalgebra.multiset_sum_mem
 
 protected theorem sum_mem {ι : Type w} {t : Finset ι} {f : ι → A} (h : ∀ x ∈ t, f x ∈ S) :
-    (∑ x in t, f x) ∈ S :=
+    (∑ x ∈ t, f x) ∈ S :=
   sum_mem h
 #align subalgebra.sum_mem Subalgebra.sum_mem
 
@@ -176,7 +174,7 @@ protected theorem multiset_prod_mem {R : Type u} {A : Type v} [CommSemiring R] [
 
 protected theorem prod_mem {R : Type u} {A : Type v} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (S : Subalgebra R A) {ι : Type w} {t : Finset ι} {f : ι → A} (h : ∀ x ∈ t, f x ∈ S) :
-    (∏ x in t, f x) ∈ S :=
+    (∏ x ∈ t, f x) ∈ S :=
   prod_mem h
 #align subalgebra.prod_mem Subalgebra.prod_mem
 
@@ -506,6 +504,35 @@ instance isDomain {R A : Type*} [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
 
 end Subalgebra
 
+namespace SubalgebraClass
+
+variable {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable [SetLike S A] [SubsemiringClass S A] [hSR : SMulMemClass S R A] (s : S)
+
+instance (priority := 75) toAlgebra : Algebra R s where
+  toFun r := ⟨algebraMap R A r, algebraMap_mem s r⟩
+  map_one' := Subtype.ext <| by simp
+  map_mul' _ _ := Subtype.ext <| by simp
+  map_zero' := Subtype.ext <| by simp
+  map_add' _ _ := Subtype.ext <| by simp
+  commutes' r x := Subtype.ext <| Algebra.commutes r (x : A)
+  smul_def' r x := Subtype.ext <| (algebraMap_smul A r (x : A)).symm
+
+@[simp, norm_cast]
+lemma coe_algebraMap (r : R) : (algebraMap R s r : A) = algebraMap R A r := rfl
+
+/-- Embedding of a subalgebra into the algebra, as an algebra homomorphism. -/
+def val (s : S) : s →ₐ[R] A :=
+  { SubsemiringClass.subtype s, SMulMemClass.subtype s with
+    toFun := (↑)
+    commutes' := fun _ ↦ rfl }
+
+@[simp]
+theorem coe_val : (val s : s → A) = ((↑) : s → A) :=
+  rfl
+
+end SubalgebraClass
+
 namespace Submodule
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
@@ -725,7 +752,7 @@ def adjoin (s : Set A) : Subalgebra R A :=
 variable {R}
 
 protected theorem gc : GaloisConnection (adjoin R : Set A → Subalgebra R A) (↑) := fun s S =>
-  ⟨fun H => le_trans (le_trans (Set.subset_union_right _ _) Subsemiring.subset_closure) H,
+  ⟨fun H => le_trans (le_trans Set.subset_union_right Subsemiring.subset_closure) H,
    fun H => show Subsemiring.closure (Set.range (algebraMap R A) ∪ s) ≤ S.toSubsemiring from
       Subsemiring.closure_le.2 <| Set.union_subset S.range_subset H⟩
 #align algebra.gc Algebra.gc
@@ -985,8 +1012,7 @@ instance : Unique (Subalgebra R R) :=
 /-- The map `S → T` when `S` is a subalgebra contained in the subalgebra `T`.
 
 This is the subalgebra version of `Submodule.inclusion`, or `Subring.inclusion`  -/
-def inclusion {S T : Subalgebra R A} (h : S ≤ T) : S →ₐ[R] T
-    where
+def inclusion {S T : Subalgebra R A} (h : S ≤ T) : S →ₐ[R] T where
   toFun := Set.inclusion h
   map_one' := rfl
   map_add' _ _ := rfl
@@ -1257,6 +1283,16 @@ theorem centralizer_eq_top_iff_subset {s : Set A} : centralizer R s = ⊤ ↔ s 
 theorem centralizer_univ : centralizer R Set.univ = center R A :=
   SetLike.ext' (Set.centralizer_univ A)
 #align subalgebra.centralizer_univ Subalgebra.centralizer_univ
+
+lemma le_centralizer_centralizer {s : Subalgebra R A} :
+    s ≤ centralizer R (centralizer R (s : Set A)) :=
+  Set.subset_centralizer_centralizer
+
+@[simp]
+lemma centralizer_centralizer_centralizer {s : Set A} :
+    centralizer R s.centralizer.centralizer = centralizer R s := by
+  apply SetLike.coe_injective
+  simp only [coe_centralizer, Set.centralizer_centralizer_centralizer]
 
 end Centralizer
 

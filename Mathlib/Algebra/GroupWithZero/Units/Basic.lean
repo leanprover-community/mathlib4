@@ -3,11 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Group.Units
-import Mathlib.Tactic.Nontriviality
-import Mathlib.Util.AssertExists
+import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Nontriviality
+import Mathlib.Tactic.Spread
+import Mathlib.Util.AssertExists
 
 #align_import algebra.group_with_zero.units.basic from "leanprover-community/mathlib"@"df5e9937a06fdd349fc60106f54b84d47b1434f0"
 
@@ -18,6 +20,9 @@ We also define `Ring.inverse`, a globally defined function on any ring
 (in fact any `MonoidWithZero`), which inverts units and sends non-units to zero.
 -/
 
+-- Guard against import creep
+assert_not_exists Multiplicative
+assert_not_exists DenselyOrdered
 
 variable {α M₀ G₀ M₀' G₀' F F' : Type*}
 variable [MonoidWithZero M₀]
@@ -228,15 +233,12 @@ theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
 #align units.exists0' Units.exists0'
 
 @[simp]
-theorem exists_iff_ne_zero {x : G₀} : (∃ u : G₀ˣ, ↑u = x) ↔ x ≠ 0 := by simp [exists0]
+theorem exists_iff_ne_zero {p : G₀ → Prop} : (∃ u : G₀ˣ, p u) ↔ ∃ x ≠ 0, p x := by
+  simp [exists0]
 #align units.exists_iff_ne_zero Units.exists_iff_ne_zero
 
 theorem _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀ˣ, a = u := by
-  by_cases h : a = 0
-  · left
-    exact h
-  · right
-    simpa only [eq_comm] using Units.exists_iff_ne_zero.mpr h
+  simpa using em _
 #align group_with_zero.eq_zero_or_unit GroupWithZero.eq_zero_or_unit
 
 end Units
@@ -250,7 +252,7 @@ theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
 
 @[simp]
 theorem isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
-  Units.exists_iff_ne_zero
+  (Units.exists_iff_ne_zero (p := (· = a))).trans (by simp)
 #align is_unit_iff_ne_zero isUnit_iff_ne_zero
 
 alias ⟨_, Ne.isUnit⟩ := isUnit_iff_ne_zero
@@ -414,8 +416,8 @@ lemma pow_sub₀ (a : G₀) (ha : a ≠ 0) (h : n ≤ m) : a ^ (m - n) = a ^ m *
 
 lemma pow_sub_of_lt (a : G₀) (h : n < m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
-  · rw [zero_pow (Nat.sub_pos_of_lt h).ne', zero_pow (by omega), zero_mul]
-  · exact pow_sub₀ _ ha h.le
+  · rw [zero_pow (Nat.ne_of_gt <| Nat.sub_pos_of_lt h), zero_pow (by omega), zero_mul]
+  · exact pow_sub₀ _ ha <| Nat.le_of_lt h
 #align pow_sub_of_lt pow_sub_of_lt
 
 lemma inv_pow_sub₀ (ha : a ≠ 0) (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ m)⁻¹ * a ^ n := by
@@ -462,6 +464,17 @@ theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
 theorem Ring.inverse_eq_inv' : (Ring.inverse : G₀ → G₀) = Inv.inv :=
   funext Ring.inverse_eq_inv
 #align ring.inverse_eq_inv' Ring.inverse_eq_inv'
+
+/-- In a `GroupWithZero` `α`, the unit group `αˣ` is equivalent to the subtype of nonzero
+elements. -/
+@[simps] def unitsEquivNeZero [GroupWithZero α] : αˣ ≃ {a : α // a ≠ 0} where
+  toFun a := ⟨a, a.ne_zero⟩
+  invFun a := Units.mk0 _ a.prop
+  left_inv _ := Units.ext rfl
+  right_inv _ := rfl
+#align units_equiv_ne_zero unitsEquivNeZero
+#align units_equiv_ne_zero_apply_coe unitsEquivNeZero_apply_coe
+#align units_equiv_ne_zero_symm_apply unitsEquivNeZero_symm_apply
 
 end GroupWithZero
 
@@ -565,9 +578,6 @@ noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
 #align comm_group_with_zero_of_is_unit_or_eq_zero commGroupWithZeroOfIsUnitOrEqZero
 
 end NoncomputableDefs
-
--- Guard against import creep
-assert_not_exists Multiplicative
 
 -- 2024-03-20
 -- The names `div_mul_cancel`, `mul_div_cancel` and `mul_div_cancel_left` have been reused

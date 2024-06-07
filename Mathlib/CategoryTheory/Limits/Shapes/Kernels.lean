@@ -343,7 +343,7 @@ def kernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ≅ X') (q 
   inv :=
     kernel.map f' f p.inv q.inv
       (by
-        refine' (cancel_mono q.hom).1 _
+        refine (cancel_mono q.hom).1 ?_
         simp [w])
 #align category_theory.limits.kernel.map_iso CategoryTheory.Limits.kernel.mapIso
 
@@ -845,7 +845,7 @@ def cokernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'] (p : X ≅ X')
     (w : f ≫ q.hom = p.hom ≫ f') : cokernel f ≅ cokernel f' where
   hom := cokernel.map f f' p.hom q.hom w
   inv := cokernel.map f' f p.inv q.inv (by
-          refine' (cancel_mono q.hom).1 _
+          refine (cancel_mono q.hom).1 ?_
           simp [w])
 #align category_theory.limits.cokernel.map_iso CategoryTheory.Limits.cokernel.mapIso
 
@@ -981,8 +981,7 @@ variable [HasZeroObject C]
 open ZeroObject
 
 /-- The morphism to the zero object determines a cocone on a cokernel diagram -/
-def cokernel.zeroCokernelCofork : CokernelCofork f
-    where
+def cokernel.zeroCokernelCofork : CokernelCofork f where
   pt := 0
   ι := { app := fun j => 0 }
 #align category_theory.limits.cokernel.zero_cokernel_cofork CategoryTheory.Limits.cokernel.zeroCokernelCofork
@@ -1237,8 +1236,8 @@ attribute [instance 100] HasKernels.has_limit HasCokernels.has_colimit
 instance (priority := 100) hasKernels_of_hasEqualizers [HasEqualizers C] : HasKernels C where
 #align category_theory.limits.has_kernels_of_has_equalizers CategoryTheory.Limits.hasKernels_of_hasEqualizers
 
-instance (priority := 100) hasCokernels_of_hasCoequalizers [HasCoequalizers C] : HasCokernels C
-    where
+instance (priority := 100) hasCokernels_of_hasCoequalizers [HasCoequalizers C] :
+    HasCokernels C where
 #align category_theory.limits.has_cokernels_of_has_coequalizers CategoryTheory.Limits.hasCokernels_of_hasCoequalizers
 
 end CategoryTheory.Limits

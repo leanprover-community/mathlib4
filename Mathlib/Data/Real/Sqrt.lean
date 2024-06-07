@@ -34,7 +34,7 @@ square root
 -/
 
 open Set Filter
-open scoped BigOperators Filter NNReal Topology
+open scoped Filter NNReal Topology
 
 namespace NNReal
 
@@ -441,21 +441,16 @@ theorem nat_sqrt_le_real_sqrt {a : ℕ} : ↑(Nat.sqrt a) ≤ √(a : ℝ) := by
   exact Nat.sqrt_le' a
 #align real.nat_sqrt_le_real_sqrt Real.nat_sqrt_le_real_sqrt
 
-/-- The real square root is at most the natural square root plus one -/
-theorem real_sqrt_le_nat_sqrt_succ {a : ℕ} : √(a : ℝ) ≤ Nat.sqrt a + 1 := by
-  rw [Real.sqrt_le_iff]
-  constructor
-  · norm_cast
-    apply zero_le
-  · norm_cast
-    exact le_of_lt (Nat.lt_succ_sqrt' a)
-#align real.real_sqrt_le_nat_sqrt_succ Real.real_sqrt_le_nat_sqrt_succ
-
 /-- The real square root is less than the natural square root plus one -/
 theorem real_sqrt_lt_nat_sqrt_succ {a : ℕ} : √(a : ℝ) < Nat.sqrt a + 1 := by
   rw [sqrt_lt (by simp)] <;> norm_cast
   · exact Nat.lt_succ_sqrt' a
   · exact Nat.le_add_left 0 (Nat.sqrt a + 1)
+
+/-- The real square root is at most the natural square root plus one -/
+theorem real_sqrt_le_nat_sqrt_succ {a : ℕ} : √(a : ℝ) ≤ Nat.sqrt a + 1 :=
+  real_sqrt_lt_nat_sqrt_succ.le
+#align real.real_sqrt_le_nat_sqrt_succ Real.real_sqrt_le_nat_sqrt_succ
 
 /-- The floor of the real square root is the same as the natural square root. -/
 @[simp]
@@ -466,7 +461,7 @@ theorem floor_real_sqrt_eq_nat_sqrt {a : ℕ} : ⌊√(a : ℝ)⌋ = Nat.sqrt a 
 /-- The natural floor of the real square root is the same as the natural square root. -/
 @[simp]
 theorem nat_floor_real_sqrt_eq_nat_sqrt {a : ℕ} : ⌊√(a : ℝ)⌋₊ = Nat.sqrt a := by
-  rw [Nat.floor_eq_iff (sqrt_nonneg ↑a)]
+  rw [Nat.floor_eq_iff (sqrt_nonneg a)]
   exact ⟨nat_sqrt_le_real_sqrt, real_sqrt_lt_nat_sqrt_succ⟩
 
 /-- Bernoulli's inequality for exponent `1 / 2`, stated using `sqrt`. -/
@@ -535,12 +530,12 @@ open Finset
 
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ≥0`. -/
 lemma sum_mul_le_sqrt_mul_sqrt (s : Finset ι) (f g : ι → ℝ≥0) :
-    ∑ i in s, f i * g i ≤ sqrt (∑ i in s, f i ^ 2) * sqrt (∑ i in s, g i ^ 2) :=
+    ∑ i ∈ s, f i * g i ≤ sqrt (∑ i ∈ s, f i ^ 2) * sqrt (∑ i ∈ s, g i ^ 2) :=
   (le_sqrt_iff_sq_le.2 $ sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq <| sqrt_mul _ _
 
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ≥0`. -/
 lemma sum_sqrt_mul_sqrt_le (s : Finset ι) (f g : ι → ℝ≥0) :
-    ∑ i in s, sqrt (f i) * sqrt (g i) ≤ sqrt (∑ i in s, f i) * sqrt (∑ i in s, g i) := by
+    ∑ i ∈ s, sqrt (f i) * sqrt (g i) ≤ sqrt (∑ i ∈ s, f i) * sqrt (∑ i ∈ s, g i) := by
   simpa [*] using sum_mul_le_sqrt_mul_sqrt _ (fun x ↦ sqrt (f x)) (fun x ↦ sqrt (g x))
 
 end NNReal
@@ -551,13 +546,13 @@ open Finset
 
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ`. -/
 lemma sum_mul_le_sqrt_mul_sqrt (s : Finset ι) (f g : ι → ℝ) :
-    ∑ i in s, f i * g i ≤ √(∑ i in s, f i ^ 2) * √(∑ i in s, g i ^ 2) :=
+    ∑ i ∈ s, f i * g i ≤ √(∑ i ∈ s, f i ^ 2) * √(∑ i ∈ s, g i ^ 2) :=
   (le_sqrt_of_sq_le <| sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq <| sqrt_mul
     (sum_nonneg fun _ _ ↦ by positivity) _
 
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ`. -/
 lemma sum_sqrt_mul_sqrt_le (s : Finset ι) (hf : ∀ i, 0 ≤ f i) (hg : ∀ i, 0 ≤ g i) :
-    ∑ i in s, √(f i) * √(g i) ≤ √(∑ i in s, f i) * √(∑ i in s, g i) := by
+    ∑ i ∈ s, √(f i) * √(g i) ≤ √(∑ i ∈ s, f i) * √(∑ i ∈ s, g i) := by
   simpa [*] using sum_mul_le_sqrt_mul_sqrt _ (fun x ↦ √(f x)) (fun x ↦ √(g x))
 
 end Real

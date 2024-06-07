@@ -53,8 +53,6 @@ These have not yet been implemented.
 
 universe u u' v w
 
-open BigOperators
-
 /-- `Matrix m n R` is the type of matrices with entries in `R`, whose rows are indexed by `m`
 and whose columns are indexed by `n`. -/
 def Matrix (m : Type u) (n : Type u') (α : Type v) : Type max u u' v :=
@@ -567,6 +565,14 @@ theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _
   simp only [one_apply, Pi.single_apply, eq_comm]
 #align matrix.one_eq_pi_single Matrix.one_eq_pi_single
 
+lemma zero_le_one_elem [Preorder α] [ZeroLEOneClass α] (i j : n) :
+    0 ≤ (1 : Matrix n n α) i j := by
+  by_cases hi : i = j <;> simp [hi]
+
+lemma zero_le_one_row [Preorder α] [ZeroLEOneClass α] (i : n) :
+    0 ≤ (1 : Matrix n n α) i :=
+  zero_le_one_elem i
+
 end One
 
 instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (Matrix n n α) where
@@ -723,7 +729,7 @@ theorem diag_multiset_sum [AddCommMonoid α] (s : Multiset (Matrix n n α)) :
 
 @[simp]
 theorem diag_sum {ι} [AddCommMonoid α] (s : Finset ι) (f : ι → Matrix n n α) :
-    diag (∑ i in s, f i) = ∑ i in s, diag (f i) :=
+    diag (∑ i ∈ s, f i) = ∑ i ∈ s, diag (f i) :=
   map_sum (diagAddMonoidHom n α) f s
 #align matrix.diag_sum Matrix.diag_sum
 
@@ -894,6 +900,9 @@ theorem neg_dotProduct : -v ⬝ᵥ w = -(v ⬝ᵥ w) := by simp [dotProduct]
 theorem dotProduct_neg : v ⬝ᵥ -w = -(v ⬝ᵥ w) := by simp [dotProduct]
 #align matrix.dot_product_neg Matrix.dotProduct_neg
 
+lemma neg_dotProduct_neg : -v ⬝ᵥ -w = v ⬝ᵥ w := by
+  rw [neg_dotProduct, dotProduct_neg, neg_neg]
+
 @[simp]
 theorem sub_dotProduct : (u - v) ⬝ᵥ w = u ⬝ᵥ w - v ⬝ᵥ w := by simp [sub_eq_add_neg]
 #align matrix.sub_dot_product Matrix.sub_dotProduct
@@ -909,13 +918,13 @@ section DistribMulAction
 variable [Monoid R] [Mul α] [AddCommMonoid α] [DistribMulAction R α]
 
 @[simp]
-theorem smul_dotProduct [IsScalarTower R α α] (x : R) (v w : m → α) : x • v ⬝ᵥ w = x • (v ⬝ᵥ w) :=
-  by simp [dotProduct, Finset.smul_sum, smul_mul_assoc]
+theorem smul_dotProduct [IsScalarTower R α α] (x : R) (v w : m → α) :
+    x • v ⬝ᵥ w = x • (v ⬝ᵥ w) := by simp [dotProduct, Finset.smul_sum, smul_mul_assoc]
 #align matrix.smul_dot_product Matrix.smul_dotProduct
 
 @[simp]
-theorem dotProduct_smul [SMulCommClass R α α] (x : R) (v w : m → α) : v ⬝ᵥ x • w = x • (v ⬝ᵥ w) :=
-  by simp [dotProduct, Finset.smul_sum, mul_smul_comm]
+theorem dotProduct_smul [SMulCommClass R α α] (x : R) (v w : m → α) :
+    v ⬝ᵥ x • w = x • (v ⬝ᵥ w) := by simp [dotProduct, Finset.smul_sum, mul_smul_comm]
 #align matrix.dot_product_smul Matrix.dotProduct_smul
 
 end DistribMulAction
@@ -965,7 +974,7 @@ theorem mul_apply' [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {
 #align matrix.mul_apply' Matrix.mul_apply'
 
 theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β) (g : β → Matrix m n α) :
-    (∑ c in s, g c) i j = ∑ c in s, g c i j :=
+    (∑ c ∈ s, g c) i j = ∑ c ∈ s, g c i j :=
   (congr_fun (s.sum_apply i g) j).trans (s.sum_apply j _)
 #align matrix.sum_apply Matrix.sum_apply
 
@@ -1088,12 +1097,12 @@ def addMonoidHomMulRight [Fintype m] (M : Matrix m n α) : Matrix l m α →+ Ma
 #align matrix.add_monoid_hom_mul_right Matrix.addMonoidHomMulRight
 
 protected theorem sum_mul [Fintype m] (s : Finset β) (f : β → Matrix l m α) (M : Matrix m n α) :
-    (∑ a in s, f a) * M = ∑ a in s, f a * M :=
+    (∑ a ∈ s, f a) * M = ∑ a ∈ s, f a * M :=
   map_sum (addMonoidHomMulRight M) f s
 #align matrix.sum_mul Matrix.sum_mul
 
 protected theorem mul_sum [Fintype m] (s : Finset β) (f : β → Matrix m n α) (M : Matrix l m α) :
-    (M * ∑ a in s, f a) = ∑ a in s, M * f a :=
+    (M * ∑ a ∈ s, f a) = ∑ a ∈ s, M * f a :=
   map_sum (addMonoidHomMulLeft M) f s
 #align matrix.mul_sum Matrix.mul_sum
 
@@ -1936,6 +1945,9 @@ theorem vecMul_neg [Fintype m] (v : m → α) (A : Matrix m n α) : v ᵥ* (-A) 
   apply dotProduct_neg
 #align matrix.vec_mul_neg Matrix.vecMul_neg
 
+lemma neg_vecMul_neg [Fintype m] (v : m → α) (A : Matrix m n α) : (-v) ᵥ* (-A) = v ᵥ* A := by
+  rw [vecMul_neg, neg_vecMul, neg_neg]
+
 theorem neg_mulVec [Fintype n] (v : n → α) (A : Matrix m n α) : (-A) *ᵥ v = - (A *ᵥ v) := by
   ext
   apply neg_dotProduct
@@ -1945,6 +1957,9 @@ theorem mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : A *ᵥ (-v) 
   ext
   apply dotProduct_neg
 #align matrix.mul_vec_neg Matrix.mulVec_neg
+
+lemma neg_mulVec_neg [Fintype n] (v : n → α) (A : Matrix m n α) : (-A) *ᵥ (-v) = A *ᵥ v := by
+  rw [mulVec_neg, neg_mulVec, neg_neg]
 
 theorem mulVec_sub [Fintype n] (A : Matrix m n α) (x y : n → α) :
     A *ᵥ (x - y) = A *ᵥ x - A *ᵥ y := by
@@ -2112,7 +2127,7 @@ variable {m n α}
 
 theorem transpose_list_sum [AddMonoid α] (l : List (Matrix m n α)) :
     l.sumᵀ = (l.map transpose).sum :=
-  (transposeAddEquiv m n α).toAddMonoidHom.map_list_sum l
+  map_list_sum (transposeAddEquiv m n α) l
 #align matrix.transpose_list_sum Matrix.transpose_list_sum
 
 theorem transpose_multiset_sum [AddCommMonoid α] (s : Multiset (Matrix m n α)) :
@@ -2121,7 +2136,7 @@ theorem transpose_multiset_sum [AddCommMonoid α] (s : Multiset (Matrix m n α))
 #align matrix.transpose_multiset_sum Matrix.transpose_multiset_sum
 
 theorem transpose_sum [AddCommMonoid α] {ι : Type*} (s : Finset ι) (M : ι → Matrix m n α) :
-    (∑ i in s, M i)ᵀ = ∑ i in s, (M i)ᵀ :=
+    (∑ i ∈ s, M i)ᵀ = ∑ i ∈ s, (M i)ᵀ :=
   map_sum (transposeAddEquiv m n α) _ s
 #align matrix.transpose_sum Matrix.transpose_sum
 
@@ -2219,8 +2234,8 @@ theorem conjTranspose_zero [AddMonoid α] [StarAddMonoid α] : (0 : Matrix m n �
 
 @[simp]
 theorem conjTranspose_eq_zero [AddMonoid α] [StarAddMonoid α] {M : Matrix m n α} :
-    Mᴴ = 0 ↔ M = 0 :=
-  by rw [← conjTranspose_inj (A := M), conjTranspose_zero]
+    Mᴴ = 0 ↔ M = 0 := by
+  rw [← conjTranspose_inj (A := M), conjTranspose_zero]
 
 @[simp]
 theorem conjTranspose_one [DecidableEq n] [Semiring α] [StarRing α] : (1 : Matrix n n α)ᴴ = 1 := by
@@ -2385,7 +2400,7 @@ variable {m n α}
 
 theorem conjTranspose_list_sum [AddMonoid α] [StarAddMonoid α] (l : List (Matrix m n α)) :
     l.sumᴴ = (l.map conjTranspose).sum :=
-  (conjTransposeAddEquiv m n α).toAddMonoidHom.map_list_sum l
+  map_list_sum (conjTransposeAddEquiv m n α) l
 #align matrix.conj_transpose_list_sum Matrix.conjTranspose_list_sum
 
 theorem conjTranspose_multiset_sum [AddCommMonoid α] [StarAddMonoid α]
@@ -2394,7 +2409,7 @@ theorem conjTranspose_multiset_sum [AddCommMonoid α] [StarAddMonoid α]
 #align matrix.conj_transpose_multiset_sum Matrix.conjTranspose_multiset_sum
 
 theorem conjTranspose_sum [AddCommMonoid α] [StarAddMonoid α] {ι : Type*} (s : Finset ι)
-    (M : ι → Matrix m n α) : (∑ i in s, M i)ᴴ = ∑ i in s, (M i)ᴴ :=
+    (M : ι → Matrix m n α) : (∑ i ∈ s, M i)ᴴ = ∑ i ∈ s, (M i)ᴴ :=
   map_sum (conjTransposeAddEquiv m n α) _ s
 #align matrix.conj_transpose_sum Matrix.conjTranspose_sum
 

@@ -52,7 +52,7 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with 
 This file defines `ℝ≥0` as a localized notation for `NNReal`.
 -/
 
-open BigOperators Function
+open Function
 
 -- to ensure these instances are computable
 /-- Nonnegative real numbers. -/
@@ -326,25 +326,25 @@ theorem coe_multiset_prod (s : Multiset ℝ≥0) : ((s.prod : ℝ≥0) : ℝ) = 
 #align nnreal.coe_multiset_prod NNReal.coe_multiset_prod
 
 @[norm_cast]
-theorem coe_sum {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a in s, f a) = ∑ a in s, (f a : ℝ) :=
+theorem coe_sum {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : ℝ) :=
   map_sum toRealHom _ _
 #align nnreal.coe_sum NNReal.coe_sum
 
 theorem _root_.Real.toNNReal_sum_of_nonneg {α} {s : Finset α} {f : α → ℝ}
     (hf : ∀ a, a ∈ s → 0 ≤ f a) :
-    Real.toNNReal (∑ a in s, f a) = ∑ a in s, Real.toNNReal (f a) := by
+    Real.toNNReal (∑ a ∈ s, f a) = ∑ a ∈ s, Real.toNNReal (f a) := by
   rw [← coe_inj, NNReal.coe_sum, Real.coe_toNNReal _ (Finset.sum_nonneg hf)]
   exact Finset.sum_congr rfl fun x hxs => by rw [Real.coe_toNNReal _ (hf x hxs)]
 #align real.to_nnreal_sum_of_nonneg Real.toNNReal_sum_of_nonneg
 
 @[norm_cast]
-theorem coe_prod {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a in s, f a) = ∏ a in s, (f a : ℝ) :=
+theorem coe_prod {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : ℝ) :=
   map_prod toRealHom _ _
 #align nnreal.coe_prod NNReal.coe_prod
 
 theorem _root_.Real.toNNReal_prod_of_nonneg {α} {s : Finset α} {f : α → ℝ}
     (hf : ∀ a, a ∈ s → 0 ≤ f a) :
-    Real.toNNReal (∏ a in s, f a) = ∏ a in s, Real.toNNReal (f a) := by
+    Real.toNNReal (∏ a ∈ s, f a) = ∏ a ∈ s, Real.toNNReal (f a) := by
   rw [← coe_inj, NNReal.coe_prod, Real.coe_toNNReal _ (Finset.prod_nonneg hf)]
   exact Finset.prod_congr rfl fun x hxs => by rw [Real.coe_toNNReal _ (hf x hxs)]
 #align real.to_nnreal_prod_of_nonneg Real.toNNReal_prod_of_nonneg
@@ -357,6 +357,9 @@ theorem coe_nsmul (r : ℝ≥0) (n : ℕ) : ↑(n • r) = n • (r : ℝ) := rf
 protected theorem coe_natCast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
   map_natCast toRealHom n
 #align nnreal.coe_nat_cast NNReal.coe_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias coe_nat_cast := NNReal.coe_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
@@ -674,6 +677,9 @@ lemma toNNReal_eq_one {r : ℝ} : r.toNNReal = 1 ↔ r = 1 := toNNReal_eq_iff_eq
 lemma toNNReal_eq_natCast {r : ℝ} {n : ℕ} (hn : n ≠ 0) : r.toNNReal = n ↔ r = n :=
   mod_cast toNNReal_eq_iff_eq_coe <| Nat.cast_ne_zero.2 hn
 
+@[deprecated (since := "2024-04-17")]
+alias toNNReal_eq_nat_cast := toNNReal_eq_natCast
+
 @[simp]
 lemma toNNReal_eq_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
     r.toNNReal = no_index (OfNat.ofNat n) ↔ r = OfNat.ofNat n :=
@@ -696,9 +702,15 @@ lemma one_lt_toNNReal {r : ℝ} : 1 < r.toNNReal ↔ 1 < r := by
 lemma toNNReal_le_natCast {r : ℝ} {n : ℕ} : r.toNNReal ≤ n ↔ r ≤ n := by
   simpa using toNNReal_le_toNNReal_iff n.cast_nonneg
 
+@[deprecated (since := "2024-04-17")]
+alias toNNReal_le_nat_cast := toNNReal_le_natCast
+
 @[simp]
 lemma natCast_lt_toNNReal {r : ℝ} {n : ℕ} : n < r.toNNReal ↔ n < r := by
   simpa only [not_le] using toNNReal_le_natCast.not
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_lt_toNNReal := natCast_lt_toNNReal
 
 @[simp]
 lemma toNNReal_le_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
@@ -750,13 +762,25 @@ lemma toNNReal_lt_one {r : ℝ} : r.toNNReal < 1 ↔ r < 1 := by simp only [← 
 lemma natCastle_toNNReal' {n : ℕ} {r : ℝ} : ↑n ≤ r.toNNReal ↔ n ≤ r ∨ n = 0 := by
   simpa [n.cast_nonneg.le_iff_eq] using toNNReal_le_toNNReal_iff' (r := n)
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_le_toNNReal' := natCastle_toNNReal'
+
 @[simp]
 lemma toNNReal_lt_natCast' {n : ℕ} {r : ℝ} : r.toNNReal < n ↔ r < n ∧ n ≠ 0 := by
   simpa [pos_iff_ne_zero] using toNNReal_lt_toNNReal_iff' (r := r) (p := n)
 
+@[deprecated (since := "2024-04-17")]
+alias toNNReal_lt_nat_cast' := toNNReal_lt_natCast'
+
 lemma natCast_le_toNNReal {n : ℕ} {r : ℝ} (hn : n ≠ 0) : ↑n ≤ r.toNNReal ↔ n ≤ r := by simp [hn]
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_le_toNNReal := natCast_le_toNNReal
+
 lemma toNNReal_lt_natCast {r : ℝ} {n : ℕ} (hn : n ≠ 0) : r.toNNReal < n ↔ r < n := by simp [hn]
+
+@[deprecated (since := "2024-04-17")]
+alias toNNReal_lt_nat_cast := toNNReal_lt_natCast
 
 @[simp]
 lemma toNNReal_lt_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
@@ -1142,7 +1166,7 @@ theorem image_coe_nnreal_real (h : t.OrdConnected) : ((↑) '' t : Set ℝ).OrdC
 
 -- Porting note (#11215): TODO: does it generalize to a `GaloisInsertion`?
 theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConnected := by
-  refine' ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => _⟩
+  refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
   rcases le_total y 0 with hy₀ | hy₀
   · rw [mem_Icc, Real.toNNReal_of_nonpos hy₀, nonpos_iff_eq_zero] at hz
     exact ⟨y, hy, (toNNReal_of_nonpos hy₀).trans hz.2.symm⟩
@@ -1197,6 +1221,41 @@ theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := 
 #align real.cast_nat_abs_eq_nnabs_cast Real.cast_natAbs_eq_nnabs_cast
 
 end Real
+
+section StrictMono
+
+open NNReal
+
+variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+
+/-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict monomorphism, then for any positive
+  `r : ℝ≥0`, there exists `d : Γ₀ˣ` with `f d < r`. -/
+theorem NNReal.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f)
+    {r : ℝ≥0} (hr : 0 < r) : ∃ d : Γ₀ˣ, f d < r := by
+  obtain ⟨g, hg1⟩ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mp h
+  set u : Γ₀ˣ := if g < 1 then g else g⁻¹ with hu
+  have hfu : f u < 1 := by
+    rw [hu]
+    split_ifs with hu1
+    · rw [← _root_.map_one f]; exact hf hu1
+    · have hfg0 : f g ≠ 0 :=
+        fun h0 ↦ (Units.ne_zero g) ((map_eq_zero f).mp h0)
+      have hg1' : 1 < g := lt_of_le_of_ne (not_lt.mp hu1) hg1.symm
+      rw [Units.val_inv_eq_inv_val, map_inv₀, inv_lt_one_iff hfg0, ← _root_.map_one f]
+      exact hf hg1'
+  obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hr hfu
+  use u ^ n
+  rwa [Units.val_pow_eq_pow_val, _root_.map_pow]
+
+/-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict monomorphism, then for any positive
+  real `r`, there exists `d : Γ₀ˣ` with `f d < r`. -/
+theorem Real.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f)
+    {r : ℝ} (hr : 0 < r) : ∃ d : Γ₀ˣ, (f d : ℝ) < r := by
+  set s : NNReal := ⟨r, le_of_lt hr⟩
+  have hs : 0 < s := hr
+  exact NNReal.exists_lt_of_strictMono hf hs
+
+end StrictMono
 
 namespace Mathlib.Meta.Positivity
 
