@@ -173,7 +173,7 @@ theorem unitLattice_inter_ball_finite (r : ℝ) :
       · exact pos_iff.mpr (coe_ne_zero x)
       · rw [mem_closedBall_zero_iff] at hx
         exact (le_abs_self _).trans (log_le_of_logEmbedding_le hr hx w)
-    refine Set.Finite.of_finite_image ?_ ((coe_injective K).injOn _)
+    refine Set.Finite.of_finite_image ?_ (coe_injective K).injOn
     refine (Embeddings.finite_of_norm_le K ℂ
         (Real.exp ((Fintype.card (InfinitePlace K)) * r))).subset ?_
     rintro _ ⟨x, ⟨⟨h_int, h_le⟩, rfl⟩⟩
@@ -355,7 +355,7 @@ instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
   refine discreteTopology_of_isOpen_singleton_zero ?_
   refine isOpen_singleton_of_finite_mem_nhds 0 (s := Metric.closedBall 0 1) ?_ ?_
   · exact Metric.closedBall_mem_nhds _ (by norm_num)
-  · refine Set.Finite.of_finite_image ?_ (Set.injOn_of_injective Subtype.val_injective _)
+  · refine Set.Finite.of_finite_image ?_ (Set.injOn_of_injective Subtype.val_injective)
     convert unitLattice_inter_ball_finite K 1
     ext x
     refine ⟨?_, fun ⟨hx1, hx2⟩ => ⟨⟨x, hx1⟩, hx2, rfl⟩⟩
@@ -397,6 +397,18 @@ theorem logEmbeddingQuot_injective :
   simp_rw [MonoidHom.toAdditive'_apply_apply, MonoidHom.coe_comp, MulEquiv.coe_toMonoidHom,
     Function.comp_apply, EmbeddingLike.apply_eq_iff_eq] at h
   exact (EmbeddingLike.apply_eq_iff_eq _).mp <| (QuotientGroup.kerLift_injective _).eq_iff.mp h
+
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/4119
+the `Module ℤ (Additive ((𝓞 K)ˣ ⧸ NumberField.Units.torsion K))` instance required below isn't found
+unless we use `set_option maxSynthPendingDepth 2`, or add
+explicit instances:
+```
+local instance : CommGroup (𝓞 K)ˣ := inferInstance
+```
+-/
+set_option maxSynthPendingDepth 2 -- Note this is active for the remainder of the file.
 
 /-- The linear equivalence between `(𝓞 K)ˣ ⧸ (torsion K)` as an additive `ℤ`-module and
 `unitLattice` . -/
