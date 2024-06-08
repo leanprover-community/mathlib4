@@ -33,7 +33,7 @@ variable {α β : Type*} {l l₁ l₂ : List α} {a : α}
 
 #align list.perm List.Perm
 
-instance {α : Type*} : Trans (@List.Perm α) (@List.Perm α) List.Perm where
+instance : Trans (@List.Perm α) (@List.Perm α) List.Perm where
   trans := @List.Perm.trans α
 
 open Perm (swap)
@@ -575,7 +575,7 @@ theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
 
 #align list.perm.erasep List.Perm.eraseP
 
-theorem Perm.take_inter {α : Type*} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys)
+theorem Perm.take_inter [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys)
     (h' : ys.Nodup) : xs.take n ~ ys.inter (xs.take n) := by
   simp only [List.inter]
   exact Perm.trans (show xs.take n ~ xs.filter (xs.take n).elem by
@@ -583,7 +583,7 @@ theorem Perm.take_inter {α : Type*} [DecidableEq α] {xs ys : List α} (n : ℕ
     (Perm.filter _ h)
 #align list.perm.take_inter List.Perm.take_inter
 
-theorem Perm.drop_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup) :
+theorem Perm.drop_inter [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup) :
     xs.drop n ~ ys.inter (xs.drop n) := by
   by_cases h'' : n ≤ xs.length
   · let n' := xs.length - n
@@ -603,7 +603,7 @@ theorem Perm.drop_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : x
     simp [this, List.inter]
 #align list.perm.drop_inter List.Perm.drop_inter
 
-theorem Perm.dropSlice_inter {α} [DecidableEq α] {xs ys : List α} (n m : ℕ) (h : xs ~ ys)
+theorem Perm.dropSlice_inter [DecidableEq α] {xs ys : List α} (n m : ℕ) (h : xs ~ ys)
     (h' : ys.Nodup) : List.dropSlice n m xs ~ ys ∩ List.dropSlice n m xs := by
   simp only [dropSlice_eq]
   have : n ≤ n + m := Nat.le_add_right _ _
@@ -684,7 +684,7 @@ theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
 #align list.mem_permutations List.mem_permutations
 
 -- Porting note: temporary theorem to solve diamond issue
-private theorem DecEq_eq {α : Type*} [DecidableEq α] :
+private theorem DecEq_eq [DecidableEq α] :
     List.instBEq = @instBEqOfDecidableEq (List α) instDecidableEqList :=
   congr_arg BEq.mk <| by
     funext l₁ l₂
@@ -836,7 +836,7 @@ theorem nodup_permutations'Aux_of_not_mem (s : List α) (x : α) (hx : x ∉ s) 
 
 set_option linter.deprecated false in
 theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'Aux x s) ↔ x ∉ s := by
-  refine' ⟨fun h => _, nodup_permutations'Aux_of_not_mem _ _⟩
+  refine ⟨fun h => ?_, nodup_permutations'Aux_of_not_mem _ _⟩
   intro H
   obtain ⟨k, hk, hk'⟩ := nthLe_of_mem H
   rw [nodup_iff_nthLe_inj] at h
@@ -846,7 +846,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
   rw [nthLe_permutations'Aux, nthLe_permutations'Aux]
   have hl : length (insertNth k x s) = length (insertNth (k + 1) x s) := by
     rw [length_insertNth _ _ hk.le, length_insertNth _ _ (Nat.succ_le_of_lt hk)]
-  refine' ext_nthLe hl fun n hn hn' => _
+  refine ext_nthLe hl fun n hn hn' => ?_
   rcases lt_trichotomy n k with (H | rfl | H)
   · rw [nthLe_insertNth_of_lt _ _ _ _ H (H.trans hk),
       nthLe_insertNth_of_lt _ _ _ _ (H.trans (Nat.lt_succ_self _))]
@@ -877,7 +877,7 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
       rw [mem_permutations'] at hy
       rw [nodup_permutations'Aux_iff, hy.mem_iff]
       exact fun H => h x H rfl
-    · refine' IH.pairwise_of_forall_ne fun as ha bs hb H => _
+    · refine IH.pairwise_of_forall_ne fun as ha bs hb H => ?_
       rw [disjoint_iff_ne]
       rintro a ha' b hb' rfl
       obtain ⟨⟨n, hn⟩, hn'⟩ := get_of_mem ha'
@@ -887,12 +887,12 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
       simp only [Nat.lt_succ_iff, length_permutations'Aux] at hn hm
       rw [← nthLe, nthLe_permutations'Aux] at hn' hm'
       have hx :
-        nthLe (insertNth n x as) m (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff, hl]) = x :=
-        by simp [hn', ← hm', hm]
+        nthLe (insertNth n x as) m (by rwa [length_insertNth _ _ hn, Nat.lt_succ_iff, hl]) = x := by
+        simp [hn', ← hm', hm]
       have hx' :
         nthLe (insertNth m x bs) n (by rwa [length_insertNth _ _ hm, Nat.lt_succ_iff, ← hl]) =
-          x :=
-        by simp [hm', ← hn', hn]
+          x := by
+        simp [hm', ← hn', hn]
       rcases lt_trichotomy n m with (ht | ht | ht)
       · suffices x ∈ bs by exact h x (hb.subset this) rfl
         rw [← hx', nthLe_insertNth_of_lt _ _ _ _ ht (ht.trans_le hm)]

@@ -371,3 +371,22 @@ theorem cobounded_eq_bot : cobounded α = ⊥ :=
 #align bornology.cobounded_eq_bot Bornology.cobounded_eq_bot
 
 end Bornology
+
+namespace OrderDual
+variable [Bornology α]
+
+instance instBornology : Bornology αᵒᵈ := ‹Bornology α›
+
+@[simp] lemma isCobounded_preimage_ofDual {s : Set α} :
+    IsCobounded (ofDual ⁻¹' s) ↔ IsCobounded s := Iff.rfl
+
+@[simp] lemma isCobounded_preimage_toDual {s : Set αᵒᵈ} :
+    IsCobounded (toDual ⁻¹' s) ↔ IsCobounded s := Iff.rfl
+
+@[simp] lemma isBounded_preimage_ofDual {s : Set α} :
+    IsBounded (ofDual ⁻¹' s) ↔ IsBounded s := Iff.rfl
+
+@[simp] lemma isBounded_preimage_toDual {s : Set αᵒᵈ} :
+    IsBounded (toDual ⁻¹' s) ↔ IsBounded s := Iff.rfl
+
+end OrderDual

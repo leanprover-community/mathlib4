@@ -399,8 +399,8 @@ def restr (h : e.IsImage s t) : PartialEquiv α β where
   target := e.target ∩ t
   map_source' := h.mapsTo
   map_target' := h.symm_mapsTo
-  left_inv' := e.leftInvOn.mono (inter_subset_left _ _)
-  right_inv' := e.rightInvOn.mono (inter_subset_left _ _)
+  left_inv' := e.leftInvOn.mono inter_subset_left
+  right_inv' := e.rightInvOn.mono inter_subset_left
 #align local_equiv.is_image.restr PartialEquiv.IsImage.restr
 #align local_equiv.is_image.restr_apply PartialEquiv.IsImage.restr_apply
 #align local_equiv.is_image.restr_source PartialEquiv.IsImage.restr_source
@@ -823,7 +823,7 @@ theorem EqOnSource.target_eq {e e' : PartialEquiv α β} (h : e ≈ e') : e.targ
 
 /-- If two partial equivs are equivalent, so are their inverses. -/
 theorem EqOnSource.symm' {e e' : PartialEquiv α β} (h : e ≈ e') : e.symm ≈ e'.symm := by
-  refine' ⟨target_eq h, eqOn_of_leftInvOn_of_rightInvOn e.leftInvOn _ _⟩ <;>
+  refine ⟨target_eq h, eqOn_of_leftInvOn_of_rightInvOn e.leftInvOn ?_ ?_⟩ <;>
     simp only [symm_source, target_eq h, source_eq h, e'.symm_mapsTo]
   exact e'.rightInvOn.congr_right e'.symm_mapsTo (source_eq h ▸ h.eqOn.symm)
 #align local_equiv.eq_on_source.symm' PartialEquiv.EqOnSource.symm'
@@ -841,7 +841,7 @@ theorem EqOnSource.trans' {e e' : PartialEquiv α β} {f f' : PartialEquiv β γ
     (hf : f ≈ f') : e.trans f ≈ e'.trans f' := by
   constructor
   · rw [trans_source'', trans_source'', ← target_eq he, ← hf.1]
-    exact (he.symm'.eqOn.mono <| inter_subset_left _ _).image_eq
+    exact (he.symm'.eqOn.mono inter_subset_left).image_eq
   · intro x hx
     rw [trans_source] at hx
     simp [Function.comp_apply, PartialEquiv.coe_trans, (he.2 hx.1).symm, hf.2 hx.2]
@@ -866,7 +866,7 @@ theorem EqOnSource.source_inter_preimage_eq {e e' : PartialEquiv α β} (he : e 
 the restriction of the identity to the source. -/
 theorem self_trans_symm : e.trans e.symm ≈ ofSet e.source := by
   have A : (e.trans e.symm).source = e.source := by mfld_set_tac
-  refine' ⟨by rw [A, ofSet_source], fun x hx => _⟩
+  refine ⟨by rw [A, ofSet_source], fun x hx => ?_⟩
   rw [A] at hx
   simp only [hx, mfld_simps]
 #align local_equiv.self_trans_symm PartialEquiv.self_trans_symm
