@@ -32,7 +32,7 @@ instance : ProperSpace ℕ+ where
   isCompact_closedBall n r := by
     change IsCompact (((↑) : ℕ+ → ℕ) ⁻¹' closedBall (↑n : ℕ) r)
     rw [Nat.closedBall_eq_Icc]
-    exact ((Set.finite_Icc _ _).preimage (PNat.coe_injective.injOn _)).isCompact
+    exact ((Set.finite_Icc _ _).preimage PNat.coe_injective.injOn).isCompact
 
 instance : NoncompactSpace ℕ+ :=
   noncompactSpace_of_neBot <| by simp only [Filter.cocompact_eq_cofinite, Filter.cofinite_neBot]
