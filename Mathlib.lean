@@ -2895,6 +2895,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.MeasureTheory.Constructions.Cylinders
+import Mathlib.MeasureTheory.Constructions.EventuallyMeasurable
 import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Constructions.Polish
