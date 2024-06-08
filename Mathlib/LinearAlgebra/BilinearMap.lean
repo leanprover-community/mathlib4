@@ -329,7 +329,7 @@ def compl₂ {R₅ : Type*} [CommSemiring R₅] [Module R₅ P] [SMulCommClass R
     (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₅] Q →ₛₗ[σ₄₃] P where
   toFun a := (lcompₛₗ P σ₂₃ g) (h a)
   map_add' _ _ := by
-    simp  [map_add]
+    simp [map_add]
   map_smul' _ _ := by
     simp only [LinearMap.map_smulₛₗ, lcompₛₗ]
     rfl
