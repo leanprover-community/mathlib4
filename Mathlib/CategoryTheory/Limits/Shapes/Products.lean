@@ -102,6 +102,22 @@ abbrev HasCoproduct (f : β → C) :=
   HasColimit (Discrete.functor f)
 #align category_theory.limits.has_coproduct CategoryTheory.Limits.HasCoproduct
 
+lemma hasCoproduct_of_equiv_of_iso (f : α → C) (g : β → C)
+    [HasCoproduct f] (e : β ≃ α) (iso : ∀ j, g j ≅ f (e j)) : HasCoproduct g := by
+  have : HasColimit ((Discrete.equivalence e).functor ⋙ Discrete.functor f) :=
+    hasColimit_equivalence_comp _
+  have α : Discrete.functor g ≅ (Discrete.equivalence e).functor ⋙ Discrete.functor f :=
+    Discrete.natIso (fun ⟨j⟩ => iso j)
+  exact hasColimitOfIso α
+
+lemma hasProduct_of_equiv_of_iso (f : α → C) (g : β → C)
+    [HasProduct f] (e : β ≃ α) (iso : ∀ j, g j ≅ f (e j)) : HasProduct g := by
+  have : HasLimit ((Discrete.equivalence e).functor ⋙ Discrete.functor f) :=
+    hasLimitEquivalenceComp _
+  have α : Discrete.functor g ≅ (Discrete.equivalence e).functor ⋙ Discrete.functor f :=
+    Discrete.natIso (fun ⟨j⟩ => iso j)
+  exact hasLimitOfIso α.symm
+
 /-- Make a fan `f` into a limit fan by providing `lift`, `fac`, and `uniq` --
   just a convenience lemma to avoid having to go through `Discrete` -/
 @[simps]
