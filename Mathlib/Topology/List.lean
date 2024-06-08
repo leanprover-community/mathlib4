@@ -113,6 +113,9 @@ theorem tendsto_nhds {β : Type*} {f : List α → β} {r : List α → Filter �
     rw [tendsto_cons_iff]; exact h_cons l a (@tendsto_nhds _ _ _ h_nil h_cons l)
 #align list.tendsto_nhds List.tendsto_nhds
 
+instance [DiscreteTopology α] : DiscreteTopology (List α) := by
+  rw [discreteTopology_iff_nhds]; intro l; induction l <;> simp [*, nhds_cons]
+
 theorem continuousAt_length : ∀ l : List α, ContinuousAt List.length l := by
   simp only [ContinuousAt, nhds_discrete]
   refine tendsto_nhds ?_ ?_
