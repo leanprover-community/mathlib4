@@ -614,6 +614,8 @@ class AddMonoid (M : Type u) extends AddZeroClass M, AddSemigroup M where
 #align add_monoid.nsmul_zero' AddMonoid.nsmul_zero
 #align add_monoid.nsmul_succ' AddMonoid.nsmul_succ
 
+attribute [instance 150] AddMonoid.toAddZeroClass
+
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
 class Monoid (M : Type u) extends MulOneClass M, Semigroup M where
