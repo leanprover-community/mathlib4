@@ -3,11 +3,11 @@ Copyright (c) 2023 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Etienne Marion
 -/
-
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.StoneCech
 import Mathlib.Topology.Filter
 import Mathlib.Order.Filter.Cofinite
+import Mathlib.Topology.Defs.Sequences
 
 /-!
 # Proper maps between topological spaces
@@ -32,8 +32,9 @@ Hausdorff space as continuous maps such that preimages of compact sets are compa
 * `IsProperMap.pi_map`: any product of proper maps is proper.
 * `isProperMap_iff_isClosedMap_and_compact_fibers`: a map is proper if and only if it is
   continuous, closed, and has compact fibers
-* `isProperMap_iff_isCompact_preimage`: a map to a locally compact Hausdorff space is proper if
-  and only if it is continuous and preimages of compact sets are compact.
+* `isProperMap_iff_isCompact_preimage`: a map to a Hausdorff compactly generated space is proper if
+  and only if it is continuous and preimages of compact sets are compact. This is in particular
+  true if the space is locally compact or sequential.
 * `isProperMap_iff_universally_closed`: a map is proper if and only if it is continuous and
   universally closed, in the sense of condition 2. above.
 
@@ -45,6 +46,14 @@ convention because it is unclear whether it would give the right notion in all c
 particular for the theory of proper group actions. That means that our terminology does **NOT**
 align with that of [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M),
 instead our definition of `IsProperMap` coincides with what they call "Bourbaki-proper".
+
+Concerning `isProperMap_iff_isCompact_preimage`, this result should be the only one needed to link
+the definition of a proper map and the criteria "preimage of compact sets are compact", however
+the notion of compactly generated space is not yet in Mathlib so it is used as an intermediate
+result to prove
+`WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage` and
+`SequentialSpace.isProperMap_iff_isCompact_preimage`. In the future those should be inferred
+by typeclass inference.
 
 Regarding the proofs, we don't really follow Bourbaki and go for more filter-heavy proofs,
 as usual. In particular, their arguments rely heavily on restriction of closed maps (see
@@ -78,7 +87,7 @@ universe u v
 /-- A map `f : X → Y` between two topological spaces is said to be **proper** if it is continuous
 and, for all `ℱ : Filter X`, any cluster point of `map f ℱ` is the image by `f` of a cluster point
 of `ℱ`. -/
-@[mk_iff isProperMap_iff_clusterPt, fun_prop]
+@[mk_iff isProperMap_iff_clusterPt]
 structure IsProperMap (f : X → Y) extends Continuous f : Prop where
   /-- By definition, if `f` is a proper map and `ℱ` is any filter on `X`, then any cluster point of
   `map f ℱ` is the image by `f` of some cluster point of `ℱ`. -/
@@ -90,7 +99,7 @@ for closed maps. -/
 add_decl_doc isProperMap_iff_clusterPt
 
 /-- By definition, a proper map is continuous. -/
-@[fun_prop]
+@[continuity, fun_prop]
 lemma IsProperMap.continuous (h : IsProperMap f) : Continuous f := h.toContinuous
 
 /-- A proper map is closed. -/
@@ -129,7 +138,7 @@ lemma IsProperMap.ultrafilter_le_nhds_of_tendsto (h : IsProperMap f) ⦃𝒰 : U
 /-- The composition of two proper maps is proper. -/
 lemma IsProperMap.comp (hf : IsProperMap f) (hg : IsProperMap g) :
     IsProperMap (g ∘ f) := by
-  refine ⟨by fun_prop, fun ℱ z h ↦ ?_⟩
+  refine ⟨by continuity, fun ℱ z h ↦ ?_⟩
   rw [mapClusterPt_comp] at h
   rcases hg.clusterPt_of_mapClusterPt h with ⟨y, rfl, hy⟩
   rcases hf.clusterPt_of_mapClusterPt hy with ⟨x, rfl, hx⟩
@@ -212,7 +221,7 @@ lemma IsProperMap.pi_map {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
 /-- The preimage of a compact set by a proper map is again compact. See also
 `isProperMap_iff_isCompact_preimage` which proves that this property completely characterizes
-proper map when the codomain is locally compact and Hausdorff. -/
+proper map when the codomain is compactly generated and Hausdorff. -/
 lemma IsProperMap.isCompact_preimage (h : IsProperMap f) {K : Set Y} (hK : IsCompact K) :
     IsCompact (f ⁻¹' K) := by
   rw [isCompact_iff_ultrafilter_le_nhds]
@@ -287,10 +296,8 @@ lemma isProperMap_restr_of_proper_of_closed {U : Set X} (hf : IsProperMap f) (hU
   IsProperMap.comp (isProperMap_subtype_val_of_closed hU) hf
 
 /-- The range of a proper map is closed. -/
-lemma IsProperMap.isClosed_range (hf : IsProperMap f) : IsClosed (range f) :=
+lemma IsProperMap.closed_range (hf : IsProperMap f) : IsClosed (range f) :=
   hf.isClosedMap.isClosed_range
-
-@[deprecated (since := "2024-05-08")] alias IsProperMap.closed_range := IsProperMap.isClosed_range
 
 /-- Version of `isProperMap_iff_isClosedMap_and_compact_fibers` in terms of `cofinite` and
 `cocompact`. Only works when the codomain is `T1`. -/
@@ -308,36 +315,94 @@ lemma isProperMap_iff_isClosedMap_and_tendsto_cofinite [T1Space Y] :
 theorem Continuous.isProperMap [CompactSpace X] [T2Space Y] (hf : Continuous f) : IsProperMap f :=
   isProperMap_iff_isClosedMap_and_tendsto_cofinite.2 ⟨hf, hf.isClosedMap, by simp⟩
 
+/-- If `Y` is Hausdorff and compactly generated, then proper maps `X → Y` are exactly
+continuous maps such that the preimage of any compact set is compact.
+
+This result should be the only one needed to link the definition of a proper map and
+the criteria "preimage of compact sets are compact", but the notion of compactly generated space
+is not yet in Mathlib so we use it as an intermediate result to prove
+`WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage` and
+`SequentialSpace.isProperMap_iff_isCompact_preimage`. In the future those should be inferred
+by typeclass inference. -/
+theorem isProperMap_iff_isCompact_preimage [T2Space Y]
+    (compactlyGenerated : ∀ s : Set Y, IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K)) :
+    IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
+  ⟨fun hf ↦ ⟨hf.continuous, fun _ ↦ hf.isCompact_preimage⟩,
+    fun ⟨hf, h⟩ ↦ isProperMap_iff_isClosedMap_and_compact_fibers.2
+    ⟨hf, fun _ hs ↦ (compactlyGenerated _).2
+    fun _ hK ↦ image_inter_preimage .. ▸ (((h hK).inter_left hs).image hf).isClosed,
+    fun _ ↦ h isCompact_singleton⟩⟩
+
+/-- A locally compact space is compactly generated. -/
+theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocallyCompactSpace X]
+    {s : Set X} : IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
+  refine ⟨fun hs K hK ↦ hs.inter hK.isClosed, fun h ↦ ?_⟩
+  rw [isClosed_iff_forall_filter]
+  intro x ℱ hℱ₁ hℱ₂ hℱ₃
+  rcases exists_compact_mem_nhds x with ⟨K, hK, K_mem⟩
+  exact mem_of_mem_inter_left <| isClosed_iff_forall_filter.1 (h hK) x ℱ hℱ₁
+    (inf_principal ▸ le_inf hℱ₂ (le_trans hℱ₃ <| le_principal_iff.2 K_mem)) hℱ₃
+
 /-- If `Y` is locally compact and Hausdorff, then proper maps `X → Y` are exactly continuous maps
-such that the preimage of any compact set is compact. -/
-theorem isProperMap_iff_isCompact_preimage [T2Space Y] [WeaklyLocallyCompactSpace Y] :
-    IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) := by
-  constructor <;> intro H
-  -- The direct implication follows from the previous results
-  · exact ⟨H.continuous, fun K hK ↦ H.isCompact_preimage hK⟩
-  · rw [isProperMap_iff_ultrafilter_of_t2]
-    -- Let `𝒰 : Ultrafilter X`, and assume that `f` tends to some `y` along `𝒰`.
-    refine ⟨H.1, fun 𝒰 y hy ↦ ?_⟩
-    -- Pick `K` some compact neighborhood of `y`, which exists by local compactness.
-    rcases exists_compact_mem_nhds y with ⟨K, hK, hKy⟩
-    -- Then `map f 𝒰 ≤ 𝓝 y ≤ 𝓟 K`, hence `𝒰 ≤ 𝓟 (f ⁻¹' K)`
-    have : 𝒰 ≤ 𝓟 (f ⁻¹' K) := by
-      simpa only [← comap_principal, ← tendsto_iff_comap] using
-        hy.mono_right (le_principal_iff.mpr hKy)
-    -- By compactness of `f ⁻¹' K`, `𝒰` converges to some `x ∈ f ⁻¹' K`.
-    rcases (H.2 hK).ultrafilter_le_nhds _ this with ⟨x, -, hx⟩
-    exact ⟨x, hx⟩
+such that the preimage of any compact set is compact.
+
+This result is a direct consequence of `isProperMap_iff_isCompact_preimage`, because any
+Hausdorff and weakly locally compact space is compactly generated.
+In the future it should be inferred by typeclass inference, however compactly generated spaces
+are not yet in Mathlib, therefore we also add this theorem. -/
+theorem WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage [T2Space Y]
+    [WeaklyLocallyCompactSpace Y] :
+    IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
+  _root_.isProperMap_iff_isCompact_preimage
+    (fun _ ↦ compactlyGenerated_of_weaklyLocallyCompactSpace)
+
+/-- A sequential space is compactly generated. -/
+theorem compactlyGenerated_of_sequentialSpace [T2Space X] [SequentialSpace X] {s : Set X} :
+    IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
+  refine ⟨fun hs K hK ↦ hs.inter hK.isClosed,
+    fun h ↦ SequentialSpace.isClosed_of_seq _ fun u p hu hup ↦
+    mem_of_mem_inter_left ((h hup.isCompact_insert_range).mem_of_tendsto hup ?_)⟩
+  simp only [mem_inter_iff, mem_insert_iff, mem_range, exists_apply_eq_apply, or_true, and_true,
+    eventually_atTop, ge_iff_le]
+  exact ⟨0, fun n _ ↦ hu n⟩
+
+/-- If `Y` is sequential and Hausdorff, then proper maps `X → Y` are exactly continuous maps
+such that the preimage of any compact set is compact.
+
+This result is a direct consequence of `isProperMap_iff_isCompact_preimage`, because any
+Hausdorff and sequential space is compactly generated. In the future it should be inferred
+by typeclass inference, however compactly generated spaces are not yet in Mathlib, therefore
+we also add this theorem. -/
+theorem SequentialSpace.isProperMap_iff_isCompact_preimage [T2Space Y] [SequentialSpace Y] :
+    IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
+  _root_.isProperMap_iff_isCompact_preimage
+    (fun _ ↦ compactlyGenerated_of_sequentialSpace)
 
 /-- Version of `isProperMap_iff_isCompact_preimage` in terms of `cocompact`. -/
-lemma isProperMap_iff_tendsto_cocompact [T2Space Y] [WeaklyLocallyCompactSpace Y] :
+lemma isProperMap_iff_tendsto_cocompact [T2Space Y]
+    (compactlyGenerated : ∀ s : Set Y, IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K)) :
     IsProperMap f ↔ Continuous f ∧ Tendsto f (cocompact X) (cocompact Y) := by
-  simp_rw [isProperMap_iff_isCompact_preimage, hasBasis_cocompact.tendsto_right_iff,
-    ← mem_preimage, eventually_mem_set, preimage_compl]
+  simp_rw [isProperMap_iff_isCompact_preimage compactlyGenerated,
+    hasBasis_cocompact.tendsto_right_iff, ← mem_preimage, eventually_mem_set, preimage_compl]
   refine and_congr_right fun f_cont ↦
     ⟨fun H K hK ↦ (H hK).compl_mem_cocompact, fun H K hK ↦ ?_⟩
   rcases mem_cocompact.mp (H K hK) with ⟨K', hK', hK'y⟩
   exact hK'.of_isClosed_subset (hK.isClosed.preimage f_cont)
     (compl_le_compl_iff_le.mp hK'y)
+
+/-- Version of `WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage`
+in terms of `cocompact`. -/
+lemma WeaklyLocallyCompactSpace.isProperMap_iff_tendsto_cocompact [T2Space Y]
+    [WeaklyLocallyCompactSpace Y] :
+    IsProperMap f ↔ Continuous f ∧ Tendsto f (cocompact X) (cocompact Y) :=
+  _root_.isProperMap_iff_tendsto_cocompact
+    (fun _ ↦ compactlyGenerated_of_weaklyLocallyCompactSpace)
+
+/-- Version of `SequentialSpace.isProperMap_iff_isCompact_preimage` in terms of `cocompact`. -/
+lemma SequentialSpace.isProperMap_iff_tendsto_cocompact [T2Space Y] [SequentialSpace Y] :
+    IsProperMap f ↔ Continuous f ∧ Tendsto f (cocompact X) (cocompact Y) :=
+  _root_.isProperMap_iff_tendsto_cocompact
+    (fun _ ↦ compactlyGenerated_of_sequentialSpace)
 
 /-- A proper map `f : X → Y` is **universally closed**: for any topological space `Z`, the map
 `Prod.map f id : X × Z → Y × Z` is closed. We will prove in `isProperMap_iff_universally_closed`
