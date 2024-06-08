@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.Algebra.PUnitInstances
+import Mathlib.Algebra.Group.ULift
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 
 #align_import algebra.category.Mon.basic from "leanprover-community/mathlib"@"0caf3701139ef2e69c215717665361cda205a90b"
@@ -169,6 +170,16 @@ lemma mul_of {A : Type*} [Monoid A] (a b : A) :
 @[to_additive]
 instance {G : Type*} [Group G] : Group (MonCat.of G) := by assumption
 
+/-- Universe lift functor for monoids. -/
+@[to_additive (attr := simps)
+  "Universe lift functor for additive monoids."]
+def uliftFunctor : MonCat.{u} ⥤ MonCat.{max u v} where
+  obj X := MonCat.of (ULift.{v, u} X)
+  map {X Y} f := MonCat.ofHom <|
+    MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
+  map_id X := by rfl
+  map_comp {X Y Z} f g := by rfl
+
 end MonCat
 
 /-- The category of commutative monoids and monoid morphisms. -/
@@ -281,6 +292,16 @@ add_decl_doc AddCommMonCat.ofHom
 @[to_additive (attr := simp)]
 lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
+
+/-- Universe lift functor for commutative monoids. -/
+@[to_additive (attr := simps)
+  "Universe lift functor for additive commutative monoids."]
+def uliftFunctor : CommMonCat.{u} ⥤ CommMonCat.{max u v} where
+  obj X := CommMonCat.of (ULift.{v, u} X)
+  map {X Y} f := CommMonCat.ofHom <|
+    MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
+  map_id X := by rfl
+  map_comp {X Y Z} f g := by rfl
 
 end CommMonCat
 
