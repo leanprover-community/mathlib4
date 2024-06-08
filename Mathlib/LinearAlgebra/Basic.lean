@@ -546,7 +546,7 @@ def smulOfUnit (a : Rˣ) : M ≃ₗ[R] M :=
 
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
 linear isomorphism between the two function spaces. -/
-def arrowCongr {R M₁ M₂ M₂₁ M₂₂ : Type(} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
+def arrowCongr {R M₁ M₂ M₂₁ M₂₂ : Type*} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
     [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R₁ M₁] [Module R₁ M₂] [Module R₁ M₂₁]
     [Module R₁ M₂₂] [Module R M₂₁] [Module R M₂₂] [SMulCommClass R₁ R M₂₁] [SMulCommClass R₁ R M₂₂]
     (e₁ : M₁ ≃ₗ[R₁] M₂) (e₂ : M₂₁ ≃ₗ[R₁] M₂₂) (h : ∀ (c : R) (x), e₂ (c • x) = c • e₂ x) :
