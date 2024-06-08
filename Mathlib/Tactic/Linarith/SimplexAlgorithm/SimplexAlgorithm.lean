@@ -109,7 +109,7 @@ def choosePivots : SimplexAlgorithmM matType (Nat × Nat) := do
   return ⟨exitIdx, enterIdx⟩
 
 /--
-Runs Simplex Algorithm starting with `initTable`. It always terminates, finding solution if
+Runs Simplex Algorithm inside the `SimplexAlgorithmM`. It always terminates, finding solution if
 such exists.
 -/
 def runSimplexAlgorithm : SimplexAlgorithmM matType Unit := do

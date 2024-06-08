@@ -49,7 +49,8 @@ def getTableImp : GaussM n m matType <| Table matType := do
       if i == row then
         continue
       let coef := (← get)[(i, col)]!
-      modify fun mat => subtractRow mat row i coef
+      if coef != 0 then
+        modify fun mat => subtractRow mat row i coef
 
     basic := basic.push col
     row := row + 1
