@@ -1009,6 +1009,8 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
     intros; rfl
 #align sub_neg_monoid SubNegMonoid
 
+attribute [instance 100] SubNegMonoid.toAddMonoid
+
 attribute [to_additive SubNegMonoid] DivInvMonoid
 
 instance DivInvMonoid.Pow {M} [DivInvMonoid M] : Pow M ℤ :=
@@ -1117,6 +1119,8 @@ class NegZeroClass (G : Type*) extends Zero G, Neg G where
 class SubNegZeroMonoid (G : Type*) extends SubNegMonoid G, NegZeroClass G
 #align sub_neg_zero_monoid SubNegZeroMonoid
 
+attribute [instance 100] SubNegZeroMonoid.toSubNegMonoid
+
 /-- Typeclass for expressing that `1⁻¹ = 1`. -/
 @[to_additive]
 class InvOneClass (G : Type*) extends One G, Inv G where
@@ -1127,6 +1131,8 @@ class InvOneClass (G : Type*) extends One G, Inv G where
 @[to_additive SubNegZeroMonoid]
 class DivInvOneMonoid (G : Type*) extends DivInvMonoid G, InvOneClass G
 #align div_inv_one_monoid DivInvOneMonoid
+
+attribute [instance 100] DivInvOneMonoid.toDivInvMonoid
 
 -- FIXME: `to_additive` is not operating on the second parent. (#660)
 attribute [to_additive existing] DivInvOneMonoid.toInvOneClass
@@ -1227,7 +1233,7 @@ class Group (G : Type u) extends DivInvMonoid G where
   protected mul_left_inv : ∀ a : G, a⁻¹ * a = 1
 #align group Group
 
-attribute [instance 0] Group.toDivInvMonoid -- use `Group.toDivisionMonoid`
+attribute [instance 200] Group.toDivInvMonoid
 
 /-- An `AddGroup` is an `AddMonoid` with a unary `-` satisfying `-a + a = 0`.
 
@@ -1241,7 +1247,7 @@ class AddGroup (A : Type u) extends SubNegMonoid A where
   protected add_left_neg : ∀ a : A, -a + a = 0
 #align add_group AddGroup
 
-attribute [instance 0] AddGroup.toSubNegMonoid -- use `AddGroup.toSubtractionMonoid`
+attribute [instance 200] AddGroup.toSubNegMonoid
 
 attribute [to_additive] Group
 

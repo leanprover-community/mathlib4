@@ -44,9 +44,9 @@ class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
 #align ordered_comm_group OrderedCommGroup
 
-attribute [to_additive] OrderedCommGroup
-
 attribute [instance 10] OrderedCommGroup.toCommGroup
+
+attribute [to_additive] OrderedCommGroup
 
 @[to_additive]
 instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGroup α] :
