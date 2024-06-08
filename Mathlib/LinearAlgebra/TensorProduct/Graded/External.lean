@@ -263,6 +263,7 @@ theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   -- Note: #8386 had to specialize `map_smul` to avoid timeouts.
   simp_rw [Units.smul_def, zsmul_eq_smul_cast R, LinearEquiv.map_smul, LinearMap.map_smul,
     LinearMap.smul_apply]
+  letI : DistribMulAction R (⨁ (i : ι), ℬ i) := inferInstance
   simp_rw [← zsmul_eq_smul_cast R, ← Units.smul_def, DirectSum.lof_eq_of, DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul, smul_smul,
     DirectSum.lof_eq_of, ← DirectSum.of_mul_of, ← DirectSum.lof_eq_of R]
