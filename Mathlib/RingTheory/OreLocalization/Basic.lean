@@ -83,8 +83,7 @@ namespace OreLocalization
 
 section Monoid
 
-variable {R : Type*} [Monoid R] {S : Submonoid R}
-variable (R S) [OreSet S]
+variable (R : Type*) [Monoid R] (S : Submonoid R) [OreSet S]
 
 @[inherit_doc OreLocalization]
 scoped syntax:1075 term noWs atomic("[" term "⁻¹" noWs "]") : term

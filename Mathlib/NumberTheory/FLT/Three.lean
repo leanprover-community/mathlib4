@@ -172,7 +172,8 @@ attribute [nolint docBlame] Solution'.u
 structure Solution extends Solution' hζ where
   hab : λ ^ 2 ∣ a + b
 
-variable {hζ} (S : Solution hζ) (S' : Solution' hζ) [DecidableRel fun (a b : 𝓞 K) ↦ a ∣ b]
+variable {hζ}
+variable (S : Solution hζ) (S' : Solution' hζ) [DecidableRel fun (a b : 𝓞 K) ↦ a ∣ b]
 
 /-- For any `S' : Solution'`, the multiplicity of `λ` in `S'.c` is finite. -/
 lemma Solution'.multiplicity_lambda_c_finite :
