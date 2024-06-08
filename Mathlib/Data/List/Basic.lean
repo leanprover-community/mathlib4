@@ -488,7 +488,7 @@ theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
 
 /-! ### pure -/
 
-theorem mem_pure {α} (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp
+theorem mem_pure (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp
 #align list.mem_pure List.mem_pure
 
 /-! ### bind -/
@@ -1965,7 +1965,7 @@ theorem foldr_hom₂ (l : List ι) (f : α → β → γ) (op₁ : ι → α →
   induction l <;> intros <;> [rfl; simp only [*, foldr]]
 #align list.foldr_hom₂ List.foldr_hom₂
 
-theorem injective_foldl_comp {α : Type*} {l : List (α → α)} {f : α → α}
+theorem injective_foldl_comp {l : List (α → α)} {f : α → α}
     (hl : ∀ f ∈ l, Function.Injective f) (hf : Function.Injective f) :
     Function.Injective (@List.foldl (α → α) (α → α) Function.comp f l) := by
   induction' l with lh lt l_ih generalizing f
@@ -2274,12 +2274,12 @@ end FoldlMFoldrM
 #align list.intersperse_nil List.intersperse_nil
 
 @[simp]
-theorem intersperse_singleton {α : Type u} (a b : α) : intersperse a [b] = [b] :=
+theorem intersperse_singleton (a b : α) : intersperse a [b] = [b] :=
   rfl
 #align list.intersperse_singleton List.intersperse_singleton
 
 @[simp]
-theorem intersperse_cons_cons {α : Type u} (a b c : α) (tl : List α) :
+theorem intersperse_cons_cons (a b c : α) (tl : List α) :
     intersperse a (b :: c :: tl) = b :: a :: intersperse a (c :: tl) :=
   rfl
 #align list.intersperse_cons_cons List.intersperse_cons_cons
@@ -2334,7 +2334,7 @@ where
 #align list.split_at_eq_take_drop List.splitAt_eq_take_drop
 
 @[simp]
-theorem splitOn_nil {α : Type u} [DecidableEq α] (a : α) : [].splitOn a = [[]] :=
+theorem splitOn_nil [DecidableEq α] (a : α) : [].splitOn a = [[]] :=
   rfl
 #align list.split_on_nil List.splitOn_nil
 
@@ -2602,7 +2602,7 @@ theorem attach_eq_nil (l : List α) : l.attach = [] ↔ l = [] :=
   pmap_eq_nil
 #align list.attach_eq_nil List.attach_eq_nil
 
-theorem getLast_pmap {α β : Type*} (p : α → Prop) (f : ∀ a, p a → β) (l : List α)
+theorem getLast_pmap (p : α → Prop) (f : ∀ a, p a → β) (l : List α)
     (hl₁ : ∀ a ∈ l, p a) (hl₂ : l ≠ []) :
     (l.pmap f hl₁).getLast (mt List.pmap_eq_nil.1 hl₂) =
       f (l.getLast hl₂) (hl₁ _ (List.getLast_mem hl₂)) := by
@@ -2658,7 +2658,7 @@ theorem pmap_append {p : ι → Prop} (f : ∀ a : ι, p a → α) (l₁ l₂ : 
     rw [ih]
 #align list.pmap_append List.pmap_append
 
-theorem pmap_append' {α β : Type*} {p : α → Prop} (f : ∀ a : α, p a → β) (l₁ l₂ : List α)
+theorem pmap_append' {p : α → Prop} (f : ∀ a : α, p a → β) (l₁ l₂ : List α)
     (h₁ : ∀ a ∈ l₁, p a) (h₂ : ∀ a ∈ l₂, p a) :
     ((l₁ ++ l₂).pmap f fun a ha => (List.mem_append.1 ha).elim (h₁ a) (h₂ a)) =
       l₁.pmap f h₁ ++ l₂.pmap f h₂ :=
@@ -3605,8 +3605,6 @@ theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) 
 #align list.sizeof_slice_lt List.sizeOf_dropSlice_lt
 
 section Disjoint
-
-variable {α β : Type*}
 
 /-- The images of disjoint lists under a partially defined map are disjoint -/
 theorem disjoint_pmap {p : α → Prop} {f : ∀ a : α, p a → β} {s t : List α}

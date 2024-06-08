@@ -406,7 +406,7 @@ theorem mem_mk {s : Set G} {x : G} (h_one) (h_mul) (h_inv) :
 #align subgroup.mem_mk Subgroup.mem_mk
 #align add_subgroup.mem_mk AddSubgroup.mem_mk
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_set_mk {s : Set G} (h_one) (h_mul) (h_inv) :
     (mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv : Set G) = s :=
   rfl
