@@ -84,6 +84,7 @@ theorem cardQuot_top : cardQuot (⊤ : Submodule R M) = 1 :=
 
 variable {R M}
 
+@[simp]
 theorem cardQuot_eq_one_iff {P : Submodule R M} : cardQuot P = 1 ↔ P = ⊤ :=
   AddSubgroup.index_eq_one.trans (by simp [SetLike.ext_iff])
 #align submodule.card_quot_eq_one_iff Submodule.cardQuot_eq_one_iff
