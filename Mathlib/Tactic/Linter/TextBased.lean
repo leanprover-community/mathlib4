@@ -221,9 +221,10 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (mode : OutputSetting) :
       let path := System.mkFilePath ["scripts/style-exceptions.txt"]
       IO.FS.appendToFile path (s!"{outputMessage err ErrorFormat.exceptionsFile}\n")
     | OutputSetting.regenerate =>
-    -- FIXME: implement this!
+      -- FIXME: implement this!
       IO.println "the --regenerate option is not implemented yet: \
         please call `./scripts/update-style-exceptions.sh instead"
+      -- FIXME: can I call that script myself, as a band-aid?
     return true
   return false
 
@@ -255,7 +256,8 @@ def lintAllFiles (path : System.FilePath) (mode : OutputSetting) : IO UInt32 := 
   )
   let n ← lintFiles paths mode
   if n > 0 && mode matches OutputSetting.print _ then
-    IO.println "run with the --update flag to add all style errors to the style exceptions file"
+    IO.println s!"error: found {n} new style errors\
+      run `lake exe lint_style --update` to ignore all of them"
   return n
 
 open Cli in
@@ -292,15 +294,16 @@ open Cli in
 -- so far, no help options or so: perhaps that is fine?
 def lint_style : Cmd := `[Cli|
   lint_style VIA lintStyleCli; ["0.0.1"]
-  "Run text-based style linters on every Lean file in Mathlib/, Archive/ and Counterexamples/."
+  "Run text-based style linters on every Lean file in Mathlib/, Archive/ and Counterexamples/.
+  Print errors about any unexpected style errors to standard output."
 
   FLAGS:
-    github;     "Print errors in a format suitable for github problem matchers\
+    github;     "Print errors in a format suitable for github problem matchers\n\
                  otherwise, produce human-readable output"
     update;     "Append all new errors to the current list of exceptions \
                  (leaving existing entries untouched)"
-    regenerate; "(not implemented yet) Fully regenerate the file of style exceptions: \
-                 this may update or remove existing entries"
+    regenerate; "(not implemented yet) Regenerate the file of style exceptions: \
+                 add entries for all current errors and update or remove all obsolete ones"
 
   ARGS:
     ...files : String; "Only lint these file(s)"
