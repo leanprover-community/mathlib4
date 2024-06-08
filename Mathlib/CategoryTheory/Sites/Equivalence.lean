@@ -252,10 +252,8 @@ instance hasColimitsEssentiallySmallSite
 namespace GrothendieckTopology
 
 variable {A}
-variable [Functor.IsContinuous G K J]
-  [(G.sheafPushforwardContinuous A K J).IsEquivalence]
-  (hG : ∀ (P Q : Cᵒᵖ ⥤ A), Presheaf.IsSheaf J Q →
-    Function.Bijective (((whiskeringLeft Dᵒᵖ Cᵒᵖ A).obj G.op).map : (P ⟶ Q) → _))
+variable [G.IsCoverDense J] [Functor.IsContinuous G K J] [G.Full]
+  [(G.sheafPushforwardContinuous A K J).EssSurj]
 
 open Localization
 
@@ -278,8 +276,11 @@ lemma W_inverseImage_whiskeringLeft :
   have h₂ : ∀ (R : Sheaf J A),
     Function.Bijective (fun (g : G.op ⋙ Q ⟶ G.op ⋙ R.val) ↦ whiskerLeft G.op f ≫ g) ↔
       Function.Bijective (fun (g : Q ⟶ R.val) ↦ f ≫ g) := fun R ↦ by
-    rw [← Function.Bijective.of_comp_iff _ (hG Q R.val R.cond)]
-    exact Function.Bijective.of_comp_iff' (hG P R.val R.cond) (fun g ↦ f ≫ g)
+    rw [← Function.Bijective.of_comp_iff _
+      (Functor.whiskerLeft_obj_map_bijective_of_isCoverDense J G Q R.val R.cond)]
+    exact Function.Bijective.of_comp_iff'
+      (Functor.whiskerLeft_obj_map_bijective_of_isCoverDense J G P R.val R.cond)
+        (fun g ↦ f ≫ g)
   rw [h₁, J.W_eq_W_range_sheafToPresheaf_obj, MorphismProperty.inverseImage_iff]
   constructor
   · rintro h _ ⟨R, rfl⟩
@@ -289,18 +290,16 @@ lemma W_inverseImage_whiskeringLeft :
 
 lemma W_whiskerLeft_iff {P Q : Cᵒᵖ ⥤ A} (f : P ⟶ Q) :
     K.W (whiskerLeft G.op f) ↔ J.W f := by
-  rw [← W_inverseImage_whiskeringLeft J K G hG]
+  rw [← W_inverseImage_whiskeringLeft J K G]
   rfl
 
-variable [G.IsCocontinuous K J] (hG' : CoverPreserving K J G) [ConcreteCategory A]
-  [K.WEqualsLocallyBijective A] [G.IsCoverDense J]
-
--- WIP: The assumption `hG` may be a consequence of the others here (assuming `G` full?).
+variable [G.IsCocontinuous K J] (hG : CoverPreserving K J G) [ConcreteCategory A]
+  [K.WEqualsLocallyBijective A]
 
 lemma WEqualsLocallyBijective.transport : J.WEqualsLocallyBijective A where
   iff f := by
-    rw [← W_whiskerLeft_iff J K G hG f, Presheaf.isLocallyInjective_iff_whisker K J G f hG',
-      Presheaf.isLocallySurjective_iff_whisker K J G f hG', W_iff_isLocallyBijective]
+    rw [← W_whiskerLeft_iff J K G f, Presheaf.isLocallyInjective_iff_whisker K J G f hG',
+      Presheaf.isLocallySurjective_iff_whisker K J G f hG, W_iff_isLocallyBijective]
 
 end GrothendieckTopology
 
