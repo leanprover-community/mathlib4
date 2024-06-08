@@ -51,8 +51,8 @@ variable {R : Type u} [CommRing R] {R' : Type v} [CommMonoid R']
 /-- The values of an additive character on a ring of positive characteristic are roots of unity. -/
 lemma val_mem_rootsOfUnity (φ : AddChar R R') (a : R) (h : 0 < ringChar R) :
     (φ.val_isUnit a).unit ∈ rootsOfUnity (ringChar R).toPNat' R' := by
-  simp only [mem_rootsOfUnity', IsUnit.unit_spec, Nat.toPNat'_coe, h, ↓reduceIte, ← map_nsmul_pow,
-    nsmul_eq_mul, CharP.cast_eq_zero, zero_mul, map_zero_one]
+  simp only [mem_rootsOfUnity', IsUnit.unit_spec, Nat.toPNat'_coe, h, ↓reduceIte,
+    ← map_nsmul_eq_pow, nsmul_eq_mul, CharP.cast_eq_zero, zero_mul, map_zero_eq_one]
 
 /-- An additive character is *primitive* iff all its multiplicative shifts by nonzero
 elements are nontrivial. -/
@@ -156,8 +156,8 @@ section ZModCharDef
 /-- We can define an additive character on `ZMod n` when we have an `n`th root of unity `ζ : C`. -/
 def zmodChar (n : ℕ+) {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) : AddChar (ZMod n) C where
   toFun a := ζ ^ a.val
-  map_zero_one' := by simp only [ZMod.val_zero, pow_zero]
-  map_add_mul' x y := by simp only [ZMod.val_add, ← pow_eq_pow_mod _ hζ, ← pow_add]
+  map_zero_eq_one' := by simp only [ZMod.val_zero, pow_zero]
+  map_add_eq_mul' x y := by simp only [ZMod.val_add, ← pow_eq_pow_mod _ hζ, ← pow_add]
 #align add_char.zmod_char AddChar.zmodChar
 
 /-- The additive character on `ZMod n` defined using `ζ` sends `a` to `ζ^a`. -/
@@ -181,14 +181,14 @@ theorem zmod_char_isNontrivial_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) :
   rintro h₁ ⟨a, ha⟩
   have ha₁ : a = a.val • (1 : ZMod ↑n) := by
     rw [nsmul_eq_mul, mul_one]; exact (ZMod.natCast_zmod_val a).symm
-  rw [ha₁, map_nsmul_pow, h₁, one_pow] at ha
+  rw [ha₁, map_nsmul_eq_pow, h₁, one_pow] at ha
   exact ha rfl
 #align add_char.zmod_char_is_nontrivial_iff AddChar.zmod_char_isNontrivial_iff
 
 /-- A primitive additive character on `ZMod n` takes the value `1` only at `0`. -/
 theorem IsPrimitive.zmod_char_eq_one_iff (n : ℕ+) {ψ : AddChar (ZMod n) C} (hψ : IsPrimitive ψ)
     (a : ZMod n) : ψ a = 1 ↔ a = 0 := by
-  refine ⟨fun h => not_imp_comm.mp (hψ a) ?_, fun ha => by rw [ha, map_zero_one]⟩
+  refine ⟨fun h => not_imp_comm.mp (hψ a) ?_, fun ha => by rw [ha, map_zero_eq_one]⟩
   rw [zmod_char_isNontrivial_iff n (mulShift ψ a), mulShift_apply, mul_one, h, Classical.not_not]
 #align add_char.is_primitive.zmod_char_eq_one_iff AddChar.IsPrimitive.zmod_char_eq_one_iff
 
@@ -271,7 +271,7 @@ theorem sum_eq_zero_of_isNontrivial [IsDomain R'] {ψ : AddChar R R'} (hψ : IsN
   rcases hψ with ⟨b, hb⟩
   have h₁ : ∑ a : R, ψ (b + a) = ∑ a : R, ψ a :=
     Fintype.sum_bijective _ (AddGroup.addLeft_bijective b) _ _ fun x => rfl
-  simp_rw [map_add_mul] at h₁
+  simp_rw [map_add_eq_mul] at h₁
   have h₂ : ∑ a : R, ψ a = Finset.univ.sum ↑ψ := rfl
   rw [← Finset.mul_sum, h₂] at h₁
   exact eq_zero_of_mul_eq_self_left hb h₁
@@ -295,7 +295,7 @@ theorem sum_mulShift {R : Type*} [CommRing R] [Fintype R] [DecidableEq R]
     (hψ : IsPrimitive ψ) : ∑ x : R, ψ (x * b) = if b = 0 then Fintype.card R else 0 := by
   split_ifs with h
   · -- case `b = 0`
-    simp only [h, mul_zero, map_zero_one, Finset.sum_const, Nat.smul_one_eq_cast]
+    simp only [h, mul_zero, map_zero_eq_one, Finset.sum_const, Nat.smul_one_eq_cast]
     rfl
   · -- case `b ≠ 0`
     simp_rw [mul_comm]

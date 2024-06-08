@@ -97,7 +97,7 @@ private theorem gaussSum_mul_aux {χ : MulChar R R'} (hχ : IsNontrivial χ) (ψ
   rcases eq_or_ne b 0 with hb | hb
   · -- case `b = 0`
     simp only [hb, inv_zero, mul_zero, MulChar.map_zero, zero_mul,
-      Finset.sum_const_zero, map_zero_one, mul_one]
+      Finset.sum_const_zero, map_zero_eq_one, mul_one]
     exact (hχ.sum_eq_zero).symm
   · -- case `b ≠ 0`
     refine (Fintype.sum_bijective _ (mulLeft_bijective₀ b hb) _ _ fun x => ?_).symm
@@ -112,8 +112,8 @@ theorem gaussSum_mul_gaussSum_eq_card {χ : MulChar R R'} (hχ : IsNontrivial χ
     lhs; congr; next => skip
     ext; congr; next => skip
     ext
-    rw [mul_mul_mul_comm, ← map_mul, ← map_add_mul, ← sub_eq_add_neg]
---  conv in _ * _ * (_ * _) => rw [mul_mul_mul_comm, ← map_mul, ← map_add_mul, ← sub_eq_add_neg]
+    rw [mul_mul_mul_comm, ← map_mul, ← map_add_eq_mul, ← sub_eq_add_neg]
+--  conv in _ * _ * (_ * _) => rw [mul_mul_mul_comm, ← map_mul, ← map_add_eq_mul, ← sub_eq_add_neg]
   simp_rw [gaussSum_mul_aux hχ ψ]
   rw [Finset.sum_comm]
   classical -- to get `[DecidableEq R]` for `sum_mulShift`
@@ -295,11 +295,11 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   let τ : FF := ψ₈char 1
   have τ_spec : τ ^ 4 = -1 := by
     refine (sq_eq_one_iff.1 ?_).resolve_left ?_
-    · rw [← pow_mul, ← map_nsmul_pow ψ₈char]
+    · rw [← pow_mul, ← map_nsmul_eq_pow ψ₈char]
       -- doesn't match syntactically for `rw`
       refine (AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim _).2 ?_
       decide
-    · rw [← map_nsmul_pow ψ₈char]
+    · rw [← map_nsmul_eq_pow ψ₈char]
       -- doesn't match syntactically for `rw`
       refine (AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim _).not.2 ?_
       decide
@@ -314,7 +314,7 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
     have h₁ : (fun i : Fin 8 => ↑(χ₈ i) * τ ^ i.val) = (fun a : ZMod 8 => χ a * ↑(ψ₈char a)) := by
       -- Porting note: original proof
       -- ext; congr; apply pow_one
-      ext (x : Fin 8); rw [← map_nsmul_pow ψ₈char]; congr 2;
+      ext (x : Fin 8); rw [← map_nsmul_eq_pow ψ₈char]; congr 2;
       rw [Nat.smul_one_eq_cast, Fin.cast_val_eq_self x]
     have h₂ : (0 + 1 * τ ^ 1 + 0 + -1 * τ ^ 3 + 0 + -1 * τ ^ 5 + 0 + 1 * τ ^ 7) ^ 2 =
         8 + (τ ^ 4 + 1) * (τ ^ 10 - 2 * τ ^ 8 - 2 * τ ^ 6 + 6 * τ ^ 4 + τ ^ 2 - 8) := by ring

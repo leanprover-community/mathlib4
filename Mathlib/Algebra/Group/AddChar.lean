@@ -58,12 +58,12 @@ structure AddChar where
   toFun : A → M
   /-- The function maps `0` to `1`.
 
-  Do not use this directly. Instead use `AddChar.map_zero_one`. -/
-  map_zero_one' : toFun 0 = 1
+  Do not use this directly. Instead use `AddChar.map_zero_eq_one`. -/
+  map_zero_eq_one' : toFun 0 = 1
   /-- The function maps addition in `A` to multiplication in `M`.
 
-  Do not use this directly. Instead use `AddChar.map_add_mul`. -/
-  map_add_mul' : ∀ a b : A, toFun (a + b) = toFun a * toFun b
+  Do not use this directly. Instead use `AddChar.map_add_eq_mul`. -/
+  map_add_eq_mul' : ∀ a b : A, toFun (a + b) = toFun a * toFun b
 
 #align add_char AddChar
 
@@ -88,23 +88,26 @@ instance instFunLike : FunLike (AddChar A M) A M where
   DFunLike.ext f g h
 
 @[simp] lemma coe_mk (f : A → M)
-    (map_zero_one' : f 0 = 1) (map_add_mul' : ∀ a b : A, f (a + b) = f a * f b) :
-    AddChar.mk f map_zero_one' map_add_mul' = f := by
+    (map_zero_eq_one' : f 0 = 1) (map_add_eq_mul' : ∀ a b : A, f (a + b) = f a * f b) :
+    AddChar.mk f map_zero_eq_one' map_add_eq_mul' = f := by
   rfl
 
 /-- An additive character maps `0` to `1`. -/
-@[simp] lemma map_zero_one (ψ : AddChar A M) : ψ 0 = 1 := ψ.map_zero_one'
-#align add_char.map_zero_one AddChar.map_zero_one
+@[simp] lemma map_zero_eq_one (ψ : AddChar A M) : ψ 0 = 1 := ψ.map_zero_eq_one'
+#align add_char.map_zero_one AddChar.map_zero_eq_one
 
 /-- An additive character maps sums to products. -/
-lemma map_add_mul (ψ : AddChar A M) (x y : A) : ψ (x + y) = ψ x * ψ y := ψ.map_add_mul' x y
-#align add_char.map_add_mul AddChar.map_add_mul
+lemma map_add_eq_mul (ψ : AddChar A M) (x y : A) : ψ (x + y) = ψ x * ψ y := ψ.map_add_eq_mul' x y
+#align add_char.map_add_mul AddChar.map_add_eq_mul
+
+@[deprecated (since := "2024-06-06")] alias map_zero_one := map_zero_eq_one
+@[deprecated (since := "2024-06-06")] alias map_add_mul := map_add_eq_mul
 
 /-- Interpret an additive character as a monoid homomorphism. -/
 def toMonoidHom (φ : AddChar A M) : Multiplicative A →* M where
   toFun := φ.toFun
-  map_one' := φ.map_zero_one'
-  map_mul' := φ.map_add_mul'
+  map_one' := φ.map_zero_eq_one'
+  map_mul' := φ.map_add_eq_mul'
 #align add_char.to_monoid_hom AddChar.toMonoidHom
 
 -- this instance was a bad idea and conflicted with `instFunLike` above
@@ -116,9 +119,11 @@ def toMonoidHom (φ : AddChar A M) : Multiplicative A →* M where
 #align add_char.coe_to_fun_apply AddChar.toMonoidHom_apply
 
 /-- An additive character maps multiples by natural numbers to powers. -/
-lemma map_nsmul_pow (ψ : AddChar A M) (n : ℕ) (x : A) : ψ (n • x) = ψ x ^ n :=
+lemma map_nsmul_eq_pow (ψ : AddChar A M) (n : ℕ) (x : A) : ψ (n • x) = ψ x ^ n :=
   ψ.toMonoidHom.map_pow x n
-#align add_char.map_nsmul_pow AddChar.map_nsmul_pow
+#align add_char.map_nsmul_pow AddChar.map_nsmul_eq_pow
+
+@[deprecated (since := "2024-06-06")] alias map_nsmul_pow := map_nsmul_eq_pow
 
 variable (A M) in
 /-- Additive characters `A → M` are the same thing as monoid homomorphisms from `Multiplicative A`
@@ -127,16 +132,16 @@ def toMonoidHomEquiv : AddChar A M ≃ (Multiplicative A →* M) where
   toFun φ := φ.toMonoidHom
   invFun f :=
   { toFun := f.toFun
-    map_zero_one' := f.map_one'
-    map_add_mul' := f.map_mul' }
+    map_zero_eq_one' := f.map_one'
+    map_add_eq_mul' := f.map_mul' }
   left_inv _ := rfl
   right_inv _ := rfl
 
 /-- Interpret an additive character as a monoid homomorphism. -/
 def toAddMonoidHom (φ : AddChar A M) : A →+ Additive M where
   toFun := φ.toFun
-  map_zero' := φ.map_zero_one'
-  map_add' := φ.map_add_mul'
+  map_zero' := φ.map_zero_eq_one'
+  map_add' := φ.map_add_eq_mul'
 
 @[simp] lemma toAddMonoidHom_apply (ψ : AddChar A M) (a : A) : ψ.toAddMonoidHom a = ψ a := rfl
 
@@ -147,8 +152,8 @@ def toAddMonoidHomEquiv : AddChar A M ≃ (A →+ Additive M) where
   toFun φ := φ.toAddMonoidHom
   invFun f :=
   { toFun := f.toFun
-    map_zero_one' := f.map_zero'
-    map_add_mul' := f.map_add' }
+    map_zero_eq_one' := f.map_zero'
+    map_add_eq_mul' := f.map_add' }
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -224,11 +229,11 @@ variable {A M : Type*} [AddCommGroup A] [CommMonoid M]
 /-- The additive characters on a commutative additive group form a commutative group.
 
 Note that the inverse is defined using negation on the domain; we do not assume `M` has an
-inversion operation for the definition (but see `AddChar.map_neg_inv` below). -/
+inversion operation for the definition (but see `AddChar.map_neg_eq_inv` below). -/
 instance instCommGroup : CommGroup (AddChar A M) :=
   { instCommMonoid with
     inv := fun ψ ↦ ψ.compAddMonoidHom negAddMonoidHom
-    mul_left_inv := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_mul]}
+    mul_left_inv := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_eq_mul]}
 #align add_char.comm_group AddChar.instCommGroup
 #align add_char.has_inv AddChar.instCommGroup
 
@@ -250,14 +255,17 @@ section fromAddGrouptoDivisionMonoid
 variable {A M : Type*} [AddGroup A] [DivisionMonoid M]
 
 /-- An additive character maps negatives to inverses (when defined) -/
-lemma map_neg_inv (ψ : AddChar A M) (a : A) : ψ (-a) = (ψ a)⁻¹ := by
+lemma map_neg_eq_inv (ψ : AddChar A M) (a : A) : ψ (-a) = (ψ a)⁻¹ := by
   apply eq_inv_of_mul_eq_one_left
-  simp only [← map_add_mul, add_left_neg, map_zero_one]
+  simp only [← map_add_eq_mul, add_left_neg, map_zero_eq_one]
 
 /-- An additive character maps integer scalar multiples to integer powers. -/
-lemma map_zsmul_zpow (ψ : AddChar A M) (n : ℤ) (a : A) : ψ (n • a) = (ψ a) ^ n :=
+lemma map_zsmul_eq_zpow (ψ : AddChar A M) (n : ℤ) (a : A) : ψ (n • a) = (ψ a) ^ n :=
   ψ.toMonoidHom.map_zpow a n
-#align add_char.map_zsmul_zpow AddChar.map_zsmul_zpow
+#align add_char.map_zsmul_zpow AddChar.map_zsmul_eq_zpow
+
+@[deprecated (since := "2024-06-06")] alias map_neg_inv := map_neg_eq_inv
+@[deprecated (since := "2024-06-06")] alias map_zsmul_zpow := map_zsmul_eq_zpow
 
 end fromAddGrouptoDivisionMonoid
 
@@ -265,7 +273,7 @@ section fromAddGrouptoDivisionCommMonoid
 
 variable {A M : Type*} [AddCommGroup A] [DivisionCommMonoid M]
 
-lemma inv_apply' (ψ : AddChar A M) (x : A) : ψ⁻¹ x = (ψ x)⁻¹ := by rw [inv_apply, map_neg_inv]
+lemma inv_apply' (ψ : AddChar A M) (x : A) : ψ⁻¹ x = (ψ x)⁻¹ := by rw [inv_apply, map_neg_eq_inv]
 
 end fromAddGrouptoDivisionCommMonoid
 
@@ -295,7 +303,7 @@ theorem inv_mulShift (ψ : AddChar R M) : ψ⁻¹ = mulShift ψ (-1) := by
 
 /-- If `n` is a natural number, then `mulShift ψ n x = (ψ x) ^ n`. -/
 theorem mulShift_spec' (ψ : AddChar R M) (n : ℕ) (x : R) : mulShift ψ n x = ψ x ^ n := by
-  rw [mulShift_apply, ← nsmul_eq_mul, map_nsmul_pow]
+  rw [mulShift_apply, ← nsmul_eq_mul, map_nsmul_eq_pow]
 #align add_char.mul_shift_spec' AddChar.mulShift_spec'
 
 /-- If `n` is a natural number, then `ψ ^ n = mulShift ψ n`. -/
@@ -308,7 +316,7 @@ theorem pow_mulShift (ψ : AddChar R M) (n : ℕ) : ψ ^ n = mulShift ψ n := by
 theorem mulShift_mul (ψ : AddChar R M) (r s : R) :
     mulShift ψ r * mulShift ψ s = mulShift ψ (r + s) := by
   ext
-  rw [mulShift_apply, right_distrib, map_add_mul]; norm_cast
+  rw [mulShift_apply, right_distrib, map_add_eq_mul]; norm_cast
 #align add_char.mul_shift_mul AddChar.mulShift_mul
 
 lemma mulShift_mulShift (ψ : AddChar R M) (r s : R) :
@@ -319,7 +327,7 @@ lemma mulShift_mulShift (ψ : AddChar R M) (r s : R) :
 /-- `mulShift ψ 0` is the trivial character. -/
 @[simp]
 theorem mulShift_zero (ψ : AddChar R M) : mulShift ψ 0 = 1 := by
-  ext; rw [mulShift_apply, zero_mul, map_zero_one, one_apply]
+  ext; rw [mulShift_apply, zero_mul, map_zero_eq_one, one_apply]
 #align add_char.mul_shift_zero AddChar.mulShift_zero
 
 @[simp]
