@@ -252,9 +252,10 @@ def lint_style : Cmd := `[Cli|
   "Run text-based style linters on every Lean file in Mathlib/, Archive/ and Counterexamples/."
 
   FLAGS:
-    --github      "Print errors in a format suitable for github problem matchers; otherwise, produce human-readable output"
-    --update      "Append all new errors to the current list of exceptions (leaving existing entries untouched)"
-    --regenerate  "Fully regenerate the file of style exceptions: updates or removes existing entries"
+    github;     "Print errors in a format suitable for github problem matchers\
+                 otherwise, produce human-readable output"
+    update;     "Append all new errors to the current list of exceptions (leaving existing entries untouched)"
+    regenerate; "Fully regenerate the file of style exceptions: may update or remove existing entries"
 ]
 
 /-- The entry point to the `lake exe lint_style` command. -/
