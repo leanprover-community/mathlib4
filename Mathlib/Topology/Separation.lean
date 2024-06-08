@@ -2489,11 +2489,8 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
     rw [← separatedNhds_iff_disjoint]
     obtain ⟨S, S_open, S_count, S_int⟩ := closed_gdelta (h := closure s) isClosed_closure
     wlog S_nonempty : S.Nonempty
-    · have : closure s = univ := by
-        rw [S_int, not_nonempty_iff_eq_empty.mp S_nonempty]
-        exact sInter_empty
-      have : t = ∅ := by
-        rw [← Set.disjoint_univ, ← this]
+    · have : t = ∅ := by
+        rw [← disjoint_univ, ← sInter_empty, ← not_nonempty_iff_eq_empty.mp S_nonempty, ← S_int]
         exact Disjoint.symm hd₁
       rw [this]
       exact SeparatedNhds.empty_right s
@@ -2504,11 +2501,8 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
       exact sInter_subset_of_mem (f n).2
     obtain ⟨T, T_open, T_count, T_int⟩ := closed_gdelta (h := closure t) isClosed_closure
     wlog T_nonempty : T.Nonempty
-    · have : closure t = univ := by
-        rw [T_int, not_nonempty_iff_eq_empty.mp T_nonempty]
-        exact sInter_empty
-      have : s = ∅ := by
-        rw [← Set.disjoint_univ, ← this]
+    · have : s = ∅ := by
+        rw [← disjoint_univ, ← sInter_empty, ← not_nonempty_iff_eq_empty.mp T_nonempty, ← T_int]
         exact hd₂
       rw [this]
       exact SeparatedNhds.empty_left t
