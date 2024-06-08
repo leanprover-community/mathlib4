@@ -341,8 +341,7 @@ theorem ceil_one : ⌈(1 : α)⌉₊ = 1 := by rw [← Nat.cast_one, ceil_natCas
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈no_index (OfNat.ofNat n : α)⌉₊ = n :=
-  ceil_natCast n
+theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈no_index (OfNat.ofNat n : α)⌉₊ = n := ceil_natCast n
 
 @[simp]
 theorem ceil_eq_zero : ⌈a⌉₊ = 0 ↔ a ≤ 0 := by rw [← Nat.le_zero, ceil_le, Nat.cast_zero]
@@ -1243,8 +1242,7 @@ theorem ceil_natCast (n : ℕ) : ⌈(n : α)⌉ = n :=
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈(no_index (OfNat.ofNat n : α))⌉ = n :=
-  ceil_natCast n
+theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈(no_index (OfNat.ofNat n : α))⌉ = n := ceil_natCast n
 
 theorem ceil_mono : Monotone (ceil : α → ℤ) :=
   gc_ceil_coe.monotone_l
