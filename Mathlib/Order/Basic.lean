@@ -63,8 +63,6 @@ preorder, order, partial order, poset, linear order, chain
 
 open Function
 
-universe u v w
-
 variable {ι α β : Type*} {π : ι → Type*}
 
 section Preorder
@@ -1273,11 +1271,11 @@ type synonym `α ×ₗ β = α × β`.
 
 namespace Prod
 
-instance (α : Type u) (β : Type v) [LE α] [LE β] : LE (α × β) :=
+instance (α β : Type*) [LE α] [LE β] : LE (α × β) :=
   ⟨fun p q ↦ p.1 ≤ q.1 ∧ p.2 ≤ q.2⟩
 
 -- Porting note (#10754): new instance
-instance instDecidableLE (α : Type u) (β : Type v) [LE α] [LE β] (x y : α × β)
+instance instDecidableLE (α β : Type*) [LE α] [LE β] (x y : α × β)
     [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) := And.decidable
 
 theorem le_def [LE α] [LE β] {x y : α × β} : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 :=
@@ -1298,7 +1296,7 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {a a₁ a₂ : α} {b b₁ b₂ : β} {x y : α × β}
 
-instance (α : Type u) (β : Type v) [Preorder α] [Preorder β] : Preorder (α × β) where
+instance (α β : Type*) [Preorder α] [Preorder β] : Preorder (α × β) where
   __ := inferInstanceAs (LE (α × β))
   le_refl := fun ⟨a, b⟩ ↦ ⟨le_refl a, le_refl b⟩
   le_trans := fun ⟨a, b⟩ ⟨c, d⟩ ⟨e, f⟩ ⟨hac, hbd⟩ ⟨hce, hdf⟩ ↦ ⟨le_trans hac hce, le_trans hbd hdf⟩
@@ -1344,7 +1342,7 @@ end Preorder
 /-- The pointwise partial order on a product.
     (The lexicographic ordering is defined in `Order.Lexicographic`, and the instances are
     available via the type synonym `α ×ₗ β = α × β`.) -/
-instance instPartialOrder (α : Type u) (β : Type v) [PartialOrder α] [PartialOrder β] :
+instance instPartialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] :
     PartialOrder (α × β) where
   __ := inferInstanceAs (Preorder (α × β))
   le_antisymm := fun _ _ ⟨hac, hbd⟩ ⟨hca, hdb⟩ ↦ Prod.ext (hac.antisymm hca) (hbd.antisymm hdb)
@@ -1353,9 +1351,8 @@ end Prod
 
 /-! ### Additional order classes -/
 
-
 /-- An order is dense if there is an element between any pair of distinct comparable elements. -/
-class DenselyOrdered (α : Type u) [LT α] : Prop where
+class DenselyOrdered (α : Type*) [LT α] : Prop where
   /-- An order is dense if there is an element between any pair of distinct elements. -/
   dense : ∀ a₁ a₂ : α, a₁ < a₂ → ∃ a, a₁ < a ∧ a < a₂
 #align densely_ordered DenselyOrdered
@@ -1364,7 +1361,7 @@ theorem exists_between [LT α] [DenselyOrdered α] : ∀ {a₁ a₂ : α}, a₁ 
   DenselyOrdered.dense _ _
 #align exists_between exists_between
 
-instance OrderDual.denselyOrdered (α : Type u) [LT α] [h : DenselyOrdered α] :
+instance OrderDual.denselyOrdered (α : Type*) [LT α] [h : DenselyOrdered α] :
     DenselyOrdered αᵒᵈ :=
   ⟨fun _ _ ha ↦ (@exists_between α _ h _ _ ha).imp fun _ ↦ And.symm⟩
 #align order_dual.densely_ordered OrderDual.denselyOrdered
@@ -1438,7 +1435,7 @@ lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
 
 namespace PUnit
 
-variable (a b : PUnit.{u + 1})
+variable (a b : PUnit)
 
 instance instLinearOrder : LinearOrder PUnit where
   le  := fun _ _ ↦ True
@@ -1502,13 +1499,11 @@ instance Prop.partialOrder : PartialOrder Prop where
 
 end «Prop»
 
-variable {γ : Type w} {s : β → β → Prop} {t : γ → γ → Prop}
-
 /-! ### Linear order from a total partial order -/
 
 
 /-- Type synonym to create an instance of `LinearOrder` from a `PartialOrder` and `IsTotal α (≤)` -/
-def AsLinearOrder (α : Type u) :=
+def AsLinearOrder (α : Type*)  :=
   α
 #align as_linear_order AsLinearOrder
 
