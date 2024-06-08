@@ -2477,12 +2477,6 @@ closed sets are Gδ. -/
 class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] extends NormalSpace X : Prop where
     closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ h
 
-lemma subset_interior_closure {s : Set X} (s_open : IsOpen s) : s ⊆ interior (closure s) :=
-    (IsOpen.subset_interior_iff s_open).mpr subset_closure
-
-lemma closure_interior_subset {s : Set X} (s_closed : IsClosed s) : closure (interior s) ⊆ s :=
-    (IsClosed.closure_subset_iff s_closed).mpr interior_subset
-
 instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
     [PerfectlyNormalSpace X] : CompletelyNormalSpace X where
   completely_normal s t hd₁ hd₂ := by

@@ -650,6 +650,12 @@ theorem dense_compl_singleton_iff_not_open :
     exact ho hU
 #align dense_compl_singleton_iff_not_open dense_compl_singleton_iff_not_open
 
+theorem subset_interior_closure {s : Set X} (s_open : IsOpen s) : s ⊆ interior (closure s) :=
+    (IsOpen.subset_interior_iff s_open).mpr subset_closure
+
+theorem closure_interior_subset {s : Set X} (s_closed : IsClosed s) : closure (interior s) ⊆ s :=
+    (IsClosed.closure_subset_iff s_closed).mpr interior_subset
+
 /-!
 ### Frontier of a set
 -/
