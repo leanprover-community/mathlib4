@@ -231,7 +231,7 @@ theorem LieSubalgebra.toEnd_mk (K : LieSubalgebra R L) {x : L} (hx : x ∈ K) :
 
 section
 
-open BigOperators LieAlgebra LieModule
+open LieAlgebra LieModule
 
 lemma LieSubmodule.coe_toEnd (N : LieSubmodule R L M) (x : L) (y : N) :
     (toEnd R L N x y : M) = toEnd R L M x y := rfl

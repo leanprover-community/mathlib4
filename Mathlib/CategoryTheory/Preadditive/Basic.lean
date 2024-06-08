@@ -3,7 +3,7 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Module.Defs
 import Mathlib.CategoryTheory.Endomorphism
@@ -48,8 +48,6 @@ additive, preadditive, Hom group, Ab-category, Ab-enriched
 universe v u
 
 open CategoryTheory.Limits
-
-open BigOperators
 
 namespace CategoryTheory
 

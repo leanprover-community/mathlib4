@@ -32,7 +32,7 @@ to `EMetricSpace` at the end.
 
 open Set Filter Classical
 
-open scoped Uniformity Topology BigOperators Filter NNReal ENNReal Pointwise
+open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
 
 universe u v w
 
@@ -206,7 +206,7 @@ For specific bases see `uniformity_basis_edist`, `uniformity_basis_edist'`,
 protected theorem EMetric.mk_uniformity_basis {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 < f x } := by
-  refine' ⟨fun s => uniformity_basis_edist.mem_iff.trans _⟩
+  refine ⟨fun s => uniformity_basis_edist.mem_iff.trans ?_⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
     rcases hf ε ε₀ with ⟨i, hi, H⟩
@@ -221,7 +221,7 @@ For specific bases see `uniformity_basis_edist_le` and `uniformity_basis_edist_l
 protected theorem EMetric.mk_uniformity_basis_le {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 ≤ f x } := by
-  refine' ⟨fun s => uniformity_basis_edist.mem_iff.trans _⟩
+  refine ⟨fun s => uniformity_basis_edist.mem_iff.trans ?_⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
     rcases exists_between ε₀ with ⟨ε', hε'⟩
@@ -844,7 +844,7 @@ theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : Is
     SeparableSpace s := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
   lift t to Set s using hts
-  refine ⟨⟨t, countable_of_injective_of_countable_image (Subtype.coe_injective.injOn _) htc, ?_⟩⟩
+  refine ⟨⟨t, countable_of_injective_of_countable_image Subtype.coe_injective.injOn htc, ?_⟩⟩
   rwa [inducing_subtype_val.dense_iff, Subtype.forall]
 #align topological_space.is_separable.separable_space TopologicalSpace.IsSeparable.separableSpace
 
@@ -872,7 +872,7 @@ instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α]
   suffices SeparableSpace α by exact UniformSpace.secondCountable_of_separable α
   choose T _ hTc hsubT using fun n =>
     subset_countable_closure_of_compact (isCompact_compactCovering α n)
-  refine' ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x => _⟩⟩
+  refine ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x => ?_⟩⟩
   rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering α) x with ⟨n, hn⟩
   exact closure_mono (subset_iUnion _ n) (hsubT _ hn)
 #align emetric.second_countable_of_sigma_compact EMetric.secondCountable_of_sigmaCompact

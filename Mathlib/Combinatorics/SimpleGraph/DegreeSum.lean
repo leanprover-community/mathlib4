@@ -3,7 +3,7 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Combinatorics.SimpleGraph.Dart
 import Mathlib.Combinatorics.SimpleGraph.Finite
@@ -41,7 +41,6 @@ simple graphs, sums, degree-sum formula, handshaking lemma
 
 
 open Finset
-open scoped BigOperators
 
 namespace SimpleGraph
 

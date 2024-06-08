@@ -220,8 +220,6 @@ end DecEq
 
 section FinrankQuotientMap
 
-open scoped BigOperators
-
 open scoped nonZeroDivisors
 
 variable [Algebra R S]
@@ -381,7 +379,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
       have : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective hRL
       rw [← IsFractionRing.isAlgebraic_iff' R S]
       infer_instance
-    refine' IsFractionRing.ideal_span_singleton_map_subset R hRL span_d hx
+    refine IsFractionRing.ideal_span_singleton_map_subset R hRL span_d hx
 #align ideal.finrank_quotient_map.span_eq_top Ideal.FinrankQuotientMap.span_eq_top
 
 variable (K L)
@@ -508,7 +506,7 @@ noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem
     fun x y h => by
     rw [Submodule.quotientRel_r_def] at h ⊢
     simp only [_root_.map_mul, LinearMap.mem_range]
-    refine' ⟨⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_mul a_mem h)⟩, _⟩
+    refine ⟨⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_mul a_mem h)⟩, ?_⟩
     ext
     rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Submodule.coe_sub, Subtype.coe_mk,
       Subtype.coe_mk, _root_.map_mul, map_sub, mul_sub]
@@ -516,8 +514,8 @@ noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem
 
 theorem quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
     quotientToQuotientRangePowQuotSuccAux f p P a_mem (Submodule.Quotient.mk x) =
-      Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ :=
-  by apply Quotient.map'_mk''
+      Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ := by
+  apply Quotient.map'_mk''
 #align ideal.quotient_to_quotient_range_pow_quot_succ_aux_mk Ideal.quotientToQuotientRangePowQuotSuccAux_mk
 
 /-- `S ⧸ P` embeds into the quotient by `P^(i+1) ⧸ P^e` as a subspace of `P^i ⧸ P^e`. -/
@@ -526,12 +524,12 @@ noncomputable def quotientToQuotientRangePowQuotSucc {i : ℕ} {a : S} (a_mem : 
       (P ^ i).map (Ideal.Quotient.mk (P ^ e)) ⧸ LinearMap.range (powQuotSuccInclusion f p P i) where
   toFun := quotientToQuotientRangePowQuotSuccAux f p P a_mem
   map_add' := by
-    intro x y; refine' Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => _
+    intro x y; refine Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => ?_
     simp only [Submodule.Quotient.mk''_eq_mk, ← Submodule.Quotient.mk_add,
       quotientToQuotientRangePowQuotSuccAux_mk, mul_add]
     exact congr_arg Submodule.Quotient.mk rfl
   map_smul' := by
-    intro x y; refine' Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => _
+    intro x y; refine Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => ?_
     simp only [Submodule.Quotient.mk''_eq_mk, RingHom.id_apply,
       quotientToQuotientRangePowQuotSuccAux_mk]
     refine congr_arg Submodule.Quotient.mk ?_
@@ -606,7 +604,7 @@ noncomputable def quotientRangePowQuotSuccInclusionEquiv [IsDedekindDomain S]
   choose a a_mem a_not_mem using
     SetLike.exists_of_lt
       (Ideal.pow_right_strictAnti P hP (Ideal.IsPrime.ne_top inferInstance) (le_refl i.succ))
-  refine' (LinearEquiv.ofBijective _ ⟨_, _⟩).symm
+  refine (LinearEquiv.ofBijective ?_ ⟨?_, ?_⟩).symm
   · exact quotientToQuotientRangePowQuotSucc f p P a_mem
   · exact quotientToQuotientRangePowQuotSucc_injective f p P hi a_mem a_not_mem
   · exact quotientToQuotientRangePowQuotSucc_surjective f p P hP hi a_mem a_not_mem
@@ -801,8 +799,6 @@ noncomputable def Factors.piQuotientLinearEquiv (p : Ideal R) (hp : map (algebra
 #align ideal.factors.pi_quotient_linear_equiv Ideal.Factors.piQuotientLinearEquiv
 
 variable {S}
-
-open scoped BigOperators
 
 /-- The **fundamental identity** of ramification index `e` and inertia degree `f`:
 for `P` ranging over the primes lying over `p`, `∑ P, e P * f P = [Frac(S) : Frac(R)]`;

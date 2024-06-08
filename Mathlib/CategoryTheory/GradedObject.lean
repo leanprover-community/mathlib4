@@ -209,8 +209,8 @@ open ZeroObject
 
 instance hasZeroObject [HasZeroObject C] [HasZeroMorphisms C] (β : Type w) :
     HasZeroObject.{max w v} (GradedObject β C) := by
-  refine' ⟨⟨fun _ => 0, fun X => ⟨⟨⟨fun b => 0⟩, fun f => _⟩⟩, fun X =>
-    ⟨⟨⟨fun b => 0⟩, fun f => _⟩⟩⟩⟩ <;> aesop_cat
+  refine ⟨⟨fun _ => 0, fun X => ⟨⟨⟨fun b => 0⟩, fun f => ?_⟩⟩, fun X =>
+    ⟨⟨⟨fun b => 0⟩, fun f => ?_⟩⟩⟩⟩ <;> aesop_cat
 #align category_theory.graded_object.has_zero_object CategoryTheory.GradedObject.hasZeroObject
 
 end
@@ -284,6 +284,12 @@ variable (j : J)
 /-- Given `X : GradedObject I C` and `p : I → J`, `X.HasMap p` is the condition that
 for all `j : J`, the coproduct of all `X i` such `p i = j` exists. -/
 abbrev HasMap : Prop := ∀ (j : J), HasCoproduct (X.mapObjFun p j)
+
+variable {X Y} in
+lemma hasMap_of_iso [HasMap X p] : HasMap Y p := fun j => by
+  have α : Discrete.functor (X.mapObjFun p j) ≅ Discrete.functor (Y.mapObjFun p j) :=
+    Discrete.natIso (fun ⟨i, _⟩ => (GradedObject.eval i).mapIso e)
+  exact hasColimitOfIso α.symm
 
 variable [X.HasMap p] [Y.HasMap p] [Z.HasMap p]
 

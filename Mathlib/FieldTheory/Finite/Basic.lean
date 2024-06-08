@@ -50,7 +50,7 @@ local notation "q" => Fintype.card K
 
 open Finset
 
-open scoped BigOperators Polynomial
+open scoped Polynomial
 
 namespace FiniteField
 

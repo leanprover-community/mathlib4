@@ -31,7 +31,7 @@ noncomputable section
 
 open Complex UpperHalfPlane Set Finset
 
-open scoped BigOperators UpperHalfPlane
+open scoped UpperHalfPlane
 
 
 variable (z : ℍ)

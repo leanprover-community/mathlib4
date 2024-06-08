@@ -21,8 +21,6 @@ This file defines bundled isomorphisms of `R`-algebras.
 * `A ≃ₐ[R] B` : `R`-algebra equivalence from `A` to `B`.
 -/
 
-open BigOperators
-
 universe u v w u₁ v₁
 
 /-- An equivalence of algebras is an equivalence of rings commuting with the actions of scalars. -/
@@ -42,7 +40,7 @@ notation:50 A " ≃ₐ[" R "] " A' => AlgEquiv R A A'
 
 /-- `AlgEquivClass F R A B` states that `F` is a type of algebra structure preserving
   equivalences. You should extend this class when you extend `AlgEquiv`. -/
-class AlgEquivClass (F : Type*) (R A B : outParam (Type*)) [CommSemiring R] [Semiring A]
+class AlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R] [Semiring A]
     [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B]
     extends RingEquivClass F A B : Prop where
   /-- An equivalence of algebras commutes with the action of scalars. -/

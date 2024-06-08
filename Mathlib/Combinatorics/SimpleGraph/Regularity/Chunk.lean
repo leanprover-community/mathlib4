@@ -38,7 +38,7 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 
 open Finpartition Finset Fintype Rel Nat
-open scoped BigOperators SzemerediRegularity.Positivity
+open scoped SzemerediRegularity.Positivity
 
 namespace SzemerediRegularity
 
@@ -493,7 +493,7 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ 
       · -- This seems faster than `exact div_nonneg (by positivity) (by positivity)` and *much*
         -- (tens of seconds) faster than `positivity` on its own.
         apply div_nonneg <;> positivity
-      refine' le_trans _ (mul_le_mul_of_nonneg_right UVl _)
+      refine le_trans ?_ (mul_le_mul_of_nonneg_right UVl ?_)
       · norm_num
         nlinarith
       · norm_num

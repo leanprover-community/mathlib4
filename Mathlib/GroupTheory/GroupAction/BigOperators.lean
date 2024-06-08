@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Multiset.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
@@ -18,8 +18,6 @@ Note that analogous lemmas for `Module`s like `Finset.sum_smul` appear in other 
 
 
 variable {α β γ : Type*}
-
-open BigOperators
 
 section
 

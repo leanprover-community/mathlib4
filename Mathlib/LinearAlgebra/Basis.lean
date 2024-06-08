@@ -66,8 +66,6 @@ universe u
 
 open Function Set Submodule
 
-open BigOperators
-
 variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
 variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
 
@@ -1168,7 +1166,7 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
       -- Porting note: why doesn't `rw [h₁]` work here?
       exact congr_arg _ h₁
     have h₃ : (x : M) ∈ map (Submodule.subtype (span R (range v)))
-        (span R (Set.range fun i => Subtype.mk (v i) _)) := by
+        (span R (Set.range fun i => Subtype.mk (v i) (this i))) := by
       rw [h₂]
       apply Subtype.mem x
     rcases mem_map.1 h₃ with ⟨y, hy₁, hy₂⟩
@@ -1363,12 +1361,12 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
   intro N' N'_le x x_mem x_ortho
   apply rank_ih
   intro m v hli
-  refine' Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) _)
+  refine Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) ?_)
   convert hli.fin_cons' x _ ?_
   · ext i
-    refine' Fin.cases _ _ i <;> simp
+    refine Fin.cases ?_ ?_ i <;> simp
   · intro c y hcy
-    refine' x_ortho c y (Submodule.span_le.mpr _ y.2) hcy
+    refine x_ortho c y (Submodule.span_le.mpr ?_ y.2) hcy
     rintro _ ⟨z, rfl⟩
     exact (v z).2
 #align submodule.induction_on_rank_aux Submodule.inductionOnRankAux

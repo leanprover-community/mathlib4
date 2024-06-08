@@ -17,7 +17,7 @@ This file provides lemmas about the interaction of infinite sums and products an
 -/
 
 
-open Finset Filter Function BigOperators
+open Finset Filter Function
 open scoped Classical
 
 variable {ι κ α : Type*}

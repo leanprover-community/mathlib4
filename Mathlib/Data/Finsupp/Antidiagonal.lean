@@ -16,8 +16,6 @@ The antidiagonal of `s : α →₀ ℕ` consists of
 all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + t₂ = s`.
 -/
 
-open BigOperators
-
 namespace Finsupp
 
 open Finset
