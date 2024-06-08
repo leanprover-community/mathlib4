@@ -255,7 +255,7 @@ theorem carrier_eq_coe (s : NonemptyCompacts α) : s.carrier = s :=
 theorem coe_toCompacts (s : NonemptyCompacts α) : (s.toCompacts : Set α) = s := rfl
 
 instance : Sup (NonemptyCompacts α) :=
-  ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.nonempty.mono <| subset_union_left _ _⟩⟩
+  ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.nonempty.mono subset_union_left⟩⟩
 
 instance [CompactSpace α] [Nonempty α] : Top (NonemptyCompacts α) :=
   ⟨⟨⊤, univ_nonempty⟩⟩
@@ -366,7 +366,7 @@ theorem coe_toCompacts (s : PositiveCompacts α) : (s.toCompacts : Set α) = s :
 instance : Sup (PositiveCompacts α) :=
   ⟨fun s t =>
     ⟨s.toCompacts ⊔ t.toCompacts,
-      s.interior_nonempty.mono <| interior_mono <| subset_union_left _ _⟩⟩
+      s.interior_nonempty.mono <| interior_mono subset_union_left⟩⟩
 
 instance [CompactSpace α] [Nonempty α] : Top (PositiveCompacts α) :=
   ⟨⟨⊤, interior_univ.symm.subst univ_nonempty⟩⟩

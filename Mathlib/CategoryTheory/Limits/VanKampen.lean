@@ -294,8 +294,8 @@ theorem isVanKampenColimit_of_evaluation [HasPullbacks D] [HasColimitsOfShape J 
       (hα.whiskerRight _)
   constructor
   · rintro ⟨hc'⟩ j
-    refine' ⟨⟨(NatTrans.congr_app e j).symm⟩, ⟨evaluationJointlyReflectsLimits _ _⟩⟩
-    refine' fun x => (isLimitMapConePullbackConeEquiv _ _).symm _
+    refine ⟨⟨(NatTrans.congr_app e j).symm⟩, ⟨evaluationJointlyReflectsLimits _ ?_⟩⟩
+    refine fun x => (isLimitMapConePullbackConeEquiv _ _).symm ?_
     exact ((this x).mp ⟨PreservesColimit.preserves hc'⟩ _).isLimit
   · exact fun H => ⟨evaluationJointlyReflectsColimits _ fun x =>
       ((this x).mpr fun j => (H j).map ((evaluation C D).obj x)).some⟩
@@ -477,8 +477,8 @@ theorem hasStrictInitial_of_isUniversal [HasInitial C]
         obtain ⟨l, h₁, h₂⟩ := Limits.BinaryCofan.IsColimit.desc' this (f ≫ initial.to A) (𝟙 A)
         rcases(Category.id_comp _).symm.trans h₂ with rfl
         exact ⟨⟨_, ((Category.id_comp _).symm.trans h₁).symm, initialIsInitial.hom_ext _ _⟩⟩
-      refine' (H (BinaryCofan.mk (𝟙 _) (𝟙 _)) (mapPair f f) f (by ext ⟨⟨⟩⟩ <;> dsimp <;> simp)
-        (mapPair_equifibered _) _).some
+      refine (H (BinaryCofan.mk (𝟙 _) (𝟙 _)) (mapPair f f) f (by ext ⟨⟨⟩⟩ <;> dsimp <;> simp)
+        (mapPair_equifibered _) ?_).some
       rintro ⟨⟨⟩⟩ <;> dsimp <;>
         exact IsPullback.of_horiz_isIso ⟨(Category.id_comp _).trans (Category.comp_id _).symm⟩)
 #align category_theory.has_strict_initial_of_is_universal CategoryTheory.hasStrictInitial_of_isUniversal
@@ -564,7 +564,7 @@ theorem BinaryCofan.isVanKampen_mk {X Y : C} (c : BinaryCofan X Y)
         simp
       exact (IsPullback.of_vert_isIso ⟨this⟩).paste_vert hr
   · rintro ⟨H₁, H₂⟩
-    refine' ⟨IsColimit.ofIsoColimit _ <| (isoBinaryCofanMk _).symm⟩
+    refine ⟨IsColimit.ofIsoColimit ?_ <| (isoBinaryCofanMk _).symm⟩
     let e₁ : X' ≅ _ := H₁.isLimit.conePointUniqueUpToIso (limits _ _)
     let e₂ : Y' ≅ _ := H₂.isLimit.conePointUniqueUpToIso (limits _ _)
     have he₁ : c'.inl = e₁.hom ≫ (cones f c.inl).fst := by simp [e₁]
@@ -775,7 +775,7 @@ theorem mono_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {F : Discrete ι �
     Functor.hext (fun i ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp [f])
   clear_value f
   subst this
-  refine' PullbackCone.mono_of_isLimitMkIdId _ (IsPullback.isLimit _)
+  refine PullbackCone.mono_of_isLimitMkIdId _ (IsPullback.isLimit ?_)
   nth_rw 1 [← Category.id_comp (c.ι.app i)]
   convert IsPullback.paste_vert _ (isPullback_of_cofan_isVanKampen hc i.as i.as)
   swap

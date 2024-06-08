@@ -40,7 +40,7 @@ arc-length, parameterization
 -/
 
 
-open scoped BigOperators NNReal ENNReal
+open scoped NNReal ENNReal
 
 open Set MeasureTheory Classical
 
@@ -71,7 +71,7 @@ theorem hasConstantSpeedOnWith_of_subsingleton (f : ℝ → E) {s : Set ℝ} (hs
 theorem hasConstantSpeedOnWith_iff_ordered :
     HasConstantSpeedOnWith f s l ↔ ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ (_ : y ∈ s),
       x ≤ y → eVariationOn f (s ∩ Icc x y) = ENNReal.ofReal (l * (y - x)) := by
-  refine' ⟨fun h x xs y ys _ => h xs ys, fun h x xs y ys => _⟩
+  refine ⟨fun h x xs y ys _ => h xs ys, fun h x xs y ys => ?_⟩
   rcases le_total x y with (xy | yx)
   · exact h xs ys xy
   · rw [eVariationOn.subsingleton, ENNReal.ofReal_of_nonpos]
@@ -86,7 +86,7 @@ theorem hasConstantSpeedOnWith_iff_variationOnFromTo_eq :
     HasConstantSpeedOnWith f s l ↔ LocallyBoundedVariationOn f s ∧
       ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ (_ : y ∈ s), variationOnFromTo f s x y = l * (y - x) := by
   constructor
-  · rintro h; refine' ⟨h.hasLocallyBoundedVariationOn, fun x xs y ys => _⟩
+  · rintro h; refine ⟨h.hasLocallyBoundedVariationOn, fun x xs y ys => ?_⟩
     rw [hasConstantSpeedOnWith_iff_ordered] at h
     rcases le_total x y with (xy | yx)
     · rw [variationOnFromTo.eq_of_le f s xy, h xs ys xy]
@@ -168,9 +168,9 @@ theorem hasConstantSpeedOnWith_zero_iff :
     · rw [edist_comm] at hxy
       exact hxy (h ys xs y ⟨ys, le_rfl, yx⟩ x ⟨xs, yx, le_rfl⟩)
   · rintro h x _ y _
-    refine' le_antisymm _ zero_le'
+    refine le_antisymm ?_ zero_le'
     rw [← h]
-    exact eVariationOn.mono f (inter_subset_left s (Icc x y))
+    exact eVariationOn.mono f inter_subset_left
 #align has_constant_speed_on_with_zero_iff hasConstantSpeedOnWith_zero_iff
 
 theorem HasConstantSpeedOnWith.ratio {l' : ℝ≥0} (hl' : l' ≠ 0) {φ : ℝ → ℝ} (φm : MonotoneOn φ s)

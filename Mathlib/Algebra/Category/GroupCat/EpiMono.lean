@@ -52,7 +52,7 @@ theorem range_eq_top_of_cancel {f : A →* B}
     rw [show (1 : B ⧸ f.range) = (1 : B) from QuotientGroup.mk_one _, QuotientGroup.eq, inv_one,
       one_mul]
     exact ⟨x, rfl⟩
-  replace h : (QuotientGroup.mk' _).ker = (1 : B →* B ⧸ f.range).ker := by rw [h]
+  replace h : (QuotientGroup.mk' f.range).ker = (1 : B →* B ⧸ f.range).ker := by rw [h]
   rwa [ker_one, QuotientGroup.ker_mk'] at h
 #align monoid_hom.range_eq_top_of_cancel MonoidHom.range_eq_top_of_cancel
 #align add_monoid_hom.range_eq_top_of_cancel AddMonoidHom.range_eq_top_of_cancel
@@ -280,13 +280,13 @@ theorem h_apply_fromCoset_nin_range (x : B) (hx : x ∈ f.range) (b : B) (hb : b
     @Equiv.swap_apply_of_ne_of_ne X' _ (fromCoset ⟨f.range, 1, one_leftCoset _⟩) ∞
       (fromCoset ⟨b • ↑f.range, b, rfl⟩) (fromCoset_ne_of_nin_range _ hb) (by simp)]
   simp only [g_apply_fromCoset, leftCoset_assoc]
-  refine' Equiv.swap_apply_of_ne_of_ne (fromCoset_ne_of_nin_range _ fun r => hb _) (by simp)
+  refine Equiv.swap_apply_of_ne_of_ne (fromCoset_ne_of_nin_range _ fun r => hb ?_) (by simp)
   convert Subgroup.mul_mem _ (Subgroup.inv_mem _ hx) r
   rw [← mul_assoc, mul_left_inv, one_mul]
 #align Group.surjective_of_epi_auxs.h_apply_fromCoset_nin_range GroupCat.SurjectiveOfEpiAuxs.h_apply_fromCoset_nin_range
 
 theorem agree : f.range = { x | h x = g x } := by
-  refine' Set.ext fun b => ⟨_, fun hb : h b = g b => by_contradiction fun r => _⟩
+  refine Set.ext fun b => ⟨?_, fun hb : h b = g b => by_contradiction fun r => ?_⟩
   · rintro ⟨a, rfl⟩
     change h (f a) = g (f a)
     ext ⟨⟨_, ⟨y, rfl⟩⟩⟩
@@ -359,7 +359,7 @@ variable {A B : AddGroupCat.{u}} (f : A ⟶ B)
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   have i1 : Epi f ↔ Epi (groupAddGroupEquivalence.inverse.map f) := by
-    refine' ⟨_, groupAddGroupEquivalence.inverse.epi_of_epi_map⟩
+    refine ⟨?_, groupAddGroupEquivalence.inverse.epi_of_epi_map⟩
     intro e'
     apply groupAddGroupEquivalence.inverse.map_epi
   rwa [GroupCat.epi_iff_surjective] at i1

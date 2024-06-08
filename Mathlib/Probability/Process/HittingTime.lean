@@ -38,7 +38,7 @@ hitting times indexed by the natural numbers or the reals. By taking the bounds 
 
 open Filter Order TopologicalSpace
 
-open scoped Classical MeasureTheory NNReal ENNReal Topology BigOperators
+open scoped Classical MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
 
@@ -89,7 +89,7 @@ theorem not_mem_of_lt_hitting {m k : ι} (hk₁ : k < hitting u s n m ω) (hk₂
   classical
   intro h
   have hexists : ∃ j ∈ Set.Icc n m, u j ω ∈ s := ⟨k, ⟨hk₂, le_trans hk₁.le <| hitting_le _⟩, h⟩
-  refine' not_le.2 hk₁ _
+  refine not_le.2 hk₁ ?_
   simp_rw [hitting, if_pos hexists]
   exact csInf_le bddBelow_Icc.inter_of_left ⟨⟨hk₂, le_trans hk₁.le <| hitting_le _⟩, h⟩
 #align measure_theory.not_mem_of_lt_hitting MeasureTheory.not_mem_of_lt_hitting
@@ -112,7 +112,7 @@ theorem hitting_of_le {m : ι} (hmn : m ≤ n) : hitting u s n m ω = m := by
 theorem le_hitting {m : ι} (hnm : n ≤ m) (ω : Ω) : n ≤ hitting u s n m ω := by
   simp only [hitting]
   split_ifs with h
-  · refine' le_csInf _ fun b hb => _
+  · refine le_csInf ?_ fun b hb => ?_
     · obtain ⟨k, hk_Icc, hk_s⟩ := h
       exact ⟨k, hk_Icc, hk_s⟩
     · rw [Set.mem_inter_iff] at hb
@@ -122,7 +122,7 @@ theorem le_hitting {m : ι} (hnm : n ≤ m) (ω : Ω) : n ≤ hitting u s n m ω
 
 theorem le_hitting_of_exists {m : ι} (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
     n ≤ hitting u s n m ω := by
-  refine' le_hitting _ ω
+  refine le_hitting ?_ ω
   by_contra h
   rw [Set.Icc_eq_empty_of_lt (not_le.mp h)] at h_exists
   simp at h_exists
@@ -166,10 +166,10 @@ theorem hitting_le_iff_of_exists [IsWellOrder ι (· < ·)] {m : ι}
   · have h'' : ∃ k ∈ Set.Icc n (min m i), u k ω ∈ s := by
       obtain ⟨k₁, hk₁_mem, hk₁_s⟩ := h_exists
       obtain ⟨k₂, hk₂_mem, hk₂_s⟩ := h'
-      refine' ⟨min k₁ k₂, ⟨le_min hk₁_mem.1 hk₂_mem.1, min_le_min hk₁_mem.2 hk₂_mem.2⟩, _⟩
+      refine ⟨min k₁ k₂, ⟨le_min hk₁_mem.1 hk₂_mem.1, min_le_min hk₁_mem.2 hk₂_mem.2⟩, ?_⟩
       exact min_rec' (fun j => u j ω ∈ s) hk₁_s hk₂_s
     obtain ⟨k, hk₁, hk₂⟩ := h''
-    refine' le_trans _ (hk₁.2.trans (min_le_right _ _))
+    refine le_trans ?_ (hk₁.2.trans (min_le_right _ _))
     exact hitting_le_of_mem hk₁.1 (hk₁.2.trans (min_le_left _ _)) hk₂
 #align measure_theory.hitting_le_iff_of_exists MeasureTheory.hitting_le_iff_of_exists
 
@@ -192,7 +192,7 @@ theorem hitting_lt_iff [IsWellOrder ι (· < ·)] {m : ι} (i : ι) (hi : i ≤ 
       exact h' hi
     exact ⟨hitting u s n m ω, ⟨le_hitting_of_exists h, h'⟩, hitting_mem_set h⟩
   · obtain ⟨k, hk₁, hk₂⟩ := h'
-    refine' lt_of_le_of_lt _ hk₁.2
+    refine lt_of_le_of_lt ?_ hk₁.2
     exact hitting_le_of_mem hk₁.1 (hk₁.2.le.trans hi) hk₂
 #align measure_theory.hitting_lt_iff MeasureTheory.hitting_lt_iff
 
@@ -201,9 +201,9 @@ theorem hitting_eq_hitting_of_exists {m₁ m₂ : ι} (h : m₁ ≤ m₂)
   simp only [hitting, if_pos h']
   obtain ⟨j, hj₁, hj₂⟩ := h'
   rw [if_pos]
-  · refine' le_antisymm _ (csInf_le_csInf bddBelow_Icc.inter_of_left ⟨j, hj₁, hj₂⟩
+  · refine le_antisymm ?_ (csInf_le_csInf bddBelow_Icc.inter_of_left ⟨j, hj₁, hj₂⟩
       (Set.inter_subset_inter_left _ (Set.Icc_subset_Icc_right h)))
-    refine' le_csInf ⟨j, Set.Icc_subset_Icc_right h hj₁, hj₂⟩ fun i hi => _
+    refine le_csInf ⟨j, Set.Icc_subset_Icc_right h hj₁, hj₂⟩ fun i hi => ?_
     by_cases hi' : i ≤ m₁
     · exact csInf_le bddBelow_Icc.inter_of_left ⟨⟨hi.1.1, hi'⟩, hi.2⟩
     · change j ∈ {i | u i ω ∈ s} at hj₂
@@ -218,7 +218,7 @@ theorem hitting_mono {m₁ m₂ : ι} (hm : m₁ ≤ m₂) : hitting u s n m₁ 
   · simp_rw [hitting, if_neg h]
     split_ifs with h'
     · obtain ⟨j, hj₁, hj₂⟩ := h'
-      refine' le_csInf ⟨j, hj₁, hj₂⟩ _
+      refine le_csInf ⟨j, hj₁, hj₂⟩ ?_
       by_contra hneg; push_neg at hneg
       obtain ⟨i, hi₁, hi₂⟩ := hneg
       exact h ⟨i, ⟨hi₁.1.1, hi₂.le⟩, hi₁.2⟩

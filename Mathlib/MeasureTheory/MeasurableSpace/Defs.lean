@@ -528,8 +528,8 @@ theorem measurableSet_sSup {ms : Set (MeasurableSpace α)} {s : Set α} :
 #align measurable_space.measurable_set_Sup MeasurableSpace.measurableSet_sSup
 
 theorem measurableSet_iSup {ι} {m : ι → MeasurableSpace α} {s : Set α} :
-    MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s :=
-  by simp only [iSup, measurableSet_sSup, exists_range_iff]
+    MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s := by
+  simp only [iSup, measurableSet_sSup, exists_range_iff]
 #align measurable_space.measurable_set_supr MeasurableSpace.measurableSet_iSup
 
 theorem measurableSpace_iSup_eq (m : ι → MeasurableSpace α) :

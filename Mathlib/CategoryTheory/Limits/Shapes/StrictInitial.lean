@@ -206,7 +206,7 @@ said object via `limit.π`. -/
 theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
     (H : ∀ (j) (_ : j ≠ i), IsTerminal (F.obj j)) [Subsingleton (i ⟶ i)] : IsIso (limit.π F i) := by
   classical
-    refine' ⟨⟨limit.lift _ ⟨_, ⟨_, _⟩⟩, _, _⟩⟩
+    refine ⟨⟨limit.lift _ ⟨_, ⟨?_, ?_⟩⟩, ?_, ?_⟩⟩
     · exact fun j =>
         dite (j = i)
           (fun h => eqToHom (by cases h; rfl))

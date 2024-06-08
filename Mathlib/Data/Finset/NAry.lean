@@ -3,7 +3,6 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Set.Finite
 
@@ -23,7 +22,6 @@ keep them in sync.
 We do not define `Finset.image₃` as its only purpose would be to prove properties of `Finset.image₂`
 and `Set.image2` already fulfills this task.
 -/
-
 
 open Function Set
 
