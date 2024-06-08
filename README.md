@@ -74,7 +74,7 @@ You may want to subscribe to the `mathlib4` stream
 * If you added a new file, run the following command to update `Mathlib.lean`
 
   ```shell
-  find Mathlib -name "*.lean" | env LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
+  lean exe lint_style
   ```
 
 ### Guidelines
