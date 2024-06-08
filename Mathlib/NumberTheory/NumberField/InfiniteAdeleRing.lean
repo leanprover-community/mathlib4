@@ -31,7 +31,7 @@ noncomputable section
 
 namespace NumberField
 
-variable (K : Type*) [Field K] [NumberField K] {v : InfinitePlace K}
+variable (K : Type*) [Field K] [NumberField K] (v : InfinitePlace K)
 
 /-- The infinite adele ring of a number field. -/
 def infiniteAdeleRing := (v : InfinitePlace K) → v.completion
@@ -44,7 +44,8 @@ instance : CommRing (infiniteAdeleRing K) := Pi.commRing
 
 instance : Inhabited (infiniteAdeleRing K) := ⟨0⟩
 
-instance : Nontrivial (infiniteAdeleRing K) := Pi.nontrivial_at v
+instance : Nontrivial (infiniteAdeleRing K) :=
+  (inferInstanceAs <| Nonempty (InfinitePlace K)).elim fun w => Pi.nontrivial_at w
 
 end DerivedInstances
 
@@ -57,8 +58,6 @@ instance : Algebra K (infiniteAdeleRing K) := Pi.algebra _ _
 /-- The global embedding of a number field into its infinite adele ring,
 sending `x ∈ K` to `(x)ᵥ`. -/
 abbrev globalEmbedding : K →+* infiniteAdeleRing K := algebraMap K (infiniteAdeleRing K)
-
-variable (v)
 
 @[simp]
 theorem globalEmbedding_apply (x : K) : globalEmbedding K x v = (x : v.completion) := rfl
