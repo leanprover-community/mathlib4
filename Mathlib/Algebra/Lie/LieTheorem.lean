@@ -66,7 +66,7 @@ lemma iSup_eq_iteratedRange : ∃ N : ℕ, iSup_iteratedRange v f = iteratedRang
     (iteratedRange_map v f)
   rfl
 
-lemma map_iteratedRange_iSup_le_iSup:
+lemma map_iteratedRange_iSup_le_iSup :
     Submodule.map f (iSup_iteratedRange v f) ≤ iSup_iteratedRange v f := by
   rcases iSup_eq_iteratedRange v f with ⟨N, hN⟩
   nth_rewrite 1 [hN]
@@ -143,7 +143,7 @@ lemma T_map_iSup_iteratedRange (hv : v ∈ altWeightSpace A χ) (x : V)
   exact T_apply_succ A χ z w hv n
 
 theorem iSup_iteratedRange_A_stable (hv : v ∈ altWeightSpace A χ) (x : V)
-    (hx : x ∈ iSup_iteratedRange v (π z)) : (π w) x ∈ (iSup_iteratedRange v (π z)):= by
+    (hx : x ∈ iSup_iteratedRange v (π z)) : (π w) x ∈ (iSup_iteratedRange v (π z)) := by
   have hx' : (π w) x = (T A χ w) x + χ w • x := by simp
   rw [hx']
   exact Submodule.add_mem _ (T_map_iSup_iteratedRange A χ z w hv x hx)
@@ -177,21 +177,20 @@ lemma trace_T_res_zero (hv : v ∈ altWeightSpace A χ) :
   exact LinearMap.isNilpotent_trace_of_isNilpotent (T_res_nilpotent A χ z w hv)
 
 lemma πaz_map_iSup_iteratedRange (a : A) (hv : v ∈ altWeightSpace A χ) (x : V)
-    (hx : x ∈ iSup_iteratedRange v (π z)) : π ⁅a, z⁆ x ∈ iSup_iteratedRange v (π z):= by
+    (hx : x ∈ iSup_iteratedRange v (π z)) : π ⁅a, z⁆ x ∈ iSup_iteratedRange v (π z) := by
   apply iSup_iteratedRange_A_stable A χ z ⟨⁅a, z⁆, lie_mem_left k L A a z a.prop⟩ hv
   assumption
 
-lemma trace_πaz (a : A) (hv : v ∈ altWeightSpace A χ):
+lemma trace_πaz (a : A) (hv : v ∈ altWeightSpace A χ) :
     LinearMap.trace k (iSup_iteratedRange v (π z))
       ((π ⁅a, z⁆).restrict (πaz_map_iSup_iteratedRange A χ z a hv))
     = χ ⟨⁅a, z⁆, lie_mem_left k L A a z a.prop⟩ • (finrank k (iSup_iteratedRange v (π z))) := by
   rw [← LinearMap.trace_id, ← LinearMap.map_smul, ← sub_eq_zero, ← LinearMap.map_sub]
   apply trace_T_res_zero A χ z ⟨⁅a, z⁆, lie_mem_left k L A a z a.prop⟩ hv
 
-theorem trace_πaz_zero (a : A) (hv : v ∈ altWeightSpace A χ):
+theorem trace_πaz_zero (a : A) (hv : v ∈ altWeightSpace A χ) :
     LinearMap.trace k (iSup_iteratedRange v (π z))
-      ((π ⁅a, z⁆).restrict (πaz_map_iSup_iteratedRange A χ z a hv))
-    = 0 := by
+      ((π ⁅a, z⁆).restrict (πaz_map_iSup_iteratedRange A χ z a hv)) = 0 := by
   have hzU : ∀ x ∈ iSup_iteratedRange v (π z), (π z) x ∈ iSup_iteratedRange v (π z) :=
     fun _ hx ↦ (map_iteratedRange_iSup_le_iSup v (π z)) (Submodule.mem_map_of_mem hx)
   have hres : (π ⁅a, z⁆).restrict (πaz_map_iSup_iteratedRange A χ z a hv) =
@@ -200,7 +199,7 @@ theorem trace_πaz_zero (a : A) (hv : v ∈ altWeightSpace A χ):
     simp
   rw [hres, LieRing.of_associative_ring_bracket, map_sub, LinearMap.trace_mul_comm, sub_self]
 
-lemma chi_az_zero (a : A) (hv : v ∈ altWeightSpace A χ) (hv' : v ≠ 0):
+lemma chi_az_zero (a : A) (hv : v ∈ altWeightSpace A χ) (hv' : v ≠ 0) :
     χ ⟨⁅a, z⁆, lie_mem_left k L A a z a.prop⟩ = 0 := by
   have h := trace_πaz A χ z a hv
   rw [trace_πaz_zero A χ z a hv] at h
@@ -216,29 +215,17 @@ lemma chi_az_zero (a : A) (hv : v ∈ altWeightSpace A χ) (hv' : v ≠ 0):
   apply Nat.ne_of_lt'
   apply FiniteDimensional.finrank_pos
 
-theorem altWeightSpace_lie_stable (hv : v ∈ altWeightSpace A χ):  ⁅z, v⁆ ∈ altWeightSpace A χ := by
+theorem altWeightSpace_lie_stable (hv : v ∈ altWeightSpace A χ) :  ⁅z, v⁆ ∈ altWeightSpace A χ := by
   rcases eq_or_ne v 0 with (rfl | hv')
   · simp only [lie_zero, Submodule.zero_mem]
   · intro a
     have hzwv : ⁅⁅a.val, z⁆, v⁆ = χ ⟨⁅a, z⁆, lie_mem_left k L A a z a.prop⟩ • v :=
       hv ⟨⁅a, z⁆, lie_mem_left k L A a z a.prop⟩
-    rw [leibniz_lie, hv a, hzwv, chi_az_zero A χ z a hv hv']
-    simp only [zero_smul, lie_smul, zero_add]
+    rw [leibniz_lie, hv a, hzwv, lie_smul, chi_az_zero A χ z a hv hv', zero_smul, zero_add]
 end
 
 instance : IsCoatomic (Submodule k V) :=
   isCoatomic_of_isAtomic_of_complementedLattice_of_isModular
-
-lemma exists_coatom (n : ℕ) (hV : finrank k V = n + 1) (X : Submodule k V) (hX : X ≠ ⊤) :
-    ∃ W : Submodule k V, X ≤ W ∧ finrank k W = n ∧ IsCoatom W := by
-  obtain (h1 | ⟨W, hW1, hW2⟩) := eq_top_or_exists_le_coatom X; contradiction
-  use W, hW2
-  have hW1' := isSimpleModule_iff_isCoatom.mpr hW1
-  apply isSimpleModule_iff_finrank_eq_one.mp at hW1'
-  have := W.finrank_quotient_add_finrank
-  rw [hV, hW1', add_comm 1 _] at this
-  apply add_right_cancel at this
-  constructor <;> assumption
 
 lemma derivedSeries_eq_top (n : ℕ) (h : derivedSeries k L 1 = ⊤) : derivedSeries k L n = ⊤ := by
   rw [derivedSeries_def]
@@ -257,149 +244,19 @@ theorem derivedSeries_ne_top_of_solvable [IsSolvable k L] [Nontrivial L] :
   aesop
 
 theorem exists_lieIdeal_of_derivedSeries_le (A : Submodule k L) (h : derivedSeries k L 1 ≤ A) :
-    ∃ A' : LieIdeal k L, A = A' := ⟨{
-      carrier := A
-      add_mem' := A.add_mem'
-      zero_mem' := A.zero_mem'
-      smul_mem' := A.smul_mem'
-      lie_mem := by
-        intro x m hm
-        simp only [derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero,
-          LieIdeal.coe_to_lieSubalgebra_to_submodule, SetLike.mem_coe] at *
-        apply h
-        apply LieSubmodule.lie_mem_lie
-        trivial
-        trivial
-    }, rfl⟩
-
-theorem derivedSubalgebra_ne_top [LieAlgebra.IsSolvable k L] [Nontrivial L] :
-    (lieIdealSubalgebra k L (LieAlgebra.derivedSeries k L 1)).toSubmodule ≠ ⊤ := by
-    have h := derivedSeries_ne_top_of_solvable k L
-    simp_all only [derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero, ne_eq,
-      LieIdeal.coe_to_lieSubalgebra_to_submodule, LieSubmodule.coeSubmodule_eq_top_iff,
-      not_false_eq_true]
+    ∃ A' : LieIdeal k L, A = A' := by
+  refine ⟨⟨A, ?_⟩, rfl⟩
+  intro x m _
+  exact h <| LieSubmodule.lie_mem_lie _ _ (LieSubmodule.mem_top _) (LieSubmodule.mem_top _)
 
 section
--- we introduce linear projections from a direct sum to its summands
-variable {R V : Type*} [Ring R] [AddCommGroup V] [Module R V] {A B : Submodule R V}
 
-noncomputable def pr1_aux (hcodis : Codisjoint A B) (v : V) : V :=
-    (Submodule.exists_add_eq_of_codisjoint hcodis v).choose
-
-lemma pr1_aux_mem (hcodis : Codisjoint A B) (v : V) : pr1_aux hcodis v ∈ A :=
-      (Submodule.exists_add_eq_of_codisjoint hcodis v).choose_spec.1
-
-noncomputable def pr2_aux (hcodis : Codisjoint A B) (v : V) : V :=
-    (Submodule.exists_add_eq_of_codisjoint hcodis v).choose_spec.2.choose
-
-lemma pr2_aux_mem (hcodis : Codisjoint A B) (v : V) : pr2_aux hcodis v ∈ B :=
-      (Submodule.exists_add_eq_of_codisjoint hcodis v).choose_spec.2.choose_spec.1
-
-lemma pr1_pr2_add' (hcodis : Codisjoint A B) (v : V) : pr1_aux hcodis v + pr2_aux hcodis v = v :=
-      (Submodule.exists_add_eq_of_codisjoint hcodis v).choose_spec.2.choose_spec.2
-
-lemma id_sub_pr2' (hcodis : Codisjoint A B) (v : V) :
-    v - (pr2_aux hcodis v) = (pr1_aux hcodis v) := by
-  nth_rw 1 [← pr1_pr2_add' hcodis v]
-  simp only [add_sub_cancel_right]
-
-lemma id_sub_pr1' (hcodis : Codisjoint A B) (v : V) :
-    v - (pr1_aux hcodis v) = (pr2_aux hcodis v) := by
-  nth_rw 1 [← pr1_pr2_add' hcodis v]
-  simp only [add_sub_cancel_left]
-
-noncomputable def pr1 (hcodis : Codisjoint A B) (hdis : Disjoint A B) : V →ₗ[R] A where
-  toFun := fun v ↦ ⟨pr1_aux hcodis v, pr1_aux_mem hcodis v⟩
-  map_add' := by
-    intro x y
-    simp only [AddSubmonoid.mk_add_mk, Subtype.mk.injEq]
-    have : pr1_aux hcodis (x + y) - (pr1_aux hcodis x) - (pr1_aux hcodis y) ∈ A ⊓ B := by
-      constructor
-      · apply Submodule.sub_mem
-        apply Submodule.sub_mem <;> apply pr1_aux_mem
-        apply pr1_aux_mem
-      · have : pr1_aux hcodis (x + y) - (pr1_aux hcodis x) - (pr1_aux hcodis y) =
-            (pr2_aux hcodis x) + (pr2_aux hcodis y) - (pr2_aux hcodis (x + y)) := by
-          rw [← id_sub_pr2', ← id_sub_pr2', ← id_sub_pr2']
-          abel
-        rw [this]
-        apply Submodule.sub_mem
-        apply Submodule.add_mem <;> apply pr2_aux_mem
-        apply pr2_aux_mem
-    rw [disjoint_iff.mp hdis, Submodule.mem_bot] at this
-    rw [sub_eq_zero, sub_eq_iff_eq_add, add_comm (pr1_aux hcodis y)] at this
-    assumption
-  map_smul' := by
-    intro c x
-    simp only [RingHom.id_apply, SetLike.mk_smul_mk, Subtype.mk.injEq]
-    have : pr1_aux hcodis (c • x) - c • (pr1_aux hcodis x) ∈ A ⊓ B := by
-      constructor
-      · apply Submodule.sub_mem
-        apply pr1_aux_mem
-        apply Submodule.smul_mem
-        apply pr1_aux_mem
-      · have : pr1_aux hcodis (c • x) - c • pr1_aux hcodis x  =
-            c • pr2_aux hcodis x - pr2_aux hcodis (c • x) := by
-          rw [← id_sub_pr2', ← id_sub_pr2', smul_sub]
-          abel
-        rw [this]
-        apply Submodule.sub_mem
-        apply Submodule.smul_mem
-        apply pr2_aux_mem
-        apply pr2_aux_mem
-    rwa [disjoint_iff.mp hdis, Submodule.mem_bot, sub_eq_zero] at this
-
-
-theorem pr1_val (hcodis : Codisjoint A B) (hdis : Disjoint A B) (v : V) :
-    (pr1 hcodis hdis v).val = pr1_aux hcodis v := rfl
-
-noncomputable def pr2 (hcodis : Codisjoint A B) (hdis : Disjoint A B) : V →ₗ[R] B where
-  toFun := fun v ↦ ⟨pr2_aux hcodis v, pr2_aux_mem hcodis v⟩
-  map_add' := by
-    intro x y
-    simp only [AddSubmonoid.mk_add_mk, Subtype.mk.injEq]
-    rw [← id_sub_pr1' hcodis, ← id_sub_pr1' hcodis, ← id_sub_pr1' hcodis]
-    rw [← pr1_val, (pr1 hcodis hdis).map_add]
-    simp only [AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid]
-    rw [pr1_val, pr1_val]
-    abel
-  map_smul' := by
-    intro x y
-    simp only [RingHom.id_apply, SetLike.mk_smul_mk, Subtype.mk.injEq]
-    rw [← id_sub_pr1', ← id_sub_pr1', ← pr1_val, (pr1 hcodis hdis).map_smul]
-    simp only [SetLike.val_smul]
-    rw [pr1_val, smul_sub]
-
-end
-
-noncomputable def kequivB (z : L) (hz : z ≠ 0): k ≃ₗ[k] Submodule.span k {z} where
-  toFun := fun d ↦ ⟨d • z, Submodule.smul_mem _ d (Submodule.mem_span_singleton_self z)⟩
-  map_add' := by
-    intro c d
-    rw [AddSubmonoid.mk_add_mk, Subtype.mk.injEq]
-    exact add_smul c d z
-  map_smul' := by
-    intro c d
-    rw [smul_eq_mul, RingHom.id_apply, SetLike.mk_smul_mk, Subtype.mk.injEq]
-    exact mul_smul c d z
-  invFun := fun ⟨z', hz'⟩ ↦ (Submodule.mem_span_singleton.mp hz').choose
-  left_inv := by
-    intro c
-    simp only
-    have h : (Submodule.mem_span_singleton.mp
-        (Submodule.smul_mem _ c (Submodule.mem_span_singleton_self z))).choose • z = c • z :=
-      (Submodule.mem_span_singleton.mp
-          (Submodule.smul_mem _ c (Submodule.mem_span_singleton_self z))).choose_spec
-    rw [← sub_eq_zero, ← sub_smul] at *
-    rwa [smul_eq_zero_iff_left hz] at h
-  right_inv := by
-    intro ⟨z', hz'⟩
-    simp only [Subtype.mk.injEq]
-    apply (Submodule.mem_span_singleton.mp hz').choose_spec
+noncomputable def kequivB (z : L) (hz : z ≠ 0) : k ≃ₗ[k] k ∙ z :=
+  LinearEquiv.toSpanNonzeroSingleton k _ z hz
 
 theorem extend_weight (A : LieIdeal k L) (z : L) (hz : z ∉ A)
-    (hcodis : A.toSubmodule ⊔ (Submodule.span k {z}) = ⊤)
-    (hdis : A.toSubmodule ⊓ (Submodule.span k {z}) = ⊥) (χ' : Module.Dual k A) (v : V)
+    (hcodis : A.toSubmodule ⊔ (k ∙ z) = ⊤)
+    (hdis : A.toSubmodule ⊓ (k ∙ z) = ⊥) (χ' : Module.Dual k A) (v : V)
     (hv : v ≠ 0) (hvA' : ∀ (x : A), ⁅x, v⁆ = χ' x • v) :
   ∃ (χ : Module.Dual k L) (v : V), v ≠ 0 ∧ ∀ (x : L), ⁅x, v⁆ = χ x • v := by
   let πz_res : altWeightSpace (V := V) A χ' →ₗ[k] altWeightSpace (V := V) A χ' :=
@@ -411,13 +268,13 @@ theorem extend_weight (A : LieIdeal k L) (z : L) (hz : z ∉ A)
   obtain ⟨⟨v', hv'⟩, hv''⟩ := Module.End.HasEigenvalue.exists_hasEigenvector hc
   rw [← codisjoint_iff] at hcodis
   rw [← disjoint_iff] at hdis
-  have aux : IsCompl A.toSubmodule (Submodule.span k {z}) := ⟨hdis, hcodis⟩
+  have aux : IsCompl A.toSubmodule (k ∙ z) := ⟨hdis, hcodis⟩
   have hz' : z ≠ 0 := by
     rintro rfl
     apply hz <| A.zero_mem
 
-  let π1 := A.toSubmodule.linearProjOfIsCompl (Submodule.span k {z}) aux
-  let π2 := (Submodule.span k {z}).linearProjOfIsCompl ↑A aux.symm
+  let π1 := A.toSubmodule.linearProjOfIsCompl (k ∙ z) aux
+  let π2 := (k ∙ z).linearProjOfIsCompl ↑A aux.symm
 
   use (χ'.comp π1) + c • ((kequivB z hz').symm.comp π2), v'
   constructor
@@ -461,14 +318,15 @@ theorem LieModule.exists_forall_lie_eq_smul_finrank :
     use 0, v, hv
     intro x
     simp only [Subsingleton.elim x 0, zero_lie, map_zero, zero_smul]
-  obtain H|⟨A, hcoatomA, hAL⟩ := eq_top_or_exists_le_coatom (derivedSeries k L 1 : Submodule k L)
-  · exact (derivedSubalgebra_ne_top H).elim
+  obtain H|⟨A, hcoatomA, hAL⟩ := eq_top_or_exists_le_coatom (derivedSeries k L 1).toSubmodule
+  · rw [LieSubmodule.coeSubmodule_eq_top_iff] at H
+    exact (derivedSeries_ne_top_of_solvable k L H).elim
   obtain ⟨z, hz⟩ : ∃ (z : L), z ∉ A := by
     by_contra! h
     apply hcoatomA.1
     rw [eq_top_iff]
     exact fun ⦃x⦄ _ => h x
-  set B := Submodule.span k {z} with hBdef
+  set B := k ∙ z with hBdef
   have htopdecomp : A ⊔ B = ⊤ := by
     apply hcoatomA.2
     rw [left_lt_sup]
