@@ -32,7 +32,7 @@ Hausdorff space as continuous maps such that preimages of compact sets are compa
 * `IsProperMap.pi_map`: any product of proper maps is proper.
 * `isProperMap_iff_isClosedMap_and_compact_fibers`: a map is proper if and only if it is
   continuous, closed, and has compact fibers
-* `isProperMap_iff_isCompact_preimage`: a map to a compactly generated space is proper if
+* `isProperMap_iff_isCompact_preimage`: a map to a Hausdorff compactly generated space is proper if
   and only if it is continuous and preimages of compact sets are compact. This is in particular
   true if the space is locally compact or sequential.
 * `isProperMap_iff_universally_closed`: a map is proper if and only if it is continuous and
@@ -221,7 +221,7 @@ lemma IsProperMap.pi_map {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
 /-- The preimage of a compact set by a proper map is again compact. See also
 `isProperMap_iff_isCompact_preimage` which proves that this property completely characterizes
-proper map when the codomain is locally compact and Hausdorff. -/
+proper map when the codomain is compactly generated and Hausdorff. -/
 lemma IsProperMap.isCompact_preimage (h : IsProperMap f) {K : Set Y} (hK : IsCompact K) :
     IsCompact (f ⁻¹' K) := by
   rw [isCompact_iff_ultrafilter_le_nhds]
@@ -347,9 +347,9 @@ theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocal
 such that the preimage of any compact set is compact.
 
 This result is a direct consequence of `isProperMap_iff_isCompact_preimage`, because any
-weakly locally compact space is compactly generated. In the future it should be inferred
-by typeclass inference, however compactly generated spaces are not yet in Mathlib, therefore
-we also add this theorem. -/
+Hausdorff and weakly locally compact space is compactly generated.
+In the future it should be inferred by typeclass inference, however compactly generated spaces
+are not yet in Mathlib, therefore we also add this theorem. -/
 theorem WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage [T2Space Y]
     [WeaklyLocallyCompactSpace Y] :
     IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
@@ -370,7 +370,7 @@ theorem compactlyGenerated_of_sequentialSpace [T2Space X] [SequentialSpace X] {s
 such that the preimage of any compact set is compact.
 
 This result is a direct consequence of `isProperMap_iff_isCompact_preimage`, because any
-sequential space is compactly generated. In the future it should be inferred
+Hausdorff and sequential space is compactly generated. In the future it should be inferred
 by typeclass inference, however compactly generated spaces are not yet in Mathlib, therefore
 we also add this theorem. -/
 theorem SequentialSpace.isProperMap_iff_isCompact_preimage [T2Space Y] [SequentialSpace Y] :
