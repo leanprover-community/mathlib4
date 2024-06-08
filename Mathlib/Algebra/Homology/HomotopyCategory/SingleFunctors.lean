@@ -29,7 +29,8 @@ namespace CochainComplex
 open HomologicalComplex
 
 /-- The collection of all single functors `C ⥤ CochainComplex C ℤ` along with
-their compatibilites with shifts. -/
+their compatibilites with shifts. (This definition has purposely no `simps`
+attribute, as the generated lemmas would not be very useful.) -/
 noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ where
   functor n := single _ _ n
   shiftIso n a a' ha' := NatIso.ofComponents
@@ -57,7 +58,9 @@ instance (n : ℤ) : ((singleFunctors C).functor n).Additive := by
   infer_instance
 
 /-- The single functor `C ⥤ CochainComplex C ℤ` which sends `X` to the complex
-consisting of `X` in degree `n : ℤ` and zero otherwise. -/
+consisting of `X` in degree `n : ℤ` and zero otherwise.
+(This is definitionally equal to `HomologicalComplex.single C (up ℤ) n`,
+but `singleFunctor C n` is the preferred term when interactions with shifts are relevant.) -/
 noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
 end CochainComplex
