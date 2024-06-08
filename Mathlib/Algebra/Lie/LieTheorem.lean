@@ -411,13 +411,15 @@ theorem extend_weight (A : LieIdeal k L) (z : L) (hz : z ∉ A)
   obtain ⟨⟨v', hv'⟩, hv''⟩ := Module.End.HasEigenvalue.exists_hasEigenvector hc
   rw [← codisjoint_iff] at hcodis
   rw [← disjoint_iff] at hdis
+  have aux : IsCompl A.toSubmodule (Submodule.span k {z}) := ⟨hdis, hcodis⟩
   have hz' : z ≠ 0 := by
-    intro h
-    rw [h] at hz
-    apply hz
-    apply Submodule.zero_mem
+    rintro rfl
+    apply hz <| A.zero_mem
 
-  use (χ'.comp (pr1 hcodis hdis)) + c • ((kequivB z hz').symm.comp (pr2 hcodis hdis)), v'
+  let π1 := A.toSubmodule.linearProjOfIsCompl (Submodule.span k {z}) aux
+  let π2 := (Submodule.span k {z}).linearProjOfIsCompl ↑A aux.symm
+
+  use (χ'.comp π1) + c • ((kequivB z hz').symm.comp π2), v'
   constructor
   · have := hv''.right
     rw [ne_eq]
@@ -425,25 +427,21 @@ theorem extend_weight (A : LieIdeal k L) (z : L) (hz : z ∉ A)
     apply this
     apply (Submodule.mk_eq_zero _ _).mpr h
   · intro x
-    nth_rw 1 [← pr1_pr2_add' hcodis x, add_lie]
-    have pr1lie : ⁅pr1_aux hcodis x, v'⁆ = ⁅(pr1 hcodis hdis x).val, v'⁆ := rfl
-    have pr2lie : ⁅pr2_aux hcodis x, v'⁆ = ⁅(pr2 hcodis hdis x).val, v'⁆ := rfl
-    rw [pr1lie, pr2lie, hv' ((pr1 hcodis hdis) x), LinearMap.add_apply, LinearMap.comp_apply]
-    rw [add_smul]
+    have π1_add_π2 : (π1 x : L) + π2 x = x :=
+      Submodule.linear_proj_add_linearProjOfIsCompl_eq_self aux x
+    nth_rw 1 [← π1_add_π2, add_lie]
+    rw [hv' (π1 x), LinearMap.add_apply, LinearMap.comp_apply, add_smul, add_right_inj]
     simp only [LieIdeal.coe_to_lieSubalgebra_to_submodule, LinearMap.smul_apply, LinearMap.coe_comp,
-      LinearEquiv.coe_coe, Function.comp_apply, smul_eq_mul, add_right_inj]
-    rcases Submodule.mem_span_singleton.mp (((pr2 hcodis hdis) x).prop) with ⟨d, hd⟩
+      LinearEquiv.coe_coe, Function.comp_apply, smul_eq_mul]
+    rcases Submodule.mem_span_singleton.mp ((π2 x).prop) with ⟨d, hd⟩
     rw [← hd, smul_lie]
     have : ⁅z, v'⁆ = πz_res ⟨v', hv'⟩ := rfl
     rw [this, Module.End.HasEigenvector.apply_eq_smul hv'', mul_comm, mul_smul]
     simp only [SetLike.mk_smul_mk]
-    have : (pr2 hcodis hdis) x = d • ⟨z, Submodule.mem_span_singleton_self z⟩ := by
-      simp only [SetLike.mk_smul_mk, hd]
-    rw [this]
-    rw [SetLike.mk_smul_mk]
-    rw [← LinearEquiv.invFun_eq_symm]
-    have : ⟨d • z, _⟩  =  (kequivB z hz').toFun d := rfl
-    rw [this, (kequivB z hz').left_inv]
+    congr 2
+    rw [LinearEquiv.eq_symm_apply]
+    ext
+    exact hd
 
 
 theorem LieIdeal.incl_injective (I : LieIdeal k L) : Function.Injective I.incl := by
