@@ -3068,6 +3068,7 @@ import Mathlib.MeasureTheory.Measure.WithDensityFinite
 import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
 import Mathlib.MeasureTheory.Order.Group.Lattice
 import Mathlib.MeasureTheory.Order.Lattice
+import Mathlib.MeasureTheory.Order.UpperLower
 import Mathlib.MeasureTheory.OuterMeasure.AE
 import Mathlib.MeasureTheory.OuterMeasure.Basic
 import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
