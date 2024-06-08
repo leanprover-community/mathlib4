@@ -688,7 +688,7 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
       ext m f <;> simp [e]
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
-    exact Bijective.Prod_map (bijective_dual_eval R M) (bijective_dual_eval R N)
+    exact (bijective_dual_eval R M).prodMap (bijective_dual_eval R N)
 
 variable {R M N} in
 lemma equiv (e : M ≃ₗ[R] N) : IsReflexive R N where
