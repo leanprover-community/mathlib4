@@ -707,13 +707,13 @@ variable (B : M₁ →ₗ[R₁] M₁ →ₗ[R₁] N₂)
 theorem _root_.Matrix.Nondegenerate.toLinearMap₂' {M : Matrix ι ι R₁} (h : M.Nondegenerate) :
     (Matrix.toLinearMap₂' (R := R₁) M).SeparatingLeft (R := R₁) := fun x hx =>
   h.eq_zero_of_ortho fun y => by simpa only [toLinearMap₂'_apply'] using hx y
-#align matrix.nondegenerate.to_linear_map₂' ScalarMatrix.Nondegenerate.toLinearMap₂'
+#align matrix.nondegenerate.to_linear_map₂' Matrix.Nondegenerate.toLinearMap₂'
 
 @[simp]
 theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff {M : Matrix ι ι R₁} :
     (Matrix.toLinearMap₂' (R := R₁) M).SeparatingLeft (R := R₁) ↔ M.Nondegenerate :=
   ⟨fun h v hv => h v fun w => (M.toLinearMap₂'_apply' _ _).trans <| hv w,
-    ScalarMatrix.Nondegenerate.toLinearMap₂' (R₁ := R₁)⟩
+    Matrix.Nondegenerate.toLinearMap₂' (R₁ := R₁)⟩
 #align matrix.separating_left_to_linear_map₂'_iff Matrix.separatingLeft_toLinearMap₂'_iff
 
 theorem _root_.Matrix.Nondegenerate.toLinearMap₂ {M : Matrix ι ι R₁} (h : M.Nondegenerate)
