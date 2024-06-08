@@ -194,10 +194,7 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] [Module.Finite ℤ S] [Module
   suffices hquot : map (P ^ i.succ).mkQ (P ^ i) ≃ S ⧸ P by
     rw [pow_succ' (cardQuot P), ← ih, cardQuot_apply (P ^ i.succ), ←
       card_quotient_mul_card_quotient (P ^ i) (P ^ i.succ) this.le, cardQuot_apply (P ^ i),
-      cardQuot_apply P]
-    congr 1
-    rw [Fintype.card_eq]
-    exact ⟨hquot⟩
+      cardQuot_apply P, Nat.card_congr hquot]
   choose a a_mem a_not_mem using SetLike.exists_of_lt this
   choose f g hg hf using fun c (hc : c ∈ P ^ i) =>
     Ideal.exists_mul_add_mem_pow_succ hP a c a_mem a_not_mem hc
