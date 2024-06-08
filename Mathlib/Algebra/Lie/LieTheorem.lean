@@ -264,7 +264,7 @@ theorem extend_weight (A : LieIdeal k L) (z : L) (hz : z ∉ A)
       (fun _ hx ↦ altWeightSpace_lie_stable A χ' z hx)
   have altWeightSpace_nontrivial : Nontrivial (altWeightSpace (V := V) A χ') :=
     ⟨⟨v, hvA'⟩, ⟨0, Subtype.coe_ne_coe.mp hv⟩⟩
-  obtain ⟨c, hc⟩ := Module.End.exists_eigenvalue  πz_res
+  obtain ⟨c, hc⟩ := Module.End.exists_eigenvalue πz_res
   obtain ⟨⟨v', hv'⟩, hv''⟩ := Module.End.HasEigenvalue.exists_hasEigenvector hc
   rw [← codisjoint_iff] at hcodis
   rw [← disjoint_iff] at hdis
