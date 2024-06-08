@@ -3,9 +3,11 @@ Copyright (c) 2019 mathlib community. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
 -/
-import Mathlib.Init.Data.Nat.Notation
-import Mathlib.Util.CompileInductive
 import Batteries.Data.RBMap.Basic
+import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Mathport.Rename
+import Mathlib.Tactic.TypeStar
+import Mathlib.Util.CompileInductive
 
 #align_import data.tree from "leanprover-community/mathlib"@"ed989ff568099019c6533a4d94b27d852a5710d8"
 
