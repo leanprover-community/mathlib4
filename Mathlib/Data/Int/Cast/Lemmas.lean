@@ -58,7 +58,7 @@ variable [AddGroupWithOne α]
 @[simp] lemma coe_castAddHom : ⇑(castAddHom α) = fun x : ℤ => (x : α) := rfl
 #align int.coe_cast_add_hom Int.coe_castAddHom
 
-lemma Even.intCast {n : ℤ} (h : Even n) : Even (n : α) := h.map (castAddHom α)
+lemma _root_.Even.intCast {n : ℤ} (h : Even n) : Even (n : α) := h.map (castAddHom α)
 
 variable [CharZero α] {m n : ℤ}
 
@@ -119,11 +119,6 @@ lemma cast_comm (n : ℤ) (x : α) : n * x = x * n := (cast_commute ..).eq
 lemma commute_cast (a : α) (n : ℤ) : Commute a n := (cast_commute ..).symm
 #align int.commute_cast Int.commute_cast
 
-end NonAssocRing
-
-section Ring
-variable [Ring α]
-
 @[simp] lemma _root_.zsmul_eq_mul (a : α) : ∀ n : ℤ, n • a = n * a
   | (n : ℕ) => by rw [natCast_zsmul, nsmul_eq_mul, Int.cast_natCast]
   | -[n+1] => by simp [Nat.cast_succ, neg_add_rev, Int.cast_negSucc, add_mul]
@@ -133,8 +128,12 @@ lemma _root_.zsmul_eq_mul' (a : α) (n : ℤ) : n • a = a * n := by
   rw [zsmul_eq_mul, (n.cast_commute a).eq]
 #align zsmul_eq_mul' zsmul_eq_mul'
 
-lemma _root_.Odd.intCast {n : ℤ} (hn : Odd n) : Odd (n : α) :=
-  hn.map (castRingHom α)
+end NonAssocRing
+
+section Ring
+variable [Ring α] {n : ℤ}
+
+lemma _root_.Odd.intCast (hn : Odd n) : Odd (n : α) := hn.map (castRingHom α)
 
 end Ring
 

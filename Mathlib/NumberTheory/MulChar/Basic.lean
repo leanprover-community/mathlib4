@@ -5,6 +5,7 @@ Authors: Michael Stoll
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Data.Fintype.Units
+import Mathlib.GroupTheory.OrderOfElement
 
 #align_import number_theory.legendre_symbol.mul_character from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 

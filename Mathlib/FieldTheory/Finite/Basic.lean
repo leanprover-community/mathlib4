@@ -366,7 +366,7 @@ theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := b
     apply nodup_roots
     rw [separable_def]
     convert isCoprime_one_right.neg_right (R := K[X]) using 1
-    rw [derivative_sub, derivative_X, derivative_X_pow, CharP.cast_card_eq_zero K, C_0,
+    rw [derivative_sub, derivative_X, derivative_X_pow, Nat.cast_card_eq_zero K, C_0,
       zero_mul, zero_sub]
 set_option linter.uppercaseLean3 false in
 #align finite_field.roots_X_pow_card_sub_X FiniteField.roots_X_pow_card_sub_X
