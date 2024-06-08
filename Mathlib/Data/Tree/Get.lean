@@ -12,11 +12,11 @@ import Mathlib.Data.Tree.Basic
 # Binary tree get operation
 
 In this file we define `Tree.indexOf`, `Tree.get`, and `Tree.getOrElse`.
-These definitions were moved from the main file to avoid dependency on `Num`.
+These definitions were moved from the main file to avoid a dependency on `Num`.
 
 ## References
 
-<https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html>
+<https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html#170999997>
 -/
 
 namespace Tree
