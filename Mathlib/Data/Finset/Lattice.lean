@@ -886,7 +886,7 @@ lemma prodMk_sup'_sup' (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → α) (g : 
     exact ⟨by aesop, fun h ↦ ⟨fun i hi ↦ (h _ _ hi hb).1, fun j hj ↦ (h _ _ ha hj).2⟩⟩
 
 /-- See also `Finset.prodMk_sup'_sup'`. -/
--- @[simp] -- TODO: Why does `Prod_map` simplify the LHS?
+-- @[simp] -- TODO: Why does `Prod.map_apply` simplify the LHS?
 lemma sup'_prodMap (hst : (s ×ˢ t).Nonempty) (f : ι → α) (g : κ → β) :
     sup' (s ×ˢ t) hst (Prod.map f g) = (sup' s hst.fst f, sup' t hst.snd g) :=
   (prodMk_sup'_sup' _ _ _ _).symm
@@ -1075,7 +1075,7 @@ lemma prodMk_inf'_inf' (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → α) (g : 
   prodMk_sup'_sup' (α := αᵒᵈ) (β := βᵒᵈ) hs ht _ _
 
 /-- See also `Finset.prodMk_inf'_inf'`. -/
--- @[simp] -- TODO: Why does `Prod_map` simplify the LHS?
+-- @[simp] -- TODO: Why does `Prod.map_apply` simplify the LHS?
 lemma inf'_prodMap (hst : (s ×ˢ t).Nonempty) (f : ι → α) (g : κ → β) :
     inf' (s ×ˢ t) hst (Prod.map f g) = (inf' s hst.fst f, inf' t hst.snd g) :=
   (prodMk_inf'_inf' _ _ _ _).symm

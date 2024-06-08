@@ -107,7 +107,7 @@ theorem corners_theorem_nat (hε : 0 < ε) (hn : cornersTheoremBound (ε / 9) �
   have : A = Prod.map Fin.val Fin.val ''
       (Prod.map Nat.cast Nat.cast '' A : Set (Fin (2 * n).succ × Fin (2 * n).succ)) := by
     rw [Set.image_image, Set.image_congr, Set.image_id]
-    simp only [mem_coe, Nat.succ_eq_add_one, Prod_map, Fin.val_natCast, id_eq, Prod.forall,
+    simp only [mem_coe, Nat.succ_eq_add_one, Prod.map_apply, Fin.val_natCast, id_eq, Prod.forall,
       Prod.mk.injEq, Nat.mod_succ_eq_iff_lt]
     rintro a b hab
     have := hAn hab

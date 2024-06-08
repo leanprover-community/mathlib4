@@ -1680,7 +1680,7 @@ end ConstSMul
 
 /-! ### Cartesian product of two functions -/
 
-section Prod_map
+section prodMap
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
@@ -1740,7 +1740,7 @@ theorem contDiff_prod_mk_right (e₀ : E) : ContDiff 𝕜 n fun f : F => (e₀, 
   contDiff_const.prod contDiff_id
 #align cont_diff_prod_mk_right contDiff_prod_mk_right
 
-end Prod_map
+end prodMap
 
 /-! ### Inversion in a complete normed algebra -/
 

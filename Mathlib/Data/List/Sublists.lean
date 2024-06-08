@@ -462,7 +462,7 @@ theorem revzip_sublists' (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip 
   · simp_all only [sublists'_nil, reverse_cons, reverse_nil, nil_append, zip_cons_cons,
       zip_nil_right, mem_singleton, Prod.mk.injEq, append_nil, Perm.refl]
   · rw [sublists'_cons, reverse_append, zip_append, ← map_reverse, zip_map_right, zip_map_left] at *
-      <;> [simp only [mem_append, mem_map, Prod_map, id_eq, Prod.mk.injEq, Prod.exists,
+      <;> [simp only [mem_append, mem_map, Prod.map_apply, id_eq, Prod.mk.injEq, Prod.exists,
         exists_eq_right_right] at h; simp]
     rcases h with (⟨l₁, l₂', h, rfl, rfl⟩ | ⟨l₁', h, rfl⟩)
     · exact perm_middle.trans ((IH _ _ h).cons _)
