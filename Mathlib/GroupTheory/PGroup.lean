@@ -134,6 +134,7 @@ noncomputable abbrev powEquiv' {n : ℕ} (hn : ¬p ∣ n) : G ≃ G :=
 theorem index (H : Subgroup G) [H.FiniteIndex] : ∃ n : ℕ, H.index = p ^ n := by
   haveI := H.normalCore.fintypeQuotientOfFiniteIndex
   obtain ⟨n, hn⟩ := iff_card.mp (hG.to_quotient H.normalCore)
+  rw [← Nat.card_eq_fintype_card] at hn
   obtain ⟨k, _, hk2⟩ :=
     (Nat.dvd_prime_pow hp.out).mp
       ((congr_arg _ (H.normalCore.index_eq_card.trans hn)).mp
@@ -170,7 +171,7 @@ theorem card_orbit (a : α) [Fintype (orbit G a)] : ∃ n : ℕ, card (orbit G a
   let ϕ := orbitEquivQuotientStabilizer G a
   haveI := Fintype.ofEquiv (orbit G a) ϕ
   haveI := (stabilizer G a).finiteIndex_of_finite_quotient
-  rw [card_congr ϕ, ← Subgroup.index_eq_card]
+  rw [card_congr ϕ, ← Nat.card_eq_fintype_card, ← Subgroup.index_eq_card]
   exact hG.index (stabilizer G a)
 #align is_p_group.card_orbit IsPGroup.card_orbit
 
