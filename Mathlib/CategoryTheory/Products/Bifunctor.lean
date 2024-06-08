@@ -112,14 +112,16 @@ lemma comp_app₃ {H G K : C ⥤ D ⥤ E ⥤ F} (α : H ⟶ G) (β : G ⟶ K) (X
     (Z : E) : (α ≫ β).app₃ X Y Z = α.app₃ X Y Z ≫ β.app₃ X Y Z := rfl
 
 /- Naturality for natural transformations in two variables. -/
-@[reassoc (attr := simp)]
+-- can't be simp because `H.map₂ f g ≫ α.app₂ X' Y'` isn't in simp NF,
+-- as it's left associated
+@[reassoc]
 lemma naturality₂ {H G : C ⥤ D ⥤ E} (α : NatTrans H G) {X Y X' Y'} (f : X ⟶ X')
     (g : Y ⟶ Y') : H.map₂ f g ≫ α.app₂ X' Y' = α.app₂ X Y ≫ G.map₂ f g := by
   rw [Category.assoc, naturality, naturality_app_assoc]
 
 @[reassoc]
-theorem naturality_app_app {G H : C ⥤ D ⥤ E ⥤ F} (T : G ⟶ H) (Z : E) {X₁ Y₁ : C}
-    {X₂ Y₂ : D} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
+theorem naturality_app_app {G H : C ⥤ D ⥤ E ⥤ F} (T : NatTrans G H) (Z : E)
+    {X₁ Y₁ : C} {X₂ Y₂ : D} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
     (G.map f).app₂ X₂ Z ≫ ((G.obj Y₁).map g).app Z ≫ T.app₃ Y₁ Y₂ Z =
       T.app₃ X₁ X₂ Z ≫ (H.map₂ f g).app Z := by
   rw [naturality_app, ← Category.assoc, ← comp_app₂,
@@ -127,7 +129,7 @@ theorem naturality_app_app {G H : C ⥤ D ⥤ E ⥤ F} (T : G ⟶ H) (Z : E) {X�
   rfl
 
 /- Naturality for natural transformations in three variables. -/
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma naturality₃ {H G : C ⥤ D ⥤ E ⥤ F} (α : H ⟶ G) {X Y Z X' Y' Z'}
     (f : X ⟶ X') (g : Y ⟶ Y') (h : Z ⟶ Z') :
     H.map₃ f g h ≫ α.app₃ X' Y' Z' = α.app₃ X Y Z ≫ G.map₃ f g h := by
