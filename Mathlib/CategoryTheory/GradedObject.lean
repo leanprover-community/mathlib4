@@ -285,6 +285,12 @@ variable (j : J)
 for all `j : J`, the coproduct of all `X i` such `p i = j` exists. -/
 abbrev HasMap : Prop := ∀ (j : J), HasCoproduct (X.mapObjFun p j)
 
+variable {X Y} in
+lemma hasMap_of_iso [HasMap X p] : HasMap Y p := fun j => by
+  have α : Discrete.functor (X.mapObjFun p j) ≅ Discrete.functor (Y.mapObjFun p j) :=
+    Discrete.natIso (fun ⟨i, _⟩ => (GradedObject.eval i).mapIso e)
+  exact hasColimitOfIso α.symm
+
 variable [X.HasMap p] [Y.HasMap p] [Z.HasMap p]
 
 /-- Given `X : GradedObject I C` and `p : I → J`, `X.mapObj p` is the graded object by `J`
