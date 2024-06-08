@@ -74,16 +74,15 @@ We use the following type variables in this file:
 * `G`, `G'` : normed vector spaces over `𝕜`.
 -/
 
-universe u v v' wE wE₁ wE' wEi wG wG'
+universe u v v' wE wE₁ wE' wG wG'
 
 section Seminorm
 
-variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {n : ℕ} {E : ι → Type wE} {E₁ : ι → Type wE₁}
-  {E' : ι' → Type wE'} {Ei : Fin n.succ → Type wEi} {G : Type wG} {G' : Type wG'} [Fintype ι]
+variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {E : ι → Type wE} {E₁ : ι → Type wE₁}
+  {E' : ι' → Type wE'} {G : Type wG} {G' : Type wG'} [Fintype ι]
   [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, SeminormedAddCommGroup (E i)]
   [∀ i, NormedSpace 𝕜 (E i)] [∀ i, SeminormedAddCommGroup (E₁ i)] [∀ i, NormedSpace 𝕜 (E₁ i)]
   [∀ i, SeminormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
-  [∀ i, SeminormedAddCommGroup (Ei i)] [∀ i, NormedSpace 𝕜 (Ei i)]
   [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [SeminormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 /-!
@@ -379,7 +378,7 @@ theorem le_opNorm_mul_pow_card_of_le {b : ℝ} (hm : ‖m‖ ≤ b) :
 
 @[deprecated] alias le_op_norm_mul_pow_card_of_le := le_opNorm_mul_pow_card_of_le -- 2024-02-02
 
-theorem le_opNorm_mul_pow_of_le {Ei : Fin n → Type*} [∀ i, NormedAddCommGroup (Ei i)]
+theorem le_opNorm_mul_pow_of_le {n : ℕ} {Ei : Fin n → Type*} [∀ i, SeminormedAddCommGroup (Ei i)]
     [∀ i, NormedSpace 𝕜 (Ei i)] (f : ContinuousMultilinearMap 𝕜 Ei G) {m : ∀ i, Ei i} {b : ℝ}
     (hm : ‖m‖ ≤ b) : ‖f m‖ ≤ ‖f‖ * b ^ n := by
   simpa only [Fintype.card_fin] using f.le_opNorm_mul_pow_card_of_le hm
@@ -821,7 +820,7 @@ end
 
 section
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
+variable {n : ℕ} {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 
 theorem norm_mkPiAlgebraFin_succ_le : ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n.succ A‖ ≤ 1 := by
   refine opNorm_le_bound _ zero_le_one fun m => ?_
