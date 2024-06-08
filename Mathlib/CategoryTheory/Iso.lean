@@ -605,8 +605,8 @@ theorem mapIso_symm (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.mapIso i.symm = (F
 
 @[simp]
 theorem mapIso_trans (F : C ⥤ D) {X Y Z : C} (i : X ≅ Y) (j : Y ≅ Z) :
-    F.mapIso (i ≪≫ j) = F.mapIso i ≪≫ F.mapIso j :=
-  by ext; apply Functor.map_comp
+    F.mapIso (i ≪≫ j) = F.mapIso i ≪≫ F.mapIso j := by
+  ext; apply Functor.map_comp
 #align category_theory.functor.map_iso_trans CategoryTheory.Functor.mapIso_trans
 
 @[simp]

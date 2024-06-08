@@ -109,6 +109,14 @@ theorem finset_sum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ
   map_sum (lcoeff R n) _ _
 #align polynomial.finset_sum_coeff Polynomial.finset_sum_coeff
 
+lemma coeff_list_sum (l : List R[X]) (n : ℕ) :
+    l.sum.coeff n = (l.map (lcoeff R n)).sum :=
+  map_list_sum (lcoeff R n) _
+
+lemma coeff_list_sum_map {ι : Type*} (l : List ι) (f : ι → R[X]) (n : ℕ) :
+    (l.map f).sum.coeff n = (l.map (fun a => (f a).coeff n)).sum := by
+  simp_rw [coeff_list_sum, List.map_map, Function.comp, lcoeff_apply]
+
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
   rcases p with ⟨⟩
@@ -262,8 +270,9 @@ theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
 #align polynomial.coeff_mul_X_pow Polynomial.coeff_mul_X_pow
 
 @[simp]
-theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) : coeff (Polynomial.X ^ n * p) (d + n) = coeff p d :=
-  by rw [(commute_X_pow p n).eq, coeff_mul_X_pow]
+theorem coeff_X_pow_mul (p : R[X]) (n d : ℕ) :
+    coeff (Polynomial.X ^ n * p) (d + n) = coeff p d := by
+  rw [(commute_X_pow p n).eq, coeff_mul_X_pow]
 #align polynomial.coeff_X_pow_mul Polynomial.coeff_X_pow_mul
 
 theorem coeff_mul_X_pow' (p : R[X]) (n d : ℕ) :

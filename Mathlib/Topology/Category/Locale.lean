@@ -27,7 +27,7 @@ def Locale :=
 
 namespace Locale
 
-instance : CoeSort Locale (Type*) :=
+instance : CoeSort Locale Type* :=
   ⟨fun X => X.unop⟩
 
 instance (X : Locale) : Frame X :=

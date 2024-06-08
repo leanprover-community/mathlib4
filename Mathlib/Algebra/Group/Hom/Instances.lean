@@ -106,6 +106,11 @@ theorem AddMonoid.End.intCast_apply [AddCommGroup M] (z : ℤ) (m : M) :
 @[deprecated (since := "2024-04-17")]
 alias AddMonoid.End.int_cast_apply := AddMonoid.End.intCast_apply
 
+@[to_additive (attr := simp)] lemma MonoidHom.pow_apply {M N : Type*} [MulOneClass M]
+    [CommMonoid N] (f : M →* N) (n : ℕ) (x : M) :
+    (f ^ n) x = (f x) ^ n :=
+  rfl
+
 /-!
 ### Morphisms of morphisms
 

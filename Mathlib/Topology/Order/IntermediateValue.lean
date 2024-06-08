@@ -514,7 +514,7 @@ lemma isTotallyDisconnected_iff_lt {s : Set α} :
     nontrivial_iff_exists_lt, not_exists, not_and]
   refine ⟨fun h x hx y hy hxy ↦ ?_, fun h t hts ht x hx y hy hxy ↦ ?_⟩
   · simp_rw [← not_ordConnected_inter_Icc_iff hx hy]
-    exact fun hs ↦ h _ (inter_subset_left _ _) hs _ ⟨hx, le_rfl, hxy.le⟩ _ ⟨hy, hxy.le, le_rfl⟩ hxy
+    exact fun hs ↦ h _ inter_subset_left hs _ ⟨hx, le_rfl, hxy.le⟩ _ ⟨hy, hxy.le, le_rfl⟩ hxy
   · obtain ⟨z, h1z, h2z⟩ := h x (hts hx) y (hts hy) hxy
     exact h1z <| hts <| ht.1 hx hy ⟨h2z.1.le, h2z.2.le⟩
 
@@ -610,8 +610,9 @@ theorem ContinuousOn.surjOn_Icc {s : Set α} [hs : OrdConnected s] {f : α → �
 /-- **Intermediate value theorem**: if `f` is continuous on an order-connected set `s` and `a`,
 `b` are two points of this set, then `f` sends `s` to a superset of `[f x, f y]`. -/
 theorem ContinuousOn.surjOn_uIcc {s : Set α} [hs : OrdConnected s] {f : α → δ}
-    (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) : SurjOn f s (uIcc (f a) (f b)) :=
-  by rcases le_total (f a) (f b) with hab | hab <;> simp [hf.surjOn_Icc, *]
+    (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
+    SurjOn f s (uIcc (f a) (f b)) := by
+  rcases le_total (f a) (f b) with hab | hab <;> simp [hf.surjOn_Icc, *]
 #align continuous_on.surj_on_uIcc ContinuousOn.surjOn_uIcc
 
 /-- A continuous function which tendsto `Filter.atTop` along `Filter.atTop` and to `atBot` along
@@ -695,7 +696,7 @@ theorem Continuous.strictMonoOn_of_inj_rigidity {f : α → δ}
   have hf_mono_st : StrictMonoOn f (Icc s t) ∨ StrictAntiOn f (Icc s t) := by
     letI := Icc.completeLinearOrder hst
     have := Continuous.strictMono_of_inj_boundedOrder' (f := Set.restrict (Icc s t) f)
-      hf_c.continuousOn.restrict (hf_i.injOn _).injective
+      hf_c.continuousOn.restrict hf_i.injOn.injective
     exact this.imp strictMono_restrict.mp strictAntiOn_iff_strictAnti.mpr
   have (h : StrictAntiOn f (Icc s t)) : False := by
     have : Icc a b ⊆ Icc s t := Icc_subset_Icc hsa hbt
@@ -744,7 +745,7 @@ continuous and injective. Then `f` is strictly monotone or antitone (increasing 
 theorem Continuous.strictMono_of_inj {f : α → δ}
     (hf_c : Continuous f) (hf_i : Injective f) : StrictMono f ∨ StrictAnti f := by
   have H {c d : α} (hcd : c < d) : StrictMono f ∨ StrictAnti f :=
-    (hf_c.continuousOn.strictMonoOn_of_injOn_Icc' hcd.le (hf_i.injOn _)).imp
+    (hf_c.continuousOn.strictMonoOn_of_injOn_Icc' hcd.le hf_i.injOn).imp
       (hf_c.strictMonoOn_of_inj_rigidity hf_i hcd)
       (hf_c.strictMonoOn_of_inj_rigidity (δ := δᵒᵈ) hf_i hcd)
   by_cases hn : Nonempty α

@@ -749,8 +749,8 @@ noncomputable def algEquiv : S ≃ₐ[R] Q :=
 end
 
 -- Porting note (#10618): removed `simp`, `simp` can prove it
-theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y :=
-  by simp
+theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y := by
+  simp
 #align is_localization.alg_equiv_mk' IsLocalization.algEquiv_mk'
 
 -- Porting note (#10618): removed `simp`, `simp` can prove it
@@ -771,7 +771,7 @@ variable (R M)
 
 /-- The localization at a module of units is isomorphic to the ring. -/
 noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
-  refine' AlgEquiv.ofBijective (Algebra.ofId R S) ⟨_, _⟩
+  refine AlgEquiv.ofBijective (Algebra.ofId R S) ⟨?_, ?_⟩
   · intro x y hxy
     obtain ⟨c, eq⟩ := (IsLocalization.eq_iff_exists M S).mp hxy
     obtain ⟨u, hu⟩ := H c.prop
@@ -926,10 +926,8 @@ protected irreducible_def add (z w : Localization M) : Localization M :=
         cases' h2 with t₆ ht₆
         use t₅ * t₆
         dsimp only
-        calc
-          ↑t₅ * ↑t₆ * (↑b' * ↑d' * ((b : R) * c + d * a)) =
-              t₆ * (d' * c) * (t₅ * (b' * b)) + t₅ * (b' * a) * (t₆ * (d' * d)) :=
-            by ring
+        calc ↑t₅ * ↑t₆ * (↑b' * ↑d' * ((b : R) * c + d * a))
+          _ = t₆ * (d' * c) * (t₅ * (b' * b)) + t₅ * (b' * a) * (t₆ * (d' * d)) := by ring
           _ = t₅ * t₆ * (b * d * (b' * c' + d' * a')) := by rw [ht₆, ht₅]; ring
           )
 #align localization.add Localization.add
