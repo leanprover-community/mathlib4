@@ -464,6 +464,8 @@ end φ
 
 section Map
 
+/-! ### Maps across ring homomorphisms -/
+
 variable (f : R →+* S)
 
 lemma map_ψ₂ : (W.map f).ψ₂ = W.ψ₂.map (mapRingHom f) := by
@@ -512,6 +514,8 @@ lemma map_φ (n : ℤ) : (W.map f).φ n = (W.φ n).map (mapRingHom f) := by
 end Map
 
 section BaseChange
+
+/-! ### Base changes across algebra homomorphisms -/
 
 variable [Algebra R S] {A : Type u} [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
   {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B)

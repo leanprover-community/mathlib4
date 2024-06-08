@@ -290,11 +290,11 @@ noncomputable def normEDSRec {P : ℕ → Sort u}
 
 lemma map_preNormEDS' (n : ℕ) : f (preNormEDS' b c d n) = preNormEDS' (f b) (f c) (f d) n := by
   induction n using normEDSRec' with
-  | zero => exact map_zero f
-  | one => exact map_one f
-  | two => exact map_one f
-  | three => rfl
-  | four => rfl
+  | zero => rw [preNormEDS'_zero, map_zero, preNormEDS'_zero]
+  | one => rw [preNormEDS'_one, map_one, preNormEDS'_one]
+  | two => rw [preNormEDS'_two, map_one, preNormEDS'_two]
+  | three => rw [preNormEDS'_three, preNormEDS'_three]
+  | four => rw [preNormEDS'_four, preNormEDS'_four]
   | _ _ ih =>
     simp only [preNormEDS'_odd, preNormEDS'_even, map_one, map_sub, map_mul, map_pow, apply_ite f]
     repeat rw [ih _ <| by linarith only]
