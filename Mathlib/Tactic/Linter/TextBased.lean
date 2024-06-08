@@ -253,7 +253,10 @@ def lintAllFiles (path : System.FilePath) (mode : OutputSetting) : IO UInt32 := 
   let paths := allModules.map (fun mod ↦
     (System.mkFilePath ((mod.stripPrefix "import ").split fun c ↦ (c == '.'))).addExtension "lean"
   )
-  lintFiles paths mode
+  let n ← lintFiles paths mode
+  if n > 0 && mode matches OutputSetting.print _ then
+    IO.println "run with the --update flag to add all style errors to the style exceptions file"
+  return n
 
 open Cli in
 /-- Implementation of the `lint_style` command line program. -/
