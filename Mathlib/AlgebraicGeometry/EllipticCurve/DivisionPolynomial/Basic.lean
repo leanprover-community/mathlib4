@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 David Kurniadi Angdinata. All rights reserved.
+Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
@@ -9,9 +9,9 @@ import Mathlib.NumberTheory.EllipticDivisibilitySequence
 /-!
 # Division polynomials of Weierstrass curves
 
-This file defines certain polynomials associated to division polynomials of Weierstrass curves and
-computes their leading terms. These are defined in terms of the auxiliary sequences of normalised
-elliptic divisibility sequences defined in `Mathlib.NumberTheory.EllipticDivisibilitySequence`.
+This file defines certain polynomials associated to division polynomials of Weierstrass curves.
+These are defined in terms of the auxiliary sequences of normalised elliptic divisibility sequences
+defined in `Mathlib.NumberTheory.EllipticDivisibilitySequence`.
 
 ## Mathematical background
 
@@ -33,9 +33,8 @@ induction that $\psi_n$ always divides $\psi_{2n}$, so that $\psi_{2n} / \psi_n$
 well-defined as a polynomial, while division by 2 is well-defined when $R$ has characteristic
 different from 2. In general, it can be shown that 2 always divides the polynomial
 $\psi_{2n} / \psi_n - \psi_n(a_1\phi_n + a_3\psi_n^2)$ in the characteristic zero universal ring
-$\mathcal{R}[X, Y] := \mathbb{Z}[a_i][X, Y] / \langle W(a_i, X, Y)\rangle$ associated to $W$, where
-$W(a_i, X, Y)$ is the associated Weierstrass equation. Then $\omega_n$ can be equivalently defined
-as its image under the associated universal morphism $\mathcal{R}[X, Y] \to R[X, Y]$.
+$\mathbb{Z}[A_i][X, Y]$ of $W$, where $A_i$ are indeterminates. Then $\omega_n$ can be equivalently
+defined as its image under the associated universal morphism $\mathbb{Z}[A_i][X, Y] \to R[X, Y]$.
 
 Now, in the coordinate ring $R[W]$, note that $\psi_2^2$ is congruent to the polynomial
 $\Psi_2^{[2]} := 4X^3 + b_2X^2 + 2b_4X + b_6 \in R[X]$. As such, in $R[W]$, the recurrences
@@ -60,15 +59,10 @@ Furthermore, define the associated sequences $\Psi_n^{[2]}, \Phi_n \in R[X]$ by
 
 With these definitions in mind, $\psi_n \in R[X, Y]$ and $\phi_n \in R[X, Y]$ are congruent in
 $R[W]$ to $\Psi_n \in R[X, Y]$ and $\Phi_n \in R[X]$ respectively, which are defined in terms of
-$\Psi_2^{[2]} \in R[X]$ and $\tilde{\Psi}_n \in R[X]$. By induction, their leading terms are
- * $\tilde{\Psi}_n = nX^{\tfrac{n^2 - 4}{2}} + \dots$ if $n$ is even,
- * $\tilde{\Psi}_n = nX^{\tfrac{n^2 - 1}{2}} + \dots$ if $n$ is odd,
- * $\Psi_n^{[2]} = n^2X^{n^2 - 1} + \dots$, and
- * $\Phi_n = X^{n^2} + \dots$.
+$\Psi_2^{[2]} \in R[X]$ and $\tilde{\Psi}_n \in R[X]$.
 
 ## Main definitions
 
- * `WeierstrassCurve.Ψ₂Sq`: the univariate polynomial $\Psi_2^{[2]}$.
  * `WeierstrassCurve.preΨ`: the univariate polynomials $\tilde{\Psi}_n$.
  * `WeierstrassCurve.ΨSq`: the univariate polynomials $\Psi_n^{[2]}$.
  * `WeierstrassCurve.Ψ`: the bivariate polynomials $\Psi_n$.
@@ -103,11 +97,11 @@ open Polynomial PolynomialPolynomial
 local macro "C_simp" : tactic =>
   `(tactic| simp only [map_ofNat, C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])
 
-universe u v
+universe u
 
 namespace WeierstrassCurve
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] (W : WeierstrassCurve R) (f : R →+* S)
+variable {R : Type u} [CommRing R] (W : WeierstrassCurve R)
 
 /-! ### The univariate polynomial $\Psi_2^{[2]}$ -/
 
@@ -136,14 +130,14 @@ protected noncomputable def Ψ₃ : R[X] :=
 
 /-- The univariate polynomial $\tilde{\Psi}_4$, which is auxiliary to the $4$-division polynomial
 $\psi_4 = \Psi_4 = \tilde{\Psi}_4\psi_2$. -/
-protected noncomputable def Ψ₄' : R[X] :=
+protected noncomputable def preΨ₄ : R[X] :=
   2 * X ^ 6 + C W.b₂ * X ^ 5 + 5 * C W.b₄ * X ^ 4 + 10 * C W.b₆ * X ^ 3 + 10 * C W.b₈ * X ^ 2 +
     C (W.b₂ * W.b₈ - W.b₄ * W.b₆) * X + C (W.b₄ * W.b₈ - W.b₆ ^ 2)
 
 /-- The univariate polynomials $\tilde{\Psi}_n$ for $n \in \mathbb{N}$, which are auxiliary to the
 bivariate polynomials $\Psi_n$ congruent to the bivariate $n$-division polynomials $\psi_n$. -/
 protected noncomputable def preΨ' (n : ℕ) : R[X] :=
-  preNormEDS' (W.Ψ₂Sq ^ 2) W.Ψ₃ W.Ψ₄' n
+  preNormEDS' (W.Ψ₂Sq ^ 2) W.Ψ₃ W.preΨ₄ n
 
 @[simp]
 lemma preΨ'_zero : W.preΨ' 0 = 0 :=
@@ -162,7 +156,7 @@ lemma preΨ'_three : W.preΨ' 3 = W.Ψ₃ :=
   preNormEDS'_three ..
 
 @[simp]
-lemma preΨ'_four : W.preΨ' 4 = W.Ψ₄' :=
+lemma preΨ'_four : W.preΨ' 4 = W.preΨ₄ :=
   preNormEDS'_four ..
 
 lemma preΨ'_odd (m : ℕ) : W.preΨ' (2 * (m + 2) + 1) =
@@ -180,7 +174,7 @@ lemma preΨ'_even (m : ℕ) : W.preΨ' (2 * (m + 3)) =
 /-- The univariate polynomials $\tilde{\Psi}_n$ for $n \in \mathbb{Z}$, which are auxiliary to the
 bivariate polynomials $\Psi_n$ congruent to the bivariate $n$-division polynomials $\psi_n$. -/
 protected noncomputable def preΨ (n : ℤ) : R[X] :=
-  preNormEDS (W.Ψ₂Sq ^ 2) W.Ψ₃ W.Ψ₄' n
+  preNormEDS (W.Ψ₂Sq ^ 2) W.Ψ₃ W.preΨ₄ n
 
 @[simp]
 lemma preΨ_ofNat (n : ℕ) : W.preΨ n = W.preΨ' n :=
@@ -203,7 +197,7 @@ lemma preΨ_three : W.preΨ 3 = W.Ψ₃ :=
   preNormEDS_three ..
 
 @[simp]
-lemma preΨ_four : W.preΨ 4 = W.Ψ₄' :=
+lemma preΨ_four : W.preΨ 4 = W.preΨ₄ :=
   preNormEDS_four ..
 
 lemma preΨ_odd (m : ℕ) : W.preΨ (2 * (m + 2) + 1) =
@@ -247,7 +241,7 @@ lemma ΨSq_three : W.ΨSq 3 = W.Ψ₃ ^ 2 := by
   erw [ΨSq_ofNat, preΨ'_three, mul_one]
 
 @[simp]
-lemma ΨSq_four : W.ΨSq 4 = W.Ψ₄' ^ 2 * W.Ψ₂Sq := by
+lemma ΨSq_four : W.ΨSq 4 = W.preΨ₄ ^ 2 * W.Ψ₂Sq := by
   erw [ΨSq_ofNat, preΨ'_four, if_pos <| by decide]
 
 lemma ΨSq_odd (m : ℕ) : W.ΨSq (2 * (m + 2) + 1) =
@@ -291,7 +285,7 @@ lemma Ψ_three : W.Ψ 3 = C W.Ψ₃ := by
   erw [Ψ_ofNat, preΨ'_three, mul_one]
 
 @[simp]
-lemma Ψ_four : W.Ψ 4 = C W.Ψ₄' * W.ψ₂ := by
+lemma Ψ_four : W.Ψ 4 = C W.preΨ₄ * W.ψ₂ := by
   erw [Ψ_ofNat, preΨ'_four, if_pos <| by decide]
 
 lemma Ψ_odd (m : ℕ) : W.Ψ (2 * (m + 2) + 1) =
@@ -343,11 +337,11 @@ lemma Φ_two : W.Φ 2 = X ^ 4 - C W.b₄ * X ^ 2 - C (2 * W.b₆) * X - C W.b₈
   ring1
 
 @[simp]
-lemma Φ_three : W.Φ 3 = X * W.Ψ₃ ^ 2 - W.Ψ₄' * W.Ψ₂Sq := by
+lemma Φ_three : W.Φ 3 = X * W.Ψ₃ ^ 2 - W.preΨ₄ * W.Ψ₂Sq := by
   erw [Φ_ofNat, preΨ'_three, mul_one, preΨ'_four, preΨ'_two, mul_one, if_pos even_two]
 
 @[simp]
-lemma Φ_four : W.Φ 4 = X * W.Ψ₄' ^ 2 * W.Ψ₂Sq - W.Ψ₃ * (W.Ψ₄' * W.Ψ₂Sq ^ 2 - W.Ψ₃ ^ 3) := by
+lemma Φ_four : W.Φ 4 = X * W.preΨ₄ ^ 2 * W.Ψ₂Sq - W.Ψ₃ * (W.preΨ₄ * W.Ψ₂Sq ^ 2 - W.Ψ₃ ^ 3) := by
   erw [Φ_ofNat, preΨ'_four, if_neg <| by decide, show 3 + 2 = 2 * 2 + 1 by rfl, preΨ'_odd,
     preΨ'_four, preΨ'_two, if_pos even_zero, preΨ'_one, preΨ'_three, if_pos even_zero]
   ring1
@@ -361,7 +355,7 @@ lemma Φ_neg (n : ℤ) : W.Φ (-n) = W.Φ n := by
 
 /-- The bivariate $n$-division polynomials $\psi_n$. -/
 protected noncomputable def ψ (n : ℤ) : R[X][Y] :=
-  normEDS W.ψ₂ (C W.Ψ₃) (C W.Ψ₄') n
+  normEDS W.ψ₂ (C W.Ψ₃) (C W.preΨ₄) n
 
 @[simp]
 lemma ψ_zero : W.ψ 0 = 0 :=
@@ -380,7 +374,7 @@ lemma ψ_three : W.ψ 3 = C W.Ψ₃ :=
   normEDS_three ..
 
 @[simp]
-lemma ψ_four : W.ψ 4 = C W.Ψ₄' * W.ψ₂ :=
+lemma ψ_four : W.ψ 4 = C W.preΨ₄ * W.ψ₂ :=
   normEDS_four ..
 
 lemma ψ_odd (m : ℕ) : W.ψ (2 * (m + 2) + 1) =
@@ -415,11 +409,12 @@ lemma φ_two : W.φ 2 = C X * W.ψ₂ ^ 2 - C W.Ψ₃ := by
   erw [WeierstrassCurve.φ, ψ_two, ψ_three, ψ_one, mul_one]
 
 @[simp]
-lemma φ_three : W.φ 3 = C X * C W.Ψ₃ ^ 2 - C W.Ψ₄' * W.ψ₂ ^ 2 := by
+lemma φ_three : W.φ 3 = C X * C W.Ψ₃ ^ 2 - C W.preΨ₄ * W.ψ₂ ^ 2 := by
   erw [WeierstrassCurve.φ, ψ_three, ψ_four, mul_assoc, ψ_two, ← sq]
 
 @[simp]
-lemma φ_four : W.φ 4 = C X * C W.Ψ₄' ^ 2 * W.ψ₂ ^ 2 - C W.Ψ₄' * W.ψ₂ ^ 4 * C W.Ψ₃ + C W.Ψ₃ ^ 4 := by
+lemma φ_four :
+    W.φ 4 = C X * C W.preΨ₄ ^ 2 * W.ψ₂ ^ 2 - C W.preΨ₄ * W.ψ₂ ^ 4 * C W.Ψ₃ + C W.Ψ₃ ^ 4 := by
   erw [WeierstrassCurve.φ, ψ_four, show (4 + 1 : ℤ) = 2 * 2 + 1 by rfl, ψ_odd, ψ_four, ψ_two, ψ_one,
     ψ_three]
   ring1
