@@ -1028,7 +1028,6 @@ namespace Completion
 
 instance : NormedField v.completion :=
   letI := v.normedField
-  letI := UniformSpace.comap_completableTopField v.embedding
   UniformSpace.Completion.instNormedField K
 
 instance : CompleteSpace v.completion :=
