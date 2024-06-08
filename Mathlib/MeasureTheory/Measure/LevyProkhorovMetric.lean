@@ -536,10 +536,9 @@ lemma ProbabilityMeasure.continuous_toLevyProkhorov :
     simp only [tendsto_atTop_nhds, Function.comp_apply] at exhaust
     obtain ⟨N, hN⟩ := exhaust (Iio (ENNReal.ofReal (ε / 3))) third_ε_pos' isOpen_Iio
     refine ⟨N, ?_⟩
-    have rewr : ⋃ i, ⋃ (_ : N ≤ i), Es i = (⋃ i, ⋃ (_ : i < N), Es i)ᶜ :=
-      by simpa only [mem_Iio, compl_Iio, mem_Ici]
-        using (biUnion_compl_eq_of_pairwise_disjoint_of_iUnion_eq_univ
-                Es_cover Es_disjoint (Iio N)).symm
+    have rewr : ⋃ i, ⋃ (_ : N ≤ i), Es i = (⋃ i, ⋃ (_ : i < N), Es i)ᶜ := by
+      simpa only [mem_Iio, compl_Iio, mem_Ici] using
+        (biUnion_compl_eq_of_pairwise_disjoint_of_iUnion_eq_univ Es_cover Es_disjoint (Iio N)).symm
     simpa only [mem_Iio, ← rewr, gt_iff_lt] using hN N le_rfl
   -- With the finite `N` fixed above, consider the finite collection of open sets of the form
   -- `Gs J = thickening (ε/3) (⋃ j ∈ J, Es j)`, where `J ⊆ {0, 1, ..., N-1}`.
