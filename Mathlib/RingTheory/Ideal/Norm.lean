@@ -69,9 +69,7 @@ noncomputable def cardQuot (S : Submodule R M) : ℕ :=
 @[simp]
 theorem cardQuot_apply (S : Submodule R M) [h : Fintype (M ⧸ S)] :
     cardQuot S = Fintype.card (M ⧸ S) := by
-  -- Porting note: original proof was AddSubgroup.index_eq_card _
-  suffices Fintype (M ⧸ S.toAddSubgroup) by convert AddSubgroup.index_eq_card S.toAddSubgroup
-  convert h
+  rw [cardQuot, AddSubgroup.index_eq_card, Nat.card_eq_fintype_card]
 #align submodule.card_quot_apply Submodule.cardQuot_apply
 
 variable (R M)
