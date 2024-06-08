@@ -2538,9 +2538,8 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
       constructor
       · simp only [isOpen_compl_iff, isClosed_closure]
       · simp only [closure_compl, disjoint_compl_left_iff_subset]
-        apply Subset.trans subset_closure
-        apply Subset.trans (clt_sub_g' n)
-        exact subset_interior_closure (g'_open n)
+        exact Subset.trans subset_closure
+            (Subset.trans (clt_sub_g' n) (subset_interior_closure (g'_open n)))
     · use fun n ↦ (closure (f' n))ᶜ
       constructor
       · rw [← compl_iInter, subset_compl_comm, S_int']
@@ -2549,9 +2548,8 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
       constructor
       · simp only [isOpen_compl_iff, isClosed_closure]
       · simp only [closure_compl, disjoint_compl_left_iff_subset]
-        apply Subset.trans subset_closure
-        apply Subset.trans (cls_sub_f' n)
-        exact subset_interior_closure (f'_open n)
+        exact Subset.trans subset_closure
+            (Subset.trans (cls_sub_f' n) (subset_interior_closure (f'_open n)))
 
 /-- A T₆ space is a perfectly normal T₁ space. -/
 class T6Space (X : Type u) [TopologicalSpace X] extends T1Space X, PerfectlyNormalSpace X : Prop
