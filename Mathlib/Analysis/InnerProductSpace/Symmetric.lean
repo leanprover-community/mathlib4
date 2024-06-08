@@ -131,9 +131,7 @@ local instance : ContinuousSMul ℝ 𝕜 := inferInstance in
 @[nolint docBlame] -- linter bug?
 noncomputable local instance : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E in
 theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
-    @LinearMap.IsSymmetric ℝ E _ _ (InnerProductSpace.rclikeToReal 𝕜 E)
-      (@LinearMap.restrictScalars ℝ 𝕜 _ _ _ _ _ _ (InnerProductSpace.rclikeToReal 𝕜 E).toModule
-        (InnerProductSpace.rclikeToReal 𝕜 E).toModule _ _ _ T) :=
+    (T.restrictScalars ℝ).IsSymmetric :=
   fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
 #align linear_map.is_symmetric.restrict_scalars LinearMap.IsSymmetric.restrictScalars
 

@@ -328,7 +328,7 @@ theorem sum_range_pow (n p : ℕ) :
     rw [choose_eq_factorial_div_factorial h.le, eq_comm, div_eq_iff (hne q.succ), succ_eq_add_one,
       mul_assoc _ _ (q.succ ! : ℚ), mul_comm _ (q.succ ! : ℚ), ← mul_assoc, div_mul_eq_mul_div]
     simp only [add_eq, add_zero, ge_iff_le, IsUnit.mul_iff, Nat.isUnit_iff, succ.injEq, cast_mul,
-      cast_succ, MonoidHom.coe_mk, (OneHom.coe_mk), coeff_exp, Algebra.id.map_eq_id, one_div,
+      cast_succ, MonoidHom.coe_mk, OneHom.coe_mk, coeff_exp, Algebra.id.map_eq_id, one_div,
       map_inv₀, map_natCast, coeff_mk, mul_inv_rev]
     rw [mul_comm ((n : ℚ) ^ (q - m + 1)), ← mul_assoc _ _ ((n : ℚ) ^ (q - m + 1)), ← one_div,
       mul_one_div, div_div, tsub_add_eq_add_tsub (le_of_lt_succ h), cast_div, cast_mul]
@@ -353,7 +353,7 @@ theorem sum_range_pow (n p : ℕ) :
       use 1
       simp [factorial_ne_zero]
     have h_r : exp ℚ ^ n - 1 = X * mk fun p => coeff ℚ (p + 1) (exp ℚ ^ n) := by
-      have h_const : C ℚ (constantCoeff ℚ (exp ℚ ^ n)) = 1 := by simp [(map_one)]
+      have h_const : C ℚ (constantCoeff ℚ (exp ℚ ^ n)) = 1 := by simp [map_one]
       rw [← h_const, sub_const_eq_X_mul_shift]
     -- key step: a chain of equalities of power series
     -- Porting note: altered proof slightly

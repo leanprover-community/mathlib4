@@ -467,22 +467,22 @@ theorem mul_le_right : I * J ≤ I :=
   Ideal.mul_le.2 fun _ hr _ _ => I.mul_mem_right _ hr
 #align ideal.mul_le_right Ideal.mul_le_right
 
-@[simp, nolint simpNF]
+@[simp]
 theorem sup_mul_right_self : I ⊔ I * J = I :=
   sup_eq_left.2 Ideal.mul_le_right
 #align ideal.sup_mul_right_self Ideal.sup_mul_right_self
 
-@[simp, nolint simpNF]
+@[simp]
 theorem sup_mul_left_self : I ⊔ J * I = I :=
   sup_eq_left.2 Ideal.mul_le_left
 #align ideal.sup_mul_left_self Ideal.sup_mul_left_self
 
-@[simp, nolint simpNF]
+@[simp]
 theorem mul_right_self_sup : I * J ⊔ I = I :=
   sup_eq_right.2 Ideal.mul_le_right
 #align ideal.mul_right_self_sup Ideal.mul_right_self_sup
 
-@[simp, nolint simpNF]
+@[simp]
 theorem mul_left_self_sup : J * I ⊔ I = I :=
   sup_eq_right.2 Ideal.mul_le_left
 #align ideal.mul_left_self_sup Ideal.mul_left_self_sup
