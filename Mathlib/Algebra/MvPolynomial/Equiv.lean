@@ -289,11 +289,21 @@ def optionEquivLeft : MvPolynomial (Option S₁) R ≃ₐ[R] Polynomial (MvPolyn
     (by ext : 2 <;> simp) (by ext i : 2; cases i <;> simp)
 #align mv_polynomial.option_equiv_left MvPolynomial.optionEquivLeft
 
+lemma optionEquivLeft_X_some (x : S₁) : optionEquivLeft R S₁ (X (some x)) = Polynomial.C (X x) := by
+  simp only [optionEquivLeft_apply, aeval_X]
+
+lemma optionEquivLeft_X_none : optionEquivLeft R S₁ (X none) = Polynomial.X := by
+  simp only [optionEquivLeft_apply, aeval_X]
+
+lemma optionEquivLeft_C (r : R) : optionEquivLeft R S₁ (C r) = Polynomial.C (C r) := by
+  simp only [optionEquivLeft_apply, aeval_C, Polynomial.algebraMap_apply, algebraMap_eq]
+
 end
 
 /-- The algebra isomorphism between multivariable polynomials in `Option S₁` and
 multivariable polynomials with coefficients in polynomials.
 -/
+@[simps!]
 def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ R[X] :=
   AlgEquiv.ofAlgHom (MvPolynomial.aeval fun o => o.elim (C Polynomial.X) X)
     (MvPolynomial.aevalTower (Polynomial.aeval (X none)) fun i => X (Option.some i))
@@ -307,6 +317,15 @@ def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ 
         simp only [Option.elim, AlgHom.coe_comp, comp_apply, aeval_X, aevalTower_C,
           Polynomial.aeval_X, AlgHom.coe_id, id, aevalTower_X])
 #align mv_polynomial.option_equiv_right MvPolynomial.optionEquivRight
+
+lemma optionEquivRight_X_some (x : S₁) : optionEquivRight R S₁ (X (some x)) = X x := by
+  simp only [optionEquivRight_apply, aeval_X]
+
+lemma optionEquivRight_X_none : optionEquivRight R S₁ (X none) = C Polynomial.X := by
+  simp only [optionEquivRight_apply, aeval_X]
+
+lemma optionEquivRight_C (r : R) : optionEquivRight R S₁ (C r) = C (Polynomial.C r) := by
+  simp only [optionEquivRight_apply, aeval_C, algebraMap_apply, Polynomial.algebraMap_eq]
 
 variable (n : ℕ)
 

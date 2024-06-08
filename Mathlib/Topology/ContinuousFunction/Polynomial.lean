@@ -40,7 +40,7 @@ Every polynomial with coefficients in a topological semiring gives a (bundled) c
 -/
 @[simps]
 def toContinuousMap (p : R[X]) : C(R, R) :=
-  ⟨fun x : R => p.eval x, by continuity⟩
+  ⟨fun x : R => p.eval x, by fun_prop⟩
 #align polynomial.to_continuous_map Polynomial.toContinuousMap
 
 open ContinuousMap in
