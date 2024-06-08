@@ -3,7 +3,6 @@ Copyright (c) 2024 Wang Haocheng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ma Jiajun, Wang Haocheng
 -/
-import Mathlib.Tactic.Linarith.Lemmas
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Real.Basic
@@ -20,19 +19,16 @@ first-price and second-price auctions, as well as several fundamental results an
 - `maxb`: Function that computes the highest bid given a bidding function.
 - `winner`: Identifies the winner of the auction as the bidder with the highest bid.
 - `B`: Function that computes the highest bid excluding a given participant.
-
+- `dominant`: Defines a dominant strategy in the context of a auction.
 - `Secondprice`: Computes the second highest bid in the auction.
-- `utility`: Computes the utility of each bidder based on the outcome of the auction.
-- `dominant`: Establishes whether a strategy is dominant for a bidder.
-
-- `utility`: Computes the utility for a first price auction.
-- `dominant`: Defines a dominant strategy in the context of a first price auction.
+- `Secondprice.utility`: Computes the utility of each bidder based on the outcome of the auction.
+- `Firstprice.utility`: Computes the utility for a first price auction.
 
 ## Main Results
 
-- `utility_nneg`: utility is non-negative if the bid equals the valuation.
-- `valuation_is_dominant`: Bidding one's valuation is a dominant strategy.
-- `first_price_has_no_dominant_strategy`: There is no dominant strategy in a first price auction.
+- `utility_nneg`: Utility is non-negative if the bid equals the valuation in second price auction.
+- `valuation_is_dominant`: Bidding one's valuation is a dominant strategy in second price auction.
+- `first_price_has_no_dominant_strategy`: There is no dominant strategy in first price auction.
 
 ## Helping Lemmas
 
@@ -40,19 +36,12 @@ first-price and second-price auctions, as well as several fundamental results an
 - `exists_max`: There exists a participant whose bid matches the highest bid
 - `winner_take_max`: The winner's bid is the highest.
 - `b_winner`: The winner's bid is at least the second highest bid.
-- `utility_winner`: If `i` wins, utility is the valuation minus the second highest bid.
-- `utility_loser`: If `i` does not win, their utility is 0.
+- `Secondprice.utility_winner`: If `i` wins, utility is the valuation minus the second highest bid.
+- `Secondprice.utility_loser`: If `i` does not win, their utility is 0.
 - `b_winner_max`: The winner's bid is greater than or equal to all other bids.
 - `b_loser_max`: If `i` does not win, the highest bid excluding `i` matches the highest bid.
-
-- `utility_winner`: If `i` wins in a first price auction utility is valuation minus bid.
-- `utility_loser`: If `i` does not win in a first price auction, utility is 0.
-
-## Notations
-
-- `|b|`: Represents a bidding function.
-- `maxb(b)`: The highest bid in the function `b`.
-- `B i`: The maximal bid of all participants but `i`.
+- `Firstprice.utility_winner`: If `i` wins in a first price auction utility is valuation minus bid.
+- `Firstprice.utility_loser`: If `i` does not win in a first price auction, utility is 0.
 
 ## Implementation Notes
 
@@ -205,6 +194,7 @@ theorem valuation_is_dominant (i : a.I) : dominant utility i (a.v i) := by
   · rw [utility_loser b h1]
     apply utility_nneg
     apply Function.update_same
+    
 end Secondprice
 
 namespace Firstprice
