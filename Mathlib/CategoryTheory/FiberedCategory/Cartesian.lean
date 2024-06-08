@@ -79,6 +79,30 @@ lemma inducedMap_self_eq_id : inducedMap p f φ φ = 𝟙 a := by
   apply inducedMap_unique
   simp only [id_comp]
 
+/-- Precomposing a cartesian morphism with an isomorphism lifting the identity is cartesian. -/
+instance of_iso_comp {a' : 𝒳} (φ' : a' ≅ a) [IsHomLift p (𝟙 R) φ'.hom] :
+    IsCartesian p f (φ'.hom ≫ φ) where
+  universal_property := by
+    intro c ψ hψ
+    use inducedMap p f φ ψ ≫ φ'.inv
+    refine ⟨⟨inferInstance, by simp⟩, ?_⟩
+    rintro τ ⟨hτ₁, hτ₂⟩
+    rw [Iso.eq_comp_inv]
+    apply inducedMap_unique
+    simp only [assoc, hτ₂]
+
+/-- Postcomposing a cartesian morphism with an isomorphism lifting the identity is cartesian. -/
+instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom] :
+    IsCartesian p f (φ ≫ φ'.hom) where
+  universal_property := by
+    intro c ψ hψ
+    use inducedMap p f φ (ψ ≫ φ'.inv)
+    refine ⟨⟨inferInstance, by simp [← assoc, inducedMap_comp]⟩, ?_⟩
+    rintro τ ⟨hτ₁, hτ₂⟩
+    apply inducedMap_unique
+    rw [Iso.eq_comp_inv]
+    simp only [assoc, hτ₂]
+
 /-- The canonical isomorphism between the domains of two cartesian arrows
 lying over the same object. -/
 @[simps]
