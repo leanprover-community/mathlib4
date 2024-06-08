@@ -219,52 +219,69 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (mode : OutputSetting) :
     -- XXX: should these also print the errors? if yes, only for humans, I guess!
     | OutputSetting.append =>
       let path := System.mkFilePath ["scripts/style-exceptions.txt"]
-      IO.FS.appendToFile path (outputMessage err ErrorFormat.exceptionsFile)
+      IO.FS.appendToFile path (s!"{outputMessage err ErrorFormat.exceptionsFile}\n")
     | OutputSetting.regenerate =>
     -- FIXME: implement this!
-      IO.println "the --regenerate option not implemented yet: \
+      IO.println "the --regenerate option is not implemented yet: \
         please call `./scripts/update-style-exceptions.sh instead"
     return true
   return false
+
+/-- Lint a list of files referenced and return the number of files which had new style errors.
+`mode` specifies what kind of output this script should produce. -/
+def lintFiles (files : Array System.FilePath) (mode : OutputSetting) : IO UInt32 := do
+  -- Read the style exceptions file.
+  let exceptions_file ← IO.FS.lines (mkFilePath ["scripts/style-exceptions.txt"])
+  let style_exceptions := parseStyleExceptions exceptions_file
+  let mut number_error_files := 0
+  for file in files do
+    -- Find the size limit for this given file.
+    -- If several size limits are given (unlikely in practice), we use the first one.
+    let size_limits := (style_exceptions.filter (·.path == file)).filterMap (fun errctx ↦
+      match errctx.error with
+      | StyleError.fileTooLong _ limit => some limit)
+    if ← lintFile file (size_limits.get? 0) mode then
+      number_error_files := number_error_files + 1
+  return number_error_files
 
 /-- Lint all files referenced in a given import-only file.
 Return the number of files which had new style errors.
 `mode` specifies what kind of output this script should produce. -/
 def lintAllFiles (path : System.FilePath) (mode : OutputSetting) : IO UInt32 := do
-  -- Read all module names from the file at `path`.
+  -- Read all module names from the file at `path` and convert to file paths.
   let allModules ← IO.FS.lines path
-  -- Read the style exceptions file.
-  let exceptions_file ← IO.FS.lines (mkFilePath ["scripts/style-exceptions.txt"])
-  let mut style_exceptions := parseStyleExceptions exceptions_file
-  let mut number_error_files := 0
-  for module in allModules do
-    let module := module.stripPrefix "import "
-    -- Convert the module name to a file name, then lint that file.
-    let path := (mkFilePath (module.split (· == '.'))).addExtension "lean"
-    -- Find the size limit for this given file.
-    -- If several size limits are given (unlikely in practice), we use the first one.
-    let size_limits := (style_exceptions.filter (·.path == path)).filterMap (fun errctx ↦
-      match errctx.error with
-      | StyleError.fileTooLong _ limit => some limit)
-    if ← lintFile path (size_limits.get? 0) mode then
-      number_error_files := number_error_files + 1
-  return number_error_files
+  let paths := allModules.map (fun mod ↦
+    (System.mkFilePath ((mod.stripPrefix "import ").split fun c ↦ (c == '.'))).addExtension "lean"
+  )
+  lintFiles paths mode
 
 open Cli in
 /-- Implementation of the `lint_style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   if args.hasFlag "update" && args.hasFlag "regenerate" then
-    IO.println "invalid input: the --update and --regenerate flags are mutually exclusive"
+    IO.println "invalid options: the --update and --regenerate flags are mutually exclusive"
     return 2
+  if args.variableArgs.size > 0 && args.hasFlag "regenerate" then
+    IO.println "invalid options: the --regenerate flag can only be used when linting all files"
   let errorStyle := if args.hasFlag "github" then ErrorFormat.github else ErrorFormat.humanReadable
   let mode : OutputSetting := match (args.hasFlag "update", args.hasFlag "regenerate") with
   | (true, false) => OutputSetting.append
   | (false, true) => OutputSetting.regenerate
   | (false, false) | (true, true) => OutputSetting.print errorStyle
-  let mut number_error_files := 0
-  for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    let n ← lintAllFiles (mkFilePath [s]) mode
-    number_error_files := number_error_files + n
+  let mut number_error_files : UInt32 := 0
+  let files := args.variableArgsAs! String
+  if files.size > 0 then
+    -- Only lint the specified files.
+    for filename in files do
+      if !(← System.FilePath.pathExists filename) then
+        IO.println s!"invalid input: file {filename} does not exist"
+        return 2
+    let paths := files.map (fun fname ↦ System.mkFilePath [fname])
+    number_error_files := number_error_files + (← lintFiles paths mode)
+  else
+    for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
+        let n ← lintAllFiles (mkFilePath [s]) mode
+        number_error_files := number_error_files + n
   return number_error_files
 
 open Cli in
@@ -281,6 +298,9 @@ def lint_style : Cmd := `[Cli|
                  (leaving existing entries untouched)"
     regenerate; "(not implemented yet) Fully regenerate the file of style exceptions: \
                  this may update or remove existing entries"
+
+  ARGS:
+    ...files : String; "Only lint these file(s)"
 ]
 
 /-- The entry point to the `lake exe lint_style` command. -/

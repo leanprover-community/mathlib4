@@ -18,4 +18,4 @@
 find Mathlib -name '*.lean' | xargs ./scripts/lint-style.py | LC_ALL=C sort > scripts/style-exceptions.txt
 
 # Append the warnings of the Lean linter, on the file length.
-lake exe lint_style --github >> scripts/style-exceptions.txt
+lake exe lint_style --update >> scripts/style-exceptions.txt
