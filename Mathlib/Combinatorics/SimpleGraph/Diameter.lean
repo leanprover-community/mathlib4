@@ -27,8 +27,10 @@ in the graph.
 namespace SimpleGraph
 variable {α : Type*} {G G' : SimpleGraph α}
 
-/-- The diameter is the greatest distance between any two vertices, with the value `0` in case the
-distances are not bounded above. -/
+/--
+The diameter is the greatest distance between any two vertices, with the value `0` in case the
+distances are not bounded above.
+-/
 noncomputable def diam (G : SimpleGraph α) : ℕ :=
   sSup {d | ∃ u v, d = G.dist u v}
 
@@ -61,7 +63,7 @@ lemma diam_bot : (⊥ : SimpleGraph α).diam = 0 := by
   unfold diam
   by_cases h : Nonempty α
   · have : {d | ∃ u v, d = (⊥ : SimpleGraph α).dist u v} = {0} := by
-      ext d
+      ext
       rw [Set.mem_setOf_eq, Set.mem_singleton_iff]
       refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
       · obtain ⟨_, _, h⟩ := h
@@ -83,8 +85,7 @@ lemma diam_eq_zero :
       have : ∃ u v, G.Adj u v := by
         by_contra
         have : G = emptyGraph α := by
-          unfold emptyGraph
-          aesop
+          ext; simp_all only [emptyGraph, not_exists]
         rw [emptyGraph_eq_bot] at this
         exact h' this
       obtain ⟨u, v, huv⟩ := this
@@ -104,16 +105,17 @@ lemma diam_le (h : G.diam ≠ 0) : ∀ u v, G.dist u v ≤ G.diam := by
   rw [ne_eq, diam_eq_zero] at h
   push_neg at h
   exact h.1
-  aesop
+  tauto
 
 lemma diam_le_subgraph_diam [Nonempty α] (hg: G.Connected) (hz : G.diam ≠ 0) (h : G ≤ G') :
-    G'.diam ≤ G.diam := by
-  obtain ⟨u, v, huv⟩ := G'.diam_exists
-  rw [← huv]
-  exact LE.le.trans (dist_le_subgraph_dist h (hg u v)) (G.diam_le hz u v)
+    G'.diam ≤ G.diam :=
+  have ⟨u, v, huv⟩ := G'.diam_exists
+  huv ▸ LE.le.trans (dist_le_subgraph_dist h (hg u v)) (G.diam_le hz u v)
 
-/-- The extended diameter is the greatest distance between any two vertices, with the value `⊤` in
-case the distances are not bounded above. -/
+/--
+The extended diameter is the greatest distance between any two vertices, with the value `⊤` in
+case the distances are not bounded above.
+-/
 noncomputable def ediam (G : SimpleGraph α) : ℕ∞ :=
   sSup {d | ∃ u v : α, d = G.dist u v}
 
