@@ -231,7 +231,7 @@ instance instTop [Top α] : Top (WithBot α) where
 
 @[simp, norm_cast] lemma coe_top [Top α] : ((⊤ : α) : WithBot α) = ⊤ := rfl
 @[simp, norm_cast] lemma coe_eq_top [Top α] {a : α} : (a : WithBot α) = ⊤ ↔ a = ⊤ := coe_eq_coe
-@[simp, norm_cast] lemma top_eq_coe [Top α] {a : α} : (a : WithBot α) = ⊤ ↔ a = ⊤ := coe_eq_coe
+@[simp, norm_cast] lemma top_eq_coe [Top α] {a : α} : ⊤ = (a : WithBot α) ↔ ⊤ = a := coe_eq_coe
 
 instance orderTop [OrderTop α] : OrderTop (WithBot α) where
   le_top o a ha := by cases ha; exact ⟨_, rfl, le_top⟩
