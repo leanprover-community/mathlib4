@@ -1,5 +1,5 @@
 import Mathlib.CategoryTheory.Monoidal.Mon_
-import Mathlib.CategoryTheory.GroupObjects.PreservesFiniteProducts
+import Mathlib.CategoryTheory.GroupObjects.Basic
 import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
 
 open CategoryTheory Limits
@@ -8,7 +8,6 @@ universe v u v₁ u₁
 
 variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D]
 variable [HasFiniteProducts C] [HasFiniteProducts D]
-variable (F : C ⥤ D) [PreservesFiniteProducts F]
 
 namespace GroupObject
 

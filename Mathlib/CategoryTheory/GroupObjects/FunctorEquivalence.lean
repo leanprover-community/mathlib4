@@ -15,12 +15,18 @@ suppress_compilation
 
 variable {C : Type u} [Category.{v, u} C] {D : Type u'} [Category.{v', u'} D] [HasFiniteProducts D]
 
+namespace CategoryTheory
+
 instance functorCategoryHasFiniteProducts : HasFiniteProducts (C ⥤ D) where
   out _ := inferInstance
 -- This should be an instance in mathlib, but it doesn't
 -- seem to be there. TODO: add it.
 
-namespace GroupObjectFunctorToFunctorGroupObject
+namespace GroupObject
+
+namespace FunctorEquivalence
+
+namespace functor
 
 @[simp]
 def obj_obj_one (G : GroupObject (C ⥤ D)) (X : C) :
@@ -141,77 +147,17 @@ def map {G H : GroupObject (C ⥤ D)} (α : G ⟶ H) : obj G ⟶ obj H where
     ext
     simp only [GroupObject.comp_hom', NatTrans.naturality]
 
-end GroupObjectFunctorToFunctorGroupObject
+end functor
 
 variable (C D)
 
 @[simp]
-def GroupObjectFunctorToFunctorGroupObject :
+def functor :
     GroupObject (C ⥤ D) ⥤ C ⥤ GroupObject D where
-  obj G := GroupObjectFunctorToFunctorGroupObject.obj G
-  map α := GroupObjectFunctorToFunctorGroupObject.map α
+  obj G := functor.obj G
+  map α := functor.map α
 
-/-
-variable {C D}
-
-namespace GroupObjectFunctorToFunctorGroupObject
-
-def faithful : (GroupObjectFunctorToFunctorGroupObject C D).Faithful where
-map_injective := by
-  intro G H α β
-  simp only [GroupObjectFunctorToFunctorGroupObject, map, id_eq]
-  intro h
-  ext X
-  apply_fun (fun a ↦ (a.app X).hom) at h
-  exact h
-
-def full : (GroupObjectFunctorToFunctorGroupObject C D).Full where
-  map_surjective := by
-    intro G H
-    simp only [GroupObjectFunctorToFunctorGroupObject, obj, map, id_eq, obj_obj]
-    intro a
-    set αhom : G.X ⟶ H.X :=
-     {
-      app := fun X ↦ (a.app X).hom
-      naturality := by
-        intro X Y f
-        have := a.naturality f
-        apply_fun (fun h ↦ h.hom) at this
-        simp only [GroupObject.comp_hom'] at this
-        exact this
-     }
-    existsi
-     {
-      hom := αhom
-      one_hom := ?_
-      mul_hom := ?_
-      inv_hom := ?_
-     }
-    · ext X
-      simp only [NatTrans.comp_app, αhom]
-      have := (a.app X).one_hom
-      simp only [obj_obj_one, evaluation_obj_obj, PreservesTerminal.iso_inv, Category.assoc,
-        IsIso.eq_inv_comp, IsIso.hom_inv_id_assoc] at this
-      exact this
-    · ext X
-      simp only [NatTrans.comp_app, αhom]
-      have := (a.app X).mul_hom
-      simp only [obj_obj_mul, evaluation_obj_obj, PreservesLimitPair.iso_inv, Category.assoc,
-        IsIso.inv_comp_eq] at this
-      rw [← Category.assoc] at this
-      have that := prodComparison_natural ((evaluation C D).obj X) αhom αhom
-      simp only [evaluation_obj_obj, evaluation_obj_map, αhom] at that
-      rw [← that] at this
-      simp only [evaluation_obj_obj, Category.assoc, IsIso.hom_inv_id_assoc] at this
-      exact this
-    · ext X; dsimp
-      rw [(a.app X).inv_hom]
-    · ext; simp only
-
-end GroupObjectFunctorToFunctorGroupObject
--/
-
-namespace FunctorGroupObjectToGroupObjectFunctor
+namespace inverse
 
 variable {C D}
 
@@ -371,114 +317,71 @@ def map : obj F ⟶ obj F' where
       NatTrans.comp_app]
     exact (α.app X).inv_hom
 
-end FunctorGroupObjectToGroupObjectFunctor
+end inverse
 
 @[simp]
-def FunctorGroupObjectToGroupObjectFunctor : (C ⥤ (GroupObject D)) ⥤ GroupObject (C ⥤ D) where
-  obj := FunctorGroupObjectToGroupObjectFunctor.obj
-  map := FunctorGroupObjectToGroupObjectFunctor.map
-
-namespace GroupObjectFunctorEquivalence
+def inverse : (C ⥤ (GroupObject D)) ⥤ GroupObject (C ⥤ D) where
+  obj := inverse.obj
+  map := inverse.map
 
 @[simp]
-def unitIso : 𝟭 (GroupObject (C ⥤ D)) ≅ GroupObjectFunctorToFunctorGroupObject C D ⋙
-    FunctorGroupObjectToGroupObjectFunctor C D := by
+def unitIso : 𝟭 (GroupObject (C ⥤ D)) ≅ functor C D ⋙ inverse C D := by
   refine NatIso.ofComponents ?_ ?_
   · intro G
     refine GroupObject.isoOfIso (NatIso.ofComponents (fun X ↦ Iso.refl (G.X.obj X))
         (by aesop_cat)) (by aesop_cat) ?_ (by aesop_cat)
     ext
-    simp only [Functor.id_obj, GroupObjectFunctorToFunctorGroupObject,
-          GroupObjectFunctorToFunctorGroupObject.obj,
-          GroupObjectFunctorToFunctorGroupObject.obj_obj,
-          GroupObjectFunctorToFunctorGroupObject.obj_obj_one, evaluation_obj_obj,
-          GroupObjectFunctorToFunctorGroupObject.obj_obj_mul,
-          GroupObjectFunctorToFunctorGroupObject.map, id_eq, FunctorGroupObjectToGroupObjectFunctor,
-          Functor.comp_obj, FunctorGroupObjectToGroupObjectFunctor.obj,
-          FunctorGroupObjectToGroupObjectFunctor.obj_X,
-          FunctorGroupObjectToGroupObjectFunctor.obj_one,
-          FunctorGroupObjectToGroupObjectFunctor.obj_mul,
-          FunctorGroupObjectToGroupObjectFunctor.obj_inv, NatTrans.comp_app,
-          NatIso.ofComponents_hom_app, Iso.refl_hom, Category.comp_id, PreservesLimitPair.iso_inv,
-          IsIso.hom_inv_id_assoc]
+    simp only [Functor.id_obj, functor, functor.obj, functor.obj_obj, functor.obj_obj_one,
+      evaluation_obj_obj, functor.obj_obj_mul, functor.map, id_eq, inverse, Functor.comp_obj,
+      inverse.obj, inverse.obj_X, inverse.obj_one, inverse.obj_mul, inverse.obj_inv,
+      NatTrans.comp_app, NatIso.ofComponents_hom_app, Iso.refl_hom, Category.comp_id,
+      PreservesLimitPair.iso_inv, IsIso.hom_inv_id_assoc]
     erw [prod.map_id_id, Category.id_comp]
   · aesop_cat
 
 @[simp]
-def counitIso : FunctorGroupObjectToGroupObjectFunctor C D ⋙
-    GroupObjectFunctorToFunctorGroupObject C D ≅ 𝟭 (C ⥤ GroupObject D) := by
+def counitIso : inverse C D ⋙ functor C D ≅ 𝟭 (C ⥤ GroupObject D) := by
   refine NatIso.ofComponents ?_ ?_
   · intro G
     refine NatIso.ofComponents (fun X ↦ GroupObject.isoOfIso (Iso.refl (G.obj X).X) (by simp)
       (by simp) (by simp)) (by aesop_cat)
   · aesop_cat
 
-end GroupObjectFunctorEquivalence
+end FunctorEquivalence
+
+variable (C D)
 
 @[simp]
-def GroupObjectFunctorEquivalence : Equivalence (GroupObject (C ⥤ D)) (C ⥤ GroupObject D) where
-  functor := GroupObjectFunctorToFunctorGroupObject C D
-  inverse := FunctorGroupObjectToGroupObjectFunctor C D
-  unitIso := GroupObjectFunctorEquivalence.unitIso C D
-  counitIso := GroupObjectFunctorEquivalence.counitIso C D
+def FunctorEquivalence : Equivalence (GroupObject (C ⥤ D)) (C ⥤ GroupObject D) where
+  functor := FunctorEquivalence.functor C D
+  inverse := FunctorEquivalence.inverse C D
+  unitIso := FunctorEquivalence.unitIso C D
+  counitIso := FunctorEquivalence.counitIso C D
   functor_unitIso_comp X := by
     ext
-    simp only [GroupObjectFunctorToFunctorGroupObject, GroupObjectFunctorToFunctorGroupObject.obj,
-      GroupObjectFunctorToFunctorGroupObject.obj_obj,
-      GroupObjectFunctorToFunctorGroupObject.obj_obj_one, evaluation_obj_obj,
-      GroupObjectFunctorToFunctorGroupObject.obj_obj_mul,
-      GroupObjectFunctorToFunctorGroupObject.map, id_eq, Functor.id_obj,
-      FunctorGroupObjectToGroupObjectFunctor, Functor.comp_obj,
-      FunctorGroupObjectToGroupObjectFunctor.obj, FunctorGroupObjectToGroupObjectFunctor.obj_X,
-      FunctorGroupObjectToGroupObjectFunctor.obj_one,
-      FunctorGroupObjectToGroupObjectFunctor.obj_mul,
-      FunctorGroupObjectToGroupObjectFunctor.obj_inv, GroupObjectFunctorEquivalence.unitIso,
-      NatIso.ofComponents_hom_app, GroupObject.isoOfIso_hom_hom, Iso.refl_hom,
-      GroupObjectFunctorEquivalence.counitIso, NatTrans.comp_app, GroupObject.comp_hom',
-      Category.comp_id, NatTrans.id_app, GroupObject.id_hom']
+    simp only [FunctorEquivalence.functor, FunctorEquivalence.functor.obj,
+      FunctorEquivalence.functor.obj_obj, FunctorEquivalence.functor.obj_obj_one,
+      evaluation_obj_obj, FunctorEquivalence.functor.obj_obj_mul, FunctorEquivalence.functor.map,
+      id_eq, Functor.id_obj, FunctorEquivalence.inverse, Functor.comp_obj,
+      FunctorEquivalence.inverse.obj, FunctorEquivalence.inverse.obj_X,
+      FunctorEquivalence.inverse.obj_one, FunctorEquivalence.inverse.obj_mul,
+      FunctorEquivalence.inverse.obj_inv, FunctorEquivalence.unitIso, NatIso.ofComponents_hom_app,
+      GroupObject.isoOfIso_hom_hom, Iso.refl_hom, FunctorEquivalence.counitIso, NatTrans.comp_app,
+      GroupObject.comp_hom', Category.comp_id, NatTrans.id_app, GroupObject.id_hom']
 
-/-
-namespace GroupObjectFunctorToFunctorGroupObject
+namespace FunctorEquivalence
 
-def essSurj : (GroupObjectFunctorToFunctorGroupObject C D).EssSurj where
-  mem_essImage F := by
-    refine Functor.essImage.ofIso (NatIso.ofComponents ?_ ?_) (Functor.obj_mem_essImage _
-      (FunctorGroupObjectToGroupObjectFunctor.obj F))
-    · intro X
-      simp only [GroupObjectFunctorToFunctorGroupObject, obj, obj_obj,
-        FunctorGroupObjectToGroupObjectFunctor.obj, FunctorGroupObjectToGroupObjectFunctor.obj_X]
-      refine GroupObject.isoOfIso (Iso.refl _) ?_ ?_ ?_
-      · simp only [FunctorGroupObjectToGroupObjectFunctor.obj_one, obj_obj_one, evaluation_obj_obj,
-        PreservesTerminal.iso_inv, IsIso.inv_hom_id_assoc, Iso.refl_hom, Category.comp_id]
-      · simp only [FunctorGroupObjectToGroupObjectFunctor.obj_mul,
-        FunctorGroupObjectToGroupObjectFunctor.obj_X, evaluation_obj_obj, obj_obj_mul,
-        PreservesLimitPair.iso_inv, IsIso.inv_hom_id_assoc, Iso.refl_hom, Category.comp_id,
-        prod.map_id_id, Category.id_comp]
-      · dsimp; rw [Category.comp_id, Category.id_comp]
-    · intro X Y f
-      ext
-      simp only [GroupObjectFunctorToFunctorGroupObject, FunctorGroupObjectToGroupObjectFunctor.obj,
-        id_eq, GroupObject.comp_hom', GroupObject.isoOfIso_hom_hom, Iso.refl_hom]
-      simp only [FunctorGroupObjectToGroupObjectFunctor.obj_X, obj]
-      erw [Category.id_comp, Category.comp_id]
-
-def isEquivalence : (GroupObjectFunctorToFunctorGroupObject C D).IsEquivalence where
-  full := full
-  faithful := faithful
-  essSurj := essSurj
--/
-
-namespace GroupObjectFunctorEquivalence
+open GroupObject
 
 def comp_forget :
-    (GroupObjectFunctorEquivalence C D).functor ⋙ (GroupObject.forget D).postcomp
+    (FunctorEquivalence C D).functor ⋙ (GroupObject.forget D).postcomp
     ≅ GroupObject.forget (C ⥤ D) := by
   refine NatIso.ofComponents (fun G ↦ NatIso.ofComponents (fun X ↦ Iso.refl (G.X.obj X))
     (by aesop_cat)) (by aesop_cat)
 
-def forget_postcomp : (GroupObjectFunctorEquivalence C D).inverse ⋙ GroupObject.forget (C ⥤ D)
+def forget_postcomp : (FunctorEquivalence C D).inverse ⋙ GroupObject.forget (C ⥤ D)
     ≅ (GroupObject.forget D).postcomp :=
   NatIso.ofComponents (fun F ↦ NatIso.ofComponents (fun X ↦ Iso.refl (F.obj X).X) (by simp))
   (by aesop_cat)
 
-end GroupObjectFunctorEquivalence
+end FunctorEquivalence

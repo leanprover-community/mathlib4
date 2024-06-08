@@ -8,18 +8,17 @@ open CategoryTheory Limits
 
 noncomputable section
 
-universe v u v₁ u₁ u₂ v₂
+universe v u v₁ u₁ u₂ v₂ u₃ v₃
 
 variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D] {E : Type u₂}
-  [Category.{v₂, u₂} E]
-
-namespace CategoryTheory.GroupObjectFunctor
-
-variable [HasFiniteProducts C] [HasFiniteProducts D] [HasFiniteProducts E]
+  [Category.{v₂, u₂} E] {E' : Type u₃} [Category.{v₃, u₃} E']
+variable [HasFiniteProducts C] [HasFiniteProducts D] [HasFiniteProducts E] [HasFiniteProducts E']
 variable (F F' F'' : C ⥤ D) [PreservesFiniteProducts F] [PreservesFiniteProducts F']
   [PreservesFiniteProducts F'']
 variable {G G' : D ⥤ E} [PreservesFiniteProducts G] [PreservesFiniteProducts G']
-variable {H H' : E ⥤ C} [PreservesFiniteProducts H] [PreservesFiniteProducts H']
+variable {H : E ⥤ E'} [PreservesFiniteProducts H]
+
+namespace CategoryTheory.GroupObjectFunctor
 
 /-- Lifting a functor `C ⥤ D` that commutes with finite products to a functor between the
 categories of group objects: the action on objects.-/
@@ -108,7 +107,7 @@ variable (C)
 /-- If `F : C ⥤ C` is the identity functor, then its lift to categories of group objects
 is isomorphic (actually equal) to the identity functor.-/
 @[simps!]
-noncomputable def mapIdIso : map (𝟭 C) ≅ 𝟭 (GroupObject C) := by
+noncomputable def mapId [PreservesFiniteProducts (𝟭 C)] : map (𝟭 C) ≅ 𝟭 (GroupObject C) := by
   refine NatIso.ofComponents ?_ ?_
   · intro X
     refine GroupObject.isoOfIso (Iso.refl _) ?_ ?_ ?_
@@ -134,7 +133,7 @@ variable (G)
 
 /-- The construction `map` is compatible with composition of functors.-/
 @[simps!]
-noncomputable def mapCompIso : map (F ⋙ G) ≅
+noncomputable def mapComp [PreservesFiniteProducts (F ⋙ G)] : map (F ⋙ G) ≅
     map F ⋙ map G := by
   refine NatIso.ofComponents ?_ ?_
   · intro X
@@ -240,19 +239,7 @@ noncomputable def mapAsFunctor :
 
 variable {C D}
 
-variable {F F'}
-
-lemma mapComp_naturality_left (α : F ⟶ F') :
-    map₂ (whiskerRight α G) ≫ (mapCompIso F' G).hom =
-    (mapCompIso F G).hom ≫ whiskerRight (map₂ α) (map G) := by
-  aesop_cat
-
-variable (F)
-
-lemma mapComp_naturality_right (α : G ⟶ G') :
-    map₂ (whiskerLeft F α) ≫ (mapCompIso F G').hom =
-    (mapCompIso F G).hom ≫ whiskerLeft (map F) (map₂ α) := by
-  aesop_cat
+variable {F'}
 
 lemma map₂_id : map₂ (𝟙 F) = 𝟙 (map F) := by
   aesop_cat
@@ -265,25 +252,38 @@ lemma map₂_comp (α : F ⟶ F') (β : F' ⟶ F'') :
 
 variable {F}
 
-lemma map₂_associator : map₂ (Functor.associator F G H).hom ≫
-    (mapCompIso F (G ⋙ H)).hom ≫ whiskerLeft (map F)
-    (mapCompIso G H).hom = (mapCompIso (F ⋙ G) H).hom ≫
-    whiskerRight (mapCompIso F G).hom
-    (map H) ≫ (Functor.associator (map F) (map G)
-    (map H)).hom := by
+lemma map₂_associator [PreservesFiniteProducts (G ⋙ H)] [PreservesFiniteProducts (F ⋙ G ⋙ H)]
+    [PreservesFiniteProducts (F ⋙ G)] [PreservesFiniteProducts ((F ⋙ G) ⋙ H)] :
+    map₂ (Functor.associator F G H).hom = (mapComp (F ⋙ G) H).hom ≫
+    (whiskerRight (mapComp F G).hom) (map H) ≫ (Functor.associator (map F) (map G)
+    (map H)).hom ≫ whiskerLeft (map F) (mapComp G H).inv ≫ (mapComp F (G ⋙ H)).inv := by
   aesop_cat
 
 variable (F)
 
-lemma map₂_leftUnitor :
-    map₂ F.leftUnitor.hom = (mapCompIso (𝟭 C) F).hom ≫
-    whiskerRight (mapIdIso C).hom (map F) ≫
+lemma map₂_whisker_left [PreservesFiniteProducts (F ⋙ G)] [PreservesFiniteProducts (F ⋙ G')]
+    (β : G ⟶ G') :
+    map₂ (whiskerLeft F β) = (mapComp F G).hom ≫ (whiskerLeft (map F) (map₂ β)) ≫
+    (mapComp F G').inv := by aesop_cat
+
+variable {F} (G)
+
+lemma map₂_whisker_right [PreservesFiniteProducts (F ⋙ G)] [PreservesFiniteProducts (F' ⋙ G)]
+    (α : F ⟶ F') :
+    map₂ (whiskerRight α G) = (mapComp F G).hom ≫ (whiskerRight (map₂ α) (map G)) ≫
+    (mapComp F' G).inv := by aesop_cat
+
+variable (F)
+
+lemma map₂_left_unitor [PreservesFiniteProducts (𝟭 C)] [PreservesFiniteProducts (𝟭 C ⋙ F)] :
+    map₂ F.leftUnitor.hom = (mapComp (𝟭 C) F).hom ≫
+    whiskerRight (mapId C).hom (map F) ≫
     (map F).leftUnitor.hom := by
   aesop_cat
 
-lemma map₂_rightUnitor :
-    map₂ F.rightUnitor.hom = (mapCompIso F (𝟭 D)).hom ≫
-    whiskerLeft (map F) (mapIdIso D).hom ≫
+lemma map₂_right_unitor [PreservesFiniteProducts (𝟭 D)] [PreservesFiniteProducts (F ⋙ 𝟭 D)] :
+    map₂ F.rightUnitor.hom = (mapComp F (𝟭 D)).hom ≫
+    whiskerLeft (map F) (mapId D).hom ≫
     (map F).rightUnitor.hom := by
   aesop_cat
 

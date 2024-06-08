@@ -1,19 +1,19 @@
 import Mathlib.CategoryTheory.Limits.Fubini
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.GroupObjects.FunctorCategory
-import Mathlib.CategoryTheory.GroupObjects.PreservesFiniteProducts
-import Mathlib.CategoryTheory.GroupObjects.Bicategory
-import Mathlib.CategoryTheory.Bicategory.Adjunction
+import Mathlib.CategoryTheory.GroupObjects.FunctorEquivalence
+import Mathlib.CategoryTheory.GroupObjects.GroupObjectFunctor
+--import Mathlib.CategoryTheory.GroupObjects.Bicategory
+--import Mathlib.CategoryTheory.Bicategory.Adjunction
 import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+--import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.CategoryTheory.Adjunction.Unique
 
 set_option linter.unreachableTactic false
 
 universe u v u' v' u'' v''
 
-open CategoryTheory Limits
+open CategoryTheory Limits GroupObject
 
 noncomputable section
 
@@ -107,23 +107,23 @@ variable (C J)
 
 def constAdj'_core : Adjunction.CoreUnitCounit
     (map (Functor.const J : C ⥤ J ⥤ C)) (map (lim : (J ⥤ C) ⥤ C)) where
-  unit := (mapIdIso C).inv ≫ (map₂ Limits.constLimAdj.unit) ≫ (mapCompIso (const J) lim).hom
-  counit := (mapCompIso lim (const J)).inv ≫ (map₂ Limits.constLimAdj.counit) ≫
-    (mapIdIso (J ⥤ C)).hom
+  unit := (mapId C).inv ≫ (map₂ Limits.constLimAdj.unit) ≫ (mapComp (const J) lim).hom
+  counit := (mapComp lim (const J)).inv ≫ (map₂ Limits.constLimAdj.counit) ≫
+    (mapId (J ⥤ C)).hom
   left_triangle := by
     ext
     simp only [GroupObjectFunctor.map, comp_obj, id_obj, map_obj_X, const_obj_obj, map₂, id_eq,
       whiskerRight_comp, whiskerLeft_comp, Category.assoc, NatTrans.comp_app, whiskerRight_app,
       associator_hom_app, whiskerLeft_app, Category.id_comp, comp_hom', map_map_hom,
-      mapIdIso_inv_app_hom, CategoryTheory.Functor.map_id, lim_obj, mapCompIso_hom_app_hom,
-      mapCompIso_inv_app_hom, mapIdIso_hom_app_hom, Category.comp_id,
+      mapId_inv_app_hom, CategoryTheory.Functor.map_id, lim_obj, mapComp_hom_app_hom,
+      mapComp_inv_app_hom, mapId_hom_app_hom, Category.comp_id,
       Adjunction.left_triangle_components, NatTrans.id_app, NatTrans.id_app', id_hom']
   right_triangle := by
     ext X
     simp only [GroupObjectFunctor.map, comp_obj, id_obj, map_obj_X, lim_obj, map₂, id_eq,
       whiskerLeft_comp, whiskerRight_comp, Category.assoc, NatTrans.comp_app, whiskerLeft_app,
-      associator_inv_app, whiskerRight_app, Category.id_comp, comp_hom', mapIdIso_inv_app_hom,
-      mapCompIso_hom_app_hom, map_map_hom, mapCompIso_inv_app_hom, mapIdIso_hom_app_hom,
+      associator_inv_app, whiskerRight_app, Category.id_comp, comp_hom', mapId_inv_app_hom,
+      mapComp_hom_app_hom, map_map_hom, mapComp_inv_app_hom, mapId_hom_app_hom,
       NatTrans.id_app', id_hom']
     rw [CategoryTheory.Functor.map_id]; erw [Category.id_comp]
     rw [CategoryTheory.Functor.map_id]; erw [Category.comp_id]
@@ -137,16 +137,18 @@ def constAdj' := Adjunction.mkOfUnitCounit (constAdj'_core C J)
 
 @[simp]
 def constIsConst_app (X : GroupObject C) :
-    (GroupObjectFunctorToFunctorGroupObject J C).obj ((map (Functor.const J (C := C))).obj X) ≅
+    (FunctorEquivalence J C).functor.obj ((map (Functor.const J (C := C))).obj X) ≅
     (Functor.const J).obj X := by
   refine NatIso.ofComponents ?_ ?_
   · intro j
     refine GroupObject.isoOfIso (Iso.refl _) ?_ ?_ ?_ <;> simp only [const_obj_obj,
-      GroupObjectFunctorToFunctorGroupObject, GroupObjectFunctorToFunctorGroupObject.obj,
-      GroupObjectFunctorToFunctorGroupObject.obj_obj,
-      GroupObjectFunctorToFunctorGroupObject.obj_obj_one, evaluation_obj_obj,
-      GroupObjectFunctorToFunctorGroupObject.obj_obj_mul,
-      GroupObjectFunctorToFunctorGroupObject.map, id_eq, map, map_obj_X, map_obj_one,
+      FunctorEquivalence, FunctorEquivalence.functor, FunctorEquivalence.functor.obj,
+      FunctorEquivalence.functor.obj_obj, FunctorEquivalence.functor.obj_obj_one,
+      evaluation_obj_obj, FunctorEquivalence.functor.obj_obj_mul, FunctorEquivalence.functor.map,
+      id_eq, FunctorEquivalence.inverse, FunctorEquivalence.unitIso, id_obj, comp_obj,
+      FunctorEquivalence.inverse.obj, FunctorEquivalence.inverse.obj_X,
+      FunctorEquivalence.inverse.obj_one, FunctorEquivalence.inverse.obj_mul,
+      FunctorEquivalence.inverse.obj_inv, FunctorEquivalence.counitIso, map, map_obj_X, map_obj_one,
       NatTrans.comp_app, const_map_app, map_obj_mul, map_obj_inv, const_obj_map,
       PreservesTerminal.iso_inv, NatIso.isIso_inv_app, Iso.refl_hom, Category.comp_id,
       IsIso.inv_comp_eq]
@@ -168,23 +170,24 @@ def constIsConst_app (X : GroupObject C) :
     · simp only [Category.id_comp]
   · intro j j' u
     ext
-    simp only [GroupObjectFunctorToFunctorGroupObject, GroupObjectFunctorToFunctorGroupObject.obj,
-      GroupObjectFunctorToFunctorGroupObject.obj_obj,
-      GroupObjectFunctorToFunctorGroupObject.obj_obj_one, evaluation_obj_obj,
-      GroupObjectFunctorToFunctorGroupObject.obj_obj_mul,
-      GroupObjectFunctorToFunctorGroupObject.map, id_eq, map, map_obj_X, const_obj_obj, map_obj_one,
-      NatTrans.comp_app, const_map_app, map_obj_mul, map_obj_inv, const_obj_map, comp_hom',
-      isoOfIso_hom_hom, Iso.refl_hom, Category.comp_id]
+    simp only [FunctorEquivalence, FunctorEquivalence.functor, FunctorEquivalence.functor.obj,
+      FunctorEquivalence.functor.obj_obj, FunctorEquivalence.functor.obj_obj_one,
+      evaluation_obj_obj, FunctorEquivalence.functor.obj_obj_mul, FunctorEquivalence.functor.map,
+      id_eq, FunctorEquivalence.inverse, FunctorEquivalence.unitIso, id_obj, comp_obj,
+      FunctorEquivalence.inverse.obj, FunctorEquivalence.inverse.obj_X,
+      FunctorEquivalence.inverse.obj_one, FunctorEquivalence.inverse.obj_mul,
+      FunctorEquivalence.inverse.obj_inv, FunctorEquivalence.counitIso, map, map_obj_X,
+      const_obj_obj, map_obj_one, NatTrans.comp_app, const_map_app, map_obj_mul, map_obj_inv,
+      const_obj_map, comp_hom', isoOfIso_hom_hom, Iso.refl_hom, Category.comp_id]
 
-def constIsConst : map (Functor.const J (C := C)) ⋙ GroupObjectFunctorToFunctorGroupObject J C ≅
+def constIsConst : map (Functor.const J (C := C)) ⋙ (FunctorEquivalence J C).functor ≅
     Functor.const J (C := GroupObject C) := by
   refine NatIso.ofComponents (constIsConst_app C J) (by aesop_cat)
 
-
 def constAdj : Adjunction (Functor.const J (C := GroupObject C))
-    ((GroupObjectFunctorEquivalence J C).inverse ⋙ map lim) :=
+    ((FunctorEquivalence J C).inverse ⋙ map lim) :=
   Adjunction.ofNatIsoLeft (Adjunction.comp (constAdj' C J)
-  (GroupObjectFunctorEquivalence J C).toAdjunction) (constIsConst C J)
+  (FunctorEquivalence J C).toAdjunction) (constIsConst C J)
 
 instance instHasLimitsOfShape : HasLimitsOfShape J (GroupObject C) where
   has_limit :=
@@ -196,9 +199,9 @@ def forget_comp_lim : (lim : (J ⥤ GroupObject C) ⥤ GroupObject C) ⋙ GroupO
   refine (NatIso.hcomp (Adjunction.rightAdjointUniq (Limits.constLimAdj (J := J)
     (C := GroupObject C)) (GroupObject.constAdj C J)) (Iso.refl (GroupObject.forget C))).trans ?_
   refine (Functor.associator _ _ _).trans ?_
-  refine (NatIso.hcomp (Iso.refl ((GroupObjectFunctorEquivalence J C).inverse))
+  refine (NatIso.hcomp (Iso.refl ((FunctorEquivalence J C).inverse))
     (GroupObjectFunctor.map_comp_forget (lim (J := J) (C := C)))).trans ?_
   exact (Functor.associator _ _ _).symm.trans (NatIso.hcomp
-    (GroupObjectFunctorEquivalence.forget_postcomp J C) (Iso.refl lim))
+    (FunctorEquivalence.forget_postcomp J C) (Iso.refl lim))
 
 end GroupObject
