@@ -1027,7 +1027,8 @@ def completion :=
 namespace Completion
 
 instance : NormedField v.completion :=
-  letI := v.normedField; letI := UniformSpace.comap_completableTopField v.embedding;
+  letI := v.normedField
+  letI := UniformSpace.comap_completableTopField v.embedding
   UniformSpace.Completion.instNormedField K
 
 instance : CompleteSpace v.completion :=
@@ -1063,13 +1064,18 @@ theorem extensionEmbedding_dist_eq (x y : v.completion) :
 
 variable (v)
 
+/-- The embedding `v.completion → ℂ` is an isometry. -/
+theorem isometry_extensionEmbedding :
+    Isometry (extensionEmbedding v) :=
+  Isometry.of_dist_eq extensionEmbedding_dist_eq
+
 /-- The embedding `v.completion → ℂ` is a closed embedding. -/
-theorem closedEmbedding : ClosedEmbedding (extensionEmbedding v) :=
-  (Isometry.of_dist_eq extensionEmbedding_dist_eq).closedEmbedding
+theorem closed_extensionEmbedding: ClosedEmbedding (extensionEmbedding v) :=
+  (isometry_extensionEmbedding v).closedEmbedding
 
 /-- The completion of a number field at an infinite place is locally compact. -/
 instance locallyCompactSpace : LocallyCompactSpace (v.completion) :=
-  (closedEmbedding v).locallyCompactSpace
+  (closed_extensionEmbedding v).locallyCompactSpace
 
 end Completion
 

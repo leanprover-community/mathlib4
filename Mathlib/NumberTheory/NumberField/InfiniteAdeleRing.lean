@@ -63,7 +63,7 @@ abbrev globalEmbedding : K →+* infiniteAdeleRing K := algebraMap K (infiniteAd
 theorem globalEmbedding_apply (x : K) : globalEmbedding K x v = (x : v.completion) := rfl
 
 /-- The infinite adele ring is locally compact. -/
-theorem locallyCompactSpace : LocallyCompactSpace (infiniteAdeleRing K) :=
+instance locallyCompactSpace : LocallyCompactSpace (infiniteAdeleRing K) :=
   Pi.locallyCompactSpace_of_finite
 
 end InfiniteAdeleRing
