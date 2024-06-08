@@ -27,8 +27,6 @@ We use this to transport the notion of `support` from `Finsupp` to `FreeAbelianG
 
 noncomputable section
 
-open BigOperators
-
 variable {X : Type*}
 
 /-- The group homomorphism `FreeAbelianGroup X →+ (X →₀ ℤ)`. -/

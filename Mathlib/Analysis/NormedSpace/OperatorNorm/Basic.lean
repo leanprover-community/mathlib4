@@ -362,7 +362,7 @@ private lemma uniformity_eq_seminorm :
     intro f hf
     refine opNorm_le_of_shell (f := f) one_pos (norm_nonneg c) hc fun x hcx hx ↦ ?_
     exact (hf x hx.le).trans ((div_le_iff' <| one_pos.trans hc).1 hcx)
-  · rcases (NormedSpace.isVonNBounded_iff' _ _ _).1 hs with ⟨ε, hε⟩
+  · rcases (NormedSpace.isVonNBounded_iff' _).1 hs with ⟨ε, hε⟩
     rcases exists_pos_mul_lt hr ε with ⟨δ, hδ₀, hδ⟩
     refine ⟨δ, hδ₀, fun f hf x hx ↦ ?_⟩
     simp only [Seminorm.mem_ball_zero, mem_closedBall_zero_iff] at hf ⊢
@@ -492,6 +492,14 @@ theorem coe_restrict_scalarsL' : ⇑(restrictScalarsL 𝕜 E Fₗ 𝕜' 𝕜'') 
 #align continuous_linear_map.coe_restrict_scalarsL' ContinuousLinearMap.coe_restrict_scalarsL'
 
 end RestrictScalars
+
+lemma norm_pi_le_of_le {ι : Type*} [Fintype ι]
+    {M : ι → Type*} [∀ i, SeminormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)] {C : ℝ}
+    {L : (i : ι) → (E →L[𝕜] M i)} (hL : ∀ i, ‖L i‖ ≤ C) (hC : 0 ≤ C) :
+    ‖pi L‖ ≤ C := by
+  refine opNorm_le_bound _ hC (fun x ↦ ?_)
+  refine (pi_norm_le_iff_of_nonneg (by positivity)).mpr (fun i ↦ ?_)
+  exact (L i).le_of_opNorm_le (hL i) _
 
 end ContinuousLinearMap
 

@@ -50,7 +50,7 @@ integrable, function space, l1
 noncomputable section
 
 open scoped Classical
-open Topology BigOperators ENNReal MeasureTheory NNReal
+open Topology ENNReal MeasureTheory NNReal
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
 
@@ -558,7 +558,7 @@ theorem integrable_zero_measure {_ : MeasurableSpace α} {f : α → β} :
 #align measure_theory.integrable_zero_measure MeasureTheory.integrable_zero_measure
 
 theorem integrable_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → β} {μ : ι → Measure α}
-    {s : Finset ι} : Integrable f (∑ i in s, μ i) ↔ ∀ i ∈ s, Integrable f (μ i) := by
+    {s : Finset ι} : Integrable f (∑ i ∈ s, μ i) ↔ ∀ i ∈ s, Integrable f (μ i) := by
   induction s using Finset.induction_on <;> simp [*]
 #align measure_theory.integrable_finset_sum_measure MeasureTheory.integrable_finset_sum_measure
 
@@ -676,13 +676,13 @@ theorem Integrable.add {f g : α → β} (hf : Integrable f μ) (hg : Integrable
 #align measure_theory.integrable.add MeasureTheory.Integrable.add
 
 theorem integrable_finset_sum' {ι} (s : Finset ι) {f : ι → α → β}
-    (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (∑ i in s, f i) μ :=
+    (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (∑ i ∈ s, f i) μ :=
   Finset.sum_induction f (fun g => Integrable g μ) (fun _ _ => Integrable.add)
     (integrable_zero _ _ _) hf
 #align measure_theory.integrable_finset_sum' MeasureTheory.integrable_finset_sum'
 
 theorem integrable_finset_sum {ι} (s : Finset ι) {f : ι → α → β}
-    (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (fun a => ∑ i in s, f i a) μ := by
+    (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (fun a => ∑ i ∈ s, f i a) μ := by
   simpa only [← Finset.sum_apply] using integrable_finset_sum' s hf
 #align measure_theory.integrable_finset_sum MeasureTheory.integrable_finset_sum
 
@@ -705,6 +705,33 @@ lemma integrable_add_iff_integrable_right {f g : α → β} (hf : Integrable f �
 lemma integrable_add_iff_integrable_left {f g : α → β} (hf : Integrable f μ) :
     Integrable (g + f) μ ↔ Integrable g μ := by
   rw [add_comm, integrable_add_iff_integrable_right hf]
+
+lemma integrable_left_of_integrable_add_of_nonneg {f g : α → ℝ}
+    (h_meas : AEStronglyMeasurable f μ) (hf : 0 ≤ᵐ[μ] f) (hg : 0 ≤ᵐ[μ] g)
+    (h_int : Integrable (f + g) μ) : Integrable f μ := by
+  refine h_int.mono' h_meas ?_
+  filter_upwards [hf, hg] with a haf hag
+  exact (Real.norm_of_nonneg haf).symm ▸ (le_add_iff_nonneg_right _).mpr hag
+
+lemma integrable_right_of_integrable_add_of_nonneg {f g : α → ℝ}
+    (h_meas : AEStronglyMeasurable f μ) (hf : 0 ≤ᵐ[μ] f) (hg : 0 ≤ᵐ[μ] g)
+    (h_int : Integrable (f + g) μ) : Integrable g μ :=
+  integrable_left_of_integrable_add_of_nonneg
+    ((AEStronglyMeasurable.add_iff_right h_meas).mp h_int.aestronglyMeasurable)
+      hg hf (add_comm f g ▸ h_int)
+
+lemma integrable_add_iff_of_nonneg {f g : α → ℝ} (h_meas : AEStronglyMeasurable f μ)
+    (hf : 0 ≤ᵐ[μ] f) (hg : 0 ≤ᵐ[μ] g) :
+    Integrable (f + g) μ ↔ Integrable f μ ∧ Integrable g μ :=
+  ⟨fun h ↦ ⟨integrable_left_of_integrable_add_of_nonneg h_meas hf hg h,
+    integrable_right_of_integrable_add_of_nonneg h_meas hf hg h⟩, fun ⟨hf, hg⟩ ↦ hf.add hg⟩
+
+lemma integrable_add_iff_of_nonpos {f g : α → ℝ} (h_meas : AEStronglyMeasurable f μ)
+    (hf : f ≤ᵐ[μ] 0) (hg : g ≤ᵐ[μ] 0) :
+    Integrable (f + g) μ ↔ Integrable f μ ∧ Integrable g μ := by
+  rw [← integrable_neg_iff, ← integrable_neg_iff (f := f), ← integrable_neg_iff (f := g), neg_add]
+  exact integrable_add_iff_of_nonneg h_meas.neg (hf.mono (fun _ ↦ neg_nonneg_of_nonpos))
+    (hg.mono (fun _ ↦ neg_nonneg_of_nonpos))
 
 @[simp]
 lemma integrable_add_const_iff [IsFiniteMeasure μ] {f : α → β} {c : β} :
@@ -772,8 +799,8 @@ theorem Integrable.essSup_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace �
   have h : (1 : ℝ≥0∞) / 1 = 1 / ∞ + 1 / 1 := by norm_num
   have hg' : snorm g ∞ μ ≠ ∞ := by rwa [snorm_exponent_top]
   calc
-    snorm (fun x : α => g x • f x) 1 μ ≤ _ :=
-      by simpa using MeasureTheory.snorm_smul_le_mul_snorm hf.1 g_aestronglyMeasurable h
+    snorm (fun x : α => g x • f x) 1 μ ≤ _ := by
+      simpa using MeasureTheory.snorm_smul_le_mul_snorm hf.1 g_aestronglyMeasurable h
     _ < ∞ := ENNReal.mul_lt_top hg' hf.2.ne
 #align measure_theory.integrable.ess_sup_smul MeasureTheory.Integrable.essSup_smul
 
@@ -789,8 +816,8 @@ theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β]
   have h : (1 : ℝ≥0∞) / 1 = 1 / 1 + 1 / ∞ := by norm_num
   have hg' : snorm g ∞ μ ≠ ∞ := by rwa [snorm_exponent_top]
   calc
-    snorm (fun x : α => f x • g x) 1 μ ≤ _ :=
-      by simpa using MeasureTheory.snorm_smul_le_mul_snorm g_aestronglyMeasurable hf.1 h
+    snorm (fun x : α => f x • g x) 1 μ ≤ _ := by
+      simpa using MeasureTheory.snorm_smul_le_mul_snorm g_aestronglyMeasurable hf.1 h
     _ < ∞ := ENNReal.mul_lt_top hf.2.ne hg'
 #align measure_theory.integrable.smul_ess_sup MeasureTheory.Integrable.smul_essSup
 

@@ -37,7 +37,7 @@ by a sequence of simple functions.
 open Set Function Filter TopologicalSpace ENNReal EMetric Finset
 
 open scoped Classical
-open Topology ENNReal MeasureTheory BigOperators
+open Topology ENNReal MeasureTheory
 
 variable {α β ι E F 𝕜 : Type*}
 
@@ -162,7 +162,7 @@ theorem tendsto_approxOn {f : β → α} (hf : Measurable f) {s : Set α} {y₀ 
   simp (config := { iota := false }) only [Nat.range_casesOn, closure_union, range_comp]
   exact
     Subset.trans (image_closure_subset_closure_image continuous_subtype_val)
-      (subset_union_right _ _)
+      subset_union_right
 #align measure_theory.simple_func.tendsto_approx_on MeasureTheory.SimpleFunc.tendsto_approxOn
 
 theorem edist_approxOn_mono {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)

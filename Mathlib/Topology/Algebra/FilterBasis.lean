@@ -120,24 +120,15 @@ theorem conj : ∀ x₀, ∀ {U}, U ∈ B → ∃ V ∈ B, V ⊆ (fun x ↦ x₀
 is discrete. -/
 @[to_additive "The trivial additive group filter basis consists of `{0}` only. The associated
 topology is discrete."]
-instance : Inhabited (GroupFilterBasis G) := ⟨by
-  refine'
-    { sets := {{1}}
-      nonempty := singleton_nonempty _.. }
-  all_goals simp only [exists_prop, mem_singleton_iff]
-  · rintro - - rfl rfl
-    use {1}
-    simp
-  · simp
-  · rintro - rfl
-    use {1}
-    simp
-  · rintro - rfl
-    use {1}
-    simp
-  · rintro x₀ - rfl
-    use {1}
-    simp⟩
+instance : Inhabited (GroupFilterBasis G) where
+  default := {
+    sets := {{1}}
+    nonempty := singleton_nonempty _
+    inter_sets := by simp
+    one' := by simp
+    mul' := by simp
+    inv' := by simp
+    conj' := by simp }
 
 @[to_additive]
 theorem subset_mul_self (B : GroupFilterBasis G) {U : Set G} (h : U ∈ B) : U ⊆ U * U :=
@@ -236,12 +227,12 @@ instance (priority := 100) isTopologicalGroup (B : GroupFilterBasis G) :
   letI := B.topology
   have basis := B.nhds_one_hasBasis
   have basis' := basis.prod basis
-  refine' TopologicalGroup.of_nhds_one _ _ _ _
+  refine TopologicalGroup.of_nhds_one ?_ ?_ ?_ ?_
   · rw [basis'.tendsto_iff basis]
     suffices ∀ U ∈ B, ∃ V W, (V ∈ B ∧ W ∈ B) ∧ ∀ a b, a ∈ V → b ∈ W → a * b ∈ U by simpa
     intro U U_in
     rcases mul U_in with ⟨V, V_in, hV⟩
-    refine' ⟨V, V, ⟨V_in, V_in⟩, _⟩
+    refine ⟨V, V, ⟨V_in, V_in⟩, ?_⟩
     intro a b a_in b_in
     exact hV <| mul_mem_mul a_in b_in
   · rw [basis.tendsto_iff basis]
@@ -308,7 +299,7 @@ instance (priority := 100) isTopologicalRing {R : Type u} [Ring R] (B : RingFilt
     suffices ∀ U ∈ B', ∃ V W, (V ∈ B' ∧ W ∈ B') ∧ ∀ a b, a ∈ V → b ∈ W → a * b ∈ U by simpa
     intro U U_in
     rcases B.mul U_in with ⟨V, V_in, hV⟩
-    refine' ⟨V, V, ⟨V_in, V_in⟩, _⟩
+    refine ⟨V, V, ⟨V_in, V_in⟩, ?_⟩
     intro a b a_in b_in
     exact hV <| mul_mem_mul a_in b_in
   · intro x₀
