@@ -66,7 +66,6 @@ noncomputable def cardQuot (S : Submodule R M) : ℕ :=
   AddSubgroup.index S.toAddSubgroup
 #align submodule.card_quot Submodule.cardQuot
 
-@[simp]
 theorem cardQuot_apply (S : Submodule R M) : cardQuot S = Nat.card (M ⧸ S) := by
   rfl
 #align submodule.card_quot_apply Submodule.cardQuot_apply
@@ -78,14 +77,13 @@ theorem cardQuot_bot [Infinite M] : cardQuot (⊥ : Submodule R M) = 0 :=
   AddSubgroup.index_bot.trans Nat.card_eq_zero_of_infinite
 #align submodule.card_quot_bot Submodule.cardQuot_bot
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem cardQuot_top : cardQuot (⊤ : Submodule R M) = 1 :=
   AddSubgroup.index_top
 #align submodule.card_quot_top Submodule.cardQuot_top
 
 variable {R M}
 
-@[simp]
 theorem cardQuot_eq_one_iff {P : Submodule R M} : cardQuot P = 1 ↔ P = ⊤ :=
   AddSubgroup.index_eq_one.trans (by simp [SetLike.ext_iff])
 #align submodule.card_quot_eq_one_iff Submodule.cardQuot_eq_one_iff
@@ -106,11 +104,6 @@ This is essentially just a repackaging of the Chinese Remainder Theorem.
 theorem cardQuot_mul_of_coprime [Module.Free ℤ S] [Module.Finite ℤ S]
     {I J : Ideal S} (coprime : IsCoprime I J) : cardQuot (I * J) = cardQuot I * cardQuot J := by
   let b := Module.Free.chooseBasis ℤ S
-  cases isEmpty_or_nonempty (Module.Free.ChooseBasisIndex ℤ S)
-  · haveI : Subsingleton S := Function.Surjective.subsingleton b.repr.toEquiv.symm.surjective
-    nontriviality S
-    exfalso
-    exact not_nontrivial_iff_subsingleton.mpr ‹Subsingleton S› ‹Nontrivial S›
   haveI : Infinite S := Infinite.of_surjective _ b.repr.toEquiv.surjective
   by_cases hI : I = ⊥
   · rw [hI, Submodule.bot_mul, cardQuot_bot, zero_mul]
