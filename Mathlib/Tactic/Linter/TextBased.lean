@@ -31,12 +31,20 @@ inductive StyleError where
   | fileTooLong (number_lines : ℕ) (new_size_limit : ℕ) : StyleError
   deriving BEq
 
+/-- How to format style errors -/
+inductive ErrorFormat
+  /-- Produce style error output aimed at humans: no error code, clickable file name -/
+  | humanReadable : ErrorFormat
+  /-- Produce output suitable for Github error annotations: in particular,
+  duplicate the file path, line number and error code -/
+  | github : ErrorFormat
+
 /-- Create the underlying error message for a given `StyleError`. -/
-def StyleError.errorMessage (err : StyleError) (github : Bool) : String := match err with
+def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String := match err with
   | StyleError.fileTooLong current_size size_limit =>
-    if github then
-      s!"{size_limit} file contains {current_size} lines, try to split it up"
-    else s!"file contains {current_size} lines, try to split it up"
+    match style with
+    | ErrorFormat.github => s!"{size_limit} file contains {current_size} lines, try to split it up"
+    | ErrorFormat.humanReadable => s!"file contains {current_size} lines, try to split it up"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -70,19 +78,21 @@ instance : BEq ErrorContext where
       -- We normalise errors before comparing them.
       && (ctx.error).normalise == (ctx'.error).normalise
 
-/-- Output the formatted error message, containing its context. -/
--- XXX document github flag! should this be a bool or an enum?
-def outputMessage (errctx : ErrorContext) (github : Bool) : String :=
-  if github then
+/-- Output the formatted error message, containing its context.
+
+`style` specifies if the error should be formatted for humans or for github output matchers -/
+def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
+  match style with
+  | ErrorFormat.github =>
     -- We are outputting for github: duplicate file path, line number and error code,
     -- so that they are also visible in the plain text output.
     let path := errctx.path
     let nr := errctx.lineNumber
     let code := errctx.error.errorCode
-    s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {errctx.error.errorMessage github}"
-  else
+    s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {errctx.error.errorMessage style}"
+  | ErrorFormat.humanReadable =>
     -- Print for humans: clickable file name and omit the error code
-    s!"error: {errctx.path}:{errctx.lineNumber} {errctx.error.errorMessage github}"
+    s!"error: {errctx.path}:{errctx.lineNumber} {errctx.error.errorMessage style}"
 
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
@@ -120,11 +130,12 @@ def parseStyleExceptions (lines : Array String) : Array ErrorContext := Id.run d
   -- We treat all lines starting with "--" as a comment and ignore them.
   Array.filterMap (parse?_errorContext ·) (lines.filter (fun line ↦ !line.startsWith "--"))
 
-/-- Print information about all errors encountered to standard output. -/
--- XXX document github flag!
-def formatErrors (errors : Array ErrorContext) (github : Bool) : IO Unit := do
+/-- Print information about all errors encountered to standard output.
+
+`style` specifies if we print errors for humand or github consumption. -/
+def formatErrors (errors : Array ErrorContext) (style : ErrorFormat) : IO Unit := do
   for e in errors do
-    IO.println (outputMessage e github)
+    IO.println (outputMessage e style)
 
 /-- Core logic of a text based linter: given a collection of lines,
 return an array of all style errors with line numbers. -/
@@ -163,19 +174,24 @@ end
 def allLinters : Array TextbasedLinter := Array.mk
   []
 
--- XXX: TODO document this! and implement it :-)
-/-- Mo-/
-inductive OutputMode : Type
- | Print
- | Append
- | Regenerate
+/-- Controls what kind of output this programme produces. -/
+inductive OutputSetting : Type
+  /-- Print any style error to standard output (the default) -/
+  | Print (style : ErrorFormat)
+  /-- Append all new errors to the style exceptions file (and print them?),
+  leaving existing ones intact -/
+  | Append
+  /-- Regenerate the whole style exceptions file -/
+  | Regenerate
 
-/-- Read a file, apply all text-based linters and print formatted errors.
+/-- Read a file and apply all text-based linters.
+Print formatted errors and possibly update the style exceptions file accordingly.
+
 Return `true` if there were new errors (and `false` otherwise).
-`sizeLimit` is any pre-existing limit on this file's size. -/
--- xxx: document github and mode parameters
+`sizeLimit` is any pre-existing limit on this file's size.
+`style` and `mode` specify what kind of output this script should produce. -/
 def lintFile (path : FilePath) (sizeLimit : Option ℕ)
-    (github : Bool) (mode : OutputMode) : IO Bool := do
+    (errorStyle : ErrorFormat) (mode : OutputSetting) : IO Bool := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
   -- NB. The Python script used to still run a few linters; this is in fact not necessary.
@@ -183,15 +199,15 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ)
     return false
   if let some (StyleError.fileTooLong n limit) := checkFileLength lines sizeLimit then
     let arr := Array.mkArray1 (ErrorContext.mk (StyleError.fileTooLong n limit) 1 path)
-    formatErrors arr github
+    formatErrors arr errorStyle
     -- TODO: implement different behaviour based on the output mode!
     return true
   return false
 
 /-- Lint all files referenced in a given import-only file.
-Return the number of files which had new style errors. -/
--- xxx: document github and mode parameters
-def lintAllFiles (path : FilePath) (github : Bool) (mode : OutputMode) : IO UInt32 := do
+Return the number of files which had new style errors.
+`style` and `mode` specify what kind of output this script should produce. -/
+def lintAllFiles (path : System.FilePath) (errorStyle : ErrorFormat) (mode : OutputSetting) : IO UInt32 := do
   -- Read all module names from the file at `path`.
   let allModules ← IO.FS.lines path
   -- Read the style exceptions file.
@@ -207,7 +223,7 @@ def lintAllFiles (path : FilePath) (github : Bool) (mode : OutputMode) : IO UInt
     let size_limits := (style_exceptions.filter (·.path == path)).filterMap (fun errctx ↦
       match errctx.error with
       | StyleError.fileTooLong _ limit => some limit)
-    if ← lintFile path (size_limits.get? 0) github mode then
+    if ← lintFile path (size_limits.get? 0) errorStyle mode then
       number_error_files := number_error_files + 1
   return number_error_files
 
@@ -217,14 +233,14 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   if args.hasFlag "update" && args.hasFlag "regenerate" then
     IO.println "invalid input: the --update and --regenerate flags are mutually exclusive"
     return 2
-  let for_github := args.hasFlag "github"
-  let mode : OutputMode := match (args.hasFlag "update", args.hasFlag "regenerate") with
-  | (true, false) => OutputMode.Append
-  | (false, true) => OutputMode.Regenerate
-  | (false, false) | (true, true) => OutputMode.Print
+  let errorStyle := if args.hasFlag "github" then ErrorFormat.github else ErrorFormat.humanReadable
+  let mode : OutputSetting := match (args.hasFlag "update", args.hasFlag "regenerate") with
+  | (true, false) => OutputSetting.Append
+  | (false, true) => OutputSetting.Regenerate
+  | (false, false) | (true, true) => OutputSetting.Print errorStyle
   let mut number_error_files := 0
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    let n ← lintAllFiles (mkFilePath [s]) for_github mode
+    let n ← lintAllFiles (mkFilePath [s]) errorStyle mode
     number_error_files := number_error_files + n
   return number_error_files
 
