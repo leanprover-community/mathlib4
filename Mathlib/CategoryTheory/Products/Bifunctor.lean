@@ -112,7 +112,7 @@ lemma comp_app₃ {H G K : C ⥤ D ⥤ E ⥤ F} (α : H ⟶ G) (β : G ⟶ K) (X
     (Z : E) : (α ≫ β).app₃ X Y Z = α.app₃ X Y Z ≫ β.app₃ X Y Z := rfl
 
 /- Naturality for natural transformations in two variables. -/
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma naturality₂ {H G : C ⥤ D ⥤ E} (α : NatTrans H G) {X Y X' Y'} (f : X ⟶ X')
     (g : Y ⟶ Y') : H.map₂ f g ≫ α.app₂ X' Y' = α.app₂ X Y ≫ G.map₂ f g := by
   rw [Category.assoc, naturality, naturality_app_assoc]
