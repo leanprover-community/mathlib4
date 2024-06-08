@@ -232,7 +232,7 @@ variable {A : Type*} [CommRing A]
 theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
     rescale a (exp A) * rescale b (exp A) = rescale (a + b) (exp A) := by
   ext n
-  simp only [coeff_mul, exp, rescale, coeff_mk, MonoidHom.coe_mk, (OneHom.coe_mk), coe_mk,
+  simp only [coeff_mul, exp, rescale, coeff_mk, MonoidHom.coe_mk, OneHom.coe_mk, coe_mk,
     factorial, Nat.sum_antidiagonal_eq_sum_range_succ_mk, add_pow, sum_mul]
   apply sum_congr rfl
   rintro x hx
@@ -258,13 +258,13 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
 
 /-- Shows that $e^{x} * e^{-x} = 1$ -/
 theorem exp_mul_exp_neg_eq_one [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 := by
-  convert exp_mul_exp_eq_exp_add (1 : A) (-1) <;> simp [(map_one)]
+  convert exp_mul_exp_eq_exp_add (1 : A) (-1) <;> simp [map_one]
 #align power_series.exp_mul_exp_neg_eq_one PowerSeries.exp_mul_exp_neg_eq_one
 
 /-- Shows that $(e^{X})^k = e^{kX}$. -/
 theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (k : A) (exp A) := by
   induction' k with k h
-  · simp only [rescale_zero, constantCoeff_exp, Function.comp_apply, (map_one), cast_zero, zero_eq,
+  · simp only [rescale_zero, constantCoeff_exp, Function.comp_apply, map_one, cast_zero, zero_eq,
       pow_zero (exp A), coe_comp]
   · simpa only [succ_eq_add_one, cast_add, ← exp_mul_exp_eq_exp_add (k : A), ← h, cast_one,
     id_apply, rescale_one] using pow_succ (exp A) k
@@ -278,7 +278,7 @@ theorem exp_pow_sum [Algebra ℚ A] (n : ℕ) :
         fun k => (k ^ p : A) * algebraMap ℚ A p.factorial⁻¹ := by
   simp only [exp_pow_eq_rescale_exp, rescale]
   ext
-  simp only [one_div, coeff_mk, cast_pow, coe_mk, MonoidHom.coe_mk, (OneHom.coe_mk),
+  simp only [one_div, coeff_mk, cast_pow, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
     coeff_exp, factorial, map_sum]
 #align power_series.exp_pow_sum PowerSeries.exp_pow_sum
 
