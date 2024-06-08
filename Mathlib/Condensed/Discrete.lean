@@ -13,7 +13,7 @@ import Mathlib.Condensed.Basic
 Given a well-behaved category `C`, we define a functor `C ⥤ Condensed C` which associates
 to an object of `C` the corresponding "discrete" condensed object (see `Condensed.discrete`).
 
-In `Condensed.discrete_underlying_adj` we prove that this functor is left adjoint to the forgetful
+In `Condensed.discreteUnderlyingAdj` we prove that this functor is left adjoint to the forgetful
 functor from `Condensed C` to `C`.
 -/
 
@@ -21,7 +21,7 @@ universe u v w
 
 open CategoryTheory Limits Opposite GrothendieckTopology
 
-variable (C : Type w) [Category.{u+1} C] [HasWeakSheafify (coherentTopology CompHaus) C]
+variable (C : Type w) [Category.{u+1} C] [HasWeakSheafify (coherentTopology CompHaus.{u}) C]
 
 /--
 The discrete condensed object associated to an object of `C` is the constant sheaf at that object.
@@ -41,5 +41,5 @@ noncomputable def Condensed.underlying : Condensed.{u} C ⥤ C :=
 Discreteness is left adjoint to the forgetful functor. When `C` is `Type*`, this is analogous to
 `TopCat.adj₁ : TopCat.discrete ⊣ forget TopCat`.  
 -/
-noncomputable def Condensed.discrete_underlying_adj : discrete C ⊣ underlying C :=
+noncomputable def Condensed.discreteUnderlyingAdj : discrete C ⊣ underlying C :=
   constantSheafAdj _ _ CompHaus.isTerminalPUnit
