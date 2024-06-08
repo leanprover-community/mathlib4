@@ -481,12 +481,12 @@ theorem get_inits (l : List α) (n : Fin (length (inits l))) : (inits l).get n =
 section deprecated
 set_option linter.deprecated false
 
-@[simp, deprecated get_tails] -- 2024-04-16
+@[simp, deprecated get_tails (since := "2024-04-16")]
 theorem nth_le_tails (l : List α) (n : ℕ) (hn : n < length (tails l)) :
     nthLe (tails l) n hn = l.drop n :=
   get_tails l _
 
-@[simp, deprecated get_inits] -- 2024-04-16
+@[simp, deprecated get_inits (since := "2024-04-16")]
 theorem nth_le_inits (l : List α) (n : ℕ) (hn : n < length (inits l)) :
     nthLe (inits l) n hn = l.take n :=
   get_inits l _

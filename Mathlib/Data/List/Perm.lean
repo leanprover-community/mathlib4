@@ -779,7 +779,7 @@ theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
 #align list.nth_le_permutations'_aux List.get_permutations'Aux
 
 set_option linter.deprecated false in
-@[deprecated get_permutations'Aux] -- 2024-04-23
+@[deprecated get_permutations'Aux (since := "2024-04-23")]
 theorem nthLe_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (hn : n < length (permutations'Aux x s)) :
     (permutations'Aux x s).nthLe n hn = s.insertNth n x :=

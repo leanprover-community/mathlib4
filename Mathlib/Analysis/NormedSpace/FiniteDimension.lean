@@ -488,7 +488,7 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
     _ < ‖c‖ := hN (N + 1) (Nat.le_succ N)
 #align finite_dimensional_of_is_compact_closed_ball₀ FiniteDimensional.of_isCompact_closedBall₀
 
-@[deprecated] -- Since 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_isCompact_closedBall₀ := FiniteDimensional.of_isCompact_closedBall₀
 
 /-- **Riesz's theorem**: if a closed ball of positive radius is compact in a vector space, then the
@@ -498,7 +498,7 @@ theorem FiniteDimensional.of_isCompact_closedBall {r : ℝ} (rpos : 0 < r) {c : 
   .of_isCompact_closedBall₀ 𝕜 rpos <| by simpa using h.vadd (-c)
 #align finite_dimensional_of_is_compact_closed_ball FiniteDimensional.of_isCompact_closedBall
 
-@[deprecated] -- Since 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_isCompact_closedBall := FiniteDimensional.of_isCompact_closedBall
 
 /-- **Riesz's theorem**: a locally compact normed vector space is finite-dimensional. -/
@@ -507,7 +507,7 @@ theorem FiniteDimensional.of_locallyCompactSpace [LocallyCompactSpace E] :
   let ⟨_r, rpos, hr⟩ := exists_isCompact_closedBall (0 : E)
   .of_isCompact_closedBall₀ 𝕜 rpos hr
 
-@[deprecated] -- Since 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_locallyCompactSpace := FiniteDimensional.of_locallyCompactSpace
 
 /-- If a function has compact support, then either the function is trivial
@@ -543,7 +543,7 @@ lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
     Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
   exact .of_seq_closedBall hTop (eventually_of_forall hC)
 
-@[deprecated] -- Since 2024-01-31
+@[deprecated (since := "2024-01-31")]
 alias properSpace_of_locallyCompactSpace := ProperSpace.of_locallyCompactSpace
 
 variable (E)
@@ -556,7 +556,7 @@ lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E
     apply ClosedEmbedding.locallyCompactSpace this
   .of_locallyCompactSpace 𝕜
 
-@[deprecated] -- Since 2024-01-31
+@[deprecated (since := "2024-01-31")]
 alias properSpace_of_locallyCompact_module := ProperSpace.of_locallyCompact_module
 
 end Riesz

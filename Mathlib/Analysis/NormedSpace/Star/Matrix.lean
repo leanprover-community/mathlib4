@@ -200,13 +200,13 @@ lemma l2_opNorm_conjTranspose_mul_self (A : Matrix m n 𝕜) : ‖Aᴴ * A‖ = 
     Matrix.toLin_mul (v₂ := (EuclideanSpace.basisFun m 𝕜).toBasis), toLin_conjTranspose]
   exact ContinuousLinearMap.norm_adjoint_comp_self _
 
-@[deprecated] -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias l2_op_norm_conjTranspose_mul_self := l2_opNorm_conjTranspose_mul_self
 
 lemma l2_opNNNorm_conjTranspose_mul_self (A : Matrix m n 𝕜) : ‖Aᴴ * A‖₊ = ‖A‖₊ * ‖A‖₊ :=
   Subtype.ext <| l2_opNorm_conjTranspose_mul_self _
 
-@[deprecated] -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias l2_op_nnnorm_conjTranspose_mul_self := l2_opNNNorm_conjTranspose_mul_self
 
 -- note: with only a type ascription in the left-hand side, Lean picks the wrong norm.
