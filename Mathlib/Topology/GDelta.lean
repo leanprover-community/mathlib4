@@ -131,8 +131,7 @@ theorem IsGδ.sInter {S : Set (Set X)} (h : ∀ s ∈ S, IsGδ s) (hS : S.Counta
   simpa only [sInter_eq_biInter] using IsGδ.biInter hS h
 #align is_Gδ_sInter IsGδ.sInter
 
-@[deprecated (since := "2024-02-15")]
-alias isGδ_sInter := IsGδ.sInter
+@[deprecated (since := "2024-02-15")] alias isGδ_sInter := IsGδ.sInter
 
 theorem IsGδ.inter {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∩ t) := by
   rw [inter_eq_iInter]
