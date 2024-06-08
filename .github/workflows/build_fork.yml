@@ -153,7 +153,7 @@ jobs:
           lake --version
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
-        run: lake exe mk_all
+        run: lake exe mk_all --check
 
       - name: check_imported
         run: git diff --exit-code
