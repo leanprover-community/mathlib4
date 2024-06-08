@@ -5,7 +5,7 @@ Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Finite.Card
 
 #align_import group_theory.subgroup.finite from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
@@ -17,8 +17,6 @@ This file provides some result on multiplicative and additive subgroups in the f
 ## Tags
 subgroup, subgroups
 -/
-
-open BigOperators
 
 variable {G : Type*} [Group G]
 variable {A : Type*} [AddGroup A]
@@ -72,7 +70,7 @@ theorem multiset_noncommProd_mem (K : Subgroup G) (g : Multiset G) (comm) :
 @[to_additive "Sum of elements in an `AddSubgroup` of an `AddCommGroup` indexed by a `Finset`
  is in the `AddSubgroup`."]
 protected theorem prod_mem {G : Type*} [CommGroup G] (K : Subgroup G) {ι : Type*} {t : Finset ι}
-    {f : ι → G} (h : ∀ c ∈ t, f c ∈ K) : (∏ c in t, f c) ∈ K :=
+    {f : ι → G} (h : ∀ c ∈ t, f c ∈ K) : (∏ c ∈ t, f c) ∈ K :=
   prod_mem h
 #align subgroup.prod_mem Subgroup.prod_mem
 #align add_subgroup.sum_mem AddSubgroup.sum_mem
@@ -102,7 +100,7 @@ theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
 -- Porting note: increased priority to appease `simpNF`, otherwise `simp` can prove it.
 @[to_additive (attr := simp 1100, norm_cast)]
 theorem val_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
-    ↑(∏ i in s, f i) = (∏ i in s, f i : G) :=
+    ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : G) :=
   SubmonoidClass.coe_finset_prod f s
 #align subgroup.coe_finset_prod Subgroup.val_finset_prod
 #align add_subgroup.coe_finset_sum AddSubgroup.val_finset_sum
@@ -115,24 +113,25 @@ instance fintypeBot : Fintype (⊥ : Subgroup G) :=
 #align subgroup.fintype_bot Subgroup.fintypeBot
 #align add_subgroup.fintype_bot AddSubgroup.fintypeBot
 
-/- curly brackets `{}` are used here instead of instance brackets `[]` because
-  the instance in a goal is often not the same as the one inferred by type class inference.  -/
 @[to_additive] -- Porting note: removed `simp` because `simpNF` says it can prove it.
-theorem card_bot {_ : Fintype (⊥ : Subgroup G)} : Fintype.card (⊥ : Subgroup G) = 1 :=
-  Fintype.card_eq_one_iff.2
-    ⟨⟨(1 : G), Set.mem_singleton 1⟩, fun ⟨_y, hy⟩ => Subtype.eq <| Subgroup.mem_bot.1 hy⟩
+theorem card_bot : Nat.card (⊥ : Subgroup G) = 1 :=
+  Nat.card_unique
 #align subgroup.card_bot Subgroup.card_bot
 #align add_subgroup.card_bot AddSubgroup.card_bot
 
 @[to_additive]
-theorem card_top [Fintype G] : Fintype.card (⊤ : Subgroup G) = Fintype.card G := by
-  rw [Fintype.card_eq]
-  exact Nonempty.intro Subgroup.topEquiv.toEquiv
+theorem card_top : Nat.card (⊤ : Subgroup G) = Nat.card G :=
+  Nat.card_congr Subgroup.topEquiv.toEquiv
 
 @[to_additive]
-theorem eq_top_of_card_eq [Fintype H] [Fintype G] (h : Fintype.card H = Fintype.card G) :
+theorem eq_top_of_card_eq [Finite H] (h : Nat.card H = Nat.card G) :
     H = ⊤ := by
-  letI : Fintype (H : Set G) := ‹Fintype H›
+  have : Nonempty H := ⟨1, one_mem H⟩
+  have h' : Nat.card H ≠ 0 := Nat.card_pos.ne'
+  have : Finite G := (Nat.finite_of_card_ne_zero (h ▸ h'))
+  have : Fintype G := Fintype.ofFinite G
+  have : Fintype H := Fintype.ofFinite H
+  rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card] at h
   rw [SetLike.ext'_iff, coe_top, ← Finset.coe_univ, ← (H : Set G).coe_toFinset, Finset.coe_inj, ←
     Finset.card_eq_iff_eq_univ, ← h, Set.toFinset_card]
   congr
@@ -140,50 +139,47 @@ theorem eq_top_of_card_eq [Fintype H] [Fintype G] (h : Fintype.card H = Fintype.
 #align add_subgroup.eq_top_of_card_eq AddSubgroup.eq_top_of_card_eq
 
 @[to_additive (attr := simp)]
-theorem card_eq_iff_eq_top [Fintype H] [Fintype G] : Fintype.card H = Fintype.card G ↔ H = ⊤ :=
+theorem card_eq_iff_eq_top [Finite H] : Nat.card H = Nat.card G ↔ H = ⊤ :=
   Iff.intro (eq_top_of_card_eq H) (fun h ↦ by simpa only [h] using card_top)
 
 @[to_additive]
-theorem eq_top_of_le_card [Fintype H] [Fintype G] (h : Fintype.card G ≤ Fintype.card H) : H = ⊤ :=
-  eq_top_of_card_eq H
-    (le_antisymm (Fintype.card_le_of_injective Subtype.val Subtype.coe_injective) h)
+theorem eq_top_of_le_card [Finite G] (h : Nat.card G ≤ Nat.card H) : H = ⊤ :=
+  eq_top_of_card_eq H (le_antisymm (Nat.card_le_card_of_injective H.subtype H.subtype_injective) h)
 #align subgroup.eq_top_of_le_card Subgroup.eq_top_of_le_card
 #align add_subgroup.eq_top_of_le_card AddSubgroup.eq_top_of_le_card
 
 @[to_additive]
-theorem eq_bot_of_card_le [Fintype H] (h : Fintype.card H ≤ 1) : H = ⊥ :=
-  let _ := Fintype.card_le_one_iff_subsingleton.mp h
+theorem eq_bot_of_card_le [Finite H] (h : Nat.card H ≤ 1) : H = ⊥ :=
+  let _ := Finite.card_le_one_iff_subsingleton.mp h
   eq_bot_of_subsingleton H
 #align subgroup.eq_bot_of_card_le Subgroup.eq_bot_of_card_le
 #align add_subgroup.eq_bot_of_card_le AddSubgroup.eq_bot_of_card_le
 
 @[to_additive]
-theorem eq_bot_of_card_eq [Fintype H] (h : Fintype.card H = 1) : H = ⊥ :=
-  H.eq_bot_of_card_le (le_of_eq h)
+theorem eq_bot_of_card_eq (h : Nat.card H = 1) : H = ⊥ :=
+  let _ := (Nat.card_eq_one_iff_unique.mp h).1
+  eq_bot_of_subsingleton H
 #align subgroup.eq_bot_of_card_eq Subgroup.eq_bot_of_card_eq
 #align add_subgroup.eq_bot_of_card_eq AddSubgroup.eq_bot_of_card_eq
 
 @[to_additive card_le_one_iff_eq_bot]
-theorem card_le_one_iff_eq_bot [Fintype H] : Fintype.card H ≤ 1 ↔ H = ⊥ :=
-  ⟨fun h =>
-    (eq_bot_iff_forall _).2 fun x hx => by
-      simpa [Subtype.ext_iff] using Fintype.card_le_one_iff.1 h ⟨x, hx⟩ 1,
-    fun h => by simp [h]⟩
+theorem card_le_one_iff_eq_bot [Finite H] : Nat.card H ≤ 1 ↔ H = ⊥ :=
+  ⟨H.eq_bot_of_card_le, fun h => by simp [h]⟩
 #align subgroup.card_le_one_iff_eq_bot Subgroup.card_le_one_iff_eq_bot
 #align add_subgroup.card_nonpos_iff_eq_bot AddSubgroup.card_le_one_iff_eq_bot
 
-@[to_additive] lemma eq_bot_iff_card [Fintype H] : H = ⊥ ↔ Fintype.card H = 1 :=
+@[to_additive] lemma eq_bot_iff_card : H = ⊥ ↔ Nat.card H = 1 :=
   ⟨by rintro rfl; exact card_bot, eq_bot_of_card_eq _⟩
 
 @[to_additive one_lt_card_iff_ne_bot]
-theorem one_lt_card_iff_ne_bot [Fintype H] : 1 < Fintype.card H ↔ H ≠ ⊥ :=
+theorem one_lt_card_iff_ne_bot [Finite H] : 1 < Nat.card H ↔ H ≠ ⊥ :=
   lt_iff_not_le.trans H.card_le_one_iff_eq_bot.not
 #align subgroup.one_lt_card_iff_ne_bot Subgroup.one_lt_card_iff_ne_bot
 #align add_subgroup.pos_card_iff_ne_bot AddSubgroup.one_lt_card_iff_ne_bot
 
 @[to_additive]
-theorem card_le_card_group [Fintype G] [Fintype H] : Fintype.card H ≤ Fintype.card G :=
-  Fintype.card_le_of_injective _ Subtype.coe_injective
+theorem card_le_card_group [Finite G] : Nat.card H ≤ Nat.card G :=
+  Nat.card_le_card_of_injective _ Subtype.coe_injective
 
 end Subgroup
 

@@ -354,7 +354,7 @@ theorem sub_one_norm_eq_eval_cyclotomic [IsCyclotomicExtension {n} K L] (h : 2 <
     (totient_even h).neg_one_pow, one_mul]
   have Hprod : (Finset.univ.prod fun σ : L →ₐ[K] E => 1 - σ ζ) = eval 1 (cyclotomic' n E) := by
     rw [cyclotomic', eval_prod, ← @Finset.prod_attach E E, ← univ_eq_attach]
-    refine' Fintype.prod_equiv (hζ.embeddingsEquivPrimitiveRoots E hirr) _ _ fun σ => _
+    refine Fintype.prod_equiv (hζ.embeddingsEquivPrimitiveRoots E hirr) _ _ fun σ => ?_
     simp
   haveI : NeZero ((n : ℕ) : E) := NeZero.of_noZeroSMulDivisors K _ (n : ℕ)
   rw [Hprod, cyclotomic', ← cyclotomic_eq_prod_X_sub_primitiveRoots (isRoot_cyclotomic_iff.1 hz),
@@ -418,7 +418,7 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
       have H : K⟮η + 1⟯.toSubalgebra = K⟮η⟯.toSubalgebra := by
         simp only [IntermediateField.adjoin_simple_toSubalgebra_of_integral
             ((integral {p ^ (k + 1)} K L).isIntegral _)]
-        refine' Subalgebra.ext fun x => ⟨fun hx => adjoin_le _ hx, fun hx => adjoin_le _ hx⟩
+        refine Subalgebra.ext fun x => ⟨fun hx => adjoin_le ?_ hx, fun hx => adjoin_le ?_ hx⟩
         · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
           exact Subalgebra.add_mem _ (subset_adjoin (mem_singleton η)) (Subalgebra.one_mem _)
         · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
@@ -469,7 +469,7 @@ theorem norm_pow_sub_one_of_prime_ne_two {k : ℕ} (hζ : IsPrimitiveRoot ζ ↑
     [hpri : Fact (p : ℕ).Prime] [IsCyclotomicExtension {p ^ (k + 1)} K L]
     (hirr : Irreducible (cyclotomic (↑(p ^ (k + 1)) : ℕ) K)) {s : ℕ} (hs : s ≤ k) (hodd : p ≠ 2) :
     norm K (ζ ^ (p : ℕ) ^ s - 1) = (p : K) ^ (p : ℕ) ^ s := by
-  refine' hζ.norm_pow_sub_one_of_prime_pow_ne_two hirr hs fun h => _
+  refine hζ.norm_pow_sub_one_of_prime_pow_ne_two hirr hs fun h => ?_
   have coe_two : ((2 : ℕ+) : ℕ) = 2 := by norm_cast
   rw [← PNat.coe_inj, coe_two, PNat.pow_coe, ← pow_one 2] at h
 -- Porting note: the proof is slightly different because of coercions.

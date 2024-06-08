@@ -55,6 +55,8 @@ for the empty set by convention.
 * `ω` is a notation for the first infinite ordinal in the locale `Ordinal`.
 -/
 
+assert_not_exists Module
+assert_not_exists Field
 
 noncomputable section
 
@@ -316,7 +318,15 @@ theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
 
 /-! ### The order on ordinals -/
 
+/--
+For `Ordinal`:
 
+* less-equal is defined such that well orders `r` and `s` satisfy `type r ≤ type s` if there exists
+  a function embedding `r` as an *initial* segment of `s`.
+
+* less-than is defined such that well orders `r` and `s` satisfy `type r < type s` if there exists
+  a function embedding `r` as a *principal* segment of `s`.
+-/
 instance partialOrder : PartialOrder Ordinal where
   le a b :=
     Quotient.liftOn₂ a b (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≼i s))
@@ -340,17 +350,6 @@ instance partialOrder : PartialOrder Ordinal where
   le_antisymm a b :=
     Quotient.inductionOn₂ a b fun _ _ ⟨h₁⟩ ⟨h₂⟩ =>
       Quot.sound ⟨InitialSeg.antisymm h₁ h₂⟩
-
--- Porting note: How can we add a doc to this?
--- /-- Ordinal less-equal is defined such that
---   well orders `r` and `s` satisfy `type r ≤ type s` if there exists
---   a function embedding `r` as an initial segment of `s`. -/
--- add_decl_doc Ordinal.partial_order.le
-
--- /-- Ordinal less-than is defined such that
---   well orders `r` and `s` satisfy `type r < type s` if there exists
---   a function embedding `r` as a principal segment of `s`. -/
--- add_decl_doc ordinal.partial_order.lt
 
 theorem type_le_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] : type r ≤ type s ↔ Nonempty (r ≼i s) :=
@@ -1018,7 +1017,7 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
     inductionOn a fun α r hr =>
       inductionOn b fun β s hs ⟨⟨f, t, hf⟩⟩ => by
         haveI := hs
-        refine' ⟨⟨RelEmbedding.ofMonotone (Sum.rec f fun _ => t) (fun a b ↦ _), fun a b ↦ _⟩⟩
+        refine ⟨⟨RelEmbedding.ofMonotone (Sum.rec f fun _ => t) (fun a b ↦ ?_), fun a b ↦ ?_⟩⟩
         · rcases a with (a | _) <;> rcases b with (b | _)
           · simpa only [Sum.lex_inl_inl] using f.map_rel_iff.2
           · intro
@@ -1092,6 +1091,9 @@ theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
 theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
   rfl
 #align ordinal.nat_cast_succ Ordinal.natCast_succ
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_succ := natCast_succ
 
 instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
   default := ⟨0, by simp⟩
@@ -1239,7 +1241,7 @@ theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
   `ordinal.{v}` as a principal segment when `u < v`. -/
 def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < ·) (· < ·) :=
   ⟨↑lift.initialSeg.{u, max (u + 1) v}, univ.{u, v}, by
-    refine' fun b => inductionOn b _; intro β s _
+    refine fun b => inductionOn b ?_; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
     · rw [← lift_id (type s)] at h ⊢
       cases' lift_type_lt.{_,_,v}.1 h with f
@@ -1249,11 +1251,11 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
       -- Porting note: apply inductionOn does not work, refine does
       refine inductionOn a ?_
       intro α r _ hf
-      refine'
+      refine
         lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
-          ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone _ _) _).symm⟩
+          ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ ?_) ?_).symm⟩
       · exact fun b => enum r (f b) ((hf _).2 ⟨_, rfl⟩)
-      · refine' fun a b h => (typein_lt_typein r).1 _
+      · refine fun a b h => (typein_lt_typein r).1 ?_
         rw [typein_enum, typein_enum]
         exact f.map_rel_iff.2 h
       · intro a'
@@ -1307,7 +1309,7 @@ def ord (c : Cardinal) : Ordinal :=
       suffices ∀ {α β}, α ≈ β → F α ≤ F β from
         fun α β h => (this h).antisymm (this (Setoid.symm h))
       rintro α β ⟨f⟩
-      refine' le_ciInf_iff'.2 fun i => _
+      refine le_ciInf_iff'.2 fun i => ?_
       haveI := @RelEmbedding.isWellOrder _ _ (f ⁻¹'o i.1) _ (↑(RelIso.preimage f i.1)) i.2
       exact
         (ciInf_le' _
@@ -1430,7 +1432,7 @@ theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord (no_index (OfNat.ofNat n)) = Of
 
 @[simp]
 theorem lift_ord (c) : Ordinal.lift.{u,v} (ord c) = ord (lift.{u,v} c) := by
-  refine' le_antisymm (le_of_forall_lt fun a ha => _) _
+  refine le_antisymm (le_of_forall_lt fun a ha => ?_) ?_
   · rcases Ordinal.lt_lift_iff.1 ha with ⟨a, rfl, _⟩
     rwa [lt_ord, ← lift_card, lift_lt, ← lt_ord, ← Ordinal.lift_lt]
   · rw [ord_le, ← lift_card, card_ord]
@@ -1632,8 +1634,8 @@ theorem card_eq_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
   card_eq_nat
 
 @[simp]
-theorem type_fintype (r : α → α → Prop) [IsWellOrder α r] [Fintype α] : type r = Fintype.card α :=
-  by rw [← card_eq_nat, card_type, mk_fintype]
+theorem type_fintype (r : α → α → Prop) [IsWellOrder α r] [Fintype α] :
+    type r = Fintype.card α := by rw [← card_eq_nat, card_type, mk_fintype]
 #align ordinal.type_fintype Ordinal.type_fintype
 
 theorem type_fin (n : ℕ) : @type (Fin n) (· < ·) _ = n := by simp

@@ -3,7 +3,8 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Semisimple
+import Mathlib.Algebra.Lie.InvariantForm
+import Mathlib.Algebra.Lie.Semisimple.Basic
 import Mathlib.Algebra.Lie.TraceForm
 
 /-!
@@ -22,11 +23,14 @@ non-degenerate Killing form.
 
 This file contains basic definitions and results for such Lie algebras.
 
-## Main definitions
+## Main declarations
+
  * `LieAlgebra.IsKilling`: a typeclass encoding the fact that a Lie algebra has a non-singular
    Killing form.
- * `LieAlgebra.IsKilling.instIsSemisimple`: if a Lie algebra has non-singular Killing form then it
-   is semisimple.
+ * `LieAlgebra.IsKilling.instSemisimple`: if a finite-dimensional Lie algebra over a field
+   has non-singular Killing form then it is semisimple.
+ * `LieAlgebra.IsKilling.instHasTrivialRadical`: if a Lie algebra over a PID
+   has non-singular Killing form then it has trivial radical.
 
 ## TODO
 
@@ -34,7 +38,7 @@ This file contains basic definitions and results for such Lie algebras.
 
 -/
 
-variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+variable (R K L M : Type*) [CommRing R] [Field K] [LieRing L] [LieAlgebra R L] [LieAlgebra K L]
 
 namespace LieAlgebra
 
@@ -60,12 +64,27 @@ lemma killingForm_nondegenerate :
     (killingForm R L).Nondegenerate := by
   simp [LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot]
 
-/-- The converse of this is true over a field of characteristic zero. There are counterexamples
-over fields with positive characteristic. -/
-instance instIsSemisimple [IsDomain R] [IsPrincipalIdealRing R] : IsSemisimple R L := by
-  refine' (isSemisimple_iff_no_abelian_ideals R L).mpr fun I hI ↦ _
+variable {R L} in
+lemma ideal_eq_bot_of_isLieAbelian [IsDomain R] [IsPrincipalIdealRing R]
+    (I : LieIdeal R L) [IsLieAbelian I] : I = ⊥ := by
   rw [eq_bot_iff, ← killingCompl_top_eq_bot]
   exact I.le_killingCompl_top_of_isLieAbelian
+
+instance instSemisimple [IsKilling K L] [Module.Finite K L] : IsSemisimple K L := by
+  apply InvariantForm.isSemisimple_of_nondegenerate (Φ := killingForm K L)
+  · exact IsKilling.killingForm_nondegenerate _ _
+  · exact LieModule.traceForm_lieInvariant _ _ _
+  · exact (LieModule.traceForm_isSymm K L L).isRefl
+  · intro I h₁ h₂
+    exact h₁.1 <| IsKilling.ideal_eq_bot_of_isLieAbelian I
+
+/-- The converse of this is true over a field of characteristic zero. There are counterexamples
+over fields with positive characteristic.
+
+Note that when the coefficients are a field this instance is redundant since we have
+`LieAlgebra.IsKilling.instSemisimple` and `LieAlgebra.IsSemisimple.instHasTrivialRadical`. -/
+instance instHasTrivialRadical [IsDomain R] [IsPrincipalIdealRing R] : HasTrivialRadical R L :=
+  (hasTrivialRadical_iff_no_abelian_ideals R L).mpr IsKilling.ideal_eq_bot_of_isLieAbelian
 
 end IsKilling
 

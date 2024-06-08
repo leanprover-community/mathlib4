@@ -95,8 +95,8 @@ theorem rotate'_length_mul (l : List α) : ∀ n : ℕ, l.rotate' (l.length * n)
   | n + 1 =>
     calc
       l.rotate' (l.length * (n + 1)) =
-          (l.rotate' (l.length * n)).rotate' (l.rotate' (l.length * n)).length :=
-        by simp [-rotate'_length, Nat.mul_succ, rotate'_rotate']
+          (l.rotate' (l.length * n)).rotate' (l.rotate' (l.length * n)).length := by
+        simp [-rotate'_length, Nat.mul_succ, rotate'_rotate']
       _ = l := by rw [rotate'_length, rotate'_length_mul l n]
 #align list.rotate'_length_mul List.rotate'_length_mul
 
@@ -207,7 +207,7 @@ theorem rotate_singleton (x : α) (n : ℕ) : [x].rotate n = [x] :=
   rotate_replicate x 1 n
 #align list.rotate_singleton List.rotate_singleton
 
-theorem zipWith_rotate_distrib {α β γ : Type*} (f : α → β → γ) (l : List α) (l' : List β) (n : ℕ)
+theorem zipWith_rotate_distrib {β γ : Type*} (f : α → β → γ) (l : List α) (l' : List β) (n : ℕ)
     (h : l.length = l'.length) :
     (zipWith f l l').rotate n = zipWith f (l.rotate n) (l'.rotate n) := by
   rw [rotate_eq_drop_append_take_mod, rotate_eq_drop_append_take_mod,
@@ -514,12 +514,12 @@ theorem isRotated_reverse_iff : l.reverse ~r l'.reverse ↔ l ~r l' := by
 #align list.is_rotated_reverse_iff List.isRotated_reverse_iff
 
 theorem isRotated_iff_mod : l ~r l' ↔ ∃ n ≤ l.length, l.rotate n = l' := by
-  refine' ⟨fun h => _, fun ⟨n, _, h⟩ => ⟨n, h⟩⟩
+  refine ⟨fun h => ?_, fun ⟨n, _, h⟩ => ⟨n, h⟩⟩
   obtain ⟨n, rfl⟩ := h
   cases' l with hd tl
   · simp
-  · refine' ⟨n % (hd :: tl).length, _, rotate_mod _ _⟩
-    refine' (Nat.mod_lt _ _).le
+  · refine ⟨n % (hd :: tl).length, ?_, rotate_mod _ _⟩
+    refine (Nat.mod_lt _ ?_).le
     simp
 #align list.is_rotated_iff_mod List.isRotated_iff_mod
 
@@ -627,7 +627,7 @@ theorem cyclicPermutations_rotate (l : List α) (k : ℕ) :
     cases l
     · simp
     · rw [length_cyclicPermutations_of_ne_nil] <;> simp
-  refine' ext_get this fun n hn hn' => _
+  refine ext_get this fun n hn hn' => ?_
   rw [get_rotate, get_cyclicPermutations, rotate_rotate, ← rotate_mod, Nat.add_comm]
   cases l <;> simp
 #align list.cyclic_permutations_rotate List.cyclicPermutations_rotate

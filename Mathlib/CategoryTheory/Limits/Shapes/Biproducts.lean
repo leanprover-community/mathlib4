@@ -320,7 +320,7 @@ def whiskerToCocone {f : J → C} (c : Bicone f) (g : K ≃ J) :
 /-- Whiskering a bicone with an equivalence between types preserves being a bilimit bicone. -/
 def whiskerIsBilimitIff {f : J → C} (c : Bicone f) (g : K ≃ J) :
     (c.whisker g).IsBilimit ≃ c.IsBilimit := by
-  refine' equivOfSubsingletonOfSubsingleton (fun hc => ⟨_, _⟩) fun hc => ⟨_, _⟩
+  refine equivOfSubsingletonOfSubsingleton (fun hc => ⟨?_, ?_⟩) fun hc => ⟨?_, ?_⟩
   · let this := IsLimit.ofIsoLimit hc.isLimit (Bicone.whiskerToCone c g)
     let this := (IsLimit.postcomposeHomEquiv (Discrete.functorComp f g).symm _) this
     exact IsLimit.ofWhiskerEquivalence (Discrete.equivalence g) this
@@ -583,7 +583,7 @@ theorem biproduct.hom_ext' {f : J → C} [HasBiproduct f] {Z : C} (g h : ⨁ f �
 #align category_theory.limits.biproduct.hom_ext' CategoryTheory.Limits.biproduct.hom_ext'
 
 /-- The canonical isomorphism between the chosen biproduct and the chosen product. -/
-def biproduct.isoProduct (f : J → C) [HasBiproduct f] : ⨁ f ≅ ∏ f :=
+def biproduct.isoProduct (f : J → C) [HasBiproduct f] : ⨁ f ≅ ∏ᶜ f :=
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (limit.isLimit _)
 #align category_theory.limits.biproduct.iso_product CategoryTheory.Limits.biproduct.isoProduct
 
@@ -837,7 +837,7 @@ theorem biproduct.ι_fromSubtype (j : Subtype p) :
 @[reassoc (attr := simp)]
 theorem biproduct.fromSubtype_toSubtype :
     biproduct.fromSubtype f p ≫ biproduct.toSubtype f p = 𝟙 (⨁ Subtype.restrict p f) := by
-  refine' biproduct.hom_ext _ _ fun j => _
+  refine biproduct.hom_ext _ _ fun j => ?_
   rw [Category.assoc, biproduct.toSubtype_π, biproduct.fromSubtype_π_subtype, Category.id_comp]
 #align category_theory.limits.biproduct.from_subtype_to_subtype CategoryTheory.Limits.biproduct.fromSubtype_toSubtype
 
@@ -1081,7 +1081,7 @@ theorem biproduct.conePointUniqueUpToIso_hom (f : J → C) [HasBiproduct f] {b :
 theorem biproduct.conePointUniqueUpToIso_inv (f : J → C) [HasBiproduct f] {b : Bicone f}
     (hb : b.IsBilimit) :
     (hb.isLimit.conePointUniqueUpToIso (biproduct.isLimit _)).inv = biproduct.desc b.ι := by
-  refine' biproduct.hom_ext' _ _ fun j => hb.isLimit.hom_ext fun j' => _
+  refine biproduct.hom_ext' _ _ fun j => hb.isLimit.hom_ext fun j' => ?_
   rw [Category.assoc, IsLimit.conePointUniqueUpToIso_inv_comp, Bicone.toCone_π_app,
     biproduct.bicone_π, biproduct.ι_desc, biproduct.ι_π, b.toCone_π_app, b.ι_π]
 #align category_theory.limits.biproduct.cone_point_unique_up_to_iso_inv CategoryTheory.Limits.biproduct.conePointUniqueUpToIso_inv
@@ -1109,7 +1109,7 @@ variable (C)
 /-- A category with finite biproducts has a zero object. -/
 instance (priority := 100) hasZeroObject_of_hasFiniteBiproducts [HasFiniteBiproducts C] :
     HasZeroObject C := by
-  refine' ⟨⟨biproduct Empty.elim, fun X => ⟨⟨⟨0⟩, _⟩⟩, fun X => ⟨⟨⟨0⟩, _⟩⟩⟩⟩
+  refine ⟨⟨biproduct Empty.elim, fun X => ⟨⟨⟨0⟩, ?_⟩⟩, fun X => ⟨⟨⟨0⟩, ?_⟩⟩⟩⟩
   · intro a; apply biproduct.hom_ext'; simp
   · intro a; apply biproduct.hom_ext; simp
 #align category_theory.limits.has_zero_object_of_has_finite_biproducts CategoryTheory.Limits.hasZeroObject_of_hasFiniteBiproducts
@@ -1849,7 +1849,7 @@ theorem biprod.conePointUniqueUpToIso_inv (X Y : C) [HasBinaryBiproduct X Y] {b 
     (hb : b.IsBilimit) :
     (hb.isLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit _ _)).inv =
       biprod.desc b.inl b.inr := by
-  refine' biprod.hom_ext' _ _ (hb.isLimit.hom_ext fun j => _) (hb.isLimit.hom_ext fun j => _)
+  refine biprod.hom_ext' _ _ (hb.isLimit.hom_ext fun j => ?_) (hb.isLimit.hom_ext fun j => ?_)
   all_goals
     simp only [Category.assoc, IsLimit.conePointUniqueUpToIso_inv_comp]
     rcases j with ⟨⟨⟩⟩
@@ -2162,8 +2162,8 @@ theorem biprod.symmetry' (P Q : C) :
 
 /-- The braiding isomorphism is symmetric. -/
 @[reassoc]
-theorem biprod.symmetry (P Q : C) : (biprod.braiding P Q).hom ≫ (biprod.braiding Q P).hom = 𝟙 _ :=
-  by simp
+theorem biprod.symmetry (P Q : C) :
+    (biprod.braiding P Q).hom ≫ (biprod.braiding Q P).hom = 𝟙 _ := by simp
 #align category_theory.limits.biprod.symmetry CategoryTheory.Limits.biprod.symmetry
 
 /-- The associator isomorphism which associates a binary biproduct. -/

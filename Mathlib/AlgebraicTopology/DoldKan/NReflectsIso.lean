@@ -70,8 +70,8 @@ theorem compatibility_N₂_N₁_karoubi :
       karoubiFunctorCategoryEmbedding SimplexCategoryᵒᵖ C ⋙
         N₁ ⋙ (karoubiChainComplexEquivalence (Karoubi C) ℕ).functor ⋙
             Functor.mapHomologicalComplex (KaroubiKaroubi.equivalence C).inverse _ := by
-  refine' CategoryTheory.Functor.ext (fun P => _) fun P Q f => _
-  · refine' HomologicalComplex.ext _ _
+  refine CategoryTheory.Functor.ext (fun P => ?_) fun P Q f => ?_
+  · refine HomologicalComplex.ext ?_ ?_
     · ext n
       · rfl
       · dsimp
