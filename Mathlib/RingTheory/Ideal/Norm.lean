@@ -101,19 +101,8 @@ open Submodule
 /-- Multiplicity of the ideal norm, for coprime ideals.
 This is essentially just a repackaging of the Chinese Remainder Theorem.
 -/
-theorem cardQuot_mul_of_coprime [Module.Free ℤ S] [Module.Finite ℤ S]
+theorem cardQuot_mul_of_coprime
     {I J : Ideal S} (coprime : IsCoprime I J) : cardQuot (I * J) = cardQuot I * cardQuot J := by
-  let b := Module.Free.chooseBasis ℤ S
-  haveI : Infinite S := Infinite.of_surjective _ b.repr.toEquiv.surjective
-  by_cases hI : I = ⊥
-  · rw [hI, Submodule.bot_mul, cardQuot_bot, zero_mul]
-  by_cases hJ : J = ⊥
-  · rw [hJ, Submodule.mul_bot, cardQuot_bot, mul_zero]
-  have hIJ : I * J ≠ ⊥ := mt Ideal.mul_eq_bot.mp (not_or_of_not hI hJ)
-  letI := Classical.decEq (Module.Free.ChooseBasisIndex ℤ S)
-  letI := I.fintypeQuotientOfFreeOfNeBot hI
-  letI := J.fintypeQuotientOfFreeOfNeBot hJ
-  letI := (I * J).fintypeQuotientOfFreeOfNeBot hIJ
   rw [cardQuot_apply, cardQuot_apply, cardQuot_apply,
     Nat.card_congr (Ideal.quotientMulEquivQuotientProd I J coprime).toEquiv,
     Nat.card_prod]
@@ -174,15 +163,10 @@ theorem Ideal.mul_add_mem_pow_succ_unique [IsDedekindDomain S] {i : ℕ} (a d d'
 #align ideal.mul_add_mem_pow_succ_unique Ideal.mul_add_mem_pow_succ_unique
 
 /-- Multiplicity of the ideal norm, for powers of prime ideals. -/
-theorem cardQuot_pow_of_prime [IsDedekindDomain S] [Module.Finite ℤ S] [Module.Free ℤ S] {i : ℕ} :
+theorem cardQuot_pow_of_prime [IsDedekindDomain S] {i : ℕ} :
     cardQuot (P ^ i) = cardQuot P ^ i := by
-  let _ := Module.Free.chooseBasis ℤ S
-  classical
   induction' i with i ih
   · simp
-  letI := Ideal.fintypeQuotientOfFreeOfNeBot (P ^ i.succ) (pow_ne_zero _ hP)
-  letI := Ideal.fintypeQuotientOfFreeOfNeBot (P ^ i) (pow_ne_zero _ hP)
-  letI := Ideal.fintypeQuotientOfFreeOfNeBot P hP
   have : P ^ (i + 1) < P ^ i := Ideal.pow_succ_lt_pow hP i
   suffices hquot : map (P ^ i.succ).mkQ (P ^ i) ≃ S ⧸ P by
     rw [pow_succ' (cardQuot P), ← ih, cardQuot_apply (P ^ i.succ), ←
@@ -215,14 +199,9 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] [Module.Finite ℤ S] [Module
 end PPrime
 
 /-- Multiplicativity of the ideal norm in number rings. -/
-theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] [Module.Finite ℤ S] (I J : Ideal S) :
+theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] (I J : Ideal S) :
     cardQuot (I * J) = cardQuot I * cardQuot J := by
   let b := Module.Free.chooseBasis ℤ S
-  cases isEmpty_or_nonempty (Module.Free.ChooseBasisIndex ℤ S)
-  · haveI : Subsingleton S := Function.Surjective.subsingleton b.repr.toEquiv.symm.surjective
-    nontriviality S
-    exfalso
-    exact not_nontrivial_iff_subsingleton.mpr ‹Subsingleton S› ‹Nontrivial S›
   haveI : Infinite S := Infinite.of_surjective _ b.repr.toEquiv.surjective
   exact UniqueFactorizationMonoid.multiplicative_of_coprime cardQuot I J (cardQuot_bot _ _)
       (fun {I J} hI => by simp [Ideal.isUnit_iff.mp hI, Ideal.mul_top])
@@ -235,8 +214,8 @@ theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] [Module.Finite ℤ
 #align card_quot_mul cardQuot_mul
 
 /-- The absolute norm of the ideal `I : Ideal R` is the cardinality of the quotient `R ⧸ I`. -/
-noncomputable def Ideal.absNorm [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S]
-    [Module.Finite ℤ S] : Ideal S →*₀ ℕ where
+noncomputable def Ideal.absNorm [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S] :
+    Ideal S →*₀ ℕ where
   toFun := Submodule.cardQuot
   map_mul' I J := by dsimp only; rw [cardQuot_mul]
   map_one' := by dsimp only; rw [Ideal.one_eq_top, cardQuot_top]
