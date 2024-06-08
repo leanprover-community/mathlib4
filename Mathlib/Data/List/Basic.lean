@@ -1761,19 +1761,6 @@ theorem cons_get_drop_succ {l : List α} {n} :
 #align list.drop_take List.drop_take
 #align list.map_drop List.map_drop
 #align list.modify_nth_tail_eq_take_drop List.modifyNthTail_eq_take_drop
-
-@[simp]
-theorem modifyNth_nil (f : α → α) (n : ℕ) :
-    modifyNth f n [] = [] := by cases n <;> rfl
-
-@[simp]
-theorem modifyNth_zero_cons (f : α → α) (a : α) (l : List α) :
-    modifyNth f 0 (a :: l) = f a :: l := rfl
-
-@[simp]
-theorem modifyNth_succ_cons (f : α → α) (n : ℕ) (a : α) (l : List α) :
-    modifyNth f (n + 1) (a :: l) = a :: modifyNth f n l := rfl
-
 #align list.modify_nth_eq_take_drop List.modifyNth_eq_take_drop
 #align list.modify_nth_eq_take_cons_drop List.modifyNth_eq_take_cons_drop
 #align list.update_nth_eq_take_cons_drop List.set_eq_take_cons_drop
