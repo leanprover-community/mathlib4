@@ -266,7 +266,7 @@ local notation "F'" => F ⋙ FintypeCat.incl
 Galois objects. -/
 noncomputable def endEquivSectionsFibers : End F ≃ (incl F ⋙ F').sections :=
   let i1 : End F ≃ End F' :=
-    NatTrans.equivOfCompFullyFaithful FintypeCat.incl
+    (FullyFaithful.whiskeringRight (FullyFaithful.ofFullyFaithful FintypeCat.incl) C).homEquiv
   let i2 : End F' ≅ (colimit ((incl F).op ⋙ coyoneda) ⟶ F') :=
     (yoneda.obj (F ⋙ FintypeCat.incl)).mapIso (colimit.isoColimitCocone ⟨cocone F, isColimit F⟩).op
   let i3 : (colimit ((incl F).op ⋙ coyoneda) ⟶ F') ≅ limit ((incl F ⋙ F') ⋙ uliftFunctor.{u₁}) :=
@@ -284,10 +284,12 @@ lemma endEquivSectionsFibers_π (f : End F) (A : PointedGaloisObject F) :
   erw [Types.limitEquivSections_apply]
   simp only [colimitCoyonedaHomIsoLimit'_π_apply, incl_obj, comp_obj, FintypeCat.incl_obj, op_obj,
     FunctorToTypes.comp]
-  change ((NatTrans.equivOfCompFullyFaithful FintypeCat.incl) f).app A
+  change (((FullyFaithful.whiskeringRight (FullyFaithful.ofFullyFaithful
+      FintypeCat.incl) C).homEquiv) f).app A
     (((colimit.ι _ _) ≫ (colimit.isoColimitCocone ⟨cocone F, isColimit F⟩).hom).app
       A _) = f.app A A.pt
   simp
+  rfl
 
 /-- Functorial isomorphism `Aut A ≅ F.obj A` for Galois objects `A`. -/
 noncomputable def autIsoFibers :
