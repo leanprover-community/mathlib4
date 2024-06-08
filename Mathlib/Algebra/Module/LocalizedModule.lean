@@ -174,7 +174,7 @@ private theorem add_assoc' (x y z : LocalizedModule S M) : x + y + z = x + (y + 
   induction' y using LocalizedModule.induction_on with my sy
   induction' z using LocalizedModule.induction_on with mz sz
   simp only [mk_add_mk, smul_add]
-  refine' mk_eq.mpr ⟨1, _⟩
+  refine mk_eq.mpr ⟨1, ?_⟩
   rw [one_smul, one_smul]
   congr 1
   · rw [mul_assoc]
@@ -729,7 +729,7 @@ theorem lift_unique (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R 
   rw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, ← hl, LinearMap.coe_comp,
     Function.comp_apply, LocalizedModule.mkLinearMap_apply, ← l.map_smul, LocalizedModule.smul'_mk]
   congr 1; rw [LocalizedModule.mk_eq]
-  refine' ⟨1, _⟩; simp only [one_smul, Submonoid.smul_def]
+  refine ⟨1, ?_⟩; simp only [one_smul, Submonoid.smul_def]
 #align localized_module.lift_unique LocalizedModule.lift_unique
 
 end LocalizedModule
@@ -1146,7 +1146,7 @@ theorem mkOfAlgebra {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S'] [Al
       simp_rw [Submonoid.smul_def, Algebra.smul_def] at e
       exact (h₁ x x.2).mul_left_cancel e
     · intro a
-      refine' ⟨((h₁ x x.2).unit⁻¹ : _) * a, _⟩
+      refine ⟨((h₁ x x.2).unit⁻¹ : _) * a, ?_⟩
       rw [Module.algebraMap_end_apply, Algebra.smul_def, ← mul_assoc, IsUnit.mul_val_inv, one_mul]
   · exact h₂
   · intros x y

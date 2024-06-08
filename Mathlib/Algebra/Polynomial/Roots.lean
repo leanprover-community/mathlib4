@@ -553,9 +553,9 @@ theorem bUnion_roots_finite {R S : Type*} [Semiring R] [CommRing S] [IsDomain S]
       -- We prove that the set of polynomials under consideration is finite because its
       -- image by the injective map `π` is finite
       let π : R[X] → Fin (d + 1) → R := fun f i => f.coeff i
-      refine' ((Set.Finite.pi fun _ => h).subset <| _).of_finite_image (_ : Set.InjOn π _)
+      refine ((Set.Finite.pi fun _ => h).subset <| ?_).of_finite_image (?_ : Set.InjOn π _)
       · exact Set.image_subset_iff.2 fun f hf i _ => hf.2 i
-      · refine' fun x hx y hy hxy => (ext_iff_natDegree_le hx.1 hy.1).2 fun i hi => _
+      · refine fun x hx y hy hxy => (ext_iff_natDegree_le hx.1 hy.1).2 fun i hi => ?_
         exact id congr_fun hxy ⟨i, Nat.lt_succ_of_le hi⟩)
     fun i _ => Finset.finite_toSet _
 #align polynomial.bUnion_roots_finite Polynomial.bUnion_roots_finite
@@ -596,7 +596,7 @@ theorem aeval_eq_zero_of_mem_rootSet {p : T[X]} [CommRing S] [IsDomain S] [Algeb
 theorem rootSet_mapsTo {p : T[X]} {S S'} [CommRing S] [IsDomain S] [Algebra T S] [CommRing S']
     [IsDomain S'] [Algebra T S'] [NoZeroSMulDivisors T S'] (f : S →ₐ[T] S') :
     (p.rootSet S).MapsTo f (p.rootSet S') := by
-  refine' rootSet_maps_to' (fun h₀ => _) f
+  refine rootSet_maps_to' (fun h₀ => ?_) f
   obtain rfl : p = 0 :=
     map_injective _ (NoZeroSMulDivisors.algebraMap_injective T S') (by rwa [Polynomial.map_zero])
   exact Polynomial.map_zero _
@@ -651,8 +651,8 @@ set_option linter.uppercaseLean3 false in
 
 theorem prod_multiset_root_eq_finset_root [DecidableEq R] :
     (p.roots.map fun a => X - C a).prod =
-      p.roots.toFinset.prod fun a => (X - C a) ^ rootMultiplicity a p :=
-  by simp only [count_roots, Finset.prod_multiset_map_count]
+      p.roots.toFinset.prod fun a => (X - C a) ^ rootMultiplicity a p := by
+  simp only [count_roots, Finset.prod_multiset_map_count]
 #align polynomial.prod_multiset_root_eq_finset_root Polynomial.prod_multiset_root_eq_finset_root
 
 /-- The product `∏ (X - a)` for `a` inside the multiset `p.roots` divides `p`. -/
@@ -660,7 +660,7 @@ theorem prod_multiset_X_sub_C_dvd (p : R[X]) : (p.roots.map fun a => X - C a).pr
   classical
   rw [← map_dvd_map _ (IsFractionRing.injective R <| FractionRing R) monic_prod_multiset_X_sub_C]
   rw [prod_multiset_root_eq_finset_root, Polynomial.map_prod]
-  refine' Finset.prod_dvd_of_coprime (fun a _ b _ h => _) fun a _ => _
+  refine Finset.prod_dvd_of_coprime (fun a _ b _ h => ?_) fun a _ => ?_
   · simp_rw [Polynomial.map_pow, Polynomial.map_sub, map_C, map_X]
     exact (pairwise_coprime_X_sub_C (IsFractionRing.injective R <| FractionRing R) h).pow
   · exact Polynomial.map_dvd _ (pow_rootMultiplicity_dvd p a)
@@ -753,7 +753,7 @@ variable {A B : Type*} [CommRing A] [CommRing B]
 theorem le_rootMultiplicity_map {p : A[X]} {f : A →+* B} (hmap : map f p ≠ 0) (a : A) :
     rootMultiplicity a p ≤ rootMultiplicity (f a) (p.map f) := by
   rw [le_rootMultiplicity_iff hmap]
-  refine' _root_.trans _ ((mapRingHom f).map_dvd (pow_rootMultiplicity_dvd p a))
+  refine _root_.trans ?_ ((mapRingHom f).map_dvd (pow_rootMultiplicity_dvd p a))
   rw [map_pow, map_sub, coe_mapRingHom, map_X, map_C]
 #align polynomial.le_root_multiplicity_map Polynomial.le_rootMultiplicity_map
 

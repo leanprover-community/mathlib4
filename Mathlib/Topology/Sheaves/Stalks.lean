@@ -109,6 +109,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_res TopCat.Presheaf.germ_res
 
 -- Porting note: `@[elementwise]` did not generate the best lemma when applied to `germ_res`
+attribute [local instance] ConcreteCategory.instFunLike in
 theorem germ_res_apply (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) [ConcreteCategory C]
     (s) : germ F x (F.map i.op s) = germ F (i x) s := by rw [← comp_apply, germ_res]
 set_option linter.uppercaseLean3 false in
@@ -197,11 +198,11 @@ set_option linter.uppercaseLean3 false in
 theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding f) (F : X.Presheaf C)
     (x : X) : IsIso (F.stalkPushforward _ f x) := by
   haveI := Functor.initial_of_adjunction (hf.isOpenMap.adjunctionNhds x)
-  convert IsIso.of_iso
+  convert
       ((Functor.Final.colimitIso (hf.isOpenMap.functorNhds x).op
               ((OpenNhds.inclusion (f x)).op ⋙ f _* F) :
             _).symm ≪≫
-        colim.mapIso _)
+        colim.mapIso _).isIso_hom
   swap
   · fapply NatIso.ofComponents
     · intro U
@@ -217,7 +218,7 @@ theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding 
     erw [colimit.ι_map_assoc, colimit.ι_pre, ← F.map_comp_assoc]
     apply colimit.w ((OpenNhds.inclusion (f x)).op ⋙ f _* F) _
     dsimp only [Functor.op]
-    refine' ((homOfLE _).op : op (unop U) ⟶ _)
+    refine ((homOfLE ?_).op : op (unop U) ⟶ _)
     exact Set.image_preimage_subset _ _
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.stalk_pushforward_iso_of_open_embedding TopCat.Presheaf.stalkPushforward.stalkPushforward_iso_of_openEmbedding
@@ -305,7 +306,7 @@ variable {C}
 /-- If `x` specializes to `y`, then there is a natural map `F.stalk y ⟶ F.stalk x`. -/
 noncomputable def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     F.stalk y ⟶ F.stalk x := by
-  refine' colimit.desc _ ⟨_, fun U => _, _⟩
+  refine colimit.desc _ ⟨_, fun U => ?_, ?_⟩
   · exact
       colimit.ι ((OpenNhds.inclusion x).op ⋙ F)
         (op ⟨(unop U).1, (specializes_iff_forall_open.mp h _ (unop U).1.2 (unop U).2 : _)⟩)
@@ -385,9 +386,7 @@ section Concrete
 variable {C}
 variable [ConcreteCategory.{v} C]
 
-attribute [local instance] ConcreteCategory.hasCoeToSort
--- Porting note: The following does not seem to be needed.
--- ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 -- Porting note (#11215): TODO: @[ext] attribute only applies to structures or lemmas proving x = y
 -- @[ext]
@@ -563,7 +562,7 @@ set_option linter.uppercaseLean3 false in
 theorem app_surjective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
     (h : ∀ x : U, Function.Bijective ((stalkFunctor C x.val).map f.1)) :
     Function.Surjective (f.1.app (op U)) := by
-  refine' app_surjective_of_injective_of_locally_surjective f U (fun x => (h x).1) fun t x => _
+  refine app_surjective_of_injective_of_locally_surjective f U (fun x => (h x).1) fun t x => ?_
   -- Now we need to prove our initial claim: That we can find preimages of `t` locally.
   -- Since `f` is surjective on stalks, we can find a preimage `s₀` of the germ of `t` at `x`
   obtain ⟨s₀, hs₀⟩ := (h x).2 (G.presheaf.germ x t)

@@ -53,7 +53,7 @@ noncomputable section
 open scoped Classical
 open MeasureTheory Set Filter Function
 
-open scoped Classical Topology Filter ENNReal BigOperators Interval NNReal
+open scoped Classical Topology Filter ENNReal Interval NNReal
 
 variable {ι 𝕜 E F A : Type*} [NormedAddCommGroup E]
 
@@ -172,7 +172,7 @@ theorem trans_iterate_Ico {a : ℕ → ℝ} {m n : ℕ} (hmn : m ≤ n)
     (hint : ∀ k ∈ Ico m n, IntervalIntegrable f μ (a k) (a <| k + 1)) :
     IntervalIntegrable f μ (a m) (a n) := by
   revert hint
-  refine' Nat.le_induction _ _ n hmn
+  refine Nat.le_induction ?_ ?_ n hmn
   · simp
   · intro p hp IH h
     exact (IH fun k hk => h k (Ico_subset_Ico_right p.le_succ hk)).trans (h p (by simp [hp]))
@@ -271,7 +271,7 @@ theorem sub (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable g μ a b
 #align interval_integrable.sub IntervalIntegrable.sub
 
 theorem sum (s : Finset ι) {f : ι → ℝ → E} (h : ∀ i ∈ s, IntervalIntegrable (f i) μ a b) :
-    IntervalIntegrable (∑ i in s, f i) μ a b :=
+    IntervalIntegrable (∑ i ∈ s, f i) μ a b :=
   ⟨integrable_finset_sum' s fun i hi => (h i hi).1, integrable_finset_sum' s fun i hi => (h i hi).2⟩
 #align interval_integrable.sum IntervalIntegrable.sum
 
@@ -424,7 +424,7 @@ end
 /-- Let `l'` be a measurably generated filter; let `l` be a of filter such that each `s ∈ l'`
 eventually includes `Ioc u v` as both `u` and `v` tend to `l`. Let `μ` be a measure finite at `l'`.
 
-Suppose that `f : ℝ → E` has a finite limit at `l' ⊓ μ.ae`. Then `f` is interval integrable on
+Suppose that `f : ℝ → E` has a finite limit at `l' ⊓ ae μ`. Then `f` is interval integrable on
 `u..v` provided that both `u` and `v` tend to `l`.
 
 Typeclass instances allow Lean to find `l'` based on `l` but not vice versa, so
@@ -432,7 +432,7 @@ Typeclass instances allow Lean to find `l'` based on `l` but not vice versa, so
 `TendstoIxxClass Ioc ?m_1 l'`. -/
 theorem Filter.Tendsto.eventually_intervalIntegrable_ae {f : ℝ → E} {μ : Measure ℝ}
     {l l' : Filter ℝ} (hfm : StronglyMeasurableAtFilter f l' μ) [TendstoIxxClass Ioc l l']
-    [IsMeasurablyGenerated l'] (hμ : μ.FiniteAtFilter l') {c : E} (hf : Tendsto f (l' ⊓ μ.ae) (𝓝 c))
+    [IsMeasurablyGenerated l'] (hμ : μ.FiniteAtFilter l') {c : E} (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c))
     {u v : ι → ℝ} {lt : Filter ι} (hu : Tendsto u lt l) (hv : Tendsto v lt l) :
     ∀ᶠ t in lt, IntervalIntegrable f μ (u t) (v t) :=
   have := (hf.integrableAtFilter_ae hfm hμ).eventually
@@ -605,7 +605,7 @@ nonrec theorem integral_add (hf : IntervalIntegrable f μ a b) (hg : IntervalInt
 
 nonrec theorem integral_finset_sum {ι} {s : Finset ι} {f : ι → ℝ → E}
     (h : ∀ i ∈ s, IntervalIntegrable (f i) μ a b) :
-    ∫ x in a..b, ∑ i in s, f i x ∂μ = ∑ i in s, ∫ x in a..b, f i x ∂μ := by
+    ∫ x in a..b, ∑ i ∈ s, f i x ∂μ = ∑ i ∈ s, ∫ x in a..b, f i x ∂μ := by
   simp only [intervalIntegral_eq_integral_uIoc, integral_finset_sum s fun i hi => (h i hi).def',
     Finset.smul_sum]
 #align interval_integral.integral_finset_sum intervalIntegral.integral_finset_sum
@@ -744,13 +744,15 @@ theorem integral_comp_mul_left (hc : c ≠ 0) :
 #align interval_integral.integral_comp_mul_left intervalIntegral.integral_comp_mul_left
 
 -- Porting note (#10618): was @[simp]
-theorem smul_integral_comp_mul_left (c) : (c • ∫ x in a..b, f (c * x)) = ∫ x in c * a..c * b, f x :=
-  by by_cases hc : c = 0 <;> simp [hc, integral_comp_mul_left]
+theorem smul_integral_comp_mul_left (c) :
+    (c • ∫ x in a..b, f (c * x)) = ∫ x in c * a..c * b, f x := by
+  by_cases hc : c = 0 <;> simp [hc, integral_comp_mul_left]
 #align interval_integral.smul_integral_comp_mul_left intervalIntegral.smul_integral_comp_mul_left
 
 -- Porting note (#10618): was @[simp]
-theorem integral_comp_div (hc : c ≠ 0) : (∫ x in a..b, f (x / c)) = c • ∫ x in a / c..b / c, f x :=
-  by simpa only [inv_inv] using integral_comp_mul_right f (inv_ne_zero hc)
+theorem integral_comp_div (hc : c ≠ 0) :
+    (∫ x in a..b, f (x / c)) = c • ∫ x in a / c..b / c, f x := by
+  simpa only [inv_inv] using integral_comp_mul_right f (inv_ne_zero hc)
 #align interval_integral.integral_comp_div intervalIntegral.integral_comp_div
 
 -- Porting note (#10618): was @[simp]
@@ -933,9 +935,9 @@ theorem integral_add_adjacent_intervals (hab : IntervalIntegrable f μ a b)
 
 theorem sum_integral_adjacent_intervals_Ico {a : ℕ → ℝ} {m n : ℕ} (hmn : m ≤ n)
     (hint : ∀ k ∈ Ico m n, IntervalIntegrable f μ (a k) (a <| k + 1)) :
-    ∑ k : ℕ in Finset.Ico m n, ∫ x in a k..a <| k + 1, f x ∂μ = ∫ x in a m..a n, f x ∂μ := by
+    ∑ k ∈ Finset.Ico m n, ∫ x in a k..a <| k + 1, f x ∂μ = ∫ x in a m..a n, f x ∂μ := by
   revert hint
-  refine' Nat.le_induction _ _ n hmn
+  refine Nat.le_induction ?_ ?_ n hmn
   · simp
   · intro p hmp IH h
     rw [Finset.sum_Ico_succ_top hmp, IH, integral_add_adjacent_intervals]
@@ -949,7 +951,7 @@ theorem sum_integral_adjacent_intervals_Ico {a : ℕ → ℝ} {m n : ℕ} (hmn :
 
 theorem sum_integral_adjacent_intervals {a : ℕ → ℝ} {n : ℕ}
     (hint : ∀ k < n, IntervalIntegrable f μ (a k) (a <| k + 1)) :
-    ∑ k : ℕ in Finset.range n, ∫ x in a k..a <| k + 1, f x ∂μ = ∫ x in (a 0)..(a n), f x ∂μ := by
+    ∑ k ∈ Finset.range n, ∫ x in a k..a <| k + 1, f x ∂μ = ∫ x in (a 0)..(a n), f x ∂μ := by
   rw [← Nat.Ico_zero_eq_range]
   exact sum_integral_adjacent_intervals_Ico (zero_le n) fun k hk => hint k hk.2
 #align interval_integral.sum_integral_adjacent_intervals intervalIntegral.sum_integral_adjacent_intervals
@@ -1009,7 +1011,7 @@ theorem integral_Iio_add_Ici (h_left : IntegrableOn f (Iio b) μ)
 theorem integral_const_of_cdf [IsFiniteMeasure μ] (c : E) :
     ∫ _ in a..b, c ∂μ = ((μ (Iic b)).toReal - (μ (Iic a)).toReal) • c := by
   simp only [sub_smul, ← setIntegral_const]
-  refine' (integral_Iic_sub_Iic _ _).symm <;>
+  refine (integral_Iic_sub_Iic ?_ ?_).symm <;>
     simp only [integrableOn_const, measure_lt_top, or_true_iff]
 #align interval_integral.integral_const_of_cdf intervalIntegral.integral_const_of_cdf
 
@@ -1054,8 +1056,9 @@ section
 variable {f g : ℝ → ℝ} {a b : ℝ} {μ : Measure ℝ}
 
 theorem integral_eq_zero_iff_of_le_of_nonneg_ae (hab : a ≤ b) (hf : 0 ≤ᵐ[μ.restrict (Ioc a b)] f)
-    (hfi : IntervalIntegrable f μ a b) : ∫ x in a..b, f x ∂μ = 0 ↔ f =ᵐ[μ.restrict (Ioc a b)] 0 :=
-  by rw [integral_of_le hab, integral_eq_zero_iff_of_nonneg_ae hf hfi.1]
+    (hfi : IntervalIntegrable f μ a b) :
+    ∫ x in a..b, f x ∂μ = 0 ↔ f =ᵐ[μ.restrict (Ioc a b)] 0 := by
+  rw [integral_of_le hab, integral_eq_zero_iff_of_nonneg_ae hf hfi.1]
 #align interval_integral.integral_eq_zero_iff_of_le_of_nonneg_ae intervalIntegral.integral_eq_zero_iff_of_le_of_nonneg_ae
 
 theorem integral_eq_zero_iff_of_nonneg_ae (hf : 0 ≤ᵐ[μ.restrict (Ioc a b ∪ Ioc b a)] f)
@@ -1099,7 +1102,7 @@ theorem intervalIntegral_pos_of_pos_on {f : ℝ → ℝ} {a b : ℝ} (hfi : Inte
     ⟨mem_support.mpr (hpos x hx).ne', Ioo_subset_Ioc_self hx⟩
   have h₀ : 0 ≤ᵐ[volume.restrict (uIoc a b)] f := by
     rw [EventuallyLE, uIoc_of_le hab.le]
-    refine' ae_restrict_of_ae_eq_of_ae_restrict Ioo_ae_eq_Ioc _
+    refine ae_restrict_of_ae_eq_of_ae_restrict Ioo_ae_eq_Ioc ?_
     rw [ae_restrict_iff' measurableSet_Ioo]
     filter_upwards with x hx using (hpos x hx).le
   rw [integral_pos_iff_support_of_nonneg_ae' h₀ hfi]
@@ -1124,7 +1127,7 @@ theorem integral_lt_integral_of_ae_le_of_measure_setOf_lt_ne_zero (hab : a ≤ b
     (∫ x in a..b, f x ∂μ) < ∫ x in a..b, g x ∂μ := by
   rw [← sub_pos, ← integral_sub hgi hfi, integral_of_le hab,
     MeasureTheory.integral_pos_iff_support_of_nonneg_ae]
-  · refine' pos_iff_ne_zero.2 (mt (measure_mono_null _) hlt)
+  · refine pos_iff_ne_zero.2 (mt (measure_mono_null ?_) hlt)
     exact fun x hx => (sub_pos.2 hx.out).ne'
   exacts [hle.mono fun x => sub_nonneg.2, hgi.1.sub hfi.1]
 #align interval_integral.integral_lt_integral_of_ae_le_of_measure_set_of_lt_ne_zero intervalIntegral.integral_lt_integral_of_ae_le_of_measure_setOf_lt_ne_zero

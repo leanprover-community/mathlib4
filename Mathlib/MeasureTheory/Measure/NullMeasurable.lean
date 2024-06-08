@@ -227,7 +227,7 @@ protected theorem insert [MeasurableSingletonClass (NullMeasurableSpace α μ)]
 theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
     ∃ t ⊇ s, MeasurableSet t ∧ t =ᵐ[μ] s := by
   rcases h with ⟨t, htm, hst⟩
-  refine' ⟨t ∪ toMeasurable μ (s \ t), _, htm.union (measurableSet_toMeasurable _ _), _⟩
+  refine ⟨t ∪ toMeasurable μ (s \ t), ?_, htm.union (measurableSet_toMeasurable _ _), ?_⟩
   · exact diff_subset_iff.1 (subset_toMeasurable _ _)
   · have : toMeasurable μ (s \ t) =ᵐ[μ] (∅ : Set α) := by simp [ae_le_set.1 hst.le]
     simpa only [union_empty] using hst.symm.union this
@@ -263,7 +263,7 @@ theorem exists_subordinate_pairwise_disjoint [Countable ι] {s : ι → Set α}
   choose t ht_sub htm ht_eq using fun i => exists_measurable_subset_ae_eq (h i)
   rcases exists_null_pairwise_disjoint_diff hd with ⟨u, hum, hu₀, hud⟩
   exact
-    ⟨fun i => t i \ u i, fun i => (diff_subset _ _).trans (ht_sub _), fun i =>
+    ⟨fun i => t i \ u i, fun i => diff_subset.trans (ht_sub _), fun i =>
       (ht_eq _).symm.trans (diff_null_ae_eq_self (hu₀ i)).symm, fun i => (htm i).diff (hum i),
       hud.mono fun i j h =>
         h.mono (diff_subset_diff_left (ht_sub i)) (diff_subset_diff_left (ht_sub j))⟩
@@ -356,8 +356,8 @@ protected theorem _root_.Set.Finite.nullMeasurableSet (hs : s.Finite) : NullMeas
   Finite.measurableSet hs
 #align set.finite.null_measurable_set Set.Finite.nullMeasurableSet
 
-protected theorem _root_.Finset.nullMeasurableSet (s : Finset α) : NullMeasurableSet (↑s) μ :=
-  by apply Finset.measurableSet
+protected theorem _root_.Finset.nullMeasurableSet (s : Finset α) : NullMeasurableSet (↑s) μ := by
+  apply Finset.measurableSet
 #align finset.null_measurable_set Finset.nullMeasurableSet
 
 end MeasurableSingletonClass
@@ -500,7 +500,7 @@ theorem completion_apply {_ : MeasurableSpace α} (μ : Measure α) (s : Set α)
 #align measure_theory.measure.completion_apply MeasureTheory.Measure.completion_apply
 
 @[simp]
-theorem ae_completion {_ : MeasurableSpace α} (μ : Measure α) : μ.completion.ae = μ.ae := rfl
+theorem ae_completion {_ : MeasurableSpace α} (μ : Measure α) : ae μ.completion = ae μ := rfl
 
 end Measure
 

@@ -105,7 +105,7 @@ lemma finiteCoproduct.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stone
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
 lemma Sigma.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stonean.{u}) (a : α) :
     OpenEmbedding (Sigma.ι Z a) := by
-  refine' OpenEmbedding.of_comp _ (homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding _
+  refine OpenEmbedding.of_comp _ (homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding ?_
   convert finiteCoproduct.openEmbedding_ι Z a
   ext x
   change ((Sigma.ι Z a) ≫ (coproductIsoCoproduct Z).inv) x = _
@@ -160,7 +160,7 @@ def pullback : Stonean where
     dsimp at U
     have h : IsClopen (f ⁻¹' (Set.range i)) := by
       constructor
-      · refine' IsClosed.preimage f.continuous _
+      · refine IsClosed.preimage f.continuous ?_
         apply IsCompact.isClosed
         simp only [← Set.image_univ]
         exact IsCompact.image isCompact_univ i.continuous

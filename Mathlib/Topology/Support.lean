@@ -3,9 +3,9 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 -/
+import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Topology.Separation
-import Mathlib.Algebra.Group.Defs
 
 #align_import topology.support from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
@@ -248,7 +248,7 @@ theorem _root_.hasCompactMulSupport_comp_left (hg : ∀ {x}, g x = 1 ↔ x = 1) 
 theorem comp_closedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
     (hg : ClosedEmbedding g) : HasCompactMulSupport (f ∘ g) := by
   rw [hasCompactMulSupport_def, Function.mulSupport_comp_eq_preimage]
-  refine' IsCompact.of_isClosed_subset (hg.isCompact_preimage hf) isClosed_closure _
+  refine IsCompact.of_isClosed_subset (hg.isCompact_preimage hf) isClosed_closure ?_
   rw [hg.toEmbedding.closure_eq_preimage_closure_image]
   exact preimage_mono (closure_mono <| image_preimage_subset _ _)
 #align has_compact_mul_support.comp_closed_embedding HasCompactMulSupport.comp_closedEmbedding
@@ -395,9 +395,9 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
   classical
     let is := hnf.toFinset.filter fun i => x ∈ U i
     let js := hnf.toFinset.filter fun j => x ∉ U j
-    refine'
-      ⟨is, (n ∩ ⋂ j ∈ js, (mulTSupport (f j))ᶜ) ∩ ⋂ i ∈ is, U i, inter_mem (inter_mem hn _) _,
-        inter_subset_right _ _, fun z hz => _⟩
+    refine
+      ⟨is, (n ∩ ⋂ j ∈ js, (mulTSupport (f j))ᶜ) ∩ ⋂ i ∈ is, U i, inter_mem (inter_mem hn ?_) ?_,
+        inter_subset_right, fun z hz => ?_⟩
     · exact (biInter_finset_mem js).mpr fun j hj => IsClosed.compl_mem_nhds (isClosed_mulTSupport _)
         (Set.not_mem_subset (hso j) (Finset.mem_filter.mp hj).2)
     · exact (biInter_finset_mem is).mpr fun i hi => (ho i).mem_nhds (Finset.mem_filter.mp hi).2
@@ -408,7 +408,7 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
       simp only [js, Finset.mem_filter, Finite.mem_toFinset, mem_setOf_eq, mem_iInter,
         and_imp] at hz
       suffices (mulSupport fun i => f i z) ⊆ hnf.toFinset by
-        refine' hnf.toFinset.subset_coe_filter_of_subset_forall _ this fun i hi => _
+        refine hnf.toFinset.subset_coe_filter_of_subset_forall _ this fun i hi => ?_
         specialize hz i ⟨z, ⟨hi, hzn⟩⟩
         contrapose hz
         simp [hz, subset_mulTSupport (f i) hi]

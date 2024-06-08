@@ -57,7 +57,7 @@ universe u u' v
 
 variable {l : Type*} {m : Type u} {n : Type u'} {α : Type v}
 
-open Matrix BigOperators Equiv Equiv.Perm Finset
+open Matrix Equiv Equiv.Perm Finset
 
 /-! ### Matrices are `Invertible` iff their determinants are -/
 
@@ -558,9 +558,9 @@ theorem right_inv_eq_left_inv (h : A * B = 1) (g : C * A = 1) : B = C := by
 #align matrix.right_inv_eq_left_inv Matrix.right_inv_eq_left_inv
 
 theorem inv_inj (h : A⁻¹ = B⁻¹) (h' : IsUnit A.det) : A = B := by
-  refine' left_inv_eq_left_inv (mul_nonsing_inv _ h') _
+  refine left_inv_eq_left_inv (mul_nonsing_inv _ h') ?_
   rw [h]
-  refine' mul_nonsing_inv _ _
+  refine mul_nonsing_inv _ ?_
   rwa [← isUnit_nonsing_inv_det_iff, ← h, isUnit_nonsing_inv_det_iff]
 #align matrix.inv_inj Matrix.inv_inj
 
@@ -578,7 +578,7 @@ theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
     ext i
     exact (IsEmpty.false i).elim
   · have hn : Nonempty n := Fintype.card_pos_iff.mp hc
-    refine' nonsing_inv_apply_not_isUnit _ _
+    refine nonsing_inv_apply_not_isUnit _ ?_
     simp [hn]
 #align matrix.inv_zero Matrix.inv_zero
 
@@ -594,7 +594,7 @@ theorem inv_smul' (k : αˣ) (h : IsUnit A.det) : (k • A)⁻¹ = k⁻¹ • A�
 #align matrix.inv_smul' Matrix.inv_smul'
 
 theorem inv_adjugate (A : Matrix n n α) (h : IsUnit A.det) : (adjugate A)⁻¹ = h.unit⁻¹ • A := by
-  refine' inv_eq_left_inv _
+  refine inv_eq_left_inv ?_
   rw [smul_mul, mul_adjugate, Units.smul_def, smul_smul, h.val_inv_mul, one_smul]
 #align matrix.inv_adjugate Matrix.inv_adjugate
 
@@ -784,8 +784,8 @@ section Det
 variable [Fintype m] [DecidableEq m] [CommRing α]
 
 /-- A variant of `Matrix.det_units_conj`. -/
-theorem det_conj {M : Matrix m m α} (h : IsUnit M) (N : Matrix m m α) : det (M * N * M⁻¹) = det N :=
-  by rw [← h.unit_spec, ← coe_units_inv, det_units_conj]
+theorem det_conj {M : Matrix m m α} (h : IsUnit M) (N : Matrix m m α) :
+    det (M * N * M⁻¹) = det N := by rw [← h.unit_spec, ← coe_units_inv, det_units_conj]
 #align matrix.det_conj Matrix.det_conj
 
 /-- A variant of `Matrix.det_units_conj'`. -/
