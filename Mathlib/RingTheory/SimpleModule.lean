@@ -196,7 +196,7 @@ theorem sSup_simples_le (N : Submodule R M) :
 
 variable (R M)
 
-theorem exists_simple [Nontrivial M] : ∃ m : Submodule R M, IsSimpleModule R m := by
+theorem exists_simple_submodule [Nontrivial M] : ∃ m : Submodule R M, IsSimpleModule R m := by
   simpa only [isSimpleModule_iff_isAtom] using IsAtomic.exists_atom _
 
 theorem sSup_simples_eq_top : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤ := by
