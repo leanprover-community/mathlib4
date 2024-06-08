@@ -67,11 +67,8 @@ noncomputable def cardQuot (S : Submodule R M) : ℕ :=
 #align submodule.card_quot Submodule.cardQuot
 
 @[simp]
-theorem cardQuot_apply (S : Submodule R M) [h : Fintype (M ⧸ S)] :
-    cardQuot S = Fintype.card (M ⧸ S) := by
-  -- Porting note: original proof was AddSubgroup.index_eq_card _
-  suffices Fintype (M ⧸ S.toAddSubgroup) by convert AddSubgroup.index_eq_card S.toAddSubgroup
-  convert h
+theorem cardQuot_apply (S : Submodule R M) : cardQuot S = Nat.card (M ⧸ S) := by
+  rfl
 #align submodule.card_quot_apply Submodule.cardQuot_apply
 
 variable (R M)
@@ -125,8 +122,8 @@ theorem cardQuot_mul_of_coprime [Module.Free ℤ S] [Module.Finite ℤ S]
   letI := J.fintypeQuotientOfFreeOfNeBot hJ
   letI := (I * J).fintypeQuotientOfFreeOfNeBot hIJ
   rw [cardQuot_apply, cardQuot_apply, cardQuot_apply,
-    Fintype.card_eq.mpr ⟨(Ideal.quotientMulEquivQuotientProd I J coprime).toEquiv⟩,
-    Fintype.card_prod]
+    Nat.card_congr (Ideal.quotientMulEquivQuotientProd I J coprime).toEquiv,
+    Nat.card_prod]
 #align card_quot_mul_of_coprime cardQuot_mul_of_coprime
 
 /-- If the `d` from `Ideal.exists_mul_add_mem_pow_succ` is unique, up to `P`,
@@ -331,7 +328,7 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [EquivLike E S I] [AddEquivCl
     _ = Int.natAbs (Matrix.diagonal a).det := ?_
     _ = Int.natAbs (∏ i, a i) := by rw [Matrix.det_diagonal]
     _ = ∏ i, Int.natAbs (a i) := map_prod Int.natAbsHom a Finset.univ
-    _ = Fintype.card (S ⧸ I) := ?_
+    _ = Nat.card (S ⧸ I) := ?_
     _ = absNorm I := (Submodule.cardQuot_apply _).symm
   -- since `LinearMap.toMatrix b' b' f` is the diagonal matrix with `a` along the diagonal.
   · congr 2; ext i j
@@ -344,8 +341,8 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [EquivLike E S I] [AddEquivCl
   -- which maps `(S ⧸ I)` to `Π i, ZMod (a i).nat_abs`.
   haveI : ∀ i, NeZero (a i).natAbs := fun i =>
     ⟨Int.natAbs_ne_zero.mpr (Ideal.smithCoeffs_ne_zero b I hI i)⟩
-  simp_rw [Fintype.card_eq.mpr ⟨(Ideal.quotientEquivPiZMod I b hI).toEquiv⟩, Fintype.card_pi,
-    ZMod.card]
+  simp_rw [Nat.card_congr (Ideal.quotientEquivPiZMod I b hI).toEquiv, Nat.card_pi,
+    Nat.card_zmod]
 #align ideal.nat_abs_det_equiv Ideal.natAbs_det_equiv
 
 /-- Let `b` be a basis for `S` over `ℤ` and `bI` a basis for `I` over `ℤ` of the same dimension.
