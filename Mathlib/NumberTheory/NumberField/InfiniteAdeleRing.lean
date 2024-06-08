@@ -44,7 +44,7 @@ instance : CommRing (infiniteAdeleRing K) := Pi.commRing
 
 instance : Inhabited (infiniteAdeleRing K) := ⟨0⟩
 
-instance : Nontrivial (infiniteAdeleRing K) := Pi.nontrivial
+instance : Nontrivial (infiniteAdeleRing K) := Pi.nontrivial_at v
 
 end DerivedInstances
 
@@ -54,9 +54,9 @@ instance topologicalRing : TopologicalRing (infiniteAdeleRing K) := Pi.instTopol
 
 instance : Algebra K (infiniteAdeleRing K) := Pi.algebra _ _
 
-/-The global embedding of a number field into its infinite adele ring,
+/-- The global embedding of a number field into its infinite adele ring,
 sending `x ∈ K` to `(x)ᵥ`. -/
-def globalEmbedding : K →+* infiniteAdeleRing K := Algebra.toRingHom
+abbrev globalEmbedding : K →+* infiniteAdeleRing K := algebraMap K (infiniteAdeleRing K)
 
 @[simp]
 theorem globalEmbedding_apply (x : K) : globalEmbedding K x v = (x : v.completion) := rfl

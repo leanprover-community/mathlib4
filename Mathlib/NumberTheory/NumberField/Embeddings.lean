@@ -1007,24 +1007,18 @@ lemma card_eq_card_isUnramifiedIn [NumberField k] [IsGalois k K] :
       Finset.card (Finset.univ.filter <| IsUnramifiedIn K (k := k))ᶜ * (finrank k K / 2) := by
   rw [← card_isUnramified, ← card_isUnramified_compl, Finset.card_add_card_compl]
 
-variable {K : Type*} [Field K] [NumberField K] (v : InfinitePlace K)
+noncomputable section InfiniteCompletion
 
-noncomputable instance : Inhabited (InfinitePlace K) :=
-  ⟨Classical.choice (instNonemptyInfinitePlaceOfNumberField K)⟩
+variable {K : Type*} [Field K] [NumberField K] (v : InfinitePlace K)
 
 /-- The normed field structure of a number field coming from the norm asociated to
 an infinite place. -/
-noncomputable abbrev normedField : NormedField K :=
+abbrev normedField : NormedField K :=
   NormedField.induced _ _ v.embedding v.embedding.injective
 
 /-- The embedding associated to an infinite place is a uniform embedding. -/
 theorem uniformEmbedding : letI := v.normedField; UniformEmbedding v.embedding :=
   letI := v.normedField; ⟨uniformInducing_iff_uniformSpace.2 rfl, v.embedding.injective⟩
-
-/-- The uniform structure induced by an infinite place of a number field defines a
-completable topological field. -/
-theorem completableTopField : letI := v.normedField; CompletableTopField K :=
-  letI := v.normedField; UniformSpace.comap_completableTopField
 
 /-- The completion of a number field at an infinite place. -/
 def completion :=
@@ -1032,22 +1026,23 @@ def completion :=
 
 namespace Completion
 
-noncomputable instance : NormedField v.completion :=
-  letI := v.normedField; letI := v.completableTopField; UniformSpace.Completion.instNormedField K
+instance : NormedField v.completion :=
+  letI := v.normedField; letI := UniformSpace.comap_completableTopField v.embedding;
+  UniformSpace.Completion.instNormedField K
 
 instance : CompleteSpace v.completion :=
   letI := v.normedField; UniformSpace.Completion.completeSpace K
 
-noncomputable instance : Inhabited v.completion := ⟨0⟩
+instance : Inhabited v.completion := ⟨0⟩
 
-noncomputable instance : Coe K v.completion :=
-  letI := v.normedField; (inferInstance : Coe K (UniformSpace.Completion K))
+instance : Coe K v.completion :=
+  letI := v.normedField; inferInstanceAs (Coe K (UniformSpace.Completion K))
 
-noncomputable instance : Algebra K v.completion :=
+instance : Algebra K v.completion :=
   letI := v.normedField; UniformSpace.Completion.algebra K _
 
 /-- The embedding associated to an infinite place extended to `v.completion →+* ℂ`. -/
-noncomputable def extensionEmbedding : v.completion →+* ℂ :=
+def extensionEmbedding : v.completion →+* ℂ :=
   letI := v.normedField
   UniformSpace.Completion.extensionHom _ v.uniformEmbedding.uniformContinuous.continuous
 
@@ -1077,6 +1072,8 @@ instance locallyCompactSpace : LocallyCompactSpace (v.completion) :=
   (closedEmbedding v).locallyCompactSpace
 
 end Completion
+
+end InfiniteCompletion
 
 end NumberField.InfinitePlace
 
