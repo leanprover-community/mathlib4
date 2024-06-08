@@ -388,6 +388,7 @@ theorem quotientMap_mk : QuotientMap (mk : X → SeparationQuotient X) :=
   quotientMap_quot_mk
 #align separation_quotient.quotient_map_mk SeparationQuotient.quotientMap_mk
 
+@[fun_prop, continuity]
 theorem continuous_mk : Continuous (mk : X → SeparationQuotient X) :=
   continuous_quot_mk
 #align separation_quotient.continuous_mk SeparationQuotient.continuous_mk
@@ -414,6 +415,10 @@ instance [Inhabited X] : Inhabited (SeparationQuotient X) :=
 
 instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
+
+@[to_additive] instance [One X] : One (SeparationQuotient X) := ⟨mk 1⟩
+
+@[to_additive (attr := simp)] theorem mk_one [One X] : mk (1 : X) = 1 := rfl
 
 theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by
   refine Subset.antisymm ?_ (subset_preimage_image _ _)
