@@ -73,14 +73,14 @@ theorem Matrix.toBilin'Aux_stdBasis [Fintype n] [DecidableEq n] (M : Matrix n n 
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
 def BilinForm.toMatrixAux (b : n → M₂) : BilinForm R₂ M₂ →ₗ[R₂] Matrix n n R₂ :=
-  LinearMap.toMatrix₂Aux b b
+  LinearMap.toMatrix₂Aux R₂ b b
 #align bilin_form.to_matrix_aux BilinForm.toMatrixAux
 
 @[simp]
 theorem LinearMap.BilinForm.toMatrixAux_apply (B : BilinForm R₂ M₂) (b : n → M₂) (i j : n) :
     -- Porting note: had to hint the base ring even though it should be clear from context...
     BilinForm.toMatrixAux (R₂ := R₂) b B i j = B (b i) (b j) :=
-  LinearMap.toMatrix₂Aux_apply B _ _ _ _
+  LinearMap.toMatrix₂Aux_apply R₂ B _ _ _ _
 #align bilin_form.to_matrix_aux_apply LinearMap.BilinForm.toMatrixAux_apply
 
 variable [Fintype n] [Fintype o]
@@ -127,11 +127,9 @@ theorem Matrix.toBilin'Aux_eq (M : Matrix n n R₂) : Matrix.toBilin'Aux M = Mat
 #align matrix.to_bilin'_aux_eq Matrix.toBilin'Aux_eq
 
 theorem Matrix.toBilin'_apply (M : Matrix n n R₂) (x y : n → R₂) :
-    Matrix.toBilin' M x y = ∑ i, ∑ j, (x i * M i j) * y j := by
-    conv_rhs => {
-      apply Finset.sum_congr rfl fun i  _ => Finset.sum_congr rfl fun j _ => by
-          rw [mul_assoc, mul_comm (M i j),  ← smul_eq_mul, ← smul_eq_mul]
-    }
+    Matrix.toBilin' M x y = ∑ i, ∑ j, x i * M i j * y j :=
+  Finset.sum_congr rfl fun _  _ => Finset.sum_congr rfl fun _  _ => by
+          simp only [RingHom.id_apply, smul_eq_mul, mul_comm, mul_assoc]
 #align matrix.to_bilin'_apply Matrix.toBilin'_apply
 
 theorem Matrix.toBilin'_apply' (M : Matrix n n R₂) (v w : n → R₂) :
@@ -252,11 +250,11 @@ theorem BilinForm.toMatrix_apply (B : BilinForm R₂ M₂) (i j : n) :
 
 @[simp]
 theorem Matrix.toBilin_apply (M : Matrix n n R₂) (x y : M₂) :
-    Matrix.toBilin b M x y = ∑ i, ∑ j, b.repr x i * M i j * b.repr y j := by
-    conv_rhs => {
-      apply Finset.sum_congr rfl fun i  _ => Finset.sum_congr rfl fun j _ => by
-          rw [mul_assoc, mul_comm (M i j),  ← smul_eq_mul, ← smul_eq_mul]
-    }
+    Matrix.toBilin b M x y = ∑ i, ∑ j, b.repr x i * M i j * b.repr y j :=
+  Finset.sum_congr rfl fun i  _ => Finset.sum_congr rfl fun j _ => by
+    simp only [LinearEquiv.coe_coe, Basis.equivFun_apply, RingHom.id_apply, smul_eq_mul, mul_comm,
+      mul_assoc]
+
 #align matrix.to_bilin_apply Matrix.toBilin_apply
 
 -- Not a `simp` lemma since `BilinForm.toMatrix` needs an extra argument

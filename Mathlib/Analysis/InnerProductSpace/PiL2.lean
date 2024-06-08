@@ -1006,7 +1006,7 @@ variable [Fintype m] [Fintype n] [DecidableEq n]
 def toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] EuclideanSpace 𝕜 n →ₗ[𝕜] EuclideanSpace 𝕜 m :=
   Matrix.toLin' ≪≫ₗ
     LinearEquiv.arrowCongr (WithLp.linearEquiv _ 𝕜 (n → 𝕜)).symm
-      (WithLp.linearEquiv _ 𝕜 (m → 𝕜)).symm
+      (WithLp.linearEquiv _ 𝕜 (m → 𝕜)).symm (_root_.map_smul _)
 #align matrix.to_euclidean_lin Matrix.toEuclideanLin
 
 @[simp]

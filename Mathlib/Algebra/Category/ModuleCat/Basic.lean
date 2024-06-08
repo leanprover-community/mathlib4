@@ -344,7 +344,7 @@ instance : Linear S (ModuleCat.{v} S) where
 variable {X Y X' Y' : ModuleCat.{v} S}
 
 theorem Iso.homCongr_eq_arrowCongr (i : X ≅ X') (j : Y ≅ Y') (f : X ⟶ Y) :
-    Iso.homCongr i j f = LinearEquiv.arrowCongr i.toLinearEquiv j.toLinearEquiv f :=
+    Iso.homCongr i j f = LinearEquiv.arrowCongr i.toLinearEquiv j.toLinearEquiv (map_smul _) f :=
   rfl
 #align Module.iso.hom_congr_eq_arrow_congr ModuleCat.Iso.homCongr_eq_arrowCongr
 
