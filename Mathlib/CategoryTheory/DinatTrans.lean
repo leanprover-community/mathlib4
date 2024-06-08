@@ -37,8 +37,8 @@ structure DinatTrans (F G : Cᵒᵖ ⥤ C ⥤ D) : Type max u₁ v₂ where
   dinaturality :
     ∀ {X Y : C}
       (f : X ⟶ Y),
-      F.map₂ f.op (𝟙 _) ≫ app X ≫ G.map₂ (𝟙 _) (f) =
-      F.map₂ (𝟙 _) (f) ≫ app Y ≫ G.map₂ f.op (𝟙 _) :=
+      (F.map f.op).app X ≫ app X ≫ (G.obj (op X)).map f =
+      (F.obj (op Y)).map f ≫ app Y ≫ (G.map f.op).app Y :=
         by aesop_cat
 
 attribute [reassoc (attr := simp)] DinatTrans.dinaturality
@@ -62,8 +62,8 @@ def DinatTrans.compNatTrans (δ : F ⤞ G) (α : G ⟶ H) : F ⤞ H
     where
   app X := δ.app X ≫ α.app₂ (op X) X
   dinaturality f := by
-    rw [Category.assoc, Category.assoc, ← α.naturality₂,
-      δ.dinaturality_assoc, α.naturality₂]
+    rw [Category.assoc, Category.assoc, ← NatTrans.naturality_app,
+      ← δ.dinaturality_assoc f, NatTrans.naturality]
 
 /-- Pre-composition with a natural transformation.
 -/
@@ -71,9 +71,9 @@ def DinatTrans.compNatTrans (δ : F ⤞ G) (α : G ⟶ H) : F ⤞ H
 def DinatTrans.precompNatTrans (δ : G ⤞ H) (α : F ⟶ G) : F ⤞ H
     where
   app X := α.app₂ (op X) X ≫ δ.app X
-  dinaturality f := by
-    rw [Category.assoc, Category.assoc, α.naturality₂_assoc,
-      δ.dinaturality, ← α.naturality₂_assoc]
+  dinaturality {X Y} f := by
+    rw [Category.assoc, Category.assoc, NatTrans.naturality_assoc,
+      ← δ.dinaturality, NatTrans.naturality_app_assoc]
 
 /-- Opposite of a dinatural transformation.
 -/
