@@ -120,7 +120,7 @@ theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
   by_cases ha : a = 0
   · rw [ha, C_0, sub_zero]
     exact gal_X_pow_isSolvable n
-  have ha' : algebraMap F (X ^ n - C a : F[X]).SplittingField a ≠ 0 :=
+  have ha' : algebraMap F (X ^ n - C a).SplittingField a ≠ 0 :=
     mt ((injective_iff_map_eq_zero _).mp (RingHom.injective _) a) ha
   by_cases hn : n = 0
   · rw [hn, pow_zero, ← C_1, ← C_sub]
@@ -129,7 +129,7 @@ theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
   have hn'' : X ^ n - C a ≠ 0 := X_pow_sub_C_ne_zero hn' a
   have hn''' : (X ^ n - 1 : F[X]) ≠ 0 := X_pow_sub_C_ne_zero hn' 1
   have mem_range : ∀ {c : (X ^ n - C a).SplittingField},
-      (c ^ n = 1 → (∃ d, algebraMap F (X ^ n - C a : F[X]).SplittingField d = c)) := fun {c} hc =>
+      (c ^ n = 1 → (∃ d, algebraMap F (X ^ n - C a).SplittingField d = c)) := fun {c} hc =>
     RingHom.mem_range.mp (minpoly.mem_range_of_degree_eq_one F c (h.def.resolve_left hn'''
       (minpoly.irreducible ((SplittingField.instNormal (X ^ n - C a)).isIntegral c))
       (minpoly.dvd F c (by rwa [map_id, AlgHom.map_sub, sub_eq_zero, aeval_X_pow, aeval_one]))))

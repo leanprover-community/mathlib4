@@ -258,7 +258,7 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
 
 /-- Shows that $e^{x} * e^{-x} = 1$ -/
 theorem exp_mul_exp_neg_eq_one [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 := by
-  convert exp_mul_exp_eq_exp_add (1 : A) (-1) <;> simp [map_one]
+  convert exp_mul_exp_eq_exp_add (1 : A) (-1) <;> simp
 #align power_series.exp_mul_exp_neg_eq_one PowerSeries.exp_mul_exp_neg_eq_one
 
 /-- Shows that $(e^{X})^k = e^{kX}$. -/
