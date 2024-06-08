@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Prod
-import Mathlib.Algebra.Order.Monoid.Basic
 
 #align_import data.fintype.prod from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
