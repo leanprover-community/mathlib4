@@ -80,12 +80,12 @@ abbrev Functor.obj₃ (H : C ⥤ D ⥤ E ⥤ F) (A : C) (B : D) (C : E) : F :=
   ((H.obj A).obj B).obj C
 
 /-- Action of two-variable functors on morphisms. -/
-def Functor.map₂ (H : C ⥤ D ⥤ E) (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) :
+abbrev Functor.map₂ (H : C ⥤ D ⥤ E) (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) :
     (H.obj₂ C₁ D₁ ⟶ H.obj₂ C₂ D₂) :=
   (H.map f).app D₁ ≫ (H.obj C₂).map g
 
 /-- Action of three-variable functors on morphisms. -/
-def Functor.map₃ (H : C ⥤ D ⥤ E ⥤ F) (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) (h : E₁ ⟶ E₂) :
+abbrev Functor.map₃ (H : C ⥤ D ⥤ E ⥤ F) (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) (h : E₁ ⟶ E₂) :
     (H.obj₃ C₁ D₁ E₁ ⟶ H.obj₃ C₂ D₂ E₂) :=
   (H.map₂ f g).app E₁ ≫ (H.obj₂ C₂ D₂).map h
 
@@ -99,34 +99,8 @@ abbrev NatTrans.app₃ {H G : C ⥤ D ⥤ E ⥤ F} (α : NatTrans H G) (X : C) (
     H.obj₃ X Y Z ⟶ G.obj₃ X Y Z :=
   ((α.app X).app Y).app Z
 
-/- Utilities to apply functors into functor categories. -/
-namespace Functor
-
-@[reassoc]
-lemma map₂_eq_app_map_comp_map (H : C ⥤ D ⥤ E) (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) :
-    H.map₂ f g = (H.map f).app D₁ ≫ (H.obj C₂).map g := rfl
-
-@[reassoc]
-lemma map₃_eq_app_map₂_comp_map (H : C ⥤ D ⥤ E ⥤ F)
-    (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) (h : E₁ ⟶ E₂) :
-    H.map₃ f g h = (H.map₂ f g).app E₁ ≫ (H.obj₂ C₂ D₂).map h := rfl
-
-@[reassoc]
-lemma map₃_eq_app₂_map_comp_map₂ (H : C ⥤ D ⥤ E ⥤ F)
-    (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) (h : E₁ ⟶ E₂) :
-    H.map₃ f g h = (H.map f).app₂ D₁ E₁ ≫ (H.obj C₂).map₂ g h :=
-  Category.assoc _ _ _
-
-end Functor
-
 /- Natural transformations between functors with many variables. -/
 namespace NatTrans
-
-lemma app₃_eq_app_app₂ {H G : C ⥤ D ⥤ E ⥤ F} (α : NatTrans H G)
-    (X : C) (Y : D) (Z : E) : α.app₃ X Y Z = (α.app₂ X Y).app Z := rfl
-
-lemma app₃_eq_app₂_app {H G : C ⥤ D ⥤ E ⥤ F} (α : NatTrans H G)
-    (X : C) (Y : D) (Z : E) : α.app₃ X Y Z = (α.app X).app₂ Y Z := rfl
 
 @[reassoc]
 lemma comp_app₂ {H G K : C ⥤ D ⥤ E} (α : H ⟶ G) (β : G ⟶ K) (X : C) (Y : D) :
@@ -137,20 +111,27 @@ lemma comp_app₃ {H G K : C ⥤ D ⥤ E ⥤ F} (α : H ⟶ G) (β : G ⟶ K) (X
     (Z : E) : (α ≫ β).app₃ X Y Z = α.app₃ X Y Z ≫ β.app₃ X Y Z := rfl
 
 /- Naturality for natural transformations in two variables. -/
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma naturality₂ {H G : C ⥤ D ⥤ E} (α : NatTrans H G) {X Y X' Y'} (f : X ⟶ X')
     (g : Y ⟶ Y') : H.map₂ f g ≫ α.app₂ X' Y' = α.app₂ X Y ≫ G.map₂ f g := by
-  rw [H.map₂_eq_app_map_comp_map, G.map₂_eq_app_map_comp_map,
-    Category.assoc, naturality, naturality_app_assoc]
+  rw [Category.assoc, naturality, naturality_app_assoc]
+
+@[reassoc]
+theorem naturality_app_app {G H : C ⥤ D ⥤ E ⥤ F} (T : G ⟶ H) (Z : E) {X₁ Y₁ : C}
+    {X₂ Y₂ : D} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
+    (G.map₂ f g).app Z ≫ T.app₃ Y₁ Y₂ Z = T.app₃ X₁ X₂ Z ≫ (H.map₂ f g).app Z := by
+  rw [comp_app, Category.assoc, naturality_app, ← Category.assoc, ← comp_app₂,
+    naturality, comp_app₂, Category.assoc]
+  rfl
 
 /- Naturality for natural transformations in three variables. -/
 @[reassoc (attr := simp)]
 lemma naturality₃ {H G : C ⥤ D ⥤ E ⥤ F} (α : H ⟶ G) {X Y Z X' Y' Z'}
     (f : X ⟶ X') (g : Y ⟶ Y') (h : Z ⟶ Z') :
     H.map₃ f g h ≫ α.app₃ X' Y' Z' = α.app₃ X Y Z ≫ G.map₃ f g h := by
-  rw [H.map₃_eq_app₂_map_comp_map₂, G.map₃_eq_app₂_map_comp_map₂,
-    Category.assoc, naturality₂, ← Category.assoc, ← comp_app₂, naturality,
-    comp_app₂, Category.assoc]
+  -- `simp [naturality_app_app_assoc]` can't prove this but
+  -- `simp [-comp_app, naturality_app_app_assoc]` can
+  rw [Category.assoc, naturality, naturality_app_app_assoc]
 
 end NatTrans
 
