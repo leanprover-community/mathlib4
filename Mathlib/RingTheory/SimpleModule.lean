@@ -103,7 +103,7 @@ theorem covBy_iff_quot_is_simple {A B : Submodule R M} (hAB : A ≤ B) :
 
 namespace IsSimpleModule
 
-variable [hm : IsSimpleModule R m]
+variable [IsSimpleModule R m]
 
 @[simp]
 theorem isAtom : IsAtom m :=
@@ -189,13 +189,24 @@ namespace IsSemisimpleModule
 
 variable [IsSemisimpleModule R M]
 
+theorem eq_bot_or_exists_simple_le (N : Submodule R M) : N = ⊥ ∨ ∃ m ≤ N, IsSimpleModule R m := by
+  simpa only [isSimpleModule_iff_isAtom, and_comm] using eq_bot_or_exists_atom_le _
+
+theorem sSup_simples_le (N : Submodule R M) :
+    sSup { m : Submodule R M | IsSimpleModule R m ∧ m ≤ N } = N := by
+  simpa only [isSimpleModule_iff_isAtom] using sSup_atoms_le_eq _
+
+variable (R M)
+
+theorem exists_simple [Nontrivial M] : ∃ m : Submodule R M, IsSimpleModule R m := by
+  simpa only [isSimpleModule_iff_isAtom] using IsAtomic.exists_atom _
+
 theorem sSup_simples_eq_top : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤ := by
-  simp_rw [isSimpleModule_iff_isAtom]
-  exact sSup_atoms_eq_top
+  simpa only [isSimpleModule_iff_isAtom] using sSup_atoms_eq_top
 #align is_semisimple_module.Sup_simples_eq_top IsSemisimpleModule.sSup_simples_eq_top
 
 /-- The annihilator of a semisimple module over a commutative ring is a radical ideal. -/
-theorem annihilator_isRadical {R} [CommRing R] [Module R M] [IsSemisimpleModule R M] :
+theorem annihilator_isRadical (R) [CommRing R] [Module R M] [IsSemisimpleModule R M] :
     (Module.annihilator R M).IsRadical := by
   rw [← Submodule.annihilator_top, ← sSup_simples_eq_top, sSup_eq_iSup', Submodule.annihilator_iSup]
   exact Ideal.isRadical_iInf _ fun i ↦ (i.2.annihilator_isMaximal).isPrime.isRadical
@@ -204,6 +215,7 @@ instance submodule {m : Submodule R M} : IsSemisimpleModule R m :=
   m.mapIic.complementedLattice_iff.2 IsModularLattice.complementedLattice_Iic
 #align is_semisimple_module.is_semisimple_submodule IsSemisimpleModule.submodule
 
+variable {R M}
 open LinearMap
 
 theorem congr [IsSemisimpleModule R N] (e : M ≃ₗ[R] N) : IsSemisimpleModule R M :=

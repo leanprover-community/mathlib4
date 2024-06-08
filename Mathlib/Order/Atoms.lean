@@ -281,6 +281,16 @@ export IsAtomic (eq_bot_or_exists_atom_le)
 
 export IsCoatomic (eq_top_or_exists_le_coatom)
 
+lemma IsAtomic.exists_atom [OrderBot α] [Nontrivial α] [IsAtomic α] : ∃ a : α, IsAtom a :=
+  have ⟨b, hb⟩ := exists_ne (⊥ : α)
+  have ⟨a, ha⟩ := (eq_bot_or_exists_atom_le b).resolve_left hb
+  ⟨a, ha.1⟩
+
+lemma IsCoatomic.exists_coatom [OrderTop α] [Nontrivial α] [IsCoatomic α] : ∃ a : α, IsCoatom a :=
+  have ⟨b, hb⟩ := exists_ne (⊤ : α)
+  have ⟨a, ha⟩ := (eq_top_or_exists_le_coatom b).resolve_left hb
+  ⟨a, ha.1⟩
+
 variable {α}
 
 @[simp]
@@ -315,9 +325,9 @@ namespace IsCoatomic
 
 variable [OrderTop α] [IsCoatomic α]
 
-instance isCoatomic : IsAtomic αᵒᵈ :=
+instance isAtomic_dual : IsAtomic αᵒᵈ :=
   isAtomic_dual_iff_isCoatomic.2 ‹IsCoatomic α›
-#align is_coatomic.is_coatomic IsCoatomic.isCoatomic
+#align is_coatomic.is_coatomic IsCoatomic.isAtomic_dual
 
 instance Set.Ici.isCoatomic {x : α} : IsCoatomic (Set.Ici x) :=
   ⟨fun ⟨y, hy⟩ =>
