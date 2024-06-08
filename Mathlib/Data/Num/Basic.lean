@@ -192,6 +192,7 @@ section
 variable {α : Type*} [One α] [Add α]
 
 /-- `castPosNum` casts a `PosNum` into any type which has `1` and `+`. -/
+@[coe]
 def castPosNum : PosNum → α
   | 1 => 1
   | PosNum.bit0 a => let b := castPosNum a; b + b
@@ -199,6 +200,7 @@ def castPosNum : PosNum → α
 #align cast_pos_num castPosNum
 
 /-- `castNum` casts a `Num` into any type which has `0`, `1` and `+`. -/
+@[coe]
 def castNum [Zero α] : Num → α
   | 0 => 0
   | Num.pos p => castPosNum p

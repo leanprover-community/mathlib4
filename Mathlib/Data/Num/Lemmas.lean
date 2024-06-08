@@ -16,14 +16,6 @@ import Mathlib.Data.Num.Bitwise
 # Properties of the binary representation of integers
 -/
 
-/-
-Porting note:
-`bit0` and `bit1` are deprecated because it is mainly used to represent number literal in Lean3 but
-not in Lean4 anymore. However, this file uses them for encoding numbers so this linter is
-unnecessary.
--/
-set_option linter.deprecated false
-
 -- Porting note: Required for the notation `-[n+1]`.
 open Int Function
 
@@ -44,20 +36,20 @@ theorem cast_one' [One α] [Add α] : (PosNum.one : α) = 1 :=
 #align pos_num.cast_one' PosNum.cast_one'
 
 @[simp, norm_cast]
-theorem cast_bit0 [One α] [Add α] (n : PosNum) : (n.bit0 : α) = _root_.bit0 (n : α) :=
+theorem cast_bit0 [One α] [Add α] (n : PosNum) : (n.bit0 : α) = n + n :=
   rfl
 #align pos_num.cast_bit0 PosNum.cast_bit0
 
 @[simp, norm_cast]
-theorem cast_bit1 [One α] [Add α] (n : PosNum) : (n.bit1 : α) = _root_.bit1 (n : α) :=
+theorem cast_bit1 [One α] [Add α] (n : PosNum) : (n.bit1 : α) = n + n + 1 :=
   rfl
 #align pos_num.cast_bit1 PosNum.cast_bit1
 
 @[simp, norm_cast]
 theorem cast_to_nat [AddMonoidWithOne α] : ∀ n : PosNum, ((n : ℕ) : α) = n
   | 1 => Nat.cast_one
-  | bit0 p => (Nat.cast_bit0 _).trans <| congr_arg _root_.bit0 p.cast_to_nat
-  | bit1 p => (Nat.cast_bit1 _).trans <| congr_arg _root_.bit1 p.cast_to_nat
+  | bit0 p => by simp [cast_to_nat p]
+  | bit1 p => by simp [cast_to_nat p]
 #align pos_num.cast_to_nat PosNum.cast_to_nat
 
 @[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
@@ -73,9 +65,7 @@ theorem cast_to_int [AddGroupWithOne α] (n : PosNum) : ((n : ℤ) : α) = n := 
 theorem succ_to_nat : ∀ n, (succ n : ℕ) = n + 1
   | 1 => rfl
   | bit0 p => rfl
-  | bit1 p =>
-    (congr_arg _root_.bit0 (succ_to_nat p)).trans <|
-      show ↑p + 1 + ↑p + 1 = ↑p + ↑p + 1 + 1 by simp [add_left_comm]
+  | bit1 p => by simp [succ, succ_to_nat p, add_left_comm 1]
 #align pos_num.succ_to_nat PosNum.succ_to_nat
 
 theorem one_add (n : PosNum) : 1 + n = succ n := by cases n <;> rfl
