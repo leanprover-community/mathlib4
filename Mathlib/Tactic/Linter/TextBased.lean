@@ -35,6 +35,9 @@ inductive StyleError where
 inductive ErrorFormat
   /-- Produce style error output aimed at humans: no error code, clickable file name -/
   | humanReadable : ErrorFormat
+  /-- Produce an entry in the style-exceptions file: mention the error code, slightly uglier
+  than humand-readable output -/
+  | exceptionsFile : ErrorFormat
   /-- Produce output suitable for Github error annotations: in particular,
   duplicate the file path, line number and error code -/
   | github : ErrorFormat
@@ -43,7 +46,10 @@ inductive ErrorFormat
 def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String := match err with
   | StyleError.fileTooLong current_size size_limit =>
     match style with
-    | ErrorFormat.github => s!"{size_limit} file contains {current_size} lines, try to split it up"
+    | ErrorFormat.github =>
+        s!"file contains {current_size} lines (at most {size_limit} allowed), try to split it up"
+    | ErrorFormat.exceptionsFile =>
+        s!"{size_limit} file contains {current_size} lines, try to split it up"
     | ErrorFormat.humanReadable => s!"file contains {current_size} lines, try to split it up"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
@@ -82,6 +88,7 @@ instance : BEq ErrorContext where
 
 `style` specifies if the error should be formatted for humans or for github output matchers -/
 def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
+  let error_message := errctx.error.errorMessage style
   match style with
   | ErrorFormat.github =>
     -- We are outputting for github: duplicate file path, line number and error code,
@@ -89,11 +96,13 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
     let path := errctx.path
     let nr := errctx.lineNumber
     let code := errctx.error.errorCode
-    let msg := errctx.error.errorMessage
-    s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {msg style}"
+    s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {error_message}"
   | ErrorFormat.humanReadable =>
     -- Print for humans: clickable file name and omit the error code
-    s!"error: {errctx.path}:{errctx.lineNumber} {errctx.error.errorMessage style}"
+    s!"error: {errctx.path}:{errctx.lineNumber} {error_message}"
+  | ErrorFormat.exceptionsFile =>
+    -- Produce an entry in the exceptions file: with error code and "line" in front of the number.
+    s!"{errctx.path} : line {errctx.lineNumber} : {errctx.error.errorCode} : {error_message}"
 
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
@@ -210,7 +219,7 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (mode : OutputSetting) :
     -- XXX: should these also print the errors? if yes, only for humans, I guess!
     | OutputSetting.append =>
       let path := System.mkFilePath ["scripts/style-exceptions.txt"]
-      IO.FS.appendToFile path (outputMessage err ErrorFormat.github)
+      IO.FS.appendToFile path (outputMessage err ErrorFormat.exceptionsFile)
     | OutputSetting.regenerate =>
     -- FIXME: implement this!
       IO.println "the --regenerate option not implemented yet: \
