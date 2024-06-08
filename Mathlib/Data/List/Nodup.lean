@@ -469,7 +469,7 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
     simp (config := {contextual := true}) [List.mem_filter, this, hx]
 end List
 
-theorem Option.toList_nodup {α} : ∀ o : Option α, o.toList.Nodup
+theorem Option.toList_nodup : ∀ o : Option α, o.toList.Nodup
   | none => List.nodup_nil
   | some x => List.nodup_singleton x
 #align option.to_list_nodup Option.toList_nodup
