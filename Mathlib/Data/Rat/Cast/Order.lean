@@ -184,9 +184,12 @@ theorem cast_nonpos {n : ℚ≥0} : (n : K) ≤ 0 ↔ n ≤ 0 := by
 theorem cast_pos {n : ℚ≥0} : (0 : K) < n ↔ 0 < n := by
   norm_cast
 
-@[simp]
+@[norm_cast]
 theorem cast_lt_zero {n : ℚ≥0} : (n : K) < 0 ↔ n < 0 := by
   norm_cast
+
+@[simp]
+theorem not_cast_lt_zero {n : ℚ≥0} : ¬(n : K) < 0 := mod_cast not_lt_zero'
 
 @[simp, norm_cast]
 theorem cast_min {a b : ℚ≥0} : (↑(min a b) : K) = min (a : K) (b : K) :=
