@@ -194,7 +194,6 @@ theorem valuation_is_dominant (i : a.I) : dominant utility i (a.v i) := by
   · rw [utility_loser b h1]
     apply utility_nneg
     apply Function.update_same
-    
 end Secondprice
 
 namespace Firstprice
@@ -213,7 +212,8 @@ lemma utility_loser (i : a.I) (H : i ≠ winner b) : utility b i = 0 := by
   simp only [H, if_false]
 
 /-- Shows that there is no dominant strategy in a first price auction for any `i` and bid `bi`. -/
-theorem firstprice_auction_has_no_dominant_strategy (i : a.I) (bi : ℝ) : ¬ dominant utility i bi := by
+theorem firstprice_auction_has_no_dominant_strategy (i : a.I) (bi : ℝ) :
+    ¬ dominant utility i bi := by
   rw [dominant, not_forall]
   use Function.update (fun _ ↦ (bi - 2)) i (bi - 1)
   rw [utility, utility, if_pos (gt_wins _ i _), if_pos (gt_wins _ i _)] <;> intros <;> simp [*]
