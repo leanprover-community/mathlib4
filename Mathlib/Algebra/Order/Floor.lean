@@ -339,6 +339,7 @@ theorem ceil_zero : ⌈(0 : α)⌉₊ = 0 := by rw [← Nat.cast_zero, ceil_natC
 theorem ceil_one : ⌈(1 : α)⌉₊ = 1 := by rw [← Nat.cast_one, ceil_natCast]
 #align nat.ceil_one Nat.ceil_one
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈no_index (OfNat.ofNat n : α)⌉₊ = n :=
   ceil_natCast n
