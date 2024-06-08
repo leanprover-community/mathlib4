@@ -177,12 +177,12 @@ def allLinters : Array TextbasedLinter := Array.mk
 /-- Controls what kind of output this programme produces. -/
 inductive OutputSetting : Type
   /-- Print any style error to standard output (the default) -/
-  | Print (style : ErrorFormat)
+  | print (style : ErrorFormat)
   /-- Append all new errors to the style exceptions file (and print them?),
   leaving existing ones intact -/
-  | Append
+  | append
   /-- Regenerate the whole style exceptions file -/
-  | Regenerate
+  | regenerate
 
 /-- Read a file and apply all text-based linters.
 Print formatted errors and possibly update the style exceptions file accordingly.
@@ -235,9 +235,9 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     return 2
   let errorStyle := if args.hasFlag "github" then ErrorFormat.github else ErrorFormat.humanReadable
   let mode : OutputSetting := match (args.hasFlag "update", args.hasFlag "regenerate") with
-  | (true, false) => OutputSetting.Append
-  | (false, true) => OutputSetting.Regenerate
-  | (false, false) | (true, true) => OutputSetting.Print errorStyle
+  | (true, false) => OutputSetting.append
+  | (false, true) => OutputSetting.regenerate
+  | (false, false) | (true, true) => OutputSetting.print errorStyle
   let mut number_error_files := 0
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
     let n ← lintAllFiles (mkFilePath [s]) errorStyle mode
