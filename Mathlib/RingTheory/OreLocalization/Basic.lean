@@ -479,7 +479,7 @@ instance : IsScalarTower R R[S⁻¹] X[S⁻¹] where
   smul_assoc a b c := by rw [← oreDiv_one_smul, ← oreDiv_one_smul, smul_smul, smul_eq_mul]
 
 /-- The fraction `s /ₒ 1` as a unit in `R[S⁻¹]`, where `s : S`. -/
-@[to_additive "The difference `s -ₒ 1` as a an additive unit."]
+@[to_additive "The difference `s -ₒ 0` as a an additive unit."]
 def numeratorUnit (s : S) : Units R[S⁻¹] where
   val := (s : R) /ₒ 1
   inv := (1 : R) /ₒ s
