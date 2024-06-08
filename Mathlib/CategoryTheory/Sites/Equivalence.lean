@@ -295,7 +295,7 @@ lemma W_whiskerLeft_iff {P Q : Cᵒᵖ ⥤ A} (f : P ⟶ Q) :
 variable [G.IsCocontinuous K J] (hG' : CoverPreserving K J G) [ConcreteCategory A]
   [K.WEqualsLocallyBijective A] [G.IsCoverDense J]
 
--- WIP: The assumption `hG` may be a consequence of the others here (assuming `F` full?).
+-- WIP: The assumption `hG` may be a consequence of the others here (assuming `G` full?).
 
 lemma WEqualsLocallyBijective.transport : J.WEqualsLocallyBijective A where
   iff f := by
