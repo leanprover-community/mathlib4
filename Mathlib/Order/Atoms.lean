@@ -325,9 +325,9 @@ namespace IsCoatomic
 
 variable [OrderTop α] [IsCoatomic α]
 
-instance isAtomic_dual : IsAtomic αᵒᵈ :=
+instance isCoatomic : IsAtomic αᵒᵈ :=
   isAtomic_dual_iff_isCoatomic.2 ‹IsCoatomic α›
-#align is_coatomic.is_coatomic IsCoatomic.isAtomic_dual
+#align is_coatomic.is_coatomic IsCoatomic.isCoatomic
 
 instance Set.Ici.isCoatomic {x : α} : IsCoatomic (Set.Ici x) :=
   ⟨fun ⟨y, hy⟩ =>
