@@ -81,7 +81,8 @@ noncomputable instance : MulAction G H.QuotientDiff where
 theorem smul_diff' (h : H) :
     diff (MonoidHom.id H) α (op (h : G) • β) = diff (MonoidHom.id H) α β * h ^ H.index := by
   letI := H.fintypeQuotientOfFiniteIndex
-  rw [diff, diff, index_eq_card, ← Finset.card_univ, ← Finset.prod_const, ← Finset.prod_mul_distrib]
+  rw [diff, diff, index_eq_card, Nat.card_eq_fintype_card,
+      ← Finset.card_univ, ← Finset.prod_const, ← Finset.prod_mul_distrib]
   refine Finset.prod_congr rfl fun q _ => ?_
   simp_rw [Subtype.ext_iff, MonoidHom.id_apply, coe_mul, mul_assoc, mul_right_inj]
   rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, MulOpposite.unop_op, mul_left_inj,
@@ -165,46 +166,47 @@ private theorem step0 : N ≠ ⊥ := by
 set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
+  simp only [← Nat.card_eq_fintype_card] at h1 h2
   contrapose! h3
   have h4 : (N.comap K.subtype).index = N.index := by
     rw [← N.relindex_top_right, ← hK]
     exact (relindex_sup_right K N).symm
-  have h5 : Fintype.card K < Fintype.card G := by
+  have h5 : Nat.card K < Nat.card G := by
     rw [← K.index_mul_card]
-    exact lt_mul_of_one_lt_left Fintype.card_pos (one_lt_index_of_ne_top h3)
-  have h6 : Nat.Coprime (Fintype.card (N.comap K.subtype)) (N.comap K.subtype).index := by
+    exact lt_mul_of_one_lt_left Nat.card_pos (one_lt_index_of_ne_top h3)
+  have h6 : Nat.Coprime (Nat.card (N.comap K.subtype)) (N.comap K.subtype).index := by
     rw [h4]
-    rw [← Nat.card_eq_fintype_card] at h1 ⊢
     exact h1.coprime_dvd_left (card_comap_dvd_of_injective N K.subtype Subtype.coe_injective)
   obtain ⟨H, hH⟩ := h2 K h5 h6
-  replace hH : Fintype.card (H.map K.subtype) = N.index := by
-    rw [← relindex_bot_left_eq_card, ← relindex_comap, MonoidHom.comap_bot, Subgroup.ker_subtype,
+  replace hH : Nat.card (H.map K.subtype) = N.index := by
+    rw [← relindex_bot_left, ← relindex_comap, MonoidHom.comap_bot, Subgroup.ker_subtype,
       relindex_bot_left, ← IsComplement'.index_eq_card (IsComplement'.symm hH), index_comap,
       subtype_range, ← relindex_sup_right, hK, relindex_top_right]
-  have h7 : Fintype.card N * Fintype.card (H.map K.subtype) = Fintype.card G := by
+  have h7 : Nat.card N * Nat.card (H.map K.subtype) = Nat.card G := by
     rw [hH, ← N.index_mul_card, mul_comm]
-  have h8 : (Fintype.card N).Coprime (Fintype.card (H.map K.subtype)) := by
+  have h8 : (Nat.card N).Coprime (Nat.card (H.map K.subtype)) := by
     rwa [hH]
+  simp only [Nat.card_eq_fintype_card] at h7 h8
   exact ⟨H.map K.subtype, isComplement'_of_coprime h7 h8⟩
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K = N := by
   have : Function.Surjective (QuotientGroup.mk' K) := Quotient.surjective_Quotient_mk''
   have h4 := step1 h1 h2 h3
+  simp only [← Nat.card_eq_fintype_card] at h1 h2
   contrapose! h4
-  have h5 : Fintype.card (G ⧸ K) < Fintype.card G := by
-    rw [← index_eq_card, ← K.index_mul_card, ← Nat.card_eq_fintype_card]
+  have h5 : Nat.card (G ⧸ K) < Nat.card G := by
+    rw [← index_eq_card, ← K.index_mul_card]
     refine
       lt_mul_of_one_lt_right (Nat.pos_of_ne_zero index_ne_zero_of_finite)
         (K.one_lt_card_iff_ne_bot.mpr h4.1)
   have h6 :
-    (Fintype.card (N.map (QuotientGroup.mk' K))).Coprime (N.map (QuotientGroup.mk' K)).index := by
+    (Nat.card (N.map (QuotientGroup.mk' K))).Coprime (N.map (QuotientGroup.mk' K)).index := by
     have index_map := N.index_map_eq this (by rwa [QuotientGroup.ker_mk'])
     have index_pos : 0 < N.index := Nat.pos_of_ne_zero index_ne_zero_of_finite
     rw [index_map]
     refine h1.coprime_dvd_left ?_
     rw [← Nat.mul_dvd_mul_iff_left index_pos, index_mul_card, ← index_map, index_mul_card]
-    simp only [← Nat.card_eq_fintype_card]
     exact K.card_quotient_dvd_card
   obtain ⟨H, hH⟩ := h2 (G ⧸ K) h5 h6
   refine ⟨H.comap (QuotientGroup.mk' K), ?_, ?_⟩

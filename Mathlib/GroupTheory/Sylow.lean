@@ -415,8 +415,8 @@ theorem card_sylow_eq_card_quotient_normalizer [Fact p.Prime] [Fintype (Sylow p 
 #align card_sylow_eq_card_quotient_normalizer card_sylow_eq_card_quotient_normalizer
 
 theorem card_sylow_eq_index_normalizer [Fact p.Prime] [Fintype (Sylow p G)] (P : Sylow p G) :
-    card (Sylow p G) = (P : Subgroup G).normalizer.index :=
-  (card_sylow_eq_card_quotient_normalizer P).trans (P : Subgroup G).normalizer.index_eq_card.symm
+    card (Sylow p G) = (P : Subgroup G).normalizer.index := by
+  rw [card_sylow_eq_card_quotient_normalizer, ← Nat.card_eq_fintype_card, index_eq_card]
 #align card_sylow_eq_index_normalizer card_sylow_eq_index_normalizer
 
 theorem card_sylow_dvd_index [Fact p.Prime] [Fintype (Sylow p G)] (P : Sylow p G) :
@@ -429,7 +429,7 @@ theorem not_dvd_index_sylow' [hp : Fact p.Prime] (P : Sylow p G) [(P : Subgroup 
     [fP : FiniteIndex (P : Subgroup G)] : ¬p ∣ (P : Subgroup G).index := by
   intro h
   letI : Fintype (G ⧸ (P : Subgroup G)) := (P : Subgroup G).fintypeQuotientOfFiniteIndex
-  rw [index_eq_card (P : Subgroup G)] at h
+  rw [index_eq_card (P : Subgroup G), Nat.card_eq_fintype_card] at h
   obtain ⟨x, hx⟩ := exists_prime_orderOf_dvd_card (G := G ⧸ (P : Subgroup G)) p h
   have h := IsPGroup.of_card ((Fintype.card_zpowers.trans hx).trans (pow_one p).symm)
   let Q := (zpowers x).comap (QuotientGroup.mk' (P : Subgroup G))
@@ -691,10 +691,10 @@ lemma exists_subgroup_le_card_le {k p : ℕ} (hp : p.Prime) (h : IsPGroup p G) {
   simpa only [pow_succ', H'card] using And.intro hmk hkm
 
 theorem pow_dvd_card_of_pow_dvd_card [Fintype G] {p n : ℕ} [hp : Fact p.Prime] (P : Sylow p G)
-    (hdvd : p ^ n ∣ card G) : p ^ n ∣ card P :=
-  (hp.1.coprime_pow_of_not_dvd
-          (not_dvd_index_sylow P index_ne_zero_of_finite)).symm.dvd_of_dvd_mul_left
-    ((index_mul_card P.1).symm ▸ hdvd)
+    (hdvd : p ^ n ∣ card G) : p ^ n ∣ card P := by
+  rw [← Nat.card_eq_fintype_card, ← index_mul_card P.1, Nat.card_eq_fintype_card] at hdvd
+  exact (hp.1.coprime_pow_of_not_dvd
+    (not_dvd_index_sylow P index_ne_zero_of_finite)).symm.dvd_of_dvd_mul_left hdvd
 #align sylow.pow_dvd_card_of_pow_dvd_card Sylow.pow_dvd_card_of_pow_dvd_card
 
 theorem dvd_card_of_dvd_card [Fintype G] {p : ℕ} [Fact p.Prime] (P : Sylow p G)
