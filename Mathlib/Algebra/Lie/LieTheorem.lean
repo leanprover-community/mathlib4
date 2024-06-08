@@ -84,19 +84,16 @@ section
 
 variable (A : LieIdeal k L) (χ : Module.Dual k A)
 
-abbrev T (w : A) : Module.End k V := (π w)  - χ w • 1
+abbrev T (w : A) : Module.End k V := (π w) - χ w • 1
 
 /-- The common eigenvectors of `V` with respect to the action of all elements in
 the Lie Ideal `A`.-/
-def altWeightSpace : Submodule k V where
-  carrier := {v | ∀ a : A, ⁅a.val, v⁆ = (χ a) • v}
-  add_mem' := by
-    intro _ _ hb hc _
-    rw [lie_add, hc, hb, ← smul_add]
-  zero_mem' _ := by rw [lie_zero, smul_zero]
-  smul_mem' := by
-    intro _ _ hx _
-    rw [lie_smul, hx, smul_comm]
+def altWeightSpace : Submodule k V :=
+  (⨅ w : A, (LinearMap.ker (M := V) (T A χ w))).copy {v | ∀ a : A, ⁅a.val, v⁆ = (χ a) • v} <| by
+  ext v
+  simp only [Subtype.forall, Set.mem_setOf_eq, T, Submodule.iInf_coe, Set.mem_iInter,
+    SetLike.mem_coe, LinearMap.mem_ker, LinearMap.sub_apply, LieModule.toEnd_apply_apply,
+    LinearMap.smul_apply, LinearMap.one_apply, sub_eq_zero]
 
 variable (z : L) (w : A) {v : V}
 
