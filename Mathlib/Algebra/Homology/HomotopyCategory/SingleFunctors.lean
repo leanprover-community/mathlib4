@@ -58,7 +58,9 @@ instance (n : ℤ) : ((singleFunctors C).functor n).Additive := by
   infer_instance
 
 /-- The single functor `C ⥤ CochainComplex C ℤ` which sends `X` to the complex
-consisting of `X` in degree `n : ℤ` and zero otherwise. -/
+consisting of `X` in degree `n : ℤ` and zero otherwise.
+(This is definitionally equal to `HomologicalComplex.single C (up ℤ) n`,
+but `singleFunctor C n` is the preferred term when interactions with shifts are relevant.) -/
 noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
 end CochainComplex
