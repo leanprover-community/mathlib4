@@ -83,3 +83,9 @@ example {a b c : α} {n : ℕ} {f : Fin n.succ → α} :
     vecCons a (vecCons b (vecCons c f)) 3 = f 0 := by dsimp
 example {a b c : α} {n : ℕ} {f : Fin (n + 2) → α} :
     vecCons a (vecCons b (vecCons c f)) 4 = f 1 := by dsimp
+
+-- these won't be true by `dsimp`, so need a separate simproc
+-- example {a b c : α} {n : ℕ} {f : Fin n.succ → α} :
+--     vecCons a (vecCons b (vecCons c f)) (-1) = f (-1) := by simp
+-- example {a b c : α} {n : ℕ} {f : Fin (n + 2) → α} :
+--     vecCons a (vecCons b (vecCons c f)) (-2) = f (-2) := by simp
