@@ -60,6 +60,9 @@ def TwoSquare := T ⋙ R ⟶ L ⋙ B
 
 namespace TwoSquare
 
+/-- Constructor for `TwoSquare`. -/
+abbrev mk (α : T ⋙ R ⟶ L ⋙ B) : TwoSquare T L R B := α
+
 variable {T L R B}
 
 @[ext]
@@ -222,6 +225,33 @@ instance [hw : w.GuitartExact] (X₂ : C₂) :
     (w.structuredArrowDownwards X₂).Initial := by
   rw [guitartExact_iff_initial] at hw
   apply hw
+
+/-- When the left and right functors of a 2-square are equivalences, and the natural
+transformation of the 2-square is an isomorphism, then the 2-square is Guitart exact. -/
+instance (priority := 100) guitartExact_of_isEquivalence_of_isIso
+    [L.IsEquivalence] [R.IsEquivalence] [IsIso w] : GuitartExact w := by
+  rw [guitartExact_iff_initial]
+  intro X₂
+  have := StructuredArrow.isEquivalence_post X₂ T R
+  have : (Comma.mapRight _ w : StructuredArrow (R.obj X₂) _ ⥤ _).IsEquivalence :=
+    (Comma.mapRightIso _ (asIso w)).isEquivalence_functor
+  have := StructuredArrow.isEquivalence_pre (R.obj X₂) L B
+  dsimp only [structuredArrowDownwards]
+  infer_instance
+
+instance guitartExact_id (F : C₁ ⥤ C₂) :
+    GuitartExact (TwoSquare.mk (𝟭 C₁) F F (𝟭 C₂) (𝟙 F)) := by
+  rw [guitartExact_iff_isConnected_rightwards]
+  intro X₂ X₃ (g : F.obj X₂ ⟶ X₃)
+  let Z := StructuredArrowRightwards (TwoSquare.mk (𝟭 C₁) F F (𝟭 C₂) (𝟙 F)) g
+  let X₀ : Z := StructuredArrow.mk (Y := CostructuredArrow.mk g) (CostructuredArrow.homMk (𝟙 _))
+  have φ : ∀ (X : Z), X₀ ⟶ X := fun X =>
+    StructuredArrow.homMk (CostructuredArrow.homMk X.hom.left
+      (by simpa using CostructuredArrow.w X.hom))
+  have : Nonempty Z := ⟨X₀⟩
+  apply zigzag_isConnected
+  intro X Y
+  exact Zigzag.of_inv_hom (φ X) (φ Y)
 
 end TwoSquare
 

@@ -585,7 +585,7 @@ def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
         LinearMap.coe_toContinuousLinearMap', LinearEquiv.piRing_symm_apply]
       apply le_trans (norm_sum_le _ _)
       rw [smul_mul_assoc]
-      refine' Finset.sum_le_card_nsmul _ _ _ fun i _ => _
+      refine Finset.sum_le_card_nsmul _ _ _ fun i _ => ?_
       rw [norm_smul, mul_comm]
       gcongr <;> apply norm_le_pi_norm }
 #align continuous_linear_equiv.pi_ring ContinuousLinearEquiv.piRing

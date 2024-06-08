@@ -2002,7 +2002,7 @@ theorem isLeftRegular_of_le_isCancelMulZero (f : LocalizationWithZeroMap S N)
     leftCancelMulZero_of_le_isLeftRegular f (fun x h' => (h h').left)
   exact IsLeftCancelMulZero.to_isCancelMulZero
 
-@[deprecated isLeftRegular_of_le_isCancelMulZero] -- 2024-01-16
+@[deprecated isLeftRegular_of_le_isCancelMulZero (since := "2024-01-16")]
 alias isLeftRegular_of_le_IsCancelMulZero := isLeftRegular_of_le_isCancelMulZero
 
 end LocalizationWithZeroMap
@@ -2094,7 +2094,7 @@ instance partialOrder : PartialOrder (Localization s) where
   le_trans a b c :=
     Localization.induction_on₃ a b c fun a b c hab hbc => by
       simp only [mk_le_mk] at hab hbc ⊢
-      refine' le_of_mul_le_mul_left' _
+      apply le_of_mul_le_mul_left' _
       · exact ↑b.2
       rw [mul_left_comm]
       refine (mul_le_mul_left' hab _).trans ?_

@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Order.SupIndep
 import Mathlib.Order.Atoms
-import Mathlib.Data.Fintype.Powerset
 
 #align_import order.partition.finpartition from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -219,7 +218,7 @@ abbrev _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a
     have h : ∀ b ∈ P.parts, b = a := fun _ hb ↦
       (ha.le_iff.mp <| P.le hb).resolve_left (P.ne_bot hb)
     ext b
-    refine' Iff.trans ⟨h b, _⟩ mem_singleton.symm
+    refine Iff.trans ⟨h b, ?_⟩ mem_singleton.symm
     rintro rfl
     obtain ⟨c, hc⟩ := P.parts_nonempty ha.1
     simp_rw [← h c hc]
@@ -505,13 +504,31 @@ theorem mem_part (ha : a ∈ s) : a ∈ P.part a := by simp [part, ha, choose_pr
 
 theorem part_surjOn : Set.SurjOn P.part s P.parts := fun p hp ↦ by
   obtain ⟨x, hx⟩ := P.nonempty_of_mem_parts hp
-  have hx' := mem_of_subset ((le_sup hp).trans P.sup_parts.le) hx
+  have hx' := mem_of_subset (P.le hp) hx
   use x, hx', (P.existsUnique_mem hx').unique ⟨P.part_mem hx', P.mem_part hx'⟩ ⟨hp, hx⟩
 
 theorem exists_subset_part_bijOn : ∃ r ⊆ s, Set.BijOn P.part r P.parts := by
   obtain ⟨r, hrs, hr⟩ := P.part_surjOn.exists_bijOn_subset
   lift r to Finset α using s.finite_toSet.subset hrs
   exact ⟨r, mod_cast hrs, hr⟩
+
+/-- Equivalence between a finpartition's parts as a dependent sum and the partitioned set. -/
+def equivSigmaParts : s ≃ Σ t : P.parts, t.1 where
+  toFun x := ⟨⟨P.part x.1, P.part_mem x.2⟩, ⟨x, P.mem_part x.2⟩⟩
+  invFun x := ⟨x.2, mem_of_subset (P.le x.1.2) x.2.2⟩
+  left_inv x := by simp
+  right_inv x := by
+    ext e
+    · obtain ⟨⟨p, mp⟩, ⟨f, mf⟩⟩ := x
+      dsimp only at mf ⊢
+      have mfs := mem_of_subset (P.le mp) mf
+      rw [P.eq_of_mem_parts mp (P.part_mem mfs) mf (P.mem_part mfs)]
+    · simp
+
+lemma exists_enumeration : ∃ f : s ≃ Σ t : P.parts, Fin t.1.card,
+    ∀ a b : s, P.part a = P.part b ↔ (f a).1 = (f b).1 := by
+  use P.equivSigmaParts.trans ((Equiv.refl _).sigmaCongr (fun t ↦ t.1.equivFin))
+  simp [equivSigmaParts, Equiv.sigmaCongr, Equiv.sigmaCongrLeft]
 
 theorem sum_card_parts : ∑ i ∈ P.parts, i.card = s.card := by
   convert congr_arg Finset.card P.biUnion_parts
@@ -552,10 +569,17 @@ instance (s : Finset α) : OrderBot (Finpartition s) :=
       obtain ⟨t, ht, hat⟩ := P.exists_mem ha
       exact ⟨t, ht, singleton_subset_iff.2 hat⟩ }
 
-theorem card_parts_le_card (P : Finpartition s) : P.parts.card ≤ s.card := by
+theorem card_parts_le_card : P.parts.card ≤ s.card := by
   rw [← card_bot s]
   exact card_mono bot_le
 #align finpartition.card_parts_le_card Finpartition.card_parts_le_card
+
+lemma card_mod_card_parts_le : s.card % P.parts.card ≤ P.parts.card := by
+  rcases P.parts.card.eq_zero_or_pos with h | h
+  · have h' := h
+    rw [Finset.card_eq_zero, parts_eq_empty_iff, bot_eq_empty, ← Finset.card_eq_zero] at h'
+    rw [h, h']
+  · exact (Nat.mod_lt _ h).le
 
 variable [Fintype α]
 

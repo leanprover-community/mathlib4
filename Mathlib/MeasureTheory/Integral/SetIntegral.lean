@@ -126,14 +126,14 @@ theorem integral_union (hst : Disjoint s t) (ht : MeasurableSet t) (hfs : Integr
 theorem integral_diff (ht : MeasurableSet t) (hfs : IntegrableOn f s μ) (hts : t ⊆ s) :
     ∫ x in s \ t, f x ∂μ = ∫ x in s, f x ∂μ - ∫ x in t, f x ∂μ := by
   rw [eq_sub_iff_add_eq, ← integral_union, diff_union_of_subset hts]
-  exacts [disjoint_sdiff_self_left, ht, hfs.mono_set (diff_subset _ _), hfs.mono_set hts]
+  exacts [disjoint_sdiff_self_left, ht, hfs.mono_set diff_subset, hfs.mono_set hts]
 #align measure_theory.integral_diff MeasureTheory.integral_diff
 
 theorem integral_inter_add_diff₀ (ht : NullMeasurableSet t μ) (hfs : IntegrableOn f s μ) :
     ∫ x in s ∩ t, f x ∂μ + ∫ x in s \ t, f x ∂μ = ∫ x in s, f x ∂μ := by
   rw [← Measure.restrict_inter_add_diff₀ s ht, integral_add_measure]
-  · exact Integrable.mono_measure hfs (Measure.restrict_mono (inter_subset_left _ _) le_rfl)
-  · exact Integrable.mono_measure hfs (Measure.restrict_mono (diff_subset _ _) le_rfl)
+  · exact Integrable.mono_measure hfs (Measure.restrict_mono inter_subset_left le_rfl)
+  · exact Integrable.mono_measure hfs (Measure.restrict_mono diff_subset le_rfl)
 #align measure_theory.integral_inter_add_diff₀ MeasureTheory.integral_inter_add_diff₀
 
 theorem integral_inter_add_diff (ht : MeasurableSet t) (hfs : IntegrableOn f s μ) :
@@ -358,14 +358,14 @@ theorem integral_union_eq_left_of_ae_aux (ht_eq : ∀ᵐ x ∂μ.restrict t, f x
     ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ := by
   let k := f ⁻¹' {0}
   have hk : MeasurableSet k := by borelize E; exact haux.measurable (measurableSet_singleton _)
-  have h's : IntegrableOn f s μ := H.mono (subset_union_left _ _) le_rfl
+  have h's : IntegrableOn f s μ := H.mono subset_union_left le_rfl
   have A : ∀ u : Set X, ∫ x in u ∩ k, f x ∂μ = 0 := fun u =>
     setIntegral_eq_zero_of_forall_eq_zero fun x hx => hx.2
   rw [← integral_inter_add_diff hk h's, ← integral_inter_add_diff hk H, A, A, zero_add, zero_add,
     union_diff_distrib, union_comm]
   apply setIntegral_congr_set_ae
   rw [union_ae_eq_right]
-  apply measure_mono_null (diff_subset _ _)
+  apply measure_mono_null diff_subset
   rw [measure_zero_iff_ae_nmem]
   filter_upwards [ae_imp_of_ae_restrict ht_eq] with x hx h'x using h'x.2 (hx h'x.1)
 #align measure_theory.integral_union_eq_left_of_ae_aux MeasureTheory.integral_union_eq_left_of_ae_aux
@@ -382,11 +382,11 @@ theorem integral_union_eq_left_of_ae (ht_eq : ∀ᵐ x ∂μ.restrict t, f x = 0
       apply
         integral_union_eq_left_of_ae_aux _ H.1.stronglyMeasurable_mk (H.congr_fun_ae H.1.ae_eq_mk)
       filter_upwards [ht_eq,
-        ae_mono (Measure.restrict_mono (subset_union_right s t) le_rfl) H.1.ae_eq_mk] with x hx h'x
+        ae_mono (Measure.restrict_mono subset_union_right le_rfl) H.1.ae_eq_mk] with x hx h'x
       rw [← h'x, hx]
     _ = ∫ x in s, f x ∂μ :=
       integral_congr_ae
-        (ae_mono (Measure.restrict_mono (subset_union_left s t) le_rfl) H.1.ae_eq_mk.symm)
+        (ae_mono (Measure.restrict_mono subset_union_left le_rfl) H.1.ae_eq_mk.symm)
 #align measure_theory.integral_union_eq_left_of_ae MeasureTheory.integral_union_eq_left_of_ae
 
 theorem integral_union_eq_left_of_forall₀ {f : X → E} (ht : NullMeasurableSet t μ)
@@ -1141,7 +1141,7 @@ set_option linter.uppercaseLean3 false in
 theorem norm_Lp_toLp_restrict_le (s : Set X) (f : Lp E p μ) :
     ‖((Lp.memℒp f).restrict s).toLp f‖ ≤ ‖f‖ := by
   rw [Lp.norm_def, Lp.norm_def, ENNReal.toReal_le_toReal (Lp.snorm_ne_top _) (Lp.snorm_ne_top _)]
-  refine' (le_of_eq _).trans (snorm_mono_measure _ Measure.restrict_le_self)
+  apply (le_of_eq _).trans (snorm_mono_measure _ (Measure.restrict_le_self (s := s)))
   exact snorm_congr_ae (Memℒp.coeFn_toLp _)
 set_option linter.uppercaseLean3 false in
 #align measure_theory.norm_Lp_to_Lp_restrict_le MeasureTheory.norm_Lp_toLp_restrict_le
