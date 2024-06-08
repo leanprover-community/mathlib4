@@ -1405,10 +1405,14 @@ theorem SurjOn.mapsTo_invFunOn [Nonempty α] (h : SurjOn f s t) : MapsTo (invFun
   fun _y hy => mem_preimage.2 <| invFunOn_mem <| h hy
 #align set.surj_on.maps_to_inv_fun_on Set.SurjOn.mapsTo_invFunOn
 
+/-- This lemma is a special case of `rightInvOn_invFunOn.image_image'`; it may make more sense
+to use the other lemma directly in an application. -/
 theorem SurjOn.image_invFunOn_image_of_subset [Nonempty α] {r : Set β} (hf : SurjOn f s t)
     (hrt : r ⊆ t) : f '' (f.invFunOn s '' r) = r :=
   hf.rightInvOn_invFunOn.image_image' hrt
 
+/-- This lemma is a special case of `rightInvOn_invFunOn.image_image`; it may make more sense
+to use the other lemma directly in an application. -/
 theorem SurjOn.image_invFunOn_image [Nonempty α] (hf : SurjOn f s t) :
     f '' (f.invFunOn s '' t) = t :=
   hf.rightInvOn_invFunOn.image_image
