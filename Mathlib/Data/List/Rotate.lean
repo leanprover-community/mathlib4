@@ -207,7 +207,7 @@ theorem rotate_singleton (x : α) (n : ℕ) : [x].rotate n = [x] :=
   rotate_replicate x 1 n
 #align list.rotate_singleton List.rotate_singleton
 
-theorem zipWith_rotate_distrib {α β γ : Type*} (f : α → β → γ) (l : List α) (l' : List β) (n : ℕ)
+theorem zipWith_rotate_distrib {β γ : Type*} (f : α → β → γ) (l : List α) (l' : List β) (n : ℕ)
     (h : l.length = l'.length) :
     (zipWith f l l').rotate n = zipWith f (l.rotate n) (l'.rotate n) := by
   rw [rotate_eq_drop_append_take_mod, rotate_eq_drop_append_take_mod,
