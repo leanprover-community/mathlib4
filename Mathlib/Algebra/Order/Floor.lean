@@ -169,6 +169,11 @@ theorem floor_coe (n : ℕ) : ⌊(n : α)⌋₊ = n :=
     exact n.cast_nonneg
 #align nat.floor_coe Nat.floor_coe
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem floor_ofNat (n : ℕ) [n.AtLeastTwo] : ⌊no_index (OfNat.ofNat n : α)⌋₊ = n :=
+  Nat.floor_coe _
+
 @[simp]
 theorem floor_zero : ⌊(0 : α)⌋₊ = 0 := by rw [← Nat.cast_zero, floor_coe]
 #align nat.floor_zero Nat.floor_zero
