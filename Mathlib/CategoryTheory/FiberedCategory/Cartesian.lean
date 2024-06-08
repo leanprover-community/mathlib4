@@ -100,8 +100,7 @@ instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom]
     refine ⟨⟨inferInstance, by simp [← assoc, inducedMap_comp]⟩, ?_⟩
     rintro τ ⟨hτ₁, hτ₂⟩
     apply inducedMap_unique
-    rw [Iso.eq_comp_inv]
-    simp only [assoc, hτ₂]
+    simp only [Iso.eq_comp_inv, assoc, hτ₂]
 
 /-- The canonical isomorphism between the domains of two cartesian arrows
 lying over the same object. -/
