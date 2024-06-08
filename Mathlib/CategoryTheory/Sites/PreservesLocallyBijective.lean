@@ -76,3 +76,5 @@ lemma isLocallySurjective_iff_whisker (hH : CoverPreserving J K H) [H.IsCocontin
     fun _ ↦ isLocallySurjective_of_whisker J K H f hH⟩
 
 end Presheaf
+
+end CategoryTheory
