@@ -264,7 +264,7 @@ protected theorem separableSpace [SeparableSpace α] : SeparableSpace β :=
 protected theorem prod {e₁ : α → β} {e₂ : γ → δ} (de₁ : DenseEmbedding e₁)
     (de₂ : DenseEmbedding e₂) : DenseEmbedding fun p : α × γ => (e₁ p.1, e₂ p.2) :=
   { de₁.toDenseInducing.prod de₂.toDenseInducing with
-    inj := de₁.inj.Prod_map de₂.inj }
+    inj := de₁.inj.prodMap de₂.inj }
 #align dense_embedding.prod DenseEmbedding.prod
 
 /-- The dense embedding of a subtype inside its closure. -/
