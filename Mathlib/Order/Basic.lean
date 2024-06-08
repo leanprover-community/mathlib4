@@ -65,7 +65,7 @@ open Function
 
 universe u v w
 
-variable {ι : Type*} {α : Type u} {β : Type v} {π : ι → Type*}
+variable {ι α β : Type*} {π : ι → Type*}
 
 section Preorder
 
