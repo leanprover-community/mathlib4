@@ -34,9 +34,9 @@ any subset of the antidiagonal `{(x, y) | x + y = 0}`) is order-connected.
 2. Since an order-connected set is the intersection of its upper and lower closure, it's enough to
   show that upper and lower sets have null frontier.
 3. WLOG let's prove it for an upper set `s`.
-4. By the Lebesgue density theorem, it is enough to show that any frontier point `x` of `s` is a
-  Lebesgue point, namely a point where the density of `s` over small balls centered at `x` does not
-  tend to either `0` or `1`.
+4. By the Lebesgue density theorem, it is enough to show that any frontier point `x` of `s` is not a
+  Lebesgue point, namely we want the density of `s` over small balls centered at `x` to not tend to
+  either `0` or `1`.
 5. This is true, since by the upper setness of `s` we can intercalate a ball of radius `δ / 4` in
   `s` intersected with the upper quadrant of the ball of radius `δ` centered at `x` (recall that the
   balls are taken in the ∞-norm, so they are cubes), and another ball of radius `δ / 4` in `sᶜ` and
