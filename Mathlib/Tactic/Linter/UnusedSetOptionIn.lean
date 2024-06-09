@@ -17,7 +17,7 @@ We only report the outermost `set_option ... in` (i.e., nested, superfluous `set
 are not linted against).
 -/
 
-open Lean Elab Command
+open Lean Parser Elab Command
 
 /-- converts
 * `theorem x ...` to  `some (example ... , x)`,
@@ -27,12 +27,17 @@ open Lean Elab Command
 -/
 def toExample {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
     Syntax → m (Option (Syntax × Syntax))
-  | `($dm:declModifiers theorem $did:declId $ds* : $t $dv:declVal) => do
+  | `($dm:declModifiers theorem  $did:declId $ds* : $t $dv:declVal) => do
     return some (← `($dm:declModifiers example $ds* : $t $dv:declVal), did.raw[0])
-  | `($dm:declModifiers lemma $did:declId $ds* : $t $dv:declVal) => do
+  | `($dm:declModifiers lemma    $did:declId $ds* : $t $dv:declVal) => do
     return some (← `($dm:declModifiers example $ds* : $t $dv:declVal), did.raw[0])
-  | `($dm:declModifiers example $ds:optDeclSig $dv:declVal) => do
+  | `($dm:declModifiers example  $ds:optDeclSig $dv:declVal) => do
     return some (← `($dm:declModifiers example $ds $dv:declVal), mkIdent `example)
+  | `($dm:declModifiers def      $did:declId $ds:optDeclSig $dv:declVal) => do
+    return some (← `($dm:declModifiers example $ds $dv:declVal), did.raw[0])
+  | `($dm:declModifiers instance $(_prio)? $(did)? $ds:declSig $dv:declVal) => do
+    let did := did.getD (mkIdent `_unnamed_instance_)
+    return some (← `($dm:declModifiers instance $ds:declSig $dv:declVal), did.raw[0])
   | _ => return none
 
 /-- Report a warning if a `set_option ... in` command is unnecessary
@@ -58,20 +63,22 @@ def getSetOptionIn (o : Options) : Bool := Linter.getLinterValue linter.unnecess
 
 /-- reports a warning if the "first layer" `set_option ... in` is unused. -/
 def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
-  let mut report? := (false, default)
+  let mut (report?, declId) := (false, default)
   let s ← get
   match stx with
     | .node _ ``Lean.Parser.Command.in #[
         .node _ ``Lean.Parser.Command.set_option #[_, opt, _, _],
         _,  -- atom `in`
         inner] => do
-      if let some (exm, id) := (← toExample inner) then
-        cmd exm
-        let msgs := (← get).messages.toList
-        report? := (msgs.isEmpty, id)
-        set s
-      if report?.1 then
-        Linter.logLint linter.unnecessarySetOptionIn stx m!"unused 'set_option {opt}' in '{report?.2}'"
+      if !opt.getId.components.contains `linter then
+        if let some (exm, id) := (← toExample inner) then
+          cmd exm
+          let msgs := (← get).messages.toList
+          (report?, declId) := (msgs.isEmpty, id)
+          set s
+        if report? then
+          Linter.logLint linter.unnecessarySetOptionIn stx
+            m!"unnecessary 'set_option {opt}' in '{declId}'"
     | _ => return
 
 @[inherit_doc linter.unnecessarySetOptionIn]
