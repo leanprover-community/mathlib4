@@ -204,7 +204,7 @@ lemma norm_eq_NatCast (A : Matrix m n ℤ) : ∃ (a : ℕ), ‖A‖ = a := by
 
 /-- The norm of a non-singular integral matrix is a positive natural number-/
 lemma one_le_norm_of_nonzero (A : Matrix m n ℤ) (hA_nezero : A ≠ 0) (a : ℕ)
-    (h_norm_nat : ‖A‖ = ↑a) : 1 ≤ a := by
+    (h_norm_nat : ‖A‖ = a) : 1 ≤ a := by
   convert_to 0 < ( a : ℝ )
   · simp only [Nat.cast_pos]
     exact Nat.succ_le
