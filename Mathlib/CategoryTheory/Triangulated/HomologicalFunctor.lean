@@ -7,6 +7,7 @@ import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.CategoryTheory.Shift.ShiftSequence
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Triangulated.Subcategory
+import Mathlib.Algebra.Homology.ExactSequence
 
 /-! # Homological functors
 
@@ -236,6 +237,21 @@ lemma mem_homologicalKernel_W_iff {X Y : C} (f : X ⟶ Y) :
     apply isIso_of_mono_of_epi
   · intros
     constructor <;> infer_instance
+
+open ComposableArrows
+
+/-- The exact sequence with six terms starting from `(F.shift n₀).obj T.obj₁` until
+`(F.shift n₁).obj T.obj₃` when `T` is a distinguished triangle and `F` a homological functor. -/
+@[simp] noncomputable def homologySequenceComposableArrows₅ : ComposableArrows A 5 :=
+  mk₅ ((F.shift n₀).map T.mor₁) ((F.shift n₀).map T.mor₂)
+    (F.homologySequenceδ T n₀ n₁ h) ((F.shift n₁).map T.mor₁) ((F.shift n₁).map T.mor₂)
+
+lemma homologySequenceComposableArrows₅_exact :
+    (F.homologySequenceComposableArrows₅ T n₀ n₁ h).Exact :=
+  exact_of_δ₀ (F.homologySequence_exact₂ T hT n₀).exact_toComposableArrows
+    (exact_of_δ₀ (F.homologySequence_exact₃ T hT n₀ n₁ h).exact_toComposableArrows
+      (exact_of_δ₀ (F.homologySequence_exact₁ T hT n₀ n₁ h).exact_toComposableArrows
+        (F.homologySequence_exact₂ T hT n₁).exact_toComposableArrows))
 
 end
 
