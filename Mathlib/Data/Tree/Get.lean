@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Wojciech Nawrocki
 -/
 import Mathlib.Data.Num.Basic
 import Mathlib.Data.Tree.Basic
+import Mathlib.Init.Data.Ordering.Basic
 
 #align_import data.tree from "leanprover-community/mathlib"@"ed989ff568099019c6533a4d94b27d852a5710d8"
 
