@@ -298,8 +298,8 @@ variable [G.IsCocontinuous K J] (hG : CoverPreserving K J G) [ConcreteCategory A
 
 lemma WEqualsLocallyBijective.transport : J.WEqualsLocallyBijective A where
   iff f := by
-    rw [← W_whiskerLeft_iff J K G f, Presheaf.isLocallyInjective_iff_whisker K J G f hG,
-      Presheaf.isLocallySurjective_iff_whisker K J G f hG, W_iff_isLocallyBijective]
+    rw [← W_whiskerLeft_iff J K G f, ← Presheaf.isLocallyInjective_iff_whisker K J G f hG,
+      ← Presheaf.isLocallySurjective_iff_whisker K J G f hG, W_iff_isLocallyBijective]
 
 end GrothendieckTopology
 
