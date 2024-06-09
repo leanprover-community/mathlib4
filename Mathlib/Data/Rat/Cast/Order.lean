@@ -134,9 +134,9 @@ end Rat
 
 namespace NNRat
 
-variable {K} [LinearOrderedSemifield K]
+variable {K} [LinearOrderedSemifield K] {p q : ℚ≥0}
 
-theorem cast_strictMono : StrictMono ((↑) : ℚ≥0 → K) := fun m n h => by
+theorem cast_strictMono : StrictMono ((↑) : ℚ≥0 → K) := fun p q h => by
   rwa [NNRat.cast_def, NNRat.cast_def, div_lt_div_iff, ← Nat.cast_mul, ← Nat.cast_mul,
     Nat.cast_lt (α := K), ← NNRat.lt_def]
   · simp
@@ -151,78 +151,60 @@ theorem cast_mono : Monotone ((↑) : ℚ≥0 → K) :=
 def castOrderEmbedding : ℚ≥0 ↪o K :=
   OrderEmbedding.ofStrictMono (↑) cast_strictMono
 
-@[simp, norm_cast]
-theorem cast_le {m n : ℚ≥0} : (m : K) ≤ n ↔ m ≤ n :=
-  castOrderEmbedding.le_iff_le
+@[simp, norm_cast] lemma cast_le : (p : K) ≤ q ↔ p ≤ q := castOrderEmbedding.le_iff_le
+@[simp, norm_cast] lemma cast_lt : (p : K) < q ↔ p < q := cast_strictMono.lt_iff_lt
+@[simp] lemma cast_nonpos : (q : K) ≤ 0 ↔ q ≤ 0 := by norm_cast
+@[simp] lemma cast_pos : (0 : K) < q ↔ 0 < q := by norm_cast
+@[norm_cast] lemma cast_lt_zero : (q : K) < 0 ↔ q < 0 := by norm_cast
+@[simp] lemma not_cast_lt_zero : ¬(q : K) < 0 := mod_cast not_lt_zero'
 
-@[simp, norm_cast]
-theorem cast_lt {m n : ℚ≥0} : (m : K) < n ↔ m < n :=
-  cast_strictMono.lt_iff_lt
-
-@[simp]
-theorem cast_nonpos {n : ℚ≥0} : (n : K) ≤ 0 ↔ n ≤ 0 := by
-  norm_cast
-
-@[simp]
-theorem cast_pos {n : ℚ≥0} : (0 : K) < n ↔ 0 < n := by
-  norm_cast
-
-@[norm_cast]
-theorem cast_lt_zero {n : ℚ≥0} : (n : K) < 0 ↔ n < 0 := by
-  norm_cast
-
-@[simp]
-theorem not_cast_lt_zero {n : ℚ≥0} : ¬(n : K) < 0 := mod_cast not_lt_zero'
-
-@[simp, norm_cast]
-theorem cast_min {a b : ℚ≥0} : (↑(min a b) : K) = min (a : K) (b : K) :=
+@[simp, norm_cast] lemma cast_min (p q : ℚ≥0) : (↑(min p q) : K) = min (p : K) (q : K) :=
   (@cast_mono K _).map_min
 
-@[simp, norm_cast]
-theorem cast_max {a b : ℚ≥0} : (↑(max a b) : K) = max (a : K) (b : K) :=
+@[simp, norm_cast] lemma cast_max (p q : ℚ≥0) : (↑(max p q) : K) = max (p : K) (q : K) :=
   (@cast_mono K _).map_max
 
 open Set
 
 @[simp]
-theorem preimage_cast_Icc (a b : ℚ≥0) : (↑) ⁻¹' Icc (a : K) b = Icc a b :=
+theorem preimage_cast_Icc (p q : ℚ≥0) : (↑) ⁻¹' Icc (p : K) q = Icc p q :=
   castOrderEmbedding.preimage_Icc ..
 
 @[simp]
-theorem preimage_cast_Ico (a b : ℚ≥0) : (↑) ⁻¹' Ico (a : K) b = Ico a b :=
+theorem preimage_cast_Ico (p q : ℚ≥0) : (↑) ⁻¹' Ico (p : K) q = Ico p q :=
   castOrderEmbedding.preimage_Ico ..
 
 @[simp]
-theorem preimage_cast_Ioc (a b : ℚ≥0) : (↑) ⁻¹' Ioc (a : K) b = Ioc a b :=
-  castOrderEmbedding.preimage_Ioc a b
+theorem preimage_cast_Ioc (p q : ℚ≥0) : (↑) ⁻¹' Ioc (p : K) q = Ioc p q :=
+  castOrderEmbedding.preimage_Ioc p q
 
 @[simp]
-theorem preimage_cast_Ioo (a b : ℚ≥0) : (↑) ⁻¹' Ioo (a : K) b = Ioo a b :=
-  castOrderEmbedding.preimage_Ioo a b
+theorem preimage_cast_Ioo (p q : ℚ≥0) : (↑) ⁻¹' Ioo (p : K) q = Ioo p q :=
+  castOrderEmbedding.preimage_Ioo p q
 
 @[simp]
-theorem preimage_cast_Ici (a : ℚ≥0) : (↑) ⁻¹' Ici (a : K) = Ici a :=
-  castOrderEmbedding.preimage_Ici a
+theorem preimage_cast_Ici (p : ℚ≥0) : (↑) ⁻¹' Ici (p : K) = Ici p :=
+  castOrderEmbedding.preimage_Ici p
 
 @[simp]
-theorem preimage_cast_Iic (a : ℚ≥0) : (↑) ⁻¹' Iic (a : K) = Iic a :=
-  castOrderEmbedding.preimage_Iic a
+theorem preimage_cast_Iic (p : ℚ≥0) : (↑) ⁻¹' Iic (p : K) = Iic p :=
+  castOrderEmbedding.preimage_Iic p
 
 @[simp]
-theorem preimage_cast_Ioi (a : ℚ≥0) : (↑) ⁻¹' Ioi (a : K) = Ioi a :=
-  castOrderEmbedding.preimage_Ioi a
+theorem preimage_cast_Ioi (p : ℚ≥0) : (↑) ⁻¹' Ioi (p : K) = Ioi p :=
+  castOrderEmbedding.preimage_Ioi p
 
 @[simp]
-theorem preimage_cast_Iio (a : ℚ≥0) : (↑) ⁻¹' Iio (a : K) = Iio a :=
-  castOrderEmbedding.preimage_Iio a
+theorem preimage_cast_Iio (p : ℚ≥0) : (↑) ⁻¹' Iio (p : K) = Iio p :=
+  castOrderEmbedding.preimage_Iio p
 
 @[simp]
-theorem preimage_cast_uIcc (a b : ℚ≥0) : (↑) ⁻¹' uIcc (a : K) b = uIcc a b :=
-  (castOrderEmbedding (K := K)).preimage_uIcc a b
+theorem preimage_cast_uIcc (p q : ℚ≥0) : (↑) ⁻¹' uIcc (p : K) q = uIcc p q :=
+  (castOrderEmbedding (K := K)).preimage_uIcc p q
 
 @[simp]
-theorem preimage_cast_uIoc (a b : ℚ≥0) : (↑) ⁻¹' uIoc (a : K) b = uIoc a b :=
-  (castOrderEmbedding (K := K)).preimage_uIoc a b
+theorem preimage_cast_uIoc (p q : ℚ≥0) : (↑) ⁻¹' uIoc (p : K) q = uIoc p q :=
+  (castOrderEmbedding (K := K)).preimage_uIoc p q
 
 end NNRat
 
