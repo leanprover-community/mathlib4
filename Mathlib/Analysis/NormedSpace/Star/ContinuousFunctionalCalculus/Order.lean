@@ -123,19 +123,14 @@ lemma norm_le_norm_of_nonneg_of_le_aux [Nontrivial A] {a b : A} (ha : 0 ≤ a) (
   rw [cfc_le_iff id (fun _ => ‖b‖) a (by fun_prop) (by fun_prop) ha'] at h₂
   exact h₂ ‖a‖ <| norm_mem_spectrum_of_nonneg ha
 
-lemma conjugate_le_norm_mul_aux [Nontrivial A] {a b : A} (hb : IsSelfAdjoint b) : star a * b * a ≤ ‖b‖ • (star a * a) := by
+lemma conjugate_le_norm_mul_aux [Nontrivial A] {a b : A} (hb : IsSelfAdjoint b) :
+    star a * b * a ≤ ‖b‖ • (star a * a) := by
   calc star a * b * a ≤ star a * (algebraMap ℝ A ‖b‖) * a := by
         refine conjugate_le_conjugate ?_ _
         refine le_algebraMap_of_spectrum_le fun x hx => ?_
         calc x ≤ ‖x‖ := by exact Real.le_norm_self x
           _ ≤ ‖b‖ := by exact spectrum.norm_le_norm_of_mem hx
     _ = ‖b‖ • (star a * a) := by simp [Algebra.algebraMap_eq_smul_one]
-
---lemma conjugate_le_norm_mul_aux' {a b : A} (hb : IsSelfAdjoint b) : a * b * star a ≤ ‖b‖ • (a * star a) := by
---  have h₁ : a * b * star a = star (star a) * b * star a := by simp
---  have h₂ : a * star a = star (star a) * star a := by simp
---  simp only [h₁, h₂]
---  exact conjugate_le_norm_mul_aux hb
 
 end Cstar_unital
 
