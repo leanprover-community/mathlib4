@@ -1,9 +1,10 @@
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.AdaptationNote
 
--- Adaptation note: test disabled.
--- See https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/.23guard_msgs.20doesn't.20silence.20warnings/near/423534679
--- The linter warning is being printed twice, and #guard_msgs is only capturing one of them.
+#adaptation_note /-- test disabled.
+See https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/.23guard_msgs.20doesn't.20silence.20warnings/near/423534679
+The linter warning is being printed twice, and #guard_msgs is only capturing one of them. -/
 
 -- set_option linter.dupNamespace true in
 -- /-- warning:
@@ -14,9 +15,9 @@ import Mathlib.Tactic.ToAdditive
 -- def add.add := True
 
 namespace Foo
--- Adaptation note: test disabled.
--- See https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/.23guard_msgs.20doesn't.20silence.20warnings/near/423534679
--- The linter warning is being printed twice, and #guard_msgs is only capturing one of them.
+#adaptation_note /-- test disabled.
+See https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/.23guard_msgs.20doesn't.20silence.20warnings/near/423534679
+The linter warning is being printed twice, and #guard_msgs is only capturing one of them. -/
 
 -- set_option linter.dupNamespace true in
 -- /-- warning:
@@ -37,9 +38,9 @@ run_cmd Lean.Elab.Command.liftTermElabM do
 
 namespace Nat
 
--- Adaptation note: test disabled.
--- See https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/.23guard_msgs.20doesn't.20silence.20warnings/near/423534679
--- The linter warning is being printed twice, and #guard_msgs is only capturing one of them.
+#adaptation_note /-- test disabled.
+See https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/.23guard_msgs.20doesn't.20silence.20warnings/near/423534679
+The linter warning is being printed twice, and #guard_msgs is only capturing one of them. -/
 -- /--
 -- warning:
 -- The namespace 'Nat' is duplicated in the declaration 'Foo.Nat.Nat.Nats' [linter.dupNamespace]
@@ -52,9 +53,9 @@ end Foo
 
 namespace add
 
--- Adaptation note: test disabled.
--- See https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/.23guard_msgs.20doesn't.20silence.20warnings/near/423534679
--- The linter warning is being printed twice, and #guard_msgs is only capturing one of them.
+#adaptation_note /-- test disabled.
+See https://leanprover.zulipchat.com/#narrow/stream/348111-std4/topic/.23guard_msgs.20doesn't.20silence.20warnings/near/423534679
+The linter warning is being printed twice, and #guard_msgs is only capturing one of them. -/
 -- /--
 -- warning: The namespace 'add' is duplicated in the declaration 'add.add' [linter.dupNamespace]
 -- -/
