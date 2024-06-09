@@ -431,13 +431,11 @@ example (f : ℤ → E) (h : 0 = f 0) : 1 ≤ 2 := by nlinarith
 example (a : E) (h : a = a) : 1 ≤ 2 := by nlinarith
 end
 
+-- This should not be slower than the example below with the Fourier-Motzkin oracle
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
     p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) := by
   nlinarith
 
--- note: faster than the simplex algorithm (the default oracle for `linarith`)
--- TODO: make the simplex algorithm able to work with sparse matrices. This should speed up
--- `nlinarith` because it passes large and sparse matrices to the oracle.
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
     p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) := by
   nlinarith (config := { oracle := some .fourierMotzkin })
