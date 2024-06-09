@@ -62,9 +62,11 @@ triangle in the derived category. -/
 noncomputable def δ : (homologyFunctor C n₀).obj T.obj₃ ⟶ (homologyFunctor C n₁).obj T.obj₁ :=
   (homologyFunctor C 0).shiftMap T.mor₃ n₀ n₁ (by rw [add_comm 1, h])
 
+@[reassoc (attr := simp)]
 lemma comp_δ : (homologyFunctor C n₀).map T.mor₂ ≫ δ T n₀ n₁ h = 0 :=
   (homologyFunctor C 0).comp_homologySequenceδ _ hT _ _ h
 
+@[reassoc (attr := simp)]
 lemma δ_comp : δ T n₀ n₁ h ≫ (homologyFunctor C n₁).map T.mor₁ = 0 :=
   (homologyFunctor C 0).homologySequenceδ_comp _ hT _ _ h
 
