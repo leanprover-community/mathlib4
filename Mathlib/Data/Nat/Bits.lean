@@ -6,6 +6,7 @@ Authors: Praneeth Kolichala
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat
+import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Data.Nat.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.GeneralizeProofs
@@ -39,7 +40,7 @@ variable {m n : ℕ}
 
 /-- `boddDiv2 n` returns a 2-tuple of type `(Bool, Nat)` where the `Bool` value indicates whether
 `n` is odd or not and the `Nat` value returns `⌊n/2⌋` -/
-def boddDiv2 : ℕ → Bool × ℕ
+@[deprecated (since := "2024-06-09")] def boddDiv2 : ℕ → Bool × ℕ
   | 0 => (false, 0)
   | succ n =>
     match boddDiv2 n with
@@ -48,12 +49,23 @@ def boddDiv2 : ℕ → Bool × ℕ
 #align nat.bodd_div2 Nat.boddDiv2
 
 /-- `div2 n = ⌊n/2⌋` the greatest integer smaller than `n/2`-/
-def div2 (n : ℕ) : ℕ := (boddDiv2 n).2
+def div2 (n : ℕ) : ℕ := n >>> 1
 #align nat.div2 Nat.div2
 
+theorem div2_val (n) : div2 n = n / 2 := rfl
+#align nat.div2_val Nat.div2_val
+
 /-- `bodd n` returns `true` if `n` is odd-/
-def bodd (n : ℕ) : Bool := (boddDiv2 n).1
+def bodd (n : ℕ) : Bool := 1 &&& n != 0
 #align nat.bodd Nat.bodd
+
+theorem bit_decomp (n : Nat) : bit n.bodd n.div2 = n :=
+  n.bit_testBit_zero_shiftRight_one
+
+theorem binaryRec_of_ne_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
+    (h : n ≠ 0) :
+    binaryRec z f n = n.bit_decomp ▸ f n.bodd n.div2 (binaryRec z f n.div2) := by
+  rw [binaryRec, dif_neg h, eqRec_eq_cast, eqRec_eq_cast]; rfl
 
 @[simp] lemma bodd_zero : bodd 0 = false := rfl
 #align nat.bodd_zero Nat.bodd_zero
@@ -66,9 +78,8 @@ lemma bodd_two : bodd 2 = false := rfl
 
 @[simp]
 lemma bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
-  simp only [bodd, boddDiv2]
-  let ⟨b,m⟩ := boddDiv2 n
-  cases b <;> rfl
+  simp only [bodd, succ_eq_add_one, one_and_eq_mod_two]
+  cases mod_two_eq_zero_or_one n with | _ h => simp [h, add_mod]
 #align nat.bodd_succ Nat.bodd_succ
 
 @[simp]
@@ -101,6 +112,9 @@ lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
   cases' mod_two_eq_zero_or_one n with h h <;> rw [h] <;> rfl
 #align nat.mod_two_of_bodd Nat.mod_two_of_bodd
 
+theorem div2_add_bodd (n : Nat) : 2 * div2 n + cond (bodd n) 1 0 = n := by
+  rw [← mod_two_of_bodd, div2_val, Nat.div_add_mod]
+
 @[simp] lemma div2_zero : div2 0 = 0 := rfl
 #align nat.div2_zero Nat.div2_zero
 
@@ -112,8 +126,10 @@ lemma div2_two : div2 2 = 1 := rfl
 
 @[simp]
 lemma div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div2 n) := by
-  simp only [bodd, boddDiv2, div2]
-  rcases boddDiv2 n with ⟨_|_, _⟩ <;> simp
+  apply Nat.eq_of_mul_eq_mul_left (by decide : 0 < 2)
+  apply Nat.add_right_cancel (m := cond (bodd (succ n)) 1 0)
+  rw (config := { occs := .pos [1] }) [div2_add_bodd, bodd_succ, ← div2_add_bodd n]
+  cases bodd n <;> simp [succ_eq_add_one, Nat.add_comm 1, Nat.mul_add]
 #align nat.div2_succ Nat.div2_succ
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
@@ -128,14 +144,6 @@ lemma bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
     · simp; omega
 #align nat.bodd_add_div2 Nat.bodd_add_div2
 
-lemma div2_val (n) : div2 n = n / 2 := by
-  refine Nat.eq_of_mul_eq_mul_left (by decide)
-    (Nat.add_left_cancel (Eq.trans ?_ (Nat.mod_add_div n 2).symm))
-  rw [mod_two_of_bodd, bodd_add_div2]
-#align nat.div2_val Nat.div2_val
-
-/-- `bit b` appends the digit `b` to the binary representation of its natural number input. -/
-def bit (b : Bool) : ℕ → ℕ := cond b bit1 bit0
 #align nat.bit Nat.bit
 
 lemma bit0_val (n : Nat) : bit0 n = 2 * n :=
@@ -148,20 +156,8 @@ lemma bit0_val (n : Nat) : bit0 n = 2 * n :=
 lemma bit1_val (n : Nat) : bit1 n = 2 * n + 1 := congr_arg succ (bit0_val _)
 #align nat.bit1_val Nat.bit1_val
 
-lemma bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
-  cases b
-  · apply bit0_val
-  · apply bit1_val
 #align nat.bit_val Nat.bit_val
-
-lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
-  (bit_val _ _).trans <| (Nat.add_comm _ _).trans <| bodd_add_div2 _
 #align nat.bit_decomp Nat.bit_decomp
-
-/-- For a predicate `C : Nat → Sort*`, if instances can be
-  constructed for natural numbers of the form `bit b n`,
-  they can be constructed for any given natural number. -/
-def bitCasesOn {C : Nat → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n := bit_decomp n ▸ h _ _
 #align nat.bit_cases_on Nat.bitCasesOn
 
 lemma bit_zero : bit false 0 = 0 :=
@@ -189,30 +185,6 @@ lemma shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
 @[simp] lemma shiftRight_eq (m n : Nat) : shiftRight m n = m >>> n := rfl
 
 #align nat.test_bit Nat.testBit
-
-lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
-  rw [div2_val]
-  apply (div_lt_iff_lt_mul <| succ_pos 1).2
-  have := Nat.mul_lt_mul_of_pos_left (lt_succ_self 1)
-    (lt_of_le_of_ne n.zero_le h.symm)
-  rwa [Nat.mul_one] at this
-
-/-- A recursion principle for `bit` representations of natural numbers.
-  For a predicate `C : Nat → Sort*`, if instances can be
-  constructed for natural numbers of the form `bit b n`,
-  they can be constructed for all natural numbers. -/
-def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n :=
-  fun n =>
-    if n0 : n = 0 then by
-      simp only [n0]
-      exact z
-    else by
-      let n' := div2 n
-      have _x : bit (bodd n) n' = n := by
-        apply bit_decomp n
-      rw [← _x]
-      exact f (bodd n) n' (binaryRec z f n')
-  decreasing_by exact binaryRec_decreasing n0
 #align nat.binary_rec Nat.binaryRec
 
 /-- `size n` : Returns the size of a natural number in
@@ -240,11 +212,6 @@ def ldiff : ℕ → ℕ → ℕ :=
   bitwise fun a b => a && not b
 #align nat.ldiff Nat.ldiff
 
-@[simp]
-lemma binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
-    binaryRec z f 0 = z := by
-  rw [binaryRec]
-  rfl
 #align nat.binary_rec_zero Nat.binaryRec_zero
 
 /-! bitwise ops -/
@@ -278,12 +245,7 @@ lemma shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (sh
 lemma shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< n) >>> k :=
   fun _ _ _ hk => by simp only [← shiftLeft'_false, shiftLeft'_sub false _ hk]
 
--- Not a `simp` lemma, as later `simp` will be able to prove this.
-lemma testBit_bit_zero (b n) : testBit (bit b n) 0 = b := by
-  rw [testBit, bit]
-  cases b
-  · simp [bit0, ← Nat.mul_two]
-  · simp [bit0, bit1, ← Nat.mul_two]
+@[deprecated (since := "2024-06-09")] alias testBit_bit_zero := bit_testBit_zero
 
 #align nat.test_bit_zero Nat.testBit_zero
 
@@ -301,33 +263,11 @@ lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   exact this
 #align nat.test_bit_succ Nat.testBit_succ
 
-lemma binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
-    (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
-  rw [binaryRec]
-  split_ifs with h'
-  · generalize binaryRec z f (bit b n) = e
-    revert e
-    have bf := bodd_bit b n
-    have n0 := div2_bit b n
-    rw [h'] at bf n0
-    simp only [bodd_zero, div2_zero] at bf n0
-    subst bf n0
-    rw [binaryRec_zero]
-    intros
-    rw [h, eq_mpr_eq_cast, cast_eq]
-  · simp only; generalize_proofs h
-    revert h
-    rw [bodd_bit, div2_bit]
-    intros; simp only [eq_mpr_eq_cast, cast_eq]
 #align nat.binary_rec_eq Nat.binaryRec_eq
 #noalign nat.bitwise_bit_aux
 
 /-! ### `boddDiv2_eq` and `bodd` -/
 
-
-@[simp]
-theorem boddDiv2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := rfl
-#align nat.bodd_div2_eq Nat.boddDiv2_eq
 
 @[simp]
 theorem bodd_bit0 (n) : bodd (bit0 n) = false :=
@@ -406,10 +346,6 @@ theorem pos_of_bit0_pos {n : ℕ} (h : 0 < bit0 n) : 0 < n := by
   · apply succ_pos
 #align nat.pos_of_bit0_pos Nat.pos_of_bit0_pos
 
-@[simp]
-theorem bitCasesOn_bit {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (b : Bool) (n : ℕ) :
-    bitCasesOn (bit b n) H = H b n :=
-  eq_of_heq <| (eq_rec_heq _ _).trans <| by rw [bodd_bit, div2_bit]
 #align nat.bit_cases_on_bit Nat.bitCasesOn_bit
 
 @[simp]
@@ -441,11 +377,6 @@ protected theorem bit0_eq_zero {n : ℕ} : bit0 n = 0 ↔ n = 0 :=
   ⟨Nat.eq_zero_of_add_eq_zero_left, fun h => by simp [h]⟩
 #align nat.bit0_eq_zero Nat.bit0_eq_zero
 
-theorem bit_eq_zero_iff {n : ℕ} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
-  constructor
-  · cases b <;> simp [Nat.bit, Nat.bit0_eq_zero, Nat.bit1_ne_zero]
-  · rintro ⟨rfl, rfl⟩
-    rfl
 #align nat.bit_eq_zero_iff Nat.bit_eq_zero_iff
 
 protected lemma bit0_le (h : n ≤ m) : bit0 n ≤ bit0 m :=
@@ -538,50 +469,10 @@ theorem bit_le_bit1_iff : ∀ {b : Bool}, bit b m ≤ bit1 n ↔ m ≤ n
 #align nat.bit_le_bit1_iff Nat.bit_le_bit1_iff
 -/
 
-/--
-The same as `binaryRec_eq`,
-but that one unfortunately requires `f` to be the identity when appending `false` to `0`.
-Here, we allow you to explicitly say that that case is not happening,
-i.e. supplying `n = 0 → b = true`. -/
-theorem binaryRec_eq' {C : ℕ → Sort*} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
-    (h : f false 0 z = z ∨ (n = 0 → b = true)) :
-    binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
-  rw [binaryRec]
-  split_ifs with h'
-  · rcases bit_eq_zero_iff.mp h' with ⟨rfl, rfl⟩
-    rw [binaryRec_zero]
-    simp only [imp_false, or_false_iff, eq_self_iff_true, not_true] at h
-    exact h.symm
-  · dsimp only []
-    generalize_proofs e
-    revert e
-    rw [bodd_bit, div2_bit]
-    intros
-    rfl
+@[deprecated (since := "2024-06-09")] alias binaryRec_eq' := Nat.binaryRec_eq
+
 #align nat.binary_rec_eq' Nat.binaryRec_eq'
-
-/-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
-  the bit being appended is `true`-/
-@[elab_as_elim]
-def binaryRec' {C : ℕ → Sort*} (z : C 0) (f : ∀ b n, (n = 0 → b = true) → C n → C (bit b n)) :
-    ∀ n, C n :=
-  binaryRec z fun b n ih =>
-    if h : n = 0 → b = true then f b n h ih
-    else by
-      convert z
-      rw [bit_eq_zero_iff]
-      simpa using h
 #align nat.binary_rec' Nat.binaryRec'
-
-/-- The same as `binaryRec`, but special casing both 0 and 1 as base cases -/
-@[elab_as_elim]
-def binaryRecFromOne {C : ℕ → Sort*} (z₀ : C 0) (z₁ : C 1) (f : ∀ b n, n ≠ 0 → C n → C (bit b n)) :
-    ∀ n, C n :=
-  binaryRec' z₀ fun b n h ih =>
-    if h' : n = 0 then by
-      rw [h', h h']
-      exact z₁
-    else f b n h' ih
 #align nat.binary_rec_from_one Nat.binaryRecFromOne
 
 @[simp]
@@ -591,7 +482,7 @@ theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
 @[simp]
 theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) :
     (bit b n).bits = b :: n.bits := by
-  rw [Nat.bits, binaryRec_eq']
+  rw [Nat.bits, Nat.bits, binaryRec_eq]
   simpa
 #align nat.bits_append_bit Nat.bits_append_bit
 

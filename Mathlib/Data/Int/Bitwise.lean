@@ -292,13 +292,13 @@ theorem bit1_ne_zero (m : ℤ) : bit1 m ≠ 0 := by simpa only [bit0_zero] using
 end deprecated
 
 @[simp]
-theorem testBit_bit_zero (b) : ∀ n, testBit (bit b n) 0 = b
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_zero
+theorem bit_testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.bit_testBit_zero
   | -[n+1] => by
-    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_bit_zero]; clear testBit_bit_zero;
-        cases b <;>
-      rfl
-#align int.test_bit_zero Int.testBit_bit_zero
+    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.bit_testBit_zero, Bool.not_not]
+#align int.test_bit_zero Int.bit_testBit_zero
+
+@[deprecated (since := "2024-06-09")] alias testBit_bit_zero := bit_testBit_zero
 
 @[simp]
 theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m

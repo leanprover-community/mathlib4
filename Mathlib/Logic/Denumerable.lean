@@ -142,9 +142,8 @@ set_option linter.deprecated false in
 instance sum : Denumerable (Sum α β) :=
   ⟨fun n => by
     suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
-    simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.some.injEq, Option.map_some',
-      Option.mem_def, Sum.exists]
-    cases bodd n <;> simp [decodeSum, bit, encodeSum, bit0_eq_two_mul, bit1]⟩
+    simp only [decodeSum, decode_eq_ofNat, Option.map_some', Option.mem_def, Sum.exists]
+    cases bodd n <;> simp [bit, encodeSum, two_mul]⟩
 #align denumerable.sum Denumerable.sum
 
 section Sigma

@@ -42,7 +42,7 @@ theorem evenOddRec_even {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ i, P i → 
     | _, rfl => by
       rw [evenOddRec, binaryRec_eq]
       · apply eq_rec_heq
-      · exact H
+      · exact .inl H
   eq_of_heq (this _ (bit0_val _))
 #align nat.even_odd_rec_even Nat.evenOddRec_even
 
@@ -55,7 +55,7 @@ theorem evenOddRec_odd {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ i, P i → P
     | _, rfl => by
       rw [evenOddRec, binaryRec_eq]
       · apply eq_rec_heq
-      · exact H
+      · exact .inl H
   eq_of_heq (this _ (bit1_val _))
 #align nat.even_odd_rec_odd Nat.evenOddRec_odd
 
