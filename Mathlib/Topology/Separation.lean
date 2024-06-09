@@ -2308,8 +2308,7 @@ lemma countable_covers_witnessing_separated_nhds {h k : Set X}
       ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) k)
     (k_cov: ∃ u : ℕ → Set X, k ⊆ ⋃ n, u n ∧
       ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) h) : SeparatedNhds h k := by
-  rcases h_cov with ⟨u, u_cov, u_props⟩
-  rcases k_cov with ⟨v, v_cov, v_props⟩
+  rcases h_cov, k_cov with ⟨⟨u, u_cov, u_props⟩, ⟨v, v_cov, v_props⟩⟩
   use ⋃ n : ℕ, u n \ (closure (⋃ m ∈ {m | m ≤ n}, v m))
   use ⋃ n : ℕ, v n \ (closure (⋃ m ∈ {m | m ≤ n}, u m))
   have open_lemma : ∀ (u₀ a : ℕ → Set X), (∀ n, IsOpen (u₀ n)) →
