@@ -6,7 +6,8 @@ Authors: Joël Riou
 
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
 
-/-! The homology sequence
+/-!
+# The homology sequence
 
 In this file, we construct `homologyFunctor C n : DerivedCategory C ⥤ C` for all `n : ℤ`,
 show that they are homological functors which form a shift sequence, and construct
