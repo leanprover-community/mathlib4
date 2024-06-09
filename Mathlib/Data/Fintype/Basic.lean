@@ -123,6 +123,19 @@ theorem univ_unique [Unique α] : (univ : Finset α) = {default} :=
   Finset.ext fun x => iff_of_true (mem_univ _) <| mem_singleton.2 <| Subsingleton.elim x default
 #align finset.univ_unique Finset.univ_unique
 
+theorem univ_nontrivial_iff {α : Type*} [Fintype α] :
+    (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
+  rw [Finset.Nontrivial, Finset.coe_univ, Set.nontrivial_univ_iff]
+
+theorem univ_nontrivial {α : Type*} [Fintype α] [h : Nontrivial α] :
+    (Finset.univ : Finset α).Nontrivial :=
+  univ_nontrivial_iff.mpr h
+
+theorem Nontrivial.univ {α} [Fintype α] [Nontrivial α] :
+    Finset.Nontrivial (Finset.univ : Finset α) := by
+  let ⟨a, b, h⟩ := exists_pair_ne α
+  exact ⟨a, mem_univ _, b, mem_univ _, h⟩
+
 @[simp]
 theorem subset_univ (s : Finset α) : s ⊆ univ := fun a _ => mem_univ a
 #align finset.subset_univ Finset.subset_univ

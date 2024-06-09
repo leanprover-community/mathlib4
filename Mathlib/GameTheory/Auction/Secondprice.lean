@@ -6,6 +6,7 @@ Authors: Ma Jiajun, Wang Haocheng
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Real.Basic
+import Mathlib.Data.Finset.Basic
 
 /-!
 # Auction Theory
@@ -84,11 +85,6 @@ variable {a : Auction} (b : a.I → ℝ)
 @[simp]
 def maxb : ℝ := Finset.sup' Finset.univ Finset.univ_nonempty b
 
-/-- A strategy is dominant if bidding `bi` ensures that
-`i`'s utility is maximized relative to any other bids `b'` where `b i = bi`. -/
-def dominant (utility : (a.I → ℝ) → a.I → ℝ) (i : a.I) (bi : ℝ) : Prop :=
-  ∀ b, utility b i ≤ utility (Function.update b i bi) i
-
 /-- There exists a participant `i` whose bid equals the highest bid. -/
 lemma exists_max : ∃ i : a.I, b i = a.maxb b := by
    obtain ⟨i, _, h2⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty b
@@ -100,34 +96,6 @@ noncomputable def winner : a.I := Classical.choose (exists_max b)
 /-- The bid of the winner equals the highest bid. -/
 lemma winner_take_max : b (winner b) = maxb b := Classical.choose_spec (exists_max b)
 
-/-!  ### Finset Nontriviality Lemmas -/
-
-/--  Relates the nontriviality of type `α` with its universal finite set, implying the universal set
-has at least two distinct elements if `α` does. -/
-lemma Finset.univ_nontrivial_iff {α : Type*} [Fintype α] :
-    (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
-  rw [Finset.Nontrivial, Finset.coe_univ, Set.nontrivial_univ_iff]
-
-/-- Asserts that the universal set of a nontrivial type `α` is nontrivial. -/
-lemma Finset.univ_nontrivial {α : Type*} [Fintype α] [h : Nontrivial α] :
-    (Finset.univ : Finset α).Nontrivial :=
-  Finset.univ_nontrivial_iff.mpr h
-
-/-- Proves that the universal set contains distinct elements for any nontrivial type `α`. -/
-lemma Finset.Nontrivial.univ {α} [Fintype α] [Nontrivial α] :
-    Finset.Nontrivial (Finset.univ : Finset α) := by
-  let ⟨a, b, h⟩ := exists_pair_ne α
-  exact ⟨a, Finset.mem_univ _, b, Finset.mem_univ _, h⟩
-
-/-! ### Proofs and Lemmas -/
-
-/-- `B i` is the maximal bid of all participants but `i`. -/
-noncomputable def B (i : a.I) : ℝ := Finset.sup' (Finset.erase Finset.univ i)
-(Finset.Nontrivial.erase_nonempty (Finset.univ_nontrivial)) b
-
-/--The second highest bid: the highest bid excluding the winner’s bid.-/
-noncomputable def Secondprice : ℝ := B b (winner b)
-
 /-- The bid of the winner is always greater than or equal to the bids of all other participants.-/
 lemma b_winner_max (j : a.I) : b j ≤ b (winner b) := by
   rw [winner_take_max b]
@@ -137,6 +105,44 @@ lemma b_winner_max (j : a.I) : b j ≤ b (winner b) := by
 lemma gt_wins (i : a.I) (H : ∀ j , j ≠ i → b j < b i) : i = winner b := by
   contrapose! H
   exact ⟨winner b, H.symm, b_winner_max b i⟩
+
+/-- A strategy is dominant if bidding `bi` ensures that
+`i`'s utility is maximized relative to any other bids `b'` where `b i = bi`. -/
+def dominant (utility : (a.I → ℝ) → a.I → ℝ) (i : a.I) (bi : ℝ) : Prop :=
+  ∀ b, utility b i ≤ utility (Function.update b i bi) i
+
+/-! ### Proofs and Lemmas -/
+
+namespace Firstprice
+
+/-- Computes the utility for a first price auction where the winner pays their bid. -/
+noncomputable def utility (i : a.I) : ℝ := if i = winner b then a.v i - b i else 0
+
+/-- If `i` is the winner in a first price auction, utility is their valuation minus their bid. -/
+lemma utility_winner (i : a.I) (H : i = winner b) : utility b i = a.v i - b i := by
+  rw [H]
+  simp only [utility, if_true]
+
+/-- If `i` is not the winner in a first price auction, their utility is 0. -/
+lemma utility_loser (i : a.I) (H : i ≠ winner b) : utility b i = 0 := by
+  rw [utility]
+  simp only [H, if_false]
+
+/-- Shows that there is no dominant strategy in a first price auction for any `i` and bid `bi`. -/
+theorem firstprice_auction_has_no_dominant_strategy (i : a.I) (bi : ℝ) :
+    ¬ dominant utility i bi := by
+  rw [dominant, not_forall]
+  use Function.update (fun _ ↦ (bi - 2)) i (bi - 1)
+  rw [utility, utility, if_pos (gt_wins _ i _), if_pos (gt_wins _ i _)] <;> intros <;> simp [*]
+
+end Firstprice
+
+/-- `B i` is the maximal bid of all participants but `i`. -/
+noncomputable def B (i : a.I) : ℝ := Finset.sup' (Finset.erase Finset.univ i)
+(Finset.Nontrivial.erase_nonempty (Finset.univ_nontrivial)) b
+
+/--The second highest bid: the highest bid excluding the winner’s bid.-/
+noncomputable def Secondprice : ℝ := B b (winner b)
 
 namespace Secondprice
 
@@ -194,30 +200,7 @@ theorem valuation_is_dominant (i : a.I) : dominant utility i (a.v i) := by
   · rw [utility_loser b h1]
     apply utility_nneg
     apply Function.update_same
+
 end Secondprice
-
-namespace Firstprice
-
-/-- Computes the utility for a first price auction where the winner pays their bid. -/
-noncomputable def utility (i : a.I) : ℝ := if i = winner b then a.v i - b i else 0
-
-/-- If `i` is the winner in a first price auction, utility is their valuation minus their bid. -/
-lemma utility_winner (i : a.I) (H : i = winner b) : utility b i = a.v i - b i := by
-  rw [H]
-  simp only [utility, if_true]
-
-/-- If `i` is not the winner in a first price auction, their utility is 0. -/
-lemma utility_loser (i : a.I) (H : i ≠ winner b) : utility b i = 0 := by
-  rw [utility]
-  simp only [H, if_false]
-
-/-- Shows that there is no dominant strategy in a first price auction for any `i` and bid `bi`. -/
-theorem firstprice_auction_has_no_dominant_strategy (i : a.I) (bi : ℝ) :
-    ¬ dominant utility i bi := by
-  rw [dominant, not_forall]
-  use Function.update (fun _ ↦ (bi - 2)) i (bi - 1)
-  rw [utility, utility, if_pos (gt_wins _ i _), if_pos (gt_wins _ i _)] <;> intros <;> simp [*]
-
-end Firstprice
 
 end Auction
