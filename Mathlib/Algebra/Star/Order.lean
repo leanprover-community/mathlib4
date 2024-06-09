@@ -230,6 +230,7 @@ lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelf
   rintro - ⟨s, rfl⟩
   simp
 
+@[aesop 10% apply]
 lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
   (isSelfAdjoint_zero R).mono hx
 

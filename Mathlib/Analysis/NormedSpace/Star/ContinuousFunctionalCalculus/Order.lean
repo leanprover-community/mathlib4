@@ -31,6 +31,51 @@ continuous functional calculus, normal, selfadjoint
 
 open scoped NNReal
 
+namespace Unitization
+
+variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A] [Nontrivial A]
+  [PartialOrder A] [StarRing A] [StarOrderedRing A] [CstarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
+  [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
+
+instance instPartialOrder : PartialOrder (Unitization ℂ A) := CstarRing.spectralOrder _
+
+instance instStarOrderedRing : StarOrderedRing (Unitization ℂ A) := CstarRing.spectralOrderedRing _
+
+lemma inr_le_iff {a b : A} (ha : IsSelfAdjoint a := by cfc_tac)
+    (hb : IsSelfAdjoint b := by cfc_tac) :
+    (a : Unitization ℂ A) ≤ (b : Unitization ℂ A) ↔ a ≤ b := by
+  have hsub : (b : Unitization ℂ A) - a = .inr (b - a) := (inr_sub ℂ b a).symm
+  refine ⟨fun h => ?mp, fun h => ?mpr⟩
+  case mp =>
+    rw [← sub_nonneg] at h ⊢
+    rw [StarOrderedRing.nonneg_iff_spectrum_nonneg (R := ℝ) _] at h
+    rw [StarOrderedRing.nonneg_iff_quasispectrum_nonneg (R := ℝ) _]
+    rw [hsub] at h
+    intro x hx
+    simp only [Unitization.quasispectrum_eq_spectrum_inr' ℝ ℂ (b - a)] at hx
+    exact h x hx
+  case mpr =>
+    rw [← sub_nonneg] at h ⊢
+    rw [StarOrderedRing.nonneg_iff_spectrum_nonneg (R := ℝ) _]
+    rw [StarOrderedRing.nonneg_iff_quasispectrum_nonneg (R := ℝ) _] at h
+    rw [hsub]
+    simpa only [Unitization.quasispectrum_eq_spectrum_inr' ℝ ℂ (b - a)] using h
+
+@[simp, norm_cast]
+lemma inr_nonneg_iff {a : A} : 0 ≤ (a : Unitization ℂ A) ↔ 0 ≤ a := by
+  have h₁ : (0 : Unitization ℂ A) = Unitization.inr (0 : A) := by rfl
+  rw [h₁]
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · refine (Unitization.inr_le_iff (isSelfAdjoint_zero A) ?_).mp h
+    have ha : IsSelfAdjoint (a : Unitization ℂ A) := by
+      rw [← h₁] at h
+      exact IsSelfAdjoint.of_nonneg h
+    exact isSelfAdjoint_inr.mp ha
+  · have ha : IsSelfAdjoint a := by exact IsSelfAdjoint.of_nonneg h
+    exact (Unitization.inr_le_iff (isSelfAdjoint_zero A) ha).mpr h
+
+end Unitization
+
 section generic
 
 variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
@@ -105,8 +150,10 @@ lemma nnnorm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by c
   rw [← coe_mem_spectrum_real_of_nonneg ha, coe_nnnorm]
   exact norm_mem_spectrum_of_nonneg ha
 
-lemma norm_le_norm_of_nonneg_of_le_aux [Nontrivial A] {a b : A} (ha : 0 ≤ a) (hab : a ≤ b) :
-    ‖a‖ ≤ ‖b‖ := by
+/-- Note that this is an auxiliary lemma used to prove the more general statement
+`norm_le_norm_of_nonneg_of_le` which also holds in the non-unital case. -/
+lemma CstarRing.norm_le_norm_of_nonneg_of_le_unital [Nontrivial A] {a b : A} (ha : 0 ≤ a)
+    (hab : a ≤ b) : ‖a‖ ≤ ‖b‖ := by
   have ha' : IsSelfAdjoint a := IsSelfAdjoint.of_nonneg ha
   have hb : IsSelfAdjoint b := IsSelfAdjoint.of_nonneg <| ha.trans hab
   have hb_nonneg : 0 ≤ b := ha.trans hab
@@ -123,7 +170,9 @@ lemma norm_le_norm_of_nonneg_of_le_aux [Nontrivial A] {a b : A} (ha : 0 ≤ a) (
   rw [cfc_le_iff id (fun _ => ‖b‖) a (by fun_prop) (by fun_prop) ha'] at h₂
   exact h₂ ‖a‖ <| norm_mem_spectrum_of_nonneg ha
 
-lemma conjugate_le_norm_mul_aux [Nontrivial A] {a b : A} (hb : IsSelfAdjoint b) :
+/-- Note that this is an auxiliary lemma used to prove the more general statement
+`conjugate_le_norm_mul` which also holds in the non-unital case. -/
+lemma CstarRing.conjugate_le_norm_mul_unital [Nontrivial A] {a b : A} (hb : IsSelfAdjoint b) :
     star a * b * a ≤ ‖b‖ • (star a * a) := by
   calc star a * b * a ≤ star a * (algebraMap ℝ A ‖b‖) * a := by
         refine conjugate_le_conjugate ?_ _
@@ -136,49 +185,43 @@ end Cstar_unital
 
 section Cstar_nonunital
 
-end Cstar_nonunital
-
-namespace Unitization
-
 variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A] [Nontrivial A]
   [PartialOrder A] [StarRing A] [StarOrderedRing A] [CstarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
   [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
 
-instance instPartialOrder : PartialOrder (Unitization ℂ A) := CstarRing.spectralOrder _
+lemma CstarRing.norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
+    ‖a‖ ≤ ‖b‖ := by
+  -- We use the corresponding fact for unital C⋆-algebras and apply it to the unitization
+  let a' : Unitization ℂ A := .inr a
+  let b' : Unitization ℂ A := .inr b
+  have ha' : IsSelfAdjoint a := IsSelfAdjoint.of_nonneg ha
+  have hb' : IsSelfAdjoint b := IsSelfAdjoint.of_nonneg <| ha.trans hab
+  have hmain : ‖a'‖ ≤ ‖b'‖ := by
+    refine norm_le_norm_of_nonneg_of_le_unital ?_ ?_
+    · rwa [Unitization.inr_nonneg_iff]
+    · simpa only [a', b', Unitization.inr_le_iff ha' hb'] using hab
+  simpa [a', b', Unitization.norm_inr] using hmain
 
-instance instStarOrderedRing : StarOrderedRing (Unitization ℂ A) := CstarRing.spectralOrderedRing _
+lemma CstarRing.conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
+    star a * b * a ≤ ‖b‖ • (star a * a) := by
+  -- We use the corresponding fact for unital C⋆-algebras and apply it to the unitization
+  let a' : Unitization ℂ A := .inr a
+  let b' : Unitization ℂ A := .inr b
+  have hb' : IsSelfAdjoint b' := by exact IsSelfAdjoint.inr ℂ hb
+  have hmain : star a' * b' * a' ≤ ‖b'‖ • (star a' * a') :=
+    conjugate_le_norm_mul_unital hb' (A := Unitization ℂ A)
+  have h₁ : IsSelfAdjoint (star a * b * a) := by exact IsSelfAdjoint.conjugate' hb a
+  have h₂ : IsSelfAdjoint (‖b‖ • (star a * a)) :=
+    IsSelfAdjoint.smul (by exact rfl) (IsSelfAdjoint.star_mul_self a)
+  rw [← Unitization.inr_le_iff h₁ h₂]
+  simp only [Unitization.inr_mul, Unitization.inr_star, Unitization.inr_smul]
+  simpa only [b', Unitization.norm_inr] using hmain
 
-lemma inr_le_iff {a b : A} (ha : IsSelfAdjoint a := by cfc_tac)
-    (hb : IsSelfAdjoint b := by cfc_tac) :
-    (a : Unitization ℂ A) ≤ (b : Unitization ℂ A) ↔ a ≤ b := by
-  have hsub : (b : Unitization ℂ A) - a = .inr (b - a) := (inr_sub ℂ b a).symm
-  refine ⟨fun h => ?mp, fun h => ?mpr⟩
-  case mp =>
-    rw [← sub_nonneg] at h ⊢
-    rw [StarOrderedRing.nonneg_iff_spectrum_nonneg (R := ℝ) _] at h
-    rw [StarOrderedRing.nonneg_iff_quasispectrum_nonneg (R := ℝ) _]
-    rw [hsub] at h
-    intro x hx
-    simp only [Unitization.quasispectrum_eq_spectrum_inr' ℝ ℂ (b - a)] at hx
-    exact h x hx
-  case mpr =>
-    rw [← sub_nonneg] at h ⊢
-    rw [StarOrderedRing.nonneg_iff_spectrum_nonneg (R := ℝ) _]
-    rw [StarOrderedRing.nonneg_iff_quasispectrum_nonneg (R := ℝ) _] at h
-    rw [hsub]
-    simpa only [Unitization.quasispectrum_eq_spectrum_inr' ℝ ℂ (b - a)] using h
+lemma CstarRing.conjugate_le_norm_smul' {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
+    a * b * star a ≤ ‖b‖ • (a * star a) := by
+  have h₁ : a * b * star a = star (star a) * b * star a := by simp
+  have h₂ : a * star a = star (star a) * star a := by simp
+  simp only [h₁, h₂]
+  exact conjugate_le_norm_smul
 
-@[simp, norm_cast]
-lemma inr_nonneg_iff {a : A} : 0 ≤ (a : Unitization ℂ A) ↔ 0 ≤ a := by
-  have h₁ : (0 : Unitization ℂ A) = Unitization.inr (0 : A) := by rfl
-  rw [h₁]
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · refine (Unitization.inr_le_iff (isSelfAdjoint_zero A) ?_).mp h
-    have ha : IsSelfAdjoint (a : Unitization ℂ A) := by
-      rw [← h₁] at h
-      exact IsSelfAdjoint.of_nonneg h
-    exact isSelfAdjoint_inr.mp ha
-  · have ha : IsSelfAdjoint a := by exact IsSelfAdjoint.of_nonneg h
-    exact (Unitization.inr_le_iff (isSelfAdjoint_zero A) ha).mpr h
-
-end Unitization
+end Cstar_nonunital
