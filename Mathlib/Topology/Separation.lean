@@ -115,6 +115,8 @@ If the space is also Lindelöf:
 ## References
 
 https://en.wikipedia.org/wiki/Separation_axiom
+https://en.wikipedia.org/wiki/Normal_space
+
 -/
 
 
