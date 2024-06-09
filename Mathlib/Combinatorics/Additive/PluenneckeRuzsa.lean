@@ -151,7 +151,7 @@ theorem card_mul_mul_card_le_card_mul_mul_card_mul (A B C : Finset α) :
   push_cast
   refine (le_div_iff <| cast_pos.2 hB.card_pos).1 ?_
   rw [mul_div_right_comm, mul_comm _ B]
-  refine (cast_le.2 <| card_le_card_mul_left _ hU.1).trans ?_
+  refine (Nat.cast_le.2 <| card_le_card_mul_left _ hU.1).trans ?_
   refine le_trans ?_
     (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_card <| mul_subset_mul_right hU.2)
       (zero_le _) (zero_le _))
@@ -199,7 +199,7 @@ theorem card_add_nsmul_le {α : Type*} [AddCommGroup α] [DecidableEq α] {A B :
     ← cast_mul]
   swap
   · exact cast_pos.2 hA.card_pos
-  refine (cast_le.2 <| add_pluennecke_petridis _ hAB).trans ?_
+  refine (Nat.cast_le.2 <| add_pluennecke_petridis _ hAB).trans ?_
   rw [cast_mul]
   gcongr
 #align finset.card_add_nsmul_le Finset.card_add_nsmul_le
@@ -215,7 +215,7 @@ theorem card_mul_pow_le (hAB : ∀ A' ⊆ A, (A * B).card * A'.card ≤ (A' * B)
     le_div_iff, ← cast_mul]
   swap
   · exact cast_pos.2 hA.card_pos
-  refine (cast_le.2 <| mul_pluennecke_petridis _ hAB).trans ?_
+  refine (Nat.cast_le.2 <| mul_pluennecke_petridis _ hAB).trans ?_
   rw [cast_mul]
   gcongr
 #align finset.card_mul_pow_le Finset.card_mul_pow_le
@@ -232,7 +232,7 @@ theorem card_pow_div_pow_le (hA : A.Nonempty) (B : Finset α) (m n : ℕ) :
   rw [mem_erase, mem_powerset, ← nonempty_iff_ne_empty] at hC
   refine (mul_le_mul_right <| cast_pos.2 hC.1.card_pos).1 ?_
   norm_cast
-  refine (cast_le.2 <| card_div_mul_le_card_mul_mul_card_mul _ _ _).trans ?_
+  refine (Nat.cast_le.2 <| card_div_mul_le_card_mul_mul_card_mul _ _ _).trans ?_
   push_cast
   rw [mul_comm _ C]
   refine (mul_le_mul (card_mul_pow_le (mul_aux hC.1 hC.2 hCA) _)

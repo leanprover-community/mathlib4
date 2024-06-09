@@ -89,6 +89,13 @@ instance (F : D ⥤ E) [F.ReflectsIsomorphisms] :
     change IsIso ((((whiskeringRight C D E).obj F).map f).app Z)
     infer_instance
 
+lemma Functor.balanced_of_preserves (F : C ⥤ D)
+    [F.ReflectsIsomorphisms] [F.PreservesEpimorphisms] [F.PreservesMonomorphisms] [Balanced D] :
+    Balanced C where
+  isIso_of_mono_of_epi f _ _ := by
+    rw [← isIso_iff_of_reflects_iso (F := F)]
+    exact isIso_of_mono_of_epi _
+
 end ReflectsIso
 
 end CategoryTheory
