@@ -69,8 +69,8 @@ Finds a nonnegative vector `v`, such that `A v = 0` and some of its coordinates 
 are positive, in the case such `v` exists. If not, throws the error. The latter prevents
 `linarith` from doing useless post-processing.
 -/
-def findPositiveVector {n m : Nat} {matType : Nat → Nat → Type} [UsableInSimplexAlgorithm matType] (A : matType n m)
-    (strictIndexes : List Nat) : Lean.Meta.MetaM <| Array Rat := do
+def findPositiveVector {n m : Nat} {matType : Nat → Nat → Type} [UsableInSimplexAlgorithm matType]
+    (A : matType n m) (strictIndexes : List Nat) : Lean.Meta.MetaM <| Array Rat := do
   /- State the linear programming problem. -/
   let B := stateLP A strictIndexes
 
