@@ -85,7 +85,7 @@ def oreDenom (r : R) (s : S) : S :=
 
 /-- The Ore condition of a fraction, expressed in terms of `oreNum` and `oreDenom`. -/
 @[to_additive AddOreLocalization.ore_eq
-  "The Ore condition of a d, expressed in terms of `oreMin` and `oreSubtra`."]
+  "The Ore condition of a difference, expressed in terms of `oreMin` and `oreSubtra`."]
 theorem ore_eq (r : R) (s : S) : oreDenom r s * r = oreNum r s * s :=
   OreSet.ore_eq r s
 #align ore_localization.ore_eq OreLocalization.ore_eq
