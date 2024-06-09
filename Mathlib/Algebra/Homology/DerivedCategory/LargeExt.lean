@@ -116,7 +116,7 @@ lemma ofHom_id_comp {a : ℕ} (α : LargeExt X Y a) :
 lemma comp_ofHom_id {a : ℕ} (α : LargeExt X Y a) :
     α.comp (ofHom (𝟙 Y)) (add_zero a) = α := by aesop
 
-lemma ofHom_comp_ofHom (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma ofHom_comp (f : X ⟶ Y) (g : Y ⟶ Z) :
     ofHom (f ≫ g) = (ofHom f).comp (ofHom g) (add_zero _) := by
   ext
   dsimp
@@ -132,7 +132,7 @@ noncomputable def LargeExtFunctor.obj (n : ℕ) (X : C) : C ⥤ Ab where
   map_comp _ _ := by
     ext
     dsimp
-    simp only [ofHom_comp_ofHom]
+    simp only [ofHom_comp]
     symm
     apply comp_assoc
     all_goals omega
@@ -155,7 +155,7 @@ noncomputable def LargeExtFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ Ab.{w} where
   map_comp _ _ := by
     ext
     dsimp [LargeExtFunctor.obj]
-    simp only [ofHom_comp_ofHom]
+    simp only [ofHom_comp]
     apply comp_assoc
     all_goals omega
 
