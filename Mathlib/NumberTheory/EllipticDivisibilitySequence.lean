@@ -213,12 +213,12 @@ with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = 
 
 This is defined in terms of `preNormEDS` whose even terms differ by a factor of `b`. -/
 def normEDS (n : ℤ) : R :=
-  preNormEDS (b ^ 4) c d n * if Even n.natAbs then b else 1
+  preNormEDS (b ^ 4) c d n * if Even n then b else 1
 
 @[simp]
 lemma normEDS_ofNat (n : ℕ) :
     normEDS b c d n = preNormEDS' (b ^ 4) c d n * if Even n then b else 1 := by
-  rw [normEDS, preNormEDS_ofNat, Int.natAbs_ofNat]
+  simp only [normEDS, preNormEDS_ofNat, Int.even_coe_nat]
 
 @[simp]
 lemma normEDS_zero : normEDS b c d 0 = 0 := by
@@ -256,7 +256,7 @@ lemma normEDS_even (m : ℕ) : normEDS b c d (2 * (m + 3)) * b =
 
 @[simp]
 lemma normEDS_neg (n : ℤ) : normEDS b c d (-n) = -normEDS b c d n := by
-  rw [normEDS, preNormEDS_neg, Int.natAbs_neg, neg_mul, normEDS]
+  simp only [normEDS, preNormEDS_neg, neg_mul, even_neg]
 
 /-- Strong recursion principle for a normalised EDS: if we have
  * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,

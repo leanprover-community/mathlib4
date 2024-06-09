@@ -3,7 +3,7 @@ Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
+import Mathlib.AlgebraicGeometry.EllipticCurve.Group
 import Mathlib.NumberTheory.EllipticDivisibilitySequence
 
 /-!
@@ -121,10 +121,16 @@ noncomputable def ψ₂ : R[X][Y] :=
 noncomputable def Ψ₂Sq : R[X] :=
   C 4 * X ^ 3 + C W.b₂ * X ^ 2 + C (2 * W.b₄) * X + C W.b₆
 
-lemma C_Ψ₂Sq_eq : C W.Ψ₂Sq = W.ψ₂ ^ 2 - 4 * W.toAffine.polynomial := by
+lemma C_Ψ₂Sq : C W.Ψ₂Sq = W.ψ₂ ^ 2 - 4 * W.toAffine.polynomial := by
   rw [Ψ₂Sq, ψ₂, b₂, b₄, b₆, Affine.polynomialY, Affine.polynomial]
   C_simp
   ring1
+
+lemma ψ₂_sq : W.ψ₂ ^ 2 = C W.Ψ₂Sq + 4 * W.toAffine.polynomial := by
+  rw [C_Ψ₂Sq, sub_add_cancel]
+
+lemma Affine.CoordinateRing.mk_ψ₂_sq : mk W W.ψ₂ ^ 2 = mk W (C W.Ψ₂Sq) := by
+  rw [C_Ψ₂Sq, map_sub, map_mul, AdjoinRoot.mk_self, mul_zero, sub_zero, map_pow]
 
 -- TODO: remove `twoTorsionPolynomial` in favour of `Ψ₂Sq`
 lemma Ψ₂Sq_eq : W.Ψ₂Sq = W.twoTorsionPolynomial.toPoly :=
@@ -321,7 +327,7 @@ lemma Ψ_odd (m : ℕ) : W.Ψ (2 * (m + 2) + 1) =
           else -W.preΨ' (m + 1) * W.preΨ' (m + 3) ^ 3) := by
   repeat erw [Ψ_ofNat]
   simp_rw [preΨ'_odd, if_neg (m + 2).not_even_two_mul_add_one, Nat.even_add_one, ite_not]
-  split_ifs <;> C_simp <;> rw [C_Ψ₂Sq_eq] <;> ring1
+  split_ifs <;> C_simp <;> rw [C_Ψ₂Sq] <;> ring1
 
 lemma Ψ_even (m : ℕ) : W.Ψ (2 * (m + 3)) * W.ψ₂ =
     W.Ψ (m + 2) ^ 2 * W.Ψ (m + 3) * W.Ψ (m + 5) - W.Ψ (m + 1) * W.Ψ (m + 3) * W.Ψ (m + 4) ^ 2 := by
@@ -332,6 +338,10 @@ lemma Ψ_even (m : ℕ) : W.Ψ (2 * (m + 3)) * W.ψ₂ =
 @[simp]
 lemma Ψ_neg (n : ℤ) : W.Ψ (-n) = -W.Ψ n := by
   simp only [Ψ, preΨ_neg, C_neg, neg_mul (α := R[X][Y]), even_neg]
+
+lemma Affine.CoordinateRing.mk_Ψ_sq (n : ℤ) : mk W (W.Ψ n) ^ 2 = mk W (C <| W.ΨSq n) := by
+  simp only [Ψ, ΨSq, map_one, map_mul, map_pow, one_pow, mul_pow, ite_pow, apply_ite C,
+    apply_ite <| mk W, mk_ψ₂_sq]
 
 end Ψ
 
@@ -392,6 +402,8 @@ section ψ
 protected noncomputable def ψ (n : ℤ) : R[X][Y] :=
   normEDS W.ψ₂ (C W.Ψ₃) (C W.preΨ₄) n
 
+open WeierstrassCurve (Ψ ψ)
+
 @[simp]
 lemma ψ_zero : W.ψ 0 = 0 :=
   normEDS_zero ..
@@ -424,6 +436,9 @@ lemma ψ_even (m : ℕ) : W.ψ (2 * (m + 3)) * W.ψ₂ =
 lemma ψ_neg (n : ℤ) : W.ψ (-n) = -W.ψ n :=
   normEDS_neg ..
 
+lemma Affine.CoordinateRing.mk_ψ (n : ℤ) : mk W (W.ψ n) = mk W (W.Ψ n) := by
+  simp only [ψ, normEDS, Ψ, preΨ, map_mul, map_pow, map_preNormEDS, ← mk_ψ₂_sq, ← pow_mul]
+
 end ψ
 
 section φ
@@ -434,7 +449,7 @@ section φ
 protected noncomputable def φ (n : ℤ) : R[X][Y] :=
   C X * W.ψ n ^ 2 - W.ψ (n + 1) * W.ψ (n - 1)
 
-open WeierstrassCurve (φ)
+open WeierstrassCurve (Ψ Φ φ)
 
 @[simp]
 lemma φ_zero : W.φ 0 = 1 := by
@@ -463,6 +478,11 @@ lemma φ_four :
 lemma φ_neg (n : ℤ) : W.φ (-n) = W.φ n := by
   rw [φ, ψ_neg, neg_sq (R := R[X][Y]), neg_add_eq_sub, ← neg_sub n, ψ_neg, ← neg_add', ψ_neg,
     neg_mul_neg (α := R[X][Y]), mul_comm <| W.ψ _, φ]
+
+lemma Affine.CoordinateRing.mk_φ (n : ℤ) : mk W (W.φ n) = mk W (C <| W.Φ n) := by
+  simp_rw [φ, Φ, map_sub, map_mul, map_pow, mk_ψ, mk_Ψ_sq, Ψ, map_mul,
+    mul_mul_mul_comm _ <| mk W <| ite .., Int.even_add_one, Int.even_sub_one, ← sq, ite_not,
+    apply_ite C, apply_ite <| mk W, ite_pow, map_one, one_pow, mk_ψ₂_sq]
 
 end φ
 
