@@ -23,6 +23,10 @@ the spectral order.
   C⋆-algebra.
 * `mul_star_le_algebraMap_norm_sq` and `star_mul_le_algebraMap_norm_sq`, which give similar
   statements for `a * star a` and `star a * a`.
+* `CstarRing.norm_le_norm_of_nonneg_of_le`: in a non-unital C⋆-algebra, if `a ≤ b`, then
+  `‖a‖ ≤ ‖b‖`.
+* `CstarRing.conjugate_le_norm_smul`: in a non-unital C⋆-algebra, we have that
+  `star a * b * a ≤ ‖b‖ • (star a * a)` (and a primed version for the `a * b * star a` case).
 
 ## Tags
 
