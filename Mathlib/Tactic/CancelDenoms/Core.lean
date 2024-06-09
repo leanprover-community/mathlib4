@@ -5,7 +5,7 @@ Authors: Robert Y. Lewis
 -/
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Order.Field.Defs
-import Mathlib.Data.Tree
+import Mathlib.Data.Tree.Basic
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Util.SynthesizeUsing

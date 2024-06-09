@@ -43,12 +43,7 @@ theorem iff_rank_lt_aleph0 : IsNoetherian K V ↔ Module.rank K V < ℵ₀ := by
     rw [Set.Finite.coe_toFinset, ← b.span_eq, Basis.coe_ofVectorSpace, Subtype.range_coe]
 #align is_noetherian.iff_rank_lt_aleph_0 IsNoetherian.iff_rank_lt_aleph0
 
-variable (K V)
-
-@[deprecated (since := "2023-01-01")] protected alias rank_lt_aleph0 := _root_.rank_lt_aleph0
 #align is_noetherian.rank_lt_aleph_0 rank_lt_aleph0
-
-variable {K V}
 
 /-- In a noetherian module over a division ring, all bases are indexed by a finite type. -/
 noncomputable def fintypeBasisIndex {ι : Type*} [IsNoetherian K V] (b : Basis ι K V) : Fintype ι :=

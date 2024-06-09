@@ -378,7 +378,7 @@ theorem Measurable.measurable_of_countable_ne [MeasurableSingletonClass α] (hf 
   have : g ⁻¹' t = g ⁻¹' t ∩ { x | f x = g x }ᶜ ∪ g ⁻¹' t ∩ { x | f x = g x } := by
     simp [← inter_union_distrib_left]
   rw [this]
-  refine (h.mono (inter_subset_right _ _)).measurableSet.union ?_
+  refine (h.mono inter_subset_right).measurableSet.union ?_
   have : g ⁻¹' t ∩ { x : α | f x = g x } = f ⁻¹' t ∩ { x : α | f x = g x } := by
     ext x
     simp (config := { contextual := true })
@@ -1992,7 +1992,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   rintro x hx ⟨y, hy, rfl⟩
   rw [mem_iInter] at hx
   apply hy
-  rw [(injOn_of_injective hf.injective _).image_iInter_eq]
+  rw [hf.injective.injOn.image_iInter_eq]
   rw [mem_iInter]
   intro n
   specialize hx n.succ
@@ -2161,8 +2161,8 @@ instance Subtype.instSingleton [MeasurableSingletonClass α] :
     ↑({a} : Subtype (MeasurableSet : Set α → Prop)) = ({a} : Set α) :=
   rfl
 
-instance Subtype.instIsLawfulSingleton [MeasurableSingletonClass α] :
-    IsLawfulSingleton α (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instLawfulSingleton [MeasurableSingletonClass α] :
+    LawfulSingleton α (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun _ => Subtype.eq <| insert_emptyc_eq _⟩
 
 instance Subtype.instHasCompl : HasCompl (Subtype (MeasurableSet : Set α → Prop)) :=
