@@ -59,17 +59,15 @@ lemma δ_comp : δ T n₀ n₁ h ≫ (homologyFunctor C n₁).map T.mor₁ = 0 :
   (homologyFunctor C 0).homologySequenceδ_comp _ hT _ _ h
 
 lemma exact₂ :
-  (ShortComplex.mk ((homologyFunctor C n₀).map T.mor₁) ((homologyFunctor C n₀).map T.mor₂)
-    (by simp only [← Functor.map_comp, comp_distTriang_mor_zero₁₂ _ hT,
-      Functor.map_zero])).Exact :=
+    (ShortComplex.mk ((homologyFunctor C n₀).map T.mor₁) ((homologyFunctor C n₀).map T.mor₂)
+      (by simp only [← Functor.map_comp, comp_distTriang_mor_zero₁₂ _ hT,
+        Functor.map_zero])).Exact :=
   (homologyFunctor C 0).homologySequence_exact₂ _ hT _
 
-lemma exact₃ :
-  (ShortComplex.mk _ _ (comp_δ T hT n₀ n₁ h)).Exact :=
+lemma exact₃ : (ShortComplex.mk _ _ (comp_δ T hT n₀ n₁ h)).Exact :=
   (homologyFunctor C 0).homologySequence_exact₃ _ hT _ _ h
 
-lemma exact₁ :
-  (ShortComplex.mk _ _ (δ_comp T hT n₀ n₁ h)).Exact :=
+lemma exact₁ : (ShortComplex.mk _ _ (δ_comp T hT n₀ n₁ h)).Exact :=
   (homologyFunctor C 0).homologySequence_exact₁ _ hT _ _ h
 
 lemma epi_homologyMap_mor₁_iff :
