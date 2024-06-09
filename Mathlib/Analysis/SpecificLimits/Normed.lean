@@ -299,7 +299,7 @@ theorem hasSum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : HasSum (fun n : ℕ
   · simpa [geom_sum_eq, xi_ne_one, neg_inv, div_eq_mul_inv] using A
   · simp [norm_pow, summable_geometric_of_lt_one (norm_nonneg _) h]
 #align has_sum_geometric_of_norm_lt_1 hasSum_geometric_of_norm_lt_one
-@[deprecated] alias hasSum_geometric_of_norm_lt_1 := hasSum_geometric_of_norm_lt_one -- 2024-01-31
+@[deprecated (since := "2024-01-31")] alias hasSum_geometric_of_norm_lt_1 := hasSum_geometric_of_norm_lt_one
 
 theorem summable_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : Summable fun n : ℕ ↦ ξ ^ n :=
   ⟨_, hasSum_geometric_of_norm_lt_one h⟩
@@ -310,13 +310,13 @@ alias summable_geometric_of_norm_lt_1 := summable_geometric_of_norm_lt_one
 theorem tsum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : ∑' n : ℕ, ξ ^ n = (1 - ξ)⁻¹ :=
   (hasSum_geometric_of_norm_lt_one h).tsum_eq
 #align tsum_geometric_of_norm_lt_1 tsum_geometric_of_norm_lt_one
-@[deprecated] alias tsum_geometric_of_norm_lt_1 := tsum_geometric_of_norm_lt_one -- 2024-01-31
+@[deprecated (since := "2024-01-31")] alias tsum_geometric_of_norm_lt_1 := tsum_geometric_of_norm_lt_one
 
 theorem hasSum_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) :
     HasSum (fun n : ℕ ↦ r ^ n) (1 - r)⁻¹ :=
   hasSum_geometric_of_norm_lt_one h
 #align has_sum_geometric_of_abs_lt_1 hasSum_geometric_of_abs_lt_one
-@[deprecated] alias hasSum_geometric_of_abs_lt_1 := hasSum_geometric_of_abs_lt_one -- 2024-01-31
+@[deprecated (since := "2024-01-31")] alias hasSum_geometric_of_abs_lt_1 := hasSum_geometric_of_abs_lt_one
 
 theorem summable_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) : Summable fun n : ℕ ↦ r ^ n :=
   summable_geometric_of_norm_lt_one h
@@ -327,7 +327,7 @@ alias summable_geometric_of_abs_lt_1 := summable_geometric_of_abs_lt_one
 theorem tsum_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   tsum_geometric_of_norm_lt_one h
 #align tsum_geometric_of_abs_lt_1 tsum_geometric_of_abs_lt_one
-@[deprecated] alias tsum_geometric_of_abs_lt_1 := tsum_geometric_of_abs_lt_one -- 2024-01-31
+@[deprecated (since := "2024-01-31")] alias tsum_geometric_of_abs_lt_1 := tsum_geometric_of_abs_lt_one
 
 /-- A geometric series in a normed field is summable iff the norm of the common ratio is less than
 one. -/
