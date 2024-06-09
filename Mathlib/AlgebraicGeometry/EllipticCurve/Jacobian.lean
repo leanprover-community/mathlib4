@@ -1270,7 +1270,7 @@ lemma addMap_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equati
 
 lemma nonsingularLift_addMap {P Q : PointClass F} (hP : W.NonsingularLift P)
     (hQ : W.NonsingularLift Q) : W.NonsingularLift <| W.addMap P Q := by
-  rcases P, Q with ⟨⟨_⟩, ⟨_⟩⟩
+  rcases P; rcases Q
   exact nonsingular_add hP hQ
 
 end Addition
@@ -1281,14 +1281,10 @@ variable (W') in
 /-- A nonsingular rational point on `W'`. -/
 @[ext]
 structure Point where
+  /-- The point class underlying a nonsingular rational point on `W'`. -/
   {point : PointClass R}
+  /-- The nonsingular condition underlying a nonsingular rational point on `W'`. -/
   (nonsingular : W'.NonsingularLift point)
-
-/-- The point class underlying a nonsingular rational point on `W'`. -/
-add_decl_doc Point.point
-
-/-- The nonsingular condition underlying a nonsingular rational point on `W'`. -/
-add_decl_doc Point.nonsingular
 
 namespace Point
 
@@ -1471,12 +1467,12 @@ lemma toAffineLift_some {X Y : F} (h : W.NonsingularLift ⟦![X, Y, 1]⟧) :
 
 lemma toAffineLift_neg {P : PointClass F} (hP : W.NonsingularLift P) :
     toAffineLift (-⟨hP⟩) = -toAffineLift ⟨hP⟩ := by
-  rcases P with ⟨_⟩
+  rcases P
   exact toAffine_neg hP
 
 lemma toAffineLift_add {P Q : PointClass F} (hP : W.NonsingularLift P) (hQ : W.NonsingularLift Q) :
     toAffineLift (⟨hP⟩ + ⟨hQ⟩) = toAffineLift ⟨hP⟩ + toAffineLift ⟨hQ⟩ := by
-  rcases P, Q with ⟨⟨_⟩, ⟨_⟩⟩
+  rcases P; rcases Q
   exact toAffine_add hP hQ
 
 /-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` in Jacobian
