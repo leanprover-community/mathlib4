@@ -2481,27 +2481,6 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
     [PerfectlyNormalSpace X] : CompletelyNormalSpace X where
   completely_normal s t hd₁ hd₂ := by
     rw [← separatedNhds_iff_disjoint]
-    obtain ⟨S, S_open, S_count, S_int⟩ := closed_gdelta (h := closure s) isClosed_closure
-    wlog S_nonempty : S.Nonempty
-    · have : t = ∅ := by
-        rw [← disjoint_univ, ← sInter_empty, ← not_nonempty_iff_eq_empty.mp S_nonempty, ← S_int]
-        exact Disjoint.symm hd₁
-      rw [this]
-      exact SeparatedNhds.empty_right s
-    obtain ⟨f, f_surj⟩ := Countable.exists_surjective S_nonempty S_count
-    choose f' f'_open cls_sub_f' clf'_sub_f using fun n ↦ by
-      apply normal_exists_closure_subset (isClosed_closure (s := s)) (S_open (f n).1 (f n).2)
-      rw [S_int]
-      exact sInter_subset_of_mem (f n).2
-    have S_int' : ⋂ i, closure (f' i) = closure s := by
-      apply Subset.antisymm ?_
-          (subset_iInter fun n ↦ Subset.trans (cls_sub_f' n) subset_closure)
-      rw [S_int]
-      apply subset_sInter
-      intro s sinS
-      obtain ⟨n, fn⟩ := f_surj ⟨s, sinS⟩
-      apply (iInter_subset_of_subset n) (Subset.trans (clf'_sub_f n) ?_)
-      rw [fn]
     obtain ⟨T, T_open, T_count, T_int⟩ := closed_gdelta (h := closure t) isClosed_closure
     wlog T_nonempty : T.Nonempty
     · have : s = ∅ := by
@@ -2523,8 +2502,8 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
       obtain ⟨n, gn⟩ := g_surj ⟨t, tinT⟩
       apply (iInter_subset_of_subset n) (Subset.trans (clg'_sub_g n) ?_)
       rw [gn]
-    apply countable_covers_witnessing_separated_nhds
-    · use fun n ↦ (closure (g' n))ᶜ
+    have s_cov : ∃ u : ℕ → Set X, s ⊆ ⋃ n, u n ∧ ∀ (n : ℕ), IsOpen (u n) ∧ Disjoint (closure (u n)) t := by
+      use fun n ↦ (closure (g' n))ᶜ
       constructor
       · rw [← compl_iInter, subset_compl_comm, T_int']
         exact Disjoint.subset_compl_left hd₂
@@ -2534,16 +2513,12 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
       · simp only [closure_compl, disjoint_compl_left_iff_subset]
         exact Subset.trans subset_closure
             (Subset.trans (clt_sub_g' n) (subset_interior_closure (g'_open n)))
-    · use fun n ↦ (closure (f' n))ᶜ
-      constructor
-      · rw [← compl_iInter, subset_compl_comm, S_int']
-        exact Disjoint.subset_compl_left (Disjoint.symm hd₁)
-      intro n
-      constructor
-      · simp only [isOpen_compl_iff, isClosed_closure]
-      · simp only [closure_compl, disjoint_compl_left_iff_subset]
-        exact Subset.trans subset_closure
-            (Subset.trans (cls_sub_f' n) (subset_interior_closure (f'_open n)))
+    wlog t_cov : ∃ u : ℕ → Set X, t ⊆ ⋃ n, u n ∧ ∀ (n : ℕ), IsOpen (u n) ∧ Disjoint (closure (u n)) s
+        generalizing s t with H
+    · apply SeparatedNhds.symm
+      apply H t s (Disjoint.symm hd₂) (Disjoint.symm hd₁)
+      sorry; sorry; sorry; sorry; sorry
+    exact countable_covers_witnessing_separated_nhds s_cov t_cov
 
 /-- A T₆ space is a perfectly normal T₁ space. -/
 class T6Space (X : Type u) [TopologicalSpace X] extends T1Space X, PerfectlyNormalSpace X : Prop
