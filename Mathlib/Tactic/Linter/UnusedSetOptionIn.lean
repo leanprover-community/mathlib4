@@ -15,15 +15,20 @@ The linter reports a warning if a `set_option ... in` command is unnecessary
 (i.e., the code elaborates fine without it).
 We only report the outermost `set_option ... in` (i.e., nested, superfluous `set_option ... in`s
 are not linted against).
+
+The linter ignores `option`s containing `linter` as a component of their names.
+The linter also skips checking unnecessary `set_option ... in` preceding `notation`.
 -/
 
 open Lean Parser Elab Command
 
 /-- converts
-* `theorem x ...` to  `some (example ... , x)`,
-* `lemma x ...`   to  `some (example ... , x)`,
-* `example ...`   to ``some (example ... , `example)``,
-*  everything else goes to `none`.
+* `theorem x ...`    to `some (example  ... , x)`,
+* `lemma x ...`      to `some (example  ... , x)`,
+* `example ...`      to `some (example  ... , 'example')`,
+* `def x ...`        to `some (example  ... , 'x')`,
+* `instance x? ...`  to `some (instance ... , 'x or _unnamed_instance_')`,
+*  everything else   to `none`.
 -/
 def toExample {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
     Syntax → m (Option (Syntax × Syntax))
