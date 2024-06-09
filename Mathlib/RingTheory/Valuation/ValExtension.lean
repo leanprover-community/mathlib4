@@ -47,7 +47,7 @@ namespace IsValExtension
 
 section CoeLemma
 
-variable {R A ΓR ΓA: Type*} [CommRing R] [Ring A]
+variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
     [LinearOrderedCommMonoidWithZero ΓR] [LinearOrderedCommMonoidWithZero ΓA]
     [Algebra R A] (vR : Valuation R ΓR) (vA : Valuation A ΓA) [IsValExtension vR vA]
 
