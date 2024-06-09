@@ -15,6 +15,32 @@ This defines the density of a `Finset` and provides induction principles for fin
 ## Main declarations
 
 * `Finset.dens s`: Density of `s : Finset α` in `α` as a nonnegative rational number.
+
+## Implementation notes
+
+There are many other ways to talk about the density of a finset and provide its API:
+1. Use the uniform measure
+2. Define finitely additive functions and generalise the `Finset.card` API to it. This could either
+  be done with
+  a. A structure `FinitelyAdditiveFun`
+  b. A typeclass `IsFinitelyAdditiveFun`
+
+Solution 1 would mean importing measure theory in simple files (not necessarily bad, but not
+amazing), and every single API lemma would require the user to prove that all the sets they are
+talking about are measurable in the trivial sigma-algebra (quite terrible user experience).
+
+Solution 2 would mean that some API lemmas about density don't contain `dens` in their name because
+they are general results about finitely additive functions. But not all lemmas would be like that
+either since some really are `dens`-specific. Hence the user would need to think about whether the
+lemma they are looking for is generally true for finitely additive measure or whether it is
+`dens`-specific.
+
+On top of this, solution 2.a would break dot notation on `Finset.dens` (possibly fixable by
+introducing notation for `⇑Finset.dens`) and solution 2.b would run the risk of being bad
+performance-wise.
+
+These considerations more generally apply to `Finset.card` and `Finset.sum` and demonstrate that
+overengineering basic definitions is likely to hinder user experience.
 -/
 
 -- TODO
@@ -128,7 +154,7 @@ lemma dens_union_le (s t : Finset α) : dens (s ∪ t) ≤ dens s + dens t :=
   dens_union_add_dens_inter s t ▸ le_add_of_nonneg_right zero_le'
 
 lemma dens_le_dens_sdiff_add_dens : dens s ≤ dens (s \ t) + dens t :=
-  dens_sdiff_add_dens s _ ▸ dens_le_dens (subset_union_left _ _)
+  dens_sdiff_add_dens s _ ▸ dens_le_dens subset_union_left
 
 lemma dens_sdiff (h : s ⊆ t) : dens (t \ s) = dens t - dens s :=
   eq_tsub_of_add_eq (dens_sdiff_add_dens_eq_dens h)
