@@ -361,7 +361,8 @@ theorem le_mul_prod_of_le_opNorm_of_le {C : ℝ} {b : ι → ℝ} (hC : ‖f‖ 
   (f.le_opNorm m).trans <| mul_le_mul hC (prod_le_prod (fun _ _ ↦ norm_nonneg _) fun _ _ ↦ hm _)
     (by positivity) ((opNorm_nonneg _).trans hC)
 
-@[deprecated (since := "2024-02-02")] alias le_mul_prod_of_le_op_norm_of_le := le_mul_prod_of_le_opNorm_of_le
+@[deprecated (since := "2024-02-02")]
+alias le_mul_prod_of_le_op_norm_of_le := le_mul_prod_of_le_opNorm_of_le
 
 variable (f)
 
@@ -376,7 +377,8 @@ theorem le_opNorm_mul_pow_card_of_le {b : ℝ} (hm : ‖m‖ ≤ b) :
   simpa only [prod_const] using f.le_opNorm_mul_prod_of_le fun i => (norm_le_pi_norm m i).trans hm
 #align continuous_multilinear_map.le_op_norm_mul_pow_card_of_le ContinuousMultilinearMap.le_opNorm_mul_pow_card_of_le
 
-@[deprecated (since := "2024-02-02")] alias le_op_norm_mul_pow_card_of_le := le_opNorm_mul_pow_card_of_le
+@[deprecated (since := "2024-02-02")]
+alias le_op_norm_mul_pow_card_of_le := le_opNorm_mul_pow_card_of_le
 
 theorem le_opNorm_mul_pow_of_le {n : ℕ} {Ei : Fin n → Type*} [∀ i, SeminormedAddCommGroup (Ei i)]
     [∀ i, NormedSpace 𝕜 (Ei i)] (f : ContinuousMultilinearMap 𝕜 Ei G) {m : ∀ i, Ei i} {b : ℝ}

@@ -104,7 +104,8 @@ theorem opNorm_mulLeftRight_apply_le (x : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x�
   opNorm_le_bound _ (norm_nonneg x) (opNorm_mulLeftRight_apply_apply_le 𝕜 𝕜' x)
 #align continuous_linear_map.op_norm_mul_left_right_apply_le ContinuousLinearMap.opNorm_mulLeftRight_apply_le
 
-@[deprecated (since := "2024-02-02")] alias op_norm_mulLeftRight_apply_le := opNorm_mulLeftRight_apply_le
+@[deprecated (since := "2024-02-02")]
+alias op_norm_mulLeftRight_apply_le := opNorm_mulLeftRight_apply_le
 
 #adaptation_note
 /--

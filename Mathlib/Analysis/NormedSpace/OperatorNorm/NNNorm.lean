@@ -75,7 +75,8 @@ theorem opNNNorm_le_of_unit_nnnorm [NormedSpace ℝ E] [NormedSpace ℝ F] {f : 
   opNorm_le_of_unit_norm C.coe_nonneg fun x hx => hf x <| by rwa [← NNReal.coe_eq_one]
 #align continuous_linear_map.op_nnnorm_le_of_unit_nnnorm ContinuousLinearMap.opNNNorm_le_of_unit_nnnorm
 
-@[deprecated (since := "2024-02-02")] alias op_nnnorm_le_of_unit_nnnorm := opNNNorm_le_of_unit_nnnorm
+@[deprecated (since := "2024-02-02")]
+alias op_nnnorm_le_of_unit_nnnorm := opNNNorm_le_of_unit_nnnorm
 
 theorem opNNNorm_le_of_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} (hf : LipschitzWith K f) :
     ‖f‖₊ ≤ K :=
@@ -151,7 +152,8 @@ theorem exists_mul_lt_of_lt_opNorm (f : E →SL[σ₁₂] F) {r : ℝ} (hr₀ : 
   exact f.exists_mul_lt_apply_of_lt_opNNNorm hr
 #align continuous_linear_map.exists_mul_lt_of_lt_op_norm ContinuousLinearMap.exists_mul_lt_of_lt_opNorm
 
-@[deprecated (since := "2024-02-02")] alias exists_mul_lt_of_lt_op_norm := exists_mul_lt_of_lt_opNorm
+@[deprecated (since := "2024-02-02")]
+alias exists_mul_lt_of_lt_op_norm := exists_mul_lt_of_lt_opNorm
 
 theorem exists_lt_apply_of_lt_opNNNorm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGroup E]
     [SeminormedAddCommGroup F] [DenselyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
@@ -170,7 +172,8 @@ theorem exists_lt_apply_of_lt_opNNNorm {𝕜 𝕜₂ E F : Type*} [NormedAddComm
   rwa [map_smulₛₗ f, nnnorm_smul, ← NNReal.div_lt_iff hfy, div_eq_mul_inv, this]
 #align continuous_linear_map.exists_lt_apply_of_lt_op_nnnorm ContinuousLinearMap.exists_lt_apply_of_lt_opNNNorm
 
-@[deprecated (since := "2024-02-02")] alias exists_lt_apply_of_lt_op_nnnorm := exists_lt_apply_of_lt_opNNNorm
+@[deprecated (since := "2024-02-02")]
+alias exists_lt_apply_of_lt_op_nnnorm := exists_lt_apply_of_lt_opNNNorm
 
 theorem exists_lt_apply_of_lt_opNorm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGroup E]
     [SeminormedAddCommGroup F] [DenselyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
@@ -182,7 +185,8 @@ theorem exists_lt_apply_of_lt_opNorm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGr
     exact f.exists_lt_apply_of_lt_opNNNorm hr
 #align continuous_linear_map.exists_lt_apply_of_lt_op_norm ContinuousLinearMap.exists_lt_apply_of_lt_opNorm
 
-@[deprecated (since := "2024-02-02")] alias exists_lt_apply_of_lt_op_norm := exists_lt_apply_of_lt_opNorm
+@[deprecated (since := "2024-02-02")]
+alias exists_lt_apply_of_lt_op_norm := exists_lt_apply_of_lt_opNorm
 
 theorem sSup_unit_ball_eq_nnnorm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGroup E]
     [SeminormedAddCommGroup F] [DenselyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
