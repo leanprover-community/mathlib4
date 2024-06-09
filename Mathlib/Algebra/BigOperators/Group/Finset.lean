@@ -2407,6 +2407,11 @@ theorem prod_toFinset {M : Type*} [DecidableEq α] [CommMonoid M] (f : α → M)
 #align list.prod_to_finset List.prod_toFinset
 #align list.sum_to_finset List.sum_toFinset
 
+@[simp]
+theorem sum_toFinset_count_eq_length [DecidableEq α] (l : List α) :
+    ∑ a in l.toFinset, l.count a = l.length := by
+  simpa using (Finset.sum_list_map_count l fun _ => (1 : ℕ)).symm
+
 end List
 
 namespace Multiset
@@ -2450,11 +2455,8 @@ theorem disjoint_finset_sum_right {β : Type*} {i : Finset β} {f : β → Multi
 variable [DecidableEq α]
 
 @[simp]
-theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a ∈ s.toFinset, s.count a = card s :=
-  calc
-    ∑ a ∈ s.toFinset, s.count a = ∑ a ∈ s.toFinset, s.count a • 1 := by simp
-    _ = (s.map fun _ => 1).sum := (Finset.sum_multiset_map_count _ _).symm
-    _ = card s := by simp
+theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a in s.toFinset, s.count a = card s := by
+  simpa using (Finset.sum_multiset_map_count s (fun _ => (1 : ℕ))).symm
 #align multiset.to_finset_sum_count_eq Multiset.toFinset_sum_count_eq
 
 @[simp]
