@@ -38,14 +38,13 @@ halting problem. Instead, this requirement is limited to only functions that are
 sense of `ω`-complete partial orders, which excludes the example because it is not monotone
 (making the input argument less defined can make `f` more defined). -/
 class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
-  fix_eq : ∀ {f : α →o α}, (∀ c : Chain α, f (ωSup c) = ωSup (c.map ⟨f, f.monotone⟩)) →
+  fix_eq : ∀ {f : α →o α}, ωScottContinuous f →
     Fix.fix f = f (Fix.fix f)
 #align lawful_fix LawfulFix
 
 theorem LawfulFix.fix_eq' {α} [OmegaCompletePartialOrder α] [LawfulFix α] {f : α → α}
     (hf : ωScottContinuous f) : Fix.fix f = f (Fix.fix f) :=
-  @LawfulFix.fix_eq _ _ _ ⟨f,(ωScottContinuous_iff_monotone_map_ωSup.mp hf).1⟩
-    (ωScottContinuous_iff_monotone_map_ωSup.mp hf).2
+  @LawfulFix.fix_eq _ _ _ ⟨f,(ωScottContinuous_iff_monotone_map_ωSup.mp hf).1⟩ hf
 #align lawful_fix.fix_eq' LawfulFix.fix_eq'
 
 namespace Part
@@ -252,14 +251,20 @@ variable [(x y : _) → OmegaCompletePartialOrder <| γ x y]
 
 open OmegaCompletePartialOrder.Chain
 
-theorem continuous_curry : Continuous <| monotoneCurry α β γ := fun c ↦ by
+theorem continuous_curry : ωScottContinuous <| monotoneCurry α β γ := by
+  rw [ωScottContinuous_iff_monotone_map_ωSup]
+  use (OrderHom.monotone (monotoneCurry α β γ))
+  intro c
   ext x y
   dsimp [curry, ωSup]
   rw [map_comp, map_comp]
   rfl
 #align pi.continuous_curry Pi.continuous_curry
 
-theorem continuous_uncurry : Continuous <| monotoneUncurry α β γ := fun c ↦ by
+theorem continuous_uncurry : ωScottContinuous <| monotoneUncurry α β γ := by
+  rw [ωScottContinuous_iff_monotone_map_ωSup]
+  use (fun ⦃a b⦄ a i ↦ a i.fst i.snd)
+  intro c
   ext ⟨x, y⟩
   dsimp [uncurry, ωSup]
   rw [map_comp, map_comp]
@@ -279,11 +284,12 @@ variable [∀ x y, OmegaCompletePartialOrder <| γ x y]
 section Curry
 
 variable {f : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y}
-variable (hc : Continuous f)
+variable (hc : ωScottContinuous f)
 
 theorem uncurry_curry_continuous :
-    Continuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ :=
-  continuous_comp _ _ (continuous_comp _ _ (continuous_curry _ _ _) hc) (continuous_uncurry _ _ _)
+    ωScottContinuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ := by
+  apply ωScottContinuous.comp (continuous_uncurry _ _ _)
+  apply ωScottContinuous.comp hc (continuous_curry _ _ _)
 #align pi.uncurry_curry_continuous Pi.uncurry_curry_continuous
 
 end Curry
