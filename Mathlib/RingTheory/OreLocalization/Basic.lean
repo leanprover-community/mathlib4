@@ -585,10 +585,6 @@ instance : CommMonoid R[S⁻¹] :=
       induction' y using OreLocalization.ind with r₂ s₂
       rw [oreDiv_mul_oreDiv_comm, oreDiv_mul_oreDiv_comm, mul_comm r₁, mul_comm s₁] }
 
--- The comparison with `Localization` is removed as we(@erdOne) plan to replace that.
-#noalign ore_localization.localization_map
-#noalign ore_localization.equiv_monoid_localization
-
 end CommMonoid
 
 section DistribMulAction
