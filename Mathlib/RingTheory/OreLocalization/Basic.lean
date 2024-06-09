@@ -68,9 +68,9 @@ def oreEqv : Setoid (X × S) where
 
 end OreLocalization
 
-/-- The ore localization of a monoid and a submonoid fulfilling the ore condition. -/
+/-- The Ore localization of a monoid and a submonoid fulfilling the ore condition. -/
 @[to_additive AddOreLocalization "The ore localization of an additive monoid and a submonoid
-fulfilling the ore condition."]
+fulfilling the Ore condition."]
 def OreLocalization {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S]
     (X : Type*) [MulAction R X] :=
   Quotient (OreLocalization.oreEqv S X)
@@ -92,8 +92,8 @@ attribute [local instance] oreEqv
 variable {R S}
 variable {X} [MulAction R X]
 
-/-- The division in the ore localization `X[S⁻¹]`, as a fraction of an element of `X` and `S`. -/
-@[to_additive "The subtraction in the ore localization,
+/-- The division in the Ore localization `X[S⁻¹]`, as a fraction of an element of `X` and `S`. -/
+@[to_additive "The subtraction in the Ore localization,
 as a difference of an element of `X` and `S`."]
 def oreDiv (r : X) (s : S) : X[S⁻¹] :=
   Quotient.mk' (r, s)
@@ -253,8 +253,8 @@ private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
     ext; simp only [Submonoid.coe_mul, ← mul_assoc]
     rw [mul_assoc (s₄' : R), h₃, ← mul_assoc]
 
-/-- The multiplication on the Ore localization of monoids. -/
-@[to_additive]
+/-- The scalar multiplication on the Ore localization of monoids. -/
+@[to_additive "the vector addition on the Ore localization of additive monoids."]
 protected def smul : R[S⁻¹] → X[S⁻¹] → X[S⁻¹] :=
   liftExpand smul'' fun r₁ r₂ s hs => by
     ext x
@@ -516,7 +516,7 @@ variable (hf : ∀ s : S, f s = fS s)
 /-- The universal lift from a morphism `R →* T`, which maps elements of `S` to units of `T`,
 to a morphism `R[S⁻¹] →* T`. -/
 @[to_additive "The universal lift from a morphism `R →+ T`, which maps elements of `S` to
-  additive-units of `T`, to a morphism `AddOreLocalization R S →* T`."]
+  additive-units of `T`, to a morphism `AddOreLocalization R S →+ T`."]
 def universalMulHom : R[S⁻¹] →* T where
   -- Porting note(#12129): additional beta reduction needed
   toFun x :=
