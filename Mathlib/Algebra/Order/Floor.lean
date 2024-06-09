@@ -163,19 +163,26 @@ theorem lt_floor_add_one (a : α) : a < ⌊a⌋₊ + 1 := by simpa using lt_succ
 #align nat.lt_floor_add_one Nat.lt_floor_add_one
 
 @[simp]
-theorem floor_coe (n : ℕ) : ⌊(n : α)⌋₊ = n :=
+theorem floor_natCast (n : ℕ) : ⌊(n : α)⌋₊ = n :=
   eq_of_forall_le_iff fun a => by
     rw [le_floor_iff, Nat.cast_le]
     exact n.cast_nonneg
-#align nat.floor_coe Nat.floor_coe
+#align nat.floor_coe Nat.floor_natCast
+
+@[deprecated (since := "2024-06-08")] alias floor_coe := floor_natCast
 
 @[simp]
-theorem floor_zero : ⌊(0 : α)⌋₊ = 0 := by rw [← Nat.cast_zero, floor_coe]
+theorem floor_zero : ⌊(0 : α)⌋₊ = 0 := by rw [← Nat.cast_zero, floor_natCast]
 #align nat.floor_zero Nat.floor_zero
 
 @[simp]
-theorem floor_one : ⌊(1 : α)⌋₊ = 1 := by rw [← Nat.cast_one, floor_coe]
+theorem floor_one : ⌊(1 : α)⌋₊ = 1 := by rw [← Nat.cast_one, floor_natCast]
 #align nat.floor_one Nat.floor_one
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem floor_ofNat (n : ℕ) [n.AtLeastTwo] : ⌊no_index (OfNat.ofNat n : α)⌋₊ = n :=
+  Nat.floor_natCast _
 
 theorem floor_of_nonpos (ha : a ≤ 0) : ⌊a⌋₊ = 0 :=
   ha.lt_or_eq.elim FloorSemiring.floor_of_neg <| by
@@ -331,6 +338,10 @@ theorem ceil_zero : ⌈(0 : α)⌉₊ = 0 := by rw [← Nat.cast_zero, ceil_natC
 @[simp]
 theorem ceil_one : ⌈(1 : α)⌉₊ = 1 := by rw [← Nat.cast_one, ceil_natCast]
 #align nat.ceil_one Nat.ceil_one
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ceil_ofNat (n : ℕ) [n.AtLeastTwo] : ⌈no_index (OfNat.ofNat n : α)⌉₊ = n := ceil_natCast n
 
 @[simp]
 theorem ceil_eq_zero : ⌈a⌉₊ = 0 ↔ a ≤ 0 := by rw [← Nat.le_zero, ceil_le, Nat.cast_zero]
@@ -555,7 +566,7 @@ theorem floor_div_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
 /-- Natural division is the floor of field division. -/
 theorem floor_div_eq_div (m n : ℕ) : ⌊(m : α) / n⌋₊ = m / n := by
   convert floor_div_nat (m : α) n
-  rw [m.floor_coe]
+  rw [m.floor_natCast]
 #align nat.floor_div_eq_div Nat.floor_div_eq_div
 
 end LinearOrderedSemifield
