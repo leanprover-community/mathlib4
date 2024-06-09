@@ -2323,8 +2323,8 @@ lemma countable_covers_witnessing_separated_nhds {h k : Set X}
     simp only [mem_iUnion]
     refine ⟨n, xinun, ?_⟩
     rw [Set.Finite.closure_biUnion (finite_le_nat n)]
-    simp only [mem_setOf_eq, mem_iUnion, exists_prop, not_exists, not_and]
-    exact fun m _ ↦ Set.disjoint_right.mp (dis m) xinh
+    simp_all only [disjoint_right, mem_setOf_eq, mem_iUnion, exists_false, exists_const,
+      not_false_eq_true]
   refine ⟨
     open_lemma u (fun n ↦ ⋃ m ∈ {m | m ≤ n}, v m) (fun n ↦ (u_props n).1),
     open_lemma v (fun n ↦ ⋃ m ∈ {m | m ≤ n}, u m) (fun n ↦ (v_props n).1),
