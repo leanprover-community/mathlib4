@@ -135,6 +135,7 @@ instance instSMul : SMul R (M ⧸ P) :=
   Quotient.instSMul' P
 #align submodule.quotient.has_smul Submodule.Quotient.instSMul
 
+set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 @[simp]
 theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
   rfl
@@ -261,7 +262,7 @@ theorem mk_surjective : Function.Surjective (@mk _ _ _ _ _ p) := by
 
 theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
   obtain ⟨x, _, not_mem_s⟩ := SetLike.exists_of_lt h
-  refine' ⟨⟨mk x, 0, _⟩⟩
+  refine ⟨⟨mk x, 0, ?_⟩⟩
   simpa using not_mem_s
 #align submodule.quotient.nontrivial_of_lt_top Submodule.Quotient.nontrivial_of_lt_top
 
@@ -286,7 +287,7 @@ variable {p}
 theorem subsingleton_quotient_iff_eq_top : Subsingleton (M ⧸ p) ↔ p = ⊤ := by
   constructor
   · rintro h
-    refine' eq_top_iff.mpr fun x _ => _
+    refine eq_top_iff.mpr fun x _ => ?_
     have : x - 0 ∈ p := (Submodule.Quotient.eq p).mp (Subsingleton.elim _ _)
     rwa [sub_zero] at this
   · rintro rfl
@@ -485,6 +486,10 @@ theorem ker_liftQ_eq_bot (f : M →ₛₗ[τ₁₂] M₂) (h) (h' : ker f ≤ p)
   rw [ker_liftQ, le_antisymm h h', mkQ_map_self]
 #align submodule.ker_liftq_eq_bot Submodule.ker_liftQ_eq_bot
 
+theorem ker_liftQ_eq_bot' (f : M →ₛₗ[τ₁₂] M₂) (h : p = ker f) :
+    ker (p.liftQ f (le_of_eq h)) = ⊥ :=
+  ker_liftQ_eq_bot p f h.le h.ge
+
 /-- The correspondence theorem for modules: there is an order isomorphism between submodules of the
 quotient of `M` by `p`, and submodules of `M` larger than `p`. -/
 def comapMkQRelIso : Submodule R (M ⧸ p) ≃o { p' : Submodule R M // p ≤ p' } where
@@ -669,8 +674,7 @@ namespace Submodule
 
 /-- Given modules `M`, `M₂` over a commutative ring, together with submodules `p ⊆ M`, `q ⊆ M₂`,
 the natural map $\{f ∈ Hom(M, M₂) | f(p) ⊆ q \} \to Hom(M/p, M₂/q)$ is linear. -/
-def mapQLinear : compatibleMaps p q →ₗ[R] M ⧸ p →ₗ[R] M₂ ⧸ q
-    where
+def mapQLinear : compatibleMaps p q →ₗ[R] M ⧸ p →ₗ[R] M₂ ⧸ q where
   toFun f := mapQ _ _ f.val f.property
   map_add' x y := by
     ext

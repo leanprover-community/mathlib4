@@ -35,7 +35,7 @@ protected def traverse.{u, v}
 #align option.melim Option.elimM
 
 set_option autoImplicit true in
-@[deprecated getDM]
+@[deprecated getDM (since := "2023-03-09")]
 protected def getDM' [Monad m] (x : m (Option α)) (y : m α) : m α := do
   (← x).getDM y
 #align option.mget_or_else Option.getDM'
@@ -88,8 +88,7 @@ instance decidableExistsMem {p : α → Prop} [DecidablePred p] :
   | some a => if h : p a then isTrue <| ⟨_, rfl, h⟩ else isFalse fun ⟨_, ⟨rfl, hn⟩⟩ ↦ h hn
 
 /-- Inhabited `get` function. Returns `a` if the input is `some a`, otherwise returns `default`. -/
-@[reducible]
-def iget [Inhabited α] : Option α → α
+abbrev iget [Inhabited α] : Option α → α
   | some x => x
   | none => default
 #align option.iget Option.iget

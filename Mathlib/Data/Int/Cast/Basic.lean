@@ -95,8 +95,7 @@ theorem cast_subNatNat (m n) : ((Int.subNatNat m n : ℤ) : R) = m - n := by
   cases e : n - m
   · simp only [ofNat_eq_coe]
     simp [e, Nat.le_of_sub_eq_zero e]
-  · rw [cast_negSucc, Nat.add_one, ← e, Nat.cast_sub <| _root_.le_of_lt <| Nat.lt_of_sub_eq_succ e,
-      neg_sub]
+  · rw [cast_negSucc, ← e, Nat.cast_sub <| _root_.le_of_lt <| Nat.lt_of_sub_eq_succ e, neg_sub]
 #align int.cast_sub_nat_nat Int.cast_subNatNatₓ
 -- type had `HasLiftT`
 
@@ -135,8 +134,8 @@ theorem cast_bit0 (n : ℤ) : ((bit0 n : ℤ) : R) = bit0 (n : R) :=
 #align int.cast_bit0 Int.cast_bit0
 
 @[norm_cast, deprecated]
-theorem cast_bit1 (n : ℤ) : ((bit1 n : ℤ) : R) = bit1 (n : R) :=
-  by rw [bit1, Int.cast_add, Int.cast_one, cast_bit0]; rfl
+theorem cast_bit1 (n : ℤ) : ((bit1 n : ℤ) : R) = bit1 (n : R) := by
+  rw [bit1, Int.cast_add, Int.cast_one, cast_bit0]; rfl
 #align int.cast_bit1 Int.cast_bit1
 
 end deprecated

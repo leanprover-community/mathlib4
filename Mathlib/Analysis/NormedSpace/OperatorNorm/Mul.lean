@@ -106,10 +106,17 @@ theorem opNorm_mulLeftRight_apply_le (x : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x�
 
 @[deprecated] alias op_norm_mulLeftRight_apply_le := opNorm_mulLeftRight_apply_le -- 2024-02-02
 
+#adaptation_note
+/--
+Before https://github.com/leanprover/lean4/pull/4119
+we had to create a local instance in the signature:
+```
+letI : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') :=
+  hasOpNorm (𝕜₂ := 𝕜) (E := 𝕜') (F := 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')
+```
+-/
+set_option maxSynthPendingDepth 2 in
 theorem opNorm_mulLeftRight_le :
-    -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
-    -- see leanprover/lean4#3927
-    letI : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') := hasOpNorm (E := 𝕜') (F := 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')
     ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
   opNorm_le_bound _ zero_le_one fun x => (one_mul ‖x‖).symm ▸ opNorm_mulLeftRight_apply_le 𝕜 𝕜' x
 #align continuous_linear_map.op_norm_mul_left_right_le ContinuousLinearMap.opNorm_mulLeftRight_le
@@ -216,7 +223,7 @@ theorem lsmul_apply (c : 𝕜') (x : E) : lsmul 𝕜 𝕜' c x = c • x :=
 variable {𝕜'}
 
 theorem norm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖ = ‖x‖ := by
-  refine' opNorm_eq_of_bounds (norm_nonneg _) (fun x => _) fun N _ h => _
+  refine opNorm_eq_of_bounds (norm_nonneg _) (fun x => ?_) fun N _ h => ?_
   · rw [toSpanSingleton_apply, norm_smul, mul_comm]
   · specialize h 1
     rw [toSpanSingleton_apply, norm_smul, mul_comm] at h
@@ -233,7 +240,7 @@ theorem opNorm_lsmul_apply_le (x : 𝕜') : ‖(lsmul 𝕜 𝕜' x : E →L[𝕜
 
 /-- The norm of `lsmul` is at most 1 in any semi-normed group. -/
 theorem opNorm_lsmul_le : ‖(lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] E)‖ ≤ 1 := by
-  refine' ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun x => _
+  refine ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun x => ?_
   simp_rw [one_mul]
   exact opNorm_lsmul_apply_le _
 #align continuous_linear_map.op_norm_lsmul_le ContinuousLinearMap.opNorm_lsmul_le
@@ -280,13 +287,13 @@ This is `ContinuousLinearMap.opNorm_lsmul_le` as an equality. -/
 @[simp]
 theorem opNorm_lsmul [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' E]
     [IsScalarTower 𝕜 𝕜' E] [Nontrivial E] : ‖(lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] E)‖ = 1 := by
-  refine' ContinuousLinearMap.opNorm_eq_of_bounds zero_le_one (fun x => _) fun N _ h => _
+  refine ContinuousLinearMap.opNorm_eq_of_bounds zero_le_one (fun x => ?_) fun N _ h => ?_
   · rw [one_mul]
     apply opNorm_lsmul_apply_le
   obtain ⟨y, hy⟩ := exists_ne (0 : E)
   have := le_of_opNorm_le _ (h 1) y
   simp_rw [lsmul_apply, one_smul, norm_one, mul_one] at this
-  refine' le_of_mul_le_mul_right _ (norm_pos_iff.mpr hy)
+  refine le_of_mul_le_mul_right ?_ (norm_pos_iff.mpr hy)
   simp_rw [one_mul, this]
 #align continuous_linear_map.op_norm_lsmul ContinuousLinearMap.opNorm_lsmul
 

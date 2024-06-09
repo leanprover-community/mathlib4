@@ -102,7 +102,7 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
   simp only [wittPolynomial_eq_sum_C_mul_X_pow, selectPoly, AlgHom.map_sum, AlgHom.map_pow,
     AlgHom.map_mul, bind₁_X_right, bind₁_C_right, ← Finset.sum_add_distrib, ← mul_add]
   apply Finset.sum_congr rfl
-  refine' fun m _ => mul_eq_mul_left_iff.mpr (Or.inl _)
+  refine fun m _ => mul_eq_mul_left_iff.mpr (Or.inl ?_)
   rw [ite_pow, zero_pow (pow_ne_zero _ hp.out.ne_zero)]
   by_cases Pm : P m
   · rw [if_pos Pm, if_neg $ not_not_intro Pm, zero_pow Fin.size_pos'.ne', add_zero]
@@ -127,7 +127,7 @@ theorem coeff_add_of_disjoint (x y : 𝕎 R) (h : ∀ n, x.coeff n = 0 ∨ y.coe
   calc
     (x + y).coeff n = z.coeff n := by rw [← hx, ← hy, select_add_select_not P z]
     _ = x.coeff n + y.coeff n := by
-      simp only [z, mk._eq_1]
+      simp only [z, mk.eq_1]
       split_ifs with y0
       · rw [y0, add_zero]
       · rw [h n |>.resolve_right y0, zero_add]

@@ -67,7 +67,7 @@ protected theorem integrable_normed : Integrable (f.normed μ) μ :=
 variable [μ.IsOpenPosMeasure]
 
 theorem integral_pos : 0 < ∫ x, f x ∂μ := by
-  refine' (integral_pos_iff_support_of_nonneg f.nonneg' f.integrable).mpr _
+  refine (integral_pos_iff_support_of_nonneg f.nonneg' f.integrable).mpr ?_
   rw [f.support_eq]
   exact measure_ball_pos μ c f.rOut_pos
 #align cont_diff_bump.integral_pos ContDiffBump.integral_pos

@@ -36,8 +36,10 @@ open Module.Free Polynomial Matrix
 
 namespace LinearMap
 
+section Basic
+
 /- These attribute tweaks save ~ 2000 heartbeats in `LinearMap.charpoly_toMatrix`. -/
-attribute [-instance] instCoeOut
+attribute [-instance] instCoeOutOfCoeSort
 attribute [local instance 2000] RingHomClass.toNonUnitalRingHomClass
 attribute [local instance 2000] NonUnitalRingHomClass.toMulHomClass
 
@@ -92,6 +94,8 @@ lemma charpoly_prodMap (f₁ : M₁ →ₗ[R] M₁) (f₂ : M₂ →ₗ[R] M₂)
   let b := b₁.prod b₂
   rw [← charpoly_toMatrix f₁ b₁, ← charpoly_toMatrix f₂ b₂, ← charpoly_toMatrix (f₁.prodMap f₂) b,
     toMatrix_prodMap b₁ b₂ f₁ f₂, Matrix.charpoly_fromBlocks_zero₁₂]
+
+end Basic
 
 end LinearMap
 

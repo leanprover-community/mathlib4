@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Limits
-import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.Algebra.Category.GroupCat.ForgetCorepresentable
+import Mathlib.Algebra.Category.GroupCat.Preadditive
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
-import Mathlib.GroupTheory.Subgroup.Basic
 
 #align_import algebra.category.Group.limits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -61,6 +61,13 @@ set_option linter.uppercaseLean3 false in
 @[to_additive]
 instance sectionsGroup : Group (F ⋙ forget GroupCat.{u}).sections :=
   (sectionsSubgroup F).toGroup
+
+/-- The projection from `Functor.sections` to a factor as a `MonoidHom`. -/
+@[to_additive "The projection from `Functor.sections` to a factor as an `AddMonoidHom`."]
+def sectionsπMonoidHom (j : J) : (F ⋙ forget GroupCat.{u}).sections →* F.obj j where
+  toFun x := x.val j
+  map_one' := rfl
+  map_mul' _ _ := rfl
 
 section
 
@@ -161,7 +168,8 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J GroupCat.{u} where
   has_limit _ := inferInstance
 
 /-- The category of groups has all limits. -/
-@[to_additive "The category of additive groups has all limits."]
+@[to_additive "The category of additive groups has all limits.",
+  to_additive_relevant_arg 2]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} GroupCat.{u} where
   has_limits_of_shape J _ := { }
 set_option linter.uppercaseLean3 false in
@@ -359,7 +367,8 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommGroupCat.{u} wh
   has_limit _ := inferInstance
 
 /-- The category of commutative groups has all limits. -/
-@[to_additive "The category of additive commutative groups has all limits."]
+@[to_additive "The category of additive commutative groups has all limits.",
+  to_additive_relevant_arg 2]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommGroupCat.{u}
   where has_limits_of_shape _ _ := { }
 set_option linter.uppercaseLean3 false in

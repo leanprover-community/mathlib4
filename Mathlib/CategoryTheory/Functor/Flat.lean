@@ -67,9 +67,9 @@ class RepresentablyFlat (F : C ⥤ D) : Prop where
 
 attribute [instance] RepresentablyFlat.cofiltered
 
-instance RepresentablyFlat.of_isRightAdjoint (F : C ⥤ D) [IsRightAdjoint F] :
+instance RepresentablyFlat.of_isRightAdjoint (F : C ⥤ D) [F.IsRightAdjoint] :
     RepresentablyFlat F where
-  cofiltered _ := IsCofiltered.of_isInitial _ (mkInitialOfLeftAdjoint _ (.ofRightAdjoint F) _)
+  cofiltered _ := IsCofiltered.of_isInitial _ (mkInitialOfLeftAdjoint _ (.ofIsRightAdjoint F) _)
 
 theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
 #align category_theory.representably_flat.id CategoryTheory.RepresentablyFlat.id
@@ -200,8 +200,8 @@ noncomputable def preservesFiniteLimitsOfFlat (F : C ⥤ D) [RepresentablyFlat F
       fac := PreservesFiniteLimitsOfFlat.fac F hc
       uniq := fun s m h => by
         apply PreservesFiniteLimitsOfFlat.uniq F hc
-        exact h
-        exact PreservesFiniteLimitsOfFlat.fac F hc s }
+        · exact h
+        · exact PreservesFiniteLimitsOfFlat.fac F hc s }
 #align category_theory.preserves_finite_limits_of_flat CategoryTheory.preservesFiniteLimitsOfFlat
 
 /-- If `C` is finitely cocomplete, then `F : C ⥤ D` is representably flat iff it preserves

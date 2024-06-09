@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Sites.Canonical
 import Mathlib.CategoryTheory.Sites.Coherent.Basic
 import Mathlib.CategoryTheory.Sites.Preserves
 /-!
@@ -18,7 +19,7 @@ This file characterises sheaves for the extensive topology.
   extensive topology are precisely those preserving finite products.
 -/
 
-universe v u
+universe v u w
 
 namespace CategoryTheory
 
@@ -49,7 +50,7 @@ A finite product preserving presheaf is a sheaf for the extensive topology on a 
 `FinitaryPreExtensive`.
 -/
 theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.Extensive]
-    (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] : S.IsSheafFor F  := by
+    (F : Cᵒᵖ ⥤ Type w) [PreservesFiniteProducts F] : S.IsSheafFor F  := by
   obtain ⟨α, _, Z, π, rfl, ⟨hc⟩⟩ := Extensive.arrows_nonempty_isColimit (R := S)
   have : (ofArrows Z (Cofan.mk X π).inj).hasPullbacks :=
     (inferInstance : (ofArrows Z π).hasPullbacks)
@@ -59,14 +60,28 @@ theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X)
 instance {α : Type} [Finite α] (Z : α → C) : (ofArrows Z (fun i ↦ Sigma.ι Z i)).Extensive :=
   ⟨⟨α, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, ⟨coproductIsCoproduct _⟩⟩⟩
 
+/-- Every Yoneda-presheaf is a sheaf for the extensive topology. -/
+theorem extensiveTopology.isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (extensiveTopology C)
+    (yoneda.obj W) := by
+  erw [isSheaf_coverage]
+  intro X R ⟨Y, α, Z, π, hR, hi⟩
+  have : IsIso (Sigma.desc (Cofan.inj (Cofan.mk X π))) := hi
+  have : R.Extensive := ⟨Y, α, Z, π, hR, ⟨Cofan.isColimitOfIsIsoSigmaDesc (Cofan.mk X π)⟩⟩
+  exact isSheafFor_extensive_of_preservesFiniteProducts _ _
+
+/-- The extensive topology on a finitary pre-extensive category is subcanonical. -/
+theorem extensiveTopology.subcanonical : Sheaf.Subcanonical (extensiveTopology C) :=
+  Sheaf.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
+
 /--
-A presheaf on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite products.
+A presheaf of sets on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite
+products.
 -/
-theorem isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : Cᵒᵖ ⥤ Type max u v) :
-    Presieve.IsSheaf (extensiveCoverage C).toGrothendieck F ↔
+theorem Presieve.isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : Cᵒᵖ ⥤ Type w) :
+    Presieve.IsSheaf (extensiveTopology C) F ↔
     Nonempty (PreservesFiniteProducts F) := by
   refine ⟨fun hF ↦ ⟨⟨fun α _ ↦ ⟨fun {K} ↦ ?_⟩⟩⟩, fun hF ↦ ?_⟩
-  · rw [Presieve.isSheaf_coverage] at hF
+  · erw [Presieve.isSheaf_coverage] at hF
     let Z : α → C := fun i ↦ unop (K.obj ⟨i⟩)
     have : (Presieve.ofArrows Z (Cofan.mk (∐ Z) (Sigma.ι Z)).inj).hasPullbacks :=
       (inferInstance : (Presieve.ofArrows Z (Sigma.ι Z)).hasPullbacks)
@@ -88,10 +103,32 @@ theorem isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : Cᵒᵖ �
       ext
       simp
   · let _ := hF.some
-    rw [Presieve.isSheaf_coverage]
+    erw [Presieve.isSheaf_coverage]
     intro X R ⟨Y, α, Z, π, hR, hi⟩
     have : IsIso (Sigma.desc (Cofan.inj (Cofan.mk X π))) := hi
     have : R.Extensive := ⟨Y, α, Z, π, hR, ⟨Cofan.isColimitOfIsIsoSigmaDesc (Cofan.mk X π)⟩⟩
     exact isSheafFor_extensive_of_preservesFiniteProducts R F
+
+/--
+A presheaf on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite products.
+-/
+theorem Presheaf.isSheaf_iff_preservesFiniteProducts {D : Type*} [Category D]
+    [FinitaryExtensive C] (F : Cᵒᵖ ⥤ D) :
+    IsSheaf (extensiveTopology C) F ↔ Nonempty (PreservesFiniteProducts F) := by
+  constructor
+  · intro h
+    rw [IsSheaf] at h
+    refine ⟨⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩⟩
+    apply coyonedaJointlyReflectsLimits
+    intro ⟨E⟩
+    specialize h E
+    rw [Presieve.isSheaf_iff_preservesFiniteProducts] at h
+    have : PreservesLimit K (F.comp (coyoneda.obj ⟨E⟩)) := (h.some.preserves J).preservesLimit
+    change IsLimit ((F.comp (coyoneda.obj ⟨E⟩)).mapCone c)
+    apply this.preserves
+    exact hc
+  · intro ⟨_⟩ E
+    rw [Presieve.isSheaf_iff_preservesFiniteProducts]
+    exact ⟨inferInstance⟩
 
 end CategoryTheory
