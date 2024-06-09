@@ -719,6 +719,15 @@ any `x : L` is triangularizable. -/
 class IsTriangularizable : Prop :=
   iSup_eq_top : ∀ x, ⨆ φ, ⨆ k, (toEnd R L M x).genEigenspace φ k = ⊤
 
+instance (L' : LieSubalgebra R L) [IsTriangularizable R L M] : IsTriangularizable R L' M where
+  iSup_eq_top x := IsTriangularizable.iSup_eq_top (x : L)
+
+instance (I : LieIdeal R L) [IsTriangularizable R L M] : IsTriangularizable R I M where
+  iSup_eq_top x := IsTriangularizable.iSup_eq_top (x : L)
+
+instance [IsTriangularizable R L M] : IsTriangularizable R (LieModule.toEnd R L M).range M where
+  iSup_eq_top := by rintro ⟨-, x, rfl⟩; exact IsTriangularizable.iSup_eq_top x
+
 @[simp]
 lemma iSup_weightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
     ⨆ (φ : R), weightSpaceOf M φ x = ⊤ := by

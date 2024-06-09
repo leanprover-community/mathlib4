@@ -17,7 +17,7 @@ elements of the Lie algebra. This result is named `LieModule.exists_forall_lie_e
 open LieAlgebra
 
 -- let k be a field of characteristic zero
-variable {k : Type*} [Field k] [CharZero k] [IsAlgClosed k]
+variable {k : Type*} [Field k] [CharZero k]
 -- Let L be a Lie algebra over k
 variable {L : Type*} [LieRing L] [LieAlgebra k L]
 -- and let V be a finite-dimensional k-representation of L
@@ -254,14 +254,17 @@ noncomputable def kequivB (z : L) (hz : z ≠ 0) : k ≃ₗ[k] k ∙ z :=
 theorem extend_weight (A : LieIdeal k L) (z : L) (hz : z ∉ A)
     (hcodis : A.toSubmodule ⊔ (k ∙ z) = ⊤)
     (hdis : A.toSubmodule ⊓ (k ∙ z) = ⊥) (χ' : Module.Dual k A) (v : V)
-    (hv : v ≠ 0) (hvA' : ∀ (x : A), ⁅x, v⁆ = χ' x • v) :
+    (hv : v ≠ 0) (hvA' : ∀ (x : A), ⁅x, v⁆ = χ' x • v) [LieModule.IsTriangularizable k L V] :
   ∃ (χ : Module.Dual k L) (v : V), v ≠ 0 ∧ ∀ (x : L), ⁅x, v⁆ = χ x • v := by
   let πz_res : altWeightSpace (V := V) A χ' →ₗ[k] altWeightSpace (V := V) A χ' :=
       (π z).restrict (p := altWeightSpace A χ') (q := altWeightSpace A χ')
       (fun _ hx ↦ altWeightSpace_lie_stable A χ' z hx)
   have altWeightSpace_nontrivial : Nontrivial (altWeightSpace (V := V) A χ') :=
     ⟨⟨v, hvA'⟩, ⟨0, Subtype.coe_ne_coe.mp hv⟩⟩
-  obtain ⟨c, hc⟩ := Module.End.exists_eigenvalue πz_res
+  obtain ⟨c, hc⟩ : ∃ c, Module.End.HasEigenvalue πz_res c := by
+    apply Module.End.exists_hasEigenvalue_of_iSup_genEigenspace_eq_top (f := πz_res)
+    apply Module.End.iSup_genEigenspace_restrict_eq_top
+    exact LieModule.IsTriangularizable.iSup_eq_top z
   obtain ⟨⟨v', hv'⟩, hv''⟩ := Module.End.HasEigenvalue.exists_hasEigenvector hc
   rw [← codisjoint_iff] at hcodis
   rw [← disjoint_iff] at hdis
@@ -297,7 +300,6 @@ theorem extend_weight (A : LieIdeal k L) (z : L) (hz : z ∉ A)
     ext
     exact hd
 
-
 theorem LieIdeal.incl_injective (I : LieIdeal k L) : Function.Injective I.incl := by
   suffices h : Function.Injective ⇑(I.incl.toLinearMap) from h
   rw [I.incl_coe]
@@ -307,9 +309,9 @@ theorem LieIdeal.incl_injective (I : LieIdeal k L) : Function.Injective I.incl :
 
 theorem LieModule.exists_forall_lie_eq_smul_finrank :
     ∀ (L : Type*) [LieRing L] [LieAlgebra k L] [FiniteDimensional k L] [IsSolvable k L]
-      [LieRingModule L V] [LieModule k L V],
+      [LieRingModule L V] [LieModule k L V] [LieModule.IsTriangularizable k L V],
       ∃ χ : Module.Dual k L, ∃ v : V, v ≠ 0 ∧ ∀ x : L, ⁅x, v⁆ = χ x • v := by
-  intro L _ _ _ _ _ _
+  intro L _ _ _ _ _ _ _
   obtain _inst|_inst := subsingleton_or_nontrivial L
   · rcases (exists_ne (0 : V)) with ⟨v, hv⟩
     use 0, v, hv
@@ -349,7 +351,8 @@ decreasing_by
   exact hcoatomA.1
 
 -- If `L` is solvable, we can find a non-zero eigenvector
-theorem LieModule.exists_forall_lie_eq_smul_of_Solvable [IsSolvable k L] :
+theorem LieModule.exists_forall_lie_eq_smul_of_Solvable
+    [IsSolvable k L] [LieModule.IsTriangularizable k L V] :
     ∃ χ : Module.Dual k L, ∃ v : V, v ≠ 0 ∧ ∀ x : L, ⁅x, v⁆ = χ x • v := by
   let imL := (LieModule.toEnd k L V).range
   have hdim : FiniteDimensional k imL := Submodule.finiteDimensional_of_le (le_top)
