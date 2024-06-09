@@ -197,16 +197,10 @@ open Finset
 /-- The norm of an integral matrix is the cast of a natural number -/
 lemma norm_eq_NatCast (A : Matrix m n ℤ) : ∃ (a : ℕ), ‖A‖ = a := by
   use sup univ fun i ↦ sup univ fun j ↦ (A i j).natAbs
-  rw [norm_eq_sup_sup_nnnorm, ← NNReal.coe_natCast, NNReal.coe_inj,
-    comp_sup_eq_sup_comp_of_is_total Nat.cast Nat.mono_cast
-    (by simp only [bot_eq_zero', CharP.cast_eq_zero])]
-  congr
-  rw [Function.comp_def]
-  ext; congr
-  rw [comp_sup_eq_sup_comp_of_is_total Nat.cast Nat.mono_cast
-     (by simp only [bot_eq_zero', CharP.cast_eq_zero])]
-  congr; ext; congr;
-  rw [Function.comp_apply, NNReal.natCast_natAbs]
+  simp only [norm_eq_sup_sup_nnnorm, ← NNReal.coe_natCast, bot_eq_zero', CharP.cast_eq_zero,
+    comp_sup_eq_sup_comp_of_is_total Nat.cast Nat.mono_cast, Function.comp_def, NNReal.coe_inj]
+  congr! with n m
+  exact (NNReal.natCast_natAbs (A n m)).symm
 
 /-- The norm of a non-singular integral matrix is a positive natural number-/
 lemma one_le_norm_of_nonzero (A : Matrix m n ℤ) (hA_nezero : A ≠ 0) (a : ℕ)
