@@ -26,7 +26,7 @@ namespace AddOreLocalization
 /-- A submonoid `S` of an additive monoid `R` is (left) Ore if common summands on the right can be
 turned into common summands on the left, and if each pair of `r : R` and `s : S` admits an Ore
 minuend `v : R` and an Ore subtrahend `u : S` such that `u + r = v + s`. -/
-class OreSet {R : Type*} [AddMonoid R] (S : AddSubmonoid R) where
+class AddOreSet {R : Type*} [AddMonoid R] (S : AddSubmonoid R) where
   /-- Common summands on the right can be turned into common summands on the left, a weak form of
 cancellability. -/
   ore_right_cancel : ∀ (r₁ r₂ : R) (s : S), r₁ + s = r₂ + s → ∃ s' : S, s' + r₁ = s' + r₂
@@ -46,7 +46,7 @@ section Monoid
 /-- A submonoid `S` of a monoid `R` is (left) Ore if common factors on the right can be turned
 into common factors on the left, and if each pair of `r : R` and `s : S` admits an Ore numerator
 `v : R` and an Ore denominator `u : S` such that `u * r = v * s`. -/
-@[to_additive AddOreLocalization.OreSet]
+@[to_additive AddOreLocalization.AddOreSet]
 class OreSet {R : Type*} [Monoid R] (S : Submonoid R) where
   /-- Common factors on the right can be turned into common factors on the left, a weak form of
 cancellability. -/
