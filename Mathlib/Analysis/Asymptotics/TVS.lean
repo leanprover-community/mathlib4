@@ -3,13 +3,12 @@ import Mathlib.Analysis.Convex.EGauge
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.Seminorm
+import Mathlib.Tactic.Peel
 
 open Set Filter Asymptotics Metric
 open scoped Topology Pointwise ENNReal NNReal
 
 section TVS
-
-variable (𝕜)
 
 def IsLittleOTVS (𝕜 : Type*) {α E F : Type*} [NNNorm 𝕜] [TopologicalSpace E] [TopologicalSpace F]
     [Zero E] [Zero F] [SMul 𝕜 E] [SMul 𝕜 F] (f : α → E) (g : α → F) (l : Filter α) : Prop :=
@@ -30,6 +29,42 @@ theorem Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Type*} {pE : ιE → Prop} {
     exact ⟨V, hV₀, fun ε hε ↦ (hV ε hε).mono fun x ↦ le_trans <| egauge_anti _ hsub _⟩
   · refine fun s t hsub h ε hε ↦ (h ε hε).mono fun x hx ↦ hx.trans ?_
     gcongr
+
+protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter α}
+    (h : IsLittleOTVS 𝕜 f g l) (c : α → 𝕜) :
+    IsLittleOTVS 𝕜 (fun x ↦ c x • f x) (fun x ↦ c x • g x) l := by
+  unfold IsLittleOTVS at *
+  peel h with U hU V hV ε hε x hx
+  rw [egauge_smul_right, egauge_smul_right, mul_left_comm]
+  · gcongr
+  all_goals exact fun _ ↦ Filter.nonempty_of_mem ‹_›
+
+lemma isLittleOTVS_one [ContinuousSMul 𝕜 E] {f : α → E} {l : Filter α} :
+    IsLittleOTVS 𝕜 f (1 : α → 𝕜) l ↔ Tendsto f l (𝓝 0) := by
+  constructor
+  · intro hf
+    rw [(basis_sets _).isLittleOTVS_iff nhds_basis_ball] at hf
+    rw [(nhds_basis_balanced 𝕜 E).tendsto_right_iff]
+    rintro U ⟨hU, hUb⟩
+    rcases hf U hU with ⟨r, hr₀, hr⟩
+    lift r to ℝ≥0 using hr₀.le
+    norm_cast at hr₀
+    rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
+    obtain ⟨ε, hε₀, hε⟩ : ∃ ε : ℝ≥0, 0 < ε ∧ (ε * ‖c‖₊ / r : ℝ≥0∞) < 1 := by
+      apply Eventually.exists_gt
+      refine eventually_lt_of_tendsto_lt zero_lt_one <| Continuous.tendsto' ?_ _ _ (by simp)
+      fun_prop (disch := intros; first | apply ENNReal.coe_ne_top | positivity)
+    filter_upwards [hr ε hε₀.ne'] with x hx
+    refine mem_of_egauge_lt_one hUb (hx.trans_lt ?_)
+    calc
+      (ε : ℝ≥0∞) * egauge 𝕜 (ball (0 : 𝕜) r) 1 ≤ (ε * ‖c‖₊ / r : ℝ≥0∞) := by
+        rw [mul_div_assoc]
+        gcongr
+        simpa using egauge_ball_le_of_one_lt_norm (r := r) (E := 𝕜) hc (.inr one_ne_zero)
+      _ < 1 := ‹_›
+  · intro hf U hU
+    
+    
 
 lemma IsLittleOTVS.tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g : α → E} {l : Filter α}
     (h : IsLittleOTVS 𝕜 g f l) : Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by

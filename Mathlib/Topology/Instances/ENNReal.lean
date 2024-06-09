@@ -76,6 +76,7 @@ theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {a : ℝ≥0} :
   embedding_coe.tendsto_nhds_iff.symm
 #align ennreal.tendsto_coe ENNReal.tendsto_coe
 
+@[continuity, fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ≥0∞) :=
   embedding_coe.continuous
 #align ennreal.continuous_coe ENNReal.continuous_coe
@@ -414,14 +415,17 @@ protected theorem continuousAt_mul_const {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b
   Tendsto.mul_const tendsto_id h.symm
 #align ennreal.continuous_at_mul_const ENNReal.continuousAt_mul_const
 
+@[fun_prop]
 protected theorem continuous_const_mul {a : ℝ≥0∞} (ha : a ≠ ∞) : Continuous (a * ·) :=
   continuous_iff_continuousAt.2 fun _ => ENNReal.continuousAt_const_mul (Or.inl ha)
 #align ennreal.continuous_const_mul ENNReal.continuous_const_mul
 
+@[fun_prop]
 protected theorem continuous_mul_const {a : ℝ≥0∞} (ha : a ≠ ∞) : Continuous fun x => x * a :=
   continuous_iff_continuousAt.2 fun _ => ENNReal.continuousAt_mul_const (Or.inl ha)
 #align ennreal.continuous_mul_const ENNReal.continuous_mul_const
 
+@[fun_prop]
 protected theorem continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
     Continuous fun x : ℝ≥0∞ => x / c := by
   simp_rw [div_eq_mul_inv, continuous_iff_continuousAt]
@@ -429,7 +433,7 @@ protected theorem continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
   exact ENNReal.continuousAt_mul_const (Or.intro_left _ (inv_ne_top.mpr c_ne_zero))
 #align ennreal.continuous_div_const ENNReal.continuous_div_const
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
   induction' n with n IH
   · simp [continuous_const]
