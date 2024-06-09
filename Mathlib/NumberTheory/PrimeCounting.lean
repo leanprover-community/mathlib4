@@ -106,10 +106,7 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
 theorem zeroth_prime_eq_two : nth Prime 0 = 2 := nth_count prime_two
 
 /-- The `n`th prime is greater or equal to `n + 2`. -/
-lemma add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n := by
-  induction' n with n ih
-  · exact ge_of_eq zeroth_prime_eq_two
-  · exact le_trans (add_le_add_right ih 1)
-      (succ_le_of_lt <| nth_strictMono infinite_setOf_prime n.lt_succ_self)
+lemma add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
+  zeroth_prime_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le n 0
 
 end Nat
