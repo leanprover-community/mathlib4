@@ -2466,8 +2466,8 @@ def IsGδ₂ (s : Set X) : Prop :=
 /-- TODO use version merged from other PR soon hopefully --/
 lemma countable_covers_witnessing_separated_nhds {h k : Set X}
     (h_cov: ∃ u : ℕ → Set X, h ⊆ ⋃ n, u n ∧ ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) k)
-    (k_cov: ∃ u : ℕ → Set X, k ⊆ ⋃ n, u n ∧ ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) h)
-    : SeparatedNhds h k := sorry
+    (k_cov: ∃ u : ℕ → Set X, k ⊆ ⋃ n, u n ∧ ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) h) :
+    SeparatedNhds h k := sorry
 
 section PerfectlyNormal
 
@@ -2501,7 +2501,8 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
       obtain ⟨n, gn⟩ := g_surj ⟨t, tinT⟩
       apply (iInter_subset_of_subset n) (Subset.trans (clg'_sub_g n) ?_)
       rw [gn]
-    have s_cov : ∃ u : ℕ → Set X, s ⊆ ⋃ n, u n ∧ ∀ (n : ℕ), IsOpen (u n) ∧ Disjoint (closure (u n)) t := by
+    have s_cov : ∃ u : ℕ → Set X, s ⊆ ⋃ n, u n ∧ ∀ (n : ℕ), IsOpen (u n) ∧
+        Disjoint (closure (u n)) t := by
       use fun n ↦ (closure (g' n))ᶜ
       constructor
       · rw [← compl_iInter, subset_compl_comm, T_int']
@@ -2512,8 +2513,8 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
       · simp only [closure_compl, disjoint_compl_left_iff_subset]
         exact Subset.trans subset_closure
             (Subset.trans (clt_sub_g' n) (subset_interior_closure (g'_open n)))
-    wlog t_cov : ∃ u : ℕ → Set X, t ⊆ ⋃ n, u n ∧ ∀ (n : ℕ), IsOpen (u n) ∧ Disjoint (closure (u n)) s
-        generalizing s t with H
+    wlog t_cov : ∃ u : ℕ → Set X, t ⊆ ⋃ n, u n ∧ ∀ (n : ℕ), IsOpen (u n) ∧
+        Disjoint (closure (u n)) s generalizing s t with H
     · apply SeparatedNhds.symm
       apply H t s (Disjoint.symm hd₂) (Disjoint.symm hd₁)
       sorry; sorry; sorry; sorry; sorry
