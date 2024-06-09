@@ -212,6 +212,7 @@ theorem gen_mem_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F]
   rw [topologicalSpace_eq, nhds_induced]
   filter_upwards [Filter.preimage_mem_comap (UniformOnFun.gen_mem_nhds _ _ 0 hs this)] with f hf
   simpa using hf
+
 variable {σ F} in
 theorem isVonNBounded_image2_apply {R : Type*} [SeminormedRing R]
     [TopologicalSpace F] [TopologicalAddGroup F]
