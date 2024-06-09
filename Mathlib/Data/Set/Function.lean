@@ -786,9 +786,9 @@ theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t
 #align disjoint.image Disjoint.image
 
 lemma InjOn.image_diff {t : Set α} (h : s.InjOn f) : f '' (s \ t) = f '' s \ f '' (s ∩ t) := by
-  refine subset_antisymm (subset_diff.2 ⟨image_subset f (diff_subset s t), ?_⟩)
+  refine subset_antisymm (subset_diff.2 ⟨image_subset f diff_subset, ?_⟩)
     (diff_subset_iff.2 (by rw [← image_union, inter_union_diff]))
-  exact Disjoint.image disjoint_sdiff_inter h (diff_subset _ _) (inter_subset_left _ _)
+  exact Disjoint.image disjoint_sdiff_inter h diff_subset inter_subset_left
 
 lemma InjOn.image_diff_subset {f : α → β} {t : Set α} (h : InjOn f s) (hst : t ⊆ s) :
     f '' (s \ t) = f '' s \ f '' t := by
@@ -1138,7 +1138,7 @@ theorem BijOn.compl (hst : BijOn f s t) (hf : Bijective f) : BijOn f sᶜ tᶜ :
 
 theorem BijOn.subset_right {r : Set β} (hf : BijOn f s t) (hrt : r ⊆ t) :
     BijOn f (s ∩ f ⁻¹' r) r := by
-  refine ⟨inter_subset_right _ _, hf.injOn.mono <| inter_subset_left _ _, fun x hx ↦ ?_⟩
+  refine ⟨inter_subset_right, hf.injOn.mono inter_subset_left, fun x hx ↦ ?_⟩
   obtain ⟨y, hy, rfl⟩ := hf.surjOn (hrt hx)
   exact ⟨y, ⟨hy, hx⟩, rfl⟩
 
