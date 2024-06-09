@@ -586,7 +586,7 @@ lemma eq_X_pow_iff_natTrailingDegree_eq_natDegree (h₁ : p.Monic) :
     p = X ^ p.natDegree ↔ p.natTrailingDegree = p.natDegree :=
   h₁.eq_X_pow_iff_natDegree_le_natTrailingDegree.trans (natTrailingDegree_le_natDegree p).ge_iff_eq
 
-@[deprecated] -- 2024-04-26
+@[deprecated (since := "2024-04-26")]
 alias ⟨_, eq_X_pow_of_natTrailingDegree_eq_natDegree⟩ := eq_X_pow_iff_natTrailingDegree_eq_natDegree
 
 end Monic
