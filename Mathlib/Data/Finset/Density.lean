@@ -27,7 +27,9 @@ variable {𝕜 α β : Type*} [Fintype α]
 namespace Finset
 variable {s t : Finset α} {a b : α}
 
-/-- `dens s` is the number of elements of `s`, aka its density. -/
+/-- Density of a finset.
+
+`dens s` is the number of elements of `s` divided by the size of the ambient type `α`. -/
 def dens (s : Finset α) : ℚ≥0 := s.card / Fintype.card α
 
 lemma dens_eq_card_div_card (s : Finset α) : dens s = s.card / Fintype.card α := rfl
