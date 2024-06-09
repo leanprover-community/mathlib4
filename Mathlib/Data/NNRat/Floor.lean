@@ -11,8 +11,9 @@ import Mathlib.Data.NNRat.Lemmas
 
 ## Summary
 
-We define the `FloorRing` instance on `ℚ≥0`. Some technical lemmas relating `floor` to integer
-division and modulo arithmetic are derived as well as some simple inequalities.
+We define the `FloorSemiring` instance on `ℚ≥0`, and relate it's operators to `NNRat.cast`.
+
+Note that we cannot talk about `Int.fract`, which currently only works for rings.
 
 ## Tags
 
@@ -41,19 +42,16 @@ theorem coe_ceil (q : ℚ≥0) : ↑⌈q⌉₊ = ⌈(q : ℚ)⌉ := Int.ofNat_ce
 protected theorem floor_def (q : ℚ≥0) : ⌊q⌋₊ = q.num / q.den := by
   rw [← Int.natCast_inj, NNRat.coe_floor, Rat.floor_def, Int.ofNat_ediv, den_coe, num_coe]
 
+variable {K} [LinearOrderedSemifield K] [FloorSemiring K]
+
 @[simp, norm_cast]
-theorem floor_cast (x : ℚ≥0) : ⌊(x : K)⌋₊ = ⌊x⌋₊ := by
-  have := (Nat.floor_eq_iff x.cast_nonneg).1 (Eq.refl ⌊x⌋₊)
-  refine (Nat.floor_eq_iff x.cast_nonneg).2 ?_
-  rw [← NNRat.cast_lt (K := K)] at this
-  rw [← NNRat.cast_natCast, NNRat.cast_le] at this ⊢
-  convert this
-#align rat.floor_cast Rat.floor_cast
+theorem floor_cast (x : ℚ≥0) : ⌊(x : K)⌋₊ = ⌊x⌋₊ :=
+  (Nat.floor_eq_iff x.cast_nonneg).2 (mod_cast (Nat.floor_eq_iff x.cast_nonneg).1 (Eq.refl ⌊x⌋₊))
 
 @[simp, norm_cast]
 theorem ceil_cast (x : ℚ≥0) : ⌈(x : K)⌉₊ = ⌈x⌉₊ := by
-  rw [Nat.ceil_eq_iff]
-  rw [← neg_inj, ← floor_neg, ← floor_neg, ← Rat.cast_neg, Rat.floor_cast]
-#align rat.ceil_cast Rat.ceil_cast
+  obtain rfl | hx := eq_or_ne x 0
+  · simp
+  · refine (Nat.ceil_eq_iff ?_).2 (mod_cast (Nat.ceil_eq_iff ?_).1 (Eq.refl ⌈x⌉₊)) <;> simpa
 
 end NNRat
