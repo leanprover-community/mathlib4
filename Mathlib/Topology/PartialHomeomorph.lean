@@ -401,7 +401,7 @@ theorem map_nhdsWithin_eq {x} (hx : x ∈ e.source) (s : Set X) :
     map e (𝓝[s] x) = map e (𝓝[e.source ∩ s] x) :=
       congr_arg (map e) (e.nhdsWithin_source_inter hx _).symm
     _ = 𝓝[e '' (e.source ∩ s)] e x :=
-      (e.leftInvOn.mono <| inter_subset_left _ _).map_nhdsWithin_eq (e.left_inv hx)
+      (e.leftInvOn.mono inter_subset_left).map_nhdsWithin_eq (e.left_inv hx)
         (e.continuousAt_symm (e.map_source hx)).continuousWithinAt
         (e.continuousAt hx).continuousWithinAt
 #align local_homeomorph.map_nhds_within_eq PartialHomeomorph.map_nhdsWithin_eq
@@ -472,7 +472,7 @@ lemma isOpen_image_of_subset_source {s : Set X} (hs : IsOpen s) (hse : s ⊆ e.s
 /-- The image of the restriction of an open set to the source is open. -/
 theorem isOpen_image_source_inter {s : Set X} (hs : IsOpen s) :
     IsOpen (e '' (e.source ∩ s)) :=
-  e.isOpen_image_of_subset_source (e.open_source.inter hs) (inter_subset_left _ _)
+  e.isOpen_image_of_subset_source (e.open_source.inter hs) inter_subset_left
 #align local_homeomorph.image_open_of_open' PartialHomeomorph.isOpen_image_source_inter
 
 /-- The inverse of a partial homeomorphism `e` is an open map on `e.target`. -/
@@ -664,8 +664,8 @@ def restr (h : e.IsImage s t) (hs : IsOpen (e.source ∩ s)) : PartialHomeomorph
   toPartialEquiv := h.toPartialEquiv.restr
   open_source := hs
   open_target := h.isOpen_iff.1 hs
-  continuousOn_toFun := e.continuousOn.mono (inter_subset_left _ _)
-  continuousOn_invFun := e.symm.continuousOn.mono (inter_subset_left _ _)
+  continuousOn_toFun := e.continuousOn.mono inter_subset_left
+  continuousOn_invFun := e.symm.continuousOn.mono inter_subset_left
 #align local_homeomorph.is_image.restr PartialHomeomorph.IsImage.restr
 
 end IsImage
@@ -1375,7 +1375,7 @@ variable (f : X → Y) (h : OpenEmbedding f)
 whose source is all of `X`. The converse is also true; see `PartialHomeomorph.to_openEmbedding`. -/
 @[simps! (config := mfld_cfg) apply source target]
 noncomputable def toPartialHomeomorph [Nonempty X] : PartialHomeomorph X Y :=
-  PartialHomeomorph.ofContinuousOpen ((h.toEmbedding.inj.injOn univ).toPartialEquiv _ _)
+  PartialHomeomorph.ofContinuousOpen (h.toEmbedding.inj.injOn.toPartialEquiv f univ)
     h.continuous.continuousOn h.isOpenMap isOpen_univ
 #align open_embedding.to_local_homeomorph OpenEmbedding.toPartialHomeomorph
 
@@ -1504,10 +1504,10 @@ theorem subtypeRestr_symm_trans_subtypeRestr (f f' : PartialHomeomorph X Y) :
   rw [← ofSet_trans _ openness₁, ← trans_assoc, ← trans_assoc]
   refine EqOnSource.trans' ?_ (eqOnSource_refl _)
   -- f' has been eliminated !!!
-  have sets_identity : f.symm.source ∩ (f.target ∩ f.symm ⁻¹' s) = f.symm.source ∩ f.symm ⁻¹' s :=
-    by mfld_set_tac
+  have set_identity : f.symm.source ∩ (f.target ∩ f.symm ⁻¹' s) = f.symm.source ∩ f.symm ⁻¹' s := by
+    mfld_set_tac
   have openness₂ : IsOpen (s : Set X) := s.2
-  rw [ofSet_trans', sets_identity, ← trans_of_set' _ openness₂, trans_assoc]
+  rw [ofSet_trans', set_identity, ← trans_of_set' _ openness₂, trans_assoc]
   refine EqOnSource.trans' (eqOnSource_refl _) ?_
   -- f has been eliminated !!!
   refine Setoid.trans (symm_trans_self (s.partialHomeomorphSubtypeCoe hs)) ?_

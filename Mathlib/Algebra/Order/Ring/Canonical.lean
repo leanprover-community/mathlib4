@@ -66,8 +66,10 @@ protected theorem mul_pos [NoZeroDivisors α] {a b : α} :
   simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or]
 #align canonically_ordered_comm_semiring.mul_pos CanonicallyOrderedAdd.mul_pos
 
-protected lemma mul_lt_mul_of_lt_of_lt
-    [PosMulStrictMono α] {a b c d : α} (hab : a < b) (hcd : c < d) :
+lemma pow_pos (ha : 0 < a) (n : ℕ) : 0 < a ^ n := pos_iff_ne_zero.2 <| pow_ne_zero _ ha.ne'
+#align canonically_ordered_comm_semiring.pow_pos CanonicallyOrderedCommSemiring.pow_pos
+
+protected lemma mul_lt_mul_of_lt_of_lt [PosMulStrictMono α] (hab : a < b) (hcd : c < d) :
     a * c < b * d := by
   -- TODO: This should be an instance but it currently times out
   have := posMulStrictMono_iff_mulPosStrictMono.1 ‹_›

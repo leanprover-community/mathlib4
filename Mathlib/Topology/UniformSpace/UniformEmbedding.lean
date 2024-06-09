@@ -288,7 +288,7 @@ theorem uniformEmbedding_subtypeEmb (p : α → Prop) {e : α → β} (ue : Unif
 theorem UniformEmbedding.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : UniformEmbedding e₁) (h₂ : UniformEmbedding e₂) :
     UniformEmbedding fun p : α × β => (e₁ p.1, e₂ p.2) :=
-  { h₁.toUniformInducing.prod h₂.toUniformInducing with inj := h₁.inj.Prod_map h₂.inj }
+  { h₁.toUniformInducing.prod h₂.toUniformInducing with inj := h₁.inj.prodMap h₂.inj }
 #align uniform_embedding.prod UniformEmbedding.prod
 
 /-- A set is complete iff its image under a uniform inducing map is complete. -/
@@ -401,7 +401,7 @@ theorem totallyBounded_preimage {f : α → β} {s : Set β} (hf : UniformEmbedd
   rcases mem_comap.2 ht with ⟨t', ht', ts⟩
   rcases totallyBounded_iff_subset.1 (totallyBounded_subset (image_preimage_subset f s) hs) _ ht'
     with ⟨c, cs, hfc, hct⟩
-  refine ⟨f ⁻¹' c, hfc.preimage (hf.inj.injOn _), fun x h => ?_⟩
+  refine ⟨f ⁻¹' c, hfc.preimage hf.inj.injOn, fun x h => ?_⟩
   have := hct (mem_image_of_mem f h); simp at this ⊢
   rcases this with ⟨z, zc, zt⟩
   rcases cs zc with ⟨y, -, rfl⟩

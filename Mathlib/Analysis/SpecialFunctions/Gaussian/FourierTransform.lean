@@ -245,7 +245,7 @@ theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     simp only [I_sq]
     ring
 
-@[deprecated] -- deprecated on 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias _root_.fourier_transform_gaussian_pi' := _root_.fourierIntegral_gaussian_pi'
 
 theorem _root_.fourierIntegral_gaussian_pi (hb : 0 < b.re) :
@@ -254,7 +254,7 @@ theorem _root_.fourierIntegral_gaussian_pi (hb : 0 < b.re) :
   simpa only [mul_zero, zero_mul, add_zero] using fourierIntegral_gaussian_pi' hb 0
 #align fourier_transform_gaussian_pi fourierIntegral_gaussian_pi
 
-@[deprecated] -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias root_.fourier_transform_gaussian_pi := _root_.fourierIntegral_gaussian_pi
 
 section InnerProductSpace

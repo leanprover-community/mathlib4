@@ -375,16 +375,16 @@ theorem image2_inter_union_subset_union :
     image2 f (s ∩ s') (t ∪ t') ⊆ image2 f s t ∪ image2 f s' t' := by
   rw [image2_union_right]
   exact
-    union_subset_union (image2_subset_right <| inter_subset_left _ _)
-      (image2_subset_right <| inter_subset_right _ _)
+    union_subset_union (image2_subset_right inter_subset_left)
+      (image2_subset_right inter_subset_right)
 #align set.image2_inter_union_subset_union Set.image2_inter_union_subset_union
 
 theorem image2_union_inter_subset_union :
     image2 f (s ∪ s') (t ∩ t') ⊆ image2 f s t ∪ image2 f s' t' := by
   rw [image2_union_left]
   exact
-    union_subset_union (image2_subset_left <| inter_subset_left _ _)
-      (image2_subset_left <| inter_subset_right _ _)
+    union_subset_union (image2_subset_left inter_subset_left)
+      (image2_subset_left inter_subset_right)
 #align set.image2_union_inter_subset_union Set.image2_union_inter_subset_union
 
 theorem image2_inter_union_subset {f : α → α → β} {s t : Set α} (hf : ∀ a b, f a b = f b a) :

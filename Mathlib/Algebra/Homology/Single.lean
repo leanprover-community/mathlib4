@@ -176,6 +176,8 @@ lemma mkHomFromSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : A �
   rw [dif_pos rfl, comp_id]
   rfl
 
+instance (j : ι) : (single V c j).PreservesZeroMorphisms where
+
 end HomologicalComplex
 
 namespace ChainComplex
