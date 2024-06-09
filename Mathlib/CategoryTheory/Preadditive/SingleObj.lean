@@ -18,6 +18,7 @@ namespace CategoryTheory
 
 variable {α : Type*} [Ring α]
 
+set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 instance : Preadditive (SingleObj α) where
   homGroup := _
   add_comp _ _ _ f f' g := mul_add g f f'
