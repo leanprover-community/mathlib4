@@ -111,18 +111,20 @@ variable {R : Type r} {S : Type s} [CommRing R] [CommRing S] (W : WeierstrassCur
 
 section Ψ₂Sq
 
+section Ψ₂Sq
+
 /-! ### The univariate polynomial $\Psi_2^{[2]}$ -/
 
 /-- The $2$-division polynomial $\psi_2 = \Psi_2$. -/
-protected noncomputable def ψ₂ : R[X][Y] :=
+noncomputable def ψ₂ : R[X][Y] :=
   W.toAffine.polynomialY
 
 /-- The univariate polynomial $\Psi_2^{[2]}$ congruent to $\psi_2^2$. -/
-protected noncomputable def Ψ₂Sq : R[X] :=
+noncomputable def Ψ₂Sq : R[X] :=
   C 4 * X ^ 3 + C W.b₂ * X ^ 2 + C (2 * W.b₄) * X + C W.b₆
 
 lemma C_Ψ₂Sq_eq : C W.Ψ₂Sq = W.ψ₂ ^ 2 - 4 * W.toAffine.polynomial := by
-  rw [WeierstrassCurve.Ψ₂Sq, WeierstrassCurve.ψ₂, b₂, b₄, b₆, Affine.polynomialY, Affine.polynomial]
+  rw [Ψ₂Sq, ψ₂, b₂, b₄, b₆, Affine.polynomialY, Affine.polynomial]
   C_simp
   ring1
 
@@ -137,18 +139,18 @@ section preΨ'
 /-! ### The univariate polynomials $\tilde{\Psi}_n$ for $n \in \mathbb{N}$ -/
 
 /-- The $3$-division polynomial $\psi_3 = \Psi_3$. -/
-protected noncomputable def Ψ₃ : R[X] :=
+noncomputable def Ψ₃ : R[X] :=
   3 * X ^ 4 + C W.b₂ * X ^ 3 + 3 * C W.b₄ * X ^ 2 + 3 * C W.b₆ * X + C W.b₈
 
 /-- The univariate polynomial $\tilde{\Psi}_4$, which is auxiliary to the $4$-division polynomial
 $\psi_4 = \Psi_4 = \tilde{\Psi}_4\psi_2$. -/
-protected noncomputable def preΨ₄ : R[X] :=
+noncomputable def preΨ₄ : R[X] :=
   2 * X ^ 6 + C W.b₂ * X ^ 5 + 5 * C W.b₄ * X ^ 4 + 10 * C W.b₆ * X ^ 3 + 10 * C W.b₈ * X ^ 2 +
     C (W.b₂ * W.b₈ - W.b₄ * W.b₆) * X + C (W.b₄ * W.b₈ - W.b₆ ^ 2)
 
 /-- The univariate polynomials $\tilde{\Psi}_n$ for $n \in \mathbb{N}$, which are auxiliary to the
 bivariate polynomials $\Psi_n$ congruent to the bivariate $n$-division polynomials $\psi_n$. -/
-protected noncomputable def preΨ' (n : ℕ) : R[X] :=
+noncomputable def preΨ' (n : ℕ) : R[X] :=
   preNormEDS' (W.Ψ₂Sq ^ 2) W.Ψ₃ W.preΨ₄ n
 
 @[simp]
@@ -189,7 +191,7 @@ section preΨ
 
 /-- The univariate polynomials $\tilde{\Psi}_n$ for $n \in \mathbb{Z}$, which are auxiliary to the
 bivariate polynomials $\Psi_n$ congruent to the bivariate $n$-division polynomials $\psi_n$. -/
-protected noncomputable def preΨ (n : ℤ) : R[X] :=
+noncomputable def preΨ (n : ℤ) : R[X] :=
   preNormEDS (W.Ψ₂Sq ^ 2) W.Ψ₃ W.preΨ₄ n
 
 @[simp]
@@ -237,12 +239,12 @@ section ΨSq
 /-! ### The univariate polynomials $\Psi_n^{[2]}$ -/
 
 /-- The univariate polynomials $\Psi_n^{[2]}$ congruent to $\psi_n^2$. -/
-protected noncomputable def ΨSq (n : ℤ) : R[X] :=
+noncomputable def ΨSq (n : ℤ) : R[X] :=
   W.preΨ n ^ 2 * if Even n then W.Ψ₂Sq else 1
 
 @[simp]
 lemma ΨSq_ofNat (n : ℕ) : W.ΨSq n = W.preΨ' n ^ 2 * if Even n then W.Ψ₂Sq else 1 := by
-  simp only [WeierstrassCurve.ΨSq, preΨ_ofNat, Int.even_coe_nat]
+  simp only [ΨSq, preΨ_ofNat, Int.even_coe_nat]
 
 @[simp]
 lemma ΨSq_zero : W.ΨSq 0 = 0 := by
@@ -276,7 +278,11 @@ lemma ΨSq_even (m : ℕ) : W.ΨSq (2 * (m + 3)) =
 
 @[simp]
 lemma ΨSq_neg (n : ℤ) : W.ΨSq (-n) = W.ΨSq n := by
-  simp only [WeierstrassCurve.ΨSq, preΨ_neg, neg_sq, even_neg]
+  simp only [ΨSq, preΨ_neg, neg_sq, even_neg]
+
+end ΨSq
+
+section Ψ
 
 end ΨSq
 
@@ -288,9 +294,11 @@ section Ψ
 protected noncomputable def Ψ (n : ℤ) : R[X][Y] :=
   C (W.preΨ n) * if Even n then W.ψ₂ else 1
 
+open WeierstrassCurve (Ψ)
+
 @[simp]
 lemma Ψ_ofNat (n : ℕ) : W.Ψ n = C (W.preΨ' n) * if Even n then W.ψ₂ else 1 := by
-  simp only [WeierstrassCurve.Ψ, preΨ_ofNat, Int.even_coe_nat]
+  simp only [Ψ, preΨ_ofNat, Int.even_coe_nat]
 
 @[simp]
 lemma Ψ_zero : W.Ψ 0 = 0 := by
@@ -329,7 +337,11 @@ lemma Ψ_even (m : ℕ) : W.Ψ (2 * (m + 3)) * W.ψ₂ =
 
 @[simp]
 lemma Ψ_neg (n : ℤ) : W.Ψ (-n) = -W.Ψ n := by
-  simp only [WeierstrassCurve.Ψ, preΨ_neg, C_neg, neg_mul (α := R[X][Y]), even_neg]
+  simp only [Ψ, preΨ_neg, C_neg, neg_mul (α := R[X][Y]), even_neg]
+
+end Ψ
+
+section Φ
 
 end Ψ
 
@@ -341,17 +353,19 @@ section Φ
 protected noncomputable def Φ (n : ℤ) : R[X] :=
   X * W.ΨSq n - W.preΨ (n + 1) * W.preΨ (n - 1) * if Even n then 1 else W.Ψ₂Sq
 
+open WeierstrassCurve (Φ)
+
 @[simp]
 lemma Φ_ofNat (n : ℕ) : W.Φ (n + 1) =
     X * W.preΨ' (n + 1) ^ 2 * (if Even n then 1 else W.Ψ₂Sq) -
       W.preΨ' (n + 2) * W.preΨ' n * (if Even n then W.Ψ₂Sq else 1) := by
-  erw [WeierstrassCurve.Φ, ΨSq_ofNat, ← mul_assoc, preΨ_ofNat, add_sub_cancel_right, preΨ_ofNat]
+  erw [Φ, ΨSq_ofNat, ← mul_assoc, preΨ_ofNat, add_sub_cancel_right, preΨ_ofNat]
   simp only [Nat.even_add_one, Int.even_add_one, Int.even_coe_nat, ite_not]
 
 @[simp]
 lemma Φ_zero : W.Φ 0 = 1 := by
-  rw [WeierstrassCurve.Φ, ΨSq_zero, mul_zero, zero_sub, zero_add, preΨ_one, one_mul, zero_sub,
-    preΨ_neg, preΨ_one, neg_one_mul, neg_neg, if_pos even_zero]
+  rw [Φ, ΨSq_zero, mul_zero, zero_sub, zero_add, preΨ_one, one_mul, zero_sub, preΨ_neg, preΨ_one,
+    neg_one_mul, neg_neg, if_pos even_zero]
 
 @[simp]
 lemma Φ_one : W.Φ 1 = X := by
@@ -359,8 +373,7 @@ lemma Φ_one : W.Φ 1 = X := by
 
 @[simp]
 lemma Φ_two : W.Φ 2 = X ^ 4 - C W.b₄ * X ^ 2 - C (2 * W.b₆) * X - C W.b₈ := by
-  erw [Φ_ofNat, preΨ'_two, if_neg Nat.not_even_one, WeierstrassCurve.Ψ₂Sq, preΨ'_three, preΨ'_one,
-    mul_one, WeierstrassCurve.Ψ₃]
+  erw [Φ_ofNat, preΨ'_two, if_neg Nat.not_even_one, Ψ₂Sq, preΨ'_three, preΨ'_one, mul_one, Ψ₃]
   C_simp
   ring1
 
@@ -376,8 +389,12 @@ lemma Φ_four : W.Φ 4 = X * W.preΨ₄ ^ 2 * W.Ψ₂Sq - W.Ψ₃ * (W.preΨ₄ 
 
 @[simp]
 lemma Φ_neg (n : ℤ) : W.Φ (-n) = W.Φ n := by
-  simp only [WeierstrassCurve.Φ, ΨSq_neg, neg_add_eq_sub, ← neg_sub n, preΨ_neg, ← neg_add',
-    preΨ_neg, neg_mul_neg, mul_comm <| W.preΨ <| n - 1, even_neg]
+  simp only [Φ, ΨSq_neg, neg_add_eq_sub, ← neg_sub n, preΨ_neg, ← neg_add', preΨ_neg, neg_mul_neg,
+    mul_comm <| W.preΨ <| n - 1, even_neg]
+
+end Φ
+
+section ψ
 
 end Φ
 
@@ -431,34 +448,37 @@ section φ
 protected noncomputable def φ (n : ℤ) : R[X][Y] :=
   C X * W.ψ n ^ 2 - W.ψ (n + 1) * W.ψ (n - 1)
 
+open WeierstrassCurve (φ)
+
 @[simp]
 lemma φ_zero : W.φ 0 = 1 := by
-  erw [WeierstrassCurve.φ, ψ_zero, zero_pow two_ne_zero, mul_zero, zero_sub, ψ_one, one_mul,
+  erw [φ, ψ_zero, zero_pow two_ne_zero, mul_zero, zero_sub, ψ_one, one_mul,
     zero_sub, ψ_neg, neg_neg, ψ_one]
 
 @[simp]
 lemma φ_one : W.φ 1 = C X := by
-  erw [WeierstrassCurve.φ, ψ_one, one_pow, mul_one, ψ_zero, mul_zero, sub_zero]
+  erw [φ, ψ_one, one_pow, mul_one, ψ_zero, mul_zero, sub_zero]
 
 @[simp]
 lemma φ_two : W.φ 2 = C X * W.ψ₂ ^ 2 - C W.Ψ₃ := by
-  erw [WeierstrassCurve.φ, ψ_two, ψ_three, ψ_one, mul_one]
+  erw [φ, ψ_two, ψ_three, ψ_one, mul_one]
 
 @[simp]
 lemma φ_three : W.φ 3 = C X * C W.Ψ₃ ^ 2 - C W.preΨ₄ * W.ψ₂ ^ 2 := by
-  erw [WeierstrassCurve.φ, ψ_three, ψ_four, mul_assoc, ψ_two, ← sq]
+  erw [φ, ψ_three, ψ_four, mul_assoc, ψ_two, ← sq]
 
 @[simp]
 lemma φ_four :
     W.φ 4 = C X * C W.preΨ₄ ^ 2 * W.ψ₂ ^ 2 - C W.preΨ₄ * W.ψ₂ ^ 4 * C W.Ψ₃ + C W.Ψ₃ ^ 4 := by
-  erw [WeierstrassCurve.φ, ψ_four, show (4 + 1 : ℤ) = 2 * 2 + 1 by rfl, ψ_odd, ψ_four, ψ_two, ψ_one,
-    ψ_three]
+  erw [φ, ψ_four, show (4 + 1 : ℤ) = 2 * 2 + 1 by rfl, ψ_odd, ψ_four, ψ_two, ψ_one, ψ_three]
   ring1
 
 @[simp]
 lemma φ_neg (n : ℤ) : W.φ (-n) = W.φ n := by
-  rw [WeierstrassCurve.φ, ψ_neg, neg_sq (R := R[X][Y]), neg_add_eq_sub, ← neg_sub n, ψ_neg,
-    ← neg_add', ψ_neg, neg_mul_neg (α := R[X][Y]), mul_comm <| W.ψ _, WeierstrassCurve.φ]
+  rw [φ, ψ_neg, neg_sq (R := R[X][Y]), neg_add_eq_sub, ← neg_sub n, ψ_neg, ← neg_add', ψ_neg,
+    neg_mul_neg (α := R[X][Y]), mul_comm <| W.ψ _, φ]
+
+end φ
 
 end φ
 
