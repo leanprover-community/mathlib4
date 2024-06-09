@@ -118,7 +118,7 @@ theorem oreDiv_eq_iff {r₁ r₂ : X} {s₁ s₂ : S} :
 
 /-- A fraction `r /ₒ s` is equal to its expansion by an arbitrary factor `t` if `t * s ∈ S`. -/
 @[to_additive "A difference `r -ₒ s` is equal to its expansion by an
-arbitrary factor `t` if `t + s ∈ S`."]
+arbitrary translation `t` if `t + s ∈ S`."]
 protected theorem expand (r : X) (s : S) (t : R) (hst : t * (s : R) ∈ S) :
     r /ₒ s = t • r /ₒ ⟨t * s, hst⟩ := by
   apply Quotient.sound
@@ -126,15 +126,15 @@ protected theorem expand (r : X) (s : S) (t : R) (hst : t * (s : R) ∈ S) :
 #align ore_localization.expand OreLocalization.expand
 
 /-- A fraction is equal to its expansion by a factor from `S`. -/
-@[to_additive "A difference is equal to its expansion by a factor from `S`."]
+@[to_additive "A difference is equal to its expansion by a summand from `S`."]
 protected theorem expand' (r : X) (s s' : S) : r /ₒ s = s' • r /ₒ (s' * s) :=
   OreLocalization.expand r s s' (by norm_cast; apply SetLike.coe_mem)
 #align ore_localization.expand' OreLocalization.expand'
 
 /-- Fractions which differ by a factor of the numerator can be proven equal if
 those factors expand to equal elements of `R`. -/
-@[to_additive "Differences which differ by a factor of the minuend can be proven equal if
-those factors expand to equal elements of `R`."]
+@[to_additive "Differences whose minuends differ by a common summand can be proven equal if
+those summands expand to equal elements of `R`."]
 protected theorem eq_of_num_factor_eq {r r' r₁ r₂ : R} {s t : S} (h : t * r = t * r') :
     r₁ * r * r₂ /ₒ s = r₁ * r' * r₂ /ₒ s := by
   rcases oreCondition r₁ t with ⟨r₁', t', hr₁⟩
