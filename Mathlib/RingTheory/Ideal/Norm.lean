@@ -393,7 +393,7 @@ theorem absNorm_span_insert (r : S) (s : Set S) :
     ⟨absNorm_dvd_absNorm_of_le (span_mono (Set.subset_insert _ _)),
       _root_.trans
         (absNorm_dvd_absNorm_of_le (span_mono (Set.singleton_subset_iff.mpr (Set.mem_insert _ _))))
-        (by rw [absNorm_span_singleton])⟩
+        (by rw [absNorm_span_singleton]; rfl)⟩
 #align ideal.abs_norm_span_insert Ideal.absNorm_span_insert
 
 theorem absNorm_eq_zero_iff {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ := by

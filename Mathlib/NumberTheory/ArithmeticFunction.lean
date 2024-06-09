@@ -1248,7 +1248,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
       rw [if_neg (Nat.pos_of_mem_divisors hx).ne']
   trans μ • g' = f'
   · constructor <;> intro h
-    · rw [← h, ← mul_smul, moebius_mul_coe_zeta, one_smul]
+    · rw [← h, ← mul_smul μ ζ f', moebius_mul_coe_zeta, one_smul]
     · rw [← h, ← mul_smul, coe_zeta_mul_moebius, one_smul]
   · rw [ext_iff]
     apply forall_congr'

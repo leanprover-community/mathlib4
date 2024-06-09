@@ -203,10 +203,13 @@ theorem isThreeCycle_sq_of_three_mem_cycleType_five {g : Perm (Fin 5)} (h : 3 �
     exact (card_support_eq_three_iff.1 h3).isThreeCycle_sq
   rw [← lcm_cycleType, Multiset.lcm_dvd]
   intro n hn
-  rw [le_antisymm (two_le_of_mem_cycleType hn) (le_trans (le_card_support_of_mem_cycleType hn) _)]
-  apply le_of_add_le_add_left
-  rw [← hd.card_support_mul, h3]
-  exact (c * g').support.card_le_univ
+  have hn2 : n ≤ 2 := by
+    apply (le_card_support_of_mem_cycleType hn).trans
+    apply le_of_add_le_add_left
+    rw [← hd.card_support_mul, h3]
+    exact (c * g').support.card_le_univ
+  rw [le_antisymm (two_le_of_mem_cycleType hn) hn2]
+  rfl
 #align equiv.perm.is_three_cycle_sq_of_three_mem_cycle_type_five Equiv.Perm.isThreeCycle_sq_of_three_mem_cycleType_five
 
 end Equiv.Perm

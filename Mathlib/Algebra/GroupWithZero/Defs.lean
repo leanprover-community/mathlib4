@@ -109,12 +109,12 @@ attribute [instance 50] SemigroupWithZero.toMulZeroClass
 attribute [instance 20] SemigroupWithZero.toSemigroup
 
 /-- A typeclass for non-associative monoids with zero elements. -/
-class MulZeroOneClass (M₀ : Type u) extends MulZeroClass M₀, MulOneClass M₀
+class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M₀
 #align mul_zero_one_class MulZeroOneClass
 
 attribute [instance 100] MulZeroOneClass.toMulZeroClass
 attribute [instance 20] MulZeroOneClass.toMulOneClass
-attribute [instance 0] MulZeroOneClass.toOne
+attribute [instance 0] MulZeroOneClass.toZero
 
 /-- A type `M₀` is a “monoid with zero” if it is a monoid with zero element, and `0` is left
 and right absorbing. -/
