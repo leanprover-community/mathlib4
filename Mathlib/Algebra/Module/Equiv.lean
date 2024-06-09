@@ -1131,11 +1131,14 @@ def smulOfUnit (a : Rˣ) : M ≃ₗ[R] M :=
 
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
 linear isomorphism between the two function spaces. -/
-def arrowCongr {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
-    [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂] [Module R M₂₁]
-    [Module R M₂₂] (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) : (M₁ →ₗ[R] M₂₁) ≃ₗ[R] M₂ →ₗ[R] M₂₂ where
-  toFun := fun f : M₁ →ₗ[R] M₂₁ => (e₂ : M₂₁ →ₗ[R] M₂₂).comp <| f.comp (e₁.symm : M₂ →ₗ[R] M₁)
-  invFun f := (e₂.symm : M₂₂ →ₗ[R] M₂₁).comp <| f.comp (e₁ : M₁ →ₗ[R] M₂)
+def arrowCongr {R R₁ M₁ M₂ M₂₁ M₂₂ : Type*} [CommSemiring R] [Semiring R₁] [AddCommMonoid M₁]
+    [AddCommMonoid M₂] [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R₁ M₁] [Module R₁ M₂]
+    [Module R₁ M₂₁] [Module R₁ M₂₂] [Module R M₂₁] [Module R M₂₂] [SMulCommClass R₁ R M₂₁]
+    [SMulCommClass R₁ R M₂₂]
+    (e₁ : M₁ ≃ₗ[R₁] M₂) (e₂ : M₂₁ ≃ₗ[R₁] M₂₂) (h : ∀ (c : R) (x), e₂ (c • x) = c • e₂ x) :
+    (M₁ →ₗ[R₁] M₂₁) ≃ₗ[R] M₂ →ₗ[R₁] M₂₂ where
+  toFun := fun f : M₁ →ₗ[R₁] M₂₁ => (e₂ : M₂₁ →ₗ[R₁] M₂₂).comp <| f.comp (e₁.symm : M₂ →ₗ[R₁] M₁)
+  invFun f := (e₂.symm : M₂₂ →ₗ[R₁] M₂₁).comp <| f.comp (e₁ : M₁ →ₗ[R₁] M₂)
   left_inv f := by
     ext x
     simp only [symm_apply_apply, Function.comp_apply, coe_comp, coe_coe]
@@ -1147,7 +1150,8 @@ def arrowCongr {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommM
     simp only [map_add, add_apply, Function.comp_apply, coe_comp, coe_coe]
   map_smul' c f := by
     ext x
-    simp only [smul_apply, Function.comp_apply, coe_comp, map_smulₛₗ e₂, coe_coe]
+    simp  [smul_apply, Function.comp_apply, coe_comp, map_smulₛₗ e₂, coe_coe, IsLinearMap.map_smul,
+      h]
 #align linear_equiv.arrow_congr LinearEquiv.arrowCongr
 
 @[simp]
