@@ -234,7 +234,7 @@ instance instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩
 instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
 
 -- ADHOC Porting note: instance from Lean3 core
-instance [DecidableEq α] : IsLawfulSingleton α (List α) :=
+instance [DecidableEq α] : LawfulSingleton α (List α) :=
   { insert_emptyc_eq := fun x =>
       show (if x ∈ ([] : List α) then [] else [x]) = [x] from if_neg (not_mem_nil _) }
 
@@ -488,7 +488,7 @@ theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
 
 /-! ### pure -/
 
-theorem mem_pure {α} (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp
+theorem mem_pure (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp
 #align list.mem_pure List.mem_pure
 
 /-! ### bind -/
@@ -1061,7 +1061,7 @@ theorem Sublist.of_cons_cons {l₁ l₂ : List α} {a b : α} (h : a :: l₁ <+ 
   h.tail
 #align list.sublist_of_cons_sublist_cons List.Sublist.of_cons_cons
 
-@[deprecated] -- 2024-04-07
+@[deprecated (since := "2024-04-07")]
 theorem sublist_of_cons_sublist_cons {a} (h : a :: l₁ <+ a :: l₂) : l₁ <+ l₂ := h.of_cons_cons
 
 attribute [simp] cons_sublist_cons
@@ -1217,12 +1217,12 @@ end IndexOf
 section deprecated
 set_option linter.deprecated false
 
-@[deprecated get_of_mem] -- 2023-01-05
+@[deprecated get_of_mem (since := "2023-01-05")]
 theorem nthLe_of_mem {a} {l : List α} (h : a ∈ l) : ∃ n h, nthLe l n h = a :=
   let ⟨i, h⟩ := get_of_mem h; ⟨i.1, i.2, h⟩
 #align list.nth_le_of_mem List.nthLe_of_mem
 
-@[deprecated get?_eq_get] -- 2023-01-05
+@[deprecated get?_eq_get (since := "2023-01-05")]
 theorem nthLe_get? {l : List α} {n} (h) : get? l n = some (nthLe l n h) := get?_eq_get _
 #align list.nth_le_nth List.nthLe_get?
 
@@ -1236,13 +1236,13 @@ theorem get?_length (l : List α) : l.get? l.length = none := get?_len_le le_rfl
 #align list.nth_eq_none_iff List.get?_eq_none
 #align list.nth_of_mem List.get?_of_mem
 
-@[deprecated get_mem] -- 2023-01-05
+@[deprecated get_mem (since := "2023-01-05")]
 theorem nthLe_mem (l : List α) (n h) : nthLe l n h ∈ l := get_mem ..
 #align list.nth_le_mem List.nthLe_mem
 
 #align list.nth_mem List.get?_mem
 
-@[deprecated mem_iff_get] -- 2023-01-05
+@[deprecated mem_iff_get (since := "2023-01-05")]
 theorem mem_iff_nthLe {a} {l : List α} : a ∈ l ↔ ∃ n h, nthLe l n h = a :=
   mem_iff_get.trans ⟨fun ⟨⟨n, h⟩, e⟩ => ⟨n, h, e⟩, fun ⟨n, h, e⟩ => ⟨⟨n, h⟩, e⟩⟩
 #align list.mem_iff_nth_le List.mem_iff_nthLe
@@ -1255,7 +1255,7 @@ theorem mem_iff_nthLe {a} {l : List α} : a ∈ l ↔ ∃ n h, nthLe l n h = a :
 
 #align list.nth_map List.get?_map
 
-@[deprecated get_map] -- 2023-01-05
+@[deprecated get_map (since := "2023-01-05")]
 theorem nthLe_map (f : α → β) {l n} (H1 H2) : nthLe (map f l) n H1 = f (nthLe l n H2) := get_map ..
 #align list.nth_le_map List.nthLe_map
 
@@ -1264,20 +1264,20 @@ theorem get_map_rev (f : α → β) {l n} :
     f (get l n) = get (map f l) ⟨n.1, (l.length_map f).symm ▸ n.2⟩ := Eq.symm (get_map _)
 
 /-- A version of `nthLe_map` that can be used for rewriting. -/
-@[deprecated get_map_rev] -- 2023-01-05
+@[deprecated get_map_rev (since := "2023-01-05")]
 theorem nthLe_map_rev (f : α → β) {l n} (H) :
     f (nthLe l n H) = nthLe (map f l) n ((l.length_map f).symm ▸ H) :=
   (nthLe_map f _ _).symm
 #align list.nth_le_map_rev List.nthLe_map_rev
 
-@[simp, deprecated get_map] -- 2023-01-05
+@[simp, deprecated get_map (since := "2023-01-05")]
 theorem nthLe_map' (f : α → β) {l n} (H) :
     nthLe (map f l) n H = f (nthLe l n (l.length_map f ▸ H)) := nthLe_map f _ _
 #align list.nth_le_map' List.nthLe_map'
 
 #align list.nth_le_of_eq List.get_of_eq
 
-@[simp, deprecated get_singleton] -- 2023-01-05
+@[simp, deprecated get_singleton (since := "2023-01-05")]
 theorem nthLe_singleton (a : α) {n : ℕ} (hn : n < 1) : nthLe [a] n hn = a := get_singleton ..
 #align list.nth_le_singleton List.get_singleton
 
@@ -1285,7 +1285,7 @@ theorem nthLe_singleton (a : α) {n : ℕ} (hn : n < 1) : nthLe [a] n hn = a := 
 
 #align list.nth_le_append List.get_append
 
-@[deprecated get_append_right'] -- 2023-01-05
+@[deprecated get_append_right' (since := "2023-01-05")]
 theorem nthLe_append_right {l₁ l₂ : List α} {n : ℕ} (h₁ : l₁.length ≤ n) (h₂) :
     (l₁ ++ l₂).nthLe n h₂ = l₂.nthLe (n - l₁.length) (get_append_right_aux h₁ h₂) :=
   get_append_right' h₁ h₂
@@ -1304,7 +1304,7 @@ theorem get_length_sub_one {l : List α} (h : l.length - 1 < l.length) :
 
 #align list.nth_concat_length List.get?_concat_length
 
-@[deprecated get_cons_length] -- 2023-01-05
+@[deprecated get_cons_length (since := "2023-01-05")]
 theorem nthLe_cons_length : ∀ (x : α) (xs : List α) (n : ℕ) (h : n = xs.length),
     (x :: xs).nthLe n (by simp [h]) = (x :: xs).getLast (cons_ne_nil x xs) := get_cons_length
 #align list.nth_le_cons_length List.nthLe_cons_length
@@ -1343,7 +1343,7 @@ theorem ext_get?_iff' {l₁ l₂ : List α} : l₁ = l₂ ↔
     ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n :=
   ⟨by rintro rfl _ _; rfl, ext_get?'⟩
 
-@[deprecated ext_get] -- 2023-01-05
+@[deprecated ext_get (since := "2023-01-05")]
 theorem ext_nthLe {l₁ l₂ : List α} (hl : length l₁ = length l₂)
     (h : ∀ n h₁ h₂, nthLe l₁ n h₁ = nthLe l₂ n h₂) : l₁ = l₂ :=
   ext_get hl h
@@ -1361,7 +1361,7 @@ theorem indexOf_get? [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
     get? l (indexOf a l) = some a := by rw [get?_eq_get, indexOf_get (indexOf_lt_length.2 h)]
 #align list.index_of_nth List.indexOf_get?
 
-@[deprecated] -- 2023-01-05
+@[deprecated (since := "2023-01-05")]
 theorem get_reverse_aux₁ :
     ∀ (l r : List α) (i h1 h2), get (reverseAux l r) ⟨i + length l, h1⟩ = get r ⟨i, h2⟩
   | [], r, i => fun h1 _ => rfl
@@ -1399,7 +1399,7 @@ theorem get_reverse_aux₂ :
     get (reverse l) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ :=
   get_reverse_aux₂ _ _ _ _ _
 
-@[simp, deprecated get_reverse] -- 2023-01-05
+@[simp, deprecated get_reverse (since := "2023-01-05")]
 theorem nthLe_reverse (l : List α) (i : Nat) (h1 h2) :
     nthLe (reverse l) (length l - 1 - i) h1 = nthLe l i h2 :=
   get_reverse ..
@@ -1549,7 +1549,7 @@ theorem bind_pure_eq_map (f : α → β) (l : List α) : l.bind (pure ∘ f) = m
 #align list.bind_ret_eq_map List.bind_pure_eq_map
 
 set_option linter.deprecated false in
-@[deprecated bind_pure_eq_map] -- 2024-03-24
+@[deprecated bind_pure_eq_map (since := "2024-03-24")]
 theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l :=
   bind_pure_eq_map f l
 
@@ -1965,7 +1965,7 @@ theorem foldr_hom₂ (l : List ι) (f : α → β → γ) (op₁ : ι → α →
   induction l <;> intros <;> [rfl; simp only [*, foldr]]
 #align list.foldr_hom₂ List.foldr_hom₂
 
-theorem injective_foldl_comp {α : Type*} {l : List (α → α)} {f : α → α}
+theorem injective_foldl_comp {l : List (α → α)} {f : α → α}
     (hl : ∀ f ∈ l, Function.Injective f) (hf : Function.Injective f) :
     Function.Injective (@List.foldl (α → α) (α → α) Function.comp f l) := by
   induction' l with lh lt l_ih generalizing f
@@ -2076,7 +2076,7 @@ theorem get_zero_scanl {h : 0 < (scanl f b l).length} : (scanl f b l).get ⟨0, 
   · simp only [get, scanl_cons, singleton_append]
 
 set_option linter.deprecated false in
-@[simp, deprecated get_zero_scanl] -- 2023-01-05
+@[simp, deprecated get_zero_scanl (since := "2023-01-05")]
 theorem nthLe_zero_scanl {h : 0 < (scanl f b l).length} : (scanl f b l).nthLe 0 h = b :=
   get_zero_scanl
 #align list.nth_le_zero_scanl List.nthLe_zero_scanl
@@ -2274,12 +2274,12 @@ end FoldlMFoldrM
 #align list.intersperse_nil List.intersperse_nil
 
 @[simp]
-theorem intersperse_singleton {α : Type u} (a b : α) : intersperse a [b] = [b] :=
+theorem intersperse_singleton (a b : α) : intersperse a [b] = [b] :=
   rfl
 #align list.intersperse_singleton List.intersperse_singleton
 
 @[simp]
-theorem intersperse_cons_cons {α : Type u} (a b c : α) (tl : List α) :
+theorem intersperse_cons_cons (a b c : α) (tl : List α) :
     intersperse a (b :: c :: tl) = b :: a :: intersperse a (c :: tl) :=
   rfl
 #align list.intersperse_cons_cons List.intersperse_cons_cons
@@ -2334,7 +2334,7 @@ where
 #align list.split_at_eq_take_drop List.splitAt_eq_take_drop
 
 @[simp]
-theorem splitOn_nil {α : Type u} [DecidableEq α] (a : α) : [].splitOn a = [[]] :=
+theorem splitOn_nil [DecidableEq α] (a : α) : [].splitOn a = [[]] :=
   rfl
 #align list.split_on_nil List.splitOn_nil
 
@@ -2602,7 +2602,7 @@ theorem attach_eq_nil (l : List α) : l.attach = [] ↔ l = [] :=
   pmap_eq_nil
 #align list.attach_eq_nil List.attach_eq_nil
 
-theorem getLast_pmap {α β : Type*} (p : α → Prop) (f : ∀ a, p a → β) (l : List α)
+theorem getLast_pmap (p : α → Prop) (f : ∀ a, p a → β) (l : List α)
     (hl₁ : ∀ a ∈ l, p a) (hl₂ : l ≠ []) :
     (l.pmap f hl₁).getLast (mt List.pmap_eq_nil.1 hl₂) =
       f (l.getLast hl₂) (hl₁ _ (List.getLast_mem hl₂)) := by
@@ -2637,7 +2637,7 @@ theorem get_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : �
     · simp [hl]
 
 set_option linter.deprecated false in
-@[deprecated get_pmap] -- 2023-01-05
+@[deprecated get_pmap (since := "2023-01-05")]
 theorem nthLe_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) {n : ℕ}
     (hn : n < (pmap f l h).length) :
     nthLe (pmap f l h) n hn =
@@ -2658,7 +2658,7 @@ theorem pmap_append {p : ι → Prop} (f : ∀ a : ι, p a → α) (l₁ l₂ : 
     rw [ih]
 #align list.pmap_append List.pmap_append
 
-theorem pmap_append' {α β : Type*} {p : α → Prop} (f : ∀ a : α, p a → β) (l₁ l₂ : List α)
+theorem pmap_append' {p : α → Prop} (f : ∀ a : α, p a → β) (l₁ l₂ : List α)
     (h₁ : ∀ a ∈ l₁, p a) (h₂ : ∀ a ∈ l₂, p a) :
     ((l₁ ++ l₂).pmap f fun a ha => (List.mem_append.1 ha).elim (h₁ a) (h₂ a)) =
       l₁.pmap f h₁ ++ l₂.pmap f h₂ :=
@@ -2775,6 +2775,12 @@ theorem length_lookmap (l : List α) : length (l.lookmap f) = length l := by
 end Lookmap
 
 /-! ### filter -/
+
+theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
+    l.length = (l.filter f).length + (l.filter (! f ·)).length := by
+  simp_rw [← List.countP_eq_length_filter, l.length_eq_countP_add_countP f, Bool.not_eq_true,
+    Bool.decide_eq_false]
+
 /-! ### filterMap -/
 
 #align list.filter_map_nil List.filterMap_nil
@@ -3599,8 +3605,6 @@ theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) 
 #align list.sizeof_slice_lt List.sizeOf_dropSlice_lt
 
 section Disjoint
-
-variable {α β : Type*}
 
 /-- The images of disjoint lists under a partially defined map are disjoint -/
 theorem disjoint_pmap {p : α → Prop} {f : ∀ a : α, p a → β} {s t : List α}
