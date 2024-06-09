@@ -48,7 +48,7 @@ set_option linter.unusedVariables false in
 lemma bar (h : Nat) : True := by trivial
 
 /--
-warning: unnecessary 'set_option maxHeartbeats' in 'd'
+warning: unnecessary `set_option maxHeartbeats 0`
 note: this linter can be disabled with `set_option linter.unnecessarySetOptionIn false`
 -/
 #guard_msgs in
@@ -57,7 +57,7 @@ set_option maxHeartbeats 0 in
 instance (priority := high) d : Inhabited Nat := ⟨0⟩
 
 /--
-warning: unnecessary 'set_option maxHeartbeats' in '_unnamed_instance_'
+warning: unnecessary `set_option maxHeartbeats 0`
 note: this linter can be disabled with `set_option linter.unnecessarySetOptionIn false`
 -/
 #guard_msgs in
@@ -65,7 +65,7 @@ set_option maxHeartbeats 0 in
 instance (priority := high) : Inhabited Nat := ⟨0⟩
 
 /--
-warning: unnecessary 'set_option maxHeartbeats' in 'd1'
+warning: unnecessary `set_option maxHeartbeats 0`
 note: this linter can be disabled with `set_option linter.unnecessarySetOptionIn false`
 -/
 #guard_msgs in
@@ -73,7 +73,7 @@ set_option maxHeartbeats 0 in
 instance d1 : Inhabited Nat := ⟨0⟩
 
 /--
-warning: unnecessary 'set_option maxHeartbeats' in '_unnamed_instance_'
+warning: unnecessary `set_option maxHeartbeats 0`
 note: this linter can be disabled with `set_option linter.unnecessarySetOptionIn false`
 -/
 #guard_msgs in

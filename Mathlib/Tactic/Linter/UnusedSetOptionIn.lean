@@ -72,14 +72,18 @@ def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
   let s ← get
   match stx with
     | .node _ ``Lean.Parser.Command.in #[
-        .node _ ``Lean.Parser.Command.set_option #[_, opt, _, .atom _ v],
+        .node _ ``Lean.Parser.Command.set_option #[_, opt, _, v],
         _,  -- atom `in`
         inner] => do
+      let v := match v with
+              | .atom _ v => v
+              | .node _ _ #[.atom _ v] => v
+              | _ => default
       if !opt.getId.components.contains `linter then
-        if let some (exm, id) := (← toExample inner) then
+        if let some (exm, _) := (← toExample inner) then
           cmd exm
           let msgs := (← get).messages.toList
-          (report?, declId) := (msgs.isEmpty, id)
+          (report?, declId) := (msgs.isEmpty, v)
           set s
         if report? then
           Linter.logLint linter.unnecessarySetOptionIn stx
