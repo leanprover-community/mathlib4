@@ -55,6 +55,10 @@ lemma prod_map_comp_right_id_left :
     prod.map (𝟙 X) (f' ≫ g') = prod.map (𝟙 X) f' ≫ prod.map (𝟙 X) g' := by
   simp only [prod.map_map, Category.comp_id]
 
+lemma prod_map_comp_left :
+    prod.map (f ≫ g) f' = prod.map f f' ≫ prod.map g (𝟙 Y') := by
+  simp only [prod.map_map, Category.comp_id]
+
 @[simp]
 lemma PreservesLimitPair.iso_inv :
     (PreservesLimitPair.iso F X X').inv = inv (prodComparison F X X') := by

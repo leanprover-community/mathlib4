@@ -17,15 +17,11 @@ open CategoryTheory Limits GroupObject
 
 noncomputable section
 
-variable {C : Type u} [Category.{v, u} C] [HasFiniteProducts C]
-
-variable {J : Type u'} [Category.{v',u'} J] [HasLimitsOfShape J C]
-
-variable {K : Type u''} [Category.{v'', u''} K] [HasLimitsOfShape K C]
-
-variable {J' : Type} [SmallCategory J'] [HasLimitsOfShape J' C]
-
 namespace CategoryTheory.Limits
+
+variable {C : Type u} [Category.{v, u} C] [HasFiniteProducts C]
+variable {J : Type u'} [Category.{v',u'} J] [HasLimitsOfShape J C]
+variable {K : Type u''} [Category.{v'', u''} K] [HasLimitsOfShape K C]
 
 @[simp]
 def limPreservesLimitsOfShape_lift (F : K ⥤ (J ⥤ C)) {c : Cone F} (limc : IsLimit c)
@@ -101,107 +97,124 @@ end CategoryTheory.Limits
 
 namespace GroupObject
 
+variable {C : Type u} [Category.{v, u} C] [HasFiniteProducts C]
+variable {J : Type u'} [Category.{v',u'} J]
+variable (F : J ⥤ GroupObject C) [HasLimit (F ⋙ forget C)]
+
 open GroupObjectFunctor CategoryTheory.Functor
 
-variable (C J)
-
-def constAdj'_core : Adjunction.CoreUnitCounit
-    (map (Functor.const J : C ⥤ J ⥤ C)) (map (lim : (J ⥤ C) ⥤ C)) where
-  unit := (mapId C).inv ≫ (map₂ Limits.constLimAdj.unit) ≫ (mapComp (const J) lim).hom
-  counit := (mapComp lim (const J)).inv ≫ (map₂ Limits.constLimAdj.counit) ≫
-    (mapId (J ⥤ C)).hom
-  left_triangle := by
+@[simp]
+def candidate_cone_pt : GroupObject C where
+  X := Limits.limit (F ⋙ forget C)
+  one := (limit.isLimit (F ⋙ forget C)).lift
+    {pt := ⊤_ C, π := {app := fun j ↦ (F.obj j).one}}
+  mul := (limit.isLimit (F ⋙ forget C)).lift
+    {pt := Limits.prod (Limits.limit (F ⋙ forget C)) (Limits.limit (F ⋙ forget C))
+     π := { app := fun j ↦
+             (prod.map (limit.π (F ⋙ forget C) j) (limit.π (F ⋙ forget C) j)) ≫ (F.obj j).mul
+            naturality := by
+              intro _ _ u
+              simp only [const_obj_obj, postcomp, comp_obj, forget_obj, const_obj_map,
+                Category.id_comp, Functor.comp_map, forget_map, Category.assoc, Hom.mul_hom,
+                prod.map_map_assoc]
+              rw [← Limits.limit.w _ u, ← prod.map_map, ← prod.map_map]; rfl}}
+  inv := (limit.isLimit (F ⋙ forget C)).lift
+    {pt := Limits.limit (F ⋙ forget C)
+     π := {app := fun j ↦ (limit.π (F ⋙ forget C) j) ≫ (F.obj j).inv
+           naturality := by
+             intro _ _ u
+             simp only [const_obj_obj, postcomp, comp_obj, forget_obj, const_obj_map,
+               Category.id_comp, Functor.comp_map, forget_map, Category.assoc]
+             rw [← Limits.limit.w _ u, (F.map u).inv_hom, Category.assoc]; rfl}}
+  mul_assoc := by
+    refine (limit.isLimit (F ⋙ forget C)).hom_ext (fun j ↦ ?_)
+    simp only [comp_obj, forget_obj, limit.cone_x, postcomp, const_obj_obj, const_obj_map,
+      Functor.comp_map, forget_map, id_eq, eq_mpr_eq_cast, limit.isLimit_lift, limit.cone_π,
+      Category.assoc, limit.lift_π, prod.map_map_assoc, Category.id_comp, prod.associator_hom,
+      prod.lift_map_assoc, Category.comp_id, prod.lift_fst_comp_snd_comp]
+    rw [prod_map_comp_left, Category.assoc, (F.obj j).mul_assoc]
+    simp only [prod.associator_hom, prod.lift_map_assoc, Category.comp_id]
+    rw [← Category.assoc]
+    congr 1
     ext
-    simp only [GroupObjectFunctor.map, comp_obj, id_obj, map_obj_X, const_obj_obj, map₂, id_eq,
-      whiskerRight_comp, whiskerLeft_comp, Category.assoc, NatTrans.comp_app, whiskerRight_app,
-      associator_hom_app, whiskerLeft_app, Category.id_comp, comp_hom', map_map_hom,
-      mapId_inv_app_hom, CategoryTheory.Functor.map_id, lim_obj, mapComp_hom_app_hom,
-      mapComp_inv_app_hom, mapId_hom_app_hom, Category.comp_id,
-      Adjunction.left_triangle_components, NatTrans.id_app, NatTrans.id_app', id_hom']
-  right_triangle := by
-    ext X
-    simp only [GroupObjectFunctor.map, comp_obj, id_obj, map_obj_X, lim_obj, map₂, id_eq,
-      whiskerLeft_comp, whiskerRight_comp, Category.assoc, NatTrans.comp_app, whiskerLeft_app,
-      associator_inv_app, whiskerRight_app, Category.id_comp, comp_hom', mapId_inv_app_hom,
-      mapComp_hom_app_hom, map_map_hom, mapComp_inv_app_hom, mapId_hom_app_hom,
-      NatTrans.id_app', id_hom']
-    rw [CategoryTheory.Functor.map_id]; erw [Category.id_comp]
-    rw [CategoryTheory.Functor.map_id]; erw [Category.comp_id]
-    have := (Limits.constLimAdj (J := J) (C := C)).right_triangle
-    apply_fun (fun α ↦ α.app X.X) at this
-    simp only [comp_obj, lim_obj, id_obj, NatTrans.comp_app, whiskerLeft_app, whiskerRight_app,
-      NatTrans.id_app] at this
-    exact this
-
-def constAdj' := Adjunction.mkOfUnitCounit (constAdj'_core C J)
+    · simp only [prod.comp_lift, prod.map_fst_assoc, prod.map_fst, limit.lift_π, BinaryFan.mk_pt,
+      BinaryFan.π_app_left, BinaryFan.mk_fst]
+    · simp only [prod.comp_lift, prod.map_fst_assoc, prod.map_fst, limit.lift_π, BinaryFan.mk_pt,
+      BinaryFan.π_app_right, BinaryFan.mk_snd]
+      rw [← Category.assoc]
+      congr 1
+      simp only [prod.comp_lift, prod.map_fst_assoc, prod.map_snd, prod.lift_fst_comp_snd_comp]
+  mul_left_inv := by
+    refine (limit.isLimit (F ⋙ forget C)).hom_ext (fun j ↦ ?_)
+    simp only [comp_obj, forget_obj, limit.cone_x, postcomp, const_obj_obj, const_obj_map,
+      Functor.comp_map, forget_map, id_eq, eq_mpr_eq_cast, limit.isLimit_lift, limit.cone_π,
+      Category.assoc, limit.lift_π, prod.lift_map_assoc, Category.id_comp]
+    have : (default : limit (F ⋙ forget C) ⟶ ⊤_ C) = limit.π (F ⋙ forget C) j ≫ default :=
+      Subsingleton.elim _ _
+    rw [this, Category.assoc, ← (F.obj j).mul_left_inv, ← Category.assoc]
+    congr 1
+    simp only [comp_obj, forget_obj, prod.comp_lift, Category.comp_id]
 
 @[simp]
-def constIsConst_app (X : GroupObject C) :
-    (FunctorEquivalence J C).functor.obj ((map (Functor.const J (C := C))).obj X) ≅
-    (Functor.const J).obj X := by
-  refine NatIso.ofComponents ?_ ?_
-  · intro j
-    refine GroupObject.isoOfIso (Iso.refl _) ?_ ?_ ?_ <;> simp only [const_obj_obj,
-      FunctorEquivalence, FunctorEquivalence.functor, FunctorEquivalence.functor.obj,
-      FunctorEquivalence.functor.obj_obj, FunctorEquivalence.functor.obj_obj_one,
-      evaluation_obj_obj, FunctorEquivalence.functor.obj_obj_mul, FunctorEquivalence.functor.map,
-      id_eq, FunctorEquivalence.inverse, FunctorEquivalence.unitIso, id_obj, comp_obj,
-      FunctorEquivalence.inverse.obj, FunctorEquivalence.inverse.obj_X,
-      FunctorEquivalence.inverse.obj_one, FunctorEquivalence.inverse.obj_mul,
-      FunctorEquivalence.inverse.obj_inv, FunctorEquivalence.counitIso, map, map_obj_X, map_obj_one,
-      NatTrans.comp_app, const_map_app, map_obj_mul, map_obj_inv, const_obj_map,
-      PreservesTerminal.iso_inv, NatIso.isIso_inv_app, Iso.refl_hom, Category.comp_id,
-      IsIso.inv_comp_eq]
-    · rw [← Category.assoc, Subsingleton.elim ((terminalComparison (const J)).app j ≫
-      terminalComparison ((evaluation J C).obj j)) (𝟙 _)]; erw [Category.id_comp]
-    · rw [← Category.assoc _ _ X.mul]
-      congr 1
-      ext
-      · simp only [PreservesLimitPair.iso_inv, evaluation_obj_obj, const_obj_obj,
-        NatIso.isIso_inv_app, Category.assoc, prod.map_id_id, Category.id_comp, IsIso.inv_comp_eq]
-        erw [prodComparison_fst, evaluation_obj_map]
-        rw [← NatTrans.comp_app, prodComparison_fst]
-        simp only [const_map_app]
-      · simp only [PreservesLimitPair.iso_inv, evaluation_obj_obj, const_obj_obj,
-        NatIso.isIso_inv_app, Category.assoc, prod.map_id_id, Category.id_comp, IsIso.inv_comp_eq]
-        erw [prodComparison_snd, evaluation_obj_map]
-        rw [← NatTrans.comp_app, prodComparison_snd]
-        simp only [const_map_app]
-    · simp only [Category.id_comp]
-  · intro j j' u
+def candidate_cone_π : (Functor.const J).obj (candidate_cone_pt F) ⟶ F where
+  app j := {hom := limit.π (F ⋙ forget C) j}
+  naturality := by
+    intro _ _ u
     ext
-    simp only [FunctorEquivalence, FunctorEquivalence.functor, FunctorEquivalence.functor.obj,
-      FunctorEquivalence.functor.obj_obj, FunctorEquivalence.functor.obj_obj_one,
-      evaluation_obj_obj, FunctorEquivalence.functor.obj_obj_mul, FunctorEquivalence.functor.map,
-      id_eq, FunctorEquivalence.inverse, FunctorEquivalence.unitIso, id_obj, comp_obj,
-      FunctorEquivalence.inverse.obj, FunctorEquivalence.inverse.obj_X,
-      FunctorEquivalence.inverse.obj_one, FunctorEquivalence.inverse.obj_mul,
-      FunctorEquivalence.inverse.obj_inv, FunctorEquivalence.counitIso, map, map_obj_X,
-      const_obj_obj, map_obj_one, NatTrans.comp_app, const_map_app, map_obj_mul, map_obj_inv,
-      const_obj_map, comp_hom', isoOfIso_hom_hom, Iso.refl_hom, Category.comp_id]
+    simp only [candidate_cone_pt, postcomp, limit.isLimit_lift, const_obj_obj, comp_obj,
+      forget_obj, const_obj_map, Category.id_comp, comp_hom']
+    rw [← Limits.limit.w _ u]
+    rfl
 
-def constIsConst : map (Functor.const J (C := C)) ⋙ (FunctorEquivalence J C).functor ≅
-    Functor.const J (C := GroupObject C) := by
-  refine NatIso.ofComponents (constIsConst_app C J) (by aesop_cat)
+@[simp]
+def candidate_cone : Cone F where
+  pt := candidate_cone_pt F
+  π := candidate_cone_π F
 
-def constAdj : Adjunction (Functor.const J (C := GroupObject C))
-    ((FunctorEquivalence J C).inverse ⋙ map lim) :=
-  Adjunction.ofNatIsoLeft (Adjunction.comp (constAdj' C J)
-  (FunctorEquivalence J C).toAdjunction) (constIsConst C J)
+def candidate_cone_isLimit : IsLimit (candidate_cone F) where
+  lift s := by
+    simp only [candidate_cone, candidate_cone_pt, limit.isLimit_lift, const_obj_obj, comp_obj,
+      forget_obj, candidate_cone_π]
+    refine {hom := (limit.isLimit (F ⋙ forget C)).lift ((forget C).mapCone s),
+            one_hom := ?_, inv_hom := ?_, mul_hom := ?_}
+    · refine (limit.isLimit (F ⋙ forget C)).hom_ext (fun j ↦ ?_)
+      simp only [comp_obj, forget_obj, limit.cone_x, limit.isLimit_lift, limit.cone_π,
+        Category.assoc, limit.lift_π, mapCone_pt, mapCone_π_app, forget_map, Hom.one_hom]
+    · refine (limit.isLimit (F ⋙ forget C)).hom_ext (fun j ↦ ?_)
+      simp only [comp_obj, forget_obj, limit.cone_x, limit.isLimit_lift, limit.cone_π,
+        Category.assoc, limit.lift_π, mapCone_pt, mapCone_π_app, forget_map, Hom.mul_hom,
+        prod.map_map_assoc]
+    · refine (limit.isLimit (F ⋙ forget C)).hom_ext (fun j ↦ ?_)
+      simp only [comp_obj, forget_obj, limit.cone_x, limit.isLimit_lift, limit.cone_π,
+        Category.assoc, limit.lift_π, mapCone_pt, mapCone_π_app, forget_map, limit.lift_π_assoc]
+      exact (s.π.app j).inv_hom
+  fac s j := by aesop_cat
+  uniq s u h := by
+    ext
+    simp only [candidate_cone, candidate_cone_pt, limit.isLimit_lift, const_obj_obj, comp_obj,
+      forget_obj, candidate_cone_π, id_eq]
+    refine (limit.isLimit (F ⋙ forget C)).hom_ext (fun j ↦ ?_)
+    simp only [comp_obj, forget_obj, limit.cone_x, limit.cone_π, limit.lift_π, mapCone_pt,
+      mapCone_π_app, forget_map]
+    have := h j
+    apply_fun (fun T ↦ T.hom) at this
+    exact this
 
-instance instHasLimitsOfShape : HasLimitsOfShape J (GroupObject C) where
-  has_limit :=
-    fun F ↦ Limits.HasLimit.mk {cone := Limits.coneOfAdj (constAdj C J) F,
-                                isLimit := Limits.isLimitConeOfAdj (constAdj C J) F}
+def forget_candidate_cone :
+    limit.cone (F ⋙ forget C) ≅ (forget C).mapCone (candidate_cone F) := by
+  refine Cones.ext (Iso.refl _) (fun j ↦ ?_)
+  simp only [candidate_cone, candidate_cone_pt, limit.isLimit_lift, const_obj_obj, comp_obj,
+    forget_obj, candidate_cone_π, mapCone_pt, mapCone_π_app, forget_map, limit.cone_x,
+    Iso.refl_hom, limit.cone_π, Category.id_comp]
 
-def forget_comp_lim : (lim : (J ⥤ GroupObject C) ⥤ GroupObject C) ⋙ GroupObject.forget C ≅
-    (GroupObject.forget C).postcomp ⋙ lim := by
-  refine (NatIso.hcomp (Adjunction.rightAdjointUniq (Limits.constLimAdj (J := J)
-    (C := GroupObject C)) (GroupObject.constAdj C J)) (Iso.refl (GroupObject.forget C))).trans ?_
-  refine (Functor.associator _ _ _).trans ?_
-  refine (NatIso.hcomp (Iso.refl ((FunctorEquivalence J C).inverse))
-    (GroupObjectFunctor.map_comp_forget (lim (J := J) (C := C)))).trans ?_
-  exact (Functor.associator _ _ _).symm.trans (NatIso.hcomp
-    (FunctorEquivalence.forget_postcomp J C) (Iso.refl lim))
+instance groupObjectHasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (GroupObject C)
+    where
+  has_limit F := HasLimit.mk {cone := candidate_cone F, isLimit := candidate_cone_isLimit F}
 
-end GroupObject
+instance forgetPreservesLimitsOfShape [HasLimitsOfShape J C] :
+    PreservesLimitsOfShape J (forget C) where
+  preservesLimit := preservesLimitOfPreservesLimitCone (candidate_cone_isLimit _)
+    (IsLimit.ofIsoLimit (limit.isLimit (_ ⋙ forget C)) (forget_candidate_cone _))
+
+instance forgetPreservesLimits [HasLimits C] : PreservesLimits (forget C) where
+  preservesLimitsOfShape := inferInstance
