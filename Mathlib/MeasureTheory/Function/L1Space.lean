@@ -706,6 +706,33 @@ lemma integrable_add_iff_integrable_left {f g : α → β} (hf : Integrable f μ
     Integrable (g + f) μ ↔ Integrable g μ := by
   rw [add_comm, integrable_add_iff_integrable_right hf]
 
+lemma integrable_left_of_integrable_add_of_nonneg {f g : α → ℝ}
+    (h_meas : AEStronglyMeasurable f μ) (hf : 0 ≤ᵐ[μ] f) (hg : 0 ≤ᵐ[μ] g)
+    (h_int : Integrable (f + g) μ) : Integrable f μ := by
+  refine h_int.mono' h_meas ?_
+  filter_upwards [hf, hg] with a haf hag
+  exact (Real.norm_of_nonneg haf).symm ▸ (le_add_iff_nonneg_right _).mpr hag
+
+lemma integrable_right_of_integrable_add_of_nonneg {f g : α → ℝ}
+    (h_meas : AEStronglyMeasurable f μ) (hf : 0 ≤ᵐ[μ] f) (hg : 0 ≤ᵐ[μ] g)
+    (h_int : Integrable (f + g) μ) : Integrable g μ :=
+  integrable_left_of_integrable_add_of_nonneg
+    ((AEStronglyMeasurable.add_iff_right h_meas).mp h_int.aestronglyMeasurable)
+      hg hf (add_comm f g ▸ h_int)
+
+lemma integrable_add_iff_of_nonneg {f g : α → ℝ} (h_meas : AEStronglyMeasurable f μ)
+    (hf : 0 ≤ᵐ[μ] f) (hg : 0 ≤ᵐ[μ] g) :
+    Integrable (f + g) μ ↔ Integrable f μ ∧ Integrable g μ :=
+  ⟨fun h ↦ ⟨integrable_left_of_integrable_add_of_nonneg h_meas hf hg h,
+    integrable_right_of_integrable_add_of_nonneg h_meas hf hg h⟩, fun ⟨hf, hg⟩ ↦ hf.add hg⟩
+
+lemma integrable_add_iff_of_nonpos {f g : α → ℝ} (h_meas : AEStronglyMeasurable f μ)
+    (hf : f ≤ᵐ[μ] 0) (hg : g ≤ᵐ[μ] 0) :
+    Integrable (f + g) μ ↔ Integrable f μ ∧ Integrable g μ := by
+  rw [← integrable_neg_iff, ← integrable_neg_iff (f := f), ← integrable_neg_iff (f := g), neg_add]
+  exact integrable_add_iff_of_nonneg h_meas.neg (hf.mono (fun _ ↦ neg_nonneg_of_nonpos))
+    (hg.mono (fun _ ↦ neg_nonneg_of_nonpos))
+
 @[simp]
 lemma integrable_add_const_iff [IsFiniteMeasure μ] {f : α → β} {c : β} :
     Integrable (fun x ↦ f x + c) μ ↔ Integrable f μ :=

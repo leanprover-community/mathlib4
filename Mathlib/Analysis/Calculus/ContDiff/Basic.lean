@@ -534,7 +534,7 @@ theorem ContDiffWithinAt.prod {s : Set E} {f : E → F} {g : E → G} (hf : Cont
   rcases hg m hm with ⟨v, hv, q, hq⟩
   exact
     ⟨u ∩ v, Filter.inter_mem hu hv, _,
-      (hp.mono (inter_subset_left u v)).prod (hq.mono (inter_subset_right u v))⟩
+      (hp.mono inter_subset_left).prod (hq.mono inter_subset_right)⟩
 #align cont_diff_within_at.prod ContDiffWithinAt.prod
 
 /-- The cartesian product of `C^n` functions on domains is `C^n`. -/
@@ -611,7 +611,7 @@ private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] 
       apply Filter.inter_mem hu
       apply ContinuousWithinAt.preimage_mem_nhdsWithin'
       · rw [← continuousWithinAt_inter' hu]
-        exact (hf' x xu).differentiableWithinAt.continuousWithinAt.mono (inter_subset_right _ _)
+        exact (hf' x xu).differentiableWithinAt.continuousWithinAt.mono inter_subset_right
       · apply nhdsWithin_mono _ _ hv
         exact Subset.trans (image_subset_iff.mpr st) (subset_insert (f x) t)
     · show ∀ y ∈ w, HasFDerivWithinAt (g ∘ f) ((g' (f y)).comp (f' y)) w y
@@ -663,7 +663,7 @@ theorem ContDiffOn.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F} (hg 
 /-- The composition of `C^n` functions on domains is `C^n`. -/
 theorem ContDiffOn.comp' {s : Set E} {t : Set F} {g : F → G} {f : E → F} (hg : ContDiffOn 𝕜 n g t)
     (hf : ContDiffOn 𝕜 n f s) : ContDiffOn 𝕜 n (g ∘ f) (s ∩ f ⁻¹' t) :=
-  hg.comp (hf.mono (inter_subset_left _ _)) (inter_subset_right _ _)
+  hg.comp (hf.mono inter_subset_left) inter_subset_right
 #align cont_diff_on.comp' ContDiffOn.comp'
 
 /-- The composition of a `C^n` function on a domain with a `C^n` function is `C^n`. -/
@@ -694,11 +694,11 @@ theorem ContDiffWithinAt.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F
     rw [image_insert_eq]
     exact insert_subset_insert (image_subset_iff.mpr st)
   have Z :=
-    (hu.comp (hv.mono (inter_subset_right (f ⁻¹' u) v)) (inter_subset_left _ _)).contDiffWithinAt
+    (hu.comp (hv.mono inter_subset_right) inter_subset_left).contDiffWithinAt
       xmem m le_rfl
   have : 𝓝[f ⁻¹' u ∩ v] x = 𝓝[insert x s] x := by
     have A : f ⁻¹' u ∩ v = insert x s ∩ (f ⁻¹' u ∩ v) := by
-      apply Subset.antisymm _ (inter_subset_right _ _)
+      apply Subset.antisymm _ inter_subset_right
       rintro y ⟨hy1, hy2⟩
       simpa only [mem_inter_iff, mem_preimage, hy2, and_true, true_and, vs hy2] using hy1
     rw [A, ← nhdsWithin_restrict'']
@@ -718,7 +718,7 @@ theorem ContDiffWithinAt.comp_of_mem {s : Set E} {t : Set F} {g : F → G} {f : 
 theorem ContDiffWithinAt.comp' {s : Set E} {t : Set F} {g : F → G} {f : E → F} (x : E)
     (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x) :
     ContDiffWithinAt 𝕜 n (g ∘ f) (s ∩ f ⁻¹' t) x :=
-  hg.comp x (hf.mono (inter_subset_left _ _)) (inter_subset_right _ _)
+  hg.comp x (hf.mono inter_subset_left) inter_subset_right
 #align cont_diff_within_at.comp' ContDiffWithinAt.comp'
 
 theorem ContDiffAt.comp_contDiffWithinAt {n} (x : E) (hg : ContDiffAt 𝕜 n g (f x))
@@ -996,7 +996,7 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
       true_and_iff, subset_preimage_image]
   obtain ⟨v, hv, hvs, f', hvf', hf'⟩ := contDiffWithinAt_succ_iff_hasFDerivWithinAt'.mp hf
   refine
-    ⟨(fun z => (z, g z)) ⁻¹' v ∩ insert x₀ s, ?_, inter_subset_right _ _, fun z =>
+    ⟨(fun z => (z, g z)) ⁻¹' v ∩ insert x₀ s, ?_, inter_subset_right, fun z =>
       (f' (z, g z)).comp (ContinuousLinearMap.inr 𝕜 E F), ?_, ?_⟩
   · refine inter_mem ?_ self_mem_nhdsWithin
     have := mem_of_mem_nhdsWithin (mem_insert _ _) hv
@@ -1680,7 +1680,7 @@ end ConstSMul
 
 /-! ### Cartesian product of two functions -/
 
-section Prod_map
+section prodMap
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
@@ -1740,7 +1740,7 @@ theorem contDiff_prod_mk_right (e₀ : E) : ContDiff 𝕜 n fun f : F => (e₀, 
   contDiff_const.prod contDiff_id
 #align cont_diff_prod_mk_right contDiff_prod_mk_right
 
-end Prod_map
+end prodMap
 
 /-! ### Inversion in a complete normed algebra -/
 
