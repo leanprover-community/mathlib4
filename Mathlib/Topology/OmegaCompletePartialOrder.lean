@@ -97,7 +97,7 @@ def notBelow :=
 theorem notBelow_isOpen : IsOpen (notBelow y) := by
   have h : Monotone (notBelow y) := fun x z hle ↦ mt hle.trans
   change ωScottContinuous fun x ↦ x ∈ (notBelow y)
-  rw [← continuous'_iff_ωScottContinuous]
+  rw [ωScottContinuous_iff_monotone_map_ωSup]
   refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
   simp only [ωSup_le_iff, notBelow, mem_setOf_eq, le_Prop_eq, OrderHom.coe_mk, Chain.map_coe,
     Function.comp_apply, exists_imp, not_forall]
@@ -118,13 +118,13 @@ theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωS
 theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : Continuous f) :
     OmegaCompletePartialOrder.ωScottContinuous f := by
-  rw [← continuous'_iff_ωScottContinuous]
+  rw [ωScottContinuous_iff_monotone_map_ωSup]
   have h : Monotone f := fun x y h ↦ by
     have hf : IsUpperSet {x | ¬f x ≤ f y} := ((notBelow_isOpen (f y)).preimage hf).isUpperSet
     simpa only [mem_setOf_eq, le_refl, not_true, imp_false, not_not] using hf h
   refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
   rcases (notBelow_isOpen z).preimage hf with hf''
-  let hf' := (continuous'_iff_ωScottContinuous.mpr hf'').2
+  let hf' := (ωScottContinuous_iff_monotone_map_ωSup.mp hf'').2
   specialize hf' c
   simp only [OrderHom.coe_mk, mem_preimage, notBelow, mem_setOf_eq] at hf'
   rw [← not_iff_not]
@@ -140,10 +140,6 @@ theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
   intro s hs
   change ωScottContinuous (s ∘ f)
   change ωScottContinuous s at hs
-  rw [← continuous'_iff_ωScottContinuous] at hf
-  rw [← continuous'_iff_ωScottContinuous] at hs
-  cases' hs with hs hs'
-  cases' hf with hf hf'
-  apply Continuous.of_bundled
-  apply continuous_comp _ _ hf' hs'
+  exact ωScottContinuous.comp hs hf
+
 #align continuous_of_Scott_continuous continuous_of_scottContinuous
