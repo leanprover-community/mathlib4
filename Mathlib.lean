@@ -1226,7 +1226,9 @@ import Mathlib.CategoryTheory.Bicategory.Coherence
 import Mathlib.CategoryTheory.Bicategory.End
 import Mathlib.CategoryTheory.Bicategory.Extension
 import Mathlib.CategoryTheory.Bicategory.Free
-import Mathlib.CategoryTheory.Bicategory.Functor
+import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
+import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.CategoryTheory.Bicategory.Functor1
 import Mathlib.CategoryTheory.Bicategory.FunctorBicategory
 import Mathlib.CategoryTheory.Bicategory.Kan.Adjunction
 import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
