@@ -15,6 +15,9 @@ import Mathlib.RingTheory.OreLocalization.Basic
 
 # Module and Ring instances of Ore Localizations
 
+The `Monoid` and `DistribMulAction` instances and additive versions are provided in
+`RingTheory/OreLocalization/Basic.lean`.
+
 -/
 
 universe u
