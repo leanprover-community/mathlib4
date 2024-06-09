@@ -51,20 +51,19 @@ def IsOpen (s : Set α) : Prop :=
   ωScottContinuous fun x ↦ x ∈ s
 #align Scott.is_open Scott.IsOpen
 
-theorem isOpen_univ : IsOpen α univ :=
-  continuous'_iff_ωScottContinuous.mp
-    ⟨fun _ _ _ _ ↦ mem_univ _, @CompleteLattice.top_continuous α Prop _ _⟩
+theorem isOpen_univ : IsOpen α univ := @CompleteLattice.ωScottContinuous.top α Prop _ _
 #align Scott.is_open_univ Scott.isOpen_univ
 
 theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α (s ∩ t) :=
-  CompleteLattice.inf_continuous'
+  CompleteLattice.ωScottContinuous.inf
 #align Scott.is_open.inter Scott.IsOpen.inter
 
 theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
   simp only [IsOpen] at hs ⊢
-  convert CompleteLattice.sSup_continuous' (setOf ⁻¹' s) hs
+  convert CompleteLattice.ωScottContinuous.sSup  hs
   simp only [sSup_apply, setOf_bijective.surjective.exists, exists_prop, mem_preimage,
     SetCoe.exists, iSup_Prop_eq, mem_setOf_eq, mem_sUnion]
+  rfl
 #align Scott.is_open_sUnion Scott.isOpen_sUnion
 
 theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.monotone
