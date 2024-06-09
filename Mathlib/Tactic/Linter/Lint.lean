@@ -42,13 +42,10 @@ Linter that checks whether a structure should be in Prop.
   noErrorsFound := "no `deprecated` tags without `since` dates."
   errorsFound := "FOUND `deprecated` tags without `since` dates."
   test declName := do
-    let env ← getEnv
-    match Lean.Linter.deprecatedAttr.getParam? env declName with
-    | some info =>
-      match info.since? with
-      | some _ => return none -- TODO: enforce `YYYY-MM-DD` format
-      | none => return m!"`deprecated` attribute without `since` date"
-    | none => return none
+    let some info := Lean.Linter.deprecatedAttr.getParam? (← getEnv) declName | return none
+    match info.since? with
+    | some _ => return none -- TODO: enforce `YYYY-MM-DD` format
+    | none => return m!"`deprecated` attribute without `since` date"
 
 end Std.Tactic.Lint
 
