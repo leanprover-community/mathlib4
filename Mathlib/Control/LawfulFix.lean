@@ -38,7 +38,8 @@ halting problem. Instead, this requirement is limited to only functions that are
 sense of `ω`-complete partial orders, which excludes the example because it is not monotone
 (making the input argument less defined can make `f` more defined). -/
 class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
-  fix_eq : ∀ {f : α →o α}, (∀ c : Chain α, f (ωSup c) = ωSup (c.map ⟨f, f.monotone⟩)) → Fix.fix f = f (Fix.fix f)
+  fix_eq : ∀ {f : α →o α}, (∀ c : Chain α, f (ωSup c) = ωSup (c.map ⟨f, f.monotone⟩)) →
+    Fix.fix f = f (Fix.fix f)
 #align lawful_fix LawfulFix
 
 theorem LawfulFix.fix_eq' {α} [OmegaCompletePartialOrder α] [LawfulFix α] {f : α → α}
