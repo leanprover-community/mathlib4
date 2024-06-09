@@ -5,7 +5,6 @@ Authors: Yuma Mizuno
 -/
 import Mathlib.CategoryTheory.Bicategory.Basic
 
--- TODO: what do to about this?
 #align_import category_theory.bicategory.functor from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
 /-!
