@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Kappelmann
 -/
 import Mathlib.Algebra.Order.Floor
+import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
@@ -97,7 +98,7 @@ theorem isNat_intFloor {R} [LinearOrderedRing R] [FloorRing R] (r : R) (m : ℕ)
 theorem isInt_intFloor {R} [LinearOrderedRing R] [FloorRing R] (r : R) (m : ℤ) :
     IsInt r m → IsInt ⌊r⌋ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem isInt_intFloor_ofIsRat [CharZero α] (r : α) (n : ℤ) (d : ℕ) :
+theorem isInt_intFloor_ofIsRat (r : α) (n : ℤ) (d : ℕ) :
     IsRat r n d → IsInt ⌊r⌋ (n / d) := by
   rintro ⟨inv, rfl⟩
   constructor
@@ -105,6 +106,7 @@ theorem isInt_intFloor_ofIsRat [CharZero α] (r : α) (n : ℤ) (d : ℕ) :
   rw [← floor_int_div_nat_eq_div n d, ← floor_cast (α := α), Rat.cast_div,
     cast_intCast, cast_natCast]
 
+/-- `norm_num` extension for `Int.floor` -/
 @[norm_num ⌊_⌋]
 def evalIntFloor : NormNumExt where eval {u αZ} e := do
   match u, αZ, e with
@@ -120,7 +122,6 @@ def evalIntFloor : NormNumExt where eval {u αZ} e := do
       return .isNegNat q(inferInstance) _ q(isInt_intFloor _ _ $pb)
     | .isRat dα q n d h => do
       let _i ← synthInstanceQ q(LinearOrderedField $α)
-      let _i ← synthInstanceQ q(CharZero $α)
       assertInstancesCommute
       have z : Q(ℤ) := mkRawIntLit ⌊q⌋
       letI : $z =Q ⌊$n / $d⌋ := ⟨⟩
