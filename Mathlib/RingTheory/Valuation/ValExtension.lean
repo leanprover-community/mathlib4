@@ -103,42 +103,12 @@ variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
     [Algebra R A] {vR : Valuation R ΓR} {vA : Valuation A ΓA} [IsValExtension vR vA]
 
 instance integerAlgebra : Algebra vR.integer vA.integer where
-    smul r a := {
-      val := r • a,
-      property := by
-        rw [Valuation.mem_integer_iff,
-          show r • ↑a = algebraMap R A r * a by exact (Algebra.smul_def r (a : A))]
-        norm_num
-        apply mul_le_one'
-        · rw [val_map_le_one_iff vR]
-          exact r.2
-        · exact a.2
-    }
-    toFun r := {
-      val := algebraMap R A r,
-      property := by
-        simp only [Valuation.mem_integer_iff]
-        rw [val_map_le_one_iff vR]
-        exact r.2
-    }
-    map_one' := by
-      ext
-      simp
-    map_mul' _ _ := by
-      ext
-      simp
-    map_zero' := by
-      ext
-      simp
-    map_add' _ _ := by
-      ext
-      simp
-    commutes' _ _ := by
-      ext
-      exact Algebra.commutes _ _
-    smul_def' _ _ := by
-      ext
-      exact Algebra.smul_def _ _
+  smul r a := ⟨r • a,
+    Algebra.smul_def r (a : A) ▸ mul_mem ((val_map_le_one_iff vR vA _).mpr r.2) a.2⟩
+  __ := (algebraMap R A).restrict vR.integer vA.integer
+    (by simp [Valuation.mem_integer_iff, val_map_le_one_iff vR vA])
+  commutes' _ _ := Subtype.ext (Algebra.commutes _ _)
+  smul_def' _ _ := Subtype.ext (Algebra.smul_def _ _)
 
 @[simp, norm_cast]
 theorem coe_algebraMap_integer (r : vR.integer) :
