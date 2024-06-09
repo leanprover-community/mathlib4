@@ -124,6 +124,11 @@ instance {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n : ℤ) [QuasiIso φ] :
     change IsIso (homologyMap φ _)
     infer_instance
 
+variable (C) in
+lemma homologyFunctor_shift (n : ℤ) :
+    (homologyFunctor C (ComplexShape.up ℤ) 0).shift n =
+      homologyFunctor C (ComplexShape.up ℤ) n := rfl
+
 end CochainComplex
 
 namespace HomotopyCategory
