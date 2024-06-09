@@ -354,7 +354,6 @@ variable [NormedSpace ℝ E]
 #adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
 (Part of the code was ignoring the `maxDischargeDepth` setting:
  now that we have to increase it, other paths becomes slow.) -/
-set_option maxHeartbeats 400000 in
 theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
     (lastc : a.c (last N) = 0) (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4)
     (hδ2 : δ ≤ 1) (i j : Fin N.succ) (inej : i ≠ j) (hi : ‖a.c i‖ ≤ 2) (hj : 2 < ‖a.c j‖) :
