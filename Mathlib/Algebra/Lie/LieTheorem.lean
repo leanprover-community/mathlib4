@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lucas Whitfield
 -/
 import Mathlib.Algebra.Lie.Solvable
-import Mathlib.Algebra.Lie.Weights.Linear
+import Mathlib.Algebra.Lie.Weights.Basic
 
 /-!
 # Lie's theorem for Solvable Lie algebras.
