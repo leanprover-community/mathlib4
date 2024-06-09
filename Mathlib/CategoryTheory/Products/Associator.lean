@@ -59,7 +59,7 @@ instance inverseAssociatorIsEquivalence : (inverseAssociator C D E).IsEquivalenc
 @[simps]
 def leftUnitor : Discrete PUnit × C ⥤ C where
   obj X := X.2
-  map := @fun _ _ f => f.2
+  map f := f.2
 #align category_theory.prod.left_unitor CategoryTheory.prod.leftUnitor
 
 /-- The right unitor functor `C × 1 ⥤ C`
@@ -67,7 +67,7 @@ def leftUnitor : Discrete PUnit × C ⥤ C where
 @[simps]
 def rightUnitor : C × Discrete PUnit ⥤ C where
   obj X := X.1
-  map := @fun _ _ f => f.1
+  map f := f.1
 #align category_theory.prod.right_unitor CategoryTheory.prod.rightUnitor
 
 /-- The left inverse unitor `C ⥤ 1 × C`
@@ -75,7 +75,7 @@ def rightUnitor : C × Discrete PUnit ⥤ C where
 @[simps]
 def leftInverseUnitor : C ⥤ Discrete PUnit × C where
   obj X := ⟨⟨PUnit.unit⟩, X⟩
-  map := @fun _ _ f =>  ⟨𝟙 _, f⟩
+  map f := ⟨𝟙 _, f⟩
 #align category_theory.prod.left_inverse_unitor CategoryTheory.prod.leftInverseUnitor
 
 /-- The right inverse unitor `C ⥤ C × 1`
@@ -83,31 +83,31 @@ def leftInverseUnitor : C ⥤ Discrete PUnit × C where
 @[simps]
 def rightInverseUnitor : C ⥤ C × Discrete PUnit where
   obj X := ⟨X, ⟨PUnit.unit⟩⟩
-  map := @fun _ _ f =>  ⟨f, 𝟙 _⟩
+  map f := ⟨f, 𝟙 _⟩
 #align category_theory.prod.right_inverse_unitor CategoryTheory.prod.rightInverseUnitor
 
 /-- The equivalence of categories expressing left unity of products of categories.
 -/
-def leftUnity : Discrete PUnit × C ≌ C :=
+def leftUnitEquivalence : Discrete PUnit × C ≌ C :=
   Equivalence.mk (leftUnitor C) (leftInverseUnitor C)
     (NatIso.ofComponents fun X => eqToIso (by simp))
     (NatIso.ofComponents fun X => eqToIso (by simp))
-#align category_theory.prod.left_unity CategoryTheory.prod.leftUnity
+#align category_theory.prod.left_unit_equivalence CategoryTheory.prod.leftUnitEquivalence
 
 /-- The equivalence of categories expressing right unity of products of categories.
 -/
-def rightUnity : C × Discrete PUnit ≌ C :=
+def rightUnitEquivalence : C × Discrete PUnit ≌ C :=
   Equivalence.mk (rightUnitor C) (rightInverseUnitor C)
     (NatIso.ofComponents fun X => eqToIso (by simp))
     (NatIso.ofComponents fun X => eqToIso (by simp))
-#align category_theory.prod.right_unity CategoryTheory.prod.rightUnity
+#align category_theory.prod.right_unit_equivalence CategoryTheory.prod.rightUnitEquivalence
 
 instance leftUnitorIsEquivalence : (leftUnitor C).IsEquivalence :=
-  (by infer_instance : (leftUnity C).functor.IsEquivalence)
+  (by infer_instance : (leftUnitEquivalence C).functor.IsEquivalence)
 #align category_theory.prod.left_unitor_is_equivalence CategoryTheory.prod.leftUnitorIsEquivalence
 
 instance rightUnitorIsEquivalence : (rightUnitor C).IsEquivalence :=
-  (by infer_instance : (rightUnity C).functor.IsEquivalence)
+  (by infer_instance : (rightUnitEquivalence C).functor.IsEquivalence)
 #align category_theory.prod.right_unitor_is_equivalence CategoryTheory.prod.rightUnitorIsEquivalence
 
 -- TODO pentagon natural transformation? ...satisfying?
