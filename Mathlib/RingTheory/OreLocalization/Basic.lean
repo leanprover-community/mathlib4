@@ -102,6 +102,9 @@ def oreDiv (r : X) (s : S) : X[S⁻¹] :=
 @[inherit_doc]
 infixl:70 " /ₒ " => oreDiv
 
+@[inherit_doc]
+infixl:65 " -ₒ " => _root_.AddOreLocalization.oreSub
+
 @[to_additive (attr := elab_as_elim)]
 protected theorem ind {β : X[S⁻¹] → Prop}
     (c : ∀ (r : X) (s : S), β (r /ₒ s)) : ∀ q, β q := by
