@@ -92,12 +92,11 @@ abbrev NatTrans.app₃ {H G : C ⥤ D ⥤ E ⥤ F} (α : NatTrans H G) (X : C) (
 /- Natural transformations between functors with many variables. -/
 namespace NatTrans
 
-@[reassoc]
+@[reassoc, simp]
 lemma comp_app₂ {H G K : C ⥤ D ⥤ E} (α : H ⟶ G) (β : G ⟶ K) (X : C) (Y : D) :
-    (α ≫ β).app₂ X Y = α.app₂ X Y ≫ β.app₂ X Y :=
-  by rw [app₂, comp_app, comp_app]
+    (α ≫ β).app₂ X Y = α.app₂ X Y ≫ β.app₂ X Y := rfl
 
-@[reassoc]
+@[reassoc, simp]
 lemma comp_app₃ {H G K : C ⥤ D ⥤ E ⥤ F} (α : H ⟶ G) (β : G ⟶ K) (X : C) (Y : D)
     (Z : E) : (α ≫ β).app₃ X Y Z = α.app₃ X Y Z ≫ β.app₃ X Y Z := rfl
 
