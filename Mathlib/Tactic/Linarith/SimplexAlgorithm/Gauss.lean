@@ -17,7 +17,7 @@ namespace Linarith.SimplexAlgorithm.Gauss
 /-- The monad for the Gaussian Elimination algorithm. -/
 abbrev GaussM (n m : Nat) (matType : Nat → Nat → Type) := StateM <| matType n m
 
-variable {n m : Nat} {matType : Nat → Nat → Type} [IsMatrix matType]
+variable {n m : Nat} {matType : Nat → Nat → Type} [UsableInSimplexAlgorithm matType]
 
 /-- Finds the first row starting from the current row with nonzero element in current column. -/
 def findNonzeroRow (row col : Nat) : GaussM n m matType <| Option Nat := do
@@ -26,8 +26,8 @@ def findNonzeroRow (row col : Nat) : GaussM n m matType <| Option Nat := do
       return i
   return .none
 
-/-- Implementation of `getTable` in `GaussM` monad. -/
-def getTableImp : GaussM n m matType <| Table matType := do
+/-- Implementation of `getTableu` in `GaussM` monad. -/
+def getTableuImp : GaussM n m matType <| Tableu matType := do
   let mut free : Array Nat := #[]
   let mut basic : Array Nat := #[]
 
@@ -49,7 +49,8 @@ def getTableImp : GaussM n m matType <| Table matType := do
       if i == row then
         continue
       let coef := (← get)[(i, col)]!
-      modify fun mat => subtractRow mat row i coef
+      if coef != 0 then
+        modify fun mat => subtractRow mat row i coef
 
     basic := basic.push col
     row := row + 1
@@ -68,11 +69,11 @@ def getTableImp : GaussM n m matType <| Table matType := do
   return ⟨basic, free, ansMatrix⟩
 
 /--
-Given matrix `A`, solves the linear equation `A x = 0` and returns the solution as a table where
+Given matrix `A`, solves the linear equation `A x = 0` and returns the solution as a tableu where
 some variables are free and others (basic) variable are expressed as linear combinations of the free
 ones.
 -/
-def getTable (A : matType n m) : Table matType := Id.run do
-  return (← getTableImp.run A).fst
+def getTableu (A : matType n m) : Tableu matType := Id.run do
+  return (← getTableuImp.run A).fst
 
 end Linarith.SimplexAlgorithm.Gauss

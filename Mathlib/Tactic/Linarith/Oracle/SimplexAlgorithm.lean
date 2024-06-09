@@ -50,7 +50,7 @@ open SimplexAlgorithm
 def CertificateOracle.simplexAlgorithmSparse : CertificateOracle where
   produceCertificate hyps maxVar := do
     let ⟨A, strictIndexes⟩ := preprocessSparse hyps maxVar
-    let vec := findPositiveVector A strictIndexes
+    let vec ← findPositiveVector A strictIndexes
     return postprocess vec
 
 /--
@@ -60,7 +60,7 @@ on dense states.
 def CertificateOracle.simplexAlgorithmDense : CertificateOracle where
   produceCertificate hyps maxVar := do
     let ⟨A, strictIndexes⟩ := preprocessDense hyps maxVar
-    let vec := findPositiveVector A strictIndexes
+    let vec ← findPositiveVector A strictIndexes
     return postprocess vec
 
 end Linarith

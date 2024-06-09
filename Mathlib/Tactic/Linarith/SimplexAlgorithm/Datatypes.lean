@@ -6,16 +6,16 @@ Authors: Vasily Nesterov
 import Batteries.Data.Rat.Basic
 
 /-!
-# Datatypes for Simplex Algorithm implementation
+# Datatypes for the Simplex Algorithm implementation
 -/
 
 namespace Linarith.SimplexAlgorithm
 
 /--
-Specification for matrix types over ℚ which can be used in Gauss Elimination and Simplex Algorithm.
-It was introduced to unify `DenseMatrix` and `SparseMatrix`.
+Specification for matrix types over ℚ which can be used in the Gauss Elimination and the Simplex
+Algorithm. It was introduced to unify dense matrices and sparse matrices.
 -/
-class IsMatrix (α : Nat → Nat → Type) where
+class UsableInSimplexAlgorithm (α : Nat → Nat → Type) where
   /-- Returns `mat[i, j]`. -/
   getElem {n m : Nat} (mat : α n m) (i j : Nat) : Rat
   /-- Sets `mat[i, j]`. -/
@@ -29,14 +29,14 @@ class IsMatrix (α : Nat → Nat → Type) where
   /-- Divides `i`-th row by `coef`. -/
   divideRow {n m : Nat} (mat : α n m) (i : Nat) (coef : Rat) : α n m
 
-export IsMatrix (setElem ofValues swapRows subtractRow divideRow)
+export UsableInSimplexAlgorithm (setElem ofValues swapRows subtractRow divideRow)
 
-instance (n m : Nat) (matType : Nat → Nat → Type) [IsMatrix matType] :
+instance (n m : Nat) (matType : Nat → Nat → Type) [UsableInSimplexAlgorithm matType] :
     GetElem (matType n m) (Nat × Nat) Rat fun _ p => p.1 < n ∧ p.2 < m where
-  getElem mat p _ := IsMatrix.getElem mat p.1 p.2
+  getElem mat p _ := UsableInSimplexAlgorithm.getElem mat p.1 p.2
 
 /--
-Structure for dense matrices over ℚ.
+Structure for matrices over ℚ.
 
 So far it is just a 2d-array carrying dimensions (that are supposed to match with the actual
 dimensions of `data`), but the plan is to add some `Prop`-data and make the structure strict and
@@ -49,7 +49,7 @@ structure DenseMatrix (n m : Nat) where
   /-- The content of the matrix. -/
   data : Array (Array Rat)
 
-instance : IsMatrix DenseMatrix where
+instance : UsableInSimplexAlgorithm DenseMatrix where
   getElem mat i j := mat.data[i]![j]!
   setElem mat i j v := ⟨mat.data.set! i <| mat.data[i]!.set! j v⟩
   ofValues {n m : Nat} vals : DenseMatrix _ _ := Id.run do
@@ -72,7 +72,7 @@ structure SparseMatrix (n m : Nat) where
   /-- The content of the matrix. -/
   data : Array <| Lean.HashMap Nat Rat
 
-instance : IsMatrix SparseMatrix where
+instance : UsableInSimplexAlgorithm SparseMatrix where
   getElem mat i j := mat.data[i]!.findD j 0
   setElem mat i j v :=
     if v == 0 then
@@ -99,10 +99,10 @@ instance : IsMatrix SparseMatrix where
     ⟨newData⟩
 
 /--
-`Table` is a structure Simplex Algorithm operates on. The `i`-th row of `mat` expresses the
+`Tableu` is a structure the Simplex Algorithm operates on. The `i`-th row of `mat` expresses the
 variable `basic[i]` as a linear combination of variables from `free`.
 -/
-structure Table (matType : Nat → Nat → Type) [IsMatrix matType] where
+structure Tableu (matType : Nat → Nat → Type) [UsableInSimplexAlgorithm matType] where
   /-- Array containing the basic variables' indexes -/
   basic : Array Nat
   /-- Array containing the free variables' indexes -/

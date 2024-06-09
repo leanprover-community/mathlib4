@@ -20,10 +20,10 @@ inductive SimplexAlgorithmException
 | infeasible : SimplexAlgorithmException
 
 /-- The monad for the Simplex Algorithm. -/
-abbrev SimplexAlgorithmM (matType : Nat → Nat → Type) [IsMatrix matType] :=
-  ExceptT SimplexAlgorithmException <| StateM (Table matType)
+abbrev SimplexAlgorithmM (matType : Nat → Nat → Type) [UsableInSimplexAlgorithm matType] :=
+  ExceptT SimplexAlgorithmException <| StateM (Tableu matType)
 
-variable {matType : Nat → Nat → Type} [IsMatrix matType]
+variable {matType : Nat → Nat → Type} [UsableInSimplexAlgorithm matType]
 
 /--
 Given indexes `exitIdx` and `enterIdx` of exiting and entering variables in the `basic` and `free`
@@ -50,7 +50,7 @@ def doPivotOperation (exitIdx enterIdx : Nat) : SimplexAlgorithmM matType Unit :
     have hb : newBasic.size = s.basic.size := by apply Array.size_setD
     have hf : newFree.size = s.free.size := by apply Array.size_setD
 
-    return (⟨newBasic, newFree, hb ▸ hf ▸ mat⟩ : Table matType)
+    return (⟨newBasic, newFree, hb ▸ hf ▸ mat⟩ : Tableu matType)
 
 /--
 Check if the solution is found: the objective function is positive and all basic variables are
@@ -109,7 +109,7 @@ def choosePivots : SimplexAlgorithmM matType (Nat × Nat) := do
   return ⟨exitIdx, enterIdx⟩
 
 /--
-Runs Simplex Algorithm starting with `initTable`. It always terminates, finding solution if
+Runs the Simplex Algorithm inside the `SimplexAlgorithmM`. It always terminates, finding solution if
 such exists.
 -/
 def runSimplexAlgorithm : SimplexAlgorithmM matType Unit := do
