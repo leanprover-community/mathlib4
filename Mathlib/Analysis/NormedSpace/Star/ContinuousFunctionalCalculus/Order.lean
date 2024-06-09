@@ -122,15 +122,15 @@ lemma IsSelfAdjoint.neg_algebraMap_norm_le_self {a : A} (ha : IsSelfAdjoint a :=
     exact IsSelfAdjoint.le_algebraMap_norm_self (neg ha)
   exact neg_le.mp this
 
-lemma mul_star_le_algebraMap_norm_sq {a : A} : a * star a ≤ algebraMap ℝ A (‖a‖ ^ 2) := by
+lemma CstarRing.mul_star_le_algebraMap_norm_sq {a : A} : a * star a ≤ algebraMap ℝ A (‖a‖ ^ 2) := by
   have : a * star a ≤ algebraMap ℝ A ‖a * star a‖ := IsSelfAdjoint.le_algebraMap_norm_self
   rwa [CstarRing.norm_self_mul_star, ← pow_two] at this
 
-lemma star_mul_le_algebraMap_norm_sq {a : A} : star a * a ≤ algebraMap ℝ A (‖a‖ ^ 2) := by
+lemma CstarRing.star_mul_le_algebraMap_norm_sq {a : A} : star a * a ≤ algebraMap ℝ A (‖a‖ ^ 2) := by
   have : star a * a ≤ algebraMap ℝ A ‖star a * a‖ := IsSelfAdjoint.le_algebraMap_norm_self
   rwa [CstarRing.norm_star_mul_self, ← pow_two] at this
 
-lemma norm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc_tac) :
+lemma CstarRing.norm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖ ∈ spectrum ℝ a := by
   have ha' : IsSelfAdjoint a := IsSelfAdjoint.of_nonneg ha
   obtain ⟨z, hz₁, hz₂⟩ := spectrum.exists_nnnorm_eq_spectralRadius a
@@ -149,7 +149,7 @@ lemma norm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc
     rwa [abs_eq_self]
   rwa [← this]
 
-lemma nnnorm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc_tac) :
+lemma CstarRing.nnnorm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ∈ spectrum ℝ≥0 a := by
   rw [← coe_mem_spectrum_real_of_nonneg ha, coe_nnnorm]
   exact norm_mem_spectrum_of_nonneg ha
