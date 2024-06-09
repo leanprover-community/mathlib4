@@ -88,26 +88,28 @@ def rightInverseUnitor : C ⥤ C × Discrete PUnit where
 
 /-- The equivalence of categories expressing left unity of products of categories.
 -/
-def leftUnitEquivalence : Discrete PUnit × C ≌ C :=
-  Equivalence.mk (leftUnitor C) (leftInverseUnitor C)
-    (NatIso.ofComponents fun X => eqToIso (by simp))
-    (NatIso.ofComponents fun X => eqToIso (by simp))
-#align category_theory.prod.left_unit_equivalence CategoryTheory.prod.leftUnitEquivalence
+def leftUnitorEquivalence : Discrete PUnit × C ≌ C where
+  functor := leftUnitor C
+  inverse := leftInverseUnitor C
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+#align category_theory.prod.left_unitor_equivalence CategoryTheory.prod.leftUnitorEquivalence
 
 /-- The equivalence of categories expressing right unity of products of categories.
 -/
-def rightUnitEquivalence : C × Discrete PUnit ≌ C :=
-  Equivalence.mk (rightUnitor C) (rightInverseUnitor C)
-    (NatIso.ofComponents fun X => eqToIso (by simp))
-    (NatIso.ofComponents fun X => eqToIso (by simp))
-#align category_theory.prod.right_unit_equivalence CategoryTheory.prod.rightUnitEquivalence
+def rightUnitorEquivalence : C × Discrete PUnit ≌ C where
+  functor := rightUnitor C
+  inverse := rightInverseUnitor C
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+#align category_theory.prod.right_unitor_equivalence CategoryTheory.prod.rightUnitorEquivalence
 
 instance leftUnitorIsEquivalence : (leftUnitor C).IsEquivalence :=
-  (by infer_instance : (leftUnitEquivalence C).functor.IsEquivalence)
+  (leftUnitorEquivalence C).isEquivalence_functor
 #align category_theory.prod.left_unitor_is_equivalence CategoryTheory.prod.leftUnitorIsEquivalence
 
 instance rightUnitorIsEquivalence : (rightUnitor C).IsEquivalence :=
-  (by infer_instance : (rightUnitEquivalence C).functor.IsEquivalence)
+  (rightUnitorEquivalence C).isEquivalence_functor
 #align category_theory.prod.right_unitor_is_equivalence CategoryTheory.prod.rightUnitorIsEquivalence
 
 -- TODO pentagon natural transformation? ...satisfying?
