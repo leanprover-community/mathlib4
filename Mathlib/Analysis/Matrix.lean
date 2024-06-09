@@ -194,22 +194,23 @@ namespace Int
 
 open Finset
 
-/-- The norm of an integral matrix is the cast of a natural number -/
-lemma norm_eq_NatCast (A : Matrix m n ℤ) : ∃ (a : ℕ), ‖A‖ = a := by
-  use sup univ fun i ↦ sup univ fun j ↦ (A i j).natAbs
-  simp only [norm_eq_sup_sup_nnnorm, ← NNReal.coe_natCast, bot_eq_zero', CharP.cast_eq_zero,
-    comp_sup_eq_sup_comp_of_is_total Nat.cast Nat.mono_cast, Function.comp_def, NNReal.coe_inj]
-  congr! with n m
-  exact (NNReal.natCast_natAbs (A n m)).symm
+/-- The norm of an integral matrix as the sup of the sup of the natAbs of the entries -/
+def natNorm (A : Matrix m n ℤ) : ℕ := sup univ fun i ↦ sup univ fun j ↦ (A i j).natAbs
 
-/-- The norm of a non-singular integral matrix is a positive natural number-/
-lemma one_le_norm_of_nonzero (A : Matrix m n ℤ) (hA_nezero : A ≠ 0) (a : ℕ)
-    (h_norm_nat : ‖A‖ = a) : 1 ≤ a := by
-  convert_to 0 < ( a : ℝ )
-  · simp only [Nat.cast_pos]
-    exact Nat.succ_le
-  rw [← h_norm_nat]
-  exact norm_pos_iff'.mpr hA_nezero
+/-- The norm of an integral matrix is equal to the natNorm -/
+lemma norm_eq_natNorm (A : Matrix m n ℤ) : ‖A‖ = natNorm A := by
+  simp only [norm_eq_sup_sup_nnnorm, ← NNReal.coe_natCast, bot_eq_zero', CharP.cast_eq_zero,
+    comp_sup_eq_sup_comp_of_is_total Nat.cast Nat.mono_cast, Function.comp_def, NNReal.coe_inj,
+    natNorm]
+  congr! with i j
+  exact (NNReal.natCast_natAbs (A i j)).symm
+
+/-- The natNorm of a non-zero integral matrix is at least 1-/
+lemma one_le_natNorm (A : Matrix m n ℤ) (hA_nezero : A ≠ 0) : 1 ≤ natNorm A := by
+  by_contra h
+  simp only [not_le, Nat.lt_one_iff] at h
+  simp only [← norm_pos_iff', norm_eq_natNorm A, h, CharP.cast_eq_zero, lt_self_iff_false]
+    at hA_nezero
 
 end Int
 
