@@ -202,7 +202,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
   refine Finset.card_bij φ ?_ ?_ ?_
   · intro a ha
     simp only [φ, not_forall, not_exists, not_and, exists_prop, mem_filter]
-    rw [mem_piAntidiagonal']
+    rw [mem_finsuppAntidiag']
     dsimp only [ne_eq, smul_eq_mul, id_eq, eq_mpr_eq_cast, le_eq_subset, Finsupp.coe_mk]
     simp only [mem_univ, forall_true_left, not_and, not_forall, exists_prop,
       mem_filter, true_and] at ha
@@ -233,10 +233,10 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     · rw [← mul_left_inj' hi]
       rw [Function.funext_iff] at h
       exact h.2 i
-  · simp only [φ, mem_filter, mem_piAntidiagonal, mem_univ, exists_prop, true_and_iff, and_assoc]
+  · simp only [φ, mem_filter, mem_finsuppAntidiag, mem_univ, exists_prop, true_and_iff, and_assoc]
     rintro f ⟨hf, hf₃, hf₄⟩
-    have hf' : f ∈ piAntidiagonal s n := mem_piAntidiagonal.mpr ⟨hf, hf₃⟩
-    simp only [mem_piAntidiagonal'] at hf'
+    have hf' : f ∈ finsuppAntidiag s n := mem_finsuppAntidiag.mpr ⟨hf, hf₃⟩
+    simp only [mem_finsuppAntidiag'] at hf'
     refine ⟨⟨∑ i ∈ s, Multiset.replicate (f i / i) i, ?_, ?_⟩, ?_, ?_, ?_⟩
     · intro i hi
       simp only [exists_prop, mem_sum, mem_map, Function.Embedding.coeFn_mk] at hi
