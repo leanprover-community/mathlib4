@@ -588,7 +588,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
         exact h_le₀.2
     · refine lt_of_lt_of_le (if_neg h_eq ▸ h_le w h_eq) ?_
       rw [NNReal.coe_one, Real.le_sqrt' zero_lt_one, one_pow]
-      set_option tactic.skipAssignedInstances false in norm_num
+      norm_num
 
 /-- Let `I` be a fractional ideal of `K`. Assume that `B : ℝ` is such that
 `minkowskiBound K I < volume (convexBodySum K B)` where `convexBodySum K B` is the set of points

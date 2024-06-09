@@ -568,7 +568,7 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
       _ ≤ ∑ k ∈ Ico 1 (n + 1), a ^ k * ‖p.rightInv i k‖ :=
         (haveI : ∀ k ∈ Ico 1 (n + 1), 0 ≤ a ^ k * ‖p.rightInv i k‖ := fun k _ => by positivity
         single_le_sum this (by simp [one_le_n]))
-      _ ≤ (I + 1) * a := IRec (n + 1) (by set_option tactic.skipAssignedInstances false in norm_num)
+      _ ≤ (I + 1) * a := IRec (n + 1) (by norm_num)
 #align formal_multilinear_series.radius_right_inv_pos_of_radius_pos FormalMultilinearSeries.radius_rightInv_pos_of_radius_pos
 
 end FormalMultilinearSeries

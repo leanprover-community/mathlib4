@@ -1616,7 +1616,7 @@ theorem cos_one_le : cos 1 ≤ 2 / 3 :=
   calc
     cos 1 ≤ |(1 : ℝ)| ^ 4 * (5 / 96) + (1 - 1 ^ 2 / 2) :=
       sub_le_iff_le_add.1 (abs_sub_le_iff.1 (cos_bound (by simp))).1
-    _ ≤ 2 / 3 := by set_option tactic.skipAssignedInstances false in norm_num
+    _ ≤ 2 / 3 := by norm_num
 #align real.cos_one_le Real.cos_one_le
 
 theorem cos_one_pos : 0 < cos 1 :=
@@ -1645,7 +1645,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       -- This proof should be restored after the norm_num plugin for big operators is ported.
       -- (It may also need the positivity extensions in #3907.)
       repeat erw [Finset.sum_range_succ]
-      set_option tactic.skipAssignedInstances false in norm_num [Nat.factorial]
+      norm_num [Nat.factorial]
       nlinarith
     _ < 1 / (1 - x) := by rw [lt_div_iff] <;> nlinarith
 #align real.exp_bound_div_one_sub_of_interval' Real.exp_bound_div_one_sub_of_interval'

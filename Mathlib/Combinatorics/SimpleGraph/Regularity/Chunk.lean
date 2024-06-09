@@ -233,7 +233,7 @@ private theorem one_sub_le_m_div_m_add_one_sq [Nonempty α]
   rw [sub_le_sub_iff_left, ← le_div_iff' (show (0 : ℝ) < 2 by norm_num), div_div,
     one_div_le coe_m_add_one_pos, one_div_div]
   · refine le_trans ?_ (le_add_of_nonneg_right zero_le_one)
-    set_option tactic.skipAssignedInstances false in norm_num
+    norm_num
     apply hundred_div_ε_pow_five_le_m hPα hPε
   sz_positivity
 
@@ -457,7 +457,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
     have := average_density_near_total_density hPα hPε hε₁
       (Subset.refl (chunk hP G ε hU).parts) (Subset.refl (chunk hP G ε hV).parts)
     simp_rw [← sup_eq_biUnion, sup_parts, card_chunk (m_pos hPα).ne', cast_pow] at this
-    set_option tactic.skipAssignedInstances false in norm_num at this
+    norm_num at this
     exact this
   have hε' : ε ^ 5 ≤ ε := by
     simpa using pow_le_pow_of_le_one (by sz_positivity) hε₁ (show 1 ≤ 5 by norm_num)
