@@ -201,12 +201,11 @@ def toUnitMono (f : Part α →o Part α) : (Unit → Part α) →o Unit → Par
 #align part.to_unit_mono Part.toUnitMono
 
 theorem to_unit_cont (f : Part α →o Part α) (hc : ωScottContinuous f) :
-    ωScottContinuous (toUnitMono f) := ωScottContinuous_iff_monotone_map_ωSup.mpr (by
-  use (OrderHom.monotone (toUnitMono f))
-  intro _
-  ext ⟨⟩ : 1
-  dsimp [OmegaCompletePartialOrder.ωSup]
-  erw [(ωScottContinuous_iff_monotone_map_ωSup.mp hc).2, Chain.map_comp]; rfl)
+    ωScottContinuous (toUnitMono f) := ωScottContinuous_iff_monotone_map_ωSup.mpr ⟨
+  OrderHom.monotone (toUnitMono f), fun _ => by
+    ext ⟨⟩ : 1
+    dsimp [OmegaCompletePartialOrder.ωSup]
+    erw [(ωScottContinuous_iff_monotone_map_ωSup.mp hc).2, Chain.map_comp]; rfl⟩
 #align part.to_unit_cont Part.to_unit_cont
 
 instance lawfulFix : LawfulFix (Part α) :=
@@ -251,23 +250,19 @@ variable [(x y : _) → OmegaCompletePartialOrder <| γ x y]
 open OmegaCompletePartialOrder.Chain
 
 theorem continuous_curry : ωScottContinuous <| monotoneCurry α β γ :=
-  ωScottContinuous_iff_monotone_map_ωSup.mpr (by
-    use (OrderHom.monotone (monotoneCurry α β γ))
-    intro c
+  ωScottContinuous_iff_monotone_map_ωSup.mpr ⟨OrderHom.monotone (monotoneCurry α β γ), fun c ↦ by
     ext x y
     dsimp [curry, ωSup]
     rw [map_comp, map_comp]
-    rfl)
+    rfl⟩
 #align pi.continuous_curry Pi.continuous_curry
 
 theorem continuous_uncurry : ωScottContinuous <| monotoneUncurry α β γ :=
-  ωScottContinuous_iff_monotone_map_ωSup.mpr (by
-    use (fun ⦃a b⦄ a i ↦ a i.fst i.snd)
-    intro c
-    ext ⟨x, y⟩
-    dsimp [uncurry, ωSup]
-    rw [map_comp, map_comp]
-    rfl)
+  ωScottContinuous_iff_monotone_map_ωSup.mpr ⟨fun ⦃a b⦄ a i ↦ a i.fst i.snd, fun c ↦ by
+      ext ⟨x, y⟩
+      dsimp [uncurry, ωSup]
+      rw [map_comp, map_comp]
+      rfl⟩
 #align pi.continuous_uncurry Pi.continuous_uncurry
 
 end Monotone
