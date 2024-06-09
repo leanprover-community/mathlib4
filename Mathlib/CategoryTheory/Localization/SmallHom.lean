@@ -19,6 +19,7 @@ variable {C : Type u} [Category.{v} C]
 
 section
 
+-- should be moved to CategoryTheory.Iso
 /-- The bijection `(X ⟶ Y) ≃ (X' ⟶ Y')` that is induced by isomorphisms
 `e : X ≅ X'` and `e' : Y ≅ Y'`. -/
 @[simps]
