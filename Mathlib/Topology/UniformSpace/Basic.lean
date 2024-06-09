@@ -364,7 +364,7 @@ theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
 #align uniform_space.to_core_to_topological_space UniformSpace.toCore_toTopologicalSpace
 
 /-- Build a `UniformSpace` from a `UniformSpace.Core` and a compatible topology.
-Use `UnifiormSpace.mk` instead to avoid proving
+Use `UniformSpace.mk` instead to avoid proving
 the unnecessary assumption `UniformSpace.Core.refl`.
 
 The main constructor used to use a different compatibility assumption.
@@ -535,7 +535,7 @@ theorem tendsto_const_uniformity {a : α} {f : Filter β} : Tendsto (fun _ => (a
 theorem symm_of_uniformity {s : Set (α × α)} (hs : s ∈ 𝓤 α) :
     ∃ t ∈ 𝓤 α, (∀ a b, (a, b) ∈ t → (b, a) ∈ t) ∧ t ⊆ s :=
   have : preimage Prod.swap s ∈ 𝓤 α := symm_le_uniformity hs
-  ⟨s ∩ preimage Prod.swap s, inter_mem hs this, fun _ _ ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩, inter_subset_left _ _⟩
+  ⟨s ∩ preimage Prod.swap s, inter_mem hs this, fun _ _ ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩, inter_subset_left⟩
 #align symm_of_uniformity symm_of_uniformity
 
 theorem comp_symm_of_uniformity {s : Set (α × α)} (hs : s ∈ 𝓤 α) :
@@ -669,11 +669,11 @@ theorem ball_inter (x : β) (V W : Set (β × β)) : ball x (V ∩ W) = ball x V
 #align ball_inter ball_inter
 
 theorem ball_inter_left (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ ball x V :=
-  ball_mono (inter_subset_left V W) x
+  ball_mono inter_subset_left x
 #align ball_inter_left ball_inter_left
 
 theorem ball_inter_right (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ ball x W :=
-  ball_mono (inter_subset_right V W) x
+  ball_mono inter_subset_right x
 #align ball_inter_right ball_inter_right
 
 theorem mem_ball_symmetry {V : Set (β × β)} (hV : SymmetricRel V) {x y} :
@@ -1146,6 +1146,8 @@ section Constructions
 instance : PartialOrder (UniformSpace α) :=
   PartialOrder.lift (fun u => 𝓤[u]) fun _ _ => UniformSpace.ext
 
+protected theorem UniformSpace.le_def {u₁ u₂ : UniformSpace α} : u₁ ≤ u₂ ↔ 𝓤[u₁] ≤ 𝓤[u₂] := Iff.rfl
+
 instance : InfSet (UniformSpace α) :=
   ⟨fun s =>
     UniformSpace.ofCore
@@ -1164,10 +1166,10 @@ protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : Uniform
     (h : ∀ t' ∈ tt, t ≤ t') : t ≤ sInf tt :=
   show 𝓤[t] ≤ ⨅ u ∈ tt, 𝓤[u] from le_iInf₂ h
 
+-- TODO: Replace `.ofNhdsEqComap` with `.mk`.
 set_option linter.deprecated false in
--- TODO update this code to avoid the deprecation
 instance : Top (UniformSpace α) :=
-  ⟨.ofNhdsEqComap ⟨⊤, le_top, le_top, le_top⟩ ⊤ fun x ↦ by simp only [nhds_top, comap_top]⟩
+  ⟨@UniformSpace.mk α ⊤ ⊤ le_top le_top fun x ↦ by simp only [nhds_top, comap_top]⟩
 
 instance : Bot (UniformSpace α) :=
   ⟨{  toTopologicalSpace := ⊥

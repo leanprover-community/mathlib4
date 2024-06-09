@@ -543,8 +543,7 @@ noncomputable def multiforkEquivPiFork : Multifork I ≌ Fork I.fstPiMap I.sndPi
   unitIso :=
     NatIso.ofComponents fun K =>
       Cones.ext (Iso.refl _) (by
-        rintro (_ | _) <;> dsimp <;>
-          simp [← Fork.app_one_eq_ι_comp_left, -Fork.app_one_eq_ι_comp_left])
+        rintro (_ | _) <;> simp [← Fork.app_one_eq_ι_comp_left])
   counitIso :=
     NatIso.ofComponents fun K => Fork.ext (Iso.refl _)
 #align category_theory.limits.multicospan_index.multifork_equiv_pi_fork CategoryTheory.Limits.MulticospanIndex.multiforkEquivPiFork

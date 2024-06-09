@@ -156,7 +156,8 @@ theorem coe_lt_coe : (p : ℚ) < q ↔ p < q :=
   Iff.rfl
 #align nnrat.coe_lt_coe NNRat.coe_lt_coe
 
-@[simp, norm_cast]
+-- `cast_pos`, defined in a later file, makes this lemma redundant
+@[simp, norm_cast, nolint simpNF]
 theorem coe_pos : (0 : ℚ) < q ↔ 0 < q :=
   Iff.rfl
 #align nnrat.coe_pos NNRat.coe_pos
@@ -226,12 +227,14 @@ theorem bddBelow_coe (s : Set ℚ≥0) : BddBelow (((↑) : ℚ≥0 → ℚ) '' 
   ⟨0, fun _ ⟨q, _, h⟩ ↦ h ▸ q.2⟩
 #align nnrat.bdd_below_coe NNRat.bddBelow_coe
 
-@[simp, norm_cast]
+-- `cast_max`, defined in a later file, makes this lemma redundant
+@[simp, norm_cast, nolint simpNF]
 theorem coe_max (x y : ℚ≥0) : ((max x y : ℚ≥0) : ℚ) = max (x : ℚ) (y : ℚ) :=
   coe_mono.map_max
 #align nnrat.coe_max NNRat.coe_max
 
-@[simp, norm_cast]
+-- `cast_max`, defined in a later file, makes this lemma redundant
+@[simp, norm_cast, nolint simpNF]
 theorem coe_min (x y : ℚ≥0) : ((min x y : ℚ≥0) : ℚ) = min (x : ℚ) (y : ℚ) :=
   coe_mono.map_min
 #align nnrat.coe_min NNRat.coe_min
