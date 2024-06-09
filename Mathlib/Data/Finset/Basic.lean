@@ -2137,7 +2137,7 @@ theorem sdiff_union_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₂
 lemma inter_sdiff_assoc (s t u : Finset α) : (s ∩ t) \ u = s ∩ (t \ u) := by
   ext x; simp [and_assoc]
 
-@[deprecated inter_sdiff_assoc] -- 2024-05-01
+@[deprecated inter_sdiff_assoc (since := "2024-05-01")]
 theorem inter_sdiff (s t u : Finset α) : s ∩ (t \ u) = (s ∩ t) \ u := (inter_sdiff_assoc _ _ _).symm
 #align finset.inter_sdiff Finset.inter_sdiff
 

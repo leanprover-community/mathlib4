@@ -96,7 +96,7 @@ theorem opNorm_mulLeftRight_apply_apply_le (x y : 𝕜') : ‖mulLeftRight 𝕜 
         (norm_nonneg _) (norm_nonneg _)
 #align continuous_linear_map.op_norm_mul_left_right_apply_apply_le ContinuousLinearMap.opNorm_mulLeftRight_apply_apply_le
 
-@[deprecated] -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias op_norm_mulLeftRight_apply_apply_le :=
   opNorm_mulLeftRight_apply_apply_le
 
