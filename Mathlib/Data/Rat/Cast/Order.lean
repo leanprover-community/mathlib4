@@ -82,6 +82,38 @@ theorem cast_lt_zero {n : ℚ} : (n : K) < 0 ↔ n < 0 := by
 #align rat.cast_lt_zero Rat.cast_lt_zero
 
 @[simp, norm_cast]
+theorem cast_le_natCast {m : ℚ} {n : ℕ} : (m : K) ≤ n ↔ m ≤ (n : ℚ) := by
+  rw [← cast_le (K := K), cast_natCast]
+
+@[simp, norm_cast]
+theorem natCast_le_cast {m : ℕ} {n : ℚ} : (m : K) ≤ n ↔ (m : ℚ) ≤ n := by
+  rw [← cast_le (K := K), cast_natCast]
+
+@[simp, norm_cast]
+theorem cast_le_intCast {m : ℚ} {n : ℤ} : (m : K) ≤ n ↔ m ≤ (n : ℚ) := by
+  rw [← cast_le (K := K), cast_intCast]
+
+@[simp, norm_cast]
+theorem intCast_le_cast {m : ℤ} {n : ℚ} : (m : K) ≤ n ↔ (m : ℚ) ≤ n := by
+  rw [← cast_le (K := K), cast_intCast]
+
+@[simp, norm_cast]
+theorem cast_lt_natCast {m : ℚ} {n : ℕ} : (m : K) < n ↔ m < (n : ℚ) := by
+  rw [← cast_lt (K := K), cast_natCast]
+
+@[simp, norm_cast]
+theorem natCast_lt_cast {m : ℕ} {n : ℚ} : (m : K) < n ↔ (m : ℚ) < n := by
+  rw [← cast_lt (K := K), cast_natCast]
+
+@[simp, norm_cast]
+theorem cast_lt_intCast {m : ℚ} {n : ℤ} : (m : K) < n ↔ m < (n : ℚ) := by
+  rw [← cast_lt (K := K), cast_intCast]
+
+@[simp, norm_cast]
+theorem intCast_lt_cast {m : ℤ} {n : ℚ} : (m : K) < n ↔ (m : ℚ) < n := by
+  rw [← cast_lt (K := K), cast_intCast]
+
+@[simp, norm_cast]
 theorem cast_min {a b : ℚ} : (↑(min a b) : K) = min (a : K) (b : K) :=
   (@cast_mono K _).map_min
 #align rat.cast_min Rat.cast_min
@@ -190,6 +222,22 @@ theorem cast_lt_zero {n : ℚ≥0} : (n : K) < 0 ↔ n < 0 := by
 
 @[simp]
 theorem not_cast_lt_zero {n : ℚ≥0} : ¬(n : K) < 0 := mod_cast not_lt_zero'
+
+@[simp, norm_cast]
+theorem cast_le_natCast {m : ℚ≥0} {n : ℕ} : (m : K) ≤ n ↔ m ≤ (n : ℚ≥0) := by
+  rw [← cast_le (K := K), cast_natCast]
+
+@[simp, norm_cast]
+theorem natCast_le_cast {m : ℕ} {n : ℚ≥0} : (m : K) ≤ n ↔ (m : ℚ≥0) ≤ n := by
+  rw [← cast_le (K := K), cast_natCast]
+
+@[simp, norm_cast]
+theorem cast_lt_natCast {m : ℚ≥0} {n : ℕ} : (m : K) < n ↔ m < (n : ℚ≥0) := by
+  rw [← cast_lt (K := K), cast_natCast]
+
+@[simp, norm_cast]
+theorem natCast_lt_cast {m : ℕ} {n : ℚ≥0} : (m : K) < n ↔ (m : ℚ≥0) < n := by
+  rw [← cast_lt (K := K), cast_natCast]
 
 @[simp, norm_cast]
 theorem cast_min {a b : ℚ≥0} : (↑(min a b) : K) = min (a : K) (b : K) :=
