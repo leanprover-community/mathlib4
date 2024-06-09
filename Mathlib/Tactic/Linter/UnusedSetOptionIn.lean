@@ -9,7 +9,12 @@ import Lean.Elab.Command
 import Lean.Linter.Util
 
 /-!
-The `unusedSetOptionIn` linter warns against "most external" unused `set_option ... in`s.
+# The `unnecessarySetOptionIn`
+
+The linter reports a warning if a `set_option ... in` command is unnecessary
+(i.e., the code elaborates fine without it).
+We only report the outermost `set_option ... in` (i.e., nested, superfluous `set_option ... in`s
+are not linted against).
 -/
 
 open Lean Elab Command
@@ -30,14 +35,26 @@ def toExample {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
     return some (← `($dm:declModifiers example $ds $dv:declVal), mkIdent `example)
   | _ => return none
 
-/-- The `unusedSetOptionIn` linter warns against "most external" unused `set_option ... in`s. -/
-register_option linter.unusedSetOptionIn : Bool := {
+/-- Report a warning if a `set_option ... in` command is unnecessary
+(i.e., the code elaborates fine without it).
+We only report the outermost `set_option ... in` (i.e., nested, superfluous `set_option ... in`s
+are not linted against).
+
+This is useful since unnecessary `set_option ... in`s are often silent left-overs of adaptations
+that are no longer needed.
+Cleaning them up, helps maintaining healthy, up-to-date code.
+
+The linter runs just on the outermost `set_option ... in` mostly for simplicity.
+Consider whether emitting a warning if one of the nested `set_option ... in`s can be omitted,
+by removing them one at a time.
+-/
+register_option linter.unnecessarySetOptionIn : Bool := {
   defValue := true
-  descr := "enable the unusedSetOptionIn linter"
+  descr := "enable the unnecessarySetOptionIn linter"
 }
 
-/-- Gets the value of the `linter.unusedSetOptionIn` option. -/
-def getSetOptionIn (o : Options) : Bool := Linter.getLinterValue linter.unusedSetOptionIn o
+@[inherit_doc linter.unnecessarySetOptionIn]
+def getSetOptionIn (o : Options) : Bool := Linter.getLinterValue linter.unnecessarySetOptionIn o
 
 /-- reports a warning if the "first layer" `set_option ... in` is unused. -/
 def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
@@ -54,12 +71,12 @@ def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
         report? := (msgs.isEmpty, id)
         set s
       if report?.1 then
-        Linter.logLint linter.unusedSetOptionIn stx m!"unused 'set_option {opt}' in '{report?.2}'"
+        Linter.logLint linter.unnecessarySetOptionIn stx m!"unused 'set_option {opt}' in '{report?.2}'"
     | _ => return
 
-@[inherit_doc linter.unusedSetOptionIn]
-def unusedSetOptionIn : Linter where run cmd := do
+@[inherit_doc linter.unnecessarySetOptionIn]
+def unnecessarySetOptionIn : Linter where run cmd := do
   if getSetOptionIn (← getOptions) then
     findSetOptionIn elabCommand cmd
 
-initialize addLinter unusedSetOptionIn
+initialize addLinter unnecessarySetOptionIn
