@@ -113,6 +113,19 @@ theorem univ_eq_empty_iff : (univ : Finset α) = ∅ ↔ IsEmpty α := by
   rw [← not_nonempty_iff, ← univ_nonempty_iff, not_nonempty_iff_eq_empty]
 #align finset.univ_eq_empty_iff Finset.univ_eq_empty_iff
 
+theorem univ_nontrivial_iff [Fintype α] :
+    (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
+  rw [Finset.Nontrivial, Finset.coe_univ, Set.nontrivial_univ_iff]
+
+theorem univ_nontrivial [Fintype α] [h : Nontrivial α] :
+    (Finset.univ : Finset α).Nontrivial :=
+  univ_nontrivial_iff.mpr h
+
+theorem Nontrivial.univ [Fintype α] [Nontrivial α] :
+    Finset.Nontrivial (Finset.univ : Finset α) := by
+  let ⟨a, b, h⟩ := exists_pair_ne α
+  exact ⟨a, mem_univ _, b, mem_univ _, h⟩
+
 @[simp]
 theorem univ_eq_empty [IsEmpty α] : (univ : Finset α) = ∅ :=
   univ_eq_empty_iff.2 ‹_›
@@ -122,19 +135,6 @@ theorem univ_eq_empty [IsEmpty α] : (univ : Finset α) = ∅ :=
 theorem univ_unique [Unique α] : (univ : Finset α) = {default} :=
   Finset.ext fun x => iff_of_true (mem_univ _) <| mem_singleton.2 <| Subsingleton.elim x default
 #align finset.univ_unique Finset.univ_unique
-
-theorem univ_nontrivial_iff {α : Type*} [Fintype α] :
-    (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
-  rw [Finset.Nontrivial, Finset.coe_univ, Set.nontrivial_univ_iff]
-
-theorem univ_nontrivial {α : Type*} [Fintype α] [h : Nontrivial α] :
-    (Finset.univ : Finset α).Nontrivial :=
-  univ_nontrivial_iff.mpr h
-
-theorem Nontrivial.univ {α} [Fintype α] [Nontrivial α] :
-    Finset.Nontrivial (Finset.univ : Finset α) := by
-  let ⟨a, b, h⟩ := exists_pair_ne α
-  exact ⟨a, mem_univ _, b, mem_univ _, h⟩
 
 @[simp]
 theorem subset_univ (s : Finset α) : s ⊆ univ := fun a _ => mem_univ a
