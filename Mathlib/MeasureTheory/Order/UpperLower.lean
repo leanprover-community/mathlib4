@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kexing Ying
 -/
 import Mathlib.Analysis.Normed.Order.UpperLower
-import Mathlib.Logic.Lemmas
 import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 import Mathlib.Topology.Order.DenselyOrdered
 
@@ -28,6 +27,20 @@ the Euclidean metric because they have the same measurable sets.
 
 Null-measurability can't be strengthened to measurability because any antichain (and in particular
 any subset of the antidiagonal `{(x, y) | x + y = 0}`) is order-connected.
+
+## Sketch proof
+
+1. To show an order-connected set is null-measurable, it is enough to show it has null frontier.
+2. Since an order-connected set is the intersection of its upper and lower closure, it's enough to
+  show that upper and lower sets have null frontier.
+3. WLOG let's prove it for an upper set `s`.
+4. By the Lebesgue density theorem, it is enough to show that any frontier point `x` of `s` is a
+  Lebesgue point, namely a point where the density of `s` over small balls centered at `x` does not
+  tend to either `0` or `1`.
+5. This is true, since by the upper setness of `s` we can intercalate a ball of radius `δ / 4` in
+  `s` intersected with the upper quadrant of the ball of radius `δ` centered at `x` (recall that the
+  balls are taken in the ∞-norm, so they are cubes), and another ball of radius `δ / 4` in `sᶜ` and
+  the lower quadrant of the ball of radius `δ` centered at `x`.
 
 ## TODO
 
