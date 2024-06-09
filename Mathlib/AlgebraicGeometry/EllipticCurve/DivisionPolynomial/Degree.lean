@@ -44,30 +44,30 @@ namespace WeierstrassCurve
 variable {R : Type u} [CommRing R] (W : WeierstrassCurve R)
 
 lemma natDegree_Ψ₂Sq : W.Ψ₂Sq.natDegree ≤ 3 := by
-  rw [WeierstrassCurve.Ψ₂Sq]
+  rw [Ψ₂Sq]
   compute_degree
 
 @[simp]
 lemma coeff_Ψ₂Sq : W.Ψ₂Sq.coeff 3 = 4 := by
-  rw [WeierstrassCurve.Ψ₂Sq]
+  rw [Ψ₂Sq]
   compute_degree!
 
 lemma natDegree_Ψ₃ : W.Ψ₃.natDegree ≤ 4 := by
-  rw [WeierstrassCurve.Ψ₃]
+  rw [Ψ₃]
   compute_degree
 
 @[simp]
 lemma coeff_Ψ₃ : W.Ψ₃.coeff 4 = 3 := by
-  rw [WeierstrassCurve.Ψ₃]
+  rw [Ψ₃]
   compute_degree!
 
 lemma natDegree_preΨ₄ : W.preΨ₄.natDegree ≤ 6 := by
-  rw [WeierstrassCurve.preΨ₄]
+  rw [preΨ₄]
   compute_degree
 
 @[simp]
 lemma coeff_preΨ₄ : W.preΨ₄.coeff 6 = 2 := by
-  rw [WeierstrassCurve.preΨ₄]
+  rw [preΨ₄]
   compute_degree!
 
 private lemma natDegree_odd {a b c d e f : R[X]} {da db dc dd de df n : ℕ}
@@ -416,7 +416,7 @@ private lemma natDegree_coeff_ΨSq_ofNat (n : ℕ) :
   · erw [ΨSq_zero]
     exact ⟨natDegree_zero.le, Nat.cast_zero.symm⟩
   · have h := W.natDegree_coeff_preΨ' <| n + 1
-    simp only [WeierstrassCurve.ΨSq, preΨ_ofNat, Int.even_coe_nat, Nat.even_add_one, ite_not] at h ⊢
+    simp only [ΨSq, preΨ_ofNat, Int.even_coe_nat, Nat.even_add_one, ite_not] at h ⊢
     by_cases hn : Even n
     · rcases even_iff_exists_two_mul.mp hn with ⟨m, rfl⟩
       rw [if_pos hn, show (2 * m + 1) ^ 2 = 2 * (2 * m * (m + 1)) + 1 by ring1, Nat.add_sub_cancel,
