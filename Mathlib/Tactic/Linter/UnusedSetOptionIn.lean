@@ -45,7 +45,7 @@ def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
   let s ← get
   match stx with
     | .node _ ``Lean.Parser.Command.in #[
-        .node _ ``Lean.Parser.Command.set_option _,
+        .node _ ``Lean.Parser.Command.set_option #[_, opt, _, _],
         _,  -- atom `in`
         inner] => do
       if let some (exm, id) := (← toExample inner) then
@@ -54,7 +54,7 @@ def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
         report? := (msgs.isEmpty, id)
         set s
       if report?.1 then
-        Linter.logLint linter.unusedSetOptionIn stx m!"unused 'set_option' in '{report?.2}'"
+        Linter.logLint linter.unusedSetOptionIn stx m!"unused 'set_option {opt}' in '{report?.2}'"
     | _ => return
 
 @[inherit_doc linter.unusedSetOptionIn]

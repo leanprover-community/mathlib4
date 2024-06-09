@@ -1,7 +1,7 @@
 import Mathlib.Tactic.Linter.UnusedSetOptionIn
 
 /--
-warning: unused 'set_option' in 'example'
+warning: unused 'set_option maxHeartbeats' in 'example'
 note: this linter can be disabled with `set_option linter.unusedSetOptionIn false`
 -/
 #guard_msgs in
