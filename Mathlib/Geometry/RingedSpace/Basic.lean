@@ -80,6 +80,14 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.is_unit_res_of_is_unit_germ AlgebraicGeometry.RingedSpace.isUnit_res_of_isUnit_germ
 
+theorem eq_zero_res_of_eq_zero_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x : U)
+    (h : X.presheaf.germ x f = 0) :
+    ∃ (V : Opens X) (i : V ⟶ U) (_ : x.1 ∈ V), X.presheaf.map i.op f = 0 := by
+  have h1 : X.presheaf.germ x f = X.presheaf.germ x 0 := by simpa
+  obtain ⟨V, hv, i, _, hv4⟩ := TopCat.Presheaf.germ_eq X.presheaf x.1 x.2 x.2 f 0 h1
+  use V, i, hv
+  simpa using hv4
+
 /-- If a section `f` is a unit in each stalk, `f` must be a unit. -/
 theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     (h : ∀ x : U, IsUnit (X.presheaf.germ x f)) : IsUnit f := by

@@ -707,6 +707,8 @@ def MorphismProperty.stalkwise
     (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) :
     MorphismProperty Scheme.{u} := fun _ _ f => ∀ x, P (PresheafedSpace.stalkMap f.val x)
 
+section
+
 variable {P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
 
 theorem stalkwise_respectsIso (hP : RingHom.RespectsIso P) :
@@ -760,5 +762,99 @@ theorem stalkwiseIsLocalAtTarget_of_respectsIso (hP : RingHom.RespectsIso P) :
     obtain ⟨i, hi⟩ := Opens.mem_iSup.mp hy
     let e := morphismRestrictStalkMap f (U i) ⟨x, hi⟩
     exact (hP'.arrow_mk_iso_iff e).mp <| hf i ⟨x, hi⟩
+
+end
+
+namespace MorphismProperty
+
+def toAffineTargetMorphismProperty (P : MorphismProperty Scheme) :
+    AffineTargetMorphismProperty := fun _ _ f ↦ P f
+
+theorem toAffineTargetMorphismProperty_iff_of_isLocalAtTarget (P : MorphismProperty Scheme)
+    (hP : PropertyIsLocalAtTarget P) :
+    targetAffineLocally (toAffineTargetMorphismProperty P) = P := by
+  ext X Y f
+  constructor
+  · intro hf
+    simp [targetAffineLocally] at hf
+    let 𝒰 : Y.OpenCover := Y.affineCover
+    apply hP.of_openCover f 𝒰
+    intro i
+    have : IsAffine (𝒰.obj i) := by
+      simp [𝒰, Scheme.affineCover]
+      infer_instance
+    have hiao : IsAffineOpen (Scheme.Hom.opensRange (𝒰.map i)) := by
+      apply AlgebraicGeometry.rangeIsAffineOpenOfOpenImmersion
+    have := hf (Scheme.Hom.opensRange (𝒰.map i)) hiao
+    let e := morphismRestrictOpensRange f (𝒰.map i)
+    rw [← hP.RespectsIso.arrow_mk_iso_iff e]
+    exact hf (Scheme.Hom.opensRange (𝒰.map i)) hiao
+  · intro hf
+    dsimp [targetAffineLocally]
+    intro ⟨U, hU⟩
+    apply hP.restrict
+    exact hf
+
+theorem toAffineTargetMorphismProperty_isLocal_of_isLocalAtTarget (P : MorphismProperty Scheme)
+    (hP : PropertyIsLocalAtTarget P) :
+    (toAffineTargetMorphismProperty P).IsLocal where
+  RespectsIso := by
+    apply AffineTargetMorphismProperty.respectsIso_mk
+    · intro X Y Z e f _ hf
+      apply hP.RespectsIso.left e f hf
+    · intro X Y Z e f _ hf
+      apply hP.RespectsIso.right e f hf
+  toBasicOpen := by
+    intro X Y _ f r hf
+    apply hP.restrict
+    exact hf
+  ofBasicOpenCover := by
+    intro X Y _ f s hs hf
+    apply ((hP.openCover_TFAE f).out 0 5).mpr
+    let U (r : s) : Opens Y.carrier := Y.basicOpen r.val
+    have hiao : IsAffineOpen (⊤ : Opens Y.carrier) := topIsAffineOpen Y
+    have hU : iSup U = ⊤ := by
+      erw [hiao.basicOpen_union_eq_self_iff]
+      exact hs
+    use s, U, hU
+    intro r
+    exact hf r
+
+theorem stableUnderBaseChange_of_stableUnderBaseChangeOnAffine_of_isLocalAtTarget
+    (P : MorphismProperty Scheme)
+    (hP₁ : PropertyIsLocalAtTarget P)
+    (hP₂ : (toAffineTargetMorphismProperty P).StableUnderBaseChange) :
+    P.StableUnderBaseChange := by
+  rw [← toAffineTargetMorphismProperty_iff_of_isLocalAtTarget P hP₁]
+  apply (toAffineTargetMorphismProperty_isLocal_of_isLocalAtTarget P hP₁).stableUnderBaseChange
+  exact hP₂
+
+/-- A morphism property of schemes is `StableUnderAffineBaseChange` if
+the base change along a morphism of affine schemes of a morphism with affine target is affine. -/
+def StableUnderAffineBaseChange (P : MorphismProperty Scheme) : Prop :=
+  ∀ {X Y Y' S : Scheme} [IsAffine X] [IsAffine S] (f : X ⟶ S) (g : Y ⟶ S) (f' : Y' ⟶ Y)
+    (g' : Y' ⟶ X) (_ : IsPullback f' g' g f) (_ : P g), P g'
+
+theorem StableUnderAffineBaseChange.mk (P : MorphismProperty Scheme)
+    (hP₁ : P.RespectsIso)
+    (hP₂ : ∀ (X Y S : Scheme) [IsAffine X] [IsAffine S] (f : X ⟶ S) (g : Y ⟶ S),
+      P g → P (pullback.fst : pullback f g ⟶ X)) :
+    StableUnderAffineBaseChange P := fun {X Y Y' S} _ _ f g f' g' sq hg ↦ by
+  let e := sq.flip.isoPullback
+  rw [← hP₁.cancel_left_isIso e.inv, sq.flip.isoPullback_inv_fst]
+  exact hP₂ _ _ _ f g hg
+
+theorem stableUnderBaseChange_of_isLocalAtTarget_of_affine (P : MorphismProperty Scheme)
+    (hP₁ : PropertyIsLocalAtTarget P)
+    (hP₂ : StableUnderAffineBaseChange P) :
+    MorphismProperty.StableUnderBaseChange P := by
+  apply stableUnderBaseChange_of_stableUnderBaseChangeOnAffine_of_isLocalAtTarget P hP₁
+  intro X Y S _ _ f g hg
+  apply hP₂ f g pullback.snd
+  · apply IsPullback.flip
+    apply IsPullback.of_hasPullback
+  · exact hg
+
+end MorphismProperty
 
 end AlgebraicGeometry

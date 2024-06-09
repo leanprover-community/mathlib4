@@ -8,6 +8,9 @@ import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.RingTheory.LocalProperties
 import Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Mathlib.Topology.LocalAtTarget
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
+import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+import Mathlib.RingTheory.RingHom.Surjective
 
 /-!
 
@@ -50,6 +53,7 @@ lemma isSurjectiveOnStalks_eq_stalkwise_surjective :
 
 /-- A morphism of schemes `X ⟶ Y` is a closed immersion if the underlying
 topological map is a closed embedding and the induced stalk maps are surjective. -/
+@[mk_iff]
 class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
   base_closed : MorphismProperty.topologically ClosedEmbedding f
   surj_on_stalks : MorphismProperty.stalkwise (fun f ↦ Function.Surjective f) f
@@ -123,6 +127,23 @@ theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S) (h : Function.Surje
         ((PrimeSpectrum.comap (CommRingCat.ofHom f)) x)).hom
       exact (ConcreteCategory.bijective_of_isIso g).2
 
+open Opposite
+
+lemma specMap_Γ_map {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
+    Scheme.specMap (Scheme.Γ.map f.op) = X.isoSpec.inv ≫ f ≫ Y.isoSpec.hom := by
+  erw [IsIso.eq_inv_comp]
+  apply Adjunction.unit_naturality
+
+theorem of_surjective_of_affine {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y)
+    (h : Function.Surjective (Scheme.Γ.map f.op)) : IsClosedImmersion f := by
+  have he : IsClosedImmersion (X.isoSpec.inv ≫ f ≫ Y.isoSpec.hom) := by
+    rw [← specMap_Γ_map f]
+    apply spec_of_surjective
+    exact h
+  rw [respectsIso.cancel_left_isIso] at he
+  rw [respectsIso.cancel_right_isIso] at he
+  exact he
+
 /-- For any ideal `I` in a commutative ring `R`, the quotient map `specObj R ⟶ specObj (R ⧸ I)`
 is a closed immersion. -/
 instance spec_of_quotient_mk {R : CommRingCat.{u}} (I : Ideal R) :
@@ -145,8 +166,6 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
     have h := surjective_stalkMap (f ≫ g) x
     erw [Scheme.comp_val, PresheafedSpace.stalkMap.comp] at h
     exact Function.Surjective.of_comp h
-
-open Limits
 
 theorem closedEmbedding_localAtTarget : PropertyIsLocalAtTarget
     (MorphismProperty.topologically ClosedEmbedding) := by
@@ -175,7 +194,10 @@ theorem isSurjectiveOnStalks_localAtTarget : PropertyIsLocalAtTarget
   apply stalkwiseIsLocalAtTarget_of_respectsIso
   exact surjective_respectsIso
 
-/- TODO: can we write a general helper (ideally n-ary) to obtain this? -/
+/-
+TODO: can we write a general helper (ideally n-ary) to obtain this?
+-> write MorphismProperty.and
+-/
 /-- Closed immersions are local at the target. -/
 theorem closedImmersion_localAtTarget :
     PropertyIsLocalAtTarget @IsClosedImmersion where
@@ -188,6 +210,496 @@ theorem closedImmersion_localAtTarget :
     constructor
     · exact closedEmbedding_localAtTarget.of_openCover f 𝒰 (fun i ↦ (hf i).base_closed)
     · exact isSurjectiveOnStalks_localAtTarget.of_openCover f 𝒰 (fun i ↦ (hf i).surj_on_stalks)
+
+section Affine
+
+section
+
+variable {X Y : Scheme} (f : X ⟶ Y) (x : X) (s : Scheme.Γ.obj <| op X)
+
+example : X.presheaf.obj (op ⊤) := s
+
+variable (t : Scheme.Γ.obj <| op Y)
+
+end
+
+variable (A : Type u) [CommRing A]
+variable {X : Scheme.{u}}
+
+open TopologicalSpace
+
+lemma eq_of_eq_cover (f g : Scheme.Γ.obj (op X)) (𝒰 : X.OpenCover)
+    (h : ∀ i : 𝒰.J, Scheme.Γ.map (𝒰.map i).op f = Scheme.Γ.map (𝒰.map i).op g) : f = g := by
+  sorry
+  --let ι : Type _ := sorry
+  --let U (i : ι) : Opens X := sorry
+  --apply TopCat.Sheaf.eq_of_locally_eq' X.sheaf U ⊤ (fun i ↦ (U i).leTop)
+  --· sorry
+  --· intro i
+  --  sorry
+
+lemma zero_of_zero_cover (s : Scheme.Γ.obj (op X)) (𝒰 : X.OpenCover)
+    (h : ∀ i : 𝒰.J, Scheme.Γ.map (𝒰.map i).op s = 0) : s = 0 := by
+  apply eq_of_eq_cover s 0 _
+  intro i
+  rw [map_zero]
+  exact h i
+
+lemma isNilpotent_of_isNilpotent_cover (s : Scheme.Γ.obj (op X)) (𝒰 : X.OpenCover)
+    [Finite 𝒰.J] (h : ∀ i : 𝒰.J, IsNilpotent (Scheme.Γ.map (𝒰.map i).op s)) : IsNilpotent s := by
+  choose fn hfn using h
+  have : Fintype 𝒰.J := Fintype.ofFinite 𝒰.J
+  /- the maximum of all `fn i` (exists, because `𝒰.J` is finite) -/
+  let N : ℕ := Finset.sup Finset.univ fn
+  have hfnleN (i : 𝒰.J) : fn i ≤ N := Finset.le_sup (Finset.mem_univ i)
+  use N
+  apply zero_of_zero_cover
+  intro i
+  simp only [map_pow]
+  exact pow_eq_zero_of_le (hfnleN i) (hfn i)
+
+lemma ΓToStalk_stalkMap {X Y : Scheme} (f : X ⟶ Y) (x : X) :
+    Y.ΓToStalk (f.val.base x) ≫ PresheafedSpace.stalkMap f.val x =
+      Scheme.Γ.map f.op ≫ X.ΓToStalk x :=
+  sorry
+
+noncomputable def _root_.AlgebraicGeometry.LocallyRingedSpace.ResidueField
+    (X : LocallyRingedSpace) (x : X) : CommRingCat :=
+  CommRingCat.of <| LocalRing.ResidueField (X.stalk x)
+
+noncomputable def _root_.AlgebraicGeometry.LocallyRingedSpace.evaluation (X : LocallyRingedSpace)
+    {U : TopologicalSpace.Opens X} (x : U) :
+    X.presheaf.obj (op U) ⟶ X.ResidueField x :=
+  X.presheaf.germ x ≫ LocalRing.residue _
+
+lemma _root_.AlgebraicGeometry.LocallyRingedSpace.evaluation_eq_zero_iff_mem_maximalIdeal
+    (X : LocallyRingedSpace) {U : TopologicalSpace.Opens X} (x : U) (f : X.presheaf.obj (op U)) :
+    X.evaluation x f = 0 ↔ (X.presheaf.germ x) f ∈ LocalRing.maximalIdeal (X.stalk x) :=
+  LocalRing.residue_eq_zero_iff _
+
+lemma _root_.AlgebraicGeometry.LocallyRingedSpace.evaluation_ne_zero_iff_isUnit
+    (X : LocallyRingedSpace) {U : TopologicalSpace.Opens X} (x : U) (f : X.presheaf.obj (op U)) :
+    X.evaluation x f ≠ 0 ↔ IsUnit ((X.presheaf.germ x) f) :=
+  LocalRing.residue_ne_zero_iff_isUnit _
+
+noncomputable def _root_.AlgebraicGeometry.LocallyRingedSpace.Γevaluation (X : LocallyRingedSpace)
+    (x : X) :
+    LocallyRingedSpace.Γ.obj (op X) ⟶ X.ResidueField x :=
+  X.evaluation ⟨x, show x ∈ ⊤ from trivial⟩
+
+--lemma _root_.AlgebraicGeometry.LocallyRingedSpace.Γevaluation_eq_zero_iff_mem_maximalIdeal
+--    (X : LocallyRingedSpace) (x : X) (f : LocallyRingedSpace.Γ.obj (op X)) :
+--    X.Γevaluation x f = 0 ↔ (X.presheaf.germ x) f ∈ LocalRing.maximalIdeal (X.stalk x) :=
+--  LocalRing.residue_eq_zero_iff _
+
+lemma _root_.AlgebraicGeometry.LocallyRingedSpace.Γevaluation_ne_zero_iff_isUnit
+    (X : LocallyRingedSpace) {U : TopologicalSpace.Opens X} (x : U) (f : X.presheaf.obj (op U)) :
+    X.evaluation x f ≠ 0 ↔ IsUnit ((X.presheaf.germ x) f) :=
+  LocalRing.residue_ne_zero_iff_isUnit _
+
+noncomputable def _root_.AlgebraicGeometry.LocallyRingedSpace.evaluationMap
+    {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X) :
+    Y.ResidueField (f.val.base x) ⟶ X.ResidueField x :=
+  LocalRing.ResidueField.map (LocallyRingedSpace.stalkMap f x)
+
+lemma _root_.AlgebraicGeometry.LocallyRingedSpace.mem_basicOpen (X : LocallyRingedSpace)
+    {U : TopologicalSpace.Opens X}
+    (f : X.presheaf.obj (op U)) (x : U) :
+    x.val ∈ X.toRingedSpace.basicOpen f ↔ X.evaluation x f ≠ 0 := by
+  rw [X.toRingedSpace.mem_basicOpen f x]
+  exact (X.evaluation_ne_zero_iff_isUnit x f).symm
+
+lemma evaluation_evaluationMap {X Y : Scheme} (f : X ⟶ Y) (x : X) :
+    Y.Γevaluation (f.val.base x) ≫ LocallyRingedSpace.evaluationMap f x =
+      Scheme.Γ.map f.op ≫ X.Γevaluation x :=
+  sorry
+
+lemma evaluation_evaluationMap_apply {X Y : Scheme} (f : X ⟶ Y) (x : X) (a : Scheme.Γ.obj (op Y)) :
+    LocallyRingedSpace.evaluationMap f x (Y.Γevaluation (f.val.base x) a) =
+      X.Γevaluation x (Scheme.Γ.map f.op a) :=
+  sorry
+
+lemma ΓToStalk_stalkMap_apply {X Y : Scheme} (f : X ⟶ Y) (x : X) (a : Scheme.Γ.obj (op Y)) :
+    PresheafedSpace.stalkMap f.val x (Y.ΓToStalk (f.val.base x) a) =
+      X.ΓToStalk x (Scheme.Γ.map f.op a) :=
+  sorry
+
+def _root_.AlgebraicGeometry.RingedSpace.zeroLocus {X : RingedSpace}
+    (s : Set (X.presheaf.obj (op ⊤))) : Set X :=
+  sInf { (X.basicOpen f : Set X)ᶜ | (f ∈ s) }
+
+lemma _root_.AlgebraicGeometry.RingedSpace.mem_zeroLocus_iff {X : RingedSpace}
+    (s : Set (X.presheaf.obj (op ⊤))) : True :=
+  sorry
+
+lemma Scheme.zeroLocus_primeSpectrum_zeroLocus {X : Scheme} [IsAffine X] (s : Set (Scheme.Γ.obj (op X))) :
+    X.isoSpec.hom.val.base '' RingedSpace.zeroLocus s = PrimeSpectrum.zeroLocus s :=
+  sorry
+
+lemma Scheme.zeroLocus_eq_top_iff {X : Scheme} [IsAffine X] (s : Set (Scheme.Γ.obj (op X))) :
+    RingedSpace.zeroLocus s = ⊤ ↔ s ⊆ nilradical (Scheme.Γ.obj (op X)) :=
+  sorry
+
+lemma Scheme.zeroLocus_mem {X : Scheme} [IsAffine X] (s : Set (Scheme.Γ.obj (op X)))
+    (x : X) : x ∈ RingedSpace.zeroLocus s ↔ ∀ f ∈ s, X.Γevaluation x f = 0 :=
+  sorry
+
+lemma Scheme.isNilpotent_iff {X : Scheme} [IsAffine X] (f : Scheme.Γ.obj (op X)) :
+    IsNilpotent f ↔ ∀ x, X.Γevaluation x f = 0 := by
+  rw [nilpotent_iff_mem_prime]
+  constructor
+  · intro h x
+    sorry
+  · sorry
+
+theorem eq_zeroLocus_of_isClosed (X : Scheme) [IsAffine X] (s : Set X.carrier) (hs : IsClosed s) :
+    ∃ I : Ideal (Scheme.Γ.obj (op X)), s = RingedSpace.zeroLocus (I : Set (Scheme.Γ.obj (op X))) := by
+  let A : CommRingCat := Scheme.Γ.obj (op X)
+  let iso : X ≅ Scheme.specObj A := Scheme.isoSpec X
+  let Z : Set (Scheme.specObj A) := iso.hom.val.base '' s
+  have hZ : IsClosed Z :=
+    (TopCat.homeoOfIso (asIso <| iso.hom.val.base)).isClosedMap _ hs
+  obtain ⟨I, (hI : Z = _)⟩ := (PrimeSpectrum.isClosed_iff_zeroLocus_ideal _).mp hZ
+  use I
+  have : Function.Injective (Set.image iso.hom.val.base) := by
+    simp only [Set.image_injective]
+    exact (ConcreteCategory.bijective_of_isIso iso.hom.val.base).injective
+  apply this
+  show Z = _
+  rw [hI]
+  erw [Scheme.zeroLocus_primeSpectrum_zeroLocus]
+
+theorem surjective_of_closedInAffine_of_injective {X Y : Scheme} [IsAffine Y] [CompactSpace X]
+    (f : X ⟶ Y) (hfcl : IsClosed (Set.range f.val.base))
+    (hfinj : Function.Injective (Scheme.Γ.map f.op)) :
+    Function.Surjective f.val.base := by
+  let A : CommRingCat := Scheme.Γ.obj (op Y)
+  obtain ⟨I, hI⟩ := eq_zeroLocus_of_isClosed Y (Set.range f.val.base) hfcl
+  let φ : A ⟶ Scheme.Γ.obj (op X) := Scheme.Γ.map f.op
+  let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
+  have (i : 𝒰.J) : IsAffine (𝒰.obj i) :=
+    Scheme.affineCoverIsAffine X _
+  let B (i : 𝒰.J) : CommRingCat := Scheme.Γ.obj (op <| 𝒰.obj i)
+  let res (i : 𝒰.J) : Scheme.Γ.obj (op X) ⟶ B i := Scheme.Γ.map (𝒰.map i).op
+  apply Set.range_iff_surjective.mp
+  rw [hI]
+  apply (Scheme.zeroLocus_eq_top_iff _).mpr
+  have h1 (s : A) (hs : s ∈ I) (i : 𝒰.J) (x : 𝒰.obj i) :
+      (𝒰.obj i).Γevaluation x ((res i) (φ s)) = 0 := by
+    let y : Y := f.val.base <| (𝒰.map i).val.base x
+    have hyinrange : y ∈ Set.range f.val.base :=
+      Set.mem_range_self ((𝒰.map i).val.base x)
+    have hys : Y.Γevaluation y s = 0 := by
+      rw [hI, Scheme.zeroLocus_mem] at hyinrange
+      exact hyinrange s hs
+    let fₓ := LocallyRingedSpace.evaluationMap (𝒰.map i ≫ f) x
+    have hdiag2 :
+        (𝒰.obj i).Γevaluation x ((res i) (φ s)) = fₓ (Y.Γevaluation y s) := by
+      erw [evaluation_evaluationMap_apply]
+      rfl
+    rw [hdiag2, hys]
+    simp
+  have h3 (s : A) (hs : s ∈ I) (i : 𝒰.J) : IsNilpotent ((res i) (φ s)) := by
+    rw [Scheme.isNilpotent_iff]
+    intro x
+    apply h1 s hs i x
+  intro s hs
+  simp only [SetLike.mem_coe, mem_nilradical, ← IsNilpotent.map_iff hfinj]
+  apply isNilpotent_of_isNilpotent_cover _ 𝒰
+  exact h3 s hs
+
+theorem stalkMap_injective_of {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] (x : X)
+    (h : ∀ g,
+      LocallyRingedSpace.stalkMap f x (Y.ΓToStalk (f.val.base x) g) = 0 → Y.ΓToStalk (f.val.base x) g = 0) :
+    Function.Injective (LocallyRingedSpace.stalkMap f x) := by
+  --rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
+  sorry
+
+lemma ΓToStalk_eq_zero_of {X : Scheme} (x : X) (f s : Scheme.Γ.obj (op X)) (hx : x ∈ X.basicOpen s)
+    {n : ℕ} (hf : s ^ n * f = 0) : X.ΓToStalk x f = 0 :=
+  sorry
+
+lemma pow_mul_eq_zero_of_le {R : Type*} [CommRing R] {a b : R} {m n : ℕ} (hmn : m ≤ n)
+    (h : a ^ m * b = 0) : a ^ n * b = 0 :=
+  sorry
+
+lemma res_basicOpen_zero_iff_of_qcqs {X : Scheme} {U : TopologicalSpace.Opens X}
+    (hU : IsCompact U.carrier) (hU' : IsQuasiSeparated U.carrier)
+    (f s : X.presheaf.obj (op U)) (hf : (f |_ X.basicOpen s : (forget CommRingCat).obj _) = 0) :
+    ∃ n, s ^ n * f = 0 := by
+  have := is_localization_basicOpen_of_qcqs hU hU' s
+  sorry
+
+lemma Γres_basicOpen_zero_iff_of_qcqs {X : Scheme} [CompactSpace X] [QuasiSeparatedSpace X]
+    (f s : Scheme.Γ.obj (op X)) (hf : (f |_ X.basicOpen s : (forget CommRingCat).obj _) = 0) :
+    ∃ n, s ^ n * f = 0 := by
+  sorry
+
+section
+
+variable {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (s : Scheme.Γ.obj (op Y))
+
+end
+
+lemma pullback_zero_of_zero {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (s : Scheme.Γ.obj (op Y))
+    (h : (s |_ U : (forget CommRingCat).obj _) = 0) :
+    ((Scheme.Γ.map f.op s) |_ f⁻¹ᵁ U : (forget CommRingCat).obj _) = 0 :=
+  sorry
+
+lemma map_le {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y} (hUV : U ≤ V) :
+    f⁻¹ᵁ U ≤ f⁻¹ᵁ V :=
+  sorry
+
+theorem injective_on_stalks {X Y : Scheme} (f : X ⟶ Y) [CompactSpace X] [IsAffine Y]
+    (hfopen : IsOpenMap f.val.base)
+    (hfinj₁ : Function.Injective f.val.base)
+    (hfinj₂ : Function.Injective (Scheme.Γ.map f.op)) (x : X) :
+    Function.Injective (LocallyRingedSpace.stalkMap f x) := by
+  let A : CommRingCat := Scheme.Γ.obj (op Y)
+  let φ : A ⟶ Scheme.Γ.obj (op X) := Scheme.Γ.map f.op
+  let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
+  have (i : 𝒰.J) : IsAffine (𝒰.obj i) := Scheme.affineCoverIsAffine X _
+  let res (i : 𝒰.J) : Scheme.Γ.obj (op X) ⟶ Scheme.Γ.obj (op <| 𝒰.obj i) :=
+    Scheme.Γ.map (𝒰.map i).op
+  apply stalkMap_injective_of
+  intro (g : A) h
+  erw [ΓToStalk_stalkMap_apply] at h
+  obtain ⟨U, _, (hx : x ∈ U), hg⟩ :=
+    X.toRingedSpace.eq_zero_res_of_eq_zero_germ ⊤ (φ g) ⟨x, trivial⟩ h
+  let y : Y := f.val.base x
+  let V : TopologicalSpace.Opens Y := ⟨f.val.base '' U.carrier, hfopen U.carrier U.is_open'⟩
+  have hyv : y ∈ V := by
+    simp only [TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.mem_mk, Set.mem_image,
+      SetLike.mem_coe, V]
+    use x
+  have : TopologicalSpace.Opens.IsBasis (Set.range Y.basicOpen) := isBasis_basicOpen Y
+  rw [Opens.isBasis_iff_nbhd] at this
+  obtain ⟨V', ⟨(s : A), rfl⟩, hyv', yv'le⟩ := this hyv
+  let W (i : 𝒰.J) : TopologicalSpace.Opens (𝒰.obj i) := ((𝒰.obj i).basicOpen ((res i) (φ s)))
+  let r (i : 𝒰.J) : (forget CommRingCat).obj ((𝒰.obj i).presheaf.obj (op <| W i)) :=
+    (res i) (φ g) |_ (W i)
+  let r0 (i : 𝒰.J) : (forget CommRingCat).obj ((𝒰.obj i).presheaf.obj (op <| (𝒰.map i)⁻¹ᵁ U)) :=
+    ((res i) (φ g) |_ (𝒰.map i)⁻¹ᵁ U)
+  have h00 (i : 𝒰.J) : r0 i = 0 := by
+    dsimp only [r0, res]
+    apply pullback_zero_of_zero
+    exact hg
+  have hwle (i : 𝒰.J) : W i ≤ (𝒰.map i)⁻¹ᵁ U := by
+    show ((𝒰.obj i).toRingedSpace.basicOpen ((𝒰.map i ≫ f).val.c.app (op ⊤) s)) ≤ _
+    erw [← LocallyRingedSpace.preimage_basicOpen (𝒰.map i ≫ f) s]
+    dsimp
+    apply map_le
+    apply map_le f at yv'le
+    dsimp only [V] at yv'le
+    trans
+    exact yv'le
+    apply le_of_eq
+    apply Opens.ext
+    apply Set.preimage_image_eq
+    exact hfinj₁
+  have h0 (i : 𝒰.J) : r i = 0 := by
+    dsimp [r]
+    rw [← TopCat.Presheaf.restrict_restrict (hwle i)]
+    dsimp [r0] at h00
+    rw [h00 i]
+    rfl
+  have h1 (i : 𝒰.J) : ∃ n, (res i) (φ (s ^ n * g)) = 0 := by
+    obtain ⟨n, hn⟩ := Γres_basicOpen_zero_iff_of_qcqs ((res i) (φ g)) ((res i) (φ s)) (h0 i)
+    use n
+    simpa
+  have h2 : ∃ n, ∀ i, (res i) (φ (s ^ n * g)) = 0 := by
+    choose fn hfn using h1
+    have : Fintype 𝒰.J := Fintype.ofFinite 𝒰.J
+    /- the maximum of all `fn i` (exists, because `𝒰.J` is finite) -/
+    let N : ℕ := Finset.sup Finset.univ fn
+    have hfnleN (i : 𝒰.J) : fn i ≤ N := Finset.le_sup (Finset.mem_univ i)
+    use N
+    intro i
+    rw [map_mul, map_pow, map_mul, map_pow]
+    simp only [map_mul, map_pow, map_mul, map_pow] at hfn
+    apply pow_mul_eq_zero_of_le (hfnleN i) (hfn i)
+  obtain ⟨n, hn⟩ := h2
+  have h3 : φ (s ^ n * g) = 0 :=
+    zero_of_zero_cover _ _ hn
+  have h4 : s ^ n * g = 0 := by
+    rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero] at hfinj₂
+    exact hfinj₂ _ h3
+  exact ΓToStalk_eq_zero_of y g s hyv' h4
+
+theorem TopCat.isIso_of_bijective_of_isClosedMap {X Y : TopCat} (f : X ⟶ Y)
+    (hfbij : Function.Bijective f) (hfcl : IsClosedMap f) : IsIso f := by
+  let e : X ≃ₜ Y := sorry
+  sorry
+
+theorem closedImmersion_affine_target_iso {X Y : Scheme} [IsAffine Y]
+    (f : X ⟶ Y) [IsClosedImmersion f] (hf : Function.Injective (Scheme.Γ.map f.op)) :
+    IsIso f := by
+  have : CompactSpace X := (closedEmbedding f).compactSpace
+  have : IsIso f.val.base := by
+    refine TopCat.isIso_of_bijective_of_isClosedMap _ ⟨?_, ?_⟩ ?_
+    · exact (closedEmbedding f).inj
+    · apply surjective_of_closedInAffine_of_injective
+      · exact (closedEmbedding f).isClosed_range
+      · exact hf
+    · exact (closedEmbedding f).isClosedMap
+  rw [isIso_iff_stalk_iso]
+  constructor
+  · assumption
+  · intro x
+    apply (ConcreteCategory.isIso_iff_bijective _).mpr
+    constructor
+    · apply injective_on_stalks
+      · exact (TopCat.homeoOfIso (asIso f.val.base)).isOpenMap
+      · exact (closedEmbedding f).inj
+      · exact hf
+    · exact surjective_stalkMap f x
+
+noncomputable example (A : CommRingCat) : Scheme.Γ.obj (op <| Scheme.specObj A) ⟶ A :=
+  SpecΓIdentity.hom.app A
+
+lemma toSpecΓ_ΓSpec_adjunction_homEquiv {X : Scheme} {B : CommRingCat} (φ : B ⟶ Scheme.Γ.obj (op X)) :
+    toSpecΓ B ≫
+      ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).val.c.app (op ⊤) = φ :=
+  sorry
+
+lemma ΓSpec_adjunction_homEquiv_app_top {X : Scheme} {B : CommRingCat} (φ : B ⟶ Scheme.Γ.obj (op X)) :
+    (((ΓSpec.adjunction.homEquiv X (op B)) φ.op).val.c.app (op ⊤)) = inv (toSpecΓ B) ≫ φ := by
+  simp_rw [← toSpecΓ_ΓSpec_adjunction_homEquiv φ]
+  simp
+
+set_option maxHeartbeats 500000
+
+lemma specMap_app_top {A B : CommRingCat} (φ : A ⟶ B) :
+    (Scheme.specMap φ).val.c.app (op ⊤) = inv (toSpecΓ A) ≫ φ ≫ toSpecΓ B :=
+  sorry
+
+lemma specMap_app_top_surjective {A B : CommRingCat} (φ : A ⟶ B) (hφ : Function.Surjective φ) :
+    Function.Surjective ((Scheme.specMap φ).val.c.app (op ⊤)) := by
+  rw [specMap_app_top]
+  erw [CommRingCat.coe_comp]
+  erw [CommRingCat.coe_comp]
+  apply Function.Surjective.comp
+  · apply Function.Surjective.comp
+    · apply Function.Bijective.surjective
+      apply (ConcreteCategory.isIso_iff_bijective _).mp
+      infer_instance
+    · exact hφ
+  · apply Function.Bijective.surjective
+    apply (ConcreteCategory.isIso_iff_bijective _).mp
+    infer_instance
+
+theorem spec_target_factorization {X : Scheme} {A : CommRingCat} (f : X ⟶ Scheme.specObj A) :
+    ∃ (B : CommRingCat) (g : X ⟶ Scheme.specObj B) (h : A ⟶ B),
+      f = g ≫ Scheme.specMap h ∧ Function.Surjective h ∧
+        Function.Injective (Scheme.Γ.map g.op) := by
+  let φ : A ⟶ Scheme.Γ.obj (op X) :=
+    (((ΓSpec.adjunction).homEquiv X (op A)).symm f).unop
+  let I : Ideal A := RingHom.ker φ
+  let B : CommRingCat := CommRingCat.of <| A ⧸ I
+  let φ' : B ⟶ Scheme.Γ.obj (op X) := RingHom.kerLift φ
+  have hinj : Function.Injective φ' := RingHom.kerLift_injective φ
+  use B
+  let g : X ⟶ Scheme.specObj B :=
+    (ΓSpec.adjunction).homEquiv X (op B) φ'.op
+  use g
+  let h : A ⟶ B := Ideal.Quotient.mk I
+  use h
+  have hd : φ = h ≫ φ' := by
+    ext a
+    simp
+    symm
+    apply RingHom.kerLift_mk
+  refine ⟨?_, ?_, ?_⟩
+  · apply ((ΓSpec.adjunction).homEquiv X (op A)).symm.injective
+    apply Opposite.unop_injective
+    show φ = _
+    rw [Adjunction.homEquiv_naturality_left_symm]
+    rw [Adjunction.homEquiv_counit]
+    show φ = _ ≫ _
+    show φ = (_ ≫ _) ≫ _
+    dsimp only [g]
+    simp
+    rw [ΓSpec.locallyRingedSpaceAdjunction_counit]
+    simp
+    rw [← Category.assoc]
+    erw [← Spec_Γ_naturality]
+    simp
+    show φ = h ≫ toSpecΓ B ≫ _
+    erw [toSpecΓ_ΓSpec_adjunction_homEquiv φ']
+    exact hd
+  · exact Ideal.Quotient.mk_surjective
+  · simp only [g]
+    simp
+    erw [ΓSpec_adjunction_homEquiv_app_top]
+    erw [CommRingCat.coe_comp]
+    apply Function.Injective.comp
+    · exact hinj
+    · apply Function.Bijective.injective
+      apply (ConcreteCategory.isIso_iff_bijective _).mp
+      infer_instance
+
+instance (B : CommRingCat) : IsAffine (Scheme.specObj B) := SpecIsAffine (op B)
+
+theorem affine_target_factorization {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y) :
+    ∃ (Z : Scheme) (g : X ⟶ Z) (h : Z ⟶ Y),
+      f = g ≫ h ∧ IsAffine Z ∧ Function.Surjective (Scheme.Γ.map h.op) ∧
+        Function.Injective (Scheme.Γ.map g.op) := by
+  let isoY := Y.isoSpec
+  obtain ⟨B, g, h, hcomp, hsurj, hinj⟩ := spec_target_factorization (f ≫ isoY.hom)
+  refine ⟨Scheme.specObj B, g, Scheme.specMap h ≫ isoY.inv, ?_, ?_, ?_, ?_⟩
+  · rw [← Category.assoc]
+    rw [← hcomp]
+    simp
+  · infer_instance
+  · simp
+    rw [CommRingCat.coe_comp]
+    apply (specMap_app_top_surjective h hsurj).comp
+    · apply Function.Bijective.surjective
+      apply ConcreteCategory.bijective_of_isIso
+  · exact hinj
+
+theorem closedImmersion_affine_target {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y)
+    [IsClosedImmersion f] : IsAffine X ∧ Function.Surjective (Scheme.Γ.map f.op) := by
+  obtain ⟨Z, g, h, rfl, hZA, hh, hg⟩ := affine_target_factorization f
+  have : IsClosedImmersion h := of_surjective_of_affine h hh
+  have : IsClosedImmersion g := IsClosedImmersion.of_comp g h
+  have : IsIso g := closedImmersion_affine_target_iso g hg
+  constructor
+  · apply isAffineOfIso g
+  · simp
+    show Function.Surjective (_ ∘ Scheme.Γ.map h.op)
+    apply Function.Surjective.comp
+    · apply Function.Bijective.surjective
+      apply ConcreteCategory.bijective_of_isIso
+    · exact hh
+
+end Affine
+
+section
+
+end
+
+open Limits
+
+theorem closedImmersion_pullback_fst_of_isAffine {X Y Z : Scheme} [IsAffine X] [IsAffine Y] [IsAffine Z]
+    (f : X ⟶ Y) (g : Z ⟶ Y) [IsClosedImmersion g]  :
+    IsClosedImmersion (pullback.fst : pullback f g ⟶ X) := by
+  have : Function.Surjective (Scheme.Γ.map g.op) :=
+    (closedImmersion_affine_target g).right
+  apply of_surjective_of_affine
+  apply (RingHom.surjective_stableUnderBaseChange).Γ_pullback_fst
+  · exact RingHom.surjective_respectsIso
+  · exact (closedImmersion_affine_target g).right
+
+theorem closedImmersion_stableUnderBaseChange :
+    MorphismProperty.StableUnderBaseChange @IsClosedImmersion := by
+  apply MorphismProperty.stableUnderBaseChange_of_isLocalAtTarget_of_affine
+  · exact closedImmersion_localAtTarget
+  · apply MorphismProperty.StableUnderAffineBaseChange.mk
+    · exact respectsIso
+    · intro X Y S _ _ f g hg
+      have : IsAffine Y := (closedImmersion_affine_target g).left
+      exact closedImmersion_pullback_fst_of_isAffine f g
 
 end IsClosedImmersion
 

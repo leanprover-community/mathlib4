@@ -318,6 +318,19 @@ theorem vanishingIdeal_eq_top_iff {s : Set (PrimeSpectrum R)} : vanishingIdeal s
     Set.subset_empty_iff]
 #align prime_spectrum.vanishing_ideal_eq_top_iff PrimeSpectrum.vanishingIdeal_eq_top_iff
 
+theorem zeroLocus_eq_top_iff (s : Set R) :
+    zeroLocus s = ⊤ ↔ s ⊆ nilradical R := by
+  constructor
+  · intro h x hx
+    refine nilpotent_iff_mem_prime.mpr (fun J hJ ↦ ?_)
+    have hJz : ⟨J, hJ⟩ ∈ zeroLocus s := by
+      rw [h]
+      trivial
+    exact (mem_zeroLocus _ _).mpr hJz hx
+  · rw [eq_top_iff]
+    intro h p _
+    apply Set.Subset.trans h (nilradical_le_prime p.asIdeal)
+
 theorem zeroLocus_sup (I J : Ideal R) :
     zeroLocus ((I ⊔ J : Ideal R) : Set R) = zeroLocus I ∩ zeroLocus J :=
   (gc R).l_sup
