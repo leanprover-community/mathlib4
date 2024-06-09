@@ -8,15 +8,7 @@ import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 #align_import category_theory.bicategory.functor from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
 /-!
-# Oplax functors and pseudofunctors
-
-An oplax functor `F` between bicategories `B` and `C` consists of
-* a function between objects `F.obj : B ⟶ C`,
-* a family of functions between 1-morphisms `F.map : (a ⟶ b) → (F.obj a ⟶ F.obj b)`,
-* a family of functions between 2-morphisms `F.map₂ : (f ⟶ g) → (F.map f ⟶ F.map g)`,
-* a family of 2-morphisms `F.mapId a : F.map (𝟙 a) ⟶ 𝟙 (F.obj a)`,
-* a family of 2-morphisms `F.mapComp f g : F.map (f ≫ g) ⟶ F.map f ≫ F.map g`, and
-* certain consistency conditions on them.
+# Pseudofunctors
 
 A pseudofunctor is an oplax functor whose `mapId` and `mapComp` are isomorphisms. We provide
 several constructors for pseudofunctors:
@@ -46,17 +38,9 @@ to forget the definitions of the inverses. On the other hand, the latter constru
 `mkOfOplax'` is useful if you want to use propositional type class `IsIso`.
 
 ## Main definitions
-
-* `CategoryTheory.OplaxFunctor B C` : an oplax functor between bicategories `B` and `C`
-* `CategoryTheory.OplaxFunctor.comp F G` : the composition of oplax functors
 * `CategoryTheory.Pseudofunctor B C` : a pseudofunctor between bicategories `B` and `C`
 * `CategoryTheory.Pseudofunctor.comp F G` : the composition of pseudofunctors
 
-## Future work
-
-There are two types of functors between bicategories, called lax and oplax functors, depending on
-the directions of `mapId` and `mapComp`. We may need both in mathlib in the future, but for
-now we only define oplax functors.
 -/
 
 namespace CategoryTheory
