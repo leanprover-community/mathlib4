@@ -2321,8 +2321,7 @@ lemma countable_covers_witnessing_separated_nhds {h k : Set X}
     rcases h₀_cov xinh with ⟨un , ⟨n, un'⟩ , xinun⟩
     rw [← un'] at xinun
     simp only [mem_iUnion]
-    use n
-    refine ⟨xinun, ?_⟩
+    refine ⟨n, xinun, ?_⟩
     rw [Set.Finite.closure_biUnion (finite_le_nat n)]
     simp only [mem_setOf_eq, mem_iUnion, exists_prop, not_exists, not_and]
     exact fun m _ ↦ Set.disjoint_right.mp (dis m) xinh
