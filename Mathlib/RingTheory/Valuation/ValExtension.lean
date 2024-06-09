@@ -150,7 +150,16 @@ instance instIsScalarTowerInteger : IsScalarTower vR.integer vA.integer A where
     simp only [Algebra.smul_def]
     exact mul_assoc _ _ _
 
-theorem integerAlgebra_injective {K A ΓK ΓA : Type*} [Field K] [Ring A] [Nontrivial A]
+instance instNoZeroSMulDivisorsInteger {K A ΓK ΓA : Type*} [CommRing K] [Ring A]
+    [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓA]
+    [Algebra K A] (vK : Valuation K ΓK) (vA : Valuation A ΓA) [IsValExtension vK vA]
+    [NoZeroSMulDivisors K A] :
+    NoZeroSMulDivisors vK.integer vA.integer := by
+  refine ⟨fun {x y} e ↦ ?_⟩
+  have : (x : K) • (y : A) = 0 := by simpa [Subtype.ext_iff, Algebra.smul_def] using e
+  simpa only [Subtype.ext_iff, smul_eq_zero] using this
+
+theorem algebraMap_integer_injective {K A ΓK ΓA : Type*} [Field K] [Ring A] [Nontrivial A]
     [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓA]
     [Algebra K A] (vK : Valuation K ΓK) (vA : Valuation A ΓA) [IsValExtension vK vA] :
     Function.Injective (algebraMap vK.integer vA.integer) := by
@@ -159,22 +168,15 @@ theorem integerAlgebra_injective {K A ΓK ΓA : Type*} [Field K] [Ring A] [Nontr
   ext
   apply RingHom.injective (algebraMap K A) h
 
-instance instIsLocalRingHomValuationInteger {K L ΓK ΓL : Type*} [Field K] [Field L]
+instance instIsLocalRingHomValuationInteger {K L ΓK ΓL : Type*} [CommRing K] [CommRing L]
     [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓL]
-    [Algebra K L] {vK : Valuation K ΓK} {vL : Valuation L ΓL} [IsValExtension vK vL] :
+    [Algebra K L] [IsLocalRingHom (algebraMap K L)] {vK : Valuation K ΓK} {vL : Valuation L ΓL} [IsValExtension vK vL] :
     IsLocalRingHom (algebraMap vK.integer vL.integer) where
   map_nonunit r hr := by
-    by_cases h : r = 0
-    · simp [h] at hr
-    · apply Valuation.Integers.isUnit_of_one (v := vK)
-      · exact Valuation.integer.integers (v := vK)
-      · simp only [isUnit_iff_ne_zero, ne_eq]
-        exact Subtype.ext_iff.not.mp h
-      · apply Valuation.Integers.one_of_isUnit (Valuation.integer.integers (v := vL)) at hr
-        change vL (((algebraMap vK.integer vL.integer) r) : L) = 1 at hr
-        norm_cast at hr
-        rw [val_map_eq_one_iff vK] at hr
-        exact hr
+    apply (Valuation.integer.integers (v := vK)).isUnit_of_one
+    · exact (isUnit_map_iff (algebraMap K L) _).mp (hr.map (algebraMap _ L))
+    · apply (Valuation.integer.integers (v := vL)).one_of_isUnit at hr
+      exact (val_map_eq_one_iff vK vL _).mp hr
 
 end integer
 
