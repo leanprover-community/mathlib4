@@ -61,7 +61,7 @@ instance is what makes things like `37 : R` type check.  Note that `0` and `1` a
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through
 `Zero` and `One`, respectively. -/
 @[nolint unusedArguments]
-instance (priority := 100) instOfNatAtLeastTwo {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
+instance (priority := 100) instOfNatAtLeastTwo {n : ℕ} [Nat.AtLeastTwo n] [NatCast R] :
     OfNat R n where
   ofNat := n.cast
 
@@ -73,10 +73,10 @@ in `no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
 Some discussion is [on Zulip here](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20Polynomial.2Ecoeff.20example/near/395438147).
 -/
 
-@[simp, norm_cast] theorem Nat.cast_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
+@[simp, norm_cast] theorem Nat.cast_ofNat {n : ℕ} [Nat.AtLeastTwo n] [NatCast R] :
   (Nat.cast (no_index (OfNat.ofNat n)) : R) = OfNat.ofNat n := rfl
 
-theorem Nat.cast_eq_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
+theorem Nat.cast_eq_ofNat {n : ℕ} [Nat.AtLeastTwo n] [NatCast R] :
     (Nat.cast n : R) = OfNat.ofNat n :=
   rfl
 
@@ -98,12 +98,15 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
 #align add_monoid_with_one.nat_cast_succ AddMonoidWithOne.natCast_succ
 
 attribute [instance 50] AddMonoidWithOne.toAddMonoid
+attribute [instance 20] AddMonoidWithOne.toOne
 
 /-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`.  -/
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
 #align add_comm_monoid_with_one AddCommMonoidWithOne
 #align add_comm_monoid_with_one.to_add_monoid_with_one AddCommMonoidWithOne.toAddMonoidWithOne
 #align add_comm_monoid_with_one.to_add_comm_monoid AddCommMonoidWithOne.toAddCommMonoid
+
+attribute [instance 90] AddCommMonoidWithOne.toAddMonoidWithOne
 
 library_note "coercion into rings"
 /--

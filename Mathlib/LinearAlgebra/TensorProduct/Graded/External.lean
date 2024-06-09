@@ -123,7 +123,6 @@ theorem gradedComm_of_tmul_of (i j : ι) (a : 𝒜 i) (b : ℬ j) :
     zsmul_eq_smul_cast R, LinearEquiv.map_smul, TensorProduct.directSum_symm_lof_tmul,
     ← zsmul_eq_smul_cast, ← Units.smul_def]
 
-set_option synthInstance.maxHeartbeats 30000 in
 theorem gradedComm_tmul_of_zero (a : ⨁ i, 𝒜 i) (b : ℬ 0) :
     gradedComm R 𝒜 ℬ (a ⊗ₜ lof R _ ℬ 0 b) = lof R _ ℬ _ b ⊗ₜ a := by
   suffices
@@ -135,7 +134,6 @@ theorem gradedComm_tmul_of_zero (a : ⨁ i, 𝒜 i) (b : ℬ 0) :
   dsimp
   rw [gradedComm_of_tmul_of, zero_mul, uzpow_zero, one_smul]
 
-set_option synthInstance.maxHeartbeats 30000 in
 theorem gradedComm_of_zero_tmul (a : 𝒜 0) (b : ⨁ i, ℬ i) :
     gradedComm R 𝒜 ℬ (lof R _ 𝒜 0 a ⊗ₜ b) = b ⊗ₜ lof R _ 𝒜 _ a := by
   suffices
@@ -199,7 +197,6 @@ theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)
 
 variable {R}
 
-set_option synthInstance.maxHeartbeats 30000 in
 theorem algebraMap_gradedMul (r : R) (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ (algebraMap R _ r ⊗ₜ 1) x = r • x := by
   suffices gradedMul R 𝒜 ℬ (algebraMap R _ r ⊗ₜ 1) = DistribMulAction.toLinearMap R _ r by
@@ -215,7 +212,6 @@ theorem one_gradedMul (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
   -- Note: #8386 had to specialize `map_one` to avoid timeouts.
   simpa only [RingHom.map_one, one_smul] using algebraMap_gradedMul 𝒜 ℬ 1 x
 
-set_option synthInstance.maxHeartbeats 30000 in
 theorem gradedMul_algebraMap (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) (r : R) :
     gradedMul R 𝒜 ℬ x (algebraMap R _ r ⊗ₜ 1) = r • x := by
   suffices (gradedMul R 𝒜 ℬ).flip (algebraMap R _ r ⊗ₜ 1) = DistribMulAction.toLinearMap R _ r by
@@ -232,7 +228,6 @@ theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
   -- Note: #8386 had to specialize `map_one` to avoid timeouts.
   simpa only [RingHom.map_one, one_smul] using gradedMul_algebraMap 𝒜 ℬ x 1
 
-set_option synthInstance.maxHeartbeats 30000 in
 theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedMul R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y) z = gradedMul R 𝒜 ℬ x (gradedMul R 𝒜 ℬ y z) := by
   let mA := gradedMul R 𝒜 ℬ

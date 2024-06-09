@@ -2111,6 +2111,7 @@ instance instWfDvdMonoid : WfDvdMonoid ℕ where
     simp only [succ_ne_zero, cast_lt, if_false]
     refine lt_of_le_of_ne (Nat.le_of_dvd (Nat.succ_pos _) h1) fun con => h2 ?_
     rw [con]
+    rfl
 
 instance instUniqueFactorizationMonoid : UniqueFactorizationMonoid ℕ where
   irreducible_iff_prime := Nat.irreducible_iff_prime

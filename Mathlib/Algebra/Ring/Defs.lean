@@ -116,16 +116,23 @@ TODO: clean this once lean4#2115 is fixed
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
 #align non_unital_non_assoc_semiring NonUnitalNonAssocSemiring
 
+attribute [instance 10] NonUnitalNonAssocSemiring.toMulZeroClass
 attribute [instance 0] NonUnitalNonAssocSemiring.toMul
 
 /-- An associative but not-necessarily unital semiring. -/
 class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
 #align non_unital_semiring NonUnitalSemiring
 
+attribute [instance 50] NonUnitalSemiring.toSemigroupWithZero
+
 /-- A unital but not-necessarily-associative semiring. -/
 class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α,
     AddCommMonoidWithOne α
 #align non_assoc_semiring NonAssocSemiring
+
+attribute [instance 10] NonAssocSemiring.toMulZeroOneClass
+attribute [instance 0] NonAssocSemiring.toOne
+attribute [instance 0] NonAssocSemiring.toNatCast
 
 /-- A not-necessarily-unital, not-necessarily-associative ring. -/
 class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
@@ -141,6 +148,10 @@ class NonUnitalRing (α : Type*) extends NonUnitalNonAssocRing α, NonUnitalSemi
 class NonAssocRing (α : Type*) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
     AddCommGroupWithOne α
 #align non_assoc_ring NonAssocRing
+
+attribute [instance 0] NonAssocRing.toOne
+attribute [instance 0] NonAssocRing.toNatCast
+attribute [instance 0] NonAssocRing.toIntCast
 
 /-- A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is
 commutative and associative, multiplication is associative and left and right distributive over
@@ -265,12 +276,16 @@ theorem boole_mul {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
 /-- A not-necessarily-unital, not-necessarily-associative, but commutative semiring. -/
 class NonUnitalNonAssocCommSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, CommMagma α
 
+attribute [instance 90] NonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring
+
 /-- A non-unital commutative semiring is a `NonUnitalSemiring` with commutative multiplication.
 In other words, it is a type with the following structures: additive commutative monoid
 (`AddCommMonoid`), commutative semigroup (`CommSemigroup`), distributive laws (`Distrib`), and
 multiplication by zero law (`MulZeroClass`). -/
 class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
 #align non_unital_comm_semiring NonUnitalCommSemiring
+
+attribute [instance 90] NonUnitalCommSemiring.toNonUnitalSemiring
 
 /-- A commutative semiring is a semiring with commutative multiplication. -/
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R

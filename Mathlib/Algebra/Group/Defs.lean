@@ -456,6 +456,7 @@ class MulOneClass (M : Type u) extends One M, Mul M where
   protected mul_one : ∀ a : M, a * 1 = a
 #align mul_one_class MulOneClass
 
+attribute [instance 150] MulOneClass.toOne
 attribute [instance 150] MulOneClass.toMul
 
 /-- Typeclass for expressing that a type `M` with addition and a zero satisfies
@@ -467,6 +468,7 @@ class AddZeroClass (M : Type u) extends Zero M, Add M where
   protected add_zero : ∀ a : M, a + 0 = a
 #align add_zero_class AddZeroClass
 
+attribute [instance 150] AddZeroClass.toZero
 attribute [instance 150] AddZeroClass.toAdd
 
 attribute [to_additive] MulOneClass
@@ -1115,6 +1117,8 @@ class NegZeroClass (G : Type*) extends Zero G, Neg G where
   protected neg_zero : -(0 : G) = 0
 #align neg_zero_class NegZeroClass
 
+attribute [instance 50] NegZeroClass.toZero
+
 /-- A `SubNegMonoid` where `-0 = 0`. -/
 class SubNegZeroMonoid (G : Type*) extends SubNegMonoid G, NegZeroClass G
 #align sub_neg_zero_monoid SubNegZeroMonoid
@@ -1126,6 +1130,8 @@ attribute [instance 100] SubNegZeroMonoid.toSubNegMonoid
 class InvOneClass (G : Type*) extends One G, Inv G where
   protected inv_one : (1 : G)⁻¹ = 1
 #align inv_one_class InvOneClass
+
+attribute [instance 50] InvOneClass.toOne
 
 /-- A `DivInvMonoid` where `1⁻¹ = 1`. -/
 @[to_additive SubNegZeroMonoid]
