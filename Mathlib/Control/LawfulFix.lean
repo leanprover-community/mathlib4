@@ -201,13 +201,12 @@ def toUnitMono (f : Part α →o Part α) : (Unit → Part α) →o Unit → Par
 #align part.to_unit_mono Part.toUnitMono
 
 theorem to_unit_cont (f : Part α →o Part α) (hc : ωScottContinuous f) :
-    ωScottContinuous (toUnitMono f) := by
-  rw [ωScottContinuous_iff_monotone_map_ωSup]
+    ωScottContinuous (toUnitMono f) := ωScottContinuous_iff_monotone_map_ωSup.mpr (by
   use (OrderHom.monotone (toUnitMono f))
   intro _
   ext ⟨⟩ : 1
   dsimp [OmegaCompletePartialOrder.ωSup]
-  erw [(ωScottContinuous_iff_monotone_map_ωSup.mp hc).2, Chain.map_comp]; rfl
+  erw [(ωScottContinuous_iff_monotone_map_ωSup.mp hc).2, Chain.map_comp]; rfl)
 #align part.to_unit_cont Part.to_unit_cont
 
 instance lawfulFix : LawfulFix (Part α) :=
@@ -251,24 +250,24 @@ variable [(x y : _) → OmegaCompletePartialOrder <| γ x y]
 
 open OmegaCompletePartialOrder.Chain
 
-theorem continuous_curry : ωScottContinuous <| monotoneCurry α β γ := by
-  rw [ωScottContinuous_iff_monotone_map_ωSup]
-  use (OrderHom.monotone (monotoneCurry α β γ))
-  intro c
-  ext x y
-  dsimp [curry, ωSup]
-  rw [map_comp, map_comp]
-  rfl
+theorem continuous_curry : ωScottContinuous <| monotoneCurry α β γ :=
+  ωScottContinuous_iff_monotone_map_ωSup.mpr (by
+    use (OrderHom.monotone (monotoneCurry α β γ))
+    intro c
+    ext x y
+    dsimp [curry, ωSup]
+    rw [map_comp, map_comp]
+    rfl)
 #align pi.continuous_curry Pi.continuous_curry
 
-theorem continuous_uncurry : ωScottContinuous <| monotoneUncurry α β γ := by
-  rw [ωScottContinuous_iff_monotone_map_ωSup]
-  use (fun ⦃a b⦄ a i ↦ a i.fst i.snd)
-  intro c
-  ext ⟨x, y⟩
-  dsimp [uncurry, ωSup]
-  rw [map_comp, map_comp]
-  rfl
+theorem continuous_uncurry : ωScottContinuous <| monotoneUncurry α β γ :=
+  ωScottContinuous_iff_monotone_map_ωSup.mpr (by
+    use (fun ⦃a b⦄ a i ↦ a i.fst i.snd)
+    intro c
+    ext ⟨x, y⟩
+    dsimp [uncurry, ωSup]
+    rw [map_comp, map_comp]
+    rfl)
 #align pi.continuous_uncurry Pi.continuous_uncurry
 
 end Monotone
@@ -289,7 +288,7 @@ variable (hc : ωScottContinuous f)
 theorem uncurry_curry_continuous :
     ωScottContinuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ := by
   apply ωScottContinuous.comp (continuous_uncurry _ _ _)
-  apply ωScottContinuous.comp hc (continuous_curry _ _ _)
+    (ωScottContinuous.comp hc (continuous_curry _ _ _))
 #align pi.uncurry_curry_continuous Pi.uncurry_curry_continuous
 
 end Curry
