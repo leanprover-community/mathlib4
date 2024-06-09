@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison
 -/
 import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.DiscreteCategory
 
 #align_import category_theory.products.associator from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -53,6 +54,49 @@ instance inverseAssociatorIsEquivalence : (inverseAssociator C D E).IsEquivalenc
   (by infer_instance : (associativity C D E).inverse.IsEquivalence)
 #align category_theory.prod.inverse_associator_is_equivalence CategoryTheory.prod.inverseAssociatorIsEquivalence
 
--- TODO unitors?
+@[simps]
+def leftUnitor : Discrete PUnit × C ⥤ C where
+  obj X := X.2
+  map := @fun _ _ f => f.2
+#align category_theory.prod.left_unitor CategoryTheory.prod.leftUnitor
+
+@[simps]
+def rightUnitor : C × Discrete PUnit ⥤ C where
+  obj X := X.1
+  map := @fun _ _ f => f.1
+#align category_theory.prod.right_unitor CategoryTheory.prod.rightUnitor
+
+@[simps]
+def leftInverseUnitor : C ⥤ Discrete PUnit × C where
+  obj X := ⟨⟨PUnit.unit⟩, X⟩
+  map := @fun _ _ f =>  ⟨𝟙 _, f⟩
+#align category_theory.prod.left_inverse_unitor CategoryTheory.prod.leftInverseUnitor
+
+@[simps]
+def rightInverseUnitor : C ⥤ C × Discrete PUnit where
+  obj X := ⟨X, ⟨PUnit.unit⟩⟩
+  map := @fun _ _ f =>  ⟨f, 𝟙 _⟩
+#align category_theory.prod.right_inverse_unitor CategoryTheory.prod.rightInverseUnitor
+
+def leftUnity : Discrete PUnit × C ≌ C :=
+  Equivalence.mk (leftUnitor C) (leftInverseUnitor C)
+    (NatIso.ofComponents fun X => eqToIso (by simp))
+    (NatIso.ofComponents fun X => eqToIso (by simp))
+#align category_theory.prod.left_unity CategoryTheory.prod.leftUnity
+
+def rightUnity : C × Discrete PUnit ≌ C :=
+  Equivalence.mk (rightUnitor C) (rightInverseUnitor C)
+    (NatIso.ofComponents fun X => eqToIso (by simp))
+    (NatIso.ofComponents fun X => eqToIso (by simp))
+#align category_theory.prod.right_unity CategoryTheory.prod.rightUnity
+
+instance leftUnitorIsEquivalence : (leftUnitor C).IsEquivalence :=
+  (by infer_instance : (leftUnity C).functor.IsEquivalence)
+#align category_theory.prod.left_unitor_is_equivalence CategoryTheory.prod.leftUnitorIsEquivalence
+
+instance rightUnitorIsEquivalence : (rightUnitor C).IsEquivalence :=
+  (by infer_instance : (rightUnity C).functor.IsEquivalence)
+#align category_theory.prod.right_unitor_is_equivalence CategoryTheory.prod.rightUnitorIsEquivalence
+
 -- TODO pentagon natural transformation? ...satisfying?
 end CategoryTheory.prod
