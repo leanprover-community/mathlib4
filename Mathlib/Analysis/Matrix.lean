@@ -195,7 +195,7 @@ namespace Int
 open Finset
 
 /-- The norm of an integral matrix is the cast of a natural number -/
-lemma norm_eq_NatCast (A : Matrix m n ℤ) : ∃ (a : ℕ), ‖A‖ = ↑a := by
+lemma norm_eq_NatCast (A : Matrix m n ℤ) : ∃ (a : ℕ), ‖A‖ = a := by
   use sup univ fun i ↦ sup univ fun j ↦ (A i j).natAbs
   rw [norm_eq_sup_sup_nnnorm, ← NNReal.coe_natCast, NNReal.coe_inj,
     comp_sup_eq_sup_comp_of_is_total Nat.cast Nat.mono_cast
