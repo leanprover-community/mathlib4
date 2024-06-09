@@ -164,3 +164,7 @@ theorem Metric.exists_isLocalMin_mem_ball [PseudoMetricSpace α] [ProperSpace α
   exact (isCompact_closedBall a r).exists_isLocalMin_mem_open ball_subset_closedBall hf hz hf1
     isOpen_ball
 #align metric.exists_local_min_mem_ball Metric.exists_isLocalMin_mem_ball
+
+instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Additive X) := ‹ProperSpace X›
+instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Multiplicative X) := ‹ProperSpace X›
+instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace Xᵒᵈ := ‹ProperSpace X›
