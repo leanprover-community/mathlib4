@@ -116,7 +116,7 @@ theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωS
 #align is_ωSup_ωSup isωSup_ωSup
 
 theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
-    [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : Continuous f) :
+    [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : _root_.Continuous f) :
     OmegaCompletePartialOrder.ωScottContinuous f := by
   rw [ωScottContinuous_iff_monotone_map_ωSup]
   have h : Monotone f := fun x y h ↦ by
@@ -135,7 +135,7 @@ theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
 
 theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β)
-    (hf : ωScottContinuous f) : Continuous f := by
+    (hf : ωScottContinuous f) : _root_.Continuous f := by
   rw [continuous_def]
   intro s hs
   change ωScottContinuous (s ∘ f)
