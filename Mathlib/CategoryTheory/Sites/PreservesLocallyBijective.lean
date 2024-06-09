@@ -46,17 +46,10 @@ lemma isLocallyInjective_of_whisker (hH : CoverPreserving J K H)
     · simp only [comp_obj, op_obj, whiskerLeft_app, Opposite.op_unop]
       erw [NatTrans.naturality_apply, NatTrans.naturality_apply, h]
 
-<<<<<<< HEAD
-lemma isLocallyInjective_iff_whisker (hH : CoverPreserving J K H) [H.IsCocontinuous J K]
-    [H.IsCoverDense K] : IsLocallyInjective K f ↔ IsLocallyInjective J (whiskerLeft H.op f) :=
-  ⟨fun _ ↦ isLocallyInjective_whisker J K H f,
-    fun _ ↦ isLocallyInjective_of_whisker J K H f hH⟩
-=======
 lemma isLocallyInjective_whisker_iff (hH : CoverPreserving J K H) [H.IsCocontinuous J K]
     [H.IsCoverDense K] : IsLocallyInjective J (whiskerLeft H.op f) ↔ IsLocallyInjective K f :=
   ⟨fun _ ↦ isLocallyInjective_of_whisker J K H f hH,
     fun _ ↦ isLocallyInjective_whisker J K H f⟩
->>>>>>> origin
 
 lemma isLocallySurjective_whisker [H.IsCocontinuous J K] [IsLocallySurjective K f] :
     IsLocallySurjective J (whiskerLeft H.op f) where
@@ -77,14 +70,6 @@ lemma isLocallySurjective_of_whisker (hH : CoverPreserving J K H)
     simp only [Sieve.functorPullback_apply, Presieve.functorPullback_mem, Sieve.pullback_apply]
     exact ⟨x, by simpa using h⟩
 
-<<<<<<< HEAD
-lemma isLocallySurjective_iff_whisker (hH : CoverPreserving J K H) [H.IsCocontinuous J K]
-    [H.IsCoverDense K] : IsLocallySurjective K f ↔ IsLocallySurjective J (whiskerLeft H.op f) :=
-  ⟨fun _ ↦ isLocallySurjective_whisker J K H f,
-    fun _ ↦ isLocallySurjective_of_whisker J K H f hH⟩
-
-end Presheaf
-=======
 lemma isLocallySurjective_whisker_iff (hH : CoverPreserving J K H) [H.IsCocontinuous J K]
     [H.IsCoverDense K] : IsLocallySurjective J (whiskerLeft H.op f) ↔ IsLocallySurjective K f :=
   ⟨fun _ ↦ isLocallySurjective_of_whisker J K H f hH,
@@ -93,4 +78,3 @@ lemma isLocallySurjective_whisker_iff (hH : CoverPreserving J K H) [H.IsCocontin
 end Presheaf
 
 end CategoryTheory
->>>>>>> origin
