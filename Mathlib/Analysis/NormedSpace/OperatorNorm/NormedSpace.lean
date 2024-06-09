@@ -210,7 +210,7 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
     simp [g.symm.toLinearIsometry.norm_toContinuousLinearMap]
 #align continuous_linear_map.op_norm_comp_linear_isometry_equiv ContinuousLinearMap.opNorm_comp_linearIsometryEquiv
 
-@[deprecated] -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias op_norm_comp_linearIsometryEquiv := opNorm_comp_linearIsometryEquiv
 
 /-- The norm of the tensor product of a scalar linear map and of an element of a normed space
