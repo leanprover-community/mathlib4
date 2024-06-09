@@ -30,7 +30,7 @@ We also give versions of these formulas in finite-dimensional inner product spac
 
 open Real Set MeasureTheory Filter Asymptotics intervalIntegral
 
-open scoped Real Topology FourierTransform RealInnerProductSpace BigOperators
+open scoped Real Topology FourierTransform RealInnerProductSpace
 
 open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
 
@@ -61,8 +61,8 @@ theorem norm_cexp_neg_mul_sq_add_mul_I' (hb : b.re ≠ 0) (c T : ℝ) :
       exp (-(b.re * (T - b.im * c / b.re) ^ 2 - c ^ 2 * (b.im ^ 2 / b.re + b.re))) := by
   have :
     b.re * T ^ 2 - 2 * b.im * c * T - b.re * c ^ 2 =
-      b.re * (T - b.im * c / b.re) ^ 2 - c ^ 2 * (b.im ^ 2 / b.re + b.re) :=
-    by field_simp; ring
+      b.re * (T - b.im * c / b.re) ^ 2 - c ^ 2 * (b.im ^ 2 / b.re + b.re) := by
+    field_simp; ring
   rw [norm_cexp_neg_mul_sq_add_mul_I, this]
 set_option linter.uppercaseLean3 false in
 #align gaussian_fourier.norm_cexp_neg_mul_sq_add_mul_I' GaussianFourier.norm_cexp_neg_mul_sq_add_mul_I'
@@ -88,8 +88,8 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
       gcongr
     · rwa [sq_le_sq]
   -- now main proof
-  refine' (intervalIntegral.norm_integral_le_of_norm_le_const _).trans _
-  pick_goal 3
+  apply (intervalIntegral.norm_integral_le_of_norm_le_const _).trans
+  pick_goal 1
   · rw [sub_zero]
     conv_lhs => simp only [mul_comm _ |c|]
     conv_rhs =>
@@ -245,7 +245,7 @@ theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     simp only [I_sq]
     ring
 
-@[deprecated] -- deprecated on 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias _root_.fourier_transform_gaussian_pi' := _root_.fourierIntegral_gaussian_pi'
 
 theorem _root_.fourierIntegral_gaussian_pi (hb : 0 < b.re) :
@@ -254,15 +254,13 @@ theorem _root_.fourierIntegral_gaussian_pi (hb : 0 < b.re) :
   simpa only [mul_zero, zero_mul, add_zero] using fourierIntegral_gaussian_pi' hb 0
 #align fourier_transform_gaussian_pi fourierIntegral_gaussian_pi
 
-@[deprecated] -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias root_.fourier_transform_gaussian_pi := _root_.fourierIntegral_gaussian_pi
 
 section InnerProductSpace
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
   [MeasurableSpace V] [BorelSpace V]
-
-open scoped BigOperators
 
 theorem integrable_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
     (hb : ∀ i, 0 < (b i).re) (c : ι → ℂ) :

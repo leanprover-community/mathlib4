@@ -30,8 +30,6 @@ This file contains lemmas that describe the cardinality of `derangements α` whe
 
 open derangements Equiv Fintype
 
-open BigOperators
-
 variable {α : Type*} [DecidableEq α] [Fintype α]
 
 instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype

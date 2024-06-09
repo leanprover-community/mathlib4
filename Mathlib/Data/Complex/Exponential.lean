@@ -19,7 +19,7 @@ hyperbolic sine, hyperbolic cosine, and hyperbolic tangent functions.
 -/
 
 open CauSeq Finset IsAbsoluteValue
-open scoped BigOperators Classical ComplexConjugate
+open scoped Classical ComplexConjugate
 
 namespace Complex
 
@@ -597,6 +597,9 @@ theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - y) / 2)
   rw [s1, s2]
   ring
 #align complex.cos_sub_cos Complex.cos_sub_cos
+
+theorem sin_add_sin : sin x + sin y = 2 * sin ((x + y) / 2) * cos ((x - y) / 2) := by
+  simpa using sin_sub_sin x (-y)
 
 theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) := by
   calc
@@ -1382,7 +1385,6 @@ theorem abs_exp_sub_one_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1) ≤ 2 
     _ = 2 * abs x := by simp [two_mul, mul_two, mul_add, mul_comm, add_mul, Nat.factorial]
 #align complex.abs_exp_sub_one_le Complex.abs_exp_sub_one_le
 
-set_option tactic.skipAssignedInstances false in
 theorem abs_exp_sub_one_sub_id_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1 - x) ≤ abs x ^ 2 :=
   calc
     abs (exp x - 1 - x) = abs (exp x - ∑ m ∈ range 2, x ^ m / m.factorial) := by
@@ -1522,11 +1524,11 @@ theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x|
             apply Complex.ext <;> simp [div_eq_mul_inv, normSq] <;> ring_nf
             )))
     _ ≤ abs ((Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) / 2) +
-          abs ((Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2) :=
-      by rw [add_div]; exact Complex.abs.add_le _ _
+          abs ((Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2) := by
+      rw [add_div]; exact Complex.abs.add_le _ _
     _ = abs (Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) / 2 +
-          abs (Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2 :=
-      by simp [map_div₀]
+          abs (Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2 := by
+      simp [map_div₀]
     _ ≤ Complex.abs (x * I) ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 +
           Complex.abs (-x * I) ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 := by
       gcongr
@@ -1554,11 +1556,11 @@ theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x|
               Nat.mul_one, Nat.cast_succ, Nat.cast_mul, Nat.cast_ofNat]
             apply Complex.ext <;> simp [div_eq_mul_inv, normSq]; ring)))
     _ ≤ abs ((Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) * I / 2) +
-          abs (-((Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) * I) / 2) :=
-      by rw [sub_mul, sub_eq_add_neg, add_div]; exact Complex.abs.add_le _ _
+          abs (-((Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) * I) / 2) := by
+      rw [sub_mul, sub_eq_add_neg, add_div]; exact Complex.abs.add_le _ _
     _ = abs (Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) / 2 +
-          abs (Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2 :=
-      by simp [add_comm, map_div₀]
+          abs (Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2 := by
+      simp [add_comm, map_div₀]
     _ ≤ Complex.abs (x * I) ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 +
           Complex.abs (-x * I) ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 := by
       gcongr
@@ -1613,7 +1615,7 @@ theorem cos_one_le : cos 1 ≤ 2 / 3 :=
   calc
     cos 1 ≤ |(1 : ℝ)| ^ 4 * (5 / 96) + (1 - 1 ^ 2 / 2) :=
       sub_le_iff_le_add.1 (abs_sub_le_iff.1 (cos_bound (by simp))).1
-    _ ≤ 2 / 3 := by set_option tactic.skipAssignedInstances false in norm_num
+    _ ≤ 2 / 3 := by norm_num
 #align real.cos_one_le Real.cos_one_le
 
 theorem cos_one_pos : 0 < cos 1 :=
@@ -1642,7 +1644,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       -- This proof should be restored after the norm_num plugin for big operators is ported.
       -- (It may also need the positivity extensions in #3907.)
       repeat erw [Finset.sum_range_succ]
-      set_option tactic.skipAssignedInstances false in norm_num [Nat.factorial]
+      norm_num [Nat.factorial]
       nlinarith
     _ < 1 / (1 - x) := by rw [lt_div_iff] <;> nlinarith
 #align real.exp_bound_div_one_sub_of_interval' Real.exp_bound_div_one_sub_of_interval'

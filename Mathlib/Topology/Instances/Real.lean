@@ -9,6 +9,7 @@ import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Instances.Int
+import Mathlib.Topology.Order.Bornology
 
 #align_import topology.instances.real from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
@@ -88,8 +89,9 @@ _
 
 lemma uniform_embedding_mul_rat {q : ℚ} (hq : q ≠ 0) : uniform_embedding ((*) q) :=
 _ -/
-theorem Real.mem_closure_iff {s : Set ℝ} {x : ℝ} : x ∈ closure s ↔ ∀ ε > 0, ∃ y ∈ s, |y - x| < ε :=
-  by simp [mem_closure_iff_nhds_basis nhds_basis_ball, Real.dist_eq]
+theorem Real.mem_closure_iff {s : Set ℝ} {x : ℝ} :
+    x ∈ closure s ↔ ∀ ε > 0, ∃ y ∈ s, |y - x| < ε := by
+  simp [mem_closure_iff_nhds_basis nhds_basis_ball, Real.dist_eq]
 #align real.mem_closure_iff Real.mem_closure_iff
 
 theorem Real.uniformContinuous_inv (s : Set ℝ) {r : ℝ} (r0 : 0 < r) (H : ∀ x ∈ s, r ≤ |x|) :
@@ -159,7 +161,7 @@ theorem closure_of_rat_image_lt {q : ℚ} :
     closure (((↑) : ℚ → ℝ) '' { x | q < x }) = { r | ↑q ≤ r } :=
   Subset.antisymm
     (isClosed_Ici.closure_subset_iff.2
-      (image_subset_iff.2 fun p h => le_of_lt <| (@Rat.cast_lt ℝ _ _ _).2 h))
+      (image_subset_iff.2 fun p (h : q < p) => by simpa using h.le))
     fun x hx => mem_closure_iff_nhds.2 fun t ht =>
       let ⟨ε, ε0, hε⟩ := Metric.mem_nhds_iff.1 ht
       let ⟨p, h₁, h₂⟩ := exists_rat_btwn ((lt_add_iff_pos_right x).2 ε0)
@@ -175,21 +177,15 @@ lemma closure_of_rat_image_le_le_eq {a b : ℚ} (hab : a ≤ b) :
     closure (of_rat '' {q:ℚ | a ≤ q ∧ q ≤ b}) = {r:ℝ | of_rat a ≤ r ∧ r ≤ of_rat b} :=
   _
 -/
-theorem Real.isBounded_iff_bddBelow_bddAbove {s : Set ℝ} : IsBounded s ↔ BddBelow s ∧ BddAbove s :=
-  ⟨fun bdd ↦ by
-    obtain ⟨r, hr⟩ : ∃ r : ℝ, s ⊆ Icc (-r) r := by
-      simpa [Real.closedBall_eq_Icc] using bdd.subset_closedBall 0
-    exact ⟨bddBelow_Icc.mono hr, bddAbove_Icc.mono hr⟩,
-    fun h => isBounded_of_bddAbove_of_bddBelow h.2 h.1⟩
-#align real.bounded_iff_bdd_below_bdd_above Real.isBounded_iff_bddBelow_bddAbove
-
-theorem Real.subset_Icc_sInf_sSup_of_isBounded {s : Set ℝ} (h : IsBounded s) :
-    s ⊆ Icc (sInf s) (sSup s) :=
-  subset_Icc_csInf_csSup (Real.isBounded_iff_bddBelow_bddAbove.1 h).1
-    (Real.isBounded_iff_bddBelow_bddAbove.1 h).2
-#align real.subset_Icc_Inf_Sup_of_bounded Real.subset_Icc_sInf_sSup_of_isBounded
 
 end
+
+instance instIsOrderBornology : IsOrderBornology ℝ where
+  isBounded_iff_bddBelow_bddAbove s := by
+    refine ⟨fun bdd ↦ ?_, fun h ↦ isBounded_of_bddAbove_of_bddBelow h.2 h.1⟩
+    obtain ⟨r, hr⟩ : ∃ r : ℝ, s ⊆ Icc (-r) r := by
+      simpa [Real.closedBall_eq_Icc] using bdd.subset_closedBall 0
+    exact ⟨bddBelow_Icc.mono hr, bddAbove_Icc.mono hr⟩
 
 section Periodic
 
@@ -231,7 +227,7 @@ instance {a : ℝ} : DiscreteTopology (AddSubgroup.zmultiples a) := by
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
     exact Subsingleton.discreteTopology (α := (⊥ : Submodule ℤ ℝ))
   rw [discreteTopology_iff_isOpen_singleton_zero, isOpen_induced_iff]
-  refine' ⟨ball 0 |a|, isOpen_ball, _⟩
+  refine ⟨ball 0 |a|, isOpen_ball, ?_⟩
   ext ⟨x, hx⟩
   obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
   simp [ha, Real.dist_eq, abs_mul, (by norm_cast : |(k : ℝ)| < 1 ↔ |k| < 1)]

@@ -63,7 +63,7 @@ instance instConcreteCategory : ConcreteCategory MagmaCat := BundledHom.concrete
 attribute [to_additive] instMagmaCatLargeCategory instConcreteCategory
 
 @[to_additive]
-instance : CoeSort MagmaCat (Type*) where
+instance : CoeSort MagmaCat Type* where
   coe X := X.α
 
 -- Porting note: Hinting to Lean that `forget R` and `R` are the same
@@ -152,7 +152,7 @@ instance instConcreteCategory : ConcreteCategory SemigroupCat :=
 attribute [to_additive] instSemigroupCatLargeCategory SemigroupCat.instConcreteCategory
 
 @[to_additive]
-instance : CoeSort SemigroupCat (Type*) where
+instance : CoeSort SemigroupCat Type* where
   coe X := X.α
 
 -- Porting note: Hinting to Lean that `forget R` and `R` are the same
@@ -309,7 +309,7 @@ instance MagmaCat.forgetReflectsIsos : (forget MagmaCat.{u}).ReflectsIsomorphism
   reflects {X Y} f _ := by
     let i := asIso ((forget MagmaCat).map f)
     let e : X ≃* Y := { f, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toMagmaCatIso).1⟩
+    exact e.toMagmaCatIso.isIso_hom
 #align Magma.forget_reflects_isos MagmaCat.forgetReflectsIsos
 #align AddMagma.forget_reflects_isos AddMagmaCat.forgetReflectsIsos
 
@@ -318,7 +318,7 @@ instance SemigroupCat.forgetReflectsIsos : (forget SemigroupCat.{u}).ReflectsIso
   reflects {X Y} f _ := by
     let i := asIso ((forget SemigroupCat).map f)
     let e : X ≃* Y := { f, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toSemigroupCatIso).1⟩
+    exact e.toSemigroupCatIso.isIso_hom
 #align Semigroup.forget_reflects_isos SemigroupCat.forgetReflectsIsos
 #align AddSemigroup.forget_reflects_isos AddSemigroupCat.forgetReflectsIsos
 

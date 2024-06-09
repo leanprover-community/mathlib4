@@ -66,7 +66,7 @@ def quotientSpanEquivZMod (a : ℤ) : ℤ ⧸ Ideal.span ({a} : Set ℤ) ≃+* Z
 end Int
 
 noncomputable section ChineseRemainder
-open BigOperators Ideal
+open Ideal
 
 /-- The **Chinese remainder theorem**, elementary version for `ZMod`. See also
 `Mathlib.Data.ZMod.Basic` for versions involving only two numbers. -/
@@ -98,7 +98,7 @@ noncomputable def zmultiplesQuotientStabilizerEquiv :
               exact isPeriodicPt_minimalPeriod (a +ᵥ ·) b))
           ⟨by
             rw [← ker_eq_bot_iff, eq_bot_iff]
-            refine' fun q => induction_on' q fun n hn => _
+            refine fun q => induction_on' q fun n hn => ?_
             rw [mem_bot, eq_zero_iff, Int.mem_zmultiples_iff, ←
               zsmul_vadd_eq_iff_minimalPeriod_dvd]
             exact (eq_zero_iff _).mp hn, fun q =>
@@ -155,7 +155,7 @@ theorem orbitZPowersEquiv_symm_apply (k : ZMod (minimalPeriod (a • ·) b)) :
 #align mul_action.orbit_zpowers_equiv_symm_apply MulAction.orbitZPowersEquiv_symm_apply
 #align add_action.orbit_zmultiples_equiv_symm_apply AddAction.orbitZMultiplesEquiv_symm_apply
 
-@[deprecated] -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias _root_.AddAction.orbit_zmultiples_equiv_symm_apply := orbitZMultiplesEquiv_symm_apply
 
 theorem orbitZPowersEquiv_symm_apply' (k : ℤ) :

@@ -3,9 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.ZMod.Basic
 import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.Data.Int.Parity
 import Mathlib.Data.Fintype.BigOperators
 
 #align_import number_theory.sum_four_squares from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
@@ -23,8 +23,6 @@ The proof used is close to Lagrange's original proof.
 
 
 open Finset Polynomial FiniteField Equiv
-
-open scoped BigOperators
 
 /-- **Euler's four-square identity**. -/
 theorem euler_four_squares {R : Type*} [CommRing R] (a b c d x y z w : R) :

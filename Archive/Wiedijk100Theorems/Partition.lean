@@ -66,8 +66,6 @@ variable {α : Type*}
 
 open Finset
 
-open scoped BigOperators
-
 open scoped Classical
 
 /-- The partial product for the generating function for odd partitions.

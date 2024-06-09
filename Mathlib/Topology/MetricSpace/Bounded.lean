@@ -502,8 +502,8 @@ theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
   refine (ENNReal.toReal_le_add' (EMetric.diam_union xs yt) ?_ ?_).trans
     (add_le_add_right ENNReal.toReal_add_le _)
   · simp only [ENNReal.add_eq_top, edist_ne_top, or_false]
-    exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono (subset_union_left _ _)
-  · exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono (subset_union_right _ _)
+    exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_left
+  · exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_right
 #align metric.diam_union Metric.diam_union
 
 /-- If two sets intersect, the diameter of the union is bounded by the sum of the diameters. -/
@@ -614,4 +614,4 @@ theorem Metric.finite_isBounded_inter_isClosed [ProperSpace α] {K s : Set α} [
     (hK : IsBounded K) (hs : IsClosed s) : Set.Finite (K ∩ s) := by
   refine Set.Finite.subset (IsCompact.finite ?_ ?_) (Set.inter_subset_inter_left s subset_closure)
   · exact hK.isCompact_closure.inter_right hs
-  · exact DiscreteTopology.of_subset inferInstance (Set.inter_subset_right _ s)
+  · exact DiscreteTopology.of_subset inferInstance Set.inter_subset_right

@@ -41,7 +41,7 @@ pseudo_metric, dist
 -/
 
 open Set Filter TopologicalSpace Bornology
-open scoped BigOperators ENNReal NNReal Uniformity Topology
+open scoped ENNReal NNReal Uniformity Topology
 
 universe u v w
 
@@ -848,7 +848,7 @@ nonrec theorem uniformInducing_iff [PseudoMetricSpace β] {f : α → β} :
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ :=
   uniformInducing_iff'.trans <| Iff.rfl.and <|
     ((uniformity_basis_dist.comap _).le_basis_iff uniformity_basis_dist).trans <| by
-      simp only [subset_def, Prod.forall, gt_iff_lt, preimage_setOf_eq, Prod_map, mem_setOf]
+      simp only [subset_def, Prod.forall, gt_iff_lt, preimage_setOf_eq, Prod.map_apply, mem_setOf]
 
 nonrec theorem uniformEmbedding_iff [PseudoMetricSpace β] {f : α → β} :
     UniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
@@ -1454,7 +1454,7 @@ theorem cauchySeq_iff_tendsto_dist_atTop_0 [Nonempty β] [SemilatticeSup β] {u 
     CauchySeq u ↔ Tendsto (fun n : β × β => dist (u n.1) (u n.2)) atTop (𝓝 0) := by
   rw [cauchySeq_iff_tendsto, Metric.uniformity_eq_comap_nhds_zero, tendsto_comap_iff,
     Function.comp_def]
-  simp_rw [Prod_map]
+  simp_rw [Prod.map_apply]
 #align cauchy_seq_iff_tendsto_dist_at_top_0 cauchySeq_iff_tendsto_dist_atTop_0
 
 theorem tendsto_uniformity_iff_dist_tendsto_zero {f : ι → α × α} {p : Filter ι} :
@@ -1915,7 +1915,7 @@ instance pseudoMetricSpacePi : PseudoMetricSpace (∀ b, π b) := by
   refine i.replaceBornology fun s => ?_
   simp only [← isBounded_def, isBounded_iff_eventually, ← forall_isBounded_image_eval_iff,
     forall_mem_image, ← Filter.eventually_all, Function.eval_apply, @dist_nndist (π _)]
-  refine' eventually_congr ((eventually_ge_atTop 0).mono fun C hC => _)
+  refine eventually_congr ((eventually_ge_atTop 0).mono fun C hC ↦ ?_)
   lift C to ℝ≥0 using hC
   refine ⟨fun H x hx y hy ↦ NNReal.coe_le_coe.2 <| Finset.sup_le fun b _ ↦ H b hx hy,
     fun H b x hx y hy ↦ NNReal.coe_le_coe.2 ?_⟩
@@ -2068,7 +2068,7 @@ theorem Fin.dist_insertNth_insertNth {n : ℕ} {α : Fin (n + 1) → Type*}
 theorem Real.dist_le_of_mem_pi_Icc {x y x' y' : β → ℝ} (hx : x ∈ Icc x' y') (hy : y ∈ Icc x' y') :
     dist x y ≤ dist x' y' := by
   refine (dist_pi_le_iff dist_nonneg).2 fun b =>
-    (Real.dist_le_of_mem_uIcc ?_ ?_).trans (dist_le_pi_dist x' y' b) <;> refine' Icc_subset_uIcc _
+    (Real.dist_le_of_mem_uIcc ?_ ?_).trans (dist_le_pi_dist x' y' b) <;> refine Icc_subset_uIcc ?_
   exacts [⟨hx.1 _, hx.2 _⟩, ⟨hy.1 _, hy.2 _⟩]
 #align real.dist_le_of_mem_pi_Icc Real.dist_le_of_mem_pi_Icc
 
