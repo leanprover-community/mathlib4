@@ -74,7 +74,7 @@ You may want to subscribe to the `mathlib4` stream
 * If you added a new file, run the following command to update `Mathlib.lean`
 
   ```shell
-  lean exe lint_style
+  lean exe mk_all
   ```
 
 ### Guidelines
