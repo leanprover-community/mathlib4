@@ -413,6 +413,8 @@ theorem of_integers : ValuationRing 𝒪 := by
     use c; exact Or.inl hc.symm
 #align valuation_ring.of_integers ValuationRing.of_integers
 
+instance instValuationRingInteger : ValuationRing v.integer := of_integers (v := v) (Valuation.integer.integers v)
+
 end
 
 section

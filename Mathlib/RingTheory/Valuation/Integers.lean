@@ -82,6 +82,10 @@ variable (hv : Integers v O)
 theorem one_of_isUnit {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
   one_of_isUnit' hx hv.map_le_one
 
+/--
+Let `O` be the integers of the valuation `v` on some commutative ring `R`. For every element `x` in
+`O`, `x` is a unit in `O` if and only if the image of `x` in `R` is a unit and has valuation 1.
+-/
 theorem isUnit_of_one {x : O} (hx : IsUnit (algebraMap O R x)) (hvx : v (algebraMap O R x) = 1) :
     IsUnit x :=
   let ⟨u, hu⟩ := hx
@@ -135,6 +139,11 @@ theorem le_iff_dvd {x y : O} : v (algebraMap O F x) ≤ v (algebraMap O F y) ↔
   ⟨hv.dvd_of_le, hv.le_of_dvd⟩
 #align valuation.integers.le_iff_dvd Valuation.Integers.le_iff_dvd
 
+/--
+This is the special case of `Valuation.Integers.isUnit_of_one` when the valuation is defined
+over a field. Let `v` be a valuation on some field `F` and `O` be its integers. For every element
+`x` in `O`, `x` is a unit in `O` if and only if the image of `x` in `F` has valuation 1.
+-/
 theorem isUnit_of_one' {x : O} (hvx : v (algebraMap O F x) = 1) :
     IsUnit x := by
   apply isUnit_of_one hv _ hvx
@@ -143,30 +152,6 @@ theorem isUnit_of_one' {x : O} (hvx : v (algebraMap O F x) = 1) :
   simp only [hvx, ne_eq, one_ne_zero, not_false_eq_true]
 
 end Integers
-
-instance instLocalRingInteger : LocalRing v.integer where
-  exists_pair_ne := by
-    use 0, 1
-    simp only [ne_eq, zero_ne_one, not_false_eq_true]
-  isUnit_or_isUnit_of_add_one {a} {b} h := by
-    suffices v a = 1 ∨ v b = 1 from
-      match this with
-      | .inl ha => Or.inl <| Valuation.Integers.isUnit_of_one' (integer.integers v) ha
-      | .inr hb => Or.inr <| Valuation.Integers.isUnit_of_one' (integer.integers v) hb
-    by_contra! hab
-    have : v 1 < 1 := by
-      calc
-      _ = v (a + b) := by
-        congr
-        simp only [← Subring.coe_add, h]
-        rfl
-      _ ≤ max (v a) (v b) := by
-        exact map_add v a b
-      _ < 1 := by
-        apply max_lt
-        exact lt_of_le_of_ne a.2 hab.1
-        exact lt_of_le_of_ne b.2 hab.2
-    simp only [_root_.map_one, lt_self_iff_false] at this
 
 instance instIsFractionRingInteger: IsFractionRing v.integer F where
   map_units' x := by

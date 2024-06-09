@@ -83,7 +83,7 @@ section mk'
 When `K` is a field, if the preimage of the valuation integers of `A` equals to the valuation
 integers of `K`, then the valuation on `A` is an extension of valuation on `K`.
 -/
-theorem ofIntegerComap {K A ΓK ΓA : Type*} [Field K] [Ring A]
+theorem ofComapInteger {K A ΓK ΓA : Type*} [Field K] [Ring A]
     [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓA]
   [Algebra K A] (vK : Valuation K ΓK) (vA : Valuation A ΓA)
     (h : vA.integer.comap (algebraMap K A) = vK.integer) : IsValExtension vK vA where
@@ -102,7 +102,7 @@ variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
     [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓA]
     [Algebra R A] {vR : Valuation R ΓR} {vA : Valuation A ΓA} [IsValExtension vR vA]
 
-instance integerAlgebra : Algebra vR.integer vA.integer where
+instance instAlgebraInteger : Algebra vR.integer vA.integer where
   smul r a := ⟨r • a,
     Algebra.smul_def r (a : A) ▸ mul_mem ((val_map_le_one_iff vR vA _).mpr r.2) a.2⟩
   __ := (algebraMap R A).restrict vR.integer vA.integer
@@ -111,7 +111,11 @@ instance integerAlgebra : Algebra vR.integer vA.integer where
   smul_def' _ _ := Subtype.ext (Algebra.smul_def _ _)
 
 @[simp, norm_cast]
-theorem coe_algebraMap_integer (r : vR.integer) :
+theorem val_smul (r : vR.integer) (a : vA.integer) : ↑(r • a : vA.integer) = (r : R) • (a : A) := by
+  rfl
+
+@[simp, norm_cast]
+theorem val_algebraMap (r : vR.integer) :
     ((algebraMap vR.integer vA.integer) r : A) = (algebraMap R A) (r : R) := by
   rfl
 
@@ -129,12 +133,12 @@ instance instNoZeroSMulDivisorsInteger {K A ΓK ΓA : Type*} [CommRing K] [Ring 
   have : (x : K) • (y : A) = 0 := by simpa [Subtype.ext_iff, Algebra.smul_def] using e
   simpa only [Subtype.ext_iff, smul_eq_zero] using this
 
-theorem algebraMap_integer_injective {K A ΓK ΓA : Type*} [Field K] [Ring A] [Nontrivial A]
+theorem algebraMap_injective {K A ΓK ΓA : Type*} [Field K] [Ring A] [Nontrivial A]
     [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓA]
     [Algebra K A] (vK : Valuation K ΓK) (vA : Valuation A ΓA) [IsValExtension vK vA] :
     Function.Injective (algebraMap vK.integer vA.integer) := by
   intro x y h
-  simp only [Subtype.ext_iff, coe_algebraMap_integer] at h
+  simp only [Subtype.ext_iff, val_algebraMap] at h
   ext
   apply RingHom.injective (algebraMap K A) h
 
