@@ -326,10 +326,10 @@ end
 /-- Composing a linear map `Q → N` and a bilinear map `M → N → P` to
 form a bilinear map `M → Q → P`. -/
 def compl₂ {R₅ : Type*} [CommSemiring R₅] [Module R₅ P] [SMulCommClass R₃ R₅ P] {σ₁₅ : R →+* R₅}
-    (h: M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₅] Q →ₛₗ[σ₄₃] P where
+    (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₅] Q →ₛₗ[σ₄₃] P where
   toFun a := (lcompₛₗ P σ₂₃ g) (h a)
   map_add' _ _ := by
-    simp  [map_add]
+    simp [map_add]
   map_smul' _ _ := by
     simp only [LinearMap.map_smulₛₗ, lcompₛₗ]
     rfl

@@ -287,6 +287,7 @@ import Mathlib.Algebra.Homology.BifunctorShift
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Homology.ComplexShapeSigns
 import Mathlib.Algebra.Homology.ConcreteCategory
+import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Embedding.Basic
 import Mathlib.Algebra.Homology.Exact
@@ -311,6 +312,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
+import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCofiber
 import Mathlib.Algebra.Homology.ImageToKernel
@@ -415,6 +417,7 @@ import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.Module.Submodule.Bilinear
+import Mathlib.Algebra.Module.Submodule.EqLocus
 import Mathlib.Algebra.Module.Submodule.IterateMapComap
 import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.Lattice
@@ -606,6 +609,7 @@ import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Laurent
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Algebra.Polynomial.Mirror
+import Mathlib.Algebra.Polynomial.Module.AEval
 import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Algebra.Polynomial.Module.FiniteDimensional
 import Mathlib.Algebra.Polynomial.Monic
@@ -1471,6 +1475,7 @@ import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
 import Mathlib.CategoryTheory.Localization.Composition
 import Mathlib.CategoryTheory.Localization.Construction
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.FiniteProducts
 import Mathlib.CategoryTheory.Localization.HasLocalization
@@ -1584,6 +1589,7 @@ import Mathlib.CategoryTheory.Shift.Predicate
 import Mathlib.CategoryTheory.Shift.Pullback
 import Mathlib.CategoryTheory.Shift.Quotient
 import Mathlib.CategoryTheory.Shift.ShiftSequence
+import Mathlib.CategoryTheory.Shift.ShiftedHom
 import Mathlib.CategoryTheory.Shift.SingleFunctors
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Simple
@@ -1631,6 +1637,7 @@ import Mathlib.CategoryTheory.Sites.OneHypercover
 import Mathlib.CategoryTheory.Sites.Over
 import Mathlib.CategoryTheory.Sites.Plus
 import Mathlib.CategoryTheory.Sites.Preserves
+import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
 import Mathlib.CategoryTheory.Sites.PreservesSheafification
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Pullback
@@ -1735,6 +1742,7 @@ import Mathlib.Combinatorics.SimpleGraph.Ends.Properties
 import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Combinatorics.SimpleGraph.Finsubgraph
 import Mathlib.Combinatorics.SimpleGraph.Girth
+import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
 import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Combinatorics.SimpleGraph.IncMatrix
 import Mathlib.Combinatorics.SimpleGraph.Init
@@ -1786,6 +1794,9 @@ import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
 import Mathlib.Condensed.Functors
 import Mathlib.Condensed.Light.Basic
+import Mathlib.Condensed.Light.Discrete
+import Mathlib.Condensed.Light.Explicit
+import Mathlib.Condensed.Light.Functors
 import Mathlib.Condensed.Light.Module
 import Mathlib.Condensed.Limits
 import Mathlib.Condensed.Module
@@ -1828,8 +1839,6 @@ import Mathlib.Data.Bool.Count
 import Mathlib.Data.Bool.Set
 import Mathlib.Data.Bracket
 import Mathlib.Data.Buffer.Basic
-import Mathlib.Data.Buffer.Parser.Basic
-import Mathlib.Data.Buffer.Parser.Numeral
 import Mathlib.Data.Bundle
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
@@ -2066,6 +2075,7 @@ import Mathlib.Data.Matrix.Rank
 import Mathlib.Data.Matrix.Reflection
 import Mathlib.Data.Matrix.RowCol
 import Mathlib.Data.Matroid.Basic
+import Mathlib.Data.Matroid.Constructions
 import Mathlib.Data.Matroid.Dual
 import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.Data.Matroid.Init
@@ -2300,7 +2310,8 @@ import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Card
 import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Data.Tree
+import Mathlib.Data.Tree.Basic
+import Mathlib.Data.Tree.Get
 import Mathlib.Data.TwoPointing
 import Mathlib.Data.TypeMax
 import Mathlib.Data.TypeVec
@@ -2888,6 +2899,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.MeasureTheory.Constructions.Cylinders
+import Mathlib.MeasureTheory.Constructions.EventuallyMeasurable
 import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Constructions.Polish
@@ -4043,6 +4055,7 @@ import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 import Mathlib.Topology.Category.CompHaus.Limits
 import Mathlib.Topology.Category.CompHaus.Projective
 import Mathlib.Topology.Category.Compactum
+import Mathlib.Topology.Category.FinTopCat
 import Mathlib.Topology.Category.LightProfinite.Basic
 import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
 import Mathlib.Topology.Category.LightProfinite.IsLight
@@ -4156,6 +4169,7 @@ import Mathlib.Topology.Instances.Irrational
 import Mathlib.Topology.Instances.Matrix
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.Instances.Nat
+import Mathlib.Topology.Instances.PNat
 import Mathlib.Topology.Instances.Rat
 import Mathlib.Topology.Instances.RatLemmas
 import Mathlib.Topology.Instances.Real
@@ -4214,6 +4228,7 @@ import Mathlib.Topology.NoetherianSpace
 import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.Order
 import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Bornology
 import Mathlib.Topology.Order.Bounded
 import Mathlib.Topology.Order.Category.AlexDisc
 import Mathlib.Topology.Order.Category.FrameAdjunction

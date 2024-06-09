@@ -2754,7 +2754,7 @@ instance continuousSMul_quotient [TopologicalSpace R] [TopologicalAddGroup M] [C
   have quot : QuotientMap fun au : R × M => (au.1, S.mkQ au.2) :=
     IsOpenMap.to_quotientMap (IsOpenMap.id.prod S.isOpenMap_mkQ)
       (continuous_id.prod_map continuous_quot_mk)
-      (Function.surjective_id.Prod_map <| surjective_quot_mk _)
+      (Function.surjective_id.prodMap <| surjective_quot_mk _)
   rw [quot.continuous_iff]
   exact continuous_quot_mk.comp continuous_smul
 #align submodule.has_continuous_smul_quotient Submodule.continuousSMul_quotient
