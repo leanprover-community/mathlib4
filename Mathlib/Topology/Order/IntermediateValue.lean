@@ -69,10 +69,9 @@ variable {X : Type u} {α : Type v} [TopologicalSpace X] [LinearOrder α] [Topol
 on a preconnected space and `f a ≤ g a` and `g b ≤ f b`, then for some `x` we have `f x = g x`. -/
 theorem intermediate_value_univ₂ [PreconnectedSpace X] {a b : X} {f g : X → α} (hf : Continuous f)
     (hg : Continuous g) (ha : f a ≤ g a) (hb : g b ≤ f b) : ∃ x, f x = g x := by
-  obtain ⟨x, _, hfg, hgf⟩ : (univ ∩ { x | f x ≤ g x ∧ g x ≤ f x }).Nonempty
-  · exact
-      isPreconnected_closed_iff.1 PreconnectedSpace.isPreconnected_univ _ _ (isClosed_le hf hg)
-        (isClosed_le hg hf) (fun _ _ => le_total _ _) ⟨a, trivial, ha⟩ ⟨b, trivial, hb⟩
+  obtain ⟨x, _, hfg, hgf⟩ : (univ ∩ { x | f x ≤ g x ∧ g x ≤ f x }).Nonempty :=
+    isPreconnected_closed_iff.1 PreconnectedSpace.isPreconnected_univ _ _ (isClosed_le hf hg)
+      (isClosed_le hg hf) (fun _ _ => le_total _ _) ⟨a, trivial, ha⟩ ⟨b, trivial, hb⟩
   exact ⟨x, le_antisymm hfg hgf⟩
 #align intermediate_value_univ₂ intermediate_value_univ₂
 
@@ -235,7 +234,7 @@ theorem IsConnected.Icc_subset {s : Set α} (hs : IsConnected s) {a b : α} (ha 
 space. -/
 theorem IsPreconnected.eq_univ_of_unbounded {s : Set α} (hs : IsPreconnected s) (hb : ¬BddBelow s)
     (ha : ¬BddAbove s) : s = univ := by
-  refine' eq_univ_of_forall fun x => _
+  refine eq_univ_of_forall fun x => ?_
   obtain ⟨y, ys, hy⟩ : ∃ y ∈ s, y < x := not_bddBelow_iff.1 hb x
   obtain ⟨z, zs, hz⟩ : ∃ z ∈ s, x < z := not_bddAbove_iff.1 ha x
   exact hs.Icc_subset ys zs ⟨le_of_lt hy, le_of_lt hz⟩
@@ -291,7 +290,7 @@ theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
       (hs'.Ioo_csInf_csSup_subset hb ha) (subset_Icc_csInf_csSup hb ha)
     simp only [insert_subset_iff, mem_insert_iff, mem_singleton_iff, true_or, or_true,
       singleton_subset_iff, and_self]
-  · refine' Or.inr <| Or.inr <| Or.inr <| Or.inr _
+  · refine Or.inr <| Or.inr <| Or.inr <| Or.inr ?_
     cases'
       mem_Ici_Ioi_of_subset_of_subset (hs.Ioi_csInf_subset hb ha) fun x hx => csInf_le hb hx with
       hs hs
@@ -498,7 +497,7 @@ theorem setOf_isPreconnected_eq_of_ordered :
       range (uncurry Icc) ∪ range (uncurry Ico) ∪ range (uncurry Ioc) ∪ range (uncurry Ioo) ∪
       -- unbounded intervals and `univ`
       (range Ici ∪ range Ioi ∪ range Iic ∪ range Iio ∪ {univ, ∅}) := by
-  refine' Subset.antisymm setOf_isPreconnected_subset_of_ordered _
+  refine Subset.antisymm setOf_isPreconnected_subset_of_ordered ?_
   simp only [subset_def, forall_mem_range, uncurry, or_imp, forall_and, mem_union,
     mem_setOf_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true_iff,
     isPreconnected_Icc, isPreconnected_Ico, isPreconnected_Ioc, isPreconnected_Ioo,
@@ -611,8 +610,9 @@ theorem ContinuousOn.surjOn_Icc {s : Set α} [hs : OrdConnected s] {f : α → �
 /-- **Intermediate value theorem**: if `f` is continuous on an order-connected set `s` and `a`,
 `b` are two points of this set, then `f` sends `s` to a superset of `[f x, f y]`. -/
 theorem ContinuousOn.surjOn_uIcc {s : Set α} [hs : OrdConnected s] {f : α → δ}
-    (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) : SurjOn f s (uIcc (f a) (f b)) :=
-  by rcases le_total (f a) (f b) with hab | hab <;> simp [hf.surjOn_Icc, *]
+    (hf : ContinuousOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s) :
+    SurjOn f s (uIcc (f a) (f b)) := by
+  rcases le_total (f a) (f b) with hab | hab <;> simp [hf.surjOn_Icc, *]
 #align continuous_on.surj_on_uIcc ContinuousOn.surjOn_uIcc
 
 /-- A continuous function which tendsto `Filter.atTop` along `Filter.atTop` and to `atBot` along

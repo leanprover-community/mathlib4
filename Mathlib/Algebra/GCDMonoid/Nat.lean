@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.Nat.Units
 
 /-!
 # ℕ is a normalized GCD monoid.

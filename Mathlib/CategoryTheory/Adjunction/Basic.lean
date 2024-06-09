@@ -134,6 +134,12 @@ lemma isLeftAdjoint : F.IsLeftAdjoint := ⟨_, ⟨adj⟩⟩
 
 lemma isRightAdjoint : G.IsRightAdjoint := ⟨_, ⟨adj⟩⟩
 
+instance (R : D ⥤ C) [R.IsRightAdjoint] : R.leftAdjoint.IsLeftAdjoint :=
+  (ofIsRightAdjoint R).isLeftAdjoint
+
+instance (L : C ⥤ D) [L.IsLeftAdjoint] : L.rightAdjoint.IsRightAdjoint :=
+  (ofIsLeftAdjoint L).isRightAdjoint
+
 variable {X' X : C} {Y Y' : D}
 
 theorem homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by simp
@@ -410,8 +416,7 @@ instance : Inhabited (Adjunction (𝟭 C) (𝟭 C)) :=
 /-- If F and G are naturally isomorphic functors, establish an equivalence of hom-sets. -/
 @[simps]
 def equivHomsetLeftOfNatIso {F F' : C ⥤ D} (iso : F ≅ F') {X : C} {Y : D} :
-    (F.obj X ⟶ Y) ≃ (F'.obj X ⟶ Y)
-    where
+    (F.obj X ⟶ Y) ≃ (F'.obj X ⟶ Y) where
   toFun f := iso.inv.app _ ≫ f
   invFun g := iso.hom.app _ ≫ g
   left_inv f := by simp
@@ -421,8 +426,7 @@ def equivHomsetLeftOfNatIso {F F' : C ⥤ D} (iso : F ≅ F') {X : C} {Y : D} :
 /-- If G and H are naturally isomorphic functors, establish an equivalence of hom-sets. -/
 @[simps]
 def equivHomsetRightOfNatIso {G G' : D ⥤ C} (iso : G ≅ G') {X : C} {Y : D} :
-    (X ⟶ G.obj Y) ≃ (X ⟶ G'.obj Y)
-    where
+    (X ⟶ G.obj Y) ≃ (X ⟶ G'.obj Y) where
   toFun f := f ≫ iso.hom.app _
   invFun g := g ≫ iso.inv.app _
   left_inv f := by simp
@@ -449,8 +453,7 @@ variable {E : Type u₃} [ℰ : Category.{v₃} E] {H : D ⥤ E} {I : E ⥤ D}
 
 See <https://stacks.math.columbia.edu/tag/0DV0>.
 -/
-def comp (adj₁ : F ⊣ G) (adj₂ : H ⊣ I) : F ⋙ H ⊣ I ⋙ G
-    where
+def comp (adj₁ : F ⊣ G) (adj₂ : H ⊣ I) : F ⋙ H ⊣ I ⋙ G where
   homEquiv X Z := Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)
   unit := adj₁.unit ≫ (whiskerLeft F <| whiskerRight adj₂.unit G) ≫ (Functor.associator _ _ _).inv
   counit :=
@@ -556,8 +559,7 @@ adjunction to an equivalence.
 -/
 @[simps!]
 noncomputable def toEquivalence (adj : F ⊣ G) [∀ X, IsIso (adj.unit.app X)]
-    [∀ Y, IsIso (adj.counit.app Y)] : C ≌ D
-    where
+    [∀ Y, IsIso (adj.counit.app Y)] : C ≌ D where
   functor := F
   inverse := G
   unitIso := NatIso.ofComponents fun X => asIso (adj.unit.app X)
@@ -584,7 +586,7 @@ variable (e : C ≌ D)
 
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
 simply use `e.symm.toAdjunction`. -/
-@[pp_dot, simps! unit counit]
+@[simps! unit counit]
 def toAdjunction : e.functor ⊣ e.inverse :=
   mkOfUnitCounit
     ⟨e.unit, e.counit, by

@@ -45,14 +45,14 @@ safe.
 Note: we avoid using the `Matrix` from `Mathlib.Data.Matrix` because it is far more efficient to
 store matrix as its entries than as function between `Fin`-s.
 -/
-structure DenseMatrix (n m : Nat) where
+structure Matrix (n m : Nat) where
   /-- The content of the matrix. -/
   data : Array (Array Rat)
 
-instance : UsableInSimplexAlgorithm DenseMatrix where
+instance : UsableInSimplexAlgorithm Matrix where
   getElem mat i j := mat.data[i]![j]!
   setElem mat i j v := ⟨mat.data.set! i <| mat.data[i]!.set! j v⟩
-  ofValues {n m : Nat} vals : DenseMatrix _ _ := Id.run do
+  ofValues {n m : Nat} vals : Matrix _ _ := Id.run do
     let mut data : Array (Array Rat) := Array.mkArray n <| Array.mkArray m 0
     for ⟨i, j, v⟩ in vals do
       data := data.set! i <| data[i]!.set! j v
@@ -63,40 +63,6 @@ instance : UsableInSimplexAlgorithm DenseMatrix where
       row.zipWith mat.data[i]! fun x y => x - coef * y
     ⟨newData⟩
   divideRow mat i coef := ⟨mat.data.modify i (·.map (· / coef))⟩
-
-/--
-Structure for sparse matrices over ℚ, implemented as an array of hashmaps, containing only nonzero
-values.
--/
-structure SparseMatrix (n m : Nat) where
-  /-- The content of the matrix. -/
-  data : Array <| Lean.HashMap Nat Rat
-
-instance : UsableInSimplexAlgorithm SparseMatrix where
-  getElem mat i j := mat.data[i]!.findD j 0
-  setElem mat i j v :=
-    if v == 0 then
-      ⟨mat.data.set! i <| mat.data[i]!.erase j⟩
-    else
-      ⟨mat.data.set! i <| mat.data[i]!.insert j v⟩
-  ofValues {n _ : Nat} vals := Id.run do
-    let mut data : Array (Lean.HashMap Nat Rat) := Array.mkArray n Lean.HashMap.empty
-    for ⟨i, j, v⟩ in vals do
-      if v != 0 then
-        data := data.set! i <| data[i]!.insert j v
-    return ⟨data⟩
-  swapRows mat i j := ⟨mat.data.swap! i j⟩
-  subtractRow mat i j coef :=
-    let newData := mat.data.modify j fun row =>
-      mat.data[i]!.fold (fun cur k val =>
-        let newVal := (cur.findD k 0) - coef * val
-        if newVal != 0 then cur.insert k newVal else cur.erase k
-      ) row
-    ⟨newData⟩
-  divideRow mat i coef :=
-    let newData : Array (Lean.HashMap Nat Rat) := mat.data.modify i fun row =>
-      row.fold (fun cur k v => cur.insert k (v / coef)) row
-    ⟨newData⟩
 
 /--
 `Tableu` is a structure the Simplex Algorithm operates on. The `i`-th row of `mat` expresses the

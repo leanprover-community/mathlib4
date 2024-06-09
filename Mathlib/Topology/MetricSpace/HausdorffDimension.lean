@@ -573,6 +573,16 @@ theorem dimH_univ : dimH (univ : Set ℝ) = 1 := by
 set_option linter.uppercaseLean3 false in
 #align real.dimH_univ Real.dimH_univ
 
+variable {E}
+
+lemma hausdorffMeasure_of_finrank_lt [MeasurableSpace E] [BorelSpace E] {d : ℝ}
+    (hd : finrank ℝ E < d) : (μH[d] : Measure E) = 0 := by
+  lift d to ℝ≥0 using (Nat.cast_nonneg _).trans hd.le
+  rw [← measure_univ_eq_zero]
+  apply hausdorffMeasure_of_dimH_lt
+  rw [dimH_univ_eq_finrank]
+  exact mod_cast hd
+
 end Real
 
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]

@@ -54,11 +54,9 @@ lemma log_inv_eq_integral {z : ℂ} (hz : 1 - z ∈ slitPlane) :
 ### The Taylor polynomials of the logarithm
 -/
 
-open BigOperators
-
 /-- The `n`th Taylor polynomial of `log` at `1`, as a function `ℂ → ℂ` -/
 noncomputable
-def logTaylor (n : ℕ) : ℂ → ℂ := fun z ↦ ∑ j in Finset.range n, (-1) ^ (j + 1) * z ^ j / j
+def logTaylor (n : ℕ) : ℂ → ℂ := fun z ↦ ∑ j ∈ Finset.range n, (-1) ^ (j + 1) * z ^ j / j
 
 lemma logTaylor_zero : logTaylor 0 = fun _ ↦ 0 := by
   funext
@@ -76,7 +74,7 @@ lemma logTaylor_at_zero (n : ℕ) : logTaylor n 0 = 0 := by
   | succ n ih => simpa [logTaylor_succ, ih] using ne_or_eq n 0
 
 lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
-    HasDerivAt (logTaylor (n + 1)) (∑ j in Finset.range n, (-1) ^ j * z ^ j) z := by
+    HasDerivAt (logTaylor (n + 1)) (∑ j ∈ Finset.range n, (-1) ^ j * z ^ j) z := by
   induction n with
   | zero => simp [logTaylor_succ, logTaylor_zero, Pi.add_def, hasDerivAt_const]
   | succ n ih =>

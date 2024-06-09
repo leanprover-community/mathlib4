@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.CategoryTheory.Elementwise
 
 #align_import topology.category.CompHaus.basic from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -32,6 +33,9 @@ introduced.
 
 universe v u
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+
 open CategoryTheory
 
 /-- The type of Compact Hausdorff topological spaces. -/
@@ -51,7 +55,7 @@ namespace CompHaus
 instance : Inhabited CompHaus :=
   ⟨{ toTop := { α := PEmpty } }⟩
 
-instance : CoeSort CompHaus (Type*) :=
+instance : CoeSort CompHaus Type* :=
   ⟨fun X => X.toTop⟩
 
 instance {X : CompHaus} : CompactSpace X :=
@@ -124,7 +128,7 @@ theorem isIso_of_bijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Function.Bi
     intro S hS
     rw [← E.image_eq_preimage]
     exact isClosedMap f S hS
-  refine' ⟨⟨⟨E.symm, hE⟩, _, _⟩⟩
+  refine ⟨⟨⟨E.symm, hE⟩, ?_, ?_⟩⟩
   · ext x
     apply E.symm_apply_apply
   · ext x
@@ -229,11 +233,11 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     -- Porting note: `ext` fails.
     apply ContinuousMap.ext
     intro (x : StoneCech X)
-    refine' congr_fun _ x
+    refine congr_fun ?_ x
     apply Continuous.ext_on denseRange_stoneCechUnit (continuous_stoneCechExtend _) hf
-    rintro _ ⟨y, rfl⟩
-    apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
-    apply continuous_stoneCechUnit
+    · rintro _ ⟨y, rfl⟩
+      apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
+      apply continuous_stoneCechUnit
   right_inv := by
     rintro ⟨f : (X : Type _) ⟶ Y, hf : Continuous f⟩
     -- Porting note: `ext` fails.

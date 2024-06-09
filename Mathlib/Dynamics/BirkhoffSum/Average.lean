@@ -24,14 +24,13 @@ see `birkhoffAverage_congr_ring`.
 -/
 
 open Finset
-open scoped BigOperators
 
 section birkhoffAverage
 
 variable (R : Type*) {α M : Type*} [DivisionSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The average value of `g` on the first `n` points of the orbit of `x` under `f`,
-i.e. the Birkhoff sum `∑ k in Finset.range n, g (f^[k] x)` divided by `n`.
+i.e. the Birkhoff sum `∑ k ∈ Finset.range n, g (f^[k] x)` divided by `n`.
 
 This average appears in many ergodic theorems
 which say that `(birkhoffAverage R f g · x)`

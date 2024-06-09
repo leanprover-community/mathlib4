@@ -248,6 +248,11 @@ section OppositeLemmas
 
 end OppositeLemmas
 
+theorem op_tensor_op {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f.op ⊗ g.op = (f ⊗ g).op := rfl
+
+theorem unop_tensor_unop {W X Y Z : Cᵒᵖ} (f : W ⟶ X) (g : Y ⟶ Z) :
+    f.unop ⊗ g.unop = (f ⊗ g).unop := rfl
+
 instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   tensorObj X Y := mop (unmop Y ⊗ unmop X)
   whiskerLeft X _ _ f := (f.unmop ▷ X.unmop).mop

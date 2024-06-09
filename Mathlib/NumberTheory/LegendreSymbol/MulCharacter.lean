@@ -76,7 +76,7 @@ instance MulChar.instFunLike : FunLike (MulChar R R') R R' :=
     fun χ₀ χ₁ h => by cases χ₀; cases χ₁; congr; apply MonoidHom.ext (fun _ => congr_fun h _)⟩
 
 /-- This is the corresponding extension of `MonoidHomClass`. -/
-class MulCharClass (F : Type*) (R R' : outParam <| Type*) [CommMonoid R]
+class MulCharClass (F : Type*) (R R' : outParam Type*) [CommMonoid R]
   [CommMonoidWithZero R'] [FunLike F R R'] extends MonoidHomClass F R R' : Prop where
   map_nonunit : ∀ (χ : F) {a : R} (_ : ¬IsUnit a), χ a = 0
 #align mul_char_class MulCharClass
@@ -532,8 +532,6 @@ theorem IsQuadratic.pow_odd {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ}
 
 end quadratic_and_comp
 
-open BigOperators
-
 section sum
 
 variable {R : Type u} [CommMonoid R] [Fintype R] {R' : Type v} [CommRing R']
@@ -543,7 +541,7 @@ variable {R : Type u} [CommMonoid R] [Fintype R] {R' : Type v} [CommRing R']
 theorem IsNontrivial.sum_eq_zero [IsDomain R'] {χ : MulChar R R'}
     (hχ : χ.IsNontrivial) : ∑ a, χ a = 0 := by
   rcases hχ with ⟨b, hb⟩
-  refine' eq_zero_of_mul_eq_self_left hb _
+  refine eq_zero_of_mul_eq_self_left hb ?_
   -- POrting note: `map_mul` isn't applied
   simp only [Finset.mul_sum, ← map_mul]
   exact Fintype.sum_bijective _ (Units.mulLeft_bijective b) _ _ fun x => rfl
