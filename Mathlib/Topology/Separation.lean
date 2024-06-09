@@ -2461,14 +2461,13 @@ end CompletelyNormal
 
 /-- TODO wire this up with GDelta.lean --/
 def IsGδ₂ (s : Set X) : Prop :=
-  ∃ T : Set (Set X), (∀ t ∈ T, IsOpen t) ∧ T.Countable ∧ s = ⋂₀ T
+    ∃ T : Set (Set X), (∀ t ∈ T, IsOpen t) ∧ T.Countable ∧ s = ⋂₀ T
 
 /-- TODO use version merged from other PR soon hopefully --/
 lemma countable_covers_witnessing_separated_nhds {h k : Set X}
-  (h_cov: ∃ u : ℕ → Set X, h ⊆ ⋃ n, u n ∧
-    ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) k)
-  (k_cov: ∃ u : ℕ → Set X, k ⊆ ⋃ n, u n ∧
-    ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) h) : SeparatedNhds h k := sorry
+    (h_cov: ∃ u : ℕ → Set X, h ⊆ ⋃ n, u n ∧ ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) k)
+    (k_cov: ∃ u : ℕ → Set X, k ⊆ ⋃ n, u n ∧ ∀ n, IsOpen (u n) ∧ Disjoint (closure (u n)) h)
+    : SeparatedNhds h k := sorry
 
 section PerfectlyNormal
 
