@@ -141,7 +141,7 @@ instance (priority := 100) [F.IsHomological] : F.Additive :=
   F.additive_of_preserves_binary_products
 
 lemma isHomological_of_localization (L : C ⥤ D)
-    [L.CommShift ℤ] [L.IsTriangulated] [L.mapArrow.EssSurj ] (F : D ⥤ A)
+    [L.CommShift ℤ] [L.IsTriangulated] [L.mapArrow.EssSurj] (F : D ⥤ A)
     (G : C ⥤ A) (e : L ⋙ F ≅ G) [G.IsHomological] :
     F.IsHomological := by
   have : F.PreservesZeroMorphisms := preservesZeroMorphisms_of_map_zero_object
