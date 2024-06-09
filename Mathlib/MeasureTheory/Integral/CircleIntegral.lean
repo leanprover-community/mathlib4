@@ -294,10 +294,9 @@ theorem ContinuousOn.circleIntegrable {f : ℂ → E} {c : ℂ} {R : ℝ} (hR : 
   ContinuousOn.circleIntegrable' <| (_root_.abs_of_nonneg hR).symm ▸ hf
 #align continuous_on.circle_integrable ContinuousOn.circleIntegrable
 
+#adaptation_note /-- nightly-2024-04-01: the simpNF linter now times out on this lemma. -/
 /-- The function `fun z ↦ (z - w) ^ n`, `n : ℤ`, is circle integrable on the circle with center `c`
 and radius `|R|` if and only if `R = 0` or `0 ≤ n`, or `w` does not belong to this circle. -/
-#adaptation_note /-- nightly-2024-04-01
-The simpNF linter now times out on this lemma. -/
 @[simp, nolint simpNF]
 theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
     CircleIntegrable (fun z => (z - w) ^ n) c R ↔ R = 0 ∨ 0 ≤ n ∨ w ∉ sphere c |R| := by
