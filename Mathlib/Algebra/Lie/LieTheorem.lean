@@ -84,6 +84,9 @@ section
 
 variable (A : LieIdeal k L) (χ : Module.Dual k A)
 
+/-- Temporary definition until we clear up `altWeightSpace`.
+
+See also `LieModule.shiftedWeightSpace`. -/
 abbrev T (w : A) : Module.End k V := (π w) - χ w • 1
 
 /-- The common eigenvectors of `V` with respect to the action of all elements in
@@ -248,9 +251,6 @@ theorem exists_lieIdeal_of_derivedSeries_le (A : Submodule k L) (h : derivedSeri
 
 section
 
-noncomputable def kequivB (z : L) (hz : z ≠ 0) : k ≃ₗ[k] k ∙ z :=
-  LinearEquiv.toSpanNonzeroSingleton k _ z hz
-
 theorem extend_weight (A : LieIdeal k L) (z : L) (hz : z ∉ A)
     (hcodis : A.toSubmodule ⊔ (k ∙ z) = ⊤)
     (hdis : A.toSubmodule ⊓ (k ∙ z) = ⊥) (χ' : Module.Dual k A) (v : V)
@@ -276,7 +276,7 @@ theorem extend_weight (A : LieIdeal k L) (z : L) (hz : z ∉ A)
   let π1 := A.toSubmodule.linearProjOfIsCompl (k ∙ z) aux
   let π2 := (k ∙ z).linearProjOfIsCompl ↑A aux.symm
 
-  use (χ'.comp π1) + c • ((kequivB z hz').symm.comp π2), v'
+  use (χ'.comp π1) + c • ((LinearEquiv.toSpanNonzeroSingleton k _ z hz').symm.comp π2), v'
   constructor
   · have := hv''.right
     rw [ne_eq]
