@@ -68,7 +68,7 @@ def oreEqv : Setoid (X × S) where
 
 end OreLocalization
 
-/-- The Ore localization of a monoid and a submonoid fulfilling the ore condition. -/
+/-- The Ore localization of a monoid and a submonoid fulfilling the Ore condition. -/
 @[to_additive AddOreLocalization "The ore localization of an additive monoid and a submonoid
 fulfilling the Ore condition."]
 def OreLocalization {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S]
