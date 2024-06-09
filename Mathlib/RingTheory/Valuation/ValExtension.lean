@@ -47,7 +47,7 @@ namespace IsValExtension
 
 section CoeLemma
 
-variable {R A ΓR ΓA: Type*} [CommRing R] [Ring A]
+variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
     [LinearOrderedCommMonoidWithZero ΓR] [LinearOrderedCommMonoidWithZero ΓA]
     [Algebra R A] (vR : Valuation R ΓR) (vA : Valuation A ΓA) [IsValExtension vR vA]
 
@@ -90,8 +90,7 @@ theorem ofComapInteger {K A ΓK ΓA : Type*} [Field K] [Ring A]
   val_isEquiv_comap := by
     rw [isEquiv_iff_val_le_one]
     intro x
-    rw [← Valuation.mem_integer_iff, ← Valuation.mem_integer_iff]
-    rw [← h]
+    rw [← Valuation.mem_integer_iff, ← Valuation.mem_integer_iff, ← h]
     rfl
 
 end mk'
