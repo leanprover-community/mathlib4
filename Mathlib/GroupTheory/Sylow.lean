@@ -556,7 +556,6 @@ theorem card_normalizer_modEq_card [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact p.
   exact (card_quotient_normalizer_modEq_card_quotient hH).mul_right' _
 #align sylow.card_normalizer_modeq_card Sylow.card_normalizer_modEq_card
 
---set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- If `H` is a `p`-subgroup but not a Sylow `p`-subgroup, then `p` divides the
   index of `H` inside its normalizer. -/
 theorem prime_dvd_card_quotient_normalizer [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact p.Prime]
