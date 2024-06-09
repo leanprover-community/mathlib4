@@ -111,8 +111,6 @@ variable {R : Type r} {S : Type s} [CommRing R] [CommRing S] (W : WeierstrassCur
 
 section Ψ₂Sq
 
-section Ψ₂Sq
-
 /-! ### The univariate polynomial $\Psi_2^{[2]}$ -/
 
 /-- The $2$-division polynomial $\psi_2 = \Psi_2$. -/
@@ -284,10 +282,6 @@ end ΨSq
 
 section Ψ
 
-end ΨSq
-
-section Ψ
-
 /-! ### The bivariate polynomials $\Psi_n$ -/
 
 /-- The bivariate polynomials $\Psi_n$ congruent to the $n$-division polynomials $\psi_n$. -/
@@ -343,10 +337,6 @@ end Ψ
 
 section Φ
 
-end Ψ
-
-section Φ
-
 /-! ### The univariate polynomials $\Phi_n$ -/
 
 /-- The univariate polynomials $\Phi_n$ congruent to $\phi_n$. -/
@@ -391,10 +381,6 @@ lemma Φ_four : W.Φ 4 = X * W.preΨ₄ ^ 2 * W.Ψ₂Sq - W.Ψ₃ * (W.preΨ₄ 
 lemma Φ_neg (n : ℤ) : W.Φ (-n) = W.Φ n := by
   simp only [Φ, ΨSq_neg, neg_add_eq_sub, ← neg_sub n, preΨ_neg, ← neg_add', preΨ_neg, neg_mul_neg,
     mul_comm <| W.preΨ <| n - 1, even_neg]
-
-end Φ
-
-section ψ
 
 end Φ
 
@@ -480,55 +466,55 @@ lemma φ_neg (n : ℤ) : W.φ (-n) = W.φ n := by
 
 end φ
 
-end φ
-
 section Map
 
 /-! ### Maps across ring homomorphisms -/
 
+open WeierstrassCurve (Ψ Φ ψ φ)
+
 variable (f : R →+* S)
 
 lemma map_ψ₂ : (W.map f).ψ₂ = W.ψ₂.map (mapRingHom f) := by
-  simp only [WeierstrassCurve.ψ₂, Affine.map_polynomialY]
+  simp only [ψ₂, Affine.map_polynomialY]
 
 lemma map_Ψ₂Sq : (W.map f).Ψ₂Sq = W.Ψ₂Sq.map f := by
-  simp only [WeierstrassCurve.Ψ₂Sq, map_b₂, map_b₄, map_b₆]
+  simp only [Ψ₂Sq, map_b₂, map_b₄, map_b₆]
   map_simp
 
 lemma map_Ψ₃ : (W.map f).Ψ₃ = W.Ψ₃.map f := by
-  simp only [WeierstrassCurve.Ψ₃, map_b₂, map_b₄, map_b₆, map_b₈]
+  simp only [Ψ₃, map_b₂, map_b₄, map_b₆, map_b₈]
   map_simp
 
 lemma map_preΨ₄ : (W.map f).preΨ₄ = W.preΨ₄.map f := by
-  simp only [WeierstrassCurve.preΨ₄, map_b₂, map_b₄, map_b₆, map_b₈]
+  simp only [preΨ₄, map_b₂, map_b₄, map_b₆, map_b₈]
   map_simp
 
 lemma map_preΨ' (n : ℕ) : (W.map f).preΨ' n = (W.preΨ' n).map f := by
-  simp only [WeierstrassCurve.preΨ', map_Ψ₂Sq, map_Ψ₃, map_preΨ₄, ← coe_mapRingHom, map_preNormEDS']
+  simp only [preΨ', map_Ψ₂Sq, map_Ψ₃, map_preΨ₄, ← coe_mapRingHom, map_preNormEDS']
   map_simp
 
 lemma map_preΨ (n : ℤ) : (W.map f).preΨ n = (W.preΨ n).map f := by
-  simp only [WeierstrassCurve.preΨ, map_Ψ₂Sq, map_Ψ₃, map_preΨ₄, ← coe_mapRingHom, map_preNormEDS]
+  simp only [preΨ, map_Ψ₂Sq, map_Ψ₃, map_preΨ₄, ← coe_mapRingHom, map_preNormEDS]
   map_simp
 
 lemma map_ΨSq (n : ℤ) : (W.map f).ΨSq n = (W.ΨSq n).map f := by
-  simp only [WeierstrassCurve.ΨSq, map_preΨ, map_Ψ₂Sq, ← coe_mapRingHom]
+  simp only [ΨSq, map_preΨ, map_Ψ₂Sq, ← coe_mapRingHom]
   map_simp
 
 lemma map_Ψ (n : ℤ) : (W.map f).Ψ n = (W.Ψ n).map (mapRingHom f) := by
-  simp only [WeierstrassCurve.Ψ, map_preΨ, map_ψ₂, ← coe_mapRingHom]
+  simp only [Ψ, map_preΨ, map_ψ₂, ← coe_mapRingHom]
   map_simp
 
 lemma map_Φ (n : ℤ) : (W.map f).Φ n = (W.Φ n).map f := by
-  simp only [WeierstrassCurve.Φ, map_ΨSq, map_preΨ, map_Ψ₂Sq, ← coe_mapRingHom]
+  simp only [Φ, map_ΨSq, map_preΨ, map_Ψ₂Sq, ← coe_mapRingHom]
   map_simp
 
 lemma map_ψ (n : ℤ) : (W.map f).ψ n = (W.ψ n).map (mapRingHom f) := by
-  simp only [WeierstrassCurve.ψ, map_ψ₂, map_Ψ₃, map_preΨ₄, ← coe_mapRingHom, map_normEDS]
+  simp only [ψ, map_ψ₂, map_Ψ₃, map_preΨ₄, ← coe_mapRingHom, map_normEDS]
   map_simp
 
 lemma map_φ (n : ℤ) : (W.map f).φ n = (W.φ n).map (mapRingHom f) := by
-  simp only [WeierstrassCurve.φ, map_ψ]
+  simp only [φ, map_ψ]
   map_simp
 
 end Map
