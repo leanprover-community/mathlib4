@@ -2460,7 +2460,7 @@ end CompletelyNormal
 
 
 /-- TODO wire this up with GDelta.lean --/
-def IsGδ (s : Set X) : Prop :=
+def IsGδ₂ (s : Set X) : Prop :=
   ∃ T : Set (Set X), (∀ t ∈ T, IsOpen t) ∧ T.Countable ∧ s = ⋂₀ T
 
 /-- TODO use version merged from other PR soon hopefully --/
@@ -2475,7 +2475,7 @@ section PerfectlyNormal
 /-- A topological space `X` is a *perfectly normal space* provided it is normal and
 closed sets are Gδ. -/
 class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] extends NormalSpace X : Prop where
-    closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ h
+    closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ₂ h
 
 instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
     [PerfectlyNormalSpace X] : CompletelyNormalSpace X where
