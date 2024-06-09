@@ -2375,10 +2375,8 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
       (IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ kcl (subset_univ k))
       v v_open v_cov with ⟨g, g_cov⟩
     apply countable_covers_witnessing_separated_nhds
-    · use fun n ↦ u (f n)
-      exact ⟨f_cov, fun n ↦ ⟨u_open (f n), u_dis (f n)⟩⟩
-    · use fun n ↦ v (g n)
-      exact ⟨g_cov, fun n ↦ ⟨v_open (g n), v_dis (g n)⟩⟩
+    · exact ⟨u ∘ f, ⟨f_cov, fun n ↦ ⟨u_open (f n), u_dis (f n)⟩⟩⟩
+    · exact ⟨v ∘ g, ⟨g_cov, fun n ↦ ⟨v_open (g n), v_dis (g n)⟩⟩⟩
 
 
 instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
