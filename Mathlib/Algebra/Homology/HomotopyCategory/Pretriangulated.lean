@@ -175,7 +175,7 @@ with `set_option says.verify true` (e.g. during CI).
 
 section Rotate
 
-set_option maxHeartbeats 200000 in
+set_option maxHeartbeats 400000 in
 /-- Given `φ : K ⟶ L`, `K⟦(1 : ℤ)⟧` is homotopy equivalent to
 the mapping cone of `inr φ : L ⟶ mappingCone φ`. -/
 noncomputable def rotateHomotopyEquiv :
@@ -277,7 +277,7 @@ end Rotate
 
 section Shift
 
-set_option maxHeartbeats 200000 in
+set_option maxHeartbeats 800000 in
 /-- The canonical isomorphism `(mappingCone φ)⟦n⟧ ≅ mappingCone (φ⟦n⟧')`. -/
 noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (φ⟦n⟧') where
   hom := lift _ (n.negOnePow • (fst φ).shift n) ((snd φ).shift n) (by
