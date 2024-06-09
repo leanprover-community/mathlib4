@@ -225,7 +225,9 @@ theorem tendsto_exp_nhds_zero_nhds_one : Tendsto exp (𝓝 0) (𝓝 1) := by
   convert continuous_exp.tendsto 0
   simp
 #align real.tendsto_exp_nhds_0_nhds_1 Real.tendsto_exp_nhds_zero_nhds_one
-@[deprecated (since := "2024-01-31")] alias tendsto_exp_nhds_0_nhds_1 := tendsto_exp_nhds_zero_nhds_one
+
+@[deprecated (since := "2024-01-31")]
+alias tendsto_exp_nhds_0_nhds_1 := tendsto_exp_nhds_zero_nhds_one
 
 theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
   (tendsto_exp_neg_atTop_nhds_zero.comp tendsto_neg_atBot_atTop).congr fun x =>
