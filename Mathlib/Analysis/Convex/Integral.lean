@@ -364,6 +364,6 @@ theorem ae_eq_const_or_norm_setIntegral_lt_of_norm_le_const [StrictConvexSpace â
   exact ae_eq_const_or_norm_integral_lt_of_norm_le_const h_le
 #align ae_eq_const_or_norm_set_integral_lt_of_norm_le_const ae_eq_const_or_norm_setIntegral_lt_of_norm_le_const
 
-@[deprecated] -- 2024-04-17
+@[deprecated (since := "2024-04-17")]
 alias ae_eq_const_or_norm_set_integral_lt_of_norm_le_const :=
   ae_eq_const_or_norm_setIntegral_lt_of_norm_le_const

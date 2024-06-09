@@ -312,6 +312,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
+import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCofiber
 import Mathlib.Algebra.Homology.ImageToKernel
@@ -557,7 +558,6 @@ import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Algebra.Order.Ring.Cone
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.Finset
@@ -608,6 +608,7 @@ import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Laurent
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Algebra.Polynomial.Mirror
+import Mathlib.Algebra.Polynomial.Module.AEval
 import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Algebra.Polynomial.Module.FiniteDimensional
 import Mathlib.Algebra.Polynomial.Monic
@@ -1636,6 +1637,7 @@ import Mathlib.CategoryTheory.Sites.OneHypercover
 import Mathlib.CategoryTheory.Sites.Over
 import Mathlib.CategoryTheory.Sites.Plus
 import Mathlib.CategoryTheory.Sites.Preserves
+import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
 import Mathlib.CategoryTheory.Sites.PreservesSheafification
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Pullback
@@ -2308,7 +2310,8 @@ import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Card
 import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Data.Tree
+import Mathlib.Data.Tree.Basic
+import Mathlib.Data.Tree.Get
 import Mathlib.Data.TwoPointing
 import Mathlib.Data.TypeMax
 import Mathlib.Data.TypeVec
@@ -2896,6 +2899,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.MeasureTheory.Constructions.Cylinders
+import Mathlib.MeasureTheory.Constructions.EventuallyMeasurable
 import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Constructions.Polish
@@ -4051,6 +4055,7 @@ import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 import Mathlib.Topology.Category.CompHaus.Limits
 import Mathlib.Topology.Category.CompHaus.Projective
 import Mathlib.Topology.Category.Compactum
+import Mathlib.Topology.Category.FinTopCat
 import Mathlib.Topology.Category.LightProfinite.Basic
 import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
 import Mathlib.Topology.Category.LightProfinite.IsLight
@@ -4164,6 +4169,7 @@ import Mathlib.Topology.Instances.Irrational
 import Mathlib.Topology.Instances.Matrix
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.Instances.Nat
+import Mathlib.Topology.Instances.PNat
 import Mathlib.Topology.Instances.Rat
 import Mathlib.Topology.Instances.RatLemmas
 import Mathlib.Topology.Instances.Real
