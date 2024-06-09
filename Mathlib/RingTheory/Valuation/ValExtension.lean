@@ -110,7 +110,7 @@ instance integerAlgebra : Algebra vR.integer vA.integer where
   smul_def' _ _ := Subtype.ext (Algebra.smul_def _ _)
 
 @[simp, norm_cast]
-theorem coe_algebraMap_integer (r : vR.integer) :
+theorem val_algebraMap (r : vR.integer) :
     ((algebraMap vR.integer vA.integer) r : A) = (algebraMap R A) (r : R) := by
   rfl
 
