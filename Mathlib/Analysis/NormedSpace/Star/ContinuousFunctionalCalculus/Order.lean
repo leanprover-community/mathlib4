@@ -6,12 +6,15 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus.Instances
 import Mathlib.Topology.ContinuousFunction.StarOrdered
---import Mathlib.Topology.ContinuousFunction.NonUnitalFunctionalCalculus
+import Mathlib.Analysis.NormedSpace.Star.Unitization
 
 /-! # Facts about star-ordered rings that depend on the continuous functional calculus
 
 This file contains various basic facts about star-ordered rings (i.e. mainly C⋆-algebras)
 that depend on the continuous functional calculus.
+
+We also put an order instance on `Unitization ℂ A` when `A` is a C⋆-algebra via
+the spectral order.
 
 ## Main theorems
 
@@ -139,3 +142,48 @@ end Cstar_unital
 section Cstar_nonunital
 
 end Cstar_nonunital
+
+namespace Unitization
+
+variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A] [Nontrivial A]
+  [PartialOrder A] [StarRing A] [StarOrderedRing A] [CstarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
+  [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
+
+instance instPartialOrder : PartialOrder (Unitization ℂ A) := CstarRing.spectralOrder _
+
+instance instStarOrderedRing : StarOrderedRing (Unitization ℂ A) := CstarRing.spectralOrderedRing _
+
+lemma inr_le_iff {a b : A} (ha : IsSelfAdjoint a := by cfc_tac)
+    (hb : IsSelfAdjoint b := by cfc_tac) :
+    (a : Unitization ℂ A) ≤ (b : Unitization ℂ A) ↔ a ≤ b := by
+  have hsub : (b : Unitization ℂ A) - a = .inr (b - a) := (inr_sub ℂ b a).symm
+  refine ⟨fun h => ?mp, fun h => ?mpr⟩
+  case mp =>
+    rw [← sub_nonneg] at h ⊢
+    rw [StarOrderedRing.nonneg_iff_spectrum_nonneg (R := ℝ) _] at h
+    rw [StarOrderedRing.nonneg_iff_quasispectrum_nonneg (R := ℝ) _]
+    rw [hsub] at h
+    intro x hx
+    simp only [Unitization.quasispectrum_eq_spectrum_inr' ℝ ℂ (b - a)] at hx
+    exact h x hx
+  case mpr =>
+    rw [← sub_nonneg] at h ⊢
+    rw [StarOrderedRing.nonneg_iff_spectrum_nonneg (R := ℝ) _]
+    rw [StarOrderedRing.nonneg_iff_quasispectrum_nonneg (R := ℝ) _] at h
+    rw [hsub]
+    simpa only [Unitization.quasispectrum_eq_spectrum_inr' ℝ ℂ (b - a)] using h
+
+@[simp, norm_cast]
+lemma inr_nonneg_iff {a : A} : 0 ≤ (a : Unitization ℂ A) ↔ 0 ≤ a := by
+  have h₁ : (0 : Unitization ℂ A) = Unitization.inr (0 : A) := by rfl
+  rw [h₁]
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · refine (Unitization.inr_le_iff (isSelfAdjoint_zero A) ?_).mp h
+    have ha : IsSelfAdjoint (a : Unitization ℂ A) := by
+      rw [← h₁] at h
+      exact IsSelfAdjoint.of_nonneg h
+    exact isSelfAdjoint_inr.mp ha
+  · have ha : IsSelfAdjoint a := by exact IsSelfAdjoint.of_nonneg h
+    exact (Unitization.inr_le_iff (isSelfAdjoint_zero A) ha).mpr h
+
+end Unitization

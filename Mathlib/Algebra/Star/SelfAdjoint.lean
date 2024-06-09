@@ -122,6 +122,7 @@ variable (R)
 
 variable {R}
 
+@[aesop 90% apply]
 theorem add {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x + y) := by
   simp only [isSelfAdjoint_iff, star_add, hx.star_eq, hy.star_eq]
 #align is_self_adjoint.add IsSelfAdjoint.add
@@ -138,10 +139,12 @@ section AddGroup
 
 variable [AddGroup R] [StarAddMonoid R]
 
+@[aesop safe apply]
 theorem neg {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint (-x) := by
   simp only [isSelfAdjoint_iff, star_neg, hx.star_eq]
 #align is_self_adjoint.neg IsSelfAdjoint.neg
 
+@[aesop 90% apply]
 theorem sub {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x - y) := by
   simp only [isSelfAdjoint_iff, star_sub, hx.star_eq, hy.star_eq]
 #align is_self_adjoint.sub IsSelfAdjoint.sub
@@ -166,10 +169,12 @@ section Semigroup
 
 variable [Semigroup R] [StarMul R]
 
+@[aesop safe apply]
 theorem conjugate {x : R} (hx : IsSelfAdjoint x) (z : R) : IsSelfAdjoint (z * x * star z) := by
   simp only [isSelfAdjoint_iff, star_mul, star_star, mul_assoc, hx.star_eq]
 #align is_self_adjoint.conjugate IsSelfAdjoint.conjugate
 
+@[aesop safe apply]
 theorem conjugate' {x : R} (hx : IsSelfAdjoint x) (z : R) : IsSelfAdjoint (star z * x * z) := by
   simp only [isSelfAdjoint_iff, star_mul, star_star, mul_assoc, hx.star_eq]
 #align is_self_adjoint.conjugate' IsSelfAdjoint.conjugate'
@@ -196,6 +201,7 @@ section Monoid
 
 variable [Monoid R] [StarMul R]
 
+@[aesop safe apply]
 theorem pow {x : R} (hx : IsSelfAdjoint x) (n : ℕ) : IsSelfAdjoint (x ^ n) := by
   simp only [isSelfAdjoint_iff, star_pow, hx.star_eq]
 #align is_self_adjoint.pow IsSelfAdjoint.pow
@@ -259,10 +265,12 @@ section DivisionSemiring
 
 variable [DivisionSemiring R] [StarRing R]
 
+@[aesop safe apply]
 theorem inv {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint x⁻¹ := by
   simp only [isSelfAdjoint_iff, star_inv', hx.star_eq]
 #align is_self_adjoint.inv IsSelfAdjoint.inv
 
+@[aesop safe apply]
 theorem zpow {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) := by
   simp only [isSelfAdjoint_iff, star_zpow₀, hx.star_eq]
 #align is_self_adjoint.zpow IsSelfAdjoint.zpow
@@ -295,6 +303,7 @@ section SMul
 
 variable [Star R] [AddMonoid A] [StarAddMonoid A] [SMul R A] [StarModule R A]
 
+@[aesop safe apply]
 theorem smul {r : R} (hr : IsSelfAdjoint r) {x : A} (hx : IsSelfAdjoint x) :
     IsSelfAdjoint (r • x) := by simp only [isSelfAdjoint_iff, star_smul, hr.star_eq, hx.star_eq]
 #align is_self_adjoint.smul IsSelfAdjoint.smul

@@ -719,7 +719,7 @@ lemma cfc_nonneg_iff (f : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) :
   rw [cfc_apply .., cfcHom_nonneg_iff, ContinuousMap.le_def]
   simp
 
-lemma StarOrderedRing.nonneg_iff_spectrum_nonneg (a : A) (ha : p a) :
+lemma StarOrderedRing.nonneg_iff_spectrum_nonneg (a : A) (ha : p a := by cfc_tac) :
     0 ≤ a ↔ ∀ x ∈ spectrum R a, 0 ≤ x := by
   have := cfc_nonneg_iff (id : R → R) a (by fun_prop) ha
   simpa [cfc_id _ a ha] using this

@@ -488,7 +488,7 @@ lemma cfcₙ_nonneg_iff (f : R → R) (a : A) (hf : ContinuousOn f (σₙ R a) :
   simp only [ContinuousMapZero.coe_mk, ContinuousMap.coe_mk, Set.restrict_apply, Subtype.forall]
   congr!
 
-lemma StarOrderedRing.nonneg_iff_quasispectrum_nonneg (a : A) (ha : p a) :
+lemma StarOrderedRing.nonneg_iff_quasispectrum_nonneg (a : A) (ha : p a := by cfc_tac) :
     0 ≤ a ↔ ∀ x ∈ quasispectrum R a, 0 ≤ x := by
   have := cfcₙ_nonneg_iff (id : R → R) a (by fun_prop)
   simpa [cfcₙ_id _ a ha] using this
