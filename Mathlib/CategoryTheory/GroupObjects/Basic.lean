@@ -1,6 +1,9 @@
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Fubini
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+import Mathlib.Algebra.Category.GroupCat.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.Tactic.ApplyFun
 
 universe u v
 
@@ -103,8 +106,6 @@ instance instGroupObjectCat : Category (GroupObject C) where
   Hom G H := Hom G H
   id := id
   comp f g := comp f g
-
-#check instGroupObjectCat 
 
 -- Porting note: added, as `Hom.ext` does not apply to a morphism.
 @[ext]
@@ -209,7 +210,7 @@ instance trivialIsZero : IsZero (trivial C) where
 
 /- The Yoneda embedding.-/
 
-def HomAsGroup (X : C) (G : GroupObject C) : Group (X ⟶ G.X) where
+instance homAsGroup (X : C) (G : GroupObject C) : Group (X ⟶ G.X) where
   mul f g := prod.lift f g ≫ G.mul
   mul_assoc f g h := by
     change prod.lift (_ ≫ G.mul) _ ≫ G.mul = prod.lift _ (_ ≫ G.mul) ≫ G.mul
@@ -248,4 +249,4 @@ def HomAsGroup (X : C) (G : GroupObject C) : Group (X ⟶ G.X) where
       Subsingleton.elim (f ≫ default) default]
     rfl
 
-end GroupObject
+open Opposite
