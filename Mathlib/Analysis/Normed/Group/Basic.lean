@@ -98,6 +98,8 @@ class SeminormedGroup (E : Type*) extends Norm E, Group E, PseudoMetricSpace E w
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 #align seminormed_group SeminormedGroup
 
+attribute [instance 10] SeminormedGroup.toGroup
+
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖` defines a
 metric space structure. -/
 class NormedAddGroup (E : Type*) extends Norm E, AddGroup E, MetricSpace E where

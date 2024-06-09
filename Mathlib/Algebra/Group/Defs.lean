@@ -1239,7 +1239,7 @@ class Group (G : Type u) extends DivInvMonoid G where
   protected mul_left_inv : ∀ a : G, a⁻¹ * a = 1
 #align group Group
 
-attribute [instance 200] Group.toDivInvMonoid
+attribute [instance 100] Group.toDivInvMonoid
 
 /-- An `AddGroup` is an `AddMonoid` with a unary `-` satisfying `-a + a = 0`.
 
