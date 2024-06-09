@@ -182,12 +182,11 @@ theorem mk_coe (f : α →ₙ+* β) (h₁ h₂ h₃) : NonUnitalRingHom.mk (MulH
 #align non_unital_ring_hom.mk_coe NonUnitalRingHom.mk_coe
 
 theorem coe_addMonoidHom_injective : Injective fun f : α →ₙ+* β => (f : α →+ β) :=
-  fun _ _ h => ext <| DFunLike.congr_fun (F := α →+ β) h
+  Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 #align non_unital_ring_hom.coe_add_monoid_hom_injective NonUnitalRingHom.coe_addMonoidHom_injective
 
-set_option linter.deprecated false in
-theorem coe_mulHom_injective : Injective fun f : α →ₙ+* β => (f : α →ₙ* β) := fun _ _ h =>
-  ext <| MulHom.congr_fun h
+theorem coe_mulHom_injective : Injective fun f : α →ₙ+* β => (f : α →ₙ* β) :=
+  Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 #align non_unital_ring_hom.coe_mul_hom_injective NonUnitalRingHom.coe_mulHom_injective
 
 end
@@ -195,8 +194,11 @@ end
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
 
 /-- The identity non-unital ring homomorphism from a non-unital semiring to itself. -/
-protected def id (α : Type*) [NonUnitalNonAssocSemiring α] : α →ₙ+* α := by
-  refine' { toFun := id.. } <;> intros <;> rfl
+protected def id (α : Type*) [NonUnitalNonAssocSemiring α] : α →ₙ+* α where
+  toFun := id
+  map_mul' _ _ := rfl
+  map_zero' := rfl
+  map_add' _ _ := rfl
 #align non_unital_ring_hom.id NonUnitalRingHom.id
 
 instance : Zero (α →ₙ+* β) :=
@@ -540,9 +542,8 @@ theorem coe_addMonoidHom_injective : Injective (fun f : α →+* β => (f : α �
   ext <| DFunLike.congr_fun (F := α →+ β) h
 #align ring_hom.coe_add_monoid_hom_injective RingHom.coe_addMonoidHom_injective
 
-set_option linter.deprecated false in
-theorem coe_monoidHom_injective : Injective (fun f : α →+* β => (f : α →* β)) := fun _ _ h =>
-  ext <| MonoidHom.congr_fun h
+theorem coe_monoidHom_injective : Injective (fun f : α →+* β => (f : α →* β)) :=
+  Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 #align ring_hom.coe_monoid_hom_injective RingHom.coe_monoidHom_injective
 
 /-- Ring homomorphisms map zero to zero. -/
@@ -626,8 +627,12 @@ def mk' [NonAssocSemiring α] [NonAssocRing β] (f : α →* β)
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
 
 /-- The identity ring homomorphism from a semiring to itself. -/
-def id (α : Type*) [NonAssocSemiring α] : α →+* α := by
-  refine' { toFun := _root_.id.. } <;> intros <;> rfl
+def id (α : Type*) [NonAssocSemiring α] : α →+* α where
+  toFun := _root_.id
+  map_zero' := rfl
+  map_one' := rfl
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
 #align ring_hom.id RingHom.id
 
 instance : Inhabited (α →+* α) :=
@@ -681,30 +686,30 @@ theorem id_comp (f : α →+* β) : (id β).comp f = f :=
   ext fun _ => rfl
 #align ring_hom.id_comp RingHom.id_comp
 
-instance : Monoid (α →+* α) where
-  one := id α
-  mul := comp
+instance instOne : One (α →+* α) where one := id _
+instance instMul : Mul (α →+* α) where mul := comp
+
+lemma one_def : (1 : α →+* α) = id α := rfl
+#align ring_hom.one_def RingHom.one_def
+
+lemma mul_def (f g : α →+* α) : f * g = f.comp g := rfl
+#align ring_hom.mul_def RingHom.mul_def
+
+@[simp, norm_cast] lemma coe_one : ⇑(1 : α →+* α) = _root_.id := rfl
+#align ring_hom.coe_one RingHom.coe_one
+
+@[simp, norm_cast] lemma coe_mul (f g : α →+* α) : ⇑(f * g) = f ∘ g := rfl
+#align ring_hom.coe_mul RingHom.coe_mul
+
+instance instMonoid : Monoid (α →+* α) where
   mul_one := comp_id
   one_mul := id_comp
   mul_assoc f g h := comp_assoc _ _ _
+  npow n f := (npowRec n f).copy f^[n] $ by induction' n <;> simp [npowRec, *]
+  npow_succ n f := DFunLike.coe_injective $ Function.iterate_succ _ _
 
-theorem one_def : (1 : α →+* α) = id α :=
-  rfl
-#align ring_hom.one_def RingHom.one_def
-
-theorem mul_def (f g : α →+* α) : f * g = f.comp g :=
-  rfl
-#align ring_hom.mul_def RingHom.mul_def
-
-@[simp]
-theorem coe_one : ⇑(1 : α →+* α) = _root_.id :=
-  rfl
-#align ring_hom.coe_one RingHom.coe_one
-
-@[simp]
-theorem coe_mul (f g : α →+* α) : ⇑(f * g) = f ∘ g :=
-  rfl
-#align ring_hom.coe_mul RingHom.coe_mul
+@[simp, norm_cast] lemma coe_pow (f : α →+* α) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
+#align ring_hom.coe_pow RingHom.coe_pow
 
 @[simp]
 theorem cancel_right {g₁ g₂ : β →+* γ} {f : α →+* β} (hf : Surjective f) :

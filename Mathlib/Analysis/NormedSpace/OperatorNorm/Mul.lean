@@ -96,7 +96,7 @@ theorem opNorm_mulLeftRight_apply_apply_le (x y : 𝕜') : ‖mulLeftRight 𝕜 
         (norm_nonneg _) (norm_nonneg _)
 #align continuous_linear_map.op_norm_mul_left_right_apply_apply_le ContinuousLinearMap.opNorm_mulLeftRight_apply_apply_le
 
-@[deprecated] -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias op_norm_mulLeftRight_apply_apply_le :=
   opNorm_mulLeftRight_apply_apply_le
 
@@ -106,10 +106,17 @@ theorem opNorm_mulLeftRight_apply_le (x : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x�
 
 @[deprecated] alias op_norm_mulLeftRight_apply_le := opNorm_mulLeftRight_apply_le -- 2024-02-02
 
+#adaptation_note
+/--
+Before https://github.com/leanprover/lean4/pull/4119
+we had to create a local instance in the signature:
+```
+letI : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') :=
+  hasOpNorm (𝕜₂ := 𝕜) (E := 𝕜') (F := 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')
+```
+-/
+set_option maxSynthPendingDepth 2 in
 theorem opNorm_mulLeftRight_le :
-    -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
-    -- see leanprover/lean4#3927
-    letI : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') := hasOpNorm (E := 𝕜') (F := 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')
     ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
   opNorm_le_bound _ zero_le_one fun x => (one_mul ‖x‖).symm ▸ opNorm_mulLeftRight_apply_le 𝕜 𝕜' x
 #align continuous_linear_map.op_norm_mul_left_right_le ContinuousLinearMap.opNorm_mulLeftRight_le
