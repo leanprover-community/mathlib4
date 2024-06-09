@@ -131,6 +131,10 @@ syntax "././././" sepBy(ident, "/") : build
 syntax "warning:" build ":" num ":" num ": `" ident
   "` has been deprecated, use `" ident "` instead" : build
 
+/-- a deprecated declaration. -/
+syntax "warning:" build ":" num ":" num ": unnecessary `set_option " ident ident
+  "in`" : build
+
 end build_syntax
 
 open System.FilePath in
@@ -153,6 +157,9 @@ def getCorrections : TSyntax `build → Option (System.FilePath × (String × St
   | `(build| warning: $fil:build: $s : $f : `$depr` has been deprecated, use `$new` instead) =>
     let oldNewName := (depr.getId.toString, new.getId.toString)
     (toFile fil, oldNewName, s.getNat, f.getNat)
+  | `(build|warning: $fil:build: $s : $f : unnecessary `set_option $optN:ident $opt:ident in`) =>
+    (toFile fil, (s!"set_option {optN.getId.toString} {opt.getId.toString} in", ""),
+      s.getNat, f.getNat)
   | _ => default
 
 /-- Parse the output of `lake build` and perform the relevant substitutions. -/

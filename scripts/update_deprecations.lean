@@ -33,7 +33,7 @@ def updateDeprecationsCLI (args : Parsed) : IO UInt32 := do
   let env : Environment ← importModules #[{module := `Mathlib.Tactic.UpdateDeprecations}] {}
   -- process the `lake build` output, catching messages
   let (_, msgLog) ← Lean.Elab.process buildOutput env {}
-  let exitCode := ← match msgLog.msgs.toArray with
+  let exitCode := ← match msgLog.unreported.toArray with
     | #[msg, exCode] => do
       IO.println f!"{(← msg.toString).trimRight}"
       return String.toNat! (← exCode.toString).trimRight
