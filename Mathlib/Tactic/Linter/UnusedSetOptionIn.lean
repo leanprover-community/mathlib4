@@ -1,20 +1,18 @@
-import Mathlib.adomaniLeanUtils.inspect_syntax
+/-
+Copyright (c) 2024 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+
 import Mathlib.Tactic.Lemma
-import Lean
+import Lean.Elab.Command
+import Lean.Linter.Util
+
+/-!
+The `unusedSetOptionIn` linter warns against "most external" unused `set_option ... in`s.
+-/
 
 open Lean Elab Command
-
-/-
-node Lean.Parser.Command.in, none
-|-node Lean.Parser.Command.set_option, none
-|   |-atom original: ⟨⟩⟨ ⟩-- 'set_option'
-|   |-ident original: ⟨⟩⟨ ⟩-- (maxHeartbeats,maxHeartbeats)
-|   |-node null, none
-|   |-node num, none
-|   |   |-atom original: ⟨⟩⟨ ⟩-- '2'
-|-atom original: ⟨⟩⟨\n⟩-- 'in'
-|-node Lean.Parser.Command.declaration, none
--/
 
 /-- converts
 * `theorem x ...` to  `some (example ... , x)`,
@@ -32,6 +30,16 @@ def toExample {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] :
     return some (← `($dm:declModifiers example $ds $dv:declVal), mkIdent `example)
   | _ => return none
 
+/-- The `unusedSetOptionIn` linter warns against "most external" unused `set_option ... in`s. -/
+register_option linter.unusedSetOptionIn : Bool := {
+  defValue := true
+  descr := "enable the unusedSetOptionIn linter"
+}
+
+/-- Gets the value of the `linter.unusedSetOptionIn` option. -/
+def getSetOptionIn (o : Options) : Bool := Linter.getLinterValue linter.unusedSetOptionIn o
+
+/-- reports a warning if the "first layer" `set_option ... in` is unused. -/
 def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
   let mut report? := (false, default)
   let s ← get
@@ -45,23 +53,13 @@ def findSetOptionIn (cmd : CommandElab) : CommandElab := fun stx => do
         let msgs := (← get).messages.toList
         report? := (msgs.isEmpty, id)
         set s
-      if report?.1 then logInfoAt stx m!"unused 'set_option' in '{report?.2}'"
+      if report?.1 then
+        Linter.logLint linter.unusedSetOptionIn stx m!"unused 'set_option' in '{report?.2}'"
     | _ => return
 
-/-- The `unusedSetOptionIn` linter warns against "most external" unused `set_option ... in`s. -/
-register_option linter.unusedSetOptionIn : Bool := {
-  defValue := true
-  descr := "enable the unusedSetOptionIn linter"
-}
-
-/-- Gets the value of the `linter.unusedSetOptionIn` option. -/
-def getSetOptionIn (o : Options) : Bool := Linter.getLinterValue linter.unusedSetOptionIn o
-
 @[inherit_doc linter.unusedSetOptionIn]
-def unusedSetOptionIn : Linter where run cmd := do --withSetOptionIn fun cmd => do
+def unusedSetOptionIn : Linter where run cmd := do
   if getSetOptionIn (← getOptions) then
     findSetOptionIn elabCommand cmd
 
 initialize addLinter unusedSetOptionIn
-
-elab "fso " cmd:command : command => findSetOptionIn elabCommand cmd
