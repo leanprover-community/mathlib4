@@ -32,7 +32,7 @@ end SimplexAlgorithm
 
 open SimplexAlgorithm
 
-/-- An oracle that uses the simplex algorithm. -/
+/-- An oracle that uses the Simplex Algorithm. -/
 def CertificateOracle.simplexAlgorithm : CertificateOracle where
   produceCertificate hyps maxVar := do
     let ⟨A, strictIndexes⟩ := preprocess hyps maxVar
