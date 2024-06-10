@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Analysis.Analytic.IsolatedZeros
+import Mathlib.Algebra.Order.Group.WithTop
+import Mathlib.Algebra.Order.Sub.WithTop
+import Mathlib.Algebra.Order.Group.Int
 
 /-!
 # Meromorphic functions
@@ -144,7 +147,7 @@ lemma zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : M
 /-- The order of vanishing of a meromorphic function, as an element of `ℤ ∪ ∞` (to include the
 case of functions identically 0 near `x`). -/
 noncomputable def order {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) : WithTop ℤ :=
-  (hf.choose_spec.order.map (↑· : ℕ → ℤ)) - hf.choose
+  (hf.choose_spec.order.map (↑· : ℕ → ℤ)) - (hf.choose : WithTop ℤ)
 
 lemma order_eq_top_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) :
     hf.order = ⊤ ↔ ∀ᶠ z in 𝓝[≠] x, f z = 0 := by
