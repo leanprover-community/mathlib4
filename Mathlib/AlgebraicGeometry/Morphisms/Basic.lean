@@ -660,7 +660,7 @@ lemma MorphismProperty.topologically_respectsIso
 
 /-- To check that a topologically defined morphism property is local at the target,
 we may check the corresponding properties on topological spaces. -/
-lemma MorphismProperty.topologically_propertyIsLocalAtTarget_of_morphismRestrict
+lemma MorphismProperty.topologically_propertyIsLocalAtTarget
     (hP₁ : (MorphismProperty.topologically P).RespectsIso)
     (hP₂ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) (s : Set β),
       P f → P (s.restrictPreimage f))
