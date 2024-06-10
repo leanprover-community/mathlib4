@@ -361,22 +361,16 @@ lemma LiftedContextFreeGrammar.sink_produces {G : LiftedContextFreeGrammar T}
   rcases hG with ⟨r, rin, hr⟩
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
   rcases G.preimage_of_rules r (by
-      constructor
-      · exact rin
+      refine ⟨rin, ?_⟩
       rw [bef] at hw₁
-      obtain ⟨n₀, hn₀⟩ : GoodLetter (Symbol.nonterminal r.input) := by
-        apply hw₁ (Symbol.nonterminal r.input)
-        apply List.mem_append_left
-        apply List.mem_append_right
-        rw [List.mem_singleton]
+      obtain ⟨n₀, hn₀⟩ : GoodLetter (Symbol.nonterminal r.input) := by apply hw₁; simp
       use n₀
       simpa [G.sinkNT_inverse_liftNT r.input ⟨n₀, hn₀⟩, Option.map_some'] using
         congr_arg (Option.map G.liftNT) hn₀.symm)
     with ⟨r₀, hr₀, hrr₀⟩
   constructor
   · use r₀
-    constructor
-    · exact hr₀
+    refine ⟨hr₀, ?_⟩
     rw [ContextFreeRule.rewrites_iff]
     use Symbol.sinkString G.sinkNT u, Symbol.sinkString G.sinkNT v
     have correct_inverse : sinkSymbol G.sinkNT ∘ liftSymbol G.liftNT = Option.some := by
