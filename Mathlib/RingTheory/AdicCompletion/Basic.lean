@@ -226,7 +226,6 @@ def of : M →ₗ[R] AdicCompletion I M where
   map_smul' _ _ := rfl
 #align adic_completion.of AdicCompletion.of
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 theorem of_apply (x : M) (n : ℕ) : (of I M x).1 n = mkQ (I ^ n • ⊤ : Submodule R M) x :=
   rfl
