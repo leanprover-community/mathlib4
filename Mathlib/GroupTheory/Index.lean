@@ -620,26 +620,21 @@ namespace MonoidHom
 
 open Finset
 
-variable {G H F : Type*} [Group G] [Fintype G] [Group H] [DecidableEq H]
-  [FunLike F G H] [MonoidHomClass F G H]
+variable {G M F : Type*} [Group G] [Fintype G] [Monoid M] [DecidableEq M]
+  [FunLike F G M] [MonoidHomClass F G M]
 
 @[to_additive]
-theorem card_fiber_of_mem_range (f : F) {x : H} (hx : x ∈ Set.range f) :
-    (univ.filter fun g => f g = x).card = (univ.filter fun g => f g = 1).card := by
+lemma card_fiber_eq_of_mem_range (f : F) {x y : M} (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :
+    (univ.filter <| fun g => f g = x).card = (univ.filter <| fun g => f g = y).card := by
   rcases hx with ⟨x, rfl⟩
-  refine card_bij (fun g _ => g * x⁻¹ * 1) ?_ ?_ fun g hg => ⟨g * 1⁻¹ * x, ?_⟩
-  · simp (config := { contextual := true }) only [mem_filter, mem_univ, true_and, mul_one, map_mul,
-      map_inv, mul_right_inv, and_self, implies_true, forall_const]
-  · simp only [mul_left_inj, imp_self, forall₂_true_iff]
-  · simp only [true_and_iff, mem_filter, mem_univ] at hg
-    simp only [inv_one, mul_one, mul_inv_cancel_right, mem_filter, mem_univ, map_mul, hg, one_mul,
-      and_self, exists_prop_of_true]
-
-@[to_additive]
-theorem card_fiber_eq_of_mem_range (f : F) {x y : H} (hx : x ∈ Set.range f)
-    (hy : y ∈ Set.range f) :
-    (univ.filter fun g => f g = x).card = (univ.filter fun g => f g = y).card := by
-  simp only [card_fiber_of_mem_range f hx, card_fiber_of_mem_range f hy]
-#align card_fiber_eq_of_mem_range MonoidHom.card_fiber_eq_of_mem_range
+  rcases hy with ⟨y, rfl⟩
+  rcases mul_left_surjective x y with ⟨y, rfl⟩
+  conv_lhs =>
+    rw [← map_univ_equiv (Equiv.mulRight y⁻¹), filter_map, card_map]
+  congr 2 with g
+  simp only [Function.comp, Equiv.toEmbedding_apply, Equiv.coe_mulRight, map_mul]
+  let f' := MonoidHomClass.toMonoidHom f
+  show f' g * f' y⁻¹ = f' x ↔ f' g = f' x * f' y
+  rw [← f'.coe_toHomUnits y⁻¹, map_inv, Units.mul_inv_eq_iff_eq_mul, f'.coe_toHomUnits]
 
 end MonoidHom
