@@ -1385,7 +1385,7 @@ theorem abs_exp_sub_one_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1) ≤ 2 
     _ = 2 * abs x := by simp [two_mul, mul_two, mul_add, mul_comm, add_mul, Nat.factorial]
 #align complex.abs_exp_sub_one_le Complex.abs_exp_sub_one_le
 
-set_option tactic.skipAssignedInstances false in
+/-set_option {optN.getId.toString} {opt.getId.toString} in-/
 theorem abs_exp_sub_one_sub_id_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1 - x) ≤ abs x ^ 2 :=
   calc
     abs (exp x - 1 - x) = abs (exp x - ∑ m ∈ range 2, x ^ m / m.factorial) := by

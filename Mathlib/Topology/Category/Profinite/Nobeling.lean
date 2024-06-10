@@ -778,7 +778,7 @@ theorem Products.lt_nil_empty : { m : Products I | m < Products.nil } = ∅ := b
 instance {α : Type*} [TopologicalSpace α] [Nonempty α] : Nontrivial (LocallyConstant α ℤ) :=
   ⟨0, 1, ne_of_apply_ne DFunLike.coe <| (Function.const_injective (β := ℤ)).ne zero_ne_one⟩
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
+/-set_option {optN.getId.toString} {opt.getId.toString} in-/ -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem Products.isGood_nil : Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil := by
   intro h
   simp only [Products.lt_nil_empty, Products.eval, List.map, List.prod_nil, Set.image_empty,

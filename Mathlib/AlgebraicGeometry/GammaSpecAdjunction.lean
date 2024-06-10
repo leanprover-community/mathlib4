@@ -398,7 +398,7 @@ theorem adjunction_homEquiv_symm_apply {X : Scheme} {R : CommRingCatᵒᵖ}
   by rw [adjunction_homEquiv]; rfl
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_symm_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_symm_apply
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
+/-set_option {optN.getId.toString} {opt.getId.toString} in-/ -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 theorem adjunction_counit_app {R : CommRingCatᵒᵖ} :
     ΓSpec.adjunction.counit.app R = locallyRingedSpaceAdjunction.counit.app R := by

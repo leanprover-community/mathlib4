@@ -302,7 +302,7 @@ section SpecΓ
 
 open AlgebraicGeometry.LocallyRingedSpace
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
+/-set_option {optN.getId.toString} {opt.getId.toString} in-/ -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- The counit morphism `R ⟶ Γ(Spec R)` given by `AlgebraicGeometry.StructureSheaf.toOpen`.  -/
 @[simps!]
 def toSpecΓ (R : CommRingCat.{u}) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj (op R))) :=
