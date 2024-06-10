@@ -192,6 +192,9 @@ end EuclideanDivision
 
 variable [Fintype G]
 
+@[deprecated (since := "2024-06-10")]
+alias card_fiber_eq_of_mem_range := MonoidHom.card_fiber_eq_of_mem_range
+
 /-- In an integral domain, a sum indexed by a nontrivial homomorphism from a finite group is zero.
 -/
 theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0 := by
