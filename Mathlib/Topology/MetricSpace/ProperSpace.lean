@@ -3,6 +3,7 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.MetricSpace.PseudoMetric
 
 /-! ## Proper spaces
