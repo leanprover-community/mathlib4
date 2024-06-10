@@ -521,7 +521,7 @@ theorem UniformCauchySeqOn.prod_map {ι' α' β' : Type*} [UniformSpace β'] {F'
   intro u hu
   rw [uniformity_prod_eq_prod, mem_map, mem_prod_iff] at hu
   obtain ⟨v, hv, w, hw, hvw⟩ := hu
-  simp_rw [mem_prod, Prod_map, and_imp, Prod.forall]
+  simp_rw [mem_prod, Prod.map_apply, and_imp, Prod.forall]
   rw [← Set.image_subset_iff] at hvw
   apply (tendsto_swap4_prod.eventually ((h v hv).prod_mk (h' w hw))).mono
   intro x hx a b ha hb
