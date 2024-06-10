@@ -6,7 +6,6 @@ Authors: Johan Commelin
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.MvPolynomial.Tower
 import Mathlib.RingTheory.Ideal.QuotientOperations
-import Mathlib.RingTheory.RingHomProperties
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness

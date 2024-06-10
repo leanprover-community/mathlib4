@@ -8,7 +8,6 @@ import Mathlib.GroupTheory.Finiteness
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.Finiteness
-import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
