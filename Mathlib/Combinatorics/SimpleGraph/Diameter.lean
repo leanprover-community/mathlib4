@@ -51,8 +51,7 @@ lemma diam_exists [Nonempty α] : ∃ u v, G.dist u v = G.diam := by
   · have : s.Nonempty := ⟨0, u, u, dist_self.symm⟩
     obtain ⟨u, v, huv⟩ := Nat.sSup_mem this h
     use u, v, huv.symm
-  · rw [not_bddAbove_diam_eq_zero h]
-    use u, u, dist_self
+  · exact not_bddAbove_diam_eq_zero h ▸ ⟨u, u, dist_self⟩
 
 lemma bddAbove_dist_le_diam (h : BddAbove {d | ∃ u v, d = G.dist u v}) :
     ∀ u v, G.dist u v ≤ G.diam := by
@@ -62,45 +61,31 @@ lemma bddAbove_dist_le_diam (h : BddAbove {d | ∃ u v, d = G.dist u v}) :
 lemma diam_bot : (⊥ : SimpleGraph α).diam = 0 := by
   unfold diam
   by_cases h : Nonempty α
-  · have : {d | ∃ u v, d = (⊥ : SimpleGraph α).dist u v} = {0} := by
-      ext
-      rw [Set.mem_setOf_eq, Set.mem_singleton_iff]
-      refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-      · obtain ⟨_, _, h⟩ := h
-        rw [h, dist_bot]
-      · let u := Classical.arbitrary α
-        use u, u
-        rw [dist_bot, h]
-    rw [this, csSup_singleton]
-  · convert_to sSup ∅ = 0
-    · aesop
-    · rw [csSup_empty, bot_eq_zero']
+  · have : {d | ∃ u v, d = (⊥ : SimpleGraph α).dist u v} = {0} :=
+      Set.ext_iff.mpr fun _ ↦ ⟨fun ⟨_, _, h⟩ ↦ dist_bot _ _ ▸ h,
+      fun h ↦ ⟨Classical.arbitrary α, Classical.arbitrary α, dist_bot _ _ ▸ h⟩⟩
+    exact this ▸ csSup_singleton _
+  · simp_all
 
-lemma diam_eq_zero :
-    G.diam = 0 ↔ ¬BddAbove {d | ∃ u v, d = G.dist u v} ∨ G = ⊥ := by
+lemma diam_eq_zero : G.diam = 0 ↔ ¬BddAbove {d | ∃ u v, d = G.dist u v} ∨ G = ⊥ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · by_cases h' : G = ⊥
-    · apply Or.inr h'
-    · apply Or.inl
-      have : ∃ u v, G.Adj u v := by
+    · exact Or.inr h'
+    · have : ∃ u v, G.Adj u v := by
         by_contra
-        have : G = emptyGraph α := by
-          ext; simp_all only [emptyGraph, not_exists]
-        rw [emptyGraph_eq_bot] at this
-        exact h' this
+        have : G = emptyGraph α := by ext; simp_all
+        exact h' (emptyGraph_eq_bot _ ▸ this)
       obtain ⟨u, v, huv⟩ := this
-      rw [← dist_eq_one_iff_adj] at huv
-      by_contra con
-      apply bddAbove_dist_le_diam at con
-      have := con u v
-      rw [huv, h] at this
-      omega
+      apply Or.inl
+      by_contra h
+      have := bddAbove_dist_le_diam h u v
+      simp_all [dist_eq_one_iff_adj.mpr huv]
   · cases' h with h h
-    · apply not_bddAbove_diam_eq_zero h
+    · exact not_bddAbove_diam_eq_zero h
     · rw [h, diam_bot]
 
 lemma diam_le (h : G.diam ≠ 0) : ∀ u v, G.dist u v ≤ G.diam := by
-  intro u v
+  intros
   apply le_csSup
   rw [ne_eq, diam_eq_zero] at h
   push_neg at h
@@ -131,7 +116,7 @@ private lemma top_not_mem_of_sup_ne_top {s : Set ℕ∞} (h : sSup s ≠ ⊤) : 
 
 /-- The extended diameter is equal to the distance of some vertices iff it is not infinite. -/
 lemma ediam_exists [Nonempty α] : G.ediam ≠ ⊤ ↔ ∃ (u v : α),  G.dist u v = G.ediam := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h => ?_, by aesop⟩
   unfold ediam at h ⊢
   let s' := WithTop.some ⁻¹' {d : ℕ∞ | ∃ u v : α, d = G.dist u v}
   have nonempty_s' : s'.Nonempty := by
@@ -145,12 +130,11 @@ lemma ediam_exists [Nonempty α] : G.ediam ≠ ⊤ ↔ ∃ (u v : α),  G.dist u
     use WithTop.untop ub ub_lt_top.ne
     intro a ha
     rw [WithTop.le_untop_iff]
-    rw [Set.mem_preimage] at ha
     exact hub a ha
   obtain ⟨u, v, huv⟩ := Nat.sSup_mem nonempty_s' bddAbove_s'
   rw [WithTop.sSup_eq (top_not_mem_of_sup_ne_top h) bddAbove_s']
   use u, v, huv.symm
-  aesop
+
 
 lemma zero_lt_ediam_iff [Nonempty α] (ht : G.ediam ≠ ⊤) :
     0 < G.ediam ↔ ∃ (u v : α), G.ediam = G.dist u v ∧ G.Reachable u v ∧ u ≠ v := by
@@ -159,6 +143,6 @@ lemma zero_lt_ediam_iff [Nonempty α] (ht : G.ediam ≠ ⊤) :
     rw [← huv, Nat.cast_pos, pos_iff_ne_zero, ne_eq, dist_eq_zero_iff_eq_or_not_reachable.not] at h
     push_neg at h
     use u, v, huv.symm, h.2, h.1
-  · obtain ⟨u, v, h⟩ := h
+  · have ⟨u, v, h⟩ := h
     rw [h.1, Nat.cast_pos]
-    apply LT.lt.nat_succ_le (Reachable.pos_dist_of_ne h.2.1 h.2.2)
+    exact LT.lt.nat_succ_le (Reachable.pos_dist_of_ne h.2.1 h.2.2)
