@@ -447,12 +447,10 @@ private lemma natDegree_coeff_ΨSq (n : ℤ) :
   · exact W.natDegree_coeff_ΨSq_ofNat n
   · simpa only [ΨSq_neg, Int.natAbs_neg] using W.natDegree_coeff_ΨSq_ofNat n
 
-lemma natDegree_ΨSq (n : ℤ) :
-    (W.ΨSq n).natDegree ≤ n.natAbs ^ 2 - 1 :=
+lemma natDegree_ΨSq (n : ℤ) : (W.ΨSq n).natDegree ≤ n.natAbs ^ 2 - 1 :=
   (W.natDegree_coeff_ΨSq n).left
 
-lemma coeff_ΨSq (n : ℤ) :
-    (W.ΨSq n).coeff (n.natAbs ^ 2 - 1) = (n.natAbs ^ 2 : ℕ) :=
+lemma coeff_ΨSq (n : ℤ) : (W.ΨSq n).coeff (n.natAbs ^ 2 - 1) = (n.natAbs ^ 2 : ℕ) :=
   (W.natDegree_coeff_ΨSq n).right
 
 private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
