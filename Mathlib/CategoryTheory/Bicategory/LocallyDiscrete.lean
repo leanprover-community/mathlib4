@@ -154,13 +154,13 @@ end
 
 end CategoryTheory
 
-namespace Quiver.Hom
+section
 
 open CategoryTheory LocallyDiscrete
 
 universe v u
 
-section
+namespace Quiver.Hom
 
 variable {C : Type u} [CategoryStruct.{v} C]
 
@@ -178,11 +178,11 @@ lemma comp_toLoc {a b c : C} (f : a ⟶ b) (g : b ⟶ c) :
     (f ≫ g).toLoc = f.toLoc ≫ g.toLoc :=
   rfl
 
-end
+end Quiver.Hom
 
 @[simp]
-lemma eqToHom_toLoc {C : Type u} [Category.{v} C] {a b : C} (h : a = b) :
-    (eqToHom h).toLoc = eqToHom (congrArg LocallyDiscrete.mk h) := by
+lemma CategoryTheory.LocallyDiscrete.eqToHom_toLoc {C : Type u} [Category.{v} C] {a b : C}
+    (h : a = b) : (eqToHom h).toLoc = eqToHom (congrArg LocallyDiscrete.mk h) := by
   subst h; rfl
 
-end Quiver.Hom
+end
