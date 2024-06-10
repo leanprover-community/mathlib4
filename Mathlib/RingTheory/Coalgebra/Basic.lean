@@ -37,6 +37,26 @@ class CoalgebraStruct (R : Type u) (A : Type v)
   /-- The counit of the coalgebra -/
   counit : A →ₗ[R] R
 
+variable (R) in
+/--
+An representation of an element `a` of a coalgebra `A` is a finite sum of pure tensors `∑ xᵢ ⊗ yᵢ`
+that is equal to `comul a`.
+-/
+structure CoalgebraStruct.Repr (R : Type u) {A : Type v}
+    [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) where
+  {ι : Type*}
+  (index : Finset ι)
+  (left : ι → A)
+  (right : ι → A)
+  (eq : ∑ i ∈ index, left i ⊗ₜ[R] right i = comul a)
+
+variable (R) in
+/-- An arbitrarily chosen representation. -/
+def CoalgebraStruct.Repr.arbitrary (R : Type u) {A : Type v}
+    [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) : Repr R a where
+  index := TensorProduct.exists_finset (R := R) (comul a) |>.choose
+  eq := TensorProduct.exists_finset (R := R) (comul a) |>.choose_spec.symm
+
 namespace Coalgebra
 export CoalgebraStruct (comul counit)
 end Coalgebra
@@ -55,24 +75,6 @@ class Coalgebra (R : Type u) (A : Type v)
 namespace Coalgebra
 variable {R : Type u} {A : Type v}
 variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
-
-variable (R) in
-/--
-An representation of an element `a` of a coalgebra `A` is a finite sum of pure tensors `∑ xᵢ ⊗ yᵢ`
-that is equal to `comul a`.
--/
-structure Repr (a : A) where
-  {ι : Type*}
-  (index : Finset ι)
-  (left : ι → A)
-  (right : ι → A)
-  (eq : ∑ i ∈ index, left i ⊗ₜ[R] right i = comul a)
-
-variable (R) in
-/-- An arbitrarily chosen representation. -/
-def Repr.arbitrary (a : A) : Repr R a where
-  index := TensorProduct.exists_finset (R := R) (comul a) |>.choose
-  eq := TensorProduct.exists_finset (R := R) (comul a) |>.choose_spec.symm
 
 @[simp]
 theorem coassoc_apply (a : A) :
@@ -98,7 +100,7 @@ theorem rTensor_counit_comul (a : A) : counit.rTensor A (comul a) = 1 ⊗ₜ[R] 
 theorem lTensor_counit_comul (a : A) : counit.lTensor A (comul a) = a ⊗ₜ[R] 1 :=
   LinearMap.congr_fun lTensor_counit_comp_comul a
 
-open BigOperators
+open BigOperators CoalgebraStruct
 
 lemma sum_counit_tmul_eq {a : A} (repr : Repr R a) :
     ∑ i ∈ repr.index, counit (R := R) (repr.left i) ⊗ₜ (repr.right i) = 1 ⊗ₜ[R] a := by
@@ -215,7 +217,7 @@ namespace Finsupp
 variable (R : Type u) (ι : Type v) (A : Type w)
 variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
 
-open LinearMap
+open LinearMap CoalgebraStruct
 
 instance instCoalgebraStruct : CoalgebraStruct R (ι →₀ A) where
   comul := Finsupp.lsum R fun i =>

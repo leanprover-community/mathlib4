@@ -298,7 +298,11 @@ instance subsingleton_to_ring : Subsingleton (A →ₗc[R] R) :=
 theorem ext_to_ring (f g : A →ₗc[R] R) : f = g := Subsingleton.elim _ _
 
 variable {A B}
-def Repr.induced {a : A} (repr : Repr R a) {F : Type*} [FunLike F A B] [CoalgHomClass F R A B]
+/--
+If `φ : A → B` is a coalgebra map and `a = ∑ xᵢ ⊗ yᵢ`, then `φ a = ∑ φ xᵢ ⊗ φ yᵢ`
+-/
+@[simps]
+def _root_.CoalgebraStruct.Repr.induced {a : A} (repr : Repr R a) {F : Type*} [FunLike F A B] [CoalgHomClass F R A B]
     (φ : F) : Repr R (φ a) where
   index := repr.index
   left := φ ∘ repr.left
