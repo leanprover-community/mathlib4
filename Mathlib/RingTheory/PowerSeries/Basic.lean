@@ -661,10 +661,10 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 
 /-- Coefficients of a product of power series -/
 theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
-    coeff R d (∏ j ∈ s, f j) = ∑ l ∈ piAntidiagonal s d, ∏ i ∈ s, coeff R (l i) (f i) := by
+    coeff R d (∏ j ∈ s, f j) = ∑ l ∈ finsuppAntidiag s d, ∏ i ∈ s, coeff R (l i) (f i) := by
   simp only [coeff]
   convert MvPowerSeries.coeff_prod _ _ _
-  rw [← AddEquiv.finsuppUnique_symm d, ← mapRange_piAntidiagonal_eq, sum_map, sum_congr rfl]
+  rw [← AddEquiv.finsuppUnique_symm d, ← mapRange_finsuppAntidiag_eq, sum_map, sum_congr rfl]
   intro x _
   apply prod_congr rfl
   intro i _
