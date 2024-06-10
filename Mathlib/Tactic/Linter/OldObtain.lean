@@ -70,8 +70,7 @@ def oldObtainLinter : Linter where run := withSetOptionIn fun stx => do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-
-    if let some ((head, _)::_) := stx.findStack? (fun _ ↦ true) is_obtain_without_proof then
+    if let some head := stx.find? is_obtain_without_proof then
       Linter.logLint linter.oldObtain head m!"Please remove stream-of-conciousness `obtain` syntax"
 
 initialize addLinter oldObtainLinter
