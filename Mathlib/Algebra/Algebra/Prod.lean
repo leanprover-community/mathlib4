@@ -113,6 +113,6 @@ def prodMap {D : Type*} [Semiring D] [Algebra R D] (f : A →ₐ[R] B) (g : C �
     commutes' := fun r => by
       simp only [toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, Prod.algebraMap_apply,
         OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe, RingHom.coe_prodMap,
-        RingHom.coe_coe, Prod_map, commutes] }
+        RingHom.coe_coe, Prod.map_apply, commutes] }
 
 end AlgHom
