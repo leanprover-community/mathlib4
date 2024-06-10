@@ -186,6 +186,31 @@ noncomputable def scalarRTensorAlgEquiv :
     MvPolynomial σ R ⊗[R] N ≃ₐ[R] MvPolynomial σ N :=
   rTensorAlgEquiv.trans (mapAlgEquiv σ (Algebra.TensorProduct.lid R N))
 
+variable (A : Type*) [CommRing A] [Algebra R A]
+
+/-- Tensoring `MvPolynomial σ R` on the left by an `R`-algebra `A` is algebraically
+equivalent to `M̀vPolynomial σ A`. -/
+noncomputable def algebraTensorAlgEquiv :
+    A ⊗[R] MvPolynomial σ R ≃ₐ[A] MvPolynomial σ A := AlgEquiv.ofAlgHom
+  (Algebra.TensorProduct.lift
+    (Algebra.ofId A (MvPolynomial σ A))
+    (MvPolynomial.mapAlgHom <| Algebra.ofId R A) (fun _ _ ↦ Commute.all _ _))
+  (aeval (fun s ↦ 1 ⊗ₜ X s))
+  (by ext s; simp)
+  (by ext s; simp)
+
+@[simp]
+lemma algebraTensorAlgEquiv_apply (a : A) (s : σ) :
+    algebraTensorAlgEquiv (R := R) A (a ⊗ₜ X s) = a • X s := by
+  simp [algebraTensorAlgEquiv]
+  rw [Algebra.smul_def]
+  rfl
+
+@[simp]
+lemma algebraTensorAlgEquiv_symm_apply (s : σ) :
+    (algebraTensorAlgEquiv (R := R) A).symm (X s) = 1 ⊗ₜ X s := by
+  simp [algebraTensorAlgEquiv]
+
 end Algebra
 
 end MvPolynomial

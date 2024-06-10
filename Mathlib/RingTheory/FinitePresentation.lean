@@ -6,6 +6,10 @@ Authors: Johan Commelin
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.MvPolynomial.Tower
 import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.RingHomProperties
+import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.MvPolynomial
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 #align_import ring_theory.finite_presentation from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
@@ -29,7 +33,7 @@ set_option autoImplicit true
 
 open Function (Surjective)
 
-open Polynomial
+open Polynomial TensorProduct
 
 section ModuleAndAlgebra
 
@@ -401,6 +405,26 @@ theorem ker_fG_of_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
   simp_rw [RingHom.ker_eq_comap_bot, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom]
   rw [← Ideal.comap_comap, Ideal.map_comap_of_surjective (g : MvPolynomial (Fin n) R →+* A) hg]
 #align algebra.finite_presentation.ker_fg_of_surjective Algebra.FinitePresentation.ker_fG_of_surjective
+
+theorem baseChange (hfa : Algebra.FinitePresentation R A) :
+    Algebra.FinitePresentation B (B ⊗[R] A) := by
+  obtain ⟨n, f, hsurj, hfg⟩ := hfa
+  let g : B ⊗[R] MvPolynomial (Fin n) R →ₐ[B] B ⊗[R] A :=
+    Algebra.TensorProduct.map (AlgHom.id B B) f
+  have hgsurj : Function.Surjective g := Algebra.FiniteType.baseChangeAux_surj B hsurj
+  have hker_eq : RingHom.ker g = Ideal.map Algebra.TensorProduct.includeRight (RingHom.ker f) :=
+    Algebra.TensorProduct.lTensor_ker f hsurj
+  have hfgg : Ideal.FG (RingHom.ker g) := by
+    rw [hker_eq]
+    exact Ideal.FG.map hfg _
+  let g' : MvPolynomial (Fin n) B →ₐ[B] B ⊗[R] A :=
+    AlgHom.comp g (MvPolynomial.algebraTensorAlgEquiv B).symm.toAlgHom
+  refine ⟨n, g', ?_, Ideal.fg_ker_comp _ _ ?_ hfgg ?_⟩
+  · simp_all [g, g']
+  · show Ideal.FG (RingHom.ker (AlgEquiv.symm (MvPolynomial.algebraTensorAlgEquiv B)))
+    simp only [RingHom.ker_equiv]
+    exact Submodule.fg_bot
+  · simpa using EquivLike.surjective _
 
 end FinitePresentation
 
