@@ -115,6 +115,7 @@ import Mathlib.Tactic.Linter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.Lint
+import Mathlib.Tactic.Linter.UnusedSetOptionIn
 import Mathlib.Tactic.Measurability
 import Mathlib.Tactic.Measurability.Init
 import Mathlib.Tactic.MkIffOfInductiveProp
@@ -204,6 +205,7 @@ import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.UnsetOption
+import Mathlib.Tactic.UpdateDeprecations
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.Variable
 import Mathlib.Tactic.WLOG
