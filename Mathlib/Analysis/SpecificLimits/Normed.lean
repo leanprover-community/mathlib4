@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Sébastien Gouëzel, Yury G. Kudryashov, Dylan MacKen
 -/
 import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Order.Filter.ModEq
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
