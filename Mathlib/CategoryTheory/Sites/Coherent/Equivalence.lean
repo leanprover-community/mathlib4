@@ -64,8 +64,9 @@ The coherent sheaf condition on an essentially small site can be checked after p
 the equivalence with a small category.
 -/
 theorem precoherent_isSheaf_iff_of_essentiallySmall [EssentiallySmall C] (F : Cᵒᵖ ⥤ A) :
-    IsSheaf (coherentTopology C) F ↔ IsSheaf (coherentTopology (SmallModel C))
-    ((equivSmallModel C).inverse.op ⋙ F) := precoherent_isSheaf_iff _ _ _
+    IsSheaf (coherentTopology C) F ↔
+      IsSheaf (coherentTopology (SmallModel C)) ((equivSmallModel C).inverse.op ⋙ F) :=
+  precoherent_isSheaf_iff _ _ _
 
 end Coherent
 

@@ -25,15 +25,15 @@ theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.cent
   comm _:= by rw [Nat.commute_cast]
   left_assoc _ _ := by
     induction n with
-    | zero => rw [Nat.zero_eq, Nat.cast_zero, zero_mul, zero_mul, zero_mul]
+    | zero => rw [Nat.cast_zero, zero_mul, zero_mul, zero_mul]
     | succ n ihn => rw [Nat.cast_succ, add_mul, one_mul, ihn, add_mul, add_mul, one_mul]
   mid_assoc _ _ := by
     induction n with
-    | zero => rw [Nat.zero_eq, Nat.cast_zero, zero_mul, mul_zero, zero_mul]
+    | zero => rw [Nat.cast_zero, zero_mul, mul_zero, zero_mul]
     | succ n ihn => rw [Nat.cast_succ, add_mul, mul_add, add_mul, ihn, mul_add, one_mul, mul_one]
   right_assoc _ _ := by
     induction n with
-    | zero => rw [Nat.zero_eq, Nat.cast_zero, mul_zero, mul_zero, mul_zero]
+    | zero => rw [Nat.cast_zero, mul_zero, mul_zero, mul_zero]
     | succ n ihn => rw [Nat.cast_succ, mul_add, ihn, mul_add, mul_add, mul_one, mul_one]
 
 -- See note [no_index around OfNat.ofNat]

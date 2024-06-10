@@ -3,9 +3,9 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.List.Basic
+import Mathlib.Algebra.BigOperators.Group.List
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Units
-import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import algebra.free_monoid.basic from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
@@ -75,8 +75,7 @@ theorem ofList_comp_toList : @ofList α ∘ toList = id := rfl
 #align free_add_monoid.of_list_comp_to_list FreeAddMonoid.ofList_comp_toList
 
 @[to_additive]
-instance : CancelMonoid (FreeMonoid α)
-    where
+instance : CancelMonoid (FreeMonoid α) where
   one := ofList []
   mul x y := ofList (toList x ++ toList y)
   mul_one := List.append_nil
@@ -310,8 +309,7 @@ theorem of_smul (f : α → β → β) (x : α) (y : β) :
 each `of x` to `of (f x)`. -/
 @[to_additive "The unique additive monoid homomorphism `FreeAddMonoid α →+ FreeAddMonoid β`
 that sends each `of x` to `of (f x)`."]
-def map (f : α → β) : FreeMonoid α →* FreeMonoid β
-    where
+def map (f : α → β) : FreeMonoid α →* FreeMonoid β where
   toFun l := ofList <| l.toList.map f
   map_one' := rfl
   map_mul' _ _ := List.map_append _ _ _

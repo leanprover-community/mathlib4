@@ -3,7 +3,7 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.GroupTheory.Submonoid.Center
 
 #align_import group_theory.subgroup.basic from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
@@ -82,7 +82,7 @@ instance decidableMemCenter (z : G) [Decidable (∀ g, g * z = z * g)] : Decidab
 
 @[to_additive]
 instance centerCharacteristic : (center G).Characteristic := by
-  refine' characteristic_iff_comap_le.mpr fun ϕ g hg => _
+  refine characteristic_iff_comap_le.mpr fun ϕ g hg => ?_
   rw [mem_center_iff]
   intro h
   rw [← ϕ.injective.eq_iff, ϕ.map_mul, ϕ.map_mul]

@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Kyle Miller All rights reserved.
+Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
@@ -28,6 +28,8 @@ needs a fleshed-out interface.
 symmetric powers
 
 -/
+
+assert_not_exists MonoidWithZero
 
 set_option autoImplicit true
 
@@ -60,8 +62,7 @@ instance [DecidableEq α] : DecidableEq (Sym α n) :=
 
 See note [reducible non-instances].
 -/
-@[reducible]
-def Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :=
+abbrev Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :=
   (List.isSetoid α).comap Subtype.val
 #align vector.perm.is_setoid Vector.Perm.isSetoid
 
@@ -269,6 +270,8 @@ theorem cons_equiv_eq_equiv_cons (α : Type*) (n : ℕ) (a : α) (s : Sym α n) 
 instance instZeroSym : Zero (Sym α 0) :=
   ⟨⟨0, rfl⟩⟩
 
+@[simp] theorem toMultiset_zero : toMultiset (0 : Sym α 0) = 0 := rfl
+
 instance : EmptyCollection (Sym α 0) :=
   ⟨0⟩
 
@@ -440,7 +443,7 @@ def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n where
 /-- "Attach" a proof that `a ∈ s` to each element `a` in `s` to produce
 an element of the symmetric power on `{x // x ∈ s}`. -/
 def attach (s : Sym α n) : Sym { x // x ∈ s } n :=
-  ⟨s.val.attach, by conv_rhs => rw [← s.2, ← Multiset.card_attach]⟩
+  ⟨s.val.attach, by (conv_rhs => rw [← s.2, ← Multiset.card_attach]); rfl⟩
 #align sym.attach Sym.attach
 
 @[simp]
@@ -560,7 +563,7 @@ Yields the number of copies `i` and a term of `Sym α (n - i)`. -/
 def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σi : Fin (n + 1), Sym α (n - i) :=
   ⟨⟨m.1.count a, (count_le_card _ _).trans_lt <| by rw [m.2, Nat.lt_succ_iff]⟩,
     m.1.filter (a ≠ ·),
-    eq_tsub_of_add_eq <|
+    Nat.eq_sub_of_add_eq <|
       Eq.trans
         (by
           rw [← countP_eq_card_filter, add_comm]
@@ -686,9 +689,9 @@ theorem encode_decode [DecidableEq α] (s : Sum (Sym (Option α) n) (Sym α n.su
     split_ifs with h
     · obtain ⟨a, _, ha⟩ := Multiset.mem_map.mp h
       exact Option.some_ne_none _ ha
-    · refine' congr_arg Sum.inr _
-      refine' map_injective (Option.some_injective _) _ _
-      refine' Eq.trans _ (.trans (SymOptionSuccEquiv.decode (Sum.inr s)).attach_map_coe _) <;> simp
+    · refine congr_arg Sum.inr ?_
+      refine map_injective (Option.some_injective _) _ ?_
+      refine Eq.trans ?_ (.trans (SymOptionSuccEquiv.decode (Sum.inr s)).attach_map_coe ?_) <;> simp
 #align sym_option_succ_equiv.encode_decode SymOptionSuccEquiv.encode_decode
 
 end SymOptionSuccEquiv

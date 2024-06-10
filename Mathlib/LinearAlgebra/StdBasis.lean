@@ -37,8 +37,6 @@ this is a basis over `Fin 3 → R`.
 
 open Function Set Submodule
 
-open BigOperators
-
 namespace LinearMap
 
 variable (R : Type*) {ι : Type*} [Semiring R] (φ : ι → Type*) [∀ i, AddCommMonoid (φ i)]
@@ -97,7 +95,7 @@ theorem proj_stdBasis_ne (i j : ι) (h : i ≠ j) : (proj i).comp (stdBasis R φ
 
 theorem iSup_range_stdBasis_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
     ⨆ i ∈ I, range (stdBasis R φ i) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
-  refine' iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 _
+  refine iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 ?_
   simp only [← ker_comp, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
   rintro b - j hj
   rw [proj_stdBasis_ne R φ j i, zero_apply]
@@ -112,7 +110,7 @@ theorem iInf_ker_proj_le_iSup_range_stdBasis {I : Finset ι} {J : Set ι} (hu : 
       intro b hb
       simp only [mem_iInf, mem_ker, proj_apply] at hb
       rw [←
-        show (∑ i in I, stdBasis R φ i (b i)) = b by
+        show (∑ i ∈ I, stdBasis R φ i (b i)) = b by
           ext i
           rw [Finset.sum_apply, ← stdBasis_same R φ i (b i)]
           refine Finset.sum_eq_single i (fun j _ ne => stdBasis_ne _ _ _ _ ne.symm _) ?_
@@ -125,9 +123,9 @@ theorem iInf_ker_proj_le_iSup_range_stdBasis {I : Finset ι} {J : Set ι} (hu : 
 theorem iSup_range_stdBasis_eq_iInf_ker_proj {I J : Set ι} (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) (hI : Set.Finite I) :
     ⨆ i ∈ I, range (stdBasis R φ i) = ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
-  refine' le_antisymm (iSup_range_stdBasis_le_iInf_ker_proj _ _ _ _ hd) _
+  refine le_antisymm (iSup_range_stdBasis_le_iInf_ker_proj _ _ _ _ hd) ?_
   have : Set.univ ⊆ ↑hI.toFinset ∪ J := by rwa [hI.coe_toFinset]
-  refine' le_trans (iInf_ker_proj_le_iSup_range_stdBasis R φ this) (iSup_mono fun i => _)
+  refine le_trans (iInf_ker_proj_le_iSup_range_stdBasis R φ this) (iSup_mono fun i => ?_)
   rw [Set.Finite.mem_toFinset]
 #align linear_map.supr_range_std_basis_eq_infi_ker_proj LinearMap.iSup_range_stdBasis_eq_iInf_ker_proj
 
@@ -141,9 +139,9 @@ theorem iSup_range_stdBasis [Finite ι] : ⨆ i, range (stdBasis R φ i) = ⊤ :
 
 theorem disjoint_stdBasis_stdBasis (I J : Set ι) (h : Disjoint I J) :
     Disjoint (⨆ i ∈ I, range (stdBasis R φ i)) (⨆ i ∈ J, range (stdBasis R φ i)) := by
-  refine'
+  refine
     Disjoint.mono (iSup_range_stdBasis_le_iInf_ker_proj _ _ _ _ <| disjoint_compl_right)
-      (iSup_range_stdBasis_le_iInf_ker_proj _ _ _ _ <| disjoint_compl_right) _
+      (iSup_range_stdBasis_le_iInf_ker_proj _ _ _ _ <| disjoint_compl_right) ?_
   simp only [disjoint_iff_inf_le, SetLike.le_def, mem_iInf, mem_inf, mem_ker, mem_bot, proj_apply,
     funext_iff]
   rintro b ⟨hI, hJ⟩ i
@@ -181,25 +179,25 @@ theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i,
     intro j
     exact (hs j).map' _ (ker_stdBasis _ _ _)
   apply linearIndependent_iUnion_finite hs'
-  · intro j J _ hiJ
-    have h₀ :
-      ∀ j, span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
-        LinearMap.range (stdBasis R Ms j) := by
-      intro j
-      rw [span_le, LinearMap.range_coe]
-      apply range_comp_subset_range
-    have h₁ :
-      span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
-        ⨆ i ∈ ({j} : Set _), LinearMap.range (stdBasis R Ms i) := by
-      rw [@iSup_singleton _ _ _ fun i => LinearMap.range (stdBasis R (Ms) i)]
-      apply h₀
-    have h₂ :
-      ⨆ j ∈ J, span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
-        ⨆ j ∈ J, LinearMap.range (stdBasis R (fun j : η => Ms j) j) :=
-      iSup₂_mono fun i _ => h₀ i
-    have h₃ : Disjoint (fun i : η => i ∈ ({j} : Set _)) J := by
-      convert Set.disjoint_singleton_left.2 hiJ using 0
-    exact (disjoint_stdBasis_stdBasis _ _ _ _ h₃).mono h₁ h₂
+  intro j J _ hiJ
+  have h₀ :
+    ∀ j, span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
+      LinearMap.range (stdBasis R Ms j) := by
+    intro j
+    rw [span_le, LinearMap.range_coe]
+    apply range_comp_subset_range
+  have h₁ :
+    span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
+      ⨆ i ∈ ({j} : Set _), LinearMap.range (stdBasis R Ms i) := by
+    rw [@iSup_singleton _ _ _ fun i => LinearMap.range (stdBasis R (Ms) i)]
+    apply h₀
+  have h₂ :
+    ⨆ j ∈ J, span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
+      ⨆ j ∈ J, LinearMap.range (stdBasis R (fun j : η => Ms j) j) :=
+    iSup₂_mono fun i _ => h₀ i
+  have h₃ : Disjoint (fun i : η => i ∈ ({j} : Set _)) J := by
+    convert Set.disjoint_singleton_left.2 hiJ using 0
+  exact (disjoint_stdBasis_stdBasis _ _ _ _ h₃).mono h₁ h₂
 #align pi.linear_independent_std_basis Pi.linearIndependent_stdBasis
 
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]

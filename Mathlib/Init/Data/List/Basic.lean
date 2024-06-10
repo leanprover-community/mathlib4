@@ -5,9 +5,9 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Notation
-import Std.Data.List.Basic
+import Batteries.Data.List.Basic
 /-!
-Definitions for `List` not (yet) in `Std`
+Definitions for `List` not (yet) in `Batteries`
 -/
 
 set_option autoImplicit true
@@ -19,20 +19,7 @@ universe u v w
 
 namespace List
 
-
-
-open Option Nat
-
 #align list.nth List.get?
-
-/-- nth element of a list `l` given `n < l.length`. -/
-@[deprecated get] -- 2023-01-05
-def nthLe (l : List α) (n) (h : n < l.length) : α := get l ⟨n, h⟩
-#align list.nth_le List.nthLe
-
-set_option linter.deprecated false in
-@[deprecated] -- 2023-01-05
-theorem nthLe_eq (l : List α) (n) (h : n < l.length) : nthLe l n h = get l ⟨n, h⟩ := rfl
 
 /-- The head of a list, or the default element of the type is the list is `nil`. -/
 def headI [Inhabited α] : List α → α
@@ -70,7 +57,8 @@ def getLastI [Inhabited α] : List α → α
 #align list.init List.dropLast
 
 /-- List with a single given element. -/
-@[inline, deprecated List.pure] protected def ret {α : Type u} (a : α) : List α := [a] -- 2024-03-24
+@[inline, deprecated List.pure (since := "2024-03-24")]
+protected def ret {α : Type u} (a : α) : List α := [a]
 #align list.ret List.pure
 
 /-- `≤` implies not `>` for lists. -/

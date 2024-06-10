@@ -236,7 +236,7 @@ theorem Balanced.smul_mem_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a
   ⟨(hs.smul_mem_mono · h.ge), (hs.smul_mem_mono · h.le)⟩
 #align balanced.mem_smul_iff Balanced.smul_mem_iff
 
-@[deprecated] alias Balanced.mem_smul_iff := Balanced.smul_mem_iff -- since 2024-02-02
+@[deprecated (since := "2024-02-02")] alias Balanced.mem_smul_iff := Balanced.smul_mem_iff
 
 variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
@@ -252,7 +252,7 @@ theorem Balanced.zero_insert_interior (hA : Balanced 𝕜 A) :
   intro a ha
   obtain rfl | h := eq_or_ne a 0
   · rw [zero_smul_set]
-    exacts [subset_union_left _ _, ⟨0, Or.inl rfl⟩]
+    exacts [subset_union_left, ⟨0, Or.inl rfl⟩]
   · rw [← image_smul, image_insert_eq, smul_zero]
     apply insert_subset_insert
     exact ((isOpenMap_smul₀ h).mapsTo_interior <| hA.smul_mem ha).image_subset
@@ -280,7 +280,7 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
-@[deprecated Absorbent.zero_mem] -- Since 2024-02-02
+@[deprecated Absorbent.zero_mem (since := "2024-02-02")]
 theorem Absorbent.zero_mem' (hs : Absorbent 𝕜 s) : (0 : E) ∈ s := hs.zero_mem
 
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
@@ -288,14 +288,14 @@ variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull ℝ s) := by
   suffices Convex ℝ { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull ℝ s } by
     rw [balanced_iff_smul_mem] at hs ⊢
-    refine' fun a ha x hx => convexHull_min _ this hx a ha
+    refine fun a ha x hx => convexHull_min ?_ this hx a ha
     exact fun y hy a ha => subset_convexHull ℝ s (hs ha hy)
   intro x hx y hy u v hu hv huv a ha
   simp only [smul_add, ← smul_comm]
   exact convex_convexHull ℝ s (hx a ha) (hy a ha) hu hv huv
 #align balanced_convex_hull_of_balanced Balanced.convexHull
 
-@[deprecated] alias balanced_convexHull_of_balanced := Balanced.convexHull -- Since 2024-02-02
+@[deprecated (since := "2024-02-02")] alias balanced_convexHull_of_balanced := Balanced.convexHull
 
 end NontriviallyNormedField
 
@@ -304,7 +304,7 @@ section Real
 variable [AddCommGroup E] [Module ℝ E] {s : Set E}
 
 theorem balanced_iff_neg_mem (hs : Convex ℝ s) : Balanced ℝ s ↔ ∀ ⦃x⦄, x ∈ s → -x ∈ s := by
-  refine' ⟨fun h x => h.neg_mem_iff.2, fun h a ha => smul_set_subset_iff.2 fun x hx => _⟩
+  refine ⟨fun h x => h.neg_mem_iff.2, fun h a ha => smul_set_subset_iff.2 fun x hx => ?_⟩
   rw [Real.norm_eq_abs, abs_le] at ha
   rw [show a = -((1 - a) / 2) + (a - -1) / 2 by ring, add_smul, neg_smul, ← smul_neg]
   exact hs (h hx) hx (div_nonneg (sub_nonneg_of_le ha.2) zero_le_two)

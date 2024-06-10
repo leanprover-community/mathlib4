@@ -23,7 +23,7 @@ such as being nilpotent, having determinant equal to 0, having a non-trivial ker
   equivalent characterizations of endomorphisms with eigenvalue 0
 * `LinearMap.not_hasEigenvalue_zero_tfae`:
   endomorphisms without eigenvalue 0
-* `LinearMap.finrank_maximalGeneralizedEigenspace`:
+* `LinearMap.finrank_maxGenEigenspace`:
   the dimension of the maximal generalized eigenspace of an endomorphism
   is the trailing degree of its characteristic polynomial
 
@@ -69,10 +69,7 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
     rw [← mem_ker] at hk
     exact Submodule.mem_iSup_of_mem _ hk
   tfae_have 2 ↔ 4
-  · rw [← φ.charpoly_natDegree]
-    refine ⟨?_, φ.charpoly_monic.eq_X_pow_of_natTrailingDegree_eq_natDegree⟩
-    intro h
-    rw [← natTrailingDegree_X_pow (R := R) φ.charpoly.natDegree, ← h]
+  · rw [← φ.charpoly_natDegree, φ.charpoly_monic.eq_X_pow_iff_natTrailingDegree_eq_natDegree]
   tfae_finish
 
 lemma charpoly_eq_X_pow_iff [IsNoetherian R M] (φ : Module.End R M) :
@@ -134,17 +131,17 @@ lemma not_hasEigenvalue_zero_tfae (φ : Module.End K M) :
   simpa only [aux₁, aux₂] using this
 
 open Module.Free in
-lemma finrank_maximalGeneralizedEigenspace (φ : Module.End K M) :
-    finrank K (φ.maximalGeneralizedEigenspace 0) = natTrailingDegree (φ.charpoly) := by
-  set V := φ.maximalGeneralizedEigenspace 0
+lemma finrank_maxGenEigenspace (φ : Module.End K M) :
+    finrank K (φ.maxGenEigenspace 0) = natTrailingDegree (φ.charpoly) := by
+  set V := φ.maxGenEigenspace 0
   have hV : V = ⨆ (n : ℕ), ker (φ ^ n) := by
-    simp [V, Module.End.maximalGeneralizedEigenspace, Module.End.generalizedEigenspace]
+    simp [V, Module.End.maxGenEigenspace, Module.End.genEigenspace]
   let W := ⨅ (n : ℕ), LinearMap.range (φ ^ n)
   have hVW : IsCompl V W := by
     rw [hV]
     exact LinearMap.isCompl_iSup_ker_pow_iInf_range_pow φ
   have hφV : ∀ x ∈ V, φ x ∈ V := by
-    simp only [V, Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero,
+    simp only [V, Module.End.mem_maxGenEigenspace, zero_smul, sub_zero,
       forall_exists_index]
     intro x n hx
     use n
@@ -179,13 +176,13 @@ lemma finrank_maximalGeneralizedEigenspace (φ : Module.End K M) :
     apply Subtype.ext
     suffices x.1 ∈ V ⊓ W by rwa [hVW.inf_eq_bot, Submodule.mem_bot] at this
     suffices x.1 ∈ V from ⟨this, x.2⟩
-    simp only [Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero, V]
+    simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero, V]
     use 1
     rw [pow_one]
     rwa [Subtype.ext_iff] at hx
   rw [hG, add_zero, eq_comm]
   apply ((charpoly_nilpotent_tfae F).out 2 3).mp
-  simp only [Subtype.forall, Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero, V, F]
+  simp only [Subtype.forall, Module.End.mem_maxGenEigenspace, zero_smul, sub_zero, V, F]
   rintro x ⟨n, hx⟩
   use n
   apply Subtype.ext

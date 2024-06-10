@@ -60,13 +60,14 @@ def HomAsType := ShrinkHoms (ObjAsType α)
 instance : LocallySmall.{0} (ObjAsType α) where
   hom_small _ _ := inferInstance
 
-instance : SmallCategory (HomAsType α) := ShrinkHoms.instCategoryShrinkHoms.{0} _
+instance : SmallCategory (HomAsType α) := inferInstanceAs <| SmallCategory (ShrinkHoms _)
 
 instance : Countable (HomAsType α) := Countable.of_equiv α (equivShrink.{0} α)
 
 instance {i j : HomAsType α} : Countable (i ⟶ j) :=
   Countable.of_equiv ((ShrinkHoms.equivalence _).inverse.obj i ⟶
-    (ShrinkHoms.equivalence _).inverse.obj j) (equivOfFullyFaithful _).symm
+    (ShrinkHoms.equivalence _).inverse.obj j)
+    (Functor.FullyFaithful.ofFullyFaithful _).homEquiv.symm
 
 instance : CountableCategory (HomAsType α) where
 
