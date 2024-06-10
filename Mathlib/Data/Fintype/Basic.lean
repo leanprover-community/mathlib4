@@ -322,8 +322,8 @@ theorem univ_filter_mem_range (f : α → β) [Fintype β] [DecidablePred fun y 
   exact univ_filter_exists f
 #align finset.univ_filter_mem_range Finset.univ_filter_mem_range
 
-theorem coe_filter_univ (p : α → Prop) [DecidablePred p] : (univ.filter p : Set α) = { x | p x } :=
-  by simp
+theorem coe_filter_univ (p : α → Prop) [DecidablePred p] :
+    (univ.filter p : Set α) = { x | p x } := by simp
 #align finset.coe_filter_univ Finset.coe_filter_univ
 
 @[simp] lemma subtype_eq_univ {p : α → Prop} [DecidablePred p] [Fintype {a // p a}] :
@@ -840,8 +840,8 @@ theorem Fin.image_castSucc (n : ℕ) :
 /-- Embed `Fin n` into `Fin (n + 1)` by prepending zero to the `univ` -/
 theorem Fin.univ_succ (n : ℕ) :
     (univ : Finset (Fin (n + 1))) =
-      Finset.cons 0 (univ.map ⟨Fin.succ, Fin.succ_injective _⟩) (by simp [map_eq_image]) :=
-  by simp [map_eq_image]
+      Finset.cons 0 (univ.map ⟨Fin.succ, Fin.succ_injective _⟩) (by simp [map_eq_image]) := by
+  simp [map_eq_image]
 #align fin.univ_succ Fin.univ_succ
 
 /-- Embed `Fin n` into `Fin (n + 1)` by appending a new `Fin.last n` to the `univ` -/

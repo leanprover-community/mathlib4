@@ -309,8 +309,8 @@ theorem sup_set_eq_biUnion (s : Finset α) (f : α → Set β) : s.sup f = ⋃ x
 #align finset.sup_set_eq_bUnion Finset.sup_set_eq_biUnion
 
 theorem sup_eq_sSup_image [CompleteLattice β] (s : Finset α) (f : α → β) :
-    s.sup f = sSup (f '' s) :=
-  by classical rw [← Finset.coe_image, ← sup_id_eq_sSup, sup_image, Function.id_comp]
+    s.sup f = sSup (f '' s) := by
+  classical rw [← Finset.coe_image, ← sup_id_eq_sSup, sup_image, Function.id_comp]
 #align finset.sup_eq_Sup_image Finset.sup_eq_sSup_image
 
 /-! ### inf -/
@@ -848,7 +848,7 @@ theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a := by
 
 theorem sup'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty)
     (f : β → α) :
-    (s₁ ∪ s₂).sup' (h₁.mono <| subset_union_left _ _) f = s₁.sup' h₁ f ⊔ s₂.sup' h₂ f :=
+    (s₁ ∪ s₂).sup' (h₁.mono subset_union_left) f = s₁.sup' h₁ f ⊔ s₂.sup' h₂ f :=
   eq_of_forall_ge_iff fun a => by simp [or_imp, forall_and]
 #align finset.sup'_union Finset.sup'_union
 
@@ -886,7 +886,7 @@ lemma prodMk_sup'_sup' (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → α) (g : 
     exact ⟨by aesop, fun h ↦ ⟨fun i hi ↦ (h _ _ hi hb).1, fun j hj ↦ (h _ _ ha hj).2⟩⟩
 
 /-- See also `Finset.prodMk_sup'_sup'`. -/
--- @[simp] -- TODO: Why does `Prod_map` simplify the LHS?
+-- @[simp] -- TODO: Why does `Prod.map_apply` simplify the LHS?
 lemma sup'_prodMap (hst : (s ×ˢ t).Nonempty) (f : ι → α) (g : κ → β) :
     sup' (s ×ˢ t) hst (Prod.map f g) = (sup' s hst.fst f, sup' t hst.snd g) :=
   (prodMk_sup'_sup' _ _ _ _).symm
@@ -897,13 +897,11 @@ theorem sup'_induction {p : α → Prop} (hp : ∀ a₁, p a₁ → ∀ a₂, p 
     (hs : ∀ b ∈ s, p (f b)) : p (s.sup' H f) := by
   show @WithBot.recBotCoe α (fun _ => Prop) True p ↑(s.sup' H f)
   rw [coe_sup']
-  refine sup_induction trivial ?_ hs
-  rintro (_ | a₁) h₁ a₂ h₂
-  · rw [WithBot.none_eq_bot, bot_sup_eq]
-    exact h₂
-  · cases a₂ using WithBot.recBotCoe with
-    | bot => exact h₁
-    | coe a₂ => exact hp a₁ h₁ a₂ h₂
+  refine sup_induction trivial (fun a₁ h₁ a₂ h₂ ↦ ?_) hs
+  match a₁, a₂ with
+  | ⊥, _ => rwa [bot_sup_eq]
+  | (a₁ : α), ⊥ => rwa [sup_bot_eq]
+  | (a₁ : α), (a₂ : α) => exact hp a₁ h₁ a₂ h₂
 #align finset.sup'_induction Finset.sup'_induction
 
 theorem sup'_mem (s : Set α) (w : ∀ᵉ (x ∈ s) (y ∈ s), x ⊔ y ∈ s) {ι : Type*}
@@ -1043,7 +1041,7 @@ theorem inf'_const (a : α) : (s.inf' H fun _ => a) = a :=
 
 theorem inf'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty)
     (f : β → α) :
-    (s₁ ∪ s₂).inf' (h₁.mono <| subset_union_left _ _) f = s₁.inf' h₁ f ⊓ s₂.inf' h₂ f :=
+    (s₁ ∪ s₂).inf' (h₁.mono subset_union_left) f = s₁.inf' h₁ f ⊓ s₂.inf' h₂ f :=
   @sup'_union αᵒᵈ _ _ _ _ _ h₁ h₂ _
 #align finset.inf'_union Finset.inf'_union
 
@@ -1077,7 +1075,7 @@ lemma prodMk_inf'_inf' (hs : s.Nonempty) (ht : t.Nonempty) (f : ι → α) (g : 
   prodMk_sup'_sup' (α := αᵒᵈ) (β := βᵒᵈ) hs ht _ _
 
 /-- See also `Finset.prodMk_inf'_inf'`. -/
--- @[simp] -- TODO: Why does `Prod_map` simplify the LHS?
+-- @[simp] -- TODO: Why does `Prod.map_apply` simplify the LHS?
 lemma inf'_prodMap (hst : (s ×ˢ t).Nonempty) (f : ι → α) (g : κ → β) :
     inf' (s ×ˢ t) hst (Prod.map f g) = (inf' s hst.fst f, inf' t hst.snd g) :=
   (prodMk_inf'_inf' _ _ _ _).symm
@@ -1251,8 +1249,9 @@ theorem sup'_inf_distrib_left (f : ι → α) (a : α) :
   | cons _ _ _ hs ih => simp_rw [sup'_cons hs, inf_sup_left, ih]
 #align finset.sup'_inf_distrib_left Finset.sup'_inf_distrib_left
 
-theorem sup'_inf_distrib_right (f : ι → α) (a : α) : s.sup' hs f ⊓ a = s.sup' hs fun i => f i ⊓ a :=
-  by rw [inf_comm, sup'_inf_distrib_left]; simp_rw [inf_comm]
+theorem sup'_inf_distrib_right (f : ι → α) (a : α) :
+    s.sup' hs f ⊓ a = s.sup' hs fun i => f i ⊓ a := by
+  rw [inf_comm, sup'_inf_distrib_left]; simp_rw [inf_comm]
 #align finset.sup'_inf_distrib_right Finset.sup'_inf_distrib_right
 
 theorem sup'_inf_sup' (f : ι → α) (g : κ → α) :
@@ -2097,8 +2096,8 @@ theorem iSup_singleton (a : α) (s : α → β) : ⨆ x ∈ ({a} : Finset α), s
 theorem iInf_singleton (a : α) (s : α → β) : ⨅ x ∈ ({a} : Finset α), s x = s a := by simp
 #align finset.infi_singleton Finset.iInf_singleton
 
-theorem iSup_option_toFinset (o : Option α) (f : α → β) : ⨆ x ∈ o.toFinset, f x = ⨆ x ∈ o, f x :=
-  by simp
+theorem iSup_option_toFinset (o : Option α) (f : α → β) : ⨆ x ∈ o.toFinset, f x = ⨆ x ∈ o, f x := by
+  simp
 #align finset.supr_option_to_finset Finset.iSup_option_toFinset
 
 theorem iInf_option_toFinset (o : Option α) (f : α → β) : ⨅ x ∈ o.toFinset, f x = ⨅ x ∈ o, f x :=

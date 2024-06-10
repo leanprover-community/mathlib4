@@ -210,8 +210,8 @@ theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : W₁ 
     [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] [H.PreservesZeroMorphisms]
     (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.mapHomologicalComplex (α ≫ β) c =
-      NatTrans.mapHomologicalComplex α c ≫ NatTrans.mapHomologicalComplex β c :=
-  by aesop_cat
+      NatTrans.mapHomologicalComplex α c ≫ NatTrans.mapHomologicalComplex β c := by
+  aesop_cat
 #align category_theory.nat_trans.map_homological_complex_comp CategoryTheory.NatTrans.mapHomologicalComplex_comp
 
 @[reassoc (attr := simp 1100)]
@@ -219,8 +219,8 @@ theorem NatTrans.mapHomologicalComplex_naturality {c : ComplexShape ι} {F G : W
     [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms]
     (α : F ⟶ G) {C D : HomologicalComplex W₁ c} (f : C ⟶ D) :
     (F.mapHomologicalComplex c).map f ≫ (NatTrans.mapHomologicalComplex α c).app D =
-      (NatTrans.mapHomologicalComplex α c).app C ≫ (G.mapHomologicalComplex c).map f :=
-  by aesop_cat
+      (NatTrans.mapHomologicalComplex α c).app C ≫ (G.mapHomologicalComplex c).map f := by
+  aesop_cat
 #align category_theory.nat_trans.map_homological_complex_naturality CategoryTheory.NatTrans.mapHomologicalComplex_naturality
 
 /-- A natural isomorphism between functors induces a natural isomorphism
@@ -275,6 +275,10 @@ end ChainComplex
 variable [HasZeroObject W₁] [HasZeroObject W₂]
 
 namespace HomologicalComplex
+
+instance (W : Type*) [Category W] [Preadditive W] [HasZeroObject W] [DecidableEq ι] (j : ι) :
+    (single W c j).Additive where
+  map_add {_ _ f g} := by ext; simp [single]
 
 variable (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
     (c : ComplexShape ι) [DecidableEq ι]

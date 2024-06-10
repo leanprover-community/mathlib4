@@ -455,6 +455,17 @@ theorem not_isReal_of_mk_isComplex {φ : K →+* ℂ} (h : IsComplex (mk φ)) :
 define it, see `card_filter_mk_eq`. -/
 noncomputable def mult (w : InfinitePlace K) : ℕ := if (IsReal w) then 1 else 2
 
+theorem mult_pos {w : InfinitePlace K} : 0 < mult w := by
+  rw [mult]
+  split_ifs <;> norm_num
+
+@[simp]
+theorem mult_ne_zero {w : InfinitePlace K} : mult w ≠ 0 := ne_of_gt mult_pos
+
+theorem one_le_mult {w : InfinitePlace K} : (1 : ℝ) ≤ mult w := by
+  rw [← Nat.cast_one, Nat.cast_le]
+  exact mult_pos
+
 theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) :
     (Finset.univ.filter fun φ => mk φ = w).card = mult w := by
   conv_lhs =>
@@ -890,8 +901,7 @@ lemma even_nat_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified
     Even (Nat.card <| K ≃ₐ[k] K) := by
   by_cases H : Finite (K ≃ₐ[k] K)
   · cases nonempty_fintype (K ≃ₐ[k] K)
-    rw [even_iff_two_dvd, Nat.card_eq_fintype_card,
-      ← not_isUnramified_iff_card_stabilizer_eq_two.mp hw, Nat.card_eq_fintype_card]
+    rw [even_iff_two_dvd, ← not_isUnramified_iff_card_stabilizer_eq_two.mp hw]
     exact Subgroup.card_subgroup_dvd_card (Stab w)
   · convert even_zero
     by_contra e
