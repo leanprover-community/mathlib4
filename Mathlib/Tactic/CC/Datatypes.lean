@@ -191,7 +191,7 @@ Example: given `e₁ := a*a*a*a*b*b*c*d*d*d` and `e₂ := a*a*a*b*b*d`,
 the result is `#[a, c, d, d]`
 
 Precondition: `e₂.isSubset e₁` -/
-def ACApps.diff (e₁ e₂ : ACApps) (r : Array Expr) : Array Expr :=
+def ACApps.diff (e₁ e₂ : ACApps) (r : Array Expr := #[]) : Array Expr :=
   match e₁ with
   | .apps op₁ args₁ => Id.run do
     let mut r := r
@@ -217,7 +217,7 @@ def ACApps.diff (e₁ e₂ : ACApps) (r : Array Expr) : Array Expr :=
   | .ofExpr e => if e₂ == e then r else r.push e
 
 /-- Appends arguments of `e` to `r`. -/
-def ACApps.append (op : Expr) (e : ACApps) (r : Array Expr) : Array Expr :=
+def ACApps.append (op : Expr) (e : ACApps) (r : Array Expr := #[]) : Array Expr :=
   match e with
   | .apps op' args =>
     if op' == op then r ++ args else r
@@ -225,7 +225,7 @@ def ACApps.append (op : Expr) (e : ACApps) (r : Array Expr) : Array Expr :=
     r.push e
 
 /-- Appends elements in the intersection of `e₁` and `e₂` to `r`. -/
-def ACApps.intersection (e₁ e₂ : ACApps) (r : Array Expr) : Array Expr :=
+def ACApps.intersection (e₁ e₂ : ACApps) (r : Array Expr := #[]) : Array Expr :=
   match e₁, e₂ with
   | .apps _ args₁, .apps _ args₂ => Id.run do
     let mut r := r
@@ -249,7 +249,7 @@ def ACApps.mkApps (op : Expr) (args : Array Expr) : ACApps :=
 
 /-- Flattens given two `ACApps`. -/
 def ACApps.mkFlatApps (op : Expr) (e₁ e₂ : ACApps) : ACApps :=
-  let newArgs := ACApps.append op e₁ #[]
+  let newArgs := ACApps.append op e₁
   let newArgs := ACApps.append op e₂ newArgs
   -- TODO: this does a full sort but `newArgs` consists of two sorted subarrays,
   -- so if we want to optimize this, some form of merge sort might be faster.
@@ -380,9 +380,11 @@ modules. -/
 structure ACEntry where
   /-- Natural number associated to an expression. -/
   idx : Nat
-  /-- Expressions that occur on the left hand side of an equality in `CCState.acR`. -/
+  /-- AC variables that occur on the left hand side of an equality which `e` occurs as the left hand
+  side of in `CCState.acR`. -/
   RLHSOccs : RBACAppsSet := ∅
-  /-- Expressions that occur on the right hand side of an equality in `CCState.acR`. -/
+  /-- AC variables that occur on the **left** hand side of an equality which `e` occurs as the right
+  hand side of in `CCState.acR`. Don't confuse. -/
   RRHSOccs : RBACAppsSet := ∅
   deriving Inhabited
 

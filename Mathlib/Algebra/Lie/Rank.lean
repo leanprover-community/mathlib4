@@ -30,8 +30,6 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 
 -/
 
-open scoped BigOperators
-
 variable {R A L M ι ιₘ : Type*}
 variable [CommRing R] [Nontrivial R]
 variable [CommRing A] [Algebra R A]
@@ -48,7 +46,7 @@ open LieAlgebra LinearMap Module.Free
 
 variable (R L M)
 
-local notation "φ" => LieHom.toLinearMap (LieModule.toEndomorphism R L M)
+local notation "φ" => LieHom.toLinearMap (LieModule.toEnd R L M)
 
 /--
 Let `M` be a representation of a Lie algebra `L` over a nontrivial commutative ring `R`,
@@ -78,7 +76,7 @@ lemma rank_le_finrank : rank R L M ≤ finrank R M :=
 variable {L}
 
 lemma rank_le_natTrailingDegree_charpoly_ad :
-    rank R L M ≤ (toEndomorphism R L M x).charpoly.natTrailingDegree :=
+    rank R L M ≤ (toEnd R L M x).charpoly.natTrailingDegree :=
   nilRank_le_natTrailingDegree_charpoly _ _
 
 /-- Let `x` be an element of a Lie algebra `L` over `R`, and write `n` for `rank R L`.
@@ -87,7 +85,7 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 def IsRegular (x : L) : Prop := LinearMap.IsNilRegular φ x
 
 lemma isRegular_def :
-    IsRegular R M x ↔ (toEndomorphism R L M x).charpoly.coeff (rank R L M) ≠ 0 := Iff.rfl
+    IsRegular R M x ↔ (toEnd R L M x).charpoly.coeff (rank R L M) ≠ 0 := Iff.rfl
 
 lemma isRegular_iff_coeff_polyCharpoly_rank_ne_zero :
     IsRegular R M x ↔
@@ -96,7 +94,7 @@ lemma isRegular_iff_coeff_polyCharpoly_rank_ne_zero :
   LinearMap.isNilRegular_iff_coeff_polyCharpoly_nilRank_ne_zero _ _ _
 
 lemma isRegular_iff_natTrailingDegree_charpoly_eq_rank :
-    IsRegular R M x ↔ (toEndomorphism R L M x).charpoly.natTrailingDegree = rank R L M :=
+    IsRegular R M x ↔ (toEnd R L M x).charpoly.natTrailingDegree = rank R L M :=
   LinearMap.isNilRegular_iff_natTrailingDegree_charpoly_eq_nilRank _ _
 section IsDomain
 
@@ -194,7 +192,7 @@ open FiniteDimensional LieSubalgebra
 
 lemma finrank_engel (x : L) :
     finrank K (engel K x) = (ad K L x).charpoly.natTrailingDegree :=
-  (ad K L x).finrank_maximalGeneralizedEigenspace
+  (ad K L x).finrank_maxGenEigenspace
 
 lemma rank_le_finrank_engel (x : L) :
     rank K L ≤ finrank K (engel K x) :=

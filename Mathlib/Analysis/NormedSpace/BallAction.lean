@@ -41,8 +41,8 @@ instance continuousSMul_closedBall_ball : ContinuousSMul (closedBall (0 : 𝕜) 
   ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
 #align has_continuous_smul_closed_ball_ball continuousSMul_closedBall_ball
 
-instance mulActionClosedBallClosedBall : MulAction (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r)
-    where
+instance mulActionClosedBallClosedBall :
+    MulAction (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) where
   smul c x :=
     ⟨(c : 𝕜) • ↑x,
       mem_closedBall_zero_iff.2 <| by
