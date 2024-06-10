@@ -2099,3 +2099,7 @@ theorem lebesgue_number_lemma_of_metric_sUnion {s : Set α} {c : Set (Set α)} (
     (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, ball x δ ⊆ t := by
   rw [sUnion_eq_iUnion] at hc₂; simpa using lebesgue_number_lemma_of_metric hs (by simpa) hc₂
 #align lebesgue_number_lemma_of_metric_sUnion lebesgue_number_lemma_of_metric_sUnion
+
+instance [PseudoMetricSpace X] : PseudoMetricSpace (Additive X) := ‹PseudoMetricSpace X›
+instance [PseudoMetricSpace X] : PseudoMetricSpace (Multiplicative X) := ‹PseudoMetricSpace X›
+instance [PseudoMetricSpace X] : PseudoMetricSpace Xᵒᵈ := ‹PseudoMetricSpace X›
