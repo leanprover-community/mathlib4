@@ -152,23 +152,19 @@ def homEquiv' (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
         apply congr_arg
         simpa using congr_fun (X₂.hom.naturality φ.left.op).symm (𝟙 _) }
   left_inv f := by
-    ext x
-    dsimp
-    erw [yonedaEquiv_apply]
-    simp
-    congr 1
-    obtain ⟨X, ⟨⟨⟩⟩, f⟩ := x
-    dsimp [CostructuredArrow.mk]
-    suffices yonedaEquiv.symm (f.app (Opposite.op X) (𝟙 X)) = f by
+    ext ⟨X, ⟨⟨⟩⟩, φ⟩
+    suffices yonedaEquiv.symm (φ.app (Opposite.op X) (𝟙 X)) = φ by
+      dsimp
+      erw [yonedaEquiv_apply]
+      dsimp [CostructuredArrow.mk]
       erw [this]
-    ext Y y
-    simpa using congr_fun (f.naturality y.op).symm (𝟙 _)
+    exact yonedaEquiv.injective (by aesop_cat)
   right_inv g := by
     ext X x
     dsimp
     erw [yonedaEquiv_apply]
-    rw [FunctorToTypes.comp]
-    erw [yonedaEquiv_symm_app_apply]
+    dsimp
+    rw [yonedaEquiv_symm_app_apply]
     simp
 
 section
@@ -342,12 +338,16 @@ noncomputable def isExtensionAlongYoneda :
 #align category_theory.colimit_adj.is_extension_along_yoneda CategoryTheory.ColimitAdj.isExtensionAlongYoneda
 
 @[reassoc]
-lemma isExtensionAlongYoneda_inv_app_extendAlongYoneda_map_yonedaSections (X : Cᵒᵖ ⥤ Type u₁) (j : X.Elements) :
-      (isExtensionAlongYoneda A).inv.app j.1.unop ≫ (extendAlongYoneda A).map ((yonedaSections j.1.unop X).inv ⟨j.2⟩) =
+lemma isExtensionAlongYoneda_inv_app_extendAlongYoneda_map_yonedaSections (X : Cᵒᵖ ⥤ Type u₁)
+      (j : X.Elements) :
+      (isExtensionAlongYoneda A).inv.app j.1.unop ≫ (extendAlongYoneda A).map
+        ((yonedaSections j.1.unop X).inv ⟨j.2⟩) =
       colimit.ι ((CategoryOfElements.costructuredArrowYonedaEquivalence X).functor ⋙
         CostructuredArrow.proj yoneda X ⋙ A) (Opposite.op j) := by
-  have eq := IsColimit.comp_coconePointUniqueUpToIso_inv (colimit.isColimit  ((CategoryOfElements.π (yoneda.obj j.1.unop)).leftOp ⋙ A))
-    (colimitOfDiagramTerminal (terminalOpOfInitial (isInitial _)) _) (Opposite.op (Elements.initial j.1.unop))
+  have eq := IsColimit.comp_coconePointUniqueUpToIso_inv (colimit.isColimit
+    ((CategoryOfElements.π (yoneda.obj j.1.unop)).leftOp ⋙ A))
+    (colimitOfDiagramTerminal (terminalOpOfInitial (isInitial _)) _)
+      (Opposite.op (Elements.initial j.1.unop))
   dsimp at eq
   simp only [IsTerminal.from_self, unop_id, Opposite.unop_op, CategoryOfElements.id_val,
     yoneda_obj_obj, Functor.map_id, id_comp] at eq

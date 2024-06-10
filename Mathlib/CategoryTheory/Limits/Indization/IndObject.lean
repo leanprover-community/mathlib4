@@ -158,7 +158,8 @@ theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
     (factoringCompInclusion (fromFinalModel <| CostructuredArrow yoneda A)).symm
   have h₂ : Functor.Final (inclusion (fromFinalModel (CostructuredArrow yoneda A))) :=
     Functor.final_of_comp_full_faithful' (factoring _) (inclusion _)
-  let c := (Presheaf.tautologicalCocone A).whisker (inclusion (fromFinalModel (CostructuredArrow yoneda A)))
+  let c := (Presheaf.tautologicalCocone A).whisker
+    (inclusion (fromFinalModel (CostructuredArrow yoneda A)))
   let hc : IsColimit c := (Functor.Final.isColimitWhiskerEquiv _ _).symm
     (Presheaf.isColimitTautologicalCocone A)
   have hq : Nonempty (FinalModel (CostructuredArrow yoneda A)) := Nonempty.map
