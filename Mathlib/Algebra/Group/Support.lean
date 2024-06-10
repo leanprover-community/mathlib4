@@ -132,8 +132,8 @@ theorem disjoint_mulSupport_iff {f : α → M} {s : Set α} :
 
 @[to_additive (attr := simp)]
 theorem mulSupport_eq_empty_iff {f : α → M} : mulSupport f = ∅ ↔ f = 1 := by
-  -- Adaptation note: This used to be `simp_rw` rather than `rw`,
-  -- but this broke `to_additive` as of `nightly-2024-03-07`
+  #adaptation_note /-- This used to be `simp_rw` rather than `rw`,
+  but this broke `to_additive` as of `nightly-2024-03-07` -/
   rw [← subset_empty_iff, mulSupport_subset_iff', funext_iff]
   simp
 #align function.mul_support_eq_empty_iff Function.mulSupport_eq_empty_iff

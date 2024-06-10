@@ -297,6 +297,7 @@
   "Mathlib.Init.Data.Nat.GCD": ["Batteries.Data.Nat.Gcd"],
   "Mathlib.Init.Data.List.Basic": ["Batteries.Data.List.Basic"],
   "Mathlib.Init.Data.Int.Basic": ["Batteries.Data.Int.Order"],
+  "Mathlib.Init.Data.Bool.Lemmas": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.GroupTheory.MonoidLocalization": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],

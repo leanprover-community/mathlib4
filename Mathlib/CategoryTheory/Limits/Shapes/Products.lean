@@ -495,14 +495,14 @@ def Sigma.whiskerEquiv {J K : Type*} {f : J → C} {g : K → C} (e : J ≃ K) (
   hom := Sigma.map' e fun j => (w j).inv
   inv := Sigma.map' e.symm fun k => eqToHom (by simp) ≫ (w (e.symm k)).hom
 
+#adaptation_note /-- nightly-2024-04-01
+The last proof was previously by `aesop_cat`. -/
 instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasProduct (g i)] [HasProduct fun i => ∏ᶜ g i] :
     HasProduct fun p : Σ i, f i => g p.1 p.2 where
   exists_limit := Nonempty.intro
     { cone := Fan.mk (∏ᶜ fun i => ∏ᶜ g i) (fun X => Pi.π (fun i => ∏ᶜ g i) X.1 ≫ Pi.π (g X.1) X.2)
       isLimit := mkFanLimit _ (fun s => Pi.lift fun b => Pi.lift fun c => s.proj ⟨b, c⟩)
-        -- Adaptation note: nightly-2024-04-01
-        -- Both of these proofs were previously by `aesop_cat`.
         (by aesop_cat) (by intro s m w; simp only [Fan.mk_pt]; symm; ext i x; simp_all) }
 
 /-- An iterated product is a product over a sigma type. -/
@@ -513,6 +513,8 @@ def piPiIso {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
   hom := Pi.lift fun ⟨i, x⟩ => Pi.π _ i ≫ Pi.π _ x
   inv := Pi.lift fun i => Pi.lift fun x => Pi.π _ (⟨i, x⟩ : Σ i, f i)
 
+#adaptation_note /-- nightly-2024-04-01
+The last proof was previously by `aesop_cat`. -/
 instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasCoproduct (g i)] [HasCoproduct fun i => ∐ g i] :
     HasCoproduct fun p : Σ i, f i => g p.1 p.2 where
@@ -521,8 +523,6 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
         (fun X => Sigma.ι (g X.1) X.2 ≫ Sigma.ι (fun i => ∐ g i) X.1)
       isColimit := mkCofanColimit _
         (fun s => Sigma.desc fun b => Sigma.desc fun c => s.inj ⟨b, c⟩)
-        -- Adaptation note: nightly-2024-04-01
-        -- Both of these proofs were previously by `aesop_cat`.
         (by aesop_cat) (by intro s m w; simp only [Cofan.mk_pt]; symm; ext i x; simp_all) }
 
 /-- An iterated coproduct is a coproduct over a sigma type. -/

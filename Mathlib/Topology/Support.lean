@@ -259,7 +259,8 @@ theorem comp₂_left (hf : HasCompactMulSupport f)
     (hf₂ : HasCompactMulSupport f₂) (hm : m 1 1 = 1) :
     HasCompactMulSupport fun x => m (f x) (f₂ x) := by
   rw [hasCompactMulSupport_iff_eventuallyEq] at hf hf₂ ⊢
-  /- Adaptation note: (`nightly-2024-03-11`) If we *either* (1) remove the type annotations on the
+  #adaptation_note /-- `nightly-2024-03-11`
+  If we *either* (1) remove the type annotations on the
   binders in the following `fun` or (2) revert `simp only` to `simp_rw`, `to_additive` fails
   because an `OfNat.ofNat 1` is not replaced with `0`. Notably, as of this nightly, what used to
   look like `OfNat.ofNat (nat_lit 1) x` in the proof term now looks like
