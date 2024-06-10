@@ -255,7 +255,7 @@ theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
   erw [← colimit.w _ ee.op, ι_colimMap_assoc, colimit.ι_pre, diagramPullback_app,
     ← Category.assoc, ← Category.assoc]
   congr 1
-  refine' Multiequalizer.hom_ext _ _ _ (fun II => _)
+  refine Multiequalizer.hom_ext _ _ _ (fun II => ?_)
   convert Multiequalizer.condition (S.unop.index P)
     (Cover.Relation.mk I II.base { g₁ := II.f, g₂ := 𝟙 _ }) using 1
   all_goals dsimp; simp
