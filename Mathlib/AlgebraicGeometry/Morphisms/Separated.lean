@@ -3,9 +3,9 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
-import Mathlib.Topology.QuasiSeparated
+import Mathlib.AlgebraicGeometry.Pullbacks
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 
