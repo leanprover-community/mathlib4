@@ -152,4 +152,14 @@ lemma homologyShiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainCom
       (homologyFunctorFactors _ _ a').inv.app K := by
   apply Functor.ShiftSequence.induced_shiftIso_hom_app_obj
 
+@[reassoc]
+lemma homologyFunctor_shiftMap
+    {K L : CochainComplex C ℤ} {n : ℤ} (f : K ⟶ L⟦n⟧) (a a' : ℤ) (h : n + a = a') :
+    (homologyFunctor C (ComplexShape.up ℤ) 0).shiftMap
+      ((quotient _ _).map f ≫ ((quotient _ _).commShiftIso n).hom.app _) a a' h =
+        (homologyFunctorFactors _ _ a).hom.app K ≫
+          (HomologicalComplex.homologyFunctor C (ComplexShape.up ℤ) 0).shiftMap f a a' h ≫
+            (homologyFunctorFactors _ _ a').inv.app L := by
+  apply Functor.ShiftSequence.induced_shiftMap
+
 end HomotopyCategory

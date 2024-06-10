@@ -42,25 +42,21 @@ lemma liftCycles_shift_homologyπ
         simp only [Linear.comp_units_smul] at hf
         apply (one_smul (M := ℤˣ) _).symm.trans _
         rw [← Int.units_mul_self n.negOnePow, mul_smul, comp_id, hf, smul_zero]) ≫
-        K.homologyπ i' ≫ ((HomologicalComplex.homologyFunctor C (up ℤ) 0).shiftIso n i i' hi').inv.app K := by
+        K.homologyπ i' ≫
+          ((HomologicalComplex.homologyFunctor C (up ℤ) 0).shiftIso n i i' hi').inv.app K := by
   sorry
 
 end
 
-section
-
-variable (T : Triangle (CochainComplex C ℤ)) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
-
 @[reassoc]
-lemma homologySequenceδ_quotient_mapTriangle_obj :
+lemma homologySequenceδ_quotient_mapTriangle_obj
+    (T : Triangle (CochainComplex C ℤ)) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (homologyFunctor C (up ℤ) 0).homologySequenceδ
         ((quotient C (up ℤ)).mapTriangle.obj T) n₀ n₁ h =
       (homologyFunctorFactors C (up ℤ) n₀).hom.app _ ≫
         (HomologicalComplex.homologyFunctor C (up ℤ) 0).shiftMap T.mor₃ n₀ n₁ (by omega) ≫
         (homologyFunctorFactors C (up ℤ) n₁).inv.app _ := by
-  sorry
-
-end
+  apply homologyFunctor_shiftMap
 
 namespace mappingCone
 
