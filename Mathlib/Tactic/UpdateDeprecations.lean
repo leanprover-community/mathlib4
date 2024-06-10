@@ -28,7 +28,6 @@ def findNamespaceMatch (fullName s : String) : Option String :=
     let withDot := "." ++ noDot
     if withDot.isPrefixOf s then return withDot
     comps := comps.drop 1
-  dbg_trace "No tail segment of '{fullName}' is a prefix of '{s}'"
   return none
 
 /-- `String.replaceCheck s check repl st` takes as input
@@ -72,9 +71,11 @@ def substitutions (lines : Array String) (dat : Array ((String × String) × (Na
   for ((check, repl), (l', c)) in dat do
     let l := l' - 1
     match new[l]!.replaceCheck check repl c with
-      | some newLine => new := new.modify l (fun _ => newLine); replaced := replaced + 1
-      | none => unreplaced := unreplaced + 1
-  ((replaced, unreplaced), new)
+      | some newLine => (new, replaced) := (new.modify l (fun _ => newLine), replaced + 1)
+      | none         =>
+        dbg_trace "Could not replace '{check}' with '{repl}'"
+        unreplaced := unreplaced + 1
+  return ((replaced, unreplaced), new)
 
 /-- `getBuild` checks if there is an available cache.  If this is the case, then it returns
 the replayed build, otherwise it asks to build/download the cache.
@@ -131,9 +132,12 @@ syntax "././././" sepBy(ident, "/") : build
 syntax "warning:" build ":" num ":" num ": `" ident
   "` has been deprecated, use `" ident "` instead" : build
 
-/-- a deprecated declaration. -/
-syntax "warning:" build ":" num ":" num ": unnecessary `set_option " ident ident
-  "in`" : build
+/-- an unnecessary `set_option ... in`. -/
+syntax "warning:" build ":" num ":" num ": unnecessary `set_option " ident ident &"`" : build
+
+/-- instruction to silence the linter -/
+example := Nat
+syntax "note: this linter can be disabled with `set_option " ident term &"`" : build
 
 end build_syntax
 
@@ -157,8 +161,9 @@ def getCorrections : TSyntax `build → Option (System.FilePath × (String × St
   | `(build| warning: $fil:build: $s : $f : `$depr` has been deprecated, use `$new` instead) =>
     let oldNewName := (depr.getId.toString, new.getId.toString)
     (toFile fil, oldNewName, s.getNat, f.getNat)
-  | `(build|warning: $fil:build: $s : $f : unnecessary `set_option $optN:ident $opt:ident in`) =>
-    (toFile fil, (s!"set_option {optN.getId.toString} {opt.getId.toString} in", ""),
+  | `(build|warning: $fil:build: $s : $f : unnecessary `set_option $optN:ident $opt:ident`) =>
+    (toFile fil, (s!"set_option {optN.getId.toString} {opt.getId.toString} in",
+      "/-set_option {optN.getId.toString} {opt.getId.toString} in-/"),
       s.getNat, f.getNat)
   | _ => default
 
