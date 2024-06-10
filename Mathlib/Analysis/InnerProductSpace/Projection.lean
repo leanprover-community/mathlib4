@@ -238,7 +238,6 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
       have : 2 * p ≤ p :=
         calc
           2 * p ≤ θ * q := by
-            set_option tactic.skipAssignedInstances false in
             exact this θ (lt_min (by norm_num) (div_pos hp q_pos)) (by norm_num [θ])
           _ ≤ p := eq₁
       linarith

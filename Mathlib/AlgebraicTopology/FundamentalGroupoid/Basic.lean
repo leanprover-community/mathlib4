@@ -107,7 +107,6 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
     cases hx with
     | inl hx
     | inr hx =>
-      set_option tactic.skipAssignedInstances false in
       rw [hx]
       norm_num [reflTransSymmAux]
 #align path.homotopy.refl_trans_symm Path.Homotopy.reflTransSymm
