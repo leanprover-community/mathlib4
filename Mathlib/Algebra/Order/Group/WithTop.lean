@@ -9,7 +9,17 @@ import Mathlib.Algebra.Order.Monoid.WithTop
 #align_import algebra.order.group.with_top from "leanprover-community/mathlib"@"f178c0e25af359f6cbc72a96a243efd3b12423a3"
 
 /-!
-# Adjoining a top element to a `LinearOrderedAddCommGroupWithTop`.
+# Adjoining a top element to a `LinearOrderedAddCommGroup`.
+
+This file defines a negation on `WithTop α` when `α` is a linearly ordered additive commutative
+group, by setting `-⊤ = ⊤`. This corresponds to the additivization of the usual multiplicative
+convention `0⁻¹ = 0`, and is relevant in valuation theory.
+
+
+Note that there is another subtraction on objects of the form `WithTop α` in the file
+`Mathlib.Algebra.Order.Sub.WithTop`, setting `-⊤ = ⊥` when `α` has a bottom element. This is the
+right convention for `ℕ∞` or `ℝ≥0∞`. Since `LinearOrderedAddCommGroup`s don't have a bottom element
+(unless they are trivial), this shouldn't create diamonds.
 -/
 
 namespace WithTop
