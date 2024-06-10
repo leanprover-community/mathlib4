@@ -1418,10 +1418,10 @@ noncomputable def algEquivOfEq {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
   ofAlgHom (algHomOfDvd (dvd_of_eq h_eq.symm)) (algHomOfDvd (dvd_of_eq h_eq))
     (PowerBasis.algHom_ext (powerBasis (h_eq ▸ hp))
       (by rw [algHomOfDvd, powerBasis_gen (h_eq ▸ hp), AlgHom.coe_comp, Function.comp_apply,
-        algHomOfDvd, liftHom_root, liftHom_root, AlgHom.coe_id, id.def]))
+        algHomOfDvd, liftHom_root, liftHom_root, AlgHom.coe_id, id_eq]))
     (PowerBasis.algHom_ext (powerBasis hp)
       (by rw [algHomOfDvd, powerBasis_gen hp, AlgHom.coe_comp, Function.comp_apply, algHomOfDvd,
-          liftHom_root, liftHom_root, AlgHom.coe_id, id.def]))
+          liftHom_root, liftHom_root, AlgHom.coe_id, id_eq]))
 
 theorem coe_algEquivOfEq {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
     (algEquivOfEq hp h_eq).toFun = liftHom p (root q) (by rw [h_eq, aeval_eq, mk_self]) :=
@@ -1444,17 +1444,15 @@ noncomputable def algEquivOfAssociated {p q : K[X]} (hp : p ≠ 0) (hpq : Associ
     (liftHom q (root p) (by simp only [aeval_eq, mk_eq_zero, hpq.dvd]))
     ( PowerBasis.algHom_ext (powerBasis (hpq.ne_zero_iff.mp hp))
         (by rw [powerBasis_gen (hpq.ne_zero_iff.mp hp), AlgHom.coe_comp, Function.comp_apply,
-          liftHom_root, liftHom_root, AlgHom.coe_id, id.def]))
+          liftHom_root, liftHom_root, AlgHom.coe_id, id_eq]))
     (PowerBasis.algHom_ext (powerBasis hp)
       (by rw [powerBasis_gen hp, AlgHom.coe_comp, Function.comp_apply, liftHom_root, liftHom_root,
-          AlgHom.coe_id, id.def]))
+          AlgHom.coe_id, id_eq]))
 
 theorem coe_algEquivOfAssociated {p q : K[X]} (hp : p ≠ 0) (hpq : Associated p q) :
     (algEquivOfAssociated hp hpq).toFun =
       liftHom p (root q) (by simp only [aeval_eq, mk_eq_zero, hpq.symm.dvd]) :=
   rfl
-
-
 
 theorem algEquivOfAssociated_toAlgHom {p q : K[X]} (hp : p ≠ 0) (hpq : Associated p q) :
     (algEquivOfAssociated hp hpq).toAlgHom =
