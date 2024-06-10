@@ -97,12 +97,12 @@ theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty) (h's : BddB
   obtain ⟨x, hx⟩ := hs
   change _ = ite _ _ _
   split_ifs with h
-  · cases h (mem_image_of_mem _ hx)
+  · rcases h with h1 | h2
+    · cases h1 (mem_image_of_mem _ hx)
+    · exact (h2 (Monotone.map_bddBelow coe_mono h's)).elim
   · rw [preimage_image_eq]
     exact Option.some_injective _
 #align with_top.coe_Inf' WithTop.coe_sInf'
-
-#exit
 
 -- Porting note: the mathlib3 proof uses `range_comp` in the opposite direction and
 -- does not need `rfl`.
@@ -129,9 +129,11 @@ theorem WithTop.coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)
 #align with_top.coe_supr WithTop.coe_iSup
 
 @[simp]
-theorem WithBot.csSup_empty [SupSet α] : sSup (∅ : Set (WithBot α)) = ⊥ :=
-  if_pos <| Set.empty_subset _
-#align with_bot.cSup_empty WithBot.csSup_empty
+theorem WithBot.sSup_empty [SupSet α] : sSup (∅ : Set (WithBot α)) = ⊥ :=
+  WithTop.sInf_empty (α := αᵒᵈ)
+#align with_bot.cSup_empty WithBot.sSup_empty
+
+@[deprecated (since := "2024-06-10")] alias WithBot.csSup_empty := WithBot.sSup_empty
 
 @[simp]
 theorem WithBot.ciSup_empty [IsEmpty ι] [SupSet α] (f : ι → WithBot α) :
