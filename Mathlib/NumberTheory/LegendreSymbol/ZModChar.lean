@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 import Mathlib.Data.Int.Range
 import Mathlib.Data.ZMod.Basic
-import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
+import Mathlib.NumberTheory.MulChar.Basic
 
 #align_import number_theory.legendre_symbol.zmod_char from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 

@@ -165,7 +165,7 @@ protected theorem coe_injective : Injective ((↑) : ℝ≥0 → ℝ) := Subtype
   NNReal.coe_injective.eq_iff
 #align nnreal.coe_eq NNReal.coe_inj
 
-@[deprecated] protected alias coe_eq := coe_inj -- 2024-02-03
+@[deprecated (since := "2024-02-03")] protected alias coe_eq := coe_inj
 
 @[simp, norm_cast] lemma coe_zero : ((0 : ℝ≥0) : ℝ) = 0 := rfl
 #align nnreal.coe_zero NNReal.coe_zero
@@ -408,7 +408,7 @@ theorem mk_natCast (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ
   NNReal.eq (NNReal.coe_natCast n).symm
 #align nnreal.mk_coe_nat NNReal.mk_natCast
 
-@[deprecated] alias mk_coe_nat := mk_natCast -- 2024-04-05
+@[deprecated (since := "2024-04-05")] alias mk_coe_nat := mk_natCast
 
 -- Porting note: place this in the `Real` namespace
 @[simp]

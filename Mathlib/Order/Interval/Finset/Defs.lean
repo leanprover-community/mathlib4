@@ -890,8 +890,8 @@ variable (α) [PartialOrder α] [OrderTop α] [LocallyFiniteOrder α]
 attribute [local simp] Option.mem_iff
 
 private lemma aux (x : α) (p : α → Prop) :
-    (∃ a : α, p a ∧ Option.some a = Option.some x) ↔ p x := by
-  simp [Option.some_inj]
+    (∃ a : α, p a ∧ WithTop.some a = WithTop.some x) ↔ p x := by
+  simp
 
 instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
   finsetIcc a b :=
@@ -923,14 +923,13 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
       iff_of_false (not_mem_empty _) fun h => (h.1.trans h.2).not_lt <| coe_lt_top _
     | (a : α), ⊤, ⊤ => by simp [WithTop.some, WithTop.top, insertNone]
     | (a : α), ⊤, (x : α) => by
-        simp only [some_eq_coe, le_eq_subset, coe_le_coe, le_top, and_true]
+        simp only [le_eq_subset, coe_le_coe, le_top, and_true]
         rw [← some_eq_coe, some_mem_insertNone, mem_Ici]
     | (a : α), (b : α), ⊤ => by
         simp only [Embedding.some, mem_map, mem_Icc, and_false, exists_const, some, le_top,
           top_le_iff]
     | (a : α), (b : α), (x : α) => by
-        simp only [some_eq_coe, le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk,
-          coe_le_coe]
+        simp only [le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk, coe_le_coe]
         -- This used to be in the above `simp` before leanprover/lean4#2644
         erw [aux]
   finset_mem_Ico a b x :=
@@ -938,8 +937,8 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_lt h.2
     | (a : α), ⊤, ⊤ => by simp [some, Embedding.some]
     | (a : α), ⊤, (x : α) => by
-        simp only [some_eq_coe, none_eq_top, Embedding.some, mem_map, mem_Ici, Embedding.coeFn_mk,
-          coe_le_coe, aux, coe_lt_top, and_true]
+        simp only [Embedding.some, mem_map, mem_Ici, Embedding.coeFn_mk, coe_le_coe, aux,
+          coe_lt_top, and_true]
         -- This used to be in the above `simp` before leanprover/lean4#2644
         erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some]

@@ -3,7 +3,6 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Nat.Factors
 import Mathlib.Order.Interval.Finset.Nat
@@ -485,10 +484,10 @@ theorem mem_properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ
   intro a
   constructor <;> intro h
   · rcases h with ⟨_h_left, rfl, h_right⟩
-    rw [pow_lt_pow_iff_right pp.one_lt] at h_right
-    exact ⟨h_right, by rfl⟩
+    rw [Nat.pow_lt_pow_iff_right pp.one_lt] at h_right
+    exact ⟨h_right, rfl⟩
   · rcases h with ⟨h_left, rfl⟩
-    rw [pow_lt_pow_iff_right pp.one_lt]
+    rw [Nat.pow_lt_pow_iff_right pp.one_lt]
     simp [h_left, le_of_lt]
 #align nat.mem_proper_divisors_prime_pow Nat.mem_properDivisors_prime_pow
 

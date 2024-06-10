@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.MinMax
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.Order.Interval.Set.OrderIso
@@ -735,15 +735,8 @@ theorem Tendsto.nsmul_atBot (hf : Tendsto f l atBot) {n : ℕ} (hn : 0 < n) :
   @Tendsto.nsmul_atTop α βᵒᵈ _ l f hf n hn
 #align filter.tendsto.nsmul_at_bot Filter.Tendsto.nsmul_atBot
 
-set_option linter.deprecated false in
-@[deprecated] theorem tendsto_bit0_atTop : Tendsto bit0 (atTop : Filter β) atTop :=
-  tendsto_atTop_add tendsto_id tendsto_id
-#align filter.tendsto_bit0_at_top Filter.tendsto_bit0_atTop
-
-set_option linter.deprecated false in
-@[deprecated] theorem tendsto_bit0_atBot : Tendsto bit0 (atBot : Filter β) atBot :=
-  tendsto_atBot_add tendsto_id tendsto_id
-#align filter.tendsto_bit0_at_bot Filter.tendsto_bit0_atBot
+#noalign filter.tendsto_bit0_at_top
+#noalign filter.tendsto_bit0_at_bot
 
 end OrderedAddCommMonoid
 
@@ -931,10 +924,7 @@ section OrderedSemiring
 
 variable [OrderedSemiring α] {l : Filter β} {f g : β → α}
 
-set_option linter.deprecated false in
-@[deprecated] theorem tendsto_bit1_atTop : Tendsto bit1 (atTop : Filter α) atTop :=
-  tendsto_atTop_add_nonneg_right tendsto_bit0_atTop fun _ => zero_le_one
-#align filter.tendsto_bit1_at_top Filter.tendsto_bit1_atTop
+#noalign filter.tendsto_bit1_at_top
 
 theorem Tendsto.atTop_mul_atTop (hf : Tendsto f l atTop) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x * g x) l atTop := by
@@ -1036,14 +1026,6 @@ theorem tendsto_pow_atTop_iff {n : ℕ} : Tendsto (fun x : α => x ^ n) atTop at
 
 end LinearOrderedSemiring
 
--- Porting note (#11215): TODO: make `Odd` and `Even` available here, drop `bit1`
-set_option linter.deprecated false in
-theorem nonneg_of_eventually_pow_nonneg [LinearOrderedRing α] {a : α}
-    (h : ∀ᶠ n in atTop, 0 ≤ a ^ (n : ℕ)) : 0 ≤ a :=
-  let ⟨_n, hn⟩ := (tendsto_bit1_atTop.eventually h).exists
-  pow_bit1_nonneg_iff.1 hn
-#align filter.nonneg_of_eventually_pow_nonneg Filter.nonneg_of_eventually_pow_nonneg
-
 theorem not_tendsto_pow_atTop_atBot [LinearOrderedRing α] :
     ∀ {n : ℕ}, ¬Tendsto (fun x : α => x ^ n) atTop atBot
   | 0 => by simp [not_tendsto_const_atBot]
@@ -1104,7 +1086,7 @@ lemma tendsto_div_const_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
 
 /-- If `f` tends to infinity along a filter, then `f` multiplied by a positive
 constant (on the left) also tends to infinity. For a version working in `ℕ` or `ℤ`, use
-`filter.tendsto.const_mul_atTop'` instead. -/
+`Filter.Tendsto.const_mul_atTop'` instead. -/
 theorem Tendsto.const_mul_atTop (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atTop :=
   (tendsto_const_mul_atTop_of_pos hr).2 hf
@@ -1112,7 +1094,7 @@ theorem Tendsto.const_mul_atTop (hr : 0 < r) (hf : Tendsto f l atTop) :
 
 /-- If a function `f` tends to infinity along a filter, then `f` multiplied by a positive
 constant (on the right) also tends to infinity. For a version working in `ℕ` or `ℤ`, use
-`filter.tendsto.atTop_mul_const'` instead. -/
+`Filter.Tendsto.atTop_mul_const'` instead. -/
 theorem Tendsto.atTop_mul_const (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atTop :=
   (tendsto_mul_const_atTop_of_pos hr).2 hf
