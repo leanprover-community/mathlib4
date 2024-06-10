@@ -8,6 +8,7 @@ Mathlib/Algebra/Order/Floor.lean : line 1 : ERR_NUM_LIN : 2000 file contains 181
 Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1709 lines, try to split it up
 Mathlib/Algebra/Polynomial/Degree/Definitions.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1703 lines, try to split it up
 Mathlib/Algebra/Quaternion.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1590 lines, try to split it up
+Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1503 lines, try to split it up
 Mathlib/Analysis/Asymptotics/Asymptotics.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2335 lines, try to split it up
 Mathlib/Analysis/Calculus/ContDiff/Basic.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2175 lines, try to split it up
 Mathlib/Analysis/Calculus/ContDiff/Defs.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1768 lines, try to split it up
