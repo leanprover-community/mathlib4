@@ -1591,9 +1591,9 @@ import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
 import Mathlib.CategoryTheory.Products.Associator
-import Mathlib.CategoryTheory.Products.Unitor
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Products.Bifunctor
+import Mathlib.CategoryTheory.Products.Unitor
 import Mathlib.CategoryTheory.Quotient
 import Mathlib.CategoryTheory.Quotient.Linear
 import Mathlib.CategoryTheory.Quotient.Preadditive
