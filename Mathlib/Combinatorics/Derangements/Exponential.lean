@@ -19,8 +19,6 @@ The specific lemma is `numDerangements_tendsto_inv_e`.
 
 open Filter NormedSpace
 
-open scoped BigOperators
-
 open scoped Topology
 
 theorem numDerangements_tendsto_inv_e :

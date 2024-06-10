@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Data.Nat.Interval
+import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Interval.Finset
+import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.Linarith
 
 #align_import algebra.big_operators.intervals from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
@@ -16,7 +17,6 @@ We prove results about big operators over intervals.
 -/
 
 open Nat
-open scoped BigOperators
 
 variable {α M : Type*}
 
@@ -193,7 +193,7 @@ theorem sum_Ico_Ico_comm {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → 
     (fun _ _ ↦ rfl) <;>
   simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
   rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
-  refine' ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;>
+  refine ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;>
   omega
 #align finset.sum_Ico_Ico_comm Finset.sum_Ico_Ico_comm
 
@@ -206,7 +206,7 @@ theorem sum_Ico_Ico_comm' {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ →
     (fun _ _ ↦ rfl) <;>
   simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
   rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
-  refine' ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;>
+  refine ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;>
   omega
 
 @[to_additive]

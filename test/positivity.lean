@@ -12,7 +12,6 @@ This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 set_option autoImplicit true
 
 open Finset Function Nat NNReal ENNReal
-open scoped BigOperators
 
 variable {ι α β : Type _}
 
@@ -320,7 +319,7 @@ example [MetricSpace α] {s : Set α} : 0 ≤ Metric.diam s := by positivity
 /- ### Canonical orders -/
 
 example {a : ℕ} : 0 ≤ a := by positivity
--- example {a : ℚ≥0} : 0 ≤ a := by positivity
+example {a : ℚ≥0} : 0 ≤ a := by positivity
 example {a : ℝ≥0} : 0 ≤ a := by positivity
 example {a : ℝ≥0∞} : 0 ≤ a := by positivity
 
@@ -336,6 +335,9 @@ example {a : ℤ} (ha : 0 < a) : (0 : ℚ) < a := by positivity
 example {a : ℚ} (ha : a ≠ 0) : (a : ℝ) ≠ 0 := by positivity
 example {a : ℚ} (ha : 0 ≤ a) : (0 : ℝ) ≤ a := by positivity
 example {a : ℚ} (ha : 0 < a) : (0 : ℝ) < a := by positivity
+example {a : ℚ≥0} (ha : a ≠ 0) : (a : ℝ≥0) ≠ 0 := by positivity
+example {a : ℚ≥0} : (0 : ℝ≥0) ≤ a := by positivity
+example {a : ℚ≥0} (ha : 0 < a) : (0 : ℝ≥0) < a := by positivity
 example {r : ℝ≥0} : (0 : ℝ) ≤ r := by positivity
 example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ) < r := by positivity
 -- example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ≥0∞) < r := by positivity

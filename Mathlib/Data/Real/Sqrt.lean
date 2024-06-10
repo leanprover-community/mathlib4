@@ -34,7 +34,7 @@ square root
 -/
 
 open Set Filter
-open scoped BigOperators Filter NNReal Topology
+open scoped Filter NNReal Topology
 
 namespace NNReal
 

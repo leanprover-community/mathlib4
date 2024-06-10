@@ -11,6 +11,7 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
 import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Order.Filter.IndicatorFunction
 
 #align_import measure_theory.function.lp_space from "leanprover-community/mathlib"@"c4015acc0a223449d44061e27ddac1835a3852b9"
 
@@ -70,7 +71,7 @@ set_option linter.uppercaseLean3 false
 
 open TopologicalSpace MeasureTheory Filter
 
-open scoped NNReal ENNReal BigOperators Topology MeasureTheory Uniformity
+open scoped NNReal ENNReal Topology MeasureTheory Uniformity
 
 variable {α E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
@@ -832,10 +833,17 @@ theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt 
 @[simp]
 theorem indicatorConstLp_empty :
     indicatorConstLp p MeasurableSet.empty (by simp : μ ∅ ≠ ∞) c = 0 := by
-  rw [Lp.eq_zero_iff_ae_eq_zero]
-  convert indicatorConstLp_coeFn (E := E)
-  simp [Set.indicator_empty', Pi.zero_def]
+  simp only [indicatorConstLp, Set.indicator_empty', Memℒp.toLp_zero]
 #align measure_theory.indicator_const_empty MeasureTheory.indicatorConstLp_empty
+
+theorem indicatorConstLp_inj {s t : Set α} (hs : MeasurableSet s) (hsμ : μ s ≠ ∞)
+    (ht : MeasurableSet t) (htμ : μ t ≠ ∞) {c : E} (hc : c ≠ 0)
+    (h : indicatorConstLp p hs hsμ c = indicatorConstLp p ht htμ c) : s =ᵐ[μ] t :=
+  .of_indicator_const hc <|
+    calc
+      s.indicator (fun _ ↦ c) =ᵐ[μ] indicatorConstLp p hs hsμ c := indicatorConstLp_coeFn.symm
+      _ = indicatorConstLp p ht htμ c := by rw [h]
+      _ =ᵐ[μ] t.indicator (fun _ ↦ c) := indicatorConstLp_coeFn
 
 theorem memℒp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :

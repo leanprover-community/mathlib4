@@ -170,9 +170,11 @@ theorem map_inv_hom_id_app {X Y : C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (Z : D) :
 #align category_theory.map_inv_hom_app CategoryTheory.Iso.map_inv_hom_id_app
 #align category_theory.map_inv_hom_app_assoc CategoryTheory.Iso.map_inv_hom_id_app_assoc
 
-@[deprecated (since := "2024-05-27")] alias map_hom_inv_app := map_hom_inv_id_app
-@[deprecated (since := "2024-05-27")] alias map_inv_hom_app := map_inv_hom_id_app
-
 end Iso
+
+@[deprecated (since := "2024-06-09")] alias map_hom_inv_app := Iso.map_hom_inv_id_app
+@[deprecated (since := "2024-06-09")] alias map_inv_hom_app := Iso.map_inv_hom_id_app
+@[deprecated (since := "2024-06-09")] alias map_hom_inv_app_assoc := Iso.map_hom_inv_id_app_assoc
+@[deprecated (since := "2024-06-09")] alias map_inv_hom_app_assoc := Iso.map_inv_hom_id_app_assoc
 
 end CategoryTheory

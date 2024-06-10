@@ -25,8 +25,6 @@ multilinear map, alternating map, continuous
 
 open Function Matrix
 
-open scoped BigOperators
-
 /-- A continuous alternating map from `ι → M` to `N`, denoted `M [⋀^ι]→L[R] N`,
 is a continuous map that is
 
