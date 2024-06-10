@@ -620,13 +620,14 @@ namespace MonoidHom
 
 open Finset
 
-variable {G H F : Type*} [Group G] [Fintype G] [Group H] [DecidableEq H] [MonoidHomClass F G H]
+variable {G H F : Type*} [Group G] [Fintype G] [Group H] [DecidableEq H]
+  [FunLike F G H] [MonoidHomClass F G H]
 
 @[to_additive]
 theorem card_fiber_of_mem_range (f : F) {x : H} (hx : x ∈ Set.range f) :
     (univ.filter fun g => f g = x).card = (univ.filter fun g => f g = 1).card := by
   rcases hx with ⟨x, rfl⟩
-  refine card_congr (fun g _ => g * x⁻¹ * 1) ?_ ?_ fun g hg => ⟨g * 1⁻¹ * x, ?_⟩
+  refine card_bij (fun g _ => g * x⁻¹ * 1) ?_ ?_ fun g hg => ⟨g * 1⁻¹ * x, ?_⟩
   · simp (config := { contextual := true }) only [mem_filter, mem_univ, true_and, mul_one, map_mul,
       map_inv, mul_right_inv, and_self, implies_true, forall_const]
   · simp only [mul_left_inj, imp_self, forall₂_true_iff]
