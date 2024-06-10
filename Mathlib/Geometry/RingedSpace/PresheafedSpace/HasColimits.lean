@@ -57,11 +57,9 @@ attribute [local simp] eqToHom_map
 
 @[simp]
 theorem map_id_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) (j) (U) :
-    (F.map (𝟙 j)).c.app (op U) =
-      (Pushforward.id (F.obj j).presheaf).inv.app (op U) ≫
-        (pushforwardEq (by simp) (F.obj j).presheaf).hom.app
-          (op U) := by
-  cases U
+    (F.map (𝟙 j)).c.app U =
+      (Pushforward.id (F.obj j).presheaf).inv.app U ≫
+        (pushforwardEq (by simp) (F.obj j).presheaf).hom.app U := by
   simp [PresheafedSpace.congr_app (F.map_id j)]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.map_id_c_app AlgebraicGeometry.PresheafedSpace.map_id_c_app
@@ -69,13 +67,10 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem map_comp_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) {j₁ j₂ j₃}
     (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃) (U) :
-    (F.map (f ≫ g)).c.app (op U) =
-      (F.map g).c.app (op U) ≫
-        (pushforwardMap (F.map g).base (F.map f).c).app (op U) ≫
-          (Pushforward.comp (F.obj j₁).presheaf (F.map f).base (F.map g).base).inv.app (op U) ≫
-            (pushforwardEq (by rw [F.map_comp]; rfl) _).hom.app
-              _ := by
-  cases U
+    (F.map (f ≫ g)).c.app U =
+      (F.map g).c.app U ≫
+        ((pushforward C (F.map g).base).map (F.map f).c).app U ≫
+          (pushforwardEq (congr_arg Hom.base (F.map_comp f g).symm) _).hom.app U := by
   simp [PresheafedSpace.congr_app (F.map_comp f g)]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.map_comp_c_app AlgebraicGeometry.PresheafedSpace.map_comp_c_app
@@ -93,20 +88,8 @@ def componentwiseDiagram (F : J ⥤ PresheafedSpace.{_, _, v} C) [HasColimit F]
     (F.obj (unop k)).presheaf.map (eqToHom (by rw [← colimit.w F f.unop, comp_base]; rfl))
   map_comp {i j k} f g := by
     dsimp
-    simp_rw [map_comp_c_app]
-    simp only [op_obj, unop_op, eqToHom_op, id_eq, id_comp, assoc, eqToHom_trans]
-    congr 1
-    rw [TopCat.Presheaf.Pushforward.comp_inv_app, TopCat.Presheaf.pushforwardEq_hom_app,
-      CategoryTheory.NatTrans.naturality_assoc, TopCat.Presheaf.pushforwardMap_app]
-    congr 1
+    simp only [assoc, CategoryTheory.NatTrans.naturality_assoc]
     simp
-  map_id x := by
-    dsimp
-    simp [map_id_c_app, pushforwardObj_obj, op_obj, unop_op, pushforwardEq_hom_app, eqToHom_op,
-      id_eq, eqToHom_map, assoc, eqToHom_trans, eqToHom_refl, comp_id,
-      TopCat.Presheaf.Pushforward.id_inv_app']
-    rw [TopCat.Presheaf.Pushforward.id_inv_app']
-    simp only [Opens.carrier_eq_coe, Opens.mk_coe, map_id]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.componentwise_diagram AlgebraicGeometry.PresheafedSpace.componentwiseDiagram
 

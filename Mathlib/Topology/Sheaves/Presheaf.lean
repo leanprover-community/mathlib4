@@ -422,15 +422,79 @@ set_option linter.uppercaseLean3 false in
 
 variable {C}
 
-theorem Pushforward.id_eq {X : TopCat.{w}} (ℱ : X.Presheaf C) : 𝟙 X _* ℱ = ℱ := rfl
+namespace Pushforward
+
+/-- The natural isomorphism between the pushforward of a presheaf along the identity continuous map
+and the original presheaf. -/
+def id {X : TopCat.{w}} (ℱ : X.Presheaf C) : 𝟙 X _* ℱ ≅ ℱ := Iso.refl _
+set_option linter.uppercaseLean3 false in
+#align Top.presheaf.pushforward.id TopCat.Presheaf.Pushforward.id
+
+@[simp]
+theorem id_hom_app {X : TopCat.{w}} (ℱ : X.Presheaf C) (U) : (id ℱ).hom.app U = 𝟙 _ := rfl
+set_option linter.uppercaseLean3 false in
+#align Top.presheaf.pushforward.id_hom_app TopCat.Presheaf.Pushforward.id_hom_app
+
+@[simp]
+theorem id_inv_app {X : TopCat.{w}} (ℱ : X.Presheaf C) (U) :
+    (id ℱ).inv.app U = 𝟙 _ := rfl
+set_option linter.uppercaseLean3 false in
+#align Top.presheaf.pushforward.id_inv_app' TopCat.Presheaf.Pushforward.id_inv_app
+
+theorem id_eq {X : TopCat.{w}} (ℱ : X.Presheaf C) : 𝟙 X _* ℱ = ℱ := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_eq TopCat.Presheaf.Pushforward.id_eq
 
-theorem Pushforward.comp_eq {Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (ℱ : X.Presheaf C) :
+/-- The natural isomorphism between
+the pushforward of a presheaf along the composition of two continuous maps and
+the corresponding pushforward of a pushforward. -/
+def comp {X Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (ℱ : X.Presheaf C) :
+    (f ≫ g) _* ℱ ≅ g _* (f _* ℱ) := Iso.refl _
+set_option linter.uppercaseLean3 false in
+#align Top.presheaf.pushforward.comp TopCat.Presheaf.Pushforward.comp
+
+theorem comp_eq {X Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (ℱ : X.Presheaf C) :
     (f ≫ g) _* ℱ = g _* (f _* ℱ) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.comp_eq TopCat.Presheaf.Pushforward.comp_eq
+
+@[simp]
+theorem comp_hom_app {X Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (ℱ : X.Presheaf C) (U) :
+    (comp f g ℱ).hom.app U = 𝟙 _ := rfl
+set_option linter.uppercaseLean3 false in
+#align Top.presheaf.pushforward.comp_hom_app TopCat.Presheaf.Pushforward.comp_hom_app
+
+@[simp]
+theorem comp_inv_app {X Y Z : TopCat.{w}} (f : X ⟶ Y) (g : Y ⟶ Z) (ℱ : X.Presheaf C) (U) :
+    (comp f g ℱ).inv.app U = 𝟙 _ := rfl
+set_option linter.uppercaseLean3 false in
+#align Top.presheaf.pushforward.comp_inv_app TopCat.Presheaf.Pushforward.comp_inv_app
+
+end Pushforward
+
+/--
+An equality of continuous maps induces a natural isomorphism between the pushforwards of a presheaf
+along those maps.
+-/
+def pushforwardEq {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Presheaf C) :
+    f _* ℱ ≅ g _* ℱ :=
+  isoWhiskerRight (NatIso.op (Opens.mapIso f g h).symm) ℱ
+set_option linter.uppercaseLean3 false in
+#align Top.presheaf.pushforward_eq TopCat.Presheaf.pushforwardEq
+
+theorem pushforward_eq' {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Presheaf C) :
+    f _* ℱ = g _* ℱ := by rw [h]
+set_option linter.uppercaseLean3 false in
+#align Top.presheaf.pushforward_eq' TopCat.Presheaf.pushforward_eq'
+
+@[simp]
+theorem pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y}
+    (h : f = g) (ℱ : X.Presheaf C) (U) :
+    (pushforwardEq h ℱ).hom.app U = ℱ.map (eqToHom (by aesop_cat)) := by
+  simp [pushforwardEq]
+set_option linter.uppercaseLean3 false in
+#align Top.presheaf.pushforward_eq_hom_app TopCat.Presheaf.pushforwardEq_hom_app
 
 variable (C)
 
