@@ -70,7 +70,7 @@ theorem mul_antipode_lTensor_comul_apply (a : A) :
     algebraMap R A (Coalgebra.counit a) :=
   LinearMap.congr_fun mul_antipode_lTensor_comul a
 
-open BigOperators Coalgebra
+open BigOperators Coalgebra CoalgebraStruct
 
 lemma sum_antipode_mul_eq {a : A} (repr : Repr R a) :
     ∑ i ∈ repr.index, antipode (R := R) (repr.left i) * repr.right i =
