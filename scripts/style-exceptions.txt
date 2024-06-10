@@ -8,6 +8,7 @@ Mathlib/Algebra/Order/Floor.lean : line 1 : ERR_NUM_LIN : 2000 file contains 181
 Mathlib/Algebra/Order/Monoid/Unbundled/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1709 lines, try to split it up
 Mathlib/Algebra/Polynomial/Degree/Definitions.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1703 lines, try to split it up
 Mathlib/Algebra/Quaternion.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1590 lines, try to split it up
+Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1503 lines, try to split it up
 Mathlib/Analysis/Asymptotics/Asymptotics.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2335 lines, try to split it up
 Mathlib/Analysis/Calculus/ContDiff/Basic.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2175 lines, try to split it up
 Mathlib/Analysis/Calculus/ContDiff/Defs.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1768 lines, try to split it up
@@ -45,9 +46,10 @@ Mathlib/Data/Set/Function.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2002 
 Mathlib/Data/Set/Image.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1651 lines, try to split it up
 Mathlib/Data/Set/Lattice.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2290 lines, try to split it up
 Mathlib/Data/String/Lemmas.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/UnionFind.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Geometry/Manifold/SmoothManifoldWithCorners.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1654 lines, try to split it up
-Mathlib/GroupTheory/MonoidLocalization.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2163 lines, try to split it up
+Mathlib/Data/UnionFind.lean : line 10 : ERR_MOD : Module docstring missing, or too late
+Mathlib/FieldTheory/Adjoin.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1781 lines, try to split it up
+Mathlib/Geometry/Manifold/SmoothManifoldWithCorners.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1607 lines, try to split it up
+Mathlib/GroupTheory/MonoidLocalization.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2153 lines, try to split it up
 Mathlib/Init/Data/Int/Basic.lean : line 12 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Data/Nat/Basic.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Init/Data/Nat/Lemmas.lean : line 13 : ERR_MOD : Module docstring missing, or too late
@@ -95,6 +97,12 @@ Mathlib/SetTheory/Game/PGame.lean : line 1 : ERR_NUM_LIN : 2100 file contains 19
 Mathlib/SetTheory/Ordinal/Arithmetic.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2641 lines, try to split it up
 Mathlib/SetTheory/Ordinal/Basic.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1663 lines, try to split it up
 Mathlib/SetTheory/ZFC/Basic.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1803 lines, try to split it up
+Mathlib/Tactic/AdaptationNote.lean : line 12 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/AdaptationNote.lean : line 21 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/AdaptationNote.lean : line 27 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/AdaptationNote.lean : line 39 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/AdaptationNote.lean : line 52 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+Mathlib/Tactic/AdaptationNote.lean : line 9 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
 Mathlib/Tactic/ApplyWith.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Basic.lean : line 13 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/ByContra.lean : line 8 : ERR_MOD : Module docstring missing, or too late
