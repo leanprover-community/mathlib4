@@ -360,17 +360,15 @@ lemma LiftedContextFreeGrammar.sink_produces {G : LiftedContextFreeGrammar T}
       GoodString w₂ := by
   rcases hG with ⟨r, rin, hr⟩
   rcases hr.exists_parts with ⟨u, v, bef, aft⟩
+  rw [bef] at hw₁
   rcases G.preimage_of_rules r (by
-      refine ⟨rin, ?_⟩
-      rw [bef] at hw₁
       obtain ⟨n₀, hn₀⟩ : GoodLetter (Symbol.nonterminal r.input) := by apply hw₁; simp
-      use n₀
+      refine ⟨rin, n₀, ?_⟩
       simpa [G.sinkNT_inverse_liftNT r.input ⟨n₀, hn₀⟩, Option.map_some'] using
         congr_arg (Option.map G.liftNT) hn₀.symm)
     with ⟨r₀, hr₀, hrr₀⟩
   constructor
-  · use r₀
-    refine ⟨hr₀, ?_⟩
+  · refine ⟨r₀, hr₀, ?_⟩
     rw [ContextFreeRule.rewrites_iff]
     use Symbol.sinkString G.sinkNT u, Symbol.sinkString G.sinkNT v
     have correct_inverse : sinkSymbol G.sinkNT ∘ liftSymbol G.liftNT = Option.some := by
@@ -392,8 +390,7 @@ lemma LiftedContextFreeGrammar.sink_produces {G : LiftedContextFreeGrammar T}
     · simpa only [Symbol.sinkString, List.filterMap_append, ContextFreeRule.lift,
         Symbol.liftString, List.filterMap_map, List.filterMap_some,
         ← hrr₀, correct_inverse] using congr_arg (Symbol.sinkString G.sinkNT) aft
-  · rw [bef] at hw₁
-    rw [aft, ← hrr₀]
+  · rw [aft, ← hrr₀]
     simp only [GoodString, List.forall_mem_append] at hw₁ ⊢
     refine ⟨⟨hw₁.left.left, ?_⟩, hw₁.right⟩
     intro a ha
